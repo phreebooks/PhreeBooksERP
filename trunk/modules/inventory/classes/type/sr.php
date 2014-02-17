@@ -46,6 +46,11 @@ class sr extends inventory {//Serialized Item
 		}
      	$this->qty_table .='  </tbody>'. chr(10);
     	$this->qty_table .='</table>'. chr(10);
-	  	
+
+    	$field_list  = array('m.id', 'm.post_date', 'm.purchase_invoice_id', 'm.closed', 'm.bill_primary_name', 'm.total_amount', 'i.serialize_number');
+    	$sql   = "SELECT ".implode(', ', $field_list)." FROM ".TABLE_JOURNAL_MAIN." m JOIN ".TABLE_JOURNAL_ITEM." i on m.id=i.ref_id
+    	WHERE m.journal_id=12 AND i.sku='$this->sku' ORDER BY m.purchase_invoice_id DESC";
+    	$this->orderHistory = $db->Execute($sql);
+    	$this->tab_list['orderhist'] = array('file'=>'template_tab_hist_sr', 'tag'=>'orderhist', 'order'=>40, 'text'=>'Unit History');
 	}
 }
