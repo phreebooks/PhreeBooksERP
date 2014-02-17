@@ -449,10 +449,23 @@ function convertSO() {
   }
 }
 
-function serialList(rowID) {
-   var choice    = document.getElementById(rowID).value;
-   var newChoice = prompt(serial_num_prompt, choice);
-   if (newChoice) document.getElementById(rowID).value = newChoice;
+function serialList(id) {
+	switch (journalID) {
+		default: // for purchases
+			var newChoice = prompt(serial_num_prompt, $(id).val());
+			$(id).val(newChoice);
+			break;
+		case  '9':
+		case '10':
+		case '12':
+		case '13':
+			var curDef  = $("#"+id).val();
+			var rowID   = id.replace("serial_", "");
+			var sku     = $("#sku_"+rowID).val();
+			var storeID = $("#store_id").val();
+			window.open("index.php?module=inventory&page=popup_serial&def="+curDef+"&sku="+sku+"&rowID="+rowID+"&storeID="+storeID,"serialize","width=700px,height=550px,resizable=1,scrollbars=1,top=150,left=200");
+			break;
+	}
 }
 
 function openBarCode() {
