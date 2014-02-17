@@ -69,7 +69,7 @@ define('TEXT_RECEIVE_FROM','Ontvangen van:');
 define('ORD_SHIP_CARRIER','Koerier');
 define('TEXT_SO_BAL','VO Bal');
 define('TEXT_PO_BAL','IO Bal');
-define('TEXT_SALES_REP','Verkooper');
+define('TEXT_SALES_REP','Verkoper');
 define('TEXT_SHIP_BY_DATE','Verzend per Datum');
 define('ORD_SHIP_TO','Verzending naar:');
 define('TEXT_SHIPPED','Verzonden');

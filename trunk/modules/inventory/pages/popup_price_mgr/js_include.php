@@ -68,6 +68,7 @@ function updatePrice(sheetID) {
 	  case 1: // Direct Entry
 		document.getElementById('adj_'+refID).value        = formatted_zero;
 		document.getElementById('rnd_'+refID).value        = formatted_zero;
+		document.getElementById('adj_'+refID).value        = 0;
 		document.getElementById('adj_'+refID).disabled     = true;
 		document.getElementById('rnd_'+refID).disabled     = true;
 		document.getElementById('adj_val_'+refID).disabled = true;

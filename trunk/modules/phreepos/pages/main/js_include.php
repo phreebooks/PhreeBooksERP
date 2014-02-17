@@ -175,6 +175,22 @@ function ot_option (till_id, id, type, use_tax, taxable, description) {
 function ClearForm() {	
 }
 
+function stripslashes (str) {
+	return (str + '').replace(/\\(.?)/g, function (s, n1) {
+		switch (n1) {
+	    	case '\\':
+	      		return '\\';
+	    	case '0':
+	      		return '\u0000';
+	    	case '':
+	      		return '';
+	    	default:
+	      		return n1;
+	    	}
+	});
+}
+
+
 function CloseTill(){
 	OpenDrawer();
 	var tillId = document.getElementById('till_id').value;
@@ -1025,7 +1041,7 @@ function changeOfTill(){
 	  		rowCnt++;
 		}
 	}
-	if (qz != null) qz.findPrinter(tills[tillId].printer);
+	if (qz.tagName.toLowerCase() == "applet") qz.findPrinter(tills[tillId].printer);
 	//if (qz.getVersion() <= '1.4.9' ) alert('update jzebra');
 	set_ot_options();
 	document.getElementById('ot_till_id').value = tillId ;
@@ -1034,7 +1050,7 @@ function changeOfTill(){
 
 function monitorPrinting() {
   var qz = document.getElementById('qz');
-  if (qz != null) {
+  if (qz.tagName.toLowerCase() == "applet") {
     if (!qz.isDonePrinting()) {
       window.setTimeout('monitorPrinting()', 1000);
     } else {
@@ -1043,9 +1059,7 @@ function monitorPrinting() {
 	    alert("printing exception occured: " + e.getLocalizedMessage());
 	  }
     }
-  } else {
-	alert("Error: Java printing applet not loaded!");
-  }
+  } 
 }
 
 function InventoryProp(elementID) {
@@ -1182,14 +1196,14 @@ function ajaxPrintAndClean(sXml) { // call back function
   	var action 		= $(xml).find("action").text();
   	var print 		= action.substring(0,5) == 'print';
   	var tillId 		= document.getElementById('till_id').value;
-  	if ( print && qz != null && tills[tillId].printer != '') {	
+  	if ( print && qz.tagName.toLowerCase() == "applet" && tills[tillId].printer != '') {	
   	  	//print receipt and open drawer.
   	  	//qz.setEncoding(tills[tillId].printerEncoding);
 		for(var i in tills[tillId].startingLine){
 			qz.append(tills[tillId].startingLine[i]);
 		}
 	    $(xml).find("receipt_data").each(function() {
-	    	qz.append($(this).find("line").text() + "\n");
+	    	qz.append(stripslashes($(this).find("line").text()) + "\n");
 	    });
 		if ($(xml).find("open_cash_drawer").text() == 1){
 			for(var i in tills[tillId].openDrawer){
@@ -1219,7 +1233,7 @@ function jzebraReady(){
 //Automatically gets called when applet is done appending a file
 function jzebraDoneAppending(){
 	var qz = document.getElementById('qz');
-	if (qz != null) {
+	if (qz.tagName.toLowerCase() == "applet")  {
 	   if (!qz.isDoneAppending()) {
 	      window.setTimeout('jzebraDoneAppending()', 50);
 	   } else {
@@ -1230,16 +1244,14 @@ function jzebraDoneAppending(){
               // "jzebraDonePrinting()" and handle your next steps there.
           monitorPrinting();
 	   }
-	} else {
-    	alert("Applet not loaded!. Please reload the page and except ");
-    }
+	}
 }
 
 //Automatically gets called when applet is done finding
 function jzebraDoneFindingPrinters() {
 	var tillId = document.getElementById('till_id').value;
 	var qz = document.getElementById('qz');
-	if (qz != null) {
+	if (qz.tagName.toLowerCase() == "applet") {
 		if (qz.getPrinter() == null) {
     		return alert('Error: Can not find Printer ' + tills[tillId].printer);
 		} 
@@ -1249,7 +1261,7 @@ function jzebraDoneFindingPrinters() {
 // Automatically gets called when the applet is done printing
 function jzebraDonePrinting() {
 	var qz = document.getElementById('qz');
-	if (qz != null){
+	if (qz.tagName.toLowerCase() == "applet") {
    		if (qz.getException() != null) {
     		return alert('printing error:' + qz.getExceptionMessage());
    		}
@@ -1280,13 +1292,13 @@ function PrintPreviousReceipt(sXml) { // call back function
 	  var massage = $(xml).find("massage").text();
 	  if ( massage ) alert( massage );
 	  var tillId = document.getElementById('till_id').value;
-	  if (qz != null && tills[tillId].printer != '') {
+	  if (qz.tagName.toLowerCase() == "applet" && tills[tillId].printer != '') {
 		  //qz.setEncoding(tills[tillId].printerEncoding);
 			for(var i in tills[tillId].startingLine){
 				qz.append(tills[tillId].startingLine[i]);
 			}
 	        $(xml).find("receipt_data").each(function() {
-	        	qz.append($(this).find("line").text() + "\n");
+	        	qz.append(stripslashes($(this).find("line").text()) + "\n");
 	        });
 	        for(var i in tills[tillId].closingLine){
 				qz.append(tills[tillId].closingLine[i]);
@@ -1304,7 +1316,7 @@ function PrintPreviousReceipt(sXml) { // call back function
 function OpenDrawer(){
 	var tillId = document.getElementById('till_id').value;
 	var qz = document.getElementById('qz');
-	if ( qz != null && tills[tillId].printer != '') {
+	if (qz.tagName.toLowerCase() == "applet" && tills[tillId].printer != '') {
 		if (!qz.isDonePrinting()) {
 			window.setTimeout('OpenDrawer()', 50);
 		} else {

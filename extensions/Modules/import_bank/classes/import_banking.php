@@ -311,8 +311,9 @@ class impbanking extends journal {
 				'post_date'             => $this->post_date,
 				'debit_amount'     		=> $this->_debitamount,	
 				'credit_amount'			=> $this->_creditamount,
-		  		'description'    		=> $this->_description,	
+		  		'description'    		=> $this->_description,
 			);
+			$this->waiting = 1;
 			
 		}else{ 
 			for($i=0; $i < sizeof($found_invoices); $i++){

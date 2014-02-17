@@ -219,5 +219,10 @@ define('SETUP_TAX_DELETE_INTRO','Weet u zeker dat u dit belasting tarief wilt ve
 define('SETUP_HEADING_NEW_TAX_RATE','Nieuw Belasting tarief');
 define('SETUP_HEADING_EDIT_TAX_RATE','Bewerk Belasting tarief');
 define('SETUP_TAX_RATES_LOG','Belasting Tarieven - ');
+define('GEN_ADM_TOOLS_INVENTORY_OWED','Voorraad Kosten van de Verkoop');
+define('GEN_ADM_TOOLS_INVENTORY_DESC','Uw inventory_cogs_owed tabel heeft op dit moment %s regel.<br> Deze tool zal alle regels controleren en opnieuw op slaan. <br>De inventory_cogs_owed tabel zou geen regels moeten bevatten tenzij de voorraad niveau\'s negatief zijn. <br>Als de tabel items bevat en de voorraad niveaus zijn nul of groter dan zal deze tool proberen om de tabel te repareren door het her-opslaan van de journaal posten. <br>Er waren problemen met release R3.6 en ouder. U kunt in een rapport be kijken welke items in uw cogs_owed tabel staan.');
+define('GEN_ADM_TOOLS_OWED_FIX','Opnieuw opslaan kosten van verkoop ');
+define('GEN_ADM_TOOLS_BTN_OWED','Start Opnieuw Opslaan');
+define('GEN_ADM_TOOLS_OWED_CONFIRM','Weet u zeker dat u de kosten van de verkoop opnieuw wil opslaan?\n\nU ZOU EEN BACKUP MOETEN MAKEN VOORDAT U DIT DOET!');
 
 ?>

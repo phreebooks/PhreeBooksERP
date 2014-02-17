@@ -719,6 +719,7 @@ function BuildSeq($report, $delivery_method = 'D') { // for forms only - Sequent
 			}
 			$oneline .= implode("", $temp). "\n";
 		  }
+		  $oneline = substr($oneline,0,-2);
 		  $field->rowbreak = 1;
 		  break;
 		case 'TDup':

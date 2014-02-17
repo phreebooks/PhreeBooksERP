@@ -23,6 +23,7 @@ define('TEXT_EDIT_TILL','Bewerk Kassa Lade');
 define('TEXT_TILLS','Kassa Lade');
 define('TEXT_ENTER_NEW_OTHER_TRANSACTION','Nieuwe Overige Transacties');
 define('TEXT_EDIT_OTHER_TRANSACTION','Bewerk Overige Transacties');
+define('PHREEPOS_ENABLE_DIRECT_PRINTING_DESC','Moet direct printen geactiveerd zijn? Door het de deactiveren zullen de pop_ups verdwijnen die vragen om java toe te staan.');
 
 define('SETUP_TILL_DELETE_INTRO','Wil u deze kassa lade verwijderen?');
 define('PHREEPOS_DISPLAY_WITH_TAX_DESC','Wil u de prijzen op het scherm laten zien met btw<br> (als u nee selecteerd worden de prijzen exclusief btw)');

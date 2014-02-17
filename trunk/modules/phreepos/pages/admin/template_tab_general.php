@@ -39,6 +39,10 @@
 		<td><?php echo PHREEPOS_ROUNDING_DESC ?></td>
 		<td><?php echo html_pull_down_menu('phreepos_rounding',    $sel_rounding, $_POST['phreepos_rounding'] ? $_POST['phreepos_rounding'] : PHREEPOS_ROUNDING, '0'); ?></td>
 	  </tr>
+	  <tr>
+		<td><?php echo PHREEPOS_ENABLE_DIRECT_PRINTING_DESC ?></td>
+		<td><?php echo html_pull_down_menu('phreepos_enable_direct_printing', $sel_yes_no, $_POST['phreepos_enable_direct_printing'] ? $_POST['phreepos_enable_direct_printing'] : PHREEPOS_ENABLE_DIRECT_PRINTING, '1'); ?></td>
+	  </tr>
 	</table>
   </fieldset>
 </div>

@@ -222,7 +222,7 @@ function update_full_price_incl_tax(margin, inclTax, fullprice) {
 function priceMgr(id, cost, price, type) {
   if (!cost)  cost  = document.getElementById('item_cost')  ? cleanCurrency(document.getElementById('item_cost').value)  : 0;
   if (!price) price = document.getElementById('full_price') ? cleanCurrency(document.getElementById('full_price').value) : 0;
-  window.open('index.php?module=inventory&page=popup_price_mgr&iID='+id+'&cost='+cost+'&price='+price+'&type='+type,"price_mgr","width=820,height=400,resizable=1,scrollbars=1,top=150,left=200");
+  window.open('index.php?module=inventory&page=popup_price_mgr&iID='+id+'&cost='+cost+'&price='+price+'&type='+type,"price_mgr","width=860,height=500,resizable=1,scrollbars=1,top=150,left=200");
 }
 
 function InventoryList(rowCnt) {
@@ -482,7 +482,7 @@ function processSkuDetails(sXml) { // call back function
 function InventoryProp(rID) {
 	var sku = document.getElementById('sku_'+rID).value;
 	if (sku != text_search && sku != '') {
-		  window.open("index.php?module=inventory&page=main&action=properties&sku="+sku+'&rowID='+elementID,"inventory","width=800px,height=600px,resizable=1,scrollbars=1,top=50,left=50");
+		  window.open("index.php?module=inventory&page=main&action=properties&sku="+sku+'&rowID='+rID,"inventory","width=800px,height=600px,resizable=1,scrollbars=1,top=50,left=50");
 	}
 }
 // ******* EOF - AJAX BOM item Properties pair *********/

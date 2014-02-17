@@ -2062,12 +2062,12 @@ function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext
 function PhreebooksExceptionHandler($exception) {
 	global $messageStack;
 	if ($_POST['page'] == 'ajax' || $_GET['page'] == 'ajax'){
-    	echo createXmlHeader() . xmlEntry('error', "Exception: " , $exception->getMessage()) . createXmlFooter();
+    	echo createXmlHeader() . xmlEntry('error', "Exception: " . $exception->getMessage()) . createXmlFooter();
         die();
     }
     $messageStack->add($exception->getMessage(), 'error');
   	$text  = date('Y-m-d H:i:s') . " User: " . $_SESSION['admin_id'] . " Company: " . $_SESSION['company'] ;
-    $text .= " EXCEPTION: '" . $exception->getMessage() . "' line " . $exception->getLine() . " in file " . $exception->getFile();
+    $text .= " Exception: '" . $exception->getMessage() . "' line " . $exception->getLine() . " in file " . $exception->getFile();
     if(DEBUG) error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
 }
 

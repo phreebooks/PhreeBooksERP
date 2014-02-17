@@ -26,8 +26,9 @@
 // 3.6 => 2013-05 bug fix and added function to check if payments are set properly before page is loaded
 // 3.7 => 2013-05 bug fix changed the js function refreshOrderClock because it was using the wrong row.
 // 3.8 => 2013-07 added tax_id to till
+// 3.9 => 2014-01 added config option to enable or disable direct printing.
 // Module software version information
-define('MODULE_PHREEPOS_VERSION', 3.8);
+define('MODULE_PHREEPOS_VERSION', 3.9);
 // Menu Sort Positions
 //define('MENU_HEADING_PHREEPOS_ORDER', 40);
 // Menu Security id's (refer to master doc to avoid security setting overlap)
