@@ -362,7 +362,7 @@ class inventory {
 	    }     
 		$sql_data_array['last_update'] = date('Y-m-d H-i-s');
 		if ($_SESSION['admin_security'][SECURITY_ID_PURCHASE_INVENTORY] > 1){
-			$sql_data_array['item_cost'] = $this->store_purchase_array();	
+			$sql_data_array['item_cost'] = $this->store_purchase_array();
 			$sql_data_array['vendor_id'] = $this->min_vendor_id;
 		} else{
 			if (isset($sql_data_array['item_cost'])) unset($sql_data_array['item_cost']);
@@ -540,7 +540,7 @@ class inventory {
 		foreach($this->backup_purchase_array as $key => $value){
 			if($value['action'] == 'delete') $result = $db->Execute("delete from " . TABLE_INVENTORY_PURCHASE . " where id = '" . $value['id'] . "'");
 		}
-		return $lowest_cost; 
+		return $lowest_cost == 99999999999 ? 0 : $lowest_cost; //added in case no purchase data entered when creating new product
 	}
 	
 	function gather_history() {
