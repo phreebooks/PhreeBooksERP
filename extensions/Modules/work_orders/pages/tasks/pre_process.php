@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/work_orders/pages/tasks/pre_process.php
 //
-$security_level = validate_user(SECURITY_WORK_ORDERS_TASK);
+$security_level = \core\classes\user::validate(SECURITY_WORK_ORDERS_TASK);
 /**************  include page specific files    *********************/
 require(DIR_FS_WORKING . 'defaults.php');
 require(DIR_FS_WORKING . 'functions/work_orders.php');
@@ -30,7 +30,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save':
-	validate_security($security_level, 2);
+	\core\classes\user::validate_security($security_level, 2);
   	$id          = db_prepare_input($_POST['id']);
 	$task_name   = db_prepare_input($_POST['task_name']);
 	$description = db_prepare_input($_POST['description']);
@@ -149,11 +149,11 @@ if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_lis
 
 $query_raw    = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . " from " . TABLE_WO_TASK . $search . " order by $disp_order";
 $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-$query_split  = new splitPageResults($_REQUEST['list'], '');
+$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results
 	$_REQUEST['list'] = $query_split->current_page_number;
 	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-	$query_split      = new splitPageResults($_REQUEST['list'], '');
+	$query_split      = new \core\classes\splitPageResults($_REQUEST['list'], '');
 }
 history_save('wo_tasks');
 

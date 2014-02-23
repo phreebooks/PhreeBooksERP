@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreepos/pages/main/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_PHREEPOS);
+$security_level = \core\classes\user::validate(SECURITY_ID_PHREEPOS);
 define('JOURNAL_ID',19);
 /**************  include page specific files    *********************/
 gen_pull_language('contacts');
@@ -28,14 +28,6 @@ require_once(DIR_FS_MODULES . 'inventory/defaults.php');
 require_once(DIR_FS_MODULES . 'phreeform/defaults.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
-require_once(DIR_FS_MODULES . 'phreebooks/classes/gen_ledger.php');
-require_once(DIR_FS_WORKING . 'classes/tills.php');
-require_once(DIR_FS_WORKING . 'classes/other_transactions.php');
-if (file_exists(DIR_FS_MODULES . 'phreepos/custom/classes/journal/journal_'.JOURNAL_ID.'.php')) { 
-	require_once(DIR_FS_MODULES . 'phreepos/custom/classes/journal/journal_'.JOURNAL_ID.'.php') ; 
-}else{
-    require_once(DIR_FS_MODULES . 'phreepos/classes/journal/journal_'.JOURNAL_ID.'.php'); // is needed here for the defining of the class and retriving the security_token
-}
 /**************   page specific initialization  *************************/
 define('ORD_ACCT_ID',		GEN_CUSTOMER_ID);
 define('GL_TYPE',			'sos');
@@ -44,10 +36,9 @@ define('DEF_GL_ACCT',		AR_DEFAULT_GL_ACCT);
 define('DEF_GL_ACCT_TITLE',	ORD_AR_ACCOUNT);
 define('POPUP_FORM_TYPE',	'pos:rcpt');
 $account_type = 'c';
-$order        = new journal_19();
-$tills        = new tills();
-$trans	 	  = new other_transactions();
-$payment_modules = load_all_methods('payment');
+$order        = new \phreepos\classes\journal\journal_19();
+$tills        = new \phreepos\classes\tills();
+$trans	 	  = new \phreepos\classes\other_transactions();
 $extra_ThirdToolbar_buttons = null;
 $extra_toolbar_buttons		= null;
 /***************   hook for custom actions  ***************************/
@@ -73,18 +64,18 @@ for ($i = 0; $i < count($ot_tax_rates); $i++) {
 }
 //payment modules
 // generate payment choice arrays for receipt of payments
-$js_pmt_types = 'var pmt_types = new Array();' . chr(10);
-foreach ($payment_modules as $key => $pmts) {
-  $pmt_method = $pmts['id'];
-  $$pmt_method = new $pmt_method;
-  if($$pmt_method->show_in_pos == false || $$pmt_method->pos_gl_acct == '') {
-  	unset($payment_modules[$key]);
-  }else{
-  	$js_pmt_types .= 'pmt_types[\'' . $pmts['id'] . '\'] = "' . $pmts['text'] . '";' . chr(10);
-  }
+$number_of_methods = 0;
+$js_pmt_types = "var pmt_types = new Array();" . chr(10);
+foreach ($admin_classes['payment']->methods as $method) {
+	if($method->installed) {
+  		if($method->show_in_pos == true && $method->pos_gl_acct != '') {
+  			$number_of_methods++;
+  			$js_pmt_types .= "pmt_types['$method->id'] = '$method->text';" . chr(10);
+  		}
+	}
 }
 //check if setting are right for usage of phreepos 
-if(count($payment_modules) < 1 ){
+if($number_of_methods < 1 ){
 	$messageStack->add(ERROR_NO_PAYMENT_METHODES, 'error');
 	gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL'));
 }

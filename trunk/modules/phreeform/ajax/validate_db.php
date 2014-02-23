@@ -19,7 +19,7 @@
 //
 /**************   Check user security   *****************************/
 $xml = NULL;
-$security_level = validate_ajax_user(SECURITY_ID_PHREEFORM);
+$security_level = \core\classes\user::validate(SECURITY_ID_PHREEFORM);
 /**************  include page specific files    *********************/
 /**************   page specific initialization  *************************/
 $runaway   = 0;
@@ -28,15 +28,12 @@ $i         = 2;
 $strTable .= DB_PREFIX . $_GET['table1'];
 $tables[]  = $_GET['table1'];
 while (true) {
-  if (!isset($_GET['table' . $i])) break;
-  $joinopt = (isset($_GET['joinopt' . $i])) ? $_GET['joinopt' . $i] : 'JOIN';
-  $strTable .= ' ' . $joinopt . ' ' . DB_PREFIX . $_GET['table' . $i] . ' on ' . $_GET['table' . $i . 'criteria'];
-  $tables[] = $_GET['table' . $i];
-  $i++;
-  if ($runaway++ > 100) {
-    echo createXmlHeader() . xmlEntry('error', 'Runaway counter expired.') . createXmlFooter();
-	die;
-  }
+  	if (!isset($_GET['table' . $i])) break;
+  	$joinopt = (isset($_GET['joinopt' . $i])) ? $_GET['joinopt' . $i] : 'JOIN';
+  	$strTable .= ' ' . $joinopt . ' ' . DB_PREFIX . $_GET['table' . $i] . ' on ' . $_GET['table' . $i . 'criteria'];
+  	$tables[] = $_GET['table' . $i];
+  	$i++;
+  	if ($runaway++ > 100) throw new Exception('Runaway counter expired.');
 }
 foreach ($tables as $table) { // prefix the criteria
   $strTable = str_replace($table . '.', DB_PREFIX . $table . '.', $strTable);
@@ -52,5 +49,7 @@ if ($db->error_number) {
   $message = PHREEFORM_AJAX_DB_SUCCESS;
 }
 echo createXmlHeader() . xmlEntry("message", $message) . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

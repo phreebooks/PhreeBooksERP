@@ -22,7 +22,6 @@
 // pass any php variables generated during pre-process that are used in the javascript functions.
 // Include translations here as well.
 function init() {
-  $(function() { $('#admintabs').tabs(); });
   var dlg = $('#shipping_dialog').dialog({ 
 	  autoOpen: false,
 	  buttons: { "<?php echo TEXT_SUBMIT; ?>": function() { $(this).dialog('close'); document.getElementById('action').form.submit(); } }
@@ -50,7 +49,7 @@ function getDialog(method, template) {
     url: 'index.php?module=shipping&page=ajax&op=shipping&action=form&method='+method+'&template='+template,
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-      alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     },
 	success: fillDialog
   });

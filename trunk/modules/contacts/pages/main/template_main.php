@@ -89,6 +89,6 @@ echo $toolbar->build_toolbar($add_search = true);
 <div style="float:right"><?php echo $query_split->display_links(); ?></div>
 <div><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . constant('ACT_' . strtoupper($type) . '_TYPE_NAME')); ?></div>
 
-<div id="contact_chart" title="">&nbsp;</div>
+<div class="easyui-dialog" data-options="closed: true," style="padding:10px" id="contact_chart" title="">&nbsp;</div>
 
 </form>

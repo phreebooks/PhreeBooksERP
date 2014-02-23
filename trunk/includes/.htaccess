@@ -29,7 +29,7 @@
 #  AllowOverride Limit Options Indexes
 #</Directory>
 ###############################
-
+AddDefaultCharset utf-8
 # deny *everything*
 <FilesMatch ".*">
   Order Allow,Deny

@@ -16,11 +16,11 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/import_bank/classes/import_bank.php
 //
-require_once(DIR_FS_MODULES . 'phreebooks/classes/gen_ledger.php');
+namespace import_bank\classes;
 gen_pull_language('phreebooks');
 require(DIR_FS_MODULES  . 'phreebooks/functions/phreebooks.php');
 
-class impbanking extends journal {
+class import_banking extends \phreebooks\classes\journal {
 	protected $_questionposts = QUESTION_POSTS;
 	protected $_accounttype;
 	protected $_creditamount;
@@ -53,30 +53,14 @@ class impbanking extends journal {
 	 	$messageStack->debug("\n\n*************** Start Processing Import Payment *******************");
 	 	if ($ouwer_bank_account_number <> '') {
 			$ouwer_bank = ltrim($ouwer_bank_account_number,0);
-		 	If($ouwer_bank == ''){
-				$messageStack->add(TEXT_BIMP_ERMSG1 , 'error');
-				return false;
-				exit;
-			}
+		 	if ($ouwer_bank == '') throw new \Exception(TEXT_BIMP_ERMSG1);
 		 	$sql ="select id, description from " . TABLE_CHART_OF_ACCOUNTS. " where description like '%".$ouwer_bank."%'";
 			$result = $db->Execute($sql);
-			If($result->RecordCount()== 0){
-				$messageStack->add(TEXT_BIMP_ERMSG5 .' '. $ouwer_bank, 'error');
-				return false;
-				exit;
-			}
-			if (!$result->RecordCount()> 1){
-				$messageStack->add(TEXT_BIMP_ERMSG2 .' '. $ouwer_bank, 'error');
-				return false;
-				exit;
-			}
+			if ($result->RecordCount()== 0) throw new \Exception(TEXT_BIMP_ERMSG5 .' '. $ouwer_bank);
+			if (!$result->RecordCount()> 1) throw new \Exception(TEXT_BIMP_ERMSG2 .' '. $ouwer_bank);
 			$this->gl_acct_id 			= $result->fields['id'];
 		}else{
-			If($bank_gl_acct == ''){
-				$messageStack->add(TEXT_BIMP_ERMSG1 , 'error');
-				return false;
-				exit;
-			}
+			if($bank_gl_acct == '') throw new \Exception(TEXT_BIMP_ERMSG1);
 			$this->gl_acct_id 			= $bank_gl_acct;
 		}
 		$this->_description			= $description;

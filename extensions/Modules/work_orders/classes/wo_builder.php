@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/work_orders/classes/wo_builder.php
 //
-
+namespace work_orders\classes;
 class wo_builder {
   function __construct() {
   }

@@ -18,7 +18,7 @@
 //
 
 function default_report() {
-  $report = new objectInfo();
+  $report = new \core\classes\objectInfo();
   $report->page->margin->top    = PF_DEFAULT_MARGIN;
   $report->page->margin->bottom = PF_DEFAULT_MARGIN;
   $report->page->margin->left   = PF_DEFAULT_MARGIN;
@@ -158,14 +158,11 @@ function load_my_reports() {
 }
 
 function find_special_class($class_name) {
-  global $loaded_modules, $messageStack;
-  if (is_array($loaded_modules)) foreach ($loaded_modules as $module) {
-    if (file_exists(DIR_FS_MODULES . $module . '/classes/' . $class_name . '.php')) {
-	  return DIR_FS_MODULES . $module . '/';
-	}
-  }
-  $messageStack->add('Special class: ' . $class_name . ' was called but could not be found!', 'error');
-  return false;
+	global $loaded_modules;
+  	if (is_array($loaded_modules)) foreach ($loaded_modules as $module) {
+    	if (file_exists(DIR_FS_MODULES . $module . '/classes/' . $class_name . '.php')) return DIR_FS_MODULES . $module . '/';
+  	}
+  	throw new \Exception('Special class: ' . $class_name . ' was called but could not be found!');
 }
 
 function load_special_language($path, $class_name) {
@@ -240,16 +237,9 @@ function ReadDefReports($name, $path) {
 }
 
 function get_report_details($id) {
-  global $messageStack;
-  if (!$id) {
-    $messageStack->add('There was no report or form passed to open!','error');
-    return false;
-  }
+  if (!$id) throw new \Exception('There was no report or form passed to open!');
   $filename = PF_DIR_MY_REPORTS . 'pf_' . $id;
-  if (!file_exists($filename)) {
-    $messageStack->add('The report or form requested could not be found in the my_reports directory!','error');
-    return false;
-  }
+  if (!file_exists($filename)) throw new \Exception('The report or form requested could not be found in the my_reports directory!');
   $handle   = fopen($filename, "r");
   $contents = fread($handle, filesize($filename));
   fclose($handle);
@@ -268,15 +258,14 @@ function get_report_details($id) {
 }
 
 function ImportReport($RptName = '', $RptFileName = '', $import_path = PF_DIR_DEF_REPORTS, $save_path = PF_DIR_MY_REPORTS) {
-	global $db, $messageStack;
+	global $db;
 	$rID = '';
 	if ($RptFileName <> '') { // then a locally stored report was chosen
 	  $path = $import_path . $RptFileName;
 	} else if (validate_upload('reportfile')) {
 	  $path = $_FILES['reportfile']['tmp_name'];
 	} else {
-	  $messageStack->add(PHREEFORM_IMPORT_ERROR, 'error');
-	  return false;
+	  throw new \Exception(PHREEFORM_IMPORT_ERROR);
 	}
 	$handle   = fopen($path, "r");
 	$contents = fread($handle, filesize($path));
@@ -295,8 +284,7 @@ function ImportReport($RptName = '', $RptFileName = '', $import_path = PF_DIR_DE
 	if ($result->RecordCount() > 0) { // the report name already exists, if file exists error, else write 
 	  $rID = $result->fields['id'];
 	  if (file_exists($save_path . 'pf_' . $rID)) { // file exists - error and return
-	    $messageStack->add(sprintf(PHREEFORM_REPDUP, $report->title), 'error');
-	    return false;
+	    throw new \Exception (sprintf(PHREEFORM_REPDUP, $report->title));
 	  }
 	}
 	if (!$result = save_report($report, $rID, $save_path)) return false;
@@ -349,7 +337,7 @@ function save_report($report, $rID = '', $save_path = PF_DIR_MY_REPORTS) {
 	}
 	if ($error) {
 	  $db->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
-	  $messageStack->add(sprintf(PHREEFORM_WRITE_ERROR, $filename), 'error');
+	  throw new \Exception(sprintf(PHREEFORM_WRITE_ERROR, $filename));
 	  return false;
 	}
 	return $rID;
@@ -481,7 +469,7 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 	global $db, $messageStack, $FieldValues, $posted_currencies;
 	// Generate a form for each group element
 	$output = array();
-	$pdf    = new PDF();
+	$pdf    = new PDF();//@todo needs new location
 	foreach ($report->recordID as $formNum => $Fvalue) {
 	  $pdf->StartPageGroup();
 	  // find the single line data from the query for the current form page
@@ -489,7 +477,7 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 	  $FieldValues = array();
 	  if ($report->special_class) {
 	    $form_class   = $report->special_class;
-		$special_form = new $form_class();
+		$special_form = new $form_class();//@todo needs new location
 		$FieldValues  = $special_form->load_query_results($report->formbreakfield, $Fvalue);
 	  } else {
 		if (strlen($report->sqlField) > 0) {
@@ -646,7 +634,7 @@ function BuildSeq($report, $delivery_method = 'D') { // for forms only - Sequent
     $TrailingSQL = " from " . $report->sqlTable . " where " . ($report->sqlCrit ? $report->sqlCrit . " AND " : '') . prefixTables($report->formbreakfield) . " = '" . $Fvalue . "'";
     if ($report->special_class) {
 	  $form_class   = $report->special_class;
-	  $special_form = new $form_class();
+	  $special_form = new $form_class();//@todo needs new location
 	  $FieldValues  = $special_form->load_query_results($report->formbreakfield, $Fvalue);
     } else {
 	  $result       = $db->Execute("select " . $report->sqlField . $TrailingSQL);
@@ -719,7 +707,7 @@ function BuildSeq($report, $delivery_method = 'D') { // for forms only - Sequent
 			}
 			$oneline .= implode("", $temp). "\n";
 		  }
-		  $oneline = substr($oneline,0,-2);
+		  $oneline = substr($oneline, 0, -2);//strip the last \n 
 		  $field->rowbreak = 1;
 		  break;
 		case 'TDup':
@@ -1003,7 +991,7 @@ function BuildDataArray($sql, $report) { // for reports only
       if (!$path = find_special_class($report->special_class)) return false;
 	  load_special_language($path, $report->special_class);
 	  require_once($path . '/classes/' . $report->special_class . '.php');
-	  $sp_report = new $report->special_class;
+	  $sp_report = new $report->special_class; //@todo needs new location
 	  return $sp_report->load_report_data($report, $Seq, $sql, $GrpField); // the special report formats all of the data, we're done
 	}
 
@@ -1073,7 +1061,7 @@ function ReplaceNonAllowedCharacters($input) {
 
 function GeneratePDFFile($Data, $report, $delivery_method = 'D') { // for pdf reports only
 	require_once(DIR_FS_MODULES . 'phreeform/classes/report_generator.php');
-	$pdf = new PDF();
+	$pdf = new PDF(); // @todo needs new location
 	$pdf->ReportTable($Data);
 	$ReportName = ReplaceNonAllowedCharacters($report->title) . '.pdf';
 	if ($delivery_method == 'S') return array('filename' => $ReportName, 'pdf' => $pdf->Output($ReportName, 'S'));
@@ -1088,7 +1076,7 @@ function GeneratePDFFile($Data, $report, $delivery_method = 'D') { // for pdf re
 
 function GenerateHTMLFile($Data, $report, $delivery_method = 'D') { // for html reports only
 	require_once(DIR_FS_MODULES . 'phreeform/classes/html_generator.php');
-	$html        = new HTML();
+	$html        = new HTML();//@todo needs new location
 	$html->title = ReplaceNonAllowedCharacters($report->title);
 	$html->ReportTable($Data);
 	$ReportName = ReplaceNonAllowedCharacters($report->title) . '.html';
@@ -1175,9 +1163,9 @@ function GenerateXMLFile($Data, $report, $delivery_method = 'D') { // for csv re
 	$output .= '</PhreeformReport>' . chr(10);
 	
 	print $output;
+	ob_end_flush();
+	session_write_close();
 	exit();  
-	echo createXmlHeader() . $xml . createXmlFooter();
-	die;
 }
 
 function CreateFieldArray($report) {
@@ -1222,7 +1210,7 @@ function CreateSpecialDropDown($report) {
     if (!$path = find_special_class($report->special_class)) return false;
     load_special_language($path, $report->special_class);
     require_once($path . '/classes/' . $report->special_class . '.php');
-    $sp_report = new $report->special_class;
+    $sp_report = new $report->special_class; //@todo needs new location
     return $sp_report->build_selection_dropdown();
   }
   return CreateFieldArray($report);
@@ -1233,7 +1221,7 @@ function CreateFieldTblDropDown($report) {
     if (!$path = find_special_class($report->special_class)) return false;
     load_special_language($path, $report->special_class);
     require_once($path . '/classes/' . $report->special_class . '.php');
-    $sp_report = new $report->special_class;
+    $sp_report = new $report->special_class; //@todo need new location
     return $sp_report->build_table_drop_down();
   }
   return CreateFieldArray($report);

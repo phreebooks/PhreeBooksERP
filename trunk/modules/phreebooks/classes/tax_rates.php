@@ -17,7 +17,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/classes/tax_rates.php
 //
-
+namespace phreebooks\classes;
 class tax_rates {
 	public $code        = 'tax_rates'; // needs to match class name
 	public $db_table    = TABLE_TAX_RATES;
@@ -26,17 +26,14 @@ class tax_rates {
     public $error       = false;
 	
     public function __construct(){
-         $this->security_id = $_SESSION['admin_security'][SECURITY_ID_CONFIGURATION];
+         $this->security_id = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
          foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
          $this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
     }
     
   function btn_save($id = '') {
-  	global $db, $messageStack;
-	if ($this->security_id < 2) {
-		$messageStack->add(ERROR_NO_PERMISSION,'error');
-		return false;
-	}
+  	global $db;
+	\core\classes\user::validate_security($this->security_id, 2); // security check		
 	$this->combine_rates();
     $sql_data_array = array(
 		'type'              => $this->type,
@@ -56,11 +53,8 @@ class tax_rates {
   }
 
   function btn_delete($id = 0) {
-  	global $db, $messageStack;
-	if ($this->security_id < 4) {
-	  $messageStack->add(ERROR_NO_PERMISSION,'error');
-	  return false;
-	}
+  	global $db;
+	\core\classes\user::validate_security($this->security_id, 4); // security check		
 	// Check for this rate as part of a journal entry, if so do not delete
 	// Since tax rates are not used explicitly, they can be deleted at any time.
 	$result = $db->Execute("select description_short from " . $this->db_table . " where tax_rate_id = '" . $id . "'");
@@ -70,7 +64,7 @@ class tax_rates {
   }
 
   function build_main_html() {
-  	global $db, $messageStack;
+  	global $db;
     $tax_authorities_array = gen_build_tax_auth_array();
     $content = array();
 	$content['thead'] = array(

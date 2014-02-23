@@ -76,7 +76,7 @@ echo $toolbar->build_toolbar();
 	</thead>
 	<tbody id="item_table" class="ui-widget-content">
 <?php
-if (!$error) {
+if (!$error) {//@todo how to do this
   $hidden_fields .= '<script type="text/javascript">addInvRow();</script>';
 } else {
   $rowCnt = 1;

@@ -75,20 +75,11 @@ echo $toolbar->build_toolbar();
 <?php
   if ($price_sheets->RecordCount() > 0) {
 	if (ENABLE_MULTI_CURRENCY) echo '<p class="fieldRequired"> ' . sprintf(GEN_PRICE_SHEET_CURRENCY_NOTE, $currencies->currencies[DEFAULT_CURRENCY]['title']) . '</p>';
-	echo '<div id="pricetabs"><ul>' . chr(10);
-	$j=1;
-	while (!$price_sheets->EOF) {
-	  echo add_tab_list('tab_'.$price_sheets->fields['id'], $price_sheets->fields['sheet_name'] . ' (Rev. ' . $price_sheets->fields['revision'] . ')');
-	  $price_sheets->MoveNext();
-	  $j++;
-	}
-	$price_sheets->Move(0);
-	$price_sheets->MoveNext();
-	echo '</ul>' . chr(10);
+	echo '<div class="easyui-tabs" id="pricetabs">' . chr(10);
 	$m = 1;
 	while (!$price_sheets->EOF) { ?>
 	  <!-- start the tabsets -->
-	  <div id="tab_<?php echo $price_sheets->fields['id']; ?>">
+	  <div title="<?php echo $price_sheets->fields['sheet_name'] . ' (Rev. ' . $price_sheets->fields['revision'] . ')';?>" id="tab_<?php echo $price_sheets->fields['id']; ?>">
 <?php
 		$checked = isset($special_prices[$price_sheets->fields['id']]) ? false : true;
 		echo html_checkbox_field('def_' . $m, '1', $checked, '', $parameters = '') . '&nbsp;' . TEXT_USE_DEFAULT_PRICE_SHEET . '<br />';

@@ -46,6 +46,7 @@ var store_country_code   = '<?php echo COMPANY_COUNTRY; ?>';
 var delete_icon_HTML     = '<?php echo substr(html_icon("emblems/emblem-unreadable.png", TEXT_DELETE, "small", "onclick=\"if (confirm(\'" . TEXT_DELETE_ENTRY . "\')) removeInvRow("), 0, -2); ?>';
 var delete_icon_HTML_PMT = '<?php echo substr(html_icon("emblems/emblem-unreadable.png", TEXT_DELETE, "small", "onclick=\"if (confirm(\'" . TEXT_DELETE_ENTRY . "\')) removePmtRow("), 0, -2); ?>';
 var serial_num_prompt    = '<?php echo ORD_JS_SERIAL_NUM_PROMPT; ?>';
+var text_serial_number	 = '<?php echo TEXT_SERIAL_NUMBER; ?>';
 var show_status          = '<?php echo ($account_type == "v") ? AP_SHOW_CONTACT_STATUS : AR_SHOW_CONTACT_STATUS; ?>';
 var warn_form_modified   = '<?php echo ORD_WARN_FORM_MODIFIED; ?>';
 var default_inv_acct     = '<?php echo DEF_INV_GL_ACCT; ?>';
@@ -88,7 +89,7 @@ function check_form() {
   var error_message = "<?php echo JS_ERROR; ?>";
   var todo    = document.getElementById('action').value;
   if (error == 1) {
-    alert(error_message);
+	$.messager.alert('error',error_message,'error');
     return false;
   }
   return true;
@@ -119,7 +120,7 @@ function refreshOrderClock() {
 		url: 'index.php?module=inventory&page=ajax&op=inv_details&fID=skuDetails&cID='+acct+'&qty='+qty+'&upc='+upc+'&rID='+rowCnt+'&jID='+journalID,
 		dataType: ($.browser.msie) ? "text" : "xml",
 		error: function(XMLHttpRequest, textStatus, errorThrown) {
-		  alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+			$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 		},
 		success: fillInventory
 	  });
@@ -243,7 +244,7 @@ function ajaxOrderData(cID, oID, jID, open_order, ship_only) {
 	    	url: 'index.php?module=phreebooks&page=ajax&op=load_order&cID='+cID+'&oID='+oID+'&jID='+jID+'&so_po=0&ship_only=0',
 	    	dataType: ($.browser.msie) ? "text" : "xml",
 	    	error: function(XMLHttpRequest, textStatus, errorThrown) {
-	      		alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+	    		$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 	    	},
 			success: fillOrderData
 	  	});
@@ -253,7 +254,7 @@ function ajaxOrderData(cID, oID, jID, open_order, ship_only) {
 			url: 'index.php?module=phreepos&page=ajax&op=print_previous&oID='+oID,
 			dataType: ($.browser.msie) ? "text" : "xml",
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
-				alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+				$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 			},
 			success: PrintPreviousReceipt
 		});
@@ -412,7 +413,7 @@ function accountGuess(force) {
 	  guess = firstguess;
   }
   // test for data already in the form
-  if (guess == '') return alert('Please enter a guess to search for the contact!');
+  if (guess == '') return $.messager.alert('info','Please enter a guess to search for the contact!','info');
   if (guess != text_search && guess != '') {
     if (document.getElementById('bill_acct_id').value ||
         document.getElementById('bill_primary_name').value != default_array[0]) {
@@ -424,7 +425,7 @@ function accountGuess(force) {
 		url: 'index.php?module=phreebooks&page=ajax&op=load_searches&jID='+journalID+'&type=c&guess='+guess,
 		dataType: ($.browser.msie) ? "text" : "xml",
 		error: function(XMLHttpRequest, textStatus, errorThrown) {
-		  alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+			$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 		},
 		success: processAccountGuess
 	  });
@@ -463,9 +464,14 @@ function InventoryList(rowCnt) {
 }
 
 function serialList(rowID) {
-   var choice    = document.getElementById(rowID).value;
-   var newChoice = prompt(serial_num_prompt, choice);
-   if (newChoice) document.getElementById(rowID).value = newChoice;
+	var choice    = document.getElementById(rowID).value;
+  	$.messager.prompt(text_serial_number, serial_num_prompt, function(newChoice){
+		if (newChoice){
+			insertValue(rowID, newChoice);
+		}
+		return false;
+	});
+	$('.messager-input').val(choice).focus();
 }
 
 function fillAddress(type) {
@@ -686,7 +692,7 @@ function updateRowTotal(rowCnt, useAjax) {
 	      url: 'index.php?module=inventory&page=ajax&op=inv_details&fID=skuPrice&cID='+cID+'&sku='+sku+'&qty='+qty+'&rID='+rowCnt+'&strict=1',
 	      dataType: ($.browser.msie) ? "text" : "xml",
 	      error: function(XMLHttpRequest, textStatus, errorThrown) {
-		    alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+	    	  $.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 	      },
 	      success: processSkuPrice
 	    });
@@ -927,23 +933,46 @@ function newformatPrecise(amount) { // convert to expected currency format with 
   }
 }
 
-// AJAX auto load SKU pair
+/**
+ * this function is started when you click the sku search icon.
+ */
+function startSkuSearch($sku){
+	if (sku == '' || sku === text_search) return;
+	// search if item is aready present then increment it by one
+	var numRows = document.getElementById('item_table_body').rows.length;
+	var qty = 1;
+	var rowCnt = 0;
+	for (var i=1; i<=numRows; i++) {
+		if (document.getElementById('sku_' +i).value == sku && document.getElementById('fixed_price_' +i).value > formatted_zero){
+		  	qty = document.getElementById('pstd_' +i).value;
+		  	qty++;
+			rowCnt = i;
+		}
+	}
+	var cID = document.getElementById('bill_acct_id').value;
+	var bID = document.getElementById('store_id').value;
+	$.ajax({
+	  type: "GET",
+	  contentType: "application/xml; charset=utf-8",
+	  url: 'index.php?module=inventory&page=ajax&op=inv_details&fID=skuDetails&bID='+bID+'&cID='+cID+'&qty='+qty+'&iID='+iID+'&strict=1&sku='+sku+'&rID='+rowCnt+'&jID='+journalID,
+	  dataType: ($.browser.msie) ? "text" : "xml",
+	  error: function(XMLHttpRequest, textStatus, errorThrown) {
+	  	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
+	  },
+	  success: fillInventory
+	});
+}
+
+
+/**
+ * this function is called after you click on a row in the inventory pop_up
+ */
 function loadSkuDetails(iID, rowCnt) {
-  var qty, sku;
-  // check to see if there is a sku present
-  if (!iID) sku = document.getElementById('sku').value; // read the search field as the real value
-  if (!iID && (sku == '' || sku === text_search)) return;
+  var sku;
+  if (!iID) return;
   // search if item is aready present then increment it by one
-  var numRows = document.getElementById('item_table_body').rows.length;
   var qty = 1;
   var rowCnt = 0;
-  for (var i=1; i<=numRows; i++) {
-	if (document.getElementById('sku_' +i).value == sku && document.getElementById('fixed_price_' +i).value > formatted_zero){
-	  qty = document.getElementById('pstd_' +i).value;
-	  qty++;
-	  rowCnt = i;
-	}
-  }
   var cID = document.getElementById('bill_acct_id').value;
   var bID = document.getElementById('store_id').value;
   $.ajax({
@@ -952,7 +981,7 @@ function loadSkuDetails(iID, rowCnt) {
 	url: 'index.php?module=inventory&page=ajax&op=inv_details&fID=skuDetails&bID='+bID+'&cID='+cID+'&qty='+qty+'&iID='+iID+'&strict=1&sku='+sku+'&rID='+rowCnt+'&jID='+journalID,
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-      alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     },
     success: fillInventory
   });
@@ -1056,7 +1085,7 @@ function monitorPrinting() {
     } else {
       var e = qz.getException();
       if (e != null) {
-	    alert("printing exception occured: " + e.getLocalizedMessage());
+    	$.messager.alert("printing exception occured ", e.getLocalizedMessage(),'error');
 	  }
     }
   } 
@@ -1140,13 +1169,12 @@ function SavePayment(PrintOrSave) { // request function
   var f3 = document.getElementById(payment_method+'_field_3') ? document.getElementById(payment_method+'_field_3').value : '';
   var f4 = document.getElementById(payment_method+'_field_4') ? document.getElementById(payment_method+'_field_4').value : '';
 <?php
-  foreach ($payment_modules as $pmt_class) { // fetch the javascript validation of payments module
-	$value = $pmt_class['id'];
-	echo $$value->javascript_validation();
+  foreach ($admin_classes['payment']->methods as $method) { // fetch the javascript validation of payments module
+  	if ($method->installed)	echo $method->javascript_validation();
   }
 ?>
   if ( error_message != ''){
-	  alert(error_message);
+	  $.messager.alert('error',error_message,'error');
 	  return false;
   }
   addPmtRow();
@@ -1177,7 +1205,7 @@ function ajaxSave(PrintOrSave){
 		dataType: ($.browser.msie) ? "text" : "xml",
 		data: $("form").serialize(),
 		error: function(XMLHttpRequest, textStatus, errorThrown) {
-		      alert ("Ajax ErrorThrown: " + errorThrown + "\nTextStatus: " + textStatus + "\nError: " + XMLHttpRequest.responseText);
+			$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 		      save_allowed = true;
 			},
 		success: ajaxPrintAndClean
@@ -1192,7 +1220,7 @@ function ajaxPrintAndClean(sXml) { // call back function
     var qz = document.getElementById('qz');
     if (!xml) return;
   	var massage 	= $(xml).find("massage").text();
-  	if ( massage ) 	  alert( massage );
+  	if ( massage ) 	 $.messager.alert('info', massage,'info');
   	var action 		= $(xml).find("action").text();
   	var print 		= action.substring(0,5) == 'print';
   	var tillId 		= document.getElementById('till_id').value;
@@ -1253,7 +1281,7 @@ function jzebraDoneFindingPrinters() {
 	var qz = document.getElementById('qz');
 	if (qz.tagName.toLowerCase() == "applet") {
 		if (qz.getPrinter() == null) {
-    		return alert('Error: Can not find Printer ' + tills[tillId].printer);
+    		return $.messager.alert('error','Can not find Printer ' + tills[tillId].printer,'error');
 		} 
    	}
 }
@@ -1263,7 +1291,7 @@ function jzebraDonePrinting() {
 	var qz = document.getElementById('qz');
 	if (qz.tagName.toLowerCase() == "applet") {
    		if (qz.getException() != null) {
-    		return alert('printing error:' + qz.getExceptionMessage());
+    		return $.messager.alert('printing error', qz.getExceptionMessage(),'error');
    		}
    	}
 }
@@ -1279,7 +1307,7 @@ function GetPrintPreviousReceipt() {
       url: 'index.php?module=phreepos&page=ajax&op=print_previous',
       dataType: ($.browser.msie) ? "text" : "xml",
       error: function(XMLHttpRequest, textStatus, errorThrown) {
-      	alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	  $.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
       },
       success: PrintPreviousReceipt
      });
@@ -1290,7 +1318,7 @@ function PrintPreviousReceipt(sXml) { // call back function
 	  var qz = document.getElementById('qz');
 	  if (!xml) return;
 	  var massage = $(xml).find("massage").text();
-	  if ( massage ) alert( massage );
+	  if ( massage ) $.messager.alert('info', massage,'info');
 	  var tillId = document.getElementById('till_id').value;
 	  if (qz.tagName.toLowerCase() == "applet" && tills[tillId].printer != '') {
 		  //qz.setEncoding(tills[tillId].printerEncoding);
@@ -1398,7 +1426,7 @@ function SaveOt(){
 		dataType: ($.browser.msie) ? "text" : "xml",
 		data: $("form [name=popupOtherTrans]").serialize(),
 		error: function(XMLHttpRequest, textStatus, errorThrown) {
-		      alert ("Ajax ErrorThrown: " + errorThrown + "\nTextStatus: " + textStatus + "\nError: " + XMLHttpRequest.responseText);
+			$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 			},
 		success: cleanOt
 	  });
@@ -1425,63 +1453,21 @@ function popupContact(){
 	}
 	//loads popup only if it is disabled
 	if(popupStatus==0){  
-		$("#backgroundPopup").fadeIn("slow");  
-		$("#customer_div").fadeIn("slow");  
+		$('#customer_div').window('open');
 		popupStatus = 1;
 	}
-	var windowWidth = document.documentElement.clientWidth;  
-	var windowHeight = document.documentElement.clientHeight;  
-	var popupHeight = $("#customer_div").height();  
-	var popupWidth = $("#customer_div").width();  
-	//centering  
-	$("#customer_div").css({  
-		"position": "absolute",
-		"top": windowHeight/2-popupHeight/2,  
-		"left": windowWidth/2-popupWidth/2  
-	});  
-	$("#backgroundPopup").css({
-		"position": "absolute",
-		"opacity": "0.7",
-		"background":"#000000",  
-		"top": "0px",  
-		"left": "0px",
-		"height": windowHeight,  
-		"width":  windowWidth	  
-	});
 }  
 
 //loading popup with jQuery magic!  
 function popupPayment(){  
 	//loads popup only if it is disabled
 	if(popupStatus==0){  
-		$("#backgroundPopup").fadeIn("slow");  
-		$("#popupPayment").fadeIn("slow");  
+		$('#popupPayment').window('open');
 		popupStatus = 1;
 		document.getElementById('amount').value = document.getElementById('bal_due').value;
 		activateFields();
 		document.getElementById('amount').select();
-	}
-	//request data for centering  
-	var windowWidth = document.documentElement.clientWidth;  
-	var windowHeight = document.documentElement.clientHeight;  
-	var popupHeight = $("#popupPayment").height();  
-	var popupWidth = $("#popupPayment").width();  
-	//centering  
-	$("#popupPayment").css({  
-		"position": "absolute",
-		"top": windowHeight/2-popupHeight/2,  
-		"left": windowWidth/2-popupWidth/2  
-	});  
-	$("#backgroundPopup").css({
-		"position": "absolute",
-		"opacity": "0.7",
-		"background":"#000000",  
-		"top": "0px",  
-		"left": "0px",
-		"height": windowHeight,  
-		"width":windowWidth	  
-	});
-	
+	}	
 }  
 
 function open_other_options(){
@@ -1499,39 +1485,17 @@ function open_other_options(){
 function ShowOtherTrans(){
 	// start by fadinng out the other options menu bar then show background and 
 	$("#other_options").fadeOut("slow"); 
-	$("#backgroundPopup").fadeIn("slow");  
-	$("#popupOtherTrans").fadeIn("slow");  
+	$('#popupOtherTrans').window('open');  
 	popupStatus = 1;
-	//request data for centering  
-	var windowWidth = document.documentElement.clientWidth;  
-	var windowHeight = document.documentElement.clientHeight;  
-	var popupHeight = $("#popupOtherTrans").height();  
-	var popupWidth = $("#popupOtherTrans").width();  
-	//centering  
-	$("#popupOtherTrans").css({  
-		"position": "absolute",
-		"top": windowHeight/2-popupHeight/2,  
-		"left": windowWidth/2-popupWidth/2  
-	});  
-	$("#backgroundPopup").css({
-		"position": "absolute",
-		"opacity": "0.7",
-		"background":"#000000",  
-		"top": "0px",  
-		"left": "0px",
-		"height": windowHeight,  
-		"width":windowWidth	  
-	});
 }
 
 //disabling popup with jQuery magic!  
 function disablePopup(){  
 	//disables popup only if it is enabled  
 	if(popupStatus==1){  
-		$("#popupOtherTrans").fadeOut("slow");
-		$("#backgroundPopup").fadeOut("slow");  
-		$("#popupPayment").fadeOut("slow"); 
-		$("#customer_div").fadeOut("slow");
+		$("#popupOtherTrans").window('close');
+		$("#popupPayment").window('close'); 
+		$("#customer_div").window('close');
 		popupStatus = 0;  
 		document.getElementById('sku').focus();
 	}  
@@ -1551,10 +1515,6 @@ function setImage(src){
 }
 
 $(document).ready(function(){ 
-	$("#backgroundPopup").click(function(){
-		disablePopup();  
-	});
-
 	$("#disc_percent").keydown(function(event) {
 		$("#discount").val('');
 	});
@@ -1566,7 +1526,6 @@ $(document).ready(function(){
 	$("#amount").keydown(function(event) {
 		if (event.keyCode == 13) SavePayment('save');
 	});
-
 	$("#open_other_options").click(function(){
 		open_other_options();  
 	});
@@ -1575,7 +1534,6 @@ $(document).ready(function(){
 
 //Press Escape event!  
 $(document).keydown(function(event){
-	
 	if (event.altKey && event.keyCode == 82) {
 		event.preventDefault();
 		// if alt + r then redirect to template return

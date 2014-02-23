@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreepos/ajax/save_pos.php
 //
-$security_level = validate_user(SECURITY_ID_PHREEPOS);
+$security_level = \core\classes\user::validate(SECURITY_ID_PHREEPOS);
 define('JOURNAL_ID',19);
 /**************  include page specific files    *********************/
 gen_pull_language('contacts');
@@ -27,13 +27,6 @@ require_once(DIR_FS_MODULES . 'inventory/defaults.php');
 require_once(DIR_FS_MODULES . 'phreeform/defaults.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
-//require_once(DIR_FS_MODULES . 'phreebooks/classes/gen_ledger.php');
-if (file_exists(DIR_FS_MODULES . 'phreepos/custom/classes/journal/journal_'.JOURNAL_ID.'.php')) { 
-	require_once(DIR_FS_MODULES . 'phreepos/custom/classes/journal/journal_'.JOURNAL_ID.'.php') ; 
-}else{
-    require_once(DIR_FS_MODULES . 'phreepos/classes/journal/journal_'.JOURNAL_ID.'.php'); // is needed here for the defining of the class and retriving the security_token
-}
-require_once(DIR_FS_MODULES . 'phreepos/classes/tills.php');
 /**************   page specific initialization  *************************/
 define('ORD_ACCT_ID',GEN_CUSTOMER_ID);
 define('GL_TYPE','sos');
@@ -47,17 +40,14 @@ $total_discount  = 0;
 $total_fixed     = 0;
 $account_type    = 'c';
 $post_success    = false;
-$order           = new journal_19();
-$payment_modules = load_all_methods('payment');
-$tills           = new tills();
+$order           = new \phreepos\classes\journal\journal_19();
+$tills           = new \phreepos\classes\tills();
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_MODULES . 'phreepos/custom/ajax/save_main.php';
 if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 
-	if ($security_level < 2) {
-	  $error .= ERROR_NO_PERMISSION;
-	}
+	\core\classes\user::validate_security($security_level, 2); // security check		
 	$tills->get_till_info($_POST['till_id']);
 	// load bill to and ship to information
 	$order->short_name          = db_prepare_input(($_POST['search'] <> TEXT_SEARCH) ? $_POST['search'] : '');
@@ -275,5 +265,7 @@ if ($error)  			$xml .= "\t" . xmlEntry("error", 			$error);
 if ($massage)  	 		$xml .= "\t" . xmlEntry("massage", 			$massage);
 if ($order->errormsg)	$xml .= "\t" . xmlEntry("error", 			$order->errormsg);
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

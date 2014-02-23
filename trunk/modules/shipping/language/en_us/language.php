@@ -21,7 +21,6 @@
 // Headings 
 define('HEADING_TITLE_MODULES_SHIPPING','Shipping Services');
 define('SHIPPING_HEADING_SHIP_MGR','Shipping Module Manager');
-define('TEXT_SHIPPING_MODULES_AVAILABLE','Shipping Methods Available');
 // General Defines
 define('TEXT_PRODUCTION','Production');
 define('TEXT_TEST','Test');
@@ -187,4 +186,14 @@ define('SHIPPING_SENDER','Sender');
 define('SHIPPING_RECEIPIENT','Receipient');
 define('SHIPPING_THIRD_PARTY','Third Party');
 define('SHIPPING_COLLECT','Collect');
+
+// Key descriptions
+define('SHIPPING_TITLE_DESC', 'Title to use for display purposes on shipping rate estimator');
+define('SHIPPING_COST_DESC', 'What is the Shipping cost?');
+define('SHIPPING_HANDLING_DESC', 'Handling fee for this shipping method.');
+define('SORT_ORDER_DESC', 'Sort order of display. Determines the order which this method appears on all generted lists.');
+define('SHIPPING_PRINTER_TYPE_DESC','Type of printer to use for printing labels. PDF for plain paper, Thermal for Eltron/Zebra Label Printer');
+define('SHIPPING_PRINTER_NAME_DESC', 'Sets then name of the printer to use for printing labels as defined in the printer preferences for the local workstation');
+define('SHIPPING_DEFAULT_SERVICE_DESC','Select the services to be offered by default');
+define('SHIPPING_TEST_MODE_DESC','Test/Production mode used for testing shipping labels');
 ?>

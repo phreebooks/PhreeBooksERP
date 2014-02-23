@@ -22,7 +22,7 @@
 //
 
 ?>
-<div id="tab_general">
+<div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
   <h2 class="tabset_label"><?php echo TEXT_AUDIT_SETTINGS; ?></h2>
   <fieldset class="formAreaTitle">
     <table border="0" width="100%" cellspacing="1" cellpadding="1">

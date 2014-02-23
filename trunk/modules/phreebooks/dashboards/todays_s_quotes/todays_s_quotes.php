@@ -20,15 +20,16 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/dashboards/todays_s_quotes/todays_s_quotes.php
 //
-
-class todays_s_quotes extends ctl_panel {
-	public $dashboard_id 		= 'todays_s_quotes';
+namespace phreebooks\dashboards\todays_s_quotes;
+class todays_s_quotes extends \core\classes\ctl_panel {
+	public $id			 		= 'todays_s_quotes';
 	public $description	 		= CP_TODAYS_S_QUOTES_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_SALES_QUOTE;
-	public $title		 		= CP_TODAYS_S_QUOTES_TITLE;
-	public $version      		= 3.5;
+	public $text		 		= CP_TODAYS_S_QUOTES_TITLE;
+	public $version      		= '3.5';
 	public $size_params			= 1;
 	public $default_params 		= array('num_rows'=> 0);
+	public $module_id 			= 'phreebooks';
 
 	function Output($params) {
 		global $db, $currencies;
@@ -64,7 +65,7 @@ class todays_s_quotes extends ctl_panel {
 	            $contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;oID=' . $result->fields['id'] . '&amp;jID=9&amp;action=edit', 'SSL') . '">';
 	//          $contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, 'cat=orders&amp;module=orders&amp;oID=' . $result->fields['id'] . '&amp;jID=9&amp;action=edit', 'SSL') . '">';                
 				$contents .= $result->fields['purchase_invoice_id'] . ' - ';
-				$contents .= htmlspecialchars($result->fields['bill_primary_name']);
+				$contents .= htmlspecialchars(gen_trim_string($result->fields['bill_primary_name'], 20, true));
 				$contents .= '</a></div>' . chr(10);
 				$result->MoveNext();
 		  	}

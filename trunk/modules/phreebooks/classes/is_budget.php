@@ -15,9 +15,9 @@
 // | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the   |
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
-//  Path: /modules/phreeform/custom/classes/is_budget.php
+//  Path: /modules/phreebooks/classes/is_budget.php
 //
-
+namespace phreebooks\classes;
 gen_pull_language('phreebooks', 'admin'); // need coa types defines
 
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');

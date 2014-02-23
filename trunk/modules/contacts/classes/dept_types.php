@@ -17,26 +17,22 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/contacts/classes/dept_types.php
 //
-
+namespace contacts\classes;
 class dept_types {
     public $extra_buttons = '';
     public $db_table      = TABLE_DEPT_TYPES;
     public $help_path     = '07.07.03';
     public $title         = '';
-    public $error         = false;
 
     public function __construct(){
     	foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
     	$this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
-        $this->security_id = $_SESSION['admin_security'][SECURITY_ID_CONFIGURATION];
+        $this->security_id = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
     }
 
   function btn_save($id = '') {
-  	global $db, $messageStack;
-	if ($this->security_id < 2) {
-		$messageStack->add(ERROR_NO_PERMISSION,'error');
-		return false;
-	}
+  	global $db;
+	\core\classes\user::validate_security($this->security_id, 2); // security check		
     $description = db_prepare_input($_POST['description']);
 	$sql_data_array = array('description' => $description);
     if (!$this->id == '') {
@@ -50,18 +46,12 @@ class dept_types {
   }
 
   function btn_delete($id = 0) {
-  	global $db, $messageStack;
-	if ($this->security_id < 4) {
-		$messageStack->add(ERROR_NO_PERMISSION,'error');
-		return false;
-	}
+  	global $db;
+	\core\classes\user::validate_security($this->security_id, 4); // security check		
 	// Check for this department type being used in a department, if so do not delete
 	$result = $db->Execute("select department_type from " . TABLE_DEPARTMENTS);
 	while (!$result->EOF) {
-	  if ($this->id == $result->fields['department_type']) {
-		$messageStack->add(SETUP_DEPT_TYPES_DELETE_ERROR,'error');
-		return false;
-	  }
+	  if ($this->id == $result->fields['department_type']) throw new \Exception(SETUP_DEPT_TYPES_DELETE_ERROR);
 	  $result->MoveNext();
 	}
 	// OK to delete
@@ -72,7 +62,7 @@ class dept_types {
   }
 
   function build_main_html() {
-  	global $db, $messageStack;
+  	global $db;
     $content = array();
 	$content['thead'] = array(
 	  'value' => array(SETUP_INFO_DEPT_TYPES_NAME, TEXT_ACTION),
@@ -98,7 +88,7 @@ class dept_types {
 
   function build_form_html($action, $id = '') {
     global $db;
-    if ($action <> 'new' && $this->error == false) {
+    if ($action <> 'new') {
         $sql = "select description from " . $this->db_table . " where id = '" . $this->id . "'";
         $result = $db->Execute($sql);
         foreach ($result->fields as $key => $value) $this->$key = $value;

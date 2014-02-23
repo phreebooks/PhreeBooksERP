@@ -35,16 +35,7 @@ $toolbar->add_help('07.04.WO.03');
 echo $toolbar->build_toolbar(); 
 ?>
 <h1><?php echo BOX_WORK_ORDERS_BUILDER . ' - ' . $wo_title; ?></h1>
-<div id="buildertabs">
-<ul>
-<?php 
-  echo add_tab_list('tab_general', TEXT_GENERAL);
-  echo add_tab_list('tab_history', TEXT_HISTORY);
-  if (isset($extra_wo_tabs) && is_array($extra_wo_tabs)) {
-	foreach ($extra_wo_tabs as $tabs) echo add_tab_list('tab_'.$tabs['tab_id'], $tabs['tab_title']);
-  }
-?>
-</ul>
+<div class="easyui-tabs" id="buildertabs">
 <?php
   require (DIR_FS_WORKING . 'pages/builder/template_tab_gen.php');
   require (DIR_FS_WORKING . 'pages/builder/template_tab_hist.php');

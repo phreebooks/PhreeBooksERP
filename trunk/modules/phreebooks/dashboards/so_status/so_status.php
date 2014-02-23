@@ -18,15 +18,16 @@
 //
 // Revision history
 // 2011-07-01 - Added version number for revision control
-
-class so_status extends ctl_panel {
-	public $dashboard_id 		= 'so_status';
+namespace phreebooks\dashboards\so_status;
+class so_status extends \core\classes\ctl_panel {
+	public $id			 		= 'so_status';
 	public $description	 		= CP_SO_STATUS_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_SALES_ORDER;
-	public $title		 		= CP_SO_STATUS_TITLE;
-	public $version      		= 3.5;
+	public $text		 		= CP_SO_STATUS_TITLE;
+	public $version      		= '3.5';
 	public $size_params			= 3;
 	public $default_params 		= array('num_rows'=> 0, 'order'   => 'asc', 'limit'   => 1);
+	public $module_id 			= 'phreebooks';
 
 	function Output($params) {
 		global $db, $currencies;

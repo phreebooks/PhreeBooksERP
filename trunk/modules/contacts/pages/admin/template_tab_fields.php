@@ -17,7 +17,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/contacts/pages/admin/template_tab_fields.php
 //
-$field_toolbar = new toolbar('fields');
+$field_toolbar = new \core\classes\toolbar('fields');
 $field_toolbar->icon_list['cancel']['show'] = false;
 $field_toolbar->icon_list['open']['show']   = false;
 $field_toolbar->icon_list['delete']['show'] = false;
@@ -25,7 +25,7 @@ $field_toolbar->icon_list['save']['show']   = false;
 $field_toolbar->icon_list['print']['show']  = false;
 if ($security_level > 1) $field_toolbar->add_icon('new', 'onclick="loadPopUp(\'fields_new\', 0)"', $order = 10);
 ?>
-<div id="tab_fields">
+<div title="<?php echo TEXT_EXTRA_FIELDS;?>" id="tab_fields">
   <?php echo $field_toolbar->build_toolbar(); ?>
   <h1><?php echo $fields->title; ?></h1>
   <div id="fields_content"><?php echo $fields->build_main_html(); ?></div>

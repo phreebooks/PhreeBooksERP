@@ -46,18 +46,12 @@ Once the test labels are approved for production status by the label evaluation 
 <h3>Step 10. Replace URL and Credentials</h3>
 Replace the test URL and test credentials with the production URL and production credentials.');
 // key descriptions
-define('MODULE_SHIPPING_FEDEX_V7_TITLE_DESC','Title to use for display purposes on shipping with FedEx.');
 define('MODULE_SHIPPING_FEDEX_V7_ACCOUNT_NUMBER_DESC','Enter the FedEx account number to use for rate estimates');
 define('MODULE_SHIPPING_FEDEX_V7_LTL_ACCOUNT_NUMBER_DESC','Enter the FedEx Freight account number to use for rate estimates. Leave this field blank if no LTL Freight will be used.');
 define('MODULE_SHIPPING_FEDEX_V7_NAT_ACCOUNT_NUMBER_DESC','Enter the FedEx National LTL account number to use for rate estimates. Leave this field blank if no LTL Freight will be used.');
 define('MODULE_SHIPPING_FEDEX_V7_AUTH_KEY_DESC','Enter the FedEx developer key provided by FedEx.');
 define('MODULE_SHIPPING_FEDEX_V7_AUTH_PWD_DESC','Enter the FedEx developer password provided by FedEx.');
 define('MODULE_SHIPPING_FEDEX_V7_METER_NUMBER_DESC','Enter the meter number supplied to you from FedEx.');
-define('MODULE_SHIPPING_FEDEX_V7_TEST_MODE_DESC','Test/Production mode used for testing shipping labels');
-define('MODULE_SHIPPING_FEDEX_V7_PRINTER_TYPE_DESC','Type of printer to use for printing labels. PDF for plain paper, Thermal for FedEx 2844 Thermal Label Printer (See Help file before selecting Thermal printer)');
-define('MODULE_SHIPPING_FEDEX_V7_PRINTER_NAME_DESC', 'Sets then name of the printer to use for printing labels as defined in the printer preferences for the local workstation.');
-define('MODULE_SHIPPING_FEDEX_V7_TYPES_DESC','Select the FEDEX services to be offered by default.');
-define('MODULE_SHIPPING_FEDEX_V7_SORT_ORDER_DESC','Sort order of display. Lowest is displayed first.');
 // Delivery Methods
 define('MODULE_SHIPPING_FEDEX_V7_GND','Ground');
 define('MODULE_SHIPPING_FEDEX_V7_GDR','Home Delivery');
@@ -81,7 +75,6 @@ define('SHIPPING_FEDEX_V7_VIEW_REPORTS','View Reports for ');
 define('SHIPPING_FEDEX_V7_CLOSE_REPORTS','Closing Report');
 define('SHIPPING_FEDEX_V7_MULTIWGHT_REPORTS','Multiweight Report');
 define('SHIPPING_FEDEX_V7_HAZMAT_REPORTS','Hazmat Report');
-define('SHIPPING_FEDEX_V7_SHIPMENTS_ON','FedEx Shipments on ');
 define('SHIPPING_FEDEX_CURL_ERROR','There was an error communicating with the FedEx server:');
 define('SHIPPING_FEDEX_V7_RATE_ERROR','FedEx rate response error: ');
 define('SHIPPING_FEDEX_V7_RATE_CITY_MATCH','City doesn\'t match zip code.');

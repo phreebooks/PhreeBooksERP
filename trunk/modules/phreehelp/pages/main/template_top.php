@@ -4,7 +4,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <title><?php echo TITLE_TOP_FRAME; ?></title>
   <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/stylesheet.css'; ?>">
-  <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/jquery-ui.css'; ?>" />	
+  <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/jquery-ui.css'; ?>" />
+  <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/easyui.css'; ?>" />
+  <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/icon.css'; ?>" />	
   <link rel="shortcut icon" type="image/ico" href="favicon.ico">
   <script type="text/javascript">
     var icon_path        = '<?php echo DIR_WS_ICONS; ?>';
@@ -14,6 +16,8 @@
   </script>
   <script type="text/javascript" src="includes/common.js"></script>
   <script type="text/javascript" src="includes/jquery-1.6.2.min.js"></script>
+  <script type="text/javascript" src="includes/jquery-ui-1.8.16.custom.min.js"></script>
+  <script type="text/javascript" src="includes/jquery.easyui.min.js"></script>
   <?php require_once(DIR_FS_ADMIN . DIR_WS_THEMES . '/config.php'); ?>
   <?php require_once(DIR_FS_WORKING . 'pages/' . $page . '/js_include.php'); ?>
 </head>

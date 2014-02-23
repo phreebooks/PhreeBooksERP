@@ -17,10 +17,9 @@
 //  Path: /modules/phreedom/pages/backup/pre_process.php
 //
 ini_set('memory_limit','256M');  // Set this big for memory exhausted errors
-$security_level = validate_user(SECURITY_ID_BACKUP);
+$security_level = \core\classes\user::validate(SECURITY_ID_BACKUP);
 /**************  include page specific files    *********************/
 gen_pull_language($module, 'admin');
-require_once(DIR_FS_WORKING . 'classes/backup.php');
 require_once(DIR_FS_WORKING . 'functions/phreedom.php');
 /**************   page specific initialization  *************************/
 $error  = false;
@@ -35,7 +34,7 @@ switch ($_REQUEST['action']) {
 	$save_local = (isset($_POST['save_local'])) ? true : false;
 	// set execution time limit to a large number to allow extra time 
 	if (ini_get('max_execution_time') < 20000) set_time_limit(20000);
-	$backup              = new backup;
+	$backup              = new \phreedom\classes\backup;
 	$backup->db_filename = 'db-' . $_SESSION['company'] . '-' . date('Ymd');
 	$backup->source_dir  = DIR_FS_MY_FILES . $_SESSION['company'] . '/';
 	$backup->source_file = $backup->db_filename . '.sql';
@@ -74,7 +73,7 @@ switch ($_REQUEST['action']) {
 
   case 'backup_log':
 	if (ini_get('max_execution_time') < 20000) set_time_limit(20000);
-	$backup              = new backup;
+	$backup              = new \phreedom\classes\backup;
 	$backup->db_filename = 'log-' . $_SESSION['company'] . '-' . date('Ymd');
 	$backup->source_dir  = DIR_FS_MY_FILES . $_SESSION['company'] . '/';
 	$backup->source_file = $backup->db_filename . '.sql';

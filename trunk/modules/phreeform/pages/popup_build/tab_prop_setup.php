@@ -18,7 +18,7 @@
 //  Path: /modules/phreeform/pages/popup_phreefrom/tab_security_setup.php
 //
 ?>
-<div id="tab_prop">
+<div title="<?php echo TEXT_PROPERTIES;?>"  id="tab_prop">
 <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto;">
  <thead class="ui-widget-header">
     <tr><th colspan="2"><?php echo TEXT_REPORT_PROPERTIES; ?></th></tr>

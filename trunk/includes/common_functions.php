@@ -33,8 +33,10 @@
 /**************************************************************************************************************/
 // Redirect to another page or site
   function gen_redirect($url) {
-    global $messageStack;
 	// clean up URL before executing it
+	ob_clean();
+	ob_end_flush();
+  	session_write_close();
     while (strstr($url, '&&'))    $url = str_replace('&&', '&', $url);
     // header locates should not have the &amp; in the address it breaks things
     while (strstr($url, '&amp;')) $url = str_replace('&amp;', '&', $url);
@@ -42,7 +44,7 @@
     exit;
   }
 
-  function gen_pull_language($page, $file = 'language') {
+  function gen_pull_language($page, $file = 'language') {//@todo add switch for core files.
   	if (!is_dir(DIR_FS_MODULES . $page)) return;
   	if       (file_exists(DIR_FS_MODULES . "$page/custom/language/".$_SESSION['language']."/$file.php")) {
       include_once       (DIR_FS_MODULES . "$page/custom/language/".$_SESSION['language']."/$file.php");
@@ -64,38 +66,33 @@
       include_once       ($path . "$file/language/en_us/language.php");
     }
   }
-
-  function load_all_methods($module, $active_only = true, $inc_select = false) {
-    $choices     = array();
-	if (!$module) return $choices;
-    $method_dir  = DIR_FS_MODULES . "$module/methods/";
-	if ($inc_select) $choices[] = array('id' => '0', 'text' => GEN_HEADING_PLEASE_SELECT);
-    if ($methods = @scandir($method_dir)) foreach ($methods as $method) {
-	  if ($method == '.' || $method == '..' || !is_dir($method_dir . $method)) continue;
-	  if ($active_only && !defined('MODULE_' . strtoupper($module) . '_' . strtoupper($method) . '_STATUS')) continue;
-	  load_method_language($method_dir, $method);
-	  include_once($method_dir . $method . '/' . $method . '.php');
-	  $choices[constant('MODULE_' . strtoupper($module) . '_' . strtoupper($method) . '_SORT_ORDER')] = array(
-	    'id'   => $method, 
-		'text' => constant('MODULE_' . strtoupper($module) . '_' . strtoupper($method) . '_TEXT_TITLE'),
-	  );
-    }
-    ksort($choices);
-    return $choices;
-  }
-
-  function load_specific_method($module, $method) {
-    $method_dir  = DIR_FS_MODULES . $module . '/methods/';
-    load_method_language($method_dir, $method);
-    if (file_exists($method_dir . $method . '/' . $method . '.php')) {
-	  require_once ($method_dir . $method . '/' . $method . '.php');
-    }
-	return $method;
-  }
+  
+	function return_all_methods($module, $active_only = true, $type ='methods') {
+	    $choices     = array();
+		if (!$module) return $choices;
+	    $method_dir  = DIR_FS_MODULES . "$module/$type/";
+	    if ($methods = @scandir($method_dir)) foreach ($methods as $method) {
+			if ($method == '.' || $method == '..' || !is_dir($method_dir . $method)) continue;
+		  	if ($active_only && !defined('MODULE_' . strtoupper($module) . '_' . strtoupper($method) . '_STATUS')) continue;
+		  	load_method_language($method_dir, $method);
+		  	$class = "\\$module\\$type\\$method\\$method";
+		  	$choices[$method] = new $class; 
+	    }
+		uasort($choices, "arange_object_by_sort_order");
+	    return $choices;
+	}
+  
+	/**
+	 * this function is for sorting a array of objects by the sort_order variable
+	 */
+  
+  	function arange_object_by_sort_order($a, $b){
+    	return strcmp($a->sort_order, $b->sort_order);
+	}
 
   function write_configure($constant, $value = '') {
     global $db;
-	if (!$constant) return false;
+	if (!$constant) throw new \Exception("contant isn't defined for value: $value");
 	$result = $db->Execute("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = '" . $constant . "'");
 	if ($result->RecordCount() == 0) {
 	  $sql_array = array('configuration_key'  => $constant, 'configuration_value'=> $value);
@@ -109,7 +106,7 @@
 
   function remove_configure($constant){
     global $db;
-	if (!$constant) return false;
+	if (!$constant) throw new \Exception("There is no constant to remove");
 	$db->Execute("delete from " . TABLE_CONFIGURATION . " where configuration_key = '" . $constant . "'");
 	return true;
   }
@@ -134,29 +131,33 @@
 	return $str;
   }
 
-  function gen_trim_string($string, $length = 20, $add_dots = false) {
-    return mb_strimwidth($string, 0, $length, $add_dots ? '...' : '');
-  }
-
-  function gen_array_key_merge($arr1, $arr2) {
-  	if (!is_array($arr1)) $arr1 = array();
-    if (is_array($arr2) && sizeof($arr2) > 0) {
-	  foreach($arr2 as $key => $value) if (!array_key_exists($key, $arr1)) $arr1[$key] = $value;
-	}
-    return $arr1;
-  }
+  	function gen_trim_string($string, $length = 20, $add_dots = false) {
+    	return mb_strimwidth($string, 0, $length, $add_dots ? '...' : '');
+  	}
  
   function gen_null_pull_down() {
     $null_array = array('id' => '0', 'text' => TEXT_ENTER_NEW);
     return $null_array;
   }
 
-  function gen_build_pull_down($keyed_array) {
+  /**
+   * this function creates a array for dropdown doxes.
+   * arrays with objects may also be passed
+   * @param array $keyed_array
+   * @param bool  $installed_only. this wil be used for objects only 
+   */
+  function gen_build_pull_down($keyed_array, $installed_only = false, $inc_select = false) {
 	$values = array();
+	if ($inc_select) $values[] = array('id' => '0', 'text' => GEN_HEADING_PLEASE_SELECT);
 	if (is_array($keyed_array)) {
-	  foreach($keyed_array as $key => $value) {
-		$values[] = array('id' => $key, 'text' => $value);
-	  }
+	  	foreach($keyed_array as $key => $value) {
+	  		if(is_array($key)){
+				$values[] = array('id' => $key, 'text' => $value);
+	  		}else{
+	  			if($installed_only == true && $value->installed == false) continue;
+	  			else $values[] = array('id' => $value->id, 'text' => $value->text);
+	  		}
+	  	}
 	}
 	return $values;
   }
@@ -189,7 +190,7 @@
   }
 
   function gen_calculate_period($post_date, $hide_error = false) {
-	global $db, $messageStack;
+	global $db;
 	$post_time_stamp = strtotime($post_date);
 	$period_start_time_stamp = strtotime(CURRENT_ACCOUNTING_PERIOD_START);
 	$period_end_time_stamp = strtotime(CURRENT_ACCOUNTING_PERIOD_END);
@@ -200,10 +201,9 @@
 		$result = $db->Execute("select period from " . TABLE_ACCOUNTING_PERIODS . " 
 			where start_date <= '" . $post_date . "' and end_date >= '" . $post_date . "'");
 		if ($result->RecordCount() <> 1) { // post_date is out of range of defined accounting periods
-			if (!$hide_error) $messageStack->add(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');
-			return false;
+			if (!$hide_error) throw new \Exception(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR);
 		}
-		if (!$hide_error) $messageStack->add(ERROR_MSG_BAD_POST_DATE,'caution');
+		if (!$hide_error) throw new \Exception(ERROR_MSG_BAD_POST_DATE);
 		return $result->fields['period'];
 	}
   }
@@ -266,15 +266,16 @@
     return ($vendor_type->RecordCount() == 1) ? $vendor_type->fields['type'] : false;
   }
 
-  function gen_get_contact_name($id) {
-    global $db;
-    $vendor_name = $db->Execute("select short_name from " . TABLE_CONTACTS . " where id = '" . $id . "'");
-    if ($vendor_name->RecordCount() < 1) {
-      return false;
-    } else {
-      return $vendor_name->fields['short_name'];
-    }
-  }
+  	/**
+   	 * this function will return the short_name for a contact 
+   	 * @param unknown_type $id
+   	 */
+  	function gen_get_contact_name($id) {
+    	global $db;
+    	$vendor_name = $db->Execute("select short_name from " . TABLE_CONTACTS . " where id = '$id'");
+    	if ($vendor_name->RecordCount() == 1) return $vendor_name->fields['short_name'];
+    	throw new \Exception("couldn't find contact with $id");
+  	}
 
   function gen_get_contact_array_by_type($type = 'v') {
     global $db;
@@ -330,12 +331,12 @@
     return $result_array;
   }
 
-  function inv_calculate_tax_drop_down($type = 'c',$contactForm = true) {
+  function inv_calculate_tax_drop_down($type = 'c', $contactForm = true) {
     global $db;
     $tax_rates = $db->Execute("select tax_rate_id, description_short 
 		from " . TABLE_TAX_RATES . " where type = '" . $type . "'");
     $tax_rate_drop_down = array();
-    if ($contactForm)$tax_rate_drop_down[] = array('id' => '-1', 'text' => TEXT_PRODUCT_DEFAULT);
+    if ($contactForm) $tax_rate_drop_down[] = array('id' => '-1', 'text' => TEXT_PRODUCT_DEFAULT);
     $tax_rate_drop_down[] = array('id' => '0', 'text' => TEXT_NONE);
 	while (!$tax_rates->EOF) {
 	  $tax_rate_drop_down[] = array(
@@ -405,10 +406,8 @@
 		where inactive = '0' and type = '" . $type . "' order by sheet_name";
     $result = $db->Execute($sql);
     $sheets = array();
-	$default = '';
     $sheets[] = array('id' => '', 'text' => TEXT_NONE);
     while (!$result->EOF) {
-	  if ($result->fields['default_sheet']) $default = $result->fields['sheet_name'];
       $sheets[] = array('id' => $result->fields['sheet_name'], 'text' => $result->fields['sheet_name']);
       $result->MoveNext();
     }
@@ -435,27 +434,9 @@
 	return $acct_array;
   }
 
-  function gen_validate_sku($sku) {
-  	global $db;
-	$result = $db->Execute("select id from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
-	return ($result->RecordCount() <> 0) ? true : false;
-  }
-
-  function gen_parse_permissions($imploded_permissions) {
-	$result = array();
-	$temp = explode(',', $imploded_permissions);
-	if (is_array($temp)) {
-	  foreach ($temp as $imploded_entry) {
-		$entry = explode(':', $imploded_entry);
-		$result[$entry[0]] = $entry[1];
-	  }
-	}
-	return $result;
-  }
-
   function gen_add_audit_log($action, $ref_id = '', $amount = '') {
 	global $db;
-  	if ($action == '' || !isset($action)) die ('Error, call to audit log with no description');
+  	if ($action == '' || !isset($action)) throw new \Exception('Error, call to audit log with no description');
   	$stats = (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME))."ms, ".$db->count_queries."q ".(int)($db->total_query_time * 1000)."ms";
 	$fields = array(
 	  'user_id'   => $_SESSION['admin_id'] ? $_SESSION['admin_id'] : '1',
@@ -495,12 +476,10 @@
   }
 
 function saveUploadZip($file_field, $dest_dir, $dest_name) {
-	global $messageStack;
 	if ($_FILES[$file_field]['error']) { // php error uploading file
-		$messageStack->add(TEXT_IMP_ERMSG5 . $_FILES[$file_field]['error'], 'error');
+		throw new \Exception(TEXT_IMP_ERMSG5 . $_FILES[$file_field]['error']);
 	} elseif ($_FILES[$file_field]['size'] > 0) {
-		require_once(DIR_FS_MODULES . 'phreedom/classes/backup.php');
-		$backup              = new backup();
+		$backup              = new \phreedom\classes\backup();
 		$backup->source_dir  = $_FILES[$file_field]['tmp_name'];
 		$backup->source_file = '';
 		$backup->dest_dir    = $dest_dir;
@@ -699,9 +678,9 @@ function gen_db_date($raw_date = '', $separator = '/') {
   $parts     = explode($second_separator, $raw_date);
   foreach ($date_vals as $key => $position) {
     switch ($position) {
-      case 'Y': $year  = substr('20' . $parts[$key], -4, 4); break;
-      case 'm': $month = substr('0'  . $parts[$key], -2, 2); break;
-      case 'd': $day   = substr('0'  . $parts[$key], -2, 2); break;
+      case 'Y': $year  = (int)substr('20' . $parts[$key], -4, 4); break;
+      case 'm': $month = (int)substr('0'  . $parts[$key], -2, 2); break;
+      case 'd': $day   = (int)substr('0'  . $parts[$key], -2, 2); break;
     }
   }
   if ($month < 1    || $month > 12)   $error = true;
@@ -777,12 +756,11 @@ function gen_db_date($raw_date = '', $separator = '/') {
   }
 
   function gen_calculate_fiscal_dates($period) {
-	global $db, $messageStack;
+	global $db;
 	$result = $db->Execute("select fiscal_year, start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . " 
 	  where period = " . $period);
 	if ($result->RecordCount() <> 1) { // post_date is out of range of defined accounting periods
-	  $messageStack->add(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');
-	  return false;
+	  throw new \Exception(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');
 	}
 	return $result->fields;
   }
@@ -823,27 +801,6 @@ function gen_db_date($raw_date = '', $separator = '/') {
   }
 
 /*************** Other Functions *******************************/
-  function gen_get_top_level_domain($url) {
-    if (strpos($url, '://')) {
-      $url = parse_url($url);
-      $url = $url['host'];
-    }
-    $domain_array = explode('.', $url);
-    $domain_size = sizeof($domain_array);
-    if ($domain_size > 1) {
-      if (is_numeric($domain_array[$domain_size-2]) && is_numeric($domain_array[$domain_size-1])) {
-        return false;
-      } else {
-        if ($domain_size > 3) {
-          return $domain_array[$domain_size-3] . '.' . $domain_array[$domain_size-2] . '.' . $domain_array[$domain_size-1];
-        } else {
-          return $domain_array[$domain_size-2] . '.' . $domain_array[$domain_size-1];
-        }
-      }
-    } else {
-      return false;
-    }
-  }
 
   function get_ip_address() {
     if (isset($_SERVER)) {
@@ -906,7 +863,6 @@ function gen_db_date($raw_date = '', $separator = '/') {
   }
 
   function install_blank_webpage($filename) {
-    global $messageStack;
   	$blank_web = '<html>
   <head>
     <title></title>
@@ -916,8 +872,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
   <body>&nbsp;</body>
 </html>';
 	if (!$handle = @fopen($filename, 'w')) {
-	  $messageStack->add('Cannot open file (' . $filename . ') for writing check your permissions.', 'error');
-	  return false;
+	  throw new \Exception('Cannot open file (' . $filename . ') for writing check your permissions.', 'error');
 	}
 	fwrite($handle, $blank_web);
 	fclose($handle);
@@ -929,7 +884,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
 /**************************************************************************************************************/
   function db_perform($table, $data, $action = 'insert', $parameters = '') {
     global $db;
-    if (!is_array($data)) return false;
+    if (!is_array($data)) throw new \Exception("data isn't a array for table: $table");
     reset($data);
     if ($action == 'insert') {
       $query = 'insert into ' . $table . ' (';
@@ -1006,10 +961,8 @@ function gen_db_date($raw_date = '', $separator = '/') {
 // Section 3. HTML Functions
 /**************************************************************************************************************/
   function html_href_link($page = '', $parameters = '', $connection = 'NONSSL', $add_session_id = false) {
-    global $request_type, $session_started, $http_domain, $https_domain;
-    if ($page == '') {
-      die('Unable to determine the page link!<br />Function used:<br />html_href_link(\'' . $page . '\', \'' . $parameters . '\', \'' . $connection . '\')');
-    }
+    global $request_type, $http_domain, $https_domain;
+	if ($page == '') throw new \Exception('Unable to determine the page link!<br />Function used:<br />html_href_link(\'' . $page . '\', \'' . $parameters . '\', \'' . $connection . '\')');
     if ($connection == 'SSL') {
       $link = DIR_WS_FULL_PATH;
     } else {
@@ -1025,7 +978,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
     }
     while ( (substr($link, -1) == '&') || (substr($link, -1) == '?') ) $link = substr($link, 0, -1);
 	// Add the session ID when moving from different HTTP and HTTPS servers, or when SID is defined
-    if ( ($add_session_id == true) && ($session_started == true) ) {
+    if ( ($add_session_id == true) && (session_status() == PHP_SESSION_ACTIVE) ) {
       if (defined('SID') && gen_not_null(SID)) {
         $sid = SID;
       } elseif ( ( ($request_type == 'NONSSL') && ($connection == 'SSL') && (ENABLE_SSL_ADMIN == 'true') ) || ( ($request_type == 'SSL') && ($connection == 'NONSSL') ) ) {
@@ -1079,26 +1032,82 @@ function gen_db_date($raw_date = '', $separator = '/') {
     return $form;
   }
 
-  function html_input_field($name, $value = '', $parameters = '', $required = false, $type = 'text') {
-	if (strpos($name, '[]')) { // don't show id attribute if generic array
-	  $id = false;
-	} else {
-	  $id = str_replace('[', '_', $name); // clean up for array inputs causing html errors
-	  $id = str_replace(']', '',  $id);
-    }
-    $field = '<input type="' . $type . '" name="' . $name . '"';
-	if ($id)                       $field .= ' id="'    . $id    . '"';
-    if (gen_not_null($value))      $field .= ' value="' . str_replace('"', '&quot;', $value) . '"';
-    if (gen_not_null($parameters)) $field .= ' ' . $parameters;
-    $field .= ' />';
-    if ($required == true) $field .= TEXT_FIELD_REQUIRED;
-    return $field;
+  	function html_input_field($name, $value = '', $parameters = '', $required = false, $type = 'text') {
+		if (strpos($name, '[]')) { // don't show id attribute if generic array
+		  	$id = false;
+		} else {
+	  		$id = str_replace('[', '_', $name); // clean up for array inputs causing html errors
+	  		$id = str_replace(']', '',  $id);
+    	}
+    	$field = '<input type="' . $type . '" name="' . $name . '" class="easyui-validatebox"';
+		if ($id)                       	$field .= ' id="'    . $id    . '"';
+    	if (gen_not_null($value))      	$field .= ' value="' . str_replace('"', '&quot;', $value) . '"';
+    	if ($required == true) 			$field .= ' required="required"'; 
+    	if (gen_not_null($parameters)) 	$field .= ' ' . $parameters;
+    	$field .= ' />';
+    	return $field;
+  	}
+
+  	function html_hidden_field($name, $value = '', $parameters = '') {
+    	return html_input_field($name, $value, $parameters, false, 'hidden', false);
+  	}
+  
+  	function html_currency_field($name, $value, $parameters, $currency_code = DEFAULT_CURRENCY){//@todo test and implement
+  		global $currencies;
+  		if (strpos($name, '[]')) { // don't show id attribute if generic array
+	  		$id = false;
+		} else {
+	  		$id = str_replace('[', '_', $name); // clean up for array inputs causing html errors
+	  		$id = str_replace(']', '',  $id);
+    	}
+    	$field = "<input class='easyui-numberbox' data-options='min:0,precision:2' name='$name' ";//@todo set precision
+		if ($id)						$field .= " id='$id' ";
+    	if (gen_not_null($value))		$field .= ' value="' . str_replace('"', '&quot;', $value) . '"';
+    	if (gen_not_null($parameters))	$field .= " $parameters ";
+    	if ($required)					$field .= " required='required' ";
+    	$field .= " class='easyui-numberbox' data-options=\"precision:$currencies[$currency_code]->decimal_places,groupSeparator:'$currencies[$currency_code]->thousands_point',decimalSeparator:'$currencies[$currency_code]->decimal_point',prefix:'$currencies[$currency_code]->symbol_left'\" $temp />";
+  		return $field;
   }
 
-  function html_hidden_field($name, $value = '', $parameters = '') {
-    return html_input_field($name, $value, $parameters, false, 'hidden', false);
-  }
-
+  	function html_number_field($name, $value, $parameters, $required = false){//@todo test and implement
+	  	global $currencies;
+  		if (strpos($name, '[]')) { // don't show id attribute if generic array
+	  		$id = false;
+		} else {
+	  		$id = str_replace('[', '_', $name); // clean up for array inputs causing html errors
+	  		$id = str_replace(']', '',  $id);
+    	}
+    	$field = "<input class='easyui-numberbox' data-options='min:0,precision:2' name='$name' ";
+		if ($id)						$field .= " id='$id' ";
+    	if (gen_not_null($value))		$field .= ' value="' . str_replace('"', '&quot;', $value) . '"';
+    	if (gen_not_null($parameters))	$field .= " $parameters ";
+    	if ($required)					$field .= " required='required' ";
+    	$field .=  "class='easyui-numberbox' data-options=\"precision:$currencies[DEFAULT_CURRENCY]->decimal_places,groupSeparator:'$currencies[DEFAULT_CURRENCY]->thousands_point',decimalSeparator:'$currencies[DEFAULT_CURRENCY]->decimal_point'\" />";
+  		return $field;
+  	}
+  	
+  	/** 
+  	 * new function to create a date field
+  	 * @param $name
+  	 * @param $value
+  	 * @param $required bool
+  	 */
+  	
+  	function html_date_field($name, $value, $required = false){//@todo test and implement date format needs to be right
+  		if (strpos($name, '[]')) { // don't show id attribute if generic array
+	  		$id = false;
+		} else {
+	  		$id = str_replace('[', '_', $name); // clean up for array inputs causing html errors
+	  		$id = str_replace(']', '',  $id);
+    	}
+    	$field = "<input class='easyui-datebox' name='$name' ";
+		if ($id)					$field .= " id='$id'";
+    	if (gen_not_null($value))	$field .= ' value="' . str_replace('"', '&quot;', $value) . '"';
+    	if ($required == true)		$field .= " required='required' ";
+    	$field .= " class='easyui-datebox' />";
+    	return $field;
+  	}
+  
   function html_password_field($name, $value = '', $required = false, $parameters = '') {
     return html_input_field($name, $value, 'maxlength="40" ' . $parameters, $required, 'password', false);
   }
@@ -1173,6 +1182,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
     $field = '<select name="' . $name . '"';
 	if ($id) $field .= ' id="' . $id . '"';
     if (gen_not_null($parameters)) $field .= ' ' . $parameters;
+    if ($required)				$field .= ' required="required" ';
     $field .= '>';
     if (empty($default) && isset($GLOBALS[$name])) $default = stripslashes($GLOBALS[$name]);
 	if (is_array($values) > 0) {
@@ -1187,7 +1197,6 @@ function gen_db_date($raw_date = '', $separator = '/') {
 	  }
 	}
     $field .= '</select>';
-    if ($required == true) $field .= TEXT_FIELD_REQUIRED;
     return $field;
   }
 
@@ -1200,8 +1209,9 @@ function gen_db_date($raw_date = '', $separator = '/') {
 	    $id = str_replace(']', '', $id);
       }
 	}
-	$field  = '<input type="text" name="' . $name . '"';
-	if (gen_not_null($id)) $field .= ' id="' . $id . '"';
+	$field  = '<input class="easyui-combobox" type="text" name="' . $name . '"';
+	if (gen_not_null($id)) 	$field .= ' id="' . $id . '"';
+	if ($required)			$field .= ' required="required" ';
 	$field .= ' value="' . $default . '" ' . $parameters . ' />';
 	$field .= '<img name="imgName' . $id . '" id="imgName' . $id . '" alt="" src="' . DIR_WS_ICONS . '16x16/phreebooks/pull_down_inactive.gif" height="16" width="16" align="top" style="border:none;" onmouseover="handleOver(\'imgName' . $id . '\'); return true;" onmouseout="handleOut(\'imgName' . $id . '\'); return true;" onclick="JavaScript:cbMmenuActivate(\'' . $id . '\', \'combodiv' . $id . '\', \'combosel' . $id . '\', \'imgName' . $id . '\')" />';
 	$field .= '<div id="combodiv' . $id . '" style="position:absolute; display:none; top:0px; left:0px; z-index:10000" onmouseover="javascript:oOverMenu=\'combodiv' . $id . '\';" onmouseout="javascript:oOverMenu=false;">';
@@ -1287,33 +1297,29 @@ function gen_db_date($raw_date = '', $separator = '/') {
 	return $result;
   }
 
-  function html_datatable($id, $content = NULL) {
+  function html_datatable($id, $content = NULL, $title) {
 	$head_bar  = '   <tr>'."\n";
-	foreach ($content['thead']['value'] as $heading) $head_bar .= '    <th nowrap="nowrap">'.htmlspecialchars($heading).'</th>'."\n";
+	foreach ($content['thead']['value'] as $heading) $head_bar .= '    <th>'.htmlspecialchars($heading).'</th>'."\n";
 	$head_bar .= '   </tr>'."\n";
-	$output    = '<table class="ui-widget" id="'.$id.'" '.$content['thead']['params'].'>'."\n";
-	$output   .= '  <thead class="ui-widget-header">'."\n".$head_bar.'  </thead>'."\n";
-	$output   .= '  <tbody class="ui-widget-content">'."\n";
+	$output    = '<table class="easyui-datagrid" id="'.$id.'" title="'.$title.'"  pagination="true"
+		rownumbers="true" fitColumns="true" singleSelect="true">'."\n";
+	$output   .= '  <thead>'."\n".$head_bar.'  </thead>'."\n";
+	$output   .= '  <tbody>'."\n";
     if (is_array($content['tbody'])) {
 	  foreach ($content['tbody'] as $row) {
 	    $output .= '  <tr>'."\n";
-	    foreach ($row as $element) $output .= '    <td nowrap="nowrap" '.$element['params'].'>'.$element['value'].'</td>'."\n";
+	    foreach ($row as $element) $output .= '    <td>'.$element['value'].'</td>'."\n";
         $output .= '  </tr>'."\n";
 	  }
 	} else {
 	  $output .= '  <tr>'."\n";
-	  $output .= '    <td nowrap="nowrap">'.TEXT_NO_DATA.'</td>'."\n";
+	  $output .= '    <td>'.TEXT_NO_DATA.'</td>'."\n";
 	  for ($i = 1; $i < sizeof($content['thead']['value']); $i++) $output .= '    <td>&nbsp;</td>'."\n";
 	  $output .= '  </tr>'."\n";
 	}
  	$output .= '  </tbody>'."\n";
- 	$output .= '  <tfoot class="ui-widget-header">'."\n".$head_bar.'  </tfoot>'."\n";
  	$output .= '</table>'."\n";
     return $output;
-  }
-
-  function add_tab_list($name, $text, $active = false) {
-	return '<li><a href="#' . $name . '">' . $text . '</a></li>' . chr(10);
   }
 
   function build_dir_html($name, $full_array) {
@@ -1428,166 +1434,28 @@ function charConv($string, $in, $out) {
   }
 
 /**************************************************************************************************************/
-// Section 5. Extra Fields Functions
-/**************************************************************************************************************/
-  function xtra_field_build_entry($param_array, $cInfo) {
-	$output = '<tr><td>' . $param_array['description'] . '</td>';
-	$params = unserialize($param_array['params']);
-	switch ($params['type']) {
-		case 'text':
-		case 'html':
-			if ($params['length'] < 256) {
-				$length = ($params['length'] > 120) ? 'size="120"' : ('size="' . $params['length'] . '"');
-				$output .= '<td>' . html_input_field($param_array['field_name'], $cInfo->$param_array['field_name'], $length) . '</td></tr>';
-			} else {
-				$output .= '<td>' . html_textarea_field($param_array['field_name'], DEFAULT_INPUT_FIELD_LENGTH, 4, $cInfo->$param_array['field_name']) . '</td></tr>';
-			}
-			break;
-		case 'hyperlink':
-		case 'image_link':
-		case 'inventory_link':
-			$output .= '<td>' . html_input_field($param_array['field_name'], $cInfo->$param_array['field_name'], 'size="' . DEFAULT_INPUT_FIELD_LENGTH . '"') . '</td></tr>';
-			break;
-		case 'integer':
-		case 'decimal':
-			$output .= '<td>' . html_input_field($param_array['field_name'], $cInfo->$param_array['field_name'], 'size="13" maxlength="12" style="text-align:right"') . '</td></tr>';
-			break;
-		case 'date':
-		case 'time':
-		case 'date_time':
-			$output .= '<td>' . html_input_field($param_array['field_name'], $cInfo->$param_array['field_name'], 'size="21" maxlength="20"') . '</td></tr>';
-			break;
-		case 'drop_down':
-		case 'enum':
-			$choices = explode(',',$params['default']);
-			$pull_down_selection = array();
-			$default_selection = '';
-			while ($choice = array_shift($choices)) {
-				$values = explode(':',$choice);
-				$pull_down_selection[] = array('id' => $values[0], 'text' => $values[1]);
-				if ($cInfo->$param_array['field_name'] == $values[0]) $default_selection = $values[0];
-			}
-			$output .= '<td>' . html_pull_down_menu($param_array['field_name'], $pull_down_selection, $default_selection) . '</td></tr>';
-			break;
-		case 'radio':
-			$output .= '<td>';
-			$choices = explode(',',$params['default']);
-			while ($choice = array_shift($choices)) {
-				$values = explode(':',$choice);
-				$output .= html_radio_field($param_array['field_name'], $values[0], ($cInfo->$param_array['field_name']==$values[0]) ? true : false);
-				$output .= '<label for="' . $param_array['field_name']. '_' . $values[0] . '"> ' . $values[1] . '</label>';
-			}
-			$output .= '</td></tr>';
-			break;
-		case 'multi_check_box':	
-			$output  .= '<td>';
-			$output  .= '<table frame="border"><tr>';
-			$choices  = explode(',',$params['default']);
-			$selected = explode(',',$cInfo->$param_array['field_name']);
-			$i = 1;
-			while ($choice = array_shift($choices)) {
-				$values = explode(':', $choice);
-				$output .= '<td>';
-				$output .= html_checkbox_field($param_array['field_name'] . $values[0] , $values[0], in_array($values[0], $selected) ? true : false);
-				$output .= '<label for="' . $param_array['field_name'] . $values[0] . '"> ' . $values[1] . '</label>';
-				$output .= '</td>';
-				if ($i == 4){
-					$output .= '</tr><tr>';
-					$i=0;
-				}
-				$i++;
-			}
-			$output .= '</tr></table>';
-			$output .= '</td></tr>';
-			break;	
-		case 'check_box':
-			$output .= '<td>' . html_checkbox_field($param_array['field_name'], '1', ($cInfo->$param_array['field_name']==1) ? true : false) . '</td></tr>';
-			break;
-		case 'time_stamp':
-		default:
-			$output = '';
-	}
-	return $output;
-  }
-
-/**************************************************************************************************************/
 // Section 6. Validation Functions
 /**************************************************************************************************************/
-function validate_user($token = 0, $user_active = false) {
-  global $messageStack;
-  $security_level = $_SESSION['admin_security'][$token];
-  if (!in_array($security_level, array(1,2,3,4)) && !$user_active) { // not suppose to be here, bail
-    $messageStack->add(ERROR_NO_PERMISSION, 'error');
-    gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL'));
-  }
-  return $user_active ? 1 : $security_level;
-}
-
-function validate_security($security_level = 0, $required_level = 1) {
-  global $messageStack;
-  if ($security_level < $required_level) {
-	$messageStack->add(ERROR_NO_PERMISSION, 'error');
-	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-  }
-  return true;
-}
-
-function validate_ajax_user($token = 0) {
-  $security_level = $token ? $_SESSION['admin_security'][$token] : (int)$_SESSION['admin_id'];
-  if (!$security_level) { // not suppose to be here
-    echo createXmlHeader() . xmlEntry('error', ERROR_NO_PERMISSION) . createXmlFooter();
-    die;
-  }
-  return $token ? $security_level : 1;
-}
-
-  function validate_email($email) {
-    $isValid = true;
-    $atIndex = strrpos($email, "@");
-    if (is_bool($atIndex) && !$atIndex) {
-      $isValid = false;
-    } else {
-      $domain    = substr($email, $atIndex+1);
-      $local     = substr($email, 0, $atIndex);
-      $localLen  = strlen($local);
-      $domainLen = strlen($domain);
-      if ($localLen < 1 || $localLen > 64) { // local part length exceeded
-         $isValid = false;
-      } else if ($domainLen < 1 || $domainLen > 255) { // domain part length exceeded
-         $isValid = false;
-      } else if ($local[0] == '.' || $local[$localLen-1] == '.') { // local part starts or ends with '.'
-         $isValid = false;
-      } else if (preg_match('/\\.\\./', $local)) { // local part has two consecutive dots
-         $isValid = false;
-      } else if (!preg_match('/^[A-Za-z0-9\\-\\.]+$/', $domain)) { // character not valid in domain part
-         $isValid = false;
-      } else if (preg_match('/\\.\\./', $domain)) { // domain part has two consecutive dots
-         $isValid = false;
-      } else if (!preg_match('/^(\\\\.|[A-Za-z0-9!#%&`_=\\/$\'*+?^{}|~.-])+$/', str_replace("\\\\","",$local))) {
-         // character not valid in local part unless local part is quoted
-         if (!preg_match('/^"(\\\\"|[^"])+"$/', str_replace("\\\\","",$local))) $isValid = false;
-      }
-    }
-    return $isValid;
-  }
-
+  /**
+   * checks if file exists and is of the required type
+   * @param unknown_type $filename
+   * @param unknown_type $file_type
+   * @param unknown_type $extension
+   * @throws Exception
+   */
   function validate_upload($filename, $file_type = 'text', $extension = 'txt') {
-  	global $messageStack;
 	if ($_FILES[$filename]['error']) { // php error uploading file
 		switch ($_FILES[$filename]['error']) {
-			case '1': $messageStack->add(TEXT_IMP_ERMSG1, 'error'); break;
-			case '2': $messageStack->add(TEXT_IMP_ERMSG2, 'error'); break;
-			case '3': $messageStack->add(TEXT_IMP_ERMSG3, 'error'); break;
-			case '4': $messageStack->add(TEXT_IMP_ERMSG4, 'error'); break;
-			default:  $messageStack->add(TEXT_IMP_ERMSG5 . $_FILES[$filename]['error'] . '.', 'error');
+			case '1': throw new \Exception(TEXT_IMP_ERMSG1, 'error');
+			case '2': throw new \Exception(TEXT_IMP_ERMSG2, 'error');
+			case '3': throw new \Exception(TEXT_IMP_ERMSG3, 'error');
+			case '4': throw new \Exception(TEXT_IMP_ERMSG4, 'error');
+			default:  throw new \Exception(TEXT_IMP_ERMSG5 . $_FILES[$filename]['error'] . '.');
 		}
-		return false;
 	} elseif (!is_uploaded_file($_FILES[$filename]['tmp_name'])) { // file uploaded
-		$messageStack->add(TEXT_IMP_ERMSG13, 'error');
-		return false;
+		throw new \Exception(TEXT_IMP_ERMSG13);
 	} elseif ($_FILES[$filename]['size'] == 0) { // report contains no data, error
-		$messageStack->add(TEXT_IMP_ERMSG7, 'error');
-		return false;
+		throw new \Exception(TEXT_IMP_ERMSG7);
 	}
 	$ext = strtolower(substr($_FILES[$filename]['name'], -3, 3));
 	$textfile = (strpos($_FILES[$filename]['type'], $file_type) === false) ? false : true;
@@ -1595,215 +1463,181 @@ function validate_ajax_user($token = 0) {
 	if ((!$textfile && in_array($ext, $extension)) || $textfile) { // allow file_type and extensions
 		return true;
 	}
-	$messageStack->add(TEXT_IMP_ERMSG6, 'error');
-	return false;
+	throw new \Exception(TEXT_IMP_ERMSG6);
   }
 
-  function validate_path($file_path) {
-	if (!is_dir($file_path)) mkdir($file_path, 0777, true);
-	return true;
-  }
+	/** @todo places where it is used need to be modified 
+	 * checks if path exists if not it will try to create it 
+	 * @param string $file_path
+	 * @throws Exception
+	 */
+  	function validate_path($file_path) {
+		if (!is_dir($file_path)) {
+			if(mkdir($file_path, 0777, true) == false) throw new \Exception("cloudn't make dir: $file_path");
+		}
+  	}
 
-  function validate_db_date($date) {
-    $y = (int)substr($date, 0, 4); 
-	if ($y < 1900 || $y > 2099) return false;
-    $m = (int)substr($date, 5, 2); 
-	if ($m < 1 || $m > 12) return false;
-    $d = (int)substr($date, 8, 2); 
-	if ($d < 1 || $d > 31) return false;
-	return true;
-  }
+  
+  	/**
+  	 * this function will try to validate the date
+  	 * @param str $date
+  	 */ 
+	function validate_db_date($date) {
+    	$y = (int)substr($date, 0, 4); 
+		if ($y < 1900 || $y > 2099)	throw new \Exception("the year is to big or to small for date: $date");
+    	$m = (int)substr($date, 5, 2); 
+		if ($m < 1 || $m > 12) 		throw new \Exception("the month is to big or to small for date: $date");
+    	$d = (int)substr($date, 8, 2); 
+		if ($d < 1 || $d > 31) 		throw new \Exception("the day is to big or to small for date: $date");
+		return true;
+  	}
 
-  function validate_send_mail($to_name, $to_address, $email_subject, $email_text, $from_email_name, $from_email_address, $block = array(), $attachments_list = '' ) {
-    global $db, $messageStack;
-    // check for injection attempts. If new-line characters found in header fields, simply fail to send the message
-    foreach(array($from_email_address, $to_address, $from_email_name, $to_name, $email_subject) as $key => $value) {
-      if (!$value) continue;
-	  if (strpos("\r", $value) !== false || strpos("\n", $value) !== false) return false;
-    }
-    // if no text or html-msg supplied, exit
-    if (!gen_not_null($email_text) && !gen_not_null($block['EMAIL_MESSAGE_HTML'])) return false;
-    // if email name is same as email address, use the Store Name as the senders 'Name'
-    if ($from_email_name == $from_email_address) $from_email_name = COMPANY_NAME;
-    // loop thru multiple email recipients if more than one listed  --- (esp for the admin's "Extra" emails)...
-    foreach(explode(',', $to_address) as $key => $to_email_address) {
-      //define some additional html message blocks available to templates, then build the html portion.
-      if ($block['EMAIL_TO_NAME'] == '')      $block['EMAIL_TO_NAME']      = $to_name;
-      if ($block['EMAIL_TO_ADDRESS'] == '')   $block['EMAIL_TO_ADDRESS']   = $to_email_address;
-      if ($block['EMAIL_SUBJECT'] == '')      $block['EMAIL_SUBJECT']      = $email_subject;
-      if ($block['EMAIL_FROM_NAME'] == '')    $block['EMAIL_FROM_NAME']    = $from_email_name;
-      if ($block['EMAIL_FROM_ADDRESS'] == '') $block['EMAIL_FROM_ADDRESS'] = $from_email_address;
-      $email_html = $email_text;
-      //  if ($attachments_list == '') $attachments_list= array();
-      // clean up &amp; and && from email text
-      while (strstr($email_text, '&amp;&amp;')) $email_text = str_replace('&amp;&amp;', '&amp;', $email_text);
-      while (strstr($email_text, '&amp;'))      $email_text = str_replace('&amp;', '&', $email_text);
-      while (strstr($email_text, '&&'))         $email_text = str_replace('&&', '&', $email_text);
-      // clean up currencies for text emails
-      $fix_currencies = explode(":", CURRENCIES_TRANSLATIONS);
-      $size = sizeof($fix_currencies);
-      for ($i=0, $n=$size; $i<$n; $i+=2) {
-        $fix_current = $fix_currencies[$i];
-        $fix_replace = $fix_currencies[$i+1];
-        if (strlen($fix_current)>0) {
-          while (strpos($email_text, $fix_current)) $email_text = str_replace($fix_current, $fix_replace, $email_text);
-        }
-      }
-      // fix double quotes
-      while (strstr($email_text, '&quot;')) $email_text = str_replace('&quot;', '"', $email_text);
-      // fix slashes
-      $email_text = stripslashes($email_text);
-      $email_html = stripslashes($email_html);
-      // Build the email based on whether customer has selected HTML or TEXT, and whether we have supplied HTML or TEXT-only components
-      if (!gen_not_null($email_text)) {
-        $text = str_replace('<br[[:space:]]*/?[[:space:]]*>', "\n", $block['EMAIL_MESSAGE_HTML']);
-        $text = str_replace('</p>', "</p>\n", $text);
-        $text = htmlspecialchars(stripslashes(strip_tags($text)));
-      } else {
-        $text = strip_tags($email_text);
-      }
-      // now lets build the mail object with the phpmailer class
-	  require_once(DIR_FS_MODULES . 'phreedom/includes/PHPMailer/class.phpmailer.php');
-      $mail = new PHPMailer();
-      $mail->SetLanguage();
-      $mail->CharSet =  (defined('CHARSET')) ? CHARSET : "iso-8859-1";
-      if ($debug_mode=='on') $mail->SMTPDebug = true;
-      if (EMAIL_TRANSPORT=='smtp' || EMAIL_TRANSPORT=='smtpauth') {
-        $mail->IsSMTP();                           // set mailer to use SMTP
-        $mail->Host = EMAIL_SMTPAUTH_MAIL_SERVER;
-        if (EMAIL_SMTPAUTH_MAIL_SERVER_PORT != '25' && EMAIL_SMTPAUTH_MAIL_SERVER_PORT != '') $mail->Port = EMAIL_SMTPAUTH_MAIL_SERVER_PORT;
-        if (EMAIL_TRANSPORT=='smtpauth') {
-          $mail->SMTPAuth = true;     // turn on SMTP authentication
-          $mail->Username = (gen_not_null(EMAIL_SMTPAUTH_MAILBOX)) ? EMAIL_SMTPAUTH_MAILBOX : EMAIL_FROM;  // SMTP username
-          $mail->Password = EMAIL_SMTPAUTH_PASSWORD; // SMTP password
-        }
-      }
-      $mail->Subject  = $email_subject;
-      $mail->From     = $from_email_address;
-      $mail->FromName = $from_email_name;
-      $mail->AddAddress($to_email_address, $to_name);
-      $mail->AddReplyTo($from_email_address, $from_email_name);
-	  if (isset($block['EMAIL_CC_ADDRESS'])) $mail->AddCC($block['EMAIL_CC_ADDRESS'], $block['EMAIL_CC_NAME']);
-      // set proper line-endings based on switch ... important for windows vs linux hosts:
-      $mail->LE = (EMAIL_LINEFEED == 'CRLF') ? "\r\n" : "\n";
-      $mail->WordWrap = 76;    // set word wrap to 76 characters
-      // if mailserver requires that all outgoing mail must go "from" an email address matching domain on server, set it to store address
-      if (EMAIL_TRANSPORT=='sendmail-f' || EMAIL_TRANSPORT=='sendmail') {
-	    $mail->Mailer = 'sendmail';
-        $mail->Sender = $mail->From;
-      }
-      // process attachments
-      // Note: $attachments_list array requires that the 'file' portion contains the full path to the file to be attached
-      if (EMAIL_ATTACHMENTS_ENABLED && gen_not_null($attachments_list) ) {
-        $mail->AddAttachment($attachments_list['file']);          // add attachments
-      } //endif attachments
-      if (EMAIL_USE_HTML && trim($email_html) != '' && ADMIN_EXTRA_EMAIL_FORMAT == 'HTML') {
-        $mail->IsHTML(true);           // set email format to HTML
-        $mail->Body    = $email_html;  // HTML-content of message
-        $mail->AltBody = $text;        // text-only content of message
-      }  else {                        // use only text portion if not HTML-formatted
-        $mail->Body    = $text;        // text-only content of message
-      }
-      if (!$mail->Send()) {
-        $messageStack->add(sprintf(EMAIL_SEND_FAILED . '&nbsp;'. $mail->ErrorInfo, $to_name, $to_email_address, $email_subject),'error');
-        return false;
-	  }else{
-	  	$temp = $db->Execute("select address_id, ref_id from " . TABLE_ADDRESS_BOOK . " where email ='".$to_email_address."' and ref_id <> 0");
-		$sql_data_array['address_id_from'] 	= $temp->fields['address_id'];
-		$ref_id = $temp->fields['ref_id'];
-		$temp = $db->Execute("select address_id, ref_id from " . TABLE_ADDRESS_BOOK . " where email ='".$from_email_address."'");
-		$sql_data_array['address_id_to'] 	= $temp->fields['address_id'];
-		$sql_data_array['Message'] 		= $text;
-		$sql_data_array['Message_html']	= $email_html;
-		//$sql_data_array['IDEmail'] 		= $email['message_id'];?? Rene Unknown
-		$sql_data_array['EmailFrom']	= $from_email_address;
-		$sql_data_array['EmailFromP']	= $from_email_name;
-		$sql_data_array['EmailTo']		= $to_name;
-		$sql_data_array['Account']		= $from_email_address;
-		$sql_data_array['DateE']		= date("Y-m-d H:i:s");
-		$sql_data_array['DateDb'] 		= date("Y-m-d H:i:s");
-		$sql_data_array['Subject']		= $email_subject;
-		//$sql_data_array['MsgSize'] 		= $email["SIZE"];?? Rene Unknown
-// 		if(db_table_exists(TABLE_PHREEMAIL)) db_perform(TABLE_PHREEMAIL, $sql_data_array, 'insert');  		
-  		// save in crm_notes
-		$temp = $db->Execute("select account_id from " . TABLE_USERS . " where admin_email = '" . $from_email_address . "'");
-		$sql_array['contact_id'] = $ref_id;
-		$sql_array['log_date']   = $sql_data_array['DateE'];
-		$sql_array['entered_by'] = $temp->fields['account_id'];
-		$sql_array['action']     = 'mail_out';
-		$sql_array['notes']      = $email_subject;
-		db_perform(TABLE_CONTACTS_LOG, $sql_array, 'insert');
-	  }
-    } // end foreach loop thru possible multiple email addresses
-    return true;
-  }  // end function
-
-  function web_connected($silent = true) {
-    global $messageStack;
-    $web_enabled = false; 
-    $connected = @fsockopen('www.google.com', 80, $errno, $errstr, 20);
-    if ($connected) { 
-      $web_enabled = true; 
-      fclose($connected); 
-    } else {
-	  if (!$silent) $messageStack->add('You are not connected to the internet. Error:' . $errno . ' - ' . $errstr, 'error');
-	}
-    return $web_enabled;   
-  }
-
+	function validate_send_mail($to_name, $to_address, $email_subject, $email_text, $from_email_name, $from_email_address, $block = array(), $attachments_list = '' ) {
+    	global $db, $messageStack;
+    	try{
+	    	// 	check for injection attempts. If new-line characters found in header fields, simply fail to send the message
+    		foreach(array($from_email_address, $to_address, $from_email_name, $to_name, $email_subject) as $key => $value) {
+      			if (!$value) continue;
+	  			if (strpos("\r", $value) !== false || strpos("\n", $value) !== false) throw new \Exception("There are new line or line return chariters the adresses or the subject.");
+	    	}
+		    // if no text or html-msg supplied, exit
+	    	if (!gen_not_null($email_text) && !gen_not_null($block['EMAIL_MESSAGE_HTML'])) throw new \Exception("There is no text in your email.");
+	    	// if email name is same as email address, use the Store Name as the senders 'Name'
+	    	if ($from_email_name == $from_email_address) $from_email_name = COMPANY_NAME;
+		    // loop thru multiple email recipients if more than one listed  --- (esp for the admin's "Extra" emails)...
+	    	foreach(explode(',', $to_address) as $key => $to_email_address) {
+		    	//define some additional html message blocks available to templates, then build the html portion.
+	      		if ($block['EMAIL_TO_NAME'] == '')      $block['EMAIL_TO_NAME']      = $to_name;
+	      		if ($block['EMAIL_TO_ADDRESS'] == '')   $block['EMAIL_TO_ADDRESS']   = $to_email_address;
+	      		if ($block['EMAIL_SUBJECT'] == '')      $block['EMAIL_SUBJECT']      = $email_subject;
+	      		if ($block['EMAIL_FROM_NAME'] == '')    $block['EMAIL_FROM_NAME']    = $from_email_name;
+	      		if ($block['EMAIL_FROM_ADDRESS'] == '') $block['EMAIL_FROM_ADDRESS'] = $from_email_address;
+	      		$email_html = $email_text;
+	      		//  if ($attachments_list == '') $attachments_list= array();
+	      		// clean up &amp; and && from email text
+	      		while (strstr($email_text, '&amp;&amp;')) $email_text = str_replace('&amp;&amp;', '&amp;', $email_text);
+	      		while (strstr($email_text, '&amp;'))      $email_text = str_replace('&amp;', '&', $email_text);
+	      		while (strstr($email_text, '&&'))         $email_text = str_replace('&&', '&', $email_text);
+	      		// clean up currencies for text emails
+	      		$fix_currencies = explode(":", CURRENCIES_TRANSLATIONS);
+	      		$size = sizeof($fix_currencies);
+	      		for ($i=0, $n=$size; $i<$n; $i+=2) {
+	        		$fix_current = $fix_currencies[$i];
+	        		$fix_replace = $fix_currencies[$i+1];
+	        		if (strlen($fix_current)>0) {
+	          			while (strpos($email_text, $fix_current)) $email_text = str_replace($fix_current, $fix_replace, $email_text);
+	        		}
+	      		}
+	      		// fix double quotes
+	      		while (strstr($email_text, '&quot;')) $email_text = str_replace('&quot;', '"', $email_text);
+	      		// fix slashes
+	      		$email_text = stripslashes($email_text);
+	      		$email_html = stripslashes($email_html);
+	      		// Build the email based on whether customer has selected HTML or TEXT, and whether we have supplied HTML or TEXT-only components
+	      		if (!gen_not_null($email_text)) {
+	        		$text = str_replace('<br[[:space:]]*/?[[:space:]]*>', "\n", $block['EMAIL_MESSAGE_HTML']);
+	        		$text = str_replace('</p>', "</p>\n", $text);
+	        		$text = htmlspecialchars(stripslashes(strip_tags($text)));
+	      		} else {
+	        		$text = strip_tags($email_text);
+	      		}    
+		      	// now lets build the mail object with the phpmailer class
+			  	require_once(DIR_FS_MODULES . 'phreedom/includes/PHPMailer/class.phpmailer.php');
+		      	$mail = new PHPMailer(true);
+		      	$mail->SetLanguage();
+		      	$mail->CharSet =  (defined('CHARSET')) ? CHARSET : "iso-8859-1";
+		      	if ($debug_mode=='on') $mail->SMTPDebug = true;
+		      	if (EMAIL_TRANSPORT=='smtp' || EMAIL_TRANSPORT=='smtpauth') {
+	        		$mail->IsSMTP();                           // set mailer to use SMTP
+	        		$mail->Host = EMAIL_SMTPAUTH_MAIL_SERVER;
+	        		if (EMAIL_SMTPAUTH_MAIL_SERVER_PORT != '25' && EMAIL_SMTPAUTH_MAIL_SERVER_PORT != '') $mail->Port = EMAIL_SMTPAUTH_MAIL_SERVER_PORT;
+	        		if (EMAIL_TRANSPORT=='smtpauth') {
+	          			$mail->SMTPAuth = true;     // turn on SMTP authentication
+	          			$mail->Username = (gen_not_null(EMAIL_SMTPAUTH_MAILBOX)) ? EMAIL_SMTPAUTH_MAILBOX : EMAIL_FROM;  // SMTP username
+	          			$mail->Password = EMAIL_SMTPAUTH_PASSWORD; // SMTP password
+	        		}
+	      		}
+	      		$mail->Subject  = $email_subject;
+	      		$mail->From     = $from_email_address;
+	      		$mail->FromName = $from_email_name;
+	      		$mail->AddAddress($to_email_address, $to_name);
+	      		$mail->AddReplyTo($from_email_address, $from_email_name);
+		  		if (isset($block['EMAIL_CC_ADDRESS'])) $mail->AddCC($block['EMAIL_CC_ADDRESS'], $block['EMAIL_CC_NAME']);
+	      		// 	set proper line-endings based on switch ... important for windows vs linux hosts:
+	      		$mail->LE = (EMAIL_LINEFEED == 'CRLF') ? "\r\n" : "\n";
+	      		$mail->WordWrap = 76;    // set word wrap to 76 characters
+	      		// if mailserver requires that all outgoing mail must go "from" an email address matching domain on server, set it to store address
+	      		if (EMAIL_TRANSPORT=='sendmail-f' || EMAIL_TRANSPORT=='sendmail') {
+		    		$mail->Mailer = 'sendmail';
+	        		$mail->Sender = $mail->From;
+	      		}
+	      		// process attachments
+	      		// Note: $attachments_list array requires that the 'file' portion contains the full path to the file to be attached
+	      		if (EMAIL_ATTACHMENTS_ENABLED && gen_not_null($attachments_list) ) {
+	        		$mail->AddAttachment($attachments_list['file']);          // add attachments
+	      		} //endif attachments
+	      		if (EMAIL_USE_HTML && trim($email_html) != '' && ADMIN_EXTRA_EMAIL_FORMAT == 'HTML') {
+	        		$mail->IsHTML(true);           // set email format to HTML
+	        		$mail->Body    = $email_html;  // HTML-content of message
+	        		$mail->AltBody = $text;        // text-only content of message
+	      		}  else {                        // use only text portion if not HTML-formatted
+	        		$mail->Body    = $text;        // text-only content of message
+	      		}
+	      		$mail->Send();
+	      		$temp = $db->Execute("select address_id, ref_id from " . TABLE_ADDRESS_BOOK . " where email ='".$to_email_address."' and ref_id <> 0");
+				$sql_data_array['address_id_from'] 	= $temp->fields['address_id'];
+				$ref_id = $temp->fields['ref_id'];
+				$temp = $db->Execute("select address_id, ref_id from " . TABLE_ADDRESS_BOOK . " where email ='".$from_email_address."'");
+				$sql_data_array['address_id_to'] 	= $temp->fields['address_id'];
+				$sql_data_array['Message'] 		= $text;
+				$sql_data_array['Message_html']	= $email_html;
+				//$sql_data_array['IDEmail'] 		= $email['message_id'];?? Rene Unknown
+				$sql_data_array['EmailFrom']	= $from_email_address;
+				$sql_data_array['EmailFromP']	= $from_email_name;
+				$sql_data_array['EmailTo']		= $to_name;
+				$sql_data_array['Account']		= $from_email_address;
+				$sql_data_array['DateE']		= date("Y-m-d H:i:s");
+				$sql_data_array['DateDb'] 		= date("Y-m-d H:i:s");
+				$sql_data_array['Subject']		= $email_subject;
+				//$sql_data_array['MsgSize'] 		= $email["SIZE"];?? Rene Unknown
+		  		if(db_table_exists(TABLE_PHREEMAIL)) db_perform(TABLE_PHREEMAIL, $sql_data_array, 'insert');  		
+		  		// save in crm_notes
+				$temp = $db->Execute("select account_id from " . TABLE_USERS . " where admin_email = '" . $from_email_address . "'");
+				$sql_array['contact_id'] = $ref_id;
+				$sql_array['log_date']   = $sql_data_array['DateE'];
+				$sql_array['entered_by'] = $temp->fields['account_id'];
+				$sql_array['action']     = 'mail_out';
+				$sql_array['notes']      = $email_subject;
+				db_perform(TABLE_CONTACTS_LOG, $sql_array, 'insert');
+    		} // end foreach loop thru possible multiple email addresses
+    		return true;
+         }catch(Exception $e) {
+      		$messageStack->add(sprintf(EMAIL_SEND_FAILED . '&nbsp;'. $mail->ErrorInfo, $to_name, $to_email_address, $email_subject),'error');
+	  		$messageStack->add($e->getMessage(), $e->getCode());
+		}
+    
+	}  // end function
 /**************************************************************************************************************/
 // Section 7. Password Functions
 /**************************************************************************************************************/
-function pw_validate_password($plain, $encrypted) {
-  if (gen_not_null($plain) && gen_not_null($encrypted)) {
-// split apart the hash / salt
-    $stack = explode(':', $encrypted);
-    if (sizeof($stack) != 2) return false;
-    if (md5($stack[1] . $plain) == $stack[0]) {
-      return true;
-    }
-  }
-  return false;
-}
 
-function pw_validate_encrypt($plain) {
-  global $db;
-  if (gen_not_null($plain)) {
-    $sql = "select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = 'ENCRYPTION_VALUE'";
-    $result = $db->Execute($sql);
-    $encrypted = $result->fields['configuration_value'];
-    $stack = explode(':', $encrypted);
-    if (sizeof($stack) != 2) return false;
-    if (md5($stack[1] . $plain) == $stack[0]) return true;
-  }
-  return false;
-}
-
-function pw_encrypt_password($plain) {
-  $password = '';
-  for ($i=0; $i<10; $i++) {
-    $password .= general_rand();
-  }
-  $salt = substr(md5($password), 0, 2);
-  $password = md5($salt . $plain) . ':' . $salt;
-  return $password;
-}
-
-function pw_create_random_value($length = 12) {
-  $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
-  $chars_length = (strlen($chars) - 1);
-  $string = $chars{rand(0, $chars_length)};
-  for ($i = 1; $i < $length; $i = strlen($string)) {
-	$r = $chars{rand(0, $chars_length)};
-	if ($r != $string{$i - 1}) $string .=  $r;
-  }
-  return $string;
+function pw_validate_encrypt($plain) {//@todo hoe anders is deze functie
+  	global $db;
+	if (gen_not_null($plain)) {
+	    $sql = "select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = 'ENCRYPTION_VALUE'";
+	    $result = $db->Execute($sql);
+	    $encrypted = $result->fields['configuration_value'];
+	    $stack = explode(':', $encrypted);
+	    if (sizeof($stack) != 2) trigger_error("the stack hasn't got size 2", E_USER_ERROR);
+	    if (md5($stack[1] . $plain) == $stack[0]) return true;
+	}
+  	throw new \Exception(ERROR_WRONG_ENCRYPT_KEY);
 }
 
 /**************************************************************************************************************/
 // Section 8. Conversion Functions
 /**************************************************************************************************************/
-function createXmlHeader($type = '') {
+function createXmlHeader() {
 	header("Content-Type: text/xml");
 	if (!defined("CHARSET")) define("CHARSET", "UTF-8");
 	$str = "<?xml version=\"1.0\" encoding=\"" . CHARSET . "\" standalone=\"yes\"?>\n";
@@ -1812,7 +1646,10 @@ function createXmlHeader($type = '') {
 }
 
 function createXmlFooter() {
-	return "</data>\n";
+	global $messageStack;
+	$xml  = $messageStack->output_xml();
+	$xml .=  "</data>\n"; 
+	return $xml;
 }
 
 //encases the data in its xml tags and CDATA declaration
@@ -1829,11 +1666,11 @@ function xmlEntry($key, $data, $ignore = NULL) {
 }
 
 function xml_to_object($xml = '') {
-  global $messageStack;
   $xml     = trim($xml);
   if ($xml == '') return '';
-  $output  = new objectInfo();
+  $output  = new \core\classes\objectInfo();
   $runaway = 0;
+  if( strlen(substr($xml, 0,strpos($xml, '<?xml'))) != 0) throw new \Exception("There is a unforseen error on the other side: " . substr($xml, 0,strpos($xml, '<?xml')));
   while (strlen($xml) > 0) {
 	if (strpos($xml, '<?xml') === 0) { // header xml, ignore
 	  $xml = trim(substr($xml, strpos($xml, '>') + 1));
@@ -1870,12 +1707,11 @@ function xml_to_object($xml = '') {
 	  }
 	  // TBD, the attr array is set but how to add to output?
 	  if (!$selfclose && strpos($xml, $end_tag) === false) {
-	    $messageStack->add('PhreeBooks XML parse error looking for end tag: ' . $tag . ' but could not find it!','error');
-	    return false;
+	  	throw new \Exception('PhreeBooks XML parse error looking for end tag: ' . $tag . ' but could not find it!');
 	  }
 	  while(true) {
 		$runaway++;
-		if ($runaway > 10000) return $messageStack->add('Runaway counter 1 reached. There is an error in the xml entry!','error');	
+		if ($runaway > 10000) throw new \Exception('PhreeBooks Runaway counter 1 reached. There is an error in the xml entry!');	
 		$data = $selfclose ? '' : trim(substr($xml, $taglen, strpos($xml, $end_tag) - $taglen));
 		if (isset($output->$tag)) {
 		  if (!is_array($output->$tag)) $output->$tag = array($output->$tag);
@@ -1891,7 +1727,7 @@ function xml_to_object($xml = '') {
 	  return $xml;
 	}
 	$runaway++;
-	if ($runaway > 10000) $messageStack->add('Runaway counter 2 reached. There is an error in the xml entry!','error');	
+	if ($runaway > 10000) throw new \Exception('Phreebooks Runaway counter 2 reached. There is an error in the xml entry!');	
   }
   return $output;
 }
@@ -1919,19 +1755,6 @@ function object_to_xml($params, $multiple = false, $multiple_key = '', $level = 
   return $output;
 }
 
-function array_to_object($arr = array()) {
-  if (!is_array($arr)) return $arr;
-  $output = new objectInfo();
-  foreach ($arr as $key => $value) {
-    if (is_array($value)) {
-	  $output->$key = array_to_object($value);
-	} else {
-	  $output->$key = $value;
-	}
-  }
-  return $output;
-}
-
 function csv_string_to_array($str = '') {
   $results = preg_split("/,(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))/", trim($str));
   return preg_replace("/^\"(.*)\"$/", "$1", $results);
@@ -1942,12 +1765,12 @@ function csv_string_to_array($str = '') {
 /**************************************************************************************************************/
 
 function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext) {
-	global $messageStack;
     if (!(error_reporting() & $errno)) {
         // This error code is not included in error_reporting
         return;
     }
     $temp = '';
+    $type = 'error';
 	if(isset($_SESSION['admin_id'])) $temp = " User: " . $_SESSION['admin_id'];
 	if(isset($_SESSION['company'])) $temp .= " Company: " . $_SESSION['company'];
     switch ($errno) {
@@ -1958,11 +1781,17 @@ function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext
     		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
     		if ($_POST['page'] == 'ajax' || $_GET['page'] == 'ajax'){
                 echo createXmlHeader() . xmlEntry('error', "Sorry! FATAL RUN-TIME ERROR. We encounterd the following error: $errstr.  and had to cancel the script") . createXmlFooter();
+               	ob_end_flush();
+  				session_write_close();
                 die();
                 break;  
             }
+            ob_clean();
     		header('HTTP/1.1 500 Internal Server Error'); 
-    		die("<h1>Sorry! 1 FATAL RUN-TIME ERROR</h1> <p>We encounterd the following error:<br/> $errstr. <br/><br/> and had to cancel the script.</p>");
+    		echo("<h1>Sorry! 1 FATAL RUN-TIME ERROR</h1> <p>We encounterd the following error:<br/> $errstr. <br/><br/> and had to cancel the script.</p>");
+    		ob_end_flush();
+  			session_write_close();
+    		die();
 	        break;
     	case E_WARNING: //2
     		$text  = date('Y-m-d H:i:s') . $temp;
@@ -1977,15 +1806,17 @@ function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext
         case E_NOTICE: //8
         	$text  = date('Y-m-d H:i:s') . $temp;
     		$text .= " RUN-TIME NOTICE:  '$errstr' line $errline in file $errfile";
-    		if(!defined('DEBUG') || DEBUG == true) error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
         	break;
         case E_CORE_ERROR: //16
         	$text  = date('Y-m-d H:i:s') . $temp;
     		$text .= " FATAL ERROR THAT OCCURED DURING PHP's INITIAL STARTUP: '$errstr' Fatal error on line $errline in file $errfile, PHP " . PHP_VERSION . " (" . PHP_OS . ") Aborting...";
     		//error_log($text, 1, "operator@example.com");
     		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    		ob_clean();
     		header('HTTP/1.1 500 Internal Server Error');
-    		die("<h1>Sorry! 16 FATAL ERROR THAT OCCURED DURING PHP's INITIAL STARTUP</h1> <p>We encounterd the following error:<br/> $errstr. <br/><br/> and had to cancel the script.</p>");
+    		echo("<h1>Sorry! 16 FATAL ERROR THAT OCCURED DURING PHP's INITIAL STARTUP</h1> <p>We encounterd the following error:<br/> $errstr. <br/><br/> and had to cancel the script.</p>");
+    		die();
 	        break;
         case E_CORE_WARNING: //32
         	$text  = date('Y-m-d H:i:s') . $temp;
@@ -1997,13 +1828,17 @@ function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext
     		$text .= " FATAL COMPILE-TIME ERROR: '$errstr' Fatal error on line $errline in file $errfile, PHP " . PHP_VERSION . " (" . PHP_OS . ") Aborting...";
     		//error_log($text, 1, "operator@example.com");
     		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    		ob_clean();
     		if ($_POST['page'] == 'ajax' || $_GET['page'] == 'ajax'){
                 echo createXmlHeader() . xmlEntry('error', "Sorry! FATAL COMPILE-TIME ERROR. We encounterd the following error: $errstr.  and had to cancel the script") . createXmlFooter();
                 die();
                 break;  
             }
     		header('HTTP/1.1 500 Internal Server Error');
-    		die("<h1>Sorry! 64 FATAL COMPILE-TIME ERROR</h1> <p>We encounterd the following error:<br/> $errstr. <br/><br/> and had to cancel the script.</p>");
+    		echo("<h1>Sorry! 64 FATAL COMPILE-TIME ERROR</h1> <p>We encounterd the following error:<br/> $errstr. <br/><br/> and had to cancel the script.</p>");
+    		ob_end_flush();
+  			session_write_close();
+    		die();
 	        break;
         case E_COMPILE_WARNING: //128
         	$text  = date('Y-m-d H:i:s') . $temp;
@@ -2016,23 +1851,33 @@ function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext
     		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
     		//error_log($text, 1, "operator@example.com");
     		if ($_POST['page'] == 'ajax' || $_GET['page'] == 'ajax'){
+    			ob_clean();
                 echo createXmlHeader() . xmlEntry('error', "Sorry! User Error. We encounterd the following error: $errstr.  and had to cancel the script") . createXmlFooter();
+                ob_end_flush();
+  				session_write_close();
                 die();
                 break;  
             }
-    		$messageStack->add($errstr, 'error');
-    		//header('HTTP/1.1 500 Internal Server Error');
-    		//die("<h1>Sorry! 256 User Error</h1> <p>We encounterd the following error:<br/> $errstr. <br/><br/> and had to cancel the script.</p>");
+    		ob_clean();
+    		header('HTTP/1.1 500 Internal Server Error');
+			echo "<h1>Sorry! 256 User Error</h1> <p>We encounterd the following error:<br/> $errstr. <br/><br/> and had to cancel the script.</p><br/>";
+			log_trace();
+    		$_SESSION['messageToStack'][] = array('type' => $type, 'params' => 'class="ui-state-error"', 'text' => $errstr, 'message' => $errstr);
+    		ob_end_flush();
+  			session_write_close();
+    		die();
 	        break;
     	case E_USER_WARNING: //512
     		$text  = date('Y-m-d H:i:s') . $temp;
     		$text .= " USER WARNING: '$errstr' line $errline in file $errfile";
     		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    		$_SESSION['messageToStack'][] = array('type' => $type, 'params' => 'class="ui-state-highlight"', 'text' => $errstr, 'message' => $errstr);
         	break;
     	case E_USER_NOTICE: //1024
     		$text  = date('Y-m-d H:i:s') . $temp;
     		$text .= " USER NOTICE:  '$errstr' line $errline in file $errfile";
     		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    		$_SESSION['messageToStack'][] = array('type' => $type, 'params' => 'class="ui-state-highlight"', 'text' => $errstr, 'message' => $errstr);
         	break;
     	case E_RECOVERABLE_ERROR : //4096
     		$text  = date('Y-m-d H:i:s') . $temp;
@@ -2059,36 +1904,70 @@ function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext
     return true;
 }
 
+function log_trace() {
+    $trace = debug_backtrace();
+    $caller = array_shift($trace);
+    $function_name = $caller['function'];
+    error_log(sprintf('%s: Called from %s:%s', $function_name, $caller['file'], $caller['line']) . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    echo sprintf('%s: Called from %s:%s', $function_name, $caller['file'], $caller['line']) . "<br/>";
+    foreach ($trace as $entry_id => $entry) {
+        $entry['file'] = $entry['file'] ? : '-';
+        $entry['line'] = $entry['line'] ? : '-';
+        if (empty($entry['class'])) {
+            error_log(sprintf('%s %3s. %s() %s:%s', $function_name, $entry_id + 1, $entry['function'], $entry['file'], $entry['line']) . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+		echo sprintf('%s %3s. %s() %s:%s', $function_name, $entry_id + 1, $entry['function'], $entry['file'], $entry['line']) . "<br/>";
+        } else {
+            error_log(sprintf('%s %3s. %s->%s() %s:%s', $function_name, $entry_id + 1, $entry['class'], $entry['function'], $entry['file'], $entry['line']) . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+		echo sprintf('%s %3s. %s->%s() %s:%s', $function_name, $entry_id + 1, $entry['class'], $entry['function'], $entry['file'], $entry['line']) . "<br/>";
+        }
+    }
+} 
+
 function PhreebooksExceptionHandler($exception) {
-	global $messageStack;
-	if ($_POST['page'] == 'ajax' || $_GET['page'] == 'ajax'){
-    	echo createXmlHeader() . xmlEntry('error', "Exception: " . $exception->getMessage()) . createXmlFooter();
+	ob_clean();
+  	$text  = date('Y-m-d H:i:s') . " User: " . $_SESSION['admin_id'] . " Company: " . $_SESSION['company'] ;
+    $text .= " Uncaught Exception: '" . $exception->getMessage() . "' line " . $exception->getLine() . " in file " . $exception->getFile();
+    error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+	if ($_REQUEST['page'] == 'ajax'){
+    	echo createXmlHeader() . createXmlFooter();
+    	ob_end_flush();
+  		session_write_close();
         die();
     }
-    $messageStack->add($exception->getMessage(), 'error');
-  	$text  = date('Y-m-d H:i:s') . " User: " . $_SESSION['admin_id'] . " Company: " . $_SESSION['company'] ;
-    $text .= " Exception: '" . $exception->getMessage() . "' line " . $exception->getLine() . " in file " . $exception->getFile();
-    if(DEBUG) error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    header('HTTP/1.1 500 Internal Server Error');
+    echo " Uncaught Exception<br/>'" . $exception->getMessage() . "'<br/>line: " . $exception->getLine() . "<br/>file: " . $exception->getFile();
+    echo "<br>trace:<br/>". $exception->getTraceAsString();
+	ob_end_flush();
+  	session_write_close();
+	die;    //@todo maken van UserVisuableException(evt loggen in construct.), InternalException optie = }catch(UserVisuableException $e){return to template...}catch(Exception $e){return to main. }catch(Exception $e){return to error page.} 
+// added a if to prevent circulair page loading
+//	if ($_SERVER['REQUEST_URI'] != FILENAME_DEFAULT)    gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL'));
 }
 
-function Phreebooks_autoloader($class){
-	if(class_exists($class)) print("class is geladen $class");
-	$class = str_replace("\\", "/", $class);
-	$path = explode("/", $class, 2);
-	if($path[0] == 'core'){
-		print(DIR_FS_ADMIN."includes/classes/$path[1].php<br/>");
-		if (file_exists(DIR_FS_ADMIN."includes/classes/$path[1].php"))
-		require_once DIR_FS_ADMIN."includes/classes/$path[1].php";	
+function Phreebooks_autoloader($temp){ 
+	$class = str_replace("\\", "/", $temp);
+	$path  = explode("/", $class, 3);
+	if ($path[0] == 'core'){
+		gen_pull_language('phreedom'); //always load the main language file
+		// if it is a method or dashboard load those language files as well.
+		if ( in_array($path[1], array('methods','dashboards'))) load_method_language(DIR_FS_ADMIN."modules/$path[0]/$path[1]", $path[2]);
+		$file = DIR_FS_ADMIN."includes/$path[1]/$path[2].php";
+		include_once (DIR_FS_ADMIN."includes/$path[1]/$path[2].php");
 	}else{
-		if (file_exists(DIR_FS_ADMIN."modules/$path[0]/custom/classes/$path[1].php")){
-			print((DIR_FS_ADMIN."modules/$path[0]/custom/classes/$path[1].php<br/>"));
-			require_once DIR_FS_ADMIN."modules/$path[0]/custom/classes/$path[1].php";
-		}else{
-			print("$class<br/>");
-			print((DIR_FS_ADMIN."modules/$path[0]/classes/$path[1].php<br/>"));
-			require_once DIR_FS_ADMIN."modules/$path[0]/classes/$path[1].php";
+		gen_pull_language($path[0], 'admin');
+		gen_pull_language($path[0]); //always load the main language file
+		// if it is a method or dashboard load those language files as well.
+		if ( in_array($path[1], array('methods','dashboards'))) load_method_language(DIR_FS_ADMIN."modules/$path[0]/$path[1]", $path[2]);
+		if (file_exists(DIR_FS_ADMIN."modules/$path[0]/custom/$path[1]/$path[2].php")){
+			$file = DIR_FS_ADMIN."modules/$path[0]/custom/$path[1]/$path[2].php";
+			include_once(DIR_FS_ADMIN."modules/$path[0]/custom/$path[1]/$path[2].php");
+		} else {
+			$file = DIR_FS_ADMIN."modules/$path[0]/$path[1]/$path[2].php";
+			include_once(DIR_FS_ADMIN."modules/$path[0]/$path[1]/$path[2].php");
 		}
 	}
-	
+	if (!class_exists($temp, false)) {
+        trigger_error("Unable to load module = $path[0] <br/>$path[1] = $path[2]<br/> called = $temp<br/>file = $file", E_USER_ERROR);
+    }
 }
 ?>

@@ -31,9 +31,9 @@ switch (JOURNAL_ID) {
   case 18: $security_token = SECURITY_ID_CUSTOMER_RECEIPTS;  break;
   case 20: $security_token = SECURITY_ID_PAY_BILLS;          break;
   default:
-    die('Bad or missing journal id found (filename: modules/phreebooks/status.php), Journal_ID needs to be passed to this script to identify the correct procedure.');
+    trigger_error('Bad or missing journal id found (filename: modules/phreebooks/status.php), Journal_ID needs to be passed to this script to identify the correct procedure.', E_USER_ERROR);
 }
-$security_level = validate_user($security_token);
+$security_level = \core\classes\user::validate($security_token);
 /**************  include page specific files    *********************/
 require(DIR_FS_WORKING . 'defaults.php');
 require(DIR_FS_WORKING . 'functions/phreebooks.php');
@@ -54,8 +54,7 @@ switch ($_REQUEST['action']) {
   case 'dn_attach':
 	$oID = db_prepare_input($_POST['rowSeq']);
 	if (file_exists(PHREEBOOKS_DIR_MY_ORDERS . 'order_' . $oID . '.zip')) {
-	  require_once(DIR_FS_MODULES . 'phreedom/classes/backup.php');
-	  $backup = new backup();
+	  $backup = new \phreedom\classes\backup();
 	  $backup->download(PHREEBOOKS_DIR_MY_ORDERS, 'order_' . $oID . '.zip', true);
 	}
 	die;
@@ -118,7 +117,6 @@ switch (JOURNAL_ID) {
 	break;
   case 12:	// Invoice Journal
 	if (defined('MODULE_SHIPPING_STATUS')) {
-	  $shipping_modules = load_all_methods('shipping');
 	  $heading_array['shipper_code'] = TEXT_CARRIER;
 	}
 	define('POPUP_FORM_TYPE','cust:inv');
@@ -161,11 +159,11 @@ $query_raw    = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " f
 	where journal_id = " . JOURNAL_ID . $period_filter . $search . " order by $disp_order, purchase_invoice_id DESC";
 $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 // the splitPageResults should be run directly after the query that contains SQL_CALC_FOUND_ROWS
-$query_split  = new splitPageResults($_REQUEST['list'], '');
+$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results
 	$_REQUEST['list'] = $query_split->current_page_number;
 	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-	$query_split  = new splitPageResults($_REQUEST['list'], '');
+	$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 }
 history_save('pb'.JOURNAL_ID);
 

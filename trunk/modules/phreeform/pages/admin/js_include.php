@@ -23,9 +23,6 @@
 // pass any php variables generated during pre-process that are used in the javascript functions.
 // Include translations here as well.
 function init() {
-	$(function() {
-		$('#admintabs').tabs();
-	});
 }
 
 function check_form() {

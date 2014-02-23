@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/import_bank/pages/admin/template_tab_kt.php
 //
-$kt_toolbar = new toolbar();
+$kt_toolbar = new \core\classes\toolbar();
 $kt_toolbar->icon_list['cancel']['show'] = false;
 $kt_toolbar->icon_list['open']['show']   = false;
 $kt_toolbar->icon_list['delete']['show'] = false;
@@ -24,7 +24,7 @@ $kt_toolbar->icon_list['save']['show']   = false;
 $kt_toolbar->icon_list['print']['show']  = false;
 if ($security_level > 1) $kt_toolbar->add_icon('new', 'onclick="loadPopUp(\'known_transactions_new\', 0)"', $order = 10);
 ?>
-<div id="tab_kt">
+<div title="<?php echo TEXT_KNOWN_TRANSACTION;?>" id="tab_kt">
   <?php echo $kt_toolbar->build_toolbar(); ?>
   <h1><?php echo $kt->title; ?></h1>
   <div id="kt_content"><?php echo $kt->build_main_html(); ?></div>

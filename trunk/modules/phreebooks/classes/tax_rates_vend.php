@@ -17,9 +17,8 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/classes/tax_rates_vend.php
 //
-require_once(DIR_FS_MODULES . 'phreebooks/classes/tax_rates.php');
-
-class tax_rates_vend extends tax_rates {
+namespace phreebooks\classes;
+class tax_rates_vend extends \phreebooks\classes\tax_rates {
 	public $code        = 'tax_rates_vend'; // needs to match class name
     public $help_path   = '07.08.03.02';
     public $type        = 'v'; // choices are c for customers and v for vendors

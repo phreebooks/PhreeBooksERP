@@ -20,7 +20,7 @@
 
 /**************   Check user security   *****************************/
 $xml = NULL;
-$security_level = validate_ajax_user();
+$security_level = \core\classes\user::validate();
 /**************   include page specific files   *********************/
 /**************   page specific initialization  *********************/
 $gl_acct = db_prepare_input($_GET['glAcct']);
@@ -29,8 +29,10 @@ $error   = false;
 $result  = $db->Execute("select period, start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . " 
 	where fiscal_year = '" . ($fy - 1) . "' order by period");
 if ($result->RecordCount() == 0) { // no earlier data found
-  echo createXmlHeader() . xmlEntry('error', ERROR_NO_GL_ACCT_INFO) . createXmlFooter();
-  die;
+  	echo createXmlHeader() . xmlEntry('error', ERROR_NO_GL_ACCT_INFO) . createXmlFooter();
+  	ob_end_flush();
+	session_write_close();
+  	die;
 }
 $periods = array();
 while (!$result->EOF) {
@@ -47,5 +49,7 @@ while (!$result->EOF) {
 }
 
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

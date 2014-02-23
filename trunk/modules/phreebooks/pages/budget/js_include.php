@@ -97,7 +97,7 @@ function fetchAcct() {
     url: 'index.php?module=phreebooks&page=ajax&op=load_gl_data&glAcct='+gl_acct+'&fy='+fy,
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-      alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     },
 	success: processLoadAccount
   });

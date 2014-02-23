@@ -18,7 +18,7 @@
 //  Path: /modules/contacts/pages/popup_terms/pre_process.php
 //
 
-$security_level = validate_user(0, true);
+$security_level = \core\classes\user::validate(0, true);
 /**************  include page specific files    *********************/
 /**************   page specific initialization  *************************/
 $account_type = (isset($_GET['type']) ? $_GET['type'] : 'c');	// current types are c (customer) and v (vendor)

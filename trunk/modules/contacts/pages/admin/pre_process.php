@@ -16,33 +16,24 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/contacts/pages/admin/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_CONFIGURATION);
+$security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 /**************  include page specific files    *********************/
 gen_pull_language($module, 'admin');
 gen_pull_language('phreedom', 'admin');
 require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
-require_once(DIR_FS_WORKING . 'classes/install.php');
-require_once(DIR_FS_WORKING . 'classes/departments.php');
-require_once(DIR_FS_WORKING . 'classes/dept_types.php');
-require_once(DIR_FS_WORKING . 'classes/project_costs.php');
-require_once(DIR_FS_WORKING . 'classes/project_phases.php');
-require_once(DIR_FS_WORKING . 'classes/contact_tabs.php');
-require_once(DIR_FS_WORKING . 'classes/contact_fields.php');
 /**************   page specific initialization  *************************/
-$error          = false; 
-$install        = new contacts_admin();
-$departments    = new departments();
-$dept_types     = new dept_types();
-$project_costs  = new project_costs();
-$project_phases = new project_phases();
-$tabs           = new contact_tabs();
-$fields         = new contact_fields();
+$departments    = new \contacts\classes\departments();
+$dept_types     = new \contacts\classes\dept_types();
+$project_costs  = new \contacts\classes\project_costs();
+$project_phases = new \contacts\classes\project_phases();
+$tabs           = new \contacts\classes\tabs();
+$fields         = new \contacts\classes\fields();
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save':
-	validate_security($security_level, 3);
-  	foreach ($install->keys as $key => $default) {
+	\core\classes\user::validate_security($security_level, 3);
+  	foreach ($admin_classes['contacts']->keys as $key => $default) {
 	  $field = strtolower($key);
       if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
     }
@@ -50,7 +41,7 @@ switch ($_REQUEST['action']) {
 	$messageStack->add(CONTACTS_CONFIG_SAVED,'success');
     break;
   case 'delete':
-	validate_security($security_level, 4);
+	\core\classes\user::validate_security($security_level, 4);
     $subject = $_POST['subject'];
     $id      = $_POST['rowSeq'];
 	if (!$subject || !$id) break;

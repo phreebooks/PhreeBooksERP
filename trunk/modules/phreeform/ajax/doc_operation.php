@@ -19,14 +19,14 @@
 //
 /**************   Check user security   *****************************/
 $xml = NULL;
-$security_level = validate_ajax_user(SECURITY_ID_PHREEFORM);
+$security_level = \core\classes\user::validate(SECURITY_ID_PHREEFORM);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
 
 /**************   page specific initialization  *************************/
 $id     = (int)$_GET['id'];
 
-if (!isset($_GET['id'])) die;
+if (!isset($_GET['id'])) throw new Exception("variable ID isn't set");
 $doc_details = $db->Execute("select * from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
 switch ($_REQUEST['action']) {
   case 'bookmark':
@@ -65,12 +65,15 @@ switch ($_REQUEST['action']) {
 	$id = $doc_details->fields['parent_id']; // set the id to the parent to display refreshed page
 	$ajax_text = PHREEFORM_JS_RPT_DELETED;
 	break;
-  default: die;
+  default: 
+  	throw new Exception("don't know action {$_REQUEST['action']}");
 }
 // put the output together
 $xml .= "\t" . xmlEntry("docID", $id);
 $xml .= "\t" . xmlEntry("msg",   $ajax_text);
 
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

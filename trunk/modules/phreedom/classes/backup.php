@@ -17,6 +17,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreedom/classes/backup.php
 //
+namespace phreedom\classes;
 define('lnbr', "\n");
 
 class backup {
@@ -32,20 +33,16 @@ class backup {
   }
 
   function copy_db_table($source_db, $table_list, $type = 'data', $params = '') {
-  	global $messageStack;
     $error = false;
 	if (is_array($table_list)) foreach($table_list as $table) {
 	  if (!$this->dump_db_table($source_db, $table, $type, $params)) return false;
 	  $result = $this->db_executeSql($this->source_dir . $this->source_file);
-	  if (count($result['errors']) > 0) {
-	    return $messageStack->add(SETUP_CO_MGR_ERROR_1,'error');
-	  }
+	  if (count($result['errors']) > 0) throw new \Exception(SETUP_CO_MGR_ERROR_1);
 	}
 	return $error;
   }
 
   function dump_db_table($db, $table = 'all', $type = 'data', $params = '') {
-  	global $messageStack;
 	if ($table == 'all') {
 	  $tables = array();
 	  $table_list = $db->Execute("show tables");
@@ -58,10 +55,7 @@ class backup {
 	}
 	if (!is_dir($this->source_dir)) mkdir($this->source_dir);
 	$handle = @fopen($this->source_dir . $this->source_file, 'w');
-	if ($handle === false) {
-	  $messageStack->add(sprintf(ERROR_ACCESSING_FILE, $this->source_dir . $this->source_file), 'error');
-	  return false;
-	}
+	if ($handle === false) throw new \Exception(sprintf(ERROR_ACCESSING_FILE, $this->source_dir . $this->source_file));
 	foreach ($tables as $table) {
 	  $query  = '';
 	  if ($type == 'structure' || $type == 'both') { // build the table create sql
@@ -106,12 +100,10 @@ class backup {
   }
 
   function make_zip($type = 'file', $localname = NULL, $root_folder = '/') {
-    global $messageStack;
-    $error = false;
-	if (!class_exists('ZipArchive')) return $messageStack->add(GEN_BACKUP_NO_ZIP_CLASS, 'error');
-	$zip = new ZipArchive;
+	if (!class_exists('ZipArchive')) throw new \Exception(GEN_BACKUP_NO_ZIP_CLASS);
+	$zip = new \ZipArchive;
 	$res = $zip->open($this->dest_dir . $this->dest_file, ZipArchive::CREATE);
-	if ($res !== true) return $messageStack->add(GEN_BACKUP_FILE_ERROR . $this->dest_dir, 'error');
+	if ($res !== true) throw new \Exception(GEN_BACKUP_FILE_ERROR . $this->dest_dir);
 	if ($type == 'file') {
 	  $zip->addFile($this->source_dir . $this->source_file, $localname);
 	} else { // compress all
@@ -136,7 +128,7 @@ class backup {
     $error = false;
     if (!$dest_path) $dest_path = $this->dest_dir;
 	if (!file_exists($file)) $error = true;
-	$zip = new ZipArchive;
+	$zip = new \ZipArchive;
     $zip->open($file);
     $zip->extractTo($dest_path);
     $zip->close();
@@ -144,9 +136,7 @@ class backup {
   }
 
   function make_bz2($type = 'file') {
-    global $messageStack;
-    $error = false;
-	unset($output);
+  	unset($output);
 	if ($type == 'file') {
 	  $this->backup_mime = 'application/x-bz2';
 	  exec("cd " . $this->source_dir . "; nice -n 19 bzip2 -k " . $this->source_file . " 2>&1", $output, $res);
@@ -155,25 +145,16 @@ class backup {
 	  $this->backup_mime = 'application/x-tar';
 	  exec("cd " . $this->source_dir . "; nice -n 19 tar -jcf " . $this->dest_dir . $this->dest_file . " " . $this->source_dir . " 2>&1", $output, $res);
 	}
-	if ($res > 0) {
-	  $messageStack->add(ERROR_COMPRESSION_FAILED . implode(": ", $output), 'error');
-	  $error = true;
-	}
-	return $error;
+	if ($res > 0) throw new \Exception(ERROR_COMPRESSION_FAILED . implode(": ", $output));
   }
 
   function download($path, $filename, $save_source = false) {
-    global $messageStack;
-	$error = false;
 	$source_file = $path . $filename;
 	$handle      = fopen($source_file, "rb");
 	$contents    = fread($handle, filesize($source_file));
 	fclose($handle);
 	if (!$save_source) unlink($source_file);
-	if (strlen($contents) == 0) {
-	  $error = $messageStack->add(GEN_BACKUP_DOWNLOAD_EMPTY, 'caution');
-	  return;
-	}
+	if (strlen($contents) == 0) throw new \Exception(GEN_BACKUP_DOWNLOAD_EMPTY); //@todo caution code
 	header("Content-type: " . $this->backup_mime);
 	header("Content-disposition: attachment; filename=" . $filename . "; size=" . strlen($contents));
 	header('Pragma: cache');

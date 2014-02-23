@@ -18,7 +18,7 @@
 //
 /**************   Check user security   *****************************/
 $xml = NULL;
-$security_level = validate_ajax_user();
+$security_level = \core\classes\user::validate();
 /**************   page specific initialization  *************************/
 $id = $_GET['id'];
 if (!$id) {

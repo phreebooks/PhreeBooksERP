@@ -1,6 +1,6 @@
 <?php
-require_once(DIR_FS_MODULES . 'inventory/classes/inventory.php');
-class sr extends inventory {//Serialized Item
+namespace inventory\classes\type;
+class sr extends \inventory\classes\inventory {//Serialized Item
 	public $inventory_type			= 'sr';
 	public $title       			= INV_TYPES_SR;
     public $serialize 				= 1;
@@ -10,6 +10,11 @@ class sr extends inventory {//Serialized Item
 	public $cost_method				= 'f';
 	public $posible_cost_methodes   = array('f');
 
+	function __construct(){
+		parent::__construct();
+		$this->tab_list['orderhist'] = array('file'=>'template_tab_hist_sr', 'tag'=>'orderhist', 'order'=>40, 'text'=>'Unit History');
+	}
+	
 	function get_item_by_id($id){
 		parent::get_item_by_id($id);
 		$this->get_sr_list();
@@ -51,6 +56,5 @@ class sr extends inventory {//Serialized Item
     	$sql   = "SELECT ".implode(', ', $field_list)." FROM ".TABLE_JOURNAL_MAIN." m JOIN ".TABLE_JOURNAL_ITEM." i on m.id=i.ref_id
     	WHERE m.journal_id=12 AND i.sku='$this->sku' ORDER BY m.purchase_invoice_id DESC";
     	$this->orderHistory = $db->Execute($sql);
-    	$this->tab_list['orderhist'] = array('file'=>'template_tab_hist_sr', 'tag'=>'orderhist', 'order'=>40, 'text'=>'Unit History');
 	}
 }

@@ -62,7 +62,6 @@ define('TEXT_WO_HISTORY','History (last %s results)');
 define('WO_MESSAGE_BUILDER_ERROR','There was and error adding/updating the work order record. Please check the data and retry.');
 define('WO_ERROR_CANNOT_DELETE_BUILDER','This work order has been used in the system. It cannot be deleted.');
 define('WO_BUILDER_ERROR_DUP_TITLE','The Work Order Title has already been used. Please retry!');
-define('WO_MSG_COPY_INTRO','Please enter the title for the new work order.');
 define('WO_SKU_NOT_FOUND','The SKU entered cannot be found in the inventory database table!');
 define('WO_INSUFFICIENT_INVENTORY','Not enough of the following parts to build the sku entered. The shortages include:');
 define('WO_MESSAGE_SUCCESS_MAIN_UPDATE','The work order record was updated successfully!');

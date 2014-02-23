@@ -27,9 +27,6 @@ var default_country = '<?php echo COMPANY_COUNTRY; ?>';
 var account_type    = '<?php echo $type; ?>';
 
 function init() {
-  $(function() { $('#detailtabs').tabs(); });
-  $('#contact_chart').dialog({ autoOpen:false });
-
 <?php if ($include_template == 'template_main.php') {
  	echo '  document.getElementById("search_text").focus();'  . chr(10); 
   	echo '  document.getElementById("search_text").select();' . chr(10); 
@@ -49,7 +46,7 @@ function check_form() {
   }
   <?php } ?>
   if (error == 1) {
-    alert(error_message);
+	$.messager.alert("Processing error",error_message,"error");
     return false;
   } else {
     return true;
@@ -67,7 +64,7 @@ function loadContacts() {
     url: 'index.php?module=contacts&page=ajax&op=load_contact_info&guess='+guess,
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-      alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     },
 	success: fillContacts
   });

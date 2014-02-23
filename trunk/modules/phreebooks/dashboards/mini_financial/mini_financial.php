@@ -18,15 +18,16 @@
 //
 // Revision history
 // 2011-07-01 - Added version number for revision control
-
-class mini_financial extends ctl_panel {
-	public $dashboard_id 		= 'mini_financial';
+namespace phreebooks\dashboards\mini_financial;
+class mini_financial extends \core\classes\ctl_panel {
+	public $id			 		= 'mini_financial';
 	public $description	 		= CP_MINI_FINANCIAL_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_JOURNAL_ENTRY;
-	public $title		 		= CP_MINI_FINANCIAL_TITLE;
-	public $version      		= 3.5;
+	public $text		 		= CP_MINI_FINANCIAL_TITLE;
+	public $version      		= '3.5';
 	public $size_params			= 0;
 	public $default_params 		= array();
+	public $module_id 			= 'phreebooks';
 
 	function Output($params) {
 		global $db;

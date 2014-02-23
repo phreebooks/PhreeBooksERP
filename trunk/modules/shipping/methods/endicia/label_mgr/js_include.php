@@ -44,7 +44,7 @@ function check_form() {
 	error = 1;
   }
   if (error == 1) {
-    alert(error_message);
+	$.messager.alert('error',error_message,'error');
     return false;
   }
   return true;
@@ -69,7 +69,7 @@ function validateAddress() {
     url: 'index.php?module=shipping&page=ajax&op=shipping&action=validate&method='+method+address,
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-      alert ("Ajax Error: "+XMLHttpRequest.responseText+"\nTextStatus: "+textStatus+"\nErrorThrown: "+errorThrown);
+    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     },
 	success: fillValidate
   });
@@ -111,7 +111,7 @@ function monitorPrinting() {
     } else {
       var e = applet.getException();
       if (e != null) {
-	    alert("Exception occured: " + e.getLocalizedMessage());
+    	$.messager.alert("Exception occured: ", e.getLocalizedMessage(),'error');
 	  } else {
 <?php
 if (sizeof($pdf_list) > 0) {

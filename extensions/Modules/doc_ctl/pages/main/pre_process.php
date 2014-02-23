@@ -16,12 +16,11 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/doc_ctl/pages/main/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_DOC_CONTROL);
+$security_level = \core\classes\user::validate(SECURITY_ID_DOC_CONTROL);
 /**************  include page specific files    *********************/
 require(DIR_FS_WORKING . 'defaults.php');
 require(DIR_FS_WORKING . 'functions/doc_ctl.php');
 /**************   page specific initialization  *************************/
-$error       = false;
 $processed   = false;
 if ($_REQUEST['search_text'] == TEXT_SEARCH) $_REQUEST['search_text'] = '';
 if (!$_REQUEST['action'] && $_REQUEST['search_text'] <> '') $_REQUEST['action'] = 'search'; // if enter key pressed and search not blank
@@ -42,10 +41,7 @@ switch ($_REQUEST['action']) {
 	  elseif (isset($_POST['users']) && $_POST['groups'][0] <> '') $groups = 'g:' . implode(':', $_POST['groups']);
 	$security    = $users . ';' . $groups;
 	// error checking
-	if (!$id) {
-	  $error = true;
-	  break;
-	}
+	if (!$id) throw new \Exception("the id variable ins't defined");
 	// retrieve some information about the document
 	$result   = $db->Execute("select revision from " . TABLE_DC_DOCUMENT . " where id = " . $id);
 	$revision = $result->fields['revision'];
@@ -53,10 +49,7 @@ switch ($_REQUEST['action']) {
 	$new_file = false;
 	if ($_FILES['docfile']['tmp_name']) { // there was an uploaded file
 	  $new_file = true;
-	  if (!dc_validate_upload('docfile')) { 
-	    $error = true;
-		break;
-	  }
+	  dc_validate_upload('docfile');
 	  $file_name = str_pad($id, 8, '0', STR_PAD_LEFT) . '_' . $revision .'.dc';
 	  // if an old file exists, bump the revision
 	  if (file_exists(DOC_CTL_DIR_MY_DOCS . $file_name)) {
@@ -64,10 +57,7 @@ switch ($_REQUEST['action']) {
 		$new_file = false;
 	    $file_name = str_pad($id, 8, '0', STR_PAD_LEFT) . '_' . $revision .'.dc';
 	  }
-	  if (!copy($_FILES['docfile']['tmp_name'], DOC_CTL_DIR_MY_DOCS . $file_name)) {
-	    $error = $messageStack->add(sprintf(DOC_CTL_FILE_WRITE_ERROR, DOC_CTL_DIR_MY_DOCS), 'error');
-	    break;
-	  }
+	  if (!copy($_FILES['docfile']['tmp_name'], DOC_CTL_DIR_MY_DOCS . $file_name)) throw new \Exception(sprintf(DOC_CTL_FILE_WRITE_ERROR, DOC_CTL_DIR_MY_DOCS));
 	}
 	// insert/update db
 	$sql_array = array(
@@ -132,7 +122,7 @@ switch ($_REQUEST['action']) { // figure which detail page to load
 	$field_list = array('id', 'title', 'type');
 	$query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . " from " . TABLE_DC_DOCUMENT . $search;
 	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-	$query_split  = new splitPageResults($_REQUEST['list'], '');
+	$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 	$div_template = DIR_FS_WORKING . 'pages/main/' . ($id ? 'tab_document.php' : 'tab_folder.php');
 	break;
   case 'home':

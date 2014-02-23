@@ -19,19 +19,20 @@
 //
 // Revision history
 // 2011-12-01 - Initial release
-
-class company_notes extends ctl_panel {
-	public $dashboard_id 		= 'company_notes';
+namespace phreedom\dashboards\company_notes;
+class company_notes extends \core\classes\ctl_panel {
+	public $id			 		= 'company_notes';
 	public $description	 		= CP_COMPANY_NOTES_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_PHREEFORM;
-	public $title		 		= CP_COMPANY_NOTES_TITLE;
-	public $version      		= 3.5;
+	public $text		 		= CP_COMPANY_NOTES_TITLE;
+	public $version      		= '3.5';
+	public $module_id 			= 'phreedom';
 	
 	function Install($column_id = 1, $row_id = 0) {
 		global $db;
 		// fetch the pages params to copy to new install
 		$result = $db->Execute("select params from " . TABLE_USERS_PROFILES . "
-		  where menu_id = '".$this->menu_id."' and dashboard_id = '".$this->dashboard_id."'"); // just need one
+		  where menu_id = '".$this->menu_id."' and dashboard_id = '".$this->id."'"); // just need one
 		$this->default_params = unserialize($result->fields['params']);
 		parent::Install($column_id, $row_id);
 	}
@@ -56,7 +57,7 @@ class company_notes extends ctl_panel {
 		  	foreach ($params as $my_note) {
 		    	$contents .= '  <div>';
 				$contents .= '    <div style="float:right; height:16px;">';
-				$contents .= html_icon('phreebooks/dashboard-remove.png', TEXT_REMOVE, 'small', 'onclick="return del_index(\'' . $this->dashboard_id . '\', ' . $index . ')"');
+				$contents .= html_icon('phreebooks/dashboard-remove.png', TEXT_REMOVE, 'small', 'onclick="return del_index(\'' . $this->id . '\', ' . $index . ')"');
 				$contents .= '    </div>' . chr(10);
 				$contents .= '    <div style="min-height:16px;">&#9679; '. $my_note . '</div>' . chr(10);
 		   		$contents .= '  </div>' . chr(10);
@@ -77,7 +78,7 @@ class company_notes extends ctl_panel {
 		// fetch the current params
 		$result = $db->Execute("select params from " . TABLE_USERS_PROFILES . "
 		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "' 
-		  and dashboard_id = '" . $this->dashboard_id . "'");
+		  and dashboard_id = '" . $this->id . "'");
 		if ($remove_id) { // remove element
 		  	$this->params		= unserialize($result->fields['params']);
 		  	$first_part 		= array_slice($this->params, 0, $remove_id - 1);
@@ -90,7 +91,7 @@ class company_notes extends ctl_panel {
 			$this->params[]  	= $my_note;
 		}
 		ksort($this->params);
-		db_perform(TABLE_USERS_PROFILES, array('params' => serialize($this->params)), "update", "menu_id = '".$this->menu_id."' and dashboard_id = '".$this->dashboard_id."'");
+		db_perform(TABLE_USERS_PROFILES, array('params' => serialize($this->params)), "update", "menu_id = '".$this->menu_id."' and dashboard_id = '".$this->id."'");
 	}
 
 }

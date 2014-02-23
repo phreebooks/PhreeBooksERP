@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft, LLC (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -72,7 +72,7 @@ echo $toolbar->build_toolbar();
 <?php echo html_button_field('home', TEXT_HOME, 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, '', 'SSL') . '\'"'); ?><br/><br/>
 <?php echo html_button_field('open_sales', POS_PRINT_OTHER,'onclick="OpenOrdrList(this)"');?><br/><br/>
 <?php echo html_button_field('other_trans', TEXT_OTHER_TRANS,'onclick="ShowOtherTrans()"');?><br/><br/>
-<?php if(in_array($_SESSION['admin_security'][SECURITY_ID_POS_CLOSING], array(1,2,3,4))) echo html_button_field('close_till', POS_HEADING_CLOSING, 'onclick="CloseTill()"' ).'<br/><br/>'; ?>
+<?php if(in_array(\core\classes\user::security_level(SECURITY_ID_POS_CLOSING), array(1,2,3,4))) echo html_button_field('close_till', POS_HEADING_CLOSING, 'onclick="CloseTill()"' ).'<br/><br/>'; ?>
 </div>
 <fieldset id="search_part">
 	<ol>
@@ -87,39 +87,39 @@ echo $toolbar->build_toolbar();
 		echo '<li><label>' . TEXT_EXCHANGE_RATE . ' ' . html_input_field('currencies_value', $order->currencies_value, 'readonly="readonly"'). '</label></li>'; 
  } ?>
  		<li><label> 
- <?php	echo TEXT_SKU . ' ' . html_input_field('sku', '', ' size="' . (MAX_INVENTORY_SKU_LENGTH + 1) . '" maxlength="' . MAX_INVENTORY_SKU_LENGTH . '" title="' . TEXT_SEARCH . '"  onchange ="loadSkuDetails(0, 0)"') . chr(10);
-  		echo html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'id="sku_open" align="top" style="cursor:pointer" onclick="InventoryList(0)"') . chr(10);	?>
+ <?php	echo TEXT_SKU . ' ' . html_search_field('sku', "startSkuSearch") . chr(10);?>
  		</label></li>
 	</ol>
 </fieldset>
-
-<fieldset id="customer_div">
-	<ol>
-		<li><label>
-<?php 
-  echo ORD_ACCT_ID . ' ' . html_input_field('search', isset($order->short_name) ? $order->short_name : TEXT_SEARCH, 'size="21" maxlength="20" title="' . TEXT_SEARCH . '" onchange="accountGuess(true)"');
-  echo '&nbsp;' . html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'align="top" style="cursor:pointer" onclick="accountGuess(true)"'); 
-?>
-	  	</label></li>
-		<li><label>
-<?php echo html_pull_down_menu('bill_to_select', gen_null_pull_down(), '', 'onchange="fillAddress(\'bill\')"'); ?>
-		</label></li>
-<?php
-
-  echo '<li><label>' . html_input_field('bill_primary_name',$order->bill_primary_name, 'size="33" maxlength="32" onfocus="clearField(\'bill_primary_name\', \'' . GEN_PRIMARY_NAME . '\')" onblur="setField(\'bill_primary_name\', \'' . GEN_PRIMARY_NAME . '\')"', true) . chr(10);
-  echo 				   html_checkbox_field('bill_add_update', '1', ($order->bill_add_update) ? true : false, '', '') . TEXT_ADD_UPDATE . '</label></li>';
-  echo '<li><label>' . html_input_field('bill_contact',     $order->bill_contact, 'size="33" maxlength="32" onfocus="clearField(\'bill_contact\', \'' . GEN_CONTACT . '\')" onblur="setField(\'bill_contact\', \'' . GEN_CONTACT . '\')"', ADDRESS_BOOK_CONTACT_REQUIRED) . '</label></li>';
-  echo '<li><label>' . html_input_field('bill_address1',    $order->bill_address1, 'size="33" maxlength="32" onfocus="clearField(\'bill_address1\', \'' . GEN_ADDRESS1 . '\')" onblur="setField(\'bill_address1\', \'' . GEN_ADDRESS1 . '\')"', ADDRESS_BOOK_ADDRESS1_REQUIRED) . '</label></li>';
-  echo '<li><label>' . html_input_field('bill_address2',    $order->bill_address2, 'size="33" maxlength="32" onfocus="clearField(\'bill_address2\', \'' . GEN_ADDRESS2 . '\')" onblur="setField(\'bill_address2\', \'' . GEN_ADDRESS2 . '\')"', ADDRESS_BOOK_ADDRESS2_REQUIRED) . '</label></li>';
-  echo '<li><label>' . html_input_field('bill_city_town',   $order->bill_city_town, 'size="25" maxlength="24" onfocus="clearField(\'bill_city_town\', \'' . GEN_CITY_TOWN . '\')" onblur="setField(\'bill_city_town\', \'' . GEN_CITY_TOWN . '\')"', ADDRESS_BOOK_CITY_TOWN_REQUIRED) . chr(10);
-  echo  			   html_input_field('bill_state_province', $order->bill_state_province, 'size="3" maxlength="5" onfocus="clearField(\'bill_state_province\', \'' . GEN_STATE_PROVINCE . '\')" onblur="setField(\'bill_state_province\', \'' . GEN_STATE_PROVINCE . '\')"', ADDRESS_BOOK_STATE_PROVINCE_REQUIRED) . chr(10);
-  echo '<li><label>' . html_input_field('bill_postal_code', $order->bill_postal_code, 'size="11" maxlength="10" onfocus="clearField(\'bill_postal_code\', \'' . GEN_POSTAL_CODE . '\')" onblur="setField(\'bill_postal_code\', \'' . GEN_POSTAL_CODE . '\')"', ADDRESS_BOOK_POSTAL_CODE_REQUIRED) . '</label></li>';
-  echo '<li><label>' . html_pull_down_menu('bill_country_code', gen_get_countries(), $order->bill_country_code ? $order->bill_country_code : COMPANY_COUNTRY) . '</label></li>'; 
-  echo '<li><label>' . html_input_field('bill_telephone1',  $order->bill_telephone1, 'size="21" maxlength="20" onfocus="clearField(\'bill_telephone1\', \'' . GEN_TELEPHONE1 . '\')" onblur="setField(\'bill_telephone1\', \'' . GEN_TELEPHONE1 . '\')"', ADDRESS_BOOK_TELEPHONE1_REQUIRED) . chr(10);
-  echo '<li><label>' . html_input_field('bill_email',       $order->bill_email, 'size="35" maxlength="48" onfocus="clearField(\'bill_email\', \'' . GEN_EMAIL . '\')" onblur="setField(\'bill_email\', \'' . GEN_EMAIL . '\')"', ADDRESS_BOOK_EMAIL_REQUIRED) . '</label></li>';
-  ?>
-	</ol>
-</fieldset>
+<div class="easyui-dialog" data-options="closed: true," id="customer_div" title="<?php echo TEXT_CUSTOMER; ?>" style="height:450px;width:700px">
+	<fieldset>
+		<ol style="list-style:none;">
+			<li><label>
+	<?php 
+	  echo ORD_ACCT_ID . ' ' . html_input_field('search', isset($order->short_name) ? $order->short_name : TEXT_SEARCH, 'size="21" maxlength="20" title="' . TEXT_SEARCH . '" onchange="accountGuess(true)"');
+	  echo '&nbsp;' . html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'align="top" style="cursor:pointer" onclick="accountGuess(true)"'); 
+	?>
+		  	</label></li>
+			<li><label>
+	<?php echo html_pull_down_menu('bill_to_select', gen_null_pull_down(), '', 'onchange="fillAddress(\'bill\')"'); ?>
+			</label></li>
+	<?php
+	
+	  echo '<li><label>' . html_input_field('bill_primary_name',$order->bill_primary_name, 'size="33" maxlength="32" onfocus="clearField(\'bill_primary_name\', \'' . GEN_PRIMARY_NAME . '\')" onblur="setField(\'bill_primary_name\', \'' . GEN_PRIMARY_NAME . '\')"', true) . chr(10);
+	  echo 				   html_checkbox_field('bill_add_update', '1', ($order->bill_add_update) ? true : false, '', '') . TEXT_ADD_UPDATE . '</label></li>';
+	  echo '<li><label>' . html_input_field('bill_contact',     $order->bill_contact, 'size="33" maxlength="32" onfocus="clearField(\'bill_contact\', \'' . GEN_CONTACT . '\')" onblur="setField(\'bill_contact\', \'' . GEN_CONTACT . '\')"', ADDRESS_BOOK_CONTACT_REQUIRED) . '</label></li>';
+	  echo '<li><label>' . html_input_field('bill_address1',    $order->bill_address1, 'size="33" maxlength="32" onfocus="clearField(\'bill_address1\', \'' . GEN_ADDRESS1 . '\')" onblur="setField(\'bill_address1\', \'' . GEN_ADDRESS1 . '\')"', ADDRESS_BOOK_ADDRESS1_REQUIRED) . '</label></li>';
+	  echo '<li><label>' . html_input_field('bill_address2',    $order->bill_address2, 'size="33" maxlength="32" onfocus="clearField(\'bill_address2\', \'' . GEN_ADDRESS2 . '\')" onblur="setField(\'bill_address2\', \'' . GEN_ADDRESS2 . '\')"', ADDRESS_BOOK_ADDRESS2_REQUIRED) . '</label></li>';
+	  echo '<li><label>' . html_input_field('bill_city_town',   $order->bill_city_town, 'size="25" maxlength="24" onfocus="clearField(\'bill_city_town\', \'' . GEN_CITY_TOWN . '\')" onblur="setField(\'bill_city_town\', \'' . GEN_CITY_TOWN . '\')"', ADDRESS_BOOK_CITY_TOWN_REQUIRED) . chr(10);
+	  echo  			   html_input_field('bill_state_province', $order->bill_state_province, 'size="3" maxlength="5" onfocus="clearField(\'bill_state_province\', \'' . GEN_STATE_PROVINCE . '\')" onblur="setField(\'bill_state_province\', \'' . GEN_STATE_PROVINCE . '\')"', ADDRESS_BOOK_STATE_PROVINCE_REQUIRED) . chr(10);
+	  echo '<li><label>' . html_input_field('bill_postal_code', $order->bill_postal_code, 'size="11" maxlength="10" onfocus="clearField(\'bill_postal_code\', \'' . GEN_POSTAL_CODE . '\')" onblur="setField(\'bill_postal_code\', \'' . GEN_POSTAL_CODE . '\')"', ADDRESS_BOOK_POSTAL_CODE_REQUIRED) . '</label></li>';
+	  echo '<li><label>' . html_pull_down_menu('bill_country_code', gen_get_countries(), $order->bill_country_code ? $order->bill_country_code : COMPANY_COUNTRY) . '</label></li>'; 
+	  echo '<li><label>' . html_input_field('bill_telephone1',  $order->bill_telephone1, 'size="21" maxlength="20" onfocus="clearField(\'bill_telephone1\', \'' . GEN_TELEPHONE1 . '\')" onblur="setField(\'bill_telephone1\', \'' . GEN_TELEPHONE1 . '\')"', ADDRESS_BOOK_TELEPHONE1_REQUIRED) . chr(10);
+	  echo '<li><label>' . html_input_field('bill_email',       $order->bill_email, 'size="35" maxlength="48" onfocus="clearField(\'bill_email\', \'' . GEN_EMAIL . '\')" onblur="setField(\'bill_email\', \'' . GEN_EMAIL . '\')"', ADDRESS_BOOK_EMAIL_REQUIRED) . '</label></li>';
+	  ?>
+		</ol>
+	</fieldset>
+</div>
 <fieldset id="totals_div">
 	<ol>
 		<li><label>
@@ -213,7 +213,12 @@ echo $toolbar->build_toolbar();
 	</tfoot>
 </table>	 
 
-<footer><?php echo "<b><u>" . TEXT_NOTES . "</u></b><br>" . PHREEPOS_ITEM_NOTES; ?></footer>
+<footer style="witdh:800px;">
+<div style="witdh:450px;float:left;">
+	<?php echo "<b><u>" . TEXT_NOTES . "</u></b><br>" . PHREEPOS_ITEM_NOTES; ?>
+</div>
+</footer>
+
 <?php // display the hidden fields that are not used in this rendition of the form
 echo $hidden_fields;
 if (defined('PHREEPOS_ENABLE_DIRECT_PRINTING') && PHREEPOS_ENABLE_DIRECT_PRINTING  == true){
@@ -232,9 +237,9 @@ if (defined('PHREEPOS_ENABLE_DIRECT_PRINTING') && PHREEPOS_ENABLE_DIRECT_PRINTIN
 <?php }else{
 	echo html_hidden_field("qz");
 }?>
-<div id="popupPayment">
+<div class="easyui-dialog" data-options="closed: true," id="popupPayment" title="<?php echo PAYMENT_TITLE; ?>" style="height:450px;width:450px">
 <?php 
-$SeccondToolbar      = new toolbar;
+$SeccondToolbar      = new \core\classes\toolbar;
 $SeccondToolbar->icon_list['cancel']['params'] = 'onclick="disablePopup()"';
 $SeccondToolbar->icon_list['open']['show']     = false;
 $SeccondToolbar->icon_list['save']['params']   = 'onclick="SavePayment(\'save\')"';
@@ -249,19 +254,14 @@ if (count($extra_SeccondToolbar_buttons) > 0) {
 // add the help file index and build the toolbar
 echo $SeccondToolbar->build_toolbar(); 
  // Build the page
-?>
-	<h2 align="center"><?php echo PAYMENT_TITLE; ?></h2>
-  
-<?php
 	echo '    <fieldset>';
     echo '    <legend>'. TEXT_PAYMENT_METHOD . '</legend>';
 	echo '    <div style="position: relative; height: 150px;">';
-	echo html_pull_down_menu('payment_method', $payment_modules, $order->shipper_code, 'onchange="activateFields()"') . chr(10);
+	echo html_pull_down_menu('payment_method', gen_build_pull_down($admin_classes['payment']->methods), $order->shipper_code, 'onchange="activateFields()"') . chr(10);
 	$count = 0;
-	foreach ($payment_modules as $value) {
+	foreach ($admin_classes['payment']->methods as $method) {
 	  echo '      <div id="pm_' . $count . '" style="visibility:hidden; position:absolute; top:22px; left:1px">' . chr(10);
-	  $pmt_class = $value['id'];
-	  $disp_fields = $$pmt_class->selection();
+	  $disp_fields = $method->selection();
 	  for ($i=0; $i<count($disp_fields['fields']); $i++) {
 		echo $disp_fields['fields'][$i]['title'] . '<br />' . chr(10);
 		echo $disp_fields['fields'][$i]['field'] . '<br />' . chr(10);
@@ -278,14 +278,13 @@ echo $SeccondToolbar->build_toolbar();
 	</table>
 	<?php echo TEXT_AMOUNT . ' ' . html_input_field('amount', $currencies->format($amount), 'size="15" maxlength="20" style="text-align:right; font-size: 1.5em"'); ?>
 	<footer><?php echo PHREEPOS_PAYMENT_NOTES; ?> </footer>
+	</form>
 </div>
 
-<div id="backgroundPopup"></div>
-</form>
-
+<div class="easyui-dialog" data-options="closed: true," id="popupOtherTrans" title="<?php echo TEXT_OTHER_TRANS; ?>" style="height:410px;width:1050px;padding:10px">
 <?php 
-echo html_form('popupOtherTrans', FILENAME_DEFAULT) . chr(10);
-$thirdToolbar      = new toolbar;
+echo html_form('popupOtherTrans_form', FILENAME_DEFAULT) . chr(10);
+$thirdToolbar      = new \core\classes\toolbar;
 $thirdToolbar->icon_list['cancel']['params'] = 'onclick="disablePopup()"';
 $thirdToolbar->icon_list['open']['show']     = false;
 $thirdToolbar->icon_list['save']['params']   = 'onclick="SaveOt()"';
@@ -324,4 +323,4 @@ echo $thirdToolbar->build_toolbar();
       echo html_hidden_field('ot_currencies_value', '1') . chr(10);
       echo html_hidden_field('ot_currencies_code',    $order->currencies_code) . chr(10);?>
 </form>
-
+</div>

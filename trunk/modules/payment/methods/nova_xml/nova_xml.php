@@ -18,14 +18,14 @@
 //
 // Revision history
 // 2011-07-01 - Added version number for revision control
-define('MODULE_PAYMENT_NOVA_XML_VERSION','3.3');
-require_once(DIR_FS_MODULES . 'payment/classes/payment.php');
+namespace payment\methods\nova_xml;
 // Elevon Payment Module
-class nova_xml extends payment {
-  public $code        = 'nova_xml'; // needs to match class name
-  public $title 	  = MODULE_PAYMENT_NOVA_XML_TEXT_TITLE;
-  public $description = MODULE_PAYMENT_NOVA_XML_TEXT_DESCRIPTION;
-  public $sort_order  = 2;
+class nova_xml extends \payment\classes\payment {
+  public $id			= 'nova_xml'; // needs to match class name
+  public $text			= MODULE_PAYMENT_NOVA_XML_TEXT_TITLE;
+  public $description	= MODULE_PAYMENT_NOVA_XML_TEXT_DESCRIPTION;
+  public $sort_order	= 2;
+  public $version		= '3.3';
     
   public function __construct(){
   	parent::__construct();
@@ -63,11 +63,11 @@ class nova_xml extends payment {
 		'U' => 'Issuer has not certified for CVV2 or issuer has not provided Visa with the CVV2 encryption keys.'
 	);
 	
-    $this->key[] = array('key'=>'MODULE_PAYMENT_NOVA_XML_MERCHANT_ID',       'default'=>'', 				'text'=>MODULE_PAYMENT_NOVA_XML_MERCHANT_ID_DESC);
-    $this->key[] = array('key'=>'MODULE_PAYMENT_NOVA_XML_USER_ID',           'default'=>'', 				'text'=>MODULE_PAYMENT_NOVA_XML_USER_ID_DESC);
-    $this->key[] = array('key'=>'MODULE_PAYMENT_NOVA_XML_PIN',               'default'=>'', 				'text'=>MODULE_PAYMENT_NOVA_XML_PIN_DESC);
-    $this->key[] = array('key'=>'MODULE_PAYMENT_NOVA_XML_TESTMODE',          'default'=>'Production',		'text'=>MODULE_PAYMENT_NOVA_XML_TESTMODE_DESC);
-    $this->key[] = array('key'=>'MODULE_PAYMENT_NOVA_XML_AUTHORIZATION_TYPE','default'=>'Authorize/Capture','text'=>MODULE_PAYMENT_NOVA_XML_AUTHORIZATION_TYPE_DESC);
+    $this->keys[] = array('key'=>'MODULE_PAYMENT_NOVA_XML_MERCHANT_ID',       'default'=>'', 				'text'=>MODULE_PAYMENT_NOVA_XML_MERCHANT_ID_DESC);
+    $this->keys[] = array('key'=>'MODULE_PAYMENT_NOVA_XML_USER_ID',           'default'=>'', 				'text'=>MODULE_PAYMENT_NOVA_XML_USER_ID_DESC);
+    $this->keys[] = array('key'=>'MODULE_PAYMENT_NOVA_XML_PIN',               'default'=>'', 				'text'=>MODULE_PAYMENT_NOVA_XML_PIN_DESC);
+    $this->keys[] = array('key'=>'MODULE_PAYMENT_NOVA_XML_TESTMODE',          'default'=>'Production',		'text'=>MODULE_PAYMENT_NOVA_XML_TESTMODE_DESC);
+    $this->keys[] = array('key'=>'MODULE_PAYMENT_NOVA_XML_AUTHORIZATION_TYPE','default'=>'Authorize/Capture','text'=>MODULE_PAYMENT_NOVA_XML_AUTHORIZATION_TYPE_DESC);
   }
 
   function configure($key) {
@@ -91,7 +91,7 @@ class nova_xml extends payment {
 
   function javascript_validation() {
     $js = 
-	'  if (payment_method == "' . $this->code . '") {' . "\n" .
+	'  if (payment_method == "' . $this->id . '") {' . "\n" .
     '    var cc_owner  = document.getElementById("nova_xml_field_0").value;' . "\n" .
     '    var cc_number = document.getElementById("nova_xml_field_1").value;' . "\n" .
     '    var cc_cvv    = document.getElementById("nova_xml_field_4").value;' . "\n" . 
@@ -126,8 +126,8 @@ class nova_xml extends payment {
       $expires_year[] = array('id' => strftime('%Y',mktime(0,0,0,1,1,$i)), 'text' => strftime('%Y',mktime(0,0,0,1,1,$i)));
     }
     $selection = array(
-	  'id'     => $this->code,
-	  'page'   => $this->title,
+	  'id'     => $this->id,
+	  'page'   => $this->text,
 	  'fields' => array(
 	    array(  'title' => MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_OWNER,
 			    'field' => html_input_field('nova_xml_field_0', $this->field_0)),
@@ -136,7 +136,7 @@ class nova_xml extends payment {
 	    array(	'title' => MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_EXPIRES,
 			    'field' => html_pull_down_menu('nova_xml_field_2', $expires_month, $this->field_2) . '&nbsp;' . html_pull_down_menu('nova_xml_field_3', $expires_year, $this->field_3)),
 		array ( 'title' => MODULE_PAYMENT_CC_TEXT_CVV,
-				'field' => html_input_field('nova_xml_field_4', $this->field_4, 'size="4" maxlength="4"' . ' id="' . $this->code . '-cc-cvv"' ) . ' ' . '<a href="javascript:popupWindow(\'' . html_href_link(FILENAME_POPUP_CVV_HELP) . '\')">' . TEXT_MORE_INFO . '</a>',)
+				'field' => html_input_field('nova_xml_field_4', $this->field_4, 'size="4" maxlength="4"' . ' id="' . $this->id . '-cc-cvv"' ) . ' ' . '<a href="javascript:popupWindow(\'' . html_href_link(FILENAME_POPUP_CVV_HELP) . '\')">' . TEXT_MORE_INFO . '</a>',)
 	  ));
     return $selection;
   }
@@ -144,40 +144,31 @@ class nova_xml extends payment {
    * Evaluates the Credit Card Type for acceptance and the validity of the Credit Card Number & Expiration Date
    *
    */
-  function pre_confirmation_check() {
-    global $messageStack;
+  	function pre_confirmation_check() {
+	    global $messageStack;
 
-	// if the card number has the blanked out middle number fields, it has been processed, show message that 
-	// the charges were not processed through the merchant gateway and continue posting payment.
-	if (strpos($this->field_1, '*') !== false) {
-    	$messageStack->add(MODULE_PAYMENT_CC_NO_DUPS, 'caution');
+		// if the card number has the blanked out middle number fields, it has been processed, show message that 
+		// 	the charges were not processed through the merchant gateway and continue posting payment.
+		if (strpos($this->field_1, '*') !== false) {
+    		$messageStack->add(MODULE_PAYMENT_CC_NO_DUPS, 'caution');
+			return false;
+		}
+
+    	$result = $this->validate();
+    	switch ($result) {
+      		case -1:
+        		throw new \Exception(sprintf(TEXT_CCVAL_ERROR_UNKNOWN_CARD, substr($this->cc_card_number, 0, 4)));
+      		case -2:
+      		case -3:
+      		case -4:
+        		throw new \Exception(TEXT_CCVAL_ERROR_INVALID_DATE);
+      		case false:
+        		throw new \Exception(TEXT_CCVAL_ERROR_INVALID_NUMBER);
+    	}
+
+    	$this->cc_cvv2         = $this->field_4;
 		return false;
 	}
-
-    $result = $this->validate();
-    $error = '';
-    switch ($result) {
-      case -1:
-        $error = sprintf(TEXT_CCVAL_ERROR_UNKNOWN_CARD, substr($this->cc_card_number, 0, 4));
-        break;
-      case -2:
-      case -3:
-      case -4:
-        $error = TEXT_CCVAL_ERROR_INVALID_DATE;
-        break;
-      case false:
-        $error = TEXT_CCVAL_ERROR_INVALID_NUMBER;
-        break;
-    }
-
-    if (($result == false) || ($result < 1)) {
-      $messageStack->add($error . '<!-- ['.$this->code.'] -->', 'error');
-      return true;
-    }
-
-    $this->cc_cvv2         = $this->field_4;
-	return false;
-  }
   /**
    * Store the CC info to the order and process any results that come back from the payment gateway
    *
@@ -299,10 +290,7 @@ class nova_xml extends payment {
 	$curlerrornum = curl_errno($ch);
 	$curlerror    = curl_error($ch);
 	curl_close ($ch);
-	if ($curlerrornum) { 
-		$messageStack->add('XML Read Error (cURL) #' . $curlerrornum . '. Description = ' . $curlerror,'error');
-		return true;
-	}
+	if ($curlerrornum) throw new \Exception('XML Read Error (cURL) #' . $curlerrornum . '. Description = ' . $curlerror);
 	// since the response is only one level deep, we can do a simple parse
 	$authorize = trim($authorize);
 	$authorize = substr($authorize, strpos($authorize, '<txn>') + 5); // remove up to and including the container tag
@@ -324,15 +312,13 @@ class nova_xml extends payment {
 
     // If the response code is not 0 (approved) then redirect back to the payment page with the appropriate error message
     if ($results['errorCode']) {
-      $messageStack->add('Decline Code #' . $results['errorCode'] . ': ' . $results['errorMessage'] . ' - ' . MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE, 'error');
-	  return true;
+      throw new \Exception('Decline Code #' . $results['errorCode'] . ': ' . $results['errorMessage'] . ' - ' . MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE);
     } elseif ($results['ssl_result'] == '0') {
 		$messageStack->add($results['ssl_result_message'] . ' - Approval code: ' . $this->auth_code . ' --> CVV2 results: ' . $this->cvv_codes[$results['ssl_cvv2_response']], 'success');
 		$messageStack->add('Address verification results: ' . $this->avs_codes[$results['ssl_avs_response']], 'success');
 		return false;
 	}
-	$messageStack->add($results['ssl_result_message'] . ' - ' . MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE, 'error');
-	return true;
+	throw new \Exception($results['ssl_result_message'] . ' - ' . MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE);
   }
 }
 ?>

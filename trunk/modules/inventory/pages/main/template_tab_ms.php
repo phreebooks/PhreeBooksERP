@@ -19,7 +19,8 @@
 //
 // start the master stock tab html
 ?>
-<div id="tab_master"><?php echo TEXT_MS_HELP;?>
+<div title="<?php echo INV_MS_ATTRIBUTES;?>" id="tab_master">
+<?php echo TEXT_MS_HELP;?>
 <div style="margin:auto;min-height:165px;">
  <?php if($cInfo->edit_ms_list){?>
   <div style="float:left;width:50%">

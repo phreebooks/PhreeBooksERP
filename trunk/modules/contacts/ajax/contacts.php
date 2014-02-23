@@ -18,7 +18,7 @@
 //  Path: /modules/contacts/ajax/contacts.php
 //
 /**************   Check user security   *****************************/
-$security_level = validate_ajax_user();
+$security_level = \core\classes\user::validate();
 /**************  include page specific files    *********************/
 require_once(DIR_FS_MODULES . 'contacts/defaults.php');
 require_once(DIR_FS_MODULES . 'contacts/classes/contacts.php');
@@ -56,7 +56,7 @@ switch ($_REQUEST['action']) {
 		$result = $db->Execute("select ref_id, type from ".TABLE_ADDRESS_BOOK." where address_id = $id");
 		if ($result->fields['type'] == 'im') { // it's a contact record, also delete record
 			$short_name = gen_get_contact_name($id);
-			$contact = new contacts();
+			$contact = new \contacts\classes\contacts();
 			if ($contact->delete($result->fields['ref_id'])) {
 	  			gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_DELETE . '-' . constant('ACT_' . strtoupper($type) . '_TYPE_NAME'), $short_name);
 				$message[] = 'The record was successfully deleted!';
@@ -76,7 +76,7 @@ switch ($_REQUEST['action']) {
 		if ($result->RecordCount() < 1) {
 			$message[] = sprintf('The record could not be found! Looking for id = %s', $id);
 		} else {
-			$enc_data = new encryption();
+			$enc_data = new \core\classes\encryption();
 			$data = $enc_data->decrypt($_SESSION['admin_encrypt'], $result->fields['enc_value']);
 			$fields = explode(':', $data);
 			if (strlen($fields[3]) == 2) $fields[3] = '20'.$fields[3]; // make sure year is 4 digits
@@ -102,10 +102,15 @@ switch ($_REQUEST['action']) {
 		$message[] = 'The record was successfully deleted!';
 		break;
 
-	default: die;
+	default:
+		ob_end_flush();
+  		session_write_close(); 
+		die;
 }
 
 if (sizeof($message) > 0) $xml .= xmlEntry('message', implode("\n",$message));
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

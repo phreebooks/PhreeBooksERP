@@ -16,9 +16,8 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/contacts/classes/type/c.php
 //  customers
-require_once(DIR_FS_MODULES . 'contacts/classes/contacts.php');
-
-class c extends contacts{	
+namespace contacts\classes\type;
+class c extends \contacts\classes\contacts{	
 	public $terms_type     = 'AR';
 	public $security_token = SECURITY_ID_MAINTAIN_CUSTOMERS;
 	public $auto_type      = AUTO_INC_CUST_ID;

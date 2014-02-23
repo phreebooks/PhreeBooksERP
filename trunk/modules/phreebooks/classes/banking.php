@@ -16,8 +16,8 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/classes/banking.php
 //
-
-class banking extends journal {
+namespace phreebooks\classes;
+class banking extends \core\classes\journal {
 	
 	function __construct() {
 		global $db;
@@ -50,17 +50,17 @@ class banking extends journal {
 	}
 
 	function post_ordr($action) {
-		global $db, $currencies, $messageStack, $processor;
+		global $db, $currencies, $messageStack;
 		$this->journal_main_array = $this->build_journal_main_array();	// build ledger main record
 		$this->journal_rows = array();	// initialize ledger row(s) array
 
 		switch ($this->journal_id) {
 			case 18: // Cash Receipts Journal
 				$method = (isset($this->shipper_code)) ? $this->shipper_code : 'freecharger'; 
-				$method = load_specific_method('payment', $method);
 				if (class_exists($method)) {
-					$processor = new $method;
-					if (!defined('MODULE_PAYMENT_' . strtoupper($method) . '_STATUS')) return false;
+					$temp = "\payment\methods\\$method\\$method\\";
+	  				$processor = new $temp;
+					if (!defined('MODULE_PAYMENT_' . strtoupper($method) . '_STATUS')) throw new \Exception("processor is not installed");
 				}
 				$result        = $this->add_item_journal_rows('credit');	// read in line items and add to journal row array
 				$credit_total  = $result['total'];
@@ -73,27 +73,27 @@ class banking extends journal {
 				$credit_total  = $this->add_discount_journal_row('credit');
 				$credit_total += $this->add_total_journal_row('credit', $result['total'] - $result['discount']);
 				break;
-			default: return $this->fail_message('bad journal_id in banking pre-POST processing'); 	// this should never happen, JOURNAL_ID is tested at script entry!
+			default: throw new \Exception('bad journal_id in banking pre-POST processing'); 	// this should never happen, JOURNAL_ID is tested at script entry!
 		}
 
 		// ***************************** START TRANSACTION *******************************
 		$db->transStart();
 		// *************  Pre-POST processing *************
-		if (!$this->validate_purchase_invoice_id()) return false;
+		$this->validate_purchase_invoice_id();
 
 		// ************* POST journal entry *************
 		if ($this->id) {	// it's an edit, first unPost record, then rewrite
-			if (!$this->Post($new_post = 'edit')) return false;
+			$this->Post($new_post = 'edit');
 		    $messageStack->add(BNK_REPOST_PAYMENT,'caution');
 		} else {
-			if (!$this->Post($new_post = 'insert')) return false;
+			$this->Post($new_post = 'insert');
 		}
 
 		// ************* post-POST processing *************
 		switch ($this->journal_id) {
 			case 18:
 				if ($this->purchase_invoice_id == '') {	// it's a new record, increment the po/so/inv to next number
-					if (!$this->increment_purchase_invoice_id()) return false;
+					$this->increment_purchase_invoice_id();
 				}
 				// Lastly, we process the payment (for receipts). NEEDS TO BE AT THE END BEFORE THE COMMIT!!!
 				// Because, if an error here we need to back out the entire post (which we can), but if 
@@ -101,13 +101,13 @@ class banking extends journal {
 //				if ($processor->pre_confirmation_check()) return false;
 				// Update the save payment/encryption data if requested
 				if (ENABLE_ENCRYPTION && $this->save_payment && $processor->enable_encryption !== false) {
-					if (!$this->encrypt_payment($method, $processor->enable_encryption)) return false;
+					$this->encrypt_payment($method, $processor->enable_encryption);
 				}
-				if ($processor->before_process()) return false;
+				$processor->before_process();
 				break;
 			case 20:
 				if ($new_post == 'insert') { // only increment if posting a new payment
-					if (!$this->increment_purchase_invoice_id($force = true)) return false;
+					$this->increment_purchase_invoice_id($force = true);
 				}
 				break;
 			default:
@@ -115,7 +115,7 @@ class banking extends journal {
 
 		$db->transCommit();	// finished successfully
 		// ***************************** END TRANSACTION *******************************
-		$this->session_message(sprintf(TEXT_POST_SUCCESSFUL, constant('ORD_HEADING_NUMBER_' . $this->journal_id), $this->purchase_invoice_id), 'success');
+		$messageStack->add(sprintf(TEXT_POST_SUCCESSFUL, constant('ORD_HEADING_NUMBER_' . $this->journal_id), $this->purchase_invoice_id), 'success');
 		return true;
 	}
 
@@ -130,9 +130,9 @@ class banking extends journal {
 		$credit_total += $this->add_total_journal_row('credit', $result['total'] - $result['discount']);
 
 		// *************  Pre-POST processing *************
-		if (!$this->validate_purchase_invoice_id()) return false;
+		$this->validate_purchase_invoice_id();
 		// ************* POST journal entry *************
-		if (!$this->Post('insert')) return false; // all bulk pay are new posts, cannot edit
+		$this->Post('insert'); // all bulk pay are new posts, cannot edit
 		// ************* post-POST processing *************
 		for ($i = 0; $i < count($this->item_rows); $i++) {
 			$total_paid = $this->item_rows[$i]['total'] + $this->item_rows[$i]['dscnt'];
@@ -141,7 +141,7 @@ class banking extends journal {
 			}
 		}
 		$force = ($this->journal_id == 18) ? false : true; // don't force increment if it's a bulk receipt
-		if (!$this->increment_purchase_invoice_id($force)) return false;
+		$this->increment_purchase_invoice_id($force);
 		return true;
 	}
 
@@ -149,13 +149,13 @@ class banking extends journal {
 		global $db;
 		// verify no item rows have been acted upon (accounts reconciliation)
 		$result = $db->Execute("select closed from " . TABLE_JOURNAL_MAIN . " where id = " . $this->id);
-		if ($result->fields['closed'] == '1') return $this->fail_message(constant('GENERAL_JOURNAL_' . $this->journal_id . '_ERROR_6'));
+		if ($result->fields['closed'] == '1') throw new \Exception(constant('GENERAL_JOURNAL_' . $this->journal_id . '_ERROR_6'));
 		// *************** START TRANSACTION *************************
 		$db->transStart();
-		if (!$this->unPost('delete')) return false;
+		$this->unPost('delete');
 		$db->transCommit();
 		// *************** END TRANSACTION *************************
-		$this->session_message(sprintf(TEXT_DELETE_SUCCESSFUL, constant('ORD_HEADING_NUMBER_' . $this->journal_id), $this->purchase_invoice_id), 'success');
+		$messageStack->add(sprintf(TEXT_DELETE_SUCCESSFUL, constant('ORD_HEADING_NUMBER_' . $this->journal_id), $this->purchase_invoice_id), 'success');
 		return true;
 	}
 
@@ -179,7 +179,7 @@ class banking extends journal {
 			);
 			return $amount;
 		} else {
-			die('bad parameter passed to add_total_journal_row in class orders');
+			trigger_error('bad parameter passed to add_total_journal_row in class orders', E_USER_ERROR);
 		}
 	}
 
@@ -200,7 +200,7 @@ class banking extends journal {
 			}
 			return $discount;
 		} else {
-			die('bad parameter passed to add_discount_journal_row in class banking');
+			trigger_error('bad parameter passed to add_discount_journal_row in class banking', E_USER_ERROR);
 		}
 	}
 
@@ -223,12 +223,11 @@ class banking extends journal {
 			}
 			return $result;
 		} else {
-			die('bad parameter passed to add_item_journal_rows in class banking');
+			trigger_error('bad parameter passed to add_item_journal_rows in class banking', E_USER_ERROR);
 		}
 	}
 
 	function encrypt_payment($method, $card_key_pos = false) {
-	  $encrypt = new encryption();
 	  $cc_info = array();
 	  $cc_info['name']    = isset($_POST[$method.'_field_0']) ? db_prepare_input($_POST[$method.'_field_0']) : '';
 	  $cc_info['number']  = isset($_POST[$method.'_field_1']) ? db_prepare_input($_POST[$method.'_field_1']) : '';
@@ -237,7 +236,7 @@ class banking extends journal {
 	  $cc_info['cvv2']    = isset($_POST[$method.'_field_4']) ? db_prepare_input($_POST[$method.'_field_4']) : '';
 	  $cc_info['alt1']    = isset($_POST[$method.'_field_5']) ? db_prepare_input($_POST[$method.'_field_5']) : '';
 	  $cc_info['alt2']    = isset($_POST[$method.'_field_6']) ? db_prepare_input($_POST[$method.'_field_6']) : '';
-	  if (!$enc_value = $encrypt->encrypt_cc($cc_info)) return false;
+	  $enc_value = \core\classes\encryption::encrypt_cc($cc_info);
 	  $payment_array = array(
 		'hint'      => $enc_value['hint'],
 		'module'    => 'contacts',

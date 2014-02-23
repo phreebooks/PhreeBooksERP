@@ -23,7 +23,6 @@
 // 3.6 => 2013-09-23 - Updates for PhreeBooks R3.6
 // Module software version information
 gen_pull_language('phreebooks', 'menu');
-define('MODULE_ASSETS_VERSION',       3.6);
 // Menu sort positions
 define('MENU_HEADING_ASSETS_ORDER',      77);
 define('BOX_ASSETS_MODULE_ORDER',        90);
@@ -81,7 +80,7 @@ if (defined('MODULE_ASSETS_STATUS')) {
 		'params'	  => '',
 	  );
 	}
-  	if(isset($_SESSION['admin_security'][SECURITY_ID_CONFIGURATION]) && $_SESSION['admin_security'][SECURITY_ID_CONFIGURATION] > 0){
+  	if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
   		gen_pull_language('assets', 'admin');
 		$mainmenu["company"]['submenu']["configuration"]['submenu']["asset"] = array(
 	  		'order'		  => MODULE_ASSETS_TITLE,

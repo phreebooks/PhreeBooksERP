@@ -10,11 +10,11 @@
 
 define('HEADING_TITLE_MODULES_SHIPPING','Verzending Services');
 define('SHIPPING_HEADING_SHIP_MGR','Verzending Module Manager');
-define('TEXT_SHIPPING_MODULES_AVAILABLE','Beschikbare Verzend Methodes');
 define('TEXT_PRODUCTION','Productie');
 define('TEXT_TEST','Test');
 define('TEXT_PDF','PDF');
 define('TEXT_GIF','GIF');
+define('TEXT_SHIPMENTS_ON','Verzendingen Opn: ');
 define('TEXT_THERMAL','Thermisch');
 define('TEXT_PAGKAGE_DEFAULTS','Pakket Standaardwaarden');
 define('TEXT_SHIPMENT_DEFAULTS','Verzend Standaardwaarden');
@@ -158,5 +158,13 @@ define('SHIPPING_SENDER','Zender');
 define('SHIPPING_RECEIPIENT','Ontvanger');
 define('SHIPPING_THIRD_PARTY','Ontv/Derde Acct #');
 define('SHIPPING_COLLECT','Verzamel');
-
+// Key descriptions
+define('SHIPPING_TITLE_DESC', 'De titel welke gebruikt moet worden in weergaven. ');
+define('SHIPPING_COST_DESC', 'Wat zijn de verzend kosten?');
+define('SHIPPING_HANDLING_DESC', 'Kosten voor deze verzend optie');
+define('SORT_ORDER_DESC', 'Volgorde van tonen. Bepaalt in welke volgorde deze optie in lijsten voor moet komen.');
+define('SHIPPING_TEST_MODE_DESC','Test/Productie mode voor het testen van verzend labels');
+define('SHIPPING_PRINTER_TYPE_DESC','Type printer te gebruiken voor het afdrukken van etiketten. PDF voor gewoon papier, Thermaal voor Eltron/Zebra Label Printer');
+define('SHIPPING_PRINTER_NAME_DESC','Stel dan naam van de printer welke gebruikt moet worden voor het printen van labels zoals gedefinieerd in de printer instellingen op de computer.');
+define('SHIPPING_DEFAULT_SERVICE_DESC','Selecteer de dienst die standaard aangeboden moet worden.');
 ?>

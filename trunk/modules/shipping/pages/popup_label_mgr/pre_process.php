@@ -17,7 +17,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/shipping/pages/popup_label_mgr/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_SHIPPING_MANAGER);
+$security_level = \core\classes\user::validate(SECURITY_ID_SHIPPING_MANAGER);
 /**************   page specific initialization  *************************/
 gen_pull_language('contacts');
 require_once(DIR_FS_WORKING . 'defaults.php');

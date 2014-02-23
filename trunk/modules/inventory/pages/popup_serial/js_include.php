@@ -15,7 +15,7 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/inventory/pages/popup_serial/js_include.php
-//
+//@todo modify for release4.0
 
 ?>
 <script type="text/javascript">

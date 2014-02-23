@@ -15,12 +15,12 @@
 // | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the   |
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
-//  Path: /modules/accounts/pages/admin/template_tab_stats.php
+//  Path: /modules/inventory/pages/admin/template_tab_stats.php
 //
 ?>
-<div id="tab_stats">
+<div title="<?php echo TEXT_STATISTICS;?>" id="tab_stats">
 <?php 
-  if (sizeof($install->tables) > 0) {
+  if (sizeof($admin_classes['inventory']->tables) > 0) {
     echo "  <fieldset><!-- db table stats -->\n";
     echo "    <legend>" . TEXT_TABLE_STATS . "</legend>\n";
     echo "    <table class=\"ui-widget\" style=\"border-collapse:collapse;width:100%;\">\n";
@@ -35,7 +35,7 @@
     echo "        </tr>\n";
     echo "      </thead>\n";
     echo "      <tbody class=\"ui-widget-content\">\n";
-    foreach ($install->tables as $tablename => $tablesql) {
+    foreach ($admin_classes['inventory']->tables as $tablename => $tablesql) {
 	  $result = $db->Execute("SHOW TABLE STATUS LIKE '" . $tablename ."'");
 	  echo "         <tr>\n";
 	  echo "          <td>" . $result->fields['Name'] . "</td>\n";

@@ -54,7 +54,7 @@ echo $toolbar->build_toolbar($add_search = true);
 	  // first pull in any extra buttons, this is dynamic since each row can have different buttons
 	  if (function_exists('add_extra_action_bar_buttons')) echo add_extra_action_bar_buttons($query_result->fields);
 	  if ($security_level > 1) echo html_icon('actions/edit-find-replace.png', TEXT_EDIT, 'small', 'onclick="submitSeq(' . $query_result->fields['admin_id'] . ', \'edit\')"') . chr(10);
-	  if ($security_level > 3) echo html_icon('actions/edit-copy.png', TEXT_COPY_TO, 'small', 'onclick="copyItem(' . $query_result->fields['admin_id'] . ')"') . chr(10);
+	  if ($security_level > 3) echo html_icon('actions/edit-copy.png', TEXT_COPY, 'small', 'onclick="copyItem(' . $query_result->fields['admin_id'] . ')"') . chr(10);
 	  if ($security_level > 3) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . TEXT_DELETE_INTRO_USERS . '\')) submitSeq(' . $query_result->fields['admin_id'] . ', \'delete\')"') . chr(10);
 ?>
 	</td>

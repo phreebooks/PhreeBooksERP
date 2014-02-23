@@ -17,10 +17,9 @@
 //  Initially Written By: Harry Lu @ 2009/08/01
 //  Path: /modules/payment/methods/linkpoint/pages/ccreview/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_PAY_BILLS);
+$security_level = \core\classes\user::validate(SECURITY_ID_PAY_BILLS);
 /**************  include page specific files    *********************/
 /**************   page specific initialization  *************************/
-$error = false;
 history_filter('linkpoint');
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
@@ -79,11 +78,11 @@ $query_raw  = "select SQL_CALC_FOUND_ROWS lp.*, c.short_name, c.contact_last, c.
                 where c.id = lp.customer_id $search  $period_filter order by $disp_order ";
 $customers = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 // the splitPageResults should be run directly after the query that contains SQL_CALC_FOUND_ROWS
-$query_split  = new splitPageResults($_REQUEST['list'], '');						  
+$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');						  
 if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results
 	$_REQUEST['list'] = $query_split->current_page_number;
 	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-	$query_split      = new splitPageResults($_REQUEST['list'], '');
+	$query_split      = new \core\classes\splitPageResults($_REQUEST['list'], '');
 }
 history_save('linkpoint');
 

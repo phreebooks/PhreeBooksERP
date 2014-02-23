@@ -17,7 +17,7 @@
 //  Path: /modules/phreedom/ajax/tab_details.php
 //
 /**************   Check user security   *****************************/
-$security_level = validate_ajax_user();
+$security_level = \core\classes\user::validate();
 /**************  include page specific files    *********************/
 gen_pull_language('phreedom', 'admin');
 gen_pull_language($_GET['mod'], 'admin');
@@ -28,12 +28,11 @@ $subject = $_GET['subject'];
 $rID     = $_GET['rID'];
 $xml     = NULL;
 
-if (!$page || !subject) die('no subject or module');
+if (!$page || !subject) throw  new \Exception('no subject or module');
 if (!$_REQUEST['list']) 	$_REQUEST['list'] = 1;
 if (!$_REQUEST['action']) 	$_REQUEST['action'] = 'go_first';
-
-require_once(DIR_FS_MODULES . $page . '/classes/' . $subject . '.php');
-$my_class = new $subject();
+$temp = "\\$page\classes\\$subject";
+$my_class = new $temp;
 $my_class->message = false;
 
 switch ($_REQUEST['action']) {
@@ -51,5 +50,7 @@ $xml .= "\t" . xmlEntry("subject",      $subject);
 $xml .= "\t" . xmlEntry("htmlContents", "<div>" . $my_class->build_main_html() . "</div>");
 if ($my_class->message) $xml .= "\t" . xmlEntry("message", $my_class->message);
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

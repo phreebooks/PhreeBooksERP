@@ -17,19 +17,16 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/shipping/methods/endicia/label_mgr/pre_process.php
 //
-$shipping_module = 'endicia';
+$method = 'endicia';
 /**************  include page specific files    *********************/
-load_specific_method('shipping', $shipping_module);
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/shipping.php');
-require_once(DIR_FS_WORKING . 'classes/shipping.php');
 /**************   page specific initialization  *************************/
 $error      = false;
 $auto_print = false;
 $label_data = NULL;
 $pdf_list   = array();
-$sInfo      = new shipment();
-$shipment   = new $shipping_module;
+$sInfo      = new \shipping\classes\shipment();
 // override shipping package types
 $shipping_defaults['package_type'] = $shipment->mailPieceShape;
 /***************   Act on the action request   *************************/
@@ -66,7 +63,7 @@ switch ($_REQUEST['action']) {
 		$sql_array = array(
 		  'ref_id'       => $shipment['ref_id'],
 		  'shipment_id'  => $shipment_num,
-		  'carrier'      => $shipping_module,
+		  'carrier'      => $admin_classes['shipping']->methods[$method]->id,
 		  'method'       => $sInfo->ship_method,
 		  'ship_date'    => $sInfo->ship_date . ' ' . date('h:i:s'),
 		  'deliver_date' => $shipment['delivery_date'],
@@ -78,12 +75,12 @@ switch ($_REQUEST['action']) {
 	  }
 	  $db->Execute("update ".TABLE_CURRENT_STATUS." set next_shipment_num = next_shipment_num + 1");
 	  gen_add_audit_log(SHIPPING_LOG_LABEL_PRINTED, $shipment_num . '-' . $sInfo->purchase_invoice_id);
-	  $file_path = SHIPPING_DEFAULT_LABEL_DIR . $shipping_module . '/' . str_replace('-', '/', $date) . '/';
+	  $file_path = SHIPPING_DEFAULT_LABEL_DIR . $admin_classes['shipping']->methods[$method]->id . '/' . str_replace('-', '/', $date) . '/';
 	  // fetch the tracking labels
 	  foreach ($labels_array as $tracking_num) {
 	    foreach (glob($file_path . $tracking_num . '*.*') as $filename) {
 	      if (substr($filename, -3) == 'lpt') { // it's a thermal label
-		    if (!$handle = fopen($filename, 'r')) $error = $messageStack->add('Cannot open file (' . $filename . ')','error');
+		    if (!$handle = fopen($filename, 'r')) throw new \Exception('Cannot open file (' . $filename . ')');
 		    $label_data .= fread($handle, filesize($filename));
 		    fclose($handle);
 		    if (!$error) $auto_print = true;
@@ -92,14 +89,14 @@ switch ($_REQUEST['action']) {
 	      }
 	    }
 	    if (!$auto_print) { // just pdf, go there now
-	      gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=shipping&page=popup_label_viewer&method=' . $shipping_module . '&date=' . $sInfo->ship_date . '&labels=' . implode(':', $labels_array), 'SSL'));	
+	      gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=shipping&page=popup_label_viewer&method=' . $admin_classes['shipping']->methods[$method]->id . '&date=' . $sInfo->ship_date . '&labels=' . implode(':', $labels_array), 'SSL'));	
 	    }
 	  }
 	  $label_data = str_replace("\r", "", addslashes($label_data)); // for javascript multi-line
 	  $label_data = str_replace("\n", "\\n", $label_data);
 	} else {
-	  $messageStack->add(SHIPPING_NO_PACKAGES,'error');
-	  $sInfo->ship_country_code = gen_get_country_iso_3_from_2($sInfo->ship_country_code);
+		$sInfo->ship_country_code = gen_get_country_iso_3_from_2($sInfo->ship_country_code);
+	  	throw new \Exception(SHIPPING_NO_PACKAGES);
 	}
 	break;
 
@@ -107,13 +104,13 @@ switch ($_REQUEST['action']) {
 	$date         = $_GET['date'];
 	$labels       = $_GET['labels'];
 	$labels_array = explode(':', $labels);
-	if (count($labels_array) == 0) die('No labels were passed to label_viewer.php!');
-	$file_path = SHIPPING_DEFAULT_LABEL_DIR . $shipping_module . '/' . str_replace('-', '/', $date) . '/';
+	if (count($labels_array) == 0) throw new Exception('No labels were passed to label_viewer.php!');
+	$file_path = SHIPPING_DEFAULT_LABEL_DIR . $admin_classes['shipping']->methods[$method]->id . '/' . str_replace('-', '/', $date) . '/';
 	// fetch the tracking labels
 	foreach ($labels_array as $tracking_num) {
 	  foreach (glob($file_path . $tracking_num . '*.*') as $filename) {
 	    if (substr($filename, -3) == 'lpt') { // it's a thermal label
-		  if (!$handle = fopen($filename, 'r')) $error = $messageStack->add('Cannot open file (' . $filename . ')','error');
+		  if (!$handle = fopen($filename, 'r')) throw new \Exception('Cannot open file (' . $filename . ')');
 		  $label_data .= fread($handle, filesize($filename));
 		  fclose($handle);
 		  $auto_print = true;
@@ -125,7 +122,7 @@ switch ($_REQUEST['action']) {
 	$label_data = str_replace("\r", "", addslashes($label_data)); // for javascript multi-line
 	$label_data = str_replace("\n", "\\n", $label_data);
 	if (!$auto_print) { // just pdf, go there now
-	  gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=shipping&page=popup_label_viewer&method=' . $shipping_module . '&date=' . $date . '&labels=' . $labels, 'SSL'));	
+	  gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=shipping&page=popup_label_viewer&method=' . $admin_classes['shipping']->methods[$method]->id . '&date=' . $date . '&labels=' . $labels, 'SSL'));	
 	}
     break;
 
@@ -133,20 +130,16 @@ switch ($_REQUEST['action']) {
 	$shipment_id = db_prepare_input($_GET['sID']);
 	$shipments   = $db->Execute("select method, ship_date, tracking_id from " . TABLE_SHIPPING_LOG . " where shipment_id = " . (int)$shipment_id);
 	$ship_method = $shipments->fields['method'];
-	if ($shipments->RecordCount() == 0 || !$ship_method) {
-	  $error = $messageStack->add(SHIPPING_DELETE_ERROR,'error');
-	  break;
-	}
+	if ($shipments->RecordCount() == 0 || !$ship_method) throw new \Exception(SHIPPING_DELETE_ERROR);
 	if ($shipments->fields['ship_date'] < date('Y-m-d')) { // only allow delete if shipped today or in future
-	  $error = $messageStack->add(SHIPPING_CANNOT_DELETE,'error');
-	  break;
+	  throw new \Exception(SHIPPING_CANNOT_DELETE);
 	}
 	while (!$shipments->EOF) {
 	  $tracking_number = $shipments->fields['tracking_id'];
 	  $shipment->deleteLabel($tracking_number);
 	  // delete the label file
 	  $date = explode('-', substr($shipments->fields['ship_date'], 0, 10));
-	  $file_path = SHIPPING_DEFAULT_LABEL_DIR.$shipping_module.'/'.$date[0].'/'.$date[1].'/'.$date[2].'/';
+	  $file_path = SHIPPING_DEFAULT_LABEL_DIR.$admin_classes['shipping']->methods[$method]->id.'/'.$date[0].'/'.$date[1].'/'.$date[2].'/';
 	  $cnt = 0;
 	  while(true) {
 		$filename = $file_path . $tracking_number . ($cnt > 0 ? '-'.$cnt : '') . '.lpt';
@@ -187,7 +180,7 @@ switch ($_REQUEST['action']) {
 // translate shipping terms in the carriers language, style
 $shipping_methods = array();
 foreach ($shipping_defaults['service_levels'] as $key => $value) {
-  if (defined($shipping_module . '_' . $key)) $shipping_methods[$key] = constant($shipping_module . '_' . $key);
+  if (defined($admin_classes['shipping']->methods[$method]->id . '_' . $key)) $shipping_methods[$key] = constant($admin_classes['shipping']->methods[$method]->id . '_' . $key);
 }
 
 $include_header   = false;

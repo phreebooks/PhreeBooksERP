@@ -29,7 +29,6 @@
 // 2.1 27-09-2013 fixed bug that it would try to find a contact for known_transactions.
 gen_pull_language('phreedom', 'menu');
 // Module software version information
-define('MODULE_IMPORT_BANK_VERSION',  2.1);
 // Menu Sort Positions
 
 // Menu Security id's
@@ -48,7 +47,7 @@ if (defined('MODULE_IMPORT_BANK_STATUS')) {
     	'params'      => '',
   	);
   
-	if(isset($_SESSION['admin_security'][SECURITY_ID_CONFIGURATION]) && $_SESSION['admin_security'][SECURITY_ID_CONFIGURATION] > 0){
+	if(\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
   		gen_pull_language('import_bank', 'admin');
   		$mainmenu["company"]['submenu']["configuration"]['submenu']["import_bank"] = array(
 			'order'	      => MODULE_IMPORT_BANK_TITLE,

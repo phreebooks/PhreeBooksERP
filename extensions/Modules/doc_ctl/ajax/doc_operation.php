@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/doc_ctl/ajax/doc_operation.php
 //
-$security_level = validate_ajax_user(SECURITY_ID_DOC_CONTROL);
+$security_level = \core\classes\user::validate(SECURITY_ID_DOC_CONTROL);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_MODULES . 'doc_ctl/defaults.php');
 require_once(DIR_FS_MODULES . 'doc_ctl/functions/doc_ctl.php');

@@ -45,8 +45,6 @@ var text_properties     = '<?php echo TEXT_PROPERTIES;?>';
 <?php if(isset($SecondFieldId)) 	echo $SecondFieldId; ?>;
 // required function called with every page load
 function init() {
-	$(function() { $('#detailtabs').tabs(); });
-	$('#inv_image').dialog({ autoOpen:false, width:800 });
 	<?php 
 	$action_array = array('edit','properties','create');
   	if(in_array($_REQUEST['action'], $action_array)&& empty($cInfo->purchase_array)) {
@@ -62,7 +60,7 @@ function check_form() {
   var error_message = "<?php echo JS_ERROR; ?>";
 
   if (error == 1) {
-	alert(error_message);
+	$.messager.alert("Error",error_message,"error");
 	return false;
   } else {
 	return true;
@@ -87,7 +85,7 @@ function check_sku() {
   }
 
   if (error == 1) {
-	alert(error_message);
+	$.messager.alert("Error",error_message,"error");
 	return false;
   } else {
 	return true;
@@ -105,30 +103,30 @@ function setSkuLength() {
 	}
 }
 
-function deleteItem(id) {
-	location.href = 'index.php?module=inventory&page=main&action=delete&cID='+id;
+function deleteItem(id, type) {
+	location.href = 'index.php?module=inventory&page=main&action=delete&cID='+id+'&inventory_type='+type;
 }
 
 function showImage() {
-	$('#inv_image').dialog('open');	
+	$('#inv_image').window('open');	
 }
 
-function copyItem(id) {
-	var skuID = prompt('<?php echo INV_MSG_COPY_INTRO; ?>', '');
-	if (skuID) {
-		location.href = 'index.php?module=inventory&page=main&action=copy&cID='+id+'&sku='+skuID;
-	} else {
+function copyItem(id, type) {
+	$.messager.prompt('<?php echo TEXT_COPY;?>', '<?php echo TEXT_COPY_TO; ?>', function(skuID){
+		if (skuID){
+			return location.href = 'index.php?module=inventory&page=main&action=copy&cID='+id+'&sku='+skuID+'&inventory_type='+type;
+		}
 		return false;
-	}
+	});
 }
 
-function renameItem(id) {
-	var skuID = prompt('<?php echo INV_MSG_RENAME_INTRO; ?>', '');
-	if (skuID) {
-		location.href = 'index.php?module=inventory&page=main&action=rename&cID='+id+'&sku='+skuID;
-	} else {
+function renameItem(id, type) {
+	$.messager.prompt('<?php echo TEXT_RENAME;?>', '<?php echo TEXT_RENAME_TO; ?>', function(skuID){
+		if (skuID){
+			return location.href = 'index.php?module=inventory&page=main&action=rename&cID='+id+'&sku='+skuID+'&inventory_type='+type;
+		}
 		return false;
-	}
+	});
 }
 
 function printOrder(id) {
@@ -247,16 +245,16 @@ function masterStockBuildList(action, id) {
   switch (action) {
     case 'add':
 	  if (document.getElementById('attr_id_'+id).value == '' || document.getElementById('attr_id_'+id).value == '') {
-	    alert('<?php echo JS_MS_INVALID_ENTRY; ?>');
+		  $.messager.alert('error','<?php echo JS_MS_INVALID_ENTRY; ?>','error');
 		return;
 	  }
 	  var str = document.getElementById('attr_desc_'+id).value ;
 	  if(str.search(",") == true){
-		  alert('<?php echo JS_MS_COMMA_NOT_ALLOWED; ?>');
+		  $.messager.alert('error','<?php echo JS_MS_COMMA_NOT_ALLOWED; ?>','error');
 		  return;
 	  } 
 	  if(str.search(":") == true){
-		  alert('<?php echo JS_MS_COLON_NOT_ALLOWED; ?>');
+		  $.messager.alert('error','<?php echo JS_MS_COLON_NOT_ALLOWED; ?>','error');
 		  return;
 	  } 
 	  var newOpt = document.createElement("option");
@@ -457,7 +455,7 @@ function loadSkuDetails(iID, rID) {
 	  url: 'index.php?module=inventory&page=ajax&op=inv_details&fID=skuDetails&iID='+iID+'&rID='+rID,
       dataType: ($.browser.msie) ? "text" : "xml",
       error: function(XMLHttpRequest, textStatus, errorThrown) {
-        alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	  $.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
       },
 	  success: processSkuDetails
     });
@@ -499,7 +497,7 @@ function ajaxAssyCost() {
 	  url: 'index.php?module=inventory&page=ajax&op=inv_details&fID=bomCost&iID='+id,
       dataType: ($.browser.msie) ? "text" : "xml",
       error: function(XMLHttpRequest, textStatus, errorThrown) {
-        alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	  $.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
       },
 	  success: showBOMCost
     });
@@ -510,7 +508,7 @@ function showBOMCost(sXml) {
   var xml = parseXml(sXml);
   if (!xml) return;
   if ($(xml).find("assy_cost").text()) {
-    alert('<?php echo JS_INV_TEXT_ASSY_COST; ?>'+formatPrecise($(xml).find("assy_cost").text()));
+	  $.messager.alert('Current Costs','<?php echo JS_INV_TEXT_ASSY_COST; ?>'+formatPrecise($(xml).find("assy_cost").text()),'info');
   }
 }
 // ******* EOF - AJAX BOM Cost function pair *********/
@@ -523,7 +521,7 @@ function bom_guess(rID){
 		  url: 'index.php?module=inventory&page=ajax&op=inv_details&fID=skuDetails&sku='+sku+'&strict=1&rID='+rID,
 	      dataType: ($.browser.msie) ? "text" : "xml",
 	      error: function(XMLHttpRequest, textStatus, errorThrown) {
-	        alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+	    	  $.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 	      },
 		  success: processSkuDetails
 	    });
@@ -557,7 +555,7 @@ function ajaxWhereUsed() {
 	  url: 'index.php?module=inventory&page=ajax&op=inv_details&fID=whereUsed&iID='+id,
       dataType: ($.browser.msie) ? "text" : "xml",
       error: function(XMLHttpRequest, textStatus, errorThrown) {
-        alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	  $.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
       },
 	  success: showWhereUsed
     });
@@ -572,7 +570,7 @@ function showWhereUsed(sXml) {
     $(xml).find("sku_usage").each(function() {
 	  text += $(this).find("text_line").text() + "\n";
     });
-	alert(text);
+    $.messager.alert("Where Used",text,"info");
   }
 }
 // ******* EOF - AJAX Where Used pair *********/

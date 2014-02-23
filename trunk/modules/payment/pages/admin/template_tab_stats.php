@@ -18,9 +18,9 @@
 //  Path: /modules/payment/pages/admin/template_tab_stats.php
 //
 ?>
-<div id="tab_stats">
+<div title="<?php echo TEXT_STATISTICS;?>" id="tab_stats">
 <?php 
-  if (sizeof($install->tables) > 0) {
+  if (sizeof($admin_classes['payment']->tables) > 0) {
     echo "  <fieldset><!-- db table stats -->\n";
     echo "    <legend>" . TEXT_TABLE_STATS . "</legend>\n";
     echo "    <table width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">\n";
@@ -35,7 +35,7 @@
     echo "        </tr>\n";
     echo "      </thead>\n";
     echo "      <tbody>\n";
-    foreach ($install->tables as $tablename => $tablesql) {
+    foreach ($admin_classes['payment']->tables as $tablename => $tablesql) {
 	  $result = $db->Execute("SHOW TABLE STATUS LIKE '" . $tablename ."'");
 	  echo "         <tr>\n";
 	  echo "          <td>" . $result->fields['Name'] . "</td>\n";

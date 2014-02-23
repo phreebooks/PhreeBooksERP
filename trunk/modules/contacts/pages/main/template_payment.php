@@ -19,7 +19,7 @@
 //
 
 ?>
-<div id="tab_payment">
+<div title="<?php echo TEXT_PAYMENT;?>" id="tab_payment">
   <fieldset>
     <legend><?php echo ACT_CATEGORY_P_ADDRESS; ?></legend>
     <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto;">

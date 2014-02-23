@@ -41,20 +41,7 @@ echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h2 align="center"><?php echo PAGE_TITLE . ' - ' . ($report->title ? $report->title : TEXT_NEW); ?></h2>
-<div id="buildtabs">
-<ul>
-<?php 
-  echo add_tab_list('tab_page',  TEXT_PAGE_SETUP);
-  echo add_tab_list('tab_db',    TEXT_DATABASE_SETUP);
-  echo add_tab_list('tab_field', TEXT_FIELD_SETUP);
-  echo add_tab_list('tab_crit',  TEXT_CRITERIA);
-  echo add_tab_list('tab_prop',  TEXT_PROPERTIES);
-  // pull in additional custom tabs
-  if (isset($extra_designer_tabs) && is_array($extra_designer_tabs)) {
-	foreach ($extra_designer_tabs as $tabs) echo add_tab_list('tab_'.$tabs['tab_id'], $tabs['tab_title']);
-  }
-?>
-</ul>
+<div title="<?php echo TEXT_GENERAL;?>" id="buildtabs">
 <?php
 require (DIR_FS_WORKING . 'pages/popup_build/tab_page_setup.php');
 require (DIR_FS_WORKING . 'pages/popup_build/tab_db_setup.php');

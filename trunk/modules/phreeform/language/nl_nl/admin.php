@@ -9,7 +9,7 @@
 // Path: /modules/phreeform/language/nl_nl/admin.php
 
 define('MODULE_PHREEFORM_TITLE','PhreeForm Module');
-define('MODULE_PHREEFORM_DESCRIPTION','De phreeform module bevat alle rapport en formulier tools die nodig zijn om rapporten in PDF of HTML-formaat af te drukken. <b> LET OP: Dit is een kernmodule en dient niet te worden verwijderd </ b>!');
+define('MODULE_PHREEFORM_DESCRIPTION','De phreeform module bevat alle rapport en formulier tools die nodig zijn om rapporten in PDF of HTML-formaat af te drukken.');
 define('BOX_PHREEFORM_MODULE_ADM','PhreeForm Admin');
 define('PB_CONVERT_REPORTS','Converteren .txt Rapporten naar PhreeForm');
 define('PB_CONVERT_SAVE_ERROR','Er was en fout bij het opslaan van het geconverteerde rapport: %s');
@@ -23,5 +23,10 @@ define('PF_DEFAULT_ORIENTATION_TEXT','Stelt het standaard afdrukstand in voor ra
 define('PF_DEFAULT_TRIM_LENGTH_TEXT','Stelt de trim lengte in van rapport en formulier namen bij het opsommen in directory-indeling (standaard: 25)');
 define('PF_DEFAULT_ROWSPACE_TEXT','Stelt de scheiding in tussen de koptekst rijen voor rapporten (standaard: 2)');
 define('PDF_APP_TEXT','Stelt de standaard PDF generator in. Aantekening: TCPDF is vereist voor UTF-8 en Bar Code.');
+// Tools
+define('PHREEFORM_TOOLS_REBUILD_TITLE','PhreeForm Stuctuur verificatie en herbouw');
+define('PHREEFORM_TOOLS_REBUILD_DESC','Deze tool verifieerd, en herbouwt de rapport en menu structuur. Het zal de mappen structuur opnieuw laden, en voorkomen dat er ontkoppelde rapporten zijn');
+define('PHREEFORM_TOOLS_REBUILD_SUBMIT','Start Structuur Verificatie en herbouw');
+define('PHREEFORM_TOOLS_REBUILD_SUCCESS','Succesvol de rapporten tabel herbouwt. %s rapporten herbouwd. %s ontkoppelde rapporten zijn in de Miscellaneous map geplaatst.');
 
 ?>

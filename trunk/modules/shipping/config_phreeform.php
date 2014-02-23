@@ -28,11 +28,11 @@ function pf_process_shipping($strData, $Process) {
   return $strData; // No Process recognized, return original value
 }
 
-function shipping_get_name($id) {
+function shipping_get_name($id) {//@todo what is send here and what should it return.
   if (!$id) return '';
   $parts = explode(':', $id);
   if (!$parts[0]) return '';
-  load_specific_method('shipping', $parts[0]);
+  $admin_classes['shipping']->methods[$parts[0]];
 //echo 'id = ' . $id . ' and method = ' . constant($parts[0] . '_' . $parts[1]) . '<br>';
   return defined($parts[0] . '_' . $parts[1]) ? constant($parts[0] . '_' . $parts[1]) : $id;
 }

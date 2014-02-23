@@ -40,12 +40,12 @@ class queryFactory {
 //		mysql_set_charset('utf8', $this->link); 
         return true;
       } else {
-        $this->set_error(mysql_errno(), mysql_error(), false);
+      	throw new \Exception(mysql_error());
       }
     } else {
-      $this->set_error(mysql_errno(), mysql_error(), false);
+      throw new \Exception(mysql_error());
     }
-    return false;
+    throw new \Exception("database isn't connected.");
   }
 
   function selectdb($zf_database) {
@@ -117,9 +117,9 @@ class queryFactory {
       $time_start = explode(' ', microtime());
       $obj = new queryFactoryResult;
       $obj->sql_query = $zf_sql;
-      if (!$this->db_connected) $this->set_error('0', DB_ERROR_NOT_CONNECTED);
+      if (!$this->db_connected) throw new \Exception(DB_ERROR_NOT_CONNECTED);
       $zp_db_resource = @mysql_query($zf_sql, $this->link);
-      if (!$zp_db_resource) $this->set_error(@mysql_errno(),@mysql_error());
+      if (!$zp_db_resource) throw new \Exception(@mysql_error());
       $obj->resource = $zp_db_resource;
       $obj->cursor = 0;
       $obj->is_cached = true;
@@ -158,23 +158,15 @@ class queryFactory {
     } else {
       $time_start = explode(' ', microtime());
       $obj = new queryFactoryResult;
-      if (!$this->db_connected) $this->set_error('0', DB_ERROR_NOT_CONNECTED);
+      if (!$this->db_connected) throw new \Exception( DB_ERROR_NOT_CONNECTED);
       $zp_db_resource = @mysql_query($zf_sql, $this->link);
       if (!$zp_db_resource) {
-      	if ($_POST['page'] == 'ajax' || $_GET['page'] == 'ajax'){
-      		$messageStack->debug("\n\nThe failing sql was: " . $zf_sql);
-		  	$messageStack->debug("\n\nmySQL returned: " . @mysql_errno($this->link) . ' ' . @mysql_error($this->link));
-		  	if (defined('FILENAME_DEFAULT')) $messageStack->write_debug();
-      		echo createXmlHeader() . xmlEntry('error', 'There was a SQL Error: '.@mysql_error($this->link)) . createXmlFooter();
-      		die();	
-      	}
 		if (method_exists($messageStack, 'debug')) {
 		  $messageStack->debug("\n\nThe failing sql was: " . $zf_sql);
 		  $messageStack->debug("\n\nmySQL returned: " . @mysql_errno($this->link) . ' ' . @mysql_error($this->link));
 		  if (defined('FILENAME_DEFAULT')) {
 		    $messageStack->write_debug();
-		    $messageStack->add('The last transaction had a SQL database error.', 'error');
-		    gen_redirect(html_href_link(FILENAME_DEFAULT, 'cat=phreedom&page=main&amp;action=crash', 'SSL'));
+		    throw new \Exception('The last transaction had a SQL database error.');
 		  } else{
 		  	echo str_replace("\n", '<br />', $messageStack->debug_info); 
 			die;

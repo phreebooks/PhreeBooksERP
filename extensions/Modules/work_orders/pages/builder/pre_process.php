@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/work_orders/pages/builder/pre_process.php
 //
-$security_level = validate_user(SECURITY_WORK_ORDERS_BUILDER);
+$security_level = \core\classes\user::validate(SECURITY_WORK_ORDERS_BUILDER);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_MODULES . 'inventory/defaults.php');
 /**************   page specific initialization  *************************/
@@ -36,7 +36,7 @@ switch ($_REQUEST['action']) {
   case 'new':
 	break;
   case 'save':
-	validate_security($security_level, 2);
+	\core\classes\user::validate_security($security_level, 2);
   	$id          = db_prepare_input($_POST['id']);
 	$wo_title    = db_prepare_input($_POST['wo_title']);
 	$sku_id      = db_prepare_input($_POST['sku_id']);
@@ -130,7 +130,7 @@ switch ($_REQUEST['action']) {
 	}
 	break;
   case 'copy':
-	validate_security($security_level, 2);
+	\core\classes\user::validate_security($security_level, 2);
   	$id    = db_prepare_input($_GET['cID']);
 	$title = db_prepare_input($_GET['title']);
 	// check for duplicate skus
@@ -214,7 +214,7 @@ switch ($_REQUEST['action']) {
 	}
 	break;
   case 'delete':
-	validate_security($security_level, 4);
+	\core\classes\user::validate_security($security_level, 4);
       $id = db_prepare_input($_GET['id']);
 	if (!$id) {
 	  $_REQUEST['action'] = '';
@@ -289,11 +289,11 @@ switch ($_REQUEST['action']) {
     $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " 
 	  from " . TABLE_WO_MAIN . " m inner join " . TABLE_INVENTORY . " i on m.sku_id = i.id" . $search . " order by $disp_order, m.revision DESC";
     $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-    $query_split  = new splitPageResults($_REQUEST['list'], '');
+    $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results
     	$_REQUEST['list'] = $query_split->current_page_number;
     	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-    	$query_split      = new splitPageResults($_REQUEST['list'], '');
+    	$query_split      = new \core\classes\splitPageResults($_REQUEST['list'], '');
     }
     history_save('wo_build');
     

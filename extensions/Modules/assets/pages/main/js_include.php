@@ -29,8 +29,6 @@ echo js_calendar_init($cal_date3);
 
 // required function called with every page load
 function init() {
-	$(function() { $('#detailtabs').tabs(); });
-	$('#inv_image').dialog({ autoOpen:false, width:800 });
   <?php if ($_REQUEST['action'] <> 'new' && $_REQUEST['action'] <> 'edit') { // set focus for main window
 	echo "  document.getElementById('search_text').focus();";
 	echo "  document.getElementById('search_text').select();";
@@ -45,7 +43,7 @@ function check_form() {
   var error_message = "<?php echo JS_ERROR; ?>";
 
   if (error == 1) {
-	alert(error_message);
+	$.messager.alert("Processing error",error_message,"error");
 	return false;
   } else {
 	return true;
@@ -57,22 +55,25 @@ function deleteItem(id) {
 }
 
 function copyItem(id) {
-	var skuID = prompt('<?php echo ASSETS_MSG_COPY_INTRO; ?>', '');
-	if (skuID) {
-		location.href = 'index.php?module=assets&page=main&action=copy&cID='+id+'&asset_id='+skuID;
-	} else {
+	$.messager.prompt('<?php echo TEXT_COPY;?>', '<?php echo TEXT_COPY_TO; ?>', function(skuID){
+		if (skuID){
+			return location.href = 'index.php?module=assets&page=main&action=copy&cID='+id+'&asset_id='+skuID;
+		}
 		return false;
-	}
+	});
 }
 
 function renameItem(id) {
-	var skuID = prompt('<?php echo ASSETS_MSG_RENAME_INTRO; ?>', '');
-	if (skuID) {
-		location.href = 'index.php?module=assets&page=main&action=rename&cID='+id+'&asset_id='+skuID;
-	} else {
+	$.messager.prompt('<?php echo TEXT_RENAME;?>', '<?php echo TEXT_RENAME_TO; ?>', function(skuID){
+		if (skuID){
+			return location.href = 'index.php?module=assets&page=main&action=rename&cID='+id+'&asset_id='+skuID;
+		}
 		return false;
-	}
+	});
 }
 
+function showImage() {
+	$('#inv_image').window('open');	
+}
 // -->
 </script>

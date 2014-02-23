@@ -14,23 +14,21 @@
 // | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the   |
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
-//  Path: /modules/payment/methods/cod.php
+//  Path: /modules/payment/methods/cod/cod.php
 //
 // Revision history
 // 2011-07-01 - Added version number for revision control
-define('MODULE_PAYMENT_COD_VERSION','3.3');
-require_once(DIR_FS_MODULES . 'payment/classes/payment.php');
-
-class cod extends payment {
-  public $code        = 'cod'; // needs to match class name
-  public $title		  = MODULE_PAYMENT_COD_TEXT_TITLE;
-  public $description = MODULE_PAYMENT_COD_TEXT_DESCRIPTION;
-  public $sort_order  = 40; 
+namespace payment\methods\cod;
+class cod extends \payment\classes\payment {
+	public $id        	= 'cod'; // needs to match class name
+  	public $text		= MODULE_PAYMENT_COD_TEXT_TITLE;
+  	public $description = MODULE_PAYMENT_COD_TEXT_DESCRIPTION;
+  	public $sort_order  = 40; 
+  	public $version		= '3.3';
   
-  public function __construct(){
-	parent::__construct();
-  	$this->payment_fields = implode(':', array($_POST['bill_primary_name']));
-  }
-
+  	public function __construct(){
+		parent::__construct();
+  		$this->payment_fields = implode(':', array($_POST['bill_primary_name']));
+  	}
 }
 ?>

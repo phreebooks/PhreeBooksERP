@@ -53,26 +53,9 @@ $fields->set_fields_to_display($type);
 
 $custom_path = DIR_FS_MODULES . 'contacts/custom/pages/main/extra_tabs.php';
 if (file_exists($custom_path)) { include($custom_path); }
-
-function tab_sort($a, $b) {
-  if ($a['order'] == $b['order']) return 0;
-  return ($a['order'] > $b['order']) ? 1 : -1;
-}
-usort($cInfo->tab_list, 'tab_sort');
-
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
-<div id="detailtabs">
-<ul>
-<?php // build the tab list's
-  $set_default = false;
-  foreach ($cInfo->tab_list as $value) {
-  	echo add_tab_list('tab_'.$value['tag'],  $value['text']);
-	$set_default = true;
-  }
-  echo $fields->extra_tab_li . chr(10); // user added extra tabs
-?>
-</ul>
+<div class="easyui-tabs" id="detailtabs">
 <?php
 foreach ($cInfo->tab_list as $value) {
   if (file_exists(DIR_FS_WORKING . 'custom/pages/main/' . $value['file'] . '.php')) {

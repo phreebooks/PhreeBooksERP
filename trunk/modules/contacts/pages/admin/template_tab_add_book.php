@@ -19,7 +19,7 @@
 //
 
 ?>
-<div id="tab_add_book">
+<div title="<?php echo TEXT_ADDRESS_BOOK;?>" id="tab_add_book">
   <fieldset>
     <table>
 	  <tr><th colspan="2"><?php echo TEXT_BILLING_PREFS; ?></th></tr>

@@ -28,7 +28,6 @@
 // 3.7.1 => 2013-06-30 - Bug fixes 
 // Module software version information
 gen_pull_language('phreedom', 'menu');
-define('MODULE_CONTACTS_VERSION',     3.71);
 // Menu Sort Positions
 define('MENU_HEADING_CUSTOMERS_ORDER',   10);
 define('MENU_HEADING_VENDORS_ORDER',     20);
@@ -207,7 +206,7 @@ $mainmenu["customers"]['submenu']['projects']['submenu']["project_mgr"] = array(
   'params'      => '',
 );
 
-if(isset($_SESSION['admin_security'][SECURITY_ID_CONFIGURATION]) && $_SESSION['admin_security'][SECURITY_ID_CONFIGURATION] > 0){
+if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
   gen_pull_language('contacts', 'admin');
   $mainmenu["company"]['submenu']["configuration"]['submenu']["contacts"] = array(
 	'order'	      => MODULE_CONTACTS_TITLE,

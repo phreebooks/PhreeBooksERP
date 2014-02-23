@@ -134,7 +134,7 @@ function ajaxOrderData(cID, oID, jID, open_order, ship_only) {
     url: 'index.php?module=phreebooks&page=ajax&op=load_order&cID='+cID+'&oID='+oID+'&jID='+jID+'&so_po='+open_so_po+'&ship_only='+only_ship,
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-      alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     },
 	success: fillOrderData
   });
@@ -355,7 +355,7 @@ function AccountList() {
 	  url: 'index.php?module=phreebooks&page=ajax&op=load_searches&jID='+journalID+'&type='+account_type+'&guess='+guess,
 	  dataType: ($.browser.msie) ? "text" : "xml",
 	  error: function(XMLHttpRequest, textStatus, errorThrown) {
-	    alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+		  $.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 	  },
 	  success: AccountListResp
     });
@@ -394,11 +394,11 @@ function DropShipList(currObj) {
 }
 
 function OpenOrdrList(currObj) {
-  window.open("index.php?module=phreebooks&page=popup_orders&jID="+journalID,"search_po","width=700px,height=550px,resizable=1,scrollbars=1,top=150,left=200");
+	window.open("index.php?module=phreebooks&page=popup_orders&jID="+journalID,"search_po","width=700px,height=550px,resizable=1,scrollbars=1,top=150,left=200");
 }
 
 function OpenRecurList(currObj) {
-  window.open("index.php?module=phreebooks&page=popup_recur&jID="+journalID,"recur","width=400px,height=300px,resizable=1,scrollbars=1,top=150,left=200");
+	window.open("index.php?module=phreebooks&page=popup_recur&jID="+journalID,"recur","width=400px,height=300px,resizable=1,scrollbars=1,top=150,left=200");
 }
 
 function InventoryList(rowCnt) {
@@ -436,7 +436,7 @@ function convertQuote() {
   if (id != '') {
 	window.open("index.php?module=phreebooks&page=popup_convert&oID="+id,"popup_convert","width=500px,height=300px,resizable=1,scrollbars=1,top=150,left=200");
   } else {
-    alert(cannot_convert_quote);
+	  $.messager.alert('error',cannot_convert_quote,'error');
   }
 }
 
@@ -445,16 +445,12 @@ function convertSO() {
   if (id != '') {
 	window.open("index.php?module=phreebooks&page=popup_convert_po&oID="+id,"popup_convert_po","width=500px,height=300px,resizable=1,scrollbars=1,top=150,left=200");
   } else {
-    alert(cannot_convert_so);
+	  $.messager.alert('error',cannot_convert_so,'error');
   }
 }
 
 function serialList(id) {
 	switch (journalID) {
-		default: // for purchases
-			var newChoice = prompt(serial_num_prompt, $(id).val());
-			$(id).val(newChoice);
-			break;
 		case  '9':
 		case '10':
 		case '12':
@@ -465,6 +461,15 @@ function serialList(id) {
 			var storeID = $("#store_id").val();
 			window.open("index.php?module=inventory&page=popup_serial&def="+curDef+"&sku="+sku+"&rowID="+rowID+"&storeID="+storeID,"serialize","width=700px,height=550px,resizable=1,scrollbars=1,top=150,left=200");
 			break;
+		default: // for purchases
+			var choice    = document.getElementById(rowID).value;
+		  	$.messager.prompt(text_serial_number, serial_num_prompt, function(newChoice){
+				if (newChoice){
+					$(id).val(newChoice);
+				}
+				return false;
+			});
+			$('.messager-input').val(choice).focus();
 	}
 }
 
@@ -831,7 +836,7 @@ function updateRowTotal(rowCnt, useAjax) {
 			  url: 'index.php?module=inventory&page=ajax&op=inv_details&fID=skuPrice&cID='+bill_acct_id+'&sku='+sku+'&qty='+qty+'&rID='+rowCnt,
 			  dataType: ($.browser.msie) ? "text" : "xml",
 			  error: function(XMLHttpRequest, textStatus, errorThrown) {
-			    alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+				  $.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 			  },
 			  success: processSkuPrice
 		    });
@@ -1003,7 +1008,7 @@ function showOverride() {
   if (document.getElementById('tb_icon_print'))         document.getElementById('tb_icon_print').style.visibility         = "hidden";
   if (document.getElementById('tb_icon_post_previous')) document.getElementById('tb_icon_post_previous').style.visibility = "hidden";
   if (document.getElementById('tb_icon_post_next'))     document.getElementById('tb_icon_post_next').style.visibility     = "hidden";
-  $('#override_order').dialog('open');
+  $('#override_order').window('open');
 }
 
 function checkOverride () {
@@ -1014,7 +1019,7 @@ function checkOverride () {
 	url: 'index.php?module=phreedom&page=ajax&op=validate&u='+user+'&p='+pass+'&level=4',
 	dataType: ($.browser.msie) ? "text" : "xml",
 	error: function(XMLHttpRequest, textStatus, errorThrown) {
-	  alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+		$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 	},
 	success: clearOverride
   });
@@ -1025,7 +1030,7 @@ function clearOverride(sXml) {
   if (!xml) return;
   var result = $(xml).find("result").text();
   if (result == 'validated') {
-	$('#override_order').dialog('close');
+	$('#override_order').window('close');
     if (document.getElementById('tb_icon_save'))          document.getElementById('tb_icon_save').style.visibility          = "";
     if (document.getElementById('tb_icon_print'))         document.getElementById('tb_icon_print').style.visibility         = "";
     if (document.getElementById('tb_icon_post_previous')) document.getElementById('tb_icon_post_previous').style.visibility = "";
@@ -1056,7 +1061,7 @@ function updateDesc(rowID) {
  // this function not used - it sets the chart of accounts description if required by the form
 }
 
-function buildFreightDropdown() {
+function buildFreightDropdown() {//@todo
   // fetch the selection
   if (!freightCarriers) return;
   var selectedCarrier = document.getElementById('ship_carrier').value;
@@ -1192,7 +1197,7 @@ function loadSkuDetails(iID, rowCnt) {
 		url: 'index.php?module=inventory&page=ajax&op=inv_details&fID=skuDetails&bID='+bID+'&cID='+cID+'&qty='+qty+'&iID='+iID+'&sku='+sku+'&rID='+rowCnt+'&jID='+journalID,
 		dataType: ($.browser.msie) ? "text" : "xml",
 		error: function(XMLHttpRequest, textStatus, errorThrown) {
-			alert ("Ajax ErrorThrown: " + errorThrown + "\nTextStatus: " + textStatus + "\nError: " + XMLHttpRequest.responseText);
+			$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     	},
     	success: fillInventory
 	});
@@ -1329,7 +1334,7 @@ function fillInventory(sXml) {
   $(xml).find("stock_note").each(function() {
 	text += $(this).find("text_line").text() + "\n";
   });
-  if (text) alert(text);
+  if (text) $.messager.alert('Info',text,'info');
 }
 
 function InventoryProp(elementID) {
@@ -1376,7 +1381,7 @@ function PreProcessLowStock() {
   }
   var acct   = document.getElementById('bill_acct_id').value;
   if (!acct){
-    alert(lowStockNoVendor);
+	$.messager.alert('error',lowStockNoVendor,'error');
     return;
   }
   var store  = document.getElementById('store_id').value;
@@ -1392,7 +1397,7 @@ function PreProcessLowStock() {
 	url: 'index.php?module=phreebooks&page=ajax&op=low_stock&cID='+acct+'&sID='+store+'&rID='+rowCnt,
 	dataType: ($.browser.msie) ? "text" : "xml",
 	error: function(XMLHttpRequest, textStatus, errorThrown) {
-	  alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+		$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 	},
 	success: PostProcessLowStock
   });

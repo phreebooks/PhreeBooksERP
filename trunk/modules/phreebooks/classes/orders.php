@@ -16,69 +16,82 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/classes/orders.php
 //
-
-class orders extends journal {
- var $closed = '0';
-	
-  function __construct() {
-	$this->journal_id          = JOURNAL_ID;
-	$this->gl_type             = GL_TYPE;
-	$this->gl_acct_id          = DEF_GL_ACCT;
-	$this->currencies_code     = DEFAULT_CURRENCY;
-	$this->currencies_value    = '1.0';
-	$this->bill_primary_name   = GEN_PRIMARY_NAME;
-	$this->bill_contact        = GEN_CONTACT;
-	$this->bill_address1       = GEN_ADDRESS1;
-	$this->bill_address2       = GEN_ADDRESS2;
-	$this->bill_city_town      = GEN_CITY_TOWN;
-	$this->bill_state_province = GEN_STATE_PROVINCE;
-	$this->bill_postal_code    = GEN_POSTAL_CODE;
-	$this->bill_country_code   = COMPANY_COUNTRY;
+namespace phreebooks\classes;
+class orders extends \core\classes\journal {
+	public $id;
+	public $recur_id;
+	public $recur_frequency;
+	public $so_po_ref_id;
+	public $bill_acct_id;
+	public $bill_address_id;
+	public $terms;
+	public $item_count;
+	public $weight;
+	public $printed 			= false;
+	public $waiting 			= false;
+	public $purchase_invoice_id;
+	public $bill_add_update		= false;
+ 	public $closed 				= false;
+ 	public $journal_id          = JOURNAL_ID;
+	public $gl_type             = GL_TYPE;
+	public $gl_acct_id          = DEF_GL_ACCT;
+	public $currencies_code     = DEFAULT_CURRENCY;
+	public $currencies_value    = '1.0';
+	public $bill_primary_name   = GEN_PRIMARY_NAME;
+	public $bill_contact        = GEN_CONTACT;
+	public $bill_address1       = GEN_ADDRESS1;
+	public $bill_address2       = GEN_ADDRESS2;
+	public $bill_city_town      = GEN_CITY_TOWN;
+	public $bill_state_province = GEN_STATE_PROVINCE;
+	public $bill_postal_code    = GEN_POSTAL_CODE;
+	public $bill_country_code   = COMPANY_COUNTRY;
 	// shipping defaults
-	$this->ship_short_name     = '';
-	$this->ship_add_update     = 0;
-	$this->ship_acct_id        = 0;
-	$this->ship_address_id     = 0;
-	$this->ship_country_code   = COMPANY_COUNTRY;
-	$this->shipper_code        = '';
-	$this->drop_ship           = 0;
-	$this->freight             = 0;
-	switch ($this->journal_id) { // default to company data for purchases/PO's
-	  case  3:
-	  case  4:
-	  case  6:
-	  case  7:
-		$this->disc_gl_acct_id     = AP_DISCOUNT_PURCHASE_ACCOUNT;
-		$this->ship_gl_acct_id     = AP_DEF_FREIGHT_ACCT;
-		$this->ship_primary_name   = COMPANY_NAME;
-		$this->ship_contact        = AP_CONTACT_NAME;
-		$this->ship_address1       = COMPANY_ADDRESS1;
-		$this->ship_address2       = COMPANY_ADDRESS2;
-		$this->ship_city_town      = COMPANY_CITY_TOWN;
-		$this->ship_state_province = COMPANY_ZONE;
-		$this->ship_postal_code    = COMPANY_POSTAL_CODE;
-		$this->ship_telephone1     = COMPANY_TELEPHONE1;
-		$this->ship_email          = COMPANY_EMAIL;
-		break;
-	  case  9:
-	  case 10:
-	  case 12:
-	  case 13:
-		$this->disc_gl_acct_id     = AR_DISCOUNT_SALES_ACCOUNT;
-		$this->ship_gl_acct_id     = AR_DEF_FREIGHT_ACCT;
-		$this->ship_primary_name   = GEN_PRIMARY_NAME;
-		$this->ship_contact        = GEN_CONTACT;
-		$this->ship_address1       = GEN_ADDRESS1;
-		$this->ship_address2       = GEN_ADDRESS2;
-		$this->ship_city_town      = GEN_CITY_TOWN;
-		$this->ship_state_province = GEN_STATE_PROVINCE;
-		$this->ship_postal_code    = GEN_POSTAL_CODE;
-		$this->ship_telephone1     = GEN_TELEPHONE1;
-		$this->ship_email          = GEN_EMAIL;
-		break;
-	  default:
+	public $ship_short_name     = '';
+	public $ship_add_update     = 0;
+	public $ship_acct_id        = 0;
+	public $ship_address_id     = 0;
+	public $ship_country_code   = COMPANY_COUNTRY;
+	public $shipper_code        = '';
+	public $drop_ship           = 0;
+	public $freight             = 0;
+	
+	function __construct() {
+		switch ($this->journal_id) { // default to company data for purchases/PO's
+		  case  3:
+		  case  4:
+		  case  6:
+		  case  7:
+			$this->disc_gl_acct_id     = AP_DISCOUNT_PURCHASE_ACCOUNT;
+			$this->ship_gl_acct_id     = AP_DEF_FREIGHT_ACCT;
+			$this->ship_primary_name   = COMPANY_NAME;
+			$this->ship_contact        = AP_CONTACT_NAME;
+			$this->ship_address1       = COMPANY_ADDRESS1;
+			$this->ship_address2       = COMPANY_ADDRESS2;
+			$this->ship_city_town      = COMPANY_CITY_TOWN;
+			$this->ship_state_province = COMPANY_ZONE;
+			$this->ship_postal_code    = COMPANY_POSTAL_CODE;
+			$this->ship_telephone1     = COMPANY_TELEPHONE1;
+			$this->ship_email          = COMPANY_EMAIL;
+			break;
+		  case  9:
+		  case 10:
+		  case 12:
+		  case 13:
+			$this->disc_gl_acct_id     = AR_DISCOUNT_SALES_ACCOUNT;
+			$this->ship_gl_acct_id     = AR_DEF_FREIGHT_ACCT;
+			$this->ship_primary_name   = GEN_PRIMARY_NAME;
+			$this->ship_contact        = GEN_CONTACT;
+			$this->ship_address1       = GEN_ADDRESS1;
+			$this->ship_address2       = GEN_ADDRESS2;
+			$this->ship_city_town      = GEN_CITY_TOWN;
+			$this->ship_state_province = GEN_STATE_PROVINCE;
+			$this->ship_postal_code    = GEN_POSTAL_CODE;
+			$this->ship_telephone1     = GEN_TELEPHONE1;
+			$this->ship_email          = GEN_EMAIL;
+			break;
+		  default:
+		}
 	}
-  }
 
   function post_ordr($action) {
 	global $db, $messageStack;
@@ -114,7 +127,7 @@ class orders extends journal {
 		$this->total_amount = $credit_total - $debit_total;
 		$debit_total  += $this->add_total_journal_row('debit');	// put total value into ledger row array
 		break;
-	  default: return $this->fail_message('bad journal_id in pre-POST processing'); // this should never happen, JOURNAL_ID is tested at script entry!
+	  default: throw new \Exception('bad journal_id in pre-POST processing'); // this should never happen, JOURNAL_ID is tested at script entry!
 	}
 	$this->journal_main_array = $this->build_journal_main_array();	// build ledger main record
 
@@ -125,13 +138,13 @@ class orders extends journal {
 	// add/update address book
 	if ($this->bill_add_update) { // billing address
 	  $this->bill_acct_id = $this->add_account($this->account_type . 'b', $this->bill_acct_id, $this->bill_address_id);
-	  if (!$this->bill_acct_id) return false;
+	  if (!$this->bill_acct_id)  throw new \Exception('no contact was selected');
 	}
 	if ($this->ship_add_update) { // shipping address
 	  if (!$this->ship_acct_id) $this->ship_acct_id = $this->bill_acct_id; // set to bill if adding contact and id not set.
 	  if ($this->bill_address_id == $this->ship_address_id) $this->ship_address_id = ''; // force create new ship address, here from copy button
 	  $this->ship_acct_id = $this->add_account($this->account_type . 's', $this->ship_acct_id, $this->ship_address_id);
-	  if (!$this->ship_acct_id) return false;
+	  if (!$this->ship_acct_id)  throw new \Exception('no shipping contact was selected');
 	}
 	// set the ship account id to bill account id if null (new accounts with ship update box not checked)
 	// basically defaults the shipping same as billing if not specified
@@ -164,9 +177,9 @@ class orders extends journal {
 		  $this->journal_main_array['post_date']     = $this->post_date;
 		  $this->journal_main_array['period']        = $this->period;
 		  $this->journal_main_array['terminal_date'] = $this->terminal_date;
-		  if (!$this->validate_purchase_invoice_id()) return false;
+		  $this->validate_purchase_invoice_id();
 		  $messageStack->debug("\n\n  re-posting recur id = " . $this->id);
-		  if (!$this->Post('edit')) return false;
+		  $this->Post('edit');
 		  // test for single post versus rolling into future posts, terminate loop if single post
 		  if (!$this->recur_frequency) break;
 		}
@@ -178,8 +191,8 @@ class orders extends journal {
 		$year_offset  = 0;
 		$post_date    = $this->post_date;
 		for ($i = 0; $i < $this->recur_id; $i++) {
-		  if (!$this->validate_purchase_invoice_id()) return false;
-		  if (!$this->Post('insert')) return false;
+		  $this->validate_purchase_invoice_id();
+		  $this->Post('insert');
 		  $this->id = '';
 		  $this->journal_main_array['id'] = $this->id;
 		  $this->remove_cogs_rows();
@@ -196,7 +209,7 @@ class orders extends journal {
 		  if ($this->terminal_date) $this->terminal_date = gen_specific_date($this->terminal_date, $day_offset, $month_offset, $year_offset);
 		  $this->period        = gen_calculate_period($this->post_date, true);
 		  if (!$this->period && $i < ($this->recur_id - 1)) { // recur falls outside of available periods, ignore last calculation
-		    return $this->fail_message(ORD_PAST_LAST_PERIOD);
+		    throw new \Exception(ORD_PAST_LAST_PERIOD);
 		  }
 		  $this->journal_main_array['post_date']     = $this->post_date;
 		  $this->journal_main_array['period']        = $this->period;
@@ -220,8 +233,8 @@ class orders extends journal {
 	  $this->journal_main_array['purchase_invoice_id'] = $first_purchase_invoice_id;
 	  $this->journal_main_array['terminal_date']       = $first_terminal_date;
 	} else {
-	  if (!$this->validate_purchase_invoice_id()) return false;
-	  if (!$this->Post($this->id ? 'edit' : 'insert')) return false;
+	  $this->validate_purchase_invoice_id();
+	  $this->Post($this->id ? 'edit' : 'insert');
 	}
 	// ************* post-POST processing *************
 	switch ($this->journal_id) {
@@ -233,7 +246,7 @@ class orders extends journal {
 	  case 12: // Sales/Invoice Journal
 	  case 13: // Customer Credit Memo Journal
 		if ($this->purchase_invoice_id == '') {	// it's a new record, increment the po/so/inv to next number
-			if (!$this->increment_purchase_invoice_id()) return false;
+			$this->increment_purchase_invoice_id();
 		}
 		break;
 	  case  6: // Purchase Journal
@@ -255,7 +268,7 @@ class orders extends journal {
 	  case  4: // Purchase Order Journal
 	  case 10: // Sales Order Journal
 		$result = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " where so_po_ref_id = " . $this->id);
-		if ($result->RecordCount() > 0) return $this->fail_message(constant('GENERAL_JOURNAL_' . $this->journal_id . '_ERROR_6'));
+		if ($result->RecordCount() > 0) throw new \Exception(constant('GENERAL_JOURNAL_' . $this->journal_id . '_ERROR_6'));
 		break;
 	  case  6: // Purchase Journal
 	  case  7: // Vendor Credit Memo Journal
@@ -263,11 +276,11 @@ class orders extends journal {
 	  case 13: // Customer Credit Memo Journal
 		// first check for main entries that refer to delete id (credit memos)
 		$result = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " where so_po_ref_id = " . $this->id);
-		if ($result->RecordCount() > 0) return $this->fail_message(constant('GENERAL_JOURNAL_' . $this->journal_id . '_ERROR_6'));
+		if ($result->RecordCount() > 0) throw new \Exception(constant('GENERAL_JOURNAL_' . $this->journal_id . '_ERROR_6'));
 		// next check for payments that link to deleted id (payments)
 		$result = $db->Execute("select id from " . TABLE_JOURNAL_ITEM . " 
 			where gl_type = 'pmt' and so_po_item_ref_id = " . $this->id);
-		if ($result->RecordCount() > 0) return $this->fail_message(constant('GENERAL_JOURNAL_' . $this->journal_id . '_ERROR_6'));
+		if ($result->RecordCount() > 0)throw new \Exception(constant('GENERAL_JOURNAL_' . $this->journal_id . '_ERROR_6'));
 		break;
 	  case  3: // Purchase Quote Journal
 	  case  9: // Sales Quote Journal
@@ -282,12 +295,12 @@ class orders extends journal {
 	  for ($i = 0; $i < count($affected_ids); $i++) {
 		$this->id = $affected_ids[$i]['id'];
 		$this->journal($this->id); // load the posted record based on the id submitted
-		if (!$this->unPost('delete')) return false;
+		$this->unPost('delete');
 		// test for single post versus rolling into future posts, terminate loop if single post
 		if (!$recur_frequency) break;
 	  }
 	} else {
-	  if (!$this->unPost('delete')) return false;
+	  $this->unPost('delete');
 	}
 	$db->transCommit();
 	// *************** END TRANSACTION *************************

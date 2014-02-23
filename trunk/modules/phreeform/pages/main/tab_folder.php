@@ -20,7 +20,7 @@
 
 $fieldset_content = NULL;
 // build the tab toolbar
-$docbar = new toolbar;
+$docbar = new \core\classes\toolbar;
 $docbar->icon_list['cancel']['show']   = false;
 $docbar->icon_list['open']['show']     = false;
 $docbar->icon_list['save']['show']     = false;

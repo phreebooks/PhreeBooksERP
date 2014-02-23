@@ -39,9 +39,6 @@ var tableCount    = 0;
 <?php echo $jsArray; ?>
 
 function init() {
-  $(function() {
-	$('#gentabs').tabs();
-  });
   for (var tables in tableInit) {
     var table = document.getElementById(tableInit[tables]);
     var tableDnD = new TableDnD();
@@ -82,7 +79,7 @@ function fetchEmailMsg() {
 	  url: 'index.php?module=phreeform&page=ajax&op=load_email_msg&rID='+rID,
       dataType: ($.browser.msie) ? "text" : "xml",
       error: function(XMLHttpRequest, textStatus, errorThrown) {
-        alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	  $.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
       },
 	  success: fillEmailMsg
     });
@@ -97,11 +94,13 @@ function fillEmailMsg(sXml) {
 }
 
 function querySaveAs() {
-  var title = prompt('Enter the new report name:', '');
-  if (title) {
-    document.getElementById('title').value = title;
-    submitToDo('save_as');
-  }
+ 	$.messager.prompt('<?php echo TEXT_REPORT?>', "<?php echo PHREEFORM_RPTENTER; ?>", function(title){
+		if (title){
+			document.getElementById('title').value = title;
+		    submitToDo('save_as');
+		}
+		return false;
+	});
 }
 
 function hideEmail() {

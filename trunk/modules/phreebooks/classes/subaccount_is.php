@@ -14,9 +14,9 @@
 // | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the   |
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
-//  Path: /modules/phreeform/custom/classes/subaccount_is.php
+//  Path: /modules/phreebooks/classes/subaccount_is.php
 //
-
+namespace phreebooks\classes;
 // this file contains special function calls to generate the data array needed to build reports not possible
 // with the current reportbuilder structure.
 class subaccount_is {
@@ -45,7 +45,6 @@ class subaccount_is {
   }
 
   function fill_bal_sheet($balance) {
-    global $messageStack;
     $parent = array();
 	// build list of parents
     foreach ($this->coa_info as $details) {
@@ -65,10 +64,7 @@ class subaccount_is {
 		unset($this->coa_info[$acct_id]);
 	  }
 	}
-	if ($this->runaway_cnt-- < 0) {
-	  $messageStack->add('Runaway counter expired, check your subaccounts for a recursive reference.','error');
-	  return false;
-	}
+	if ($this->runaway_cnt-- < 0) throw new \Exception('Runaway counter expired, check your subaccounts for a recursive reference.');
 	if (sizeof($parent) > 0) $this->fill_bal_sheet($balance);
 	// if we are here, the tree is built and all that is left are the top levels
     foreach ($this->coa_info as $acct_id => $account) {

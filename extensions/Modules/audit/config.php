@@ -19,8 +19,8 @@
 gen_pull_language('phreedom', 'menu');
 // Release History
 // 1 16-10-2012 created.
+// 1.3 added xsd validation
 // Module software version information
-define('MODULE_AUDIT_VERSION',  '1');
 // Menu Sort Positions
 
 // Menu Security id's
@@ -37,7 +37,7 @@ if (defined('MODULE_AUDIT_STATUS')) {
 	    'link'        => html_href_link(FILENAME_DEFAULT, 'module=audit&amp;page=main', 'SSL'),
 		'params'	  => '',
 	);
-	if(isset($_SESSION['admin_security'][SECURITY_ID_CONFIGURATION]) && $_SESSION['admin_security'][SECURITY_ID_CONFIGURATION] > 0){
+	if(\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
   		gen_pull_language('audit', 'admin');
   		$mainmenu["company"]['submenu']["configuration"]['submenu']["audit"] = array(
 			'order'	      => MODULE_AUDIT_TITLE,

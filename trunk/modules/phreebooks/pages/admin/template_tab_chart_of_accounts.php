@@ -17,7 +17,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/pages/admin/template_tab_chart_of_accounts.php
 //
-$chart_of_accounts_toolbar = new toolbar;
+$chart_of_accounts_toolbar = new \core\classes\toolbar;
 $chart_of_accounts_toolbar->icon_list['cancel']['show'] = false;
 $chart_of_accounts_toolbar->icon_list['open']['show']   = false;
 $chart_of_accounts_toolbar->icon_list['save']['show']   = false;
@@ -25,7 +25,7 @@ $chart_of_accounts_toolbar->icon_list['delete']['show'] = false;
 $chart_of_accounts_toolbar->icon_list['print']['show']  = false;
 if ($security_level > 1) $chart_of_accounts_toolbar->add_icon('new', 'onclick="loadPopUp(\'chart_of_accounts_new\', 0)"', $order = 10);
 ?>
-<div id="tab_chart_of_accounts">
+<div title="<?php echo GL_POPUP_WINDOW_TITLE;?>" id="tab_chart_of_accounts">
   <?php echo $chart_of_accounts_toolbar->build_toolbar(); ?>
   <h1><?php echo $chart_of_accounts->title; ?></h1>
   <div align="center">

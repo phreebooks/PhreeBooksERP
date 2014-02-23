@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreepos/ajax/other_transactions.php
 //
-$security_level = validate_user(SECURITY_ID_PHREEPOS);
+$security_level = \core\classes\user::validate(SECURITY_ID_PHREEPOS);
 define('JOURNAL_ID',2);
 /**************  include page specific files    *********************/
 gen_pull_language('contacts');
@@ -26,9 +26,6 @@ gen_pull_language('phreeform');
 require_once(DIR_FS_MODULES . 'inventory/defaults.php');
 require_once(DIR_FS_MODULES . 'phreeform/defaults.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
-require_once(DIR_FS_MODULES . 'phreebooks/classes/gen_ledger.php');
-require_once(DIR_FS_MODULES . 'phreepos/classes/tills.php');
-require_once(DIR_FS_MODULES . 'phreepos/classes/other_transactions.php');
 /**************   page specific initialization  *************************/
 define('ORD_ACCT_ID',GEN_CUSTOMER_ID);
 define('GL_TYPE','sos');
@@ -38,16 +35,14 @@ define('DEF_GL_ACCT_TITLE',ORD_AR_ACCOUNT);
 define('POPUP_FORM_TYPE','pos:rcpt');
 $error           = false;
 $account_type    = 'c';
-$order           = new journal();
-$transaction     = new other_transactions();
-$tills           = new tills();
+$order           = new \core\classes\journal();
+$transaction     = new \phreepos\classes\other_transactions();
+$tills           = new \phreepos\classes\tills();
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_MODULES . 'phreepos/custom/ajax/other_transactions.php';
 if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
-	if ($security_level < 2) {
-	  $error .= ERROR_NO_PERMISSION;
-	}
+	\core\classes\user::validate_security($security_level, 2); // security check		
 	$transaction->get_transaction_info($_POST['Other_trans_type']);
 	$tills->get_till_info($_POST['ot_till_id']);
 	// currency values (convert to DEFAULT_CURRENCY to store in db)
@@ -127,5 +122,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 if ($error)  			$xml .= "\t" . xmlEntry("error", 			$error);
 //if ($order->errormsg)	$xml .= "\t" . xmlEntry("error", 			$order->errormsg);
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

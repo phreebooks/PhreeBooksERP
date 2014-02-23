@@ -16,24 +16,11 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreedom/pages/ctl_panel/pre_process.php
 //
-$security_level = validate_user(0, true);
+$security_level = \core\classes\user::validate(0, true);
 /**************  include page specific files    *********************/
 
 /**************   page specific initialization  *************************/
 $menu_id = $_GET['mID'];
-// retrieve all modules from directory, and available dashboards
-if (!isset($dirs)) $dirs = scandir(DIR_FS_MODULES);
-$dashboards = array();
-foreach ($dirs as $dir) {
-  if (defined('MODULE_' . strtoupper($dir) . '_STATUS') && file_exists(DIR_FS_MODULES . $dir . '/dashboards/')) {
-    $choices = scandir(DIR_FS_MODULES . "$dir/dashboards/");
-	foreach ($choices as $dashboard) {
-	  if ($dashboard == '.' || $dashboard == '..' || !file_exists(DIR_FS_MODULES."$dir/dashboards/$dashboard/$dashboard.php")) continue;
-	  $dashboards[] = array('module_id' => $dir, 'dashboard_id' => $dashboard);
-	}
-  }
-}
-
 // retireve current user profile for this page
 $my_profile = array();
 $result = $db->Execute("select dashboard_id from " . TABLE_USERS_PROFILES . " 
@@ -49,29 +36,24 @@ if (file_exists($custom_path)) { include($custom_path); }
 
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
-  case 'save':
-  	foreach ($dashboards as $dashboard) {
-	  // build add and delete list
-	  // if post is set and not in my_profile -> add
-	  if (isset($_POST[$dashboard['dashboard_id']]) && !in_array($dashboard['dashboard_id'], $my_profile)) {
-	  	include_once (DIR_FS_MODULES . $dashboard['module_id'] . '/dashboards/' . $dashboard['dashboard_id'] . '/' . $dashboard['dashboard_id'] . '.php');
-	    $dbItem = new $dashboard['dashboard_id'];
-	    $dbItem->menu_id      = $menu_id;
-	    $dbItem->module_id    = $dashboard['module_id'];
-		$dbItem->Install();
-	  }
-	  // if post is not set and in my_profile -> delete
-	  if (!isset($_POST[$dashboard['dashboard_id']]) && in_array($dashboard['dashboard_id'], $my_profile)) { // delete it
-	  	include_once  (DIR_FS_MODULES . $dashboard['module_id'] . '/dashboards/' . $dashboard['dashboard_id'] . '/' . $dashboard['dashboard_id'] . '.php');
-	    $dbItem = new $dashboard['dashboard_id'];
-	    $dbItem->menu_id      = $menu_id;
-	    $dbItem->module_id    = $dashboard['module_id'];
-	    $dbItem->Remove();
-	  }
-	}
-	gen_redirect(html_href_link(FILENAME_DEFAULT, '&module=phreedom&page=main&mID=' . $menu_id, 'SSL'));
-	break;
-  default:
+  	case 'save':
+  		foreach ($admin_classes as $module) {
+  			if ($module->installed){
+				// build add and delete list
+		  		// if post is set and not in my_profile -> add
+		  		foreach ($module->dashboards as $dashboard){
+			  		if (isset($_POST[$dashboard->id]) && !in_array($dashboard->id, $my_profile)) {
+						$dashboard->install();
+			  		}else{
+			  			// 	if post is not set and in my_profile -> delete
+			  			$dashboard->delete();
+			  		}
+		  		}
+  			}
+		}
+		gen_redirect(html_href_link(FILENAME_DEFAULT, '&module=phreedom&page=main&mID=' . $menu_id, 'SSL'));
+		break;
+  	default:
 }
 
 /*****************   prepare to display templates  *************************/

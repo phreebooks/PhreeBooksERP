@@ -32,7 +32,7 @@ echo html_form('pw_lost', FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;a
   </tr>
   <tr>
    <td nowrap="nowrap">&nbsp;&nbsp;<?php echo TEXT_LOGIN_COMPANY; ?></td>
-   <td><?php echo html_pull_down_menu('company', load_company_dropdown(), $admin_company); ?></td>
+   <td><?php echo html_pull_down_menu('company', $_SESSION['companies'], $company_index, '', true); ?></td>
   </tr>
   <tr><td colspan="2" align="right"><?php echo html_submit_field('submit', TEXT_PASSWORD_FORGOTTEN) . '&nbsp;&nbsp;'; ?></td></tr>
  </tbody>

@@ -31,19 +31,7 @@ $toolbar->icon_list['print']['show']    = false;
 echo $toolbar->build_toolbar();
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
-<div id="admintabs">
-<ul>
-<?php
-  echo add_tab_list('tab_inventory',MENU_HEADING_INVENTORY);
-  echo add_tab_list('tab_tabs',     TEXT_EXTRA_TABS);
-  echo add_tab_list('tab_fields',   TEXT_EXTRA_FIELDS);
-  echo add_tab_list('tab_tools',    TEXT_TOOLS);
-  if (file_exists(DIR_FS_MODULES . $module . '/custom/pages/admin/template_tab_custom.php')) {
-    echo add_tab_list('tab_custom', TEXT_CUSTOM_TAB);    
-  }
-  echo add_tab_list('tab_stats',    TEXT_STATISTICS);
-?>
-</ul>
+<div class="easyui-tabs" id="admintabs">
 <?php
   require (DIR_FS_MODULES . $module . '/pages/admin/template_tab_inventory.php');
   require (DIR_FS_MODULES . $module . '/pages/admin/template_tab_tabs.php');

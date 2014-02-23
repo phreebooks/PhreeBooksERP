@@ -17,7 +17,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreeform/pages/popup_build/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_PHREEFORM);
+$security_level = \core\classes\user::validate(SECURITY_ID_PHREEFORM);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/phreeform.php');
@@ -34,7 +34,7 @@ $parent_id   = $_GET['parent_id']    ? $_GET['parent_id']: $_POST['parent_id'];
 $def_module  = $_POST['mod']         ? $_POST['mod']     : DEFAULT_MODULE;
 $def_lang    = $_POST['lang']        ? $_POST['lang']    : DEFAULT_LANGUAGE;
 $import_path = "modules/$def_module/language/$def_lang/reports/";
-$report      = new objectInfo();
+$report      = new \core\classes\objectInfo();
 // load the directory tree to java array (use for page display and error checking on update
 $js_dir = $db->Execute('select id, parent_id, doc_title from ' . TABLE_PHREEFORM . ' order by id');
 $dir_tree = array();
@@ -47,8 +47,7 @@ switch ($_REQUEST['action']) {
   case 'save':
   case 'preview':
   	if (!isset($_POST['filename_prefix'])) { // check for truncated post vars
-		$messageStack->add('The form was not submitted in full and cannot be saved properly. The most common solution to this problem is to set the max_input_vars above the standard 1000 in your php.ini configuration file.','error');
-		break;
+		throw new \Exception('The form was not submitted in full and cannot be saved properly. The most common solution to this problem is to set the max_input_vars above the standard 1000 in your php.ini configuration file.');
 	}
 	// hidden fields
     $rID                          = db_prepare_input($_POST['rID']);
@@ -62,7 +61,7 @@ switch ($_REQUEST['action']) {
 	$report->page->size           = db_prepare_input($_POST['papersize']);
 	$report->page->orientation    = db_prepare_input($_POST['paperorientation']);
 	if ($_POST['table']) foreach ($_POST['table'] as $key => $value) {
-	  $report->tables[] = new objectInfo(array(
+	  $report->tables[] = new \core\classes\objectInfo(array(
 	    'joinopt'      => db_prepare_input($_POST['joinopt'][$key]),
 	    'tablename'    => db_prepare_input($_POST['table'][$key]),
 	    'relationship' => db_prepare_input($_POST['table_crit'][$key]),
@@ -107,7 +106,7 @@ switch ($_REQUEST['action']) {
 	  $report->totalonly            = db_prepare_input($_POST['totalonly']);
 	  $report->fieldlist            = array();
 	  if ($_POST['fld_fld']) foreach ($_POST['fld_fld'] as $key => $value) {
-	    $report->fieldlist[] = new objectInfo(
+	    $report->fieldlist[] = new \core\classes\objectInfo(
 		  array(
 	        'fieldname'   => db_prepare_input($_POST['fld_fld'][$key]),
 	        'description' => db_prepare_input($_POST['fld_desc'][$key]),
@@ -131,7 +130,7 @@ switch ($_REQUEST['action']) {
 	  while(true) {
 	    if (!isset($_POST['row_id'][$cnt])) break;
 		$key = $_POST['row_id'][$cnt];
-	    $properties = new objectInfo();
+	    $properties = new \core\classes\objectInfo();
 	    $properties->description = db_prepare_input($_POST['fld_desc'][$cnt]);
 	    $properties->abscissa    = db_prepare_input($_POST['fld_abs'][$cnt]);
 	    $properties->ordinate    = db_prepare_input($_POST['fld_ord'][$cnt]);
@@ -184,7 +183,7 @@ switch ($_REQUEST['action']) {
 		if ($_POST['hbox_fclr_' .$key]) $properties->hfillcolor   = $_POST['hbox_fclr_'.$key];
 		$boxfield = array();
 		for ($j = 0; $j < sizeof($_POST['box_fld_' . $key]); $j++) {
-		  $temp = new objectInfo();
+		  $temp = new \core\classes\objectInfo();
 		  if ($_POST['box_fld_' .$key]) $temp->fieldname          = $_POST['box_fld_'  .$key][$j];
 		  if ($_POST['box_desc_'.$key]) $temp->description        = $_POST['box_desc_' .$key][$j];
 		  if ($_POST['box_proc_'.$key]) $temp->processing         = $_POST['box_proc_' .$key][$j];
@@ -222,7 +221,7 @@ switch ($_REQUEST['action']) {
 	$report->filenamefield  = db_prepare_input($_POST['filename_field']);
 	$report->grouplist      = array();
 	if ($_POST['grp_fld']) foreach ($_POST['grp_fld'] as $key => $value) {
-	  $report->grouplist[]  = new objectInfo(array(
+	  $report->grouplist[]  = new \core\classes\objectInfo(array(
 	    'fieldname'   => db_prepare_input($_POST['grp_fld'][$key]),
 	    'description' => db_prepare_input($_POST['grp_desc'][$key]),
 	    'default'     => db_prepare_input($_POST['grp_def'][$key]),
@@ -232,7 +231,7 @@ switch ($_REQUEST['action']) {
 	}
 	$report->sortlist = array();
 	if ($_POST['sort_fld']) foreach ($_POST['sort_fld'] as $key => $value) {
-	  $report->sortlist[] = new objectInfo(array(
+	  $report->sortlist[] = new \core\classes\objectInfo(array(
 	    'fieldname'   => db_prepare_input($_POST['sort_fld'][$key]),
 	    'description' => db_prepare_input($_POST['sort_desc'][$key]),
 	    'default'     => db_prepare_input($_POST['srt_def'][$key]),
@@ -240,7 +239,7 @@ switch ($_REQUEST['action']) {
 	}
 	$report->filterlist = array();
 	if ($_POST['crit_fld']) foreach ($_POST['crit_fld'] as $key => $value) {
-	  $report->filterlist[] = new objectInfo(array(
+	  $report->filterlist[] = new \core\classes\objectInfo(array(
 	    'fieldname'   => db_prepare_input($_POST['crit_fld'][$key]),
 	    'description' => db_prepare_input($_POST['crit_desc'][$key]),
 	    'visible'     => db_prepare_input($_POST['crit_vis'][$key]),
@@ -259,15 +258,9 @@ switch ($_REQUEST['action']) {
 	$doc_ext   = db_prepare_input($_POST['doc_ext']);
 	$doc_group = db_prepare_input($_POST['doc_group']);
 	// check for valid folder name
-	if (!$doc_title) {
-	  $messageStack->add(PHREEFORM_FOLDER_BLANK_ERROR,'error');
-	  break;
-	}
+	if (!$doc_title) throw new \Exception(PHREEFORM_FOLDER_BLANK_ERROR);
 	// check to see if the directory is being moved below itself
-	if (!validate_dir_move($dir_tree, $id, $parent_id)) {
-	  $messageStack->add(PHREEFORM_DIR_MOVE_ERROR,'error');
-	  break;
-	}
+	if (!validate_dir_move($dir_tree, $id, $parent_id)) throw new \Exception(PHREEFORM_DIR_MOVE_ERROR);
 	$result = $db->Execute("select id from " . TABLE_PHREEFORM . " where doc_group = '" . $doc_group . "'");
 	if ($result->RecordCount() > 0) {
 	  if ($result->fields['id'] <> $id) {
@@ -293,16 +286,10 @@ switch ($_REQUEST['action']) {
 	$doc_title = ''; // clear the doc title
     break;
   case 'delete_dir':
-	if (!$id) {
-	  $messageStack->add(PHREEFORM_DIR_DELETE_ERROR,'error');
-	  break;
-	}
+	if (!$id) throw new \Exception(PHREEFORM_DIR_DELETE_ERROR);
 	// check for directory empty
 	$result = $db->Execute("select id from " . TABLE_PHREEFORM . " where parent_id = " . $id);
-	if ($result->RecordCount() > 0) {
-	  $messageStack->add(PHREEFORM_DIR_NOT_EMPTY_ERROR,'error');
-	  break;
-	}
+	if ($result->RecordCount() > 0) throw new \Exception(PHREEFORM_DIR_NOT_EMPTY_ERROR);
 	$db->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $id);
 	$messageStack->add(PHREEFORM_DIR_DELETE_SUCCESS,'success');
     break;
@@ -319,8 +306,7 @@ switch ($_REQUEST['action']) {
         if ($file <> "." && $file <> "..") $output[] = $file;
       }
 	} else {
-	  $messageStack->add('error opening the directory for reading!','error');
-	  break;
+	  throw new \Exception('error opening the directory for reading!');
 	}
     closedir($handle);
 	foreach ($output as $file) if (!$success = ImportReport(NULL, $file, $import_path)) $error = true;
@@ -344,7 +330,7 @@ switch ($_REQUEST['action']) {
   case 'import_all':
   case 'refresh_dir':
     $sel_modules = array();
-	foreach ($loaded_modules as $mod) $sel_modules[] = array('id' => $mod, 'text' => $mod);
+	foreach ($loaded_modules as $mod) $sel_modules[] = array('id' => $mod, 'text' => $mod); //@todo make use of the gen_build_dropdown($admin_classes);
 	$sel_language = load_language_dropdown();
 	define('PAGE_TITLE', PHREEFORM_DOC_IMPORT);
     $include_template = 'template_import.php';

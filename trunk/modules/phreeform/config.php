@@ -26,7 +26,6 @@
 // 3.5 => 2012-10-01 - bug fixes
 // 3.6 => 2013-06-30 - bug fixes
 // Module software version information
-define('MODULE_PHREEFORM_VERSION',  3.6);
 // Menu Sort Positions
 // Menu Security id's (refer to master doc to avoid security setting overlap)
 define('SECURITY_ID_PHREEFORM', 3); // same as SECURITY_ID_REPORTS

@@ -22,7 +22,6 @@ define('MODULE_SHIPPING_USPS_TITLE_SHORT', 'USPS');
 define('MODULE_SHIPPING_USPS_TEXT_DESCRIPTION', 'This method currently only supports rate estimation for domestic Express, Priority, and Parcel Post mailings.');
 define('MODULE_SHIPPING_USPS_TEXT_INTRODUCTION', 'You will need to have registered an account with USPS at http://www.uspsprioritymail.com/et_regcert.html to use this module. USPS expects you to use pounds as weight measure for your products.');
 define('MODULE_SHIPPING_USPS_TRACKING_URL','http://trkcnfrm1.smi.usps.com/PTSInternetWeb/InterLabelInquiry.do');
-define('SHIPPING_USPS_SHIPMENTS_ON','US Postal Service Shipments on: ');
 
 // Key descriptions
 define('MODULE_SHIPPING_USPS_TITLE_DESC', 'Title to use for display purposes on shipping rate estimator');

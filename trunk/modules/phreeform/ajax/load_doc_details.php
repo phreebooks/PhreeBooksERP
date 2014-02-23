@@ -19,7 +19,7 @@
 //
 /**************   Check user security   *****************************/
 $xml = NULL;
-$security_level = validate_ajax_user(SECURITY_ID_PHREEFORM);
+$security_level = \core\classes\user::validate(SECURITY_ID_PHREEFORM);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_MODULES . 'phreeform/defaults.php');
 require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
@@ -27,7 +27,7 @@ require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
 if(!isset($_REQUEST['list'])) $_REQUEST['list'] = 1;
 $fieldset_content = 'NULL';
 $id = (int)$_GET['id'];
-if (!isset($_GET['id'])) die;
+if (!isset($_GET['id'])) throw new Exception("variable ID isn't set");
 $doc_details = $db->Execute("select * from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
 if ($id == 0 || $doc_details->fields['doc_type'] == '0') { // folder
   $dir_path     = TEXT_PATH . ': /' . build_dir_path($id);
@@ -37,7 +37,7 @@ if ($id == 0 || $doc_details->fields['doc_type'] == '0') { // folder
   $query_raw    = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . " from " . TABLE_PHREEFORM . " where parent_id = '" . $id . "'";
   $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
   // the splitPageResults should be run directly after the query that contains SQL_CALC_FOUND_ROWS
-  $query_split  = new splitPageResults($_REQUEST['list'], '');  
+  $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');  
   include (DIR_FS_MODULES . 'phreeform/pages/main/tab_folder.php');
 } else { // load document details
   include (DIR_FS_MODULES . 'phreeform/pages/main/tab_report.php');
@@ -48,5 +48,7 @@ $html .= "</div>";
 
 $xml  .= "\t" . xmlEntry("htmlContents", $html);
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

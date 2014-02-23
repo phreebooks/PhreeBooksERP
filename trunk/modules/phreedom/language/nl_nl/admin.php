@@ -10,7 +10,7 @@
 
 define('GEN_LOG_RESEND_PW','Herstuur Wachtwoord naar email -> ');
 define('GEN_LOG_LOGIN','Inloggen Gebruiker -> ');
-define('GEN_LOG_LOGIN_FAILED','Inloggen van gebruiker mislukt - id -> ');
+define('GEN_LOG_LOGIN_FAILED','Inloggen van gebruiker mislukt - reden: %s id -> %s');
 define('GEN_LOG_LOGOFF','Gebruikker Uitgelogd -> ');
 define('INV_FIELD_RESERVED_WORD','De ingevoerde naam is een gereserveerd woord. Kies alstublieft een andere naam.');
 define('INV_IMAGE_FILE_WRITE_ERROR','Er was een probleem met het opslaan van het bestand in de directory.');
@@ -42,10 +42,10 @@ define('INV_LABEL_FIXED_255_CHARS','Gefixeerd op 255 karacters Maximaal');
 define('INV_LABEL_MAX_NUM_CHARS','Maximum Aantal karacters (Lengte)');
 define('INV_LABEL_DEFAULT_TEXT_VALUE','Standaard waarde: ');
 define('EXTRA_FIELDS_ERROR_NO_TABS','Er zijn geen aangepaste tabbladen, voeg dan ten minste een aangepaste tabblad voor het toevoegen van velden.');
-define('ASSETS_FIELD_DELETE_INTRO','Weet u zeker dat u deze veld wilt verwijderen?');
-define('ASSETS_FIELD_RESERVED_WORD','Het veld naam die u heeft opgegeven, is een MySQL gereserveerd woord, kies een nieuwe veldnaam!');
-define('ASSETS_ERROR_FIELD_DUPLICATE','De veldnaam die u hebt ingevoerd is al in gebruik, kies een nieuwe veldnaam!');
-define('ASSETS_ERROR_FIELD_BLANK','De veldnaam leeg is, kies een veldnaam en controleer het formulier!');
+define('EXTRA_FIELD_DELETE_INTRO','Weet u zeker dat u deze veld wilt verwijderen?');
+define('EXTRA_FIELD_RESERVED_WORD','Het veld naam die u heeft opgegeven, is een MySQL gereserveerd woord, kies een nieuwe veldnaam!');
+define('EXTRA_FIELD_ERROR_DUPLICATE','De veldnaam die u hebt ingevoerd is al in gebruik, kies een nieuwe veldnaam!');
+define('EXTRA_ERROR_FIELD_BLANK','De veldnaam leeg is, kies een veldnaam en controleer het formulier!');
 define('INV_FIELD_NAME','Veld Naam: ');
 define('INV_CATEGORY_MEMBER','Categorie lid:');
 define('EXTRA_TABS_LOG','Tabbladen (%s)');

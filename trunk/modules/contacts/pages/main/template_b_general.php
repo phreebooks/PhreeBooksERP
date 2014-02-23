@@ -18,7 +18,7 @@
 //  Path: /modules/contacts/pages/main/template_b_general.php
 //
 ?>
-<div id="tab_general">
+<div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
   <fieldset>
     <legend><?php echo ACT_CATEGORY_CONTACT; ?></legend>
     <table>

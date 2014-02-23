@@ -9,7 +9,7 @@
 // Path: /modules/phreebooks/language/nl_nl/admin.php
 
 define('MODULE_PHREEBOOKS_TITLE','PhreeBooks Module');
-define('MODULE_PHREEBOOKS_DESCRIPTION','De phreebooks module biedt dubbele invoer boekhouden. De functies omvatten Inkooporders, Verkooporders, facturering, Journaalposten en nog veel meer. <b> LET OP: Dit is een core module en dient niet te worden verwijderd </ b>!');
+define('MODULE_PHREEBOOKS_DESCRIPTION','De phreebooks module biedt dubbele invoer boekhouden.<br>De functies omvatten Inkooporders, Verkooporders, facturering, Journaalposten en nog veel meer.');
 define('MODULE_PHREEBOOKS_NOTES_1','MEDIUM BELANGRIJK: Voer bedrijfsinformatie in (Bedrijf -> Module Administratie -> Mijn Bedrijf tabblad)');
 define('MODULE_PHREEBOOKS_NOTES_2','MINST BELANGRIJK: Set up mail server instellingen (Bedrijf -> Module Administratie -> Email tabblad)');
 define('MODULE_PHREEBOOKS_NOTES_3','HEEL BELANGRIJK: Verander de standaard grootboekrekeningen of importeer nieuwe (Bedrijf -> Module Administratie -> PhreeBooks Module -> Grootboekrekeningen tabblad)');
@@ -91,7 +91,7 @@ define('GL_UTIL_PURGE_DB_CONFIRM','Weet u zeker dat u alle Journaal posten wil v
 define('GL_UTIL_PURGE_CONFIRM','Alle journaal records zijn verwijderd en de database is opgeschoond');
 define('GL_UTIL_PURGE_FAIL','Geen journaal Boekingen zijn gewijzigd!');
 define('GL_CURRENT_PERIOD','Huidige Periode is:');
-define('GL_WARN_ADD_FISCAL_YEAR','Weet u zeker dat het boekjaar wil toevoegen:');
+define('GL_WARN_ADD_FISCAL_YEAR','Weet u zeker dat het boekjaar %s wil toevoegen.');
 define('GL_ERROR_FISCAL_YEAR_SEQ','De laatste periode van de gewijzigde fiscale jaar stemt niet af met de start datum van de volgende fiscale jaar. De startdatum van het volgende fiscale jaar is gewijzigd en moeten worden herzien.');
 define('GL_WARN_CHANGE_ACCT_PERIOD','Voer een periode in om tot huidige periode te maken:');
 define('GL_ERROR_BAD_ACCT_PERIOD','De geselecteerde periode is nog niet ingesteld. Of verander de periode of voeg een nieuw boekjaar toe.');
@@ -220,7 +220,7 @@ define('SETUP_HEADING_NEW_TAX_RATE','Nieuw Belasting tarief');
 define('SETUP_HEADING_EDIT_TAX_RATE','Bewerk Belasting tarief');
 define('SETUP_TAX_RATES_LOG','Belasting Tarieven - ');
 define('GEN_ADM_TOOLS_INVENTORY_OWED','Voorraad Kosten van de Verkoop');
-define('GEN_ADM_TOOLS_INVENTORY_DESC','Uw inventory_cogs_owed tabel heeft op dit moment %s regel.<br> Deze tool zal alle regels controleren en opnieuw op slaan. <br>De inventory_cogs_owed tabel zou geen regels moeten bevatten tenzij de voorraad niveau\'s negatief zijn. <br>Als de tabel items bevat en de voorraad niveaus zijn nul of groter dan zal deze tool proberen om de tabel te repareren door het her-opslaan van de journaal posten. <br>Er waren problemen met release R3.6 en ouder. U kunt in een rapport be kijken welke items in uw cogs_owed tabel staan.');
+define('GEN_ADM_TOOLS_INVENTORY_DESC','Uw inventory_cogs_owed tabel heeft op dit moment %s regels.<br> Deze tool zal alle regels controleren en opnieuw op slaan. <br>De inventory_cogs_owed tabel zou geen regels moeten bevatten tenzij de voorraad niveau\'s negatief zijn. <br>Als de tabel items bevat en de voorraad niveaus zijn nul of groter dan zal deze tool proberen om de tabel te repareren door het her-opslaan van de journaal posten. <br>Er waren problemen met release R3.6 en ouder. U kunt in een rapport be kijken welke items in uw cogs_owed tabel staan.');
 define('GEN_ADM_TOOLS_OWED_FIX','Opnieuw opslaan kosten van verkoop ');
 define('GEN_ADM_TOOLS_BTN_OWED','Start Opnieuw Opslaan');
 define('GEN_ADM_TOOLS_OWED_CONFIRM','Weet u zeker dat u de kosten van de verkoop opnieuw wil opslaan?\n\nU ZOU EEN BACKUP MOETEN MAKEN VOORDAT U DIT DOET!');

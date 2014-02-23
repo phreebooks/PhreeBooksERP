@@ -50,8 +50,6 @@ define('ASSETS_DATE_LAST_UPDATE','Last Mantainence Date');
 define('ASSETS_DATE_LAST_JOURNAL_DATE','Asset Retire Date');
 define('ASSETS_PURCHASE_CONDITION','Purchase Condition');
 define('ASSETS_ENTRY_IMAGE_PATH','Image Relative Path');
-define('ASSETS_MSG_COPY_INTRO','Enter the asset ID for the new asset.');
-define('ASSETS_MSG_RENAME_INTRO','Enter the new asset ID to rename this asset.');
 /************ Javascript defines *********/
 define('ASSETS_MSG_DELETE_ASSET','Are you sure you want to delete this asset?');
 

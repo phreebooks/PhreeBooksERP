@@ -24,7 +24,6 @@
 // 3.5 => 2013-08-08 - added product fields 
 // 3.6 => 2014-01-15 - updated for move back to phreebooks and menu changes
 // Module software version information
-define('MODULE_ZENCART_VERSION',      3.6);
 // Set the menu order, if using ZenCart title menu option (after Customers and before Vendors)
 define('MENU_HEADING_ZENCART_ORDER',     15);
 // Security id's
@@ -46,7 +45,7 @@ if (defined('MODULE_ZENCART_STATUS')) {
     'show_in_users_settings' => true,
     'params'      => '',
   );
-  if(isset($_SESSION['admin_security'][SECURITY_ID_CONFIGURATION]) && $_SESSION['admin_security'][SECURITY_ID_CONFIGURATION] > 0){
+  if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
 	  gen_pull_language('zencart', 'admin');
 	  $mainmenu["company"]['submenu']["configuration"]['submenu']["zencart"] = array(
 		'order'	      => MODULE_ZENCART_TITLE,

@@ -20,15 +20,14 @@
 // PayPal Payment Pro Module
 // Revision history
 // 2011-07-01 - Added version number for revision control
-define('MODULE_PAYMENT_PAYPAL_NVP_VERSION','3.2');
-require_once(DIR_FS_MODULES . 'payment/classes/payment.php');
-
-class paypal_nvp extends payment {
-  public $code              = 'paypal_nvp'; // needs to match class name
-  public $title 	        = MODULE_PAYMENT_CC_TEXT_CATALOG_TITLE;
+namespace payment\methods\paypal_nvp;
+class paypal_nvp extends \payment\classes\payment {
+  public $id				= 'paypal_nvp'; // needs to match class name
+  public $text				= MODULE_PAYMENT_CC_TEXT_CATALOG_TITLE;
   public $description       = MODULE_PAYMENT_PAYPAL_NVP_TEXT_DESCRIPTION;
   public $enable_encryption = 1; // set to field position of credit card to create hint, false to turn off encryption
   public $sort_order        = 3;
+  public $version			= '3.2';
   
   public function __construct(){
   	global $order;
@@ -65,11 +64,11 @@ class paypal_nvp extends payment {
 		'S' => 'Issuer indicates that CVV2 data should be present on the card, but the merchant has indicated that the CVV2 data is not present on the card.',
 		'U' => 'Issuer has not certified for CVV2 or issuer has not provided Visa with the CVV2 encryption keys.'
 	);
-	$this->key[] = array('key'=>'MODULE_PAYMENT_PAYPAL_NVP_USER_ID',           'default'=>'',    'text'=>MODULE_PAYMENT_PAYPAL_NVP_USER_ID_DESC);
-	$this->key[] = array('key'=>'MODULE_PAYMENT_PAYPAL_NVP_PW',                'default'=>'',    'text'=>MODULE_PAYMENT_PAYPAL_NVP_PW_DESC);
-	$this->key[] = array('key'=>'MODULE_PAYMENT_PAYPAL_NVP_SIG',               'default'=>'',    'text'=>MODULE_PAYMENT_PAYPAL_NVP_SIG_DESC);
-	$this->key[] = array('key'=>'MODULE_PAYMENT_PAYPAL_NVP_TESTMODE',          'default'=>'live','text'=>MODULE_PAYMENT_PAYPAL_NVP_TESTMODE_DESC);
-    $this->key[] = array('key'=>'MODULE_PAYMENT_PAYPAL_NVP_AUTHORIZATION_TYPE','default'=>'Sale','text'=>MODULE_PAYMENT_PAYPAL_NVP_AUTHORIZATION_TYPE_DESC);
+	$this->keys[] = array('key'=>'MODULE_PAYMENT_PAYPAL_NVP_USER_ID',           'default'=>'',    'text'=>MODULE_PAYMENT_PAYPAL_NVP_USER_ID_DESC);
+	$this->keys[] = array('key'=>'MODULE_PAYMENT_PAYPAL_NVP_PW',                'default'=>'',    'text'=>MODULE_PAYMENT_PAYPAL_NVP_PW_DESC);
+	$this->keys[] = array('key'=>'MODULE_PAYMENT_PAYPAL_NVP_SIG',               'default'=>'',    'text'=>MODULE_PAYMENT_PAYPAL_NVP_SIG_DESC);
+	$this->keys[] = array('key'=>'MODULE_PAYMENT_PAYPAL_NVP_TESTMODE',          'default'=>'live','text'=>MODULE_PAYMENT_PAYPAL_NVP_TESTMODE_DESC);
+    $this->keys[] = array('key'=>'MODULE_PAYMENT_PAYPAL_NVP_AUTHORIZATION_TYPE','default'=>'Sale','text'=>MODULE_PAYMENT_PAYPAL_NVP_AUTHORIZATION_TYPE_DESC);
   }
 
   function configure($key) {
@@ -93,7 +92,7 @@ class paypal_nvp extends payment {
 
   function javascript_validation() {
     $js = 
-	'  if (payment_method == "' . $this->code . '") {' . "\n" .
+	'  if (payment_method == "' . $this->id . '") {' . "\n" .
     '    var cc_owner  = document.getElementById("paypal_nvp_field_0").value +" "+document.getElementById("paypal_nvp_field_5").value;' . "\n" .
     '    var cc_number = document.getElementById("paypal_nvp_field_1").value;' . "\n" . 
     '    var cc_cvv    = document.getElementById("paypal_nvp_field_4").value;' . "\n" . 
@@ -124,8 +123,8 @@ class paypal_nvp extends payment {
       $expires_year[] = array('id' => strftime('%Y',mktime(0,0,0,1,1,$i)), 'text' => strftime('%Y',mktime(0,0,0,1,1,$i)));
     }
 	$selection = array(
-	   'id'     => $this->code,
-	   'page'   => $this->title,
+	   'id'     => $this->id,
+	   'page'   => $this->text,
 	   'fields' => array(
 			array(	'title' => MODULE_PAYMENT_PAYPAL_NVP_TEXT_CREDIT_CARD_OWNER,
 					'field' => html_input_field('paypal_nvp_field_0', $order->paypal_nvp_field_0, 'size="12" maxlength="25"') . '&nbsp;' . html_input_field('paypal_nvp_field_5', $order->paypal_nvp_field_5, 'size="12" maxlength="25"')),
@@ -139,37 +138,28 @@ class paypal_nvp extends payment {
     return $selection;
   }
 
-  function pre_confirmation_check() {
-    global $_POST, $messageStack;
+ 	function pre_confirmation_check() {
+    	global $messageStack;
 
-	// if the card number has the blanked out middle number fields, it has been processed, show message that 
-	// the charges were not processed through the merchant gateway and continue posting payment.
-	if (strpos($this->field_1,'*') !== false) {
-    	$messageStack->add(MODULE_PAYMENT_CC_NO_DUPS, 'caution');
+		// if the card number has the blanked out middle number fields, it has been processed, show message that 
+		// the charges were not processed through the merchant gateway and continue posting payment.
+		if (strpos($this->field_1,'*') !== false) {
+    		$messageStack->add(MODULE_PAYMENT_CC_NO_DUPS, 'caution');
+			return false;
+		}
+    	$result = $this->validate($this->cc_card_number);
+    	switch ($result) {
+      		case -1:
+      			throw new \Exception(sprintf(TEXT_CCVAL_ERROR_UNKNOWN_CARD, substr($this->cc_card_number, 0, 4)));
+      		case -2:
+      		case -3:
+      		case -4:
+      			throw new \Exception(TEXT_CCVAL_ERROR_INVALID_DATE);
+      		case false:
+      			throw new \Exception(TEXT_CCVAL_ERROR_INVALID_NUMBER);
+    	}
 		return false;
-	}
-    $result = $this->validate($this->cc_card_number);
-    $error  = '';
-    switch ($result) {
-      case -1:
-      $error = sprintf(TEXT_CCVAL_ERROR_UNKNOWN_CARD, substr($this->cc_card_number, 0, 4));
-      break;
-      case -2:
-      case -3:
-      case -4:
-      $error = TEXT_CCVAL_ERROR_INVALID_DATE;
-      break;
-      case false:
-      $error = TEXT_CCVAL_ERROR_INVALID_NUMBER;
-      break;
-    }
-
-    if ( ($result == false) || ($result < 1) ) {
-      $messageStack->add($error . '<!-- ['.$this->code.'] -->', 'error');
-      return true;
-    }
-	return false;
-  }
+  	}
 
   function before_process() {
     global $order, $db, $messageStack;
@@ -284,11 +274,7 @@ return false;
 //echo 'string = ' . $data . '<br>';
 	$httpResponse = curl_exec($ch);
 
-	if(!$httpResponse) {
-		$messageStack->add('XML Read Error (cURL) #' . curl_errno($ch) . '. Description = ' . curl_error($ch),'error');
-		return false;
-//		exit("$methodName_ failed: " . curl_error($ch) . '(' . curl_errno($ch) . ')');
-	}
+	if(!$httpResponse) throw new \Exception('XML Read Error (cURL) #' . curl_errno($ch) . '. Description = ' . curl_error($ch));
 	// Extract the response details.
 	$httpResponseAr = explode("&", $httpResponse);
 	$httpParsedResponseAr = array();
@@ -298,11 +284,7 @@ return false;
 			$httpParsedResponseAr[$tmpAr[0]] = $tmpAr[1];
 		}
 	}
-	if (0 == sizeof($httpParsedResponseAr) || !array_key_exists('ACK', $httpParsedResponseAr)) {
-		$messageStack->add('PayPal Response Error.','error');
-		return false;
-//		exit("Invalid HTTP Response for POST request($nvpreq) to $API_Endpoint.");
-	}
+	if (0 == sizeof($httpParsedResponseAr) || !array_key_exists('ACK', $httpParsedResponseAr)) throw new \Exception('PayPal Response Error.');
 	return $httpParsedResponseAr;
   }
 }

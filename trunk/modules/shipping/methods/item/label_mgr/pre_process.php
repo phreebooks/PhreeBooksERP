@@ -23,12 +23,10 @@ $shipping_module = 'item';
 /**************  include page specific files    *********************/
 load_method_language(DEFAULT_MOD_DIR, $shipping_module);
 require(DIR_FS_WORKING . 'shipping/functions/shipping.php');
-require(DIR_FS_WORKING . 'shipping/classes/shipping.php');
-require(DIR_FS_WORKING . 'methods/' . $shipping_module . '/' . $shipping_module . '.php');
-
 /**************   page specific initialization  *************************/
 $error = false;
-$sInfo = new shipment();	// load defaults
+$shipping_method = "\shipping\methods\\$shipping_module\\$shipping_module";
+$sInfo = new $shipping_method();	// load defaults
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save':
@@ -58,16 +56,10 @@ switch ($_REQUEST['action']) {
 	$shipment_id = db_prepare_input($_GET['sID']);
 	$result = $db->Execute("select method, ship_date from " . TABLE_SHIPPING_LOG . " where shipment_id = " . (int)$shipment_id);
 	$ship_method = $result->fields['method'];
-	if ($result->RecordCount() == 0 || !$shipment_id) {
-		$messageStack->add(SHIPPING_DELETE_ERROR,'error');
-		$error = true;
-		break;
-	}
+	if ($result->RecordCount() == 0 || !$shipment_id) throw new \Exception(SHIPPING_DELETE_ERROR);
 
 	if ($result->fields['ship_date'] < date('Y-m-d', time())) { // only allow delete if shipped today or in future
-		$messageStack->add(SHIPPING_CANNOT_DELETE,'error');
-		$error = true;
-		break;
+		throw new \Exception(SHIPPING_CANNOT_DELETE);
 	}
 
 	$db->Execute("delete from " . TABLE_SHIPPING_LOG . " where shipment_id = " . $shipment_id);

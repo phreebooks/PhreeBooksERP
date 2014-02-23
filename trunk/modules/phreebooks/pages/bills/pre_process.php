@@ -19,26 +19,24 @@
 
 /**************   Check user security   *****************************/
 $jID  = (int)$_GET['jID'];
-$type = isset($_GET['type']) ? $_GET['type'] : $_POST['type'];
+$account_type = isset($_REQUEST['type']) ? $_REQUEST['type'] : 'c';
 
 switch ($jID) {
   case 18:	// Cash Receipts Journal
 	define('JOURNAL_ID',18);
-	$security_token = ($type == 'v') ? SECURITY_ID_VENDOR_RECEIPTS : SECURITY_ID_CUSTOMER_RECEIPTS;
+	$security_token = ($account_type == 'v') ? SECURITY_ID_VENDOR_RECEIPTS : SECURITY_ID_CUSTOMER_RECEIPTS;
 	break;
   case 20:	// Cash Disbursements Journal
 	define('JOURNAL_ID',20);
-	$security_token = ($type == 'c') ? SECURITY_ID_CUSTOMER_PAYMENTS : SECURITY_ID_PAY_BILLS;
+	$security_token = ($account_type == 'c') ? SECURITY_ID_CUSTOMER_PAYMENTS : SECURITY_ID_PAY_BILLS;
 	break;
 }
-$security_level = validate_user($security_token);
+$security_level = \core\classes\user::validate($security_token);
 /**************  include page specific files    *********************/
 gen_pull_language('contacts');
 gen_pull_language('payment');
 require_once(DIR_FS_MODULES . 'payment/defaults.php');
 require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
-require_once(DIR_FS_WORKING . 'classes/gen_ledger.php');
-require_once(DIR_FS_WORKING . 'classes/banking.php');
 /**************   page specific initialization  *************************/
 // check to see if we need to make a payment for a specific order
 $oID               = isset($_GET['oID']) ? (int)$_GET['oID'] : false;
@@ -52,7 +50,6 @@ if (!$period) { // bad post_date was submitted
 $gl_acct_id        = ($_POST['gl_acct_id']) ? db_prepare_input($_POST['gl_acct_id']) : AP_PURCHASE_INVOICE_ACCOUNT;
 $post_success      = false;
 $error             = false;
-$payment_modules   = array();
 
 switch (JOURNAL_ID) {
   case 18:	// Cash Receipts Journal
@@ -60,26 +57,19 @@ switch (JOURNAL_ID) {
 	define('POPUP_FORM_TYPE','bnk:rcpt');
 	define('AUDIT_LOG_DESC',ORD_TEXT_18_WINDOW_TITLE);
 	define('AUDIT_LOG_DEL_DESC',ORD_TEXT_18_WINDOW_TITLE . '-' . TEXT_DELETE);
-	$account_type = ($type == 'v') ? 'v' : 'c';
-	$payment_modules = load_all_methods('payment');
-	foreach ($payment_modules as $pmt_class) {
-	  $class  = $pmt_class['id'];
-	  $$class = new $class;
-	}
 	break;
   case 20:	// Cash Disbursements Journal
 	define('GL_TYPE','chk');
 	define('POPUP_FORM_TYPE','bnk:chk');
 	define('AUDIT_LOG_DESC',ORD_TEXT_20_WINDOW_TITLE);
 	define('AUDIT_LOG_DEL_DESC',ORD_TEXT_20_WINDOW_TITLE . '-' . TEXT_DELETE);
-	$account_type = ($type == 'c') ? 'c' : 'v';
 	break;
   default: // this should never happen
-	$messageStack->add('No valid journal id found (module bills), Journal ID needs to be passed to this script to identify the action', 'error');
+	throw new \Exception('No valid journal id found (module bills), Journal ID needs to be passed to this script to identify the action');
 	gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL'));
 }
 
-$order  = new banking();
+$order  = new \phreebooks\classes\banking();
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/bills/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
@@ -88,7 +78,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 switch ($_REQUEST['action']) {
   case 'save':
   case 'print':
-	validate_security($security_level, 2);
+	\core\classes\user::validate_security($security_level, 2);
   	// create and retrieve customer account (defaults also)
 	$order->bill_short_name     = db_prepare_input($_POST['search']);
 	$order->bill_acct_id        = db_prepare_input($_POST['bill_acct_id']);
@@ -149,18 +139,18 @@ switch ($_REQUEST['action']) {
 	// error check input
 	if (!$order->bill_acct_id) { // no account was selected, error
 	  $contact_type = $type=='c' ? TEXT_LC_CUSTOMER : TEXT_LC_VENDOR;
-	  $error = $messageStack->add(sprintf(ERROR_NO_CONTACT_SELECTED, $contact_type, $contact_type, ORD_ADD_UPDATE), 'error');
+	  throw new \Exception(sprintf(ERROR_NO_CONTACT_SELECTED, $contact_type, $contact_type, ORD_ADD_UPDATE));
 	}
-	if (!$order->item_rows) $error = $messageStack->add(GL_ERROR_NO_ITEMS, 'error');
+	if (!$order->item_rows) throw new \Exception(GL_ERROR_NO_ITEMS);
 	// check to make sure the payment method is valid
 	if (JOURNAL_ID == 18) {	
-	  $payment_module = $order->shipper_code;
-	  $processor = new $payment_module;
-	  if ($processor->pre_confirmation_check()) $error = true;	
+		$temp = "\payment\methods\\$order->shipper_code\\$order->shipper_code\\";
+	  	$processor = new $temp;
+	  	if ($processor->pre_confirmation_check()) $error = true;	
 	}
 
 /* This has been commented out to allow customer refunds (negative invoices)
-	if ($order->total_amount < 0) $error = $messageStack->add(TEXT_TOTAL_LESS_THAN_ZERO,'error');
+	if ($order->total_amount < 0) throw new \Exception(TEXT_TOTAL_LESS_THAN_ZERO);
 */
 	// post the receipt/payment
 	if (!$error && $post_success = $order->post_ordr($_REQUEST['action'])) {	// Post the order class to the db
@@ -170,21 +160,21 @@ switch ($_REQUEST['action']) {
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	  } // else print or print_update, fall through and load javascript to call form_popup and clear form
 	  $print_record_id = $order->id; // save id for printing
-	  $order  = new banking(); // reset all values
+	  $order  = new \phreebooks\classes\banking(); // reset all values
 	} else { // else there was a post error, display and re-display form
-	  $error = $messageStack->add(GL_ERROR_NO_POST, 'error');
+	  throw new \Exception(GL_ERROR_NO_POST);
 	  if (DEBUG) $messageStack->write_debug();
-	  $order = new objectInfo($_POST);
+	  $order = new \core\classes\objectInfo($_POST);
 	  $order->post_date = gen_db_date($_POST['post_date']); // fix the date to original format
 	  $order->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
 	}
 	break;
 
   case 'delete':
-	validate_security($security_level, 4);
+	\core\classes\user::validate_security($security_level, 4);
   	$id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
 	if ($id) {
-		$delOrd = new banking();
+		$delOrd = new \phreebooks\classes\banking();
 		$delOrd->journal($id); // load the posted record based on the id submitted
 		if ($delOrd->delete_payment()) {
 			gen_add_audit_log(AUDIT_LOG_DEL_DESC, $order->purchase_invoice_id, $order->total_amount);
@@ -192,11 +182,11 @@ switch ($_REQUEST['action']) {
 			gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		}
 	} else {
-		$messageStack->add(GL_ERROR_NEVER_POSTED, 'error');
+		throw new \Exception(GL_ERROR_NEVER_POSTED);
 	}
-	$messageStack->add(GL_ERROR_NO_DELETE, 'error');
+	throw new \Exception(GL_ERROR_NO_DELETE);
 	// if we are here, there was an error, reload page
-	$order = new objectInfo($_POST);
+	$order = new \core\classes\objectInfo($_POST);
 	$order->post_date = gen_db_date($_POST['post_date']); // fix the date to original format
 	break;
 

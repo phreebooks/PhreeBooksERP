@@ -47,14 +47,13 @@ require_once('defaults.php');
 require_once(DIR_FS_MODULES . 'phreedom/defaults.php');
 require_once(DIR_FS_MODULES . 'phreeform/defaults.php');
 require_once('../includes/common_functions.php');
-require_once('../includes/common_classes.php');
 require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
 require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 /**************   page specific initialization  *************************/
 $error   = false;
 $caution = false;
-$messageStack = new messageStack();
+$messageStack = new \core\classes\messageStack();
 /***************   act on the action request   *************************/
 switch ($_REQUEST['action']) {
 	default:
@@ -211,85 +210,20 @@ switch ($_REQUEST['action']) {
 	  		}
 	  	}
 		// install core modules first
-	  	$core_modules = array('phreedom','phreeform');
-	  	foreach ($core_modules as $entry) {
-	  		if (DEBUG) $messageStack->debug("\n  installing core module = " . $entry);
-	  		if ($entry <> '.' && $entry <> '..' && is_dir(DIR_FS_MODULES . $entry)) {
-	  			if (file_exists(DIR_FS_MODULES . $entry . '/config.php')) {
-	  				$error = false;
-	  				require_once (DIR_FS_MODULES . $entry . '/classes/install.php');
-	  				$classname   = $entry . '_admin';
-	  				$install_mod = new $classname;
-			    	if (admin_check_versions($entry, $install_mod->prerequisites)) {
-			    		// Check for version levels
-			    		$error = true;
-			    	} elseif (admin_install_dirs($install_mod->dirlist, DIR_FS_MY_FILES.$_SESSION['company'].'/')) {
-			    		$error = true;
-			    	} elseif (admin_install_tables($install_mod->tables)) {
-				    	// Create the tables
-			    		$error = true;
-				    } else {
-				    	// Load the installed module version into db
-			    		write_configure('MODULE_' . strtoupper($entry) . '_STATUS', constant('MODULE_' . strtoupper($entry) . '_VERSION'));
-			    		// Load the remaining configuration constants
-			    		foreach ($install_mod->keys as $key => $value) write_configure($key, $value);
-			    		if ($company_demo) if ($install_mod->load_demo()) $error = true; // load demo data
-			    		if ($entry <> 'phreedom') $install_mod->load_reports($entry);
-			    	}
-			    	if ($install_mod->install($entry)) $error = true; // install any special stuff
-			    	if ($error) $messageStack->add(sprintf(MSG_ERROR_MODULE_INSTALL, $entry), 'error');
-			    	if (sizeof($install_mod->notes) > 0) $params = array_merge($params, $install_mod->notes);
-	  			}
+	  	foreach ($admin_classes as $module) {
+	  		if ($module->core) {
+	  			if (DEBUG) $messageStack->debug("\n  installing core module = " . $module->id);
+	  			$module->install(DIR_FS_MY_FILES.$_SESSION['company'].'/', $company_demo);
 	  		}
 	  	}
 		// load phreedom reports now since table exists
 	  	if (DEBUG) $messageStack->debug("\n  installing phreedom.");
-	  	$install_mod = new phreedom_admin;
-	  	$install_mod->load_reports('phreedom');
-	  	if ($error) {
-	  		$messageStack->add(sprintf(MSG_ERROR_MODULE_INSTALL, $module), 'error');
-	  	} else { // load all other modules and execute install script
-	  		foreach ($contents as $entry) {
-		  		// install each module
-		  		if (in_array($entry, $core_modules)) continue; // core module, already installed
-	  			if ($entry <> '.' && $entry <> '..' && is_dir(DIR_FS_MODULES . $entry)) {
-		  			if (DEBUG) $messageStack->debug("\n  installing additional module = " . $entry);
-		  			if (file_exists(DIR_FS_MODULES . $entry . '/config.php')) {
-				    	$error = false;
-				    	require_once (DIR_FS_MODULES . $entry . '/classes/install.php');
-			    		$classname   = $entry . '_admin';
-			    		$install_mod = new $classname;
-			    		if (admin_check_versions($entry, $install_mod->prerequisites)) {
-			    			// Check for version levels
-			    			$error = true;
-			    		} elseif (admin_install_dirs($install_mod->dirlist, DIR_FS_MY_FILES.$_SESSION['company'].'/')) {
-			    			// Create any new directories
-			    			$error = true;
-			    		} elseif (admin_install_tables($install_mod->tables)) {
-			    			// Create the tables
-			    			$error = true;
-			    		} else {
-			    			// Load the installed module version into db
-			    			write_configure('MODULE_' . strtoupper($entry) . '_STATUS', constant('MODULE_' . strtoupper($entry) . '_VERSION'));
-			    			// 	Load the remaining configuration constants
-			    			foreach ($install_mod->keys as $key => $value) write_configure($key, $value);
-			    			if ($company_demo) if ($install_mod->load_demo()) $error = true; // load demo data
-			    			$install_mod->load_reports($entry);
-			    		}
-			    		if ($install_mod->install($entry)) $error = true; // install any special stuff
-			    		if ($error) $messageStack->add(sprintf(MSG_ERROR_MODULE_INSTALL, $entry), 'error');
-			    		if (sizeof($install_mod->notes) > 0) $params = array_merge($params, $install_mod->notes);
-	  				}
-			  	}
-	  	  	}
+		foreach ($admin_classes as $module) {
+	  		if (!$module->core) {
+	  			if (DEBUG) $messageStack->debug("\n  installing core module = " . $module->id);
+	  			$module->install(DIR_FS_MY_FILES.$_SESSION['company'].'/', $company_demo);
+	  		}
 	  	}
-		if (!$error) {
-			if (DEBUG) $messageStack->debug("\n  installing reports");
-		  	foreach ($contents as $entry) {
-		  		// install reports now that categories are set up
-		  		if ($entry <> '.' && $entry <> '..' ) admin_add_reports($entry, DIR_FS_MY_FILES . $_SESSION['company'] . '/phreeform/');
-		  	}
-		}
 		if (!$error) { // input admin username record, clear the tables first
 			if (DEBUG) $messageStack->debug("\n  installing users");
 		  	$db->Execute("TRUNCATE TABLE " . TABLE_USERS);
@@ -298,7 +232,7 @@ switch ($_REQUEST['action']) {
 		  	$db->Execute($sql = "insert into " . TABLE_USERS . " set
 		      admin_name  = '" . $user_username . "', 
 			  admin_email = '" . $user_email . "', 
-		  	  admin_pass  = '" . pw_encrypt_password($user_password) . "',
+		  	  admin_pass  = '" . \core\classes\encryption::password($user_password) . "',
 			  admin_security = '" . $security . "'");
 		  	$user_id = $db->insert_ID();
 		  	if (sizeof($params) > 0) {
@@ -377,7 +311,7 @@ switch ($_REQUEST['action']) {
 		  $_SESSION['admin_prefs']    = '';
 		  $_SESSION['language']       = $lang;
 		  $_SESSION['account_id']     = '';
-		  $_SESSION['admin_security'] = gen_parse_permissions($security);
+		  $_SESSION['admin_security'] = \core\classes\user::parse_permissions($security);
 		  $include_template = 'template_finish.php';
 		  define('PAGE_TITLE', TITLE_FINISH);
 		  if (DEBUG) $messageStack->write_debug();

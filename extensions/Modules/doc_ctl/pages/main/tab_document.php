@@ -18,7 +18,7 @@
 //
 $fieldset_content = NULL;
 // build the tab toolbar
-$docbar = new toolbar;
+$docbar = new \core\classes\toolbar;
 $docbar->add_icon('export', 'onclick="submitSeq(' . $id . ',\'download\', true)"', $order = 10);
 $docbar->icon_list['cancel']['show'] = false;
 $docbar->icon_list['open']['show']   = false;

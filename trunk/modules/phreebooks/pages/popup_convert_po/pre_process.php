@@ -17,7 +17,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/pages/popup_convert_po/pre_process.php
 //
-$security_level = validate_user(0, true);
+$security_level = \core\classes\user::validate(0, true);
 /**************  include page specific files    *********************/
 /**************   page specific initialization  *************************/
 $id     = (isset($_GET['oID']) ? $_GET['oID'] : $_POST['id']);
@@ -30,11 +30,10 @@ switch ($_REQUEST['action']) {
   case 'save':
 	$purchase_invoice_id = $_POST['po_num'];
 	$drop_ship = isset($_POST['drop_ship']) ? '1' : '0';
-	require_once(DIR_FS_WORKING . 'classes/gen_ledger.php');
 	define('JOURNAL_ID',4);
 	define('GL_TYPE','poo');
 	// Load the existing sales order
-	$order = new journal($id);
+	$order = new \core\classes\journal($id);
 	// replace some settings with the new values and re-post
 	$order->id = '';
 	$order->journal_id = JOURNAL_ID;

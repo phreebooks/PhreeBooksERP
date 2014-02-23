@@ -16,31 +16,23 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/pages/admin/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_CONFIGURATION);
+$security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 /**************  include page specific files    *********************/
 gen_pull_language($module, 'admin');
 gen_pull_language('phreedom', 'admin');
 require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
-require_once(DIR_FS_WORKING . 'classes/install.php');
-require_once(DIR_FS_WORKING . 'classes/chart_of_accounts.php');
-require_once(DIR_FS_WORKING . 'classes/tax_auths.php');
-require_once(DIR_FS_WORKING . 'classes/tax_auths_vend.php');
-require_once(DIR_FS_WORKING . 'classes/tax_rates.php');
-require_once(DIR_FS_WORKING . 'classes/tax_rates_vend.php');
-
 /**************   page specific initialization  *************************/
 $error  = false; 
-$install           = new phreebooks_admin();
-$chart_of_accounts = new chart_of_accounts();
-$tax_auths         = new tax_auths();
-$tax_auths_vend    = new tax_auths_vend();
-$tax_rates         = new tax_rates();
-$tax_rates_vend    = new tax_rates_vend();
+$chart_of_accounts = new \phreebooks\classes\chart_of_accounts();
+$tax_auths         = new \phreebooks\classes\tax_auths();
+$tax_auths_vend    = new \phreebooks\classes\tax_auths_vend();
+$tax_rates         = new \phreebooks\classes\tax_rates();
+$tax_rates_vend    = new \phreebooks\classes\tax_rates_vend();
 
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'import':
-	validate_security($security_level, 3);
+	\core\classes\user::validate_security($security_level, 3);
   	$delete_chart = ($_POST['delete_chart']) ? true : false;
 	$std_chart    = db_prepare_input($_POST['std_chart']);
 	// first verify the file was uploaded ok
@@ -48,7 +40,7 @@ switch ($_REQUEST['action']) {
 	if ($delete_chart) {
 	  $result = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " limit 1");
 	  if ($result->RecordCount() > 0) {
-	    $messageStack->add(GL_JOURNAL_NOT_EMTPY,'error');
+	  	throw new \Exception(GL_JOURNAL_NOT_EMTPY);
 	    break;
 	  }
 	  $db->Execute("TRUNCATE TABLE " . TABLE_CHART_OF_ACCOUNTS);
@@ -76,12 +68,12 @@ switch ($_REQUEST['action']) {
 	build_and_check_account_history_records();
 	break;
   case 'save':
-	validate_security($security_level, 3);
+	\core\classes\user::validate_security($security_level, 3);
   	// some special values for checkboxes
 	$_POST['ar_use_credit_limit'] = isset($_POST['ar_use_credit_limit']) ? '1' : '0';
 	$_POST['ap_use_credit_limit'] = isset($_POST['ap_use_credit_limit']) ? '1' : '0';
 	// save general tab
-	foreach ($install->keys as $key => $default) {
+	foreach ($admin_classes['phreebooks']->keys as $key => $default) {
 	  $field = strtolower($key);
       if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
     }
@@ -89,7 +81,7 @@ switch ($_REQUEST['action']) {
 	$messageStack->add(PHREEBOOKS_CONFIG_SAVED,'success');
     break;
   case 'delete':
-	validate_security($security_level, 4);
+	\core\classes\user::validate_security($security_level, 4);
     $subject = $_POST['subject'];
     $id      = $_POST['rowSeq'];
 	if (!$subject || !$id) break;

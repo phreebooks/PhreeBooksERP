@@ -23,7 +23,7 @@
 
 
 /**************   Check user security   *****************************/
-$security_level = validate_user(SECURITY_ID_IMPORT_BANK);
+$security_level = \core\classes\user::validate(SECURITY_ID_IMPORT_BANK);
 /**************  include page specific files    *********************/
 gen_pull_language($module);
 gen_pull_language('phreebooks');
@@ -33,7 +33,6 @@ require_once(DIR_FS_MODULES . 'phreebooks/classes/gen_ledger.php');
 require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
 require_once(DIR_FS_WORKING . 'functions/import_bank.php');
 /**************   page specific initialization  *************************/
-$error     = false; 
 $bank_acct = (isset($_GET['bank_acct']) ? $_GET['bank_acct'] : $_POST['bank_acct']);
 $page_list = array();
 

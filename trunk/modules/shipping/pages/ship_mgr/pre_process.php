@@ -16,30 +16,26 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/shipping/pages/ship_mgr/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_SHIPPING_MANAGER);
+$security_level = \core\classes\user::validate(SECURITY_ID_SHIPPING_MANAGER);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_WORKING . 'defaults.php');
 /**************   page specific initialization  *************************/
 $date        = $_GET['search_date']       ? gen_db_date($_GET['search_date']) : date('Y-m-d');
 if ($_REQUEST['search_text'] == TEXT_SEARCH) $_REQUEST['search_text'] = '';
-$module_id   = isset($_POST['module_id']) ? $_POST['module_id'] : '';
+$method   = isset($_POST['module_id']) ? $_POST['module_id'] : '';
 $row_seq     = isset($_POST['rowSeq'])    ? $_POST['rowSeq']    : '';
 $action		 = $_REQUEST['action'];
-// load methods
-$installed_modules = load_all_methods('shipping');
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/ship_mgr/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
-if ($module_id) {
-  require_once (DIR_FS_WORKING.'methods/'.$module_id.'/'.$module_id.'.php');
-  $shipping = new $module_id;
+if ($method) {
   switch ($_REQUEST['action']) {
     default:
-      if (method_exists($shipping, $action)) $shipping->$action();
+      if (method_exists($admin_classes['shipping']->methods[$method], $action)) $admin_classes['shipping']->methods[$method]->$action();
       break;
-    case 'track':     $shipping->trackPackages($date, $row_seq);   break;
-    case 'reconcile': $shipping->reconcileInvoice();               break;
+    case 'track':     $admin_classes['shipping']->methods[$method]->trackPackages($date, $row_seq);   break;
+    case 'reconcile': $admin_classes['shipping']->methods[$method]->reconcileInvoice();               break;
     case 'search':
     case 'search_reset':
   }

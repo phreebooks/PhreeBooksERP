@@ -17,7 +17,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreehelp/pages/main/pre_process.php
 //
-$security_level = validate_user(0, true);
+$security_level = \core\classes\user::validate(0, true);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/phreehelp.php');

@@ -136,7 +136,7 @@ foreach ($_REQUEST as $key => $val)
   include_once(DIR_FS_MODULES . 'phreedom/includes/bigdump/language/'.$_SESSION['language'].'/language.php');
   // load the javascript specific, required
   $js_include_path = DIR_FS_WORKING . 'pages/' . $page . '/js_include.php';
-  if (file_exists($js_include_path)) { require($js_include_path); } else die('No js_include file');
+  if (file_exists($js_include_path)) { require($js_include_path); } else throw new \Exception('No js_include file');
 // ****************************** EOF - Mods by PhreeSoft **************************************** ?>
 
 <style type="text/css">
@@ -929,27 +929,27 @@ echo '</form>' . chr(10);
 
 if ($error) 
 {
-  $out1 = ob_get_contents();
-  ob_end_clean();
-  echo $out1;
-  die;
+  	$out1 = ob_get_contents();
+  	ob_end_clean();
+  	echo $out1;
+  	ob_end_flush();
+	session_write_close();
+  	die;
 }
 
 // Creates responses  (XML only or web page)
 
-if (($ajax) && isset($_REQUEST['start']))
-{
-  if (isset($_REQUEST['ajaxrequest'])) 
-  {	ob_end_clean();
+if (($ajax) && isset($_REQUEST['start'])){
+  	if (isset($_REQUEST['ajaxrequest'])){
+  		ob_end_clean();
 		create_xml_response();
+		ob_end_flush();
+		session_write_close();
 		die;
-	} 
-	else 
-	{
+	} else {
 	  create_ajax_script();	  
 	}  
 }
-ob_flush();
 
 // *******************************************************************************************
 // 				AJAX utilities
@@ -1136,7 +1136,7 @@ function create_ajax_script()
 	  if (http_request.readyState != 4)
 			return;
 	  if (http_request.status != 200) {
-	    alert("Page unavailable, or wrong url!")
+		$.messager.alert('error',"Page unavailable, or wrong url!",'error');
 			return;
 		}
 		

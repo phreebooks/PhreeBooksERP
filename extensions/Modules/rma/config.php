@@ -21,7 +21,6 @@
 // 3.3 => 2011-11-15 - Bug fixes, themeroller changes
 // 3.6 => More bug fixes, inventory not filling properly, changes for R3.6 table paging
 // Module software version information
-define('MODULE_RMA_VERSION', 3.6);
 // Menu Sort Positions
 define('BOX_RMA_MODULE_ORDER', 70);
 // Menu Security id's

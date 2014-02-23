@@ -17,7 +17,7 @@
 //  Path: /modules/phreedom/functions/translator.php
 //
 
-function build_mod_list() {
+function build_mod_list() { //@todo change for admin classes
   $sel_modules = array(
     array('id' => 'all',     'text' => TEXT_ALL),
     array('id' => 'install', 'text' => 'install'),

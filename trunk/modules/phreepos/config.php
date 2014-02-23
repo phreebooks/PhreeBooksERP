@@ -28,7 +28,6 @@
 // 3.8 => 2013-07 added tax_id to till
 // 3.9 => 2014-01 added config option to enable or disable direct printing.
 // Module software version information
-define('MODULE_PHREEPOS_VERSION', 3.9);
 // Menu Sort Positions
 //define('MENU_HEADING_PHREEPOS_ORDER', 40);
 // Menu Security id's (refer to master doc to avoid security setting overlap)
@@ -96,7 +95,7 @@ if (defined('MODULE_PHREEPOS_STATUS')) {
     'show_in_users_settings' => true,
     'params'      => '',
   );
-  if(isset($_SESSION['admin_security'][SECURITY_ID_CONFIGURATION]) && $_SESSION['admin_security'][SECURITY_ID_CONFIGURATION] > 0) {
+  if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0) {
 	  gen_pull_language('phreepos', 'admin');
 	  $mainmenu["company"]['submenu']["configuration"]['submenu']["phreepos"] = array(
 		'order'	      => MODULE_PHREEPOS_TITLE,

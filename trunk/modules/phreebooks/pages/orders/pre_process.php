@@ -28,9 +28,9 @@ switch (JOURNAL_ID) {
   case 12: $security_token = SECURITY_ID_SALES_INVOICE;      break;
   case 13: $security_token = SECURITY_ID_SALES_CREDIT;       break;
   default:
-	die('No valid journal id found (filename: modules/orders.php), Journal ID needs to be passed to this script to identify the action required.');
+	trigger_error('No valid journal id found (filename: modules/orders.php), Journal ID needs to be passed to this script to identify the action required.', E_USER_ERROR);
 }
-$security_level = validate_user($security_token);
+$security_level = \core\classes\user::validate($security_token);
 /**************  include page specific files    *********************/
 gen_pull_language('contacts');
 gen_pull_language('inventory');
@@ -38,8 +38,6 @@ gen_pull_language('shipping');
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_MODULES . 'inventory/defaults.php');
 require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
-require_once(DIR_FS_WORKING . 'classes/gen_ledger.php');
-require_once(DIR_FS_WORKING . 'classes/orders.php');
 if (defined('MODULE_SHIPPING_STATUS')) { 
   require_once(DIR_FS_MODULES . 'shipping/functions/shipping.php');
   require_once(DIR_FS_MODULES . 'shipping/defaults.php'); 
@@ -163,7 +161,7 @@ switch (JOURNAL_ID) {
 
 $error        = false;
 $post_success = false;
-$order        = new orders();
+$order        = new \phreebooks\classes\orders();
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/orders/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
@@ -175,11 +173,9 @@ switch ($_REQUEST['action']) {
   case 'payment':
   case 'post_previous':
   case 'post_next':
-	validate_security($security_level, 2);
-  	if (!isset($_POST['total'])) { // check for truncated post vars
-		$messageStack->add('The total field was not set, this means the form was not submitted in full and the order cannot be posted properly. The most common solution to this problem is to set the max_input_vars above the standard 1000 in your php.ini configuration file.','error');
-		break;
-	}
+	\core\classes\user::validate_security($security_level, 2);
+  	if (!isset($_POST['total'])) // check for truncated post vars
+		throw new \Exception('The total field was not set, this means the form was not submitted in full and the order cannot be posted properly. The most common solution to this problem is to set the max_input_vars above the standard 1000 in your php.ini configuration file.');
 	// currency values (convert to DEFAULT_CURRENCY to store in db)
 	$order->currencies_code     = db_prepare_input($_POST['currencies_code']);
 	$order->currencies_value    = db_prepare_input($_POST['currencies_value']);
@@ -350,7 +346,7 @@ switch ($_REQUEST['action']) {
 	  if ($result->RecordCount() > 0) {
 	    $oID    = $result->fields['id'];
 	    $_REQUEST['action'] = 'edit'; // force page to reload with the new order to edit
-		$order  = new orders();
+		$order  = new \phreebooks\classes\orders();
       } else { // at the beginning
 	  	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	  }
@@ -362,7 +358,7 @@ switch ($_REQUEST['action']) {
 	  if ($result->RecordCount() > 0) {
 	    $oID    = $result->fields['id'];
 	    $_REQUEST['action'] = 'edit'; // force page to reload with the new order to edit
-		$order  = new orders();
+		$order  = new \phreebooks\classes\orders();
       } else { // at the end
 	  	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	  }
@@ -371,10 +367,10 @@ switch ($_REQUEST['action']) {
 	break;
 
   case 'delete':
-	validate_security($security_level, 4);
+	\core\classes\user::validate_security($security_level, 4);
   	$id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
 	if ($id) {
-	  $delOrd = new orders();
+	  $delOrd = new \phreebooks\classes\orders();
 	  $delOrd->journal($id); // load the posted record based on the id submitted
 	  if ($_SESSION['admin_prefs']['restrict_period'] && $delOrd->period <> CURRENT_ACCOUNTING_PERIOD) {
 	    $error = $messageStack->add(ORD_ERROR_DEL_NOT_CUR_PERIOD, 'error');
@@ -398,15 +394,15 @@ switch ($_REQUEST['action']) {
   case 'prc_so':
 	$oID = db_prepare_input($_GET['oID']);
 	if (!$oID) {
-	  $messageStack->add('Bad order ID passed to edit order.','error'); // this should never happen
-	  $_REQUEST['action'] = '';
+		$_REQUEST['action'] = '';
+	  throw new \Exception('Bad order ID passed to edit order.'); // this should never happen
+	  
 	}
 	break;
   case 'dn_attach':
 	$oID = db_prepare_input($_POST['id']);
 	if (file_exists(PHREEBOOKS_DIR_MY_ORDERS . 'order_' . $oID . '.zip')) {
-	  require_once(DIR_FS_MODULES . 'phreedom/classes/backup.php');
-	  $backup = new backup();
+	  $backup = new \phreedom\classes\backup();
 	  $backup->download(PHREEBOOKS_DIR_MY_ORDERS, 'order_' . $oID . '.zip', true);
 	}
 	die;
@@ -443,14 +439,8 @@ $result = $db->Execute("select account_id from " . TABLE_USERS . " where admin_i
 $default_sales_rep = $result->fields['account_id'] ? $result->fields['account_id'] : '0';
 
 // Load shipping methods
-if (defined('MODULE_SHIPPING_STATUS')) {
-  $methods           = load_all_methods('shipping', true, true);
-  $shipping_methods  = build_js_methods($methods);
-} else {
-  $shipping_methods  = 'var freightLevels   = new Array(); ' . chr(10);
-  $shipping_methods .= 'var freightCarriers = new Array(); ' . chr(10);
-  $shipping_methods .= 'var freightDetails  = new Array(); ' . chr(10);
-}
+$shipping_methods = return_all_methods('shipping', false);
+$js_shipping_options  = build_js_methods($shipping_methods);
 
 // load calendar parameters
 $cal_order = array(

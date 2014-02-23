@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/pages/reconciliation/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_ACCT_RECONCILIATION);
+$security_level = \core\classes\user::validate(SECURITY_ID_ACCT_RECONCILIATION);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
 require_once(DIR_FS_WORKING . 'classes/gen_ledger.php');
@@ -54,7 +54,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save':
-	validate_security($security_level, 3);
+	\core\classes\user::validate_security($security_level, 3);
   	$statement_balance = $currencies->clean_value($_POST['start_balance']);
 	if (is_array($_POST['id'])) for ($i = 0; $i < count($_POST['id']); $i++) {
 	  $all_items[] = $_POST['id'][$i];
@@ -185,8 +185,9 @@ if ($result->RecordCount() <> 0) { // there are current cleared items in the pre
 $combined_list = array();
 if (is_array($bank_list)) foreach ($bank_list as $id => $value) {
 //	$index = ($value['payment'] ? 'p_' : 'd_') . $value['reference']; // this will separate deposits from payments with the same referenece 
-	$index = $value['reference'];
-	if (isset($combined_list[$index])) { // the reference already exists
+	if($value['reference'] == '') $index = $id;
+	else $index = $value['reference'];
+	if ($index != '' && isset($combined_list[$index])) { // the reference already exists
 		$combined_list[$index]['dep_amount'] += $value['dep_amount'];
 		$combined_list[$index]['pmt_amount'] += $value['pmt_amount'];
 		$combined_list[$index]['name']        = $value['payment'] ? TEXT_MULTIPLE_PAYMENTS : TEXT_MULTIPLE_DEPOSITS;

@@ -266,10 +266,10 @@ define('EXTRA_FIELDS_LOG','Extra Fields (%s)');
 define('EXTRA_TABS_LOG','Asset Tabs (%s)');
 define('INV_CATEGORY_MEMBER', 'Tab Member:');
 define('INV_FIELD_NAME', 'Field Name:');
-define('ASSETS_ERROR_FIELD_BLANK','The asset field name is blank, please enter a field name and re-check all entries in this form!');
-define('ASSETS_ERROR_FIELD_DUPLICATE','The field name you entered is already in use, please enter a new field name!');
-define('ASSETS_FIELD_RESERVED_WORD','The field name you entered is a MySQL reserved word, please enter a new field name!');
-define('ASSETS_FIELD_DELETE_INTRO', 'Are you sure you want to delete this asset field?');
+define('EXTRA_ERROR_FIELD_BLANK','The asset field name is blank, please enter a field name and re-check all entries in this form!');
+define('EXTRA_FIELD_ERROR_DUPLICATE','The field name you entered is already in use, please enter a new field name!');
+define('EXTRA_FIELD_RESERVED_WORD','The field name you entered is a MySQL reserved word, please enter a new field name!');
+define('EXTRA_FIELD_DELETE_INTRO', 'Are you sure you want to delete this field?');
 define('EXTRA_FIELDS_ERROR_NO_TABS','There are no custom tabs, please add at least one custom tab before adding fields.');
 /************************** ( Tabs/Fields) ***********************************************/
 define('INV_LABEL_DEFAULT_TEXT_VALUE', 'Default Value: ');
@@ -304,7 +304,7 @@ define('INV_IMAGE_FILE_WRITE_ERROR','There was a problem writing the image file 
 define('INV_FIELD_RESERVED_WORD','The field name entered is a reserved word. Please choose a new field name.');
 // Audit Log Messages
 define('GEN_LOG_LOGIN','User Login -> ');
-define('GEN_LOG_LOGIN_FAILED','Failed User Login - id -> ');
+define('GEN_LOG_LOGIN_FAILED','Failed User Login - reason : %s id -> %s ');
 define('GEN_LOG_LOGOFF','User Logoff -> ');
 define('GEN_LOG_RESEND_PW','Re-sent Password to email -> ');
 

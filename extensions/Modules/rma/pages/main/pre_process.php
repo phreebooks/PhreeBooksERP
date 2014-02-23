@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/rma/pages/main/pre_process.php
 //
-$security_level = validate_user(SECURITY_RMA_MGT);
+$security_level = \core\classes\user::validate(SECURITY_RMA_MGT);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_MODULES . 'inventory/defaults.php');
@@ -24,7 +24,7 @@ require_once(DIR_FS_MODULES . 'inventory/defaults.php');
 if(!isset($_REQUEST['list'])) $_REQUEST['list'] = 1;
 $error     = false;
 $processed = false;
-$cInfo     = new objectInfo(array());
+$cInfo     = new \core\classes\objectInfo(array());
 $creation_date = isset($_POST['creation_date']) ? gen_db_date($_POST['creation_date']) : date('Y-m-d');
 $receive_date  = isset($_POST['receive_date'])  ? gen_db_date($_POST['receive_date'])  : '';
 $closed_date   = isset($_POST['closed_date'])   ? gen_db_date($_POST['closed_date'])   : '';
@@ -36,11 +36,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save':
-	if ($security_level < 2) {
-	  $messageStack->add_session(ERROR_NO_PERMISSION,'error');
-	  gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-	  break;
-	}
+  	\core\classes\user::validate_security($security_level, 2); // security check
 	$id                  = db_prepare_input($_POST['id']);
 	$rma_num             = db_prepare_input($_POST['rma_num']);
 	$caller_name         = db_prepare_input($_POST['caller_name']);
@@ -160,15 +156,11 @@ switch ($_REQUEST['action']) {
 	$attachments     = $result->fields['attachments']     ? unserialize($result->fields['attachments'])     : array();
 	$receive_details = $result->fields['receive_details'] ? unserialize($result->fields['receive_details']) : array();
 	$close_details   = $result->fields['close_details']   ? unserialize($result->fields['close_details'])   : array();
-	$cInfo = new objectInfo($result->fields);
+	$cInfo = new \core\classes\objectInfo($result->fields);
 	break;
 
   case 'delete':
-	if ($security_level < 4) {
-		$messageStack->add_session(ERROR_NO_PERMISSION,'error');
-		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-		break;
-	}
+  	\core\classes\user::validate_security($security_level, 4); // security check
 	$id     = db_prepare_input($_GET['cID']);
 	$result = $db->Execute("select rma_num from " . TABLE_RMA . " where id = " . $id);
 	if ($result->RecordCount() > 0) {
@@ -185,8 +177,7 @@ switch ($_REQUEST['action']) {
 	$imgID = db_prepare_input($_POST['rowSeq']);
 	$filename = 'rma_'.$cID.'_'.$imgID.'.zip';
 	if (file_exists(RMA_DIR_ATTACHMENTS . $filename)) {
-	  require_once(DIR_FS_MODULES . 'phreedom/classes/backup.php');
-	  $backup = new backup();
+	  $backup = new \phreedom\classes\backup();
 	  $backup->download(RMA_DIR_ATTACHMENTS, $filename, true);
 	}
 	die;
@@ -197,8 +188,7 @@ switch ($_REQUEST['action']) {
 	foreach ($attachments as $key => $value) {
 	  $filename = 'rma_'.$cID.'_'.$key.'.zip';
 	  if (file_exists(RMA_DIR_ATTACHMENTS . $filename)) {
-		require_once(DIR_FS_MODULES . 'phreedom/classes/backup.php');
-		$backup = new backup();
+		$backup = new \phreedom\classes\backup();
 		$backup->download(RMA_DIR_ATTACHMENTS, $filename, true);
 		die;
 	  }
@@ -305,11 +295,11 @@ switch ($_REQUEST['action']) {
 	if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
     $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . " from " . TABLE_RMA . $search . " order by $disp_order, rma_num";
     $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-    $query_split  = new splitPageResults($_REQUEST['list'], '');
+    $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 	if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results
 	   	$_REQUEST['list'] = $query_split->current_page_number;
 		$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-		$query_split      = new splitPageResults($_REQUEST['list'], '');
+		$query_split      = new \core\classes\splitPageResults($_REQUEST['list'], '');
 	   }
 	history_save();
     define('PAGE_TITLE', BOX_RMA_MAINTAIN);

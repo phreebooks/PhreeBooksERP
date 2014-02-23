@@ -177,7 +177,7 @@ function build_audit_xml($date_from, $date_to, $select){
 					$output .= xmlEntry('lineCredit', $line_credit	        ,true);
 					$output .= '</lineError>' .chr(10);
 				}
-				$error = $messageStack->add('The journal with id ' . $result->fields['id'] . ' is out of balance total Debit = ' . $line_debit . ' total Credit = ' . $line_credit, 'error');
+				throw new \Exception('The journal with id ' . $result->fields['id'] . ' is out of balance total Debit = ' . $line_debit . ' total Credit = ' . $line_credit);
 			}
 			$total_debit  += $line_debit;
 			$total_credit += $line_credit;
@@ -186,12 +186,11 @@ function build_audit_xml($date_from, $date_to, $select){
 		}
 		$output .= "\t" . '</journal>' .chr(10);
 		if((float)(string)$total_debit != (float)(string)$total_credit){
-			$error = $messageStack->add('Totals are out of balance total Debit = ' . $total_debit . ' total Credit = ' . $total_credit, 'error');
+			throw new \Exception('Totals are out of balance total Debit = ' . $total_debit . ' total Credit = ' . $total_credit);
 		}
 		$output .= xmlEntry('totalDedit',			$total_debit	,true);
 		$output .= xmlEntry('totalCredit',			$total_credit	,true);
 	$output .= '</transactions>'.chr(10);
   	$output .= '</auditfile>'.chr(10);
-  	if ($error) return false;
     return $output;
 }

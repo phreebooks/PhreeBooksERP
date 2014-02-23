@@ -9,7 +9,6 @@
 // Path: /modules/shipping/methods/fedex_v7/language/nl_nl/language.php
 
 define('MODULE_SHIPPING_FEDEX_V7_TEXT_TITLE','Federal Express');
-define('MODULE_SHIPPING_FEDEX_V7_TITLE_SHORT','FedEx');
 define('MODULE_SHIPPING_FEDEX_V7_TEXT_DESCRIPTION','Federal Express');
 define('MODULE_SHIPPING_FEDEX_V7_TITLE_DESC','De titel welke gebruikt moet worden in weergaven. ');
 define('MODULE_SHIPPING_FEDEX_V7_ACCOUNT_NUMBER_DESC','Voer het FedEx-klantnummer te gebruiken voor tarief schattingen');
@@ -18,11 +17,6 @@ define('MODULE_SHIPPING_FEDEX_V7_NAT_ACCOUNT_NUMBER_DESC','Voer de FedEx Nationa
 define('MODULE_SHIPPING_FEDEX_V7_AUTH_KEY_DESC','Voer de FedEx-ontwikkelaar sleutel in welke u geleverd is door FedEx.');
 define('MODULE_SHIPPING_FEDEX_V7_AUTH_PWD_DESC','Voer de FedEx-ontwikkelaar wachtwoord in afgegeven door FedEx.');
 define('MODULE_SHIPPING_FEDEX_V7_METER_NUMBER_DESC','Voer de meter nummer in welke aan u is geleverde door FedEx.');
-define('MODULE_SHIPPING_FEDEX_V7_TEST_MODE_DESC','Test/Productie mode voor het testen van verzend labels');
-define('MODULE_SHIPPING_FEDEX_V7_PRINTER_TYPE_DESC','Type printer te gebruiken voor het afdrukken van etiketten. PDF voor gewoon papier, Thermal voor FedEx 2844 Thermal Label Printer (Zie Help-bestand voor het selecteren van thermische printer)');
-define('MODULE_SHIPPING_FEDEX_V7_PRINTER_NAME_DESC','Stel dan naam van de printer welke gebruikt moet worden voor het printen van labels zoals gedefinieerd in de printer instellingen op de computer.');
-define('MODULE_SHIPPING_FEDEX_V7_TYPES_DESC','Selecteer de FedEx diensten die standaard aangeboden worden.');
-define('MODULE_SHIPPING_FEDEX_V7_SORT_ORDER_DESC','Volgorde van tonen. Bepaalt in welke volgorde deze optie in lijsten voor moet komen.');
 define('MODULE_SHIPPING_FEDEX_V7_GND','Grond');
 define('MODULE_SHIPPING_FEDEX_V7_GDR','Thuis Bezorging');
 define('MODULE_SHIPPING_FEDEX_V7_1DM','Eerste Klas Overnacht');
@@ -42,7 +36,6 @@ define('SHIPPING_FEDEX_V7_VIEW_REPORTS','Bekijk rapporten voor');
 define('SHIPPING_FEDEX_V7_CLOSE_REPORTS','Eind Rapport');
 define('SHIPPING_FEDEX_V7_MULTIWGHT_REPORTS','Multigewicht Rapport');
 define('SHIPPING_FEDEX_V7_HAZMAT_REPORTS','Hazmat Rapport');
-define('SHIPPING_FEDEX_V7_SHIPMENTS_ON','FedEx Verzendingen op');
 define('SHIPPING_FEDEX_CURL_ERROR','Er is een fout in de communicatie met de FedEx-server:');
 define('SHIPPING_FEDEX_V7_RATE_ERROR','FedEx tarief respons fout:');
 define('SHIPPING_FEDEX_V7_RATE_CITY_MATCH','Stad komt niet overeen met de postcode.');

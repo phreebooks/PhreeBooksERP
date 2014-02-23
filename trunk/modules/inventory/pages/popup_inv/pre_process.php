@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/inventory/pages/popup_inv/pre_process.php
 //
-$security_level = validate_user(0, true);
+$security_level = \core\classes\user::validate(0, true);
 /**************  include page specific files    *********************/
 require(DIR_FS_WORKING . 'defaults.php');
 require(DIR_FS_WORKING . 'functions/inventory.php');
@@ -107,11 +107,11 @@ if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_lis
 $query_raw = "select SQL_CALC_FOUND_ROWS DISTINCT " . implode(', ', $field_list)  . " from " . TABLE_INVENTORY ."  a LEFT OUTER JOIN " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku " . $search . " order by $disp_order";
 $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 // the splitPageResults should be run directly after the query that contains SQL_CALC_FOUND_ROWS
-$query_split  = new splitPageResults($_REQUEST['list'], '');
+$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results
 	$_REQUEST['list'] = $query_split->current_page_number;
 	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-	$query_split      = new splitPageResults($_REQUEST['list'], '');
+	$query_split      = new \core\classes\splitPageResults($_REQUEST['list'], '');
 }
 history_save('inv_popup');
 

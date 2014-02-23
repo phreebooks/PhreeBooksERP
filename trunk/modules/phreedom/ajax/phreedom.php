@@ -18,7 +18,7 @@
 //  Path: /modules/phreedom/ajax/phreedom.php
 //
 /**************   Check user security   *****************************/
-$security_level = validate_ajax_user();
+$security_level = \core\classes\user::validate();
 /**************  include page specific files    *********************/
 /**************   page specific initialization  *************************/
 $xml    = NULL;
@@ -81,8 +81,10 @@ switch ($_REQUEST['action']) {
 		}
 		break;
 
-	default: die;
+	default: throw new Exception("do not know action {$_REQUEST['action']}");
 }
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

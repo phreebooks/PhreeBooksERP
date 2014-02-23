@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/classes/income_statement.php
 //
-
+namespace phreebooks\classes;
 gen_pull_language('phreebooks', 'admin'); // need coa types defines
 
 // this file contains special function calls to generate the data array needed to build reports not possible

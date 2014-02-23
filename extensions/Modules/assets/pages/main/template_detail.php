@@ -37,7 +37,7 @@ $fields->set_fields_to_display($asset_type);
 ?>
 <h1><?php echo MENU_HEADING_ASSETS . ' - ' . TEXT_ASSET_ID . '# ' . $cInfo->asset_id; ?></h1>
 
-  <div id="inv_image" title="<?php echo $cInfo->asset_id; ?>">
+  <div class="easyui-dialog" data-options="closed: true," id="inv_image" title="<?php echo TEXT_IMAGE; ?>" style="width:800px;padding:10px">
     <?php if ($cInfo->image_with_path) echo html_image(DIR_WS_FULL_PATH . 'my_files/' . $_SESSION['company'] . '/assets/images/' . $cInfo->image_with_path, '', 600) . chr(10);
 			else echo TEXT_NO_IMAGE; ?>
     <div>
@@ -46,19 +46,9 @@ $fields->set_fields_to_display($asset_type);
     </div>
   </div>
 
-<div id="detailtabs">
-<ul>
-<?php 
-  echo add_tab_list('tab_general', TEXT_GENERAL);
-  echo $fields->extra_tab_li;
-  // pull in additional custom tabs
-  if (isset($extra_assets_tabs) && is_array($extra_assets_tabs)) {
-    foreach ($extra_assets_tabs as $tabs) echo add_tab_list($tabs['tab_id'], $tabs['tab_title']);
-  }
-?>
-</ul>
+<div class="easyui-tabs" id="detailtabs">
 <!-- start the tabsets -->
-<div id="tab_general">
+<div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
   <table>
 	<tr>
 	  <td><?php echo TEXT_ASSET_ID; ?></td>
@@ -69,7 +59,7 @@ $fields->set_fields_to_display($asset_type);
 	  </td>
 	  <td rowspan="4" align="center">
 		<?php if ($cInfo->image_with_path) { // show image if it is defined
-			echo html_image(DIR_WS_FULL_PATH . 'my_files/' . $_SESSION['company'] . '/assets/images/' . $cInfo->image_with_path, $cInfo->image_with_path, '', '100', 'rel="#photo1"');
+			echo html_image(DIR_WS_MY_FILES . $_SESSION['company'] . '/assets/images/' . $cInfo->image_with_path, $cInfo->image_with_path, '', '100', 'onclick="showImage()"');
 		} else echo '&nbsp;'; ?>
 	  </td>
 	  <td><?php echo TEXT_IMAGE . ' (' . TEXT_REMOVE . ' ' . html_checkbox_field('remove_image', '1', $cInfo->remove_image) . ')'; ?></td>

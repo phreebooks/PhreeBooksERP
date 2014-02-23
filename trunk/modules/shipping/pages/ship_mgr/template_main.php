@@ -34,28 +34,13 @@ echo $toolbar->build_toolbar($add_search = false, false, $cal_ship);
 // Build the page
 ?>
 <h1><?php echo BOX_SHIPPING_MANAGER; ?></h1>
-<div id="shippingtabs">
-  <ul>
-<?php 
-	$image_types = array('gif', 'png', 'jpg', 'jpeg');
-	$path = DIR_WS_MODULES . 'shipping/methods/';
-	foreach ($installed_modules as $value) {
-      $image_file = DIR_WS_MODULES . 'shipping/images/no_logo.png';
-	  foreach ($image_types as $ext) {
-	    if (file_exists($path . $value['id'] . '/images/logo.' . $ext)) {
-		  $image_file = $path . $value['id'] . '/images/logo.' . $ext;
-		  break;
-		}
-	  }
-  	  echo add_tab_list('tab_'.$value['id'], html_image($image_file, $value['text'], 0, 30));
-	}
-?>
-  </ul>
+<div class="easyui-tabs" id="shippingtabs">
+ 
 <?php
-  foreach ($installed_modules as $value) {
-    $method_id = $value['id'];
-	echo '<div id="tab_' . $method_id . '">' . chr(10);
-	include_once(DIR_FS_MODULES . 'shipping/methods/' . $method_id . '/ship_mgr.php');
+  foreach ($admin_classes['shipping']->methods as $method) {
+  	if (!$method->installed) continue;
+	echo '<div title="'.$method->text.'" id="tab_' . $method->id . '">' . chr(10);
+	include_once(DIR_FS_MODULES . 'shipping/methods/' . $method->id . '/ship_mgr.php');
 	echo '</div>' . chr(10);
   }
 ?>

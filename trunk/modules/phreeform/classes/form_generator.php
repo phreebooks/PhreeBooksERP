@@ -17,6 +17,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreeform/classes/form_generator.php
 //
+namespace phreeform\classes;
 if (PDF_APP == 'TCPDF') { 
   define ('K_PATH_MAIN', DIR_FS_MODULES . 'phreeform/includes/tcpdf/');
   define ('K_PATH_URL',  DIR_WS_MODULES . 'phreeform/includes/tcpdf/');

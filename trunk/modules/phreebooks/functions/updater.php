@@ -19,8 +19,8 @@
 //
 
 function execute_upgrade($db_release) {
-  global $db, $messageStack;
-  $code_release = MODULE_PHREEBOOKS_VERSION;
+  global $db, $messageStack, $admin_classes;
+  $code_release = $admin_classes['phreedom']->version;
 //  $db_release   = PROJECT_DB_VERSION_MAJOR . '.' . PROJECT_DB_VERSION_MINOR;
 
   if ($db_release <= '1.3.1') { // upgrade db to Release 1.4
@@ -78,7 +78,7 @@ function execute_upgrade($db_release) {
 	$db_release = '2.1';
     if ($code_release == $db_release) return false;
   }
-  return true; // error
+  throw new \Exception("wasn't able to upgrade the database from $db_release to $db_release");
 }
 
 function update_version_db($major = PROJECT_VERSION_MAJOR, $minor = PROJECT_VERSION_MINOR) {

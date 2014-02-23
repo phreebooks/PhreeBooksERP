@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/pages/popup_bills_accts/pre_process.php
 //
-$security_level = validate_user(0, true);
+$security_level = \core\classes\user::validate(0, true);
 /**************  include page specific files    *********************/
 gen_pull_language('contacts');
 require(DIR_FS_WORKING . 'functions/phreebooks.php');
@@ -84,11 +84,11 @@ $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . "
 	group by m.bill_acct_id order by $disp_order";
 
 $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-$query_split  = new splitPageResults($_REQUEST['list'], '');
+$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results
    	$_REQUEST['list'] = $query_split->current_page_number;
 	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-	$query_split  = new splitPageResults($_REQUEST['list'], '');
+	$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
    }
 history_save('pb_pop_contacts');
 $include_header   = false;

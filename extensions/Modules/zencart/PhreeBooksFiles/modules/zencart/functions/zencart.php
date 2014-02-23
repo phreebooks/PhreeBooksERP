@@ -18,27 +18,27 @@
 //
 
 function doCURLRequest($method = 'GET', $url, $vars) {
-  global $messageStack;
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, $url);
-  curl_setopt($ch, CURLOPT_VERBOSE, 0);
-  curl_setopt($ch, CURLOPT_HEADER, false);
-  curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($ch, CURLOPT_TIMEOUT, 30); // times out after 30 seconds 
-  if (strtoupper($method) == 'POST') {
-	curl_setopt($ch, CURLOPT_POST, true);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, $vars);
-  }
-  $data  = curl_exec($ch);
-  $error = curl_error($ch);
-  curl_close($ch);
-  if ($data != '') {
-	return $data;
-  } else {
-	$messageStack->add('cURL error: ' . $error, 'error');
-	return false; 
-  }
+  	global $messageStack;
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_VERBOSE, 0);
+	curl_setopt($ch, CURLOPT_HEADER, false);
+	curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 30); // times out after 30 seconds 
+	if (strtoupper($method) == 'POST') {
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $vars);
+	}
+	$data  = curl_exec($ch);
+	$error = curl_error($ch);
+	$error_nr = curl_errno($ch);
+  	curl_close($ch);
+  	if ($error_nr == 0) {
+		return $data;
+  	} else {
+  		 throw new \Exception('cURL error nr:'. curl_errno($ch).' cURL error: ' . curl_error($ch)); 
+  	}
 }
 
 function pull_down_price_sheet_list() {

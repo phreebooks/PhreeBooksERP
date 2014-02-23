@@ -16,18 +16,17 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/inventory/pages/main/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_MAINTAIN_INVENTORY);
+$security_level = \core\classes\user::validate(SECURITY_ID_MAINTAIN_INVENTORY);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 require_once(DIR_FS_WORKING . 'functions/inventory.php');
-require_once(DIR_FS_WORKING . 'classes/inventory_fields.php');
 /**************   page specific initialization  *************************/
 gen_pull_language('inventory','filter');
 $error       = false;
 $processed   = false;
 $criteria    = array();
-$fields		 = new inventory_fields();
+$fields		 = new \inventory\classes\fields();
 $type        = isset($_REQUEST['inventory_type']) ? $_REQUEST['inventory_type'] : null; // default to stock item
 history_filter('inventory');
 $first_entry = isset($_GET['add']) ? true : false;
@@ -42,37 +41,38 @@ if (is_null($type)){
 	if ($result->RecordCount()>0) $type = $result->fields['inventory_type'];
 	else $type ='si';
 } 
-if ($type == 'as') $type = 'ma'; 
-if (file_exists(DIR_FS_WORKING . 'custom/classes/type/'.$type.'.php')) { 
-	require_once(DIR_FS_WORKING . 'custom/classes/type/'.$type.'.php'); 
-} else {
-	require_once(DIR_FS_WORKING . 'classes/type/'.$type.'.php'); // is needed here for the defining of the class and retriving the security_token
-}
-$cInfo = new $type();
+$temp = '\inventory\classes\type\\'. $type;
+$cInfo = new $temp;
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/main/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'create':
-	validate_security($security_level, 2); // security check
-	if($cInfo->check_create_new())	$_REQUEST['action'] = 'edit';
+  	try{
+		\core\classes\user::validate_security($security_level, 2); // security check
+		$cInfo->check_create_new();
+		$_REQUEST['action'] = 'edit';
+  	}catch (Exception $e){
+  		$messageStack->add($e->getMessage());
+  		$_REQUEST['action'] = 'new';
+  	}
 	break;
 	
   case 'save':
-	validate_security($security_level, 2); // security check
-	$error = $cInfo->save() == false;
-	if($error) $_REQUEST['action'] = 'edit';
+	\core\classes\user::validate_security($security_level, 2); // security check
+	if (!$error) $error = $cInfo->save() == false;
+	if ($error) $_REQUEST['action'] = 'edit';
 	break;
 
   case 'delete':
-	validate_security($security_level, 4); // security check
+	\core\classes\user::validate_security($security_level, 4); // security check
 	$id = db_prepare_input($_GET['cID']);
 	$cInfo->check_remove($id);
 	break;
 
   case 'copy': 	// Pictures are not copied over...
-	validate_security($security_level, 2); // security check
+	\core\classes\user::validate_security($security_level, 2); // security check
 	$id  = db_prepare_input($_GET['cID']);
 	$sku = db_prepare_input($_GET['sku']);
 	if($cInfo->copy($id, $sku)) $_REQUEST['action'] = 'edit';
@@ -88,7 +88,7 @@ switch ($_REQUEST['action']) {
 	break;
 
   case 'rename':
-	validate_security($security_level, 4); // security check
+	\core\classes\user::validate_security($security_level, 4); // security check
 	$id  = db_prepare_input($_GET['cID']);
 	$sku = db_prepare_input($_GET['sku']);
 	$cInfo->rename($id, $sku);
@@ -98,23 +98,26 @@ switch ($_REQUEST['action']) {
   	    $imgID = db_prepare_input($_POST['rowSeq']);
 	    $filename = 'inventory_'.$cID.'_'.$imgID.'.zip';
 	    if (file_exists(INVENTORY_DIR_ATTACHMENTS . $filename)) {
-	       require_once(DIR_FS_MODULES . 'phreedom/classes/backup.php');
-	       $backup = new backup();
+	       $backup = new \phreedom\classes\backup();
 	       $backup->download(INVENTORY_DIR_ATTACHMENTS, $filename, true);
 	    }
+	    ob_end_flush();
+  		session_write_close();
         die;
   case 'dn_attach': // download from list, assume the first document only
         $cID   = db_prepare_input($_POST['rowSeq']);
   	    $result = $db->Execute("select attachments from ".TABLE_INVENTORY." where id = $cID");
   	    $attachments = unserialize($result->fields['attachments']);
   	    foreach ($attachments as $key => $value) {
-		   $filename = 'inventory_'.$cID.'_'.$key.'.zip';
-		   if (file_exists(INVENTORY_DIR_ATTACHMENTS . $filename)) {
-		      require_once(DIR_FS_MODULES . 'phreedom/classes/backup.php');
-		      $backup = new backup();
-		      $backup->download(INVENTORY_DIR_ATTACHMENTS, $filename, true);
-		      die;
-		   }
+		   	$filename = 'inventory_'.$cID.'_'.$key.'.zip';
+		   	if (file_exists(INVENTORY_DIR_ATTACHMENTS . $filename)) {
+		      	require_once(DIR_FS_MODULES . 'phreedom/classes/backup.php');
+		      	$backup = new \phreedom\classes\backup();
+		      	$backup->download(INVENTORY_DIR_ATTACHMENTS, $filename, true);
+		      	ob_end_flush();
+  				session_write_close();
+		      	die;
+		   	}
   	    }
   case 'reset':
   		$_SESSION['filter_field']	 = null; 
@@ -244,11 +247,11 @@ switch ($_REQUEST['action']) {
     $query_raw    = "SELECT SQL_CALC_FOUND_ROWS DISTINCT " . implode(', ', $field_list)  . " from " . TABLE_INVENTORY ." a LEFT JOIN " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku ". $search . " order by $disp_order ";
     $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     // the splitPageResults should be run directly after the query that contains SQL_CALC_FOUND_ROWS
-    $query_split  = new splitPageResults($_REQUEST['list'], '');
+    $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results
     	$_REQUEST['list'] = $query_split->current_page_number;
     	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-    	$query_split  = new splitPageResults($_REQUEST['list'], '');
+    	$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     }
 	history_save('inventory');
     //building array's for filter dropdown selection

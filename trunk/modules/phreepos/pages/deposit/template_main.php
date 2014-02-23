@@ -122,13 +122,12 @@ echo '<br />' . html_pull_down_menu('bill_country_code', gen_get_countries(), $o
 	    <fieldset>
           <legend><?php echo TEXT_PAYMENT_METHOD; ?></legend>
 		  <div style="position: relative; height: 160px;">
-<?php echo html_pull_down_menu('shipper_code', $payment_modules, $order->shipper_code, 'onchange="activateFields()"') . chr(10);
+<?php echo html_pull_down_menu('shipper_code', gen_build_pull_down($admin_classes['payment']->methods), $order->shipper_code, 'onchange="activateFields()"') . chr(10);
 	$count = 0;
-	foreach ($payment_modules as $pmt_class) {
-		$value = $pmt_class['id'];
+	foreach ($admin_classes['payment']->methods as $method) {
 		echo '          <div id="pm_' . $count . '" style="visibility:hidden; position:absolute; top:22px; left:1px">' . chr(10);
 		// fetch the html inside of module
-		$disp_fields = $$value->selection();
+		$disp_fields = $method->selection();
 		for($i=0; $i<count($disp_fields['fields']); $i++) {
 		  echo $disp_fields['fields'][$i]['title'] . '<br />' . chr(10);
 		  echo $disp_fields['fields'][$i]['field'] . '<br />' . chr(10);

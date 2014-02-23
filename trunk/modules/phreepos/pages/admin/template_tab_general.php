@@ -18,7 +18,7 @@
 //
 
 ?>
-<div id="general" class="tabset_content">
+<div title="<?php echo TEXT_GENERAL;?>" id="general">
   <h2 class="tabset_label"><?php echo TEXT_PHREEPOS_SETTINGS; ?></h2>
   <fieldset class="formAreaTitle">
 	<table align="center">

@@ -37,13 +37,13 @@ function check_form() {
 
 // Insert other page specific functions here.
 function fetchPeriod() {
-  var acctPeriod = prompt('<?php echo GL_WARN_CHANGE_ACCT_PERIOD; ?>', '');
-  if (acctPeriod) {
-	document.getElementById('period').value = acctPeriod;
-    return true;
-  } else {
-    return false;
-  }
+ 	$.messager.prompt('<?php echo TEXT_ACCOUNTING_PERIOD?>', "<?php echo GL_WARN_CHANGE_ACCT_PERIOD; ?>", function(acctPeriod){
+		if (acctPeriod){
+			document.getElementById('period').value = acctPeriod;
+			submitToDo('change');
+		}
+		return false;
+	});
 }
 
 function updateEnd(index) {
@@ -66,6 +66,15 @@ function updateEnd(index) {
 	temp = thisYear + '-' + thisMonth + '-' + thisDay;
 	document.getElementById('start_'+(index+1)).value = formatDate(temp);
   }
+}
+
+function confirmNewYear(){
+	$.messager.confirm('Please Confirm','<?php echo sprintf(GL_WARN_ADD_FISCAL_YEAR, ($highest_fy + 1))?>',function(r){
+		if (r){
+			submitToDo('new');
+		}
+	});
+	return false;
 }
 
 // -->

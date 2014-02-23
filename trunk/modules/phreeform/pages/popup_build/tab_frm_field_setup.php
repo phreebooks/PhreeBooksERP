@@ -18,7 +18,7 @@
 //
 require_once(DIR_FS_WORKING . 'pages/popup_build/box_html.php'); // box templates
 ?>
-<div id="tab_field">
+<div title="<?php echo TEXT_FIELD_SETUP;?>" id="tab_field">
 <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto;">
 <tr><td>
   <table id="field_setup_frm" class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto;">

@@ -18,7 +18,7 @@
 //
 ?>
 
-<div id="tab_receiving">
+<div title="<?php echo TEXT_RECEIVING;?>" id="tab_receiving">
 <fieldset>
   <legend><?php echo TEXT_DETAILS; ?></legend>
 <table class="ui-widget" style="border-style:none;width:100%">

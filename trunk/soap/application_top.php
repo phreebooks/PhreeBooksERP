@@ -27,7 +27,7 @@ if (!defined('DIR_FS_ADMIN')) {
   if (file_exists('../includes/configure.php')) {
 	require_once('../includes/configure.php');
   } else {
-	die('ERROR: includes/configure.php file not found on PhreeBooks Server.');
+	trigger_error('ERROR: includes/configure.php file not found on PhreeBooks Server.');
   }
 }
 
@@ -44,7 +44,9 @@ $request_type = (strtolower($_SERVER['HTTPS']) == 'on' || $_SERVER['HTTPS'] == '
 
 require_once(DIR_FS_ADMIN . 'includes/common_functions.php');
 require_once(DIR_FS_ADMIN . 'includes/common_classes.php');
-
+set_error_handler("PhreebooksErrorHandler");
+set_exception_handler('PhreebooksExceptionHandler');
+spl_autoload_register('Phreebooks_autoloader', true, false);
 // set the session name and save path
 $http_domain  = gen_get_top_level_domain(HTTP_SERVER);
 $https_domain = gen_get_top_level_domain(HTTPS_SERVER);
@@ -75,7 +77,7 @@ require_once(DIR_FS_ADMIN . 'soap/language/' . LANGUAGE . '/language.php');
 // Load queryFactory db classes
 require_once(DIR_FS_ADMIN . 'includes/db/' . DB_TYPE . '/query_factory.php');
 $db = new queryFactory();
-if (!$db->connect(DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, DB_DATABASE)) die ('cannot connec to db!');
+if (!$db->connect(DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, DB_DATABASE)) throw new Exception('cannot connec to db!');
 
 // set application wide parameters for phreebooks module
 $configuration = $db->Execute("select configuration_key, configuration_value from " . DB_PREFIX . "configuration");
@@ -99,8 +101,8 @@ gen_pull_language('phreedom', 'menu');
     }
   }
 
-$currencies   = new currencies;
-$messageStack = new messageStack;
+$currencies   = new \core\classes\currencies;
+$messageStack = new \core\classes\messageStack;
 if (get_cfg_var('safe_mode')) echo 'Operating in Safe Mode. (This is bad!)';
 // check if a default currency is set
 if (!defined('DEFAULT_CURRENCY')) $messageStack->add(ERROR_NO_DEFAULT_CURRENCY_DEFINED, 'error');

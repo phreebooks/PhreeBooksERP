@@ -19,7 +19,7 @@
 
 // Module information
 define('MODULE_PHREEBOOKS_TITLE','PhreeBooks Module');
-define('MODULE_PHREEBOOKS_DESCRIPTION','The phreebooks module provides double entry accounting. Functions include Purchase Orders, Sales Orders, Invoicing, Journal Entries and more. <b>NOTE: This is a core module and should not be removed!</b>');
+define('MODULE_PHREEBOOKS_DESCRIPTION','The phreebooks module provides double entry accounting.<br>Functions include Purchase Orders, Sales Orders, Invoicing, Journal Entries and more.');
 // Headings
 // Installation
 define('MODULE_PHREEBOOKS_NOTES_1','PRIORITY MEDIUM: Enter company information (Company -> Module Administration -> My Company tab)');
@@ -115,7 +115,7 @@ define('GL_UTIL_PURGE_DB_CONFIRM','Are you sure you want to clear all journal en
 define('GL_UTIL_PURGE_CONFIRM','Deleted all journal records and cleaned up databases.');
 define('GL_UTIL_PURGE_FAIL','No journal entries were affected!');
 define('GL_CURRENT_PERIOD','Current Accounting Period is: ');
-define('GL_WARN_ADD_FISCAL_YEAR','Are you sure you want to add fiscal year: ');
+define('GL_WARN_ADD_FISCAL_YEAR','Are you sure you want to add fiscal year : %s ');
 define('GL_ERROR_FISCAL_YEAR_SEQ','The last period of the modified fiscal year does not align with the start date of the next fiscal year. The start date of the next fiscal year has been modified and should be reviewed.');
 define('GL_WARN_CHANGE_ACCT_PERIOD','Enter the accounting period to make current:');
 define('GL_ERROR_BAD_ACCT_PERIOD','The accounting period selected has not been setup. Either re-enter the period or add a fiscal year to continue.');

@@ -18,7 +18,7 @@
 //  Path: /modules/phreedom/pages/admin/template_tab_tools.php
 //
 ?>
-<div id="tab_tools">
+<div title="<?php echo TEXT_TOOLS;?>" id="tab_tools">
 <fieldset>
 <legend><?php echo GEN_ADM_TOOLS_SEQ_HEADING; ?></legend>
 <p><?php echo GEN_ADM_TOOLS_SEQ_DESC; ?></p>

@@ -1,6 +1,6 @@
 <?php
-require_once(DIR_FS_MODULES . 'inventory/classes/inventory.php');
-class mi extends inventory { //Master Stock Sub Item. child of ma (master assembly)
+namespace inventory\classes\type;
+class mi extends \inventory\classes\inventory { //Master Stock Sub Item. child of ma (master assembly)
 	public $inventory_type			= 'mi';
 	public $title 					= INV_TYPES_MI;
 	public $master					= '';
@@ -33,15 +33,11 @@ class mi extends inventory { //Master Stock Sub Item. child of ma (master assemb
 	}
 	
 	function copy($id, $newSku) {
-		global $messageStack;
-		$messageStack->add(INV_ERROR_CANNOT_COPY, 'error');
-		return false;
+		throw new \Exception(INV_ERROR_CANNOT_COPY);
 	}
 	
 	function check_remove($id){ // this is disabled in the form but just in case, error here as well
-		global $messageStack;
-		$messageStack->add('Master Stock Sub Items are not allowed to be deleted separately!','error');
-		return false;
+		throw new \Exception('Master Stock Sub Items are not allowed to be deleted separately!');
 	}
 	
 	function get_ms_list(){

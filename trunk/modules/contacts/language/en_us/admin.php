@@ -19,7 +19,7 @@
 
 // Module information
 define('MODULE_CONTACTS_TITLE','Contacts module');
-define('MODULE_CONTACTS_DESCRIPTION','The contacts module manages all customer, vendors, employees, branches and projects used in the PhreeSoft Business Toolkit. <b>NOTE: This is a core module and should not be removed!</b>');
+define('MODULE_CONTACTS_DESCRIPTION','The contacts module manages all customer, vendors, employees, branches and projects used in the PhreeSoft Business Toolkit.');
 // Headings
 define('BOX_CONTACTS_ADMIN','Contacts Administration');
 define('TEXT_BILLING_PREFS','Billing Address Book Settings');

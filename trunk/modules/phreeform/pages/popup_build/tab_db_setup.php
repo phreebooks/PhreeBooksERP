@@ -19,7 +19,7 @@
 //
 
 ?>
-<div id="tab_db">
+<div title="<?php echo TEXT_DATABASE_SETUP;?>" id="tab_db">
   <table class="ui-widget" style="border-style:none;width:100%">
   <tbody class="ui-widget-content">
 	<tr>

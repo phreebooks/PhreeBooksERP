@@ -20,14 +20,15 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/dashboards/audit_log/audit_log.php
 //
-
-class audit_log extends ctl_panel {
-	public $dashboard_id 		= 'audit_log';
+namespace phreedom\dashboards\audit_log;
+class audit_log extends \core\classes\ctl_panel {
+	public $id			 		= 'audit_log';
 	public $description	 		= CP_AUDIT_LOG_DESCRIPTION;
 	public $max_length   		= 50;
 	public $security_id  		= SECURITY_ID_CONFIGURATION;
-	public $title		 		= CP_AUDIT_LOG_TITLE;
-	public $version      		= 3.5; 
+	public $text		 		= CP_AUDIT_LOG_TITLE;
+	public $module_id 			= 'phreedom';
+	public $version      		= '3.5'; 
 	public $size_params			= 1;
 	public $default_params 		= array('num_rows'=> 50, 'today_minus' => '0');
 	
@@ -84,7 +85,7 @@ class audit_log extends ctl_panel {
                 $result->MoveNext();
           	}
         }
-        $this->title = CP_AUDIT_LOG_TITLE . " " . date('Y-m-d', strtotime('-' . $params['today_minus'] . ' day'));
+        $this->text = CP_AUDIT_LOG_TITLE . " " . date('Y-m-d', strtotime('-' . $params['today_minus'] . ' day'));
        	return $this->build_div('', $contents, $control);
  	}
   

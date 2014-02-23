@@ -58,7 +58,7 @@ function setReturnItem(override) { // request funtion
   document.getElementById('upc').value = '';
   document.getElementById('qty').value = '1';
   if (!qty) {
-    alert('The quantity cannot be less than or equal to zero!');
+	$.messager.alert('error','The quantity cannot be less than or equal to zero!','error');
     return;
   }
   $.ajax({
@@ -66,7 +66,7 @@ function setReturnItem(override) { // request funtion
     url: 'index.php?module=inventory&page=ajax&op=inv_details&fID=upcDetails&cID='+id+'&qty='+qty+'&upc='+upc,
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-      alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     },
 	success: processUpcDetails
   });

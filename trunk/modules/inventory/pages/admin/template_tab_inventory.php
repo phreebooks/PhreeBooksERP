@@ -19,7 +19,7 @@
 //
 
 ?>
-<div id="tab_inventory">
+<div title="<?php echo MENU_HEADING_INVENTORY;?>" id="tab_inventory">
   <fieldset>
     <table>
 	  <tr><th colspan="5"><?php echo TEXT_DEFAULT_GL_ACCOUNTS; ?></th></tr>

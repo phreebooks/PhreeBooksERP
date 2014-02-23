@@ -70,7 +70,7 @@ function loadSkuDetails(iID, rowCnt) {
 	url: 'index.php?module=inventory&page=ajax&op=inv_details&fID=skuDetails&bID='+bID+'&cID=0&qty='+qty+'&iID='+iID+'&sku='+sku+'&rID='+rowCnt,
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-      alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     },
 	success: fillInventory
   });
@@ -90,7 +90,7 @@ function fillInventory(sXml) {
     url: 'index.php?module=work_orders&page=ajax&op=load_task_list&iID='+iID,
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-      alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     },
 	success: fillTaskList
   });
@@ -112,7 +112,7 @@ function fillTaskList(sXml) { // call back function
   }
   while (document.getElementById('table_tasks').rows.length) document.getElementById("table_tasks").deleteRow(-1);
   if ($(xml).find("Message").text()) {
-    alert($(xml).find("Message").text());
+	$.messager.alert('info',$(xml).find("Message").text(),'info');
 	return;
   }
   var odd = true;
@@ -141,7 +141,7 @@ function printWOrder(id) { // request funtion
 	url: 'index.php?module=work_orders&page=ajax&op=load_wo_detail&id='+id,
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-      alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     },
 	success: fillwoDetail
   });
@@ -170,7 +170,7 @@ function fetchBOMList() { // request funtion
 	  url: 'index.php?module=work_orders&page=ajax&op=load_bom_list&skuID='+skuID+'&qty='+qty,
       dataType: ($.browser.msie) ? "text" : "xml",
       error: function(XMLHttpRequest, textStatus, errorThrown) {
-        alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	  $.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
       },
 	  success: fillBOMList
     });
@@ -182,7 +182,7 @@ function fillBOMList(sXml) {
   if (!xml) return;
   var shortage = $(xml).find("shortage").text();
   if (shortage != 'none') {
-    alert('<?php echo WO_INSUFFICIENT_INVENTORY; ?>'+"\n"+shortage);
+	 $.messager.alert('error','<?php echo WO_INSUFFICIENT_INVENTORY; ?>'+"\n"+shortage,'error');
   }
 }
 

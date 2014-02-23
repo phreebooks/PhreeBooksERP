@@ -31,11 +31,8 @@
   }
 
   function inv_calculate_prices($item_cost, $full_price, $encoded_price_levels) {
-    global $currencies, $messageStack;
-	if (!defined('MAX_NUM_PRICE_LEVELS')) {
-	  $messageStack->add('Constant MAX_NUM_PRICE_LEVELS is not defined! returning from inv_calculate_prices','error');
-	  return false;
-	}
+    global $currencies;
+	if (!defined('MAX_NUM_PRICE_LEVELS')) throw new \Exception('Constant MAX_NUM_PRICE_LEVELS is not defined! returning from inv_calculate_prices');
 	$price_levels = explode(';', $encoded_price_levels);
 	$prices = array();
 	for ($i=0, $j=1; $i < MAX_NUM_PRICE_LEVELS; $i++, $j++) {

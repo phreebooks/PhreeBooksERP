@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft, LLC (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -16,11 +16,10 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/pages/admin_tools/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_GEN_ADMIN_TOOLS);
+$security_level = \core\classes\user::validate(SECURITY_ID_GEN_ADMIN_TOOLS);
 /**************  include page specific files    *********************/
 gen_pull_language($module, 'admin');
 require(DIR_FS_WORKING . 'functions/phreebooks.php');
-require(DIR_FS_WORKING . 'classes/gen_ledger.php');
 /**************   page specific initialization  *************************/
 define('JOURNAL_ID',2);	// General Journal
 if (!defined('CURRENT_ACCOUNTING_PERIOD')) gen_auto_update_period(false);
@@ -48,7 +47,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'update':
-	validate_security($security_level, 3);
+	\core\classes\user::validate_security($security_level, 3);
   	// propagate into remaining fiscal years if the last date was changed.
 	$fy_array = array();
 	$x = 0;
@@ -75,7 +74,7 @@ switch ($_REQUEST['action']) {
 	gen_add_audit_log(GL_LOG_FY_UPDATE . TEXT_UPDATE);
 	break;
   case 'new':
-	validate_security($security_level, 2);
+	\core\classes\user::validate_security($security_level, 2);
   	$result = $db->Execute("select * from " . TABLE_ACCOUNTING_PERIODS . " where period = " . $highest_period);
 	$next_fy         = $result->fields['fiscal_year'] + 1;
 	$next_period     = $result->fields['period'] + 1;
@@ -83,7 +82,7 @@ switch ($_REQUEST['action']) {
 	$highest_period  = validate_fiscal_year($next_fy, $next_period, $next_start_date);
 	build_and_check_account_history_records();
 	// *************** roll account balances into next fiscal year *************************
-    $glEntry = new journal();
+    $glEntry = new \core\classes\journal();
 	$result = $db->Execute("select id from " . TABLE_CHART_OF_ACCOUNTS);
 	while (!$result->EOF) {
 		$glEntry->affected_accounts[$result->fields['id']] = 1;
@@ -95,7 +94,7 @@ switch ($_REQUEST['action']) {
 	break;
   case "change":
 	// retrieve the desired period and update the system default values.
-	validate_security($security_level, 3);
+	\core\classes\user::validate_security($security_level, 3);
   	$period = (int)db_prepare_input($_POST['period']);
 	if ($period <= 0 || $period > $highest_period) {
 		$messageStack->add(GL_ERROR_BAD_ACCT_PERIOD, 'error');
@@ -115,7 +114,7 @@ switch ($_REQUEST['action']) {
 	gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=beg_bal', 'SSL'));
 	break;
   case 'purge_db':
-	validate_security($security_level, 4);
+	\core\classes\user::validate_security($security_level, 4);
   	if ($_POST['purge_confirm'] == 'purge') {
 		$db->Execute("TRUNCATE TABLE " . TABLE_JOURNAL_MAIN);
 		$db->Execute("TRUNCATE TABLE " . TABLE_JOURNAL_ITEM);
@@ -135,7 +134,7 @@ switch ($_REQUEST['action']) {
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	break;
   case 'repost':
-	validate_security($security_level, 4);
+	\core\classes\user::validate_security($security_level, 4);
   		// determine which journals were selected to re-post
 	$valid_journals = array(2,3,4,6,7,8,9,10,12,13,14,16,18,19,20,21,22);
 	$journals = array();
@@ -151,7 +150,7 @@ switch ($_REQUEST['action']) {
 	break;
 
 	case 'inv_owed_fix' :
-		validate_security($security_level, 3);
+		\core\classes\user::validate_security($security_level, 3);
 		$error = false;
 		$result = $db->Execute("SELECT journal_main_id FROM ".TABLE_INVENTORY_COGS_OWED);
 		$cnt = 0;
@@ -161,7 +160,7 @@ switch ($_REQUEST['action']) {
 		    $gl_entry->remove_cogs_rows(); // they will be regenerated during the re-post
 		    if (!$gl_entry->Post('edit', true)) {
 			  $db->transRollback();
-			  $messageStack->add('<br /><br />Failed Re-posting the inventory owed. The record that failed was # '.$gl_entry->id,'error');
+			  throw new \Exception('Failed Re-posting the inventory owed. The record that failed was # '.$gl_entry->id);
 			  $error = true;
 			  break;
 		    }
@@ -180,7 +179,7 @@ switch ($_REQUEST['action']) {
 
   case 'coa_hist_test':
   case 'coa_hist_fix':
-	validate_security($security_level, 4);
+	\core\classes\user::validate_security($security_level, 4);
   	$tolerance    = 1 / pow(10, $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']); // i.e. 1 cent in USD
 	// pull fiscal years
 	$fiscal_years = array();
@@ -233,7 +232,7 @@ switch ($_REQUEST['action']) {
 		if (in_array($acct, $acct_list) && in_array($period, $max_periods)) $next_beg_bal = 0;
 		if (abs($diff_debit) > $tolerance || abs($diff_credit) > $tolerance) {
 		  if ($_REQUEST['action'] == 'coa_hist_test') {
-		    $messageStack->add(sprintf(GEN_ADM_TOOLS_REPAIR_ERROR_MSG, 'gl '.$period, $acct, $posted_bal, $currencies->format($next_beg_bal)), 'caution');
+		    $messageStack->add(sprintf(GEN_ADM_TOOLS_REPAIR_ERROR_MSG, $period, 'gl '.$acct, $posted_bal, $currencies->format($next_beg_bal)), 'caution');
 		  }
 		  $bad_accounts[$acct][$period]['debit_amount']  = $posted->fields['debit'];
 		  $bad_accounts[$acct][$period]['credit_amount'] = $posted->fields['credit'];
@@ -242,8 +241,8 @@ switch ($_REQUEST['action']) {
 		  $first_error_period = min($first_error_period, $period);
 		}
 		if ($currencies->format(abs($next_beg_bal - $history[$acct][$period+1]['beg_bal'])) > $tolerance) {
-		  if ($_REQUEST['action'] == 'coa_hist_test') {
-		    $messageStack->add(sprintf(GEN_ADM_TOOLS_REPAIR_ERROR_MSG, 'bb '.$period, $acct, $posted_bal, $currencies->format($next_beg_bal)), 'caution');
+		  if ($_REQUEST['action'] == 'coa_hist_test' && $period <= CURRENT_ACCOUNTING_PERIOD) {
+		    $messageStack->add(sprintf(GEN_ADM_TOOLS_REPAIR_BALANCE_ERROR_MSG, $period, $acct, $currencies->format($history[$acct][$period+1]['beg_bal']), $currencies->format($next_beg_bal)), 'caution');
 		  }
 		  $bad_accounts[$acct][$period+1]['beginning_balance'] = $next_beg_bal;
 		  $history[$acct][$period+1]['beg_bal'] = $next_beg_bal;
@@ -258,7 +257,7 @@ switch ($_REQUEST['action']) {
 	if ($_REQUEST['action'] == 'coa_hist_fix' && sizeof($bad_accounts) > 0) {
 		// *************** START TRANSACTION *************************
 		$db->transStart();
-	    $glEntry = new journal();
+	    $glEntry = new \core\classes\journal();
 		foreach ($bad_accounts as $gl_acct => $acct_array) {
 		  $glEntry->affected_accounts[$gl_acct] = 1;
 		  foreach ($acct_array as $period => $sql_data_array) {

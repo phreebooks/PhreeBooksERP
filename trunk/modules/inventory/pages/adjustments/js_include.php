@@ -52,9 +52,14 @@ function InventoryList(rowCnt) {
 }
 
 function serialList(rowID) {
-  var choice    = document.getElementById('serial_'+rowID).value;
-  var newChoice = prompt('<?php echo 'Enter Serial Number:'; ?>', choice);
-  if (newChoice) document.getElementById('serial_'+rowID).value = newChoice;
+  	var choice    = document.getElementById('serial_'+rowID).value;
+  	$.messager.prompt('<?php echo TEXT_SERIAL_NUMBER?>', "<?php echo ORD_JS_SERIAL_NUM_PROMPT; ?>", function(newChoice){
+		if (newChoice){
+			document.getElementById('serial_'+rowID).value = newChoice;
+		}
+		return false;
+	});
+	$('.messager-input').val(choice).focus();
 }
 
 function loadSkuDetails(iID, rowCnt, strict) {
@@ -66,7 +71,7 @@ function loadSkuDetails(iID, rowCnt, strict) {
 	url: 'index.php?module=inventory&page=ajax&op=inv_details&iID='+iID+'&sku='+sku+'&bID='+bID+'&rID='+rowCnt+'&strict='+strict,
 	dataType: ($.browser.msie) ? "text" : "xml",
 	error: function(XMLHttpRequest, textStatus, errorThrown) {
-	  alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+		$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 	},
 	success: processSkuStock
   });
@@ -194,7 +199,7 @@ function EditAdjustment(rID) {
     url: 'index.php?module=phreebooks&page=ajax&op=load_record&rID='+rID,
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-      alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     },
 	success: processEditAdjustment
   });

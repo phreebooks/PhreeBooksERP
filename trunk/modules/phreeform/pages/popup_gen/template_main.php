@@ -113,12 +113,8 @@ echo $toolbar->build_toolbar();
     echo html_hidden_field('rID', $rID) . chr(10);
 ?>
 
-<div id="gentabs">
-<ul>
-  <?php foreach ($tab_list as $key => $value) echo add_tab_list('tab_'.$key, $value); ?>
-</ul>
-
-<div id="tab_crit">
+<div class="easyui-tabs" id="gentabs">
+<div title="<?php echo TEXT_CRITERIA;?>" id="tab_crit">
 	<div id="rpt_body">
 	  <table class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto;">
 	   <thead class="ui-widget-header">
@@ -209,7 +205,7 @@ echo $toolbar->build_toolbar();
 
 <?php // ********************  end criteria tab, start fields tab ************************** ?>
 <?php if ($report->reporttype == 'rpt') { ?>
-  <div id="tab_field">
+  <div title="<?php echo TEXT_FIELDS;?>" id="tab_field">
 	<table><tr><td>
 	  <table id="field_setup" class="ui-widget" style="border-collapse:collapse;width:100%">
 	  <thead  class="ui-widget-header">
@@ -258,7 +254,7 @@ echo $toolbar->build_toolbar();
 <?php } ?>
 <?php // ********************  end fields tab, start page setup tab ************************** ?>
 <?php if ($report->reporttype == 'rpt') { ?>
-<div id="tab_page">
+<div title="<?php echo TEXT_PAGE_SETUP;?>" id="tab_page">
     <table  class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto;">
 	 <thead class="ui-widget-header">
       <tr><th colspan="8"><?php echo PHREEFORM_PGLAYOUT ?></th></tr>

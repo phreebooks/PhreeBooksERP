@@ -81,7 +81,7 @@ function PrepReport($ReportID) {
 
 // This function imports old stored reports from reportwriter into phreeform xml format
 function import_text_params($arrSQL) {
-	$params = new objectInfo();
+	$params = new \core\classes\objectInfo();
 	$ValidReportSQL = false;
 	if (is_array($arrSQL)) foreach ($arrSQL as $sql) { // find the main reports sql statement
 	  if (strpos($sql, 'ReportData:') === 0) {
@@ -109,7 +109,7 @@ function import_text_params($arrSQL) {
 		$params->tables = array();
 		for ($i = 1; $i < 6; $i++) {
 		  if ($sql_array['table' . $i]) {
-		    $params->tables[] = new objectInfo(array(
+		    $params->tables[] = new \core\classes\objectInfo(array(
 			  'tablename'    => $sql_array['table' . $i],
 			  'relationship' => pb_replace_tables($sql_array, $sql_array['table' . $i . 'criteria']),
 			));
@@ -255,7 +255,7 @@ function import_text_params($arrSQL) {
 		  default:
 		}
 		if ($temp) {
-		  $objTemp = new objectInfo($temp);
+		  $objTemp = new \core\classes\objectInfo($temp);
 		  if (!is_array($params->$entrytype)) $params->$entrytype = array(); 
 		  array_push($params->$entrytype, $objTemp);
 		}
@@ -552,7 +552,7 @@ function convertSeq($seq, $type, $sql_array) {
 		unset($value['TblSeqNum']);
 		break;
 	}
-    $output[] = new objectInfo($value);
+    $output[] = new \core\classes\objectInfo($value);
   }
   return $output;
 }

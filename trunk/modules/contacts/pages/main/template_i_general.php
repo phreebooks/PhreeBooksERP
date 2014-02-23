@@ -20,7 +20,7 @@
 // some setup
 $acct_def = (!$cInfo->dept_rep_id) ? array() : array(array('id'=>$cInfo->dept_rep_id, 'text'=>gen_get_contact_name($cInfo->dept_rep_id)));
 // *********************** Display account information ****************************** ?>
-<div id="tab_general">
+<div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
   <fieldset>
     <legend><?php echo ACT_CATEGORY_CONTACT; ?></legend>
     <table>

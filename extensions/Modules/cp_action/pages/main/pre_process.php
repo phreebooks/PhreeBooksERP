@@ -16,12 +16,11 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/cp_action/pages/main/pre_process.php
 //
-$security_level = validate_user(SECURITY_CAPA_MGT);
+$security_level = \core\classes\user::validate(SECURITY_CAPA_MGT);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_WORKING . 'defaults.php');
 /**************   page specific initialization  *************************/
-$error         = false;
-$cInfo         = new objectInfo();
+$cInfo         = new \core\classes\objectInfo();
 $creation_date = $_POST['creation_date'] ? gen_db_date($_POST['creation_date']) : date('Y-m-d');
 history_filter();
 /***************   hook for custom actions  ***************************/
@@ -31,13 +30,12 @@ if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save':
-	validate_security($security_level, 2);
+	\core\classes\user::validate_security($security_level, 2);
   	$id = db_prepare_input($_POST['rowSeq']);
 	// check for errors, process
 
 	// write the data
-	if (!$error) {
-	  $sql_data_array = array(
+	$sql_data_array = array(
 	    'capa_type'           => db_prepare_input($_POST['capa_type']),
 	    'requested_by'        => db_prepare_input($_POST['requested_by']),
 	    'capa_status'         => db_prepare_input($_POST['capa_status']),
@@ -76,48 +74,37 @@ switch ($_REQUEST['action']) {
 	  );
 
 	  if ($id) {
-	    if ($success = db_perform(TABLE_CAPA, $sql_data_array, 'update', 'id = ' . $id)) {
-		  gen_add_audit_log(CAPA_LOG_USER_UPDATE . $_POST['capa_num']);
-		  $capa_num = $_POST['capa_num'];
-		} else $error = true;
+	    	if (!db_perform(TABLE_CAPA, $sql_data_array, 'update', 'id = ' . $id)) throw new \Exception(CAPA_MESSAGE_ERROR);
+		 	gen_add_audit_log(CAPA_LOG_USER_UPDATE . $_POST['capa_num']);
+		  	$capa_num = $_POST['capa_num'];
 	  } else {
-	    // fetch the CAPA number
-		$result   = $db->Execute("select next_capa_num from " . TABLE_CURRENT_STATUS);
-		$capa_num = $result->fields['next_capa_num'];
-		$sql_data_array['capa_num'] = $capa_num;
-	    $success  = db_perform(TABLE_CAPA, $sql_data_array, 'insert');
-		if ($success) {
-		  $id = db_insert_id();
-		  $next_num = string_increment($capa_num);
-		  $db->Execute("update " . TABLE_CURRENT_STATUS . " set next_capa_num = '" . $next_num . "'");
-		  gen_add_audit_log(CAPA_LOG_USER_ADD . $capa_num);
-		} else $error = true;
+	    	// fetch the CAPA number
+			$result   = $db->Execute("select next_capa_num from " . TABLE_CURRENT_STATUS);
+			$capa_num = $result->fields['next_capa_num'];
+			$sql_data_array['capa_num'] = $capa_num;
+	    	if (!db_perform(TABLE_CAPA, $sql_data_array, 'insert')) throw new \Exception(CAPA_MESSAGE_ERROR);
+		  	$id = db_insert_id();
+		  	$next_num = string_increment($capa_num);
+		  	$db->Execute("update " . TABLE_CURRENT_STATUS . " set next_capa_num = '" . $next_num . "'");
+		  	gen_add_audit_log(CAPA_LOG_USER_ADD . $capa_num);
 	  }
-	  if (!$error) {
-	    $messageStack->add(($_POST['rowSeq'] ? CAPA_MESSAGE_SUCCESS_UPDATE : CAPA_MESSAGE_SUCCESS_ADD) . $capa_num, 'success');
-	  } else {
-	    $messageStack->add(CAPA_MESSAGE_ERROR, 'error');
-	  }
-	}
+	  $messageStack->add(($_POST['rowSeq'] ? CAPA_MESSAGE_SUCCESS_UPDATE : CAPA_MESSAGE_SUCCESS_ADD) . $capa_num, 'success');
 	break;
 
   case 'edit':
     $id = db_prepare_input($_POST['rowSeq']);
 	$result = $db->Execute("select * from " . TABLE_CAPA . " where id = " . $id);
-	$cInfo = new objectInfo($result->fields);
+	$cInfo = new \core\classes\objectInfo($result->fields);
 	break;
 
   case 'delete':
-	validate_security($security_level, 4);
+	\core\classes\user::validate_security($security_level, 4);
   	$id     = db_prepare_input($_GET['cID']);
 	$result = $db->Execute("select capa_num from " . TABLE_CAPA . " where id = " . $id);
-	if ($result->RecordCount() > 0) {
-	  $db->Execute("delete from " . TABLE_CAPA . " where id = " . $id);
-	  gen_add_audit_log(CAPA_MESSAGE_DELETE, $result->fields['capa_num']);
-	  gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('cID', 'action')), 'SSL'));
-	} else {
-	  $messageStack->add(CAPA_ERROR_CANNOT_DELETE, 'error');
-	}
+	if ($result->RecordCount() == 0) throw new \Exception(CAPA_ERROR_CANNOT_DELETE);
+	$db->Execute("delete from " . TABLE_CAPA . " where id = " . $id);
+	gen_add_audit_log(CAPA_MESSAGE_DELETE, $result->fields['capa_num']);
+	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('cID', 'action')), 'SSL'));
 	break;
 
   case 'go_first':    $_REQUEST['list'] = 1;       break;
@@ -255,11 +242,11 @@ switch ($_REQUEST['action']) {
 
     $query_raw    = "select SQL_CALC_FOUND_ROWS ".implode(', ', $field_list)." from ".TABLE_CAPA." $search order by $disp_order, capa_num";
     $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-    $query_split  = new splitPageResults($_REQUEST['list'], '');
+    $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 	if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results
 	   	$_REQUEST['list'] = $query_split->current_page_number;
 		$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-		$query_split      = new splitPageResults($_REQUEST['list'], '');
+		$query_split      = new \core\classes\splitPageResults($_REQUEST['list'], '');
 	}
 	history_save();
     define('PAGE_TITLE', BOX_CAPA_MAINTAIN);

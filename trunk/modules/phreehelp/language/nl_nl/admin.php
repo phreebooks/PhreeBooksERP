@@ -9,6 +9,6 @@
 // Path: /modules/phreehelp/language/nl_nl/admin.php
 
 define('MODULE_PHREEHELP_TITLE','PhreeHelp Module');
-define('MODULE_PHREEHELP_DESCRIPTION','De PhreeHelp module voorziet in een popup context help scherm om handleidingen te tonen die geleverd worden bij de modules. <b>Aantekening: Dit is een kern module en moet niet verwijderd worden!</b>');
+define('MODULE_PHREEHELP_DESCRIPTION','De PhreeHelp module voorziet in een popup context help scherm om handleidingen te tonen die geleverd worden bij de modules.');
 
 ?>

@@ -78,7 +78,7 @@ function check_form() {
   }
 
   if (error == 1) {
-    alert(error_message);
+	$.messager.alert('error',error_message,'error');
     return false;
   }
   return true;
@@ -95,7 +95,7 @@ function OpenRecurList(currObj) {
 function verifyCopy() {
   var id = document.getElementById('id').value;
   if (!id) {
-    alert('<?php echo GL_JS_CANNOT_COPY; ?>');
+	$.messager.alert('error','<?php echo GL_JS_CANNOT_COPY; ?>','error');
 	return;
   }
   if (confirm('<?php echo GL_JS_COPY_CONFIRM; ?>')) {
@@ -113,7 +113,7 @@ function EditJournal(rID) {
     url: 'index.php?module=phreebooks&page=ajax&op=load_record&rID='+rID,
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-      alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     },
 	success: processEditJournal
   });
@@ -156,7 +156,7 @@ function processEditJournal(sXml) {
 	jIndex++;
   });
   updateBalance();
-  if ($(xml).find("closed").text() == '1') alert('<?php echo WARNING_ENTRY_RECONCILED; ?>');
+  if ($(xml).find("closed").text() == '1') $.messager.alert('error','<?php echo WARNING_ENTRY_RECONCILED; ?>','warning');
 }
 
 function downloadAttachment() {

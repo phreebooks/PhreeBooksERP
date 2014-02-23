@@ -25,7 +25,6 @@
 
 function init() {
   $(function() { // initialize tables
-	$('#admintabs').tabs();
     $('#tab_table').dataTable( dataTables_i18n );
     $('#field_table').dataTable( dataTables_i18n );
   });
@@ -38,12 +37,12 @@ function check_form() {
 // Insert other page specific functions here.
 function loadPopUp(action, id) {
   switch(action) {
-    case 'fields_new':     action = 'new';    subject = 'inventory_fields'; break;
-    case 'tabs_new':       action = 'new';    subject = 'inventory_tabs';   break;
-    case 'fields_edit':    action = 'edit';   subject = 'inventory_fields'; break;
-    case 'tabs_edit':      action = 'edit';   subject = 'inventory_tabs';   break;
-    case 'fields_delete':  action = 'delete'; subject = 'inventory_fields'; break;
-    case 'tabs_delete':    action = 'delete'; subject = 'inventory_tabs';   break;
+    case 'fields_new':     action = 'new';    subject = 'fields'; break;
+    case 'tabs_new':       action = 'new';    subject = 'tabs';   break;
+    case 'fields_edit':    action = 'edit';   subject = 'fields'; break;
+    case 'tabs_edit':      action = 'edit';   subject = 'tabs';   break;
+    case 'fields_delete':  action = 'delete'; subject = 'fields'; break;
+    case 'tabs_delete':    action = 'delete'; subject = 'tabs';   break;
   }
   window.open("index.php?module=phreedom&page=popup_setup&topic="+module+"&subject="+subject+"&action="+action+"&sID="+id,"popup_setup","width=500,height=550,resizable=1,scrollbars=1,top=150,left=200");
 }

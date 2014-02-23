@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreepos/ajax/save_pos.php
 //
-$security_level = validate_user(SECURITY_ID_PHREEPOS);
+$security_level = \core\classes\user::validate(SECURITY_ID_PHREEPOS);
 define('JOURNAL_ID','19');
 /**************  include page specific files    *********************/
 gen_pull_language('phreeform');
@@ -71,5 +71,7 @@ if (!$error ) {
 if ($error)  	 $xml .= "\t" . xmlEntry("error", $error);
 if ($massage)  	 $xml .= "\t" . xmlEntry("massage", $massage);
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

@@ -18,7 +18,7 @@
 //  Path: /modules/contacts/pages/main/template_addbook.php
 //
 ?>
-<div id="tab_addbook">
+<div title="<?php echo TEXT_ADDRESS_BOOK;?>" id="tab_addbook">
 <?php // *********************** SHIPPING ADDRESSES  *************************************
   if (defined('MODULE_SHIPPING_STATUS')) { // show shipping address for customers and vendors
     echo '  <fieldset>';

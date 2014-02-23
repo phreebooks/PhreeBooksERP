@@ -19,7 +19,7 @@
 /**************   Check user security   *****************************/
 $xml   = NULL;
 $debug = NULL;
-$security_level = validate_ajax_user();
+$security_level = \core\classes\user::validate();
 /**************  include page specific files    *********************/
 gen_pull_language('contacts');
 require_once(DIR_FS_MODULES . 'phreebooks/defaults.php');
@@ -55,7 +55,7 @@ if ($oID) {
   $currencies_code  = $order->fields['currencies_code'];
   $currencies_value = $order->fields['currencies_value'];
 } else {
-  $order = new objectInfo();
+  $order = new \core\classes\objectInfo();
 }
 // select the customer and build the contact record
 if ($sID) {
@@ -162,7 +162,7 @@ if (sizeof($order->fields) > 0) {
 		} else if ($ordr_items->fields['gl_type'] == 'dsc') {
 		  $discount = $ordr_items->fields['credit_amount'] + $ordr_items->fields['debit_amount'];
 		} else {
-		  $inv_details = new objectInfo();
+		  $inv_details = new \core\classes\objectInfo();
 		}
 		$ordr_items->MoveNext();
 	  }
@@ -210,7 +210,7 @@ if (sizeof($order->fields) > 0) {
 	  	} else if ($ordr_items->fields['gl_type'] == 'dsc') {
 		  $discount = $ordr_items->fields['credit_amount'] + $ordr_items->fields['debit_amount'];
 		} else {
-		  $inv_details = new objectInfo();
+		  $inv_details = new \core\classes\objectInfo();
 		}
 //$debug .= ' processing quantity_on_hand = ' . $inv_details->fields['quantity_on_hand'] . ' and total = ' . $total . chr(10);
 		if ($so_po_ref_id) {
@@ -319,5 +319,7 @@ if (sizeof($order->fields) > 0) { // there was an order to open
 
 if ($debug) $xml .= xmlEntry('debug', $debug);
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

@@ -268,7 +268,7 @@ function AliasNbPages($alias='{nb}')
 function Error($msg)
 {
 	//Fatal error
-	die('<b>FPDF error:</b> '.$msg);
+	throw new \Exception('<b>FPDF error:</b> '.$msg);
 }
 
 function Open()

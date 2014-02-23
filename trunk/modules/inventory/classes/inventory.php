@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft, LLC (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/inventory/classes/inventory.php
 //
-
+namespace inventory\classes;
 class inventory {
 	public $inventory_type			= '';
 	public $help_path   			= '07.04.01.02';
@@ -63,7 +63,7 @@ class inventory {
 	 * this function gets inventory details from the database by id
 	 * @param integer $id
 	 */
-	function get_item_by_id(integer $id) {
+	function get_item_by_id($id) {
 		global $db;
 		$this->purchases_history = null;
 		$this->sales_history	 = null;
@@ -87,7 +87,7 @@ class inventory {
 	 * @param char $sku
 	 */
 	
-	function get_item_by_sku(char $sku){
+	function get_item_by_sku($sku){
 		global $db;
 		$this->purchases_history = null;
 		$this->sales_history	 = null;
@@ -167,16 +167,9 @@ class inventory {
 	
 	//this is to check if you are allowed to create a new product
 	function check_create_new() {
-		global $messageStack;
+		global $admin_classes;
 		if (!$this->sku) $this->sku = $this->next_sku;
-		if (!$this->sku) {
-		  	$messageStack->add(INV_ERROR_SKU_BLANK, 'error');
-		  	return false;
-		}
-		if (gen_validate_sku($this->sku)) {
-		  	$messageStack->add(INV_ERROR_DUPLICATE_SKU, 'error');
-			return false;
-		}
+		$admin_classes['inventory']->validate_name($this->sku);
 		return $this->create_new();
 	}
 	
@@ -203,27 +196,24 @@ class inventory {
 		return true;
 	}
 	
-	//this is to copy a product
+	/**
+	 * This is to copy a product
+	 * @param int $id
+	 * @param string $newSku
+	 * @throws Exception
+	 */
+	
 	function copy($id, $newSku) {
-		global $db, $messageStack;
+		global $admin_classes, $db;
 		if (!$newSku) $newSku = $this->next_sku;
-		if (!$newSku) {
-		  	$messageStack->add(INV_ERROR_SKU_BLANK, 'error');
-		  	return false;
-		}
-		if (gen_validate_sku($newSku)) {
-		  	$messageStack->add(INV_ERROR_DUPLICATE_SKU, 'error');
-			return false;
-		}
+		$admin_classes['inventory']->validate_name($newSku);
 		if(isset($id))$this->get_item_by_id($id);
-		else return false;
+		else throw new \Exception("id should be submitted in order to copy");
 		$this->old_id					= $this->id;
 		$this->old_sku					= $this->sku;
-		$result = $db->Execute("select * from " . TABLE_INVENTORY . " where sku = '" . $this->old_sku. "'");
-		//if ($result->RecordCount() == 0) return false;
 		$sql_data_array = array();
 		$not_usable_keys = array('id','sku','last_journal_date','upc_code','image_with_path','quantity_on_hand','quantity_on_order','quantity_on_sales_order','quantity_on_allocation','creation_date','last_update');
-		foreach ($result->fields as $key => $value) {
+		foreach ($this as $key => $value) {
 			if(!in_array($key, $not_usable_keys)) $sql_data_array[$key] = $value;
 		}
 		$this->sku 							= $newSku;
@@ -271,16 +261,9 @@ class inventory {
  	*/
 	
 	function rename($id, $newSku){
-		global $db, $messageStack;
+		global $admin_classes, $db;
 		if (!$newSku) $newSku = $this->next_sku;
-		if (!$newSku) {
-		  	$messageStack->add(INV_ERROR_SKU_BLANK, 'error');
-		  	return false;
-		}
-		if (gen_validate_sku($newSku)) {
-		  	$messageStack->add(INV_ERROR_DUPLICATE_SKU, 'error');
-			return false;
-		}
+		$admin_classes['inventory']->validate_name($newSku);
 		if(isset($id))$this->get_item_by_id($id); 
 		$sku_list = array($this->sku);
 		if (isset($this->edit_ms_list) && $this->edit_ms_list == true) { // build list of sku's to rename (without changing contents)
@@ -309,26 +292,17 @@ class inventory {
 	
 	//this is to check if you are allowed to remove
 	function check_remove($id) {
-		global $messageStack, $db;
+		global $db;
 		if(isset($id))$this->get_item_by_id($id);
-		else return false;
+		else throw new \Exception("id should be submitted in order to delete");
 		// check to see if there is inventory history remaining, if so don't allow delete
 		$result = $db->Execute("select id from " . TABLE_INVENTORY_HISTORY . " where sku = '" . $this->sku . "' and remaining > 0");
-		if ($result->RecordCount() > 0) {
-		 	$messageStack->add(INV_ERROR_DELETE_HISTORY_EXISTS, 'error');
-		 	return false;
-		}
+		if ($result->RecordCount() > 0) throw new \Exception(INV_ERROR_DELETE_HISTORY_EXISTS);
 		// check to see if this item is part of an assembly
 		$result = $db->Execute("select id from " . TABLE_INVENTORY_ASSY_LIST . " where sku = '" . $this->sku . "'");
-		if ($result->RecordCount() > 0) {
-	  		$messageStack->add(INV_ERROR_DELETE_ASSEMBLY_PART, 'error');
-	  		return false;
-		}
+		if ($result->RecordCount() > 0) throw new \Exception(INV_ERROR_DELETE_ASSEMBLY_PART);
 		$result = $db->Execute( "select id from " . TABLE_JOURNAL_ITEM . " where sku = '" . $this->sku . "' limit 1");
-		if ($result->Recordcount() > 0) {
-			$messageStack->add(INV_ERROR_CANNOT_DELETE, 'error');
-	  		return false;	
-		}
+		if ($result->Recordcount() > 0) throw new \Exception(INV_ERROR_CANNOT_DELETE);
 		$this->remove();
 	  	return true;
 		
@@ -353,15 +327,15 @@ class inventory {
 	
 	// this is the general save function.
 	function save() {
-		global $db, $currencies, $fields, $messageStack;
+		global $db, $currencies, $fields;
 	    $sql_data_array = $fields->what_to_save();
 	    // handle the checkboxes
 	    $sql_data_array['inactive'] = isset($_POST['inactive']) ? $_POST['inactive'] : '0'; // else unchecked
-	    foreach(array('quantity_on_hand', 'quantity_on_order', 'quantity_on_sales_order', 'quantity_on_allocation' ) as $key){
+	    foreach(array('quantity_on_hand', 'quantity_on_order', 'quantity_on_sales_order', 'quantity_on_allocation', 'creation_date', 'last_update', 'last_journal_date' ) as $key){
 	    	unset($sql_data_array[$key]);
 	    }     
 		$sql_data_array['last_update'] = date('Y-m-d H-i-s');
-		if ($_SESSION['admin_security'][SECURITY_ID_PURCHASE_INVENTORY] > 1){
+		if (\core\classes\user::security_level(SECURITY_ID_PURCHASE_INVENTORY) > 1){
 			$sql_data_array['item_cost'] = $this->store_purchase_array();	
 			$sql_data_array['vendor_id'] = $this->min_vendor_id;
 		} else{
@@ -384,24 +358,16 @@ class inventory {
 	  		$temp_file_name = $_FILES['inventory_image']['tmp_name'];
 	  		$file_name = $_FILES['inventory_image']['name'];
 	  		if (!validate_path($file_path)) {
-				$messageStack->add(INV_IMAGE_PATH_ERROR, 'error');
-				return false;
+				throw new \Exception(INV_IMAGE_PATH_ERROR, 'error');
 	  		} elseif (!validate_upload('inventory_image', 'image', 'jpg')) {
-				$messageStack->add(INV_IMAGE_FILE_TYPE_ERROR, 'error');
-				return false;
+				throw new \Exception(INV_IMAGE_FILE_TYPE_ERROR, 'error');
 	  		} else { // passed all test, write file
 	  			$result = $db->Execute("select * from " . TABLE_INVENTORY . " where image_with_path = '" . ($this->inventory_path ? ($this->inventory_path . '/') : '') . $file_name ."'");
-	  			if ( $result->RecordCount() != 0) {
-	  				$messageStack->add(INV_IMAGE_DUPLICATE_NAME, 'error');
-	  				return false;
-	  			}
-	  			if (!copy($temp_file_name, $file_path . '/' . $file_name)) {
-		  			$messageStack->add(INV_IMAGE_FILE_WRITE_ERROR, 'error');
-		  			return false;
-				} else {
-		  			$this->image_with_path = ($this->inventory_path ? ($this->inventory_path . '/') : '') . $file_name;
-		  			$sql_data_array['image_with_path'] = $this->image_with_path; // update the image with relative path
-				}
+	  			if ( $result->RecordCount() != 0) throw new \Exception(INV_IMAGE_DUPLICATE_NAME, 'error');
+	  			if (!copy($temp_file_name, $file_path . '/' . $file_name)) throw new \Exception(INV_IMAGE_FILE_WRITE_ERROR);
+				$this->image_with_path = ($this->inventory_path ? ($this->inventory_path . '/') : '') . $file_name;
+		  		$sql_data_array['image_with_path'] = $this->image_with_path; // update the image with relative path
+				
 	  		}
 		}
 		if ($this->id != ''){
@@ -516,7 +482,7 @@ class inventory {
 				$this->purchase_array[$i]['price_sheet_v']			= $_POST['price_sheet_v_array'][$key];
 			}
 			if(!empty($sql_data_array)){
-				if(isset($_POST['row_id_array'][$key])){//update
+				if(isset($_POST['row_id_array'][$key]) && $_POST['row_id_array'][$key] != ''){//update
 					$this->backup_purchase_array[$_POST['row_id_array'][$key]]['action'] = 'update';
 					db_perform(TABLE_INVENTORY_PURCHASE, $sql_data_array, 'update', "id = " . $_POST['row_id_array'][$key]);
 				}else{//insert

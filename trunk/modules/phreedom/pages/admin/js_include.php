@@ -25,8 +25,7 @@
 
 function init() {
 	$(function() {
-		$('#admintabs').tabs();
-		$('#currency_table').dataTable( dataTables_i18n );
+		$('#currency_table').dataTable( dataTables_i18n );//@todo remove after new layout
 	});
 }
 
@@ -38,13 +37,13 @@ function check_form() {
 function loadPopUp(action, id) {
   switch(action) {
     case 'countries_new':    action = 'new';    subject = 'countries'; break;
-    case 'currency_new':     action = 'new';    subject = 'currency';  break;
+    case 'currency_new':     action = 'new';    subject = 'currencies';  module = 'core'; break;
     case 'zones_new':        action = 'new';    subject = 'zones';     break;
     case 'countries_edit':   action = 'edit';   subject = 'countries'; break;
-    case 'currency_edit':    action = 'edit';   subject = 'currency';  break;
+    case 'currency_edit':    action = 'edit';   subject = 'currencies';  module = 'core'; break;
     case 'zones_edit':       action = 'edit';   subject = 'zones';     break;
 //    case 'countries_delete': action = 'delete'; subject = 'countries'; break;
-//    case 'currency_delete':  action = 'delete'; subject = 'currency';  break;
+//    case 'currency_delete':  action = 'delete'; subject = 'currency';  module = 'core'; break;
 //    case 'zones_delete':     action = 'delete'; subject = 'zones';     break;
   }
   window.open("index.php?module=phreedom&page=popup_setup&topic="+module+"&subject="+subject+"&action="+action+"&sID="+id,"popup_setup","width=500,height=550,resizable=1,scrollbars=1,top=150,left=200");

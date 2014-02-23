@@ -17,37 +17,25 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/shipping/methods/storepickup/storepickup.php
 //
+namespace shipping\methods\storepickup;
 // Revision history
 // 2011-07-01 - Added version number for revision control
-define('MODULE_SHIPPING_STOREPICKUP_VERSION','3.2');
+class storepickup extends \shipping\classes\shipping {
+	public $id				= 'storepickup'; // needs to match class name
+  	public $text			= MODULE_SHIPPING_STOREPICKUP_TEXT_TITLE;
+  	public $description		= MODULE_SHIPPING_STOREPICKUP_TEXT_DESCRIPTION;
+  	public $sort_order		= 35;
+  	public $version			= '3.2';
+  	public $shipping_cost	= 0.00;
+  	public $handling_cost;
 
-class storepickup {
-  function __construct() {
-    $this->code = 'storepickup';
-  }
-
-  function keys() {
-    return array(
-	  array('key' => 'MODULE_SHIPPING_STOREPICKUP_TITLE',      'default' => 'Store Pickup'),
-	  array('key' => 'MODULE_SHIPPING_STOREPICKUP_COST',       'default' => '0.00'),
-	  array('key' => 'MODULE_SHIPPING_STOREPICKUP_SORT_ORDER', 'default' => '35'),
-	);
-  }
-
-  function update() {
-    foreach ($this->keys() as $key) {
-	  $field = strtolower($key['key']);
-	  if (isset($_POST[$field])) write_configure($key['key'], $_POST[$field]);
+	function quote($pkg = '') {
+		$arrRates = array();
+		$arrRates[$this->id]['GND']['book']  = '';
+		$arrRates[$this->id]['GND']['quote'] = MODULE_SHIPPING_STOREPICKUP_COST;
+		$arrRates[$this->id]['GND']['cost']  = '';
+		return array('result' => 'success', 'rates' => $arrRates);
 	}
-  }
-
-  function quote($pkg = '') {
-	$arrRates = array();
-	$arrRates[$this->code]['GND']['book']  = '';
-	$arrRates[$this->code]['GND']['quote'] = MODULE_SHIPPING_STOREPICKUP_COST;
-	$arrRates[$this->code]['GND']['cost']  = '';
-	return array('result' => 'success', 'rates' => $arrRates);
-  }
 
 }
 ?>

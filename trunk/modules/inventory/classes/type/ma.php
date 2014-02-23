@@ -1,6 +1,6 @@
 <?php
-require_once(DIR_FS_MODULES . 'inventory/classes/inventory.php');
-class ma extends inventory { //Item Assembly formerly know as 'as' but this resulted in problems with the php function as.
+namespace inventory\classes\type;
+class ma extends \inventory\classes\inventory { //Item Assembly formerly know as 'as' but this resulted in problems with the php function as.
 	public $inventory_type			= 'ma'; 
 	public $title 					= INV_TYPES_AS;
 	public $account_sales_income	= INV_ASSY_DEFAULT_SALES;
@@ -28,6 +28,30 @@ class ma extends inventory { //Item Assembly formerly know as 'as' but this resu
 		parent::get_item_by_sku($sku);
 		$this->get_bom_list();
 		$this->allow_edit_bom = (($this->last_journal_date == '0000-00-00 00:00:00' || $this->last_journal_date == '') && ($this->quantity_on_hand == 0|| $this->quantity_on_hand == '')) ? true : false;
+	}
+	
+	function copy($id, $newSku){
+		global $db;
+		error_log("begin hier" . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+		if(parent::copy($id, $newSku)){
+			$result = $db->Execute("select * from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = '$id'");
+			error_log("hier1{$result->RecordCount()}" . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+			while(!$result->EOF) {
+				$bom_list = array(
+				  	'ref_id'      => $this->id,
+				  	'sku'         => $result->fields['sku'],
+					'description' => $result->fields['description'],
+					'qty'         => $result->fields['qty'],
+				);
+				db_perform(TABLE_INVENTORY_ASSY_LIST, $bom_list, 'insert');
+				$result->MoveNext();
+			}
+			error_log("hier2" . PHP_EOL,  3,DIR_FS_MY_FILES."/errors.log");
+			$this->get_bom_list();
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	function get_bom_list(){

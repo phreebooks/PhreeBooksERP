@@ -19,7 +19,7 @@
 //
 
 /**************   Check user security   *****************************/
-$security_level = validate_ajax_user();
+$security_level = \core\classes\user::validate();
 /**************  include page specific files    *********************/
 require(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 
@@ -36,5 +36,7 @@ $xml = xmlEntry("value", load_cash_acct_balance($post_date, $gl_acct_id, $period
 // error check
 
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

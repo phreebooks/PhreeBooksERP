@@ -17,7 +17,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/contacts/pages/admin/template_tab_project_phases.php
 //
-$project_phases_toolbar = new toolbar('project_phases');
+$project_phases_toolbar = new \core\classes\toolbar('project_phases');
 $project_phases_toolbar->icon_list['cancel']['show'] = false;
 $project_phases_toolbar->icon_list['open']['show']   = false;
 $project_phases_toolbar->icon_list['save']['show']   = false;
@@ -27,7 +27,7 @@ if ($security_level > 1) $project_phases_toolbar->add_icon('new', 'onclick="load
 if ($project_phases->extra_buttons) $project_phases->customize_buttons($project_phases_toolbar);
 
 ?>
-<div id="tab_project_phases">
+<div title="<?php echo SETUP_TITLE_PROJECTS_PHASES;?>" id="tab_project_phases">
   <?php echo $project_phases_toolbar->build_toolbar(); ?>
   <h1><?php echo $project_phases->title; ?></h1>
   <div id="project_phases_content"><?php echo $project_phases->build_main_html(); ?></div>

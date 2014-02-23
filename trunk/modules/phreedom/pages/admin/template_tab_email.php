@@ -19,7 +19,7 @@
 //
 
 ?>
-<div id="tab_email">
+<div title="<?php echo MENU_HEADING_EMAIL;?>" id="tab_email">
 <table class="ui-widget" style="border-style:none;width:100%">
  <thead class="ui-widget-header">
   <tr><th colspan="2"><?php echo MENU_HEADING_EMAIL; ?></th></tr>

@@ -18,7 +18,7 @@
 //
 $hidden_fields = '';
 ?>
-<div id="tab_general">
+<div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
   <div id="inv_image" title="<?php echo $wo_title; ?>">
     <?php if ($image_with_path) echo html_image(DIR_WS_MY_FILES . $_SESSION['company'] . '/inventory/images/' . $image_with_path, '', 600) . chr(10);
 			else echo TEXT_NO_IMAGE; ?>

@@ -19,7 +19,7 @@
 
 /**************   Check user security   *****************************/
 $xml = NULL;
-$security_level = validate_ajax_user();
+$security_level = \core\classes\user::validate();
 /**************  include page specific files    *********************/
 /**************   page specific initialization  *************************/
 $xml = NULL;

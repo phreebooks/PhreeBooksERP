@@ -16,14 +16,14 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/contacts/classes/type/i.php
 //  crm
-require_once(DIR_FS_MODULES . 'contacts/classes/contacts.php');
-
-class i extends contacts{	
+namespace contacts\classes\type;
+class i extends \contacts\classes\contacts{	
 	public  $security_token         = SECURITY_ID_PHREECRM;
 	public  $page_title_new         = BOX_CONTACTS_NEW_CONTACT;
 	public  $address_types          = array('im', 'is', 'ib');
 	public  $type                   = 'i';
 	private $duplicate_id_error     = ACT_ERROR_DUPLICATE_CONTACT;
+	public 	$auto_field    			= 'next_crm_id_num';
 	
   public function __construct(){
 	$this->tab_list[] = array('file'=>'template_notes',		'tag'=>'notes',    'order'=>40, 'text'=>TEXT_NOTES);
@@ -51,33 +51,31 @@ class i extends contacts{
   	
   }
   
-  public function data_complete($error){
-    global $db, $messageStack;
-    if ($this->auto_field && $this->short_name == '') {
-    	$result = $db->Execute("select ".$this->auto_field." from ".TABLE_CURRENT_STATUS);
-    	$this->short_name  = $result->fields[$this->auto_field];
-    	$this->inc_auto_id = true;
-    }
-    foreach ($this->address_types as $value) {
-      if (($value == 'im') || // contact main address when editing the contact directly
-          ($this->address[$value]['primary_name'] <> '')) { // optional billing, shipping, and contact
-        $msg_add_type = GEN_ERRMSG_NO_DATA . constant('ACT_CATEGORY_' . strtoupper(substr($value, 1, 1)) . '_ADDRESS');
-        if (false === db_prepare_input($this->address[$value]['primary_name'],   $required = true))                     $error = $messageStack->add(ACT_I_TYPE_NAME . ': ' . ACT_JS_SHORT_NAME,'error');
-        if (false === db_prepare_input($this->address[$value]['contact'],        ADDRESS_BOOK_CONTACT_REQUIRED))        $error = $messageStack->add($msg_add_type.' - '.GEN_CONTACT,       'error');
-        if (false === db_prepare_input($this->address[$value]['address1'],       ADDRESS_BOOK_ADDRESS1_REQUIRED))       $error = $messageStack->add($msg_add_type.' - '.GEN_ADDRESS1,      'error');
-        if (false === db_prepare_input($this->address[$value]['address2'],       ADDRESS_BOOK_ADDRESS2_REQUIRED))       $error = $messageStack->add($msg_add_type.' - '.GEN_ADDRESS2,      'error');
-        if (false === db_prepare_input($this->address[$value]['city_town'],      ADDRESS_BOOK_CITY_TOWN_REQUIRED))      $error = $messageStack->add($msg_add_type.' - '.GEN_CITY_TOWN,     'error');
-        if (false === db_prepare_input($this->address[$value]['state_province'], ADDRESS_BOOK_STATE_PROVINCE_REQUIRED)) $error = $messageStack->add($msg_add_type.' - '.GEN_STATE_PROVINCE,'error');
-        if (false === db_prepare_input($this->address[$value]['postal_code'],    ADDRESS_BOOK_POSTAL_CODE_REQUIRED))    $error = $messageStack->add($msg_add_type.' - '.GEN_POSTAL_CODE,   'error');
-        if (false === db_prepare_input($this->address[$value]['telephone1'],     ADDRESS_BOOK_TELEPHONE1_REQUIRED))     $error = $messageStack->add($msg_add_type.' - '.GEN_TELEPHONE1,    'error');
-        if (false === db_prepare_input($this->address[$value]['email'],          ADDRESS_BOOK_EMAIL_REQUIRED))          $error = $messageStack->add($msg_add_type.' - '.GEN_EMAIL,         'error');
-      }
-    }
-    
-    $error = $this->duplicate_id($error);
-    return $error;
-    
-  }
+	public function data_complete(){
+    	global $db;
+    	if ($this->auto_field && $this->short_name == '') {
+    		$result = $db->Execute("select ".$this->auto_field." from ".TABLE_CURRENT_STATUS);
+    		$this->short_name  = $result->fields[$this->auto_field];
+    		$this->inc_auto_id = true;
+    	}
+    	foreach ($this->address_types as $value) {
+      		if (($value == 'im') || // contact main address when editing the contact directly
+          	  ($this->address[$value]['primary_name'] <> '')) { // optional billing, shipping, and contact
+        		$msg_add_type = GEN_ERRMSG_NO_DATA . constant('ACT_CATEGORY_' . strtoupper(substr($value, 1, 1)) . '_ADDRESS');
+        		if (false === db_prepare_input($this->address[$value]['primary_name'],   $required = true))                     throw new \Exception(ACT_I_TYPE_NAME . ': ' . ACT_JS_SHORT_NAME);
+        		if (false === db_prepare_input($this->address[$value]['contact'],        ADDRESS_BOOK_CONTACT_REQUIRED))        throw new \Exception($msg_add_type.' - '.GEN_CONTACT);
+        		if (false === db_prepare_input($this->address[$value]['address1'],       ADDRESS_BOOK_ADDRESS1_REQUIRED))       throw new \Exception($msg_add_type.' - '.GEN_ADDRESS1);
+        		if (false === db_prepare_input($this->address[$value]['address2'],       ADDRESS_BOOK_ADDRESS2_REQUIRED))       throw new \Exception($msg_add_type.' - '.GEN_ADDRESS2);
+        		if (false === db_prepare_input($this->address[$value]['city_town'],      ADDRESS_BOOK_CITY_TOWN_REQUIRED))      throw new \Exception($msg_add_type.' - '.GEN_CITY_TOWN);
+        		if (false === db_prepare_input($this->address[$value]['state_province'], ADDRESS_BOOK_STATE_PROVINCE_REQUIRED)) throw new \Exception($msg_add_type.' - '.GEN_STATE_PROVINCE);
+        		if (false === db_prepare_input($this->address[$value]['postal_code'],    ADDRESS_BOOK_POSTAL_CODE_REQUIRED))    throw new \Exception($msg_add_type.' - '.GEN_POSTAL_CODE);
+        		if (false === db_prepare_input($this->address[$value]['telephone1'],     ADDRESS_BOOK_TELEPHONE1_REQUIRED))     throw new \Exception($msg_add_type.' - '.GEN_TELEPHONE1);
+        		if (false === db_prepare_input($this->address[$value]['email'],          ADDRESS_BOOK_EMAIL_REQUIRED))          throw new \Exception($msg_add_type.' - '.GEN_EMAIL);
+      		}
+    	}
+   		$this->duplicate_id();
+    	return true;
+  	}
   
   
   public function save_contact(){

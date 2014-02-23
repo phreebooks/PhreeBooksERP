@@ -19,14 +19,14 @@
 //
 
 /**************   Check user security   *****************************/
-$security_level = validate_ajax_user(SECURITY_ID_PHREEFORM);
+$security_level = \core\classes\user::validate(SECURITY_ID_PHREEFORM);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_MODULES . 'phreeform/defaults.php');
 require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
 
 /**************   page specific initialization  *************************/
 $rID = $_GET['rID'];
-if (!$rID) die;
+if (!$rID) throw new Exception("variable rID isn't set");
 
 $result  = $db->Execute("select doc_title from " . TABLE_PHREEFORM . " where id = '" . $rID . "'");
 $subject = $result->fields['doc_title'] . ' ' . TEXT_FROM . ' ' . COMPANY_NAME;
@@ -45,5 +45,7 @@ $xml .= "\t" . xmlEntry("text",    $text);
 // error check
 
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

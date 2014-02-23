@@ -17,7 +17,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/classes/tax_auths.php
 //
-
+namespace phreebooks\classes;
 class tax_auths {
 	public $code        = 'tax_auths'; // needs to match class name
     public $db_table    = TABLE_TAX_AUTH;
@@ -26,17 +26,14 @@ class tax_auths {
     public $error       = false;
     
     public function __construct(){
-        $this->security_id = $_SESSION['admin_security'][SECURITY_ID_CONFIGURATION];
+        $this->security_id = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
         foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
         $this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
     }
 
   function btn_save($id = '') {
-  	global $db, $messageStack;
-	if ($this->security_id < 2) {
-		$messageStack->add(ERROR_NO_PERMISSION,'error');
-		return false;
-	}
+  	global $db;
+	\core\classes\user::validate_security($this->security_id, 2); // security check		
 	$sql_data_array = array(
 		'type'              => $this->type,
 		'description_short' => $this->description_short,
@@ -56,21 +53,15 @@ class tax_auths {
   }
 
   function btn_delete($id = 0) {
-  	global $db, $messageStack;
-	if ($this->security_id < 4) {
-		$messageStack->add(ERROR_NO_PERMISSION,'error');
-		return false;
-	}
+  	global $db;
+	\core\classes\user::validate_security($this->security_id, 4); // security check		
 	// Check for this authority being used in a tax rate calculation, if so do not delete
 	$result = $db->Execute("select tax_auths from " . TABLE_JOURNAL_MAIN . " 
 		where tax_auths like '%" . $id . "%'");
 	while (!$result->EOF) {
 	  $auth_ids = explode(':', $result->fields['tax_auths']);
 	  for ($i = 0; $i < count($auth_ids); $i++) {
-		if ($id == $auth_ids[$i]) {
-		  $messageStack->add(SETUP_TAX_AUTHS_DELETE_ERROR,'error');
-		  return false;
-		}
+		if ($id == $auth_ids[$i]) throw new \Exception(SETUP_TAX_AUTHS_DELETE_ERROR);
 	  }
 	  $result->MoveNext();
 	}
@@ -83,7 +74,7 @@ class tax_auths {
   }
 
   function build_main_html() {
-  	global $db, $messageStack;
+  	global $db;
     $content = array();
 	$content['thead'] = array(
 	  'value' => array(SETUP_TAX_DESC_SHORT, TEXT_DESCRIPTION, SETUP_TAX_GL_ACCT, SETUP_TAX_RATE, TEXT_ACTION),

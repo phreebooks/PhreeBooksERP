@@ -40,7 +40,7 @@ $toolbar->icon_list['print']['params']  = 'onclick="submitToDo(\'print\')"';
 if ($security_level < 4) $toolbar->icon_list['delete']['show'] = false;
 if ($security_level < 2) $toolbar->icon_list['save']['show']   = false;
 if ($security_level < 2) $toolbar->icon_list['print']['show']  = false;
-$toolbar->add_icon('new', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')) . 'jID=' . JOURNAL_ID . '&amp;type=' . $type, 'SSL') . '\'"', 2);
+$toolbar->add_icon('new', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')) . 'jID=' . JOURNAL_ID . '&amp;type=' . $account_type, 'SSL') . '\'"', 2);
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 switch (JOURNAL_ID) {
   case 18: $toolbar->add_help('07.05.02'); break;
@@ -49,14 +49,14 @@ switch (JOURNAL_ID) {
 echo $toolbar->build_toolbar(); 
 // Build the page
 ?>
-<h1><?php echo constant('ORD_TEXT_' . JOURNAL_ID . '_' . strtoupper($type) . '_WINDOW_TITLE'); ?></h1>
+<h1><?php echo constant('ORD_TEXT_' . JOURNAL_ID . '_' . strtoupper($account_type) . '_WINDOW_TITLE'); ?></h1>
 <div>
  <table class="ui-widget" style="border-style:none;width:100%">
   <tbody class="ui-widget-content">
 	<tr>
 	  <td valign="top">
 <?php
-echo (($type == 'c') ? GEN_CUSTOMER_ID : GEN_VENDOR_ID) . ' ' . html_input_field('search', $order->search, 'onfocus="clearField(\'search\', \'' . TEXT_SEARCH . '\')" onblur="setField(\'search\', \'' . TEXT_SEARCH . '\');"'); 
+echo (($account_type == 'c') ? GEN_CUSTOMER_ID : GEN_VENDOR_ID) . ' ' . html_input_field('search', $order->search, 'onfocus="clearField(\'search\', \'' . TEXT_SEARCH . '\')" onblur="setField(\'search\', \'' . TEXT_SEARCH . '\');"'); 
 echo '&nbsp;' . html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'align="top" style="cursor:pointer" onclick="AccountList()"');
 ?>
 	  </td>
@@ -136,13 +136,12 @@ echo '<br />' . html_input_field('bill_email', $order->bill_email, 'size="40" ma
           <legend><?php echo TEXT_PAYMENT_METHOD; ?></legend>
 		  <div style="position: relative; height: 160px;">
 <?php 
-  echo html_pull_down_menu('shipper_code', $payment_modules, $order->shipper_code, 'onchange="activateFields()"') . chr(10);
+  echo html_pull_down_menu('shipper_code', gen_build_pull_down($admin_classes['payment']->methods), $order->shipper_code, 'onchange="activateFields()"') . chr(10);
   $count = 0;
-  foreach ($payment_modules as $pmt_class) {
-	$value = $pmt_class['id'];
+  foreach ($admin_classes['payment']->methods as $method) {
 	echo '          <div id="pm_' . $count . '" style="visibility:hidden; position:absolute; top:22px; left:1px">' . chr(10);
 	// fetch the html inside of module
-	$disp_fields = $$value->selection();
+	$disp_fields = $method->selection();
 	for($i = 0; $i < sizeof($disp_fields['fields']); $i++) {
 	  echo $disp_fields['fields'][$i]['title'] . '<br />' . chr(10);
 	  echo $disp_fields['fields'][$i]['field'] . '<br />' . chr(10);

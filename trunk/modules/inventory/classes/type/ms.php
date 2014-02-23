@@ -1,6 +1,6 @@
 <?php
-require_once(DIR_FS_MODULES . 'inventory/classes/inventory.php');
-class ms extends inventory {//Master Stock Item parent of mi
+namespace inventory\classes\type;
+class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 	public $inventory_type			= 'ms';
 	public $title       			= INV_TYPES_MS;
 	public $account_sales_income	= INV_MASTER_STOCK_DEFAULT_SALES;
@@ -262,9 +262,8 @@ class ms extends inventory {//Master Stock Item parent of mi
 			}
 		}
 		if (count($delete_list) && $security_level < 4){
-			$messageStack->add(ERROR_NO_PERMISSION,'error');
 			$this->get_ms_list();
-	  		return false;
+			throw new \Exception(ERROR_NO_PERMISSION);
 		}
 		foreach($delete_list as $sku) {
 			$temp = $this->mi_check_remove($sku);

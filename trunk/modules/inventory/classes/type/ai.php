@@ -1,6 +1,6 @@
 <?php
-require_once(DIR_FS_MODULES . 'inventory/classes/inventory.php');
-class ai extends inventory {//Activity Item
+namespace inventory\classes\type;
+class ai extends \inventory\classes\inventory {//Activity Item
 	//cost_methods 'f' =( First-in, First-out),  'l' =( Last-in, First-out) , 'a' =( Average Costing )
 	public $inventory_type			= 'ai';
 	public $title 					= INV_TYPES_AI;

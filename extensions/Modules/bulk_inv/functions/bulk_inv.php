@@ -43,7 +43,7 @@
 	if ($data != '') {
 	  return $data;
 	} else {
-	  $messageStack->add('cURL error: ' . $error, 'error');
+	  throw new \Exception('cURL error: ' . $error);
 	  return false; 
 	}
   }

@@ -16,28 +16,20 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/assets/pages/admin/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_CONFIGURATION);
+$security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 /**************  include page specific files    *********************/
 gen_pull_language($module, 'admin');
 gen_pull_language('phreedom', 'admin');
 require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
-require_once(DIR_FS_WORKING . 'classes/install.php');
-require_once(DIR_FS_WORKING . 'classes/assets_tabs.php');
-require_once(DIR_FS_WORKING . 'classes/assets_fields.php');
 /**************   page specific initialization  *************************/
-$error  = false; 
-$install= new assets_admin();
-$tabs   = new assets_tabs();
-$fields = new assets_fields();
+$tabs   = new \assets\classes\tabs();
+$fields = new \assets\classes\fields();
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'insert':      $subject_module->btn_insert(); break;
   case 'save':        $subject_module->btn_save();   break;
   case 'delete':
-	if ($security_level < 4) {
-	  $messageStack->add(ERROR_NO_PERMISSION,'error');
-	  break;
-	}
+  	\core\classes\user::validate_security($security_level, 4); // security check
     $subject = $_POST['subject'];
     $id      = $_POST['rowSeq'];
 	if (!$subject || !$id) break;

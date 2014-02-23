@@ -17,7 +17,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/classes/pricelist_report.php
 //
-
+namespace inventory\classes;
 require_once (DIR_FS_MODULES."/inventory/defaults.php");
 require_once (DIR_FS_MODULES."/inventory/functions/inventory.php");
 

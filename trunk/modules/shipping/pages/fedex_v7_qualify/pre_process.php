@@ -37,13 +37,10 @@ gen_pull_language('phreedom','admin');
 load_method_language(DIR_FS_MODULES  . 'shipping/methods/', 'fedex_v7');
 require(DIR_FS_WORKING . 'defaults.php');
 require(DIR_FS_WORKING . 'functions/shipping.php');
-require(DIR_FS_WORKING . 'classes/shipping.php');
-require(DIR_FS_MODULES . 'phreedom/classes/backup.php');
-require(DIR_FS_WORKING . 'methods/fedex_v7/fedex_v7.php');
 require(DIR_FS_WORKING . 'pages/fedex_v7_qualify/sample_data.php');
 /**************   page specific initialization  *************************/
 $error               = false;
-$backup              = new backup();
+$backup              = new \phreedom\classes\backup();
 $backup->source_dir  = DIR_FS_MY_FILES . $_SESSION['company'] . '/temp/fedex_qual/';
 $backup->dest_dir    = DIR_FS_MY_FILES . 'backups/';
 $backup->dest_file   = 'fedex_qual.zip';
@@ -54,7 +51,7 @@ switch ($_REQUEST['action']) {
 	validate_path($backup->source_dir);
 	$count = 1;
 	foreach ($shipto as $pkg) {
-	  $sInfo = new shipment();	// load defaults
+	  $sInfo = new \shipping\classes\shipment();	// load defaults
 	  while (list($key, $value) = each($pkg)) $sInfo->$key = db_prepare_input($value);
 	  $sInfo->ship_date = date('Y-m-d');
 	  // load package information
@@ -68,8 +65,8 @@ switch ($_REQUEST['action']) {
 		  'value'  => $item['value'],
 		);
 	  }
-	  if (count($sInfo->package) > 0) {
-		$shipment = new fedex_v7();
+	  if (count($sInfo->package) > 0) {	
+		$shipment = new \shipping\methods\fedex_v7\fedex_v7();
 		if (!$result = $shipment->retrieveLabel($sInfo)) $error = true; // fetch label
 	  }
 	  $messageStack->add('generating label for '.$sInfo->ship_primary_name.' and label length: '.strlen($shipment->returned_label), 'caution');

@@ -72,7 +72,7 @@ if ($security_level > 1 && in_array(JOURNAL_ID, array(3, 9))) {
   $toolbar->icon_list['cvt_quote']['icon'] = 'emblems/emblem-symbolic-link.png';
   $toolbar->icon_list['cvt_quote']['text'] = JOURNAL_ID == 3 ? ORD_CONVERT_TO_RFQ_PO : ORD_CONVERT_TO_SO_INV;
 }
-if ($security_level > 1 && JOURNAL_ID == 10 && $_SESSION['admin_security'][SECURITY_ID_PURCHASE_ORDER] > 1) {
+if ($security_level > 1 && JOURNAL_ID == 10 && \core\classes\user::security_level(SECURITY_ID_PURCHASE_ORDER) > 1) {
   $toolbar->add_icon('cvt_quote', 'onclick="convertSO()"', 13);
   $toolbar->icon_list['cvt_quote']['icon'] = 'emblems/emblem-symbolic-link.png';
   $toolbar->icon_list['cvt_quote']['text'] = ORD_CONVERT_TO_PO;
@@ -119,7 +119,7 @@ switch(JOURNAL_ID) {
 echo $toolbar->build_toolbar();
 // Build the page
 ?>
-<div id="override_order" title="<?php echo TEXT_CREDIT_LIMIT_TITLE; ?>">
+<div class="easyui-window" id="override_order" title="<?php echo TEXT_CREDIT_LIMIT_TITLE; ?>" data-options="modal:true,closed:true,iconCls:'icon-save'">
 	<p><?php echo TEXT_CREDIT_LIMIT_DESC; ?></p>
 	<p>
 	  <?php echo TEXT_ADMIN_USER . '&nbsp;' . html_input_field('override_user', '', 'onblur="document.getElementById(\'override_user\').value = this.value;"', true); ?><br />
@@ -425,7 +425,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
 		  </td>
           <td align="right">
 <?php echo html_button_field('estimate', TEXT_ESTIMATE, 'onclick="FreightList()"');
-  echo ORD_SHIP_CARRIER . ' ' . html_pull_down_menu('ship_carrier', $methods, $default = '', 'onchange="buildFreightDropdown()"');
+  echo ORD_SHIP_CARRIER . ' ' . html_pull_down_menu('ship_carrier', gen_build_pull_down($shipping_methods, true, true), $default = '', "onchange='buildFreightDropdown()'");
   echo ' ' . ORD_FREIGHT_SERVICE . ' ' . html_pull_down_menu('ship_service', gen_null_pull_down(), '');
   echo ' ' . ORD_FREIGHT . ' ';
   echo html_input_field('freight', $currencies->format(($order->freight ? $order->freight : '0.00'), true, $order->currencies_code, $order->currencies_value), 'size="15" maxlength="20" onchange="updateTotalPrices()" style="text-align:right"'); ?>

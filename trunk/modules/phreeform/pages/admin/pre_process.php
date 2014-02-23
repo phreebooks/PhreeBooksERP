@@ -17,23 +17,21 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreeform/pages/admin/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_CONFIGURATION);
+$security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 /**************  include page specific files    *********************/
 gen_pull_language($module, 'admin');
 gen_pull_language('phreedom', 'admin');
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/phreeform.php');
 require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
-require_once(DIR_FS_WORKING . 'classes/install.php');
 /**************   page specific initialization  *************************/
 $error   = false; 
-$install = new phreeform_admin();
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save': 
-	validate_security($security_level, 3);
+	\core\classes\user::validate_security($security_level, 3);
   	// save general tab
-	foreach ($install->keys as $key => $default) {
+	foreach ($admin_classes['phreeform']->keys as $key => $default) {
 	  $field = strtolower($key);
       if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
     }
@@ -44,17 +42,13 @@ switch ($_REQUEST['action']) {
 	// drop the database
 	$db->Execute("truncate ".TABLE_PHREEFORM);
 	// load all the install classes to re-build directory structure
-  	$install_mod = new phreeform_admin;
-	$install_mod->load_reports('phreeform');
+	$admin_classes['phreeform']->load_reports('phreeform');
 	$contents    = scandir(DIR_FS_MODULES);
-	foreach ($contents as $entry) { // install each module
+	foreach ($contents as $entry) { // install each module @todo replace for admin_classes
 	  if (!defined('MODULE_'.strtoupper($entry).'_STATUS')) continue; // skip uninstalled modules
 	  if (!in_array($entry, array('.', '..', 'phreeform')) && is_dir(DIR_FS_MODULES . $entry)) {
 	  	if (file_exists(DIR_FS_MODULES . $entry . '/config.php')) {
-	  	  require_once (DIR_FS_MODULES . $entry . '/classes/install.php');
-		  $classname   = $entry . '_admin';
-		  $install_mod = new $classname;
-		  $install_mod->load_reports($entry);
+		  $admin_classes[$entry]->load_reports($entry);
 		}
 	  }
 	}

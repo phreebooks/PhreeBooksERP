@@ -34,10 +34,10 @@ function check_form() {
 }
 
 function box_edit(boxId) {
-  document.getElementById(boxId+'_prop').style.display= '';
-  document.getElementById(boxId+'_hr').style.display  = '';
-  document.getElementById(boxId+'_can').style.display = '';
-  document.getElementById(boxId+'_add').style.display = 'none';
+  	document.getElementById(boxId+'_prop').style.display= '';
+  	document.getElementById(boxId+'_hr').style.display  = '';
+  	document.getElementById(boxId+'_can').style.display = '';
+  	document.getElementById(boxId+'_add').style.display = 'none';
 }
 
 function box_cancel(boxId) {
@@ -47,32 +47,16 @@ function box_cancel(boxId) {
   document.getElementById(boxId+'_add').style.display = '';
 }
 
-var plusSign = new Image(16,16);
-plusSign.src = "<?php echo DIR_WS_ICONS; ?>16x16/actions/list-add.png";
-var minusSign = new Image(16,16);
-minusSign.src= " <?php echo DIR_WS_ICONS; ?>16x16/actions/list-remove.png";
-
-function min_box(boxId) {
-  var objBody = document.getElementById(boxId + '_body');
-  if (objBody.style.display == 'none') {
-	objBody.style.display = '';
-	document.getElementById(boxId + '_exp').src = minusSign.src;
-	document.getElementById(boxId + '_exp').title = '<?php echo TEXT_COLLAPSE; ?>';
-  } else {
-	objBody.style.display = 'none';
-	document.getElementById(boxId + '_exp').src = plusSign.src;
-	document.getElementById(boxId + '_exp').title = '<?php echo TEXT_EXPAND; ?>';
-  }
-}
-
 function del_box(boxId) {
-  if (confirm('<?php echo JS_CTL_PANEL_DELETE_BOX; ?>')) {
-	var formId = boxId + '_frm';
-	var actionId = boxId + '_action';
-	document.getElementById(actionId).value = 'delete';
-	document.getElementById(formId).submit();
-  }
-  return false;
+	$.messager.confirm('Confirm','<?php echo JS_CTL_PANEL_DELETE_BOX; ?>',function(r){
+		if (r){
+			var formId = boxId + '_frm';
+			var actionId = boxId + '_action';
+			document.getElementById(actionId).value = 'delete';
+			document.getElementById(formId).submit();
+		}
+	});
+  	return false;
 }
 
 function move_box(boxId, direction) {

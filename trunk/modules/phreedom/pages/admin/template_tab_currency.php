@@ -17,21 +17,21 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreedom/pages/admin/template_currency_currency.php
 //
-$currency_toolbar = new toolbar('currency');
+$currency_toolbar = new \core\classes\toolbar('currency');
 $currency_toolbar->icon_list['cancel']['show'] = false;
 $currency_toolbar->icon_list['open']['show']   = false;
 $currency_toolbar->icon_list['save']['show']   = false;
 $currency_toolbar->icon_list['delete']['show'] = false;
 $currency_toolbar->icon_list['print']['show']  = false;
-if ($security_level > 1) $currency_toolbar->add_icon('new', 'onclick="loadPopUp(\'currency_new\', 0)"', $order = 10);
+if ($security_level > 1) $currency_toolbar->add_icon('new', 'onclick="loadPopUp(\'currency_new\', \'\')"', $order = 10);
 if (ENABLE_MULTI_CURRENCY) {
   $currency_toolbar->add_icon('update', 'onclick="tabPage(\'currency\', \'update\')"', $order = 10);
   $currency_toolbar->icon_list['update']['text'] = SETUP_UPDATE_EXC_RATE;
 }
 
 ?>
-<div id="tab_currency">
+<div title="<?php echo SETUP_TITLE_CURRENCIES;?>" id="tab_currency">
     <?php echo $currency_toolbar->build_toolbar(); ?>
-	<h1><?php echo $currency->title; ?></h1>
-    <div id="currency_content"><?php echo $currency->build_main_html(); ?></div>
+	<h1><?php echo $currencies->title; ?></h1>
+    <div id="currency_content"><?php echo $currencies->build_main_html(); ?></div>
 </div>

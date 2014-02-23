@@ -19,7 +19,7 @@
 //
 
 ?>
-<div id="tab_general">
+<div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
   <fieldset>
     <table>
 	  <tr><th colspan="2"><?php echo TEXT_OPTIONS; ?></th></tr>

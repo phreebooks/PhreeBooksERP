@@ -1,6 +1,6 @@
 <?php
-require_once(DIR_FS_MODULES . 'inventory/classes/inventory.php');
-class ds extends inventory {//Description
+namespace inventory\classes\type;
+class ds extends \inventory\classes\inventory {//Description
 	public $inventory_type			= 'ds';
 	public $title					= INV_TYPES_DS;
 	public $account_sales_income	= null;

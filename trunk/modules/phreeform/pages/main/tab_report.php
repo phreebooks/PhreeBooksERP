@@ -19,7 +19,7 @@
 //
 
 // build the tab toolbar
-$docbar = new toolbar;
+$docbar = new \core\classes\toolbar;
 $docbar->icon_list['cancel']['show'] = false;
 $docbar->icon_list['open']['params'] = 'onclick="ReportGenPopup(' . $id . ', \'' . $doc_details->fields['doc_ext'] . '\')"';
 $docbar->icon_list['save']['show']   = false;

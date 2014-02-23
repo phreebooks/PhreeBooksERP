@@ -69,7 +69,7 @@ echo $toolbar->build_toolbar($add_search = true);
 
 	  if ($security_level > 1) echo html_icon('actions/edit-find-replace.png', TEXT_EDIT, 'small', 'onclick="submitSeq(' . $query_result->fields['id'] . ', \'edit\')"') . chr(10);
 	  if (!$hide_action) {
-	    if ($security_level > 1) echo html_icon('actions/edit-copy.png', TEXT_COPY_TO, 'small', 'onclick="copyItem(' . $query_result->fields['id'] . ')"') . chr(10);
+	    if ($security_level > 1) echo html_icon('actions/edit-copy.png', TEXT_COPY, 'small', 'onclick="copyItem(' . $query_result->fields['id'] . ')"') . chr(10);
 	    if ($security_level > 3) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . WORK_ORDER_MSG_DELETE_WO . '\')) deleteItem(' . $query_result->fields['id'] . ')"') . chr(10);
 	  }
 ?>

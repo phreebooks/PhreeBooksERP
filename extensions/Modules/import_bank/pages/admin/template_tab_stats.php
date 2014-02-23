@@ -21,7 +21,7 @@
 //  Path: /modules/import_bank/pages/admin/template_tab_stats.php
 //
 ?>
-<div id="statistics" class="tabset_content">
+<div title="<?php echo TEXT_STATISTICS;?>" id="statistics" class="tabset_content">
   <h2 class="tabset_label"><?php echo TEXT_STATISTICS; ?></h2>
   <fieldset class="formAreaTitle">
     <legend><?php echo TEXT_MODULE_STATS; ?></legend>

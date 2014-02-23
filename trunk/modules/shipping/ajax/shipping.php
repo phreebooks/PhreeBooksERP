@@ -18,7 +18,7 @@
 //  Path: /modules/shipping/ajax/shipping.php
 //
 /**************   Check user security   *****************************/
-$security_level = validate_ajax_user();
+$security_level = \core\classes\user::validate();
 /**************  include page specific files    *********************/
 require_once(DIR_FS_MODULES . 'shipping/defaults.php');
 require_once(DIR_FS_MODULES . 'shipping/functions/shipping.php');
@@ -30,12 +30,11 @@ $message = '';
 
 switch ($_REQUEST['action']) {
   case 'form':
-	$template= $_GET['template'];
-	if (file_exists($mod_dir . $method.'/'.$template.'.php')) {
-	  require_once($mod_dir . $method.'/'.$template.'.php');
-	  foreach ($output as $key => $value) $xml .= xmlEntry($key, $value);
-	} else {
-	  $xml .= xmlEntry('message', 'Error locating file: '.$mod_dir.$method.'/'.$template.'.php to load template!');
+	$template = $_GET['template'];
+	$name = '\shipping\methods\\'.$template;
+	$class = new $name;
+	foreach (get_object_vars($class) as $key => $value) {
+    	$xml .= xmlEntry($key, $value);
 	}
 	break;
   case 'tracking':
@@ -43,13 +42,11 @@ switch ($_REQUEST['action']) {
   	if (!$tID) {
   	  $message = 'No tracking ID passed!';
   	} else {
-  	  load_specific_method('shipping', $method);
-  	  $shipment = new $method;
-  	  $message = $shipment->trackPackages('', $tID);
+  	  $message = $admin_classes['shipping']->methods[$method]->trackPackages('', $tID);
   	}
   	break;
   case 'validate':
-	$address = new objectInfo();
+	$address = new \core\classes\objectInfo();
 	$address->ship_primary_name   = db_prepare_input($_GET['primary_name']);
 	$address->ship_contact        = db_prepare_input($_GET['contact']);
 	$address->ship_address1       = db_prepare_input($_GET['address1']);
@@ -58,9 +55,7 @@ switch ($_REQUEST['action']) {
 	$address->ship_state_province = db_prepare_input($_GET['state_province']);
 	$address->ship_postal_code    = db_prepare_input($_GET['postal_code']);
 	$address->ship_country_code   = db_prepare_input($_GET['country_code']);
-	load_specific_method('shipping', $method);
-	$shipment = new $method;
-	$result = $shipment->validateAddress($address);
+	$result = $admin_classes['shipping']->methods[$method]->validateAddress($address);
 	if ($result['result'] == 'success') $xml .= $result['xmlString'];
 	$debug   = $result['debug'];
 	$message = $result['message'];
@@ -71,5 +66,7 @@ switch ($_REQUEST['action']) {
 if ($message) $xml .= xmlEntry('message', $message);
 if ($debug)   $xml .= xmlEntry('debug',   $debug);
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

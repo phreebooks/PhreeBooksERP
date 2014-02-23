@@ -17,8 +17,8 @@
 //  Path: /modules/phreepos/classes/journal/journal_19.php
 //
 // POS Journal
-require_once(DIR_FS_MODULES . 'phreebooks/classes/gen_ledger.php');
-class journal_19 extends journal {
+namespace phreepos\classes\journal;
+class journal_19 extends \core\classes\journal {
 	public $id					= '';
 	public $save_payment        = false;
     public $closed 				= '0';
@@ -85,38 +85,24 @@ class journal_19 extends journal {
 		// add/update address book
 		if ($this->bill_add_update) { // billing address
 			$this->bill_acct_id = $this->add_account($this->account_type . 'b', $this->bill_acct_id, $this->bill_address_id);
-		  	if (!$this->bill_acct_id){
-				$this->fail_message('no customer was selected');
-				return false;
-			} 
+			if (!$this->bill_acct_id) throw new \Exception('no customer was selected');
 		}
 		// ************* POST journal entry *************
-		if (!$this->validate_purchase_invoice_id()) {
-			$this->fail_message('invoice number is being used in a other post');
-			return false;
-		}
-		if (!$this->Post($this->id ? 'edit' : 'insert',true)){
-			$this->fail_message('it was not posible to post the sale');
-			return false;
-		}
+		$this->validate_purchase_invoice_id();
+		$this->Post($this->id ? 'edit' : 'insert',true);
 		// ************* post-POST processing *************
-		if (!$this->increment_purchase_invoice_id()){
-			$this->fail_message('invoice number can not be incrementedt');
-			return false;
-		}
+		if (!$this->increment_purchase_invoice_id()) throw new \Exception('invoice number can not be incrementedt');
 		// cycle through the payments
 		foreach ($this->pmt_rows as $pay_method) {
-	        $pay_meth  = $pay_method['meth'];
+	        $method   = $pay_method['meth'];
+	        $pay_meth = "\payment\methods\\$method\\$method";
 	        $processor = new $pay_meth;
+	        $messageStack->debug("\n encryption =".ENABLE_ENCRYPTION." save_payment =$this->save_payment enable_encryption=$processor->enable_encryption");
 	        if (ENABLE_ENCRYPTION && $this->save_payment && $processor->enable_encryption !== false) {
-	            if (!$this->encrypt_payment($pay_method, $processor->enable_encryption)){
-					$this->fail_message('unable to encrypt payment');
-					return false;
-				} 
+	            $this->encrypt_payment($pay_method);
 	        }
-	        if ($processor->before_process()){
-				$this->fail_message('unable to process payment');
-				return false;
+	        if ($processor->before_process()){//@todo check if this does throw exception
+				throw new \Exception('unable to process payment');
 			} 
 	    } 
 		$messageStack->debug("\n  committed order post purchase_invoice_id = " . $this->purchase_invoice_id . " and id = " . $this->id . "\n\n");
@@ -144,7 +130,8 @@ class journal_19 extends journal {
 		  		$desc   = MENU_HEADING_PHREEPOS . '-' . TEXT_PAYMENT;
 		  		$method = $this->pmt_rows[$i]['meth'];
 		  		if ($method) {
-		    		$$method    = new $method;
+		  			$pay_meth = "\payment\methods\\$method\\$method";
+		    		$$method    = new $pay_meth;
 		    		$deposit_id = $$method->def_deposit_id ? $$method->def_deposit_id : ('DP' . date('Ymd'));
 					$desc       = JOURNAL_ID . ':' . $method . ':' . $$method->payment_fields;
 					$gl_acct_id = $$method->pos_gl_acct;
@@ -288,31 +275,7 @@ class journal_19 extends journal {
 	return $this->rounding_amt;
   }
   
-  //this class is only used for ajax posting that is why error's will be returned in a string.
-  function fail_message($message) {
-	global $db, $messageStack;
-	$db->transRollback();
-	$this->errormsg = $message;
-	$messageStack->add($message, 'error');
-	return false;
-  }
-
-  function session_message($message, $level = 'error') {
-	$this->errormsg = $message;
-  }
-  function printSelf(){
-  	global $messageStack;
-  	$messageStack->add(var_dump($this));
-  }
-  
-  	function __destruct(){
-  		global $messageStack;
-		if ( DEBUG ) $messageStack->write_debug();
-	}
-  
 	function encrypt_payment($method) {
-  		global $messageStack;	
-	  	$encrypt = new encryption();
 	  	$cc_info = array();
 	  	$cc_info['name']    = $method['f0'];
 	  	$cc_info['number']  = $method['f1'];
@@ -321,7 +284,7 @@ class journal_19 extends journal {
 	  	$cc_info['cvv2']    = $method['f4'];
 	  	$cc_info['alt1']    = $method['f5'];
 	  	$cc_info['alt2']    = $method['f6'];
-	  	if (!$enc_value = $encrypt->encrypt_cc($cc_info)) return false;
+	  	\core\classes\encryption::encrypt_cc($cc_info);
 	  	$payment_array = array(
 		  'hint'      => $enc_value['hint'],
 		  'module'    => 'contacts',

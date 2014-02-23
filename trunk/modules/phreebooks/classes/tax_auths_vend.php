@@ -17,9 +17,8 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/classes/tax_auths_vend.php
 //
-require_once(DIR_FS_MODULES . 'phreebooks/classes/tax_auths.php');
-
-class tax_auths_vend extends tax_auths {
+namespace phreebooks\classes;
+class tax_auths_vend extends \phreebooks\classes\tax_auths {
 	public $code        = 'tax_auths'; // needs to match class name
     public $help_path   = '07.08.03.01';
     public $type        = 'v'; // choices are c for customers and v for vendors

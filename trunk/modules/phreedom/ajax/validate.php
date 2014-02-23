@@ -19,7 +19,7 @@
 //
 
 /**************   Check user security   *****************************/
-$security_level = validate_ajax_user();
+$security_level = \core\classes\user::validate();
 /**************  include page specific files    *********************/
 /**************   page specific initialization  *************************/
 $xml   = NULL;
@@ -29,13 +29,14 @@ $level = $_GET['level'];
 
 $result = $db->Execute("select inactive, admin_pass from " . TABLE_USERS . " where admin_name = '" . $user . "'");
 if ($result->RecordCount() <> 1 || $result->fields['inactive']) {
-  $xml = xmlEntry('result', 'failed');
-} elseif (!pw_validate_password($pass, $result->fields['admin_pass'])) {
-  $xml = xmlEntry('result', 'failed');
-} else {
-  $xml = xmlEntry('result', 'validated');
+  	$xml = xmlEntry('result', 'failed');
 }
+\core\classes\encryption::_validate_password($pass, $result->fields['admin_pass']);@todo should there be a underscore at the beginning of function name
+$xml = xmlEntry('result', 'failed');//@todo rewrite to use footer
+$xml = xmlEntry('result', 'validated');
 
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

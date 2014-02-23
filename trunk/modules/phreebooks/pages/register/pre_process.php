@@ -17,7 +17,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/pages/register/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_ACCT_REGISTER);
+$security_level = \core\classes\user::validate(SECURITY_ID_ACCT_REGISTER);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
 
@@ -72,7 +72,7 @@ while (!$result->EOF) {
      $withdrawal_amount = $result->fields['credit_amount'];
      break;
    default:
-     $messageStack->add(BNK_BAD_CASH_ACCOUNT,'error');
+     throw new \Exception(BNK_BAD_CASH_ACCOUNT);
   }
   $bank_list[] = array(
    'post_date'  => $result->fields['post_date'],

@@ -17,9 +17,8 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/pages/popup_convert/pre_process.php
 //
-$security_level = validate_user(0, true);
+$security_level = \core\classes\user::validate(0, true);
 /**************  include page specific files    *********************/
-require_once(DIR_FS_WORKING . 'classes/gen_ledger.php');
 
 /**************   page specific initialization  *************************/
 $id     = (isset($_GET['oID'])    ? $_GET['oID']    : $_POST['id']);
@@ -35,7 +34,7 @@ switch ($_REQUEST['action']) {
     $selection = $_POST['conv_type'];
 	$so_num    = $_POST['so_num'];
 	$inv_num   = $_POST['inv_num'];
-	$order     = new journal($id);
+	$order     = new \core\classes\journal($id);
 	switch ($order->journal_id) {
 	  case  3: 
 	    define('JOURNAL_ID', 4);

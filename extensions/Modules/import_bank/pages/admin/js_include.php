@@ -28,9 +28,6 @@
 // Include translations here as well.
 
 function init() {
-  $(function() { // initialize tables
-		$('#admintabs').tabs();
-  });
 }
 
 function check_form() {

@@ -17,33 +17,25 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/contacts/classes/departments.php
 //
-
+namespace contacts\classes;
 class departments {
 	public $extra_buttons = '';
     public $db_table      = TABLE_DEPARTMENTS;
     public $help_path     = '07.07.04';
     public $title         = '';
-    public $error         = false;
 
     public function __construct(){
     	foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
     	$this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
-        $this->security_id = $_SESSION['admin_security'][SECURITY_ID_CONFIGURATION];
+        $this->security_id = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
     }
 
   function btn_save($id = '') {
-  	global $db, $messageStack;
-	if ($this->security_id < 2) {
-	  $messageStack->add(ERROR_NO_PERMISSION,'error');
-	  return false;
-	}
+  	global $db;
+	\core\classes\user::validate_security($this->security_id, 2); // security check		
     if ( $_POST['subdepartment'] && !$_POST['primary_dept_id']) $_POST['subdepartment'] = '0';
     if (!$_POST['subdepartment']) $_POST['primary_dept_id'] = '';
-    if ($_POST['primary_dept_id'] == $id) {
-	  $messageStack->add(HR_DEPARTMENT_REF_ERROR,'error');
-	  $this->error = true;
-	  return false;
-	}
+    if ($_POST['primary_dept_id'] == $id) throw new \Exception(HR_DEPARTMENT_REF_ERROR);
 	// OK to save
 	$sql_data_array = array(
 		'description_short'   => db_prepare_input($_POST['description_short']),
@@ -64,11 +56,8 @@ class departments {
   }
 
   function btn_delete($id = 0) {
-  	global $db, $messageStack;
-	if ($this->security_id < 4) {
-		$messageStack->add(ERROR_NO_PERMISSION,'error');
-		return false;
-	}
+  	global $db;
+	\core\classes\user::validate_security($this->security_id, 4); // security check		
 	// error check
 	// Departments have no pre-requisites to check prior to delete
 	// OK to delete
@@ -79,7 +68,7 @@ class departments {
   }
 
   function build_main_html() {
-  	global $db, $messageStack;
+  	global $db;
     $content = array();
 	$content['thead'] = array(
 	  'value' => array(HR_ACCOUNT_ID, TEXT_DESCRIPTION, HR_HEADING_SUBACCOUNT, TEXT_INACTIVE, TEXT_ACTION),
@@ -111,7 +100,7 @@ class departments {
 
   function build_form_html($action, $id = '') {
     global $db;
-    if ($action <> 'new' && $this->error == false) {
+    if ($action <> 'new') {
         $sql = "select * from " . $this->db_table . " where id = '" . $this->id . "'";
         $result = $db->Execute($sql);
         foreach ($result->fields as $key => $value) $this->$key = $value;

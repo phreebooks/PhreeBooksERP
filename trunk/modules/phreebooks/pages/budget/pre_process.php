@@ -17,7 +17,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/pages/budget/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_GL_BUDGET);
+$security_level = \core\classes\user::validate(SECURITY_ID_GL_BUDGET);
 /**************  include page specific files    *********************/
 require(DIR_FS_WORKING . 'functions/phreebooks.php');
 require(DIR_FS_WORKING . 'classes/gen_ledger.php');
@@ -42,7 +42,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save':
-	validate_security($security_level, 3);
+	\core\classes\user::validate_security($security_level, 3);
   	$i = 0;
 	while (true) {
 	  if (!isset($_POST['budget_' . $i])) break;
@@ -116,13 +116,13 @@ if ($gl_acct && sizeof($lf_per) > 0) {
   $last_fy = $db->Execute("select budget from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " 
 	where account_id = '" . $gl_acct . "' and period in (" . implode(',', array_keys($lf_per)) . ")");
 } else {
-  $next_fy = new objectInfo();
+  $next_fy = new \core\classes\objectInfo();
 }
 if ($gl_acct && sizeof($nf_per) > 0) {
   $next_fy = $db->Execute("select budget from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " 
 	where account_id = '" . $gl_acct . "' and period in (" . implode(',', array_keys($nf_per)) . ")");
 } else {
-  $next_fy = new objectInfo();
+  $next_fy = new \core\classes\objectInfo();
 }
 $fy_array = array();
 while(!$result->EOF) {

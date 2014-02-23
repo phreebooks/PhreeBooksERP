@@ -16,28 +16,24 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreepos/pages/admin/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_CONFIGURATION);
+$security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 /**************  include page specific files    *********************/
 gen_pull_language($module, 'admin');
 gen_pull_language('phreedom', 'admin');
-require_once(DIR_FS_WORKING . 'classes/install.php');
-require_once(DIR_FS_WORKING . 'classes/tills.php');
-require_once(DIR_FS_WORKING . 'classes/other_transactions.php');
 /**************   page specific initialization  *************************/
 $error  = false; 
-$install = new phreepos_admin();
-$tills   = new tills();
-$trans	 = new other_transactions();
+$tills   = new \phreepos\classes\tills();
+$trans	 = new \phreepos\classes\other_transactions();
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save': 
-  	validate_security($security_level, 3); // security check
+  	\core\classes\user::validate_security($security_level, 3); // security check
 	if(AR_TAX_BEFORE_DISCOUNT == false && PHREEPOS_DISCOUNT_OF == true && $_POST['phreepos_discount_of'] == 1 ){ // tax after discount
 		$messageStack->add('your setting tax before discount and discount over total don\'t work together, <br/>This has circulair logic. one can\'t preceed the other', 'error');
 		break;
 	}else{
 		// save general tab
-		foreach ($install->keys as $key => $default) {
+		foreach ($admin_classes['phreepos']->keys as $key => $default) {
 		  $field = strtolower($key);
 	      if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
 	    }
@@ -46,7 +42,7 @@ switch ($_REQUEST['action']) {
 	    break;
 	}
   case 'delete':
-	validate_security($security_level, 4); // security check
+	\core\classes\user::validate_security($security_level, 4); // security check
     $subject = $_POST['subject'];
     $id      = $_POST['rowSeq'];
 	if (!$subject || !$id) break;

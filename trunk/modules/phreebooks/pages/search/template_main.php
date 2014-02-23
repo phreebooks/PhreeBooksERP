@@ -105,82 +105,82 @@ echo $toolbar->build_toolbar();
 	  $jID = (int)$query_result->fields['journal_id'];
 	  switch ($jID) {
 	    case  2: 
-		  $security_level = $_SESSION['admin_security'][SECURITY_ID_JOURNAL_ENTRY]; 
+		  $security_level = \core\classes\user::validate(SECURITY_ID_JOURNAL_ENTRY); 
 		  $module = 'phreebooks'; 
 		  $mod = 'journal'; 
 		  break;
 		case  3: 
-		  $security_level = $_SESSION['admin_security'][SECURITY_ID_PURCHASE_QUOTE]; 
+		  $security_level = \core\classes\user::validate(SECURITY_ID_PURCHASE_QUOTE); 
 		  $module = 'phreebooks'; 
 		  $mod = 'orders'; 
 		  break;
 		case  4: 
-		  $security_level = $_SESSION['admin_security'][SECURITY_ID_PURCHASE_ORDER]; 
+		  $security_level = \core\classes\user::validate(SECURITY_ID_PURCHASE_ORDER); 
 		  $module = 'phreebooks'; 
 		  $mod = 'orders'; 
 		  break;
 		case  6: 
-		  $security_level = $_SESSION['admin_security'][SECURITY_ID_PURCHASE_INVENTORY]; 
+		  $security_level = \core\classes\user::validate(SECURITY_ID_PURCHASE_INVENTORY); 
 		  $module = 'phreebooks'; 
 		  $mod = 'orders'; 
 		  break;
 		case  7: 
-		  $security_level = $_SESSION['admin_security'][SECURITY_ID_PURCHASE_CREDIT]; 
+		  $security_level = \core\classes\user::validate(SECURITY_ID_PURCHASE_CREDIT); 
 		  $module = 'phreebooks'; 
 		  $mod = 'orders'; 
 		  break;
 		case  9: 
-		  $security_level = $_SESSION['admin_security'][SECURITY_ID_SALES_QUOTE]; 
+		  $security_level = \core\classes\user::validate(SECURITY_ID_SALES_QUOTE); 
 		  $module = 'orders'; 
 		  $mod = 'orders'; 
 		  break;
 		case 10: 
-		  $security_level = $_SESSION['admin_security'][SECURITY_ID_SALES_ORDER]; 
+		  $security_level = \core\classes\user::validate(SECURITY_ID_SALES_ORDER); 
 		  $module = 'phreebooks'; 
 		  $mod = 'orders'; 
 		  break;
 		case 12: 
-		  $security_level = $_SESSION['admin_security'][SECURITY_ID_SALES_INVOICE]; 
+		  $security_level = \core\classes\user::validate(SECURITY_ID_SALES_INVOICE); 
 		  $module = 'phreebooks'; 
 		  $mod = 'orders'; 
 		  break;
 		case 13: 
-		  $security_level = $_SESSION['admin_security'][SECURITY_ID_SALES_CREDIT]; 
+		  $security_level = \core\classes\user::validate(SECURITY_ID_SALES_CREDIT); 
 		  $module = 'phreebooks'; 
 		  $mod = 'orders'; 
 		  break;
 	    case 14: 
-		  $security_level = $_SESSION['admin_security'][SECURITY_ID_ASSEMBLE_INVENTORY]; 
+		  $security_level = \core\classes\user::validate(SECURITY_ID_ASSEMBLE_INVENTORY); 
 		  $module = 'inventory'; 
 		  $mod = 'assemblies'; 
 		  break;
 	    case 16: 
-		  $security_level = $_SESSION['admin_security'][SECURITY_ID_ADJUST_INVENTORY]; 
+		  $security_level = \core\classes\user::validate(SECURITY_ID_ADJUST_INVENTORY); 
 		  $module = 'inventory'; 
 		  $mod = 'adjustments'; 
 		  break;
 	    case 18:
-		  $security_level = $_SESSION['admin_security'][SECURITY_ID_CUSTOMER_RECEIPTS]; 
+		  $security_level = \core\classes\user::validate(SECURITY_ID_CUSTOMER_RECEIPTS); 
 		  $module = 'phreebooks'; 
 		  $mod = 'bills'; 
 		  $type = gen_get_contact_type($query_result->fields['bill_acct_id']);
 		  break;
 	    case 19: 
-		  $security_level = $_SESSION['admin_security'][SECURITY_ID_POS_MGR]; 
+		  $security_level = \core\classes\user::validate(SECURITY_ID_POS_MGR); 
 		  $module = 'phreepos'; $mod = 'pos_mgr'; 
 		  break;
 	    case 20: 
-		  $security_level = $_SESSION['admin_security'][SECURITY_ID_PAY_BILLS]; 
+		  $security_level = \core\classes\user::validate(SECURITY_ID_PAY_BILLS); 
 		  $module = 'phreebooks'; 
 		  $mod = 'bills'; 
 		  $type = gen_get_contact_type($query_result->fields['bill_acct_id']);
 		  break;
 	    case 21: 
-		  $security_level = $_SESSION['admin_security'][SECURITY_ID_POS_MGR]; 
+		  $security_level = \core\classes\user::validate(SECURITY_ID_POS_MGR); 
 		  $module = 'phreepos'; $mod = 'pos_mgr'; 
 		  break;
 		default: 
-		  $security_level = $_SESSION['admin_security'][SECURITY_ID_SEARCH]; 
+		  $security_level = \core\classes\user::validate(SECURITY_ID_SEARCH); 
 		  $module = 'phreebooks'; 
 		  $mod = 'orders'; 
 		  break;

@@ -16,12 +16,11 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/shipping/methods/endicia/endicia.php
 //
+namespace shipping\methods\endicia;
 define('MODULE_SHIPPING_ENDICIA_PARTNER_ID','lpst'); // 'lpst' - PhreeSoft, LLC Partner ID
 define('MODULE_SHIPPING_ENDICIA_DIAL_A_ZIP_PW', 'Phreedom_2012_LLC'); // Dial-A-Zip test acct: 400540, password: HOCKEYSTAR
 // Revision history
 // 2012-01-15 - Initial Release
-define('MODULE_SHIPPING_ENDICIA_VERSION','1.0');
-
 ini_set("soap.wsdl_cache_enabled", "0");
 
 // User settings, TBD need to move to user variables
@@ -55,155 +54,155 @@ define('MODULE_SHIPPING_ENDICIA_ELS_URL', 'https://www.endicia.com/ELS/ELSServic
 define('MODULE_SHIPPING_USPS_TRACKING_URL','https://tools.usps.com/go/TrackConfirmAction_input?tracking=');
 define('MODULE_SHIPPING_ENDICIA_DIAL_A_ZIP_URL','http://www.dial-a-zip.com/XML-Dial-A-ZIP/DAZService.asmx/MethodZIPValidate');
 
-class endicia {
+class endicia extends \shipping\classes\shipping {
+	public $id				= 'endicia'; // needs to match class name
+  	public $text			= MODULE_SHIPPING_ENDICIA_TEXT_TITLE;
+  	public $description		= MODULE_SHIPPING_ENDICIA_TEXT_DESCRIPTION;
+  	public $sort_order		= 9;
+  	public $version			= '1.0';
+  	public $shipping_cost;
+  	public $handling_cost;
 
-  var $buyPostageAmounts = array(
-	'10'  => TEXT_0010_DOLLARS,
-	'25'  => TEXT_0025_DOLLARS,
-	'100' => TEXT_0100_DOLLARS,
-	'250' => TEXT_0250_DOLLARS,
-	'500' => TEXT_0500_DOLLARS,
-	'1000'=> TEXT_1000_DOLLARS,
-  );
-
-  // Endicia Rate code maps
-  var $EndiciaRateCodes = array(	
-	'Priority'                    => '1DEam',
-	'Express'                     => '1Dam',
-	'First'                       => '1Dpm',
-	'CriticalMail'                => '2Dam',
-    'LibraryMail'                 => '2Dpm',
-	'StandardMail'                => '3Dam',
-    'MediaMail'                   => '3Dpm',
-	'ParcelPost'                  => 'GND',
-	'ParcelSelect'                => 'GDR',
-//	'ExpressMailInternational'    => 'I2DEam',
-//	'PriorityMailInternational'   => 'I2Dam',
-//	'FirstClassMailInternational' => 'I3D',
-  );
-
-var $PackageMap = array( // for rate estimates, assume this set of options
-	'01' => 'FlatRateEnvelope',
-	'02' => 'Parcel',
-	'03' => 'IrregularParcel',
-	'04' => 'SmallFlatRateBox',
-	'21' => 'MediumFlatRateBox',
-	'25' => 'RegionalRateBoxA',
-	'24' => 'RegionalRateBoxB',
-  );
-
-  var $mailPieceShape = array(
-//  'Card'                      => MPS_01,
-//  'Letter'                    => MPS_02,
-    'FlatRateEnvelope'          => MPS_08,
-    'Flat'                      => MPS_03,
-    'Parcel'                    => MPS_04,
-	'LargeParcel'               => MPS_05,
-	'IrregularParcel'           => MPS_06,
-	'OversizedParcel'           => MPS_07,
-	'FlatRateLegalEnvelope'     => MPS_09,
-    'FlatRatePaddedEnvelope'    => MPS_10,
-	'FlatRateGiftCardEnvelope'  => MPS_11,
-	'FlatRateWindowEnvelope'    => MPS_12,
-	'FlatRateCardboardEnvelope' => MPS_13,
-	'SmallFlatRateEnvelope'     => MPS_14,
-    'SmallFlatRateBox'          => MPS_15,
-    'MediumFlatRateBox'         => MPS_16,
-	'LargeFlatRateBox'          => MPS_17,
-	'DVDFlatRateBox'            => MPS_18,
-	'LargeVideoFlatRateBox'     => MPS_19,
-    'RegionalRateBoxA'          => MPS_20,
-    'RegionalRateBoxB'          => MPS_21,
-  );
-
-  var $dialAZipCodes = array(
-    '10' => 'Invalid address',
-    '11' => 'Invalid zip code',
-    '12' => 'Invalid state code',
-    '13' => 'Invalid city',
-    '21' => 'Address not found',
-    '22' => 'Multiple matches, too ambiguious',
-    '25' => 'City, State and ZIP Code are valid, but street address is not a match',
-    '31' => 'Exact match',
-    '32' => 'Default match, more information may give a more specific +4',
-  );
-
-  function __construct() {
-    $this->code = 'endicia';
-  }
-
-  function keys() {
-    return array(
-	  array('key' => 'MODULE_SHIPPING_ENDICIA_TITLE',         'default' => 'US Postal Service'),
-      array('key' => 'MODULE_SHIPPING_ENDICIA_ACCOUNT_NUMBER','default' => ''),
-	  array('key' => 'MODULE_SHIPPING_ENDICIA_PASS_PHRASE',   'default' => ''),
-      array('key' => 'MODULE_SHIPPING_ENDICIA_TEST_MODE',     'default' => 'Test'),
-	  array('key' => 'MODULE_SHIPPING_ENDICIA_PRINTER_TYPE',  'default' => 'ZPLII'),
-	  array('key' => 'MODULE_SHIPPING_ENDICIA_PRINTER_NAME',  'default' => 'zebra'),
-	  array('key' => 'MODULE_SHIPPING_ENDICIA_TYPES',         'default' => '1DEam,1Dam,1Dpm,2Dam,3Dam,3Dpm,GND,GDR'),
-	  array('key' => 'MODULE_SHIPPING_ENDICIA_SORT_ORDER',    'default' => '9'),
+	public $buyPostageAmounts = array(
+	  '10'  => TEXT_0010_DOLLARS,
+	  '25'  => TEXT_0025_DOLLARS,
+	  '100' => TEXT_0100_DOLLARS,
+	  '250' => TEXT_0250_DOLLARS,
+	  '500' => TEXT_0500_DOLLARS,
+	  '1000'=> TEXT_1000_DOLLARS,
 	);
-  }
-  
-  function configure($key) {
-    switch ($key) {
-	  case 'MODULE_SHIPPING_ENDICIA_TEST_MODE':
-	    $temp = array(
-		  array('id' => 'Test', 'text' => TEXT_TEST),
-		  array('id' => 'Prod', 'text' => TEXT_PRODUCTION),
-	    );
-	    $html .= html_pull_down_menu(strtolower($key), $temp, constant($key));
-	    break;
-	  case 'MODULE_SHIPPING_ENDICIA_PRINTER_TYPE':
-	    $temp = array(
-		  array('id' => 'EPL2', 'text' => 'EPL2'),
-		  array('id' => 'ZPLII','text' => 'ZPLII'),
-//		  array('id' => 'GIF',  'text' => 'GIF'),
-//		  array('id' => 'JPEG', 'text' => 'JPEG'),
-//		  array('id' => 'PDF',  'text' => 'PDF'),
-//		  array('id' => 'PNG',  'text' => 'PNG'),
-	    );
-	    $html .= html_pull_down_menu(strtolower($key), $temp, constant($key));
-	    break;
-	  case 'MODULE_SHIPPING_ENDICIA_TYPES':
-	    $temp = array(
-	      array('id' => '1DEam', 'text' => MODULE_SHIPPING_ENDICIA_1DM),
-		  array('id' => '1Dam',  'text' => MODULE_SHIPPING_ENDICIA_1DA),
-		  array('id' => '1Dpm',  'text' => MODULE_SHIPPING_ENDICIA_1DP),
-		  array('id' => '2Dam',  'text' => MODULE_SHIPPING_ENDICIA_2DA),
-		  array('id' => '2Dpm',  'text' => MODULE_SHIPPING_ENDICIA_2DP),
-	      array('id' => '3Dam',  'text' => MODULE_SHIPPING_ENDICIA_3DA),
-	      array('id' => '3Dpm',  'text' => MODULE_SHIPPING_ENDICIA_3DS),
-	      array('id' => 'GND',   'text' => MODULE_SHIPPING_ENDICIA_GND),
-		  array('id' => 'GDR',   'text' => MODULE_SHIPPING_ENDICIA_GDR),
-//		  array('id' => 'I2DEam','text' => MODULE_SHIPPING_ENDICIA_XDM),
-//		  array('id' => 'I2Dam', 'text' => MODULE_SHIPPING_ENDICIA_XPR),
-//		  array('id' => 'I3D',   'text' => MODULE_SHIPPING_ENDICIA_XPD),
-	    );
-	    $choices = array();
-	    foreach ($temp as $value) {
-		  $choices[] = html_checkbox_field(strtolower($key).'[]', $value['id'], ((strpos(constant($key), $value['id']) === false) ? false : true), '', $parameters = '') . ' ' . $value['text'];
-	    }
-	    $html = implode('<br />' . chr(10), $choices);
-	    break;
-	  default:
-	    $html .= html_input_field(strtolower($key), constant($key), '');
-    }
-    return $html;
-  }
+	
+	  // Endicia Rate code maps
+	public $EndiciaRateCodes = array(	
+	  'Priority'                    => '1DEam',
+	  'Express'                     => '1Dam',
+	  'First'                       => '1Dpm',
+	  'CriticalMail'                => '2Dam',
+	  'LibraryMail'                 => '2Dpm',
+	  'StandardMail'                => '3Dam',
+	  'MediaMail'                   => '3Dpm',
+	  'ParcelPost'                  => 'GND',
+	  'ParcelSelect'                => 'GDR',
+	//'ExpressMailInternational'    => 'I2DEam',
+	//'PriorityMailInternational'   => 'I2Dam',
+	//'FirstClassMailInternational' => 'I3D',
+	);
+	
+	public $PackageMap = array( // for rate estimates, assume this set of options
+	  '01' => 'FlatRateEnvelope',
+	  '02' => 'Parcel',
+	  '03' => 'IrregularParcel',
+	  '04' => 'SmallFlatRateBox',
+	  '21' => 'MediumFlatRateBox',
+	  '25' => 'RegionalRateBoxA',
+	  '24' => 'RegionalRateBoxB',
+	);
+	
+	public $mailPieceShape = array(
+	//'Card'                      => MPS_01,
+	//'Letter'                    => MPS_02,
+	  'FlatRateEnvelope'          => MPS_08,
+	  'Flat'                      => MPS_03,
+	  'Parcel'                    => MPS_04,
+	  'LargeParcel'               => MPS_05,
+	  'IrregularParcel'           => MPS_06,
+	  'OversizedParcel'           => MPS_07,
+	  'FlatRateLegalEnvelope'     => MPS_09,
+	  'FlatRatePaddedEnvelope'    => MPS_10,
+	  'FlatRateGiftCardEnvelope'  => MPS_11,
+	  'FlatRateWindowEnvelope'    => MPS_12,
+	  'FlatRateCardboardEnvelope' => MPS_13,
+	  'SmallFlatRateEnvelope'     => MPS_14,
+	  'SmallFlatRateBox'          => MPS_15,
+	  'MediumFlatRateBox'         => MPS_16,
+	  'LargeFlatRateBox'          => MPS_17,
+	  'DVDFlatRateBox'            => MPS_18,
+	  'LargeVideoFlatRateBox'     => MPS_19,
+	  'RegionalRateBoxA'          => MPS_20,
+	  'RegionalRateBoxB'          => MPS_21,
+	);
+	
+	public $dialAZipCodes = array(
+	  '10' => 'Invalid address',
+	  '11' => 'Invalid zip code',
+	  '12' => 'Invalid state code',
+	  '13' => 'Invalid city',
+	  '21' => 'Address not found',
+	  '22' => 'Multiple matches, too ambiguious',
+	  '25' => 'City, State and ZIP Code are valid, but street address is not a match',
+	  '31' => 'Exact match',
+	  '32' => 'Default match, more information may give a more specific +4',
+	);
 
-  function update() {
-    foreach ($this->keys() as $key) {
-	  $field = strtolower($key['key']);
-	  switch ($key['key']) {
-	    case 'MODULE_SHIPPING_ENDICIA_TYPES': // read the checkboxes
-		  write_configure($key['key'], implode(',', $_POST[$field]));
-		  break;
-		default:  // just write the value
-		  if (isset($_POST[$field])) write_configure($key['key'], $_POST[$field]);
-	  }
+  	function __construct() {
+		$this->keys[] = array('key' => 'MODULE_SHIPPING_ENDICIA_ACCOUNT_NUMBER',	'default' => '',										'text' => MODULE_SHIPPING_ENDICIA_ACCOUNT_NUMBER_DESC);
+	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_ENDICIA_PASS_PHRASE',   	'default' => '',										'text' => MODULE_SHIPPING_ENDICIA_PASS_PHRASE_DESC);
+      	$this->keys[] = array('key' => 'MODULE_SHIPPING_ENDICIA_TEST_MODE',     	'default' => 'Test',									'text' => SHIPPING_TEST_MODE_DESC);
+	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_ENDICIA_PRINTER_TYPE',  	'default' => 'ZPLII',									'text' => SHIPPING_PRINTER_TYPE_DESC);
+	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_ENDICIA_PRINTER_NAME',  	'default' => 'zebra',									'text' => SHIPPING_PRINTER_NAME_DESC);
+	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_ENDICIA_TYPES',         	'default' => '1DEam,1Dam,1Dpm,2Dam,3Dam,3Dpm,GND,GDR',	'text' => SHIPPING_DEFAULT_SERVICE_DESC);
+	  	parent::__construct();    
+  	}
+  
+  	function configure($key) {
+    	switch ($key) {
+	  		case 'MODULE_SHIPPING_ENDICIA_TEST_MODE':
+			    $temp = array(
+				  array('id' => 'Test', 'text' => TEXT_TEST),
+				  array('id' => 'Prod', 'text' => TEXT_PRODUCTION),
+			    );
+			    $html .= html_pull_down_menu(strtolower($key), $temp, constant($key));
+			    break;
+			case 'MODULE_SHIPPING_ENDICIA_PRINTER_TYPE':
+			    $temp = array(
+				  array('id' => 'EPL2', 'text' => 'EPL2'),
+				  array('id' => 'ZPLII','text' => 'ZPLII'),
+		//		  array('id' => 'GIF',  'text' => 'GIF'),
+		//		  array('id' => 'JPEG', 'text' => 'JPEG'),
+		//		  array('id' => 'PDF',  'text' => 'PDF'),
+		//		  array('id' => 'PNG',  'text' => 'PNG'),
+			    );
+			    $html .= html_pull_down_menu(strtolower($key), $temp, constant($key));
+			    break;
+			case 'MODULE_SHIPPING_ENDICIA_TYPES':
+			    $temp = array(
+			      array('id' => '1DEam', 'text' => MODULE_SHIPPING_ENDICIA_1DM),
+				  array('id' => '1Dam',  'text' => MODULE_SHIPPING_ENDICIA_1DA),
+				  array('id' => '1Dpm',  'text' => MODULE_SHIPPING_ENDICIA_1DP),
+				  array('id' => '2Dam',  'text' => MODULE_SHIPPING_ENDICIA_2DA),
+				  array('id' => '2Dpm',  'text' => MODULE_SHIPPING_ENDICIA_2DP),
+			      array('id' => '3Dam',  'text' => MODULE_SHIPPING_ENDICIA_3DA),
+			      array('id' => '3Dpm',  'text' => MODULE_SHIPPING_ENDICIA_3DS),
+			      array('id' => 'GND',   'text' => MODULE_SHIPPING_ENDICIA_GND),
+				  array('id' => 'GDR',   'text' => MODULE_SHIPPING_ENDICIA_GDR),
+		//		  array('id' => 'I2DEam','text' => MODULE_SHIPPING_ENDICIA_XDM),
+		//		  array('id' => 'I2Dam', 'text' => MODULE_SHIPPING_ENDICIA_XPR),
+		//		  array('id' => 'I3D',   'text' => MODULE_SHIPPING_ENDICIA_XPD),
+			    );
+			    $choices = array();
+			    foreach ($temp as $value) {
+				  $choices[] = html_checkbox_field(strtolower($key).'[]', $value['id'], ((strpos(constant($key), $value['id']) === false) ? false : true), '', $parameters = '') . ' ' . $value['text'];
+			    }
+			    $html = implode('<br />' . chr(10), $choices);
+			    break;
+	  		default:
+	    		$html = parent::configure($key);
+    	}
+    	return $html;
+  	}
+
+	function update() {
+	    foreach ($this->keys as $key) {
+			$field = strtolower($key['key']);
+			switch ($key['key']) {
+		    	case 'MODULE_SHIPPING_ENDICIA_TYPES': // read the checkboxes
+			  		write_configure($key['key'], implode(',', $_POST[$field]));
+			  		break;
+				default:  // just write the value
+			  		if (isset($_POST[$field])) write_configure($key['key'], $_POST[$field]);
+			}
+		}
 	}
-  }
 
 // ***************************************************************************************************************
 //								Endicia Address Validation Request
@@ -313,7 +312,7 @@ var $PackageMap = array( // for rate estimates, assume this set of options
 //echo 'Endicia XML Submit String:<br />'; print_r($request); echo '<br />'; return false;
 	$arrRates = array();
 	$url = (MODULE_SHIPPING_ENDICIA_TEST_MODE=='Prod') ? MODULE_SHIPPING_ENDICIA_WSDL_URL : MODULE_SHIPPING_ENDICIA_TEST_WSDL_URL;
-	$client = new SoapClient($url, array('trace'=>1));
+	$client = new \SoapClient($url, array('trace'=>1));
 	try {
 	  $response = $client->CalculatePostageRates($request);
 //echo 'Request <pre>'  . htmlspecialchars($client->__getLastRequest()) . '</pre>';
@@ -325,13 +324,13 @@ var $PackageMap = array( // for rate estimates, assume this set of options
 		  $service = $this->EndiciaRateCodes[$rateReply->MailClass];
 		  $total   = $rateReply->TotalAmount;
 		  if (in_array($service, $user_choices)) {
-		    $arrRates[$this->code][$service]['cost'] = $rateReply->TotalAmount;
-		    $arrRates[$this->code][$service]['book'] = $rateReply->TotalAmount;
-		    $arrRates[$this->code][$service]['note'] = '';
+		    $arrRates[$this->id][$service]['cost'] = $rateReply->TotalAmount;
+		    $arrRates[$this->id][$service]['book'] = $rateReply->TotalAmount;
+		    $arrRates[$this->id][$service]['note'] = '';
 		  	if (function_exists('endicia_shipping_rate_calc')) {
-			  $arrRates[$this->code][$service]['quote'] = endicia_shipping_rate_calc($arrRates[$this->code][$service]['book'], $arrRates[$this->code][$service]['cost'], $service);
+			  $arrRates[$this->id][$service]['quote'] = endicia_shipping_rate_calc($arrRates[$this->id][$service]['book'], $arrRates[$this->id][$service]['cost'], $service);
 			} else {
-			  $arrRates[$this->code][$service]['quote']= $rateReply->TotalAmount;
+			  $arrRates[$this->id][$service]['quote']= $rateReply->TotalAmount;
 			}
 		  }
 		}
@@ -356,8 +355,7 @@ var $PackageMap = array( // for rate estimates, assume this set of options
   	global $messageStack, $currencies;
   	$amount = db_prepare_input($_POST['endicia_postage']);
   	if (!in_array($amount, array('10', '25', '100', '250', '500', '1000'))) {
-  		$messageStack->add('The postage purchase amount submitted is an invalid amount!','error');
-  		return false;
+  		throw new \Exception('The postage purchase amount submitted is an invalid amount!');
   	}
 	$data  = array(
 	  'RecreditRequest' => array(
@@ -371,18 +369,16 @@ var $PackageMap = array( // for rate estimates, assume this set of options
   	  ),
 	);
 	$url = (MODULE_SHIPPING_ENDICIA_TEST_MODE=='Prod') ? MODULE_SHIPPING_ENDICIA_WSDL_URL : MODULE_SHIPPING_ENDICIA_TEST_WSDL_URL;
-	$client = new SoapClient($url, array('trace'=>1));
+	$client = new \SoapClient($url, array('trace'=>1));
   	try {
 	  $response = $client->BuyPostage($data);
   	  if ($response->RecreditRequestResponse->Status == 0) {
   		$messageStack->add(sprintf(SHIPPING_ENDICIA_PURCHASE_SUCCESS_MSG, $currencies->format($response->RecreditRequestResponse->CertifiedIntermediary->PostageBalance), $response->RecreditRequestResponse->CertifiedIntermediary->SerialNumber),'success');
   	  } else {
-  		$messageStack->add(TEXT_ERROR.' ('.$response->RecreditRequestResponse->Status.') '.$response->RecreditRequestResponse->ErrorMessage, 'error');
-  		return false;
+  		throw new \Exception(TEXT_ERROR.' ('.$response->RecreditRequestResponse->Status.') '.$response->RecreditRequestResponse->ErrorMessage);
 	  }
   	} catch (SoapFault $exception) {
-  	  $messageStack->add("SOAP error ({$exception->faultcode}) {$exception->faultstring}",'error');
-  	  return false;
+  	  throw new \Exception("SOAP error ({$exception->faultcode}) {$exception->faultstring}");
   	}
   	return true;
   }
@@ -396,14 +392,8 @@ var $PackageMap = array( // for rate estimates, assume this set of options
   	$new_pp = db_prepare_input($_POST['pass_phrase_new']);
   	$dup_pp = db_prepare_input($_POST['pass_phrase_confirm']);
   	// error check
-  	if ($old_pp <> MODULE_SHIPPING_ENDICIA_PASS_PHRASE) {
-  	  $messageStack->add(SHIPPING_ENDICIA_PASSPHRASE_OLD_NOT_MATCH, 'error');
-  	  return false;
-  	}
-  	if ($new_pp <> $dup_pp) {
-  	  $messageStack->add(SHIPPING_ENDICIA_PASSPHRASE_NEW_NOT_MATCH, 'error');
-  	  return false;
-  	}
+  	if ($old_pp <> MODULE_SHIPPING_ENDICIA_PASS_PHRASE) throw new \Exception(SHIPPING_ENDICIA_PASSPHRASE_OLD_NOT_MATCH);
+  	if ($new_pp <> $dup_pp) throw new \Exception(SHIPPING_ENDICIA_PASSPHRASE_NEW_NOT_MATCH);
   	$data = array(
   	  'ChangePassPhraseRequest' => array(
   	    'RequesterID' => MODULE_SHIPPING_ENDICIA_PARTNER_ID,
@@ -416,17 +406,17 @@ var $PackageMap = array( // for rate estimates, assume this set of options
   	  ),
   	);
   	$url = (MODULE_SHIPPING_ENDICIA_TEST_MODE=='Prod') ? MODULE_SHIPPING_ENDICIA_WSDL_URL : MODULE_SHIPPING_ENDICIA_TEST_WSDL_URL;
-  	$client = new SoapClient($url, array('trace'=>1));
+  	$client = new \SoapClient($url, array('trace'=>1));
   	try {
 	  $response = $client->ChangePassPhrase($data);
   	  if ($response->ChangePassPhraseRequestResponse->Status == 0) {
   	  	write_configure('MODULE_SHIPPING_ENDICIA_PASS_PHRASE', $new_pp);
   		$messageStack->add(SHIPPING_ENDICIA_PASSPHRASE_SUCCESS_MSG, 'success');
   	  } else {
-  		$messageStack->add(TEXT_ERROR.' ('.$response->ChangePassPhraseRequestResponse->Status.') '.$response->ChangePassPhraseRequestResponse->ErrorMessage, 'error');
+  		throw new \Exception(TEXT_ERROR.' ('.$response->ChangePassPhraseRequestResponse->Status.') '.$response->ChangePassPhraseRequestResponse->ErrorMessage);
   	  }
   	} catch (SoapFault $exception) {
-  	  $messageStack->add("SOAP error ({$exception->faultcode}) {$exception->faultstring}", 'error');
+  	  throw new \Exception("SOAP error ({$exception->faultcode}) {$exception->faultstring}");
   	}
   }
 
@@ -437,15 +427,14 @@ var $PackageMap = array( // for rate estimates, assume this set of options
 	global $messageStack;
 	$endicia_results = array();
 	if (in_array($sInfo->ship_method, array('I2DEam','I2Dam','I3D'))) { // unsupported ship methods
-	  $messageStack->add('The ship method requested is not supported by this tool presently. Please ship the package via a different tool.','error');
-	  return false;
+	  throw new \Exception('The ship method requested is not supported by this tool presently. Please ship the package via a different tool.');
 	}
 	$labels = array();
 	$xml = $this->FormatEndiciaShipRequest($sInfo);
 //echo 'Endicia XML Label Submit String:'; print_r($xml); echo '<br />'; //return false;
 //	$client = new SoapClient((MODULE_SHIPPING_ENDICIA_TEST_MODE=='Test')?PATH_TO_TEST_RATE_WSDL:PATH_TO_RATE_WSDL, array('trace'=>1));
 	$url = (MODULE_SHIPPING_ENDICIA_TEST_MODE=='Prod') ? MODULE_SHIPPING_ENDICIA_WSDL_URL : MODULE_SHIPPING_ENDICIA_TEST_WSDL_URL;
-	$client = new SoapClient($url, array('trace'=>1));
+	$client = new \SoapClient($url, array('trace'=>1));
 	try {
 	  $response = $client->GetPostageLabel($xml);
 //echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';
@@ -470,7 +459,7 @@ var $PackageMap = array( // for rate estimates, assume this set of options
 		);
 		if ($label) {
 		  $date      = explode('-',$sInfo->ship_date);
-		  $file_path = SHIPPING_DEFAULT_LABEL_DIR.$this->code.'/'.$date[0].'/'.$date[1].'/'.$date[2].'/';
+		  $file_path = SHIPPING_DEFAULT_LABEL_DIR.$this->id.'/'.$date[0].'/'.$date[1].'/'.$date[2].'/';
 		  validate_path($file_path);
 		  $this->returned_label = $label;
 		  $file_name = $tracking.'.lpt'; // assume thermal printer
@@ -480,29 +469,24 @@ var $PackageMap = array( // for rate estimates, assume this set of options
 //		  if (!in_array(MODULE_SHIPPING_ENDICIA_PRINTER_TYPE, array('EPL2','ZPLII'))) $label = base64_decode($label);
 		  $label = base64_decode($label);
 		  if (!$handle = fopen($file_path . $file_name, 'w')) { 
-			$messageStack->add('Cannot open file ('.$file_path . $file_name.')','error');
-			return false;
+			throw new \Exception('Cannot open file ('.$file_path . $file_name.')');
 		  }
 		  
 		  if (fwrite($handle, $label) === false) {
-			$messageStack->add('Cannot write to file ('.$file_path . $file_name.')','error');
-			return false;
+			throw new \Exception('Cannot write to file ('.$file_path . $file_name.')');
 		  }
 		  fclose($handle);
 		  $messageStack->add(sprintf(SHIPPING_ENDICIA_LABEL_STATUS, $tracking, $response->LabelRequestResponse->PostageBalance),'success');
 		} else {
-		  $messageStack->add('Error - No label found in return string.','error');
-		  return false;				
+		  throw new \Exception('Error - No label found in return string.');
 		}
 	  } else {
-	  	$messageStack->add(TEXT_ERROR.' ('.$response->LabelRequestResponse->Status.') '.$response->LabelRequestResponse->ErrorMessage, 'error');
-		return false;
+	  	throw new \Exception(TEXT_ERROR.' ('.$response->LabelRequestResponse->Status.') '.$response->LabelRequestResponse->ErrorMessage);
 	  }
 	} catch (SoapFault $exception) {
 //echo 'Fault Request <pre>'  . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
 //echo 'Fault Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
-	  $messageStack->add("Soap Error ({$exception->faultcode}) {$exception->faultstring}", 'error');
-	  return false;
+	  throw new \Exception("Soap Error ({$exception->faultcode}) {$exception->faultstring}");
 	}
 	return $endicia_results;
   }
@@ -618,7 +602,7 @@ var $PackageMap = array( // for rate estimates, assume this set of options
   	$xml .= xmlEntry('PICNumber', $tracking_number);
   	$xml .= "  </RefundList>\n";
   	$xml .= "</RefundRequest>\n";
-  	$client = new SoapClient(MODULE_SHIPPING_ENDICIA_ELS_URL, array('trace'=>1));
+  	$client = new \SoapClient(MODULE_SHIPPING_ENDICIA_ELS_URL, array('trace'=>1));
   	try {
 	  $response = $client->RefundRequest($xml);
 //echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
@@ -626,14 +610,13 @@ var $PackageMap = array( // for rate estimates, assume this set of options
 	  if ($response->RefundResponse->RefundList->PICNumber->IsAppoved == 'YES') {
 	  	$messageStack->add(sprintf(SHIPPING_ENDICIA_REFUND_MSG, $response->RefundResponse->RefundList->PICNumber, $response->RefundResponse->RefundList->PICNumber->IsApproved, $response->RefundResponse->RefundList->PICNumber->ErrorMsg), 'success');
 	  } else {
-	  	$messageStack->add(TEXT_ERROR.' '.$response->RefundResponse->RefundList->PICNumber->ErrorMsg, 'error');
+	  	throw new \Exception(TEXT_ERROR.' '.$response->RefundResponse->RefundList->PICNumber->ErrorMsg);
   	  }
   	} catch (SoapFault $exception) {
 //echo 'Fault Request <pre>'  . htmlspecialchars($client->__getLastRequest()) . '</pre>';
 //echo 'Fault Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
-	  $messageStack->add("SOAP error ({$exception->faultcode}) {$exception->faultstring}", 'error');
+	  throw new \Exception("SOAP error ({$exception->faultcode}) {$exception->faultstring}");
   	}
-  	$messageStack->convert_add_to_session(); // save any messages for reload
 	return true;
   }
 
@@ -645,12 +628,12 @@ var $PackageMap = array( // for rate estimates, assume this set of options
 //	$result = array();
 	if ($log_id) {
 	  $shipments  = $db->Execute("select id, ref_id, deliver_date, actual_date, tracking_id, notes 
-		from ".TABLE_SHIPPING_LOG." where carrier = '$this->code' and id = '$log_id'");
+		from ".TABLE_SHIPPING_LOG." where carrier = '$this->id' and id = '$log_id'");
 	} else {
 	  $start_date = $track_date;
 	  $end_date   = gen_specific_date($track_date, $day_offset =  1);
 	  $shipments  = $db->Execute("select id, ref_id, deliver_date, actual_date, tracking_id, notes 
-		from ".TABLE_SHIPPING_LOG." where carrier = '$this->code' and ship_date >= '$start_date' and ship_date < '$end_date'");
+		from ".TABLE_SHIPPING_LOG." where carrier = '$this->id' and ship_date >= '$start_date' and ship_date < '$end_date'");
 	}
 	if ($shipments->RecordCount() == 0) return 'No records were found!';
 	$xml  = "<StatusRequest>\n";
@@ -665,7 +648,7 @@ var $PackageMap = array( // for rate estimates, assume this set of options
 	  $shipments->MoveNext();
 	}
 	$xml .= "</StatusRequest>\n";
-  	$client = new SoapClient(MODULE_SHIPPING_ENDICIA_ELS_URL, array('trace'=>1));
+  	$client = new \SoapClient(MODULE_SHIPPING_ENDICIA_ELS_URL, array('trace'=>1));
 	try {
 	  $response = $client->StatusRequest($xml);
 //echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
@@ -679,14 +662,12 @@ var $PackageMap = array( // for rate estimates, assume this set of options
 	  	  $messageStack->add($message, $status_code=='D'?'success':'caution');
 		}
 	  } else {
-	  	$message = TEXT_ERROR.' ('.$response->StatusResponse->Status.') '.$response->StatusResponse->ErrorMsg;
-		$messageStack->add($message, 'error');
+	  	throw new \Exception(TEXT_ERROR.' ('.$response->StatusResponse->Status.') '.$response->StatusResponse->ErrorMsg);
 	  }
 	} catch (SoapFault $exception) {
 //echo 'Error Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
 //echo 'Error Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
-	  $message = "SOAP Error ({$exception->faultcode}) {$exception->faultstring}";
-	  $messageStack->add($message, 'error');
+	  throw new \Exception( "SOAP Error ({$exception->faultcode}) {$exception->faultstring}");
 	}
 	return $message;
   }

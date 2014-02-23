@@ -14,9 +14,9 @@
 // | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the   |
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
-//  Path: /modules/phreeform/custom/classes/entry_builder.php
+//  Path: /modules/phreebooks/classes/entry_builder.php
 //
-
+namespace phreebooks\classes;
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 
 class entry_builder {
@@ -242,29 +242,28 @@ class entry_builder {
 	}
   }
 
-  function load_shipment_details($id) {
-    global $db;
-	$this->ship_carrier = '';
-	$this->ship_service = '';
-	$this->tracking_id  = '';
-	$shipping_info      = explode(':', $this->shipper_code);
-	$carrier            = $shipping_info[0];
-	if ($carrier) {
-	  load_specific_method('shipping', $carrier);
-	  $this->ship_carrier = constant('MODULE_SHIPPING_' . strtoupper($carrier) . '_TITLE_SHORT');
-	  $this->ship_service = defined($carrier . '_' . $shipping_info[1]) ? constant($carrier . '_' . $shipping_info[1]) : '';
-	  $result = $db->Execute("SELECT tracking_id FROM ".TABLE_SHIPPING_LOG." 
-	    WHERE ref_id='$this->purchase_invoice_id' OR ref_id LIKE '".$this->purchase_invoice_id."-%'");
-	  if ($result->RecordCount() > 0) {
-	    $tracking = array();
-		while(!$result->EOF) {
-		  $tracking[] = $result->fields['tracking_id'];
-		  $result->MoveNext();
+  	function load_shipment_details($id) {
+    	global $db;
+		$this->ship_carrier	= '';
+		$this->ship_service	= '';
+		$this->tracking_id 	= '';
+		$shipping_info		= explode(':', $this->shipper_code);
+		$method				= $shipping_info[0];
+		if ($method) {
+			$this->ship_carrier = $admin_classes['shipping']->methods[$method]->text;
+		  	$this->ship_service = defined($method . '_' . $shipping_info[1]) ? constant($method . '_' . $shipping_info[1]) : '';
+		  	$result = $db->Execute("SELECT tracking_id FROM ".TABLE_SHIPPING_LOG." 
+		      WHERE ref_id='$this->purchase_invoice_id' OR ref_id LIKE '".$this->purchase_invoice_id."-%'");
+		  	if ($result->RecordCount() > 0) {
+		    	$tracking = array();
+				while(!$result->EOF) {
+			  		$tracking[] = $result->fields['tracking_id'];
+			  		$result->MoveNext();
+				}
+		    	$this->tracking_id = $this->ship_carrier.' '.$this->ship_service.' # '.implode(', ', $tracking);
+		  	}
 		}
-	    $this->tracking_id = $this->ship_carrier.' '.$this->ship_service.' # '.implode(', ', $tracking);
-	  }
-	}
-  }
+  	}
 
   function pull_desc($desc) {
 	$output = '';

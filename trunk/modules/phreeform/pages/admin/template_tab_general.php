@@ -19,7 +19,7 @@
 //
 
 ?>
-<div id="tab_general">
+<div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
 <table class="ui-widget" style="border-style:none;width:100%">
  <thead class="ui-widget-header">
 	  <tr><th colspan="2"><?php echo PF_ADMIN_CONFIG_INFO; ?></th></tr> 

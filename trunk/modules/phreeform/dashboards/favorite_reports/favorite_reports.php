@@ -18,15 +18,17 @@
 //
 // Revision history
 // 2011-07-01 - Added version number for revision control
+namespace phreeform\dashboards\favorite_reports;
 
 require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
 
-class favorite_reports extends ctl_panel {
-	public $dashboard_id 		= 'favorite_reports';
+class favorite_reports extends \core\classes\ctl_panel {
+	public $id			 		= 'favorite_reports';
 	public $description	 		= CP_FAVORITE_REPORTS_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_PHREEFORM;
-	public $title		 		= CP_FAVORITE_REPORTS_TITLE;
-	public $version      		= 3.5;
+	public $text		 		= CP_FAVORITE_REPORTS_TITLE;
+	public $version      		= '3.5';
+	public $module_id 			= 'phreeform';
 
 	function Output($params) {
 		global $db;
@@ -58,7 +60,7 @@ class favorite_reports extends ctl_panel {
 		  	$index = 1;
 		  	foreach ($params as $id => $description) {
 				$contents .= '<div style="float:right; height:16px;">';
-				$contents .= html_icon('phreebooks/dashboard-remove.png', TEXT_REMOVE, 'small', 'onclick="return del_index(\'' . $this->dashboard_id . '\', ' . $index . ')"');
+				$contents .= html_icon('phreebooks/dashboard-remove.png', TEXT_REMOVE, 'small', 'onclick="return del_index(\'' . $this->id . '\', ' . $index . ')"');
 				$contents .= '</div>';
 				$contents .= '<div style="height:16px;">';
 				$contents .= '  <a href="index.php?module=phreeform&amp;page=popup_gen&amp;rID=' . $id . '" target="_blank">' . $description . '</a>' . chr(10);
@@ -82,7 +84,7 @@ class favorite_reports extends ctl_panel {
 		// fetch the current params
 		$result = $db->Execute("select params from " . TABLE_USERS_PROFILES . "
 		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "' 
-		  and dashboard_id = '" . $this->dashboard_id . "'");
+		  and dashboard_id = '" . $this->id . "'");
 		if ($remove_id) { // remove element
 		  	$this->params = unserialize($result->fields['params']);
 		  	$temp   = array();
@@ -101,7 +103,7 @@ class favorite_reports extends ctl_panel {
 		asort($this->params);
 		$db->Execute("update " . TABLE_USERS_PROFILES . " set params = '" . serialize($this->params) . "' 
 		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "' 
-		  and dashboard_id = '" . $this->dashboard_id . "'");
+		  and dashboard_id = '" . $this->id . "'");
 	}
 }
 ?>

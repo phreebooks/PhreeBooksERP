@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreeform/pages/popup_gen/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_PHREEFORM);
+$security_level = \core\classes\user::validate(SECURITY_ID_PHREEFORM);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/phreeform.php');
@@ -151,7 +151,7 @@ if (!$error) switch ($_REQUEST['action']) {
 	  // read the field listings
 	  $report->fieldlist = array();
 	  if ($_POST['fld_fld']) foreach ($_POST['fld_fld'] as $key => $value) {
-	    $report->fieldlist[] = new objectInfo(array(
+	    $report->fieldlist[] = new \core\classes\objectInfo(array(
 	      'fieldname'   => db_prepare_input($_POST['fld_fld'][$key]),
 	      'description' => db_prepare_input($_POST['fld_desc'][$key]),
 	      'visible'     => db_prepare_input($_POST['fld_vis'][$key]),
@@ -165,7 +165,7 @@ if (!$error) switch ($_REQUEST['action']) {
 	  $i = 0;
 	  while(true) {
 	    if (!isset($_POST['field_' . $i])) break;
-	    $report->fieldlist[$_POST['seq_' . $i]] = new objectInfo(
+	    $report->fieldlist[$_POST['seq_' . $i]] = new \core\classes\objectInfo(
 		  array(
 		    'fieldname'   => $_POST['field_' . $i],
 		    'description' => $_POST['desc_' . $i],
@@ -298,15 +298,6 @@ if (!isset($DateArray[2])) $DateArray[2] = '';
 $ValidDateChoices = array();
 foreach ($DateChoices as $key => $value) {
  if (strpos($report->datelist, $key) !== false) $ValidDateChoices[$key] = $value;
-}
-
-$tab_list = array();
-if ($report->reporttype == 'frm' && sizeof($r_list) > 0) {
-  $tab_list['crit']  = TEXT_CRITERIA;
-} elseif ($report->reporttype == 'rpt') {
-  $tab_list['crit']  = TEXT_CRITERIA;
-  $tab_list['field'] = TEXT_FIELDS;
-  $tab_list['page']  = TEXT_PAGE_SETUP;
 }
 $custom_path = DIR_FS_WORKING . 'custom/pages/popup_gen/extra_tabs.php';
 if (file_exists($custom_path)) { include($custom_path); }

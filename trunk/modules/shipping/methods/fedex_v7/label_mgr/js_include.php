@@ -45,7 +45,7 @@ function check_form() {
 	error = 1;
   }
   if (error == 1) {
-    alert(error_message);
+	$.messager.alert('error',error_message,'error');
     return false;
   }
   return true;
@@ -128,7 +128,7 @@ function monitorPrinting() {
     } else {
       var e = applet.getException();
       if (e != null) {
-	    alert("Exception occured: " + e.getLocalizedMessage());
+    	$.messager.alert("Exception occured ", e.getLocalizedMessage(),'error');
 	  } else {
 		<?php echo (sizeof($pdf_list) > 0) ? " paperPrint();\n" : " window.opener.location.reload();\n self.close();\n"; ?>
 	  }

@@ -25,7 +25,6 @@
 
 function init() {
   $(function() { // initialize tables
-	$('#admintabs').tabs();
     $('#coa_table').dataTable( dataTables_i18n );
     $('#tax_c_table').dataTable( dataTables_i18n );
     $('#tax_v_table').dataTable( dataTables_i18n );

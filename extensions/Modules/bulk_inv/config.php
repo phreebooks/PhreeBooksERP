@@ -20,7 +20,6 @@
 // 1.0 => 2012-10-10 - Initial release
 // Module software version information
 gen_pull_language('bulk_inv', 'admin');
-define('MODULE_BULK_INV_VERSION', '1.0');
 // Menu Sort Positions
 // Security id's
 define('SECURITY_ID_MAINTAIN_INVENTORY', 151);

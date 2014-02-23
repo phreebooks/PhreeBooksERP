@@ -19,7 +19,7 @@
 //
 
 ?>
-<div id="tab_company">
+<div title="<?php echo MENU_HEADING_MY_COMPANY;?>" id="tab_company">
 <table class="ui-widget" style="border-style:none;width:100%">
  <thead class="ui-widget-header">
   <tr><th colspan="2"><?php echo MENU_HEADING_MY_COMPANY; ?></th></tr>

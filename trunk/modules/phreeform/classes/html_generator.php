@@ -17,7 +17,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreeform/classes/html_generator.php
 //
-
+namespace phreeform\classes;
 class HTML {
 
   function __construct() {

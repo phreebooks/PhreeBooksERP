@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreepos/custom/classes/pos_builder.php
 //
-
+namespace phreepos\classes;
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 
 class pos_builder {

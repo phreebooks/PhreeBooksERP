@@ -16,22 +16,17 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/zencart/classes/bulk_upload.php
 //
-
+namespace zencart\classes;
 class bulk_upload {
-  function bulk_upload() {
-  }
-
-  function bulkUpload($inc_image = false) {
+  
+  function __construct($inc_image = false) {
 	global $db, $messageStack;
 	$error  = false;
 	$result = $db->Execute("select id from " . TABLE_INVENTORY . " where catalog = '1' ");
 	$cnt    = 0;
+	$prodXML = new \zencart\classes\zencart();
 	while(!$result->EOF) {
-	  $prodXML = new zencart();
-	  if (!$prodXML->submitXML($result->fields['id'], 'product_ul', true, $inc_image)) {
-		$error = true;
-		break;
-	  }
+	  $prodXML->submitXML($result->fields['id'], 'product_ul', true, $inc_image);
 	  $cnt++;
 	  $result->MoveNext();
 	}

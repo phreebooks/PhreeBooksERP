@@ -18,40 +18,26 @@
 //
 // Revision history
 // 2011-07-01 - Added version number for revision control
-define('MODULE_SHIPPING_FLAT_VERSION','3.2');
+namespace shipping\methods\flat;
+class flat extends \shipping\classes\shipping {
+	public $id				= 'flat'; // needs to match class name
+  	public $text			= MODULE_SHIPPING_FLAT_TITLE;
+  	public $description		= MODULE_SHIPPING_FLAT_TEXT_DESCRIPTION;
+  	public $sort_order		= 20;
+  	public $shipping_cost	= 5.00;
+  	public $version			= '3.2';
 
-class flat {
-  function __construct() {
-    $this->code = 'flat';
-  }
-
-  function keys() {
-    return array(
-      array('key' => 'MODULE_SHIPPING_FLAT_TITLE',      'default' => 'Flat Shipping'),
-      array('key' => 'MODULE_SHIPPING_FLAT_COST',       'default' => '5.00'),
-	  array('key' => 'MODULE_SHIPPING_FLAT_SORT_ORDER', 'default' => '20'),
-	);
-  }
-
-  function update() {
-    foreach ($this->keys() as $key) {
-	  $field = strtolower($key['key']);
-	  if (isset($_POST[$field])) write_configure($key['key'], $_POST[$field]);
-	}
-  }
-
-  function quote($pkg = '') {
-    global $shipping_defaults;
-	$arrRates = array();
-	foreach ($shipping_defaults['service_levels'] as $key => $value) {
-	  if (defined($this->code.'_'.$key)) {
-	    $arrRates[$this->code][$key]['book']  = '';
-	    $arrRates[$this->code][$key]['quote'] = MODULE_SHIPPING_FLAT_COST;
-	    $arrRates[$this->code][$key]['cost']  = '';
-	  }
-	}
-	return array('result' => 'success', 'rates' => $arrRates);
-  }
-
+  	function quote($pkg = '') {
+    	global $shipping_defaults;
+		$arrRates = array();
+		foreach ($shipping_defaults['service_levels'] as $key => $value) {
+	  		if (defined($this->id.'_'.$key)) {
+	    		$arrRates[$this->id][$key]['book']  = '';
+	    		$arrRates[$this->id][$key]['quote'] = MODULE_SHIPPING_FLAT_COST;
+	    		$arrRates[$this->id][$key]['cost']  = '';
+	  		}
+		}
+		return array('result' => 'success', 'rates' => $arrRates);
+  	}
 }
 ?>

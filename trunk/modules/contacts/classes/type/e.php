@@ -16,9 +16,8 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/contacts/classes/type/e.php
 //  employees
-require_once(DIR_FS_MODULES . 'contacts/classes/contacts.php');
-
-class e extends contacts{	
+namespace contacts\classes\type;
+class e extends \contacts\classes\contacts{	
 	public $security_token = SECURITY_ID_MAINTAIN_EMPLOYEES;
 	public $help		   = '07.07.01.02';
 	public $address_types  = array('em', 'es', 'eb', 'im');

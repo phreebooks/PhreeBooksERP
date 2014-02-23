@@ -19,24 +19,26 @@
 //
 /**************   Check user security   *****************************/
 $xml = NULL;
-$security_level = validate_ajax_user(SECURITY_ID_PHREEFORM);
+$security_level = \core\classes\user::validate(SECURITY_ID_PHREEFORM);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
 
 /**************   page specific initialization  *************************/
-$report         = new objectInfo();
+$report         = new \core\classes\objectInfo();
 $report->tables = array();
 $i              = 1;
 $runaway        = 0; // just in case
 while(true) {
-  if (isset($_GET['t' . $i])) $report->tables[] = new objectInfo(array('tablename' => $_GET['t' . $i]));
+  if (isset($_GET['t' . $i])) $report->tables[] = new \core\classes\objectInfo(array('tablename' => $_GET['t' . $i]));
     else break;
   $i++;
-  if ($runaway++ > 100) die;
+  if ($runaway++ > 100) throw new Exception("caught by runaway counter");
 }
 if (sizeof($report->tables) < 1) {
-  echo createXmlHeader() . xmlEntry('error', PHREEFORM_NO_TABLES_PASSED) . createXmlFooter();
-  die;
+  	echo createXmlHeader() . xmlEntry('error', PHREEFORM_NO_TABLES_PASSED) . createXmlFooter();
+  	ob_end_flush();
+	session_write_close();
+  	die;
 }
 $report->special_class = $_GET['sp'] ? $_GET['sp'] : false;
 
@@ -50,5 +52,7 @@ if (sizeof($kFields) > 0) foreach ($kFields as $value) {
 $xml .= xmlEntry("message", 'Success select length = ' . sizeof($kFields));
 
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

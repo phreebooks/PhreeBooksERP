@@ -1,6 +1,6 @@
 <?php
-require_once(DIR_FS_MODULES . 'inventory/classes/inventory.php');
-class si extends inventory {//Stock Item
+namespace inventory\classes\type;
+class si extends \inventory\classes\inventory {//Stock Item
 	public $inventory_type			= 'si';
 	public $title					= INV_TYPES_SI;
 	public $account_sales_income	= INV_STOCK_DEFAULT_SALES;

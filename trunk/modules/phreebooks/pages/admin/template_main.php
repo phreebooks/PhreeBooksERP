@@ -31,23 +31,7 @@ $toolbar->icon_list['print']['show']    = false;
 echo $toolbar->build_toolbar();
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
-<div id="admintabs">
-<ul>
-<?php
-  echo add_tab_list('tab_general',           TEXT_GENERAL);
-  echo add_tab_list('tab_customers',         MENU_HEADING_CUSTOMERS);
-  echo add_tab_list('tab_vendors',           MENU_HEADING_VENDORS);
-  echo add_tab_list('tab_chart_of_accounts', GL_POPUP_WINDOW_TITLE);
-  echo add_tab_list('tab_tax_auths',         SETUP_TITLE_TAX_AUTHS);
-  echo add_tab_list('tab_tax_auths_vend',    SETUP_TITLE_TAX_AUTHS_VEND);
-  echo add_tab_list('tab_tax_rates',         SETUP_TITLE_TAX_RATES);
-  echo add_tab_list('tab_tax_rates_vend',    SETUP_TITLE_TAX_RATES_VEND);
-  if (file_exists(DIR_FS_MODULES . $module . '/custom/pages/admin/template_tab_custom.php')) {
-    echo add_tab_list('tab_custom',   TEXT_CUSTOM_TAB);
-  }
-  echo add_tab_list('tab_stats',             TEXT_STATISTICS);
-?>
-</ul>
+<div class="easyui-tabs" id="admintabs">
 <?php
   require (DIR_FS_MODULES . $module . '/pages/admin/template_tab_general.php');
   require (DIR_FS_MODULES . $module . '/pages/admin/template_tab_customers.php');

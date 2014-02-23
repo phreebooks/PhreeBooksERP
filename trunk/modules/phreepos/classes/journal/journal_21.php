@@ -17,8 +17,8 @@
 //  Path: /modules/phreepos/classes/journal/journal_21.php
 //
 // Inventory Direct Purchase Journal (POP)
-require_once(DIR_FS_MODULES . 'phreebooks/classes/gen_ledger.php');
-class journal_21 extends journal {
+namespace phreepos\classes\journal;
+class journal_21 extends \core\classes\journal {
 	public $id					= '';
 	public $save_payment        = false;
     public $closed 				= '0';
@@ -85,29 +85,13 @@ class journal_21 extends journal {
 		// add/update address book
 		if ($this->bill_add_update) { // billing address
 			$this->bill_acct_id = $this->add_account($this->account_type . 'b', $this->bill_acct_id, $this->bill_address_id);
-			if (!$this->bill_acct_id){
-				$messageStack->add('no customer was selected', 'error');
-				$db->transRollback();
-				return false;
-			} 
+			if (!$this->bill_acct_id) throw new \Exception('no customer was selected');
 		}
 		// ************* POST journal entry *************
-		if (!$this->validate_purchase_invoice_id()) {
-			$messageStack->add('invoice number is being used in a other post', 'error');
-			$db->transRollback();
-			return false;
-		}
-		if (!$this->Post($this->id ? 'edit' : 'insert',true)){
-			$messageStack->add('it was not posible to post the sale', 'error');
-			$db->transRollback();
-			return false;
-		}
+		$this->validate_purchase_invoice_id();
+		$this->Post($this->id ? 'edit' : 'insert',true);
 		// ************* post-POST processing *************
-		if (!$this->increment_purchase_invoice_id()){
-			$messageStack->add('invoice number can not be incrementedt', 'error');
-			$db->transRollback();
-			return false;
-		}
+		$this->increment_purchase_invoice_id();
 		$messageStack->debug("\n  committed order post purchase_invoice_id = " . $this->purchase_invoice_id . " and id = " . $this->id . "\n\n");
 		$db->transCommit();
 		// ***************************** END TRANSACTION *******************************
@@ -115,15 +99,15 @@ class journal_21 extends journal {
 		return true;
 	}
 
-  function refund_ordr() {
-    global $db, $messageStack;
-    // *************** START TRANSACTION *************************
-    $db->transStart();
-    if (!$this->unPost('delete')) return false;
-    $db->transCommit();
-    // *************** END TRANSACTION *************************
-    return true;
-  }
+  	function refund_ordr() {
+    	global $db, $messageStack;
+    	// *************** START TRANSACTION *************************
+    	$db->transStart();
+    	$this->unPost('delete');
+   		$db->transCommit();
+    	// *************** END TRANSACTION *************************
+    	return true;
+  	}
 
   function add_total_journal_row() {
 	global $payment_modules;
@@ -133,7 +117,8 @@ class journal_21 extends journal {
 		  $desc = MENU_HEADING_PHREEPOS . '-' . TEXT_TOTAL;
 		  $method     = $this->pmt_rows[$i]['meth'];
 		  if ($method) {
-		    $$method    = new $method;
+		    $pay_meth = "\payment\methods\\$method\\$method";
+		    $$method    = new $pay_meth;
 		    $deposit_id = $$method->def_deposit_id ? $$method->def_deposit_id : ('DP' . date('Ymd'));
 			$desc = JOURNAL_ID . ':' . $method . ':' . $$method->payment_fields;
 		  }

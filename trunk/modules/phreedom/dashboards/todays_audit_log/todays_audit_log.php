@@ -20,17 +20,17 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/dashboards/todays_audit_log/todays_audit_log.php
 //
-
-class todays_audit_log extends ctl_panel {
-	public $dashboard_id 		= 'todays_audit_log';
+namespace phreedom\dashboards\todays_audit_log;
+class todays_audit_log extends \core\classes\ctl_panel {
+	public $id			 		= 'todays_audit_log';
 	public $description	 		= CP_TODAYS_AUDIT_LOG_DESCRIPTION;
 	public $max_length   		= 50;
 	public $security_id  		= SECURITY_ID_CONFIGURATION;
-	public $title		 		= CP_TODAYS_AUDIT_LOG_TITLE;
-	public $version      		= 3.5;
+	public $text		 		= CP_TODAYS_AUDIT_LOG_TITLE;
+	public $version      		= '3.5';
 	public $size_params			= 1;
 	public $default_params 		= array('num_rows'=> 0);
-	
+	public $module_id 			= 'phreedom';
  
 	function Output($params) {
 		global $db, $currencies;

@@ -19,7 +19,7 @@
 $fieldset_content = NULL;
 // build the tab toolbar (if not the home dir)
 if ($doc_details->fields['type'] <> 'drive') {
-  $dirbar = new toolbar;
+  $dirbar = new \core\classes\toolbar;
   $dirbar->icon_list['cancel']['show'] = false;
   $dirbar->icon_list['open']['show']   = false;
   $dirbar->icon_list['save']['show']   = false;

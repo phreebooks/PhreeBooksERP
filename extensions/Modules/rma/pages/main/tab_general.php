@@ -18,7 +18,7 @@
 //
 ?>
 
-<div id="tab_general">
+<div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
 <fieldset>
   <legend><?php echo TEXT_GENERAL; ?></legend>
 <div style="float:right;width:40%">

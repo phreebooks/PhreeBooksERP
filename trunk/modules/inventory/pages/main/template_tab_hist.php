@@ -18,7 +18,7 @@
 //
 // start the history tab html
 ?>
-<div id="tab_history">
+<div title="<?php echo TEXT_HISTORY;?>" id="tab_history">
   <fieldset>
     <legend><?php echo INV_SKU_HISTORY; ?></legend>
 	<table class="ui-widget" style="border-style:none;">

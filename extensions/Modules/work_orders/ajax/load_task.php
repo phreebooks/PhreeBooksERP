@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/work_orders/ajax/load_task.php
 //
-$security_level = validate_ajax_user();
+$security_level = \core\classes\user::validate();
 /**************  include page specific files    *********************/
 /**************   page specific initialization  *************************/
 $xml = NULL;

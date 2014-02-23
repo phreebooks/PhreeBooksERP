@@ -16,15 +16,12 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreepos/pages/closing/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_POS_CLOSING);
+$security_level = \core\classes\user::validate(SECURITY_ID_POS_CLOSING);
 define('JOURNAL_ID',2);
 /**************  include page specific files    *********************/
 gen_pull_language('phreebooks');
 require_once(DIR_FS_WORKING . 'classes/tills.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
-require_once(DIR_FS_MODULES . 'phreebooks/classes/gen_ledger.php');
-require_once(DIR_FS_MODULES . 'phreebooks/classes/banking.php');
-
 /**************   page specific initialization  *************************/
 $error			 = false;
 $till_known 	 = false;
@@ -33,9 +30,8 @@ $current_cleard_items = unserialize($_POST['current_cleard_items']);
 $all_items       = array();
 $gl_types 		 = array('pmt','ttl','tpm');
 $post_date 		 = ($_POST['post_date']) ? gen_db_date($_POST['post_date']) : '';
-$payment_modules = load_all_methods('payment');
-$tills           = new tills();
-$glEntry		 = new journal();
+$tills           = new \phreepos\classes\tills();
+$glEntry		 = new \core\classes\journal();
 if(isset($_GET['till_id'])){
 	$tills->get_till_info(db_prepare_input($_GET['till_id']));
 	$post_date 		 = gen_db_date(gen_locale_date(date('Y-m-d')));
@@ -48,10 +44,6 @@ if(isset($_GET['till_id'])){
 	$_REQUEST['action']    = '';
 }
 if($post_date) $period = gen_calculate_period($post_date);
-foreach ($payment_modules as $pmt_class) {
-	$class  = $pmt_class['id'];
-	$$class = new $class;
-}
 $glEntry->currencies_code  = DEFAULT_CURRENCY;
 $glEntry->currencies_value = 1;
 /***************   hook for custom actions  ***************************/
@@ -61,7 +53,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save':
-	validate_security($security_level, 2);
+	\core\classes\user::validate_security($security_level, 2);
 	$glEntry->journal_id          = JOURNAL_ID;
 	$glEntry->post_date           = $post_date;
 	$glEntry->period              = $period;

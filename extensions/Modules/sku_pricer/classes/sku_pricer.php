@@ -16,6 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/sku_pricer/classes/sku_pricer.php
 //
+namespace sku_pricer\classes;
 class sku_pricer {
 	public $records    = array();
 	

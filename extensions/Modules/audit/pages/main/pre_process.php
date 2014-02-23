@@ -23,7 +23,7 @@
 
 
 /**************   Check user security   *****************************/
-$security_level = validate_user(SECURITY_ID_AUDIT);
+$security_level = \core\classes\user::validate(SECURITY_ID_AUDIT);
 /**************  include page specific files    *********************/
 //gen_pull_language($module);
 require_once(DIR_FS_WORKING . 'functions/audit.php');
@@ -40,23 +40,47 @@ if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
 	case 'export_audit': //search for contacts, gl_accounts and journals
-	
-	  	$output = build_audit_xml($date_from, $date_to, $select);
-	  	if($output == false){
-	  		$messageStack->add(GL_ERROR_BALANCE, 'error');
-	  		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-	  		break;
-	  	}
-	  	$dates = gen_get_dates($date_from);
-		header("Content-type: plain/txt;");
-		header("Content-disposition: attachment; filename=aud_". $dates['ThisYear'].".xaf; size=" . strlen($output));
-		header('Pragma: cache');
-		header('Cache-Control: public, must-revalidate, max-age=0');
-		header('Connection: close');
-		header('Expires: ' . date('r', time()+3600));
-		header('Last-Modified: ' . date('r'));
-		print $output;
-		exit();
+		try{
+		  	build_audit_xml($date_from, $date_to, $select);
+		  	libxml_use_internal_errors(true);
+		  	$dates = gen_get_dates($date_from);
+		  	$dom = new \DOMDocument('1.0', 'UTF-8');
+		  	$dom->loadXML($output);
+		  	$temp = $dom->schemaValidate(DIR_FS_MODULES.'audit/AuditfileFinancieelVersie3.1.xsd');
+			$temp = true;
+			if($temp){
+		  		header("Content-type: plain/txt;");
+				header("Content-disposition: attachment; filename=aud_". $dates['ThisYear'].".xaf; size=" . strlen($output));
+				header('Pragma: cache');
+				header('Cache-Control: public, must-revalidate, max-age=0');
+				header('Connection: close');
+				header('Expires: ' . date('r', time()+3600));
+				header('Last-Modified: ' . date('r'));
+		  	 	echo $dom->saveXML(); 
+				exit();
+		  	}else{
+		  		$errors = libxml_get_errors();
+	    		foreach ($errors as $error) {
+	        		printf('XML error "%s" [%d] (Code %d) in %s on line %d column %d' . "\n",
+	            	$error->message, $error->level, $error->code, $error->file,
+	            	$error->line, $error->column);
+	    		}
+	    		libxml_clear_errors();
+		  	}
+		  	libxml_use_internal_errors(false);
+	/*	  	// hieronder werkt
+			header("Content-type: plain/txt;");
+			header("Content-disposition: attachment; filename=aud_". $dates['ThisYear'].".xaf; size=" . strlen($output));
+			header('Pragma: cache');
+			header('Cache-Control: public, must-revalidate, max-age=0');
+			header('Connection: close');
+			header('Expires: ' . date('r', time()+3600));
+			header('Last-Modified: ' . date('r'));
+			print $output;
+			exit();*/
+		}catch(Exception $e){
+			$messageStack->add($e->getMessage());
+		}
 	default:
 }
 

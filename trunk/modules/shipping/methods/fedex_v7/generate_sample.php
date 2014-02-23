@@ -23,13 +23,10 @@
 load_method_language(DIR_FS_WORKING . 'methods/', 'fedex_v7');
 require(DIR_FS_WORKING . 'defaults.php');
 require(DIR_FS_WORKING . 'functions/shipping.php');
-require(DIR_FS_WORKING . 'classes/shipping.php');
-require(DIR_FS_MODULES . 'phreedom/classes/backup.php');
-require(DIR_FS_WORKING . 'methods/fedex_v7/fedex_v7.php');
 require(DIR_FS_WORKING . 'methods/fedex_v7/sample_data.php');
 /**************   page specific initialization  *************************/
 $error               = false;
-$backup              = new backup();
+$backup              = new \phreedom\classes\backup();
 $backup->source_dir  = DIR_FS_MY_FILES . $_SESSION['company'] . '/temp/fedex_qual/';
 $backup->dest_dir    = DIR_FS_MY_FILES . 'backups/';
 $backup->dest_file   = 'fedex_qual.zip';
@@ -37,7 +34,7 @@ $backup->dest_file   = 'fedex_qual.zip';
 // retrieve the sample ship to addresses and query FEDEX_V7
 $count = 1;
 foreach ($shipto as $pkg) {
-  $sInfo = new shipment();	// load defaults
+  $sInfo = new \shipping\classes\shipment();	// load defaults
   while (list($key, $value) = each($pkg)) $sInfo->$key = db_prepare_input($value);
   $sInfo->ship_date = date('Y-m-d', strtotime($sInfo->ship_date));
   // load package information
@@ -52,7 +49,7 @@ foreach ($shipto as $pkg) {
 	);
   }
   if (count($sInfo->package) > 0) {
-	$shipment = new fedex_v7();
+	$shipment = new \shipping\methods\fedex_v7\fedex_v7();
 	if (!$result = $shipment->retrieveLabel($sInfo)) $error = true;
   }
   // fetch label

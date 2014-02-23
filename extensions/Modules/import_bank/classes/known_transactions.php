@@ -16,26 +16,22 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/import_bank/classes/known_transactions.php
 //
-
+namespace import_bank\classes;
 class known_transactions {
 	public $code                    = 'known_transactions';
     public $db_table     			= TABLE_IMPORT_BANK;
     public $help_path   			= '';
-    public $error       			= false;
     
     public function __construct(){
-         $this->security_id           = $_SESSION['admin_security'][SECURITY_ID_CONFIGURATION];
+         $this->security_id           = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
          foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
          $this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
     }
 
   function btn_save($id = '') {
-  	global $db, $messageStack, $currencies;
-	validate_security($this->security_id, 2);
-	if ($this->gl_acct_id == ''){
-		$messageStack->add(GL_SELECT_STD_CHART,'error');
-		return false;
-	}
+  	global $db, $currencies;
+	\core\classes\user::validate_security($this->security_id, 2);
+	if ($this->gl_acct_id == '') throw new \Exception(GL_SELECT_STD_CHART);
 	$sql_data_array = array(
 		'description' 		    => $this->description,
 		'gl_acct_id'  		    => $this->gl_acct_id,
@@ -53,8 +49,8 @@ class known_transactions {
   }
 
   function btn_delete($id = 0) {
-  	global $db, $messageStack;
-	validate_security($this->security_id, 4);
+  	global $db;
+	\core\classes\user::validate_security($this->security_id, 4);
 	// OK to delete
 	$result = $db->Execute("select description from " . $this->db_table . " where kt_id = '" . $id . "'");
 	$db->Execute("delete from " . $this->db_table . " where kt_id = '" . $id . "'");
@@ -63,7 +59,7 @@ class known_transactions {
   }
 
   function build_main_html() {
-  	global $db, $messageStack ,$currencies;
+  	global $db, $currencies;
     $content = array();
 	$content['thead'] = array(
 	  'value' => array(TEXT_DESCRIPTION, TEXT_GL_ACCOUNT,  TEXT_BANK_ACCOUNT,TEXT_ACTION),
@@ -93,7 +89,7 @@ class known_transactions {
 
   function build_form_html($action, $id = '') {
     global $db;
-    if ($action <> 'new' && $this->error == false) {
+    if ($action <> 'new') {
         $sql = "select * from " . $this->db_table . " where kt_id = " . $id;
         $result = $db->Execute($sql);
         foreach ($result->fields as $key => $value) $this->$key = $value;

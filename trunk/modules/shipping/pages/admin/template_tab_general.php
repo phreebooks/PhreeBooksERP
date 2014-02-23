@@ -18,7 +18,7 @@
 //  Path: /modules/shipping/pages/admin/template_tab_general.php
 //
 ?>
-<div id="tab_general">
+<div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
  <thead class="ui-widget-header">
 	  <tr><th colspan="4"><?php echo TEXT_SHIPPING_PREFS; ?></th></tr>

@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/inventory/pages/popup_price_mgr/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_PRICE_SHEET_MANAGER);
+$security_level = \core\classes\user::validate(SECURITY_ID_PRICE_SHEET_MANAGER);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_MODULES . 'inventory/functions/inventory.php');
 require_once(DIR_FS_MODULES . 'inventory/defaults.php');
@@ -33,7 +33,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save':
-	validate_security($security_level, 2);
+	\core\classes\user::validate_security($security_level, 2);
   	$tab_id = 1;
 	while (true) {
 	  if (!isset($_POST['id_' . $tab_id])) break;

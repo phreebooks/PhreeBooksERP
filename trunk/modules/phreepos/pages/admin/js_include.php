@@ -25,7 +25,6 @@
 
 function init() {
 	$(function() { // initialize tables
-		$('#admintabs').tabs();
 	    $('#tills_table').dataTable( dataTables_i18n );
 	  });
 }

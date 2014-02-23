@@ -18,19 +18,19 @@
 //
 // Revision history
 // 2011-07-01 - Added version number for revision control
-define('MODULE_PAYMENT_FIRSTDATA_VERSION','3.3');
-require_once(DIR_FS_MODULES . 'payment/classes/payment.php');
+namespace payment\methods\firstdata;
 /*
  * FirstData Global Gateway Module
  * You must have SSL active on your server to be compliant with merchant TOS
  */
-class firstdata extends payment {
-  public $code              = 'firstdata'; // needs to match class name
-  public $title             = MODULE_PAYMENT_FIRSTDATA_TEXT_TITLE;
-  public $description       = MODULE_PAYMENT_FIRSTDATA_TEXT_DESCRIPTION;
+class firstdata extends \payment\classes\payment {
+  public $id				= 'firstdata'; // needs to match class name
+  public $text				= MODULE_PAYMENT_FIRSTDATA_TEXT_TITLE;
+  public $description		= MODULE_PAYMENT_FIRSTDATA_TEXT_DESCRIPTION;
   public $enabled;
-  public $enable_encryption = 1; // set to field position of credit card to create hint, false to turn off encryption
-  public $sort_order        = 10;
+  public $enable_encryption	= 1; // set to field position of credit card to create hint, false to turn off encryption
+  public $sort_order		= 10;
+  public $version			= '3.3';
    
   public function __construct(){
   	global $order;
@@ -38,12 +38,12 @@ class firstdata extends payment {
     if ((int)MODULE_PAYMENT_FIRSTDATA_ORDER_STATUS_ID > 0) $this->order_status = MODULE_PAYMENT_FIRSTDATA_ORDER_STATUS_ID;
 	// save the information
 	// Card numbers are not saved, instead keep the first and last four digits and fill middle with *'s
-    $this->key[] = array('key' => 'MODULE_PAYMENT_FIRSTDATA_CONFIG_FILE',       'default' => ''			, 'text' => MODULE_PAYMENT_FIRSTDATA_CONFIG_FILE_DESC);
-    $this->key[] = array('key' => 'MODULE_PAYMENT_FIRSTDATA_KEY_FILE',          'default' => ''			, 'text' => MODULE_PAYMENT_FIRSTDATA_KEY_FILE_DESC);
-    $this->key[] = array('key' => 'MODULE_PAYMENT_FIRSTDATA_HOST',              'default' => ''			, 'text' => MODULE_PAYMENT_FIRSTDATA_HOST_DESC);
-    $this->key[] = array('key' => 'MODULE_PAYMENT_FIRSTDATA_PORT',              'default' => ''			, 'text' => MODULE_PAYMENT_FIRSTDATA_PORT_DESC);
-    $this->key[] = array('key' => 'MODULE_PAYMENT_FIRSTDATA_TESTMODE',          'default' => 'Test'		, 'text' => MODULE_PAYMENT_FIRSTDATA_TESTMODE_DESC);
-    $this->key[] = array('key' => 'MODULE_PAYMENT_FIRSTDATA_AUTHORIZATION_TYPE','default' => 'Authorize', 'text' => MODULE_PAYMENT_FIRSTDATA_AUTHORIZATION_TYPE_DESC);
+    $this->keys[] = array('key' => 'MODULE_PAYMENT_FIRSTDATA_CONFIG_FILE',       'default' => ''			, 'text' => MODULE_PAYMENT_FIRSTDATA_CONFIG_FILE_DESC);
+    $this->keys[] = array('key' => 'MODULE_PAYMENT_FIRSTDATA_KEY_FILE',          'default' => ''			, 'text' => MODULE_PAYMENT_FIRSTDATA_KEY_FILE_DESC);
+    $this->keys[] = array('key' => 'MODULE_PAYMENT_FIRSTDATA_HOST',              'default' => ''			, 'text' => MODULE_PAYMENT_FIRSTDATA_HOST_DESC);
+    $this->keys[] = array('key' => 'MODULE_PAYMENT_FIRSTDATA_PORT',              'default' => ''			, 'text' => MODULE_PAYMENT_FIRSTDATA_PORT_DESC);
+    $this->keys[] = array('key' => 'MODULE_PAYMENT_FIRSTDATA_TESTMODE',          'default' => 'Test'		, 'text' => MODULE_PAYMENT_FIRSTDATA_TESTMODE_DESC);
+    $this->keys[] = array('key' => 'MODULE_PAYMENT_FIRSTDATA_AUTHORIZATION_TYPE','default' => 'Authorize', 'text' => MODULE_PAYMENT_FIRSTDATA_AUTHORIZATION_TYPE_DESC);
 	  
 	$this->avs_codes = array(
 		'A' => 'Address matches - Postal Code does not match.',
@@ -97,7 +97,7 @@ class firstdata extends payment {
 
   function javascript_validation() {
     $js = 
-	'  if (payment_method == "' . $this->code . '") {' . "\n" .
+	'  if (payment_method == "' . $this->id . '") {' . "\n" .
     '    var cc_owner  = document.getElementById("firstdata_field_0").value;' . "\n" .
     '    var cc_number = document.getElementById("firstdata_field_1").value;' . "\n" .
     '    var cc_cvv    = document.getElementById("firstdata_field_4").value;' . "\n" . 
@@ -133,8 +133,8 @@ class firstdata extends payment {
       $expires_year[] = array('id' => strftime('%Y',mktime(0,0,0,1,1,$i)), 'text' => strftime('%Y',mktime(0,0,0,1,1,$i)));
     }
     $selection = array (
-	  'id'     => $this->code,
-	  'page'   => $this->title,
+	  'id'     => $this->id,
+	  'page'   => $this->text,
 	  'fields' => array (
 	    array(  'title' => MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_OWNER,
 			    'field' => html_input_field('firstdata_field_0', $this->field_0)),
@@ -143,48 +143,39 @@ class firstdata extends payment {
 	    array(	'title' => MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_EXPIRES,
 			    'field' => html_pull_down_menu('firstdata_field_2', $expires_month, $this->field_2) . '&nbsp;' . html_pull_down_menu('firstdata_field_3', $expires_year, $this->field_3)),
 		array ( 'title' => MODULE_PAYMENT_CC_TEXT_CVV,
-				'field' => html_input_field('firstdata_field_4', $this->field_4, 'size="4" maxlength="4"' . ' id="' . $this->code . '-cc-cvv"' ) . ' ' . '<a href="javascript:popupWindow(\'' . html_href_link(FILENAME_POPUP_CVV_HELP) . '\')">' . TEXT_MORE_INFO . '</a>',)
+				'field' => html_input_field('firstdata_field_4', $this->field_4, 'size="4" maxlength="4"' . ' id="' . $this->id . '-cc-cvv"' ) . ' ' . '<a href="javascript:popupWindow(\'' . html_href_link(FILENAME_POPUP_CVV_HELP) . '\')">' . TEXT_MORE_INFO . '</a>',)
 	  ));
     return $selection;
   }
-  /**
-   * Evaluates the Credit Card Type for acceptance and the validity of the Credit Card Number & Expiration Date
-   *
-   */
-  function pre_confirmation_check() {
-    global $messageStack;
-
-	// if the card number has the blanked out middle number fields, it has been processed, show message that 
-	// the charges were not processed through the merchant gateway and continue posting payment.
-	if (strpos($this->field_1, '*') !== false) {
-    	$messageStack->add(MODULE_PAYMENT_CC_NO_DUPS, 'caution');
+  
+  	/**
+   	 * Evaluates the Credit Card Type for acceptance and the validity of the Credit Card Number & Expiration Date
+   	 *
+   	 */
+  
+  	function pre_confirmation_check() {
+  		global $messageStack;
+	    // if the card number has the blanked out middle number fields, it has been processed, show message that 
+		// the charges were not processed through the merchant gateway and continue posting payment.
+		if (strpos($this->field_1, '*') !== false) {
+	    	$messageStack->add(MODULE_PAYMENT_CC_NO_DUPS, 'caution');
+			return false;
+		}
+	
+	    $result = $this->validate();
+	    switch ($result) {
+	      	case -1:
+	        	throw new \Exception(sprintf(TEXT_CCVAL_ERROR_UNKNOWN_CARD, substr($this->cc_card_number, 0, 4)));
+	        case -2:
+	      	case -3:
+	      	case -4:
+	        	throw new \Exception(TEXT_CCVAL_ERROR_INVALID_DATE);
+	        case false:
+	        	throw new \Exception(TEXT_CCVAL_ERROR_INVALID_NUMBER);
+	    }
+	    $this->cc_cvv2         = $this->field_4;
 		return false;
 	}
-
-    $result = $this->validate();
-    $error = '';
-    switch ($result) {
-      case -1:
-        $error = sprintf(TEXT_CCVAL_ERROR_UNKNOWN_CARD, substr($this->cc_card_number, 0, 4));
-        break;
-      case -2:
-      case -3:
-      case -4:
-        $error = TEXT_CCVAL_ERROR_INVALID_DATE;
-        break;
-      case false:
-        $error = TEXT_CCVAL_ERROR_INVALID_NUMBER;
-        break;
-    }
-
-    if (($result == false) || ($result < 1)) {
-      $messageStack->add($error . '<!-- ['.$this->code.'] -->', 'error');
-      return true;
-    }
-
-    $this->cc_cvv2         = $this->field_4;
-	return false;
-  }
   /**
    * Store the CC info to the order and process any results that come back from the payment gateway
    *
@@ -325,10 +316,7 @@ class firstdata extends payment {
 	$curlerrornum = curl_errno($ch);
 	$curlerror    = curl_error($ch);
 	curl_close ($ch);
-	if ($curlerrornum) { 
-		$messageStack->add('XML Read Error (cURL) #' . $curlerrornum . '. Description = ' . $curlerror,'error');
-		return true;
-	}
+	if ($curlerrornum) throw new \Exception('XML Read Error (cURL) #' . $curlerrornum . '. Description = ' . $curlerror);
 //$messageStack->add('response xml = ' . htmlspecialchars($authorize),'caution');
 
 	// since the response is only one level deep, we can do a simple parse
@@ -351,15 +339,13 @@ class firstdata extends payment {
 
     // If the response code is not 0 (approved) then redirect back to the payment page with the appropriate error message
     if ($results['r_error']) {
-      $messageStack->add('Decline Code #' . $results['r_error'] . ': ' . $results['r_message'] . ' - ' . MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE, 'error');
-	  return true;
+      	throw new \Exception('Decline Code #' . $results['r_error'] . ': ' . $results['r_message'] . ' - ' . MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE);
     } else {
 		$messageStack->add($results['r_message'] . ' - Approval code: ' . $this->auth_code . ' --> CVV2 results: ' . $this->cvv_codes[$results['r_authresponse']], 'success');
 		$messageStack->add('Address verification results: ' . $this->avs_codes[$results['r_avs']], 'success');
 		return false;
 	}
-	$messageStack->add($results['r_message'] . ' - ' . MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE, 'error');
-	return true;
+	throw new \Exception($results['r_message'] . ' - ' . MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE);
   }
 }
 ?>

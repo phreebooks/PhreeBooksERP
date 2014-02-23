@@ -16,16 +16,9 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreepos/pages/pos_mgr/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_POS_MGR);
+$security_level = \core\classes\user::validate(SECURITY_ID_POS_MGR);
 define('JOURNAL_ID','19');
 /**************  include page specific files    *********************/
-require_once(DIR_FS_MODULES . 'phreebooks/classes/gen_ledger.php');
-if (file_exists(DIR_FS_MODULES . 'phreepos/custom/classes/journal/journal_'.JOURNAL_ID.'.php')) { 
-	require_once(DIR_FS_MODULES . 'phreepos/custom/classes/journal/journal_'.JOURNAL_ID.'.php') ; 
-}else{
-    require_once(DIR_FS_MODULES . 'phreepos/classes/journal/journal_'.JOURNAL_ID.'.php'); // is needed here for the defining of the class and retriving the security_token
-}
-$class = 'journal_'.JOURNAL_ID;
 /**************   page specific initialization  *************************/
 define('POPUP_FORM_TYPE','pos:rcpt');
 $error      = false;
@@ -42,7 +35,7 @@ switch ($_REQUEST['action']) {
   case 'delete':
     $id = db_prepare_input($_POST['rowSeq']);
 	if ($id) {
-	  $delOrd = new $class($id);
+	  $delOrd = new \phreepos\classes\journal\journal_19($id);
 	  if ($_SESSION['admin_prefs']['restrict_period'] && $delOrd->period <> CURRENT_ACCOUNTING_PERIOD) {
 	    $error = $messageStack->add(ORD_ERROR_DEL_NOT_CUR_PERIOD, 'error');
 	    break;
@@ -58,18 +51,18 @@ switch ($_REQUEST['action']) {
 		  $db->transRollback();
 		  break;
 	    } else { // delete the payments
-		  $payment_modules = load_all_methods('payment');
 		  foreach ($delOrd->journal_rows as $value) {
 		    if ($value['gl_type'] <> 'ttl') continue;
 		    $pmt_fields  = explode(':', $value['description']);
-			$pmt_method  = $pmt_fields[1]; // payment method
+		    $name = "\payment\methods\\$pmt_fields[1]\\$pmt_fields[1]";
+			$pmt_method  = new $name; // payment method
 			$pmt_field_0 = $pmt_fields[2]; // cardholder name/reference
 			$pmt_field_1 = $pmt_fields[3]; // card number
 			$pmt_field_2 = $pmt_fields[4]; // exp month
 			$pmt_field_3 = $pmt_fields[5]; // exp year
 			$pmt_field_4 = $pmt_fields[6]; // cvv2
-			if (method_exists($$pmt_method, 'refund')) {
-		      $result = $$pmt_method->refund($value['debit_amount'], $reference, $pmt_field_0, $pmt_field_1);
+			if (method_exists($pmt_method, 'refund')) {
+		      $result = $pmt_method->refund($value['debit_amount'], $reference, $pmt_field_0, $pmt_field_1);
 		    } else {
 			  $messageStack->add(sprintf('The payment method (%s) was not refunded with the processor. The refund in the amount of %s needs to be credited with the processor manually.', $pmt_method, $currencies->format_full($value['debit_amount'])), 'caution');
 			}
@@ -147,11 +140,11 @@ $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " from
 		where journal_id in (19,21) $period_filter $search order by $disp_order, purchase_invoice_id DESC";
 $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 // the splitPageResults should be run directly after the query that contains SQL_CALC_FOUND_ROWS
-$query_split  = new splitPageResults($_REQUEST['list'], '');
+$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results
 	$_REQUEST['list'] = $query_split->current_page_number;
 	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-	$query_split  = new splitPageResults($_REQUEST['list'], '');
+	$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 }
 history_save('pos_mgr');
 

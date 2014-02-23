@@ -19,6 +19,7 @@
 // display alerts/error messages, if any since the toolbar is not shown
 echo $messageStack->output();
 $column = 1;
+$row_started = true;
 ?>
 <div><a href="<?php echo html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=ctl_panel&amp;mID=' . $menu_id, 'SSL'); ?>"><?php echo CP_CHANGE_PROFILE; ?></a></div>
 <table style="width:100%;margin-left:auto;margin-right:auto;">
@@ -28,40 +29,37 @@ $column = 1;
     <td width="33%" valign="top">
       <div id="col_<?php echo $column; ?>" style="position:relative;">
 <?php
-while(!$cp_boxes->EOF) {
-  if ($cp_boxes->fields['column_id'] <> $column) {
-	while ($cp_boxes->fields['column_id'] <> $column) {
-	  $column++;
-	  echo '      </div>' . chr(10);
-	  echo '    </td>' . chr(10);
-	  echo '    <td width="33%" valign="top">' . chr(10);
-	  echo '      <div id="col_' . $column . '" style="position:relative;">' . chr(10);
-	}
-  }
-  $dashboard 	= $cp_boxes->fields['dashboard_id'];
-  $module_id    = $cp_boxes->fields['module_id'];
-  $column_id    = $cp_boxes->fields['column_id'];
-  $row_id       = $cp_boxes->fields['row_id'];
-  $params       = unserialize($cp_boxes->fields['params']);
-  if (file_exists(DIR_FS_MODULES . "$module_id/dashboards/$dashboard/$dashboard.php")) {
-    load_method_language(DIR_FS_MODULES . "$module_id/dashboards/$dashboard");
-    require_once        (DIR_FS_MODULES . "$module_id/dashboards/$dashboard/$dashboard.php");
-    $new_box               = new $dashboard;
-    $new_box->menu_id      = $menu_id;
-    $new_box->module_id    = $module_id;
-    $new_box->column_id    = $cp_boxes->fields['column_id'];
-    $new_box->row_id       = $cp_boxes->fields['row_id'];
-    echo $new_box->Output($params);
-  }
-  $cp_boxes->MoveNext();
+while(!$cp_boxes->EOF) {//@todo use dashboards
+	if ($cp_boxes->fields['column_id'] <> $column) {
+  		$row_started = true;
+		while ($cp_boxes->fields['column_id'] <> $column) {
+	  		$column++;
+	  		echo '      </div>' . chr(10);
+	  		echo '    </td>' . chr(10);
+	  		echo '    <td width="33%" valign="top">' . chr(10);
+	  		echo '      <div id="col_' . $column . '" style="position:relative;">' . chr(10);
+		}
+  	}
+  	$dashboard 	  = $cp_boxes->fields['dashboard_id'];
+  	$module_id    = $cp_boxes->fields['module_id'];
+  	load_method_language(DIR_FS_MODULES . "$module_id/dashboards/$dashboard");
+    if($admin_classes[$module_id]->dashboards[$dashboard]->valid_user){
+    		$admin_classes[$module_id]->dashboards[$dashboard]->menu_id      = $menu_id;
+    		$admin_classes[$module_id]->dashboards[$dashboard]->column_id    = $cp_boxes->fields['column_id'];
+    		$admin_classes[$module_id]->dashboards[$dashboard]->row_started  = $row_started; 
+    		$admin_classes[$module_id]->dashboards[$dashboard]->row_id       = $cp_boxes->fields['row_id'];
+    		echo $admin_classes[$module_id]->dashboards[$dashboard]->Output(unserialize($cp_boxes->fields['params']));
+    }
+  	$cp_boxes->MoveNext();
+  	$row_started = false;
 }
 
 while (MAX_CP_COLUMNS <> $column) { // fill remaining columns with blank space
-  $column++;
-  echo '      </div>' . chr(10);
-  echo '    </td>' . chr(10);
-  echo '    <td width="33%" valign="top">' . chr(10);
-  echo '      <div id="col_' . $column . '" style="position:relative;">' . chr(10);
+  	$column++;
+  	echo '      </div>' . chr(10);
+  	echo '    </td>' . chr(10);
+  	echo '    <td width="33%" valign="top">' . chr(10);
+  	echo '      <div id="col_' . $column . '" style="position:relative;">' . chr(10);
 }
 ?>
       </div>

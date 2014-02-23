@@ -18,16 +18,16 @@
 //
 // Revision history
 // 2011-07-01 - Added version number for revision control
-
-class po_status extends ctl_panel {
-	public $dashboard_id 		= 'po_status';
+namespace phreebooks\dashboards\po_status;
+class po_status extends \core\classes\ctl_panel {
+	public $id			 		= 'po_status';
 	public $description	 		= CP_PO_STATUS_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_PURCHASE_ORDER;
-	public $title		 		= CP_PO_STATUS_TITLE;
-	public $version      		= 3.5;
+	public $text		 		= CP_PO_STATUS_TITLE;
+	public $version      		= '3.5';
 	public $size_params			= 3;
 	public $default_params 		= array('num_rows'=> 0, 'order' => 'asc', 'limit' => 1);
-	
+	public $module_id 			= 'phreebooks';
 
 	function Output($params) {
 		global $db, $currencies;

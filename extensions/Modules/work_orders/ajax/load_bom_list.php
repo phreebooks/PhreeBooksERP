@@ -17,7 +17,7 @@
 //  Path: /modules/work_orders/ajax/load_bom_list.php
 //
 /**************   Check user security   *****************************/
-$security_level = validate_ajax_user();
+$security_level = \core\classes\user::validate();
 /**************  include page specific files    *********************/
 /**************   page specific initialization  *************************/
 $xml    = NULL;

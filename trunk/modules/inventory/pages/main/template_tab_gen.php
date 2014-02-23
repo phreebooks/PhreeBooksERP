@@ -17,9 +17,9 @@
 //  Path: /modules/inventory/pages/main/template_tab_gen.php
 //
 ?>
-<div id="tab_general">
+<div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
 
-  <div id="inv_image" title="<?php echo $cInfo->sku; ?>">
+  <div class="easyui-window" id="inv_image" title="<?php echo $cInfo->sku; ?>" data-options="modal:true,closed:true" >
     <?php if (isset($cInfo->image_with_path)) {
     	echo html_image(DIR_WS_MY_FILES . $_SESSION['company'] . '/inventory/images/' . $cInfo->image_with_path, '', 600) . chr(10);
     } else {
@@ -120,7 +120,7 @@
 	</tbody>
 	</table>
 	<?php } 
-	if ($_SESSION['admin_security'][SECURITY_ID_PURCHASE_INVENTORY] > 0 && in_array('purchase',$cInfo->posible_transactions)) { ?>
+	if (\core\classes\user::security_level(SECURITY_ID_PURCHASE_INVENTORY) > 0 && in_array('purchase',$cInfo->posible_transactions)) { ?>
 	<table class="ui-widget" style="border-collapse:collapse;width:100%;">
 	 	<thead class="ui-widget-header">
 	   		<tr><th colspan="7"><?php echo TEXT_VENDOR_DETAILS; ?></th></tr>

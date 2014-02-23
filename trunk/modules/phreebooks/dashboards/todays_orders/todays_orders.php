@@ -18,15 +18,16 @@
 //
 // Revision history
 // 2011-07-01 - Added version number for revision control
-
-class todays_orders extends ctl_panel {
-	public $dashboard_id 		= 'todays_orders';
+namespace phreebooks\dashboards\todays_orders;
+class todays_orders extends \core\classes\ctl_panel {
+	public $id			 		= 'todays_orders';
 	public $description	 		= CP_TODAYS_ORDERS_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_SALES_ORDER;
-	public $title		 		= CP_TODAYS_ORDERS_TITLE;
-	public $version      		= 3.5;
+	public $text		 		= CP_TODAYS_ORDERS_TITLE;
+	public $version      		= '3.5';
 	public $size_params			= 1;
 	public $default_params 		= array('num_rows'=> 0);
+	public $module_id 			= 'phreebooks';
 
 	function Output($params) {
 		global $db, $currencies;
@@ -60,7 +61,7 @@ class todays_orders extends ctl_panel {
 				$contents .= '<div>';
 				$contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;oID=' . $result->fields['id'] . '&amp;jID=10&amp;action=edit', 'SSL') . '">';
 				$contents .= $result->fields['purchase_invoice_id'] . ' - ';
-				$contents .= htmlspecialchars($result->fields['bill_primary_name']);
+				$contents .= htmlspecialchars(gen_trim_string($result->fields['bill_primary_name'], 20, true));
 				$contents .= '</a></div>' . chr(10);
 				$result->MoveNext();
 		  	}

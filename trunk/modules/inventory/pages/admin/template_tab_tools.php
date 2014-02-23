@@ -18,7 +18,7 @@
 //  Path: /modules/accounts/pages/admin/template_tab_tools.php
 //
 ?>
-<div id="tab_tools">
+<div title="<?php echo TEXT_TOOLS;?>" id="tab_tools">
 <fieldset>
 <legend><?php echo INV_TOOLS_VALIDATE_INVENTORY; ?></legend>
 <p><?php echo INV_TOOLS_VALIDATE_INV_DESC; ?></p>

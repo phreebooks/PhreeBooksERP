@@ -30,8 +30,10 @@ class parser {
 	if ($result->RecordCount() == 0) {
 	  return $this->responseXML('11', SOAP_USER_NOT_FOUND, 'error');
 	}
-	if (!pw_validate_password($password, $result->fields['admin_pass'])) {
-	  return $this->responseXML('12', SOAP_PASSWORD_NOT_FOUND, 'error');
+	try{
+		\core\classes\encryption::validate_password($password, $result->fields['admin_pass']);
+	}catch(Exception $e){
+		return $this->responseXML('12', $e->getMessage(), 'error');
 	}
 	return true; // if both the username and password are correct
   }
@@ -59,6 +61,8 @@ class parser {
 	if ($extra_xml) $strResponse .= $extra_xml;
 	$strResponse .= '</Response>';
 	echo $strResponse;
+	ob_end_flush();
+	session_write_close();
 	die;
   }
 

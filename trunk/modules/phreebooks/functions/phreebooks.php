@@ -452,29 +452,30 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
     return ($crit) ? ('(' . implode(' or ', $crit) . ')') : '';
   }
 
-  function repost_journals($journals, $start_date, $end_date) {
-	global $db, $messageStack;
-	if (sizeof($journals) > 0) {
-	  $sql = "SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE journal_id IN (".implode(',', $journals).") 
-		AND post_date>= '$start_date' AND post_date<'".gen_specific_date($end_date, 1)."' ORDER BY post_date, id";
-	  $result = $db->Execute($sql);
-	  $cnt = 0;
-	  $db->transStart();
-	  while (!$result->EOF) {
-	    $gl_entry = new journal($result->fields['id']);
-	    $gl_entry->remove_cogs_rows(); // they will be regenerated during the re-post
-	    if (!$gl_entry->Post('edit', true)) {
-		  $db->transRollback();
-		  $messageStack->add('<br /><br />Failed Re-posting the journals, try a smaller range. The record that failed was # '.$gl_entry->id,'error');
-		  return false;
-	    }
-		$cnt++;
-	    $result->MoveNext();
-	  }
-      $db->transCommit();
-	  return $cnt;
-	}
-  }
+  	function repost_journals($journals, $start_date, $end_date) {
+		global $db;
+		try{
+			if (sizeof($journals) == 0) throw new Exception('no journals received to repost');
+			$sql = "SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE journal_id IN (".implode(',', $journals).") 
+			  AND post_date>= '$start_date' AND post_date<'".gen_specific_date($end_date, 1)."' ORDER BY post_date, id";
+			$result = $db->Execute($sql);
+			$cnt = 0;
+			$db->transStart();
+			while (!$result->EOF) {
+			    $gl_entry = new \core\classes\journal($result->fields['id']);
+			    $gl_entry->remove_cogs_rows(); // they will be regenerated during the re-post
+			    if (!$gl_entry->Post('edit', true)) throw new \Exception('Failed Re-posting the journals, try a smaller range. The record that failed was # '.$gl_entry->id);
+				$cnt++;
+			    $result->MoveNext();
+			}
+		    $db->transCommit();
+			return $cnt;
+
+	  	}catch(Exception $e){
+  		  $db->transRollback();
+  		  return FALSE;
+  		}
+  	}
 
   function calculate_aging($id, $type = 'c', $special_terms = '0') {
   	global $db;

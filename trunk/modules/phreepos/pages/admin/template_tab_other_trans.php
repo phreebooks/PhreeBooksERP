@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreepos/pages/admin/template_other_trans.php
 //
-$trans_toolbar = new toolbar();
+$trans_toolbar = new \core\classes\toolbar();
 $trans_toolbar->icon_list['cancel']['show'] = false;
 $trans_toolbar->icon_list['open']['show']   = false;
 $trans_toolbar->icon_list['delete']['show'] = false;
@@ -24,7 +24,7 @@ $trans_toolbar->icon_list['save']['show']   = false;
 $trans_toolbar->icon_list['print']['show']  = false;
 if ($security_level > 1) $trans_toolbar->add_icon('new', 'onclick="loadPopUp(\'other_transactions_new\', 0)"', $order = 10);
 ?>
-<div id="tab_other_trans">
+<div title="<?php echo TEXT_OTHER_TRANS;?>" id="tab_other_trans">
   <?php echo $trans_toolbar->build_toolbar(); ?>
   <h1><?php echo $trans->title; ?></h1>
   <div id="other_trans_content"><?php echo $trans->build_main_html(); ?></div>

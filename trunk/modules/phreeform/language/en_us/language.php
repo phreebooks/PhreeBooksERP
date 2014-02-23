@@ -190,8 +190,6 @@ define('PHREEFORM_NO_ACCESS','No valid users/groups have been selected to view t
 define('PF_ADMIN_CONFIG_INFO','PhreeForm Default Parameters');
 // Javascript defines
 define('PHREEFORM_JS_RPT_DELETED','The report was successfully deleted.');
-define('PHREEFORM_JS_RPT_COPY','Please enter a new report name to copy this report to:');
-define('PHREEFORM_JS_RPT_RENAME','Please enter a new report name to rename this report to:');
 define('PHREEFORM_JS_RPT_BLANK','No report name was entered. Please try again.');
 define('PHREEFORM_JS_TABLE_CHECK_ERROR','At a minimum, two tables and the asscoiated relationship must be entered to validate the database relationship!');
 // AJAX errors

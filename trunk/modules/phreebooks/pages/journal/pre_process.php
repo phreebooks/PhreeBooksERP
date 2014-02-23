@@ -16,17 +16,16 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/pages/journal/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_JOURNAL_ENTRY);
+$security_level = \core\classes\user::validate(SECURITY_ID_JOURNAL_ENTRY);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
-require_once(DIR_FS_WORKING . 'classes/gen_ledger.php');
 /**************   page specific initialization  *************************/
 define('JOURNAL_ID',2);	// General Journal
 $error     = false;
 $post_date = ($_POST['post_date']) ? gen_db_date($_POST['post_date']) : date('Y-m-d', time());
 $period    = gen_calculate_period($post_date);
-$glEntry   = new journal();
+$glEntry   = new \core\classes\journal();
 $glEntry->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing gl entry
 // All general journal entries are in the default currency.
 $glEntry->currencies_code  = DEFAULT_CURRENCY;
@@ -38,7 +37,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 switch ($_REQUEST['action']) {
   case 'save':
   case 'copy':
-	validate_security($security_level, 2);
+	\core\classes\user::validate_security($security_level, 2);
     // for copy operation, erase the id to force post a new journal entry with same values
 	if ($_REQUEST['action'] == 'copy') $glEntry->id = '';
 	$glEntry->journal_id          = JOURNAL_ID;
@@ -197,17 +196,17 @@ switch ($_REQUEST['action']) {
 	$db->transRollback();
 	$messageStack->add(GL_ERROR_NO_POST, 'error');
     if (DEBUG) $messageStack->write_debug();
-	$cInfo = new objectInfo($_POST); // if we are here, there was an error, reload page
+	$cInfo = new \core\classes\objectInfo($_POST); // if we are here, there was an error, reload page
 	$cInfo->post_date = gen_db_date($_POST['post_date']);
 	break;
 
   case 'delete':
-	validate_security($security_level, 4);
+	\core\classes\user::validate_security($security_level, 4);
   	// check for errors and prepare extra values
 	if (!$glEntry->id) {
 		$error = true;
 	} else {
-		$delGL = new journal();
+		$delGL = new \core\classes\journal();
 		$delGL->journal($glEntry->id); // load the posted record based on the id submitted
 		$recur_id        = db_prepare_input($_POST['recur_id']);
 		$recur_frequency = db_prepare_input($_POST['recur_frequency']);
@@ -239,21 +238,20 @@ switch ($_REQUEST['action']) {
 	$db->transRollback();
 	$messageStack->add(GL_ERROR_NO_DELETE, 'error');
     if (DEBUG) $messageStack->write_debug();
-	$cInfo = new objectInfo($_POST); // if we are here, there was an error, reload page
+	$cInfo = new \core\classes\objectInfo($_POST); // if we are here, there was an error, reload page
 	$cInfo->post_date = gen_db_date($_POST['post_date']);
 	break;
 
   case 'edit':
     $oID = (int)$_GET['oID'];
-	validate_security($security_level, 2);
-   	$cInfo = new objectInfo(array());
+	\core\classes\user::validate_security($security_level, 2);
+   	$cInfo = new \core\classes\objectInfo(array());
 	break;
 
   case 'dn_attach':
 	$oID = db_prepare_input($_POST['id']);
 	if (file_exists(PHREEBOOKS_DIR_MY_ORDERS . 'order_' . $oID . '.zip')) {
-		require_once(DIR_FS_MODULES . 'phreedom/classes/backup.php');
-		$backup = new backup();
+		$backup = new \phreedom\classes\backup();
 		$backup->download(PHREEBOOKS_DIR_MY_ORDERS, 'order_' . $oID . '.zip', true);
 	}
 	die;

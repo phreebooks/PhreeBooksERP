@@ -17,7 +17,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/classes/chart_of_accounts.php
 //
-
+namespace phreebooks\classes;
 require_once(DIR_FS_MODULES . 'phreebooks/defaults.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 
@@ -31,38 +31,25 @@ class chart_of_accounts {
     public function __construct(){
         foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
         if(!isset($this->id))$this->id = isset($_GET['sID'])?$_GET['sID']:$_POST['rowSeq'];
-        $this->security_id   = $_SESSION['admin_security'][SECURITY_ID_CONFIGURATION];
+        $this->security_id   = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
     }
 
   function btn_save($id = '') {
-  	global $db, $messageStack, $coa_types_list;
-	if ($this->security_id < 2) {
-	    $messageStack->add(ERROR_NO_PERMISSION,'error');
-	    return false;
-	}   
+  	global $db, $coa_types_list;
+	\core\classes\user::validate_security($this->security_id, 2); // security check		
 	$this->heading_only     = $this->heading_only == 1 ? '1' : '0';
 	$this->account_inactive = $this->account_inactive == 1 ? '1' : '0';
-	if ($this->account_type == '') {
-	    $messageStack->add(ERROR_ACCT_TYPE_REQ,'error');
-	    $this->error = true;
-	    return false;
-	}
+	if ($this->account_type == '') throw new \Exception(ERROR_ACCT_TYPE_REQ);
 	if (!$this->primary_acct_id == ''){
 	    $result = $db->Execute("select account_type from " . $this->db_table . " where id = '" . $this->primary_acct_id . "'");
-        if( $result->fields['account_type'] <> $this->account_type){
-            $messageStack->add('set account_type to '. $coa_types_list[$result->fields['account_type']]['text']. ' this is the same as the parent','error');
-            $this->error = true;
-            return false;
-        }
+        if( $result->fields['account_type'] <> $this->account_type) throw new \Exception('set account_type to '. $coa_types_list[$result->fields['account_type']]['text']. ' this is the same as the parent');
 	}	
 	if ($this->heading_only == 1 && $this->rowSeq <> 0) { // see if this was a non-heading account converted to a heading account
 	   $sql = "select max(debit_amount) as debit, max(credit_amount) as credit, max(beginning_balance) as beg_bal 
 		from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '" . $this->id . "'";
 	   $result = $db->Execute($sql);
 	   if ($result->fields['debit'] <> 0 || $result->fields['credit'] <> 0 || $result->fields['beg_bal'] <> 0) {
-		  $messageStack->add(GL_ERROR_CANT_MAKE_HEADING, 'error');
-		  $this->error = true;
-		  return false;
+		  throw new \Exception(GL_ERROR_CANT_MAKE_HEADING);
 	   }
 	}
 	$sql_data_array = array(
@@ -85,18 +72,14 @@ class chart_of_accounts {
   }
 
   function btn_delete($id = 0) {
-  	global $db, $messageStack;
-	if ($this->security_id < 4) {
-	  $messageStack->add(ERROR_NO_PERMISSION,'error');
-	  return false;
-	}
+  	global $db;
+	\core\classes\user::validate_security($this->security_id, 4); // security check		
 	// Don't allow delete if there is account activity for this account
 	$sql = "select max(debit_amount) as debit, max(credit_amount) as credit, max(beginning_balance) as beg_bal 
 		from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '" . $id . "'";
 	$result = $db->Execute($sql);
 	if ($result->fields['debit'] <> 0 || $result->fields['credit'] <> 0 || $result->fields['beg_bal'] <> 0) {
-	  $messageStack->add(GL_ERROR_CANT_DELETE, 'error');
-	  return false;
+	  throw new \Exception(GL_ERROR_CANT_DELETE);
 	}
 	// OK to delete
 	$db->Execute("delete from " . $this->db_table . " where id = '" . $id . "'");
@@ -106,7 +89,7 @@ class chart_of_accounts {
   }
 
   function build_main_html() {
-  	global $db, $messageStack;
+  	global $db;
     $content = array();
 	$content['thead'] = array(
 	  'value'  => array(GL_HEADING_ACCOUNT_NAME, TEXT_ACCT_DESCRIPTION, GL_INFO_ACCOUNT_TYPE, GL_HEADING_SUBACCOUNT, TEXT_ACTION),

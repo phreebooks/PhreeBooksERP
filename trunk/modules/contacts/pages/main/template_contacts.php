@@ -17,7 +17,7 @@
 //  Path: /modules/contacts/pages/main/template_contacts.php
 //
 ?>
-<div id="tab_contacts">
+<div title="<?php echo TEXT_CONTACTS;?>" id="tab_contacts">
 <?php 
   if (is_array($cInfo->contacts)) { 
 	$heading_array  = array(); // don't sort
@@ -63,7 +63,7 @@
       <tr>
        <td>
 <?php // build a secondary toolbar for the contact form
-	$ctoolbar = new toolbar('i');
+	$ctoolbar = new \core\classes\toolbar('i');
 	$ctoolbar->icon_list['cancel']['show'] = false;
 	$ctoolbar->icon_list['open']['show']   = false;
 	$ctoolbar->icon_list['save']['show']   = false;

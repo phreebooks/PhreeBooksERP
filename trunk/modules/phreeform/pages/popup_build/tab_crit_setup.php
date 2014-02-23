@@ -21,7 +21,7 @@
 $notes       = NULL;
 $extra_stuff = NULL;
 ?>
-<div id="tab_crit">
+<div title="<?php echo TEXT_CRITERIA_SETUP;?>" id="tab_crit">
 <table class="ui-widget" style="border-style:none;width:100%">
  <tbody class="ui-widget-content">
 	<tr>

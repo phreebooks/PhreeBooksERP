@@ -19,7 +19,7 @@
 //
 /**************   Check user security   *****************************/
 $xml = NULL;
-$security_level = validate_ajax_user();
+$security_level = \core\classes\user::validate();
 /**************  include page specific files    *********************/
 gen_pull_language('contacts');
 /**************   page specific initialization  *************************/
@@ -57,5 +57,7 @@ if (defined('MODULE_SHIPPING_STATUS') && $ship_add->fields) while (!$ship_add->E
   $ship_add->MoveNext();
 }
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

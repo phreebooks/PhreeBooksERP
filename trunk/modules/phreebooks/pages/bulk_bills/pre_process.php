@@ -16,11 +16,9 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/pages/bulk_bills/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_SELECT_PAYMENT);
+$security_level = \core\classes\user::validate(SECURITY_ID_SELECT_PAYMENT);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
-require_once(DIR_FS_WORKING . 'classes/gen_ledger.php');
-require_once(DIR_FS_WORKING . 'classes/banking.php');
 /**************   page specific initialization  *************************/
 define('JOURNAL_ID',20);
 define('GL_TYPE','chk');
@@ -56,7 +54,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'print':
-	validate_security($security_level, 2);
+	\core\classes\user::validate_security($security_level, 2);
   	// read the input data, place into array
 	$payment_list = array();
 	for ($i=1; $i<count($_POST); $i++) {
@@ -74,17 +72,13 @@ switch ($_REQUEST['action']) {
 	  }
 	}
 	// error check input
-	if (!count($payment_list)) {
-		$messageStack->add(GL_ERROR_NO_ITEMS, 'error');
-		$error = true;
-		break;
-	}
+	if (!count($payment_list)) throw new \Exception(GL_ERROR_NO_ITEMS);
 	// ***************************** START TRANSACTION *******************************
 	$first_payment_ref = $purchase_invoice_id; // first check number, needed for printing
 	$db->transStart();
 	// post each payment by vendor (save journal record id)
 	foreach ($payment_list as $account => $values) {
-	  $order = new banking();
+	  $order = new \phreebooks\classes\banking();
 	  // load journal main data
 	  $order->id = '';
 	  $order->journal_id          = JOURNAL_ID;
@@ -138,9 +132,7 @@ switch ($_REQUEST['action']) {
 	  if ($post_success = $order->bulk_pay()) {	// Post the order class to the db
 		gen_add_audit_log(AUDIT_LOG_DESC, $order->purchase_invoice_id, $order->total_amount);
 	  } else { // else there was a post error, display and re-display form
-	  	$error = true;
-		$messageStack->add(GL_ERROR_NO_POST, 'error');
-		break; // exit foreach loop
+		throw new \Exception(GL_ERROR_NO_POST);
 	  }
 	  $last_payment_ref = $purchase_invoice_id;
       $purchase_invoice_id++; // next check number

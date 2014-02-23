@@ -42,12 +42,14 @@ echo $toolbar->build_toolbar();
 	<tbody class="ui-widget-content">
 <?php 
 $odd = true;
-foreach ($dashboards as $dashboard) {
-	load_method_language(DIR_FS_MODULES . $dashboard['module_id'] . '/dashboards/', $dashboard['dashboard_id']);
-	require_once        (DIR_FS_MODULES . $dashboard['module_id'] . '/dashboards/' . $dashboard['dashboard_id'] . '/' . $dashboard['dashboard_id'] . '.php');
-	$dashboard = new $dashboard['dashboard_id'];
-	echo $dashboard->pre_install($odd, $my_profile);// returns nothing if user isn't valid.
-	if ($dashboard->valid_user) $odd = !$odd; //so only update if user is valid.
+foreach ($admin_classes as $module) {
+	if ($module->installed){
+  		foreach ($module->dashboards as $dashboard){
+  			load_method_language(DIR_FS_MODULES . "{$module->id}dashboards/{$dashboard->id}");
+			echo $dashboard->pre_install($odd, $my_profile);// returns nothing if user isn't valid.
+			if ($dashboard->valid_user) $odd = !$odd; //so only update if user is valid.
+  		}
+	}
 } ?>
     </tbody>
   </table>

@@ -19,7 +19,7 @@
 //
 // Module information
 define('MODULE_PHREEFORM_TITLE','PhreeForm Module');
-define('MODULE_PHREEFORM_DESCRIPTION','The phreeform module contains all the report and form tools needed to print reports in PDF or HTML format. <b>NOTE: This is a core module and should not be removed!</b>');
+define('MODULE_PHREEFORM_DESCRIPTION','The phreeform module contains all the report and form tools needed to print reports in PDF or HTML format.');
 // title
 define('BOX_PHREEFORM_MODULE_ADM', 'PhreeForm Admin');
 // Headings and Helpers

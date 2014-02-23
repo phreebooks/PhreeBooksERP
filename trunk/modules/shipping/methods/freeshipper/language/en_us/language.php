@@ -19,14 +19,7 @@
 //
 
 define('MODULE_SHIPPING_FREESHIPPER_TEXT_TITLE', 'FREE SHIPPING!');
-define('MODULE_SHIPPING_FREESHIPPER_TITLE_SHORT', 'Free Shipping');
 define('MODULE_SHIPPING_FREESHIPPER_TEXT_DESCRIPTION', 'FREE SHIPPING');
-
-// Key descriptions
-define('MODULE_SHIPPING_FREESHIPPER_TITLE_DESC', 'Title to use for display purposes on shipping rate estimator');
-define('MODULE_SHIPPING_FREESHIPPER_COST_DESC', 'What is the Shipping cost?');
-define('MODULE_SHIPPING_FREESHIPPER_HANDLING_DESC', 'Handling fee for this shipping method.');
-define('MODULE_SHIPPING_FREESHIPPER_SORT_ORDER_DESC', 'Sort order of display. Determines the order which this method appears on all generted lists.');
 
 // Shipping Methods
 define('freeshipper_1DEam', 'Best Way');
@@ -36,7 +29,4 @@ define('freeshipper_2Dpm',  'Courier');
 define('freeshipper_3Dpm',  'Sender Paid Economy');
 define('freeshipper_GND',   'Local Delivery');
 define('freeshipper_GDR',   'Customer Pickup');
-
-define('SHIPPING_FREESHIPPER_SHIPMENTS_ON','Free Shipping Shipments on ');
-
 ?>

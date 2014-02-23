@@ -17,7 +17,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/classes/beg_balances_imp.php
 //
-
+namespace phreedom\classes;
 class beg_bal_import {
   function __construct() {
   }
@@ -31,8 +31,7 @@ class beg_bal_import {
 	  $current_order = $this->records[$row_id];
 	  // pre-process and check for errors
 	  if (!in_array($current_order['gl_acct'], $coa) || !in_array($current_order['inv_gl_acct'], $coa)) {
-		$messageStack->add(GL_BEG_BAL_ERROR_1 . ($row_id + 1), 'error');
-		return false;
+		throw new \Exception(GL_BEG_BAL_ERROR_1 . ($row_id + 1));
 	  }
 	  if (!$current_order['order_id']) {
 		switch (JOURNAL_ID) {
@@ -41,15 +40,11 @@ class beg_bal_import {
 			$this->records[$row_id]['waiting'] = 1;
 			break;
 		  default:
-			$messageStack->add(GL_BEG_BAL_ERROR_3 . ($row_id + 1), 'error');
-			return false;
+			throw new \Exception(GL_BEG_BAL_ERROR_3 . ($row_id + 1));
 		}
 	  }
 	  $this->records[$row_id]['post_date'] = gen_db_date($current_order['post_date']); // from mm/dd/yyyy to YYYY-MM-DD
-	  if (!validate_db_date($this->records[$row_id]['post_date'])) {
-		$messageStack->add(sprintf(GL_BEG_BAL_ERROR_4, ($row_id + 1)) . DATE_FORMAT, 'error');
-		return false;
-	  }
+	  if (!validate_db_date($this->records[$row_id]['post_date'])) throw new \Exception(sprintf(GL_BEG_BAL_ERROR_4, ($row_id + 1)) . DATE_FORMAT);
 	  switch (JOURNAL_ID) { // total amount is calculated for PO/SOs
 		case  6:
 		case 12:
@@ -102,12 +97,12 @@ class beg_bal_import {
   }
 
   function submitJournalEntry() {
-	global $db, $currencies, $messageStack;
+	global $db, $currencies;
 	$entry_count = 0;
 	$row_cnt = 0;
 	while($row_cnt < count($this->records)) {
 	  $order = $this->records[$row_cnt];
-	  $glEntry = new journal();
+	  $glEntry = new \core\classes\journal();
 	  // determine if date is within a known period, if date is before period 1 use period = 0 (and enter beginning balances)
 	  $glEntry->period = gen_calculate_period($order['post_date'], $hide_error = true); // date format YYYY-MM-DD
 	  if (!$glEntry->period) $glEntry->period = 1; // if out of range default to first period (required to be valid period or it won't post)
@@ -232,10 +227,10 @@ class beg_bal_import {
   }
 
   function processInventory($upload_name) {
-	global $coa, $db, $currencies, $messageStack;
+	global $admin_classes, $coa, $db, $currencies, $messageStack;
 	if (!$this->cyberParse($upload_name)) return false;
 	$post_date = gen_specific_date(date('Y-m-d'), $day_offset = -1);
-	$glEntry   = new journal();
+	$glEntry   = new \core\classes\journal();
 	$sku_list  = array();
 	$coa_list  = array();
 	$affected_accounts = array();
@@ -244,14 +239,8 @@ class beg_bal_import {
 	  $total_amount = $currencies->clean_value($row['total_amount']);
 	  $qty = $currencies->clean_value($row['quantity']);
 	  // check for errors and report/exit if error found
-	  if (!gen_validate_sku($row['sku'])) {
-		$messageStack->add(GL_ERROR_UPDATING_INVENTORY_STATUS . $row['sku'] . GL_BEG_BAL_ERROR_0 . $j, 'error');
-		return false;
-	  }
-	  if (!in_array($row['inv_gl_acct'], $coa) || !in_array($row['gl_acct'], $coa)) {
-		$messageStack->add(GL_BEG_BAL_ERROR_6 . $j, 'error');
-		return false;
-	  }
+	  $admin_classes['inventory']->validate_name($row['sku']);
+	  if (!in_array($row['inv_gl_acct'], $coa) || !in_array($row['gl_acct'], $coa)) throw new \Exception(GL_BEG_BAL_ERROR_6 . $j);
 	  if ($qty == 0) {
 		$messageStack->add(GL_BEG_BAL_ERROR_7 . $j,'caution');
 	  } else {
@@ -273,9 +262,8 @@ class beg_bal_import {
 			set quantity_on_hand = quantity_on_hand + " . $details['qty'] . " where sku = '" . $sku . "'";
 		$result = $db->Execute($sql);
 		if ($result->AffectedRows() <> 1) {
-		  $messageStack->add(sprintf(GL_BEG_BAL_ERROR_8, $sku),'error');
 		  $db->transRollback();
-		  return false;
+		  throw new \Exception(sprintf(GL_BEG_BAL_ERROR_8, $sku));
 		}
 		$history_array = array(
 		  'ref_id'    => 0,
@@ -293,9 +281,8 @@ class beg_bal_import {
 			where account_id = '" . $account . "' and period = 1";
 		$result = $db->Execute($sql);
 		if ($result->AffectedRows() <> 1) {
-		  $messageStack->add(sprintf(GL_BEG_BAL_ERROR_9, $account),'error');
 		  $db->transRollback();
-		  return false;
+		  throw new \Exception(sprintf(GL_BEG_BAL_ERROR_9, $account));
 		}
 	  }
 	  // update the chart of accounts history through the existing periods

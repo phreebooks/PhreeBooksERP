@@ -15,7 +15,7 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/inventory/pages/main/template_tab_history_sr.php
-//
+// @todo update to release4.0
 
 ?>
 <div id="tab_orderhist">

@@ -16,16 +16,11 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/payment/pages/admin/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_CONFIGURATION);
+$security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 /**************  include page specific files    *********************/
 gen_pull_language($module, 'admin');
-require_once(DIR_FS_WORKING . 'classes/install.php');
-
 /**************   page specific initialization  *************************/
 $error      = false; 
-$method_dir = DIR_FS_WORKING . 'methods/';
-$install    = new payment_admin();
-
 // see if installing or removing a method
 if (substr($_REQUEST['action'], 0, 8) == 'install_') {
   $method = substr($_REQUEST['action'], 8);
@@ -34,53 +29,28 @@ if (substr($_REQUEST['action'], 0, 8) == 'install_') {
   $method = substr($_REQUEST['action'], 7);
   $_REQUEST['action'] = 'remove';
 }
-
-// load the available methods
-$methods = array();
-if ($dir = @dir($method_dir)) {
-  while ($choice = $dir->read()) {
-	if (file_exists($method_dir . $choice . '/' . $choice . '.php') && $choice <> '.' && $choice <> '..') {
-	  load_method_language($method_dir, $choice);
-	  $methods[] = $choice;
-	}
-  }
-  $dir->close();
-}
-sort($methods);
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
-  case 'install':
-	validate_security($security_level, 4);
-  	require_once($method_dir . $method . '/' . $method . '.php');
-	$properties = new $method();
+  case 'install'://@todo move to method
+	\core\classes\user::validate_security($security_level, 4);
 	write_configure('MODULE_PAYMENT_' . strtoupper($method) . '_STATUS', '1');
-	foreach ($properties->keys() as $key) write_configure($key['key'], $key['default']);
-	if (method_exists($properties, 'install')) $properties->install(); // handle special case install, db, files, etc
+	foreach ($admin_classes['payment']->methods[$method]->keys as $key) write_configure($key['key'], $key['default']);
+	if (method_exists($admin_classes['payment']->methods[$method], 'install')) $admin_classes['payment']->methods[$method]->install(); // handle special case install, db, files, etc
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	break;
   case 'remove';
-	validate_security($security_level, 4);
-  	require_once($method_dir . $method . '/' . $method . '.php');
-	$properties = new $method();
-	if (method_exists($properties, 'remove')) $properties->remove(); // handle special case removal, db, files, etc
-	foreach ($properties->keys() as $key) { // remove all of the keys from the configuration table
-      $db->Execute("delete from " . TABLE_CONFIGURATION . " where configuration_key = '" . $key['key'] . "'");
-	}
-	remove_configure('MODULE_PAYMENT_' . strtoupper($method) . '_STATUS');
+	\core\classes\user::validate_security($security_level, 4);
+	$admin_classes['payment']->methods[$method]->delete();
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	break;
   case 'save':
-	validate_security($security_level, 3);
+	\core\classes\user::validate_security($security_level, 3);
   	// foreach method if enabled, save info
-	if (sizeof($methods) > 0) foreach ($methods as $shipper) {
-	  require_once($method_dir . $shipper . '/' . $shipper . '.php');
-	  if (defined('MODULE_PAYMENT_' . strtoupper($shipper) . '_STATUS')) {
-	    $properties = new $shipper();
-	    $properties->update();
-	  }
+	foreach ($admin_classes['payment']->methods as $method) {
+	  	if ($method->installed) $method->update();
 	}
 	// save general tab
-	foreach ($install->keys as $key => $default) {
+	foreach ($admin_classes['payment']->keys as $key => $default) {
 	  $field = strtolower($key);
       if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
     }

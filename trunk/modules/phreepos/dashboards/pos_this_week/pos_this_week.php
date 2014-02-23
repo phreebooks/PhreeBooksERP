@@ -16,13 +16,14 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreepos/dashboards/pos_this_week/pos_this_week.php
 //
-
-class pos_this_week extends ctl_panel {
-	public $dashboard_id 		= 'pos_this_week';
+namespace phreepos\dashboards\pos_this_week;
+class pos_this_week extends \core\classes\ctl_panel {
+	public $id			 		= 'pos_this_week';
 	public $description	 		= CP_POS_THIS_WEEK_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_POS_MGR;
-	public $title		 		= CP_POS_THIS_WEEK_TITLE;
-	public $version      		= 3.5;
+	public $text		 		= CP_POS_THIS_WEEK_TITLE;
+	public $version      		= '3.5';
+	public $module_id 			= 'phreepos';
 
 	function Output($params) {
 		global $db, $currencies;

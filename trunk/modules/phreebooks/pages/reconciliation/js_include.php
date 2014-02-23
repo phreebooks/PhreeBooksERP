@@ -36,7 +36,7 @@ function check_form() {
   var error_message = "<?php echo JS_ERROR; ?>";
 
   if (error == 1) {
-    alert(error_message);
+	$.messager.alert('error',error_message,'error');
     return false;
   }
   return true;

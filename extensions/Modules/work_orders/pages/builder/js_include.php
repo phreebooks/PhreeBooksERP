@@ -28,8 +28,6 @@ var text_search       = '<?php echo TEXT_SEARCH; ?>';
 
 // required function called with every page load
 function init() {
-  $(function() { $('#buildertabs').tabs(); });
-  $('#inv_image').dialog({ autoOpen:false, width:800 });
   <?php if ($_REQUEST['action'] <> 'new' && $_REQUEST['action'] <> 'edit') { // set focus for main window
 	echo "  document.getElementById('search_text').focus();";
 	echo "  document.getElementById('search_text').select();";
@@ -68,7 +66,7 @@ function loadSkuDetails(iID) {
     url: 'index.php?module=inventory&page=ajax&op=inv_details&fID=skuDetails&bID='+bID+'&cID='+cID+'&qty='+qty+'&iID='+iID+'&sku='+sku+'&rID='+rID+'&jID='+jID,
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-      alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     },
 	success: processSkuDetails
   });
@@ -88,12 +86,12 @@ function deleteItem(id) {
 }
 
 function copyItem(id) {
-	var title = prompt('<?php echo WO_MSG_COPY_INTRO; ?>', '');
-	if (title) {
-		location.href = 'index.php?module=work_orders&page=builder&action=copy&cID='+id+'&title='+title;
-	} else {
-		return false;
-	}
+	$.messager.prompt('<?php echo TEXT_COPY;?>', '<?php echo TEXT_COPY_TO; ?>', function(title){
+		if (title){
+			return location.href = 'index.php?module=work_orders&page=builder&action=copy&cID='+id+'&title='+title;
+		}
+		return false;  
+	});
 }
 
 function taskList(id) {

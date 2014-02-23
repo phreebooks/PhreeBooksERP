@@ -18,7 +18,8 @@
 //
 
 function load_company_dropdown($include_select = false) {
-  $output = array();
+  $the_list = array();
+  if ($include_select) $the_list[0] = array('text' => TEXT_NONE, 'file' => 'none');
   $i = 1;
   $contents = scandir(DIR_FS_MY_FILES);
   foreach ($contents as $file) {
@@ -26,19 +27,18 @@ function load_company_dropdown($include_select = false) {
 	  if (file_exists(DIR_FS_MY_FILES . $file . '/config.txt')) convert_cfg($file);
 	  if (file_exists(DIR_FS_MY_FILES . $file . '/config.php')) {
 		require_once (DIR_FS_MY_FILES . $file . '/config.php');
-		$output[$i] = array(
+		$_SESSION['companies'][$file] = array(
+		  'id'   => $file,
+		  'text' => constant($file . '_TITLE'), 
+		  'file' => $file,
+		);
+		$the_list[$i] = array(
 		  'text' => constant($file . '_TITLE'), 
 		  'file' => $file,
 		);
 		$i++;
 	  }
 	}
-  }
-  if ($include_select) $output[0] = array('text' => TEXT_NONE, 'file' => 'none');
-  $the_list = array();
-  foreach ($output as $key => $value) {
-    $_SESSION['companies'][$key] = $value['file'];
-    $the_list[] = array('id' => $key, 'text' => $value['text']);
   }
   return $the_list;
 }
@@ -110,10 +110,10 @@ function convert_cfg($company) {
   $lines .= "define('DB_SERVER_PASSWORD','"     . gen_pull_db_config_info($company, 'db_pw') . "');" . "\n";
 
   $filename = DIR_FS_ADMIN . 'my_files/' . $company . '/config';
-  if (!$handle = @fopen($filename . '.php', 'w')) die('Cannot open file (' . $filename . '.php) for writing, check your permissions. This directory and file needs access from the web server for upgrading PhreeBooks to the latest version.');
-  if (!fwrite($handle, $lines)) die('Cannot write to file (' . $filename . '.php), check your permissions.');
+  if (!$handle = @fopen($filename . '.php', 'w')) throw new \Exception('Cannot open file (' . $filename . '.php) for writing, check your permissions. This directory and file needs access from the web server for upgrading PhreeBooks to the latest version.');
+  if (!fwrite($handle, $lines)) throw new \Exception('Cannot write to file (' . $filename . '.php), check your permissions.');
   fclose($handle);
-  if (!unlink($filename . '.txt')) die('Cannot delete file (' . $filename . '.txt). This file needs to be deleted for security reasons.');
+  if (!unlink($filename . '.txt')) throw new \Exception('Cannot delete file (' . $filename . '.txt). This file needs to be deleted for security reasons.');
 }
 
 function gen_pull_db_config_info($database, $key) {
@@ -128,93 +128,6 @@ function gen_pull_db_config_info($database, $key) {
 }
 
 /**************************** admin functions ***********************************************/
-function admin_check_versions($module, $prerequisites = NULL) {
-  global $messageStack;
-  $error = false;
-  if (is_array($prerequisites) && sizeof($prerequisites) > 0) {
-	foreach ($prerequisites as $mod => $version) {
-	  if (!$cur_rev = constant('MODULE_' . strtoupper($mod) . '_VERSION')) {
-	    $messageStack->add(sprintf(ERROR_MODULE_NOT_INSTALLED, $module, $mod),'error');
-		$error = true;
-	  } elseif ($cur_rev < $version) {
-	    $messageStack->add(sprintf(ERROR_MODULE_VERSION_TOO_LOW, $module, $mod, $version, $cur_rev),'error');
-		$error = true;
-	  }
-	}
-  }
-  return $error;
-}
-
-function admin_install_dirs($dirlist, $path = DIR_FS_MY_FILES) {
-  global $messageStack;
-  $error = false;
-  if (is_array($dirlist)) foreach ($dirlist as $dir) {
-	if (!file_exists($path . $dir)) {
-	  if (!@mkdir($path . $dir, 0755, true)) $error = $messageStack->add(sprintf(ERROR_CANNOT_CREATE_MODULE_DIR, $path . $dir), 'error');
-    }
-  }
-  return $error;
-}
-
-function admin_remove_dirs($dirlist, $path = DIR_FS_MY_FILES) {
-  global $messageStack;
-  $error = false;
-  if (is_array($dirlist)) {
-    $temp = array_reverse($dirlist);
-	foreach($temp as $dir) {
-	  if (!@rmdir($path . $dir)) $error = $messageStack->add(sprintf(ERROR_CANNOT_REMOVE_MODULE_DIR, $path . $dir), 'error');
-	}
-  }
-  return $error;
-}
-
-function admin_install_tables($tables) {
-  global $db, $messageStack;
-  $error = false;
-  foreach ($tables as $table => $create_table_sql) {
-    if (!db_table_exists($table)) {
-	  if (!$db->Execute($create_table_sql)) $error = $messageStack->add(sprintf("Error installing table: %s", $table), 'error');
-	}
-  }
-  return $error;
-}
-
-function admin_remove_tables($tables) {
-  global $db;
-  $error = false;
-  if (is_array($tables)) foreach($tables as $table) {
-	if (db_table_exists($table)) $db->Execute('DROP TABLE ' . $table);
-  }
-  return $error;
-}
-
-function admin_add_report_heading($doc_title, $doc_group) {
-  global $db;
-  $result = $db->Execute("select id from ".TABLE_PHREEFORM." where doc_group = '$doc_group'");
-  if ($result->RecordCount() < 1) {
-    $db->Execute("INSERT INTO ".TABLE_PHREEFORM." (parent_id, doc_type, doc_title, doc_group, doc_ext, security, create_date) VALUES 
-      (0, '0', '" . $doc_title . "', '".$doc_group."', '0', 'u:0;g:0', now())");
-    $id = db_insert_id();
-  } else {
-    $id = $result->fields['id'];
-  }
-  return $id;
-}
-
-function admin_add_report_folder($parent_id, $doc_title, $doc_group, $doc_ext) {
-  global $db;
-  $error = false;
-  if ($parent_id == '') return true;
-  $result = $db->Execute("select id from ".TABLE_PHREEFORM." where doc_group = '$doc_group' and doc_ext = '$doc_ext'");
-  if ($result->RecordCount() < 1) {
-    $db->Execute("INSERT INTO ".TABLE_PHREEFORM." (parent_id, doc_type, doc_title, doc_group, doc_ext, security, create_date) VALUES 
-      (".$parent_id.", '0', '" . $doc_title . "', '".$doc_group."', '".$doc_ext."', 'u:0;g:0', now())");
-    $id = db_insert_id();
-  } else {
-    $id = $result->fields['id'];
-  }
-  return $error;
-}
 
 function admin_add_reports($module, $save_path = PF_DIR_MY_REPORTS) {
   $error = false;
@@ -254,10 +167,7 @@ function install_build_co_config_file($company, $key, $value) {
     $lines[] = "define('" . $key . "','" . addslashes($value) . "');" . "\n";
   }
   $line = implode('', $lines);
-  if (!$handle = @fopen($filename, 'w')) {
-    $messageStack->add(sprintf(MSG_ERROR_CANNOT_WRITE, $filename), 'error');
-    return false;
-  }
+  if (!$handle = @fopen($filename, 'w')) throw new Exception(sprintf(MSG_ERROR_CANNOT_WRITE, $filename));
   fwrite($handle, $line);
   fclose($handle);
   return true;
@@ -375,13 +285,10 @@ function table_import_xml($structure, $db_table, $filename) {
 
 function table_import_csv($structure, $db_table, $filename) {
 //echo 'structure = '; print_r($structure); echo '<br>';
-  global $db, $messageStack;
+  global $db;
   $data = file($_FILES[$filename]['tmp_name']);
   // read the header and build array
-  if (sizeof($data) < 2) {
-    $messageStack->add('The number of lines in the file is to small, a csv file must contain a header line and at least on input line!','error');
-	return false;
-  }
+  if (sizeof($data) < 2) throw new \Exception('The number of lines in the file is to small, a csv file must contain a header line and at least on input line!');
   $header = csv_explode(trim(array_shift($data)));
   foreach ($header as $key => $value) $header[$key] = trim($value);
 //echo 'header = '; print_r($header); echo '<br>';
@@ -500,10 +407,8 @@ function csv_explode($str, $delim = ',', $enclose = '"', $preserve = false){
 // Syncronizes the fields in the module db with the field parameters 
 // (usually only needed for first entry to inventory field builder)
   function xtra_field_sync_list($module = '', $db_table = '') {
-	global $db, $messageStack;
-	if (!$module || !$db_table) {
-	  $messageStack->add('Sync fields called without all necessary parameters!','error');
-	}
+	global $db;
+	if (!$module || !$db_table) throw new \Exception('Sync fields called without all necessary parameters!');
 	// First check to see if inventory field table is synced with actual inventory table
 	$temp = $db->Execute("describe " . $db_table);
 	while (!$temp->EOF) {
@@ -511,13 +416,13 @@ function csv_explode($str, $delim = ',', $enclose = '"', $preserve = false){
 		$temp->MoveNext();
 	}
 	sort($table_fields);
-	$temp = $db->Execute("select field_name from " . TABLE_EXTRA_FIELDS . " where module_id = '" . $module . "' order by field_name");
+	$temp = $db->Execute("select field_name from " . TABLE_EXTRA_FIELDS . " where module_id = '$module' order by field_name");
 	while (!$temp->EOF) {
 		$field_list[]=$temp->fields['field_name'];
 		$temp->MoveNext();
 	}
 	$needs_sync = false;
-	foreach ($table_fields as $key=>$value) {
+	foreach ($table_fields as $key => $value) {
 		if ($value <> $field_list[$key]) {
 			$needs_sync = true;
 			break;
@@ -620,78 +525,6 @@ function csv_explode($str, $delim = ',', $enclose = '"', $preserve = false){
 		}
 	}
 	return;
-  }
-
-  function xtra_field_get_tabs($module = '') {
-    global $db;
-    $tab_array = array(0 => TEXT_SYSTEM);
-	if (!$module) return $tab_array;
-    $result = $db->Execute("select id, tab_name from " . TABLE_EXTRA_TABS . " where module_id = '" . $module . "' order by tab_name");
-    while (!$result->EOF) {
-      $tab_array[$result->fields['id']] = $result->fields['tab_name'];
-      $result->MoveNext();
-    }
-    return $tab_array;
-  }
-
-  function xtra_field_prep_form($form_array) {
-	// set the default values
-	$form_array['text_length']     = DEFAULT_TEXT_LENGTH;
-	$form_array['text_default']    = '';
-	$form_array['link_default']    = '';
-	$form_array['integer_range']   = '0';
-	$form_array['integer_default'] = '0';
-	$form_array['decimal_range']   = '0';
-	$form_array['decimal_display'] = DEFAULT_REAL_DISPLAY_FORMAT;
-	$form_array['decimal_default'] = '';
-	$form_array['radio_default']   = '';
-	$form_array['date_range']      = '0';
-	$form_array['time_range']      = '0';
-	$form_array['date_time_range'] = '0';
-	$form_array['check_box_range'] = '0';
-	switch ($form_array['entry_type']) {
-		case 'text':
-		case 'html':
-			$form_array['text_length']  = $form_array['length'];
-			$form_array['text_default'] = $form_array['default'];
-			break;
-		case 'hyperlink':
-		case 'image_link':
-		case 'inventory_link':
-			$form_array['link_default'] = $form_array['default'];
-			break;
-		case 'integer':
-			$form_array['integer_range']   = $form_array['select'];
-			$form_array['integer_default'] = $form_array['default'];
-			break;
-		case 'decimal':
-			$form_array['decimal_range']   = $form_array['select'];
-			$form_array['decimal_display'] = $form_array['display'];
-			$form_array['decimal_default'] = $form_array['default'];
-			break;
-		case 'multi_check_box':
-		case 'drop_down':
-		case 'radio':
-		case 'enum':
-			$form_array['radio_default'] = $form_array['default'];
-			break;
-		case 'date':
-			$form_array['date_range'] = $form_array['select'];
-			break;
-		case 'time':
-			$form_array['time_range'] = $form_array['select'];
-			break;
-		case 'date_time':
-			$form_array['date_time_range'] = $form_array['select'];
-			break;
-		case 'check_box':
-			$form_array['check_box_range'] = $form_array['select'];
-			break;
-		case 'time_stamp':
-			break;
-		default:
-	}
-	return $form_array;
   }
 
 ?>

@@ -16,9 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/contacts/classes/contacts.php
 //
-
-require_once(DIR_FS_MODULES . 'contacts/classes/contact_fields.php');
-
+namespace contacts\classes;
 class contacts {
 	public  $terms_type         = 'AP'; 
 	public  $page_title_new     = '';
@@ -55,7 +53,7 @@ class contacts {
     }
 		
 	public function getContact() {
-	  	global $db, $messageStack;
+	  	global $db;
 	  	if ($this->id == '' && !$this->aid == ''){
 	  		$result = $db->Execute("select * from ".TABLE_ADDRESS_BOOK." where address_id = $this->aid ");
 	  		$this->id = $result->fields['ref_id'];
@@ -70,7 +68,7 @@ class contacts {
 		$this->address = array();
 		while (!$result->EOF) {
 		  $type = substr($result->fields['type'], 1);
-		  $this->address_book[$type][] = new objectInfo($result->fields);
+		  $this->address_book[$type][] = new \core\classes\objectInfo($result->fields);
 		  if ($type == 'm') { // prefill main address
 		  	foreach ($result->fields as $key => $value) $this->address[$result->fields['type']][$key] = $value;
 		  }
@@ -79,12 +77,8 @@ class contacts {
 		// load payment info
 		if ($_SESSION['admin_encrypt'] && ENABLE_ENCRYPTION) {
 		  $result = $db->Execute("select id, hint, enc_value from ".TABLE_DATA_SECURITY." where module='contacts' and ref_1=$this->id");
-		  $encrypt = new encryption();
 		  while (!$result->EOF) {
-		    if (!$values = $encrypt->decrypt($_SESSION['admin_encrypt'], $result->fields['enc_value'])) {
-			  $error = $messageStack->add('Encryption error - ' . implode('. ', $encrypt->errors), 'error');
-		    }
-		    $val = explode(':', $values);
+		    $val = explode(':', \core\classes\encryption::decrypt($_SESSION['admin_encrypt'], $result->fields['enc_value']));
 		    $this->payment_data[] = array(
 			  'id'   => $result->fields['id'],
 			  'name' => $val[0],
@@ -98,15 +92,15 @@ class contacts {
 		$result = $db->Execute("select * from ".TABLE_CONTACTS." where dept_rep_id=$this->id");
 		$this->contacts = array();
 		while (!$result->EOF) {
-		  $cObj = new objectInfo();
+		  $cObj = new \core\classes\objectInfo();
 		  foreach ($result->fields as $key => $value) $cObj->$key = $value;
 		  $addRec = $db->Execute("select * from ".TABLE_ADDRESS_BOOK." where type='im' and ref_id=".$result->fields['id']);
-		  $cObj->address['m'][] = new objectInfo($addRec->fields);
+		  $cObj->address['m'][] = new \core\classes\objectInfo($addRec->fields);
 		  $this->contacts[] = $cObj; //unserialize(serialize($cObj));
     	  // load crm notes
 		  $logs = $db->Execute("select * from ".TABLE_CONTACTS_LOG." where contact_id = ". $result->fields['id']. " order by log_date desc");
 		  while (!$logs->EOF) {
-		    $this->crm_log[] = new objectInfo($logs->fields);
+		    $this->crm_log[] = new \core\classes\objectInfo($logs->fields);
 		    $logs->MoveNext();
 		  }
 		  $result->MoveNext();
@@ -114,24 +108,21 @@ class contacts {
 		// load crm notes
 		$result = $db->Execute("select * from ".TABLE_CONTACTS_LOG." where contact_id = $this->id order by log_date desc");
 		while (!$result->EOF) {
-		  $this->crm_log[] = new objectInfo($result->fields);
+		  $this->crm_log[] = new \core\classes\objectInfo($result->fields);
 		  $result->MoveNext();
 		}
   }
 
   function delete($id) {
   	global $db; 
-  	if ( $this->id == '' ) $this->id = $id;
-	// error check, no delete if a journal entry exists
+  	if ( $this->id == '' ) $this->id = $id;	// error check, no delete if a journal entry exists
 	$result = $db->Execute("SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE bill_acct_id=$this->id OR ship_acct_id=$this->id OR store_id=$this->id LIMIT 1");
-	if ($result->RecordCount() == 0) {
-	  return $this->do_delete();
-	}
-  	return ACT_ERROR_CANNOT_DELETE;
+	if ($result->RecordCount() != 0) throw new \Exception(ACT_ERROR_CANNOT_DELETE); 
+	return $this->do_delete();  	
   }
   
   public function do_delete(){
-	  global $db; // ajax nog controleren
+	  global $db;
 	  $db->Execute("DELETE FROM ".TABLE_ADDRESS_BOOK ." WHERE ref_id=$this->id");
 	  $db->Execute("DELETE FROM ".TABLE_DATA_SECURITY." WHERE ref_1=$this->id");
 	  $db->Execute("DELETE FROM ".TABLE_CONTACTS     ." WHERE id=$this->id");
@@ -170,47 +161,45 @@ class contacts {
   	return $output;
   }
   
-  public function data_complete($error){
-  	global $db, $messageStack;
-  	if ($this->auto_type && $this->short_name == '') {
-    	$result = $db->Execute("select ".$this->auto_field." from ".TABLE_CURRENT_STATUS);
-        $this->short_name  = $result->fields[$this->auto_field];
-        $this->inc_auto_id = true;
-    }
-  	foreach ($this->address_types as $value) {
-      if (($value <> 'im' && substr($value, 1, 1) == 'm') || // all main addresses except contacts which is optional
-          ($this->address[$value]['primary_name'] <> '')) { // optional billing, shipping, and contact
-          $msg_add_type = GEN_ERRMSG_NO_DATA . constant('ACT_CATEGORY_' . strtoupper(substr($value, 1, 1)) . '_ADDRESS');
-	      if (false === db_prepare_input($this->address[$value]['primary_name'],   $required = true))                     $error = $messageStack->add($msg_add_type.' - '.GEN_PRIMARY_NAME,  'error');
-	      if (false === db_prepare_input($this->address[$value]['contact'],        ADDRESS_BOOK_CONTACT_REQUIRED))        $error = $messageStack->add($msg_add_type.' - '.GEN_CONTACT,       'error');
-	      if (false === db_prepare_input($this->address[$value]['address1'],       ADDRESS_BOOK_ADDRESS1_REQUIRED))       $error = $messageStack->add($msg_add_type.' - '.GEN_ADDRESS1,      'error');
-	      if (false === db_prepare_input($this->address[$value]['address2'],       ADDRESS_BOOK_ADDRESS2_REQUIRED))       $error = $messageStack->add($msg_add_type.' - '.GEN_ADDRESS2,      'error');
-	      if (false === db_prepare_input($this->address[$value]['city_town'],      ADDRESS_BOOK_CITY_TOWN_REQUIRED))      $error = $messageStack->add($msg_add_type.' - '.GEN_CITY_TOWN,     'error');
-	      if (false === db_prepare_input($this->address[$value]['state_province'], ADDRESS_BOOK_STATE_PROVINCE_REQUIRED)) $error = $messageStack->add($msg_add_type.' - '.GEN_STATE_PROVINCE,'error');
-	      if (false === db_prepare_input($this->address[$value]['postal_code'],    ADDRESS_BOOK_POSTAL_CODE_REQUIRED))    $error = $messageStack->add($msg_add_type.' - '.GEN_POSTAL_CODE,   'error');
-	      if (false === db_prepare_input($this->address[$value]['telephone1'],     ADDRESS_BOOK_TELEPHONE1_REQUIRED))     $error = $messageStack->add($msg_add_type.' - '.GEN_TELEPHONE1,    'error');
-	      if (false === db_prepare_input($this->address[$value]['email'],          ADDRESS_BOOK_EMAIL_REQUIRED))          $error = $messageStack->add($msg_add_type.' - '.GEN_EMAIL,         'error');
-      }
-    }
-    $error = $this->duplicate_id($error);    
-    return $error;
-    
+  	public function data_complete(){
+  		global $db, $messageStack;
+  		if ($this->auto_type && $this->short_name == '') {
+    		$result = $db->Execute("select ".$this->auto_field." from ".TABLE_CURRENT_STATUS);
+        	$this->short_name  = $result->fields[$this->auto_field];
+        	$this->inc_auto_id = true;
+    	}
+  		foreach ($this->address_types as $value) {
+      		if (($value <> 'im' && substr($value, 1, 1) == 'm') || // all main addresses except contacts which is optional
+        	  ($this->address[$value]['primary_name'] <> '')) { // optional billing, shipping, and contact
+          		$msg_add_type = GEN_ERRMSG_NO_DATA . constant('ACT_CATEGORY_' . strtoupper(substr($value, 1, 1)) . '_ADDRESS');
+	      		if (false === db_prepare_input($this->address[$value]['primary_name'],   $required = true))                     throw new \Exception($msg_add_type.' - '.GEN_PRIMARY_NAME);
+	      		if (false === db_prepare_input($this->address[$value]['contact'],        ADDRESS_BOOK_CONTACT_REQUIRED))        throw new \Exception($msg_add_type.' - '.GEN_CONTACT);
+	      		if (false === db_prepare_input($this->address[$value]['address1'],       ADDRESS_BOOK_ADDRESS1_REQUIRED))       throw new \Exception($msg_add_type.' - '.GEN_ADDRESS1);
+	      		if (false === db_prepare_input($this->address[$value]['address2'],       ADDRESS_BOOK_ADDRESS2_REQUIRED))       throw new \Exception($msg_add_type.' - '.GEN_ADDRESS2);
+	      		if (false === db_prepare_input($this->address[$value]['city_town'],      ADDRESS_BOOK_CITY_TOWN_REQUIRED))      throw new \Exception($msg_add_type.' - '.GEN_CITY_TOWN);
+	      		if (false === db_prepare_input($this->address[$value]['state_province'], ADDRESS_BOOK_STATE_PROVINCE_REQUIRED)) throw new \Exception($msg_add_type.' - '.GEN_STATE_PROVINCE);
+	      		if (false === db_prepare_input($this->address[$value]['postal_code'],    ADDRESS_BOOK_POSTAL_CODE_REQUIRED))    throw new \Exception($msg_add_type.' - '.GEN_POSTAL_CODE);
+	      		if (false === db_prepare_input($this->address[$value]['telephone1'],     ADDRESS_BOOK_TELEPHONE1_REQUIRED))     throw new \Exception($msg_add_type.' - '.GEN_TELEPHONE1);
+	      		if (false === db_prepare_input($this->address[$value]['email'],          ADDRESS_BOOK_EMAIL_REQUIRED))          throw new \Exception($msg_add_type.' - '.GEN_EMAIL);
+      		}
+    	}
+    	$this->duplicate_id($error);    
+    	return true;
   }
   
-  /*
-   * this function looks if there are duplicate id's if so it returns a error. 
+  /**
+   * this function looks if there are duplicate id's if so it throws a exception. 
    */
   
   public function duplicate_id($error){
-  	global $db, $messageStack; 
+  	global $db; 
   	// check for duplicate short_name IDs
     if ($this->id == '') {
       $result = $db->Execute("select id from ".TABLE_CONTACTS." where short_name = '$this->short_name' and type = '$this->type'");
     } else {
       $result = $db->Execute("select id from ".TABLE_CONTACTS." where short_name = '$this->short_name' and type = '$this->type' and id <> $this->id");
     }
-    if ($result->RecordCount() > 0) $error = $messageStack->add($this->duplicate_id_error,'error');    
-    return $error;
+    if ($result->RecordCount() > 0) throw new \Exception($this->duplicate_id_error);    
   }
 
   /*
@@ -219,7 +208,7 @@ class contacts {
   
   public function save_contact(){
   	global $db;
-  	$fields = new contact_fields(false);
+  	$fields = new \contacts\classes\fields(false);
   	$sql_data_array = $fields->what_to_save();
     $sql_data_array['type']            = $this->type;
     $sql_data_array['short_name']      = $this->short_name;

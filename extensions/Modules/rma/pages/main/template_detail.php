@@ -38,18 +38,7 @@ echo $toolbar->build_toolbar();
 ?>
 <h1><?php echo ($_REQUEST['action'] == 'new') ? MENU_HEADING_NEW_RMA : (BOX_RMA_MODULE . ' - ' . TEXT_RMA_ID . '# ' . $cInfo->rma_num); ?></h1>
 
-<div id="detailtabs">
-<ul>
-<?php 
-  echo add_tab_list('tab_general', TEXT_GENERAL);
-  echo add_tab_list('tab_receiving', TEXT_RECEIVING);
-  // pull in additional custom tabs
-  if (isset($extra_rma_tabs) && is_array($extra_rma_tabs)) {
-    foreach ($extra_rma_tabs as $tabs) echo add_tab_list($tabs['tab_id'], $tabs['tab_title']);
-  }
-  echo add_tab_list('tab_disposition', TEXT_DISPOSITION);
-  ?>
-</ul>
+<div class="easyui-tabs" id="detailtabs">
 <?php
 require (DIR_FS_WORKING . 'pages/main/tab_general.php');
 require (DIR_FS_WORKING . 'pages/main/tab_receiving.php');

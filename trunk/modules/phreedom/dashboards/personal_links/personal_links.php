@@ -18,13 +18,14 @@
 //
 // Revision history
 // 2011-07-01 - Added version number for revision control
-
-class personal_links extends ctl_panel {
-	public $dashboard_id 		= 'personal_links';
+namespace phreedom\dashboards\personal_links;
+class personal_links extends \core\classes\ctl_panel {
+	public $id			 		= 'personal_links';
 	public $description	 		= CP_PERSONAL_LINKS_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_MY_PROFILE;
-	public $title		 		= CP_PERSONAL_LINKS_TITLE;
-	public $version      		= 3.5;
+	public $text		 		= CP_PERSONAL_LINKS_TITLE;
+	public $version      		= '3.5';
+	public $module_id 			= 'phreedom';
 
 	function Output($params) {
 		global $db;
@@ -45,7 +46,7 @@ class personal_links extends ctl_panel {
 			$index = 1;
 			foreach ($params as $title => $hyperlink) {
 				$contents .= '<div style="float:right; height:16px;">';
-				$contents .= html_icon('phreebooks/dashboard-remove.png', TEXT_REMOVE, 'small', 'onclick="return del_index(\'' . $this->dashboard_id . '\', ' . $index . ')"');
+				$contents .= html_icon('phreebooks/dashboard-remove.png', TEXT_REMOVE, 'small', 'onclick="return del_index(\'' . $this->id . '\', ' . $index . ')"');
 				$contents .= '</div>';
 				$contents .= '<div style="min-height:16px;">';
 				$contents .= '<a href="' . $hyperlink . '" target="_blank">' . $title . '</a>' . chr(10);
@@ -68,7 +69,7 @@ class personal_links extends ctl_panel {
 		// fetch the current params
 		$result = $db->Execute("select params from " . TABLE_USERS_PROFILES . "
 		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "' 
-		  and dashboard_id = '" . $this->dashboard_id . "'");
+		  and dashboard_id = '" . $this->id . "'");
 		if ($remove_id) { // remove element
 		  	$this->params	= unserialize($result->fields['params']);
 		  	$first_part 	= array_slice($this->params, 0, $remove_id - 1);
@@ -81,7 +82,7 @@ class personal_links extends ctl_panel {
 		  	$this->params[$my_title] = $my_url;
 		}
 		ksort($this->params);	
-		db_perform(TABLE_USERS_PROFILES, array('params' => serialize($this->params)), "update", "user_id = ".$_SESSION['admin_id']." and menu_id = '".$this->menu_id."' and dashboard_id = '".$this->dashboard_id."'");
+		db_perform(TABLE_USERS_PROFILES, array('params' => serialize($this->params)), "update", "user_id = ".$_SESSION['admin_id']." and menu_id = '".$this->menu_id."' and dashboard_id = '".$this->id."'");
 	}
 }
 ?>

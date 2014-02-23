@@ -20,7 +20,7 @@
 
 /**************   Check user security   *****************************/
 $xml = NULL;
-$security_level = validate_ajax_user(SECURITY_ID_PHREEFORM);
+$security_level = \core\classes\user::validate(SECURITY_ID_PHREEFORM);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_MODULES . 'phreeform/defaults.php');
 require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
@@ -31,8 +31,10 @@ $rowID = $_GET['rowID'];
 $rID   = $_GET['rID'];
 $type  = $_GET['type'] ? $_GET['type'] : '';
 if (!isset($_GET['rowID'])) {
-  echo createXmlHeader() . xmlEntry('error', 'Row ID was not passed!') . createXmlFooter();
-  die;
+  	echo createXmlHeader() . xmlEntry('error', 'Row ID was not passed!') . createXmlFooter();
+  	ob_end_flush();
+	session_write_close();
+  	die;
 }
 
 if ($rID) $report = get_report_details($rID);
@@ -55,7 +57,7 @@ if (!$type) { // use the first type of the FormEntries array since it will be sh
   $type = array_shift($temp);
 }
 
-$properties       = new objectInfo();
+$properties       = new \core\classes\objectInfo();
 $properties->type = $type;
 $output           = box_build($properties, $rowID);
 
@@ -65,5 +67,7 @@ $xml .= xmlEntry("html", $output);
 $xml .= xmlEntry("message", 'Success type = ' . $type . ' and html length = ' . strlen($output));
 
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

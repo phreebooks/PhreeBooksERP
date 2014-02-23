@@ -21,7 +21,6 @@
 // Release History
 // 1.0 => 2011-11-15 - Initial release
 // Module software version information
-define('MODULE_XML_BUILDER_VERSION', '1.0');
 // Menu Sort Positions
 // Security id's
 define('SECURITY_ID_XML_BUILDER', 499);

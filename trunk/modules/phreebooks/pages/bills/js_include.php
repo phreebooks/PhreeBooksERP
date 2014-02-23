@@ -35,7 +35,7 @@ var text_enter_new     = '<?php echo TEXT_ENTER_NEW; ?>';
 var post_error         = <?php echo $error ? "true;" : "false;"; ?>
 var account_type       = '<?php echo $account_type; ?>';
 var store_country_code = '<?php echo STORE_COUNTRY; ?>';
-var payments_installed = <?php echo count($payment_modules) ? 'true' : 'false'; ?>;
+var payments_installed = <?php echo count($admin_classes['payment']->methods) ? 'true' : 'false'; ?>;
 <?php echo js_calendar_init($cal_bills); ?>
 
 function init() {
@@ -80,15 +80,14 @@ function check_form() {
     var index = document.getElementById('shipper_code').selectedIndex;
     var payment_method = document.getElementById('shipper_code').options[index].value;
 	<?php
-	  foreach ($payment_modules as $pmt_class) { // fetch the javascript validation of payments module
-		$value = $pmt_class['id'];
-		echo $$value->javascript_validation();
+	  foreach ($admin_classes['payment']->methods as $method) { // fetch the javascript validation of payments module
+		if($method->installed) echo $method->javascript_validation();
 	  }
 	?>
   }
 
   if (error == 1) {
-    alert(error_message);
+	$.messager.alert('error',error_message,'error');
     return false;
   }
   return true;
@@ -104,7 +103,7 @@ function loadNewPayment() { // request funtion
     url: 'index.php?module=phreebooks&page=ajax&op=stored_payments&contact_id='+contact_id,
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-      alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     },
 	success: showNewPayment
   });

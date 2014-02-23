@@ -20,9 +20,7 @@
 
 // Module information
 define('MODULE_PAYMENT_TITLE','Payment Module');
-define('MODULE_PAYMENT_DESCRIPTION','The payment module is a wrapper for user configurable payment methods. Some methods are included with the core package and others are available for download from the PhreeSoft website. <b>NOTE: This is a core module and should not be removed!</b>');
-// Headings
-define('TEXT_PAYMENT_MODULES_AVAILABLE','Payment Methods Available');
+define('MODULE_PAYMENT_DESCRIPTION','The payment module is a wrapper for user configurable payment methods.<br/>Some methods are included with the core package and others are available for download from the PhreeSoft website.');
 // Defaults
 define('TEXT_PRODUCTION','Production');
 define('TEXT_AUTHORIZE','Authorize');

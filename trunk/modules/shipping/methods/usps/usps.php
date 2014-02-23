@@ -16,10 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/shipping/methods/usps/usps.php
 //
-// Revision history
-// 2011-07-01 - Added version number for revision control
-define('MODULE_SHIPPING_USPS_VERSION','3.2');
-
+namespace shipping\methods\usps;
 define('usps_1DEam', MODULE_SHIPPING_USPS_1DM);
 define('usps_1Dam',  MODULE_SHIPPING_USPS_1DA);
 define('usps_1Dpm',  MODULE_SHIPPING_USPS_1DP);
@@ -30,135 +27,109 @@ define('usps_3Dpm',  MODULE_SHIPPING_USPS_3DS);
 define('usps_GND',   MODULE_SHIPPING_USPS_GND);
 define('usps_GDR',   MODULE_SHIPPING_USPS_GDR);
 
-class usps {
-  // FedEx Rate code maps
-  var $USPSRateCodes = array(	
-	'Express Mail'                       => '1DEam',
-	'Express Mail Flat Rate Envelope'    => '1Dam',
-	'Priority Mail'                      => '1Dpm',
-	'Priority Mail Flat Rate Envelope'   => '2Dam',
-	'Priority Mail Small Flat Rate Box'  => '2Dpm',
-	'Priority Mail Medium Flat Rate Box' => '3Dam',
-	'Priority Mail Large Flat Rate Box'  => '3Dpm',
-	'Parcel Post'                        => 'GND',
-	'Media Mail'                         => 'GDR',
-  );
+class usps extends \shipping\classes\shipping {
+	public $id				= 'usps'; // needs to match class name
+  	public $text			= MODULE_SHIPPING_USPS_TEXT_TITLE;
+  	public $description		= MODULE_SHIPPING_USPS_TEXT_DESCRIPTION;
+  	public $sort_order		= 15;
+  	public $version			= '3.2';
+  	public $shipping_cost	= 0.00;
+  	public $handling_cost	= 1.00; 
+  	// FedEx Rate code maps
+ 	public $USPSRateCodes = array(	
+	  'Express Mail'                       => '1DEam',
+	  'Express Mail Flat Rate Envelope'    => '1Dam',
+	  'Priority Mail'                      => '1Dpm',
+	  'Priority Mail Flat Rate Envelope'   => '2Dam',
+	  'Priority Mail Small Flat Rate Box'  => '2Dpm',
+	  'Priority Mail Medium Flat Rate Box' => '3Dam',
+	  'Priority Mail Large Flat Rate Box'  => '3Dpm',
+	  'Parcel Post'                        => 'GND',
+	  'Media Mail'                         => 'GDR',
+  	);
+  	
+	function __construct() {
+    	$this->keys[] = array('key' => 'MODULE_SHIPPING_USPS_USERID',		'default' => '',				'text' => MODULE_SHIPPING_USPS_USERID_DESC);
+	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_USPS_MACHINABLE',	'default' => 1,					'text' => MODULE_SHIPPING_USPS_MACHINABLE_DESC);
+      	$this->keys[] = array('key' => 'MODULE_SHIPPING_USPS_SERVER',     	'default' => 'Test',			'text' => SHIPPING_TEST_MODE_DESC);
+	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_USPS_TYPES',      	'default' => '1DEam,1Dpm,GND',	'text' => SHIPPING_DEFAULT_SERVICE_DESC);
+	  	parent::__construct();
+  	}
 
-  function __construct() {
-    $this->code    = 'usps';
-    $this->version = '1.0';
-/*
-    $this->types = array(
-	  'Express'     => MODULE_SHIPPING_USPS_1DA,
-//	  'First Class' => 'First-Class Mail',
-	  'Priority'    => MODULE_SHIPPING_USPS_3DS,
-	  'Parcel'      => MODULE_SHIPPING_USPS_GND,
-//	  'Media'       => 'Media Mail',
-//	  'BPM'         => 'Bound Printed Material',
-//	  'Library'     => 'Library',
-	);
-*/
-/* Not Supported at this time
-    $this->intl_types = array(
-      'GXG Document'     => 'Global Express Guaranteed Document Service',
-      'GXG Non-Document' => 'Global Express Guaranteed Non-Document Service',
-      'Express'          => 'Global Express Mail (EMS)',
-      'Priority Lg'      => 'Global Priority Mail - Flat-rate Envelope (Large)',
-      'Priority Sm'      => 'Global Priority Mail - Flat-rate Envelope (Small)',
-      'Priority Var'     => 'Global Priority Mail - Variable Weight (Single)',
-      'Airmail Letter'   => 'Airmail Letter-post',
-      'Airmail Parcel'   => 'Airmail Parcel Post',
-      'Surface Letter'   => 'Economy (Surface) Letter-post',
-      'Surface Post'     => 'Economy (Surface) Parcel Post',
-	);
-*/
-  }
-  function keys() {
-    return array(
-	  array('key' => 'MODULE_SHIPPING_USPS_TITLE',      'default' => 'US Postal Service'),
-	  array('key' => 'MODULE_SHIPPING_USPS_USERID',     'default' => ''),
-	  array('key' => 'MODULE_SHIPPING_USPS_SERVER',     'default' => 'production'),
-	  array('key' => 'MODULE_SHIPPING_USPS_MACHINABLE', 'default' => '1'),
-	  array('key' => 'MODULE_SHIPPING_USPS_TYPES',      'default' => '1DEam,1Dpm,GND'),
-//	  array('key' => 'MODULE_SHIPPING_USPS_TYPES_INTL', 'default' => 'GXG Document, GXG Non-Document, Express, Priority Lg, Priority Sm, Priority Var, Airmail Letter, Airmail Parcel, Surface Letter, Surface Post'),
-	  array('key' => 'MODULE_SHIPPING_USPS_SORT_ORDER', 'default' => '15'),
-	);
-  }
-
-  function configure($key) {
-	switch ($key) {
-	  case 'MODULE_SHIPPING_USPS_SERVER':
-		$temp = array(
-		  array('id' => 'test',       'text' => TEXT_TEST),
-		  array('id' => 'production', 'text' => TEXT_PRODUCTION),
-		);
-		$html .= html_pull_down_menu(strtolower($key), $temp, constant($key));
-		break;
-	  case 'MODULE_SHIPPING_USPS_MACHINABLE':
-		$temp = array(
-		  array('id' => '1', 'text' => TEXT_YES),
-		  array('id' => '0', 'text' => TEXT_NO),
-		);
-		$html .= html_pull_down_menu(strtolower($key), $temp, constant($key));
-		break;
-	  case 'MODULE_SHIPPING_USPS_TYPES':
-		  $temp = array(
-			array('id' => '1DEam', 'text' => MODULE_SHIPPING_USPS_1DM),
-			array('id' => '1Dam',  'text' => MODULE_SHIPPING_USPS_1DA),
-			array('id' => '1Dpm',  'text' => MODULE_SHIPPING_USPS_1DP),
-			array('id' => '2Dam',  'text' => MODULE_SHIPPING_USPS_2DA),
-			array('id' => '2Dpm',  'text' => MODULE_SHIPPING_USPS_2DP),
-			array('id' => '3Dam',  'text' => MODULE_SHIPPING_USPS_3DA),
-			array('id' => '3Dpm',  'text' => MODULE_SHIPPING_USPS_3DS),
-			array('id' => 'GND',   'text' => MODULE_SHIPPING_USPS_GND),
-			array('id' => 'GDR',   'text' => MODULE_SHIPPING_USPS_GDR),
-		  );
-		  $choices = array();
-		  foreach ($temp as $value) {
-		    $choices[] = html_checkbox_field(strtolower($key) . '[]', $value['id'], ((strpos(constant($key), $value['id']) === false) ? false : true), '', $parameters = '') . ' ' . $value['text'];
-		  }
-		  $html = implode('<br />', $choices);
-		break;
-/*
-	  case 'MODULE_SHIPPING_USPS_TYPES_INTL':
-		  $temp = array(
-			array('id' => 'GXG Document',     'text' => 'GXG Document'),
-			array('id' => 'GXG Non-Document', 'text' => 'GXG Non-Document'),
-			array('id' => 'Express',          'text' => 'Int Express'),
-			array('id' => 'Priority Lg',      'text' => 'Int Priority Lg'),
-			array('id' => 'Priority Sm',      'text' => 'Int Priority Sm'),
-			array('id' => 'Priority Var',     'text' => 'Int Priority Var'),
-			array('id' => 'Airmail Letter',   'text' => 'Airmail Letter'),
-			array('id' => 'Airmail Parcel',   'text' => 'Airmail Parcel'),
-			array('id' => 'Surface Letter',   'text' => 'Surface Letter'),
-			array('id' => 'Surface Post',     'text' => 'Surface Post'),
-		  );
-		  $choices = array();
-		  foreach ($temp as $value) {
-		    $choices[] = html_checkbox_field(strtolower($key) . '[]', $value['id'], ((strpos(constant($key), $value['id']) === false) ? false : true), '', $parameters = '') . ' ' . $value['text'];
-		  }
-		  $html = implode('<br />', $choices);
-		break;
-*/
-	  default:
-		$html .= html_input_field(strtolower($key), constant($key), '');
+	function configure($key) {
+		switch ($key) {
+		  	case 'MODULE_SHIPPING_USPS_SERVER':
+				$temp = array(
+			  	  array('id' => 'test',       'text' => TEXT_TEST),
+				  array('id' => 'production', 'text' => TEXT_PRODUCTION),
+				);
+				$html .= html_pull_down_menu(strtolower($key), $temp, constant($key));
+				break;
+			case 'MODULE_SHIPPING_USPS_MACHINABLE':
+				$temp = array(
+				  array('id' => '1', 'text' => TEXT_YES),
+				  array('id' => '0', 'text' => TEXT_NO),
+				);
+				$html .= html_pull_down_menu(strtolower($key), $temp, constant($key));
+				break;
+			case 'MODULE_SHIPPING_USPS_TYPES':
+				  $temp = array(
+					array('id' => '1DEam', 'text' => MODULE_SHIPPING_USPS_1DM),
+					array('id' => '1Dam',  'text' => MODULE_SHIPPING_USPS_1DA),
+					array('id' => '1Dpm',  'text' => MODULE_SHIPPING_USPS_1DP),
+					array('id' => '2Dam',  'text' => MODULE_SHIPPING_USPS_2DA),
+					array('id' => '2Dpm',  'text' => MODULE_SHIPPING_USPS_2DP),
+					array('id' => '3Dam',  'text' => MODULE_SHIPPING_USPS_3DA),
+					array('id' => '3Dpm',  'text' => MODULE_SHIPPING_USPS_3DS),
+					array('id' => 'GND',   'text' => MODULE_SHIPPING_USPS_GND),
+					array('id' => 'GDR',   'text' => MODULE_SHIPPING_USPS_GDR),
+				  );
+				  $choices = array();
+				  foreach ($temp as $value) {
+				    	$choices[] = html_checkbox_field(strtolower($key) . '[]', $value['id'], ((strpos(constant($key), $value['id']) === false) ? false : true), '', $parameters = '') . ' ' . $value['text'];
+				  }
+				  $html = implode('<br />', $choices);
+				break;
+	/*
+			case 'MODULE_SHIPPING_USPS_TYPES_INTL':
+				$temp = array(
+				  array('id' => 'GXG Document',     'text' => 'GXG Document'),
+				  array('id' => 'GXG Non-Document', 'text' => 'GXG Non-Document'),
+				  array('id' => 'Express',          'text' => 'Int Express'),
+				  array('id' => 'Priority Lg',      'text' => 'Int Priority Lg'),
+				  array('id' => 'Priority Sm',      'text' => 'Int Priority Sm'),
+				  array('id' => 'Priority Var',     'text' => 'Int Priority Var'),
+				  array('id' => 'Airmail Letter',   'text' => 'Airmail Letter'),
+				  array('id' => 'Airmail Parcel',   'text' => 'Airmail Parcel'),
+				  array('id' => 'Surface Letter',   'text' => 'Surface Letter'),
+				  array('id' => 'Surface Post',     'text' => 'Surface Post'),
+				);
+				$choices = array();
+				foreach ($temp as $value) {
+				    $choices[] = html_checkbox_field(strtolower($key) . '[]', $value['id'], ((strpos(constant($key), $value['id']) === false) ? false : true), '', $parameters = '') . ' ' . $value['text'];
+				}
+				$html = implode('<br />', $choices);
+				break;
+	*/
+		  	default:
+				$html = parent::configure($key);
+		}
+		return $html;
 	}
-	return $html;
-  }
 
-  function update() {
-    foreach ($this->keys() as $key) {
-	  $field = strtolower($key['key']);
-	  switch ($key['key']) {
-	    case 'MODULE_SHIPPING_USPS_TYPES':
-	    case 'MODULE_SHIPPING_USPS_TYPES_INTL':
-		  write_configure($key['key'], implode(',', $_POST[$field]));
-		  break;
-		default:  // just write the value
-		  if (isset($_POST[$field])) write_configure($key['key'], $_POST[$field]);
-	  }
+	function update() {
+	    foreach ($this->keys as $key) {
+			$field = strtolower($key['key']);
+		  	switch ($key['key']) {
+		    	case 'MODULE_SHIPPING_USPS_TYPES':
+			    case 'MODULE_SHIPPING_USPS_TYPES_INTL':
+					write_configure($key['key'], implode(',', $_POST[$field]));
+			  		break;
+				default:  // just write the value
+			  		if (isset($_POST[$field])) write_configure($key['key'], $_POST[$field]);
+		  	}
+		}
 	}
-  }
 
 // ***************************************************************************************************************
 //								USPS RATE AND SERVICE REQUEST
@@ -264,7 +235,7 @@ class usps {
 	  $XMLFail = $ResponseXML->Error->Number;
 	  if ($XMLFail) {	// fetch the error code
 		$XMLErrorDesc = $ResponseXML->Error->Description;
-		$messageStack->add($this->code . ' - ' . $XMLFail . ' - ' . $XMLErrorDesc, 'error');
+		$messageStack->add($this->id . ' - ' . $XMLFail . ' - ' . $XMLErrorDesc, 'error');
 		return false;
 	  }
 	  // Fetch the USPS Rates
@@ -277,10 +248,10 @@ class usps {
 	  foreach ($SearchObj->RateV2Response->Package->Postage as $postage) { 
 		foreach ($this->USPSRateCodes as $key => $service) {
 		  if ($postage->MailService == $key && in_array($service, $user_choices)) {
-		    $arrXML[$this->code][$service]['book']  = $postage->Rate;
-		    $arrXML[$this->code][$service]['quote'] = $postage->Rate;
-		    $arrXML[$this->code][$service]['cost']  = $postage->Rate;
-		    $arrXML[$this->code][$service]['note']  = '';
+		    $arrXML[$this->id][$service]['book']  = $postage->Rate;
+		    $arrXML[$this->id][$service]['quote'] = $postage->Rate;
+		    $arrXML[$this->id][$service]['cost']  = $postage->Rate;
+		    $arrXML[$this->id][$service]['note']  = '';
 		  }
 		}
 	  }

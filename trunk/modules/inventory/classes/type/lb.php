@@ -1,6 +1,6 @@
 <?php
-require_once(DIR_FS_MODULES . 'inventory/classes/inventory.php');
-class lb extends inventory {//Labor
+namespace inventory\classes\type;
+class lb extends \inventory\classes\inventory {//Labor
 	public $inventory_type			= 'lb';
 	public $title					= INV_TYPES_LB;
 	public $account_sales_income	= INV_LABOR_DEFAULT_SALES;

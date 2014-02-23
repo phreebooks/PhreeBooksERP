@@ -9,8 +9,7 @@
 // Path: /modules/payment/language/nl_nl/admin.php
 
 define('MODULE_PAYMENT_TITLE','Betaal Module');
-define('MODULE_PAYMENT_DESCRIPTION','De betaal module is een huls voor gebruiker configureerbare betaal methodes. Sommige methodes zijn beschikbaar in de kern software andere zijn beschikbaar voor download van de PhreeSoft website. <b>Aantekening: Dit is een kern module en zou niet verwijderd moeten worden!</b>');
-define('TEXT_PAYMENT_MODULES_AVAILABLE','Beschikbare Betaal Modules');
+define('MODULE_PAYMENT_DESCRIPTION','De betaal module is een huls voor gebruiker configureerbare betaal methodes.<br/>Sommige methodes zijn beschikbaar in de kern software andere zijn beschikbaar voor download van de PhreeSoft website.');
 define('TEXT_PRODUCTION','Productie');
 define('TEXT_AUTHORIZE','Autoriseer');
 define('TEXT_CAPTURE','Vastleggen');

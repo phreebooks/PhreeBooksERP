@@ -18,22 +18,17 @@
 //  Path: /modules/xml_builder/pages/main/pre_process.php
 //
 // This script updates the xml module information file
-$security_level = validate_user(SECURITY_ID_XML_BUILDER);
+$security_level = \core\classes\user::validate(SECURITY_ID_XML_BUILDER);
 /**************  include page specific files    *********************/
-require_once(DIR_FS_WORKING . 'classes/xml_builder.php');
-require_once(DIR_FS_MODULES . 'phreedom/classes/backup.php');
 /**************   page specific initialization  *************************/
-$working  = new xml_builder();
-$mod_xml  = new backup();
+$working  = new \xml_builder\classes\xml_builder();
+$mod_xml  = new \phreedom\classes\backup();
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save':
-	validate_security($security_level, 2);
+	\core\classes\user::validate_security($security_level, 2);
   	// read the input variables
-	$mod       = $_POST['mod'];
-	$mod_admin = $mod . '_admin';
-	require_once(DIR_FS_MODULES . $mod . '/classes/install.php');
-	$mod_info  = new $mod_admin;
+	$entry       = $_POST['mod'];
 	// read the existing xml file to set as base, if it exists
 	if (file_exists(DIR_FS_MODULES . $mod . '/' . $mod . '.xml')) {
 	  $working->output = xml_to_object(file_get_contents(DIR_FS_MODULES . $mod . '/' . $mod . '.xml'));
@@ -78,7 +73,7 @@ switch ($_REQUEST['action']) {
 	// read the dirs
 	if ($working->make_dir_tree(DIR_FS_MODULES . $mod . '/', '')) $error = true;
 	// read the db
-	if ($working->make_db_info($mod_info->tables)) $error = true;
+	if ($working->make_db_info($admin_classes[$entry]->tables)) $error = true;
 	// build the output string
 //echo 'result object = '; print_r($working->output); echo '<br><br>';
 	$xmlString  = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";

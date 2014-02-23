@@ -46,7 +46,7 @@
             } catch(e) {
                 if ($canvas[0].nodeName.toLowerCase() === "canvas") {
                     // TODO, maybe add a bit less offensive way to present this, but still something that can easily be noticed
-                    alert("Canvas is tainted, unable to read data");
+                	$.messager.alert('error',"Canvas is tainted, unable to read data",'error');
                 }
             }
         };

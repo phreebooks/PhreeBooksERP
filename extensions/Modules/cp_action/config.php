@@ -21,7 +21,6 @@
 // 0.1 => 2010-09-01 - Converted from stand-alone PhreeBooks release
 // 3.3 => 2011-11-15 - bug fixes, themeroller changes
 // Module software version information
-define('MODULE_CP_ACTION_VERSION','3.3');
 // Menu Sort Positions
 define('BOX_CAPA_MODULE_ORDER',      80);
 // Menu Security id's

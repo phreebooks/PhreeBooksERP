@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreedom/classes/translator.php
 //
-
+namespace translator\classes;
 class translator {
 	function __construct() {
 		global $db;
@@ -40,20 +40,11 @@ class translator {
   function upload_language($dir_dest, $mod, $lang) {
 	global $db, $backup, $messageStack;
 	$upload_filename = DIR_FS_MY_FILES . 'translator/translate.zip';
-	if (!validate_upload('zipfile', 'zip', 'zip')) {
-	  $messageStack->add(TEXT_IMP_ERMSG7, 'error');
-	  return false;
-	}
+	if (!validate_upload('zipfile', 'zip', 'zip')) throw new \Exception(TEXT_IMP_ERMSG7);
 	if (file_exists($upload_filename)) unlink ($upload_filename);
-	if (!copy($_FILES['zipfile']['tmp_name'], $upload_filename)) {
-	  $messageStack->add('Error copying to ' . $upload_filename, 'error');
-	  return false;
-	} 
+	if (!copy($_FILES['zipfile']['tmp_name'], $upload_filename)) throw new \Exception('Error copying to ' . $upload_filename);
 	if (!is_dir($dir_dest)) mkdir($dir_dest);
-	if ($backup->unzip_file($upload_filename, $dir_dest)) {
-	  $messageStack->add('Error unzipping file', 'error');
-	  return false;
-	}
+	if ($backup->unzip_file($upload_filename, $dir_dest)) throw new \Exception('Error unzipping file');
 	$this->import_language($dir_dest, $mod, $lang);
 	if (file_exists($upload_filename)) unlink ($upload_filename);
 	$backup->delete_dir($dir_dest); // remove unzipped files
@@ -117,10 +108,7 @@ if ($const == 'GEN_COUNTRY_CODE')echo 'writing const = '.$const.' with value = '
 	// retrieve highest version
 	$result = $db->Execute("select max(version) as version from " . TABLE_TRANSLATOR . " 
 	  where module = '" . $mod . "' and language = '" . $source . "'");
-	if ($result->RecordCount() == 0) {
-	  $messageStack->add(TRANS_ERROR_NO_SOURCE,'error');
-	  return false;
-	}
+	if ($result->RecordCount() == 0) throw new \Exception(TRANS_ERROR_NO_SOURCE);
 	$ver = $result->fields['version'];
 	// delete all from the version being written, prevents dups
 	$db->Execute("delete from " . TABLE_TRANSLATOR . " 
@@ -162,10 +150,7 @@ if ($const == 'GEN_COUNTRY_CODE')echo 'writing const = '.$const.' with value = '
 	global $db, $backup, $messageStack;
 	$result = $db->Execute("select pathtofile, defined_constant, translation from " . TABLE_TRANSLATOR . " 
 	  where module = '" . $mod . "' and language = '" . $lang . "' and version = '" . $ver . "'");
-	if ($result->RecordCount() == 0) {
-	  if (!$hide_error) $messageStack->add(GEN_BACKUP_DOWNLOAD_EMPTY,'error');
-	  return false; // no rows, return
-	}
+	if ($result->RecordCount() == 0) throw new \Exception(GEN_BACKUP_DOWNLOAD_EMPTY);
 	$output  = array();
 	$header  = '<' . '?' . 'php'  . chr(10);
 	$header .= '// +-----------------------------------------------------------------+' . chr(10);
@@ -190,10 +175,7 @@ if ($const == 'GEN_COUNTRY_CODE')echo 'writing const = '.$const.' with value = '
 	  $new_dir  = $backup->source_dir . substr ($path, 0, strrpos($path, '/'));
 	  $filename = substr ($path, strrpos($path,'/')+1);
 	  if (!is_dir($new_dir)) mkdir($new_dir, 0777, true);
-	  if (!$fp = fopen($new_dir . '/' . $filename, 'w')) {
-	    if (!$hide_error) $messageStack->add('Error opening ' . $new_dir . '/' . $filename,'error');
-		return false;
-	  }
+	  if (!$fp = fopen($new_dir . '/' . $filename, 'w')) throw new \Exception('Error opening ' . $new_dir . '/' . $filename);
 	  fwrite($fp, $content);
 	  fclose($fp);
 	}
@@ -219,7 +201,7 @@ if ($const == 'GEN_COUNTRY_CODE')echo 'writing const = '.$const.' with value = '
   	$runaway = 0;
   	$output = array();
   	while(true) {
-  		if ($runaway++ > 50000) break;
+  		if ($runaway++ > 50000) throw new \Exception('hit runaway counter');
   		if (strpos($langFile, 'define') === false) break;
   		$langFile = trim(substr($langFile, strpos($langFile, 'define')+6)); // find first define
   		$langFile = trim(substr($langFile, 1)); // remove '('

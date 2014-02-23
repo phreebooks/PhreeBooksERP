@@ -1,6 +1,6 @@
 <?php
-require_once(DIR_FS_MODULES . 'inventory/classes/inventory.php');
-class mb extends inventory {//Master Build (combination of Master Stock Item and assembly) parent of ia
+namespace inventory\classes\type;
+class mb extends \inventory\classes\inventory {//Master Build (combination of Master Stock Item and assembly) parent of ia
 	public $inventory_type			= 'mb';
 	public $title       			= INV_TYPES_MB;
 	public $account_sales_income	= INV_ASSY_DEFAULT_SALES;
@@ -47,6 +47,17 @@ class mb extends inventory {//Master Build (combination of Master Stock Item and
 	function copy($id, $newSku) {
 		global $db;
 		if(parent::copy($id, $newSku)){
+			$result = $db->Execute("select * from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = '$id'");
+			while(!$result->EOF) {
+				$bom_list = array(
+				  	'ref_id'      => $this->id,
+				  	'sku'         => $result->fields['sku'],
+					'description' => $result->fields['description'],
+					'qty'         => $result->fields['qty'],
+				);
+				db_perform(TABLE_INVENTORY_ASSY_LIST, $bom_list, 'insert');
+				$result->MoveNext();
+			}
 			$result = $db->Execute("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->old_sku . "'");
 			$data_array = array(
 				'sku'         => $this->sku,
@@ -146,26 +157,17 @@ class mb extends inventory {//Master Build (combination of Master Stock Item and
 	}
 
 	function check_remove($id){
-		global $messageStack, $db;
+		global $db;
 		if(isset($id))$this->get_item_by_id($id);
 		else return false;
 		// check to see if there is inventory history remaining, if so don't allow delete
 		$result = $db->Execute("select id from " . TABLE_INVENTORY_HISTORY . " where ( sku like '" . $this->sku  . "-%' or sku = '" . $this->sku  . "') and remaining > 0");
-		if ($result->RecordCount() > 0) {
-		 	$messageStack->add(INV_ERROR_DELETE_HISTORY_EXISTS, 'error');
-		 	return false;
-		}
+		if ($result->RecordCount() > 0) throw new \Exception(INV_ERROR_DELETE_HISTORY_EXISTS);
 		// check to see if this item is part of an assembly
 		$result = $db->Execute("select id from " . TABLE_INVENTORY_ASSY_LIST . " where sku like '" . $this->sku  . "-%' or sku = '" . $this->sku  . "'");
-		if ($result->RecordCount() > 0) {
-	  		$messageStack->add(INV_ERROR_DELETE_ASSEMBLY_PART, 'error');
-	  		return false;
-		}
+		if ($result->RecordCount() > 0) throw new \Exception(INV_ERROR_DELETE_ASSEMBLY_PART);
 		$result = $db->Execute( "select id from " . TABLE_JOURNAL_ITEM . " where sku like '" . $this->sku  . "-%' or sku = '" . $this->sku  . "' limit 1");
-		if ($result->Recordcount() > 0) {
-			$messageStack->add(INV_ERROR_CANNOT_DELETE, 'error');
-	  		return false;	
-		}
+		if ($result->Recordcount() > 0) throw new \Exception(INV_ERROR_CANNOT_DELETE);
 		$this->remove();
 	  	return true;
 		
@@ -192,7 +194,7 @@ class mb extends inventory {//Master Build (combination of Master Stock Item and
 	}
 	
 	function save(){
-		global $db, $messageStack, $security_level, $currencies;
+		global $db, $security_level, $currencies;
 		$bom_list = array();
 		for($x=0; $x < count($_POST['assy_sku']); $x++) {
 			$bom_list[$x] = array(
@@ -204,7 +206,7 @@ class mb extends inventory {//Master Build (combination of Master Stock Item and
 		  	$result = $db->Execute("select id from " . TABLE_INVENTORY . " where sku = '". $_POST['assy_sku'][$x]."'" );
 		  	if (($result->RecordCount() == 0 || $currencies->clean_value($_POST['assy_qty'][$x]) == 0) && $_POST['assy_sku'][$x] =! '') { 
 		  		// show error, bad sku, negative quantity. error check sku is valid and qty > 0
-				$error = $messageStack->add(INV_ERROR_BAD_SKU . db_prepare_input($_POST['assy_sku'][$x]), 'error');
+				throw new \Exception(INV_ERROR_BAD_SKU . db_prepare_input($_POST['assy_sku'][$x]));
 		  	}else{
 		  		$prices = inv_calculate_sales_price(abs($this->bom[$x]['qty']), $result->fields['id'], 0, 'v');
 				$bom_list[$x]['item_cost'] = strval($prices['price']);
@@ -218,7 +220,6 @@ class mb extends inventory {//Master Build (combination of Master Stock Item and
 		if ($sql_data_array == false) return false;	
 		$result = $db->Execute("select last_journal_date, quantity_on_hand  from " . TABLE_INVENTORY . " where id = " . $this->id);
 		$this->allow_edit_bom = (($result->fields['last_journal_date'] == '0000-00-00 00:00:00' || $result->fields['last_journal_date'] == '') && ($result->fields['quantity_on_hand'] == 0|| $result->fields['quantity_on_hand'] == '')) ? true : false;
-		if($error) return false;
 	  	if ($this->allow_edit_bom == true) { // only update if no posting has been performed
 	  		$result = $db->Execute("delete from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = " . $this->id);
 			foreach($bom_list as $list_array) {
@@ -348,9 +349,8 @@ class mb extends inventory {//Master Build (combination of Master Stock Item and
 		  	}
 		}
 		if (count($delete_list) && $security_level < 4){
-			$messageStack->add(ERROR_NO_PERMISSION,'error');
 			$this->get_ms_list();
-	  		return false;
+			throw new \Exception(ERROR_NO_PERMISSION);
 		}
 		foreach($delete_list as $sku) {
 			$temp = $this->ia_check_remove($sku);

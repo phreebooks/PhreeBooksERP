@@ -19,7 +19,7 @@
 //
 
 ?>
-<div id="tab_customers">
+<div title="<?php echo MENU_HEADING_CUSTOMERS;?>" id="tab_customers">
   <fieldset>
 	<table class="ui-widget" style="border-collapse:collapse;width:100%">
 	 <thead class="ui-widget-header">

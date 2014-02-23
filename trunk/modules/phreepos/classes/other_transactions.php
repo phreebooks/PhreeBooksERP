@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreepos/classes/other_transactions.php
 //
-
+namespace phreepos\classes;
 class other_transactions {
 	public $code        	= 'other_transactions'; // needs to match class name
     public $db_table     	= TABLE_PHREEPOS_OTHER_TRANSACTIONS;
@@ -24,19 +24,16 @@ class other_transactions {
     public $error       	= false;
     
     public function __construct(){
-         $this->security_id           = $_SESSION['admin_security'][SECURITY_ID_CONFIGURATION];
+         $this->security_id           = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
          foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
          $this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
          $this->store_ids = gen_get_store_ids();
     }
 
   	function btn_save($id = '') {
-  		global $db, $messageStack, $currencies;
-		validate_security($this->security_id, 2);
-		if ($this->gl_acct_id == ''){
-			$messageStack->add(GL_SELECT_STD_CHART,'error');
-			return false;
-		}
+  		global $db;
+		\core\classes\user::validate_security($this->security_id, 2);
+		if ($this->gl_acct_id == '') throw new \Exception(GL_SELECT_STD_CHART);
 		$sql_data_array = array(
 			'description' 		    => $this->description,
 			'till_id'    		    => $this->till_id,
@@ -56,8 +53,8 @@ class other_transactions {
   	}
 
   	function btn_delete($id = 0) {
-  		global $db, $messageStack;
-  		validate_security($this->security_id, 4);
+  		global $db;
+  		\core\classes\user::validate_security($this->security_id, 4);
 		// 	OK to delete
 		$result = $db->Execute("select description from " . $this->db_table . " where ot_id = '" . $id . "'");
 		$db->Execute("delete from " . $this->db_table . " where ot_id = '" . $id . "'");
@@ -66,7 +63,7 @@ class other_transactions {
   	}
 
   	function build_main_html() {
-  		global $db, $messageStack, $currencies;
+  		global $db, $currencies;
   		require_once(DIR_FS_MODULES . 'phreepos/defaults.php');
     	$content = array();
 		$content['thead'] = array(
@@ -99,14 +96,13 @@ class other_transactions {
 
 	function build_form_html($action, $id = '') {
     	global $db, $currencies;
-    	require_once(DIR_FS_MODULES . 'phreepos/classes/tills.php');
     	require_once(DIR_FS_MODULES . 'phreepos/defaults.php');
     	if ($action <> 'new' && $this->error == false) {
         	$sql = "select * from " . $this->db_table . " where ot_id = " . $id;
         	$result = $db->Execute($sql);
         	foreach ($result->fields as $key => $value) $this->$key = $value;
 		}
-		$tills = new tills();
+		$tills = new \phreepos\classes\tills();
 		$output = "<script type='text/javascript'>
 						$(document).ready(function(){
 							changeOfType();

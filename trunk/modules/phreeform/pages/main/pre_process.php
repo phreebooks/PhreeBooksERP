@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreeform/pages/main/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_PHREEFORM);
+$security_level = \core\classes\user::validate(SECURITY_ID_PHREEFORM);
 /**************  include page specific files    *********************/
 require(DIR_FS_WORKING . 'defaults.php');
 require(DIR_FS_WORKING . 'functions/phreeform.php');
@@ -77,18 +77,14 @@ switch ($_REQUEST['action']) {
 	$backup_filename = str_replace(' ', '',  $result->fields['doc_title']);
 	$backup_filename = str_replace('/', '_', $backup_filename) . '.zip';
 	$dest_dir        = DIR_FS_MY_FILES . 'backups/';
-	if (!class_exists('ZipArchive')) {
-	  $messageStack->add(PHREEFORM_NO_ZIP,'error');
-	  break;
-	}
-	$zip = new ZipArchive;
-	$res = $zip->open($dest_dir . $backup_filename, ZipArchive::CREATE);
+	if (!class_exists('ZipArchive')) throw new \Exception(PHREEFORM_NO_ZIP);
+	$zip = new \ZipArchive;
+	$res = $zip->open($dest_dir . $backup_filename, \ZipArchive::CREATE);
 	if ($res === TRUE) {
 		$res = $zip->addFromString($source_filename, file_get_contents($filename));
 		$zip->close();
 	} else {
-	  $messageStack->add(PHREEFORM_ZIP_ERROR . $dest_dir, 'error');
-	  break;
+	  throw new \Exception(PHREEFORM_ZIP_ERROR . $dest_dir);
 	}
 	// download file and exit script
 	$contents = file_get_contents($dest_dir . $backup_filename);
@@ -152,11 +148,11 @@ switch ($_REQUEST['action']) { // figure which detail page to load
 	$query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . " from " . TABLE_PHREEFORM . $search;
 	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     // the splitPageResults should be run directly after the query that contains SQL_CALC_FOUND_ROWS
-    $query_split  = new splitPageResults($_REQUEST['list'], '');
+    $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results
     	$_REQUEST['list'] = $query_split->current_page_number;
     	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-    	$query_split  = new splitPageResults($_REQUEST['list'], '');
+    	$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     }
     history_save();
     $div_template = DIR_FS_WORKING . 'pages/main/' . ($id ? 'tab_report.php' : 'tab_folder.php');

@@ -23,7 +23,6 @@
 // Include translations here as well.
 function init() {
   $(function() { // initialize tables
-	$('#admintabs').tabs();
     $('#tab_table').dataTable( dataTables_i18n );
     $('#field_table').dataTable( dataTables_i18n );
     $('#dept_table').dataTable( dataTables_i18n );
@@ -52,12 +51,12 @@ function loadPopUp(action, id) {
     case 'dept_types_delete':    action = 'delete'; subject = 'dept_types';     break;
     case 'project_costs_delete': action = 'delete'; subject = 'project_costs';  break;
     case 'project_phases_delete':action = 'delete'; subject = 'project_phases'; break;
-    case 'fields_new':           action = 'new';    subject = 'contact_fields'; break;
-    case 'tabs_new':             action = 'new';    subject = 'contact_tabs';   break;
-    case 'fields_edit':          action = 'edit';   subject = 'contact_fields'; break;
-    case 'tabs_edit':            action = 'edit';   subject = 'contact_tabs';   break;
-    case 'fields_delete':        action = 'delete'; subject = 'contact_fields'; break;
-    case 'tabs_delete':          action = 'delete'; subject = 'contact_tabs';   break;
+    case 'fields_new':           action = 'new';    subject = 'fields'; 		break;
+    case 'tabs_new':             action = 'new';    subject = 'tabs';   		break;
+    case 'fields_edit':          action = 'edit';   subject = 'fields';			break;
+    case 'tabs_edit':            action = 'edit';   subject = 'tabs';   		break;
+    case 'fields_delete':        action = 'delete'; subject = 'fields'; 		break;
+    case 'tabs_delete':          action = 'delete'; subject = 'tabs';   		break;
   }
   window.open("index.php?module=phreedom&page=popup_setup&topic="+module+"&subject="+subject+"&action="+action+"&sID="+id,"popup_setup","width=500,height=550,resizable=1,scrollbars=1,top=150,left=200");
 }

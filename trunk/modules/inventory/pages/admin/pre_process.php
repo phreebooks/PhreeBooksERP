@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/inventory/pages/admin/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_CONFIGURATION);
+$security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 /**************  include page specific files    *********************/
 gen_pull_language($module, 'admin');
 gen_pull_language('phreedom', 'admin');
@@ -24,23 +24,17 @@ require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 require_once(DIR_FS_WORKING . 'functions/inventory.php');
-require_once(DIR_FS_WORKING . 'classes/install.php');
-require_once(DIR_FS_WORKING . 'classes/inventory_tabs.php');
-require_once(DIR_FS_WORKING . 'classes/inventory_fields.php');
-
 /**************   page specific initialization  *************************/
-$error    = false; 
 $cog_type = explode(',', COG_ITEM_TYPES);
-$install  = new inventory_admin();
-$tabs     = new inventory_tabs();
-$fields   = new inventory_fields();
+$tabs     = new \inventory\classes\tabs();
+$fields   = new \inventory\classes\fields();
 
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save':
-	validate_security($security_level, 3); // security check
+	\core\classes\user::validate_security($security_level, 3); // security check
 	// save general tab
-	foreach ($install->keys as $key => $default) {
+	foreach ($admin_classes['inventory']->keys as $key => $default) {
 	  $field = strtolower($key);
       if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
     }
@@ -48,7 +42,7 @@ switch ($_REQUEST['action']) {
 	$messageStack->add(INVENTORY_CONFIG_SAVED,'success');
     break;
   case 'delete':
-	validate_security($security_level, 4); // security check
+	\core\classes\user::validate_security($security_level, 4); // security check
     $subject = $_POST['subject'];
     $id      = $_POST['rowSeq'];
 	if (!$subject || !$id) break;
@@ -56,7 +50,7 @@ switch ($_REQUEST['action']) {
 	break;
   case 'inv_hist_test':
   case 'inv_hist_fix':
-	validate_security($security_level, 3); // security check
+	\core\classes\user::validate_security($security_level, 3); // security check
 	$result = $db->Execute("select sku, qty from " . TABLE_INVENTORY_COGS_OWED);
 	$owed = array();
 	while (!$result->EOF) {
@@ -111,7 +105,7 @@ switch ($_REQUEST['action']) {
 	$default_tab_id = 'tools';
     break;
   case 'inv_on_order_fix':
-	validate_security($security_level, 3); // security check
+	\core\classes\user::validate_security($security_level, 3); // security check
     // fetch the inventory items that we track COGS and get qty on SO, PO
 	$cnt = 0;
 	$fix = 0;
@@ -155,7 +149,6 @@ switch ($_REQUEST['action']) {
 }
 
 /*****************   prepare to display templates  *************************/
-$category_array = xtra_field_get_tabs();
 // build some general pull down arrays
 $sel_yes_no = array(
  array('id' => '0', 'text' => TEXT_NO),

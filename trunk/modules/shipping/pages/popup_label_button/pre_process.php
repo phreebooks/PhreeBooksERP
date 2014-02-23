@@ -17,7 +17,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/shipping/pages/popup_label_button/pre_process.php
 //
-$security_level = validate_user(0, true);
+$security_level = \core\classes\user::validate(0, true);
 /**************   page specific initialization  *************************/
 $index = $_GET['index'];
 

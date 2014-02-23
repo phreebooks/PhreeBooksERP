@@ -17,7 +17,7 @@
 //  Path: /modules/phreedom/pages/users/pre_process.php
 //
 if($_SESSION['admin_id'] == 1) $security_level = 4;
-else $security_level = validate_user(SECURITY_ID_USERS);
+else $security_level = \core\classes\user::validate(SECURITY_ID_USERS);
 /**************  include page specific files    *********************/
 gen_pull_language($module, 'admin');
 gen_pull_language('contacts');
@@ -34,7 +34,7 @@ switch ($_REQUEST['action']) {
   case 'save':
   case 'fill_all': 
   case 'fill_role':
-	validate_security($security_level, 2);
+	\core\classes\user::validate_security($security_level, 2);
 	$admin_id  = db_prepare_input($_POST['rowSeq']);
 	$fill_all  = db_prepare_input($_POST['fill_all']);
 	$fill_role = db_prepare_input($_POST['fill_role']);
@@ -98,7 +98,7 @@ switch ($_REQUEST['action']) {
 	  } else if ($password_new != $password_conf) {
 		$error = $messageStack->add(ENTRY_PASSWORD_NEW_ERROR_NOT_MATCHING, 'error');
 	  }
-	  $sql_data_array['admin_pass'] = pw_encrypt_password($password_new);
+	  $sql_data_array['admin_pass'] = \core\classes\encryption::password($password_new);
 	}
 	if (!$admin_id) { // check for duplicate user name
 	  $result = $db->Execute("select admin_id from " . TABLE_USERS . " where admin_name = '" . db_prepare_input($_POST['admin_name']) . "'");
@@ -115,16 +115,16 @@ switch ($_REQUEST['action']) {
 		$admin_id = db_insert_id();
 		gen_add_audit_log(sprintf(GEN_LOG_USER, TEXT_ADD), db_prepare_input($_POST['admin_name']));
 	  }
-	  if ($admin_id == $_SESSION['admin_id']) $_SESSION['admin_security'] = gen_parse_permissions($admin_security); // update if user is current user
+	  if ($admin_id == $_SESSION['admin_id']) $_SESSION['admin_security'] = \core\classes\user::parse_permissions($admin_security); // update if user is current user
 	} elseif ($error) {
 	  $_REQUEST['action'] = 'edit';
 	}
-	$uInfo = new objectInfo($_POST);
+	$uInfo = new \core\classes\objectInfo($_POST);
 	$uInfo->admin_security = $admin_security;
 	break;
 
   case 'copy':
-	validate_security($security_level, 3);
+	\core\classes\user::validate_security($security_level, 3);
 	$admin_id = db_prepare_input($_GET['cID']);
 	$new_name = db_prepare_input($_GET['name']);
 	// check for duplicate user names
@@ -165,12 +165,12 @@ switch ($_REQUEST['action']) {
 	$result = $db->Execute("select * from " . TABLE_USERS . " where admin_id = " . (int)$admin_id);
 	$temp = unserialize($result->fields['admin_prefs']);
 	unset($result->fields['admin_prefs']);
-	$uInfo = new objectInfo($result->fields);
+	$uInfo = new \core\classes\objectInfo($result->fields);
 	if (is_array($temp)) foreach ($temp as $key => $value) $uInfo->$key = $value;
 	break;
 
   case 'delete':
-	validate_security($security_level, 4);
+	\core\classes\user::validate_security($security_level, 4);
 	$admin_id = (int)db_prepare_input($_POST['rowSeq']);
 	// fetch the name for the audit log
 	$result = $db->Execute("select admin_name from " . TABLE_USERS . " where admin_id = " . $admin_id);
@@ -241,11 +241,11 @@ switch ($_REQUEST['action']) {
 	if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
 	$query_raw    = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " from " . TABLE_USERS . " where is_role = '0'" . $search . " order by $disp_order";
 	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-    $query_split  = new splitPageResults($_REQUEST['list'], '');
+    $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results
     	$_REQUEST['list'] = $query_split->current_page_number;
     	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-    	$query_split  = new splitPageResults($_REQUEST['list'], '');
+    	$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     }
     history_save('users');
     

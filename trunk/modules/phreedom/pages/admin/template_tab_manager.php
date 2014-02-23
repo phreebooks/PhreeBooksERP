@@ -19,7 +19,7 @@
 //
 
 ?>
-<div id="tab_manager">
+<div title="<?php echo BOX_COMPANY_MANAGER;?>" id="tab_manager">
   <fieldset>
   <legend><?php echo SETUP_CO_MGR_COPY_CO; ?></legend>
     <table>

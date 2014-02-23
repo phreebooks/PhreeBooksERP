@@ -50,8 +50,6 @@ define('ASSETS_DATE_LAST_UPDATE','Laatste Onderhouds Datum');
 define('ASSETS_DATE_LAST_JOURNAL_DATE','Activa Pension Datum');
 define('ASSETS_PURCHASE_CONDITION','Aankoop Conditie');
 define('ASSETS_ENTRY_IMAGE_PATH','Afbeelding Adres');
-define('ASSETS_MSG_COPY_INTRO','Voer Id in voor de nieuwe activa.');
-define('ASSETS_MSG_RENAME_INTRO','Voer id in om activa te hernoemen.');
 /************ Javascript defines *********/
 define('ASSETS_MSG_DELETE_ASSET','Weet u zeker dat u dit wil verwijderen?');
 

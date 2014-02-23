@@ -33,7 +33,7 @@ var company_array        = new Array("<?php echo implode('", "', $js_arrays['com
 var default_array        = new Array("<?php echo implode('", "', $js_arrays['text']); ?>");
 var journalID            = '<?php echo JOURNAL_ID; ?>';
 var securityLevel        = <?php echo $security_level; ?>;
-var single_line_list     = '<?php echo SINGLE_LINE_ORDER_SCREEN; ?>';
+var single_line_list     = <?php echo SINGLE_LINE_ORDER_SCREEN; ?>;
 var account_type         = '<?php echo $account_type; ?>';
 var text_search          = '<?php echo TEXT_SEARCH; ?>';
 var text_enter_new       = '<?php echo TEXT_ENTER_NEW; ?>';
@@ -59,6 +59,7 @@ var item_col_2_enable    = '<?php echo ($item_col_2_enable) ? '1' : '0'; ?>';
 var ship_search_HTML     = '<?php echo GEN_CUSTOMER_ID . " " . html_input_field("ship_search", $order->ship_short_name) . "&nbsp;" . html_icon("status/folder-open.png", TEXT_SEARCH, "small", 'align="top" style="cursor:pointer" title="' . TEXT_SEARCH . '" onclick="DropShipList(this)"'); ?>';
 var delete_icon_HTML     = '<?php echo substr(html_icon("emblems/emblem-unreadable.png", TEXT_DELETE, "small", "onclick=\"if (confirm(\'" . TEXT_ROW_DELETE_ALERT . "\')) removeInvRow("), 0, -2); ?>';
 var serial_num_prompt    = '<?php echo ORD_JS_SERIAL_NUM_PROMPT; ?>';
+var text_serial_number	 = '<?php echo TEXT_SERIAL_NUMBER; ?>';
 var no_stock_a           = '<?php echo ORD_JS_NO_STOCK_A; ?>';
 var no_stock_b           = '<?php echo ORD_JS_NO_STOCK_B; ?>';
 var no_stock_c           = '<?php echo ORD_JS_NO_STOCK_C; ?>';
@@ -106,21 +107,20 @@ if ($template_options['terminal_date']) echo js_calendar_init($cal_terminal);
 // List the active projects
 <?php echo $js_proj_list; ?>
 // list the freight options
-<?php echo $shipping_methods; ?>
+<?php echo $js_shipping_options; //@todo this doesn't work anymore?>
 
 function init() {
   document.getElementById('ship_to_select').style.visibility = 'hidden';
   document.getElementById('bill_to_select').style.visibility = 'hidden';
   document.getElementById('ship_to_search').innerHTML = '&nbsp;'; // turn off ship to id search
-  $('#override_order').dialog({ autoOpen:false, width:600 });
 <?php 
   if ($error && isset($order->shipper_code)) {
     $values = explode(':', $order->shipper_code);
     echo '  document.getElementById("ship_carrier").value = "' . $values[0] . '";' . chr(10);
-    echo '  buildFreightDropdown();';
+    echo '  buildFreightDropdown();' . chr(10);
     echo '  document.getElementById("ship_service").value = "' . $values[1] . '";' . chr(10);
   } else {
-    echo '  buildFreightDropdown();';
+    echo '  buildFreightDropdown();' . chr(10);
   }
 ?>
   setField('sku_1',text_search);
@@ -232,7 +232,7 @@ function check_form() {
   }
 
   if (error == 1) {
-    alert(error_message);
+	$.messager.alert('error',error_message,'error');
     return false;
   }
   return true;
@@ -283,7 +283,7 @@ function refreshOrderClock() {
 		url: 'index.php?module=inventory&page=ajax&op=inv_details&fID=skuDetails&cID='+acct+'&qty='+qty+'&upc='+upc+'&rID='+setId+'&jID='+journalID,
 		dataType: ($.browser.msie) ? "text" : "xml",
 		error: function(XMLHttpRequest, textStatus, errorThrown) {
-		  alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+			$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 		},
 		success: fillInventory
 	  });

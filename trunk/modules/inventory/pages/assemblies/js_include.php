@@ -44,7 +44,7 @@ function check_form() {
 	error = 1;
   }
   if (error == 1) {
-    alert(error_message);
+	$.messager.alert("Processing error",error_message,"error");
     return false;
   }
   return true;
@@ -82,7 +82,7 @@ function EditAssembly(rID) {
     url: 'index.php?module=phreebooks&page=ajax&op=load_record&rID='+rID,
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-      alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     },
     success: processEditAssembly
   });
@@ -125,7 +125,7 @@ function loadSkuStock(sku) {
 	url: 'index.php?module=inventory&page=ajax&op=inv_details&fID=skuDetails&sku='+sku+'&bID='+bID+'&strict=1',
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-      alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     },
 	success: processSkuDetails
   });
@@ -140,7 +140,7 @@ function loadSkuDetails(iID, rowCnt) {
 	url: 'index.php?module=inventory&page=ajax&op=inv_details&iID='+iID+'&sku='+sku+'&bID='+bID+'&rID='+rowCnt,
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-      alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     },
 	success: processSkuDetails
   });
@@ -209,7 +209,7 @@ function checkBalances() {
 	  document.getElementById('stk_'+j).style.color = '';
 	}
   }
-  if (error) alert('<?php echo JS_NOT_ENOUGH_PARTS; ?>');
+  if (error) $.messager.alert("Error",'<?php echo JS_NOT_ENOUGH_PARTS; ?>',"error");
 }
 
 function updateBalance() {

@@ -18,7 +18,7 @@
 //
 
 ?>
-<div id="tab_general">
+<div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
 <fieldset>
   <legend></legend>
 <table class="ui-widget" style="border-style:none;width:100%">

@@ -17,7 +17,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreedom/pages/profile/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_MY_PROFILE);
+$security_level = \core\classes\user::validate(SECURITY_ID_MY_PROFILE);
 /**************  include page specific files    *********************/
 gen_pull_language($module, 'admin');
 require_once(DIR_FS_WORKING . 'functions/phreedom.php');
@@ -31,14 +31,11 @@ if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save':
-	validate_security($security_level, 4);
+	\core\classes\user::validate_security($security_level, 4);
 	$prefs['theme']  = db_prepare_input($_POST['theme']);
 	$prefs['menu']   = db_prepare_input($_POST['menu']);
 	$prefs['colors'] = db_prepare_input($_POST['colors']);
-	if (!$prefs['colors']) {
-		$error = $messageStack->add(GEN_ERROR_NO_THEME_COLORS,'error');
-		break;
-	}
+	if (!$prefs['colors']) throw new \Exception(GEN_ERROR_NO_THEME_COLORS);
 	db_perform(TABLE_USERS, array('admin_prefs'=>serialize($prefs)), 'update', 'admin_id = '.$_SESSION['admin_id']);
 	$_SESSION['admin_prefs']['theme']  = $prefs['theme'];
 	$_SESSION['admin_prefs']['menu']   = $prefs['menu'];

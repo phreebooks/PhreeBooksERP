@@ -25,7 +25,6 @@
 
 function init() {
   $(function() { // initialize tables
-	$('#admintabs').tabs();
     $('#tab_table').dataTable();
     $('#field_table').dataTable();
   });

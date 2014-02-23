@@ -19,7 +19,7 @@
 //
 
 ?>
-<div id="tab_page">
+<div title="<?php echo TEXT_PAGE_SETUP;?>" id="tab_page">
   <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto;">
    <thead class="ui-widget-header">
     <tr><th colspan="3"><?php echo TEXT_TITLE; ?></th></tr>

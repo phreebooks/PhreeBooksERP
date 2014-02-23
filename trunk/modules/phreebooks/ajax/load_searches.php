@@ -18,7 +18,7 @@
 //  Path: /modules/phreebooks/ajax/load_searches.php
 //
 /**************   Check user security   *****************************/
-$security_level = validate_ajax_user();
+$security_level = \core\classes\user::validate();
 /**************  include page specific files    *********************/
 /**************   page specific initialization  *************************/
 $error       = false;
@@ -50,5 +50,8 @@ if (!$error) {
   $xml .=  xmlEntry('result', 'fail');
 }
 if ($debug) $xml .= xmlEntry('debug', $debug);
-echo createXmlHeader() . $xml . createXmlFooter(); die;
+echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close(); 
+die;
 ?>

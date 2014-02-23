@@ -18,7 +18,6 @@
 //  Path: /modules/shipping/methods/endicia/language/en_us/language.php
 //
 define('MODULE_SHIPPING_ENDICIA_TEXT_TITLE', 'US Postal Service');
-define('MODULE_SHIPPING_ENDICIA_TITLE_SHORT', 'USPS');
 define('MODULE_SHIPPING_ENDICIA_TEXT_DESCRIPTION', 'US Postal Service (powered by Endicia)');
 define('MODULE_SHIPPING_ENDICIA_TEXT_INTRODUCTION', '<h3>Step 1. Register for an account</h3>
 <p>Open the Endicia registration application form and follow the instructions to create an account. Usually the basic service is all that is needed (about $15.95 per month). <a href="http://www.endicia.com/labelserver/login.cfm?partid=lpst" target="_blank"><b>Click HERE to Signup</b></a></p>
@@ -27,14 +26,8 @@ define('MODULE_SHIPPING_ENDICIA_TEXT_INTRODUCTION', '<h3>Step 1. Register for an
 <h3>Step 4. Buy Postage</h3><p>Navigate to Tools -> Shipping Manager -> US Postal Service tab. Select an amount and click the <b>Buy Postage</b> button to add a balance to your postage account.</p>
 <h3>Step 5. Configure Options</h3><p>Make sure the mode is set to Production for rate estimation and label printing. Contact PhreeSoft for the Dial-A-Zip password as it is a shared account with PhreeSoft and we would like to know who is using this service. You should now be able to retrieve rates, and print labels using the service. NOTE: PhreeSoft has performed all label testing on a Zebra ZP 505 printer. Older Eltron/Zebra 2442 and 2844 printers don\'t support the bar code types necessary for USPS postage printing.</p>');
 // key descriptions
-define('MODULE_SHIPPING_ENDICIA_TITLE_DESC','Title to use for display purposes when shipping with USPS');
 define('MODULE_SHIPPING_ENDICIA_ACCOUNT_NUMBER_DESC','Enter the Endicia account number to use');
 define('MODULE_SHIPPING_ENDICIA_PASS_PHRASE_DESC','Enter your Endicia account pass phrase');
-define('MODULE_SHIPPING_ENDICIA_TEST_MODE_DESC','Test/Production mode used for testing shipping labels');
-define('MODULE_SHIPPING_ENDICIA_PRINTER_TYPE_DESC','Type of printer to use for printing labels. PDF for plain paper, Thermal for Eltron/Zebra Label Printer');
-define('MODULE_SHIPPING_ENDICIA_PRINTER_NAME_DESC', 'Sets then name of the printer to use for printing labels as defined in the printer preferences for the local workstation');
-define('MODULE_SHIPPING_ENDICIA_TYPES_DESC','Select the USPS services to be offered by default');
-define('MODULE_SHIPPING_ENDICIA_SORT_ORDER_DESC','Sort order of display. Lowest is displayed first');
 // Delivery Methods
 define('MODULE_SHIPPING_ENDICIA_GND','Parcel Post');
 define('MODULE_SHIPPING_ENDICIA_GDR','Parcel Select');

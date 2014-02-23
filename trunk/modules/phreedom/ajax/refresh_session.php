@@ -26,5 +26,7 @@ $xml  = NULL;
 $xml .= xmlEntry("action", 'bump');
 echo createXmlHeader() . $xml . createXmlFooter();
 */
+ob_end_flush();
+session_write_close();
 die; // nothing to do as just getting here refreshes the session clock
 ?>

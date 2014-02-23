@@ -24,19 +24,14 @@ $fID = $_GET['fID'] ? $_GET['fID'] : 'validateDir';
 
 /**************   Check user security   *****************************/
 $xml = NULL;
-$security_level = $_SESSION['admin_security'][SECURITY_ID_PHREEFORM];
-if ($security_level == 0) { // no permission to enter page, return error
-  echo createXmlHeader($fID) . xmlEntry('error', ERROR_NO_PERMISSION) . createXmlFooter();
-  die;
-}
-
+$security_level = \core\classes\user::validate(SECURITY_ID_PHREEFORM);
 /**************  include page specific files    *********************/
 gen_pull_language($module);
 
 /**************   page specific initialization  *************************/
 $id = $_GET['id'];
 
-if (!$id) die;
+if (!$id) throw new Exception("variable ID isn't set");
 $xml = '';
 // This script checks the fieldname and field reference and validates that it is good.
 $result = $db->Execute("select * from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
@@ -50,5 +45,7 @@ if ($result->RecordCount() > 0) {
 
 //put it all together
 echo createXmlHeader($fID) . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

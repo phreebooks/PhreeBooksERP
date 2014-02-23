@@ -16,9 +16,8 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/contacts/classes/type/v.php
 //
-require_once(DIR_FS_MODULES . 'contacts/classes/contacts.php');
-
-class v extends contacts{	
+namespace contacts\classes\type;
+class v extends \contacts\classes\contacts{	
 	public $security_token = SECURITY_ID_MAINTAIN_VENDORS;
 	public $auto_type      = AUTO_INC_VEND_ID;
 	public $auto_field     = 'next_vend_id_num';

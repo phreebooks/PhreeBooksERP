@@ -38,23 +38,25 @@ function get_mime_image($ext, $type = 'default') {
   }
 }
 
+/**
+ * @todo make sure return isn't expected.
+ * Enter description here ...
+ * @param string $filename
+ * @throws Exception
+ */
 function dc_validate_upload($filename) {
-  	global $messageStack;
 	if ($_FILES[$filename]['error']) { // php error uploading file
 		switch ($_FILES[$filename]['error']) {
-			case '1': $messageStack->add(TEXT_IMP_ERMSG1, 'error'); break;
-			case '2': $messageStack->add(TEXT_IMP_ERMSG2, 'error'); break;
-			case '3': $messageStack->add(TEXT_IMP_ERMSG3, 'error'); break;
-			case '4': $messageStack->add(TEXT_IMP_ERMSG4, 'error'); break;
-			default:  $messageStack->add(TEXT_IMP_ERMSG5 . $_FILES[$filename]['error'] . '.', 'error');
+			case '1': throw new \Exception(TEXT_IMP_ERMSG1); break;
+			case '2': throw new \Exception(TEXT_IMP_ERMSG2); break;
+			case '3': throw new \Exception(TEXT_IMP_ERMSG3); break;
+			case '4': throw new \Exception(TEXT_IMP_ERMSG4); break;
+			default:  throw new \Exception(TEXT_IMP_ERMSG5 . $_FILES[$filename]['error'] . '.');
 		}
-		return false;
 	} elseif (!is_uploaded_file($_FILES[$filename]['tmp_name'])) { // file uploaded
-		$messageStack->add(TEXT_IMP_ERMSG13, 'error');
-		return false;
+		throw new \Exception(TEXT_IMP_ERMSG13);
 	} elseif ($_FILES[$filename]['size'] == 0) { // report contains no data, error
-		$messageStack->add(TEXT_IMP_ERMSG7, 'error');
-		return false;
+		throw new \Exception(TEXT_IMP_ERMSG7);
 	}
 	return true;
 }

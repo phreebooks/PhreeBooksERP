@@ -18,7 +18,7 @@
 //
 ?>
 
-<div id="tab_disposition">
+<div title="<?php echo TEXT_DISPOSITION;?>" id="tab_disposition">
 
 <fieldset>
   <legend><?php echo TEXT_DETAILS; ?></legend>

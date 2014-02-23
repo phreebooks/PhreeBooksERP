@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreepos/classes/tills.php
 //
-
+namespace phreepos\classes;
 class tills {
 	public $code                    = 'tills';
     public $db_table     			= TABLE_PHREEPOS_TILLS;
@@ -29,7 +29,7 @@ class tills {
     public $printer_open_drawer   	= '';
     
     public function __construct(){
-         $this->security_id           = $_SESSION['admin_security'][SECURITY_ID_CONFIGURATION];
+         $this->security_id           = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
          foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
          $this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
          $this->store_ids = gen_get_store_ids();
@@ -37,12 +37,9 @@ class tills {
     }
 
   function btn_save($id = '') {
-  	global $db, $messageStack, $currencies;
-	validate_security($this->security_id, 2);
-	if ($this->gl_acct_id == ''){
-		$messageStack->add(GL_SELECT_STD_CHART,'error');
-		return false;
-	}
+  	global $db, $currencies;
+	\core\classes\user::validate_security($this->security_id, 2);
+	if ($this->gl_acct_id == '') throw new \Exception(GL_SELECT_STD_CHART);
 	$sql_data_array = array(
 		'description' 		    => $this->description,
 		'store_id'    		    => $this->store_id,
@@ -71,15 +68,14 @@ class tills {
   }
 
   function btn_delete($id = 0) {
-  	global $db, $messageStack;
-	validate_security($this->security_id, 4);
+  	global $db;
+	\core\classes\user::validate_security($this->security_id, 4);
 	// Don't allow delete if there is account activity for this account
 	$sql = "select max(debit_amount) as debit, max(credit_amount) as credit, max(beginning_balance) as beg_bal 
 		from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '" . $this->gl_acct_id . "'";
 	$result = $db->Execute($sql);
 	if ($result->fields['debit'] <> 0 || $result->fields['credit'] <> 0 || $result->fields['beg_bal'] <> 0) {
-	  $messageStack->add(GL_ERROR_CANT_DELETE, 'error');
-	  return false;
+	  throw new \Exception(GL_ERROR_CANT_DELETE);
 	}
 	// OK to delete
 	$result = $db->Execute("select description from " . $this->db_table . " where till_id = '" . $id . "'");
@@ -89,7 +85,7 @@ class tills {
   }
 
   function build_main_html() {
-  	global $db, $messageStack ,$currencies;
+  	global $db, $currencies;
     $content = array();
 	$content['thead'] = array(
 	  'value' => array(TEXT_DESCRIPTION, GEN_STORE_ID, TEXT_GL_ACCOUNT, TEXT_ACTION, TEXT_BALANCE),
@@ -204,16 +200,13 @@ class tills {
   
 // functions for template main  
   function showDropDown(){
-  	global $db, $messageStack;
+  	global $db;
   	foreach ($this->store_ids as $store){
   		$temp[]= $store['id'];
   	}
   	$sql = "select till_id, description from " . $this->db_table . " where store_id in (" . implode(',', $temp) . ")";
     $result = $db->Execute($sql);
-    if ($result->RecordCount()== 0){// trigger_error("Before continuing set a till for this store. This will contain default values to allow this page to work", E_USER_ERROR);// there should always be a till because of defaults values.
-    	$messageStack->add("Before continuing set a till for this store.<br> This will contain default values to allow this page to work", 'error');
-    	gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL')); 
-    }
+    if ($result->RecordCount()== 0) trigger_error("Before continuing set a till for this store. This will contain default values to allow this page to work", E_USER_ERROR);// there should always be a till because of defaults values.
     if ($result->RecordCount()== 1) {
     	return false;
     }else{

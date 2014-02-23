@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/work_orders/pages/main/pre_process.php
 //
-$security_level = validate_user(SECURITY_WORK_ORDERS);
+$security_level = \core\classes\user::validate(SECURITY_WORK_ORDERS);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_MODULES . 'inventory/defaults.php');
 require_once(DIR_FS_WORKING . 'functions/work_orders.php');
@@ -40,7 +40,7 @@ switch ($_REQUEST['action']) {
 	break;
   case 'save':
   case 'print':
-	validate_security($security_level, 2);
+	\core\classes\user::validate_security($security_level, 2);
   	$id       = db_prepare_input($_POST['id']);
 	$sku      = db_prepare_input($_POST['sku']);
 	$sku_id   = db_prepare_input($_POST['sku_id']);
@@ -153,26 +153,18 @@ switch ($_REQUEST['action']) {
 	  break;
 	}
 	if (isset($_POST['user_mfg']) && $user_mfg > 0) { // the mfg signoff is required and present
-	  $sql = "select admin_pass from " . TABLE_USERS . " where admin_id = '" . $user_mfg . "'";
-      $result = $db->Execute($sql);
-      if (!pw_validate_password($pw_mfg, $result->fields['admin_pass'])) {
-        $error = true;
-	    $messageStack->add(WO_MFG_PASSWORD_BAD,'error');
-      } else {
+		$sql = "select admin_pass from " . TABLE_USERS . " where admin_id = '" . $user_mfg . "'";
+      	$result = $db->Execute($sql);
+      	\core\classes\encryption::validate_password($pw_mfg, $result->fields['admin_pass']);
 	    $sql_data_array['mfg_id']   = $user_mfg;
 	    $sql_data_array['mfg_date'] = date('Y-m-d H:i:s');
-	  }
 	}
 	if (isset($_POST['user_qa']) && $user_qa> 0) { // the qa signoff is required and present
-	  $sql = "select admin_pass from " . TABLE_USERS . " where admin_id = '" . $user_qa . "'";
-      $result = $db->Execute($sql);
-      if (!pw_validate_password($pw_qa, $result->fields['admin_pass'])) {
-        $error = true;
-	    $messageStack->add(WO_QA_PASSWORD_BAD,'error');
-      } else {
+	  	$sql = "select admin_pass from " . TABLE_USERS . " where admin_id = '" . $user_qa . "'";
+      	$result = $db->Execute($sql);
+      	\core\classes\encryption::validate_password($pw_qa, $result->fields['admin_pass']);
 	    $sql_data_array['qa_id']   = $user_qa;
 	    $sql_data_array['qa_date'] = date('Y-m-d H:i:s');
-      }
 	}
 	if (isset($_POST['data_value'])) {
 	  if ($data_value == '') {
@@ -213,7 +205,7 @@ switch ($_REQUEST['action']) {
 		require_once(DIR_FS_MODULES . 'phreebooks/classes/gen_ledger.php');
 		define('JOURNAL_ID', 14); // Inventory Assemblies Journal
 		define('GL_TYPE', '');
-		$glEntry = new journal();
+		$glEntry = new \core\classes\journal();
 		$glEntry->id                  = '';
 		$glEntry->admin_id            = $_SESSION['admin_id'];
 		$glEntry->journal_id          = JOURNAL_ID;
@@ -310,7 +302,7 @@ switch ($_REQUEST['action']) {
 	}
 	break;
   case 'delete':
-	validate_security($security_level, 4);
+	\core\classes\user::validate_security($security_level, 4);
     $id = db_prepare_input($_GET['id']);
 	if (!$id) $error = true;
 	if (!$error) {
@@ -391,11 +383,11 @@ switch ($_REQUEST['action']) {
     $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " 
 	  from " . TABLE_WO_JOURNAL_MAIN . " m inner join " . TABLE_INVENTORY . " i on m.sku_id = i.id" . $search . " order by $disp_order, m.closed, m.id DESC";
     $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-    $query_split  = new splitPageResults($_REQUEST['list'], '');
+    $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results
     	$_REQUEST['list'] = $query_split->current_page_number;
     	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-    	$query_split      = new splitPageResults($_REQUEST['list'], '');
+    	$query_split      = new \core\classes\splitPageResults($_REQUEST['list'], '');
     }
     history_save('wo_main');
     

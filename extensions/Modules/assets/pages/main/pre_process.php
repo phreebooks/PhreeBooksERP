@@ -16,16 +16,14 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/assets/pages/main/pre_process.php
 //
-$security_level = validate_user(SECURITY_ASSETS_MGT);
+$security_level = \core\classes\user::validate(SECURITY_ASSETS_MGT);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 require_once(DIR_FS_MODULES . 'inventory/functions/inventory.php');
 require_once(DIR_FS_WORKING . 'defaults.php');
-require_once(DIR_FS_WORKING . 'classes/assets_fields.php');
 /**************   page specific initialization  *************************/
-$error       = false;
 $processed   = false;
-$fields		 = new assets_fields();
+$fields		 = new \assets\classes\fields();
 $acquisition_date = isset($_POST['acquisition_date']) ? gen_db_date($_POST['acquisition_date']) : '';
 $maintenance_date = isset($_POST['maintenance_date']) ? gen_db_date($_POST['maintenance_date']) : '';
 $terminal_date    = isset($_POST['terminal_date'])    ? gen_db_date($_POST['terminal_date'])    : '';
@@ -40,35 +38,14 @@ switch ($_REQUEST['action']) {
 	$cInfo = '';
 	break;
   case 'create':
-	if ($security_level < 2) {
-		$messageStack->add(ERROR_NO_PERMISSION, 'error');
-		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-		break;
-	}
+  	\core\classes\user::validate_security($security_level, 2); // security check
 	$asset_id   = db_prepare_input($_POST['asset_id']);
 	$asset_type = db_prepare_input($_POST['asset_type']);
-	if (!$asset_id) {
-		$messageStack->add(ASSETS_ERROR_SKU_BLANK, 'error');
-		$_REQUEST['action'] = 'new';
-		break;
-	}
-	if (gen_validate_sku($asset_id)) {
-		$messageStack->add(ASSETS_ERROR_DUPLICATE_SKU, 'error');
-		$_REQUEST['action'] = 'new';
-		break;
-	}
+	$admin_classes['assets']->validate_name($asset_id);
 	$sql_data_array = array(
 		'asset_id'         => $asset_id,
 		'asset_type'       => $asset_type,
 		'acquisition_date' => 'now()');
-	switch ($asset_type) {
-	  case 'vh': $_REQUEST['search_text'] = TEXT_VEHICLE;   break;
-	  case 'bd': $_REQUEST['search_text'] = TEXT_BUILDING;  break;
-	  case 'fn': $_REQUEST['search_text'] = TEXT_FURNITURE; break;
-	  case 'pc': $_REQUEST['search_text'] = TEXT_COMPUTER;  break;
-	  case 'ld': $_REQUEST['search_text'] = TEXT_LAND;      break;
-	  case 'sw': $_REQUEST['search_text'] = TEXT_SOFTWARE;  break;
-	}
 	$sql_data_array['account_asset']        = ''; // best_acct_guess(8,$_REQUEST['search_text'],'');
 	$sql_data_array['account_depreciation'] = ''; // best_acct_guess(10,$_REQUEST['search_text'],'');
 	$sql_data_array['account_maintenance']  = ''; // best_acct_guess(34,$_REQUEST['search_text'],'');
@@ -78,11 +55,7 @@ switch ($_REQUEST['action']) {
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('cID', 'action')) . '&cID=' . $id . '&action=edit', 'SSL'));
 	break;
   case 'delete':
-	if ($security_level < 4) {
-		$messageStack->add(ERROR_NO_PERMISSION,'error');
-		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-		break;
-	}
+  	\core\classes\user::validate_security($security_level, 4); // security check
 	$id         = db_prepare_input($_GET['cID']);
 	$result     = $db->Execute("select asset_id, asset_type, image_with_path from " . TABLE_ASSETS . " where id = " . $id);
 	$asset_id   = $result->fields['asset_id'];
@@ -98,11 +71,7 @@ switch ($_REQUEST['action']) {
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('cID', 'action')), 'SSL'));
 	break;
   case 'save':
-	if ($security_level < 3) {
-		$messageStack->add(ERROR_NO_PERMISSION,'error');
-		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-		break;
-	}
+  	\core\classes\user::validate_security($security_level, 3); // security check
 	$id              = db_prepare_input($_POST['id']);
 	$asset_id        = db_prepare_input($_POST['asset_id']);
 	$image_with_path = db_prepare_input($_POST['image_with_path']); // the current image name with path relative from my_files/company_db/asset/images directory
@@ -162,59 +131,39 @@ switch ($_REQUEST['action']) {
 		$_POST['image_with_path'] = '';
 		$sql_data_array['image_with_path'] = ''; 
 	}
-	if (!$error && is_uploaded_file($_FILES['asset_image']['tmp_name'])) {
-		$file_path = DIR_FS_MY_FILES . $_SESSION['company'] . '/assets/images';
-        $asset_path = str_replace('\\', '/', $asset_path);
-		// strip beginning and trailing slashes if present
-		if (substr($asset_path, -1, 1) == '/') $asset_path = substr($asset_path, 0, -1);
-		if (substr($asset_path, 0, 1) == '/') $asset_path = substr($asset_path, 1);
-		if ($asset_path) $file_path .= '/' . $asset_path;
-
-		$temp_file_name = $_FILES['asset_image']['tmp_name'];
-		$file_name = $_FILES['asset_image']['name'];
-		if (!validate_path($file_path)) {
-			$messageStack->add(ASSETS_IMAGE_PATH_ERROR, 'error');
-			$error = true;
-		} elseif (!validate_upload('asset_image', 'image', 'jpg')) {
-			$messageStack->add(ASSETS_IMAGE_FILE_TYPE_ERROR, 'error');
-			$error = true;
-		} else { // passed all test, write file
-			if (!copy($temp_file_name, $file_path . '/' . $file_name)) {
-				$messageStack->add(ASSETS_IMAGE_FILE_WRITE_ERROR, 'error');
-				$error = true;
-			} else {
-				$image_with_path = ($asset_path ? ($asset_path . '/') : '') . $file_name;
-				$_POST['image_with_path'] = $image_with_path;
-				$sql_data_array['image_with_path'] = $image_with_path; // update the image with relative path
-			}
-		}
+	is_uploaded_file($_FILES['asset_image']['tmp_name']);
+	$file_path = DIR_FS_MY_FILES . $_SESSION['company'] . '/assets/images';
+       $asset_path = str_replace('\\', '/', $asset_path);
+	// strip beginning and trailing slashes if present
+	if (substr($asset_path, -1, 1) == '/') $asset_path = substr($asset_path, 0, -1);
+	if (substr($asset_path, 0, 1) == '/') $asset_path = substr($asset_path, 1);
+	if ($asset_path) $file_path .= '/' . $asset_path;
+	$temp_file_name = $_FILES['asset_image']['tmp_name'];
+	$file_name = $_FILES['asset_image']['name'];
+	if (!validate_path($file_path)) {
+		throw new \Exception(ASSETS_IMAGE_PATH_ERROR);
 	}
+	validate_upload('asset_image', 'image', 'jpg');
+	if (!copy($temp_file_name, $file_path . '/' . $file_name)) throw new \Exception(ASSETS_IMAGE_FILE_WRITE_ERROR);
+	$image_with_path = ($asset_path ? ($asset_path . '/') : '') . $file_name;
+	$_POST['image_with_path'] = $image_with_path;
+	$sql_data_array['image_with_path'] = $image_with_path; // update the image with relative path
 	// Ready to write update
 	if (!$error) {
 		db_perform(TABLE_ASSETS, $sql_data_array, 'update', "id = " . $id);
 		gen_add_audit_log(AESSETS_LOG_ASSETS . TEXT_UPDATE, $asset_id . ' - ' . $sql_data_array['description_short']);
-	} else if ($error == true) {
-		$tab_list = $db->Execute("select id, tab_name, description 
-		  from " . TABLE_EXTRA_TABS . " where module_id='assets' order by sort_order");
+	} else {
 		$_POST['id'] = $id;
-		$cInfo = new objectInfo($_POST);
+		$cInfo = new \core\classes\objectInfo($_POST);
 		$processed = true;
 	}
 	break;
   case 'copy':
-	if ($security_level < 2) {
-		$messageStack->add(ERROR_NO_PERMISSION,'error');
-		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-		break;
-	}
+  	\core\classes\user::validate_security($security_level, 2); // security check
 	$id 		  = db_prepare_input($_GET['cID']);
 	$new_asset_id = db_prepare_input($_GET['asset_id']);
 	// check for duplicate skus
-	$result = $db->Execute("select id from " . TABLE_ASSETS . " where asset_id = '" . $new_asset_id . "'");
-	if ($result->Recordcount() > 0) {	// error and reload
-		$messageStack->add(ASSETS_ERROR_DUPLICATE_SKU, 'error');
-		break;
-	}
+	$admin_classes['assets']->validate_name($new_asset_id);
 	$result = $db->Execute("select * from " . TABLE_ASSETS . " where id = " . $id);
 	$old_asset_key = $result->fields['asset_id'];
 	// clean up the fields (especially the system fields, retain the custom fields)
@@ -249,22 +198,14 @@ switch ($_REQUEST['action']) {
 	$asset = $db->Execute($sql);
 	// load attachments
 	$attachments = $asset->fields['attachments'] ? unserialize($asset->fields['attachments']) : array();
-	$cInfo = new objectInfo($asset->fields);
+	$cInfo = new \core\classes\objectInfo($asset->fields);
 	break;
   case 'rename':
-	if ($security_level < 4) {
-		$messageStack->add(ERROR_NO_PERMISSION,'error');
-		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-		break;
-	}
+  	\core\classes\user::validate_security($security_level, 4); // security check
 	$id = db_prepare_input($_GET['cID']);
 	$asset_id = db_prepare_input($_GET['asset_id']);
 	// check for duplicate skus
-	$result = $db->Execute("select id from " . TABLE_ASSETS . " where asset_id = '" . $asset_id . "'");
-	if ($result->Recordcount() > 0) {	// error and reload
-		$messageStack->add(ASSETS_ERROR_DUPLICATE_SKU, 'error');
-		break;
-	}
+	$admin_classes['assets']->validate_name($asset_id);
 	$result = $db->Execute("select asset_id, asset_type from " . TABLE_ASSETS . " where id = " . $id);
 	$orig_sku = $result->fields['asset_id'];
 	$asset_type = $result->fields['asset_type'];
@@ -290,8 +231,7 @@ switch ($_REQUEST['action']) {
 	$imgID = db_prepare_input($_POST['rowSeq']);
 	$filename = 'assets_'.$cID.'_'.$imgID.'.zip';
 	if (file_exists(ASSETS_DIR_ATTACHMENTS . $filename)) {
-		require_once(DIR_FS_MODULES . 'phreedom/classes/backup.php');
-		$backup = new backup();
+		$backup = new \phreedom\classes\backup();
 		$backup->download(ASSETS_DIR_ATTACHMENTS, $filename, true);
 	}
 	die;
@@ -302,8 +242,7 @@ switch ($_REQUEST['action']) {
 	foreach ($attachments as $key => $value) {
 	  $filename = 'assets_'.$cID.'_'.$key.'.zip';
 	  if (file_exists(ASSETS_DIR_ATTACHMENTS . $filename)) {
-		require_once(DIR_FS_MODULES . 'phreedom/classes/backup.php');
-		$backup = new backup();
+		$backup = new \phreedom\classes\backup();
 		$backup->download(ASSETS_DIR_ATTACHMENTS, $filename, true);
 		die;
 	  }
@@ -393,11 +332,11 @@ switch ($_REQUEST['action']) {
 
     $query_raw    = "select SQL_CALC_FOUND_ROWS ".implode(', ', $field_list)." from ".TABLE_ASSETS." $search order by $disp_order, asset_id";
     $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-    $query_split  = new splitPageResults($_REQUEST['list'], '');
+    $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results
     	$_REQUEST['list'] = $query_split->current_page_number;
 	    $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-	    $query_split  = new splitPageResults($_REQUEST['list'], '');
+	    $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     }
     history_save('assets');
     

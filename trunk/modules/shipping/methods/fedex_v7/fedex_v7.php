@@ -16,10 +16,9 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/shipping/methods/fedex_v7/fedex_v7.php
 //
+namespace shipping\methods\fedex_v7;
 // Revision history
 // 2011-07-01 - Added version number for revision control
-define('MODULE_SHIPPING_FEDEX_V7_VERSION','3.2');
-
 define('FEDEX_V7_COST_OFFSET',3.00); // constant to add to cost for reconciliation notifications
 define('FEDEX_V7_COST_FACTOR',0.10); // percent of allowed cost over actual charge
 define('FEDEX_V7_MAX_SINGLE_BOX_WEIGHT', 150); // maximum single box weight for small package in pounds
@@ -77,106 +76,106 @@ define('GUAR_TIME_2D','16:30:00'); // 2 Day and Saver
 define('GUAR_TIME_GD','17:00:00'); // Ground
 define('GUAR_TIME_RE','19:00:00'); // Residential
 
-class fedex_v7 {
-  // FedEx Rate code maps
-  var $FedExRateCodes = array(	
-	'FIRST_OVERNIGHT'        => '1DEam',
-	'PRIORITY_OVERNIGHT'     => '1Dam',
-	'STANDARD_OVERNIGHT'     => '1Dpm',
-	'FEDEX_2_DAY_AM'         => '2Dam',
-    'FEDEX_2_DAY'            => '2Dpm',
-	'SMART_POST'             => '3Dam',
-    'FEDEX_EXPRESS_SAVER'    => '3Dpm',
-	'FEDEX_GROUND'           => 'GND',
-	'GROUND_HOME_DELIVERY'   => 'GDR',
-	'INTERNATIONAL_FIRST'    => 'I2DEam',
-	'INTERNATIONAL_PRIORITY' => 'I2Dam',
-	'INTERNATIONAL_ECONOMY'  => 'I3D',
-	'FEDEX_1_DAY_FREIGHT'    => '1DFrt',
-	'FEDEX_2_DAY_FREIGHT'    => '2DFrt',
-	'FEDEX_3_DAY_FREIGHT'    => '3DFrt',
-	'FEDEX_FREIGHT_PRIORITY' => 'GndFrt',
-//	'FEDEX_FREIGHT_ECONOMY'  => 'EcoFrt',
-	// new options
-//	'EUROPE_FIRST_INTERNATIONAL_PRIORITY',
-//	'INTERNATIONAL_ECONOMY_FREIGHT',
-//	'INTERNATIONAL_PRIORITY_FREIGHT',
-  );
-
-  var $FedExPickupMap = array(
-	'01' => 'REGULAR_PICKUP',
-	'06' => 'REQUEST_COURIER',
-	'19' => 'DROP_BOX',
-	'20' => 'BUSINESS_SERVICE_CENTER',
-	'03' => 'STATION',
-  );
-
-  var $ReturnServiceMap = array(
-//	''  => 'NONRETURN',
-	'1' => 'PRINTRETURNLABEL',
-//	''  => 'EMAILABEL',
-	'2' => 'FEDEXTAG',
-  );
-
-  var $PackageMap = array(
-	'01' => 'FEDEX_ENVELOPE',
-	'02' => 'YOUR_PACKAGING',
-	'03' => 'FEDEX_TUBE',
-	'04' => 'FEDEX_PAK',
-	'21' => 'FEDEX_BOX',
-	'25' => 'FEDEX_10KG_BOX',
-	'24' => 'FEDEX_25KG_BOX',
-  );
-
-  var $CODMap = array(
-	'4' => 'ANY',
-	'3' => 'GUARANTEED_FUNDS',	// money order
-	'2' => 'GUARANTEED_FUNDS',
-	'1' => 'GUARANTEED_FUNDS',	// check not a great match, but the best
-	'0' => 'CASH',
-  );
-
-  var $HandlingMap = array(
-	'' => 'FIXED_AMOUNT',
-	'' => 'PERCENTAGE_OF_BASE',
-	'' => 'PERCENTAGE_OF_NET',
-	'' => 'PERCENTAGE_OF_NET_EXCL_TAXES',
-  );
-
-  var $PaymentMap = array(
-	'0' => 'SENDER',
-	'1' => 'RECIPIENT',
-	'2' => 'THIRD_PARTY',
-//	'3' => 'COLLECT',
-  );
-
-  var $SignatureMap = array(
-    '1' => 'DELIVERYWITHOUTSIGNATURE',
-    '2' => 'INDIRECT',	// closest match to signature required (other: DIRECT which requires the exact person)
-    '3' => 'ADULT',
-  );
-
-  function __construct() {
-    $this->code     = 'fedex_v7';
-    $this->rate_url = MODULE_SHIPPING_FEDEX_V7_TEST_MODE == 'Test' ? FEDEX_V7_EXPRESS_TEST_RATE_URL : FEDEX_V7_EXPRESS_RATE_URL;	  
-  }
-
-  function keys() {
-    return array(
-	  array('key' => 'MODULE_SHIPPING_FEDEX_V7_TITLE',              'default' => 'FedEx'),
-	  array('key' => 'MODULE_SHIPPING_FEDEX_V7_ACCOUNT_NUMBER',     'default' => ''),
-	  array('key' => 'MODULE_SHIPPING_FEDEX_V7_LTL_ACCOUNT_NUMBER', 'default' => ''),
-	  array('key' => 'MODULE_SHIPPING_FEDEX_V7_NAT_ACCOUNT_NUMBER', 'default' => ''),
-	  array('key' => 'MODULE_SHIPPING_FEDEX_V7_AUTH_KEY',           'default' => ''),
-	  array('key' => 'MODULE_SHIPPING_FEDEX_V7_AUTH_PWD',           'default' => ''),
-	  array('key' => 'MODULE_SHIPPING_FEDEX_V7_METER_NUMBER',       'default' => ''),
-	  array('key' => 'MODULE_SHIPPING_FEDEX_V7_TEST_MODE',          'default' => 'Test'),
-	  array('key' => 'MODULE_SHIPPING_FEDEX_V7_PRINTER_TYPE',       'default' => 'PDF'),
-	  array('key' => 'MODULE_SHIPPING_FEDEX_V7_PRINTER_NAME',       'default' => 'zebra'),
-	  array('key' => 'MODULE_SHIPPING_FEDEX_V7_TYPES',              'default' => '1DEam,1Dam,1Dpm,1DFrt,2Dam,2Dpm,2DFrt,3Dpm,3DFrt,GND,GDR,GndFrt,EcoFrt,I2DEam,I2Dam,I3D,IGND'),
-	  array('key' => 'MODULE_SHIPPING_FEDEX_V7_SORT_ORDER',         'default' => '10'),
+class fedex_v7 extends \shipping\classes\shipping {
+	public $id				= 'fedex_v7'; // needs to match class name
+  	public $text			= MODULE_SHIPPING_FEDEX_V7_TEXT_TITLE;
+  	public $description		= MODULE_SHIPPING_FEDEX_V7_TEXT_DESCRIPTION;
+  	public $sort_order		= 10;
+  	public $version			= '3.2';
+  	public $shipping_cost	= 0.00;
+  	public $handling_cost	= 1.00; 
+	  // FedEx Rate code maps
+	public $FedExRateCodes = array(	
+	  'FIRST_OVERNIGHT'        => '1DEam',
+	  'PRIORITY_OVERNIGHT'     => '1Dam',
+	  'STANDARD_OVERNIGHT'     => '1Dpm',
+	  'FEDEX_2_DAY_AM'         => '2Dam',
+	  'FEDEX_2_DAY'            => '2Dpm',
+	  'SMART_POST'             => '3Dam',
+	  'FEDEX_EXPRESS_SAVER'    => '3Dpm',
+	  'FEDEX_GROUND'           => 'GND',
+	  'GROUND_HOME_DELIVERY'   => 'GDR',
+	  'INTERNATIONAL_FIRST'    => 'I2DEam',
+	  'INTERNATIONAL_PRIORITY' => 'I2Dam',
+	  'INTERNATIONAL_ECONOMY'  => 'I3D',
+	  'FEDEX_1_DAY_FREIGHT'    => '1DFrt',
+	  'FEDEX_2_DAY_FREIGHT'    => '2DFrt',
+	  'FEDEX_3_DAY_FREIGHT'    => '3DFrt',
+	  'FEDEX_FREIGHT_PRIORITY' => 'GndFrt',
+	//'FEDEX_FREIGHT_ECONOMY'  => 'EcoFrt',
+// new options
+	//'EUROPE_FIRST_INTERNATIONAL_PRIORITY',
+	//'INTERNATIONAL_ECONOMY_FREIGHT',
+	//'INTERNATIONAL_PRIORITY_FREIGHT',
 	);
-  }
+
+  	public $FedExPickupMap = array(
+	  '01' => 'REGULAR_PICKUP',
+	  '06' => 'REQUEST_COURIER',
+	  '19' => 'DROP_BOX',
+	  '20' => 'BUSINESS_SERVICE_CENTER',
+	  '03' => 'STATION',
+  	);
+
+  	public $ReturnServiceMap = array(
+	  //''  => 'NONRETURN',
+	  '1' => 'PRINTRETURNLABEL',
+	  //''  => 'EMAILABEL',
+	  '2' => 'FEDEXTAG',
+  	);
+
+  	public $PackageMap = array(
+	  '01' => 'FEDEX_ENVELOPE',
+	  '02' => 'YOUR_PACKAGING',
+	  '03' => 'FEDEX_TUBE',
+	  '04' => 'FEDEX_PAK',
+	  '21' => 'FEDEX_BOX',
+	  '25' => 'FEDEX_10KG_BOX',
+	  '24' => 'FEDEX_25KG_BOX',
+	);
+
+	public $CODMap = array(
+	  '4' => 'ANY',
+	  '3' => 'GUARANTEED_FUNDS',	// money order
+	  '2' => 'GUARANTEED_FUNDS',
+	  '1' => 'GUARANTEED_FUNDS',	// check not a great match, but the best
+	  '0' => 'CASH',
+  	);
+
+  	public $HandlingMap = array(
+	  '' => 'FIXED_AMOUNT',
+	  '' => 'PERCENTAGE_OF_BASE',
+	  '' => 'PERCENTAGE_OF_NET',
+	  '' => 'PERCENTAGE_OF_NET_EXCL_TAXES',
+	);
+
+	public $PaymentMap = array(
+	  '0' => 'SENDER',
+	  '1' => 'RECIPIENT',
+	  '2' => 'THIRD_PARTY',
+	//'3' => 'COLLECT',
+  	);
+
+	public $SignatureMap = array(
+      '1' => 'DELIVERYWITHOUTSIGNATURE',
+      '2' => 'INDIRECT',	// closest match to signature required (other: DIRECT which requires the exact person)
+      '3' => 'ADULT',
+  	);
+
+  	function __construct() {
+    	$this->rate_url = MODULE_SHIPPING_FEDEX_V7_TEST_MODE == 'Test' ? FEDEX_V7_EXPRESS_TEST_RATE_URL : FEDEX_V7_EXPRESS_RATE_URL;
+    	$this->keys[] = array('key' => 'MODULE_SHIPPING_FEDEX_V7_ACCOUNT_NUMBER',		'default' => '',										'text' => MODULE_SHIPPING_FEDEX_V7_ACCOUNT_NUMBER_DESC);
+	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_FEDEX_V7_LTL_ACCOUNT_NUMBER',	'default' => '',										'text' => MODULE_SHIPPING_FEDEX_V7_LTL_ACCOUNT_NUMBER_DESC);
+      	$this->keys[] = array('key' => 'MODULE_SHIPPING_FEDEX_V7_NAT_ACCOUNT_NUMBER',    'default' => '',										'text' => MODULE_SHIPPING_FEDEX_V7_NAT_ACCOUNT_NUMBER_DESC);
+	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_FEDEX_V7_AUTH_KEY',  			'default' => '',										'text' => MODULE_SHIPPING_FEDEX_V7_AUTH_KEY_DESC);
+	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_FEDEX_V7_AUTH_PWD',  			'default' => '',										'text' => MODULE_SHIPPING_FEDEX_V7_AUTH_PWD_DESC);
+	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_FEDEX_V7_TEST_MODE',     		'default' => 'Test',									'text' => SHIPPING_TEST_MODE_DESC);
+	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_FEDEX_V7_PRINTER_TYPE',  		'default' => 'PDF',										'text' => SHIPPING_PRINTER_TYPE_DESC);
+	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_FEDEX_V7_PRINTER_NAME',  		'default' => 'zebra',									'text' => SHIPPING_PRINTER_NAME_DESC);
+	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_FEDEX_V7_TYPES',         		'default' => '1DEam,1Dam,1Dpm,1DFrt,2Dam,2Dpm,2DFrt,3Dpm,3DFrt,GND,GDR,GndFrt,EcoFrt,I2DEam,I2Dam,I3D,IGND',	'text' => SHIPPING_DEFAULT_SERVICE_DESC);
+	  	parent::__construct();
+  	}
+
 
   function configure($key) {
     switch ($key) {
@@ -220,13 +219,13 @@ class fedex_v7 {
 	    $html = implode('<br />' . chr(10), $choices);
 	    break;
 	  default:
-	    $html .= html_input_field(strtolower($key), constant($key), '');
+	    $html = parent::configure($key);
     }
     return $html;
   }
 
   function update() {
-    foreach ($this->keys() as $key) {
+    foreach ($this->keys as $key) {
 	  $field = strtolower($key['key']);
 	  switch ($key['key']) {
 	    case 'MODULE_SHIPPING_FEDEX_V7_TYPES': // read the checkboxes
@@ -261,9 +260,9 @@ class fedex_v7 {
 	}
 
 	if (MODULE_SHIPPING_FEDEX_V7_TEST_MODE == 'Test') {
-	  $client = new SoapClient(PATH_TO_TEST_RATE_WSDL, array('trace' => 1));
+	  $client = new \SoapClient(PATH_TO_TEST_RATE_WSDL, array('trace' => 1));
 	} else {
-	  $client = new SoapClient(PATH_TO_RATE_WSDL, array('trace' => 1));
+	  $client = new \SoapClient(PATH_TO_RATE_WSDL, array('trace' => 1));
 	}
 	// fisrt check if small package
 	if ($pkg->split_large_shipments || ($pkg->num_packages == 1 && $pkg->pkg_weight <= FEDEX_V7_MAX_SINGLE_BOX_WEIGHT)) {
@@ -326,29 +325,29 @@ class fedex_v7 {
 			  switch ($details->ShipmentRateDetail->RateType) {
 				default:
 				case 'PAYOR_ACCOUNT':
-				  $arrRates[$this->code][$service]['cost']   = $details->ShipmentRateDetail->TotalNetCharge->Amount;
+				  $arrRates[$this->id][$service]['cost']   = $details->ShipmentRateDetail->TotalNetCharge->Amount;
 				  if (isset($rateReply->CommitDetails->CommitTimestamp)) {
-					$arrRates[$this->code][$service]['note'] = 'Commit: ' . date("D M j g:i a", strtotime($rateReply->CommitDetails->CommitTimestamp));
+					$arrRates[$this->id][$service]['note'] = 'Commit: ' . date("D M j g:i a", strtotime($rateReply->CommitDetails->CommitTimestamp));
 				  } elseif (isset($rateReply->CommitDetails->MaximumTransitTime)) {
-					$arrRates[$this->code][$service]['note'] = ' Commit: ' . date("D M j g:i a", strtotime($this->calculateDelivery($rateReply->CommitDetails->MaximumTransitTime, $pkg->residential_address)));
+					$arrRates[$this->id][$service]['note'] = ' Commit: ' . date("D M j g:i a", strtotime($this->calculateDelivery($rateReply->CommitDetails->MaximumTransitTime, $pkg->residential_address)));
 				  } elseif (isset($rateReply->CommitDetails->TransitTime)) {
-					$arrRates[$this->code][$service]['note'] = ' Commit: ' . date("D M j g:i a", strtotime($this->calculateDelivery($rateReply->CommitDetails->TransitTime, $pkg->residential_address)));
+					$arrRates[$this->id][$service]['note'] = ' Commit: ' . date("D M j g:i a", strtotime($this->calculateDelivery($rateReply->CommitDetails->TransitTime, $pkg->residential_address)));
 				  } else {
-					$arrRates[$this->code][$service]['note'] = '';
+					$arrRates[$this->id][$service]['note'] = '';
 				  }
 				  // fall through as book and quote are the same for both types
 				case 'RATED_ACCOUNT':
 				  $surcharges = $details->ShipmentRateDetail->TotalSurcharges->Amount;
 				  $baserate   = $details->ShipmentRateDetail->TotalBaseCharge->Amount;
-				  $arrRates[$this->code][$service]['book']  = $baserate + $surcharges;
-				  $arrRates[$this->code][$service]['quote'] = $arrRates[$this->code][$service]['book'];
+				  $arrRates[$this->id][$service]['book']  = $baserate + $surcharges;
+				  $arrRates[$this->id][$service]['quote'] = $arrRates[$this->id][$service]['book'];
 				  break;
 				case 'PAYOR_MULTIWEIGHT':
 				  break;
 			  }
 			}
 			if (function_exists('fedex_shipping_rate_calc')) {
-			  $arrRates[$this->code][$service]['quote'] = fedex_shipping_rate_calc($arrRates[$this->code][$service]['book'], $arrRates[$this->code][$service]['cost'], $service);
+			  $arrRates[$this->id][$service]['quote'] = fedex_shipping_rate_calc($arrRates[$this->id][$service]['book'], $arrRates[$this->id][$service]['cost'], $service);
 			}
 		  }
 		}
@@ -510,9 +509,9 @@ class fedex_v7 {
 		  return false;
 		}
 		if (MODULE_SHIPPING_FEDEX_V7_TEST_MODE == 'Test') {
-			$client = new SoapClient(PATH_TO_TEST_SHIP_WSDL, array('trace' => 1));
+			$client = new \SoapClient(PATH_TO_TEST_SHIP_WSDL, array('trace' => 1));
 		} else {
-			$client = new SoapClient(PATH_TO_SHIP_WSDL, array('trace' => 1));
+			$client = new \SoapClient(PATH_TO_SHIP_WSDL, array('trace' => 1));
 		}
 		for ($key = 0; $key < count($sInfo->package); $key++) {
 		  $labels = array();
@@ -585,7 +584,7 @@ class fedex_v7 {
 				if (sizeof($labels) > 0) {
 				  $cnt       = 0;
 				  $date      = explode('-',$sInfo->ship_date);
-				  $file_path = SHIPPING_DEFAULT_LABEL_DIR.$this->code.'/'.$date[0].'/'.$date[1].'/'.$date[2].'/';
+				  $file_path = SHIPPING_DEFAULT_LABEL_DIR.$this->id.'/'.$date[0].'/'.$date[1].'/'.$date[2].'/';
 				  validate_path($file_path);
 				  foreach ($labels as $label) {
 					$this->returned_label = $label;
@@ -937,9 +936,9 @@ class fedex_v7 {
 	}
 	$result = array();
 	if (MODULE_SHIPPING_FEDEX_V7_TEST_MODE == 'Test') {
-	  $client = new SoapClient(PATH_TO_TEST_SHIP_WSDL, array('trace' => 1));
+	  $client = new \SoapClient(PATH_TO_TEST_SHIP_WSDL, array('trace' => 1));
 	} else {
-	  $client = new SoapClient(PATH_TO_SHIP_WSDL, array('trace' => 1));
+	  $client = new \SoapClient(PATH_TO_SHIP_WSDL, array('trace' => 1));
 	}
 	  $request = $this->FormatFedExDeleteRequest($method, $tracking_number);
 //echo 'request = '; print_r($request); echo '<br />';  
@@ -1013,18 +1012,18 @@ class fedex_v7 {
 			$messageStack->add('Tracking only works on the FedEx production server!','error');
 			return false;
 		} else {
-			$client = new SoapClient(PATH_TO_TRACK_WSDL, array('trace' => 1));
+			$client = new \SoapClient(PATH_TO_TRACK_WSDL, array('trace' => 1));
 		}
 		if ($log_id) {
 			$shipments  = $db->Execute("select id, ref_id, deliver_date, actual_date, tracking_id, notes 
 				from " . TABLE_SHIPPING_LOG . " 
-				where carrier = '" . $this->code . "' and id = '" . $log_id . "'");
+				where carrier = '" . $this->id . "' and id = '" . $log_id . "'");
 		} else {
 			$start_date = $track_date;
 			$end_date   = gen_specific_date($track_date, $day_offset =  1);
 			$shipments  = $db->Execute("select id, ref_id, deliver_date, actual_date, tracking_id, notes 
 				from " . TABLE_SHIPPING_LOG . " 
-				where carrier = '" . $this->code . "' 
+				where carrier = '" . $this->id . "' 
 					and ship_date >= '" . $start_date . "' and ship_date < '" . $end_date . "'");
 		}
 		while (!$shipments->EOF) {
@@ -1121,9 +1120,9 @@ class fedex_v7 {
 	function closeFedEx($close_date = '', $report_only = false, $report_type = 'MANIFEST') {
 		global $messageStack;
 		if (MODULE_SHIPPING_FEDEX_V7_TEST_MODE == 'Test') {
-			$client = new SoapClient(PATH_TO_TEST_CLOSE_WSDL, array('trace' => 1));
+			$client = new \SoapClient(PATH_TO_TEST_CLOSE_WSDL, array('trace' => 1));
 		} else {
-			$client = new SoapClient(PATH_TO_CLOSE_WSDL, array('trace' => 1));
+			$client = new \SoapClient(PATH_TO_CLOSE_WSDL, array('trace' => 1));
 		}
 		$today = date('c');
 		if (!$close_date) $close_date = $today;
@@ -1139,7 +1138,7 @@ class fedex_v7 {
 //echo 'close response array = '; print_r($response); echo '<br />';
 			if ($response->HighestSeverity != 'FAILURE' && $response->HighestSeverity != 'ERROR') {
 				// Fetch the FedEx reports
-				$file_path   = DIR_FS_MY_FILES . $_SESSION['company'] . '/shipping/reports/' . $this->code . '/' . $date[0] . '/' . $date[1] . '/';
+				$file_path   = DIR_FS_MY_FILES . $_SESSION['company'] . '/shipping/reports/' . $this->id . '/' . $date[0] . '/' . $date[1] . '/';
 				validate_path($file_path);
 				$file_name    = $date[2] . '-' . $response->Manifest->FileName . '.txt';
 				$closeReport  = base64_decode($response->Manifest->File);
@@ -1297,6 +1296,8 @@ class fedex_v7 {
 	header('Expires: ' . date('r', time()+60*60));
 	header('Last-Modified: ' . date('r'));
 	print $output;
+	ob_end_flush();
+	session_write_close();
 	die;
   }
 

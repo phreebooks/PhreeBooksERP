@@ -15,10 +15,10 @@
 // | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the   |
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
-//  Path: /modules/contacts/ajax/contacts.php
+//  Path: /modules/contacts/ajax/phreebooks.php
 //
 /**************   Check user security   *****************************/
-$security_level = validate_ajax_user();
+$security_level = \core\classes\user::validate();
 /**************  include page specific files    *********************/
 require_once(DIR_FS_MODULES . 'phreebooks/defaults.php');
 /**************   page specific initialization  *************************/
@@ -32,5 +32,7 @@ switch ($_REQUEST['action']) {
 
 if (sizeof($message) > 0) $xml .= xmlEntry('message', implode("\n",$message));
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

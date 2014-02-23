@@ -32,7 +32,7 @@ function getAddress(id, type) {
 	url: 'index.php?module=contacts&page=ajax&op=contacts&action=get_address&type='+type+'&aID='+id,
 	dataType: ($.browser.msie) ? "text" : "xml",
 	error: function(XMLHttpRequest, textStatus, errorThrown) {
-	  alert ("Ajax Error: " + errorThrown + '-' + XMLHttpRequest.responseText + "\nStatus: " + textStatus);
+		$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 	},
 	success: fillAddress
   });
@@ -42,7 +42,7 @@ function fillAddress(sXml) {
   var xml = parseXml(sXml);
   if (!xml) return;
   var message = $(xml).find("message").text();
-  if (message) { alert (message); }
+  if (message) { $.messager.alert("Info",message,"info"); }
   else {
 	var type = $(xml).find("type").first().text();
 	$(xml).find("Address").each(function() {
@@ -101,7 +101,7 @@ function deleteAddress(id) {
 	url: 'index.php?module=contacts&page=ajax&op=contacts&action=rm_address&aID='+id,
 	dataType: ($.browser.msie) ? "text" : "xml",
 	error: function(XMLHttpRequest, textStatus, errorThrown) {
-	  alert ("Ajax Error: " + errorThrown + '-' + XMLHttpRequest.responseText + "\nStatus: " + textStatus);
+		$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 	},
 	success: deleteAddressResp
   });
@@ -113,7 +113,7 @@ function deleteAddressResp(sXml) {
   var rowID = $(xml).find("address_id").text();
   if (rowID) $('#tr_add_'+rowID).remove();
   var message = $(xml).find("message").text();
-  if (message) { alert (message); }
+  if (message) { $.messager.alert("Info",message,"info"); }
   // TBD need to remove the row here
 }
 
@@ -128,7 +128,7 @@ function getPayment(id) {
 	url: 'index.php?module=contacts&page=ajax&op=contacts&action=get_payment&pID='+id,
 	dataType: ($.browser.msie) ? "text" : "xml",
 	error: function(XMLHttpRequest, textStatus, errorThrown) {
-	  alert ("Ajax Error: " + errorThrown + '-' + XMLHttpRequest.responseText + "\nStatus: " + textStatus);
+		$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 	},
 	success: fillPayment
   });
@@ -138,7 +138,7 @@ function fillPayment(sXml) {
   var xml = parseXml(sXml);
   if (!xml) return;
   var message = $(xml).find("message").text();
-  if (message) { alert (message); }
+  if (message) { $.messager.alert("Info",message,"info"); }
   else {
 	document.getElementById('payment_id').value        = $(xml).find("payment_id").text();
 	document.getElementById('payment_cc_name').value   = $(xml).find("field_0").text();
@@ -164,7 +164,7 @@ function deletePayment(id) {
 	url: 'index.php?module=contacts&page=ajax&op=contacts&action=rm_payment&pID='+id,
 	dataType: ($.browser.msie) ? "text" : "xml",
 	error: function(XMLHttpRequest, textStatus, errorThrown) {
-	  alert ("Ajax Error: " + errorThrown + '-' + XMLHttpRequest.responseText + "\nStatus: " + textStatus);
+		$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 	},
 	success: deletePaymentResp
   });
@@ -176,7 +176,7 @@ function deletePaymentResp(sXml) {
   var rowID = $(xml).find("payment_id").text();
   if (rowID) $('#tr_pmt_'+rowID).remove();
   var message = $(xml).find("message").text();
-  if (message) { alert (message); }
+  if (message) { $.messager.alert("Info",message,"info"); }
 }
 
 function deleteCRM(id) {
@@ -185,7 +185,7 @@ function deleteCRM(id) {
 	url: 'index.php?module=contacts&page=ajax&op=contacts&action=rm_crm&nID='+id,
 	dataType: ($.browser.msie) ? "text" : "xml",
 	error: function(XMLHttpRequest, textStatus, errorThrown) {
-	  alert ("Ajax Error: " + errorThrown + '-' + XMLHttpRequest.responseText + "\nStatus: " + textStatus);
+		$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 	},
 	success: deleteCRMResp
   });
@@ -200,7 +200,7 @@ function deleteCRMResp(sXml) {
 	  $('#tr_crm_b_'+rowID).remove();
   }
   var message = $(xml).find("message").text();
-  if (message) { alert (message); }
+  if (message) { $.messager.alert("Info",message,"info"); }
 }
 
 function downloadAttachment(filename) {
@@ -210,7 +210,7 @@ function downloadAttachment(filename) {
 	url: 'index.php?module=phreedom&page=ajax&op=phreedom&action=download&file='+file_name,
 	dataType: ($.browser.msie) ? "text" : "xml",
 	error: function(XMLHttpRequest, textStatus, errorThrown) {
-	  alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+		$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     },
 	success: downloadResponse
   });

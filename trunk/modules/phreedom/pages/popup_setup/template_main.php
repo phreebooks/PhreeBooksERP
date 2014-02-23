@@ -32,5 +32,11 @@ echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo $subject_module->title; ?></h1>
-<?php echo $subject_module->build_form_html($_REQUEST['action'], $sID); ?>
+<?php
+try{
+	echo $subject_module->build_form_html($_REQUEST['action'], $sID); 
+}catch(Exception $e){
+	$messageStack->add($e->getMessage(), $e->getCode);
+}
+	?>
 </form>

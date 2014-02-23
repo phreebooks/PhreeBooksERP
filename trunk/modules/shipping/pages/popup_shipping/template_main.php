@@ -211,10 +211,12 @@ echo html_pull_down_menu('ship_to_country_code', $country_list, $pkg->ship_to_co
   </tr>
   <tr class="ui-widget-header"><th colspan="2" align="center"><?php echo SHIPPING_TEXT_METHODS; ?></th></tr>
 <?php 
-foreach ($methods as $method) {
-  echo '  <tr><td colspan="2">';
-  echo html_checkbox_field('ship_method_' . $method, '1', '1') . ' ' . constant('MODULE_SHIPPING_' . strtoupper($method) . '_TEXT_TITLE');
-  echo '</td></tr>' . chr(10);
+foreach ($admin_classes['shipping']->methods as $method) {
+	if ($method->installed){
+  		echo '  <tr><td colspan="2">';
+  		echo html_checkbox_field('ship_method_' . $method->id, '1', '1') . ' ' . $method->text;
+  		echo '</td></tr>' . chr(10);
+	}
 }
 ?>
 </tbody>

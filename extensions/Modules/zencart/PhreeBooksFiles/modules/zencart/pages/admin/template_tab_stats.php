@@ -17,7 +17,7 @@
 //  Path: /modules/zencart/pages/admin/template_tab_stats.php
 //
 ?>
-<div id="tab_stats" class="tabset_content">
+<div title="<?php echo TEXT_STATISTICS;?>" id="tab_stats" class="tabset_content">
   <h2 class="tabset_label"><?php echo TEXT_STATISTICS; ?></h2>
   <fieldset class="formAreaTitle">
     <legend><?php echo TEXT_MODULE_STATS; ?></legend>

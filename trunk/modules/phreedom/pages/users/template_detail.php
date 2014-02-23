@@ -87,40 +87,37 @@ echo $toolbar->build_toolbar();
   <fieldset>
   <legend><?php echo TEXT_SECURITY_SETTINGS; ?></legend>
     <div><?php echo TEXT_FILL_ALL_LEVELS . ' ' . html_pull_down_menu('fill_all', $fill_all_values, '-1', 'onchange="submitToDo(\'fill_all\')"'); ?></div>
-	<div id="accesstabs">
-	<ul>
-<?php foreach ($mainmenu as $key => $value) {
-  if ($value['text'] == TEXT_HOME || $value['text'] == TEXT_LOGOUT) continue;
-  echo add_tab_list('tab_' . $key, $value['text']) . chr(10);
-}
-?>
-    </ul>
-<?php
-$settings     = gen_parse_permissions($uInfo->admin_security);
+	<div class="easyui-tabs" id="accesstabs">
+<?php //@todo tables do not show in ff
+$settings     = \core\classes\user::parse_permissions($uInfo->admin_security);
 $column_break = true;
+// array pb_headings is defined in /includes/header_navigation.php
 foreach ($mainmenu as $key => $menu_heading) {
-  	if ($menu_heading['text'] == TEXT_HOME || $menu_heading['text'] == TEXT_LOGOUT) continue;
-  	echo '<div id="tab_' . $key . '">' . chr(10);
-	echo '<table class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto;">' . chr(10);
-	echo '<thead class="ui-widget-header">' . chr(10);
-	echo '<tr>' . chr(10);
-	echo '<th width="50%">&nbsp;</th>' . chr(10);
-	echo '<th width="10%" nowrap="nowrap">' . TEXT_FULL      . '</th>' . chr(10);
-	echo '<th width="10%" nowrap="nowrap">' . TEXT_EDIT      . '</th>' . chr(10);
-	echo '<th width="10%" nowrap="nowrap">' . TEXT_ADD       . '</th>' . chr(10);
-	echo '<th width="10%" nowrap="nowrap">' . TEXT_READ_ONLY . '</th>' . chr(10);
-	echo '<th width="10%" nowrap="nowrap">' . TEXT_NONE      . '</th>' . chr(10);
-	echo '</tr>' . chr(10);
-	echo '</thead><tbody class="ui-widget-content">' . chr(10);
+  if ($menu_heading['text'] == TEXT_HOME || $menu_heading['text'] == TEXT_LOGOUT) continue;
+	echo '		<div title="'.$menu_heading['text'].'" id="tab_' . $key . '">' . chr(10);
+	echo '			<table  class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto;">' . chr(10);
+	echo '				<thead class="ui-widget-header">' . chr(10);
+	echo '					<tr>' . chr(10);
+	echo '						<th width="50%">&nbsp;</th>' . chr(10);
+	echo '						<th width="10%" nowrap="nowrap">' . TEXT_FULL      . '</th>' . chr(10);
+	echo '						<th width="10%" nowrap="nowrap">' . TEXT_EDIT      . '</th>' . chr(10);
+	echo '						<th width="10%" nowrap="nowrap">' . TEXT_ADD       . '</th>' . chr(10);
+	echo '						<th width="10%" nowrap="nowrap">' . TEXT_READ_ONLY . '</th>' . chr(10);
+	echo '						<th width="10%" nowrap="nowrap">' . TEXT_NONE      . '</th>' . chr(10);
+	echo '					</tr>' . chr(10);
+	echo '				</thead><tbody class="ui-widget-content">' . chr(10);
 	$odd = true;
 	foreach($menu_heading['submenu'] as $menu_item){ 
 		create_row($menu_item);
 	}
-	echo '</tbody></table></div>' . chr(10);
-	} ?>
+	echo '				</tbody>' . chr(10);
+	echo '			</table>' . chr(10);
+	echo '		</div>' . chr(10);
+} ?>
     </div>
   </fieldset>
 </form>
+
 
 <?php 
 function create_row($array){
@@ -141,13 +138,14 @@ function create_row($array){
 		} else {
 			$checked[0] = true;	// default to no access
 		}
-		echo '<tr valign="top" class="' . ($odd?'odd':'even') . '">';
-		echo '<td>' . $array['text'] . '</td>' . chr(10);
-		echo '<td align="center">' . html_radio_field('sID_' . $array['security_id'], '4', $checked[4]) . '</td>' . chr(10);
-		echo '<td align="center">' . html_radio_field('sID_' . $array['security_id'], '3', $checked[3]) . '</td>' . chr(10);
-		echo '<td align="center">' . html_radio_field('sID_' . $array['security_id'], '2', $checked[2]) . '</td>' . chr(10);
-		echo '<td align="center">' . html_radio_field('sID_' . $array['security_id'], '1', $checked[1]) . '</td>' . chr(10);
-		echo '<td align="center">' . html_radio_field('sID_' . $array['security_id'], '0', $checked[0]) . '</td></tr>' . chr(10);
+		echo '					<tr valign="top" class="' . ($odd?'odd':'even') . '">'. chr(10);
+		echo '						<td>' . $array['text'] . '</td>' . chr(10);
+		echo '						<td align="center">' . html_radio_field('sID_' . $array['security_id'], '4', $checked[4]) . '</td>' . chr(10);
+		echo '						<td align="center">' . html_radio_field('sID_' . $array['security_id'], '3', $checked[3]) . '</td>' . chr(10);
+		echo '						<td align="center">' . html_radio_field('sID_' . $array['security_id'], '2', $checked[2]) . '</td>' . chr(10);
+		echo '						<td align="center">' . html_radio_field('sID_' . $array['security_id'], '1', $checked[1]) . '</td>' . chr(10);
+		echo '						<td align="center">' . html_radio_field('sID_' . $array['security_id'], '0', $checked[0]) . '</td>' . chr(10);
+		echo '					</tr>' . chr(10);
 		$odd =!$odd;
 	}
 }

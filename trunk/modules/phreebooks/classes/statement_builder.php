@@ -15,8 +15,9 @@
 // | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the   |
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
-//  Path: /modules/phreeform/custom/classes/statement_builder.php
+//  Path: /modules/phreebooks/classes/statement_builder.php
 //
+namespace phreebooks\classes;
 gen_pull_language('phreebooks');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php'); // needed to calculate terms, aging
 

@@ -20,6 +20,6 @@
 
 // Module information
 define('MODULE_PHREEHELP_TITLE','PhreeHelp Module');
-define('MODULE_PHREEHELP_DESCRIPTION','The PhreeHelp module provides a popup context help screen to display manual entries supplied with modules. <b>NOTE: This is a core module and should not be removed!</b>');
+define('MODULE_PHREEHELP_DESCRIPTION','The PhreeHelp module provides a popup context help screen to display manual entries supplied with modules.');
 
 ?>

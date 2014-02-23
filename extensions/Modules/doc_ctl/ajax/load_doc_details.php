@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/doc_ctl/ajax/load_doc_details.php
 //
-$security_level = validate_ajax_user(SECURITY_ID_DOC_CONTROL);
+$security_level = \core\classes\user::validate(SECURITY_ID_DOC_CONTROL);
 /**************  include page specific files    *********************/
 require(DIR_FS_MODULES . 'doc_ctl/defaults.php');
 require(DIR_FS_MODULES . 'doc_ctl/functions/doc_ctl.php');
@@ -34,7 +34,7 @@ if ($id == -1) { // home page
 	$list_header  = $result['html_code'];
 	$field_list   = array('id', 'file_name', 'title', 'type', 'doc_ext', 'description', 'security');
 	$query_raw    = "select " . implode(', ', $field_list)  . " from " . TABLE_DC_DOCUMENT . " where parent_id = '" . $id . "' order by position";
-	$query_split  = new splitPageResults($_GET['list'], MAX_DISPLAY_SEARCH_RESULTS, $query_raw, $query_numrows);
+	$query_split  = new \core\classes\splitPageResults($_GET['list'], MAX_DISPLAY_SEARCH_RESULTS, $query_raw, $query_numrows);
 	$query_result = $db->Execute($query_raw);
 	include (DIR_FS_MODULES . 'doc_ctl/pages/main/tab_folder.php');
 } else { // load document details

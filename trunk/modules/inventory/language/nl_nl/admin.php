@@ -9,7 +9,7 @@
 // Path: /modules/inventory/language/nl_nl/admin.php
 
 define('MODULE_INVENTORY_TITLE','Voorraad Module');
-define('MODULE_INVENTORY_DESCRIPTION','Deze voorraad module bevat alle functionaliteiten om product en service items gebruikt in uw bedrijf te bewerken en bewaren. Hier vallen ook dingen onder voor intern en extern gebruik. <b>NOTE: Deze kern module moet niet verwijderd worden!</b>');
+define('MODULE_INVENTORY_DESCRIPTION','Deze voorraad module bevat alle functionaliteiten om product en service items gebruikt in uw bedrijf te bewerken en bewaren.<br/> Hier vallen ook dingen onder voor intern en extern gebruik.');
 define('BOX_INV_ADMIN','Voorraad Administratie');
 define('INV_HEADING_FIELD_PROPERTIES','Veld type en eigenschappen (Selecteer een)');
 define('TEXT_DEFAULT_GL_ACCOUNTS','Standaard Grookboek rekeningen');

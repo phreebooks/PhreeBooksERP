@@ -18,7 +18,7 @@
 //
 // start the bill of materials tab html
 ?>
-<div id="tab_bom">
+<div title="<?php echo INV_BOM;?>" id="tab_bom">
  <div style="width:850px;margin-left:auto;margin-right:auto">
   <div>
    <table class="ui-widget" style="border-collapse:collapse;width:100%">

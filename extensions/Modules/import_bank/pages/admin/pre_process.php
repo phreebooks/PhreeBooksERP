@@ -22,24 +22,20 @@
 //
 
 /**************   Check user security   *****************************/
-$security_level = validate_user(SECURITY_ID_CONFIGURATION);
+$security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 
 /**************  include page specific files    *********************/
 gen_pull_language($module);
 gen_pull_language($module, 'admin');
-require_once(DIR_FS_WORKING . 'classes/install.php');
-require_once(DIR_FS_WORKING . 'classes/known_transactions.php');
 /**************   page specific initialization  *************************/
-$error   = false; 
-$install = new import_bank_admin();
-$kt      = new known_transactions();
+$kt      = new \import_bank\classes\known_transactions();
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save':
-	validate_security($security_level, 4);
+	\core\classes\user::validate_security($security_level, 4);
   	// save general tab
   	if($_POST['number_of_bank_accounts'] < NUMBER_OF_BANK_ACCOUNTS){
-  		$messageStack->add(IMPORT_BANK_CAN_NOT_DECREASE_NUMBER_OF_BANK_ACCOUNTS, 'error');
+  		throw new \Exception(IMPORT_BANK_CAN_NOT_DECREASE_NUMBER_OF_BANK_ACCOUNTS);
   		$_POST['number_of_bank_accounts'] = NUMBER_OF_BANK_ACCOUNTS;	
   	}else if($_POST['number_of_bank_accounts'] > NUMBER_OF_BANK_ACCOUNTS){
   		for($x=NUMBER_OF_BANK_ACCOUNTS; $x<=$_POST['number_of_bank_accounts']; $x++){
@@ -64,7 +60,7 @@ switch ($_REQUEST['action']) {
 		
   		}
   	}
-	foreach ($install->keys as $key => $default) {
+	foreach ($admin_classes['import_bank']->keys as $key => $default) {
 	  $field = strtolower($key);
       if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
     }
@@ -72,7 +68,7 @@ switch ($_REQUEST['action']) {
 	$messageStack->add(IMPORT_BANK_CONFIG_SAVED, 'success');
     break;
   case 'delete':
-	validate_security($security_level, 4); // security check
+	\core\classes\user::validate_security($security_level, 4); // security check
     $subject = $_POST['subject'];
     $id      = $_POST['rowSeq'];
 	if (!$subject || !$id) break;

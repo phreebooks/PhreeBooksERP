@@ -17,9 +17,10 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/xml_builder/classes/xml_builder.php
 //
+namespace xml_builder\classes;
 class xml_builder {
   function __construct() {
-    $this->output = new objectInfo();
+    $this->output = new \core\classes\objectInfo();
 	$this->files  = array();
   }
 

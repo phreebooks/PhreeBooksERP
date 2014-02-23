@@ -15,9 +15,9 @@
 // | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the   |
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
-//  Path: /modules/phreeform/custom/classes/backorders_report.php
+//  Path: /modules/phreebooks/classes/backorders_report.php
 //
-
+namespace phreebooks\classes;
 // this file contains special function calls to generate the data array needed to build reports not possible
 // with the current reportbuilder structure. Targeted towards aged receivables.
 class backorders_report {

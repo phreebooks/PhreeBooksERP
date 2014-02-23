@@ -18,7 +18,7 @@
 //  Path: /modules/phreeform/pages/admin/template_tab_tools.php
 //
 ?>
-<div id="tab_tools">
+<div title="<?php echo TEXT_TOOLS;?>" id="tab_tools">
 <fieldset>
   <legend><?php echo PHREEFORM_TOOLS_REBUILD_TITLE; ?></legend>
   <p><?php echo PHREEFORM_TOOLS_REBUILD_DESC; ?></p>

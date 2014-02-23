@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/translator/pages/main/pre_process.php
 //
-$security_level = validate_user(SECURITY_TRANSLATOR_MGT);
+$security_level = \core\classes\user::validate(SECURITY_TRANSLATOR_MGT);
 /**************  include page specific files    *********************/
 gen_pull_language('phreedom', 'admin');
 require_once(DIR_FS_WORKING . 'functions/translator.php');
@@ -38,203 +38,181 @@ $f3 = isset($_POST['action']) ? $_POST['f3'] : $_GET['f3'];
 
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
-  case 'import_go': // imports existing language file constants from current install
-    $mod  = db_prepare_input($_POST['mod']);
-	$lang = db_prepare_input($_POST['lang']);
-	switch($mod) {
-	  case 'all':
-	    $dirs = scandir(DIR_FS_MODULES);
-		foreach ($dirs as $value) {
-		  if ($value == '.' || $value == '..' || !file_exists(DIR_FS_MODULES . $value . '/config.php')) continue;
-	      $dir = DIR_FS_MODULES . "$value/language/$lang/";
-		  include_once(DIR_FS_MODULES . "$value/config.php"); // fetch the version number
-		  $ver = defined('MODULE_'.strtoupper($value).'_VERSION') ? constant('MODULE_'.strtoupper($value).'_VERSION') : '0.1';
-		  $translator->import_language($dir, $value, $lang, $ver);
-		  if (is_dir(DIR_FS_MODULES . $value . '/methods')) { // there are methods to load languages
-			$meths = scandir(DIR_FS_MODULES . $value . '/methods');
-			foreach ($meths as $val) {
-			  if ($val == '.' || $val == '..') continue;
-			  $dir = DIR_FS_MODULES . "$value/methods/$val/language/$lang/";
-			  @include_once(DIR_FS_MODULES . "$value/methods/$val/$val" . ".php"); // fetch the version number
-			  $ver = defined('MODULE_'.strtoupper($value).'_'.strtoupper($val).'_VERSION') ? constant('MODULE_'.strtoupper($value).'_'.strtoupper($val).'_VERSION') : '0.1';
-			  $translator->import_language($dir, $value.'-'.$val, $lang, $ver);
-			}
-		  }
-		  if (is_dir(DIR_FS_MODULES . $value . '/dashboards')) { // there are dashboards to load languages
-			$meths = scandir(DIR_FS_MODULES . $value . '/dashboards');
-			foreach ($meths as $val) {
-			  if ($val == '.' || $val == '..') continue;
-			  $dir = DIR_FS_MODULES . "$value/dashboards/$val/language/$lang/";
-			  @include_once(DIR_FS_MODULES . "$value/dashboards/$val/$val" . ".php"); // fetch the version number
-			  $ver = defined('DASHBOARD_'.strtoupper($val).'_VERSION') ? constant('DASHBOARD_'.strtoupper($val).'_VERSION') : '0.1';
-			  $translator->import_language($dir, $value.'-'.$val, $lang, $ver);
-			}
-		  }
+  	case 'import_go': // imports existing language file constants from current install
+    	$mod  = db_prepare_input($_POST['mod']);
+		$lang = db_prepare_input($_POST['lang']);
+		switch($mod) {
+			case 'all':
+	  			foreach ($admin_classes as $module){
+	  				$dir = DIR_FS_MODULES . $module->id."/language/$lang/";
+	  				$ver = $module->version;
+	  				$translator->import_language($dir, $value, $lang, $ver);
+	  				foreach ($module->methods as $method){
+	  					$dir = DIR_FS_MODULES . $module->id."/methods/{$method->id}/language/$lang/";
+	  					$ver = $method->version;
+	  					$translator->import_language($dir, $module->id.'-'.$method->id, $lang, $ver);
+	  				}
+	  				foreach ($module->dashboards as $dashboard){
+	  					$dir = DIR_FS_MODULES . $module->id."/methods/{$dashboard->id}/language/$lang/";
+	  					$ver = $dashboard->version;
+	  					$translator->import_language($dir, $module->id.'-'.$dashboard->id, $lang, $ver);
+	  				}
+	  			}
+				// fall through to do install dir
+				$mod = 'install';
+	  		case 'install':
+	    		$install_dir = db_prepare_input($_POST['install_dir']);
+	    		$dir = DIR_FS_ADMIN . "$install_dir/language/$lang/";
+				$ver = $admin_classes['phreedom']->version;
+				$translator->import_language($dir, $mod, $lang, $ver);
+				if ($_REQUEST['action'] == 'install') break; // else fall through and do the soap directory
+	  		case 'soap':
+	    		$dir = DIR_FS_ADMIN . "soap/language/$lang/";
+				$ver = $admin_classes['phreedom']->version;
+				$translator->import_language($dir, $mod, $lang, $ver);
+				break;
+	  		default:
+	    		if (strpos($mod, '-') !== false) { // it's a method or dashboard within a module
+		  			$parts = explode('-', $mod);
+		  			if ( in_array($parts[1], $admin_classes[$parts[0]]->methods)){
+		  				$dir = DIR_FS_MODULES.$parts[0]."/methods/".$parts[1]."/language/$lang/";
+		  				$ver = $admin_classes[$parts[0]]->methods[$parts[1]]->version;
+		  			}else{
+		  				$dir = DIR_FS_MODULES.$parts[0]."/dashboards/".$parts[1]."/language/$lang/";
+		  				$ver = $admin_classes[$parts[0]]->dashboards[$parts[1]]->version;
+		  			}
+				} else {
+	      			$dir = DIR_FS_MODULES . "$mod/language/$lang/";
+		  			$ver = $admin_classes[$mod]->version;
+				}
+				$translator->import_language($dir, $mod, $lang, $ver);
+				break;
 		}
-		// fall through to do install dir
-		$mod = 'install';
-	  case 'install':
-	    $install_dir = db_prepare_input($_POST['install_dir']);
-	    $dir = DIR_FS_ADMIN . "$install_dir/language/$lang/";
-		$ver = constant('MODULE_PHREEDOM_VERSION');
-		$translator->import_language($dir, $mod, $lang, $ver);
-		if ($_REQUEST['action'] == 'install') break; // else fall through and do the soap directory
-	  case 'soap':
-	    $dir = DIR_FS_ADMIN . "soap/language/$lang/";
-		$ver = constant('MODULE_PHREEDOM_VERSION');
-		$translator->import_language($dir, $mod, $lang, $ver);
+		$f0 = $mod  = '';
+		$f1 = $lang = '';
+		$f2 = $ver  = '';
+		$_REQUEST['action'] = '';
 		break;
-	  default:
-	    if (strpos($mod, '-') !== false) { // it's a method or dashboard within a module
-		  $parts = explode('-', $mod);
-	      $dir   = DIR_FS_MODULES.$parts[0]."/methods/".$parts[1]."/language/$lang/";
-		  if (is_dir($dir)) { // look for methods to load languages, else dashboards
-			include_once(DIR_FS_MODULES.$parts[0]."/methods/".$parts[1]."/".$parts[1].".php");
-		    $ver = defined('MODULE_'.strtoupper($parts[0]).'_'.strtoupper($parts[1]).'_VERSION') ? constant('MODULE_'.strtoupper($parts[0]).'_'.strtoupper($parts[1]).'_VERSION') : '0.1';
-		  } else {
-	        $dir       = DIR_FS_MODULES.$parts[0]."/dashboards/".$parts[1]."/language/$lang/";
-			include_once(DIR_FS_MODULES.$parts[0]."/dashboards/".$parts[1]."/".$parts[1].".php");
-		    $ver = defined('DASHBOARD_'.strtoupper($parts[1]).'_VERSION') ? constant('DASHBOARD_'.strtoupper($parts[1]).'_VERSION') : '0.1';
-		  }
+  	case 'upload_go':
+		$dir  = DIR_FS_MY_FILES . 'translator/upload/';
+	    $mod  = db_prepare_input($_POST['mod']);
+		$lang = db_prepare_input($_POST['lang']);
+		$translator->upload_language($dir, $mod, $lang);
+		$_REQUEST['action'] = '';
+		break;
+ 	 case 'create_new':
+	    $mod     = db_prepare_input($_POST['mod']);
+		$lang    = db_prepare_input($_POST['lang']);
+		$source  = db_prepare_input($_POST['source_lang']);
+		$replace = isset($_POST['replace']) ? true : false;
+		$history = db_prepare_input($_POST['history_lang']);
+		$subs    = array();
+		// pull the source language current and historical values
+		$lang_list = $replace ? ("('".$lang."','".$source."','".$history."')") : ("('".$lang."','".$source."')"); 
+		$sql  = "select language, version, defined_constant, translation from " . TABLE_TRANSLATOR . " 
+		  where language in " . $lang_list;
+		if ($mod <> 'all') $sql .= " and module = '" . $mod . "'";
+		$result = $db->Execute($sql);
+		while (!$result->EOF) {
+		  	$subs[$result->fields['language']][$result->fields['defined_constant']][$result->fields['version']] = $result->fields['translation'];
+		  	$result->MoveNext();
+		}
+		if ($mod == 'all') {
+			$sel_modules = build_mod_list();
+			array_shift($sel_modules); // remove 'all' option
+			foreach ($sel_modules as $value) {
+			    $translator->convert_language($value['id'], $lang, $source, $history, $subs);
+			}
 		} else {
-	      $dir = DIR_FS_MODULES . "$mod/language/$lang/";
-		  include_once(DIR_FS_MODULES . "$value/config.php");
-		  $ver = defined('MODULE_'.strtoupper($mod).'_VERSION') ? constant('MODULE_'.strtoupper($mod).'_VERSION') : '0.1';
+		  	$translator->convert_language($mod, $lang, $source, $history, $subs);
 		}
-		$translator->import_language($dir, $mod, $lang, $ver);
+		if ($mod <> 'all') $_REQUEST['action'] = 'edit';
 		break;
-	}
-	$f0 = $mod  = '';
-	$f1 = $lang = '';
-	$f2 = $ver  = '';
-	$_REQUEST['action'] = '';
-	break;
-  case 'upload_go':
-	$dir  = DIR_FS_MY_FILES . 'translator/upload/';
-    $mod  = db_prepare_input($_POST['mod']);
-	$lang = db_prepare_input($_POST['lang']);
-	$translator->upload_language($dir, $mod, $lang);
-	$_REQUEST['action'] = '';
-	break;
-  case 'create_new':
-    $mod     = db_prepare_input($_POST['mod']);
-	$lang    = db_prepare_input($_POST['lang']);
-	$source  = db_prepare_input($_POST['source_lang']);
-	$replace = isset($_POST['replace']) ? true : false;
-	$history = db_prepare_input($_POST['history_lang']);
-	$subs    = array();
-	// pull the source language current and historical values
-	$lang_list = $replace ? ("('".$lang."','".$source."','".$history."')") : ("('".$lang."','".$source."')"); 
-	$sql  = "select language, version, defined_constant, translation from " . TABLE_TRANSLATOR . " 
-	  where language in " . $lang_list;
-	if ($mod <> 'all') $sql .= " and module = '" . $mod . "'";
-	$result = $db->Execute($sql);
-	while (!$result->EOF) {
-	  $subs[$result->fields['language']][$result->fields['defined_constant']][$result->fields['version']] = $result->fields['translation'];
-	  $result->MoveNext();
-	}
-	if ($mod == 'all') {
-	  $sel_modules = build_mod_list();
-	  array_shift($sel_modules); // remove 'all' option
-	  foreach ($sel_modules as $value) {
-	    $translator->convert_language($value['id'], $lang, $source, $history, $subs);
-	  }
-	} else {
-	  $translator->convert_language($mod, $lang, $source, $history, $subs);
-	}
-	if ($mod <> 'all') $_REQUEST['action'] = 'edit';
-	break;
-  case 'edit':
-	$pieces    = explode(':', $_POST['rowSeq']);
-    $mod  = $pieces[0];
-	$lang = $pieces[1];
-	$ver  = $pieces[2];
-	$f0   = $mod;
-	$f1   = $lang;
-	$f2   = $ver;
-	break;
-  case 'save':
-    $mod  = db_prepare_input($_POST['mod']);
-	$lang = db_prepare_input($_POST['lang']);
-	$ver  = db_prepare_input($_POST['ver']);
-    foreach ($_POST as $key => $trans) {
-	  if (substr($key, 0, 2) <> 't:') continue; // not interested in this value
-	  $temp   = explode(':', $key);
-	  $id     = $temp[1];
-	  $const  = $temp[2];
-	  $status = isset($_POST['d:' . $id . ':' . $const]) ? '1' : '0';
-	  $db->Execute("update " . TABLE_TRANSLATOR . " 
-		set translation = '" . db_input($trans) . "', translated = '" . $status . "' where id = '" . $id . "'");
-	}
-	$messageStack->add(TEXT_TRANSLATIONS_SAVED,'success');
-	$_REQUEST['action'] = 'edit';
-	break;
-  case 'delete':
-	$pieces = explode(':', $_POST['rowSeq']);
-	$db->Execute("delete from " . TABLE_TRANSLATOR . " 
-	  where module = '" . $pieces[0] . "' and language = '" . $pieces[1] . "' and version = '" . $pieces[2] . "'");
-	$_REQUEST['action'] = '';
-	break;
-  case 'export':
-	$dir    = DIR_FS_MY_FILES . 'translator/';
-	$pieces = explode(':', $_POST['rowSeq']);
-    $mod    = $pieces[0];
-	$lang   = $pieces[1];
-	$ver    = $pieces[2];
-
-	$backup->source_dir = $dir . 'export/';
-	$backup->dest_dir   = $dir;
-	$backup->dest_file  = $mod . '_' . $lang . '_R' . str_replace('.', '', $ver) . '.zip';
-	if (!$result = $translator->export_language($mod, $lang, $ver)) {
-	  $error = true;
-	}
-	if ($backup->make_zip('dir')) $error = true;
-	if ($backup->delete_dir($backup->source_dir)) $error = true;
-	if (!$error) {
-	  gen_add_audit_log(TEXT_EDIT_TRANSLATION . ' (' . TEXT_EXPORT . ')', $mod . ' ' . lang . ' R' . $ver);
-	  $backup->download($backup->dest_dir, $backup->dest_file); // will not return if successful
-	}
-	break;
-  case 'export_all_go':
-	$dir  = DIR_FS_MY_FILES . 'translator/';
-	$lang = db_prepare_input($_POST['lang']);
-	$backup->source_dir = $dir . 'export/';
-	$backup->dest_dir   = $dir;
-	$backup->dest_file  = 'language_' . $lang . '_Rxx.zip';
-	$sel_modules = build_mod_list();
-	array_shift($sel_modules); // remove 'all' option
-	$have_data = false;
-	foreach ($sel_modules as $value) {
-	  $result = $db->Execute("select max(version) as version from " . TABLE_TRANSLATOR . " 
-	    where module = '" . $value['id'] . "' and language = '" . $lang . "'");
-	  $ver = $result->fields['version'];
-	  if ($ver) {
-	    if ($result = $translator->export_language($value['id'], $lang, $ver, true)) $have_data = true;
-	  }
-	}
-	if ($have_data) {
-	  if ($backup->make_zip('dir')) $error = true;
-	  if ($backup->delete_dir($backup->source_dir)) $error = true;
-	  if (!$error) {
-	    gen_add_audit_log(TEXT_EDIT_TRANSLATION . ' (' . TEXT_EXPORT . ')', 'all ' . lang . ' R' . $ver);
-	    $backup->download($backup->dest_dir, $backup->dest_file); // will not return if successful
-	  }
-	}
-	break;
-  case 'go_first':    $_REQUEST['list'] = 1;       break;
-  case 'go_previous': $_REQUEST['list'] = max($_REQUEST['list']-1, 1); break;
-  case 'go_next':     $_REQUEST['list']++;         break;
-  case 'go_last':     $_REQUEST['list'] = 99999;   break;
-  case 'search':
-  case 'search_reset':
-  case 'go_page':
-  case 'filter':
-  case 'filter_main':
-  default:
-    $mod  = $f0;
-	$lang = $f1;
-	$ver  = $f2;
-	break;
+  	case 'edit':
+		$pieces    = explode(':', $_POST['rowSeq']);
+	    $mod  = $pieces[0];
+		$lang = $pieces[1];
+		$ver  = $pieces[2];
+		$f0   = $mod;
+		$f1   = $lang;
+		$f2   = $ver;
+		break;
+  	case 'save':
+	    $mod  = db_prepare_input($_POST['mod']);
+		$lang = db_prepare_input($_POST['lang']);
+		$ver  = db_prepare_input($_POST['ver']);
+	    foreach ($_POST as $key => $trans) {
+			if (substr($key, 0, 2) <> 't:') continue; // not interested in this value
+			$temp   = explode(':', $key);
+			$id     = $temp[1];
+			$const  = $temp[2];
+			$status = isset($_POST['d:' . $id . ':' . $const]) ? '1' : '0';
+			$db->Execute("update " . TABLE_TRANSLATOR . " 
+			  set translation = '" . db_input($trans) . "', translated = '" . $status . "' where id = '" . $id . "'");
+		}
+		$messageStack->add(TEXT_TRANSLATIONS_SAVED,'success');
+		$_REQUEST['action'] = 'edit';
+		break;
+  	case 'delete':
+		$pieces = explode(':', $_POST['rowSeq']);
+		$db->Execute("delete from " . TABLE_TRANSLATOR . " 
+	  	  where module = '" . $pieces[0] . "' and language = '" . $pieces[1] . "' and version = '" . $pieces[2] . "'");
+		$_REQUEST['action'] = '';
+		break;
+  	case 'export':
+		$dir    = DIR_FS_MY_FILES . 'translator/';
+		$pieces = explode(':', $_POST['rowSeq']);
+	    $mod    = $pieces[0];
+		$lang   = $pieces[1];
+		$ver    = $pieces[2];
+	
+		$backup->source_dir = $dir . 'export/';
+		$backup->dest_dir   = $dir;
+		$backup->dest_file  = $mod . '_' . $lang . '_R' . str_replace('.', '', $ver) . '.zip';
+		$translator->export_language($mod, $lang, $ver);
+		$backup->make_zip('dir');
+		$backup->delete_dir($backup->source_dir);
+		gen_add_audit_log(TEXT_EDIT_TRANSLATION . ' (' . TEXT_EXPORT . ')', $mod . ' ' . lang . ' R' . $ver);
+		$backup->download($backup->dest_dir, $backup->dest_file); // will not return if successful
+		break;
+  	case 'export_all_go':
+		$dir  = DIR_FS_MY_FILES . 'translator/';
+		$lang = db_prepare_input($_POST['lang']);
+		$backup->source_dir = $dir . 'export/';
+		$backup->dest_dir   = $dir;
+		$backup->dest_file  = 'language_' . $lang . '_Rxx.zip';
+		$sel_modules = build_mod_list();
+		array_shift($sel_modules); // remove 'all' option
+		$have_data = false;
+		foreach ($sel_modules as $value) {
+	  		$result = $db->Execute("select max(version) as version from " . TABLE_TRANSLATOR . " 
+	    	  where module = '" . $value['id'] . "' and language = '" . $lang . "'");
+	  		$ver = $result->fields['version'];
+	  		if ($ver) {
+	    		if ($result = $translator->export_language($value['id'], $lang, $ver, true)) $have_data = true;
+	  		}
+		}
+		if ($have_data) {
+	  		$backup->make_zip('dir');
+	  		$backup->delete_dir($backup->source_dir);
+	  	    gen_add_audit_log(TEXT_EDIT_TRANSLATION . ' (' . TEXT_EXPORT . ')', 'all ' . lang . ' R' . $ver);
+	    	$backup->download($backup->dest_dir, $backup->dest_file); // will not return if successful
+		}
+		break;
+	case 'go_first':    $_REQUEST['list'] = 1;       break;
+	case 'go_previous': $_REQUEST['list'] = max($_REQUEST['list']-1, 1); break;
+	case 'go_next':     $_REQUEST['list']++;         break;
+	case 'go_last':     $_REQUEST['list'] = 99999;   break;
+	case 'search':
+	case 'search_reset':
+	case 'go_page':
+	case 'filter':
+	case 'filter_main':
+	default:
+	    $mod  = $f0;
+		$lang = $f1;
+		$ver  = $f2;
+		break;
 }
 
 /*****************   prepare to display templates  *************************/

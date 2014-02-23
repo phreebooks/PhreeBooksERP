@@ -18,14 +18,14 @@
 //
 // Revision history
 // 2011-07-01 - Added version number for revision control
-define('DASHBOARD_MY_NOTES_VERSION','3.2');
-
-class my_notes extends ctl_panel {
-	public $dashboard_id 		= 'my_notes';
+namespace phreedom\dashboards\my_notes;
+class my_notes extends \core\classes\ctl_panel {
+	public $id			 		= 'my_notes';
 	public $description	 		= CP_MY_NOTES_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_MY_PROFILE;
-	public $title		 		= CP_MY_NOTES_TITLE;
-	public $version      		= 3.5;
+	public $text		 		= CP_MY_NOTES_TITLE;
+	public $version      		= '3.5';
+	public $module_id 			= 'phreedom';
 
 	function Output($params) {
 		global $db;
@@ -47,7 +47,7 @@ class my_notes extends ctl_panel {
 		  	foreach ($params as $my_note) {
 		    	$contents .= '  <div>';
 				$contents .= '    <div style="float:right; height:16px;">';
-				$contents .= html_icon('phreebooks/dashboard-remove.png', TEXT_REMOVE, 'small', 'onclick="return del_index(\'' . $this->dashboard_id . '\', ' . $index . ')"');
+				$contents .= html_icon('phreebooks/dashboard-remove.png', TEXT_REMOVE, 'small', 'onclick="return del_index(\'' . $this->id . '\', ' . $index . ')"');
 				$contents .= '    </div>' . chr(10);
 				$contents .= '    <div style="min-height:16px;">&#9679; '. $my_note . '</div>' . chr(10);
 		    	$contents .= '  </div>' . chr(10);
@@ -68,7 +68,7 @@ class my_notes extends ctl_panel {
 		// fetch the current params
 		$result = $db->Execute("select params from " . TABLE_USERS_PROFILES . "
 		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "' 
-		  and dashboard_id = '" . $this->dashboard_id . "'");
+		  and dashboard_id = '" . $this->id . "'");
 		if ($remove_id) { // remove element
 		  	$this->params	= unserialize($result->fields['params']);
 		  	$first_part 	= array_slice($this->params, 0, $remove_id - 1);
@@ -81,7 +81,7 @@ class my_notes extends ctl_panel {
 		  	$this->params[] = $my_note;
 		}
 		ksort($this->params);
-		db_perform(TABLE_USERS_PROFILES, array('params' => serialize($this->params)), "update", "user_id = ".$_SESSION['admin_id']." and menu_id = '".$this->menu_id."' and dashboard_id = '".$this->dashboard_id."'");
+		db_perform(TABLE_USERS_PROFILES, array('params' => serialize($this->params)), "update", "user_id = ".$_SESSION['admin_id']." and menu_id = '".$this->menu_id."' and dashboard_id = '".$this->id."'");
 	}
 
 }

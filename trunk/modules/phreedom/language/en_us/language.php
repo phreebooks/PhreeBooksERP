@@ -117,7 +117,6 @@ define('TEXT_EXPORT_CSV','Export CSV');
 define('TEXT_EXPORT_PDF','Export PDF');
 define('TEXT_FALSE','False');
 define('TEXT_FIELD', 'Field');
-define('TEXT_FIELD_REQUIRED', '&nbsp;<span class="fieldRequired">*</span>');
 define('TEXT_FIELDS','Fields');
 define('TEXT_FILENAME','File Name');
 define('TEXT_FILE_UPLOAD','File Upload');
@@ -225,6 +224,7 @@ define('TEXT_RECUR','Recur');
 define('TEXT_REFERENCE','Reference');
 define('TEXT_REMOVE','Remove');
 define('TEXT_RENAME','Rename');
+define('TEXT_RENAME_TO','Rename to:');
 define('TEXT_REPLACE','Replace');
 define('TEXT_REPORT','Report');
 define('TEXT_REPORTS','Reports');
@@ -358,7 +358,6 @@ define('ERROR_MODULE_VERSION_TOO_LOW','The module you are trying to install (%s)
 define('ERROR_CANNOT_CREATE_DIR','Backup directory could not be created in /my_files. Check permissions.');
 define('ERROR_COMPRESSION_FAILED','Backup compression failed: ');
 define('TEXT_ENCRYPTION_ENABLED','Encryption Key is Set');
-define('GEN_MSG_COPY_INTRO','Please enter the new user name.');
 define('GEN_ERROR_DUPLICATE_ID','The username is already in use. Please select a different name.');
 define('GEN_MSG_COPY_SUCCESS','The user was copied. Please set the password and any other properties for this new user.');
 define('EMAIL_SEND_FAILED','The email message was not sent.');
@@ -383,6 +382,7 @@ define('ERROR_CANNOT_DELETE_DEFAULT_CURRENCY','Error - The default currency cann
 define('ERROR_CURRENCY_DELETE_IN_USE','Error - The currency cannot be deleted because there are journal entries using this currency.');
 define('ERROR_ACCESSING_FILE','Cannot open file (%s) for reading/writing check your permissions.');
 define('TEXT_INSTALL_DIR_PRESENT','The /install directory is present. This directory should be removed or renamed to avoid re-installing the application.');
+define('INSTALL_ERROR_SAFE_MODE','Your php configuration is set to run in safe mode. Safe mode needs to be turned off to install PhreeBooks.');
 // Error messages for file operations
 define('TEXT_SELECT_FILE_TO_ATTACH','Select file to attach:');
 define('MSG_ERROR_CANNOT_WRITE','Cannot open file (%s) for reading/writing check your permissions.');
@@ -421,5 +421,5 @@ define('GEN_LOG_PERIOD_CHANGE','Accounting Period - Change');
 define('GEN_LOG_INSTALL_SUCCESS','Module %s: ');
 
 define('TEXT_PRODUCT_DEFAULT','Product Default');
-
+define('TEXT_METHODS_AVAILABLE', 'Methods Available');
 ?>

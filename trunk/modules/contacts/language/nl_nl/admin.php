@@ -9,7 +9,7 @@
 // Path: /modules/contacts/language/nl_nl/admin.php
 
 define('MODULE_CONTACTS_TITLE','Contact module');
-define('MODULE_CONTACTS_DESCRIPTION','De contact module beheert alle klanten, leveranciers, medewerkers, brances en projecten in de PhreeSoft Business Toolkit. <b>NOTE: Deze module moet niet verwijderd worden omdat hij tot de kern van het programma behoort!</b>');
+define('MODULE_CONTACTS_DESCRIPTION','De contact module beheert alle klanten, leveranciers, medewerkers, brances en projecten in de PhreeSoft Business Toolkit.');
 define('BOX_CONTACTS_ADMIN','Contact Administratie');
 define('TEXT_BILLING_PREFS','Factuur Adres Instellingen');
 define('PB_PF_CONTACT_ID','Contact ID');

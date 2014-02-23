@@ -18,7 +18,7 @@
 //  Path: /modules/phreebooks/ajax/load_bill.php
 //
 $xml = NULL;
-$security_level = validate_ajax_user();
+$security_level = \core\classes\user::validate();
 /**************  include page specific files    *********************/
 gen_pull_language('contacts');
 require_once(DIR_FS_MODULES . 'phreebooks/defaults.php');
@@ -37,7 +37,7 @@ if ($bID) {
   $bill = $db->Execute("select * from " . TABLE_JOURNAL_MAIN . " where id = '" . $bID . "'");
   if ($bill->fields['bill_acct_id']) $cID = $bill->fields['bill_acct_id']; // replace bID with ID from payment
 } else {
-  $bill = new objectInfo();
+  $bill = new \core\classes\objectInfo();
 }
 // select the customer and build the contact record
 $contact = $db->Execute("select * from " . TABLE_CONTACTS . " where id = '" . $cID . "'");
@@ -80,5 +80,7 @@ if (sizeof($bill->fields) > 0) { // there was an bill to open
 
 if ($debug) $xml .= xmlEntry('debug', $debug);
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

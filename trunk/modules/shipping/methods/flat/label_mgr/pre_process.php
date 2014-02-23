@@ -19,16 +19,13 @@
 //
 
 $shipping_module = 'flat';
-
 /**************  include page specific files    *********************/
 load_method_language(DEFAULT_MOD_DIR, $shipping_module);
 require(DIR_FS_WORKING . 'functions/shipping.php');
-require(DIR_FS_WORKING . 'classes/shipping.php');
-require(DIR_FS_WORKING . 'methods/' . $shipping_module . '/' . $shipping_module . '.php');
-
 /**************   page specific initialization  *************************/
 $error = false;
-$sInfo = new shipment();	// load defaults
+$shipping_method = "\shipping\methods\\$shipping_module\\$shipping_module";
+$sInfo = new $shipping_method();	// load defaults
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save':
@@ -41,14 +38,14 @@ switch ($_REQUEST['action']) {
 
 	$temp = $db->Execute("select next_shipment_num from " . TABLE_CURRENT_STATUS);
 	$sql_array = array(
-		'ref_id' => $sInfo->purchase_invoice_id,
-		'shipment_id' => $temp->fields['next_shipment_num'],
-		'carrier' => $shipping_module,
-		'method' => $sInfo->ship_method,
-		'ship_date' => $sInfo->ship_date,
-		'deliver_date' => $sInfo->deliver_date,
-		'tracking_id' => $sInfo->tracking_id,
-		'cost' => $sInfo->cost);
+		'ref_id' 		=> $sInfo->purchase_invoice_id,
+		'shipment_id' 	=> $temp->fields['next_shipment_num'],
+		'carrier' 		=> $shipping_module,
+		'method' 		=> $sInfo->ship_method,
+		'ship_date' 	=> $sInfo->ship_date,
+		'deliver_date' 	=> $sInfo->deliver_date,
+		'tracking_id' 	=> $sInfo->tracking_id,
+		'cost' 			=> $sInfo->cost);
 	db_perform(TABLE_SHIPPING_LOG, $sql_array, 'insert');
 	$db->Execute("update " . TABLE_CURRENT_STATUS . " set next_shipment_num = next_shipment_num + 1");
 	gen_add_audit_log(SHIPPING_LOG_LABEL_PRINTED, $sInfo->purchase_invoice_id);
@@ -58,16 +55,10 @@ switch ($_REQUEST['action']) {
 	$shipment_id = db_prepare_input($_GET['sID']);
 	$result = $db->Execute("select method, ship_date from " . TABLE_SHIPPING_LOG . " where shipment_id = " . (int)$shipment_id);
 	$ship_method = $result->fields['method'];
-	if ($result->RecordCount() == 0 || !$shipment_id) {
-		$messageStack->add(SHIPPING_DELETE_ERROR,'error');
-		$error = true;
-		break;
-	}
+	if ($result->RecordCount() == 0 || !$shipment_id) throw new \Exception(SHIPPING_DELETE_ERROR);
 
 	if ($result->fields['ship_date'] < date('Y-m-d', time())) { // only allow delete if shipped today or in future
-		$messageStack->add(SHIPPING_CANNOT_DELETE,'error');
-		$error = true;
-		break;
+		throw new \Exception(SHIPPING_CANNOT_DELETE);
 	}
 
 	$db->Execute("delete from " . TABLE_SHIPPING_LOG . " where shipment_id = " . $shipment_id);

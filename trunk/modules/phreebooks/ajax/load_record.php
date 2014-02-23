@@ -19,7 +19,7 @@
 
 /**************   Check user security   *****************************/
 $xml = NULL;
-$security_level = validate_ajax_user();
+$security_level = \core\classes\user::validate();
 /**************   include page specific files   *********************/
 require_once(DIR_FS_ADMIN . 'modules/phreebooks/defaults.php');
 /**************   page specific initialization  *********************/
@@ -27,8 +27,10 @@ $rID   = db_prepare_input($_GET['rID']);
 $error = false;
 $main  = $db->Execute("select * from ".TABLE_JOURNAL_MAIN." where id = '$rID'");
 if ($main->RecordCount() <> 1) {
-  echo createXmlHeader() . xmlEntry('error', 'Bad record submitted. No results found!') . createXmlFooter();
-  die;
+  	echo createXmlHeader() . xmlEntry('error', 'Bad record submitted. No results found!') . createXmlFooter();
+  	ob_end_flush();
+	session_write_close();
+  	die;
 }
 $items = $db->Execute("select * from ".TABLE_JOURNAL_ITEM." where ref_id = '$rID'");
 // build the journal record data
@@ -42,5 +44,7 @@ while (!$items->EOF) {
 }
 
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

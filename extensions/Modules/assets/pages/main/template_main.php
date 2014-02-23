@@ -62,7 +62,7 @@ echo $toolbar->build_toolbar($add_search = true);
 
 	  if ($security_level > 1) echo html_icon('actions/edit-find-replace.png', TEXT_EDIT, 'small', 'onclick="submitSeq(' . $query_result->fields['id'] . ', \'edit\')"') . chr(10);
 	  if ($security_level > 3) echo html_icon('apps/accessories-text-editor.png', TEXT_RENAME, 'small', 'onclick="renameItem(' . $query_result->fields['id'] . ')"') . chr(10);
-	  if ($security_level > 1) echo html_icon('actions/edit-copy.png', TEXT_COPY_TO, 'small', 'onclick="copyItem(' . $query_result->fields['id'] . ')"') . chr(10);
+	  if ($security_level > 1) echo html_icon('actions/edit-copy.png', TEXT_COPY, 'small', 'onclick="copyItem(' . $query_result->fields['id'] . ')"') . chr(10);
 	  if ($attach_exists) {
 	    echo html_icon('status/mail-attachment.png', TEXT_DOWNLOAD_ATTACHMENT,'small', 'onclick="submitSeq(' . $query_result->fields['id'] . ', \'dn_attach\', true)"') . chr(10);
 	  }

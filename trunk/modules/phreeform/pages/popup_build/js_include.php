@@ -41,9 +41,6 @@ var textPortrait  = '<?php echo TEXT_PORTRAIT; ?>';
 var textLandscape = '<?php echo TEXT_LANDSCAPE; ?>';
 
 function init() {
-  $(function() {
-	$('#buildtabs').tabs();
-  });
   if (action == 'preview') {
     var rID = document.getElementById('rID').value;
     var popupWin = window.open("index.php?module=phreeform&page=popup_gen&rID="+rID+"&action=open&preview=1","popup_gen","width=900,height=650,resizable=1,scrollbars=1,top=150,left=200");
@@ -102,7 +99,7 @@ function validateDB() {
 	}
   }
   if (tableCnt < 2 || !tableCrit) {
-    alert('<?php echo PHREEFORM_JS_TABLE_CHECK_ERROR; ?>');
+	$.messager.alert('error','<?php echo PHREEFORM_JS_TABLE_CHECK_ERROR; ?>','error');
     return;
   }
   $.ajax({
@@ -110,7 +107,7 @@ function validateDB() {
     url: 'index.php?module=phreeform&page=ajax&op=validate_db'+fields,
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-      alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     },
 	success: validateDbResp
   });
@@ -119,7 +116,7 @@ function validateDB() {
 function validateDbResp(sXml) {
   var xml = parseXml(sXml);
   if (!xml) return;
-  if ($(xml).find("message").text()) alert($(xml).find("message").text());
+  if ($(xml).find("message").text()) $.messager.alert('info',$(xml).find("message").text(),'info');
 }
 /**************************************************************************************/
 // ajax call to load form field list after a table change
@@ -138,7 +135,7 @@ function fieldLoad() {
     url: 'index.php?module=phreeform&page=ajax&op=field_load'+params,
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-      alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     },
 	success: fieldLoadResp
   });
@@ -170,7 +167,7 @@ function boxLoad(type, rowID) {
     url: 'index.php?module=phreeform&page=ajax&op=box_load&type='+type+'&rID='+rID+'&rowID='+rowID,
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-      alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     },
 	success: boxLoadResp
   });

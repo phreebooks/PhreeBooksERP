@@ -240,12 +240,14 @@ define('GL_ERROR_NO_RETAINED_EARNINGS_ACCOUNT','Zero or more than one retained e
 define('PB_ERROR_NO_PREFERRED_VENDOR','No valid vendor could be found, make sure at least one sku has a prefered vendor setup for the inventory item.');
 define('GL_ERROR_2','The %s you entered is a duplicate, please enter a new unique value!');
 define('GL_ERROR_5','There was an error incrementing the %s!');
+define('ERROR_SKU_BLANK','The id field was empty');
+define('ERROR_DUPLICATE_SKU','The id $s is not unique');
 // Javascript Messages
 define('ORD_JS_RECUR_NO_INVOICE','For a recurring transaction, a starting invoice number needs to be entered. PhreeBooks will increment it for each recurring entry.');
 define('ORD_JS_RECUR_ROLL_REQD','This is a recurring entry. Do you want to update future entries as well? (Press Cancel to update only this entry)');
 define('ORD_JS_RECUR_DEL_ROLL_REQD','This is a recurring entry. Do you want to delete future entries as well? (Press Cancel to delete only this entry)');
 define('ORD_JS_WAITING_FOR_PAYMENT','Either Waiting for Invoice needs to be checked or an invoice number needs to be entered.');
-define('ORD_JS_SERIAL_NUM_PROMPT','Enter the serial number for this line item. NOTE: The quantity must be 1 for serialized items.');
+define('ORD_JS_SERIAL_NUM_PROMPT','Enter the serial number for this line item.<br/> NOTE: The quantity must be 1 for serialized items.');
 define('ORD_JS_NO_STOCK_A','Caution! There is not enough of item SKU ');
 define('ORD_JS_NO_STOCK_B',' in stock to fill the order.\nThe number of items in stock is: ');
 define('ORD_JS_NO_STOCK_C','\n\nPress OK to continue or Cancel to return to the order form.');

@@ -31,7 +31,7 @@ $cal_c_gen = array(
 <?php echo js_calendar_init($cal_c_gen); ?>
 </script>
 
-<div id="tab_notes">
+<div title="<?php echo TEXT_NOTES;?>" id="tab_notes">
   <fieldset>
     <legend><?php echo TEXT_NOTES; ?></legend>
 	<div style="float:right;width:50%">

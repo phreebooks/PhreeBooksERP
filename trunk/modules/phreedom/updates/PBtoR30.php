@@ -82,28 +82,15 @@ if (defined('MODULE_SHIPPING_USPS_SORT_ORDER'))        write_configure('MODULE_S
 gen_pull_language('phreeform', 'admin');
 require_once (DIR_FS_MODULES . 'phreeform/config.php');
 require_once (DIR_FS_MODULES . 'phreeform/defaults.php');
-require_once (DIR_FS_MODULES . 'phreeform/classes/install.php');
-$mInstall = new phreeform_admin;
-admin_install_dirs($mInstall->dirlist, DIR_FS_MY_FILES.$_SESSION['company'].'/');
-admin_install_tables($mInstall->tables);
-write_configure('MODULE_PHREEFORM_STATUS', constant('MODULE_PHREEFORM_VERSION'));
-foreach ($mInstall->keys as $key => $value) write_configure($key, $value);
-$mInstall->load_reports('phreeform');
-admin_add_reports('phreeform');
-$mInstall->install('phreeform');
+$admin_classes['phreeform']->install(DIR_FS_MY_FILES.$_SESSION['company'].'/', false);
 // load installed modules and build report folders
 $contents = scandir(DIR_FS_MODULES);
-foreach ($contents as $entry) { // load the configuration files to load version info
-  if ($entry <> '.' && $entry <> '..' && is_dir(DIR_FS_MODULES . $entry)) {
-    if (defined('MODULE_' . strtoupper($entry) . '_STATUS') && $entry <> 'phreeform') { // build the directories
-	  gen_pull_language($entry, 'admin');
-	  require_once (DIR_FS_MODULES . $entry . '/config.php');
-	  require_once (DIR_FS_MODULES . $entry . '/classes/install.php');
-	  $classname   = $entry . '_admin';
-	  $install_mod = new $classname;
-	  $install_mod->load_reports($entry);
-    }
-  }
+foreach ($admin_classes as $key => $class) { // load the configuration files to load version info
+    if ($class->installed && $key <> 'phreeform') { // build the directories
+	  	gen_pull_language($key, 'admin');
+	  	require_once (DIR_FS_MODULES . $key . '/config.php');
+	  	$class->load_reports();
+  	}
 }
 
 // reload pages array since it doesn't exist at the start of the update

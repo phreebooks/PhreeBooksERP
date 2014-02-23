@@ -22,7 +22,6 @@ $contact_js  = '';
 $js_pmt_array= '';
 $js_actions  = '';
 $criteria    = array();
-$tab_list    = array();
 if ($_POST['crm_date']) $_POST['crm_date'] = gen_db_date($_POST['crm_date']);
 if ($_POST['due_date']) $_POST['due_date'] = gen_db_date($_POST['due_date']);
 $type        = isset($_GET['type']) ? $_GET['type'] : 'c'; // default to customer
@@ -32,31 +31,20 @@ $default_f0 = defined('CONTACTS_F0_'.strtoupper($type)) ? constant('CONTACTS_F0_
 $_SESSION['f0'] = (isset($_SESSION['f0'])) ? $_SESSION['f0'] : $default_f0;
 if($_SERVER['REQUEST_METHOD'] == 'POST') $_SESSION['f0'] = (isset($_REQUEST['f0'])) ? $_REQUEST['f0'] : false; // show inactive checkbox
 if(!isset($_REQUEST['list'])) $_REQUEST['list'] = 1; 
-if (file_exists(DIR_FS_WORKING . 'custom/classes/type/'.$type.'.php')) { 
-	require_once(DIR_FS_WORKING . 'custom/classes/type/'.$type.'.php'); 
-}else{
-    require_once(DIR_FS_WORKING . 'classes/type/'.$type.'.php'); // is needed here for the defining of the class and retrieving the security_token
-}
-if ($type <>'i' && file_exists(DIR_FS_WORKING . 'custom/classes/type/i.php')) {
-	require_once(DIR_FS_WORKING . 'custom/classes/type/i.php');
-}elseif ($type <>'i'){
-	require_once(DIR_FS_WORKING . 'classes/type/i.php');
-}
-$cInfo = new $type();
+$temp = '\contacts\classes\type\\'.$type;
+$cInfo = new $temp;
 /**************   Check user security   *****************************/
 
 /***************   hook for custom security  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/contacts/main/extra_security.php';
 if (file_exists($custom_path)) { include($custom_path); }
-$security_level = validate_user($cInfo->security_token); // in this case it must be done after the class is defined for
+$security_level = \core\classes\user::validate($cInfo->security_token); // in this case it must be done after the class is defined for
 /**************  include page specific files    *********************/
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 require_once(DIR_FS_WORKING . 'functions/contacts.php');
-require_once(DIR_FS_WORKING . 'classes/contacts.php');
-require_once(DIR_FS_WORKING . 'classes/contact_fields.php');
-$fields = new contact_fields();
+$fields = new \contacts\classes\fields();
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/main/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
@@ -64,11 +52,11 @@ if (file_exists($custom_path)) { include($custom_path); }
  
 switch ($_REQUEST['action']) {
     case 'new':
-        validate_security($security_level, 2);
+        \core\classes\user::validate_security($security_level, 2);
 	    break;
     case 'save':
 		$id = (int)db_prepare_input($_POST['id']);  // if present, then its an edit
-	    $id ? validate_security($security_level, 3) : validate_security($security_level, 2);
+	    $id ? \core\classes\user::validate_security($security_level, 3) : \core\classes\user::validate_security($security_level, 2);
 		// error check
 		$error = $cInfo->data_complete($error);
 		// start saving data
@@ -76,7 +64,7 @@ switch ($_REQUEST['action']) {
 		  $cInfo->save_contact(); 
 		  $cInfo->save_addres();
 		  if ($type <> 'i' && ($_POST['i_short_name'] || $_POST['address']['im']['primary_name'])) { // is null
-		  	$crmInfo = new i;
+		  	$crmInfo = new \contacts\classes\type\i;
 	        $crmInfo->auto_field  = $cInfo->type=='v' ? 'next_vend_id_num' : 'next_cust_id_num';
 	        $crmInfo->dept_rep_id = $cInfo->id;
 		  	// error check contact
@@ -88,7 +76,7 @@ switch ($_REQUEST['action']) {
 		  }
 		  // payment fields
 		  if (ENABLE_ENCRYPTION && $_POST['payment_cc_name'] && $_POST['payment_cc_number']) { // save payment info
-			  $encrypt = new encryption();
+			  $encrypt = new \core\classes\encryption();
 				$cc_info = array(
 				  'name'    => db_prepare_input($_POST['payment_cc_name']),
 				  'number'  => db_prepare_input($_POST['payment_cc_number']),
@@ -155,14 +143,10 @@ switch ($_REQUEST['action']) {
 
     case 'delete':
     case 'crm_delete':
-	    validate_security($security_level, 4);
+	    \core\classes\user::validate_security($security_level, 4);
 	    $short_name = gen_get_contact_name($cInfo->id);
-	    $temp = $cInfo->delete();
-	    if ($temp == true) {
-	       gen_add_audit_log(TEXT_CONTACTS.'-'.TEXT_DELETE.'-'.constant('ACT_'.strtoupper($type).'_TYPE_NAME'), $short_name);
-        } else {
-    	   $error = $messageStack->add($temp,'error');
-	    }
+	   	$cInfo->delete();
+	    gen_add_audit_log(TEXT_CONTACTS.'-'.TEXT_DELETE.'-'.constant('ACT_'.strtoupper($type).'_TYPE_NAME'), $short_name);
 	    break;
 
     case 'download':
@@ -170,10 +154,11 @@ switch ($_REQUEST['action']) {
   	    $imgID = db_prepare_input($_POST['rowSeq']);
 	    $filename = 'contacts_'.$cID.'_'.$imgID.'.zip';
 	    if (file_exists(CONTACTS_DIR_ATTACHMENTS . $filename)) {
-	       require_once(DIR_FS_MODULES . 'phreedom/classes/backup.php');
-	       $backup = new backup();
+	       $backup = new \phreedom\classes\backup();
 	       $backup->download(CONTACTS_DIR_ATTACHMENTS, $filename, true);
 	    }
+	    ob_end_flush();
+  		session_write_close();
         die;
 
     case 'dn_attach': // download from list, assume the first document only
@@ -181,13 +166,14 @@ switch ($_REQUEST['action']) {
   	    $result = $db->Execute("select attachments from ".TABLE_CONTACTS." where id = $cID");
   	    $attachments = unserialize($result->fields['attachments']);
   	    foreach ($attachments as $key => $value) {
-		   $filename = 'contacts_'.$cID.'_'.$key.'.zip';
-		   if (file_exists(CONTACTS_DIR_ATTACHMENTS . $filename)) {
-		      require_once(DIR_FS_MODULES . 'phreedom/classes/backup.php');
-		      $backup = new backup();
-		      $backup->download(CONTACTS_DIR_ATTACHMENTS, $filename, true);
-		      die;
-		   }
+		   	$filename = 'contacts_'.$cID.'_'.$key.'.zip';
+		   	if (file_exists(CONTACTS_DIR_ATTACHMENTS . $filename)) {
+		      	$backup = new \phreedom\classes\backup();
+		      	$backup->download(CONTACTS_DIR_ATTACHMENTS, $filename, true);
+		      	ob_end_flush();
+  				session_write_close();
+		      	die;
+		   	}
   	    }
  	case 'reset':
  		$_SESSION['f0'] = $default_f0;
@@ -271,11 +257,11 @@ switch ($_REQUEST['action']) {
 			from " . TABLE_CONTACTS . " c left join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id " . $search . " order by $disp_order";
 	    $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 	    // the splitPageResults should be run directly after the query that contains SQL_CALC_FOUND_ROWS
-    	$query_split  = new splitPageResults($_REQUEST['list'], '');
+    	$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     	if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results
     		$_REQUEST['list'] = $query_split->current_page_number;
 	    	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-    		$query_split  = new splitPageResults($_REQUEST['list'], '');
+    		$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     	}
     	history_save('contacts'.$type);
 	    $include_template = 'template_main.php'; // include display template (required)

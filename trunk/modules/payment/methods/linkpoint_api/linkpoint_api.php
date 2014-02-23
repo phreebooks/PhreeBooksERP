@@ -21,17 +21,17 @@
 // 2009-08-01 - Author: Harry Lu
 // 2010-08-17 - Modified by PhreeSoft
 // 2011-07-01 - Added version number for revision control
-define('MODULE_PAYMENT_LINKPOINT_API_VERSION','3.3');
-require_once(DIR_FS_MODULES . 'payment/classes/payment.php');
+namespace payment\methods\linkpoint_api;
 @define('MODULE_PAYMENT_LINKPOINT_API_CODE_DEBUG', 'off'); // debug for programmer use only
 
-class linkpoint_api extends payment {
-  public $code        = 'linkpoint_api'; // needs to match class name
-  public $title       = MODULE_PAYMENT_LINKPOINT_API_TEXT_TITLE;
-  public $description = MODULE_PAYMENT_LINKPOINT_API_TEXT_DESCRIPTION;
-  public $sort_order  = 8;
+class linkpoint_api extends \payment\classes\payment {
+  public $id			= 'linkpoint_api'; // needs to match class name
+  public $text			= MODULE_PAYMENT_LINKPOINT_API_TEXT_TITLE;
+  public $description	= MODULE_PAYMENT_LINKPOINT_API_TEXT_DESCRIPTION;
+  public $sort_order	= 8;
   public $enabled, $payment_status, $auth_code, $transaction_id;
-  public $_logDir = DIR_FS_SQL_CACHE;
+  public $_logDir		= DIR_FS_SQL_CACHE;
+  public $version		= '3.3';
 
   public function __construct(){
   	global $order, $messageStack;
@@ -42,20 +42,20 @@ class linkpoint_api extends payment {
 	if (MODULE_PAYMENT_LINKPOINT_API_STATUS) {
 		$pemFileDir = DIR_FS_WORKING . '/payment/modules/linkpoint_api/' . MODULE_PAYMENT_LINKPOINT_API_LOGIN . '.pem';
 		if (MODULE_PAYMENT_LINKPOINT_API_LOGIN == 'EnterYourStoreNumber') {
-			$this->title .= MODULE_PAYMENT_LINKPOINT_API_TEXT_NOT_CONFIGURED;
+			$this->text .= MODULE_PAYMENT_LINKPOINT_API_TEXT_NOT_CONFIGURED;
 		} elseif (MODULE_PAYMENT_LINKPOINT_API_LOGIN != '' && !file_exists($pemFileDir)) {
-			$this->title .= MODULE_PAYMENT_LINKPOINT_API_TEXT_PEMFILE_MISSING;
+			$this->text .= MODULE_PAYMENT_LINKPOINT_API_TEXT_PEMFILE_MISSING;
 		} elseif (MODULE_PAYMENT_LINKPOINT_API_TRANSACTION_MODE_RESPONSE != 'LIVE: Production') {
-			$this->title .= MODULE_PAYMENT_LINKPOINT_API_TEXT_TEST_MODE;
+			$this->text .= MODULE_PAYMENT_LINKPOINT_API_TEXT_TEST_MODE;
 		}
 	}
-	$this->key[] = array('key' => 'MODULE_PAYMENT_LINKPOINT_API_LOGIN',                    'default' => 'YourStoreNumber'			, 'text' => MODULE_PAYMENT_LINKPOINT_API_LOGIN_DESC);
-	$this->key[] = array('key' => 'MODULE_PAYMENT_LINKPOINT_API_TRANSACTION_MODE_RESPONSE','default' => 'LIVE: Production'			, 'text' => MODULE_PAYMENT_LINKPOINT_API_TRANSACTION_MODE_RESPONSE_DESC);
-	$this->key[] = array('key' => 'MODULE_PAYMENT_LINKPOINT_API_AUTHORIZATION_MODE',       'default' => 'Immediate Charge/Capture'	, 'text' => MODULE_PAYMENT_LINKPOINT_API_AUTHORIZATION_MODE_DESC);
-	$this->key[] = array('key' => 'MODULE_PAYMENT_LINKPOINT_API_FRAUD_ALERT',              'default' => '1'							, 'text' => MODULE_PAYMENT_LINKPOINT_API_FRAUD_ALERT_DESC);
-	$this->key[] = array('key' => 'MODULE_PAYMENT_LINKPOINT_API_STORE_DATA',               'default' => '1'							, 'text' => MODULE_PAYMENT_LINKPOINT_API_STORE_DATA_DESC);
-	$this->key[] = array('key' => 'MODULE_PAYMENT_LINKPOINT_API_TRANSACTION_MODE',         'default' => 'Production'				, 'text' => MODULE_PAYMENT_LINKPOINT_API_TRANSACTION_MODE_DESC);
-    $this->key[] = array('key' => 'MODULE_PAYMENT_LINKPOINT_API_DEBUG',                    'default' => 'Off'						, 'text' => MODULE_PAYMENT_LINKPOINT_API_DEBUG_DESC);
+	$this->keys[] = array('key' => 'MODULE_PAYMENT_LINKPOINT_API_LOGIN',                    'default' => 'YourStoreNumber'			, 'text' => MODULE_PAYMENT_LINKPOINT_API_LOGIN_DESC);
+	$this->keys[] = array('key' => 'MODULE_PAYMENT_LINKPOINT_API_TRANSACTION_MODE_RESPONSE','default' => 'LIVE: Production'			, 'text' => MODULE_PAYMENT_LINKPOINT_API_TRANSACTION_MODE_RESPONSE_DESC);
+	$this->keys[] = array('key' => 'MODULE_PAYMENT_LINKPOINT_API_AUTHORIZATION_MODE',       'default' => 'Immediate Charge/Capture'	, 'text' => MODULE_PAYMENT_LINKPOINT_API_AUTHORIZATION_MODE_DESC);
+	$this->keys[] = array('key' => 'MODULE_PAYMENT_LINKPOINT_API_FRAUD_ALERT',              'default' => '1'							, 'text' => MODULE_PAYMENT_LINKPOINT_API_FRAUD_ALERT_DESC);
+	$this->keys[] = array('key' => 'MODULE_PAYMENT_LINKPOINT_API_STORE_DATA',               'default' => '1'							, 'text' => MODULE_PAYMENT_LINKPOINT_API_STORE_DATA_DESC);
+	$this->keys[] = array('key' => 'MODULE_PAYMENT_LINKPOINT_API_TRANSACTION_MODE',         'default' => 'Production'				, 'text' => MODULE_PAYMENT_LINKPOINT_API_TRANSACTION_MODE_DESC);
+    $this->keys[] = array('key' => 'MODULE_PAYMENT_LINKPOINT_API_DEBUG',                    'default' => 'Off'						, 'text' => MODULE_PAYMENT_LINKPOINT_API_DEBUG_DESC);
   }
 
   function configure($key) {
@@ -100,7 +100,7 @@ class linkpoint_api extends payment {
   }
 
   function javascript_validation() {
-	$js = 'if (payment_method == "' . $this->code . '") {' . "\n" .
+	$js = 'if (payment_method == "' . $this->id . '") {' . "\n" .
 	'    var cc_owner  = document.getElementById("linkpoint_api_field_0").value;' . "\n" .
 	'    var cc_number = document.getElementById("linkpoint_api_field_1").value;' . "\n" .
 	'    if (cc_owner == "" || cc_owner.length < ' . CC_OWNER_MIN_LENGTH . ') {' . "\n" .
@@ -137,8 +137,8 @@ class linkpoint_api extends payment {
       $expires_year[] = array('id' => strftime('%Y',mktime(0,0,0,1,1,$i)), 'text' => strftime('%Y',mktime(0,0,0,1,1,$i)));
     }
     $selection = array (
-	  'id'     => $this->code,
-	  'page'   => $this->title,
+	  'id'     => $this->id,
+	  'page'   => $this->text,
 	  'fields' => array (
 	    array(  'title' => MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_OWNER,
 			    'field' => html_input_field('linkpoint_api_field_0', $this->field_0)),
@@ -147,7 +147,7 @@ class linkpoint_api extends payment {
 	    array(	'title' => MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_EXPIRES,
 			    'field' => html_pull_down_menu('linkpoint_api_field_2', $expires_month, $this->field_2) . '&nbsp;' . html_pull_down_menu('linkpoint_api_field_3', $expires_year, $this->field_3)),
 		array ( 'title' => MODULE_PAYMENT_CC_TEXT_CVV,
-				'field' => html_input_field('linkpoint_api_field_4', $this->field_4, 'size="4" maxlength="4"' . ' id="' . $this->code . '-cc-cvv"' ) . ' ' . '<a href="javascript:popupWindow(\'' . html_href_link(FILENAME_POPUP_CVV_HELP) . '\')">' . TEXT_MORE_INFO . '</a>',)
+				'field' => html_input_field('linkpoint_api_field_4', $this->field_4, 'size="4" maxlength="4"' . ' id="' . $this->id . '-cc-cvv"' ) . ' ' . '<a href="javascript:popupWindow(\'' . html_href_link(FILENAME_POPUP_CVV_HELP) . '\')">' . TEXT_MORE_INFO . '</a>',)
 	  ));
     return $selection;
   }
@@ -183,9 +183,9 @@ class linkpoint_api extends payment {
 
     if (($result == false) || ($result < 1)) {
 		$has_error = true;
-		$payment_error_return = 'payment_error=' . $this->code;
+		$payment_error_return = 'payment_error=' . $this->id;
 		$error_info2 = '&error=' . urlencode($error) . '&linkpoint_api_cc_owner=' . urlencode($this->field_0) . '&linkpoint_api_cc_expires_month=' . $this->field_2 . '&linkpoint_api_cc_expires_year=' . $this->field_3;
-		$messageStack->add($error . '<!-- [' . $this->code . '] -->', 'error');
+		$messageStack->add($error . '<!-- [' . $this->id . '] -->', 'error');
 		if (MODULE_PAYMENT_LINKPOINT_API_STORE_DATA) {
 			$cc_type         = $this->cc_card_type;
 			$cc_number_clean = $this->cc_card_number;
@@ -263,7 +263,7 @@ class linkpoint_api extends payment {
 	// Display Credit Card Information on the Checkout Confirmation Page
 	function confirmation() {
 		$confirmation = array (
-			'title' => $this->title . ': ' . $this->cc_card_type,
+			'title' => $this->text . ': ' . $this->cc_card_type,
 			'fields' => array (
 				array ( 'title' => MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_OWNER,
 						'field' => $this->field_0 ),
@@ -636,13 +636,15 @@ class linkpoint_api extends payment {
 	}
   }
 
-  function remove() {
-	global $db;
-	if (db_table_exists(TABLE_LINKPOINT_API)) { // cleanup database if contains no data
-	  $result = $db->Execute("select count(id) as count from " . TABLE_LINKPOINT_API);
-	  if ($result->RecordCount() == 0) $db->Execute("DROP TABLE " . TABLE_LINKPOINT_API);
-	}
-  }
+  	function delete() {
+		global $db;
+		if (db_table_exists(TABLE_LINKPOINT_API)) { // cleanup database if contains no data
+		  	$result = $db->Execute("select count(id) as count from " . TABLE_LINKPOINT_API);
+		  	if ($result->RecordCount() != 0) throw new Exception("Can't delete table ". TABLE_LINKPOINT_API. " because it contains data", $code, $previous); 
+		  	$db->Execute("DROP TABLE " . TABLE_LINKPOINT_API);
+		}
+		parent::delete();
+  	}
 
   function _log($msg, $suffix = '') {
 	static $key;
