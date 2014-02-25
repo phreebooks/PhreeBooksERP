@@ -68,10 +68,10 @@ function submit_wait() {
 }
 
 function clearField(field_name, text_value) {
-  if (document.getElementById(field_name).value == text_value) {
 	document.getElementById(field_name).style.color = '';
-	document.getElementById(field_name).value       = '';
-  }
+	if (document.getElementById(field_name).value == text_value) {
+		document.getElementById(field_name).value       = '';
+	}
 }
 
 function setField(field_name, text_value) {
@@ -448,6 +448,7 @@ function jumpToPage(get_params) {
 }
 
 function checkEnter(e) {
+  var keycode;
   if(window.event) { // IE
     keycode = event.keyCode;
   } else if (e.which) { // Netscape/Firefox/Opera

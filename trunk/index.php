@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 // Path: /index.php
 //
-ini_set('display_errors', '0');
+ini_set('display_errors', '1');
 error_reporting(E_ALL ^ E_NOTICE);
 if (isset($_POST['module']))    $module = $_POST['module'];
 elseif (isset($_GET['module'])) $module = $_GET['module'];
@@ -66,5 +66,6 @@ if (file_exists(DIR_FS_WORKING . 'custom/pages/' . $page . '/' . $include_templa
 }
 require('includes/template_index.php');
 require('includes/application_bottom.php');
-
+ob_end_flush();
+session_write_close();
 ?>
