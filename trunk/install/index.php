@@ -16,7 +16,9 @@
 // +-----------------------------------------------------------------+
 // Path: /install/index.php
 //
-ini_set('display_errors', '0');
+ob_start();
+ini_set('log_errors','1'); 
+ini_set('display_errors', '1');
 error_reporting(E_ALL & ~E_NOTICE);
 require_once('pages/main/pre_process.php');
 ?>
@@ -51,3 +53,7 @@ require_once('pages/main/pre_process.php');
 <?php require_once('pages/main/' . $include_template); ?>
 </body>
 </html>
+<?php 
+ob_end_flush();
+session_write_close();
+?>

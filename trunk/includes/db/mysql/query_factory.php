@@ -169,11 +169,13 @@ class queryFactory {
 		    throw new \Exception('The last transaction had a SQL database error.');
 		  } else{
 		  	echo str_replace("\n", '<br />', $messageStack->debug_info); 
-			die;
+			ob_end_flush();
+  			session_write_close();
 		  }
 		} else { 
 		    echo str_replace("\n", '<br />', $messageStack->debug_info); 
-			die;
+			ob_end_flush();
+  			session_write_close();
 		}
 	  }
       $obj->resource = $zp_db_resource;
