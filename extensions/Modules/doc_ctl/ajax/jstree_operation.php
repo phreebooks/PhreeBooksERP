@@ -43,8 +43,10 @@ if ($_REQUEST["operation"] && strpos($_REQUEST["operation"], "_") !== 0 && metho
 	header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
 	header("Pragma: no-cache");
 	echo $jstree->{$_REQUEST["operation"]}($_REQUEST);
+	ob_end_flush();
+  	session_write_close();
 	die();
 }
-header("HTTP/1.0 404 Not Found"); 
+throw new \Exception("HTTP/1.0 404 Not Found"); 
 
 ?>

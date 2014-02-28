@@ -18,52 +18,44 @@
 //
 namespace zencart\classes;
 class zencart {
-  var $arrOutput = array();
-  var $resParser;
-  var $strXML;
+  	var $arrOutput = array();
+  	var $resParser;
+  	var $strXML;
 
-  function __construct() {
-  }
-
-  function submitXML($id, $action = '', $hide_success = false, $inc_image = true) {
-	global $messageStack;
-	$this->strXML = null;
-	switch ($action) {
-		case 'product_ul': 
-			if (!$this->buildProductUploadXML($id, $inc_image)) return false;
-			$url = 'products.php';
-			break;
-		case 'product_sync':
-		  	if (!$this->buildProductSyncXML()) return false;
-			$url = 'sync.php';
-			break;
-		case 'confirm':
-			if (!$this->buildConfirmXML()) return false;
-			$url = 'confirm.php';
-			break;
-		default:
-			throw new Exception(ZENCART_INVALID_ACTION);
-	}
-	$temp = ZENCART_URL;
-	if(!defined('ZENCART_URL') || empty($temp) || $temp == 'http://') throw new \Exception("the Zen Cart url is empty");
-//	echo 'Submit to ' . ZENCART_URL . '/soap/' . $url . ' and XML string = <pre>' . htmlspecialchars($this->strXML) . '</pre><br />';
-	$this->response = doCURLRequest('POST', ZENCART_URL . '/soap/' . $url, $this->strXML);
-//	echo 'XML response (at the Phreedom side from Zencart) => <pre>' . htmlspecialchars($this->response) . '</pre><br />' . chr(10);
-//	if (!$this->response) return false;
-	$results = xml_to_object($this->response);
-//	echo 'Parsed string = '; print_r($results); echo '<br />';
+  	function submitXML($id, $action = '', $hide_success = false, $inc_image = true) {
+		global $messageStack;
+		$this->strXML = null;
+		switch ($action) {
+			case 'product_ul': 
+				$this->buildProductUploadXML($id, $inc_image);
+				$url = 'products.php';
+				break;
+			case 'product_sync':
+				$this->buildProductSyncXML();
+				$url = 'sync.php';
+				break;
+			case 'confirm':
+				$this->buildConfirmXML();
+				$url = 'confirm.php';
+				break;
+			default:
+				throw new \Exception(ZENCART_INVALID_ACTION);
+		}
+		$temp = ZENCART_URL;
+		if(!defined('ZENCART_URL') || empty($temp) || $temp == 'http://') throw new \Exception("the Zen Cart url is empty");
+//		echo 'Submit to ' . ZENCART_URL . '/soap/' . $url . ' and XML string = <pre>' . htmlspecialchars($this->strXML) . '</pre><br />';
+		$this->response = doCURLRequest('POST', ZENCART_URL . '/soap/' . $url, $this->strXML);
+//		echo 'XML response (at the PhreeBooks side from Zencart) => <pre>' . htmlspecialchars($this->response) . '</pre><br />' . chr(10);
+		$results = xml_to_object($this->response);
+//		echo 'Parsed string = '; print_r($results); echo '<br />';
 		
-	$this->result = $results->Response->Result;
-	$this->code   = $results->Response->Code;
-	$this->text   = $results->Response->Text;
-	if ($this->code == 0) {
-		if (!$hide_success) $messageStack->add($this->text, strtolower($this->result));
-	} else {
-		throw new \Exception(ZENCART_TEXT_ERROR . $this->code . ' - ' . $this->text);
-	  //$messageStack->add(ZENCART_TEXT_ERROR . $this->code . ' - ' . $this->text, strtolower($this->result));
+		$this->result = $results->Response->Result;
+		$this->code   = $results->Response->Code;
+		$this->text   = $results->Response->Text;
+
+		if (!$hide_success && $this->result) $messageStack->add($this->text, strtolower($this->result));
+		return true;
 	}
-	return true;
-  }
 
 /*************************************************************************************/
 //                           Product Upload XML string generation
@@ -130,7 +122,7 @@ class zencart {
 	$this->strXML .= xmlEntry('SKU', $result->fields['sku']);
 // Specific to Zencart
 	$this->strXML .= xmlEntry('ProductVirtual', '0');
-//rene	$this->strXML .= xmlEntry('ProductStatus', ($result->fields['inactive'] == '0' ? '1' : '0'));
+	$this->strXML .= xmlEntry('ProductStatus', ($result->fields['inactive'] ? '0' : '1'));
 	$this->strXML .= xmlEntry('ProductFreeShipping', '0');
 	$this->strXML .= xmlEntry('ProductHidePrice', '0');
 	$this->strXML .= xmlEntry('ProductCategory', $result->fields['category_id']);

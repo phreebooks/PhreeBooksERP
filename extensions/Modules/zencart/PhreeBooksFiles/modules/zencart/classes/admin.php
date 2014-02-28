@@ -42,13 +42,14 @@ class admin extends \core\classes\admin {
 		  'ZENCART_PRICE_SHEET'       => '',
 		  'ZENCART_STATUS_CONFIRM_ID' => '',
 		  'ZENCART_STATUS_PARTIAL_ID' => '',
+		  'MODULE_ZENCART_LAST_UPDATE' => date('Y-m-d H:i:s'),
 		);
 		parent::__construct();
 	}
 
 	function install($path_my_files, $demo = false) {
-	    global $db;
-	    parent::install($path_my_files, $demo);
+		global $db;
+		parent::install($path_my_files, $demo);
 		if (!db_field_exists(TABLE_INVENTORY, 'catalog')) { // setup new tab in table inventory
 		  $result = $db->Execute("select id FROM ".TABLE_EXTRA_TABS." WHERE tab_name='ZenCart'");
 		  if ($result->RecordCount() == 0) {
@@ -129,20 +130,21 @@ class admin extends \core\classes\admin {
 		}
 	}
 
-	function initialize() {
-	  	global $db, $messageStack;
+  function initialize() {
+  	global $db, $messageStack;
+  	try{
 	  	gen_pull_language('inventory');
-		require_once(DIR_FS_MODULES . 'zencart/functions/zencart.php');
+	  	require_once(DIR_FS_MODULES . 'zencart/functions/zencart.php');
 		require_once(DIR_FS_MODULES . 'zencart/language/'.$_SESSION['language'].'/language.php');
-		require_once(DIR_FS_MODULES . 'inventory/defaults.php');
-		require_once(DIR_FS_MODULES . 'inventory/functions/inventory.php');
+	    require_once(DIR_FS_MODULES . 'inventory/defaults.php');
+	  	require_once(DIR_FS_MODULES . 'inventory/functions/inventory.php');
 		if(defined('MODULE_ZENCART_LAST_UPDATE') && MODULE_ZENCART_LAST_UPDATE <> '') $where = " and ( last_update >'" . MODULE_ZENCART_LAST_UPDATE . "' or last_journal_date >'" . MODULE_ZENCART_LAST_UPDATE . "')";
 		$result = $db->Execute("select id from " . TABLE_INVENTORY . " where catalog = '1' " . $where);
 		$cnt    = 0;
 		if($result->RecordCount() == 0)	return true;
 		$prodXML = new \zencart\classes\zencart();
 		while(!$result->EOF) {
-		  	$prodXML->submitXML($result->fields['id'], 'product_ul', true, true); //should throw errors
+		  	$prodXML->submitXML($result->fields['id'], 'product_ul', true, true);
 		  	$cnt++;
 		  	$result->MoveNext();
 		}
@@ -150,7 +152,10 @@ class admin extends \core\classes\admin {
 		gen_add_audit_log(ZENCART_BULK_UPLOAD);
 		write_configure('MODULE_ZENCART_LAST_UPDATE', date('Y-m-d H:i:s'));
 		parent::initialize();
+  	}catch(Exception $e) {
+		$messageStack->add($e->getMessage());
 	}
+  }
 
 	function upgrade() {
 	    global $db;

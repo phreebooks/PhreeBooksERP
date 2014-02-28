@@ -234,6 +234,8 @@ switch ($_REQUEST['action']) {
 		$backup = new \phreedom\classes\backup();
 		$backup->download(ASSETS_DIR_ATTACHMENTS, $filename, true);
 	}
+	ob_end_flush();
+  	session_write_close();
 	die;
   case 'dn_attach': // download from list, assume the first document only
 	$cID   = db_prepare_input($_POST['rowSeq']);
@@ -244,6 +246,8 @@ switch ($_REQUEST['action']) {
 	  if (file_exists(ASSETS_DIR_ATTACHMENTS . $filename)) {
 		$backup = new \phreedom\classes\backup();
 		$backup->download(ASSETS_DIR_ATTACHMENTS, $filename, true);
+		ob_end_flush();
+  		session_write_close();
 		die;
 	  }
 	}

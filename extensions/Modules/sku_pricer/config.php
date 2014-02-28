@@ -21,7 +21,7 @@
 // 1.0 => 2011-05-26 - Initial Release
 // Module software version information
 // Menu Sort Positions
-// Security id's@todo needs fix for inventory update
+// Security id's @todo needs fix for inventory update
 define('SECURITY_ID_SKU_PRICER', 999);
 // New Database Tables
 // Menu Locations

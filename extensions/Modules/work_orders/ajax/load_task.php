@@ -21,7 +21,7 @@ $security_level = \core\classes\user::validate();
 /**************   page specific initialization  *************************/
 $xml = NULL;
 $id  = $_GET['id'];
-if (!$id) die;
+if (!$id) throw new \Exception("variable id isn't set");
 
 $result = $db->Execute("select * from " . TABLE_WO_TASK . " where id = '" . $id . "' limit 1");
 $xml .= xmlEntry("id",          $result->fields['id']);
@@ -39,5 +39,7 @@ $xml .= xmlEntry("erp_entry",   $result->fields['erp_entry']);
 
 // error check
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

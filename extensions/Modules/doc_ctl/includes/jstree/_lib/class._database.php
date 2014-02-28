@@ -124,6 +124,8 @@ class _database {
 		if($this->settings["dieonerror"]) {
 			if(isset($this->result)) mysql_free_result($this->result);
 			mysql_close($this->link);
+			ob_end_flush();
+  			session_write_close();
 			die();
 		}
 	}

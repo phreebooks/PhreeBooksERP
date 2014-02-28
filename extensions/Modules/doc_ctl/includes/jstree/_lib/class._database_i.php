@@ -132,6 +132,8 @@ class _database {
 		if($this->settings["dieonerror"]) {
 			if(isset($this->result)) $this->result->free();
 			@$this->data->close();
+			ob_end_flush();
+  			session_write_close();
 			die();
 		}
 	}

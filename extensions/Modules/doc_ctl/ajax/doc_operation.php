@@ -105,5 +105,7 @@ switch ($_REQUEST['action']) {
 $xml .= "\t" . xmlEntry("docID", $id);
 $xml .= "\t" . xmlEntry("msg",   $ajax_text);
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

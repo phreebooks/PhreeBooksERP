@@ -24,7 +24,7 @@ $security_level = \core\classes\user::validate();
 /**************   page specific initialization  *************************/
 $xml = NULL;
 $iID = $_GET['iID'];
-if (!$iID) die;
+if (!$iID) throw new \Exception("variable iID isn't set");
 
 // Pull the workorder information
 $field_list = array();
@@ -60,5 +60,7 @@ if ($id) {
 }
 
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

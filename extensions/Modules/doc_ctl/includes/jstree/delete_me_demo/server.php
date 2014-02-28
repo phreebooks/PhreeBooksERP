@@ -7,10 +7,14 @@ $jstree = new json_tree();
 
 if(isset($_GET["reconstruct"])) {
 	$jstree->_reconstruct();
+	ob_end_flush();
+  	session_write_close();
 	die();
 }
 if(isset($_GET["analyze"])) {
 	echo $jstree->_analyze();
+	ob_end_flush();
+  	session_write_close();
 	die();
 }
 
@@ -21,9 +25,11 @@ if($_REQUEST["operation"] && strpos($_REQUEST["operation"], "_") !== 0 && method
 	header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
 	header("Pragma: no-cache");
 	echo $jstree->{$_REQUEST["operation"]}($_REQUEST);
+	ob_end_flush();
+  	session_write_close();
 	die();
 }
-header("HTTP/1.0 404 Not Found"); 
+throw new Exception("HTTP/1.0 404 Not Found"); 
 ?>
 
 <?php

@@ -180,18 +180,22 @@ switch ($_REQUEST['action']) {
 	  $backup = new \phreedom\classes\backup();
 	  $backup->download(RMA_DIR_ATTACHMENTS, $filename, true);
 	}
+	ob_end_flush();
+	session_write_close();
 	die;
   case 'dn_attach': // download from list, assume the first document only
 	$cID   = db_prepare_input($_POST['rowSeq']);
 	$result = $db->Execute("select attachments from " . TABLE_RMA . " where id = " . $cID);
 	$attachments = unserialize($result->fields['attachments']);
 	foreach ($attachments as $key => $value) {
-	  $filename = 'rma_'.$cID.'_'.$key.'.zip';
-	  if (file_exists(RMA_DIR_ATTACHMENTS . $filename)) {
-		$backup = new \phreedom\classes\backup();
-		$backup->download(RMA_DIR_ATTACHMENTS, $filename, true);
-		die;
-	  }
+	  	$filename = 'rma_'.$cID.'_'.$key.'.zip';
+	  	if (file_exists(RMA_DIR_ATTACHMENTS . $filename)) {
+			$backup = new \phreedom\classes\backup();
+			$backup->download(RMA_DIR_ATTACHMENTS, $filename, true);
+			ob_end_flush();
+			session_write_close();
+			die;
+	  	}
 	}
     break;
 	

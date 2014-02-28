@@ -17,7 +17,7 @@
 //  Path: /modules/inventory/pages/main/template_detail.php
 //
 // start the form
-echo html_form('inventory', FILENAME_DEFAULT, gen_get_all_get_params(array('action', 'cID', 'sku', 'add')), 'post', 'enctype="multipart/form-data"');
+echo html_form('inventory', FILENAME_DEFAULT, gen_get_all_get_params(array('action', 'cID', 'sku', 'add', 'inventory_type')), 'post', 'enctype="multipart/form-data"');
 // include hidden fields
 echo html_hidden_field('action', '') . chr(10);
 echo html_hidden_field('rowSeq', 	$cInfo->id) . chr(10);

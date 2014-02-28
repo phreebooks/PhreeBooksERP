@@ -21,10 +21,7 @@ $xml = NULL;
 $security_level = \core\classes\user::validate();
 /**************   page specific initialization  *************************/
 $id = $_GET['id'];
-if (!$id) {
-  echo createXmlHeader() . xmlEntry('error', 'Error - Bad ID passed.') . createXmlFooter();
-  die;
-}
+if (!$id) throw new Exception("Error - Bad ID passed.");
 
 $result = $db->Execute("select display_name, admin_email from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
 $xml  = xmlEntry("id",     $id);
@@ -34,5 +31,7 @@ $xml .= xmlEntry("rEmail", '');
 $xml .= xmlEntry("rName",  '');
 
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

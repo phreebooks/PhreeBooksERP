@@ -38,5 +38,7 @@ while (!$result->EOF) {
 }
 $shortage = (sizeof($short) == 0) ? 'none' : implode(chr(10), $short);
 echo createXmlHeader() . xmlEntry("shortage", $shortage) . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

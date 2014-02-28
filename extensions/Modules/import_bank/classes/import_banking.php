@@ -255,8 +255,8 @@ class import_banking extends \phreebooks\classes\journal {
 						'gl_account'            => $gl_acct_id,
 						'serialize_number'      => $found_invoices[$i]['purchase_invoice_id'],
 						'post_date'             => $this->post_date,
-						'debit_amount'     		=> ($this->_firstjid == 20 ? $found_invoices[$i]['amount'] : 0),	
-						'credit_amount'			=> ($this->_firstjid == 20 ? 0       : $found_invoices[$i]['amount'] ),
+						'debit_amount'     		=> ($this->_firstjid == 20 && $this->_debitamount != 0) ? $found_invoices[$i]['amount'] : 0,	
+						'credit_amount'			=> ($this->_firstjid == 20 && $this->_debitamount != 0) ? 0       : $found_invoices[$i]['amount'],
 				  		'description'    		=> $this->_description,	
 					);
 				}
@@ -267,8 +267,8 @@ class import_banking extends \phreebooks\classes\journal {
 						'gl_account'            => $gl_disc_acct_id,
 						'serialize_number'      => $found_invoices[$i]['purchase_invoice_id'],
 						'post_date'             => $this->post_date,
-						'debit_amount'     		=> ($this->_firstjid == 20 ? 0         : $found_invoices[$i]['discount']),	
-						'credit_amount'			=> ($this->_firstjid == 20 ? $found_invoices[$i]['discount'] : 0 ),
+						'debit_amount'     		=> ($this->_firstjid == 20 && $this->_debitamount != 0) ? 0         : $found_invoices[$i]['discount'],	
+						'credit_amount'			=> ($this->_firstjid == 20 && $this->_debitamount != 0) ? $found_invoices[$i]['discount'] : 0,
 			  			'description'    		=> $this->_description,	
 					);
 				}

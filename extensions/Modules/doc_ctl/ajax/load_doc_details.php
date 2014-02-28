@@ -55,5 +55,7 @@ $xml .= "\t" . xmlEntry("htmlContents", $html);
 // error check
 
 echo createXmlHeader() . $xml . createXmlFooter();
+ob_end_flush();
+session_write_close();
 die;
 ?>

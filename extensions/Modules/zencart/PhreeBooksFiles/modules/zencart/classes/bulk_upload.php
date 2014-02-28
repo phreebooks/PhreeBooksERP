@@ -26,11 +26,10 @@ class bulk_upload {
 	$cnt    = 0;
 	$prodXML = new \zencart\classes\zencart();
 	while(!$result->EOF) {
-	  $prodXML->submitXML($result->fields['id'], 'product_ul', true, $inc_image);
-	  $cnt++;
-	  $result->MoveNext();
+	  	$prodXML->submitXML($result->fields['id'], 'product_ul', true, $inc_image);
+	  	$cnt++;
+	  	$result->MoveNext();
 	}
-	if ($error) return false;
 	$messageStack->add(sprintf(ZENCART_BULK_UPLOAD_SUCCESS, $cnt), 'success');
 	return  true;
   }
