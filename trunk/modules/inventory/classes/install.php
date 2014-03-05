@@ -58,6 +58,7 @@ class inventory_admin {
 	  'INV_LABOR_DEFAULT_COS'              => '5000',
 	  'INV_ACTIVITY_DEFAULT_SALES'         => '4000',
 	  'INV_CHARGE_DEFAULT_SALES'           => '4000',
+	  'INV_DESC_DEFAULT_SALES'             => '4000',
 	  'INVENTORY_DEFAULT_TAX'              => '0',
 	  'INVENTORY_DEFAULT_PURCH_TAX'        => '0',
 	  'INVENTORY_AUTO_ADD'                 => '0',
@@ -231,7 +232,6 @@ class inventory_admin {
 				$temp['inventory_type'] = 'ia:ma:mb:mi:ms:ns:sa:si:sr';
 				break;
 			case 'account_inventory_wage':
-			case 'account_cost_of_sales':
 				$temp['inventory_type'] = 'ia:lb:ma:mb:mi:ms:ns:sa:sf:si:sr:sv';
 				break;
 			case 'cost_method':
@@ -418,6 +418,12 @@ class inventory_admin {
 	}
 	if (MODULE_INVENTORY_STATUS < 3.7) {
 		if (!db_field_exists(TABLE_INVENTORY_HISTORY, 'avg_cost')) $db->Execute("ALTER TABLE ".TABLE_INVENTORY_HISTORY." ADD avg_cost FLOAT NOT NULL DEFAULT '0' AFTER unit_cost");
+	}
+	if (MODULE_INVENTORY_STATUS < '3.7.1') {
+		$result = $db->Execute("select id, params from ".TABLE_EXTRA_FIELDS." where module_id = 'inventory' AND field_name = 'account_cost_of_sales'");
+		$temp = unserialize($result->fields['params']);
+		$temp['inventory_type'] = 'ai:ci:ds:ia:lb:ma:mb:mi:ms:ns:sa:sf:si:sr:sv';
+		$updateDB = $db->Execute("update ".TABLE_EXTRA_FIELDS." set params='".serialize($temp)."' where id='".$result->fields['id']."'");
 	}
 	if (!$error) {
 		xtra_field_sync_list('inventory', TABLE_INVENTORY);
