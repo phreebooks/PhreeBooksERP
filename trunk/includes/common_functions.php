@@ -1179,7 +1179,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
 	  $id = str_replace('[','_', $name); // clean up for array inputs causing html errors
 	  $id = str_replace(']','',  $id);
     }
-    $field = '<select name="' . $name . '"';
+    $field = '<select class="easyui-combobox" name="' . $name . '"';
 	if ($id) $field .= ' id="' . $id . '"';
     if (gen_not_null($parameters)) $field .= ' ' . $parameters;
     if ($required)				$field .= ' required="required" ';

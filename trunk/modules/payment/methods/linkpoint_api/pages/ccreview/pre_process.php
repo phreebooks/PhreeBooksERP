@@ -79,11 +79,6 @@ $query_raw  = "select SQL_CALC_FOUND_ROWS lp.*, c.short_name, c.contact_last, c.
 $customers = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 // the splitPageResults should be run directly after the query that contains SQL_CALC_FOUND_ROWS
 $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');						  
-if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results
-	$_REQUEST['list'] = $query_split->current_page_number;
-	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-	$query_split      = new \core\classes\splitPageResults($_REQUEST['list'], '');
-}
 history_save('linkpoint');
 
 $include_header   = true;

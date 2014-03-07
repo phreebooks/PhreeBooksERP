@@ -30,9 +30,8 @@ if (isset($_GET['req']) && $_GET['req'] == 'pw_lost_sub') $_REQUEST['action'] = 
 switch ($_REQUEST['action']) {
   	case 'validate':
 	  	try{
-	 	 	if (!is_object($db)) { // Errors will happen here if there was a problem logging in, logout and restart
-				trigger_error("Database isn't created", E_USER_ERROR);	
-			}
+	  		// Errors will happen here if there was a problem logging in, logout and restart
+	 	 	if (!is_object($db)) throw new \ErrorException("Database isn't created", '',E_USER_ERROR);	
 		    $admin_name     = db_prepare_input($_POST['admin_name']);
 		    $admin_pass     = db_prepare_input($_POST['admin_pass']);
 		    $admin_company  = db_prepare_input($_POST['company']);
@@ -113,7 +112,7 @@ switch ($_REQUEST['action']) {
 	case 'logout':
 		$result = $db->Execute("select admin_name from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
 		gen_add_audit_log(GEN_LOG_LOGOFF . $result->fields['admin_name']);
-		session_destroy();
+		if (!session_destroy()) throw new \ErrorException("can't destroy session", '', E_USER_ERROR);
 		gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL'));
 		break;
   	case 'save':

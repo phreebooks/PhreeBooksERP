@@ -19,13 +19,14 @@
 ob_start();
 ini_set('log_errors','1'); 
 ini_set('display_errors', '1');
-error_reporting(E_ALL ^ E_NOTICE);
+error_reporting(E_ALL);
 if (isset($_POST['module']))    $module = $_POST['module'];
 elseif (isset($_GET['module'])) $module = $_GET['module'];
 else                            $module = 'phreedom';
 if (isset($_POST['page']))      $page = $_POST['page'];
 elseif (isset($_GET['page']))   $page = $_GET['page'];
 else                     		$page = 'main';
+
 require_once('includes/application_top.php');
 if (!\core\classes\user::is_validated()) {
   	if ($page == 'ajax'){
@@ -65,12 +66,18 @@ if (!\core\classes\user::is_validated()) {
     		foreach (get_declared_classes() as $module) if (method_exists($module, $ModuleActionAfter))  $module->$ModuleActionAfter();
     		if (method_exists($class, $_REQUEST['display'])) $class->$_REQUEST['display']();
    		}catch(Exception $e) {
-  			$messageStack->add($e->getMessage(), $e->getCode());
-  			if (method_exists($class, $_REQUEST['display'])){
-  				$class->$_REQUEST['display']();
-  			}else{
-  				throw new \Exception($_REQUEST['display'] . " method is not availeble in $class", '', $e);
-  			}
+   			switch(get_class($e){
+   				case "\core\classes\userException":
+   				case "\soapException":
+   					$messageStack->add($e->getMessage(), $e->getCode());
+  					if (method_exists($class, $_REQUEST['display'])){
+  						$class->$_REQUEST['display']();
+  					}else{
+  						throw $e;
+  					}
+  				default:
+  					throw $e;   			
+   			}
 		}
    	}catch(Exception $e) {
   		\core\page::home();
@@ -90,16 +97,15 @@ if ($page == 'ajax') {
 		session_write_close(); 
 	  	die; 
   	}
-  	trigger_error("cant find ajax page {$_GET['op']} in module $module");
+  	trigger_error("cant find ajax page {$_GET['op']} in module $module", E_USER_ERROR);
 }else if (stristr($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
 	header('Content-Type: application/json; charset=utf-8');
   	$pre_process_path = DIR_FS_MODULES . $module . 'custom/json/' . $_GET['op'] . '.php';
   	if (file_exists($pre_process_path)) { require($pre_process_path); die; }
   	$pre_process_path = DIR_FS_MODULES . $module . '/json/' . $_GET['op'] . '.php';
   	if (file_exists($pre_process_path)) { require($pre_process_path); die; }
- 	trigger_error('No json file, looking for the file: ' . $pre_process_path, E_USER_ERROR);
+ 	trigger_error("No json file, looking for the file: $pre_process_path", E_USER_ERROR);
 }
-
 $custom_html      = false;
 $include_header   = false;
 $include_footer   = false;
@@ -107,7 +113,7 @@ $include_template = 'template_main.php';
 $pre_process_path = DIR_FS_MODULES . $module . '/pages/' . $page . '/pre_process.php';
 try{
 	if (file_exists($pre_process_path)) { define('DIR_FS_WORKING', DIR_FS_MODULES . $module . '/'); }
-  	else trigger_error('No pre_process file, looking for the file: ' . $pre_process_path, E_USER_ERROR);
+  	else trigger_error("No pre_process file, looking for the file: $pre_process_path", E_USER_ERROR);
 	require($pre_process_path); 
 	if (file_exists(DIR_FS_WORKING . 'custom/pages/' . $page . '/' . $include_template)) {
 		$template_path = DIR_FS_WORKING . 'custom/pages/' . $page . '/' . $include_template;

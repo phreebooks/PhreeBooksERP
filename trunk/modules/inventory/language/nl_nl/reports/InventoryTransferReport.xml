@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PhreeformReport>
+	<reporttype><![CDATA[rpt]]></reporttype>
+	<title><![CDATA[Inventory Transfer Report]]></title>
+	<groupname><![CDATA[inv]]></groupname>
+	<description><![CDATA[This report lists the item transferred between branches. format Letter, portrait]]></description>
+<page>
+	<size><![CDATA[Letter:216:282]]></size>
+	<orientation><![CDATA[P]]></orientation>
+<margin>
+	<top><![CDATA[8]]></top>
+	<bottom><![CDATA[8]]></bottom>
+	<left><![CDATA[8]]></left>
+	<right><![CDATA[8]]></right>
+</margin>
+<heading>
+	<show><![CDATA[1]]></show>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[12]]></size>
+	<color><![CDATA[custom]]></color>
+	<align><![CDATA[C]]></align>
+</heading>
+<title1>
+	<show><![CDATA[1]]></show>
+	<text><![CDATA[%reportname%]]></text>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<color><![CDATA[custom]]></color>
+	<align><![CDATA[C]]></align>
+</title1>
+<title2>
+	<show><![CDATA[1]]></show>
+	<text><![CDATA[Report Generated %date%]]></text>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<color><![CDATA[custom]]></color>
+	<align><![CDATA[L]]></align>
+</title2>
+<filter>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<color><![CDATA[custom]]></color>
+	<align><![CDATA[L]]></align>
+</filter>
+<data>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<color><![CDATA[custom]]></color>
+	<align><![CDATA[C]]></align>
+</data>
+<totals>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<color><![CDATA[custom]]></color>
+	<align><![CDATA[L]]></align>
+</totals>
+</page>
+<tables>
+	<tablename><![CDATA[journal_main]]></tablename>
+</tables>
+<tables>
+	<tablename><![CDATA[journal_item]]></tablename>
+	<relationship><![CDATA[journal_main.id = journal_item.ref_id]]></relationship>
+</tables>
+	<truncate><![CDATA[0]]></truncate>
+	<totalonly><![CDATA[0]]></totalonly>
+<fieldlist>
+	<fieldname><![CDATA[journal_main.post_date]]></fieldname>
+	<description><![CDATA[Date]]></description>
+	<visible><![CDATA[1]]></visible>
+	<columnwidth><![CDATA[20]]></columnwidth>
+	<columnbreak><![CDATA[1]]></columnbreak>
+	<processing><![CDATA[date]]></processing>
+	<align><![CDATA[L]]></align>
+	<total><![CDATA[0]]></total>
+</fieldlist>
+<fieldlist>
+	<fieldname><![CDATA[journal_main.store_id]]></fieldname>
+	<description><![CDATA[Store ID]]></description>
+	<visible><![CDATA[1]]></visible>
+	<columnwidth><![CDATA[25]]></columnwidth>
+	<columnbreak><![CDATA[1]]></columnbreak>
+	<processing><![CDATA[branch]]></processing>
+	<align><![CDATA[L]]></align>
+	<total><![CDATA[0]]></total>
+</fieldlist>
+<fieldlist>
+	<fieldname><![CDATA[journal_item.sku]]></fieldname>
+	<description><![CDATA[SKU]]></description>
+	<visible><![CDATA[1]]></visible>
+	<columnwidth><![CDATA[25]]></columnwidth>
+	<columnbreak><![CDATA[1]]></columnbreak>
+	<align><![CDATA[L]]></align>
+	<total><![CDATA[0]]></total>
+</fieldlist>
+<fieldlist>
+	<fieldname><![CDATA[journal_item.qty]]></fieldname>
+	<description><![CDATA[Qty]]></description>
+	<visible><![CDATA[1]]></visible>
+	<columnwidth><![CDATA[10]]></columnwidth>
+	<columnbreak><![CDATA[1]]></columnbreak>
+	<align><![CDATA[R]]></align>
+	<total><![CDATA[1]]></total>
+</fieldlist>
+<fieldlist>
+	<fieldname><![CDATA[journal_item.description]]></fieldname>
+	<description><![CDATA[Description]]></description>
+	<visible><![CDATA[1]]></visible>
+	<columnwidth><![CDATA[75]]></columnwidth>
+	<columnbreak><![CDATA[1]]></columnbreak>
+	<align><![CDATA[L]]></align>
+	<total><![CDATA[0]]></total>
+</fieldlist>
+	<security><![CDATA[u:0;g:0]]></security>
+	<datelist><![CDATA[abcdlfhj]]></datelist>
+	<datefield><![CDATA[journal_main.post_date]]></datefield>
+	<datedefault><![CDATA[c]]></datedefault>
+	<filenameprefix><![CDATA[XFR-]]></filenameprefix>
+	<filenamefield><![CDATA[journal_main.post_date]]></filenamefield>
+<grouplist>
+	<fieldname><![CDATA[journal_main.store_id]]></fieldname>
+	<description><![CDATA[Store ID]]></description>
+	<default><![CDATA[1]]></default>
+	<page_break><![CDATA[0]]></page_break>
+	<processing><![CDATA[branch]]></processing>
+</grouplist>
+<grouplist>
+	<fieldname><![CDATA[journal_item.sku]]></fieldname>
+	<description><![CDATA[SKU]]></description>
+	<default><![CDATA[0]]></default>
+	<page_break><![CDATA[0]]></page_break>
+</grouplist>
+<grouplist>
+	<fieldname><![CDATA[journal_main.post_date]]></fieldname>
+	<description><![CDATA[Date]]></description>
+	<default><![CDATA[0]]></default>
+	<page_break><![CDATA[0]]></page_break>
+</grouplist>
+<sortlist>
+	<fieldname><![CDATA[journal_main.post_date]]></fieldname>
+	<description><![CDATA[Post Date]]></description>
+	<default><![CDATA[0]]></default>
+</sortlist>
+<sortlist>
+	<fieldname><![CDATA[journal_main.store_id]]></fieldname>
+	<description><![CDATA[Store ID]]></description>
+	<default><![CDATA[0]]></default>
+</sortlist>
+<filterlist>
+	<fieldname><![CDATA[journal_main.post_date]]></fieldname>
+	<description><![CDATA[Post Date]]></description>
+	<visible><![CDATA[1]]></visible>
+	<type><![CDATA[0]]></type>
+</filterlist>
+<filterlist>
+	<fieldname><![CDATA[journal_main.store_id]]></fieldname>
+	<description><![CDATA[Store ID]]></description>
+	<visible><![CDATA[1]]></visible>
+	<type><![CDATA[0]]></type>
+</filterlist>
+<filterlist>
+	<fieldname><![CDATA[journal_item.sku]]></fieldname>
+	<description><![CDATA[SKU]]></description>
+	<visible><![CDATA[1]]></visible>
+	<type><![CDATA[0]]></type>
+</filterlist>
+<filterlist>
+	<fieldname><![CDATA[journal_item.gl_type]]></fieldname>
+	<description><![CDATA[GL Type]]></description>
+	<visible><![CDATA[0]]></visible>
+	<type><![CDATA[6]]></type>
+	<min_val><![CDATA[adj]]></min_val>
+</filterlist>
+</PhreeformReport>

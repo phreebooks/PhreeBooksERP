@@ -29,8 +29,7 @@ $type        = isset($_GET['type']) ? $_GET['type'] : 'c'; // default to custome
 history_filter('contacts'.$type, $defaults = array('sf'=>'', 'so'=>'asc')); // load the filters
 $default_f0 = defined('CONTACTS_F0_'.strtoupper($type)) ? constant('CONTACTS_F0_'.strtoupper($type)) : DEFAULT_F0_SETTING;
 $_SESSION['f0'] = (isset($_SESSION['f0'])) ? $_SESSION['f0'] : $default_f0;
-if($_SERVER['REQUEST_METHOD'] == 'POST') $_SESSION['f0'] = (isset($_REQUEST['f0'])) ? $_REQUEST['f0'] : false; // show inactive checkbox
-if(!isset($_REQUEST['list'])) $_REQUEST['list'] = 1; 
+if($_SERVER['REQUEST_METHOD'] == 'POST') $_SESSION['f0'] = (isset($_POST['f0'])) ? $_REQUEST['f0'] : false; // show inactive checkbox
 $temp = '\contacts\classes\type\\'.$type;
 $cInfo = new $temp;
 /**************   Check user security   *****************************/
@@ -258,11 +257,6 @@ switch ($_REQUEST['action']) {
 	    $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 	    // the splitPageResults should be run directly after the query that contains SQL_CALC_FOUND_ROWS
     	$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
-    	if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results
-    		$_REQUEST['list'] = $query_split->current_page_number;
-	    	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-    		$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
-    	}
     	history_save('contacts'.$type);
 	    $include_template = 'template_main.php'; // include display template (required)
 	    switch ($type) {

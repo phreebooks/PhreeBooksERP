@@ -27,9 +27,9 @@ class user {
 	 * returns true if user is logged in. 
 	 */
 	final static public function is_validated(){
-		if(isset($_SESSION['admin_id'])){
+		if (isset($_SESSION['admin_id']) && $_SESSION['admin_id'] != ''){
 			return true;
-		}else {
+		} else {
 			return false;	
 		}
 	}
@@ -39,7 +39,7 @@ class user {
 	 */
 	
 	final static public function get_language(){
-		if   (isset($_REQUEST['language'])) {
+		if (isset($_REQUEST['language'])) {
 			 $_SESSION['language'] = $_REQUEST['language']; 
 		} elseif (!isset($_SESSION['language'])) { 
 			$_SESSION['language'] = defined('DEFAULT_LANGUAGE') ? DEFAULT_LANGUAGE : $this->language; 

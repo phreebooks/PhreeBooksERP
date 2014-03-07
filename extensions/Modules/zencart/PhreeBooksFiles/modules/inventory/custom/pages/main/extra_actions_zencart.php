@@ -22,20 +22,20 @@
 $id = isset($_POST['rowSeq']) ? db_prepare_input($_POST['rowSeq']) : db_prepare_input($_GET['cID']);
 switch ($_REQUEST['action']) {
 // Begin - Upload operation added by PhreeSoft to upload products to ZenCart
-  case 'upload_zc':
-	$id = db_prepare_input($_POST['rowSeq']);
-	require_once(DIR_FS_MODULES . 'zencart/functions/zencart.php');
-	$upXML = new \zencart\classes\zencart();
-	$upXML->submitXML($id, 'product_ul')
-	gen_add_audit_log(ZENCART_UPLOAD_PRODUCT, $upXML->sku);
-	$_REQUEST['action'] = '';
-	break;
-  case 'save':
-  	// check if menu isn't empty when saving.
-  	if(!isset($_POST['inactive']) && isset($_POST['catalog']) && $_POST['category_id'] == ''){
-  		throw new \Exception(ZENCART_INVENTORY_CATALOG_IS_EMPTY);
-  		$_REQUEST['action'] = 'edit';
-  	}
+  	case 'upload_zc':
+		$id = db_prepare_input($_POST['rowSeq']);
+		require_once(DIR_FS_MODULES . 'zencart/functions/zencart.php');
+		$upXML = new \zencart\classes\zencart();
+		$upXML->submitXML($id, 'product_ul');
+		gen_add_audit_log(ZENCART_UPLOAD_PRODUCT, $upXML->sku);
+		$_REQUEST['action'] = '';
+		break;
+  	case 'save':
+	  	// check if menu isn't empty when saving.
+	  	if(!isset($_POST['inactive']) && isset($_POST['catalog']) && $_POST['category_id'] == ''){
+	  		throw new \Exception(ZENCART_INVENTORY_CATALOG_IS_EMPTY);
+	  		$_REQUEST['action'] = 'edit';
+	  	}
 // End - Upload operation added by PhreeSoft
   default:
 }

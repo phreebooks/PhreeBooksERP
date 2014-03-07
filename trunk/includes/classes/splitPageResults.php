@@ -18,7 +18,6 @@
 //
 namespace core\classes;
 class splitPageResults {
-  	public	$current_page_number	= 1;
 	public	$jump_page_displayed 	= false;
 	public	$max_rows_per_page 		= MAX_DISPLAY_SEARCH_RESULTS;
 	public	$page_prefix         	= '';
@@ -33,10 +32,10 @@ class splitPageResults {
     		$query_num_rows = $temp->fields['found_rows'];
     	}
     	$this->total_num_rows		= $query_num_rows;
-      	$this->current_page_number 	= max(1, $current_page_number);
+      	$_REQUEST['list'] 			= max(1, $current_page_number);
 		$this->total_num_pages		= ceil($this->total_num_rows / $this->max_rows_per_page);
 		if ($this->total_num_pages == 0) $this->total_num_pages = 1;
-      	if ($this->total_num_pages < $this->current_page_number) $this->current_page_number = max(1, $this->total_num_pages);
+      	if ($this->total_num_pages < $_REQUEST['list']) $_REQUEST['list'] = max(1, $this->total_num_pages);
     }
     
     function display_links($page_name = 'list') {
@@ -44,7 +43,7 @@ class splitPageResults {
 	    for ($i = 1; $i <= $this->total_num_pages; $i++) $pages_array[] = array('id' => $i, 'text' => $i);
 	    if ($this->total_num_pages > 1) {
 	        $display_links = '';
-	        if ($this->current_page_number > 1) {
+	        if ($_REQUEST['list'] > 1) {
 			  	$display_links .= html_icon('actions/media-skip-backward.png', TEXT_GO_FIRST, 'small', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')) . '&action=go_first', 'SSL') . '\'" style="cursor:pointer;"');
 			  	$display_links .= html_icon('phreebooks/media-playback-previous.png', TEXT_GO_PREVIOUS, 'small', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')) . '&action=go_previous', 'SSL') . '\'" style="cursor:pointer;"');
 	        } else {
@@ -52,12 +51,12 @@ class splitPageResults {
 			  	$display_links .= html_icon('phreebooks/media-playback-previous.png', '', 'small', '');
 	        }
 	        if (!$this->jump_page_displayed) { // only diplay pull down once (the rest are not read by browser)
-			  	$display_links .= sprintf(TEXT_RESULT_PAGE, html_pull_down_menu($page_name, $pages_array, $this->current_page_number, 'onchange="jumpToPage(\'' . gen_get_all_get_params(array('list', 'action')) . '&action=go_page\')"'), $this->total_num_pages);
+			  	$display_links .= sprintf(TEXT_RESULT_PAGE, html_pull_down_menu($page_name, $pages_array, $_REQUEST['list'], 'onchange="jumpToPage(\'' . gen_get_all_get_params(array('list', 'action')) . '&action=go_page\')"'), $this->total_num_pages);
 			  	$this->jump_page_displayed = true;
 			} else {
-				$display_links .= sprintf(TEXT_RESULT_PAGE, $this->current_page_number, $this->total_num_pages);
+				$display_links .= sprintf(TEXT_RESULT_PAGE, $_REQUEST['list'], $this->total_num_pages);
 			}
-	        if (($this->current_page_number < $this->total_num_pages) && ($this->total_num_pages != 1)) {
+	        if (($_REQUEST['list'] < $this->total_num_pages) && ($this->total_num_pages != 1)) {
 				$display_links .= html_icon('actions/media-playback-start.png', TEXT_GO_NEXT, 'small', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')) . '&action=go_next', 'SSL') . '\'" style="cursor:pointer;"');
 				$display_links .= html_icon('actions/media-skip-forward.png', TEXT_GO_LAST, 'small', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')) . '&action=go_last', 'SSL') . '\'" style="cursor:pointer;"');
 	        } else {
@@ -75,7 +74,7 @@ class splitPageResults {
       	$pages_array     = array();
       	for ($i = 1; $i <= $this->total_num_pages; $i++) $pages_array[] = array('id' => $i, 'text' => $i);
       	if ($this->total_num_pages > 1) {
-        	if ($this->current_page_number > 1) {
+        	if ($_REQUEST['list'] > 1) {
 		  		$display_links .= html_icon('actions/media-skip-backward.png', TEXT_GO_FIRST, 'small', 'onclick="tabPage(\'' . $id . '\', \'go_first\')" style="cursor:pointer;"');
 		  		$display_links .= html_icon('phreebooks/media-playback-previous.png', TEXT_GO_PREVIOUS, 'small', 'onclick="tabPage(\'' . $id . '\', \'go_previous\')" style="cursor:pointer;"');
         	} else {
@@ -83,12 +82,12 @@ class splitPageResults {
 				$display_links .= html_icon('phreebooks/media-playback-previous.png', '', 'small', '');
         	}
         	if (!$this->jump_page_displayed) { // only diplay pull down once (the rest are not read by browser)
-		  		$display_links .= sprintf(TEXT_RESULT_PAGE, html_pull_down_menu($page_name, $pages_array, $this->current_page_number, 'onchange="tabPage(\'' . $id . '\', \'go_page\')"'), $this->total_num_pages);
+		  		$display_links .= sprintf(TEXT_RESULT_PAGE, html_pull_down_menu($page_name, $pages_array, $_REQUEST['list'], 'onchange="tabPage(\'' . $id . '\', \'go_page\')"'), $this->total_num_pages);
 		  		$this->jump_page_displayed = true;
 			} else {
-		  		$display_links .= sprintf(TEXT_RESULT_PAGE, $this->current_page_number, $this->total_num_pages);
+		  		$display_links .= sprintf(TEXT_RESULT_PAGE, $_REQUEST['list'], $this->total_num_pages);
 			}
-        	if (($this->current_page_number < $this->total_num_pages) && ($this->total_num_pages != 1)) {
+        	if (($_REQUEST['list'] < $this->total_num_pages) && ($this->total_num_pages != 1)) {
 		  		$display_links .= html_icon('actions/media-playback-start.png', TEXT_GO_NEXT, 'small', 'onclick="tabPage(\'' . $id . '\', \'go_next\')" style="cursor:pointer;"');
 		  		$display_links .= html_icon('actions/media-skip-forward.png', TEXT_GO_LAST, 'small', 'onclick="tabPage(\'' . $id . '\', \'go_last\')" style="cursor:pointer;"');
         	} else {
@@ -104,9 +103,9 @@ class splitPageResults {
 
     function display_count($text_output){
     	if ($text_output == '' || !is_string($text_output)) $text_output = TEXT_DISPLAY_NUMBER . TEXT_ITEMS;
-      	$to_num = ($this->max_rows_per_page * $this->current_page_number);
+      	$to_num = ($this->max_rows_per_page * $_REQUEST['list']);
       	if ($to_num > $this->total_num_rows) $to_num = $this->total_num_rows;
-      	$from_num = ($this->max_rows_per_page * ($this->current_page_number - 1));
+      	$from_num = ($this->max_rows_per_page * ($_REQUEST['list'] - 1));
       	if ($to_num == 0) {
         	$from_num = 0;
       	} else {

@@ -97,13 +97,14 @@ switch ($_REQUEST['action']) {
 			// save general tab
 			$db->transStart();
 			foreach ($admin_classes['phreedom']->keys as $key => $default) {
-			$field = strtolower($key);
-		     if (isset($_POST[$field])) write_configure($key, db_prepare_input($_POST[$field]));
-			// special case for field COMPANY_NAME to update company config file
-			if ($key == 'COMPANY_NAME' && $_POST[$field] <> COMPANY_NAME) {
-				install_build_co_config_file($_SESSION['company'], $_SESSION['company'] . '_TITLE', db_prepare_input($_POST[$field]));
+				$field = strtolower($key);
+		     	if (isset($_POST[$field])) write_configure($key, db_prepare_input($_POST[$field]));
+				// special case for field COMPANY_NAME to update company config file
+				if ($key == 'COMPANY_NAME' && $_POST[$field] <> COMPANY_NAME) {
+					install_build_co_config_file($_SESSION['company'], $_SESSION['company'] . '_TITLE', db_prepare_input($_POST[$field]));
+				}
 			}
-		    	$db->transCommit();
+		    $db->transCommit();
 			$messageStack->add(GENERAL_CONFIG_SAVED,'success');
 			$default_tab_id = 'company';
 		    break;

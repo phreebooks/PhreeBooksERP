@@ -65,11 +65,6 @@ if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_lis
 $query_raw = "select " . implode(', ', $field_list)  . " from " . TABLE_WO_TASK . $search . " order by $disp_order";
 $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
-if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results
-	$_REQUEST['list'] = $query_split->current_page_number;
-	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-	$query_split      = new \core\classes\splitPageResults($_REQUEST['list'], '');
-}
 history_save('wo_poptask');
 
 $include_header   = false;

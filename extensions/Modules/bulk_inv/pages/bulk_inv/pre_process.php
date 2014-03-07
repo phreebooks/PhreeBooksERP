@@ -92,11 +92,6 @@ for ($i = 0; $i < $field_cnt; $i++) $field_list[] = $field[$i] . ' as f'.$i;
 $query_raw        = "select SQL_CALC_FOUND_ROWS ".implode(', ', $field_list)." from ".TABLE_INVENTORY."$search order by $disp_order";
 $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 $query_split      = new \core\classes\splitPageResults($_REQUEST['list'], '');
-if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results
-   	$_REQUEST['list'] = $query_split->current_page_number;
-	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-	$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
-   }
 history_save();
 
 $include_header   = true;

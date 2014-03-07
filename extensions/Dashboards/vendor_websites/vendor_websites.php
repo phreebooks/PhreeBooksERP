@@ -18,24 +18,29 @@
 //
 // Revision history
 // 2011-07-01 - Added version number for revision control
-
-class vendor_websites extends ctl_panel {
+namespace contacts\dashboards\vendor_websites;
+class vendor_websites extends \core\classes\ctl_panel {
 	public $dashboard_id 		= 'vendor_websites';
 	public $description	 		= CP_VENDOR_WEBSITES_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_MAINTAIN_VENDORS;
 	public $title		 		= CP_VENDOR_WEBSITES_TITLE;
 	public $version      		= 3.5;
+	public $size_params			= 0;
+	public $default_params 		= array();
 
 	function Output($params) {
 		global $db;
+		if(count($params) != $this->size_params){ //upgrading
+			$params = $this->Upgrade($params);
+		}
+		$contents = '';
+		$control  = '';
 		$sql = "select a.primary_name, a.website 
 		  from " . TABLE_CONTACTS . " c left join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id 
 		  where  c.type = 'v' and c.inactive = '0' and a.website !='' order by a.primary_name";
 		$result = $db->Execute($sql);
 		// Build control box form data
-		$control = '';
 		// Build content box
-		$contents = '';
 		if ($result->RecordCount() < 1) {
 		  	$contents = ACT_NO_RESULTS;
 		} else {

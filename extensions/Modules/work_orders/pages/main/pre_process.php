@@ -384,11 +384,6 @@ switch ($_REQUEST['action']) {
 	  from " . TABLE_WO_JOURNAL_MAIN . " m inner join " . TABLE_INVENTORY . " i on m.sku_id = i.id" . $search . " order by $disp_order, m.closed, m.id DESC";
     $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
-    if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results
-    	$_REQUEST['list'] = $query_split->current_page_number;
-    	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-    	$query_split      = new \core\classes\splitPageResults($_REQUEST['list'], '');
-    }
     history_save('wo_main');
     
     define('PAGE_TITLE', BOX_WORK_ORDERS_MODULE);
