@@ -2,8 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright (c) 2008-2013 PhreeSoft, LLC                          |
-// | http://www.PhreeSoft.com                                        |
+// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -18,7 +17,7 @@
 //  Path: /modules/shipping/methods/ups/ship_mgr.php
 //
 ?>
-<div align="center" class="pageHeading"><?php echo constant('MODULE_SHIPPING_' . strtoupper($method_id) . '_TEXT_TITLE'); ?></div>
+<div align="center" class="pageHeading"><?php echo constant('MODULE_SHIPPING_' . strtoupper($value) . '_TEXT_TITLE'); ?></div>
 <table width="95%">
   <tr>
     <td>

@@ -15,7 +15,7 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/shipping/methods/yrc/yrc.php
-//
+//@todo update to release 4.0
 // Revision history
 // 2012-09-01 - New Release
 define('MODULE_SHIPPING_YRC_VERSION','1.0');

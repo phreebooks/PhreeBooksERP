@@ -16,7 +16,7 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/shipping/methods/yrc/ship_mgr.php
-//
+//@todo update to release 4.0
 ?>
 <h1><?php echo constant('MODULE_SHIPPING_' . strtoupper($method_id) . '_TEXT_TITLE'); ?></h1>
 <table class="ui-widget" style="border-style:none;width:100%">

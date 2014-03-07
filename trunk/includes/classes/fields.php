@@ -306,6 +306,11 @@ class fields {
 	$output .= '	<td>' . TEXT_GROUP . '</td>' . chr(10);
 	$output .= '	<td>' . html_input_field('group_by', $this->group_by, 'size="65" maxlength="64"') . '</td>' . chr(10);
 	$output .= '  </tr>' . chr(10);
+	$output .= '  <tr>' . chr(10);
+	$output .= '	<td>' . TEXT_REQUIRED . '</td>' . chr(10);
+	$output .= '	<td>' . html_checkbox_field('required' , true , false,'', '') . '</td>' . chr(10);
+	$output .= '  </tr>' . chr(10);
+	
 	
 	if (is_array($this->type_array)){
 		$output .= '  <tr>' . chr(10);
@@ -403,7 +408,7 @@ class fields {
   public function what_to_save(){
   	global $db, $currencies;
   	$sql_data_array = array();
-    $xtra_db_fields = $db->Execute("select field_name, entry_type, params 
+    $xtra_db_fields = $db->Execute("select field_name, entry_type, params, required, field_name
         from " . TABLE_EXTRA_FIELDS . " where module_id='$this->module'");
     while (!$xtra_db_fields->EOF) {
     	if ($xtra_db_fields->fields['field_name'] == 'id' )  $xtra_db_fields->MoveNext();
@@ -417,10 +422,12 @@ class fields {
                 if(isset($_POST[$field_name.$values[0]])){
                     $temp.= $_POST[$field_name.$values[0]].',';
             }}
+            if ($xtra_db_fields->fields['required'] == '1' && $temp == '') throw new \core\classes\userException("Required field {$xtra_db_fields->fields['field_name']} is empty")
             $sql_data_array[$field_name] = $temp;
         }elseif (!isset($_POST[$field_name]) && $xtra_db_fields->fields['entry_type'] == 'check_box') {
             $sql_data_array[$field_name] = '0'; // special case for unchecked check boxes
         }elseif (isset($_POST[$field_name]) && $field_name <> 'id') {
+        	if (db_prepare_input($_POST[$field_name], $xtra_db_fields->fields['required']) == false) throw new \core\classes\userException("Required field {$xtra_db_fields->fields['field_name']} is empty")
             $sql_data_array[$field_name] = db_prepare_input($_POST[$field_name]);
         }
         if ($xtra_db_fields->fields['entry_type'] == 'date_time') {
@@ -469,25 +476,25 @@ class fields {
 	$this->extra_tab_html .= '</div>' . chr(10); 
   }
   
-  /**
-   * this function returns the fields that shouldn't be displayed for that type.
-   * allowing us to remove the field for objects. 
-   * @param string $type
-   */
+  	/**
+   	 * this function returns the fields that shouldn't be displayed for that type.
+	 * allowing us to remove the field for objects. 
+	 * @param string $type
+	 */
   
-  public function unwanted_fields($type = null){
-  	global $db;
-  	$values = array();
-  	if($this->type_params == '' && $type == null ) return $values;
-	$result = $db->Execute("SELECT params, field_name FROM ".TABLE_EXTRA_FIELDS." WHERE module_id='".$this->module."'");
-	while (!$result->EOF) {
-		$xtra_params = unserialize($result->fields['params']);
-  		$temp = explode(':',$xtra_params[$this->type_params]);
-	    if(!in_array($type,$temp)) $values [] = $result->fields['field_name'];
-  		$result->MoveNext();
+	public function unwanted_fields($type = null){
+	  	global $db;
+	  	$values = array();
+	  	if($this->type_params == '' && $type == null ) return $values;
+		$result = $db->Execute("SELECT params, field_name FROM ".TABLE_EXTRA_FIELDS." WHERE module_id='".$this->module."'");
+		while (!$result->EOF) {
+			$xtra_params = unserialize($result->fields['params']);
+	  		$temp = explode(':',$xtra_params[$this->type_params]);
+		    if(!in_array($type,$temp)) $values [] = $result->fields['field_name'];
+	  		$result->MoveNext();
+		}
+		return $values;
 	}
-	return $values;
-  }
   
   	function get_tabs($module = '') {
     	global $db;

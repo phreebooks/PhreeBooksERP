@@ -2,8 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright (c) 2008-2013 PhreeSoft, LLC                          |
-// | http://www.PhreeSoft.com                                        |
+// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -16,7 +15,8 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/shipping/methods/ups/ups.php
-//
+//@todo update to release 4.0
+namespace shipping\methods\ups;
 
 define('NL', chr(10).chr(13));
 define('MODULE_SHIPPING_UPS_RATE_URL',          'https://www.ups.com/ups.app/xml/Rate');
@@ -115,8 +115,13 @@ class ups {
 // See UPS Service Code specification for Puerto Rico, Mexico, and all other origins
 */
   function ups() {
-    $this->code    = 'ups';
-    $this->version = '1.0';
+    $this->code 	= 'ups';
+	$this->version 	= '1.0';
+//    $this->title       = MODULE_SHIPPING_UPS_TEXT_TITLE;
+//    $this->title_short = MODULE_SHIPPING_UPS_TITLE_SHORT;
+//	  $this->description = MODULE_SHIPPING_UPS_TEXT_DESCRIPTION;
+//	  $this->enabled     = MODULE_SHIPPING_UPS_STATUS ? true : false;
+//    $this->sort_order  = MODULE_SHIPPING_UPS_SORT_ORDER;
   }
 
   function keys() {

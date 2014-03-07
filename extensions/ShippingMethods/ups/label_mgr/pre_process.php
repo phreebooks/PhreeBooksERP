@@ -2,8 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright (c) 2008-2013 PhreeSoft, LLC                          |
-// | http://www.PhreeSoft.com                                        |
+// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -16,7 +15,7 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/shipping/methods/ups/label_mgr/pre_process.php
-//
+//@todo release 4.0
 
 $shipping_module = 'ups';
 /**************  include page specific files    *********************/
@@ -30,15 +29,13 @@ $error      = false;
 $auto_print = false;
 $label_data = NULL;
 $sInfo      = new shipment();
-$action     = isset($_GET['action']) ? $_GET['action'] : $_POST['todo'];
-
 /***************   Act on the action request   *************************/
-switch ($action) {
+switch ($_REQUEST['action']) {
   case 'label':
 	// overwrite the defaults with data from the form
 	reset($_POST);
 	while (list($key, $value) = each($_POST)) $sInfo->$key = db_prepare_input($value);
-	// generate ISO2 codes for countries
+	// generate ISO2 codes for countries (needed by UPS and others)
 	$sInfo->ship_country_code = gen_get_country_iso_2_from_3($sInfo->ship_country_code);
 	$sInfo->ship_date             = date('Y-m-d', strtotime($sInfo->ship_date));
 	// read checkboxes
@@ -58,23 +55,22 @@ switch ($action) {
 	$i = 0;
 	$sInfo->package = array();
 	while(true) {
-	  $i++;		
-	  if (!isset($_POST['qty_' . $i])) break;
-	  // error check
-	  if (!$_POST['qty_' . $i]) continue; // skip if quantity is 0 or blank
-	  if (!$_POST['wt_'  . $i]) continue;	// skip if weight is 0 or blank
-	  if (!$_POST['len_' . $i]) $_POST['len_' . $i] = SHIPPING_DEFAULT_LENGTH;
-	  if (!$_POST['wid_' . $i]) $_POST['wid_' . $i] = SHIPPING_DEFAULT_WIDTH;
-	  if (!$_POST['hgt_' . $i]) $_POST['hgt_' . $i] = SHIPPING_DEFAULT_HEIGHT;
-	  for ($j = 0; $j < $_POST['qty_' . $i]; $j++) {
-		$sInfo->package[] = array(
-		  'weight' => $_POST['wt_' .  $i],
-		  'length' => $_POST['len_' . $i],
-		  'width'  => $_POST['wid_' . $i],
-		  'height' => $_POST['hgt_' . $i],
-		  'value'  => $_POST['ins_' . $i],
-	    );
-	  }
+		$i++;		
+		if (!isset($_POST['qty_' . $i])) break;
+		// error check
+		if (!$_POST['qty_' . $i]) continue; // skip if quantity is 0 or blank
+		if (!$_POST['wt_' . $i]) continue;	// skip if weight is 0 or blank
+		if (!$_POST['len_' . $i]) $_POST['len_' . $i] = SHIPPING_DEFAULT_LENGTH;
+		if (!$_POST['wid_' . $i]) $_POST['wid_' . $i] = SHIPPING_DEFAULT_WIDTH;
+		if (!$_POST['hgt_' . $i]) $_POST['hgt_' . $i] = SHIPPING_DEFAULT_HEIGHT;
+		for ($j = 0; $j < $_POST['qty_' . $i]; $j++) {
+			$sInfo->package[] = array(
+				'weight' => $_POST['wt_'  . $i],
+				'length' => $_POST['len_' . $i],
+				'width' => $_POST['wid_'  . $i],
+				'height' => $_POST['hgt_' . $i],
+				'value' => $_POST['ins_'  . $i]);
+		}
 	}
 	if (count($sInfo->package) > 0) {
 	  $shipment = new $shipping_module;
