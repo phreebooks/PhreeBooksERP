@@ -18,19 +18,26 @@
 //
 // Revision history
 // 2012-07-01 - new
- 
+namespace phreebooks\dashboards\to_receive_inv;
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 
-class to_receive_inv extends ctl_panel {
+class to_receive_inv extends \core\classes\ctl_panel {
 	public $dashboard_id 		= 'to_receive_inv';
 	public $description	 		= CP_TO_RECEIVE_INV_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_PURCHASE_INVENTORY;
 	public $title		 		= CP_TO_RECEIVE_INV_TITLE;
-	public $version      		= 3.5;
+	public $version      		= 3.6;
+	public $size_params			= 1;
+	public $default_params 		= array('num_rows'=> 0);
 	
 	function Output($params) {
 		global $db, $currencies;
+		if(count($params) != $this->size_params){ //upgrading
+			$params = $this->Upgrade($params);
+		}
 		$list_length = array();
+		$contents = '';
+		$control  = '';
 		for ($i = 0; $i <= $this->max_length; $i++) $list_length[] = array('id' => $i, 'text' => $i);
 		// Build control box form data
 		$control  = '<div class="row">';
@@ -40,9 +47,9 @@ class to_receive_inv extends ctl_panel {
 		$control .= '</div></div>';
 		// Build content box
 		$total = 0;
-		$sql = "select id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value 
+		$sql = "select id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value, post_date 
 		  from " . TABLE_JOURNAL_MAIN . " 
-		  where journal_id = 6 and waiting = '1' order by post_date DESC, purchase_invoice_id DESC";
+		  where journal_id in (6,7) and waiting = '1' order by post_date DESC, purchase_invoice_id DESC";
 		if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
 		$result = $db->Execute($sql);
 		if ($result->RecordCount() < 1) {
@@ -54,7 +61,8 @@ class to_receive_inv extends ctl_panel {
 				$contents .= '<div style="float:right">' . $currencies->format_full($inv_balance, true, $result->fields['currencies_code'], $result->fields['currencies_value']) . '</div>';
 				$contents .= '<div>';
 				$contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;oID='.$result->fields['id'].'&amp;jID=6&amp;action=edit', 'SSL') . '">';
-				$contents .= $result->fields['purchase_invoice_id'] . ' - ';
+				$contents .= gen_locale_date($result->fields['post_date']) . ' - ';
+				if($result->fields['purchase_invoice_id'] != '')$contents .= $result->fields['purchase_invoice_id'] . ' - ';
 				$contents .= htmlspecialchars($result->fields['bill_primary_name']);
 				$contents .= '</a></div>' . chr(10);
 				$result->MoveNext();
@@ -68,9 +76,10 @@ class to_receive_inv extends ctl_panel {
 	}
 
 	function Update() {
-		$this->params['num_rows'] = db_prepare_input($_POST['to_receive_inv_field_0']);
+		if(count($this->params) == 0){
+			$this->params['num_rows'] = db_prepare_input($_POST['to_receive_inv_field_0']);
+		}
 		parent::Update();
 	}
-
 }
 ?>
