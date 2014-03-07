@@ -327,6 +327,10 @@ function fillOrder(xml) {
 				  insertValue('purch_package_quantity_' + jIndex, 1);
 			  }
 		  }
+		  var imgSerial = document.getElementById('imgSerial_'+jIndex);
+		  if (imgSerial != null && $(xml).find("inventory_type").text() == 'sr') {
+			  document.getElementById('imgSerial_'+jIndex).style.display = '';
+		  }
 	      if ($(this).find("so_po_item_ref_id").text() || ((journalID == 4 || journalID == 10) && $(this).find("pstd").text())) {
 	        // don't allow sku to change, hide the sku search icon
 	        document.getElementById('sku_' + jIndex).readOnly = true;
@@ -452,8 +456,9 @@ function convertSO() {
 function serialList(id) {
 	switch (journalID) {
 		default: // for purchases
-			var newChoice = prompt(serial_num_prompt, $(id).val());
-			$(id).val(newChoice);
+			alert('looking for id = '+id);
+			var newChoice = prompt(serial_num_prompt, $('#'+id).val());
+			$('#'+id).val(newChoice);
 			break;
 		case  '9':
 		case '10':
