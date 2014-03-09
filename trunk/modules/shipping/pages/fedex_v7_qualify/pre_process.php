@@ -39,7 +39,6 @@ require(DIR_FS_WORKING . 'defaults.php');
 require(DIR_FS_WORKING . 'functions/shipping.php');
 require(DIR_FS_WORKING . 'pages/fedex_v7_qualify/sample_data.php');
 /**************   page specific initialization  *************************/
-$error               = false;
 $backup              = new \phreedom\classes\backup();
 $backup->source_dir  = DIR_FS_MY_FILES . $_SESSION['company'] . '/temp/fedex_qual/';
 $backup->dest_dir    = DIR_FS_MY_FILES . 'backups/';
@@ -47,38 +46,40 @@ $backup->dest_file   = 'fedex_qual.zip';
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
 	case 'go':
-	// retrieve the sample ship to addresses and query FEDEX_V7
-	validate_path($backup->source_dir);
-	$count = 1;
-	foreach ($shipto as $pkg) {
-	  $sInfo = new \shipping\classes\shipment();	// load defaults
-	  while (list($key, $value) = each($pkg)) $sInfo->$key = db_prepare_input($value);
-	  $sInfo->ship_date = date('Y-m-d');
-	  // load package information
-	  $sInfo->package = array();
-	  foreach ($pkg['package'] as $item) {
-		$sInfo->package[] = array(
-		  'weight' => $item['weight'],
-		  'length' => $item['length'],
-		  'width'  => $item['width'],
-		  'height' => $item['height'],
-		  'value'  => $item['value'],
-		);
-	  }
-	  if (count($sInfo->package) > 0) {	
-		$shipment = new \shipping\methods\fedex_v7\fedex_v7();
-		if (!$result = $shipment->retrieveLabel($sInfo)) $error = true; // fetch label
-	  }
-	  $messageStack->add('generating label for '.$sInfo->ship_primary_name.' and label length: '.strlen($shipment->returned_label), 'caution');
-	  $ext = (MODULE_SHIPPING_FEDEX_V7_PRINTER_TYPE == 'Thermal') ? '.lpt' : '.pdf';
-	  write_file($backup->source_dir . 'label_' . $count . $ext, $shipment->returned_label);
-	  $count++;
-	}
-	if (!$error) {
-		$backup->make_zip('dir');
-		$backup->download($backup->dest_dir, $backup->dest_file, false); // will not return from here if successful
-		exit();
-	}
+		try{
+			// retrieve the sample ship to addresses and query FEDEX_V7
+			validate_path($backup->source_dir);
+			$count = 1;
+			foreach ($shipto as $pkg) {
+			  	$sInfo = new \shipping\classes\shipment();	// load defaults
+			  	while (list($key, $value) = each($pkg)) $sInfo->$key = db_prepare_input($value);
+			  	$sInfo->ship_date = date('Y-m-d');
+			  	// load package information
+			  	$sInfo->package = array();
+			  	foreach ($pkg['package'] as $item) {
+					$sInfo->package[] = array(
+					  'weight' => $item['weight'],
+					  'length' => $item['length'],
+					  'width'  => $item['width'],
+					  'height' => $item['height'],
+					  'value'  => $item['value'],
+					);
+			  	}
+			  	if (count($sInfo->package) > 0) $admin_classes['shipping']->methods['fedex_v7']->retrieveLabel($sInfo); // fetch label
+			  	$messageStack->add('generating label for '.$sInfo->ship_primary_name.' and label length: '.strlen($admin_classes['shipping']->methods['fedex_v7']->returned_label), 'caution');
+			  	$ext = (MODULE_SHIPPING_FEDEX_V7_PRINTER_TYPE == 'Thermal') ? '.lpt' : '.pdf';
+			  	write_file($backup->source_dir . 'label_' . $count . $ext, $admin_classes['shipping']->methods['fedex_v7']->returned_label);
+			  	$count++;
+			}
+			$backup->make_zip('dir');
+			$backup->download($backup->dest_dir, $backup->dest_file, false); // will not return from here if successful
+			session_write_close();
+			ob_end_flush();
+			exit();
+		}catch(Exception $e){
+			$messageStack->add($e->getMessage());
+		}
+		break;
 }
 
 $include_header   = true;

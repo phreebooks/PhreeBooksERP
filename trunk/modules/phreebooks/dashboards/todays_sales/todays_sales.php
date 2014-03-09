@@ -29,10 +29,10 @@ class todays_sales extends \core\classes\ctl_panel {
 	public $default_params 		= array('num_rows'=> 0);
 	public $module_id 			= 'phreebooks';
 
-	function Output($params) {
+	function output($params) {
 		global $db, $currencies;
 		if(count($params) != $this->size_params){ //upgrading
-			$params = $this->Upgrade($params);
+			$params = $this->upgrade($params);
 		}
 		$list_length = array();
 		$contents = '';
@@ -73,11 +73,11 @@ class todays_sales extends \core\classes\ctl_panel {
 		return $this->build_div('', $contents, $control);
 	}
 
-	function Update() {
+	function update() {
 		if(count($this->params) == 0){
 			$this->params['num_rows'] = db_prepare_input($_POST['todays_sales_field_0']);
 		}
-		parent::Update();
+		parent::update();
 	}
 }
 ?>

@@ -76,8 +76,7 @@ switch ($_REQUEST['action']) {
 		if ($result->RecordCount() < 1) {
 			$message[] = sprintf('The record could not be found! Looking for id = %s', $id);
 		} else {
-			$enc_data = new \core\classes\encryption();
-			$data = $enc_data->decrypt($_SESSION['admin_encrypt'], $result->fields['enc_value']);
+			$data = \core\classes\encryption::decrypt($_SESSION['admin_encrypt'], $result->fields['enc_value']);
 			$fields = explode(':', $data);
 			if (strlen($fields[3]) == 2) $fields[3] = '20'.$fields[3]; // make sure year is 4 digits
 			$xml .= "<PaymentMethod>\n";

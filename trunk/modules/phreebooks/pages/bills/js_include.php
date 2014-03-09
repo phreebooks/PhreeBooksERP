@@ -32,7 +32,6 @@ var defaultGlAcct      = '<?php echo JOURNAL_ID == 18 ? AR_SALES_RECEIPTS_ACCOUN
 var defaultDiscAcct    = '<?php echo JOURNAL_ID == 18 ? AR_DISCOUNT_SALES_ACCOUNT : AP_DISCOUNT_PURCHASE_ACCOUNT; ?>';
 var journalID          = '<?php echo JOURNAL_ID; ?>';
 var text_enter_new     = '<?php echo TEXT_ENTER_NEW; ?>';
-var post_error         = <?php echo $error ? "true;" : "false;"; ?>
 var account_type       = '<?php echo $account_type; ?>';
 var store_country_code = '<?php echo STORE_COUNTRY; ?>';
 var payments_installed = <?php echo count($admin_classes['payment']->methods) ? 'true' : 'false'; ?>;

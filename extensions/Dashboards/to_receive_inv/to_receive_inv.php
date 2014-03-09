@@ -20,20 +20,20 @@
 // 2012-07-01 - new
 namespace phreebooks\dashboards\to_receive_inv;
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
-
 class to_receive_inv extends \core\classes\ctl_panel {
-	public $dashboard_id 		= 'to_receive_inv';
+	public $id					= 'to_receive_inv';
 	public $description	 		= CP_TO_RECEIVE_INV_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_PURCHASE_INVENTORY;
-	public $title		 		= CP_TO_RECEIVE_INV_TITLE;
-	public $version      		= 3.6;
+	public $text		 		= CP_TO_RECEIVE_INV_TITLE;
+	public $version      		= '3.5';
 	public $size_params			= 1;
 	public $default_params 		= array('num_rows'=> 0);
+	public $module_id 			= 'phreebooks';
 	
-	function Output($params) {
+	function output($params) {
 		global $db, $currencies;
 		if(count($params) != $this->size_params){ //upgrading
-			$params = $this->Upgrade($params);
+			$params = $this->upgrade($params);
 		}
 		$list_length = array();
 		$contents = '';
@@ -49,7 +49,7 @@ class to_receive_inv extends \core\classes\ctl_panel {
 		$total = 0;
 		$sql = "select id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value, post_date 
 		  from " . TABLE_JOURNAL_MAIN . " 
-		  where journal_id in (6,7) and waiting = '1' order by post_date DESC, purchase_invoice_id DESC";
+		  where journal_id = 6 and waiting = '1' order by post_date DESC, purchase_invoice_id DESC";
 		if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
 		$result = $db->Execute($sql);
 		if ($result->RecordCount() < 1) {
@@ -63,7 +63,7 @@ class to_receive_inv extends \core\classes\ctl_panel {
 				$contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;oID='.$result->fields['id'].'&amp;jID=6&amp;action=edit', 'SSL') . '">';
 				$contents .= gen_locale_date($result->fields['post_date']) . ' - ';
 				if($result->fields['purchase_invoice_id'] != '')$contents .= $result->fields['purchase_invoice_id'] . ' - ';
-				$contents .= htmlspecialchars($result->fields['bill_primary_name']);
+				$contents .= htmlspecialchars(gen_trim_string($result->fields['bill_primary_name'], 20, true));
 				$contents .= '</a></div>' . chr(10);
 				$result->MoveNext();
 			}
@@ -75,11 +75,11 @@ class to_receive_inv extends \core\classes\ctl_panel {
 		return $this->build_div('', $contents, $control);
 	}
 
-	function Update() {
+	function update() {
 		if(count($this->params) == 0){
 			$this->params['num_rows'] = db_prepare_input($_POST['to_receive_inv_field_0']);
 		}
-		parent::Update();
+		parent::update();
 	}
 }
 ?>

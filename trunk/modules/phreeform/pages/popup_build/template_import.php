@@ -40,7 +40,7 @@ echo $toolbar->build_toolbar();
     <tr>
       <td colspan="2">
 	    <?php echo TEXT_ENTER_SEARCH_PARAMS_A; ?>
-		<?php echo html_pull_down_menu('mod',  $sel_modules,  $def_module); ?>
+		<?php echo html_pull_down_menu('mod',  gen_build_pull_down($admin_classes, true, true),  $def_module); ?>
 	    <?php echo TEXT_ENTER_SEARCH_PARAMS_B; ?>
 		<?php echo html_pull_down_menu('lang', $sel_language, $def_lang); ?>
 	    <?php echo TEXT_ENTER_SEARCH_PARAMS_C; ?>

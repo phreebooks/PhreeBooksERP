@@ -33,7 +33,6 @@ define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);
 define('DEF_GL_ACCT',AR_DEFAULT_GL_ACCT);
 define('DEF_GL_ACCT_TITLE',ORD_AR_ACCOUNT);
 define('POPUP_FORM_TYPE','pos:rcpt');
-$error           = false;
 $account_type    = 'c';
 $order           = new \core\classes\journal();
 $transaction     = new \phreepos\classes\other_transactions();
@@ -116,10 +115,9 @@ if (file_exists($custom_path)) { include($custom_path); }
 	}
 	
 	
-	$error = $order->Post('insert', true);
+	$order->Post('insert', true);
 	if ( DEBUG )           $messageStack->write_debug();
 						$xml .= "\t" . xmlEntry("action",			$_REQUEST['action']);
-if ($error)  			$xml .= "\t" . xmlEntry("error", 			$error);
 //if ($order->errormsg)	$xml .= "\t" . xmlEntry("error", 			$order->errormsg);
 echo createXmlHeader() . $xml . createXmlFooter();
 ob_end_flush();

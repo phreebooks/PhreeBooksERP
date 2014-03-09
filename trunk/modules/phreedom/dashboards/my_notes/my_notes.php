@@ -27,7 +27,7 @@ class my_notes extends \core\classes\ctl_panel {
 	public $version      		= '3.5';
 	public $module_id 			= 'phreedom';
 
-	function Output($params) {
+	function output($params) {
 		global $db;
 		$contents = '';
 		$control  = '';
@@ -59,7 +59,7 @@ class my_notes extends \core\classes\ctl_panel {
 		return $this->build_div('', $contents, $control);
 	}
 
-	function Update() {
+	function update() {
 		global $db;
 		$my_note   = db_prepare_input($_POST['my_notes_field_0']);
 		$remove_id = db_prepare_input($_POST['my_notes_rId']);

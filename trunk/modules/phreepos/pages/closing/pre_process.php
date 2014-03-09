@@ -23,7 +23,6 @@ gen_pull_language('phreebooks');
 require_once(DIR_FS_WORKING . 'classes/tills.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 /**************   page specific initialization  *************************/
-$error			 = false;
 $till_known 	 = false;
 $cleared_items   = array();
 $current_cleard_items = unserialize($_POST['current_cleard_items']);
@@ -53,84 +52,82 @@ if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save':
-	\core\classes\user::validate_security($security_level, 2);
-	$glEntry->journal_id          = JOURNAL_ID;
-	$glEntry->post_date           = $post_date;
-	$glEntry->period              = $period;
-	$glEntry->closed 			  = ($security_level > 2) ? 1 : 0;
-	$glEntry->admin_id            = $_SESSION['admin_id'];
-	$glEntry->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);
-	$glEntry->recur_id            = db_prepare_input($_POST['recur_id']);
-	$glEntry->recur_frequency     = db_prepare_input($_POST['recur_frequency']);
-	$glEntry->store_id            = db_prepare_input($_POST['store_id']);
-	if ($glEntry->store_id == '') $glEntry->store_id = 0;
-	//save new till balance
-	$tills->new_balance($currencies->clean_value($_POST['new_balance']));
-	if (is_array($_POST['id'])) for ($i = 0; $i < count($_POST['id']); $i++) {
-	  $all_items[] = $_POST['id'][$i];
-	  $cleared_items[]   = $_POST['id'][$i];
-	  $glrows[db_prepare_input($_POST['gl_account_' . $i])] += $currencies->clean_value($_POST['amt_'.$i]) - $currencies->clean_value($_POST['pmt_'.$i]);
-	}
-	foreach($glrows as $key => $value){
-		$value = $value;
-		if($value == $currencies->clean_value(0)) continue;
-		$value = round($value,  $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
-		$balance_payments += $value;
+  	try{
+		\core\classes\user::validate_security($security_level, 2);
+		$glEntry->journal_id          = JOURNAL_ID;
+		$glEntry->post_date           = $post_date;
+		$glEntry->period              = $period;
+		$glEntry->closed 			  = ($security_level > 2) ? 1 : 0;
+		$glEntry->admin_id            = $_SESSION['admin_id'];
+		$glEntry->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);
+		$glEntry->recur_id            = db_prepare_input($_POST['recur_id']);
+		$glEntry->recur_frequency     = db_prepare_input($_POST['recur_frequency']);
+		$glEntry->store_id            = db_prepare_input($_POST['store_id']);
+		if ($glEntry->store_id == '') $glEntry->store_id = 0;
+		//save new till balance
+		$tills->new_balance($currencies->clean_value($_POST['new_balance']));
+		if (is_array($_POST['id'])) for ($i = 0; $i < count($_POST['id']); $i++) {
+		  	$all_items[] = $_POST['id'][$i];
+		  	$cleared_items[]   = $_POST['id'][$i];
+		  	$glrows[db_prepare_input($_POST['gl_account_' . $i])] += $currencies->clean_value($_POST['amt_'.$i]) - $currencies->clean_value($_POST['pmt_'.$i]);
+		}
+		foreach($glrows as $key => $value){
+			$value = $value;
+			if($value == $currencies->clean_value(0)) continue;
+			$value = round($value,  $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
+			$balance_payments += $value;
+			$glEntry->journal_rows[] = array(
+			  'id'            => '',
+			  'qty'           => '1',
+			  'gl_account'    => $key,
+			  'description'   => PHREEPOS_HANDELING_CASH_DIFFERENCE,
+			  'debit_amount'  => ($value > 0 ) ? $value : '',
+			  'credit_amount' => ($value > 0 ) ? ''     : -$value,
+			  'reconciled'	  => ($security_level > 2) ? $period : 0,
+			  'post_date'     => $glEntry->post_date
+			);
+		}
+		$value = $currencies->clean_value($_POST['balance']) - $balance_payments;
 		$glEntry->journal_rows[] = array(
-			'id'            => '',
-			'qty'           => '1',
-			'gl_account'    => $key,
-			'description'   => PHREEPOS_HANDELING_CASH_DIFFERENCE,
-			'debit_amount'  => ($value > 0 ) ? $value : '',
-			'credit_amount' => ($value > 0 ) ? ''     : -$value,
-			'reconciled'	=> ($security_level > 2) ? $period : 0,
-			'post_date'     => $glEntry->post_date);
-	}
-	$value = $currencies->clean_value($_POST['balance']) - $balance_payments;
-	$glEntry->journal_rows[] = array(
-		'id'            => '',
-		'qty'           => '1',
-		'gl_account'    => $tills->gl_acct_id,
-		'description'   => PHREEPOS_HANDELING_CASH_DIFFERENCE,
-		'debit_amount'  => ($value > 0 ) ? $value : '',
-		'credit_amount' => ($value > 0 ) ? ''     : -$value,
-		'reconciled'	=> ($security_level > 2) ? $period : 0,
-		'post_date'     => $glEntry->post_date);
-	if ($currencies->clean_value($_POST['balance'])<> 0){
-		$glEntry->journal_rows[] = array(
-			'id'            => '',
-			'qty'           => '1',
-			'gl_account'    => $tills->dif_gl_acct_id,
-			'description'   => PHREEPOS_HANDELING_CASH_DIFFERENCE,
-			'debit_amount'  => ($currencies->clean_value($_POST['balance']) > 0) ? '' : -$currencies->clean_value($_POST['balance']) ,
-			'credit_amount' => ($currencies->clean_value($_POST['balance']) > 0) ? $currencies->clean_value($_POST['balance']) : '' ,
-			'reconciled'	=> ($security_level > 2) ? $period : 0,
-			'post_date'     => $glEntry->post_date);		
-	}
-	
-	$glEntry->journal_main_array = array(
-		'period'              => $glEntry->period,
-		'journal_id'          => JOURNAL_ID,
-		'post_date'           => $glEntry->post_date,
-		'total_amount'        => $currencies->clean_value($_POST['balance']),
-		'description'         => GL_ENTRY_TITLE,
-		'purchase_invoice_id' => $glEntry->purchase_invoice_id,
-		'admin_id'            => $glEntry->admin_id,
-		'bill_primary_name'   => PHREEPOS_HANDELING_CASH_DIFFERENCE,
-		'store_id'            => $glEntry->store_id,
-	);
-	$db->transStart();
-	if (!$glEntry->Post($glEntry->id ? 'edit' : 'insert', true)) $error = true;
-	if ($error) {
-		$db->transRollback();
-		if (DEBUG) $messageStack->write_debug();
-		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-	}
-	$db->transCommit();
-	if( !$error ){
+		  'id'            => '',
+		  'qty'           => '1',
+		  'gl_account'    => $tills->gl_acct_id,
+		  'description'   => PHREEPOS_HANDELING_CASH_DIFFERENCE,
+		  'debit_amount'  => ($value > 0 ) ? $value : '',
+		  'credit_amount' => ($value > 0 ) ? ''     : -$value,
+		  'reconciled'    => ($security_level > 2) ? $period : 0,
+		  'post_date'     => $glEntry->post_date
+		);
+		if ($currencies->clean_value($_POST['balance'])<> 0){
+			$glEntry->journal_rows[] = array(
+			  'id'            => '',
+			  'qty'           => '1',
+			  'gl_account'    => $tills->dif_gl_acct_id,
+			  'description'   => PHREEPOS_HANDELING_CASH_DIFFERENCE,
+			  'debit_amount'  => ($currencies->clean_value($_POST['balance']) > 0) ? '' : -$currencies->clean_value($_POST['balance']) ,
+			  'credit_amount' => ($currencies->clean_value($_POST['balance']) > 0) ? $currencies->clean_value($_POST['balance']) : '' ,
+			  'reconciled'    => ($security_level > 2) ? $period : 0,
+			  'post_date'     => $glEntry->post_date
+			);		
+		}
+		
+		$glEntry->journal_main_array = array(
+		  'period'              => $glEntry->period,
+		  'journal_id'          => JOURNAL_ID,
+		  'post_date'           => $glEntry->post_date,
+		  'total_amount'        => $currencies->clean_value($_POST['balance']),
+		  'description'         => GL_ENTRY_TITLE,
+		  'purchase_invoice_id' => $glEntry->purchase_invoice_id,
+		  'admin_id'            => $glEntry->admin_id,
+		  'bill_primary_name'   => PHREEPOS_HANDELING_CASH_DIFFERENCE,
+		  'store_id'            => $glEntry->store_id,
+		);
+		$db->transStart();
+		$glEntry->Post($glEntry->id ? 'edit' : 'insert', true);
+		$db->transCommit();
 		$newrow = $db->Execute("select i.id from " . TABLE_JOURNAL_MAIN . " m join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id where i.gl_account = '" . $tills->gl_acct_id . "' and m.id ='".$glEntry->id."'");
 		$cleared_items[] = $newrow->fields['id'];
-		$statement_balance = $currencies->clean_value($_POST['statement_balance']);// misschien moet dit opgehaald worden ipv balans waarde van till
+		$statement_balance = $currencies->clean_value($_POST['statement_balance']);
 		// see if this is an update or new entry
 		$sql_data_array = array(
 		  'statement_balance' => $statement_balance,
@@ -139,36 +136,40 @@ switch ($_REQUEST['action']) {
 		$sql = "select id from " . TABLE_RECONCILIATION . " where period = " . $period . " and gl_account = '" . $tills->gl_acct_id . "'";
 		$result = $db->Execute($sql);
 		if ($result->RecordCount() == 0) {
-		  $sql_data_array['period']     = $period;
-		  $sql_data_array['gl_account'] = $tills->gl_acct_id;
-		  db_perform(TABLE_RECONCILIATION, $sql_data_array, 'insert');
+			$sql_data_array['period']     = $period;
+			$sql_data_array['gl_account'] = $tills->gl_acct_id;
+			db_perform(TABLE_RECONCILIATION, $sql_data_array, 'insert');
 		} else {
-		  db_perform(TABLE_RECONCILIATION, $sql_data_array, 'update', "period = " . $period . " and gl_account = '" . $tills->gl_acct_id . "'");
+			db_perform(TABLE_RECONCILIATION, $sql_data_array, 'update', "period = " . $period . " and gl_account = '" . $tills->gl_acct_id . "'");
 		}
 		// set reconciled flag to period for all records that were checked
 		$mains = array();
 		if (count($cleared_items)) {
-		  $sql = "update " . TABLE_JOURNAL_ITEM . " set reconciled = $period where id in (" . implode(',', $cleared_items) . ")";
-		  $result = $db->Execute($sql);
-		  // check to see if the journal main closed flag should be set or cleared based on all cash accounts
-		  $result = $db->Execute("select ref_id from " . TABLE_JOURNAL_ITEM . " where id in (" . implode(",", $cleared_items) . ")");
-		  while (!$result->EOF) {
-			$mains[] = $result->fields['ref_id'];
-			$result->MoveNext();
-		  }
+			$sql = "update " . TABLE_JOURNAL_ITEM . " set reconciled = $period where id in (" . implode(',', $cleared_items) . ")";
+			$result = $db->Execute($sql);
+			// check to see if the journal main closed flag should be set or cleared based on all cash accounts
+			$result = $db->Execute("select ref_id from " . TABLE_JOURNAL_ITEM . " where id in (" . implode(",", $cleared_items) . ")");
+			while (!$result->EOF) {
+				$mains[] = $result->fields['ref_id'];
+				$result->MoveNext();
+			}
 		}
 		if (count($mains)) { 
-		  // closes if any cash records within the journal main that are reconciled
-		  $db->Execute("update " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
-		    set m.closed = '1' 
+			// closes if any cash records within the journal main that are reconciled
+			$db->Execute("update " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
+			  set m.closed = '1' 
 			  where i.reconciled > 0 
 			  and i.gl_account = '" . $tills->gl_acct_id . "' 
 			  and m.id in (" . implode(",", $mains) . ")");
 		}
 		$messageStack->add(BNK_RECON_POST_SUCCESS,'success');
 		gen_add_audit_log(BNK_LOG_ACCT_RECON . $period, $tills->gl_acct_id);
-	}
-	$post_date = ''; // reset for new form
+		$post_date = ''; // reset for new form
+  	}catch(Exception $e){
+  		$db->transRollback();
+  		$messageStack->add($e->getMessage());
+  		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
+  	}
 	if (DEBUG) $messageStack->write_debug();
 	break;
   default:

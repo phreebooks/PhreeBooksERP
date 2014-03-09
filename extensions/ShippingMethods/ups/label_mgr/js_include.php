@@ -29,24 +29,24 @@ var image_delete_msg  = '<?php echo SHIPPING_DELETE_CONFIRM; ?>';
 <?php echo js_calendar_init($cal_exp); ?>
 
 function init() {
-  <?php 
-    if (!$error && !$auto_print && ($action == 'label' || $action == 'delete')) {
-	  echo '  window.opener.location.reload();' . chr(10);
-	  echo '  self.close();' . chr(10);
-    } 
-    if (!$auto_print) echo '  document.getElementById("wt_1").focus();' . chr(10);
-  ?>
+	<?php if ($_REQUEST['action'] == 'label' || $_REQUEST['action'] == 'delete') {
+		echo 'window.opener.location.reload();' . chr(10);
+		echo 'self.close();' . chr(10);
+	} ?>
+	document.getElementById('wt_1').focus();
 }
 
 function check_form() {
   var error = 0;
   var error_message = "<?php echo JS_ERROR; ?>";
+
   if (!document.getElementById('total_weight').value) {
   	error_message += '<?php echo SHIPPING_ERROR_WEIGHT_ZERO; ?>' + '\n';
 	error = 1;
   }
+
   if (error == 1) {
-    alert(error_message);
+	$.messager.alert('error',error_message,'error');
     return false;
   }
   return true;
@@ -81,7 +81,7 @@ function removeRow(delRowCnt) {
   	// delete icon (don't delete to keep row reference)
 	// remaining cell values
 	document.getElementById('qty_'+i).value = document.getElementById('qty_'+(i+1)).value;
-	document.getElementById('wt_'+i).value  = document.getElementById('wt_'+(i+1)).value;
+	document.getElementById('wt_'+i).value = document.getElementById('wt_'+(i+1)).value;
 	document.getElementById('len_'+i).value = document.getElementById('len_'+(i+1)).value;
 	document.getElementById('wid_'+i).value = document.getElementById('wid_'+(i+1)).value;
 	document.getElementById('hgt_'+i).value = document.getElementById('hgt_'+(i+1)).value;

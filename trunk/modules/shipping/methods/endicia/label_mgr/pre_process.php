@@ -22,7 +22,6 @@ $method = 'endicia';
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/shipping.php');
 /**************   page specific initialization  *************************/
-$error      = false;
 $auto_print = false;
 $label_data = NULL;
 $pdf_list   = array();
@@ -32,69 +31,69 @@ $shipping_defaults['package_type'] = $shipment->mailPieceShape;
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'label':
-	// overwrite the defaults with data from the form
-	reset($_POST);
-	while (list($key, $value) = each($_POST)) $sInfo->$key = db_prepare_input($value);
-	// generate ISO2 codes for countries (needed by Endicia and others)
-	$sInfo->ship_country_code     = gen_get_country_iso_2_from_3($sInfo->ship_country_code);
-	$sInfo->ship_date             = date('Y-m-d', strtotime($sInfo->ship_date));
-	// read checkboxes
-	$sInfo->delivery_confirmation = isset($_POST['delivery_confirmation']) ? '1' : '0';
-	$sInfo->cod                   = isset($_POST['cod'])                   ? '1' : '0';
-	// load package information
-	$date = $sInfo->ship_date;
-	$i    = 0;
-	$sInfo->package = array();
-	// error check
-	$sInfo->package = array(
-	  'weight' => $_POST['wt_1'],
-	  'length' => $_POST['len_1'] ? $_POST['len_1'] : '', // SHIPPING_DEFAULT_LENGTH
-	  'width'  => $_POST['wid_1'] ? $_POST['wid_1'] : '', // SHIPPING_DEFAULT_WIDTH
-	  'height' => $_POST['hgt_1'] ? $_POST['hgt_1'] : '', // SHIPPING_DEFAULT_HEIGHT
-	  'value'  => $_POST['ins_1'],
-	);
-	if (!$result = $shipment->retrieveLabel($sInfo)) $error = true;
-
-	if (!$error) {
-	  $temp = $db->Execute("select next_shipment_num from ".TABLE_CURRENT_STATUS);
-	  $shipment_num = $temp->fields['next_shipment_num'];
-	  $labels_array = array();
-	  foreach ($result as $shipment) {
-		$sql_array = array(
-		  'ref_id'       => $shipment['ref_id'],
-		  'shipment_id'  => $shipment_num,
-		  'carrier'      => $admin_classes['shipping']->methods[$method]->id,
-		  'method'       => $sInfo->ship_method,
-		  'ship_date'    => $sInfo->ship_date . ' ' . date('h:i:s'),
-		  'deliver_date' => $shipment['delivery_date'],
-		  'tracking_id'  => $shipment['tracking'],
-		  'cost'         => $shipment['net_cost'],
+  	try{
+		// overwrite the defaults with data from the form
+		reset($_POST);
+		while (list($key, $value) = each($_POST)) $sInfo->$key = db_prepare_input($value);
+		// generate ISO2 codes for countries (needed by Endicia and others)
+		$sInfo->ship_country_code     = gen_get_country_iso_2_from_3($sInfo->ship_country_code);
+		$sInfo->ship_date             = date('Y-m-d', strtotime($sInfo->ship_date));
+		// read checkboxes
+		$sInfo->delivery_confirmation = isset($_POST['delivery_confirmation']) ? '1' : '0';
+		$sInfo->cod                   = isset($_POST['cod'])                   ? '1' : '0';
+		// load package information
+		$date = $sInfo->ship_date;
+		$i    = 0;
+		$sInfo->package = array();
+		// error check
+		$sInfo->package = array(
+		  'weight' => $_POST['wt_1'],
+		  'length' => $_POST['len_1'] ? $_POST['len_1'] : '', // SHIPPING_DEFAULT_LENGTH
+		  'width'  => $_POST['wid_1'] ? $_POST['wid_1'] : '', // SHIPPING_DEFAULT_WIDTH
+		  'height' => $_POST['hgt_1'] ? $_POST['hgt_1'] : '', // SHIPPING_DEFAULT_HEIGHT
+		  'value'  => $_POST['ins_1'],
 		);
-		db_perform(TABLE_SHIPPING_LOG, $sql_array, 'insert');
-		$labels_array[] = $shipment['tracking'];
-	  }
-	  $db->Execute("update ".TABLE_CURRENT_STATUS." set next_shipment_num = next_shipment_num + 1");
-	  gen_add_audit_log(SHIPPING_LOG_LABEL_PRINTED, $shipment_num . '-' . $sInfo->purchase_invoice_id);
-	  $file_path = SHIPPING_DEFAULT_LABEL_DIR . $admin_classes['shipping']->methods[$method]->id . '/' . str_replace('-', '/', $date) . '/';
-	  // fetch the tracking labels
-	  foreach ($labels_array as $tracking_num) {
-	    foreach (glob($file_path . $tracking_num . '*.*') as $filename) {
-	      if (substr($filename, -3) == 'lpt') { // it's a thermal label
-		    if (!$handle = fopen($filename, 'r')) throw new \Exception('Cannot open file (' . $filename . ')');
-		    $label_data .= fread($handle, filesize($filename));
-		    fclose($handle);
-		    if (!$error) $auto_print = true;
-	      } elseif (substr($filename, -3) == 'pdf') { // it's a pdf image label
-		    $pdf_list[] = $tracking_num; // it's a pdf image label
-	      }
-	    }
-	    if (!$auto_print) { // just pdf, go there now
-	      gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=shipping&page=popup_label_viewer&method=' . $admin_classes['shipping']->methods[$method]->id . '&date=' . $sInfo->ship_date . '&labels=' . implode(':', $labels_array), 'SSL'));	
-	    }
-	  }
-	  $label_data = str_replace("\r", "", addslashes($label_data)); // for javascript multi-line
-	  $label_data = str_replace("\n", "\\n", $label_data);
-	} else {
+		$result = $shipment->retrieveLabel($sInfo);
+
+		$temp = $db->Execute("select next_shipment_num from ".TABLE_CURRENT_STATUS);
+	  	$shipment_num = $temp->fields['next_shipment_num'];
+	  	$labels_array = array();
+	  	foreach ($result as $shipment) {
+			$sql_array = array(
+			  'ref_id'       => $shipment['ref_id'],
+			  'shipment_id'  => $shipment_num,
+			  'carrier'      => $admin_classes['shipping']->methods[$method]->id,
+			  'method'       => $sInfo->ship_method,
+			  'ship_date'    => $sInfo->ship_date . ' ' . date('h:i:s'),
+			  'deliver_date' => $shipment['delivery_date'],
+			  'tracking_id'  => $shipment['tracking'],
+			  'cost'         => $shipment['net_cost'],
+			);
+			db_perform(TABLE_SHIPPING_LOG, $sql_array, 'insert');
+			$labels_array[] = $shipment['tracking'];
+	  	}
+	  	$db->Execute("update ".TABLE_CURRENT_STATUS." set next_shipment_num = next_shipment_num + 1");
+	  	gen_add_audit_log(SHIPPING_LOG_LABEL_PRINTED, $shipment_num . '-' . $sInfo->purchase_invoice_id);
+	  	$file_path = SHIPPING_DEFAULT_LABEL_DIR . $admin_classes['shipping']->methods[$method]->id . '/' . str_replace('-', '/', $date) . '/';
+		// fetch the tracking labels
+	  	foreach ($labels_array as $tracking_num) {
+		    foreach (glob($file_path . $tracking_num . '*.*') as $filename) {
+				if (substr($filename, -3) == 'lpt') { // it's a thermal label
+		    		if (!$handle = fopen($filename, 'r')) throw new \Exception('Cannot open file (' . $filename . ')');
+		    		$label_data .= fread($handle, filesize($filename));
+		    		fclose($handle);
+		    		$auto_print = true;
+	      		} elseif (substr($filename, -3) == 'pdf') { // it's a pdf image label
+		    		$pdf_list[] = $tracking_num; // it's a pdf image label
+	      		}
+	    	}
+	    	if (!$auto_print) { // just pdf, go there now
+	      		gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=shipping&page=popup_label_viewer&method=' . $admin_classes['shipping']->methods[$method]->id . '&date=' . $sInfo->ship_date . '&labels=' . implode(':', $labels_array), 'SSL'));	
+	    	}
+	  	}
+	  	$label_data = str_replace("\r", "", addslashes($label_data)); // for javascript multi-line
+	  	$label_data = str_replace("\n", "\\n", $label_data);
+	} catch(exception $e) {
 		$sInfo->ship_country_code = gen_get_country_iso_3_from_2($sInfo->ship_country_code);
 	  	throw new \Exception(SHIPPING_NO_PACKAGES);
 	}

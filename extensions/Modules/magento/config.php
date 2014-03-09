@@ -19,7 +19,6 @@
 gen_pull_language('phreedom', 'menu');
 // Release History
 // Module software version information
-define('MODULE_MAGENTO_VERSION',      1);
 // Set the menu order, if using Magento title menu option (after Customers and before Vendors)
 define('MENU_HEADING_MAGENTO_ORDER',     15);
 // Security id's
@@ -37,7 +36,7 @@ if (defined('MODULE_MAGENTO_STATUS')) {
 		'params'	  => '',
   	);
   
-	if(isset($_SESSION['admin_security'][SECURITY_ID_CONFIGURATION]) && $_SESSION['admin_security'][SECURITY_ID_CONFIGURATION] > 0){
+	if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
 	  gen_pull_language('magento', 'admin');
 	  $mainmenu["company"]['submenu']["configuration"]['submenu']["magento"] = array(
 		'order'	      => MODULE_MAGENTO_TITLE,

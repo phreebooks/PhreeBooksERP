@@ -20,8 +20,7 @@ $security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 /**************  include page specific files    *********************/
 gen_pull_language($module, 'admin');
 require_once(DIR_FS_WORKING . 'functions/zencart.php');
-/**************   page specific initialization  *************************/
-$error   = false; 
+/**************   page specific initialization  *************************/ 
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/admin/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }

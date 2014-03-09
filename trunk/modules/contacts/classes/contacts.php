@@ -183,7 +183,7 @@ class contacts {
 	      		if (false === db_prepare_input($this->address[$value]['email'],          ADDRESS_BOOK_EMAIL_REQUIRED))          throw new \Exception($msg_add_type.' - '.GEN_EMAIL);
       		}
     	}
-    	$this->duplicate_id($error);    
+    	$this->duplicate_id();    
     	return true;
   }
   
@@ -191,7 +191,7 @@ class contacts {
    * this function looks if there are duplicate id's if so it throws a exception. 
    */
   
-  public function duplicate_id($error){
+  public function duplicate_id(){
   	global $db; 
   	// check for duplicate short_name IDs
     if ($this->id == '') {

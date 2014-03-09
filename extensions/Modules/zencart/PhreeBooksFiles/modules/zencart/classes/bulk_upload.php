@@ -19,20 +19,18 @@
 namespace zencart\classes;
 class bulk_upload {
   
-  function __construct($inc_image = false) {
-	global $db, $messageStack;
-	$error  = false;
-	$result = $db->Execute("select id from " . TABLE_INVENTORY . " where catalog = '1' ");
-	$cnt    = 0;
-	$prodXML = new \zencart\classes\zencart();
-	while(!$result->EOF) {
-	  	$prodXML->submitXML($result->fields['id'], 'product_ul', true, $inc_image);
-	  	$cnt++;
-	  	$result->MoveNext();
-	}
-	$messageStack->add(sprintf(ZENCART_BULK_UPLOAD_SUCCESS, $cnt), 'success');
-	return  true;
-  }
-
+  	function __construct($inc_image = false) {
+		global $db, $messageStack;
+		$result = $db->Execute("select id from " . TABLE_INVENTORY . " where catalog = '1' ");
+		$cnt    = 0;
+		$prodXML = new \zencart\classes\zencart();
+		while(!$result->EOF) {
+	  		$prodXML->submitXML($result->fields['id'], 'product_ul', true, $inc_image);
+	  		$cnt++;
+	  		$result->MoveNext();
+		}
+		$messageStack->add(sprintf(ZENCART_BULK_UPLOAD_SUCCESS, $cnt), 'success');
+		return  true;
+  	}
 }
 ?>

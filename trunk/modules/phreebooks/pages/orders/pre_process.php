@@ -159,7 +159,6 @@ switch (JOURNAL_ID) {
   default:
 }
 
-$error        = false;
 $post_success = false;
 $order        = new \phreebooks\classes\orders();
 /***************   hook for custom actions  ***************************/
@@ -173,220 +172,209 @@ switch ($_REQUEST['action']) {
   case 'payment':
   case 'post_previous':
   case 'post_next':
-	\core\classes\user::validate_security($security_level, 2);
-  	if (!isset($_POST['total'])) // check for truncated post vars
-		throw new \Exception('The total field was not set, this means the form was not submitted in full and the order cannot be posted properly. The most common solution to this problem is to set the max_input_vars above the standard 1000 in your php.ini configuration file.');
-	// currency values (convert to DEFAULT_CURRENCY to store in db)
-	$order->currencies_code     = db_prepare_input($_POST['currencies_code']);
-	$order->currencies_value    = db_prepare_input($_POST['currencies_value']);
-	// load bill to and ship to information
-	$order->short_name          = db_prepare_input(($_POST['search'] <> TEXT_SEARCH) ? $_POST['search'] : '');
-	$order->bill_add_update     = isset($_POST['bill_add_update']) ? $_POST['bill_add_update'] : 0;
-	$order->account_type        = $account_type;
-	$order->bill_acct_id        = db_prepare_input($_POST['bill_acct_id']);
-	$order->bill_address_id     = db_prepare_input($_POST['bill_address_id']);
-	$order->bill_primary_name   = db_prepare_input(($_POST['bill_primary_name']   <> GEN_PRIMARY_NAME)   ? $_POST['bill_primary_name']   : '', true);
-	$order->bill_contact        = db_prepare_input(($_POST['bill_contact']        <> GEN_CONTACT)        ? $_POST['bill_contact']        : '', ADDRESS_BOOK_CONTACT_REQUIRED);
-	$order->bill_address1       = db_prepare_input(($_POST['bill_address1']       <> GEN_ADDRESS1)       ? $_POST['bill_address1']       : '', ADDRESS_BOOK_ADDRESS1_REQUIRED);
-	$order->bill_address2       = db_prepare_input(($_POST['bill_address2']       <> GEN_ADDRESS2)       ? $_POST['bill_address2']       : '', ADDRESS_BOOK_ADDRESS2_REQUIRED);
-	$order->bill_city_town      = db_prepare_input(($_POST['bill_city_town']      <> GEN_CITY_TOWN)      ? $_POST['bill_city_town']      : '', ADDRESS_BOOK_CITY_TOWN_REQUIRED);
-	$order->bill_state_province = db_prepare_input(($_POST['bill_state_province'] <> GEN_STATE_PROVINCE) ? $_POST['bill_state_province'] : '', ADDRESS_BOOK_STATE_PROVINCE_REQUIRED);
-	$order->bill_postal_code    = db_prepare_input(($_POST['bill_postal_code']    <> GEN_POSTAL_CODE)    ? $_POST['bill_postal_code']    : '', ADDRESS_BOOK_POSTAL_CODE_REQUIRED);
-	$order->bill_country_code   = db_prepare_input($_POST['bill_country_code']);
-	$order->bill_telephone1     = db_prepare_input(($_POST['bill_telephone1']     <> GEN_TELEPHONE1)     ? $_POST['bill_telephone1']     : '', ADDRESS_BOOK_TELEPHONE1_REQUIRED);
-	$order->bill_email          = db_prepare_input(($_POST['bill_email']          <> GEN_EMAIL)          ? $_POST['bill_email']          : '', ADDRESS_BOOK_EMAIL_REQUIRED);
-	if (defined('MODULE_SHIPPING_STATUS')) {
-	  $order->ship_short_name     = db_prepare_input($_POST['ship_search']);
-	  $order->ship_add_update     = isset($_POST['ship_add_update']) ? $_POST['ship_add_update'] : 0;
-	  $order->ship_acct_id        = db_prepare_input($_POST['ship_acct_id']);
-	  $order->ship_address_id     = db_prepare_input($_POST['ship_address_id']);
-	  $order->ship_primary_name   = db_prepare_input(($_POST['ship_primary_name']   <> GEN_PRIMARY_NAME)   ? $_POST['ship_primary_name']   : '', true);
-	  $order->ship_contact        = db_prepare_input(($_POST['ship_contact']        <> GEN_CONTACT)        ? $_POST['ship_contact']        : '', ADDRESS_BOOK_SHIP_CONTACT_REQ);
-	  $order->ship_address1       = db_prepare_input(($_POST['ship_address1']       <> GEN_ADDRESS1)       ? $_POST['ship_address1']       : '', ADDRESS_BOOK_SHIP_ADD1_REQ);
-	  $order->ship_address2       = db_prepare_input(($_POST['ship_address2']       <> GEN_ADDRESS2)       ? $_POST['ship_address2']       : '', ADDRESS_BOOK_SHIP_ADD2_REQ);
-	  $order->ship_city_town      = db_prepare_input(($_POST['ship_city_town']      <> GEN_CITY_TOWN)      ? $_POST['ship_city_town']      : '', ADDRESS_BOOK_SHIP_CITY_REQ);
-	  $order->ship_state_province = db_prepare_input(($_POST['ship_state_province'] <> GEN_STATE_PROVINCE) ? $_POST['ship_state_province'] : '', ADDRESS_BOOK_SHIP_STATE_REQ);
-	  $order->ship_postal_code    = db_prepare_input(($_POST['ship_postal_code']    <> GEN_POSTAL_CODE)    ? $_POST['ship_postal_code']    : '', ADDRESS_BOOK_SHIP_POSTAL_CODE_REQ);
-	  $order->ship_country_code   = db_prepare_input($_POST['ship_country_code']);
-	  $order->ship_telephone1     = db_prepare_input(($_POST['ship_telephone1']     <> GEN_TELEPHONE1)     ? $_POST['ship_telephone1']     : '', ADDRESS_BOOK_TELEPHONE1_REQUIRED);
-	  $order->ship_email          = db_prepare_input(($_POST['ship_email']          <> GEN_EMAIL)          ? $_POST['ship_email']          : '', ADDRESS_BOOK_EMAIL_REQUIRED);
-	  $order->shipper_code        = implode(':', array(db_prepare_input($_POST['ship_carrier']), db_prepare_input($_POST['ship_service'])));
-	  $order->drop_ship           = isset($_POST['drop_ship']) ? $_POST['drop_ship'] : 0;
-	  $order->freight             = $currencies->clean_value(db_prepare_input($_POST['freight']), $order->currencies_code) / $order->currencies_value;
-	}
-	// load journal main data
-	$order->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
-	$order->journal_id          = JOURNAL_ID;
-	$order->post_date           = gen_db_date($_POST['post_date']);
-	$order->period              = gen_calculate_period($order->post_date);
-	if (!$order->period) break;	// bad post_date was submitted
-	if ($_SESSION['admin_prefs']['restrict_period'] && $order->period <> CURRENT_ACCOUNTING_PERIOD) {
-	  $error = $messageStack->add(ORD_ERROR_NOT_CUR_PERIOD, 'error');
-	  break;
-	}
-	$order->so_po_ref_id        = db_prepare_input($_POST['so_po_ref_id']);	// Internal link to reference po/so record
-	$order->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);	// PhreeBooks order/invoice ID
-	$order->purch_order_id      = db_prepare_input($_POST['purch_order_id']);  // customer PO/Ref number
-	$order->store_id            = db_prepare_input($_POST['store_id']);
-	if ($order->store_id == '') $order->store_id = 0;
-	$order->description         = sprintf(TEXT_JID_ENTRY, constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE'));
-	$order->recur_id            = db_prepare_input($_POST['recur_id']);
-	$order->recur_frequency     = db_prepare_input($_POST['recur_frequency']);
-//	$order->sales_tax_auths     = db_prepare_input($_POST['sales_tax_auths']);
-	$order->admin_id            = $_SESSION['admin_id'];
-	$order->rep_id              = db_prepare_input($_POST['rep_id']);
-	$order->gl_acct_id          = db_prepare_input($_POST['gl_acct_id']);
-	$order->terms               = db_prepare_input($_POST['terms']);
-	$order->waiting             = (JOURNAL_ID == 6 || JOURNAL_ID == 7) ? (isset($_POST['waiting']) ? 1 : 0) : ($_POST['waiting'] ? 1 : 0);
-	$order->closed              = ($_POST['closed'] == '1') ? 1 : 0;
-	$order->terminal_date       = gen_db_date($_POST['terminal_date']);
-	$order->item_count          = db_prepare_input($_POST['item_count']);
-	$order->weight              = db_prepare_input($_POST['weight']);
-	$order->printed             = db_prepare_input($_POST['printed']);
-	$order->subtotal            = $currencies->clean_value(db_prepare_input($_POST['subtotal']), $order->currencies_code) / $order->currencies_value; // don't need unless for verification
-	$order->disc_gl_acct_id     = db_prepare_input($_POST['disc_gl_acct_id']);
-	$order->discount            = $currencies->clean_value(db_prepare_input($_POST['discount']), $order->currencies_code) / $order->currencies_value;
-	$order->disc_percent        = ($order->subtotal) ? (1 - (($order->subtotal - $order->discount) / $order->subtotal)) : 0;
-	$order->ship_gl_acct_id     = db_prepare_input($_POST['ship_gl_acct_id']);
-	$order->rm_attach           = isset($_POST['rm_attach']) ? true : false;
-	$order->sales_tax           = $currencies->clean_value(db_prepare_input($_POST['sales_tax']), $order->currencies_code) / $order->currencies_value;
-	$order->total_amount        = $currencies->clean_value(db_prepare_input($_POST['total']), $order->currencies_code) / $order->currencies_value;
-	// load item row data
-	$x = 1;
-	while (isset($_POST['qty_' . $x])) { // while there are item rows to read in
-	  if (!$_POST['qty_' . $x] && !$_POST['pstd_' . $x]) {
-	    $x++;
-	    continue; // skip item line
-	  }
-	  // Error check some input fields
-	  //if ($_POST['pstd_' . $x] == "") $error = $messageStack->add(GEN_ERRMSG_NO_DATA . "Qty", 'error');	  
-	  if ($_POST['acct_' . $x] == "") $error = $messageStack->add(GEN_ERRMSG_NO_DATA . TEXT_GL_ACCOUNT, 'error');
-	  //if ($_POST['price_' . $x] == "") $error = $messageStack->add(GEN_ERRMSG_NO_DATA . "Price", 'error'); //need to fix bugs.
-	  $order->item_rows[] = array(
-		'id'                		=> db_prepare_input($_POST['id_' . $x]),
-		'so_po_item_ref_id' 		=> db_prepare_input($_POST['so_po_item_ref_id_' . $x]),
-		'item_cnt'					=> db_prepare_input($_POST['item_cnt_' . $x]),
-		'gl_type'           		=> GL_TYPE,
-		'qty'               		=> $currencies->clean_value(db_prepare_input($_POST['qty_' . $x]), $order->currencies_code),
-		'pstd'             			=> $currencies->clean_value(db_prepare_input($_POST['pstd_' . $x]), $order->currencies_code),
-		'sku'               		=> ($_POST['sku_' . $x] == TEXT_SEARCH) ? '' : db_prepare_input($_POST['sku_' . $x]),
-		'desc'              		=> db_prepare_input($_POST['desc_' . $x]),
-		'proj'              		=> db_prepare_input($_POST['proj_' . $x]),
-	  	'purch_package_quantity'	=> db_prepare_input($_POST['purch_package_quantity_' . $x]),
-		'date_1'            		=> db_prepare_input($_POST['date_1_' . $x]),
-		'price'             		=> $currencies->clean_value(db_prepare_input($_POST['price_' . $x]), $order->currencies_code) / $order->currencies_value,
-		'full'              		=> $currencies->clean_value(db_prepare_input($_POST['full_' . $x]),  $order->currencies_code) / $order->currencies_value,
-		'acct'              		=> db_prepare_input($_POST['acct_' . $x]),
-		'tax'               		=> db_prepare_input($_POST['tax_' . $x]),
-		'total'             		=> $currencies->clean_value(db_prepare_input($_POST['total_' . $x]), $order->currencies_code) / $order->currencies_value,
-		'weight'            		=> db_prepare_input($_POST['weight_' . $x]),
-		'serial'            		=> db_prepare_input($_POST['serial_' . $x]),
-		'stock'             		=> db_prepare_input($_POST['stock_' . $x]),
-		'inactive'          		=> db_prepare_input($_POST['inactive_' . $x]),
-		'lead_time'         		=> db_prepare_input($_POST['lead_' . $x]),
-	  );
-	  $x++;
-	}
-	// check for errors (address fields)
-	if (!$order->bill_acct_id && !$order->bill_add_update) {
-	  $contact_type = $account_type=='c' ? TEXT_LC_CUSTOMER : TEXT_LC_VENDOR;
-	  $messageStack->add(sprintf(ERROR_NO_CONTACT_SELECTED, $contact_type, $contact_type, ORD_ADD_UPDATE), 'error');
-	  break; // go no further
-	}
-	$base_msg = in_array(JOURNAL_ID, array(3,4,6,7)) ? TEXT_REMIT_TO : TEXT_BILL_TO;
-	if ($order->bill_primary_name     === false) $error = $messageStack->add(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_PRIMARY_NAME, 'error');
-	if ($order->bill_contact          === false) $error = $messageStack->add(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_CONTACT, 'error');
-	if ($order->bill_address1         === false) $error = $messageStack->add(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_ADDRESS1, 'error');
-	if ($order->bill_address2         === false) $error = $messageStack->add(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_ADDRESS2, 'error');
-	if ($order->bill_city_town        === false) $error = $messageStack->add(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_CITY_TOWN, 'error');
-	if ($order->bill_state_province   === false) $error = $messageStack->add(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_STATE_PROVINCE, 'error');
-	if ($order->bill_postal_code      === false) $error = $messageStack->add(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_POSTAL_CODE, 'error');
-	if (ENABLE_SHIPPING_FUNCTIONS) {
-	  if ($order->ship_primary_name   === false) $error = $messageStack->add(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_PRIMARY_NAME, 'error');
-	  if ($order->ship_contact        === false) $error = $messageStack->add(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_CONTACT, 'error');
-	  if ($order->ship_address1       === false) $error = $messageStack->add(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_ADDRESS1, 'error');
-	  if ($order->ship_address2       === false) $error = $messageStack->add(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_ADDRESS2, 'error');
-	  if ($order->ship_city_town      === false) $error = $messageStack->add(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_CITY_TOWN, 'error');
-	  if ($order->ship_state_province === false) $error = $messageStack->add(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_STATE_PROVINCE, 'error');
-	  if ($order->ship_postal_code    === false) $error = $messageStack->add(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_POSTAL_CODE, 'error');
-	  if ($order->ship_telephone1     === false) $error = $messageStack->add(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_TELEPHONE1, 'error');
-	  if ($order->ship_email          === false) $error = $messageStack->add(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_EMAIL, 'error');
-	}
-	// Item row errors
-	if (!$order->item_rows) $error = $messageStack->add(GL_ERROR_NO_ITEMS, 'error');
-	// End of error checking, check for attachments and process the order
-	if (!$error) { // Post the order
-	  if ($post_success = $order->post_ordr($_REQUEST['action'])) {	// Post the order class to the db
-		if ($order->rm_attach) @unlink(PHREEBOOKS_DIR_MY_ORDERS . 'order_'.$order->id.'.zip');
+  	try{
+		\core\classes\user::validate_security($security_level, 2);
+		// check for truncated post vars
+	  	if (!isset($_POST['total'])) throw new \Exception('The total field was not set, this means the form was not submitted in full and the order cannot be posted properly. The most common solution to this problem is to set the max_input_vars above the standard 1000 in your php.ini configuration file.');
+		// currency values (convert to DEFAULT_CURRENCY to store in db)
+		$order->currencies_code     = db_prepare_input($_POST['currencies_code']);
+		$order->currencies_value    = db_prepare_input($_POST['currencies_value']);
+		// load bill to and ship to information
+		$order->short_name          = db_prepare_input(($_POST['search'] <> TEXT_SEARCH) ? $_POST['search'] : '');
+		$order->bill_add_update     = isset($_POST['bill_add_update']) ? $_POST['bill_add_update'] : 0;
+		$order->account_type        = $account_type;
+		$order->bill_acct_id        = db_prepare_input($_POST['bill_acct_id']);
+		$order->bill_address_id     = db_prepare_input($_POST['bill_address_id']);
+		$order->bill_primary_name   = db_prepare_input(($_POST['bill_primary_name']   <> GEN_PRIMARY_NAME)   ? $_POST['bill_primary_name']   : '', true);
+		$order->bill_contact        = db_prepare_input(($_POST['bill_contact']        <> GEN_CONTACT)        ? $_POST['bill_contact']        : '', ADDRESS_BOOK_CONTACT_REQUIRED);
+		$order->bill_address1       = db_prepare_input(($_POST['bill_address1']       <> GEN_ADDRESS1)       ? $_POST['bill_address1']       : '', ADDRESS_BOOK_ADDRESS1_REQUIRED);
+		$order->bill_address2       = db_prepare_input(($_POST['bill_address2']       <> GEN_ADDRESS2)       ? $_POST['bill_address2']       : '', ADDRESS_BOOK_ADDRESS2_REQUIRED);
+		$order->bill_city_town      = db_prepare_input(($_POST['bill_city_town']      <> GEN_CITY_TOWN)      ? $_POST['bill_city_town']      : '', ADDRESS_BOOK_CITY_TOWN_REQUIRED);
+		$order->bill_state_province = db_prepare_input(($_POST['bill_state_province'] <> GEN_STATE_PROVINCE) ? $_POST['bill_state_province'] : '', ADDRESS_BOOK_STATE_PROVINCE_REQUIRED);
+		$order->bill_postal_code    = db_prepare_input(($_POST['bill_postal_code']    <> GEN_POSTAL_CODE)    ? $_POST['bill_postal_code']    : '', ADDRESS_BOOK_POSTAL_CODE_REQUIRED);
+		$order->bill_country_code   = db_prepare_input($_POST['bill_country_code']);
+		$order->bill_telephone1     = db_prepare_input(($_POST['bill_telephone1']     <> GEN_TELEPHONE1)     ? $_POST['bill_telephone1']     : '', ADDRESS_BOOK_TELEPHONE1_REQUIRED);
+		$order->bill_email          = db_prepare_input(($_POST['bill_email']          <> GEN_EMAIL)          ? $_POST['bill_email']          : '', ADDRESS_BOOK_EMAIL_REQUIRED);
+		if (defined('MODULE_SHIPPING_STATUS')) {
+			$order->ship_short_name     = db_prepare_input($_POST['ship_search']);
+		  	$order->ship_add_update     = isset($_POST['ship_add_update']) ? $_POST['ship_add_update'] : 0;
+		  	$order->ship_acct_id        = db_prepare_input($_POST['ship_acct_id']);
+		  	$order->ship_address_id     = db_prepare_input($_POST['ship_address_id']);
+		  	$order->ship_primary_name   = db_prepare_input(($_POST['ship_primary_name']   <> GEN_PRIMARY_NAME)   ? $_POST['ship_primary_name']   : '', true);
+		  	$order->ship_contact        = db_prepare_input(($_POST['ship_contact']        <> GEN_CONTACT)        ? $_POST['ship_contact']        : '', ADDRESS_BOOK_SHIP_CONTACT_REQ);
+		  	$order->ship_address1       = db_prepare_input(($_POST['ship_address1']       <> GEN_ADDRESS1)       ? $_POST['ship_address1']       : '', ADDRESS_BOOK_SHIP_ADD1_REQ);
+		  	$order->ship_address2       = db_prepare_input(($_POST['ship_address2']       <> GEN_ADDRESS2)       ? $_POST['ship_address2']       : '', ADDRESS_BOOK_SHIP_ADD2_REQ);
+		  	$order->ship_city_town      = db_prepare_input(($_POST['ship_city_town']      <> GEN_CITY_TOWN)      ? $_POST['ship_city_town']      : '', ADDRESS_BOOK_SHIP_CITY_REQ);
+		  	$order->ship_state_province = db_prepare_input(($_POST['ship_state_province'] <> GEN_STATE_PROVINCE) ? $_POST['ship_state_province'] : '', ADDRESS_BOOK_SHIP_STATE_REQ);
+		  	$order->ship_postal_code    = db_prepare_input(($_POST['ship_postal_code']    <> GEN_POSTAL_CODE)    ? $_POST['ship_postal_code']    : '', ADDRESS_BOOK_SHIP_POSTAL_CODE_REQ);
+		  	$order->ship_country_code   = db_prepare_input($_POST['ship_country_code']);
+		  	$order->ship_telephone1     = db_prepare_input(($_POST['ship_telephone1']     <> GEN_TELEPHONE1)     ? $_POST['ship_telephone1']     : '', ADDRESS_BOOK_TELEPHONE1_REQUIRED);
+		  	$order->ship_email          = db_prepare_input(($_POST['ship_email']          <> GEN_EMAIL)          ? $_POST['ship_email']          : '', ADDRESS_BOOK_EMAIL_REQUIRED);
+		  	$order->shipper_code        = implode(':', array(db_prepare_input($_POST['ship_carrier']), db_prepare_input($_POST['ship_service'])));
+		  	$order->drop_ship           = isset($_POST['drop_ship']) ? $_POST['drop_ship'] : 0;
+		  	$order->freight             = $currencies->clean_value(db_prepare_input($_POST['freight']), $order->currencies_code) / $order->currencies_value;
+		}
+		// load journal main data
+		$order->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
+		$order->journal_id          = JOURNAL_ID;
+		$order->post_date           = gen_db_date($_POST['post_date']);
+		$order->period              = gen_calculate_period($order->post_date);
+		if (!$order->period) throw new \Exception("the period isn't set");	// bad post_date was submitted
+		if ($_SESSION['admin_prefs']['restrict_period'] && $order->period <> CURRENT_ACCOUNTING_PERIOD) throw new \Exception(ORD_ERROR_NOT_CUR_PERIOD);
+		$order->so_po_ref_id        = db_prepare_input($_POST['so_po_ref_id']);	// Internal link to reference po/so record
+		$order->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);	// PhreeBooks order/invoice ID
+		$order->purch_order_id      = db_prepare_input($_POST['purch_order_id']);  // customer PO/Ref number
+		$order->store_id            = db_prepare_input($_POST['store_id']);
+		if ($order->store_id == '') $order->store_id = 0;
+		$order->description         = sprintf(TEXT_JID_ENTRY, constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE'));
+		$order->recur_id            = db_prepare_input($_POST['recur_id']);
+		$order->recur_frequency     = db_prepare_input($_POST['recur_frequency']);
+	//	$order->sales_tax_auths     = db_prepare_input($_POST['sales_tax_auths']);
+		$order->admin_id            = $_SESSION['admin_id'];
+		$order->rep_id              = db_prepare_input($_POST['rep_id']);
+		$order->gl_acct_id          = db_prepare_input($_POST['gl_acct_id']);
+		$order->terms               = db_prepare_input($_POST['terms']);
+		$order->waiting             = (JOURNAL_ID == 6 || JOURNAL_ID == 7) ? (isset($_POST['waiting']) ? 1 : 0) : ($_POST['waiting'] ? 1 : 0);
+		$order->closed              = ($_POST['closed'] == '1') ? 1 : 0;
+		$order->terminal_date       = gen_db_date($_POST['terminal_date']);
+		$order->item_count          = db_prepare_input($_POST['item_count']);
+		$order->weight              = db_prepare_input($_POST['weight']);
+		$order->printed             = db_prepare_input($_POST['printed']);
+		$order->subtotal            = $currencies->clean_value(db_prepare_input($_POST['subtotal']), $order->currencies_code) / $order->currencies_value; // don't need unless for verification
+		$order->disc_gl_acct_id     = db_prepare_input($_POST['disc_gl_acct_id']);
+		$order->discount            = $currencies->clean_value(db_prepare_input($_POST['discount']), $order->currencies_code) / $order->currencies_value;
+		$order->disc_percent        = ($order->subtotal) ? (1 - (($order->subtotal - $order->discount) / $order->subtotal)) : 0;
+		$order->ship_gl_acct_id     = db_prepare_input($_POST['ship_gl_acct_id']);
+		$order->rm_attach           = isset($_POST['rm_attach']) ? true : false;
+		$order->sales_tax           = $currencies->clean_value(db_prepare_input($_POST['sales_tax']), $order->currencies_code) / $order->currencies_value;
+		$order->total_amount        = $currencies->clean_value(db_prepare_input($_POST['total']), $order->currencies_code) / $order->currencies_value;
+		// load item row data
+		$x = 1;
+		while (isset($_POST['qty_' . $x])) { // while there are item rows to read in
+		  if (!$_POST['qty_' . $x] && !$_POST['pstd_' . $x]) {
+		    $x++;
+		    continue; // skip item line
+		  }
+		  // Error check some input fields
+		  //if ($_POST['pstd_' . $x] == "") throw new \Exception(GEN_ERRMSG_NO_DATA . "Qty");	  
+		  if ($_POST['acct_' . $x] == "") throw new \Exception(GEN_ERRMSG_NO_DATA . TEXT_GL_ACCOUNT);
+		  //if ($_POST['price_' . $x] == "") throw new \Exception(GEN_ERRMSG_NO_DATA . "Price"); //need to fix bugs.
+		  $order->item_rows[] = array(
+			'id'                		=> db_prepare_input($_POST['id_' . $x]),
+			'so_po_item_ref_id' 		=> db_prepare_input($_POST['so_po_item_ref_id_' . $x]),
+			'item_cnt'					=> db_prepare_input($_POST['item_cnt_' . $x]),
+			'gl_type'           		=> GL_TYPE,
+			'qty'               		=> $currencies->clean_value(db_prepare_input($_POST['qty_' . $x]), $order->currencies_code),
+			'pstd'             			=> $currencies->clean_value(db_prepare_input($_POST['pstd_' . $x]), $order->currencies_code),
+			'sku'               		=> ($_POST['sku_' . $x] == TEXT_SEARCH) ? '' : db_prepare_input($_POST['sku_' . $x]),
+			'desc'              		=> db_prepare_input($_POST['desc_' . $x]),
+			'proj'              		=> db_prepare_input($_POST['proj_' . $x]),
+		  	'purch_package_quantity'	=> db_prepare_input($_POST['purch_package_quantity_' . $x]),
+			'date_1'            		=> db_prepare_input($_POST['date_1_' . $x]),
+			'price'             		=> $currencies->clean_value(db_prepare_input($_POST['price_' . $x]), $order->currencies_code) / $order->currencies_value,
+			'full'              		=> $currencies->clean_value(db_prepare_input($_POST['full_' . $x]),  $order->currencies_code) / $order->currencies_value,
+			'acct'              		=> db_prepare_input($_POST['acct_' . $x]),
+			'tax'               		=> db_prepare_input($_POST['tax_' . $x]),
+			'total'             		=> $currencies->clean_value(db_prepare_input($_POST['total_' . $x]), $order->currencies_code) / $order->currencies_value,
+			'weight'            		=> db_prepare_input($_POST['weight_' . $x]),
+			'serial'            		=> db_prepare_input($_POST['serial_' . $x]),
+			'stock'             		=> db_prepare_input($_POST['stock_' . $x]),
+			'inactive'          		=> db_prepare_input($_POST['inactive_' . $x]),
+			'lead_time'         		=> db_prepare_input($_POST['lead_' . $x]),
+		  );
+		  $x++;
+		}
+		// check for errors (address fields)
+		if (!$order->bill_acct_id && !$order->bill_add_update) {
+		  $contact_type = $account_type=='c' ? TEXT_LC_CUSTOMER : TEXT_LC_VENDOR;
+		  throw new \Exception(sprintf(ERROR_NO_CONTACT_SELECTED, $contact_type, $contact_type, ORD_ADD_UPDATE));
+		}
+		$base_msg = in_array(JOURNAL_ID, array(3,4,6,7)) ? TEXT_REMIT_TO : TEXT_BILL_TO;
+		if ($order->bill_primary_name     === false) throw new \Exception(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_PRIMARY_NAME);
+		if ($order->bill_contact          === false) throw new \Exception(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_CONTACT);
+		if ($order->bill_address1         === false) throw new \Exception(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_ADDRESS1);
+		if ($order->bill_address2         === false) throw new \Exception(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_ADDRESS2);
+		if ($order->bill_city_town        === false) throw new \Exception(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_CITY_TOWN);
+		if ($order->bill_state_province   === false) throw new \Exception(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_STATE_PROVINCE);
+		if ($order->bill_postal_code      === false) throw new \Exception(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_POSTAL_CODE);
+		if (ENABLE_SHIPPING_FUNCTIONS) {
+		  if ($order->ship_primary_name   === false) throw new \Exception(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_PRIMARY_NAME);
+		  if ($order->ship_contact        === false) throw new \Exception(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_CONTACT);
+		  if ($order->ship_address1       === false) throw new \Exception(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_ADDRESS1);
+		  if ($order->ship_address2       === false) throw new \Exception(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_ADDRESS2);
+		  if ($order->ship_city_town      === false) throw new \Exception(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_CITY_TOWN);
+		  if ($order->ship_state_province === false) throw new \Exception(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_STATE_PROVINCE);
+		  if ($order->ship_postal_code    === false) throw new \Exception(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_POSTAL_CODE);
+		  if ($order->ship_telephone1     === false) throw new \Exception(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_TELEPHONE1);
+		  if ($order->ship_email          === false) throw new \Exception(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_EMAIL);
+		}
+		// Item row errors
+		if (!$order->item_rows) throw new \Exception(GL_ERROR_NO_ITEMS);
+		// End of error checking, check for attachments and process the order
+		$order->post_ordr($_REQUEST['action']);	// Post the order class to the db
+		if ($order->rm_attach) unlink(PHREEBOOKS_DIR_MY_ORDERS . 'order_'.$order->id.'.zip');
 		if (is_uploaded_file($_FILES['file_name']['tmp_name'])) saveUploadZip('file_name', PHREEBOOKS_DIR_MY_ORDERS, 'order_'.$order->id.'.zip');
 		gen_add_audit_log(constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE') . ' - ' . ($_POST['id'] ? TEXT_EDIT : TEXT_ADD), $order->purchase_invoice_id, $order->total_amount);
-		if (DEBUG) $messageStack->write_debug();
 		if ($_REQUEST['action'] == 'save') {
-		  gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
+			gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		} elseif ($_REQUEST['action'] == 'payment') {
-		  switch (JOURNAL_ID) {
-			case  6: $jID = 20; break; // payments
-			case 12: $jID = 18; break; // cash receipts
-			default: $jID = 0; // error
-		  } 
-		  gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=bills&amp;jID=' . $jID . '&amp;type=' . $account_type . '&amp;oID=' . $order->id . '&amp;action=pmt', 'SSL'));
-		} // else print or print_update, fall through and load javascript to call form_popup and clear form
-	  } else { // reset the id because the post failed (ID could have been set inside of Post)
-		$error = true;
-		$order->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);	// reset order num to submitted value (may have been set if payment failed)
+			switch (JOURNAL_ID) {
+				case  6: $jID = 20; break; // payments
+				case 12: $jID = 18; break; // cash receipts
+				default: $jID = 0; // error
+			}
+			gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=bills&amp;jID=' . $jID . '&amp;type=' . $account_type . '&amp;oID=' . $order->id . '&amp;action=pmt', 'SSL'));
+		} 		
+  	}catch(Exception $e){
+  		$messageStack->add($e->getMessage());
+  		$order->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);	// reset order num to submitted value (may have been set if payment failed)
 		$order->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
-	  }
-	} else { // there was a post error, reset id and re-display form
-	  $messageStack->add(GL_ERROR_NO_POST, 'error');
-	}
+  	}
 	if ($_REQUEST['action'] == 'post_previous') {
-	  $result = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " 
-	    where journal_id = '12' and purchase_invoice_id < '" . $order->purchase_invoice_id . "' 
-	    order by purchase_invoice_id DESC limit 1");
-	  if ($result->RecordCount() > 0) {
-	    $oID    = $result->fields['id'];
-	    $_REQUEST['action'] = 'edit'; // force page to reload with the new order to edit
-		$order  = new \phreebooks\classes\orders();
-      } else { // at the beginning
-	  	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-	  }
+		$result = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " 
+		  where journal_id = '12' and purchase_invoice_id < '" . $order->purchase_invoice_id . "' 
+		  order by purchase_invoice_id DESC limit 1");
+		if ($result->RecordCount() > 0) {
+			$oID    = $result->fields['id'];
+		    $_REQUEST['action'] = 'edit'; // force page to reload with the new order to edit
+			$order  = new \phreebooks\classes\orders();
+	    } else { // at the beginning
+		  	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
+		}
 	}
 	if ($_REQUEST['action'] == 'post_next') {
-	  $result = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " 
-	    where journal_id = '12' and purchase_invoice_id > '" . $order->purchase_invoice_id . "' 
-	    order by purchase_invoice_id limit 1");
-	  if ($result->RecordCount() > 0) {
-	    $oID    = $result->fields['id'];
-	    $_REQUEST['action'] = 'edit'; // force page to reload with the new order to edit
-		$order  = new \phreebooks\classes\orders();
-      } else { // at the end
-	  	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-	  }
+		$result = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " 
+		  where journal_id = '12' and purchase_invoice_id > '" . $order->purchase_invoice_id . "' 
+		  order by purchase_invoice_id limit 1");
+		if ($result->RecordCount() > 0) {
+		    $oID    = $result->fields['id'];
+		    $_REQUEST['action'] = 'edit'; // force page to reload with the new order to edit
+			$order  = new \phreebooks\classes\orders();
+	    } else { // at the end
+		  	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
+		}
 	}
 	if (DEBUG) $messageStack->write_debug();
 	break;
 
   case 'delete':
-	\core\classes\user::validate_security($security_level, 4);
-  	$id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
-	if ($id) {
-	  $delOrd = new \phreebooks\classes\orders();
-	  $delOrd->journal($id); // load the posted record based on the id submitted
-	  if ($_SESSION['admin_prefs']['restrict_period'] && $delOrd->period <> CURRENT_ACCOUNTING_PERIOD) {
-	    $error = $messageStack->add(ORD_ERROR_DEL_NOT_CUR_PERIOD, 'error');
-	    break;
-	  }
-	  $delOrd->recur_frequency = db_prepare_input($_POST['recur_frequency']);
-	  if ($delOrd->delete_ordr()) {
+  	try{
+		\core\classes\user::validate_security($security_level, 4);
+	  	$id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
+		if (!$id) throw new \Exception(GL_ERROR_NO_DELETE);
+		$delOrd = new \phreebooks\classes\orders();
+		$delOrd->journal($id); // load the posted record based on the id submitted
+		if ($_SESSION['admin_prefs']['restrict_period'] && $delOrd->period <> CURRENT_ACCOUNTING_PERIOD) throw new \Exception(ORD_ERROR_DEL_NOT_CUR_PERIOD);
+		$delOrd->recur_frequency = db_prepare_input($_POST['recur_frequency']);
+		$delOrd->delete_ordr();
 		if (DEBUG) $messageStack->write_debug();
 		gen_add_audit_log(constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE') . ' - Delete', $delOrd->purchase_invoice_id, $delOrd->total_amount);
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-		break;
-	  }
-	} else {
-	  $messageStack->add(GL_ERROR_NEVER_POSTED, 'error');
-	}
-	$messageStack->add(GL_ERROR_NO_DELETE, 'error');
+  	}catch(Exception $e){
+  		$messageStack->add($e->getMessage());
+  		$order->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);	// reset order num to submitted value (may have been set if payment failed)
+		$order->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
+  	}
 	if (DEBUG) $messageStack->write_debug();
 	break;
 

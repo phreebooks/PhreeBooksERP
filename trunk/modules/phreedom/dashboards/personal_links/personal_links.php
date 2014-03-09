@@ -27,7 +27,7 @@ class personal_links extends \core\classes\ctl_panel {
 	public $version      		= '3.5';
 	public $module_id 			= 'phreedom';
 
-	function Output($params) {
+	function output($params) {
 		global $db;
 		$contents = '';
 		$control  = '';
@@ -59,7 +59,7 @@ class personal_links extends \core\classes\ctl_panel {
 		return $this->build_div('', $contents, $control);
 	}
 
-	function Update() {
+	function update() {
 		global $db;
 		$my_title  = db_prepare_input($_POST['personal_links_field_0']);
 		$my_url    = db_prepare_input($_POST['personal_links_field_1']);

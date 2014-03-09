@@ -311,42 +311,42 @@ $joinSyntax = array(
 if (file_exists(DIR_FS_MODULES."phreeform/custom/extra_phreeform.php")) { // user custom additions
 	require_once (DIR_FS_MODULES . "phreeform/custom/extra_phreeform.php");
 }
-if (is_array($loaded_modules)) foreach ($loaded_modules as $mod) {
-  if (file_exists(DIR_FS_MODULES . "$mod/config_phreeform.php")) {
-	gen_pull_language($mod, 'admin');
-    require_once (DIR_FS_MODULES . "$mod/config_phreeform.php");
+foreach ($admin_classes as $key => $class) { 
+  if (file_exists(DIR_FS_MODULES . "$key/config_phreeform.php")) {
+	gen_pull_language($key, 'admin');
+    require_once (DIR_FS_MODULES . "$key/config_phreeform.php");
   }
 }
 /***************************************************************************************************/
 
 // Processing functions
 function ProcessData($strData, $Process) {
-  global $loaded_modules;
+  	global $admin_classes;
 //echo 'process = ' . $Process . ' and posted cur = '; print_r($posted_currencies); echo '<br />';
-  switch ($Process) {
-	case "uc":      return strtoupper_utf8($strData);
-	case "lc":      return strtolower_utf8($strData);
-	case "neg":     return -$strData;
-	case "n2wrd":   return value_to_words_en_us($strData);
-	case "rnd2d":   if (!is_numeric($strData)) return $strData;
-	                return number_format(round($strData, 2), 2, '.', '');
-	case "date":    return gen_locale_date($strData);
-	case "null-dlr":return (real)$strData == 0 ? '' : '$ ' . number_format($strData, 2);
-	case "dlr":     if (!is_numeric($strData)) return $strData;
-	                return '$ ' . number_format(round($strData, 2), 2);
-	case "euro":    if (!is_numeric($strData)) return $strData;
-	                return chr(128) . ' ' . number_format(round($strData, 2), 2); // assumes standard FPDF fonts
-	case 'yesBno':  return ($strData) ? TEXT_YES : '';
-	case 'blank':   return '';
-	case 'printed': return ($strData) ? '' : TEXT_DUPLICATE;
-  }
-  // now try loaded modules for processing
-  foreach ($loaded_modules as $mod) {
-    $mod_function = "pf_process_" . $mod;
-    if (function_exists($mod_function)) $strData = $mod_function($strData, $Process);
-  }
-  if (function_exists('pf_extra_process')) $strData = pf_extra_process($strData, $Process);
-  return $strData;
+  	switch ($Process) {
+		case "uc":      return strtoupper_utf8($strData);
+		case "lc":      return strtolower_utf8($strData);
+		case "neg":     return -$strData;
+		case "n2wrd":   return value_to_words_en_us($strData);
+		case "rnd2d":   if (!is_numeric($strData)) return $strData;
+		                return number_format(round($strData, 2), 2, '.', '');
+		case "date":    return gen_locale_date($strData);
+		case "null-dlr":return (real)$strData == 0 ? '' : '$ ' . number_format($strData, 2);
+		case "dlr":     if (!is_numeric($strData)) return $strData;
+		                return '$ ' . number_format(round($strData, 2), 2);
+		case "euro":    if (!is_numeric($strData)) return $strData;
+		                return chr(128) . ' ' . number_format(round($strData, 2), 2); // assumes standard FPDF fonts
+		case 'yesBno':  return ($strData) ? TEXT_YES : '';
+		case 'blank':   return '';
+		case 'printed': return ($strData) ? '' : TEXT_DUPLICATE;
+  	}
+  	// now try loaded modules for processing
+  	foreach ($admin_classes as $key => $class) { 
+    	$mod_function = "pf_process_$key";
+    	if (function_exists($mod_function)) $strData = $mod_function($strData, $Process);
+  	}
+  	if (function_exists('pf_extra_process')) $strData = pf_extra_process($strData, $Process);
+  	return $strData;
 }
 
 function AddSep($value, $Process) {

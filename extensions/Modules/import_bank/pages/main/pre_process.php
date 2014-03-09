@@ -49,7 +49,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
 	case'import_csv':
-		if (!validate_upload('file_name', 'text', 'csv')) break;
+		validate_upload('file_name', 'text', 'csv');
 		$result = bank_import_csv($page_list[$subject]['structure'], 'file_name', $bank_acct);
 		break;
 	case 'sample_csv':

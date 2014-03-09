@@ -29,7 +29,7 @@ var image_delete_msg  = '<?php echo SHIPPING_DELETE_CONFIRM; ?>';
 
 function init() {
   <?php 
-    if (!$error && !$auto_print && ($_REQUEST['action'] == 'label' || $_REQUEST['action'] == 'delete')) {
+    if (!$auto_print && ($_REQUEST['action'] == 'label' || $_REQUEST['action'] == 'delete')) {
 	  echo '  window.opener.location.reload();' . chr(10);
 	  echo '  self.close();' . chr(10);
     } 

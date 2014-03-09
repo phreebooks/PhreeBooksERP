@@ -24,8 +24,7 @@ gen_pull_language('phreedom', 'admin');
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/phreeform.php');
 require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
-/**************   page specific initialization  *************************/
-$error   = false; 
+/**************   page specific initialization  *************************/ 
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save': 
@@ -43,14 +42,10 @@ switch ($_REQUEST['action']) {
 	$db->Execute("truncate ".TABLE_PHREEFORM);
 	// load all the install classes to re-build directory structure
 	$admin_classes['phreeform']->load_reports('phreeform');
-	$contents    = scandir(DIR_FS_MODULES);
-	foreach ($contents as $entry) { // install each module @todo replace for admin_classes
-	  if (!defined('MODULE_'.strtoupper($entry).'_STATUS')) continue; // skip uninstalled modules
-	  if (!in_array($entry, array('.', '..', 'phreeform')) && is_dir(DIR_FS_MODULES . $entry)) {
-	  	if (file_exists(DIR_FS_MODULES . $entry . '/config.php')) {
-		  $admin_classes[$entry]->load_reports($entry);
+	foreach($admin_classes as $key => $class){
+		if($class->installed && $key != 'phreeform'){
+			if (file_exists(DIR_FS_MODULES . $key . '/config.php')) $class->load_reports();
 		}
-	  }
 	}
 	// load the files, parse, insert into db
 	$rpt_cnt  = 0;
@@ -98,26 +93,22 @@ switch ($_REQUEST['action']) {
 	$result = $db->Execute("select * from " . TABLE_REPORTS);
 	$count = 0;
 	while (!$result->EOF) {
-	  $skip_report = false;
-	  $report = PrepReport($result->fields['id']);
-	  if (!$params = import_text_params($report)) {
-	    $messageStack->add(sprintf(PB_CONVERT_ERROR, $result->fields['description']), 'error');
-		$skip_report = true;
-	  }
-	  // fix some fields
-	  $params->standard_report = $result->fields['standard_report'] ? 's' : 'c';
-	  // error check
-	  $duplicate = $db->Execute("select id from " . TABLE_PHREEFORM . " 
-	    where doc_title = '" . addslashes($params->title) . "' and doc_type <> '0'");
-	  if ($duplicate->RecordCount() > 0) { // the report name already exists, error 
-	    $messageStack->add(sprintf(PHREEFORM_REPDUP, $params->title), 'error');
-	    $skip_report = true;
-	  }
-	  if (!$skip_report) {
-	    if (!$success = save_report($params)) {
-	      $messageStack->add(sprintf(PB_CONVERT_SAVE_ERROR, $params->title), 'error');
-		}
-		$count++;
+	  try{
+		  $report = PrepReport($result->fields['id']);
+		  if (!$params = import_text_params($report)) throw new \Exception(sprintf(PB_CONVERT_ERROR, $result->fields['description']));
+		  // fix some fields
+		  $params->standard_report = $result->fields['standard_report'] ? 's' : 'c';
+		  // error check
+		  $duplicate = $db->Execute("select id from " . TABLE_PHREEFORM . " 
+		    where doc_title = '" . addslashes($params->title) . "' and doc_type <> '0'");
+		  if ($duplicate->RecordCount() > 0) { // the report name already exists, error 
+		    throw new \Exception(sprintf(PHREEFORM_REPDUP, $params->title));
+		  }
+		  
+		  if (!$success = save_report($params)) throw new \Exception(sprintf(PB_CONVERT_SAVE_ERROR, $params->title));
+		  $count++;
+	  }catch(exception $e){
+	  	$messageStack->add($e->getMessage());
 	  }
 	  $result->MoveNext();
 	}

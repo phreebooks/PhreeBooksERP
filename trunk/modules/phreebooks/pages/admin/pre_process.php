@@ -21,8 +21,7 @@ $security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 gen_pull_language($module, 'admin');
 gen_pull_language('phreedom', 'admin');
 require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
-/**************   page specific initialization  *************************/
-$error  = false; 
+/**************   page specific initialization  *************************/ 
 $chart_of_accounts = new \phreebooks\classes\chart_of_accounts();
 $tax_auths         = new \phreebooks\classes\tax_auths();
 $tax_auths_vend    = new \phreebooks\classes\tax_auths_vend();
@@ -36,13 +35,10 @@ switch ($_REQUEST['action']) {
   	$delete_chart = ($_POST['delete_chart']) ? true : false;
 	$std_chart    = db_prepare_input($_POST['std_chart']);
 	// first verify the file was uploaded ok
-	if (!$std_chart) if (!validate_upload('file_name', 'text', 'txt')) break;
+	if (!$std_chart) validate_upload('file_name', 'text', 'txt');
 	if ($delete_chart) {
 	  $result = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " limit 1");
-	  if ($result->RecordCount() > 0) {
-	  	throw new \Exception(GL_JOURNAL_NOT_EMTPY);
-	    break;
-	  }
+	  if ($result->RecordCount() > 0) throw new \Exception(GL_JOURNAL_NOT_EMTPY);
 	  $db->Execute("TRUNCATE TABLE " . TABLE_CHART_OF_ACCOUNTS);
 	  $db->Execute("TRUNCATE TABLE " . TABLE_CHART_OF_ACCOUNTS_HISTORY);
 	}
@@ -51,19 +47,19 @@ switch ($_REQUEST['action']) {
 	if (is_object($accounts->ChartofAccounts)) $accounts = $accounts->ChartofAccounts; // just pull the first one
 	if (is_object($accounts->account)) $accounts->account = array($accounts->account); // in case of only one chart entry
 	if (is_array($accounts->account)) foreach ($accounts->account as $account) {
-	  $result = $db->Execute("select id from " . TABLE_CHART_OF_ACCOUNTS . " where id = '" . $account->id . "'");
-	  if ($result->RecordCount() > 0) {
-	    $messageStack->add(sprintf(GL_ACCOUNT_DUPLICATE, $account->id),'error');
-		continue;
-	  }
-	  $sql_data_array = array(
-	    'id'              => $account->id,
-		'description'     => $account->description,
-		'heading_only'    => $account->heading,
-		'primary_acct_id' => $account->primary,
-		'account_type'    => $account->type,
-	  );
-	  db_perform(TABLE_CHART_OF_ACCOUNTS, $sql_data_array, 'insert');
+	  	$result = $db->Execute("select id from " . TABLE_CHART_OF_ACCOUNTS . " where id = '" . $account->id . "'");
+	  	if ($result->RecordCount() > 0) {
+	    	$messageStack->add(sprintf(GL_ACCOUNT_DUPLICATE, $account->id),'error');
+			continue;
+	  	}
+		$sql_data_array = array(
+		  'id'              => $account->id,
+		  'description'     => $account->description,
+		  'heading_only'    => $account->heading,
+		  'primary_acct_id' => $account->primary,
+		  'account_type'    => $account->type,
+		);
+	  	db_perform(TABLE_CHART_OF_ACCOUNTS, $sql_data_array, 'insert');
 	}
 	build_and_check_account_history_records();
 	break;

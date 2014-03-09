@@ -79,7 +79,6 @@ class admin extends \core\classes\admin {
 		  $db->Execute("INSERT INTO " . TABLE_DC_DOCUMENT . " (`id`, `parent_id`, `position`, `left`, `right`, `level`, `title`, `type`) 
 		  	VALUES (" . $id . ", 1, 0, " . $left . ", " . $right . ", 1, '" . $title . "', 'drive')");
 		}
-		write_configure('MODULE_' . strtoupper($this->id) . '_STATUS', $this->version);
 	}
 }
 ?>

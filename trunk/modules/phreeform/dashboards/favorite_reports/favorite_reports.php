@@ -30,7 +30,7 @@ class favorite_reports extends \core\classes\ctl_panel {
 	public $version      		= '3.5';
 	public $module_id 			= 'phreeform';
 
-	function Output($params) {
+	function output($params) {
 		global $db;
 		$contents = '';
 		$control  = '';
@@ -73,7 +73,7 @@ class favorite_reports extends \core\classes\ctl_panel {
 		return $this->build_div('', $contents, $control);
 	}
 
-	function Update() {
+	function update() {
 		global $db;
 		$report_id   = db_prepare_input($_POST['report_id']);
 		$result      = $db->Execute("select doc_title from " . TABLE_PHREEFORM . " where id = '" . $report_id . "'");

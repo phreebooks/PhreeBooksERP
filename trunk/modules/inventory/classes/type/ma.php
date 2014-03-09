@@ -90,7 +90,7 @@ class ma extends \inventory\classes\inventory { //Item Assembly formerly know as
 		  	$result = $db->Execute("select id from " . TABLE_INVENTORY . " where sku = '". $_POST['assy_sku'][$x]."'" );
 		  	if (($result->RecordCount() == 0 || $currencies->clean_value($_POST['assy_qty'][$x]) == 0) && $_POST['assy_sku'][$x] =! '') { 
 		  		// show error, bad sku, negative quantity. error check sku is valid and qty > 0
-				$error = $messageStack->add(INV_ERROR_BAD_SKU . db_prepare_input($_POST['assy_sku'][$x]), 'error');
+				throw new \Exception(INV_ERROR_BAD_SKU . db_prepare_input($_POST['assy_sku'][$x]));
 		  	}else{
 		  		$prices = inv_calculate_sales_price(abs($this->bom[$x]['qty']), $result->fields['id'], 0, 'v');
 				$bom_list[$x]['item_cost'] = strval($prices['price']);
@@ -99,10 +99,9 @@ class ma extends \inventory\classes\inventory { //Item Assembly formerly know as
 		  	}
 		}
 		$this->bom = $bom_list;
-		if (!parent::save()) return false;	
+		parent::save();	
 		$result = $db->Execute("select last_journal_date, quantity_on_hand  from " . TABLE_INVENTORY . " where id = " . $this->id);
 		$this->allow_edit_bom = (($result->fields['last_journal_date'] == '0000-00-00 00:00:00' || $result->fields['last_journal_date'] == '') && ($result->fields['quantity_on_hand'] == 0|| $result->fields['quantity_on_hand'] == '')) ? true : false;
-		if($error) return false;
 	  	if ($this->allow_edit_bom == true) { // only update if no posting has been performed
 	  		$result = $db->Execute("delete from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = " . $this->id);
 			while ($list_array = array_shift($bom_list)) {

@@ -25,8 +25,7 @@ gen_pull_language('contacts');
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/phreedom.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
-/**************   page specific initialization  *************************/
-$error   = false; 
+/**************   page specific initialization  *************************/ 
 $subject = $_POST['subject'];
 if (substr($_REQUEST['action'], 0, 3) == 'go_') {
   $subject = substr($_REQUEST['action'], 3);
@@ -108,11 +107,11 @@ switch ($_REQUEST['action']) {
 	$format = $_POST['import_format_' . $db_table];
 	switch ($format) {
 	  case 'xml':
-		if (!validate_upload('file_name_' . $db_table, 'text', 'xml')) break;
+		validate_upload('file_name_' . $db_table, 'text', 'xml');
     	$result = table_import_xml($page_list[$subject]['structure'], $db_table, 'file_name_' . $db_table);
 	    break;
 	  case 'csv':
-		if (!validate_upload('file_name_' . $db_table, 'text', 'csv')) break;
+		validate_upload('file_name_' . $db_table, 'text', 'csv');
     	$result = table_import_csv($page_list[$subject]['structure'], $db_table, 'file_name_' . $db_table);
 	    break;
 	}
@@ -156,10 +155,7 @@ switch ($_REQUEST['action']) {
 	}
 	// check to see if journal is still in balance
 	$total_amount = $currencies->format($total_amount);
-	if ($total_amount <> 0) {
-	  $messageStack->add(GL_ERROR_NO_BALANCE, 'error');
-	  break;
-	}
+	if ($total_amount <> 0) throw new \Exception(GL_ERROR_NO_BALANCE);
 	// *************** START TRANSACTION *************************
 	$db->transStart();
 	foreach ($glEntry->beg_bal as $account => $values) {
@@ -168,17 +164,15 @@ switch ($_REQUEST['action']) {
 		where period = 1 and account_id = '" . $account . "'";
 	  $result = $db->Execute($sql);
 	}
-	if (!$glEntry->update_chart_history_periods($period = 1)) { // roll the beginning balances into chart history table
-	  $glEntry->fail_message(GL_ERROR_UPDATE_COA_HISTORY);
-	} else {
-	  $db->transCommit();	// post the chart of account values
-	  gen_add_audit_log('Enter Beginning Balances');
-	  if (DEBUG) $messageStack->write_debug();
-	  gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-	  // *************** END TRANSACTION *************************
-	}
+	$glEntry->update_chart_history_periods($period = 1); // roll the beginning balances into chart history table
+	$glEntry->fail_message(GL_ERROR_UPDATE_COA_HISTORY);
+	$db->transCommit();	// post the chart of account values
+	gen_add_audit_log('Enter Beginning Balances');
 	if (DEBUG) $messageStack->write_debug();
-	$messageStack->add(GL_ERROR_NO_POST, 'error');
+	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
+	// *************** END TRANSACTION *************************
+	if (DEBUG) $messageStack->write_debug();
+	throw new \Exception(GL_ERROR_NO_POST);
 	break;
 
   case 'import_inv':
@@ -186,70 +180,70 @@ switch ($_REQUEST['action']) {
   case 'import_ap':
   case 'import_so':
   case 'import_ar':
-	\core\classes\user::validate_security($security_level, 4);
-    switch ($_REQUEST['action']) {
-	  case 'import_inv':
-		$upload_name = 'file_name_inv';
-		define('JOURNAL_ID',0);
-		break;
-	  case 'import_po':
-		$upload_name = 'file_name_po';
-		define('JOURNAL_ID',4);
-		define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);
-		define('BB_ACCOUNT_TYPE','v');
-		define('BB_GL_TYPE','poo');
-		break;
-	  case 'import_ap':
-		$upload_name = 'file_name_ap';
-		define('JOURNAL_ID',6);
-		define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);
-		define('BB_ACCOUNT_TYPE','v');
-		define('BB_GL_TYPE','por');
-		break;
-	  case 'import_so':
-		$upload_name = 'file_name_so';
-		define('JOURNAL_ID',10);
-		define('DEF_INV_GL_ACCT',AR_DEFAULT_INVENTORY_ACCOUNT);
-		define('BB_ACCOUNT_TYPE','c');
-		define('BB_GL_TYPE','soo');
-		break;
-	  case 'import_ar':
-		$upload_name = 'file_name_ar';
-		define('JOURNAL_ID',12);
-		define('DEF_INV_GL_ACCT',AR_DEFAULT_INVENTORY_ACCOUNT);
-		define('BB_ACCOUNT_TYPE','c');
-		define('BB_GL_TYPE','sos');
-		break;
-	}
-	// preload the chart of accounts
-	$result = $db->Execute("select id from " . TABLE_CHART_OF_ACCOUNTS);
-	$coa = array();
-	while (!$result->EOF) {
-	  $coa[] = $result->fields['id'];
-	  $result->MoveNext();
-	}
-	$result     = $db->Execute("select start_date from " . TABLE_ACCOUNTING_PERIODS . " where period = 1");
-	$first_date = $result->fields['start_date'];
-	// first verify the file was uploaded ok
-	if (!validate_upload($upload_name, 'text', 'csv')) {
-	  $error  = true;
-	  break;
-	}
-	$so_po = new \phreedom\classes\beg_bal_import();
-	switch ($_REQUEST['action']) {
-	  case 'import_inv': if (!$so_po->processInventory($upload_name)) $error = true; break;
-	  case 'import_po':
-	  case 'import_ap':
-	  case 'import_so':
-	  case 'import_ar':  if (!$so_po->processCSV($upload_name))       $error = true; break;
-	}
-	if ($error) {
-	  $messageStack->add(GL_ERROR_NO_POST, 'error');
-	} else {
-	  $messageStack->add(TEXT_SUCCESS . '-' . constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE') . '-' . TEXT_IMPORT . ': ' . sprintf(SUCCESS_IMPORT_COUNT, $so_po->line_count),'success');
-	  gen_add_audit_log(constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE') . '-' . TEXT_IMPORT, $so_po->line_count);
-	}
-  default:
+  	try{
+		\core\classes\user::validate_security($security_level, 4);
+	    switch ($_REQUEST['action']) {
+		  case 'import_inv':
+			$upload_name = 'file_name_inv';
+			define('JOURNAL_ID',0);
+			break;
+		  case 'import_po':
+			$upload_name = 'file_name_po';
+			define('JOURNAL_ID',4);
+			define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);
+			define('BB_ACCOUNT_TYPE','v');
+			define('BB_GL_TYPE','poo');
+			break;
+		  case 'import_ap':
+			$upload_name = 'file_name_ap';
+			define('JOURNAL_ID',6);
+			define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);
+			define('BB_ACCOUNT_TYPE','v');
+			define('BB_GL_TYPE','por');
+			break;
+		  case 'import_so':
+			$upload_name = 'file_name_so';
+			define('JOURNAL_ID',10);
+			define('DEF_INV_GL_ACCT',AR_DEFAULT_INVENTORY_ACCOUNT);
+			define('BB_ACCOUNT_TYPE','c');
+			define('BB_GL_TYPE','soo');
+			break;
+		  case 'import_ar':
+			$upload_name = 'file_name_ar';
+			define('JOURNAL_ID',12);
+			define('DEF_INV_GL_ACCT',AR_DEFAULT_INVENTORY_ACCOUNT);
+			define('BB_ACCOUNT_TYPE','c');
+			define('BB_GL_TYPE','sos');
+			break;
+		}
+		$db->transStart();
+		// preload the chart of accounts
+		$result = $db->Execute("select id from " . TABLE_CHART_OF_ACCOUNTS);
+		$coa = array();
+		while (!$result->EOF) {
+		  $coa[] = $result->fields['id'];
+		  $result->MoveNext();
+		}
+		$result     = $db->Execute("select start_date from " . TABLE_ACCOUNTING_PERIODS . " where period = 1");
+		$first_date = $result->fields['start_date'];
+		// first verify the file was uploaded ok
+		validate_upload($upload_name, 'text', 'csv');
+		$so_po = new \phreedom\classes\beg_bal_import();
+		switch ($_REQUEST['action']) {
+		  	case 'import_inv': $so_po->processInventory($upload_name);
+		  	case 'import_po':
+		  	case 'import_ap':
+		  	case 'import_so':
+		  	case 'import_ar':  $so_po->processCSV($upload_name);
+		}
+		$messageStack->add(TEXT_SUCCESS . '-' . constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE') . '-' . TEXT_IMPORT . ': ' . sprintf(SUCCESS_IMPORT_COUNT, $so_po->line_count),'success');
+		gen_add_audit_log(constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE') . '-' . TEXT_IMPORT, $so_po->line_count);
+		$db->transCommit();
+  	}catch(Exception $e){
+  		$db->transRollback();
+  		$messageStack->add($e->getMessage());
+  	}
+  	default:
 }
 
 /*****************   prepare to display templates  *************************/

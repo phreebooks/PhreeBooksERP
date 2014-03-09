@@ -21,9 +21,7 @@ $security_level = \core\classes\user::validate(SECURITY_WORK_ORDERS);
 require_once(DIR_FS_MODULES . 'inventory/defaults.php');
 require_once(DIR_FS_WORKING . 'functions/work_orders.php');
 /**************   page specific initialization  *************************/
-$error       = false;
 $processed   = false;
-$lock_title  = false;
 $hide_save   = false;
 $image       = false;
 $step_list   = array();
@@ -40,241 +38,210 @@ switch ($_REQUEST['action']) {
 	break;
   case 'save':
   case 'print':
-	\core\classes\user::validate_security($security_level, 2);
-  	$id       = db_prepare_input($_POST['id']);
-	$sku      = db_prepare_input($_POST['sku']);
-	$sku_id   = db_prepare_input($_POST['sku_id']);
-	$qty      = db_prepare_input($_POST['qty']);
-	$wo_id    = db_prepare_input($_POST['wo_id']);
-	$priority = db_prepare_input($_POST['priority']);
-	$wo_title = db_prepare_input($_POST['wo_title']);
-	$notes    = db_prepare_input($_POST['notes']);
-	$closed   = isset($_POST['closed']) ? '1' : '0';
-	// error check
-	if (!$sku_id || !$sku || !$qty) {
-	  $messageStack->add(WO_SKU_ID_REQUIRED,'error');
-	  $error = true;
-	}
-	if ($closed && $close_date == '') $close_date = date('Y-m-d');
-	if (!$closed) $close_date = '';
-	// update/insert the data to the db
-	if (!$error) {
-	  if ($id) { // if id is present only allow update of select fields
-		$result   = $db->Execute("select qty, wo_id from " . TABLE_WO_JOURNAL_MAIN . " where id = " . $id);
-		$temp     = $db->Execute("select allocate from " . TABLE_WO_MAIN . " where id = '" . $result->fields['wo_id'] . "'");
-		$allocate = $temp->fields['allocate'];
-		// only if qty changed, update allocation
-		if ($allocate && $result->fields['qty'] <> $qty) allocation_adjustment($sku_id, $qty, $result->fields['qty']);
-		// if closing, remove allocation
-		if ($allocate && $closed) allocation_adjustment($sku_id, 0, $result->fields['qty']);
-	    $sql_data_array = array(
-	      'qty'        => $qty,
-		  'priority'   => $priority,
-		  'notes'      => $notes,
-		  'closed'     => $closed,
-		  'close_date' => $close_date,
-		);
-	    $success = db_perform(TABLE_WO_JOURNAL_MAIN, $sql_data_array, 'update', 'id = ' . $id);
-		if (!$success) $error = true;
-	  } else {
-		$result = $db->Execute("select next_wo_num from " . TABLE_CURRENT_STATUS);
-		$wo_num = $result->fields['next_wo_num'];
-	    $sql_data_array = array(
-	      'wo_num'     => $wo_num,
-	      'sku_id'     => $sku_id,
-	      'qty'        => $qty,
-	      'wo_id'      => $wo_id,
-	      'priority'   => $priority,
-	      'wo_title'   => $wo_title,
-	      'post_date'  => $post_date,
-	      'notes'      => $notes,
-	      'closed'     => $closed,
-		  'close_date' => $close_date,
-	    );
-	    $success = db_perform(TABLE_WO_JOURNAL_MAIN, $sql_data_array, 'insert');
-		$id = db_insert_id();
-		if (!$success) $error = true;
-		if (!$error) {
-		  $result   = $db->Execute("update " . TABLE_CURRENT_STATUS . " set next_wo_num = '" . string_increment($wo_num) . "'");
-		  $temp     = $db->Execute("select allocate from " . TABLE_WO_MAIN . " where id = '" . $wo_id . "'");
-		  $allocate = $temp->fields['allocate'];
-		  if ($allocate) allocation_adjustment($sku_id, $qty); // add allocation
+  	try{
+		\core\classes\user::validate_security($security_level, 2);
+	  	$id       = db_prepare_input($_POST['id']);
+		$sku      = db_prepare_input($_POST['sku']);
+		$sku_id   = db_prepare_input($_POST['sku_id']);
+		$qty      = db_prepare_input($_POST['qty']);
+		$wo_id    = db_prepare_input($_POST['wo_id']);
+		$priority = db_prepare_input($_POST['priority']);
+		$wo_title = db_prepare_input($_POST['wo_title']);
+		$notes    = db_prepare_input($_POST['notes']);
+		$closed   = isset($_POST['closed']) ? '1' : '0';
+		// error check
+		if (!$sku_id || !$sku || !$qty) throw new \Exception(WO_SKU_ID_REQUIRED);
+		if ($closed && $close_date == '') $close_date = date('Y-m-d');
+		if (!$closed) $close_date = '';
+		// update/insert the data to the db
+		if ($id) { // if id is present only allow update of select fields
+			$result   = $db->Execute("select qty, wo_id from " . TABLE_WO_JOURNAL_MAIN . " where id = " . $id);
+			$temp     = $db->Execute("select allocate from " . TABLE_WO_MAIN . " where id = '" . $result->fields['wo_id'] . "'");
+			$allocate = $temp->fields['allocate'];
+			// only if qty changed, update allocation
+			if ($allocate && $result->fields['qty'] <> $qty) allocation_adjustment($sku_id, $qty, $result->fields['qty']);
+			// if closing, remove allocation
+			if ($allocate && $closed) allocation_adjustment($sku_id, 0, $result->fields['qty']);
+		    $sql_data_array = array(
+		      'qty'        => $qty,
+			  'priority'   => $priority,
+			  'notes'      => $notes,
+			  'closed'     => $closed,
+			  'close_date' => $close_date,
+			);
+		    if (!db_perform(TABLE_WO_JOURNAL_MAIN, $sql_data_array, 'update', 'id = ' . $id)) throw new \Exception("wasn't able to update table id $id");
+		} else {
+			$result = $db->Execute("select next_wo_num from " . TABLE_CURRENT_STATUS);
+			$wo_num = $result->fields['next_wo_num'];
+		    $sql_data_array = array(
+		      'wo_num'     => $wo_num,
+		      'sku_id'     => $sku_id,
+		      'qty'        => $qty,
+		      'wo_id'      => $wo_id,
+		      'priority'   => $priority,
+		      'wo_title'   => $wo_title,
+		      'post_date'  => $post_date,
+		      'notes'      => $notes,
+		      'closed'     => $closed,
+			  'close_date' => $close_date,
+		    );
+		    if (!db_perform(TABLE_WO_JOURNAL_MAIN, $sql_data_array, 'insert'))throw new \Exception("wasn't able to insert");
+			$id = db_insert_id();
+			$result   = $db->Execute("update " . TABLE_CURRENT_STATUS . " set next_wo_num = '" . string_increment($wo_num) . "'");
+			$temp     = $db->Execute("select allocate from " . TABLE_WO_MAIN . " where id = '" . $wo_id . "'");
+			$allocate = $temp->fields['allocate'];
+			if ($allocate) allocation_adjustment($sku_id, $qty); // add allocation
 		}
-	  }
-	}
-	// load and create the intial task list (only if new)
-	if (!$error && !$_POST['id']) {
-	  $result = $db->Execute("select step, task_id  
-	    from " . TABLE_WO_STEPS . " where ref_id = " . $wo_id . " order by step");
-	  $step_list = array();
-	  while (!$result->EOF) {
-	    $task = $db->Execute("select task_name, mfg, qa, data_entry from " . TABLE_WO_TASK . " where id = " . $result->fields['task_id'] . " limit 1");
-	    $sql_data_array = array(
-	      'ref_id'     => $id,
-	      'step'       => $result->fields['step'],
-	      'task_id'    => $result->fields['task_id'],
-	      'task_name'  => $task->fields['task_name'],
-	      'mfg'        => $task->fields['mfg'],
-	      'qa'         => $task->fields['qa'],
-	      'data_entry' => $task->fields['data_entry'],
-		  'complete'   => '0', // set initial complete to zero
-	    );
-	    db_perform(TABLE_WO_JOURNAL_ITEM, $sql_data_array, 'insert');
-	    $result->MoveNext();
-	  }
-	  // update the last usage for the template
-	  $db->Execute("update " . TABLE_WO_MAIN . " set last_usage = '" . date('Y-m-d') . "' where id = " . $wo_id);
-	}
-	// finish
-	if (!$error) {
-	  gen_add_audit_log($id  ? sprintf(WO_AUDIT_LOG_MAIN, TEXT_UPDATE) . $wo_id : sprintf(WO_AUDIT_LOG_MAIN, TEXT_ADD) . $wo_id);
-	  $messageStack->add($id ? WO_MESSAGE_SUCCESS_MAIN_UPDATE : WO_MESSAGE_SUCCESS_MAIN_ADD, 'success');
-	  if ($_REQUEST['action'] == 'save') gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-	} else {
-	  $messageStack->add(WO_MESSAGE_MAIN_ERROR, 'error');
+		// load and create the intial task list (only if new)
+		if (!$_POST['id']) {
+		  	$result = $db->Execute("select step, task_id  
+		  	  from " . TABLE_WO_STEPS . " where ref_id = " . $wo_id . " order by step");
+		  	$step_list = array();
+		  	while (!$result->EOF) {
+		    	$task = $db->Execute("select task_name, mfg, qa, data_entry from " . TABLE_WO_TASK . " where id = " . $result->fields['task_id'] . " limit 1");
+		    	$sql_data_array = array(
+		    	  'ref_id'     => $id,
+		    	  'step'       => $result->fields['step'],
+		    	  'task_id'    => $result->fields['task_id'],
+		    	  'task_name'  => $task->fields['task_name'],
+		    	  'mfg'        => $task->fields['mfg'],
+		    	  'qa'         => $task->fields['qa'],
+		    	  'data_entry' => $task->fields['data_entry'],
+				  'complete'   => '0', // set initial complete to zero
+		    	);
+		    	if (!db_perform(TABLE_WO_JOURNAL_ITEM, $sql_data_array, 'insert')) throw new \Exception("wasn't able to insert");
+		    	$result->MoveNext();
+		  	}
+		  	// update the last usage for the template
+		  	$db->Execute("update " . TABLE_WO_MAIN . " set last_usage = '" . date('Y-m-d') . "' where id = " . $wo_id);
+		}
+		// finish
+		gen_add_audit_log($id  ? sprintf(WO_AUDIT_LOG_MAIN, TEXT_UPDATE) . $wo_id : sprintf(WO_AUDIT_LOG_MAIN, TEXT_ADD) . $wo_id);
+		$messageStack->add($id ? WO_MESSAGE_SUCCESS_MAIN_UPDATE : WO_MESSAGE_SUCCESS_MAIN_ADD, 'success');
+		if ($_REQUEST['action'] == 'save') gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
+	} catch(Exception $e) {
+	  $messageStack->add($e->getMessage(), 'error');
 	  $_REQUEST['action'] = 'edit';
 	}
 	break;
 
   case 'save_step':
-	$id         = db_prepare_input($_POST['id']); // the id of the work order
-    $step       = db_prepare_input($_POST['rowSeq']);
-	$user_mfg   = db_prepare_input($_POST['user_mfg']);
-	$user_qa    = db_prepare_input($_POST['user_qa']);
-	$pw_mfg     = db_prepare_input($_POST['pw_mfg']);
-	$pw_qa      = db_prepare_input($_POST['pw_qa']);
-	$data_value = db_prepare_input($_POST['data_value']);
-	$notes      = db_prepare_input($_POST['notes']);
-	$sql_data_array = array(); // start the update field list
-	// error check
-	if (!$id || !$step) {
-	  $_REQUEST['action'] = '';
-	  $error = true;
-	  break;
-	}
-	if (isset($_POST['user_mfg']) && $user_mfg > 0) { // the mfg signoff is required and present
-		$sql = "select admin_pass from " . TABLE_USERS . " where admin_id = '" . $user_mfg . "'";
-      	$result = $db->Execute($sql);
-      	\core\classes\encryption::validate_password($pw_mfg, $result->fields['admin_pass']);
-	    $sql_data_array['mfg_id']   = $user_mfg;
-	    $sql_data_array['mfg_date'] = date('Y-m-d H:i:s');
-	}
-	if (isset($_POST['user_qa']) && $user_qa> 0) { // the qa signoff is required and present
-	  	$sql = "select admin_pass from " . TABLE_USERS . " where admin_id = '" . $user_qa . "'";
-      	$result = $db->Execute($sql);
-      	\core\classes\encryption::validate_password($pw_qa, $result->fields['admin_pass']);
-	    $sql_data_array['qa_id']   = $user_qa;
-	    $sql_data_array['qa_date'] = date('Y-m-d H:i:s');
-	}
-	if (isset($_POST['data_value'])) {
-	  if ($data_value == '') {
-        $error = true;
-	    $messageStack->add(WO_DATA_VALUE_BLANK,'error');
-      } else {
-	    $sql_data_array['data_value'] = $data_value;
-	  }
-	}
-	// set the step to completed in the item db
-	if (!$error && sizeof($sql_data_array) > 0) {
-	  $success = db_perform(TABLE_WO_JOURNAL_ITEM, $sql_data_array, 'update', "ref_id = $id and step = $step");
-	  if (!$success) $error = $messageStack->add(WO_DB_UPDATE_ERROR,'error');
-	}
-	if ($notes) db_perform(TABLE_WO_JOURNAL_MAIN, array('notes'=>$notes), 'update', "id = $id");
-	// check to see if the step is complete
-	$result    = $db->Execute("select * from " . TABLE_WO_JOURNAL_ITEM . " where ref_id = $id and step = $step");
-	$task_id   = $result->fields['task_id'];
-	$set_close = true;
-	if ($result->fields['mfg']        && $result->fields['mfg_id']     == '0') $set_close = false;
-	if ($result->fields['qa']         && $result->fields['qa_id']      == '0') $set_close = false;
-	if ($result->fields['data_entry'] && $result->fields['data_value'] ==  '') $set_close = false;
-	if (!$error && $set_close) {
-	  // check to see if an erp entry is needed
-	  $result = $db->Execute("select erp_entry from " . TABLE_WO_TASK . " where id = '$task_id'");
-	  if ($result->fields['erp_entry']) { // process the request, build main record
-		$result = $db->Execute("select wo_num, sku_id, qty from " . TABLE_WO_JOURNAL_MAIN . " where id = " . $id);
-		$wo_num = $result->fields['wo_num'];
-		$qty    = $result->fields['qty'];
-		$sku_id = $result->fields['sku_id'];
-		$result = $db->Execute("select sku, description_short, account_inventory_wage from " . TABLE_INVENTORY . " where id = '" . $sku_id . "'");
-		$sku    = $result->fields['sku'];
-		$desc   = $result->fields['description_short'];
-		$acct   = $result->fields['account_inventory_wage'];
-		gen_pull_language('inventory');
-		gen_pull_language('phreebooks');
-		require_once(DIR_FS_MODULES . 'inventory/functions/inventory.php');
-		require_once(DIR_FS_MODULES . 'phreebooks/classes/gen_ledger.php');
-		define('JOURNAL_ID', 14); // Inventory Assemblies Journal
-		define('GL_TYPE', '');
-		$glEntry = new \core\classes\journal();
-		$glEntry->id                  = '';
-		$glEntry->admin_id            = $_SESSION['admin_id'];
-		$glEntry->journal_id          = JOURNAL_ID;
-		$glEntry->post_date           = date('Y-m-d');
-		$glEntry->period              = gen_calculate_period($glEntry->post_date);
-		if (!$glEntry->period) break;
-		$glEntry->purchase_invoice_id = $wo_num;
-		$glEntry->store_id            = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
-		$glEntry->closed              = '1'; // closes by default
-		$glEntry->journal_main_array  = $glEntry->build_journal_main_array();
-		// build journal entry based on adding or subtracting from inventory, debit/credit will be calculated by COGS
-		$glEntry->journal_rows[] = array(
-		  'gl_type'          => 'asy',
-		  'sku'              => $sku,
-		  'qty'              => $qty,
-		  'description'      => $desc,
-		  'gl_account'       => $acct,
-//		  'serialize_number' => $serial,
-		);
-		// *************** START TRANSACTION *************************
-		$db->transStart();
-		if (!$glEntry->Post('insert')) {
-		  $db->transRollback();
-		  $error = true;
-		} else {
-		  $db->transCommit();	// post the chart of account values
-		  gen_add_audit_log(INV_LOG_ASSY . TEXT_SAVE, $sku, $qty);
-		  $messageStack->add(INV_POST_ASSEMBLY_SUCCESS . $sku, 'success');
-		  if (DEBUG) $messageStack->write_debug();
-		  // *************** END TRANSACTION *************************
+  	try{
+  		$db->transStart();
+		$id         = db_prepare_input($_POST['id']); // the id of the work order
+	    $step       = db_prepare_input($_POST['rowSeq']);
+		$user_mfg   = db_prepare_input($_POST['user_mfg']);
+		$user_qa    = db_prepare_input($_POST['user_qa']);
+		$pw_mfg     = db_prepare_input($_POST['pw_mfg']);
+		$pw_qa      = db_prepare_input($_POST['pw_qa']);
+		$data_value = db_prepare_input($_POST['data_value']);
+		$notes      = db_prepare_input($_POST['notes']);
+		$sql_data_array = array(); // start the update field list
+		// error check
+		if (!$id || !$step) throw new \Exception("variable 'id' or 'rowSeq' isn't defined");
+		if (isset($_POST['user_mfg']) && $user_mfg > 0) { // the mfg signoff is required and present
+			$sql = "select admin_pass from " . TABLE_USERS . " where admin_id = '" . $user_mfg . "'";
+	      	$result = $db->Execute($sql);
+	      	\core\classes\encryption::validate_password($pw_mfg, $result->fields['admin_pass']);
+		    $sql_data_array['mfg_id']   = $user_mfg;
+		    $sql_data_array['mfg_date'] = date('Y-m-d H:i:s');
 		}
-	  }
-	  if (!$error) {
-	    $db->Execute("update " . TABLE_WO_JOURNAL_ITEM . " set complete = '1', admin_id = " . $_SESSION['admin_id'] . "  
-	      where ref_id = $id and step = $step");
-	    // check to see if the work order is complete
-	    $result = $db->Execute("select max(step) as max_step from " . TABLE_WO_JOURNAL_ITEM . " where ref_id = $id");
-	    if ($step == $result->fields['max_step']) {
-	      $db->Execute("update " . TABLE_WO_JOURNAL_MAIN . " 
-			set closed = '1', close_date = '" . date('Y-m-d H:i:s') . "' where id = " . $id);
-	      // check to un-allocate inventory
-		  $result   = $db->Execute("select qty, sku_id, wo_id from " . TABLE_WO_JOURNAL_MAIN . " where id = $id");
-		  $temp     = $db->Execute("select allocate from ".TABLE_WO_MAIN." where id = '".$result->fields['wo_id']."'");
-		  $allocate = $temp->fields['allocate'];
-		  if ($allocate) allocation_adjustment($result->fields['sku_id'], 0, $result->fields['qty']);
-		  gen_add_audit_log(sprintf(WO_AUDIT_LOG_WO_COMPLETE, $id));
-	      $messageStack->add(sprintf(WO_MESSAGE_SUCCESS_COMPLETE, $id),'success');
-	      gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-	    }
-	  }
-	}
-	if (!$error) {
-	  gen_add_audit_log(sprintf(WO_AUDIT_LOG_STEP_COMPLETE, $step));
-	  $messageStack->add(sprintf(WO_MESSAGE_STEP_UPDATE_SUCCESS, $step),'success');
-	  gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')) . '&action=build&id=' . $id, 'SSL'));
-	} else {
-	  $messageStack->add(WO_MESSAGE_MAIN_ERROR,'error');
-	  $_REQUEST['action'] = 'build';
-	  $_POST['rowSeq'] = $id; // make it look like an edit
+		if (isset($_POST['user_qa']) && $user_qa> 0) { // the qa signoff is required and present
+		  	$sql = "select admin_pass from " . TABLE_USERS . " where admin_id = '" . $user_qa . "'";
+	      	$result = $db->Execute($sql);
+	      	\core\classes\encryption::validate_password($pw_qa, $result->fields['admin_pass']);
+		    $sql_data_array['qa_id']   = $user_qa;
+		    $sql_data_array['qa_date'] = date('Y-m-d H:i:s');
+		}
+		if (isset($_POST['data_value'])) {
+		  	if ($data_value == '') throw new \Exception(WO_DATA_VALUE_BLANK);
+	      	$sql_data_array['data_value'] = $data_value;
+		}
+		// set the step to completed in the item db
+		if (sizeof($sql_data_array) > 0) if (!db_perform(TABLE_WO_JOURNAL_ITEM, $sql_data_array, 'update', "ref_id = $id and step = $step")) throw new \Exception(WO_DB_UPDATE_ERROR);
+		if ($notes) if (!db_perform(TABLE_WO_JOURNAL_MAIN, array('notes'=>$notes), 'update', "id = $id")) throw new \Exception(WO_DB_UPDATE_ERROR);
+		// check to see if the step is complete
+		$result    = $db->Execute("select * from " . TABLE_WO_JOURNAL_ITEM . " where ref_id = $id and step = $step");
+		$task_id   = $result->fields['task_id'];
+		$set_close = true;
+		if ($result->fields['mfg']        && $result->fields['mfg_id']     == '0') $set_close = false;
+		if ($result->fields['qa']         && $result->fields['qa_id']      == '0') $set_close = false;
+		if ($result->fields['data_entry'] && $result->fields['data_value'] ==  '') $set_close = false;
+		if ($set_close) {
+			// check to see if an erp entry is needed
+			$result = $db->Execute("select erp_entry from " . TABLE_WO_TASK . " where id = '$task_id'");
+			if ($result->fields['erp_entry']) { // process the request, build main record
+				$result = $db->Execute("select wo_num, sku_id, qty from " . TABLE_WO_JOURNAL_MAIN . " where id = " . $id);
+				$wo_num = $result->fields['wo_num'];
+				$qty    = $result->fields['qty'];
+				$sku_id = $result->fields['sku_id'];
+				$result = $db->Execute("select sku, description_short, account_inventory_wage from " . TABLE_INVENTORY . " where id = '" . $sku_id . "'");
+				$sku    = $result->fields['sku'];
+				$desc   = $result->fields['description_short'];
+				$acct   = $result->fields['account_inventory_wage'];
+				gen_pull_language('inventory');
+				gen_pull_language('phreebooks');
+				require_once(DIR_FS_MODULES . 'inventory/functions/inventory.php');
+				require_once(DIR_FS_MODULES . 'phreebooks/classes/gen_ledger.php');
+				define('JOURNAL_ID', 14); // Inventory Assemblies Journal
+				define('GL_TYPE', '');
+				$glEntry = new \core\classes\journal();
+				$glEntry->id                  = '';
+				$glEntry->admin_id            = $_SESSION['admin_id'];
+				$glEntry->journal_id          = JOURNAL_ID;
+				$glEntry->post_date           = date('Y-m-d');
+				$glEntry->period              = gen_calculate_period($glEntry->post_date);
+				if (!$glEntry->period) break;
+				$glEntry->purchase_invoice_id = $wo_num;
+				$glEntry->store_id            = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
+				$glEntry->closed              = '1'; // closes by default
+				$glEntry->journal_main_array  = $glEntry->build_journal_main_array();
+				// build journal entry based on adding or subtracting from inventory, debit/credit will be calculated by COGS
+				$glEntry->journal_rows[] = array(
+				  'gl_type'          => 'asy',
+				  'sku'              => $sku,
+				  'qty'              => $qty,
+				  'description'      => $desc,
+				  'gl_account'       => $acct,
+			//	  'serialize_number' => $serial,
+				);
+				$glEntry->Post('insert');
+				gen_add_audit_log(INV_LOG_ASSY . TEXT_SAVE, $sku, $qty);
+				$messageStack->add(INV_POST_ASSEMBLY_SUCCESS . $sku, 'success');
+			}
+			$db->Execute("update " . TABLE_WO_JOURNAL_ITEM . " set complete = '1', admin_id = " . $_SESSION['admin_id'] . "  
+			  where ref_id = $id and step = $step");
+			// check to see if the work order is complete
+			$result = $db->Execute("select max(step) as max_step from " . TABLE_WO_JOURNAL_ITEM . " where ref_id = $id");
+			if ($step == $result->fields['max_step']) {
+				$db->Execute("update " . TABLE_WO_JOURNAL_MAIN . " 
+				  set closed = '1', close_date = '" . date('Y-m-d H:i:s') . "' where id = " . $id);
+			   	// check to un-allocate inventory
+				$result   = $db->Execute("select qty, sku_id, wo_id from " . TABLE_WO_JOURNAL_MAIN . " where id = $id");
+				$temp     = $db->Execute("select allocate from ".TABLE_WO_MAIN." where id = '".$result->fields['wo_id']."'");
+				$allocate = $temp->fields['allocate'];
+				if ($allocate) allocation_adjustment($result->fields['sku_id'], 0, $result->fields['qty']);
+				gen_add_audit_log(sprintf(WO_AUDIT_LOG_WO_COMPLETE, $id));
+				$messageStack->add(sprintf(WO_MESSAGE_SUCCESS_COMPLETE, $id),'success');
+				gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
+			}
+		}
+		$db->transCommit();	// post the chart of account values
+		gen_add_audit_log(sprintf(WO_AUDIT_LOG_STEP_COMPLETE, $step));
+		$messageStack->add(sprintf(WO_MESSAGE_STEP_UPDATE_SUCCESS, $step),'success');
+		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')) . '&action=build&id=' . $id, 'SSL'));
+	} catch(Exception $e) {
+		$db->transRollback();
+	  	$messageStack->add($e->getMessage());
+	  	$_REQUEST['action'] = 'build';
+	  	$_POST['rowSeq'] = $id; // make it look like an edit
 	}	
+	if (DEBUG) $messageStack->write_debug();
     // fall through like build to reload
   case 'edit':
   case 'build':
     $id = isset($_POST['rowSeq']) ? $_POST['rowSeq'] : $_GET['id'];
-	if (!$id) {
-	  $_REQUEST['action'] = '';
-	  $error = true;
-	  break;
-	}
+	if (!$id) throw new \Exception("varible rowSeq or id isn't set");
 	$result = $db->Execute("select * from " . TABLE_WO_JOURNAL_MAIN . " where id = " . $id);
 	foreach ($result->fields as $key => $value) $$key = $value;
 	// load the sku
@@ -304,25 +271,23 @@ switch ($_REQUEST['action']) {
   case 'delete':
 	\core\classes\user::validate_security($security_level, 4);
     $id = db_prepare_input($_GET['id']);
-	if (!$id) $error = true;
-	if (!$error) {
-	  // check to un-allocate inventory
-	  $result   = $db->Execute("select qty, sku_id, wo_id from " . TABLE_WO_JOURNAL_MAIN . " where id = " . $id);
-	  $temp     = $db->Execute("select allocate from " . TABLE_WO_MAIN . " where id = '" . $result->fields['wo_id'] . "'");
-	  $allocate = $temp->fields['allocate'];
-	  if ($allocate) allocation_adjustment($result->fields['sku_id'], 0, $result->fields['qty']);
-	  $db->Execute("delete from " . TABLE_WO_JOURNAL_MAIN  . " where id = " . $id);
-	  $db->Execute("delete from " . TABLE_WO_JOURNAL_ITEM  . " where ref_id = " . $id);
-	  gen_add_audit_log(sprintf(WO_AUDIT_LOG_MAIN, TEXT_DELETE) . $result->fields['wo_title']);
-	  $messageStack->add(WO_MESSAGE_SUCCESS_MAIN_DELETE,'success');
-	}
+	if (!$id) throw new \Exception("the requird varible 'id' isn't set");
+	// check to un-allocate inventory
+	$result   = $db->Execute("select qty, sku_id, wo_id from " . TABLE_WO_JOURNAL_MAIN . " where id = " . $id);
+	$temp     = $db->Execute("select allocate from " . TABLE_WO_MAIN . " where id = '" . $result->fields['wo_id'] . "'");
+	$allocate = $temp->fields['allocate'];
+	if ($allocate) allocation_adjustment($result->fields['sku_id'], 0, $result->fields['qty']);
+	$db->Execute("delete from " . TABLE_WO_JOURNAL_MAIN  . " where id = " . $id);
+	$db->Execute("delete from " . TABLE_WO_JOURNAL_ITEM  . " where ref_id = " . $id);
+	gen_add_audit_log(sprintf(WO_AUDIT_LOG_MAIN, TEXT_DELETE) . $result->fields['wo_title']);
+	$messageStack->add(WO_MESSAGE_SUCCESS_MAIN_DELETE,'success');
     $_REQUEST['action'] = '';
 	break;
   case 'go_first':    $_REQUEST['list'] = 1;       break;
   case 'go_previous': $_REQUEST['list'] = max($_REQUEST['list']-1, 1); break;
   case 'go_next':     $_REQUEST['list']++;         break;
   case 'go_last':     $_REQUEST['list'] = 99999;   break;
-	  case 'search':
+  case 'search':
   case 'search_reset':
   case 'go_page':
   default:

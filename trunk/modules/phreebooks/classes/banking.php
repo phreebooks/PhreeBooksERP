@@ -45,7 +45,7 @@ class banking extends \core\classes\journal {
 				$result = $db->Execute("select next_check_num from " . TABLE_CURRENT_STATUS);
 				$this->purchase_invoice_id = $result->fields['next_check_num'];
 				break;
-			default: die ('bad journal ID in phreebooks/classes/banking.php!');
+			default: throw new \Exception('bad journal ID in phreebooks/classes/banking.php!');
 		}
 	}
 
@@ -98,7 +98,7 @@ class banking extends \core\classes\journal {
 				// Lastly, we process the payment (for receipts). NEEDS TO BE AT THE END BEFORE THE COMMIT!!!
 				// Because, if an error here we need to back out the entire post (which we can), but if 
 				// the credit card has been processed and the post fails, there is no way to back out the credit card charge.
-//				if ($processor->pre_confirmation_check()) return false;
+//				$processor->pre_confirmation_check();
 				// Update the save payment/encryption data if requested
 				if (ENABLE_ENCRYPTION && $this->save_payment && $processor->enable_encryption !== false) {
 					$this->encrypt_payment($method, $processor->enable_encryption);
@@ -120,7 +120,6 @@ class banking extends \core\classes\journal {
 	}
 
 	function bulk_pay() {
-		global $db, $currencies, $messageStack;
 		$this->journal_main_array = $this->build_journal_main_array();	// build ledger main record
 		$this->journal_rows       = array();	// initialize ledger row(s) array
 
@@ -179,7 +178,7 @@ class banking extends \core\classes\journal {
 			);
 			return $amount;
 		} else {
-			trigger_error('bad parameter passed to add_total_journal_row in class orders', E_USER_ERROR);
+			throw new \Exception('bad parameter passed to add_total_journal_row in class orders');
 		}
 	}
 
@@ -200,7 +199,7 @@ class banking extends \core\classes\journal {
 			}
 			return $discount;
 		} else {
-			trigger_error('bad parameter passed to add_discount_journal_row in class banking', E_USER_ERROR);
+			throw new \Exception('bad parameter passed to add_discount_journal_row in class banking');
 		}
 	}
 
@@ -223,7 +222,7 @@ class banking extends \core\classes\journal {
 			}
 			return $result;
 		} else {
-			trigger_error('bad parameter passed to add_item_journal_rows in class banking', E_USER_ERROR);
+			throw new \Exception('bad parameter passed to add_item_journal_rows in class banking');
 		}
 	}
 

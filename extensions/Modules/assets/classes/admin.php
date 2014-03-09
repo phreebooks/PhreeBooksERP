@@ -66,13 +66,12 @@ class admin extends \core\classes\admin {
  		parent::install($path_my_files, $demo);
 		require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
 		xtra_field_sync_list('assets', TABLE_ASSETS);
-		write_configure('MODULE_' . strtoupper($this->id) . '_STATUS', $this->version);
   	}
 
   	function upgrade() {
     	global $db;
 		parent::upgrade();
-	    if (MODULE_ASSETS_STATUS < 3.1) {
+	    if (version_compare($this->status, '3.1', '<') ) {
 		  	$tab_map = array('0' => '0');
 		  	if(db_table_exists(DB_PREFIX . 'assets_tabs')){
 			  	$result = $db->Execute("select * from " . DB_PREFIX . 'assets_tabs');
@@ -103,11 +102,12 @@ class admin extends \core\classes\admin {
 		  	}
 		  	xtra_field_sync_list('assets', TABLE_ASSETS);
 		}
-    	if (MODULE_ASSETS_STATUS < 3.3) {
+		if (version_compare($this->status, '3.3', '<') ) {
 	  		if (!db_field_exists(TABLE_ASSETS, 'attachments')) $db->Execute("ALTER TABLE " . TABLE_ASSETS . " ADD attachments TEXT NOT NULL AFTER terminal_date");
 	  		require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
 	  		xtra_field_sync_list('assets', TABLE_ASSETS);
     	}
+    	xtra_field_sync_list('assets', TABLE_ASSETS);// Best to always sync fields after install
 	}
 
 	function delete() {

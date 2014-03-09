@@ -24,14 +24,8 @@ $security_level = \core\classes\user::validate();
 require_once(DIR_FS_ADMIN . 'modules/phreebooks/defaults.php');
 /**************   page specific initialization  *********************/
 $rID   = db_prepare_input($_GET['rID']);
-$error = false;
 $main  = $db->Execute("select * from ".TABLE_JOURNAL_MAIN." where id = '$rID'");
-if ($main->RecordCount() <> 1) {
-  	echo createXmlHeader() . xmlEntry('error', 'Bad record submitted. No results found!') . createXmlFooter();
-  	ob_end_flush();
-	session_write_close();
-  	die;
-}
+if ($main->RecordCount() <> 1) throw new \Exception('Bad record submitted. No results found!');
 $items = $db->Execute("select * from ".TABLE_JOURNAL_ITEM." where ref_id = '$rID'");
 // build the journal record data
 $main->fields['attach_exist'] = file_exists(PHREEBOOKS_DIR_MY_ORDERS.'order_'.$rID.'.zip') ? '1' : '0';

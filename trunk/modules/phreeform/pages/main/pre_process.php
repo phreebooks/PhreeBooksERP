@@ -22,7 +22,6 @@ require(DIR_FS_WORKING . 'defaults.php');
 require(DIR_FS_WORKING . 'functions/phreeform.php');
 
 /**************   page specific initialization  *************************/
-$error       = false;
 $processed   = false;
 history_filter();
 $group  = isset($_GET['group'])   ? $_GET['group']                     : false;
@@ -62,8 +61,7 @@ switch ($_REQUEST['action']) {
 	$output   = object_to_xml($report);
 	if (!$handle = @fopen($filename, 'w')) {
 	  $db->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
-	  $messageStack->add(sprintf(PHREEFORM_WRITE_ERROR, $filename), 'error');
-	  break;
+	  throw new \Exception(sprintf(PHREEFORM_WRITE_ERROR, $filename));
 	}
 	fwrite($handle, $output);
 	fclose($handle);

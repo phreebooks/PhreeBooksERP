@@ -64,7 +64,7 @@ $mainmenu["home"] = array(
   'icon'  => html_icon('actions/go-home.png', TEXT_HOME, 'small'),
 );
 
-// @todo BEWARE OF THIS SETTING! this config must be loaded before any other menu as the heading settings will erase prior set submenus for these headings. Especially modules alphabetically before phreedom.
+// BEWARE OF THIS SETTING! this config must be loaded before any other menu as the heading settings will erase prior set submenus for these headings. Especially modules alphabetically before phreedom.
 $mainmenu["inventory"] = array(
   'order' 		=> MENU_HEADING_INVENTORY_ORDER,
   'text' 		=> MENU_HEADING_INVENTORY,

@@ -22,7 +22,6 @@ require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
 /**************   page specific initialization  *************************/
 define('JOURNAL_ID',2);	// General Journal
-$error     = false;
 $post_date = ($_POST['post_date']) ? gen_db_date($_POST['post_date']) : date('Y-m-d', time());
 $period    = gen_calculate_period($post_date);
 $glEntry   = new \core\classes\journal();
@@ -37,70 +36,66 @@ if (file_exists($custom_path)) { include($custom_path); }
 switch ($_REQUEST['action']) {
   case 'save':
   case 'copy':
-	\core\classes\user::validate_security($security_level, 2);
-    // for copy operation, erase the id to force post a new journal entry with same values
-	if ($_REQUEST['action'] == 'copy') $glEntry->id = '';
-	$glEntry->journal_id          = JOURNAL_ID;
-	$glEntry->post_date           = $post_date;
-	$glEntry->period              = $period;
-	$glEntry->admin_id            = $_SESSION['admin_id'];
-	$glEntry->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);
-	$glEntry->recur_id            = db_prepare_input($_POST['recur_id']);
-	$glEntry->recur_frequency     = db_prepare_input($_POST['recur_frequency']);
-	$glEntry->store_id            = db_prepare_input($_POST['store_id']);
-	$glEntry->rm_attach           = isset($_POST['rm_attach']) ? true : false;
-	if ($glEntry->store_id == '') $glEntry->store_id = 0;
-
-	// process the request, build main record
-	$x = 1;
-	$total_amount = 0;
-	$journal_entry_desc = GL_ENTRY_TITLE;
-	while (isset($_POST['acct_' . $x])) { // while there are gl rows to read in
-		if (!$_POST['debit_' . $x] && !$_POST['credit_' . $x]) { // skip blank rows
+  	try{
+		\core\classes\user::validate_security($security_level, 2);
+	    // for copy operation, erase the id to force post a new journal entry with same values
+		if ($_REQUEST['action'] == 'copy') $glEntry->id = '';
+		$glEntry->journal_id          = JOURNAL_ID;
+		$glEntry->post_date           = $post_date;
+		$glEntry->period              = $period;
+		$glEntry->admin_id            = $_SESSION['admin_id'];
+		$glEntry->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);
+		$glEntry->recur_id            = db_prepare_input($_POST['recur_id']);
+		$glEntry->recur_frequency     = db_prepare_input($_POST['recur_frequency']);
+		$glEntry->store_id            = db_prepare_input($_POST['store_id']);
+		$glEntry->rm_attach           = isset($_POST['rm_attach']) ? true : false;
+		if ($glEntry->store_id == '') $glEntry->store_id = 0;
+	
+		// process the request, build main record
+		$x = 1;
+		$total_amount = 0;
+		$journal_entry_desc = GL_ENTRY_TITLE;
+		while (isset($_POST['acct_' . $x])) { // while there are gl rows to read in
+			if (!$_POST['debit_' . $x] && !$_POST['credit_' . $x]) { // skip blank rows
+				$x++;
+				continue;
+			}
+			$debit_amount  = ($_POST['debit_' . $x]) ? $currencies->clean_value($_POST['debit_' . $x]) : 0;
+			$credit_amount = ($_POST['credit_'. $x]) ? $currencies->clean_value($_POST['credit_'. $x]) : 0;
+			$glEntry->journal_rows[] = array(
+				'id'            => ($_REQUEST['action'] == 'copy') ? '' : db_prepare_input($_POST['id_' . $x]),
+				'qty'           => '1',
+				'gl_account'    => db_prepare_input($_POST['acct_' . $x]),
+				'description'   => db_prepare_input($_POST['desc_' . $x]),
+				'debit_amount'  => $debit_amount,
+				'credit_amount' => $credit_amount,
+				'post_date'     => $glEntry->post_date);
+			$total_amount += $debit_amount;
+			if ($x == 1) $journal_entry_desc = db_prepare_input($_POST['desc_' . $x]);
 			$x++;
-			continue;
 		}
-		$debit_amount  = ($_POST['debit_' . $x]) ? $currencies->clean_value($_POST['debit_' . $x]) : 0;
-		$credit_amount = ($_POST['credit_'. $x]) ? $currencies->clean_value($_POST['credit_'. $x]) : 0;
-		$glEntry->journal_rows[] = array(
-			'id'            => ($_REQUEST['action'] == 'copy') ? '' : db_prepare_input($_POST['id_' . $x]),
-			'qty'           => '1',
-			'gl_account'    => db_prepare_input($_POST['acct_' . $x]),
-			'description'   => db_prepare_input($_POST['desc_' . $x]),
-			'debit_amount'  => $debit_amount,
-			'credit_amount' => $credit_amount,
-			'post_date'     => $glEntry->post_date);
-		$total_amount += $debit_amount;
-		if ($x == 1) $journal_entry_desc = db_prepare_input($_POST['desc_' . $x]);
-		$x++;
-	}
-
-	$glEntry->journal_main_array = array(
-		'id'                  => $glEntry->id,
-		'period'              => $glEntry->period,
-		'journal_id'          => JOURNAL_ID,
-		'post_date'           => $glEntry->post_date,
-		'total_amount'        => $total_amount,
-		'description'         => GL_ENTRY_TITLE,
-		'purchase_invoice_id' => $glEntry->purchase_invoice_id,
-		'currencies_code'     => DEFAULT_CURRENCY,
-		'currencies_value'    => 1,
-		'admin_id'            => $glEntry->admin_id,
-		'bill_primary_name'   => $journal_entry_desc,
-		'recur_id'            => $glEntry->recur_id,
-		'store_id'            => $glEntry->store_id,
-	);
-
-	// check for errors and prepare extra values
-	if (!$glEntry->period) $error = true;	// bad post_date was submitted
-
-	if (!$glEntry->journal_rows) { // no rows entered
-		$messageStack->add(GL_ERROR_NO_ITEMS, 'error');
-		$error = true;
-	}
-	// finished checking errors
-
-	if (!$error) {
+	
+		$glEntry->journal_main_array = array(
+			'id'                  => $glEntry->id,
+			'period'              => $glEntry->period,
+			'journal_id'          => JOURNAL_ID,
+			'post_date'           => $glEntry->post_date,
+			'total_amount'        => $total_amount,
+			'description'         => GL_ENTRY_TITLE,
+			'purchase_invoice_id' => $glEntry->purchase_invoice_id,
+			'currencies_code'     => DEFAULT_CURRENCY,
+			'currencies_value'    => 1,
+			'admin_id'            => $glEntry->admin_id,
+			'bill_primary_name'   => $journal_entry_desc,
+			'recur_id'            => $glEntry->recur_id,
+			'store_id'            => $glEntry->store_id,
+		);
+	
+		// check for errors and prepare extra values
+		if (!$glEntry->period) throw new \Exception("bad post date was submitted");// bad post_date was submitted
+		// 	no rows entered
+		if (!$glEntry->journal_rows) throw new \Exception(GL_ERROR_NO_ITEMS);
+		// finished checking errors
 		// *************** START TRANSACTION *************************
 		$db->transStart();
 		if ($glEntry->recur_id > 0) { // if new record, will contain count, if edit will contain recur_id
@@ -113,22 +108,17 @@ switch ($_REQUEST['action']) {
 					$glEntry->id                       = $affected_ids[$i]['id'];
 					$glEntry->journal_main_array['id'] = $affected_ids[$i]['id'];
 					if ($i > 0) { // Remove row id's for future posts, keep if re-posting single entry
-					  for ($j = 0; $j < count($glEntry->journal_rows); $j++) {
-					    $glEntry->journal_rows[$j]['id'] = '';
-					  }
-					  $glEntry->post_date                     = $affected_ids[$i]['post_date'];
+						for ($j = 0; $j < count($glEntry->journal_rows); $j++) {
+					    	$glEntry->journal_rows[$j]['id'] = '';
+					  	}
+					  	$glEntry->post_date = $affected_ids[$i]['post_date'];
 					}
 					$glEntry->period                          = gen_calculate_period($glEntry->post_date, true);
 					$glEntry->journal_main_array['post_date'] = $glEntry->post_date;
 					$glEntry->journal_main_array['period']    = $glEntry->period;
 					$glEntry->purchase_invoice_id             = $affected_ids[$i]['purchase_invoice_id'];
-					if (!$glEntry->validate_purchase_invoice_id()) {
-					  $error = true;
-					  break;
-					} else if (!$glEntry->Post('edit')) {
-					  $error = true;
-					  break;
-					}
+					$glEntry->validate_purchase_invoice_id();
+					$glEntry->Post('edit');
 					// test for single post versus rolling into future posts, terminate loop if single post
 					if (!$glEntry->recur_frequency) break;
 				}
@@ -139,13 +129,8 @@ switch ($_REQUEST['action']) {
 				$month_offset = 0;
 				$year_offset  = 0;
 				for ($i = 0; $i < $glEntry->recur_id; $i++) {
-					if (!$glEntry->validate_purchase_invoice_id()) {
-					  $error = true;
-					  break;
-					} else if (!$glEntry->Post('insert')) {
-					  $error = true;
-					  break;
-					}
+					$glEntry->validate_purchase_invoice_id();
+					$glEntry->Post('insert');
 					$glEntry->id = '';
 					$glEntry->journal_main_array['id'] = $glEntry->id;
 					for ($j = 0; $j < count($glEntry->journal_rows); $j++) $glEntry->journal_rows[$j]['id'] = '';
@@ -160,9 +145,7 @@ switch ($_REQUEST['action']) {
 					$glEntry->post_date = gen_specific_date($post_date, $day_offset, $month_offset, $year_offset);
 					$glEntry->period = gen_calculate_period($glEntry->post_date, true);
 					if (!$glEntry->period && $i < ($glEntry->recur_id - 1)) { // recur falls outside of available periods, ignore last calculation
-					  $messageStack->add(ORD_PAST_LAST_PERIOD,'error');
-					  $error = true;
-					  break;
+					  throw new \Exception(ORD_PAST_LAST_PERIOD);
 					}
 					$glEntry->journal_main_array['post_date'] = $glEntry->post_date;
 					$glEntry->journal_main_array['period'] = $glEntry->period;
@@ -177,35 +160,31 @@ switch ($_REQUEST['action']) {
 			$glEntry->purchase_invoice_id                       = $first_purchase_invoice_id;
 			$glEntry->journal_main_array['purchase_invoice_id'] = $first_purchase_invoice_id;
 		} else {
-			if      (!$glEntry->validate_purchase_invoice_id())         $error = true;
-			else if (!$glEntry->Post($glEntry->id ? 'edit' : 'insert')) $error = true;
+			$glEntry->validate_purchase_invoice_id();
+			$glEntry->Post($glEntry->id ? 'edit' : 'insert');
 		}
-		if (!$error) {
-		  $db->transCommit();
-		  if ($glEntry->rm_attach) @unlink(PHREEBOOKS_DIR_MY_ORDERS . 'order_'.$glEntry->id.'.zip');
-		  if (is_uploaded_file($_FILES['file_name']['tmp_name'])) {
+		$db->transCommit();
+		if ($glEntry->rm_attach) @unlink(PHREEBOOKS_DIR_MY_ORDERS . 'order_'.$glEntry->id.'.zip');
+		if (is_uploaded_file($_FILES['file_name']['tmp_name'])) {
 			$messageStack->debug('Saving file to: '.PHREEBOOKS_DIR_MY_ORDERS.'order_'.$glEntry->id.'.zip');
 		  	saveUploadZip('file_name', PHREEBOOKS_DIR_MY_ORDERS, 'order_'.$glEntry->id.'.zip');
-		  }
-		  if (DEBUG) $messageStack->write_debug();
-		  gen_add_audit_log(GL_LOG_ADD_JOURNAL . (($glEntry->id) ? TEXT_EDIT : TEXT_ADD), $glEntry->purchase_invoice_id);
-		  gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		}
+		gen_add_audit_log(GL_LOG_ADD_JOURNAL . (($glEntry->id) ? TEXT_EDIT : TEXT_ADD), $glEntry->purchase_invoice_id);
+		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		// *************** END TRANSACTION *************************
-	}
-	$db->transRollback();
-	$messageStack->add(GL_ERROR_NO_POST, 'error');
-    if (DEBUG) $messageStack->write_debug();
-	$cInfo = new \core\classes\objectInfo($_POST); // if we are here, there was an error, reload page
-	$cInfo->post_date = gen_db_date($_POST['post_date']);
+  	}catch(Exception $e){
+		$db->transRollback();
+		$messageStack->add($e->getMessage());
+		$cInfo = new \core\classes\objectInfo($_POST); // if we are here, there was an error, reload page
+		$cInfo->post_date = gen_db_date($_POST['post_date']);
+  	}
+  	if (DEBUG) $messageStack->write_debug();
 	break;
-
   case 'delete':
-	\core\classes\user::validate_security($security_level, 4);
-  	// check for errors and prepare extra values
-	if (!$glEntry->id) {
-		$error = true;
-	} else {
+  	try{
+		\core\classes\user::validate_security($security_level, 4);
+		// check for errors and prepare extra values
+		if (!$glEntry->id) throw new \Exception("the variable id wasn't set");
 		$delGL = new \core\classes\journal();
 		$delGL->journal($glEntry->id); // load the posted record based on the id submitted
 		$recur_id        = db_prepare_input($_POST['recur_id']);
@@ -217,29 +196,23 @@ switch ($_REQUEST['action']) {
 			for ($i = 0; $i < count($affected_ids); $i++) {
 				$delGL->id = $affected_ids[$i]['id'];
 				$delGL->journal($delGL->id); // load the posted record based on the id submitted
-				if (!$delGL->unPost('delete')) {
-				  $error = true;
-				  break;
-				}
+				$delGL->unPost('delete');
 				// test for single post versus rolling into future posts, terminate loop if single post
 				if (!$recur_frequency) break;
 			}
 		} else {
-			if (!$delGL->unPost('delete')) $error = true;
+			$delGL->unPost('delete');
 		}
-
-		if (!$error) {
-			$db->transCommit(); // if not successful rollback will already have been performed
-			if (DEBUG) $messageStack->write_debug();
-			gen_add_audit_log(GL_LOG_ADD_JOURNAL . TEXT_DELETE, $delGL->purchase_invoice_id);
-			gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-		} // *************** END TRANSACTION *************************
-	}
-	$db->transRollback();
-	$messageStack->add(GL_ERROR_NO_DELETE, 'error');
-    if (DEBUG) $messageStack->write_debug();
-	$cInfo = new \core\classes\objectInfo($_POST); // if we are here, there was an error, reload page
-	$cInfo->post_date = gen_db_date($_POST['post_date']);
+		$db->transCommit(); // if not successful rollback will already have been performed
+		gen_add_audit_log(GL_LOG_ADD_JOURNAL . TEXT_DELETE, $delGL->purchase_invoice_id);
+		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
+  	}catch(Exception $e){
+		$db->transRollback();
+		$messageStack->add($e->getMessage());
+		$cInfo = new \core\classes\objectInfo($_POST); // if we are here, there was an error, reload page
+		$cInfo->post_date = gen_db_date($_POST['post_date']);
+  	}
+	if (DEBUG) $messageStack->write_debug();
 	break;
 
   case 'edit':

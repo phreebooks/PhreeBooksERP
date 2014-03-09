@@ -139,14 +139,9 @@ class paypal_nvp extends \payment\classes\payment {
   }
 
  	function pre_confirmation_check() {
-    	global $messageStack;
-
-		// if the card number has the blanked out middle number fields, it has been processed, show message that 
+   		// if the card number has the blanked out middle number fields, it has been processed, show message that 
 		// the charges were not processed through the merchant gateway and continue posting payment.
-		if (strpos($this->field_1,'*') !== false) {
-    		$messageStack->add(MODULE_PAYMENT_CC_NO_DUPS, 'caution');
-			return false;
-		}
+		if (strpos($this->field_1,'*') !== false) throw new \Exception(MODULE_PAYMENT_CC_NO_DUPS);
     	$result = $this->validate($this->cc_card_number);
     	switch ($result) {
       		case -1:
@@ -166,7 +161,7 @@ class paypal_nvp extends \payment\classes\payment {
 
 	// if the card number has the blanked out middle number fields, it has been processed, the message that 
 	// the charges were not processed were set in pre_confirmation_check, just return to continue without processing.
-	if (strpos($this->field_1, '*') !== false) return false;
+	if (strpos($this->field_1,'*') !== false) throw new \Exception(MODULE_PAYMENT_CC_NO_DUPS);
 
 	$order->info['cc_expires'] = $this->field_2 . $this->field_3;
     $order->info['cc_owner']   = $this->field_0 . ' ' . $this->field_5;
@@ -174,10 +169,10 @@ class paypal_nvp extends \payment\classes\payment {
     $order->info['cc_cvv']     = $this->field_4;
     
 	switch (substr($this->field_1, 0, 1)) {
-	  case '3': $card_type = 'Amex';       break;
-	  case '4': $card_type = 'Visa';       break;
-	  case '5': $card_type = 'MasterCard'; break;
-	  case '6': $card_type = 'Discover';   break;
+	  	case '3': $card_type = 'Amex';       break;
+	  	case '4': $card_type = 'Visa';       break;
+	  	case '5': $card_type = 'MasterCard'; break;
+	  	case '6': $card_type = 'Discover';   break;
 	}
 	// Set request-specific fields.
     $submit_data = array(
@@ -219,13 +214,15 @@ class paypal_nvp extends \payment\classes\payment {
     	if ($value <> '') $data .= '&' . $key . '=' . urlencode($value);
     }
 
-// FOR TEST PURPOSES
-$messageStack->add('Test transaction complete!', 'success');
-return false;
-// END FOR TEST
+/*
+ * FOR TEST PURPOSES
+ * $messageStack->add('Test transaction complete!', 'success');
+ * return false;
+ * END FOR TEST
+ */
 
 	// Execute the API operation; see the PPHttpPost function above.
-	if (!$httpParsedResponseAr = $this->PPHttpPost('DoDirectPayment', $data)) return true; // failed cURL
+	if (!$httpParsedResponseAr = $this->PPHttpPost('DoDirectPayment', $data)) throw new \Exception("failed cURL"); // failed cURL
 
     $this->transaction_id = $httpParsedResponseAr['TRANSACTIONID'];
 	if("SUCCESS" == strtoupper($httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($httpParsedResponseAr["ACK"])) {
@@ -234,7 +231,7 @@ return false;
 //echo 'Success response:'; print_r($httpParsedResponseAr); echo '<br>';
 		return false;
 	}
-    $messageStack->add(MODULE_PAYMENT_PAYPAL_NVP_DECLINE_CODE . $httpParsedResponseAr['L_ERRORCODE0'] . ': ' . urldecode($httpParsedResponseAr['L_LONGMESSAGE0']) . ' - ' . MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE, 'error');
+    throw new \Exception(MODULE_PAYMENT_PAYPAL_NVP_DECLINE_CODE . $httpParsedResponseAr['L_ERRORCODE0'] . ': ' . urldecode($httpParsedResponseAr['L_LONGMESSAGE0']) . ' - ' . MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE);
 //echo 'Failed response:'; print_r($httpParsedResponseAr); echo '<br>';
 	return true;
   }

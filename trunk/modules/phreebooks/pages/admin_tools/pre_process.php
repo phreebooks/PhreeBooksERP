@@ -23,7 +23,6 @@ require(DIR_FS_WORKING . 'functions/phreebooks.php');
 /**************   page specific initialization  *************************/
 define('JOURNAL_ID',2);	// General Journal
 if (!defined('CURRENT_ACCOUNTING_PERIOD')) gen_auto_update_period(false);
-$error      = false;
 $start_date = ($_POST['start_date'])  ? gen_db_date($_POST['start_date']) : CURRENT_ACCOUNTING_PERIOD_START;
 $end_date   = ($_POST['end_date'])    ? gen_db_date($_POST['end_date'])   : CURRENT_ACCOUNTING_PERIOD_END;
 // see what fiscal year we are looking at (assume this FY is entered for the first time)
@@ -96,10 +95,7 @@ switch ($_REQUEST['action']) {
 	// retrieve the desired period and update the system default values.
 	\core\classes\user::validate_security($security_level, 3);
   	$period = (int)db_prepare_input($_POST['period']);
-	if ($period <= 0 || $period > $highest_period) {
-		$messageStack->add(GL_ERROR_BAD_ACCT_PERIOD, 'error');
-		break;
-	}
+	if ($period <= 0 || $period > $highest_period) throw new \Exception(GL_ERROR_BAD_ACCT_PERIOD);
 	$result = $db->Execute("select start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . " where period = " . $period);
 	$db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = " . $period . " 
 		where configuration_key = 'CURRENT_ACCOUNTING_PERIOD'");
@@ -150,30 +146,25 @@ switch ($_REQUEST['action']) {
 	break;
 
 	case 'inv_owed_fix' :
-		\core\classes\user::validate_security($security_level, 3);
-		$error = false;
-		$result = $db->Execute("SELECT journal_main_id FROM ".TABLE_INVENTORY_COGS_OWED);
-		$cnt = 0;
-		$db->transStart();
-		while (!$result->EOF) {
-		    $gl_entry = new journal($result->fields['journal_main_id']);
-		    $gl_entry->remove_cogs_rows(); // they will be regenerated during the re-post
-		    if (!$gl_entry->Post('edit', true)) {
-			  $db->transRollback();
-			  throw new \Exception('Failed Re-posting the inventory owed. The record that failed was # '.$gl_entry->id);
-			  $error = true;
-			  break;
-		    }
-			$cnt++;
-		    $result->MoveNext();
-		}
-	    $db->transCommit();
-		if ($error) {
-			$messageStack->add(GEN_ADM_TOOLS_RE_POST_FAILED,'caution');
-		} else {
-			$messageStack->add(sprintf(GEN_ADM_TOOLS_RE_POST_SUCCESS, $cnt), 'success');
+		try{
+			\core\classes\user::validate_security($security_level, 3);
+			$result = $db->Execute("SELECT journal_main_id FROM ".TABLE_INVENTORY_COGS_OWED);
+			$cnt = 0;
+			$db->transStart();
+			while (!$result->EOF) {
+			    $gl_entry = new journal($result->fields['journal_main_id']);
+			    $gl_entry->remove_cogs_rows(); // they will be regenerated during the re-post
+			    $gl_entry->Post('edit', true);
+				$cnt++;
+			    $result->MoveNext();
+			}
+		    $db->transCommit();
+		    $messageStack->add(sprintf(GEN_ADM_TOOLS_RE_POST_SUCCESS, $cnt), 'success');
 			gen_add_audit_log(GEN_ADM_TOOLS_AUDIT_LOG_RE_POST, "inventory owed");
-		}
+		}catch(Exception $e){
+			$db->transRollback();
+			$messageStack->add($e->getMessage());
+		} 
 		if (DEBUG) $messageStack->write_debug();
 		break;
 

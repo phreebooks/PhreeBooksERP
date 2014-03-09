@@ -300,47 +300,47 @@ class admin extends \core\classes\admin {
 	function upgrade() {
 	    global $db;
 	    parent::upgrade();
-		$db_version = defined('MODULE_PHREEBOOKS_STATUS') ? MODULE_PHREEBOOKS_STATUS : false;
-		if (!$db_version || $db_version < 2.1 || $db_version < '2.1') { // For PhreeBooks release 2.1 or lower to update to Phreedom structure
-		  require(DIR_FS_MODULES . 'phreebooks/functions/updater.php');
-		  if(db_table_exists(TABLE_PROJECT_VERSION)){
-			  $result = $db->Execute("select * from " . TABLE_PROJECT_VERSION . " WHERE project_version_key = 'PhreeBooks Database'");
-			  $db_version = $result->fields['project_version_major'] . '.' . $result->fields['project_version_minor'];
-			  if ($db_version < 2.1) execute_upgrade($db_version);
-			  $db_version = 2.1;
-		  }
+		$db_version = defined('MODULE_PHREEBOOKS_STATUS') ? MODULE_PHREEBOOKS_STATUS : 0;
+		if (version_compare($db_version, '2.1', '<')) { // For PhreeBooks release 2.1 or lower to update to Phreedom structure
+		  	require(DIR_FS_MODULES . 'phreebooks/functions/updater.php');
+		  	if(db_table_exists(TABLE_PROJECT_VERSION)) {
+			  	$result = $db->Execute("select * from " . TABLE_PROJECT_VERSION . " WHERE project_version_key = 'PhreeBooks Database'");
+			  	$db_version = $result->fields['project_version_major'] . '.' . $result->fields['project_version_minor'];
+			  	if (version_compare($db_version, '2.1', '<') ) execute_upgrade($db_version);
+			  	$db_version = 2.1;
+		  	}
 		}
-		if ($db_version == 2.1 || $db_version == '2.1') {
-		  $db_version = $this->release_update($this->id, 3.0, DIR_FS_MODULES . 'phreebooks/updates/R21toR30.php');
-	      // remove table project_version, no longer needed
-	      $db->Execute("DROP TABLE " . TABLE_PROJECT_VERSION);
+		if (version_compare($db_version, '2.1', '==') ) {
+		  	$db_version = $this->release_update($this->id, 3.0, DIR_FS_MODULES . 'phreebooks/updates/R21toR30.php');
+	      	// remove table project_version, no longer needed
+	      	$db->Execute("DROP TABLE " . TABLE_PROJECT_VERSION);
 		}
-		if ($db_version == 3.0 || $db_version == '3.0') {
-		  $db_version = $this->release_update($this->id, 3.1, DIR_FS_MODULES . 'phreebooks/updates/R30toR31.php');
+		if (version_compare($db_version, '3.0', '==') ) {
+			$db_version = $this->release_update($this->id, 3.1, DIR_FS_MODULES . 'phreebooks/updates/R30toR31.php');
 		}
-		if ($db_version == 3.1 || $db_version == '3.1') {
-		  if (!file_exists($path . $dir)) mkdir(DIR_FS_MY_FILES . $_SESSION['company'] . '/phreebooks/orders/', 0755, true);
-		  write_configure('ALLOW_NEGATIVE_INVENTORY', '1');
-		  $db_version = 3.2;
+		if (version_compare($db_version, '3.1', '==') ) {
+		  	if (!file_exists($path . $dir)) mkdir(DIR_FS_MY_FILES . $_SESSION['company'] . '/phreebooks/orders/', 0755, true);
+		  	write_configure('ALLOW_NEGATIVE_INVENTORY', '1');
+		  	$db_version = 3.2;
 		}
-	  	if ($db_version == 3.2 || $db_version == '3.2') {
-		  write_configure('APPLY_CUSTOMER_CREDIT_LIMIT', '0'); // flag for using credit limit to authorize orders
-		  $db->Execute("ALTER TABLE ".TABLE_JOURNAL_MAIN." CHANGE `shipper_code` `shipper_code` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT ''");
-		  require_once(DIR_FS_MODULES . 'phreebooks/defaults.php');
-		  if (is_array(glob(DIR_FS_ADMIN.'PHREEBOOKS_DIR_MY_ORDERS*.zip'))) {
-		  	foreach (glob(DIR_FS_ADMIN.'PHREEBOOKS_DIR_MY_ORDERS*.zip') as $file) {
-		  	  $newfile = str_replace('PHREEBOOKS_DIR_MY_ORDERS', '', $file);
-		  	  $newfile = str_replace(DIR_FS_ADMIN, '', $newfile);
-		  	  rename($file,PHREEBOOKS_DIR_MY_ORDERS.$newfile);
-		    }
-		  }
-		  $db_version = 3.3;
+		if (version_compare($db_version, '3.2', '==') ) {
+		  	write_configure('APPLY_CUSTOMER_CREDIT_LIMIT', '0'); // flag for using credit limit to authorize orders
+		  	$db->Execute("ALTER TABLE ".TABLE_JOURNAL_MAIN." CHANGE `shipper_code` `shipper_code` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT ''");
+		  	require_once(DIR_FS_MODULES . 'phreebooks/defaults.php');
+		  	if (is_array(glob(DIR_FS_ADMIN.'PHREEBOOKS_DIR_MY_ORDERS*.zip'))) {
+		  		foreach (glob(DIR_FS_ADMIN.'PHREEBOOKS_DIR_MY_ORDERS*.zip') as $file) {
+		  	  		$newfile = str_replace('PHREEBOOKS_DIR_MY_ORDERS', '', $file);
+		  	  		$newfile = str_replace(DIR_FS_ADMIN, '', $newfile);
+		  	  		rename($file,PHREEBOOKS_DIR_MY_ORDERS.$newfile);
+		    	}
+		  	}
+		  	$db_version = 3.3;
 		}
-		if ($db_version < 3.4 || $db_version < '3.4') {
-		  if (!db_field_exists(TABLE_JOURNAL_ITEM, 'item_cnt')) $db->Execute("ALTER TABLE ".TABLE_JOURNAL_ITEM." ADD item_cnt INT(11) NOT NULL DEFAULT '0' AFTER ref_id");
-		  $db_version = 3.4;
+		if (version_compare($db_version, '3.4', '<') ) {
+		  	if (!db_field_exists(TABLE_JOURNAL_ITEM, 'item_cnt')) $db->Execute("ALTER TABLE ".TABLE_JOURNAL_ITEM." ADD item_cnt INT(11) NOT NULL DEFAULT '0' AFTER ref_id");
+		  	$db_version = 3.4;
 		}
-		if ($db_version < 3.51 || $db_version < '3.51') {
+		if (version_compare($db_version, '3.51', '<') ) {
 			$result = $db->Execute("SELECT id, so_po_ref_id FROM ".TABLE_JOURNAL_MAIN." WHERE journal_id = 16 AND so_po_ref_id > 0");
 			while(!$result->EOF) { // to fix transfers to store 0 from any other store
 				if ($result->fields['so_po_ref_id'] > $result->fields['id']) {

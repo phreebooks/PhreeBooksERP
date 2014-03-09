@@ -71,9 +71,9 @@ switch ($_REQUEST['action']) {
 	}
 //echo 'core object = '; print_r($working->output); echo '<br><br>';
 	// read the dirs
-	if ($working->make_dir_tree(DIR_FS_MODULES . $mod . '/', '')) $error = true;
+	$working->make_dir_tree(DIR_FS_MODULES . $mod . '/', '');
 	// read the db
-	if ($working->make_db_info($admin_classes[$entry]->tables)) $error = true;
+	$working->make_db_info($admin_classes[$entry]->tables);
 	// build the output string
 //echo 'result object = '; print_r($working->output); echo '<br><br>';
 	$xmlString  = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";

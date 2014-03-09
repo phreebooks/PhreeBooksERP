@@ -90,19 +90,19 @@
     	return strcmp($a->sort_order, $b->sort_order);
 	}
 
-  function write_configure($constant, $value = '') {
-    global $db;
-	if (!$constant) throw new \Exception("contant isn't defined for value: $value");
-	$result = $db->Execute("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = '" . $constant . "'");
-	if ($result->RecordCount() == 0) {
-	  $sql_array = array('configuration_key'  => $constant, 'configuration_value'=> $value);
-	  db_perform(TABLE_CONFIGURATION,  $sql_array);
-	  define($constant, $value);
-	} elseif ($result->fields['configuration_value'] <> $value) {
-	  db_perform(TABLE_CONFIGURATION, array('configuration_value'=>$value), 'update', "configuration_key = '".$constant."'");
-	}
-	return true;
-  }
+	
+  	function write_configure($constant, $value = '') {
+    	global $db;
+		if (!$constant) throw new \Exception("contant isn't defined for value: $value");
+		$result = $db->Execute("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = '" . $constant . "'");
+		if ($result->RecordCount() == 0) {
+	  		$sql_array = array('configuration_key'  => $constant, 'configuration_value'=> $value);
+		  	db_perform(TABLE_CONFIGURATION,  $sql_array);
+		  	define($constant, $value);
+		} elseif ($result->fields['configuration_value'] <> $value) {
+		  	db_perform(TABLE_CONFIGURATION, array('configuration_value'=>$value), 'update', "configuration_key = '".$constant."'");
+		}
+  	}
 
   function remove_configure($constant){
     global $db;
@@ -476,18 +476,17 @@
   }
 
 function saveUploadZip($file_field, $dest_dir, $dest_name) {
-	if ($_FILES[$file_field]['error']) { // php error uploading file
-		throw new \Exception(TEXT_IMP_ERMSG5 . $_FILES[$file_field]['error']);
-	} elseif ($_FILES[$file_field]['size'] > 0) {
-		$backup              = new \phreedom\classes\backup();
-		$backup->source_dir  = $_FILES[$file_field]['tmp_name'];
-		$backup->source_file = '';
-		$backup->dest_dir    = $dest_dir;
-		$backup->dest_file   = $dest_name;
-		if (file_exists($dest_dir . $dest_name)) @unlink($dest_dir . $dest_name);
-		$backup->make_zip('file', $_FILES[$file_field]['name']);
-		@unlink($backup->source_dir);
-	}
+	// php error uploading file
+	if ($_FILES[$file_field]['error']) throw new \Exception(TEXT_IMP_ERMSG5 . $_FILES[$file_field]['error']);
+	if ($_FILES[$file_field]['size'] > 0)  throw new \Exception("file $file_field is empty ");
+	$backup              = new \phreedom\classes\backup();
+	$backup->source_dir  = $_FILES[$file_field]['tmp_name'];
+	$backup->source_file = '';
+	$backup->dest_dir    = $dest_dir;
+	$backup->dest_file   = $dest_name;
+	if (file_exists($dest_dir . $dest_name)) @unlink($dest_dir . $dest_name);
+	$backup->make_zip('file', $_FILES[$file_field]['name']);
+	@unlink($backup->source_dir);
 }
 
   function dircopy($src_dir, $dst_dir, $verbose = false, $use_cached_dir_trees = false) {    
@@ -759,9 +758,8 @@ function gen_db_date($raw_date = '', $separator = '/') {
 	global $db;
 	$result = $db->Execute("select fiscal_year, start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . " 
 	  where period = " . $period);
-	if ($result->RecordCount() <> 1) { // post_date is out of range of defined accounting periods
-	  throw new \Exception(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');
-	}
+	// post_date is out of range of defined accounting periods
+	if ($result->RecordCount() <> 1) throw new \Exception(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');
 	return $result->fields;
   }
 
@@ -1446,10 +1444,10 @@ function charConv($string, $in, $out) {
   function validate_upload($filename, $file_type = 'text', $extension = 'txt') {
 	if ($_FILES[$filename]['error']) { // php error uploading file
 		switch ($_FILES[$filename]['error']) {
-			case '1': throw new \Exception(TEXT_IMP_ERMSG1, 'error');
-			case '2': throw new \Exception(TEXT_IMP_ERMSG2, 'error');
-			case '3': throw new \Exception(TEXT_IMP_ERMSG3, 'error');
-			case '4': throw new \Exception(TEXT_IMP_ERMSG4, 'error');
+			case '1': throw new \Exception(TEXT_IMP_ERMSG1);
+			case '2': throw new \Exception(TEXT_IMP_ERMSG2);
+			case '3': throw new \Exception(TEXT_IMP_ERMSG3);
+			case '4': throw new \Exception(TEXT_IMP_ERMSG4);
 			default:  throw new \Exception(TEXT_IMP_ERMSG5 . $_FILES[$filename]['error'] . '.');
 		}
 	} elseif (!is_uploaded_file($_FILES[$filename]['tmp_name'])) { // file uploaded
@@ -1481,6 +1479,7 @@ function charConv($string, $in, $out) {
   	/**
   	 * this function will try to validate the date
   	 * @param str $date
+  	 * @throws Exception
   	 */ 
 	function validate_db_date($date) {
     	$y = (int)substr($date, 0, 4); 
@@ -1751,8 +1750,7 @@ function object_to_xml($params, $multiple = false, $multiple_key = '', $level = 
 	    $output .= xmlEntry($xml_key, $value);
 	  }
 	}
-  }
-  return $output;
+	return $output;
 }
 
 function csv_string_to_array($str = '') {
@@ -1779,19 +1777,7 @@ function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext
     		$text .= " FATAL RUN-TIME ERROR: '$errstr' Fatal error on line $errline in file $errfile, PHP " . PHP_VERSION . " (" . PHP_OS . ") Aborting...";
     		//error_log($text, 1, "operator@example.com");
     		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
-    		if ($_POST['page'] == 'ajax' || $_GET['page'] == 'ajax'){
-                echo createXmlHeader() . xmlEntry('error', "Sorry! FATAL RUN-TIME ERROR. We encounterd the following error: $errstr.  and had to cancel the script") . createXmlFooter();
-               	ob_end_flush();
-  				session_write_close();
-                die();
-                break;  
-            }
-            ob_clean();
-    		header('HTTP/1.1 500 Internal Server Error'); 
-    		echo("<h1>Sorry! 1 FATAL RUN-TIME ERROR</h1> <p>We encounterd the following error:<br/> $errstr. <br/><br/> and had to cancel the script.</p>");
-    		ob_end_flush();
-  			session_write_close();
-    		die();
+    		throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
 	        break;
     	case E_WARNING: //2
     		$text  = date('Y-m-d H:i:s') . $temp;
@@ -1813,10 +1799,7 @@ function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext
     		$text .= " FATAL ERROR THAT OCCURED DURING PHP's INITIAL STARTUP: '$errstr' Fatal error on line $errline in file $errfile, PHP " . PHP_VERSION . " (" . PHP_OS . ") Aborting...";
     		//error_log($text, 1, "operator@example.com");
     		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
-    		ob_clean();
-    		header('HTTP/1.1 500 Internal Server Error');
-    		echo("<h1>Sorry! 16 FATAL ERROR THAT OCCURED DURING PHP's INITIAL STARTUP</h1> <p>We encounterd the following error:<br/> $errstr. <br/><br/> and had to cancel the script.</p>");
-    		die();
+    		throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
 	        break;
         case E_CORE_WARNING: //32
         	$text  = date('Y-m-d H:i:s') . $temp;
@@ -1828,17 +1811,7 @@ function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext
     		$text .= " FATAL COMPILE-TIME ERROR: '$errstr' Fatal error on line $errline in file $errfile, PHP " . PHP_VERSION . " (" . PHP_OS . ") Aborting...";
     		//error_log($text, 1, "operator@example.com");
     		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
-    		ob_clean();
-    		if ($_POST['page'] == 'ajax' || $_GET['page'] == 'ajax'){
-                echo createXmlHeader() . xmlEntry('error', "Sorry! FATAL COMPILE-TIME ERROR. We encounterd the following error: $errstr.  and had to cancel the script") . createXmlFooter();
-                die();
-                break;  
-            }
-    		header('HTTP/1.1 500 Internal Server Error');
-    		echo("<h1>Sorry! 64 FATAL COMPILE-TIME ERROR</h1> <p>We encounterd the following error:<br/> $errstr. <br/><br/> and had to cancel the script.</p>");
-    		ob_end_flush();
-  			session_write_close();
-    		die();
+    		throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
 	        break;
         case E_COMPILE_WARNING: //128
         	$text  = date('Y-m-d H:i:s') . $temp;
@@ -1850,22 +1823,7 @@ function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext
     		$text .= " USER ERROR: '$errstr' Fatal error on line $errline in file $errfile, PHP " . PHP_VERSION . " (" . PHP_OS . ") Aborting...";
     		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
     		//error_log($text, 1, "operator@example.com");
-    		if ($_POST['page'] == 'ajax' || $_GET['page'] == 'ajax'){
-    			ob_clean();
-                echo createXmlHeader() . xmlEntry('error', "Sorry! User Error. We encounterd the following error: $errstr.  and had to cancel the script") . createXmlFooter();
-                ob_end_flush();
-  				session_write_close();
-                die();
-                break;  
-            }
-    		ob_clean();
-    		header('HTTP/1.1 500 Internal Server Error');
-			echo "<h1>Sorry! 256 User Error</h1> <p>We encounterd the following error:<br/> $errstr. <br/><br/> and had to cancel the script.</p><br/>";
-			log_trace();
-    		$_SESSION['messageToStack'][] = array('type' => $type, 'params' => 'class="ui-state-error"', 'text' => $errstr, 'message' => $errstr);
-    		ob_end_flush();
-  			session_write_close();
-    		die();
+    		throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
 	        break;
     	case E_USER_WARNING: //512
     		$text  = date('Y-m-d H:i:s') . $temp;

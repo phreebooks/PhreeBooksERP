@@ -357,18 +357,13 @@ class inventory {
 	  		if ($this->inventory_path) $file_path .= '/' . $this->inventory_path;
 	  		$temp_file_name = $_FILES['inventory_image']['tmp_name'];
 	  		$file_name = $_FILES['inventory_image']['name'];
-	  		if (!validate_path($file_path)) {
-				throw new \Exception(INV_IMAGE_PATH_ERROR, 'error');
-	  		} elseif (!validate_upload('inventory_image', 'image', 'jpg')) {
-				throw new \Exception(INV_IMAGE_FILE_TYPE_ERROR, 'error');
-	  		} else { // passed all test, write file
-	  			$result = $db->Execute("select * from " . TABLE_INVENTORY . " where image_with_path = '" . ($this->inventory_path ? ($this->inventory_path . '/') : '') . $file_name ."'");
-	  			if ( $result->RecordCount() != 0) throw new \Exception(INV_IMAGE_DUPLICATE_NAME, 'error');
-	  			if (!copy($temp_file_name, $file_path . '/' . $file_name)) throw new \Exception(INV_IMAGE_FILE_WRITE_ERROR);
-				$this->image_with_path = ($this->inventory_path ? ($this->inventory_path . '/') : '') . $file_name;
-		  		$sql_data_array['image_with_path'] = $this->image_with_path; // update the image with relative path
-				
-	  		}
+	  		validate_path($file_path);
+	  		validate_upload('inventory_image', 'image', 'jpg');
+	  		$result = $db->Execute("select * from " . TABLE_INVENTORY . " where image_with_path = '" . ($this->inventory_path ? ($this->inventory_path . '/') : '') . $file_name ."'");
+	  		if ( $result->RecordCount() != 0) throw new \Exception(INV_IMAGE_DUPLICATE_NAME);
+	  		if (!copy($temp_file_name, $file_path . '/' . $file_name)) throw new \Exception(INV_IMAGE_FILE_WRITE_ERROR);
+			$this->image_with_path = ($this->inventory_path ? ($this->inventory_path . '/') : '') . $file_name;
+		  	$sql_data_array['image_with_path'] = $this->image_with_path; // update the image with relative path
 		}
 		if ($this->id != ''){
 			$result = $db->Execute("select attachments from ".TABLE_INVENTORY." where id = $this->id");

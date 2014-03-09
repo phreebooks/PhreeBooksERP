@@ -25,7 +25,7 @@ class pos_this_week extends \core\classes\ctl_panel {
 	public $version      		= '3.5';
 	public $module_id 			= 'phreepos';
 
-	function Output($params) {
+	function output($params) {
 		global $db, $currencies;
 		$contents = '';
 		$control  = '';

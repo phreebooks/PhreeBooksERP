@@ -17,7 +17,6 @@
 //  Path: /modules/contacts/pages/main/pre_process.php
 //
 /**************   page specific initialization  *************************/
-$error       = false;
 $contact_js  = '';
 $js_pmt_array= '';
 $js_actions  = '';
@@ -54,28 +53,25 @@ switch ($_REQUEST['action']) {
         \core\classes\user::validate_security($security_level, 2);
 	    break;
     case 'save':
-		$id = (int)db_prepare_input($_POST['id']);  // if present, then its an edit
-	    $id ? \core\classes\user::validate_security($security_level, 3) : \core\classes\user::validate_security($security_level, 2);
-		// error check
-		$error = $cInfo->data_complete($error);
-		// start saving data
-		if (!$error) {
-		  $cInfo->save_contact(); 
-		  $cInfo->save_addres();
-		  if ($type <> 'i' && ($_POST['i_short_name'] || $_POST['address']['im']['primary_name'])) { // is null
-		  	$crmInfo = new \contacts\classes\type\i;
-	        $crmInfo->auto_field  = $cInfo->type=='v' ? 'next_vend_id_num' : 'next_cust_id_num';
-	        $crmInfo->dept_rep_id = $cInfo->id;
-		  	// error check contact
-			 $error = $crmInfo->data_complete($error);
-	         if (!$error) {
-	      	   $crmInfo->save_contact();
-	      	   $crmInfo->save_addres();
-			 }
-		  }
-		  // payment fields
-		  if (ENABLE_ENCRYPTION && $_POST['payment_cc_name'] && $_POST['payment_cc_number']) { // save payment info
-			  $encrypt = new \core\classes\encryption();
+    	try{
+			$id = (int)db_prepare_input($_POST['id']);  // if present, then its an edit
+		    $id ? \core\classes\user::validate_security($security_level, 3) : \core\classes\user::validate_security($security_level, 2);
+			// error check
+			$cInfo->data_complete();
+			// start saving data
+		  	$cInfo->save_contact(); 
+		  	$cInfo->save_addres();
+		  	if ($type <> 'i' && ($_POST['i_short_name'] || $_POST['address']['im']['primary_name'])) { // is null
+		  		$crmInfo = new \contacts\classes\type\i;
+	        	$crmInfo->auto_field  = $cInfo->type=='v' ? 'next_vend_id_num' : 'next_cust_id_num';
+	        	$crmInfo->dept_rep_id = $cInfo->id;
+		  		// error check contact
+				$crmInfo->data_complete();
+	        	$crmInfo->save_contact();
+	      		$crmInfo->save_addres();
+		  	}
+		  	// payment fields
+		  	if (ENABLE_ENCRYPTION && $_POST['payment_cc_name'] && $_POST['payment_cc_number']) { // save payment info
 				$cc_info = array(
 				  'name'    => db_prepare_input($_POST['payment_cc_name']),
 				  'number'  => db_prepare_input($_POST['payment_cc_number']),
@@ -83,44 +79,41 @@ switch ($_REQUEST['action']) {
 				  'exp_year'=> db_prepare_input($_POST['payment_exp_year']),
 				  'cvv2'    => db_prepare_input($_POST['payment_cc_cvv2']),
 				);
-				if ($enc_value = $encrypt->encrypt_cc($cc_info)) {
-				  $payment_array = array(
-				    'hint'      => $enc_value['hint'],
-				    'module'    => 'contacts',
-				    'enc_value' => $enc_value['encoded'],
-				    'ref_1'     => $cInfo->id,
-				    'ref_2'     => $cInfo->address[$type.'m']['address_id'],
-				    'exp_date'  => $enc_value['exp_date'],
-				  );
-				  db_perform(TABLE_DATA_SECURITY, $payment_array, $_POST['payment_id'] ? 'update' : 'insert', 'id = '.$_POST['payment_id']);				
-				} else {
-					$error = true;
-				}
-		  }
-		  // Check attachments
-		  $result = $db->Execute("select attachments from ".TABLE_CONTACTS." where id = $id");
-		  $attachments = $result->fields['attachments'] ? unserialize($result->fields['attachments']) : array();
-		  $image_id = 0;
-		  while ($image_id < 100) { // up to 100 images
-		    if (isset($_POST['rm_attach_'.$image_id])) {
-				  @unlink(CONTACTS_DIR_ATTACHMENTS . 'contacts_'.$cInfo->id.'_'.$image_id.'.zip');
-				  unset($attachments[$image_id]);
-		    }
-		    $image_id++;
-		  }
-		  if (is_uploaded_file($_FILES['file_name']['tmp_name'])) { // find an image slot to use
-		    $image_id = 0;
-		    while (true) {
-			    if (!file_exists(CONTACTS_DIR_ATTACHMENTS.'contacts_'.$cInfo->id.'_'.$image_id.'.zip')) break;
-			    $image_id++;
-		    }
-		    saveUploadZip('file_name', CONTACTS_DIR_ATTACHMENTS, 'contacts_'.$cInfo->id.'_'.$image_id.'.zip');
-		    $attachments[$image_id] = $_FILES['file_name']['name'];
-		  }
-		  $sql_data_array = array('attachments' => sizeof($attachments)>0 ? serialize($attachments) : '');
-		  db_perform(TABLE_CONTACTS, $sql_data_array, 'update', 'id = '.$cInfo->id);
-		  // check for crm notes
-		  if ($_POST['crm_action'] <> '' || $_POST['crm_note'] <> '') {
+				$enc_value = \core\classes\encryption::encrypt_cc($cc_info);
+				$payment_array = array(
+				  'hint'      => $enc_value['hint'],
+				  'module'    => 'contacts',
+				  'enc_value' => $enc_value['encoded'],
+				  'ref_1'     => $cInfo->id,
+				  'ref_2'     => $cInfo->address[$type.'m']['address_id'],
+				  'exp_date'  => $enc_value['exp_date'],
+				);
+				db_perform(TABLE_DATA_SECURITY, $payment_array, $_POST['payment_id'] ? 'update' : 'insert', 'id = '.$_POST['payment_id']);				
+		  	}
+		  	// Check attachments
+		  	$result = $db->Execute("select attachments from ".TABLE_CONTACTS." where id = $id");
+		  	$attachments = $result->fields['attachments'] ? unserialize($result->fields['attachments']) : array();
+		  	$image_id = 0;
+		  	while ($image_id < 100) { // up to 100 images
+		    	if (isset($_POST['rm_attach_'.$image_id])) {
+				  	@unlink(CONTACTS_DIR_ATTACHMENTS . 'contacts_'.$cInfo->id.'_'.$image_id.'.zip');
+				  	unset($attachments[$image_id]);
+		    	}
+		    	$image_id++;
+		  	}
+		  	if (is_uploaded_file($_FILES['file_name']['tmp_name'])) { // find an image slot to use
+		    	$image_id = 0;
+		    	while (true) {
+				    if (!file_exists(CONTACTS_DIR_ATTACHMENTS.'contacts_'.$cInfo->id.'_'.$image_id.'.zip')) break;
+				    $image_id++;
+			    }
+		    	saveUploadZip('file_name', CONTACTS_DIR_ATTACHMENTS, 'contacts_'.$cInfo->id.'_'.$image_id.'.zip');
+			    $attachments[$image_id] = $_FILES['file_name']['name'];
+			}
+		  	$sql_data_array = array('attachments' => sizeof($attachments)>0 ? serialize($attachments) : '');
+		  	db_perform(TABLE_CONTACTS, $sql_data_array, 'update', 'id = '.$cInfo->id);
+		  	// check for crm notes
+		  	if ($_POST['crm_action'] <> '' || $_POST['crm_note'] <> '') {
 				$sql_data_array = array(
 				  'contact_id' => $cInfo->id,
 				  'log_date'   => $_POST['crm_date'],
@@ -129,10 +122,13 @@ switch ($_REQUEST['action']) {
 				  'notes'      => db_prepare_input($_POST['crm_note']),
 				);
 				db_perform(TABLE_CONTACTS_LOG, $sql_data_array, 'insert');	
-		  }
-		  gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
+		  	}
+		  	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
+		}catch(Exception $e){
+			$messageStack->add($e->getMessage());
+			$_REQUEST['action'] = 'edit';
 		}
-		$_REQUEST['action'] = 'edit';
+		
 		break;
 
     case 'edit':

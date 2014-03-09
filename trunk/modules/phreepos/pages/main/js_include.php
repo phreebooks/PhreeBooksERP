@@ -37,7 +37,6 @@ var account_type         = '<?php echo $account_type; ?>';
 var text_search          = '<?php echo TEXT_SEARCH;?>';
 var text_enter_new       = '<?php echo TEXT_ENTER_NEW; ?>';
 var text_properties      = '<?php echo TEXT_PROPERTIES; ?>';
-var post_error           = <?php echo $error ? "true" : "false"; ?>;
 var default_sales_tax    = -1;
 var contact_sales_tax    = -1;
 var image_delete_text    = '<?php echo TEXT_DELETE; ?>';

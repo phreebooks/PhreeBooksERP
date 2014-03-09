@@ -18,14 +18,16 @@
 // | file: /doc/manual/ch01-Introduction/license.html.               |
 // | If not, see http://www.gnu.org/licenses/                        |
 // +-----------------------------------------------------------------+
-//  Path: /modules/import_bank/classes/install.php
+//  Path: /modules/import_bank/classes/admin.php
 //
 namespace phreewiki\classes;
 class admin extends \core\classes\admin {
-	public $module			= 'phreewiki';
+	public $id 			= 'phreewiki';
+	public $text		= MODULE_PHREEWIKI_TITLE;
+	public $description = MODULE_PHREEWIKI_DESCRIPTION;
+	public $version		= '1.2';
 	
- 	function __construct(){
-		$this->notes = array(); // placeholder for any operational notes
+ 	function __construct() {
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 	  		'phreedom'   => '3.0',
 		);
@@ -44,70 +46,62 @@ class admin extends \core\classes\admin {
 		// add new directories to store images and data
 		$this->dirlist = array(
 		);
-	// Load tables
-	$this->tables = array(
-	  TABLE_PHREEWIKI =>"CREATE TABLE ". TABLE_PHREEWIKI ." (
-		`id` int(11) NOT NULL auto_increment,
-		`title` varchar(255) NOT NULL default '',
-		`body` text NOT NULL,
-		`fields` text NOT NULL,
-		`modified` varchar(128) NOT NULL default '',
-		`created` varchar(128) NOT NULL default '',
-		`modifier` varchar(255) NOT NULL default '',
-		`creator` varchar(255) NOT NULL default '',
-		`version` int(11) NOT NULL default '0',
-		`tags` varchar(255) NOT NULL default '',
-		PRIMARY KEY (id)
-		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
-	
-	  TABLE_PHREEWIKI_VERSION =>"CREATE TABLE ".TABLE_PHREEWIKI_VERSION." (
-		`id` int(11) NOT NULL auto_increment,
-		`title` varchar(255) NOT NULL default '',
-		`body` text NOT NULL,
-		`fields` text NOT NULL,
-		`modified` varchar(128) NOT NULL default '',
-		`modifier` varchar(255) NOT NULL default '',
-		`version` int(11) NOT NULL default '0',
-		`tags` varchar(255) NOT NULL default '',
-		`oid` INT(11) NOT NULL,
-		PRIMARY KEY (id)
-		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
-    );
-    $this->pluginArray = array(
-      'ArchivedTimeline'     => "ArchivedTimeline",
-	  'CommentPlugin'        => "CommentPlugin",
-	  'CommentTabPlugin'     => "CommentTabPlugin",
-	  'GenRssPlugin'         => "GenRssPlugin",
-	  'LoadExtPlugin'        => "LoadExtPlugin",
-	  'NestedSlidersPlugin'  => "NestedSlidersPlugin",
-	  'RecentTiddlersPlugin' => "RecentTiddlersPlugin",
-	  'SelectThemePlugin'    => "SelectThemePlugin",
-	  'XMLReader2'           => "XMLReader2",
-	  'wikibar'              => "wikibar",
-    
-	/*
-	  'UploadPlugin' => "UploadPlugin",
-	  'BigThemePack' => "BigThemePack",
-	  'Breadcrumbs2' => "BreadCrumbs2",
-	*/
-    );
-    parent::__construct();
-  }
+		// Load tables
+		$this->tables = array(
+		  TABLE_PHREEWIKI =>"CREATE TABLE ". TABLE_PHREEWIKI ." (
+			`id` int(11) NOT NULL auto_increment,
+			`title` varchar(255) NOT NULL default '',
+			`body` text NOT NULL,
+			`fields` text NOT NULL,
+			`modified` varchar(128) NOT NULL default '',
+			`created` varchar(128) NOT NULL default '',
+			`modifier` varchar(255) NOT NULL default '',
+			`creator` varchar(255) NOT NULL default '',
+			`version` int(11) NOT NULL default '0',
+			`tags` varchar(255) NOT NULL default '',
+			PRIMARY KEY (id)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
+		
+		  TABLE_PHREEWIKI_VERSION =>"CREATE TABLE ".TABLE_PHREEWIKI_VERSION." (
+			`id` int(11) NOT NULL auto_increment,
+			`title` varchar(255) NOT NULL default '',
+			`body` text NOT NULL,
+			`fields` text NOT NULL,
+			`modified` varchar(128) NOT NULL default '',
+			`modifier` varchar(255) NOT NULL default '',
+			`version` int(11) NOT NULL default '0',
+			`tags` varchar(255) NOT NULL default '',
+			`oid` INT(11) NOT NULL,
+			PRIMARY KEY (id)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
+	    );
+	    $this->pluginArray = array(
+	      'ArchivedTimeline'     => "ArchivedTimeline",
+		  'CommentPlugin'        => "CommentPlugin",
+		  'CommentTabPlugin'     => "CommentTabPlugin",
+		  'GenRssPlugin'         => "GenRssPlugin",
+		  'LoadExtPlugin'        => "LoadExtPlugin",
+		  'NestedSlidersPlugin'  => "NestedSlidersPlugin",
+		  'RecentTiddlersPlugin' => "RecentTiddlersPlugin",
+		  'SelectThemePlugin'    => "SelectThemePlugin",
+		  'XMLReader2'           => "XMLReader2",
+		  'wikibar'              => "wikibar",
+	    
+		/*
+		  'UploadPlugin' => "UploadPlugin",
+		  'BigThemePack' => "BigThemePack",
+		  'Breadcrumbs2' => "BreadCrumbs2",
+		*/
+	    );
+	    parent::__construct();
+	}
 
-  function install() {
-    global $db, $messageStack;
-		$error = false;
+	function install($path_my_files, $demo = false) {
+	    global $db, $messageStack;
+	    parent::install($path_my_files, $demo);
 		require_once(DIR_FS_MODULES . 'phreewiki/functions/phreewiki.php');
-		foreach ($this->pluginArray as $key => $value){
-			$error = install_plugin($key, $value);
-		}
-    return $error;
-  }
-
-  function update() {
-  	global $db;
-  	write_configure('MODULE_' . strtoupper($this->module) . '_STATUS', constant('MODULE_' . strtoupper($this->module) . '_VERSION'));
-  }
+		foreach ($this->pluginArray as $key => $value) install_plugin($key, $value);
+	}
 
 }
 ?>

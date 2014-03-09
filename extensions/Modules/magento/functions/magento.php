@@ -36,7 +36,7 @@ class magento{
 		global $messageStack;
 		try{
 //			$messageStack->add('loggin in', 'caution');
-			$this->client = new SoapClient(MAGENTO_URL.'/index.php/api/v2_soap/?wsdl'); 
+			$this->client = new \SoapClient(MAGENTO_URL.'/index.php/api/v2_soap/?wsdl'); 
 			$this->session = $this->client->login(MAGENTO_USERNAME, MAGENTO_PASSWORD);
 		}catch(SoapFault $exception) { 
 			$messageStack->add($exception->getMessage(), 'error');
@@ -102,9 +102,8 @@ class magento{
 		global $messageStack;
 		if ($this->session == '') $this->login();
 		try{
-			require_once(DIR_FS_WORKING . 'classes/inventory.php');
 			// get attribute set
-			$inventory = new \magento\inventory();
+			$inventory = new \magento\classes\inventory();
 			$attributeSets = $this->client->catalogProductListOfAdditionalAttributes($this->session);
 			$inventory->set_attributeSets($attributeSets);
 			$inventory->get_item_by_sku($sku);

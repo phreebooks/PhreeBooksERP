@@ -118,7 +118,7 @@ function import_text_params($arrSQL) {
 		$ValidReportSQL = true;
 	  }
 	}
-	if (!$ValidReportSQL) return false; // no valid report sql statement found in the text file, error
+	if (!$ValidReportSQL) throw new \Exception("no valid sql statement found for report"); // no valid report sql statement found in the text file, error
 	foreach ($arrSQL as $sql) { // fetch the translations for the field descriptions
 	  if (strpos($sql,'FieldDesc') === 0) { // then it's a field description, find the index and save
 		$sql = trim($sql);

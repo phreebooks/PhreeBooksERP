@@ -20,8 +20,6 @@ $security_level = \core\classes\user::validate(SECURITY_WORK_ORDERS_BUILDER);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_MODULES . 'inventory/defaults.php');
 /**************   page specific initialization  *************************/
-$error       = false;
-$processed   = false;
 $lock_title  = false;
 $hide_save   = false;
 $criteria    = array();
@@ -36,97 +34,88 @@ switch ($_REQUEST['action']) {
   case 'new':
 	break;
   case 'save':
-	\core\classes\user::validate_security($security_level, 2);
-  	$id          = db_prepare_input($_POST['id']);
-	$wo_title    = db_prepare_input($_POST['wo_title']);
-	$sku_id      = db_prepare_input($_POST['sku_id']);
-	$sku         = db_prepare_input($_POST['sku']);
-	$description = db_prepare_input($_POST['description']);
-	$allocate    = db_prepare_input($_POST['allocate']);
-	$ref_doc     = db_prepare_input($_POST['ref_doc']);
-	$ref_spec    = db_prepare_input($_POST['ref_spec']);
-	$revision    = db_prepare_input($_POST['revision']);
-	// load the steps
-	$x = 1;
-	$step_list = array();
-	while (isset($_POST['task_' . $x])) { // while there are steps rows to read in
-	  $step_list[] = array(
-		'step'    => db_prepare_input($_POST['step_'    . $x]),
-		'task_id' => db_prepare_input($_POST['task_id_' . $x]),
-	  );
-	  $x++;
-	  // validate the task_id, error of no match
-	}
-	// If the sku and description were entered manually, the sku_id will be blank, find it
-	if (!$sku_id) {
-	  $result = $db->Execute("select id from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
-	  if ($result->RecordCount() == 0) {
-	    $messageStack->add(WO_SKU_NOT_FOUND, 'error');
-	    $error = true;
-	  } else {
-	    $sku_id = $result->fields['id'];
-	  }
-	}
-	// error check
-	if (!$error && (!$sku_id || !$sku || !$wo_title)) {
-	  $messageStack->add(WO_SKU_ID_REQUIRED,'error');
-	  $error = true;
-	}
-	// check the revision, roll if necessary
-	if ($id) {
-	  $result = $db->Execute("select revision, last_usage from " . TABLE_WO_MAIN . " where id = " . $id);
-	  if ($result->fields['last_usage'] <> '0000-00-00') { // roll the revision
-	    $revision = $result->fields['revision'] + 1;
-		$id = '';
-		$bump_rev = true;
-	  }
-	} else {
-		$bump_rev = false;
-	}
-	// update/insert the data to the db
-	if (!$error) {
-	  $sql_data_array = array(
-	    'sku_id'      => $sku_id,
-	    'wo_title'    => $wo_title,
-	    'description' => $description,
-		'allocate'    => $allocate,
-	    'ref_doc'     => $ref_doc,
-	    'ref_spec'    => $ref_spec,
-	    'revision'    => $revision,
-	  );
-	  if ($id) {
-	    if (!$success = db_perform(TABLE_WO_MAIN, $sql_data_array, 'update', 'id = ' . $id)) $error = true;
-	  } else {
-	    if (!$success = db_perform(TABLE_WO_MAIN, $sql_data_array, 'insert')) $error = true;
-		$id = db_insert_id();
-		if (!$error && $bump_rev) {
-	  	  $result = $db->Execute("update " . TABLE_WO_MAIN . " set inactive = '1' where id = " . $_POST['id']);
+  	try{
+  		$db->transStart();
+		\core\classes\user::validate_security($security_level, 2);
+	  	$id          = db_prepare_input($_POST['id']);
+		$wo_title    = db_prepare_input($_POST['wo_title']);
+		$sku_id      = db_prepare_input($_POST['sku_id']);
+		$sku         = db_prepare_input($_POST['sku']);
+		$description = db_prepare_input($_POST['description']);
+		$allocate    = db_prepare_input($_POST['allocate']);
+		$ref_doc     = db_prepare_input($_POST['ref_doc']);
+		$ref_spec    = db_prepare_input($_POST['ref_spec']);
+		$revision    = db_prepare_input($_POST['revision']);
+		// load the steps
+		$x = 1;
+		$step_list = array();
+		while (isset($_POST['task_' . $x])) { // while there are steps rows to read in
+		  	$step_list[] = array(
+			  'step'    => db_prepare_input($_POST['step_'    . $x]),
+			  'task_id' => db_prepare_input($_POST['task_id_' . $x]),
+		  	);
+		  	$x++;
+		  	// validate the task_id, error of no match
 		}
-	  }
-	}
-	// update the task list
-	if (!$error) {
-	  if ($_POST['id']) { // delete the previous
-	    $db->Execute("delete from " . TABLE_WO_STEPS . " where ref_id = " . $id);
-	  }
-      while (list($key, $val) = each($step_list)) {
-	    $sql_data_array = array(
-	      'ref_id'      => $id,
-	      'step'        => $val['step'],
-	      'task_id'     => $val['task_id'],
-	    );
-	    $success = db_perform(TABLE_WO_STEPS, $sql_data_array, 'insert');
-		if (!$success) $error = true;
-	  }
-	}
-	// finish
-	if (!$error) {
-	  gen_add_audit_log(($id  ? sprintf(WO_AUDIT_LOG_BUILDER, TEXT_UPDATE) : sprintf(WO_AUDIT_LOG_BUILDER, TEXT_ADD)) . $task_id);
-	  $messageStack->add(($id ? WO_MESSAGE_SUCCESS_MAIN_UPDATE : WO_MESSAGE_SUCCESS_MAIN_ADD),'success');
-	  gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-	} else {
-	  $messageStack->add(WO_MESSAGE_BUILDER_ERROR, 'error');
-	  $_REQUEST['action'] = 'edit';
+		// If the sku and description were entered manually, the sku_id will be blank, find it
+		if (!$sku_id) {
+		  	$result = $db->Execute("select id from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
+		  	if ($result->RecordCount() == 0) throw new \Exception(WO_SKU_NOT_FOUND);
+		  	$sku_id = $result->fields['id'];
+		}
+		// error check
+		if ((!$sku_id || !$sku || !$wo_title)) throw new \Exception(WO_SKU_ID_REQUIRED);
+		// check the revision, roll if necessary
+		if ($id) {
+		  	$result = $db->Execute("select revision, last_usage from " . TABLE_WO_MAIN . " where id = " . $id);
+		  	if ($result->fields['last_usage'] <> '0000-00-00') { // roll the revision
+		    	$revision = $result->fields['revision'] + 1;
+				$id = '';
+				$bump_rev = true;
+		  	}
+		} else {
+			$bump_rev = false;
+		}
+		// update/insert the data to the db
+		$sql_data_array = array(
+		  'sku_id'      => $sku_id,
+		  'wo_title'    => $wo_title,
+		  'description' => $description,
+		  'allocate'    => $allocate,
+		  'ref_doc'     => $ref_doc,
+		  'ref_spec'    => $ref_spec,
+		  'revision'    => $revision,
+		);
+		if ($id) {
+			if (!db_perform(TABLE_WO_MAIN, $sql_data_array, 'update', 'id = ' . $id)) throw new Exception("wasn't able to update $id in to table");
+		} else {
+		    if (!db_perform(TABLE_WO_MAIN, $sql_data_array, 'insert')) throw new Exception("wasn't able to insert in to table");
+			$id = db_insert_id();
+			if ($bump_rev) {
+		  	  	$result = $db->Execute("update " . TABLE_WO_MAIN . " set inactive = '1' where id = " . $_POST['id']);
+			}
+		}
+		// update the task list
+		if ($_POST['id']) { // delete the previous
+		    $db->Execute("delete from " . TABLE_WO_STEPS . " where ref_id = " . $id);
+		}
+	    while (list($key, $val) = each($step_list)) {
+		    $sql_data_array = array(
+		      'ref_id'      => $id,
+		      'step'        => $val['step'],
+		      'task_id'     => $val['task_id'],
+		    );
+			if (!db_perform(TABLE_WO_STEPS, $sql_data_array, 'insert')) throw new Exception("wasn't able to insert in to table");
+		}
+		$db->transCommit();
+		// finish
+		gen_add_audit_log(($id  ? sprintf(WO_AUDIT_LOG_BUILDER, TEXT_UPDATE) : sprintf(WO_AUDIT_LOG_BUILDER, TEXT_ADD)) . $task_id);
+		$messageStack->add(($id ? WO_MESSAGE_SUCCESS_MAIN_UPDATE : WO_MESSAGE_SUCCESS_MAIN_ADD),'success');
+		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
+	} catch(Exception $e) {
+		$db->transRollback();
+	  	$messageStack->add($e->getMessage(), 'error');
+	  	$_REQUEST['action'] = 'edit';
 	}
 	break;
   case 'copy':
@@ -174,11 +163,7 @@ switch ($_REQUEST['action']) {
 	$_REQUEST['action'] = 'edit'; // fall through to edit case
   case 'edit':
     $id = db_prepare_input($_POST['rowSeq']);
-	if (!$id) {
-	  $_REQUEST['action'] = '';
-	  $error  = true;
-	  break;
-	}
+	if (!$id) throw new \Exception("the variable 'rowSeq' isn't defined ");
 	$result = $db->Execute("select id, wo_title, sku_id, description, allocate, ref_doc, ref_spec, revision, last_usage 
 		from " . TABLE_WO_MAIN . " where id = " . $id);
 	foreach ($result->fields as $key => $value) $$key = $value;
@@ -186,13 +171,13 @@ switch ($_REQUEST['action']) {
 	$highest_rev = $result->fields['revision'];
 	// set some filters
 	if ($revision < $highest_rev) {
-	  $messageStack->add(WO_CANNOT_SAVE, 'caution');
-	  $hide_save = true;
+	  	$messageStack->add(WO_CANNOT_SAVE, 'caution');
+	  	$hide_save = true;
 	}
 	if ($revision > 0) $lock_title = true;
 	if (!$hide_save && $last_usage <> '0000-00-00') {
-	  $lock_title = true;
-	  $messageStack->add(WO_ROLL_REVISION, 'caution');
+	  	$lock_title = true;
+	  	$messageStack->add(WO_ROLL_REVISION, 'caution');
 	}
 	// pull the sku
 	$result = $db->Execute("select sku, image_with_path from " . TABLE_INVENTORY . " where id = " . $sku_id);
@@ -203,37 +188,28 @@ switch ($_REQUEST['action']) {
 	  from " . TABLE_WO_STEPS . " where ref_id = " . $id . " order by step");
 	$step_list = array();
 	while (!$result->EOF) {
-	  $task = $db->Execute("select task_name, description from " . TABLE_WO_TASK . " where id = " . $result->fields['task_id'] . " limit 1");
-	  $step_list[] = array(
-	    'step'      => $result->fields['step'],
-	    'task_id'   => $result->fields['task_id'],
-	    'task_name' => $task->fields['task_name'],
-	    'desc'      => $task->fields['description'],
-	  );
-	  $result->MoveNext();
+	  	$task = $db->Execute("select task_name, description from " . TABLE_WO_TASK . " where id = " . $result->fields['task_id'] . " limit 1");
+	  	$step_list[] = array(
+	  	  'step'      => $result->fields['step'],
+	  	  'task_id'   => $result->fields['task_id'],
+	  	  'task_name' => $task->fields['task_name'],
+	  	  'desc'      => $task->fields['description'],
+	  	);
+	  	$result->MoveNext();
 	}
 	break;
   case 'delete':
 	\core\classes\user::validate_security($security_level, 4);
       $id = db_prepare_input($_GET['id']);
-	if (!$id) {
-	  $_REQUEST['action'] = '';
-	  $error = true;
-	  break;
-	}
+	if (!$id) throw new \Exception("the variable 'id' isn't defined ");
 	// error check
 	$result = $db->Execute("select wo_title, last_usage from " . TABLE_WO_MAIN . " where id = " . $id);
-	if ($result->fields['last_usage'] <> '0000-00-00') {
-	  $error = true;
-	  $messageStack->add(WO_ERROR_CANNOT_DELETE_BUILDER, 'error');
-	}
+	if ($result->fields['last_usage'] <> '0000-00-00') throw new \Exception(WO_ERROR_CANNOT_DELETE_BUILDER);
 	// finish
-	if (!$error) {
-	  $db->Execute("delete from " . TABLE_WO_MAIN  . " where id = " . $id);
-	  $db->Execute("delete from " . TABLE_WO_STEPS . " where ref_id = " . $id);
-	  gen_add_audit_log(sprintf(WO_AUDIT_LOG_BUILDER, TEXT_DELETE) . $result->fields['wo_title']);
-	  $messageStack->add(WO_MESSAGE_SUCCESS_MAIN_DELETE,'success');
-	}
+	$db->Execute("delete from " . TABLE_WO_MAIN  . " where id = " . $id);
+	$db->Execute("delete from " . TABLE_WO_STEPS . " where ref_id = " . $id);
+	gen_add_audit_log(sprintf(WO_AUDIT_LOG_BUILDER, TEXT_DELETE) . $result->fields['wo_title']);
+	$messageStack->add(WO_MESSAGE_SUCCESS_MAIN_DELETE,'success');
     $_REQUEST['action'] = '';
 	break;
   case 'go_first':    $_REQUEST['list'] = 1;       break;

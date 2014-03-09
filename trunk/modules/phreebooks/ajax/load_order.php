@@ -32,7 +32,6 @@ $so_po     = db_prepare_input($_GET['so_po']); // pull from a so/po for invoice/
 $just_ship = db_prepare_input($_GET['ship_only']);
 define('JOURNAL_ID',$jID);
 $cog_types = explode(',', COG_ITEM_TYPES);
-$error = false;
 $sID   = $cID; // set ship contact ID equal to bill contact ID
 switch (JOURNAL_ID) {
   case  3:

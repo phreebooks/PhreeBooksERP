@@ -1,6 +1,6 @@
 <?php
 function connect(){
-	$client = new SoapClient(MAGENTO_URL.'/soap/api/?wsdl');
+	$client = new \SoapClient(MAGENTO_URL.'/soap/api/?wsdl');
 
 	// If somestuff requires api authentification,
 	// 	then get a session token
@@ -20,7 +20,7 @@ function connect(){
 	$client->endSession($session);
 }
 function update(){
-	$proxy = new SoapClient('http://magentohost/api/soap/?wsdl');
+	$proxy = new \SoapClient('http://magentohost/api/soap/?wsdl');
 	$sessionId = $proxy->login('apiUser', 'apiKey');
 	
 	$attributeSets = $proxy->call($sessionId, 'product_attribute_set.list');

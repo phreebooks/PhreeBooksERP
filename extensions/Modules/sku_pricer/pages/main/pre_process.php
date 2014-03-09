@@ -22,19 +22,14 @@ $security_level = \core\classes\user::validate(SECURITY_ID_SKU_PRICER);
 $upload_name = 'file_name';
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
-  case 'save':
-	\core\classes\user::validate_security($security_level, 1); // security check
-	// first verify the file was uploaded ok
-	if (!validate_upload($upload_name, 'text', 'csv')) {
-	  $messageStack->add(TEXT_IMP_ERMSG10,'error');
-	  break;
-	} else {
-	  $lines_array = file($_FILES[$upload_name]['tmp_name']);
-	  $post_pay = new \sku_pricer\classes\sku_pricer();
-	  $post_pay->processCSV($lines_array);
-    }
-	break;
-  default:
+  	case 'save':
+		\core\classes\user::validate_security($security_level, 1); // security check
+		validate_upload($upload_name, 'text', 'csv');
+		$lines_array = file($_FILES[$upload_name]['tmp_name']);
+		$post_pay = new \sku_pricer\classes\sku_pricer();
+		$post_pay->processCSV($lines_array);
+		break;
+  	default:
 }
 /*****************   prepare to display templates  *************************/
 $include_header   = true;

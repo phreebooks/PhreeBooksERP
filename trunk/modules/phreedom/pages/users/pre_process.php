@@ -24,7 +24,6 @@ gen_pull_language('contacts');
 require_once(DIR_FS_WORKING . 'functions/phreedom.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 /**************   page specific initialization  *************************/
-$error  = false;
 history_filter('users');
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/users/extra_actions.php';
@@ -34,132 +33,124 @@ switch ($_REQUEST['action']) {
   case 'save':
   case 'fill_all': 
   case 'fill_role':
-	\core\classes\user::validate_security($security_level, 2);
-	$admin_id  = db_prepare_input($_POST['rowSeq']);
-	$fill_all  = db_prepare_input($_POST['fill_all']);
-	$fill_role = db_prepare_input($_POST['fill_role']);
-	if ($security_level < 3 && $admin_id) $error = $messageStack->add(GEN_ADMIN_CANNOT_CHANGE_ROLES, 'error'); 
-	if ($_REQUEST['action'] == 'fill_role' ) {
-	  $result = $db->Execute("select admin_prefs, admin_security from " . TABLE_USERS . " where admin_id = " . $fill_role);
-	  $admin_security = $result->fields['admin_security'];
-	  if ($admin_id == 1) { // make sure first user cannot lock themselves out
-	  	$settings = array();
-	  	$temp = explode(",", $admin_security);
-	  	foreach ($temp as $value) {
-	  		$sID = explode(":", $value);
-	  		$settings[$sID[0]] = $sID[1];
+  	try{
+		\core\classes\user::validate_security($security_level, 2);
+		$admin_id  = db_prepare_input($_POST['rowSeq']);
+		$fill_all  = db_prepare_input($_POST['fill_all']);
+		$fill_role = db_prepare_input($_POST['fill_role']);
+		if ($security_level < 3 && $admin_id) throw new \Exception(GEN_ADMIN_CANNOT_CHANGE_ROLES); 
+		if ($_REQUEST['action'] == 'fill_role' ) {
+		  	$result = $db->Execute("select admin_prefs, admin_security from " . TABLE_USERS . " where admin_id = " . $fill_role);
+		  	$admin_security = $result->fields['admin_security'];
+		  	if ($admin_id == 1) { // make sure first user cannot lock themselves out
+		  		$temp = explode(",", $admin_security);
+		  		$settings = array();
+		  		foreach ($temp as $key => $value) $settings[] = "$key:$value";
+		  		$settings[SECURITY_ID_USERS] = 4;
+		  		$admin_security = implode(',', $settings);
+		  	}
+		  	$temp = unserialize($result->fields['admin_prefs']);  // fake the input to look like role
+		  	foreach ($temp as $key => $value) $_POST[$key] = $value;
+		} else {
+		  	$admin_security = '';
+		  	$post_keys = array_keys($_POST);
+		  	$temp = array();
+	      	foreach ($post_keys as $key) if (strpos($key, 'sID_') === 0) { // it's a security setting post
+				$secID = substr($key, 4);
+	      		$temp[$secID] =  $fill_all == '-1' ? substr($_POST[$key], 0, 1) : $fill_all;
+		  	}
+		  	if ($admin_id == 1) $temp[SECURITY_ID_USERS] = 4; // make sure first admin_id (installer) will not lock self out of system
+		  	$settings = array();
+		  	foreach ($temp as $key => $value) $settings[] = "$key:$value";
+		  	$admin_security = implode(',', $settings);
+		}
+		$prefs = array(
+		  'role'            => $fill_role,
+		  'def_store_id'    => db_prepare_input($_POST['def_store_id']),
+		  'def_cash_acct'   => db_prepare_input($_POST['def_cash_acct']),
+		  'def_ar_acct'     => db_prepare_input($_POST['def_ar_acct']),
+		  'def_ap_acct'     => db_prepare_input($_POST['def_ap_acct']),
+		  'restrict_store'  => isset($_POST['restrict_store'])  ? $_POST['restrict_store']  : '0',
+		  'restrict_period' => isset($_POST['restrict_period']) ? $_POST['restrict_period'] : '0',
+		);
+		$admin_prefs = serialize($prefs);
+		// not the most elegent but look for a colon in the second character position
+		$sql_data_array = array(
+		  'admin_name'     => db_prepare_input($_POST['admin_name']),
+		  'is_role'        => '0',
+		  'inactive'       => isset($_POST['inactive']) ? '1' : '0',
+		  'display_name'   => db_prepare_input($_POST['display_name']),
+		  'admin_email'    => db_prepare_input($_POST['admin_email']),
+		  'account_id'     => $_POST['account_id'] ? db_prepare_input($_POST['account_id']) : 0,
+		  'admin_prefs'    => $admin_prefs,
+		  'admin_security' => $admin_security,
+		);
+		if ($_POST['password_new']) { 
+		  	$password_new  = db_prepare_input($_POST['password_new']);
+		  	$password_conf = db_prepare_input($_POST['password_conf']);
+		  	if (strlen($password_new) < ENTRY_PASSWORD_MIN_LENGTH) throw new \Exception(sprintf(ENTRY_PASSWORD_NEW_ERROR, ENTRY_PASSWORD_MIN_LENGTH));
+		  	if ($password_new != $password_conf) throw new \Exception(ENTRY_PASSWORD_NEW_ERROR_NOT_MATCHING);
+		  	$sql_data_array['admin_pass'] = \core\classes\encryption::password($password_new);
+		}
+		if (!$admin_id) { // check for duplicate user name
+		  	$result = $db->Execute("select admin_id from " . TABLE_USERS . " where admin_name = '" . db_prepare_input($_POST['admin_name']) . "'");
+		  	if ($result->RecordCount() > 0) throw new \Exception(ENTRY_DUP_USER_NEW_ERROR);
+		}
+		if ($admin_id) {
+			db_perform(TABLE_USERS, $sql_data_array, 'update', 'admin_id = ' . (int)$admin_id);
+			gen_add_audit_log(sprintf(GEN_LOG_USER, TEXT_UPDATE), db_prepare_input($_POST['admin_name']));
+	  	} else {
+			db_perform(TABLE_USERS, $sql_data_array);
+			$admin_id = db_insert_id();
+			gen_add_audit_log(sprintf(GEN_LOG_USER, TEXT_ADD), db_prepare_input($_POST['admin_name']));
 	  	}
-	  	$settings[SECURITY_ID_USERS] = 4;
-	  	$settings = array();
-	  	foreach ($temp as $key => $value) $settings[] = "$key:$value";
-	  	$admin_security = implode(',', $settings);
-	  }
-	  $temp = unserialize($result->fields['admin_prefs']);  // fake the input to look like role
-	  foreach ($temp as $key => $value) $_POST[$key] = $value;
-	} else {
-	  $admin_security = '';
-	  $post_keys = array_keys($_POST);
-	  $temp = array();
-      foreach ($post_keys as $key) if (strpos($key, 'sID_') === 0) { // it's a security setting post
-		$secID = substr($key, 4);
-      	$temp[$secID] =  $fill_all == '-1' ? substr($_POST[$key], 0, 1) : $fill_all;
-	  }
-	  if ($admin_id == 1) $temp[SECURITY_ID_USERS] = 4; // make sure first admin_id (installer) will not lock self out of system
-	  $settings = array();
-	  foreach ($temp as $key => $value) $settings[] = "$key:$value";
-	  $admin_security = implode(',', $settings);
-	}
-	$prefs = array(
-	  'role'            => $fill_role,
-	  'def_store_id'    => db_prepare_input($_POST['def_store_id']),
-	  'def_cash_acct'   => db_prepare_input($_POST['def_cash_acct']),
-	  'def_ar_acct'     => db_prepare_input($_POST['def_ar_acct']),
-	  'def_ap_acct'     => db_prepare_input($_POST['def_ap_acct']),
-	  'restrict_store'  => isset($_POST['restrict_store'])  ? $_POST['restrict_store']  : '0',
-	  'restrict_period' => isset($_POST['restrict_period']) ? $_POST['restrict_period'] : '0',
-	);
-	$admin_prefs = serialize($prefs);
-	// not the most elegent but look for a colon in the second character position
-	$sql_data_array = array(
-	  'admin_name'     => db_prepare_input($_POST['admin_name']),
-	  'is_role'        => '0',
-	  'inactive'       => isset($_POST['inactive']) ? '1' : '0',
-	  'display_name'   => db_prepare_input($_POST['display_name']),
-	  'admin_email'    => db_prepare_input($_POST['admin_email']),
-	  'account_id'     => $_POST['account_id'] ? db_prepare_input($_POST['account_id']) : 0,
-	  'admin_prefs'    => $admin_prefs,
-	  'admin_security' => $admin_security,
-	);
-	if ($_POST['password_new']) { 
-	  $password_new  = db_prepare_input($_POST['password_new']);
-	  $password_conf = db_prepare_input($_POST['password_conf']);
-	  if (strlen($password_new) < ENTRY_PASSWORD_MIN_LENGTH) {
-		$error = $messageStack->add(sprintf(ENTRY_PASSWORD_NEW_ERROR, ENTRY_PASSWORD_MIN_LENGTH), 'error');
-	  } else if ($password_new != $password_conf) {
-		$error = $messageStack->add(ENTRY_PASSWORD_NEW_ERROR_NOT_MATCHING, 'error');
-	  }
-	  $sql_data_array['admin_pass'] = \core\classes\encryption::password($password_new);
-	}
-	if (!$admin_id) { // check for duplicate user name
-	  $result = $db->Execute("select admin_id from " . TABLE_USERS . " where admin_name = '" . db_prepare_input($_POST['admin_name']) . "'");
-	  if ($result->RecordCount() > 0) {
-		$error = $messageStack->add(ENTRY_DUP_USER_NEW_ERROR, 'error');
-	  }
-	}
-	if (!$error) {
-	  if ($admin_id) {
-		db_perform(TABLE_USERS, $sql_data_array, 'update', 'admin_id = ' . (int)$admin_id);
-		gen_add_audit_log(sprintf(GEN_LOG_USER, TEXT_UPDATE), db_prepare_input($_POST['admin_name']));
-	  } else {
-		db_perform(TABLE_USERS, $sql_data_array);
-		$admin_id = db_insert_id();
-		gen_add_audit_log(sprintf(GEN_LOG_USER, TEXT_ADD), db_prepare_input($_POST['admin_name']));
-	  }
-	  if ($admin_id == $_SESSION['admin_id']) $_SESSION['admin_security'] = \core\classes\user::parse_permissions($admin_security); // update if user is current user
-	} elseif ($error) {
-	  $_REQUEST['action'] = 'edit';
-	}
+	  	if ($admin_id == $_SESSION['admin_id']) $_SESSION['admin_security'] = \core\classes\user::parse_permissions($admin_security); // update if user is current user
+  	}catch(Exception $e){
+  		$_REQUEST['action'] = 'edit';
+  		$messageStack->add($e->getMessage());
+  	}
 	$uInfo = new \core\classes\objectInfo($_POST);
 	$uInfo->admin_security = $admin_security;
 	break;
 
   case 'copy':
-	\core\classes\user::validate_security($security_level, 3);
-	$admin_id = db_prepare_input($_GET['cID']);
-	$new_name = db_prepare_input($_GET['name']);
-	// check for duplicate user names
-	$result = $db->Execute("select admin_name from " . TABLE_USERS . " where admin_name = '" . $new_name . "'");
-	if ($result->Recordcount() > 0) {	// error and reload
-	  $messageStack->add(GEN_ERROR_DUPLICATE_ID, 'error');
-	  break;
-	}
-	$result   = $db->Execute("select * from " . TABLE_USERS . " where admin_id = " . $admin_id);
-	$old_name = $result->fields['admin_name'];
-	// clean up the fields (especially the system fields, retain the custom fields)
-	$output_array = array();
-	foreach ($result->fields as $key => $value) {
-	  switch ($key) {
-		case 'admin_id':	// Remove from write list fields
-		case 'display_name':
-		case 'admin_email':
-		case 'admin_pass':
-		case 'account_id':
-		  break;
-		case 'admin_name': // set the new user name
-		  $output_array[$key] = $new_name;
-		  break;
-		default:
-		  $output_array[$key] = $value;
-	  }
-	}
-	db_perform(TABLE_USERS, $output_array, 'insert');
-	$new_id = db_insert_id();
-	$messageStack->add(GEN_MSG_COPY_SUCCESS, 'success');
-	// now continue with newly copied item by editing it
-	gen_add_audit_log(sprintf(GEN_LOG_USER, TEXT_COPY), $old_name . ' => ' . $new_name);
-	$_POST['rowSeq'] = $new_id;	// set item pointer to new record
-	$_REQUEST['action'] = 'edit'; // fall through to edit case
-
+  	try{
+		\core\classes\user::validate_security($security_level, 3);
+		$admin_id = db_prepare_input($_GET['cID']);
+		$new_name = db_prepare_input($_GET['name']);
+		// check for duplicate user names
+		$result = $db->Execute("select admin_name from " . TABLE_USERS . " where admin_name = '" . $new_name . "'");
+		if ($result->Recordcount() > 0) throw new \Exception(GEN_ERROR_DUPLICATE_ID);
+	
+		$result   = $db->Execute("select * from " . TABLE_USERS . " where admin_id = " . $admin_id);
+		$old_name = $result->fields['admin_name'];
+		// clean up the fields (especially the system fields, retain the custom fields)
+		$output_array = array();
+		foreach ($result->fields as $key => $value) {
+		  	switch ($key) {
+				case 'admin_id':	// Remove from write list fields
+				case 'display_name':
+				case 'admin_email':
+				case 'admin_pass':
+				case 'account_id':
+			  		break;
+				case 'admin_name': // set the new user name
+			  		$output_array[$key] = $new_name;
+			  		break;
+				default:
+			  		$output_array[$key] = $value;
+		  	}
+		}
+		db_perform(TABLE_USERS, $output_array, 'insert');
+		$new_id = db_insert_id();
+		$messageStack->add(GEN_MSG_COPY_SUCCESS, 'success');
+		// now continue with newly copied item by editing it
+		gen_add_audit_log(sprintf(GEN_LOG_USER, TEXT_COPY), $old_name . ' => ' . $new_name);
+		$_POST['rowSeq'] = $new_id;	// set item pointer to new record
+		$_REQUEST['action'] = 'edit'; // fall through to edit case
+  	}catch(Exception $e){
+  		$messageStack->add($e->getMessage());
+  	}
   case 'edit':
 	if (isset($_POST['rowSeq'])) $admin_id = db_prepare_input($_POST['rowSeq']);
 	$result = $db->Execute("select * from " . TABLE_USERS . " where admin_id = " . (int)$admin_id);

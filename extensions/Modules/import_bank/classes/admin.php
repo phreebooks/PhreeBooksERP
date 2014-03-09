@@ -80,7 +80,6 @@ class admin extends \core\classes\admin {
 				$db->Execute("ALTER TABLE ".TABLE_CONTACTS." ADD bank_account_1 varchar(32) default NULL");
 			}
 		}
-		write_configure('MODULE_' . strtoupper($this->id) . '_STATUS', $this->version);
   	}
   
 	function upgrade() {
@@ -98,7 +97,6 @@ class admin extends \core\classes\admin {
 			}
 			$db->Execute("INSERT INTO " . TABLE_EXTRA_FIELDS . " VALUES ('', 'contacts', ". $tab_id .",'text', 'bank_account', 'Bank Account','c:v:', 'a:4:{s:4:'type';s:4:'text';s:12:'contact_type';s:16:'customer:vendor:';s:6:'length';i:32;s:7:'default';s:0:'';}' );");
 		}
-		write_configure('MODULE_' . strtoupper($this->id) . '_STATUS', $this->version);
 	}
 
 }

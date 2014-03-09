@@ -23,7 +23,6 @@ require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 require_once(DIR_FS_WORKING . 'functions/inventory.php');
 /**************   page specific initialization  *************************/
 gen_pull_language('inventory','filter');
-$error       = false;
 $processed   = false;
 $criteria    = array();
 $fields		 = new \inventory\classes\fields();
@@ -61,9 +60,13 @@ switch ($_REQUEST['action']) {
 	break;
 	
   case 'save':
-	\core\classes\user::validate_security($security_level, 2); // security check
-	if (!$error) $error = $cInfo->save() == false;
-	if ($error) $_REQUEST['action'] = 'edit';
+  	try{
+		\core\classes\user::validate_security($security_level, 2); // security check
+		$cInfo->save();
+  	}catch(Exception $e){
+  		$messageStack->add($e->getMessage());
+		$_REQUEST['action'] = 'edit';
+  	}
 	break;
 
   case 'delete':
@@ -76,14 +79,15 @@ switch ($_REQUEST['action']) {
 	\core\classes\user::validate_security($security_level, 2); // security check
 	$id  = db_prepare_input($_GET['cID']);
 	$sku = db_prepare_input($_GET['sku']);
-	if($cInfo->copy($id, $sku)) $_REQUEST['action'] = 'edit';
+	$cInfo->copy($id, $sku);
+	$_REQUEST['action'] = 'edit';
 	break;
 	
   case 'edit':
   case 'properties':
-	if(!$error && $id != ''){
+	if($id != ''){
 		$cInfo->get_item_by_id($id);
-	}else if(!$error && isset($_REQUEST['sku'])){
+	}else if(isset($_REQUEST['sku'])){
 		$cInfo->get_item_by_sku($_REQUEST['sku']);
 	}
 	break;

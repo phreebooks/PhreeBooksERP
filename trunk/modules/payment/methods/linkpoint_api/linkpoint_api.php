@@ -34,9 +34,9 @@ class linkpoint_api extends \payment\classes\payment {
   public $version		= '3.3';
 
   public function __construct(){
-  	global $order, $messageStack;
+  	global $order;
   	parent::__construct();
-	if ($this->enabled && !function_exists('curl_init')) $messageStack->add(MODULE_PAYMENT_LINKPOINT_API_TEXT_ERROR_CURL_NOT_FOUND, 'error');
+	if ($this->enabled && !function_exists('curl_init')) throw new \Exception(MODULE_PAYMENT_LINKPOINT_API_TEXT_ERROR_CURL_NOT_FOUND);
 	$this->code_debug  = (MODULE_PAYMENT_LINKPOINT_API_CODE_DEBUG == 'debug') ? true : false;
 	// set error messages if misconfigured
 	if (MODULE_PAYMENT_LINKPOINT_API_STATUS) {
@@ -52,8 +52,8 @@ class linkpoint_api extends \payment\classes\payment {
 	$this->keys[] = array('key' => 'MODULE_PAYMENT_LINKPOINT_API_LOGIN',                    'default' => 'YourStoreNumber'			, 'text' => MODULE_PAYMENT_LINKPOINT_API_LOGIN_DESC);
 	$this->keys[] = array('key' => 'MODULE_PAYMENT_LINKPOINT_API_TRANSACTION_MODE_RESPONSE','default' => 'LIVE: Production'			, 'text' => MODULE_PAYMENT_LINKPOINT_API_TRANSACTION_MODE_RESPONSE_DESC);
 	$this->keys[] = array('key' => 'MODULE_PAYMENT_LINKPOINT_API_AUTHORIZATION_MODE',       'default' => 'Immediate Charge/Capture'	, 'text' => MODULE_PAYMENT_LINKPOINT_API_AUTHORIZATION_MODE_DESC);
-	$this->keys[] = array('key' => 'MODULE_PAYMENT_LINKPOINT_API_FRAUD_ALERT',              'default' => '1'							, 'text' => MODULE_PAYMENT_LINKPOINT_API_FRAUD_ALERT_DESC);
-	$this->keys[] = array('key' => 'MODULE_PAYMENT_LINKPOINT_API_STORE_DATA',               'default' => '1'							, 'text' => MODULE_PAYMENT_LINKPOINT_API_STORE_DATA_DESC);
+	$this->keys[] = array('key' => 'MODULE_PAYMENT_LINKPOINT_API_FRAUD_ALERT',              'default' => '1'						, 'text' => MODULE_PAYMENT_LINKPOINT_API_FRAUD_ALERT_DESC);
+	$this->keys[] = array('key' => 'MODULE_PAYMENT_LINKPOINT_API_STORE_DATA',               'default' => '1'						, 'text' => MODULE_PAYMENT_LINKPOINT_API_STORE_DATA_DESC);
 	$this->keys[] = array('key' => 'MODULE_PAYMENT_LINKPOINT_API_TRANSACTION_MODE',         'default' => 'Production'				, 'text' => MODULE_PAYMENT_LINKPOINT_API_TRANSACTION_MODE_DESC);
     $this->keys[] = array('key' => 'MODULE_PAYMENT_LINKPOINT_API_DEBUG',                    'default' => 'Off'						, 'text' => MODULE_PAYMENT_LINKPOINT_API_DEBUG_DESC);
   }
@@ -151,66 +151,52 @@ class linkpoint_api extends \payment\classes\payment {
 	  ));
     return $selection;
   }
-  /**
-   * Evaluates the Credit Card Type for acceptance and the validity of the Credit Card Number & Expiration Date
-   *
-   */
-  function pre_confirmation_check() {
-    global $messageStack;
+  	/**
+   	 * Evaluates the Credit Card Type for acceptance and the validity of the Credit Card Number & Expiration Date
+   	 *@throws Exception
+   	 */
+  	function pre_confirmation_check() {	
+		// if the card number has the blanked out middle number fields, it has been processed, show message that 
+		// the charges were not processed through the merchant gateway and continue posting payment.
+		if (strpos($this->field_1, '*') !== false) throw new \Exception(MODULE_PAYMENT_CC_NO_DUPS);
+	    $result = $this->validate();
+	    switch ($result) {
+		    case -1:
+		        throw new \Exception(sprintf(TEXT_CCVAL_ERROR_UNKNOWN_CARD, substr($this->cc_card_number, 0, 4)));
+		        break;
+		    case -2:
+		    case -3:
+		    case -4:
+		        throw new \Exception(TEXT_CCVAL_ERROR_INVALID_DATE);
+		        break;
+		    case false:
+		        throw new \Exception(TEXT_CCVAL_ERROR_INVALID_NUMBER);
+		        break;
+	    }
 
-	// if the card number has the blanked out middle number fields, it has been processed, show message that 
-	// the charges were not processed through the merchant gateway and continue posting payment.
-	if (strpos($this->field_1, '*') !== false) {
-    	$messageStack->add(MODULE_PAYMENT_CC_NO_DUPS, 'caution');
-		return false;
-	}
-
-    $result = $this->validate();
-    $error = '';
-    switch ($result) {
-      case -1:
-        $error = sprintf(TEXT_CCVAL_ERROR_UNKNOWN_CARD, substr($this->cc_card_number, 0, 4));
-        break;
-      case -2:
-      case -3:
-      case -4:
-        $error = TEXT_CCVAL_ERROR_INVALID_DATE;
-        break;
-      case false:
-        $error = TEXT_CCVAL_ERROR_INVALID_NUMBER;
-        break;
-    }
-
-    if (($result == false) || ($result < 1)) {
-		$has_error = true;
 		$payment_error_return = 'payment_error=' . $this->id;
 		$error_info2 = '&error=' . urlencode($error) . '&linkpoint_api_cc_owner=' . urlencode($this->field_0) . '&linkpoint_api_cc_expires_month=' . $this->field_2 . '&linkpoint_api_cc_expires_year=' . $this->field_3;
-		$messageStack->add($error . '<!-- [' . $this->id . '] -->', 'error');
 		if (MODULE_PAYMENT_LINKPOINT_API_STORE_DATA) {
 			$cc_type         = $this->cc_card_type;
 			$cc_number_clean = $this->cc_card_number;
 			$cc_expiry_month = $this->cc_expiry_month;
 			$cc_expiry_year  = $this->cc_expiry_year;
 			$error_returned  = $payment_error_return . $error_info2;
-
+		
 			$cc_number = (strlen($cc_number_clean) > 8) ? substr($cc_number_clean, 0, 4) . str_repeat('X', (strlen($cc_number_clean) - 8)) . substr($cc_number_clean, -4) : substr($cc_number_clean, 0, 3) . '**short**';
-
-			while (strstr($error_returned, '%3A'))
-				$error_returned = str_replace('%3A', ' ', $error_returned);
-			while (strstr($error_returned, '%2C'))
-				$error_returned = str_replace('%2C', ' ', $error_returned);
-			while (strstr($error_returned, '+'))
-				$error_returned = str_replace('+', ' ', $error_returned);
+		
+			while (strstr($error_returned, '%3A')) $error_returned = str_replace('%3A', ' ', $error_returned);
+			while (strstr($error_returned, '%2C')) $error_returned = str_replace('%2C', ' ', $error_returned);
+			while (strstr($error_returned, '+'))   $error_returned = str_replace('+', ' ', $error_returned);
 			$error_returned = str_replace('&', ' &amp;', $error_returned);
 			$cust_info = $error_returned;
-			$message = addslashes($message);
+			$message = addslashes($message);//@todo message isn't set 
 			$cust_info = addslashes($cust_info);
 			$all_response_info = addslashes($all_response_info);
-
-
-	        //  Store Transaction history in Database
-/* original Harry Lu sql converted to PhreeBooks format
-		        $sql_data_array= array(array('fieldName'=>'lp_trans_num', 'value'=>'', 'type'=>'string'),
+		
+		    //  Store Transaction history in Database
+	/* original Harry Lu sql converted to PhreeBooks format
+	        $sql_data_array= array(array('fieldName'=>'lp_trans_num', 'value'=>'', 'type'=>'string'),
 	                               array('fieldName'=>'order_id', 'value'=>0, 'type'=>'integer'),
 	                               array('fieldName'=>'approval_code', 'value'=>'N/A', 'type'=>'string'),
 	                               array('fieldName'=>'transaction_response_time', 'value'=>'N/A', 'type'=>'string'),
@@ -229,35 +215,34 @@ class linkpoint_api extends \payment\classes\payment {
 	                               array('fieldName'=>'ordertype', 'value'=>'N/A', 'type'=>'string'),
 	                               array('fieldName'=>'date_added', 'value'=>'now()', 'type'=>'noquotestring'));
 	        $db->perform(TABLE_LINKPOINT_API, $sql_data_array);
-*/
-		        $sql_data_array= array(
-					'lp_trans_num'                 => '',
-					'order_id'                     => 0,
-					'approval_code'                => 'N/A',
-					'transaction_response_time'    => 'N/A',
-					'r_error'                      => '**CC Info Failed Validation during pre-processing**',
-					'customer_id'                  => $_POST['bill_acct_id'] ,
-					'avs_response'                 => '',
-					'transaction_result'           => '*CUSTOMER ERROR*',
-					'message'                      => $message . ' -- ' . $all_response_info,
-					'transaction_time'             => time(),
-					'transaction_reference_number' => '',
-					'fraud_score'                  => 0,
-					'cc_number'                    => $cc_number,
-					'cust_info'                    => $cust_info,
-					'chargetotal'                  => 0,
-					'cc_expire'                    => $cc_expiry_month . '/' . $cc_expiry_year,
-					'ordertype'                    => 'N/A',
-					'date_added'                   => 'now()',
-				);
-	        	db_perform(TABLE_LINKPOINT_API, $sql_data_array);
-			}
-			//gen_redirect(html_href_link(get_cur_url(), $payment_error_return, 'SSL', true, false));
-			//gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(), 'SSL'));				
+	*/
+			$sql_data_array= array(
+			  'lp_trans_num'                 => '',
+			  'order_id'                     => 0,
+			  'approval_code'                => 'N/A',
+			  'transaction_response_time'    => 'N/A',
+			  'r_error'                      => '**CC Info Failed Validation during pre-processing**',
+			  'customer_id'                  => $_POST['bill_acct_id'] ,
+			  'avs_response'                 => '',
+			  'transaction_result'           => '*CUSTOMER ERROR*',
+			  'message'                      => $message . ' -- ' . $all_response_info,
+			  'transaction_time'             => time(),
+			  'transaction_reference_number' => '',
+			  'fraud_score'                  => 0,
+			  'cc_number'                    => $cc_number,
+			  'cust_info'                    => $cust_info,
+			  'chargetotal'                  => 0,
+			  'cc_expire'                    => $cc_expiry_month . '/' . $cc_expiry_year,
+			  'ordertype'                    => 'N/A',
+			  'date_added'                   => 'now()',
+			);
+		    db_perform(TABLE_LINKPOINT_API, $sql_data_array);
 		}
-
-		// if no error, continue with validated data:
-		return $has_error;
+		//gen_redirect(html_href_link(get_cur_url(), $payment_error_return, 'SSL', true, false));
+		//gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(), 'SSL'));			
+	
+		// 	if no error, continue with validated data:
+		return true;
 	}
 
 	// Display Credit Card Information on the Checkout Confirmation Page
@@ -390,10 +375,9 @@ class linkpoint_api extends \payment\classes\payment {
 		
 		// alert to customer if communication failure
 		if (trim($result) == '<r_approved>FAILURE</r_approved><r_error>Could not connect.</r_error>' || !is_array($result)) {
-			$messageStack->add(MODULE_PAYMENT_LINKPOINT_API_TEXT_FAILURE_MESSAGE, 'error');
+			throw new \Exception(MODULE_PAYMENT_LINKPOINT_API_TEXT_FAILURE_MESSAGE);
 			//gen_redirect(html_href_link(get_cur_url(), '', 'SSL', true, false));
 			//gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(), 'SSL'));
-			$has_error = true;			
 		}
 
 		// PARSE Results
@@ -500,33 +484,20 @@ class linkpoint_api extends \payment\classes\payment {
 
 		//  Begin check of specific error conditions
 		if ($result["r_approved"] != "APPROVED") {
-			if (substr($result['r_error'], 0, 10) == 'SGS-020005') {
-				//$messageStack->add($result['r_error'], 'error'); // Error (Merchant config file is missing, empty or cannot be read)
-				$messageStack->add($result['r_error'], 'error'); 
-			}
-			if (substr($result['r_error'], 0, 10) == 'SGS-005000') {
-				//$messageStack->add( MODULE_PAYMENT_LINKPOINT_API_TEXT_GENERAL_ERROR . '<br />' . $result['r_error'], 'error'); // The server encountered a database error
-				$messageStack->add( MODULE_PAYMENT_LINKPOINT_API_TEXT_GENERAL_ERROR . '<br />' . $result['r_error'], 'error'); // The server encountered a database error
-			}
-			if (substr($result['r_error'], 0, 10) == 'SGS-000001' || strstr($result['r_error'], 'D:Declined') || strstr($result['r_error'], 'R:Referral')) {
-				//$messageStack->add( MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE . '<br />' . $result['r_error'], 'error');
-				$messageStack->add( MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE . '<br />' . $result['r_error'], 'error');
-			}
-			if (substr($result['r_error'], 0, 10) == 'SGS-005005' || strstr($result['r_error'], 'Duplicate transaction')) {
-				//$messageStack->add( MODULE_PAYMENT_LINKPOINT_API_TEXT_DUPLICATE_MESSAGE . '<br />' . $result['r_error'], 'error');
-				$messageStack->add( MODULE_PAYMENT_LINKPOINT_API_TEXT_DUPLICATE_MESSAGE . '<br />' . $result['r_error'], 'error');
-			}
-			$has_error = true;
+			// Error (Merchant config file is missing, empty or cannot be read)
+			if (substr($result['r_error'], 0, 10) == 'SGS-020005') throw new \Exception($result['r_error']); 
+			if (substr($result['r_error'], 0, 10) == 'SGS-005000') throw new \Exception( MODULE_PAYMENT_LINKPOINT_API_TEXT_GENERAL_ERROR . '<br />' . $result['r_error']); // The server encountered a database error
+			if (substr($result['r_error'], 0, 10) == 'SGS-000001' || strstr($result['r_error'], 'D:Declined') || strstr($result['r_error'], 'R:Referral')) throw new \Exception(MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE . '<br />' . $result['r_error']);
+			if (substr($result['r_error'], 0, 10) == 'SGS-005005' || strstr($result['r_error'], 'Duplicate transaction')) throw new \Exception(MODULE_PAYMENT_LINKPOINT_API_TEXT_DUPLICATE_MESSAGE . '<br />' . $result['r_error']);
 		}
 		//  End specific error conditions
 
 		//  Begin Transaction Status does not equal APPROVED
 		if ($result["r_approved"] != "APPROVED") {
 			// alert to customer:
-			$messageStack->add(MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE, 'caution');
+			throw new \Exception(MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE);
 			//gen_redirect(html_href_link(get_cur_url(), '', 'SSL', true, false)); //harry
 			//gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(), 'SSL'));
-			$has_error = true;
 		}
 		//  End Transaction Status does not equal APPROVED
 
@@ -609,6 +580,7 @@ class linkpoint_api extends \payment\classes\payment {
 
   function install() {
 	global $db;
+	parent::install();
 	if (!db_table_exists(TABLE_LINKPOINT_API)) {
 		$sql = "CREATE TABLE " . TABLE_LINKPOINT_API . " (
 		  id int(11) unsigned NOT NULL auto_increment,
@@ -705,8 +677,7 @@ class linkpoint_api extends \payment\classes\payment {
 			//), 'debug');
 		}
 		//DEBUG ONLY:$this->_log($errorMessage /*. print_r($myorder, true) . print_r($mylphp->xmlString, true)*/, $myorder["oid"]);
-		if ($myorder['debugging'] == 'true')
-			exit;
+		if ($myorder['debugging'] == 'true') exit;
 		return $result;
 	}
 
@@ -717,60 +688,41 @@ class linkpoint_api extends \payment\classes\payment {
 	function _doRefund($oID, $amount = 0) {
 		global $db, $messageStack;
 		$new_order_status = (int) MODULE_PAYMENT_LINKPOINT_API_REFUNDED_ORDER_STATUS_ID;
-		if ($new_order_status == 0)
-			$new_order_status = 1;
+		if ($new_order_status == 0) $new_order_status = 1;
 		$proceedToRefund = true;
 		$refundNote = strip_tags(addslashes($_POST['refnote']));
-		if (isset ($_POST['refconfirm']) && $_POST['refconfirm'] != 'on') {
-			$messageStack->add(MODULE_PAYMENT_LINKPOINT_API_TEXT_REFUND_CONFIRM_ERROR, 'error');
-			$proceedToRefund = false;
-		}
+		if (isset ($_POST['refconfirm']) && $_POST['refconfirm'] != 'on') throw new \Exception(MODULE_PAYMENT_LINKPOINT_API_TEXT_REFUND_CONFIRM_ERROR);
 		if (isset ($_POST['buttonrefund']) && $_POST['buttonrefund'] == MODULE_PAYMENT_LINKPOINT_API_ENTRY_REFUND_BUTTON_TEXT) {
 			$refundAmt = (float) $_POST['refamt'];
 			$new_order_status = (int) MODULE_PAYMENT_LINKPOINT_API_REFUNDED_ORDER_STATUS_ID;
-			if ($refundAmt == 0) {
-				$messageStack->add(MODULE_PAYMENT_LINKPOINT_API_TEXT_INVALID_REFUND_AMOUNT, 'error');
-				$proceedToRefund = false;
-			}
+			if ($refundAmt == 0) throw new \Exception(MODULE_PAYMENT_LINKPOINT_API_TEXT_INVALID_REFUND_AMOUNT);
 		}
-		if (isset ($_POST['cc_number']) && (int) trim($_POST['cc_number']) == 0) {
-			$messageStack->add(MODULE_PAYMENT_LINKPOINT_API_TEXT_CC_NUM_REQUIRED_ERROR, 'error');
-		}
-		if (isset ($_POST['trans_id']) && (int) trim($_POST['trans_id']) == 0) {
-			$messageStack->add(MODULE_PAYMENT_LINKPOINT_API_TEXT_TRANS_ID_REQUIRED_ERROR, 'error');
-			$proceedToRefund = false;
-		}
-
+		if (isset ($_POST['cc_number']) && (int) trim($_POST['cc_number']) == 0) throw new \Exception(MODULE_PAYMENT_LINKPOINT_API_TEXT_CC_NUM_REQUIRED_ERROR);
+		if (isset ($_POST['trans_id']) && (int) trim($_POST['trans_id']) == 0) throw new \Exception(MODULE_PAYMENT_LINKPOINT_API_TEXT_TRANS_ID_REQUIRED_ERROR);
+			
 		$sql = "select lp_trans_num, transaction_time from " . TABLE_LINKPOINT_API . " where order_id = " . (int) $oID . " and transaction_result = 'APPROVED' order by transaction_time DESC";
 		$query = $db->Execute($sql);
-		if ($query->RecordCount() < 1) {
-			$messageStack->add(MODULE_PAYMENT_LINKPOINT_API_TEXT_NO_MATCHING_ORDER_FOUND, 'error');
-			$proceedToRefund = false;
-		}
+		if ($query->RecordCount() < 1) throw new \Exception(MODULE_PAYMENT_LINKPOINT_API_TEXT_NO_MATCHING_ORDER_FOUND);
 		/**
 		 * Submit refund request to gateway
 		 */
-		if ($proceedToRefund) {
-			unset ($myorder);
-			$myorder["ordertype"] = 'CREDIT';
-			$myorder["oid"] = $query->fields['lp_trans_num'];
-			if ($_POST['trans_id'] != '')
-				$myorder["tdate"] = $_POST['trans_id'];
-			$myorder["chargetotal"] = number_format($refundAmt, 2, '.', '');
-			$myorder["comments"] = htmlentities($refundNote);
-
-			$result = $this->_sendRequest($myorder);
-			$response_alert = $result['r_approved'] . ' ' . $result['r_error'] . ($this->commError == '' ? '' : ' Communications Error - Please notify webmaster.');
-			$this->reportable_submit_data['Note'] = $refundNote;
-			$failure = ($result["r_approved"] != "APPROVED");
-			if ($failure) {
-				$messageStack->add($response_alert, 'error');
-			} else {
-				// Success, so save the results
-				$this->_updateOrderStatus($oID, $new_order_status, 'REFUND INITIATED. Order ID:' . $result['r_ordernum'] . ' - ' . 'Trans ID: ' . $result['r_tdate'] . "\n" . 'Amount: ' . $myorder["chargetotal"] . "\n" . $refundNote);
-				$messageStack->add(sprintf(MODULE_PAYMENT_LINKPOINT_API_TEXT_REFUND_INITIATED, $result['r_tdate'], $result['r_ordernum']), 'success');
-				return true;
-			}
+		unset ($myorder);
+		$myorder["ordertype"] = 'CREDIT';
+		$myorder["oid"] = $query->fields['lp_trans_num'];
+		if ($_POST['trans_id'] != '') $myorder["tdate"] = $_POST['trans_id'];
+		$myorder["chargetotal"] = number_format($refundAmt, 2, '.', '');
+		$myorder["comments"] = htmlentities($refundNote);
+		$result = $this->_sendRequest($myorder);
+		$response_alert = $result['r_approved'] . ' ' . $result['r_error'] . ($this->commError == '' ? '' : ' Communications Error - Please notify webmaster.');
+		$this->reportable_submit_data['Note'] = $refundNote;
+		$failure = ($result["r_approved"] != "APPROVED");
+		if ($failure) {
+			throw new \Exception($response_alert);
+		} else {
+			// Success, so save the results
+			$this->_updateOrderStatus($oID, $new_order_status, 'REFUND INITIATED. Order ID:' . $result['r_ordernum'] . ' - ' . 'Trans ID: ' . $result['r_tdate'] . "\n" . 'Amount: ' . $myorder["chargetotal"] . "\n" . $refundNote);
+			$messageStack->add(sprintf(MODULE_PAYMENT_LINKPOINT_API_TEXT_REFUND_INITIATED, $result['r_tdate'], $result['r_ordernum']), 'success');
+			return true;
 		}
 		return false;
 	}
@@ -790,8 +742,7 @@ class linkpoint_api extends \payment\classes\payment {
 		$captureNote = strip_tags(addslashes($_POST['captnote']));
 		if (isset ($_POST['captconfirm']) && $_POST['captconfirm'] == 'on') {
 		} else {
-			$messageStack->add(MODULE_PAYMENT_LINKPOINT_API_TEXT_CAPTURE_CONFIRM_ERROR, 'error');
-			$proceedToCapture = false;
+			throw new \Exception(MODULE_PAYMENT_LINKPOINT_API_TEXT_CAPTURE_CONFIRM_ERROR);
 		}
 
 		$lp_trans_num = (isset ($_POST['captauthid']) && $_POST['captauthid'] != '') ? strip_tags(addslashes($_POST['captauthid'])) : '';
@@ -800,38 +751,30 @@ class linkpoint_api extends \payment\classes\payment {
 			$sql = "select lp_trans_num, chargetotal from " . TABLE_LINKPOINT_API . " where lp_trans_num = :trans_num: and transaction_result = 'APPROVED' order by date_added";
 		$sql = $db->bindVars($sql, ':trans_num:', $lp_trans_num, 'string');
 		$query = $db->Execute($sql);
-		if ($query->RecordCount() < 1) {
-			$messageStack->add(MODULE_PAYMENT_LINKPOINT_API_TEXT_NO_MATCHING_ORDER_FOUND, 'error');
-			$proceedToCapture = false;
-		}
+		if ($query->RecordCount() < 1) throw new \Exception(MODULE_PAYMENT_LINKPOINT_API_TEXT_NO_MATCHING_ORDER_FOUND);
 		$captureAmt = (isset ($_POST['captamt']) && $_POST['captamt'] != '') ? (float) strip_tags(addslashes($_POST['captamt'])) : $query->fields['chargetotal'];
 		if (isset ($_POST['btndocapture']) && $_POST['btndocapture'] == MODULE_PAYMENT_LINKPOINT_API_ENTRY_CAPTURE_BUTTON_TEXT) {
-			if ($captureAmt == 0) {
-				$messageStack->add(MODULE_PAYMENT_LINKPOINT_API_TEXT_INVALID_CAPTURE_AMOUNT, 'error');
-				$proceedToCapture = false;
-			}
+			if ($captureAmt == 0) throw new \Exception(MODULE_PAYMENT_LINKPOINT_API_TEXT_INVALID_CAPTURE_AMOUNT);
 		}
 		/**
 		 * Submit capture request to Gateway
 		 */
-		if ($proceedToCapture) {
-			unset ($myorder);
-			$myorder["ordertype"] = 'POSTAUTH';
-			$myorder["oid"] = $query->fields['lp_trans_num'];
-			$myorder["chargetotal"] = number_format($captureAmt, 2, '.', '');
-			$myorder["comments"] = htmlentities($captureNote);
+		unset ($myorder);
+		$myorder["ordertype"] = 'POSTAUTH';
+		$myorder["oid"] = $query->fields['lp_trans_num'];
+		$myorder["chargetotal"] = number_format($captureAmt, 2, '.', '');
+		$myorder["comments"] = htmlentities($captureNote);
 
-			$result = $this->_sendRequest($myorder);
-			$response_alert = $result['r_approved'] . ' ' . $result['r_error'] . ($this->commError == '' ? '' : ' Communications Error - Please notify webmaster.');
-			$failure = ($result["r_approved"] != "APPROVED");
-			if ($failure) {
-				$messageStack->add($response_alert, 'error');
-			} else {
-				// Success, so save the results
-				$this->_updateOrderStatus($oID, $new_order_status, 'FUNDS COLLECTED. Auth Code: ' . substr($result['r_code'], 0, 6) . ' - ' . 'Trans ID: ' . $result['r_tdate'] . "\n" . ' Amount: ' . number_format($captureAmt, 2) . "\n" . $captureNote);
-				$messageStack->add(sprintf(MODULE_PAYMENT_LINKPOINT_API_TEXT_CAPT_INITIATED, $captureAmt, $result['r_tdate'], substr($result['r_code'], 0, 6)), 'success');
-				return true;
-			}
+		$result = $this->_sendRequest($myorder);
+		$response_alert = $result['r_approved'] . ' ' . $result['r_error'] . ($this->commError == '' ? '' : ' Communications Error - Please notify webmaster.');
+		$failure = ($result["r_approved"] != "APPROVED");
+		if ($failure) {
+			throw new \Exception($response_alert);
+		} else {
+			// Success, so save the results
+			$this->_updateOrderStatus($oID, $new_order_status, 'FUNDS COLLECTED. Auth Code: ' . substr($result['r_code'], 0, 6) . ' - ' . 'Trans ID: ' . $result['r_tdate'] . "\n" . ' Amount: ' . number_format($captureAmt, 2) . "\n" . $captureNote);
+			$messageStack->add(sprintf(MODULE_PAYMENT_LINKPOINT_API_TEXT_CAPT_INITIATED, $captureAmt, $result['r_tdate'], substr($result['r_code'], 0, 6)), 'success');
+			return true;
 		}
 		return false;
 	}
@@ -848,43 +791,30 @@ class linkpoint_api extends \payment\classes\payment {
 		$voidAuthID = trim(strip_tags(addslashes($_POST['voidauthid'])));
 		$proceedToVoid = true;
 		if (isset ($_POST['ordervoid']) && $_POST['ordervoid'] == MODULE_PAYMENT_LINKPOINT_API_ENTRY_VOID_BUTTON_TEXT) {
-			if (isset ($_POST['voidconfirm']) && $_POST['voidconfirm'] != 'on') {
-				$messageStack->add(MODULE_PAYMENT_LINKPOINT_API_TEXT_VOID_CONFIRM_ERROR, 'error');
-				$proceedToVoid = false;
-			}
+			if (isset ($_POST['voidconfirm']) && $_POST['voidconfirm'] != 'on') throw new \Exception(MODULE_PAYMENT_LINKPOINT_API_TEXT_VOID_CONFIRM_ERROR);
 		}
-		if ($voidAuthID == '') {
-			$messageStack->add(MODULE_PAYMENT_LINKPOINT_API_TEXT_TRANS_ID_REQUIRED_ERROR, 'error');
-			$proceedToVoid = false;
-		}
+		if ($voidAuthID == '') throw new \Exception(MODULE_PAYMENT_LINKPOINT_API_TEXT_TRANS_ID_REQUIRED_ERROR);
 		$sql = "select lp_trans_num, transaction_time from " . TABLE_LINKPOINT_API . " where order_id = " . (int) $oID . " and transaction_result = 'APPROVED' order by date_added";
 		$query = $db->Execute($sql);
-		if ($query->RecordCount() < 1) {
-			$messageStack->add(MODULE_PAYMENT_LINKPOINT_API_TEXT_NO_MATCHING_ORDER_FOUND, 'error');
-			$proceedToVoid = false;
-		}
+		if ($query->RecordCount() < 1) throw new \Exception(MODULE_PAYMENT_LINKPOINT_API_TEXT_NO_MATCHING_ORDER_FOUND);
 		/**
 		 * Submit void request to Gateway
 		 */
-		if ($proceedToVoid) {
-			unset ($myorder);
-			$myorder["ordertype"] = 'VOID';
-			$myorder["oid"] = $query->fields['lp_trans_num'];
-			if ($voidAuthID != '')
-				$myorder["tdate"] = $voidAuthID;
-			$myorder["comments"] = htmlentities($voidNote);
+		unset ($myorder);
+		$myorder["ordertype"] = 'VOID';
+		$myorder["oid"] = $query->fields['lp_trans_num'];
+		if ($voidAuthID != '') $myorder["tdate"] = $voidAuthID;
+		$myorder["comments"] = htmlentities($voidNote);
 
-			$result = $this->_sendRequest($myorder);
-			$response_alert = $result['r_approved'] . ' ' . $result['r_error'] . ($this->commError == '' ? '' : ' Communications Error - Please notify webmaster.');
-			$failure = ($result["r_approved"] != "APPROVED");
-			if ($failure) {
-				$messageStack->add($response_alert, 'error');
-			} else {
-				// Success, so save the results
-				//$this->_updateOrderStatus($oID, $new_order_status, 'VOIDED. OrderNo: ' . $result['r_ordernum'] . ' - Trans ID: ' . $result['r_tdate'] . "\n" . $voidNote);
-				$messageStack->add(sprintf(MODULE_PAYMENT_LINKPOINT_API_TEXT_VOID_INITIATED, $result['r_tdate'], $result['r_ordernum']), 'success');
-				return true;
-			}
+		$result = $this->_sendRequest($myorder);
+		$response_alert = $result['r_approved'] . ' ' . $result['r_error'] . ($this->commError == '' ? '' : ' Communications Error - Please notify webmaster.');
+		if ($result["r_approved"] != "APPROVED") {
+			throw new \Exception($response_alert);
+		} else {
+			// Success, so save the results
+			//$this->_updateOrderStatus($oID, $new_order_status, 'VOIDED. OrderNo: ' . $result['r_ordernum'] . ' - Trans ID: ' . $result['r_tdate'] . "\n" . $voidNote);
+			$messageStack->add(sprintf(MODULE_PAYMENT_LINKPOINT_API_TEXT_VOID_INITIATED, $result['r_tdate'], $result['r_ordernum']), 'success');
+			return true;
 		}
 		return false;
 	}

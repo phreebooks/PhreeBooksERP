@@ -24,9 +24,8 @@ require_once(DIR_FS_WORKING . 'classes/translator.php');
 require_once(DIR_FS_MODULES . 'phreedom/classes/backup.php');
 
 /**************   page specific initialization  *************************/
-$error       = false;
-$translator  = new translator();
-$backup      = new backup();
+$translator  = new \translator\classes\translator();
+$backup      = new \phreedom\classes\backup();
 $replace     = array();
 $criteria    = array();
 history_filter();
@@ -295,7 +294,7 @@ switch ($_REQUEST['action']) {
 	  $query_raw  = "select SQL_CALC_FOUND_ROWS distinct module, version, language from " . TABLE_TRANSLATOR . $search . " order by $disp_order";
 	}
     $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-    $query_split  = new splitPageResults($_REQUEST['list'], '');
+    $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 	history_save();
     define('PAGE_TITLE', BOX_TRANSLATOR_MODULE);
 	break;

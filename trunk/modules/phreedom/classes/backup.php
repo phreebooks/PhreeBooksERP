@@ -21,180 +21,184 @@ namespace phreedom\classes;
 define('lnbr', "\n");
 
 class backup {
+ 	public $max_count   = 200; // max 300 to work with BigDump based restore sript
+    public $backup_mime = 'application/zip';
+    public $source_file = 'filename.txt';
+    public $dest_file   = 'filename.bak';
+    
+  	function __construct() {
+    	$this->db_filename = 'db-' . $_SESSION['company'] . '-' . date('Ymd');
+    	$this->source_dir  = DIR_FS_MY_FILES . $_SESSION['company'] . '/';
+    	$this->dest_dir    = DIR_FS_MY_FILES . 'backups/';
+  	}
 
-  function __construct() {
-    $this->max_count   = 200; // max 300 to work with BigDump based restore sript
-    $this->backup_mime = 'application/zip';
-    $this->db_filename = 'db-' . $_SESSION['company'] . '-' . date('Ymd');
-    $this->source_dir  = DIR_FS_MY_FILES . $_SESSION['company'] . '/';
-    $this->source_file = 'filename.txt';
-    $this->dest_dir    = DIR_FS_MY_FILES . 'backups/';
-    $this->dest_file   = 'filename.bak';
-  }
-
-  function copy_db_table($source_db, $table_list, $type = 'data', $params = '') {
-    $error = false;
-	if (is_array($table_list)) foreach($table_list as $table) {
-	  if (!$this->dump_db_table($source_db, $table, $type, $params)) return false;
-	  $result = $this->db_executeSql($this->source_dir . $this->source_file);
-	  if (count($result['errors']) > 0) throw new \Exception(SETUP_CO_MGR_ERROR_1);
-	}
-	return $error;
-  }
-
-  function dump_db_table($db, $table = 'all', $type = 'data', $params = '') {
-	if ($table == 'all') {
-	  $tables = array();
-	  $table_list = $db->Execute("show tables");
-	  while (!$table_list->EOF) {
-		$tables[] = array_shift($table_list->fields);
-		$table_list->MoveNext();
-	  }
-	} elseif (!is_array($table)) { // single table
-	  $tables = array($table);
-	}
-	if (!is_dir($this->source_dir)) mkdir($this->source_dir);
-	$handle = @fopen($this->source_dir . $this->source_file, 'w');
-	if ($handle === false) throw new \Exception(sprintf(ERROR_ACCESSING_FILE, $this->source_dir . $this->source_file));
-	foreach ($tables as $table) {
-	  $query  = '';
-	  if ($type == 'structure' || $type == 'both') { // build the table create sql
-		$query .= "-- Table structure for table $table" . lnbr;
-		$query .= "DROP TABLE IF EXISTS $table;" . lnbr . lnbr;
-		$result = $db->Execute("show create table `$table`");
-		$query .= $result->fields['Create Table'] . ";" . lnbr . lnbr;
-	  }
-	  if ($type == 'data' || $type == 'both') {
-		$result = $db->Execute('SELECT * FROM ' . $table . $params);
-		if ($result->RecordCount() > 0) {
-		  $temp_array = $result->fields;
-		  while (list($key, $value) = each($temp_array)) $data['keys'][] = $key; 
-		  $sql_head  = 'INSERT INTO `' . $table .'` (`' . join($data['keys'], '`, `') . '`) VALUES ' . lnbr;
-		  $count     = 0; // set to max_count to force the sql_head at the start
-		  $query .= $sql_head;
-		  while (!$result->EOF) {
-			$data = array();
-			$temp_array = $result->fields;
-			while (list($key, $value) = each($temp_array)) {
-			  $data[] = addslashes($value);
-			} 
-			$query .= "('" . implode("', '", $data) . "')";
-			$result->MoveNext();
-			$count++;
-			if ($result->EOF) {
-			  $query .= ';' . lnbr;
-			} elseif ($count > $this->max_count) {
-			  $count = 0;
-			  $query .= ';' . lnbr . $sql_head;
-			} else {
-			  $query .= ',' . lnbr;
-			}
-		  }
+  	function copy_db_table($source_db, $table_list, $type = 'data', $params = '') {
+		if (is_array($table_list)) foreach($table_list as $table) {
+	  		$this->dump_db_table($source_db, $table, $type, $params);
+		  	$result = $this->db_executeSql($this->source_dir . $this->source_file);
+	  		if (count($result['errors']) > 0) throw new \Exception(SETUP_CO_MGR_ERROR_1);
 		}
-	  }
-	  $query .= lnbr . lnbr;
-	  fwrite($handle, $query);
+  	}
+
+  	function dump_db_table($db, $table = 'all', $type = 'data', $params = '') {
+		if ($table == 'all') {
+			$tables = array();
+			$table_list = $db->Execute("show tables");
+			while (!$table_list->EOF) {
+				$tables[] = array_shift($table_list->fields);
+				$table_list->MoveNext();
+			}
+		} elseif (!is_array($table)) { // single table
+		  	$tables = array($table);
+		}
+		if (!is_dir($this->source_dir)) mkdir($this->source_dir);
+		$handle = fopen($this->source_dir . $this->source_file, 'w');
+		if ($handle === false) throw new \Exception(sprintf(ERROR_ACCESSING_FILE, $this->source_dir . $this->source_file));
+		foreach ($tables as $table) {
+		  	$query  = '';
+		  	if ($type == 'structure' || $type == 'both') { // build the table create sql
+				$query .= "-- Table structure for table $table" . lnbr;
+				$query .= "DROP TABLE IF EXISTS $table;" . lnbr . lnbr;
+				$result = $db->Execute("show create table `$table`");
+				$query .= $result->fields['Create Table'] . ";" . lnbr . lnbr;
+		  	}
+		  	if ($type == 'data' || $type == 'both') {
+				$result = $db->Execute('SELECT * FROM ' . $table . $params);
+				if ($result->RecordCount() > 0) {
+			  		$temp_array = $result->fields;
+			  		while (list($key, $value) = each($temp_array)) $data['keys'][] = $key; 
+			  		$sql_head  = 'INSERT INTO `' . $table .'` (`' . join($data['keys'], '`, `') . '`) VALUES ' . lnbr;
+			  		$count     = 0; // set to max_count to force the sql_head at the start
+			  		$query .= $sql_head;
+				  	while (!$result->EOF) {
+						$data = array();
+						$temp_array = $result->fields;
+						while (list($key, $value) = each($temp_array)) {
+						  	$data[] = addslashes($value);
+						} 
+						$query .= "('" . implode("', '", $data) . "')";
+						$result->MoveNext();
+						$count++;
+						if ($result->EOF) {
+						  	$query .= ';' . lnbr;
+						} elseif ($count > $this->max_count) {
+						  	$count = 0;
+						  	$query .= ';' . lnbr . $sql_head;
+						} else {
+						  	$query .= ',' . lnbr;
+						}
+				  	}
+				}
+		  	}
+		  	$query .= lnbr . lnbr;
+		  	fwrite($handle, $query);
+		}
+		fclose($handle);
+		return true;
+  	}
+
+	function make_zip($type = 'file', $localname = NULL, $root_folder = '/') {
+		if (!class_exists('ZipArchive')) throw new \Exception(GEN_BACKUP_NO_ZIP_CLASS);
+		$zip = new \ZipArchive;
+		$res = $zip->open($this->dest_dir . $this->dest_file, ZipArchive::CREATE);
+		if ($res !== true) throw new \Exception(GEN_BACKUP_FILE_ERROR . $this->dest_dir);
+		if ($type == 'file') {
+			$zip->addFile($this->source_dir . $this->source_file, $localname);
+		} else { // compress all
+			$this->addFolderToZip($this->source_dir, $zip, $root_folder);
+		}
+		$zip->close();
 	}
-	fclose($handle);
-	return true;
-  }
 
-  function make_zip($type = 'file', $localname = NULL, $root_folder = '/') {
-	if (!class_exists('ZipArchive')) throw new \Exception(GEN_BACKUP_NO_ZIP_CLASS);
-	$zip = new \ZipArchive;
-	$res = $zip->open($this->dest_dir . $this->dest_file, ZipArchive::CREATE);
-	if ($res !== true) throw new \Exception(GEN_BACKUP_FILE_ERROR . $this->dest_dir);
-	if ($type == 'file') {
-	  $zip->addFile($this->source_dir . $this->source_file, $localname);
-	} else { // compress all
-	  $this->addFolderToZip($this->source_dir, $zip, $root_folder);
+  	function addFolderToZip($dir, $zipArchive, $dest_path = NULL) {
+    	if (!is_dir($dir)) throw new Exception("can not find dir $dir");
+		$files = scandir($dir);
+		foreach ($files as $file) {
+	  		if (is_file($dir . $file)){
+				$zipArchive->addFile($dir . $file, $dest_path . $file);
+	  		} else { // If it's a folder, run the function again!
+	    		if ($file <> "." && $file <> "..") $this->addFolderToZip($dir . $file . "/", $zipArchive, $dest_path . $file . "/");
+	  		}
+		}
+  	}
+
+	function unzip_file($file, $dest_path = '') {
+    	if (!$dest_path) $dest_path = $this->dest_dir;
+		if (!file_exists($file)) throw new Exception("file $file already exists");
+		$zip = new \ZipArchive;
+    	$zip->open($file);
+    	$zip->extractTo($dest_path);
+    	$zip->close();
+  	}
+
+	function make_bz2($type = 'file') {
+	  	unset($output);
+		if ($type == 'file') {
+		  	$this->backup_mime = 'application/x-bz2';
+		  	exec("cd " . $this->source_dir . "; nice -n 19 bzip2 -k " . $this->source_file . " 2>&1", $output, $res);
+		  	exec("mv " . $this->source_dir . $this->db_name . ".bz2 " . $this->dest_dir . $this->dest_file, $output, $res);
+		} else { // compress all
+		  	$this->backup_mime = 'application/x-tar';
+		  	exec("cd " . $this->source_dir . "; nice -n 19 tar -jcf " . $this->dest_dir . $this->dest_file . " " . $this->source_dir . " 2>&1", $output, $res);
+		}
+		if ($res > 0) throw new \Exception(ERROR_COMPRESSION_FAILED . implode(": ", $output));
 	}
-	$zip->close();
-  }
 
-  function addFolderToZip($dir, $zipArchive, $dest_path = NULL) {
-    if (!is_dir($dir)) return;
-	$files = scandir($dir);
-	foreach ($files as $file) {
-	  if (is_file($dir . $file)){
-		$zipArchive->addFile($dir . $file, $dest_path . $file);
-	  } else { // If it's a folder, run the function again!
-	    if ($file <> "." && $file <> "..") $this->addFolderToZip($dir . $file . "/", $zipArchive, $dest_path . $file . "/");
-	  }
+  	function download($path, $filename, $save_source = false) {
+		$source_file = $path . $filename;
+		$handle      = fopen($source_file, "rb");
+		$contents    = fread($handle, filesize($source_file));
+		fclose($handle);
+		if (!$save_source) unlink($source_file);
+		if (strlen($contents) == 0) throw new \Exception(GEN_BACKUP_DOWNLOAD_EMPTY);
+		header("Content-type: " . $this->backup_mime);
+		header("Content-disposition: attachment; filename=" . $filename . "; size=" . strlen($contents));
+		header('Pragma: cache');
+		header('Cache-Control: public, must-revalidate, max-age=0');
+		header('Connection: close');
+		header('Expires: ' . date('r', time() + 60 * 60));
+		header('Last-Modified: ' . date('r', time()));
+		print $contents;
+		ob_end_flush();
+		session_write_close();
+		exit();  
+  	}
+  	
+  	/**
+  	 * this function will delete a directory
+  	 * @param string $dir
+  	 * @throws Exception
+  	 */
+
+	function delete_dir($dir) {
+	    if (!is_dir($dir)) return;
+		$files = scandir($dir);
+		foreach ($files as $file) {
+		  	if ($file == "." || $file == "..") continue;
+		  	if (is_file($dir . '/' . $file)) {
+				if (!@unlink($dir . '/' . $file)) throw new Exception("can not un link file $file from dir $dir");
+		  	} else { // it's a directory
+		    	$subdir = scandir($dir . '/' . $file);
+				if (sizeof($subdir) > 2) $this->delete_dir($dir . '/' . $file); // directory is not empty, recurse
+				if (!@rmdir("$dir/$file")) throw new Exception("can not remove dir $dir/$file");
+		  	}
+		}
+		if (!@rmdir($dir)) throw new Exception("can not remove dir $dir");
 	}
-  }
 
-  function unzip_file($file, $dest_path = '') {
-    $error = false;
-    if (!$dest_path) $dest_path = $this->dest_dir;
-	if (!file_exists($file)) $error = true;
-	$zip = new \ZipArchive;
-    $zip->open($file);
-    $zip->extractTo($dest_path);
-    $zip->close();
-    return $error;
-  }
-
-  function make_bz2($type = 'file') {
-  	unset($output);
-	if ($type == 'file') {
-	  $this->backup_mime = 'application/x-bz2';
-	  exec("cd " . $this->source_dir . "; nice -n 19 bzip2 -k " . $this->source_file . " 2>&1", $output, $res);
-	  exec("mv " . $this->source_dir . $this->db_name . ".bz2 " . $this->dest_dir . $this->dest_file, $output, $res);
-	} else { // compress all
-	  $this->backup_mime = 'application/x-tar';
-	  exec("cd " . $this->source_dir . "; nice -n 19 tar -jcf " . $this->dest_dir . $this->dest_file . " " . $this->source_dir . " 2>&1", $output, $res);
-	}
-	if ($res > 0) throw new \Exception(ERROR_COMPRESSION_FAILED . implode(": ", $output));
-  }
-
-  function download($path, $filename, $save_source = false) {
-	$source_file = $path . $filename;
-	$handle      = fopen($source_file, "rb");
-	$contents    = fread($handle, filesize($source_file));
-	fclose($handle);
-	if (!$save_source) unlink($source_file);
-	if (strlen($contents) == 0) throw new \Exception(GEN_BACKUP_DOWNLOAD_EMPTY); //@todo caution code
-	header("Content-type: " . $this->backup_mime);
-	header("Content-disposition: attachment; filename=" . $filename . "; size=" . strlen($contents));
-	header('Pragma: cache');
-	header('Cache-Control: public, must-revalidate, max-age=0');
-	header('Connection: close');
-	header('Expires: ' . date('r', time() + 60 * 60));
-	header('Last-Modified: ' . date('r', time()));
-	print $contents;
-	exit();  
-  }
-
-  function delete_dir($dir) {
-    if (!is_dir($dir)) return;
-	$files = scandir($dir);
-	foreach ($files as $file) {
-	  if ($file == "." || $file == "..") continue;
-	  if (is_file($dir . '/' . $file)) {
-		unlink($dir . '/' . $file);
-	  } else { // it's a directory
-	    $subdir = scandir($dir . '/' . $file);
-		if (sizeof($subdir) > 2) $this->delete_dir($dir . '/' . $file); // directory is not empty, recurse
-		@rmdir($dir . '/' . $file); 
-	  }
-	}
-	rmdir($dir); 
-  }
-
-  function copy_dir($dir_source, $dir_dest) {
-    if (!is_dir($dir_source)) return;
-	$files = scandir($dir_source);
-	foreach ($files as $file) {
-	  if ($file == "." || $file == "..") continue;
-	  if (is_file($dir_source . $file)) {
-		copy($dir_source . $file, $dir_dest . $file); 
-	  } else {
-		@mkdir($dir_dest . $file);
-		$this->copy_dir($dir_source . $file . "/", $dir_dest . $file . "/");
-	  }
-	}
-  }
+  	function copy_dir($dir_source, $dir_dest) {
+    	if (!is_dir($dir_source))  throw new Exception("can not find dir $dir");
+		$files = scandir($dir_source);
+		foreach ($files as $file) {
+	  		if ($file == "." || $file == "..") continue;
+	  		if (is_file($dir_source . $file)) {
+				copy($dir_source . $file, $dir_dest . $file); 
+	  		} else {
+				@mkdir($dir_dest . $file);
+				$this->copy_dir($dir_source . $file . "/", $dir_dest . $file . "/");
+	  		}
+		}
+  	}
 
   function db_executeSql($sql_file, $table_prefix = '') {
 //echo 'start SQL execute';

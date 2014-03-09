@@ -105,16 +105,11 @@ if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR
   	gen_pull_language('phreedom', 'menu');
   	gen_pull_language('phreebooks', 'menu');
   	require(DIR_FS_MODULES . 'phreedom/config.php');
-  	$loaded_modules = array();
   	$admin_classes = array();
   	$dirs = scandir(DIR_FS_MODULES);
   	foreach ($dirs as $dir) { // first pull all module language files, loaded or not
     	if ($dir == '.' || $dir == '..') continue;
     	gen_pull_language($dir, 'menu');
-		if (defined('MODULE_' . strtoupper($dir) . '_STATUS')) { // module is loade
-	  		$loaded_modules[] = $dir;
-      		require_once(DIR_FS_MODULES . $dir . '/config.php');
-    	} 
   		if (is_dir(DIR_FS_MODULES . $dir)){
     		$class = "\\$dir\classes\admin";
 	  		$admin_classes[$dir]  = new $class;

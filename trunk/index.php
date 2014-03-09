@@ -128,6 +128,12 @@ try{
 	}else{
 		$template_path = DIR_FS_MODULES . "phreedom/pages/main/template_main.php";
 	}
+=======
+require($pre_process_path); 
+if (file_exists(DIR_FS_WORKING . 'custom/pages/' . $page . '/' . $include_template)) {
+  $template_path = DIR_FS_WORKING . 'custom/pages/' . $page . '/' . $include_template;
+} else {
+  $template_path = DIR_FS_WORKING . 'pages/' . $page . '/' . $include_template;
 }
 require('includes/template_index.php');
 require('includes/application_bottom.php');

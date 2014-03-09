@@ -24,7 +24,6 @@ $security_level = \core\classes\user::validate();
 gen_pull_language('contacts');
 /**************   page specific initialization  *************************/
 $cID   = db_prepare_input($_GET['cID']);
-$error = false;
   // select the customer and build the contact record
 $contact    = $db->Execute("select * from " . TABLE_CONTACTS . " where id = '" . $cID . "'");
 $type       = $contact->fields['type'];

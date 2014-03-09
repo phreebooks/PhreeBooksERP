@@ -71,88 +71,88 @@ switch ($_REQUEST['action']) {
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('cID', 'action')), 'SSL'));
 	break;
   case 'save':
-  	\core\classes\user::validate_security($security_level, 3); // security check
-	$id              = db_prepare_input($_POST['id']);
-	$asset_id        = db_prepare_input($_POST['asset_id']);
-	$image_with_path = db_prepare_input($_POST['image_with_path']); // the current image name with path relative from my_files/company_db/asset/images directory
-	$asset_path      = db_prepare_input($_POST['asset_path']);
-	if (substr($asset_path, 0, 1) == '/') $asset_path = substr($asset_path, 1); // remove leading '/' if there
-	if (substr($asset_path, -1, 1) == '/') $asset_path = substr($asset_path, 0, strlen($asset_path)-1); // remove trailing '/' if there
-	$asset_type = db_prepare_input($_POST['asset_type']);
-	$sql_data_array = array();
-	$asset_fields = $db->Execute("select field_name, entry_type from " . TABLE_EXTRA_FIELDS . " where module_id = 'assets'");
-	while (!$asset_fields->EOF) {
-		$field_name = $asset_fields->fields['field_name'];
-		if (!isset($_POST[$field_name]) && $asset_fields->fields['entry_type'] == 'check_box') {
-			$sql_data_array[$field_name] = '0'; // special case for unchecked check boxes
-		} elseif (isset($_POST[$field_name]) && $field_name <> 'id') {
-			$sql_data_array[$field_name] = db_prepare_input($_POST[$field_name]);
+  	try{
+	  	\core\classes\user::validate_security($security_level, 3); // security check
+		$id              = db_prepare_input($_POST['id']);
+		$asset_id        = db_prepare_input($_POST['asset_id']);
+		$image_with_path = db_prepare_input($_POST['image_with_path']); // the current image name with path relative from my_files/company_db/asset/images directory
+		$asset_path      = db_prepare_input($_POST['asset_path']);
+		if (substr($asset_path, 0, 1) == '/') $asset_path = substr($asset_path, 1); // remove leading '/' if there
+		if (substr($asset_path, -1, 1) == '/') $asset_path = substr($asset_path, 0, strlen($asset_path)-1); // remove trailing '/' if there
+		$asset_type = db_prepare_input($_POST['asset_type']);
+		$sql_data_array = array();
+		$asset_fields = $db->Execute("select field_name, entry_type from " . TABLE_EXTRA_FIELDS . " where module_id = 'assets'");
+		while (!$asset_fields->EOF) {
+			$field_name = $asset_fields->fields['field_name'];
+			if (!isset($_POST[$field_name]) && $asset_fields->fields['entry_type'] == 'check_box') {
+				$sql_data_array[$field_name] = '0'; // special case for unchecked check boxes
+			} elseif (isset($_POST[$field_name]) && $field_name <> 'id') {
+				$sql_data_array[$field_name] = db_prepare_input($_POST[$field_name]);
+			}
+			if ($asset_fields->fields['entry_type'] == 'date_time') {
+				$sql_data_array[$field_name] = ($sql_data_array[$field_name]) ? gen_db_date($sql_data_array[$field_name]) : '';
+			}
+			$asset_fields->MoveNext();
 		}
-		if ($asset_fields->fields['entry_type'] == 'date_time') {
-			$sql_data_array[$field_name] = ($sql_data_array[$field_name]) ? gen_db_date($sql_data_array[$field_name]) : '';
+		// special cases for checkboxes of system fields (don't return a POST value if unchecked)
+		$remove_image = $_POST['remove_image'] == '1' ? true : false;
+		unset($sql_data_array['remove_image']); // this is not a db field, just an action
+		$sql_data_array['inactive']         = ($sql_data_array['inactive'] == '1' ? '1' : '0');
+		$sql_data_array['purch_cond']       = db_prepare_input($_POST['purch_cond']);
+		$sql_data_array['acquisition_date'] = $acquisition_date;
+		$sql_data_array['maintenance_date'] = $maintenance_date;
+		$sql_data_array['terminal_date']    = $terminal_date;
+		// special cases for monetary values in system fields
+		$sql_data_array['full_price']       = $currencies->clean_value($sql_data_array['full_price']);
+		$sql_data_array['asset_cost']       = $currencies->clean_value($sql_data_array['asset_cost']);
+		// Check attachments
+		$result = $db->Execute("select attachments from " . TABLE_ASSETS . " where id = " . $id);
+		$attachments = $result->fields['attachments'] ? unserialize($result->fields['attachments']) : array();
+		$image_id = 0;
+		while ($image_id < 100) { // up to 100 images
+		  if (isset($_POST['rm_attach_'.$image_id])) {
+			@unlink(ASSETS_DIR_ATTACHMENTS . 'assets_'.$id.'_'.$image_id.'.zip');
+			unset($attachments[$image_id]);
+		  }
+		  $image_id++;
 		}
-		$asset_fields->MoveNext();
-	}
-	// special cases for checkboxes of system fields (don't return a POST value if unchecked)
-	$remove_image = $_POST['remove_image'] == '1' ? true : false;
-	unset($sql_data_array['remove_image']); // this is not a db field, just an action
-	$sql_data_array['inactive']         = ($sql_data_array['inactive'] == '1' ? '1' : '0');
-	$sql_data_array['purch_cond']       = db_prepare_input($_POST['purch_cond']);
-	$sql_data_array['acquisition_date'] = $acquisition_date;
-	$sql_data_array['maintenance_date'] = $maintenance_date;
-	$sql_data_array['terminal_date']    = $terminal_date;
-	// special cases for monetary values in system fields
-	$sql_data_array['full_price']       = $currencies->clean_value($sql_data_array['full_price']);
-	$sql_data_array['asset_cost']       = $currencies->clean_value($sql_data_array['asset_cost']);
-	// Check attachments
-	$result = $db->Execute("select attachments from " . TABLE_ASSETS . " where id = " . $id);
-	$attachments = $result->fields['attachments'] ? unserialize($result->fields['attachments']) : array();
-	$image_id = 0;
-	while ($image_id < 100) { // up to 100 images
-	  if (isset($_POST['rm_attach_'.$image_id])) {
-		@unlink(ASSETS_DIR_ATTACHMENTS . 'assets_'.$id.'_'.$image_id.'.zip');
-		unset($attachments[$image_id]);
-	  }
-	  $image_id++;
-	}
-	if (is_uploaded_file($_FILES['file_name']['tmp_name'])) {
-	  // find an image slot to use
-	  $image_id = 0;
-	  while (true) {
-		if (!file_exists(ASSETS_DIR_ATTACHMENTS . 'assets_'.$id.'_'.$image_id.'.zip')) break;
-		$image_id++;
-	  }
-	  saveUploadZip('file_name', ASSETS_DIR_ATTACHMENTS, 'assets_'.$id.'_'.$image_id.'.zip');
-	  $attachments[$image_id] = $_FILES['file_name']['name'];
-	}
-	$sql_data_array['attachments'] = sizeof($attachments)>0 ? serialize($attachments) : '';
-	
-	if ($remove_image) { // update the image with relative path
-		$_POST['image_with_path'] = '';
-		$sql_data_array['image_with_path'] = ''; 
-	}
-	is_uploaded_file($_FILES['asset_image']['tmp_name']);
-	$file_path = DIR_FS_MY_FILES . $_SESSION['company'] . '/assets/images';
-       $asset_path = str_replace('\\', '/', $asset_path);
-	// strip beginning and trailing slashes if present
-	if (substr($asset_path, -1, 1) == '/') $asset_path = substr($asset_path, 0, -1);
-	if (substr($asset_path, 0, 1) == '/') $asset_path = substr($asset_path, 1);
-	if ($asset_path) $file_path .= '/' . $asset_path;
-	$temp_file_name = $_FILES['asset_image']['tmp_name'];
-	$file_name = $_FILES['asset_image']['name'];
-	if (!validate_path($file_path)) {
-		throw new \Exception(ASSETS_IMAGE_PATH_ERROR);
-	}
-	validate_upload('asset_image', 'image', 'jpg');
-	if (!copy($temp_file_name, $file_path . '/' . $file_name)) throw new \Exception(ASSETS_IMAGE_FILE_WRITE_ERROR);
-	$image_with_path = ($asset_path ? ($asset_path . '/') : '') . $file_name;
-	$_POST['image_with_path'] = $image_with_path;
-	$sql_data_array['image_with_path'] = $image_with_path; // update the image with relative path
-	// Ready to write update
-	if (!$error) {
+		if (is_uploaded_file($_FILES['file_name']['tmp_name'])) {
+		  // find an image slot to use
+		  $image_id = 0;
+		  while (true) {
+			if (!file_exists(ASSETS_DIR_ATTACHMENTS . 'assets_'.$id.'_'.$image_id.'.zip')) break;
+			$image_id++;
+		  }
+		  saveUploadZip('file_name', ASSETS_DIR_ATTACHMENTS, 'assets_'.$id.'_'.$image_id.'.zip');
+		  $attachments[$image_id] = $_FILES['file_name']['name'];
+		}
+		$sql_data_array['attachments'] = sizeof($attachments)>0 ? serialize($attachments) : '';
+		
+		if ($remove_image) { // update the image with relative path
+			$_POST['image_with_path'] = '';
+			$sql_data_array['image_with_path'] = ''; 
+		}
+		is_uploaded_file($_FILES['asset_image']['tmp_name']);
+		$file_path = DIR_FS_MY_FILES . $_SESSION['company'] . '/assets/images';
+	       $asset_path = str_replace('\\', '/', $asset_path);
+		// strip beginning and trailing slashes if present
+		if (substr($asset_path, -1, 1) == '/') $asset_path = substr($asset_path, 0, -1);
+		if (substr($asset_path, 0, 1) == '/') $asset_path = substr($asset_path, 1);
+		if ($asset_path) $file_path .= '/' . $asset_path;
+		$temp_file_name = $_FILES['asset_image']['tmp_name'];
+		$file_name = $_FILES['asset_image']['name'];
+		validate_path($file_path);
+		validate_upload('asset_image', 'image', 'jpg');
+		if (!copy($temp_file_name, $file_path . '/' . $file_name)) throw new \Exception(ASSETS_IMAGE_FILE_WRITE_ERROR);
+		$image_with_path = ($asset_path ? ($asset_path . '/') : '') . $file_name;
+		$_POST['image_with_path'] = $image_with_path;
+		$sql_data_array['image_with_path'] = $image_with_path; // update the image with relative path
+		// Ready to write update
 		db_perform(TABLE_ASSETS, $sql_data_array, 'update', "id = " . $id);
 		gen_add_audit_log(AESSETS_LOG_ASSETS . TEXT_UPDATE, $asset_id . ' - ' . $sql_data_array['description_short']);
-	} else {
+		
+	} catch (Exception $e) {
+		$messageStack->add($e->getMessage());
 		$_POST['id'] = $id;
 		$cInfo = new \core\classes\objectInfo($_POST);
 		$processed = true;
@@ -234,8 +234,6 @@ switch ($_REQUEST['action']) {
 		$backup = new \phreedom\classes\backup();
 		$backup->download(ASSETS_DIR_ATTACHMENTS, $filename, true);
 	}
-	ob_end_flush();
-  	session_write_close();
 	die;
   case 'dn_attach': // download from list, assume the first document only
 	$cID   = db_prepare_input($_POST['rowSeq']);

@@ -23,46 +23,45 @@ gen_pull_language('contacts');
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/shipping.php');
 /**************   page specific initialization  *************************/
-$error       = false;
 $pkg         = new \shipping\classes\shipment();
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/popup_shipping/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
-  case 'rates':
-	// overwrite the defaults with data from the form
-	reset ($_POST);
-	while (list($key, $value) = each($_POST)) $pkg->$key = db_prepare_input($value);
-	// generate ISO2 codes for countries (needed by FedEx and others)
-	$pkg->ship_from_country_iso2 = gen_get_country_iso_2_from_3($pkg->ship_country_code);
-	$pkg->ship_to_country_iso2   = gen_get_country_iso_2_from_3($pkg->ship_to_country_code);
-	// read checkboxes
-	$pkg->residential_address    = isset($_POST['residential_address']) ? '1' : '0';
-	$pkg->additional_handling    = isset($_POST['additional_handling']) ? '1' : '0';
-	$pkg->insurance              = isset($_POST['insurance']) ? '1' : '0';
-	$pkg->split_large_shipments  = isset($_POST['split_large_shipments']) ? '1' : '0';
-	$pkg->delivery_confirmation  = isset($_POST['delivery_confirmation']) ? '1' : '0';
-	$pkg->handling_charge        = isset($_POST['handling_charge']) ? '1' : '0';
-	$pkg->cod                    = isset($_POST['cod']) ? '1' : '0';
-	$pkg->saturday_pickup        = isset($_POST['saturday_pickup']) ? '1' : '0';
-	$pkg->saturday_delivery      = isset($_POST['saturday_delivery']) ? '1' : '0';
-	$pkg->hazardous_material     = isset($_POST['hazardous_material']) ? '1' : '0';
-	// read the modules installed
-	$rates = array();
-	foreach ($admin_classes['shipping']->methods as $method) {
-	  if (isset($_POST['ship_method_' . $method->id])) {
-		$result = $method->quote($pkg); // will return false if there was an error
-		if (is_array($result)) {
-		  $rates = array_merge_recursive($result, $rates);
-		} else {
-		  $error = true;
-		}
-	  }
-	}
-	if ($error) $_REQUEST['action'] = ''; // reload selection form
-	break;
-  default:
+  	case 'rates':
+  		try{
+			// overwrite the defaults with data from the form
+			reset ($_POST);
+			while (list($key, $value) = each($_POST)) $pkg->$key = db_prepare_input($value);
+			// generate ISO2 codes for countries (needed by FedEx and others)
+			$pkg->ship_from_country_iso2 = gen_get_country_iso_2_from_3($pkg->ship_country_code);
+			$pkg->ship_to_country_iso2   = gen_get_country_iso_2_from_3($pkg->ship_to_country_code);
+			// read checkboxes
+			$pkg->residential_address    = isset($_POST['residential_address']) ? '1' : '0';
+			$pkg->additional_handling    = isset($_POST['additional_handling']) ? '1' : '0';
+			$pkg->insurance              = isset($_POST['insurance']) ? '1' : '0';
+			$pkg->split_large_shipments  = isset($_POST['split_large_shipments']) ? '1' : '0';
+			$pkg->delivery_confirmation  = isset($_POST['delivery_confirmation']) ? '1' : '0';
+			$pkg->handling_charge        = isset($_POST['handling_charge']) ? '1' : '0';
+			$pkg->cod                    = isset($_POST['cod']) ? '1' : '0';
+			$pkg->saturday_pickup        = isset($_POST['saturday_pickup']) ? '1' : '0';
+			$pkg->saturday_delivery      = isset($_POST['saturday_delivery']) ? '1' : '0';
+			$pkg->hazardous_material     = isset($_POST['hazardous_material']) ? '1' : '0';
+			// read the modules installed
+			$rates = array();
+			foreach ($admin_classes['shipping']->methods as $method) {
+			  	if (isset($_POST['ship_method_' . $method->id])) {
+					$result = $method->quote($pkg); // will return false if there was an error
+					$rates = array_merge_recursive($result, $rates);
+			  	}
+			}
+  		}catch(Exception $e){
+  			$messageStack->add($e->getMessage());
+  			$_REQUEST['action'] = ''; // reload selection form	
+  		}
+		break;
+  	default:
 }
 /*****************   prepare to display templates  *************************/
 $cal_ship = array(

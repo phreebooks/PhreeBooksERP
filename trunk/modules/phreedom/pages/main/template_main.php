@@ -29,7 +29,7 @@ $row_started = true;
     <td width="33%" valign="top">
       <div id="col_<?php echo $column; ?>" style="position:relative;">
 <?php
-while(!$cp_boxes->EOF) {//@todo use dashboards
+while(!$cp_boxes->EOF) {
 	if ($cp_boxes->fields['column_id'] <> $column) {
   		$row_started = true;
 		while ($cp_boxes->fields['column_id'] <> $column) {
@@ -48,7 +48,7 @@ while(!$cp_boxes->EOF) {//@todo use dashboards
     		$admin_classes[$module_id]->dashboards[$dashboard]->column_id    = $cp_boxes->fields['column_id'];
     		$admin_classes[$module_id]->dashboards[$dashboard]->row_started  = $row_started; 
     		$admin_classes[$module_id]->dashboards[$dashboard]->row_id       = $cp_boxes->fields['row_id'];
-    		echo $admin_classes[$module_id]->dashboards[$dashboard]->Output(unserialize($cp_boxes->fields['params']));
+    		echo $admin_classes[$module_id]->dashboards[$dashboard]->output(unserialize($cp_boxes->fields['params']));
     }
   	$cp_boxes->MoveNext();
   	$row_started = false;

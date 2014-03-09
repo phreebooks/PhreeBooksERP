@@ -25,7 +25,6 @@ define('GL_TYPE','chk');
 define('POPUP_FORM_TYPE','bnk:chk');
 define('AUDIT_LOG_DESC',ORD_TEXT_20_WINDOW_TITLE);
 $post_success      = false;
-$error             = false;
 $post_date         = isset($_REQUEST['post_date']) ? gen_db_date($_REQUEST['post_date']) : date('Y-m-d', time());
 $_GET['post_date'] = $post_date;
 $period = gen_calculate_period($post_date);
@@ -53,106 +52,103 @@ $custom_path = DIR_FS_WORKING . 'custom/pages/bills/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
-  case 'print':
-	\core\classes\user::validate_security($security_level, 2);
-  	// read the input data, place into array
-	$payment_list = array();
-	for ($i=1; $i<count($_POST); $i++) {
-	  if (!isset($_POST['id_' . $i])) break; // we're done
-	  if (isset($_POST['pay_' . $i])) {
-	    $payment_list[$_POST['bill_acct_id_' . $i]][] = array(
-		  'id'    => $_POST['id_' . $i],
-		  'amt'   => $currencies->clean_value($_POST['amt_' . $i]),
-		  'desc'  => $_POST['desc_' . $i],
-		  'dscnt' => $currencies->clean_value($_POST['dscnt_' . $i]),
-		  'total' => $currencies->clean_value($_POST['total_' . $i]),
-		  'acct'  => $currencies->clean_value($_POST['acct_' . $i]),
-		  'inv'   => $_POST['inv_' . $i],
-		);
-	  }
-	}
-	// error check input
-	if (!count($payment_list)) throw new \Exception(GL_ERROR_NO_ITEMS);
-	// ***************************** START TRANSACTION *******************************
-	$first_payment_ref = $purchase_invoice_id; // first check number, needed for printing
-	$db->transStart();
-	// post each payment by vendor (save journal record id)
-	foreach ($payment_list as $account => $values) {
-	  $order = new \phreebooks\classes\banking();
-	  // load journal main data
-	  $order->id = '';
-	  $order->journal_id          = JOURNAL_ID;
-	  $order->post_date           = $post_date;
-	  $order->period              = $period;
-	  $order->admin_id            = $_SESSION['admin_id'];
-	  $order->purchase_invoice_id = $purchase_invoice_id;	// PhreeBooks payment number
-	  $order->shipper_code        = '';
-	  $order->purch_order_id      = $purch_order_id;
-	  $order->description         = constant('GEN_ADM_TOOLS_J' . JOURNAL_ID);
-	  $order->gl_acct_id          = $gl_acct_id;
-	  $order->gl_disc_acct_id     = $gl_disc_acct_id;
-
-	  // retrieve billing information
-	  $result = $db->Execute("select * from " . TABLE_ADDRESS_BOOK . " where type = 'vm' and ref_id = " . $account);
-	  $order->bill_acct_id        = $account;
-	  $order->bill_address_id     = $result->fields['address_id'];
-	  $order->bill_primary_name   = $result->fields['primary_name'];
-	  $order->bill_contact        = $result->fields['contact'];
-	  $order->bill_address1       = $result->fields['address1'];
-	  $order->bill_address2       = $result->fields['address2'];
-	  $order->bill_city_town      = $result->fields['city_town'];
-	  $order->bill_state_province = $result->fields['state_province'];
-	  $order->bill_postal_code    = $result->fields['postal_code'];
-	  $order->bill_country_code   = $result->fields['country_code'];
-
-	  // load item row data
-	  $payment_total = 0;
-	  for ($x = 0; $x < count($values); $x++) {
-		$order->item_rows[] = array(
-		  'id'      => $values[$x]['id'],
-		  'amt'     => $values[$x]['amt'],
-		  'gl_type' => GL_TYPE,
-		  'desc'    => $values[$x]['desc'],
-		  'acct'    => $values[$x]['acct'],
-		  'inv'     => $values[$x]['inv'],
-		  'dscnt'   => $values[$x]['dscnt'],
-		  'total'   => $values[$x]['total'],
-		);
-	    $payment_total += $values[$x]['total'];
-	  }
-
-	  // Make sure there is a positive balance to pay
-	  $order->total_amount = $payment_total;
-	  if ($order->total_amount <= 0) {
-		$messageStack->add(sprintf(BNK_BULK_PAY_NOT_POSITIVE, $order->bill_primary_name), 'caution');
-		continue;
-	  }
-
-	  // post the payment
-	  if ($post_success = $order->bulk_pay()) {	// Post the order class to the db
-		gen_add_audit_log(AUDIT_LOG_DESC, $order->purchase_invoice_id, $order->total_amount);
-	  } else { // else there was a post error, display and re-display form
-		throw new \Exception(GL_ERROR_NO_POST);
-	  }
-	  $last_payment_ref = $purchase_invoice_id;
-      $purchase_invoice_id++; // next check number
-	}
-	$print_crit = array(
-	  'min' => $first_payment_ref,
-	  'max' => $last_payment_ref,
-	);
-
-	if ($error) {
-	  $db->transRollback();
-	} else {
-	  $db->transCommit();	// finished successfully
-	}
-	// ***************************** END TRANSACTION *******************************
-	if (DEBUG) $messageStack->write_debug();
-	// send to printer (range of check numbers)
-	break;
-  case 'search':
-  default:
+  	case 'print':
+  		try{
+			\core\classes\user::validate_security($security_level, 2);
+		  	// read the input data, place into array
+			$payment_list = array();
+			for ($i=1; $i<count($_POST); $i++) {
+			  if (!isset($_POST['id_' . $i])) break; // we're done
+			  if (isset($_POST['pay_' . $i])) {
+			    $payment_list[$_POST['bill_acct_id_' . $i]][] = array(
+				  'id'    => $_POST['id_' . $i],
+				  'amt'   => $currencies->clean_value($_POST['amt_' . $i]),
+				  'desc'  => $_POST['desc_' . $i],
+				  'dscnt' => $currencies->clean_value($_POST['dscnt_' . $i]),
+				  'total' => $currencies->clean_value($_POST['total_' . $i]),
+				  'acct'  => $currencies->clean_value($_POST['acct_' . $i]),
+				  'inv'   => $_POST['inv_' . $i],
+				);
+			  }
+			}
+			// error check input
+			if (!count($payment_list)) throw new \Exception(GL_ERROR_NO_ITEMS);
+			// ***************************** START TRANSACTION *******************************
+			$first_payment_ref = $purchase_invoice_id; // first check number, needed for printing
+			$db->transStart();
+			// post each payment by vendor (save journal record id)
+			foreach ($payment_list as $account => $values) {
+				$order = new \phreebooks\classes\banking();
+				// load journal main data
+				$order->id = '';
+				$order->journal_id          = JOURNAL_ID;
+				$order->post_date           = $post_date;
+				$order->period              = $period;
+				$order->admin_id            = $_SESSION['admin_id'];
+				$order->purchase_invoice_id = $purchase_invoice_id;	// PhreeBooks payment number
+				$order->shipper_code        = '';
+				$order->purch_order_id      = $purch_order_id;
+				$order->description         = constant('GEN_ADM_TOOLS_J' . JOURNAL_ID);
+				$order->gl_acct_id          = $gl_acct_id;
+				$order->gl_disc_acct_id     = $gl_disc_acct_id;
+			
+				// retrieve billing information
+				$result = $db->Execute("select * from " . TABLE_ADDRESS_BOOK . " where type = 'vm' and ref_id = " . $account);
+				$order->bill_acct_id        = $account;
+				$order->bill_address_id     = $result->fields['address_id'];
+				$order->bill_primary_name   = $result->fields['primary_name'];
+				$order->bill_contact        = $result->fields['contact'];
+				$order->bill_address1       = $result->fields['address1'];
+				$order->bill_address2       = $result->fields['address2'];
+				$order->bill_city_town      = $result->fields['city_town'];
+				$order->bill_state_province = $result->fields['state_province'];
+				$order->bill_postal_code    = $result->fields['postal_code'];
+				$order->bill_country_code   = $result->fields['country_code'];
+				// load item row data
+				$payment_total = 0;
+				for ($x = 0; $x < count($values); $x++) {
+					$order->item_rows[] = array(
+					  'id'      => $values[$x]['id'],
+					  'amt'     => $values[$x]['amt'],
+					  'gl_type' => GL_TYPE,
+					  'desc'    => $values[$x]['desc'],
+					  'acct'    => $values[$x]['acct'],
+					  'inv'     => $values[$x]['inv'],
+					  'dscnt'   => $values[$x]['dscnt'],
+					  'total'   => $values[$x]['total'],
+					);
+				    $payment_total += $values[$x]['total'];
+				}
+			
+				// Make sure there is a positive balance to pay
+				$order->total_amount = $payment_total;
+				if ($order->total_amount <= 0) {
+					$messageStack->add(sprintf(BNK_BULK_PAY_NOT_POSITIVE, $order->bill_primary_name), 'caution');
+					continue;
+				}
+			
+				// post the payment
+				$order->bulk_pay();	// Post the order class to the db
+				gen_add_audit_log(AUDIT_LOG_DESC, $order->purchase_invoice_id, $order->total_amount);
+				$last_payment_ref = $purchase_invoice_id;
+			    $purchase_invoice_id++; // next check number
+			}
+			$print_crit = array(
+			  'min' => $first_payment_ref,
+			  'max' => $last_payment_ref,
+			);
+			$db->transCommit();	// finished successfully
+  		}catch(Exception $e){
+  			$db->transRollback();
+  			$messageStack->add($e->getMessage());	
+  		}
+			
+		// ***************************** END TRANSACTION *******************************
+		if (DEBUG) $messageStack->write_debug();
+		// send to printer (range of check numbers)
+		break;
+  	case 'search':
+  	default:
 }
 
 /*****************   prepare to display templates  *************************/

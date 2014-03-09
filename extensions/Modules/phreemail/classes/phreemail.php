@@ -15,7 +15,8 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreemail/classes/phreemail.php
-//  
+// 
+namespace phreemail\classes; 
 require_once (DIR_FS_MODULES . 'phreedom/includes/PHPMailer/class.phpmailer.php');
 require_once (DIR_FS_MODULES . 'phreemail/language/'.$_SESSION['language'].'/language.php');
 require_once (DIR_FS_MODULES . 'phreemail/config.php');
@@ -27,7 +28,6 @@ class phreemail extends PHPMailer{
 	public $Password	= EMAIL_SMTPAUTH_PASSWORD; // van ouder
 	public $box			= "INBOX";
 	public $imap_stream;
-	public $error 		= array();
 	public $max_headers = 10;  #How much headers you want to retrive 'max' = all headers (
 	public $file_path 	= PHREEMAIL_DIR_ATTACHMENTS; #Where to write file attachments to // [full/path/to/attachment/store/(chmod777)]
 	public $partsarray	= array();
@@ -61,7 +61,7 @@ class phreemail extends PHPMailer{
   		try{
   			$this->imap_stream 	= imap_open("{". $this->Host . $this->Port."}".$this->box, $this->Username, $this->Password);
 	  		if($this->imap_stream == false){
-	    		throw new phpmailerException(imap_last_error());
+	    		throw new \Exception(imap_last_error());
 	  		}
   		}catch(Exception $e){
   			$this->SetError($e->getMessage());
@@ -79,7 +79,7 @@ class phreemail extends PHPMailer{
   	function mailboxmsginfo(){
   		try{
 	    	$mailbox = imap_check($this->imap_stream);
-  			if($mailbox == false) throw new phpmailerException(imap_last_error());
+  			if($mailbox == false) throw new \Exception(imap_last_error());
   			print_r($mailbox);
 	    	$mbox["Date"]    = $mailbox->Date;
     	   	$mbox["Driver"]  = $mailbox->Driver;
@@ -369,7 +369,7 @@ class phreemail extends PHPMailer{
 	function listmailbox(){
 		try{
 			$list = imap_list($this->imap_stream, "{".$this->Host."}", "*");
-	  		if (is_array($list) == false) throw new phpmailerException(imap_last_error());
+	  		if (is_array($list) == false) throw new \Exception(imap_last_error());
 	    	return $list;
 		}catch(Exception $e){
   			$this->SetError($e->getMessage());

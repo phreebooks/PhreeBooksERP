@@ -29,10 +29,10 @@ class mini_financial extends \core\classes\ctl_panel {
 	public $default_params 		= array();
 	public $module_id 			= 'phreebooks';
 
-	function Output($params) {
+	function output($params) {
 		global $db;
 		if(count($params) != $this->size_params){ //upgrading
-			$params = $this->Upgrade($params);
+			$params = $this->upgrade($params);
 		}
 		$contents = '';
 		$control  = '';

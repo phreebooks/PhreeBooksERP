@@ -27,7 +27,7 @@
 <?php echo js_calendar_init($cal_exp); ?>
 
 function init() {
-  <?php if (!$error && ($_REQUEST['action'] == 'save' || $_REQUEST['action'] == 'delete')) {
+  <?php if ($_REQUEST['action'] == 'save' || $_REQUEST['action'] == 'delete') {
 	echo '  window.opener.location.reload();' . chr(10);
 	echo '  self.close();' . chr(10);
   } ?>

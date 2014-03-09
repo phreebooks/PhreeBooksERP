@@ -21,7 +21,6 @@ $security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 gen_pull_language($module, 'admin');
 gen_pull_language('phreedom', 'admin');
 /**************   page specific initialization  *************************/
-$error  = false; 
 $tills   = new \phreepos\classes\tills();
 $trans	 = new \phreepos\classes\other_transactions();
 /***************   Act on the action request   *************************/
@@ -29,8 +28,7 @@ switch ($_REQUEST['action']) {
   case 'save': 
   	\core\classes\user::validate_security($security_level, 3); // security check
 	if(AR_TAX_BEFORE_DISCOUNT == false && PHREEPOS_DISCOUNT_OF == true && $_POST['phreepos_discount_of'] == 1 ){ // tax after discount
-		$messageStack->add('your setting tax before discount and discount over total don\'t work together, <br/>This has circulair logic. one can\'t preceed the other', 'error');
-		break;
+		throw new Exception("your setting tax before discount and discount over total don't work together, <br/>This has circulair logic. one can't preceed the other");
 	}else{
 		// save general tab
 		foreach ($admin_classes['phreepos']->keys as $key => $default) {

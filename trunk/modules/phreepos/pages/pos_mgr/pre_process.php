@@ -21,7 +21,6 @@ define('JOURNAL_ID','19');
 /**************  include page specific files    *********************/
 /**************   page specific initialization  *************************/
 define('POPUP_FORM_TYPE','pos:rcpt');
-$error      = false;
 history_filter('pos_mgr');
 /***************   hook for custom actions  ***************************/
 $date        = $_REQUEST['search_date'];
@@ -32,54 +31,47 @@ $custom_path = DIR_FS_WORKING . 'custom/pages/pos_mgr/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
-  case 'delete':
-    $id = db_prepare_input($_POST['rowSeq']);
-	if ($id) {
-	  $delOrd = new \phreepos\classes\journal\journal_19($id);
-	  if ($_SESSION['admin_prefs']['restrict_period'] && $delOrd->period <> CURRENT_ACCOUNTING_PERIOD) {
-	    $error = $messageStack->add(ORD_ERROR_DEL_NOT_CUR_PERIOD, 'error');
-	    break;
-	  }
-	  // verify no item rows have been acted upon (accounts reconciliation)
-	  $result = $db->Execute("select closed from " . TABLE_JOURNAL_MAIN . " where id = " . $id);
-	  if ($result->fields['closed'] == '1') $error = $delOrd ->fail_message(constant('GENERAL_JOURNAL_' . $delOrd ->journal_id . '_ERROR_6'));
-	  if (!$error) {	
-	    // *************** START TRANSACTION *************************
-	    $db->transStart();
-	    if (!$delOrd->unPost('delete')) {
-	      $error = $messageStack->add(GL_ERROR_NO_POST, 'error');
-		  $db->transRollback();
-		  break;
-	    } else { // delete the payments
-		  foreach ($delOrd->journal_rows as $value) {
-		    if ($value['gl_type'] <> 'ttl') continue;
-		    $pmt_fields  = explode(':', $value['description']);
-		    $name = "\payment\methods\\$pmt_fields[1]\\$pmt_fields[1]";
-			$pmt_method  = new $name; // payment method
-			$pmt_field_0 = $pmt_fields[2]; // cardholder name/reference
-			$pmt_field_1 = $pmt_fields[3]; // card number
-			$pmt_field_2 = $pmt_fields[4]; // exp month
-			$pmt_field_3 = $pmt_fields[5]; // exp year
-			$pmt_field_4 = $pmt_fields[6]; // cvv2
-			if (method_exists($pmt_method, 'refund')) {
-		      $result = $pmt_method->refund($value['debit_amount'], $reference, $pmt_field_0, $pmt_field_1);
-		    } else {
-			  $messageStack->add(sprintf('The payment method (%s) was not refunded with the processor. The refund in the amount of %s needs to be credited with the processor manually.', $pmt_method, $currencies->format_full($value['debit_amount'])), 'caution');
-			}
-	      }
-		  $db->transCommit();
-	    }
-	    // *************** END TRANSACTION *************************
-	  }
-	  if (DEBUG) $messageStack->write_debug();
-	  if (!$error) {
-	    gen_add_audit_log(TEXT_JID_ENTRY, JOURNAL_ID==19 ? BOX_CUSTOMER_DEPOSITS: BOX_VENDOR_DEPOSITS . ' - ' . TEXT_DELETE, $delOrd->purchase_invoice_id, $delOrd->total_amount);
-	    gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-	  }
-	} else {
-	  $messageStack->add(GL_ERROR_NEVER_POSTED, 'error');
-	}
-    break;
+  	case 'delete':
+	  	try{
+	    	$id = db_prepare_input($_POST['rowSeq']);
+			if (!$id) throw new Exception(GL_ERROR_NEVER_POSTED);
+		  	$delOrd = new \phreepos\classes\journal\journal_19($id);
+		  	if ($_SESSION['admin_prefs']['restrict_period'] && $delOrd->period <> CURRENT_ACCOUNTING_PERIOD) { //@todo move this to the journal
+		    	throw new Exception(ORD_ERROR_DEL_NOT_CUR_PERIOD);
+		  	}
+		  	// verify no item rows have been acted upon (accounts reconciliation)
+		  	$result = $db->Execute("select closed from " . TABLE_JOURNAL_MAIN . " where id = " . $id);
+		  	if ($result->fields['closed'] == '1') throw new Exception(constant('GENERAL_JOURNAL_' . $delOrd ->journal_id . '_ERROR_6'));
+		  	// *************** START TRANSACTION *************************
+		  	$db->transStart();
+		  	$delOrd->unPost('delete');
+		 
+		  	// delete the payments
+			foreach ($delOrd->journal_rows as $value) {
+			   	if ($value['gl_type'] <> 'ttl') continue;
+			   	$pmt_fields  = explode(':', $value['description']);
+				$pmt_field_0 = $pmt_fields[2]; // cardholder name/reference
+				$pmt_field_1 = $pmt_fields[3]; // card number
+				$pmt_field_2 = $pmt_fields[4]; // exp month
+				$pmt_field_3 = $pmt_fields[5]; // exp year
+				$pmt_field_4 = $pmt_fields[6]; // cvv2
+				if (method_exists($admin_classes['payment']->methods[$pmt_fields[1]], 'refund')) {
+			   		$admin_classes['payment']->methods[$pmt_fields[1]]->refund($value['debit_amount'], $reference, $pmt_field_0, $pmt_field_1);
+			   	} else {
+			  		$messageStack->add(sprintf('The payment method (%s) was not refunded with the processor. The refund in the amount of %s needs to be credited with the processor manually.', $pmt_method, $currencies->format_full($value['debit_amount'])), 'caution');
+				}
+		    }
+			$db->transCommit();
+		    gen_add_audit_log(TEXT_JID_ENTRY, JOURNAL_ID==19 ? BOX_CUSTOMER_DEPOSITS: BOX_VENDOR_DEPOSITS . ' - ' . TEXT_DELETE, $delOrd->purchase_invoice_id, $delOrd->total_amount);
+		    gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
+		    // *************** END TRANSACTION *************************
+		}catch(Exception $e){
+	  		$db->transRollback();
+			$messageStack->add($e->getMessage());
+	  	}
+	  	if (DEBUG) $messageStack->write_debug();
+	  
+    	break;
   case 'go_first':    $_REQUEST['list'] = 1;       break;
   case 'go_previous': $_REQUEST['list'] = max($_REQUEST['list']-1, 1); break;
   case 'go_next':     $_REQUEST['list']++;         break;

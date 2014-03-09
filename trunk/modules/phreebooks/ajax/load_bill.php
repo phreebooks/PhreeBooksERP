@@ -25,7 +25,6 @@ require_once(DIR_FS_MODULES . 'phreebooks/defaults.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 
 /**************   page specific initialization  *************************/
-$error = false;
 $debug = NULL;
 $cID   = db_prepare_input($_GET['cID']); // contact record ID
 $bID   = db_prepare_input($_GET['bID']); // journal record ID

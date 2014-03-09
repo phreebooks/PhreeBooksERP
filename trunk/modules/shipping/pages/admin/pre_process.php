@@ -24,7 +24,6 @@ gen_pull_language('contacts');
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/shipping.php');
 /**************   page specific initialization  *************************/
-$error      = false; 
 // see if installing or removing a method
 if (substr($_REQUEST['action'], 0, 8) == 'install_') {
   $method = substr($_REQUEST['action'], 8);
@@ -40,9 +39,7 @@ if (substr($_REQUEST['action'], 0, 8) == 'install_') {
 switch ($_REQUEST['action']) {
   case 'install':
   	\core\classes\user::validate_security($security_level, 4);
-	write_configure('MODULE_SHIPPING_' . strtoupper($method) . '_STATUS', '1');
-	foreach ($admin_classes['shipping']->methods[$method]->keys as $key) write_configure($key['key'], $key['default']);
-	if (method_exists($admin_classes['shipping']->methods[$method], 'install')) $admin_classes['shipping']->methods[$method]->install(); // handle special case install, db, files, etc
+	$admin_classes['shipping']->methods[$method]->install(); 
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	break;
   case 'remove';
@@ -58,8 +55,8 @@ switch ($_REQUEST['action']) {
 	}
 	// save general tab
 	foreach ($admin_classes['shipping']->keys as $key => $default) {
-	  $field = strtolower($key);
-      if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
+	  	$field = strtolower($key);
+      	if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
     }
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
     break;
@@ -79,20 +76,18 @@ switch ($_REQUEST['action']) {
 	$backup->source_dir  = DIR_FS_MY_FILES . $_SESSION['company'].'/shipping/labels/'.$carrier.'/'.$fy_year.'/'.$fy_month.'/';
 	$backup->dest_dir    = DIR_FS_MY_FILES . 'backups/';
 	switch ($conv_type) {
-	  case 'bz2': 
-		$backup->dest_file = 'ship_' . $carrier . '_' . $fy_year . $fy_month . '.tar.bz2';
-	    if ($backup->make_bz2('dir')) $error = true;
-		break;
-	  default:
-	  case 'zip': 
-		$backup->dest_file = 'ship_' . $carrier . '_' . $fy_year . $fy_month . '.zip';
-		if ($backup->make_zip('dir')) $error = true;
-		break;
+		case 'bz2': 
+			$backup->dest_file = 'ship_' . $carrier . '_' . $fy_year . $fy_month . '.tar.bz2';
+		    $backup->make_bz2('dir');
+			break;
+		default:
+		case 'zip': 
+			$backup->dest_file = 'ship_' . $carrier . '_' . $fy_year . $fy_month . '.zip';
+			$backup->make_zip('dir');
+			break;
 	}
-	if (!$error) {
-	  gen_add_audit_log(GEN_DB_DATA_BACKUP, TABLE_AUDIT_LOG);
-	  $backup->download($backup->dest_dir, $backup->dest_file); // will not return if successful
-	}
+	gen_add_audit_log(GEN_DB_DATA_BACKUP, TABLE_AUDIT_LOG);
+	$backup->download($backup->dest_dir, $backup->dest_file); // will not return if successful
 	$default_tab_id = 'tools';
     break;
   case 'clean':
@@ -102,8 +97,8 @@ switch ($_REQUEST['action']) {
   	$conv_type = db_prepare_input($_POST['conv_type']);
 	$backup    = new \phreedom\classes\backup;
 	$backup->source_dir  = DIR_FS_MY_FILES . $_SESSION['company'] . '/shipping/labels/' . $carrier . '/' . $fy_year . '/' . $fy_month . '/';
-    if ($backup->delete_dir($backup->source_dir, $recursive = true)) $error = true;
-	if (!$error) gen_add_audit_log(GEN_FILE_DATA_CLEAN);
+    $backup->delete_dir($backup->source_dir, $recursive = true);
+	gen_add_audit_log(GEN_FILE_DATA_CLEAN);
 	$default_tab_id = 'tools';
 	break;
   default:
@@ -138,7 +133,7 @@ $sel_fy_month = array(
 );
 $sel_fy_year = array();
 for ($i = 0; $i < 8; $i++) {
-  $sel_fy_year[] = array('id' => date('Y')-$i, 'text' => date('Y')-$i);
+  	$sel_fy_year[] = array('id' => date('Y')-$i, 'text' => date('Y')-$i);
 }
 $include_header   = true;
 $include_footer   = true;

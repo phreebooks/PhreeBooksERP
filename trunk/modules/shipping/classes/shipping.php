@@ -62,6 +62,16 @@ class shipping {
   	}
   	
 	/**
+  	 * this will preform the install functions 
+  	 */
+  	
+  	function install(){
+  		write_configure('MODULE_SHIPPING_' . strtoupper($this->id) . '_STATUS', '1');
+		foreach ($this->keys as $key) write_configure($key['key'], $key['default']);
+  		
+  	}
+  	
+	/**
   	 * this function will be called when a module is removed.
   	 * or when it is removed by in the payment admin page 
   	 */

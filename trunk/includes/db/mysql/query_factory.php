@@ -171,11 +171,13 @@ class queryFactory {
 		  	echo str_replace("\n", '<br />', $messageStack->debug_info); 
 			ob_end_flush();
   			session_write_close();
+			die;
 		  }
 		} else { 
 		    echo str_replace("\n", '<br />', $messageStack->debug_info); 
 			ob_end_flush();
   			session_write_close();
+			die;
 		}
 	  }
       $obj->resource = $zp_db_resource;

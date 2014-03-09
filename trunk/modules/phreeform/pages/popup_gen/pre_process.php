@@ -24,7 +24,6 @@ require_once(DIR_FS_WORKING . 'functions/phreeform.php');
 $custom_path = DIR_FS_WORKING . 'custom/pages/popup_gen/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
 /**************   page specific initialization  *************************/
-$error  = false;
 $r_list = false;
 $rID    = $_REQUEST['rID'];
 $gID    = isset($_GET ['gID'])  ? $_GET ['gID']  : false;
@@ -79,8 +78,7 @@ if ($rID) {
     }
   }
 } else {
-  $error = true;
-  $messageStack->add(PHREEFORM_NORPT, 'error');
+	throw new \Exception(PHREEFORM_NORPT);
 }
 //echo 'post override report->filterlist = '; print_r($report->filterlist); echo '<br>';
 
@@ -101,8 +99,7 @@ $message_subject = $title . ' ' . TEXT_FROM . ' ' . COMPANY_NAME;
 $message_subject = $_POST['message_subject'] ? $_POST['message_subject'] : $message_subject;
 $message_body    = $report->emailmessage     ? TextReplace($report->emailmessage) : sprintf(PHREEFORM_EMAIL_BODY, $title, COMPANY_NAME);
 $email_text      = $_POST['message_body']    ? $_POST['message_body']    : $message_body;
-
-if (!$error) switch ($_REQUEST['action']) {
+switch ($_REQUEST['action']) {
   case 'save':
   case 'save_as':
   case 'exp_csv':
@@ -202,8 +199,7 @@ if (!$error) switch ($_REQUEST['action']) {
 	  $filename = PF_DIR_MY_REPORTS . 'pf_' . $rID;
 	  if (!$handle = @fopen($filename, 'w')) {
 	    $db->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
-	    $messageStack->add(sprintf(PHREEFORM_WRITE_ERROR, $filename), 'error');
-	    break;
+	    throw new \Exception(sprintf(PHREEFORM_WRITE_ERROR, $filename));
 	  }
 	  fwrite($handle, $output);
 	  fclose($handle);
@@ -228,67 +224,55 @@ if (!$error) switch ($_REQUEST['action']) {
 	  $output = object_to_xml($report);
 	  $filename = PF_DIR_MY_REPORTS . 'pf_' . $rID;
 	  if (!$handle = @fopen($filename, 'w')) {
-	    $db->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
-	    $messageStack->add(sprintf(PHREEFORM_WRITE_ERROR, $filename), 'error');
-	    break;
+	    	$db->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
+	    	throw new \Exception(sprintf(PHREEFORM_WRITE_ERROR, $filename));
 	  }
 	  fwrite($handle, $output);
 	  fclose($handle);
 	  $messageStack->add(TEXT_REPORT . $report->description . PHREEFORM_WASSAVED . $report->title, 'success');
 	  break; // we're done
 	}
-	if ($error) break;
 
 	// if we are here, the user wants to generate output
 	switch ($report->reporttype) {
-	  case 'frm':
-	    $output = BuildForm($report, $delivery_method);
-		if ($output === true) $error = true;
-	    break;
-	  case 'rpt':
-	    $ReportData = '';
-	    $success = BuildSQL($report);
-	    if ($success['level'] == 'success') { // Generate the output data array
-		  $sql = $success['data'];
-		  $report->page->filter->text = $success['description']; // fetch the filter message
-		  if (!$ReportData = BuildDataArray($sql, $report)) {
-		    $messageStack->add(PHREEFORM_NODATA . ' The sql was: ' . $sql, 'caution');
-		    $error = true;
+	  	case 'frm':
+	    	BuildForm($report, $delivery_method);
+	    	break;
+		case 'rpt':
+		    $ReportData = '';
+		    $success = BuildSQL($report);
+		    if ($success['level'] == 'success') { // Generate the output data array
+			  	$sql = $success['data'];
+			  	$report->page->filter->text = $success['description']; // fetch the filter message
+			  	if (!$ReportData = BuildDataArray($sql, $report)) throw new \Exception(PHREEFORM_NODATA . ' The sql was: ' . $sql);
+			  	// Check for the report returning with data
+			  	if (!$ReportData) throw new \Exception(PHREEFORM_NODATA . ' The failing sql= ' . $sql);
+			    if ($_REQUEST['action'] == 'exp_csv')  $output = GenerateCSVFile ($ReportData, $report, $delivery_method);
+			    if ($_REQUEST['action'] == 'exp_xml')  $output = GenerateXMLFile ($ReportData, $report, $delivery_method);
+			    if ($_REQUEST['action'] == 'exp_html') $output = GenerateHTMLFile($ReportData, $report, $delivery_method);
+			    if ($_REQUEST['action'] == 'exp_pdf')  $output = GeneratePDFFile ($ReportData, $report, $delivery_method);
+		    } else { // Houston, we have a problem
+			  	throw new \Exception($success['message']);
+		    }
 		    break;
-		  }
-		  // Check for the report returning with data
-		  if (!$ReportData) {
-		    $messageStack->add(PHREEFORM_NODATA . ' The failing sql= ' . $sql, 'caution');
-		    $error = true;
-		  } else {
-		    if ($_REQUEST['action'] == 'exp_csv')  $output = GenerateCSVFile ($ReportData, $report, $delivery_method);
-		    if ($_REQUEST['action'] == 'exp_xml')  $output = GenerateXMLFile ($ReportData, $report, $delivery_method);
-		    if ($_REQUEST['action'] == 'exp_html') $output = GenerateHTMLFile($ReportData, $report, $delivery_method);
-		    if ($_REQUEST['action'] == 'exp_pdf')  $output = GeneratePDFFile ($ReportData, $report, $delivery_method);
-		  }
-	    } else { // Houston, we have a problem
-		  $messageStack->add($success['message'], $success['level']);
-		  $error = true;
-	    }
-	    break;
 	}
 	// if we are here, delivery method was email
-	if (!$error && $output) {
+	if ($output) {
 		$temp_file = DIR_FS_MY_FILES . $_SESSION['company'] . '/temp/' . $output['filename'];
 		$handle = fopen($temp_file, 'w');
 		fwrite($handle, $output['pdf']);
 		fclose($handle);
 		$block = array();
 		if ($cc_email) {
-		  $block['EMAIL_CC_NAME']    = $cc_name;
-		  $block['EMAIL_CC_ADDRESS'] = $cc_email;
+			$block['EMAIL_CC_NAME']    = $cc_name;
+			$block['EMAIL_CC_ADDRESS'] = $cc_email;
 		}
 		$attachments_list['file'] = $temp_file;
-		$success = validate_send_mail($to_name, $to_email, $message_subject, $email_text, $from_name, $from_email, $block, $attachments_list);
-		if ($success) $messageStack->add(EMAIL_SEND_SUCCESS, 'success');
+		validate_send_mail($to_name, $to_email, $message_subject, $email_text, $from_name, $from_email, $block, $attachments_list);
+		$messageStack->add(EMAIL_SEND_SUCCESS, 'success');
 		unlink($temp_file);
 	}
-  default:
+	default:
 }
 
 /*****************   prepare to display templates  *************************/

@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/magento/pages/main/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_MAGENTO_INTERFACE);
+$security_level = \core\classes\user::validate(SECURITY_ID_MAGENTO_INTERFACE);
 /**************  include page specific files    *********************/
 gen_pull_language('shipping');
 gen_pull_language('inventory');
@@ -24,13 +24,10 @@ require_once(DIR_FS_MODULES . 'inventory/defaults.php');
 require_once(DIR_FS_MODULES . 'shipping/defaults.php'); 
 require_once(DIR_FS_WORKING . 'functions/magento.php'); 
 require_once(DIR_FS_MODULES . 'inventory/functions/inventory.php'); 
-//require_once(DIR_FS_WORKING . 'classes/magento.php'); 
-require_once(DIR_FS_WORKING . 'classes/bulk_upload.php'); 
 require_once(DIR_FS_WORKING . 'functions/magento.php');
-$magento = new magento();
-$magento->create_product('10056');
+$magento = new \magento\classes\magento();
+$magento->update_inventory_catalog_options();
 /**************   page specific initialization  *************************/
-$error     = false;
 $ship_date = $_POST['ship_date'] ? gen_db_date($_POST['ship_date']) : date('Y-m-d');
 
 /***************   hook for custom actions  ***************************/
@@ -40,12 +37,12 @@ if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'upload':
-    $upXML = new magento();
+    $upXML = new \magento\classes\magento();
 	$id    = db_prepare_input($_POST['rowSeq']);
 	if ($upXML->submitXML($id, 'product_ul')) gen_add_audit_log(MAGENTO_UPLOAD_PRODUCT, $upXML->sku);
 	break;
   case 'bulkupload':
-    $upXML = new bulk_upload();
+    $upXML = new \magento\classes\bulk_upload();
     $inc_image = isset($_POST['include_images']) ? true : false;
 	if ($upXML->bulkUpload($inc_image)) {
 		gen_add_audit_log(MAGENTO_BULK_UPLOAD);
@@ -53,11 +50,11 @@ switch ($_REQUEST['action']) {
 	}
     break;
   case 'sync':
-    $upXML = new magento();
+    $upXML = new \magento\classes\magento();
 	if ($upXML->submitXML(0, 'product_sync')) gen_add_audit_log(MAGENTO_PRODUCT_SYNC);
 	break;
   case 'confirm':
-    $upXML = new magento();
+    $upXML = new \magento\classes\magento();
 	$upXML->post_date = $ship_date;
 	if ($upXML->submitXML(0, 'confirm')) gen_add_audit_log(MAGENTO_SHIP_CONFIRM, $ship_date);
     break;

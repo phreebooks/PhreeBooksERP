@@ -22,7 +22,7 @@
 //
 
 /**************   Check user security   *****************************/
-$security_level = validate_user(SECURITY_PHREEMAIL_MGT);
+$security_level = \core\classes\user::validate(SECURITY_PHREEMAIL_MGT);
 /**************  include page specific files  *********************/
 require(DIR_FS_MODULES . 'phreeform/language/'  . $_SESSION['language'] . '/language.php'); // error messages, qualifiers
 
@@ -55,12 +55,10 @@ if($_REQUEST['action'] = 'send'){
 		$block['EMAIL_CC_NAME']    = $cc_name;
 		$block['EMAIL_CC_ADDRESS'] = $cc_address;
 	}
-	$success = validate_send_mail($to_name, $to_address, $email_subject, $email_text, $from_name, $from_address, $block);
-	if ($success){
-	 	$messageStack->add(EMAIL_SEND_SUCCESS, 'success');
-	 	echo '<script type="text/javascript"> window.opener.location.reload();' . chr(10);
-	 	echo'self.close();</script>' . chr(10);
-	}
+	validate_send_mail($to_name, $to_address, $email_subject, $email_text, $from_name, $from_address, $block);
+	$messageStack->add(EMAIL_SEND_SUCCESS, 'success');
+	echo '<script type="text/javascript"> window.opener.location.reload();' . chr(10);
+	echo'self.close();</script>' . chr(10);
 }
 /*****************   prepare to display templates  *************************/
 $include_header   = false;

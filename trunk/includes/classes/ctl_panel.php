@@ -47,7 +47,7 @@ class ctl_panel {
 		return $output;
 	}
   
-  	function Install($column_id = 1, $row_id = 0) {//@todo rename to install
+  	function install($column_id = 1, $row_id = 0) {
 		global $db;
 		if (!$row_id) $row_id 		= $this->get_next_row();
 		//$this->params['num_rows']   = $this->default_num_rows;	// defaults to unlimited rows
@@ -60,7 +60,7 @@ class ctl_panel {
   	/**
   	 * this will be called when a user unchecks the show on page check box.
   	 */
-  	function Remove() {
+  	function remove() {
 		global $db;
 		$result = $db->Execute("delete from " . TABLE_USERS_PROFILES . " 
 	  	where user_id = {$_SESSION['admin_id']} and menu_id = '{$this->menu_id}' and dashboard_id = '{$this->id }'");
@@ -77,7 +77,7 @@ class ctl_panel {
 		return true;
   	}
 
-  	function Update() {
+  	function update() {
   		global $db;
   		$db->Execute("update " . TABLE_USERS_PROFILES . " set params = '" . serialize($this->params) . "' 
 	  		where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "' 
@@ -132,7 +132,7 @@ class ctl_panel {
 		return ($result->fields['max_row'] + 1);
 	}
 	
-	function Upgrade($params){
+	function upgrade($params){
 		foreach ($this->default_params as $key => $value){
 			if(in_array($key, $params, false)){
 				$this->params[$key] =  $params[$key];
@@ -140,7 +140,7 @@ class ctl_panel {
 				$this->params[$key] =  $value;
 			}
 		}
-		$this->Update();
+		$this->update();
 		return $this->params;
 	}
 }

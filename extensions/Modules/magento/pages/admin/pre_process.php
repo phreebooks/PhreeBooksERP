@@ -16,28 +16,20 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/magento/pages/admin/pre_process.php
 //
-$security_level = validate_user(SECURITY_ID_CONFIGURATION);
+$security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 /**************  include page specific files    *********************/
 gen_pull_language($module, 'admin');
 require_once(DIR_FS_WORKING . 'functions/magento.php');
-require_once(DIR_FS_WORKING . 'classes/install.php');
-
-/**************   page specific initialization  *************************/
-$error   = false; 
-$install = new magento_admin();
-
+/**************   page specific initialization  *************************/ 
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/admin/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save':
-	if ($security_level < 3) {
-		$messageStack->add_session(ERROR_NO_PERMISSION,'error');
-		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL')); 
-	}
+  	\core\classes\user::validate_security($security_level, 3); // security check
 	// save general tab
-	foreach ($install->keys as $key => $default) {
+	foreach ($admin_classes['magento']->keys as $key => $default) {
 	  $field = strtolower($key);
       if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
     }

@@ -27,7 +27,6 @@ if (defined('MODULE_PHREEFORM_STATUS')) {
 }
 require_once(DIR_FS_WORKING . 'functions/phreedom.php');
 /**************   page specific initialization  *************************/
-$error  = false; 
 // see if installing or removing a module
 if (substr($_REQUEST['action'], 0, 8) == 'install_') {
   $method = substr($_REQUEST['action'], 8);
@@ -70,7 +69,7 @@ switch ($_REQUEST['action']) {
 			break;
   		}catch (Exception $e){
   			$db->transRollback();
-  			$messageStack->add($e->getMessage(),'error');
+  			$messageStack->add($e->getMessage());
   			break;
   		}
   	case 'remove':
@@ -88,7 +87,7 @@ switch ($_REQUEST['action']) {
 			break;
   		}catch (Exception $e){
   			$db->transRollback();
-  			$messageStack->add($e->getMessage(),'error');
+  			$messageStack->add($e->getMessage());
   			break;
   		}
   	case 'save':
@@ -110,7 +109,7 @@ switch ($_REQUEST['action']) {
 		    break;
   		}catch (Exception $e){
   			$db->transRollback();
-  			$messageStack->add($e->getMessage(),'error');
+  			$messageStack->add($e->getMessage());
   			break;
   		}
   	case 'delete':
@@ -125,7 +124,7 @@ switch ($_REQUEST['action']) {
 		   	break;
   		}catch (Exception $e){
   			$db->transRollback();
-  			$messageStack->add($e->getMessage(),'error');
+  			$messageStack->add($e->getMessage());
   			break;
   		}
   	case 'copy_co':
@@ -139,9 +138,9 @@ switch ($_REQUEST['action']) {
 			if (!$db_name || !$co_name)           throw new \Exception(SETUP_CO_MGR_ERROR_EMPTY_FIELD);
 			if ($db_name == $_SESSION['company']) throw new \Exception(SETUP_CO_MGR_DUP_DB_NAME);
 			// check for database already exists
-			$db_orig = new queryFactory;
+			$db_orig = new queryFactory;//@todo pdo
 			if (!$db_orig->connect(DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, DB_DATABASE)) trigger_error('Problem connecting to original DB!', E_USER_ERROR);
-			$db = new queryFactory;
+			$db = new queryFactory;//@todo pdo
 			if (!$db->connect($db_server, $db_user, $db_pw, $db_name)) throw new \Exception(SETUP_CO_MGR_CANNOT_CONNECT);
 			// write the db config.php in the company directory
 			if (!file_exists(DIR_FS_ADMIN . PATH_TO_MY_FILES . $db_name)) {
@@ -212,9 +211,9 @@ switch ($_REQUEST['action']) {
 		   	break;
   		}catch (Exception $e){
   			$db->transRollback();
-  			$db = new queryFactory;
+  			$db = new queryFactory;//@todo pdo
 			$db->connect(DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, DB_DATABASE);
-  			$messageStack->add($e->getMessage(),'error');
+  			$messageStack->add($e->getMessage());
   			break;
   		}
   case 'delete_co':
@@ -222,32 +221,30 @@ switch ($_REQUEST['action']) {
 	// Failsafe to prevent current company from being deleted accidently
 	$backup = new backup;
 	if ($db_name == 'none') throw new \Exception(SETUP_CO_MGR_NO_SELECTION);
-	if (!$error && $db_name <> $_SESSION['company']) {
-	  // connect to other company, retrieve login info
-	  $config = file(DIR_FS_MY_FILES . $db_name . '/config.php');
-	  foreach ($config as $line) {
-	    if     (strpos($line, 'DB_SERVER_USERNAME')) $db_user   = substr($line, strpos($line,",")+1, strpos($line,")")-strpos($line,",")-1);
-	    elseif (strpos($line, 'DB_SERVER_PASSWORD')) $db_pw     = substr($line, strpos($line,",")+1, strpos($line,")")-strpos($line,",")-1);
-	    elseif (strpos($line, 'DB_SERVER_HOST'))     $db_server = substr($line, strpos($line,",")+1, strpos($line,")")-strpos($line,",")-1);
-	  }
-	  $db_user   = str_replace("'", "", $db_user);
-	  $db_pw     = str_replace("'", "", $db_pw);
-	  $db_server = str_replace("'", "", $db_server);
-	  $del_db = new queryFactory;
-	  if (!$del_db->connect($db_server, $db_user, $db_pw, $db_name)) throw new \Exception(SETUP_CO_MGR_CANNOT_CONNECT);
-	  if (!$error) {
-	    $tables = array();
-	    $table_list = $del_db->Execute("show tables");
-	    while (!$table_list->EOF) {
-		  $tables[] = array_shift($table_list->fields);
-		  $table_list->MoveNext();
+	if ($db_name <> $_SESSION['company']) {
+		// connect to other company, retrieve login info
+	  	$config = file(DIR_FS_MY_FILES . $db_name . '/config.php');
+	  	foreach ($config as $line) {
+	    	if     (strpos($line, 'DB_SERVER_USERNAME')) $db_user   = substr($line, strpos($line,",")+1, strpos($line,")")-strpos($line,",")-1);
+	    	elseif (strpos($line, 'DB_SERVER_PASSWORD')) $db_pw     = substr($line, strpos($line,",")+1, strpos($line,")")-strpos($line,",")-1);
+	    	elseif (strpos($line, 'DB_SERVER_HOST'))     $db_server = substr($line, strpos($line,",")+1, strpos($line,")")-strpos($line,",")-1);
+	  	}
+	  	$db_user   = str_replace("'", "", $db_user);
+	  	$db_pw     = str_replace("'", "", $db_pw);
+	  	$db_server = str_replace("'", "", $db_server);
+	  	$del_db = new queryFactory;//@todo pdo
+	  	if (!$del_db->connect($db_server, $db_user, $db_pw, $db_name)) throw new \Exception(SETUP_CO_MGR_CANNOT_CONNECT);
+	  	$tables = array();
+	  	$table_list = $del_db->Execute("show tables");
+	  	while (!$table_list->EOF) {
+	  		$tables[] = array_shift($table_list->fields);
+			$table_list->MoveNext();
 	    }
 	    if (is_array($tables)) foreach ($tables as $table) $del_db->Execute("drop table " . $table);
 	    $backup->delete_dir(DIR_FS_MY_FILES . $db_name);
 	    unset($_SESSION['companies'][$_POST['del_company']]);
 	    gen_add_audit_log(SETUP_CO_MGR_LOG . TEXT_DELETE, $db_name);
 	    $messageStack->add(SETUP_CO_MGR_DELETE_SUCCESS, 'success');
-	  }
 	}
 	$default_tab_id = 'manager';
 	break;

@@ -23,7 +23,6 @@ class tax_rates {
 	public $db_table    = TABLE_TAX_RATES;
     public $help_path   = '07.08.03.02';
     public $type        = 'c'; // choices are c for customers and v for vendors
-    public $error       = false;
 	
     public function __construct(){
          $this->security_id = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
@@ -100,7 +99,7 @@ class tax_rates {
     global $db;
 	require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
     $tax_authorities_array = gen_build_tax_auth_array();
-    if ($action <> 'new' && $this->error == false) {
+    if ($action <> 'new') {
         $sql = "select description_short, description_long, rate_accounts, freight_taxable 
 	       from " . $this->db_table . " where tax_rate_id = " . $id;
         $result = $db->Execute($sql);

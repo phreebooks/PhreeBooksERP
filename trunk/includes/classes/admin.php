@@ -71,7 +71,7 @@ class admin {
 	    	if (method_exists($dashboard, 'install')) $dashboard->install();
 		}
 		$this->installed = true;
-		$this->status = $this->version;
+		$this->status 	 = $this->version;
 	}
 	
 	/**
@@ -82,12 +82,15 @@ class admin {
   	}
 	
   	/**
-  	 * this used to be the update function.
-  	 * this function will be called when a module is upgraded. 
+  	 * this function will be called when a module is upgraded.
+  	 * it will update tables directories and keys 
   	 */
   	
-	function upgrade() { //@todo sub classes should use version_compare
+	function upgrade() {
+		$this->check_prerequisites_versions();
+		$this->install_dirs($path_my_files);
 		$this->install_update_tables();
+		foreach ($this->keys as $key => $value) if(!defined($key)) write_configure($key, $value);
 		foreach ($this->methods as $method) {
 			if ($method->installed && $method->should_update()){
 	    		foreach ($method->key() as $key) if(!defined($key['key'])) write_configure($key['key'], $key['default']);

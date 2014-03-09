@@ -79,16 +79,14 @@ class admin extends \core\classes\admin {
 	    parent::install($path_my_files, $demo);
 	    // add a current status field for the next ca/pa number
 	    if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_capa_num')) {
-		  $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_capa_num  VARCHAR(16) NOT NULL DEFAULT 'CAPA0001'");
+		  	$db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_capa_num  VARCHAR(16) NOT NULL DEFAULT 'CAPA0001'");
 	    }
-	    write_configure('MODULE_' . strtoupper($this->id) . '_STATUS', $this->version);
   	}
 
   	function upgrade() {
     	global $db;
     	parent::upgrade();
     	if (db_field_exists(TABLE_CURRENT_STATUS, 'next_capa_desc')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_capa_desc");
-    	write_configure('MODULE_' . strtoupper($this->id) . '_STATUS', $this->version);
   	}
 
   	function delete() {

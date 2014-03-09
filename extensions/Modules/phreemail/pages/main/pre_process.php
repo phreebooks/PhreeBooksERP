@@ -16,14 +16,12 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreemail/pages/main/pre_process.php
 //
-$security_level = validate_user(SECURITY_PHREEMAIL_MGT);
+$security_level = \core\classes\user::validate(SECURITY_PHREEMAIL_MGT);
 /**************  include page specific files    *********************/
-require_once(DIR_FS_WORKING . 'classes/phreemail.php');
 require_once(DIR_FS_WORKING . 'defaults.php');
 /**************   page specific initialization  *************************/
-$error       = false;
 $processed   = false;
-$mail		 = new phreemail();
+$mail		 = new \phreemail\classes\phreemail();
 if(!isset($_REQUEST['list'])) $_REQUEST['list'] = 1;
 if ($_REQUEST['search_text'] == TEXT_SEARCH) $_REQUEST['search_text'] = '';
 if (!$_REQUEST['action'] && $_REQUEST['search_text'] <> '') $_REQUEST['action'] = 'search'; // if enter key pressed and search not blank
@@ -33,34 +31,18 @@ if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'create':
-	if ($security_level < 2) {
-		$messageStack->add_session(ERROR_NO_PERMISSION, 'error');
-		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-		break;
-	}
-	
+  	\core\classes\user::validate_security($security_level, 2); // security check
 	break;
   case 'delete':
-	if ($security_level < 4) {
-		$messageStack->add_session(ERROR_NO_PERMISSION,'error');
-		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-		break;
-	}
+  	\core\classes\user::validate_security($security_level, 4); // security check
+	
 	
   case 'save':
-	if ($security_level < 3) {
-		$messageStack->add_session(ERROR_NO_PERMISSION,'error');
-		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-		break;
-	}
+  	\core\classes\user::validate_security($security_level, 3); // security check
 	
 	break;
   case 'copy':
-	if ($security_level < 2) {
-		$messageStack->add_session(ERROR_NO_PERMISSION,'error');
-		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-		break;
-	}
+  	\core\classes\user::validate_security($security_level, 2); // security check
 	
   case 'edit':
     $mail->getEmailFromDb($_POST['rowSeq']);
@@ -70,27 +52,21 @@ switch ($_REQUEST['action']) {
 	$imgID = db_prepare_input($_POST['rowSeq']);
 	$filename = 'assets_'.$cID.'_'.$imgID.'.zip';
 	if (file_exists(ASSETS_DIR_ATTACHMENTS . $filename)) {
-		require_once(DIR_FS_MODULES . 'phreedom/classes/backup.php');
-		$backup = new backup();
+		$backup = new \phreedom\classes\backup();
 		$backup->download(ASSETS_DIR_ATTACHMENTS, $filename, true);
 	}
-	ob_end_flush();
-	session_write_close();
 	die;
   case 'dn_attach': // download from list, assume the first document only
 	$cID   = db_prepare_input($_POST['rowSeq']);
 	$result = $db->Execute("select attachments from " . TABLE_PHREEMAIL . " where id = " . $cID);
 	$attachments = unserialize($result->fields['attachments']);
 	foreach ($attachments as $key => $value) {
-	  	$filename = 'mail_'.$cID.'_'.$key.'.zip';
-	  	if (file_exists(ASSETS_DIR_ATTACHMENTS . $filename)) {
-			require_once(DIR_FS_MODULES . 'phreedom/classes/backup.php');
-			$backup = new backup();
-			$backup->download(ASSETS_DIR_ATTACHMENTS, $filename, true);
-			ob_end_flush();
-			session_write_close();
-			die;
-	  	}
+	  $filename = 'mail_'.$cID.'_'.$key.'.zip';
+	  if (file_exists(ASSETS_DIR_ATTACHMENTS . $filename)) {
+		$backup = new \phreedom\classes\backup();
+		$backup->download(ASSETS_DIR_ATTACHMENTS, $filename, true);
+		die;
+	  }
 	}
 	break;
 
@@ -144,7 +120,7 @@ switch ($_REQUEST['action']) {
     $query_raw    = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . " from " . TABLE_PHREEMAIL . $search . " order by $disp_order";
     $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     // the splitPageResults should be run directly after the query that contains SQL_CALC_FOUND_ROWS
-    $query_split  = new splitPageResults($_REQUEST['list'], '');
+    $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 	define('PAGE_TITLE', BOX_ASSET_MODULE);
     $include_template = 'template_main.php';
 	break;

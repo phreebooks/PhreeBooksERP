@@ -14,12 +14,12 @@ config.options.chkConfirmDelete= <?php echo PHREEWIKI_CONFIRM_DELETE ? "true;" :
 config.options.chkInsertTabs= <?php echo PHREEWIKI_INSERT_TABS? "true;" : "false;";?>;
 config.options.txtMaxEditRows=<?php echo defined(PHREEWIKI_MAX_EDIT_ROWS)? PHREEWIKI_MAX_EDIT_ROWS: 30; ?>;
 <?php
-if(isset($_SESSION['admin_security'][SECURITY_PHREEWIKI_MGT]) && $_SESSION['admin_security'][SECURITY_PHREEWIKI_MGT] < 2 ){
+if(\core\classes\user::security_level(SECURITY_PHREEWIKI_MGT) < 2 ){
 	echo 'config.options.chkHttpReadOnly = true;'.chr(13);
 }else{
 	echo 'config.options.chkHttpReadOnly = false;'.chr(13);
 }
-if(isset($_SESSION['admin_security'][SECURITY_ID_CONFIGURATION]) && $_SESSION['admin_security'][SECURITY_ID_CONFIGURATION] != 0){
+if(\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) != 0){
 	echo 'var is_admin = true;'.chr(13);
 }else{
 	echo 'var is_admin = false;'.chr(13);

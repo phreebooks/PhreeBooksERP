@@ -57,10 +57,18 @@ class payment {
 		$card_number = substr($card_number, 0, 4) . '********' . substr($card_number, -4);
 		$this->payment_fields = implode(':', array($this->field_0, $card_number, $this->field_2, $this->field_3, $this->field_4, $this->field_5, $this->field_6));
 	  	if (defined('MODULE_PAYMENT_' . strtoupper($this->id) . '_STATUS'))	 $this->installed = true;
-  	}
+  	} 
   	
   	/**
-	 * 
+  	 * this will preform the install functions 
+  	 */
+  	
+  	function install(){
+  		write_configure('MODULE_PAYMENT_' . strtoupper($this->id) . '_STATUS', '1');
+		foreach ($this->keys as $key) write_configure($key['key'], $key['default']);
+  		
+  	}
+  	/**
 	 * this method is used when you update config settings.
 	 */
 
@@ -114,7 +122,7 @@ class payment {
 	    return false;
 	}
 	
-	function pre_confirmation_check() {// @todo throw exceptions
+	function pre_confirmation_check() {
 	    return false;
 	}
 	

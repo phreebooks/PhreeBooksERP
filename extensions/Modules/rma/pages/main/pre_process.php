@@ -22,7 +22,6 @@ require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_MODULES . 'inventory/defaults.php');
 /**************   page specific initialization  *************************/
 if(!isset($_REQUEST['list'])) $_REQUEST['list'] = 1;
-$error     = false;
 $processed = false;
 $cInfo     = new \core\classes\objectInfo(array());
 $creation_date = isset($_POST['creation_date']) ? gen_db_date($_POST['creation_date']) : date('Y-m-d');
@@ -36,119 +35,119 @@ if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save':
-  	\core\classes\user::validate_security($security_level, 2); // security check
-	$id                  = db_prepare_input($_POST['id']);
-	$rma_num             = db_prepare_input($_POST['rma_num']);
-	$caller_name         = db_prepare_input($_POST['caller_name']);
-	$caller_telephone1   = db_prepare_input($_POST['caller_telephone1']);
-	$caller_email        = db_prepare_input($_POST['caller_email']);
-	$contact_id          = db_prepare_input($_POST['contact_id']);
-	$contact_name        = db_prepare_input($_POST['contact_name']);
-	$entered_by          = db_prepare_input($_POST['entered_by']);
-	$status              = db_prepare_input($_POST['status']);
-	$purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);
-	$purch_order_id      = db_prepare_input($_POST['purch_order_id']);
-	$return_code         = db_prepare_input($_POST['return_code']);
-	$caller_notes        = db_prepare_input($_POST['caller_notes']);
-	$received_by         = db_prepare_input($_POST['received_by']);
-	$receive_carrier     = db_prepare_input($_POST['receive_carrier']);
-	$receive_tracking    = db_prepare_input($_POST['receive_tracking']);
-	$receive_notes       = db_prepare_input($_POST['receive_notes']);
-	$receive_details     = array();
-	$close_notes         = db_prepare_input($_POST['close_notes']);
-	$close_details       = array();
-	if (is_array($_POST['rcv_sku'])) foreach ($_POST['rcv_sku'] as $key => $value) {
-		$receive_details[] = array(
-		  'qty'   => $_POST['rcv_qty'][$key],
-		  'sku'   => $_POST['rcv_sku'][$key],
-		  'desc'  => $_POST['rcv_desc'][$key],
-		  'mfg'   => $_POST['rcv_mfg'][$key],
-		  'wrnty' => $_POST['rcv_wrnty'][$key],
+  	try{
+	  	\core\classes\user::validate_security($security_level, 2); // security check
+		$id                  = db_prepare_input($_POST['id']);
+		$rma_num             = db_prepare_input($_POST['rma_num']);
+		$caller_name         = db_prepare_input($_POST['caller_name']);
+		$caller_telephone1   = db_prepare_input($_POST['caller_telephone1']);
+		$caller_email        = db_prepare_input($_POST['caller_email']);
+		$contact_id          = db_prepare_input($_POST['contact_id']);
+		$contact_name        = db_prepare_input($_POST['contact_name']);
+		$entered_by          = db_prepare_input($_POST['entered_by']);
+		$status              = db_prepare_input($_POST['status']);
+		$purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);
+		$purch_order_id      = db_prepare_input($_POST['purch_order_id']);
+		$return_code         = db_prepare_input($_POST['return_code']);
+		$caller_notes        = db_prepare_input($_POST['caller_notes']);
+		$received_by         = db_prepare_input($_POST['received_by']);
+		$receive_carrier     = db_prepare_input($_POST['receive_carrier']);
+		$receive_tracking    = db_prepare_input($_POST['receive_tracking']);
+		$receive_notes       = db_prepare_input($_POST['receive_notes']);
+		$receive_details     = array();
+		$close_notes         = db_prepare_input($_POST['close_notes']);
+		$close_details       = array();
+		if (is_array($_POST['rcv_sku'])) foreach ($_POST['rcv_sku'] as $key => $value) {
+			$receive_details[] = array(
+			  'qty'   => $_POST['rcv_qty'][$key],
+			  'sku'   => $_POST['rcv_sku'][$key],
+			  'desc'  => $_POST['rcv_desc'][$key],
+			  'mfg'   => $_POST['rcv_mfg'][$key],
+			  'wrnty' => $_POST['rcv_wrnty'][$key],
+			);
+		}
+	
+		if (is_array($_POST['dis_sku'])) foreach ($_POST['dis_sku'] as $key => $value) {
+			$close_details[] = array(
+			  'qty'    => $_POST['dis_qty'][$key],
+			  'sku'    => $_POST['dis_sku'][$key],
+			  'notes'  => $_POST['dis_notes'][$key],
+			  'action' => $_POST['dis_action'][$key],
+			);
+		} 
+		$db->transStart();
+		// Check attachments
+		$result = $db->Execute("select attachments from " . TABLE_RMA . " where id = '" . $id . "'");
+		$attachments = $result->fields['attachments'] ? unserialize($result->fields['attachments']) : array();
+		$image_id = 0;
+		while ($image_id < 100) { // up to 100 images
+		  	if (isset($_POST['rm_attach_'.$image_id])) {
+				if (!@unlink(RMA_DIR_ATTACHMENTS . 'rma_'.$id.'_'.$image_id.'.zip')) throw new Exception("can not unlink file");//@todo copy to other file functions
+				unset($attachments[$image_id]);
+		  	}
+		  	$image_id++;
+		}
+		if (is_uploaded_file($_FILES['file_name']['tmp_name'])) {
+		  	// find an image slot to use
+		  	$image_id = 0;
+		  	while (true) {
+				if (!file_exists(RMA_DIR_ATTACHMENTS . 'rma_'.$id.'_'.$image_id.'.zip')) break;
+				$image_id++;
+		  	}
+		  	saveUploadZip('file_name', RMA_DIR_ATTACHMENTS, 'rma_'.$id.'_'.$image_id.'.zip');
+		  	$attachments[$image_id] = $_FILES['file_name']['name'];
+		}
+		// check for errors, process
+		if ($status == 99 && $closed_date == '') $closed_date = date('Y-m-d');
+	
+		// write the data
+		
+		$sql_data_array = array(
+		  'status'              => $status,
+		  'entered_by'          => $entered_by,
+		  'caller_name'         => $caller_name,
+		  'caller_telephone1'   => $caller_telephone1,
+		  'caller_email'        => $caller_email,
+		  'contact_id'          => $contact_id,
+		  'contact_name'        => $contact_name,
+		  'purchase_invoice_id' => $purchase_invoice_id,
+		  'purch_order_id'      => $purch_order_id,
+		  'return_code'         => $return_code,
+		  'caller_notes'        => $caller_notes,
+		  'received_by'         => $received_by,
+		  'receive_carrier'     => $receive_carrier,
+		  'receive_tracking'    => $receive_tracking,
+		  'receive_notes'       => $receive_notes,
+		  'receive_details'	  => serialize($receive_details),
+		  'close_notes'         => $close_notes,
+		  'close_details'	      => serialize($close_details),
+		  'creation_date'       => $creation_date,
+		  'invoice_date'        => $invoice_date,
+		  'closed_date'         => $closed_date,
+		  'receive_date'        => $receive_date,
+		  'attachments'         => sizeof($attachments)>0 ? serialize($attachments) : '',
 		);
-	}
-
-	if (is_array($_POST['dis_sku'])) foreach ($_POST['dis_sku'] as $key => $value) {
-		$close_details[] = array(
-		  'qty'    => $_POST['dis_qty'][$key],
-		  'sku'    => $_POST['dis_sku'][$key],
-		  'notes'  => $_POST['dis_notes'][$key],
-		  'action' => $_POST['dis_action'][$key],
-		);
-	} 
-	// Check attachments
-	$result = $db->Execute("select attachments from " . TABLE_RMA . " where id = '" . $id . "'");
-	$attachments = $result->fields['attachments'] ? unserialize($result->fields['attachments']) : array();
-	$image_id = 0;
-	while ($image_id < 100) { // up to 100 images
-	  if (isset($_POST['rm_attach_'.$image_id])) {
-		@unlink(RMA_DIR_ATTACHMENTS . 'rma_'.$id.'_'.$image_id.'.zip');
-		unset($attachments[$image_id]);
-	  }
-	  $image_id++;
-	}
-	if (is_uploaded_file($_FILES['file_name']['tmp_name'])) {
-	  // find an image slot to use
-	  $image_id = 0;
-	  while (true) {
-		if (!file_exists(RMA_DIR_ATTACHMENTS . 'rma_'.$id.'_'.$image_id.'.zip')) break;
-		$image_id++;
-	  }
-	  saveUploadZip('file_name', RMA_DIR_ATTACHMENTS, 'rma_'.$id.'_'.$image_id.'.zip');
-	  $attachments[$image_id] = $_FILES['file_name']['name'];
-	}
-	// check for errors, process
-	if ($status == 99 && $closed_date == '') $closed_date = date('Y-m-d');
-
-	// write the data
-	if (!$error) {
-	  $sql_data_array = array(
-	    'status'              => $status,
-	    'entered_by'          => $entered_by,
-	    'caller_name'         => $caller_name,
-	    'caller_telephone1'   => $caller_telephone1,
-	    'caller_email'        => $caller_email,
-	    'contact_id'          => $contact_id,
-	    'contact_name'        => $contact_name,
-	    'purchase_invoice_id' => $purchase_invoice_id,
-	    'purch_order_id'      => $purch_order_id,
-	    'return_code'         => $return_code,
-	    'caller_notes'        => $caller_notes,
-	    'received_by'         => $received_by,
-	    'receive_carrier'     => $receive_carrier,
-	    'receive_tracking'    => $receive_tracking,
-	    'receive_notes'       => $receive_notes,
-	    'receive_details'	  => serialize($receive_details),
-	  	'close_notes'         => $close_notes,
-	    'close_details'	      => serialize($close_details),
-	    'creation_date'       => $creation_date,
-	    'invoice_date'        => $invoice_date,
-	    'closed_date'         => $closed_date,
-	    'receive_date'        => $receive_date,
-	    'attachments'         => sizeof($attachments)>0 ? serialize($attachments) : '',
-	  );
-	  if ($id) {
-	    $success = db_perform(TABLE_RMA, $sql_data_array, 'update', 'id = ' . $id);
-		if ($success) gen_add_audit_log(RMA_LOG_USER_UPDATE . $rma_num);
-		else $error = true;
-	  } else {
-	    // fetch the RMA number
-		$result = $db->Execute("select next_rma_num from " . TABLE_CURRENT_STATUS);
-		$rma_num = $result->fields['next_rma_num'];
-		$sql_data_array['rma_num'] = $rma_num;
-	    $success = db_perform(TABLE_RMA, $sql_data_array, 'insert');
-		if ($success) {
-		  $id = db_insert_id();
-		  $next_num = string_increment($sql_data_array['rma_num']);
-		  $db->Execute("update " . TABLE_CURRENT_STATUS . " set next_rma_num = '" . $next_num . "'");
-		  gen_add_audit_log(RMA_LOG_USER_ADD . $rma_num);
-		} else $error = true;
-	  }
-	  if (!$error) {
-	    $messageStack->add(($_POST['id'] ? RMA_MESSAGE_SUCCESS_UPDATE : RMA_MESSAGE_SUCCESS_ADD) . $rma_num, 'success');
-	  } else {
-	    $messageStack->add(RMA_MESSAGE_ERROR, 'error');
-	  }
-	}
+		if ($id) {
+		    db_perform(TABLE_RMA, $sql_data_array, 'update', 'id = ' . $id);
+			gen_add_audit_log(RMA_LOG_USER_UPDATE . $rma_num);
+		} else {
+		    // fetch the RMA number
+			$result = $db->Execute("select next_rma_num from " . TABLE_CURRENT_STATUS);
+			$rma_num = $result->fields['next_rma_num'];
+			$sql_data_array['rma_num'] = $rma_num;
+		    $success = db_perform(TABLE_RMA, $sql_data_array, 'insert');
+			if (!db_perform(TABLE_RMA, $sql_data_array, 'insert')) throw new Exception( "unable to add to database");
+			$id = db_insert_id();
+			$next_num = string_increment($sql_data_array['rma_num']);
+			$db->Execute("update " . TABLE_CURRENT_STATUS . " set next_rma_num = '" . $next_num . "'");
+			gen_add_audit_log(RMA_LOG_USER_ADD . $rma_num);
+		}
+		$db->transCommit();
+		$messageStack->add(($_POST['id'] ? RMA_MESSAGE_SUCCESS_UPDATE : RMA_MESSAGE_SUCCESS_ADD) . $rma_num, 'success');
+  	}catch(Exception $e){
+  		$db->transRollback();
+  		$messageStack->add($e->getMessage());
+  	}
 	break;
   case 'edit':
 	$id = db_prepare_input($_POST['rowSeq']);
@@ -180,22 +179,18 @@ switch ($_REQUEST['action']) {
 	  $backup = new \phreedom\classes\backup();
 	  $backup->download(RMA_DIR_ATTACHMENTS, $filename, true);
 	}
-	ob_end_flush();
-	session_write_close();
 	die;
   case 'dn_attach': // download from list, assume the first document only
 	$cID   = db_prepare_input($_POST['rowSeq']);
 	$result = $db->Execute("select attachments from " . TABLE_RMA . " where id = " . $cID);
 	$attachments = unserialize($result->fields['attachments']);
 	foreach ($attachments as $key => $value) {
-	  	$filename = 'rma_'.$cID.'_'.$key.'.zip';
-	  	if (file_exists(RMA_DIR_ATTACHMENTS . $filename)) {
-			$backup = new \phreedom\classes\backup();
-			$backup->download(RMA_DIR_ATTACHMENTS, $filename, true);
-			ob_end_flush();
-			session_write_close();
-			die;
-	  	}
+	  $filename = 'rma_'.$cID.'_'.$key.'.zip';
+	  if (file_exists(RMA_DIR_ATTACHMENTS . $filename)) {
+		$backup = new \phreedom\classes\backup();
+		$backup->download(RMA_DIR_ATTACHMENTS, $filename, true);
+		die;
+	  }
 	}
     break;
 	

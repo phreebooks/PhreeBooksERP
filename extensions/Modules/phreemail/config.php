@@ -20,7 +20,6 @@
 // 1.0 - created
 // 
 // Module software version information
-define('MODULE_PHREEMAIL_VERSION', 1.0);
 // Menu Sort Positions
 define('BOX_PHREEMAIL_MODULE_ORDER', 70);
 // Menu Security id's
@@ -34,7 +33,7 @@ define('TABLE_PHREEMAIL_WORDS',		DB_PREFIX . 'phreemail_words'); //emailtodb_wor
 define('TABLE_PHREEMAIL_ATTACH',	DB_PREFIX . 'phreemail_attach'); //emailtodb_attach
 
 // directory
-$db_company = (isset($_SESSION['company'])) ? $_SESSION['company'] : $_POST['company'];
+$db_company = (isset($_SESSION['company'])) ? $_SESSION['company'] : $_SESSION['companies'][$_POST['company']];
 define('PHREEMAIL_DIR_ATTACHMENTS',  DIR_FS_MY_FILES . $db_company . '/phreemail/attachments/');
 
 if (defined('MODULE_PHREEMAIL_STATUS')) {

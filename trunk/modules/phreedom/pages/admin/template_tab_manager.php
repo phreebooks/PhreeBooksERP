@@ -60,14 +60,14 @@
 	    <th width="20%"><?php echo TEXT_DEMO_DATA; ?></th>
 	    <th width="20%"><?php echo TEXT_ALL_DATA;  ?></th>
 	  </tr>
-<?php foreach ($loaded_modules as $mod) { // load modules and query for copy 
-		if ($mod == 'phreedom') continue;
+<?php foreach ($admin_classes as $mod) { // load modules and query for copy 
+		if ($mod->id == 'phreedom') continue;
 ?>
 	  <tr>
-		<td><?php echo html_checkbox_field($mod, '1', (!in_array($mod, $core_modules) && $error && !isset($_POST[$mod])) ? false : true, '', in_array($mod, $core_modules) ? 'disabled="disabled"' : '') . '&nbsp;' . TEXT_MODULE . ': ' . $mod; ?></td>
-		<td align="center"><?php echo html_radio_field($mod . '_action', 'core', $_POST[$mod.'_action']=='core' ? true : false, '', $parameters = ''); ?></td>
-		<td align="center"><?php echo html_radio_field($mod . '_action', 'demo', $_POST[$mod.'_action']=='demo' ? true : false, '', $parameters = ''); ?></td>
-		<td align="center"><?php echo html_radio_field($mod . '_action', 'data', (!isset($_POST[$mod.'_action'])||$_POST[$mod.'_action']=='data') ? true : false,  '', $parameters = ''); ?></td>
+		<td><?php echo html_checkbox_field($mod->id, '1', (isset($_POST[$mod]) && $_POST[$mod] == true)  ? true : false, '', $mod->core ? 'disabled="disabled"' : '') . '&nbsp;' . TEXT_MODULE . ': ' . $mod->title; ?></td>
+		<td align="center"><?php echo html_radio_field($mod->id . '_action', 'core', $_POST[$mod->id.'_action']=='core' ? true : false, '', $parameters = ''); ?></td>
+		<td align="center"><?php echo html_radio_field($mod->id . '_action', 'demo', $_POST[$mod->id.'_action']=='demo' ? true : false, '', $parameters = ''); ?></td>
+		<td align="center"><?php echo html_radio_field($mod->id . '_action', 'data', (!isset($_POST[$mod->id.'_action'])||$_POST[$mod->id.'_action']=='data') ? true : false,  '', $parameters = ''); ?></td>
 	  </tr>
 <?php } ?>
 	</table>

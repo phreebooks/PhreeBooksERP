@@ -21,7 +21,6 @@ class other_transactions {
 	public $code        	= 'other_transactions'; // needs to match class name
     public $db_table     	= TABLE_PHREEPOS_OTHER_TRANSACTIONS;
     public $help_path   	= '';
-    public $error       	= false;
     
     public function __construct(){
          $this->security_id           = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
@@ -97,7 +96,7 @@ class other_transactions {
 	function build_form_html($action, $id = '') {
     	global $db, $currencies;
     	require_once(DIR_FS_MODULES . 'phreepos/defaults.php');
-    	if ($action <> 'new' && $this->error == false) {
+    	if ($action <> 'new') {
         	$sql = "select * from " . $this->db_table . " where ot_id = " . $id;
         	$result = $db->Execute($sql);
         	foreach ($result->fields as $key => $value) $this->$key = $value;

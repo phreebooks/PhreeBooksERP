@@ -15,8 +15,8 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/inventory/pages/popup_serial/pre_process.php
-//@todo modify for release4.0
-$security_level = validate_user(0, true);
+//
+$security_level = \core\classes\user::validate(0, true);
 /**************  include page specific files    *********************/
 /**************   page specific initialization  *************************/
 $snDef = $_GET['def'];
@@ -42,5 +42,5 @@ if (file_exists($custom_path)) { include($custom_path); }
 $include_header   = false;
 $include_footer   = false;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', "Please select the SKU serial number from the list below:");
+define('PAGE_TITLE', "Please select the SKU serial number from the list below:");//@todo translation
 ?>

@@ -34,12 +34,7 @@ while(true) {
   $i++;
   if ($runaway++ > 100) throw new Exception("caught by runaway counter");
 }
-if (sizeof($report->tables) < 1) {
-  	echo createXmlHeader() . xmlEntry('error', PHREEFORM_NO_TABLES_PASSED) . createXmlFooter();
-  	ob_end_flush();
-	session_write_close();
-  	die;
-}
+if (sizeof($report->tables) < 1) throw new \Exception(PHREEFORM_NO_TABLES_PASSED);
 $report->special_class = $_GET['sp'] ? $_GET['sp'] : false;
 
 $kFields = CreateSpecialDropDown($report);

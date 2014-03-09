@@ -17,32 +17,21 @@
 //  Path: /modules/phreedom/functions/translator.php
 //
 
-function build_mod_list() { //@todo change for admin classes
-  $sel_modules = array(
-    array('id' => 'all',     'text' => TEXT_ALL),
-    array('id' => 'install', 'text' => 'install'),
-    array('id' => 'soap',    'text' => 'soap'),
-  );
-  $dirs = scandir(DIR_FS_MODULES);
-  foreach ($dirs as $value) {
-    if ($value == '.' || $value == '..') continue;
-    if (is_dir(DIR_FS_MODULES . $value . '/dashboards')) { // there are dashboards to load languages
-	  $meths = scandir(DIR_FS_MODULES . $value . '/dashboards');
-	  foreach ($meths as $val) {
-	    if ($val == '.' || $val == '..') continue;
-	    $sel_modules[] = array('id' => $value.'-'.$val, 'text' => $value.'-'.$val);
-	  }
+function build_mod_list() {
+	global $admin_classes;
+	$sel_modules = array(
+	  array('id' => 'all',     'text' => TEXT_ALL),
+	  array('id' => 'install', 'text' => 'install'),
+	  array('id' => 'soap',    'text' => 'soap'),
+	);
+	$dirs = scandir(DIR_FS_MODULES);
+	foreach($admin_classes as $key => $class) {
+		$sel_modules[] = array('id' => $key, 'text' => $key);
+		foreach ($class->methods as $method_key => $method) 		 $sel_modules[] = array('id' => $key.'-'.$method_key, 'text' => $key.'-'.$method_key);
+		foreach ($class->dashboards as $dashboard_key => $dashboard) $sel_modules[] = array('id' => $key.'-'.$dashboard_key, 'text' => $key.'-'.$dashboard_key);
+		  	
 	}
-	if (is_dir(DIR_FS_MODULES . $value . '/methods')) { // there are methods to load languages
-	  $meths = scandir(DIR_FS_MODULES . $value . '/methods');
-	  foreach ($meths as $val) {
-		if ($val == '.' || $val == '..') continue;
-		$sel_modules[] = array('id' => $value.'-'.$val, 'text' => $value.'-'.$val);
-	  }
-	}
-	$sel_modules[] = array('id' => $value, 'text' => $value);
-  }
-  return $sel_modules;
+  	return $sel_modules;
 }
 
 function build_ver_list() {

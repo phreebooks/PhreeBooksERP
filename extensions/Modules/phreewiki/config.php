@@ -21,7 +21,6 @@
 // 1.2 => 2011-05-01 - Created same as ccTiddly
 
 // Module software version information
-define('MODULE_PHREEWIKI_VERSION',  '1.2');
 // Menu Sort Positions
 define('BOX_PHREEWIKI_MODULE_ORDER',  100);
 // Menu Security id's
@@ -41,7 +40,7 @@ if (defined('MODULE_PHREEWIKI_STATUS')) {
   	);
   	
 
-  if(isset($_SESSION['admin_security'][SECURITY_ID_CONFIGURATION]) && $_SESSION['admin_security'][SECURITY_ID_CONFIGURATION] > 0){
+  if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
 	  gen_pull_language('phreewiki', 'admin');
 	  $mainmenu["company"]['submenu']["configuration"]['submenu']["phreewiki"] = array(
 		'order'	      => MODULE_PHREEWIKI_TITLE,

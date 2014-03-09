@@ -20,18 +20,19 @@
 // 2011-07-01 - Added version number for revision control
 namespace contacts\dashboards\vendor_websites;
 class vendor_websites extends \core\classes\ctl_panel {
-	public $dashboard_id 		= 'vendor_websites';
+	public $id					= 'vendor_websites';
 	public $description	 		= CP_VENDOR_WEBSITES_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_MAINTAIN_VENDORS;
-	public $title		 		= CP_VENDOR_WEBSITES_TITLE;
-	public $version      		= 3.5;
+	public $text		 		= CP_VENDOR_WEBSITES_TITLE;
+	public $version      		= '3.5';
 	public $size_params			= 0;
 	public $default_params 		= array();
+	public $module_id 			= 'contacts';
 
-	function Output($params) {
+	function output($params) {
 		global $db;
 		if(count($params) != $this->size_params){ //upgrading
-			$params = $this->Upgrade($params);
+			$params = $this->upgrade($params);
 		}
 		$contents = '';
 		$control  = '';

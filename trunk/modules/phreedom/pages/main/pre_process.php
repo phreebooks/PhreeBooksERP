@@ -22,8 +22,7 @@
 gen_pull_language($module, 'admin');
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/phreedom.php');
-/**************   page specific initialization  *************************/
-$error        = false; 
+/**************   page specific initialization  *************************/ 
 $menu_id      = isset($_GET['mID']) ? $_GET['mID'] : 'index'; // default to index unless heading is passed
 if (isset($_GET['req']) && $_GET['req'] == 'pw_lost_sub') $_REQUEST['action'] = 'pw_lost_sub';
 /***************   Act on the action request   *************************/
@@ -54,8 +53,12 @@ switch ($_REQUEST['action']) {
 			setcookie('pb_company' , $admin_company,  $cookie_exp);
 			setcookie('pb_language', $admin_language, $cookie_exp);
 			// load init functions for each module and execute
-			if ($admin_classes['phreedom']->should_update()) $admin_classes['phreedom']->update();
-			$admin_classes['phreedom']->initialize();
+			foreach ($admin_classes as $key => $module) {
+			  	if ($module->should_update()) $module->update();
+			}
+	  		foreach ($admin_classes as $key => $module) {
+			  	$module->initialize();
+			}
 			if (defined('TABLE_CONTACTS')) {
 			    $dept = $db->Execute("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result->fields['account_id']);
 			    $_SESSION['department'] = $dept->fields['dept_rep_id'];
@@ -77,7 +80,7 @@ switch ($_REQUEST['action']) {
 			    gen_redirect(html_href_link(FILENAME_DEFAULT, $get_params, 'SSL'));
 			}
 			// check safe mode is allowed to log in.
-			if (get_cfg_var('safe_mode')) $messageStack->add(SAFE_MODE_ERROR, 'error');
+			if (get_cfg_var('safe_mode')) throw new \Exception(SAFE_MODE_ERROR);
 		    $_REQUEST['action'] = '';
 		    break;
 		}catch(\Exception $e) {
@@ -112,7 +115,7 @@ switch ($_REQUEST['action']) {
 	case 'logout':
 		$result = $db->Execute("select admin_name from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
 		gen_add_audit_log(GEN_LOG_LOGOFF . $result->fields['admin_name']);
-		if (!session_destroy()) throw new \ErrorException("can't destroy session", '', E_USER_ERROR);
+		session_destroy();
 		gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL'));
 		break;
   	case 'save':
@@ -124,7 +127,7 @@ switch ($_REQUEST['action']) {
 		  			load_method_language(DIR_FS_MODULES . "{$module->id}/dashboards/{$dashboard->id}");
 		  			$dashboard->menu_id	= $menu_id;
 					$dashboard->params	= array();
-					$dashboard->Update();
+					$dashboard->update();
 		  		}
   			}
 		}
@@ -137,7 +140,7 @@ switch ($_REQUEST['action']) {
 		  		if ($dashboard->id == $dashboard_id) {
 		  			load_method_language(DIR_FS_MODULES . "{$module->id}/dashboards/{$dashboard->id}");
 		  			$dashboard->menu_id	= $menu_id;
-					$dashboard->Remove();
+					$dashboard->remove();
 		  		}
   			}
 		}
@@ -253,7 +256,7 @@ switch ($_REQUEST['action']) {
 		trigger_error("class queryFactory doesn't exist", E_USER_ERROR);	
 	}
 	$cp_boxes = $db->Execute("select * from ".TABLE_USERS_PROFILES." 
-	  where user_id = '".$_SESSION['admin_id']."' and menu_id = '$menu_id' order by column_id, row_id");
+	  where user_id = '{$_SESSION['admin_id']}' and menu_id = '$menu_id' order by column_id, row_id");
 	$include_template = 'template_main.php';
 	define('PAGE_TITLE', COMPANY_NAME.' - '.TITLE);
 	break;

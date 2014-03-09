@@ -25,15 +25,10 @@ $security_level = \core\classes\user::validate();
 /**************   page specific initialization  *********************/
 $gl_acct = db_prepare_input($_GET['glAcct']);
 $fy      = db_prepare_input($_GET['fy']);
-$error   = false;
 $result  = $db->Execute("select period, start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . " 
 	where fiscal_year = '" . ($fy - 1) . "' order by period");
-if ($result->RecordCount() == 0) { // no earlier data found
-  	echo createXmlHeader() . xmlEntry('error', ERROR_NO_GL_ACCT_INFO) . createXmlFooter();
-  	ob_end_flush();
-	session_write_close();
-  	die;
-}
+// no ealier data found
+if ($result->RecordCount() == 0) throw new \Exception(ERROR_NO_GL_ACCT_INFO);
 $periods = array();
 while (!$result->EOF) {
   $periods[] = $result->fields['period'];

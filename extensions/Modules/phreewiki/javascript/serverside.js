@@ -81,7 +81,7 @@ config.commands.revisions = {
 			button.setAttribute('tiddlerTitle', title);
 			button.setAttribute('revisionkey', key);
 			var t = store.fetchTiddler(title);
-			if(!t) alert(title+serverside.lingo.revision.notExist);
+			if(!t) $.messager.alert('error',title+serverside.lingo.revision.notExist,'error');
 			if( t && t.modified == modified )
 				button.className = 'revisionCurrent';
 		});
@@ -92,8 +92,8 @@ config.commands.revisions = {
 		url: 'index.php?module=phreewiki&page=ajax&op=msghandle&action=revisionList&title='+encodeURIComponent(title.htmlDecode()),
 		dataType: ($.browser.msie) ? "text" : "xml",
 		//error: serverside.fn.displayMessage,
-				error: function(XMLHttpRequest, textStatus, errorThrown) {
-			  alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+					$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 			},
 		success: callback
 	  });
@@ -204,7 +204,7 @@ TiddlyWiki.prototype.saveTiddler = function(title,newTitle,newBody,modifier,modi
 		data: postStr,
 		//error:   serverside.fn.displayMessage ,
 		error: function(XMLHttpRequest, textStatus, errorThrown) {
-		      alert ("Ajax ErrorThrown: " + errorThrown + "\nTextStatus: " + textStatus + "\nError: " + XMLHttpRequest.responseText);
+			$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 			},
 		success: serverside.fn.displayMessage
 	  });

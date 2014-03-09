@@ -156,7 +156,7 @@ class admin extends \core\classes\admin {
   	function upgrade() {
     	global $db, $messageStack;
     	parent::upgrade();
-    	if (MODULE_CONTACTS_STATUS < 3.3) {
+    	if (version_compare($this->status, '3.3', '<') ) {
 	  		$db->Execute("ALTER TABLE " . TABLE_CONTACTS . " CHANGE short_name short_name VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT ''");
 		  	if (db_table_exists(DB_PREFIX . 'contacts_extra_fields')) {
 		    	// first create a new tab
@@ -184,19 +184,19 @@ class admin extends \core\classes\admin {
 		  	}
 		  	xtra_field_sync_list('contacts', TABLE_CONTACTS);
 		}
-    	if (MODULE_CONTACTS_STATUS < 3.5) {
+		if (version_compare($this->status, '3.5', '<') ) {
 	  		if ( db_field_exists(TABLE_CURRENT_STATUS, 'next_cust_id_desc')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cust_id_desc");
 	  		if ( db_field_exists(TABLE_CURRENT_STATUS, 'next_vend_id_desc')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_vend_id_desc");
 	  		if (!db_field_exists(TABLE_CONTACTS, 'attachments')) $db->Execute("ALTER TABLE " . TABLE_CONTACTS . " ADD attachments TEXT NOT NULL AFTER tax_id");
     	}
-    	if (MODULE_CONTACTS_STATUS < 3.7) {
+    	if (version_compare($this->status, '3.7', '<') ) {
       		if (!db_field_exists(TABLE_CONTACTS_LOG, 'entered_by')) $db->Execute("ALTER TABLE " . TABLE_CONTACTS_LOG . " ADD entered_by INT(11) NOT NULL DEFAULT '0' AFTER contact_id");
     	}
 		if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_crm_id_num')){
     		$result = $db->Execute("Select MAX(short_name + 1) AS new  FROM " . TABLE_CONTACTS . " WHERE TYPE = 'i'");
 			$db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_crm_id_num VARCHAR( 16 ) NOT NULL DEFAULT '".$result->fields['new']."';");
 		}
-
+		xtra_field_sync_list('contacts', TABLE_CONTACTS);
   	}
 
 	function delete() {

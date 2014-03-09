@@ -505,8 +505,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 		global $messageStack;
 		$fedex_results = array();
 		if (in_array($sInfo->ship_method, array('I2DEam','I2Dam','I3D'))) { // unsupported ship methods
-		  $messageStack->add('The ship method requested is not supported by this tool presently. Please ship the package via a different tool.','error');
-		  return false;
+		  	throw new \Exception("The ship method {$sInfo->ship_method} is not supported by this tool presently. Please ship the package via a different tool.");
 		}
 		if (MODULE_SHIPPING_FEDEX_V7_TEST_MODE == 'Test') {
 			$client = new \SoapClient(PATH_TO_TEST_SHIP_WSDL, array('trace' => 1));
@@ -566,11 +565,8 @@ class fedex_v7 extends \shipping\classes\shipping {
 					$tracking = $response->CompletedShipmentDetail->CompletedPackageDetails->TrackingIds->TrackingNumber;
 				  }
 				}
-				if (!$tracking) {
-				  $messageStack->add('Error - No tracking found in return string.','error');
+				if (!$tracking) throw new \Exception("Error - No tracking found in return string.");
 //echo 'label response array = '; print_r($response); echo '<br />';
-				  return false;
-				}
 				$fedex_results[$key] = array(
 					'ref_id'        => $sInfo->purchase_invoice_id . '-' . ($key + 1),
 					'tracking'      => $tracking,
@@ -595,21 +591,14 @@ class fedex_v7 extends \shipping\classes\shipping {
 					} else {
 						$file_name = $tracking . ($cnt > 0 ? '-'.$cnt : '') . '.pdf'; // plain paper
 					}
-					if (!$handle = fopen($file_path . $file_name, 'w')) { 
-						$messageStack->add('Cannot open file (' . $file_path . $file_name . ')','error');
-						return false;
-					}
-					if (fwrite($handle, $label) === false) {
-						$messageStack->add('Cannot write to file (' . $file_path . $file_name . ')','error');
-						return false;
-					}
+					if (!$handle = fopen($file_path . $file_name, 'w')) throw new \Exception("Cannot open file ($file_path$file_name)");
+					if (fwrite($handle, $label) === false) throw new \Exception("Cannot write to file ($file_path$file_name)");
 					fclose($handle);
 					$cnt++;
 //					$messageStack->add('Successfully retrieved the FedEx shipping label. Tracking # ' . $fedex_results[$key]['tracking'],'success');
 				  }
 				} else {
-					$messageStack->add('Error - No label found in return string.','error');
-					return false;				
+					throw new \Exception('Error - No label found in return string.');
 				}
 		    } else {
 			  foreach ($response->Notifications as $notification) {
@@ -620,15 +609,13 @@ class fedex_v7 extends \shipping\classes\shipping {
 				}
 			  }
 //echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';
-			  $messageStack->add(SHIPPING_FEDEX_V7_RATE_ERROR . $message, 'error');
-			  return false;
+			  throw new \Exception(SHIPPING_FEDEX_V7_RATE_ERROR . $message);
 		    }
 		  } catch (SoapFault $exception) {
 //echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
 //echo 'Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
-		    $message = " [label soap fault] ({$exception->faultcode}) {$exception->faultstring}";
-		    $messageStack->add(SHIPPING_FEDEX_CURL_ERROR . $message, 'error');
-		    return false;
+				throw new \Exception($exception->getMessage());
+		    	return false;
 		  }
 	    }
 		return $fedex_results;
@@ -1128,7 +1115,6 @@ class fedex_v7 extends \shipping\classes\shipping {
 		if (!$close_date) $close_date = $today;
 		$report_only = ($close_date == $today) ? false : true;
 		$date = explode('-', $close_date);
-		$error = false;
 		$request = $this->FormatFedExCloseRequest($close_date, $report_only, $report_type);
 //echo 'request = '; print_r($request); echo '<br />';  
 		try {
@@ -1146,38 +1132,15 @@ class fedex_v7 extends \shipping\classes\shipping {
 				$codReport    = base64_decode($response->CODReport);
 //				$hazMatReport = base64_decode($response->HazMatCertificate);
 //echo 'file_path = '   . $file_path   . ' and file_name = '   . $file_name   . '<br />';
-				if (!$handle = fopen($file_path . $file_name, 'w')) {
-					echo 'Cannot open file (' . $file_path . $file_name . ')';
-					$error = true;
-					continue;
-				}
-				if (fwrite($handle, $closeReport) === false) {
-					$messageStack->add('Cannot write close report to file (' . $file_path . $file_name . ')','error');
-					$error = true;
-					continue;
-				}
-				if (fwrite($handle, $mwReport) === false) {
-					$messageStack->add('Cannot write multi-weight report to file (' . $file_path . $file_name . ')','error');
-					$error = true;
-					continue;
-				}
-				if (fwrite($handle, $codReport) === false) {
-					$messageStack->add('Cannot write COD report to file (' . $file_path . $file_name . ')','error');
-					$error = true;
-					continue;
-				}
+				if (!$handle = fopen($file_path . $file_name, 'w')) throw new \Exception("Cannot open file ($file_path$file_name)");
+				if (fwrite($handle, $closeReport) === false) throw new \Exception("Cannot write close report to file ($file_path$file_name)");
+				if (fwrite($handle, $mwReport) === false) throw new \Exception("Cannot write multi-weight report to file ($file_path$file_name)");
+				if (fwrite($handle, $codReport) === false) throw new \Exception("Cannot write COD report to file ($file_path$file_name");
 /*
-				if (fwrite($handle, $hazMatReport) === false) {
-					$messageStack->add('Cannot write Hazmat report to file (' . $file_path . $file_name . ')','error');
-					$error = true;
-					continue;
-				}
+				if (fwrite($handle, $hazMatReport) === false) throw new \Exception("Cannot write Hazmat report to file ($file_path$file_name)");
 */
 				fclose($handle);
-				if (!$error) {
-					$messageStack->add(SHIPPING_FEDEX_V7_CLOSE_SUCCESS,'success');
-					return true;
-				}
+				$messageStack->add(SHIPPING_FEDEX_V7_CLOSE_SUCCESS,'success');
 			} else {
 				foreach ($response->Notifications as $notification) {
 					if (is_object($notification)) {
@@ -1186,13 +1149,13 @@ class fedex_v7 extends \shipping\classes\shipping {
 						$message .= ' ' . $notification;
 					}
 				}
-				$messageStack->add(SHIPPING_FEDEX_V7_DEL_ERROR . $message, 'error');
+				throw new \Exception(SHIPPING_FEDEX_V7_DEL_ERROR . $message);
 			} 
 		} catch (SoapFault $exception) {
 //echo 'Error Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
 //echo ' Error Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
 			$message = " ({$exception->faultcode}) {$exception->faultstring}";
-			$messageStack->add(SHIPPING_FEDEX_CURL_ERROR . $message, 'error');
+			throw new \Exception(SHIPPING_FEDEX_CURL_ERROR . $message);
 		}
 		return false;
 	}
@@ -1237,7 +1200,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 	$count      = 0;
 	// first verify the file was uploaded ok
 	$upload_name = 'file_name';
-	if (!validate_upload($upload_name, 'text', 'csv')) return false;
+	validate_upload($upload_name, 'text', 'csv');
 	$lines_array = file($_FILES[$upload_name]['tmp_name']);
 	if (!$shipments = $this->fedExParse($lines_array)) return false;
 	$inv_num  = $shipments[0]['Invoice Number'];

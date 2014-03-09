@@ -130,14 +130,13 @@ class admin extends \core\classes\admin {
 		}
 	}
 
-  function initialize() {
-  	global $db, $messageStack;
-  	try{
+	function initialize() {
+	  	global $db, $messageStack;
 	  	gen_pull_language('inventory');
-	  	require_once(DIR_FS_MODULES . 'zencart/functions/zencart.php');
+		require_once(DIR_FS_MODULES . 'zencart/functions/zencart.php');
 		require_once(DIR_FS_MODULES . 'zencart/language/'.$_SESSION['language'].'/language.php');
-	    require_once(DIR_FS_MODULES . 'inventory/defaults.php');
-	  	require_once(DIR_FS_MODULES . 'inventory/functions/inventory.php');
+		require_once(DIR_FS_MODULES . 'inventory/defaults.php');
+		require_once(DIR_FS_MODULES . 'inventory/functions/inventory.php');
 		if(defined('MODULE_ZENCART_LAST_UPDATE') && MODULE_ZENCART_LAST_UPDATE <> '') $where = " and ( last_update >'" . MODULE_ZENCART_LAST_UPDATE . "' or last_journal_date >'" . MODULE_ZENCART_LAST_UPDATE . "')";
 		$result = $db->Execute("select id from " . TABLE_INVENTORY . " where catalog = '1' " . $where);
 		$cnt    = 0;
@@ -152,15 +151,12 @@ class admin extends \core\classes\admin {
 		gen_add_audit_log(ZENCART_BULK_UPLOAD);
 		write_configure('MODULE_ZENCART_LAST_UPDATE', date('Y-m-d H:i:s'));
 		parent::initialize();
-  	}catch(Exception $e) {
-		$messageStack->add($e->getMessage());
 	}
-  }
 
 	function upgrade() {
 	    global $db;
 		parent::upgrade();
-		if (MODULE_ZENCART_STATUS < 3.4) {
+		if (version_compare($this->status, '3.4', '<') ) {
 			write_configure('MODULE_ZENCART_LAST_UPDATE', date('0000-00-00 00:00:00'));
 		}
 		$result = $db->Execute("select tab_id from " . TABLE_EXTRA_FIELDS . " where field_name = 'category_id'");

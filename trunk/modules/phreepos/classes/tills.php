@@ -21,7 +21,6 @@ class tills {
 	public $code                    = 'tills';
     public $db_table     			= TABLE_PHREEPOS_TILLS;
     public $help_path   			= '';
-    public $error       			= false;
     public $currencies_code 		= DEFAULT_CURRENCY;
     public $printer_name    		= '';
     public $printer_starting_line 	= '';
@@ -117,7 +116,7 @@ class tills {
 
   function build_form_html($action, $id = '') {
     global $db, $currencies;
-    if ($action <> 'new' && $this->error == false) {
+    if ($action <> 'new') {
         $sql = "select * from " . $this->db_table . " where till_id = " . $id;
         $result = $db->Execute($sql);
         foreach ($result->fields as $key => $value) $this->$key = $value;

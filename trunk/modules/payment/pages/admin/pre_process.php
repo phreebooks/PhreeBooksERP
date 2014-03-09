@@ -19,8 +19,7 @@
 $security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 /**************  include page specific files    *********************/
 gen_pull_language($module, 'admin');
-/**************   page specific initialization  *************************/
-$error      = false; 
+/**************   page specific initialization  *************************/ 
 // see if installing or removing a method
 if (substr($_REQUEST['action'], 0, 8) == 'install_') {
   $method = substr($_REQUEST['action'], 8);
@@ -31,11 +30,9 @@ if (substr($_REQUEST['action'], 0, 8) == 'install_') {
 }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
-  case 'install'://@todo move to method
+  case 'install':
 	\core\classes\user::validate_security($security_level, 4);
-	write_configure('MODULE_PAYMENT_' . strtoupper($method) . '_STATUS', '1');
-	foreach ($admin_classes['payment']->methods[$method]->keys as $key) write_configure($key['key'], $key['default']);
-	if (method_exists($admin_classes['payment']->methods[$method], 'install')) $admin_classes['payment']->methods[$method]->install(); // handle special case install, db, files, etc
+	$admin_classes['payment']->methods[$method]->install();
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	break;
   case 'remove';
@@ -51,8 +48,8 @@ switch ($_REQUEST['action']) {
 	}
 	// save general tab
 	foreach ($admin_classes['payment']->keys as $key => $default) {
-	  $field = strtolower($key);
-      if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
+	  	$field = strtolower($key);
+      	if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
     }
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
     break;

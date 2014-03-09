@@ -16,26 +16,21 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/magento/classes/bulk_upload.php
 //
-
+namespace magento\classes;
 class bulk_upload {
-  function bulk_upload() {
+  function __construct() {
   }
 
   function bulkUpload($inc_image = false) {
 	global $db, $messageStack;
-	$error  = false;
 	$result = $db->Execute("select id from " . TABLE_INVENTORY . " where catalog = '1' " . $where);
 	$cnt    = 0;
 	while(!$result->EOF) {
-	  $prodXML = new magento();
-	  if (!$prodXML->submitXML($result->fields['id'], 'product_ul', true, $inc_image)) {
-		$error = true;
-		break;
-	  }
-	  $cnt++;
-	  $result->MoveNext();
+	  	$prodXML = new magento\classes\magento();
+	  	$prodXML->submitXML($result->fields['id'], 'product_ul', true, $inc_image);
+	  	$cnt++;
+	  	$result->MoveNext();
 	}
-	if ($error) return false;
 	$messageStack->add(sprintf(MAGENTO_BULK_UPLOAD_SUCCESS, $cnt), 'success');
 	return  true;
   }

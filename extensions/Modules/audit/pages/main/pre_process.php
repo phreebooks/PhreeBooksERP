@@ -28,7 +28,6 @@ $security_level = \core\classes\user::validate(SECURITY_ID_AUDIT);
 //gen_pull_language($module);
 require_once(DIR_FS_WORKING . 'functions/audit.php');
 /**************   page specific initialization  *************************/
-$error     = false;
 $date_from = gen_db_date($_REQUEST['date_from']);//         ? db_prepare_input($_POST['date_from'])       : $_GET['date_from'];
 $date_to   = gen_db_date($_REQUEST['date_to']);//           ? db_prepare_input($_POST['date_to'])         : $_GET['date_to'];
 $select    = $_REQUEST['select'];//           ? db_prepare_input($_POST['date_to'])         : $_GET['date_to'];
@@ -46,28 +45,16 @@ switch ($_REQUEST['action']) {
 		  	$dates = gen_get_dates($date_from);
 		  	$dom = new \DOMDocument('1.0', 'UTF-8');
 		  	$dom->loadXML($output);
-		  	$temp = $dom->schemaValidate(DIR_FS_MODULES.'audit/AuditfileFinancieelVersie3.1.xsd');
-			$temp = true;
-			if($temp){
-		  		header("Content-type: plain/txt;");
-				header("Content-disposition: attachment; filename=aud_". $dates['ThisYear'].".xaf; size=" . strlen($output));
-				header('Pragma: cache');
-				header('Cache-Control: public, must-revalidate, max-age=0');
-				header('Connection: close');
-				header('Expires: ' . date('r', time()+3600));
-				header('Last-Modified: ' . date('r'));
-		  	 	echo $dom->saveXML(); 
-				exit();
-		  	}else{
-		  		$errors = libxml_get_errors();
-	    		foreach ($errors as $error) {
-	        		printf('XML error "%s" [%d] (Code %d) in %s on line %d column %d' . "\n",
-	            	$error->message, $error->level, $error->code, $error->file,
-	            	$error->line, $error->column);
-	    		}
-	    		libxml_clear_errors();
-		  	}
-		  	libxml_use_internal_errors(false);
+		  	$dom->schemaValidate(DIR_FS_MODULES.'audit/AuditfileFinancieelVersie3.1.xsd');
+			header("Content-type: plain/txt;");
+			header("Content-disposition: attachment; filename=aud_". $dates['ThisYear'].".xaf; size=" . strlen($output));
+			header('Pragma: cache');
+			header('Cache-Control: public, must-revalidate, max-age=0');
+			header('Connection: close');
+			header('Expires: ' . date('r', time()+3600));
+			header('Last-Modified: ' . date('r'));
+		  	echo $dom->saveXML(); 
+			exit();
 	/*	  	// hieronder werkt
 			header("Content-type: plain/txt;");
 			header("Content-disposition: attachment; filename=aud_". $dates['ThisYear'].".xaf; size=" . strlen($output));

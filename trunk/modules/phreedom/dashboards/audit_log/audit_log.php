@@ -32,16 +32,16 @@ class audit_log extends \core\classes\ctl_panel {
 	public $size_params			= 1;
 	public $default_params 		= array('num_rows'=> 50, 'today_minus' => '0');
 	
-	function Install($column_id = 1, $row_id = 0) {
+	function install($column_id = 1, $row_id = 0) {
 		$this->params['num_rows']    = $this->max_length;	// defaults to 20 rows
 	    $this->params['today_minus'] = '0';         		// defaults to today
-		parent::Install($column_id, $row_id);
+		parent::install($column_id, $row_id);
 	}
 
-	function Output($params) {
+	function output($params) {
 		global $db, $currencies;
 		if(count($params) != $this->size_params){ //upgrading
-			$params = $this->Upgrade($params);
+			$params = $this->upgrade($params);
 		}
 		$list_length = array();
 		$contents = '';
@@ -89,12 +89,12 @@ class audit_log extends \core\classes\ctl_panel {
        	return $this->build_div('', $contents, $control);
  	}
   
- 	function Update() {
+ 	function update() {
  		if(count($this->params) == 0){
         	$this->params['num_rows'] 		= db_prepare_input($_POST['audit_log_num_rows']);
         	$this->params['today_minus'] 	= db_prepare_input($_POST['today_minus']);
  		}
-		parent::Update();
+		parent::update();
   	}
   
 }

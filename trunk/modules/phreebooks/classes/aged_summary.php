@@ -15,7 +15,7 @@
 // | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the   |
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
-//  Path: /modules/phreeform/custom/classes/aged_summary.php @todo
+//  Path: /modules/phreeform/classes/aged_summary.php
 //
 namespace phreebooks\classes;
 // this file contains special function calls to generate the data array needed to build reports not possible

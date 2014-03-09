@@ -160,7 +160,7 @@ class encryption {
 	}
 	
 	/**
-	 * this function will check if passwords match
+	 * this function will check if passwords / encryption keys match
 	 * @param string $plainPassword
 	 * @param string $encryptedPassword
 	 */
@@ -169,10 +169,11 @@ class encryption {
   		if (gen_not_null($plainPassword) && gen_not_null($encryptedPassword)) {
 			// split apart the hash / salt
     		$stack = explode(':', $encryptedPassword);
-    		if (sizeof($stack) != 2) trigger_error("varible stack han't got size 2");
+    		if (sizeof($stack) != 2) throw new \Exception("varible stack hasn't got size 2");
     		if (md5($stack[1] . $plainPassword) == $stack[0]) return true;
   		}
-  		throw new \Exception(ERROR_WRONG_LOGIN);
+  		if ($encryptedPassword == ENCRYPTION_VALUE) throw new \Exception(ERROR_WRONG_ENCRYPT_KEY);
+  		else throw new \Exception(ERROR_WRONG_LOGIN);
 	}
 	
 	/**

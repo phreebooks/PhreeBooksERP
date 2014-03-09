@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreewiki/pages/main/js_include.php
 //
-$security_id = $_SESSION['admin_security'][SECURITY_PHREEWIKI_MGT];
+$security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
 ?>
 <script type="text/javascript">
 var is_admin = false;

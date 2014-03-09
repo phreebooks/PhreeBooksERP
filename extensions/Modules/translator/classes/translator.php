@@ -40,7 +40,7 @@ class translator {
   function upload_language($dir_dest, $mod, $lang) {
 	global $db, $backup, $messageStack;
 	$upload_filename = DIR_FS_MY_FILES . 'translator/translate.zip';
-	if (!validate_upload('zipfile', 'zip', 'zip')) throw new \Exception(TEXT_IMP_ERMSG7);
+	validate_upload('zipfile', 'zip', 'zip');
 	if (file_exists($upload_filename)) unlink ($upload_filename);
 	if (!copy($_FILES['zipfile']['tmp_name'], $upload_filename)) throw new \Exception('Error copying to ' . $upload_filename);
 	if (!is_dir($dir_dest)) mkdir($dir_dest);

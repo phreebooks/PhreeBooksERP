@@ -192,47 +192,32 @@ class admin extends \core\classes\admin {
 		$db->Execute("insert into " . TABLE_CURRENT_STATUS . " set id = 1");
 	}
 
-	function initialize() {//@todo
+	function initialize() {
 		global $db, $messageStack, $currencies, $admin_classes;
-  		try{
-	    	// load the latest currency exchange rates
-		    if ($this->web_connected(false) && AUTO_UPDATE_CURRENCY && ENABLE_MULTI_CURRENCY) {
+	    //load the latest currency exchange rates
+		if ($this->web_connected(false) && AUTO_UPDATE_CURRENCY && ENABLE_MULTI_CURRENCY) {
 				$currencies->btn_update();
-			}
-			// Fix for change to audit log for upgrade to R3.6 causes perpertual crashing when writing audit log
-			if (!db_field_exists(TABLE_AUDIT_LOG, 'stats')) $db->Execute("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
-			if ($this->web_connected(false) && CFG_AUTO_UPDATE_CHECK && (SECURITY_ID_CONFIGURATION > 3)) { // check for software updates
-			  	$revisions = @file_get_contents(VERSION_CHECK_URL);
-			  	if ($revisions) {
-		    		$versions = xml_to_object($revisions);
-					$latest  = $versions->Revisions->Phreedom->Current;
-					if (version_compare($admin_classes['phreedom']->version, $latest) < 0 )  $messageStack->add(sprintf(TEXT_VERSION_CHECK_NEW_VER, $admin_classes['phreedom']->version, $latest), 'caution');
-			  	}
-			}
-			// load installed modules and initialize them
-			if (is_array($admin_classes)) foreach ($admin_classes as $key => $module) {
-			  	if ($key == 'phreedom') continue; // skip this module
-			  	if ($module->should_update()){
-					// add any new constants
-					if (sizeof($module->keys) > 0) foreach ($module->keys as $key => $value) {
-				  		if (!defined($key)) write_configure($key, $value);
-					}
-					$this->install_dirs($module->dirlist, DIR_FS_MY_FILES.$_SESSION['company'].'/');
-			    	if (method_exists($module, 'update')) $module->update();
-			  	}
-			  	if (method_exists($module, 'initialize')) $module->initialize();
-			  	if ($revisions) {
-			  		$mod = $module->id;
-			  		$latest  = $versions->Revisions->Modules->$mod->Current;
-			  		if (version_compare($module->version, $latest) < 0 )  $messageStack->add(sprintf(TEXT_VERSION_CHECK_NEW_MOD_VER, $module->text, $module->version, $latest), 'caution');
-			  	}
-			}
-			// Make sure the install directory has been moved/removed
-			if (is_dir(DIR_FS_ADMIN . 'install')) $messageStack->add(TEXT_INSTALL_DIR_PRESENT, 'caution');
-  		}catch(\Exception $e){
-  			$messageStack->add($e->getMessage(), 'caution');
-  			return true;
-  		} 
+		}
+		// Fix for change to audit log for upgrade to R3.6 causes perpertual crashing when writing audit log
+		if (!db_field_exists(TABLE_AUDIT_LOG, 'stats')) $db->Execute("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
+		if ($this->web_connected(false) && CFG_AUTO_UPDATE_CHECK && (SECURITY_ID_CONFIGURATION > 3)) { // check for software updates
+		  	$revisions = @file_get_contents(VERSION_CHECK_URL);
+		  	if ($revisions) {
+		   		$versions = xml_to_object($revisions);
+				$latest  = $versions->Revisions->Phreedom->Current;
+				if (version_compare($admin_classes['phreedom']->version, $latest, '<'))  $messageStack->add(sprintf(TEXT_VERSION_CHECK_NEW_VER, $admin_classes['phreedom']->version, $latest), 'caution');
+		  	}
+		}
+		// load installed modules and initialize them
+		if (is_array($admin_classes)) foreach ($admin_classes as $key => $module) {
+		  	if ($key == 'phreedom') continue; // skip this module
+		  	if ($revisions) {
+		  		$latest  = $versions->Revisions->Modules->$key->Current;
+		  		if (version_compare($module->version, $latest , '<'))  $messageStack->add(sprintf(TEXT_VERSION_CHECK_NEW_MOD_VER, $module->text, $module->version, $latest), 'caution');
+		  	}
+		}
+		// Make sure the install directory has been moved/removed
+		if (is_dir(DIR_FS_ADMIN . 'install')) $messageStack->add(TEXT_INSTALL_DIR_PRESENT, 'caution'); 
   		return true;
   	}
 
@@ -242,7 +227,7 @@ class admin extends \core\classes\admin {
       		fclose($connected);
       		return true; 
     	} else {
-	  		if (!$silent) throw new \Exception('You are not connected to the internet. Error:' . $errno . ' - ' . $errstr, 'error');
+	  		if (!$silent) throw new \Exception('You are not connected to the internet. Error:' . $errno . ' - ' . $errstr);
 	  		return false;
 		}   
   	}
@@ -250,29 +235,22 @@ class admin extends \core\classes\admin {
 	function upgrade() {
 	    global $db, $messageStack;
 		parent::upgrade();
-		$db_version = defined('MODULE_PHREEDOM_STATUS') ? MODULE_PHREEDOM_STATUS : false;
-		foreach ($this->keys as $key => $value) if (!defined($key)) write_configure($key, $value);
-		if ($db_version < MODULE_PHREEDOM_STATUS) {
-	 	  $db_version = $this->release_update($this->id, 3.0, DIR_FS_MODULES . 'phreedom/updates/PBtoR30.php');
-		  if (!$db_version) return true;
+		$db_version = defined('MODULE_PHREEDOM_STATUS') ? MODULE_PHREEDOM_STATUS : 0;
+		if (version_compare($db_version, MODULE_PHREEDOM_STATUS, '<') ) {
+	 	  	$db_version = $this->release_update($this->id, 3.0, DIR_FS_MODULES . 'phreedom/updates/PBtoR30.php');
+		  	if (!$db_version) return true;
 		}
-	  	if (MODULE_PHREEDOM_STATUS < 3.1) {
-	  	  foreach ($this->tables as $table => $create_table_sql) {
-		    if (!db_table_exists($table)) if (!$db->Execute($create_table_sql)) $error = true;
-		  }
-		  write_configure(PHREEHELP_FORCE_RELOAD, '1');
+		if (version_compare($this->status, '3.2', '<') ) {
+		  	if (!db_field_exists(TABLE_USERS, 'is_role')) $db->Execute("ALTER TABLE ".TABLE_USERS." ADD is_role ENUM('0','1') NOT NULL DEFAULT '0' AFTER admin_id");
 		}
-	    if (MODULE_PHREEDOM_STATUS < 3.2) {
-		  if (!db_field_exists(TABLE_USERS, 'is_role')) $db->Execute("ALTER TABLE ".TABLE_USERS." ADD is_role ENUM('0','1') NOT NULL DEFAULT '0' AFTER admin_id");
-		}
-	    if (MODULE_PHREEDOM_STATUS < 3.4) {
-		  if (!db_field_exists(TABLE_DATA_SECURITY, 'exp_date')) $db->Execute("ALTER TABLE ".TABLE_DATA_SECURITY." ADD exp_date DATE NOT NULL DEFAULT '2049-12-31' AFTER enc_value");
-		  if (!db_field_exists(TABLE_AUDIT_LOG, 'ip_address'))   $db->Execute("ALTER TABLE ".TABLE_AUDIT_LOG    ." ADD ip_address VARCHAR(15) NOT NULL AFTER user_id");
+		if (version_compare($this->status, '3.4', '<') ) {
+		  	if (!db_field_exists(TABLE_DATA_SECURITY, 'exp_date')) $db->Execute("ALTER TABLE ".TABLE_DATA_SECURITY." ADD exp_date DATE NOT NULL DEFAULT '2049-12-31' AFTER enc_value");
+		  	if (!db_field_exists(TABLE_AUDIT_LOG, 'ip_address'))   $db->Execute("ALTER TABLE ".TABLE_AUDIT_LOG    ." ADD ip_address VARCHAR(15) NOT NULL AFTER user_id");
 	    }
-	  	if (MODULE_PHREEDOM_STATUS < 3.5) {
-		  if (!db_field_exists(TABLE_EXTRA_FIELDS, 'group_by'))  $db->Execute("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD group_by varchar(64) NOT NULL default ''");
-		  if (!db_field_exists(TABLE_EXTRA_FIELDS, 'sort_order'))$db->Execute("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD sort_order varchar(64) NOT NULL default ''");
-		  if (!db_field_exists(TABLE_AUDIT_LOG, 'stats'))        $db->Execute("ALTER TABLE ".TABLE_AUDIT_LOG." ADD 'stats' VARCHAR(32) NOT NULL AFTER 'ip_address'");
+	    if (version_compare($this->status, '3.5', '<') ) {
+		  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'group_by'))  $db->Execute("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD group_by varchar(64) NOT NULL default ''");
+		  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'sort_order'))$db->Execute("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD sort_order varchar(64) NOT NULL default ''");
+		  	if (!db_field_exists(TABLE_AUDIT_LOG, 'stats'))        $db->Execute("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
 	  	}
 	  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'required'))  $db->Execute("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD required enum('0','1') NOT NULL DEFAULT '0'");
 	}

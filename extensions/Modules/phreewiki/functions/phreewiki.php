@@ -45,8 +45,8 @@ function saveTiddly($otitle, $omodified, $ntiddler, $overwrite=0)	{
 function insert_tiddler($tiddler , $install = false) {
 	global $lock_title;  
 	print_r($lock_title);
-	$security_id = $_SESSION['admin_security'][SECURITY_PHREEWIKI_MGT];
-	if ( $security_id < 2 ) 																							return ERROR_NO_PERMISSION ;
+	$security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
+	\core\classes\user::validate_security($security_id, 2); // security check		
 	if ( sizeof($tiddler)== 0 )																						return PHREEWIKI_WARNING_TIDDLER_NOT_FOUND;
   if ( !$install == true && in_array($tiddler['title'], $lock_title) )	return PHREEWIKI_WARNING_IN_LOCKED_ARRAY;
   db_perform( TABLE_PHREEWIKI , $tiddler, 'insert');
@@ -67,8 +67,8 @@ function insert_tiddler($tiddler , $install = false) {
 function tiddler_update($oldtiddler, $newtiddler) {
 	global $lock_title;
 	unset($newtiddler['id']);  
-	$security_id = $_SESSION['admin_security'][SECURITY_PHREEWIKI_MGT];
-	if ( $security_id < 3 ) 												return ERROR_NO_PERMISSION ;
+	$security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
+	\core\classes\user::validate_security($security_id, 3); // security check		
 	if ( sizeof($tiddler)== 0 )											return PHREEWIKI_WARNING_TIDDLER_NOT_FOUND;
   if ( in_array($tiddler['title'], $lock_title) )	return PHREEWIKI_WARNING_IN_LOCKED_ARRAY;
 	db_perform(TABLE_PHREEWIKI, $newtiddler, 'update', 'id = "' . $oldtiddler['id']. '"');
@@ -87,8 +87,8 @@ function tiddler_update($oldtiddler, $newtiddler) {
 
 function deleteTiddler($tiddler) {
   global $db, $lock_title;  
-  $security_id = $_SESSION['admin_security'][SECURITY_PHREEWIKI_MGT];
-  if ( $security_id < 4 ) 												return ERROR_NO_PERMISSION ;
+  $security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
+  \core\classes\user::validate_security($security_id, 2); // security check		
   if ( sizeof($tiddler)== 0 )											return PHREEWIKI_WARNING_TIDDLER_NOT_FOUND;
   if ( in_array($tiddler['title'], $lock_title) )	return PHREEWIKI_WARNING_IN_LOCKED_ARRAY;
   
@@ -105,7 +105,7 @@ function deleteTiddler($tiddler) {
 
 function select_all_tiddlers() {
   global $db;
-  $security_id = $_SESSION['admin_security'][SECURITY_PHREEWIKI_MGT];
+  $security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
   $output_array = array();
   if (!$security_id < 1) {
   	$result = $db->Execute("SELECT * FROM ".TABLE_PHREEWIKI);
@@ -123,7 +123,7 @@ function select_all_tiddlers() {
 
 function select_tiddler_by_title($title) {
   global $db;
-  $security_id = $_SESSION['admin_security'][SECURITY_PHREEWIKI_MGT];
+  $security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
   if ($security_id < 1)  return array();	
   $tiddlers = $db->Execute("SELECT * FROM ".TABLE_PHREEWIKI."  where title ='" . $title . "'");
   foreach($tiddlers as $t) {
@@ -136,7 +136,7 @@ function select_tiddler_by_title($title) {
 
 function select_all_tiddler_versions($title) {
 	global $db;
-	$security_id = $_SESSION['admin_security'][SECURITY_PHREEWIKI_MGT];
+	$security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
   if ($security_id < 1)  return array();	
 	//get current tiddler id
 	$tiddler_id = select_tiddler_by_title($title);
@@ -159,7 +159,7 @@ function select_all_tiddler_versions($title) {
 }
 
 function select_all_tiddler_by_tags($yesTags,$noTags) {
-	$security_id = $_SESSION['admin_security'][SECURITY_PHREEWIKI_MGT];
+	$security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
 	if ($security_id < 1) return false;
 	//get all data from db
 	$tiddlers = select_all_tiddlers();
@@ -341,9 +341,7 @@ function install_plugin($pluginName, $pluginValue) {
 												  "",
 												  "ccTiddly",
 												  date("YmdHi"));
-	  if( !insert_tiddler($t, true)== True ) {
-			return false;
-	  }
+	  if( !insert_tiddler($t, true)== True ) throw new \Exception("cant install plugin $pluginName for phreewiki");
   }
   return true;
 }

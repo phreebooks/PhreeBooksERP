@@ -21,7 +21,6 @@ $security_level = \core\classes\user::validate(SECURITY_WORK_ORDERS_TASK);
 require(DIR_FS_WORKING . 'defaults.php');
 require(DIR_FS_WORKING . 'functions/work_orders.php');
 /**************   page specific initialization  *************************/
-$error       = false;
 $processed   = false;
 history_filter('wo_tasks');
 /***************   hook for custom actions  ***************************/
@@ -30,73 +29,66 @@ if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save':
-	\core\classes\user::validate_security($security_level, 2);
-  	$id          = db_prepare_input($_POST['id']);
-	$task_name   = db_prepare_input($_POST['task_name']);
-	$description = db_prepare_input($_POST['description']);
-	$ref_doc     = db_prepare_input($_POST['ref_doc']);
-	$ref_spec    = db_prepare_input($_POST['ref_spec']);
-	$dept_id     = db_prepare_input($_POST['dept_id']);
-	$job_time    = db_prepare_input($_POST['job_time']);
-	$job_unit    = db_prepare_input($_POST['job_unit']);
-	$mfg         = $_POST['mfg']        ? '1' : '0';
-	$qa          = $_POST['qa']         ? '1' : '0';
-	$data_entry  = $_POST['data_entry'] ? '1' : '0';
-	$erp_entry   = $_POST['erp_entry']  ? '1' : '0';
-	// error check
-	if (!$task_name || !$description) {
-	  $messageStack->add(WO_TASK_ID_MISSING,'error');
-	  $error = true;
-	}
-	$result = $db->Execute("select id from " . TABLE_WO_TASK . " where task_name = '" . $task_name . "'");
-	if ($result->Recordcount() > 0) {
-	  if ($result->fields['id'] <> $id) {
-	    $messageStack->add(WO_DUPLICATE_TASK_ID,'error');
-		$error = true;
-	  }
-	}
-	// write the data
-	if (!$error) {
-	  $sql_data_array = array(
-	    'task_name'   => $task_name,
-	    'description' => $description,
-	    'ref_doc'     => $ref_doc,
-	    'ref_spec'    => $ref_spec,
-	    'dept_id'     => $dept_id,
-	    'job_time'    => $job_time,
-	    'job_unit'    => $job_unit,
-	    'mfg'         => $mfg,
-	    'qa'          => $qa,
-	    'data_entry'  => $data_entry,
-	    'erp_entry'   => $erp_entry,
-	  );
-	  if ($id) {
-	    $success = db_perform(TABLE_WO_TASK, $sql_data_array, 'update', 'id = ' . $id);
-		if ($success) gen_add_audit_log(sprintf(WO_AUDIT_LOG_TASK, TEXT_UPDATE) . $task_name);
-		else $error = true;
-	  } else {
-	    $success = db_perform(TABLE_WO_TASK, $sql_data_array, 'insert');
-		if ($success) gen_add_audit_log(sprintf(WO_AUDIT_LOG_TASK, TEXT_ADD) . $task_name);
-		else $error = true;
-	  }
-	}
-	if (!$error) {
-	  $messageStack->add(($id ? WO_MESSAGE_SUCCESS_UPDATE : WO_MESSAGE_SUCCESS_ADD),'success');
-	  gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-	} else {
-	  $messageStack->add(WO_MESSAGE_ERROR, 'error');
-	}
+  	try{
+		\core\classes\user::validate_security($security_level, 2);
+	  	$id          = db_prepare_input($_POST['id']);
+		$task_name   = db_prepare_input($_POST['task_name']);
+		$description = db_prepare_input($_POST['description']);
+		$ref_doc     = db_prepare_input($_POST['ref_doc']);
+		$ref_spec    = db_prepare_input($_POST['ref_spec']);
+		$dept_id     = db_prepare_input($_POST['dept_id']);
+		$job_time    = db_prepare_input($_POST['job_time']);
+		$job_unit    = db_prepare_input($_POST['job_unit']);
+		$mfg         = $_POST['mfg']        ? '1' : '0';
+		$qa          = $_POST['qa']         ? '1' : '0';
+		$data_entry  = $_POST['data_entry'] ? '1' : '0';
+		$erp_entry   = $_POST['erp_entry']  ? '1' : '0';
+		// error check
+		if (!$task_name || !$description) throw new \Exception(WO_TASK_ID_MISSING);
+	
+		$result = $db->Execute("select id from " . TABLE_WO_TASK . " where task_name = '" . $task_name . "'");
+		if ($result->Recordcount() > 0) {
+		  	if ($result->fields['id'] <> $id) throw new \Exception(WO_DUPLICATE_TASK_ID);
+		}
+		// write the data
+		
+		$sql_data_array = array(
+		  'task_name'   => $task_name,
+		  'description' => $description,
+		  'ref_doc'     => $ref_doc,
+		  'ref_spec'    => $ref_spec,
+		  'dept_id'     => $dept_id,
+		  'job_time'    => $job_time,
+		  'job_unit'    => $job_unit,
+		  'mfg'         => $mfg,
+		  'qa'          => $qa,
+		  'data_entry'  => $data_entry,
+		  'erp_entry'   => $erp_entry,
+		);
+		if ($id) {
+		    if (!db_perform(TABLE_WO_TASK, $sql_data_array, 'update', 'id = ' . $id)) throw new \Exception("unable to update $id in the database");
+			gen_add_audit_log(sprintf(WO_AUDIT_LOG_TASK, TEXT_UPDATE) . $task_name);
+		} else {
+		    if (!db_perform(TABLE_WO_TASK, $sql_data_array, 'insert')) throw new \Exception("unable to insert in the database");
+			gen_add_audit_log(sprintf(WO_AUDIT_LOG_TASK, TEXT_ADD) . $task_name);
+		}
+		
+		$messageStack->add(($id ? WO_MESSAGE_SUCCESS_UPDATE : WO_MESSAGE_SUCCESS_ADD),'success');
+		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
+  	}catch(Exception $e){
+  		$messageStack->add($e->getMessage());
+  	}
 	break;
   case 'delete':
 	$id = db_prepare_input($_GET['cID']);
 	// check to see if the task is used in any defined work orders. If so don't let it be deleted.
 	$result = $db->Execute("select ref_id from " . TABLE_WO_JOURNAL_ITEM . " where task_id = " . $id);
 	if ($result->RecordCount() == 0) {
-	  $db->Execute("delete from " . TABLE_WO_TASK . " where id = " . $id);
-	  gen_add_audit_log(sprintf(WO_AUDIT_LOG_TASK, TEXT_DELETE), $id);
-	  gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
+	  	$db->Execute("delete from " . TABLE_WO_TASK . " where id = " . $id);
+	  	gen_add_audit_log(sprintf(WO_AUDIT_LOG_TASK, TEXT_DELETE), $id);
+	  	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	} else {
-	  $messageStack->add(sprintf(WO_ERROR_CANNOT_DELETE . $result->fields['ref_id']), 'error');
+	  	$messageStack->add(sprintf(WO_ERROR_CANNOT_DELETE . $result->fields['ref_id']), 'error');
 	}
 	break;
   case 'go_first':    $_REQUEST['list'] = 1;       break;

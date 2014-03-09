@@ -158,19 +158,19 @@ function load_my_reports() {
 }
 
 function find_special_class($class_name) {
-	global $loaded_modules;
-  	if (is_array($loaded_modules)) foreach ($loaded_modules as $module) {
-    	if (file_exists(DIR_FS_MODULES . $module . '/classes/' . $class_name . '.php')) return DIR_FS_MODULES . $module . '/';
+	global $admin_classes;
+  	foreach ($admin_classes as $key => $class) { 
+    	if (file_exists(DIR_FS_MODULES . $key . '/classes/' . $class_name . '.php')) return DIR_FS_MODULES . $key . '/';
   	}
-  	throw new \Exception('Special class: ' . $class_name . ' was called but could not be found!');
+  	throw new \Exception("Special class: $class_name was called but could not be found!");
 }
 
 function load_special_language($path, $class_name) {
-  if (file_exists($path . 'language/' . $_SESSION['language'] . '/classes/' . $class_name . '.php')) {
-    require_once ($path . 'language/' . $_SESSION['language'] . '/classes/' . $class_name . '.php');
-  } elseif (file_exists($path . 'language/en_us/classes/' . $class_name . '.php')) {
-    require_once       ($path . 'language/en_us/classes/' . $class_name . '.php');
-  }
+  	if (file_exists($path . "language/{$_SESSION['language']}/classes/$class_name.php")) {
+    	require_once ($path . "language/{$_SESSION['language']}/classes/$class_name.php");
+  	} elseif (file_exists($path . "language/en_us/classes/$class_name.php")) {
+    	require_once       ($path . "language/en_us/classes/$class_name.php");
+  	}
 }
 
 function ReadDefReports($name, $path) {
@@ -261,20 +261,20 @@ function ImportReport($RptName = '', $RptFileName = '', $import_path = PF_DIR_DE
 	global $db;
 	$rID = '';
 	if ($RptFileName <> '') { // then a locally stored report was chosen
-	  $path = $import_path . $RptFileName;
-	} else if (validate_upload('reportfile')) {
-	  $path = $_FILES['reportfile']['tmp_name'];
+	  	$path = $import_path . $RptFileName;
+		validate_upload('reportfile');
+	  	$path = $_FILES['reportfile']['tmp_name'];
 	} else {
-	  throw new \Exception(PHREEFORM_IMPORT_ERROR);
+	  	throw new \Exception(PHREEFORM_IMPORT_ERROR);
 	}
 	$handle   = fopen($path, "r");
 	$contents = fread($handle, filesize($path));
 	fclose($handle);
 	if (strpos($contents, 'Report Builder Export Tool')) { // it's an old style report
 	  require_once(DIR_FS_MODULES . 'phreeform/functions/reportwriter.php');
-	  if (!$report = import_text_params(file($path))) return false;
+	  $report = import_text_params(file($path));
 	} else { // assume it's a new xml type
-	  if (!$report = xml_to_object($contents)) return false;
+	  if (!$report = xml_to_object($contents)) throw new \Exception ("the file is empty");
 	  if (is_object($report->PhreeformReport)) $report = $report->PhreeformReport; // remove container tag
 	}
 	if ($RptName <> '') $report->title = $RptName; // replace the title if provided
@@ -282,18 +282,15 @@ function ImportReport($RptName = '', $RptFileName = '', $import_path = PF_DIR_DE
 	$result = $db->Execute("select id from " . TABLE_PHREEFORM . " 
 	  where doc_title = '" . addslashes($report->title) . "' and doc_type <> '0'");
 	if ($result->RecordCount() > 0) { // the report name already exists, if file exists error, else write 
-	  $rID = $result->fields['id'];
-	  if (file_exists($save_path . 'pf_' . $rID)) { // file exists - error and return
-	    throw new \Exception (sprintf(PHREEFORM_REPDUP, $report->title));
-	  }
+	  	$rID = $result->fields['id'];
+	  	// file exists - error and return
+	  	if (file_exists($save_path . 'pf_' . $rID)) throw new \Exception (sprintf(PHREEFORM_REPDUP, $report->title));
 	}
-	if (!$result = save_report($report, $rID, $save_path)) return false;
-	return true;
+	save_report($report, $rID, $save_path);
 }
 
 function save_report($report, $rID = '', $save_path = PF_DIR_MY_REPORTS) {
-	global $db, $messageStack;
-	$error  = false;
+	global $db;
 	$output  = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . chr(10);
 	$output .= '<PhreeformReport>' . chr(10);
 	$output .= object_to_xml($report);
@@ -330,16 +327,9 @@ function save_report($report, $rID = '', $save_path = PF_DIR_MY_REPORTS) {
 	  $rID = db_insert_id();
 	}
 	$filename = $save_path . 'pf_' . $rID;
-	if (!$handle = @fopen($filename, 'w')) $error = true;
-	if (!$error) {
-	  if (!fwrite($handle, $output)) $error = true;
-	  @fclose($handle);
-	}
-	if ($error) {
-	  $db->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
-	  throw new \Exception(sprintf(PHREEFORM_WRITE_ERROR, $filename));
-	  return false;
-	}
+	if (!$handle = @fopen($filename, 'w')) throw new \Exception("unable to open $filename");
+	if (!fwrite($handle, $output)) throw new \Exception("unable to write $filename");
+	@fclose($handle);
 	return $rID;
 }
 
@@ -367,13 +357,11 @@ function validate_dir_move($dir_tree, $id, $new_parent) {
 
 function BuildForm($report, $delivery_method = 'D') { // for forms only
 	global $db, $messageStack, $FieldValues;
-	require_once(DIR_FS_MODULES . 'phreeform/classes/form_generator.php');
 	$output = array();
 
 	// check for at least one field selected to show
-	if (!$report->fieldlist) { // No fields are checked to show, that's bad
-	  return $messageStack->add(PHREEFORM_NOROWS, 'caution');
-	}
+	// No fields are checked to show, that's bad
+	if (!$report->fieldlist) throw new \Exception(PHREEFORM_NOROWS);
 	// Let's build the sql field list for the general data fields (not totals, blocks or tables)
 	$strField = array();
 	foreach ($report->fieldlist as $key => $field) { // check for a data field and build sql field list
@@ -381,7 +369,7 @@ function BuildForm($report, $delivery_method = 'D') { // for forms only
 		if ($field->boxfield[0]->fieldname) {
 		  $strField[] = prefixTables($field->boxfield[0]->fieldname) . ' as d' . $key;
 		} else { // the field is empty, bad news, error and exit
-		  return $messageStack->add(PHREEFORM_EMPTYFIELD . $key, 'error');
+		  throw new \Exception(PHREEFORM_EMPTYFIELD . $key);
 		}
 	  }
 	}
@@ -421,7 +409,7 @@ function BuildForm($report, $delivery_method = 'D') { // for forms only
 	// execute sql to see if we have data
 //echo 'sql = ' . $sql . '<br />'; exit();
 	$result = $db->Execute($sql);
-	if (!$result->RecordCount()) return $messageStack->add(PHREEFORM_NOROWS, 'caution');
+	if (!$result->RecordCount()) throw new \Exception(PHREEFORM_NOROWS);
 
 	// set the filename for download or email
 	if ($report->filenameprefix || $report->filenamefield) {
@@ -437,25 +425,23 @@ function BuildForm($report, $delivery_method = 'D') { // for forms only
 	}
 	// retrieve the company information
 	for ($i = 0; $i < sizeof($report->fieldlist); $i++) {
-	  if ($report->fieldlist[$i]->type == 'CDta') {
-		$report->fieldlist[$i]->text = constant($report->fieldlist[$i]->boxfield[0]->fieldname);
-	  } else if ($report->fieldlist[$i]->type == 'CBlk') {
-		if (!$report->fieldlist[$i]->boxfield) {
-		  return $messageStack->add(PHREEFORM_EMPTYFIELD . $report->fieldlist[$i]->description, 'error');
-		}
-		$TextField = '';
-		foreach ($report->fieldlist[$i]->boxfield as $entry) {
-			$temp = $entry->formatting ? ProcessData(constant($entry->fieldname), $entry->formatting) : constant($entry->fieldname);
-			$TextField .= AddSep($temp, $entry->processing);
-		}
-		$report->fieldlist[$i]->text = $TextField;
-	  }
+	  	if ($report->fieldlist[$i]->type == 'CDta') {
+			$report->fieldlist[$i]->text = constant($report->fieldlist[$i]->boxfield[0]->fieldname);
+	  	} else if ($report->fieldlist[$i]->type == 'CBlk') {
+			if (!$report->fieldlist[$i]->boxfield) throw new \Exception(PHREEFORM_EMPTYFIELD . $report->fieldlist[$i]->description);
+			$TextField = '';
+			foreach ($report->fieldlist[$i]->boxfield as $entry) {
+				$temp = $entry->formatting ? ProcessData(constant($entry->fieldname), $entry->formatting) : constant($entry->fieldname);
+				$TextField .= AddSep($temp, $entry->processing);
+			}
+			$report->fieldlist[$i]->text = $TextField;
+	  	}
 	}
 	// patch for special_reports (forms) where the data file is generated externally from the standard class
 	if ($report->special_class) {
-      if (!$path = find_special_class($report->special_class)) return false;
-      load_special_language($path, $report->special_class);
-      require_once($path . '/classes/' . $report->special_class . '.php');
+      	$path = find_special_class($report->special_class);
+      	load_special_language($path, $report->special_class);
+      	require_once($path . '/classes/' . $report->special_class . '.php');
 	}
     if ($report->serialform) { 
 	  $output = BuildSeq($report, $delivery_method); // build sequential form (receipt style)
@@ -469,7 +455,7 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 	global $db, $messageStack, $FieldValues, $posted_currencies;
 	// Generate a form for each group element
 	$output = array();
-	$pdf    = new PDF();//@todo needs new location
+	$pdf    = new \phreeform\classes\form_generator();
 	foreach ($report->recordID as $formNum => $Fvalue) {
 	  $pdf->StartPageGroup();
 	  // find the single line data from the query for the current form page
@@ -501,7 +487,7 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 	  foreach ($report->fieldlist as $key => $field) { // Build the text block strings
 	    if ($field->type == 'TBlk') {
 		  if (!$field->boxfield[0]->fieldname) {
-		    return $messageStack->add(PHREEFORM_EMPTYFIELD . $field->fieldname, 'error');
+		    throw new \Exception(PHREEFORM_EMPTYFIELD . $field->fieldname);
 		  }
 		  if ($report->special_class) {
 		    $TextField = $special_form->load_text_block_data($field->boxfield);
@@ -520,7 +506,7 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 	    }
 	    if ($field->type == 'LtrData') { // letter template
 		  if (!$field->boxfield) {
-		    return $messageStack->add(PHREEFORM_EMPTYFIELD . $field->description, 'error');
+		    throw new \Exception(PHREEFORM_EMPTYFIELD . $field->description);
 		  }
 		  $tblField = '';
 		  $data = array();
@@ -545,9 +531,7 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 	  // Send the table
 	  foreach ($report->fieldlist as $TableObject) {
 	    if ($TableObject->type == 'Tbl') {
-		  if (!$TableObject->boxfield) {
-		    return $messageStack->add(PHREEFORM_EMPTYFIELD . $TableObject->description, 'error');
-		  }
+		  if (!$TableObject->boxfield) throw new \Exception(PHREEFORM_EMPTYFIELD . $TableObject->description);
 		  // Build the sql
 		  $tblField = '';
 		  $tblHeading = array();
@@ -574,9 +558,7 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 	  // Send the duplicate data table (only works if each form is contained in a single page [no multi-page])
 	  foreach ($report->fieldlist as $field) {
 	    if ($field->type == 'TDup') {
-		  if (!$StoredTable) {
-		    return $messageStack->add(PHREEFORM_EMPTYTABLE . $field->description, 'error');
-		  }
+		  if (!$StoredTable) throw new \Exception(PHREEFORM_EMPTYTABLE . $field->description);
 		  // insert new coordinates into existing table
 		  $StoredTable->abscissa = $field->abscissa;
 		  $StoredTable->ordinate = $field->ordinate;
@@ -586,9 +568,7 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 	  foreach ($report->fieldlist as $key => $field) {
 	    // Set the totals (need to be on last printed page) - Handled in the Footer function in FPDF
 	    if ($field->type == 'Ttl') {
-		  if (!$field->boxfield) {
-		    return $messageStack->add(PHREEFORM_EMPTYFIELD . $field->description, 'error');
-		  }
+		  if (!$field->boxfield) throw new \Exception(PHREEFORM_EMPTYFIELD . $field->description);
 		  $report->fieldlist[$key]->processing = $field->boxfield[0]->processing; // assume first processing setting carries for the total
 		  if ($report->special_class) {
 		    $FieldValues = $special_form->load_total_results($field);
@@ -662,7 +642,7 @@ function BuildSeq($report, $delivery_method = 'D') { // for forms only - Sequent
 		  $oneline = formatReceipt($value, $field->width, $field->align, $oneline);
 		  break;
 		case 'TBlk':
-		  if (!$field->boxfield[0]->fieldname) return $messageStack->add(PHREEFORM_EMPTYFIELD . $field->fieldname, 'error');
+		  if (!$field->boxfield[0]->fieldname) throw new \Exception(PHREEFORM_EMPTYFIELD . $field->fieldname);
 		  if ($report->special_class) {
 			$TextField = $special_form->load_text_block_data($field->boxfield);
 		  } else {
@@ -680,38 +660,38 @@ function BuildSeq($report, $delivery_method = 'D') { // for forms only - Sequent
 		  $oneline = $report->fieldlist[$key]->text;
 		  break;
 		case 'Tbl':
-		  if (!$field->boxfield) return $messageStack->add(PHREEFORM_EMPTYFIELD . $field->description, 'error');
-//		  $tblHeading = array();
-//		  foreach ($field->boxfield as $TableField) $tblHeading[] = $TableField->description;
-		  $data = array();
-		  if ($report->special_class) {
-			$data = $special_form->load_table_data($field->boxfield);
-		  } else {
-			  $tblField = array();
-			  foreach ($field->boxfield as $key => $TableField) $tblField[] = prefixTables($TableField->fieldname) . ' as r' . $key;
-			  $tblField = implode(', ', $tblField);
-			  $result = $db->Execute("select " . $tblField . $TrailingSQL);
-			  while (!$result->EOF) {
-				$data[] = $result->fields;
-				$result->MoveNext();
-			  }
-		  }
-		  $field->data = $data;
-		  $StoredTable = $field;
-		  foreach ($data as $key => $value) {
-			$temp = array();
-			foreach ($value as $data_key => $data_element) {
-			  $offset  = substr($data_key, 1);
-			  $value   = ProcessData($data_element, $field->boxfield[$offset]->processing);
-			  $temp[] .= formatReceipt($value, $field->boxfield[$offset]->width, $field->boxfield[$offset]->align);
-			}
-			$oneline .= implode("", $temp). "\n";
-		  }
-		  $oneline = substr($oneline, 0, -2);//strip the last \n 
-		  $field->rowbreak = 1;
-		  break;
+		  	if (!$field->boxfield) throw new \Exception(PHREEFORM_EMPTYFIELD . $field->description);
+//		  	$tblHeading = array();
+//		  	foreach ($field->boxfield as $TableField) $tblHeading[] = $TableField->description;
+		  	$data = array();
+		  	if ($report->special_class) {
+				$data = $special_form->load_table_data($field->boxfield);
+		  	} else {
+			  	$tblField = array();
+			  	foreach ($field->boxfield as $key => $TableField) $tblField[] = prefixTables($TableField->fieldname) . ' as r' . $key;
+			  	$tblField = implode(', ', $tblField);
+			  	$result = $db->Execute("select " . $tblField . $TrailingSQL);
+			  	while (!$result->EOF) {
+					$data[] = $result->fields;
+					$result->MoveNext();
+			  	}
+		  	}
+		  	$field->data = $data;
+		  	$StoredTable = $field;
+		  	foreach ($data as $key => $value) {
+				$temp = array();
+				foreach ($value as $data_key => $data_element) {
+			  		$offset  = substr($data_key, 1);
+			  		$value   = ProcessData($data_element, $field->boxfield[$offset]->processing);
+			  		$temp[] .= formatReceipt($value, $field->boxfield[$offset]->width, $field->boxfield[$offset]->align);
+				}
+				$oneline .= implode("", $temp). "\n";
+		  	}
+		  	$oneline = substr($oneline, 0, -2);//strip the last \n 
+		  	$field->rowbreak = 1;
+		  	break;
 		case 'TDup':
-		  if (!$StoredTable) return $messageStack->add(PHREEFORM_EMPTYTABLE . $field->description, 'error');
+		  if (!$StoredTable) throw new \Exception(PHREEFORM_EMPTYTABLE . $field->description);
 		  // insert new coordinates into existing table
 		  $StoredTable->abscissa = $field->abscissa;
 		  $StoredTable->ordinate = $field->ordinate;
@@ -726,7 +706,7 @@ function BuildSeq($report, $delivery_method = 'D') { // for forms only - Sequent
 		  $field->rowbreak = 1;
 		  break;
 		case 'Ttl':
-		  if (!$field->boxfield) return $messageStack->add(PHREEFORM_EMPTYFIELD . $field->description, 'error');
+		  if (!$field->boxfield) throw new \Exception(PHREEFORM_EMPTYFIELD . $field->description);
 		  if ($report->special_class) {
 			$FieldValues = $special_form->load_total_results($field);
 		  } else {
@@ -988,11 +968,11 @@ function BuildDataArray($sql, $report) { // for reports only
 	}
 	// patch for special_reports where the data file is generated externally from the standard function
 	if ($report->special_class) {
-      if (!$path = find_special_class($report->special_class)) return false;
-	  load_special_language($path, $report->special_class);
-	  require_once($path . '/classes/' . $report->special_class . '.php');
-	  $sp_report = new $report->special_class; //@todo needs new location
-	  return $sp_report->load_report_data($report, $Seq, $sql, $GrpField); // the special report formats all of the data, we're done
+      	$path = find_special_class($report->special_class);
+	  	load_special_language($path, $report->special_class);
+	  	require_once($path . '/classes/' . $report->special_class . '.php');
+	  	$sp_report = new $report->special_class; //@todo needs new location
+		return $sp_report->load_report_data($report, $Seq, $sql, $GrpField); // the special report formats all of the data, we're done
 	}
 
 	$result = $db->Execute($sql);
@@ -1060,8 +1040,7 @@ function ReplaceNonAllowedCharacters($input) {
 }
 
 function GeneratePDFFile($Data, $report, $delivery_method = 'D') { // for pdf reports only
-	require_once(DIR_FS_MODULES . 'phreeform/classes/report_generator.php');
-	$pdf = new PDF(); // @todo needs new location
+	$pdf = new \phreeform\classes\report_generator();
 	$pdf->ReportTable($Data);
 	$ReportName = ReplaceNonAllowedCharacters($report->title) . '.pdf';
 	if ($delivery_method == 'S') return array('filename' => $ReportName, 'pdf' => $pdf->Output($ReportName, 'S'));
@@ -1075,8 +1054,7 @@ function GeneratePDFFile($Data, $report, $delivery_method = 'D') { // for pdf re
 }
 
 function GenerateHTMLFile($Data, $report, $delivery_method = 'D') { // for html reports only
-	require_once(DIR_FS_MODULES . 'phreeform/classes/html_generator.php');
-	$html        = new HTML();//@todo needs new location
+	$html        = new \phreeform\classes\html_generator();
 	$html->title = ReplaceNonAllowedCharacters($report->title);
 	$html->ReportTable($Data);
 	$ReportName = ReplaceNonAllowedCharacters($report->title) . '.html';
@@ -1155,8 +1133,6 @@ function GenerateXMLFile($Data, $report, $delivery_method = 'D') { // for csv re
 	}
 	$ReportName = ReplaceNonAllowedCharacters($report->title) . '.csv';
 	if ($delivery_method == 'S') return array('filename' => $ReportName, 'pdf' => $CSVOutput);
-	global $db, $messageStack;
-	$error  = false;
 	$output  = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . chr(10);
 	$output .= '<PhreeformReport>' . chr(10);
 	$output .= $xml;
@@ -1206,25 +1182,25 @@ function CreateTableList($report) {
 }
 
 function CreateSpecialDropDown($report) {
-  if ($report->special_class) {
-    if (!$path = find_special_class($report->special_class)) return false;
-    load_special_language($path, $report->special_class);
-    require_once($path . '/classes/' . $report->special_class . '.php');
-    $sp_report = new $report->special_class; //@todo needs new location
-    return $sp_report->build_selection_dropdown();
-  }
-  return CreateFieldArray($report);
+	if ($report->special_class) {
+	    $path = find_special_class($report->special_class);
+	    load_special_language($path, $report->special_class);
+	    require_once($path . "/classes/{$report->special_class}.php");
+	    $sp_report = new $report->special_class;
+	    return $sp_report->build_selection_dropdown();
+	}
+	return CreateFieldArray($report);
 }
 
 function CreateFieldTblDropDown($report) {
-  if ($report->special_class) {
-    if (!$path = find_special_class($report->special_class)) return false;
-    load_special_language($path, $report->special_class);
-    require_once($path . '/classes/' . $report->special_class . '.php');
-    $sp_report = new $report->special_class; //@todo need new location
-    return $sp_report->build_table_drop_down();
-  }
-  return CreateFieldArray($report);
+	if ($report->special_class) {
+	    $path = find_special_class($report->special_class); 
+	    load_special_language($path, $report->special_class);
+	    require_once($path . "/classes/{$report->special_class}.php");
+	    $sp_report = new $report->special_class;
+	    return $sp_report->build_table_drop_down();
+	}
+	return CreateFieldArray($report);
 }
 
 function crit_build_pull_down($keyed_array) {

@@ -101,17 +101,7 @@ class admin extends \core\classes\admin {
 	function upgrade() {
 	    global $db;
 		parent::upgrade();
-		if (MODULE_PHREEPOS_STATUS < 3.2) {
-		  if(!defined('PHREEPOS_RECEIPT_PRINTER_STARTING_LINE')) write_configure('PHREEPOS_RECEIPT_PRINTER_STARTING_LINE', '');
-		  if(!defined('PHREEPOS_RECEIPT_PRINTER_CLOSING_LINE'))  write_configure('PHREEPOS_RECEIPT_PRINTER_CLOSING_LINE', '');
-		}
-		if (MODULE_PHREEPOS_STATUS < 3.3) {
-		  if(!defined('PHREEPOS_RECEIPT_PRINTER_OPEN_DRAWER'))   write_configure('PHREEPOS_RECEIPT_PRINTER_OPEN_DRAWER', '');
-		  if(!defined('PHREEPOS_DISPLAY_WITH_TAX'))  			 write_configure('PHREEPOS_DISPLAY_WITH_TAX',		     '1');
-	      if(!defined('PHREEPOS_DISCOUNT_OF'))   				 write_configure('PHREEPOS_DISCOUNT_OF',                 '0');
-	      if(!defined('PHREEPOS_ROUNDING'))   				     write_configure('PHREEPOS_ROUNDING',                    '0');
-		}
-		if (MODULE_PHREEPOS_STATUS < 3.4) {
+		if (version_compare($this->status, '3.4', '<') ) {
 			  foreach (gen_get_store_ids() as $store){
 			  	$sql_data_array = array(
 			  		'store_id'    		  	=> $store['id'],
@@ -130,7 +120,6 @@ class admin extends \core\classes\admin {
 			  if(defined('PHREEPOS_RECEIPT_PRINTER_STARTING_LINE')) remove_configure('PHREEPOS_RECEIPT_PRINTER_STARTING_LINE');
 			  if(defined('PHREEPOS_RECEIPT_PRINTER_CLOSING_LINE'))  remove_configure('PHREEPOS_RECEIPT_PRINTER_CLOSING_LINE');
 		}
-		if (!defined('PHREEPOS_ENABLE_DIRECT_PRINTING')) write_configure('PHREEPOS_ENABLE_DIRECT_PRINTING', 1);
 		if (!db_field_exists(TABLE_PHREEPOS_TILLS, 'tax_id')) $db->Execute("ALTER TABLE " . TABLE_PHREEPOS_TILLS . " ADD tax_id INT(11) default '-1' AFTER max_discount");
   	}
 

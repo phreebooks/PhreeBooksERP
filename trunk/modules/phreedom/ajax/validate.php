@@ -31,7 +31,7 @@ $result = $db->Execute("select inactive, admin_pass from " . TABLE_USERS . " whe
 if ($result->RecordCount() <> 1 || $result->fields['inactive']) {
   	$xml = xmlEntry('result', 'failed');
 }
-\core\classes\encryption::_validate_password($pass, $result->fields['admin_pass']);@todo should there be a underscore at the beginning of function name
+\core\classes\encryption::validate_password($pass, $result->fields['admin_pass']);
 $xml = xmlEntry('result', 'failed');//@todo rewrite to use footer
 $xml = xmlEntry('result', 'validated');
 

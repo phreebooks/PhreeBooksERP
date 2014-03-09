@@ -31,8 +31,8 @@ function init() {
 	echo "  document.getElementById('search_text').select();";
   } ?>
 <?php
-  if (!$error && $_REQUEST['action'] == 'print') echo '  printWOrder(' . $id . ');';
-  if (!$error && $_REQUEST['action'] == 'new')   echo '  document.getElementById("sku").focus();';
+  if ($_REQUEST['action'] == 'print') echo '  printWOrder(' . $id . ');';
+  if ($_REQUEST['action'] == 'new')   echo '  document.getElementById("sku").focus();';
 ?>
 }
 

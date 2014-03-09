@@ -75,12 +75,12 @@ class admin extends \core\classes\admin {
   	function upgrade() {
     	global $db, $messageStack;
     	parent::upgrade();
-		if (MODULE_PHREEFORM_STATUS == '3.0') write_configure('PDF_APP', 'TCPDF');
-		if (MODULE_PHREEFORM_STATUS < '3.5') {
+    	if (version_compare($this->status, '3.3', '==') ) write_configure('PDF_APP', 'TCPDF');
+    	if (version_compare($this->status, '3.5', '<') ) {
 //			$id = $this->add_report_heading(TEXT_MISC, 'cust');
-//			if ($this->add_report_folder($id, TEXT_LETTERS, 'cust:ltr', 'fl')) $error = true;
+//			$this->add_report_folder($id, TEXT_LETTERS, 'cust:ltr', 'fl');
 //			$id = $this->add_report_heading(TEXT_MISC, 'vend');
-//			if ($this->add_report_folder($id, TEXT_LETTERS, 'vend:ltr', 'fl')) $error = true;
+//			$this->add_report_folder($id, TEXT_LETTERS, 'vend:ltr', 'fl');
 		}
 	}
 

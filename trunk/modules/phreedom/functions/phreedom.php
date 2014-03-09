@@ -130,19 +130,17 @@ function gen_pull_db_config_info($database, $key) {
 /**************************** admin functions ***********************************************/
 
 function admin_add_reports($module, $save_path = PF_DIR_MY_REPORTS) {
-  $error = false;
-  if (file_exists(DIR_FS_MODULES . $module . '/language/' . $_SESSION['language'] . '/reports/')) {
-    $read_path = DIR_FS_MODULES . $module . '/language/' . $_SESSION['language'] . '/reports/';
-  } elseif (file_exists(DIR_FS_MODULES . $module . '/language/en_us/reports/')) {
-    $read_path = DIR_FS_MODULES . $module . '/language/en_us/reports/';
-  } else {
-    return $error; // nothing to import
-  }
-  $files = scandir($read_path);
-  foreach ($files as $file) if (strtolower(substr($file, -4)) == '.xml') {
-    if (!ImportReport('', $file, $read_path, $save_path)) $error = true;
-  }
-  return $error;
+	if (file_exists(DIR_FS_MODULES . $module . '/language/' . $_SESSION['language'] . '/reports/')) {
+	    $read_path = DIR_FS_MODULES . $module . '/language/' . $_SESSION['language'] . '/reports/';
+	} elseif (file_exists(DIR_FS_MODULES . $module . '/language/en_us/reports/')) {
+	    $read_path = DIR_FS_MODULES . $module . '/language/en_us/reports/';
+	} else {
+	    return; // nothing to import
+	}
+	$files = scandir($read_path);
+	foreach ($files as $file) if (strtolower(substr($file, -4)) == '.xml') {
+	    	ImportReport('', $file, $read_path, $save_path);
+	}
 }
 
 /************************ install functions ******************************/
@@ -167,7 +165,7 @@ function install_build_co_config_file($company, $key, $value) {
     $lines[] = "define('" . $key . "','" . addslashes($value) . "');" . "\n";
   }
   $line = implode('', $lines);
-  if (!$handle = @fopen($filename, 'w')) throw new Exception(sprintf(MSG_ERROR_CANNOT_WRITE, $filename));
+  if (!$handle = @fopen($filename, 'w')) throw new \Exception(sprintf(MSG_ERROR_CANNOT_WRITE, $filename));
   fwrite($handle, $line);
   fclose($handle);
   return true;
@@ -176,12 +174,11 @@ function install_build_co_config_file($company, $key, $value) {
 /***************************** import/export functions ******************************/
 function load_module_xml($module) {
 	global $db;
-  $error = false;
-  $result = trim(file_get_contents(DIR_FS_MODULES . $module . '/' . $module . '.xml'));
-  if (!$output = xml_to_object($result)) return false;
-  // fix some special cases, multi elements with single entries convert to arrays
-  if (is_object($output->Module->Table)) $output->Module->Table = array($output->Module->Table);
-  return $output;
+  	$result = trim(file_get_contents(DIR_FS_MODULES . $module . '/' . $module . '.xml'));
+  	if (!$output = xml_to_object($result)) throw new Exception("xml file is empty for module");
+  	// fix some special cases, multi elements with single entries convert to arrays
+  	if (is_object($output->Module->Table)) $output->Module->Table = array($output->Module->Table);
+  	return $output;
 }
 
 function build_sample_xml($structure, $db_table) {

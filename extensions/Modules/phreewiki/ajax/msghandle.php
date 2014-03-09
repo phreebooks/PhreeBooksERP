@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreewiki/ajax/msghandle.php
 //
-$security_id =  validate_ajax_user();
+$security_id =  \core\classes\user::validate();
 /**************  include page specific files    *********************/
 include_once(DIR_WS_MODULES."phreewiki/functions/phreewiki.php");
 include_once(DIR_WS_MODULES."phreewiki/defaults.php");
@@ -121,10 +121,7 @@ switch ($_REQUEST['action']){
 		$body = $_REQUEST['rss'];
 
 		//check authorization
-		if ($security_id < 1) {
-			$return_result =  ERROR_NO_PERMISSION ;		//return error to display in displayMessage and make iframe idle
-			break;
-		}
+		\core\classes\user::validate_security($security_id, 1); // security check		
 		//save to file
 		$fhandle = fopen(DIR_FS_ADMIN."/modules/phreewiki/rss.xml",'w');
 		if( $fhandle===FALSE ) {
@@ -145,9 +142,7 @@ switch ($_REQUEST['action']){
 		$body = $_REQUEST['upload'];
 		
 		//check authorization
-		if ($security_id < 1) {
-			exit(ERROR_NO_PERMISSION );		//return error to display in displayMessage and make iframe idle
-		}
+		\core\classes\user::validate_security($security_id, 2); // security check		
 		//convert HTML to array form and insert into DB
 		//WARNING: everything will be overwritten so beware
 		$tiddler_array = tiddler_htmlToArray($body);
@@ -168,7 +163,5 @@ $xml .= xmlEntry("Message", $return_result );		//return error to display in disp
 
 
 echo createXmlHeader() . $xml . createXmlFooter();
-ob_end_flush();
-session_write_close();
 die;	
 ?>

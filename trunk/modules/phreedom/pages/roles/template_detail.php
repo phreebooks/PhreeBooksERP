@@ -46,18 +46,18 @@ echo $toolbar->build_toolbar();
     <td><?php echo TEXT_INACTIVE . ' ' . html_checkbox_field('inactive', '1', ($uInfo->inactive ? true : false)); ?></td>
    </tr>
    <tr>
-    <td><?php echo GEN_DEFAULT_STORE . ' ' . html_pull_down_menu('def_store_id',  gen_get_store_ids(), $error ? $_POST['def_store_id'] : $uInfo->def_store_id, ''); ?></td>
-    <td><?php echo GEN_DEF_CASH_ACCT . ' ' . html_pull_down_menu('def_cash_acct', gen_coa_pull_down(), $error ? $_POST['def_cash_acct'] : $uInfo->def_cash_acct, ''); ?></td>
+    <td><?php echo GEN_DEFAULT_STORE . ' ' . html_pull_down_menu('def_store_id',  gen_get_store_ids(), isset($_POST['def_store_id']) ? $_POST['def_store_id'] : $uInfo->def_store_id, ''); ?></td>
+    <td><?php echo GEN_DEF_CASH_ACCT . ' ' . html_pull_down_menu('def_cash_acct', gen_coa_pull_down(), isset($_POST['def_cash_acct']) ? $_POST['def_cash_acct'] : $uInfo->def_cash_acct, ''); ?></td>
     <td><?php echo '&nbsp;'; ?></td>
    </tr>
    <tr>
-    <td><?php echo GEN_RESTRICT_STORE . ' ' . html_checkbox_field('restrict_store', '1', (($error && $_POST['restrict_store']) || $uInfo->restrict_store) ? true : false); ?></td>
-    <td><?php echo GEN_DEF_AR_ACCT    . ' ' . html_pull_down_menu('def_ar_acct', gen_coa_pull_down(), $error ? $_POST['def_ar_acct'] : $uInfo->def_ar_acct, ''); ?></td>
+    <td><?php echo GEN_RESTRICT_STORE . ' ' . html_checkbox_field('restrict_store', '1', (( isset($_POST['restrict_store']) && $_POST['restrict_store']) || $uInfo->restrict_store) ? true : false); ?></td>
+    <td><?php echo GEN_DEF_AR_ACCT    . ' ' . html_pull_down_menu('def_ar_acct', gen_coa_pull_down(), isset($_POST['def_ar_acct']) ? $_POST['def_ar_acct'] : $uInfo->def_ar_acct, ''); ?></td>
     <td><?php echo '&nbsp;'; ?></td>
    </tr>
    <tr>
-    <td><?php echo GEN_RESTRICT_PERIOD . ' ' . html_checkbox_field('restrict_period', '1', (($error && $_POST['restrict_period']) || $uInfo->restrict_period) ? true : false); ?></td>
-    <td><?php echo GEN_DEF_AP_ACCT     . ' ' . html_pull_down_menu('def_ap_acct', gen_coa_pull_down(), $error ? $_POST['def_ap_acct'] : $uInfo->def_ap_acct, ''); ?></td>
+    <td><?php echo GEN_RESTRICT_PERIOD . ' ' . html_checkbox_field('restrict_period', '1', ((isset($_POST['restrict_period']) && $_POST['restrict_period']) || $uInfo->restrict_period) ? true : false); ?></td>
+    <td><?php echo GEN_DEF_AP_ACCT     . ' ' . html_pull_down_menu('def_ap_acct', gen_coa_pull_down(), isset($_POST['restrict_period']) ? $_POST['def_ap_acct'] : $uInfo->def_ap_acct, ''); ?></td>
     <td><?php echo '&nbsp;'; ?></td>
    </tr>
    </tbody>
@@ -107,12 +107,12 @@ foreach ($mainmenu as $key => $menu_heading) {
 		$checked = array();
 		if ($array['show_in_users_settings'] === false) {
 			return; // skip if menu only item
+		} elseif (isset($_POST['sID_' . $array['security_id']])) {
+			$checked[0] = false;
+			$checked[$_POST['sID_' . $array['security_id']]] = true;
 		} elseif (isset($settings[$array['security_id']])) {
 			$checked[0] = false;
 			$checked[$settings[$array['security_id']]] = true;
-		} elseif ($error) {
-			$checked[0] = false;
-			$checked[$_POST['sID_' . $array['security_id']]] = true;
 		} else {
 			$checked[0] = true;	// default to no access
 		}

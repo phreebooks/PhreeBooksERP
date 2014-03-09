@@ -282,7 +282,7 @@ config.formatters.push( {
 					panel.setAttribute("rendered","false");
 					w.nextMatch += endpos+3;
 					if (w.source.substr(w.nextMatch,1)=="\n") w.nextMatch++;
-					if (config.options.chkDebugLazySliderDefer) alert("deferred '"+title+"':\n\n"+panel.getAttribute("raw"));
+					if (config.options.chkDebugLazySliderDefer) $.messager.alert('error',"deferred '"+title+"':\n\n"+panel.getAttribute("raw"),'error');
 				}
 			}
 		}

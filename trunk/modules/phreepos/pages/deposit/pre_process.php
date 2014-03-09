@@ -44,7 +44,6 @@ gen_pull_language('phreebooks');
 gen_pull_language('contacts');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 /**************   page specific initialization  *************************/
-$error            = false;
 $post_success     = false;
 $default_dep_acct = JOURNAL_ID == 18 ? AR_DEF_DEPOSIT_ACCT : AP_DEF_DEPOSIT_ACCT;
 $order            = new \phreebooks\classes\banking;
@@ -112,15 +111,13 @@ switch ($_REQUEST['action']) {
 	switch (JOURNAL_ID) {
 	  case 18:
 	  	$pmt_meth = db_prepare_input($_POST['shipper_code']);
-	    $payment_method = "\payment\methods\\$pmt_meth\\$pmt_meth";
-	    $processor      = new $payment_method; 
-	    if ($processor->pre_confirmation_check()) $error = true;	
+	    $admin_classes['payment']->methods[$pmt_meth]->pre_confirmation_check();	
 		$pmt_amt  = $currencies->clean_value(db_prepare_input($_POST['pmt_' . $x]), $order->currencies_code) / $order->currencies_value;
 		$tot_paid += $pmt_amt;
 		$order->pmt_rows[] = array(
 		  'meth' => $pmt_meth,
 		  'pmt'  => $order->total_amount,
-		  'desc' => GEN_ADM_TOOLS_J18 . '-' . TEXT_TOTAL . ':' . $processor->payment_fields,
+		  'desc' => GEN_ADM_TOOLS_J18 . '-' . TEXT_TOTAL . ':' . $admin_classes['payment']->methods[$pmt_meth]->payment_fields,
 		  'f0'   => db_prepare_input($_POST[$pmt_meth . '_field_0']),
 		  'f1'   => db_prepare_input($_POST[$pmt_meth . '_field_1']),
 		  'f2'   => db_prepare_input($_POST[$pmt_meth . '_field_2']),
@@ -138,11 +135,11 @@ switch ($_REQUEST['action']) {
 	    break;
 	}
 	// error check input
-	if (!$order->period)                break;
-	if (!$order->bill_acct_id)          $error = $messageStack->add(sprintf(ERROR_NO_CONTACT_SELECTED, TEXT_LC_CUSTOMER, TEXT_LC_CUSTOMER, ORD_ADD_UPDATE), 'error');
-	if (!$order->item_rows[0]['total']) $error = $messageStack->add(GL_ERROR_NO_ITEMS, 'error');
+	if (!$order->period)                throw new \Exception("Period isn't set");
+	if (!$order->bill_acct_id)          throw new \Exception(sprintf(ERROR_NO_CONTACT_SELECTED, TEXT_LC_CUSTOMER, TEXT_LC_CUSTOMER, ORD_ADD_UPDATE));
+	if (!$order->item_rows[0]['total']) throw new \Exception(GL_ERROR_NO_ITEMS);
 	// post the receipt/payment
-	if (!$error && $post_success = $order->post_ordr($_REQUEST['action'])) {
+	if ($post_success = $order->post_ordr($_REQUEST['action'])) {
 	  $oID = $order->id; // save id for printing
 	  // now create a credit memo to show a credit on customers account
 	  $order                      = new \phreebooks\classes\orders();

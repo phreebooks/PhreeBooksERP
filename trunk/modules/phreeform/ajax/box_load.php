@@ -30,12 +30,7 @@ require_once(DIR_FS_MODULES . 'phreeform/pages/popup_build/box_html.php');
 $rowID = $_GET['rowID'];
 $rID   = $_GET['rID'];
 $type  = $_GET['type'] ? $_GET['type'] : '';
-if (!isset($_GET['rowID'])) {
-  	echo createXmlHeader() . xmlEntry('error', 'Row ID was not passed!') . createXmlFooter();
-  	ob_end_flush();
-	session_write_close();
-  	die;
-}
+if (!isset($_GET['rowID'])) throw new \Exception('Row ID was not passed!');
 
 if ($rID) $report = get_report_details($rID);
 $kFonts       = gen_build_pull_down($Fonts);

@@ -53,13 +53,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function upgrade() {
-	    global $db;
 	    parent::upgrade();
-		if (MODULE_PHREEHELP_STATUS < 3.0) {
-		  foreach ($this->tables as $table => $create_table_sql) {
-			if (!db_table_exists($table)) if (!$db->Execute($create_table_sql)) $error = true;
-		  }
-		}
 		write_configure(PHREEHELP_FORCE_RELOAD, '1');
 	}
 }

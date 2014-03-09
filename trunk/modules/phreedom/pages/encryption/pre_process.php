@@ -21,7 +21,6 @@ $security_level = \core\classes\user::validate(SECURITY_ID_ENCRYPTION);
 /**************  include page specific files    *********************/
 gen_pull_language($module, 'admin');
 /**************   page specific initialization  *************************/
-$error = false;
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/encryption/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
@@ -30,11 +29,8 @@ switch ($_REQUEST['action']) {
   case 'save':
     $enc_key = db_prepare_input($_POST['enc_key']);
     $enc_key_confirm = db_prepare_input($_POST['enc_key_confirm']);
-	if ($enc_key <> $enc_key_confirm) {
-      	throw new \Exception(ERROR_WRONG_ENCRYPT_KEY_MATCH);
-	} elseif ($enc_key) {
-		pw_validate_encrypt($enc_key);
-    }
+	if ($enc_key <> $enc_key_confirm) throw new \Exception(ERROR_WRONG_ENCRYPT_KEY_MATCH);
+	\core\classes\encryption::validate_password($enc_key, ENCRYPTION_VALUE);
 	$_SESSION['admin_encrypt'] = $enc_key;
     $messageStack->add(GEN_ENCRYPTION_KEY_SET,'success');
 	break;

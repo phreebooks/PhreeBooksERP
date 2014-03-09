@@ -142,17 +142,17 @@
 			echo '<tr class="' . ($odd?'odd':'even') .'" id ="row_id_'.$i.'" >';
 			echo '<td  width="5%">'.html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . INV_MSG_DELETE_VENDOR_ROW . '\')) removeVendorRow('.$i.');"').'</td>';
 			echo html_hidden_field('row_id_array[]', $purchaseRow['id']);
-			if(isset($cInfo->vendor_id) || $error ) {			echo '<td>'.html_pull_down_menu('vendor_id_array[]', gen_get_contact_array_by_type('v'), $purchaseRow['vendor_id']).'</td>';
+			if (isset($cInfo->vendor_id)) {			echo '<td>'.html_pull_down_menu('vendor_id_array[]', gen_get_contact_array_by_type('v'), $purchaseRow['vendor_id']).'</td>';
 			}else{ echo '<td></td>';}
-			if(isset($cInfo->description_purchase) || $error ) { echo '<td>'.html_textarea_field('description_purchase_array[]', 75, 2, $purchaseRow['description_purchase'], '', $reinsert_value = true).'</td>';
+			if (isset($cInfo->description_purchase)) { echo '<td>'.html_textarea_field('description_purchase_array[]', 75, 2, $purchaseRow['description_purchase'], '', $reinsert_value = true).'</td>';
 			}else{ echo '<td></td>';}
-			if(isset($cInfo->item_cost) || $error ){ 			echo '<td>'.html_input_field('item_cost_array[]', $currencies->precise($purchaseRow['item_cost']), 'onchange="what_to_update();" size="15" maxlength="20" style="text-align:right"', false).'</td>';
+			if (isset($cInfo->item_cost)){ 			echo '<td>'.html_input_field('item_cost_array[]', $currencies->precise($purchaseRow['item_cost']), 'onchange="what_to_update();" size="15" maxlength="20" style="text-align:right"', false).'</td>';
 			}else{ echo '<td></td>';}
-			if(isset($cInfo->item_cost) || $error ) {			echo '<td>'.html_input_field('purch_package_quantity_array[]', $purchaseRow['purch_package_quantity'], 'size="6" maxlength="5" style="text-align:right"').'</td>';
+			if (isset($cInfo->item_cost)) {			echo '<td>'.html_input_field('purch_package_quantity_array[]', $purchaseRow['purch_package_quantity'], 'size="6" maxlength="5" style="text-align:right"').'</td>';
 			}else{ echo '<td></td>';}
-			if(isset($cInfo->purch_taxable) || $error ){ 		echo '<td>'.html_pull_down_menu('purch_taxable_array[]', $purch_tax_rates, $purchaseRow['purch_taxable']).'</td>';
+			if (isset($cInfo->purch_taxable)){ 		echo '<td>'.html_pull_down_menu('purch_taxable_array[]', $purch_tax_rates, $purchaseRow['purch_taxable']).'</td>';
 			}else{ echo '<td></td>';}
-			if(isset($cInfo->price_sheet_v) || $error ) {		echo '<td>'.html_pull_down_menu('price_sheet_v_array[]', get_price_sheet_data('v'), $purchaseRow['price_sheet_v']).'</td>';
+			if (isset($cInfo->price_sheet_v)) {		echo '<td>'.html_pull_down_menu('price_sheet_v_array[]', get_price_sheet_data('v'), $purchaseRow['price_sheet_v']).'</td>';
 			}else{ echo '<td></td>';}
 			echo '</tr>';
 			$odd = !$odd;

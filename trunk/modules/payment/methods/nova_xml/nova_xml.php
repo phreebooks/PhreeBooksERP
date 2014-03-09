@@ -142,17 +142,12 @@ class nova_xml extends \payment\classes\payment {
   }
   /**
    * Evaluates the Credit Card Type for acceptance and the validity of the Credit Card Number & Expiration Date
-   *
+   * @throws Exception
    */
   	function pre_confirmation_check() {
-	    global $messageStack;
-
 		// if the card number has the blanked out middle number fields, it has been processed, show message that 
 		// 	the charges were not processed through the merchant gateway and continue posting payment.
-		if (strpos($this->field_1, '*') !== false) {
-    		$messageStack->add(MODULE_PAYMENT_CC_NO_DUPS, 'caution');
-			return false;
-		}
+		if (strpos($this->field_1, '*') !== false) throw new \Exception(MODULE_PAYMENT_CC_NO_DUPS);
 
     	$result = $this->validate();
     	switch ($result) {
@@ -177,7 +172,7 @@ class nova_xml extends \payment\classes\payment {
     global $order, $db, $messageStack;
 	// if the card number has the blanked out middle number fields, it has been processed, the message that 
 	// the charges were not processed were set in pre_confirmation_check, just return to continue without processing.
-	if (strpos($this->field_1, '*') !== false) return false;
+	if (strpos($this->field_1, '*') !== false) throw new Exception(MODULE_PAYMENT_CC_NO_DUPS);
 
     $order->info['cc_expires'] = $this->field_2 . substr($this->field_3, -2);
     $order->info['cc_owner']   = $this->field_0;

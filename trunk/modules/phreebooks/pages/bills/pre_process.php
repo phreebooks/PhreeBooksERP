@@ -49,7 +49,6 @@ if (!$period) { // bad post_date was submitted
 }
 $gl_acct_id        = ($_POST['gl_acct_id']) ? db_prepare_input($_POST['gl_acct_id']) : AP_PURCHASE_INVOICE_ACCOUNT;
 $post_success      = false;
-$error             = false;
 
 switch (JOURNAL_ID) {
   case 18:	// Cash Receipts Journal
@@ -78,96 +77,95 @@ if (file_exists($custom_path)) { include($custom_path); }
 switch ($_REQUEST['action']) {
   case 'save':
   case 'print':
-	\core\classes\user::validate_security($security_level, 2);
-  	// create and retrieve customer account (defaults also)
-	$order->bill_short_name     = db_prepare_input($_POST['search']);
-	$order->bill_acct_id        = db_prepare_input($_POST['bill_acct_id']);
-	$order->bill_address_id     = db_prepare_input($_POST['bill_address_id']);
-	$order->bill_primary_name   = $_POST['bill_primary_name'] <> GEN_PRIMARY_NAME ? db_prepare_input($_POST['bill_primary_name']) : '';
-	$order->bill_contact        = $_POST['bill_contact'] <> GEN_CONTACT ? db_prepare_input($_POST['bill_contact']) : '';
-	$order->bill_address1       = $_POST['bill_address1'] <> GEN_ADDRESS1 ? db_prepare_input($_POST['bill_address1']) : '';
-	$order->bill_address2       = $_POST['bill_address2'] <> GEN_ADDRESS2 ? db_prepare_input($_POST['bill_address2']) : '';
-	$order->bill_city_town      = $_POST['bill_city_town'] <> GEN_CITY_TOWN ? db_prepare_input($_POST['bill_city_town']) : '';
-	$order->bill_state_province = $_POST['bill_state_province'] <> GEN_STATE_PROVINCE ? db_prepare_input($_POST['bill_state_province']) : '';
-	$order->bill_postal_code    = $_POST['bill_postal_code'] <> GEN_POSTAL_CODE ? db_prepare_input($_POST['bill_postal_code']) : '';
-	$order->bill_country_code   = db_prepare_input($_POST['bill_country_code']);
-	$order->bill_email          = db_prepare_input($_POST['bill_email']);
-
-	// load journal main data
-	$order->id                  = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
-	$order->admin_id            = $_SESSION['admin_id'];
-	$order->rep_id              = db_prepare_input($_POST['rep_id']);
-	$order->journal_id          = JOURNAL_ID;
-	$order->post_date           = $post_date;
-	$order->period              = $period;
-	if (!$order->period) break;	// bad post_date was submitted
-	$order->store_id            = db_prepare_input($_POST['store_id']);
-	if ($order->store_id == '') $order->store_id = 0;
-	$order->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);	// PhreeBooks order/invoice ID
-	$order->shipper_code        = db_prepare_input($_POST['shipper_code']);  // store payment method in shipper_code field
-	$order->purch_order_id      = db_prepare_input($_POST['purch_order_id']);  // customer PO/Ref number
-	$order->description         = sprintf(TEXT_JID_ENTRY, constant('ORD_TEXT_' . JOURNAL_ID . '_' . strtoupper($type) . '_WINDOW_TITLE'));
-
-	$order->total_amount        = $currencies->clean_value(db_prepare_input($_POST['total']), DEFAULT_CURRENCY);
-	$order->gl_acct_id          = $gl_acct_id;
-	$order->gl_disc_acct_id     = db_prepare_input($_POST['gl_disc_acct_id']);
-	$order->payment_id          = db_prepare_input($_POST['payment_id']);
-	$order->save_payment        = isset($_POST['save_payment']) ? true : false;
-
-	// load item row data
-	$x = 1;
-	while (isset($_POST['id_' . $x])) { // while there are invoice rows to read in
-	  if (isset($_POST['pay_' . $x])) {
-		$order->item_rows[] = array(
-		  'id'      => db_prepare_input($_POST['id_' . $x]),
-		  'gl_type' => GL_TYPE,
-		  'amt'     => $currencies->clean_value(db_prepare_input($_POST['amt_' . $x])),
-		  'desc'    => db_prepare_input($_POST['desc_' . $x]),
-		  'dscnt'   => $currencies->clean_value(db_prepare_input($_POST['dscnt_' . $x])),
-		  'total'   => $currencies->clean_value(db_prepare_input($_POST['total_' . $x])),
-		  'inv'     => db_prepare_input($_POST['inv_' . $x]),
-		  'prcnt'   => db_prepare_input($_POST['prcnt_' . $x]),
-		  'early'   => db_prepare_input($_POST['early_' . $x]),
-		  'due'     => db_prepare_input($_POST['due_' . $x]),
-		  'pay'     => isset($_POST['pay_' . $x]) ? true : false,
-		  'acct'    => db_prepare_input($_POST['acct_' . $x]),
-		);
-	  }
-	  $x++;
+  	try{
+  		$db->transStart();
+		\core\classes\user::validate_security($security_level, 2);
+	  	// create and retrieve customer account (defaults also)
+		$order->bill_short_name     = db_prepare_input($_POST['search']);
+		$order->bill_acct_id        = db_prepare_input($_POST['bill_acct_id']);
+		$order->bill_address_id     = db_prepare_input($_POST['bill_address_id']);
+		$order->bill_primary_name   = $_POST['bill_primary_name'] <> GEN_PRIMARY_NAME ? db_prepare_input($_POST['bill_primary_name']) : '';
+		$order->bill_contact        = $_POST['bill_contact'] <> GEN_CONTACT ? db_prepare_input($_POST['bill_contact']) : '';
+		$order->bill_address1       = $_POST['bill_address1'] <> GEN_ADDRESS1 ? db_prepare_input($_POST['bill_address1']) : '';
+		$order->bill_address2       = $_POST['bill_address2'] <> GEN_ADDRESS2 ? db_prepare_input($_POST['bill_address2']) : '';
+		$order->bill_city_town      = $_POST['bill_city_town'] <> GEN_CITY_TOWN ? db_prepare_input($_POST['bill_city_town']) : '';
+		$order->bill_state_province = $_POST['bill_state_province'] <> GEN_STATE_PROVINCE ? db_prepare_input($_POST['bill_state_province']) : '';
+		$order->bill_postal_code    = $_POST['bill_postal_code'] <> GEN_POSTAL_CODE ? db_prepare_input($_POST['bill_postal_code']) : '';
+		$order->bill_country_code   = db_prepare_input($_POST['bill_country_code']);
+		$order->bill_email          = db_prepare_input($_POST['bill_email']);
+	
+		// load journal main data
+		$order->id                  = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
+		$order->admin_id            = $_SESSION['admin_id'];
+		$order->rep_id              = db_prepare_input($_POST['rep_id']);
+		$order->journal_id          = JOURNAL_ID;
+		$order->post_date           = $post_date;
+		$order->period              = $period;
+		if (!$order->period) break;	// bad post_date was submitted
+		$order->store_id            = db_prepare_input($_POST['store_id']);
+		if ($order->store_id == '') $order->store_id = 0;
+		$order->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);	// PhreeBooks order/invoice ID
+		$order->shipper_code        = db_prepare_input($_POST['shipper_code']);  // store payment method in shipper_code field
+		$order->purch_order_id      = db_prepare_input($_POST['purch_order_id']);  // customer PO/Ref number
+		$order->description         = sprintf(TEXT_JID_ENTRY, constant('ORD_TEXT_' . JOURNAL_ID . '_' . strtoupper($type) . '_WINDOW_TITLE'));
+	
+		$order->total_amount        = $currencies->clean_value(db_prepare_input($_POST['total']), DEFAULT_CURRENCY);
+		$order->gl_acct_id          = $gl_acct_id;
+		$order->gl_disc_acct_id     = db_prepare_input($_POST['gl_disc_acct_id']);
+		$order->payment_id          = db_prepare_input($_POST['payment_id']);
+		$order->save_payment        = isset($_POST['save_payment']) ? true : false;
+	
+		// load item row data
+		$x = 1;
+		while (isset($_POST['id_' . $x])) { // while there are invoice rows to read in
+		  if (isset($_POST['pay_' . $x])) {
+			$order->item_rows[] = array(
+			  'id'      => db_prepare_input($_POST['id_' . $x]),
+			  'gl_type' => GL_TYPE,
+			  'amt'     => $currencies->clean_value(db_prepare_input($_POST['amt_' . $x])),
+			  'desc'    => db_prepare_input($_POST['desc_' . $x]),
+			  'dscnt'   => $currencies->clean_value(db_prepare_input($_POST['dscnt_' . $x])),
+			  'total'   => $currencies->clean_value(db_prepare_input($_POST['total_' . $x])),
+			  'inv'     => db_prepare_input($_POST['inv_' . $x]),
+			  'prcnt'   => db_prepare_input($_POST['prcnt_' . $x]),
+			  'early'   => db_prepare_input($_POST['early_' . $x]),
+			  'due'     => db_prepare_input($_POST['due_' . $x]),
+			  'pay'     => isset($_POST['pay_' . $x]) ? true : false,
+			  'acct'    => db_prepare_input($_POST['acct_' . $x]),
+			);
+		  }
+		  $x++;
+		}
+	
+		// error check input
+		if (!$order->bill_acct_id) { // no account was selected, error
+		  $contact_type = $type=='c' ? TEXT_LC_CUSTOMER : TEXT_LC_VENDOR;
+		  throw new \Exception(sprintf(ERROR_NO_CONTACT_SELECTED, $contact_type, $contact_type, ORD_ADD_UPDATE));
+		}
+		if (!$order->item_rows) throw new \Exception(GL_ERROR_NO_ITEMS);
+		// check to make sure the payment method is valid
+		if (JOURNAL_ID == 18) $admin_classes['payment']->methods[$order->shipper_code]->pre_confirmation_check();	
+	
+	/* This has been commented out to allow customer refunds (negative invoices)
+		if ($order->total_amount < 0) throw new \Exception(TEXT_TOTAL_LESS_THAN_ZERO);
+	*/
+		// post the receipt/payment
+		$order->post_ordr($_REQUEST['action']);	// Post the order class to the db
+		if ($_REQUEST['action'] == 'save') {
+			gen_add_audit_log(AUDIT_LOG_DESC, $order->purchase_invoice_id, $order->total_amount);
+			gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
+		} // else print or print_update, fall through and load javascript to call form_popup and clear form
+		$print_record_id = $order->id; // save id for printing
+		$order  = new \phreebooks\classes\banking(); // reset all values
+		$db->transCommit();
+	} catch (Exception $e) { // else there was a post error, display and re-display form
+		$db->transRollback();
+	 	$messageStack->add($e->getMessage());
+	  	$order = new \core\classes\objectInfo($_POST);
+	  	$order->post_date = gen_db_date($_POST['post_date']); // fix the date to original format
+	  	$order->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
 	}
-
-	// error check input
-	if (!$order->bill_acct_id) { // no account was selected, error
-	  $contact_type = $type=='c' ? TEXT_LC_CUSTOMER : TEXT_LC_VENDOR;
-	  throw new \Exception(sprintf(ERROR_NO_CONTACT_SELECTED, $contact_type, $contact_type, ORD_ADD_UPDATE));
-	}
-	if (!$order->item_rows) throw new \Exception(GL_ERROR_NO_ITEMS);
-	// check to make sure the payment method is valid
-	if (JOURNAL_ID == 18) {	
-		$temp = "\payment\methods\\$order->shipper_code\\$order->shipper_code\\";
-	  	$processor = new $temp;
-	  	if ($processor->pre_confirmation_check()) $error = true;	
-	}
-
-/* This has been commented out to allow customer refunds (negative invoices)
-	if ($order->total_amount < 0) throw new \Exception(TEXT_TOTAL_LESS_THAN_ZERO);
-*/
-	// post the receipt/payment
-	if (!$error && $post_success = $order->post_ordr($_REQUEST['action'])) {	// Post the order class to the db
-	  if ($_REQUEST['action'] == 'save') {
-		gen_add_audit_log(AUDIT_LOG_DESC, $order->purchase_invoice_id, $order->total_amount);
-		if (DEBUG) $messageStack->write_debug();
-		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-	  } // else print or print_update, fall through and load javascript to call form_popup and clear form
-	  $print_record_id = $order->id; // save id for printing
-	  $order  = new \phreebooks\classes\banking(); // reset all values
-	} else { // else there was a post error, display and re-display form
-	  throw new \Exception(GL_ERROR_NO_POST);
-	  if (DEBUG) $messageStack->write_debug();
-	  $order = new \core\classes\objectInfo($_POST);
-	  $order->post_date = gen_db_date($_POST['post_date']); // fix the date to original format
-	  $order->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
-	}
+	if (DEBUG) $messageStack->write_debug();
 	break;
 
   case 'delete':

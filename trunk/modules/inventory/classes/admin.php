@@ -282,7 +282,7 @@ class admin extends \core\classes\admin {
   	function upgrade() {
     	global $db, $currencies;
     	parent::upgrade();
-    	if (MODULE_INVENTORY_STATUS < 3.1) {
+    	if (version_compare($this->status, '3.1', '<') ) {
 	  		$tab_map = array('0' => '0');
 	  		if(db_table_exists(DB_PREFIX . 'inventory_categories')){
 		  		$result = $db->Execute("select * from " . DB_PREFIX . 'inventory_categories');
@@ -313,12 +313,12 @@ class admin extends \core\classes\admin {
 	  		}
 	  		xtra_field_sync_list('inventory', TABLE_INVENTORY);
 		}
-    	if (MODULE_INVENTORY_STATUS < 3.2) {
+		if (version_compare($this->status, '3.2', '<') ) {
 	  		if (!db_field_exists(TABLE_PRICE_SHEETS, 'type')) $db->Execute("ALTER TABLE " . TABLE_PRICE_SHEETS . " ADD type char(1) NOT NULL default 'c' AFTER sheet_name");
 	  		if (!db_field_exists(TABLE_INVENTORY, 'price_sheet_v')) $db->Execute("ALTER TABLE " . TABLE_INVENTORY . " ADD price_sheet_v varchar(32) default NULL AFTER price_sheet");
 	  		xtra_field_sync_list('inventory', TABLE_INVENTORY);
 		}
-		if (MODULE_INVENTORY_STATUS < 3.6) {
+		if (version_compare($this->status, '3.6', '<') ) {
 			$db->Execute("ALTER TABLE " . TABLE_INVENTORY . " ADD INDEX ( `sku` )"); 
 			if (!db_field_exists(TABLE_INVENTORY, 'attachments')) $db->Execute("ALTER TABLE " . TABLE_INVENTORY . " ADD attachments text AFTER last_journal_date");
 			if (!db_field_exists(TABLE_INVENTORY, 'full_price_with_tax')) $db->Execute("ALTER TABLE " . TABLE_INVENTORY . " ADD full_price_with_tax FLOAT NOT NULL DEFAULT '0' AFTER full_price");
@@ -409,10 +409,10 @@ class admin extends \core\classes\admin {
 			}
 		  	mkdir(DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/attachments/', 0755, true);
 		}
-		if (MODULE_INVENTORY_STATUS < 3.7) {
+		if (version_compare($this->status, '3.7', '<') ) {
 			if (!db_field_exists(TABLE_INVENTORY_HISTORY, 'avg_cost')) $db->Execute("ALTER TABLE ".TABLE_INVENTORY_HISTORY." ADD avg_cost FLOAT NOT NULL DEFAULT '0' AFTER unit_cost");
 		}
-		if (MODULE_INVENTORY_STATUS < '3.7.1') {//@TODO: new 
+		if (version_compare($this->status, '3.7.1', '<') ) { 
 			$result = $db->Execute("select id, params from ".TABLE_EXTRA_FIELDS." where module_id = 'inventory' AND field_name = 'account_cost_of_sales'");
 			$temp = unserialize($result->fields['params']);
 			$temp['inventory_type'] = 'ai:ci:ds:ia:lb:ma:mb:mi:ms:ns:sa:sf:si:sr:sv';

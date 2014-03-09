@@ -26,7 +26,7 @@ if (PDF_APP == 'TCPDF') {
   require_once (DIR_FS_MODULES . 'phreeform/includes/fpdf/fpdf.php'); // FPDF class to generate reports
 }
 
-class PDF extends TCPDF {
+class report_generator extends TCPDF {
 	var $y0; // current y position
 	var $x0; // current x position
 	var $pageY; // y value of bottom of page less bottom margin

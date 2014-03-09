@@ -44,7 +44,6 @@ var text_gl_acct         = '<?php echo TEXT_GL_ACCOUNT; ?>';
 var text_sales_tax       = '<?php echo ORD_TAXABLE; ?>';
 var text_price_manager   = '<?php echo TEXT_PRICE_MANAGER; ?>';
 var text_acct_ID         = '<?php echo TEXT_GL_ACCOUNT; ?>';
-var post_error           = <?php echo $error ? "true;" : "false;"; ?>
 var default_inv_acct     = '<?php echo DEF_INV_GL_ACCT; ?>';
 var default_sales_tax    = '0';
 var default_GL_acct      = '<?php echo DEF_GL_ACCT; ?>';
@@ -114,7 +113,7 @@ function init() {
   document.getElementById('bill_to_select').style.visibility = 'hidden';
   document.getElementById('ship_to_search').innerHTML = '&nbsp;'; // turn off ship to id search
 <?php 
-  if ($error && isset($order->shipper_code)) {
+  if ($error && isset($order->shipper_code)) { //@todo
     $values = explode(':', $order->shipper_code);
     echo '  document.getElementById("ship_carrier").value = "' . $values[0] . '";' . chr(10);
     echo '  buildFreightDropdown();' . chr(10);
@@ -142,14 +141,14 @@ function init() {
   document.orders.elements['search'].focus();
 
 <?php 
-  if (!$error) echo 'DropShipView(document.orders);' . "\n";
-  if (!$error && $_REQUEST['action'] == 'print') {
+  if (!$error) echo 'DropShipView(document.orders);' . "\n"; //@todo
+  if (!$error && $_REQUEST['action'] == 'print') {//@todo
     echo '  force_clear = true;' . "\n";
 	echo '  ClearForm();' . "\n";
 	echo '  var printWin = window.open("index.php?module=phreeform&page=popup_gen&gID=' . POPUP_FORM_TYPE . '&date=a&xfld=journal_main.id&xcr=EQUAL&xmin=' . $order->id . '","popup_gen","width=700px,height=550px,resizable=1,scrollbars=1,top=150px,left=200px");' . "\n";
     echo '  printWin.focus();' . "\n";
   }
-  if (!$error && $_REQUEST['action'] == 'email') {
+  if (!$error && $_REQUEST['action'] == 'email') {//@todo
     echo '  force_clear = true;' . "\n";
 	echo '  ClearForm();' . "\n";
 	echo '  var printWin = window.open("index.php?module=phreebooks&page=popup_email&oID=' . $order->id . '","forms","width=500px,height=350px,resizable=1,scrollbars=1,top=150px,left=200px");' . "\n";

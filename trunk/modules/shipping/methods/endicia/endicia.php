@@ -593,7 +593,7 @@ class endicia extends \shipping\classes\shipping {
 // ***************************************************************************************************************
   function deleteLabel($tracking_number = '') { // only one at a time allowed
   	global $messageStack;
-	if (!$tracking_number) return SHIPPING_DELETE_ERROR;
+	if (!$tracking_number) throw new \Exception(SHIPPING_DELETE_ERROR);
   	$xml  = "<RefundRequest>\n";
   	$xml .= xmlEntry('AccountID', MODULE_SHIPPING_ENDICIA_ACCOUNT_NUMBER);
   	$xml .= xmlEntry('PassPhrase', MODULE_SHIPPING_ENDICIA_PASS_PHRASE);

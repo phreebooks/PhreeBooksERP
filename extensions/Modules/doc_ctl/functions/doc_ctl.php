@@ -39,8 +39,7 @@ function get_mime_image($ext, $type = 'default') {
 }
 
 /**
- * @todo make sure return isn't expected.
- * Enter description here ...
+ * this function will check if the file is uploaded correctly
  * @param string $filename
  * @throws Exception
  */

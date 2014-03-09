@@ -1420,7 +1420,10 @@ class journal {
 	$messageStack->debug("\n  Record ID: " . $this->id . " " . (($closed) ? "Closed Record ID: " : "Opened Record ID: ") . $id);
 	return;
   }
-
+  /**
+   * checks if the invoice nr is valid if allowed it will create a new one when empty  
+   * @throws Exception
+   */
   function validate_purchase_invoice_id() {
 	global $db, $messageStack;
 	$messageStack->debug("\n  Start validating purchase_invoice_id ... ");
@@ -1615,7 +1618,7 @@ class journal {
 	$post_date = $result->fields['post_date'];
 	$output = array();
 	$result = $db->Execute("select id, post_date, purchase_invoice_id, terminal_date from " . TABLE_JOURNAL_MAIN . " 
-	  where recur_id = " . $recur_id . " and post_date >= '" . $post_date . "' order by post_date");
+	  where recur_id = $recur_id and post_date >= '$post_date' order by post_date");
 	while (!$result->EOF) {
 	  $output[] = array(
 		'id'                  => $result->fields['id'],

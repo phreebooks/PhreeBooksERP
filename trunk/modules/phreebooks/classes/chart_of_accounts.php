@@ -26,7 +26,6 @@ class chart_of_accounts {
     public $title         = GL_POPUP_WINDOW_TITLE;
     public $extra_buttons = false;
     public $help_path     = '07.06.01';
-    public $error         = false;
     
     public function __construct(){
         foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
@@ -127,7 +126,7 @@ class chart_of_accounts {
 
   function build_form_html($action, $id = '') {
     global $db, $coa_types_list;
-    if ($action <> 'new' && $this->error == false) {
+    if ($action <> 'new') {
         $sql = "select * from " . $this->db_table . " where id = '" . $this->id . "'";
         $result = $db->Execute($sql);
         foreach ($result->fields as $key => $value) $this->$key = $value;
@@ -159,7 +158,7 @@ class chart_of_accounts {
 	$output .= '    <td>' . GL_INFO_PRIMARY_ACCT_ID . '</td>' . "\n";
 	$output .= '    <td>' . html_pull_down_menu('primary_acct_id', gen_coa_pull_down(SHOW_FULL_GL_NAMES, true, true, true), $this->primary_acct_id) . '</td>' . "\n";
     $output .= '  </tr>' . "\n";
-    if ($this->primary_acct_id == '' || $this->error == true){
+    if ($this->primary_acct_id == ''){
 	    $output .= '  <tr>' . "\n";
 	    $output .= '    <td>' . GL_INFO_ACCOUNT_TYPE . '</td>' . "\n";
 	    $output .= '    <td>' . html_pull_down_menu('account_type', $coa_types_list, $this->account_type) . '</td>' . "\n";

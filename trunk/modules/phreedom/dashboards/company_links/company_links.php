@@ -28,16 +28,16 @@ class company_links extends \core\classes\ctl_panel {
 	public $module_id 			= 'phreedom';
 	public  $version      		= '3.5'; 
 	
-  	function Install($column_id = 1, $row_id = 0) {
+  	function install($column_id = 1, $row_id = 0) {
   		global $db;
 		// fetch the pages params to copy to new install
 		$result = $db->Execute("select params from ".TABLE_USERS_PROFILES."
 	  	  where menu_id = '".$this->menu_id."' and dashboard_id = '".$this->id."'"); // just need one
 		$this->default_params = unserialize($result->fields['params']);
-		parent::Install($column_id, $row_id);
+		parent::install($column_id, $row_id);
   	}
 
-  	function Output($params) {
+  	function output($params) {
 		global $db;
 		$contents = '';
 		$control  = '';
@@ -73,7 +73,7 @@ class company_links extends \core\classes\ctl_panel {
 		return $this->build_div('', $contents, $control);
   	}
 
-	function Update() {
+	function update() {
 		global $db;
 		$my_title  = db_prepare_input($_POST['company_links_field_0']);
 		$my_url    = db_prepare_input($_POST['company_links_field_1']);

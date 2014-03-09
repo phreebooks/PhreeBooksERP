@@ -23,7 +23,6 @@ class tax_auths {
     public $db_table    = TABLE_TAX_AUTH;
     public $help_path   = '07.08.03.01';
     public $type        = 'c'; // choices are c for customers and v for vendors
-    public $error       = false;
     
     public function __construct(){
         $this->security_id = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
@@ -107,7 +106,7 @@ class tax_auths {
 
   function build_form_html($action, $id = '') {
     global $db;
-    if ($action <> 'new' && $this->error == false) {
+    if ($action <> 'new') {
         $sql = "select description_short, description_long, account_id, vendor_id, tax_rate 
 	       from " . $this->db_table . " where tax_auth_id = " . $id;
         $result = $db->Execute($sql);

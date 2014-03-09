@@ -29,10 +29,10 @@ class po_status extends \core\classes\ctl_panel {
 	public $default_params 		= array('num_rows'=> 0, 'order' => 'asc', 'limit' => 1);
 	public $module_id 			= 'phreebooks';
 
-	function Output($params) {
+	function output($params) {
 		global $db, $currencies;
 		if(count($params) != $this->size_params){ //upgrading
-			$params = $this->Upgrade($params);
+			$params = $this->upgrade($params);
 		}
 		$list_length = array();
 		$contents = '';
@@ -86,7 +86,7 @@ class po_status extends \core\classes\ctl_panel {
 	  	return $this->build_div('', $contents, $control);
 	}
 
-	function Update() {
+	function update() {
 		if(count($this->params) == 0){
 			$this->params = array(
 			  'num_rows'=> db_prepare_input($_POST['po_status_field_0']),
@@ -94,7 +94,7 @@ class po_status extends \core\classes\ctl_panel {
 			  'limit'   => db_prepare_input($_POST['po_status_field_2']),
 			);
 		}
-		parent::Update();
+		parent::update();
 	}
 }
 ?>

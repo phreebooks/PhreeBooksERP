@@ -80,33 +80,33 @@ class admin extends \core\classes\admin {
 	function upgrade() {
 	    global $db;
 	    parent::upgrade();
-	    if (MODULE_RMA_STATUS < 3.1) {
-		  if (db_field_exists(TABLE_CURRENT_STATUS, 'next_rma_desc')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_rma_desc");
+	    if (version_compare($this->status, '3.13', '<') ) {
+		  	if (db_field_exists(TABLE_CURRENT_STATUS, 'next_rma_desc')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_rma_desc");
 		}
-	    if (MODULE_RMA_STATUS < 3.3) {
-		  if (!db_field_exists(TABLE_RMA, 'attachments'))       $db->Execute("ALTER TABLE " . TABLE_RMA . " ADD attachments TEXT DEFAULT NULL AFTER closed_date");
-		  if (!db_field_exists(TABLE_RMA, 'contact_id'))        $db->Execute("ALTER TABLE " . TABLE_RMA . " ADD contact_id VARCHAR(32) DEFAULT NULL AFTER caller_email");
-		  if (!db_field_exists(TABLE_RMA, 'contact_name'))      $db->Execute("ALTER TABLE " . TABLE_RMA . " ADD contact_name VARCHAR(48) DEFAULT NULL AFTER contact_id");
-		  if (!db_field_exists(TABLE_RMA, 'purch_order_id'))    $db->Execute("ALTER TABLE " . TABLE_RMA . " ADD purch_order_id VARCHAR(24) DEFAULT NULL AFTER purchase_invoice_id");
-		  if (!db_field_exists(TABLE_RMA, 'receive_details'))   $db->Execute("ALTER TABLE " . TABLE_RMA . " ADD receive_details TEXT DEFAULT NULL AFTER receive_notes");
-		  if (!db_field_exists(TABLE_RMA, 'close_notes'))       $db->Execute("ALTER TABLE " . TABLE_RMA . " ADD close_notes VARCHAR(255) DEFAULT NULL AFTER receive_details");
-		  if (!db_field_exists(TABLE_RMA, 'close_details'))     $db->Execute("ALTER TABLE " . TABLE_RMA . " ADD close_details TEXT DEFAULT NULL AFTER close_notes");
-		  if (!db_field_exists(TABLE_RMA, 'invoice_date'))      $db->Execute("ALTER TABLE " . TABLE_RMA . " ADD invoice_date DATE NOT NULL DEFAULT '0000-00-00' AFTER creation_date");
-		  $result = $db->Execute("select * from " . DB_PREFIX . 'rma_module_item');
-		  $output = array();
-		  while (!$result->EOF) {
-		  	$output[$result->fields['ref_id']][] = array(
-		  	  'sku'    => $result->fields['sku'],
-		  	  'qty'    => $result->fields['qty'],
-		  	  'notes'  => $result->fields['item_notes'],
-		  	  'action' => $result->fields['item_action'],
-		  	);
-		  	$result->MoveNext();
-		  }
-		  if (sizeof($output > 0)) foreach ($output as $key => $value) {
-		  	db_perform(TABLE_RMA, array('close_details'=>serialize($value)), 'update', 'id = '.$key);
-		  }
-		  if (db_table_exists(DB_PREFIX . 'rma_module_item')) $db->Execute("drop table ".DB_PREFIX.'rma_module_item');
+		if (version_compare($this->status, '3.3', '<') ) {
+		  	if (!db_field_exists(TABLE_RMA, 'attachments'))       $db->Execute("ALTER TABLE " . TABLE_RMA . " ADD attachments TEXT DEFAULT NULL AFTER closed_date");
+		  	if (!db_field_exists(TABLE_RMA, 'contact_id'))        $db->Execute("ALTER TABLE " . TABLE_RMA . " ADD contact_id VARCHAR(32) DEFAULT NULL AFTER caller_email");
+		  	if (!db_field_exists(TABLE_RMA, 'contact_name'))      $db->Execute("ALTER TABLE " . TABLE_RMA . " ADD contact_name VARCHAR(48) DEFAULT NULL AFTER contact_id");
+		  	if (!db_field_exists(TABLE_RMA, 'purch_order_id'))    $db->Execute("ALTER TABLE " . TABLE_RMA . " ADD purch_order_id VARCHAR(24) DEFAULT NULL AFTER purchase_invoice_id");
+		  	if (!db_field_exists(TABLE_RMA, 'receive_details'))   $db->Execute("ALTER TABLE " . TABLE_RMA . " ADD receive_details TEXT DEFAULT NULL AFTER receive_notes");
+		  	if (!db_field_exists(TABLE_RMA, 'close_notes'))       $db->Execute("ALTER TABLE " . TABLE_RMA . " ADD close_notes VARCHAR(255) DEFAULT NULL AFTER receive_details");
+		  	if (!db_field_exists(TABLE_RMA, 'close_details'))     $db->Execute("ALTER TABLE " . TABLE_RMA . " ADD close_details TEXT DEFAULT NULL AFTER close_notes");
+		  	if (!db_field_exists(TABLE_RMA, 'invoice_date'))      $db->Execute("ALTER TABLE " . TABLE_RMA . " ADD invoice_date DATE NOT NULL DEFAULT '0000-00-00' AFTER creation_date");
+		  	$result = $db->Execute("select * from " . DB_PREFIX . 'rma_module_item');
+		  	$output = array();
+		  	while (!$result->EOF) {
+			  	$output[$result->fields['ref_id']][] = array(
+			  	  'sku'    => $result->fields['sku'],
+			  	  'qty'    => $result->fields['qty'],
+			  	  'notes'  => $result->fields['item_notes'],
+			  	  'action' => $result->fields['item_action'],
+			  	);
+			  	$result->MoveNext();
+		  	}
+		  	if (sizeof($output > 0)) foreach ($output as $key => $value) {
+		  		db_perform(TABLE_RMA, array('close_details'=>serialize($value)), 'update', 'id = '.$key);
+		  	}
+		  	if (db_table_exists(DB_PREFIX . 'rma_module_item')) $db->Execute("drop table ".DB_PREFIX.'rma_module_item');
 	    }
 	}
 

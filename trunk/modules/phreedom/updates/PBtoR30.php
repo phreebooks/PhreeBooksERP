@@ -94,19 +94,9 @@ foreach ($admin_classes as $key => $class) { // load the configuration files to 
 }
 
 // reload pages array since it doesn't exist at the start of the update
-global $loaded_modules;
-$loaded_modules = array();
-$dirs = scandir(DIR_FS_MODULES);
-foreach ($dirs as $dir) { // first pull all module language files, loaded or not
-  if ($dir == '.' || $dir == '..') continue;
-  if (is_dir(DIR_FS_MODULES . $dir)) gen_pull_language($dir, 'menu'); 
-}
-foreach ($dirs as $dir) {
-  if ($dir == '.' || $dir == '..') continue;
-  if (defined('MODULE_' . strtoupper($dir) . '_STATUS')) { // module is loaded
-    $loaded_modules[] = $dir;
-    require_once(DIR_FS_MODULES . $dir . '/config.php');
-  }
+foreach ($admin_classes as $key => $class) { 
+	gen_pull_language($key, 'menu');
+	if ($class->installed ) require_once (DIR_FS_MODULES . $key . '/config.php');
 }
 
 write_configure('DATE_FORMAT',     defined('DATE_FORMAT')      ? DATE_FORMAT      : 'm/d/Y');

@@ -119,20 +119,20 @@ class admin extends \core\classes\admin {
 	function upgrade() {
 	    global $db;
 	    parent::upgrade();
-	    if (MODULE_WORK_ORDERS_STATUS < '3.1') {
-		  if (!db_field_exists(TABLE_WO_TASK, 'erp_entry')) {
-		    $db->Execute("ALTER TABLE " . TABLE_WO_TASK . " ADD erp_entry ENUM('0', '1') NOT NULL DEFAULT '0'");
-		    $db->Execute("ALTER TABLE " . TABLE_WO_MAIN . " ADD allocate ENUM('0', '1') NOT NULL DEFAULT '0' AFTER description");
-		    $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_wo_num VARCHAR(16)  NOT NULL DEFAULT 'WO0001';");
-		    $db->Execute("ALTER TABLE " . TABLE_WO_JOURNAL_MAIN . " ADD wo_num VARCHAR(16) NOT NULL DEFAULT 'WO-00001' AFTER id");
-			$result = $db->Execute("select id from " . TABLE_WO_JOURNAL_MAIN);
-			while(!$result->EOF) {
-			  $id = $result->fields['id'];
-			  $db->Execute("update " . TABLE_WO_JOURNAL_MAIN . " set wo_num = 'WO-" . str_pad($id, 5, '0', STR_PAD_LEFT) . "' where id = " . $id);
-			  $result->MoveNext();
+	    if (version_compare($this->status, '3.1', '<') ) {
+			if (!db_field_exists(TABLE_WO_TASK, 'erp_entry')) {
+			    $db->Execute("ALTER TABLE " . TABLE_WO_TASK . " ADD erp_entry ENUM('0', '1') NOT NULL DEFAULT '0'");
+			    $db->Execute("ALTER TABLE " . TABLE_WO_MAIN . " ADD allocate ENUM('0', '1') NOT NULL DEFAULT '0' AFTER description");
+			    $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_wo_num VARCHAR(16)  NOT NULL DEFAULT 'WO0001';");
+			    $db->Execute("ALTER TABLE " . TABLE_WO_JOURNAL_MAIN . " ADD wo_num VARCHAR(16) NOT NULL DEFAULT 'WO-00001' AFTER id");
+				$result = $db->Execute("select id from " . TABLE_WO_JOURNAL_MAIN);
+				while(!$result->EOF) {
+					$id = $result->fields['id'];
+				  	$db->Execute("update " . TABLE_WO_JOURNAL_MAIN . " set wo_num = 'WO-" . str_pad($id, 5, '0', STR_PAD_LEFT) . "' where id = " . $id);
+				  	$result->MoveNext();
+				}
+				$db->Execute("update " . TABLE_CURRENT_STATUS . " set next_wo_num = 'WO-" . str_pad($id+1, 5, '0', STR_PAD_LEFT) . "'");
 			}
-			$db->Execute("update " . TABLE_CURRENT_STATUS . " set next_wo_num = 'WO-" . str_pad($id+1, 5, '0', STR_PAD_LEFT) . "'");
-		  }
 		} 
 	}
 
