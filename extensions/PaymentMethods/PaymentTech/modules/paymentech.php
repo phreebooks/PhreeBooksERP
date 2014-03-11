@@ -213,10 +213,7 @@ class paymentech {
 
 	// if the card number has the blanked out middle number fields, it has been processed, show message that 
 	// the charges were not processed through the merchant gateway and continue posting payment.
-	if (strpos($_POST['paymentech_field_1'],'*') !== false) {
-    	$messageStack->add(MODULE_PAYMENT_PAYMENTECH_NO_DUPS, 'caution');
-		return false;
-	}
+	if (strpos($_POST['paymentech_field_1'],'*') !== false) throw new \core\classes\userException(MODULE_PAYMENT_PAYMENTECH_NO_DUPS);
 
     include(DIR_FS_MODULES . 'general/classes/cc_validation.php');
 
@@ -224,23 +221,20 @@ class paymentech {
     $result = $cc_validation->validate($_POST['paymentech_field_1'], $_POST['paymentech_field_2'], $_POST['paymentech_field_3'], $_POST['paymentech_field_4']);
     $error = '';
     switch ($result) {
-      case -1:
-      $error = sprintf(TEXT_CCVAL_ERROR_UNKNOWN_CARD, substr($cc_validation->cc_number, 0, 4));
-      break;
-      case -2:
-      case -3:
-      case -4:
-      $error = TEXT_CCVAL_ERROR_INVALID_DATE;
-      break;
-      case false:
-      $error = TEXT_CCVAL_ERROR_INVALID_NUMBER;
-      break;
+      	case -1:
+      		$error = sprintf(TEXT_CCVAL_ERROR_UNKNOWN_CARD, substr($cc_validation->cc_number, 0, 4));
+      		break;
+	    case -2:
+	    case -3:
+	    case -4:
+	      $error = TEXT_CCVAL_ERROR_INVALID_DATE;
+	      break;
+	    case false:
+	      $error = TEXT_CCVAL_ERROR_INVALID_NUMBER;
+	      break;
     }
 
-    if ( ($result == false) || ($result < 1) ) {
-      $messageStack->add($error . '<!-- ['.$this->code.'] -->', 'error');
-      return true;
-    }
+    if ( ($result == false) || ($result < 1) ) throw new \core\classes\userException($error . '<!-- ['.$this->code.'] -->');
 
     $this->cc_card_type = $cc_validation->cc_type;
     $this->cc_card_number = $cc_validation->cc_number;
@@ -258,9 +252,7 @@ class paymentech {
 
 	// if the card number has the blanked out middle number fields, it has been processed, the message that 
 	// the charges were not processed were set in pre_confirmation_check, just return to continue without processing.
-	if (strpos($_POST['paymentech_field_1'], '*') !== false) {
-		return false;
-	}
+	if (strpos($_POST['paymentech_field_1'], '*') !== false)  throw new \core\classes\userException(MODULE_PAYMENT_PAYMENTECH_NO_DUPS);
 
     $order->info['cc_expires'] = $_POST['paymentech_field_2'] . $_POST['paymentech_field_3'];
     $order->info['cc_owner'] = $_POST['paymentech_field_0'];
@@ -413,9 +405,7 @@ class paymentech {
 /* DELETE ME */ return true; // force a fail to not post
 		    return false;
 		} else {
-			
-			$messageStack->add(sprintf(MODULE_PAYMENT_PAYMENTECH_TEXT_DECLINED_MESSAGE, $results['StatusMsg']), 'error');
-			return true;
+			throw new \core\classes\userException(sprintf(MODULE_PAYMENT_PAYMENTECH_TEXT_DECLINED_MESSAGE, $results['StatusMsg']));
 		}
 	}
 	//gateway test failed

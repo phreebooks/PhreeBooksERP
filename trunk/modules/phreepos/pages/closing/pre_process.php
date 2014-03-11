@@ -133,14 +133,14 @@ switch ($_REQUEST['action']) {
 		  'statement_balance' => $statement_balance,
 		  'cleared_items'     => serialize(array_merge($cleared_items, $current_cleard_items)),
 		);
-		$sql = "select id from " . TABLE_RECONCILIATION . " where period = " . $period . " and gl_account = '" . $tills->gl_acct_id . "'";
+		$sql = "select id from " . TABLE_RECONCILIATION . " where period = $period and gl_account = '{$tills->gl_acct_id}'";
 		$result = $db->Execute($sql);
 		if ($result->RecordCount() == 0) {
 			$sql_data_array['period']     = $period;
 			$sql_data_array['gl_account'] = $tills->gl_acct_id;
 			db_perform(TABLE_RECONCILIATION, $sql_data_array, 'insert');
 		} else {
-			db_perform(TABLE_RECONCILIATION, $sql_data_array, 'update', "period = " . $period . " and gl_account = '" . $tills->gl_acct_id . "'");
+			db_perform(TABLE_RECONCILIATION, $sql_data_array, 'update', "period = $period and gl_account = '{$tills->gl_acct_id}'");
 		}
 		// set reconciled flag to period for all records that were checked
 		$mains = array();

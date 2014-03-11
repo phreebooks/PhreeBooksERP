@@ -73,8 +73,9 @@ class sku_pricer {
 	$results = preg_split("/,(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))/", trim($str));
 	return preg_replace("/^\"(.*)\"$/", "$1", $results);
   }
-  function __destruct()
-  { //print_r($this);
+  
+  function __destruct() { 
+  	//print_r($this);
   } 
 }
 

@@ -88,25 +88,14 @@ class ups extends \shipping\classes\shipping {
 
   function quote($pkg) {
 	global $messageStack;
-	if ($pkg->pkg_weight == 0) {
-	  $messageStack->add(SHIPPING_ERROR_WEIGHT_ZERO, 'error');
-	  return false;
-	}
-	if (!$pkg->split_large_shipments && $pkg->pkg_weight > 150) {
-	  $messageStack->add(SHIPPING_UPS_ERROR_WEIGHT_150, 'caution');
-	  return false;
-	}
-	if ($pkg->ship_to_postal_code == '') {
-	  $messageStack->add(SHIPPING_UPS_ERROR_POSTAL_CODE, 'error');
-	  return false;
-	}
+	if ($pkg->pkg_weight == 0) throw new \core\classes\userException(SHIPPING_ERROR_WEIGHT_ZERO);
+	if (!$pkg->split_large_shipments && $pkg->pkg_weight > 150) throw new \core\classes\userException(SHIPPING_UPS_ERROR_WEIGHT_150);
+	if ($pkg->ship_to_postal_code == '') throw new \core\classes\userException(SHIPPING_UPS_ERROR_POSTAL_CODE);
 	$status = $this->getUPSrates($pkg);
 	if ($status['result'] == 'error') {
-	  $messageStack->add(SHIPPING_UPS_RATE_ERROR . $status['message'], 'error');
-	  return false;
+		throw new \core\classes\userException(SHIPPING_UPS_RATE_ERROR . $status['message']);
 	} elseif ($status['result'] == 'CityMatch') {
-	  $messageStack->add(SHIPPING_UPS_RATE_CITY_MATCH, 'error');
-	  return false;
+	  	throw new \core\classes\userException(SHIPPING_UPS_RATE_CITY_MATCH);
 	}
 	return $status;
   }
@@ -356,10 +345,7 @@ class ups extends \shipping\classes\shipping {
 		$arrRates = array();	// Initialize the Rate Output array
 
 		$this->package = $pkg->split_shipment($pkg);
-		if (!$this->package) {
-			$messageStack->add(SHIPPING_UPS_PACKAGE_ERROR . $pkg->pkg_weight, 'error');
-			return false;
-		}
+		if (!$this->package) throw new \core\classes\userException(SHIPPING_UPS_PACKAGE_ERROR . $pkg->pkg_weight);
 		if ($shipping_defaults['TnTEnable'] && gen_get_country_iso_2_from_3($pkg->ship_to_country_code) == 'US') {
 			// Use UPS time in transit to get shipment time
 			$strXML = $this->FormatTnTRequest();
@@ -378,8 +364,7 @@ class ups extends \shipping\classes\shipping {
 				$XMLErrorType = GetNodeData($ResponseXML, $XMLPath);
 				$XMLPath = 'TimeInTransitResponse:Response:Error:ErrorDescription';
 				$XMLErrorDesc = GetNodeData($ResponseXML, $XMLPath);
-				$messageStack->add(SHIPPING_UPS_TNT_ERROR . $XMLErrorType . ' - ' . $XMLErrorDesc,'error');
-				return false;
+				throw new \core\classes\userException((SHIPPING_UPS_TNT_ERROR . $XMLErrorType . ' - ' . $XMLErrorDesc);
 			}
 
 			// See if service list returned or candidate city list is returned.
@@ -426,10 +411,7 @@ class ups extends \shipping\classes\shipping {
 		$SubmitXML = GetXMLString($strXML, $url, "POST");
 //echo 'Ship Request response string = ' . htmlspecialchars($SubmitXML['xmlString']) . '<br />';
 		// Check for XML request errors
-		if ($SubmitXML['result']=='error') {
-			$messageStack->add(SHIPPING_UPS_CURL_ERROR . $SubmitXML['message'], 'error');
-			return false;
-		}
+		if ($SubmitXML['result']=='error') throw new \core\classes\userException(SHIPPING_UPS_CURL_ERROR . $SubmitXML['message']);
 		$ResponseXML = $SubmitXML['xmlString'];
 		// Check for errors returned from UPS
 		$XMLPath = 'RatingServiceSelectionResponse:Response:ResponseStatusCode';
@@ -441,8 +423,7 @@ class ups extends \shipping\classes\shipping {
 			$XMLErrorType = GetNodeData($ResponseXML, $XMLPath);
 			$XMLPath = 'RatingServiceSelectionResponse:Response:Error:ErrorDescription';
 			$XMLErrorDesc = GetNodeData($ResponseXML, $XMLPath);
-			$messageStack->add(SHIPPING_UPS_RATE_ERROR . $XMLErrorType . ' - ' . $XMLErrorDesc,'error');
-			return false;
+			throw new \core\classes\userException(SHIPPING_UPS_RATE_ERROR . $XMLErrorType . ' - ' . $XMLErrorDesc);
 		}
 
 		// Fetch the UPS Rates
@@ -548,8 +529,8 @@ class ups extends \shipping\classes\shipping {
 		$results = GetPackageArray($ResponseXML, $Container, $TagsToFind);
 
 		$returnArray = array();
-		if (sizeof($results) > 0) {
-		  foreach ($results as $label) {
+		if (sizeof($results) == 0) throw new \core\classes\userException("Error - No label found in return string.");
+		foreach ($results as $label) {
 		    $returnArray[] = $ups_results + array('tracking' => $label['tracking']);
 			$date = explode('-', $sInfo->ship_date); // date format YYYY-MM-DD
 			$file_path = DIR_FS_MY_FILES . $_SESSION['company'] . '/shipping/labels/' . $this->id . '/' . $date[0] . '/' . $date[1] . '/' . $date[2] . '/';
@@ -563,16 +544,12 @@ class ups extends \shipping\classes\shipping {
 				$output_label = base64_decode($label['graphic_image']);
 				$file_name = $label['tracking'] . '.gif'; // plain paper
 			}
-			if (!$handle = fopen($file_path . $file_name, 'w')) throw new \Exception("Cannot open file ($file_path$file_name)");
-			if (fwrite($handle, $output_label) === false) throw new \Exception("Cannot write to file ($file_path$file_name");
+			if (!$handle = fopen($file_path . $file_name, 'w')) throw new \Exception("Cannot open file ($file_path $file_name)");
+			if (fwrite($handle, $output_label) === false) throw new \Exception("Cannot write to file ($file_path $file_name");
 			$this->labelFilePath = $file_path . $file_name;
 			fclose($handle);
-		  }
-          $messageStack->add('Successfully retrieved the UPS shipping label. Tracking # ' . $ups_results[$key]['tracking'],'success');
-		} else {
-			throw new \Exception("Error - No label found in return string.");
-			return false;				
 		}
+        $messageStack->add('Successfully retrieved the UPS shipping label. Tracking # ' . $ups_results[$key]['tracking'],'success');
 		if (DEBUG) $messageStack->write_debug();
 		return $returnArray;
 	}
@@ -706,7 +683,7 @@ class ups extends \shipping\classes\shipping {
 				$sBody .= $crlf . '</BillThirdParty>';
 				break;
 			case '3': // COD - NOT allowed for UPS
-				return false;
+				throw new \core\classes\userException("Error - COD - NOT allowed for UPS.");;
 		}
 		$sBody .= $crlf . '</PaymentInformation>';
 
@@ -890,10 +867,7 @@ class ups extends \shipping\classes\shipping {
 // ***************************************************************************************************************
 	function deleteLabel($shipment_id = '') {
 		global $db, $messageStack;
-		if (!$shipment_id) {
-			$messageStack->add('Cannot delete shipment, shipment ID was not provided!','error');
-			return false;
-		}
+		if (!$shipment_id) throw new \core\classes\userException("Cannot delete shipment, shipment ID was not provided!");
 
 		if ($this->tracking_number) {
 			$tracking_number = $this->tracking_number;
@@ -910,18 +884,15 @@ class ups extends \shipping\classes\shipping {
 		$this->labelDelResponse = $SubmitXML['xmlString'];
 //echo 'Delete Request response string = ' . htmlspecialchars($SubmitXML['xmlString']) . '<br />';
 		// Check for XML request errors
-		if ($SubmitXML['result'] == 'error') {
-			$messageStack->add(SHIPPING_UPS_CURL_ERROR . $SubmitXML['message'], 'error');
-			return false;
-		}
+		if ($SubmitXML['result'] == 'error') throw new \core\classes\userException(SHIPPING_UPS_CURL_ERROR . $SubmitXML['message']);
+		
 		$ResponseXML = $SubmitXML['xmlString'];
 		$XMLFail = GetNodeData($ResponseXML, 'VoidShipmentResponse:Response:Error:ErrorCode'); // Check for errors returned from UPS
 		$XMLWarn = GetNodeData($ResponseXML, 'VoidShipmentResponse:Response:Error:ErrorSeverity'); // Check for warnings returned from UPS (process continues)
 		if ($XMLFail && $XMLWarn == 'Warning') { // soft error, report it and continue
 			$messageStack->add('UPS Label Delete Warning # ' . $XMLFail . ' - ' . GetNodeData($ResponseXML, 'VoidShipmentResponse:Response:Error:ErrorDescription'),'caution');
 		} elseif ($XMLFail && $XMLWarn <> 'Warning') { // hard error - return with bad news
-			$messageStack->add('UPS Label Delete Error # ' . $XMLFail . ' - ' . GetNodeData($ResponseXML, 'VoidShipmentResponse:Response:Error:ErrorDescription'),'error');
-			return false;
+			throw new \core\classes\userException("UPS Label Delete Error # $XMLFai - ". GetNodeData($ResponseXML, 'VoidShipmentResponse:Response:Error:ErrorDescription'));
 		}
 
 		// delete the label file

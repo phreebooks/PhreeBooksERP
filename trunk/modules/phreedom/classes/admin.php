@@ -227,7 +227,7 @@ class admin extends \core\classes\admin {
       		fclose($connected);
       		return true; 
     	} else {
-	  		if (!$silent) throw new \Exception('You are not connected to the internet. Error:' . $errno . ' - ' . $errstr);
+	  		if (!$silent) throw new \core\classes\userException("You are not connected to the internet. Error: $errno -$errstr");
 	  		return false;
 		}   
   	}

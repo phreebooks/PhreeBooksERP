@@ -253,18 +253,9 @@ class endicia extends \shipping\classes\shipping {
 // ***************************************************************************************************************
   function quote($pkg) { // assumes only one package at a time
   	global $messageStack, $currencies;
-	if ($pkg->pkg_weight == 0) {
-	  $messageStack->add(SHIPPING_ERROR_WEIGHT_ZERO, 'error');
-	  return false;
-	}
-	if ($pkg->ship_to_postal_code == '') {
-	  $messageStack->add(SHIPPING_ENDICIA_ERROR_POSTAL_CODE, 'error');
-	  return false;
-	}
-	if ($pkg->pkg_weight > ENDICIA_MAX_SINGLE_BOX_WEIGHT) {
-		$messageStack->add(SHIPPING_ENDICIA_ERROR_TOO_HEAVY, 'error');
-		return false;
-	}
+	if ($pkg->pkg_weight == 0) throw new \core\classes\userException(SHIPPING_ERROR_WEIGHT_ZERO);
+	if ($pkg->ship_to_postal_code == '') throw new \core\classes\userException(SHIPPING_ENDICIA_ERROR_POSTAL_CODE);
+	if ($pkg->pkg_weight > ENDICIA_MAX_SINGLE_BOX_WEIGHT) throw new \core\classes\userException(SHIPPING_ENDICIA_ERROR_TOO_HEAVY);
 	$request = array(
 	  'PostageRatesRequest' => array(
 	    'RequesterID'  => MODULE_SHIPPING_ENDICIA_PARTNER_ID,
@@ -335,14 +326,12 @@ class endicia extends \shipping\classes\shipping {
 		  }
 		}
 	  } else {
-	  	$messageStack->add(TEXT_ERROR.' ('.$response->PostageRatesResponse->Status.') '.$response->PostageRatesResponse->ErrorMessage, 'error');
-		return false;
+	  	throw new \core\classes\userException(TEXT_ERROR.' ('.$response->PostageRatesResponse->Status.') '.$response->PostageRatesResponse->ErrorMessage);
 	  }
-	} catch (SoapFault $exception) {
+	} catch (SoapFault $e) {
 //echo 'Fault Request <pre>'  . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
 //echo 'Fault Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
-	  $messageStack->add("Soap Error ({$exception->faultcode}) {$exception->faultstring}", 'error');
-	  return false;
+	  throw $e;
 	}
 // echo 'arrRates array = '; print_r($arrRates); echo '<br /><br />';
 	return array('result' => 'success', 'rates' => $arrRates);

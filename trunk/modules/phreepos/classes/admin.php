@@ -25,12 +25,12 @@ class admin extends \core\classes\admin {
 	
 	function __construct(){
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
-		  'contacts'  => 3.71,
-		  'inventory' => 3.6,
-		  'phreebooks'=> 3.6,
-		  'phreedom'  => 3.6,
-		  'payment'   => 3.6,
-		  'phreeform' => 3.6,
+		  'contacts'  => '3.7.1',
+		  'inventory' => '3.6',
+		  'phreebooks'=> '3.6',
+		  'phreedom'  => '3.6',
+		  'payment'   => '3.6',
+		  'phreeform' => '3.6',
 		);
 		// Load configuration constants for this module, must match entries in admin tabs
 	    $this->keys = array(
@@ -42,7 +42,7 @@ class admin extends \core\classes\admin {
 	      'PHREEPOS_DISPLAY_WITH_TAX'			  => '1',// if prices on screen should be net or not
 	      'PHREEPOS_DISCOUNT_OF'                  => '0',// should the discount be of the total or subtotal.
 	      'PHREEPOS_ROUNDING'					  => '0',// should the endtotal be rounded.
-		  'PHREEPOS_ENABLE_DIRECT_PRINTING'       => 1,  // this enables or disables direct printing.
+		  'PHREEPOS_ENABLE_DIRECT_PRINTING'       => 0,  // this enables or disables direct printing.
 		);
 		
 		// Load tables

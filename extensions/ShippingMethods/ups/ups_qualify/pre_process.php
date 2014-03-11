@@ -19,17 +19,10 @@
 //
 
 function write_file($file_name, $data) {
-  global $messageStack;
-  if (!$handle = @fopen($file_name, 'w')) { 
-	$messageStack->add('Cannot open file (' . $file_name . ')','error');
-	return false;
-  }
-  if (@fwrite($handle, $data) === false) {
-	$messageStack->add('Cannot write to file (' . $file_name . ')','error');
-	return false;
-  }
-  fclose($handle);
-  return true;
+  	if (!$handle = @fopen($file_name, 'w')) throw new \core\classes\userException("Cannot open file ($file_name)");
+  	if (@fwrite($handle, $data) === false) throw new \core\classes\userException("Cannot write to file ($file_name)");
+  	fclose($handle);
+  	return true;
 }
 
 /**************   Check user security   *****************************/

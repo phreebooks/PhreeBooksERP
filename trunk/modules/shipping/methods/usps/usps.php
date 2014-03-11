@@ -136,19 +136,10 @@ class usps extends \shipping\classes\shipping {
 // ***************************************************************************************************************
     function quote($pkg) {
 		global $messageStack;
-		if ($pkg->pkg_weight == 0) {
-			$messageStack->add(SHIPPING_ERROR_WEIGHT_ZERO, 'error');
-			return false;
-		}
-		if ($pkg->ship_to_postal_code == '') {
-			$messageStack->add(SHIPPING_USPS_ERROR_POSTAL_CODE, 'error');
-			return false;
-		}
+		if ($pkg->pkg_weight == 0) throw new \core\classes\userException(SHIPPING_ERROR_WEIGHT_ZERO);
+		if ($pkg->ship_to_postal_code == '') throw new \core\classes\userException(SHIPPING_USPS_ERROR_POSTAL_CODE);
 		$status = $this->getUSPSRates($pkg);
-		if ($status['result'] == 'error') {
-			$messageStack->add(SHIPPING_USPS_RATE_ERROR . $status['message'], 'error');
-			return false;
-		}
+		if ($status['result'] == 'error') throw new \core\classes\userException(SHIPPING_USPS_RATE_ERROR . $status['message']);
 		return $status;
     }
 
@@ -198,10 +189,7 @@ class usps extends \shipping\classes\shipping {
 		$USPSQuote = array();	// Initialize the Response Array
 
 		$this->package = $pkg->split_shipment($pkg);
-		if (!$this->package) {
-			$messageStack->add(SHIPPING_USPS_PACKAGE_ERROR . $pkg->pkg_weight, 'error');
-			return false;
-		}
+		if (!$this->package) throw new \core\classes\userException(SHIPPING_USPS_PACKAGE_ERROR . $pkg->pkg_weight);
 // TBD convert weight to pounds if in KGs
 		if ($pkg->split_large_shipments || ($pkg->num_packages == 1 && $pkg->pkg_weight <= 70)) {
 			$arrRates = $this->queryUSPS($pkg, $user_choices, $pkg->num_packages);
@@ -226,17 +214,13 @@ class usps extends \shipping\classes\shipping {
 	  }
 	  $SubmitXML = GetXMLString($strXML, $RateURL, "GET");
 	  // Check for XML request errors
-	  if ($SubmitXML['result']=='error') {
-		$messageStack->add(SHIPPING_USPS_CURL_ERROR . $SubmitXML['message'], 'error');
-		return false;
-	  }
+	  if ($SubmitXML['result']=='error') throw new \core\classes\userException(SHIPPING_USPS_CURL_ERROR . $SubmitXML['message']);
 	  $ResponseXML = xml_to_object($SubmitXML['xmlString']);
 	  // Check for errors
 	  $XMLFail = $ResponseXML->Error->Number;
 	  if ($XMLFail) {	// fetch the error code
 		$XMLErrorDesc = $ResponseXML->Error->Description;
-		$messageStack->add($this->id . ' - ' . $XMLFail . ' - ' . $XMLErrorDesc, 'error');
-		return false;
+		throw new \core\classes\userException($this->id . ' - ' . $XMLFail . ' - ' . $XMLErrorDesc);
 	  }
 	  // Fetch the USPS Rates
 	  return $this->GetUSPSRateArray($ResponseXML);

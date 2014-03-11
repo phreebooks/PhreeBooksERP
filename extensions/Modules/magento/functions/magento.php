@@ -34,35 +34,18 @@ class magento{
 	
 	function login(){
 		global $messageStack;
-		try{
-//			$messageStack->add('loggin in', 'caution');
-			$this->client = new \SoapClient(MAGENTO_URL.'/index.php/api/v2_soap/?wsdl'); 
-			$this->session = $this->client->login(MAGENTO_USERNAME, MAGENTO_PASSWORD);
-		}catch(SoapFault $exception) { 
-			$messageStack->add($exception->getMessage(), 'error');
-		} 
+//		$messageStack->add('loggin in', 'caution');
+		$this->client = new \SoapClient(MAGENTO_URL.'/index.php/api/v2_soap/?wsdl'); 
+		$this->session = $this->client->login(MAGENTO_USERNAME, MAGENTO_PASSWORD); 
 	}
 
 	function get_menus(){
-		global $messageStack;
 		if ($this->session == '') $this->login();
-		try{
-			return $this->client->catalogCategoryTree($this->session);
-		}catch(SoapFault $exception) { 
-			$messageStack->add($exception->getMessage(), 'error');
-			return false;
-		} 
+		return $this->client->catalogCategoryTree($this->session); 
 	} 
 	
 	function get_menus_options($id){
-		global $messageStack;
-		if ($this->session == '') $this->login();
-		try{
-			return $this->client->catalogCategoryInfo($this->session, $id);
-		}catch(SoapFault $exception) { 
-			$messageStack->add($exception->getMessage(), 'error');
-			return false;
-		} 
+		return $this->client->catalogCategoryInfo($this->session, $id); 
 	}
 	
 	function update_inventory_catalog_options(){
@@ -101,22 +84,15 @@ class magento{
 	function create_product($sku){
 		global $messageStack;
 		if ($this->session == '') $this->login();
-		try{
-			// get attribute set
-			$inventory = new \magento\classes\inventory();
-			$attributeSets = $this->client->catalogProductListOfAdditionalAttributes($this->session);
-			$inventory->set_attributeSets($attributeSets);
-			$inventory->get_item_by_sku($sku);
-			//$attributeSet = current($attributeSets);
-			
-			//$result = $this->client->catalogProductCreate($this->session, 'simple', $attributeSet->set_id, 'product_sku', $inventory);
-		 	if($result != false){
-				$messageStack->add("uploaded with success assigend id $result", "success");
-			}
-			
-		}catch(SoapFault $exception) { 
-			$messageStack->add($exception->getMessage(), 'error');
-		} 
+		// get attribute set
+		$inventory = new \magento\classes\inventory();
+		$attributeSets = $this->client->catalogProductListOfAdditionalAttributes($this->session);
+		$inventory->set_attributeSets($attributeSets);
+		$inventory->get_item_by_sku($sku);
+		//$attributeSet = current($attributeSets);
+		
+		//$result = $this->client->catalogProductCreate($this->session, 'simple', $attributeSet->set_id, 'product_sku', $inventory);
+		if($result != false) $messageStack->add("uploaded with success assigend id $result", "success"); 
 	}
 	
 	/**
@@ -127,13 +103,9 @@ class magento{
 	
 	function get_pricesheet_id($pricesheet_name){
 		if ($this->session == '') $this->login();
-		try{
-			$result = $this->client->customerGroupList($this->session);
-			foreach ($result as $item){
-				if( $item['customer_group_code'] == $pricesheet_name) return $item['customer_group_id']; 
-			}
-		}catch(SoapFault $exception) { 
-			$messageStack->add($exception->getMessage(), 'error');
+		$result = $this->client->customerGroupList($this->session);
+		foreach ($result as $item){
+			if( $item['customer_group_code'] == $pricesheet_name) return $item['customer_group_id']; 
 		} 
 	}
 	
@@ -151,46 +123,30 @@ class magento{
 			);
 		global $messageStack;
 		if ($this->session == '') $this->login();
-		try{
-			if( $this->client->catalogProductAttributeTierPriceUpdate($this->session, $sku,	$tierPrices) == true){
-				$messageStack->add("updated tier pricing for $sku with success", "success");
-			}
-		}catch(SoapFault $exception) { 
-			$messageStack->add($exception->getMessage(), 'error');
+		if( $this->client->catalogProductAttributeTierPriceUpdate($this->session, $sku,	$tierPrices) == true){
+			$messageStack->add("updated tier pricing for $sku with success", "success");
 		} 
 	}
 	
 	function set_menu_for_sku($menuId, $sku){
 		global $messageStack;
 		if ($this->session == '') $this->login();
-		try{
-			if($this->client->catalogCategoryAssignProduct($this->session, $menuId, $sku, '', 'SKU') == true){
-				$messageStack->add("assigned to webshop category $menuId with success", "success");
-			}
-		}catch(SoapFault $exception) { 
-			$messageStack->add($exception->getMessage(), 'error');
+		if($this->client->catalogCategoryAssignProduct($this->session, $menuId, $sku, '', 'SKU') == true){
+			$messageStack->add("assigned to webshop category $menuId with success", "success");
 		} 
 	} 
 	
 	function delete_product($sku){
 		global $messageStack;
 		if ($this->session == '') $this->login();
-		try{
-			if ($proxy->catalogProductDelete($sessionId, $sku , 'SKU') == true){
-				$messageStack->add("deleted from webshop with success", "success");
-			}
-		}catch(SoapFault $exception) { 
-			$messageStack->add($exception->getMessage(), 'error');
+		if ($proxy->catalogProductDelete($sessionId, $sku , 'SKU') == true){
+			$messageStack->add("deleted from webshop with success", "success");
 		}
 	}
 	
 	function __destruct(){
 		global $messageStack;
-		try{
-			$this->client->endSession($this->session);
-		}catch(SoapFault $exception) { 
-			$messageStack->add($exception->getMessage(), 'error');
-		}	
+		$this->client->endSession($this->session);	
 	}
 	
 }

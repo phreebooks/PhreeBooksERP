@@ -64,19 +64,10 @@ class yrc {
 // ***************************************************************************************************************
     function quote($pkg) {
 		global $messageStack;
-		if ($pkg->pkg_weight == 0) {
-			$messageStack->add(SHIPPING_ERROR_WEIGHT_ZERO, 'error');
-			return false;
-		}
-		if ($pkg->ship_to_postal_code == '') {
-			$messageStack->add(SHIPPING_YRC_ERROR_POSTAL_CODE, 'error');
-			return false;
-		}
+		if ($pkg->pkg_weight == 0) throw new \core\classes\userException(SHIPPING_ERROR_WEIGHT_ZERO);
+		if ($pkg->ship_to_postal_code == '') throw new \core\classes\userException(SHIPPING_YRC_ERROR_POSTAL_CODE);
 		$status = $this->getYRCRates($pkg);
-		if ($status['result'] == 'error') {
-			$messageStack->add(SHIPPING_YRC_RATE_ERROR . $status['message'], 'error');
-			return false;
-		}
+		if ($status['result'] == 'error') throw new \core\classes\userException(SHIPPING_YRC_RATE_ERROR . $status['message']);
 		return $status;
     }
 
@@ -86,10 +77,7 @@ class yrc {
     	$user_choices = explode(',', str_replace(' ', '', MODULE_SHIPPING_YRC_TYPES));
     	$YRCQuote = array();
     	$this->package = $pkg->split_shipment($pkg);
-    	if (!$this->package) {
-    		$messageStack->add(SHIPPING_YRC_PACKAGE_ERROR . $pkg->pkg_weight, 'error');
-    		return false;
-    	}
+    	if (!$this->package) throw new \core\classes\userException(SHIPPING_YRC_PACKAGE_ERROR . $pkg->pkg_weight);
     	if ($pkg->pkg_weight > YRC_MIN_SINGLE_BOX_WEIGHT) $arrRates = $this->queryYRC($pkg);
     	return $YRCQuote = array('result' => 'success', 'rates' => $arrRates);
     }
@@ -104,8 +92,7 @@ class yrc {
 //echo 'returned string = '; print_r($response); echo '<br>';
 	  // Check for errors
 	  if ($attributes['ReturnCode'] <> 0) {	// fetch the error code
-		$messageStack->add("YRC Error # ".$attributes['ReturnCode']." - ".$attributes['ReturnText'], 'error');
-		return false;
+			throw new \core\classes\userException("YRC Error # {$attributes['ReturnCode']} - {$attributes['ReturnText']}");
 	  }
 	  // Fetch the YRC Rates
 	  $rates = $response->BodyMain->RateQuote->QuoteMatrix->TransitOptions;

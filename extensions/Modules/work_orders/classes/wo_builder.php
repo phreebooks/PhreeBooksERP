@@ -23,7 +23,7 @@ class wo_builder {
 
   function load_query_results($tableKey = 'id', $tableValue = 0) {
 	global $db, $report;
-	if (!$tableValue) return false;
+	if (!$tableValue) throw new \core\classes\userException("tableValue is empty");
 	$sql = "select * from " . TABLE_WO_JOURNAL_MAIN . " where id = " . $tableValue;
 	$result = $db->Execute($sql);
 	while (list($key, $value) = each($result->fields)) $this->$key = db_prepare_input($value);

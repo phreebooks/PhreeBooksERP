@@ -32,26 +32,20 @@ class ma extends \inventory\classes\inventory { //Item Assembly formerly know as
 	
 	function copy($id, $newSku){
 		global $db;
-		error_log("begin hier" . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
-		if(parent::copy($id, $newSku)){
-			$result = $db->Execute("select * from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = '$id'");
-			error_log("hier1{$result->RecordCount()}" . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
-			while(!$result->EOF) {
-				$bom_list = array(
-				  	'ref_id'      => $this->id,
-				  	'sku'         => $result->fields['sku'],
-					'description' => $result->fields['description'],
-					'qty'         => $result->fields['qty'],
-				);
-				db_perform(TABLE_INVENTORY_ASSY_LIST, $bom_list, 'insert');
-				$result->MoveNext();
-			}
-			error_log("hier2" . PHP_EOL,  3,DIR_FS_MY_FILES."/errors.log");
-			$this->get_bom_list();
-			return true;
-		}else{
-			return false;
+		parent::copy($id, $newSku);
+		$result = $db->Execute("select * from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = '$id'");
+		while(!$result->EOF) {
+			$bom_list = array(
+			  	'ref_id'      => $this->id,
+			  	'sku'         => $result->fields['sku'],
+				'description' => $result->fields['description'],
+				'qty'         => $result->fields['qty'],
+			);
+			db_perform(TABLE_INVENTORY_ASSY_LIST, $bom_list, 'insert');
+			$result->MoveNext();
 		}
+		$this->get_bom_list();
+		return true;
 	}
 
 	function get_bom_list(){

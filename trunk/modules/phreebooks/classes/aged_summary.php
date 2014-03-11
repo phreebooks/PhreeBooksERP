@@ -43,7 +43,7 @@ class aged_summary {
 	$temp_sql = str_replace(' FROM ', ', ' . TABLE_JOURNAL_MAIN . '.id, journal_id, post_date, total_amount, bill_acct_id FROM ', $sql);
 	$temp_sql = $this->replace_special_fields($temp_sql);
 	$result = $db->Execute($temp_sql);
-	if ($result->RecordCount() == 0) return false; // No data so bail now
+	if ($result->RecordCount() == 0) throw new \core\classes\userException("no data");; // No data so bail now
 	while (!$result->EOF) {
 	  for ($i = 0; $i < sizeof($this->sql_field_karray); $i++) {
 	    $this->accounts[$result->fields['bill_acct_id']]['c' . $i] = $result->fields['c' . $i];

@@ -36,7 +36,6 @@ if ($id == 0 || $doc_details->fields['doc_type'] == '0') { // folder
   $field_list   = array('id', 'doc_type', 'doc_title', 'security');
   $query_raw    = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . " from " . TABLE_PHREEFORM . " where parent_id = '" . $id . "'";
   $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-  // the splitPageResults should be run directly after the query that contains SQL_CALC_FOUND_ROWS
   $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');  
   include (DIR_FS_MODULES . 'phreeform/pages/main/tab_folder.php');
 } else { // load document details

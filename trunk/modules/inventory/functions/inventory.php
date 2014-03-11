@@ -296,6 +296,12 @@ function inv_status_open_orders($journal_id, $gl_type) { // checks order status 
   return $item_list;
 }
 
+/**
+ * this function check is a value is a barcode
+ * @param unknown $barcode
+ * @return boolean
+ */
+
 function validate_UPCABarcode($barcode){
 	// check to see if barcode is 12 digits long
   	if(!preg_match("/^[0-9]{12}$/",$barcode)) return false;
@@ -314,6 +320,13 @@ function validate_UPCABarcode($barcode){
 	if($check_digit == $digits[11]) return true;
 	return false;
 }
+
+
+/**
+ * this function check is a value is a EAN barcode
+ * @param unknown $barcode
+ * @return boolean
+ */
 
 function validate_EAN13Barcode($barcode) {
 	// check to see if barcode is 13 digits long

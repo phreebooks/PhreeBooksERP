@@ -140,7 +140,7 @@ function fill_paid_invoice_array($id, $account_id, $type = 'c') {
 	switch ($type) {
 	  case 'c': $search_journal = '(12, 13)'; break;
 	  case 'v': $search_journal = '(6, 7)';   break;
-	  default: return false;
+	  default: throw new \core\classes\userException("unknown type $type");
 	}
 	$open_invoices = array();
 	$sql = "select id, journal_id, post_date, terms, purch_order_id, purchase_invoice_id, total_amount, gl_acct_id 
@@ -309,24 +309,21 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
   return $acct_balance;
 }
 
-  function gen_build_tax_auth_array() {
-    global $db;
-    $tax_auth_values = $db->Execute("select tax_auth_id, description_short, account_id , tax_rate
-      from " . TABLE_TAX_AUTH . " order by description_short");
-    if ($tax_auth_values->RecordCount() < 1) {
-      return false;
-    } else {
+  	function gen_build_tax_auth_array() {
+    	global $db;
+    	$tax_auth_values = $db->Execute("select tax_auth_id, description_short, account_id , tax_rate
+      	  from " . TABLE_TAX_AUTH . " order by description_short");
+    	if ($tax_auth_values->RecordCount() < 1) throw new \core\classes\userException("there are not tax records to select");
 		while (!$tax_auth_values->EOF) {
-		  $tax_auth_array[$tax_auth_values->fields['tax_auth_id']] = array(
-			'description_short' => $tax_auth_values->fields['description_short'],
-			'account_id'        => $tax_auth_values->fields['account_id'],
-			'tax_rate'          => $tax_auth_values->fields['tax_rate'],
-		  );
-		  $tax_auth_values->MoveNext();
+			$tax_auth_array[$tax_auth_values->fields['tax_auth_id']] = array(
+			  'description_short' => $tax_auth_values->fields['description_short'],
+			  'account_id'        => $tax_auth_values->fields['account_id'],
+			  'tax_rate'          => $tax_auth_values->fields['tax_rate'],
+			);
+			$tax_auth_values->MoveNext();
 		}
     	return $tax_auth_array;
-    }
-  }
+  	}
 
   function gen_calculate_tax_rate($tax_authorities_chosen, $tax_auth_array) {
 	$chosen_auth_array = explode(':', $tax_authorities_chosen);
@@ -451,11 +448,20 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
     }
     return ($crit) ? ('(' . implode(' or ', $crit) . ')') : '';
   }
+  
+  	/**
+  	 * this function will repost journals
+  	 * @param unknown $journals
+     * @param unknown $start_date
+	 * @param unknown $end_date
+	 * @throws \core\classes\userException
+   	 * @return number|boolean
+   	 */
 
   	function repost_journals($journals, $start_date, $end_date) {
 		global $db;
 		try{
-			if (sizeof($journals) == 0) throw new Exception('no journals received to repost');
+			if (sizeof($journals) == 0) throw new \core\classes\userException('no journals received to repost');
 			$sql = "SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE journal_id IN (".implode(',', $journals).") 
 			  AND post_date>= '$start_date' AND post_date<'".gen_specific_date($end_date, 1)."' ORDER BY post_date, id";
 			$result = $db->Execute($sql);
@@ -464,7 +470,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 			while (!$result->EOF) {
 			    $gl_entry = new \core\classes\journal($result->fields['id']);
 			    $gl_entry->remove_cogs_rows(); // they will be regenerated during the re-post
-			    if (!$gl_entry->Post('edit', true)) throw new \Exception('Failed Re-posting the journals, try a smaller range. The record that failed was # '.$gl_entry->id);
+			    if (!$gl_entry->Post('edit', true)) throw new \core\classes\userException('Failed Re-posting the journals, try a smaller range. The record that failed was # '.$gl_entry->id);
 				$cnt++;
 			    $result->MoveNext();
 			}
@@ -473,7 +479,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 
 	  	}catch(Exception $e){
   		  $db->transRollback();
-  		  return FALSE;
+  		  throw $e;
   		}
   	}
 

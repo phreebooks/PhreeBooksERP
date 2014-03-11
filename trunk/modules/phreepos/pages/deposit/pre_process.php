@@ -52,9 +52,9 @@ $next_inv_ref     = isset($_POST['purchase_invoice_id']) ? db_prepare_input($_PO
 $post_date        = isset($_POST['post_date'])           ? gen_db_date($_POST['post_date'])                : date('Y-m-d');
 $period           = gen_calculate_period($post_date ,true); //@todo why is her a true
 if (!$period) { // bad post_date was submitted
-  $_REQUEST['action']    = '';
-  $post_date = date('Y-m-d');
-  $period    = 0;
+  	$_REQUEST['action']    = '';
+  	$post_date = date('Y-m-d');
+  	$period    = 0;
 }
 $order->gl_acct_id = $gl_acct_id;
 $order->acct_1     = DEF_DEP_GL_ACCT;

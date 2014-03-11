@@ -18,17 +18,17 @@
 //  Path: /modules/phreebooks/functions/updater.php
 //
 
-function execute_upgrade($db_release) {
-  global $db, $messageStack, $admin_classes;
-  $code_release = $admin_classes['phreedom']->version;
+function execute_upgrade($db_release) { //@todo use version_compair
+  	global $db, $admin_classes;
+  	$code_release = $admin_classes['phreedom']->version;
 //  $db_release   = PROJECT_DB_VERSION_MAJOR . '.' . PROJECT_DB_VERSION_MINOR;
 
-  if ($db_release <= '1.3.1') { // upgrade db to Release 1.4
-	include (DIR_FS_MODULES . 'phreebooks/updates/R131toR14.php');
-	update_version_db('1', '4');
-	$db_release = '1.4';
-    if ($code_release == $db_release) return false;
-  }
+	if ($db_release <= '1.3.1') { // upgrade db to Release 1.4
+		include (DIR_FS_MODULES . 'phreebooks/updates/R131toR14.php');
+		update_version_db('1', '4');
+		$db_release = '1.4';
+	    if ($code_release == $db_release) return false;
+	}
 
   if ($db_release <= '1.4') { // upgrade db to Release 1.5
 	include (DIR_FS_MODULES . 'phreebooks/updates/R14toR15.php');

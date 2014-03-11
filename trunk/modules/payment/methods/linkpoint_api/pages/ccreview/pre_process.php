@@ -77,7 +77,6 @@ $query_raw  = "select SQL_CALC_FOUND_ROWS lp.*, c.short_name, c.contact_last, c.
                 from  " . TABLE_CONTACTS . " c,  linkpoint_api lp 
                 where c.id = lp.customer_id $search  $period_filter order by $disp_order ";
 $customers = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-// the splitPageResults should be run directly after the query that contains SQL_CALC_FOUND_ROWS
 $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');						  
 history_save('linkpoint');
 

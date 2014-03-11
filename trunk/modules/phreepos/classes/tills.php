@@ -197,21 +197,23 @@ class tills {
     return $output;
   }
   
-// functions for template main  
-  function showDropDown(){
-  	global $db;
-  	foreach ($this->store_ids as $store){
-  		$temp[]= $store['id'];
-  	}
-  	$sql = "select till_id, description from " . $this->db_table . " where store_id in (" . implode(',', $temp) . ")";
-    $result = $db->Execute($sql);
-    if ($result->RecordCount()== 0) trigger_error("Before continuing set a till for this store. This will contain default values to allow this page to work", E_USER_ERROR);// there should always be a till because of defaults values.
-    if ($result->RecordCount()== 1) {
-    	return false;
-    }else{
-    	return true;
-    }
-  }
+	/**
+	 * this function will determin if the store drop down should be build 
+	 * @throws \core\classes\userException 
+	 * @return bool
+	 */ 
+    
+  	function showDropDown(){
+  		global $db;
+	  	foreach ($this->store_ids as $store){
+	  		$temp[]= $store['id'];
+	  	}
+	  	$sql = "select till_id, description from " . $this->db_table . " where store_id in (" . implode(',', $temp) . ")";
+	    $result = $db->Execute($sql);
+	    if ($result->RecordCount()== 0) throw new \core\classes\userException("Before continuing set a till for this store. This will contain default values to allow this page to work", E_USER_ERROR);// there should always be a till because of defaults values.
+	    if ($result->RecordCount()== 1) return false;
+	    return true;
+	}
   
   function default_till(){
   	global $db;

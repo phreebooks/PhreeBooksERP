@@ -46,40 +46,38 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 	//this is to copy a product
 	function copy($id, $newSku) {
 		global $db;
-		if(parent::copy($id, $newSku)){
-			$result = $db->Execute("select * from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = '$id'");
-			while(!$result->EOF) {
-				$bom_list = array(
-				  	'ref_id'      => $this->id,
-				  	'sku'         => $result->fields['sku'],
-					'description' => $result->fields['description'],
-					'qty'         => $result->fields['qty'],
-				);
-				db_perform(TABLE_INVENTORY_ASSY_LIST, $bom_list, 'insert');
-				$result->MoveNext();
-			}
-			$result = $db->Execute("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->old_sku . "'");
-			$data_array = array(
-				'sku'         => $this->sku,
-				'attr_0'      => $result->fields['ms_attr_0'],
-				'attr_name_0' => $result->fields['attr_name_0'],
-				'attr_1'      => $result->fields['ms_attr_1'],
-				'attr_name_1' => $result->fields['attr_name_1']);
-			db_perform(TABLE_INVENTORY_MS_LIST, $data_array, 'insert');
-			$result = $db->Execute("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->old_sku . "'");
+		parent::copy($id, $newSku);
+		$result = $db->Execute("select * from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = '$id'");
+		while(!$result->EOF) {
 			$bom_list = array(
-			  	'ref_id'      => $this->id,
-			  	'sku'         => $result->fields['sku'],
-				'description' => $result->fields['description'],
-				'qty'         => $result->fields['qty'],
+			  'ref_id'      => $this->id,
+			  'sku'         => $result->fields['sku'],
+			  'description' => $result->fields['description'],
+			  'qty'         => $result->fields['qty'],
 			);
 			db_perform(TABLE_INVENTORY_ASSY_LIST, $bom_list, 'insert');
-			$this->get_ms_list();
-			$this->get_bom_list();
-			return true;
-		}else{
-			return false;
+			$result->MoveNext();
 		}
+		$result = $db->Execute("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->old_sku . "'");
+		$data_array = array(
+		  'sku'         => $this->sku,
+		  'attr_0'      => $result->fields['ms_attr_0'],
+		  'attr_name_0' => $result->fields['attr_name_0'],
+		  'attr_1'      => $result->fields['ms_attr_1'],
+		  'attr_name_1' => $result->fields['attr_name_1'],
+		);
+		db_perform(TABLE_INVENTORY_MS_LIST, $data_array, 'insert');
+		$result = $db->Execute("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->old_sku . "'");
+		$bom_list = array(
+		  'ref_id'      => $this->id,
+		  'sku'         => $result->fields['sku'],
+		  'description' => $result->fields['description'],
+		  'qty'         => $result->fields['qty'],
+		);
+		db_perform(TABLE_INVENTORY_ASSY_LIST, $bom_list, 'insert');
+		$this->get_ms_list();
+		$this->get_bom_list();
+		return true;
 	}
 	
 	function get_bom_list(){
@@ -158,16 +156,16 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 
 	function check_remove($id){
 		global $db;
-		if(isset($id))$this->get_item_by_id($id);
-		else return false;
+		if(!isset($id)) throw new \core\classes\userException("the id field isn't set");
+		$this->get_item_by_id($id);
 		// check to see if there is inventory history remaining, if so don't allow delete
 		$result = $db->Execute("select id from " . TABLE_INVENTORY_HISTORY . " where ( sku like '" . $this->sku  . "-%' or sku = '" . $this->sku  . "') and remaining > 0");
-		if ($result->RecordCount() > 0) throw new \Exception(INV_ERROR_DELETE_HISTORY_EXISTS);
+		if ($result->RecordCount() > 0) throw new \core\classes\userException(INV_ERROR_DELETE_HISTORY_EXISTS);
 		// check to see if this item is part of an assembly
 		$result = $db->Execute("select id from " . TABLE_INVENTORY_ASSY_LIST . " where sku like '" . $this->sku  . "-%' or sku = '" . $this->sku  . "'");
-		if ($result->RecordCount() > 0) throw new \Exception(INV_ERROR_DELETE_ASSEMBLY_PART);
+		if ($result->RecordCount() > 0) throw new \core\classes\userException(INV_ERROR_DELETE_ASSEMBLY_PART);
 		$result = $db->Execute( "select id from " . TABLE_JOURNAL_ITEM . " where sku like '" . $this->sku  . "-%' or sku = '" . $this->sku  . "' limit 1");
-		if ($result->Recordcount() > 0) throw new \Exception(INV_ERROR_CANNOT_DELETE);
+		if ($result->Recordcount() > 0) throw new \core\classes\userException(INV_ERROR_CANNOT_DELETE);
 		$this->remove();
 	  	return true;
 		

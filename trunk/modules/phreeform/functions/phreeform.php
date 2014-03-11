@@ -237,9 +237,9 @@ function ReadDefReports($name, $path) {
 }
 
 function get_report_details($id) {
-  if (!$id) throw new \Exception('There was no report or form passed to open!');
+  if (!$id) throw new \core\classes\userException("There was no report or form passed to open!");
   $filename = PF_DIR_MY_REPORTS . 'pf_' . $id;
-  if (!file_exists($filename)) throw new \Exception('The report or form requested could not be found in the my_reports directory!');
+  if (!file_exists($filename)) throw new \core\classes\userException("The report or form '$filename' could not be found in the my_reports directory!");
   $handle   = fopen($filename, "r");
   $contents = fread($handle, filesize($filename));
   fclose($handle);
@@ -976,7 +976,7 @@ function BuildDataArray($sql, $report) { // for reports only
 	}
 
 	$result = $db->Execute($sql);
-	if ($result->RecordCount() == 0) return false; // No data so bail now
+	if ($result->RecordCount() == 0) throw new \core\classes\userException("no data"); // No data so bail now
 	// Generate the output data array
 	$RowCnt     = 0;
 	$ColCnt     = 1;

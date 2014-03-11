@@ -242,23 +242,13 @@ class fedex_v7 extends \shipping\classes\shipping {
 // ***************************************************************************************************************
   function quote($pkg) {
 	global $messageStack, $currencies;
-	if ($pkg->pkg_weight == 0) {
-	  $messageStack->add(SHIPPING_ERROR_WEIGHT_ZERO, 'error');
-	  return false;
-	}
-	if ($pkg->ship_to_postal_code == '') {
-	  $messageStack->add(SHIPPING_FEDEX_V7_ERROR_POSTAL_CODE, 'error');
-	  return false;
-	}
+	if ($pkg->pkg_weight == 0) throw new \core\classes\userException(SHIPPING_ERROR_WEIGHT_ZERO);
+	if ($pkg->ship_to_postal_code == '') throw new \core\classes\userException(SHIPPING_FEDEX_V7_ERROR_POSTAL_CODE);
 
 	$FedExQuote = array();	// Initialize the Response Array
 	$user_choices = explode(',', str_replace(' ', '', MODULE_SHIPPING_FEDEX_V7_TYPES));  
 	$this->package = $pkg->split_shipment($pkg);
-	if (!$this->package) {
-	  $messageStack->add(SHIPPING_FEDEX_V7_PACKAGE_ERROR . $pkg->pkg_weight, 'error');
-	  return false;
-	}
-
+	if (!$this->package) throw new \core\classes\userException(SHIPPING_FEDEX_V7_PACKAGE_ERROR . $pkg->pkg_weight);
 	if (MODULE_SHIPPING_FEDEX_V7_TEST_MODE == 'Test') {
 	  $client = new \SoapClient(PATH_TO_TEST_RATE_WSDL, array('trace' => 1));
 	} else {
@@ -359,15 +349,12 @@ class fedex_v7 extends \shipping\classes\shipping {
 			  $message .= ' - ' . $notification;
 			}
 		  }
-		  $messageStack->add(SHIPPING_FEDEX_V7_RATE_ERROR . $message, 'error');
-		  return false;
+		  throw new \core\classes\userException(SHIPPING_FEDEX_V7_RATE_ERROR . $message);
 	  }
-	} catch (SoapFault $exception) {
+	} catch (SoapFault $e) {
 //echo 'Request <pre>'  . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
 //echo 'Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
-	  $message = " [soap fault] ({$exception->faultcode}) {$exception->faultstring}";
-	  $messageStack->add(SHIPPING_FEDEX_CURL_ERROR . $message, 'error');
-	  return false;
+	  throw $e;
 	}
 //if ($ltl) { echo 'arrRates array = '; print_r($arrRates); echo '<br /><br />'; }
 	return $arrRates;
@@ -611,11 +598,10 @@ class fedex_v7 extends \shipping\classes\shipping {
 //echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';
 			  throw new \Exception(SHIPPING_FEDEX_V7_RATE_ERROR . $message);
 		    }
-		  } catch (SoapFault $exception) {
+		  } catch (SoapFault $e) {
 //echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
 //echo 'Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
-				throw new \Exception($exception->getMessage());
-		    	return false;
+				throw $e;
 		  }
 	    }
 		return $fedex_results;
@@ -917,10 +903,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 // ***************************************************************************************************************
   function deleteLabel($method = 'FDXE', $tracking_number = '') {
 	global $db, $messageStack;
-	if (!$tracking_number) {
-	  $messageStack->add('Cannot delete shipment, tracking number was not provided!','error');
-	  return false;
-	}
+	if (!$tracking_number) throw new \core\classes\userException("Cannot delete shipment, tracking number was not provided!");
 	$result = array();
 	if (MODULE_SHIPPING_FEDEX_V7_TEST_MODE == 'Test') {
 	  $client = new \SoapClient(PATH_TO_TEST_SHIP_WSDL, array('trace' => 1));
@@ -943,15 +926,12 @@ class fedex_v7 extends \shipping\classes\shipping {
 			  $message .= ' ' . $notification;
 			}
 		  }
-		  $messageStack->add(SHIPPING_FEDEX_V7_DEL_ERROR . $message, 'error');
-		  return false;
+		  throw new \core\classes\userException(SHIPPING_FEDEX_V7_DEL_ERROR . $message);
 		}
 	  } catch (SoapFault $exception) {
 //echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
 //echo 'Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
-		$message = " ({$exception->faultcode}) {$exception->faultstring}";
-		$messageStack->add(SHIPPING_FEDEX_CURL_ERROR . $message, 'error');
-		return false;
+		throw $e;
 	  }
 	return true;
   }
@@ -995,12 +975,8 @@ class fedex_v7 extends \shipping\classes\shipping {
 	function trackPackages($track_date = '0000-00-00', $log_id = false) {
 		global $db, $messageStack;
 		$result = array();
-		if (MODULE_SHIPPING_FEDEX_V7_TEST_MODE == 'Test') {
-			$messageStack->add('Tracking only works on the FedEx production server!','error');
-			return false;
-		} else {
-			$client = new \SoapClient(PATH_TO_TRACK_WSDL, array('trace' => 1));
-		}
+		if (MODULE_SHIPPING_FEDEX_V7_TEST_MODE == 'Test') throw new \core\classes\userException('Tracking only works on the FedEx production server!');
+		$client = new \SoapClient(PATH_TO_TRACK_WSDL, array('trace' => 1));
 		if ($log_id) {
 			$shipments  = $db->Execute("select id, ref_id, deliver_date, actual_date, tracking_id, notes 
 				from " . TABLE_SHIPPING_LOG . " 
@@ -1050,15 +1026,13 @@ class fedex_v7 extends \shipping\classes\shipping {
 							$message .= ' ' . $notification;
 						}
 			  		}
-					$messageStack->add(SHIPPING_FEDEX_V7_TRACK_ERROR . $message, 'error');
-					return false;
+					throw new \core\classes\userException(SHIPPING_FEDEX_V7_TRACK_ERROR . $message);
 				}
-			} catch (SoapFault $exception) {
+			} catch (SoapFault $e) {
 //echo 'Error Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
 //echo 'Error Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
 				$message = " ({$exception->faultcode}) {$exception->faultstring}";
-				$messageStack->add(SHIPPING_FEDEX_CURL_ERROR . $message, 'error');
-				return false;
+				throw new \core\classes\userException(SHIPPING_FEDEX_CURL_ERROR . $message, '', $e);
 			}
 			$shipments->MoveNext();
 		}
@@ -1067,7 +1041,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 
 	function FormatFedExTrackRequest($tracking_id = '') {
 		global $debug, $currencies;
-		if (!$tracking_id) return false;
+		if (!$tracking_id) throw new \core\classes\userException("the tracking id is empty");
 		$request = array();
 		$request['WebAuthenticationDetail'] = array(
 			'UserCredential' => array(
@@ -1149,13 +1123,13 @@ class fedex_v7 extends \shipping\classes\shipping {
 						$message .= ' ' . $notification;
 					}
 				}
-				throw new \Exception(SHIPPING_FEDEX_V7_DEL_ERROR . $message);
+				throw new \core\classes\userException(SHIPPING_FEDEX_V7_DEL_ERROR . $message);
 			} 
-		} catch (SoapFault $exception) {
+		} catch (SoapFault $e) {
 //echo 'Error Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
 //echo ' Error Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
 			$message = " ({$exception->faultcode}) {$exception->faultstring}";
-			throw new \Exception(SHIPPING_FEDEX_CURL_ERROR . $message);
+			throw new \Exception(SHIPPING_FEDEX_CURL_ERROR . $message,'', $e);
 		}
 		return false;
 	}
@@ -1202,7 +1176,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 	$upload_name = 'file_name';
 	validate_upload($upload_name, 'text', 'csv');
 	$lines_array = file($_FILES[$upload_name]['tmp_name']);
-	if (!$shipments = $this->fedExParse($lines_array)) return false;
+	$shipments = $this->fedExParse($lines_array);
 	$inv_num  = $shipments[0]['Invoice Number'];
 	$inv_date = $shipments[0]['Invoice Date'];
 	$output   = SHIPPING_FEDEX_RECON_TITLE . date('Y-m-d') . "\n";
@@ -1363,7 +1337,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 	}
 
 	function fedExParse($lines) { // csv parse with all fields enclosed in double quotes
-	  if (!$lines) return false;
+	  if (!$lines) throw new \core\classes\userException("the variable lines isn't set");
 	  $title_line = trim(array_shift($lines)); // pull header
 	  if (strlen($title_line) < 10) $title_line = trim(array_shift($lines)); // for blank first line
 	  $title_line = substr($title_line, 1, strlen($title_line) - 2); // strip the starting and ending double quote

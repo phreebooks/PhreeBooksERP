@@ -18,44 +18,43 @@
 //
 namespace magento\classes;
 class magento {
-  var $arrOutput = array();
-  var $resParser;
-  var $strXML;
+  	var $arrOutput = array();
+  	var $resParser;
+  	var $strXML;
   
-  function submitXML($id, $action = '', $hide_success = false, $inc_image = true) {
-	global $messageStack;
-	switch ($action) {
-	  case 'product_ul': 
-		if (!$this->buildProductUploadXML($id, $inc_image)) return false;
-		$url = 'products.php';
-		break;
-	  case 'product_sync':
-	  	if (!$this->buildProductSyncXML()) return false;
-		$url = 'sync.php';
-		break;
-	  case 'confirm':
-		if (!$this->buildConfirmXML()) return false;
-		$url = 'confirm.php';
-		break;
-	  default:
-		throw new \Exception(MAGENTO_INVALID_ACTION);
-	}
-//echo 'Submit to ' . MAGENTO_URL . '/soap/' . $url . ' and XML string = <pre>' . htmlspecialchars($this->strXML) . '</pre><br />';
-	$this->response = doCURLRequest('POST', MAGENTO_URL . '/soap/' . $url, $this->strXML);
-//echo 'XML response (at the Phreedom side from Magento) => <pre>' ; print_r($this); echo '</pre><br />' . chr(10);
-	if (!$this->response) return false;
-	if (!$results = xml_to_object($this->response)) return false;
-//echo 'Parsed string = '; print_r($results); echo '<br />';
+  	function submitXML($id, $action = '', $hide_success = false, $inc_image = true) {
+		global $messageStack;
+		switch ($action) {
+	  		case 'product_ul': 
+				$this->buildProductUploadXML($id, $inc_image);
+				$url = 'products.php';
+				break;
+	  		case 'product_sync':
+	  			$this->buildProductSyncXML();
+				$url = 'sync.php';
+				break;
+	  		case 'confirm':
+				$this->buildConfirmXML();
+				$url = 'confirm.php';
+				break;
+	  		default:
+				throw new \Exception(MAGENTO_INVALID_ACTION);
+		}
+//		echo 'Submit to ' . MAGENTO_URL . '/soap/' . $url . ' and XML string = <pre>' . htmlspecialchars($this->strXML) . '</pre><br />';
+		$this->response = doCURLRequest('POST', MAGENTO_URL . '/soap/' . $url, $this->strXML);
+//		echo 'XML response (at the Phreedom side from Magento) => <pre>' ; print_r($this); echo '</pre><br />' . chr(10);
+		$results = xml_to_object($this->response);
+//		echo 'Parsed string = '; print_r($results); echo '<br />';
 	
-	$this->result = $results->Response->Result;
-	$this->code   = $results->Response->Code;
-	$this->text   = $results->Response->Text;
-	if ($this->code == 0) {
-	  if (!$hide_success) $messageStack->add($this->text, strtolower($this->result));
-	  return true;
-	} else {
-	  throw new \Exception(MAGENTO_TEXT_ERROR . $this->code . ' - ' . $this->text);
-	}
+		$this->result = $results->Response->Result;
+		$this->code   = $results->Response->Code;
+		$this->text   = $results->Response->Text;
+		if ($this->code == 0) {
+	  		if (!$hide_success) $messageStack->add($this->text, strtolower($this->result));
+	  		return true;
+		} else {
+	  		throw new \Exception(MAGENTO_TEXT_ERROR . $this->code . ' - ' . $this->text);
+		}
   }
 
 /*************************************************************************************/

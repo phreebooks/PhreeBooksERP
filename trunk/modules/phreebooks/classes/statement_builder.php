@@ -27,7 +27,7 @@ class statement_builder {
 
   function load_query_results($tableKey = 'id', $tableValue = 0) {
 	global $db, $FieldListings, $report;
-	if (!$tableValue) return false;
+	if (!$tableValue) throw new \core\classes\userException("the table value isn't set");
 	$today = date('Y-m-d');
 	$this->bill_acct_id = $tableValue;
 	// fetch the main contact information, only one record

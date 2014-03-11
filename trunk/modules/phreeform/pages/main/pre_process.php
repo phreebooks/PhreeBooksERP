@@ -145,7 +145,6 @@ switch ($_REQUEST['action']) { // figure which detail page to load
 	$field_list = array('id', 'doc_title', 'doc_ext');
 	$query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . " from " . TABLE_PHREEFORM . $search;
 	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-    // the splitPageResults should be run directly after the query that contains SQL_CALC_FOUND_ROWS
     $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     history_save();
     $div_template = DIR_FS_WORKING . 'pages/main/' . ($id ? 'tab_report.php' : 'tab_folder.php');

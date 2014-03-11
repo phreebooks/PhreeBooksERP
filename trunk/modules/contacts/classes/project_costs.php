@@ -64,7 +64,6 @@ class project_costs {
 	  for ($i = 0; $i < count($cost_ids); $i++) {
 		if ($id == $cost_ids[$i]) {
 		  throw new \Exception(SETUP_PROJECT_COSTS_DELETE_ERROR);
-		  return false;
 		}
 	  }
 	  $result->MoveNext();

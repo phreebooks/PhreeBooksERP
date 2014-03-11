@@ -922,22 +922,22 @@ function gen_db_date($raw_date = '', $separator = '/') {
     return addslashes($string);
   }
 
-  function db_prepare_input($string, $required = false) {
-    if (is_string($string)) {
-      $temp = trim(stripslashes($string));
-	  if ($required && (strlen($temp) == 0)) {
-	  	return false;
-	  } else {
-	    return $temp;
-	  }
-    } elseif (is_array($string)) {
-      reset($string);
-      while (list($key, $value) = each($string)) $string[$key] = db_prepare_input($value);
-      return $string;
-    } else {
-      return $string;
-    }
-  }
+  	function db_prepare_input($string, $required = false) {
+    	if (is_string($string)) {
+      		$temp = trim(stripslashes($string));
+	  		if ($required && (strlen($temp) == 0)) {
+	  			return false;
+	  		} else {
+	    		return $temp;
+	  		}
+    	} elseif (is_array($string)) {
+      		reset($string);
+      		while (list($key, $value) = each($string)) $string[$key] = db_prepare_input($value);
+      		return $string;
+    	} else {
+      		return $string;
+    	}
+  	}
 
   function db_table_exists($table_name) {
     global $db;

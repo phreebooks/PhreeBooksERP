@@ -66,7 +66,7 @@ class shipment {
   function split_shipment($pkg) {
 	$package = array();
 // TBD convert both to same units to compare
-	if ($pkg->pkg_weight == 0) return false;
+	if ($pkg->pkg_weight == 0) throw new \core\classes\userException(SHIPPING_ERROR_WEIGHT_ZERO);
 	$num_packages = (($pkg->split_large_shipments) ? ceil($pkg->pkg_weight / $pkg->split_large_shipments_value) : 1);
 	for ($i=0; $i<$num_packages; $i++) {
 	  $package[] = array(

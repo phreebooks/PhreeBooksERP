@@ -65,7 +65,6 @@ class project_phases {
 		  for ($i = 0; $i < count($phase_ids); $i++) {
 			if ($id == $phase_ids[$i]) {
 			  throw new \Exception(SETUP_PROJECT_PHASESS_DELETE_ERROR);
-			  return false;
 			}
 		  }
 		  $result->MoveNext();

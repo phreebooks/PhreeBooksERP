@@ -385,11 +385,7 @@ class import_banking extends \phreebooks\classes\journal {
 		  	'description'    		=> $this->_description,	
 		);
 		$this->journal_main_array = $this->build_journal_main_array();
-		if(!$this->Post('insert', true)){
-			$messageStack->debug("\n unable to post the journal e error was returned by the class journal");
-			return false;
-			exit;	
-		}
+		$this->Post('insert', true);
 		$this->_succes = true;
 	}
 	
@@ -426,10 +422,7 @@ class import_banking extends \phreebooks\classes\journal {
 		  	'description'    		=> $this->_description,	
 		);
 		$this->journal_main_array = $this->build_journal_main_array();
-		if(!$this->Post('insert',true)){
-			$this->journal_rows = null;
-			return false;
-		}
+		$this->Post('insert',true);
 		$this->_succes = true;
 		return true;
 	}

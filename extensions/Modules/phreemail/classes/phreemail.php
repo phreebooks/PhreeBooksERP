@@ -77,23 +77,18 @@ class phreemail extends PHPMailer{
  	* Recent - number of recent messages in the mailbox
   	*/
   	function mailboxmsginfo(){
-  		try{
-	    	$mailbox = imap_check($this->imap_stream);
-  			if($mailbox == false) throw new \Exception(imap_last_error());
-  			print_r($mailbox);
-	    	$mbox["Date"]    = $mailbox->Date;
-    	   	$mbox["Driver"]  = $mailbox->Driver;
-	       	$mbox["Mailbox"] = $mailbox->Mailbox;
-    	   	$mbox["Nmsgs"]	 = $mailbox->Nmsgs;
-	       	$mbox["Recent"]  = $mailbox->Recent;
-    	   	$mbox["Unread"]  = $mailbox->Unread;
-			$mbox["Deleted"] = $mailbox->Deleted;
-       		$mbox["Size"]    = $mailbox->Size;
-       		return $mbox;
-    	} catch(Exception $e){
-  			$this->SetError($e->getMessage());
-  		}
-    	return false;
+	    $mailbox = imap_check($this->imap_stream);
+  		if($mailbox == false) throw new \Exception(imap_last_error());
+  		print_r($mailbox);
+	    $mbox["Date"]    = $mailbox->Date;
+    	$mbox["Driver"]  = $mailbox->Driver;
+	    $mbox["Mailbox"] = $mailbox->Mailbox;
+    	$mbox["Nmsgs"]	 = $mailbox->Nmsgs;
+	    $mbox["Recent"]  = $mailbox->Recent;
+    	$mbox["Unread"]  = $mailbox->Unread;
+		$mbox["Deleted"] = $mailbox->Deleted;
+       	$mbox["Size"]    = $mailbox->Size;
+       	return $mbox;
   	}
 	 
 	/**

@@ -44,7 +44,6 @@
 	  return $data;
 	} else {
 	  throw new \Exception('cURL error: ' . $error);
-	  return false; 
 	}
   }
 

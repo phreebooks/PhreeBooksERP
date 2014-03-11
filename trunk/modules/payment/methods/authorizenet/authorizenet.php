@@ -99,11 +99,12 @@ class authorizenet extends \payment\classes\payment {
 
     return $js;
   }
+  
   /**
    * Display Credit Card Information Submission Fields on the Checkout Payment Page
-   *
    * @return array
    */
+  
   function selection() {
     global $order;
 
@@ -130,30 +131,32 @@ class authorizenet extends \payment\classes\payment {
 	  ));
     return $selection;
   }
-  /**
-   * Evaluates the Credit Card Type for acceptance and the validity of the Credit Card Number & Expiration Date
-   *@throws Exception
-   */
   
-  function pre_confirmation_check() {
-
-	// if the card number has the blanked out middle number fields, it has been processed, show message that 
-	// the charges were not processed through the merchant gateway and continue posting payment.
-	if (strpos($this->field_1, '*') !== false) throw new \Exception(MODULE_PAYMENT_CC_NO_DUPS);
-    $result = $this->validate();
-    switch ($result) {
-      	case -1:
-        	throw new \Exception(sprintf(TEXT_CCVAL_ERROR_UNKNOWN_CARD, substr($this->cc_card_number, 0, 4)));
-      	case -2:
-      	case -3:
-      	case -4:
-        	throw new \Exception(TEXT_CCVAL_ERROR_INVALID_DATE);
-      	case false:
-        	throw new \Exception(TEXT_CCVAL_ERROR_INVALID_NUMBER);
-    }
-    $this->cc_cvv2         = $this->field_4;
-	return false;
-  }
+	/**
+	 * Evaluates the Credit Card Type for acceptance and the validity of the Credit Card Number & Expiration Date
+	 *@throws Exception
+	 */
+  
+	function pre_confirmation_check() {
+	
+		// if the card number has the blanked out middle number fields, it has been processed, show message that 
+		// the charges were not processed through the merchant gateway and continue posting payment.
+		if (strpos($this->field_1, '*') !== false) throw new \Exception(MODULE_PAYMENT_CC_NO_DUPS);
+	    $result = $this->validate();
+	    switch ($result) {
+	      	case -1:
+	        	throw new \Exception(sprintf(TEXT_CCVAL_ERROR_UNKNOWN_CARD, substr($this->cc_card_number, 0, 4)));
+	      	case -2:
+	      	case -3:
+	      	case -4:
+	        	throw new \Exception(TEXT_CCVAL_ERROR_INVALID_DATE);
+	      	case false:
+	        	throw new \Exception(TEXT_CCVAL_ERROR_INVALID_NUMBER);
+	    }
+	    $this->cc_cvv2         = $this->field_4;
+		return false;
+	}
+	
   /**
    * Store the CC info to the order and process any results that come back from the payment gateway
    *@throws Exception

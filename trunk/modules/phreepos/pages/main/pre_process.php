@@ -75,17 +75,13 @@ foreach ($admin_classes['payment']->methods as $method) {
 	}
 }
 //check if setting are right for usage of phreepos 
-if($number_of_methods < 1 ){
-	$messageStack->add(ERROR_NO_PAYMENT_METHODES, 'error');
-	gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL'));
-}
-if(AR_TAX_BEFORE_DISCOUNT == false && PHREEPOS_DISCOUNT_OF == true ){ // tax after discount
-	$messageStack->add('your setting tax before discount and discount over total don\'t work together, <br/>This has circulair logic one can\'t preceed the other', 'error');
-	gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL'));
-}
+if($number_of_methods < 1 )	throw new \core\classes\userException(ERROR_NO_PAYMENT_METHODES);
+// tax after discount
+if(AR_TAX_BEFORE_DISCOUNT == false && PHREEPOS_DISCOUNT_OF == true ) throw new \core\classes\userException("your setting tax before discount and discount over total don't work together, <br/>This has circulair logic one can't preceed the other");
+
 $js_currency  = 'var currency  = new Array();' . chr(10);
 foreach ($currencies->currencies as $key => $currency) {
-	$js_currency .= 'currency["' . $key . '"] = new currencyType("' . $key . '", "'. $currency['title'] . '", "'. $currency['value'] . '", "'. $currency['decimal_point'] . '", "' . $currency['thousands_point'] . '", "' . $currency['decimal_places'] . '", "' . $currency['decimal_precise'] . '");' . chr(10);
+	$js_currency .= "currency['$key'] = new currencyType('$key','{$currency['title']}', '{$currency['value']}', '{$currency['decimal_point']}', '{$currency['thousands_point']}', '{$currency['decimal_places']}', '{$currency['decimal_precise']}');" . chr(10);
 }
 // see if current user points to a employee for sales rep default
 $result = $db->Execute("select account_id from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
@@ -98,14 +94,14 @@ $include_header   = false;
 $include_footer   = false;
 
 switch ($_REQUEST['action']) {
-  case 'pos_return': 
-    $include_template = 'template_return.php';
-	define('PAGE_TITLE', BOX_PHREEPOS_RETURN);
-    break;
-  default: 
-    $include_template = 'template_main.php';
-	define('PAGE_TITLE', BOX_PHREEPOS);
-	break;
+  	case 'pos_return': 
+    	$include_template = 'template_return.php';
+		define('PAGE_TITLE', BOX_PHREEPOS_RETURN);
+    	break;
+  	default: 
+	    $include_template = 'template_main.php';
+		define('PAGE_TITLE', BOX_PHREEPOS);
+		break;
 }
 
 

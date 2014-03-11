@@ -104,27 +104,24 @@ function deleteTiddler($tiddler) {
  */	
 
 function select_all_tiddlers() {
-  global $db;
-  $security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
-  $output_array = array();
-  if (!$security_id < 1) {
+	global $db;
+  	$security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
+  	$output_array = array();
   	$result = $db->Execute("SELECT * FROM ".TABLE_PHREEWIKI);
   	$i=0;
-	  while(!$result->EOF){
-			foreach ($result->fields as $key => $value) {
-		  	$output_array[$i][$key] = $value;
-			}
-			$i++;
-			$result->MoveNext();
-	  }
-  }
-  return $output_array;	
+  	while(!$result->EOF){
+		foreach ($result->fields as $key => $value) {
+			$output_array[$i][$key] = $value;
+		}
+		$i++;
+		$result->MoveNext();
+	}
+  	return $output_array;	
 }
 
 function select_tiddler_by_title($title) {
   global $db;
-  $security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
-  if ($security_id < 1)  return array();	
+  $security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);	
   $tiddlers = $db->Execute("SELECT * FROM ".TABLE_PHREEWIKI."  where title ='" . $title . "'");
   foreach($tiddlers as $t) {
 		if( strcmp($t['title'],$title)==0 ) {
@@ -137,7 +134,6 @@ function select_tiddler_by_title($title) {
 function select_all_tiddler_versions($title) {
 	global $db;
 	$security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
-  if ($security_id < 1)  return array();	
 	//get current tiddler id
 	$tiddler_id = select_tiddler_by_title($title);
 	if( sizeof($tiddler_id)<>0 ) {
@@ -160,7 +156,6 @@ function select_all_tiddler_versions($title) {
 
 function select_all_tiddler_by_tags($yesTags,$noTags) {
 	$security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
-	if ($security_id < 1) return false;
 	//get all data from db
 	$tiddlers = select_all_tiddlers();
 	if( sizeof($tiddlers)>0 ) {

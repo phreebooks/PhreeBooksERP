@@ -26,32 +26,31 @@ class fields extends \core\classes\fields{
 	public  $type_params = 'inventory_type';
 	public  $extra_buttons = '';
   
-  public function __construct(){
-  	gen_pull_language('inventory');
-  	require(DIR_FS_MODULES . 'inventory/defaults.php');
-  	foreach ($inventory_types_plus as $key => $value) $this->type_array[] = array('id'=>$key, 'text'=>$value);
-    $this->type_desc    = INV_ENTRY_INVENTORY_TYPE;
-    parent::__construct();
-  }
+	public function __construct(){
+	  	gen_pull_language('inventory');
+	  	require(DIR_FS_MODULES . 'inventory/defaults.php');
+	  	foreach ($inventory_types_plus as $key => $value) $this->type_array[] = array('id'=>$key, 'text'=>$value);
+	    $this->type_desc    = INV_ENTRY_INVENTORY_TYPE;
+	    parent::__construct();
+	}
 
-  function btn_save($id = '') {
-  	if(parent::btn_save($id = '')){
+	function btn_save($id = '') {
+  		parent::btn_save($id = '');
   		$sql_data_array['use_in_inventory_filter'] = db_prepare_input($_POST['use_in_inventory_filter']);
-  		db_perform(TABLE_EXTRA_FIELDS, $sql_data_array, 'update', "id = $this->id");
+  		db_perform(TABLE_EXTRA_FIELDS, $sql_data_array, 'update', "id = {$this->id}");
   		return true;
   	}
-  	return false;
-  }
-  public function build_form_html($action, $id = '') {
-  	$output  = parent::build_form_html($action, $id = '');
-  	$output .= '<table style="border-collapse:collapse;width:100%;">' . chr(10);
-  	$output .= '  <thead class="ui-widget-header"><tr><th>'.TEXT_OPTIONS."</th></tr></thead>\n";
-  	$output .= '  <tbody class="ui-widget-content"><tr><td>'."\n";
-  	$output .= html_checkbox_field('use_in_inventory_filter', true,  $this->use_in_inventory_filter, '').'&nbsp;'.TEXT_USE_IN_FILTER."<br />\n";
-  	$output .= '  </td></tr></tbody>'."\n";
-  	$output .= "</table>\n";
-  	return $output;
-  }
+  	
+	public function build_form_html($action, $id = '') {
+	  	$output  = parent::build_form_html($action, $id = '');
+	  	$output .= '<table style="border-collapse:collapse;width:100%;">' . chr(10);
+	  	$output .= '  <thead class="ui-widget-header"><tr><th>'.TEXT_OPTIONS."</th></tr></thead>\n";
+	  	$output .= '  <tbody class="ui-widget-content"><tr><td>'."\n";
+	  	$output .= html_checkbox_field('use_in_inventory_filter', true,  $this->use_in_inventory_filter, '').'&nbsp;'.TEXT_USE_IN_FILTER."<br />\n";
+	  	$output .= '  </td></tr></tbody>'."\n";
+	  	$output .= "</table>\n";
+	  	return $output;
+	}
 }
 
 ?>

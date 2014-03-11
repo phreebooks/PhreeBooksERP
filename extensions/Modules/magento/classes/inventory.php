@@ -33,36 +33,34 @@ class inventory {
 	function get_item_by_id(integer $id) {
 		global $db;
 		$result = $db->Execute("SELECT * FROM ".TABLE_INVENTORY." WHERE id = $id");
-		if ($result->RecordCount() != 0) {
-			$this->name 					= $result->fields['name'];
-			$this->description 				= $result->fields['sales_description'];
-			$this->short_description 		= $result->fields['short_description'];
-			$this->weight 					= $result->fields['weight'];
-			$this->status 					= $result->fields['inactive'] == 0;
-			$this->url_key 					= $result->fields['url_key'];
-			$this->url_path 				= $result->fields['url_path'];
-			$this->visibility 				= $result->fields['magento_catalog'];
-			$this->category_ids 			= explode(':', $result->fields['']); //Array of category IDs
-			//$this->has_options 				= false;//$result->fields[''];
-			$this->gift_message_available 	= $result->fields['gift_message_available'];
-			$this->price 					= $result->fields['full_price_with_tax'];
-			$this->special_price 			= $result->fields['special_price_with_tax'];
-			$this->special_from_date		= $result->fields['special_from_date'];
-			$this->special_to_date 			= $result->fields['special_to_date'];
-			$this->tax_class_id 			= $result->fields['item_taxable'];
-			$this->meta_title 				= $result->fields['meta_title'];
-			$this->meta_keyword 			= $result->fields['meta_keyword'];
-			$this->meta_description 		= $result->fields['meta_description'];
-			$this->custom_design 			= $result->fields['custom_design'];
-			$this->custom_layout_update 	= $result->fields['custom_layout_update'];
-			//$this->options_container 		= $result->fields[''];
-			
-			foreach ($this->attributeSets as $key => $value) {
-				if(isset($result->fields[$key])) $this->additional_attributes['multi_data'][] = array($key => $result->fields[$key]) ;
-			}
-			return true;
+		if ($result->RecordCount() == 0) throw new \core\classes\userException("couldn't find inventory with id $id");
+		$this->name 					= $result->fields['name'];
+		$this->description 				= $result->fields['sales_description'];
+		$this->short_description 		= $result->fields['short_description'];
+		$this->weight 					= $result->fields['weight'];
+		$this->status 					= $result->fields['inactive'] == 0;
+		$this->url_key 					= $result->fields['url_key'];
+		$this->url_path 				= $result->fields['url_path'];
+		$this->visibility 				= $result->fields['magento_catalog'];
+		$this->category_ids 			= explode(':', $result->fields['']); //Array of category IDs
+		//$this->has_options 				= false;//$result->fields[''];
+		$this->gift_message_available 	= $result->fields['gift_message_available'];
+		$this->price 					= $result->fields['full_price_with_tax'];
+		$this->special_price 			= $result->fields['special_price_with_tax'];
+		$this->special_from_date		= $result->fields['special_from_date'];
+		$this->special_to_date 			= $result->fields['special_to_date'];
+		$this->tax_class_id 			= $result->fields['item_taxable'];
+		$this->meta_title 				= $result->fields['meta_title'];
+		$this->meta_keyword 			= $result->fields['meta_keyword'];
+		$this->meta_description 		= $result->fields['meta_description'];
+		$this->custom_design 			= $result->fields['custom_design'];
+		$this->custom_layout_update 	= $result->fields['custom_layout_update'];
+		//$this->options_container 		= $result->fields[''];
+		
+		foreach ($this->attributeSets as $key => $value) {
+			if(isset($result->fields[$key])) $this->additional_attributes['multi_data'][] = array($key => $result->fields[$key]) ;
 		}
-		return false;
+		return true;
 	}
 	
 	/** 
@@ -72,38 +70,36 @@ class inventory {
 	
 	function get_item_by_sku(char $sku){
 		global $db;
-		$result = $db->Execute("select * from " . TABLE_INVENTORY . " where sku = '" . $sku  . "'");
-		if ($result->RecordCount() != 0) {
-			$this->name 					= $result->fields['name'];
-			$this->description 				= $result->fields['sales_description'];
-			$this->short_description 		= $result->fields['short_description'];
-			$this->weight 					= $result->fields['weight'];
-			$this->status 					= $result->fields['inactive'] == 0;
-			$this->url_key 					= $result->fields['url_key'];
-			$this->url_path 				= $result->fields['url_path'];
-			$this->visibility 				= $result->fields['magento_catalog'];
-			$this->category_ids 			= explode(':', $result->fields['']); //Array of category IDs
-			//$this->has_options 				= false;//$result->fields[''];
-			$this->gift_message_available 	= $result->fields['gift_message_available'];
-			$this->price 					= $result->fields['full_price_with_tax'];
-			$this->special_price 			= $result->fields['special_price_with_tax'];
-			$this->special_from_date		= $result->fields['special_from_date'];
-			$this->special_to_date 			= $result->fields['special_to_date'];
-			$this->tax_class_id 			= $result->fields['item_taxable'];
-			$this->meta_title 				= $result->fields['meta_title'];
-			$this->meta_keyword 			= $result->fields['meta_keyword'];
-			$this->meta_description 		= $result->fields['meta_description'];
-			$this->custom_design 			= $result->fields['custom_design'];
-			$this->custom_layout_update 	= $result->fields['custom_layout_update'];
-			//$this->options_container 		= $result->fields[''];
+		$result = $db->Execute("select * from " . TABLE_INVENTORY . " where sku = '$sku'");
+		if ($result->RecordCount() != 0) throw new \core\classes\userException("couldn't find inventory with sku $sku");
+		$this->name 					= $result->fields['name'];
+		$this->description 				= $result->fields['sales_description'];
+		$this->short_description 		= $result->fields['short_description'];
+		$this->weight 					= $result->fields['weight'];
+		$this->status 					= $result->fields['inactive'] == 0;
+		$this->url_key 					= $result->fields['url_key'];
+		$this->url_path 				= $result->fields['url_path'];
+		$this->visibility 				= $result->fields['magento_catalog'];
+		$this->category_ids 			= explode(':', $result->fields['']); //Array of category IDs
+		//$this->has_options 				= false;//$result->fields[''];
+		$this->gift_message_available 	= $result->fields['gift_message_available'];
+		$this->price 					= $result->fields['full_price_with_tax'];
+		$this->special_price 			= $result->fields['special_price_with_tax'];
+		$this->special_from_date		= $result->fields['special_from_date'];
+		$this->special_to_date 			= $result->fields['special_to_date'];
+		$this->tax_class_id 			= $result->fields['item_taxable'];
+		$this->meta_title 				= $result->fields['meta_title'];
+		$this->meta_keyword 			= $result->fields['meta_keyword'];
+		$this->meta_description 		= $result->fields['meta_description'];
+		$this->custom_design 			= $result->fields['custom_design'];
+		$this->custom_layout_update 	= $result->fields['custom_layout_update'];
+		//$this->options_container 		= $result->fields[''];
 			
-			foreach ($this->attributeSets as $key => $value) {
-				print("key = $key<br/>");print_r($value);
-				if(isset($result->fields[$key])) $this->additional_attributes['multi_data'][] = array($key => $result->fields[$key]) ;
-			}
-			return true;
+		foreach ($this->attributeSets as $key => $value) {
+			print("key = $key<br/>");print_r($value);
+			if(isset($result->fields[$key])) $this->additional_attributes['multi_data'][] = array($key => $result->fields[$key]) ;
 		}
-		return false;
+		return true;
 	}
 	
 	function set_attributeSets($attributeSets){

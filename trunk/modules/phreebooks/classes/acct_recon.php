@@ -32,7 +32,7 @@ class acct_recon {
 		$period            = $report->period;
 		$fiscal_dates      = gen_calculate_fiscal_dates($period);
 	    $gl_account        = $report->filterlist[0]->min_val; // assumes that the gl account is the first criteria
-	    if (!$gl_account) return false; // No gl account so bail now
+	    if (!$gl_account) throw new \core\classes\userException("no gl account"); // No gl account so bail now
 
 	    //Load open Journal Items
 		$sql = "SELECT m.id, m.post_date, i.debit_amount, i.credit_amount, m.purchase_invoice_id, i.description " .

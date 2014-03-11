@@ -43,7 +43,7 @@ class pricelist_report {
 	$sql = $this->replace_special_fields($sql);
 	
 	$result = $db->Execute($sql);
-	if ($result->RecordCount() == 0) return false; // No data so bail now
+	if ($result->RecordCount() == 0) throw new \core\classes\userException("No data");
 	// Generate the output data array
 	$RowCnt = 0; // Row counter for output data
 	$ColCnt = 1;
@@ -150,7 +150,6 @@ class pricelist_report {
 	  }
 	}
     $new_data = $this->calulate_special_fields($id);
-	if (!$new_data) return false;
 	foreach ($myrow as $key => $value) { 
 	  for ($i = 0; $i < count($this->special_field_array); $i++) {
 	    if ($this->sql_field_karray[$key] == $this->special_field_array[$i]) $myrow[$key] = $new_data[$this->special_field_array[$i]];
@@ -161,7 +160,6 @@ class pricelist_report {
 
   function calulate_special_fields($id) {
 	global $db, $currencies;
-	$new_data = array();
 	// get the inventory prices
 	$inventory = $db->Execute("select item_cost, full_price, price_sheet from ".TABLE_INVENTORY." where id = '$id'");
 	// determine what price sheet to use, priority: inventory, default
