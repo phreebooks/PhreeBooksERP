@@ -83,7 +83,8 @@ if (file_exists(DIR_WS_THEMES . 'icons/')) { define('DIR_WS_ICONS',  DIR_WS_THEM
 else { define('DIR_WS_ICONS', 'themes/default/icons/'); } // use default
 $messageStack 	= new \core\classes\messageStack;
 $toolbar      	= new \core\classes\toolbar;
-$currencies  	= new \core\classes\currencies;
+$currencies		= apc_fetch("currencies");
+if ($currencies === false) $currencies  	= new \core\classes\currencies;
 // determine what company to connect to
 if ($_REQUEST['action']=="validate") $_SESSION['company'] = $_POST['company'];
 if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php')) {
@@ -95,31 +96,46 @@ if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR
   	$db = new queryFactory();
   	$db->connect(DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, DB_DATABASE);
   	// set application wide parameters for phreebooks module
-  	$result = $db->Execute_return_error("select configuration_key, configuration_value from " . DB_PREFIX . "configuration");
-  	if ($db->error_number != '' || $result->RecordCount() == 0) trigger_error(LOAD_CONFIG_ERROR, E_USER_ERROR);
-  	while (!$result->EOF) {
-		define($result->fields['configuration_key'], $result->fields['configuration_value']);
-		$result->MoveNext();
+  	if(!function_exists('apc_load_constants') || apc_load_constants('configuration') === false) {
+  		$result = $db->Execute_return_error("select configuration_key, configuration_value from " . DB_PREFIX . "configuration");
+  		if ($db->error_number != '' || $result->RecordCount() == 0) trigger_error(LOAD_CONFIG_ERROR, E_USER_ERROR);
+  		$array = array ();
+  		while (!$result->EOF) {
+  			if (function_exists('apc_load_constants')) {
+  				$array[$result->fields['configuration_key']] = $result->fields['configuration_value'];
+  			}else{
+  				define($result->fields['configuration_key'], $result->fields['configuration_value']);
+  			}
+			$result->MoveNext();
+  		}
+  		if (function_exists('apc_load_constants')) apc_define_constants("configuration", $array, true);
   	}
   	// search the list modules and load configuration files and language files
   	gen_pull_language('phreedom', 'menu');
   	gen_pull_language('phreebooks', 'menu');
   	require(DIR_FS_MODULES . 'phreedom/config.php');
-  	$admin_classes = array();
-  	$dirs = scandir(DIR_FS_MODULES);
-  	foreach ($dirs as $dir) { // first pull all module language files, loaded or not
-    	if ($dir == '.' || $dir == '..') continue;
-    	gen_pull_language($dir, 'menu');
-  		if (is_dir(DIR_FS_MODULES . $dir)){
-    		$class = "\\$dir\classes\admin";
-	  		$admin_classes[$dir]  = new $class;
-		}
-  	}
-  	uasort($admin_classes, "arange_object_by_sort_order");
+  	$admin_classes 	= apc_fetch("admin_classes");
+  	$mainmenu 		= apc_fetch("mainmenu");
+  	if(!function_exists('apc_load_constants') || $admin_classes === false || $mainmenu === false) {
+	  	$admin_classes = array();
+	  	$dirs = scandir(DIR_FS_MODULES);
+	  	foreach ($dirs as $dir) { // first pull all module language files, loaded or not
+	    	if ($dir == '.' || $dir == '..') continue;
+	    	gen_pull_language($dir, 'menu');
+	  		if (is_dir(DIR_FS_MODULES . $dir)){
+	    		$class = "\\$dir\classes\admin";
+		  		$admin_classes[$dir]  = new $class;
+			}
+	  	}
+	  	uasort($admin_classes, "arange_object_by_sort_order");
+	  	if (function_exists('apc_load_constants') && apc_add("admin_classes", $admin_classes, 600) == false) throw new \core\classes\userException("can not cache admin classes");
+	  	$currencies->load_currencies();
+	  	if (function_exists('apc_load_constants') && apc_add("currencies", $currencies, 600) == false) throw new \core\classes\userException("can not cache currencies");
+	  	if (function_exists('apc_load_constants') && apc_add("mainmenu", $mainmenu, 600) == false)     throw new \core\classes\userException("can not cache mainmenu");
+  	} 
 	// pull in the custom language over-rides for this module (to pre-define the standard language)
   	$path = DIR_FS_MODULES . "$module/custom/pages/$page/extra_menus.php";
   	if (file_exists($path)) { include($path); }
-  	$currencies->load_currencies();
 }
 $prefered_type = ENABLE_SSL_ADMIN == 'true' ? 'SSL' : 'NONSSL';
 if ($request_type <> $prefered_type) gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL')); // re-direct if SSL request not matching actual request

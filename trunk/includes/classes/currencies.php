@@ -23,13 +23,13 @@ require_once(DIR_FS_MODULES . 'phreedom/config.php');
 gen_pull_language('phreedom', 'admin');
 
 class currencies {
-	private $default_currency = false;
-  	public  $currencies = array();
-  	public  $db_table      = TABLE_CURRENCIES;
-	public  $title         = SETUP_TITLE_CURRENCIES;
-    public  $extra_buttons = true;
-	public  $help_path     = '07.08.02';
-	public  $def_currency  = DEFAULT_CURRENCY;
+	private $default_currency 	= false;
+  	public  $currencies			= array();
+  	public  $db_table      		= TABLE_CURRENCIES;
+	public  $title         		= SETUP_TITLE_CURRENCIES;
+    public  $extra_buttons 		= true;
+	public  $help_path     		= '07.08.02';
+	public  $def_currency  		= DEFAULT_CURRENCY;
   
   	function __construct() {
   		$this->security_id   = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);		
@@ -119,7 +119,7 @@ class currencies {
 	}
   
   	function default_currency_code(){
-  		if(!defined('DEFAULT_CURRENCY')) throw new \Exception(ERROR_NO_DEFAULT_CURRENCY_DEFINED); // check for default currency defined
+  		if(!defined('DEFAULT_CURRENCY')) throw new \core\classes\userException(ERROR_NO_DEFAULT_CURRENCY_DEFINED); // check for default currency defined
   		return $this->default_currency = DEFAULT_CURRENCY;
   	}
   	

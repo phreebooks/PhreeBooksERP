@@ -66,7 +66,7 @@
       include_once       ($path . "$file/language/en_us/language.php");
     }
   }
-  
+
 	function return_all_methods($module, $active_only = true, $type ='methods') {
 	    $choices     = array();
 		if (!$module) return $choices;
@@ -76,21 +76,26 @@
 		  	if ($active_only && !defined('MODULE_' . strtoupper($module) . '_' . strtoupper($method) . '_STATUS')) continue;
 		  	load_method_language($method_dir, $method);
 		  	$class = "\\$module\\$type\\$method\\$method";
-		  	$choices[$method] = new $class; 
+		  	$choices[$method] = new $class;
 	    }
 		uasort($choices, "arange_object_by_sort_order");
 	    return $choices;
 	}
-  
+
 	/**
 	 * this function is for sorting a array of objects by the sort_order variable
 	 */
-  
+
   	function arange_object_by_sort_order($a, $b){
     	return strcmp($a->sort_order, $b->sort_order);
 	}
 
-	
+	/**
+	 * function stores configuration values and updates constants and or cache.
+	 * @param string $constant
+	 * @param string $value
+	 */
+
   	function write_configure($constant, $value = '') {
     	global $db;
 		if (!$constant) throw new \Exception("contant isn't defined for value: $value");
@@ -98,18 +103,42 @@
 		if ($result->RecordCount() == 0) {
 	  		$sql_array = array('configuration_key'  => $constant, 'configuration_value'=> $value);
 		  	db_perform(TABLE_CONFIGURATION,  $sql_array);
-		  	define($constant, $value);
 		} elseif ($result->fields['configuration_value'] <> $value) {
-		  	db_perform(TABLE_CONFIGURATION, array('configuration_value'=>$value), 'update', "configuration_key = '".$constant."'");
+		  	db_perform(TABLE_CONFIGURATION, array('configuration_value'=>$value), 'update', "configuration_key = '$constant'");
+		}
+		if (function_exists('apc_load_constants')) {// rebuild cache
+			$result = $db->Execute("select configuration_key, configuration_value from " . TABLE_CONFIGURATION );
+			$array = array ();
+			while (!$result->EOF) {
+				$array[$result->fields['configuration_key']] = $result->fields['configuration_value'];
+				$result->MoveNext();
+			}
+			apc_define_constants("configuration", $array, true);
+		} else{ // cache not installed just define constant
+			define($constant, $value);
 		}
   	}
 
-  function remove_configure($constant){
-    global $db;
-	if (!$constant) throw new \Exception("There is no constant to remove");
-	$db->Execute("delete from " . TABLE_CONFIGURATION . " where configuration_key = '" . $constant . "'");
-	return true;
-  }
+  	/**
+  	 * function removes constant from configuration values and updates cache if installed.
+  	 * @param string $constant
+  	 */
+
+  	function remove_configure($constant){
+	    global $db;
+		if (!$constant) throw new \Exception("There is no constant to remove");
+		$db->Execute("delete from " . TABLE_CONFIGURATION . " where configuration_key = '$constant'");
+		if (function_exists('apc_load_constants')) {// rebuild cache
+			$result = $db->Execute("select configuration_key, configuration_value from " . TABLE_CONFIGURATION );
+			$array = array ();
+			while (!$result->EOF) {
+				$array[$result->fields['configuration_key']] = $result->fields['configuration_value'];
+				$result->MoveNext();
+			}
+			apc_define_constants("configuration", $array, true);
+		}
+		return true;
+  	}
 
   function gen_not_null($value) {
     return (!is_null($value) || strlen(trim($value)) > 0) ? true : false;
@@ -134,7 +163,7 @@
   	function gen_trim_string($string, $length = 20, $add_dots = false) {
     	return mb_strimwidth($string, 0, $length, $add_dots ? '...' : '');
   	}
- 
+
   function gen_null_pull_down() {
     $null_array = array('id' => '0', 'text' => TEXT_ENTER_NEW);
     return $null_array;
@@ -144,7 +173,7 @@
    * this function creates a array for dropdown doxes.
    * arrays with objects may also be passed
    * @param array $keyed_array
-   * @param bool  $installed_only. this wil be used for objects only 
+   * @param bool  $installed_only. this wil be used for objects only
    */
   function gen_build_pull_down($keyed_array, $installed_only = false, $inc_select = false) {
 	$values = array();
@@ -198,7 +227,7 @@
 	if (($post_time_stamp >= $period_start_time_stamp) && ($post_time_stamp <= $period_end_time_stamp)) {
 		return CURRENT_ACCOUNTING_PERIOD;
 	} else {
-		$result = $db->Execute("select period from " . TABLE_ACCOUNTING_PERIODS . " 
+		$result = $db->Execute("select period from " . TABLE_ACCOUNTING_PERIODS . "
 			where start_date <= '" . $post_date . "' and end_date >= '" . $post_date . "'");
 		if ($result->RecordCount() <> 1) { // post_date is out of range of defined accounting periods
 			if (!$hide_error) throw new \Exception(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR);
@@ -229,7 +258,7 @@
 	if ($hide_inactive)  $params[] = "account_inactive = '0'";
 	if (!$show_all)      $params[] = "heading_only = '0'";
 	if ($restrict_types) $params[] = "account_type in (" . implode(',', $restrict_types) . ")";
-	$sql .= (sizeof($params) == 0) ? '' : ' where ' . implode(' and ', $params); 
+	$sql .= (sizeof($params) == 0) ? '' : ' where ' . implode(' and ', $params);
 	$sql .= " order by id";
     $result = $db->Execute($sql);
     if ($first_none) $output[] = array('id' => '', 'text' => GEN_HEADING_PLEASE_SELECT);
@@ -267,7 +296,7 @@
   }
 
   	/**
-   	 * this function will return the short_name for a contact 
+   	 * this function will return the short_name for a contact
    	 * @param unknown_type $id
    	 */
   	function gen_get_contact_name($id) {
@@ -279,7 +308,7 @@
 
   function gen_get_contact_array_by_type($type = 'v') {
     global $db;
-    $accounts = $db->Execute("select c.id, a.primary_name from " . TABLE_CONTACTS . " c left join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id 
+    $accounts = $db->Execute("select c.id, a.primary_name from " . TABLE_CONTACTS . " c left join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id
 	  where c.inactive <> '1' and a.type='" . $type . "m' order by a.primary_name");
     $accounts_array = array();
     $accounts_array[] = array('id' => '', 'text' => TEXT_NONE);
@@ -333,7 +362,7 @@
 
   function inv_calculate_tax_drop_down($type = 'c', $contactForm = true) {
     global $db;
-    $tax_rates = $db->Execute("select tax_rate_id, description_short 
+    $tax_rates = $db->Execute("select tax_rate_id, description_short
 		from " . TABLE_TAX_RATES . " where type = '" . $type . "'");
     $tax_rate_drop_down = array();
     if ($contactForm) $tax_rate_drop_down[] = array('id' => '-1', 'text' => TEXT_PRODUCT_DEFAULT);
@@ -396,13 +425,13 @@
 		$result['long']  .= ACT_END_OF_MONTH;
 		$result['short'] .=  ACT_END_OF_MONTH;
 	}
-	if ($short) return $result['short']; 
+	if ($short) return $result['short'];
 	return $result['long'];
   }
 
   function get_price_sheet_data($type = 'c') {
     global $db;
-    $sql = "select distinct sheet_name, default_sheet from " . TABLE_PRICE_SHEETS . " 
+    $sql = "select distinct sheet_name, default_sheet from " . TABLE_PRICE_SHEETS . "
 		where inactive = '0' and type = '" . $type . "' order by sheet_name";
     $result = $db->Execute($sql);
     $sheets = array();
@@ -424,9 +453,9 @@
 	  gen_js_encode(COMPANY_ADDRESS2),
 	  gen_js_encode(COMPANY_CITY_TOWN),
 	  gen_js_encode(COMPANY_ZONE),
-	  gen_js_encode(COMPANY_POSTAL_CODE), 
-	  gen_js_encode(COMPANY_COUNTRY), 
-	  gen_js_encode(COMPANY_TELEPHONE1), 
+	  gen_js_encode(COMPANY_POSTAL_CODE),
+	  gen_js_encode(COMPANY_COUNTRY),
+	  gen_js_encode(COMPANY_TELEPHONE1),
 	  gen_js_encode(COMPANY_EMAIL),
 	);
 	$acct_array['text'] = array();
@@ -489,54 +518,54 @@ function saveUploadZip($file_field, $dest_dir, $dest_name) {
 	@unlink($backup->source_dir);
 }
 
-  function dircopy($src_dir, $dst_dir, $verbose = false, $use_cached_dir_trees = false) {    
+  function dircopy($src_dir, $dst_dir, $verbose = false, $use_cached_dir_trees = false) {
 	static $cached_src_dir;
-	static $src_tree; 
+	static $src_tree;
 	static $dst_tree;
 	$num = 0;
 
-	if (($slash = substr($src_dir, -1)) == "\\" || $slash == "/") $src_dir = substr($src_dir, 0, strlen($src_dir) - 1); 
-	if (($slash = substr($dst_dir, -1)) == "\\" || $slash == "/") $dst_dir = substr($dst_dir, 0, strlen($dst_dir) - 1);  
+	if (($slash = substr($src_dir, -1)) == "\\" || $slash == "/") $src_dir = substr($src_dir, 0, strlen($src_dir) - 1);
+	if (($slash = substr($dst_dir, -1)) == "\\" || $slash == "/") $dst_dir = substr($dst_dir, 0, strlen($dst_dir) - 1);
 
 	if (!$use_cached_dir_trees || !isset($src_tree) || $cached_src_dir != $src_dir) {
 		$src_tree = get_dir_tree($src_dir);
 		$cached_src_dir = $src_dir;
-		$src_changed = true;  
+		$src_changed = true;
 	}
 	if (!$use_cached_dir_trees || !isset($dst_tree) || $src_changed) $dst_tree = get_dir_tree($dst_dir);
-	if (!is_dir($dst_dir)) mkdir($dst_dir, 0777, true);  
+	if (!is_dir($dst_dir)) mkdir($dst_dir, 0777, true);
 
 	foreach ($src_tree as $file => $src_mtime) {
-		if (!isset($dst_tree[$file]) && $src_mtime === false) mkdir("$dst_dir/$file"); 
+		if (!isset($dst_tree[$file]) && $src_mtime === false) mkdir("$dst_dir/$file");
 		elseif (!isset($dst_tree[$file]) && $src_mtime || isset($dst_tree[$file]) && $src_mtime > $dst_tree[$file]) {
 			if (copy("$src_dir/$file", "$dst_dir/$file")) {
 				if($verbose) echo "Copied '$src_dir/$file' to '$dst_dir/$file'<br />\r\n";
-				touch("$dst_dir/$file", $src_mtime); 
-				$num++; 
+				touch("$dst_dir/$file", $src_mtime);
+				$num++;
 			} else echo "<font color='red'>File '$src_dir/$file' could not be copied!</font><br />\r\n";
-		}        
+		}
 	}
 
-	return $num; 
+	return $num;
   }
 
   function get_dir_tree($dir, $root = true)  {
 	static $tree;
-	static $base_dir_length; 
-	if ($root) { 
-	  $tree = array();  
-	  $base_dir_length = strlen($dir) + 1;  
+	static $base_dir_length;
+	if ($root) {
+	  $tree = array();
+	  $base_dir_length = strlen($dir) + 1;
 	}
 	if (is_file($dir)) {
-	  $tree[substr($dir, $base_dir_length)] = filemtime($dir); 
-	} elseif (is_dir($dir) && $di = dir($dir)) { 
-	  if (!$root) $tree[substr($dir, $base_dir_length)] = false;  
-	  while (($file = $di->read()) !== false) 
+	  $tree[substr($dir, $base_dir_length)] = filemtime($dir);
+	} elseif (is_dir($dir) && $di = dir($dir)) {
+	  if (!$root) $tree[substr($dir, $base_dir_length)] = false;
+	  while (($file = $di->read()) !== false)
 		if ($file != "." && $file != "..")
-		  get_dir_tree("$dir/$file", false);  
-	  $di->close(); 
+		  get_dir_tree("$dir/$file", false);
+	  $di->close();
 	}
-	if ($root) return $tree;     
+	if ($root) return $tree;
   }
 
 /*************** Date Functions *******************************/
@@ -574,7 +603,7 @@ function saveUploadZip($file_field, $dest_dir, $dest_name) {
 		  $d .= $df . " < '" . $de . "'";
 		  $fildesc .= ' ' . TEXT_TO . ' ' . $DateArray[2];
 		}
-		$fildesc .= '; ';			
+		$fildesc .= '; ';
 		break;
 	  case "c": // Today (specify range for datetime type fields to match for time parts)
 		$ds = $dates['Today'];
@@ -655,7 +684,7 @@ function saveUploadZip($file_field, $dest_dir, $dest_name) {
 		break;
 	}
 	$dates = array(
-	  'sql'         => $d, 
+	  'sql'         => $d,
 	  'description' => $fildesc,
 	  'start_date'  => $ds,
 	  'end_date'    => $de,
@@ -663,7 +692,7 @@ function saveUploadZip($file_field, $dest_dir, $dest_name) {
 	return $dates;
   }
 
-function gen_db_date($raw_date = '', $separator = '/') { 
+function gen_db_date($raw_date = '', $separator = '/') {
   global $messageStack;
   if (!$raw_date) return '';
   // handles periods (.), dashes (-), and slashes (/) as date separators
@@ -756,7 +785,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
 
   function gen_calculate_fiscal_dates($period) {
 	global $db;
-	$result = $db->Execute("select fiscal_year, start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . " 
+	$result = $db->Execute("select fiscal_year, start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . "
 	  where period = " . $period);
 	// post_date is out of range of defined accounting periods
 	if ($result->RecordCount() <> 1) throw new \Exception(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');
@@ -949,7 +978,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
     global $db;
     $result = $db->Execute("show fields from " . $table_name);
     while (!$result->EOF) {
-      if  ($result->fields['Field'] == $field_name) return true; 
+      if  ($result->fields['Field'] == $field_name) return true;
       $result->MoveNext();
     }
     return false;
@@ -1040,7 +1069,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
     	$field = '<input type="' . $type . '" name="' . $name . '" class="easyui-validatebox"';
 		if ($id)                       	$field .= ' id="'    . $id    . '"';
     	if (gen_not_null($value))      	$field .= ' value="' . str_replace('"', '&quot;', $value) . '"';
-    	if ($required == true) 			$field .= ' required="required"'; 
+    	if ($required == true) 			$field .= ' required="required"';
     	if (gen_not_null($parameters)) 	$field .= ' ' . $parameters;
     	$field .= ' />';
     	return $field;
@@ -1049,7 +1078,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
   	function html_hidden_field($name, $value = '', $parameters = '') {
     	return html_input_field($name, $value, $parameters, false, 'hidden', false);
   	}
-  
+
   	function html_currency_field($name, $value, $parameters, $currency_code = DEFAULT_CURRENCY){//@todo test and implement
   		global $currencies;
   		if (strpos($name, '[]')) { // don't show id attribute if generic array
@@ -1083,14 +1112,14 @@ function gen_db_date($raw_date = '', $separator = '/') {
     	$field .=  "class='easyui-numberbox' data-options=\"precision:$currencies[DEFAULT_CURRENCY]->decimal_places,groupSeparator:'$currencies[DEFAULT_CURRENCY]->thousands_point',decimalSeparator:'$currencies[DEFAULT_CURRENCY]->decimal_point'\" />";
   		return $field;
   	}
-  	
-  	/** 
+
+  	/**
   	 * new function to create a date field
   	 * @param $name
   	 * @param $value
   	 * @param $required bool
   	 */
-  	
+
   	function html_date_field($name, $value, $required = false){//@todo test and implement date format needs to be right
   		if (strpos($name, '[]')) { // don't show id attribute if generic array
 	  		$id = false;
@@ -1105,7 +1134,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
     	$field .= " class='easyui-datebox' />";
     	return $field;
   	}
-  
+
   function html_password_field($name, $value = '', $required = false, $parameters = '') {
     return html_input_field($name, $value, 'maxlength="40" ' . $parameters, $required, 'password', false);
   }
@@ -1257,15 +1286,15 @@ function gen_db_date($raw_date = '', $separator = '/') {
   }
 
 /**
- * this function creates a heading for a table that will be able to sort 
+ * this function creates a heading for a table that will be able to sort
  * @param array $heading_array the fields of the table
  * @param array $extra_headings extra columns that do not have the abillety to sort
  * @return 'html_code' this is the table heading
  * @return 'disp_order' this is the field + display order for the sql statement_builder
  */
-	
+
   function html_heading_bar($heading_array, $extra_headings = array(TEXT_ACTION)) {
-	global $PHP_SELF; 
+	global $PHP_SELF;
 	$result = array();
 	$output .= html_hidden_field('sf', $_REQUEST['sf']) . chr(10);
     $output .= html_hidden_field('so', ($_REQUEST['so'] == 'desc' ? 'desc' : 'asc') ) . chr(10);
@@ -1291,7 +1320,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
 	if (sizeof($extra_headings) > 0) foreach ($extra_headings as $value) {
 	  $output .= '<th nowrap="nowrap">' . $value . '</th>' . chr(10);
 	}
-	$result['html_code'] = $output; 
+	$result['html_code'] = $output;
 	return $result;
   }
 
@@ -1349,7 +1378,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
 		}
 	  }
 	  // change title to language if constant is defined
-	  if (defined($full_array[$index][$j]['doc_title'])) $full_array[$index][$j]['doc_title'] = constant($full_array[$index][$j]['doc_title']); 
+	  if (defined($full_array[$index][$j]['doc_title'])) $full_array[$index][$j]['doc_title'] = constant($full_array[$index][$j]['doc_title']);
 	  if ($full_array[$index][$j]['doc_type'] == '0') {  // folder
 		$entry_string .= '<a id="imgdc_' . $new_ref . '" href="javascript:Toggle(\'dc_' . $new_ref . '\');">' . html_icon('places/folder.png', TEXT_OPEN, 'small', '', '', '', 'icndc_' . $new_ref) . '</a>';
 	  } else {
@@ -1464,8 +1493,8 @@ function charConv($string, $in, $out) {
 	throw new \Exception(TEXT_IMP_ERMSG6);
   }
 
-	/** @todo places where it is used need to be modified 
-	 * checks if path exists if not it will try to create it 
+	/** @todo places where it is used need to be modified
+	 * checks if path exists if not it will try to create it
 	 * @param string $file_path
 	 * @throws Exception
 	 */
@@ -1475,18 +1504,18 @@ function charConv($string, $in, $out) {
 		}
   	}
 
-  
+
   	/**
   	 * this function will try to validate the date
   	 * @param str $date
   	 * @throws Exception
-  	 */ 
+  	 */
 	function validate_db_date($date) {
-    	$y = (int)substr($date, 0, 4); 
+    	$y = (int)substr($date, 0, 4);
 		if ($y < 1900 || $y > 2099)	throw new \Exception("the year is to big or to small for date: $date");
-    	$m = (int)substr($date, 5, 2); 
+    	$m = (int)substr($date, 5, 2);
 		if ($m < 1 || $m > 12) 		throw new \Exception("the month is to big or to small for date: $date");
-    	$d = (int)substr($date, 8, 2); 
+    	$d = (int)substr($date, 8, 2);
 		if ($d < 1 || $d > 31) 		throw new \Exception("the day is to big or to small for date: $date");
 		return true;
   	}
@@ -1539,7 +1568,7 @@ function charConv($string, $in, $out) {
 	        		$text = htmlspecialchars(stripslashes(strip_tags($text)));
 	      		} else {
 	        		$text = strip_tags($email_text);
-	      		}    
+	      		}
 		      	// now lets build the mail object with the phpmailer class
 			  	require_once(DIR_FS_MODULES . 'phreedom/includes/PHPMailer/class.phpmailer.php');
 		      	$mail = new PHPMailer(true);
@@ -1599,7 +1628,7 @@ function charConv($string, $in, $out) {
 				$sql_data_array['DateDb'] 		= date("Y-m-d H:i:s");
 				$sql_data_array['Subject']		= $email_subject;
 				//$sql_data_array['MsgSize'] 		= $email["SIZE"];?? Rene Unknown
-		  		if(db_table_exists(TABLE_PHREEMAIL)) db_perform(TABLE_PHREEMAIL, $sql_data_array, 'insert');  		
+		  		if(db_table_exists(TABLE_PHREEMAIL)) db_perform(TABLE_PHREEMAIL, $sql_data_array, 'insert');
 		  		// save in crm_notes
 				$temp = $db->Execute("select account_id from " . TABLE_USERS . " where admin_email = '" . $from_email_address . "'");
 				$sql_array['contact_id'] = $ref_id;
@@ -1614,7 +1643,7 @@ function charConv($string, $in, $out) {
       		$messageStack->add(sprintf(EMAIL_SEND_FAILED . '&nbsp;'. $mail->ErrorInfo, $to_name, $to_email_address, $email_subject),'error');
 	  		$messageStack->add($e->getMessage(), $e->getCode());
 		}
-    
+
 	}  // end function
 /**************************************************************************************************************/
 // Section 7. Password Functions
@@ -1647,7 +1676,7 @@ function createXmlHeader() {
 function createXmlFooter() {
 	global $messageStack;
 	$xml  = $messageStack->output_xml();
-	$xml .=  "</data>\n"; 
+	$xml .=  "</data>\n";
 	return $xml;
 }
 
@@ -1699,7 +1728,7 @@ function xml_to_object($xml = '') {
 		  foreach ($temp as $prop) {
 		    if ($prop) {
 		      $oneval = explode('=', $prop);
-		      $attr[$oneval[0]] = $onveal[1]; 
+		      $attr[$oneval[0]] = $onveal[1];
 		    }
 		  }
 		}
@@ -1710,7 +1739,7 @@ function xml_to_object($xml = '') {
 	  }
 	  while(true) {
 		$runaway++;
-		if ($runaway > 10000) throw new \Exception('PhreeBooks Runaway counter 1 reached. There is an error in the xml entry!');	
+		if ($runaway > 10000) throw new \Exception('PhreeBooks Runaway counter 1 reached. There is an error in the xml entry!');
 		$data = $selfclose ? '' : trim(substr($xml, $taglen, strpos($xml, $end_tag) - $taglen));
 		if (isset($output->$tag)) {
 		  if (!is_array($output->$tag)) $output->$tag = array($output->$tag);
@@ -1726,7 +1755,7 @@ function xml_to_object($xml = '') {
 	  return $xml;
 	}
 	$runaway++;
-	if ($runaway > 10000) throw new \Exception('Phreebooks Runaway counter 2 reached. There is an error in the xml entry!');	
+	if ($runaway > 10000) throw new \Exception('Phreebooks Runaway counter 2 reached. There is an error in the xml entry!');
   }
   return $output;
 }
@@ -1847,11 +1876,11 @@ function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext
     		$text .= " DEPRECATED FUNCTION:  '$errstr' line $errline in file $errfile";
     		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
         	break;
-        case E_USER_DEPRECATED : //16384 	
+        case E_USER_DEPRECATED : //16384
     		$text  = "PLEASE REPORT THIS TO THE DEV TEAM ".date('Y-m-d H:i:s') . $temp;
     		$text .= " USER DEPRECATED FUNCTION:  '$errstr' line $errline in file $errfile";
     		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
-        	break; 	
+        	break;
         default:
 	    	$text  = date('Y-m-d H:i:s') . $temp;
 	    	$text .=  " Unknown error type: [$errno] '$errstr' error on line $errline in file $errfile";
@@ -1879,7 +1908,7 @@ function log_trace() {
 		echo sprintf('%s %3s. %s->%s() %s:%s', $function_name, $entry_id + 1, $entry['class'], $entry['function'], $entry['file'], $entry['line']) . "<br/>";
         }
     }
-} 
+}
 
 function PhreebooksExceptionHandler($exception) {
 	ob_clean();
@@ -1897,12 +1926,12 @@ function PhreebooksExceptionHandler($exception) {
     echo "<br>trace:<br/>". $exception->getTraceAsString();
 	ob_end_flush();
   	session_write_close();
-	die;    //@todo maken van UserVisuableException(evt loggen in construct.), InternalException optie = }catch(UserVisuableException $e){return to template...}catch(Exception $e){return to main. }catch(Exception $e){return to error page.} 
+	die;    //@todo maken van UserVisuableException(evt loggen in construct.), InternalException optie = }catch(UserVisuableException $e){return to template...}catch(Exception $e){return to main. }catch(Exception $e){return to error page.}
 // added a if to prevent circulair page loading
 //	if ($_SERVER['REQUEST_URI'] != FILENAME_DEFAULT)    gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL'));
 }
 
-function Phreebooks_autoloader($temp){ 
+function Phreebooks_autoloader($temp){
 	$class = str_replace("\\", "/", $temp);
 	$path  = explode("/", $class, 3);
 	if ($path[0] == 'core'){
