@@ -22,6 +22,7 @@
 <!--
 // pass any php variables generated during pre-process that are used in the javascript functions.
 // Include translations here as well.
+<?php echo js_calendar_init($cal_date); ?>
 var journalID = <?php echo JOURNAL_ID; ?>;
 
 function init() {

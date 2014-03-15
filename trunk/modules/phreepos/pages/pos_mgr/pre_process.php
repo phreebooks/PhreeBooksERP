@@ -23,9 +23,11 @@ define('JOURNAL_ID','19');
 define('POPUP_FORM_TYPE','pos:rcpt');
 history_filter('pos_mgr');
 /***************   hook for custom actions  ***************************/
-$date        = $_REQUEST['search_date'];
+$date        = ($_REQUEST['search_date']!= '') ? gen_db_date($_REQUEST['search_date']): false;
 $acct_period = $_REQUEST['search_period'];
 $oid		 = isset($_GET['oID']) ? $_GET['oID'] : false;
+if ($acct_period == false) $acct_period = CURRENT_ACCOUNTING_PERIOD;
+$period_filter = ($acct_period == 'all') ? '' : " and period = $acct_period ";
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/pos_mgr/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
@@ -45,7 +47,7 @@ switch ($_REQUEST['action']) {
 		  	// *************** START TRANSACTION *************************
 		  	$db->transStart();
 		  	$delOrd->unPost('delete');
-		 
+
 		  	// delete the payments
 			foreach ($delOrd->journal_rows as $value) {
 			   	if ($value['gl_type'] <> 'ttl') continue;
@@ -70,7 +72,7 @@ switch ($_REQUEST['action']) {
 			$messageStack->add($e->getMessage());
 	  	}
 	  	if (DEBUG) $messageStack->write_debug();
-	  
+
     	break;
   case 'go_first':    $_REQUEST['list'] = 1;       break;
   case 'go_previous': $_REQUEST['list'] = max($_REQUEST['list']-1, 1); break;
@@ -83,7 +85,7 @@ switch ($_REQUEST['action']) {
 }
 /*****************   prepare to display templates  *************************/
 // build the list header
-if (!isset($_REQUEST['sf'])) $_REQUEST['sf'] = 'post_date'; 
+if (!isset($_REQUEST['sf'])) $_REQUEST['sf'] = 'post_date';
 if (!isset($_REQUEST['so'])) $_REQUEST['so'] = 'desc';// default to descending by postdate
 
 if (ENABLE_MULTI_CURRENCY){
@@ -106,13 +108,9 @@ $result      = html_heading_bar($heading_array);
 $list_header = $result['html_code'];
 $disp_order  = $result['disp_order'];
 // build the list for the page selected
-if (!$date == false){
-	$period_filter = (" and post_date = '" . $date."'");
+if ($date != false){
+	$period_filter = " and post_date = '$date' ";
 	$acct_period   = '';
-}else{
-	if ($acct_period == false) $acct_period = CURRENT_ACCOUNTING_PERIOD;
-	$period_filter = ($acct_period == 'all') ? '' : (' and period = ' . $acct_period);
-	$date = '';
 }
 if ($oid == true){
 	$search = " and id = $oid";
@@ -128,7 +126,7 @@ if ($oid == true){
 $field_list = array('id', 'post_date', 'shipper_code', 'purchase_invoice_id', 'total_amount', 'bill_primary_name', 'journal_id', 'currencies_code', 'currencies_value','total_amount as new_total_amount');
 // hook to add new fields to the query return results
 if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
-$query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " from " . TABLE_JOURNAL_MAIN . " 
+$query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " from " . TABLE_JOURNAL_MAIN . "
 		where journal_id in (19,21) $period_filter $search order by $disp_order, purchase_invoice_id DESC";
 $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
@@ -139,8 +137,16 @@ $cal_date = array(
   'form'      => 'pos_mgr',
   'fieldname' => 'search_date',
   'imagename' => 'btn_date_1',
-  'default'   => isset($date) ? gen_locale_date($date): '',
+  'default'   => ($date != false) ? gen_locale_date($date): '',
   'params'    => array('align' => 'left'),
+);
+
+$cal_gl = array(
+		'name'      => 'datePost',
+		'form'      => 'journal',
+		'fieldname' => 'post_date',
+		'imagename' => 'btn_date_1',
+		'default'   => gen_locale_date($post_date),
 );
 
 $include_header   = true;

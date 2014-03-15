@@ -25,16 +25,16 @@ class toolbar {
 	public $search_prefix = '';
     public $icon_size     = 'large';	// default icon size (choice are small, medium, large)
   	public $icon_list     = array();
-  	
-  function __construct($id = '0') {
-    // set up the default toolbar
-	$this->id                  = $id;
-	$this->icon_list['cancel'] = array('show' => true, 'icon' => 'actions/edit-undo.png',        'params' => '', 'text' => TEXT_CANCEL, 'order' => 1);
-	$this->icon_list['open']   = array('show' => true, 'icon' => 'actions/document-open.png',    'params' => '', 'text' => TEXT_OPEN,   'order' => 2);
-	$this->icon_list['save']   = array('show' => true, 'icon' => 'devices/media-floppy.png',     'params' => '', 'text' => TEXT_SAVE,   'order' => 3);
-	$this->icon_list['delete'] = array('show' => true, 'icon' => 'actions/edit-delete.png',      'params' => '', 'text' => TEXT_DELETE, 'order' => 4);
-	$this->icon_list['print']  = array('show' => true, 'icon' => 'phreebooks/pdficon_large.gif', 'params' => '', 'text' => TEXT_PRINT,  'order' => 5);
-  }
+
+	function __construct($id = '0') {
+	    // set up the default toolbar
+		$this->id                  = $id;
+		$this->icon_list['cancel'] = array('show' => true, 'icon' => 'actions/edit-undo.png',        'params' => '', 'text' => TEXT_CANCEL, 'order' => 1);
+		$this->icon_list['open']   = array('show' => true, 'icon' => 'actions/document-open.png',    'params' => '', 'text' => TEXT_OPEN,   'order' => 2);
+		$this->icon_list['save']   = array('show' => true, 'icon' => 'devices/media-floppy.png',     'params' => '', 'text' => TEXT_SAVE,   'order' => 3);
+		$this->icon_list['delete'] = array('show' => true, 'icon' => 'actions/edit-delete.png',      'params' => '', 'text' => TEXT_DELETE, 'order' => 4);
+		$this->icon_list['print']  = array('show' => true, 'icon' => 'phreebooks/pdficon_large.gif', 'params' => '', 'text' => TEXT_PRINT,  'order' => 5);
+	}
 
   function add_icon($name, $params = '', $order = 98) { // adds some common icons, per request
 	switch ($name) {
@@ -56,20 +56,20 @@ class toolbar {
 	  case 'ship_all':   $image = 'mimetypes/package-x-generic.png';    $text = TEXT_SHIP_ALL;   break;
 	  case 'search':     $image = 'actions/system-search.png';          $text = TEXT_SEARCH;     break;
 	  case 'update':     $image = 'apps/system-software-update.png';    $text = TEXT_UPDATE;     break;
-	  default:           $image = 'emblems/emblem-important.png';       $text = $name . ' ICON NOT FOUND'; 
+	  default:           $image = 'emblems/emblem-important.png';       $text = $name . ' ICON NOT FOUND';
 	}
 	if ($image) $this->icon_list[$name] = array('show' => true, 'icon' => $image, 'params' => $params, 'text' => $text, 'order' => $order);
   }
 
-  function add_help($index = '', $order = 99) { // adds some common icons, per request
-	$this->icon_list['help'] = array(
-	  'show'   => true, 
-	  'icon'   => 'apps/help-browser.png',
-	  'params' => 'onclick="window.open(\'' . FILENAME_DEFAULT . '.php?module=phreehelp&amp;page=main&amp;idx=' . $index . '\',\'help\',\'width=800,height=600,resizable=1,scrollbars=1,top=100,left=100\')"', 
-	  'text'   => TEXT_HELP, 
-	  'order'  => $order,
-	);
-  }
+	function add_help($index = '', $order = 99) { // adds some common icons, per request
+		$this->icon_list['help'] = array(
+		  'show'   => true,
+		  'icon'   => 'apps/help-browser.png',
+		  'params' => 'onclick="window.open(\'' . FILENAME_DEFAULT . '.php?module=phreehelp&amp;page=main&amp;idx=' . $index . '\',\'help\',\'width=800,height=600,resizable=1,scrollbars=1,top=100,left=100\')"',
+		  'text'   => TEXT_HELP,
+		  'order'  => $order,
+		);
+	}
 
   function build_toolbar($add_search = false, $add_period = false, $cal_props = false) { // build the main toolbar
 	global $messageStack;
@@ -92,31 +92,31 @@ class toolbar {
     return $output;
   }
 
-  function add_search() {
-  	if($this->search_text == '') $this->search_text = $_REQUEST['search_text'];
-	$output = '<div id="tb_search_' . $this->id . '" class="ui-state-hover" style="float:right; border:0px;">' . "\n";
-	$output .= HEADING_TITLE_SEARCH_DETAIL . '<br />';
-	$output .= html_input_field('search_text', $this->search_text, $params = 'onkeypress="checkEnter(event);"');
-	if ($this->search_text) $output .= '&nbsp;' . html_icon('actions/view-refresh.png', TEXT_RESET, 'small', 'onclick="location.href = \'index.php?' . gen_get_all_get_params(array('search_text', 'search_period', 'search_date', 'so', 'sf', 'list', 'action')) . '&reset=1\';" style="cursor:pointer;"');
-    $output .= '&nbsp;' . html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'onclick="searchPage(\'' . gen_get_all_get_params(array('search_text', 'list', 'action')) . '\')" style="cursor:pointer;"');
-	$output .= '</div>' . "\n";
-	return $output;
-  }
+	function add_search() {
+	  	if($this->search_text == '') $this->search_text = $_REQUEST['search_text'];
+		$output = '<div id="tb_search_' . $this->id . '" class="ui-state-hover" style="float:right; border:0px;">' . "\n";
+		$output .= HEADING_TITLE_SEARCH_DETAIL . '<br />';
+		$output .= html_input_field('search_text', $this->search_text, $params = 'onkeypress="checkEnter(event);"');
+		if ($this->search_text) $output .= '&nbsp;' . html_icon('actions/view-refresh.png', TEXT_RESET, 'small', 'onclick="location.href = \'index.php?' . gen_get_all_get_params(array('search_text', 'search_period', 'search_date', 'so', 'sf', 'list', 'action')) . '&reset=1\';" style="cursor:pointer;"');
+	    $output .= '&nbsp;' . html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'onclick="searchPage(\'' . gen_get_all_get_params(array('search_text', 'list', 'action')) . '\')" style="cursor:pointer;"');
+		$output .= '</div>' . "\n";
+		return $output;
+	}
 
-  function add_period() {
-	$output = '<div id="tb_period_' . $this->id . '" class="ui-state-hover" style="float:right; border:0px;">' . "\n";
-	$output .= TEXT_INFO_SEARCH_PERIOD_FILTER . '<br />' . "\n";
-	$output .= html_pull_down_menu('search_period', gen_get_period_pull_down($this->period_strict), $this->search_period, 'onchange="periodPage(\'' . gen_get_all_get_params(array('action', 'list')) . '\')"');
-	$output .= '</div>' . "\n";
-	return $output;
-  }
+	function add_period() {
+		$output = '<div id="tb_period_' . $this->id . '" class="ui-state-hover" style="float:right; border:0px;">' . "\n";
+		$output .= TEXT_INFO_SEARCH_PERIOD_FILTER . '<br />' . "\n";
+		$output .= html_pull_down_menu('search_period', gen_get_period_pull_down($this->period_strict), $this->search_period, 'onchange="periodPage(\'' . gen_get_all_get_params(array('action', 'list')) . '\')"');
+		$output .= '</div>' . "\n";
+		return $output;
+	}
 
-  function add_date($cal_props) {
-	$output = '<div id="tb_date_' . $this->id . '" class="ui-state-hover" style="float:right; border:0px;">' . "\n";
-	$output .= TEXT_DATE . '<br />' . "\n";
-	$output .= html_calendar_field($cal_props) . "\n";
-	$output .= '</div>' . "\n";
-	return $output;
-  }
+	function add_date($cal_props) {
+		$output = '<div id="tb_date_' . $this->id . '" class="ui-state-hover" style="float:right; border:0px;">' . "\n";
+		$output .= TEXT_DATE . '<br />' . "\n";
+		$output .= html_calendar_field($cal_props) . "\n";
+		$output .= '</div>' . "\n";
+		return $output;
+	}
 
 }

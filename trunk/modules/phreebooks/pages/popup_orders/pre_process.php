@@ -18,6 +18,7 @@
 //
 $security_level = \core\classes\user::validate(0, true);
 /**************  include page specific files  *********************/
+$date = ($_REQUEST['search_date']!= '') ? gen_db_date($_REQUEST['search_date']) : false;
 gen_pull_language('contacts');
 require(DIR_FS_WORKING . 'functions/phreebooks.php');
 
@@ -78,19 +79,19 @@ $heading_array['post_date'] = TEXT_DATE;
 $heading_array['purchase_invoice_id'] = constant('ORD_HEADING_NUMBER_' . JOURNAL_ID);
 switch (JOURNAL_ID) {
   case  6:
-  case  7: 
+  case  7:
 	$heading_array['so_po_ref_id']   = ORD_HEADING_NUMBER_4;
 	$heading_array['waiting']        = ORD_WAITING;
 	break;
   case 12:
-  case 13: 
+  case 13:
 	$heading_array['so_po_ref_id']   = ORD_HEADING_NUMBER_10;
 	$heading_array['closed']         = TEXT_PAID;
 	break;
   case 19:
 	$heading_array['so_po_ref_id']   = ORD_HEADING_NUMBER_10;
 	$heading_array['closed']         = TEXT_CLOSED; break;
-  default: 
+  default:
 	$heading_array['closed']         = TEXT_CLOSED;
 }
 $heading_array['bill_primary_name'] = in_array(JOURNAL_ID, array(12,13)) ? ORD_CUSTOMER_NAME : ORD_VENDOR_NAME;
@@ -110,13 +111,25 @@ if (isset($_REQUEST['search_text']) && $_REQUEST['search_text'] <> '') {
   $search = '';
 }
 
-$field_list = array('id', 'journal_id', 'post_date', 'purchase_invoice_id', 'purch_order_id', 'so_po_ref_id', 
+$cal_date = array(
+  'name'      => 'searchdate',
+  'form'      => 'popup_orders',
+  'fieldname' => 'search_date',
+  'imagename' => 'btn_date_1',
+  'default'   => ($date != false) ? gen_locale_date($date): '',
+  'params'    => array('align' => 'left'),
+);
+
+$field_list = array('id', 'journal_id', 'post_date', 'purchase_invoice_id', 'purch_order_id', 'so_po_ref_id',
   'store_id', 'closed', 'waiting', 'bill_primary_name', 'total_amount', 'currencies_code', 'currencies_value');
-		
+
 // hook to add new fields to the query return results
 if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
-
-$query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " from " . TABLE_JOURNAL_MAIN . " 
+if ($date != false){
+	$period_filter = " and post_date = '$date' ";
+	$acct_period   = '';
+}
+$query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " from " . TABLE_JOURNAL_MAIN . "
   where journal_id = " . JOURNAL_ID . $period_filter . $search . " order by $disp_order";
 $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
