@@ -26,6 +26,7 @@ else                            $module = 'phreedom';
 if (isset($_POST['page']))      $page = $_POST['page'];
 elseif (isset($_GET['page']))   $page = $_GET['page'];
 else                     		$page = 'main';
+$include_template = null;
 
 require_once('includes/application_top.php');
 if (!\core\classes\user::is_validated()) {
@@ -49,21 +50,12 @@ if (!\core\classes\user::is_validated()) {
 /*@todo
 try{
 	try{
-    	$name = $_REQUEST['module'] . "\\" . $_REQUEST['page'];
-    	$class = new $name;
-    	$ModuleActionBefore = $_REQUEST['module'] . "_" . $_REQUEST['page'] . "_before_" . $_REQUEST['action'];
-    	foreach (get_declared_classes() as $module) if (method_exists($module, $ModuleActionBefore)) $module->$ModuleActionBefore();
-    	$ActionBefore = "before_" . $_REQUEST['action'];
-    	if (method_exists($class, $ActionBefore)) $class->$ActionBefore();
-    	if (method_exists($class, $_REQUEST['action'])){
-    		$class->$_REQUEST['action']();
-    	}else{
-    		throw new \Exception($_REQUEST['action'] . " method is not availeble in $class->id");
-    	}
-    	$ActionAfter = "after_" . $_REQUEST['action'];
-    	if (method_exists($class, $ActionAfter)) $class->$ActionAfter();
-    	$ModuleActionAfter  = $_REQUEST['module'] . "_" . $_REQUEST['page'] . "_after_"  . $_REQUEST['action'];
-    	foreach (get_declared_classes() as $module) if (method_exists($module, $ModuleActionAfter))  $module->$ModuleActionAfter();
+    	$ActionBefore  = "{$_REQUEST['module']}_.{$_REQUEST['page']}_before_{$_REQUEST['action']}"
+    	foreach ($admin_classes as $module_class) if (method_exists($module_class, $ActionBefore)) $module_class->$ActionBefore();
+    	$Action = "{$_REQUEST['module']}_.{$_REQUEST['page']}_{$_REQUEST['action']}"
+    	$admin_classes[$_REQUEST['module']]->$Action();
+    	$ActionAfter  = "{$_REQUEST['module']}_.{$_REQUEST['page']}_after_{$_REQUEST['action']}";
+    	foreach ($admin_classes as $module_class) if (method_exists($admin_classes, $ActionAfter))  $admin_classes->$ActionAfter();
     	if (method_exists($class, $_REQUEST['display'])) $class->$_REQUEST['display']();
    	}catch(Exception $e) {
    		switch(get_class($e){
@@ -84,8 +76,8 @@ try{
 }
 */
 if ($page == 'ajax') {
-  	$custom_pre_process_path = DIR_FS_MODULES . $module . 'custom/ajax/' . $_GET['op'] . '.php';
-  	$pre_process_path = DIR_FS_MODULES . $module . '/ajax/' . $_GET['op'] . '.php';
+  	$custom_pre_process_path = DIR_FS_MODULES . $module . "custom/ajax/{$_GET['op']}.php";
+  	$pre_process_path = DIR_FS_MODULES . $module . "/ajax/{$_GET['op']}.php";
   	if (file_exists($custom_pre_process_path)) {
   		require($custom_pre_process_path);
   		ob_end_flush();
@@ -112,13 +104,16 @@ $include_footer   = false;
 $include_template = 'template_main.php';
 $pre_process_path = DIR_FS_MODULES . $module . '/pages/' . $page . '/pre_process.php';
 try{
-	if (file_exists($pre_process_path)) { define('DIR_FS_WORKING', DIR_FS_MODULES . $module . '/'); }
-  	else trigger_error("No pre_process file, looking for the file: $pre_process_path", E_USER_ERROR);
-	require($pre_process_path);
-	if (file_exists(DIR_FS_WORKING . 'custom/pages/' . $page . '/' . $include_template)) {
-		$template_path = DIR_FS_WORKING . 'custom/pages/' . $page . '/' . $include_template;
+	if ( file_exists($pre_process_path)) {
+		define('DIR_FS_WORKING', DIR_FS_MODULES . $module . '/');
 	} else {
-		$template_path = DIR_FS_WORKING . 'pages/' . $page . '/' . $include_template;
+		trigger_error("No pre_process file, looking for the file: $pre_process_path", E_USER_ERROR);
+	}
+	require($pre_process_path);
+	if ( file_exists(DIR_FS_WORKING . "custom/pages/$page/$include_template")) {
+		$template_path = DIR_FS_WORKING . "custom/pages/$page/$include_template";
+	} else {
+		$template_path = DIR_FS_WORKING . "pages/$page/$include_template";
 	}
 }catch(\Exception $e){
 	$include_header = true;
@@ -128,12 +123,13 @@ try{
 	}else{
 		$template_path = DIR_FS_MODULES . "phreedom/pages/main/template_main.php";
 	}
-=======
+}
+
 require($pre_process_path);
-if (file_exists(DIR_FS_WORKING . 'custom/pages/' . $page . '/' . $include_template)) {
-  $template_path = DIR_FS_WORKING . 'custom/pages/' . $page . '/' . $include_template;
+if ( file_exists(DIR_FS_WORKING . "custom/pages/$page/$include_template")) {
+  	$template_path = DIR_FS_WORKING . "custom/pages/$page/$include_template";
 } else {
-  $template_path = DIR_FS_WORKING . 'pages/' . $page . '/' . $include_template;
+  	$template_path = DIR_FS_WORKING . "pages/$page/$include_template";
 }
 require('includes/template_index.php');
 require('includes/application_bottom.php');
