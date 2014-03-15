@@ -22,7 +22,7 @@
 //        bugg fix added InventoryProp and processSkuProp to js_include, replaced ORD_TEXT_19_WINDOW_TITLE with MENU_HEADING_PHREEPOS
 // 3.3 => 2012-11 compleet rewrite
 // 3.4 => 2012-12 added other transactions
-// 3.5 => 2013-04 bug fix    
+// 3.5 => 2013-04 bug fix
 // 3.6 => 2013-05 bug fix and added function to check if payments are set properly before page is loaded
 // 3.7 => 2013-05 bug fix changed the js function refreshOrderClock because it was using the wrong row.
 // 3.8 => 2013-07 added tax_id to till
@@ -43,14 +43,14 @@ if (defined('MODULE_PHREEPOS_STATUS')) {
 /*
   // Set the title menu
   $pb_headings[MENU_HEADING_PHREEPOS_ORDER] = array(
-    'text' => MENU_HEADING_PHREEPOS, 
+    'text' => MENU_HEADING_PHREEPOS,
     'link' => html_href_link(FILENAME_DEFAULT, 'module=phreepos&amp;page=main&amp;mID=cat_pos', 'SSL'),
   );
 */
   // Set the menus
   $mainmenu["customers"]['submenu']["phreepos"] = array(
   	'order' 	  => 51,
-  	'text'        => BOX_PHREEPOS, 
+  	'text'        => BOX_PHREEPOS,
     'security_id' => SECURITY_ID_PHREEPOS,
     'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreepos&amp;page=main', 'SSL'),
     'show_in_users_settings' => true,
@@ -58,23 +58,22 @@ if (defined('MODULE_PHREEPOS_STATUS')) {
   );
   $mainmenu["banking"]['submenu']['phreepos'] = array(
   	'order' 	  => 50,
-  	'text'        => BOX_PHREEPOS, 
-    'security_id' => '',
+  	'text'        => BOX_PHREEPOS,
     'show_in_users_settings' => false,
     'params'      => '',
   );
   $mainmenu["banking"]['submenu']['phreepos']['submenu']["phreepos_mgr"] = array(
   	'order' 	  => 53,
-  	'text'        => BOX_POS_MGR, 
-    'security_id' => SECURITY_ID_POS_MGR, 
+  	'text'        => BOX_POS_MGR,
+    'security_id' => SECURITY_ID_POS_MGR,
     'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreepos&amp;page=pos_mgr&amp;list=1', 'SSL'),
     'show_in_users_settings' => true,
     'params'      => '',
   );
   $mainmenu["banking"]['submenu']['phreepos']['submenu']["phreepos_closing"] = array(
   	'order' 	  => 54,
-  	'text'        => BOX_POS_CLOSING, 
-    'security_id' => SECURITY_ID_POS_CLOSING, 
+  	'text'        => BOX_POS_CLOSING,
+    'security_id' => SECURITY_ID_POS_CLOSING,
     'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreepos&amp;page=closing', 'SSL'),
     'show_in_users_settings' => true,
     'params'      => '',
@@ -100,12 +99,12 @@ if (defined('MODULE_PHREEPOS_STATUS')) {
 	  $mainmenu["company"]['submenu']["configuration"]['submenu']["phreepos"] = array(
 		'order'	      => MODULE_PHREEPOS_TITLE,
 		'text'        => MODULE_PHREEPOS_TITLE,
-		'security_id' => SECURITY_ID_CONFIGURATION, 
+		'security_id' => SECURITY_ID_CONFIGURATION,
 		'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreepos&amp;page=admin', 'SSL'),
 	    'show_in_users_settings' => false,
 		'params'      => '',
 	  );
-	}  
+	}
 }
 
 ?>

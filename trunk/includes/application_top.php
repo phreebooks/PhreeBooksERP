@@ -24,10 +24,10 @@ $force_reset_cache = false;
 // set php_self in the local scope
 if (!isset($PHP_SELF)) $PHP_SELF = $_SERVER['PHP_SELF'];
 // Check for application configuration parameters
-if     (file_exists('includes/configure.php')) { require('includes/configure.php'); } 
+if     (file_exists('includes/configure.php')) { require('includes/configure.php'); }
 elseif (file_exists('install/index.php')) {
 	ob_end_flush();
-  	session_write_close(); 
+  	session_write_close();
 	header('Location: install/index.php'); exit(); }
 else  trigger_error('Phreedom cannot find the configuration file. Aborting!', E_USER_ERROR);
 // Load some path constants
@@ -48,22 +48,22 @@ $request_type = (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) == '
 define('COG_ITEM_TYPES','si,sr,ms,mi,ma,sa');
 //start session functions
 @ini_set('session.gc_maxlifetime', (SESSION_TIMEOUT_ADMIN < 900 ? (SESSION_TIMEOUT_ADMIN + 900) : SESSION_TIMEOUT_ADMIN));
-session_set_cookie_params((SESSION_TIMEOUT_ADMIN < 900 ? (SESSION_TIMEOUT_ADMIN + 900) : SESSION_TIMEOUT_ADMIN),'/',$path); 
+session_set_cookie_params((SESSION_TIMEOUT_ADMIN < 900 ? (SESSION_TIMEOUT_ADMIN + 900) : SESSION_TIMEOUT_ADMIN),'/',$path);
 session_start();
 session_decode();
 //end session
 $_REQUEST = array_merge($_GET, $_POST);
 // set the language
 if ( !isset($_SESSION['language']) && isset($_GET['language'])) {
-	$_SESSION['language'] = $_GET['language']; 
-}elseif (!isset($_SESSION['language'])) { 
-	$_SESSION['language'] = defined('DEFAULT_LANGUAGE') ? DEFAULT_LANGUAGE : 'en_us'; 
+	$_SESSION['language'] = $_GET['language'];
+}elseif (!isset($_SESSION['language'])) {
+	$_SESSION['language'] = defined('DEFAULT_LANGUAGE') ? DEFAULT_LANGUAGE : 'en_us';
 }
 // load general language translation, Check for global define overrides first
 $path = DIR_FS_MODULES . 'phreedom/custom/language/' . $_SESSION['language'] . '/language.php';
 if (file_exists($path)) { require_once($path); }
 $path = DIR_FS_MODULES . 'phreedom/language/' . $_SESSION['language'] . '/language.php';
-if (file_exists($path)) { require_once($path); } 
+if (file_exists($path)) { require_once($path); }
 else { require_once(DIR_FS_MODULES . 'phreedom/language/en_us/language.php'); }
 // define general functions and classes used application-wide
 require_once(DIR_FS_MODULES  . 'phreedom/defaults.php');
@@ -132,11 +132,12 @@ if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR
 	  	$currencies->load_currencies();
 	  	if (function_exists('apc_load_constants') && apc_add("currencies", $currencies, 600) == false) throw new \core\classes\userException("can not cache currencies");
 	  	if (function_exists('apc_load_constants') && apc_add("mainmenu", $mainmenu, 600) == false)     throw new \core\classes\userException("can not cache mainmenu");
-  	} 
+  	}
 	// pull in the custom language over-rides for this module (to pre-define the standard language)
   	$path = DIR_FS_MODULES . "$module/custom/pages/$page/extra_menus.php";
   	if (file_exists($path)) { include($path); }
 }
+if ( defined('ENABLE_ENCRYPTION') && ENABLE_ENCRYPTION  == true && strlen($_SESSION['admin_encrypt']) < 1 ) throw new \core\classes\userException("Be aware that you have enabled encryption but the encryption key is empty");
 $prefered_type = ENABLE_SSL_ADMIN == 'true' ? 'SSL' : 'NONSSL';
 if ($request_type <> $prefered_type) gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL')); // re-direct if SSL request not matching actual request
 ?>

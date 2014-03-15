@@ -34,13 +34,13 @@ if (defined('MODULE_ASSETS_STATUS')) {
 	if(defined(ASSETS_OWN_HEADING) && ASSETS_OWN_HEADING == TRUE){ // Set the title menu
 	  $mainmenu["assets"] = array(
 	  	'order' => MENU_HEADING_ASSETS_ORDER,
-	    'text'  => MENU_HEADING_ASSETS, 
+	    'text'  => MENU_HEADING_ASSETS,
 	    'link'  => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_assets', 'SSL'),
 	  );
 	  $mainmenu["assets"]['submenu']["new_asset"] = array(
 	    'order'		  => 1,
-	    'text'        => sprintf(BOX_TEXT_NEW_TITLE, BOX_ASSET_MODULE),  
-	    'security_id' => SECURITY_ASSETS_MGT, 
+	    'text'        => sprintf(BOX_TEXT_NEW_TITLE, BOX_ASSET_MODULE),
+	    'security_id' => SECURITY_ASSETS_MGT,
 	    'link'        => html_href_link(FILENAME_DEFAULT, 'module=assets&amp;page=main&amp;action=new', 'SSL'),
 	  	'show_in_users_settings' => false,
 		'params'	  => '',
@@ -56,16 +56,15 @@ if (defined('MODULE_ASSETS_STATUS')) {
 	}else{
 	  $mainmenu["company"]['submenu']["assets"] = array(
 	  	'order'		  => BOX_ASSETS_MODULE_ORDER,
-		'text'        => BOX_ASSET_MODULE,  
-	    'security_id' => SECURITY_ASSETS_MGT, 
-	    'link'        => html_href_link(FILENAME_DEFAULT, 'module=assets&amp;page=main', 'SSL'),
+		'text'        => BOX_ASSET_MODULE,
+	    'link'        => '',//html_href_link(FILENAME_DEFAULT, 'module=assets&amp;page=main', 'SSL'),
 	  	'show_in_users_settings' => false,
 		'params'	  => '',
-	  );	
+	  );
 	  $mainmenu["company"]['submenu']["assets"]['submenu']["new_asset"] = array(
 	  	'order'		  => 1,
-	    'text'        => sprintf(BOX_TEXT_NEW_TITLE, BOX_ASSET_MODULE),  
-	    'security_id' => SECURITY_ASSETS_MGT, 
+	    'text'        => sprintf(BOX_TEXT_NEW_TITLE, BOX_ASSET_MODULE),
+	    'security_id' => SECURITY_ASSETS_MGT,
 	    'link'        => html_href_link(FILENAME_DEFAULT, 'module=assets&amp;page=main&amp;action=new', 'SSL'),
 	  	'show_in_users_settings' => false,
 		'params'	  => '',
@@ -73,8 +72,8 @@ if (defined('MODULE_ASSETS_STATUS')) {
 	  // Set the menus
 	  $mainmenu["company"]['submenu']["assets"]['submenu']["asset_mgr"]= array(
 	  	'order'		  => 2,
-	    'text'        => sprintf(BOX_STATUS_MGR, BOX_ASSET_MODULE),  
-	    'security_id' => SECURITY_ASSETS_MGT, 
+	    'text'        => sprintf(BOX_STATUS_MGR, BOX_ASSET_MODULE),
+	    'security_id' => SECURITY_ASSETS_MGT,
 	    'link'        => html_href_link(FILENAME_DEFAULT, 'module=assets&amp;page=main', 'SSL'),
 	  	'show_in_users_settings' => true,
 		'params'	  => '',
@@ -85,7 +84,7 @@ if (defined('MODULE_ASSETS_STATUS')) {
 		$mainmenu["company"]['submenu']["configuration"]['submenu']["asset"] = array(
 	  		'order'		  => MODULE_ASSETS_TITLE,
 	  		'text'        => MODULE_ASSETS_TITLE,
-	  		'security_id' => SECURITY_ID_CONFIGURATION, 
+	  		'security_id' => SECURITY_ID_CONFIGURATION,
 	  		'link'        => html_href_link(FILENAME_DEFAULT, 'module=assets&amp;page=admin', 'SSL'),
 			'show_in_users_settings' => false,
 	  		'params'      => '',

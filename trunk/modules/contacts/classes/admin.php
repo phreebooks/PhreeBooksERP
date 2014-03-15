@@ -24,7 +24,7 @@ class admin extends \core\classes\admin {
 	public $description = MODULE_CONTACTS_DESCRIPTION;
 	public $core		= true;
 	public $version		= '3.71';
-	
+
 	function __construct() {
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom'   => 3.6,
@@ -161,7 +161,7 @@ class admin extends \core\classes\admin {
 		  	if (db_table_exists(DB_PREFIX . 'contacts_extra_fields')) {
 		    	// first create a new tab
 				if (!defined('SETUP_TITLE_EXTRA_FIELDS')) define('SETUP_TITLE_EXTRA_FIELDS','New Tab');
-		    	$updateDB = $db->Execute("insert into " . TABLE_EXTRA_TABS . " set 
+		    	$updateDB = $db->Execute("insert into " . TABLE_EXTRA_TABS . " set
 			  	  module_id = 'contacts',
 			  	  tab_name = '"    . SETUP_TITLE_EXTRA_FIELDS . "',
 			  	  description = '" . SETUP_TITLE_EXTRA_FIELDS . "',
@@ -171,7 +171,7 @@ class admin extends \core\classes\admin {
 		    	while (!$result->EOF) {
 			  		$params = unserialize($result->fields['params']); // need to insert contact_type
 			  		$params['contact_type'] = $result->fields['contact_type'];
-		      		$updateDB = $db->Execute("insert into " . TABLE_EXTRA_FIELDS . " set 
+		      		$updateDB = $db->Execute("insert into " . TABLE_EXTRA_FIELDS . " set
 			    	  module_id = 'contacts',
 			    	  tab_id = '"      . $tab_id . "',
 			    	  entry_type = '"  . $result->fields['entry_type']  . "',
@@ -194,7 +194,7 @@ class admin extends \core\classes\admin {
     	}
 		if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_crm_id_num')){
     		$result = $db->Execute("Select MAX(short_name + 1) AS new  FROM " . TABLE_CONTACTS . " WHERE TYPE = 'i'");
-			$db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_crm_id_num VARCHAR( 16 ) NOT NULL DEFAULT '".$result->fields['new']."';");
+			$db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_crm_id_num VARCHAR( 16 ) NOT NULL DEFAULT '{$result->fields['new']}';");
 		}
 		xtra_field_sync_list('contacts', TABLE_CONTACTS);
   	}
@@ -210,7 +210,7 @@ class admin extends \core\classes\admin {
 		$db->Execute("delete from " . TABLE_EXTRA_FIELDS . " where module_id = 'contacts'");
 		$db->Execute("delete from " . TABLE_EXTRA_TABS   . " where module_id = 'contacts'");
 	}
-	
+
 	function load_reports() {
 		$id = $this->add_report_heading(MENU_HEADING_CUSTOMERS,   'cust');
 		$this->add_report_folder($id, TEXT_REPORTS,           'cust', 'fr');
@@ -220,7 +220,7 @@ class admin extends \core\classes\admin {
 		$this->add_report_folder($id, TEXT_REPORTS,           'vend', 'fr');
 		parent::load_reports();
 	}
-	
+
 	function load_demo() {
 	    global $db;
 		// Data for table `address_book`

@@ -18,7 +18,7 @@
 //
 namespace phreebooks\classes;
 class banking extends \core\classes\journal {
-	
+
 	function __construct() {
 		global $db;
 		$this->journal_id          = JOURNAL_ID;
@@ -50,18 +50,14 @@ class banking extends \core\classes\journal {
 	}
 
 	function post_ordr($action) {
-		global $db, $currencies, $messageStack;
+		global $db, $currencies, $messageStack, $admin_classes;
 		$this->journal_main_array = $this->build_journal_main_array();	// build ledger main record
 		$this->journal_rows = array();	// initialize ledger row(s) array
 
 		switch ($this->journal_id) {
 			case 18: // Cash Receipts Journal
-				$method = (isset($this->shipper_code)) ? $this->shipper_code : 'freecharger'; 
-				if (class_exists($method)) {
-					$temp = "\payment\methods\\$method\\$method\\";
-	  				$processor = new $temp;
-					if (!defined('MODULE_PAYMENT_' . strtoupper($method) . '_STATUS')) throw new \Exception("processor is not installed");
-				}
+				$method = (isset($this->shipper_code)) ? $this->shipper_code : 'freecharger';
+				if (!$admin_classes['payment']->methods[$method]->installed) throw new \core\clases\userException("payment methode $method is not installed");
 				$result        = $this->add_item_journal_rows('credit');	// read in line items and add to journal row array
 				$credit_total  = $result['total'];
 				$debit_total   = $this->add_discount_journal_row('debit');
@@ -73,7 +69,7 @@ class banking extends \core\classes\journal {
 				$credit_total  = $this->add_discount_journal_row('credit');
 				$credit_total += $this->add_total_journal_row('credit', $result['total'] - $result['discount']);
 				break;
-			default: throw new \Exception('bad journal_id in banking pre-POST processing'); 	// this should never happen, JOURNAL_ID is tested at script entry!
+			default: throw new \Exception("bad journal_id in banking pre-POST processing id {$this->journal_id}"); 	// this should never happen, JOURNAL_ID is tested at script entry!
 		}
 
 		// ***************************** START TRANSACTION *******************************
@@ -96,14 +92,14 @@ class banking extends \core\classes\journal {
 					$this->increment_purchase_invoice_id();
 				}
 				// Lastly, we process the payment (for receipts). NEEDS TO BE AT THE END BEFORE THE COMMIT!!!
-				// Because, if an error here we need to back out the entire post (which we can), but if 
+				// Because, if an error here we need to back out the entire post (which we can), but if
 				// the credit card has been processed and the post fails, there is no way to back out the credit card charge.
-//				$processor->pre_confirmation_check();
+//				$admin_classes['payment']->methods[$method]->pre_confirmation_check();
 				// Update the save payment/encryption data if requested
-				if (ENABLE_ENCRYPTION && $this->save_payment && $processor->enable_encryption !== false) {
-					$this->encrypt_payment($method, $processor->enable_encryption);
+				if (ENABLE_ENCRYPTION && $this->save_payment && $admin_classes['payment']->methods[$method]->enable_encryption !== false) {
+					$this->encrypt_payment($method, $admin_classes['payment']->methods[$method]->enable_encryption);
 				}
-				$processor->before_process();
+				$admin_classes['payment']->methods[$method]->before_process();
 				break;
 			case 20:
 				if ($new_post == 'insert') { // only increment if posting a new payment
@@ -159,11 +155,11 @@ class banking extends \core\classes\journal {
 	}
 
 	function add_total_journal_row($debit_credit, $amount) {	// put total value into ledger row array
-		global $processor;
+		global $admin_classes;
 		if ($debit_credit == 'debit' || $debit_credit == 'credit') {
 			switch ($this->journal_id) {
 				case '18':
-					$desc = GEN_ADM_TOOLS_J18 . '-' . TEXT_TOTAL . ':' . $processor->payment_fields;
+					$desc = GEN_ADM_TOOLS_J18 . '-' . TEXT_TOTAL . ':' . $admin_classes['payment']->methods[$method]->payment_fields;
 					break;
 				case '20':
 				default:
@@ -206,7 +202,7 @@ class banking extends \core\classes\journal {
 	function add_item_journal_rows($debit_credit) {	// read in line items and add to journal row array
 		if ($debit_credit == 'debit' || $debit_credit == 'credit') {
 			$result = array('discount' => 0, 'total' => 0);
-			for ($i=0; $i<count($this->item_rows); $i++) {	
+			for ($i=0; $i<count($this->item_rows); $i++) {
 				$total_paid = $this->item_rows[$i]['dscnt'] + $this->item_rows[$i]['total'];
 				$this->journal_rows[] = array(
 					'so_po_item_ref_id'       => $this->item_rows[$i]['id'], // link purch/rec id here for multi-id payments
