@@ -23,7 +23,7 @@ $security_level = \core\classes\user::validate(0, true);
 $menu_id = $_GET['mID'];
 // retireve current user profile for this page
 $my_profile = array();
-$result = $db->Execute("select dashboard_id from " . TABLE_USERS_PROFILES . " 
+$result = $db->Execute("select dashboard_id from " . TABLE_USERS_PROFILES . "
   where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $menu_id . "'");
 while (!$result->EOF) {
   $my_profile[] = $result->fields['dashboard_id'];
@@ -37,11 +37,11 @@ if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   	case 'save':
-  		foreach ($admin_classes as $module) {
-  			if ($module->installed){
+  		foreach ($admin_classes as $module_class) {
+  			if ($module_class->installed){
 				// build add and delete list
 		  		// if post is set and not in my_profile -> add
-		  		foreach ($module->dashboards as $dashboard){
+		  		foreach ($module_class->dashboards as $dashboard){
 			  		if (isset($_POST[$dashboard->id]) && !in_array($dashboard->id, $my_profile)) {
 						$dashboard->install();
 			  		}else{

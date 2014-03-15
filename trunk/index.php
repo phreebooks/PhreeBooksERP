@@ -17,7 +17,7 @@
 // Path: /index.php
 //
 ob_start();
-ini_set('log_errors','1'); 
+ini_set('log_errors','1');
 ini_set('display_errors', '1');
 error_reporting(E_ALL);
 if (isset($_POST['module']))    $module = $_POST['module'];
@@ -47,55 +47,55 @@ if (!\core\classes\user::is_validated()) {
   	}
 }
 /*@todo
- * try{
-   		try{
-    		$name = $_REQUEST['module'] . "\\" . $_REQUEST['page'];   		
-    		$class = new $name;
-    		$ModuleActionBefore = $_REQUEST['module'] . "_" . $_REQUEST['page'] . "_before_" . $_REQUEST['action'];
-    		foreach (get_declared_classes() as $module) if (method_exists($module, $ModuleActionBefore)) $module->$ModuleActionBefore();
-    		$ActionBefore = "before_" . $_REQUEST['action'];
-    		if (method_exists($class, $ActionBefore)) $class->$ActionBefore();
-    		if (method_exists($class, $_REQUEST['action'])){
-    			$class->$_REQUEST['action']();
-    		}else{
-    			throw new \Exception($_REQUEST['action'] . " method is not availeble in $class->id");
-    		}
-    		$ActionAfter = "after_" . $_REQUEST['action'];
-    		if (method_exists($class, $ActionAfter)) $class->$ActionAfter();
-    		$ModuleActionAfter  = $_REQUEST['module'] . "_" . $_REQUEST['page'] . "_after_"  . $_REQUEST['action'];
-    		foreach (get_declared_classes() as $module) if (method_exists($module, $ModuleActionAfter))  $module->$ModuleActionAfter();
-    		if (method_exists($class, $_REQUEST['display'])) $class->$_REQUEST['display']();
-   		}catch(Exception $e) {
-   			switch(get_class($e){
-   				case "\core\classes\userException":
-   				case "\soapException":
-   					$messageStack->add($e->getMessage(), $e->getCode());
-  					if (method_exists($class, $_REQUEST['display'])){
-  						$class->$_REQUEST['display']();
-  					}else{
-  						throw $e;
-  					}
-  				default:
-  					throw $e;   			
-   			}
-		}
+try{
+	try{
+    	$name = $_REQUEST['module'] . "\\" . $_REQUEST['page'];
+    	$class = new $name;
+    	$ModuleActionBefore = $_REQUEST['module'] . "_" . $_REQUEST['page'] . "_before_" . $_REQUEST['action'];
+    	foreach (get_declared_classes() as $module) if (method_exists($module, $ModuleActionBefore)) $module->$ModuleActionBefore();
+    	$ActionBefore = "before_" . $_REQUEST['action'];
+    	if (method_exists($class, $ActionBefore)) $class->$ActionBefore();
+    	if (method_exists($class, $_REQUEST['action'])){
+    		$class->$_REQUEST['action']();
+    	}else{
+    		throw new \Exception($_REQUEST['action'] . " method is not availeble in $class->id");
+    	}
+    	$ActionAfter = "after_" . $_REQUEST['action'];
+    	if (method_exists($class, $ActionAfter)) $class->$ActionAfter();
+    	$ModuleActionAfter  = $_REQUEST['module'] . "_" . $_REQUEST['page'] . "_after_"  . $_REQUEST['action'];
+    	foreach (get_declared_classes() as $module) if (method_exists($module, $ModuleActionAfter))  $module->$ModuleActionAfter();
+    	if (method_exists($class, $_REQUEST['display'])) $class->$_REQUEST['display']();
    	}catch(Exception $e) {
-  		\core\page::home();
+   		switch(get_class($e){
+   			case "\core\classes\userException":
+   			case "\soapException":
+   				$messageStack->add($e->getMessage(), $e->getCode());
+  				if (method_exists($class, $_REQUEST['display'])){
+  					$class->$_REQUEST['display']();
+  				}else{
+  					throw $e;
+  				}
+  			default:
+  				throw $e;
+   		}
 	}
+}catch(Exception $e) {
+	\core\page::crache_home();
+}
 */
 if ($page == 'ajax') {
   	$custom_pre_process_path = DIR_FS_MODULES . $module . 'custom/ajax/' . $_GET['op'] . '.php';
   	$pre_process_path = DIR_FS_MODULES . $module . '/ajax/' . $_GET['op'] . '.php';
-  	if (file_exists($custom_pre_process_path)) { 
+  	if (file_exists($custom_pre_process_path)) {
   		require($custom_pre_process_path);
   		ob_end_flush();
-		session_write_close(); 
+		session_write_close();
   		die;
-  	}elseif (file_exists($pre_process_path)) { 
+  	}elseif (file_exists($pre_process_path)) {
 	  	require($pre_process_path);
 	  	ob_end_flush();
-		session_write_close(); 
-	  	die; 
+		session_write_close();
+	  	die;
   	}
   	trigger_error("cant find ajax page {$_GET['op']} in module $module", E_USER_ERROR);
 }else if (stristr($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
@@ -114,7 +114,7 @@ $pre_process_path = DIR_FS_MODULES . $module . '/pages/' . $page . '/pre_process
 try{
 	if (file_exists($pre_process_path)) { define('DIR_FS_WORKING', DIR_FS_MODULES . $module . '/'); }
   	else trigger_error("No pre_process file, looking for the file: $pre_process_path", E_USER_ERROR);
-	require($pre_process_path); 
+	require($pre_process_path);
 	if (file_exists(DIR_FS_WORKING . 'custom/pages/' . $page . '/' . $include_template)) {
 		$template_path = DIR_FS_WORKING . 'custom/pages/' . $page . '/' . $include_template;
 	} else {
@@ -129,7 +129,7 @@ try{
 		$template_path = DIR_FS_MODULES . "phreedom/pages/main/template_main.php";
 	}
 =======
-require($pre_process_path); 
+require($pre_process_path);
 if (file_exists(DIR_FS_WORKING . 'custom/pages/' . $page . '/' . $include_template)) {
   $template_path = DIR_FS_WORKING . 'custom/pages/' . $page . '/' . $include_template;
 } else {
@@ -139,5 +139,5 @@ require('includes/template_index.php');
 require('includes/application_bottom.php');
 ob_end_flush();
 session_encode();
-session_write_close(); 
+session_write_close();
 ?>

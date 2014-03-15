@@ -23,7 +23,7 @@ class admin extends \core\classes\admin {
 	public $text;
 	public $description;
 	public $version		= '3.6';
-	
+
   function __construct() {
 	// Load configuration constants for this module, must match entries in admin tabs
     $this->keys = array(
@@ -209,29 +209,29 @@ class admin extends \core\classes\admin {
 		  	}
 		}
 		// load installed modules and initialize them
-		if (is_array($admin_classes)) foreach ($admin_classes as $key => $module) {
+		if (is_array($admin_classes)) foreach ($admin_classes as $key => $module_class) {
 		  	if ($key == 'phreedom') continue; // skip this module
 		  	if ($revisions) {
 		  		$latest  = $versions->Revisions->Modules->$key->Current;
-		  		if (version_compare($module->version, $latest , '<'))  $messageStack->add(sprintf(TEXT_VERSION_CHECK_NEW_MOD_VER, $module->text, $module->version, $latest), 'caution');
+		  		if (version_compare($module_class->version, $latest , '<'))  $messageStack->add(sprintf(TEXT_VERSION_CHECK_NEW_MOD_VER, $module_class->text, $module_class->version, $latest), 'caution');
 		  	}
 		}
 		// Make sure the install directory has been moved/removed
-		if (is_dir(DIR_FS_ADMIN . 'install')) $messageStack->add(TEXT_INSTALL_DIR_PRESENT, 'caution'); 
+		if (is_dir(DIR_FS_ADMIN . 'install')) $messageStack->add(TEXT_INSTALL_DIR_PRESENT, 'caution');
   		return true;
   	}
 
-	function web_connected($silent = true) { 
+	function web_connected($silent = true) {
     	$connected = @fsockopen('www.google.com', 80, $errno, $errstr, 20);
-    	if ($connected) { 
+    	if ($connected) {
       		fclose($connected);
-      		return true; 
+      		return true;
     	} else {
 	  		if (!$silent) throw new \core\classes\userException("You are not connected to the internet. Error: $errno -$errstr");
 	  		return false;
-		}   
+		}
   	}
-  	
+
 	function upgrade() {
 	    global $db, $messageStack;
 		parent::upgrade();

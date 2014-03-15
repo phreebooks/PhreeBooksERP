@@ -22,7 +22,7 @@
 gen_pull_language($module, 'admin');
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/phreedom.php');
-/**************   page specific initialization  *************************/ 
+/**************   page specific initialization  *************************/
 $menu_id      = isset($_GET['mID']) ? $_GET['mID'] : 'index'; // default to index unless heading is passed
 if (isset($_GET['req']) && $_GET['req'] == 'pw_lost_sub') $_REQUEST['action'] = 'pw_lost_sub';
 /***************   Act on the action request   *************************/
@@ -30,12 +30,12 @@ switch ($_REQUEST['action']) {
   	case 'validate':
 	  	try{
 	  		// Errors will happen here if there was a problem logging in, logout and restart
-	 	 	if (!is_object($db)) throw new \ErrorException("Database isn't created", '',E_USER_ERROR);	
+	 	 	if (!is_object($db)) throw new \ErrorException("Database isn't created", '',E_USER_ERROR);
 		    $admin_name     = db_prepare_input($_POST['admin_name']);
 		    $admin_pass     = db_prepare_input($_POST['admin_pass']);
 		    $admin_company  = db_prepare_input($_POST['company']);
 		    $admin_language = db_prepare_input($_POST['language']);
-		    $sql = "select admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security 
+		    $sql = "select admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security
 				from " . TABLE_USERS . " where admin_name = '" . db_input($admin_name) . "'";
 		    if ($db->db_connected) $result = $db->Execute($sql);
 			if (!$result || $admin_name <> $result->fields['admin_name'] || $result->fields['inactive']) throw new \Exception(ERROR_WRONG_LOGIN);
@@ -53,11 +53,11 @@ switch ($_REQUEST['action']) {
 			setcookie('pb_company' , $admin_company,  $cookie_exp);
 			setcookie('pb_language', $admin_language, $cookie_exp);
 			// load init functions for each module and execute
-			foreach ($admin_classes as $key => $module) {
-			  	if ($module->should_update()) $module->update();
+			foreach ($admin_classes as $key => $module_class) {
+			  	if ($module_class->should_update()) $module_class->update();
 			}
-	  		foreach ($admin_classes as $key => $module) {
-			  	$module->initialize();
+	  		foreach ($admin_classes as $key => $module_class) {
+			  	$module_class->initialize();
 			}
 			if (defined('TABLE_CONTACTS')) {
 			    $dept = $db->Execute("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result->fields['account_id']);
@@ -93,7 +93,7 @@ switch ($_REQUEST['action']) {
   	case 'pw_lost_sub':
   		try{
 	    	$admin_email = db_prepare_input($_POST['admin_email']);
-	    	$result = $db->Execute("select admin_id, admin_name, admin_email 
+	    	$result = $db->Execute("select admin_id, admin_name, admin_email
 			  from " . TABLE_USERS . " where admin_email = '" . db_input($admin_email) . "'");
 	    	if (!$admin_email || $admin_email <> $result->fields['admin_email']) throw new \Exception(ERROR_WRONG_EMAIL);
 	    	$_SESSION['company'] = $_POST['company'];
@@ -121,10 +121,10 @@ switch ($_REQUEST['action']) {
   	case 'save':
 		$dashboard_id = db_prepare_input($_POST['dashboard_id']);
 		// since we don't know where the module is, go find it.
-		foreach ($admin_classes as $module) {
-	  		foreach ($module->dashboards as $dashboard){
+		foreach ($admin_classes as $module_class) {
+	  		foreach ($module_class->dashboards as $dashboard){
 		  		if ($dashboard->id == $dashboard_id) {
-		  			load_method_language(DIR_FS_MODULES . "{$module->id}/dashboards/{$dashboard->id}");
+		  			load_method_language(DIR_FS_MODULES . "{$module_class->id}/dashboards/{$dashboard->id}");
 		  			$dashboard->menu_id	= $menu_id;
 					$dashboard->params	= array();
 					$dashboard->update();
@@ -135,37 +135,37 @@ switch ($_REQUEST['action']) {
   	case 'delete':
 		$dashboard_id = db_prepare_input($_POST['dashboard_id']);
 		//since we don't know where the module is, go find it.
-		foreach ($admin_classes as $module) {
-	  		foreach ($module->dashboards as $dashboard){
+		foreach ($admin_classes as $module_class) {
+	  		foreach ($module_class->dashboards as $dashboard){
 		  		if ($dashboard->id == $dashboard_id) {
-		  			load_method_language(DIR_FS_MODULES . "{$module->id}/dashboards/{$dashboard->id}");
+		  			load_method_language(DIR_FS_MODULES . "{$module_class->id}/dashboards/{$dashboard->id}");
 		  			$dashboard->menu_id	= $menu_id;
 					$dashboard->remove();
 		  		}
   			}
 		}
 		break;
-  	case 'move_up': 
+  	case 'move_up':
   	case 'move_down':
 		$dashboard_id = db_prepare_input($_POST['dashboard_id']);
-		$sql = "select column_id, row_id from " . TABLE_USERS_PROFILES . " 
+		$sql = "select column_id, row_id from " . TABLE_USERS_PROFILES . "
 		  where user_id=".$_SESSION['admin_id']." and menu_id='$menu_id' and dashboard_id='$dashboard_id'";
 		$result         = $db->Execute($sql);
 		$current_row    = $result->fields['row_id'];
 		$current_column = $result->fields['column_id'];
 		$new_row        = ($_REQUEST['action'] == 'move_up') ? ($current_row - 1) : ($current_row + 1);
-		$sql = "select max(row_id) as max_row from " . TABLE_USERS_PROFILES . " 
+		$sql = "select max(row_id) as max_row from " . TABLE_USERS_PROFILES . "
 		  where user_id=".$_SESSION['admin_id']." and menu_id='$menu_id' and column_id='$current_column'";
 		$result         = $db->Execute($sql);
 		$max_row        = $result->fields['max_row'];
 		if (($new_row >= 1 && $_REQUEST['action'] == 'move_up') || ($new_row <= $max_row && $_REQUEST['action'] == 'move_down')) {
-		  	$sql = "update " . TABLE_USERS_PROFILES . " set row_id = 0 
+		  	$sql = "update " . TABLE_USERS_PROFILES . " set row_id = 0
 			  where user_id=".$_SESSION['admin_id']." and menu_id='$menu_id' and column_id=$current_column and row_id='$current_row'";
 		  	$db->Execute($sql);
-		  	$sql = "update " . TABLE_USERS_PROFILES . " set row_id=$current_row 
+		  	$sql = "update " . TABLE_USERS_PROFILES . " set row_id=$current_row
 			  where user_id=".$_SESSION['admin_id']." and menu_id='$menu_id' and column_id=$current_column and row_id='$new_row'";
 		  	$db->Execute($sql);
-		  	$sql = "update " . TABLE_USERS_PROFILES . " set row_id=$new_row   
+		  	$sql = "update " . TABLE_USERS_PROFILES . " set row_id=$new_row
 			  where user_id=".$_SESSION['admin_id']." and menu_id='$menu_id' and column_id=$current_column and row_id=0";
 		  	$db->Execute($sql);
 		}
@@ -173,22 +173,22 @@ switch ($_REQUEST['action']) {
   	case 'move_left':
   	case 'move_right':
 		$dashboard_id = db_prepare_input($_POST['dashboard_id']);
-		$sql = "select column_id, row_id from " . TABLE_USERS_PROFILES . " 
+		$sql = "select column_id, row_id from " . TABLE_USERS_PROFILES . "
 		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $menu_id . "' and dashboard_id = '" . $dashboard_id . "'";
 		$result         = $db->Execute($sql);
 		$current_row    = $result->fields['row_id'];
 		$current_column = $result->fields['column_id'];
 		$new_col = ($_REQUEST['action'] == 'move_left') ? ($current_column - 1) : ($current_column + 1);
 		if (($new_col >= 1 && $_REQUEST['action'] == 'move_left') || ($new_col <= MAX_CP_COLUMNS && $_REQUEST['action'] == 'move_right')) {
-	  		$sql = "select max(row_id) as max_row from " . TABLE_USERS_PROFILES . " 
+	  		$sql = "select max(row_id) as max_row from " . TABLE_USERS_PROFILES . "
 			  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $menu_id . "' and column_id = '" . $new_col . "'";
 	  		$result = $db->Execute($sql);
 	  		$new_max_row = $result->fields['max_row'] + 1;
-	  		$sql = "update  " . TABLE_USERS_PROFILES . " set column_id = " . $new_col . ", row_id = " . $new_max_row . " 
+	  		$sql = "update  " . TABLE_USERS_PROFILES . " set column_id = " . $new_col . ", row_id = " . $new_max_row . "
 			  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $menu_id . "' and dashboard_id = '" . $dashboard_id . "'";
 	  		$db->Execute($sql);
-	  		$sql = "update  " . TABLE_USERS_PROFILES . " set row_id = row_id - 1 
-			  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $menu_id . "' 
+	  		$sql = "update  " . TABLE_USERS_PROFILES . " set row_id = row_id - 1
+			  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $menu_id . "'
 			  and column_id = " . $current_column . " and row_id >= '" . $current_row . "'";
 	  		$db->Execute($sql);
 		}
@@ -253,9 +253,9 @@ switch ($_REQUEST['action']) {
   default: // prepare to display templates
 	if (!class_exists('queryFactory')) { // Errors will happen here if there was a problem logging in, logout and restart
 		session_destroy();
-		trigger_error("class queryFactory doesn't exist", E_USER_ERROR);	
+		trigger_error("class queryFactory doesn't exist", E_USER_ERROR);
 	}
-	$cp_boxes = $db->Execute("select * from ".TABLE_USERS_PROFILES." 
+	$cp_boxes = $db->Execute("select * from ".TABLE_USERS_PROFILES."
 	  where user_id = '{$_SESSION['admin_id']}' and menu_id = '$menu_id' order by column_id, row_id");
 	$include_template = 'template_main.php';
 	define('PAGE_TITLE', COMPANY_NAME.' - '.TITLE);

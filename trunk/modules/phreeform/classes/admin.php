@@ -23,7 +23,7 @@ class admin extends \core\classes\admin {
 	public $description = MODULE_PHREEFORM_DESCRIPTION;
 	public $sort_order  = 8;
 	public $version		= '3.6';
-	
+
 	function __construct() {
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom'  => 3.6,
@@ -66,9 +66,9 @@ class admin extends \core\classes\admin {
   	function install($path_my_files, $demo = false) {
 		global $admin_classes;
 		parent::install($path_my_files, $demo);
-		if (is_array($admin_classes)) foreach ($admin_classes as $module) {
-		  	gen_pull_language($module, 'admin');
-	  		$module->load_reports();
+		if (is_array($admin_classes)) foreach ($admin_classes as $module_class) {
+		  	gen_pull_language($module_class, 'admin');
+	  		$module_class->load_reports();
 		}
   	}
 

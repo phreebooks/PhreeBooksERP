@@ -210,18 +210,18 @@ switch ($_REQUEST['action']) {
 	  		}
 	  	}
 		// install core modules first
-	  	foreach ($admin_classes as $module) {
-	  		if ($module->core) {
-	  			if (DEBUG) $messageStack->debug("\n  installing core module = " . $module->id);
-	  			$module->install(DIR_FS_MY_FILES.$_SESSION['company'].'/', $company_demo);
+	  	foreach ($admin_classes as $module_class) {
+	  		if ($module_class->core) {
+	  			if (DEBUG) $messageStack->debug("\n  installing core module = " . $module_class->id);
+	  			$module_class->install(DIR_FS_MY_FILES.$_SESSION['company'].'/', $company_demo);
 	  		}
 	  	}
 		// load phreedom reports now since table exists
 	  	if (DEBUG) $messageStack->debug("\n  installing phreedom.");
-		foreach ($admin_classes as $module) {
-	  		if (!$module->core) {
-	  			if (DEBUG) $messageStack->debug("\n  installing core module = " . $module->id);
-	  			$module->install(DIR_FS_MY_FILES.$_SESSION['company'].'/', $company_demo);
+		foreach ($admin_classes as $module_class) {
+	  		if (!$module_class->core) {
+	  			if (DEBUG) $messageStack->debug("\n  installing core module = {$module_class->id}");
+	  			$module_class->install(DIR_FS_MY_FILES.$_SESSION['company'].'/', $company_demo);
 	  		}
 	  	}
 		if (!$error) { // input admin username record, clear the tables first
@@ -230,15 +230,15 @@ switch ($_REQUEST['action']) {
 		  	$db->Execute("TRUNCATE TABLE " . TABLE_USERS_PROFILES);
 		  	$security = load_full_access_security();
 		  	$db->Execute($sql = "insert into " . TABLE_USERS . " set
-		      admin_name  = '" . $user_username . "', 
-			  admin_email = '" . $user_email . "', 
+		      admin_name  = '" . $user_username . "',
+			  admin_email = '" . $user_email . "',
 		  	  admin_pass  = '" . \core\classes\encryption::password($user_password) . "',
 			  admin_security = '" . $security . "'");
 		  	$user_id = $db->insert_ID();
 		  	if (sizeof($params) > 0) {
 		  		// create My Notes dashboard entries
 		  		$db->Execute("insert into " . TABLE_USERS_PROFILES . " set user_id = " . $user_id . ",
-				  menu_id = 'index', module_id = 'phreedom', dashboard_id = 'to_do', column_id = 1, row_id = 1, 
+				  menu_id = 'index', module_id = 'phreedom', dashboard_id = 'to_do', column_id = 1, row_id = 1,
 			  	  params = '" . serialize($params) . "'");
 		  	}
 		}

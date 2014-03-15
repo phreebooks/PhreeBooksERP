@@ -22,7 +22,7 @@ class phreemail_admin {
 	public $keys			= array();// Load configuration constants for this module, must match entries in admin tabs
 	public $dirlist			= array();// add new directories to store images and data
 	public $tables			= array();// Load tables
-	
+
   function __construct() {
 	$this->prerequisites = array( // modules required and rev level for this module to work properly
 	  'phreedom'   => 3.3,
@@ -35,7 +35,7 @@ class phreemail_admin {
 	);
     // Load tables
     //@todo maybe the toaddress_id and fromadress_id can be removed.
-	$this->tables = array(	  
+	$this->tables = array(
 	  TABLE_PHREEMAIL => "CREATE TABLE ".TABLE_PHREEMAIL."  (
   		`id` int(11) NOT NULL auto_increment,
   		`message_id` varchar(255) NOT NULL default '0',
@@ -106,10 +106,10 @@ class phreemail_admin {
 	);
   }
 
-  function install($module) {
+  function install() {
     global $db, $messageStack;
 	$error = false;
-  	$db->Execute("INSERT INTO " . TABLE_PHREEMAIL_WORDS . " VALUES(1, 'viagvra');"); 
+  	$db->Execute("INSERT INTO " . TABLE_PHREEMAIL_WORDS . " VALUES(1, 'viagvra');");
   	$db->Execute("INSERT INTO " . TABLE_PHREEMAIL_WORDS . " VALUES(2, 'rjolex');");
   	$db->Execute("INSERT INTO " . TABLE_PHREEMAIL_WORDS . " VALUES(3, 'viajagra');");
 	$db->Execute("INSERT INTO " . TABLE_PHREEMAIL_LIST  . " VALUES (1, 'spam@spamserver.com', 'B');");
@@ -117,11 +117,11 @@ class phreemail_admin {
 	$db->Execute("INSERT INTO " . TABLE_PHREEMAIL_DIR   . " VALUES (2, 0, 1, 'Trash', 1, '', '');");
 	$db->Execute("INSERT INTO " . TABLE_PHREEMAIL_DIR   . " VALUES (3, 0, 2, 'Orders', 1, '', '');");
 	$db->Execute("INSERT INTO " . TABLE_PHREEMAIL_DIR   . " VALUES (4, 0, 3, 'Personal', 1, '', '');");
-	
+
     return $error;
   }
 
-  function Iinitialize($module) {
+  function Iinitialize() {
   		global $db, $messageStack;
   		$messageStack->debug("\n\n*************** Retrieving Mail from ".EMAIL_SMTPAUTH_MAILBOX." *******************");
 		try{
@@ -134,9 +134,9 @@ class phreemail_admin {
 				//while(!$mail->EOF){
 					$mail->do_action();
 					//$mail->MoveNext();
-				//}	
+				//}
 			}
-			
+
 			/*while(!$mail->EOF){
 				$mail->do_action();
 				$mail->MoveNext();
@@ -156,7 +156,7 @@ class phreemail_admin {
 				//while(!$mail->EOF){
 					$mail->do_action();
 					//$mail->MoveNext();
-				//}	
+				//}
 			}
 			/*
 			while(!$mail->EOF){
@@ -170,7 +170,7 @@ class phreemail_admin {
 		if ( DEBUG )   $messageStack->write_debug();
   }
 
-  function update($module) {
+  function update() {
     global $db, $messageStack;
     $error = false;
 	if (!$error) {
@@ -180,13 +180,13 @@ class phreemail_admin {
     return $error;
   }
 
-  function remove($module) {
+  function remove() {
     global $db;
 	$error = false;
     return $error;
   }
 
-  function load_reports($module) {
+  function load_reports() {
   }
 
   function load_demo() {

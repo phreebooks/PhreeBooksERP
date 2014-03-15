@@ -29,11 +29,11 @@ function load_company_dropdown($include_select = false) {
 		require_once (DIR_FS_MY_FILES . $file . '/config.php');
 		$_SESSION['companies'][$file] = array(
 		  'id'   => $file,
-		  'text' => constant($file . '_TITLE'), 
+		  'text' => constant($file . '_TITLE'),
 		  'file' => $file,
 		);
 		$the_list[$i] = array(
-		  'text' => constant($file . '_TITLE'), 
+		  'text' => constant($file . '_TITLE'),
 		  'file' => $file,
 		);
 		$i++;
@@ -215,7 +215,7 @@ function build_sample_csv($structure, $db_table) {
 	foreach ($table->Field as $field) {
 	  if ($field->CanImport) {
 	    $req = ($field->Required) ? ('[' . TEXT_REQUIRED . '] '): '';
-	    $output .= $field->TagName . ', '; 
+	    $output .= $field->TagName . ', ';
 	    $legend .= '"' . $field->TagName . ': (' . $field->Type . ') - ' . $req . $field->Description . '"' . chr(10);
 	  }
 	}
@@ -227,7 +227,7 @@ function build_sample_csv($structure, $db_table) {
 		  foreach ($working->Field as $field) {
 	        if ($field->CanImport) {
 			  $req = ($field->Required) ? ('[' . TEXT_REQUIRED . '] '): '';
-	          $output .= $field->TagName . '_' . $i .', '; 
+	          $output .= $field->TagName . '_' . $i .', ';
 	          if ($i == 1) $legend .= '"' . $field->TagName . '_X: (' . $field->Type . ') - ' . $req . $field->Description . '"' . chr(10);
 	        }
 		  }
@@ -335,7 +335,7 @@ function table_import_csv($structure, $db_table, $filename) {
 	    if ($cnt == 0) { // main record, fetch id afterwards
 	      db_perform(DB_PREFIX . $table, $table_array, 'insert');
 		  $id = db_insert_id();
-		} else { // dependent table 
+		} else { // dependent table
 		  $data_present = false;
 		  foreach ($table_array as $value) if (gen_not_null($value)) $data_present = true;
 		  if ($data_present) {
@@ -398,10 +398,10 @@ function table_export_csv($structure, $db_table) {
 function csv_explode($str, $delim = ',', $enclose = '"', $preserve = false){
 	$results = preg_split("/,(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))/", trim($str));
 	return preg_replace("/^\"(.*)\"$/", "$1", $results);
-} 
+}
 
 /**************************** extra tab/fields functions ***********************************************/
-// Syncronizes the fields in the module db with the field parameters 
+// Syncronizes the fields in the module db with the field parameters
 // (usually only needed for first entry to inventory field builder)
   function xtra_field_sync_list($module = '', $db_table = '') {
 	global $db;
@@ -450,7 +450,7 @@ function csv_explode($str, $delim = ',', $enclose = '"', $preserve = false){
 					case 'datetime':  $Params['type'] = 'date_time'; break;
 					case 'timestamp': $Params['type'] = 'time_stamp'; break;
 					case 'year':      $Params['type'] = 'date'; break;
-	
+
 					case 'bigint':
 					case 'int':
 					case 'mediumint':
@@ -506,18 +506,18 @@ function csv_explode($str, $delim = ',', $enclose = '"', $preserve = false){
 						break;
 					default:
 				}
-				$temp = $db->Execute("insert into " . TABLE_EXTRA_FIELDS . " set 
-					module_id = '" . $module . "', 
-					tab_id = 0, 
-					entry_type = '" . $Params['type'] . "', 
-					field_name = '" . $value . "', 
-					description = '" . $value . "', 
+				$temp = $db->Execute("insert into " . TABLE_EXTRA_FIELDS . " set
+					module_id = '$module',
+					tab_id = 0,
+					entry_type = '{$Params['type']}',
+					field_name = '$value',
+					description = '$value',
 					params = '" . serialize($Params) . "'");  // tab_id = 0 for System category
 			}
 		}
 		if ($delete_list) {
 			foreach ($delete_list as $value) {
-				$temp = $db->Execute("delete from " . TABLE_EXTRA_FIELDS . " where module_id='" . $module . "' and field_name='" . $value . "'");
+				$temp = $db->Execute("delete from " . TABLE_EXTRA_FIELDS . " where module_id='$module' and field_name='$value'");
 			}
 		}
 	}

@@ -42,19 +42,19 @@ switch ($_REQUEST['action']) {
 		$lang = db_prepare_input($_POST['lang']);
 		switch($mod) {
 			case 'all':
-	  			foreach ($admin_classes as $module){
-	  				$dir = DIR_FS_MODULES . $module->id."/language/$lang/";
-	  				$ver = $module->version;
+	  			foreach ($admin_classes as $module_class){
+	  				$dir = DIR_FS_MODULES . $module_class->id."/language/$lang/";
+	  				$ver = $module_class->version;
 	  				$translator->import_language($dir, $value, $lang, $ver);
-	  				foreach ($module->methods as $method){
-	  					$dir = DIR_FS_MODULES . $module->id."/methods/{$method->id}/language/$lang/";
+	  				foreach ($module_class->methods as $method){
+	  					$dir = DIR_FS_MODULES . $module_class->id."/methods/{$method->id}/language/$lang/";
 	  					$ver = $method->version;
-	  					$translator->import_language($dir, $module->id.'-'.$method->id, $lang, $ver);
+	  					$translator->import_language($dir, $module_class->id.'-'.$method->id, $lang, $ver);
 	  				}
-	  				foreach ($module->dashboards as $dashboard){
-	  					$dir = DIR_FS_MODULES . $module->id."/methods/{$dashboard->id}/language/$lang/";
+	  				foreach ($module_class->dashboards as $dashboard){
+	  					$dir = DIR_FS_MODULES . $module_class->id."/methods/{$dashboard->id}/language/$lang/";
 	  					$ver = $dashboard->version;
-	  					$translator->import_language($dir, $module->id.'-'.$dashboard->id, $lang, $ver);
+	  					$translator->import_language($dir, $module_class->id.'-'.$dashboard->id, $lang, $ver);
 	  				}
 	  			}
 				// fall through to do install dir
@@ -107,8 +107,8 @@ switch ($_REQUEST['action']) {
 		$history = db_prepare_input($_POST['history_lang']);
 		$subs    = array();
 		// pull the source language current and historical values
-		$lang_list = $replace ? ("('".$lang."','".$source."','".$history."')") : ("('".$lang."','".$source."')"); 
-		$sql  = "select language, version, defined_constant, translation from " . TABLE_TRANSLATOR . " 
+		$lang_list = $replace ? ("('".$lang."','".$source."','".$history."')") : ("('".$lang."','".$source."')");
+		$sql  = "select language, version, defined_constant, translation from " . TABLE_TRANSLATOR . "
 		  where language in " . $lang_list;
 		if ($mod <> 'all') $sql .= " and module = '" . $mod . "'";
 		$result = $db->Execute($sql);
@@ -146,7 +146,7 @@ switch ($_REQUEST['action']) {
 			$id     = $temp[1];
 			$const  = $temp[2];
 			$status = isset($_POST['d:' . $id . ':' . $const]) ? '1' : '0';
-			$db->Execute("update " . TABLE_TRANSLATOR . " 
+			$db->Execute("update " . TABLE_TRANSLATOR . "
 			  set translation = '" . db_input($trans) . "', translated = '" . $status . "' where id = '" . $id . "'");
 		}
 		$messageStack->add(TEXT_TRANSLATIONS_SAVED,'success');
@@ -154,7 +154,7 @@ switch ($_REQUEST['action']) {
 		break;
   	case 'delete':
 		$pieces = explode(':', $_POST['rowSeq']);
-		$db->Execute("delete from " . TABLE_TRANSLATOR . " 
+		$db->Execute("delete from " . TABLE_TRANSLATOR . "
 	  	  where module = '" . $pieces[0] . "' and language = '" . $pieces[1] . "' and version = '" . $pieces[2] . "'");
 		$_REQUEST['action'] = '';
 		break;
@@ -164,7 +164,7 @@ switch ($_REQUEST['action']) {
 	    $mod    = $pieces[0];
 		$lang   = $pieces[1];
 		$ver    = $pieces[2];
-	
+
 		$backup->source_dir = $dir . 'export/';
 		$backup->dest_dir   = $dir;
 		$backup->dest_file  = $mod . '_' . $lang . '_R' . str_replace('.', '', $ver) . '.zip';
@@ -184,7 +184,7 @@ switch ($_REQUEST['action']) {
 		array_shift($sel_modules); // remove 'all' option
 		$have_data = false;
 		foreach ($sel_modules as $value) {
-	  		$result = $db->Execute("select max(version) as version from " . TABLE_TRANSLATOR . " 
+	  		$result = $db->Execute("select max(version) as version from " . TABLE_TRANSLATOR . "
 	    	  where module = '" . $value['id'] . "' and language = '" . $lang . "'");
 	  		$ver = $result->fields['version'];
 	  		if ($ver) {
@@ -236,8 +236,8 @@ switch ($_REQUEST['action']) {
 	  load_method_language(DIR_FS_MODULES . $parts[0] . '/methods/', $parts[1]);
 	} else {
 	  gen_pull_language($mod);
-	  gen_pull_language($mod, 'admin');	
-	} 
+	  gen_pull_language($mod, 'admin');
+	}
 	$heading_array = array(
 	  TEXT_TRANSLATED,
 	  TEXT_TRANSLATION,
@@ -250,7 +250,7 @@ switch ($_REQUEST['action']) {
 	if ($lang) $criteria[] = "language = '" . $lang . "'";
 	if ($ver)  $criteria[] = "version = '"  . $ver  . "'";
 	if ($f3)   $criteria[] = $f3=='y' ? "translated = '1'" : "translated = '0'";
-	$query_raw = "select id, module, language, version, pathtofile, defined_constant, translation, translated 
+	$query_raw = "select id, module, language, version, pathtofile, defined_constant, translation, translated
 	  from " . TABLE_TRANSLATOR . ' where ' . implode(' and ', $criteria);
     $query_result = $db->Execute($query_raw);
 	$include_template = 'template_edit.php';
@@ -289,7 +289,7 @@ switch ($_REQUEST['action']) {
     }
 	$search = (sizeof($criteria) == 0) ? '' : ' where ' . implode(' and ', $criteria);
     if ($ver=='L') {
-	  $query_raw  = "select SQL_CALC_FOUND_ROWS module, max(version) as version, language from " . TABLE_TRANSLATOR . $search . " group by module order by $disp_order";	
+	  $query_raw  = "select SQL_CALC_FOUND_ROWS module, max(version) as version, language from " . TABLE_TRANSLATOR . $search . " group by module order by $disp_order";
 	} else {
 	  $query_raw  = "select SQL_CALC_FOUND_ROWS distinct module, version, language from " . TABLE_TRANSLATOR . $search . " order by $disp_order";
 	}
