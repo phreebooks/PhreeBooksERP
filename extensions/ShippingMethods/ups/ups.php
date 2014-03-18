@@ -38,7 +38,7 @@ class ups extends \shipping\classes\shipping {
 	  '03'=>'IGND');
 
 // UPS Rate code map (US Origin)
-	public $UPSRateCodes = array(	
+	public $UPSRateCodes = array(
 	  '14'=>'1DEam',
 	  '01'=>'1Dam',
 	  '13'=>'1Dpm',
@@ -51,9 +51,9 @@ class ups extends \shipping\classes\shipping {
 	  '08'=>'I3D',
 	  '11'=>'IGND');
 
-/* 
+/*
 // For Canada Origin
-	public $UPSRateCodes = array(	
+	public $UPSRateCodes = array(
 	  '01'=>'1Dam',
 	  '02'=>'2Dpm',
 	  '07'=>'I2Dam',
@@ -65,7 +65,7 @@ class ups extends \shipping\classes\shipping {
 	  '54'=>'I2DEam');
 
 // For EU Origin
-	public $UPSRateCodes = array(	
+	public $UPSRateCodes = array(
 	  '07'=>'I2Dam',
 	  '11'=>'IGND',
 	  '54'=>'I2DEam',
@@ -169,7 +169,7 @@ class ups extends \shipping\classes\shipping {
 	function FormatRateRequest() {
 		global $pkg;
 		$crlf = chr(13) . chr(10);
-		
+
 		$sBody = '<?xml version="1.0"?>';
 		$sBody .= $crlf . '<AccessRequest xml:lang="en-US">';
 		$sBody .= $crlf . '<AccessLicenseNumber>' . MODULE_SHIPPING_UPS_ACCESS_KEY . '</AccessLicenseNumber>';
@@ -184,7 +184,7 @@ class ups extends \shipping\classes\shipping {
 		$sBody .= $crlf . '<XpciVersion>1.0001</XpciVersion>';
 		$sBody .= $crlf . '</TransactionReference>';
 		$sBody .= $crlf . '<RequestAction>' . 'rate' . '</RequestAction>'; // must be rate for tool to work
-		$sBody .= $crlf . '<RequestOption>' . 'shop' . '</RequestOption>'; // must be shop to 
+		$sBody .= $crlf . '<RequestOption>' . 'shop' . '</RequestOption>'; // must be shop to
 		$sBody .= $crlf . '</Request>';
 		$sBody .= $crlf . '<PickupType><Code>' . $pkg->pickup_service . '</Code></PickupType>';
 		$sBody .= $crlf . '<CustomerClassification><Code>' . '01' . '</Code></CustomerClassification>'; // wholesale (default for PickupType 01)
@@ -224,7 +224,7 @@ class ups extends \shipping\classes\shipping {
 		foreach ($this->package as $pkgnum) $ShipmentWeight += $pkgnum['weight'];
 		$sBody .= $crlf . '<Weight>' . $ShipmentWeight . '</Weight>';
 		$sBody .= $crlf . '</ShipmentWeight>';
-		foreach ($this->package as $pkgnum) { // Enter each package 
+		foreach ($this->package as $pkgnum) { // Enter each package
 			$sBody .= $crlf . '<Package>';
 			$sBody .= $crlf . '<PackagingType><Code>'.$pkgnum['PackageTypeCode'].'</Code></PackagingType>';
 			$sBody .= $crlf . '<Dimensions>';
@@ -281,14 +281,14 @@ class ups extends \shipping\classes\shipping {
 		$sBody .= $crlf;
 		return $sBody;
 	}
-	
+
 	// ***************************************************************************************************************
 	//								UPS TIME IN TRANSIT REQUEST
 	// ***************************************************************************************************************
 	function FormatTnTRequest() {
 		global $pkg;
 		$crlf = chr(13).chr(10);
-		
+
 		$sBody = '<?xml version="1.0"?>';
 		$sBody .= $crlf . '<AccessRequest xml:lang="en-US">';
 		$sBody .= $crlf . '<AccessLicenseNumber>' . MODULE_SHIPPING_UPS_ACCESS_KEY . '</AccessLicenseNumber>';
@@ -330,7 +330,7 @@ class ups extends \shipping\classes\shipping {
 		$sBody .= $crlf;
 		return $sBody;
 	}
-	
+
 	// ***************************************************************************************************************
 	//								Parse function to retrieve UPS rates
 	// ***************************************************************************************************************
@@ -339,7 +339,7 @@ class ups extends \shipping\classes\shipping {
 
 		// Retrieve the user choices for services to rate shop
 // TBD - defaults per user db choice for now
-		$user_choices = explode(',', str_replace(' ', '', MODULE_SHIPPING_UPS_TYPES));  
+		$user_choices = explode(',', str_replace(' ', '', MODULE_SHIPPING_UPS_TYPES));
 
 		$UPSQuote = array();	// Initialize the Response Array
 		$arrRates = array();	// Initialize the Rate Output array
@@ -438,7 +438,7 @@ class ups extends \shipping\classes\shipping {
 		);
 		$UPSRates = GetNodeArray($ResponseXML, $XMLStart, $XMLIndexName, $TagsToFind);
 		foreach ($this->UPSRateCodes as $key => $value) {
-			if (isset($UPSRates[$key]) && in_array($value, $user_choices)) { 
+			if (isset($UPSRates[$key]) && in_array($value, $user_choices)) {
 				if ($UPSRates[$key]['BookCharges'] <> "")  $arrRates[$this->id][$value]['book'] = $currencies->clean_value($UPSRates[$key]['BookCharges']);
 				if ($UPSRates[$key]['ShipmentCost'] <> "") $arrRates[$this->id][$value]['cost'] = $currencies->clean_value($UPSRates[$key]['ShipmentCost']);
 				$arrRates[$this->id][$value]['note'] = '';
@@ -459,7 +459,7 @@ class ups extends \shipping\classes\shipping {
 	}	// End UPS Rate Function
 
 // ***************************************************************************************************************
-//								UPS LABEL REQUEST (multipiece compatible) 
+//								UPS LABEL REQUEST (multipiece compatible)
 // ***************************************************************************************************************
 	function retrieveLabel($sInfo) {
 		global $messageStack;
@@ -539,15 +539,15 @@ class ups extends \shipping\classes\shipping {
 			if (MODULE_SHIPPING_UPS_PRINTER_TYPE == 'Thermal') {
 				// keep the thermal label encoded for now
 				$output_label = base64_decode($label['graphic_image']);
-				$file_name = $label['tracking'] . '.lpt'; // thermal printer
+				$filename = $label['tracking'] . '.lpt'; // thermal printer
 			} else {
 				$output_label = base64_decode($label['graphic_image']);
-				$file_name = $label['tracking'] . '.gif'; // plain paper
+				$filename = $label['tracking'] . '.gif'; // plain paper
 			}
-			if (!$handle = fopen($file_path . $file_name, 'w')) throw new \Exception("Cannot open file ($file_path $file_name)");
-			if (fwrite($handle, $output_label) === false) throw new \Exception("Cannot write to file ($file_path $file_name");
-			$this->labelFilePath = $file_path . $file_name;
-			fclose($handle);
+			if (!$handle = @fopen($file_path . $filename, 'w')) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE,  $file_path . $filename));
+			if (!@fwrite($handle, $output_label) === false) 	throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, $file_path . $filename);
+			$this->labelFilePath = $file_path . $filename;
+			if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 		}
         $messageStack->add('Successfully retrieved the UPS shipping label. Tracking # ' . $ups_results[$key]['tracking'],'success');
 		if (DEBUG) $messageStack->write_debug();
@@ -556,7 +556,7 @@ class ups extends \shipping\classes\shipping {
 
 	function FormatUPSShipRequest($pkg, $key) {
 		$crlf = chr(13) . chr(10);
-		
+
 		$sBody = '<?xml version="1.0"?>';
 		$sBody .= $crlf . '<AccessRequest xml:lang="en-US">';
 		$sBody .= $crlf . '<AccessLicenseNumber>' . MODULE_SHIPPING_UPS_ACCESS_KEY . '</AccessLicenseNumber>';
@@ -575,7 +575,7 @@ class ups extends \shipping\classes\shipping {
 		$sBody .= $crlf . '<RequestOption>' . 'validate' . '</RequestOption>'; // 'validate' or 'nonvalidate' address
 		$sBody .= $crlf . '</Request>';
 		$sBody .= $crlf . '<Shipment>';
-	
+
 		$sBody .= $crlf . '<Shipper>';
 		$sBody .= $crlf . '<Name>' . COMPANY_NAME . '</Name>';
 		$sBody .= $crlf . '<ShipperNumber>' . MODULE_SHIPPING_UPS_SHIPPER_NUMBER . '</ShipperNumber>';
@@ -592,7 +592,7 @@ class ups extends \shipping\classes\shipping {
 		$sBody .= $crlf . '<CountryCode>' . gen_get_country_iso_2_from_3(COMPANY_COUNTRY) . '</CountryCode>';
 		$sBody .= $crlf . '</Address>';
 		$sBody .= $crlf . '</Shipper>';
-	
+
 		$sBody .= $crlf . '<ShipTo>';
 		$sBody .= $crlf . '<CompanyName>' . $pkg->ship_primary_name . '</CompanyName>';
 		if ($pkg->ship_contact) $sBody .= $crlf . '<AttentionName>' . $pkg->ship_contact . '</AttentionName>';
@@ -761,7 +761,7 @@ class ups extends \shipping\classes\shipping {
 		}
 		$sBody .= $crlf . '</ShipmentServiceOptions>';
 
-		foreach ($pkg->package as $pkgnum) { // Enter each package 
+		foreach ($pkg->package as $pkgnum) { // Enter each package
 			$sBody .= $crlf . '<Package>';
 			$sBody .= $crlf . '<PackagingType><Code>' . $pkg->pkg_type . '</Code></PackagingType>';
 			$sBody .= $crlf . '<Dimensions>';
@@ -840,7 +840,7 @@ class ups extends \shipping\classes\shipping {
 
 	function FormatUPSAcceptRequest($digest) {
 		$crlf = chr(13) . chr(10);
-		
+
 		$sBody = '<?xml version="1.0"?>';
 		$sBody .= $crlf . '<AccessRequest xml:lang="en-US">';
 		$sBody .= $crlf . '<AccessLicenseNumber>' . MODULE_SHIPPING_UPS_ACCESS_KEY . '</AccessLicenseNumber>';
@@ -871,7 +871,7 @@ class ups extends \shipping\classes\shipping {
 
 		if ($this->tracking_number) {
 			$tracking_number = $this->tracking_number;
-		} else { 
+		} else {
 			$shipments = $db->Execute("select ship_date, tracking_id from " . TABLE_SHIPPING_LOG . " where shipment_id = " . $shipment_id);
 			$tracking_number = $shipments->fields['tracking_id'];
 		}
@@ -885,7 +885,7 @@ class ups extends \shipping\classes\shipping {
 //echo 'Delete Request response string = ' . htmlspecialchars($SubmitXML['xmlString']) . '<br />';
 		// Check for XML request errors
 		if ($SubmitXML['result'] == 'error') throw new \core\classes\userException(SHIPPING_UPS_CURL_ERROR . $SubmitXML['message']);
-		
+
 		$ResponseXML = $SubmitXML['xmlString'];
 		$XMLFail = GetNodeData($ResponseXML, 'VoidShipmentResponse:Response:Error:ErrorCode'); // Check for errors returned from UPS
 		$XMLWarn = GetNodeData($ResponseXML, 'VoidShipmentResponse:Response:Error:ErrorSeverity'); // Check for warnings returned from UPS (process continues)
@@ -905,9 +905,7 @@ class ups extends \shipping\classes\shipping {
 		} else {
 			$file_name = false; // file does not exist, skip
 		}
-		if ($file_name) if (!unlink($file_path . $file_name)) {
-			$messageStack->add('Trouble deleting label file (' . $file_path . $file_name . ')','caution');
-		}
+		if ($file_name) if (!unlink($file_path . $file_name)) $messageStack->add('Trouble deleting label file (' . $file_path . $file_name . ')','caution');
 
 		// if we are here the delete was successful, the lack of an error indicates success
 		$messageStack->add('Successfully deleted the UPS shipping label. Tracking # ' . $tracking_number,'success');

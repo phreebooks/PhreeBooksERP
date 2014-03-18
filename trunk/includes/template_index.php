@@ -29,9 +29,9 @@ if ($custom_html) { // load the template only as the rest of the html will be ge
         return true;
     }
   </script>
-  <!-- module: <?php echo $module; ?> - page: <?php echo $page; ?> -->
+  <!-- module: <?php echo $_REQUEST['module']; ?> - page: <?php echo $_REQUEST['page']; ?> -->
   <meta http-equiv="Content-Type" content="text/html; charset=<?php echo CHARSET; ?>" />
-<?php if ($force_reset_cache) { header("Cache-Control: no-cache, must-revalidate"); header("Expires: ".date('D, j M \2\0\0\0 G:i:s T')); } ?>  
+<?php if ($force_reset_cache) { header("Cache-Control: no-cache, must-revalidate"); header("Expires: ".date('D, j M \2\0\0\0 G:i:s T')); } ?>
   <title><?php echo PAGE_TITLE; ?></title>
   <link rel="shortcut icon" type="image/ico" href="favicon.ico" />
   <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/stylesheet.css'; ?>" />
@@ -65,7 +65,7 @@ if ($custom_html) { // load the template only as the rest of the html will be ge
   <script type="text/javascript" src="includes/jquery.easyui.min.js"></script>
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
   <script type="text/javascript" src="includes/common.js"></script>
-<?php 
+<?php
 require_once(DIR_FS_ADMIN . DIR_WS_THEMES . '/config.php');
 // load the jquery and javascript translations
 if      (file_exists($js_i18n = 'modules/phreedom/custom/language/'.$_SESSION['language'].'/jquery_i18n.js')) {
@@ -78,11 +78,11 @@ if      (file_exists($file = 'includes/easyui/custom/language/'.$_SESSION['langu
 } else               $file = 'includes/easyui/language/en_us/easyui_lang.js';
 echo '  <script type="text/javascript" src="'.$file.'"></script>'."\n";
 // load the javascript specific, required
-$js_include_path = DIR_FS_WORKING . 'pages/' . $page . '/js_include.php';
-if (file_exists($js_include_path)) { require_once($js_include_path); } 
+$js_include_path = DIR_FS_WORKING . "pages/{$_REQUEST['page']}/js_include.php";
+if (file_exists($js_include_path)) { require_once($js_include_path); }
   else trigger_error('No js_include file, looking for the file: ' . $js_include_path, E_USER_ERROR);
 // load the custom javascript if present
-$js_include_path = DIR_FS_WORKING . 'custom/pages/' . $page . '/extra_js.php';
+$js_include_path = DIR_FS_WORKING . "custom/pages/{$_REQUEST['page']}/extra_js.php";
 if (file_exists($js_include_path)) { require_once($js_include_path); }
 if (SESSION_AUTO_REFRESH == '1') echo '  <script type="text/javascript">addLoadEvent(refreshSessionClock);</script>' . chr(10);
 ?>
@@ -90,7 +90,7 @@ if (SESSION_AUTO_REFRESH == '1') echo '  <script type="text/javascript">addLoadE
  </head>
  <body>
   <script type="text/javascript" src="modules/phreedom/includes/wz_tooltip/wz_tooltip.js"></script>
-  <script type="text/javascript" src="modules/phreedom/includes/wz_tooltip/tip_balloon.js"></script>  
+  <script type="text/javascript" src="modules/phreedom/includes/wz_tooltip/tip_balloon.js"></script>
   <div id="please_wait"><p><?php echo html_icon('phreebooks/please_wait.gif', TEXT_PLEASE_WAIT, 'large'); ?></p></div>
   <!-- Menu -->
   <?php if ($include_header) { require_once(DIR_FS_ADMIN . DIR_WS_THEMES . '/menu.php'); } else echo "<div>\n"?>
@@ -103,7 +103,7 @@ if (SESSION_AUTO_REFRESH == '1') echo '  <script type="text/javascript">addLoadE
   ?>
   <div style="clear:both;text-align:center;font-size:9px">
     <a href="http://www.PhreeSoft.com" target="_blank"><?php echo html_image($image_path, TEXT_PHREEDOM_INFO, NULL, '64'); ?></a><br />
-  <?php 
+  <?php
   $footer_info  = COMPANY_NAME.' | '.TEXT_ACCOUNTING_PERIOD.': '.CURRENT_ACCOUNTING_PERIOD.' | '.TEXT_PHREEDOM_INFO.' ('.$admin_classes['phreedom']->version.') ';
   if ($module <> 'phreedom') $footer_info .= '(' . $module . ' ' . constant('MODULE_' . strtoupper($module) . '_STATUS') . ') ';
   $footer_info .= '<br />' . TEXT_COPYRIGHT .  ' &copy;' . date('Y') . ' <a href="http://www.PhreeSoft.com" target="_blank">PhreeSoft, LLC&trade;</a>';

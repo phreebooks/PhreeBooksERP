@@ -26,7 +26,7 @@ class zencart {
 		global $messageStack;
 		$this->strXML = null;
 		switch ($action) {
-			case 'product_ul': 
+			case 'product_ul':
 				$this->buildProductUploadXML($id, $inc_image);
 				$url = 'products.php';
 				break;
@@ -48,7 +48,7 @@ class zencart {
 //		echo 'XML response (at the PhreeBooks side from Zencart) => <pre>' . htmlspecialchars($this->response) . '</pre><br />' . chr(10);
 		$results = xml_to_object($this->response);
 //		echo 'Parsed string = '; print_r($results); echo '<br />';
-		
+
 		$this->result = $results->Response->Result;
 		$this->code   = $results->Response->Code;
 		$this->text   = $results->Response->Text;
@@ -66,14 +66,14 @@ class zencart {
 	if ($result->RecordCount() <> 1) throw new \Exception(ZENCART_INVALID_SKU);
 	$this->sku = $result->fields['sku'];
 	if (ZENCART_USE_PRICE_SHEETS == '1') {
-	  $sql = "select id, default_levels from " . TABLE_PRICE_SHEETS . " 
-		where '" . date('Y-m-d',time()) . "' >= effective_date 
+	  $sql = "select id, default_levels from " . TABLE_PRICE_SHEETS . "
+		where '" . date('Y-m-d',time()) . "' >= effective_date
 		and sheet_name = '" . ZENCART_PRICE_SHEET . "' and inactive = '0'";
 	  $default_levels = $db->Execute($sql);
 	  if ($default_levels->RecordCount() == 0) {
 		throw new \Exception(ZENCART_ERROR_NO_PRICE_SHEET . ZENCART_PRICE_SHEET);
 	  }
-	  $sql = "select price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " 
+	  $sql = "select price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . "
 		where inventory_id = " . $id . " and price_sheet_id = " . $default_levels->fields['id'];
 	  $special_levels = $db->Execute($sql);
 	  if ($special_levels->RecordCount() > 0) {
@@ -85,9 +85,9 @@ class zencart {
 
 	// prepare some information before assembling string
 	if ($result->fields['image_with_path']) { // image file
-	  // Zencart only support one level, so we'll use the first path dir and filename only 
+	  // Zencart only support one level, so we'll use the first path dir and filename only
 	  $temp = explode('/', $result->fields['image_with_path']);
-	  if (sizeof($temp) > 1) { 
+	  if (sizeof($temp) > 1) {
 		$image_path     = $temp[0];
 		$image_filename = array_pop($temp);
 	  } else {
@@ -98,11 +98,10 @@ class zencart {
 	if ($inc_image && $result->fields['image_with_path']) { // image file
 	  $filename = DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/images/' . $result->fields['image_with_path'];
 	  if (file_exists($filename)) {
-		if ($handle = fopen($filename, "rb")) {
-		  $contents = fread($handle, filesize($filename));
-		  fclose($handle);
-		  $image_data = base64_encode($contents);
-		}
+		if (!$handle = @fopen($filename, "rb")) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
+		$contents = fread($handle, filesize($filename));
+		if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
+		$image_data = base64_encode($contents);
 	  } else {
 		unset($image_data);
 	  }
@@ -187,7 +186,7 @@ if (file_exists(DIR_FS_MODULES . 'zencart/custom/extra_product_attrs.php')) {
 /*************************************************************************************/
 //                           Product Syncronizer string generation
 /*************************************************************************************/
-  function buildProductSyncXML() { 
+  function buildProductSyncXML() {
 	global $db;
 	$result = $db->Execute("select sku from " . TABLE_INVENTORY . " where catalog = '1'");
 	if ($result->RecordCount() == 0) {
@@ -229,7 +228,7 @@ if (file_exists(DIR_FS_MODULES . 'zencart/custom/extra_product_attrs.php')) {
 	$this->strXML .= xmlEntry('Action', 'Confirm');
 	$this->strXML .= xmlEntry('Reference', 'Order Ship Confirmation');
 	// fetch every shipment for the given post_date
-	$result = $db->Execute("select ref_id, carrier, method, tracking_id from " . TABLE_SHIPPING_LOG . " 
+	$result = $db->Execute("select ref_id, carrier, method, tracking_id from " . TABLE_SHIPPING_LOG . "
 	  where ship_date like '" . $this->post_date . " %'");
 	if ($result->RecordCount() == 0) {
 	  throw new \Exception(ZENCART_ERROR_CONFRIM_NO_DATA);
@@ -241,12 +240,12 @@ if (file_exists(DIR_FS_MODULES . 'zencart/custom/extra_product_attrs.php')) {
 	  } else {
 	    $purchase_invoice_id = $result->fields['ref_id'];
 	  }
-	  $details = $db->Execute("select so_po_ref_id from " . TABLE_JOURNAL_MAIN . " 
-	    where journal_id = 12 and purchase_invoice_id = '" . $purchase_invoice_id . "' 
+	  $details = $db->Execute("select so_po_ref_id from " . TABLE_JOURNAL_MAIN . "
+	    where journal_id = 12 and purchase_invoice_id = '" . $purchase_invoice_id . "'
 		order by id desc limit 1");
 		// check to see if the order is complete
 		if ($details->fields['so_po_ref_id']) {
-		  $details = $db->Execute("select closed, purchase_invoice_id from " . TABLE_JOURNAL_MAIN . " 
+		  $details = $db->Execute("select closed, purchase_invoice_id from " . TABLE_JOURNAL_MAIN . "
 	        where id = '" . $details->fields['so_po_ref_id'] . "'");
 		  if ($details->RecordCount() == 1) {
 		    $message = sprintf(ZENCART_CONFIRM_MESSAGE, $this->post_date, $methods[$result->fields['carrier']]['title'], $methods[$result->fields['carrier']][$result->fields['method']], $result->fields['tracking_id']);
@@ -285,7 +284,7 @@ if (file_exists(DIR_FS_MODULES . 'zencart/custom/extra_product_attrs.php')) {
 		$output[$method][$value] = defined($method . '_' . $value) ? constant($method . '_' . $value) : "";
 	  }
 	}
-	return $output;  
+	return $output;
   }
 
 }

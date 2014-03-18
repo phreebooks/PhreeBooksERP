@@ -26,7 +26,7 @@ class translator {
 	global $db, $messageStack;
 	$total = 0;
 	$trans = 0;
-	$result = $db->Execute("select translated from " . TABLE_TRANSLATOR . " 
+	$result = $db->Execute("select translated from " . TABLE_TRANSLATOR . "
 	  where module = '" . $mod . "' and language = '" . $lang . "' and version = '" . $ver . "'");
 	while(!$result->EOF) {
 	  if ($result->fields['translated'] == '1') $trans++;
@@ -70,8 +70,8 @@ class translator {
 		$db->Execute("DELETE FROM ".TABLE_TRANSLATOR." WHERE module='$mod' AND language='$lang' AND version='$ver' AND pathtofile='$pathtofile'");
 		foreach ($langtemp as $const => $value) {
 if ($const == 'GEN_COUNTRY_CODE')echo 'writing const = '.$const.' with value = '.$value.'<br>';
-			$sql = "INSERT INTO ".TABLE_TRANSLATOR." SET 
-			module='$mod', language='$lang', version='$ver', pathtofile='$pathtofile', 
+			$sql = "INSERT INTO ".TABLE_TRANSLATOR." SET
+			module='$mod', language='$lang', version='$ver', pathtofile='$pathtofile',
 			defined_constant='".db_input($const)."', translation='".db_input($value)."', translated='1'";
 		  $db->Execute($sql);
 		}
@@ -106,15 +106,15 @@ if ($const == 'GEN_COUNTRY_CODE')echo 'writing const = '.$const.' with value = '
   function convert_language($mod, $lang, $source = 'en_us', $history = '', $subs = array()) {
 	global $db, $messageStack;
 	// retrieve highest version
-	$result = $db->Execute("select max(version) as version from " . TABLE_TRANSLATOR . " 
+	$result = $db->Execute("select max(version) as version from " . TABLE_TRANSLATOR . "
 	  where module = '" . $mod . "' and language = '" . $source . "'");
 	if ($result->RecordCount() == 0) throw new \Exception(TRANS_ERROR_NO_SOURCE);
 	$ver = $result->fields['version'];
 	// delete all from the version being written, prevents dups
-	$db->Execute("delete from " . TABLE_TRANSLATOR . " 
+	$db->Execute("delete from " . TABLE_TRANSLATOR . "
 	  where module = '" . $mod . "' and language = '" . $lang . "' and version = '" . $ver . "'");
 	// load the source language
-	$result = $db->Execute("select pathtofile, defined_constant, translation from " . TABLE_TRANSLATOR . " 
+	$result = $db->Execute("select pathtofile, defined_constant, translation from " . TABLE_TRANSLATOR . "
 	  where module = '" . $mod . "' and language = '" . $source . "' and version = '" . $ver . "' order by id");
 	while (!$result->EOF) {
 	  // fix some fields
@@ -132,7 +132,7 @@ if ($const == 'GEN_COUNTRY_CODE')echo 'writing const = '.$const.' with value = '
 		$translated = $temp['translated'];
 	  }
 	  $path  = str_replace($source, $lang, $result->fields['pathtofile']);
-	  $sql   = "INSERT INTO " . TABLE_TRANSLATOR . " set 
+	  $sql   = "INSERT INTO " . TABLE_TRANSLATOR . " set
 		module  = '"          . $mod . "',
 		language = '"         . $lang . "',
 		version = '"          . $ver . "',
@@ -148,7 +148,7 @@ if ($const == 'GEN_COUNTRY_CODE')echo 'writing const = '.$const.' with value = '
 
   function export_language($mod, $lang, $ver, $hide_error = false) {
 	global $db, $backup, $messageStack;
-	$result = $db->Execute("select pathtofile, defined_constant, translation from " . TABLE_TRANSLATOR . " 
+	$result = $db->Execute("select pathtofile, defined_constant, translation from " . TABLE_TRANSLATOR . "
 	  where module = '" . $mod . "' and language = '" . $lang . "' and version = '" . $ver . "'");
 	if ($result->RecordCount() == 0) throw new \Exception(GEN_BACKUP_DOWNLOAD_EMPTY);
 	$output  = array();
@@ -171,13 +171,13 @@ if ($const == 'GEN_COUNTRY_CODE')echo 'writing const = '.$const.' with value = '
 	  $result->MoveNext();
 	}
 	foreach ($output as $path => $content) {
-	  $content .= chr(10) . '?' . '>' . chr(10); // terminate the file
-	  $new_dir  = $backup->source_dir . substr ($path, 0, strrpos($path, '/'));
-	  $filename = substr ($path, strrpos($path,'/')+1);
-	  if (!is_dir($new_dir)) mkdir($new_dir, 0777, true);
-	  if (!$fp = fopen($new_dir . '/' . $filename, 'w')) throw new \Exception('Error opening ' . $new_dir . '/' . $filename);
-	  fwrite($fp, $content);
-	  fclose($fp);
+	  	$content .= chr(10) . '?' . '>' . chr(10); // terminate the file
+	  	$new_dir  = $backup->source_dir . substr ($path, 0, strrpos($path, '/'));
+	  	$filename = substr ($path, strrpos($path,'/')+1);
+	  	if (!is_dir($new_dir)) mkdir($new_dir, 0777, true);
+	  	if (!$handle = @fopen($new_dir . '/' . $filename, 'w'))  	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $new_dir .'/'. $filename));
+	  	if (!@fwrite($handle, $content)) 							throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, $filename));
+	  	if (!@fclose($handle)) 									throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 	}
 	return true;
   }
@@ -208,17 +208,17 @@ if ($const == 'GEN_COUNTRY_CODE')echo 'writing const = '.$const.' with value = '
   		$quotChar = $langFile[0]; // quote character for constant
   		$const = substr($langFile, 1, strpos($langFile, $quotChar, 1)-1); // from after first quotechar to just before second
   		$langFile = trim(substr($langFile, strpos($langFile, $quotChar, 1)+1)); // remove constant and quotes from input string
-  		
+
   		$langFile = trim(substr($langFile, 1)); // remove ',' between define statement
 
   		$quotChar = $langFile[0]; // quote character for value
-  		$value = trim(substr($langFile, 1, strpos($langFile, ');'))); // ASSUME define statment ends with no space between ) and ; 
+  		$value = trim(substr($langFile, 1, strpos($langFile, ');'))); // ASSUME define statment ends with no space between ) and ;
   		$value = substr($value, 0, strrpos($value, $quotChar)); // remove closing quote character
   		$langFile = trim(substr($langFile, strpos($langFile, ');')+2)); // remove ');' at end of define
   		$output[$const] = $value;
   	}
   	return $output;
   }
-  
+
 }
 ?>

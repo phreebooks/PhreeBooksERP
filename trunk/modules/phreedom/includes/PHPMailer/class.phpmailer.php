@@ -1708,7 +1708,7 @@ class PHPMailer {
     if (!in_array('convert.*', $filters)) { //Got convert stream filter?
       return $this->EncodeQPphp($string, $line_max, $space_conv); //Fall back to old implementation
     }
-    $fp = fopen('php://temp/', 'r+');
+    if (!$fp = @fopen('php://temp/', 'r+')) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, "php://temp"));
     $string = preg_replace('/\r\n?/', $this->LE, $string); //Normalise line breaks
     $params = array('line-length' => $line_max, 'line-break-chars' => $this->LE);
     $s = stream_filter_append($fp, 'convert.quoted-printable-encode', STREAM_FILTER_READ, $params);

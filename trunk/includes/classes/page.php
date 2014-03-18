@@ -1,12 +1,12 @@
-<?php  
+<?php
 namespace core\classes;
-    /** 
-     * This is our page object 
-     * It is a seperate object to allow some interesting extra functionality to be added 
-     * Some ideas: passwording pages, adding page specific css/js files, etc 
-     */  
-class page {  
-      
+    /**
+     * This is our page object
+     * It is a seperate object to allow some interesting extra functionality to be added
+     * Some ideas: passwording pages, adding page specific css/js files, etc
+     */
+class page {
+
 	// header elements
     private $css_files = array();
     private $css;
@@ -20,12 +20,13 @@ class page {
     private $custom_html      = false;
     private $include_header   = false;
     private $include_footer   = false;
-    private $include_template = 'template_main.php';   
-          
-    /** 
-     * Constructor... 
-     */  
-    function __construct() {
+    private $include_template = 'template_main.php';
+    private $ModuleAndPage    = "phreedom_main";
+
+    /**
+     * Constructor...
+     */
+    function __construct($ModuleAndPage) {
        	require_once(DIR_FS_ADMIN . DIR_WS_THEMES . '/config.php');
        	$this->js_files[] = "includes/jquery-1.6.2.min.js";
   		$this->js_files[] = "includes/jquery-ui-1.8.16.custom.min.js";
@@ -44,7 +45,7 @@ class page {
   		//load the custom javascript if present
   		if (file_exists(DIR_FS_WORKING . "custom/pages/$page/extra_js.php")) $this->$include_php_js_files[] = DIR_FS_WORKING . "custom/pages/$page/extra_js.php";
     }
-          
+
     public function print_js_includes(){
        	//first normal js files
        	foreach($this->js_files as $file){
@@ -57,21 +58,35 @@ class page {
        	foreach($this->js_override_files as $file){
        		echo "<script type='text/javascript' src='$file'></script>";
        	}
-    } 
-        
+    }
+
     public function print_css_includes(){
       	foreach($this->css_files as $file){
        		echo "<link rel='stylesheet' type='text/css' href='$file' />";
        	}
     }
-      
+
     public function print_menu(){
        	if($this->include_header){
-       		require_once(DIR_FS_ADMIN . DIR_WS_THEMES . '/menu.php'); 
+       		require_once(DIR_FS_ADMIN . DIR_WS_THEMES . '/menu.php');
        	} else{
        		echo "<div>\n";
        	}
     }
+
+    /**
+     * this is called when class loses focus
+     * it will store common variales in session data
+     */
+
+    function __destruct(){
+    	$_SESSION[$this->ModuleAndPage]['sf']    = $_REQUEST['sf'];
+    	$_SESSION[$this->ModuleAndPage]['so']    = $_REQUEST['so'];
+    	$_SESSION[$this->ModuleAndPage]['list']  = $_REQUEST['list'];
+    	$_SESSION[$this->ModuleAndPage]['search']= $_REQUEST['search_text'];
+    	$_SESSION[$this->ModuleAndPage]['period']= $_REQUEST['search_period'];
+    	$_SESSION[$this->ModuleAndPage]['date']  = $_REQUEST['search_date'];
+    }
 }
-        
+
 ?>

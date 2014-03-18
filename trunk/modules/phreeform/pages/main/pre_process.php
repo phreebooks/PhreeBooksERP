@@ -61,10 +61,10 @@ switch ($_REQUEST['action']) {
 	$output   = object_to_xml($report);
 	if (!$handle = @fopen($filename, 'w')) {
 	  $db->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
-	  throw new \Exception(sprintf(PHREEFORM_WRITE_ERROR, $filename));
+	  throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
 	}
-	fwrite($handle, $output);
-	fclose($handle);
+	if (!@fwrite($handle, $output)) throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$filename));
+	if (!@fclose($handle)) 			throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 	$messageStack->add($message, 'success');
 	break;
   case 'export':
@@ -95,7 +95,7 @@ switch ($_REQUEST['action']) {
 	header('Expires: ' . date('r', time() + 60 * 60));
 	header('Last-Modified: ' . date('r', time()));
 	print $contents;
-	exit();  
+	exit();
     break;
   case 'go_first':    $_REQUEST['list'] = 1;       						$_REQUEST['action'] = 'search'; break;
   case 'go_previous': $_REQUEST['list'] = max($_REQUEST['list']-1, 1); 	$_REQUEST['action'] = 'search'; break;
@@ -108,7 +108,7 @@ switch ($_REQUEST['action']) {
 }
 
 /*****************   prepare to display templates  *************************/
-$result = $db->Execute('select id, parent_id, doc_type, doc_title, doc_group, security from ' . TABLE_PHREEFORM . ' 
+$result = $db->Execute('select id, parent_id, doc_type, doc_title, doc_group, security from ' . TABLE_PHREEFORM . '
 	order by doc_title, id, parent_id');
 $toc_array    = array();
 $toc_array[-1][] = array('id' => 0, 'doc_type' => '0', 'doc_title' => TEXT_HOME); // home dir

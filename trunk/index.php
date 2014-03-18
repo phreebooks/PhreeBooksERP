@@ -27,6 +27,7 @@ if (isset($_POST['page']))      $page = $_POST['page'];
 elseif (isset($_GET['page']))   $page = $_GET['page'];
 else                     		$page = 'main';
 $include_template = null;
+$cInfo = null;
 
 require_once('includes/application_top.php');
 if (!\core\classes\user::is_validated()) {
@@ -47,18 +48,45 @@ if (!\core\classes\user::is_validated()) {
    		$_REQUEST['action'] = 'login';
   	}
 }
-/*@todo
+
 try{
 	try{
-    	$ActionBefore  = "{$_REQUEST['module']}_.{$_REQUEST['page']}_before_{$_REQUEST['action']}"
-    	foreach ($admin_classes as $module_class) if (method_exists($module_class, $ActionBefore)) $module_class->$ActionBefore();
-    	$Action = "{$_REQUEST['module']}_.{$_REQUEST['page']}_{$_REQUEST['action']}"
-    	$admin_classes[$_REQUEST['module']]->$Action();
+		$page_template = new \core\classes\page();
+    	$ActionBefore  = "{$_REQUEST['module']}_.{$_REQUEST['page']}_before_{$_REQUEST['action']}";
+    	foreach ($admin_classes as $module_class){
+    		if ($module_class->installed && method_exists($module_class, $ActionBefore)) {
+    			$messageStack->debug("class {$admin_classes->id} has action method $ActionBefore");
+    			$module_class->$ActionBefore();
+    		}
+    	}
+    	$Action = "{$_REQUEST['module']}_.{$_REQUEST['page']}_{$_REQUEST['action']}";
+    	if ($admin_classes[$_REQUEST['module']]->installed == false )throw new \Exception("module {$admin_classes[$_REQUEST['module']]->id} isn't installed");
+    	if (method_exists($admin_classes[$_REQUEST['module']], $Action) == false) throw new \Exception("module {$admin_classes[$_REQUEST['module']]->id} hasn't got action method $Action ");
+    	$messageStack->debug("class {$admin_classes[$_REQUEST['module']]->id} has action method $Action");
+    	$cInfo = $admin_classes[$_REQUEST['module']]->$Action();
     	$ActionAfter  = "{$_REQUEST['module']}_.{$_REQUEST['page']}_after_{$_REQUEST['action']}";
-    	foreach ($admin_classes as $module_class) if (method_exists($admin_classes, $ActionAfter))  $admin_classes->$ActionAfter();
-    	if (method_exists($class, $_REQUEST['display'])) $class->$_REQUEST['display']();
-   	}catch(Exception $e) {
-   		switch(get_class($e){
+    	foreach ($admin_classes as $module_class) {
+    		if ($module_class->installed && method_exists($admin_classes, $ActionAfter)) {
+    			$messageStack->debug("class {$admin_classes->id} has action method $ActionAfter");
+    			$admin_classes->$ActionAfter();
+    		}
+    	}
+    	// handle ajax and json
+    	if ($_REQUEST['page'] == 'ajax'){
+    		echo createXmlHeader();
+    		foreach (get_object_vars($cInfo) as $key => $value) xmlEntry($key, $value);
+    		echo createXmlFooter();
+		} else if ($_REQUEST['page'] == 'json'){
+			header('Content-Type: application/json');
+			echo json_encode($cInfo);
+		} else {
+			$page_template->display();
+		}
+		ob_end_flush();
+		session_write_close();
+		die;
+   	}catch (Exception $e) {
+   		switch (get_class($e)) {
    			case "\core\classes\userException":
    			case "\soapException":
    				$messageStack->add($e->getMessage(), $e->getCode());
@@ -71,10 +99,11 @@ try{
   				throw $e;
    		}
 	}
-}catch(Exception $e) {
-	\core\page::crache_home();
+}catch (Exception $e) {
+	$messageStack->add($e->getMessage(), $e->getCode());
+	$page_template = new \core\classes\page();
 }
-*/
+
 if ($page == 'ajax') {
   	$custom_pre_process_path = DIR_FS_MODULES . $module . "custom/ajax/{$_GET['op']}.php";
   	$pre_process_path = DIR_FS_MODULES . $module . "/ajax/{$_GET['op']}.php";

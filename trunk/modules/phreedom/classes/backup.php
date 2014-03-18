@@ -25,7 +25,7 @@ class backup {
     public $backup_mime = 'application/zip';
     public $source_file = 'filename.txt';
     public $dest_file   = 'filename.bak';
-    
+
   	function __construct() {
     	$this->db_filename = 'db-' . $_SESSION['company'] . '-' . date('Ymd');
     	$this->source_dir  = DIR_FS_MY_FILES . $_SESSION['company'] . '/';
@@ -52,8 +52,7 @@ class backup {
 		  	$tables = array($table);
 		}
 		if (!is_dir($this->source_dir)) mkdir($this->source_dir);
-		$handle = fopen($this->source_dir . $this->source_file, 'w');
-		if ($handle === false) throw new \Exception(sprintf(ERROR_ACCESSING_FILE, $this->source_dir . $this->source_file));
+		if (!$handle = @fopen($this->source_dir . $this->source_file, 'w')) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $this->source_dir . $this->source_file));
 		foreach ($tables as $table) {
 		  	$query  = '';
 		  	if ($type == 'structure' || $type == 'both') { // build the table create sql
@@ -66,7 +65,7 @@ class backup {
 				$result = $db->Execute('SELECT * FROM ' . $table . $params);
 				if ($result->RecordCount() > 0) {
 			  		$temp_array = $result->fields;
-			  		while (list($key, $value) = each($temp_array)) $data['keys'][] = $key; 
+			  		while (list($key, $value) = each($temp_array)) $data['keys'][] = $key;
 			  		$sql_head  = 'INSERT INTO `' . $table .'` (`' . join($data['keys'], '`, `') . '`) VALUES ' . lnbr;
 			  		$count     = 0; // set to max_count to force the sql_head at the start
 			  		$query .= $sql_head;
@@ -75,7 +74,7 @@ class backup {
 						$temp_array = $result->fields;
 						while (list($key, $value) = each($temp_array)) {
 						  	$data[] = addslashes($value);
-						} 
+						}
 						$query .= "('" . implode("', '", $data) . "')";
 						$result->MoveNext();
 						$count++;
@@ -91,9 +90,9 @@ class backup {
 				}
 		  	}
 		  	$query .= lnbr . lnbr;
-		  	fwrite($handle, $query);
+		  	if (!@fwrite($handle, $query)) throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE,  $this->source_dir . $this->source_file));
 		}
-		fclose($handle);
+		if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $this->source_dir . $this->source_file));
 		return true;
   	}
 
@@ -146,9 +145,9 @@ class backup {
 
   	function download($path, $filename, $save_source = false) {
 		$source_file = $path . $filename;
-		$handle      = fopen($source_file, "rb");
+		if (!$handle = @fopen($source_file, "rb")) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $source_file));
 		$contents    = fread($handle, filesize($source_file));
-		fclose($handle);
+		if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $source_file));
 		if (!$save_source) unlink($source_file);
 		if (strlen($contents) == 0) throw new \Exception(GEN_BACKUP_DOWNLOAD_EMPTY);
 		header("Content-type: " . $this->backup_mime);
@@ -161,9 +160,9 @@ class backup {
 		print $contents;
 		ob_end_flush();
 		session_write_close();
-		exit();  
+		exit();
   	}
-  	
+
   	/**
   	 * this function will delete a directory
   	 * @param string $dir
@@ -192,7 +191,7 @@ class backup {
 		foreach ($files as $file) {
 	  		if ($file == "." || $file == "..") continue;
 	  		if (is_file($dir_source . $file)) {
-				copy($dir_source . $file, $dir_dest . $file); 
+				copy($dir_source . $file, $dir_dest . $file);
 	  		} else {
 				@mkdir($dir_dest . $file);
 				$this->copy_dir($dir_source . $file . "/", $dir_dest . $file . "/");
@@ -204,7 +203,7 @@ class backup {
 //echo 'start SQL execute';
     global $db;
     $ignored_count = 0;
-    // prepare for upgrader processing 
+    // prepare for upgrader processing
     if (!get_cfg_var('safe_mode')) {
       @set_time_limit(1200);
     }
@@ -314,7 +313,7 @@ class backup {
               } //end foreach
               if (substr($line,-1)==',') $line = substr($line,0,(strlen($line)-1)); // remove trailing ','
             } else { //didn't have a comma, but starts with "FROM ", so insert table prefix
-              $line = str_replace('FROM ', 'FROM '.$table_prefix, $line); 
+              $line = str_replace('FROM ', 'FROM '.$table_prefix, $line);
             }//endif substr_count(,)
             break;
           default:
@@ -324,8 +323,8 @@ class backup {
 
         if ( substr($line,-1) ==  ';') {
           //found a semicolon, so treat it as a full command, incrementing counter of rows to process at once
-          if (substr($newline,-1)==' ') $newline = substr($newline,0,(strlen($newline)-1)); 
-          $lines_to_keep_together_counter++; 
+          if (substr($newline,-1)==' ') $newline = substr($newline,0,(strlen($newline)-1));
+          $lines_to_keep_together_counter++;
           if ($lines_to_keep_together_counter == $keep_together) { // if all grouped rows have been loaded, go to execute.
             $complete_line = true;
             $lines_to_keep_together_counter=0;

@@ -195,13 +195,13 @@ switch ($_REQUEST['action']) {
 		break;
   	case 'debug':
   		try{
-			$file_name = 'trace.txt';
-			if (!$handle = fopen(DIR_FS_MY_FILES . $file_name, "r")) throw new Exception(DEBUG_TRACE_MISSING);
-			$contents = fread($handle, filesize(DIR_FS_MY_FILES . $file_name));
-			fclose($handle);
+			$filename = 'trace.txt';
+			if (!$handle = @fopen(DIR_FS_MY_FILES . $filename, "r")) throw new \Exception(sprintf(ERROR_ACCESSING_FILE, DIR_FS_MY_FILES . $filename));
+			$contents = fread($handle, filesize(DIR_FS_MY_FILES . $filename));
+			if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 			$file_size = strlen($contents);
 			header('Content-type: text/html; charset=utf-8');
-			header("Content-disposition: attachment; filename=" . $file_name . "; size=" . $file_size);
+			header("Content-disposition: attachment; filename=$filename; size=$file_size");
 			header('Pragma: cache');
 			header('Cache-Control: public, must-revalidate, max-age=0');
 			header('Connection: close');

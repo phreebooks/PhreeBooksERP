@@ -32,15 +32,15 @@ switch ($todo) {
 	break;
   case 'download':
 	$file_path = SHIPPING_DEFAULT_LABEL_DIR.$method.'/'.$date[0].'/'.$date[1].'/'.$date[2].'/';
-	$file_name = $label . '.lpt';
-	if (file_exists($file_path . $file_name)) {
-	  $file_size = filesize($file_path . $file_name);
-	  $handle    = fopen($file_path . $file_name, "r");
+	$filename = $label . '.lpt';
+	if (file_exists($file_path . $filename)) {
+	  $file_size = filesize($file_path . $filename);
+	  if (!$handle = @fopen($file_path . $filename, "r")) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $file_path . $filename));
 	  $image     = fread($handle, $file_size);
-	  fclose($handle);
+	  if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 	  header('Content-type: application/octet-stream');
 	  header('Content-Length: ' . $file_size);
-	  header('Content-Disposition: attachment; filename=' . $file_name);
+	  header('Content-Disposition: attachment; filename=' . $filename);
 	  header('Expires: 0');
 	  header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 	  header('Pragma: public');

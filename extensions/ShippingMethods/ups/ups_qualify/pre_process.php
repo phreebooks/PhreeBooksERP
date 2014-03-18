@@ -18,10 +18,10 @@
 //  Path: /modules/shipping/methods/ups/ups_qualify/pre_process.php
 //
 
-function write_file($file_name, $data) {
-  	if (!$handle = @fopen($file_name, 'w')) throw new \core\classes\userException("Cannot open file ($file_name)");
-  	if (@fwrite($handle, $data) === false) throw new \core\classes\userException("Cannot write to file ($file_name)");
-  	fclose($handle);
+function write_file($filename, $data) {
+  	if (!$handle = @fopen($filename, 'w'))	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
+  	if (!@fwrite($handle, $data) === false)	throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, $filename));
+  	if (!@fclose($handle)) 					throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
   	return true;
 }
 
@@ -96,7 +96,7 @@ switch ($action) {
 	  $count++;
 	}
 	// zip the results and download
-	
+
 	$messageStack->add('Successfully created UPS validation files! Disregard error messages from delete operation, they are expected. The files can be found in: ' . $file_path,'success');
 	break;
 

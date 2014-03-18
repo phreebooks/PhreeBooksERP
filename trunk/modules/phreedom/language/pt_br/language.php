@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:46
 // Module/Method: phreedom
 // ISO Language: pt_br
@@ -29,7 +29,7 @@ define('TEXT_IMP_ERMSG2','O tamanho do arquivo excede a diretiva MAX_FILE_SIZE n
 define('TEXT_IMP_ERMSG3','O arquivo não foi completamente carregado. Tente novamente.');
 define('TEXT_IMP_ERMSG1','O tamanho do arquivo excede a diretiva upload_max_filesize nas configurações do php.ini.');
 define('MSG_ERROR_CREATE_MY_FILES','Erro criando o diretório: %s. Provavelmente problema de permissão, verifique o caminho para o diretório de arquivos do servidor web e defina permissão de escrita para o servidor.');
-define('MSG_ERROR_CANNOT_WRITE','Não foi possível abrir o arquivo (%s) para leitura/escrita. Verifique suas permissões.');
+define('ERROR_ACCESSING_FILE','Não foi possível abrir o arquivo (%s) para leitura/escrita. Verifique suas permissões.');
 define('TEXT_SELECT_FILE_TO_ATTACH','Selecione o arquivo a ser anexado:');
 define('TEXT_INSTALL_DIR_PRESENT','O diretório /install está presente. Este diretório deve ser excluído ou renomeado para evitar a reinstalação da aplicação.');
 define('ERROR_ACCESSING_FILE','Não foi possível abrir o arquivo (%s) para leitura/escrita. Verifique suas permissões.');

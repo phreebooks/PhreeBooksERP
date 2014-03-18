@@ -293,17 +293,10 @@ switch ($_REQUEST['action']) {
 		  $config_contents = str_replace('DEFAULT_DEFAULT_LANGUAGE', $lang,        $config_contents);
 		  $config_contents = str_replace('DEFAULT_DB_TYPE',          DB_TYPE,      $config_contents);
 		  $config_contents = str_replace('DEFAULT_DB_PREFIX',        DB_PREFIX,    $config_contents);
-		  if (file_exists('../includes/configure.php')) {
-		  	$messageStack->add(MSG_ERROR_CONFIGURE_EXISTS,'error');
-		  	$error = true;
-		  } else {
-		  	if (!$fp = fopen('../includes/configure.php', 'w')) {
-		  		$messageStack->add(sprintf(MSG_ERROR_CANNOT_WRITE, 'includes/configure.php'),'error');
-		  		$error = true;
-		  	}
-		  }
-		  fwrite($fp, $config_contents);
-		  fclose($fp);
+		  if (file_exists('../includes/configure.php'))				throw new \core\classes\userException(MSG_ERROR_CONFIGURE_EXISTS);
+		  if (!$handle = @fopen('../includes/configure.php', 'w'))	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, 'includes/configure.php'));
+		  if (!@fwrite($handle, $config_contents))					throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 'includes/configure.php'));
+		  if (!@fclose($handle))									throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 'includes/configure.php'));
 		  @chmod('../includes/configure.php', 0444);
 		}
 		if (!$error) { // set the session variables so they can log in

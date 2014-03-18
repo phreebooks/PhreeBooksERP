@@ -328,7 +328,7 @@ define ('DB_ERROR_NOT_CONNECTED', 'Datenbank-Fehler: Konnte keine Verbindung zur
 define('GEN_MODULE_UPDATE_SUCCESS','Successfully upgraded module %s to release %s');
 define('GEN_CALENDAR_FORMAT_ERROR', "A submitted date format was in error, please check all your dates! Received: %s. (Date Format: " . DATE_FORMAT . ") Please check your SEPARATOR is consistent for SpiffyCal also: " . DATE_FORMAT_CALENDAR);
 define ('LOAD_CONFIG_ERROR', 'Es wurde ein Fehler zurückgegeben beim Abrufen der Konfigurationsdaten. <br /> PhreeBooks konnte die Verbindung zur Datenbank konnte aber nicht finden die Konfiguration Tisch. Sieht aus wie die Tabelle fehlt! Optionen zum Löschen / includes / configure.php und neu zu installieren (für neue Anlagen) oder die Wiederherstellung der Datenbank-Tabellen (Datenbank Absturz ).');
-define ('SAFE_MODE_ERROR', 'Betriebssystem im abgesicherten Modus. PhreeBooks wird nicht richtig funktionieren, wenn PHP Safe Mode gesetzt ist !)'); 
+define ('SAFE_MODE_ERROR', 'Betriebssystem im abgesicherten Modus. PhreeBooks wird nicht richtig funktionieren, wenn PHP Safe Mode gesetzt ist !)');
 define ('GEN_ERRMSG_NO_DATA', 'Ein erforderliches Feld ausgefüllt worden Feld:.');
 define ('ERROR_MSG_ACCT_PERIOD_CHANGE', 'Der Abrechnungszeitraum wurde automatisch geändert: %s ');
 define ('ERROR_MSG_BAD_POST_DATE', 'Achtung: Die Post Datum fällt außerhalb der aktuellen Abrechnungsperiode!');
@@ -365,7 +365,7 @@ define ('ERROR_CURRENCY_DELETE_IN_USE', 'Fehler - Die Währung kann nicht gelös
 define ('ERROR_ACCESSING_FILE', 'Kann Datei nicht öffnen ( %s ) zum Lesen / Schreiben überprüfen Sie Ihre Berechtigungen.');
 define ('TEXT_INSTALL_DIR_PRESENT', 'Das Verzeichnis / install vorhanden ist dieses Verzeichnis sollten entfernt oder umbenannt, um zu vermeiden Neuinstallation der Anwendung..');
 // Fehlermeldungen für Dateioperationen
-define ('MSG_ERROR_CANNOT_WRITE', 'Kann Datei nicht öffnen ( %s ) zum Lesen / Schreiben überprüfen Sie Ihre Berechtigungen.');
+define ('ERROR_CANNOT_WRITE', 'Kann Datei nicht öffnen ( %s ) zum Lesen / Schreiben überprüfen Sie Ihre Berechtigungen.');
 define ('MSG_ERROR_CREATE_MY_FILES', 'Fehler beim Erstellen des Verzeichnisses: %s . Wahrscheinlich ein Berechtigungsproblem, überprüfen Sie die Web-Server Dateiverzeichnispfad und setzen damit den Webserver in das Verzeichnis zu erstellen.');
 define ('TEXT_IMP_ERMSG1', 'Die Dateigröße überschreitet die upload_max_filesize in der php.ini Sie Einstellungen.');
 define ('TEXT_IMP_ERMSG2', 'Die Dateigröße überschreitet die MAX_FLE_SIZE Direktive in der PhreeBooks bilden.');

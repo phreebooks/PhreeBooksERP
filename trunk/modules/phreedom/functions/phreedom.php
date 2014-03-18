@@ -110,9 +110,9 @@ function convert_cfg($company) {
   $lines .= "define('DB_SERVER_PASSWORD','"     . gen_pull_db_config_info($company, 'db_pw') . "');" . "\n";
 
   $filename = DIR_FS_ADMIN . 'my_files/' . $company . '/config';
-  if (!$handle = @fopen($filename . '.php', 'w')) throw new \Exception('Cannot open file (' . $filename . '.php) for writing, check your permissions. This directory and file needs access from the web server for upgrading PhreeBooks to the latest version.');
-  if (!fwrite($handle, $lines)) throw new \Exception('Cannot write to file (' . $filename . '.php), check your permissions.');
-  fclose($handle);
+  if (!$handle = @fopen($filename . '.php', 'w'))	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
+  if (!@fwrite($handle, $lines)) 					throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$filename));
+  if (!@fclose($handle))							throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
   if (!unlink($filename . '.txt')) throw new \Exception('Cannot delete file (' . $filename . '.txt). This file needs to be deleted for security reasons.');
 }
 
@@ -165,9 +165,9 @@ function install_build_co_config_file($company, $key, $value) {
     $lines[] = "define('" . $key . "','" . addslashes($value) . "');" . "\n";
   }
   $line = implode('', $lines);
-  if (!$handle = @fopen($filename, 'w')) throw new \Exception(sprintf(MSG_ERROR_CANNOT_WRITE, $filename));
-  fwrite($handle, $line);
-  fclose($handle);
+  if (!$handle = @fopen($filename, 'w')) 	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
+  if (!@fwrite($handle, $line)) 			throw new \Exception(sprintf(MSG_ERROR_CANNOT_WRITE, $filename));
+  if (!@fclose($handle)) 					throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
   return true;
 }
 

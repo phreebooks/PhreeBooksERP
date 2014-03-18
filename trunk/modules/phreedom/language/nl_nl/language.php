@@ -360,10 +360,11 @@ define('ERROR_WRONG_LOGIN','U heeft een verkeerde gebruikersnaam of wachtwoord i
 define('PB_USE_ACCOUNTING_PERIODS','Gebruik Boekhoud Periodes (veld: periode)');
 define('ERROR_CANNOT_DELETE_DEFAULT_CURRENCY','Error - De standaard valuta kan niet verwijderd worden, verander de standaard valuta naar andere valuta voordat deze verwijderd.');
 define('ERROR_CURRENCY_DELETE_IN_USE','Error - Deze valuta kan niet verwijderd worden omdat er journaal boekingen mee gedaan zijn.');
-define('ERROR_ACCESSING_FILE','Kan bestand (%s) niet openen voor lezen/schrijven. controleer uw rechten.');
+define('ERROR_ACCESSING_FILE','Kan bestand (%s) niet openen. Controleer uw rechten.');
+define('ERROR_CLOSING_FILE','Kan bestand (%s) niet sluiten. Controleer uw rechten.');
+define('ERROR_ACCESSING_FILE','Kan bestand (%s) niet openen voor schrijven. controleer uw rechten.');
 define('TEXT_INSTALL_DIR_PRESENT','De /install directory is aanwezig. Deze directory zou verwijderd of hernoemd moeten worden om te voorkomen dat het programma overschreven wordt.');
 define('TEXT_SELECT_FILE_TO_ATTACH','Bestand Toevoegen:');
-define('MSG_ERROR_CANNOT_WRITE','Kan bestand (%s) niet openen voor lezen/schrijven. controleer uw rechten.');
 define('MSG_ERROR_CREATE_MY_FILES','Error bij het maken van directory: %s. Waarschijnlijk problemen met uw rechten, Controleer de web server bestandsdirectory adres en geef de webserver toestemming om de directory te maken.');
 define('TEXT_IMP_ERMSG1','Het bestandsformaat is groter dan upload_max_filesize in gesteld in php.ini.');
 define('TEXT_IMP_ERMSG2','Het bestand overschrijd MAX_FILE_SIZE richtlijn in de PhreeBooks formulier.');

@@ -80,9 +80,9 @@ switch ($_REQUEST['action']) {
 	$xmlString .= $working->build_xml_string($working->output);
 //echo 'writing: ' . htmlspecialchars($xmlString) . '<br>';
 	// store it in a file
-	$handle   = fopen(DIR_FS_MY_FILES . $mod . '.xml', "w");
-	$contents = fwrite($handle, $xmlString, strlen($xmlString));
-	fclose($handle);
+	if(!$handle = @fopen(DIR_FS_MY_FILES . $mod . '.xml', "w")) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $mod.xml));
+	if (!@fwrite($handle, $xmlString, strlen($xmlString)))		throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, $mod_xml));
+	if (!@fclose($handle)) 										throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $mod_xml));
 	// zip it and download
 	$mod_xml->source_dir  = DIR_FS_MY_FILES;
 	$mod_xml->source_file = $mod . '.xml';

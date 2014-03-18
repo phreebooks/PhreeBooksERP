@@ -26,8 +26,8 @@ define('FEDEX_MAX_SMART_POST_WEIGHT',7); // maximum weight to use Smart Post ser
 define('FEDEX_SMARTPOST_HUB_ID','5802'); // 5802 for Denver, CO
 define('FEDEX_V7_TRACKING_URL','http://www.fedex.com/Tracking?ascend_header=1&amp;clienttype=dotcom&amp;cntry_code=us&amp;language=english&amp;tracknumbers=');
 // Set the defaults for Thermal printing
-define('LABELORIENTATION_THERMAL', 'STOCK_4X6.75_LEADING_DOC_TAB'); 
-define('LABELORIENTATION_PDF', 'PAPER_8.5X11_TOP_HALF_LABEL'); 
+define('LABELORIENTATION_THERMAL', 'STOCK_4X6.75_LEADING_DOC_TAB');
+define('LABELORIENTATION_PDF', 'PAPER_8.5X11_TOP_HALF_LABEL');
 /* PAPER_4X6, PAPER_4X8, PAPER_4X9, PAPER_7X4.75, PAPER_8.5X11_BOTTOM_HALF_LABEL, PAPER_8.5X11_TOP_HALF_LABEL,
 STOCK_4X6, STOCK_4X6.75_LEADING_DOC_TAB, STOCK_4X6.75_TRAILING_DOC_TAB, STOCK_4X8,
 STOCK_4X9_LEADING_DOC_TAB, STOCK_4X9_TRAILING_DOC_TAB */
@@ -70,7 +70,7 @@ define('GUAR_TIME_A2','08:30:00');
 define('GUAR_TIME_A4','09:00:00');
 define('GUAR_TIME_A5','10:00:00');
 define('GUAR_TIME_P1','10:30:00'); // Priority Overnight
-define('GUAR_TIME_PR','12:00:00'); 
+define('GUAR_TIME_PR','12:00:00');
 define('GUAR_TIME_CM','15:00:00'); // Standard Overnight
 define('GUAR_TIME_2D','16:30:00'); // 2 Day and Saver
 define('GUAR_TIME_GD','17:00:00'); // Ground
@@ -83,9 +83,9 @@ class fedex_v7 extends \shipping\classes\shipping {
   	public $sort_order		= 10;
   	public $version			= '3.2';
   	public $shipping_cost	= 0.00;
-  	public $handling_cost	= 1.00; 
+  	public $handling_cost	= 1.00;
 	  // FedEx Rate code maps
-	public $FedExRateCodes = array(	
+	public $FedExRateCodes = array(
 	  'FIRST_OVERNIGHT'        => '1DEam',
 	  'PRIORITY_OVERNIGHT'     => '1Dam',
 	  'STANDARD_OVERNIGHT'     => '1Dpm',
@@ -246,7 +246,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 	if ($pkg->ship_to_postal_code == '') throw new \core\classes\userException(SHIPPING_FEDEX_V7_ERROR_POSTAL_CODE);
 
 	$FedExQuote = array();	// Initialize the Response Array
-	$user_choices = explode(',', str_replace(' ', '', MODULE_SHIPPING_FEDEX_V7_TYPES));  
+	$user_choices = explode(',', str_replace(' ', '', MODULE_SHIPPING_FEDEX_V7_TYPES));
 	$this->package = $pkg->split_shipment($pkg);
 	if (!$this->package) throw new \core\classes\userException(SHIPPING_FEDEX_V7_PACKAGE_ERROR . $pkg->pkg_weight);
 	if (MODULE_SHIPPING_FEDEX_V7_TEST_MODE == 'Test') {
@@ -311,7 +311,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 			} else {
 			  $temp[] = $rateReply->RatedShipmentDetails;
 			}
-			foreach ($temp as $details) { 
+			foreach ($temp as $details) {
 			  switch ($details->ShipmentRateDetail->RateType) {
 				default:
 				case 'PAYOR_ACCOUNT':
@@ -352,7 +352,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 		  throw new \core\classes\userException(SHIPPING_FEDEX_V7_RATE_ERROR . $message);
 	  }
 	} catch (SoapFault $e) {
-//echo 'Request <pre>'  . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
+//echo 'Request <pre>'  . htmlspecialchars($client->__getLastRequest()) . '</pre>';
 //echo 'Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
 	  throw $e;
 	}
@@ -368,7 +368,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 		  'Key'      => MODULE_SHIPPING_FEDEX_V7_AUTH_KEY,
 		  'Password' => MODULE_SHIPPING_FEDEX_V7_AUTH_PWD,
 		),
-	); 
+	);
 	$request['ClientDetail'] = array(
 	  'AccountNumber' => MODULE_SHIPPING_FEDEX_V7_ACCOUNT_NUMBER,
 	  'MeterNumber'   => MODULE_SHIPPING_FEDEX_V7_METER_NUMBER,
@@ -377,9 +377,9 @@ class fedex_v7 extends \shipping\classes\shipping {
 	  'CustomerTransactionId' => '*** Rate Available Services Request v7 ***',
 	);
 	$request['Version'] = array( // version 7
-	  'ServiceId'    => 'crs', 
-	  'Major'        => MODULE_SHIPPING_FEDEX_RATE_WSDL_VERSION, 
-	  'Intermediate' => '0', 
+	  'ServiceId'    => 'crs',
+	  'Major'        => MODULE_SHIPPING_FEDEX_RATE_WSDL_VERSION,
+	  'Intermediate' => '0',
 	  'Minor'        => '0',
 	);
 	$request['ReturnTransitAndCommit']             = '1';
@@ -486,7 +486,7 @@ class fedex_v7 extends \shipping\classes\shipping {
   }
 
 // ***************************************************************************************************************
-//								FEDEX LABEL REQUEST (multipiece compatible) 
+//								FEDEX LABEL REQUEST (multipiece compatible)
 // ***************************************************************************************************************
 	function retrieveLabel($sInfo) {
 		global $messageStack;
@@ -539,7 +539,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 				  $is_ltl   = true; // special handling for freight, hard coded label types for now
 				  $tracking = $response->CompletedShipmentDetail->MasterTrackingId->TrackingNumber;
 				  $zone     = '';
-				  foreach ($response->CompletedShipmentDetail->ShipmentDocuments as $document) $labels[] = $document->Parts->Image;					
+				  foreach ($response->CompletedShipmentDetail->ShipmentDocuments as $document) $labels[] = $document->Parts->Image;
 				} else {
 				  $is_ltl    = false;
 				  $zone      = $response->CompletedShipmentDetail->ShipmentRating->ShipmentRateDetails->RateZone;
@@ -573,14 +573,14 @@ class fedex_v7 extends \shipping\classes\shipping {
 					$this->returned_label = $label;
 					// check for label to be for thermal printer or plain paper
 					if (MODULE_SHIPPING_FEDEX_V7_PRINTER_TYPE == 'Thermal') { // keep the thermal label encoded for now
-						$file_name = $tracking . ($cnt > 0 ? '-'.$cnt : '') . '.lpt'; // thermal printer
-						if ($is_ltl && $cnt > 0) $file_name = $tracking . '-' .$cnt . '.pdf'; // BOL must be PDF
+						$filename = $tracking . ($cnt > 0 ? '-'.$cnt : '') . '.lpt'; // thermal printer
+						if ($is_ltl && $cnt > 0) $filename = $tracking . '-' .$cnt . '.pdf'; // BOL must be PDF
 					} else {
-						$file_name = $tracking . ($cnt > 0 ? '-'.$cnt : '') . '.pdf'; // plain paper
+						$filename = $tracking . ($cnt > 0 ? '-'.$cnt : '') . '.pdf'; // plain paper
 					}
-					if (!$handle = fopen($file_path . $file_name, 'w')) throw new \Exception("Cannot open file ($file_path$file_name)");
-					if (fwrite($handle, $label) === false) throw new \Exception("Cannot write to file ($file_path$file_name)");
-					fclose($handle);
+					if (!$handle = @fopen($file_path . $filename, 'w')) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, 	$file_path . $filename));
+					if (!@fwrite($handle, $label) === false) 			throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$file_path . $filename));
+					if (!@fclose($handle)) 								throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 		$file_path . $filename));
 					$cnt++;
 //					$messageStack->add('Successfully retrieved the FedEx shipping label. Tracking # ' . $fedex_results[$key]['tracking'],'success');
 				  }
@@ -599,7 +599,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 			  throw new \Exception(SHIPPING_FEDEX_V7_RATE_ERROR . $message);
 		    }
 		  } catch (SoapFault $e) {
-//echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
+//echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';
 //echo 'Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
 				throw $e;
 		  }
@@ -616,7 +616,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 			  'Key'      => MODULE_SHIPPING_FEDEX_V7_AUTH_KEY,
 			  'Password' => MODULE_SHIPPING_FEDEX_V7_AUTH_PWD,
 			),
-		); 
+		);
 		$request['ClientDetail'] = array(
 		  'AccountNumber' => MODULE_SHIPPING_FEDEX_V7_ACCOUNT_NUMBER,
 		  'MeterNumber'   => MODULE_SHIPPING_FEDEX_V7_METER_NUMBER,
@@ -625,9 +625,9 @@ class fedex_v7 extends \shipping\classes\shipping {
 		  'CustomerTransactionId' => '*** FedEx Shipping Request ***',
 		);
 		$request['Version'] = array( // version 7
-		  'ServiceId'    => 'ship', 
-		  'Major'        => MODULE_SHIPPING_FEDEX_SHIP_WSDL_VERSION, 
-		  'Intermediate' => '0', 
+		  'ServiceId'    => 'ship',
+		  'Major'        => MODULE_SHIPPING_FEDEX_SHIP_WSDL_VERSION,
+		  'Intermediate' => '0',
 		  'Minor'        => '0',
 		);
 		$temp = array_flip($this->FedExRateCodes);
@@ -648,7 +648,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 			'StreetLines' => array(
 			  '0' => COMPANY_ADDRESS1,
 			  '1' => COMPANY_ADDRESS2,
-			),        
+			),
 			'City'                => COMPANY_CITY_TOWN,
 			'StateOrProvinceCode' => COMPANY_ZONE,
 			'PostalCode'          => COMPANY_POSTAL_CODE,
@@ -665,7 +665,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 			'StreetLines' => array(
 			  '0' => remove_special_chars($pkg->ship_address1),
 			  '1' => remove_special_chars($pkg->ship_address2),
-			),        
+			),
 			'City'                => strtoupper($pkg->ship_city_town),
 			'StateOrProvinceCode' => ($pkg->ship_country_code == 'US') ? strtoupper($pkg->ship_state_province) : '',
 			'PostalCode'          => strip_alphanumeric($pkg->ship_postal_code),
@@ -800,7 +800,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 				'0' => array(
 				  'CustomerReferenceType' => 'CUSTOMER_REFERENCE',
 				  'Value' => $pkg->purchase_invoice_id . '-' . ($key + 1),
-				), 
+				),
 				'1' => array(
 				  'CustomerReferenceType' => 'INVOICE_NUMBER',
 				  'Value' => $pkg->purchase_invoice_id,
@@ -837,7 +837,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 			}
 		}
 		$request['RequestedShipment']['PackageCount']  = count($pkg->package);
-		$request['RequestedShipment']['PackageDetail'] = 'INDIVIDUAL_PACKAGES';                                                                                
+		$request['RequestedShipment']['PackageDetail'] = 'INDIVIDUAL_PACKAGES';
 		$request['RequestedShipment']['RateRequestTypes'] = 'LIST'; // valid values ACCOUNT and LIST
 		$request['RequestedShipment']['LabelSpecification']['LabelFormatType'] = 'COMMON2D';
 		$request['RequestedShipment']['LabelSpecification']['CustomerSpecifiedDetail']['MaskedData'] = 'SHIPPER_ACCOUNT_NUMBER';
@@ -911,10 +911,10 @@ class fedex_v7 extends \shipping\classes\shipping {
 	  $client = new \SoapClient(PATH_TO_SHIP_WSDL, array('trace' => 1));
 	}
 	  $request = $this->FormatFedExDeleteRequest($method, $tracking_number);
-//echo 'request = '; print_r($request); echo '<br />';  
+//echo 'request = '; print_r($request); echo '<br />';
 	  try {
 		$response = $client->deleteShipment($request);
-//echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
+//echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';
 //echo 'Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
 		if ($response->HighestSeverity != 'FAILURE' && $response->HighestSeverity != 'ERROR') {
 		  $messageStack->add(SHIPPING_FEDEX_V7_DEL_SUCCESS. $tracking_number, 'success');
@@ -929,7 +929,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 		  throw new \core\classes\userException(SHIPPING_FEDEX_V7_DEL_ERROR . $message);
 		}
 	  } catch (SoapFault $exception) {
-//echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
+//echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';
 //echo 'Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
 		throw $e;
 	  }
@@ -942,7 +942,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 	    'Key'      => MODULE_SHIPPING_FEDEX_V7_AUTH_KEY,
 	    'Password' => MODULE_SHIPPING_FEDEX_V7_AUTH_PWD,
 	  ),
-	); 
+	);
 	$request['ClientDetail'] = array(
 	  'AccountNumber' => MODULE_SHIPPING_FEDEX_V7_ACCOUNT_NUMBER,
 	  'MeterNumber'   => MODULE_SHIPPING_FEDEX_V7_METER_NUMBER,
@@ -951,9 +951,9 @@ class fedex_v7 extends \shipping\classes\shipping {
 	  'CustomerTransactionId' => '*** FedEx Delete Label Request ***',
 	);
 	$request['Version'] = array(
-	  'ServiceId'    => 'ship', 
-	  'Major'        => MODULE_SHIPPING_FEDEX_SHIP_WSDL_VERSION, 
-	  'Intermediate' => '0', 
+	  'ServiceId'    => 'ship',
+	  'Major'        => MODULE_SHIPPING_FEDEX_SHIP_WSDL_VERSION,
+	  'Intermediate' => '0',
 	  'Minor'        => '0',
 	);
 	switch($method) {
@@ -978,15 +978,15 @@ class fedex_v7 extends \shipping\classes\shipping {
 		if (MODULE_SHIPPING_FEDEX_V7_TEST_MODE == 'Test') throw new \core\classes\userException('Tracking only works on the FedEx production server!');
 		$client = new \SoapClient(PATH_TO_TRACK_WSDL, array('trace' => 1));
 		if ($log_id) {
-			$shipments  = $db->Execute("select id, ref_id, deliver_date, actual_date, tracking_id, notes 
-				from " . TABLE_SHIPPING_LOG . " 
+			$shipments  = $db->Execute("select id, ref_id, deliver_date, actual_date, tracking_id, notes
+				from " . TABLE_SHIPPING_LOG . "
 				where carrier = '" . $this->id . "' and id = '" . $log_id . "'");
 		} else {
 			$start_date = $track_date;
 			$end_date   = gen_specific_date($track_date, $day_offset =  1);
-			$shipments  = $db->Execute("select id, ref_id, deliver_date, actual_date, tracking_id, notes 
-				from " . TABLE_SHIPPING_LOG . " 
-				where carrier = '" . $this->id . "' 
+			$shipments  = $db->Execute("select id, ref_id, deliver_date, actual_date, tracking_id, notes
+				from " . TABLE_SHIPPING_LOG . "
+				where carrier = '" . $this->id . "'
 					and ship_date >= '" . $start_date . "' and ship_date < '" . $end_date . "'");
 		}
 		while (!$shipments->EOF) {
@@ -997,10 +997,10 @@ class fedex_v7 extends \shipping\classes\shipping {
 			}
 			$request = $this->FormatFedExTrackRequest($shipments->fields['tracking_id']);
 			if (!$request) continue;
-//echo 'request = '; print_r($request); echo '<br />';  
+//echo 'request = '; print_r($request); echo '<br />';
 			try {
 				$response = $client->track($request);
-//echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
+//echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';
 //echo 'Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
 				if ($response->HighestSeverity != 'FAILURE' && $response->HighestSeverity != 'ERROR') {
 					$actual_date = str_replace('T', ' ', $response->TrackDetails->ActualDeliveryTimestamp);
@@ -1015,7 +1015,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 					  $messageStack->add(sprintf(SHIPPING_FEDEX_V7_TRACK_STATUS, $shipments->fields['ref_id'], $response->TrackDetails->StatusCode, $response->TrackDetails->StatusDescription), 'caution');
 					}
 					// update the log file with the actual delivery timestamp, append notes
-					$db->Execute("update " . TABLE_SHIPPING_LOG . " 
+					$db->Execute("update " . TABLE_SHIPPING_LOG . "
 					  set actual_date = '" . $actual_date . "', deliver_late = '" . $late . "' where id = " . $shipments->fields['id']);
 //					$messageStack->add(SHIPPING_FEDEX_V7_TRACK_SUCCESS . $response->TrackDetails->ActualDeliveryTimestamp, 'success');
 				} else {
@@ -1029,7 +1029,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 					throw new \core\classes\userException(SHIPPING_FEDEX_V7_TRACK_ERROR . $message);
 				}
 			} catch (SoapFault $e) {
-//echo 'Error Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
+//echo 'Error Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';
 //echo 'Error Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
 				$message = " ({$exception->faultcode}) {$exception->faultstring}";
 				throw new \core\classes\userException(SHIPPING_FEDEX_CURL_ERROR . $message, '', $e);
@@ -1048,7 +1048,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 			  'Key'      => MODULE_SHIPPING_FEDEX_V7_AUTH_KEY,
 			  'Password' => MODULE_SHIPPING_FEDEX_V7_AUTH_PWD,
 			),
-		); 
+		);
 		$request['ClientDetail'] = array(
 		  'AccountNumber' => MODULE_SHIPPING_FEDEX_V7_ACCOUNT_NUMBER,
 		  'MeterNumber'   => MODULE_SHIPPING_FEDEX_V7_METER_NUMBER,
@@ -1063,14 +1063,14 @@ class fedex_v7 extends \shipping\classes\shipping {
 		  ),
 		);
 		$request['Version'] = array( // version 4
-		  'ServiceId'    => 'trck', 
-		  'Major'        => '4', 
-		  'Intermediate' => '0', 
+		  'ServiceId'    => 'trck',
+		  'Major'        => '4',
+		  'Intermediate' => '0',
 		  'Minor'        => '0',
 		);
-		$request['PackageIdentifier'] = array( 
-		  'Value' => $tracking_id, 
-		  'Type'  => 'TRACKING_NUMBER_OR_DOORTAG', 
+		$request['PackageIdentifier'] = array(
+		  'Value' => $tracking_id,
+		  'Type'  => 'TRACKING_NUMBER_OR_DOORTAG',
 		);
 		return $request;
 	}
@@ -1090,30 +1090,30 @@ class fedex_v7 extends \shipping\classes\shipping {
 		$report_only = ($close_date == $today) ? false : true;
 		$date = explode('-', $close_date);
 		$request = $this->FormatFedExCloseRequest($close_date, $report_only, $report_type);
-//echo 'request = '; print_r($request); echo '<br />';  
+//echo 'request = '; print_r($request); echo '<br />';
 		try {
 			$response = $client->groundClose($request);
-//echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
+//echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';
 //echo 'Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
 //echo 'close response array = '; print_r($response); echo '<br />';
 			if ($response->HighestSeverity != 'FAILURE' && $response->HighestSeverity != 'ERROR') {
 				// Fetch the FedEx reports
 				$file_path   = DIR_FS_MY_FILES . $_SESSION['company'] . '/shipping/reports/' . $this->id . '/' . $date[0] . '/' . $date[1] . '/';
 				validate_path($file_path);
-				$file_name    = $date[2] . '-' . $response->Manifest->FileName . '.txt';
+				$filename    = $date[2] . '-' . $response->Manifest->FileName . '.txt';
 				$closeReport  = base64_decode($response->Manifest->File);
 				$mwReport     = base64_decode($response->MultiweightReport);
 				$codReport    = base64_decode($response->CODReport);
 //				$hazMatReport = base64_decode($response->HazMatCertificate);
-//echo 'file_path = '   . $file_path   . ' and file_name = '   . $file_name   . '<br />';
-				if (!$handle = fopen($file_path . $file_name, 'w')) throw new \Exception("Cannot open file ($file_path$file_name)");
-				if (fwrite($handle, $closeReport) === false) throw new \Exception("Cannot write close report to file ($file_path$file_name)");
-				if (fwrite($handle, $mwReport) === false) throw new \Exception("Cannot write multi-weight report to file ($file_path$file_name)");
-				if (fwrite($handle, $codReport) === false) throw new \Exception("Cannot write COD report to file ($file_path$file_name");
+//echo 'file_path = '   . $file_path   . ' and file_name = '   . $filename   . '<br />';
+				if (!$handle = @fopen($file_path . $filename, 'w')) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, 	$file_path . $filename));
+				if (!@fwrite($handle, $closeReport) === false) 		throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE,	$file_path . $filename));
+				if (fwrite($handle, $mwReport) === false) 			throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$file_path . $filename));
+				if (fwrite($handle, $codReport) === false) 			throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$file_path . $filename));
 /*
-				if (fwrite($handle, $hazMatReport) === false) throw new \Exception("Cannot write Hazmat report to file ($file_path$file_name)");
+				if (fwrite($handle, $hazMatReport) === false) throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, $file_path . $filename));
 */
-				fclose($handle);
+				if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 				$messageStack->add(SHIPPING_FEDEX_V7_CLOSE_SUCCESS,'success');
 			} else {
 				foreach ($response->Notifications as $notification) {
@@ -1124,9 +1124,9 @@ class fedex_v7 extends \shipping\classes\shipping {
 					}
 				}
 				throw new \core\classes\userException(SHIPPING_FEDEX_V7_DEL_ERROR . $message);
-			} 
+			}
 		} catch (SoapFault $e) {
-//echo 'Error Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
+//echo 'Error Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';
 //echo ' Error Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
 			$message = " ({$exception->faultcode}) {$exception->faultstring}";
 			throw new \Exception(SHIPPING_FEDEX_CURL_ERROR . $message,'', $e);
@@ -1140,7 +1140,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 			  'Key'      => MODULE_SHIPPING_FEDEX_V7_AUTH_KEY,
 			  'Password' => MODULE_SHIPPING_FEDEX_V7_AUTH_PWD,
 			),
-		); 
+		);
 		$request['ClientDetail'] = array(
 		  'AccountNumber' => MODULE_SHIPPING_FEDEX_V7_ACCOUNT_NUMBER,
 		  'MeterNumber'   => MODULE_SHIPPING_FEDEX_V7_METER_NUMBER,
@@ -1149,9 +1149,9 @@ class fedex_v7 extends \shipping\classes\shipping {
 		  'CustomerTransactionId' => '*** FedEx Close Request - V2 ***',
 		);
 		$request['Version'] = array(
-		  'ServiceId'    => 'clos', 
-		  'Major'        => '2', 
-		  'Intermediate' => '0', 
+		  'ServiceId'    => 'clos',
+		  'Major'        => '2',
+		  'Intermediate' => '0',
 		  'Minor'        => '0',
 		);
 		if ($report_only) { // if reprinting reports, add these
@@ -1294,22 +1294,22 @@ class fedex_v7 extends \shipping\classes\shipping {
 	    case '1DFrt':
 	    case '2DFrt':
 	    case '3DFrt':  $guar_time = GUAR_TIME_PR; break;
-	    case '1Dpm':  
+	    case '1Dpm':
 		  switch ($code) {
 		    default:
-			case 'A1': 
+			case 'A1':
 			case 'A2':
 			case 'AA':
 			case 'A4': $guar_time = GUAR_TIME_CM; break;
 			case 'A3':
 			case 'A5':
 			case 'AM': $guar_time = GUAR_TIME_PR; break;
-		  } 
+		  }
 		  break;
-	    case '1Dam':  
+	    case '1Dam':
 		  switch ($code) {
 		    default:
-			case 'A1': 
+			case 'A1':
 			case 'A2':
 			case 'AA':
 			case 'A4': $guar_time = GUAR_TIME_P1; break;
@@ -1319,9 +1319,9 @@ class fedex_v7 extends \shipping\classes\shipping {
 			case 'RM':
 			case 'PM':
 			case 'A6': $guar_time = GUAR_TIME_CM; break;
-		  } 
+		  }
 		  break;
-	    case '1DEam':  
+	    case '1DEam':
 		  switch ($code) {
 		    default:
 			case 'A1': $guar_time = GUAR_TIME_A1; break;
@@ -1330,7 +1330,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 			case 'A4': $guar_time = GUAR_TIME_A4; break;
 			case 'A5':
 			case 'A6': $guar_time = GUAR_TIME_A5; break;
-		  } 
+		  }
 		  break;
 	  }
 	  return $guar_time;

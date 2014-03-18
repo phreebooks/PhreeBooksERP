@@ -48,7 +48,7 @@ if ($rID) {
   }
   $title = $report->title;
 } elseif ($gID) {
-  $result = $db->Execute("select id, doc_title from " . TABLE_PHREEFORM . " 
+  $result = $db->Execute("select id, doc_title from " . TABLE_PHREEFORM . "
     where doc_group = '" . $gID . "' and (doc_ext = 'rpt' || doc_ext = 'frm') order by doc_title");
   if ($result->RecordCount() == 1) {
     $rID    = $result->fields['id']; // only one form available, use it
@@ -68,7 +68,7 @@ if ($rID) {
       if (isset($_GET['xmax'])) $report->xfilterlist[0]->max_val   = $_GET['xmax'];
     }
   } else {
-    $frm_grp = $db->Execute("select doc_title from " . TABLE_PHREEFORM . " 
+    $frm_grp = $db->Execute("select doc_title from " . TABLE_PHREEFORM . "
     where doc_group = '" . $gID . "' and (doc_ext = 'ff' || doc_ext = 'ff') limit 1");
   	$title  = $frm_grp->fields['doc_title'];
     $r_list = array();
@@ -198,11 +198,11 @@ switch ($_REQUEST['action']) {
 	  $output = object_to_xml($report);
 	  $filename = PF_DIR_MY_REPORTS . 'pf_' . $rID;
 	  if (!$handle = @fopen($filename, 'w')) {
-	    $db->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
-	    throw new \Exception(sprintf(PHREEFORM_WRITE_ERROR, $filename));
+	    	$db->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
+	    	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
 	  }
-	  fwrite($handle, $output);
-	  fclose($handle);
+	  if (!@fwrite($handle, $output)) 	throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$filename));
+	  if (!@fclose($handle)) 			throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 	  $messageStack->add(TEXT_REPORT . $report->description . PHREEFORM_WASSAVED . $report->title, 'success');
 	  break; // we're done
 	} elseif ($_REQUEST['action'] == 'save') {
@@ -225,10 +225,10 @@ switch ($_REQUEST['action']) {
 	  $filename = PF_DIR_MY_REPORTS . 'pf_' . $rID;
 	  if (!$handle = @fopen($filename, 'w')) {
 	    	$db->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
-	    	throw new \Exception(sprintf(PHREEFORM_WRITE_ERROR, $filename));
+	    	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
 	  }
-	  fwrite($handle, $output);
-	  fclose($handle);
+	  if (@fwrite($handle, $output)) 	throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$filename));
+	  if (!@fclose($handle))			throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 	  $messageStack->add(TEXT_REPORT . $report->description . PHREEFORM_WASSAVED . $report->title, 'success');
 	  break; // we're done
 	}
@@ -258,19 +258,19 @@ switch ($_REQUEST['action']) {
 	}
 	// if we are here, delivery method was email
 	if ($output) {
-		$temp_file = DIR_FS_MY_FILES . $_SESSION['company'] . '/temp/' . $output['filename'];
-		$handle = fopen($temp_file, 'w');
-		fwrite($handle, $output['pdf']);
-		fclose($handle);
+		$filename = DIR_FS_MY_FILES . $_SESSION['company'] . '/temp/' . $output['filename'];
+		if (!$handle = @fopen($filename, 'w'))	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, 	$filename));
+		if (@fwrite($handle, $output['pdf']))	throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$filename));
+		if (!@fclose($handle)) 					throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 		$block = array();
 		if ($cc_email) {
 			$block['EMAIL_CC_NAME']    = $cc_name;
 			$block['EMAIL_CC_ADDRESS'] = $cc_email;
 		}
-		$attachments_list['file'] = $temp_file;
+		$attachments_list['file'] = $filename;
 		validate_send_mail($to_name, $to_email, $message_subject, $email_text, $from_name, $from_email, $block, $attachments_list);
 		$messageStack->add(EMAIL_SEND_SUCCESS, 'success');
-		unlink($temp_file);
+		unlink($filename);
 	}
 	default:
 }

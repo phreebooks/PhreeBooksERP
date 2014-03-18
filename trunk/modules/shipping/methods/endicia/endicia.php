@@ -71,9 +71,9 @@ class endicia extends \shipping\classes\shipping {
 	  '500' => TEXT_0500_DOLLARS,
 	  '1000'=> TEXT_1000_DOLLARS,
 	);
-	
+
 	  // Endicia Rate code maps
-	public $EndiciaRateCodes = array(	
+	public $EndiciaRateCodes = array(
 	  'Priority'                    => '1DEam',
 	  'Express'                     => '1Dam',
 	  'First'                       => '1Dpm',
@@ -87,7 +87,7 @@ class endicia extends \shipping\classes\shipping {
 	//'PriorityMailInternational'   => 'I2Dam',
 	//'FirstClassMailInternational' => 'I3D',
 	);
-	
+
 	public $PackageMap = array( // for rate estimates, assume this set of options
 	  '01' => 'FlatRateEnvelope',
 	  '02' => 'Parcel',
@@ -97,7 +97,7 @@ class endicia extends \shipping\classes\shipping {
 	  '25' => 'RegionalRateBoxA',
 	  '24' => 'RegionalRateBoxB',
 	);
-	
+
 	public $mailPieceShape = array(
 	//'Card'                      => MPS_01,
 	//'Letter'                    => MPS_02,
@@ -121,7 +121,7 @@ class endicia extends \shipping\classes\shipping {
 	  'RegionalRateBoxA'          => MPS_20,
 	  'RegionalRateBoxB'          => MPS_21,
 	);
-	
+
 	public $dialAZipCodes = array(
 	  '10' => 'Invalid address',
 	  '11' => 'Invalid zip code',
@@ -141,9 +141,9 @@ class endicia extends \shipping\classes\shipping {
 	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_ENDICIA_PRINTER_TYPE',  	'default' => 'ZPLII',									'text' => SHIPPING_PRINTER_TYPE_DESC);
 	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_ENDICIA_PRINTER_NAME',  	'default' => 'zebra',									'text' => SHIPPING_PRINTER_NAME_DESC);
 	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_ENDICIA_TYPES',         	'default' => '1DEam,1Dam,1Dpm,2Dam,3Dam,3Dpm,GND,GDR',	'text' => SHIPPING_DEFAULT_SERVICE_DESC);
-	  	parent::__construct();    
+	  	parent::__construct();
   	}
-  
+
   	function configure($key) {
     	switch ($key) {
 	  		case 'MODULE_SHIPPING_ENDICIA_TEST_MODE':
@@ -296,7 +296,7 @@ class endicia extends \shipping\classes\shipping {
 		'Machinable'     => 'TRUE',
 		'CODAmount'      => $pkg->cod ? $pkg->total_amount : '0',
 		'InsuredValue'   => $pkg->insurance ? $pkg->total_amount : '0',
-	
+
 	  ),
 	);
 
@@ -308,7 +308,7 @@ class endicia extends \shipping\classes\shipping {
 	  $response = $client->CalculatePostageRates($request);
 //echo 'Request <pre>'  . htmlspecialchars($client->__getLastRequest()) . '</pre>';
 //echo 'Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
-	  $user_choices = explode(',', str_replace(' ', '', MODULE_SHIPPING_ENDICIA_TYPES));  
+	  $user_choices = explode(',', str_replace(' ', '', MODULE_SHIPPING_ENDICIA_TYPES));
 	  if ($response->PostageRatesResponse->Status == 0) {
 		if (is_object($response->PostageRatesResponse->PostagePrice)) $response->PostageRatesResponse->PostagePrice = array($response->PostageRatesResponse->PostagePrice);
 		if (is_array($response->PostageRatesResponse->PostagePrice)) foreach ($response->PostageRatesResponse->PostagePrice as $rateReply) {
@@ -329,7 +329,7 @@ class endicia extends \shipping\classes\shipping {
 	  	throw new \core\classes\userException(TEXT_ERROR.' ('.$response->PostageRatesResponse->Status.') '.$response->PostageRatesResponse->ErrorMessage);
 	  }
 	} catch (SoapFault $e) {
-//echo 'Fault Request <pre>'  . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
+//echo 'Fault Request <pre>'  . htmlspecialchars($client->__getLastRequest()) . '</pre>';
 //echo 'Fault Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
 	  throw $e;
 	}
@@ -410,7 +410,7 @@ class endicia extends \shipping\classes\shipping {
   }
 
 // ***************************************************************************************************************
-//								Endicia Label Request (domestic, single piece only) 
+//								Endicia Label Request (domestic, single piece only)
 // ***************************************************************************************************************
   function retrieveLabel($sInfo) {
 	global $messageStack;
@@ -451,20 +451,15 @@ class endicia extends \shipping\classes\shipping {
 		  $file_path = SHIPPING_DEFAULT_LABEL_DIR.$this->id.'/'.$date[0].'/'.$date[1].'/'.$date[2].'/';
 		  validate_path($file_path);
 		  $this->returned_label = $label;
-		  $file_name = $tracking.'.lpt'; // assume thermal printer
+		  $filename = $tracking.'.lpt'; // assume thermal printer
 		  // decode label if necessary
 //echo 'label raw = '.$label.'<br>';
 //echo 'label decoded = '.base64_decode($label).'<br>';
 //		  if (!in_array(MODULE_SHIPPING_ENDICIA_PRINTER_TYPE, array('EPL2','ZPLII'))) $label = base64_decode($label);
 		  $label = base64_decode($label);
-		  if (!$handle = fopen($file_path . $file_name, 'w')) { 
-			throw new \Exception('Cannot open file ('.$file_path . $file_name.')');
-		  }
-		  
-		  if (fwrite($handle, $label) === false) {
-			throw new \Exception('Cannot write to file ('.$file_path . $file_name.')');
-		  }
-		  fclose($handle);
+		  if (!$handle = @fopen($file_path . $filename, 'w')) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, file_path . $filename));
+		  if (!@fwrite($handle, $label)) throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$file_path . $filename));
+		  if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 		  $messageStack->add(sprintf(SHIPPING_ENDICIA_LABEL_STATUS, $tracking, $response->LabelRequestResponse->PostageBalance),'success');
 		} else {
 		  throw new \Exception('Error - No label found in return string.');
@@ -473,7 +468,7 @@ class endicia extends \shipping\classes\shipping {
 	  	throw new \Exception(TEXT_ERROR.' ('.$response->LabelRequestResponse->Status.') '.$response->LabelRequestResponse->ErrorMessage);
 	  }
 	} catch (SoapFault $exception) {
-//echo 'Fault Request <pre>'  . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
+//echo 'Fault Request <pre>'  . htmlspecialchars($client->__getLastRequest()) . '</pre>';
 //echo 'Fault Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
 	  throw new \Exception("Soap Error ({$exception->faultcode}) {$exception->faultstring}");
 	}
@@ -562,7 +557,7 @@ class endicia extends \shipping\classes\shipping {
 	  	'CustomsWeight5'   => 0,
   	  ),
 	);
-  	if ($pkg->package['length'] && $pkg->package['width'] && $pkg->package['height']) 
+  	if ($pkg->package['length'] && $pkg->package['width'] && $pkg->package['height'])
   	  $data['LabelRequest']['MailpieceDimensions'] = array(
   		'Length' => $pkg->package['length'],
   		'Width'  => $pkg->package['width'],
@@ -594,7 +589,7 @@ class endicia extends \shipping\classes\shipping {
   	$client = new \SoapClient(MODULE_SHIPPING_ENDICIA_ELS_URL, array('trace'=>1));
   	try {
 	  $response = $client->RefundRequest($xml);
-//echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
+//echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';
 //echo 'Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
 	  if ($response->RefundResponse->RefundList->PICNumber->IsAppoved == 'YES') {
 	  	$messageStack->add(sprintf(SHIPPING_ENDICIA_REFUND_MSG, $response->RefundResponse->RefundList->PICNumber, $response->RefundResponse->RefundList->PICNumber->IsApproved, $response->RefundResponse->RefundList->PICNumber->ErrorMsg), 'success');
@@ -616,12 +611,12 @@ class endicia extends \shipping\classes\shipping {
 	global $db, $messageStack;
 //	$result = array();
 	if ($log_id) {
-	  $shipments  = $db->Execute("select id, ref_id, deliver_date, actual_date, tracking_id, notes 
+	  $shipments  = $db->Execute("select id, ref_id, deliver_date, actual_date, tracking_id, notes
 		from ".TABLE_SHIPPING_LOG." where carrier = '$this->id' and id = '$log_id'");
 	} else {
 	  $start_date = $track_date;
 	  $end_date   = gen_specific_date($track_date, $day_offset =  1);
-	  $shipments  = $db->Execute("select id, ref_id, deliver_date, actual_date, tracking_id, notes 
+	  $shipments  = $db->Execute("select id, ref_id, deliver_date, actual_date, tracking_id, notes
 		from ".TABLE_SHIPPING_LOG." where carrier = '$this->id' and ship_date >= '$start_date' and ship_date < '$end_date'");
 	}
 	if ($shipments->RecordCount() == 0) return 'No records were found!';
@@ -640,7 +635,7 @@ class endicia extends \shipping\classes\shipping {
   	$client = new \SoapClient(MODULE_SHIPPING_ENDICIA_ELS_URL, array('trace'=>1));
 	try {
 	  $response = $client->StatusRequest($xml);
-//echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
+//echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';
 //echo 'Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
 	  if ($response->StatusResponse->Status == 0) {
 	  	if (!is_array($response->StatusResponse->StatusList)) $response->StatusResponse->StatusList = array($response->StatusResponse->StatusList);
@@ -654,7 +649,7 @@ class endicia extends \shipping\classes\shipping {
 	  	throw new \Exception(TEXT_ERROR.' ('.$response->StatusResponse->Status.') '.$response->StatusResponse->ErrorMsg);
 	  }
 	} catch (SoapFault $exception) {
-//echo 'Error Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';  
+//echo 'Error Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';
 //echo 'Error Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
 	  throw new \Exception( "SOAP Error ({$exception->faultcode}) {$exception->faultstring}");
 	}

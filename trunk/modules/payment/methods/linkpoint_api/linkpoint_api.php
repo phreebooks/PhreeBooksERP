@@ -111,14 +111,14 @@ class linkpoint_api extends \payment\classes\payment {
 	'      error_message = error_message + "' . sprintf(MODULE_PAYMENT_CC_TEXT_JS_CC_NUMBER, CC_NUMBER_MIN_LENGTH) . '\n";' . "\n" .
 	'      error = 1;' . "\n" .
 	'    }' . "\n" .
-	
+
 	'    var cc_cvv    = document.getElementById("linkpoint_api_field_4").value;' . "\n" .
 	'    if (cc_cvv == "" || cc_cvv.length < "3") {' . "\n".
 	'       error_message = error_message + "' . MODULE_PAYMENT_CC_TEXT_JS_CC_CVV . '\n";' . "\n" .
 	'       error = 1;' . "\n" .
 	'    }' . "\n" .
 	'  }' . "\n";
-	return $js;		
+	return $js;
   }
   /**
    * Display Credit Card Information Submission Fields on the Checkout Payment Page
@@ -155,8 +155,8 @@ class linkpoint_api extends \payment\classes\payment {
    	 * Evaluates the Credit Card Type for acceptance and the validity of the Credit Card Number & Expiration Date
    	 *@throws Exception
    	 */
-  	function pre_confirmation_check() {	
-		// if the card number has the blanked out middle number fields, it has been processed, show message that 
+  	function pre_confirmation_check() {
+		// if the card number has the blanked out middle number fields, it has been processed, show message that
 		// the charges were not processed through the merchant gateway and continue posting payment.
 		if (strpos($this->field_1, '*') !== false) throw new \Exception(MODULE_PAYMENT_CC_NO_DUPS);
 	    $result = $this->validate();
@@ -182,18 +182,18 @@ class linkpoint_api extends \payment\classes\payment {
 			$cc_expiry_month = $this->cc_expiry_month;
 			$cc_expiry_year  = $this->cc_expiry_year;
 			$error_returned  = $payment_error_return . $error_info2;
-		
+
 			$cc_number = (strlen($cc_number_clean) > 8) ? substr($cc_number_clean, 0, 4) . str_repeat('X', (strlen($cc_number_clean) - 8)) . substr($cc_number_clean, -4) : substr($cc_number_clean, 0, 3) . '**short**';
-		
+
 			while (strstr($error_returned, '%3A')) $error_returned = str_replace('%3A', ' ', $error_returned);
 			while (strstr($error_returned, '%2C')) $error_returned = str_replace('%2C', ' ', $error_returned);
 			while (strstr($error_returned, '+'))   $error_returned = str_replace('+', ' ', $error_returned);
 			$error_returned = str_replace('&', ' &amp;', $error_returned);
 			$cust_info = $error_returned;
-			$message = addslashes($message);//@todo message isn't set 
+			$message = addslashes($message);//@todo message isn't set
 			$cust_info = addslashes($cust_info);
 			$all_response_info = addslashes($all_response_info);
-		
+
 		    //  Store Transaction history in Database
 	/* original Harry Lu sql converted to PhreeBooks format
 	        $sql_data_array= array(array('fieldName'=>'lp_trans_num', 'value'=>'', 'type'=>'string'),
@@ -239,8 +239,8 @@ class linkpoint_api extends \payment\classes\payment {
 		    db_perform(TABLE_LINKPOINT_API, $sql_data_array);
 		}
 		//gen_redirect(html_href_link(get_cur_url(), $payment_error_return, 'SSL', true, false));
-		//gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(), 'SSL'));			
-	
+		//gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(), 'SSL'));
+
 		// 	if no error, continue with validated data:
 		return true;
 	}
@@ -280,7 +280,7 @@ class linkpoint_api extends \payment\classes\payment {
 	 * Prepare and submit the authorization to the gateway
 	 */
 	function before_process() {
-		
+
 		global $order, $db, $messageStack, $lp_avs, $lp_trans_num;
 		$has_error = false;
 		$myorder = array ();
@@ -321,7 +321,7 @@ class linkpoint_api extends \payment\classes\payment {
 		// BILLING INFO
 		$myorder["userid"]     = $_POST['bill_acct_id']; //$order->bill_primary_name; //$_SESSION['customer_id']; //harry
 		$myorder["customerid"] = $_POST['bill_acct_id']; //$order->bill_primary_name; //$_SESSION['customer_id']; //harry
-		$myorder["name"]       = htmlentities($this->field_0, ENT_QUOTES, 'UTF-8'); 
+		$myorder["name"]       = htmlentities($this->field_0, ENT_QUOTES, 'UTF-8');
 		$myorder["company"]    = htmlentities($order->bill_primary_name); // htmlentities($order->billing['company'], ENT_QUOTES, 'UTF-8'); //harry
 		$myorder["address1"]   = htmlentities($order->bill_address1); //htmlentities($order->billing['street_address'], ENT_QUOTES, 'UTF-8'); //harry
 		$myorder["address2"]   = htmlentities($order->bill_address2); //htmlentities($order->billing['suburb'], ENT_QUOTES, 'UTF-8'); //harry
@@ -344,7 +344,7 @@ class linkpoint_api extends \payment\classes\payment {
 		$myorder["szip"] = $order->delivery['postcode'];
 		$myorder["scountry"] = $order->delivery['country']['iso_code_2'];
 		*/
-		
+
 		// MISC
 		$myorder["comments"] = "Phreebooks Sales Order";
 
@@ -356,7 +356,7 @@ class linkpoint_api extends \payment\classes\payment {
 			$myorder["items"][$i]['price'] = number_format($order->item_rows[$i]['amt']); // number_format($order->products[$i]['price'], 2, '.', ''); //harry
 			$myorder["items"][$i]['options']['name'] = "invoice_num" ; //array("invoice_num" => $order->item_rows[$i]['inv']);
 			$myorder["items"][$i]['options']['value'] = $order->item_rows[$i]['inv'];
-			
+
 //			$myorder["items"][$i]['invoice_num'] = $order->item_rows[$i]['inv'];
 			/* harry
 			if (isset ($order->products[$i]['attributes'])) {
@@ -372,7 +372,7 @@ class linkpoint_api extends \payment\classes\payment {
 		$this->payment_status = $myorder["ordertype"];
 		// send request to gateway
 		$result = $this->_sendRequest($myorder);
-		
+
 		// alert to customer if communication failure
 		if (trim($result) == '<r_approved>FAILURE</r_approved><r_error>Could not connect.</r_error>' || !is_array($result)) {
 			throw new \Exception(MODULE_PAYMENT_LINKPOINT_API_TEXT_FAILURE_MESSAGE);
@@ -485,7 +485,7 @@ class linkpoint_api extends \payment\classes\payment {
 		//  Begin check of specific error conditions
 		if ($result["r_approved"] != "APPROVED") {
 			// Error (Merchant config file is missing, empty or cannot be read)
-			if (substr($result['r_error'], 0, 10) == 'SGS-020005') throw new \Exception($result['r_error']); 
+			if (substr($result['r_error'], 0, 10) == 'SGS-020005') throw new \Exception($result['r_error']);
 			if (substr($result['r_error'], 0, 10) == 'SGS-005000') throw new \Exception( MODULE_PAYMENT_LINKPOINT_API_TEXT_GENERAL_ERROR . '<br />' . $result['r_error']); // The server encountered a database error
 			if (substr($result['r_error'], 0, 10) == 'SGS-000001' || strstr($result['r_error'], 'D:Declined') || strstr($result['r_error'], 'R:Referral')) throw new \Exception(MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE . '<br />' . $result['r_error']);
 			if (substr($result['r_error'], 0, 10) == 'SGS-005005' || strstr($result['r_error'], 'Duplicate transaction')) throw new \Exception(MODULE_PAYMENT_LINKPOINT_API_TEXT_DUPLICATE_MESSAGE . '<br />' . $result['r_error']);
@@ -569,12 +569,12 @@ class linkpoint_api extends \payment\classes\payment {
 
 	function check() {
 		global $db;
-		
+
 		if (!isset ($this->_check)) {
 			$check_query = $db->Execute("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = 'MODULE_PAYMENT_LINKPOINT_API_STATUS'");
-			
+
 			$this->_check = $check_query->RecordCount();
-		}		
+		}
 		return $this->_check;
 	}
 
@@ -612,29 +612,28 @@ class linkpoint_api extends \payment\classes\payment {
 		global $db;
 		if (db_table_exists(TABLE_LINKPOINT_API)) { // cleanup database if contains no data
 		  	$result = $db->Execute("select count(id) as count from " . TABLE_LINKPOINT_API);
-		  	if ($result->RecordCount() != 0) throw new Exception("Can't delete table ". TABLE_LINKPOINT_API. " because it contains data", $code, $previous); 
+		  	if ($result->RecordCount() != 0) throw new Exception("Can't delete table ". TABLE_LINKPOINT_API. " because it contains data", $code, $previous);
 		  	$db->Execute("DROP TABLE " . TABLE_LINKPOINT_API);
 		}
 		parent::delete();
   	}
 
-  function _log($msg, $suffix = '') {
-	static $key;
-	if (!isset ($key) || $key == '')
+  	function _log($msg, $suffix = '') {
+		static $key;
+		if (!isset ($key) || $key == '')
 		$key = time() . '_' . general_rand(4);
-	$file = $this->_logDir . '/' . 'Linkpoint_Debug_' . $suffix . $key . '.log';
-	if ($fp = @ fopen($file, 'a')) {
-		@ fwrite($fp, $msg);
-		@ fclose($fp);
-	}
-  }
+		$filename = $this->_logDir . '/' . 'Linkpoint_Debug_' . $suffix . $key . '.log';
+		if (!$handle = @fopen($filename, 'a'))	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
+		if (!@fwrite($handle, $msg))			throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$filename));
+		if (!@fclose($handle))					throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
+  	}
 
 	function _sendRequest($myorder) {
 		$myorder["host"] = "secure.linkpt.net";
 		if (MODULE_PAYMENT_LINKPOINT_API_TRANSACTION_MODE == 'DevelopersTest') {
 			$myorder["host"] = "staging.linkpt.net";
 		}
-		
+
 		$myorder["port"] = "1129";
 		$myorder["keyfile"] = (DIR_FS_MODULES . 'payment/methods/linkpoint_api/' . MODULE_PAYMENT_LINKPOINT_API_LOGIN . '.pem');
 		$myorder["configfile"] = MODULE_PAYMENT_LINKPOINT_API_LOGIN; // This is your store number
@@ -699,7 +698,7 @@ class linkpoint_api extends \payment\classes\payment {
 		}
 		if (isset ($_POST['cc_number']) && (int) trim($_POST['cc_number']) == 0) throw new \Exception(MODULE_PAYMENT_LINKPOINT_API_TEXT_CC_NUM_REQUIRED_ERROR);
 		if (isset ($_POST['trans_id']) && (int) trim($_POST['trans_id']) == 0) throw new \Exception(MODULE_PAYMENT_LINKPOINT_API_TEXT_TRANS_ID_REQUIRED_ERROR);
-			
+
 		$sql = "select lp_trans_num, transaction_time from " . TABLE_LINKPOINT_API . " where order_id = " . (int) $oID . " and transaction_result = 'APPROVED' order by transaction_time DESC";
 		$query = $db->Execute($sql);
 		if ($query->RecordCount() < 1) throw new \Exception(MODULE_PAYMENT_LINKPOINT_API_TEXT_NO_MATCHING_ORDER_FOUND);

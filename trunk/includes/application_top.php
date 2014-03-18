@@ -53,6 +53,8 @@ session_start();
 session_decode();
 //end session
 $_REQUEST = array_merge($_GET, $_POST);
+if(!isset($_REQUEST['module']))	$_REQUEST['module']	= 'phreedom';
+if(!isset($_REQUEST['page'])) 	$_REQUEST['page'] 	= 'main';
 // set the language
 if ( !isset($_SESSION['language']) && isset($_GET['language'])) {
 	$_SESSION['language'] = $_GET['language'];
@@ -72,7 +74,7 @@ set_error_handler("PhreebooksErrorHandler");
 set_exception_handler('PhreebooksExceptionHandler');
 spl_autoload_register('Phreebooks_autoloader', true, false);
 // pull in the custom language over-rides for this module/page
-$custom_path = DIR_FS_MODULES . "$module/custom/pages/$page/extra_defines.php";
+$custom_path = DIR_FS_MODULES . "{$_REQUEST['module']}/custom/pages/{$_REQUEST['page']}/extra_defines.php";
 if (file_exists($custom_path)) { include($custom_path); }
 gen_pull_language($module);
 define('DIR_WS_THEMES', 'themes/' . (isset($_SESSION['admin_prefs']['theme']) ? $_SESSION['admin_prefs']['theme'] : DEFAULT_THEME) . '/');
@@ -134,7 +136,7 @@ if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR
 	  	if (function_exists('apc_load_constants') && apc_add("mainmenu", $mainmenu, 600) == false)     throw new \core\classes\userException("can not cache mainmenu");
   	}
 	// pull in the custom language over-rides for this module (to pre-define the standard language)
-  	$path = DIR_FS_MODULES . "$module/custom/pages/$page/extra_menus.php";
+  	$path = DIR_FS_MODULES . "{$_REQUEST['module']}/custom/pages/{$_REQUEST['page']}/extra_menus.php";
   	if (file_exists($path)) { include($path); }
 }
 if ( defined('ENABLE_ENCRYPTION') && ENABLE_ENCRYPTION  == true && strlen($_SESSION['admin_encrypt']) < 1 ) throw new \core\classes\userException("Be aware that you have enabled encryption but the encryption key is empty");

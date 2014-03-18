@@ -224,7 +224,7 @@ class admin extends \core\classes\admin {
 	function web_connected($silent = true) {
     	$connected = @fsockopen('www.google.com', 80, $errno, $errstr, 20);
     	if ($connected) {
-      		fclose($connected);
+    		if (!@fclose($connected)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 'www.google.com'));
       		return true;
     	} else {
 	  		if (!$silent) throw new \core\classes\userException("You are not connected to the internet. Error: $errno -$errstr");

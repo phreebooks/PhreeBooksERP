@@ -57,7 +57,7 @@ switch ($action) {
 	$i    = 0;
 	$sInfo->package = array();
 	while(true) {
-	  $i++;		
+	  $i++;
 	  if (!isset($_POST['qty_' . $i])) break;
 	  // error check
 	  if (!$_POST['qty_' . $i]) continue; // skip if quantity is 0 or blank
@@ -105,16 +105,16 @@ switch ($action) {
 	  foreach ($labels_array as $tracking_num) {
 	    foreach (glob($file_path . $tracking_num . '*.*') as $filename) {
 	      if (substr($filename, -3) == 'lpt') { // it's a thermal label
-		    if (!$handle = fopen($filename, 'r')) $error = $messageStack->add('Cannot open file (' . $filename . ')','error');
+		    if (!$handle = @fopen($filename, 'r')) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
 		    $label_data .= fread($handle, filesize($filename));
-		    fclose($handle);
+		    if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 		    if (!$error) $auto_print = true;
 	      } elseif (substr($filename, -3) == 'pdf') { // it's a pdf image label
 		    $pdf_list[] = $tracking_num; // it's a pdf image label
 	      }
 	    }
 	    if (!$auto_print) { // just pdf, go there now
-	      gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=shipping&page=popup_label_viewer&method=' . $shipping_module . '&date=' . $sInfo->ship_date . '&labels=' . implode(':', $labels_array), 'SSL'));	
+	      gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=shipping&page=popup_label_viewer&method=' . $shipping_module . '&date=' . $sInfo->ship_date . '&labels=' . implode(':', $labels_array), 'SSL'));
 	    }
 	  }
 	  $label_data = str_replace("\r", "", addslashes($label_data)); // for javascript multi-line
@@ -135,9 +135,9 @@ switch ($action) {
 	foreach ($labels_array as $tracking_num) {
 	  foreach (glob($file_path . $tracking_num . '*.*') as $filename) {
 	    if (substr($filename, -3) == 'lpt') { // it's a thermal label
-		  if (!$handle = fopen($filename, 'r')) $error = $messageStack->add('Cannot open file (' . $filename . ')','error');
+		  if (!$handle = @fopen($filename, 'r')) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
 		  $label_data .= fread($handle, filesize($filename));
-		  fclose($handle);
+		  if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 		  $auto_print = true;
 	    } elseif (substr($filename, -3) == 'pdf') { // it's a pdf image label
 		  $pdf_list[] = $tracking_num;
@@ -147,7 +147,7 @@ switch ($action) {
 	$label_data = str_replace("\r", "", addslashes($label_data)); // for javascript multi-line
 	$label_data = str_replace("\n", "\\n", $label_data);
 	if (!$auto_print) { // just pdf, go there now
-		gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=shipping&page=popup_label_viewer&method=' . $shipping_module . '&date=' . $date . '&labels=' . $labels, 'SSL'));	
+		gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=shipping&page=popup_label_viewer&method=' . $shipping_module . '&date=' . $date . '&labels=' . $labels, 'SSL'));
 	}
     break;
 
@@ -212,9 +212,9 @@ switch ($action) {
 
   default:
 	$oID = db_prepare_input($_GET['oID']);
-	$sql = "select shipper_code, ship_primary_name, ship_contact, ship_address1, ship_address2, 
-		ship_city_town, ship_state_province, ship_postal_code, ship_country_code, ship_telephone1, 
-		ship_email, purchase_invoice_id, purch_order_id, total_amount  
+	$sql = "select shipper_code, ship_primary_name, ship_contact, ship_address1, ship_address2,
+		ship_city_town, ship_state_province, ship_postal_code, ship_country_code, ship_telephone1,
+		ship_email, purchase_invoice_id, purch_order_id, total_amount
 		from " . TABLE_JOURNAL_MAIN . " where id = " . (int)$oID;
 	$result = $db->Execute($sql);
 	if (is_array($result->fields)) {

@@ -19,11 +19,11 @@
 namespace core\classes;
 class messageStack {
     public $debug_info 	= NULL;
-    
+
     function __construct(){
     	$this->debug_header();
     }
-    
+
     function add($message, $type = 'error') {
       	if ($type == 'error') {
         	$_SESSION['messageToStack'][] = array('type' => $type, 'params' => 'class="ui-state-error"', 'text' => html_icon('emblems/emblem-unreadable.png', TEXT_ERROR) . '&nbsp;' . $message, 'message' => $message);
@@ -53,7 +53,7 @@ class messageStack {
 	  	$this->reset();
       	return $output;
     }
-    
+
   	function output_xml() {
 		$xml = "<messageStack>\n";
 	  	if (! isset($_SESSION['messageToStack'])) return '';
@@ -65,7 +65,7 @@ class messageStack {
       		} elseif ($value['type'] == 'success') {
 	    		if (!HIDE_SUCCESS_MESSAGES) foreach (explode("\n",$value['message']) as $temp){
 					if($temp != '') $xml .= xmlEntry("messageStack_msg", gen_js_encode($temp));
-				}  
+				}
       		} elseif ($value['type'] == 'caution' || $type == 'warning') {
       			foreach (explode("\n",$value['message']) as $temp){
 					if($temp != '') $xml .= xmlEntry("messageStack_caution", gen_js_encode($temp));
@@ -105,9 +105,9 @@ class messageStack {
 	  	if (strlen($this->debug_info) < 1) return;
 	  	$this->debug_info .= "\n\nPage trace stats: Execution Time: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, " . $db->count_queries . " queries taking " . (int)($db->total_query_time * 1000)." ms";
       	$filename = DIR_FS_MY_FILES . 'trace.txt';
-      	if (!$handle = fopen($filename, 'w')) trigger_error("Cannot open file ($filename)", E_USER_ERROR);
-      	if (fwrite($handle, $this->debug_info) === false) trigger_error("Cannot write to file ($filename)", E_USER_ERROR);
-      	fclose($handle);
+      	if (!$handle = @fopen($filename, 'w')) 		throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
+      	if (!@fwrite($handle, $this->debug_info)) 	throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, $filename));
+      	if (!@fclose($handle)) 						throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 	  	$this->debug_info = NULL;
 	  	$this->add("Successfully created trace.txt file.","success");
 	}

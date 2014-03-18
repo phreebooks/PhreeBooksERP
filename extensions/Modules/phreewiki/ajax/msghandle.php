@@ -22,25 +22,25 @@ include_once(DIR_WS_MODULES."phreewiki/functions/phreewiki.php");
 include_once(DIR_WS_MODULES."phreewiki/defaults.php");
 
 $xml = false ;
-	
+
 //////////////////////////////////////////////////////////initial checking and required functions////////////////////////////////////////
 if( !isset($_REQUEST['action']) ) {
-	$return_result = "no action found";		
+	$return_result = "no action found";
 }
-	
 
-switch ($_REQUEST['action']){	
+
+switch ($_REQUEST['action']){
 	case "revisionList":
 	case "revisionDisplay":
 		//list of revision
 		if( !isset($_REQUEST['title']) ){
-			$return_result = PHREEWIKI_NO_TITLE;	
+			$return_result = PHREEWIKI_NO_TITLE;
 			break;
 		}
-		
+
 		$title = $_REQUEST['title'];
 		$result = select_all_tiddler_versions($title);		//get all required version
-		
+
 		//print revision list
 		if( strcmp($_REQUEST['action'],"revisionList") == 0 ) {
 
@@ -51,10 +51,10 @@ switch ($_REQUEST['action']){
 				$xml .= "\t" . xmlEntry("modifier", $result[$i]['modifier']);
 				$xml .= "</revisionList>\n";
 			}
-			
+
 		}else{//get detailed info
 			if( sizeof($result) == 1 ) {
-				$return_result = PHREEWIKI_ERROR_REVISION_NOT_FOUND;	
+				$return_result = PHREEWIKI_ERROR_REVISION_NOT_FOUND;
 				break;
 			}
 			for( $i=sizeof($result)-1; $i>=0; $i-- ) {
@@ -73,9 +73,9 @@ switch ($_REQUEST['action']){
 				}
 			}
 		}
-		
+
 	break;
-	
+
 	case "saveTiddler":
 		//strip all slashes first and readd them before adding to SQL
 		$tiddler = $_REQUEST['tiddler'];
@@ -83,11 +83,11 @@ switch ($_REQUEST['action']){
 		$omodified =$_REQUEST['omodified'];
 		//exit($tiddler.'  omo  '.$omodified);
 		$tiddler = tiddler_htmlToArray($tiddler);
-		$ntiddler = tiddler_create($tiddler[0]['title'], 
-									$tiddler[0]['body'], 
-									$tiddler[0]['modifier'], 
-									$tiddler[0]['modified'], 
-									$tiddler[0]['tags'], 
+		$ntiddler = tiddler_create($tiddler[0]['title'],
+									$tiddler[0]['body'],
+									$tiddler[0]['modifier'],
+									$tiddler[0]['modified'],
+									$tiddler[0]['tags'],
 									"","","",
 									$tiddler[0]['fields']);
 
@@ -101,8 +101,8 @@ switch ($_REQUEST['action']){
 				$ntiddler['tags'] .= " ".$modifier_add;
 			}
 		}
-		
-		//save entry 
+
+		//save entry
 		$return_result = saveTiddly( $oldtitle, $omodified, $ntiddler);
 	break;
 
@@ -112,7 +112,7 @@ switch ($_REQUEST['action']){
 		$title = $_REQUEST['title'];
 		$title = tiddler_bodyEncode($title);
 		$tiddler = select_tiddler_by_title($title);
-		$return_result = deleteTiddler($tiddler);	
+		$return_result = deleteTiddler($tiddler);
 
 	break;
 //////////////////////////////////////////////////////////rss//////////////////////////////////////////////////////////////
@@ -121,28 +121,21 @@ switch ($_REQUEST['action']){
 		$body = $_REQUEST['rss'];
 
 		//check authorization
-		\core\classes\user::validate_security($security_id, 1); // security check		
+		\core\classes\user::validate_security($security_id, 1); // security check
 		//save to file
-		$fhandle = fopen(DIR_FS_ADMIN."/modules/phreewiki/rss.xml",'w');
-		if( $fhandle===FALSE ) {
-			$return_result = PHREEWIKI_ERROR_RSS_FILE_CREATE ;		//return error to display in displayMessage and make iframe idle
-			break;
-		}
-		if( fwrite($fhandle,$body)== FALSE ) {
-			$return_result .=  PHREEWIKI_ERROR_RSS_FILE_WRITE ;		//return error to display in displayMessage and make iframe idle
-			break;
-		}
+		if (!$fhandle = @fopen(DIR_FS_ADMIN."/modules/phreewiki/rss.xml",'w')) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, DIR_FS_ADMIN."/modules/phreewiki/rss.xml"));
+		if (!@fwrite($fhandle,$body)) throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE,  DIR_FS_ADMIN."/modules/phreewiki/rss.xml"));
 		$return_result = PHREEWIKI_NOTICE_RSS_CREATED ;		//return error to display in displayMessage and make iframe idle
-		
+
 	break;
 
 //////////////////////////////////////////////////////////saveChanges//////////////////////////////////////////////////////////////
 	case "upload":
 		//remove slashes
 		$body = $_REQUEST['upload'];
-		
+
 		//check authorization
-		\core\classes\user::validate_security($security_id, 2); // security check		
+		\core\classes\user::validate_security($security_id, 2); // security check
 		//convert HTML to array form and insert into DB
 		//WARNING: everything will be overwritten so beware
 		$tiddler_array = tiddler_htmlToArray($body);
@@ -152,7 +145,7 @@ switch ($_REQUEST['action']){
 			$result .= '" ';
 			$result .= $ntiddler['title'] .' = ' ;
 			$result .= saveTiddly($tiddler['title'],$tiddler['modified'],$ntiddler);
-			$result .= ' " ';			
+			$result .= ' " ';
 		}
 		$return_result =  PHREEWIKI_NOTICE_UPLOAD_STORE_AREA_COMPLETE . ': ' . $result ;		//return error to display in displayMessage and make iframe idle
 	}
@@ -163,5 +156,5 @@ $xml .= xmlEntry("Message", $return_result );		//return error to display in disp
 
 
 echo createXmlHeader() . $xml . createXmlFooter();
-die;	
+die;
 ?>

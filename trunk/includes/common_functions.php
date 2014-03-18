@@ -898,11 +898,9 @@ function gen_db_date($raw_date = '', $separator = '/') {
   </head>
   <body>&nbsp;</body>
 </html>';
-	if (!$handle = @fopen($filename, 'w')) {
-	  throw new \Exception('Cannot open file (' . $filename . ') for writing check your permissions.', 'error');
-	}
-	fwrite($handle, $blank_web);
-	fclose($handle);
+	if (!$handle = @fopen($filename, 'w'))	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, 	$filename));
+	if (!@fwrite($handle, $blank_web)) 		throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$filename));
+	if (!@fclose($handle))					throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 		$filename));
 	return true;
   }
 

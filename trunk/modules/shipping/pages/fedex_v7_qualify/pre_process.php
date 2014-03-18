@@ -17,11 +17,11 @@
 //  Path: /modules/shipping/pages/fedex_qualify/pre_process.php
 //
 
-function write_file($file_name, $data) {
+function write_file($filename, $data) {
   global $messageStack;
-  if (!$handle = @fopen($file_name, 'w')) throw new \core\classes\userException("Cannot open file ($file_name)");
-  if (@fwrite($handle, $data) === false)  throw new \core\classes\userException("Cannot write to file ($file_name)");
-  fclose($handle);
+  if (!$handle = @fopen($filename, 'w'))	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, 	$filename));
+  if (@fwrite($handle, $data) === false)	throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$filename));
+  if (!@fclose($handle))					throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE,		$filename));
   return true;
 }
 /**************   Check user security   *****************************/
