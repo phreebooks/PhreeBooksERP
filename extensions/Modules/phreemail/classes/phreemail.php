@@ -323,9 +323,8 @@ class phreemail extends PHPMailer{
    	*/
   	function save_files($filename, $part){
 	    if (!$handle = @fopen($this->file_path . $filename, "w+")) 	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
-	    if (!@fwrite($handle,$part)) 								throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, $filename));
+	    if (!@fwrite($handle,$part)) 								throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $filename));
     	if (!@fclose($handle)) 										throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
-    	chown($this->file_path . $filename, 'apache');
 	}
 
    	/**

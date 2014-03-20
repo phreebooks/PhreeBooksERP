@@ -58,7 +58,7 @@ class translator {
 	foreach ($files as $file) {
 	  if ($file == "." || $file == "..") continue;
 	  if (is_file($dir_source . $file) && substr($dir_source . $file, -4) == '.php') {
-		$langfile = file_get_contents($dir_source . $file);
+		if (($langfile = @file_get_contents($dir_source . $file)) === false) throw new \core\classes\userException(sprintf(ERROR_READ_FILE, 	$dir_source . $file));
 		if (!$ver) { // try to pull version form language file, upload mode
 		  $temp = substr($langfile, strpos($langfile, 'Version:')+8, 5);
           $temp = preg_replace("/[^0-9.]+/", "", $temp);
@@ -176,7 +176,7 @@ if ($const == 'GEN_COUNTRY_CODE')echo 'writing const = '.$const.' with value = '
 	  	$filename = substr ($path, strrpos($path,'/')+1);
 	  	if (!is_dir($new_dir)) mkdir($new_dir, 0777, true);
 	  	if (!$handle = @fopen($new_dir . '/' . $filename, 'w'))  	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $new_dir .'/'. $filename));
-	  	if (!@fwrite($handle, $content)) 							throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, $filename));
+	  	if (!@fwrite($handle, $content)) 							throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $filename));
 	  	if (!@fclose($handle)) 									throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 	}
 	return true;

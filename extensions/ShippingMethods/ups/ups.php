@@ -545,7 +545,7 @@ class ups extends \shipping\classes\shipping {
 				$filename = $label['tracking'] . '.gif'; // plain paper
 			}
 			if (!$handle = @fopen($file_path . $filename, 'w')) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE,  $file_path . $filename));
-			if (!@fwrite($handle, $output_label) === false) 	throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, $file_path . $filename);
+			if (!@fwrite($handle, $output_label) === false) 	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $file_path . $filename);
 			$this->labelFilePath = $file_path . $filename;
 			if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 		}

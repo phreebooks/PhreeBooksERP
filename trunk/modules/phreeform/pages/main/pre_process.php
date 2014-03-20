@@ -63,7 +63,7 @@ switch ($_REQUEST['action']) {
 	  $db->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
 	  throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
 	}
-	if (!@fwrite($handle, $output)) throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$filename));
+	if (!@fwrite($handle, $output)) throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));
 	if (!@fclose($handle)) 			throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 	$messageStack->add($message, 'success');
 	break;
@@ -75,17 +75,15 @@ switch ($_REQUEST['action']) {
 	$backup_filename = str_replace(' ', '',  $result->fields['doc_title']);
 	$backup_filename = str_replace('/', '_', $backup_filename) . '.zip';
 	$dest_dir        = DIR_FS_MY_FILES . 'backups/';
-	if (!class_exists('ZipArchive')) throw new \Exception(PHREEFORM_NO_ZIP);
+	if (!class_exists('ZipArchive')) throw new \core\classes\userException(PHREEFORM_NO_ZIP);
 	$zip = new \ZipArchive;
 	$res = $zip->open($dest_dir . $backup_filename, \ZipArchive::CREATE);
-	if ($res === TRUE) {
-		$res = $zip->addFromString($source_filename, file_get_contents($filename));
-		$zip->close();
-	} else {
-	  throw new \Exception(PHREEFORM_ZIP_ERROR . $dest_dir);
-	}
+	if ($res === false) 									throw new \core\classes\userException(PHREEFORM_ZIP_ERROR . $dest_dir);
+	if (($temp = @file_get_contents($filename)) === false)	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, $filename));
+	$res = $zip->addFromString($source_filename, $temp);
+	$zip->close();
 	// download file and exit script
-	$contents = file_get_contents($dest_dir . $backup_filename);
+	if (($contents = @file_get_contents($dest_dir . $backup_filename)) === false)  throw new \core\classes\userException(sprintf(ERROR_READ_FILE, $backup_filename));
 	unlink($dest_dir . $backup_filename); // delete zip file in the temp dir
 	header("Content-type: application/zip");
 	header("Content-disposition: attachment; filename=" . $backup_filename . "; size=" . strlen($contents));

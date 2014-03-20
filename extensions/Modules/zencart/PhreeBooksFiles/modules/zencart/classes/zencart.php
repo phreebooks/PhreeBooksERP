@@ -98,9 +98,9 @@ class zencart {
 	if ($inc_image && $result->fields['image_with_path']) { // image file
 	  $filename = DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/images/' . $result->fields['image_with_path'];
 	  if (file_exists($filename)) {
-		if (!$handle = @fopen($filename, "rb")) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
-		$contents = fread($handle, filesize($filename));
-		if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
+		if (!$handle = @fopen($filename, "rb")) 				throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE,	$filename));
+		if (!$contents = @fread($handle, filesize($filename))) 	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, 		$filename));
+		if (!@fclose($handle)) 									throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE,	$filename));
 		$image_data = base64_encode($contents);
 	  } else {
 		unset($image_data);

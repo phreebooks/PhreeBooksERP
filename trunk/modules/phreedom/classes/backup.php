@@ -90,7 +90,7 @@ class backup {
 				}
 		  	}
 		  	$query .= lnbr . lnbr;
-		  	if (!@fwrite($handle, $query)) throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE,  $this->source_dir . $this->source_file));
+		  	if (!@fwrite($handle, $query)) throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE,  $this->source_dir . $this->source_file));
 		}
 		if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $this->source_dir . $this->source_file));
 		return true;
@@ -145,9 +145,9 @@ class backup {
 
   	function download($path, $filename, $save_source = false) {
 		$source_file = $path . $filename;
-		if (!$handle = @fopen($source_file, "rb")) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $source_file));
-		$contents    = fread($handle, filesize($source_file));
-		if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $source_file));
+		if (!$handle = @fopen($source_file, "rb")) 					throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $source_file));
+		if (!$contents = @fread($handle, filesize($source_file)))	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, 		$source_file));
+		if (!@fclose($handle)) 										throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 	$source_file));
 		if (!$save_source) unlink($source_file);
 		if (strlen($contents) == 0) throw new \Exception(GEN_BACKUP_DOWNLOAD_EMPTY);
 		header("Content-type: " . $this->backup_mime);

@@ -32,7 +32,6 @@ define('MSG_ERROR_CREATE_MY_FILES','Erro criando o diretório: %s. Provavelmente
 define('ERROR_ACCESSING_FILE','Não foi possível abrir o arquivo (%s) para leitura/escrita. Verifique suas permissões.');
 define('TEXT_SELECT_FILE_TO_ATTACH','Selecione o arquivo a ser anexado:');
 define('TEXT_INSTALL_DIR_PRESENT','O diretório /install está presente. Este diretório deve ser excluído ou renomeado para evitar a reinstalação da aplicação.');
-define('ERROR_ACCESSING_FILE','Não foi possível abrir o arquivo (%s) para leitura/escrita. Verifique suas permissões.');
 define('ERROR_CURRENCY_DELETE_IN_USE','Erro - A moeda padrão não pode ser excluída porque há entradas no diário utilizando esta moeda.');
 define('ERROR_CANNOT_DELETE_DEFAULT_CURRENCY','Erro - A moeda padrão não pode ser excluída, por favor altere o padrão para outra moeda antes de excluir.');
 define('PB_USE_ACCOUNTING_PERIODS','Usar Períodos Fiscais (field: period)');

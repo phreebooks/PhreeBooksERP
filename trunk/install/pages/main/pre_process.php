@@ -264,7 +264,8 @@ switch ($_REQUEST['action']) {
 		  	$result = $db->Execute("select id from " . TABLE_CHART_OF_ACCOUNTS . " limit 1");
 		  	$chart_exists = $result->RecordCount() > 0 ? true : false;
 		  	if (!$entries_exist && !$chart_exists) {
-		  		$accounts = xml_to_object(file_get_contents($default_chart));
+		  		if (($temp = @file_get_contents($default_chart)) === false) throw new \core\classes\userException(sprintf(ERROR_READ_FILE, $default_chart));
+		  		$accounts = xml_to_object($temp);
 		  		if (is_object($accounts->ChartofAccounts)) $accounts = $accounts->ChartofAccounts; // just pull the first one
 		  		if (is_object($accounts->account)) $accounts->account = array($accounts->account); // in case of only one chart entry
 		  		if (is_array($accounts->account)) foreach ($accounts->account as $account) {
@@ -295,9 +296,9 @@ switch ($_REQUEST['action']) {
 		  $config_contents = str_replace('DEFAULT_DB_PREFIX',        DB_PREFIX,    $config_contents);
 		  if (file_exists('../includes/configure.php'))				throw new \core\classes\userException(MSG_ERROR_CONFIGURE_EXISTS);
 		  if (!$handle = @fopen('../includes/configure.php', 'w'))	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, 'includes/configure.php'));
-		  if (!@fwrite($handle, $config_contents))					throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 'includes/configure.php'));
+		  if (!@fwrite($handle, $config_contents))					throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 'includes/configure.php'));
 		  if (!@fclose($handle))									throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 'includes/configure.php'));
-		  @chmod('../includes/configure.php', 0444);
+		  if (!@chmod('../includes/configure.php', 0444))			$messageStack->add("Was not able to mark configure file as read only", "caution");
 		}
 		if (!$error) { // set the session variables so they can log in
 		  $_SESSION['admin_id']       = $user_id;

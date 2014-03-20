@@ -30,11 +30,11 @@ class currencies {
     public  $extra_buttons 		= true;
 	public  $help_path     		= '07.08.02';
 	public  $def_currency  		= DEFAULT_CURRENCY;
-  
+
   	function __construct() {
-  		$this->security_id   = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);		
+  		$this->security_id   = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
   	}
-  
+
   	function load_currencies(){
   		global $db;
   		$currencies = $db->Execute("select * from " .$this->db_table);
@@ -117,13 +117,13 @@ class currencies {
 		$js_values = substr($js_values, 0, -1) . ");";
 		return $js_codes . chr(10) . $js_values . chr(10);
 	}
-  
+
   	function default_currency_code(){
   		if(!defined('DEFAULT_CURRENCY')) throw new \core\classes\userException(ERROR_NO_DEFAULT_CURRENCY_DEFINED); // check for default currency defined
   		return $this->default_currency = DEFAULT_CURRENCY;
   	}
-  	
-  	
+
+
   	function btn_save($id = '') {
 	  	global $db, $messageStack;
 	  	\core\classes\user::validate_security($this->security_id, 3); // security check
@@ -148,14 +148,14 @@ class currencies {
 	      db_perform($this->db_table, $sql_data_array);
 	      gen_add_audit_log(SETUP_LOG_CURRENCY . TEXT_ADD, $title);
 		}
-	
+
 		if (isset($_POST['default']) && ($_POST['default'] == 'on')) {
 			// first check to see if there are any general ledger entries
 		  	$result = $db->Execute("SELECT id FROM " . TABLE_JOURNAL_MAIN . " LIMIT 1");
 		  	if ($result->RecordCount() > 0) throw new \Exception(SETUP_ERROR_CANNOT_CHANGE_DEFAULT);
 		  	write_configure('DEFAULT_CURRENCY', db_input($code));
 			db_perform($this->db_table, array('value' => 1), 'update', "code='$code'"); // change default exc rate to 1
-		    $db->Execute("alter table " . TABLE_JOURNAL_MAIN . " 
+		    $db->Execute("alter table " . TABLE_JOURNAL_MAIN . "
 				change currencies_code currencies_code CHAR(3) NOT NULL DEFAULT '" . db_input($code) . "'");
 			$this->def_currency = db_input($code);
 			$this->btn_update();
@@ -210,9 +210,9 @@ class currencies {
 	  	preg_match('/(.+),(\w{3}),([0-9.]+),([0-9.]+)/i', implode('', $page), $match);
 	  	return (sizeof($match) > 0) ? $match[3] : false;
 	}
-  
+
 	function quote_yahoo($to, $from = DEFAULT_CURRENCY) {
-	  	$page = file_get_contents('http://finance.yahoo.com/d/quotes.csv?e=.csv&f=sl1d1t1&s='.$from.$to.'=X');
+	  	if ($page = @file_get_contents('http://finance.yahoo.com/d/quotes.csv?e=.csv&f=sl1d1t1&s='.$from.$to.'=X')) === false) throw new \core\classes\userException("can not open 'http://finance.yahoo.com/d/quotes.csv?e=.csv&f=sl1d1t1&s=$from$to=X'");
 	  	if ($page) $parts = explode(',', trim($page));
 	  	return ($parts[1] > 0) ? $parts[1] : false;
 	}
@@ -246,7 +246,7 @@ class currencies {
 		  	$content['tbody'][$rowCnt] = array(
 		      array('value' => DEFAULT_CURRENCY == $code ? '<b>'.htmlspecialchars($value['title']).' ('.TEXT_DEFAULT.')</b>' : htmlspecialchars($value['title']),
 				    'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'currency_edit\',\''.$code.'\')"'),
-			  array('value' => $code, 
+			  array('value' => $code,
 				    'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'currency_edit\',\''.$code.'\')"'),
 			  array('value' => number_format($value['value'], 8),
 				    'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'currency_edit\',\''.$code.'\')"'),
@@ -317,5 +317,5 @@ class currencies {
 	    $output .= '</table>' . chr(10);
 	    return $output;
 	}
-  	
+
 }

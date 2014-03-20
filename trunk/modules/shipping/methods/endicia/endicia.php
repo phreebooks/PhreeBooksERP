@@ -220,7 +220,7 @@ class endicia extends \shipping\classes\shipping {
 	$xml .= '<ADDRESS2>' . urlencode(remove_special_chars($address->ship_address1).' '.remove_special_chars($address->ship_address2)) . '</ADDRESS2>';
 	$xml .= '<ADDRESS3>' . urlencode(strtoupper($address->ship_city_town).', '.strtoupper($address->ship_state_province).' '.strip_alphanumeric($address->ship_postal_code)) . '</ADDRESS3>';
 	$xml .= '</VERIFYADDRESS>';
-	$result = file_get_contents(MODULE_SHIPPING_ENDICIA_DIAL_A_ZIP_URL . $xml);
+	if (($result = @file_get_contents(MODULE_SHIPPING_ENDICIA_DIAL_A_ZIP_URL . $xml)) === false)  throw new \core\classes\userException("can not open ". MODULE_SHIPPING_ENDICIA_DIAL_A_ZIP_URL . $xml);
 	$result = substr($result, strpos($result, '>')+1);
 	$result = str_replace('<Dial-A-ZIP_Response>',  '', trim($result));
 	$result = str_replace('</Dial-A-ZIP_Response>', '', trim($result));
@@ -458,7 +458,7 @@ class endicia extends \shipping\classes\shipping {
 //		  if (!in_array(MODULE_SHIPPING_ENDICIA_PRINTER_TYPE, array('EPL2','ZPLII'))) $label = base64_decode($label);
 		  $label = base64_decode($label);
 		  if (!$handle = @fopen($file_path . $filename, 'w')) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, file_path . $filename));
-		  if (!@fwrite($handle, $label)) throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$file_path . $filename));
+		  if (!@fwrite($handle, $label)) throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$file_path . $filename));
 		  if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 		  $messageStack->add(sprintf(SHIPPING_ENDICIA_LABEL_STATUS, $tracking, $response->LabelRequestResponse->PostageBalance),'success');
 		} else {

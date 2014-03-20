@@ -106,7 +106,7 @@ class messageStack {
 	  	$this->debug_info .= "\n\nPage trace stats: Execution Time: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, " . $db->count_queries . " queries taking " . (int)($db->total_query_time * 1000)." ms";
       	$filename = DIR_FS_MY_FILES . 'trace.txt';
       	if (!$handle = @fopen($filename, 'w')) 		throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
-      	if (!@fwrite($handle, $this->debug_info)) 	throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, $filename));
+      	if (!@fwrite($handle, $this->debug_info)) 	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $filename));
       	if (!@fclose($handle)) 						throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 	  	$this->debug_info = NULL;
 	  	$this->add("Successfully created trace.txt file.","success");

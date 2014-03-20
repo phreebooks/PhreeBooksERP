@@ -196,9 +196,9 @@ switch ($_REQUEST['action']) {
   	case 'debug':
   		try{
 			$filename = 'trace.txt';
-			if (!$handle = @fopen(DIR_FS_MY_FILES . $filename, "r")) throw new \Exception(sprintf(ERROR_ACCESSING_FILE, DIR_FS_MY_FILES . $filename));
-			$contents = fread($handle, filesize(DIR_FS_MY_FILES . $filename));
-			if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
+			if (!$handle = @fopen(DIR_FS_MY_FILES . $filename, "r")) 					throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, DIR_FS_MY_FILES . $filename));
+			if (!$contents = @fread($handle, filesize(DIR_FS_MY_FILES . $filename)))	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, 		DIR_FS_MY_FILES . $filename));
+			if (!@fclose($handle)) 														throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 	DIR_FS_MY_FILES . $filename));
 			$file_size = strlen($contents);
 			header('Content-type: text/html; charset=utf-8');
 			header("Content-disposition: attachment; filename=$filename; size=$file_size");

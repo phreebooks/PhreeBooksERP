@@ -624,7 +624,7 @@ class linkpoint_api extends \payment\classes\payment {
 		$key = time() . '_' . general_rand(4);
 		$filename = $this->_logDir . '/' . 'Linkpoint_Debug_' . $suffix . $key . '.log';
 		if (!$handle = @fopen($filename, 'a'))	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
-		if (!@fwrite($handle, $msg))			throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$filename));
+		if (!@fwrite($handle, $msg))			throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));
 		if (!@fclose($handle))					throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
   	}
 

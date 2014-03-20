@@ -111,7 +111,7 @@ function convert_cfg($company) {
 
   $filename = DIR_FS_ADMIN . 'my_files/' . $company . '/config';
   if (!$handle = @fopen($filename . '.php', 'w'))	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
-  if (!@fwrite($handle, $lines)) 					throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$filename));
+  if (!@fwrite($handle, $lines)) 					throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));
   if (!@fclose($handle))							throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
   if (!unlink($filename . '.txt')) throw new \Exception('Cannot delete file (' . $filename . '.txt). This file needs to be deleted for security reasons.');
 }
@@ -166,7 +166,7 @@ function install_build_co_config_file($company, $key, $value) {
   }
   $line = implode('', $lines);
   if (!$handle = @fopen($filename, 'w')) 	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
-  if (!@fwrite($handle, $line)) 			throw new \Exception(sprintf(MSG_ERROR_CANNOT_WRITE, $filename));
+  if (!@fwrite($handle, $line)) 			throw new \Exception(sprintf(ERROR_WRITE_FILE, $filename));
   if (!@fclose($handle)) 					throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
   return true;
 }
@@ -174,7 +174,7 @@ function install_build_co_config_file($company, $key, $value) {
 /***************************** import/export functions ******************************/
 function load_module_xml($module) {
 	global $db;
-  	$result = trim(file_get_contents(DIR_FS_MODULES . $module . '/' . $module . '.xml'));
+  	if (($result = @file_get_contents(DIR_FS_MODULES . $module . '/' . $module . '.xml')) === false) throw new \core\classes\userException(sprintf(ERROR_READ_FILE, DIR_FS_MODULES . $module . '/' . $module . '.xml'));
   	if (!$output = xml_to_object($result)) throw new Exception("xml file is empty for module");
   	// fix some special cases, multi elements with single entries convert to arrays
   	if (is_object($output->Module->Table)) $output->Module->Table = array($output->Module->Table);
@@ -241,7 +241,7 @@ function build_sample_csv($structure, $db_table) {
 function table_import_xml($structure, $db_table, $filename) {
 //echo 'structure = '; print_r($structure); echo '<br>';
   global $db;
-  $data = file_get_contents($_FILES[$filename]['tmp_name'], "r");
+  if (($data = @file_get_contents($_FILES[$filename]['tmp_name'], "r")) === false) throw new \core\classes\userException(sprintf(ERROR_READ_FILE, $_FILES[$filename]['tmp_name']));
   $temp = $structure->Module->Table;
   foreach ($structure->Module->Table as $table) if ($table->Name == $db_table) {
 	$tbl_active = $table;

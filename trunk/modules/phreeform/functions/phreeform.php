@@ -196,7 +196,7 @@ function ReadDefReports($name, $path) {
 		}
 		break;
 	  case 'xml':
-		$data = file_get_contents(DIR_FS_ADMIN . $path . '/' . $DefRpt);
+		if (($data = @file_get_contents(DIR_FS_ADMIN . $path . '/' . $DefRpt)) === false) throw new \core\classes\userException(sprintf(ERROR_READ_FILE, DIR_FS_ADMIN . $path . '/' . $DefRpt));
 		$report = xml_to_object($data);
 		if (is_object($report->PhreeformReport)) $report = $report->PhreeformReport; // remove container tag
 		$ReportList[$report->groupname][$i]['RptName']  = $report->title;
@@ -239,10 +239,10 @@ function ReadDefReports($name, $path) {
 function get_report_details($id) {
   if (!$id) throw new \core\classes\userException("There was no report or form passed to open!");
   $filename = PF_DIR_MY_REPORTS . 'pf_' . $id;
-  if (!file_exists($filename)) 			throw new \core\classes\userException("The report or form '$filename' could not be found in the my_reports directory!");
-  if (!$handle = @fopen($filename, "r")) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
-  $contents = fread($handle, filesize($filename));
-  if (!@fclose($handle))				throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
+  if (!file_exists($filename)) 								throw new \core\classes\userException("The report or form '$filename' could not be found in the my_reports directory!");
+  if (!$handle = @fopen($filename, "r")) 					throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
+  if (!$contents = @fread($handle, filesize($filename)))	throw new \core\classes\userException(sprintf(ERROR_READ_FILE,		$filename));
+  if (!@fclose($handle))									throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 	$filename));
   if (!$report = xml_to_object($contents)) return false;
   if (is_object($report->PhreeformReport)) $report = $report->PhreeformReport; // remove container tag
   // fix some special cases
@@ -267,9 +267,9 @@ function ImportReport($RptName = '', $RptFileName = '', $import_path = PF_DIR_DE
 	} else {
 	  	throw new \Exception(PHREEFORM_IMPORT_ERROR);
 	}
-	if (!$handle = @fopen($path, "r") throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $path));
-	$contents = fread($handle, filesize($path));
-	if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $path));
+	if (!$handle = @fopen($path, "r") 					throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $path));
+	if (!$contents = @fread($handle, filesize($path))) 	throw new \core\classes\userException(sprintf(ERROR_READ_FILE,  	$path));
+	if (!@fclose($handle)) 								throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 	$path));
 	if (strpos($contents, 'Report Builder Export Tool')) { // it's an old style report
 	  require_once(DIR_FS_MODULES . 'phreeform/functions/reportwriter.php');
 	  $report = import_text_params(file($path));
@@ -328,7 +328,7 @@ function save_report($report, $rID = '', $save_path = PF_DIR_MY_REPORTS) {
 	}
 	$filename = $save_path . 'pf_' . $rID;
 	if (!$handle = @fopen($filename, 'w'))	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, 	$filename));
-	if (!@fwrite($handle, $output))			throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$filename));
+	if (!@fwrite($handle, $output))			throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));
 	if (!@fclose($handle))					throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 		$filename));
 	return $rID;
 }

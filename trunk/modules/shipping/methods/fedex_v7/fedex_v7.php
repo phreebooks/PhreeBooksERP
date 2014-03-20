@@ -579,7 +579,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 						$filename = $tracking . ($cnt > 0 ? '-'.$cnt : '') . '.pdf'; // plain paper
 					}
 					if (!$handle = @fopen($file_path . $filename, 'w')) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, 	$file_path . $filename));
-					if (!@fwrite($handle, $label) === false) 			throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$file_path . $filename));
+					if (!@fwrite($handle, $label) === false) 			throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$file_path . $filename));
 					if (!@fclose($handle)) 								throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 		$file_path . $filename));
 					$cnt++;
 //					$messageStack->add('Successfully retrieved the FedEx shipping label. Tracking # ' . $fedex_results[$key]['tracking'],'success');
@@ -1107,11 +1107,11 @@ class fedex_v7 extends \shipping\classes\shipping {
 //				$hazMatReport = base64_decode($response->HazMatCertificate);
 //echo 'file_path = '   . $file_path   . ' and file_name = '   . $filename   . '<br />';
 				if (!$handle = @fopen($file_path . $filename, 'w')) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, 	$file_path . $filename));
-				if (!@fwrite($handle, $closeReport) === false) 		throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE,	$file_path . $filename));
-				if (fwrite($handle, $mwReport) === false) 			throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$file_path . $filename));
-				if (fwrite($handle, $codReport) === false) 			throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$file_path . $filename));
+				if (!@fwrite($handle, $closeReport) === false) 		throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE,	$file_path . $filename));
+				if (fwrite($handle, $mwReport) === false) 			throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$file_path . $filename));
+				if (fwrite($handle, $codReport) === false) 			throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$file_path . $filename));
 /*
-				if (fwrite($handle, $hazMatReport) === false) throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, $file_path . $filename));
+				if (fwrite($handle, $hazMatReport) === false) throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $file_path . $filename));
 */
 				if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 				$messageStack->add(SHIPPING_FEDEX_V7_CLOSE_SUCCESS,'success');

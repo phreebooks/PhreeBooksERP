@@ -201,7 +201,7 @@ switch ($_REQUEST['action']) {
 	    	$db->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
 	    	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
 	  }
-	  if (!@fwrite($handle, $output)) 	throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$filename));
+	  if (!@fwrite($handle, $output)) 	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));
 	  if (!@fclose($handle)) 			throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 	  $messageStack->add(TEXT_REPORT . $report->description . PHREEFORM_WASSAVED . $report->title, 'success');
 	  break; // we're done
@@ -227,7 +227,7 @@ switch ($_REQUEST['action']) {
 	    	$db->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
 	    	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
 	  }
-	  if (@fwrite($handle, $output)) 	throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$filename));
+	  if (@fwrite($handle, $output)) 	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));
 	  if (!@fclose($handle))			throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 	  $messageStack->add(TEXT_REPORT . $report->description . PHREEFORM_WASSAVED . $report->title, 'success');
 	  break; // we're done
@@ -260,7 +260,7 @@ switch ($_REQUEST['action']) {
 	if ($output) {
 		$filename = DIR_FS_MY_FILES . $_SESSION['company'] . '/temp/' . $output['filename'];
 		if (!$handle = @fopen($filename, 'w'))	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, 	$filename));
-		if (@fwrite($handle, $output['pdf']))	throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$filename));
+		if (@fwrite($handle, $output['pdf']))	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));
 		if (!@fclose($handle)) 					throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 		$block = array();
 		if ($cc_email) {

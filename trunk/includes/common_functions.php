@@ -793,16 +793,16 @@ function gen_db_date($raw_date = '', $separator = '/') {
   }
 
 /*************** Country Functions *******************************/
-  function gen_pull_countries() {
-    if (file_exists(DIR_FS_MODULES . 'phreedom/language/' . $_SESSION['language'] . '/locales.xml')) {
-      $xmlStr = file_get_contents(DIR_FS_MODULES . 'phreedom/language/' . $_SESSION['language'] . '/locales.xml');
-    } else {
-      $xmlStr = file_get_contents(DIR_FS_MODULES . 'phreedom/language/en_us/locales.xml');
-    }
-	$locales =  xml_to_object($xmlStr);
-    if (isset($locales->data)) $locales = $locales->data;
-	return $locales;
-  }
+  	function gen_pull_countries() {
+    	if (file_exists(DIR_FS_MODULES . "phreedom/language/{$_SESSION['language']}/locales.xml")) {
+      		if (($xmlStr = @file_get_contents(DIR_FS_MODULES . "phreedom/language/{$_SESSION['language']}/locales.xml")) === false) 	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, "phreedom/language/{$_SESSION['language']}/locales.xml"));
+    	} else {
+    		if (($xmlStr = @file_get_contents(DIR_FS_MODULES . "phreedom/language/en_us/locales.xml")) === false) 					throw new \core\classes\userException(sprintf(ERROR_READ_FILE, "phreedom/language/en_us/locales.xml"));
+    	}
+		$locales =  xml_to_object($xmlStr);
+    	if (isset($locales->data)) $locales = $locales->data;
+		return $locales;
+  	}
 
   function gen_get_country_iso_2_from_3($iso3 = COMPANY_COUNTRY, $countries = false) {
     if (!$countries) $countries = gen_pull_countries();
@@ -899,7 +899,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
   <body>&nbsp;</body>
 </html>';
 	if (!$handle = @fopen($filename, 'w'))	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, 	$filename));
-	if (!@fwrite($handle, $blank_web)) 		throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, 	$filename));
+	if (!@fwrite($handle, $blank_web)) 		throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));
 	if (!@fclose($handle))					throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 		$filename));
 	return true;
   }

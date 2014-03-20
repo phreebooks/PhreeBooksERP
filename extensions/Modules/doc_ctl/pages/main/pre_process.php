@@ -85,8 +85,8 @@ switch ($_REQUEST['action']) {
 	// now perform the download
   case 'download':
 	$doc_details = $db->Execute("select file_name, revision from " . TABLE_DC_DOCUMENT . " where id = '" . $doc_id . "'");
-	$file_name = str_pad($doc_id, 8, '0', STR_PAD_LEFT) . '_' . $doc_details->fields['revision'] . '.dc';
-	$contents  = file_get_contents(DOC_CTL_DIR_MY_DOCS . $file_name);	
+	$filename = str_pad($doc_id, 8, '0', STR_PAD_LEFT) . '_' . $doc_details->fields['revision'] . '.dc';
+	if (($contents  = @file_get_contents(DOC_CTL_DIR_MY_DOCS . $filename)) === false) throw new \core\classes\userException(sprintf(ERROR_READ_FILE, 		$filename));
 	header('Content-type: text/plain');
 	header('Content-Length: ' . strlen($contents));
 	header('Content-Disposition: attachment; filename=' . urlencode($doc_details->fields['file_name']));
@@ -102,7 +102,7 @@ switch ($_REQUEST['action']) {
   case 'go_last':     $_REQUEST['list'] = 99999;  					   $_REQUEST['action'] = 'search'; break;
   case 'search':
   case 'search_reset':
-  case 'go_page':                            $_REQUEST['action'] = 'search'; break;
+  case 'go_page':     $_REQUEST['action'] = 'search'; break;
   default:
 }
 

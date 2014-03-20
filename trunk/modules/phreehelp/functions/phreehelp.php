@@ -1,4 +1,4 @@
-<?php 
+<?php
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
@@ -35,16 +35,16 @@ function synchronize() {
 	}
   }
   $toc = array();
-  foreach ($file_list as $file_name) {
-	$file_name = str_replace(DOC_REL_PATH, DOC_ROOT_URL, $file_name); // convert to url to read script generated filenames
-	$tags      = get_meta_tags($file_name);
-	$doc_html  = file_get_contents($file_name);
+  foreach ($file_list as $filename) {
+	$filename = str_replace(DOC_REL_PATH, DOC_ROOT_URL, $filename); // convert to url to read script generated filenames
+	$tags      = get_meta_tags($filename);
+	if (($doc_html  = @file_get_contents($filename)) === false)  throw new \core\classes\userException(sprintf(ERROR_READ_FILE, 	$filename));
 	preg_match('/<title>([^>]*)<\/title>/si', $doc_html, $match);
 	$doc_title = (isset($match) && is_array($match) && count($match) > 0) ? strip_tags($match[1]) : TEXT_NO_TITLE;
 	$doc_text  = trim(strip_tags($doc_html));
 	$doc_text  = str_replace(chr(10), ' ', $doc_text); // process out special characters
 	$sql      = "insert into " . TABLE_PHREEHELP . " (doc_url, doc_pos, doc_index, doc_title, doc_text)
-	  values ('" . $file_name . "', '" . $tags['doc_pos'] . "', '" . $tags['doc_index_1'] . "', '" . $doc_title . "', '" . addslashes($doc_text) . "')";
+	  values ('$filename', '{$tags['doc_pos']}', '{$tags['doc_index_1']}', '$doc_title', '" . addslashes($doc_text) . "')";
 	$row      = $db->Execute($sql);
 	$id       = db_insert_id();
 	$toc[$id] = $tags['doc_pos'];
@@ -69,7 +69,7 @@ function directory_to_array($directory, $extension = "", $full_path = true) {
   foreach ($contents as $file) {
 	if ($file <> "." && $file <> "..") {
 	  if (is_dir($directory. "/" . $file)) {
-		$array_items = array_merge($array_items, directory_to_array($directory. "/" . $file, $extension, $full_path)); 
+		$array_items = array_merge($array_items, directory_to_array($directory. "/" . $file, $extension, $full_path));
 	  } else {
 		$file_ext = substr(strrchr($file, "."), 1);
 		if (!$extension || in_array($file_ext, $extension)) {
@@ -83,7 +83,7 @@ function directory_to_array($directory, $extension = "", $full_path = true) {
 
 function retrieve_toc() {
   global $db;
-  $toc = $db->Execute('select id, parent_id, doc_type, doc_url, doc_title from ' . TABLE_PHREEHELP . ' 
+  $toc = $db->Execute('select id, parent_id, doc_type, doc_url, doc_title from ' . TABLE_PHREEHELP . '
 	order by parent_id, doc_pos');
   $toc_array = array();
   $toc_array[-1][] = array('id' => 0, 'doc_type' => '0', 'doc_title' => TEXT_MANUAL); // home dir
@@ -201,7 +201,7 @@ function retrieve_index() {
 function search_results($search_text) {
   global $db;
   if (!$search_text) return '';
-  $sql = "select id, doc_url, doc_title, MATCH (doc_title, doc_text) AGAINST ('" . $search_text . "') as score 
+  $sql = "select id, doc_url, doc_title, MATCH (doc_title, doc_text) AGAINST ('" . $search_text . "') as score
     from " . TABLE_PHREEHELP . " where MATCH (doc_title, doc_text) AGAINST ('" . $search_text . "')";
   $results = $db->Execute($sql);
   if ($results->RecordCount() == 0) return TEXT_NO_RESULTS;

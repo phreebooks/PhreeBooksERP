@@ -381,8 +381,9 @@ define('PB_USE_ACCOUNTING_PERIODS','Use Accounting Periods (field: period)');
 define('ERROR_CANNOT_DELETE_DEFAULT_CURRENCY','Error - The default currency cannot be deleted, please change the default to another currency before deleting this currency.');
 define('ERROR_CURRENCY_DELETE_IN_USE','Error - The currency cannot be deleted because there are journal entries using this currency.');
 define('ERROR_ACCESSING_FILE','Cannot open file (%s) check your permissions.');
-define('ERROR_CANNOT_WRITE','Cannot write to file (%s) check your permissions.');
+define('ERROR_WRITE_FILE','Cannot write to file (%s) check your permissions.');
 define('ERROR_CLOSING_FILE','Cannot close file (%s) check your permissions.');
+define('ERROR_READ_FILE','Cannot read file (%s) check your permissions.');
 define('TEXT_INSTALL_DIR_PRESENT','The /install directory is present. This directory should be removed or renamed to avoid re-installing the application.');
 define('INSTALL_ERROR_SAFE_MODE','Your php configuration is set to run in safe mode. Safe mode needs to be turned off to install PhreeBooks.');
 // Error messages for file operations

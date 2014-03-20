@@ -24,10 +24,10 @@ gen_pull_language('phreedom', 'admin');
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/phreeform.php');
 require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
-/**************   page specific initialization  *************************/ 
+/**************   page specific initialization  *************************/
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
-  case 'save': 
+  case 'save':
 	\core\classes\user::validate_security($security_level, 3);
   	// save general tab
 	foreach ($admin_classes['phreeform']->keys as $key => $default) {
@@ -55,7 +55,8 @@ switch ($_REQUEST['action']) {
 	foreach ($reports as $report) {
 	  if (substr($report, 0, 3) <> 'pf_') continue;
 	  $rpt_id = substr($report, 3);
-	  $rpt = xml_to_object(file_get_contents(PF_DIR_MY_REPORTS.$report));
+	  if (($temp = @file_get_contents(PF_DIR_MY_REPORTS.$report)) === false)  throw new \core\classes\userException(sprintf(ERROR_READ_FILE, PF_DIR_MY_REPORTS.$report));
+	  $rpt = xml_to_object($temp);
 	  if ($rpt->PhreeformReport) $rpt = $rpt->PhreeformReport; // lose the container
 	  if ($rpt->security == 'u:-1;g:-1') $rpt->security = 'u:'.$_SESSION['admin_id'].'g:-1'; // orphaned, set so current user can access
 	  $result = $db->Execute("select id from ".TABLE_PHREEFORM." where doc_group = '".$rpt->groupname."' and doc_type = '0'");
@@ -99,12 +100,12 @@ switch ($_REQUEST['action']) {
 		  // fix some fields
 		  $params->standard_report = $result->fields['standard_report'] ? 's' : 'c';
 		  // error check
-		  $duplicate = $db->Execute("select id from " . TABLE_PHREEFORM . " 
+		  $duplicate = $db->Execute("select id from " . TABLE_PHREEFORM . "
 		    where doc_title = '" . addslashes($params->title) . "' and doc_type <> '0'");
-		  if ($duplicate->RecordCount() > 0) { // the report name already exists, error 
+		  if ($duplicate->RecordCount() > 0) { // the report name already exists, error
 		    throw new \Exception(sprintf(PHREEFORM_REPDUP, $params->title));
 		  }
-		  
+
 		  if (!$success = save_report($params)) throw new \Exception(sprintf(PB_CONVERT_SAVE_ERROR, $params->title));
 		  $count++;
 	  }catch(exception $e){

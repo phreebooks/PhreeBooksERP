@@ -201,12 +201,12 @@ class admin extends \core\classes\admin {
 		// Fix for change to audit log for upgrade to R3.6 causes perpertual crashing when writing audit log
 		if (!db_field_exists(TABLE_AUDIT_LOG, 'stats')) $db->Execute("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
 		if ($this->web_connected(false) && CFG_AUTO_UPDATE_CHECK && (SECURITY_ID_CONFIGURATION > 3)) { // check for software updates
-		  	$revisions = @file_get_contents(VERSION_CHECK_URL);
+			if (($revisions = @file_get_contents(VERSION_CHECK_URL)) === false) throw new \core\classes\userException("can not open ". VERSION_CHECK_URL);
 		  	if ($revisions) {
 		   		$versions = xml_to_object($revisions);
 				$latest  = $versions->Revisions->Phreedom->Current;
 				if (version_compare($admin_classes['phreedom']->version, $latest, '<'))  $messageStack->add(sprintf(TEXT_VERSION_CHECK_NEW_VER, $admin_classes['phreedom']->version, $latest), 'caution');
-		  	}
+			}
 		}
 		// load installed modules and initialize them
 		if (is_array($admin_classes)) foreach ($admin_classes as $key => $module_class) {

@@ -35,9 +35,9 @@ switch ($todo) {
 	$filename = $label . '.lpt';
 	if (file_exists($file_path . $filename)) {
 	  $file_size = filesize($file_path . $filename);
-	  if (!$handle = @fopen($file_path . $filename, "r")) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $file_path . $filename));
-	  $image     = fread($handle, $file_size);
-	  if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
+	  if (!$handle = @fopen($file_path . $filename, "r")) 	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $file_path . $filename));
+	  if (!$image = @fread($handle, $file_size))  			throw new \core\classes\userException(sprintf(ERROR_READ_FILE,  	$file_path . $filename));
+	  if (!@fclose($handle)) 								throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 	$file_path . $filename));
 	  header('Content-type: application/octet-stream');
 	  header('Content-Length: ' . $file_size);
 	  header('Content-Disposition: attachment; filename=' . $filename);

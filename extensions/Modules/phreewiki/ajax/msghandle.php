@@ -124,7 +124,7 @@ switch ($_REQUEST['action']){
 		\core\classes\user::validate_security($security_id, 1); // security check
 		//save to file
 		if (!$fhandle = @fopen(DIR_FS_ADMIN."/modules/phreewiki/rss.xml",'w')) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, DIR_FS_ADMIN."/modules/phreewiki/rss.xml"));
-		if (!@fwrite($fhandle,$body)) throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE,  DIR_FS_ADMIN."/modules/phreewiki/rss.xml"));
+		if (!@fwrite($fhandle,$body)) throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE,  DIR_FS_ADMIN."/modules/phreewiki/rss.xml"));
 		$return_result = PHREEWIKI_NOTICE_RSS_CREATED ;		//return error to display in displayMessage and make iframe idle
 
 	break;

@@ -362,10 +362,10 @@ define ('ERROR_WRONG_LOGIN', 'Sie haben den falschen Benutzernamen oder Kennwort
 define ('PB_USE_ACCOUNTING_PERIODS', 'Verwenden Sie Buchungsperioden (Feld: Zeit)');
 define ('ERROR_CANNOT_DELETE_DEFAULT_CURRENCY', 'Fehler - Die Standard-Währung kann nicht gelöscht werden, ändern die Standard-in eine andere Währung vor dem Löschen dieser Währung.');
 define ('ERROR_CURRENCY_DELETE_IN_USE', 'Fehler - Die Währung kann nicht gelöscht werden, da Journaleinträge mit dieser Währung sind.');
-define ('ERROR_ACCESSING_FILE', 'Kann Datei nicht öffnen ( %s ) zum Lesen / Schreiben überprüfen Sie Ihre Berechtigungen.');
+define ('ERROR_ACCESSING_FILE', 'Kann Datei nicht öffnen ( %s ) überprüfen Sie Ihre Berechtigungen.');
 define ('TEXT_INSTALL_DIR_PRESENT', 'Das Verzeichnis / install vorhanden ist dieses Verzeichnis sollten entfernt oder umbenannt, um zu vermeiden Neuinstallation der Anwendung..');
 // Fehlermeldungen für Dateioperationen
-define ('ERROR_CANNOT_WRITE', 'Kann Datei nicht öffnen ( %s ) zum Lesen / Schreiben überprüfen Sie Ihre Berechtigungen.');
+define ('ERROR_WRITE_FILE', 'Kann Datei nicht öffnen ( %s ) zum Schreiben überprüfen Sie Ihre Berechtigungen.');
 define ('MSG_ERROR_CREATE_MY_FILES', 'Fehler beim Erstellen des Verzeichnisses: %s . Wahrscheinlich ein Berechtigungsproblem, überprüfen Sie die Web-Server Dateiverzeichnispfad und setzen damit den Webserver in das Verzeichnis zu erstellen.');
 define ('TEXT_IMP_ERMSG1', 'Die Dateigröße überschreitet die upload_max_filesize in der php.ini Sie Einstellungen.');
 define ('TEXT_IMP_ERMSG2', 'Die Dateigröße überschreitet die MAX_FLE_SIZE Direktive in der PhreeBooks bilden.');

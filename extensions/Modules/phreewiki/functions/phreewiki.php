@@ -7,10 +7,10 @@ function saveTiddly($otitle, $omodified, $ntiddler, $overwrite=0)	{
   if( strlen($ntiddler['title']) == 0 ) 			return PHREEWIKI_NO_TITLE;
 	//lock title check
   if( in_array($ntiddler['title'], $lock_title) )	return PHREEWIKI_WARNING_IN_LOCKED_ARRAY;
-	
+
   $tiddler = select_tiddler_by_title($ntiddler['title']);			//tiddler with title $title
   $otiddler = select_tiddler_by_title($otitle);		//tiddler with $otitle
-	
+
 	//insert tiddler if both are not found
 	if( sizeof($tiddler)== 0 && sizeof($otiddler)== 0 ) {
 		$ntiddler['creator'] = $ntiddler['modifier'];
@@ -18,7 +18,7 @@ function saveTiddly($otitle, $omodified, $ntiddler, $overwrite=0)	{
 		$ntiddler['version'] = 1;
 		return insert_tiddler($ntiddler);
 	}
-	
+
 	//if old title not exist, but new title exist, treat as overwrite (new tiddler overwrite another)
 	//both $otitle and $title exist and title different, $title overwrite $otitle, delete $title
 	//$otitle exist, $title not exist, treat as editting/modify (rename  tiddler)
@@ -43,10 +43,10 @@ function saveTiddly($otitle, $omodified, $ntiddler, $overwrite=0)	{
  */
 
 function insert_tiddler($tiddler , $install = false) {
-	global $lock_title;  
+	global $lock_title;
 	print_r($lock_title);
 	$security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
-	\core\classes\user::validate_security($security_id, 2); // security check		
+	\core\classes\user::validate_security($security_id, 2); // security check
 	if ( sizeof($tiddler)== 0 )																						return PHREEWIKI_WARNING_TIDDLER_NOT_FOUND;
   if ( !$install == true && in_array($tiddler['title'], $lock_title) )	return PHREEWIKI_WARNING_IN_LOCKED_ARRAY;
   db_perform( TABLE_PHREEWIKI , $tiddler, 'insert');
@@ -66,9 +66,9 @@ function insert_tiddler($tiddler , $install = false) {
 
 function tiddler_update($oldtiddler, $newtiddler) {
 	global $lock_title;
-	unset($newtiddler['id']);  
+	unset($newtiddler['id']);
 	$security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
-	\core\classes\user::validate_security($security_id, 3); // security check		
+	\core\classes\user::validate_security($security_id, 3); // security check
 	if ( sizeof($tiddler)== 0 )											return PHREEWIKI_WARNING_TIDDLER_NOT_FOUND;
   if ( in_array($tiddler['title'], $lock_title) )	return PHREEWIKI_WARNING_IN_LOCKED_ARRAY;
 	db_perform(TABLE_PHREEWIKI, $newtiddler, 'update', 'id = "' . $oldtiddler['id']. '"');
@@ -83,15 +83,15 @@ function tiddler_update($oldtiddler, $newtiddler) {
 
 /*
  * delete tiddlers
- */	
+ */
 
 function deleteTiddler($tiddler) {
-  global $db, $lock_title;  
+  global $db, $lock_title;
   $security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
-  \core\classes\user::validate_security($security_id, 2); // security check		
+  \core\classes\user::validate_security($security_id, 2); // security check
   if ( sizeof($tiddler)== 0 )											return PHREEWIKI_WARNING_TIDDLER_NOT_FOUND;
   if ( in_array($tiddler['title'], $lock_title) )	return PHREEWIKI_WARNING_IN_LOCKED_ARRAY;
-  
+
   $result = $db->Execute("DELETE FROM ". TABLE_PHREEWIKI ." WHERE `id` = '". $tiddler['id'] ."'");
   if( $result === FALSE ) {
     return GL_ERROR_NO_DELETE;
@@ -101,7 +101,7 @@ function deleteTiddler($tiddler) {
 
 /*
  * selecting tiddlers
- */	
+ */
 
 function select_all_tiddlers() {
 	global $db;
@@ -116,12 +116,12 @@ function select_all_tiddlers() {
 		$i++;
 		$result->MoveNext();
 	}
-  	return $output_array;	
+  	return $output_array;
 }
 
 function select_tiddler_by_title($title) {
   global $db;
-  $security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);	
+  $security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
   $tiddlers = $db->Execute("SELECT * FROM ".TABLE_PHREEWIKI."  where title ='" . $title . "'");
   foreach($tiddlers as $t) {
 		if( strcmp($t['title'],$title)==0 ) {
@@ -177,7 +177,7 @@ function select_all_tiddler_by_tags($yesTags,$noTags) {
 	}
 	return array();
 }
-	
+
 /*
  * create
  */
@@ -274,7 +274,7 @@ function tiddler_breakTag($tagStr)	{
 }
 
 function tiddler_htmlToArray($html)	{
-	
+
 	$tiddlers=preg_grep("!<div.+tiddler=!",explode("\n",$html));		//only ones with "<div tiddler=" is accepted
 	$result = array();
 	foreach($tiddlers as $tid)	{	//for each line of tiddler
@@ -282,21 +282,21 @@ function tiddler_htmlToArray($html)	{
 		//first take body out
 		$r['body'] = trim(preg_replace("!(<div[^>]*>|</div>)!","",$t));
 		$t = preg_replace("!(<div |>.*</div>)!","",$t);		//take away body and begining <div tag
-		
+
 		//define useful regex
 		$reg_remove = "!([^=]*=\"|\")!";		//reg ex for removing something=" and "
-			
+
 		//take out the rest of the info
 		$reg = "!tiddler=\"[^\"]*\"!";
 		preg_match($reg, $t, $tmp);				//obtain string from tiddler
 		$t = preg_replace($reg, "", $t);		//remove data from div string
 		$r['title'] = trim(preg_replace($reg_remove,"",$tmp[0]));		//remove unwanted string and add to array
-			
+
 		$reg = "!modifier=\"[^\"]*\"!";
 		preg_match($reg, $t, $tmp);				//obtain string from tiddler
 		$t = preg_replace($reg, "", $t);		//remove data from div string
 		$r['modifier'] = trim(preg_replace($reg_remove,"",$tmp[0]));		//remove unwanted string and add to array
-			
+
 		$reg = "!modified=\"[^\"]*\"!";
 		preg_match($reg, $t, $tmp);				//obtain string from tiddler
 		$t = preg_replace($reg, "", $t);		//remove data from div string
@@ -306,7 +306,7 @@ function tiddler_htmlToArray($html)	{
 		preg_match($reg, $t, $tmp);				//obtain string from tiddler
 		$t = preg_replace($reg, "", $t);		//remove data from div string
 		$r['created'] = trim(preg_replace($reg_remove,"",$tmp[0]));		//remove unwanted string and add to array
-			
+
 		$reg = "!tags=\"[^\"]*\"!";
 		preg_match($reg, $t, $tmp);				//obtain string from tiddler
 		$t = preg_replace($reg, "", $t);		//remove data from div string
@@ -314,7 +314,7 @@ function tiddler_htmlToArray($html)	{
 		//remove "temp." fields as they are temporary
 		$t = preg_replace("!temp[.][^\"]*=\"[^\"]*\"!", "", $t);
 		$t = str_replace("  ", " ", $t);		//remove double-space
-		
+
 		//trim and put everything into fields
 		$r['fields'] = trim($t);
 
@@ -327,9 +327,10 @@ function tiddler_htmlToArray($html)	{
 function install_plugin($pluginName, $pluginValue) {
   //check if title existed
   if( sizeof(select_tiddler_by_title($pluginValue))==0 ) {
+  	if (($temp = @file_get_contents(DIR_FS_MODULES."phreewiki/javascript/plugins/$pluginName.js")) === false)  throw new \core\classes\userException(sprintf(ERROR_READ_FILE, 		"phreewiki/javascript/plugins/$pluginName.js"));
 	//if not exist, insert into db
 	$t = tiddler_create($pluginValue,
-	   		                  tiddler_bodyEncode(file_get_contents(DIR_FS_MODULES."phreewiki/javascript/plugins/".$pluginName.".js")),
+	   		                  tiddler_bodyEncode($temp),
 			                  	"ccTiddly",
 												  date("YmdHi"),
 												  "systemConfig excludeSearch excludeLists",

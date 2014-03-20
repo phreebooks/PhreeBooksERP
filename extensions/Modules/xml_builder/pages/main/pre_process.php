@@ -31,43 +31,44 @@ switch ($_REQUEST['action']) {
 	$entry       = $_POST['mod'];
 	// read the existing xml file to set as base, if it exists
 	if (file_exists(DIR_FS_MODULES . $mod . '/' . $mod . '.xml')) {
-	  $working->output = xml_to_object(file_get_contents(DIR_FS_MODULES . $mod . '/' . $mod . '.xml'));
-	  // fix some lists
-	  if (!is_array($working->output->Module->Table)) $working->output->Module->Table = array($working->output->Module->Table);
-	  $temp = array();
-	  foreach ($working->output->Module->Table as $tkey => $table) {
-	    $tname = $table->Name;
-		$temp[$tname] = $working->output->Module->Table[$tkey]; // copy most of the info
-	    // index keys
-		if (isset($table->Key)) {
-		  if (!is_array($table->Key)) $table->Key = array($table->Key);
-		  foreach ($table->Key as $kkey => $index) {
-		    $kname = $index->Name;
-		    $temp[$tname]->Key[$kname] = $table->Key[$kkey];
-		    unset($temp[$tname]->Key[$kkey]); // will be set next
-		  }
-		}
-		// fields
-	    if (!is_array($table->Field)) $table->Field = array($table->Field);
-		foreach ($table->Field as $fkey => $field) {
-		  $fname = $field->Name;
-		  $temp[$tname]->Field[$fname] = $table->Field[$fkey];
-		  unset($temp[$tname]->Field[$fkey]); // will be set next
-		}
-	  }
-	  $working->output->Module->Table = $temp;
-	  // convert files
-	  $temp = array();
-	  if (is_array($working->output->Module->Files->File)) foreach ($working->output->Module->Files->File as $file) {
-	    $fname                      = $file->Name;
-		$temp[$fname]->Name         = $file->Name;
-		$temp[$fname]->Description  = $file->Description;
-	  }
-	  $working->output->Module->Files->File = $temp;
+		if (($temp = @file_get_contents(DIR_FS_MODULES . $mod . '/' . $mod . '.xml')) === false) throw new \core\classes\userException(sprintf(ERROR_READ_FILE, DIR_FS_MODULES . $mod . '/' . $mod . '.xml'));
+	  	$working->output = xml_to_object($temp);
+	  	// fix some lists
+	  	if (!is_array($working->output->Module->Table)) $working->output->Module->Table = array($working->output->Module->Table);
+	 	$temp = array();
+	  	foreach ($working->output->Module->Table as $tkey => $table) {
+	    	$tname = $table->Name;
+			$temp[$tname] = $working->output->Module->Table[$tkey]; // copy most of the info
+		    // index keys
+			if (isset($table->Key)) {
+				if (!is_array($table->Key)) $table->Key = array($table->Key);
+		  		foreach ($table->Key as $kkey => $index) {
+		    		$kname = $index->Name;
+		    		$temp[$tname]->Key[$kname] = $table->Key[$kkey];
+		    		unset($temp[$tname]->Key[$kkey]); // will be set next
+		  		}
+			}
+			// fields
+		    if (!is_array($table->Field)) $table->Field = array($table->Field);
+			foreach ($table->Field as $fkey => $field) {
+		  		$fname = $field->Name;
+		  		$temp[$tname]->Field[$fname] = $table->Field[$fkey];
+		  		unset($temp[$tname]->Field[$fkey]); // will be set next
+			}
+	  	}
+	  	$working->output->Module->Table = $temp;
+		// convert files
+	  	$temp = array();
+	  	if (is_array($working->output->Module->Files->File)) foreach ($working->output->Module->Files->File as $file) {
+	    	$fname                      = $file->Name;
+			$temp[$fname]->Name         = $file->Name;
+			$temp[$fname]->Description  = $file->Description;
+	  	}
+	  	$working->output->Module->Files->File = $temp;
 	} else { // intialize some values
-	  $working->output->Module->Name        = $mod;
-	  $working->output->Module->Description = $mod;
-	  $working->output->Module->Path        = 'modules/' . $mod;
+	  	$working->output->Module->Name        = $mod;
+	  	$working->output->Module->Description = $mod;
+	  	$working->output->Module->Path        = 'modules/' . $mod;
 	}
 //echo 'core object = '; print_r($working->output); echo '<br><br>';
 	// read the dirs
@@ -81,7 +82,7 @@ switch ($_REQUEST['action']) {
 //echo 'writing: ' . htmlspecialchars($xmlString) . '<br>';
 	// store it in a file
 	if(!$handle = @fopen(DIR_FS_MY_FILES . $mod . '.xml', "w")) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $mod.xml));
-	if (!@fwrite($handle, $xmlString, strlen($xmlString)))		throw new \core\classes\userException(sprintf(MSG_ERROR_CANNOT_WRITE, $mod_xml));
+	if (!@fwrite($handle, $xmlString, strlen($xmlString)))		throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $mod_xml));
 	if (!@fclose($handle)) 										throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $mod_xml));
 	// zip it and download
 	$mod_xml->source_dir  = DIR_FS_MY_FILES;

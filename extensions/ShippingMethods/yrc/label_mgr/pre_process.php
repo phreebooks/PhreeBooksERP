@@ -105,9 +105,9 @@ switch ($action) {
 	  foreach ($labels_array as $tracking_num) {
 	    foreach (glob($file_path . $tracking_num . '*.*') as $filename) {
 	      if (substr($filename, -3) == 'lpt') { // it's a thermal label
-		    if (!$handle = @fopen($filename, 'r')) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
-		    $label_data .= fread($handle, filesize($filename));
-		    if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
+		    if (!$handle = @fopen($filename, 'r')) 						throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
+		    if (!$label_data .= @fread($handle, filesize($filename))) 	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, 		$filename));
+		    if (!@fclose($handle)) 										throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 		    if (!$error) $auto_print = true;
 	      } elseif (substr($filename, -3) == 'pdf') { // it's a pdf image label
 		    $pdf_list[] = $tracking_num; // it's a pdf image label
@@ -135,9 +135,9 @@ switch ($action) {
 	foreach ($labels_array as $tracking_num) {
 	  foreach (glob($file_path . $tracking_num . '*.*') as $filename) {
 	    if (substr($filename, -3) == 'lpt') { // it's a thermal label
-		  if (!$handle = @fopen($filename, 'r')) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
-		  $label_data .= fread($handle, filesize($filename));
-		  if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
+		  if (!$handle = @fopen($filename, 'r')) 					throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
+		  if (!$label_data .= @fread($handle, filesize($filename)))	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, 		$filename));
+		  if (!@fclose($handle)) 									throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 	$filename));
 		  $auto_print = true;
 	    } elseif (substr($filename, -3) == 'pdf') { // it's a pdf image label
 		  $pdf_list[] = $tracking_num;
@@ -178,18 +178,18 @@ switch ($action) {
 	  $file_path = SHIPPING_DEFAULT_LABEL_DIR.$shipping_module.'/'.$date[0].'/'.$date[1].'/'.$date[2].'/';
 	  $cnt = 0;
 	  while(true) {
-		$filename = $file_path . $tracking_number . ($cnt > 0 ? '-'.$cnt : '') . '.lpt';
-		if   (is_file($filename)) {
-		  if (!unlink($filename)) $messageStack->add_session('Trouble removing label file (' . $filename . ')','caution');
-		} else {
-		  $filename = $file_path . $tracking_number . ($cnt > 0 ? '-'.$cnt : '') . '.pdf';
-		  if (is_file($filename)) {
-		    if (!unlink($filename)) $messageStack->add_session('Trouble removing label file (' . $filename . ')','caution');
-		  } else {
-		    break; // file does not exist, exit loop
-		  }
-		}
-		$cnt++;
+			$filename = $file_path . $tracking_number . ($cnt > 0 ? '-'.$cnt : '') . '.lpt';
+			if   (is_file($filename)) {
+		  		if (!unlink($filename)) $messageStack->add("Trouble removing label file ($filename)",'caution');
+			} else {
+			  	$filename = $file_path . $tracking_number . ($cnt > 0 ? '-'.$cnt : '') . '.pdf';
+			  	if (is_file($filename)) {
+			    	if (!unlink($filename)) $messageStack->add("Trouble removing label file ($filename)",'caution');
+			  	} else {
+			    	break; // file does not exist, exit loop
+			  	}
+			}
+			$cnt++;
 	  }
 	  $shipments->MoveNext();
 	}

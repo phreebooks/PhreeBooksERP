@@ -21,7 +21,7 @@ $security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 gen_pull_language($module, 'admin');
 gen_pull_language('phreedom', 'admin');
 require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
-/**************   page specific initialization  *************************/ 
+/**************   page specific initialization  *************************/
 $chart_of_accounts = new \phreebooks\classes\chart_of_accounts();
 $tax_auths         = new \phreebooks\classes\tax_auths();
 $tax_auths_vend    = new \phreebooks\classes\tax_auths_vend();
@@ -43,7 +43,8 @@ switch ($_REQUEST['action']) {
 	  $db->Execute("TRUNCATE TABLE " . TABLE_CHART_OF_ACCOUNTS_HISTORY);
 	}
 	$filename = $std_chart ? (DIR_FS_WORKING.'language/'.$_SESSION['language'].'/charts/'.$std_chart) : $_FILES['file_name']['tmp_name'];
-	$accounts = xml_to_object(file_get_contents($filename));
+	if (($temp = @file_get_contents($filename)) === false)  throw new \core\classes\userException(sprintf(ERROR_READ_FILE, $filename));
+	$accounts = xml_to_object($temp);
 	if (is_object($accounts->ChartofAccounts)) $accounts = $accounts->ChartofAccounts; // just pull the first one
 	if (is_object($accounts->account)) $accounts->account = array($accounts->account); // in case of only one chart entry
 	if (is_array($accounts->account)) foreach ($accounts->account as $account) {
@@ -117,15 +118,19 @@ $sel_inv_due = array( // invoice date versus due date for aging
 );
 
 // load available charts based on language
-if (is_dir($dir = DIR_FS_WORKING.'language/'.$_SESSION['language'].'/charts')) { $charts = scandir($dir); }
-  else { $charts = scandir(DIR_FS_WORKING . 'language/en_us/charts'); }
+if (is_dir($dir = DIR_FS_WORKING.'language/'.$_SESSION['language'].'/charts')) {
+	$charts = scandir($dir);
+}else {
+	$charts = scandir(DIR_FS_WORKING . 'language/en_us/charts');
+}
 $sel_chart = array(array('id' => '0', 'text' => TEXT_SELECT));
 foreach ($charts as $chart) {
-  if (strpos($chart, 'xml')) {
-	$temp = xml_to_object(file_get_contents(DIR_FS_WORKING . 'language/' . $_SESSION['language'] . '/charts/' . $chart));
-	if ($temp->ChartofAccounts) $temp = $temp->ChartofAccounts;
-    $sel_chart[] = array('id' => $chart, 'text' => $temp->description);
-  }
+  	if (strpos($chart, 'xml')) {
+  		if (($file = @file_get_contents(DIR_FS_WORKING . "language/{$_SESSION['language']}/charts/$chart")) === false)  throw new \core\classes\userException(sprintf(ERROR_READ_FILE, DIR_FS_WORKING . "language/{$_SESSION['language']}/charts/$chart"));
+		$temp = xml_to_object($file);
+		if ($temp->ChartofAccounts) $temp = $temp->ChartofAccounts;
+    	$sel_chart[] = array('id' => $chart, 'text' => $temp->description);
+	}
 }
 
 // some pre-defined gl accounts
