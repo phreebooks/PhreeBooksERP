@@ -623,12 +623,7 @@ $execute = mysql_query("INSERT INTO emailtodb_attach (IDEmail, FileNameOrg, File
 
   $dir_n = $year . "_" . $month;
   echo $this->set_path();
-  if (is_dir($this->set_path() . $dir_n)) {
-    return $dir_n . '/';
-  } else {
-    mkdir($this->set_path() . $dir_n, 0777);
-    return $dir_n . '/';
-  }
+  validate_path($this->set_path() . $dir_n);
  }
   
   function do_action(){

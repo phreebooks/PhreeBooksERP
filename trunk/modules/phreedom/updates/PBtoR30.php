@@ -42,21 +42,21 @@ if (!db_field_exists(TABLE_USERS_PROFILES, 'dashboard_id')) {
 }
 
 // check for modules installed, set status
-                                                       write_configure('MODULE_CONTACTS_STATUS',   '0.1');
-                                                       write_configure('MODULE_INVENTORY_STATUS',  '0.1');
-                                                       write_configure('MODULE_PAYMENT_STATUS',    '0.1');
-                                                       write_configure('MODULE_PHREEBOOKS_STATUS', '0.1');
-                                                       write_configure('MODULE_PHREECRM_STATUS',   '0.1');
-                                                       write_configure('MODULE_PHREEHELP_STATUS',  '0.1');
-                                                       write_configure('MODULE_SHIPPING_STATUS',   '0.1');
-if (db_table_exists(DB_PREFIX . 'assets'))             write_configure('MODULE_ASSETS_STATUS',     '0.1');
-if (db_table_exists(DB_PREFIX . 'capa_module'))        write_configure('MODULE_CP_ACTION_STATUS',  '0.1');
-if (db_table_exists(DB_PREFIX . 'doc_ctl_document'))   write_configure('MODULE_DOC_CTL_STATUS',    '0.1');
-if (db_table_exists(DB_PREFIX . 'receiving_module'))   write_configure('MODULE_RECEIVING_STATUS',  '0.1');
-if (db_table_exists(DB_PREFIX . 'rma_module'))         write_configure('MODULE_RMA_STATUS',        '0.1');
-if (db_table_exists(DB_PREFIX . 'translate_files'))    write_configure('MODULE_TRANSLATOR_STATUS', '0.1');
-if (db_table_exists(DB_PREFIX . 'wo_main'))            write_configure('MODULE_WORK_ORDERS_STATUS','0.1');
-if (db_field_exists(DB_PREFIX.'inventory', 'catalog')) write_configure('MODULE_ZENCART_STATUS',    '0.1');
+                                                       		write_configure('MODULE_CONTACTS_STATUS',   '0.1');
+                                                       		write_configure('MODULE_INVENTORY_STATUS',  '0.1');
+                                                       		write_configure('MODULE_PAYMENT_STATUS',    '0.1');
+                                                       		write_configure('MODULE_PHREEBOOKS_STATUS', '0.1');
+                                                       		write_configure('MODULE_PHREECRM_STATUS',   '0.1');
+                                                       		write_configure('MODULE_PHREEHELP_STATUS',  '0.1');
+                                                       		write_configure('MODULE_SHIPPING_STATUS',   '0.1');
+if (db_table_exists(DB_PREFIX . 'assets'))             		write_configure('MODULE_ASSETS_STATUS',     '0.1');
+if (db_table_exists(DB_PREFIX . 'capa_module'))        		write_configure('MODULE_CP_ACTION_STATUS',  '0.1');
+if (db_table_exists(DB_PREFIX . 'doc_ctl_document'))   		write_configure('MODULE_DOC_CTL_STATUS',    '0.1');
+if (db_table_exists(DB_PREFIX . 'receiving_module'))   		write_configure('MODULE_RECEIVING_STATUS',  '0.1');
+if (db_table_exists(DB_PREFIX . 'rma_module'))         		write_configure('MODULE_RMA_STATUS',        '0.1');
+if (db_table_exists(DB_PREFIX . 'translate_files'))    		write_configure('MODULE_TRANSLATOR_STATUS', '0.1');
+if (db_table_exists(DB_PREFIX . 'wo_main'))            		write_configure('MODULE_WORK_ORDERS_STATUS','0.1');
+if (db_field_exists(DB_PREFIX . 'inventory', 'catalog'))	write_configure('MODULE_ZENCART_STATUS',    '0.1');
 
 // check installed payment and shipping methods and update
 if (defined('MODULE_PAYMENT_AUTHORIZENET_ORDER'))      write_configure('MODULE_PAYMENT_AUTHORIZENET_STATUS', '0.1');
@@ -84,7 +84,6 @@ require_once (DIR_FS_MODULES . 'phreeform/config.php');
 require_once (DIR_FS_MODULES . 'phreeform/defaults.php');
 $admin_classes['phreeform']->install(DIR_FS_MY_FILES.$_SESSION['company'].'/', false);
 // load installed modules and build report folders
-$contents = scandir(DIR_FS_MODULES);
 foreach ($admin_classes as $key => $class) { // load the configuration files to load version info
     if ($class->installed && $key <> 'phreeform') { // build the directories
 	  	gen_pull_language($key, 'admin');
@@ -94,7 +93,7 @@ foreach ($admin_classes as $key => $class) { // load the configuration files to 
 }
 
 // reload pages array since it doesn't exist at the start of the update
-foreach ($admin_classes as $key => $class) { 
+foreach ($admin_classes as $key => $class) {
 	gen_pull_language($key, 'menu');
 	if ($class->installed ) require_once (DIR_FS_MODULES . $key . '/config.php');
 }

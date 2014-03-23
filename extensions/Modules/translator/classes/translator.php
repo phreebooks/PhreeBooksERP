@@ -43,7 +43,7 @@ class translator {
 	validate_upload('zipfile', 'zip', 'zip');
 	if (file_exists($upload_filename)) unlink ($upload_filename);
 	if (!copy($_FILES['zipfile']['tmp_name'], $upload_filename)) throw new \Exception('Error copying to ' . $upload_filename);
-	if (!is_dir($dir_dest)) mkdir($dir_dest);
+	validate_path($dir_dest);
 	if ($backup->unzip_file($upload_filename, $dir_dest)) throw new \Exception('Error unzipping file');
 	$this->import_language($dir_dest, $mod, $lang);
 	if (file_exists($upload_filename)) unlink ($upload_filename);
@@ -174,10 +174,10 @@ if ($const == 'GEN_COUNTRY_CODE')echo 'writing const = '.$const.' with value = '
 	  	$content .= chr(10) . '?' . '>' . chr(10); // terminate the file
 	  	$new_dir  = $backup->source_dir . substr ($path, 0, strrpos($path, '/'));
 	  	$filename = substr ($path, strrpos($path,'/')+1);
-	  	if (!is_dir($new_dir)) mkdir($new_dir, 0777, true);
+	  	validate_path($new_dir);
 	  	if (!$handle = @fopen($new_dir . '/' . $filename, 'w'))  	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $new_dir .'/'. $filename));
 	  	if (!@fwrite($handle, $content)) 							throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $filename));
-	  	if (!@fclose($handle)) 									throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
+	  	if (!@fclose($handle)) 										throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 	}
 	return true;
   }

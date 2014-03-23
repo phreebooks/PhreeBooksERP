@@ -51,7 +51,7 @@ switch ($_REQUEST['action']) {
 			$data[$x] = $_GET['d'.$x];
 			$x++;
 		}
-		if (!file_exists(DIR_FS_MODULES.$modID.'/functions/'.$modID.'.php'))  throw new \Exception('Could not find module function file to process!');
+		if (!file_exists(DIR_FS_MODULES."$modID/functions/$modID.php"))  throw new \Exception('Could not find module function file to process!');
 		gen_pull_language($modID);
 		require_once(DIR_FS_MODULES.$modID.'/functions/'.$modID.'.php');
 		if (!$results = get_chart_data($fID, $data)) throw new \Exception('No data returned from function call!');

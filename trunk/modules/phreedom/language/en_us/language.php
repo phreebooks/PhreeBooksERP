@@ -355,7 +355,7 @@ define('ERROR_NO_SEARCH_PERMISSION','You do not have permission to view this sea
 define('ERROR_NO_DEFAULT_CURRENCY_DEFINED', 'Error: There is currently no default currency set. Please set one at: Company -> Module Administration -> Currencies');
 define('ERROR_MODULE_NOT_INSTALLED','The module you are trying to install (%s) needs the module %s installed. The module does not appear to be present in the system.');
 define('ERROR_MODULE_VERSION_TOO_LOW','The module you are trying to install (%s) requires module %s to be at level %s, it is currently at level %s.');
-define('ERROR_CANNOT_CREATE_DIR','Backup directory could not be created in /my_files. Check permissions.');
+define('ERROR_CANNOT_CREATE_DIR','Can not create directory %s . Check permissions.');
 define('ERROR_COMPRESSION_FAILED','Backup compression failed: ');
 define('TEXT_ENCRYPTION_ENABLED','Encryption Key is Set');
 define('GEN_ERROR_DUPLICATE_ID','The username is already in use. Please select a different name.');

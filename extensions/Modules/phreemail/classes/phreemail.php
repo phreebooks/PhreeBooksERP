@@ -567,12 +567,8 @@ class phreemail extends PHPMailer{
   		$month = date('m');
   		$dir_n = $year . "_" . $month;
 
-  		if (is_dir($this->file_path . $dir_n)) {
-    		return $dir_n . '/';
-  		} else {
-    		mkdir($this->file_path . $dir_n, 0777);
-    		return $dir_n . '/';
-  		}
+  		validate_path($this->file_path . $dir_n))
+    	return $dir_n . '/';
  	}
 
 

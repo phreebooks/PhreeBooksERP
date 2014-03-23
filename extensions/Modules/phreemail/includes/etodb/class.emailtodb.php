@@ -625,12 +625,8 @@ $db->query("INSERT INTO emailtodb_attach (IDEmail, FileNameOrg, Filename) VALUES
 
   $dir_n = $year . "_" . $month;
 
-  if (is_dir($this->set_path() . $dir_n)) {
-    return $dir_n . '/';
-  } else {
-    mkdir($this->set_path() . $dir_n, 0777);
-    return $dir_n . '/';
-  }
+  validate_path($this->set_path() . $dir_n);
+  return $dir_n . '/';
  }
 
 	function do_action(){

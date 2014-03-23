@@ -118,7 +118,7 @@ $sel_inv_due = array( // invoice date versus due date for aging
 );
 
 // load available charts based on language
-if (is_dir($dir = DIR_FS_WORKING.'language/'.$_SESSION['language'].'/charts')) {
+if (is_dir($dir = DIR_FS_WORKING."language/{$_SESSION['language']}/charts")) {
 	$charts = scandir($dir);
 }else {
 	$charts = scandir(DIR_FS_WORKING . 'language/en_us/charts');

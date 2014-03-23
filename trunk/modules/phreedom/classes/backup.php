@@ -51,7 +51,7 @@ class backup {
 		} elseif (!is_array($table)) { // single table
 		  	$tables = array($table);
 		}
-		if (!is_dir($this->source_dir)) mkdir($this->source_dir);
+		validate_path($this->source_dir);
 		if (!$handle = @fopen($this->source_dir . $this->source_file, 'w')) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $this->source_dir . $this->source_file));
 		foreach ($tables as $table) {
 		  	$query  = '';
@@ -110,7 +110,7 @@ class backup {
 	}
 
   	function addFolderToZip($dir, $zipArchive, $dest_path = NULL) {
-    	if (!is_dir($dir)) throw new Exception("can not find dir $dir");
+    	validate_path($dir);
 		$files = scandir($dir);
 		foreach ($files as $file) {
 	  		if (is_file($dir . $file)){
@@ -186,14 +186,14 @@ class backup {
 	}
 
   	function copy_dir($dir_source, $dir_dest) {
-    	if (!is_dir($dir_source))  throw new Exception("can not find dir $dir");
+    	if (!is_dir($dir_source))  throw new Exception("can not find dir $dir_source");
 		$files = scandir($dir_source);
 		foreach ($files as $file) {
 	  		if ($file == "." || $file == "..") continue;
 	  		if (is_file($dir_source . $file)) {
 				copy($dir_source . $file, $dir_dest . $file);
 	  		} else {
-				@mkdir($dir_dest . $file);
+				validate_path($dir_dest . $file);
 				$this->copy_dir($dir_source . $file . "/", $dir_dest . $file . "/");
 	  		}
 		}

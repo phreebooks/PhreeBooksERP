@@ -141,7 +141,7 @@ class admin extends \core\classes\admin {
 			  qty float NOT NULL default '0',
 			  inventory_history_id int(11) NOT NULL default '0',
 			  PRIMARY KEY (id),
-			  INDEX (journal_main_id, inventory_history_id) 
+			  INDEX (journal_main_id, inventory_history_id)
 			) ENGINE=innodb DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci",
 		  TABLE_INVENTORY_HISTORY => "CREATE TABLE " . TABLE_INVENTORY_HISTORY . " (
 			  id int(11) NOT NULL auto_increment,
@@ -168,7 +168,7 @@ class admin extends \core\classes\admin {
 			  attr_name_0 varchar(16) NULL,
 			  attr_name_1 varchar(16) NULL,
 			  attr_0 varchar(255) NULL,
-			  attr_1 varchar(255) NULL, 
+			  attr_1 varchar(255) NULL,
 			  PRIMARY KEY (id)
 			) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;",
 		  TABLE_INVENTORY_PURCHASE => "CREATE TABLE " . TABLE_INVENTORY_PURCHASE . " (
@@ -178,7 +178,7 @@ class admin extends \core\classes\admin {
 			  description_purchase varchar(255) default NULL,
 			  purch_package_quantity float NOT NULL default '1',
 			  purch_taxable int(11) NOT NULL default '0',
-			  item_cost float NOT NULL default '0', 
+			  item_cost float NOT NULL default '0',
 			  price_sheet_v varchar(32) default NULL,
 			  PRIMARY KEY (id),
 			  INDEX (sku)
@@ -267,7 +267,7 @@ class admin extends \core\classes\admin {
 			$updateDB = $db->Execute("update " . TABLE_EXTRA_FIELDS . " set params = '" . serialize($temp) . "' where id = '".$result->fields['id']."'");
 			$result->MoveNext();
 		}
-		// set the fields to view in the inventory field filters 
+		// set the fields to view in the inventory field filters
 		$haystack = array('attachments', 'account_sales_income', 'item_taxable', 'purch_taxable', 'image_with_path', 'account_inventory_wage', 'account_cost_of_sales', 'cost_method', 'lead_time');
 		$result = $db->Execute("update " . TABLE_EXTRA_FIELDS . " set entry_type='check_box' where field_name='inactive'");
 		$result = $db->Execute("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory'");
@@ -287,7 +287,7 @@ class admin extends \core\classes\admin {
 	  		if(db_table_exists(DB_PREFIX . 'inventory_categories')){
 		  		$result = $db->Execute("select * from " . DB_PREFIX . 'inventory_categories');
 		  		while (!$result->EOF) {
-		    		$updateDB = $db->Execute("insert into " . TABLE_EXTRA_TABS . " set 
+		    		$updateDB = $db->Execute("insert into " . TABLE_EXTRA_TABS . " set
 			  		  module_id = 'inventory',
 			  		  tab_name = '"    . $result->fields['category_name']        . "',
 			  		  description = '" . $result->fields['category_description'] . "',
@@ -300,7 +300,7 @@ class admin extends \core\classes\admin {
 	  		if(db_table_exists(DB_PREFIX . 'inventory_categories')){
 		  		$result = $db->Execute("select * from " . DB_PREFIX . 'inventory_fields');
 		  		while (!$result->EOF) {
-		    		$updateDB = $db->Execute("insert into " . TABLE_EXTRA_FIELDS . " set 
+		    		$updateDB = $db->Execute("insert into " . TABLE_EXTRA_FIELDS . " set
 			  		  module_id = 'inventory',
 			  		  tab_id = '"      . $tab_map[$result->fields['category_id']] . "',
 			  		  entry_type = '"  . $result->fields['entry_type']  . "',
@@ -319,7 +319,7 @@ class admin extends \core\classes\admin {
 	  		xtra_field_sync_list('inventory', TABLE_INVENTORY);
 		}
 		if (version_compare($this->status, '3.6', '<') ) {
-			$db->Execute("ALTER TABLE " . TABLE_INVENTORY . " ADD INDEX ( `sku` )"); 
+			$db->Execute("ALTER TABLE " . TABLE_INVENTORY . " ADD INDEX ( `sku` )");
 			if (!db_field_exists(TABLE_INVENTORY, 'attachments')) $db->Execute("ALTER TABLE " . TABLE_INVENTORY . " ADD attachments text AFTER last_journal_date");
 			if (!db_field_exists(TABLE_INVENTORY, 'full_price_with_tax')) $db->Execute("ALTER TABLE " . TABLE_INVENTORY . " ADD full_price_with_tax FLOAT NOT NULL DEFAULT '0' AFTER full_price");
 			if (!db_field_exists(TABLE_INVENTORY, 'product_margin')) $db->Execute("ALTER TABLE " . TABLE_INVENTORY . " ADD product_margin FLOAT NOT NULL DEFAULT '0' AFTER full_price_with_tax");
@@ -327,12 +327,12 @@ class admin extends \core\classes\admin {
 			$db->Execute("alter table " . TABLE_INVENTORY . " CHANGE `inactive` `inactive` ENUM( '0', '1' ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'");
 			xtra_field_sync_list('inventory', TABLE_INVENTORY);
 			$db->Execute("update " . TABLE_INVENTORY . " set inventory_type = 'ma' where inventory_type = 'as'");
-			$result = $db->Execute("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory'"); 
+			$result = $db->Execute("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory'");
 			while (!$result->EOF) {
 				$temp = unserialize($result->fields['params']);
 				switch($result->fields['field_name']){
 					case 'serialize':
-						$temp['inventory_type'] = 'sa:sr'; 	
+						$temp['inventory_type'] = 'sa:sr';
 						break;
 					case 'account_sales_income':
 					case 'item_taxable':
@@ -375,7 +375,7 @@ class admin extends \core\classes\admin {
 			  			break;
 			  		case 'upc_code':
 			  			$temp['inventory_type'] = 'ia:ma:mi:ns:sa:si:sr';
-			  			break; 
+			  			break;
 			  		default:
 			  			$temp['inventory_type'] = 'ai:ci:ds:ia:lb:ma:mb:mi:ms:ns:sa:sf:si:sr:sv';
 				}
@@ -407,18 +407,18 @@ class admin extends \core\classes\admin {
 				db_perform(TABLE_INVENTORY, $sql_data_array, 'update', "id = " . $result->fields['id']);
 				$result->MoveNext();
 			}
-		  	mkdir(DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/attachments/', 0755, true);
+		  	validate_path(DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/attachments/', 0755);
 		}
 		if (version_compare($this->status, '3.7', '<') ) {
 			if (!db_field_exists(TABLE_INVENTORY_HISTORY, 'avg_cost')) $db->Execute("ALTER TABLE ".TABLE_INVENTORY_HISTORY." ADD avg_cost FLOAT NOT NULL DEFAULT '0' AFTER unit_cost");
 		}
-		if (version_compare($this->status, '3.7.1', '<') ) { 
+		if (version_compare($this->status, '3.7.1', '<') ) {
 			$result = $db->Execute("select id, params from ".TABLE_EXTRA_FIELDS." where module_id = 'inventory' AND field_name = 'account_cost_of_sales'");
 			$temp = unserialize($result->fields['params']);
 			$temp['inventory_type'] = 'ai:ci:ds:ia:lb:ma:mb:mi:ms:ns:sa:sf:si:sr:sv';
 			$updateDB = $db->Execute("update ".TABLE_EXTRA_FIELDS." set params='".serialize($temp)."' where id='".$result->fields['id']."'");
 		}
-		
+
 	}
 
   	function delete() {
@@ -495,16 +495,16 @@ class admin extends \core\classes\admin {
 	(17, 'VID-NV-512MB', 1, 'nVidea 512 MB Video Card - with SLI support', 0, 0, ''),
 	(18, 'PC-BB-512', 0, 'Fully assembled bare bones computer AMD/ATI 512MB/2GB/Red Case', 0, 0, '');
 		");
-		
+
 		// copy the demo image
 		$backups = new \phreedom\classes\backup;
-		if (!@mkdir(DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/images/demo')) throw new \Exception("couldn't make folder " .DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/images/demo');
+		validate_path(DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/images/demo');
 		$dir_source = DIR_FS_MODULES  . 'inventory/images/demo/';
 		$dir_dest   = DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/images/demo/';
 		$backups->copy_dir($dir_source, $dir_dest);
 		parent::load_demo();
 	}
-	
+
 	/**
 	 * This function will check if the sku field is filled and unique
 	 * @param string $sku

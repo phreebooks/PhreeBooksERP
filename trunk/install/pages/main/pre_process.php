@@ -168,9 +168,7 @@ switch ($_REQUEST['action']) {
 		$_SESSION['language'] = $lang;
 		// create the company directory
 		if (DEBUG) $messageStack->debug("\n  creating the company directory");
-		if (!file_exists(DIR_FS_ADMIN . PATH_TO_MY_FILES . $db_name)) {
-		  if (!@mkdir   (DIR_FS_ADMIN . PATH_TO_MY_FILES . $db_name)) $error = $messageStack->add(sprintf(MSG_ERROR_CREATE_MY_FILES, DIR_FS_ADMIN . PATH_TO_MY_FILES . $db_name),'error');
-		}
+		validate_path(DIR_FS_ADMIN . PATH_TO_MY_FILES . $db_name);
 		if (!$error) { // write the db config.php in the company directory
 		  if (!install_build_co_config_file($db_name, $db_name . '_TITLE',  $company_name)) $error = true;
 		  if (!install_build_co_config_file($db_name, 'DB_SERVER_USERNAME', $db_username))  $error = true;

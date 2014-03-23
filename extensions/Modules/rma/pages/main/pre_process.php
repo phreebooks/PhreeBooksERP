@@ -66,7 +66,7 @@ switch ($_REQUEST['action']) {
 			  'wrnty' => $_POST['rcv_wrnty'][$key],
 			);
 		}
-	
+
 		if (is_array($_POST['dis_sku'])) foreach ($_POST['dis_sku'] as $key => $value) {
 			$close_details[] = array(
 			  'qty'    => $_POST['dis_qty'][$key],
@@ -74,7 +74,7 @@ switch ($_REQUEST['action']) {
 			  'notes'  => $_POST['dis_notes'][$key],
 			  'action' => $_POST['dis_action'][$key],
 			);
-		} 
+		}
 		$db->transStart();
 		// Check attachments
 		$result = $db->Execute("select attachments from " . TABLE_RMA . " where id = '" . $id . "'");
@@ -82,7 +82,7 @@ switch ($_REQUEST['action']) {
 		$image_id = 0;
 		while ($image_id < 100) { // up to 100 images
 		  	if (isset($_POST['rm_attach_'.$image_id])) {
-				if (!@unlink(RMA_DIR_ATTACHMENTS . 'rma_'.$id.'_'.$image_id.'.zip')) throw new Exception("can not unlink file");//@todo copy to other file functions
+				@unlink(RMA_DIR_ATTACHMENTS . 'rma_'.$id.'_'.$image_id.'.zip');
 				unset($attachments[$image_id]);
 		  	}
 		  	$image_id++;
@@ -99,9 +99,9 @@ switch ($_REQUEST['action']) {
 		}
 		// check for errors, process
 		if ($status == 99 && $closed_date == '') $closed_date = date('Y-m-d');
-	
+
 		// write the data
-		
+
 		$sql_data_array = array(
 		  'status'              => $status,
 		  'entered_by'          => $entered_by,
@@ -193,7 +193,7 @@ switch ($_REQUEST['action']) {
 	  }
 	}
     break;
-	
+
   case 'go_first':    $_REQUEST['list'] = 1;       break;
   case 'go_previous': $_REQUEST['list'] = max($_REQUEST['list']-1, 1); break;
   case 'go_next':     $_REQUEST['list']++;         break;

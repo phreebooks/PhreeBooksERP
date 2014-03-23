@@ -57,9 +57,9 @@ if (!db_field_exists(TABLE_JOURNAL_MAIN, 'closed_date')) {
     $db->Execute("delete from " . TABLE_CONFIGURATION . " where configuration_key = '" . $value . "'");
   }
   // change True's and False's to 1's and 0s
-  $db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '0' 
+  $db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '0'
     where configuration_value in ('false', 'False', 'FALSE', 'no', 'No', 'NO')");
-  $db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '1' 
+  $db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '1'
     where configuration_value in ('true', 'True', 'TRUE', 'yes', 'Yes', 'YES')");
   // increase field length to description
   $db->Execute("ALTER TABLE " . TABLE_JOURNAL_MAIN . " ADD `closed_date` DATE NOT NULL AFTER `closed`");
@@ -73,21 +73,16 @@ require_once(DIR_FS_MODULES . 'phreeform/functions/reportwriter.php');
 $result = $db->Execute("select * from " . TABLE_REPORTS);
 $count  = 0;
 while (!$result->EOF) {
-  $skip_report = false;
-  $report = PrepReport($result->fields['id']);
-  if (!$params = import_text_params($report)) {
-	$messageStack->add(sprintf(PB_CONVERT_SAVE_ERROR, $result->fields['description']), 'error');
-	$skip_report = true;
-  }
-  // fix some fields
-  $params->custom = $result->fields['standard_report'] ? 's' : 'c';
-  if (!$skip_report) {
-	if (!$success = save_report($params)) {
-	  $messageStack->add(sprintf(PB_CONVERT_SAVE_ERROR, $params->title), 'error');
-	}
-	$count++;
-  }
-  $result->MoveNext();
+  	$skip_report = false;
+  	$report = PrepReport($result->fields['id']);
+  	if (!$params = import_text_params($report)) throw new \core\classes\userException(sprintf(PB_CONVERT_SAVE_ERROR, $result->fields['description']));
+  	// fix some fields
+  	$params->custom = $result->fields['standard_report'] ? 's' : 'c';
+  	if (!$skip_report) {
+		if (!$success = save_report($params)) throw new \core\classes\userException(sprintf(PB_CONVERT_SAVE_ERROR, $params->title));
+		$count++;
+  	}
+  	$result->MoveNext();
 }
 // Copy the PhreeBooks images
 $dir_source = DIR_FS_MY_FILES . $_SESSION['company'] . '/images';
@@ -122,8 +117,8 @@ while (!$result->EOF) {
 
 // delete some extra fields in the configuration tables no longer needed
 if (db_field_exists(TABLE_CONFIGURATION, 'set_function')) {
-  $db->Execute("ALTER TABLE " . TABLE_CONFIGURATION . " DROP configuration_title, DROP configuration_description, 
-    DROP configuration_group_id, DROP sort_order, DROP last_modified, DROP date_added, DROP use_function, 
+  $db->Execute("ALTER TABLE " . TABLE_CONFIGURATION . " DROP configuration_title, DROP configuration_description,
+    DROP configuration_group_id, DROP sort_order, DROP last_modified, DROP date_added, DROP use_function,
     DROP set_function");
 }
 

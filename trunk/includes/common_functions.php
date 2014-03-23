@@ -44,28 +44,28 @@
     exit;
   }
 
-  function gen_pull_language($page, $file = 'language') {//@todo add switch for core files.
-  	if (!is_dir(DIR_FS_MODULES . $page)) return;
-  	if       (file_exists(DIR_FS_MODULES . "$page/custom/language/".$_SESSION['language']."/$file.php")) {
-      include_once       (DIR_FS_MODULES . "$page/custom/language/".$_SESSION['language']."/$file.php");
-	} elseif (file_exists(DIR_FS_MODULES . "$page/custom/language/en_us/$file.php")) {
-      include_once       (DIR_FS_MODULES . "$page/custom/language/en_us/$file.php");
-	}
-    if       (file_exists(DIR_FS_MODULES . "$page/language/".$_SESSION['language']."/$file.php")) {
-      include_once       (DIR_FS_MODULES . "$page/language/".$_SESSION['language']."/$file.php");
-	} elseif (file_exists(DIR_FS_MODULES . "$page/language/en_us/$file.php")) {
-      include_once       (DIR_FS_MODULES . "$page/language/en_us/$file.php");
-	}
-  }
+  	function gen_pull_language($page, $file = 'language') {//@todo add switch for core files.
+	  	if (!is_dir(DIR_FS_MODULES . $page)) return;
+	  	if       (file_exists(DIR_FS_MODULES . "$page/custom/language/{$_SESSION['language']}/$file.php")) {
+	      	include_once     (DIR_FS_MODULES . "$page/custom/language/{$_SESSION['language']}/$file.php");
+		} elseif (file_exists(DIR_FS_MODULES . "$page/custom/language/en_us/$file.php")) {
+	      	include_once     (DIR_FS_MODULES . "$page/custom/language/en_us/$file.php");
+		}
+	    if       (file_exists(DIR_FS_MODULES . "$page/language/{$_SESSION['language']}/$file.php")) {
+	      	include_once     (DIR_FS_MODULES . "$page/language/{$_SESSION['language']}/$file.php");
+		} elseif (file_exists(DIR_FS_MODULES . "$page/language/en_us/$file.php")) {
+	      	include_once     (DIR_FS_MODULES . "$page/language/en_us/$file.php");
+		}
+  	}
 
-  function load_method_language($path, $file = '') {
-  	if (!is_dir($path . $file)) return;
-    if (file_exists($path . "$file/language/".$_SESSION['language'].'/language.php')) {
-      include_once ($path . "$file/language/".$_SESSION['language'].'/language.php');
-    } elseif (file_exists($path . "$file/language/en_us/language.php")) {
-      include_once       ($path . "$file/language/en_us/language.php");
-    }
-  }
+	function load_method_language($path, $file = '') {
+	  	if (!is_dir($path . $file)) return;
+	    if 		 (file_exists($path . "$file/language/{$_SESSION['language']}/language.php")) {
+	    	include_once 	 ($path . "$file/language/{$_SESSION['language']}/language.php");
+	    } elseif (file_exists($path . "$file/language/en_us/language.php")) {
+	    	include_once     ($path . "$file/language/en_us/language.php");
+	    }
+	}
 
 	function return_all_methods($module, $active_only = true, $type ='methods') {
 	    $choices     = array();
@@ -518,7 +518,7 @@ function saveUploadZip($file_field, $dest_dir, $dest_name) {
 	@unlink($backup->source_dir);
 }
 
-  function dircopy($src_dir, $dst_dir, $verbose = false, $use_cached_dir_trees = false) {
+function dircopy($src_dir, $dst_dir, $verbose = false, $use_cached_dir_trees = false) {
 	static $cached_src_dir;
 	static $src_tree;
 	static $dst_tree;
@@ -533,10 +533,12 @@ function saveUploadZip($file_field, $dest_dir, $dest_name) {
 		$src_changed = true;
 	}
 	if (!$use_cached_dir_trees || !isset($dst_tree) || $src_changed) $dst_tree = get_dir_tree($dst_dir);
-	if (!is_dir($dst_dir)) mkdir($dst_dir, 0777, true);
+	validate_path($dst_dir);
 
 	foreach ($src_tree as $file => $src_mtime) {
-		if (!isset($dst_tree[$file]) && $src_mtime === false) mkdir("$dst_dir/$file");
+		if (!isset($dst_tree[$file]) && $src_mtime === false) {
+			validate_path("$dst_dir/$file");
+		}
 		elseif (!isset($dst_tree[$file]) && $src_mtime || isset($dst_tree[$file]) && $src_mtime > $dst_tree[$file]) {
 			if (copy("$src_dir/$file", "$dst_dir/$file")) {
 				if($verbose) echo "Copied '$src_dir/$file' to '$dst_dir/$file'<br />\r\n";
@@ -547,35 +549,34 @@ function saveUploadZip($file_field, $dest_dir, $dest_name) {
 	}
 
 	return $num;
-  }
+}
 
-  function get_dir_tree($dir, $root = true)  {
+function get_dir_tree($dir, $root = true)  {
 	static $tree;
 	static $base_dir_length;
 	if ($root) {
-	  $tree = array();
-	  $base_dir_length = strlen($dir) + 1;
+	  	$tree = array();
+	  	$base_dir_length = strlen($dir) + 1;
 	}
 	if (is_file($dir)) {
-	  $tree[substr($dir, $base_dir_length)] = filemtime($dir);
+	  	$tree[substr($dir, $base_dir_length)] = filemtime($dir);
 	} elseif (is_dir($dir) && $di = dir($dir)) {
-	  if (!$root) $tree[substr($dir, $base_dir_length)] = false;
-	  while (($file = $di->read()) !== false)
-		if ($file != "." && $file != "..")
-		  get_dir_tree("$dir/$file", false);
-	  $di->close();
+	  	if (!$root) $tree[substr($dir, $base_dir_length)] = false;
+	  	while (($file = $di->read()) !== false)	if ($file != "." && $file != "..") get_dir_tree("$dir/$file", false);
+	  	$di->close();
 	}
 	if ($root) return $tree;
-  }
+}
 
 /*************** Date Functions *******************************/
-  // builds sql date string and description string based on passed criteria
-  // function requires as input an associative array with two entries:
-  // df = database fieldname for the sql date search
-  // date_prefs = imploded (:) string with three entries
-  //    entry 1 => date range specfication for switch statement
-  //    entry 2 => start date value db format
-  //    entry 3 => end date value db format
+  /** builds sql date string and description string based on passed criteria
+   * function requires as input an associative array with two entries:
+   * @param date_prefs = imploded (:) string with three entries
+   *    entry 1 => date range specfication for switch statement
+   *    entry 2 => start date value db format
+   *    entry 3 => end date value db format
+   * @param df = database fieldname for the sql date search
+   */
   function gen_build_sql_date($date_prefs, $df) {
   	global $db;
 	$dates = gen_get_dates();
@@ -1491,14 +1492,14 @@ function charConv($string, $in, $out) {
 	throw new \Exception(TEXT_IMP_ERMSG6);
   }
 
-	/** @todo places where it is used need to be modified
+	/**
 	 * checks if path exists if not it will try to create it
 	 * @param string $file_path
-	 * @throws Exception
+	 * @throws \core\classes\userException
 	 */
-  	function validate_path($file_path) {
+  	function validate_path($file_path , $rights = 0777) {
 		if (!is_dir($file_path)) {
-			if(mkdir($file_path, 0777, true) == false) throw new \Exception("cloudn't make dir: $file_path");
+			if(@mkdir($file_path, $rights, true) == false)  throw new \core\classes\userException(sprintf(ERROR_CANNOT_CREATE_DIR, $file_path));
 		}
   	}
 
@@ -1643,22 +1644,6 @@ function charConv($string, $in, $out) {
 		}
 
 	}  // end function
-/**************************************************************************************************************/
-// Section 7. Password Functions
-/**************************************************************************************************************/
-
-function pw_validate_encrypt($plain) {//@todo hoe anders is deze functie
-  	global $db;
-	if (gen_not_null($plain)) {
-	    $sql = "select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = 'ENCRYPTION_VALUE'";
-	    $result = $db->Execute($sql);
-	    $encrypted = $result->fields['configuration_value'];
-	    $stack = explode(':', $encrypted);
-	    if (sizeof($stack) != 2) trigger_error("the stack hasn't got size 2", E_USER_ERROR);
-	    if (md5($stack[1] . $plain) == $stack[0]) return true;
-	}
-  	throw new \Exception(ERROR_WRONG_ENCRYPT_KEY);
-}
 
 /**************************************************************************************************************/
 // Section 8. Conversion Functions

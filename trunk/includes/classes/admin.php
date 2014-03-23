@@ -120,11 +120,10 @@ class admin {
 	}
 
   	function release_update($version, $path = '') {
-    	global $db, $messageStack;
+    	global $db;
 		if (file_exists($path)) { include_once ($path); }
 		write_configure('MODULE_' . strtoupper($this->id) . '_STATUS', $version);
-		//@todo should not return error but throw them
-		return $this->error ? false : $version;
+		return $version;
   	}
 
 	function load_reports() {
@@ -162,9 +161,7 @@ class admin {
 
 	function install_dirs($path_my_files) {
 		foreach ($this->dirlist as $dir) {
-			if (!file_exists($path_my_files . $dir)) {
-		  		if (!@mkdir($path_my_files . $dir, 0755, true)) throw new \Exception (sprintf(ERROR_CANNOT_CREATE_MODULE_DIR, $path_my_files . $dir));
-	    	}
+			validate_path($path_my_files . $dir, 0755);
 	  	}
 	}
 

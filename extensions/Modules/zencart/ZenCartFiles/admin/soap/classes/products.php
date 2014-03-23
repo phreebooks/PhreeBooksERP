@@ -152,9 +152,7 @@ if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/extra_product_reads.php')) in
 		// the str_replace is to necessary to fix a PHP 5 issue with spaces in the base64 encode... see php.net
 		$contents = base64_decode(str_replace(" ", "+", $image_data));
 		if ($image_directory) {
-			if (!is_dir(DIR_FS_CATALOG_IMAGES . $image_directory)) {
-				mkdir(DIR_FS_CATALOG_IMAGES . $image_directory);
-			}
+			validate_path(DIR_FS_CATALOG_IMAGES . $image_directory);
 			$full_path = $image_directory . '/' . $image_filename;
 		} else {
 			$full_path = $image_filename;

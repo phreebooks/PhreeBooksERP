@@ -24,7 +24,7 @@ class admin extends \core\classes\admin {
 	public $description = MODULE_PHREEBOOKS_DESCRIPTION;
 	public $core		= true;
 	public $version		= '3.6';
-	
+
 	function __construct() {
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom'  => 3.6,
@@ -264,7 +264,7 @@ class admin extends \core\classes\admin {
 	    );
 	    parent::__construct();
 	}
-	
+
 	function install($path_my_files, $demo = false) {
 	    global $db;
 	    parent::install($path_my_files, $demo);
@@ -319,7 +319,7 @@ class admin extends \core\classes\admin {
 			$db_version = $this->release_update($this->id, 3.1, DIR_FS_MODULES . 'phreebooks/updates/R30toR31.php');
 		}
 		if (version_compare($db_version, '3.1', '==') ) {
-		  	if (!file_exists($path . $dir)) mkdir(DIR_FS_MY_FILES . $_SESSION['company'] . '/phreebooks/orders/', 0755, true);
+		  	validate_path(DIR_FS_MY_FILES . $_SESSION['company'] . '/phreebooks/orders/', 0755);
 		  	write_configure('ALLOW_NEGATIVE_INVENTORY', '1');
 		  	$db_version = 3.2;
 		}
@@ -392,7 +392,7 @@ class admin extends \core\classes\admin {
 		$this->add_report_folder($id, TEXT_REPORTS,           'gl',        'fr');
 		parent::load_reports();
 	}
-	
+
 	function load_demo() {
 	    global $db;
 		// Data for table `tax_authorities`

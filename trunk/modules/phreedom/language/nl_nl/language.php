@@ -336,7 +336,7 @@ define('ERROR_NO_SEARCH_PERMISSION','U heeft geen toestemming om deze zoek resul
 define('ERROR_NO_DEFAULT_CURRENCY_DEFINED','Error: Er is op dit moment geen standaard valuta geselecteerd. Stel er een in via : Setup->Valuta');
 define('ERROR_MODULE_NOT_INSTALLED','De module die u probeert te installeren (%s) moet de volgende module %s geïnstalleerd zijn. Het lijkt er op dat de module niet aanwezig is.');
 define('ERROR_MODULE_VERSION_TOO_LOW','De module die u probeert te installeren (%s) vereist dat de module %s versie %s, geïnstalleerd is. maar dit is momenteel %s.');
-define('ERROR_CANNOT_CREATE_DIR','Backup directory kon niet gemaakt worden in /my_files. Controleer de schijf rechten.');
+define('ERROR_CANNOT_CREATE_DIR','Can directory %s niet maken. Controleer de schijf rechten.');
 define('ERROR_COMPRESSION_FAILED','Backup compressie mislukt: ');
 define('TEXT_ENCRYPTION_ENABLED','Versleutelings sleutel is ingesteld');
 define('GEN_ERROR_DUPLICATE_ID','Gebruikersnaam is al in gebruik. Selecteer een andere Naam.');

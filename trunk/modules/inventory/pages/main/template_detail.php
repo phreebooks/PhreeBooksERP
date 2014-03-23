@@ -35,12 +35,12 @@ if ($_REQUEST['action'] == 'properties') {
 } else {
   $toolbar->icon_list['cancel']['params'] = 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action','page')), 'SSL') . '\'"';
   $toolbar->icon_list['open']['show']     = false;
-  if ($security_level > 3 && $cInfo->inventory_type != 'mi' && $cInfo->inventory_type != 'ia' && ($cInfo->last_journal_date != '0000-00-00 00:00:00' || $cInfo->last_journal_date != '') ){ 
+  if ($security_level > 3 && $cInfo->inventory_type != 'mi' && $cInfo->inventory_type != 'ia' && ($cInfo->last_journal_date != '0000-00-00 00:00:00' || $cInfo->last_journal_date != '') ){
   	$toolbar->icon_list['delete']['show']   = true;
   	$toolbar->icon_list['delete']['params'] = "onclick='if (confirm(\"". INV_MSG_DELETE_INV_ITEM . "\")) deleteItem({$cInfo->id},\"{$cInfo->inventory_type}\")'";
   }else{
   	$toolbar->icon_list['delete']['show']   = false;
-  } 
+  }
   if ($security_level > 2 || $first_entry) {
     $toolbar->icon_list['save']['params'] = 'onclick="submitToDo(\'save\')"';
   } else {
@@ -53,17 +53,17 @@ if ($_REQUEST['action'] == 'properties') {
 if (count($extra_toolbar_buttons_detail) > 0) {
   foreach ($extra_toolbar_buttons_detail as $key => $value) $toolbar->icon_list[$key] = $value;
 }
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 $fields->set_fields_to_display($cInfo->inventory_type);
 ?>
 <h1 id='heading_title'><?php echo MENU_HEADING_INVENTORY . ' - ' . TEXT_SKU . '# ' . $cInfo->sku . ' (' . $cInfo->description_short . ')'; ?></h1>
 <div class="easyui-tabs" id="detailtabs">
 <?php
 foreach ($cInfo->tab_list as $value) {
-  if (file_exists(DIR_FS_WORKING . 'custom/pages/main/' . $value['file'] . '.php')) {
-	include(DIR_FS_WORKING . 'custom/pages/main/' . $value['file'] . '.php');
+  if (file_exists(DIR_FS_WORKING . "custom/pages/main/{$value['file']}.php")) {
+	include(DIR_FS_WORKING . "custom/pages/main/{$value['file']}.php");
   } else {
-	include(DIR_FS_WORKING . 'pages/main/' . $value['file'] . '.php');
+	include(DIR_FS_WORKING . "pages/main/{$value['file']}.php");
   }
 }
 

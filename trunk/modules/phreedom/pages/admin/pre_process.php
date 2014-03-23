@@ -21,7 +21,7 @@ $security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 /**************  include page specific files    *********************/
 gen_pull_language($module, 'admin');
 gen_pull_language('phreeform');
-if (defined('MODULE_PHREEFORM_STATUS')) { 
+if (defined('MODULE_PHREEFORM_STATUS')) {
   require_once(DIR_FS_MODULES . 'phreeform/defaults.php');
   require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
 }
@@ -39,7 +39,7 @@ if (substr($_REQUEST['action'], 0, 8) == 'install_') {
 $status_fields = array();
 $result = $db->Execute("show fields from " . TABLE_CURRENT_STATUS);
 while (!$result->EOF) {
-  if ($result->fields['Field'] <> 'id') $status_fields[] = $result->fields['Field']; 
+  if ($result->fields['Field'] <> 'id') $status_fields[] = $result->fields['Field'];
   $result->MoveNext();
 }
 $status_values = $db->Execute("select * from " . TABLE_CURRENT_STATUS);
@@ -63,7 +63,7 @@ switch ($_REQUEST['action']) {
 		  		write_configure('MODULE_' . strtoupper($admin_classes[$method]->id) . '_STATUS', $admin_classes[$method]->version);
  				gen_add_audit_log(sprintf(GEN_LOG_INSTALL_SUCCESS, $admin_classes[$method]->text) . TEXT_UPDATE, $admin_classes[$method]->version);
 	   			$messageStack->add(sprintf(GEN_MODULE_UPDATE_SUCCESS, $admin_classes[$method]->id, $admin_classes[$method]->version), 'success');
-			} 
+			}
 			if (sizeof($admin_classes[$method]->notes) > 0) foreach ($admin_classes[$method]->notes as $note) $messageStack->add($note, 'caution');
 			$db->transCommit();
 			break;
@@ -143,21 +143,19 @@ switch ($_REQUEST['action']) {
 			$db = new queryFactory;//@todo pdo
 			if (!$db->connect($db_server, $db_user, $db_pw, $db_name)) throw new \Exception(SETUP_CO_MGR_CANNOT_CONNECT);
 			// write the db config.php in the company directory
-			if (!file_exists(DIR_FS_ADMIN . PATH_TO_MY_FILES . $db_name)) {
-			    if (!mkdir(DIR_FS_ADMIN . PATH_TO_MY_FILES . $db_name)) throw new \Exception(sprintf(MSG_ERROR_CREATE_MY_FILES, DIR_FS_ADMIN . PATH_TO_MY_FILES));
-			}
+			validate_path(DIR_FS_ADMIN . PATH_TO_MY_FILES . $db_name);
 			install_build_co_config_file($db_name, $db_name . '_TITLE',  $co_name);
 			install_build_co_config_file($db_name, 'DB_SERVER_USERNAME', $db_user);
 			install_build_co_config_file($db_name, 'DB_SERVER_PASSWORD', $db_pw);
 			install_build_co_config_file($db_name, 'DB_SERVER_HOST',     $db_server);
-			
+
 			$backup = new \phreedom\classes\backup;
 		    $backup->source_dir  = DIR_FS_MY_FILES . $db_name . '/temp/';
 		    $backup->source_file = 'temp.sql';
 		    foreach ($admin_classes as $key => $class) {
 				if (!$class->core && !isset($_POST[$key])) continue;
 			  	gen_pull_language($key, 'admin');
-			    $task        = $_POST[$key . '_action']; 
+			    $task        = $_POST[$key . '_action'];
 				if ($key == 'phreedom') $task = 'data'; // force complete copy of phreedom module
 			    switch ($task) {
 				  	case 'core':
@@ -177,7 +175,7 @@ switch ($_REQUEST['action']) {
 						if (is_array($class->dirlist)) foreach($class->dirlist as $source_dir) {
 				      		$dir_source = DIR_FS_MY_FILES . $_SESSION['company'] . '/' . $source_dir . '/';
 				      		$dir_dest   = DIR_FS_MY_FILES . $db_name             . '/' . $source_dir . '/';
-					  		@mkdir(DIR_FS_MY_FILES . $db_name . '/' . $source_dir);
+					  		validate_path(DIR_FS_MY_FILES . "$db_name/$source_dir");
 					  		$backup->copy_dir($dir_source, $dir_dest);
 				    	}
 						break;
@@ -197,7 +195,7 @@ switch ($_REQUEST['action']) {
 			  	gen_auto_update_period(false);
 			}
 			// reset SESSION['company'] to new company and redirect to install->store_setup
-			$db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '" . $co_name . "' 
+			$db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '" . $co_name . "'
 			  where configuration_key = 'COMPANY_NAME'");
 			$messageStack->add(SETUP_CO_MGR_CREATE_SUCCESS,'success');
 			gen_add_audit_log(SETUP_CO_MGR_LOG . TEXT_COPY, $db_name);
