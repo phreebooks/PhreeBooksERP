@@ -31,7 +31,6 @@ switch ($_REQUEST['action']) {
 	// first verify the file was uploaded ok
 	if (!validate_upload($upload_name, 'text', 'csv')) {
 	  $messageStack->add(TEXT_IMP_ERMSG10,'error');
-	  break;
 	} else {
 	  $lines_array = file($_FILES[$upload_name]['tmp_name']);
 	  $post_pay = new sku_pricer();

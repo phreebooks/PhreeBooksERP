@@ -23,7 +23,13 @@
 define('SKU_PRICER_PAGE_TITLE','SKU Price Importer');
 // General Defines
 define('SKU_PRICER_SELECT','Plese select the csv file to import');
-define('SKU_PRICER_DIRECTIONS','After a file has been selected, press the Save icon to execute the script.<br />The file format (with header):<br />sku,cost,full,upc_code<br>SKU_NUM,2.00, 4.00, upc<br />Where numbers real values with a dot as decimal point, no symbols or other characters.');
+define('SKU_PRICER_DIRECTIONS','After a file has been selected, press the Save icon to execute the script.<br />
+		The file format (with header):<br />
+		field1,field2,field2,field4,...<br>
+		data1,data2,data3,data4, ...<br />
+		Where field is the inventory field name, data is the db formatted value.<br />
+		Most fields are importable unless they are controlled by the PhreeBooks module.<br />
+		The file must contain either the SKU or UPC code to properly update the correct record.');
 // Error Messages
 // Javascrpt Defines
 // Audit Log Messages
