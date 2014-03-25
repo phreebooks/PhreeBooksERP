@@ -25,7 +25,7 @@
 <div title="<?php echo TEXT_GENERAL;?>" id="general">
   <h2 class="tabset_label"><?php echo TEXT_PHREEWIKI_SETTINGS; ?></h2>
   <fieldset class="formAreaTitle">
-    <table border="0" width="100%" cellspacing="1" cellpadding="1">
+    <table border="0" width="100%">
 	  <tr><th colspan="5"><?php echo MODULE_PHREEWIKI_CONFIG_INFO; ?></th></tr>
 	  <tr>
 	    <td colspan="4"><?php echo PHREEWIKI_CONFIG_REGEXPSEARCH; ?></td>

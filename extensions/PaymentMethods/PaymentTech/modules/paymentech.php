@@ -30,7 +30,7 @@
 /**
  * Paymentech Payment Module
  * You must have SSL active on your server to be compliant with merchant TOS
- * At time of release this has only been tested on a Canadian merchant store, using 
+ * At time of release this has only been tested on a Canadian merchant store, using
  * Paymentech service via VersaPay in Vancouver, BC. However, it may work with
  * any services provider that uses the Chase bank Orbital/Paymentech solution
  *
@@ -71,7 +71,7 @@ class paymentech {
     // Payment module title in Admin
     $this->title = MODULE_PAYMENT_PAYMENTECH_TEXT_TITLE;
     if (MODULE_PAYMENT_PAYMENTECH_MERCHANT_ID_CAD == '' && MODULE_PAYMENT_PAYMENTECH_MERCHANT_ID_USD == '') {
-      $this->title .=  '<span class="alert"> (Not Configured)</span>'; 
+      $this->title .=  '<span class="alert"> (Not Configured)</span>';
     } elseif (MODULE_PAYMENT_PAYMENTECH_TESTMODE == 'Test') {
       $this->title .= '<span class="alert"> (in Testing mode)</span>';
     }
@@ -108,7 +108,7 @@ class paymentech {
 		'F ' => "Zip No Match / Zip 4 No Match / Locale match",
 		'G ' => "No match at all",
 		'H ' => "Zip Match / Locale match",
-		'J ' => "Issuer does not participate in Global AVS", 
+		'J ' => "Issuer does not participate in Global AVS",
 		'JA' => "International street address and postal match",
 		'JB' => "International street address match. Postal code not verified.",
 		'JC' => "International street address and postal code not verified.",
@@ -211,7 +211,7 @@ class paymentech {
   function pre_confirmation_check() {
     global $_POST, $messageStack;
 
-	// if the card number has the blanked out middle number fields, it has been processed, show message that 
+	// if the card number has the blanked out middle number fields, it has been processed, show message that
 	// the charges were not processed through the merchant gateway and continue posting payment.
 	if (strpos($_POST['paymentech_field_1'],'*') !== false) throw new \core\classes\userException(MODULE_PAYMENT_PAYMENTECH_NO_DUPS);
 
@@ -245,12 +245,12 @@ class paymentech {
   }
   /**
    * Store the CC info to the order and process any results that come back from the payment gateway
-   *
+   * @throws \core\classes\userException
    */
   function before_process() {
     global $order, $db, $currencies, $messageStack;
 
-	// if the card number has the blanked out middle number fields, it has been processed, the message that 
+	// if the card number has the blanked out middle number fields, it has been processed, the message that
 	// the charges were not processed were set in pre_confirmation_check, just return to continue without processing.
 	if (strpos($_POST['paymentech_field_1'], '*') !== false)  throw new \core\classes\userException(MODULE_PAYMENT_PAYMENTECH_NO_DUPS);
 
@@ -364,16 +364,12 @@ class paymentech {
       curl_setopt ($ch, CURLOPT_PROXY, CURL_PROXY_SERVER_DETAILS);
     }
 
-	$authorize = curl_exec($ch); 
+	$authorize = curl_exec($ch);
 	// Check for curl errors
 	$curlerrornum = curl_errno($ch);
 	$curlerror = curl_error($ch);
 	curl_close ($ch);
-	if ($curlerrornum) { 
-		$messageStack->add('XML Read Error (cURL) #' . $curlerrornum . '. Description = ' . $curlerror,'error');
-		return true;
-	}
-
+	if ($curlerrornum) throw new \core\classes\userException("XML Read Error (cURL) #'$curlerrornum' Description = $curlerror");
 //echo 'response xml = ' . htmlspecialchars($authorize) . '<br><br>';
 
 	// since the response is only one level deep, we can do a simple parse
@@ -409,8 +405,7 @@ class paymentech {
 		}
 	}
 	//gateway test failed
-	$messageStack->add(MODULE_PAYMENT_PAYMENTECH_TEXT_GATEWAY_ERROR, 'error');
-	return true;
+	throw new \core\classes\userException(MODULE_PAYMENT_PAYMENTECH_TEXT_GATEWAY_ERROR);
   }
   /**
    * Post-process activities.
@@ -444,7 +439,7 @@ class paymentech {
 	$db->Execute("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, date_added) values ('Merchant ID (Test Account)', 'MODULE_PAYMENT_PAYMENTECH_MERCHANT_ID_TEST', '', 'Your Paymentech assigned Merchant ID (6 or 12 digit). Leave blank if you do not have a test account. This is only used when in testing mode.', '6', '0', now())");
 	$db->Execute("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, date_added) values ('Merchant ID (USD Account)', 'MODULE_PAYMENT_PAYMENTECH_MERCHANT_ID_USD', '', 'Your Paymentech assigned Merchant ID (6 or 12 digit). Leave blank if you do not have USD account.', '6', '0', now())");
     $db->Execute("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, date_added) values ('Merchant ID (CAD Account)', 'MODULE_PAYMENT_PAYMENTECH_MERCHANT_ID_CAD', '', 'Your Paymentech assigned Merchant ID (6 or 12 digit). Leave blank if you do not have a CAD account.', '6', '0', now())");
-    $db->Execute("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, date_added) values ('Bin Number', 'MODULE_PAYMENT_PAYMENTECH_BIN', '000002', 'Bin Number assigned by Paymentech.', '6', '0', now())"); 
+    $db->Execute("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, date_added) values ('Bin Number', 'MODULE_PAYMENT_PAYMENTECH_BIN', '000002', 'Bin Number assigned by Paymentech.', '6', '0', now())");
     $db->Execute("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, date_added) values ('Terminal ID', 'MODULE_PAYMENT_PAYMENTECH_TERMINAL_ID', '001', 'Most are 001. Only change if instructed by Paymentech', '6', '0', now())");
     $db->Execute("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, set_function, date_added) values ('Authorization Type', 'MODULE_PAYMENT_PAYMENTECH_AUTHORIZATION_TYPE', 'Authorize/Capture', 'Do you want submitted credit card transactions to be authorized only, or authorized and captured?', '6', '0', 'cfg_select_option(array(\'Authorize\', \'Authorize/Capture\'), ', now())");
     $db->Execute("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, set_function, date_added) values ('Request CVV Number', 'MODULE_PAYMENT_PAYMENTECH_USE_CVV', 'True', 'Do you want to ask the customer for the card\'s CVV number', '6', '0', 'cfg_select_option(array(\'True\', \'False\'), ', now())");
@@ -466,16 +461,16 @@ class paymentech {
    */
   function keys() {
     return array(
-	  'MODULE_PAYMENT_PAYMENTECH_STATUS', 
-	  'MODULE_PAYMENT_PAYMENTECH_TESTMODE', 
-	  'MODULE_PAYMENT_PAYMENTECH_MERCHANT_ID_TEST', 
-	  'MODULE_PAYMENT_PAYMENTECH_MERCHANT_ID_USD', 
-	  'MODULE_PAYMENT_PAYMENTECH_MERCHANT_ID_CAD', 
-	  'MODULE_PAYMENT_PAYMENTECH_BIN', 
-	  'MODULE_PAYMENT_PAYMENTECH_TERMINAL_ID', 
-	  'MODULE_PAYMENT_PAYMENTECH_AUTHORIZATION_TYPE', 
-	  'MODULE_PAYMENT_PAYMENTECH_USE_CVV', 
-	  'MODULE_PAYMENT_PAYMENTECH_SORT_ORDER', 
+	  'MODULE_PAYMENT_PAYMENTECH_STATUS',
+	  'MODULE_PAYMENT_PAYMENTECH_TESTMODE',
+	  'MODULE_PAYMENT_PAYMENTECH_MERCHANT_ID_TEST',
+	  'MODULE_PAYMENT_PAYMENTECH_MERCHANT_ID_USD',
+	  'MODULE_PAYMENT_PAYMENTECH_MERCHANT_ID_CAD',
+	  'MODULE_PAYMENT_PAYMENTECH_BIN',
+	  'MODULE_PAYMENT_PAYMENTECH_TERMINAL_ID',
+	  'MODULE_PAYMENT_PAYMENTECH_AUTHORIZATION_TYPE',
+	  'MODULE_PAYMENT_PAYMENTECH_USE_CVV',
+	  'MODULE_PAYMENT_PAYMENTECH_SORT_ORDER',
 	  'MODULE_PAYMENT_PAYMENTECH_CURRENCIES');
   }
 

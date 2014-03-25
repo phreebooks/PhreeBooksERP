@@ -21,8 +21,8 @@
 <div title="<?php echo TEXT_GENERAL;?>" id="general">
   <h2 class="tabset_label"><?php echo TEXT_PHREEPOS_SETTINGS; ?></h2>
   <fieldset class="formAreaTitle">
-	<table align="center">
-	  <tr><th colspan="2"><?php echo MENU_HEADING_CONFIG; ?></th></tr> 
+	<table>
+	  <tr><th colspan="2"><?php echo MENU_HEADING_CONFIG; ?></th></tr>
 	  <tr>
 		<td><?php echo PHREEPOS_REQUIRE_ADDRESS_DESC; ?></td>
 		<td><?php echo html_pull_down_menu('phreepos_require_address', $sel_yes_no, $_POST['phreepos_require_address'] ? $_POST['phreepos_require_address'] : PHREEPOS_REQUIRE_ADDRESS, ''); ?></td>

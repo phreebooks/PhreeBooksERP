@@ -30,7 +30,7 @@ echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
-<table align="center" border="0" cellspacing="0" cellpadding="1">
+<table border="0">
   <tr>
     <td><?php echo SKU_PRICER_SELECT; ?></td>
   </tr>

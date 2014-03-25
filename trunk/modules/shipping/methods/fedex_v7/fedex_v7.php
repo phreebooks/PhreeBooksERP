@@ -1337,7 +1337,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 	}
 
 	function fedExParse($lines) { // csv parse with all fields enclosed in double quotes
-	  if (!$lines) throw new \core\classes\userException("the variable lines isn't set");
+	  if (!$lines) throw new \core\classes\userException(sprintf(ERROR_EMPTY_VARIABLE, "lines");
 	  $title_line = trim(array_shift($lines)); // pull header
 	  if (strlen($title_line) < 10) $title_line = trim(array_shift($lines)); // for blank first line
 	  $title_line = substr($title_line, 1, strlen($title_line) - 2); // strip the starting and ending double quote

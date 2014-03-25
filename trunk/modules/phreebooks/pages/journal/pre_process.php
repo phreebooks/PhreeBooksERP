@@ -50,7 +50,7 @@ switch ($_REQUEST['action']) {
 		$glEntry->store_id            = db_prepare_input($_POST['store_id']);
 		$glEntry->rm_attach           = isset($_POST['rm_attach']) ? true : false;
 		if ($glEntry->store_id == '') $glEntry->store_id = 0;
-	
+
 		// process the request, build main record
 		$x = 1;
 		$total_amount = 0;
@@ -74,7 +74,7 @@ switch ($_REQUEST['action']) {
 			if ($x == 1) $journal_entry_desc = db_prepare_input($_POST['desc_' . $x]);
 			$x++;
 		}
-	
+
 		$glEntry->journal_main_array = array(
 			'id'                  => $glEntry->id,
 			'period'              => $glEntry->period,
@@ -90,7 +90,7 @@ switch ($_REQUEST['action']) {
 			'recur_id'            => $glEntry->recur_id,
 			'store_id'            => $glEntry->store_id,
 		);
-	
+
 		// check for errors and prepare extra values
 		if (!$glEntry->period) throw new \Exception("bad post date was submitted");// bad post_date was submitted
 		// 	no rows entered
@@ -184,7 +184,7 @@ switch ($_REQUEST['action']) {
   	try{
 		\core\classes\user::validate_security($security_level, 4);
 		// check for errors and prepare extra values
-		if (!$glEntry->id) throw new \Exception("the variable id wasn't set");
+		if (!$glEntry->id) throw new \core\classes\userException(sprintf(ERROR_EMPTY_VARIABLE, "id");
 		$delGL = new \core\classes\journal();
 		$delGL->journal($glEntry->id); // load the posted record based on the id submitted
 		$recur_id        = db_prepare_input($_POST['recur_id']);

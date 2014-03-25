@@ -21,15 +21,15 @@
 // 1.0 => 2011-05-26 - Initial Release
 // Module software version information
 // Menu Sort Positions
-// Security id's @todo needs fix for inventory update
+// Security id's
 define('SECURITY_ID_SKU_PRICER', 999);
 // New Database Tables
 // Menu Locations
 if (defined('MODULE_SKU_PRICER_STATUS')) {
   $mainmenu["inventory"]['submenu']['sku_pricer'] = array(
-    'text'        => BOX_SKU_PRICER_TITLE, 
-    'order'       => 159, 
-    'security_id' => SECURITY_ID_SKU_PRICER, 
+    'text'        => BOX_SKU_PRICER_TITLE,
+    'order'       => 159,
+    'security_id' => SECURITY_ID_SKU_PRICER,
     'link'        => html_href_link(FILENAME_DEFAULT, 'module=sku_pricer&amp;page=main', 'SSL'),
     'show_in_users_settings' => true,
     'params'      => '',

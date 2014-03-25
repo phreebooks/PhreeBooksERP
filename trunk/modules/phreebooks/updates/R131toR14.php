@@ -21,7 +21,7 @@
 // This script updates all beta releases to the first production release.
 
 // Release 1.0 to 1.1
-if ($db_release == '1.0') { // go to Release 1.1
+if (version_compair($db_release,'1.0', '==')) { // go to Release 1.1
     // change length of purch_order_id field to 24
 	$db->Execute("alter table " . TABLE_JOURNAL_MAIN . " change `purch_order_id` `purch_order_id` VARCHAR(24) NULL DEFAULT NULL");
 
@@ -45,13 +45,13 @@ if ($db_release == '1.0') { // go to Release 1.1
     // update the database version information
 	update_version_db();
     $db_release = '1.1';
-    if ($code_release == $db_release) return; // end script db is same level as code
+    if (version_compair($db_release, $code_release, '==')) return; // end script db is same level as code
 }
 // End Release 1.0 to 1.1
 
 
 // Release 1.1 to 1.2
-if ($db_release == '1.1') { // go to Release 1.2
+if (version_compair($db_release,'1.1', '==')) { // go to Release 1.2
     // add date field to track actual package arrival
 	$fields = mysql_list_fields(DB_DATABASE, TABLE_SHIPPING_LOG);
 	$columns = mysql_num_fields($fields);
@@ -122,23 +122,23 @@ if ($db_release == '1.1') { // go to Release 1.2
     // update the database version information
 	update_version_db();
 	$db_release = '1.2';
-    if ($code_release == $db_release) return; // end script db is same level as code
+    if (version_compair($db_release, $code_release, '==')) return; // end script db is same level as code
 }
 // End Release 1.1 to 1.2
 
 // Release 1.2 to 1.2.1
-if ($db_release == '1.2') { // go to Release 1.2.1
+if (version_compair($db_release,'1.2', '==')) { // go to Release 1.2.1
 	// there are no database changes in this release
 
     // update the database version information
 	update_version_db();
 	$db_release = '1.2.1';
-    if ($code_release == $db_release) return; // end script db is same level as code
+    if (version_compair($db_release, $code_release, '==')) return; // end script db is same level as code
 }
 // End Release 1.2 to 1.2.1
 
 // Release 1.2.1 to 1.3
-if ($db_release == '1.2.1') { // go to Release 1.3
+if (version_compair($db_release,'1.2.1', '==')) { // go to Release 1.3
 	// reset the configuration variables that were not set properly in R1.2
 	$db->Execute("UPDATE " . TABLE_CONFIGURATION_GROUP . " set configuration_group_id = '20'
 	  where configuration_group_title = 'Website Maintenance'");
@@ -168,12 +168,12 @@ if ($db_release == '1.2.1') { // go to Release 1.3
     // update the database version information
 	update_version_db();
 	$db_release = '1.3';
-    if ($code_release == $db_release) return; // end script db is same level as code
+    if (version_compair($db_release, $code_release, '==')) return; // end script db is same level as code
 }
 // End Release 1.2.1 to 1.3
 
 // Release 1.3 to 1.3.1
-if ($db_release == '1.3') { // go to Release 1.3.1
+if (version_compair($db_release,'1.3', '==')) { // go to Release 1.3.1
 
 	if (!mysql_num_rows(mysql_query("SHOW TABLES LIKE '" . TABLE_ACCOUNTS_NOTES . "'"))) {
 	  $db->Execute("CREATE TABLE " . TABLE_ACCOUNTS_NOTES . " (
@@ -191,7 +191,7 @@ if ($db_release == '1.3') { // go to Release 1.3.1
     // update the database version information
 	update_version_db();
 	$db_release = '1.3.1';
-    if ($code_release == $db_release) return; // end script db is same level as code
+    if (version_compair($db_release, $code_release, '==')) return; // end script db is same level as code
 }
 // end Release 1.3 to 1.3.1
 

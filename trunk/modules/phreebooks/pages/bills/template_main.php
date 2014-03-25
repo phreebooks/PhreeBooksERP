@@ -46,7 +46,7 @@ switch (JOURNAL_ID) {
   case 18: $toolbar->add_help('07.05.02'); break;
   case 20: $toolbar->add_help('07.05.01'); break;
 }
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo constant('ORD_TEXT_' . JOURNAL_ID . '_' . strtoupper($account_type) . '_WINDOW_TITLE'); ?></h1>
@@ -56,7 +56,7 @@ echo $toolbar->build_toolbar();
 	<tr>
 	  <td valign="top">
 <?php
-echo (($account_type == 'c') ? GEN_CUSTOMER_ID : GEN_VENDOR_ID) . ' ' . html_input_field('search', $order->search, 'onfocus="clearField(\'search\', \'' . TEXT_SEARCH . '\')" onblur="setField(\'search\', \'' . TEXT_SEARCH . '\');"'); 
+echo (($account_type == 'c') ? GEN_CUSTOMER_ID : GEN_VENDOR_ID) . ' ' . html_input_field('search', $order->search, 'onfocus="clearField(\'search\', \'' . TEXT_SEARCH . '\')" onblur="setField(\'search\', \'' . TEXT_SEARCH . '\');"');
 echo '&nbsp;' . html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'align="top" style="cursor:pointer" onclick="AccountList()"');
 ?>
 	  </td>
@@ -69,7 +69,7 @@ echo '&nbsp;' . html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'al
 	</tr>
 	<tr>
 	  <td valign="top">
-<?php 
+<?php
 echo JOURNAL_ID == 18 ? TEXT_RECEIVE_FROM : TEXT_PAY_TO;
 echo html_pull_down_menu('bill_to_select', gen_null_pull_down(), '', 'onchange=\'fillAddress("bill")\'') . chr(10);
 echo '<br />' . html_input_field('bill_primary_name', $order->bill_primary_name, 'size="33" maxlength="32" onfocus="clearField(\'bill_primary_name\', \'' . GEN_PRIMARY_NAME . '\')" onblur="setField(\'bill_primary_name\', \'' . GEN_PRIMARY_NAME . '\')"') . chr(10);
@@ -79,7 +79,7 @@ echo '<br />' . html_input_field('bill_address2', $order->bill_address2, 'size="
 echo '<br />' . html_input_field('bill_city_town', $order->bill_city_town, 'size="25" maxlength="24" onfocus="clearField(\'bill_city_town\', \'' . GEN_CITY_TOWN . '\')" onblur="setField(\'bill_city_town\', \'' . GEN_CITY_TOWN . '\')"') . chr(10);
 echo html_input_field('bill_state_province', $order->bill_state_province, 'size="3" maxlength="5" onfocus="clearField(\'bill_state_province\', \'' . GEN_STATE_PROVINCE . '\')" onblur="setField(\'bill_state_province\', \'' . GEN_STATE_PROVINCE . '\')"') . chr(10);
 echo html_input_field('bill_postal_code', $order->bill_postal_code, 'size="11" maxlength="10" onfocus="clearField(\'bill_postal_code\', \'' . GEN_POSTAL_CODE . '\')" onblur="setField(\'bill_postal_code\', \'' . GEN_POSTAL_CODE . '\')"') . chr(10);
-echo '<br />' . html_pull_down_menu('bill_country_code', gen_get_countries(), $order->bill_country_code) . chr(10); 
+echo '<br />' . html_pull_down_menu('bill_country_code', gen_get_countries(), $order->bill_country_code) . chr(10);
 echo '<br />' . html_input_field('bill_email', $order->bill_email, 'size="40" maxlength="64" onfocus="clearField(\'bill_email\', \'' . GEN_EMAIL . '\')" onblur="setField(\'bill_email\', \'' . GEN_EMAIL . '\')"') . chr(10);
 ?>
 	  </td>
@@ -122,7 +122,7 @@ echo '<br />' . html_input_field('bill_email', $order->bill_email, 'size="40" ma
 			  <?php echo (ENABLE_MULTI_CURRENCY) ? ' (' . DEFAULT_CURRENCY . ')' : ''; ?>
 			</td>
 			<td align="right">
-				<?php 
+				<?php
 				echo html_input_field('total', $order->total_amount, 'readonly="readonly" size="15" maxlength="20" style="text-align:right"');
 				?>
 			</td>
@@ -135,25 +135,25 @@ echo '<br />' . html_input_field('bill_email', $order->bill_email, 'size="40" ma
 	    <fieldset>
           <legend><?php echo TEXT_PAYMENT_METHOD; ?></legend>
 		  <div style="position: relative; height: 160px;">
-<?php 
-  echo html_pull_down_menu('shipper_code', gen_build_pull_down($admin_classes['payment']->methods), $order->shipper_code, 'onchange="activateFields()"') . chr(10);
-  $count = 0;
-  foreach ($admin_classes['payment']->methods as $method) {
-	echo '          <div id="pm_' . $count . '" style="visibility:hidden; position:absolute; top:22px; left:1px">' . chr(10);
-	// fetch the html inside of module
-	$disp_fields = $method->selection();
-	for($i = 0; $i < sizeof($disp_fields['fields']); $i++) {
-	  echo $disp_fields['fields'][$i]['title'] . '<br />' . chr(10);
-	  echo $disp_fields['fields'][$i]['field'] . '<br />' . chr(10);
-	}
-	echo '          </div>' . chr(10);
-	$count++;
-  }
+<?php
+  	echo html_pull_down_menu('shipper_code', gen_build_pull_down($admin_classes['payment']->methods), $order->shipper_code, 'onchange="activateFields()"') . chr(10);
+  	$count = 0;
+  	foreach ($admin_classes['payment']->methods as $method) {
+		echo '          <div id="pm_' . $count . '" style="visibility:hidden; position:absolute; top:22px; left:1px">' . chr(10);
+		// fetch the html inside of module
+		$disp_fields = $method->selection();
+		for($i = 0; $i < sizeof($disp_fields['fields']); $i++) {
+	  		echo $disp_fields['fields'][$i]['title'] . '<br />' . chr(10);
+	  		echo $disp_fields['fields'][$i]['field'] . '<br />' . chr(10);
+		}
+		echo '          </div>' . chr(10);
+		$count++;
+  	}
 ?>
 		  </div>
 		</fieldset>
 	  </td>
-<?php 
+<?php
   } elseif (JOURNAL_ID == 20) { ?>
 	  <td align="right" valign="top">
 		<table class="ui-widget" style="border-style:none;width:100%">

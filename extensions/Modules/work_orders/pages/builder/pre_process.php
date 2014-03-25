@@ -163,8 +163,8 @@ switch ($_REQUEST['action']) {
 	$_REQUEST['action'] = 'edit'; // fall through to edit case
   case 'edit':
     $id = db_prepare_input($_POST['rowSeq']);
-	if (!$id) throw new \Exception("the variable 'rowSeq' isn't defined ");
-	$result = $db->Execute("select id, wo_title, sku_id, description, allocate, ref_doc, ref_spec, revision, last_usage 
+	if (!$id) throw new \core\classes\userException(sprintf(ERROR_EMPTY_VARIABLE, 'rowSeq'));
+	$result = $db->Execute("select id, wo_title, sku_id, description, allocate, ref_doc, ref_spec, revision, last_usage
 		from " . TABLE_WO_MAIN . " where id = " . $id);
 	foreach ($result->fields as $key => $value) $$key = $value;
 	$result = $db->Execute("select id, max(revision) as revision from " . TABLE_WO_MAIN . " where wo_title = '" . $wo_title . "' group by wo_title");
@@ -184,7 +184,7 @@ switch ($_REQUEST['action']) {
 	$sku             = $result->fields['sku'];
 	$image_with_path = $result->fields['image_with_path'];
 	// load the steps
-	$result = $db->Execute("select id, ref_id, step, task_id  
+	$result = $db->Execute("select id, ref_id, step, task_id
 	  from " . TABLE_WO_STEPS . " where ref_id = " . $id . " order by step");
 	$step_list = array();
 	while (!$result->EOF) {
@@ -201,7 +201,7 @@ switch ($_REQUEST['action']) {
   case 'delete':
 	\core\classes\user::validate_security($security_level, 4);
       $id = db_prepare_input($_GET['id']);
-	if (!$id) throw new \Exception("the variable 'id' isn't defined ");
+	if (!$id) throw new \core\classes\userException(sprintf(ERROR_EMPTY_VARIABLE, 'id');
 	// error check
 	$result = $db->Execute("select wo_title, last_usage from " . TABLE_WO_MAIN . " where id = " . $id);
 	if ($result->fields['last_usage'] <> '0000-00-00') throw new \Exception(WO_ERROR_CANNOT_DELETE_BUILDER);
@@ -258,16 +258,16 @@ switch ($_REQUEST['action']) {
 	if (!$f0) $criteria[] = "m.inactive = '0'"; // inactive flag
 	// build search filter string
 	$search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
-	$field_list = array('m.id', 'm.inactive', 'm.wo_title', 'i.sku', 'm.sku_id', 'm.description', 'm.revision', 
+	$field_list = array('m.id', 'm.inactive', 'm.wo_title', 'i.sku', 'm.sku_id', 'm.description', 'm.revision',
 	  'm.revision_date');
 	// hook to add new fields to the query return results
 	if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
-    $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " 
+    $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . "
 	  from " . TABLE_WO_MAIN . " m inner join " . TABLE_INVENTORY . " i on m.sku_id = i.id" . $search . " order by $disp_order, m.revision DESC";
     $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     history_save('wo_build');
-    
+
 	// build highest rev level list, reset results
 	$rev_list = array();
 	while (!$query_result->EOF) {

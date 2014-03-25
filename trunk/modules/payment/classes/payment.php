@@ -24,15 +24,15 @@ gen_pull_language('payment');
 class payment {
 	public $id;
   	public $payment_fields;
-  	public $text;  
+  	public $text;
   	public $description;
   	public $open_pos_drawer	= false;
   	public $show_in_pos		= true;
   	public $pos_gl_acct;
   	public $sort_order;
   	public $keys            = array();
-  	public $installed		= false; 
-	 
+  	public $installed		= false;
+
   	public function __construct(){
 	  	$method = get_called_class();
 	  	if($this->id == '')   trigger_error("the id variable for the method $method can not be empty ", E_USER_ERROR);
@@ -57,16 +57,16 @@ class payment {
 		$card_number = substr($card_number, 0, 4) . '********' . substr($card_number, -4);
 		$this->payment_fields = implode(':', array($this->field_0, $card_number, $this->field_2, $this->field_3, $this->field_4, $this->field_5, $this->field_6));
 	  	if (defined('MODULE_PAYMENT_' . strtoupper($this->id) . '_STATUS'))	 $this->installed = true;
-  	} 
-  	
+  	}
+
   	/**
-  	 * this will preform the install functions 
+  	 * this will preform the install functions
   	 */
-  	
+
   	function install(){
   		write_configure('MODULE_PAYMENT_' . strtoupper($this->id) . '_STATUS', '1');
 		foreach ($this->keys as $key) write_configure($key['key'], $key['default']);
-  		
+
   	}
   	/**
 	 * this method is used when you update config settings.
@@ -78,7 +78,7 @@ class payment {
           if (isset($_POST[$field])) write_configure($key['key'], $_POST[$field]);
         }
   	}
- 
+
 	function configure($key) {
 	    switch ($key) {
 	        case 'MODULE_PAYMENT_'.strtoupper($this->id).'_OPEN_POS_DRAWER':
@@ -99,41 +99,41 @@ class payment {
 	                return html_input_field(strtolower($key), constant($key));
 	    }
 	}
- 
-	function selection() {//@todo this could be better
+
+	function selection() {
 	    return array(
 	      'id'   => $this->id,
 	      'page' => $this->text,
 	    );
 	}
-	
+
 	/**
   	 * this function will be called when a module is removed.
-  	 * or when it is removed by in the payment admin page 
+  	 * or when it is removed by in the payment admin page
   	 */
-	
+
 	function delete(){
 		foreach ($this->keys as $key) remove_configure($key['key']); // remove all of the keys from the configuration table
 		remove_configure('MODULE_PAYMENT_' . strtoupper($this->id) . '_STATUS');
 		return true;
 	}
-	 
+
 	function javascript_validation() {
 	    return false;
 	}
-	
+
 	function pre_confirmation_check() {
 	    return false;
 	}
-	
+
 	function before_process() {
 	    return false;
 	}
-	 
+
 	function confirmation() {
 	    return array('title' => $this->description);
 	}
-	 
+
   	function expirationMonths() {
   		$months = array();
   		for ($i = 1; $i < 13; $i++) {

@@ -751,7 +751,7 @@
    </head>
    <body id="content" bgcolor="#FFF380">
    <h1 id="title">QZ Print Plugin</h1><br />
-   <table border="1px" cellpadding="5px" cellspacing="0px"><tr>
+   <table border="1px"><tr>
    
    <td valign="top"><h2>All Printers</h2>
    <input type=button onClick="findPrinter()" value="Detect Printer"><br />
@@ -805,10 +805,10 @@
    <input type=button id="close_port"  onClick="closeSerialPort()" value="Close Port" /><br />
    <hr /><h2>Misc</h2>
    <input type=button onClick="allowMultiple()" value="Allow Multiple Applets" /><br /></td></tr></table>
-   </body><canvas id="hidden_screenshot" style="display:none;" />
-   <br /><br />To view the applet's html source code:<strong> Right Click This Page --> View Source</strong> and look for <strong>&lt;applet&gt &lt;/applet&gt;</strong> code.
-   <br /><br />The applet is invoked with JavaScript through:  <strong>qz.append("RAW DATA");</strong> and <strong>qz.print();</strong>.  For more details, Right Click This Page --> View Source and look for <strong>&lt;script&gt &lt;/script&gt;</strong> code.
+   </body><canvas id="hidden_screenshot" style="display:none;"></canvas><p>
+   <br /><br />To view the applet's html source code:<strong> Right Click This Page  View Source</strong> and look for <strong>&lt;applet&gt; &lt;/applet&gt;</strong> code.
+   <br /><br />The applet is invoked with JavaScript through:  <strong>qz.append("RAW DATA");</strong> and <strong>qz.print();</strong>.  For more details, Right Click This Page -- View Source and look for <strong>&lt;script&gt &lt;/script&gt;</strong> code.
    <br /><br />If the applet loads above, you can view it's output by enabling the Java console through Control Panel.
    <br /><br />To get the latest version, or submit a bug visit: <a href="http://code.google.com/p/jzebra">http://code.google.com/p/jzebra</a><br />
-   <br /><br /><strong>Java Console:</strong> Please copy/paste details from the <a href="http://java.com/en/download/help/javaconsole.xml">java console</a> when submitting a bug report
+   <br /><br /><strong>Java Console:</strong> Please copy/paste details from the <a href="http://java.com/en/download/help/javaconsole.xml">java console</a> when submitting a bug report</p>
 </html>

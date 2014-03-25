@@ -347,6 +347,7 @@ define('TEXT_NO_DATA','The table does not contain any rows!');
 define('LOAD_CONFIG_ERROR','There was an error returned while retrieving the configuration data.<br />PhreeBooks was able to connect to the database but could not find the configuration table. Looks like the table is missing! Options include deleting /includes/configure.php and re-installing (for new installations) or restoring the database tables (database crash).');
 define('SAFE_MODE_ERROR','Operating in Safe Mode. PhreeBooks will not operate properly if PHP is set to Safe Mode!)');
 define('GEN_ERRMSG_NO_DATA','A required field has been left blank. Field: ');
+define('ERROR_EMPTY_VARIABLE','Field %s is required but has been left blank.');
 define('ERROR_MSG_ACCT_PERIOD_CHANGE','The Accounting Period has been automatically changed to: %s');
 define('ERROR_MSG_BAD_POST_DATE','Caution! The post date falls outside of the current accounting period!');
 define('ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR','The post date specified is not within any of the currently defined fiscal years. Either change the post date or add the necessary fiscal year.');

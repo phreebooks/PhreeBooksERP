@@ -1,4 +1,4 @@
-<?php 
+<?php
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
@@ -16,7 +16,7 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/shipping/config_phreeform.php
-// 
+//
 
 $FormProcessing['ship_name'] = PB_PF_SHIP_METHOD;
 // Extra form processing operations
@@ -28,13 +28,11 @@ function pf_process_shipping($strData, $Process) {
   return $strData; // No Process recognized, return original value
 }
 
-function shipping_get_name($id) {//@todo what is send here and what should it return.
-  if (!$id) return '';
-  $parts = explode(':', $id);
-  if (!$parts[0]) return '';
-  $admin_classes['shipping']->methods[$parts[0]];
-//echo 'id = ' . $id . ' and method = ' . constant($parts[0] . '_' . $parts[1]) . '<br>';
-  return defined($parts[0] . '_' . $parts[1]) ? constant($parts[0] . '_' . $parts[1]) : $id;
+function shipping_get_name($id) {
+  	if (!$id) return '';
+  	$parts = explode(':', $id);
+  	if (!$parts[0]) return '';
+  	return defined($parts[0] . '_' . $parts[1]) ? constant($parts[0] . '_' . $parts[1]) : $id;
 }
 
 ?>

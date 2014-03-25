@@ -38,9 +38,9 @@ gen_pull_language('shipping');
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_MODULES . 'inventory/defaults.php');
 require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
-if (defined('MODULE_SHIPPING_STATUS')) { 
+if (defined('MODULE_SHIPPING_STATUS')) {
   require_once(DIR_FS_MODULES . 'shipping/functions/shipping.php');
-  require_once(DIR_FS_MODULES . 'shipping/defaults.php'); 
+  require_once(DIR_FS_MODULES . 'shipping/defaults.php');
 }
 /**************   page specific initialization  *************************/
 switch (JOURNAL_ID) {
@@ -256,9 +256,9 @@ switch ($_REQUEST['action']) {
 		    continue; // skip item line
 		  }
 		  // Error check some input fields
-		  //if ($_POST['pstd_' . $x] == "") throw new \Exception(GEN_ERRMSG_NO_DATA . "Qty");	  
-		  if ($_POST['acct_' . $x] == "") throw new \Exception(GEN_ERRMSG_NO_DATA . TEXT_GL_ACCOUNT);
-		  //if ($_POST['price_' . $x] == "") throw new \Exception(GEN_ERRMSG_NO_DATA . "Price"); //need to fix bugs.
+		  //if ($_POST['pstd_' . $x] == "") throw new \core\classes\userException(sprintf(ERROR_EMPTY_VARIABLE, "Qty"));
+		  if ($_POST['acct_' . $x] == "") throw new \core\classes\userException(sprintf(ERROR_EMPTY_VARIABLE, TEXT_GL_ACCOUNT));
+		  //if ($_POST['price_' . $x] == "") throw new \core\classes\userException(sprintf(ERROR_EMPTY_VARIABLE, "Price")); //need to fix bugs.
 		  $order->item_rows[] = array(
 			'id'                		=> db_prepare_input($_POST['id_' . $x]),
 			'so_po_item_ref_id' 		=> db_prepare_input($_POST['so_po_item_ref_id_' . $x]),
@@ -324,15 +324,15 @@ switch ($_REQUEST['action']) {
 				default: $jID = 0; // error
 			}
 			gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=bills&amp;jID=' . $jID . '&amp;type=' . $account_type . '&amp;oID=' . $order->id . '&amp;action=pmt', 'SSL'));
-		} 		
+		}
   	}catch(Exception $e){
   		$messageStack->add($e->getMessage());
   		$order->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);	// reset order num to submitted value (may have been set if payment failed)
 		$order->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
   	}
 	if ($_REQUEST['action'] == 'post_previous') {
-		$result = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " 
-		  where journal_id = '12' and purchase_invoice_id < '" . $order->purchase_invoice_id . "' 
+		$result = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . "
+		  where journal_id = '12' and purchase_invoice_id < '" . $order->purchase_invoice_id . "'
 		  order by purchase_invoice_id DESC limit 1");
 		if ($result->RecordCount() > 0) {
 			$oID    = $result->fields['id'];
@@ -343,8 +343,8 @@ switch ($_REQUEST['action']) {
 		}
 	}
 	if ($_REQUEST['action'] == 'post_next') {
-		$result = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " 
-		  where journal_id = '12' and purchase_invoice_id > '" . $order->purchase_invoice_id . "' 
+		$result = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . "
+		  where journal_id = '12' and purchase_invoice_id > '" . $order->purchase_invoice_id . "'
 		  order by purchase_invoice_id limit 1");
 		if ($result->RecordCount() > 0) {
 		    $oID    = $result->fields['id'];
@@ -362,12 +362,13 @@ switch ($_REQUEST['action']) {
 		\core\classes\user::validate_security($security_level, 4);
 	  	$id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
 		if (!$id) throw new \Exception(GL_ERROR_NO_DELETE);
-		$delOrd = new \phreebooks\classes\orders();
+		$db->transStart();
+		$delOrd = new \phreebooks\classes\orders($id);
 		$delOrd->journal($id); // load the posted record based on the id submitted
-		if ($_SESSION['admin_prefs']['restrict_period'] && $delOrd->period <> CURRENT_ACCOUNTING_PERIOD) throw new \Exception(ORD_ERROR_DEL_NOT_CUR_PERIOD);
 		$delOrd->recur_frequency = db_prepare_input($_POST['recur_frequency']);
-		$delOrd->delete_ordr();
+		$delOrd->unPost('delete');
 		if (DEBUG) $messageStack->write_debug();
+		$db->transCommit();
 		gen_add_audit_log(constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE') . ' - Delete', $delOrd->purchase_invoice_id, $delOrd->total_amount);
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
   	}catch(Exception $e){
@@ -384,7 +385,7 @@ switch ($_REQUEST['action']) {
 	if (!$oID) {
 		$_REQUEST['action'] = '';
 	  throw new \Exception('Bad order ID passed to edit order.'); // this should never happen
-	  
+
 	}
 	break;
   case 'dn_attach':
@@ -456,7 +457,7 @@ switch(JOURNAL_ID) {
 	$template_options['terminal_date'] = true;
 	$template_options['terms'] = true;
 	$template_options['closed'] = array(
-	  'title' => TEXT_CLOSE, 
+	  'title' => TEXT_CLOSE,
 	  'field' => html_checkbox_field('closed', '1', ($order->closed) ? true : false, '', ''));
 	break;
   case  6:
@@ -476,14 +477,14 @@ switch(JOURNAL_ID) {
   case  9:
   case 10:
 	$template_options['closed'] = array(
-	  'title' => TEXT_CLOSE, 
+	  'title' => TEXT_CLOSE,
 	  'field' => html_checkbox_field('closed', '1', ($order->closed) ? true : false, '', ''));
   case 12:
 	$req_date = date(DATE_FORMAT);
 	$template_options['terminal_date'] = true;
 	$template_options['terms'] = true;
 	break;
-  case 13: 
+  case 13:
 	$req_date = date(DATE_FORMAT);
 	break;
 default:

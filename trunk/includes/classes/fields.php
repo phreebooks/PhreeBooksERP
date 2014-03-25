@@ -23,12 +23,12 @@ class fields {
 	public  $module         = '';
 	public  $db_table       = '';
 	public  $type_desc      = '';
-	public  $type_array     = array(); 
+	public  $type_array     = array();
     public  $type_params    = '';
     public  $extra_buttons  = '';
-	public  $extra_tab_html = ''; 
-    
-  public function __construct($sync = true){ 
+	public  $extra_tab_html = '';
+
+  public function __construct($sync = true){
   	$this->security_id = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 	require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
   	foreach ($_REQUEST as $key => $value) $this->$key = $value;
@@ -39,8 +39,8 @@ class fields {
   function btn_save($id = '') {
   	global $db, $currencies;
   	\core\classes\user::validate_security($this->security_id, 2); // security check
-    // clean out all non-allowed values and then check if we have a empty string 
-	$this->field_name   = preg_replace("[^A-Za-z0-9_]", "", $this->field_name); 
+    // clean out all non-allowed values and then check if we have a empty string
+	$this->field_name   = preg_replace("[^A-Za-z0-9_]", "", $this->field_name);
 	if ($this->field_name == '') throw new \Exception(EXTRA_ERROR_FIELD_BLANK);
 	// check if the field name belongs to one of the mysql reserved names
 	$reserved_names = array('select', 'delete', 'insert', 'update', 'to', 'from', 'where', 'and', 'or',
@@ -69,7 +69,7 @@ class fields {
 		if ($params['length'] < 256) {
 			$values['entry_type'] = 'varchar(' . $params['length'] . ')';
 			$values['entry_params'] = " default '" . $params['default'] . "'";
-		} elseif ($_POST['TextLength'] < 65536) { 
+		} elseif ($_POST['TextLength'] < 65536) {
 			$values['entry_type'] = 'text';
 		} elseif ($_POST['TextLength'] < 16777216) {
 			$values['entry_type'] = 'mediumtext';
@@ -101,16 +101,16 @@ class fields {
 		$params['display'] = db_prepare_input($_POST['decimal_display']);
 		$params['default'] = $currencies->clean_value(db_prepare_input($_POST['decimal_default']));
 		switch ($params['select']) {
-			case "0": 
-				$values['entry_type'] = 'float(' . $params['display'] . ')'; 
+			case "0":
+				$values['entry_type'] = 'float(' . $params['display'] . ')';
                 break;
             case "1":
             	$values['entry_type'] = 'double';
                 break;
-            case "2": 
+            case "2":
             	$values['entry_type'] = 'decimal(' . $params['display'] .')';
                 break;
-            
+
 		}
 		$values['entry_params'] = " default '" . $params['default'] . "'";
 		break;
@@ -126,10 +126,10 @@ class fields {
 		}
 		$values['entry_type'] = 'char(' . $max_choice_size . ')';
 		break;
-	  case 'multi_check_box':	
+	  case 'multi_check_box':
 		$params['default']    = db_prepare_input($_POST['radio_default']);
 		$values['entry_type'] = 'text';
-		break;	
+		break;
 	  case 'date':
 		$values['entry_type'] = 'date';
 		break;
@@ -161,13 +161,13 @@ class fields {
 	  $sql_data_array['field_name']  = $this->field_name;
 	  $sql_data_array['tab_id']      = $this->tab_id;
 	}
-	
+
 	if (!$this->id == 0) {
 	  // load old field name as it may have been changed.
 	  if ($this->tab_id <> '') {
 		  $result = $db->Execute("select field_name from " . TABLE_EXTRA_FIELDS . " where id = " . $this->id );
 		  if (isset($values['entry_type']) || $this->field_name <> $result->fields['field_name']) {
-			$sql = "alter table " . $this->db_table . " change " . $result->fields['field_name'] . " " . $this->field_name . " 
+			$sql = "alter table " . $this->db_table . " change " . $result->fields['field_name'] . " " . $this->field_name . "
 			  " . $values['entry_type'] . (isset($values['entry_params']) ? $values['entry_params'] : '');
 			$result = $db->Execute($sql);
 		  }
@@ -175,7 +175,7 @@ class fields {
 	  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array, 'update', "id = " . $this->id );
 	  gen_add_audit_log($this->module .' '. sprintf(EXTRA_FIELDS_LOG , TEXT_UPDATE), $this->id  . ' - ' . $this->field_name);
 	} else {
-	  $sql = "alter table " . $this->db_table . " 
+	  $sql = "alter table " . $this->db_table . "
 		add column " . $this->field_name . " " . $values['entry_type'] . (isset($values['entry_params']) ? $values['entry_params'] : '');
 	  $db->Execute($sql);
 	  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array, 'insert');
@@ -216,7 +216,7 @@ class fields {
 	  $content['tbody'][$rowCnt] = array(
 	    array('value' => htmlspecialchars($result->fields['description']),
 			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'fields_edit\',\''.$result->fields['id'].'\')"'),
-		array('value' => $result->fields['field_name'], 
+		array('value' => $result->fields['field_name'],
 			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'fields_edit\',\''.$result->fields['id'].'\')"'),
 		array('value' => $tab_array[$result->fields['tab_id']],
 			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'fields_edit\',\''.$result->fields['id'].'\')"'),
@@ -310,8 +310,8 @@ class fields {
 	$output .= '	<td>' . TEXT_REQUIRED . '</td>' . chr(10);
 	$output .= '	<td>' . html_checkbox_field('required' , true , false,'', '') . '</td>' . chr(10);
 	$output .= '  </tr>' . chr(10);
-	
-	
+
+
 	if (is_array($this->type_array)){
 		$output .= '  <tr>' . chr(10);
 		$output .= '	<td>' . $this->type_desc . '</td>' . chr(10);
@@ -376,11 +376,11 @@ class fields {
 	$output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
 	$output .= '	<td>';
-	$output .= html_radio_field('entry_type', 'multi_check_box', ($this->entry_type=='multi_check_box' ? true : false),'', $disabled) . '&nbsp;' . INV_LABEL_MULTI_SELECT_FIELD . '<br />';	
+	$output .= html_radio_field('entry_type', 'multi_check_box', ($this->entry_type=='multi_check_box' ? true : false),'', $disabled) . '&nbsp;' . INV_LABEL_MULTI_SELECT_FIELD . '<br />';
 	$output .= html_radio_field('entry_type', 'drop_down', ($this->entry_type=='drop_down' ? true : false),'', $disabled)             . '&nbsp;' . INV_LABEL_DROP_DOWN_FIELD . '<br />';
 	$output .= html_radio_field('entry_type', 'radio',     ($this->entry_type=='radio'     ? true : false),'', $disabled)             . '&nbsp;' . INV_LABEL_RADIO_FIELD;
 	$output .= '	</td>' . chr(10);
-	$output .= '	<td>' . INV_LABEL_CHOICES . '<br />' . html_textarea_field('radio_default', 35, 6, $this->radio_default, $readonly) . '<br />'; 
+	$output .= '	<td>' . INV_LABEL_CHOICES . '<br />' . html_textarea_field('radio_default', 35, 6, $this->radio_default, $readonly) . '<br />';
 	$output .= INV_LABEL_RADIO_EXPLANATION . '</td>' . chr(10);
 	$output .= '  </tr>' . chr(10);
 	$output .= '  <tr class="ui-widget-content">' . chr(10);
@@ -389,9 +389,9 @@ class fields {
 	$output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
 	$output .= '   <td>';
-	$output .= html_radio_field('entry_type', 'date',       ($this->entry_type=='date'       ? true : false), '', $disabled) . '&nbsp;' . TEXT_DATE . '<br />';  
-	$output .= html_radio_field('entry_type', 'time',       ($this->entry_type=='time'       ? true : false), '', $disabled) . '&nbsp;' . TEXT_TIME . '<br />';  
-	$output .= html_radio_field('entry_type', 'date_time',  ($this->entry_type=='date_time'  ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_DATE_TIME_FIELD . '<br />';  
+	$output .= html_radio_field('entry_type', 'date',       ($this->entry_type=='date'       ? true : false), '', $disabled) . '&nbsp;' . TEXT_DATE . '<br />';
+	$output .= html_radio_field('entry_type', 'time',       ($this->entry_type=='time'       ? true : false), '', $disabled) . '&nbsp;' . TEXT_TIME . '<br />';
+	$output .= html_radio_field('entry_type', 'date_time',  ($this->entry_type=='date_time'  ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_DATE_TIME_FIELD . '<br />';
 	$output .= html_radio_field('entry_type', 'time_stamp', ($this->entry_type=='time_stamp' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_TIME_STAMP_FIELD ;
 	$output .= '   </td>' . chr(10);
 	$output .= '	<td>' . INV_LABEL_TIME_STAMP_VALUE . '</td>' . chr(10);
@@ -400,11 +400,11 @@ class fields {
 	$output .= '</table>' . chr(10);
     return $output;
   }
-  
+
   /*
    * returns a array to the caller with the info what to store in the table contact / inventory
    */
-  
+
   public function what_to_save(){
   	global $db, $currencies;
   	$sql_data_array = array();
@@ -422,12 +422,12 @@ class fields {
                 if(isset($_POST[$field_name.$values[0]])){
                     $temp.= $_POST[$field_name.$values[0]].',';
             }}
-            if ($xtra_db_fields->fields['required'] == '1' && $temp == '') throw new \core\classes\userException("Required field {$xtra_db_fields->fields['field_name']} is empty")
+            if ($xtra_db_fields->fields['required'] == '1' && $temp == '') throw new \core\classes\userException(sprintf(ERROR_EMPTY_VARIABLE, $xtra_db_fields->fields['field_name']));
             $sql_data_array[$field_name] = $temp;
         }elseif (!isset($_POST[$field_name]) && $xtra_db_fields->fields['entry_type'] == 'check_box') {
             $sql_data_array[$field_name] = '0'; // special case for unchecked check boxes
         }elseif (isset($_POST[$field_name]) && $field_name <> 'id') {
-        	if (db_prepare_input($_POST[$field_name], $xtra_db_fields->fields['required']) == false) throw new \core\classes\userException("Required field {$xtra_db_fields->fields['field_name']} is empty")
+        	if (db_prepare_input($_POST[$field_name], $xtra_db_fields->fields['required']) == false) throw new \core\classes\userException(sprintf(ERROR_EMPTY_VARIABLE, $xtra_db_fields->fields['field_name']));
             $sql_data_array[$field_name] = db_prepare_input($_POST[$field_name]);
         }
         if ($xtra_db_fields->fields['entry_type'] == 'date_time') {
@@ -440,7 +440,7 @@ class fields {
     }
     return $sql_data_array;
   }
-  
+
   public function set_fields_to_display($type = null){
   	global $db, $cInfo;
   	$tab_array = array();
@@ -473,15 +473,15 @@ class fields {
 		$result->MoveNext();
 	}
 	$this->extra_tab_html .= '  </table>';
-	$this->extra_tab_html .= '</div>' . chr(10); 
+	$this->extra_tab_html .= '</div>' . chr(10);
   }
-  
+
   	/**
    	 * this function returns the fields that shouldn't be displayed for that type.
-	 * allowing us to remove the field for objects. 
+	 * allowing us to remove the field for objects.
 	 * @param string $type
 	 */
-  
+
 	public function unwanted_fields($type = null){
 	  	global $db;
 	  	$values = array();
@@ -495,7 +495,7 @@ class fields {
 		}
 		return $values;
 	}
-  
+
   	function get_tabs($module = '') {
     	global $db;
     	$tab_array = array(0 => TEXT_SYSTEM);
@@ -507,13 +507,13 @@ class fields {
     	}
     	return $tab_array;
   	}
-  
+
   	/**
-   	 * 
+   	 *
    	 * this will return the html output for a field.
    	 * @param string $param_array
    	 * @param object $cInfo
-   	 */  
+   	 */
   	function build_field($param_array, $cInfo) {
 		$output = '<tr><td>' . $param_array['description'] . '</td>';
 		$params = unserialize($param_array['params']);
@@ -563,7 +563,7 @@ class fields {
 				}
 				$output .= '</td></tr>';
 				break;
-			case 'multi_check_box':	
+			case 'multi_check_box':
 				$output  .= '<td>';
 				$output  .= '<table frame="border"><tr>';
 				$choices  = explode(',',$params['default']);
@@ -583,7 +583,7 @@ class fields {
 				}
 				$output .= '</tr></table>';
 				$output .= '</td></tr>';
-				break;	
+				break;
 			case 'check_box':
 				$output .= '<td>' . html_checkbox_field($param_array['field_name'], '1', ($cInfo->$param_array['field_name']==1) ? true : false) . '</td></tr>';
 				break;
@@ -593,6 +593,6 @@ class fields {
 		}
 		return $output;
   	}
-  
+
 }
 ?>

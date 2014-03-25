@@ -93,7 +93,7 @@ var ItemIsOutOfStockAndInactive  = '<?php echo ITEM_IS_OUT_OF_STOCK_AND_INACTIVE
 var SalesOrderForItem	 = '<?php echo THERE_IS_SALES_ORDER_FOR_THIS_ITEM; ?>';
 var ItemIsOnOrder		 = '<?php echo ITEM_IS_ON_ORDER; ?>';
 var ItemMustBeOrderd	 = '<?php echo ITEM_MUST_BE_ORDERD; ?>';
-<?php 
+<?php
 echo js_calendar_init($cal_order);
 if ($template_options['terminal_date']) echo js_calendar_init($cal_terminal);
 ?>
@@ -109,58 +109,58 @@ if ($template_options['terminal_date']) echo js_calendar_init($cal_terminal);
 <?php echo $js_shipping_options; //@todo this doesn't work anymore?>
 
 function init() {
-  document.getElementById('ship_to_select').style.visibility = 'hidden';
-  document.getElementById('bill_to_select').style.visibility = 'hidden';
-  document.getElementById('ship_to_search').innerHTML = '&nbsp;'; // turn off ship to id search
-<?php 
-  if ($error && isset($order->shipper_code)) { //@todo
-    $values = explode(':', $order->shipper_code);
-    echo '  document.getElementById("ship_carrier").value = "' . $values[0] . '";' . chr(10);
-    echo '  buildFreightDropdown();' . chr(10);
-    echo '  document.getElementById("ship_service").value = "' . $values[1] . '";' . chr(10);
-  } else {
-    echo '  buildFreightDropdown();' . chr(10);
-  }
+  	document.getElementById('ship_to_select').style.visibility = 'hidden';
+  	document.getElementById('bill_to_select').style.visibility = 'hidden';
+  	document.getElementById('ship_to_search').innerHTML = '&nbsp;'; // turn off ship to id search
+<?php
+  	if ($error && isset($order->shipper_code)) { //@todo
+    	$values = explode(':', $order->shipper_code);
+    	echo "  document.getElementById('ship_carrier').value = '{$values[0]}';" . chr(10);
+    	echo "  buildFreightDropdown();" . chr(10);
+    	echo "  document.getElementById('ship_service').value = '{$values[1]}';" . chr(10);
+  	} else {
+    	echo "  buildFreightDropdown();" . chr(10);
+  	}
 ?>
-  setField('sku_1',text_search);
-  // change color of the bill and ship address fields if they are the default values
-  var add_id;
-  for (var i=0; i<add_array.length; i++) {
-	add_id = add_array[i];
-	if (document.getElementById('bill_'+add_id).value == '') {
-	  document.getElementById('bill_'+add_id).value = default_array[i];
-	}
-	if (document.getElementById('bill_'+add_id).value == default_array[i]) {
-	  if (add_id != 'country_code') document.getElementById('bill_'+add_id).style.color = inactive_text_color;
-	}
-	if (document.getElementById('ship_'+add_id).value == default_array[i]) {
-	  if (add_id != 'country_code') document.getElementById('ship_'+add_id).style.color = inactive_text_color;
-	}
-  }
+  	setField('sku_1',text_search);
+  	// change color of the bill and ship address fields if they are the default values
+  	var add_id;
+  	for (var i=0; i<add_array.length; i++) {
+		add_id = add_array[i];
+		if (document.getElementById('bill_'+add_id).value == '') {
+	  		document.getElementById('bill_'+add_id).value = default_array[i];
+		}
+		if (document.getElementById('bill_'+add_id).value == default_array[i]) {
+	  		if (add_id != 'country_code') document.getElementById('bill_'+add_id).style.color = inactive_text_color;
+		}
+		if (document.getElementById('ship_'+add_id).value == default_array[i]) {
+	  		if (add_id != 'country_code') document.getElementById('ship_'+add_id).style.color = inactive_text_color;
+		}
+  	}
 
-  document.orders.elements['search'].focus();
+  	document.orders.elements['search'].focus();
 
-<?php 
-  if (!$error) echo 'DropShipView(document.orders);' . "\n"; //@todo
-  if (!$error && $_REQUEST['action'] == 'print') {//@todo
-    echo '  force_clear = true;' . "\n";
-	echo '  ClearForm();' . "\n";
-	echo '  var printWin = window.open("index.php?module=phreeform&page=popup_gen&gID=' . POPUP_FORM_TYPE . '&date=a&xfld=journal_main.id&xcr=EQUAL&xmin=' . $order->id . '","popup_gen","width=700px,height=550px,resizable=1,scrollbars=1,top=150px,left=200px");' . "\n";
-    echo '  printWin.focus();' . "\n";
-  }
-  if (!$error && $_REQUEST['action'] == 'email') {//@todo
-    echo '  force_clear = true;' . "\n";
-	echo '  ClearForm();' . "\n";
-	echo '  var printWin = window.open("index.php?module=phreebooks&page=popup_email&oID=' . $order->id . '","forms","width=500px,height=350px,resizable=1,scrollbars=1,top=150px,left=200px");' . "\n";
-    echo '  printWin.focus()' . "\n";
-  }
-  if ($_REQUEST['action'] == 'edit')   echo '  ajaxOrderData(0, ' . $oID . ', ' . JOURNAL_ID . ', false, false);' . "\n";
-  if ($_REQUEST['action'] == 'prc_so') echo '  ajaxOrderData(0, ' . $oID . ', ' . JOURNAL_ID . ', true, false);' . "\n";
-  if (ORD_ENABLE_LINE_ITEM_BAR_CODE) echo 'refreshOrderClock();'; 
+<?php
+  	if (!$error) echo 'DropShipView(document.orders);' . "\n"; //@todo
+  	if (!$error && $_REQUEST['action'] == 'print') {//@todo
+    	echo '  force_clear = true;' . "\n";
+		echo '  ClearForm();' . "\n";
+		echo '  var printWin = window.open("index.php?module=phreeform&page=popup_gen&gID=' . POPUP_FORM_TYPE . '&date=a&xfld=journal_main.id&xcr=EQUAL&xmin=' . $order->id . '","popup_gen","width=700px,height=550px,resizable=1,scrollbars=1,top=150px,left=200px");' . "\n";
+    	echo '  printWin.focus();' . "\n";
+  	}
+  	if (!$error && $_REQUEST['action'] == 'email') {//@todo
+    	echo '  force_clear = true;' . "\n";
+		echo '  ClearForm();' . "\n";
+		echo '  var printWin = window.open("index.php?module=phreebooks&page=popup_email&oID=' . $order->id . '","forms","width=500px,height=350px,resizable=1,scrollbars=1,top=150px,left=200px");' . "\n";
+    	echo '  printWin.focus()' . "\n";
+  	}
+  	if ($_REQUEST['action'] == 'edit')   echo '  ajaxOrderData(0, ' . $oID . ', ' . JOURNAL_ID . ', false, false);' . "\n";
+  	if ($_REQUEST['action'] == 'prc_so') echo '  ajaxOrderData(0, ' . $oID . ', ' . JOURNAL_ID . ', true, false);' . "\n";
+  	if (ORD_ENABLE_LINE_ITEM_BAR_CODE) echo 'refreshOrderClock();';
 ?>
-  $("#search").change(function(){
-	if(document.getElementById('search').value != ''){ AccountList(); }
-  });
+  	$("#search").change(function(){
+		if(document.getElementById('search').value != ''){ AccountList(); }
+  	});
 }
 
 function check_form() {
@@ -188,7 +188,7 @@ function check_form() {
 	  document.getElementById('recur_frequency').value = '1';
 	} else {
 	  document.getElementById('recur_frequency').value = '0';
-	}		    
+	}
   }
 
   switch (journalID) {

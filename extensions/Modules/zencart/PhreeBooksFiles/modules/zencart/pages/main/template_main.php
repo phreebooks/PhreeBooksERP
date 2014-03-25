@@ -31,10 +31,10 @@ $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 
 //$toolbar->add_help('');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 ?>
 <h1><?php echo BOX_ZENCART_MODULE; ?></h1>
-  <table align="center" width="600" border="0" cellspacing="0" cellpadding="1">
+  <table width="600" border="0">
 	<tr><td colspan="2" align="right"><img src="<?php echo DIR_WS_ADMIN . 'modules/zencart/images/zen-cart-logo.png'; ?>" alt="ZenCart Logo" /></td></tr>
     <tr><th colspan="2"><?php echo ZENCART_BULK_UPLOAD_TITLE; ?></th></tr>
     <tr><td colspan="2"><?php echo ZENCART_BULK_UPLOAD_INFO; ?></td></tr>

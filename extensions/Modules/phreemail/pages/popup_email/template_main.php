@@ -48,23 +48,23 @@ echo $toolbar->build_toolbar();
 <!--possible senders-->
 <datalist id="senderlist">
 	<?php foreach($senderlist as $key => $value ) echo "<option value='$value'>";?>
-</datalist> 
+</datalist>
 <datalist id="sendermaillist">
 	<?php foreach($sendermaillist as $key => $value ) echo "<option value='$value'>";?>
-</datalist> 
+</datalist>
 <!--possible receivers-->
 <datalist id="receiverlist">
 	<?php foreach($receiverlist as $key => $value ) echo "<option value='$value'>";?>
 	<?php foreach($senderlist as $key => $value ) echo "<option value='$value'>";?>
-</datalist> 
+</datalist>
 <datalist id="receivermaillist">
 	<?php foreach($receivermaillist as $key => $value ) echo "<option value='$value'>";?>
 	<?php foreach($sendermaillist as $key => $value ) echo "<option value='$value'>";?>
-</datalist> 
-<table align="center" border="0" cellspacing="0" cellpadding="1">
+</datalist>
+<table border="0">
   <tr>
 	<td align="right"><?php echo TEXT_SENDER_NAME; ?></td>
-	<td><?php echo html_input_field('sender_name', $sender_name,'list="senderlist"') . ' ' . TEXT_EMAIL . html_input_field('sender_email', $sender_email, 'size="40" list="sendermaillist"'); ?></td>	
+	<td><?php echo html_input_field('sender_name', $sender_name,'list="senderlist"') . ' ' . TEXT_EMAIL . html_input_field('sender_email', $sender_email, 'size="40" list="sendermaillist"'); ?></td>
   </tr>
   <tr>
 	<td align="right"><?php echo TEXT_RECEPIENT_NAME; ?></td>

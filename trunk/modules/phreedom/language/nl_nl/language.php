@@ -328,6 +328,7 @@ define('TEXT_NO_DATA','De tabel bevat geen regels!');
 define('LOAD_CONFIG_ERROR','Er was een fout tijdens het ontvangen van de configuratie data.<br />PhreeBooks was in staat om verbinding te maken met de database maar kon de configuratie tabel. Het lijkt er op dat de tabel mist! Opties inclusief verwijderen /includes/configure.php en re-installeren (voor nieuwe installaties) of herstellen van database tabellen (database crash).');
 define('SAFE_MODE_ERROR','Draait in Safe Mode. PhreeBooks zal niet goed werken als PHP is ingesteld op Safe Mode = true!)');
 define('GEN_ERRMSG_NO_DATA','Een vereist veld is niet ingevuld. Veld: ');
+define('ERROR_EMPTY_VARIABLE','Veld %s is vereist maar is niet ingevuld.');
 define('ERROR_MSG_ACCT_PERIOD_CHANGE','De Boekhoud Periode is Automatisch veranderd naar: %s');
 define('ERROR_MSG_BAD_POST_DATE','Voorzichtig! De boekdatum valt buiten de huidige Boekhoud periode!');
 define('ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR','De datum valt niet in binnen de beschikbare jaren. Of verander de boekdatum of voeg het jaar toe.');

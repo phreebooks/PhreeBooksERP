@@ -38,17 +38,16 @@ if (count($extra_toolbar_buttons) > 0) {
 
 // add the help file index and build the toolbar
 $toolbar->add_help('09.01');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 
 // Build the page
 ?>
 <h1><?php echo MODULE_SHIPPING_UPS_TEXT_TITLE; ?></h1>
-<table border="0" cellspacing="0" cellpadding="2">
+<table border="0">
 <tr><td width="50%" valign="top">
-<div>
 <fieldset id="recp">
 <legend><?php echo SRV_SHIP_UPS_RECP_INFO; ?></legend>
-<table border="0" cellspacing="0" cellpadding="2">
+<table border="0">
 	<tr>
 		<td class="dataTableContent"><?php echo GEN_PRIMARY_NAME; ?></td>
 		<td class="dataTableContent"><?php echo html_input_field('ship_primary_name', $sInfo->ship_primary_name, 'size="33" maxlength="32"', true); ?></td>
@@ -87,11 +86,9 @@ echo $toolbar->build_toolbar();
 	</tr>
 </table>
 </fieldset>
-</div>
-<div>
 <fieldset>
 <legend><?php echo SRV_SHIP_UPS_EMAIL_NOTIFY; ?></legend>
-<table border="0" cellspacing="0" cellpadding="2">
+<table border="0">
 	<tr>
 		<td class="dataTableContent"><?php echo SHIPPING_EMAIL_RECIPIENT; ?></td>
 		<td class="dataTableContent">
@@ -118,11 +115,9 @@ echo $toolbar->build_toolbar();
 	</tr>
 </table>
 </fieldset>
-</div>
-<div>
 <fieldset>
 <legend><?php echo SRV_SHIP_UPS_BILL_DETAIL; ?></legend>
-<table border="0" cellspacing="0" cellpadding="2">
+<table border="0">
 	<tr>
 		<td class="dataTableContent"><?php echo SHIPPING_BILL_CHARGES_TO; ?></td>
 		<td class="dataTableContent"><?php echo html_pull_down_menu('bill_charges', gen_build_pull_down($shipping_defaults['bill_options']), $sInfo->bill_charges); ?></td>
@@ -137,12 +132,10 @@ echo $toolbar->build_toolbar();
 	</tr>
 </table>
 </fieldset>
-</div>
 </td><td width="50%" valign="top">
-<div>
 <fieldset>
 <legend><?php echo SHIPPNIG_SUMMARY; ?></legend>
-<table border="0" cellspacing="0" cellpadding="2">
+<table border="0">
 	<tr>
 		<td class="dataTableContent"><?php echo SHIPPING_TOTAL_WEIGHT; ?></td>
 		<td class="dataTableContent"><?php echo html_input_field('total_weight', $sInfo->total_weight, 'readonly="readonly" size="6" maxlength="5" style="text-align:right"'); ?></td>
@@ -153,10 +146,8 @@ echo $toolbar->build_toolbar();
 	</tr>
 </table>
 </fieldset>
-</div>
-<div>
 <fieldset id="recp"><legend><?php echo SHIPPING_SHIPMENT_DETAILS; ?></legend>
-<table border="0" cellspacing="0" cellpadding="2">
+<table border="0">
 	<tr>
 		<td class="dataTableContent"><?php echo SHIPPING_TEXT_SHIPMENT_DATE; ?></td>
 		<td class="dataTableContent"><?php echo html_calendar_field($cal_ship); ?></td>
@@ -224,7 +215,6 @@ echo $toolbar->build_toolbar();
 	</tr>
 </table>
 </fieldset>
-</div>
 <!--
 <div>
 <fieldset>
@@ -242,28 +232,28 @@ echo $toolbar->build_toolbar();
 </div>
 -->
 </td></tr></table>
-<table align="center" border="0" cellspacing="0" cellpadding="2">
+<table border="0">
   <tr>
 	<th><?php echo SHIPPING_PACKAGE_DETAILS; ?></th>
   </tr>
   <tr>
     <td id="productList" class="formArea">
-	  <table id="item_table" width="100%" border="1" cellpadding="1" cellspacing="1">
+	  <table id="item_table" width="100%" border="1">
         <tr>
 			<td class="dataTableHeadingContent" align="center">
 				<?php echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small'); ?>
 			</td>
 			<td class="dataTableHeadingContent" align="center"><?php echo TEXT_QUANTITY; ?></td>
-			<td class="dataTableHeadingContent" align="center"><?php echo TEXT_WEIGHT; 
+			<td class="dataTableHeadingContent" align="center"><?php echo TEXT_WEIGHT;
 				echo html_pull_down_menu('pkg_weight_unit', gen_build_pull_down($shipping_defaults['weight_unit']), $sInfo->pkg_weight_unit) . '&nbsp;'; ?>
 			</td>
 			<td class="dataTableHeadingContent" align="center" colspan="3"><?php echo SHIPPING_TEXT_DIMENSIONS;
 				echo html_pull_down_menu('pkg_dimension_unit', gen_build_pull_down($shipping_defaults['dimension_unit']), $sInfo->pkg_dimension_unit); ?>
 			</td>
-			<td class="dataTableHeadingContent" align="center"><?php echo TEXT_VALUE; 
+			<td class="dataTableHeadingContent" align="center"><?php echo TEXT_VALUE;
 				echo html_pull_down_menu('insurance_currency', $currency_array, $sInfo->insurance_currency); ?></td>
         </tr>
-		<?php 
+		<?php
 		  if (isset($sInfo->package)) {
 		  	$rowCnt = 1;
 		    foreach ($sInfo->package as $package) { ?>

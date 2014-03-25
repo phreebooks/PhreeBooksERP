@@ -25,7 +25,7 @@
 <div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
   <h2 class="tabset_label"><?php echo TEXT_BANK_IMPORT_SETTINGS; ?></h2>
   <fieldset class="formAreaTitle">
-    <table border="0" width="100%" cellspacing="1" cellpadding="1">
+    <table border="0" width="100%">
 	  <tr><th colspan="5"><?php echo MODULE_BANK_IMPORT_CONFIG_INFO; ?></th></tr>
 	  <tr>
 	    <td colspan="4"><?php echo BANK_IMPORT_QUESTION_POSTS; ?></td>

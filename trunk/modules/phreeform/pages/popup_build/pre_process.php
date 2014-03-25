@@ -54,7 +54,7 @@ switch ($_REQUEST['action']) {
 		$report->reporttype           = db_prepare_input($_POST['reporttype']);
 		// posted fields
 		$report->title                = db_prepare_input($_POST['title']);
-		if (!$report->title) throw new \Exception(GEN_ERRMSG_NO_DATA . TEXT_TITLE);
+		if (!$report->title) throw new \core\classes\userException(sprintf(ERROR_EMPTY_VARIABLE, TEXT_TITLE));
 		$report->groupname            = db_prepare_input($_POST['groupname']);
 		$report->description          = db_prepare_input($_POST['description']);
 		$report->emailmessage         = db_prepare_input($_POST['emailmessage']);
@@ -120,7 +120,7 @@ switch ($_REQUEST['action']) {
 				);
 		  	}
 		}
-	
+
 		if ($report->reporttype == 'frm') {
 		  	$report->setprintedfield    = db_prepare_input($_POST['setprintedfield']);
 		  	$report->formbreakfield     = db_prepare_input($_POST['formbreakfield']);
@@ -197,7 +197,7 @@ switch ($_REQUEST['action']) {
 				$cnt++;
 			}
 		}
-	
+
 		$users = 'u:-1';
 		if (isset($_POST['user_all'])) $users = 'u:0';
 		elseif (isset($_POST['users']) && $_POST['users'][0] <> '') $users = 'u:' . implode(':', $_POST['users']);
@@ -207,7 +207,7 @@ switch ($_REQUEST['action']) {
 		$report->security = $users . ';' . $groups;
 		// test for no access which will hide the report
 		if ($report->security == 'u:-1;g:-1') throw new \Exception(PHREEFORM_NO_ACCESS);
-		$datelist = $_POST['date_range'] <> '' ? implode('', $_POST['date_range']) : ''; 
+		$datelist = $_POST['date_range'] <> '' ? implode('', $_POST['date_range']) : '';
 		$report->datelist       = isset($_POST['periods_only']) ? 'z' : $datelist;
 		$report->datefield      = db_prepare_input($_POST['date_field']);
 		$report->datedefault    = db_prepare_input($_POST['date_default']);

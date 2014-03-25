@@ -506,8 +506,8 @@
 
 function saveUploadZip($file_field, $dest_dir, $dest_name) {
 	// php error uploading file
-	if ($_FILES[$file_field]['error']) throw new \Exception(TEXT_IMP_ERMSG5 . $_FILES[$file_field]['error']);
-	if ($_FILES[$file_field]['size'] > 0)  throw new \Exception("file $file_field is empty ");
+	if ($_FILES[$file_field]['error']) throw new \core\classes\userException(TEXT_IMP_ERMSG5 . $_FILES[$file_field]['error']);
+	if ($_FILES[$file_field]['size'] > 0)  throw new \core\classes\userException("file $file_field is empty ");
 	$backup              = new \phreedom\classes\backup();
 	$backup->source_dir  = $_FILES[$file_field]['tmp_name'];
 	$backup->source_file = '';
@@ -1909,9 +1909,7 @@ function PhreebooksExceptionHandler($exception) {
     echo "<br>trace:<br/>". $exception->getTraceAsString();
 	ob_end_flush();
   	session_write_close();
-	die;    //@todo maken van UserVisuableException(evt loggen in construct.), InternalException optie = }catch(UserVisuableException $e){return to template...}catch(Exception $e){return to main. }catch(Exception $e){return to error page.}
-// added a if to prevent circulair page loading
-//	if ($_SERVER['REQUEST_URI'] != FILENAME_DEFAULT)    gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL'));
+	die;
 }
 
 function Phreebooks_autoloader($temp){

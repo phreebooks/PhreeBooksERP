@@ -54,8 +54,8 @@ class orders extends \core\classes\journal {
 	public $shipper_code        = '';
 	public $drop_ship           = 0;
 	public $freight             = 0;
-	
-	function __construct() {
+
+	function __construct($id) {
 		switch ($this->journal_id) { // default to company data for purchases/PO's
 		  case  3:
 		  case  4:
@@ -91,6 +91,7 @@ class orders extends \core\classes\journal {
 			break;
 		  default:
 		}
+		parent::__construct($id);
 	}
 
   function post_ordr($action) {
@@ -217,11 +218,11 @@ class orders extends \core\classes\journal {
 		  if (in_array($this->journal_id, array(4, 10, 12, 19)) && $first_purchase_invoice_id == '') {
 			$this->increment_purchase_invoice_id(true);
 		  }
-		  $this->purchase_invoice_id = string_increment($this->journal_main_array['purchase_invoice_id']);					
+		  $this->purchase_invoice_id = string_increment($this->journal_main_array['purchase_invoice_id']);
 		}
 	  }
 	  // restore the first values to continue with post process
-	  if (in_array($this->journal_id, array(4, 10, 12, 19)) && $first_purchase_invoice_id == '') { // special case for auto increment 
+	  if (in_array($this->journal_id, array(4, 10, 12, 19)) && $first_purchase_invoice_id == '') { // special case for auto increment
 		$first_purchase_invoice_id = $this->purchase_invoice_id;
 	  }
 	  $this->id                  = $first_id;
@@ -261,8 +262,8 @@ class orders extends \core\classes\journal {
 	return true;
   }
 
-  function delete_ordr() {
-	global $db, $messageStack;
+  function unPost($action = 'delete', $skip_balance = false) {
+	global $db;
 	// verify no item rows have been acted upon (received, shipped, paid, etc.)
 	switch ($this->journal_id) {
 	  case  4: // Purchase Order Journal
@@ -278,7 +279,7 @@ class orders extends \core\classes\journal {
 		$result = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " where so_po_ref_id = " . $this->id);
 		if ($result->RecordCount() > 0) throw new \Exception(constant('GENERAL_JOURNAL_' . $this->journal_id . '_ERROR_6'));
 		// next check for payments that link to deleted id (payments)
-		$result = $db->Execute("select id from " . TABLE_JOURNAL_ITEM . " 
+		$result = $db->Execute("select id from " . TABLE_JOURNAL_ITEM . "
 			where gl_type = 'pmt' and so_po_item_ref_id = " . $this->id);
 		if ($result->RecordCount() > 0)throw new \Exception(constant('GENERAL_JOURNAL_' . $this->journal_id . '_ERROR_6'));
 		break;
@@ -289,20 +290,18 @@ class orders extends \core\classes\journal {
 	// *************** START TRANSACTION *************************
 	$recur_id        = $this->recur_id;
 	$recur_frequency = $this->recur_frequency;
-	$db->transStart();
 	if ($recur_id > 0) { // will contain recur_id
 	  $affected_ids = $this->get_recur_ids($recur_id, $this->id);
 	  for ($i = 0; $i < count($affected_ids); $i++) {
 		$this->id = $affected_ids[$i]['id'];
 		$this->journal($this->id); // load the posted record based on the id submitted
-		$this->unPost('delete');
+		parent::unPost('delete');
 		// test for single post versus rolling into future posts, terminate loop if single post
 		if (!$recur_frequency) break;
 	  }
 	} else {
-	  $this->unPost('delete');
+	  parent::unPost('delete');
 	}
-	$db->transCommit();
 	// *************** END TRANSACTION *************************
 	return true;
   }
@@ -344,12 +343,12 @@ class orders extends \core\classes\journal {
   function add_freight_journal_row($debit_credit) {	// put freight into journal row array
     if ($debit_credit == 'debit' || $debit_credit == 'credit') {
 	  switch ($this->journal_id) {
-	    case  3: 
+	    case  3:
 	    case  4:
 	    case  6:
 	    case  7: $freight_tax_id = AP_ADD_SALES_TAX_TO_SHIPPING; break;
 	    case  9:
-	    case 10: 
+	    case 10:
 	    case 12:
 	    case 13: $freight_tax_id = AR_ADD_SALES_TAX_TO_SHIPPING; break;
 	  }
@@ -374,14 +373,14 @@ class orders extends \core\classes\journal {
 	if ($debit_credit == 'debit' || $debit_credit == 'credit') {
 	  $total = 0;
 	  for ($i=0; $i<count($this->item_rows); $i++) {
-		switch ($this->journal_id) { // determine to pick from the qty or pstd value 
-		  case  3: 
+		switch ($this->journal_id) { // determine to pick from the qty or pstd value
+		  case  3:
 		  case  4:
 			$qty_pstd = 'qty';
 			$terminal_date = gen_specific_date($this->post_date, $this->item_rows[$i]['lead_time']);
 			break;
 		  case  9:
-		  case 10: 
+		  case 10:
 			$qty_pstd = 'qty';
 			$terminal_date = $this->terminal_date;
 			break;
@@ -444,7 +443,7 @@ class orders extends \core\classes\journal {
 			    if (ENABLE_ORDER_DISCOUNT && $tax_discount == '0' && $line_item['gl_type'] <> 'frt') {
 				  $line_total = $line_total * (1 - $this->disc_percent);
 				}
-//				this is wrong this is rounding per orderline not per tax auth. moved this to the next foreach.		
+//				this is wrong this is rounding per orderline not per tax auth. moved this to the next foreach.
 //				if (ROUND_TAX_BY_AUTH) {
 //				  $auth_array[$auth] += number_format(($tax_auths[$auth]['tax_rate'] / 100) * $line_total, $currencies->currencies[DEFAULT_CURRENCY]['decimal_places'], '.', '');
 //				} else {

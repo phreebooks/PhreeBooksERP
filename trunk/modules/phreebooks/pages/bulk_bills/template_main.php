@@ -30,12 +30,12 @@ $toolbar->add_icon('ship_all', 'onclick="checkShipAll()"', 20);
 $toolbar->icon_list['ship_all']['text'] = BNK_TEXT_CHECK_ALL;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('07.05.01');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo BOX_BANKING_SELECT_FOR_PAYMENT; ?></h1>
 <div>
- <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto"">
+ <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto">
   <tbody class="ui-widget-content">
 	<tr>
 	  <td width="45%" align="right" valign="top">
@@ -110,7 +110,7 @@ echo $toolbar->build_toolbar();
 </div>
 
 <div>
-  <table class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto"">
+  <table class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto">
 	<thead class="ui-widget-header">
 <?php if (ENABLE_MULTI_CURRENCY) echo '<tr><td colspan="9" class="fieldRequired"> ' . sprintf(GEN_PRICE_SHEET_CURRENCY_NOTE, $currencies->currencies[DEFAULT_CURRENCY]['title']) . '</td></tr>'; ?>
       <tr valign="top"><?php echo $list_header; ?></tr>

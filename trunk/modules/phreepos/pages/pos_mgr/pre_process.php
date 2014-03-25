@@ -38,9 +38,6 @@ switch ($_REQUEST['action']) {
 	    	$id = db_prepare_input($_POST['rowSeq']);
 			if (!$id) throw new Exception(GL_ERROR_NEVER_POSTED);
 		  	$delOrd = new \phreepos\classes\journal\journal_19($id);
-		  	if ($_SESSION['admin_prefs']['restrict_period'] && $delOrd->period <> CURRENT_ACCOUNTING_PERIOD) { //@todo move this to the journal
-		    	throw new Exception(ORD_ERROR_DEL_NOT_CUR_PERIOD);
-		  	}
 		  	// verify no item rows have been acted upon (accounts reconciliation)
 		  	$result = $db->Execute("select closed from " . TABLE_JOURNAL_MAIN . " where id = " . $id);
 		  	if ($result->fields['closed'] == '1') throw new Exception(constant('GENERAL_JOURNAL_' . $delOrd ->journal_id . '_ERROR_6'));

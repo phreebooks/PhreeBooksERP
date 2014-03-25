@@ -27,18 +27,18 @@ $search_text = db_prepare_input($_GET['guess']);
 $type        = db_prepare_input($_GET['type']);
 $jID         = db_prepare_input($_GET['jID']);
 
-if (!$search_text) throw new \Exception("the variable 'guess' was not set");
-$search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.address1', 
+if (!$search_text) throw new \core\classes\userException(sprintf(ERROR_EMPTY_VARIABLE, 'guess'));
+$search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.address1',
   'a.address2', 'a.city_town', 'a.postal_code', 'c.short_name');
 $search = " and (" . implode(" like \%$search_text%' or ", $search_fields) . " like '%$search_text%\)"; //@todo redone
-$result = $db->Execute("select c.id from ".TABLE_CONTACTS." c left join ".TABLE_ADDRESS_BOOK." a on c.id = a.ref_id 
-  where a.type = '".$type."m' and c.inactive='0' ".$search." limit 2");
+$result = $db->Execute("select c.id from ".TABLE_CONTACTS." c left join ".TABLE_ADDRESS_BOOK." a on c.id = a.ref_id
+  where a.type = '".$type."m' and c.inactive='0' $search limit 2");
 // to many results
 if ($result->RecordCount() != 1) throw new \Exception("there were to many results voor $search_text");
 $cID = $result->fields['id'];
 if (in_array($jID, array(6,12))) {
 	$result = $db->Execute("select id from ".TABLE_JOURNAL_MAIN." where closed = '0' and journal_id in (4,10) and bill_acct_id = $cID limit 1");
-	if ($result->RecordCount() > 0) throw new \Exception("found $cId in open order {$result->fields['id']}");//@todo why is this search done
+	if ($result->RecordCount() > 0) throw new \core\classes\userException("found open order");
 }
 
 $xml .= xmlEntry('cID',   $cID);
@@ -46,6 +46,6 @@ $xml .= xmlEntry('result','success');
 if ($debug) $xml .= xmlEntry('debug', $debug);
 echo createXmlHeader() . $xml . createXmlFooter();
 ob_end_flush();
-session_write_close(); 
+session_write_close();
 die;
 ?>

@@ -215,13 +215,14 @@ if (defined('PHREEPOS_ENABLE_DIRECT_PRINTING') && PHREEPOS_ENABLE_DIRECT_PRINTIN
   	<param name="archive"   value="<?php echo DIR_WS_ADMIN . 'modules/phreedom/includes/jzebra/qz-print.jar'; ?>" />
   	<param name="code"      value="qz.PrintApplet.class" />
   	<param name="mayscript" value="true" />
+  	<param name="permissions" value="all-permissions" />
 </object>
 -->
 <applet id="qz" name="QZ Print Plugin" code="qz.PrintApplet.class" archive="<?php echo DIR_WS_ADMIN . 'modules/phreedom/includes/jzebra/qz-print.jar'; ?>" width="16px" height="16px">
 	<param name="permissions" value="all-permissions" />
 </applet>
 <?php }else{
-echo html_hidden_field("qz");
+	echo html_hidden_field("qz");
 }?>
 <div class="easyui-dialog" data-options="closed: true," id="popupPayment" title="<?php echo PAYMENT_TITLE; ?>" style="height:450px;width:450px">
 <?php 
@@ -243,12 +244,11 @@ echo $SeccondToolbar->build_toolbar();
 	echo '    <fieldset>';
     echo '    <legend>'. TEXT_PAYMENT_METHOD . '</legend>';
 	echo '    <div style="position: relative; height: 150px;">';
-	echo html_pull_down_menu('payment_method', $payment_modules, $order->shipper_code, 'onchange="activateFields()"') . chr(10);
+	echo html_pull_down_menu('payment_method', gen_build_pull_down($admin_classes['payment']->methods), $order->shipper_code, 'onchange="activateFields()"') . chr(10);
 	$count = 0;
-	foreach ($payment_modules as $value) {
+	foreach ($admin_classes['payment']->methods as $method) {
 	  echo '      <div id="pm_' . $count . '" style="visibility:hidden; position:absolute; top:22px; left:1px">' . chr(10);
-	  $pmt_class = $value['id'];
-	  //$disp_fields = $$pmt_class->selection();
+	  $disp_fields = $method->selection();
 	  for ($i=0; $i<count($disp_fields['fields']); $i++) {
 		echo $disp_fields['fields'][$i]['title'] . '<br />' . chr(10);
 		echo $disp_fields['fields'][$i]['field'] . '<br />' . chr(10);

@@ -41,7 +41,7 @@ switch ($_REQUEST['action']) {
 	  elseif (isset($_POST['users']) && $_POST['groups'][0] <> '') $groups = 'g:' . implode(':', $_POST['groups']);
 	$security    = $users . ';' . $groups;
 	// error checking
-	if (!$id) throw new \Exception("the id variable ins't defined");
+	if (!$id) throw new \core\classes\userException(sprintf(ERROR_EMPTY_VARIABLE, "id"));
 	// retrieve some information about the document
 	$result   = $db->Execute("select revision from " . TABLE_DC_DOCUMENT . " where id = " . $id);
 	$revision = $result->fields['revision'];

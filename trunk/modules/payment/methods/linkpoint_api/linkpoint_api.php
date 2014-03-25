@@ -187,12 +187,8 @@ class linkpoint_api extends \payment\classes\payment {
 
 			while (strstr($error_returned, '%3A')) $error_returned = str_replace('%3A', ' ', $error_returned);
 			while (strstr($error_returned, '%2C')) $error_returned = str_replace('%2C', ' ', $error_returned);
-			while (strstr($error_returned, '+'))   $error_returned = str_replace('+', ' ', $error_returned);
-			$error_returned = str_replace('&', ' &amp;', $error_returned);
-			$cust_info = $error_returned;
-			$message = addslashes($message);//@todo message isn't set
-			$cust_info = addslashes($cust_info);
-			$all_response_info = addslashes($all_response_info);
+			while (strstr($error_returned, '+'))   $error_returned = str_replace('+'  , ' ', $error_returned);
+			$cust_info = addslashes(str_replace('&', ' &amp;', $error_returned));
 
 		    //  Store Transaction history in Database
 	/* original Harry Lu sql converted to PhreeBooks format
@@ -225,7 +221,7 @@ class linkpoint_api extends \payment\classes\payment {
 			  'customer_id'                  => $_POST['bill_acct_id'] ,
 			  'avs_response'                 => '',
 			  'transaction_result'           => '*CUSTOMER ERROR*',
-			  'message'                      => $message . ' -- ' . $all_response_info,
+			  'message'                      => '',
 			  'transaction_time'             => time(),
 			  'transaction_reference_number' => '',
 			  'fraud_score'                  => 0,
@@ -625,7 +621,7 @@ class linkpoint_api extends \payment\classes\payment {
 		$filename = $this->_logDir . '/' . 'Linkpoint_Debug_' . $suffix . $key . '.log';
 		if (!$handle = @fopen($filename, 'a'))	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
 		if (!@fwrite($handle, $msg))			throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));
-		if (!@fclose($handle))					throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
+		if (!@fclose($handle))					throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 	$filename));
   	}
 
 	function _sendRequest($myorder) {
@@ -670,12 +666,8 @@ class linkpoint_api extends \payment\classes\payment {
 			$this->_log($errorMessage, $myorder["oid"] . ($failure ? '_FAILED' : ''));
 		}
 		if (strstr(MODULE_PAYMENT_LINKPOINT_API_DEBUG, 'Email') || ($failure && strstr(MODULE_PAYMENT_LINKPOINT_API_DEBUG, 'Alert'))) {
-			//mail //TODO: Harry
-			//zen_mail(STORE_NAME, STORE_OWNER_EMAIL_ADDRESS, 'Linkpoint Debug Data' . ($failure ? ' - FAILURE' : ''), $errorMessage, STORE_OWNER, STORE_OWNER_EMAIL_ADDRESS, array (
-			//	'EMAIL_MESSAGE_HTML' => nl2br($errorMessage)
-			//), 'debug');
+
 		}
-		//DEBUG ONLY:$this->_log($errorMessage /*. print_r($myorder, true) . print_r($mylphp->xmlString, true)*/, $myorder["oid"]);
 		if ($myorder['debugging'] == 'true') exit;
 		return $result;
 	}
@@ -732,10 +724,8 @@ class linkpoint_api extends \payment\classes\payment {
 	function _doCapt($oID, $amt = 0, $currency = 'USD') {
 		global $db, $messageStack;
 
-		//@TODO: Read current order status and determine best status to set this to
 		$new_order_status = (int) MODULE_PAYMENT_LINKPOINT_API_ORDER_STATUS_ID;
-		if ($new_order_status == 0)
-			$new_order_status = 1;
+		if ($new_order_status == 0) $new_order_status = 1;
 
 		$proceedToCapture = true;
 		$captureNote = strip_tags(addslashes($_POST['captnote']));
@@ -766,16 +756,11 @@ class linkpoint_api extends \payment\classes\payment {
 
 		$result = $this->_sendRequest($myorder);
 		$response_alert = $result['r_approved'] . ' ' . $result['r_error'] . ($this->commError == '' ? '' : ' Communications Error - Please notify webmaster.');
-		$failure = ($result["r_approved"] != "APPROVED");
-		if ($failure) {
-			throw new \Exception($response_alert);
-		} else {
-			// Success, so save the results
-			$this->_updateOrderStatus($oID, $new_order_status, 'FUNDS COLLECTED. Auth Code: ' . substr($result['r_code'], 0, 6) . ' - ' . 'Trans ID: ' . $result['r_tdate'] . "\n" . ' Amount: ' . number_format($captureAmt, 2) . "\n" . $captureNote);
-			$messageStack->add(sprintf(MODULE_PAYMENT_LINKPOINT_API_TEXT_CAPT_INITIATED, $captureAmt, $result['r_tdate'], substr($result['r_code'], 0, 6)), 'success');
-			return true;
-		}
-		return false;
+		if ($result["r_approved"] != "APPROVED")	throw new \Exception($response_alert);
+		// Success, so save the results
+		$this->_updateOrderStatus($oID, $new_order_status, 'FUNDS COLLECTED. Auth Code: ' . substr($result['r_code'], 0, 6) . ' - ' . 'Trans ID: ' . $result['r_tdate'] . "\n" . ' Amount: ' . number_format($captureAmt, 2) . "\n" . $captureNote);
+		$messageStack->add(sprintf(MODULE_PAYMENT_LINKPOINT_API_TEXT_CAPT_INITIATED, $captureAmt, $result['r_tdate'], substr($result['r_code'], 0, 6)), 'success');
+		return true;
 	}
 	/**
 	 * Used to void a given previously-authorized transaction.

@@ -50,17 +50,17 @@ switch (JOURNAL_ID) {
   case 18: $toolbar->add_help('07.05'); break;
   case 20: $toolbar->add_help('07.05'); break;
 }
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
 <div>
-  <table width="100%" border="0" cellspacing="2" cellpadding="2">
+  <table width="100%" border="0">
 	<tr>
 	  <td valign="top">
 <?php
-echo (($type == 'c') ? GEN_CUSTOMER_ID : GEN_VENDOR_ID) . ' ' . html_input_field('search', $order->search, 'onfocus="clearField(\'search\', \'' . TEXT_SEARCH . '\')" onblur="setField(\'search\', \'' . TEXT_SEARCH . '\')"'); 
+echo (($type == 'c') ? GEN_CUSTOMER_ID : GEN_VENDOR_ID) . ' ' . html_input_field('search', $order->search, 'onfocus="clearField(\'search\', \'' . TEXT_SEARCH . '\')" onblur="setField(\'search\', \'' . TEXT_SEARCH . '\')"');
 echo '&nbsp;' . html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'align="top" style="cursor:pointer" onclick="billsAcctList(this)"');
 ?>
 	  </td>
@@ -73,7 +73,7 @@ echo '&nbsp;' . html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'al
 	</tr>
 	<tr>
 	  <td class="main" valign="top">
-<?php 
+<?php
 echo (JOURNAL_ID == 20 ? TEXT_REMIT_TO : TEXT_BILL_TO) . chr(10);
 echo            html_pull_down_menu('bill_to_select',    gen_null_pull_down(), '', 'onchange=\'fillAddress("bill")\'') . chr(10);
 echo '<br />' . html_input_field('bill_primary_name',    $order->bill_primary_name, 'size="33" maxlength="32" onfocus="clearField(\'bill_primary_name\', \'' . GEN_PRIMARY_NAME . '\')" onblur="setField(\'bill_primary_name\', \'' . GEN_PRIMARY_NAME . '\')"') . chr(10);
@@ -83,11 +83,11 @@ echo '<br />' . html_input_field('bill_address2',        $order->bill_address2, 
 echo '<br />' . html_input_field('bill_city_town',       $order->bill_city_town, 'size="25" maxlength="24" onfocus="clearField(\'bill_city_town\', \'' . GEN_CITY_TOWN . '\')" onblur="setField(\'bill_city_town\', \'' . GEN_CITY_TOWN . '\')"') . chr(10);
 echo            html_input_field('bill_state_province',  $order->bill_state_province, 'size="3" maxlength="5" onfocus="clearField(\'bill_state_province\', \'' . GEN_STATE_PROVINCE . '\')" onblur="setField(\'bill_state_province\', \'' . GEN_STATE_PROVINCE . '\')"') . chr(10);
 echo            html_input_field('bill_postal_code',     $order->bill_postal_code, 'size="11" maxlength="10" onfocus="clearField(\'bill_postal_code\', \'' . GEN_POSTAL_CODE . '\')" onblur="setField(\'bill_postal_code\', \'' . GEN_POSTAL_CODE . '\')"') . chr(10);
-echo '<br />' . html_pull_down_menu('bill_country_code', gen_get_countries(), $order->bill_country_code) . chr(10); 
+echo '<br />' . html_pull_down_menu('bill_country_code', gen_get_countries(), $order->bill_country_code) . chr(10);
 ?>
 	  </td>
 	  <td valign="top">
-		<table border="0" cellspacing="0" cellpadding="0">
+		<table border="0">
 		  <tr>
 			<td class="main" align="right"><?php echo ((JOURNAL_ID == 18) ? BNK_TEXT_DEPOSIT_ID : BNK_TEXT_PAYMENT_ID) . '&nbsp;'; ?></td>
 			<td class="main" align="right"><?php echo html_input_field('purchase_invoice_id', $next_inv_ref, 'style="text-align:right"'); ?></td>
@@ -110,7 +110,7 @@ echo '<br />' . html_pull_down_menu('bill_country_code', gen_get_countries(), $o
 			  <?php echo (ENABLE_MULTI_CURRENCY) ? ' (' . DEFAULT_CURRENCY . ')' : ''; ?>
 			</td>
 			<td align="right">
-				<?php 
+				<?php
 				echo html_input_field('total', $order->total_amount, 'readonly="readonly" size="15" maxlength="20" style="text-align:right"');
 				?>
 			</td>
@@ -143,7 +143,7 @@ echo '<br />' . html_pull_down_menu('bill_country_code', gen_get_countries(), $o
 	  </td>
 <?php } elseif (JOURNAL_ID == 20) { ?>
 	  <td align="right" valign="top">
-		<table border="0" cellspacing="0" cellpadding="0">
+		<table border="0">
 		  <tr>
 			<td class="main" align="right"><?php echo BNK_ACCOUNT_BALANCE . '&nbsp;'; ?></td>
 			<td class="main" align="right"><?php echo html_input_field('acct_balance', $currencies->format($acct_balance), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?></td>
@@ -161,13 +161,13 @@ echo '<br />' . html_pull_down_menu('bill_country_code', gen_get_countries(), $o
 
 <div>
   <table id="item_table"><tr><td></td></tr></table><!-- null table to get cleared -->
-  <table align="center" border="1" cellpadding="1" cellspacing="1">
+  <table border="1">
   	<tr>
 	  <th align="center"><?php echo TEXT_DESCRIPTION; ?></th>
 	  <th align="center"><?php echo TEXT_GL_ACCOUNT; ?></th>
 	  <th align="center"><?php echo constant('BNK_' . JOURNAL_ID . '_AMOUNT_PAID') . (ENABLE_MULTI_CURRENCY ? ' (' . DEFAULT_CURRENCY . ')' : ''); ?></th>
 	</tr>
-	<?php 
+	<?php
 		echo '<tr>' . chr(10);
 		echo '  <td class="main" align="center">' . chr(10);
 		// Hidden fields

@@ -38,22 +38,22 @@ if (count($extra_toolbar_buttons) > 0) {
 }
 // add the help file index and build the toolbar
 $toolbar->add_help('10');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
 
 <fieldset>
 <legend><?php echo TEXT_IMPORT; ?></legend>
-  <table width="100%" border="0" cellspacing="0" cellpadding="1">
+  <table width="100%" border="0">
 	<tr>
 	  <td><?php echo GEN_BANK_IMPORT_MESSAGE; ?></td>
 	</tr>
 	<tr><td>
-	  <table align="center" border="1" cellspacing="0" cellpadding="1">
-	   
-<?php 
-foreach ($page_list as $mod => $params) { 
+	  <table border="1">
+
+<?php
+foreach ($page_list as $mod => $params) {
   if ($subject <> $mod) continue; // only this module
   $structure = $params['structure'];
   if (!$structure->Module->Table) continue; // no tables to import
@@ -76,7 +76,7 @@ foreach ($page_list as $mod => $params) {
 <?php
     }
   }
-} 
+}
 ?>
 	  </table>
 	</td></tr>

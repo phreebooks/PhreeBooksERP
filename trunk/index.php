@@ -88,12 +88,11 @@ try{
    	}catch (Exception $e) {
    		switch (get_class($e)) {
    			case "\core\classes\userException":
-   			case "\soapException":
-   				$messageStack->add($e->getMessage(), $e->getCode());
-  				if (method_exists($class, $_REQUEST['display'])){
-  					$class->$_REQUEST['display']();
+   				if($e->RetrurnToPage) {
+   					$messageStack->add($e->getMessage(), $e->getCode());
+  					$page_template->loadPage($e->RetrurnToPage);
   				}else{
-  					throw $e;
+  					$page_template->loadPage("crash");
   				}
   			default:
   				throw $e;
@@ -101,7 +100,7 @@ try{
 	}
 }catch (Exception $e) {
 	$messageStack->add($e->getMessage(), $e->getCode());
-	$page_template = new \core\classes\page();
+	$page_template->loadPage("main");
 }
 
 if ($page == 'ajax') {

@@ -18,7 +18,11 @@
 //
 // this class will allow us to catch user errors and return them to theire pevious page.
 namespace core\classes;
-class userException extends \Exception {
+class userException extends Exception {
+	public $ReturnToPage;
+	function __construct ($message = "",  $ReturnToPage, $code = 0,  Exception $previous = NULL){
+		$this->ReturnToPage = $ReturnToPage;
+	}
 
 }
 ?>
