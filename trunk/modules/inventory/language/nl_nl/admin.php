@@ -27,6 +27,7 @@ define('TEXT_SRV_ITEMS','Service');
 define('TEXT_LABOR_ITEMS','Arbeid');
 define('TEXT_ACT_ITEMS','Activiteit');
 define('TEXT_CHARGE_ITEMS','Kosten');
+define('TEXT_DESC_ITEMS','Omschrijving');
 define('MODULE_INVENTORY_NOTES_1','MEDIUM BELANGRIJK: Stel standaard grootboekrekeningen in voor voorraad types, Later kunt u gaan naar (Bedrijf -> Voorraad Module Eigenschappen -> Voorraad tabblad)');
 define('CD_05_50_DESC','Bepaalt het standaard belasting tarief wanneer nieuwe voorraad wordt toegevoegd.<br /><br /> OPMERKING: Deze waarde wordt toegepast op de Auto-voorraad toevoegen maar kan gewijzigd worden in de Voorraad => Onderhoud scherm. De belastingtarieven zijn geselecteerd uit de tabel tax_rates en moet instellen via Setup => Verkoop belastingtarieven.');
 define('CD_05_52_DESC','Bepaalt het standaard belasting tarief wanneer nieuwe voorraad wordt toegevoegd.<br /><br /> OPMERKING: Deze waarde wordt toegepast op de Auto-voorraad toevoegen maar kan gewijzigd worden in de Voorraad => Onderhoud scherm. De belastingtarieven zijn geselecteerd uit de tabel tax_rates en moet instellen via Setup => Inkoop belastingtarieven.');

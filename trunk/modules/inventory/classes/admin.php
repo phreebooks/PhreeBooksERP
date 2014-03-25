@@ -23,7 +23,7 @@ class admin extends \core\classes\admin {
 	public $text		= MODULE_INVENTORY_TITLE;
 	public $description = MODULE_INVENTORY_DESCRIPTION;
 	public $core		= true;
-	public $version		= '3.7';
+	public $version		= '3.7.1';
 
 	function __construct() {
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
@@ -60,6 +60,7 @@ class admin extends \core\classes\admin {
 		  'INV_LABOR_DEFAULT_COS'              => '5000',
 		  'INV_ACTIVITY_DEFAULT_SALES'         => '4000',
 		  'INV_CHARGE_DEFAULT_SALES'           => '4000',
+		  'INV_DESC_DEFAULT_SALES'             => '4000',
 		  'INVENTORY_DEFAULT_TAX'              => '0',
 		  'INVENTORY_DEFAULT_PURCH_TAX'        => '0',
 		  'INVENTORY_AUTO_ADD'                 => '0',
@@ -234,7 +235,6 @@ class admin extends \core\classes\admin {
 					$temp['inventory_type'] = 'ia:ma:mb:mi:ms:ns:sa:si:sr';
 					break;
 				case 'account_inventory_wage':
-				case 'account_cost_of_sales':
 					$temp['inventory_type'] = 'ia:lb:ma:mb:mi:ms:ns:sa:sf:si:sr:sv';
 					break;
 				case 'cost_method':

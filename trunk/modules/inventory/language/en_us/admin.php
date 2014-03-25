@@ -39,6 +39,7 @@ define('TEXT_SRV_ITEMS','Service');
 define('TEXT_LABOR_ITEMS','Labor');
 define('TEXT_ACT_ITEMS','Activity');
 define('TEXT_CHARGE_ITEMS','Charge');
+define('TEXT_DESC_ITEMS','Description');
 // install messages
 define('MODULE_INVENTORY_NOTES_1','PRIORITY MEDIUM: Set default general ledger accounts for inventory types, after loading GL accounts (Company -> Inventory Module Properties -> Inventory tab)');
 /************************** (Inventory Defaults) ***********************************************/
