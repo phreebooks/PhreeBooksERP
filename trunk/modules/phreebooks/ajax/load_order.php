@@ -144,7 +144,7 @@ if (sizeof($order->fields) > 0) {
 		    'qty'               		=> $ordr_items->fields['qty'],
 			'sku'               		=> $ordr_items->fields['sku'],
 			'gl_type'           		=> $ordr_items->fields['gl_type'],
-			'description'       		=> $ordr_items->fields['description'],
+		  	'description'       		=> $ordr_items->fields['description'],
 			'gl_account'        		=> $ordr_items->fields['gl_account'],
 			'taxable'           		=> $ordr_items->fields['taxable'],
 			'serialize'         		=> $ordr_items->fields['serialize_number'],
@@ -153,7 +153,8 @@ if (sizeof($order->fields) > 0) {
 			'unit_price'        		=> $currencies->precise($ordr_items->fields['qty'] ? ($total / $ordr_items->fields['qty']) : '0', true, $currencies_code, $currencies_value),
 			'total'             		=> $currencies->format($total, true, $currencies_code, $currencies_value),
 			'full_price'       			=> $currencies->format($ordr_items->fields['full_price'], true, $currencies_code, $currencies_value),
-			'inactive'          		=> $inv_details->fields['inactive'],
+			'inventory_type'           	=> $inv_details->fields['inventory_type'],
+		  	'inactive'          		=> $inv_details->fields['inactive'],
 			'weight'            		=> $inv_details->fields['item_weight'],
 			'stock'             		=> $inv_details->fields['quantity_on_hand'],
 			'lead'              		=> $inv_details->fields['lead_time'],
@@ -228,6 +229,7 @@ if (sizeof($order->fields) > 0) {
 			  $item_list[$i]['unit_price']  			= $currencies->precise($ordr_items->fields['qty'] ? ($total / $ordr_items->fields['qty']) : '0', true, $currencies_code, $currencies_value);
 			  $item_list[$i]['total']       			= $currencies->format($total, true, $currencies_code, $currencies_value);
 			  $item_list[$i]['full_price']  			= $currencies->format($ordr_items->fields['full_price'], true, $currencies_code, $currencies_value);
+			  $item_list[$i]['inventory_type']     		= $inv_details->fields['inventory_type'];
 			  $item_list[$i]['inactive']    			= $inv_details->fields['inactive'];
 			  $item_list[$i]['weight']      			= $inv_details->fields['item_weight'];
 			  $item_list[$i]['stock']       			= $inv_details->fields['quantity_on_hand'];
@@ -242,7 +244,7 @@ if (sizeof($order->fields) > 0) {
 			'id'          				=> $ordr_items->fields['id'],
 			'item_cnt'    				=> $ordr_items->fields['item_cnt'],
 		    'gl_type'     				=> $ordr_items->fields['gl_type'],
-			$qty_pstd     				=> $ordr_items->fields['qty'],
+		  	$qty_pstd     				=> $ordr_items->fields['qty'],
 			'sku'         				=> $ordr_items->fields['sku'],
 			'description'				=> $ordr_items->fields['description'],
 			'gl_account'  				=> $ordr_items->fields['gl_account'],
@@ -254,6 +256,7 @@ if (sizeof($order->fields) > 0) {
 			'unit_price'  				=> $currencies->precise($ordr_items->fields['qty'] ? ($total / $ordr_items->fields['qty']) : '0', true, $currencies_code, $currencies_value),
 			'total'       				=> $currencies->format($total, true, $currencies_code, $currencies_value),
 			'full_price'  				=> $currencies->format($ordr_items->fields['full_price'], true, $currencies_code, $currencies_value),
+		    'inventory_type'     		=> $inv_details->fields['inventory_type'],
 			'inactive'    				=> $inv_details->fields['inactive'],
 			'weight'      				=> $inv_details->fields['item_weight'],
 			'stock'       				=> $inv_details->fields['quantity_on_hand'],
