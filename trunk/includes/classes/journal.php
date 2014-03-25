@@ -23,7 +23,7 @@ class journal {
 	public 	$cogs_entry			= array();
 	private $first_period		= 0;
 
-	public function __construct( int $id = 0) {
+	public function __construct( int $id = 0, $verbose=true) {
 		global $db;
 		if ($id != 0) {
 			$result = $db->Execute("select * from " . TABLE_JOURNAL_MAIN . " where id = $id");
@@ -47,122 +47,115 @@ class journal {
 /*******************************************************************************************************************/
   	function Post($action = 'insert', $skip_balance = false) {
 		global $messageStack;
-		$this->first_period = $this->period;
+		if (!isset($this->id) || $this->id == '') $this->id = 0;
+		$this->unpost_ids = $this->check_for_re_post();
 		if ($action == 'edit') {
-			$messageStack->debug("\n\n  unPosting as part of edit journal main id = " . $this->id);
-			$old_gl_entry = new journal($this->id); // read in the original journal entry
-			$this->first_period = min($old_gl_entry->period, $this->period);
-			$old_gl_entry->unPost('edit', true);	// unpost it
-			$this->affected_accounts = $this->array_key_merge($this->affected_accounts, $old_gl_entry->affected_accounts);
-		} else {
-			$old_gl_entry->repost_ids = $this->check_for_re_post(); // check for dependent records that will need to be re-posted
+			$orig_post = new journal($this->id); // read in the original journal entry to get post order
+			$idx = substr($orig_post->post_date, 0, 10).':'.str_pad($this->id, 8, '0', STR_PAD_LEFT);
+			$this->unpost_ids[$idx] = $this->id;
 		}
-		if (sizeof($old_gl_entry->repost_ids) > 0) { // rePost any journal entries unPosted to rollback COGS calculation (if edit)
-			ksort($old_gl_entry->repost_ids);
-		  	$messageStack->debug("\n  First level unPost returned re-post_ids to be unPosted next = " . arr2string($old_gl_entry->repost_ids));
+		$idx = substr($this->post_date, 0, 10).':'.str_pad($this->id, 8, '0', STR_PAD_LEFT);
+		$this->post_ids[$idx] = clone $this; // save variables for later to post
+		$this->first_period = $this->period;
+		// start unposting all affected records
+		if (sizeof($this->unpost_ids) > 0) {
+	  		krsort($this->unpost_ids); // unpost in reverse order
+	  		$messageStack->debug("\nStarting to unPost reverse sorted id array = " . arr2string($this->unpost_ids));
 		  	while (true) {
-				if (!$id = array_shift($old_gl_entry->repost_ids)) break; // no more to unPost, exit loop
-				$messageStack->debug("\n  unPosting re-post Journal main id = $id");
-				if (in_array($id, $this->repost_ids)) continue; // already has been unposted, skip
-				$this->unPost_entry[$id] = new journal($id);
-				$idx = substr($this->unPost_entry[$id]->post_date, 0, 10).':'.str_pad($id, 8, '0', STR_PAD_LEFT);
-				$this->repost_ids[$idx] = $id;
-				$this->unPost_entry[$id]->unPost('edit', true);
-				// add the new repost_ids to the arrays, one for now, one for re-post loop later
-				$old_gl_entry->repost_ids += $this->unPost_entry[$id]->repost_ids;
-				$messageStack->debug("\n  unPosting array now looks like = " . arr2string($old_gl_entry->repost_ids));
-				$messageStack->debug("\n  re-Posting array is queing for repost id array = " . arr2string($this->repost_ids));
-				$this->unPost_entry[$id]->repost_ids = array(); // clear nested unPost to zero, so it doesn't re-post
-		  	}
+				if (!$id = array_shift($this->unpost_ids)) break; // no more to unPost, exit loop
+				$messageStack->debug("\n/********* unPosting journal_main id = $id");
+				$unPost = new journal($id, false);
+				if (!isset($unPost->id)) continue; // already has been unposted, skip
+				if ($this->id <> $id) { // re-queue to post if not current entry
+					$idx = substr($unPost->post_date, 0, 10).':'.str_pad($id, 8, '0', STR_PAD_LEFT);
+					$this->post_ids[$idx] = clone $unPost;
+				}
+				$unPost->unPost('edit', true);
+				$this->first_period      = min($this->first_period, $unPost->period);
+				$this->affected_accounts = gen_array_key_merge($this->affected_accounts, $unPost->affected_accounts);
+				// add the new post_ids to the arrays, one for now, one for re-post loop later
+				$this->unpost_ids += $unPost->unpost_ids;
+				$messageStack->debug("\n  unPosting array now looks like = " . arr2string($this->unpost_ids));
+				$messageStack->debug("\n  re-Posting array keys now looks like = " . arr2string(array_keys($this->post_ids)));
+//				$unPost->post_ids = array(); // clear nested unPost to zero, so it doesn't re-post
+	  		}
 		}
-		// post journal main record
-		$messageStack->debug("\n  Posting Journal main ... id = " . $this->id . " and action = " . $action . " and journal_id = " . $this->journal_id);
-		$messageStack->debug("\n  main_array = " . arr2string($this->journal_main_array));
-		db_perform(TABLE_JOURNAL_MAIN, $this->journal_main_array, 'insert');
-		$this->id = db_insert_id();
+		// Post entry and rePost any journal entries unPosted
+		ksort($this->post_ids); // re-post in post_date/record_id ascending order
+		$messageStack->debug("\nStarting to Post indexes to be Posted = " . arr2string(array_keys($this->post_ids)));
+		while ($glEntry = array_shift($this->post_ids)) {
+			$messageStack->debug("\n/********* Posting Journal main ... id = $glEntry->id and journal_id = $glEntry->journal_id");
+			$this->repost_ids = $glEntry->check_for_re_post();
+			$glEntry->remove_cogs_rows(); // they will be regenerated during the post
+			$messageStack->debug("\n  journal_main array = " . arr2string($glEntry->journal_main_array));
+			db_perform(TABLE_JOURNAL_MAIN, $glEntry->journal_main_array, 'insert');
+			if (!$glEntry->id) $glEntry->id = db_insert_id();
 		// post journal rows
 		$messageStack->debug("\n  Posting Journal rows ...");
-		for ($i = 0; $i < count($this->journal_rows); $i++) {
-		  	$messageStack->debug("\n  journal_rows = " . arr2string($this->journal_rows[$i]));
-		  	$this->journal_rows[$i]['ref_id'] = $this->id;	// link the rows to the journal main id
-		  	db_perform(TABLE_JOURNAL_ITEM, $this->journal_rows[$i], 'insert');
-		  	$this->journal_rows[$i]['id'] = db_insert_id();
+			for ($i = 0; $i < count($glEntry->journal_rows); $i++) {
+		  		$messageStack->debug("\n  journal_rows = " . arr2string($glEntry->journal_rows[$i]));
+		  		$glEntry->journal_rows[$i]['ref_id'] = $glEntry->id;	// link the rows to the journal main id
+		  		db_perform(TABLE_JOURNAL_ITEM, $glEntry->journal_rows[$i], 'insert');
+		  		if (!$glEntry->journal_rows[$i]['id']) $glEntry->journal_rows[$i]['id'] = db_insert_id();
 		}
 		$messageStack->debug("\nStarting auxilliary post functions ...");
 	  	// Inventory needs to be posted first because function may add additional journal rows for COGS
-		$this->Post_inventory();
-		$this->Post_chart_balances();	// post the chart of account values
-		$this->Post_account_sales_purchases();
-		if (sizeof($this->repost_ids) > 0) { // rePost any journal entries unPosted to rollback COGS calculation (if edit)
-			ksort($this->repost_ids);
-		  $messageStack->debug("\nStarting to Post re-post_ids to be Posted = " . arr2string($this->repost_ids));
-		  $cnt = 0;
-		  while ($id = array_shift($this->repost_ids)) {
-			$messageStack->debug("\n    Re-posting as part of Post - Journal main id = " . $id);
-			$gl_entry = $this->unPost_entry[$id];
-			if (!is_object($gl_entry)) { // for this case, the affected journal objects have not been created
-			  $gl_entry = new journal($id);
-			  $gl_entry->remove_cogs_rows(); // they will be regenerated during the re-post
-			  $gl_entry->Post('edit', true);
-			} else {
-			  $gl_entry->remove_cogs_rows(); // they will be regenerated during the re-post
-			  $gl_entry->Post('insert', true);
+			$glEntry->Post_inventory(); 
+			$glEntry->Post_chart_balances();
+			$glEntry->Post_account_sales_purchases();
+			$this->affected_accounts = gen_array_key_merge($this->affected_accounts, $glEntry->affected_accounts);
+			$this->first_period = min($this->first_period, $glEntry->period);
+			if (sizeof($this->repost_ids) > 0) {
+				ksort($this->repost_ids); // repost by post date
+				$messageStack->debug("\nStarting to rePost entries queued from first pass, sorted id array = ".arr2string($this->repost_ids));
+				while (true) {
+					if (!$id = array_shift($this->repost_ids)) break; // no more to unPost, exit loop
+					$messageStack->debug("\n/********* rePosting journal_main id = $id");
+					if ($this->id == $id) continue; // don't repost current post
+					$rePost = new journal($id, false);
+					$rePost->Post('edit', true);
+					// add the new post_ids to the arrays, one for now, one for re-post loop later
+					$this->repost_ids += $rePost->repost_ids;
+					$messageStack->debug("\n  rePosting array now looks like = " . arr2string($this->repost_ids));
 			}
-			$this->affected_accounts = $this->array_key_merge($this->affected_accounts, $gl_entry->affected_accounts);
-			$this->first_period = min($gl_entry->period, $this->first_period);
-
-		  }
 		}
-		if (!$skip_balance) {
-		  	$this->update_chart_history_periods($this->first_period);
 		}
+		if (!$skip_balance) $this->update_chart_history_periods($this->first_period);
 		$this->check_for_closed_po_so('Post');
 		$messageStack->debug("\n*************** end Posting Journal ******************* id = $this->id\n");
 		return true;
   	}
 
-  	/**
-  	 * deletes journal if user is allowed to post outside period.
-  	 * @param string $action
-  	 * @param string $skip_balance
-  	 * @throws \core\classes\userException
-  	 * @throws \Exception
-  	 * @return boolean
-  	 */
   	function unPost($action = 'delete', $skip_balance = false) {
 		global $db, $messageStack;
-		if ($action == 'delete' && $_SESSION['admin_prefs']['restrict_period'] && $this->period <> CURRENT_ACCOUNTING_PERIOD) throw new \core\classes\userException(ORD_ERROR_DEL_NOT_CUR_PERIOD);
-		$messageStack->debug("\n\nunPosting Journal... id = $this->id and action = $action and journal_id = ".$this->journal_id);
-		$this->repost_ids = $this->check_for_re_post(); // check for dependent records that will need to be re-posted
+		$messageStack->debug("\nunPosting Journal... id = $this->id and action = $action and journal_id = $this->journal_id");
+		$this->unpost_ids = $this->check_for_re_post();
 		$this->unPost_account_sales_purchases();	// unPost the customer/vendor history
 		// unPost_chart_balances needs to be unPosted before inventory because inventory may remove journal rows (COGS)
 		$this->unPost_chart_balances();	// unPost the chart of account values
 		$this->unPost_inventory();
 		$messageStack->debug("\n  Deleting Journal main and rows as part of unPost ...");
 		$result = $db->Execute("delete from " . TABLE_JOURNAL_MAIN . " where id = " . $this->id);
-		if ($result->AffectedRows() != 1) throw new \Exception(GL_ERROR_CANNOT_DELETE_MAIN);
+		if ($result->AffectedRows() <> 1) throw new \Exception(GL_ERROR_CANNOT_DELETE_MAIN);
 		$result = $db->Execute("delete from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $this->id);
 		if ($result->AffectedRows() == 0 ) throw new \Exception(printf(GL_ERROR_CANNOT_DELETE_ITEM, $this->id));
-		if ($action <> 'edit') { // re-post affected entries unless edited (which is after the entry is reposted)
-		  if (is_array($this->repost_ids)) { // rePost any journal entries unPosted to rollback COGS calculation
-		  	foreach ($this->repost_ids as $id => $gl_entry) {
+		if ($action == 'delete') { // re-post affected entries unless edited (which is after the entry is reposted)
+	  	if (is_array($this->unpost_ids)) { // rePost any journal entries unPosted to rollback COGS calculation
+	  		ksort($this->unpost_ids);
+			while ($id = array_shift($this->unpost_ids)) {
 			  $messageStack->debug("\nRe-posting as part of unPost - Journal main id = " . $id);
-			  if (!is_object($gl_entry)) { // for the delete case, the affected journal objects have not been created
-				$gl_entry = new journal($id);
-				$gl_entry->remove_cogs_rows(); // they will be regenerated during the re-post
-				$gl_entry->Post('edit', true);
-			  } else {
-				$gl_entry->remove_cogs_rows(); // they will be regenerated during the re-post
-				$gl_entry->Post('insert', true);
-			  }
-			  $this->affected_accounts = $this->array_key_merge($this->affected_accounts, $gl_entry->affected_accounts);
-			  $this->first_period = min($gl_entry->period, $this->first_period);
+		  		$rePost = new journal($id, false);
+		  		if (!isset($rePost->id)) continue; // already has been unposted, skip
+		  		$rePost->remove_cogs_rows(); // they will be regenerated during the re-post
+		  		$rePost->Post('edit', true);
+		  		$this->affected_accounts = gen_array_key_merge($this->affected_accounts, $rePost->affected_accounts);
+		  		$this->first_period = min($this->first_period, $rePost->first_period);
 			}
 		  }
 		}
 		if (!$skip_balance) $this->update_chart_history_periods($this->period);
 		$this->check_for_closed_po_so('unPost'); // check to re-open predecessor entry
-		$messageStack->debug("\nend unPosting Journal.\n");
+		$messageStack->debug("\nend unPosting Journal.\n\n");
 		return true;
   	}
 
@@ -171,10 +164,6 @@ class journal {
 /*******************************************************************************************************************/
 // START re-post Functions
 /*******************************************************************************************************************/
-	/**
-	 * check for dependent records that will need to be re-posted
-	 *
-	 */
   	function check_for_re_post() {
 		global $db, $messageStack;
 		$messageStack->debug("\n  Checking for re-post records ... ");
@@ -192,12 +181,13 @@ class journal {
 	  					$result->MoveNext();
 	  	  			}
 	  	  			if (sizeof($askus) > 0) {
-		    			$messageStack->debug("\n    Finding re-post ids for average sku list = ".print_r($askus, true));
+		    			$messageStack->debug("\n    Finding re-post ids for average sku list = ".arr2string($askus)." and post_date after $this->post_date");
 	  	  				$result = $db->Execute("SELECT ref_id, post_date FROM ".TABLE_JOURNAL_ITEM." WHERE sku IN ('".implode("', '", $askus)."') AND post_date > '$this->post_date'");
 	  	  				while (!$result->EOF) {
 		  	  				$messageStack->debug("\n    check_for_re_post is queing for average cost record id = ".$result->fields['ref_id']);
 							$idx = substr($result->fields['post_date'], 0, 10).':'.str_pad($result->fields['ref_id'], 8, '0', STR_PAD_LEFT);
 							$repost_ids[$idx] = $result->fields['ref_id'];
+	  	  	  				$result->MoveNext();
 	  	  				}
 	  	  			}
 	  			}
@@ -205,18 +195,60 @@ class journal {
 	  		case  7: // Purchase Credit Memo Journal
 			case 12: // Sales/Invoice Journal
 	  		case 13: // Sales Credit Memo Journal
-	  		case 19: // POS Journal
 	  		case 14: // Inventory Assembly Journal
 	  		case 16: // Inventory Adjustment Journal
 	  		case 19: // POS Journal
 	  		case 21: // Inventory Direct Purchase Journal
+	  	if ($this->id) for ($i = 0; $i < count($this->journal_rows); $i++) if ($this->journal_rows[$i]['sku']) {
+			// check to see if any future postings relied on this record, queue to re-post if so.
+			$sql = "SELECT id FROM ".TABLE_INVENTORY_HISTORY." WHERE ref_id=$this->id AND sku='".$this->journal_rows[$i]['sku']."'";
+			$result = $db->Execute($sql);
+			if ($result->RecordCount() > 0) {
+				$sql = "SELECT journal_main_id FROM ".TABLE_INVENTORY_COGS_USAGE." WHERE inventory_history_id=".$result->fields['id'];
+				$result = $db->Execute($sql);
+				while (!$result->EOF) {
+				  if ($result->fields['journal_main_id'] <> $this->id) {
+			  		$messageStack->debug("\n    check_for_re_post is queing for cogs usage id = " . $result->fields['journal_main_id']);
+				  	$p_date = $db->Execute("SELECT post_date FROM ".TABLE_JOURNAL_MAIN." WHERE id=".$result->fields['journal_main_id']);
+			  		$idx = substr($p_date->fields['post_date'], 0, 10).':'.str_pad($result->fields['journal_main_id'], 8, '0', STR_PAD_LEFT);
+				  	$repost_ids[$idx] = $result->fields['journal_main_id'];
+				  }
+				  $result->MoveNext();
+				}
+			}
+	  	}
+	  	// find if any COGS owed for items
+	  	foreach ($this->journal_rows as $row) if ($row['sku']) {
+	  		if (($row['qty']>0 && in_array($this->journal_id, array(6, 13, 14, 16))) || ($row['qty'] < 0 && in_array($this->journal_id, array(7, 12)))) {
+			  	$sql = "SELECT id, journal_main_id, qty, post_date FROM ".TABLE_INVENTORY_COGS_OWED." WHERE sku='".$row['sku']."'";
+			  	if (ENABLE_MULTI_BRANCH) $sql .= " AND store_id = " . $this->store_id;
+			  	$sql .= " ORDER BY post_date, id";
+			  	$result = $db->Execute($sql);
+			  	$inv_qoh = $db->Execute("SELECT SUM(remaining) as remaining FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='".$row['sku']."' AND remaining>0");
+			  	$working_qty = $row['qty'] + $inv_qoh->fields['remaining'];
+			  	while (!$result->EOF) {
+			  		if ($working_qty >= $result->fields['qty']) { // repost this journal entry and remove the owed record since we will repost all the negative quantities necessary
+			  			if ($result->fields['journal_main_id'] <> $this->id) { // prevent infinite loop
+			  				$messageStack->debug("\n    check_for_re_post is queing for cogs owed, id = " . $result->fields['journal_main_id'] . " to re-post.");
+			  				$idx = substr($result->fields['post_date'], 0, 10).':'.str_pad($result->fields['journal_main_id'], 8, '0', STR_PAD_LEFT);
+			  				$repost_ids[$idx] = $result->fields['journal_main_id'];
+			  			}
+			  			$db->Execute("DELETE FROM " . TABLE_INVENTORY_COGS_OWED . " WHERE id = " . $result->fields['id']);
+			  		}
+			  		$working_qty -= $result->fields['qty'];
+			  		if ($working_qty <= 0) break;
+			  		$result->MoveNext();
+			  	}
+	  		}
+	  	}
 				// Check for payments or receipts made to this record that will need to be re-posted.
 				if ($this->id) {
-		  			$sql = "SELECT ref_id FROM ".TABLE_JOURNAL_ITEM." WHERE so_po_item_ref_id = $this->id AND gl_type in ('chk', 'pmt')";
+		  			$sql = "SELECT ref_id, post_date FROM ".TABLE_JOURNAL_ITEM." WHERE so_po_item_ref_id = $this->id AND gl_type in ('chk', 'pmt')";
 					$result = $db->Execute($sql);
 					while(!$result->EOF) {
-			  			$messageStack->debug("\n    check_for_re_post is queing id = " . $result->fields['ref_id']);
-			  			$this->repost_ids[$result->fields['ref_id']] = $result->fields['ref_id'];
+			  			$messageStack->debug("\n    check_for_re_post is queing for payment id = " . $result->fields['ref_id']);
+		  	  			$idx = substr($result->fields['post_date'], 0, 10).':'.str_pad($result->fields['ref_id'], 8, '0', STR_PAD_LEFT);
+			  			$repost_ids[$idx] = $result->fields['ref_id'];
 			  			$result->MoveNext();
 					}
 				}
@@ -227,12 +259,11 @@ class journal {
 	  		case  4: // Purchase Order Journal
 	  		case  9: // Sales Quote Journal
 	  		case 10: // Sales Order Journal
-	  		case 14: // Inventory Assembly Journal
-	  		case 16: // Inventory Adjustment Journal
 	  		case 18: // Cash Receipts Journal
 	  		case 20: // Cash Distribution Journal
 	  		default: $messageStack->debug(" end check for Re-post with no action.");
 		}
+    return $repost_ids;
   	}
 
 /*******************************************************************************************************************/
@@ -719,20 +750,6 @@ class journal {
 		case 16:
 		case 19:
 		case 21:
-		  // check to see if any future postings relied on this record, queue to re-post if so.
-		  $sql = "SELECT id FROM ".TABLE_INVENTORY_HISTORY." WHERE ref_id=$this->id AND sku='".$this->journal_rows[$i]['sku']."'";
-		  $result = $db->Execute($sql);
-		  if ($result->RecordCount() > 0) {
-			$sql = "SELECT journal_main_id FROM ".TABLE_INVENTORY_COGS_USAGE." WHERE inventory_history_id=".$result->fields['id'];
-			$result = $db->Execute($sql);
-			while (!$result->EOF) {
-			  if ($result->fields['journal_main_id'] <> $this->id) {
-				$messageStack->debug("\nunPost Inventory is queing ID: " . $result->fields['journal_main_id'] . " to re-post.");
-				$this->repost_ids[$result->fields['journal_main_id']] = $result->fields['journal_main_id'];
-			  }
-			  $result->MoveNext();
-			}
-		  }
 		  switch ($this->journal_id) {
 			case  7: // vendor credit memo - negate qty
 			case 12: // customer sales - negate quantity
@@ -823,7 +840,7 @@ class journal {
 				default:
 			  		throw new \Exception(GL_ERROR_CALCULATING_COGS);
 		  	}
-		  	$this->inventory_auto_add($item['sku'], $item['description'], $item_cost, $full_price);
+	  $id = $this->inventory_auto_add($item['sku'], $item['description'], $item_cost, $full_price);
 		  	$result = $db->Execute($sql); // re-load now that item was created
 		}
 		// only calculate cogs for certain inventory_types
@@ -842,7 +859,7 @@ class journal {
 		  	// update will never happen because the entries are removed during the unpost operation.
 			switch ($this->journal_id) {
 			  	case  6:
-				  	if ($defaults['cost_method'] == 'a') $item['price'] = $this->calculate_avg_cost($item['sku'], $item['price'], $item['qty']);
+		  if ($defaults['cost_method'] == 'a') $item['avg_cost'] = $this->calculate_avg_cost($item['sku'], $item['price'], $item['qty']);
 			  	  	break;
 				case 12: // for negative sales/invoices and customer credit memos the price needs to be the last unit_cost,
 				case 13: // not the invoice price (customers price)
@@ -854,29 +871,6 @@ class journal {
 				  	break;
 				default: // for all other journals, use the cost as entered to calculate added inventory
 			}
-		  	// adjust remaining quantity and calculate cogs since initial balance was less than zero (cogs owed)
-		  	// this will never happen with serialized items since they cannot be sold before they arrive (serial number unknown)
-		  	// find adjustments/sales that caused the inventory to go negative and queue to re-post to calculate cogs
-		  	$sql = "select id, journal_main_id, qty from " . TABLE_INVENTORY_COGS_OWED . " where sku = '" . $item['sku'] . "'";
-		  	if (ENABLE_MULTI_BRANCH) $sql .= " and store_id = " . $this->store_id;
-		  	$sql .= " order by post_date";
-		  	$result = $db->Execute($sql);
-		  	$working_qty = $item['qty'];
-		  	$working_qoh = $defaults['quantity_on_hand'];
-		  	while (!$result->EOF) {
-		  		$messageStack->debug("\n      Relieving cogs owed, working_qoh = $working_qoh and working_qty = $working_qty");
-		  		$working_qoh += $result->fields['qty'];
-				if ($working_qty >= $working_qoh && $working_qty > 0 && $working_qoh >= 0) { // repost this journal entry and remove the owed record since we will repost all the negative quantities necessary
-			  		if ($result->fields['journal_main_id'] <> $this->id) { // prevent infinite loop
-			    		$messageStack->debug("\nCOGS calculation is queing ID: " . $result->fields['journal_main_id'] . " to re-post.");
-						$this->repost_ids[$result->fields['journal_main_id']] = $result->fields['journal_main_id'];
-			  		}
-			  		$db->Execute("delete from " . TABLE_INVENTORY_COGS_OWED . " where id = " . $result->fields['id']);
-				}
-		  		$working_qty -= $result->fields['qty'];
-				if ($working_qty <= 0) break; // we are finished listing all records that will be affected by this inv receipt
-				$result->MoveNext();
-		  	}
 			// 	adjust remaining quantities for inventory history since stock was negative
 		  	$history_array = array(
 			  'ref_id'     => $this->id,
@@ -886,6 +880,7 @@ class journal {
 			  'qty'        => $item['qty'],
 			  'remaining'  => $item['qty'],
 			  'unit_cost'  => $item['price'],
+			  'avg_cost'   => $item['avg_cost'],
 			  'post_date'  => $this->post_date,
 		  	);
 		  	if ($defaults['serialize']) { // check for duplicate serial number
@@ -903,7 +898,14 @@ class journal {
 			// update should never happen because COGS is backed out during the unPost inventory function
 		  	$working_qty = -$item['qty']; // quantity needs to be positive
 		  	$history_ids = array(); // the id's used to calculated cogs from the inventory history table
-		  	if ($defaults['cost_method'] == 'a') $avg_cost = $this->fetch_avg_cost($item['sku']);
+	  		$queue_sku = false;
+			if ($defaults['cost_method'] == 'a') {
+				$sql = "SELECT SUM(remaining) as remaining FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='".$item['sku']."' AND remaining > 0";
+				if (ENABLE_MULTI_BRANCH) $sql .= " AND store_id='$this->store_id'";
+				$result = $db->Execute($sql);
+			    if ($result->fields['remaining'] < $working_qty) $queue_sku = true; // not enough of this SKU so just queue it up until stock arrives
+			  	$avg_cost = $this->fetch_avg_cost($item['sku'], $working_qty);
+			}
 		  	if ($defaults['serialize']) { // there should only be one record with one remaining quantity
 		    	$sql = "SELECT id, remaining, unit_cost FROM ".TABLE_INVENTORY_HISTORY."
 			  	  WHERE sku='".$item['sku']."' AND remaining > 0 AND serialize_number='".$item['serialize_number']."'";
@@ -916,7 +918,7 @@ class journal {
 				$sql .= " ORDER BY ".($defaults['cost_method']=='l' ? 'post_date DESC, id DESC' : 'post_date, id');
 				$result = $db->Execute($sql);
 		  	}
-		  	while (!$result->EOF) { // loops until either qty is zero and/or inventory history is exhausted
+	  if (!$queue_sku) while (!$result->EOF) { // loops until either qty is zero and/or inventory history is exhausted
 				if ($defaults['cost_method'] == 'a') { // Average cost
 			  		switch ($this->journal_id) {
 						case  7: // vendor credit memo, just need the difference in return price from average price
@@ -968,14 +970,13 @@ class journal {
 			if ($working_qty > 0) {
 				if (!ALLOW_NEGATIVE_INVENTORY) throw new \Exception(GL_ERROR_POSTING_NEGATIVE_INV);
 				// for now, estimate the cost based on the unit_price of the item, will be re-posted (corrected) when product arrives
-				$result = $db->Execute("select item_cost from " . TABLE_INVENTORY . " where sku = '" . $item['sku'] . "'");
 				switch ($this->journal_id) {
 					case  7: // vendor credit memo, just need the difference in return price from purchase price
 				  	case 14: // assembly, just need the difference in assemble price from piece price
-						$cost = $result->fields['item_cost'] - $item['price'];
+			$cost = $defaults['cost_method']=='a' ? ($avg_cost - $item['price']) : ($defaults['item_cost'] - $item['price']);
 						break;
 				  	default:
-						$cost = $result->fields['item_cost']; // for the specific history record
+			$cost = $defaults['cost_method']=='a' ? $avg_cost : $defaults['item_cost']; // for the specific history record
 				}
 				$cogs += $cost * $working_qty;
 				// queue the journal_main_id to be re-posted later after inventory is received
@@ -987,7 +988,7 @@ class journal {
 				  'store_id'        => $this->store_id,
 				);
 				$messageStack->debug("\n    Adding inventory_cogs_owed, SKU = " . $item['sku'] . ", qty = " . $working_qty);
-				$result = db_perform(TABLE_INVENTORY_COGS_OWED, $sql_data_array, 'insert');
+		db_perform(TABLE_INVENTORY_COGS_OWED, $sql_data_array, 'insert');
 			}
 		}
 
@@ -1021,7 +1022,7 @@ class journal {
   	$defaults = $db->Execute("SELECT inventory_type, item_cost, cost_method, serialize FROM ".TABLE_INVENTORY." WHERE sku='$sku'");
 	if ($defaults->RecordCount() == 0) return $cogs; // not in inventory, return no cost
 	if (strpos(COG_ITEM_TYPES, $defaults->fields['inventory_type']) === false) return $cogs; // this type not tracked in cog, return no cost
-	if ($defaults->fields['cost_method'] == 'a') return $qty * $this->fetch_avg_cost($sku);
+	if ($defaults->fields['cost_method'] == 'a') return $qty * $this->fetch_avg_cost($sku, $qty);
 	if ($defaults->fields['serialize']) { // there should only be one record
 		$result = $db->Execute("SELECT unit_cost FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='$sku' AND serialize_number='$serial_num'");
 		return $result->fields['unit_cost'];
@@ -1048,7 +1049,7 @@ class journal {
 
   function calculate_avg_cost($sku = '', $price = 0, $qty = 1) {
   	global $db, $messageStack;
-	$sql = "SELECT unit_cost, remaining FROM ".TABLE_INVENTORY_HISTORY."
+	$sql = "SELECT avg_cost, remaining FROM ".TABLE_INVENTORY_HISTORY." 
 		WHERE ref_id<>$this->id AND sku='$sku' AND remaining>0 AND post_date<='$this->post_date'";
   	if ($this->store_id > 0) $sql .= " AND store_id='$this->store_id'";
 	$sql .= " ORDER BY post_date, id";
@@ -1057,7 +1058,7 @@ class journal {
   	$last_cost   = 0;
   	while (!$result->EOF) {
   		$total_stock += $result->fields['remaining'];
-  		$last_cost    = $result->fields['unit_cost']; // just keep the cost from the last recordas this keeps the avg value of the post date
+  		$last_cost    = $result->fields['avg_cost']; // just keep the cost from the last record as this keeps the avg value of the post date
   		$result->MoveNext();
   	}
   	if ($total_stock == 0 && $qty == 0) return 0;
@@ -1065,16 +1066,30 @@ class journal {
   	return $avg_cost;
   }
 
-  function fetch_avg_cost($sku) {
+  function fetch_avg_cost($sku, $qty=1) {
 	global $db, $messageStack;
-	$messageStack->debug("\n   Entering fetch_avg_cost for sku: $sku ... ");
-	$sql = "SELECT unit_cost, qty FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='$sku' AND remaining>0 AND post_date<='$this->post_date'";
+	$messageStack->debug("\n      Entering fetch_avg_cost for sku: $sku and qty: $qty ... ");
+	$sql = "SELECT avg_cost, remaining, post_date FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='$sku' AND remaining>0";
 	if (ENABLE_MULTI_BRANCH) $sql .= " AND store_id='$this->store_id'";
-	$sql .= " ORDER BY post_date DESC, id DESC LIMIT 1";
+	$sql .= " ORDER BY post_date";
 	$result = $db->Execute($sql);
-	$avg_cost = $result->fields['unit_cost'] ? $result->fields['unit_cost'] : 0;
-	$messageStack->debug("Exiting with cost = $avg_cost");
-	return $avg_cost;
+	$last_cost = isset($result->fields['avg_cost']) ? $result->fields['avg_cost'] : 0;
+	$last_qty = 0;
+	$ready_to_exit = false;
+	while (!$result->EOF) {
+		$qty -= $result->fields['remaining'];
+		$post_date = substr($result->fields['post_date'], 0, 10);
+		if ($qty <= 0) $ready_to_exit = true;
+		if ($ready_to_exit && $post_date > $this->post_date) { // will get the last purchase cost before the sale post date
+			$messageStack->debug("Exiting early with history post_date = $post_date fetch_avg_cost with cost = ".($last_qty > 0 ? $result->fields['avg_cost'] : $last_cost));
+			return $last_qty > 0 ? $result->fields['avg_cost'] : $last_cost;
+		}
+		$last_cost = $result->fields['avg_cost'];
+		$last_qty = $qty;
+		$result->MoveNext(); // not finished yet, get next average cost
+	}
+	$messageStack->debug("Exiting fetch_avg_cost with cost = $last_cost");
+	return $last_cost;
   }
 
 	// Rolling back cost of goods sold required to unpost an entry involves only re-setting the inventory history.
@@ -1179,6 +1194,7 @@ class journal {
 		    	if ($qty > 0) $result->fields['price'] = 0; // remove unit_price for builds, leave for unbuilds (to calc delta COGS)
 		    	$item_cost = $this->calculate_COGS($result->fields, true);
 		  	}
+	  if ($item_cost === false) return false; // error in cogs calculation
 		  	$assy_cost += $item_cost;
 		  	// generate inventory assembly part record and insert into db
 		  	$temp_array = array(
@@ -1643,20 +1659,5 @@ class journal {
 	}
 	return $output;
   }
-
-	/**
-	 * merges two arrays if key from second array doesn't exist it is added to the first with its value.
-	 * values will not be added or subtracted if keys match.
-	 * @param array $arr1
-	 * @param array $arr2
-	 * @todo see if this is still nessecery
-	 */
-  	function array_key_merge($arr1, $arr2) {
-  		if (!is_array($arr1)) $arr1 = array();
-    	if (is_array($arr2) && sizeof($arr2) > 0) {
-	  		foreach($arr2 as $key => $value) if (!array_key_exists($key, $arr1)) $arr1[$key] = $value;
-		}
-    	return $arr1;
-  	}
 } // end class journal
 ?>
