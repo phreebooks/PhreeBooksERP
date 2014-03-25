@@ -48,17 +48,20 @@ class inventory_admin {
 	  'INV_SERIALIZE_DEFAULT_COS'          => '5000',
 	  'INV_SERIALIZE_DEFAULT_COSTING'      => 'f',
 	  'INV_NON_STOCK_DEFAULT_SALES'        => '4000',
-	  'INV_NON_STOCK_DEFAULT_INVENTORY'    => '1200',
+	  'INV_NON_STOCK_DEFAULT_INVENTORY'    => '6550',
 	  'INV_NON_STOCK_DEFAULT_COS'          => '5000',
 	  'INV_SERVICE_DEFAULT_SALES'          => '4000',
-	  'INV_SERVICE_DEFAULT_INVENTORY'      => '1200',
+	  'INV_SERVICE_DEFAULT_INVENTORY'      => '6550',
 	  'INV_SERVICE_DEFAULT_COS'            => '5000',
 	  'INV_LABOR_DEFAULT_SALES'            => '4000',
-	  'INV_LABOR_DEFAULT_INVENTORY'        => '1200',
+	  'INV_LABOR_DEFAULT_INVENTORY'        => '6550',
 	  'INV_LABOR_DEFAULT_COS'              => '5000',
 	  'INV_ACTIVITY_DEFAULT_SALES'         => '4000',
+	  'INV_ACTIVITY_DEFAULT_INVENTORY'     => '6550',
 	  'INV_CHARGE_DEFAULT_SALES'           => '4000',
+	  'INV_CHARGE_DEFAULT_INVENTORY'       => '6550',
 	  'INV_DESC_DEFAULT_SALES'             => '4000',
+	  'INV_DESC_DEFAULT_INVENTORY'         => '6550',
 	  'INVENTORY_DEFAULT_TAX'              => '0',
 	  'INVENTORY_DEFAULT_PURCH_TAX'        => '0',
 	  'INVENTORY_AUTO_ADD'                 => '0',
@@ -217,7 +220,6 @@ class inventory_admin {
 			case 'serialize':
 				$temp['inventory_type'] = 'sa:sr';
 				break;
-			case 'account_sales_income':
 			case 'item_taxable':
 			case 'purch_taxable':
 			case 'item_cost':
@@ -230,9 +232,6 @@ class inventory_admin {
 				break;
 			case 'image_with_path':
 				$temp['inventory_type'] = 'ia:ma:mb:mi:ms:ns:sa:si:sr';
-				break;
-			case 'account_inventory_wage':
-				$temp['inventory_type'] = 'ia:lb:ma:mb:mi:ms:ns:sa:sf:si:sr:sv';
 				break;
 			case 'cost_method':
 				$temp['inventory_type'] = 'ia:ma:mb:mi:ms:ns:si';
@@ -336,7 +335,6 @@ class inventory_admin {
 				case 'serialize':
 					$temp['inventory_type'] = 'sa:sr'; 	
 					break;
-				case 'account_sales_income':
 				case 'item_taxable':
 		  		case 'purch_taxable':
 		  		case 'item_cost':
@@ -350,7 +348,6 @@ class inventory_admin {
 		  		case 'image_with_path':
 		  			$temp['inventory_type'] = 'ia:ma:mb:mi:ms:ns:sa:si:sr';
 		  			break;
-		  		case 'account_inventory_wage':
 		  		case 'account_cost_of_sales':
 		  			$temp['inventory_type'] = 'ia:lb:ma:mb:mi:ms:ns:sa:sf:si:sr:sv';
 		  			break;
