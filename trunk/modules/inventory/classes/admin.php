@@ -409,10 +409,11 @@ class admin extends \core\classes\admin {
 			}
 		  	validate_path(DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/attachments/', 0755);
 		}
-		if (version_compare($this->status, '3.7', '<') ) {
-			if (!db_field_exists(TABLE_INVENTORY_HISTORY, 'avg_cost')) $db->Execute("ALTER TABLE ".TABLE_INVENTORY_HISTORY." ADD avg_cost FLOAT NOT NULL DEFAULT '0' AFTER unit_cost");
-		}
 		if (version_compare($this->status, '3.7.1', '<') ) {
+			if (!db_field_exists(TABLE_INVENTORY_HISTORY, 'avg_cost')) {
+				$db->Execute("ALTER TABLE ".TABLE_INVENTORY_HISTORY." ADD avg_cost FLOAT NOT NULL DEFAULT '0' AFTER unit_cost");
+				$db->Execute("UPDATE ".TABLE_INVENTORY_HISTORY." SET avg_cost = unit_cost");
+			}
 			$result = $db->Execute("select id, params from ".TABLE_EXTRA_FIELDS." where module_id = 'inventory' AND field_name = 'account_cost_of_sales'");
 			$temp = unserialize($result->fields['params']);
 			$temp['inventory_type'] = 'ai:ci:ds:ia:lb:ma:mb:mi:ms:ns:sa:sf:si:sr:sv';
