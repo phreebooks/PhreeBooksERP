@@ -214,6 +214,10 @@ class tills {
     	$messageStack->add("Before continuing set a till for this store.<br> This will contain default values to allow this page to work", 'error');
     	gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL')); 
     }
+    if (!isset($_SESSION['admin_encrypt'])){
+    	$messageStack->add("Error - Encryption key not set! The encryption key must be set to use the POS module.", 'error');
+    	gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL'));
+    }
     if ($result->RecordCount()== 1) {
     	return false;
     }else{
