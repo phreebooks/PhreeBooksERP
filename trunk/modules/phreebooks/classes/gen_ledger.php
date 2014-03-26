@@ -90,7 +90,7 @@ class journal {
 		$glEntry->remove_cogs_rows(); // they will be regenerated during the post
 		$messageStack->debug("\n  journal_main array = " . arr2string($glEntry->journal_main_array));
 		db_perform(TABLE_JOURNAL_MAIN, $glEntry->journal_main_array, 'insert');
-		if (!$glEntry->id) $glEntry->id = db_insert_id();
+		if (!$glEntry->id) $this->id = $glEntry->id = db_insert_id();
 		// post journal rows
 		$messageStack->debug("\n  Posting Journal rows ...");
 		for ($i = 0; $i < count($glEntry->journal_rows); $i++) {

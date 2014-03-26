@@ -23,7 +23,7 @@ switch ($type) {
   case 'c': // customers
 	define('JOURNAL_ID', 18);
 	define('GL_TYPE','pmt');
-	define('POPUP_FORM_TYPE','bnk:rcpt');
+	define('POPUP_FORM_TYPE','cust:cm');
 	define('AUDIT_LOG_DESC',BOX_CUSTOMER_DEPOSITS);
 	define('DEF_DEP_GL_ACCT',AR_DEF_DEP_LIAB_ACCT);
 	define('PAGE_TITLE', BOX_CUSTOMER_DEPOSITS);
@@ -160,7 +160,6 @@ switch ($_REQUEST['action']) {
 	if (!$order->item_rows[0]['total']) $error = $messageStack->add(GL_ERROR_NO_ITEMS, 'error');
 	// post the receipt/payment
 	if (!$error && $post_success = $order->post_ordr($_REQUEST['action'])) {
-	  $oID = $order->id; // save id for printing
 	  // now create a credit memo to show a credit on customers account
 	  $order                      = new orders();
 	  $order->bill_short_name     = db_prepare_input($_POST['search']);
@@ -193,6 +192,8 @@ switch ($_REQUEST['action']) {
 		'acct'  => db_prepare_input($_POST['acct_1']),
 	  );
 	  $post_credit = $order->post_ordr($_REQUEST['action']);
+	  $messageStack->add("order id is now: $order->id", 'caution');
+	  $oID = $order->id; // need to fetch id for printing
 	  if (!$post_credit) {
 		$order            = new objectInfo($_POST);
 		$order->post_date = gen_db_date($_POST['post_date']); // fix the date to original format
