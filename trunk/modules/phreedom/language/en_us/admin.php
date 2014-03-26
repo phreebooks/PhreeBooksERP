@@ -129,7 +129,7 @@ define('CD_08_03_DESC', 'Automatically check for program updates at login to Phr
 define('CD_08_05_DESC', 'Hides messages on successful operations. Only caution and error messages will be displayed.');
 define('CD_08_07_DESC', 'Updates the exchange rate for loaded currencies at every login.<br />If disabled, currencies may be manually updated in the Setup => Currencies menu.');
 define('CD_08_10_DESC', 'Limits the length of history values shown in customer/vendor accounts for sales/purchases.');
-define('CD_15_01_DESC', 'Session Timeout - Enter the time in seconds (default = 3600). Example: 3600= 1 hour<br />Note: Too few seconds can result in timeout issues when adding/editing products.');
+define('CD_15_01_DESC', 'Session Timeout - Enter the time in seconds (default = 3600). Example: 3600= 1 hour<br />Note: Too few seconds can result in timeout issues when adding/editing products, minimum value is 6 minutes.');
 define('CD_15_05_DESC', 'When enabled, this option will use ajax to refresh the session timer every 5 minutes preventing the session from expiring and logging out the user. This feature helps prevent dropped posts when PhreeBooks has been inactive and a post results in a login screen.');
 define('CD_20_99_DESC', 'Enable trace generation for debug purposes. If Yes is selected, an additional menu will be added to the Tools menu to download the trace information to help debug posting problems.');
 define('CD_09_01_DESC', 'Specifies the export preference when exporting reports and forms. Local will save them in the /my_files/reports directory of the webserver for use with all companies. Download will download the file to your browser to save/print on your local machine.');

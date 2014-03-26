@@ -3,7 +3,6 @@
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
 // | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
-
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -23,21 +22,21 @@ define('MENU_HEADING_BANKING','Banking');
 // Menu Titles
 define('ORD_TEXT_0_WINDOW_TITLE', 'Beginning Balances');
 define('ORD_TEXT_2_WINDOW_TITLE', 'General Journal');
-define('ORD_TEXT_3_WINDOW_TITLE', 'Request for Quotes');
-define('ORD_TEXT_4_WINDOW_TITLE', 'Purchase Orders');
-define('ORD_TEXT_6_WINDOW_TITLE', 'Purchase/Receive Inventory');
-define('ORD_TEXT_7_WINDOW_TITLE', 'Vendor Credit Memos');
-define('ORD_TEXT_9_WINDOW_TITLE', 'Sales Quotes');
-define('ORD_TEXT_10_WINDOW_TITLE','Sales Orders');
-define('ORD_TEXT_12_WINDOW_TITLE','Sales/Invoices');
-define('ORD_TEXT_13_WINDOW_TITLE','Customer Credit Memos');
-define('ORD_TEXT_18_WINDOW_TITLE','Cash Receipts');
-define('ORD_TEXT_20_WINDOW_TITLE','Cash Distributions');
-define('ORD_TEXT_18_C_WINDOW_TITLE','Customer Receipts');
-define('ORD_TEXT_18_V_WINDOW_TITLE','Vendor Refunds');
+define('ORD_TEXT_3_WINDOW_TITLE', 'Request for Quote');
+define('ORD_TEXT_4_WINDOW_TITLE', 'Purchase Order');
+define('ORD_TEXT_6_WINDOW_TITLE', 'Purchase/Receive');
+define('ORD_TEXT_7_WINDOW_TITLE', 'Vendor Credit Memo');
+define('ORD_TEXT_9_WINDOW_TITLE', 'Sales Quote');
+define('ORD_TEXT_10_WINDOW_TITLE','Sales Order');
+define('ORD_TEXT_12_WINDOW_TITLE','Sales/Invoice');
+define('ORD_TEXT_13_WINDOW_TITLE','Customer Credit Memo');
+define('ORD_TEXT_18_WINDOW_TITLE','Cash Receipt');
+define('ORD_TEXT_20_WINDOW_TITLE','Cash Distribution');
+define('ORD_TEXT_18_C_WINDOW_TITLE','Customer Receipt');
+define('ORD_TEXT_18_V_WINDOW_TITLE','Vendor Refund');
 define('ORD_TEXT_19_WINDOW_TITLE','Pos Sales');
-define('ORD_TEXT_20_C_WINDOW_TITLE','Customer Refunds');
-define('ORD_TEXT_20_V_WINDOW_TITLE','Vendor Payments');
+define('ORD_TEXT_20_C_WINDOW_TITLE','Customer Refund');
+define('ORD_TEXT_20_V_WINDOW_TITLE','Vendor Payment');
 
 define('BOX_BANKING_SELECT_FOR_PAYMENT', 'Pay by Due Date');
 define('BOX_BANKING_BANK_ACCOUNT_REGISTER', 'Bank Account Register');
@@ -49,9 +48,5 @@ define('BOX_PHREEBOOKS_MODULE_ADM','PhreeBooks Admin');
 define('BOX_STATUS_MGR','%s Manager');
 define('ORD_TEXT_RECEIPTS_TITLE','Receipts');
 define('ORD_TEXT_PAYMENTS_TITLE','Payments');
-define('ORD_TEXT_QUOTES_TITLE','Quotes');
 define('BOX_TEXT_NEW_TITLE','New %s');
-define('ORD_TEXT_ORDERS_TITLE','Orders');
-define('ORD_TEXT_INVOICE_TITLE','Invoices');
-define('ORD_TEXT_CREDIT_TITLE','Credit');
 ?>
