@@ -1,8 +1,0 @@
-#summary How we use svn trunk, tags, and branches.
-
-= trunk, branches, and tags  =
-
- * /trunk - Developers commit all new work to the trunk. Day-to-day changes are committed to /trunk: new features, bug fixes, and so on.
- * /branches/1.0, 1.1, etc. Release branches.  Stable maintenance branches of the code. Used to fix bugs, and stabilize new releases. If a maintenance branch, it should  be ready for QA/shipping at any given time. Teams continue to work in parallel. One team begins rigorous testing of the release branch, while another team continues new work (say, for version 2.0) on /trunk. If bugs are discovered in either location, fixes are ported back and forth as necessary. At some point, however, even that process stops. The branch is “frozen” for final testing right before a release.
- * /branches/cool_feature. A feature branch used for highly experimental or destructive work that may or may not make it into trunk (or a maintenance branch). No guarantees about code working, or otherwise behaving sanely. Should last the minimum time as possible before merging into the mainline branch.
- * /tags/1.0.1, 1.0.2, 1.1.3a, etc. Used for tagging the latest released packages. Never EVER changes. There may be many tags as bug fixes are made, taged releases are immutable.
