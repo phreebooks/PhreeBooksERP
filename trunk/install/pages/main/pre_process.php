@@ -193,20 +193,23 @@ switch ($_REQUEST['action']) {
 		  	if (!$innoDB_enabled) $error = $messageStack->add(MSG_ERROR_INNODB_NOT_ENABLED, 'error');
 		  }
 		}
-		if (!$error) {
-	  		$params   = array();
-	  		$contents = scandir(DIR_FS_MODULES);
-			// fake the install status of all modules found to 1, so all gets installed
-	  		foreach ($contents as $entry) define('MODULE_' . strtoupper($entry) . '_STATUS','1');
-	  		require_once (DIR_FS_MODULES . 'phreedom/config.php'); // needed here to avoid breaking menu array
-	  		foreach ($contents as $entry) {
-	  			// load the configuration files to load version info
-	  			if ($entry <> 'phreedom' && $entry <> '.' && $entry <> '..' && is_dir(DIR_FS_MODULES . $entry)) {
-	  				if (file_exists(DIR_FS_MODULES . $entry . '/config.php')) {
-	  					install_lang($entry, $lang, 'menu');
-	  					install_lang($entry, $lang, 'admin');
-	  					require_once (DIR_FS_MODULES . $entry . '/config.php');
-	  				}
+		if ($error) {
+			$include_template = 'template_install.php';
+			define('PAGE_TITLE', TITLE_INSTALL);
+			break; // failed initial tests
+		}
+	  	$params   = array();
+	  	$contents = scandir(DIR_FS_MODULES);
+		// fake the install status of all modules found to 1, so all gets installed
+	  	foreach ($contents as $entry) define('MODULE_' . strtoupper($entry) . '_STATUS','1');
+	  	require_once (DIR_FS_MODULES . 'phreedom/config.php'); // needed here to avoid breaking menu array
+	  	foreach ($contents as $entry) {
+	  		// load the configuration files to load version info
+	  		if ($entry <> 'phreedom' && $entry <> '.' && $entry <> '..' && is_dir(DIR_FS_MODULES . $entry)) {
+	  			if (file_exists(DIR_FS_MODULES . $entry . '/config.php')) {
+	  				install_lang($entry, $lang, 'menu');
+	  				install_lang($entry, $lang, 'admin');
+	  				require_once (DIR_FS_MODULES . $entry . '/config.php');
 	  			}
 	  		}
 	  	}
