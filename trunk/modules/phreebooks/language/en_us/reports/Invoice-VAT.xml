@@ -745,7 +745,7 @@
 	</boxfield>
 	<boxfield>
 		<fieldname><![CDATA[invoice_line_tax_rate]]></fieldname>
-		<description><![CDATA[VAT]]></description>
+		<description><![CDATA[TAX %]]></description>
 		<font><![CDATA[helvetica]]></font>
 		<size><![CDATA[11]]></size>
 		<align><![CDATA[C]]></align>
@@ -753,7 +753,7 @@
 		<width><![CDATA[18]]></width>
 	</boxfield>
 	<boxfield>
-		<fieldname><![CDATA[invoice_price_w_tax]]></fieldname>
+		<fieldname><![CDATA[invoice_price]]></fieldname>
 		<description><![CDATA[Extension]]></description>
 		<processing><![CDATA[posted_cur]]></processing>
 		<font><![CDATA[helvetica]]></font>
@@ -789,7 +789,7 @@
 	</boxfield>
 </fieldlist>
 <fieldlist>
-	<description><![CDATA[Data - Sales Tax]]></description>
+	<description><![CDATA[Data - Shipping]]></description>
 	<abscissa><![CDATA[178]]></abscissa>
 	<ordinate><![CDATA[239]]></ordinate>
 	<width><![CDATA[30]]></width>
@@ -805,7 +805,7 @@
 	<bordercolor><![CDATA[0:0:0]]></bordercolor>
 	<fillcolor><![CDATA[0:0:0]]></fillcolor>
 	<boxfield>
-		<fieldname><![CDATA[sales_tax]]></fieldname>
+		<fieldname><![CDATA[freight]]></fieldname>
 		<processing><![CDATA[posted_cur]]></processing>
 		<font><![CDATA[h]]></font>
 		<size><![CDATA[1]]></size>
@@ -814,7 +814,7 @@
 	</boxfield>
 </fieldlist>
 <fieldlist>
-	<description><![CDATA[Data - Shipping]]></description>
+	<description><![CDATA[Data - Sales Tax]]></description>
 	<abscissa><![CDATA[178]]></abscissa>
 	<ordinate><![CDATA[246]]></ordinate>
 	<width><![CDATA[30]]></width>
@@ -830,7 +830,7 @@
 	<bordercolor><![CDATA[0:0:0]]></bordercolor>
 	<fillcolor><![CDATA[0:0:0]]></fillcolor>
 	<boxfield>
-		<fieldname><![CDATA[freight]]></fieldname>
+		<fieldname><![CDATA[sales_tax]]></fieldname>
 		<processing><![CDATA[posted_cur]]></processing>
 		<font><![CDATA[h]]></font>
 		<size><![CDATA[1]]></size>
@@ -1315,13 +1315,13 @@
 	<fillcolor><![CDATA[0:0:0]]></fillcolor>
 </fieldlist>
 <fieldlist>
-	<description><![CDATA[Text - Sales Tax]]></description>
+	<description><![CDATA[Text - Shipping]]></description>
 	<abscissa><![CDATA[151]]></abscissa>
 	<ordinate><![CDATA[239]]></ordinate>
 	<width><![CDATA[27]]></width>
 	<height><![CDATA[7]]></height>
 	<type><![CDATA[Text]]></type>
-	<text><![CDATA[Sales Tax]]></text>
+	<text><![CDATA[Shipping]]></text>
 	<font><![CDATA[helvetica]]></font>
 	<size><![CDATA[10]]></size>
 	<align><![CDATA[R]]></align>
@@ -1332,13 +1332,13 @@
 	<fillcolor><![CDATA[0:0:0]]></fillcolor>
 </fieldlist>
 <fieldlist>
-	<description><![CDATA[Text - Shipping]]></description>
+	<description><![CDATA[Text - Sales Tax]]></description>
 	<abscissa><![CDATA[151]]></abscissa>
 	<ordinate><![CDATA[246]]></ordinate>
 	<width><![CDATA[27]]></width>
 	<height><![CDATA[7]]></height>
 	<type><![CDATA[Text]]></type>
-	<text><![CDATA[Shipping]]></text>
+	<text><![CDATA[Sales Tax]]></text>
 	<font><![CDATA[helvetica]]></font>
 	<size><![CDATA[10]]></size>
 	<align><![CDATA[R]]></align>
