@@ -25,6 +25,8 @@ class entry_builder {
 	$taxes = ord_calculate_tax_drop_down('c');
 	$this->taxes = array();
 	foreach ($taxes as $rate) $this->taxes[$rate['id']] = $rate['rate']/100;
+	$this->tax_rates = array();
+	foreach ($taxes as $rate) $this->tax_rates[$rate['id']] = $rate['rate'].'%';
   }
 
   function load_query_results($tableKey = 'id', $tableValue = 0) {
@@ -163,6 +165,7 @@ class entry_builder {
 		$this->line_items[$index]['invoice_serial_num']  = $result->fields['serialize_number'];
 		$this->line_items[$index]['qty_on_backorder']    = max(0, $this->line_items[$index]['qty_on_backorder'] - $result->fields['qty']);
 		$this->line_items[$index]['invoice_line_tax']    = $line_tax * $price;
+		$this->line_items[$index]['invoice_line_tax_rate']= $this->tax_rates[$result->fields['taxable']];
 		$this->line_items[$index]['invoice_price']       = $price;
 		$this->line_items[$index]['invoice_price_w_tax'] = (1 + $line_tax) * $price; // line item price with tax
 		$this->invoice_subtotal   += $price;
@@ -375,6 +378,7 @@ class entry_builder {
 	$output[] = array('id' => 'invoice_price',       'text' => RW_EB_INV_PRICE);
 	$output[] = array('id' => 'invoice_price_w_tax', 'text' => RW_EB_INV_PRICE_W_TAX);
 	$output[] = array('id' => 'invoice_line_tax',    'text' => RW_EB_INV_LINE_TAX);
+	$output[] = array('id' => 'invoice_line_tax_rate','text'=> RW_EB_INV_LINE_TAX_RATE);
 	$output[] = array('id' => 'invoice_sku',         'text' => RW_EB_INV_SKU);
 	$output[] = array('id' => 'invoice_serial_num',  'text' => RW_EB_INV_SERIAL_NUM);
 	return $output;
