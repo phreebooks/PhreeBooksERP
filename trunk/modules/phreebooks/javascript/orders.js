@@ -19,6 +19,7 @@
 var bill_add = new Array(0);
 var ship_add = new Array(0);
 var force_clear = false;
+var default_sales_tax = -1; // tax defaults to what is specified by SKU
 
 function ClearForm() {
   var numRows = 0;
@@ -1281,17 +1282,17 @@ function fillInventory(sXml) {
 	case  '9':
 	case '10':
 	  qty_pstd = 'qty_';
-	  document.getElementById('qty_'   +rowCnt).value     = $(xml).find("qty").first().text();
-	  document.getElementById('acct_'  +rowCnt).value     = $(xml).find("account_sales_income").text();
-	  document.getElementById('price_' +rowCnt).value     = formatPrecise($(xml).find("sales_price").text() * exchange_rate);
-	  document.getElementById('full_'    +rowCnt).value   = formatCurrency($(xml).find("full_price").text() * exchange_rate);
-	  if(default_sales_tax == -1) document.getElementById('tax_'   +rowCnt).value     = $(xml).find("item_taxable").text();
+	  document.getElementById('qty_'  +rowCnt).value = $(xml).find("qty").first().text();
+	  document.getElementById('acct_' +rowCnt).value = $(xml).find("account_sales_income").text();
+	  document.getElementById('price_'+rowCnt).value = formatPrecise($(xml).find("sales_price").text() * exchange_rate);
+	  document.getElementById('full_' +rowCnt).value = formatCurrency($(xml).find("full_price").text() * exchange_rate);
+	  if (default_sales_tax == -1) document.getElementById('tax_'+rowCnt).value = $(xml).find("item_taxable").text();
 	  if ($(xml).find("description_sales").text()) {
 	    document.getElementById('desc_'  +rowCnt).value   = $(xml).find("description_sales").text();
 	  } else {
 	    document.getElementById('desc_'  +rowCnt).value   = $(xml).find("description_short").text();
 	  }
-	  if(journalID == 10){
+	  if (journalID == 10) {
 		  if($(xml).find("inactive").text() == 1 && $(xml).find("branch_qty_in_stock").text() == 0) {
 			  document.getElementById('sku_'+rowCnt).style.backgroundColor = 'pink';
 			  document.getElementById('sku_'+rowCnt).title = ItemIsOutOfStockAndInactive;
@@ -1302,7 +1303,7 @@ function fillInventory(sXml) {
 			  document.getElementById('sku_'+rowCnt).style.backgroundColor = 'MediumPurple ';
 			  document.getElementById('sku_'+rowCnt).title = ItemMustBeOrderd;
 		  }
-	  }else{
+	  } else {
 		  if($(xml).find("inactive").text() == 1 && $(xml).find("branch_qty_in_stock").text() == 0) {
 			  document.getElementById('sku_'+rowCnt).style.backgroundColor = 'pink';
 			  document.getElementById('sku_'+rowCnt).title = ItemIsOutOfStockAndInactive;
@@ -1313,15 +1314,15 @@ function fillInventory(sXml) {
 	case '13':
 	case '19':
 	  qty_pstd = 'pstd_';
-	  document.getElementById('pstd_'  +rowCnt).value     = $(xml).find("qty").first().text();
-	  document.getElementById('acct_'  +rowCnt).value     = $(xml).find("account_sales_income").text();
-	  document.getElementById('price_' +rowCnt).value     = formatPrecise($(xml).find("sales_price").text() * exchange_rate);
-	  document.getElementById('full_'    +rowCnt).value   = formatCurrency($(xml).find("full_price").text() * exchange_rate);
-	  if(default_sales_tax == -1) document.getElementById('tax_'   +rowCnt).value     = $(xml).find("item_taxable").text();
+	  document.getElementById('pstd_' +rowCnt).value = $(xml).find("qty").first().text();
+	  document.getElementById('acct_' +rowCnt).value = $(xml).find("account_sales_income").text();
+	  document.getElementById('price_'+rowCnt).value = formatPrecise($(xml).find("sales_price").text() * exchange_rate);
+	  document.getElementById('full_' +rowCnt).value = formatCurrency($(xml).find("full_price").text() * exchange_rate);
+	  if (default_sales_tax == -1) document.getElementById('tax_'+rowCnt).value = $(xml).find("item_taxable").text();
 	  if ($(xml).find("description_sales").text()) {
-	    document.getElementById('desc_'  +rowCnt).value   = $(xml).find("description_sales").text();
+	    document.getElementById('desc_'  +rowCnt).value = $(xml).find("description_sales").text();
 	  } else {
-	    document.getElementById('desc_'  +rowCnt).value   = $(xml).find("description_short").text();
+	    document.getElementById('desc_'  +rowCnt).value = $(xml).find("description_short").text();
 	  }
 	  if(journalID == 12 && $(xml).find("inactive").text() == 1 && $(xml).find("branch_qty_in_stock").text() == 0) {
 		  document.getElementById('sku_'+rowCnt).style.backgroundColor = 'pink';

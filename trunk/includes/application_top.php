@@ -48,10 +48,6 @@ $_REQUEST = array_merge($_GET, $_POST);
 // The line below breaks the $_REQUEST string as array_map expects 2 parameters and the second array is null thus erasing all the values in $_REQUEST while keeping the keys.
 //$_REQUEST = array_map('mysql_real_escape_string', $_REQUEST); // this should pas all variables in the $_REQUEST pas the db_prepare_input function
 session_start();
-if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > (SESSION_TIMEOUT_ADMIN < 360 ? 360 : SESSION_TIMEOUT_ADMIN))) {
-	$_SESSION = array('language'=>$_SESSION['language'], 'companies'=>$_SESSION['companies']);
-}
-$_SESSION['LAST_ACTIVITY'] = time();
 $session_started = true;
 // set the language
 if   (isset($_GET['language'])) { $_SESSION['language'] = $_GET['language']; } 
@@ -119,6 +115,11 @@ if ($db_company && file_exists(DIR_FS_MY_FILES . $db_company . '/config.php')) {
   if (file_exists($path)) { include($path); }
   $currencies = new currencies();
 }
+if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > (SESSION_TIMEOUT_ADMIN < 360 ? 360 : SESSION_TIMEOUT_ADMIN))) {
+	$_SESSION = array('language'=>$_SESSION['language'], 'companies'=>$_SESSION['companies']);
+	gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL'));
+}
+$_SESSION['LAST_ACTIVITY'] = time();
 $prefered_type = ENABLE_SSL_ADMIN == 'true' ? 'SSL' : 'NONSSL';
 if ($request_type <> $prefered_type) gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL')); // re-direct if SSL request not matching actual request
 if ($user_validated && !defined('DEFAULT_CURRENCY')) $messageStack->add(ERROR_NO_DEFAULT_CURRENCY_DEFINED, 'error'); // check for default currency defined
