@@ -18,10 +18,10 @@
 //
 class sku_pricer {
 	public $records = array();
-	
+
   	function __construct() {
   	}
-  	
+
   	/**
   	 * this function will update the sku's that are in the csv files.
   	 * @param string $lines_array
@@ -34,9 +34,9 @@ class sku_pricer {
   		foreach ($this->records as $row) {
   			$where = '';
   			if (isset($row['sku']) && strlen($row['sku']) > 0) {
-  				$where = "sku='{$row['sku']}'";
+  				$where = "a.sku='{$row['sku']}'";
   			} elseif(isset($row['upc_code']) && strlen($row['upc_code']) > 0) {
-  				$where = "upc_code='{$row['upc_code']}'";
+  				$where = "a.upc_code='{$row['upc_code']}'";
   			}elseif(isset($row['description_purchase'])){
   					$where = " b.description_purchase like '%{$row['description_purchase']}%'";
   			}
@@ -75,7 +75,7 @@ class sku_pricer {
   		$messageStack->add("successfully imported $count SKU prices.", "success");
   		return;
   	}
-	
+
 	function cyberParse($lines) {
 		if(!$lines) return false;
 		$title_line = trim(array_shift($lines)); // pull header and remove extra white space characters
@@ -90,7 +90,7 @@ class sku_pricer {
 		}
 		return true;
 	}
-	
+
 
 	function csv_string_to_array($str) {
 		$results = preg_split("/,(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))/", trim($str));
