@@ -21,52 +21,77 @@ class sku_pricer {
 	
   	function __construct() {
   	}
-
-	function processCSV($lines_array = '') {
-		global $db, $messageStack;
-		if (!$this->cyberParse($lines_array)) return false;  // parse the submitted string, check for errors
-		$count = 0;
-		foreach ($this->records as $row) {
-			$where = '';
-			if (isset($row['sku']) && strlen($row['sku']) > 0) {
-				$where = "sku='".$row['sku']."'";
-		  	} elseif(isset($row['upc_code']) && strlen($row['upc_code']) > 0) { 
-				$where = "upc_code='".$row['upc_code']."'";
-			}
-			$valid_fields = array('description_short','description_purchase','description_sales','account_sales_income',
-					'account_inventory_wage','account_cost_of_sales','item_taxable','purch_taxable','item_cost float',
-					'price_sheet','price_sheet_v','full_price','full_price_with_tax','item_weight','minimum_stock_level',
-					'reorder_quantity','vendor_id','lead_time','upc_code');
-			$sqlData = array();
-			foreach ($valid_fields as $value) if (isset($row[$value])) $sqlData[$value] = $row[$value];
-			$sqlData['last_update'] = date('Y-m-d');
-		  	if ($where) {
-		  		$result = db_perform(TABLE_INVENTORY, $sqlData, 'update', $where);
-		  		if ($result->AffectedRows() > 0) $count++;
-		  	}
-		}
-		$messageStack->add("successfully imported $count SKU prices.", "success");
-		return;
-	}
-
+  	
+  	/**
+  	 * this function will update the sku's that are in the csv files.
+  	 * @param string $lines_array
+  	 * @return void|boolean
+  	 */
+  	function processCSV($lines_array = '') { //Master
+  		global $db, $messageStack;
+  		if (!$this->cyberParse($lines_array)) return false;  // parse the submitted string, check for errors
+  		$count = 0;
+  		foreach ($this->records as $row) {
+  			$where = '';
+  			if (isset($row['sku']) && strlen($row['sku']) > 0) {
+  				$where = "sku='{$row['sku']}'";
+  			} elseif(isset($row['upc_code']) && strlen($row['upc_code']) > 0) {
+  				$where = "upc_code='{$row['upc_code']}'";
+  			}elseif(isset($row['description_purchase'])){
+  					$where = " b.description_purchase like '%{$row['description_purchase']}%'";
+  			}
+  			if (isset($row['vendor_id'])){
+  				$where .= " b.vendor_id = '{$row['vendor_id']}'";
+  			}
+  			$valid_fields = array(
+  			  'description_short'		=> 'a.description_short',
+  			  'description_sales'		=> 'a.description_sales',
+  			  'account_sales_income'	=> 'a.account_sales_income',
+  			  'account_inventory_wage'	=> 'a.account_inventory_wage',
+  			  'account_cost_of_sales'	=> 'a.account_cost_of_sales',
+  			  'item_taxable'			=> 'a.item_taxable',
+  			  'price_sheet'				=> 'a.price_sheet',
+  			  'full_price'				=> 'a.full_price',
+  			  'full_price_with_tax'		=> 'a.full_price_with_tax',
+  			  'item_weight'				=> 'a.item_weight',
+  			  'minimum_stock_level'		=> 'a.minimum_stock_level',
+  			  'reorder_quantity'		=> 'a.reorder_quantity',
+  			  'lead_time'				=> 'a.lead_time',
+  			  'upc_code'				=> 'a.upc_code',
+  			  'description_purchase'	=> 'b.description_purchase',
+  			  'price_sheet_v'			=> 'b.price_sheet_v',
+  			  'purch_taxable'			=> 'b.purch_taxable',
+  			  'item_cost'				=> 'b.item_cost',
+  			  'vendor_id'				=> 'b.vendor_id',
+  			);
+  			$sqlData = array();
+  			foreach ($valid_fields as $key => $value) if (isset($row[$key])) $sqlData[$value] = $row[$key];
+  			$sqlData['last_update'] = date('Y-m-d');
+  			if ($where) {
+  				$result = db_perform(TABLE_INVENTORY . ' a JOIN '. TABLE_INVENTORY_PURCHASE .' b on a.sku = b.sku ' , $data_array, 'update', $where);
+  				if ($result->AffectedRows() > 0) $count++;
+  			}
+  		}
+  		$messageStack->add("successfully imported $count SKU prices.", "success");
+  		return;
+  	}
+	
 	function cyberParse($lines) {
-	  	$i 			= 0;
 		if(!$lines) return false;
 		$title_line = trim(array_shift($lines)); // pull header and remove extra white space characters
 		$title_line = str_replace('"','',$title_line);
-		$titles     = explode(",", $title_line); 
-		foreach ($lines as $line_num => $line) {    
-		  $subject      = trim($line);
-		  $parsed_array = $this->csv_string_to_array($subject);
-		  for ($field_num = 0; $field_num < count($titles); $field_num++) {
-			$this->records[$i][$titles[$field_num]] = $parsed_array[$field_num];
-		  }
-		   //$i++;
+		$titles     = explode(",", $title_line);
+		foreach ($lines as $line_num => $line) {
+			$subject      = trim($line);
+			$parsed_array = $this->csv_string_to_array($subject);
+			for ($field_num = 0; $field_num < count($titles); $field_num++) {
+				$this->records[$i][$titles[$field_num]] = $parsed_array[$field_num];
+			}
 		}
-		print_r($this->records);
 		return true;
 	}
 	
+
 	function csv_string_to_array($str) {
 		$results = preg_split("/,(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))/", trim($str));
 		return preg_replace("/^\"(.*)\"$/", "$1", $results);
