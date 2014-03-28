@@ -29,11 +29,12 @@ class user {
 	 */
 
 	final static public function is_validated(){
-		if (isset($_SESSION['admin_id']) && $_SESSION['admin_id'] != ''){
-			return true;
-		} else {
-			return false;
-
+		if (!isset($_SESSION['admin_id']) || $_SESSION['admin_id'] == ''){
+			//allow the user to continu to with the login action.
+			if (!isset($_REQUEST['action']) || !in_array($_REQUEST['action'], array('validate','pw_lost_sub','pw_lost_req'))){
+				$_REQUEST['action'] = 'login';
+				throw new \core\classes\userExeception(SORRY_YOU_ARE_LOGGED_OUT, array("phreedom","template_login.php"));
+			}
 		}
 	}
 

@@ -30,28 +30,10 @@ $include_template = null;
 $cInfo = null;
 
 require_once('includes/application_top.php');
-if (!\core\classes\user::is_validated()) {
-  	if ($page == 'ajax'){
-		echo createXmlHeader() . xmlEntry('error', SORRY_YOU_ARE_LOGGED_OUT) . createXmlFooter();
-		ob_end_flush();
-		session_write_close();
-		die;
-  	}
-  	if (isset($_REQUEST['module'])	&& !$_SESSION['pb_module'])	$_SESSION['pb_module']	= $_REQUEST['module'];
-  	if (isset($_REQUEST['page']) 	&& !$_SESSION['pb_page']) 	$_SESSION['pb_page'] 	= $_REQUEST['page'];
-  	if (isset($_REQUEST['jID']) 	&& !$_SESSION['pb_jID'])	$_SESSION['pb_jID']		= $_REQUEST['jID'];
-  	if (isset($_REQUEST['type']) 	&& !$_SESSION['pb_type'])	$_SESSION['pb_type']	= $_REQUEST['type'];
-  	if (isset($_REQUEST['list'])	&& !$_SESSION['pb_list'])	$_SESSION['pb_list']	= $_REQUEST['list'];
-	$module = 'phreedom';
-	$page   = 'main';
-  	if (!isset($_REQUEST['action']) || !in_array($_REQUEST['action'], array('validate','pw_lost_sub','pw_lost_req'))){
-   		$_REQUEST['action'] = 'login';
-  	}
-}
-
 try{
 	try{
 		$page_template = new \core\classes\page();
+		\core\classes\user::is_validated();
     	$ActionBefore  = "{$_REQUEST['module']}_.{$_REQUEST['page']}_before_{$_REQUEST['action']}";
     	foreach ($admin_classes as $module_class){
     		if ($module_class->installed && method_exists($module_class, $ActionBefore)) {
@@ -74,7 +56,7 @@ try{
     	// handle ajax and json
     	if ($_REQUEST['page'] == 'ajax'){
     		echo createXmlHeader();
-    		foreach (get_object_vars($cInfo) as $key => $value) xmlEntry($key, $value);
+    		foreach (get_object_vars($cInfo) as $key => $value) echo xmlEntry($key, $value);
     		echo createXmlFooter();
 		} else if ($_REQUEST['page'] == 'json'){
 			header('Content-Type: application/json');
@@ -88,21 +70,39 @@ try{
    	}catch (Exception $e) {
    		switch (get_class($e)) {
    			case "\core\classes\userException":
-   				if($e->RetrurnToPage) {
-   					$messageStack->add($e->getMessage(), $e->getCode());
-  					$page_template->loadPage($e->RetrurnToPage);
-  				}else{
-  					$page_template->loadPage("crash");
+   				if ($_REQUEST['page'] == 'ajax'){
+   					echo createXmlHeader();
+   					echo xmlEntry("messageStack_error", $e->getMessage());
+   					echo createXmlFooter();
+   				} else if ($_REQUEST['page'] == 'json'){
+   					$temp["messageStack_error"] = $e->getMessage();
+   					header('Content-Type: application/json');
+   					echo json_encode($temp);
+   				} else{
+   					if ($e->RetrurnToPage) {
+   						$messageStack->add($e->getMessage(), $e->getCode());
+  						$page_template->loadPage($e->RetrurnToPage);
+  					} else{
+	  					$page_template->loadPage("crash");
+  					}
   				}
   			default:
   				throw $e;
    		}
+   		ob_end_flush();
+   		session_write_close();
+   		die;
 	}
 }catch (Exception $e) {
 	$messageStack->add($e->getMessage(), $e->getCode());
 	$page_template->loadPage("main");
-}
 
+}
+require('includes/template_index.php');
+require('includes/application_bottom.php');
+ob_end_flush();
+session_write_close();
+die;
 if ($page == 'ajax') {
   	$custom_pre_process_path = DIR_FS_MODULES . $module . "custom/ajax/{$_GET['op']}.php";
   	$pre_process_path = DIR_FS_MODULES . $module . "/ajax/{$_GET['op']}.php";
