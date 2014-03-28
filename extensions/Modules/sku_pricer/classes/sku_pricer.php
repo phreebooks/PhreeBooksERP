@@ -68,7 +68,7 @@ class sku_pricer {
   			foreach ($valid_fields as $key => $value) if (isset($row[$key])) $sqlData[$value] = $row[$key];
   			$sqlData['last_update'] = date('Y-m-d');
   			if ($where) {
-  				$result = db_perform(TABLE_INVENTORY . ' a JOIN '. TABLE_INVENTORY_PURCHASE .' b on a.sku = b.sku ' , $data_array, 'update', $where);
+  				$result = db_perform(TABLE_INVENTORY . ' a JOIN '. TABLE_INVENTORY_PURCHASE .' b on a.sku = b.sku ' , $sqlData, 'update', $where);
   				if ($result->AffectedRows() > 0) $count++;
   			}
   		}
