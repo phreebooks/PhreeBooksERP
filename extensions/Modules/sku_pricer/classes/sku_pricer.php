@@ -18,10 +18,10 @@
 //
 class sku_pricer {
 	public $records = array();
-	
+
   	function __construct() {
   	}
-  	
+
   	/**
   	 * this function will update the sku's that are in the csv files.
   	 * @param string $lines_array
@@ -36,7 +36,7 @@ class sku_pricer {
   			if (isset($row['sku']) && strlen($row['sku']) > 0) {
   				$where = "a.sku='{$row['sku']}'";
   			} elseif(isset($row['upc_code']) && strlen($row['upc_code']) > 0) {
-  				$where = "upc_code='{$row['upc_code']}'";
+  				$where = "a.upc_code='{$row['upc_code']}'";
   			}elseif(isset($row['description_purchase'])){
   					$where = " b.description_purchase like '%{$row['description_purchase']}%'";
   			}
@@ -64,18 +64,21 @@ class sku_pricer {
   			  'item_cost'				=> 'b.item_cost',
   			  'vendor_id'				=> 'b.vendor_id',
   			);
+  			$messageStack->debug(" found the following fields ". arr2string($row));
   			$sqlData = array();
   			foreach ($valid_fields as $key => $value) if (isset($row[$key])) $sqlData[$value] = $row[$key];
   			$sqlData['last_update'] = date('Y-m-d');
   			if ($where) {
+  				$messageStack->debug(" updating inventory fields ". arr2string($sqlData). " where $where");
   				$result = db_perform(TABLE_INVENTORY . ' a JOIN '. TABLE_INVENTORY_PURCHASE .' b on a.sku = b.sku ' , $sqlData, 'update', $where);
   				if ($result->AffectedRows() > 0) $count++;
   			}
   		}
-  		$messageStack->add("successfully imported $count SKU prices.", "success");
+  		if (DEBUG) $messageStack->write_debug();
+  		if ($count != 0) $messageStack->add("successfully imported $count SKU prices.", "success");
   		return;
   	}
-	
+
 	function cyberParse($lines) {
 		if(!$lines) return false;
 		$title_line = trim(array_shift($lines)); // pull header and remove extra white space characters
@@ -90,7 +93,7 @@ class sku_pricer {
 		}
 		return true;
 	}
-	
+
 
 	function csv_string_to_array($str) {
 		$results = preg_split("/,(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))/", trim($str));

@@ -22,8 +22,8 @@ class phreepos_admin {
 	public $keys			= array();// Load configuration constants for this module, must match entries in admin tabs
 	public $dirlist			= array();// add new directories to store images and data
 	public $tables			= array();// Load tables
-	
-	
+
+
   function phreepos_admin() {
 	$this->prerequisites = array( // modules required and rev level for this module to work properly
 	  'contacts'  => 3.71,
@@ -43,7 +43,7 @@ class phreepos_admin {
       'PHREEPOS_DISPLAY_WITH_TAX'			  => '1',// if prices on screen should be net or not
       'PHREEPOS_DISCOUNT_OF'                  => '0',// should the discount be of the total or subtotal.
       'PHREEPOS_ROUNDING'					  => '0',// should the endtotal be rounded.
-      'PHREEPOS_ENABLE_DIRECT_PRINTING'       => 1,  // this enables or disables direct printing.
+      'PHREEPOS_ENABLE_DIRECT_PRINTING'       => 0,  // this enables or disables direct printing.
 	);
 	// add new directories to store images and data
 	$this->dirlist = array(
@@ -128,9 +128,9 @@ class phreepos_admin {
 	}
 	foreach ($this->tables as $table => $sql) {
 	  if ($table == TABLE_PHREEPOS_OTHER_TRANSACTIONS) admin_install_tables(array($table => $sql));
-		
+
 	}
-	if(!defined('PHREEPOS_ENABLE_DIRECT_PRINTING')) write_configure('PHREEPOS_ENABLE_DIRECT_PRINTING', 1);
+	if(!defined('PHREEPOS_ENABLE_DIRECT_PRINTING')) write_configure('PHREEPOS_ENABLE_DIRECT_PRINTING', 0);
 	if (!db_field_exists(TABLE_PHREEPOS_TILLS, 'tax_id')) $db->Execute("ALTER TABLE " . TABLE_PHREEPOS_TILLS . " ADD tax_id INT(11) default '-1' AFTER max_discount");
 	if (!$error) {
 	  write_configure('MODULE_' . strtoupper($module) . '_STATUS', constant('MODULE_' . strtoupper($module) . '_VERSION'));
@@ -169,6 +169,6 @@ class phreepos_admin {
 
 	return $error;
   }
-  
+
 }
 ?>
