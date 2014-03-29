@@ -17,7 +17,7 @@
 //  Path: /modules/inventory/pages/main/template_detail.php
 //
 // start the form
-echo html_form('inventory', FILENAME_DEFAULT, gen_get_all_get_params(array('action', 'cID', 'sku', 'add')), 'post', 'enctype="multipart/form-data"');
+echo html_form('inventory', FILENAME_DEFAULT, gen_get_all_get_params(array('action', 'cID', 'sku', 'add', 'inventory_type')), 'post', 'enctype="multipart/form-data"');
 // include hidden fields
 echo html_hidden_field('action', '') . chr(10);
 echo html_hidden_field('rowSeq', 	$cInfo->id) . chr(10);
@@ -37,7 +37,7 @@ if ($_REQUEST['action'] == 'properties') {
   $toolbar->icon_list['open']['show']     = false;
   if ($security_level > 3 && $cInfo->inventory_type != 'mi' && $cInfo->inventory_type != 'ia' && ($cInfo->last_journal_date != '0000-00-00 00:00:00' || $cInfo->last_journal_date != '') ){ 
   	$toolbar->icon_list['delete']['show']   = true;
-  	$toolbar->icon_list['delete']['params'] = 'onclick="if (confirm(\'' . INV_MSG_DELETE_INV_ITEM . '\')) deleteItem(' . $cInfo->id . ')"';
+  	$toolbar->icon_list['delete']['params'] = "onclick='if (confirm(\"". INV_MSG_DELETE_INV_ITEM . "\")) deleteItem({$cInfo->id},\"{$cInfo->inventory_type}\")'";
   }else{
   	$toolbar->icon_list['delete']['show']   = false;
   } 

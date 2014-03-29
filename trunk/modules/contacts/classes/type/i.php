@@ -24,6 +24,7 @@ class i extends contacts{
 	public  $address_types          = array('im', 'is', 'ib');
 	public  $type                   = 'i';
 	private $duplicate_id_error     = ACT_ERROR_DUPLICATE_CONTACT;
+	public 	$auto_field    			= 'next_crm_id_num';
 	
   public function __construct(){
 	$this->tab_list[] = array('file'=>'template_notes',		'tag'=>'notes',    'order'=>40, 'text'=>TEXT_NOTES);

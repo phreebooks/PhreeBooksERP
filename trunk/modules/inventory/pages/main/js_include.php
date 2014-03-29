@@ -105,27 +105,27 @@ function setSkuLength() {
 	}
 }
 
-function deleteItem(id) {
-	location.href = 'index.php?module=inventory&page=main&action=delete&cID='+id;
+function deleteItem(id, type) {
+	location.href = 'index.php?module=inventory&page=main&action=delete&cID='+id+'&inventory_type='+type;
 }
 
 function showImage() {
 	$('#inv_image').dialog('open');	
 }
 
-function copyItem(id) {
+function copyItem(id, type) {
 	var skuID = prompt('<?php echo INV_MSG_COPY_INTRO; ?>', '');
 	if (skuID) {
-		location.href = 'index.php?module=inventory&page=main&action=copy&cID='+id+'&sku='+skuID;
+		location.href = 'index.php?module=inventory&page=main&action=copy&cID='+id+'&sku='+skuID+'&inventory_type='+type;
 	} else {
 		return false;
 	}
 }
 
-function renameItem(id) {
+function renameItem(id, type) {
 	var skuID = prompt('<?php echo INV_MSG_RENAME_INTRO; ?>', '');
 	if (skuID) {
-		location.href = 'index.php?module=inventory&page=main&action=rename&cID='+id+'&sku='+skuID;
+		location.href = 'index.php?module=inventory&page=main&action=rename&cID='+id+'&sku='+skuID+'&inventory_type='+type;
 	} else {
 		return false;
 	}

@@ -47,6 +47,17 @@ class mb extends inventory {//Master Build (combination of Master Stock Item and
 	function copy($id, $newSku) {
 		global $db;
 		if(parent::copy($id, $newSku)){
+			$result = $db->Execute("select * from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = '$id'");
+			while(!$result->EOF) {
+				$bom_list = array(
+				  	'ref_id'      => $this->id,
+				  	'sku'         => $result->fields['sku'],
+					'description' => $result->fields['description'],
+					'qty'         => $result->fields['qty'],
+				);
+				db_perform(TABLE_INVENTORY_ASSY_LIST, $bom_list, 'insert');
+				$result->MoveNext();
+			}
 			$result = $db->Execute("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->old_sku . "'");
 			$data_array = array(
 				'sku'         => $this->sku,
