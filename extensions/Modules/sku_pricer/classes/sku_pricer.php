@@ -67,7 +67,7 @@ class sku_pricer {
   			$messageStack->debug(" found the following fields ". arr2string($row));
   			$sqlData = array();
   			foreach ($valid_fields as $key => $value) if (isset($row[$key])) $sqlData[$value] = $row[$key];
-  			$sqlData['last_update'] = date('Y-m-d');
+  			$sqlData['a.last_update'] = date('Y-m-d');
   			if ($where) {
   				$messageStack->debug(" updating inventory fields ". arr2string($sqlData). " where $where");
   				$result = db_perform(TABLE_INVENTORY . ' a JOIN '. TABLE_INVENTORY_PURCHASE .' b on a.sku = b.sku ' , $sqlData, 'update', $where);
