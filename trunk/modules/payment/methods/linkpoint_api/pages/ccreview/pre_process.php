@@ -35,11 +35,11 @@ switch ($_REQUEST['action']) {
 
 /*****************   prepare to display templates  *************************/
 // build the list header
-if (!isset($_REQUEST['sf'])) $_REQUEST['sf'] = 'post_date'; 
+if (!isset($_REQUEST['sf'])) $_REQUEST['sf'] = 'post_date';
 if (!isset($_REQUEST['so'])) $_REQUEST['so'] = 'desc';// default to descending by postdate
 
 $heading_array = array(
-	'id'            => GEN_LINK_POINT_ID,	
+	'id'            => GEN_LINK_POINT_ID,
 	'short_name'    => GEN_CUSTOMER,
 	'contact_last'  => GEN_LAST_NAME,
 	'contact_first' => GEN_FIRST_NAME,
@@ -48,9 +48,9 @@ $heading_array = array(
 	'empty_3'       => '',
 	'empty_4'       => '',
 	'first_date'    => GEN_ACCOUNT_CREATED,
-	'empty_5'       => '',	
+	'empty_5'       => '',
 );
-		
+
 $result      = html_heading_bar($heading_array, $extra_headings=array());
 $list_header = $result['html_code'];
 $disp_order  = $result['disp_order'];
@@ -62,22 +62,22 @@ if ($acct_period == 'all') {
 	$periods       = $db->Execute("select * from " . TABLE_ACCOUNTING_PERIODS . " where period = $acct_period");
 	$start_date    = $periods->fields['start_date'];
 	$end_date      =  $periods->fields['end_date'];
-	$period_filter = " and DATE_FORMAT(lp.date_added,'%Y-%m-%d' ) BETWEEN  '$start_date' AND '$end_date' "; 
+	$period_filter = " and DATE_FORMAT(lp.date_added,'%Y-%m-%d' ) BETWEEN  '$start_date' AND '$end_date' ";
 }
 
 if (isset($_REQUEST['search_text']) && $_REQUEST['search_text'] <> '') {
     $search_fields = array('short_name');
-    // hook for inserting new search fields to the query criteria.  
-    $search = ' and (' . implode(' like \'%' . $_REQUEST['search_text'] . '%\' or ', $search_fields) . ' like \'%' . $_REQUEST['search_text'] . '%\')';
+    // hook for inserting new search fields to the query criteria.
+    $search = " and (" . implode(" like %{$_REQUEST['search_text']}%' or ", $search_fields) . " like '%{$_REQUEST['search_text']}%)";
 } else {
    $search = '';
 }
 
-$query_raw  = "select SQL_CALC_FOUND_ROWS lp.*, c.short_name, c.contact_last, c.contact_first, c.first_date 
-                from  " . TABLE_CONTACTS . " c,  linkpoint_api lp 
+$query_raw  = "select SQL_CALC_FOUND_ROWS lp.*, c.short_name, c.contact_last, c.contact_first, c.first_date
+                from  " . TABLE_CONTACTS . " c,  linkpoint_api lp
                 where c.id = lp.customer_id $search  $period_filter order by $disp_order ";
 $customers = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');						  
+$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 history_save('linkpoint');
 
 $include_header   = true;

@@ -24,21 +24,21 @@ $security_level = \core\classes\user::validate();
 /**************   page specific initialization  *************************/
 $guess = db_prepare_input($_GET['guess']);
 $xml   = NULL;
-if (!$guess) throw new \Exception("variable Guess isn't set");
+if (isset($_REQUEST['guess']) || $_REQUEST['guess'] == '') throw new \Exception("variable Guess isn't set");
 
-$search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.telephone4', 
+$search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.telephone4',
   'a.city_town', 'a.postal_code', 'c.id', 'c.short_name');
-$search = ' and (' . implode(' like \'%' . $guess . '%\' or ', $search_fields) . ' like \'%' . $guess . '%\')';
+$search = " and " . implode(" like %{$_REQUEST['guess']}%' or ", $search_fields) . " like '%{$_REQUEST['guess']}%";' and (' . implode(' like \'%' . $guess . '%\' or ', $search_fields) . ' like \'%' . $guess . '%\')';
 
 $field_list = array('c.id', 'c.short_name', 'a.primary_name');
 
-$query_raw = "select " . implode(', ', $field_list)  . " 
-	from " . TABLE_CONTACTS . " c left join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id 
-	where a.type in ('cm', 'vm')" . $search;
+$query_raw = "select " . implode(', ', $field_list)  . "
+	from " . TABLE_CONTACTS . " c left join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id
+	where a.type in ('cm', 'vm') $search";
 
 $result = $db->Execute($query_raw);
 
-$xml .= xmlEntry("guess", $guess);
+$xml .= xmlEntry("guess", $_REQUEST['guess']);
 while (!$result->EOF) {
   $xml .= "\t<guesses>\n";
   $xml .= "\t" . xmlEntry("id",    $result->fields['id']);

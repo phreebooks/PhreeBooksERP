@@ -285,7 +285,7 @@ switch ($_REQUEST['action']) {
       $search_fields = array('rma_num', 'purchase_invoice_id', 'caller_name', 'caller_telephone1');
 	  // hook for inserting new search fields to the query criteria.
 	  if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
-	  $search = ' where ' . implode(' like \'%' . $_REQUEST['search_text'] . '%\' or ', $search_fields) . ' like \'%' . $_REQUEST['search_text'] . '%\'';
+	  $search = " where " . implode(" like %{$_REQUEST['search_text']}%' or ", $search_fields) . " like '%{$_REQUEST['search_text']}%";
     } else {
 	  $search = '';
 	}

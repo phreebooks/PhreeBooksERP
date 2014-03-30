@@ -821,7 +821,7 @@ function couponpopupWindow(url) {
     $search_distinct = ' distinct ';
     $new_table = " left join " . TABLE_ORDERS_PRODUCTS . " op on (op.orders_id = o.orders_id) ";
     $keywords = zen_db_input(zen_db_prepare_input($_GET['search_orders_products']));
-    $search = " and (op.products_model like '%" . $keywords . "%' or op.products_name like '" . $keywords . "%')";
+    $search = " and (op.products_model like '%$keywords%' or op.products_name like '$keywords%')";
     if (substr(strtoupper($_GET['search_orders_products']), 0, 3) == 'ID:') {
       $keywords = TRIM(substr($_GET['search_orders_products'], 3));
       $search = " and op.products_id ='" . (int)$keywords . "'";
@@ -834,13 +834,13 @@ function couponpopupWindow(url) {
   if (isset($_GET['search']) && zen_not_null($_GET['search'])) {
     $search_distinct = ' ';
     $keywords = zen_db_input(zen_db_prepare_input($_GET['search']));
-    $search = " and (o.customers_city like '%" . $keywords . "%' or o.customers_postcode like '%" . $keywords . "%' or o.date_purchased like '%" . $keywords . "%' or o.billing_name like '%" . $keywords . "%' or o.billing_company like '%" . $keywords . "%' or o.billing_street_address like '%" . $keywords . "%' or o.delivery_city like '%" . $keywords . "%' or o.delivery_postcode like '%" . $keywords . "%' or o.delivery_name like '%" . $keywords . "%' or o.delivery_company like '%" . $keywords . "%' or o.delivery_street_address like '%" . $keywords . "%' or o.billing_city like '%" . $keywords . "%' or o.billing_postcode like '%" . $keywords . "%' or o.customers_email_address like '%" . $keywords . "%' or o.customers_name like '%" . $keywords . "%' or o.customers_company like '%" . $keywords . "%' or o.customers_street_address  like '%" . $keywords . "%' or o.customers_telephone like '%" . $keywords . "%' or o.ip_address  like '%" . $keywords . "%')";
+    $search = " and (o.customers_city like '%$keywords%' or o.customers_postcode like '%$keywords%' or o.date_purchased like '%$keywords%' or o.billing_name like '%$keywords%' or o.billing_company like '%$keywords%' or o.billing_street_address like '%$keywords%' or o.delivery_city like '%$keywords%' or o.delivery_postcode like '%$keywords%' or o.delivery_name like '%$keywords%' or o.delivery_company like '%$keywords%' or o.delivery_street_address like '%$keywords%' or o.billing_city like '%$keywords%' or o.billing_postcode like '%$keywords%' or o.customers_email_address like '%$keywords%' or o.customers_name like '%$keywords%' or o.customers_company like '%$keywords%' or o.customers_street_address  like '%$keywords%' or o.customers_telephone like '%$keywords%' or o.ip_address  like '%$keywords%')";
     $new_table = '';
 //    $new_fields = ", o.customers_company, o.customers_email_address, o.customers_street_address, o.delivery_company, o.delivery_name, o.delivery_street_address, o.billing_company, o.billing_name, o.billing_street_address, o.payment_module_code, o.shipping_module_code, o.ip_address ";
   }
 } // eof: search orders or orders_products
     $new_fields = ", o.customers_company, o.customers_email_address, o.customers_street_address, o.delivery_company, o.delivery_name, o.delivery_street_address, o.billing_company, o.billing_name, o.billing_street_address, o.payment_module_code, o.shipping_module_code, o.ip_address ";
-// BOF - Added by PhreeSoft 
+// BOF - Added by PhreeSoft
 	if (MODULE_PHREEBOOKS_ORDER_DOWNLOAD_STATUS == 'True') $new_fields .= ", o.phreebooks ";
 // EOF -  Added by PhreeSoft
 ?>
@@ -933,7 +933,7 @@ if (($_GET['page'] == '' or $_GET['page'] <= 1) and $_GET['oID'] != '') {
                 <td class="dataTableContent" align="center"><?php echo zen_datetime_short($orders->fields['date_purchased']); ?></td>
                 <td class="dataTableContent" align="right"><?php echo $orders->fields['orders_status_name']; ?></td>
                 <td class="dataTableContent" align="center"><?php echo (zen_get_orders_comments($orders->fields['orders_id']) == '' ? '' : zen_image(DIR_WS_IMAGES . 'icon_yellow_on.gif', TEXT_COMMENTS_YES, 16, 16)); ?></td>
-				
+
 <?php // BOF - Download icon added by PhreeSoft to download order ?>
                 <td class="dataTableContent" align="right">
 <?php
@@ -941,12 +941,12 @@ if ($orders->fields['phreebooks'] == 0 && MODULE_PHREEBOOKS_ORDER_DOWNLOAD_STATU
   echo '<a href="' . zen_href_link(FILENAME_ORDERS, zen_get_all_get_params(array('oID', 'action')) . 'oID=' . $orders->fields['orders_id'] . '&action=download', 'NONSSL') . '">' . zen_image(DIR_WS_IMAGES . 'icons/file_download.gif', PB_TEXT_DOWNLOAD) . '</a>';
 }
 // this is the original line expanded to make it more readable
-echo '<a href="' . zen_href_link(FILENAME_ORDERS, zen_get_all_get_params(array('oID', 'action')) . 'oID=' . $orders->fields['orders_id'] . '&action=edit', 'NONSSL') . '">' . zen_image(DIR_WS_IMAGES . 'icon_edit.gif', ICON_EDIT) . '</a>'; 
-if (isset($oInfo) && is_object($oInfo) && ($orders->fields['orders_id'] == $oInfo->orders_id)) { 
-  echo zen_image(DIR_WS_IMAGES . 'icon_arrow_right.gif', ''); 
-} else { 
+echo '<a href="' . zen_href_link(FILENAME_ORDERS, zen_get_all_get_params(array('oID', 'action')) . 'oID=' . $orders->fields['orders_id'] . '&action=edit', 'NONSSL') . '">' . zen_image(DIR_WS_IMAGES . 'icon_edit.gif', ICON_EDIT) . '</a>';
+if (isset($oInfo) && is_object($oInfo) && ($orders->fields['orders_id'] == $oInfo->orders_id)) {
+  echo zen_image(DIR_WS_IMAGES . 'icon_arrow_right.gif', '');
+} else {
   echo '<a href="' . zen_href_link(FILENAME_ORDERS, zen_get_all_get_params(array('oID')) . 'oID=' . $orders->fields['orders_id'], 'NONSSL') . '">' . zen_image(DIR_WS_IMAGES . 'icon_info.gif', IMAGE_ICON_INFO) . '</a>';
-} 
+}
 ?>
 				</td>
 <?php // comment out original line since it have the table tags in it ?>

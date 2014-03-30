@@ -61,24 +61,24 @@ $disp_order  = $result['disp_order'];
 
 // build the list for the page selected
 if (isset($_REQUEST['search_text']) && $_REQUEST['search_text'] <> '') {
-  $search_fields = array('bill_primary_name', 'bill_contact', 'bill_address1', 'bill_address2', 'bill_city_town', 
+  $search_fields = array('bill_primary_name', 'bill_contact', 'bill_address1', 'bill_address2', 'bill_city_town',
   	'bill_postal_code', 'purchase_invoice_id', 'total_amount');
   // hook for inserting new search fields to the query criteria.
   if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
-  $search = ' and (' . implode(' like \'%' . $_REQUEST['search_text'] . '%\' or ', $search_fields) . ' like \'%' . $_REQUEST['search_text'] . '%\')';
+  $search = " and (" . implode(" like %{$_REQUEST['search_text']}%' or ", $search_fields) . " like '%{$_REQUEST['search_text']}%)";
 } else {
   $search = '';
 }
 
-$field_list = array('m.id', 'm.bill_acct_id', 'm.bill_primary_name', 'm.purchase_invoice_id', 
+$field_list = array('m.id', 'm.bill_acct_id', 'm.bill_primary_name', 'm.purchase_invoice_id',
 	'm.post_date', 'm.total_amount', 'm.store_id');
 
 // hook to add new fields to the query return results
 if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
 
-$query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " 
+$query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . "
 	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_CONTACTS . " a on m.bill_acct_id = a.id
-	where a.type = '" . (ACCOUNT_TYPE == 'v' ? 'v' : 'c') . "' 
+	where a.type = '" . (ACCOUNT_TYPE == 'v' ? 'v' : 'c') . "'
 	and m.journal_id = " . JOURNAL_ID . $period_filter . $search . " order by $disp_order";
 $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');

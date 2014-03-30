@@ -79,7 +79,7 @@ $heading_array = array(
   'total_amount'        => TEXT_AMOUNT,
 );
 $extras     = array(TEXT_ACTION);
-$field_list = array('id', 'journal_id', 'post_date', 'purchase_invoice_id', 'purch_order_id', 'store_id', 'closed', 'waiting', 
+$field_list = array('id', 'journal_id', 'post_date', 'purchase_invoice_id', 'purch_order_id', 'store_id', 'closed', 'waiting',
   'bill_primary_name', 'total_amount', 'currencies_code', 'currencies_value', 'shipper_code');
 $search_fields = array('bill_primary_name', 'purchase_invoice_id', 'purch_order_id', 'store_id', 'bill_postal_code', 'ship_primary_name', 'total_amount');
 
@@ -148,14 +148,14 @@ $period_filter = ($_REQUEST['search_period'] == 'all') ? '' : (" and period=".$_
 if (isset($_REQUEST['search_text']) && $_REQUEST['search_text'] <> '') {
   // hook for inserting new search fields to the query criteria.
   if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
-  $search = ' and (' . implode(' like \'%' . $_REQUEST['search_text'] . '%\' or ', $search_fields) . ' like \'%' . $_REQUEST['search_text'] . '%\')';
+  $search = " and (" . implode(" like %{$_REQUEST['search_text']}%' or ", $search_fields) . " like '%{$_REQUEST['search_text']}%)";
 } else {
   $search = '';
 }
 // hook to add new fields to the query return results
 if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
 
-$query_raw    = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " from " . TABLE_JOURNAL_MAIN . " 
+$query_raw    = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " from " . TABLE_JOURNAL_MAIN . "
 	where journal_id = " . JOURNAL_ID . $period_filter . $search . " order by $disp_order, purchase_invoice_id DESC";
 $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');

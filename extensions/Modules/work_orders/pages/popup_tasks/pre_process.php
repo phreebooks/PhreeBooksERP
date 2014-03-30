@@ -52,7 +52,7 @@ if (isset($_REQUEST['search_text']) && $_REQUEST['search_text'] <> '') {
   $search_fields = array('task_name', 'description');
   // hook for inserting new search fields to the query criteria.
   if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
-  $search = ' where ' . implode(' like \'%' . $_REQUEST['search_text'] . '%\' or ', $search_fields) . ' like \'%' . $_REQUEST['search_text'] . '%\'';
+  $search = " where " . implode(" like %{$_REQUEST['search_text']}%' or ", $search_fields) . " like '%{$_REQUEST['search_text']}%";
 } else {
   $search = '';
 }

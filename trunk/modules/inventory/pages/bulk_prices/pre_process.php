@@ -36,11 +36,11 @@ switch ($_REQUEST['action']) {
 			$item_cost  = $currencies->clean_value($_POST['cost_'  . $j]);
 			$full_price = $currencies->clean_value($_POST['sell_'  . $j]);
 			$db->Execute("update " . TABLE_INVENTORY . " set
-				lead_time  = '$lead_time', 
-				item_cost  = '$item_cost', 
+				lead_time  = '$lead_time',
+				item_cost  = '$item_cost',
 				full_price = '$full_price',
 				minimum_stock_level = '$min_stock',
-				reorder_quantity = '$re_order' 
+				reorder_quantity = '$re_order'
 				where id = $id");
 		} else {
 			break;
@@ -79,7 +79,7 @@ if (isset($_REQUEST['search_text']) && $_REQUEST['search_text'] <> '') {
   $search_fields = array('sku', 'description_short', 'description_sales', 'description_purchase');
   // hook for inserting new search fields to the query criteria.
   if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
-  $search = ' where ' . implode(' like \'%' . $_REQUEST['search_text'] . '%\' or ', $search_fields) . ' like \'%' . $_REQUEST['search_text'] . '%\'';
+  $search = " where " . implode(" like %{$_REQUEST['search_text']}%' or ", $search_fields) . " like '%{$_REQUEST['search_text']}%";
 }
 $field_list = array('id', 'sku', 'inactive', 'description_short', 'lead_time', 'item_cost', 'full_price', 'minimum_stock_level', 'reorder_quantity');
 // hook to add new fields to the query return results

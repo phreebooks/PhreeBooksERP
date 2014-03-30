@@ -58,7 +58,7 @@ if (isset($_REQUEST['search_text']) && $_REQUEST['search_text'] <> '') {
   $search_fields = array('i.sku', 'm.purchase_invoice_id', 'i.debit_amount', 'i.credit_amount', 'i.description');
   // hook for inserting new search fields to the query criteria.
   if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
-  $search = ' and (' . implode(' like \'%' . $_REQUEST['search_text'] . '%\' or ', $search_fields) . ' like \'%' . $_REQUEST['search_text'] . '%\')';
+  $search = " and (" . implode(" like %{$_REQUEST['search_text']}%' or ", $search_fields) . " like '%{$_REQUEST['search_text']}%)";
 } else {
   $search = '';
 }
@@ -68,8 +68,8 @@ $field_list = array('m.id', 'm.purchase_invoice_id', 'm.post_date', 'm.store_id'
 // hook to add new fields to the query return results
 if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
 
-$query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . " 
-	from " . TABLE_JOURNAL_MAIN . " m left join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id 
+$query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . "
+	from " . TABLE_JOURNAL_MAIN . " m left join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 	where i.gl_type = 'asy' and m.journal_id = 14" . $period_filter . $search . " order by $disp_order, m.id";
 
 $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);

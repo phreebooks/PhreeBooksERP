@@ -45,13 +45,13 @@ switch ($_REQUEST['action']) {
 		$erp_entry   = $_POST['erp_entry']  ? '1' : '0';
 		// error check
 		if (!$task_name || !$description) throw new \Exception(WO_TASK_ID_MISSING);
-	
+
 		$result = $db->Execute("select id from " . TABLE_WO_TASK . " where task_name = '" . $task_name . "'");
 		if ($result->Recordcount() > 0) {
 		  	if ($result->fields['id'] <> $id) throw new \Exception(WO_DUPLICATE_TASK_ID);
 		}
 		// write the data
-		
+
 		$sql_data_array = array(
 		  'task_name'   => $task_name,
 		  'description' => $description,
@@ -72,7 +72,7 @@ switch ($_REQUEST['action']) {
 		    if (!db_perform(TABLE_WO_TASK, $sql_data_array, 'insert')) throw new \Exception("unable to insert in the database");
 			gen_add_audit_log(sprintf(WO_AUDIT_LOG_TASK, TEXT_ADD) . $task_name);
 		}
-		
+
 		$messageStack->add(($id ? WO_MESSAGE_SUCCESS_UPDATE : WO_MESSAGE_SUCCESS_ADD),'success');
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
   	}catch(Exception $e){
@@ -131,7 +131,7 @@ if (isset($_REQUEST['search_text']) && $_REQUEST['search_text'] <> '') {
   $search_fields = array('task_name', 'description', 'ref_doc', 'ref_spec');
   // hook for inserting new search fields to the query criteria.
   if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
-  $search = ' where ' . implode(' like \'%' . $_REQUEST['search_text'] . '%\' or ', $search_fields) . ' like \'%' . $_REQUEST['search_text'] . '%\'';
+  $search = " where " . implode(" like %{$_REQUEST['search_text']}%' or ", $search_fields) . " like '%{$_REQUEST['search_text']}%";
 } else {
   $search = '';
 }

@@ -30,7 +30,7 @@ $jID         = db_prepare_input($_GET['jID']);
 if (!$search_text) throw new \core\classes\userException(sprintf(ERROR_EMPTY_VARIABLE, 'guess'));
 $search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.address1',
   'a.address2', 'a.city_town', 'a.postal_code', 'c.short_name');
-$search = " and (" . implode(" like \%$search_text%' or ", $search_fields) . " like '%$search_text%\)"; //@todo redone
+$search = " and (" . implode(" like %$search_text%' or ", $search_fields) . " like '%$search_text%)";
 $result = $db->Execute("select c.id from ".TABLE_CONTACTS." c left join ".TABLE_ADDRESS_BOOK." a on c.id = a.ref_id
   where a.type = '".$type."m' and c.inactive='0' $search limit 2");
 // to many results

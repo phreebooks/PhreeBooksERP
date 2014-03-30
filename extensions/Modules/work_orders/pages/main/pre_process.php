@@ -94,7 +94,7 @@ switch ($_REQUEST['action']) {
 		}
 		// load and create the intial task list (only if new)
 		if (!$_POST['id']) {
-		  	$result = $db->Execute("select step, task_id  
+		  	$result = $db->Execute("select step, task_id
 		  	  from " . TABLE_WO_STEPS . " where ref_id = " . $wo_id . " order by step");
 		  	$step_list = array();
 		  	while (!$result->EOF) {
@@ -209,12 +209,12 @@ switch ($_REQUEST['action']) {
 				gen_add_audit_log(INV_LOG_ASSY . TEXT_SAVE, $sku, $qty);
 				$messageStack->add(INV_POST_ASSEMBLY_SUCCESS . $sku, 'success');
 			}
-			$db->Execute("update " . TABLE_WO_JOURNAL_ITEM . " set complete = '1', admin_id = " . $_SESSION['admin_id'] . "  
+			$db->Execute("update " . TABLE_WO_JOURNAL_ITEM . " set complete = '1', admin_id = " . $_SESSION['admin_id'] . "
 			  where ref_id = $id and step = $step");
 			// check to see if the work order is complete
 			$result = $db->Execute("select max(step) as max_step from " . TABLE_WO_JOURNAL_ITEM . " where ref_id = $id");
 			if ($step == $result->fields['max_step']) {
-				$db->Execute("update " . TABLE_WO_JOURNAL_MAIN . " 
+				$db->Execute("update " . TABLE_WO_JOURNAL_MAIN . "
 				  set closed = '1', close_date = '" . date('Y-m-d H:i:s') . "' where id = " . $id);
 			   	// check to un-allocate inventory
 				$result   = $db->Execute("select qty, sku_id, wo_id from " . TABLE_WO_JOURNAL_MAIN . " where id = $id");
@@ -235,7 +235,7 @@ switch ($_REQUEST['action']) {
 	  	$messageStack->add($e->getMessage());
 	  	$_REQUEST['action'] = 'build';
 	  	$_POST['rowSeq'] = $id; // make it look like an edit
-	}	
+	}
 	if (DEBUG) $messageStack->write_debug();
     // fall through like build to reload
   case 'edit':
@@ -249,7 +249,7 @@ switch ($_REQUEST['action']) {
 	$sku    = $result->fields['sku'];
 	$image  = $result->fields['image_with_path'];
 	// load the steps with status
-	$result = $db->Execute("select step, task_id, task_name, mfg, mfg_id, qa, qa_id, data_entry, data_value, complete 
+	$result = $db->Execute("select step, task_id, task_name, mfg, mfg_id, qa, qa_id, data_entry, data_value, complete
 	  from " . TABLE_WO_JOURNAL_ITEM . " where ref_id = " . $id . " order by step");
 	while (!$result->EOF) {
 	  $task = $db->Execute("select description from " . TABLE_WO_TASK . " where id = " . $result->fields['task_id'] . " limit 1");
@@ -338,19 +338,19 @@ switch ($_REQUEST['action']) {
       $search_fields = array('m.id', 'i.sku', 'm.wo_title');
 	  // hook for inserting new search fields to the query criteria.
 	  if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
-	  $search = ' where ' . implode(' like \'%' . $_REQUEST['search_text'] . '%\' or ', $search_fields) . ' like \'%' . $_REQUEST['search_text'] . '%\'';
+	  $search = " where " . implode(" like %{$_REQUEST['search_text']}%' or ", $search_fields) . " like '%{$_REQUEST['search_text']}%";
     } else {
 	  $search = '';
 	}
 	$field_list = array('m.id', 'm.wo_num', 'm.priority', 'm.wo_title', 'i.sku', 'm.qty', 'm.sku_id', 'm.post_date', 'm.closed', 'm.close_date');
 	// hook to add new fields to the query return results
 	if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
-    $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " 
+    $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . "
 	  from " . TABLE_WO_JOURNAL_MAIN . " m inner join " . TABLE_INVENTORY . " i on m.sku_id = i.id" . $search . " order by $disp_order, m.closed, m.id DESC";
     $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     history_save('wo_main');
-    
+
     define('PAGE_TITLE', BOX_WORK_ORDERS_MODULE);
     $include_template = 'template_main.php';
 	break;

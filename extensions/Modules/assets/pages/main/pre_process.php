@@ -127,10 +127,10 @@ switch ($_REQUEST['action']) {
 		  $attachments[$image_id] = $_FILES['file_name']['name'];
 		}
 		$sql_data_array['attachments'] = sizeof($attachments)>0 ? serialize($attachments) : '';
-		
+
 		if ($remove_image) { // update the image with relative path
 			$_POST['image_with_path'] = '';
-			$sql_data_array['image_with_path'] = ''; 
+			$sql_data_array['image_with_path'] = '';
 		}
 		is_uploaded_file($_FILES['asset_image']['tmp_name']);
 		$file_path = DIR_FS_MY_FILES . $_SESSION['company'] . '/assets/images';
@@ -150,7 +150,7 @@ switch ($_REQUEST['action']) {
 		// Ready to write update
 		db_perform(TABLE_ASSETS, $sql_data_array, 'update', "id = " . $id);
 		gen_add_audit_log(AESSETS_LOG_ASSETS . TEXT_UPDATE, $asset_id . ' - ' . $sql_data_array['description_short']);
-		
+
 	} catch (Exception $e) {
 		$messageStack->add($e->getMessage());
 		$_POST['id'] = $id;
@@ -193,7 +193,7 @@ switch ($_REQUEST['action']) {
 	$_REQUEST['action'] = 'edit'; // fall through to edit case
   case 'edit':
     $id = db_prepare_input(isset($_POST['rowSeq']) ? $_POST['rowSeq'] : $_GET['cID']);
-	$sql = "select * from " . TABLE_ASSETS . " 
+	$sql = "select * from " . TABLE_ASSETS . "
 		where id = " . (int)$id . " order by asset_id";
 	$asset = $db->Execute($sql);
 	// load attachments
@@ -323,11 +323,11 @@ switch ($_REQUEST['action']) {
       $search_fields = array('asset_id', 'serial_number', 'description_short', 'description_long');
 	  // hook for inserting new search fields to the query criteria.
 	  if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
-	  $search = ' where ' . implode(' like \'%' . $_REQUEST['search_text'] . '%\' or ', $search_fields) . ' like \'%' . $_REQUEST['search_text'] . '%\'';
+	  $search = " where " . implode(" like %{$_REQUEST['search_text']}%' or ", $search_fields) . " like '%{$_REQUEST['search_text']}%";
     } else {
 	  $search = '';
 	}
-	$field_list = array('id', 'asset_id', 'asset_type', 'purch_cond', 'inactive', 'serial_number', 
+	$field_list = array('id', 'asset_id', 'asset_type', 'purch_cond', 'inactive', 'serial_number',
 		'description_short', 'acquisition_date', 'terminal_date', 'attachments');
 	// hook to add new fields to the query return results
 	if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
@@ -336,7 +336,7 @@ switch ($_REQUEST['action']) {
     $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     history_save('assets');
-    
+
 	define('PAGE_TITLE', BOX_ASSET_MODULE);
     $include_template = 'template_main.php';
 	break;

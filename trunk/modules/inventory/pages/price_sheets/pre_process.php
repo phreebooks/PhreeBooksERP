@@ -63,12 +63,12 @@ switch ($_REQUEST['action']) {
 	  }
 	}
 	$sql_data_array = array(
-	  'sheet_name' 		=> $sheet_name, 
-	  'type' 			=> $type, 
-	  'inactive' 		=> $inactive, 
-	  'revision' 		=> $revision, 
-	  'effective_date' 	=> $effective_date, 
-	  'default_sheet' 	=> $default_sheet, 
+	  'sheet_name' 		=> $sheet_name,
+	  'type' 			=> $type,
+	  'inactive' 		=> $inactive,
+	  'revision' 		=> $revision,
+	  'effective_date' 	=> $effective_date,
+	  'default_sheet' 	=> $default_sheet,
 	  'default_levels' 	=> $default_levels);
 	if ($_REQUEST['action'] == 'save'){
 		db_perform(TABLE_PRICE_SHEETS, $sql_data_array, 'insert');
@@ -82,7 +82,7 @@ switch ($_REQUEST['action']) {
 	  	$db->Execute("update " . TABLE_PRICE_SHEETS . " set default_sheet = '1' where sheet_name = '".addslashes($sheet_name)."' and type = '$type'");
 	}
 	// set expiration date of previous rev if there is a older rev of this price sheet
-	if ($id != '') $db->Execute("update " . TABLE_PRICE_SHEETS . " set expiration_date = '" . gen_specific_date($effective_date, -1) . "' 
+	if ($id != '') $db->Execute("update " . TABLE_PRICE_SHEETS . " set expiration_date = '" . gen_specific_date($effective_date, -1) . "'
 	  where sheet_name = '".addslashes($sheet_name)."' and type = '$type' and ( expiration_date IS NULL or expiration_date = '0000-00-00' or expiration_date >= '$effective_date' ) and id < $id");
 	gen_add_audit_log(PRICE_SHEETS_LOG . ($_REQUEST['action'] == 'save') ? TEXT_SAVE : TEXT_UPDATE, $sheet_name);
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('psID', 'action')), 'SSL'));
@@ -121,7 +121,7 @@ switch ($_REQUEST['action']) {
 	// Copy special pricing information to new sheet
 	$levels = $db->Execute("select inventory_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where price_sheet_id = $old_id");
 	while (!$levels->EOF){
-	  $db->Execute("insert into " . TABLE_INVENTORY_SPECIAL_PRICES . " set inventory_id = $levels->fields['inventory_id'], 
+	  $db->Execute("insert into " . TABLE_INVENTORY_SPECIAL_PRICES . " set inventory_id = $levels->fields['inventory_id'],
 	  price_sheet_id = $id, price_levels = '$levels->fields['price_levels']'");
 	  $levels->MoveNext();
 	}
@@ -179,7 +179,7 @@ switch ($_REQUEST['action']) {
 	$list_header = $result['html_code'];
 	$disp_order  = $result['disp_order'];
 	// find the highest rev level by sheet name
-	$result = $db->Execute("select distinct sheet_name, max(revision) as rev from " . TABLE_PRICE_SHEETS . " 
+	$result = $db->Execute("select distinct sheet_name, max(revision) as rev from " . TABLE_PRICE_SHEETS . "
 	  where type = '$type' group by sheet_name");
 	$rev_levels = array();
 	while(!$result->EOF) {
@@ -192,7 +192,7 @@ switch ($_REQUEST['action']) {
 	  $search_fields = array('sheet_name', 'revision');
 	  // hook for inserting new search fields to the query criteria.
 	  if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
-	  $search = ' AND (' . implode(' LIKE \'%' . $_REQUEST['search_text'] . '%\' or ', $search_fields) . ' like \'%' . $_REQUEST['search_text'] . '%\')';
+	  $search = " and (" . implode(" like %{$_REQUEST['search_text']}%' or ", $search_fields) . " like '%{$_REQUEST['search_text']}%)";
 	}
 	$field_list = array('id', 'inactive', 'sheet_name', 'revision', 'effective_date', 'expiration_date', 'default_sheet');
 	// hook to add new fields to the query return results
@@ -201,7 +201,7 @@ switch ($_REQUEST['action']) {
 	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".MAX_DISPLAY_SEARCH_RESULTS);
     $query_split      = new \core\classes\splitPageResults($_REQUEST['list'], '');
     history_save('inv_prices');
-    
+
     $include_template = 'template_main.php';
     define('PAGE_TITLE', $type == 'v' ? BOX_PURCHASE_PRICE_SHEETS : BOX_SALES_PRICE_SHEETS);
 }

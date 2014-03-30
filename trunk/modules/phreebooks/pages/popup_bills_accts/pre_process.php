@@ -25,11 +25,11 @@ define('JOURNAL_ID',   $_GET['jID']);
 define('ACCOUNT_TYPE', $_GET['type']);
 switch (JOURNAL_ID) {
 	default:
-	case 18: 
+	case 18:
 		$terms_type = 'AR';
 		$default_purchase_invoice_id = 'DP' . date('Ymd', time());
 		break;
-	case 20: 
+	case 20:
 		$terms_type = 'AP';
 		$result = $db->Execute("select next_check_num from " . TABLE_CURRENT_STATUS);
 		$default_purchase_invoice_id = $result->fields['next_check_num'];
@@ -64,23 +64,23 @@ $list_header = $result['html_code'];
 $disp_order  = $result['disp_order'];
 // build the list for the page selected
 if (isset($_REQUEST['search_text']) && $_REQUEST['search_text'] <> '') {
-  $search_fields = array('c.short_name', 'm.bill_primary_name', 'm.bill_contact', 'm.bill_address1', 
+  $search_fields = array('c.short_name', 'm.bill_primary_name', 'm.bill_contact', 'm.bill_address1',
     'm.bill_address2', 'm.bill_city_town', 'm.bill_postal_code', 'm.purchase_invoice_id');
   // hook for inserting new search fields to the query criteria.
   if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
-  $search = ' and (' . implode(' like \'%' . $_REQUEST['search_text'] . '%\' or ', $search_fields) . ' like \'%' . $_REQUEST['search_text'] . '%\')';
+  $search = " and (" . implode(" like %{$_REQUEST['search_text']}%' or ", $search_fields) . " like '%{$_REQUEST['search_text']}%)";
 } else {
   $search = '';
 }
-$field_list = array('m.bill_acct_id', 'm.bill_primary_name', 'm.bill_city_town', 
+$field_list = array('m.bill_acct_id', 'm.bill_primary_name', 'm.bill_city_town',
 	'm.bill_state_province', 'm.bill_postal_code', 'sum(m.total_amount) as ztotal_amount');
 		// hook to add new fields to the query return results
 if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
 
-$query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " 
+$query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . "
 	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_CONTACTS . " c on m.bill_acct_id = c.id
-	where c.type = '" . (ACCOUNT_TYPE == 'v' ? 'v' : 'c') . "' 
-	and m.journal_id in " . (ACCOUNT_TYPE == 'v' ? '(6, 7)' : '(12, 13)') . " and m.closed = '0'" . $search . " 
+	where c.type = '" . (ACCOUNT_TYPE == 'v' ? 'v' : 'c') . "'
+	and m.journal_id in " . (ACCOUNT_TYPE == 'v' ? '(6, 7)' : '(12, 13)') . " and m.closed = '0'" . $search . "
 	group by m.bill_acct_id order by $disp_order";
 
 $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);

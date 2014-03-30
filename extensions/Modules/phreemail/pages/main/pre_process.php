@@ -35,15 +35,15 @@ switch ($_REQUEST['action']) {
 	break;
   case 'delete':
   	\core\classes\user::validate_security($security_level, 4); // security check
-	
-	
+
+
   case 'save':
   	\core\classes\user::validate_security($security_level, 3); // security check
-	
+
 	break;
   case 'copy':
   	\core\classes\user::validate_security($security_level, 2); // security check
-	
+
   case 'edit':
     $mail->getEmailFromDb($_POST['rowSeq']);
 	break;
@@ -90,7 +90,7 @@ switch ($_REQUEST['action']) {
     $include_template = 'template_id.php';
     break;
   case 'edit':
-	
+
     define('PAGE_TITLE', BOX_ASSET_MODULE);
     $include_template = 'template_detail.php';
     break;
@@ -99,7 +99,7 @@ switch ($_REQUEST['action']) {
 	$heading_array = array(
 		'EmailFromP'  	=> TEXT_FROM,
 	  	'Subject'    	=> TEXT_MESSAGE_SUBJECT,
-		'DateE'     	=> TEXT_DATE,  
+		'DateE'     	=> TEXT_DATE,
 	);
 	$result      = html_heading_bar($heading_array);
 	$list_header = $result['html_code'];
@@ -109,7 +109,7 @@ switch ($_REQUEST['action']) {
       $search_fields = array('Subject', 'EmailFromP', 'Message');
 	  // hook for inserting new search fields to the query criteria.
 	  if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
-	  $search = ' where ' . implode(' like \'%' . $_REQUEST['search_text'] . '%\' or ', $search_fields) . ' like \'%' . $_REQUEST['search_text'] . '%\'';
+	  $search = " where " . implode(" like %{$_REQUEST['search_text']}%' or ", $search_fields) . " like '%{$_REQUEST['search_text']}%";
     } else {
 	  $search = '';
 	}

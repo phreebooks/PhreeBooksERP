@@ -30,7 +30,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save':
-  case 'fill_all': 
+  case 'fill_all':
   	try{
 		\core\classes\user::validate_security($security_level, 2);
 	  	$admin_id = db_prepare_input($_POST['rowSeq']);
@@ -63,7 +63,7 @@ switch ($_REQUEST['action']) {
 		  	$result = $db->Execute("select admin_id from " . TABLE_USERS . " where admin_name = '" . db_prepare_input($_POST['admin_name']) . "'");
 		  	if ($result->RecordCount() != 0) throw new \Exception(ENTRY_DUP_USER_NEW_ERROR);
 		}
-		
+
 		if ($admin_id) {
 			db_perform(TABLE_USERS, $sql_data_array, 'update', "admin_id = $admin_id");
 			gen_add_audit_log(sprintf(GEN_LOG_USER, TEXT_UPDATE), db_prepare_input($_POST['admin_name']));
@@ -72,7 +72,7 @@ switch ($_REQUEST['action']) {
 			$admin_id = db_insert_id();
 			gen_add_audit_log(sprintf(GEN_LOG_USER, TEXT_ADD), db_prepare_input($_POST['admin_name']));
 		}
-		if ($admin_id == $_SESSION['admin_id']) $_SESSION['admin_security'] = \core\classes\user::parse_permissions($admin_security); // update if user is current user	
+		if ($admin_id == $_SESSION['admin_id']) $_SESSION['admin_security'] = \core\classes\user::parse_permissions($admin_security); // update if user is current user
   	}catch(Exception $e){
   		$messageStack->add($e->getMessage());
   	}
@@ -182,19 +182,19 @@ switch ($_REQUEST['action']) {
 	  $search_fields = array('admin_name', 'admin_email', 'display_name');
 	  // hook for inserting new search fields to the query criteria.
 	  if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
-	  $search = ' and (' . implode(' like \'%' . $_REQUEST['search_text'] . '%\' or ', $search_fields) . ' like \'%' . $_REQUEST['search_text'] . '%\')';
+	  $search = " and (" . implode(" like %{$_REQUEST['search_text']}%' or ", $search_fields) . " like '%{$_REQUEST['search_text']}%)";
 	} else {
 	  $search = '';
 	}
 	$field_list = array('admin_id', 'inactive', 'display_name', 'admin_name', 'admin_email');
 	// hook to add new fields to the query return results
 	if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
-	$query_raw    = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " from " . TABLE_USERS . " where 
+	$query_raw    = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " from " . TABLE_USERS . " where
 	  is_role = '1'" . $search . " order by $disp_order";
 	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     history_save('roles');
-    
+
 	$include_template = 'template_main.php';
 	define('PAGE_TITLE', BOX_HEADING_ROLES);
 }
