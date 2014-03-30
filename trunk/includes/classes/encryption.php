@@ -36,7 +36,7 @@ class encryption {
 		if ($params['number']) {
 	  		$params['number'] = preg_replace("/[^0-9]/", "", $params['number']);
 	  		$hint  = substr($params['number'], 0, 4);
-	  		for ($a = 0; $a < (strlen($params['number']) - 8); $a++) $hint .= '*'; 
+	  		for ($a = 0; $a < (strlen($params['number']) - 8); $a++) $hint .= '*';
 	  		$hint .= substr($params['number'], -4);
 	  		$payment = array(); // the sequence is important!
 			$payment[] = $params['name'];
@@ -47,7 +47,7 @@ class encryption {
 			if (isset($params['alt1'])) $payment[] = $params['alt1'];
 			if (isset($params['alt2'])) $payment[] = $params['alt2'];
 			$val = implode(':', $payment).':';
-			$enc_value = $this->encrypt($_SESSION['admin_encrypt'], $val, 128);		
+			$enc_value = $this->encrypt($_SESSION['admin_encrypt'], $val, 128);
 		}
 		if (strlen($params['exp_year']) == 2) $params['exp_year'] = '20'.$params['exp_year'];
 		$exp_date = $params['exp_year'].'-'.$params['exp_mon'].'-01';
@@ -55,14 +55,15 @@ class encryption {
   	}
 
   	final static function decrypt ($key, $source) {
+  		if (strlen($_SESSION['admin_encrypt']) < 1) throw new \Exception(ACT_NO_KEY_EXISTS);
 		$fudgefactor = $this->_convertKey($key);
-		if (empty($source)) throw new \Exception('No value has been supplied for decryption');
+		if (empty($source)) throw new \core\classes\userException('No value has been supplied for decryption');
 		$target  = null;
 		$factor2 = 0;
 		for ($i = 0; $i < strlen($source); $i++) {
 	  		$char2 = substr($source, $i, 1);
 	  		$num2 = strpos($this->scramble2, $char2);
-	  		if ($num2 === false) throw new \Exception("Source string contains an invalid character ($char2)");
+	  		if ($num2 === false) throw new \core\classes\userException("Source string contains an invalid character ($char2)");
 			$adj     = $this->_applyFudgeFactor($fudgefactor);
 	  		$factor1 = $factor2 + $adj;
 	  		$num1    = $num2 - round($factor1);
@@ -76,15 +77,16 @@ class encryption {
   	}
 
   	final static function encrypt ($key, $source, $sourcelen = 0) {
+  		if (strlen($_SESSION['admin_encrypt']) < 1) throw new \Exception(ACT_NO_KEY_EXISTS);
 		$fudgefactor  = $this->_convertKey($key);
-		if (empty($source)) throw new \Exception('No value has been supplied for encryption');
+		if (empty($source)) throw new \core\classes\userException('No value has been supplied for encryption');
 	  	while (strlen($source) < $sourcelen) $source .= ' ';
 		$target = null;
 		$factor2 = 0;
 		for ($i = 0; $i < strlen($source); $i++) {
 	  		$char1 = substr($source, $i, 1);
 	  		$num1 = strpos($this->scramble1, $char1);
-	  		if ($num1 === false) throw new \Exception("Source string contains an invalid character ($char1)");
+	  		if ($num1 === false) throw new \core\classes\userException("Source string contains an invalid character ($char1)");
 			$adj     = $this->_applyFudgeFactor($fudgefactor);
 	  		$factor1 = $factor2 + $adj;
 	  		$num2    = round($factor1) + $num1;
@@ -130,25 +132,25 @@ class encryption {
   	}
 
   	final static function _convertKey ($key) {
-		if (empty($key)) throw new \Exception('No value has been supplied for the encryption key');
+		if (empty($key)) throw new \core\classes\userException('No value has been supplied for the encryption key');
 	  	$array[] = strlen($key);
 		$tot = 0;
 		for ($i = 0; $i < strlen($key); $i++) {
 	  		$char = substr($key, $i, 1);
 	  		$num = strpos($this->scramble1, $char);
-	  		if ($num === false) throw new \Exception("Key contains an invalid character ($char)");
+	  		if ($num === false) throw new \core\classes\userException("Key contains an invalid character ($char)");
 			$array[] = $num;
 	  		$tot = $tot + $num;
 		}
 		$array[] = $tot;
 		return $array;
   	}
-  	
+
   	/**
   	 * this function will encrypt password
   	 * @param string $plain
   	 */
-  	
+
 	final static function password($plainPassword) {
 		$encryptedPassword = '';
 	  	for ($i=0; $i<10; $i++) {
@@ -158,29 +160,29 @@ class encryption {
 	  	$encryptedPassword = md5($salt . $plainPassword) . ':' . $salt;
 	  	return $encryptedPassword;
 	}
-	
+
 	/**
 	 * this function will check if passwords / encryption keys match
 	 * @param string $plainPassword
 	 * @param string $encryptedPassword
 	 */
-	
+
 	final static function validate_password($plainPassword, $encryptedPassword) {
   		if (gen_not_null($plainPassword) && gen_not_null($encryptedPassword)) {
 			// split apart the hash / salt
     		$stack = explode(':', $encryptedPassword);
-    		if (sizeof($stack) != 2) throw new \Exception("varible stack hasn't got size 2");
+    		if (sizeof($stack) != 2) throw new \core\classes\userException("varible stack hasn't got size 2");
     		if (md5($stack[1] . $plainPassword) == $stack[0]) return true;
   		}
-  		if ($encryptedPassword == ENCRYPTION_VALUE) throw new \Exception(ERROR_WRONG_ENCRYPT_KEY);
+  		if ($encryptedPassword == ENCRYPTION_VALUE) throw new \core\classes\userException(ERROR_WRONG_ENCRYPT_KEY);
   		else throw new \Exception(ERROR_WRONG_LOGIN);
 	}
-	
+
 	/**
 	 * this function will create random password
 	 * @param int $passwordLength
 	 */
-	
+
 	final static function random_password($passwordLength = 12) {
   		$chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
   		$chars_length = (strlen($chars) - 1);

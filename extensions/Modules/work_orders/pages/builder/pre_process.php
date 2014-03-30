@@ -87,9 +87,9 @@ switch ($_REQUEST['action']) {
 		  'revision'    => $revision,
 		);
 		if ($id) {
-			if (!db_perform(TABLE_WO_MAIN, $sql_data_array, 'update', 'id = ' . $id)) throw new Exception("wasn't able to update $id in to table");
+			if (!db_perform(TABLE_WO_MAIN, $sql_data_array, 'update', 'id = ' . $id)) throw new \Exception("wasn't able to update $id in to table");
 		} else {
-		    if (!db_perform(TABLE_WO_MAIN, $sql_data_array, 'insert')) throw new Exception("wasn't able to insert in to table");
+		    if (!db_perform(TABLE_WO_MAIN, $sql_data_array, 'insert')) throw new \Exception("wasn't able to insert in to table");
 			$id = db_insert_id();
 			if ($bump_rev) {
 		  	  	$result = $db->Execute("update " . TABLE_WO_MAIN . " set inactive = '1' where id = " . $_POST['id']);
@@ -105,7 +105,7 @@ switch ($_REQUEST['action']) {
 		      'step'        => $val['step'],
 		      'task_id'     => $val['task_id'],
 		    );
-			if (!db_perform(TABLE_WO_STEPS, $sql_data_array, 'insert')) throw new Exception("wasn't able to insert in to table");
+			if (!db_perform(TABLE_WO_STEPS, $sql_data_array, 'insert')) throw new \Exception("wasn't able to insert in to table");
 		}
 		$db->transCommit();
 		// finish

@@ -47,8 +47,8 @@ $request_type = (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) == '
 // define the inventory types that are tracked in cost of goods sold
 define('COG_ITEM_TYPES','si,sr,ms,mi,ma,sa');
 //start session functions
-@ini_set('session.gc_maxlifetime', (SESSION_TIMEOUT_ADMIN < 900 ? (SESSION_TIMEOUT_ADMIN + 900) : SESSION_TIMEOUT_ADMIN));
-session_set_cookie_params((SESSION_TIMEOUT_ADMIN < 900 ? (SESSION_TIMEOUT_ADMIN + 900) : SESSION_TIMEOUT_ADMIN),'/',$path);
+@ini_set('session.gc_maxlifetime', (SESSION_TIMEOUT_ADMIN < 360 ? 360 : SESSION_TIMEOUT_ADMIN));
+session_set_cookie_params((SESSION_TIMEOUT_ADMIN < 360 ? 360 : SESSION_TIMEOUT_ADMIN),'/',$path);
 session_start();
 session_decode();
 //end session
@@ -139,7 +139,11 @@ if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR
   	$path = DIR_FS_MODULES . "{$_REQUEST['module']}/custom/pages/{$_REQUEST['page']}/extra_menus.php";
   	if (file_exists($path)) { include($path); }
 }
-if ( defined('ENABLE_ENCRYPTION') && ENABLE_ENCRYPTION  == true && strlen($_SESSION['admin_encrypt']) < 1 ) throw new \core\classes\userException("Be aware that you have enabled encryption but the encryption key is empty");
+if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > (SESSION_TIMEOUT_ADMIN < 360 ? 360 : SESSION_TIMEOUT_ADMIN))) {
+	$_SESSION = array('language'=>$_SESSION['language'], 'companies'=>$_SESSION['companies']);
+	gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL'));
+}
+$_SESSION['LAST_ACTIVITY'] = time();
 $prefered_type = ENABLE_SSL_ADMIN == 'true' ? 'SSL' : 'NONSSL';
 if ($request_type <> $prefered_type) gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL')); // re-direct if SSL request not matching actual request
 ?>

@@ -38,7 +38,7 @@ define('FILENAME_DEFAULT', 'index');
 
 // define the inventory types that are tracked in cost of goods sold
 define('COG_ITEM_TYPES','si,sr,ms,mi,as');
-  
+
 // set the type of request (secure or not)
 $request_type = (strtolower($_SERVER['HTTPS']) == 'on' || $_SERVER['HTTPS'] == '1' || strstr(strtoupper($_SERVER['HTTP_X_FORWARDED_BY']),'SSL') || strstr(strtoupper($_SERVER['HTTP_X_FORWARDED_HOST']),'SSL'))  ? 'SSL' : 'NONSSL';
 
@@ -77,7 +77,7 @@ require_once(DIR_FS_ADMIN . 'soap/language/' . LANGUAGE . '/language.php');
 // Load queryFactory db classes
 require_once(DIR_FS_ADMIN . 'includes/db/' . DB_TYPE . '/query_factory.php');
 $db = new queryFactory();
-if (!$db->connect(DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, DB_DATABASE)) throw new Exception('cannot connec to db!');
+if (!$db->connect(DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, DB_DATABASE)) throw new \Exception('cannot connec to db!');
 
 // set application wide parameters for phreebooks module
 $configuration = $db->Execute("select configuration_key, configuration_value from " . DB_PREFIX . "configuration");
@@ -92,7 +92,7 @@ gen_pull_language('phreedom', 'menu');
   $dirs = scandir(DIR_FS_MODULES);
   foreach ($dirs as $dir) { // first pull all module language files, loaded or not
     if ($dir == '.' || $dir == '..') continue;
-	if (is_dir(DIR_FS_MODULES . $dir)) gen_pull_language($dir, 'menu'); 
+	if (is_dir(DIR_FS_MODULES . $dir)) gen_pull_language($dir, 'menu');
   }
   foreach ($dirs as $dir) {
     if ($dir == '.' || $dir == '..') continue;

@@ -123,7 +123,7 @@ class backup {
 
 	function unzip_file($file, $dest_path = '') {
     	if (!$dest_path) $dest_path = $this->dest_dir;
-		if (!file_exists($file)) throw new Exception("file $file already exists");
+		if (!file_exists($file)) throw new \Exception("file $file already exists");
 		$zip = new \ZipArchive;
     	$zip->open($file);
     	$zip->extractTo($dest_path);
@@ -175,18 +175,18 @@ class backup {
 		foreach ($files as $file) {
 		  	if ($file == "." || $file == "..") continue;
 		  	if (is_file($dir . '/' . $file)) {
-				if (!@unlink($dir . '/' . $file)) throw new Exception("can not un link file $file from dir $dir");
+				if (!@unlink($dir . '/' . $file)) throw new \Exception("can not un link file $file from dir $dir");
 		  	} else { // it's a directory
 		    	$subdir = scandir($dir . '/' . $file);
 				if (sizeof($subdir) > 2) $this->delete_dir($dir . '/' . $file); // directory is not empty, recurse
-				if (!@rmdir("$dir/$file")) throw new Exception("can not remove dir $dir/$file");
+				if (!@rmdir("$dir/$file")) throw new \Exception("can not remove dir $dir/$file");
 		  	}
 		}
-		if (!@rmdir($dir)) throw new Exception("can not remove dir $dir");
+		if (!@rmdir($dir)) throw new \Exception("can not remove dir $dir");
 	}
 
   	function copy_dir($dir_source, $dir_dest) {
-    	if (!is_dir($dir_source))  throw new Exception("can not find dir $dir_source");
+    	if (!is_dir($dir_source))  throw new \Exception("can not find dir $dir_source");
 		$files = scandir($dir_source);
 		foreach ($files as $file) {
 	  		if ($file == "." || $file == "..") continue;

@@ -70,7 +70,7 @@ switch ($_REQUEST['action']) {
 		}
 		break;
 
-	default: throw new Exception("do not know action {$_REQUEST['action']}");
+	default: throw new \Exception("do not know action {$_REQUEST['action']}");
 }
 echo createXmlHeader() . $xml . createXmlFooter();
 ob_end_flush();

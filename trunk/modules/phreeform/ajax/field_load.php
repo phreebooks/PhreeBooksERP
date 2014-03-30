@@ -32,7 +32,7 @@ while(true) {
   if (isset($_GET['t' . $i])) $report->tables[] = new \core\classes\objectInfo(array('tablename' => $_GET['t' . $i]));
     else break;
   $i++;
-  if ($runaway++ > 100) throw new Exception("caught by runaway counter");
+  if ($runaway++ > 100) throw new \Exception("caught by runaway counter");
 }
 if (sizeof($report->tables) < 1) throw new \Exception(PHREEFORM_NO_TABLES_PASSED);
 $report->special_class = $_GET['sp'] ? $_GET['sp'] : false;

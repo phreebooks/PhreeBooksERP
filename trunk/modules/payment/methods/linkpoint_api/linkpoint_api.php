@@ -608,7 +608,7 @@ class linkpoint_api extends \payment\classes\payment {
 		global $db;
 		if (db_table_exists(TABLE_LINKPOINT_API)) { // cleanup database if contains no data
 		  	$result = $db->Execute("select count(id) as count from " . TABLE_LINKPOINT_API);
-		  	if ($result->RecordCount() != 0) throw new Exception("Can't delete table ". TABLE_LINKPOINT_API. " because it contains data", $code, $previous);
+		  	if ($result->RecordCount() != 0) throw new \Exception("Can't delete table ". TABLE_LINKPOINT_API. " because it contains data", $code, $previous);
 		  	$db->Execute("DROP TABLE " . TABLE_LINKPOINT_API);
 		}
 		parent::delete();

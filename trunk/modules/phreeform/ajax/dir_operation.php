@@ -24,7 +24,7 @@ $security_level = \core\classes\user::validate(SECURITY_ID_PHREEFORM);
 /**************   page specific initialization  *************************/
 $id        = $_GET['id'];
 $ajax_text = '';
-if (!isset($_GET['id'])) throw new Exception("variable ID isn't set");
+if (!isset($_GET['id'])) throw new \Exception("variable ID isn't set");
 $dir_details = $db->Execute("select * from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
 switch ($_REQUEST['action']) {
   case 'go_up':
@@ -40,8 +40,8 @@ switch ($_REQUEST['action']) {
 	  $ajax_text = DOC_CTL_DIR_DELETED;
 	}
 	break;
-  default: 
-  	throw new Exception("Don't know action {$_REQUEST['action']}");
+  default:
+  	throw new \Exception("Don't know action {$_REQUEST['action']}");
 }
 $xml .= "\t" . xmlEntry("docID",   $id);
 $xml .= "\t" . xmlEntry("message", $ajax_text);

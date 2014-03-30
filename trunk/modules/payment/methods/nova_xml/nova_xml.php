@@ -26,7 +26,7 @@ class nova_xml extends \payment\classes\payment {
   public $description	= MODULE_PAYMENT_NOVA_XML_TEXT_DESCRIPTION;
   public $sort_order	= 2;
   public $version		= '3.3';
-    
+
   public function __construct(){
   	parent::__construct();
     global $order;
@@ -62,7 +62,7 @@ class nova_xml extends \payment\classes\payment {
 		'S' => 'Issuer indicates that CVV2 data should be present on the card, but the merchant has indicated that the CVV2 data is not present on the card.',
 		'U' => 'Issuer has not certified for CVV2 or issuer has not provided Visa with the CVV2 encryption keys.'
 	);
-	
+
     $this->keys[] = array('key'=>'MODULE_PAYMENT_NOVA_XML_MERCHANT_ID',       'default'=>'', 				'text'=>MODULE_PAYMENT_NOVA_XML_MERCHANT_ID_DESC);
     $this->keys[] = array('key'=>'MODULE_PAYMENT_NOVA_XML_USER_ID',           'default'=>'', 				'text'=>MODULE_PAYMENT_NOVA_XML_USER_ID_DESC);
     $this->keys[] = array('key'=>'MODULE_PAYMENT_NOVA_XML_PIN',               'default'=>'', 				'text'=>MODULE_PAYMENT_NOVA_XML_PIN_DESC);
@@ -90,11 +90,11 @@ class nova_xml extends \payment\classes\payment {
   }
 
   function javascript_validation() {
-    $js = 
+    $js =
 	'  if (payment_method == "' . $this->id . '") {' . "\n" .
     '    var cc_owner  = document.getElementById("nova_xml_field_0").value;' . "\n" .
     '    var cc_number = document.getElementById("nova_xml_field_1").value;' . "\n" .
-    '    var cc_cvv    = document.getElementById("nova_xml_field_4").value;' . "\n" . 
+    '    var cc_cvv    = document.getElementById("nova_xml_field_4").value;' . "\n" .
     '    if (cc_owner == "" || cc_owner.length < ' . CC_OWNER_MIN_LENGTH . ') {' . "\n" .
     '      error_message = error_message + "' . sprintf(MODULE_PAYMENT_CC_TEXT_JS_CC_OWNER, CC_OWNER_MIN_LENGTH) . '";' . "\n" .
     '      error = 1;' . "\n" .
@@ -102,11 +102,11 @@ class nova_xml extends \payment\classes\payment {
     '    if (cc_number == "" || cc_number.length < ' . CC_NUMBER_MIN_LENGTH . ') {' . "\n" .
     '      error_message = error_message + "' . sprintf(MODULE_PAYMENT_CC_TEXT_JS_CC_NUMBER, CC_NUMBER_MIN_LENGTH) . '";' . "\n" .
     '      error = 1;' . "\n" .
-    '    }' . "\n" . 
+    '    }' . "\n" .
     '    if (cc_cvv == "" || cc_cvv.length < "3" || cc_cvv.length > "4") {' . "\n".
     '      error_message = error_message + "' . MODULE_PAYMENT_CC_TEXT_JS_CC_CVV . '";' . "\n" .
     '      error = 1;' . "\n" .
-    '    }' . "\n" . 
+    '    }' . "\n" .
     '  }' . "\n";
     return $js;
   }
@@ -145,7 +145,7 @@ class nova_xml extends \payment\classes\payment {
    * @throws Exception
    */
   	function pre_confirmation_check() {
-		// if the card number has the blanked out middle number fields, it has been processed, show message that 
+		// if the card number has the blanked out middle number fields, it has been processed, show message that
 		// 	the charges were not processed through the merchant gateway and continue posting payment.
 		if (strpos($this->field_1, '*') !== false) throw new \Exception(MODULE_PAYMENT_CC_NO_DUPS);
 
@@ -170,9 +170,9 @@ class nova_xml extends \payment\classes\payment {
    */
   function before_process() {
     global $order, $db, $messageStack;
-	// if the card number has the blanked out middle number fields, it has been processed, the message that 
+	// if the card number has the blanked out middle number fields, it has been processed, the message that
 	// the charges were not processed were set in pre_confirmation_check, just return to continue without processing.
-	if (strpos($this->field_1, '*') !== false) throw new Exception(MODULE_PAYMENT_CC_NO_DUPS);
+	if (strpos($this->field_1, '*') !== false) throw new \Exception(MODULE_PAYMENT_CC_NO_DUPS);
 
     $order->info['cc_expires'] = $this->field_2 . substr($this->field_3, -2);
     $order->info['cc_owner']   = $this->field_0;
@@ -183,9 +183,9 @@ class nova_xml extends \payment\classes\payment {
     // Populate an array that contains all of the data to be sent to Nova (their xml string is one level)
     $submit_data = array(
 		'ssl_transaction_type'   => ((MODULE_PAYMENT_NOVA_XML_AUTHORIZATION_TYPE == 'Authorize') ? 'CCAUTHONLY' : 'CCSALE'),
-		'ssl_merchant_id'        => MODULE_PAYMENT_NOVA_XML_MERCHANT_ID, 
-		'ssl_pin'                => MODULE_PAYMENT_NOVA_XML_PIN, 
-		'ssl_user_id'            => MODULE_PAYMENT_NOVA_XML_USER_ID, 
+		'ssl_merchant_id'        => MODULE_PAYMENT_NOVA_XML_MERCHANT_ID,
+		'ssl_pin'                => MODULE_PAYMENT_NOVA_XML_PIN,
+		'ssl_user_id'            => MODULE_PAYMENT_NOVA_XML_USER_ID,
 		'ssl_amount'             => $order->total_amount,
 		'ssl_salestax'           => ($order->sales_tax) ? $order->sales_tax : 0,
 		'ssl_card_number'        => preg_replace('/ /', '', $this->field_1),
@@ -278,10 +278,10 @@ class nova_xml extends \payment\classes\payment {
     $ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 20); // times out after 20 seconds 
+	curl_setopt($ch, CURLOPT_TIMEOUT, 20); // times out after 20 seconds
 	curl_setopt($ch, CURLOPT_HEADER, 0);
 	curl_setopt($ch, CURLOPT_VERBOSE, 0);
-	$authorize    = curl_exec($ch); 
+	$authorize    = curl_exec($ch);
 	$curlerrornum = curl_errno($ch);
 	$curlerror    = curl_error($ch);
 	curl_close ($ch);
@@ -301,7 +301,7 @@ class nova_xml extends \payment\classes\payment {
 		if ($runaway_loop_counter++ > 1000) break;
 	}
 //echo 'receive data = '; print_r($results); echo '<br>';
-	
+
     $this->transaction_id = $results['ssl_txn_id'];
     $this->auth_code = $results['ssl_approval_code'];
 

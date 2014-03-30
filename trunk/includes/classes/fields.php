@@ -28,13 +28,13 @@ class fields {
     public  $extra_buttons  = '';
 	public  $extra_tab_html = '';
 
-  public function __construct($sync = true){
-  	$this->security_id = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
-	require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
-  	foreach ($_REQUEST as $key => $value) $this->$key = $value;
-  	$this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
-	if ($sync) xtra_field_sync_list($this->module, $this->db_table);
-  }
+	public function __construct($sync = true){
+	  	$this->security_id = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
+		require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
+	  	foreach ($_REQUEST as $key => $value) $this->$key = $value;
+	  	$this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
+		if ($sync) xtra_field_sync_list($this->module, $this->db_table);
+	}
 
   function btn_save($id = '') {
   	global $db, $currencies;
@@ -185,17 +185,17 @@ class fields {
 	return true;
   }
 
-  function btn_delete($id = 0) {
-  	global $db;
-  	\core\classes\user::validate_security($this->security_id, 4); // security check
-	$result = $db->Execute("SELECT * FROM ".TABLE_EXTRA_FIELDS." WHERE id=$id");
-	foreach ($result->fields as $key => $value) $this->$key = $value;
-	if ($this->tab_id == '0') throw new \Exception (INV_CANNOT_DELETE_SYSTEM); // don't allow deletion of system fields
-	$db->Execute("DELETE FROM ".TABLE_EXTRA_FIELDS." WHERE id=$this->id");
-	$db->Execute("ALTER TABLE $this->db_table DROP COLUMN $this->field_name");
-	gen_add_audit_log ($this->module.' '.sprintf(EXTRA_FIELDS_LOG, TEXT_DELETE), "$id - $this->field_name");
-	return true;
-  }
+	function btn_delete($id = 0) {
+	  	global $db;
+	  	\core\classes\user::validate_security($this->security_id, 4); // security check
+		$result = $db->Execute("SELECT * FROM ".TABLE_EXTRA_FIELDS." WHERE id=$id");
+		foreach ($result->fields as $key => $value) $this->$key = $value;
+		if ($this->tab_id == '0') throw new \core\classes\userException (INV_CANNOT_DELETE_SYSTEM); // don't allow deletion of system fields
+		$db->Execute("DELETE FROM ".TABLE_EXTRA_FIELDS." WHERE id=$this->id");
+		$db->Execute("ALTER TABLE $this->db_table DROP COLUMN $this->field_name");
+		gen_add_audit_log ($this->module.' '.sprintf(EXTRA_FIELDS_LOG, TEXT_DELETE), "$id - $this->field_name");
+		return true;
+	}
 
   function build_main_html() {
   	global $db;
@@ -453,7 +453,7 @@ class fields {
 	  			$this->extra_tab_html .= '</div>' . chr(10);
   			}
   			$tab_array[] = $tab_id;
-  			$this->extra_tab_html .= '<div title="'. $result->fields['tab_name'] .'" id="tab_' . $tab_id . '">' . chr(10);
+  			$this->extra_tab_html .= "<div title='{$result->fields['tab_name']}' id='tab_$tab_id'>" . chr(10);
 	  		$this->extra_tab_html .= '  <table>' . chr(10);
   		}else if($previous_group <> $result->fields['group_by']){
   			$this->extra_tab_html .= '<tr class="ui-widget-header" height="5px"><td colspan="2"></td></tr>' . chr(10);

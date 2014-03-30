@@ -22,7 +22,7 @@ class admin extends \core\classes\admin {
 	public $text		= MODULE_PHREEPOS_TITLE;
 	public $description = MODULE_PHREEPOS_DESCRIPTION;
 	public $version		= '3.9';
-	
+
 	function __construct(){
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'contacts'  => '3.7.1',
@@ -44,7 +44,7 @@ class admin extends \core\classes\admin {
 	      'PHREEPOS_ROUNDING'					  => '0',// should the endtotal be rounded.
 		  'PHREEPOS_ENABLE_DIRECT_PRINTING'       => 0,  // this enables or disables direct printing.
 		);
-		
+
 		// Load tables
 		$this->tables = array(
 			TABLE_PHREEPOS_TILLS => "CREATE TABLE " . TABLE_PHREEPOS_TILLS . " (
@@ -78,7 +78,7 @@ class admin extends \core\classes\admin {
 		);
 	    parent::__construct();
 	}
-	
+
 	function install($path_my_files, $demo = false){
 		global $db;
 		parent::install($path_my_files, $demo);
@@ -129,7 +129,7 @@ class admin extends \core\classes\admin {
 	    // Don't allow delete if there is activity
 		$sql = "select id from " . TABLE_JOURNAL_MAIN . " where journal_id = '19'";
 		$result = $db->Execute($sql);
-		if ($result->RecordCount() <> 0 ) throw new Exception(ERROR_CANT_DELETE);
+		if ($result->RecordCount() <> 0 ) throw new \Exception(ERROR_CANT_DELETE);
 	}
 
 	function load_reports() {
@@ -138,6 +138,6 @@ class admin extends \core\classes\admin {
 		$this->add_report_folder($id, TEXT_RECEIPTS,       'pos:rcpt', 'ff');
 		parent::load_reports();
 	}
-  
+
 }
 ?>

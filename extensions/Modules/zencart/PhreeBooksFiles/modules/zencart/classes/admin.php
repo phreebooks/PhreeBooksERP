@@ -22,7 +22,7 @@ class admin extends \core\classes\admin {
 	public $text		= MODULE_ZENCART_TITLE;
 	public $description = MODULE_ZENCART_DESCRIPTION;
 	public $version		= '3.5';
-	
+
 	function __construct() {
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom'   => 3.6,
@@ -88,7 +88,7 @@ class admin extends \core\classes\admin {
 		  );
 		  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array);
 		  $db->Execute("alter table " . TABLE_INVENTORY . " add column `category_id` varchar(64) default ''");
-		  
+
 		  $sql_data_array = array(
 		    'module_id'   => 'inventory',
 		    'tab_id'      => $tab_id,
@@ -113,7 +113,7 @@ class admin extends \core\classes\admin {
 		  );
 		  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array);
 		  $db->Execute("alter table " . TABLE_INVENTORY . " add column `ProductModel` varchar(64) default ''");
-	
+
 		  $sql_data_array = array(
 		  	'module_id'   => 'inventory',
 		  	'tab_id'      => $tab_id,
@@ -160,8 +160,8 @@ class admin extends \core\classes\admin {
 			write_configure('MODULE_ZENCART_LAST_UPDATE', date('0000-00-00 00:00:00'));
 		}
 		$result = $db->Execute("select tab_id from " . TABLE_EXTRA_FIELDS . " where field_name = 'category_id'");
-		if ($result->RecordCount() == 0) throw new Exception('can not find tab_name ZenCart');
-		else $tab_id = $result->fields['tab_id'];	
+		if ($result->RecordCount() == 0) throw new \Exception('can not find tab_name ZenCart');
+		else $tab_id = $result->fields['tab_id'];
 		if (!db_field_exists(TABLE_INVENTORY, 'ProductURL')){
 			 $sql_data_array = array(
 			    'module_id'   => 'inventory',

@@ -31,7 +31,7 @@ class firstdata extends \payment\classes\payment {
   public $enable_encryption	= 1; // set to field position of credit card to create hint, false to turn off encryption
   public $sort_order		= 10;
   public $version			= '3.3';
-   
+
   public function __construct(){
   	global $order;
   	parent::__construct();
@@ -44,7 +44,7 @@ class firstdata extends \payment\classes\payment {
     $this->keys[] = array('key' => 'MODULE_PAYMENT_FIRSTDATA_PORT',              'default' => ''			, 'text' => MODULE_PAYMENT_FIRSTDATA_PORT_DESC);
     $this->keys[] = array('key' => 'MODULE_PAYMENT_FIRSTDATA_TESTMODE',          'default' => 'Test'		, 'text' => MODULE_PAYMENT_FIRSTDATA_TESTMODE_DESC);
     $this->keys[] = array('key' => 'MODULE_PAYMENT_FIRSTDATA_AUTHORIZATION_TYPE','default' => 'Authorize', 'text' => MODULE_PAYMENT_FIRSTDATA_AUTHORIZATION_TYPE_DESC);
-	  
+
 	$this->avs_codes = array(
 		'A' => 'Address matches - Postal Code does not match.',
 		'B' => 'Street address match, Postal code in wrong format. (International issuer)',
@@ -96,11 +96,11 @@ class firstdata extends \payment\classes\payment {
   }
 
   function javascript_validation() {
-    $js = 
+    $js =
 	'  if (payment_method == "' . $this->id . '") {' . "\n" .
     '    var cc_owner  = document.getElementById("firstdata_field_0").value;' . "\n" .
     '    var cc_number = document.getElementById("firstdata_field_1").value;' . "\n" .
-    '    var cc_cvv    = document.getElementById("firstdata_field_4").value;' . "\n" . 
+    '    var cc_cvv    = document.getElementById("firstdata_field_4").value;' . "\n" .
     '    if (cc_owner == "" || cc_owner.length < ' . CC_OWNER_MIN_LENGTH . ') {' . "\n" .
     '      error_message = error_message + "' . sprintf(MODULE_PAYMENT_CC_TEXT_JS_CC_OWNER, CC_OWNER_MIN_LENGTH) . '";' . "\n" .
     '      error = 1;' . "\n" .
@@ -108,11 +108,11 @@ class firstdata extends \payment\classes\payment {
     '    if (cc_number == "" || cc_number.length < ' . CC_NUMBER_MIN_LENGTH . ') {' . "\n" .
     '      error_message = error_message + "' . sprintf(MODULE_PAYMENT_CC_TEXT_JS_CC_NUMBER, CC_NUMBER_MIN_LENGTH) . '";' . "\n" .
     '      error = 1;' . "\n" .
-    '    }' . "\n" . 
+    '    }' . "\n" .
     '    if (cc_cvv == "" || cc_cvv.length < "3" || cc_cvv.length > "4") {' . "\n".
     '      error_message = error_message + "' . MODULE_PAYMENT_CC_TEXT_JS_CC_CVV . '";' . "\n" .
     '      error = 1;' . "\n" .
-    '    }' . "\n" . 
+    '    }' . "\n" .
     '  }' . "\n";
     return $js;
   }
@@ -147,16 +147,16 @@ class firstdata extends \payment\classes\payment {
 	  ));
     return $selection;
   }
-  
+
   	/**
    	 * Evaluates the Credit Card Type for acceptance and the validity of the Credit Card Number & Expiration Date
    	 *
    	 */
-  
+
   	function pre_confirmation_check() {
-	    // if the card number has the blanked out middle number fields, it has been processed, show message that 
+	    // if the card number has the blanked out middle number fields, it has been processed, show message that
 		// the charges were not processed through the merchant gateway and continue posting payment.
-		if (strpos($this->field_1, '*') !== false) throw new Exception(MODULE_PAYMENT_CC_NO_DUPS);	
+		if (strpos($this->field_1, '*') !== false) throw new \Exception(MODULE_PAYMENT_CC_NO_DUPS);
 	    $result = $this->validate();
 	    switch ($result) {
 	      	case -1:
@@ -178,9 +178,9 @@ class firstdata extends \payment\classes\payment {
   function before_process() {
     global $order, $db, $messageStack;
 
-	// if the card number has the blanked out middle number fields, it has been processed, the message that 
+	// if the card number has the blanked out middle number fields, it has been processed, the message that
 	// the charges were not processed were set in pre_confirmation_check, just return to continue without processing.
-	if (strpos($this->field_1, '*') !== false) throw new Exception(MODULE_PAYMENT_CC_NO_DUPS);
+	if (strpos($this->field_1, '*') !== false) throw new \Exception(MODULE_PAYMENT_CC_NO_DUPS);
 
     $order->info['cc_expires'] = $this->field_2 . $this->field_3;
     $order->info['cc_owner']   = $this->field_0;
@@ -280,7 +280,7 @@ class firstdata extends \payment\classes\payment {
 //	$url = str_replace('.com/', '.com:' . MODULE_PAYMENT_FIRSTDATA_PORT . '/', MODULE_PAYMENT_FIRSTDATA_HOST);
 	$url = MODULE_PAYMENT_FIRSTDATA_HOST . ':' . MODULE_PAYMENT_FIRSTDATA_PORT . '/'; // . 'LSGSXML';
 	$cert = DIR_FS_MODULES . 'payment/methods/firstdata/' . MODULE_PAYMENT_FIRSTDATA_KEY_FILE;
-	$GetPost = 'POST';	
+	$GetPost = 'POST';
 //echo 'transmit url  = '; echo htmlspecialchars($url); echo '<br />';
 //echo 'transmit cert = '; echo htmlspecialchars($cert); echo '<br />';
 //echo 'transmit data = '; echo htmlspecialchars($data); echo '<br /><br />';
@@ -294,7 +294,7 @@ class firstdata extends \payment\classes\payment {
 //	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 	curl_setopt($ch, CURLOPT_SSLCERT, DIR_FS_MODULES . 'payment/methods/firstdata/' . MODULE_PAYMENT_FIRSTDATA_KEY_FILE);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 10); // times out after 10 seconds 
+	curl_setopt($ch, CURLOPT_TIMEOUT, 10); // times out after 10 seconds
 //	curl_setopt($ch, CURLOPT_HEADER, 0);
 //	curl_setopt($ch, CURLOPT_VERBOSE, 0);
 	if ($GetPost == 'POST') {
@@ -306,7 +306,7 @@ class firstdata extends \payment\classes\payment {
       curl_setopt ($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
       curl_setopt ($ch, CURLOPT_PROXY, CURL_PROXY_SERVER_DETAILS);
     }
-	$authorize    = curl_exec($ch); 
+	$authorize    = curl_exec($ch);
 	// Check for curl errors
 	$curlerrornum = curl_errno($ch);
 	$curlerror    = curl_error($ch);

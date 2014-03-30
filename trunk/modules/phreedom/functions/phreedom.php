@@ -175,7 +175,7 @@ function install_build_co_config_file($company, $key, $value) {
 function load_module_xml($module) {
 	global $db;
   	if (($result = @file_get_contents(DIR_FS_MODULES . $module . '/' . $module . '.xml')) === false) throw new \core\classes\userException(sprintf(ERROR_READ_FILE, DIR_FS_MODULES . $module . '/' . $module . '.xml'));
-  	if (!$output = xml_to_object($result)) throw new Exception("xml file is empty for module");
+  	if (!$output = xml_to_object($result)) throw new \Exception("xml file is empty for module");
   	// fix some special cases, multi elements with single entries convert to arrays
   	if (is_object($output->Module->Table)) $output->Module->Table = array($output->Module->Table);
   	return $output;

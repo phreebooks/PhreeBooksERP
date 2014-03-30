@@ -36,11 +36,11 @@ switch ($_REQUEST['action']) {
   	case 'delete':
 	  	try{
 	    	$id = db_prepare_input($_POST['rowSeq']);
-			if (!$id) throw new Exception(GL_ERROR_NEVER_POSTED);
+			if (!$id) throw new \Exception(GL_ERROR_NEVER_POSTED);
 		  	$delOrd = new \phreepos\classes\journal\journal_19($id);
 		  	// verify no item rows have been acted upon (accounts reconciliation)
 		  	$result = $db->Execute("select closed from " . TABLE_JOURNAL_MAIN . " where id = " . $id);
-		  	if ($result->fields['closed'] == '1') throw new Exception(constant('GENERAL_JOURNAL_' . $delOrd ->journal_id . '_ERROR_6'));
+		  	if ($result->fields['closed'] == '1') throw new \Exception(constant('GENERAL_JOURNAL_' . $delOrd ->journal_id . '_ERROR_6'));
 		  	// *************** START TRANSACTION *************************
 		  	$db->transStart();
 		  	$delOrd->unPost('delete');

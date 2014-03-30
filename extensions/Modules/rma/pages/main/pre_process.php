@@ -136,7 +136,7 @@ switch ($_REQUEST['action']) {
 			$rma_num = $result->fields['next_rma_num'];
 			$sql_data_array['rma_num'] = $rma_num;
 		    $success = db_perform(TABLE_RMA, $sql_data_array, 'insert');
-			if (!db_perform(TABLE_RMA, $sql_data_array, 'insert')) throw new Exception( "unable to add to database");
+			if (!db_perform(TABLE_RMA, $sql_data_array, 'insert')) throw new \Exception( "unable to add to database");
 			$id = db_insert_id();
 			$next_num = string_increment($sql_data_array['rma_num']);
 			$db->Execute("update " . TABLE_CURRENT_STATUS . " set next_rma_num = '" . $next_num . "'");

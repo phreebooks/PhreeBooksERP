@@ -123,7 +123,7 @@ switch ($_REQUEST['action']) {
 		$date         = $_GET['date'];
 		$labels       = $_GET['labels'];
 		$labels_array = explode(':', $labels);
-		if (count($labels_array) == 0) throw new Exception('No labels were passed to label_viewer.php!');
+		if (count($labels_array) == 0) throw new \Exception('No labels were passed to label_viewer.php!');
 		$file_path = SHIPPING_DEFAULT_LABEL_DIR . $admin_classes['shipping']->methods[$method]->id . '/' . str_replace('-', '/', $date) . '/';
 		// fetch the tracking labels
 		foreach ($labels_array as $tracking_num) {

@@ -33,7 +33,7 @@ while (true) {
   	$strTable .= ' ' . $joinopt . ' ' . DB_PREFIX . $_GET['table' . $i] . ' on ' . $_GET['table' . $i . 'criteria'];
   	$tables[] = $_GET['table' . $i];
   	$i++;
-  	if ($runaway++ > 100) throw new Exception('Runaway counter expired.');
+  	if ($runaway++ > 100) throw new \Exception('Runaway counter expired.');
 }
 foreach ($tables as $table) { // prefix the criteria
   $strTable = str_replace($table . '.', DB_PREFIX . $table . '.', $strTable);
