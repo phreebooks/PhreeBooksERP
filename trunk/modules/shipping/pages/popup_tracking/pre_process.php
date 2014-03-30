@@ -62,10 +62,10 @@ switch ($_REQUEST['action']) {
 }
 
 /*****************   prepare to display templates  *************************/
-$js_methods  = build_js_methods();
+$js_shipping_options  = build_js_methods($admin_classes['shipping']->methods);
 
 if ($sID) {
-  $sql = "select id, shipment_id, carrier, ref_id, method, ship_date, deliver_date, tracking_id, cost 
+  $sql = "select id, shipment_id, carrier, ref_id, method, ship_date, deliver_date, tracking_id, cost
 	from " . TABLE_SHIPPING_LOG . " where id = " . (int)$sID;
   $result = $db->Execute($sql);
   $cInfo = new \core\classes\objectInfo($result->fields);
@@ -81,9 +81,9 @@ if ($sID) {
   }
 } else {
   $cInfo = new \core\classes\objectInfo(array(
-	'shipment_id' => $sID, 
-	'carrier'     => $carrier, 
-	'method'      => $method, 
+	'shipment_id' => $sID,
+	'carrier'     => $carrier,
+	'method'      => $method,
 	'ship_date'   => $ship_date,
   ));
 }

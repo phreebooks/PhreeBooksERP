@@ -23,7 +23,7 @@ class admin extends \core\classes\admin {
 	public $description = MODULE_SHIPPING_DESCRIPTION;
 	public $sort_order  = 5;
 	public $version		= '3.6';
-	
+
 	function __construct() {
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom'   => 3.6,
@@ -99,7 +99,6 @@ class admin extends \core\classes\admin {
 			  KEY ref_id (ref_id)
 			) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
 	    );
-	    $this->methods = return_all_methods($this->id, false);
 	    parent::__construct();
 	}
 

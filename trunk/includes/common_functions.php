@@ -32,17 +32,17 @@
 // Section 1. General Functions
 /**************************************************************************************************************/
 // Redirect to another page or site
-  function gen_redirect($url) {
-	// clean up URL before executing it
-	ob_clean();
-	ob_end_flush();
-  	session_write_close();
-    while (strstr($url, '&&'))    $url = str_replace('&&', '&', $url);
-    // header locates should not have the &amp; in the address it breaks things
-    while (strstr($url, '&amp;')) $url = str_replace('&amp;', '&', $url);
-    header('Location: ' . $url);
-    exit;
-  }
+  	function gen_redirect($url) {
+		// clean up URL before executing it
+		ob_clean();
+		ob_end_flush();
+	  	session_write_close();
+	    while (strstr($url, '&&'))    $url = str_replace('&&', '&', $url);
+	    // header locates should not have the &amp; in the address it breaks things
+	    while (strstr($url, '&amp;')) $url = str_replace('&amp;', '&', $url);
+	    header('Location: ' . $url);
+	    exit;
+  	}
 
   	function gen_pull_language($page, $file = 'language') {//@todo add switch for core files.
 	  	if (!is_dir(DIR_FS_MODULES . $page)) return;
@@ -65,21 +65,6 @@
 	    } elseif (file_exists($path . "$file/language/en_us/language.php")) {
 	    	include_once     ($path . "$file/language/en_us/language.php");
 	    }
-	}
-
-	function return_all_methods($module, $active_only = true, $type ='methods') {
-	    $choices     = array();
-		if (!$module) return $choices;
-	    $method_dir  = DIR_FS_MODULES . "$module/$type/";
-	    if ($methods = @scandir($method_dir)) foreach ($methods as $method) {
-			if ($method == '.' || $method == '..' || !is_dir($method_dir . $method)) continue;
-		  	if ($active_only && !defined('MODULE_' . strtoupper($module) . '_' . strtoupper($method) . '_STATUS')) continue;
-		  	load_method_language($method_dir, $method);
-		  	$class = "\\$module\\$type\\$method\\$method";
-		  	$choices[$method] = new $class;
-	    }
-		uasort($choices, "arange_object_by_sort_order");
-	    return $choices;
 	}
 
 	/**

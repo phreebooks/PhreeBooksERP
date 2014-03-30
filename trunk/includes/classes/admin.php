@@ -42,8 +42,8 @@ class admin {
 			$this->installed = true;
 			$this->status  = constant('MODULE_' . strtoupper($this->id) . '_STATUS');
 		}
-		$this->methods = return_all_methods($this->id, false, 'methods');
-		$this->dashboards = return_all_methods($this->id, false, 'dashboards');
+		$this->methods 		= $this->return_all_methods('methods');
+		$this->dashboards 	= $this->return_all_methods('dashboards');
 	}
 
 	/**
@@ -214,6 +214,24 @@ class admin {
 	    	$db->Execute("INSERT INTO ".TABLE_PHREEFORM." (parent_id, doc_type, doc_title, doc_group, doc_ext, security, create_date) VALUES
 	      	  (".$parent_id.", '0', '" . $doc_title . "', '".$doc_group."', '".$doc_ext."', 'u:0;g:0', now())");
 	  	}
+	}
+
+	/**
+	 * this loads all methods/dashboards that are in a modules sub folder
+	 * @param string $type
+	 * @return multitype:|multitype:unknown
+	 */
+	function return_all_methods($type ='methods') {
+	    $choices     = array();
+	    $method_dir  = DIR_FS_MODULES . "$this->id/$type/";
+	    if ($methods = @scandir($method_dir)) foreach ($methods as $method) {
+			if ($method == '.' || $method == '..' || !is_dir($method_dir . $method)) continue;
+		  	load_method_language($method_dir, $method);
+		  	$class = "\\$this->id\\$type\\$method\\$method";
+		  	$choices[$method] = new $class;
+	    }
+		uasort($choices, "arange_object_by_sort_order");
+	    return $choices;
 	}
 }
 ?>

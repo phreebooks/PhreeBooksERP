@@ -50,7 +50,7 @@ $order            = new \phreebooks\classes\banking;
 $gl_acct_id       = isset($_POST['gl_acct_id'])          ? db_prepare_input($_POST['gl_acct_id'])          : $order->gl_acct_id;
 $next_inv_ref     = isset($_POST['purchase_invoice_id']) ? db_prepare_input($_POST['purchase_invoice_id']) : $order->purchase_invoice_id;
 $post_date        = isset($_POST['post_date'])           ? gen_db_date($_POST['post_date'])                : date('Y-m-d');
-$period           = gen_calculate_period($post_date ,true); //@todo why is her a true
+$period           = gen_calculate_period($post_date ,true);
 if (!$period) { // bad post_date was submitted
   	$_REQUEST['action']    = '';
   	$post_date = date('Y-m-d');
@@ -58,8 +58,6 @@ if (!$period) { // bad post_date was submitted
 }
 $order->gl_acct_id = $gl_acct_id;
 $order->acct_1     = DEF_DEP_GL_ACCT;
-// load available payment modules, receipts only
-$payment_methods = return_all_methods('payment', true);//@todo make use of admin_classes
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/deposit/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
@@ -111,7 +109,7 @@ switch ($_REQUEST['action']) {
 	switch (JOURNAL_ID) {
 	  case 18:
 	  	$pmt_meth = db_prepare_input($_POST['shipper_code']);
-	    $admin_classes['payment']->methods[$pmt_meth]->pre_confirmation_check();	
+	    $admin_classes['payment']->methods[$pmt_meth]->pre_confirmation_check();
 		$pmt_amt  = $currencies->clean_value(db_prepare_input($_POST['pmt_' . $x]), $order->currencies_code) / $order->currencies_value;
 		$tot_paid += $pmt_amt;
 		$order->pmt_rows[] = array(
