@@ -13,6 +13,7 @@ define('PHPMAILER_INST','Could not instantiate mail function.');
 define('PHPMAILER_AUTH','SMTP Error: Could not authenticate.');
 define('PHPMAILER_FFAIL','The following From address failed: ');
 define('PHPMAILER_RFAIL','SMTP Error: The following recipients failed: ');
+define('PHPMAILER_CONN_FAILT', 'SMTP connect() failed.');
 define('PHPMAILER_DNA','SMTP Error: Data not accepted.');
 define('PHPMAILER_CH','SMTP Error: Could not connect to SMTP host.');
 define('PHPMAILER_FA','Could not access file: ');

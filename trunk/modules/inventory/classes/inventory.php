@@ -357,7 +357,7 @@ class inventory {
 	    $sql_data_array = $fields->what_to_save();
 	    // handle the checkboxes
 	    $sql_data_array['inactive'] = isset($_POST['inactive']) ? $_POST['inactive'] : '0'; // else unchecked
-	    foreach(array('quantity_on_hand', 'quantity_on_order', 'quantity_on_sales_order', 'quantity_on_allocation' ) as $key){
+	    foreach(array('quantity_on_hand', 'quantity_on_order', 'quantity_on_sales_order', 'quantity_on_allocation', 'creation_date', 'last_update', 'last_journal_date' ) as $key){
 	    	unset($sql_data_array[$key]);
 	    }     
 		$sql_data_array['last_update'] = date('Y-m-d H-i-s');
@@ -516,7 +516,7 @@ class inventory {
 				$this->purchase_array[$i]['price_sheet_v']			= $_POST['price_sheet_v_array'][$key];
 			}
 			if(!empty($sql_data_array)){
-				if(isset($_POST['row_id_array'][$key])){//update
+				if(isset($_POST['row_id_array'][$key]) && $_POST['row_id_array'][$key] != ''){//update
 					$this->backup_purchase_array[$_POST['row_id_array'][$key]]['action'] = 'update';
 					db_perform(TABLE_INVENTORY_PURCHASE, $sql_data_array, 'update', "id = " . $_POST['row_id_array'][$key]);
 				}else{//insert

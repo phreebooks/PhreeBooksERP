@@ -69,6 +69,10 @@
     <td><?php echo CD_12_74_DESC; ?></td>
     <td><?php echo html_input_field('currencies_translations', $_POST['currencies_translations'] ? $_POST['currencies_translations'] : CURRENCIES_TRANSLATIONS, ''); ?></td>
   </tr>
+  <tr>
+    <td><?php echo SETUP_SERVER_ADDRESS; ?></td>
+    <td><?php echo html_input_field('server_address', $_POST['server_address'] ? $_POST['server_address'] : SERVER_ADDRESS, ''); ?></td>
+  </tr>
  </tbody>
 </table>
 </div>

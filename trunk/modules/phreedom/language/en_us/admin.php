@@ -170,6 +170,7 @@ define('CD_12_71_DESC', 'Enter the password for your SMTP mailbox. (Only require
 define('CD_12_72_DESC', 'Enter the DNS name of your SMTP mail server. i.e. mail.mydomain.com or 55.66.77.88 (Only required if using SMTP Authentication for email)');
 define('CD_12_73_DESC', 'Enter the IP port number that your SMTP mailserver operates on. (Only required if using SMTP Authentication for email)');
 define('CD_12_74_DESC', 'What currency conversions do you need for Text emails? (Default = &amp;pound;,�:&amp;euro;,�)');
+define('SETUP_SERVER_ADDRESS', 'As of php 5.4 some linux server can not determine your web addres and will refuse to accept your email (smtp_auth) the solution: enter here your website address<br/>How do you know when you encounter this problem.? Turn debug "on" and you should see on of the lines stating something like "Access denied - Invalid HELO name (See RFC2821 4.1.1 .1)"');
 /************************** Currencies Settings ***********************************************/
 define('SETUP_TITLE_CURRENCIES', 'Currencies');
 define('SETUP_CURRENCY_NAME', 'Currency');

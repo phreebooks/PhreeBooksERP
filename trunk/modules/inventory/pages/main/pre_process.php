@@ -36,9 +36,10 @@ $f0 = $_GET['f0'] = isset($_POST['action']) ? (isset($_POST['f0']) ? '1' : '0') 
 $f1 = $_GET['f1'] = isset($_POST['f1']) ? $_POST['f1'] : $_GET['f1']; // inventory_type dropdown
 $id = isset($_POST['rowSeq']) ? db_prepare_input($_POST['rowSeq']) : db_prepare_input($_GET['cID']);
 // getting the right inventory type.
-if (is_null($type)){
-	if(isset($_REQUEST['sku'])) $result = $db->Execute("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE sku='".$_REQUEST['sku']."'");
-	else $result = $db->Execute("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE id='$id'");
+if (!isset($_REQUEST['inventory_type'])){
+	if(isset($_REQUEST['cID'])) $result = $db->Execute("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE id='{$_REQUEST['cID']}'");
+	else if (isset($_REQUEST['rowSeq'])) $result = $db->Execute("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE id='{$_REQUEST['rowSeq']}'");
+	else $result = $db->Execute("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE sku='{$_REQUEST['sku']}'");
 	if ($result->RecordCount()>0) $type = $result->fields['inventory_type'];
 	else $type ='si';
 } 
@@ -61,7 +62,7 @@ switch ($_REQUEST['action']) {
 	
   case 'save':
 	validate_security($security_level, 2); // security check
-	$error = $cInfo->save() == false;
+	if (!$error) $error = $cInfo->save() == false;
 	if($error) $_REQUEST['action'] = 'edit';
 	break;
 

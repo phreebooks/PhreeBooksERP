@@ -30,8 +30,7 @@ $type        = isset($_GET['type']) ? $_GET['type'] : 'c'; // default to custome
 history_filter('contacts'.$type, $defaults = array('sf'=>'', 'so'=>'asc')); // load the filters
 $default_f0 = defined('CONTACTS_F0_'.strtoupper($type)) ? constant('CONTACTS_F0_'.strtoupper($type)) : DEFAULT_F0_SETTING;
 $_SESSION['f0'] = (isset($_SESSION['f0'])) ? $_SESSION['f0'] : $default_f0;
-if($_SERVER['REQUEST_METHOD'] == 'POST') $_SESSION['f0'] = (isset($_REQUEST['f0'])) ? $_REQUEST['f0'] : false; // show inactive checkbox
-if(!isset($_REQUEST['list'])) $_REQUEST['list'] = 1; 
+if($_SERVER['REQUEST_METHOD'] == 'POST') $_SESSION['f0'] = (isset($_POST['f0'])) ? $_REQUEST['f0'] : false; // show inactive checkbox
 if (file_exists(DIR_FS_WORKING . 'custom/classes/type/'.$type.'.php')) { 
 	require_once(DIR_FS_WORKING . 'custom/classes/type/'.$type.'.php'); 
 }else{

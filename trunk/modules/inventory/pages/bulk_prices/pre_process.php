@@ -30,14 +30,18 @@ switch ($_REQUEST['action']) {
 	while (true) {
 		if (isset($_POST['id_' . $j])) {
 			$id = db_prepare_input($_POST['id_' . $j]);
-			$lead_time = db_prepare_input($_POST['lead_' . $j]);
+			$re_order   = $currencies->clean_value($_POST['reOrd_' . $j]);
+			$min_stock  = $currencies->clean_value($_POST['min_'   . $j]);
+			$lead_time  = $currencies->clean_value($_POST['lead_'  . $j]);
 			$item_cost = $currencies->clean_value($_POST['cost_' . $j]);
 			$full_price = $currencies->clean_value($_POST['sell_' . $j]);
-			$db->Execute("update " . TABLE_INVENTORY . " 
-				set lead_time = '" . $currencies->clean_value($lead_time) . "', 
-				item_cost = '" . $currencies->clean_value($item_cost) . "', 
-				full_price = '" . $currencies->clean_value($full_price) . "' 
-				where id = " . $id);
+			$db->Execute("update " . TABLE_INVENTORY . " set
+				lead_time  = '$lead_time', 
+				item_cost  = '$item_cost', 
+				full_price = '$full_price',
+				minimum_stock_level = '$min_stock',
+				reorder_quantity = '$re_order' 
+				where id = $id");
 		} else {
 			break;
 		}
@@ -62,6 +66,8 @@ $heading_array = array(
   'inactive'          => TEXT_INACTIVE,
   'description_short' => TEXT_DESCRIPTION,
   'lead_time'         => INV_HEADING_LEAD_TIME,
+  'minimum_stock_level' => INV_ENTRY_ITEM_MINIMUM_STOCK,
+  'reorder_quantity'  => INV_ENTRY_ITEM_REORDER_QUANTITY,
   'item_cost'         => INV_ENTRY_INV_ITEM_COST . (ENABLE_MULTI_CURRENCY ? ' (' . DEFAULT_CURRENCY . ')' : ''),
   'full_price'        => INV_ENTRY_FULL_PRICE . (ENABLE_MULTI_CURRENCY ? ' (' . DEFAULT_CURRENCY . ')' : ''));
 $result      = html_heading_bar($heading_array);
@@ -75,7 +81,7 @@ if (isset($_REQUEST['search_text']) && $_REQUEST['search_text'] <> '') {
   if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
   $search = ' where ' . implode(' like \'%' . $_REQUEST['search_text'] . '%\' or ', $search_fields) . ' like \'%' . $_REQUEST['search_text'] . '%\'';
 }
-$field_list = array('id', 'sku', 'inactive', 'description_short', 'lead_time', 'item_cost', 'full_price');
+$field_list = array('id', 'sku', 'inactive', 'description_short', 'lead_time', 'item_cost', 'full_price', 'minimum_stock_level', 'reorder_quantity');
 // hook to add new fields to the query return results
 if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
 

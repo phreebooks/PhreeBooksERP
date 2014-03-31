@@ -1614,7 +1614,7 @@ function validate_ajax_user($token = 0) {
 	return true;
   }
 
-  function validate_send_mail($to_name, $to_address, $email_subject, $email_text, $from_email_name, $from_email_address, $block = array(), $attachments_list = '' ) {
+  function validate_send_mail($to_name, $to_address, $email_subject, $email_text, $from_email_name, $from_email_address, $block = array(), $attachments_list) {
     global $db, $messageStack;
     // check for injection attempts. If new-line characters found in header fields, simply fail to send the message
     foreach(array($from_email_address, $to_address, $from_email_name, $to_name, $email_subject) as $key => $value) {
@@ -1666,8 +1666,13 @@ function validate_ajax_user($token = 0) {
 	  require_once(DIR_FS_MODULES . 'phreedom/includes/PHPMailer/class.phpmailer.php');
       $mail = new PHPMailer();
       $mail->SetLanguage();
+	  $mail->isMail(); //default
       $mail->CharSet =  (defined('CHARSET')) ? CHARSET : "iso-8859-1";
-      if ($debug_mode=='on') $mail->SMTPDebug = true;
+      if (defined('DEBUG') && DEBUG == true) $mail->SMTPDebug = 4;
+		     	if (defined('SERVER_ADDRESS') && SERVER_ADDRESS != ''){
+		      		$mail->Hello	= SERVER_ADDRESS;
+		      		$mail->Hostname = SERVER_ADDRESS;
+		      	}
       if (EMAIL_TRANSPORT=='smtp' || EMAIL_TRANSPORT=='smtpauth') {
         $mail->IsSMTP();                           // set mailer to use SMTP
         $mail->Host = EMAIL_SMTPAUTH_MAIL_SERVER;
@@ -1691,6 +1696,7 @@ function validate_ajax_user($token = 0) {
       if (EMAIL_TRANSPORT=='sendmail-f' || EMAIL_TRANSPORT=='sendmail') {
 	    $mail->Mailer = 'sendmail';
         $mail->Sender = $mail->From;
+	        		$mail->isSendmail();
       }
       // process attachments
       // Note: $attachments_list array requires that the 'file' portion contains the full path to the file to be attached

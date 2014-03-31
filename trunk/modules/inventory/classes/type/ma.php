@@ -30,6 +30,28 @@ class ma extends inventory { //Item Assembly formerly know as 'as' but this resu
 		$this->allow_edit_bom = (($this->last_journal_date == '0000-00-00 00:00:00' || $this->last_journal_date == '') && ($this->quantity_on_hand == 0|| $this->quantity_on_hand == '')) ? true : false;
 	}
 
+	function copy($id, $newSku){
+		global $db;
+		if(parent::copy($id, $newSku)){
+			$result = $db->Execute("select * from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = '$id'");
+			error_log("hier1{$result->RecordCount()}" . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+			while(!$result->EOF) {
+				$bom_list = array(
+				  	'ref_id'      => $this->id,
+				  	'sku'         => $result->fields['sku'],
+					'description' => $result->fields['description'],
+					'qty'         => $result->fields['qty'],
+				);
+				db_perform(TABLE_INVENTORY_ASSY_LIST, $bom_list, 'insert');
+				$result->MoveNext();
+			}
+			$this->get_bom_list();
+			return true;
+		}else{
+			return false;
+		}
+	}
+
 	function get_bom_list(){
 		global $db;
 		$this->assy_cost = 0; 
