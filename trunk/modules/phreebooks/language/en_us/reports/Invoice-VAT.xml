@@ -81,7 +81,7 @@
 	</boxfield>
 </fieldlist>
 <fieldlist>
-	<description><![CDATA[Company Telephone]]></description>
+	<description><![CDATA[Company VAT]]></description>
 	<abscissa><![CDATA[21]]></abscissa>
 	<ordinate><![CDATA[27]]></ordinate>
 	<width><![CDATA[25]]></width>
@@ -95,7 +95,7 @@
 	<bordercolor><![CDATA[0:0:0]]></bordercolor>
 	<fillcolor><![CDATA[0:0:0]]></fillcolor>
 	<boxfield>
-		<fieldname><![CDATA[COMPANY_TELEPHONE1]]></fieldname>
+		<fieldname><![CDATA[TAX_ID]]></fieldname>
 		<font><![CDATA[h]]></font>
 		<size><![CDATA[1]]></size>
 		<align><![CDATA[L]]></align>
@@ -125,9 +125,31 @@
 	</boxfield>
 </fieldlist>
 <fieldlist>
-	<description><![CDATA[Company Email]]></description>
+	<description><![CDATA[Company Telephone]]></description>
 	<abscissa><![CDATA[63]]></abscissa>
 	<ordinate><![CDATA[27]]></ordinate>
+	<width><![CDATA[50]]></width>
+	<height><![CDATA[4]]></height>
+	<type><![CDATA[CDta]]></type>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<align><![CDATA[L]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+	<boxfield>
+		<fieldname><![CDATA[COMPANY_TELEPHONE1]]></fieldname>
+		<font><![CDATA[h]]></font>
+		<size><![CDATA[1]]></size>
+		<align><![CDATA[L]]></align>
+		<color><![CDATA[0]]></color>
+	</boxfield>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Company Email]]></description>
+	<abscissa><![CDATA[63]]></abscissa>
+	<ordinate><![CDATA[31]]></ordinate>
 	<width><![CDATA[50]]></width>
 	<height><![CDATA[4]]></height>
 	<type><![CDATA[CDta]]></type>
@@ -149,28 +171,6 @@
 <fieldlist>
 	<description><![CDATA[Company Website]]></description>
 	<abscissa><![CDATA[63]]></abscissa>
-	<ordinate><![CDATA[31]]></ordinate>
-	<width><![CDATA[50]]></width>
-	<height><![CDATA[4]]></height>
-	<type><![CDATA[CDta]]></type>
-	<font><![CDATA[helvetica]]></font>
-	<size><![CDATA[10]]></size>
-	<align><![CDATA[L]]></align>
-	<color><![CDATA[0:0:0]]></color>
-	<bordersize><![CDATA[1]]></bordersize>
-	<bordercolor><![CDATA[0:0:0]]></bordercolor>
-	<fillcolor><![CDATA[0:0:0]]></fillcolor>
-	<boxfield>
-		<fieldname><![CDATA[COMPANY_WEBSITE]]></fieldname>
-		<font><![CDATA[h]]></font>
-		<size><![CDATA[1]]></size>
-		<align><![CDATA[L]]></align>
-		<color><![CDATA[0]]></color>
-	</boxfield>
-</fieldlist>
-<fieldlist>
-	<description><![CDATA[Data - Co VAT]]></description>
-	<abscissa><![CDATA[63]]></abscissa>
 	<ordinate><![CDATA[35]]></ordinate>
 	<width><![CDATA[50]]></width>
 	<height><![CDATA[4]]></height>
@@ -183,7 +183,7 @@
 	<bordercolor><![CDATA[0:0:0]]></bordercolor>
 	<fillcolor><![CDATA[0:0:0]]></fillcolor>
 	<boxfield>
-		<fieldname><![CDATA[TAX_ID]]></fieldname>
+		<fieldname><![CDATA[COMPANY_WEBSITE]]></fieldname>
 		<font><![CDATA[h]]></font>
 		<size><![CDATA[1]]></size>
 		<align><![CDATA[L]]></align>
@@ -745,7 +745,7 @@
 	</boxfield>
 	<boxfield>
 		<fieldname><![CDATA[invoice_line_tax_rate]]></fieldname>
-		<description><![CDATA[TAX %]]></description>
+		<description><![CDATA[VAT %]]></description>
 		<font><![CDATA[helvetica]]></font>
 		<size><![CDATA[11]]></size>
 		<align><![CDATA[C]]></align>
@@ -1010,13 +1010,13 @@
 	<fillcolor><![CDATA[0:0:0]]></fillcolor>
 </fieldlist>
 <fieldlist>
-	<description><![CDATA[Text - Co Phone]]></description>
+	<description><![CDATA[Text - Co VAT]]></description>
 	<abscissa><![CDATA[8]]></abscissa>
 	<ordinate><![CDATA[27]]></ordinate>
 	<width><![CDATA[13]]></width>
 	<height><![CDATA[4]]></height>
 	<type><![CDATA[Text]]></type>
-	<text><![CDATA[Phone:]]></text>
+	<text><![CDATA[VAT:]]></text>
 	<font><![CDATA[helvetica]]></font>
 	<size><![CDATA[10]]></size>
 	<align><![CDATA[L]]></align>
@@ -1042,9 +1042,25 @@
 	<fillcolor><![CDATA[0:0:0]]></fillcolor>
 </fieldlist>
 <fieldlist>
-	<description><![CDATA[Text - Co Email]]></description>
+	<description><![CDATA[Text - Co Phone]]></description>
 	<abscissa><![CDATA[50]]></abscissa>
 	<ordinate><![CDATA[27]]></ordinate>
+	<width><![CDATA[13]]></width>
+	<height><![CDATA[4]]></height>
+	<type><![CDATA[Text]]></type>
+	<text><![CDATA[Phone:]]></text>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<align><![CDATA[L]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Text - Co Email]]></description>
+	<abscissa><![CDATA[50]]></abscissa>
+	<ordinate><![CDATA[31]]></ordinate>
 	<width><![CDATA[13]]></width>
 	<height><![CDATA[4]]></height>
 	<type><![CDATA[Text]]></type>
@@ -1060,27 +1076,11 @@
 <fieldlist>
 	<description><![CDATA[Text - Co Website]]></description>
 	<abscissa><![CDATA[50]]></abscissa>
-	<ordinate><![CDATA[31]]></ordinate>
-	<width><![CDATA[13]]></width>
-	<height><![CDATA[4]]></height>
-	<type><![CDATA[Text]]></type>
-	<text><![CDATA[Web:]]></text>
-	<font><![CDATA[helvetica]]></font>
-	<size><![CDATA[10]]></size>
-	<align><![CDATA[L]]></align>
-	<color><![CDATA[0:0:0]]></color>
-	<bordersize><![CDATA[1]]></bordersize>
-	<bordercolor><![CDATA[0:0:0]]></bordercolor>
-	<fillcolor><![CDATA[0:0:0]]></fillcolor>
-</fieldlist>
-<fieldlist>
-	<description><![CDATA[Text - Co VAT]]></description>
-	<abscissa><![CDATA[50]]></abscissa>
 	<ordinate><![CDATA[35]]></ordinate>
 	<width><![CDATA[13]]></width>
 	<height><![CDATA[4]]></height>
 	<type><![CDATA[Text]]></type>
-	<text><![CDATA[VAT:]]></text>
+	<text><![CDATA[Web:]]></text>
 	<font><![CDATA[helvetica]]></font>
 	<size><![CDATA[10]]></size>
 	<align><![CDATA[L]]></align>
@@ -1332,13 +1332,13 @@
 	<fillcolor><![CDATA[0:0:0]]></fillcolor>
 </fieldlist>
 <fieldlist>
-	<description><![CDATA[Text - Sales Tax]]></description>
+	<description><![CDATA[Text - Total VAT]]></description>
 	<abscissa><![CDATA[151]]></abscissa>
 	<ordinate><![CDATA[246]]></ordinate>
 	<width><![CDATA[27]]></width>
 	<height><![CDATA[7]]></height>
 	<type><![CDATA[Text]]></type>
-	<text><![CDATA[Sales Tax]]></text>
+	<text><![CDATA[Total VAT]]></text>
 	<font><![CDATA[helvetica]]></font>
 	<size><![CDATA[10]]></size>
 	<align><![CDATA[R]]></align>
