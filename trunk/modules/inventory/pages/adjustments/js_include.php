@@ -28,7 +28,7 @@ var ItemIsInactive	 = '<?php echo ITEM_IS_INACTIVE; ?>';
 <?php echo js_calendar_init($cal_adj); ?>
 
 function init() {
-<?php if ($_REQUEST['action'] == 'edit') echo '  EditAdjustment(' . $oID . ')'; ?>
+<?php if ($_REQUEST['action'] == 'edit') echo " EditAdjustment('$oID')"; ?>
 }
 
 function check_form() {
@@ -132,7 +132,7 @@ function updateBalance() {
 	  document.getElementById('price_'+i).readOnly = true;
     } else {
 	  if (document.getElementById('price_'+i).value == '') document.getElementById('price_'+i).value = document.getElementById('def_cost_'+i).value;
-	  document.getElementById('price_'+i).readOnly = false;	
+	  document.getElementById('price_'+i).readOnly = false;
     }
     document.getElementById('bal_'+i).value = stock + adj;
   }
