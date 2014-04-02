@@ -1729,23 +1729,24 @@ function xml_to_object($xml = '') {
 }
 
 function object_to_xml($params, $multiple = false, $multiple_key = '', $level = 0) {
-  $output = NULL;
-  if (!is_array($params) && !is_object($params)) return;
-  foreach ($params as $key => $value) {
-	$xml_key = $multiple ? $multiple_key : $key;
-    if       (is_array($value)) {
-	  $output .= object_to_xml($value, true, $key, $level);
-    } elseif (is_object($value)) {
-	  for ($i=0; $i<$level; $i++) $output .= "\t";
-	  $output .= "<" . $xml_key . ">\n";
-	  $output .= object_to_xml($value, '', '', $level+1);
-	  for ($i=0; $i<$level; $i++) $output .= "\t";
-	  $output .= "</" . $xml_key . ">\n";
-	} else {
-	  if ($value <> '') {
-	    for ($i=0; $i<$level-1; $i++) $output .= "\t";
-	    $output .= xmlEntry($xml_key, $value);
-	  }
+	$output = NULL;
+	if (!is_array($params) && !is_object($params)) return;
+	foreach ($params as $key => $value) {
+		$xml_key = $multiple ? $multiple_key : $key;
+	    if       (is_array($value)) {
+			$output .= object_to_xml($value, true, $key, $level);
+	    } elseif (is_object($value)) {
+			for ($i=0; $i<$level; $i++) $output .= "\t";
+			$output .= "<" . $xml_key . ">\n";
+			$output .= object_to_xml($value, '', '', $level+1);
+			for ($i=0; $i<$level; $i++) $output .= "\t";
+			$output .= "</" . $xml_key . ">\n";
+		} else {
+			if ($value <> '') {
+			    for ($i=0; $i<$level-1; $i++) $output .= "\t";
+	    		$output .= xmlEntry($xml_key, $value);
+		  	}
+		}
 	}
 	return $output;
 }

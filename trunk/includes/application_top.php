@@ -50,7 +50,6 @@ define('COG_ITEM_TYPES','si,sr,ms,mi,ma,sa');
 @ini_set('session.gc_maxlifetime', (SESSION_TIMEOUT_ADMIN < 360 ? 360 : SESSION_TIMEOUT_ADMIN));
 session_set_cookie_params((SESSION_TIMEOUT_ADMIN < 360 ? 360 : SESSION_TIMEOUT_ADMIN),'/',$path);
 session_start();
-session_decode();
 //end session
 $_REQUEST = array_merge($_GET, $_POST);
 if(!isset($_REQUEST['module']))	$_REQUEST['module']	= 'phreedom';

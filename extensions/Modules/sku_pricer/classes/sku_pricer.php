@@ -35,7 +35,7 @@ class sku_pricer {
   		foreach ($this->records as $row) {
   			$where = '';
   			if (isset($row['sku']) && strlen($row['sku']) > 0) {
-  				$where = "a.sku='{$row['sku']}'";
+  				$where = "b.sku='{$row['sku']}'";
   			} elseif(isset($row['upc_code']) && strlen($row['upc_code']) > 0) {
   				$where = "a.upc_code='{$row['upc_code']}'";
   			}elseif(isset($row['description_purchase'])){
@@ -65,15 +65,23 @@ class sku_pricer {
   			  'item_cost'				=> 'b.item_cost',
   			  'vendor_id'				=> 'b.vendor_id',
   			);
-  			$sqlData = array();
-  			foreach ($valid_fields as $key => $value) if (isset($row[$key])) $sqlData[$value] = $row[$key];
-  			$sqlData['last_update'] = date('Y-m-d');
+  			$messageStack->debug(" found the following fields ". arr2string($row));
+  			$query = "";
+  			foreach ($valid_fields as $key => $value) {
+  				if (isset($row[$key])){
+  					 $query .= " $value = '" . db_input($row[$key]) . "',"; break;
+  				}
+  			}
+  			$query .= "a.last_update = '". date('Y-m-d')."'";
   			if ($where) {
-  				$result = db_perform(TABLE_INVENTORY . ' a JOIN '. TABLE_INVENTORY_PURCHASE .' b on a.sku = b.sku ' , $sqlData, 'update', $where);
+  				$messageStack->debug("update ".TABLE_INVENTORY . ' a JOIN '. TABLE_INVENTORY_PURCHASE ." b on a.sku = b.sku set $query where $where");
+  				$result = $db->Execute("update ".TABLE_INVENTORY . ' a JOIN '. TABLE_INVENTORY_PURCHASE ." b on a.sku = b.sku set $query where $where");
+  				//$result = db_perform(TABLE_INVENTORY . ' a JOIN '. TABLE_INVENTORY_PURCHASE .' b on a.sku = b.sku ' , $sqlData, 'update', $where);
   				if ($result->AffectedRows() > 0) $count++;
   			}
   		}
-  		$messageStack->add("successfully imported $count SKU prices.", "success");
+  		if (DEBUG) $messageStack->write_debug();
+  		if ($count != 0) $messageStack->add("successfully imported $count SKU prices.", "success");
   		return;
   	}
 
