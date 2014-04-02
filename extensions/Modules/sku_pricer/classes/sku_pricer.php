@@ -34,7 +34,7 @@ class sku_pricer {
   		foreach ($this->records as $row) {
   			$where = '';
   			if (isset($row['sku']) && strlen($row['sku']) > 0) {
-  				$where = "a.sku='{$row['sku']}'";
+  				$where = "b.sku='{$row['sku']}'";
   			} elseif(isset($row['upc_code']) && strlen($row['upc_code']) > 0) {
   				$where = "a.upc_code='{$row['upc_code']}'";
   			}elseif(isset($row['description_purchase'])){
@@ -68,7 +68,7 @@ class sku_pricer {
   			$query = "";
   			foreach ($valid_fields as $key => $value) {
   				if (isset($row[$key])){
-  					 $query .= " $key = '" . db_input($value) . "',"; break;
+  					 $query .= " $key = '" . db_input($row[$key]) . "',"; break;
   				}
   			}
   			$query .= "a.last_update = '". date('Y-m-d')."'";
