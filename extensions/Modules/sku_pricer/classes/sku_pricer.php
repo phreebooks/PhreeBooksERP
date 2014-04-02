@@ -68,7 +68,7 @@ class sku_pricer {
   			$query = "";
   			foreach ($valid_fields as $key => $value) {
   				if (isset($row[$key])){
-  					 $query .= " $key = '" . db_input($row[$key]) . "',"; break;
+  					 $query .= " $value = '" . db_input($row[$key]) . "',"; break;
   				}
   			}
   			$query .= "a.last_update = '". date('Y-m-d')."'";
