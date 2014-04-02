@@ -29,7 +29,7 @@ switch ($_REQUEST['action']) {
   case 'save':
     $enc_key = db_prepare_input($_POST['enc_key']);
     $enc_key_confirm = db_prepare_input($_POST['enc_key_confirm']);
-	if ($enc_key <> $enc_key_confirm) throw new \Exception(ERROR_WRONG_ENCRYPT_KEY_MATCH);
+	if ($enc_key <> $enc_key_confirm) throw new \Exception(TEXT_ERROR_ENCRYPTION_KEY_MATCH);
 	\core\classes\encryption::validate_password($enc_key, ENCRYPTION_VALUE);
 	$_SESSION['admin_encrypt'] = $enc_key;
     $messageStack->add(GEN_ENCRYPTION_KEY_SET,'success');

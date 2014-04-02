@@ -32,7 +32,7 @@ switch ($_REQUEST['action']) {
 	  	$conv_type  = $_POST['conv_type'];
 		$dl_type    = $_POST['dl_type'];
 		$save_local = (isset($_POST['save_local'])) ? true : false;
-		// set execution time limit to a large number to allow extra time 
+		// set execution time limit to a large number to allow extra time
 		if (ini_get('max_execution_time') < 20000) set_time_limit(20000);
 		$backup              = new \phreedom\classes\backup;
 		$backup->db_filename = 'db-' . $_SESSION['company'] . '-' . date('Ymd');
@@ -42,7 +42,7 @@ switch ($_REQUEST['action']) {
 		$backup->dump_db_table($db, 'all', 'both');
 		// compress the company directory
 		switch ($conv_type) {
-		  case 'bz2': 
+		  case 'bz2':
 			if ($dl_type == 'file') {
 			  $backup->dest_file = $backup->db_filename . '.bz2';
 			} else {
@@ -51,7 +51,7 @@ switch ($_REQUEST['action']) {
 		    $backup->make_bz2($dl_type);
 			@unlink($backup->source_dir . $backup->source_file); // delete db sql file
 			break;
-		  case 'zip': 
+		  case 'zip':
 			if ($dl_type == 'file') {
 			  $backup->dest_file = $backup->db_filename . '.zip';
 			} else {
@@ -85,7 +85,7 @@ switch ($_REQUEST['action']) {
 
 		$backup->make_zip('file');
 		if (file_exists($backup->source_dir . $backup->source_file)) unlink($backup->source_dir . $backup->source_file);
-		gen_add_audit_log(GEN_AUDIT_DB_DATA_BACKUP);
+		gen_add_audit_log(TEXT_AUDIT_DB_DATA_BACKUP);
 		$backup->download($backup->dest_dir, $backup->dest_file, false);
   	}catch(Exception $e){
 		$messageStack->add($e->getMessage());
@@ -97,7 +97,7 @@ switch ($_REQUEST['action']) {
 	$current_date = date('Y-m-d', mktime(0, 0, 0, $temp['ThisMonth'], 1, $temp['ThisYear']));
     $result = $db->Execute("delete from " . TABLE_AUDIT_LOG . " where action_date < '" . $current_date . "'");
     $messageStack->add('The number of records deleted was:' . ' ' . $result->AffectedRows(),'success');
-	gen_add_audit_log(GEN_AUDIT_DB_DATA_CLEAN);
+	gen_add_audit_log(TEXT_AUDIT_DB_DATA_CLEAN);
 	break;
 
   default:

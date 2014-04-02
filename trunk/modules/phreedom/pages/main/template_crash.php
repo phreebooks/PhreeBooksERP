@@ -28,15 +28,15 @@ $toolbar->icon_list['save']['show']     = false;
 $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
-<h1><?php echo HEADING_TITLE_CRASH_TITLE; ?></h1>
+<h1><?php echo TEXT_CRASH_TITLE; ?></h1>
 <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto">
  <tbody class="ui-widget-content">
-  <tr><td><?php echo HEADING_TITLE_CRASH_INFORMATION; ?></td></tr>
+  <tr><td><?php echo TEXT_CRASH_INFORMATION; ?></td></tr>
   <tr>
-	<td align="center"><?php echo html_button_field('download', HEADING_TITLE_CRASH_BUTTON, 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;action=debug', 'SSL') . '\'"'); ?></td>
+	<td align="center"><?php echo html_button_field('download', TEXT_DOWNLOAD_DEBUG, 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;action=debug', 'SSL') . '\'"'); ?></td>
   </tr>
  </tbody>
 </table>

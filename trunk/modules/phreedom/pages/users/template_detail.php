@@ -33,7 +33,7 @@ if ($security_level > 2) {
 }
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('07.08.07');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
@@ -67,18 +67,18 @@ echo $toolbar->build_toolbar();
   <legend><?php echo TEXT_PROFILE; ?></legend>
   <table>
   <tr>
-    <td><?php echo GEN_DEFAULT_STORE . ' ' . html_pull_down_menu('def_store_id',  gen_get_store_ids(), isset($_POST['def_store_id']) ? $_POST['def_store_id'] : $uInfo->def_store_id, ''); ?></td>
-    <td><?php echo GEN_DEF_CASH_ACCT . ' ' . html_pull_down_menu('def_cash_acct', gen_coa_pull_down(), isset($_POST['def_cash_acct']) ? $_POST['def_cash_acct'] : $uInfo->def_cash_acct, ''); ?></td>
+    <td><?php echo TEXT_DEFAULT_STORE . ' ' . html_pull_down_menu('def_store_id',  gen_get_store_ids(), isset($_POST['def_store_id']) ? $_POST['def_store_id'] : $uInfo->def_store_id, ''); ?></td>
+    <td><?php echo TEXT_DEFAULT_CASH_ACCOUNT . ' ' . html_pull_down_menu('def_cash_acct', gen_coa_pull_down(), isset($_POST['def_cash_acct']) ? $_POST['def_cash_acct'] : $uInfo->def_cash_acct, ''); ?></td>
     <td><?php echo '&nbsp;'; ?></td>
   </tr>
   <tr>
-    <td><?php echo GEN_RESTRICT_STORE . ' ' . html_checkbox_field('restrict_store', '1', ((isset($_POST['restrict_store']) && $_POST['restrict_store']) || $uInfo->restrict_store) ? true : false); ?></td>
-    <td><?php echo GEN_DEF_AR_ACCT    . ' ' . html_pull_down_menu('def_ar_acct', gen_coa_pull_down(), isset($_POST['def_ar_acct']) ? $_POST['def_ar_acct'] : $uInfo->def_ar_acct, ''); ?></td>
+    <td><?php echo TEXT_RESTRICT_STORE . ' ' . html_checkbox_field('restrict_store', '1', ((isset($_POST['restrict_store']) && $_POST['restrict_store']) || $uInfo->restrict_store) ? true : false); ?></td>
+    <td><?php echo TEXT_DEFAULT_AR_ACCOUNT    . ' ' . html_pull_down_menu('def_ar_acct', gen_coa_pull_down(), isset($_POST['def_ar_acct']) ? $_POST['def_ar_acct'] : $uInfo->def_ar_acct, ''); ?></td>
     <td><?php echo '&nbsp;'; ?></td>
   </tr>
   <tr>
-    <td><?php echo GEN_RESTRICT_PERIOD . ' ' . html_checkbox_field('restrict_period', '1', ((isset($_POST['restrict_period']) && $_POST['restrict_period']) || $uInfo->restrict_period) ? true : false); ?></td>
-    <td><?php echo GEN_DEF_AP_ACCT     . ' ' . html_pull_down_menu('def_ap_acct', gen_coa_pull_down(), isset($_POST['def_ap_acct']) ? $_POST['def_ap_acct'] : $uInfo->def_ap_acct, ''); ?></td>
+    <td><?php echo TEXT_RESTRICT_PERIOD . ' ' . html_checkbox_field('restrict_period', '1', ((isset($_POST['restrict_period']) && $_POST['restrict_period']) || $uInfo->restrict_period) ? true : false); ?></td>
+    <td><?php echo TEXT_DEFAULT_AP_ACCOUNT     . ' ' . html_pull_down_menu('def_ap_acct', gen_coa_pull_down(), isset($_POST['def_ap_acct']) ? $_POST['def_ap_acct'] : $uInfo->def_ap_acct, ''); ?></td>
     <td><?php echo '&nbsp;'; ?></td>
   </tr>
   </table>
@@ -107,7 +107,7 @@ foreach ($mainmenu as $key => $menu_heading) {
 	echo '					</tr>' . chr(10);
 	echo '				</thead><tbody class="ui-widget-content">' . chr(10);
 	$odd = true;
-	foreach($menu_heading['submenu'] as $menu_item){ 
+	foreach($menu_heading['submenu'] as $menu_item){
 		create_row($menu_item);
 	}
 	echo '				</tbody>' . chr(10);
@@ -119,10 +119,10 @@ foreach ($mainmenu as $key => $menu_heading) {
 </form>
 
 
-<?php 
+<?php
 function create_row($array){
 	global $odd, $settings;
-	if(!empty($array['submenu']) && $array['text'] <> BOX_HEADING_CONFIGURATION) foreach($array['submenu'] as $menu_item){ 
+	if(!empty($array['submenu']) && $array['text'] <> BOX_HEADING_CONFIGURATION) foreach($array['submenu'] as $menu_item){
 		create_row($menu_item);
 	}else{
 		if ($array['security_id'] == '') return;// && $item['heading'] <> MENU_HEADING_TOOLS) continue;  // special case for reports listings not in Tools menu

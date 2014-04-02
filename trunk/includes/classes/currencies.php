@@ -26,7 +26,7 @@ class currencies {
 	private $default_currency 	= false;
   	public  $currencies			= array();
   	public  $db_table      		= TABLE_CURRENCIES;
-	public  $title         		= SETUP_TITLE_CURRENCIES;
+	public  $title         		= TEXT_CURRENCIES;
     public  $extra_buttons 		= true;
 	public  $help_path     		= '07.08.02';
 	public  $def_currency  		= DEFAULT_CURRENCY;
@@ -235,7 +235,7 @@ class currencies {
 	  	global $db;
 	    $content = array();
 		$content['thead'] = array(
-		  'value'  => array(SETUP_CURRENCY_NAME, SETUP_CURRENCY_CODES, TEXT_VALUE, TEXT_ACTION),
+		  'value'  => array(TEXT_CURRENCY, TEXT_CURRENCY_CODE, TEXT_VALUE, TEXT_ACTION),
 		  'params' => 'width="100%" cellspacing="0" cellpadding="1"',
 		);
 	    $rowCnt = 0;
@@ -273,11 +273,11 @@ class currencies {
 		$output .= '    <td colspan="2">' . ($action=='new' ? SETUP_CURR_INSERT_INTRO : SETUP_CURR_EDIT_INTRO) . '</td>' . chr(10);
 	    $output .= '  </tr>' . chr(10);
 		$output .= '  <tr>' . chr(10);
-		$output .= '    <td>' . SETUP_INFO_CURRENCY_TITLE . '</td>' . chr(10);
+		$output .= '    <td>' . TEXT_TITLE . '</td>' . chr(10);
 		$output .= '    <td nowrap="nowrap">' . html_input_field('title', $value['title'], '', true) . '</td>' . chr(10);
 	    $output .= '  </tr>' . chr(10);
 		$output .= '  <tr>' . chr(10);
-		$output .= '    <td>' . SETUP_INFO_CURRENCY_CODE . '</td>' . chr(10);
+		$output .= '    <td>' . TEXT_CURRENCY_CODE . ' : </td>' . chr(10);
 		$output .= '    <td nowrap="nowrap">' . html_input_field('code', $code, '', true) . '</td>' . chr(10);
 	    $output .= '  </tr>' . chr(10);
 		$output .= '  <tr>' . chr(10);
@@ -305,7 +305,7 @@ class currencies {
 		$output .= '    <td nowrap="nowrap">' . html_input_field('decimal_precise', $value['decimal_precise'], '', true) . '</td>' . chr(10);
 	    $output .= '  </tr>' . chr(10);
 		$output .= '  <tr>' . chr(10);
-		$output .= '    <td>' . SETUP_INFO_CURRENCY_VALUE . '</td>' . chr(10);
+		$output .= '    <td>' . TEXT_VALUE . ' : </td>' . chr(10);
 		$output .= '    <td>' . html_input_field('value', $value['value']) . '</td>' . chr(10);
 	    $output .= '  </tr>' . chr(10);
 		if (DEFAULT_CURRENCY != $code) {

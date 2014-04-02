@@ -1,4 +1,4 @@
-<?php 
+<?php
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
@@ -16,15 +16,15 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreedom/config_phreeform.php
-// 
+//
 
-$FormProcessing['rnd_dec']    = PB_PF_ROUND_DECIMAL;
-$FormProcessing['rnd_pre']    = PB_PF_ROUND_PRECISE;
-$FormProcessing['def_cur']    = PB_PF_DEF_CURRENCY;
-$FormProcessing['null_dcur']  = PB_PF_NULL_DEF_CURRENCY;
-$FormProcessing['posted_cur'] = PB_PF_POSTED_CURRENCY;
-$FormProcessing['null_pcur']  = PB_PF_NULL_POSTED_CURRENCY;
-$FormProcessing['rep_id']     = PB_PF_USER_NAME;
+$FormProcessing['rnd_dec']    = TEXT_ROUND_DECIMAL;
+$FormProcessing['rnd_pre']    = TEXT_ROUND_PRECISE;
+$FormProcessing['def_cur']    = TEXT_DEFAULT_CURRENCY;
+$FormProcessing['null_dcur']  = TEXT_NULL_DEFAULT_CURRENCY;
+$FormProcessing['posted_cur'] = TEXT_POSTED_CURRENCY;
+$FormProcessing['null_pcur']  = TEXT_NULL_POSTED_CURRENCY;
+$FormProcessing['rep_id']     = TEXT_USER_NAME;
 // Extra form processing operations
 function pf_process_phreedom($strData, $Process) {
   global $currencies, $posted_currencies;

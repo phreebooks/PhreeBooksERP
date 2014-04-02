@@ -30,7 +30,7 @@ if (ENABLE_MULTI_CURRENCY) {
 }
 
 ?>
-<div title="<?php echo SETUP_TITLE_CURRENCIES;?>" id="tab_currency">
+<div title="<?php echo TEXT_CURRENCIES;?>" id="tab_currency">
     <?php echo $currency_toolbar->build_toolbar(); ?>
 	<h1><?php echo $currencies->title; ?></h1>
     <div id="currency_content"><?php echo $currencies->build_main_html(); ?></div>

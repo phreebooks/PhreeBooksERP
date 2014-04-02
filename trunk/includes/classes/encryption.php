@@ -174,7 +174,7 @@ class encryption {
     		if (sizeof($stack) != 2) throw new \core\classes\userException("varible stack hasn't got size 2");
     		if (md5($stack[1] . $plainPassword) == $stack[0]) return true;
   		}
-  		if ($encryptedPassword == ENCRYPTION_VALUE) throw new \core\classes\userException(ERROR_WRONG_ENCRYPT_KEY);
+  		if ($encryptedPassword == ENCRYPTION_VALUE) throw new \core\classes\userException(TEXT_ERROR_WRONG_ENCRYPTION_KEY);
   		else throw new \Exception(ERROR_WRONG_LOGIN);
 	}
 

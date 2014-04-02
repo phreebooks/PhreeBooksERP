@@ -58,12 +58,9 @@ define ('CD_05_70_DESC', '.. Legt die Anzahl der Zeichen zu erwarten, wenn das L
 define ('CD_05_75_DESC', 'Wenn aktiviert, wird das Element PhreeBooks Kosten im Inventar Tabelle entweder mit dem PO Preis oder Kauf Update / Empfangen Preis. Usefule für "on the fly PO / Einkauf und Aktualisierung Preise aus dem Auftrag Bildschirm ohne Update das Inventar Tabellen erste ');
 
 /************************** (Inventar Tabs / Fields) ***************** ******************************/
-define ('INV_HEADING_CATEGORY_NAME', 'Tab Name');
 define ('INV_INFO_CATEGORY_DESCRIPTION', 'Tab Beschreibung');
 define ('INV_INFO_CATEGORY_NAME', 'Inventory Tab Name <br /> Name sollte kurz sein (10) mit keine Sonderzeichen oder Leerzeichen enthalten.');
 define ('INV_INFO_INSERT_INTRO', 'Bitte geben Sie die neue Registerkarte mit seinen Eigenschaften');
-define ('INV_EDIT_INTRO', 'Bitte führen Sie alle notwendigen Änderungen durch');
-define ('INV_INFO_HEADING_NEW_CATEGORY', 'New Tab');
 define ('INV_INFO_HEADING_EDIT_CATEGORY', 'Register bearbeiten');
 define ('INV_INFO_DELETE_INTRO', 'Sind Sie sicher, dass Sie diese Registerkarte löschen \n Tabs können nicht gelöscht, wenn es eine Bestandsaufnahme Feld innerhalb der Registerkarte werden?.');
 define ('INV_INFO_DELETE_ERROR', 'Diese Registerkarte Name bereits vorhanden ist, verwenden Sie bitte einen anderen Namen.');

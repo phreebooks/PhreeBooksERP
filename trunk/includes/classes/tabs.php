@@ -23,7 +23,7 @@ class tabs {
     public  $module      = '';
     public  $extra_buttons = '';
     public  $title       = '';
-    
+
     public function __construct (){
     	foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
     	$this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
@@ -32,7 +32,7 @@ class tabs {
 
     public function btn_save($id = '') {
 	  	global $db;
-	  	\core\classes\user::validate_security($this->security_id, 2); // security check		  
+	  	\core\classes\user::validate_security($this->security_id, 2); // security check
 		$sql_data_array = array(
 		  'module_id'   => $this->module,
 		  'tab_name'    => $this->tab_name,
@@ -54,7 +54,7 @@ class tabs {
 
     public function btn_delete($id = 0) {
 	  	global $db;
-		\core\classes\user::validate_security($this->security_id, 4); // security check		
+		\core\classes\user::validate_security($this->security_id, 4); // security check
 		$result = $db->Execute("SELECT field_name FROM ".TABLE_EXTRA_FIELDS." WHERE tab_id='$id'");
 		if ($result->RecordCount() > 0) throw new \Exception(INV_CATEGORY_CANNOT_DELETE . $result->fields['field_name']);
 		$result = $db->Execute("SELECT tab_name FROM ".TABLE_EXTRA_TABS." WHERE id='$id'");
@@ -62,7 +62,7 @@ class tabs {
 		gen_add_audit_log(sprintf(EXTRA_TABS_LOG, TEXT_DELETE), $result->fields['tab_name']);
 		return true;
 	}
-	
+
     public function build_main_html() {
 	   global $db;
 	   $content = array();
@@ -79,7 +79,7 @@ class tabs {
 		  $content['tbody'][$rowCnt] = array(
 		    array('value' => htmlspecialchars($result->fields['tab_name']),
 				  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'tabs_edit\',\''.$result->fields['id'].'\')"'),
-			array('value' => htmlspecialchars($result->fields['description']), 
+			array('value' => htmlspecialchars($result->fields['description']),
 				  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'tabs_edit\',\''.$result->fields['id'].'\')"'),
 			array('value' => $result->fields['sort_order'],
 				  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'tabs_edit\',\''.$result->fields['id'].'\')"'),
@@ -91,7 +91,7 @@ class tabs {
 	   }
 	   return html_datatable('tab_table', $content);
 	}
-	
+
     public function build_form_html($action, $id = '') {
 	   global $db;
 	   if ($action <> 'new') {
@@ -101,12 +101,12 @@ class tabs {
 	   $output  = '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);
 	   $output .= '  <thead class="ui-widget-header">' . "\n";
 	   $output .= '  <tr>' . chr(10);
-	   $output .= '    <th colspan="2">' . ($action=='new' ? INV_INFO_HEADING_NEW_CATEGORY : INV_INFO_HEADING_EDIT_CATEGORY) . '</th>' . chr(10);
+	   $output .= '    <th colspan="2">' . ($action=='new' ? sprintf(BOX_TEXT_NEW_TITLE, TEXT_TAB) : INV_INFO_HEADING_EDIT_CATEGORY) . '</th>' . chr(10);
 	   $output .= '  </tr>' . chr(10);
 	   $output .= '  </thead>' . "\n";
 	   $output .= '  <tbody class="ui-widget-content">' . "\n";
 	   $output .= '  <tr>' . chr(10);
-	   $output .= '    <td colspan="2">' . ($action=='new' ? EXTRA_TABS_INSERT_INTRO : SETUP_CURR_EDIT_INTRO) . '</td>' . chr(10);
+	   $output .= '    <td colspan="2">' . ($action=='new' ? TEXT_TAB_INSERT_INTRO : SETUP_CURR_EDIT_INTRO) . '</td>' . chr(10);
 	   $output .= '  </tr>' . chr(10);
 	   $output .= '  <tr>' . chr(10);
 	   $output .= '    <td>' . TEXT_TAB_NAME . '</td>' . chr(10);
@@ -124,7 +124,7 @@ class tabs {
 	   $output .= '</table>' . chr(10);
 	   return $output;
 	}
-	
+
 }
 
 ?>

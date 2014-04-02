@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:46
 // Module/Method: phreedom
 // ISO Language: pt_br
@@ -49,14 +49,12 @@ define('ASSETS_ERROR_FIELD_BLANK','O nome do campo de ativo está em branco, por
 define('EXTRA_FIELDS_LOG','Campos Extra (%s)');
 define('EXTRA_TABS_DELETE_ERROR','Este nome de já existe, por favor utilize outro nome.');
 define('EXTRA_TABS_DELETE_INTRO','Tem certeza de que quer remover esta aba?\\nAbas não podem ser removidas se há um campo dentro dela.');
-define('INV_INFO_HEADING_NEW_CATEGORY','Nova Aba');
 define('TEXT_NEW_FIELD','Novo Campo');
 define('INV_INFO_HEADING_EDIT_CATEGORY','Alterar Aba');
-define('EXTRA_TABS_INSERT_INTRO','Por favor, entre a nova aba com suas propriedades');
-define('INV_EDIT_INTRO','Por favor, faça as alterações necessárias');
-define('INV_HEADING_CATEGORY_NAME','Nome Aba');
-define('INV_INFO_CATEGORY_DESCRIPTION','Descrição Aba');
-define('EXTRA_TABS_TAB_NAME','Nome Aba<br />Nome deve ser curto (10) sem caracteres especiais ou espaços.');
+define('TEXT_TAB_INSERT_INTRO','Por favor, entre a nova aba com suas propriedades');
+
+
+
 define('SETUP_CO_MGR_NO_SELECTION','Nenhuma empresa foi selecionada para remoção!');
 define('SETUP_CO_MGR_JS_DELETE_CONFIRM','Tem certeza de que quer remover esta empresa?');
 define('SETUP_CO_MGR_SELECT_DELETE','Selecione a empresa para remover: ');
@@ -102,10 +100,10 @@ define('GEN_ADM_TOOLS_SET_ENCRYPTION_PW_DESC','Utilizar a chave de criptografia 
 define('GEN_ENCRYPTION_KEY_CHANGED','A chave de criptografia foi alterada.');
 define('GEN_ADM_TOOLS_SET_ENCRYPTION_PW','Criar/Alterar chave de criptografia');
 define('GEN_ENCRYPTION_COMP_TYPE','Entre a chave de criptografia utilizada para armazenar informação segura.');
-define('GEN_ENCRYPTION_KEY','Chave criptografia ');
-define('GEN_ENCRYPTION_KEY_CONFIRM','Digite novamente a chave ');
-define('ERROR_WRONG_ENCRYPT_KEY_MATCH','As chaves de criptografia não são iguais!');
-define('ERROR_WRONG_ENCRYPT_KEY','Você entrou uma chave de criptografia mas ela não confere com a chave armazenada.');
+define('TEXT_ENCRYPTION_KEY','Chave criptografia ');
+define('TEXT_ENCRYPTION_KEY_CONFIRM','Digite novamente a chave ');
+define('TEXT_ERROR_ENCRYPTION_KEY_MATCH','As chaves de criptografia não são iguais!');
+define('TEXT_ERROR_WRONG_ENCRYPTION_KEY','Você entrou uma chave de criptografia mas ela não confere com a chave armazenada.');
 define('GEN_ENCRYPTION_KEY_SET','A chave de criptografia foi estabelecida.');
 define('GEN_ENCRYPTION_GEN_INFO','Serviços de criptografia dependem de uma chave utilizada para critografar informação na base de dados. NÃO PERCA A CHAVE, de outro modo a informação não poderá ser descriptografada!');
 define('GEN_ADM_TOOLS_SET_ENCRYPTION_KEY','Entrar Chave Criptografia');
@@ -121,21 +119,20 @@ define('SETUP_INFO_HEADING_EDIT_CURRENCY','Alterar Moeda');
 define('SETUP_INFO_HEADING_NEW_CURRENCY','Nova Moeda');
 define('SETUP_CURR_DELETE_INTRO','Tem certeza de que quer remover esta moeda?');
 define('SETUP_CURR_INSERT_INTRO','Por favor, entre a nova moeda com sua data correspondente');
-define('SETUP_INFO_CURRENCY_VALUE','Valor');
+define('TEXT_VALUE','Valor');
 define('SETUP_INFO_CURRENCY_DECIMAL_PRECISE','Precisão Decimal; Para uso com preços unitários e quantidades com mais precisão do que valores monetários. Este valor é tipicamente utilizado para estabelecer o número de casas decimais:');
 define('SETUP_INFO_CURRENCY_DECIMAL_PLACES','Casas Decimais:');
 define('SETUP_INFO_CURRENCY_THOUSANDS_POINT','Marcador Milhar:');
-define('SETUP_INFO_CURRENCY_CODE','Código:');
 define('SETUP_INFO_CURRENCY_SYMBOL_LEFT','Símbolo Esquerda:');
 define('SETUP_INFO_CURRENCY_SYMBOL_RIGHT','Símbolo Direita:');
 define('SETUP_INFO_CURRENCY_DECIMAL_POINT','Marcador Decimal:');
-define('SETUP_INFO_CURRENCY_TITLE','Título:');
+define('TEXT_TITLE','Título:');
 define('SETUP_UPDATE_EXC_RATE','Atualizar Taxa Câmbio');
 define('SETUP_CURR_EDIT_INTRO','Por favor faça as mudanças necessárias');
-define('SETUP_CURRENCY_NAME','CMoeda');
-define('SETUP_CURRENCY_CODES','Código');
+define('TEXT_CURRENCY','CMoeda');
+define('TEXT_CURRENCY_CODE','Código');
 define('CD_12_74_DESC','Que conversões de moeda você precisa para emails de texto? (Padrão = &amp;pound;,£:&amp;euro;,€)');
-define('SETUP_TITLE_CURRENCIES','Moedas');
+define('TEXT_CURRENCIES','Moedas');
 define('CD_12_72_DESC','Entre o nome DNS de seu servidor SMTP.mail.mydomain.com ou 55.66.77.88 (Só é necessária se estiver utilizando Autenticação SMTP para email)');
 define('CD_12_73_DESC','Entre o número da porta IP que seu servidor SMTP utiliza. (Só é necessária se estiver utilizando Autenticação SMTP para email)');
 define('CD_12_71_DESC','Entre a senha para sua caixa SMTP. (Only required if using SMTP Authentication for email)');
@@ -220,25 +217,25 @@ define('TEXT_THEMES_COLORS_TITLE','Temas e Esquemas de Cor');
 define('TEXT_THEMES_COLORS_DESC','Estabeleça seu tema e esquema de cores prefertido. Pressiona o ícone Salvar para alterar o tema e vê-lo em ação.');
 define('INV_FIELD_RESERVED_WORD','The field name entered is a reserved word. Please choose a new field name.');
 define('GEN_ADM_TOOLS_SEQ_HEADING','Alterar Vários Números Sequenciais');
-define('GENERAL_CONFIG_SAVED','Valores de Configuração foram gravados.');
-define('HEADING_TITLE_CRASH_BUTTON','Baixar Informação Rastreio Erro');
-define('HEADING_TITLE_CRASH_INFORMATION','PhreeBooks encontrou um erro inesperado. Clique no botão abaixo para baixar o arquivo de informação de rastreio para enviar para o administrador do sistema.');
-define('HEADING_TITLE_CRASH_TITLE','Informação Rastreio Erro SQL PhreeBooks');
-define('GEN_AUDIT_DB_DATA_CLEAN','Limpeza de Tabela Log de Auditoria Realizada');
-define('GEN_AUDIT_DB_DATA_BACKUP','Backup de Tabela Log de Auditoria Realizado');
-define('GEN_RESTRICT_PERIOD','Restringir Lançamentos ao Período Corrente?');
-define('GEN_DEF_AP_ACCT','Conta Padrão Pagamentos');
-define('GEN_DEF_AR_ACCT','Conta Padrão Recebíveis');
-define('GEN_RESTRICT_STORE','Restringir entradas a este Local Armazenagem?');
-define('GEN_DEFAULT_STORE','Local Armazenagem Padrão');
-define('GEN_DEF_CASH_ACCT','Conta Caixa Padrão');
-define('PB_PF_USER_NAME','Nome Usuário');
-define('PB_PF_ROUND_PRECISE','Precisão Arredondamento');
-define('PB_PF_ROUND_DECIMAL','Casas Decimais Arredondar');
-define('PB_PF_POSTED_CURRENCY','Posted Currency');
-define('PB_PF_NULL_POSTED_CURRENCY','Null 0 - Posted Currency');
-define('PB_PF_NULL_DEF_CURRENCY','Null 0 - Moeda Padrão');
-define('PB_PF_DEF_CURRENCY','Moeda Padrão');
+define('TEXT_CONFIG_SAVED','Valores de Configuração foram gravados.');
+define('TEXT_DOWNLOAD_DEBUG','Baixar Informação Rastreio Erro');
+define('TEXT_CRASH_INFORMATION','PhreeBooks encontrou um erro inesperado. Clique no botão abaixo para baixar o arquivo de informação de rastreio para enviar para o administrador do sistema.');
+define('TEXT_CRASH_TITLE','Informação Rastreio Erro SQL PhreeBooks');
+define('TEXT_AUDIT_DB_DATA_CLEAN','Limpeza de Tabela Log de Auditoria Realizada');
+define('TEXT_AUDIT_DB_DATA_BACKUP','Backup de Tabela Log de Auditoria Realizado');
+define('TEXT_RESTRICT_PERIOD','Restringir Lançamentos ao Período Corrente?');
+define('TEXT_DEFAULT_AP_ACCOUNT','Conta Padrão Pagamentos');
+define('TEXT_DEFAULT_AR_ACCOUNT','Conta Padrão Recebíveis');
+define('TEXT_RESTRICT_STORE','Restringir entradas a este Local Armazenagem?');
+define('TEXT_DEFAULT_STORE','Local Armazenagem Padrão');
+define('TEXT_DEFAULT_CASH_ACCOUNT','Conta Caixa Padrão');
+define('TEXT_USER_NAME','Nome Usuário');
+define('TEXT_ROUND_PRECISE','Precisão Arredondamento');
+define('TEXT_ROUND_DECIMAL','Casas Decimais Arredondar');
+define('TEXT_POSTED_CURRENCY','Posted Currency');
+define('TEXT_NULL_POSTED_CURRENCY','Null 0 - Posted Currency');
+define('TEXT_NULL_DEFAULT_CURRENCY','Null 0 - Moeda Padrão');
+define('TEXT_DEFAULT_CURRENCY','Moeda Padrão');
 define('TEXT_FORM_PLEASE_WAIT','Por favor aguarde ... Se estiver atualizando pode demorar um pouco.');
 define('TEXT_LOGIN_BUTTON','Login');
 define('TEXT_PASSWORD_FORGOTTEN','Reenviar Senha');

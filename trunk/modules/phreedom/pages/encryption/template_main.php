@@ -28,7 +28,7 @@ $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo BOX_HEADING_ENCRYPTION; ?></h1>
@@ -41,10 +41,10 @@ echo $toolbar->build_toolbar();
  </thead>
  <tbody class="ui-widget-content">
   <tr>
-	<td align="center"><?php echo GEN_ENCRYPTION_KEY . html_password_field('enc_key', ''); ?></td>
+	<td align="center"><?php echo TEXT_ENCRYPTION_KEY . html_password_field('enc_key', ''); ?></td>
   </tr>
   <tr>
-	<td align="center"><?php echo GEN_ENCRYPTION_KEY_CONFIRM . html_password_field('enc_key_confirm', ''); ?></td>
+	<td align="center"><?php echo TEXT_ENCRYPTION_KEY_CONFIRM . html_password_field('enc_key_confirm', ''); ?></td>
   </tr>
   <tr>
 	<td colspan="2" align="right"><?php echo html_button_field('encrypt_key', GEN_ADM_TOOLS_BTN_SAVE, 'onclick="submitToDo(\'save\')"'); ?></td>
