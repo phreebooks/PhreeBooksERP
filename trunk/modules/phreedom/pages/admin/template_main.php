@@ -44,6 +44,7 @@ echo $toolbar->build_toolbar();
   require (DIR_FS_MODULES . $module . '/pages/admin/template_tab_manager.php');
   require (DIR_FS_MODULES . $module . '/pages/admin/template_tab_tools.php');
   require (DIR_FS_MODULES . $module . '/pages/admin/template_tab_stats.php');
+  require (DIR_FS_MODULES . $module . '/pages/admin/template_tab_php_info.php');
 ?>
 </div>
 </form>
