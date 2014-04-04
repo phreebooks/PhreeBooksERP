@@ -117,7 +117,7 @@ class _database {
 		if($this->settings["error_file"] !== false) {
 			if (!$handle = @fopen($this->settings["error_file"], "a+"))  throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $this->settings['error_file']));
 			if($handle) {
-				if (!@fwrite($handle, "[".date("Y-m-d H:i:s")."] ".$string." <".$error.">\n")) throw new \Exception(sprintf(ERROR_WRITE_FILE, $this->settings['error_file']));
+				if (!@fwrite($handle, "[".date("Y-m-d H:i:s")."] ".$string." <".$error.">\n")) throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $this->settings['error_file']));
 				if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $this->settings['error_file']));
 			}
 		}

@@ -74,7 +74,7 @@ switch ($_REQUEST['action']) {
 	  );
 
 	  if ($id) {
-	    	if (!db_perform(TABLE_CAPA, $sql_data_array, 'update', 'id = ' . $id)) throw new \Exception(CAPA_MESSAGE_ERROR);
+	    	if (!db_perform(TABLE_CAPA, $sql_data_array, 'update', 'id = ' . $id)) throw new \core\classes\userException(CAPA_MESSAGE_ERROR);
 		 	gen_add_audit_log(CAPA_LOG_USER_UPDATE . $_POST['capa_num']);
 		  	$capa_num = $_POST['capa_num'];
 	  } else {
@@ -82,7 +82,7 @@ switch ($_REQUEST['action']) {
 			$result   = $db->Execute("select next_capa_num from " . TABLE_CURRENT_STATUS);
 			$capa_num = $result->fields['next_capa_num'];
 			$sql_data_array['capa_num'] = $capa_num;
-	    	if (!db_perform(TABLE_CAPA, $sql_data_array, 'insert')) throw new \Exception(CAPA_MESSAGE_ERROR);
+	    	if (!db_perform(TABLE_CAPA, $sql_data_array, 'insert')) throw new \core\classes\userException(CAPA_MESSAGE_ERROR);
 		  	$id = db_insert_id();
 		  	$next_num = string_increment($capa_num);
 		  	$db->Execute("update " . TABLE_CURRENT_STATUS . " set next_capa_num = '" . $next_num . "'");
@@ -101,7 +101,7 @@ switch ($_REQUEST['action']) {
 	\core\classes\user::validate_security($security_level, 4);
   	$id     = db_prepare_input($_GET['cID']);
 	$result = $db->Execute("select capa_num from " . TABLE_CAPA . " where id = " . $id);
-	if ($result->RecordCount() == 0) throw new \Exception(CAPA_ERROR_CANNOT_DELETE);
+	if ($result->RecordCount() == 0) throw new \core\classes\userException(CAPA_ERROR_CANNOT_DELETE);
 	$db->Execute("delete from " . TABLE_CAPA . " where id = " . $id);
 	gen_add_audit_log(CAPA_MESSAGE_DELETE, $result->fields['capa_num']);
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('cID', 'action')), 'SSL'));

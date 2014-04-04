@@ -24,12 +24,12 @@ $security_level = \core\classes\user::validate();
 /**************   page specific initialization  *************************/
 $xml = NULL;
 $iID = $_GET['iID'];
-if (!$iID) throw new \Exception("variable iID isn't set");
+if (!$iID) throw new \core\classes\userException("variable iID isn't set");
 
 // Pull the workorder information
 $field_list = array();
-$query_raw    = "select m.id, m.wo_title, m.description, i.image_with_path 
-  from " . TABLE_WO_MAIN . " m inner join " . TABLE_INVENTORY . " i on m.sku_id = i.id 
+$query_raw    = "select m.id, m.wo_title, m.description, i.image_with_path
+  from " . TABLE_WO_MAIN . " m inner join " . TABLE_INVENTORY . " i on m.sku_id = i.id
   where m.inactive = '0' and i.id = '" . $iID . "'";
 $result = $db->Execute($query_raw);
 $id   = $result->fields['id'];

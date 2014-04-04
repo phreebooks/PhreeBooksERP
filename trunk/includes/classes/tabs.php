@@ -27,7 +27,7 @@ class tabs {
     public function __construct (){
     	foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
     	$this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
-    	$this->security_id = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
+    	$this->security_id = \core\classes\user::security_level(SECURITY_ID_CONFIGURATION);
     }
 
     public function btn_save($id = '') {
@@ -45,7 +45,7 @@ class tabs {
 		} else {
 		  // Test for duplicates.
 		  $result = $db->Execute("select id from " . TABLE_EXTRA_TABS . " where module_id='" . $this->module . "' and tab_name='" . $this->tab_name . "'");
-		  if ($result->RecordCount() > 0) throw new \Exception(EXTRA_TABS_DELETE_ERROR);
+		  if ($result->RecordCount() > 0) throw new \core\classes\userException(EXTRA_TABS_DELETE_ERROR);
 		  db_perform(TABLE_EXTRA_TABS, $sql_data_array);
 		  gen_add_audit_log(sprintf(EXTRA_TABS_LOG, TEXT_ADD), $this->tab_name);
 		}
@@ -56,7 +56,7 @@ class tabs {
 	  	global $db;
 		\core\classes\user::validate_security($this->security_id, 4); // security check
 		$result = $db->Execute("SELECT field_name FROM ".TABLE_EXTRA_FIELDS." WHERE tab_id='$id'");
-		if ($result->RecordCount() > 0) throw new \Exception(INV_CATEGORY_CANNOT_DELETE . $result->fields['field_name']);
+		if ($result->RecordCount() > 0) throw new \core\classes\userException(INV_CATEGORY_CANNOT_DELETE . $result->fields['field_name']);
 		$result = $db->Execute("SELECT tab_name FROM ".TABLE_EXTRA_TABS." WHERE id='$id'");
 		$db->Execute("DELETE FROM ".TABLE_EXTRA_TABS." WHERE id=$id");
 		gen_add_audit_log(sprintf(EXTRA_TABS_LOG, TEXT_DELETE), $result->fields['tab_name']);

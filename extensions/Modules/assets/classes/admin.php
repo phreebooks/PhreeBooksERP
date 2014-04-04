@@ -16,13 +16,13 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/assets/classes/admin.php
 //
-namespace assets\classes; 
+namespace assets\classes;
 class admin extends \core\classes\admin {
 	public $id 			= 'assets';
 	public $text		= MODULE_ASSETS_TITLE;
 	public $description = MODULE_ASSETS_DESCRIPTION;
 	public $version		= '3.6';
-	
+
 	function __construct() {
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom'   => 3.5,
@@ -76,7 +76,7 @@ class admin extends \core\classes\admin {
 		  	if(db_table_exists(DB_PREFIX . 'assets_tabs')){
 			  	$result = $db->Execute("select * from " . DB_PREFIX . 'assets_tabs');
 			  	while (!$result->EOF) {
-			    	$updateDB = $db->Execute("insert into " . TABLE_EXTRA_TABS . " set 
+			    	$updateDB = $db->Execute("insert into " . TABLE_EXTRA_TABS . " set
 				  	  module_id = 'assets',
 				  	  tab_name = '"    . $result->fields['category_name']        . "',
 				  	  description = '" . $result->fields['category_description'] . "',
@@ -89,7 +89,7 @@ class admin extends \core\classes\admin {
 		  	if(db_table_exists(DB_PREFIX . 'assets_fields')){
 				$result = $db->Execute("select * from " . DB_PREFIX . 'assets_fields');
 			  	while (!$result->EOF) {
-			    	$updateDB = $db->Execute("insert into " . TABLE_EXTRA_FIELDS . " set 
+			    	$updateDB = $db->Execute("insert into " . TABLE_EXTRA_FIELDS . " set
 				  	  module_id = 'assets',
 				  	  tab_id = '"      . $tab_map[$result->fields['category_id']] . "',
 				  	  entry_type = '"  . $result->fields['entry_type']  . "',
@@ -97,7 +97,7 @@ class admin extends \core\classes\admin {
 				  	  description = '" . $result->fields['description'] . "',
 				  	  params = '"      . $result->fields['params']      . "'");
 			    	$result->MoveNext();
-			  	} 
+			  	}
 			  	$db->Execute("DROP TABLE " . DB_PREFIX . "assets_fields");
 		  	}
 		  	xtra_field_sync_list('assets', TABLE_ASSETS);
@@ -116,7 +116,7 @@ class admin extends \core\classes\admin {
 		$db->Execute("delete from " . TABLE_EXTRA_FIELDS . " where module_id = 'assets'");
 		$db->Execute("delete from " . TABLE_EXTRA_TABS   . " where module_id = 'assets'");
 	}
-	
+
 	/**
 	 * This function will check if the asset_id field is filled and unique
 	 * @param string $name
@@ -124,9 +124,9 @@ class admin extends \core\classes\admin {
 	 */
 	function validate_name($name){
 		global $db;
-		if (!$name) throw new \Exception(ERROR_SKU_BLANK);
+		if (!$name) throw new \core\classes\userException(ERROR_SKU_BLANK);
 		$result = $db->Execute("select id from " . TABLE_ASSETS . " where asset_id = '$name'");
-		if ($result->RecordCount() <> 0) throw new \Exception(sprintf(ERROR_DUPLICATE_SKU, $name));
+		if ($result->RecordCount() <> 0) throw new \core\classes\userException(sprintf(ERROR_DUPLICATE_SKU, $name));
 	}
 }
 ?>

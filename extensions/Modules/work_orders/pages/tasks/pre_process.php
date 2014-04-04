@@ -44,11 +44,11 @@ switch ($_REQUEST['action']) {
 		$data_entry  = $_POST['data_entry'] ? '1' : '0';
 		$erp_entry   = $_POST['erp_entry']  ? '1' : '0';
 		// error check
-		if (!$task_name || !$description) throw new \Exception(WO_TASK_ID_MISSING);
+		if (!$task_name || !$description) throw new \core\classes\userException(WO_TASK_ID_MISSING);
 
 		$result = $db->Execute("select id from " . TABLE_WO_TASK . " where task_name = '" . $task_name . "'");
 		if ($result->Recordcount() > 0) {
-		  	if ($result->fields['id'] <> $id) throw new \Exception(WO_DUPLICATE_TASK_ID);
+		  	if ($result->fields['id'] <> $id) throw new \core\classes\userException(WO_DUPLICATE_TASK_ID);
 		}
 		// write the data
 
@@ -66,10 +66,10 @@ switch ($_REQUEST['action']) {
 		  'erp_entry'   => $erp_entry,
 		);
 		if ($id) {
-		    if (!db_perform(TABLE_WO_TASK, $sql_data_array, 'update', 'id = ' . $id)) throw new \Exception("unable to update $id in the database");
+		    if (!db_perform(TABLE_WO_TASK, $sql_data_array, 'update', 'id = ' . $id)) throw new \core\classes\userException("unable to update $id in the database");
 			gen_add_audit_log(sprintf(WO_AUDIT_LOG_TASK, TEXT_UPDATE) . $task_name);
 		} else {
-		    if (!db_perform(TABLE_WO_TASK, $sql_data_array, 'insert')) throw new \Exception("unable to insert in the database");
+		    if (!db_perform(TABLE_WO_TASK, $sql_data_array, 'insert')) throw new \core\classes\userException("unable to insert in the database");
 			gen_add_audit_log(sprintf(WO_AUDIT_LOG_TASK, TEXT_ADD) . $task_name);
 		}
 

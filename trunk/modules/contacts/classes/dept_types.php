@@ -27,12 +27,12 @@ class dept_types {
     public function __construct(){
     	foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
     	$this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
-        $this->security_id = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
+        $this->security_id = \core\classes\user::security_level(SECURITY_ID_CONFIGURATION);
     }
 
   function btn_save($id = '') {
   	global $db;
-	\core\classes\user::validate_security($this->security_id, 2); // security check		
+	\core\classes\user::validate_security($this->security_id, 2); // security check
     $description = db_prepare_input($_POST['description']);
 	$sql_data_array = array('description' => $description);
     if (!$this->id == '') {
@@ -47,11 +47,11 @@ class dept_types {
 
   function btn_delete($id = 0) {
   	global $db;
-	\core\classes\user::validate_security($this->security_id, 4); // security check		
+	\core\classes\user::validate_security($this->security_id, 4); // security check
 	// Check for this department type being used in a department, if so do not delete
 	$result = $db->Execute("select department_type from " . TABLE_DEPARTMENTS);
 	while (!$result->EOF) {
-	  if ($this->id == $result->fields['department_type']) throw new \Exception(SETUP_DEPT_TYPES_DELETE_ERROR);
+	  if ($this->id == $result->fields['department_type']) throw new \core\classes\userException(SETUP_DEPT_TYPES_DELETE_ERROR);
 	  $result->MoveNext();
 	}
 	// OK to delete

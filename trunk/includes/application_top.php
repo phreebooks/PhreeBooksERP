@@ -20,6 +20,7 @@ define('PAGE_EXECUTION_START_TIME', microtime(true));
 if (!get_cfg_var('safe_mode')) {
 	if (ini_get('max_execution_time') < 60) set_time_limit(60);
 }
+if(extension_loaded('apc')) ini_set('apc.enabled','1');
 $force_reset_cache = false;
 // set php_self in the local scope
 if (!isset($PHP_SELF)) $PHP_SELF = $_SERVER['PHP_SELF'];
@@ -42,6 +43,7 @@ define('DIR_FS_MODULES',   DIR_FS_ADMIN . 'modules/');
 define('DIR_FS_MY_FILES',  DIR_FS_ADMIN . PATH_TO_MY_FILES);
 define('DIR_FS_THEMES',    DIR_FS_ADMIN . 'themes/');
 define('FILENAME_DEFAULT', 'index');
+define('APC_EXTENSION_LOADED', extension_loaded('apc') && ini_get('apc.enabled'));
 // set the type of request (secure or not)
 $request_type = (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) == 'on' || $_SERVER['HTTPS'] == '1' || strstr(strtoupper($_SERVER['HTTP_X_FORWARDED_BY']),'SSL') || strstr(strtoupper($_SERVER['HTTP_X_FORWARDED_HOST']),'SSL'))) ? 'SSL' : 'NONSSL';
 // define the inventory types that are tracked in cost of goods sold
@@ -84,7 +86,7 @@ if (file_exists(DIR_WS_THEMES . 'icons/')) { define('DIR_WS_ICONS',  DIR_WS_THEM
 else { define('DIR_WS_ICONS', 'themes/default/icons/'); } // use default
 $messageStack 	= new \core\classes\messageStack;
 $toolbar      	= new \core\classes\toolbar;
-$currencies		= apc_fetch("currencies");
+$currencies		= APC_EXTENSION_LOADED ? apc_fetch("currencies") : false;
 if ($currencies === false) $currencies  	= new \core\classes\currencies;
 // determine what company to connect to
 if ($_REQUEST['action']=="validate") $_SESSION['company'] = $_POST['company'];
@@ -97,27 +99,27 @@ if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR
   	$db = new queryFactory();
   	$db->connect(DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, DB_DATABASE);
   	// set application wide parameters for phreebooks module
-  	if(!function_exists('apc_load_constants') || apc_load_constants('configuration') === false) {
+  	if(APC_EXTENSION_LOADED == false || apc_load_constants('configuration') === false) {
   		$result = $db->Execute_return_error("select configuration_key, configuration_value from " . DB_PREFIX . "configuration");
   		if ($db->error_number != '' || $result->RecordCount() == 0) trigger_error(LOAD_CONFIG_ERROR, E_USER_ERROR);
   		$array = array ();
   		while (!$result->EOF) {
-  			if (function_exists('apc_load_constants')) {
+  			if (APC_EXTENSION_LOADED) {
   				$array[$result->fields['configuration_key']] = $result->fields['configuration_value'];
   			}else{
   				define($result->fields['configuration_key'], $result->fields['configuration_value']);
   			}
 			$result->MoveNext();
   		}
-  		if (function_exists('apc_load_constants')) apc_define_constants("configuration", $array, true);
+  		if (APC_EXTENSION_LOADED) apc_define_constants("configuration", $array, true);
   	}
   	// search the list modules and load configuration files and language files
   	gen_pull_language('phreedom', 'menu');
   	gen_pull_language('phreebooks', 'menu');
   	require(DIR_FS_MODULES . 'phreedom/config.php');
-  	$admin_classes 	= apc_fetch("admin_classes");
-  	$mainmenu 		= apc_fetch("mainmenu");
-  	if(!function_exists('apc_load_constants') || $admin_classes === false || $mainmenu === false) {
+  	$admin_classes 	= APC_EXTENSION_LOADED ? apc_fetch("admin_classes")	: false;
+  	$mainmenu 		= APC_EXTENSION_LOADED ? apc_fetch("mainmenu")		: false;
+  	if($admin_classes === false || $mainmenu === false) {
 	  	$admin_classes = array();
 	  	$dirs = scandir(DIR_FS_MODULES);
 	  	foreach ($dirs as $dir) { // first pull all module language files, loaded or not
@@ -129,10 +131,10 @@ if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR
 			}
 	  	}
 	  	uasort($admin_classes, "arange_object_by_sort_order");
-	  	if (function_exists('apc_load_constants') && apc_add("admin_classes", $admin_classes, 600) == false) throw new \core\classes\userException("can not cache admin classes");
+	  	if (APC_EXTENSION_LOADED && apc_add("admin_classes", $admin_classes, 600) == false) throw new \core\classes\userException("can not cache admin classes");
 	  	$currencies->load_currencies();
-	  	if (function_exists('apc_load_constants') && apc_add("currencies", $currencies, 600) == false) throw new \core\classes\userException("can not cache currencies");
-	  	if (function_exists('apc_load_constants') && apc_add("mainmenu", $mainmenu, 600) == false)     throw new \core\classes\userException("can not cache mainmenu");
+	  	if (APC_EXTENSION_LOADED && apc_add("currencies", $currencies, 600) == false) 		throw new \core\classes\userException("can not cache currencies");
+	  	if (APC_EXTENSION_LOADED && apc_add("mainmenu", $mainmenu, 600) == false)     		throw new \core\classes\userException("can not cache mainmenu");
   	}
 	// pull in the custom language over-rides for this module (to pre-define the standard language)
   	$path = DIR_FS_MODULES . "{$_REQUEST['module']}/custom/pages/{$_REQUEST['page']}/extra_menus.php";

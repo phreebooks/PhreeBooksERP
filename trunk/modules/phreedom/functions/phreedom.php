@@ -113,7 +113,7 @@ function convert_cfg($company) {
   if (!$handle = @fopen($filename . '.php', 'w'))	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
   if (!@fwrite($handle, $lines)) 					throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));
   if (!@fclose($handle))							throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
-  if (!unlink($filename . '.txt')) throw new \Exception('Cannot delete file (' . $filename . '.txt). This file needs to be deleted for security reasons.');
+  if (!unlink($filename . '.txt')) throw new \core\classes\userException('Cannot delete file (' . $filename . '.txt). This file needs to be deleted for security reasons.');
 }
 
 function gen_pull_db_config_info($database, $key) {
@@ -166,7 +166,7 @@ function install_build_co_config_file($company, $key, $value) {
   }
   $line = implode('', $lines);
   if (!$handle = @fopen($filename, 'w')) 	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
-  if (!@fwrite($handle, $line)) 			throw new \Exception(sprintf(ERROR_WRITE_FILE, $filename));
+  if (!@fwrite($handle, $line)) 			throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $filename));
   if (!@fclose($handle)) 					throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
   return true;
 }
@@ -175,7 +175,7 @@ function install_build_co_config_file($company, $key, $value) {
 function load_module_xml($module) {
 	global $db;
   	if (($result = @file_get_contents(DIR_FS_MODULES . $module . '/' . $module . '.xml')) === false) throw new \core\classes\userException(sprintf(ERROR_READ_FILE, DIR_FS_MODULES . $module . '/' . $module . '.xml'));
-  	if (!$output = xml_to_object($result)) throw new \Exception("xml file is empty for module");
+  	if (!$output = xml_to_object($result)) throw new \core\classes\userException("xml file is empty for module");
   	// fix some special cases, multi elements with single entries convert to arrays
   	if (is_object($output->Module->Table)) $output->Module->Table = array($output->Module->Table);
   	return $output;
@@ -285,7 +285,7 @@ function table_import_csv($structure, $db_table, $filename) {
   global $db;
   $data = file($_FILES[$filename]['tmp_name']);
   // read the header and build array
-  if (sizeof($data) < 2) throw new \Exception('The number of lines in the file is to small, a csv file must contain a header line and at least on input line!');
+  if (sizeof($data) < 2) throw new \core\classes\userException('The number of lines in the file is to small, a csv file must contain a header line and at least on input line!');
   $header = csv_explode(trim(array_shift($data)));
   foreach ($header as $key => $value) $header[$key] = trim($value);
 //echo 'header = '; print_r($header); echo '<br>';
@@ -405,7 +405,7 @@ function csv_explode($str, $delim = ',', $enclose = '"', $preserve = false){
 // (usually only needed for first entry to inventory field builder)
   function xtra_field_sync_list($module = '', $db_table = '') {
 	global $db;
-	if (!$module || !$db_table) throw new \Exception('Sync fields called without all necessary parameters!');
+	if (!$module || !$db_table) throw new \core\classes\userException('Sync fields called without all necessary parameters!');
 	// First check to see if inventory field table is synced with actual inventory table
 	$temp = $db->Execute("describe " . $db_table);
 	while (!$temp->EOF) {

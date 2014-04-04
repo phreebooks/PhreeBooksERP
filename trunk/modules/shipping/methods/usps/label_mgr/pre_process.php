@@ -56,11 +56,11 @@ switch ($_REQUEST['action']) {
 	$result = $db->Execute("select method, ship_date from " . TABLE_SHIPPING_LOG . " where shipment_id = " . (int)$shipment_id);
 	$ship_method = $result->fields['method'];
 	if ($result->RecordCount() == 0 || !$shipment_id) {
-		throw new \Exception(SHIPPING_DELETE_ERROR);
+		throw new \core\classes\userException(SHIPPING_DELETE_ERROR);
 	}
 
 	if ($result->fields['ship_date'] < date('Y-m-d', time())) { // only allow delete if shipped today or in future
-		throw new \Exception(SHIPPING_CANNOT_DELETE);
+		throw new \core\classes\userException(SHIPPING_CANNOT_DELETE);
 	}
 
 	$db->Execute("delete from " . TABLE_SHIPPING_LOG . " where shipment_id = " . $shipment_id);
@@ -69,7 +69,7 @@ switch ($_REQUEST['action']) {
 
   default:
 	$oID = db_prepare_input($_GET['oID']);
-	$sql = "select shipper_code, purchase_invoice_id   
+	$sql = "select shipper_code, purchase_invoice_id
 		from " . TABLE_JOURNAL_MAIN . " where id = " . (int)$oID;
 	$result = $db->Execute($sql);
 	$sInfo->purchase_invoice_id = $result->fields['purchase_invoice_id'];

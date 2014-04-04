@@ -6,32 +6,32 @@ class sa extends \inventory\classes\inventory {//Serialized Assembly
 	public $serialize 				= 1;
     public $account_sales_income	= INV_SERIALIZE_DEFAULT_SALES;
 	public $account_inventory_wage	= INV_SERIALIZE_DEFAULT_INVENTORY;
-	public $account_cost_of_sales	= INV_SERIALIZE_DEFAULT_COS; 
+	public $account_cost_of_sales	= INV_SERIALIZE_DEFAULT_COS;
 	public $cost_method				= 'f';
 	public $bom		 				= array();
 	public $allow_edit_bom			= true;
-	public $posible_cost_methodes   = array('f');	
-	
+	public $posible_cost_methodes   = array('f');
+
 	function __construct(){
 		parent::__construct();
 		$this->tab_list['bom'] 		 = array('file'=>'template_tab_bom',	'tag'=>'bom',    'order'=>30, 'text'=>INV_BOM);
 		$this->tab_list['orderhist'] = array('file'=>'template_tab_hist_sr', 'tag'=>'orderhist', 'order'=>40, 'text'=>'Unit History');
 	}
-	
+
 	function get_item_by_id($id){
 		parent::get_item_by_id($id);
 		$this->get_bom_list();
 		$this->allow_edit_bom = (($this->last_journal_date == '0000-00-00 00:00:00' || $this->last_journal_date == '') && ($this->quantity_on_hand == 0|| $this->quantity_on_hand == '')) ? true : false;
 		$this->get_sr_list();
 	}
-	
+
 	function get_item_by_sku($sku){
 		parent::get_item_by_sku($sku);
 		$this->get_bom_list();
 		$this->allow_edit_bom = (($this->last_journal_date == '0000-00-00 00:00:00' || $this->last_journal_date == '') && ($this->quantity_on_hand == 0|| $this->quantity_on_hand == '')) ? true : false;
 		$this->get_sr_list();
 	}
-	
+
 	function get_bom_list(){
 		global $db;
 		$this->assy_cost = 0;
@@ -48,13 +48,13 @@ class sa extends \inventory\classes\inventory {//Serialized Assembly
 	  		$result->MoveNext();
 		}
 	}
-	
+
 	function remove(){
 		global $db;
 		parent::remove();
 		$db->Execute("delete from " . TABLE_INVENTORY_ASSY_LIST . " where sku = '" . $this->sku . "'");
 	}
-	
+
 	function save(){
 		global $db, $currencies, $messageStack;
 		$bom_list = array();
@@ -66,9 +66,9 @@ class sa extends \inventory\classes\inventory {//Serialized Assembly
 				'qty'         => $currencies->clean_value(db_prepare_input($_POST['assy_qty'][$x])),
 			);
 		  	$result = $db->Execute("select id from " . TABLE_INVENTORY . " where sku = '". $_POST['assy_sku'][$x]."'" );
-		  	if (($result->RecordCount() == 0 || $currencies->clean_value($_POST['assy_qty'][$x]) == 0) && $_POST['assy_sku'][$x] =! '') { 
+		  	if (($result->RecordCount() == 0 || $currencies->clean_value($_POST['assy_qty'][$x]) == 0) && $_POST['assy_sku'][$x] =! '') {
 		  		// show error, bad sku, negative quantity. error check sku is valid and qty > 0
-				throw new \Exception(INV_ERROR_BAD_SKU . db_prepare_input($_POST['assy_sku'][$x]));
+				throw new \core\classes\userException(INV_ERROR_BAD_SKU . db_prepare_input($_POST['assy_sku'][$x]));
 		  	}else{
 		  		$prices = inv_calculate_sales_price(abs($this->bom[$x]['qty']), $result->fields['id'], 0, 'v');
 				$bom_list[$x]['item_cost'] = strval($prices['price']);
@@ -77,7 +77,7 @@ class sa extends \inventory\classes\inventory {//Serialized Assembly
 		  	}
 		}
 		$this->bom = $bom_list;
-		parent::save();	
+		parent::save();
 		$result = $db->Execute("select last_journal_date, quantity_on_hand  from " . TABLE_INVENTORY . " where id = " . $this->id);
 		$this->allow_edit_bom = (($result->fields['last_journal_date'] == '0000-00-00 00:00:00' || $result->fields['last_journal_date'] == '') && ($result->fields['quantity_on_hand'] == 0|| $result->fields['quantity_on_hand'] == '')) ? true : false;
 	  	if ($this->allow_edit_bom == true) { // only update if no posting has been performed
@@ -90,12 +90,12 @@ class sa extends \inventory\classes\inventory {//Serialized Assembly
 	  	}
 	  	return true;
 	}
-	
+
 	function get_sr_list(){
 		global $db;
 		$branches = gen_get_store_ids();
 		$this->quantity_on_hand = 0;
-		$result = $db->Execute("select store_id, qty, serialize_number from " . TABLE_INVENTORY_HISTORY . " 
+		$result = $db->Execute("select store_id, qty, serialize_number from " . TABLE_INVENTORY_HISTORY . "
 	  		where sku = '" . $this->sku . "' and remaining > 0 order by store_id");
   		$this->qty_table ='<table class="ui-widget" style="border-collapse:collapse;width:100%">'. chr(10);
 		$this->qty_table .='  <thead class="ui-widget-header">'. chr(10);
@@ -122,6 +122,6 @@ class sa extends \inventory\classes\inventory {//Serialized Assembly
     	$sql   = "SELECT ".implode(', ', $field_list)." FROM ".TABLE_JOURNAL_MAIN." m JOIN ".TABLE_JOURNAL_ITEM." i on m.id=i.ref_id
     	  WHERE m.journal_id=12 AND i.sku='$this->sku' ORDER BY m.purchase_invoice_id DESC";
     	$this->orderHistory = $db->Execute($sql);
-    	
+
 	}
 }

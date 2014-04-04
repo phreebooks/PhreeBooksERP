@@ -162,7 +162,7 @@ function find_special_class($class_name) {
   	foreach ($admin_classes as $key => $class) {
     	if (file_exists(DIR_FS_MODULES . $key . '/classes/' . $class_name . '.php')) return DIR_FS_MODULES . $key . '/';
   	}
-  	throw new \Exception("Special class: $class_name was called but could not be found!");
+  	throw new \core\classes\userException("Special class: $class_name was called but could not be found!");
 }
 
 function load_special_language($path, $class_name) {
@@ -265,7 +265,7 @@ function ImportReport($RptName = '', $RptFileName = '', $import_path = PF_DIR_DE
 		validate_upload('reportfile');
 	  	$path = $_FILES['reportfile']['tmp_name'];
 	} else {
-	  	throw new \Exception(PHREEFORM_IMPORT_ERROR);
+	  	throw new \core\classes\userException(PHREEFORM_IMPORT_ERROR);
 	}
 	if (!$handle = @fopen($path, "r") 					throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $path));
 	if (!$contents = @fread($handle, filesize($path))) 	throw new \core\classes\userException(sprintf(ERROR_READ_FILE,  	$path));
@@ -274,7 +274,7 @@ function ImportReport($RptName = '', $RptFileName = '', $import_path = PF_DIR_DE
 	  require_once(DIR_FS_MODULES . 'phreeform/functions/reportwriter.php');
 	  $report = import_text_params(file($path));
 	} else { // assume it's a new xml type
-	  if (!$report = xml_to_object($contents)) throw new \Exception ("the file is empty");
+	  if (!$report = xml_to_object($contents)) throw new \core\classes\userException ("the file is empty");
 	  if (is_object($report->PhreeformReport)) $report = $report->PhreeformReport; // remove container tag
 	}
 	if ($RptName <> '') $report->title = $RptName; // replace the title if provided
@@ -284,7 +284,7 @@ function ImportReport($RptName = '', $RptFileName = '', $import_path = PF_DIR_DE
 	if ($result->RecordCount() > 0) { // the report name already exists, if file exists error, else write
 	  	$rID = $result->fields['id'];
 	  	// file exists - error and return
-	  	if (file_exists($save_path . 'pf_' . $rID)) throw new \Exception (sprintf(PHREEFORM_REPDUP, $report->title));
+	  	if (file_exists($save_path . 'pf_' . $rID)) throw new \core\classes\userException (sprintf(PHREEFORM_REPDUP, $report->title));
 	}
 	save_report($report, $rID, $save_path);
 }
@@ -361,7 +361,7 @@ function BuildForm($report, $delivery_method = 'D') { // for forms only
 
 	// check for at least one field selected to show
 	// No fields are checked to show, that's bad
-	if (!$report->fieldlist) throw new \Exception(PHREEFORM_NOROWS);
+	if (!$report->fieldlist) throw new \core\classes\userException(PHREEFORM_NOROWS);
 	// Let's build the sql field list for the general data fields (not totals, blocks or tables)
 	$strField = array();
 	foreach ($report->fieldlist as $key => $field) { // check for a data field and build sql field list
@@ -369,7 +369,7 @@ function BuildForm($report, $delivery_method = 'D') { // for forms only
 		if ($field->boxfield[0]->fieldname) {
 		  $strField[] = prefixTables($field->boxfield[0]->fieldname) . ' as d' . $key;
 		} else { // the field is empty, bad news, error and exit
-		  throw new \Exception(PHREEFORM_EMPTYFIELD . $key);
+		  throw new \core\classes\userException(PHREEFORM_EMPTYFIELD . $key);
 		}
 	  }
 	}
@@ -409,7 +409,7 @@ function BuildForm($report, $delivery_method = 'D') { // for forms only
 	// execute sql to see if we have data
 //echo 'sql = ' . $sql . '<br />'; exit();
 	$result = $db->Execute($sql);
-	if (!$result->RecordCount()) throw new \Exception(PHREEFORM_NOROWS);
+	if (!$result->RecordCount()) throw new \core\classes\userException(PHREEFORM_NOROWS);
 
 	// set the filename for download or email
 	if ($report->filenameprefix || $report->filenamefield) {
@@ -428,7 +428,7 @@ function BuildForm($report, $delivery_method = 'D') { // for forms only
 	  	if ($report->fieldlist[$i]->type == 'CDta') {
 			$report->fieldlist[$i]->text = constant($report->fieldlist[$i]->boxfield[0]->fieldname);
 	  	} else if ($report->fieldlist[$i]->type == 'CBlk') {
-			if (!$report->fieldlist[$i]->boxfield) throw new \Exception(PHREEFORM_EMPTYFIELD . $report->fieldlist[$i]->description);
+			if (!$report->fieldlist[$i]->boxfield) throw new \core\classes\userException(PHREEFORM_EMPTYFIELD . $report->fieldlist[$i]->description);
 			$TextField = '';
 			foreach ($report->fieldlist[$i]->boxfield as $entry) {
 				$temp = $entry->formatting ? ProcessData(constant($entry->fieldname), $entry->formatting) : constant($entry->fieldname);
@@ -487,7 +487,7 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 	  foreach ($report->fieldlist as $key => $field) { // Build the text block strings
 	    if ($field->type == 'TBlk') {
 		  if (!$field->boxfield[0]->fieldname) {
-		    throw new \Exception(PHREEFORM_EMPTYFIELD . $field->fieldname);
+		    throw new \core\classes\userException(PHREEFORM_EMPTYFIELD . $field->fieldname);
 		  }
 		  if ($report->special_class) {
 		    $TextField = $special_form->load_text_block_data($field->boxfield);
@@ -506,7 +506,7 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 	    }
 	    if ($field->type == 'LtrData') { // letter template
 		  if (!$field->boxfield) {
-		    throw new \Exception(PHREEFORM_EMPTYFIELD . $field->description);
+		    throw new \core\classes\userException(PHREEFORM_EMPTYFIELD . $field->description);
 		  }
 		  $tblField = '';
 		  $data = array();
@@ -531,7 +531,7 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 	  // Send the table
 	  foreach ($report->fieldlist as $TableObject) {
 	    if ($TableObject->type == 'Tbl') {
-		  if (!$TableObject->boxfield) throw new \Exception(PHREEFORM_EMPTYFIELD . $TableObject->description);
+		  if (!$TableObject->boxfield) throw new \core\classes\userException(PHREEFORM_EMPTYFIELD . $TableObject->description);
 		  // Build the sql
 		  $tblField = '';
 		  $tblHeading = array();
@@ -558,7 +558,7 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 	  // Send the duplicate data table (only works if each form is contained in a single page [no multi-page])
 	  foreach ($report->fieldlist as $field) {
 	    if ($field->type == 'TDup') {
-		  if (!$StoredTable) throw new \Exception(PHREEFORM_EMPTYTABLE . $field->description);
+		  if (!$StoredTable) throw new \core\classes\userException(PHREEFORM_EMPTYTABLE . $field->description);
 		  // insert new coordinates into existing table
 		  $StoredTable->abscissa = $field->abscissa;
 		  $StoredTable->ordinate = $field->ordinate;
@@ -568,7 +568,7 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 	  foreach ($report->fieldlist as $key => $field) {
 	    // Set the totals (need to be on last printed page) - Handled in the Footer function in FPDF
 	    if ($field->type == 'Ttl') {
-		  if (!$field->boxfield) throw new \Exception(PHREEFORM_EMPTYFIELD . $field->description);
+		  if (!$field->boxfield) throw new \core\classes\userException(PHREEFORM_EMPTYFIELD . $field->description);
 		  $report->fieldlist[$key]->processing = $field->boxfield[0]->processing; // assume first processing setting carries for the total
 		  if ($report->special_class) {
 		    $FieldValues = $special_form->load_total_results($field);
@@ -642,7 +642,7 @@ function BuildSeq($report, $delivery_method = 'D') { // for forms only - Sequent
 		  $oneline = formatReceipt($value, $field->width, $field->align, $oneline);
 		  break;
 		case 'TBlk':
-		  if (!$field->boxfield[0]->fieldname) throw new \Exception(PHREEFORM_EMPTYFIELD . $field->fieldname);
+		  if (!$field->boxfield[0]->fieldname) throw new \core\classes\userException(PHREEFORM_EMPTYFIELD . $field->fieldname);
 		  if ($report->special_class) {
 			$TextField = $special_form->load_text_block_data($field->boxfield);
 		  } else {
@@ -660,7 +660,7 @@ function BuildSeq($report, $delivery_method = 'D') { // for forms only - Sequent
 		  $oneline = $report->fieldlist[$key]->text;
 		  break;
 		case 'Tbl':
-		  	if (!$field->boxfield) throw new \Exception(PHREEFORM_EMPTYFIELD . $field->description);
+		  	if (!$field->boxfield) throw new \core\classes\userException(PHREEFORM_EMPTYFIELD . $field->description);
 //		  	$tblHeading = array();
 //		  	foreach ($field->boxfield as $TableField) $tblHeading[] = $TableField->description;
 		  	$data = array();
@@ -691,7 +691,7 @@ function BuildSeq($report, $delivery_method = 'D') { // for forms only - Sequent
 		  	$field->rowbreak = 1;
 		  	break;
 		case 'TDup':
-		  if (!$StoredTable) throw new \Exception(PHREEFORM_EMPTYTABLE . $field->description);
+		  if (!$StoredTable) throw new \core\classes\userException(PHREEFORM_EMPTYTABLE . $field->description);
 		  // insert new coordinates into existing table
 		  $StoredTable->abscissa = $field->abscissa;
 		  $StoredTable->ordinate = $field->ordinate;
@@ -706,7 +706,7 @@ function BuildSeq($report, $delivery_method = 'D') { // for forms only - Sequent
 		  $field->rowbreak = 1;
 		  break;
 		case 'Ttl':
-		  if (!$field->boxfield) throw new \Exception(PHREEFORM_EMPTYFIELD . $field->description);
+		  if (!$field->boxfield) throw new \core\classes\userException(PHREEFORM_EMPTYFIELD . $field->description);
 		  if ($report->special_class) {
 			$FieldValues = $special_form->load_total_results($field);
 		  } else {

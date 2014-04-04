@@ -25,16 +25,16 @@ $security_level = \core\classes\user::validate();
 /**************   page specific initialization  *********************/
 $gl_acct = db_prepare_input($_GET['glAcct']);
 $fy      = db_prepare_input($_GET['fy']);
-$result  = $db->Execute("select period, start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . " 
+$result  = $db->Execute("select period, start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . "
 	where fiscal_year = '" . ($fy - 1) . "' order by period");
 // no ealier data found
-if ($result->RecordCount() == 0) throw new \Exception(ERROR_NO_GL_ACCT_INFO);
+if ($result->RecordCount() == 0) throw new \core\classes\userException(ERROR_NO_GL_ACCT_INFO);
 $periods = array();
 while (!$result->EOF) {
   $periods[] = $result->fields['period'];
   $result->MoveNext();
 }
-$result = $db->Execute("select debit_amount - credit_amount as balance from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " 
+$result = $db->Execute("select debit_amount - credit_amount as balance from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
 	where account_id = '" . $gl_acct . "' and period in (" . implode(',', $periods) . ")");
 while (!$result->EOF) {
   $xml .= "\t<items>\n";

@@ -53,7 +53,7 @@ switch ($_REQUEST['action']) {
 			header('Connection: close');
 			header('Expires: ' . date('r', time()+3600));
 			header('Last-Modified: ' . date('r'));
-		  	echo $dom->saveXML(); 
+		  	echo $dom->saveXML();
 			exit();
 	/*	  	// hieronder werkt
 			header("Content-type: plain/txt;");
@@ -65,7 +65,7 @@ switch ($_REQUEST['action']) {
 			header('Last-Modified: ' . date('r'));
 			print $output;
 			exit();*/
-		}catch(Exception $e){
+		}catch(\Exception $e){
 			$messageStack->add($e->getMessage());
 		}
 	default:

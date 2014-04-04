@@ -123,7 +123,7 @@ switch ($_REQUEST['action']) {
 		$date         = $_GET['date'];
 		$labels       = $_GET['labels'];
 		$labels_array = explode(':', $labels);
-		if (count($labels_array) == 0) throw new \Exception('No labels were passed to label_viewer.php!');
+		if (count($labels_array) == 0) throw new \core\classes\userException('No labels were passed to label_viewer.php!');
 		$file_path = SHIPPING_DEFAULT_LABEL_DIR . $admin_classes['shipping']->methods[$method]->id . '/' . str_replace('-', '/', $date) . '/';
 		// fetch the tracking labels
 		foreach ($labels_array as $tracking_num) {
@@ -152,9 +152,9 @@ switch ($_REQUEST['action']) {
 	$shipment_id = db_prepare_input($_GET['sID']);
 	$shipments   = $db->Execute("select method, ship_date, tracking_id from " . TABLE_SHIPPING_LOG . " where shipment_id = " . (int)$shipment_id);
 	$ship_method = $shipments->fields['method'];
-	if ($shipments->RecordCount() == 0 || !$ship_method) throw new \Exception(SHIPPING_DELETE_ERROR);
+	if ($shipments->RecordCount() == 0 || !$ship_method) throw new \core\classes\userException(SHIPPING_DELETE_ERROR);
 	// only allow delete if shipped today or in future
-	if ($shipments->fields['ship_date'] < date('Y-m-d')) throw new \Exception(SHIPPING_CANNOT_DELETE);
+	if ($shipments->fields['ship_date'] < date('Y-m-d')) throw new \core\classes\userException(SHIPPING_CANNOT_DELETE);
 	while (!$shipments->EOF) {
 		$tracking_number = $shipments->fields['tracking_id'];
 	  	if ($ship_method <> 'GndFrt' && $ship_method <> 'EcoFrt') { // no need to delte freight shipments,
@@ -168,11 +168,11 @@ switch ($_REQUEST['action']) {
 	while(true) {
 		$filename = $file_path . $tracking_number . ($cnt > 0 ? '-'.$cnt : '') . '.lpt';
 		if (is_file($filename)) {
-			if (!unlink($filename)) throw new \Exception("Trouble removing label file ($filename)");
+			if (!unlink($filename)) throw new \core\classes\userException("Trouble removing label file ($filename)");
 		} else {
 			$filename = $file_path . $tracking_number . ($cnt > 0 ? '-'.$cnt : '') . '.pdf';
 		  	if (is_file($filename)) {
-		    	if (!unlink($filename)) throw new \Exception("Trouble removing label file ($filename)");
+		    	if (!unlink($filename)) throw new \core\classes\userException("Trouble removing label file ($filename)");
 		  	} else {
 		    	break; // file does not exist, exit loop
 		  	}

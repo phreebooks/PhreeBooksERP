@@ -26,7 +26,7 @@ class chart_of_accounts {
     public $title         = GL_POPUP_WINDOW_TITLE;
     public $extra_buttons = false;
     public $help_path     = '07.06.01';
-    
+
     public function __construct(){
         foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
         if(!isset($this->id))$this->id = isset($_GET['sID'])?$_GET['sID']:$_POST['rowSeq'];
@@ -35,20 +35,20 @@ class chart_of_accounts {
 
   function btn_save($id = '') {
   	global $db, $coa_types_list;
-	\core\classes\user::validate_security($this->security_id, 2); // security check		
+	\core\classes\user::validate_security($this->security_id, 2); // security check
 	$this->heading_only     = $this->heading_only == 1 ? '1' : '0';
 	$this->account_inactive = $this->account_inactive == 1 ? '1' : '0';
-	if ($this->account_type == '') throw new \Exception(ERROR_ACCT_TYPE_REQ);
+	if ($this->account_type == '') throw new \core\classes\userException(ERROR_ACCT_TYPE_REQ);
 	if (!$this->primary_acct_id == ''){
 	    $result = $db->Execute("select account_type from " . $this->db_table . " where id = '" . $this->primary_acct_id . "'");
-        if( $result->fields['account_type'] <> $this->account_type) throw new \Exception('set account_type to '. $coa_types_list[$result->fields['account_type']]['text']. ' this is the same as the parent');
-	}	
+        if( $result->fields['account_type'] <> $this->account_type) throw new \core\classes\userException('set account_type to '. $coa_types_list[$result->fields['account_type']]['text']. ' this is the same as the parent');
+	}
 	if ($this->heading_only == 1 && $this->rowSeq <> 0) { // see if this was a non-heading account converted to a heading account
-	   $sql = "select max(debit_amount) as debit, max(credit_amount) as credit, max(beginning_balance) as beg_bal 
+	   $sql = "select max(debit_amount) as debit, max(credit_amount) as credit, max(beginning_balance) as beg_bal
 		from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '" . $this->id . "'";
 	   $result = $db->Execute($sql);
 	   if ($result->fields['debit'] <> 0 || $result->fields['credit'] <> 0 || $result->fields['beg_bal'] <> 0) {
-		  throw new \Exception(GL_ERROR_CANT_MAKE_HEADING);
+		  throw new \core\classes\userException(GL_ERROR_CANT_MAKE_HEADING);
 	   }
 	}
 	$sql_data_array = array(
@@ -61,7 +61,7 @@ class chart_of_accounts {
     if ($this->rowSeq <> 0) {
 	  db_perform($this->db_table, $sql_data_array, 'update', "id = '" . $this->id . "'");
       gen_add_audit_log(GL_LOG_CHART_OF_ACCOUNTS . TEXT_UPDATE, $this->id);
-	} else  { 
+	} else  {
 	  $sql_data_array['id'] = $this->id;
       db_perform($this->db_table, $sql_data_array);
 	  gen_add_audit_log(GL_LOG_CHART_OF_ACCOUNTS . TEXT_ADD, $this->id);
@@ -72,13 +72,13 @@ class chart_of_accounts {
 
   function btn_delete($id = 0) {
   	global $db;
-	\core\classes\user::validate_security($this->security_id, 4); // security check		
+	\core\classes\user::validate_security($this->security_id, 4); // security check
 	// Don't allow delete if there is account activity for this account
-	$sql = "select max(debit_amount) as debit, max(credit_amount) as credit, max(beginning_balance) as beg_bal 
+	$sql = "select max(debit_amount) as debit, max(credit_amount) as credit, max(beginning_balance) as beg_bal
 		from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '" . $id . "'";
 	$result = $db->Execute($sql);
 	if ($result->fields['debit'] <> 0 || $result->fields['credit'] <> 0 || $result->fields['beg_bal'] <> 0) {
-	  throw new \Exception(GL_ERROR_CANT_DELETE);
+	  throw new \core\classes\userException(GL_ERROR_CANT_DELETE);
 	}
 	// OK to delete
 	$db->Execute("delete from " . $this->db_table . " where id = '" . $id . "'");
@@ -109,7 +109,7 @@ class chart_of_accounts {
 	  $content['tbody'][$rowCnt] = array(
 	    array('value' => htmlspecialchars($result->fields['id']),
 			  'params'=> $bkgnd.'style="cursor:pointer" onclick="loadPopUp(\'chart_of_accounts_edit\',\''.$result->fields['id'].'\')"'),
-		array('value' => htmlspecialchars($result->fields['description']), 
+		array('value' => htmlspecialchars($result->fields['description']),
 			  'params'=> $bkgnd.'style="cursor:pointer" onclick="loadPopUp(\'chart_of_accounts_edit\',\''.$result->fields['id'].'\')"'),
 		array('value' => htmlspecialchars($account_type_desc),
 			  'params'=> $bkgnd.'style="cursor:pointer" onclick="loadPopUp(\'chart_of_accounts_edit\',\''.$result->fields['id'].'\')"'),
@@ -166,7 +166,7 @@ class chart_of_accounts {
     }else{
     	$sql = "select account_type from " . $this->db_table . " where id = '" . $this->primary_acct_id . "'";
     	$result = $db->Execute($sql);
-        $output .= html_hidden_field('account_type', $result->fields['account_type'] )   . chr(10);	
+        $output .= html_hidden_field('account_type', $result->fields['account_type'] )   . chr(10);
     }
 	$output .= '  <tr>' . "\n";
 	$output .= '    <td>' . GL_INFO_ACCOUNT_INACTIVE . '</td>' . "\n";

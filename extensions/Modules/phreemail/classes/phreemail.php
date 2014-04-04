@@ -61,9 +61,9 @@ class phreemail extends PHPMailer{
   		try{
   			$this->imap_stream 	= imap_open("{". $this->Host . $this->Port."}".$this->box, $this->Username, $this->Password);
 	  		if($this->imap_stream == false){
-	    		throw new \Exception(imap_last_error());
+	    		throw new \core\classes\userException(imap_last_error());
 	  		}
-  		}catch(Exception $e){
+  		}catch(\Exception $e){
   			$this->SetError($e->getMessage());
   		}
   		$this->num_message = imap_num_msg($this->imap_stream);
@@ -78,7 +78,7 @@ class phreemail extends PHPMailer{
   	*/
   	function mailboxmsginfo(){
 	    $mailbox = imap_check($this->imap_stream);
-  		if($mailbox == false) throw new \Exception(imap_last_error());
+  		if($mailbox == false) throw new \core\classes\userException(imap_last_error());
   		print_r($mailbox);
 	    $mbox["Date"]    = $mailbox->Date;
     	$mbox["Driver"]  = $mailbox->Driver;
@@ -363,9 +363,9 @@ class phreemail extends PHPMailer{
 	function listmailbox(){
 		try{
 			$list = imap_list($this->imap_stream, "{".$this->Host."}", "*");
-	  		if (is_array($list) == false) throw new \Exception(imap_last_error());
+	  		if (is_array($list) == false) throw new \core\classes\userException(imap_last_error());
 	    	return $list;
-		}catch(Exception $e){
+		}catch(\Exception $e){
   			$this->SetError($e->getMessage());
   			return array();
   		}

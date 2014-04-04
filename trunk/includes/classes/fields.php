@@ -29,7 +29,7 @@ class fields {
 	public  $extra_tab_html = '';
 
 	public function __construct($sync = true){
-	  	$this->security_id = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
+	  	$this->security_id = \core\classes\user::security_level(SECURITY_ID_CONFIGURATION);
 		require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
 	  	foreach ($_REQUEST as $key => $value) $this->$key = $value;
 	  	$this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
@@ -41,15 +41,15 @@ class fields {
   	\core\classes\user::validate_security($this->security_id, 2); // security check
     // clean out all non-allowed values and then check if we have a empty string
 	$this->field_name   = preg_replace("[^A-Za-z0-9_]", "", $this->field_name);
-	if ($this->field_name == '') throw new \Exception(EXTRA_ERROR_FIELD_BLANK);
+	if ($this->field_name == '') throw new \core\classes\userException(EXTRA_ERROR_FIELD_BLANK);
 	// check if the field name belongs to one of the mysql reserved names
 	$reserved_names = array('select', 'delete', 'insert', 'update', 'to', 'from', 'where', 'and', 'or',
 		'alter', 'table', 'add', 'change', 'in', 'order', 'set', 'inner');
-	if (in_array($this->field_name, $reserved_names)) throw new \Exception(EXTRA_FIELD_RESERVED_WORD);
+	if (in_array($this->field_name, $reserved_names)) throw new \core\classes\userException(EXTRA_FIELD_RESERVED_WORD);
 	// if the id is empty then check for duplicate field names
 	if($this->id == ''){
 	   $result = $db->Execute("SELECT id FROM ".TABLE_EXTRA_FIELDS." WHERE module_id='$this->module' AND field_name='$this->field_name'");
-	   if ($result->RecordCount() > 0 && $this->id =='') throw new \Exception(EXTRA_FIELD_ERROR_DUPLICATE);
+	   if ($result->RecordCount() > 0 && $this->id =='') throw new \core\classes\userException(EXTRA_FIELD_ERROR_DUPLICATE);
 	}
 	// condense the type array to a single string.
     while ($type = array_shift($this->type_array)){
@@ -276,7 +276,7 @@ class fields {
 	// build the tab list
 	$tab_list = gen_build_pull_down($this->get_tabs($this->module));
 	array_shift($tab_list);
-	if ($action == 'new' && sizeof($tab_list) < 1) throw new \Exception(EXTRA_FIELDS_ERROR_NO_TABS);
+	if ($action == 'new' && sizeof($tab_list) < 1) throw new \core\classes\userException(EXTRA_FIELDS_ERROR_NO_TABS);
     $choices  =  explode(':',$params[$this->type_params]);
 	$disabled = ($this->tab_id !== '0') ? '' : 'disabled="disabled" ';
 	$readonly = ($this->tab_id !== '0') ? '' : 'readonly="readonly" ';

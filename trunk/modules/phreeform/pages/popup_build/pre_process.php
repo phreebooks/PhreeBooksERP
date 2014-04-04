@@ -47,7 +47,7 @@ switch ($_REQUEST['action']) {
   case 'preview':
   	try{
 	  	if (!isset($_POST['filename_prefix'])) { // check for truncated post vars
-			throw new \Exception('The form was not submitted in full and cannot be saved properly. The most common solution to this problem is to set the max_input_vars above the standard 1000 in your php.ini configuration file.');
+			throw new \core\classes\userException('The form was not submitted in full and cannot be saved properly. The most common solution to this problem is to set the max_input_vars above the standard 1000 in your php.ini configuration file.');
 		}
 		// hidden fields
 	    $rID                          = db_prepare_input($_POST['rID']);
@@ -144,7 +144,7 @@ switch ($_REQUEST['action']) {
 				    	validate_upload('img_upload_' . $key, 'image', array('jpg', 'jpeg', 'png', 'gif'));
 					  	$properties->filename = $_FILES['img_upload_' . $key]['name'];
 					  	if (!@move_uploaded_file($_FILES['img_upload_' . $key]['tmp_name'], PF_DIR_MY_REPORTS . 'images/' . $properties->filename)) {
-					    	throw new \Exception(sprintf(PHREEFORM_IMAGE_MOVE_ERROR, PF_DIR_MY_REPORTS . 'images/' . $properties->filename));
+					    	throw new \core\classes\userException(sprintf(PHREEFORM_IMAGE_MOVE_ERROR, PF_DIR_MY_REPORTS . 'images/' . $properties->filename));
 					  	}
 				  	} else { // selected from the list
 						$properties->filename = $_POST['img_file_' . $key];
@@ -206,7 +206,7 @@ switch ($_REQUEST['action']) {
 		elseif (isset($_POST['users']) && $_POST['groups'][0] <> '') $groups = 'g:' . implode(':', $_POST['groups']);
 		$report->security = $users . ';' . $groups;
 		// test for no access which will hide the report
-		if ($report->security == 'u:-1;g:-1') throw new \Exception(PHREEFORM_NO_ACCESS);
+		if ($report->security == 'u:-1;g:-1') throw new \core\classes\userException(PHREEFORM_NO_ACCESS);
 		$datelist = $_POST['date_range'] <> '' ? implode('', $_POST['date_range']) : '';
 		$report->datelist       = isset($_POST['periods_only']) ? 'z' : $datelist;
 		$report->datefield      = db_prepare_input($_POST['date_field']);
@@ -253,12 +253,12 @@ switch ($_REQUEST['action']) {
 	$doc_ext   = db_prepare_input($_POST['doc_ext']);
 	$doc_group = db_prepare_input($_POST['doc_group']);
 	// check for valid folder name
-	if (!$doc_title) throw new \Exception(PHREEFORM_FOLDER_BLANK_ERROR);
+	if (!$doc_title) throw new \core\classes\userException(PHREEFORM_FOLDER_BLANK_ERROR);
 	// check to see if the directory is being moved below itself
-	if (!validate_dir_move($dir_tree, $id, $parent_id)) throw new \Exception(PHREEFORM_DIR_MOVE_ERROR);
+	if (!validate_dir_move($dir_tree, $id, $parent_id)) throw new \core\classes\userException(PHREEFORM_DIR_MOVE_ERROR);
 	$result = $db->Execute("select id from " . TABLE_PHREEFORM . " where doc_group = '" . $doc_group . "'");
 	if ($result->RecordCount() > 0) {
-	  	if ($result->fields['id'] <> $id) throw new \Exception(PHREEFORM_DIR_GROUP_DUP_ERROR);
+	  	if ($result->fields['id'] <> $id) throw new \core\classes\userException(PHREEFORM_DIR_GROUP_DUP_ERROR);
 	}
 	// insert/update db
 	$sql_array = array(
@@ -278,10 +278,10 @@ switch ($_REQUEST['action']) {
 	$doc_title = ''; // clear the doc title
     break;
   case 'delete_dir':
-	if (!$id) throw new \Exception(PHREEFORM_DIR_DELETE_ERROR);
+	if (!$id) throw new \core\classes\userException(PHREEFORM_DIR_DELETE_ERROR);
 	// check for directory empty
 	$result = $db->Execute("select id from " . TABLE_PHREEFORM . " where parent_id = " . $id);
-	if ($result->RecordCount() > 0) throw new \Exception(PHREEFORM_DIR_NOT_EMPTY_ERROR);
+	if ($result->RecordCount() > 0) throw new \core\classes\userException(PHREEFORM_DIR_NOT_EMPTY_ERROR);
 	$db->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $id);
 	$messageStack->add(PHREEFORM_DIR_DELETE_SUCCESS,'success');
     break;
@@ -299,7 +299,7 @@ switch ($_REQUEST['action']) {
 	        	if ($file <> "." && $file <> "..") $output[] = $file;
 	      	}
 		} else {
-		  	throw new \Exception('error opening the directory for reading!');
+		  	throw new \core\classes\userException('error opening the directory for reading!');
 		}
 	    closedir($handle);
 		foreach ($output as $file) ImportReport(NULL, $file, $import_path);

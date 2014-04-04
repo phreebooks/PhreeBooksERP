@@ -24,7 +24,7 @@ $security_level = \core\classes\user::validate();
 /**************   page specific initialization  *************************/
 $guess = db_prepare_input($_GET['guess']);
 $xml   = NULL;
-if (isset($_REQUEST['guess']) || $_REQUEST['guess'] == '') throw new \Exception("variable Guess isn't set");
+if (isset($_REQUEST['guess']) || $_REQUEST['guess'] == '') throw new \core\classes\userException("variable Guess isn't set");
 
 $search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.telephone4',
   'a.city_town', 'a.postal_code', 'c.id', 'c.short_name');

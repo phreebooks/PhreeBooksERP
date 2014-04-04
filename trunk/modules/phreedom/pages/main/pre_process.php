@@ -38,7 +38,7 @@ switch ($_REQUEST['action']) {
 		    $sql = "select admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security
 				from " . TABLE_USERS . " where admin_name = '" . db_input($admin_name) . "'";
 		    if ($db->db_connected) $result = $db->Execute($sql);
-			if (!$result || $admin_name <> $result->fields['admin_name'] || $result->fields['inactive']) throw new \Exception(ERROR_WRONG_LOGIN);
+			if (!$result || $admin_name <> $result->fields['admin_name'] || $result->fields['inactive']) throw new \core\classes\userException(ERROR_WRONG_LOGIN);
 		    \core\classes\encryption::validate_password($admin_pass, $result->fields['admin_pass']);
 		    $_SESSION['admin_id']       = $result->fields['admin_id'];
 		    $_SESSION['display_name']   = $result->fields['display_name'];
@@ -80,7 +80,7 @@ switch ($_REQUEST['action']) {
 			    gen_redirect(html_href_link(FILENAME_DEFAULT, $get_params, 'SSL'));
 			}
 			// check safe mode is allowed to log in.
-			if (get_cfg_var('safe_mode')) throw new \Exception(SAFE_MODE_ERROR);
+			if (get_cfg_var('safe_mode')) throw new \core\classes\userException(SAFE_MODE_ERROR);
 		    $_REQUEST['action'] = '';
 		    break;
 		}catch(\Exception $e) {
@@ -95,7 +95,7 @@ switch ($_REQUEST['action']) {
 	    	$admin_email = db_prepare_input($_POST['admin_email']);
 	    	$result = $db->Execute("select admin_id, admin_name, admin_email
 			  from " . TABLE_USERS . " where admin_email = '" . db_input($admin_email) . "'");
-	    	if (!$admin_email || $admin_email <> $result->fields['admin_email']) throw new \Exception(ERROR_WRONG_EMAIL);
+	    	if (!$admin_email || $admin_email <> $result->fields['admin_email']) throw new \core\classes\userException(ERROR_WRONG_EMAIL);
 	    	$_SESSION['company'] = $_POST['company'];
 	       	$new_password = \core\classes\encryption::random_password(ENTRY_PASSWORD_MIN_LENGTH);
 	      	$admin_pass   = \core\classes\encryption::password($new_password);

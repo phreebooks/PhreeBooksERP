@@ -60,11 +60,11 @@ switch ($_REQUEST['action']) {
 		// If the sku and description were entered manually, the sku_id will be blank, find it
 		if (!$sku_id) {
 		  	$result = $db->Execute("select id from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
-		  	if ($result->RecordCount() == 0) throw new \Exception(WO_SKU_NOT_FOUND);
+		  	if ($result->RecordCount() == 0) throw new \core\classes\userException(WO_SKU_NOT_FOUND);
 		  	$sku_id = $result->fields['id'];
 		}
 		// error check
-		if ((!$sku_id || !$sku || !$wo_title)) throw new \Exception(WO_SKU_ID_REQUIRED);
+		if ((!$sku_id || !$sku || !$wo_title)) throw new \core\classes\userException(WO_SKU_ID_REQUIRED);
 		// check the revision, roll if necessary
 		if ($id) {
 		  	$result = $db->Execute("select revision, last_usage from " . TABLE_WO_MAIN . " where id = " . $id);
@@ -87,9 +87,9 @@ switch ($_REQUEST['action']) {
 		  'revision'    => $revision,
 		);
 		if ($id) {
-			if (!db_perform(TABLE_WO_MAIN, $sql_data_array, 'update', 'id = ' . $id)) throw new \Exception("wasn't able to update $id in to table");
+			if (!db_perform(TABLE_WO_MAIN, $sql_data_array, 'update', 'id = ' . $id)) throw new \core\classes\userException("wasn't able to update $id in to table");
 		} else {
-		    if (!db_perform(TABLE_WO_MAIN, $sql_data_array, 'insert')) throw new \Exception("wasn't able to insert in to table");
+		    if (!db_perform(TABLE_WO_MAIN, $sql_data_array, 'insert')) throw new \core\classes\userException("wasn't able to insert in to table");
 			$id = db_insert_id();
 			if ($bump_rev) {
 		  	  	$result = $db->Execute("update " . TABLE_WO_MAIN . " set inactive = '1' where id = " . $_POST['id']);
@@ -105,7 +105,7 @@ switch ($_REQUEST['action']) {
 		      'step'        => $val['step'],
 		      'task_id'     => $val['task_id'],
 		    );
-			if (!db_perform(TABLE_WO_STEPS, $sql_data_array, 'insert')) throw new \Exception("wasn't able to insert in to table");
+			if (!db_perform(TABLE_WO_STEPS, $sql_data_array, 'insert')) throw new \core\classes\userException("wasn't able to insert in to table");
 		}
 		$db->transCommit();
 		// finish
@@ -204,7 +204,7 @@ switch ($_REQUEST['action']) {
 	if (!$id) throw new \core\classes\userException(sprintf(ERROR_EMPTY_VARIABLE, 'id');
 	// error check
 	$result = $db->Execute("select wo_title, last_usage from " . TABLE_WO_MAIN . " where id = " . $id);
-	if ($result->fields['last_usage'] <> '0000-00-00') throw new \Exception(WO_ERROR_CANNOT_DELETE_BUILDER);
+	if ($result->fields['last_usage'] <> '0000-00-00') throw new \core\classes\userException(WO_ERROR_CANNOT_DELETE_BUILDER);
 	// finish
 	$db->Execute("delete from " . TABLE_WO_MAIN  . " where id = " . $id);
 	$db->Execute("delete from " . TABLE_WO_STEPS . " where ref_id = " . $id);

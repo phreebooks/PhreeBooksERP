@@ -31,14 +31,14 @@ if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save':
-  case 'fill_all': 
+  case 'fill_all':
   case 'fill_role':
   	try{
 		\core\classes\user::validate_security($security_level, 2);
 		$admin_id  = db_prepare_input($_POST['rowSeq']);
 		$fill_all  = db_prepare_input($_POST['fill_all']);
 		$fill_role = db_prepare_input($_POST['fill_role']);
-		if ($security_level < 3 && $admin_id) throw new \Exception(GEN_ADMIN_CANNOT_CHANGE_ROLES); 
+		if ($security_level < 3 && $admin_id) throw new \core\classes\userException(GEN_ADMIN_CANNOT_CHANGE_ROLES);
 		if ($_REQUEST['action'] == 'fill_role' ) {
 		  	$result = $db->Execute("select admin_prefs, admin_security from " . TABLE_USERS . " where admin_id = " . $fill_role);
 		  	$admin_security = $result->fields['admin_security'];
@@ -85,16 +85,16 @@ switch ($_REQUEST['action']) {
 		  'admin_prefs'    => $admin_prefs,
 		  'admin_security' => $admin_security,
 		);
-		if ($_POST['password_new']) { 
+		if ($_POST['password_new']) {
 		  	$password_new  = db_prepare_input($_POST['password_new']);
 		  	$password_conf = db_prepare_input($_POST['password_conf']);
-		  	if (strlen($password_new) < ENTRY_PASSWORD_MIN_LENGTH) throw new \Exception(sprintf(ENTRY_PASSWORD_NEW_ERROR, ENTRY_PASSWORD_MIN_LENGTH));
-		  	if ($password_new != $password_conf) throw new \Exception(ENTRY_PASSWORD_NEW_ERROR_NOT_MATCHING);
+		  	if (strlen($password_new) < ENTRY_PASSWORD_MIN_LENGTH) throw new \core\classes\userException(sprintf(ENTRY_PASSWORD_NEW_ERROR, ENTRY_PASSWORD_MIN_LENGTH));
+		  	if ($password_new != $password_conf) throw new \core\classes\userException(ENTRY_PASSWORD_NEW_ERROR_NOT_MATCHING);
 		  	$sql_data_array['admin_pass'] = \core\classes\encryption::password($password_new);
 		}
 		if (!$admin_id) { // check for duplicate user name
 		  	$result = $db->Execute("select admin_id from " . TABLE_USERS . " where admin_name = '" . db_prepare_input($_POST['admin_name']) . "'");
-		  	if ($result->RecordCount() > 0) throw new \Exception(ENTRY_DUP_USER_NEW_ERROR);
+		  	if ($result->RecordCount() > 0) throw new \core\classes\userException(ENTRY_DUP_USER_NEW_ERROR);
 		}
 		if ($admin_id) {
 			db_perform(TABLE_USERS, $sql_data_array, 'update', 'admin_id = ' . (int)$admin_id);
@@ -120,8 +120,8 @@ switch ($_REQUEST['action']) {
 		$new_name = db_prepare_input($_GET['name']);
 		// check for duplicate user names
 		$result = $db->Execute("select admin_name from " . TABLE_USERS . " where admin_name = '" . $new_name . "'");
-		if ($result->Recordcount() > 0) throw new \Exception(GEN_ERROR_DUPLICATE_ID);
-	
+		if ($result->Recordcount() > 0) throw new \core\classes\userException(GEN_ERROR_DUPLICATE_ID);
+
 		$result   = $db->Execute("select * from " . TABLE_USERS . " where admin_id = " . $admin_id);
 		$old_name = $result->fields['admin_name'];
 		// clean up the fields (especially the system fields, retain the custom fields)
@@ -234,7 +234,7 @@ switch ($_REQUEST['action']) {
 	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     history_save('users');
-    
+
 	$include_template = 'template_main.php';
 	define('PAGE_TITLE', BOX_HEADING_USERS);
 }

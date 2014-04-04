@@ -46,16 +46,16 @@ function get_mime_image($ext, $type = 'default') {
 function dc_validate_upload($filename) {
 	if ($_FILES[$filename]['error']) { // php error uploading file
 		switch ($_FILES[$filename]['error']) {
-			case '1': throw new \Exception(TEXT_IMP_ERMSG1); break;
-			case '2': throw new \Exception(TEXT_IMP_ERMSG2); break;
-			case '3': throw new \Exception(TEXT_IMP_ERMSG3); break;
-			case '4': throw new \Exception(TEXT_IMP_ERMSG4); break;
-			default:  throw new \Exception(TEXT_IMP_ERMSG5 . $_FILES[$filename]['error'] . '.');
+			case '1': throw new \core\classes\userException(TEXT_IMP_ERMSG1); break;
+			case '2': throw new \core\classes\userException(TEXT_IMP_ERMSG2); break;
+			case '3': throw new \core\classes\userException(TEXT_IMP_ERMSG3); break;
+			case '4': throw new \core\classes\userException(TEXT_IMP_ERMSG4); break;
+			default:  throw new \core\classes\userException(TEXT_IMP_ERMSG5 . $_FILES[$filename]['error'] . '.');
 		}
 	} elseif (!is_uploaded_file($_FILES[$filename]['tmp_name'])) { // file uploaded
-		throw new \Exception(TEXT_IMP_ERMSG13);
+		throw new \core\classes\userException(TEXT_IMP_ERMSG13);
 	} elseif ($_FILES[$filename]['size'] == 0) { // report contains no data, error
-		throw new \Exception(TEXT_IMP_ERMSG7);
+		throw new \core\classes\userException(TEXT_IMP_ERMSG7);
 	}
 	return true;
 }

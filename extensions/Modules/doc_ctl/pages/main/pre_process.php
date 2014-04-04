@@ -57,7 +57,7 @@ switch ($_REQUEST['action']) {
 		$new_file = false;
 	    $file_name = str_pad($id, 8, '0', STR_PAD_LEFT) . '_' . $revision .'.dc';
 	  }
-	  if (!copy($_FILES['docfile']['tmp_name'], DOC_CTL_DIR_MY_DOCS . $file_name)) throw new \Exception(sprintf(DOC_CTL_FILE_WRITE_ERROR, DOC_CTL_DIR_MY_DOCS));
+	  if (!copy($_FILES['docfile']['tmp_name'], DOC_CTL_DIR_MY_DOCS . $file_name)) throw new \core\classes\userException(sprintf(DOC_CTL_FILE_WRITE_ERROR, DOC_CTL_DIR_MY_DOCS));
 	}
 	// insert/update db
 	$sql_array = array(

@@ -21,7 +21,7 @@ $xml = NULL;
 $security_level = \core\classes\user::validate();
 /**************   page specific initialization  *************************/
 $id = $_GET['id'];
-if (!$id) throw new \Exception("Error - Bad ID passed.");
+if (!$id) throw new \core\classes\userException("Error - Bad ID passed.");
 
 $result = $db->Execute("select display_name, admin_email from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
 $xml  = xmlEntry("id",     $id);

@@ -344,7 +344,7 @@ class endicia extends \shipping\classes\shipping {
   	global $messageStack, $currencies;
   	$amount = db_prepare_input($_POST['endicia_postage']);
   	if (!in_array($amount, array('10', '25', '100', '250', '500', '1000'))) {
-  		throw new \Exception('The postage purchase amount submitted is an invalid amount!');
+  		throw new \core\classes\userException('The postage purchase amount submitted is an invalid amount!');
   	}
 	$data  = array(
 	  'RecreditRequest' => array(
@@ -364,10 +364,10 @@ class endicia extends \shipping\classes\shipping {
   	  if ($response->RecreditRequestResponse->Status == 0) {
   		$messageStack->add(sprintf(SHIPPING_ENDICIA_PURCHASE_SUCCESS_MSG, $currencies->format($response->RecreditRequestResponse->CertifiedIntermediary->PostageBalance), $response->RecreditRequestResponse->CertifiedIntermediary->SerialNumber),'success');
   	  } else {
-  		throw new \Exception(TEXT_ERROR.' ('.$response->RecreditRequestResponse->Status.') '.$response->RecreditRequestResponse->ErrorMessage);
+  		throw new \core\classes\userException(TEXT_ERROR.' ('.$response->RecreditRequestResponse->Status.') '.$response->RecreditRequestResponse->ErrorMessage);
 	  }
   	} catch (SoapFault $exception) {
-  	  throw new \Exception("SOAP error ({$exception->faultcode}) {$exception->faultstring}");
+  	  throw new \core\classes\userException("SOAP error ({$exception->faultcode}) {$exception->faultstring}");
   	}
   	return true;
   }
@@ -381,8 +381,8 @@ class endicia extends \shipping\classes\shipping {
   	$new_pp = db_prepare_input($_POST['pass_phrase_new']);
   	$dup_pp = db_prepare_input($_POST['pass_phrase_confirm']);
   	// error check
-  	if ($old_pp <> MODULE_SHIPPING_ENDICIA_PASS_PHRASE) throw new \Exception(SHIPPING_ENDICIA_PASSPHRASE_OLD_NOT_MATCH);
-  	if ($new_pp <> $dup_pp) throw new \Exception(SHIPPING_ENDICIA_PASSPHRASE_NEW_NOT_MATCH);
+  	if ($old_pp <> MODULE_SHIPPING_ENDICIA_PASS_PHRASE) throw new \core\classes\userException(SHIPPING_ENDICIA_PASSPHRASE_OLD_NOT_MATCH);
+  	if ($new_pp <> $dup_pp) throw new \core\classes\userException(SHIPPING_ENDICIA_PASSPHRASE_NEW_NOT_MATCH);
   	$data = array(
   	  'ChangePassPhraseRequest' => array(
   	    'RequesterID' => MODULE_SHIPPING_ENDICIA_PARTNER_ID,
@@ -402,10 +402,10 @@ class endicia extends \shipping\classes\shipping {
   	  	write_configure('MODULE_SHIPPING_ENDICIA_PASS_PHRASE', $new_pp);
   		$messageStack->add(SHIPPING_ENDICIA_PASSPHRASE_SUCCESS_MSG, 'success');
   	  } else {
-  		throw new \Exception(TEXT_ERROR.' ('.$response->ChangePassPhraseRequestResponse->Status.') '.$response->ChangePassPhraseRequestResponse->ErrorMessage);
+  		throw new \core\classes\userException(TEXT_ERROR.' ('.$response->ChangePassPhraseRequestResponse->Status.') '.$response->ChangePassPhraseRequestResponse->ErrorMessage);
   	  }
   	} catch (SoapFault $exception) {
-  	  throw new \Exception("SOAP error ({$exception->faultcode}) {$exception->faultstring}");
+  	  throw new \core\classes\userException("SOAP error ({$exception->faultcode}) {$exception->faultstring}");
   	}
   }
 
@@ -416,7 +416,7 @@ class endicia extends \shipping\classes\shipping {
 	global $messageStack;
 	$endicia_results = array();
 	if (in_array($sInfo->ship_method, array('I2DEam','I2Dam','I3D'))) { // unsupported ship methods
-	  throw new \Exception('The ship method requested is not supported by this tool presently. Please ship the package via a different tool.');
+	  throw new \core\classes\userException('The ship method requested is not supported by this tool presently. Please ship the package via a different tool.');
 	}
 	$labels = array();
 	$xml = $this->FormatEndiciaShipRequest($sInfo);
@@ -462,15 +462,15 @@ class endicia extends \shipping\classes\shipping {
 		  if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 		  $messageStack->add(sprintf(SHIPPING_ENDICIA_LABEL_STATUS, $tracking, $response->LabelRequestResponse->PostageBalance),'success');
 		} else {
-		  throw new \Exception('Error - No label found in return string.');
+		  throw new \core\classes\userException('Error - No label found in return string.');
 		}
 	  } else {
-	  	throw new \Exception(TEXT_ERROR.' ('.$response->LabelRequestResponse->Status.') '.$response->LabelRequestResponse->ErrorMessage);
+	  	throw new \core\classes\userException(TEXT_ERROR.' ('.$response->LabelRequestResponse->Status.') '.$response->LabelRequestResponse->ErrorMessage);
 	  }
 	} catch (SoapFault $exception) {
 //echo 'Fault Request <pre>'  . htmlspecialchars($client->__getLastRequest()) . '</pre>';
 //echo 'Fault Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
-	  throw new \Exception("Soap Error ({$exception->faultcode}) {$exception->faultstring}");
+	  throw new \core\classes\userException("Soap Error ({$exception->faultcode}) {$exception->faultstring}");
 	}
 	return $endicia_results;
   }
@@ -577,7 +577,7 @@ class endicia extends \shipping\classes\shipping {
 // ***************************************************************************************************************
   function deleteLabel($tracking_number = '') { // only one at a time allowed
   	global $messageStack;
-	if (!$tracking_number) throw new \Exception(SHIPPING_DELETE_ERROR);
+	if (!$tracking_number) throw new \core\classes\userException(SHIPPING_DELETE_ERROR);
   	$xml  = "<RefundRequest>\n";
   	$xml .= xmlEntry('AccountID', MODULE_SHIPPING_ENDICIA_ACCOUNT_NUMBER);
   	$xml .= xmlEntry('PassPhrase', MODULE_SHIPPING_ENDICIA_PASS_PHRASE);
@@ -594,12 +594,12 @@ class endicia extends \shipping\classes\shipping {
 	  if ($response->RefundResponse->RefundList->PICNumber->IsAppoved == 'YES') {
 	  	$messageStack->add(sprintf(SHIPPING_ENDICIA_REFUND_MSG, $response->RefundResponse->RefundList->PICNumber, $response->RefundResponse->RefundList->PICNumber->IsApproved, $response->RefundResponse->RefundList->PICNumber->ErrorMsg), 'success');
 	  } else {
-	  	throw new \Exception(TEXT_ERROR.' '.$response->RefundResponse->RefundList->PICNumber->ErrorMsg);
+	  	throw new \core\classes\userException(TEXT_ERROR.' '.$response->RefundResponse->RefundList->PICNumber->ErrorMsg);
   	  }
   	} catch (SoapFault $exception) {
 //echo 'Fault Request <pre>'  . htmlspecialchars($client->__getLastRequest()) . '</pre>';
 //echo 'Fault Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
-	  throw new \Exception("SOAP error ({$exception->faultcode}) {$exception->faultstring}");
+	  throw new \core\classes\userException("SOAP error ({$exception->faultcode}) {$exception->faultstring}");
   	}
 	return true;
   }
@@ -646,12 +646,12 @@ class endicia extends \shipping\classes\shipping {
 	  	  $messageStack->add($message, $status_code=='D'?'success':'caution');
 		}
 	  } else {
-	  	throw new \Exception(TEXT_ERROR.' ('.$response->StatusResponse->Status.') '.$response->StatusResponse->ErrorMsg);
+	  	throw new \core\classes\userException(TEXT_ERROR.' ('.$response->StatusResponse->Status.') '.$response->StatusResponse->ErrorMsg);
 	  }
 	} catch (SoapFault $exception) {
 //echo 'Error Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';
 //echo 'Error Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
-	  throw new \Exception( "SOAP Error ({$exception->faultcode}) {$exception->faultstring}");
+	  throw new \core\classes\userException( "SOAP Error ({$exception->faultcode}) {$exception->faultstring}");
 	}
 	return $message;
   }

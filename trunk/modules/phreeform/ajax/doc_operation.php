@@ -26,7 +26,7 @@ require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
 /**************   page specific initialization  *************************/
 $id     = (int)$_GET['id'];
 
-if (!isset($_GET['id'])) throw new \Exception("variable ID isn't set");
+if (!isset($_GET['id'])) throw new \core\classes\userException("variable ID isn't set");
 $doc_details = $db->Execute("select * from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
 switch ($_REQUEST['action']) {
   case 'bookmark':
@@ -66,7 +66,7 @@ switch ($_REQUEST['action']) {
 	$ajax_text = PHREEFORM_JS_RPT_DELETED;
 	break;
   default:
-  	throw new \Exception("don't know action {$_REQUEST['action']}");
+  	throw new \core\classes\userException("don't know action {$_REQUEST['action']}");
 }
 // put the output together
 $xml .= "\t" . xmlEntry("docID", $id);

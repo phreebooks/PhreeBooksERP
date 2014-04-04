@@ -21,12 +21,12 @@ class messageStack {
     public $debug_info 	= NULL;
 
     function __construct(){
-    	$this->debug_header();
     }
 
     function add($message, $type = 'error') {
       	if ($type == 'error') {
         	$_SESSION['messageToStack'][] = array('type' => $type, 'params' => 'class="ui-state-error"', 'text' => html_icon('emblems/emblem-unreadable.png', TEXT_ERROR) . '&nbsp;' . $message, 'message' => $message);
+        	trigger_error($message, E_USER_NOTICE);
       	} elseif ($type == 'success') {
 	    	if (!HIDE_SUCCESS_MESSAGES) $_SESSION['messageToStack'][] = array('type' => $type, 'params' => 'class="ui-state-active"', 'text' => html_icon('emotes/face-smile.png', TEXT_SUCCESS) . '&nbsp;' . $message, 'message' => $message);
       	} elseif ($type == 'caution' || $type == 'warning') {
@@ -81,14 +81,6 @@ class messageStack {
       	return $xml;
     }
 
-	function debug_header() {
-	  	$this->debug_info .= "Trace information for debug purposes. Phreedom release {$admin_classes['phreedom']->version}, generated " . date('Y-m-d H:i:s') . ".\n\n";
-	  	$this->debug_info .= "\nGET     Vars = " . arr2string($_GET);
-	  	$this->debug_info .= "\nPOST    Vars = " . arr2string($_POST);
-	  	$this->debug_info .= "\nREQUEST Vars = " . arr2string($_REQUEST);
-	  	$this->debug_info .= "\nSESSION Vars = " . arr2string($_SESSION);
-	}
-
 	function debug($txt) {
 	  	global $db;
 	  	if (substr($txt, 0, 1) == "\n") {
@@ -102,12 +94,18 @@ class messageStack {
 
 	function write_debug() {
 	  	global $db;
+	  	$this->debug_header_info .= "Trace information for debug purposes. Phreedom release {$admin_classes['phreedom']->version}, generated " . date('Y-m-d H:i:s') . ".\n\n";
+	  	$this->debug_header_info .= "\nGET     Vars = " . arr2string($_GET);
+	  	$this->debug_header_info .= "\nPOST    Vars = " . arr2string($_POST);
+	  	$this->debug_header_info .= "\nREQUEST Vars = " . arr2string($_REQUEST);
+	  	$this->debug_header_info .= "\nSESSION Vars = " . arr2string($_SESSION);
 	  	if (strlen($this->debug_info) < 1) return;
 	  	$this->debug_info .= "\n\nPage trace stats: Execution Time: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, " . $db->count_queries . " queries taking " . (int)($db->total_query_time * 1000)." ms";
       	$filename = DIR_FS_MY_FILES . 'trace.txt';
-      	if (!$handle = @fopen($filename, 'w')) 		throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
-      	if (!@fwrite($handle, $this->debug_info)) 	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $filename));
-      	if (!@fclose($handle)) 						throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
+      	if (!$handle = @fopen($filename, 'w')) 				throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
+      	if (!@fwrite($handle, $this->debug_header_info)) 	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $filename));
+      	if (!@fwrite($handle, $this->debug_info)) 			throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $filename));
+      	if (!@fclose($handle)) 								throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 	  	$this->debug_info = NULL;
 	  	$this->add("Successfully created trace.txt file.","success");
 	}

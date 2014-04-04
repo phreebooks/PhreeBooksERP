@@ -31,7 +31,7 @@ class beg_bal_import {
 	  		$current_order = $this->records[$row_id];
 	  		// pre-process and check for errors
 		  	if (!in_array($current_order['gl_acct'], $coa) || !in_array($current_order['inv_gl_acct'], $coa)) {
-				throw new \Exception(GL_BEG_BAL_ERROR_1 . ($row_id + 1));
+				throw new \core\classes\userException(GL_BEG_BAL_ERROR_1 . ($row_id + 1));
 		  	}
 			if (!$current_order['order_id']) {
 				switch (JOURNAL_ID) {
@@ -40,7 +40,7 @@ class beg_bal_import {
 						$this->records[$row_id]['waiting'] = 1;
 						break;
 				  	default:
-						throw new \Exception(GL_BEG_BAL_ERROR_3 . ($row_id + 1));
+						throw new \core\classes\userException(GL_BEG_BAL_ERROR_3 . ($row_id + 1));
 				}
 			}
 	  		$this->records[$row_id]['post_date'] = gen_db_date($current_order['post_date']); // from mm/dd/yyyy to YYYY-MM-DD
@@ -69,11 +69,11 @@ class beg_bal_import {
 	 */
 	function cyberParse($upload_name) {
 		$lines = file($_FILES[$upload_name]['tmp_name']);
-		if(!$lines) throw new \Exception("there are no line in file $upload_name");
+		if(!$lines) throw new \core\classes\userException("there are no line in file $upload_name");
 		$title_line = trim(array_shift($lines));	// pull header and remove extra white space characters
 		$titles = explode(",", str_replace('"', '', $title_line));
 		$records = array();
-		foreach ($lines as $line_num => $line) {    
+		foreach ($lines as $line_num => $line) {
 		  	$parsed_array = $this->csv_string_to_array(trim($line));
 		  	$fields = array();
 			for ($field_num = 0; $field_num < count($titles); $field_num++) {
@@ -232,7 +232,7 @@ class beg_bal_import {
 			$qty = $currencies->clean_value($row['quantity']);
 			// check for errors and report/exit if error found
 			$admin_classes['inventory']->validate_name($row['sku']);
-			if (!in_array($row['inv_gl_acct'], $coa) || !in_array($row['gl_acct'], $coa)) throw new \Exception(GL_BEG_BAL_ERROR_6 . $j);
+			if (!in_array($row['inv_gl_acct'], $coa) || !in_array($row['gl_acct'], $coa)) throw new \core\classes\userException(GL_BEG_BAL_ERROR_6 . $j);
 			if ($qty == 0) {
 				$messageStack->add(GL_BEG_BAL_ERROR_7 . $j,'caution');
 			} else {
@@ -249,26 +249,26 @@ class beg_bal_import {
 		  	// *************** START TRANSACTION *************************
 		  	// update inventory balances on hand
 			foreach ($sku_list as $sku => $details) {
-				$sql = "update " . TABLE_INVENTORY . " 
+				$sql = "update " . TABLE_INVENTORY . "
 				  set quantity_on_hand = quantity_on_hand + " . $details['qty'] . " where sku = '" . $sku . "'";
 				$result = $db->Execute($sql);
-				if ($result->AffectedRows() <> 1) throw new \Exception(sprintf(GL_BEG_BAL_ERROR_8, $sku));
+				if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(GL_BEG_BAL_ERROR_8, $sku));
 				$history_array = array(
 				  'ref_id'    => 0,
-				  'sku'       => $sku, 
-				  'qty'       => $details['qty'], 
+				  'sku'       => $sku,
+				  'qty'       => $details['qty'],
 				  'remaining' => $details['qty'],
-				  'unit_cost' => ($details['total'] / $details['qty']), 
+				  'unit_cost' => ($details['total'] / $details['qty']),
 				  'post_date' => $post_date,
 				);
 				$result = db_perform(TABLE_INVENTORY_HISTORY, $history_array, 'insert');
 			}
 		  	// update chart of account beginning balances for period 1
 		  foreach ($coa_list as $account => $amount) {
-				$sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " set beginning_balance = beginning_balance + " . $amount . " 
+				$sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " set beginning_balance = beginning_balance + " . $amount . "
 				  where account_id = '" . $account . "' and period = 1";
 				$result = $db->Execute($sql);
-				if ($result->AffectedRows() <> 1) throw new \Exception(sprintf(GL_BEG_BAL_ERROR_9, $account));
+				if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(GL_BEG_BAL_ERROR_9, $account));
 		  }
 		  // update the chart of accounts history through the existing periods
 		  $glEntry->update_chart_history_periods($period = 1);

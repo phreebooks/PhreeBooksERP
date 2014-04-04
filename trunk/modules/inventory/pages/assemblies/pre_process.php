@@ -47,14 +47,14 @@ switch ($_REQUEST['action']) {
 			$serial                       = db_prepare_input($_POST['serial_1']);
 			// check for errors and prepare extra values
 			$glEntry->period              = gen_calculate_period($glEntry->post_date);
-			if (!$glEntry->period) throw new \Exception("period isn't set"); 
+			if (!$glEntry->period) throw new \core\classes\userException("period isn't set");
 			// if unbuild, test for stock to go negative
-			$result = $db->Execute("select account_inventory_wage, quantity_on_hand 
+			$result = $db->Execute("select account_inventory_wage, quantity_on_hand
 	  		  from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
 			$sku_inv_acct = $result->fields['account_inventory_wage'];
-			if (!$result->RecordCount()) throw new \Exception(INV_ERROR_SKU_INVALID);
-			if ($qty < 0 && ($result->fields['quantity_on_hand'] + $qty) < 0 ) throw new \Exception(INV_ERROR_NEGATIVE_BALANCE);
-			if (!$qty) throw new \Exception(JS_ASSY_VALUE_ZERO);
+			if (!$result->RecordCount()) throw new \core\classes\userException(INV_ERROR_SKU_INVALID);
+			if ($qty < 0 && ($result->fields['quantity_on_hand'] + $qty) < 0 ) throw new \core\classes\userException(INV_ERROR_NEGATIVE_BALANCE);
+			if (!$qty) throw new \core\classes\userException(JS_ASSY_VALUE_ZERO);
 			// finished checking errors, reload if any errors found
 			$cInfo = new \core\classes\objectInfo($_POST);
 			// 	process the request, build main record
@@ -71,7 +71,7 @@ switch ($_REQUEST['action']) {
 			);
 			// *************** START TRANSACTION *************************
 			$db->transStart();
-			if (!$glEntry->Post($glEntry->id ? 'edit' : 'insert')) throw new \Exception(GL_ERROR_NO_POST);
+			if (!$glEntry->Post($glEntry->id ? 'edit' : 'insert')) throw new \core\classes\userException(GL_ERROR_NO_POST);
 	  		$db->transCommit();	// post the chart of account values
 	  		gen_add_audit_log(INV_LOG_ASSY . ($_REQUEST['action']=='save' ? TEXT_SAVE : TEXT_EDIT), $sku, $qty);
 	  		$messageStack->add(INV_POST_ASSEMBLY_SUCCESS . $sku, 'success');
@@ -82,13 +82,13 @@ switch ($_REQUEST['action']) {
 			$db->transRollback();
 			$messageStack->add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo($_POST);
-			if (DEBUG) $messageStack->write_debug();	
+			if (DEBUG) $messageStack->write_debug();
 		}
 		break;
   	case 'delete':
 	  	try{
 			\core\classes\user::validate_security($security_level, 4); // security check
-			if (!$glEntry->id) throw new \Exception(GL_ERROR_NO_DELETE); 
+			if (!$glEntry->id) throw new \core\classes\userException(GL_ERROR_NO_DELETE);
 			$delAssy = new \core\classes\journal($glEntry->id); // load the posted record based on the id submitted
 			// *************** START TRANSACTION *************************
 		  	$db->transStart();
@@ -98,12 +98,12 @@ switch ($_REQUEST['action']) {
 				if (DEBUG) $messageStack->write_debug();
 				gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 				// *************** END TRANSACTION *************************
-		  	}		
+		  	}
 		}catch(Exception $e){
 			$db->transRollback();
 			$messageStack->add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo($_POST);
-			if (DEBUG) $messageStack->write_debug();	
+			if (DEBUG) $messageStack->write_debug();
 		}
 		break;
   	case 'edit':
@@ -115,7 +115,7 @@ switch ($_REQUEST['action']) {
 			$db->transRollback();
 			$messageStack->add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo(array());
-			if (DEBUG) $messageStack->write_debug();	
+			if (DEBUG) $messageStack->write_debug();
 		}
 		break;
   default:

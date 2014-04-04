@@ -41,7 +41,7 @@ while (!$result->EOF) {
 }
 // error check
 if (!$_SESSION['admin_encrypt'] && $result->RecordCount() > 0)  // no permission to enter page, return error
-  	throw new \Exception(BNK_ERROR_NO_ENCRYPT_KEY);
+  	throw new \core\classes\userException(BNK_ERROR_NO_ENCRYPT_KEY);
 
 echo createXmlHeader() . $xml . createXmlFooter();
 ob_end_flush();

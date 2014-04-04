@@ -45,7 +45,7 @@ class banking extends \core\classes\journal {
 				$result = $db->Execute("select next_check_num from " . TABLE_CURRENT_STATUS);
 				$this->purchase_invoice_id = $result->fields['next_check_num'];
 				break;
-			default: throw new \Exception('bad journal ID in phreebooks/classes/banking.php!');
+			default: throw new \core\classes\userException('bad journal ID in phreebooks/classes/banking.php!');
 		}
 	}
 
@@ -69,7 +69,7 @@ class banking extends \core\classes\journal {
 				$credit_total  = $this->add_discount_journal_row('credit');
 				$credit_total += $this->add_total_journal_row('credit', $result['total'] - $result['discount']);
 				break;
-			default: throw new \Exception("bad journal_id in banking pre-POST processing id {$this->journal_id}"); 	// this should never happen, JOURNAL_ID is tested at script entry!
+			default: throw new \core\classes\userException("bad journal_id in banking pre-POST processing id {$this->journal_id}"); 	// this should never happen, JOURNAL_ID is tested at script entry!
 		}
 
 		// ***************************** START TRANSACTION *******************************
@@ -144,7 +144,7 @@ class banking extends \core\classes\journal {
 		global $db;
 		// verify no item rows have been acted upon (accounts reconciliation)
 		$result = $db->Execute("select closed from " . TABLE_JOURNAL_MAIN . " where id = " . $this->id);
-		if ($result->fields['closed'] == '1') throw new \Exception(constant('GENERAL_JOURNAL_' . $this->journal_id . '_ERROR_6'));
+		if ($result->fields['closed'] == '1') throw new \core\classes\userException(constant('GENERAL_JOURNAL_' . $this->journal_id . '_ERROR_6'));
 		// *************** START TRANSACTION *************************
 		$db->transStart();
 		$this->unPost('delete');
@@ -174,7 +174,7 @@ class banking extends \core\classes\journal {
 			);
 			return $amount;
 		} else {
-			throw new \Exception('bad parameter passed to add_total_journal_row in class orders');
+			throw new \core\classes\userException('bad parameter passed to add_total_journal_row in class orders');
 		}
 	}
 
@@ -195,7 +195,7 @@ class banking extends \core\classes\journal {
 			}
 			return $discount;
 		} else {
-			throw new \Exception('bad parameter passed to add_discount_journal_row in class banking');
+			throw new \core\classes\userException('bad parameter passed to add_discount_journal_row in class banking');
 		}
 	}
 
@@ -218,7 +218,7 @@ class banking extends \core\classes\journal {
 			}
 			return $result;
 		} else {
-			throw new \Exception('bad parameter passed to add_item_journal_rows in class banking');
+			throw new \core\classes\userException('bad parameter passed to add_item_journal_rows in class banking');
 		}
 	}
 

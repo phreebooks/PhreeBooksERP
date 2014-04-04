@@ -5,7 +5,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 	public $title       			= INV_TYPES_MB;
 	public $account_sales_income	= INV_ASSY_DEFAULT_SALES;
 	public $account_inventory_wage	= INV_ASSY_DEFAULT_INVENTORY;
-	public $account_cost_of_sales	= INV_ASSY_DEFAULT_COS;	
+	public $account_cost_of_sales	= INV_ASSY_DEFAULT_COS;
 	public $cost_method				= INV_ASSY_DEFAULT_COSTING;
 	public $attr_array0 			= array();
 	public $attr_array1 			= array();
@@ -15,16 +15,16 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 	public $attr_name_1				= '';
 	public $edit_ms_list			= true;
 	public $bom		 				= array();
-	public $allow_edit_bom			= true;  
+	public $allow_edit_bom			= true;
 	public $child_array 			= array();
 //	public $posible_transactions	= array('sell','purchase');
-	
+
 	function __construct(){
 		parent::__construct();
 		$this->tab_list['master'] = array('file'=>'template_tab_ms',	'tag'=>'master',    'order'=>30, 'text'=>INV_MS_ATTRIBUTES);
 		$this->tab_list['bom'] 	  = array('file'=>'template_tab_bom',	'tag'=>'bom',    	'order'=>40, 'text'=>INV_BOM);
 	}
-	
+
 	function get_item_by_id($id){
 		$this->child_array  = null;
 		$this->bom 			= null;
@@ -33,7 +33,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 		$this->get_bom_list();
 		$this->allow_edit_bom = (($this->last_journal_date == '0000-00-00 00:00:00' || $this->last_journal_date == '') && ($this->quantity_on_hand == 0|| $this->quantity_on_hand == '')) ? true : false;
 	}
-	
+
 	function get_item_by_sku($sku){
 		$this->child_array  = null;
 		$this->bom 			= null;
@@ -42,7 +42,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 		$this->get_bom_list();
 		$this->allow_edit_bom = (($this->last_journal_date == '0000-00-00 00:00:00' || $this->last_journal_date == '') && ($this->quantity_on_hand == 0|| $this->quantity_on_hand == '')) ? true : false;
 	}
-	
+
 	//this is to copy a product
 	function copy($id, $newSku) {
 		global $db;
@@ -79,10 +79,10 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 		$this->get_bom_list();
 		return true;
 	}
-	
+
 	function get_bom_list(){
 		global $db;
-		$this->assy_cost = 0; 
+		$this->assy_cost = 0;
 		$result = $db->Execute("select i.id as inventory_id, l.id, l.sku, l.description, l.qty as qty from " . TABLE_INVENTORY_ASSY_LIST . " l join " . TABLE_INVENTORY . " i on l.sku = i.sku where l.ref_id = " . $this->id . " order by l.id");
 		$x =0;
 		while (!$result->EOF) {
@@ -96,7 +96,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 	  		$result->MoveNext();
 		}
 	}
-	
+
 	function get_ms_list(){
 		global $db;
 		$result = $db->Execute("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->sku . "'");
@@ -131,7 +131,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 		$result = $db->Execute("select * from " . TABLE_INVENTORY . " where sku like '" . $this->sku . "-%' and inventory_type = 'ia' order by sku asc");
 		$i = 0;
 		while(!$result->EOF){
-			$temp = explode('-',$result->fields['sku']); 
+			$temp = explode('-',$result->fields['sku']);
 			$this->child_array[$i] = array(	'id'       		=> $result->fields['id'],
 											'sku'      		=> $result->fields['sku'],
 											'inactive' 		=> $result->fields['inactive'],
@@ -168,9 +168,9 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 		if ($result->Recordcount() > 0) throw new \core\classes\userException(INV_ERROR_CANNOT_DELETE);
 		$this->remove();
 	  	return true;
-		
+
 	}
-	
+
 	function remove(){
 		global $db;
 		$ms_array = $db->Execute("select * from " . TABLE_INVENTORY . " where sku like '" . $this->sku . "-%'");
@@ -190,7 +190,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 			$ms_array->MoveNext();
 		}
 	}
-	
+
 	function save(){
 		global $db, $security_level, $currencies;
 		$bom_list = array();
@@ -202,9 +202,9 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 				'qty'         => $currencies->clean_value(db_prepare_input($_POST['assy_qty'][$x])),
 			);
 		  	$result = $db->Execute("select id from " . TABLE_INVENTORY . " where sku = '". $_POST['assy_sku'][$x]."'" );
-		  	if (($result->RecordCount() == 0 || $currencies->clean_value($_POST['assy_qty'][$x]) == 0) && $_POST['assy_sku'][$x] =! '') { 
+		  	if (($result->RecordCount() == 0 || $currencies->clean_value($_POST['assy_qty'][$x]) == 0) && $_POST['assy_sku'][$x] =! '') {
 		  		// show error, bad sku, negative quantity. error check sku is valid and qty > 0
-				throw new \Exception(INV_ERROR_BAD_SKU . db_prepare_input($_POST['assy_sku'][$x]));
+				throw new \core\classes\userException(INV_ERROR_BAD_SKU . db_prepare_input($_POST['assy_sku'][$x]));
 		  	}else{
 		  		$prices = inv_calculate_sales_price(abs($this->bom[$x]['qty']), $result->fields['id'], 0, 'v');
 				$bom_list[$x]['item_cost'] = strval($prices['price']);
@@ -215,7 +215,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 		$this->bom = $bom_list;
 		$current_situation = $db->Execute("select * from " . TABLE_INVENTORY . " where id = '" . $this->id  . "'");
 		$sql_data_array = parent::save();
-		if ($sql_data_array == false) return false;	
+		if ($sql_data_array == false) return false;
 		$result = $db->Execute("select last_journal_date, quantity_on_hand  from " . TABLE_INVENTORY . " where id = " . $this->id);
 		$this->allow_edit_bom = (($result->fields['last_journal_date'] == '0000-00-00 00:00:00' || $result->fields['last_journal_date'] == '') && ($result->fields['quantity_on_hand'] == 0|| $result->fields['quantity_on_hand'] == '')) ? true : false;
 	  	if ($this->allow_edit_bom == true) { // only update if no posting has been performed
@@ -248,7 +248,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 			} else {
 				for ($j = 0; $j < count($attr1); $j++) {
 					$idx1 = explode(':', $attr1[$j]);
-					if($idx0[0] != '' && $idx1[0] != '') { 
+					if($idx0[0] != '' && $idx1[0] != '') {
 						$sku_list[] = $this->sku . '-' . $idx0[0] . $idx1[0];
 						$variables[$this->sku . '-' . $idx0[0] . $idx1[0]]['idx0'] = $idx0[1];
 						$variables[$this->sku . '-' . $idx0[0] . $idx1[0]]['idx1'] = $idx1[1];
@@ -266,7 +266,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 		$delete_list = array_diff($existing_sku_list, $sku_list);
 		$update_list = array_intersect($existing_sku_list, $sku_list);
 		$insert_list = array_diff($sku_list, $update_list);
-		
+
 		foreach($insert_list as $sku) { // first insert new sku's with all fields
 			$sql_data_array['sku'] = $sku;
 			$sql_data_array['description_short'] 	= sprintf($this->description_short, 	$variables[$sku]['idx0'], $variables[$sku]['idx1'] );
@@ -287,13 +287,13 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 				db_perform(TABLE_INVENTORY_PURCHASE, $purchase_data_array, 'insert');
 			}
 			foreach($bom_list as $list_array) {
-				$list_array['ref_id'] = $new_id; 
+				$list_array['ref_id'] = $new_id;
 				unset($list_array['item_cost']);
 				unset($list_array['full_price']);
 				db_perform(TABLE_INVENTORY_ASSY_LIST, $list_array, 'insert');
 			}
 		}
-		if ($this->id != ''){ //only update fields that are changed otherwise fields in the child could be overwritten 
+		if ($this->id != ''){ //only update fields that are changed otherwise fields in the child could be overwritten
 			foreach ($current_situation->fields as $key => $value) { // remove fields where the parent is unchanged because the childeren could have different values in these fields.
 				switch($key){
 					case 'description_short': 		if($this->description_short == $value) 		unset($sql_data_array[$key]); Break;
@@ -304,7 +304,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 			}
 		}
 		foreach($update_list as $sku) { //update with reduced number of fields.
-			$sql_data_array['sku'] = $sku; 
+			$sql_data_array['sku'] = $sku;
 			if(isset($sql_data_array['description_short'])) 	$sql_data_array['description_short'] 	= sprintf($this->description_short, 	$variables[$sku]['idx0'], $variables[$sku]['idx1'] );
 			if(isset($sql_data_array['description_purchase'])) 	$sql_data_array['description_purchase'] = sprintf($this->description_purchase, 	$variables[$sku]['idx0'], $variables[$sku]['idx1'] );
 			if(isset($sql_data_array['description_sales'])) 	$sql_data_array['description_sales'] 	= sprintf($this->description_sales, 	$variables[$sku]['idx0'], $variables[$sku]['idx1'] );
@@ -321,7 +321,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 					$purchase_data_array['sku'] = $sku;
 					db_perform(TABLE_INVENTORY_PURCHASE, $purchase_data_array, 'insert');
 				}else{
-					/*on purpose removed this part because iam not sure what to update and what not 
+					/*on purpose removed this part because iam not sure what to update and what not
 					 * $purchase_data_array = $backUpRow;
 					unset($purchase_data_array['id']);
 					unset($purchase_data_array['action']);
@@ -339,7 +339,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 		  	if ($this->allow_edit_bom == true) { // only update if no posting has been performed
 		  		$temp = $db->Execute("delete from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = " . $result->fields['id']);
 		  		foreach($bom_list as $list_array) {
-					$list_array['ref_id'] = $result->fields['id']; 
+					$list_array['ref_id'] = $result->fields['id'];
 					unset($list_array['item_cost']);
 					unset($list_array['full_price']);
 					db_perform(TABLE_INVENTORY_ASSY_LIST, $list_array, 'insert');
@@ -348,7 +348,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 		}
 		if (count($delete_list) && $security_level < 4){
 			$this->get_ms_list();
-			throw new \Exception(ERROR_NO_PERMISSION);
+			throw new \core\classes\userException(ERROR_NO_PERMISSION);
 		}
 		foreach($delete_list as $sku) {
 			$temp = $this->ia_check_remove($sku);
@@ -363,7 +363,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 		}
 		// update/insert into inventory_ms_list table
 		$result = $db->Execute("select id from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->sku . "'");
-		$exists = $result->RecordCount();	
+		$exists = $result->RecordCount();
 		$data_array = array(
 			'sku'         => $this->sku,
 			'attr_0'      => $this->ms_attr_0,
@@ -378,7 +378,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 		$this->get_ms_list();
 		return true;
 	}
-	
+
 	function ia_check_remove($sku) {
 		global $messageStack, $db;
 		// check to see if there is inventory history remaining, if so don't allow delete
@@ -396,9 +396,9 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 		$result = $db->Execute( "select id from " . TABLE_JOURNAL_ITEM . " where sku = '" . $sku . "' limit 1");
 		if ($result->Recordcount() > 0) {
 			$messageStack->add(sprintf(INV_MS_ERROR_CANNOT_DELETE, $sku), 'caution');
-	  		return false;	
+	  		return false;
 		}
 	  	return true;
-		
+
 	}
 }

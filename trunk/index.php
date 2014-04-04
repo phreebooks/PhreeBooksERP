@@ -19,7 +19,7 @@
 ob_start();
 ini_set('log_errors','1');
 ini_set('display_errors', '1');
-error_reporting(E_ALL);
+error_reporting(E_ALL^E_NOTICE);
 if (isset($_POST['module']))    $module = $_POST['module'];
 elseif (isset($_GET['module'])) $module = $_GET['module'];
 else                            $module = 'phreedom';
@@ -32,7 +32,9 @@ $cInfo = null;
 require_once('includes/application_top.php');
 try{
 	try{
+		$messageStack->debug("\n starting new page");
 		$page_template = new \core\classes\page();
+		$messageStack->debug("\n checking if user is validated");
 		\core\classes\user::is_validated();
     	$ActionBefore  = "{$_REQUEST['module']}_.{$_REQUEST['page']}_before_{$_REQUEST['action']}";
     	foreach ($admin_classes as $module_class){
@@ -42,8 +44,8 @@ try{
     		}
     	}
     	$Action = "{$_REQUEST['module']}_.{$_REQUEST['page']}_{$_REQUEST['action']}";
-    	if ($admin_classes[$_REQUEST['module']]->installed == false )throw new \Exception("module {$admin_classes[$_REQUEST['module']]->id} isn't installed");
-    	if (method_exists($admin_classes[$_REQUEST['module']], $Action) == false) throw new \Exception("module {$admin_classes[$_REQUEST['module']]->id} hasn't got action method $Action ");
+    	if ($admin_classes[$_REQUEST['module']]->installed == false )throw new \core\classes\userException("module {$admin_classes[$_REQUEST['module']]->id} isn't installed");
+    	if (method_exists($admin_classes[$_REQUEST['module']], $Action) == false) throw new \core\classes\userException("module {$admin_classes[$_REQUEST['module']]->id} hasn't got action method $Action ");
     	$messageStack->debug("class {$admin_classes[$_REQUEST['module']]->id} has action method $Action");
     	$cInfo = $admin_classes[$_REQUEST['module']]->$Action();
     	$ActionAfter  = "{$_REQUEST['module']}_.{$_REQUEST['page']}_after_{$_REQUEST['action']}";
@@ -61,45 +63,35 @@ try{
 		} else if ($_REQUEST['page'] == 'json'){
 			header('Content-Type: application/json');
 			echo json_encode($cInfo);
-		} else {
-			$page_template->display();
 		}
-		ob_end_flush();
-		session_write_close();
-		die;
-   	}catch (Exception $e) {
-   		switch (get_class($e)) {
-   			case "\core\classes\userException":
-   				if ($_REQUEST['page'] == 'ajax'){
-   					echo createXmlHeader();
-   					echo xmlEntry("messageStack_error", $e->getMessage());
-   					echo createXmlFooter();
-   				} else if ($_REQUEST['page'] == 'json'){
-   					$temp["messageStack_error"] = $e->getMessage();
-   					header('Content-Type: application/json');
-   					echo json_encode($temp);
-   				} else{
-   					if ($e->RetrurnToPage) {
-   						$messageStack->add($e->getMessage(), $e->getCode());
-  						$page_template->loadPage($e->RetrurnToPage);
-  					} else{
-	  					$page_template->loadPage("crash");
-  					}
-  				}
-  			default:
-  				throw $e;
-   		}
-   		ob_end_flush();
-   		session_write_close();
-   		die;
+   	}catch (\core\classes\userException $e) {
+   		if ($_REQUEST['page'] == 'ajax'){
+   			echo createXmlHeader();
+   			echo xmlEntry("messageStack_error", $e->getMessage());
+   			echo createXmlFooter();
+   		} else if ($_REQUEST['page'] == 'json'){
+   			$temp["messageStack_error"] = $e->getMessage();
+   			header('Content-Type: application/json');
+   			echo json_encode($temp);
+   		} else{
+   			$messageStack->add($e->getMessage());
+   			$messageStack->debug("\n\n".$e->getTraceAsString());
+   			if (DEBUG) $messageStack->write_debug();
+   			if ($e->ReturnToTemplate) {
+  				$page_template->loadPage($e->ReturnToModule, $e->ReturnToPage, $e->ReturnToTemplate);
+  			} else{
+	  			$page_template->loadPage("phreedom","main","template_crash");
+  			}
+  		}
 	}
-}catch (Exception $e) {
-	$messageStack->add($e->getMessage(), $e->getCode());
-	$page_template->loadPage("main");
-
+}catch (\Exception $e) {
+	$messageStack->add("other Exception ".$e->getMessage(), $e->getCode());
+	$messageStack->debug("\n\n".$e->getTraceAsString());
+	$messageStack->write_debug();
+	$page_template = new \core\classes\page();
+	$page_template->loadPage("phreedom","main","template_main");
 }
 require('includes/template_index.php');
-require('includes/application_bottom.php');
 ob_end_flush();
 session_write_close();
 die;

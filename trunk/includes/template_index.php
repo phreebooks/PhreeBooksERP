@@ -32,7 +32,7 @@ if ($custom_html) { // load the template only as the rest of the html will be ge
   <!-- module: <?php echo $_REQUEST['module']; ?> - page: <?php echo $_REQUEST['page']; ?> -->
   <meta http-equiv="Content-Type" content="text/html; charset=<?php echo CHARSET; ?>" />
 <?php if ($force_reset_cache) { header("Cache-Control: no-cache, must-revalidate"); header("Expires: ".date('D, j M \2\0\0\0 G:i:s T')); } ?>
-  <title><?php echo PAGE_TITLE; ?></title>
+  <title><?php echo $page->page_title; ?></title>
   <link rel="shortcut icon" type="image/ico" href="favicon.ico" />
   <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/stylesheet.css'; ?>" />
   <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/jquery_datatables.css'; ?>" />
@@ -78,27 +78,20 @@ if      (file_exists($file = 'includes/easyui/custom/language/'.$_SESSION['langu
 } else               $file = 'includes/easyui/language/en_us/easyui_lang.js';
 echo '  <script type="text/javascript" src="'.$file.'"></script>'."\n";
 // load the javascript specific, required
-$js_include_path = DIR_FS_WORKING . "pages/{$_REQUEST['page']}/js_include.php";
-if (file_exists($js_include_path)) { require_once($js_include_path); }
-  else trigger_error('No js_include file, looking for the file: ' . $js_include_path, E_USER_ERROR);
-// load the custom javascript if present
-$js_include_path = DIR_FS_WORKING . "custom/pages/{$_REQUEST['page']}/extra_js.php";
-if (file_exists($js_include_path)) { require_once($js_include_path); }
-if (SESSION_AUTO_REFRESH == '1') echo '  <script type="text/javascript">addLoadEvent(refreshSessionClock);</script>' . chr(10);
+$page_template->print_js_includes();
 ?>
-  <script type="text/javascript">addLoadEvent(init);addUnloadEvent(clearSessionClock);</script>
  </head>
  <body>
   <script type="text/javascript" src="modules/phreedom/includes/wz_tooltip/wz_tooltip.js"></script>
   <script type="text/javascript" src="modules/phreedom/includes/wz_tooltip/tip_balloon.js"></script>
   <div id="please_wait"><p><?php echo html_icon('phreebooks/please_wait.gif', TEXT_PLEASE_WAIT, 'large'); ?></p></div>
   <!-- Menu -->
-  <?php if ($include_header) { require_once(DIR_FS_ADMIN . DIR_WS_THEMES . '/menu.php'); } else echo "<div>\n"?>
+  <?php $page_template->print_menu();?>
   <!-- Template -->
-  <?php if (is_file($template_path)) { require($template_path); } else trigger_error('No template file: ' . $template_path, E_USER_ERROR); ?>
+  <?php require($page_template->include_template);?>
   </div>
   <!-- Footer -->
-  <?php if ($include_footer) { // Hook for custom logo
+  <?php if ($page_template->include_footer) { // Hook for custom logo
   $image_path = defined('FOOTER_LOGO') ? FOOTER_LOGO : (DIR_WS_ADMIN . 'modules/phreedom/images/phreesoft_logo.png');
   ?>
   <div style="clear:both;text-align:center;font-size:9px">

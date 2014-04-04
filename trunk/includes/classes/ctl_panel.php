@@ -20,7 +20,7 @@ namespace core\classes;
 class ctl_panel {
 	public $id 					= '';
 	public $default_num_rows 	= 20;
-	public $description	 		= ''; 
+	public $description	 		= '';
 	public $max_length   		= 20;
 	public $menu_id				= 'index';
 	public $module_id 			= '';
@@ -33,11 +33,11 @@ class ctl_panel {
 	public $size_params			= 0;
 	public $default_params 		= array();
 	public $row_started			= false;
-	
+
   	function __construct() {
-  		$this->security_level = \core\classes\user::validate($this->security_id); // security check		
+  		$this->security_level = \core\classes\user::security_level($this->security_id); // security check
   	}
-  
+
   	function pre_install($odd, $my_profile){
   		$this->valid_user = in_array($this->id, $my_profile);
 		$output  = '<tr class="'.($odd?'odd':'even').'"><td align="center">';
@@ -46,14 +46,14 @@ class ctl_panel {
 		$output .=' </td><td>' . $this->text . '</td><td>' . $this->description . '</td></tr>';
 		return $output;
 	}
-  
+
   	function install($column_id = 1, $row_id = 0) {
 		global $db;
 		if (!$row_id) $row_id 		= $this->get_next_row();
 		//$this->params['num_rows']   = $this->default_num_rows;	// defaults to unlimited rows
-		$result = $db->Execute("insert into " . TABLE_USERS_PROFILES . " set 
-		  user_id = {$_SESSION['admin_id']}, menu_id = '{$this->menu_id}', module_id = '{$this->module_id}', 
-		  dashboard_id = '{$this->id}', column_id = $column_id, row_id = $row_id, 
+		$result = $db->Execute("insert into " . TABLE_USERS_PROFILES . " set
+		  user_id = {$_SESSION['admin_id']}, menu_id = '{$this->menu_id}', module_id = '{$this->module_id}',
+		  dashboard_id = '{$this->id}', column_id = $column_id, row_id = $row_id,
 		  params = '"       . serialize($this->default_params) . "'");
   	}
 
@@ -62,14 +62,14 @@ class ctl_panel {
   	 */
   	function remove() {
 		global $db;
-		$result = $db->Execute("delete from " . TABLE_USERS_PROFILES . " 
+		$result = $db->Execute("delete from " . TABLE_USERS_PROFILES . "
 	  	where user_id = {$_SESSION['admin_id']} and menu_id = '{$this->menu_id}' and dashboard_id = '{$this->id }'");
   	}
-  	
+
   	/**
   	 * this function will be called when a module is removed.
   	 */
-  	
+
   	function delete(){
 		global $db;
 		$result = $db->Execute("delete from " . TABLE_USERS_PROFILES . " where dashboard_id = '{$this->id}' and module_id = '{$this->module_id}'");
@@ -79,11 +79,11 @@ class ctl_panel {
 
   	function update() {
   		global $db;
-  		$db->Execute("update " . TABLE_USERS_PROFILES . " set params = '" . serialize($this->params) . "' 
-	  		where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "' 
+  		$db->Execute("update " . TABLE_USERS_PROFILES . " set params = '" . serialize($this->params) . "'
+	  		where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "'
 	    	and dashboard_id = '" . $this->id . "'");
   	}
-  
+
   	function build_div($title, $contents, $controls) {
 	  	$output = '';
 	  	if($this->version < 3.5 || ! $this->version ) $output .= 'update dashboard ' . $this->text . '<br/>';
@@ -127,11 +127,11 @@ class ctl_panel {
 
 	function get_next_row($column_id = 1) {
 		global $db;
-		$result = $db->Execute("select max(row_id) as max_row from " . TABLE_USERS_PROFILES . " 
+		$result = $db->Execute("select max(row_id) as max_row from " . TABLE_USERS_PROFILES . "
 		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "' and column_id = " . $column_id);
 		return ($result->fields['max_row'] + 1);
 	}
-	
+
 	function upgrade($params){
 		foreach ($this->default_params as $key => $value){
 			if(in_array($key, $params, false)){

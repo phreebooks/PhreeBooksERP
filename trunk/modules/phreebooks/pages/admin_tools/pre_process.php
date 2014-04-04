@@ -95,13 +95,13 @@ switch ($_REQUEST['action']) {
 	// retrieve the desired period and update the system default values.
 	\core\classes\user::validate_security($security_level, 3);
   	$period = (int)db_prepare_input($_POST['period']);
-	if ($period <= 0 || $period > $highest_period) throw new \Exception(GL_ERROR_BAD_ACCT_PERIOD);
+	if ($period <= 0 || $period > $highest_period) throw new \core\classes\userException(GL_ERROR_BAD_ACCT_PERIOD);
 	$result = $db->Execute("select start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . " where period = " . $period);
-	$db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = " . $period . " 
+	$db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = " . $period . "
 		where configuration_key = 'CURRENT_ACCOUNTING_PERIOD'");
-	$db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '" . $result->fields['start_date'] . "' 
+	$db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '" . $result->fields['start_date'] . "'
 		where configuration_key = 'CURRENT_ACCOUNTING_PERIOD_START'");
-	$db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '" . $result->fields['end_date'] . "' 
+	$db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '" . $result->fields['end_date'] . "'
 		where configuration_key = 'CURRENT_ACCOUNTING_PERIOD_END'");
 	gen_add_audit_log(GEN_LOG_PERIOD_CHANGE);
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
@@ -164,7 +164,7 @@ switch ($_REQUEST['action']) {
 		}catch(Exception $e){
 			$db->transRollback();
 			$messageStack->add($e->getMessage());
-		} 
+		}
 		if (DEBUG) $messageStack->write_debug();
 		break;
 
@@ -194,7 +194,7 @@ switch ($_REQUEST['action']) {
 	}
 	$history = array();
 	$bad_accounts = array();
-	$result = $db->Execute("select period, account_id, beginning_balance, debit_amount, credit_amount 
+	$result = $db->Execute("select period, account_id, beginning_balance, debit_amount, credit_amount
 	    from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " order by account_id, period");
 	while(!$result->EOF) {
 	  $history[$result->fields['account_id']][$result->fields['period']] = array(
@@ -202,7 +202,7 @@ switch ($_REQUEST['action']) {
 	    'debit'   => $result->fields['debit_amount'],
 	    'credit'  => $result->fields['credit_amount'],
 	  );
-	  $result->MoveNext();	
+	  $result->MoveNext();
 	}
 	// check beginning balances
 	$first_error_period = 9999;
@@ -210,9 +210,9 @@ switch ($_REQUEST['action']) {
 	  foreach ($activity as $period => $data) {
 	    if ($period == $max_period || $acct == $retained_earnings_acct) continue; // skip the last period, retained earnings account
 		// read and check with journal
-		$posted = $db->Execute("select sum(debit_amount) as debit, sum(credit_amount) as credit 
+		$posted = $db->Execute("select sum(debit_amount) as debit, sum(credit_amount) as credit
 		  from " . TABLE_JOURNAL_MAIN . " m join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
-		  where period = " . $period . " and gl_account = '" . $acct . "' 
+		  where period = " . $period . " and gl_account = '" . $acct . "'
 		  and journal_id in (2, 6, 7, 12, 13, 14, 16, 18, 19, 20, 21)");
 		$posted->fields['debit']  = $posted->fields['debit']  ? $posted->fields['debit']  : 0;
 		$posted->fields['credit'] = $posted->fields['credit'] ? $posted->fields['credit'] : 0;

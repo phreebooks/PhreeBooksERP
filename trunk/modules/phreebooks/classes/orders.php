@@ -128,7 +128,7 @@ class orders extends \core\classes\journal {
 		$this->total_amount = $credit_total - $debit_total;
 		$debit_total  += $this->add_total_journal_row('debit');	// put total value into ledger row array
 		break;
-	  default: throw new \Exception('bad journal_id in pre-POST processing'); // this should never happen, JOURNAL_ID is tested at script entry!
+	  default: throw new \core\classes\userException('bad journal_id in pre-POST processing'); // this should never happen, JOURNAL_ID is tested at script entry!
 	}
 	$this->journal_main_array = $this->build_journal_main_array();	// build ledger main record
 
@@ -139,13 +139,13 @@ class orders extends \core\classes\journal {
 	// add/update address book
 	if ($this->bill_add_update) { // billing address
 	  $this->bill_acct_id = $this->add_account($this->account_type . 'b', $this->bill_acct_id, $this->bill_address_id);
-	  if (!$this->bill_acct_id)  throw new \Exception('no contact was selected');
+	  if (!$this->bill_acct_id)  throw new \core\classes\userException('no contact was selected');
 	}
 	if ($this->ship_add_update) { // shipping address
 	  if (!$this->ship_acct_id) $this->ship_acct_id = $this->bill_acct_id; // set to bill if adding contact and id not set.
 	  if ($this->bill_address_id == $this->ship_address_id) $this->ship_address_id = ''; // force create new ship address, here from copy button
 	  $this->ship_acct_id = $this->add_account($this->account_type . 's', $this->ship_acct_id, $this->ship_address_id);
-	  if (!$this->ship_acct_id)  throw new \Exception('no shipping contact was selected');
+	  if (!$this->ship_acct_id)  throw new \core\classes\userException('no shipping contact was selected');
 	}
 	// set the ship account id to bill account id if null (new accounts with ship update box not checked)
 	// basically defaults the shipping same as billing if not specified
@@ -210,7 +210,7 @@ class orders extends \core\classes\journal {
 		  if ($this->terminal_date) $this->terminal_date = gen_specific_date($this->terminal_date, $day_offset, $month_offset, $year_offset);
 		  $this->period        = gen_calculate_period($this->post_date, true);
 		  if (!$this->period && $i < ($this->recur_id - 1)) { // recur falls outside of available periods, ignore last calculation
-		    throw new \Exception(ORD_PAST_LAST_PERIOD);
+		    throw new \core\classes\userException(ORD_PAST_LAST_PERIOD);
 		  }
 		  $this->journal_main_array['post_date']     = $this->post_date;
 		  $this->journal_main_array['period']        = $this->period;
@@ -269,7 +269,7 @@ class orders extends \core\classes\journal {
 	  case  4: // Purchase Order Journal
 	  case 10: // Sales Order Journal
 		$result = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " where so_po_ref_id = " . $this->id);
-		if ($result->RecordCount() > 0) throw new \Exception(constant('GENERAL_JOURNAL_' . $this->journal_id . '_ERROR_6'));
+		if ($result->RecordCount() > 0) throw new \core\classes\userException(constant('GENERAL_JOURNAL_' . $this->journal_id . '_ERROR_6'));
 		break;
 	  case  6: // Purchase Journal
 	  case  7: // Vendor Credit Memo Journal
@@ -277,11 +277,11 @@ class orders extends \core\classes\journal {
 	  case 13: // Customer Credit Memo Journal
 		// first check for main entries that refer to delete id (credit memos)
 		$result = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " where so_po_ref_id = " . $this->id);
-		if ($result->RecordCount() > 0) throw new \Exception(constant('GENERAL_JOURNAL_' . $this->journal_id . '_ERROR_6'));
+		if ($result->RecordCount() > 0) throw new \core\classes\userException(constant('GENERAL_JOURNAL_' . $this->journal_id . '_ERROR_6'));
 		// next check for payments that link to deleted id (payments)
 		$result = $db->Execute("select id from " . TABLE_JOURNAL_ITEM . "
 			where gl_type = 'pmt' and so_po_item_ref_id = " . $this->id);
-		if ($result->RecordCount() > 0)throw new \Exception(constant('GENERAL_JOURNAL_' . $this->journal_id . '_ERROR_6'));
+		if ($result->RecordCount() > 0) throw new \core\classes\userException(constant('GENERAL_JOURNAL_' . $this->journal_id . '_ERROR_6'));
 		break;
 	  case  3: // Purchase Quote Journal
 	  case  9: // Sales Quote Journal

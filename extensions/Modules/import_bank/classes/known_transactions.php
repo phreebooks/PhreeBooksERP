@@ -21,7 +21,7 @@ class known_transactions {
 	public $code                    = 'known_transactions';
     public $db_table     			= TABLE_IMPORT_BANK;
     public $help_path   			= '';
-    
+
     public function __construct(){
          $this->security_id           = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
          foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
@@ -31,13 +31,13 @@ class known_transactions {
   function btn_save($id = '') {
   	global $db, $currencies;
 	\core\classes\user::validate_security($this->security_id, 2);
-	if ($this->gl_acct_id == '') throw new \Exception(GL_SELECT_STD_CHART);
+	if ($this->gl_acct_id == '') throw new \core\classes\userException(GL_SELECT_STD_CHART);
 	$sql_data_array = array(
 		'description' 		    => $this->description,
 		'gl_acct_id'  		    => $this->gl_acct_id,
 		'bank_account' 		  	=> $this->bank_account,
 	);
-	
+
     if ($id) {
 	  db_perform($this->db_table, $sql_data_array, 'update', "kt_id = '" . $id . "'");
 	  gen_add_audit_log(SETUP_TAX_AUTHS_LOG . TEXT_UPDATE, $this->description);
@@ -117,10 +117,10 @@ class known_transactions {
     $output .= '</table>' . chr(10);
     return $output;
   }
-  
+
   function __destruct(){
   	//print_r($this);
   }
-  
+
 }
 ?>

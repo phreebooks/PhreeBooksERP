@@ -45,11 +45,10 @@ function saveTiddly($otitle, $omodified, $ntiddler, $overwrite=0)	{
 function insert_tiddler($tiddler , $install = false) {
 	global $lock_title;
 	print_r($lock_title);
-	$security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
-	\core\classes\user::validate_security($security_id, 2); // security check
+	\core\classes\user::validate_security(SECURITY_PHREEWIKI_MGT, 2); // security check
 	if ( sizeof($tiddler)== 0 )																						return PHREEWIKI_WARNING_TIDDLER_NOT_FOUND;
-  if ( !$install == true && in_array($tiddler['title'], $lock_title) )	return PHREEWIKI_WARNING_IN_LOCKED_ARRAY;
-  db_perform( TABLE_PHREEWIKI , $tiddler, 'insert');
+  	if ( !$install == true && in_array($tiddler['title'], $lock_title) )	return PHREEWIKI_WARNING_IN_LOCKED_ARRAY;
+  	db_perform( TABLE_PHREEWIKI , $tiddler, 'insert');
 	$new_id = db_insert_id();
 	//insert backup if required
 	if( PHREEWIKI_VERSIONING ==1)  {
@@ -67,10 +66,9 @@ function insert_tiddler($tiddler , $install = false) {
 function tiddler_update($oldtiddler, $newtiddler) {
 	global $lock_title;
 	unset($newtiddler['id']);
-	$security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
-	\core\classes\user::validate_security($security_id, 3); // security check
+	\core\classes\user::validate_security(SECURITY_PHREEWIKI_MGT, 3); // security check
 	if ( sizeof($tiddler)== 0 )											return PHREEWIKI_WARNING_TIDDLER_NOT_FOUND;
-  if ( in_array($tiddler['title'], $lock_title) )	return PHREEWIKI_WARNING_IN_LOCKED_ARRAY;
+ 	if ( in_array($tiddler['title'], $lock_title) )	return PHREEWIKI_WARNING_IN_LOCKED_ARRAY;
 	db_perform(TABLE_PHREEWIKI, $newtiddler, 'update', 'id = "' . $oldtiddler['id']. '"');
 	//insert backup if required
 	if( PHREEWIKI_VERSIONING == 1 ) {
@@ -87,8 +85,7 @@ function tiddler_update($oldtiddler, $newtiddler) {
 
 function deleteTiddler($tiddler) {
   global $db, $lock_title;
-  $security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
-  \core\classes\user::validate_security($security_id, 2); // security check
+  \core\classes\user::validate_security(SECURITY_PHREEWIKI_MGT, 2); // security check
   if ( sizeof($tiddler)== 0 )											return PHREEWIKI_WARNING_TIDDLER_NOT_FOUND;
   if ( in_array($tiddler['title'], $lock_title) )	return PHREEWIKI_WARNING_IN_LOCKED_ARRAY;
 
@@ -337,7 +334,7 @@ function install_plugin($pluginName, $pluginValue) {
 												  "",
 												  "ccTiddly",
 												  date("YmdHi"));
-	  if( !insert_tiddler($t, true)== True ) throw new \Exception("cant install plugin $pluginName for phreewiki");
+	  if( !insert_tiddler($t, true)== True ) throw new \core\classes\userException("cant install plugin $pluginName for phreewiki");
   }
   return true;
 }

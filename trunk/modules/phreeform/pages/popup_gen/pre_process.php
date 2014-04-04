@@ -78,7 +78,7 @@ if ($rID) {
     }
   }
 } else {
-	throw new \Exception(PHREEFORM_NORPT);
+	throw new \core\classes\userException(PHREEFORM_NORPT);
 }
 //echo 'post override report->filterlist = '; print_r($report->filterlist); echo '<br>';
 
@@ -244,15 +244,15 @@ switch ($_REQUEST['action']) {
 		    if ($success['level'] == 'success') { // Generate the output data array
 			  	$sql = $success['data'];
 			  	$report->page->filter->text = $success['description']; // fetch the filter message
-			  	if (!$ReportData = BuildDataArray($sql, $report)) throw new \Exception(PHREEFORM_NODATA . ' The sql was: ' . $sql);
+			  	if (!$ReportData = BuildDataArray($sql, $report)) throw new \core\classes\userException(PHREEFORM_NODATA . ' The sql was: ' . $sql);
 			  	// Check for the report returning with data
-			  	if (!$ReportData) throw new \Exception(PHREEFORM_NODATA . ' The failing sql= ' . $sql);
+			  	if (!$ReportData) throw new \core\classes\userException(PHREEFORM_NODATA . ' The failing sql= ' . $sql);
 			    if ($_REQUEST['action'] == 'exp_csv')  $output = GenerateCSVFile ($ReportData, $report, $delivery_method);
 			    if ($_REQUEST['action'] == 'exp_xml')  $output = GenerateXMLFile ($ReportData, $report, $delivery_method);
 			    if ($_REQUEST['action'] == 'exp_html') $output = GenerateHTMLFile($ReportData, $report, $delivery_method);
 			    if ($_REQUEST['action'] == 'exp_pdf')  $output = GeneratePDFFile ($ReportData, $report, $delivery_method);
 		    } else { // Houston, we have a problem
-			  	throw new \Exception($success['message']);
+			  	throw new \core\classes\userException($success['message']);
 		    }
 		    break;
 	}

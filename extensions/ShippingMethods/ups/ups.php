@@ -465,7 +465,7 @@ class ups extends \shipping\classes\shipping {
 		global $messageStack;
 		$ups_results = array();
 		if (in_array($sInfo->ship_method, array('I2DEam','I2Dam','I3D','GndFrt'))) { // unsupported ship methods
-			throw new \Exception("The ship method {$sInfo->ship_method} is not supported by this tool presently. Please ship the package via a different tool.");
+			throw new \core\classes\userException("The ship method {$sInfo->ship_method} is not supported by this tool presently. Please ship the package via a different tool.");
 		}
 		$strXML = $this->FormatUPSShipRequest($sInfo, $key);
 		if (DEBUG) $messageStack->debug('Ship Request xmlString = ' . htmlspecialchars($strXML));
@@ -477,14 +477,14 @@ class ups extends \shipping\classes\shipping {
 		$this->labelResponse = $SubmitXML['xmlString'];
 //echo 'Ship Request response string = ' . htmlspecialchars($SubmitXML['xmlString']) . '<br />';
 		// Check for XML request errors
-		if ($SubmitXML['result'] == 'error') throw new \Exception(SHIPPING_UPS_CURL_ERROR . $SubmitXML['message']);
+		if ($SubmitXML['result'] == 'error') throw new \core\classes\userException(SHIPPING_UPS_CURL_ERROR . $SubmitXML['message']);
 		$ResponseXML = $SubmitXML['xmlString'];
 		$XMLFail = GetNodeData($ResponseXML, 'ShipmentConfirmResponse:Response:Error:ErrorCode'); // Check for errors returned from UPS
 		$XMLWarn = GetNodeData($ResponseXML, 'ShipmentConfirmResponse:Response:Error:ErrorSeverity'); // Check for warnings returned from UPS (process continues)
 		if ($XMLFail && $XMLWarn == 'Warning') { // soft error, report it and continue
 			$messageStack->add('UPS Label Request Warning # ' . $XMLFail . ' - ' . GetNodeData($ResponseXML, 'ShipmentConfirmResponse:Response:Error:ErrorDescription'),'caution');
 		} elseif ($XMLFail && $XMLWarn <> 'Warning') { // hard error - return with bad news
-			throw new \Exception("UPS Label Request Error # $XMLFail - " . GetNodeData($ResponseXML, 'ShipmentConfirmResponse:Response:Error:ErrorDescription'));
+			throw new \core\classes\userException("UPS Label Request Error # $XMLFail - " . GetNodeData($ResponseXML, 'ShipmentConfirmResponse:Response:Error:ErrorDescription'));
 		}
 		$digest = GetNodeData($ResponseXML, 'ShipmentConfirmResponse:ShipmentDigest'); // Check for errors returned from UPS
 
@@ -499,14 +499,14 @@ class ups extends \shipping\classes\shipping {
 		$this->labelFetchReturned = $SubmitXML['xmlString'];
 //echo 'Accept Response response string = ' . htmlspecialchars($SubmitXML['xmlString']) . '<br />';
 		// Check for XML request errors
-		if ($SubmitXML['result'] == 'error') throw new \Exception(SHIPPING_UPS_CURL_ERROR . $SubmitXML['message']);
+		if ($SubmitXML['result'] == 'error') throw new \core\classes\userException(SHIPPING_UPS_CURL_ERROR . $SubmitXML['message']);
 		$ResponseXML = $SubmitXML['xmlString'];
 		$XMLFail = GetNodeData($ResponseXML, 'ShipmentAcceptResponse:Response:Error:ErrorCode'); // Check for errors returned from UPS
 		$XMLWarn = GetNodeData($ResponseXML, 'ShipmentAcceptResponse:Response:Error:ErrorSeverity'); // Check for warnings returned from UPS (process continues)
 		if ($XMLFail && $XMLWarn == 'Warning') { // soft error, report it and continue
 			$messageStack->add('UPS Label Retrieval Warning # ' . $XMLFail . ' - ' . GetNodeData($ResponseXML, 'ShipmentAcceptResponse:Response:Error:ErrorDescription'),'caution');
 		} elseif ($XMLFail && $XMLWarn <> 'Warning') { // hard error - return with bad news
-			throw new \Exception("UPS Label Retrieval Error # $XMLFail - " . GetNodeData($ResponseXML, 'ShipmentAcceptResponse:Response:Error:ErrorDescription'));
+			throw new \core\classes\userException("UPS Label Retrieval Error # $XMLFail - " . GetNodeData($ResponseXML, 'ShipmentAcceptResponse:Response:Error:ErrorDescription'));
 		}
 
 		// Fetch the UPS shipment information information

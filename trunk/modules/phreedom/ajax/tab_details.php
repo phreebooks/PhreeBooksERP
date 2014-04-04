@@ -28,7 +28,7 @@ $subject = $_GET['subject'];
 $rID     = $_GET['rID'];
 $xml     = NULL;
 
-if (!$page || !subject) throw  new \Exception('no subject or module');
+if (!$page || !subject) throw  new \core\classes\userException('no subject or module');
 if (!$_REQUEST['list']) 	$_REQUEST['list'] = 1;
 if (!$_REQUEST['action']) 	$_REQUEST['action'] = 'go_first';
 $temp = "\\$page\classes\\$subject";

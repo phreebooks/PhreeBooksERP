@@ -50,7 +50,7 @@ switch ($_REQUEST['action']) {
   		try{
 	  		\core\classes\user::validate_security($security_level, 4);
 			// load the module installation class
-			if (!array_key_exists($method, $admin_classes)) throw new \Exception(sprintf('Looking for the installation script for module %s, but could not locate it. The module cannot be installed!', $method));
+			if (!array_key_exists($method, $admin_classes)) throw new \core\classes\userException(sprintf('Looking for the installation script for module %s, but could not locate it. The module cannot be installed!', $method));
 			$db->transStart();
 			require_once(DIR_FS_MODULES . $method . '/config.php'); // config is not loaded yet since module is not installed.
 			if ($_REQUEST['action'] == 'install') {
@@ -78,7 +78,7 @@ switch ($_REQUEST['action']) {
 		  	gen_pull_language($method, 'admin');
 			gen_pull_language($method);
 			// load the module installation class
-			if (!array_key_exists($method, $admin_classes)) throw new \Exception(sprintf('Looking for the delete script for module %s, but could not locate it. The module cannot be deleted!', $method));
+			if (!array_key_exists($method, $admin_classes)) throw new \core\classes\userException(sprintf('Looking for the delete script for module %s, but could not locate it. The module cannot be deleted!', $method));
 			$db->transStart();
 			$admin_classes[$method]->delete(DIR_FS_MY_FILES.$_SESSION['company'].'/');
 			$db->transCommit();
@@ -135,13 +135,13 @@ switch ($_REQUEST['action']) {
 			$db_pw     = db_prepare_input($_POST['db_pw']);
 			$co_name   = db_prepare_input($_POST['co_name']);
 			// error check company name and company full name
-			if (!$db_name || !$co_name)           throw new \Exception(SETUP_CO_MGR_ERROR_EMPTY_FIELD);
-			if ($db_name == $_SESSION['company']) throw new \Exception(SETUP_CO_MGR_DUP_DB_NAME);
+			if (!$db_name || !$co_name)           throw new \core\classes\userException(SETUP_CO_MGR_ERROR_EMPTY_FIELD);
+			if ($db_name == $_SESSION['company']) throw new \core\classes\userException(SETUP_CO_MGR_DUP_DB_NAME);
 			// check for database already exists
 			$db_orig = new queryFactory;//@todo pdo
 			if (!$db_orig->connect(DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, DB_DATABASE)) trigger_error('Problem connecting to original DB!', E_USER_ERROR);
 			$db = new queryFactory;//@todo pdo
-			if (!$db->connect($db_server, $db_user, $db_pw, $db_name)) throw new \Exception(SETUP_CO_MGR_CANNOT_CONNECT);
+			if (!$db->connect($db_server, $db_user, $db_pw, $db_name)) throw new \core\classes\userException(SETUP_CO_MGR_CANNOT_CONNECT);
 			// write the db config.php in the company directory
 			validate_path(DIR_FS_ADMIN . PATH_TO_MY_FILES . $db_name);
 			install_build_co_config_file($db_name, $db_name . '_TITLE',  $co_name);
@@ -218,7 +218,7 @@ switch ($_REQUEST['action']) {
 	$db_name = $_POST['del_company'];
 	// Failsafe to prevent current company from being deleted accidently
 	$backup = new backup;
-	if ($db_name == 'none') throw new \Exception(SETUP_CO_MGR_NO_SELECTION);
+	if ($db_name == 'none') throw new \core\classes\userException(SETUP_CO_MGR_NO_SELECTION);
 	if ($db_name <> $_SESSION['company']) {
 		// connect to other company, retrieve login info
 	  	$config = file(DIR_FS_MY_FILES . $db_name . '/config.php');
@@ -231,7 +231,7 @@ switch ($_REQUEST['action']) {
 	  	$db_pw     = str_replace("'", "", $db_pw);
 	  	$db_server = str_replace("'", "", $db_server);
 	  	$del_db = new queryFactory;//@todo pdo
-	  	if (!$del_db->connect($db_server, $db_user, $db_pw, $db_name)) throw new \Exception(SETUP_CO_MGR_CANNOT_CONNECT);
+	  	if (!$del_db->connect($db_server, $db_user, $db_pw, $db_name)) throw new \core\classes\userException(SETUP_CO_MGR_CANNOT_CONNECT);
 	  	$tables = array();
 	  	$table_list = $del_db->Execute("show tables");
 	  	while (!$table_list->EOF) {

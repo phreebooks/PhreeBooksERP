@@ -18,13 +18,13 @@
 //
 namespace contacts\classes;
 class contacts {
-	public  $terms_type         = 'AP'; 
+	public  $terms_type         = 'AP';
 	public  $page_title_new     = '';
 	public  $auto_type          = false;
 	public  $inc_auto_id 		= false;
 	public  $auto_field         = '';
 	public  $help		        = '';
-	public  $tab_list           = array(); 
+	public  $tab_list           = array();
 	public  $address_types      = array();
 	public  $type               = '';
 	public  $crm_log			= array();
@@ -37,10 +37,10 @@ class contacts {
     public  $payment_exp_month  = '';
     public  $payment_exp_year   = '';
     public  $payment_cc_cvv2    = '';
-    public  $special_terms      = '0'; 
+    public  $special_terms      = '0';
     private $duplicate_id_error = ACT_ERROR_DUPLICATE_ACCOUNT;
     private $sql_data_array     = array();
-	
+
     public function __construct(){
     	global $db;
     	//set defaults
@@ -49,9 +49,9 @@ class contacts {
         foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
         $this->special_terms  =  db_prepare_input($_POST['terms']); // TBD will fix when popup terms is redesigned
         if ($this->id  == '') $this->id  = db_prepare_input($_POST['rowSeq'], true) ? db_prepare_input($_POST['rowSeq']) : db_prepare_input($_GET['cID']);
-        if ($this->aid == '') $this->aid = db_prepare_input($_GET['aID'],     true) ? db_prepare_input($_GET['aID'])     : db_prepare_input($_POST['aID']); 
+        if ($this->aid == '') $this->aid = db_prepare_input($_GET['aID'],     true) ? db_prepare_input($_GET['aID'])     : db_prepare_input($_POST['aID']);
     }
-		
+
 	public function getContact() {
 	  	global $db;
 	  	if ($this->id == '' && !$this->aid == ''){
@@ -114,13 +114,13 @@ class contacts {
   }
 
   function delete($id) {
-  	global $db; 
+  	global $db;
   	if ( $this->id == '' ) $this->id = $id;	// error check, no delete if a journal entry exists
 	$result = $db->Execute("SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE bill_acct_id=$this->id OR ship_acct_id=$this->id OR store_id=$this->id LIMIT 1");
-	if ($result->RecordCount() != 0) throw new \Exception(ACT_ERROR_CANNOT_DELETE); 
-	return $this->do_delete();  	
+	if ($result->RecordCount() != 0) throw new \core\classes\userException(ACT_ERROR_CANNOT_DELETE);
+	return $this->do_delete();
   }
-  
+
   public function do_delete(){
 	  global $db;
 	  $db->Execute("DELETE FROM ".TABLE_ADDRESS_BOOK ." WHERE ref_id=$this->id");
@@ -131,9 +131,9 @@ class contacts {
 	  return true;
   }
    /*
-   * this function loads alle open order 
+   * this function loads alle open order
    */
-  
+
   function load_open_orders($acct_id, $journal_id, $only_open = true, $limit = 0) {
   	global $db;
   	if (!$acct_id) return array();
@@ -160,7 +160,7 @@ class contacts {
   	}
   	return $output;
   }
-  
+
   	public function data_complete(){
   		global $db, $messageStack;
   		if ($this->auto_type && $this->short_name == '') {
@@ -172,40 +172,40 @@ class contacts {
       		if (($value <> 'im' && substr($value, 1, 1) == 'm') || // all main addresses except contacts which is optional
         	  ($this->address[$value]['primary_name'] <> '')) { // optional billing, shipping, and contact
           		$msg_add_type = GEN_ERRMSG_NO_DATA . constant('ACT_CATEGORY_' . strtoupper(substr($value, 1, 1)) . '_ADDRESS');
-	      		if (false === db_prepare_input($this->address[$value]['primary_name'],   $required = true))                     throw new \Exception($msg_add_type.' - '.GEN_PRIMARY_NAME);
-	      		if (false === db_prepare_input($this->address[$value]['contact'],        ADDRESS_BOOK_CONTACT_REQUIRED))        throw new \Exception($msg_add_type.' - '.GEN_CONTACT);
-	      		if (false === db_prepare_input($this->address[$value]['address1'],       ADDRESS_BOOK_ADDRESS1_REQUIRED))       throw new \Exception($msg_add_type.' - '.GEN_ADDRESS1);
-	      		if (false === db_prepare_input($this->address[$value]['address2'],       ADDRESS_BOOK_ADDRESS2_REQUIRED))       throw new \Exception($msg_add_type.' - '.GEN_ADDRESS2);
-	      		if (false === db_prepare_input($this->address[$value]['city_town'],      ADDRESS_BOOK_CITY_TOWN_REQUIRED))      throw new \Exception($msg_add_type.' - '.GEN_CITY_TOWN);
-	      		if (false === db_prepare_input($this->address[$value]['state_province'], ADDRESS_BOOK_STATE_PROVINCE_REQUIRED)) throw new \Exception($msg_add_type.' - '.GEN_STATE_PROVINCE);
-	      		if (false === db_prepare_input($this->address[$value]['postal_code'],    ADDRESS_BOOK_POSTAL_CODE_REQUIRED))    throw new \Exception($msg_add_type.' - '.GEN_POSTAL_CODE);
-	      		if (false === db_prepare_input($this->address[$value]['telephone1'],     ADDRESS_BOOK_TELEPHONE1_REQUIRED))     throw new \Exception($msg_add_type.' - '.GEN_TELEPHONE1);
-	      		if (false === db_prepare_input($this->address[$value]['email'],          ADDRESS_BOOK_EMAIL_REQUIRED))          throw new \Exception($msg_add_type.' - '.GEN_EMAIL);
+	      		if (false === db_prepare_input($this->address[$value]['primary_name'],   $required = true))                     throw new \core\classes\userException($msg_add_type.' - '.GEN_PRIMARY_NAME);
+	      		if (false === db_prepare_input($this->address[$value]['contact'],        ADDRESS_BOOK_CONTACT_REQUIRED))        throw new \core\classes\userException($msg_add_type.' - '.GEN_CONTACT);
+	      		if (false === db_prepare_input($this->address[$value]['address1'],       ADDRESS_BOOK_ADDRESS1_REQUIRED))       throw new \core\classes\userException($msg_add_type.' - '.GEN_ADDRESS1);
+	      		if (false === db_prepare_input($this->address[$value]['address2'],       ADDRESS_BOOK_ADDRESS2_REQUIRED))       throw new \core\classes\userException($msg_add_type.' - '.GEN_ADDRESS2);
+	      		if (false === db_prepare_input($this->address[$value]['city_town'],      ADDRESS_BOOK_CITY_TOWN_REQUIRED))      throw new \core\classes\userException($msg_add_type.' - '.GEN_CITY_TOWN);
+	      		if (false === db_prepare_input($this->address[$value]['state_province'], ADDRESS_BOOK_STATE_PROVINCE_REQUIRED)) throw new \core\classes\userException($msg_add_type.' - '.GEN_STATE_PROVINCE);
+	      		if (false === db_prepare_input($this->address[$value]['postal_code'],    ADDRESS_BOOK_POSTAL_CODE_REQUIRED))    throw new \core\classes\userException($msg_add_type.' - '.GEN_POSTAL_CODE);
+	      		if (false === db_prepare_input($this->address[$value]['telephone1'],     ADDRESS_BOOK_TELEPHONE1_REQUIRED))     throw new \core\classes\userException($msg_add_type.' - '.GEN_TELEPHONE1);
+	      		if (false === db_prepare_input($this->address[$value]['email'],          ADDRESS_BOOK_EMAIL_REQUIRED))          throw new \core\classes\userException($msg_add_type.' - '.GEN_EMAIL);
       		}
     	}
-    	$this->duplicate_id();    
+    	$this->duplicate_id();
     	return true;
   }
-  
+
   /**
-   * this function looks if there are duplicate id's if so it throws a exception. 
+   * this function looks if there are duplicate id's if so it throws a exception.
    */
-  
+
   public function duplicate_id(){
-  	global $db; 
+  	global $db;
   	// check for duplicate short_name IDs
     if ($this->id == '') {
       $result = $db->Execute("select id from ".TABLE_CONTACTS." where short_name = '$this->short_name' and type = '$this->type'");
     } else {
       $result = $db->Execute("select id from ".TABLE_CONTACTS." where short_name = '$this->short_name' and type = '$this->type' and id <> $this->id");
     }
-    if ($result->RecordCount() > 0) throw new \Exception($this->duplicate_id_error);    
+    if ($result->RecordCount() > 0) throw new \core\classes\userException($this->duplicate_id_error);
   }
 
   /*
-   * this function saves all input in the contacts main page. 
+   * this function saves all input in the contacts main page.
    */
-  
+
   public function save_contact(){
   	global $db;
   	$fields = new \contacts\classes\fields(false);
@@ -240,7 +240,7 @@ class contacts {
         gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_UPDATE . '-' . constant('ACT_' . strtoupper($this->type) . '_TYPE_NAME'), $this->short_name);
     }
   }
-  
+
   public function save_addres(){
   	global $db;
     // address book fields

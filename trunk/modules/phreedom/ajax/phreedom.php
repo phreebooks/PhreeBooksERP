@@ -51,17 +51,17 @@ switch ($_REQUEST['action']) {
 			$data[$x] = $_GET['d'.$x];
 			$x++;
 		}
-		if (!file_exists(DIR_FS_MODULES."$modID/functions/$modID.php"))  throw new \Exception('Could not find module function file to process!');
+		if (!file_exists(DIR_FS_MODULES."$modID/functions/$modID.php"))  throw new \core\classes\userException('Could not find module function file to process!');
 		gen_pull_language($modID);
 		require_once(DIR_FS_MODULES.$modID.'/functions/'.$modID.'.php');
-		if (!$results = get_chart_data($fID, $data)) throw new \Exception('No data returned from function call!');
+		if (!$results = get_chart_data($fID, $data)) throw new \core\classes\userException('No data returned from function call!');
 		$xml .= xmlEntry('modID',  $_GET['modID']);
 		$xml .= xmlEntry('type',   $results['type']);
 		$xml .= xmlEntry('title',  $results['title']);
 		$xml .= xmlEntry('width',  $results['width']);
 		$xml .= xmlEntry('height', $results['height']);
 		$xml .= xmlEntry('rowCnt', sizeof($results['data']));
-		if (sizeof($results['data']) == 0) throw new \Exception('No data returned from function call!');
+		if (sizeof($results['data']) == 0) throw new \core\classes\userException('No data returned from function call!');
 		foreach ($results['data'] as $value) {
 			$xml .= '<chartData>';
 		  	$xml .= xmlEntry('string', $value['label']);
@@ -70,7 +70,7 @@ switch ($_REQUEST['action']) {
 		}
 		break;
 
-	default: throw new \Exception("do not know action {$_REQUEST['action']}");
+	default: throw new \core\classes\userException("do not know action {$_REQUEST['action']}");
 }
 echo createXmlHeader() . $xml . createXmlFooter();
 ob_end_flush();

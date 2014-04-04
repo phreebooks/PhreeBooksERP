@@ -141,7 +141,7 @@ class phreemail_admin {
 				$mail->do_action();
 				$mail->MoveNext();
 			}*/
-		}catch (Exception $exception){
+		}catch (\Exception $exception){
 			$messageStack->add($exception->getMessage(), 'error');
 		}
 		$messageStack->debug("\n\n*************** End Retrieving Mail from ".EMAIL_SMTPAUTH_MAILBOX." *******************");
@@ -164,7 +164,7 @@ class phreemail_admin {
 				$mail->MoveNext();
 			}*/
 			$messageStack->debug("\n\n*************** End Retrieving Mail from ".$_SESSION['admin_email']." *******************");
-		}catch (Exception $exception){
+		}catch (\Exception $exception){
 			$messageStack->add($exception->getMessage(), 'error');
 		}
 		if ( DEBUG )   $messageStack->write_debug();

@@ -104,7 +104,7 @@ class admin {
 	}
 
 	function delete($path_my_files) {
-		if ($this->core) throw new \Exception("can not delete core module " .$this->text);
+		if ($this->core) throw new \core\classes\userException("can not delete core module " .$this->text);
 		foreach ($this->methods as $method) {
 			if ($method->installed){
 	    		if (method_exists($method, 'delete')) $method->delete();
@@ -140,15 +140,15 @@ class admin {
 
 	/**
 	 * This function checks if a module is allowed to install using the prerequisites
-	 * @throws \Exception
+	 * @throws \core\classes\userException
 	 */
 
 	function check_prerequisites_versions() {
 		global $admin_classes;
 		if (is_array($this->prerequisites) && sizeof($this->prerequisites) > 0) {
 			foreach ($this->prerequisites as $module_class => $RequiredVersion) {
-		  		if ( $admin_classes[$module_class]->installed == false) throw new \Exception (sprintf(ERROR_MODULE_NOT_INSTALLED, $this->id, $admin_classes[$module_class]->id));
-		  		if ( version_compare($admin_classes[$module_class]->version, $RequiredVersion) < 0 ) throw new \Exception (sprintf(ERROR_MODULE_VERSION_TOO_LOW, $this->id, $admin_classes[$module_class]->id, $RequiredVersion, $this->version));
+		  		if ( $admin_classes[$module_class]->installed == false) throw new \core\classes\userException (sprintf(ERROR_MODULE_NOT_INSTALLED, $this->id, $admin_classes[$module_class]->id));
+		  		if ( version_compare($admin_classes[$module_class]->version, $RequiredVersion) < 0 ) throw new \core\classes\userException (sprintf(ERROR_MODULE_VERSION_TOO_LOW, $this->id, $admin_classes[$module_class]->id, $RequiredVersion, $this->version));
 			}
 		}
 		return true;
@@ -156,7 +156,7 @@ class admin {
 
 	/**
 	 * this function installes the required dirs under my_files\mycompany
-	 * @throws \Exception
+	 * @throws \core\classes\userException
 	 */
 
 	function install_dirs($path_my_files) {
@@ -167,20 +167,20 @@ class admin {
 
 	function remove_dirs($path_my_files) {
 		foreach(array_reverse($this->dirlist) as $dir) {
-			if (!@rmdir($path_my_files . $dir)) throw new \Exception (sprintf(ERROR_CANNOT_REMOVE_MODULE_DIR, $path_my_files . $dir));
+			if (!@rmdir($path_my_files . $dir)) throw new \core\classes\userException (sprintf(ERROR_CANNOT_REMOVE_MODULE_DIR, $path_my_files . $dir));
 	  	}
 	}
 
 	/**
 	 * This funtion installs the tables.
 	 * If table exists nothing will happen.
-	 * @throws \Exception
+	 * @throws \core\classes\userException
 	 */
 	function install_update_tables() {
 	  	global $db;
 	  	foreach ($this->tables as $table => $create_table_sql) {
 	    	if (!db_table_exists($table)) {
-		  		if (!$db->Execute($create_table_sql)) throw new \Exception (sprintf("Error installing table: %s", $table));
+		  		if (!$db->Execute($create_table_sql)) throw new \core\classes\userException (sprintf("Error installing table: %s", $table));
 			}
 	  	}
 	}
@@ -189,7 +189,7 @@ class admin {
 	  	global $db;
 	  	foreach ($this->tables as $table) {
 			if (db_table_exists($table)){
-				if ($db->Execute('DROP TABLE ' . $table)) throw new \Exception (sprintf("Error deleting table: %s", $table));
+				if ($db->Execute('DROP TABLE ' . $table)) throw new \core\classes\userException (sprintf("Error deleting table: %s", $table));
 			}
 	  	}
 	}
@@ -208,7 +208,7 @@ class admin {
 
 	function add_report_folder($parent_id, $doc_title, $doc_group, $doc_ext) {
 	  	global $db;
-	  	if ($parent_id == '') throw new \Exception("parent_id isn't set for document $doc_title");
+	  	if ($parent_id == '') throw new \core\classes\userException("parent_id isn't set for document $doc_title");
 	  	$result = $db->Execute("select id from ".TABLE_PHREEFORM." where doc_group = '$doc_group' and doc_ext = '$doc_ext'");
 	  	if ($result->RecordCount() < 1) {
 	    	$db->Execute("INSERT INTO ".TABLE_PHREEFORM." (parent_id, doc_type, doc_title, doc_group, doc_ext, security, create_date) VALUES

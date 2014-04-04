@@ -7,7 +7,7 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 	public $master					= '';
 	public $account_sales_income	= INV_ASSY_DEFAULT_SALES;
 	public $account_inventory_wage	= INV_ASSY_DEFAULT_INVENTORY;
-	public $account_cost_of_sales	= INV_ASSY_DEFAULT_COS;	
+	public $account_cost_of_sales	= INV_ASSY_DEFAULT_COS;
 	public $cost_method				= INV_ASSY_DEFAULT_COSTING;
 	public $attr_array0 			= array();
 	public $attr_array1 			= array();
@@ -17,22 +17,22 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 	public $attr_name_1				= '';
 	public $child_array 			= array();
 	public $bom		 				= array();
-	public $allow_edit_bom			= true;  
+	public $allow_edit_bom			= true;
 	public $posible_transactions	= array('sell');
-	
+
 	function __construct(){
 		parent::__construct();
 		$this->tab_list['master'] = array('file'=>'template_tab_ms',	'tag'=>'master',    'order'=>30, 'text'=>INV_MS_ATTRIBUTES);
 		$this->tab_list['bom'] = array('file'=>'template_tab_bom',	'tag'=>'bom',    'order'=>30, 'text'=>INV_BOM);
 	}
-	
+
 	function get_item_by_id($id){
 		parent::get_item_by_id($id);
 		$this->get_ms_list();
 		$this->get_bom_list();
 		$this->allow_edit_bom = (($this->last_journal_date == '0000-00-00 00:00:00' || $this->last_journal_date == '') && ($this->quantity_on_hand == 0|| $this->quantity_on_hand == '')) ? true : false;
 	}
-	
+
 	function get_item_by_sku($sku){
 		parent::get_item_by_sku($sku);
 		$this->get_ms_list();
@@ -42,7 +42,7 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 
 	function get_bom_list(){
 		global $db;
-		$this->assy_cost = 0; 
+		$this->assy_cost = 0;
 		$result = $db->Execute("select i.id as inventory_id, l.id, l.sku, l.description, l.qty as qty from " . TABLE_INVENTORY_ASSY_LIST . " l join " . TABLE_INVENTORY . " i on l.sku = i.sku where l.ref_id = " . $this->id . " order by l.id");
 		$x =0;
 		while (!$result->EOF) {
@@ -56,18 +56,18 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 	  		$result->MoveNext();
 		}
 	}
-	
+
 	function copy($id, $newSku) {
-		throw new \Exception(INV_ERROR_CANNOT_COPY);
+		throw new \core\classes\userException(INV_ERROR_CANNOT_COPY);
 	}
-	
+
 	function check_remove($id){ // this is disabled in the form but just in case, error here as well
-		throw new \Exception('Master Stock Sub Items are not allowed to be deleted separately!');
+		throw new \core\classes\userException('Master Stock Sub Items are not allowed to be deleted separately!');
 	}
-	
+
 	function get_ms_list(){
 		global $db;
-		$master = explode('-',$this->sku); 
+		$master = explode('-',$this->sku);
 		$this->master = $master[0];
 		$result = $db->Execute("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->master . "'");
 	  	$this->ms_attr_0   = ($result->RecordCount() > 0) ? $result->fields['attr_0'] : '';
@@ -95,7 +95,7 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 		$result = $db->Execute("select * from " . TABLE_INVENTORY . " where sku like '" . $this->master . "-%' and inventory_type = 'ia' and sku<>'".$this->sku."'");
 		$i = 0;
 		while(!$result->EOF){
-			$temp = explode('-',$result->fields['sku']); 
+			$temp = explode('-',$result->fields['sku']);
 			$this->child_array[$i] = array(	'id'       		=> $result->fields['id'],
 											'sku'      		=> $result->fields['sku'],
 											'inactive' 		=> $result->fields['inactive'],
@@ -129,9 +129,9 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 				'qty'         => $currencies->clean_value(db_prepare_input($_POST['assy_qty'][$x])),
 			);
 		  	$result = $db->Execute("select id from " . TABLE_INVENTORY . " where sku = '". $_POST['assy_sku'][$x]."'" );
-		  	if (($result->RecordCount() == 0 || $currencies->clean_value($_POST['assy_qty'][$x]) == 0) && $_POST['assy_sku'][$x] =! '') { 
+		  	if (($result->RecordCount() == 0 || $currencies->clean_value($_POST['assy_qty'][$x]) == 0) && $_POST['assy_sku'][$x] =! '') {
 		  		// show error, bad sku, negative quantity. error check sku is valid and qty > 0
-				throw new \Exception(INV_ERROR_BAD_SKU . db_prepare_input($_POST['assy_sku'][$x]));
+				throw new \core\classes\userException(INV_ERROR_BAD_SKU . db_prepare_input($_POST['assy_sku'][$x]));
 		  	}
 		  	$prices = inv_calculate_sales_price(abs($this->bom[$x]['qty']), $result->fields['id'], 0, 'v');
 			$bom_list[$x]['item_cost'] = strval($prices['price']);
@@ -139,7 +139,7 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 			$bom_list[$x]['full_price'] = strval($prices['price']);
 		}
 		$this->bom = $bom_list;
-		parent::save();	
+		parent::save();
 		$result = $db->Execute("select last_journal_date, quantity_on_hand  from " . TABLE_INVENTORY . " where id = " . $this->id);
 		$this->allow_edit_bom = (($result->fields['last_journal_date'] == '0000-00-00 00:00:00' || $result->fields['last_journal_date'] == '') && ($result->fields['quantity_on_hand'] == 0|| $result->fields['quantity_on_hand'] == '')) ? true : false;
 	  	if ($this->allow_edit_bom == true) { // only update if no posting has been performed

@@ -160,7 +160,7 @@ class admin extends \core\classes\admin {
 			write_configure('MODULE_ZENCART_LAST_UPDATE', date('0000-00-00 00:00:00'));
 		}
 		$result = $db->Execute("select tab_id from " . TABLE_EXTRA_FIELDS . " where field_name = 'category_id'");
-		if ($result->RecordCount() == 0) throw new \Exception('can not find tab_name ZenCart');
+		if ($result->RecordCount() == 0) throw new \core\classes\userException('can not find tab_name ZenCart');
 		else $tab_id = $result->fields['tab_id'];
 		if (!db_field_exists(TABLE_INVENTORY, 'ProductURL')){
 			 $sql_data_array = array(

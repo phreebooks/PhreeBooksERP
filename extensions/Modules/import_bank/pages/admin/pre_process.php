@@ -35,8 +35,8 @@ switch ($_REQUEST['action']) {
 	\core\classes\user::validate_security($security_level, 4);
   	// save general tab
   	if($_POST['number_of_bank_accounts'] < NUMBER_OF_BANK_ACCOUNTS){
-  		throw new \Exception(IMPORT_BANK_CAN_NOT_DECREASE_NUMBER_OF_BANK_ACCOUNTS);
-  		$_POST['number_of_bank_accounts'] = NUMBER_OF_BANK_ACCOUNTS;	
+  		throw new \core\classes\userException(IMPORT_BANK_CAN_NOT_DECREASE_NUMBER_OF_BANK_ACCOUNTS);
+  		$_POST['number_of_bank_accounts'] = NUMBER_OF_BANK_ACCOUNTS;
   	}else if($_POST['number_of_bank_accounts'] > NUMBER_OF_BANK_ACCOUNTS){
   		for($x=NUMBER_OF_BANK_ACCOUNTS; $x<=$_POST['number_of_bank_accounts']; $x++){
   			$result = $db->Execute("select id from " . TABLE_EXTRA_TABS . " where module_id='contacts' and tab_name = 'import_banking'");
@@ -46,7 +46,7 @@ switch ($_REQUEST['action']) {
 								'sort_order'=> '100' );
 				db_perform(TABLE_EXTRA_TABS, $entry, 'insert');
 				$tab_id = $db->insert_ID();
-			}else {	
+			}else {
 				$tab_id = $result->fields['id'];
 			}
 			$entry = array(	'module_id'	  => 'contacts',
@@ -57,7 +57,7 @@ switch ($_REQUEST['action']) {
 							'params'	  => 'a:4:{s:4:"type";s:4:"text";s:12:"contact_type";s:16:"customer:vendor:";s:6:"length";i:32;s:7:"default";s:0:"";}');
 			db_perform(TABLE_EXTRA_FIELDS, $entry, 'insert');
 			$db->Execute("ALTER TABLE ".TABLE_CONTACTS." ADD bank_account_".$x." varchar(32) default NULL");
-		
+
   		}
   	}
 	foreach ($admin_classes['import_bank']->keys as $key => $default) {
@@ -79,7 +79,7 @@ switch ($_REQUEST['action']) {
 
 /*****************   prepare to display templates  *************************/
 // build some general pull down arrays
-$all_chart = gen_coa_pull_down(2, false, true, false);    
+$all_chart = gen_coa_pull_down(2, false, true, false);
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';

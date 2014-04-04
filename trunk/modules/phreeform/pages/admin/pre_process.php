@@ -96,17 +96,17 @@ switch ($_REQUEST['action']) {
 	while (!$result->EOF) {
 	  try{
 		  $report = PrepReport($result->fields['id']);
-		  if (!$params = import_text_params($report)) throw new \Exception(sprintf(PB_CONVERT_ERROR, $result->fields['description']));
+		  if (!$params = import_text_params($report)) throw new \core\classes\userException(sprintf(PB_CONVERT_ERROR, $result->fields['description']));
 		  // fix some fields
 		  $params->standard_report = $result->fields['standard_report'] ? 's' : 'c';
 		  // error check
 		  $duplicate = $db->Execute("select id from " . TABLE_PHREEFORM . "
 		    where doc_title = '" . addslashes($params->title) . "' and doc_type <> '0'");
 		  if ($duplicate->RecordCount() > 0) { // the report name already exists, error
-		    throw new \Exception(sprintf(PHREEFORM_REPDUP, $params->title));
+		    throw new \core\classes\userException(sprintf(PHREEFORM_REPDUP, $params->title));
 		  }
 
-		  if (!$success = save_report($params)) throw new \Exception(sprintf(PB_CONVERT_SAVE_ERROR, $params->title));
+		  if (!$success = save_report($params)) throw new \core\classes\userException(sprintf(PB_CONVERT_SAVE_ERROR, $params->title));
 		  $count++;
 	  }catch(exception $e){
 	  	$messageStack->add($e->getMessage());

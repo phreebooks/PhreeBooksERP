@@ -27,7 +27,7 @@ $label_list       = $_GET['labels'];
 $file_path        = SHIPPING_DEFAULT_LABEL_DIR.$method.'/'.str_replace('-', '/', $date).'/';
 $browser_path     = SHIPPING_DEFAULT_LABEL_WS .$method.'/'.str_replace('-', '/', $date).'/';
 $labels           = explode(':',$label_list);
-if (count($labels) == 0) throw new \Exception('No labels were passed to label_viewer!');
+if (count($labels) == 0) throw new \core\classes\userException('No labels were passed to label_viewer!');
 $content_list     = array();
 foreach ($labels as $one_label) {
   $cnt = 0;

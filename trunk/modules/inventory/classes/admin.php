@@ -513,9 +513,9 @@ class admin extends \core\classes\admin {
 	 */
 	function validate_name($sku){
 		global $db;
-		if (!$sku) throw new \Exception(ERROR_SKU_BLANK);
+		if (!$sku) throw new \core\classes\userException(ERROR_SKU_BLANK);
 		$result = $db->Execute("select id from " . TABLE_INVENTORY . " where sku = '$sku'");
-		if ($result->RecordCount() <> 0) throw new \Exception(sprintf(ERROR_DUPLICATE_SKU, $name));
+		if ($result->RecordCount() <> 0) throw new \core\classes\userException(sprintf(ERROR_DUPLICATE_SKU, $name));
 	}
 }
 ?>

@@ -50,7 +50,7 @@ switch ($_REQUEST['action']) {
 		$notes    = db_prepare_input($_POST['notes']);
 		$closed   = isset($_POST['closed']) ? '1' : '0';
 		// error check
-		if (!$sku_id || !$sku || !$qty) throw new \Exception(WO_SKU_ID_REQUIRED);
+		if (!$sku_id || !$sku || !$qty) throw new \core\classes\userException(WO_SKU_ID_REQUIRED);
 		if ($closed && $close_date == '') $close_date = date('Y-m-d');
 		if (!$closed) $close_date = '';
 		// update/insert the data to the db
@@ -69,7 +69,7 @@ switch ($_REQUEST['action']) {
 			  'closed'     => $closed,
 			  'close_date' => $close_date,
 			);
-		    if (!db_perform(TABLE_WO_JOURNAL_MAIN, $sql_data_array, 'update', 'id = ' . $id)) throw new \Exception("wasn't able to update table id $id");
+		    if (!db_perform(TABLE_WO_JOURNAL_MAIN, $sql_data_array, 'update', 'id = ' . $id)) throw new \core\classes\userException("wasn't able to update table id $id");
 		} else {
 			$result = $db->Execute("select next_wo_num from " . TABLE_CURRENT_STATUS);
 			$wo_num = $result->fields['next_wo_num'];
@@ -85,7 +85,7 @@ switch ($_REQUEST['action']) {
 		      'closed'     => $closed,
 			  'close_date' => $close_date,
 		    );
-		    if (!db_perform(TABLE_WO_JOURNAL_MAIN, $sql_data_array, 'insert'))throw new \Exception("wasn't able to insert");
+		    if (!db_perform(TABLE_WO_JOURNAL_MAIN, $sql_data_array, 'insert'))throw new \core\classes\userException("wasn't able to insert");
 			$id = db_insert_id();
 			$result   = $db->Execute("update " . TABLE_CURRENT_STATUS . " set next_wo_num = '" . string_increment($wo_num) . "'");
 			$temp     = $db->Execute("select allocate from " . TABLE_WO_MAIN . " where id = '" . $wo_id . "'");
@@ -109,7 +109,7 @@ switch ($_REQUEST['action']) {
 		    	  'data_entry' => $task->fields['data_entry'],
 				  'complete'   => '0', // set initial complete to zero
 		    	);
-		    	if (!db_perform(TABLE_WO_JOURNAL_ITEM, $sql_data_array, 'insert')) throw new \Exception("wasn't able to insert");
+		    	if (!db_perform(TABLE_WO_JOURNAL_ITEM, $sql_data_array, 'insert')) throw new \core\classes\userException("wasn't able to insert");
 		    	$result->MoveNext();
 		  	}
 		  	// update the last usage for the template
@@ -138,7 +138,7 @@ switch ($_REQUEST['action']) {
 		$notes      = db_prepare_input($_POST['notes']);
 		$sql_data_array = array(); // start the update field list
 		// error check
-		if (!$id || !$step) throw new \Exception("variable 'id' or 'rowSeq' isn't defined");
+		if (!$id || !$step) throw new \core\classes\userException("variable 'id' or 'rowSeq' isn't defined");
 		if (isset($_POST['user_mfg']) && $user_mfg > 0) { // the mfg signoff is required and present
 			$sql = "select admin_pass from " . TABLE_USERS . " where admin_id = '" . $user_mfg . "'";
 	      	$result = $db->Execute($sql);
@@ -154,12 +154,12 @@ switch ($_REQUEST['action']) {
 		    $sql_data_array['qa_date'] = date('Y-m-d H:i:s');
 		}
 		if (isset($_POST['data_value'])) {
-		  	if ($data_value == '') throw new \Exception(WO_DATA_VALUE_BLANK);
+		  	if ($data_value == '') throw new \core\classes\userException(WO_DATA_VALUE_BLANK);
 	      	$sql_data_array['data_value'] = $data_value;
 		}
 		// set the step to completed in the item db
-		if (sizeof($sql_data_array) > 0) if (!db_perform(TABLE_WO_JOURNAL_ITEM, $sql_data_array, 'update', "ref_id = $id and step = $step")) throw new \Exception(WO_DB_UPDATE_ERROR);
-		if ($notes) if (!db_perform(TABLE_WO_JOURNAL_MAIN, array('notes'=>$notes), 'update', "id = $id")) throw new \Exception(WO_DB_UPDATE_ERROR);
+		if (sizeof($sql_data_array) > 0) if (!db_perform(TABLE_WO_JOURNAL_ITEM, $sql_data_array, 'update', "ref_id = $id and step = $step")) throw new \core\classes\userException(WO_DB_UPDATE_ERROR);
+		if ($notes) if (!db_perform(TABLE_WO_JOURNAL_MAIN, array('notes'=>$notes), 'update', "id = $id")) throw new \core\classes\userException(WO_DB_UPDATE_ERROR);
 		// check to see if the step is complete
 		$result    = $db->Execute("select * from " . TABLE_WO_JOURNAL_ITEM . " where ref_id = $id and step = $step");
 		$task_id   = $result->fields['task_id'];
@@ -241,7 +241,7 @@ switch ($_REQUEST['action']) {
   case 'edit':
   case 'build':
     $id = isset($_POST['rowSeq']) ? $_POST['rowSeq'] : $_GET['id'];
-	if (!$id) throw new \Exception("varible rowSeq or id isn't set");
+	if (!$id) throw new \core\classes\userException("varible rowSeq or id isn't set");
 	$result = $db->Execute("select * from " . TABLE_WO_JOURNAL_MAIN . " where id = " . $id);
 	foreach ($result->fields as $key => $value) $$key = $value;
 	// load the sku
@@ -271,7 +271,7 @@ switch ($_REQUEST['action']) {
   case 'delete':
 	\core\classes\user::validate_security($security_level, 4);
     $id = db_prepare_input($_GET['id']);
-	if (!$id) throw new \Exception("the requird varible 'id' isn't set");
+	if (!$id) throw new \core\classes\userException("the requird varible 'id' isn't set");
 	// check to un-allocate inventory
 	$result   = $db->Execute("select qty, sku_id, wo_id from " . TABLE_WO_JOURNAL_MAIN . " where id = " . $id);
 	$temp     = $db->Execute("select allocate from " . TABLE_WO_MAIN . " where id = '" . $result->fields['wo_id'] . "'");

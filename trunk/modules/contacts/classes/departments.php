@@ -27,15 +27,15 @@ class departments {
     public function __construct(){
     	foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
     	$this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
-        $this->security_id = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
+        $this->security_id = \core\classes\user::security_level(SECURITY_ID_CONFIGURATION);
     }
 
   function btn_save($id = '') {
   	global $db;
-	\core\classes\user::validate_security($this->security_id, 2); // security check		
+	\core\classes\user::validate_security($this->security_id, 2); // security check
     if ( $_POST['subdepartment'] && !$_POST['primary_dept_id']) $_POST['subdepartment'] = '0';
     if (!$_POST['subdepartment']) $_POST['primary_dept_id'] = '';
-    if ($_POST['primary_dept_id'] == $id) throw new \Exception(HR_DEPARTMENT_REF_ERROR);
+    if ($_POST['primary_dept_id'] == $id) throw new \core\classes\userException(HR_DEPARTMENT_REF_ERROR);
 	// OK to save
 	$sql_data_array = array(
 		'description_short'   => db_prepare_input($_POST['description_short']),
@@ -57,7 +57,7 @@ class departments {
 
   function btn_delete($id = 0) {
   	global $db;
-	\core\classes\user::validate_security($this->security_id, 4); // security check		
+	\core\classes\user::validate_security($this->security_id, 4); // security check
 	// error check
 	// Departments have no pre-requisites to check prior to delete
 	// OK to delete
@@ -83,7 +83,7 @@ class departments {
 	  $content['tbody'][$rowCnt] = array(
 	    array('value' => htmlspecialchars($result->fields['description_short']),
 			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'departments_edit\',\''.$result->fields['id'].'\')"'),
-		array('value' => htmlspecialchars($result->fields['description']), 
+		array('value' => htmlspecialchars($result->fields['description']),
 			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'departments_edit\',\''.$result->fields['id'].'\')"'),
 		array('value' => $result->fields['subdepartment'] ? TEXT_YES : TEXT_NO,
 			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'departments_edit\',\''.$result->fields['id'].'\')"'),

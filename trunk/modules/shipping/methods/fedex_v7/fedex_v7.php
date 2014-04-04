@@ -492,7 +492,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 		global $messageStack;
 		$fedex_results = array();
 		if (in_array($sInfo->ship_method, array('I2DEam','I2Dam','I3D'))) { // unsupported ship methods
-		  	throw new \Exception("The ship method {$sInfo->ship_method} is not supported by this tool presently. Please ship the package via a different tool.");
+		  	throw new \core\classes\userException("The ship method {$sInfo->ship_method} is not supported by this tool presently. Please ship the package via a different tool.");
 		}
 		if (MODULE_SHIPPING_FEDEX_V7_TEST_MODE == 'Test') {
 			$client = new \SoapClient(PATH_TO_TEST_SHIP_WSDL, array('trace' => 1));
@@ -552,7 +552,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 					$tracking = $response->CompletedShipmentDetail->CompletedPackageDetails->TrackingIds->TrackingNumber;
 				  }
 				}
-				if (!$tracking) throw new \Exception("Error - No tracking found in return string.");
+				if (!$tracking) throw new \core\classes\userException("Error - No tracking found in return string.");
 //echo 'label response array = '; print_r($response); echo '<br />';
 				$fedex_results[$key] = array(
 					'ref_id'        => $sInfo->purchase_invoice_id . '-' . ($key + 1),
@@ -585,7 +585,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 //					$messageStack->add('Successfully retrieved the FedEx shipping label. Tracking # ' . $fedex_results[$key]['tracking'],'success');
 				  }
 				} else {
-					throw new \Exception('Error - No label found in return string.');
+					throw new \core\classes\userException('Error - No label found in return string.');
 				}
 		    } else {
 			  foreach ($response->Notifications as $notification) {
@@ -596,7 +596,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 				}
 			  }
 //echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';
-			  throw new \Exception(SHIPPING_FEDEX_V7_RATE_ERROR . $message);
+			  throw new \core\classes\userException(SHIPPING_FEDEX_V7_RATE_ERROR . $message);
 		    }
 		  } catch (SoapFault $e) {
 //echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';
@@ -1129,7 +1129,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 //echo 'Error Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';
 //echo ' Error Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
 			$message = " ({$exception->faultcode}) {$exception->faultstring}";
-			throw new \Exception(SHIPPING_FEDEX_CURL_ERROR . $message,'', $e);
+			throw new \core\classes\userException(SHIPPING_FEDEX_CURL_ERROR . $message,'', $e);
 		}
 		return false;
 	}

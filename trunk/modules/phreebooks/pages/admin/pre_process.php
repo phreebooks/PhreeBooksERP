@@ -38,7 +38,7 @@ switch ($_REQUEST['action']) {
 	if (!$std_chart) validate_upload('file_name', 'text', 'txt');
 	if ($delete_chart) {
 	  $result = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " limit 1");
-	  if ($result->RecordCount() > 0) throw new \Exception(GL_JOURNAL_NOT_EMTPY);
+	  if ($result->RecordCount() > 0) throw new \core\classes\userException(GL_JOURNAL_NOT_EMTPY);
 	  $db->Execute("TRUNCATE TABLE " . TABLE_CHART_OF_ACCOUNTS);
 	  $db->Execute("TRUNCATE TABLE " . TABLE_CHART_OF_ACCOUNTS_HISTORY);
 	}

@@ -25,7 +25,7 @@ gen_pull_language('contacts');
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/phreedom.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
-/**************   page specific initialization  *************************/ 
+/**************   page specific initialization  *************************/
 $subject = $_POST['subject'];
 if (substr($_REQUEST['action'], 0, 3) == 'go_') {
   $subject = substr($_REQUEST['action'], 3);
@@ -54,7 +54,7 @@ $result = $db->Execute($sql);
 $glEntry->beg_bal = array();
 while (!$result->EOF) {
   $glEntry->beg_bal[$result->fields['id']] = array(
-	'desc'      => $result->fields['description'], 
+	'desc'      => $result->fields['description'],
 	'type'      => $result->fields['account_type'],
 	'type_desc' => $coa_types[$result->fields['account_type']]['text'],
 	'beg_bal'   => $result->fields['beginning_balance'],
@@ -102,7 +102,7 @@ switch ($_REQUEST['action']) {
 	header('Expires: ' . date('r', time()+3600));
 	header('Last-Modified: ' . date('r'));
 	print $output;
-	exit();  
+	exit();
   case 'import_table':
 	$format = $_POST['import_format_' . $db_table];
 	switch ($format) {
@@ -131,7 +131,7 @@ switch ($_REQUEST['action']) {
 	  header('Expires: ' . date('r', time()+3600));
 	  header('Last-Modified: ' . date('r'));
 	  print $output;
-	  exit();  
+	  exit();
 	} else{
 	  $messageStack->add('There are no records in this database table.','caution');
 	  $_REQUEST['action'] = 'module'; // retun to module page
@@ -155,12 +155,12 @@ switch ($_REQUEST['action']) {
 	}
 	// check to see if journal is still in balance
 	$total_amount = $currencies->format($total_amount);
-	if ($total_amount <> 0) throw new \Exception(GL_ERROR_NO_BALANCE);
+	if ($total_amount <> 0) throw new \core\classes\userException(GL_ERROR_NO_BALANCE);
 	// *************** START TRANSACTION *************************
 	$db->transStart();
 	foreach ($glEntry->beg_bal as $account => $values) {
-	  $sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " 
-		set beginning_balance = " . $values['beg_bal'] . " 
+	  $sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
+		set beginning_balance = " . $values['beg_bal'] . "
 		where period = 1 and account_id = '" . $account . "'";
 	  $result = $db->Execute($sql);
 	}
@@ -172,7 +172,7 @@ switch ($_REQUEST['action']) {
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	// *************** END TRANSACTION *************************
 	if (DEBUG) $messageStack->write_debug();
-	throw new \Exception(GL_ERROR_NO_POST);
+	throw new \core\classes\userException(GL_ERROR_NO_POST);
 	break;
 
   case 'import_inv':

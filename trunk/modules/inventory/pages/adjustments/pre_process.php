@@ -78,7 +78,7 @@ switch ($_REQUEST['action']) {
 	  }
 	  $rowCnt++;
 	}
-	if ($adj_lines == 0) throw new \Exception(INV_ADJ_QTY_ZERO);
+	if ($adj_lines == 0) throw new \core\classes\userException(INV_ADJ_QTY_ZERO);
 	$glEntry->journal_main_array['total_amount'] = $adj_total;
 	$glEntry->journal_rows[] = array(
 	    'sku'           => '',
@@ -106,7 +106,7 @@ switch ($_REQUEST['action']) {
 
   case 'delete':
 	\core\classes\user::validate_security($security_level, 4); // security check
-	if (!$glEntry->id) throw new \Exception(GL_ERROR_NO_DELETE);
+	if (!$glEntry->id) throw new \core\classes\userException(GL_ERROR_NO_DELETE);
 	$delOrd = new \core\classes\journal();
 	$delOrd->journal($glEntry->id); // load the posted record based on the id submitted
 	// *************** START TRANSACTION *************************
@@ -117,7 +117,7 @@ switch ($_REQUEST['action']) {
 		if (DEBUG) $messageStack->write_debug();
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		break;
-	}	
+	}
 	$cInfo = new \core\classes\objectInfo($_POST);
 	break;
 

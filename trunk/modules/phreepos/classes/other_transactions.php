@@ -21,7 +21,7 @@ class other_transactions {
 	public $code        	= 'other_transactions'; // needs to match class name
     public $db_table     	= TABLE_PHREEPOS_OTHER_TRANSACTIONS;
     public $help_path   	= '';
-    
+
     public function __construct(){
          $this->security_id           = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
          foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
@@ -32,7 +32,7 @@ class other_transactions {
   	function btn_save($id = '') {
   		global $db;
 		\core\classes\user::validate_security($this->security_id, 2);
-		if ($this->gl_acct_id == '') throw new \Exception(GL_SELECT_STD_CHART);
+		if ($this->gl_acct_id == '') throw new \core\classes\userException(GL_SELECT_STD_CHART);
 		$sql_data_array = array(
 			'description' 		    => $this->description,
 			'till_id'    		    => $this->till_id,
@@ -78,7 +78,7 @@ class other_transactions {
 	  		$content['tbody'][$rowCnt] = array(
 	    		array('value' => htmlspecialchars($result->fields['description']),
 			  		  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\''.$this->code.'_edit\',\''.$result->fields['ot_id'].'\')"'),
-				array('value' => htmlspecialchars($result->fields['store_id']), 
+				array('value' => htmlspecialchars($result->fields['store_id']),
 					  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\''.$this->code.'_edit\',\''.$result->fields['ot_id'].'\')"'),
 				array('value' => gen_get_type_description(TABLE_CHART_OF_ACCOUNTS, $result->fields['gl_acct_id']),
 			  		  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\''.$this->code.'_edit\',\''.$result->fields['ot_id'].'\')"'),
@@ -106,7 +106,7 @@ class other_transactions {
 						$(document).ready(function(){
 							changeOfType();
 						});
-		
+
 						function changeOfType(){
 							var elt = document.getElementById('type');
 							if(elt.options[elt.selectedIndex].value == 'expenses'){
@@ -134,8 +134,8 @@ class other_transactions {
 			$output .= '    <td>' . TEXT_TILLS . '</td>' . chr(10);
 			$output .= '    <td>' . html_pull_down_menu('till_id', $tills->till_array() , $this->till_id ? $this->till_id : $tills->default_till()) . '</td>' . chr(10);
     		$output .= '  </tr>' . chr(10);
-  		}else{ 
-			$output .=	html_hidden_field('till_id', $tills->default_till()); 
+  		}else{
+			$output .=	html_hidden_field('till_id', $tills->default_till());
 		}
 	    //type change cash or expences.
     	$output .= '  <tr>' . chr(10);
@@ -161,21 +161,21 @@ class other_transactions {
 		$output .= '    <td>' . html_pull_down_menu('taxable', inv_calculate_tax_drop_down('v',false), $this->taxable) . '</td>' . chr(10);
 	    $output .= '  </tr>' . chr(10);
     	$output .= '  <tr>' . chr(10);
-	
+
 		$output .= '  </tbody>' . chr(10);
     	$output .= '</table>' . chr(10);
     	return $output;
   	}
-  
-  	
-  /* 
+
+
+  /*
    * returns a string that will be a array in javascript.
    */
-  
+
 	function javascript_array(){
   		global $db;
 	  	$sql = "select * from " . $this->db_table ;
-    	$result = $db->Execute($sql);    
+    	$result = $db->Execute($sql);
 	  	$js_tills  = 'var ot_options  = new Array();' . chr(10);
   		$i = 0;
 		while (!$result->EOF){
@@ -185,17 +185,17 @@ class other_transactions {
 		}
 		return $js_tills;
   	}
-  	
+
   	function get_transaction_info($id){
   		global $db;
   		$sql = "select * from " . $this->db_table . " where ot_id = " . $id;
         $result = $db->Execute($sql);
         foreach ($result->fields as $key => $value) $this->$key = $value;
   	}
-  	
+
   	function __destruct(){
   		//print_r($this);
   	}
-  
+
 }
 ?>

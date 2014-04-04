@@ -72,7 +72,7 @@ switch ($_REQUEST['action']) {
 			  }
 			}
 			// error check input
-			if (!count($payment_list)) throw new \Exception(GL_ERROR_NO_ITEMS);
+			if (!count($payment_list)) throw new \core\classes\userException(GL_ERROR_NO_ITEMS);
 			// ***************************** START TRANSACTION *******************************
 			$first_payment_ref = $purchase_invoice_id; // first check number, needed for printing
 			$db->transStart();
@@ -91,7 +91,7 @@ switch ($_REQUEST['action']) {
 				$order->description         = constant('GEN_ADM_TOOLS_J' . JOURNAL_ID);
 				$order->gl_acct_id          = $gl_acct_id;
 				$order->gl_disc_acct_id     = $gl_disc_acct_id;
-			
+
 				// retrieve billing information
 				$result = $db->Execute("select * from " . TABLE_ADDRESS_BOOK . " where type = 'vm' and ref_id = " . $account);
 				$order->bill_acct_id        = $account;
@@ -119,14 +119,14 @@ switch ($_REQUEST['action']) {
 					);
 				    $payment_total += $values[$x]['total'];
 				}
-			
+
 				// Make sure there is a positive balance to pay
 				$order->total_amount = $payment_total;
 				if ($order->total_amount <= 0) {
 					$messageStack->add(sprintf(BNK_BULK_PAY_NOT_POSITIVE, $order->bill_primary_name), 'caution');
 					continue;
 				}
-			
+
 				// post the payment
 				$order->bulk_pay();	// Post the order class to the db
 				gen_add_audit_log(AUDIT_LOG_DESC, $order->purchase_invoice_id, $order->total_amount);
@@ -140,9 +140,9 @@ switch ($_REQUEST['action']) {
 			$db->transCommit();	// finished successfully
   		}catch(Exception $e){
   			$db->transRollback();
-  			$messageStack->add($e->getMessage());	
+  			$messageStack->add($e->getMessage());
   		}
-			
+
 		// ***************************** END TRANSACTION *******************************
 		if (DEBUG) $messageStack->write_debug();
 		// send to printer (range of check numbers)
@@ -168,13 +168,13 @@ $list_header = $result['html_code'];
 $disp_order  = $result['disp_order'];
 if (!$disp_order) $disp_order = 'post_date';
 // build the list for the page selected
-$field_list = array('m.id', 'm.journal_id', 'm.post_date', 'm.total_amount', 'm.terms', 'm.gl_acct_id',  
+$field_list = array('m.id', 'm.journal_id', 'm.post_date', 'm.total_amount', 'm.terms', 'm.gl_acct_id',
 	'm.purchase_invoice_id', 'm.purch_order_id', 'm.bill_acct_id', 'm.bill_primary_name', 'm.waiting');
 // hook to add new fields to the query return results
 if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
-$query_raw = "select " . implode(', ', $field_list) . " 
-	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_CONTACTS . " a on m.bill_acct_id = a.id 
-	where a.type = 'v' and m.journal_id in (6, 7) and m.closed = '0' 
+$query_raw = "select " . implode(', ', $field_list) . "
+	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_CONTACTS . " a on m.bill_acct_id = a.id
+	where a.type = 'v' and m.journal_id in (6, 7) and m.closed = '0'
 	order by $disp_order, post_date";
 $query_result = $db->Execute($query_raw);
 $cal_bills0   = array(

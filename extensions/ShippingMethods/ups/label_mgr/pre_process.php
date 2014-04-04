@@ -52,7 +52,7 @@ switch ($_REQUEST['action']) {
 		$i = 0;
 		$sInfo->package = array();
 		while(true) {
-			$i++;		
+			$i++;
 			if (!isset($_POST['qty_' . $i])) break;
 			// error check
 			if (!$_POST['qty_' . $i]) continue; // skip if quantity is 0 or blank
@@ -74,7 +74,7 @@ switch ($_REQUEST['action']) {
 			$result = $shipment->retrieveLabel($sInfo);
 		} else {
 			$sInfo->ship_country_code = gen_get_country_iso_3_from_2($sInfo->ship_country_code);
-			throw new \Exception(SHIPPING_UPS_NO_PACKAGES);
+			throw new \core\classes\userException(SHIPPING_UPS_NO_PACKAGES);
 		}
 		$temp = $db->Execute("select next_shipment_num from " . TABLE_CURRENT_STATUS);
 		$shipment_num = $temp->fields['next_shipment_num'];
@@ -110,10 +110,10 @@ switch ($_REQUEST['action']) {
 	$result = $db->Execute("select method, ship_date from " . TABLE_SHIPPING_LOG . " where shipment_id = " . (int)$shipment_id);
 	$ship_method = $result->fields['method'];
 	if ($result->RecordCount() == 0 || !$ship_method) {
-		throw new \Exception(SHIPPING_FEDEX_DELETE_ERROR);
+		throw new \core\classes\userException(SHIPPING_FEDEX_DELETE_ERROR);
 	}
 	if ($result->fields['ship_date'] < date('Y-m-d', time())) { // only allow delete if shipped today or in future
-		throw new \Exception(SHIPPING_FEDEX_CANNOT_DELETE);
+		throw new \core\classes\userException(SHIPPING_FEDEX_CANNOT_DELETE);
 	}
 	$shipment = new $shipping_method();
 	$shipment->deleteLabel($shipment_id);
@@ -123,9 +123,9 @@ switch ($_REQUEST['action']) {
 
   default:
 	$oID = db_prepare_input($_GET['oID']);
-	$sql = "select shipper_code, ship_primary_name, ship_contact, ship_address1, ship_address2, 
-		ship_city_town, ship_state_province, ship_postal_code, ship_country_code, ship_telephone1, 
-		ship_email, purchase_invoice_id, purch_order_id, total_amount  
+	$sql = "select shipper_code, ship_primary_name, ship_contact, ship_address1, ship_address2,
+		ship_city_town, ship_state_province, ship_postal_code, ship_country_code, ship_telephone1,
+		ship_email, purchase_invoice_id, purch_order_id, total_amount
 		from " . TABLE_JOURNAL_MAIN . " where id = " . (int)$oID;
 	$result = $db->Execute($sql);
 	while (list($key, $value) = each($result->fields)) $sInfo->$key = $value;

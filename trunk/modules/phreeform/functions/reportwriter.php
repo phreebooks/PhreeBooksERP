@@ -45,7 +45,7 @@ function PrepReport($ReportID) {
 	$params = unserialize($result->fields['params']);
 	$CSVOutput[] = "ReportNarr:'" . addslashes($params['narrative']) . "'" . $crlf;
 	$CSVOutput[] = "EmailMsg:'"   . addslashes($params['email_msg']) . "'" . $crlf;
-	
+
 	// Now add the report fields
 	$CSVOutput[] = '/* Report Field Description Information */' . $crlf;
 	$sql = "select * from " . TABLE_REPORT_FIELDS . " where reportid = " . $ReportID . " order by entrytype, seqnum";
@@ -118,7 +118,7 @@ function import_text_params($arrSQL) {
 		$ValidReportSQL = true;
 	  }
 	}
-	if (!$ValidReportSQL) throw new \Exception("no valid sql statement found for report"); // no valid report sql statement found in the text file, error
+	if (!$ValidReportSQL) throw new \core\classes\userException("no valid sql statement found for report"); // no valid report sql statement found in the text file, error
 	foreach ($arrSQL as $sql) { // fetch the translations for the field descriptions
 	  if (strpos($sql,'FieldDesc') === 0) { // then it's a field description, find the index and save
 		$sql = trim($sql);
@@ -256,7 +256,7 @@ function import_text_params($arrSQL) {
 		}
 		if ($temp) {
 		  $objTemp = new \core\classes\objectInfo($temp);
-		  if (!is_array($params->$entrytype)) $params->$entrytype = array(); 
+		  if (!is_array($params->$entrytype)) $params->$entrytype = array();
 		  array_push($params->$entrytype, $objTemp);
 		}
 	  }
@@ -305,7 +305,7 @@ function convert_security($params) {
 	    break;
 	  case 'e': // employees not used, skip
 	    break;
-	}  
+	}
   }
   $output = implode(';', $output);
 //echo 'converting security started = ' . $params . ' and ended = ' . $output . '<br>';

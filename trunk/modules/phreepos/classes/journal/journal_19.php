@@ -85,13 +85,13 @@ class journal_19 extends \core\classes\journal {
 		// add/update address book
 		if ($this->bill_add_update) { // billing address
 			$this->bill_acct_id = $this->add_account($this->account_type . 'b', $this->bill_acct_id, $this->bill_address_id);
-			if (!$this->bill_acct_id) throw new \Exception('no customer was selected');
+			if (!$this->bill_acct_id) throw new \core\classes\userException('no customer was selected');
 		}
 		// ************* POST journal entry *************
 		$this->validate_purchase_invoice_id();
 		$this->Post($this->id ? 'edit' : 'insert',true);
 		// ************* post-POST processing *************
-		if (!$this->increment_purchase_invoice_id()) throw new \Exception('invoice number can not be incrementedt');
+		if (!$this->increment_purchase_invoice_id()) throw new \core\classes\userException('invoice number can not be incrementedt');
 		// cycle through the payments
 		foreach ($this->pmt_rows as $pay_method) {
 	        $method   = $pay_method['meth'];

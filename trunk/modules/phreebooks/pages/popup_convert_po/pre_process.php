@@ -46,7 +46,7 @@ switch ($_REQUEST['action']) {
 		$order->terminal_date = $order->post_date; // make ship date the same as post date
 		$order->description = sprintf(TEXT_JID_ENTRY, constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE'));
 		$order->drop_ship = $drop_ship;
-	
+
 		$temp_rows = $order->journal_rows;
 		$order->journal_rows = array(); // clean out the journal items rows to be re-generated
 		$vendor_id = false;
@@ -56,7 +56,7 @@ switch ($_REQUEST['action']) {
 		  	// fetch the sku information
 		  	if ($temp_rows[$i]['sku']) {
 		    	$result = $db->Execute("select description_purchase, item_cost, account_inventory_wage, vendor_id
-		    	  from " . TABLE_INVENTORY . " where sku = '" . $temp_rows[$i]['sku'] . "'"); 
+		    	  from " . TABLE_INVENTORY . " where sku = '" . $temp_rows[$i]['sku'] . "'");
 				if ($result->fields['vendor_id'] > 0) $vendor_id = $result->fields['vendor_id']; // save preferred vendor (takes last one)
 				$order->journal_rows[] = array(
 				  'gl_type'      => GL_TYPE,
@@ -80,10 +80,10 @@ switch ($_REQUEST['action']) {
 		  'gl_account'    => AP_DEFAULT_PURCHASE_ACCOUNT,
 		);
 		$order->total_amount = $total_amount;
-	
-		if (!$vendor_id) throw new \Exception(PB_ERROR_NO_PREFERRED_VENDOR);
+
+		if (!$vendor_id) throw new \core\classes\userException(PB_ERROR_NO_PREFERRED_VENDOR);
 		$result = $db->Execute("select * from " . TABLE_ADDRESS_BOOK . " where ref_id = " . $vendor_id . " and type = 'vm'");
-		if ($result->recordCount() == 0)  throw new \Exception("No valid vendors were found! for: $vendor_id");
+		if ($result->recordCount() == 0)  throw new \core\classes\userException("No valid vendors were found! for: $vendor_id");
 		$order->bill_acct_id        = $vendor_id;
 		$order->bill_address_id     = $result->fields['address_id'];
 		$order->bill_primary_name   = $result->fields['primary_name'];
@@ -98,7 +98,7 @@ switch ($_REQUEST['action']) {
 		$order->bill_email          = $result->fields['email'];
 		$result = $db->Execute("select special_terms from " . TABLE_CONTACTS . " where id = " . $vendor_id);
 		$order->terms = $result->fields['terms'];
-	
+
 		// determine whether to ship to customer or to company main address
 		if (!$drop_ship) {
 		  	$order->ship_acct_id        = '0';
@@ -127,7 +127,7 @@ switch ($_REQUEST['action']) {
 		  	$order->ship_telephone1     = $order->journal_main_array['ship_telephone1'];
 		  	$order->ship_email          = $order->journal_main_array['ship_email'];
 		}
-	
+
 		$order->journal_main_array = $order->build_journal_main_array();	// build ledger main record
 		// ***************************** START TRANSACTION *******************************
 		$db->transStart();

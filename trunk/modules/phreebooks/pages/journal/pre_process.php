@@ -92,9 +92,9 @@ switch ($_REQUEST['action']) {
 		);
 
 		// check for errors and prepare extra values
-		if (!$glEntry->period) throw new \Exception("bad post date was submitted");// bad post_date was submitted
+		if (!$glEntry->period) throw new \core\classes\userException("bad post date was submitted");// bad post_date was submitted
 		// 	no rows entered
-		if (!$glEntry->journal_rows) throw new \Exception(GL_ERROR_NO_ITEMS);
+		if (!$glEntry->journal_rows) throw new \core\classes\userException(GL_ERROR_NO_ITEMS);
 		// finished checking errors
 		// *************** START TRANSACTION *************************
 		$db->transStart();
@@ -145,7 +145,7 @@ switch ($_REQUEST['action']) {
 					$glEntry->post_date = gen_specific_date($post_date, $day_offset, $month_offset, $year_offset);
 					$glEntry->period = gen_calculate_period($glEntry->post_date, true);
 					if (!$glEntry->period && $i < ($glEntry->recur_id - 1)) { // recur falls outside of available periods, ignore last calculation
-					  throw new \Exception(ORD_PAST_LAST_PERIOD);
+					  throw new \core\classes\userException(ORD_PAST_LAST_PERIOD);
 					}
 					$glEntry->journal_main_array['post_date'] = $glEntry->post_date;
 					$glEntry->journal_main_array['period'] = $glEntry->period;

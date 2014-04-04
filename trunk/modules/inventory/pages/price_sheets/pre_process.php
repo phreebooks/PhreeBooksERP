@@ -59,7 +59,7 @@ switch ($_REQUEST['action']) {
 	  if ($result->RecordCount() > 0) {
 		$effective_date = gen_locale_date($effective_date);
 		$_REQUEST['action'] = 'new';
-		throw new \Exception(SRVCS_DUPLICATE_SHEET_NAME);
+		throw new \core\classes\userException(SRVCS_DUPLICATE_SHEET_NAME);
 	  }
 	}
 	$sql_data_array = array(

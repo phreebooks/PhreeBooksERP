@@ -37,7 +37,7 @@ switch ($type) {
 	define('PAGE_TITLE', BOX_VENDOR_DEPOSITS);
     break;
   default:
-    throw new \Exception('Illegal Access type');
+    throw new \core\classes\userException('Illegal Access type');
 }
 /************** include page specific files *********************/
 gen_pull_language('phreebooks');
@@ -133,9 +133,9 @@ switch ($_REQUEST['action']) {
 	    break;
 	}
 	// error check input
-	if (!$order->period)                throw new \Exception("Period isn't set");
-	if (!$order->bill_acct_id)          throw new \Exception(sprintf(ERROR_NO_CONTACT_SELECTED, TEXT_LC_CUSTOMER, TEXT_LC_CUSTOMER, ORD_ADD_UPDATE));
-	if (!$order->item_rows[0]['total']) throw new \Exception(GL_ERROR_NO_ITEMS);
+	if (!$order->period)                throw new \core\classes\userException("Period isn't set");
+	if (!$order->bill_acct_id)          throw new \core\classes\userException(sprintf(ERROR_NO_CONTACT_SELECTED, TEXT_LC_CUSTOMER, TEXT_LC_CUSTOMER, ORD_ADD_UPDATE));
+	if (!$order->item_rows[0]['total']) throw new \core\classes\userException(GL_ERROR_NO_ITEMS);
 	// post the receipt/payment
 	if ($post_success = $order->post_ordr($_REQUEST['action'])) {
 	  $oID = $order->id; // save id for printing

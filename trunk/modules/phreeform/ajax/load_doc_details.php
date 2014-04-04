@@ -27,7 +27,7 @@ require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
 if(!isset($_REQUEST['list'])) $_REQUEST['list'] = 1;
 $fieldset_content = 'NULL';
 $id = (int)$_GET['id'];
-if (!isset($_GET['id'])) throw new \Exception("variable ID isn't set");
+if (!isset($_GET['id'])) throw new \core\classes\userException("variable ID isn't set");
 $doc_details = $db->Execute("select * from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
 if ($id == 0 || $doc_details->fields['doc_type'] == '0') { // folder
   $dir_path     = TEXT_PATH . ': /' . build_dir_path($id);

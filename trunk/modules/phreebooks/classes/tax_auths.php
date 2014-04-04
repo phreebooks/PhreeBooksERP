@@ -23,16 +23,16 @@ class tax_auths {
     public $db_table    = TABLE_TAX_AUTH;
     public $help_path   = '07.08.03.01';
     public $type        = 'c'; // choices are c for customers and v for vendors
-    
+
     public function __construct(){
-        $this->security_id = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
+        $this->security_id = \core\classes\user::security_level(SECURITY_ID_CONFIGURATION);
         foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
         $this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
     }
 
   function btn_save($id = '') {
   	global $db;
-	\core\classes\user::validate_security($this->security_id, 2); // security check		
+	\core\classes\user::validate_security($this->security_id, 2); // security check
 	$sql_data_array = array(
 		'type'              => $this->type,
 		'description_short' => $this->description_short,
@@ -53,14 +53,14 @@ class tax_auths {
 
   function btn_delete($id = 0) {
   	global $db;
-	\core\classes\user::validate_security($this->security_id, 4); // security check		
+	\core\classes\user::validate_security($this->security_id, 4); // security check
 	// Check for this authority being used in a tax rate calculation, if so do not delete
-	$result = $db->Execute("select tax_auths from " . TABLE_JOURNAL_MAIN . " 
+	$result = $db->Execute("select tax_auths from " . TABLE_JOURNAL_MAIN . "
 		where tax_auths like '%" . $id . "%'");
 	while (!$result->EOF) {
 	  $auth_ids = explode(':', $result->fields['tax_auths']);
 	  for ($i = 0; $i < count($auth_ids); $i++) {
-		if ($id == $auth_ids[$i]) throw new \Exception(SETUP_TAX_AUTHS_DELETE_ERROR);
+		if ($id == $auth_ids[$i]) throw new \core\classes\userException(SETUP_TAX_AUTHS_DELETE_ERROR);
 	  }
 	  $result->MoveNext();
 	}
@@ -79,7 +79,7 @@ class tax_auths {
 	  'value' => array(SETUP_TAX_DESC_SHORT, TEXT_DESCRIPTION, SETUP_TAX_GL_ACCT, SETUP_TAX_RATE, TEXT_ACTION),
 	  'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 	);
-    $result = $db->Execute("select tax_auth_id, description_short, description_long, account_id, tax_rate 
+    $result = $db->Execute("select tax_auth_id, description_short, description_long, account_id, tax_rate
 	  from " . $this->db_table . " where type = '" . $this->type . "'");
     $rowCnt = 0;
 	while (!$result->EOF) {
@@ -89,7 +89,7 @@ class tax_auths {
 	  $content['tbody'][$rowCnt] = array(
 	    array('value' => htmlspecialchars($result->fields['description_short']),
 			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\''.$this->code.'_edit\',\''.$result->fields['tax_auth_id'].'\')"'),
-		array('value' => htmlspecialchars($result->fields['description_long']), 
+		array('value' => htmlspecialchars($result->fields['description_long']),
 			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\''.$this->code.'_edit\',\''.$result->fields['tax_auth_id'].'\')"'),
 		array('value' => gen_get_type_description(TABLE_CHART_OF_ACCOUNTS, $result->fields['account_id']),
 			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\''.$this->code.'_edit\',\''.$result->fields['tax_auth_id'].'\')"'),
@@ -107,7 +107,7 @@ class tax_auths {
   function build_form_html($action, $id = '') {
     global $db;
     if ($action <> 'new') {
-        $sql = "select description_short, description_long, account_id, vendor_id, tax_rate 
+        $sql = "select description_short, description_long, account_id, vendor_id, tax_rate
 	       from " . $this->db_table . " where tax_auth_id = " . $id;
         $result = $db->Execute($sql);
         foreach ($result->fields as $key => $value) $this->$key = $value;

@@ -36,7 +36,7 @@ class backup {
 		if (is_array($table_list)) foreach($table_list as $table) {
 	  		$this->dump_db_table($source_db, $table, $type, $params);
 		  	$result = $this->db_executeSql($this->source_dir . $this->source_file);
-	  		if (count($result['errors']) > 0) throw new \Exception(SETUP_CO_MGR_ERROR_1);
+	  		if (count($result['errors']) > 0) throw new \core\classes\userException(SETUP_CO_MGR_ERROR_1);
 		}
   	}
 
@@ -97,10 +97,10 @@ class backup {
   	}
 
 	function make_zip($type = 'file', $localname = NULL, $root_folder = '/') {
-		if (!class_exists('ZipArchive')) throw new \Exception(GEN_BACKUP_NO_ZIP_CLASS);
+		if (!class_exists('ZipArchive')) throw new \core\classes\userException(GEN_BACKUP_NO_ZIP_CLASS);
 		$zip = new \ZipArchive;
 		$res = $zip->open($this->dest_dir . $this->dest_file, ZipArchive::CREATE);
-		if ($res !== true) throw new \Exception(GEN_BACKUP_FILE_ERROR . $this->dest_dir);
+		if ($res !== true) throw new \core\classes\userException(GEN_BACKUP_FILE_ERROR . $this->dest_dir);
 		if ($type == 'file') {
 			$zip->addFile($this->source_dir . $this->source_file, $localname);
 		} else { // compress all
@@ -123,7 +123,7 @@ class backup {
 
 	function unzip_file($file, $dest_path = '') {
     	if (!$dest_path) $dest_path = $this->dest_dir;
-		if (!file_exists($file)) throw new \Exception("file $file already exists");
+		if (!file_exists($file)) throw new \core\classes\userException("file $file already exists");
 		$zip = new \ZipArchive;
     	$zip->open($file);
     	$zip->extractTo($dest_path);
@@ -140,7 +140,7 @@ class backup {
 		  	$this->backup_mime = 'application/x-tar';
 		  	exec("cd " . $this->source_dir . "; nice -n 19 tar -jcf " . $this->dest_dir . $this->dest_file . " " . $this->source_dir . " 2>&1", $output, $res);
 		}
-		if ($res > 0) throw new \Exception(ERROR_COMPRESSION_FAILED . implode(": ", $output));
+		if ($res > 0) throw new \core\classes\userException(ERROR_COMPRESSION_FAILED . implode(": ", $output));
 	}
 
   	function download($path, $filename, $save_source = false) {
@@ -149,7 +149,7 @@ class backup {
 		if (!$contents = @fread($handle, filesize($source_file)))	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, 		$source_file));
 		if (!@fclose($handle)) 										throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 	$source_file));
 		if (!$save_source) unlink($source_file);
-		if (strlen($contents) == 0) throw new \Exception(GEN_BACKUP_DOWNLOAD_EMPTY);
+		if (strlen($contents) == 0) throw new \core\classes\userException(GEN_BACKUP_DOWNLOAD_EMPTY);
 		header("Content-type: " . $this->backup_mime);
 		header("Content-disposition: attachment; filename=" . $filename . "; size=" . strlen($contents));
 		header('Pragma: cache');
@@ -175,18 +175,18 @@ class backup {
 		foreach ($files as $file) {
 		  	if ($file == "." || $file == "..") continue;
 		  	if (is_file($dir . '/' . $file)) {
-				if (!@unlink($dir . '/' . $file)) throw new \Exception("can not un link file $file from dir $dir");
+				if (!@unlink($dir . '/' . $file)) throw new \core\classes\userException("can not un link file $file from dir $dir");
 		  	} else { // it's a directory
 		    	$subdir = scandir($dir . '/' . $file);
 				if (sizeof($subdir) > 2) $this->delete_dir($dir . '/' . $file); // directory is not empty, recurse
-				if (!@rmdir("$dir/$file")) throw new \Exception("can not remove dir $dir/$file");
+				if (!@rmdir("$dir/$file")) throw new \core\classes\userException("can not remove dir $dir/$file");
 		  	}
 		}
-		if (!@rmdir($dir)) throw new \Exception("can not remove dir $dir");
+		if (!@rmdir($dir)) throw new \core\classes\userException("can not remove dir $dir");
 	}
 
   	function copy_dir($dir_source, $dir_dest) {
-    	if (!is_dir($dir_source))  throw new \Exception("can not find dir $dir_source");
+    	if (!is_dir($dir_source))  throw new \core\classes\userException("can not find dir $dir_source");
 		$files = scandir($dir_source);
 		foreach ($files as $file) {
 	  		if ($file == "." || $file == "..") continue;

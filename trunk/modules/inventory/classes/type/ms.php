@@ -5,7 +5,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 	public $title       			= INV_TYPES_MS;
 	public $account_sales_income	= INV_MASTER_STOCK_DEFAULT_SALES;
 	public $account_inventory_wage	= INV_MASTER_STOCK_DEFAULT_INVENTORY;
-	public $account_cost_of_sales	= INV_MASTER_STOCK_DEFAULT_COS;	
+	public $account_cost_of_sales	= INV_MASTER_STOCK_DEFAULT_COS;
 	public $attr_array0 			= array();
 	public $attr_array1 			= array();
 	public $ms_attr_0				= '';
@@ -15,24 +15,24 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 	public $cost_method				= INV_MASTER_STOCK_DEFAULT_COSTING;
 	public $child_array 			= array();
 	public $edit_ms_list			= true;
-	
+
 	function __construct(){
 		parent::__construct();
 		$this->tab_list['master'] = array('file'=>'template_tab_ms',	'tag'=>'master',    'order'=>30, 'text'=>INV_MS_ATTRIBUTES);
 	}
-	
+
 	function get_item_by_id($id){
 		$this->child_array = null;
 		parent::get_item_by_id($id);
 		$this->get_ms_list();
 	}
-	
+
 	function get_item_by_sku($sku){
 		$this->child_array = null;
 		parent::get_item_by_sku($sku);
 		$this->get_ms_list();
 	}
-	
+
 	//this is to copy a product
 	function copy($id, $newSku) {
 		global $db;
@@ -49,7 +49,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 		$this->get_ms_list();
 		return true;
 	}
-	
+
 	function get_ms_list(){
 		global $db;
 		$result = $db->Execute("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->sku . "'");
@@ -84,7 +84,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 		$result = $db->Execute("select * from " . TABLE_INVENTORY . " where sku like '" . $this->sku . "-%' and inventory_type = 'mi' order by sku asc");
 		$i = 0;
 		while(!$result->EOF){
-			$temp = explode('-',$result->fields['sku']); 
+			$temp = explode('-',$result->fields['sku']);
 			$this->child_array[$i] = array(	'id'       		=> $result->fields['id'],
 											'sku'      		=> $result->fields['sku'],
 											'inactive' 		=> $result->fields['inactive'],
@@ -121,9 +121,9 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 		if ($result->Recordcount() > 0) throw new \core\classes\userException(INV_ERROR_CANNOT_DELETE);
 		$this->remove();
 	  	return true;
-		
+
 	}
-	
+
 	function remove(){
 		global $db;
 		$ms_array = $db->Execute("select * from " . TABLE_INVENTORY . " where sku like '" . $this->sku . "-%'");
@@ -142,7 +142,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 			$ms_array->MoveNext();
 		}
 	}
-	
+
 	function save(){
 		global $db, $messageStack, $security_level;
 		$current_situation = $db->Execute("select * from " . TABLE_INVENTORY . " where id = '" . $this->id  . "'");
@@ -169,7 +169,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 			} else {
 				for ($j = 0; $j < count($attr1); $j++) {
 					$idx1 = explode(':', $attr1[$j]);
-					if($idx0[0] != '' && $idx1[0] != '') { 
+					if($idx0[0] != '' && $idx1[0] != '') {
 						$sku_list[] = $this->sku . '-' . $idx0[0] . $idx1[0];
 						$variables[$this->sku . '-' . $idx0[0] . $idx1[0]]['idx0'] = $idx0[1];
 						$variables[$this->sku . '-' . $idx0[0] . $idx1[0]]['idx1'] = $idx1[1];
@@ -187,7 +187,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 		$delete_list = array_diff($existing_sku_list, $sku_list);
 		$update_list = array_intersect($existing_sku_list, $sku_list);
 		$insert_list = array_diff($sku_list, $update_list);
-		
+
 		foreach($insert_list as $sku) { // first insert new sku's with all fields
 			$sql_data_array['sku'] = $sku;
 			$sql_data_array['description_short'] 	= sprintf($this->description_short, 	$variables[$sku]['idx0'], $variables[$sku]['idx1'] );
@@ -207,7 +207,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 				db_perform(TABLE_INVENTORY_PURCHASE, $purchase_data_array, 'insert');
 			}
 		}
-		if ($this->id != ''){ //only update fields that are changed otherwise fields in the child could be overwritten 
+		if ($this->id != ''){ //only update fields that are changed otherwise fields in the child could be overwritten
 			foreach ($current_situation->fields as $key => $value) { // remove fields where the parent is unchanged because the childeren could have different values in these fields.
 				switch($key){
 					case 'description_short': 		if($this->description_short == $value) 		unset($sql_data_array[$key]); Break;
@@ -218,7 +218,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 			}
 		}
 		foreach($update_list as $sku) { //update with reduced number of fields.
-			$sql_data_array['sku'] = $sku; 
+			$sql_data_array['sku'] = $sku;
 			if(isset($sql_data_array['description_short'])) 	$sql_data_array['description_short'] 	= sprintf($this->description_short, 	$variables[$sku]['idx0'], $variables[$sku]['idx1'] );
 			if(isset($sql_data_array['description_purchase'])) 	$sql_data_array['description_purchase'] = sprintf($this->description_purchase, 	$variables[$sku]['idx0'], $variables[$sku]['idx1'] );
 			if(isset($sql_data_array['description_sales'])) 	$sql_data_array['description_sales'] 	= sprintf($this->description_sales, 	$variables[$sku]['idx0'], $variables[$sku]['idx1'] );
@@ -235,7 +235,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 					$purchase_data_array['sku'] = $sku;
 					db_perform(TABLE_INVENTORY_PURCHASE, $purchase_data_array, 'insert');
 				}else{
-					/*on purpose removed this part because iam not sure what to update and what not 
+					/*on purpose removed this part because iam not sure what to update and what not
 					 * $purchase_data_array = $backUpRow;
 					unset($purchase_data_array['id']);
 					unset($purchase_data_array['action']);
@@ -251,7 +251,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 		}
 		if (count($delete_list) && $security_level < 4){
 			$this->get_ms_list();
-			throw new \Exception(ERROR_NO_PERMISSION);
+			throw new \core\classes\userException(ERROR_NO_PERMISSION);
 		}
 		foreach($delete_list as $sku) {
 			$temp = $this->mi_check_remove($sku);
@@ -264,7 +264,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 		}
 		// update/insert into inventory_ms_list table
 		$result = $db->Execute("select id from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->sku . "'");
-		$exists = $result->RecordCount();	
+		$exists = $result->RecordCount();
 		$data_array = array(
 			'sku'         => $this->sku,
 			'attr_0'      => $this->ms_attr_0,
@@ -279,7 +279,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 		$this->get_ms_list();
 		return true;
 	}
-	
+
 	function mi_check_remove($sku) {
 		global $messageStack, $db;
 		// check to see if there is inventory history remaining, if so don't allow delete
@@ -297,9 +297,9 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 		$result = $db->Execute( "select id from " . TABLE_JOURNAL_ITEM . " where sku = '" . $sku . "' limit 1");
 		if ($result->Recordcount() > 0) {
 			$messageStack->add(sprintf(INV_MS_ERROR_CANNOT_DELETE, $sku), 'caution');
-	  		return false;	
+	  		return false;
 		}
 	  	return true;
-		
+
 	}
 }

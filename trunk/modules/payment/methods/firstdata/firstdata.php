@@ -156,17 +156,17 @@ class firstdata extends \payment\classes\payment {
   	function pre_confirmation_check() {
 	    // if the card number has the blanked out middle number fields, it has been processed, show message that
 		// the charges were not processed through the merchant gateway and continue posting payment.
-		if (strpos($this->field_1, '*') !== false) throw new \Exception(MODULE_PAYMENT_CC_NO_DUPS);
+		if (strpos($this->field_1, '*') !== false) throw new \core\classes\userException(MODULE_PAYMENT_CC_NO_DUPS);
 	    $result = $this->validate();
 	    switch ($result) {
 	      	case -1:
-	        	throw new \Exception(sprintf(TEXT_CCVAL_ERROR_UNKNOWN_CARD, substr($this->cc_card_number, 0, 4)));
+	        	throw new \core\classes\userException(sprintf(TEXT_CCVAL_ERROR_UNKNOWN_CARD, substr($this->cc_card_number, 0, 4)));
 	        case -2:
 	      	case -3:
 	      	case -4:
-	        	throw new \Exception(TEXT_CCVAL_ERROR_INVALID_DATE);
+	        	throw new \core\classes\userException(TEXT_CCVAL_ERROR_INVALID_DATE);
 	        case false:
-	        	throw new \Exception(TEXT_CCVAL_ERROR_INVALID_NUMBER);
+	        	throw new \core\classes\userException(TEXT_CCVAL_ERROR_INVALID_NUMBER);
 	    }
 	    $this->cc_cvv2         = $this->field_4;
 		return false;
@@ -180,7 +180,7 @@ class firstdata extends \payment\classes\payment {
 
 	// if the card number has the blanked out middle number fields, it has been processed, the message that
 	// the charges were not processed were set in pre_confirmation_check, just return to continue without processing.
-	if (strpos($this->field_1, '*') !== false) throw new \Exception(MODULE_PAYMENT_CC_NO_DUPS);
+	if (strpos($this->field_1, '*') !== false) throw new \core\classes\userException(MODULE_PAYMENT_CC_NO_DUPS);
 
     $order->info['cc_expires'] = $this->field_2 . $this->field_3;
     $order->info['cc_owner']   = $this->field_0;
@@ -311,7 +311,7 @@ class firstdata extends \payment\classes\payment {
 	$curlerrornum = curl_errno($ch);
 	$curlerror    = curl_error($ch);
 	curl_close ($ch);
-	if ($curlerrornum) throw new \Exception('XML Read Error (cURL) #' . $curlerrornum . '. Description = ' . $curlerror);
+	if ($curlerrornum) throw new \core\classes\userException('XML Read Error (cURL) #' . $curlerrornum . '. Description = ' . $curlerror);
 //$messageStack->add('response xml = ' . htmlspecialchars($authorize),'caution');
 
 	// since the response is only one level deep, we can do a simple parse
@@ -334,13 +334,13 @@ class firstdata extends \payment\classes\payment {
 
     // If the response code is not 0 (approved) then redirect back to the payment page with the appropriate error message
     if ($results['r_error']) {
-      	throw new \Exception('Decline Code #' . $results['r_error'] . ': ' . $results['r_message'] . ' - ' . MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE);
+      	throw new \core\classes\userException('Decline Code #' . $results['r_error'] . ': ' . $results['r_message'] . ' - ' . MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE);
     } else {
 		$messageStack->add($results['r_message'] . ' - Approval code: ' . $this->auth_code . ' --> CVV2 results: ' . $this->cvv_codes[$results['r_authresponse']], 'success');
 		$messageStack->add('Address verification results: ' . $this->avs_codes[$results['r_avs']], 'success');
 		return false;
 	}
-	throw new \Exception($results['r_message'] . ' - ' . MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE);
+	throw new \core\classes\userException($results['r_message'] . ' - ' . MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE);
   }
 }
 ?>

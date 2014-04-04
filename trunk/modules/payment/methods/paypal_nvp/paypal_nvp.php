@@ -28,7 +28,7 @@ class paypal_nvp extends \payment\classes\payment {
   public $enable_encryption = 1; // set to field position of credit card to create hint, false to turn off encryption
   public $sort_order        = 3;
   public $version			= '3.2';
-  
+
   public function __construct(){
   	global $order;
   	parent::__construct();
@@ -91,11 +91,11 @@ class paypal_nvp extends \payment\classes\payment {
   }
 
   function javascript_validation() {
-    $js = 
+    $js =
 	'  if (payment_method == "' . $this->id . '") {' . "\n" .
     '    var cc_owner  = document.getElementById("paypal_nvp_field_0").value +" "+document.getElementById("paypal_nvp_field_5").value;' . "\n" .
-    '    var cc_number = document.getElementById("paypal_nvp_field_1").value;' . "\n" . 
-    '    var cc_cvv    = document.getElementById("paypal_nvp_field_4").value;' . "\n" . 
+    '    var cc_number = document.getElementById("paypal_nvp_field_1").value;' . "\n" .
+    '    var cc_cvv    = document.getElementById("paypal_nvp_field_4").value;' . "\n" .
     '    if (cc_owner == "" || cc_owner.length < ' . CC_OWNER_MIN_LENGTH . ') {' . "\n" .
     '      error_message = error_message + "' . sprintf(MODULE_PAYMENT_CC_TEXT_JS_CC_OWNER, CC_OWNER_MIN_LENGTH) . '";' . "\n" .
     '      error = 1;' . "\n" .
@@ -103,11 +103,11 @@ class paypal_nvp extends \payment\classes\payment {
     '    if (cc_number == "" || cc_number.length < ' . CC_NUMBER_MIN_LENGTH . ') {' . "\n" .
     '      error_message = error_message + "' . sprintf(MODULE_PAYMENT_CC_TEXT_JS_CC_NUMBER, CC_NUMBER_MIN_LENGTH) . '";' . "\n" .
     '      error = 1;' . "\n" .
-    '    }' . "\n" . 
+    '    }' . "\n" .
     '    if (cc_cvv == "" || cc_cvv.length < "3" || cc_cvv.length > "4") {' . "\n".
     '      error_message = error_message + "' . MODULE_PAYMENT_CC_TEXT_JS_CC_CVV . '";' . "\n" .
     '      error = 1;' . "\n" .
-    '    }' . "\n" . 
+    '    }' . "\n" .
     '  }' . "\n";
     return $js;
   }
@@ -139,19 +139,19 @@ class paypal_nvp extends \payment\classes\payment {
   }
 
  	function pre_confirmation_check() {
-   		// if the card number has the blanked out middle number fields, it has been processed, show message that 
+   		// if the card number has the blanked out middle number fields, it has been processed, show message that
 		// the charges were not processed through the merchant gateway and continue posting payment.
-		if (strpos($this->field_1,'*') !== false) throw new \Exception(MODULE_PAYMENT_CC_NO_DUPS);
+		if (strpos($this->field_1,'*') !== false) throw new \core\classes\userException(MODULE_PAYMENT_CC_NO_DUPS);
     	$result = $this->validate($this->cc_card_number);
     	switch ($result) {
       		case -1:
-      			throw new \Exception(sprintf(TEXT_CCVAL_ERROR_UNKNOWN_CARD, substr($this->cc_card_number, 0, 4)));
+      			throw new \core\classes\userException(sprintf(TEXT_CCVAL_ERROR_UNKNOWN_CARD, substr($this->cc_card_number, 0, 4)));
       		case -2:
       		case -3:
       		case -4:
-      			throw new \Exception(TEXT_CCVAL_ERROR_INVALID_DATE);
+      			throw new \core\classes\userException(TEXT_CCVAL_ERROR_INVALID_DATE);
       		case false:
-      			throw new \Exception(TEXT_CCVAL_ERROR_INVALID_NUMBER);
+      			throw new \core\classes\userException(TEXT_CCVAL_ERROR_INVALID_NUMBER);
     	}
 		return false;
   	}
@@ -159,15 +159,15 @@ class paypal_nvp extends \payment\classes\payment {
   function before_process() {
     global $order, $db, $messageStack;
 
-	// if the card number has the blanked out middle number fields, it has been processed, the message that 
+	// if the card number has the blanked out middle number fields, it has been processed, the message that
 	// the charges were not processed were set in pre_confirmation_check, just return to continue without processing.
-	if (strpos($this->field_1,'*') !== false) throw new \Exception(MODULE_PAYMENT_CC_NO_DUPS);
+	if (strpos($this->field_1,'*') !== false) throw new \core\classes\userException(MODULE_PAYMENT_CC_NO_DUPS);
 
 	$order->info['cc_expires'] = $this->field_2 . $this->field_3;
     $order->info['cc_owner']   = $this->field_0 . ' ' . $this->field_5;
 	$this->cc_card_owner       = $this->field_0 . ' ' . $this->field_5;
     $order->info['cc_cvv']     = $this->field_4;
-    
+
 	switch (substr($this->field_1, 0, 1)) {
 	  	case '3': $card_type = 'Amex';       break;
 	  	case '4': $card_type = 'Visa';       break;
@@ -222,7 +222,7 @@ class paypal_nvp extends \payment\classes\payment {
  */
 
 	// Execute the API operation; see the PPHttpPost function above.
-	if (!$httpParsedResponseAr = $this->PPHttpPost('DoDirectPayment', $data)) throw new \Exception("failed cURL"); // failed cURL
+	if (!$httpParsedResponseAr = $this->PPHttpPost('DoDirectPayment', $data)) throw new \core\classes\userException("failed cURL"); // failed cURL
 
     $this->transaction_id = $httpParsedResponseAr['TRANSACTIONID'];
 	if("SUCCESS" == strtoupper($httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($httpParsedResponseAr["ACK"])) {
@@ -231,7 +231,7 @@ class paypal_nvp extends \payment\classes\payment {
 //echo 'Success response:'; print_r($httpParsedResponseAr); echo '<br>';
 		return false;
 	}
-    throw new \Exception(MODULE_PAYMENT_PAYPAL_NVP_DECLINE_CODE . $httpParsedResponseAr['L_ERRORCODE0'] . ': ' . urldecode($httpParsedResponseAr['L_LONGMESSAGE0']) . ' - ' . MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE);
+    throw new \core\classes\userException(MODULE_PAYMENT_PAYPAL_NVP_DECLINE_CODE . $httpParsedResponseAr['L_ERRORCODE0'] . ': ' . urldecode($httpParsedResponseAr['L_LONGMESSAGE0']) . ' - ' . MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE);
 //echo 'Failed response:'; print_r($httpParsedResponseAr); echo '<br>';
 	return true;
   }
@@ -271,7 +271,7 @@ class paypal_nvp extends \payment\classes\payment {
 //echo 'string = ' . $data . '<br>';
 	$httpResponse = curl_exec($ch);
 
-	if(!$httpResponse) throw new \Exception('XML Read Error (cURL) #' . curl_errno($ch) . '. Description = ' . curl_error($ch));
+	if(!$httpResponse) throw new \core\classes\userException('XML Read Error (cURL) #' . curl_errno($ch) . '. Description = ' . curl_error($ch));
 	// Extract the response details.
 	$httpResponseAr = explode("&", $httpResponse);
 	$httpParsedResponseAr = array();
@@ -281,7 +281,7 @@ class paypal_nvp extends \payment\classes\payment {
 			$httpParsedResponseAr[$tmpAr[0]] = $tmpAr[1];
 		}
 	}
-	if (0 == sizeof($httpParsedResponseAr) || !array_key_exists('ACK', $httpParsedResponseAr)) throw new \Exception('PayPal Response Error.');
+	if (0 == sizeof($httpParsedResponseAr) || !array_key_exists('ACK', $httpParsedResponseAr)) throw new \core\classes\userException('PayPal Response Error.');
 	return $httpParsedResponseAr;
   }
 }

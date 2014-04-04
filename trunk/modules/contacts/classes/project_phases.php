@@ -29,12 +29,12 @@ class project_phases {
     public function __construct(){
     	foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
     	$this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
-        $this->security_id = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
+        $this->security_id = \core\classes\user::security_level(SECURITY_ID_CONFIGURATION);
     }
 
 	function btn_save($id = '') {
 	  	global $db;
-		\core\classes\user::validate_security($this->security_id, 2); // security check		
+		\core\classes\user::validate_security($this->security_id, 2); // security check
 	    $description_short = db_prepare_input($_POST['description_short']);
 		$sql_data_array = array(
 		  'description_short' => $description_short,
@@ -55,16 +55,16 @@ class project_phases {
 
 	function btn_delete($id = 0) {
 	  	global $db;
-		\core\classes\user::validate_security($this->security_id, 4); // security check		
+		\core\classes\user::validate_security($this->security_id, 4); // security check
 	/*
 		// Check for this project phase being used in a journal entry, if so do not allow deletion
-		$result = $db->Execute("select projects from " . TABLE_JOURNAL_ITEM . " 
+		$result = $db->Execute("select projects from " . TABLE_JOURNAL_ITEM . "
 			where projects like '%" . $id . "%'");
 		while (!$result->EOF) {
 		  $phase_ids = explode(':', $result->fields['projects']);
 		  for ($i = 0; $i < count($phase_ids); $i++) {
 			if ($id == $phase_ids[$i]) {
-			  throw new \Exception(SETUP_PROJECT_PHASESS_DELETE_ERROR);
+			  throw new \core\classes\userException(SETUP_PROJECT_PHASESS_DELETE_ERROR);
 			}
 		  }
 		  $result->MoveNext();
@@ -94,7 +94,7 @@ class project_phases {
 			$content['tbody'][$rowCnt] = array(
 			  array('value' => htmlspecialchars($result->fields['description_short']),
 					'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'project_costs_edit\',\''.$result->fields['cost_id'].'\')"'),
-			  array('value' => htmlspecialchars($result->fields['description_long']), 
+			  array('value' => htmlspecialchars($result->fields['description_long']),
 					'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'project_costs_edit\',\''.$result->fields['cost_id'].'\')"'),
 			  array('value' => $project_cost_types[$result->fields['cost_type']],
 					'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'project_costs_edit\',\''.$result->fields['cost_id'].'\')"'),
@@ -114,7 +114,7 @@ class project_phases {
   function build_form_html($action, $id = '') {
     global $db, $project_cost_types;
     if ($action <> 'new') {
-        $sql = "select description_short, description_long, cost_type, cost_breakdown, inactive 
+        $sql = "select description_short, description_long, cost_type, cost_breakdown, inactive
 	       from " . $this->db_table . " where phase_id = '" . $this->id . "'";
         $result = $db->Execute($sql);
         foreach ($result->fields as $key => $value) $this->$key = $value;

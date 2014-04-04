@@ -57,7 +57,7 @@ class EMAIL_TO_DB {
 	  	} else {
 	    	$this->error[] = imap_last_error();
 	    	$this->status = 'Not connected';
-	    	throw new \Exception(imap_last_error());
+	    	throw new \core\classes\userException(imap_last_error());
 	  	}
 	}
 

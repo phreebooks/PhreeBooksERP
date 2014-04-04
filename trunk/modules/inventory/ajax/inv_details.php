@@ -36,9 +36,9 @@ $qty    = db_prepare_input($_GET['qty']); // specifes the quantity (for pricing)
 $strict = isset($_GET['strict']) ? $_GET['strict'] : false; // specifes strict match of sku value
 // some error checking
 try{
-	if (!$sku && !$UPC && !$iID) throw new \Exception(AJAX_INV_NO_INFO);	
+	if (!$sku && !$UPC && !$iID) throw new \core\classes\userException(AJAX_INV_NO_INFO);
 	if(!$UPC && !$iID && (validate_UPCABarcode($sku) || validate_EAN13Barcode($sku) )){
-		$UPC = $sku;	
+		$UPC = $sku;
 	}
 	// Load the sku information
 	if ($iID) {
@@ -51,35 +51,35 @@ try{
 	  $search_fields = array('sku', 'upc_code', 'description_short', 'description_sales', 'description_purchase');
 	  $search = " where " . implode(" like '%$sku%' or ", $search_fields) . " like '%$sku%'";
 	}
-	
+
 	if (!$bID) $bID = 0; // assume only one branch or main branch if not specified
 	if ($cID) $xml .= xmlEntry("cID", $cID);
 	if ($jID) $xml .= xmlEntry("jID", $jID);
 	if ($rID) $xml .= xmlEntry("rID", $rID);
-	
+
 	$vendor = in_array($jID, array(3,4,6,7)) ? true : false;
 	if ($vendor && !$iID && $strict == false && $UPC == false) { // just search for products from that vendor for purchases
 	 	$v_search_fields = array('a.sku', 'a.upc_code', 'a.description_short', 'a.description_sales', 'p.description_purchase' );
 	  	$first_search = " where " . implode(" like '%$sku%' or ", $v_search_fields) . " like '%$sku%' and p.vendor_id = '$cID' and a.inactive = '0'";
-	  	$purchase     = $db->Execute("select DISTINCT a.id as id, p.vendor_id as vendor_id, p.description_purchase as description_purchase, p.purch_package_quantity as purch_package_quantity, 
+	  	$purchase     = $db->Execute("select DISTINCT a.id as id, p.vendor_id as vendor_id, p.description_purchase as description_purchase, p.purch_package_quantity as purch_package_quantity,
 	  	p.purch_taxable as purch_taxable, p.item_cost as item_cost, p.price_sheet_v as price_sheet_v from " . TABLE_INVENTORY . " a LEFT JOIN " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku $first_search GROUP BY a.sku");
 	  	if($purchase->recordCount() == 1){
 	  		$search = " where id = '" . $purchase->fields['id'] . "'";
 	  	}elseif($purchase->recordCount() != 0){
-	  		throw new \Exception(sprintf("Too many hits for row %s!", $rID));
+	  		throw new \core\classes\userException(sprintf("Too many hits for row %s!", $rID));
 	  	}
-	} 
+	}
 	$inventory = $db->Execute("select * from " . TABLE_INVENTORY . $search . " and inactive = '0'");
 	if ($inventory->RecordCount() == 0 ){//second try with inactive items
 		$inventory = $db->Execute("select * from " . TABLE_INVENTORY . $search);
 	}
 	if ($inventory->RecordCount() != 1) { // need to return something to avoid error in FireFox
-		if($UPC) 	throw new \Exception(sprintf(ORD_JS_SKU_NOT_UNIQUE, $rID)); // for UPC codes submitted only, send an error
+		if($UPC) 	throw new \core\classes\userException(sprintf(ORD_JS_SKU_NOT_UNIQUE, $rID)); // for UPC codes submitted only, send an error
 		else 		$messageStack->add(sprintf("Not enough or too many hits for row %s!", $rID), "caution");
 		$xml .= xmlEntry("qty", 1);
-	  	echo createXmlHeader() . $xml . createXmlFooter(); 
+	  	echo createXmlHeader() . $xml . createXmlFooter();
 		ob_end_flush();
-  		session_write_close(); 
+  		session_write_close();
 	  	die;
 	}
 	foreach ($inventory->fields as $key => $value) $inventory_array[$key] = $value;
@@ -98,12 +98,12 @@ try{
 		if($jID == 6 && $inventory_array['purch_package_quantity'] != 0) {
 			$qty = $inventory_array['purch_package_quantity'];
 		}elseif($jID == 4 && $inventory_array['reorder_quantity'] != 0) {
-			$qty = ceil($inventory_array['reorder_quantity'] / $inventory_array['purch_package_quantity']); 
+			$qty = ceil($inventory_array['reorder_quantity'] / $inventory_array['purch_package_quantity']);
 		}else{
 			$qty = 1; // assume that one is required, will set to 1 on the form
 		}
 	}
-	$xml .= xmlEntry("qty", $qty); 
+	$xml .= xmlEntry("qty", $qty);
 	$iID = $inventory_array['id']; // set the item id (just in case UPC or sku was the only identifying parameter)
 	$sku = $inventory_array['sku'];
 	// fix some values for special cases
@@ -163,7 +163,7 @@ try{
 	//$debug .= 'sales_tax = ' . $prices['sales_tax'] . ' and purch tax = ' . $prices['purch_tax'] . ' and price = ' . $sales_price . chr(10);
 	// Load default tax to use
 	if ($cID) {
-		
+
 	}
 	// load sku stock status and open orders
 	switch($jID) {
@@ -196,7 +196,7 @@ try{
 		// build the sales price
 		$xml .= xmlEntry("sales_price", $sales_price);
 	}
-	
+
 	//put it all together
 	// build the core inventory data
 	foreach ($inventory_array as $key => $value) $xml .= "\t" . xmlEntry($key, $value);
@@ -218,7 +218,7 @@ try{
 	  $xml .= "\t" . xmlEntry("text_line", $value);
 	  $xml .= "</sku_usage>\n";
 	}
-	
+
 	// build the stock status
 	if (sizeof($stock_note) > 0) {
 	  foreach ($stock_note as $value) {

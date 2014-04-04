@@ -83,7 +83,7 @@
 
   	function write_configure($constant, $value = '') {
     	global $db;
-		if (!$constant) throw new \Exception("contant isn't defined for value: $value");
+		if (!$constant) throw new \core\classes\userException("contant isn't defined for value: $value");
 		$result = $db->Execute("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = '" . $constant . "'");
 		if ($result->RecordCount() == 0) {
 	  		$sql_array = array('configuration_key'  => $constant, 'configuration_value'=> $value);
@@ -111,7 +111,7 @@
 
   	function remove_configure($constant){
 	    global $db;
-		if (!$constant) throw new \Exception("There is no constant to remove");
+		if (!$constant) throw new \core\classes\userException("There is no constant to remove");
 		$db->Execute("delete from " . TABLE_CONFIGURATION . " where configuration_key = '$constant'");
 		if (function_exists('apc_load_constants')) {// rebuild cache
 			$result = $db->Execute("select configuration_key, configuration_value from " . TABLE_CONFIGURATION );
@@ -215,9 +215,9 @@
 		$result = $db->Execute("select period from " . TABLE_ACCOUNTING_PERIODS . "
 			where start_date <= '" . $post_date . "' and end_date >= '" . $post_date . "'");
 		if ($result->RecordCount() <> 1) { // post_date is out of range of defined accounting periods
-			if (!$hide_error) throw new \Exception(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR);
+			if (!$hide_error) throw new \core\classes\userException(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR);
 		}
-		if (!$hide_error) throw new \Exception(ERROR_MSG_BAD_POST_DATE);
+		if (!$hide_error) throw new \core\classes\userException(ERROR_MSG_BAD_POST_DATE);
 		return $result->fields['period'];
 	}
   }
@@ -288,7 +288,7 @@
     	global $db;
     	$vendor_name = $db->Execute("select short_name from " . TABLE_CONTACTS . " where id = '$id'");
     	if ($vendor_name->RecordCount() == 1) return $vendor_name->fields['short_name'];
-    	throw new \Exception("couldn't find contact with $id");
+    	throw new \core\classes\userException("couldn't find contact with $id");
   	}
 
   function gen_get_contact_array_by_type($type = 'v') {
@@ -450,7 +450,7 @@
 
   function gen_add_audit_log($action, $ref_id = '', $amount = '') {
 	global $db;
-  	if ($action == '' || !isset($action)) throw new \Exception('Error, call to audit log with no description');
+  	if ($action == '' || !isset($action)) throw new \core\classes\userException('Error, call to audit log with no description');
   	$stats = (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME))."ms, ".$db->count_queries."q ".(int)($db->total_query_time * 1000)."ms";
 	$fields = array(
 	  'user_id'   => $_SESSION['admin_id'] ? $_SESSION['admin_id'] : '1',
@@ -774,7 +774,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
 	$result = $db->Execute("select fiscal_year, start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . "
 	  where period = " . $period);
 	// post_date is out of range of defined accounting periods
-	if ($result->RecordCount() <> 1) throw new \Exception(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');
+	if ($result->RecordCount() <> 1) throw new \core\classes\userException(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');
 	return $result->fields;
   }
 
@@ -895,7 +895,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
 /**************************************************************************************************************/
   function db_perform($table, $data, $action = 'insert', $parameters = '') {
     global $db;
-    if (!is_array($data)) throw new \Exception("data isn't a array for table: $table");
+    if (!is_array($data)) throw new \core\classes\userException("data isn't a array for table: $table");
     reset($data);
     if ($action == 'insert') {
       $query = 'insert into ' . $table . ' (';
@@ -973,7 +973,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
 /**************************************************************************************************************/
   function html_href_link($page = '', $parameters = '', $connection = 'NONSSL', $add_session_id = false) {
     global $request_type, $http_domain, $https_domain;
-	if ($page == '') throw new \Exception('Unable to determine the page link!<br />Function used:<br />html_href_link(\'' . $page . '\', \'' . $parameters . '\', \'' . $connection . '\')');
+	if ($page == '') throw new \core\classes\userException('Unable to determine the page link!<br />Function used:<br />html_href_link(\'' . $page . '\', \'' . $parameters . '\', \'' . $connection . '\')');
     if ($connection == 'SSL') {
       $link = DIR_WS_FULL_PATH;
     } else {
@@ -1457,16 +1457,16 @@ function charConv($string, $in, $out) {
   function validate_upload($filename, $file_type = 'text', $extension = 'txt') {
 	if ($_FILES[$filename]['error']) { // php error uploading file
 		switch ($_FILES[$filename]['error']) {
-			case '1': throw new \Exception(TEXT_IMP_ERMSG1);
-			case '2': throw new \Exception(TEXT_IMP_ERMSG2);
-			case '3': throw new \Exception(TEXT_IMP_ERMSG3);
-			case '4': throw new \Exception(TEXT_IMP_ERMSG4);
-			default:  throw new \Exception(TEXT_IMP_ERMSG5 . $_FILES[$filename]['error'] . '.');
+			case '1': throw new \core\classes\userException(TEXT_IMP_ERMSG1);
+			case '2': throw new \core\classes\userException(TEXT_IMP_ERMSG2);
+			case '3': throw new \core\classes\userException(TEXT_IMP_ERMSG3);
+			case '4': throw new \core\classes\userException(TEXT_IMP_ERMSG4);
+			default:  throw new \core\classes\userException(TEXT_IMP_ERMSG5 . $_FILES[$filename]['error'] . '.');
 		}
 	} elseif (!is_uploaded_file($_FILES[$filename]['tmp_name'])) { // file uploaded
-		throw new \Exception(TEXT_IMP_ERMSG13);
+		throw new \core\classes\userException(TEXT_IMP_ERMSG13);
 	} elseif ($_FILES[$filename]['size'] == 0) { // report contains no data, error
-		throw new \Exception(TEXT_IMP_ERMSG7);
+		throw new \core\classes\userException(TEXT_IMP_ERMSG7);
 	}
 	$ext = strtolower(substr($_FILES[$filename]['name'], -3, 3));
 	$textfile = (strpos($_FILES[$filename]['type'], $file_type) === false) ? false : true;
@@ -1474,7 +1474,7 @@ function charConv($string, $in, $out) {
 	if ((!$textfile && in_array($ext, $extension)) || $textfile) { // allow file_type and extensions
 		return true;
 	}
-	throw new \Exception(TEXT_IMP_ERMSG6);
+	throw new \core\classes\userException(TEXT_IMP_ERMSG6);
   }
 
 	/**
@@ -1496,11 +1496,11 @@ function charConv($string, $in, $out) {
   	 */
 	function validate_db_date($date) {
     	$y = (int)substr($date, 0, 4);
-		if ($y < 1900 || $y > 2099)	throw new \Exception("the year is to big or to small for date: $date");
+		if ($y < 1900 || $y > 2099)	throw new \core\classes\userException("the year is to big or to small for date: $date");
     	$m = (int)substr($date, 5, 2);
-		if ($m < 1 || $m > 12) 		throw new \Exception("the month is to big or to small for date: $date");
+		if ($m < 1 || $m > 12) 		throw new \core\classes\userException("the month is to big or to small for date: $date");
     	$d = (int)substr($date, 8, 2);
-		if ($d < 1 || $d > 31) 		throw new \Exception("the day is to big or to small for date: $date");
+		if ($d < 1 || $d > 31) 		throw new \core\classes\userException("the day is to big or to small for date: $date");
 		return true;
   	}
 
@@ -1510,10 +1510,10 @@ function charConv($string, $in, $out) {
 	    	// 	check for injection attempts. If new-line characters found in header fields, simply fail to send the message
     		foreach(array($from_email_address, $to_address, $from_email_name, $to_name, $email_subject) as $key => $value) {
       			if (!$value) continue;
-	  			if (strpos("\r", $value) !== false || strpos("\n", $value) !== false) throw new \Exception("There are new line or line return chariters the adresses or the subject.");
+	  			if (strpos("\r", $value) !== false || strpos("\n", $value) !== false) throw new \core\classes\userException("There are new line or line return chariters the adresses or the subject.");
 	    	}
 		    // if no text or html-msg supplied, exit
-	    	if (!gen_not_null($email_text) && !gen_not_null($block['EMAIL_MESSAGE_HTML'])) throw new \Exception("There is no text in your email.");
+	    	if (!gen_not_null($email_text) && !gen_not_null($block['EMAIL_MESSAGE_HTML'])) throw new \core\classes\userException("There is no text in your email.");
 	    	// if email name is same as email address, use the Store Name as the senders 'Name'
 	    	if ($from_email_name == $from_email_address) $from_email_name = COMPANY_NAME;
 		    // loop thru multiple email recipients if more than one listed  --- (esp for the admin's "Extra" emails)...
@@ -1666,7 +1666,7 @@ function xml_to_object($xml = '') {
   if ($xml == '') return '';
   $output  = new \core\classes\objectInfo();
   $runaway = 0;
-  if( strlen(substr($xml, 0,strpos($xml, '<?xml'))) != 0) throw new \Exception("There is a unforseen error on the other side: " . substr($xml, 0,strpos($xml, '<?xml')));
+  if( strlen(substr($xml, 0,strpos($xml, '<?xml'))) != 0) throw new \core\classes\userException("There is a unforseen error on the other side: " . substr($xml, 0,strpos($xml, '<?xml')));
   while (strlen($xml) > 0) {
 	if (strpos($xml, '<?xml') === 0) { // header xml, ignore
 	  $xml = trim(substr($xml, strpos($xml, '>') + 1));
@@ -1703,11 +1703,11 @@ function xml_to_object($xml = '') {
 	  }
 	  // TBD, the attr array is set but how to add to output?
 	  if (!$selfclose && strpos($xml, $end_tag) === false) {
-	  	throw new \Exception('PhreeBooks XML parse error looking for end tag: ' . $tag . ' but could not find it!');
+	  	throw new \core\classes\userException('PhreeBooks XML parse error looking for end tag: ' . $tag . ' but could not find it!');
 	  }
 	  while(true) {
 		$runaway++;
-		if ($runaway > 10000) throw new \Exception('PhreeBooks Runaway counter 1 reached. There is an error in the xml entry!');
+		if ($runaway > 10000) throw new \core\classes\userException('PhreeBooks Runaway counter 1 reached. There is an error in the xml entry!');
 		$data = $selfclose ? '' : trim(substr($xml, $taglen, strpos($xml, $end_tag) - $taglen));
 		if (isset($output->$tag)) {
 		  if (!is_array($output->$tag)) $output->$tag = array($output->$tag);
@@ -1723,7 +1723,7 @@ function xml_to_object($xml = '') {
 	  return $xml;
 	}
 	$runaway++;
-	if ($runaway > 10000) throw new \Exception('Phreebooks Runaway counter 2 reached. There is an error in the xml entry!');
+	if ($runaway > 10000) throw new \core\classes\userException('Phreebooks Runaway counter 2 reached. There is an error in the xml entry!');
   }
   return $output;
 }
@@ -1899,29 +1899,29 @@ function PhreebooksExceptionHandler($exception) {
 }
 
 function Phreebooks_autoloader($temp){
-	$class = str_replace("\\", "/", $temp);
-	$path  = explode("/", $class, 3);
-	if ($path[0] == 'core'){
-		gen_pull_language('phreedom'); //always load the main language file
-		// if it is a method or dashboard load those language files as well.
-		if ( in_array($path[1], array('methods','dashboards'))) load_method_language(DIR_FS_ADMIN."modules/$path[0]/$path[1]", $path[2]);
-		$file = DIR_FS_ADMIN."includes/$path[1]/$path[2].php";
-		include_once (DIR_FS_ADMIN."includes/$path[1]/$path[2].php");
-	}else{
-		gen_pull_language($path[0], 'admin');
-		gen_pull_language($path[0]); //always load the main language file
-		// if it is a method or dashboard load those language files as well.
-		if ( in_array($path[1], array('methods','dashboards'))) load_method_language(DIR_FS_ADMIN."modules/$path[0]/$path[1]", $path[2]);
-		if (file_exists(DIR_FS_ADMIN."modules/$path[0]/custom/$path[1]/$path[2].php")){
-			$file = DIR_FS_ADMIN."modules/$path[0]/custom/$path[1]/$path[2].php";
-			include_once(DIR_FS_ADMIN."modules/$path[0]/custom/$path[1]/$path[2].php");
-		} else {
-			$file = DIR_FS_ADMIN."modules/$path[0]/$path[1]/$path[2].php";
-			include_once(DIR_FS_ADMIN."modules/$path[0]/$path[1]/$path[2].php");
-		}
-	}
 	if (!class_exists($temp, false)) {
-        trigger_error("Unable to load module = $path[0] <br/>$path[1] = $path[2]<br/> called = $temp<br/>file = $file", E_USER_ERROR);
+		$class = str_replace("\\", "/", $temp);
+		$path  = explode("/", $class, 3);
+		if ($path[0] == 'core'){
+			gen_pull_language('phreedom'); //always load the main language file
+			// if it is a method or dashboard load those language files as well.
+			if ( in_array($path[1], array('methods','dashboards'))) load_method_language(DIR_FS_ADMIN."modules/$path[0]/$path[1]", $path[2]);
+			$file = DIR_FS_ADMIN."includes/$path[1]/$path[2].php";
+			include_once (DIR_FS_ADMIN."includes/$path[1]/$path[2].php");
+		}else{
+			gen_pull_language($path[0], 'admin');
+			gen_pull_language($path[0]); //always load the main language file
+			// if it is a method or dashboard load those language files as well.
+			if ( in_array($path[1], array('methods','dashboards'))) load_method_language(DIR_FS_ADMIN."modules/$path[0]/$path[1]", $path[2]);
+			if (file_exists(DIR_FS_ADMIN."modules/$path[0]/custom/$path[1]/$path[2].php")){
+				$file = DIR_FS_ADMIN."modules/$path[0]/custom/$path[1]/$path[2].php";
+				include_once(DIR_FS_ADMIN."modules/$path[0]/custom/$path[1]/$path[2].php");
+			} else {
+				$file = DIR_FS_ADMIN."modules/$path[0]/$path[1]/$path[2].php";
+				include_once(DIR_FS_ADMIN."modules/$path[0]/$path[1]/$path[2].php");
+			}
+		}
+		if (!class_exists($temp, false)) throw new \ErrorException("Unable to load module = $path[0] <br/>$path[1] = $path[2]<br/> called = $temp<br/>file = $file");
     }
 }
 ?>

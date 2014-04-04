@@ -26,7 +26,7 @@ class tills {
     public $printer_starting_line 	= '';
 	public $printer_closing_line  	= '';
     public $printer_open_drawer   	= '';
-    
+
     public function __construct(){
          $this->security_id           = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
          foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
@@ -38,7 +38,7 @@ class tills {
   function btn_save($id = '') {
   	global $db, $currencies;
 	\core\classes\user::validate_security($this->security_id, 2);
-	if ($this->gl_acct_id == '') throw new \Exception(GL_SELECT_STD_CHART);
+	if ($this->gl_acct_id == '') throw new \core\classes\userException(GL_SELECT_STD_CHART);
 	$sql_data_array = array(
 		'description' 		    => $this->description,
 		'store_id'    		    => $this->store_id,
@@ -55,7 +55,7 @@ class tills {
 		'max_discount'		    => $this->max_discount,
 		'tax_id'				=> $this->tax_id,
 	);
-	
+
     if ($id) {
 	  db_perform($this->db_table, $sql_data_array, 'update', "till_id = '" . $id . "'");
 	  gen_add_audit_log(SETUP_TAX_AUTHS_LOG . TEXT_UPDATE, $this->description);
@@ -70,11 +70,11 @@ class tills {
   	global $db;
 	\core\classes\user::validate_security($this->security_id, 4);
 	// Don't allow delete if there is account activity for this account
-	$sql = "select max(debit_amount) as debit, max(credit_amount) as credit, max(beginning_balance) as beg_bal 
+	$sql = "select max(debit_amount) as debit, max(credit_amount) as credit, max(beginning_balance) as beg_bal
 		from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '" . $this->gl_acct_id . "'";
 	$result = $db->Execute($sql);
 	if ($result->fields['debit'] <> 0 || $result->fields['credit'] <> 0 || $result->fields['beg_bal'] <> 0) {
-	  throw new \Exception(GL_ERROR_CANT_DELETE);
+	  throw new \core\classes\userException(GL_ERROR_CANT_DELETE);
 	}
 	// OK to delete
 	$result = $db->Execute("select description from " . $this->db_table . " where till_id = '" . $id . "'");
@@ -99,7 +99,7 @@ class tills {
 	  $content['tbody'][$rowCnt] = array(
 	    array('value' => htmlspecialchars($result->fields['description']),
 			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\''.$this->code.'_edit\',\''.$result->fields['till_id'].'\')"'),
-		array('value' => htmlspecialchars($result->fields['store_id']), 
+		array('value' => htmlspecialchars($result->fields['store_id']),
 			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\''.$this->code.'_edit\',\''.$result->fields['till_id'].'\')"'),
 		array('value' => gen_get_type_description(TABLE_CHART_OF_ACCOUNTS, $result->fields['gl_acct_id']),
 			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\''.$this->code.'_edit\',\''.$result->fields['till_id'].'\')"'),
@@ -196,13 +196,13 @@ class tills {
     $output .= '</table>' . chr(10);
     return $output;
   }
-  
+
 	/**
-	 * this function will determin if the store drop down should be build 
-	 * @throws \core\classes\userException 
+	 * this function will determin if the store drop down should be build
+	 * @throws \core\classes\userException
 	 * @return bool
-	 */ 
-    
+	 */
+
   	function showDropDown(){
   		global $db;
 	  	foreach ($this->store_ids as $store){
@@ -214,14 +214,14 @@ class tills {
 	    if ($result->RecordCount()== 1) return false;
 	    return true;
 	}
-  
+
   function default_till(){
   	global $db;
   	$sql = "select till_id from " . $this->db_table . " where store_id = '" . $_SESSION['admin_prefs']['def_store_id']."'";
     $result = $db->Execute($sql);
     return $result->fields['till_id'];
   }
-  
+
   function till_array($inc_select = false){
   	global $db;
   	foreach ($this->store_ids as $store){
@@ -236,31 +236,31 @@ class tills {
     }
     return $result_array;
   }
-  
+
   function get_till_info($till_id){
   	global $db;
   	$sql = "select * from " . $this->db_table . " where till_id = " . $till_id;
     $result = $db->Execute($sql);
     foreach ($result->fields as $key => $value) $this->$key = $value;
   }
-  
+
   function get_default_till_info(){
   	global $db;
   	$sql = "select * from " . $this->db_table . " where store_id = '" . $_SESSION['admin_prefs']['def_store_id']."'";
     $result = $db->Execute($sql);
     foreach ($result->fields as $key => $value) $this->$key = $value;
   }
-  /* 
+  /*
    * returns a string that will be a array in javascript.
    */
-  
+
   function javascript_array(){
   	global $db;
   	foreach ($this->store_ids as $store){
   		$temp[]= $store['id'];
   	}
   	$sql = "select * from " . $this->db_table . " where store_id in (" . implode(',', $temp) . ")";
-    $result = $db->Execute($sql);    
+    $result = $db->Execute($sql);
   	$js_tills  = 'var tills  = new Array();' . chr(10);
 	while (!$result->EOF){
 		$startingline = '';
@@ -286,24 +286,24 @@ class tills {
 	}
 	return $js_tills;
   }
-  
+
   function adjust_balance($amount){
   	global $db, $messageStack;
   	$sql_data_array = array('balance' => $this->balance + $amount);
   	$messageStack->debug("\n\n\n updating till balance  balance was = ".$this->balance . " adding = ". $amount." new balance = ". $this->balance + $amount."\n\n\n");
   	db_perform($this->db_table, $sql_data_array, 'update', "till_id = '" . $this->till_id . "'");
   }
-  
+
   function new_balance($amount){
   	global $db, $messageStack;
   	$sql_data_array = array('balance' => $amount);
   	$messageStack->debug("\n\n\n updating till balance  balance was = ".$this->balance . " new balance = ". $amount ."\n\n\n");
   	db_perform($this->db_table, $sql_data_array, 'update', "till_id = '" . $this->till_id . "'");
   }
-  
+
   function __destruct(){
   	//print_r($this);
   }
-  
+
 }
 ?>

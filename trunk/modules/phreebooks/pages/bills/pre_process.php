@@ -64,7 +64,7 @@ switch (JOURNAL_ID) {
 	define('AUDIT_LOG_DEL_DESC',ORD_TEXT_20_WINDOW_TITLE . '-' . TEXT_DELETE);
 	break;
   default: // this should never happen
-	throw new \Exception('No valid journal id found (module bills), Journal ID needs to be passed to this script to identify the action');
+	throw new \core\classes\userException('No valid journal id found (module bills), Journal ID needs to be passed to this script to identify the action');
 	gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL'));
 }
 
@@ -93,7 +93,7 @@ switch ($_REQUEST['action']) {
 		$order->bill_postal_code    = $_POST['bill_postal_code'] <> GEN_POSTAL_CODE ? db_prepare_input($_POST['bill_postal_code']) : '';
 		$order->bill_country_code   = db_prepare_input($_POST['bill_country_code']);
 		$order->bill_email          = db_prepare_input($_POST['bill_email']);
-	
+
 		// load journal main data
 		$order->id                  = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
 		$order->admin_id            = $_SESSION['admin_id'];
@@ -108,13 +108,13 @@ switch ($_REQUEST['action']) {
 		$order->shipper_code        = db_prepare_input($_POST['shipper_code']);  // store payment method in shipper_code field
 		$order->purch_order_id      = db_prepare_input($_POST['purch_order_id']);  // customer PO/Ref number
 		$order->description         = sprintf(TEXT_JID_ENTRY, constant('ORD_TEXT_' . JOURNAL_ID . '_' . strtoupper($type) . '_WINDOW_TITLE'));
-	
+
 		$order->total_amount        = $currencies->clean_value(db_prepare_input($_POST['total']), DEFAULT_CURRENCY);
 		$order->gl_acct_id          = $gl_acct_id;
 		$order->gl_disc_acct_id     = db_prepare_input($_POST['gl_disc_acct_id']);
 		$order->payment_id          = db_prepare_input($_POST['payment_id']);
 		$order->save_payment        = isset($_POST['save_payment']) ? true : false;
-	
+
 		// load item row data
 		$x = 1;
 		while (isset($_POST['id_' . $x])) { // while there are invoice rows to read in
@@ -136,18 +136,18 @@ switch ($_REQUEST['action']) {
 		  }
 		  $x++;
 		}
-	
+
 		// error check input
 		if (!$order->bill_acct_id) { // no account was selected, error
 		  $contact_type = $type=='c' ? TEXT_LC_CUSTOMER : TEXT_LC_VENDOR;
-		  throw new \Exception(sprintf(ERROR_NO_CONTACT_SELECTED, $contact_type, $contact_type, ORD_ADD_UPDATE));
+		  throw new \core\classes\userException(sprintf(ERROR_NO_CONTACT_SELECTED, $contact_type, $contact_type, ORD_ADD_UPDATE));
 		}
-		if (!$order->item_rows) throw new \Exception(GL_ERROR_NO_ITEMS);
+		if (!$order->item_rows) throw new \core\classes\userException(GL_ERROR_NO_ITEMS);
 		// check to make sure the payment method is valid
-		if (JOURNAL_ID == 18) $admin_classes['payment']->methods[$order->shipper_code]->pre_confirmation_check();	
-	
+		if (JOURNAL_ID == 18) $admin_classes['payment']->methods[$order->shipper_code]->pre_confirmation_check();
+
 	/* This has been commented out to allow customer refunds (negative invoices)
-		if ($order->total_amount < 0) throw new \Exception(TEXT_TOTAL_LESS_THAN_ZERO);
+		if ($order->total_amount < 0) throw new \core\classes\userException(TEXT_TOTAL_LESS_THAN_ZERO);
 	*/
 		// post the receipt/payment
 		$order->post_ordr($_REQUEST['action']);	// Post the order class to the db
@@ -180,9 +180,9 @@ switch ($_REQUEST['action']) {
 			gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		}
 	} else {
-		throw new \Exception(GL_ERROR_NEVER_POSTED);
+		throw new \core\classes\userException(GL_ERROR_NEVER_POSTED);
 	}
-	throw new \Exception(GL_ERROR_NO_DELETE);
+	throw new \core\classes\userException(GL_ERROR_NO_DELETE);
 	// if we are here, there was an error, reload page
 	$order = new \core\classes\objectInfo($_POST);
 	$order->post_date = gen_db_date($_POST['post_date']); // fix the date to original format
@@ -190,9 +190,9 @@ switch ($_REQUEST['action']) {
 
   case 'pmt': // for opening a sales/invoice directly from payment (POS like)
     // fetch the journal_main information
-    $sql = "select id, shipper_code, bill_acct_id, bill_address_id, bill_primary_name, bill_contact, bill_address1, 
-		bill_address2, bill_city_town, bill_state_province, bill_postal_code, bill_country_code, bill_email, 
-		post_date, terms, gl_acct_id, purchase_invoice_id, total_amount from " . TABLE_JOURNAL_MAIN . " 
+    $sql = "select id, shipper_code, bill_acct_id, bill_address_id, bill_primary_name, bill_contact, bill_address1,
+		bill_address2, bill_city_town, bill_state_province, bill_postal_code, bill_country_code, bill_email,
+		post_date, terms, gl_acct_id, purchase_invoice_id, total_amount from " . TABLE_JOURNAL_MAIN . "
 		where id = " . $oID;
 	$result = $db->Execute($sql);
 	$account_id = $db->Execute("select short_name from " . TABLE_CONTACTS . " where id = " . $result->fields['bill_acct_id']);
@@ -222,7 +222,7 @@ switch ($_REQUEST['action']) {
 	// reset some particular values
 	$order->search = $account_id->fields['short_name']; // set the customer id in the search box
 	// show the form
-	$payment = $db->Execute("select description from " . TABLE_JOURNAL_ITEM . " 
+	$payment = $db->Execute("select description from " . TABLE_JOURNAL_ITEM . "
 		where ref_id = " . $oID . " and gl_type = 'ttl'");
 	$temp = $payment->fields['description'];
 	$temp = strpos($temp, ':') ? substr($temp, strpos($temp, ':') + 1) : '';

@@ -143,7 +143,7 @@ switch ($_REQUEST['action']) {
 		$file_name = $_FILES['asset_image']['name'];
 		validate_path($file_path);
 		validate_upload('asset_image', 'image', 'jpg');
-		if (!copy($temp_file_name, $file_path . '/' . $file_name)) throw new \Exception(ASSETS_IMAGE_FILE_WRITE_ERROR);
+		if (!copy($temp_file_name, $file_path . '/' . $file_name)) throw new \core\classes\userException(ASSETS_IMAGE_FILE_WRITE_ERROR);
 		$image_with_path = ($asset_path ? ($asset_path . '/') : '') . $file_name;
 		$_POST['image_with_path'] = $image_with_path;
 		$sql_data_array['image_with_path'] = $image_with_path; // update the image with relative path

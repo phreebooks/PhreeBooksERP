@@ -32,7 +32,7 @@ class encryption {
   	}
 
   	final static function encrypt_cc($params) {
-		if (strlen($_SESSION['admin_encrypt']) < 1) throw new \Exception(ACT_NO_KEY_EXISTS);
+		if (strlen($_SESSION['admin_encrypt']) < 1) throw new \core\classes\userException(ACT_NO_KEY_EXISTS);
 		if ($params['number']) {
 	  		$params['number'] = preg_replace("/[^0-9]/", "", $params['number']);
 	  		$hint  = substr($params['number'], 0, 4);
@@ -55,7 +55,7 @@ class encryption {
   	}
 
   	final static function decrypt ($key, $source) {
-  		if (strlen($_SESSION['admin_encrypt']) < 1) throw new \Exception(ACT_NO_KEY_EXISTS);
+  		if (strlen($_SESSION['admin_encrypt']) < 1) throw new \core\classes\userException(ACT_NO_KEY_EXISTS);
 		$fudgefactor = $this->_convertKey($key);
 		if (empty($source)) throw new \core\classes\userException('No value has been supplied for decryption');
 		$target  = null;
@@ -77,7 +77,7 @@ class encryption {
   	}
 
   	final static function encrypt ($key, $source, $sourcelen = 0) {
-  		if (strlen($_SESSION['admin_encrypt']) < 1) throw new \Exception(ACT_NO_KEY_EXISTS);
+  		if (strlen($_SESSION['admin_encrypt']) < 1) throw new \core\classes\userException(ACT_NO_KEY_EXISTS);
 		$fudgefactor  = $this->_convertKey($key);
 		if (empty($source)) throw new \core\classes\userException('No value has been supplied for encryption');
 	  	while (strlen($source) < $sourcelen) $source .= ' ';
@@ -175,7 +175,7 @@ class encryption {
     		if (md5($stack[1] . $plainPassword) == $stack[0]) return true;
   		}
   		if ($encryptedPassword == ENCRYPTION_VALUE) throw new \core\classes\userException(TEXT_ERROR_WRONG_ENCRYPTION_KEY);
-  		else throw new \Exception(ERROR_WRONG_LOGIN);
+  		else throw new \core\classes\userException(ERROR_WRONG_LOGIN);
 	}
 
 	/**

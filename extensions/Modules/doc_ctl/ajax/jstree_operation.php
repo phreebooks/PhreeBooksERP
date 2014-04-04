@@ -29,8 +29,8 @@ $db_config = array(
 );
 if (extension_loaded("mysqli")) { require_once(DIR_FS_MODULES . "doc_ctl/includes/jstree/_lib/class._database_i.php"); }
 else { require_once(DIR_FS_MODULES . "doc_ctl/includes/jstree/_lib/class._database.php"); }
-require_once(DIR_FS_MODULES . "doc_ctl/functions/doc_ctl.php"); 
-require_once(DIR_FS_MODULES . "doc_ctl/includes/jstree/_lib/class.tree.php"); 
+require_once(DIR_FS_MODULES . "doc_ctl/functions/doc_ctl.php");
+require_once(DIR_FS_MODULES . "doc_ctl/includes/jstree/_lib/class.tree.php");
 /**************   page specific initialization  *************************/
 $jstree = new json_tree();
 
@@ -47,6 +47,6 @@ if ($_REQUEST["operation"] && strpos($_REQUEST["operation"], "_") !== 0 && metho
   	session_write_close();
 	die();
 }
-throw new \Exception("HTTP/1.0 404 Not Found"); 
+throw new \core\classes\userException("HTTP/1.0 404 Not Found");
 
 ?>

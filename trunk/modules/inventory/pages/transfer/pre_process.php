@@ -46,7 +46,7 @@ switch ($_REQUEST['action']) {
 	  			$sku   = db_prepare_input($_POST['sku_'.$rowCnt]);
 	  			$qty   = db_prepare_input($_POST['qty_'.$rowCnt]);
 	  			$stock = db_prepare_input($_POST['stock_'.$rowCnt]);
-	  			if ($stock < $qty) throw new \Exception(sprintf(INV_XFER_ERROR_NOT_ENOUGH_SKU, $sku));
+	  			if ($stock < $qty) throw new \core\classes\userException(sprintf(INV_XFER_ERROR_NOT_ENOUGH_SKU, $sku));
 	  			if ($qty && $sku <> '' && $sku <> TEXT_SEARCH) {
 	    			$skus[] = array(
 		  			  'qty'     => $qty,
@@ -59,7 +59,7 @@ switch ($_REQUEST['action']) {
 	  			$rowCnt++;
 			}
 			// test for errors
-			if ($source_store_id == $dest_store_id) throw new \Exception(INV_XFER_ERROR_SAME_STORE_ID);
+			if ($source_store_id == $dest_store_id) throw new \core\classes\userException(INV_XFER_ERROR_SAME_STORE_ID);
 			// 	process the request, first subtract from the source store
 	  		$glEntry                      = new \core\classes\journal();
 	  		$glEntry->id                  = isset($_POST['id']) ? $_POST['id'] : '';
@@ -111,7 +111,7 @@ switch ($_REQUEST['action']) {
 	    		$tot_amount += $cost;
 	    		$rowCnt++;
 	  		}
-	  		if ($adj_lines == 0) throw new \Exception(INV_ADJ_QTY_ZERO);
+	  		if ($adj_lines == 0) throw new \core\classes\userException(INV_ADJ_QTY_ZERO);
 	    	$glEntry->journal_main_array['total_amount'] = $tot_amount;
 	    	$glEntry->journal_rows[] = array(
 	      	  'sku'           => '',
@@ -125,7 +125,7 @@ switch ($_REQUEST['action']) {
 	    	);
 			// *************** START TRANSACTION *************************
 //			$glEntry->override_cogs_acct = $adj_account; // force cogs account to be users specified account versus default inventory account
-	    	if ($glEntry->Post($glEntry->id ? 'edit' : 'insert'))  throw new \Exception(GL_ERROR_NO_POST);
+	    	if ($glEntry->Post($glEntry->id ? 'edit' : 'insert'))  throw new \core\classes\userException(GL_ERROR_NO_POST);
 		  	$first_id = $glEntry->id;
 	      	$glEntry                      = new \core\classes\journal();
 	  	  	$glEntry->id                  = isset($_POST['ref_id']) ? $_POST['ref_id'] : '';
@@ -179,7 +179,7 @@ switch ($_REQUEST['action']) {
 				$rowCnt++;
 			}
 	    	$glEntry->journal_main_array['total_amount'] = $tot_amount;
-	    	if (!$glEntry->Post($glEntry->id ? 'edit' : 'insert')) throw new \Exception(GL_ERROR_NO_POST);
+	    	if (!$glEntry->Post($glEntry->id ? 'edit' : 'insert')) throw new \core\classes\userException(GL_ERROR_NO_POST);
 			// 	link first record to second record
 //			$db->Execute("UPDATE ".TABLE_JOURNAL_MAIN." SET so_po_ref_id=$glEntry->id WHERE id=$first_id");
 	    	$db->transCommit();	// post the chart of account values
@@ -192,22 +192,22 @@ switch ($_REQUEST['action']) {
 			$db->transRollback();
 			$messageStack->add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo($_POST);
-			if (DEBUG) $messageStack->write_debug();	
+			if (DEBUG) $messageStack->write_debug();
 		}
 		break;
   	case 'delete':
   		try{
 			\core\classes\user::validate_security($security_level, 4); // security check
-			if (!$_POST['id'])  throw new \Exception(GL_ERROR_NO_DELETE);
+			if (!$_POST['id'])  throw new \core\classes\userException(GL_ERROR_NO_DELETE);
 	  		$delOrd = new \core\classes\journal($_POST['id']);
 	  		$result = $db->Execute("SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE so_po_ref_id = $delOrd->id");
 	  		$xfer_to_id = $result->fields['id']; // save the matching adjust ID
-	  		if ($result->RecordCount() == 0) throw new \Exception('cannot delete there is no offsetting record to delete!');
+	  		if ($result->RecordCount() == 0) throw new \core\classes\userException('cannot delete there is no offsetting record to delete!');
 	  		// *************** START TRANSACTION *************************
 	    	$db->transStart();
-	    	if (!$delOrd->unPost('delete')) throw new \Exception('cannot unpost record!');
+	    	if (!$delOrd->unPost('delete')) throw new \core\classes\userException('cannot unpost record!');
 		  	$delOrd = new \core\classes\journal($xfer_to_id);
-		  	if ($delOrd->unPost('delete')) throw new \Exception('cannot unpost record!');
+		  	if ($delOrd->unPost('delete')) throw new \core\classes\userException('cannot unpost record!');
 		   	$db->transCommit(); // if not successful rollback will already have been performed
 		    gen_add_audit_log(INV_LOG_ADJ . TEXT_DELETE, $delOrd->journal_rows[0]['sku'], $delOrd->journal_rows[0]['qty']);
 		    if (DEBUG) $messageStack->write_debug();
@@ -216,7 +216,7 @@ switch ($_REQUEST['action']) {
 			$db->transRollback();
 			$messageStack->add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo($_POST);
-			if (DEBUG) $messageStack->write_debug();	
+			if (DEBUG) $messageStack->write_debug();
 		}
 		break;
 

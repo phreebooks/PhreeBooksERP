@@ -40,7 +40,7 @@ switch ($_REQUEST['action']) {
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		$messageStack->add(ZENCART_CONFIG_SAVED, 'success');
 	    break;
-  	}catch(Exception $e) {
+  	}catch(\Exception $e) {
 	  	$messageStack->add($e->getMessage(), $e->getCode());
 	}
   case 'go_first':    $_REQUEST['list'] = 1;       break;
@@ -55,7 +55,7 @@ switch ($_REQUEST['action']) {
 
 /*****************   prepare to display templates  *************************/
 // build some general pull down arrays
-    
+
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';

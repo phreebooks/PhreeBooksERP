@@ -27,7 +27,7 @@
 	curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
 //	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 30); // times out after 30 seconds 
+	curl_setopt($ch, CURLOPT_TIMEOUT, 30); // times out after 30 seconds
 	if (strtoupper($method) == 'POST') {
 	  curl_setopt($ch, CURLOPT_POST, true);
 	  curl_setopt($ch, CURLOPT_POSTFIELDS, $vars);
@@ -43,14 +43,14 @@
 	if ($data != '') {
 	  return $data;
 	} else {
-	  throw new \Exception('cURL error: ' . $error);
+	  throw new \core\classes\userException('cURL error: ' . $error);
 	}
   }
 
 function pull_down_price_sheet_list() {
   global $db;
   $output = array(array('id' => '0', 'text' => TEXT_NONE));
-  $sql = "select distinct sheet_name from " . TABLE_PRICE_SHEETS . " 
+  $sql = "select distinct sheet_name from " . TABLE_PRICE_SHEETS . "
 	where '" . date('Y-m-d',time()) . "' >= effective_date and inactive = '0'";
   $result = $db->Execute($sql);
   while(!$result->EOF) {

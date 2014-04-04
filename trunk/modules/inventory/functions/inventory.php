@@ -19,11 +19,11 @@
 
   function load_store_stock($sku, $store_id) {
 	global $db;
-	$sql = "select sum(remaining) as remaining from " . TABLE_INVENTORY_HISTORY . " 
+	$sql = "select sum(remaining) as remaining from " . TABLE_INVENTORY_HISTORY . "
 		where store_id = '" . $store_id . "' and sku = '" . $sku . "'";
 	$result = $db->Execute($sql);
 	$store_bal = $result->fields['remaining'];
-	$sql = "select sum(qty) as qty from " . TABLE_INVENTORY_COGS_OWED . " 
+	$sql = "select sum(qty) as qty from " . TABLE_INVENTORY_COGS_OWED . "
 		where store_id = '" . $store_id . "' and sku = '" . $sku . "'";
 	$result = $db->Execute($sql);
 	$qty_owed = $result->fields['qty'];
@@ -32,7 +32,7 @@
 
   function inv_calculate_prices($item_cost, $full_price, $encoded_price_levels) {
     global $currencies;
-	if (!defined('MAX_NUM_PRICE_LEVELS')) throw new \Exception('Constant MAX_NUM_PRICE_LEVELS is not defined! returning from inv_calculate_prices');
+	if (!defined('MAX_NUM_PRICE_LEVELS')) throw new \core\classes\userException('Constant MAX_NUM_PRICE_LEVELS is not defined! returning from inv_calculate_prices');
 	$price_levels = explode(';', $encoded_price_levels);
 	$prices = array();
 	for ($i=0, $j=1; $i < MAX_NUM_PRICE_LEVELS; $i++, $j++) {
@@ -91,7 +91,7 @@
 	return $prices;
   }
 
- 
+
   function gather_history($sku) {
     global $db;
 	$inv_history = array();
@@ -115,10 +115,10 @@
 	$last_year = ($dates['ThisYear'] - 1) . '-' . substr('0' . $dates['ThisMonth'], -2) . '-01';
 
 	// load the SO's and PO's and get order, expected del date
-	$sql = "select m.id, m.journal_id, m.store_id, m.purchase_invoice_id, i.qty, i.post_date, i.date_1, 
-	i.id as item_id 
-	  from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id 
-	  where m.journal_id in (4, 10) and i.sku = '" . $sku ."' and m.closed = '0' 
+	$sql = "select m.id, m.journal_id, m.store_id, m.purchase_invoice_id, i.qty, i.post_date, i.date_1,
+	i.id as item_id
+	  from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
+	  where m.journal_id in (4, 10) and i.sku = '" . $sku ."' and m.closed = '0'
 	  order by i.date_1";
 	$result = $db->Execute($sql);
 	while(!$result->EOF) {
@@ -132,7 +132,7 @@
 		  $hist_type = 'open_so';
 		  break;
 	  }
-	  $sql = "select sum(qty) as qty from " . TABLE_JOURNAL_ITEM . " 
+	  $sql = "select sum(qty) as qty from " . TABLE_JOURNAL_ITEM . "
 		where gl_type = '" . $gl_type . "' and so_po_item_ref_id = " . $result->fields['item_id'];
 	  $adj = $db->Execute($sql); // this looks for partial received to make sure this item is still on order
 	  if ($result->fields['qty'] > $adj->fields['qty']) {
@@ -149,9 +149,9 @@
 	}
 
 	// load the units received and sold, assembled and adjusted
-	$sql = "select m.journal_id, m.post_date, i.qty, i.gl_type, i.credit_amount, i.debit_amount 
-	  from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id 
-	  where m.journal_id in (6, 12, 14, 16, 19, 21) and i.sku = '" . $sku ."' and m.post_date >= '" . $last_year . "' 
+	$sql = "select m.journal_id, m.post_date, i.qty, i.gl_type, i.credit_amount, i.debit_amount
+	  from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
+	  where m.journal_id in (6, 12, 14, 16, 19, 21) and i.sku = '" . $sku ."' and m.post_date >= '" . $last_year . "'
 	  order by m.post_date DESC";
 	$result = $db->Execute($sql);
 	while(!$result->EOF) {
@@ -184,7 +184,7 @@
 	$cnt = 0;
 	$history['averages'] = array();
 	foreach ($history['sales'] as $key => $value) {
-	  if ($cnt == 0) { 
+	  if ($cnt == 0) {
 	    $cnt++;
 		continue; // skip current month since we probably don't have the full months worth
 	  }
@@ -228,19 +228,19 @@
 	} elseif ($inv_price_sheet <> '') {
 	  $sheet_name = $inv_price_sheet;
 	} else {
-	  $default_sheet = $db->Execute("select sheet_name from " . TABLE_PRICE_SHEETS . " 
+	  $default_sheet = $db->Execute("select sheet_name from " . TABLE_PRICE_SHEETS . "
 		where type = '" . $type . "' and default_sheet = '1'");
 	  $sheet_name = ($default_sheet->RecordCount() == 0) ? '' : $default_sheet->fields['sheet_name'];
 	}
 	// determine the sku price ranges from the price sheet in effect
 	$levels = false;
 	if ($sheet_name <> '') {
-	  $sql = "select id, default_levels from " . TABLE_PRICE_SHEETS . " 
-	    where inactive = '0' and type = '$type' and sheet_name = '$sheet_name' and 
+	  $sql = "select id, default_levels from " . TABLE_PRICE_SHEETS . "
+	    where inactive = '0' and type = '$type' and sheet_name = '$sheet_name' and
 	    (expiration_date is null or expiration_date = '0000-00-00' or expiration_date >= '" . date('Y-m-d') . "')";
 	  $price_sheets = $db->Execute($sql);
 	  // retrieve special pricing for this inventory item
-	  $sql = "select price_sheet_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " 
+	  $sql = "select price_sheet_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . "
 		where price_sheet_id = '" . $price_sheets->fields['id'] . "' and inventory_id = $sku_id";
 	  $result = $db->Execute($sql);
 	  $special_prices = array();
@@ -263,7 +263,7 @@
 function inv_status_open_orders($journal_id, $gl_type) { // checks order status for order balances, items received/shipped
   global $db;
   $item_list = array();
-  $orders = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " 
+  $orders = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . "
   	where journal_id = " . $journal_id . " and closed = '0'");
   while (!$orders->EOF) {
     $total_ordered = array(); // track this SO/PO sku for totals, to keep >= 0
@@ -277,7 +277,7 @@ function inv_status_open_orders($journal_id, $gl_type) { // checks order status 
 	  $ordr_items->MoveNext();
 	}
 	// calculate received/sales levels (SO and PO)
-	$sql = "select i.qty, i.sku, i.ref_id 
+	$sql = "select i.qty, i.sku, i.ref_id
 		from " . TABLE_JOURNAL_MAIN . " m left join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 		where m.so_po_ref_id = " . $id;
 	$posted_items = $db->Execute($sql);
@@ -307,7 +307,7 @@ function validate_UPCABarcode($barcode){
   	if(!preg_match("/^[0-9]{12}$/",$barcode)) return false;
   	$digits = $barcode;
 	// 1. sum each of the odd numbered digits
-  	$odd_sum = $digits[0] + $digits[2] + $digits[4] + $digits[6] + $digits[8] + $digits[10];  
+  	$odd_sum = $digits[0] + $digits[2] + $digits[4] + $digits[6] + $digits[8] + $digits[10];
   	// 2. multiply result by three
   	$odd_sum_three = $odd_sum * 3;
   	// 3. add the result to the sum of each of the even numbered digits
@@ -332,7 +332,7 @@ function validate_EAN13Barcode($barcode) {
 	// check to see if barcode is 13 digits long
 	if(!preg_match("/^[0-9]{13}$/",$barcode)) return false;
 
-	$digits = $barcode;	
+	$digits = $barcode;
 	// 1. Add the values of the digits in the even-numbered positions: 2, 4, 6, etc.
 	$even_sum = $digits[1] + $digits[3] + $digits[5] + $digits[7] + $digits[9] + $digits[11];
 	// 2. Multiply this result by 3.

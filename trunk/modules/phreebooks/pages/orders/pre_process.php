@@ -175,7 +175,7 @@ switch ($_REQUEST['action']) {
   	try{
 		\core\classes\user::validate_security($security_level, 2);
 		// check for truncated post vars
-	  	if (!isset($_POST['total'])) throw new \Exception('The total field was not set, this means the form was not submitted in full and the order cannot be posted properly. The most common solution to this problem is to set the max_input_vars above the standard 1000 in your php.ini configuration file.');
+	  	if (!isset($_POST['total'])) throw new \core\classes\userException('The total field was not set, this means the form was not submitted in full and the order cannot be posted properly. The most common solution to this problem is to set the max_input_vars above the standard 1000 in your php.ini configuration file.');
 		// currency values (convert to DEFAULT_CURRENCY to store in db)
 		$order->currencies_code     = db_prepare_input($_POST['currencies_code']);
 		$order->currencies_value    = db_prepare_input($_POST['currencies_value']);
@@ -219,8 +219,8 @@ switch ($_REQUEST['action']) {
 		$order->journal_id          = JOURNAL_ID;
 		$order->post_date           = gen_db_date($_POST['post_date']);
 		$order->period              = gen_calculate_period($order->post_date);
-		if (!$order->period) throw new \Exception("the period isn't set");	// bad post_date was submitted
-		if ($_SESSION['admin_prefs']['restrict_period'] && $order->period <> CURRENT_ACCOUNTING_PERIOD) throw new \Exception(ORD_ERROR_NOT_CUR_PERIOD);
+		if (!$order->period) throw new \core\classes\userException("the period isn't set");	// bad post_date was submitted
+		if ($_SESSION['admin_prefs']['restrict_period'] && $order->period <> CURRENT_ACCOUNTING_PERIOD) throw new \core\classes\userException(ORD_ERROR_NOT_CUR_PERIOD);
 		$order->so_po_ref_id        = db_prepare_input($_POST['so_po_ref_id']);	// Internal link to reference po/so record
 		$order->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);	// PhreeBooks order/invoice ID
 		$order->purch_order_id      = db_prepare_input($_POST['purch_order_id']);  // customer PO/Ref number
@@ -287,29 +287,29 @@ switch ($_REQUEST['action']) {
 		// check for errors (address fields)
 		if (!$order->bill_acct_id && !$order->bill_add_update) {
 		  $contact_type = $account_type=='c' ? TEXT_LC_CUSTOMER : TEXT_LC_VENDOR;
-		  throw new \Exception(sprintf(ERROR_NO_CONTACT_SELECTED, $contact_type, $contact_type, ORD_ADD_UPDATE));
+		  throw new \core\classes\userException(sprintf(ERROR_NO_CONTACT_SELECTED, $contact_type, $contact_type, ORD_ADD_UPDATE));
 		}
 		$base_msg = in_array(JOURNAL_ID, array(3,4,6,7)) ? TEXT_REMIT_TO : TEXT_BILL_TO;
-		if ($order->bill_primary_name     === false) throw new \Exception(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_PRIMARY_NAME);
-		if ($order->bill_contact          === false) throw new \Exception(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_CONTACT);
-		if ($order->bill_address1         === false) throw new \Exception(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_ADDRESS1);
-		if ($order->bill_address2         === false) throw new \Exception(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_ADDRESS2);
-		if ($order->bill_city_town        === false) throw new \Exception(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_CITY_TOWN);
-		if ($order->bill_state_province   === false) throw new \Exception(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_STATE_PROVINCE);
-		if ($order->bill_postal_code      === false) throw new \Exception(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_POSTAL_CODE);
+		if ($order->bill_primary_name     === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_PRIMARY_NAME);
+		if ($order->bill_contact          === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_CONTACT);
+		if ($order->bill_address1         === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_ADDRESS1);
+		if ($order->bill_address2         === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_ADDRESS2);
+		if ($order->bill_city_town        === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_CITY_TOWN);
+		if ($order->bill_state_province   === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_STATE_PROVINCE);
+		if ($order->bill_postal_code      === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_POSTAL_CODE);
 		if (ENABLE_SHIPPING_FUNCTIONS) {
-		  if ($order->ship_primary_name   === false) throw new \Exception(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_PRIMARY_NAME);
-		  if ($order->ship_contact        === false) throw new \Exception(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_CONTACT);
-		  if ($order->ship_address1       === false) throw new \Exception(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_ADDRESS1);
-		  if ($order->ship_address2       === false) throw new \Exception(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_ADDRESS2);
-		  if ($order->ship_city_town      === false) throw new \Exception(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_CITY_TOWN);
-		  if ($order->ship_state_province === false) throw new \Exception(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_STATE_PROVINCE);
-		  if ($order->ship_postal_code    === false) throw new \Exception(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_POSTAL_CODE);
-		  if ($order->ship_telephone1     === false) throw new \Exception(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_TELEPHONE1);
-		  if ($order->ship_email          === false) throw new \Exception(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_EMAIL);
+		  if ($order->ship_primary_name   === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_PRIMARY_NAME);
+		  if ($order->ship_contact        === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_CONTACT);
+		  if ($order->ship_address1       === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_ADDRESS1);
+		  if ($order->ship_address2       === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_ADDRESS2);
+		  if ($order->ship_city_town      === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_CITY_TOWN);
+		  if ($order->ship_state_province === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_STATE_PROVINCE);
+		  if ($order->ship_postal_code    === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_POSTAL_CODE);
+		  if ($order->ship_telephone1     === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_TELEPHONE1);
+		  if ($order->ship_email          === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_EMAIL);
 		}
 		// Item row errors
-		if (!$order->item_rows) throw new \Exception(GL_ERROR_NO_ITEMS);
+		if (!$order->item_rows) throw new \core\classes\userException(GL_ERROR_NO_ITEMS);
 		// End of error checking, check for attachments and process the order
 		$order->post_ordr($_REQUEST['action']);	// Post the order class to the db
 		if ($order->rm_attach) unlink(PHREEBOOKS_DIR_MY_ORDERS . 'order_'.$order->id.'.zip');
@@ -361,7 +361,7 @@ switch ($_REQUEST['action']) {
   	try{
 		\core\classes\user::validate_security($security_level, 4);
 	  	$id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
-		if (!$id) throw new \Exception(GL_ERROR_NO_DELETE);
+		if (!$id) throw new \core\classes\userException(GL_ERROR_NO_DELETE);
 		$db->transStart();
 		$delOrd = new \phreebooks\classes\orders($id);
 		$delOrd->journal($id); // load the posted record based on the id submitted
@@ -384,7 +384,7 @@ switch ($_REQUEST['action']) {
 	$oID = db_prepare_input($_GET['oID']);
 	if (!$oID) {
 		$_REQUEST['action'] = '';
-	  throw new \Exception('Bad order ID passed to edit order.'); // this should never happen
+	  throw new \core\classes\userException('Bad order ID passed to edit order.'); // this should never happen
 
 	}
 	break;

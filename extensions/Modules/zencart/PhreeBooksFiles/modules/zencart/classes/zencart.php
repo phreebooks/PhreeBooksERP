@@ -39,10 +39,10 @@ class zencart {
 				$url = 'confirm.php';
 				break;
 			default:
-				throw new \Exception(ZENCART_INVALID_ACTION);
+				throw new \core\classes\userException(ZENCART_INVALID_ACTION);
 		}
 		$temp = ZENCART_URL;
-		if(!defined('ZENCART_URL') || empty($temp) || $temp == 'http://') throw new \Exception("the Zen Cart url is empty");
+		if(!defined('ZENCART_URL') || empty($temp) || $temp == 'http://') throw new \core\classes\userException("the Zen Cart url is empty");
 //		echo 'Submit to ' . ZENCART_URL . '/soap/' . $url . ' and XML string = <pre>' . htmlspecialchars($this->strXML) . '</pre><br />';
 		$this->response = doCURLRequest('POST', ZENCART_URL . '/soap/' . $url, $this->strXML);
 //		echo 'XML response (at the PhreeBooks side from Zencart) => <pre>' . htmlspecialchars($this->response) . '</pre><br />' . chr(10);
@@ -63,7 +63,7 @@ class zencart {
   function buildProductUploadXML($id, $inc_image = true) {
 	global $db, $currencies;
 	$result = $db->Execute("select * from " . TABLE_INVENTORY . " where id = " . $id);
-	if ($result->RecordCount() <> 1) throw new \Exception(ZENCART_INVALID_SKU);
+	if ($result->RecordCount() <> 1) throw new \core\classes\userException(ZENCART_INVALID_SKU);
 	$this->sku = $result->fields['sku'];
 	if (ZENCART_USE_PRICE_SHEETS == '1') {
 	  $sql = "select id, default_levels from " . TABLE_PRICE_SHEETS . "
@@ -71,7 +71,7 @@ class zencart {
 		and sheet_name = '" . ZENCART_PRICE_SHEET . "' and inactive = '0'";
 	  $default_levels = $db->Execute($sql);
 	  if ($default_levels->RecordCount() == 0) {
-		throw new \Exception(ZENCART_ERROR_NO_PRICE_SHEET . ZENCART_PRICE_SHEET);
+		throw new \core\classes\userException(ZENCART_ERROR_NO_PRICE_SHEET . ZENCART_PRICE_SHEET);
 	  }
 	  $sql = "select price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . "
 		where inventory_id = " . $id . " and price_sheet_id = " . $default_levels->fields['id'];
@@ -190,7 +190,7 @@ if (file_exists(DIR_FS_MODULES . 'zencart/custom/extra_product_attrs.php')) {
 	global $db;
 	$result = $db->Execute("select sku from " . TABLE_INVENTORY . " where catalog = '1'");
 	if ($result->RecordCount() == 0) {
-	  throw new \Exception(ZENCART_ERROR_NO_ITEMS);
+	  throw new \core\classes\userException(ZENCART_ERROR_NO_ITEMS);
 	}
 	$this->strXML  = '<?xml version="1.0" encoding="UTF-8" ?>' . chr(10);
 	$this->strXML .= '<Request>' . chr(10);

@@ -35,17 +35,17 @@ class queryFactory {
         $this->db_connected = true;
 		// set the character set
 		mysql_query("SET character_set_results='utf8', character_set_client='utf8', character_set_connection='utf8', character_set_database='utf8', character_set_server='utf8'", $this->link);
-//		mysql_query("SET NAMES utf8", $this->link); 
-//		mysql_query("SET CHARACTER SET utf8", $this->link); 
-//		mysql_set_charset('utf8', $this->link); 
+//		mysql_query("SET NAMES utf8", $this->link);
+//		mysql_query("SET CHARACTER SET utf8", $this->link);
+//		mysql_set_charset('utf8', $this->link);
         return true;
       } else {
-      	throw new \Exception(mysql_error());
+      	throw new \core\classes\userException(mysql_error());
       }
     } else {
-      throw new \Exception(mysql_error());
+      throw new \core\classes\userException(mysql_error());
     }
-    throw new \Exception("database isn't connected.");
+    throw new \core\classes\userException("database isn't connected.");
   }
 
   function selectdb($zf_database) {
@@ -117,9 +117,9 @@ class queryFactory {
       $time_start = explode(' ', microtime());
       $obj = new queryFactoryResult;
       $obj->sql_query = $zf_sql;
-      if (!$this->db_connected) throw new \Exception(DB_ERROR_NOT_CONNECTED);
+      if (!$this->db_connected) throw new \core\classes\userException(DB_ERROR_NOT_CONNECTED);
       $zp_db_resource = @mysql_query($zf_sql, $this->link);
-      if (!$zp_db_resource) throw new \Exception(@mysql_error());
+      if (!$zp_db_resource) throw new \core\classes\userException(@mysql_error());
       $obj->resource = $zp_db_resource;
       $obj->cursor = 0;
       $obj->is_cached = true;
@@ -158,7 +158,7 @@ class queryFactory {
     } else {
       $time_start = explode(' ', microtime());
       $obj = new queryFactoryResult;
-      if (!$this->db_connected) throw new \Exception( DB_ERROR_NOT_CONNECTED);
+      if (!$this->db_connected) throw new \core\classes\userException( DB_ERROR_NOT_CONNECTED);
       $zp_db_resource = @mysql_query($zf_sql, $this->link);
       if (!$zp_db_resource) {
 		if (method_exists($messageStack, 'debug')) {
@@ -166,15 +166,15 @@ class queryFactory {
 		  $messageStack->debug("\n\nmySQL returned: " . @mysql_errno($this->link) . ' ' . @mysql_error($this->link));
 		  if (defined('FILENAME_DEFAULT')) {
 		    $messageStack->write_debug();
-		    throw new \Exception('The last transaction had a SQL database error.');
+		    throw new \core\classes\userException('The last transaction had a SQL database error.');
 		  } else{
-		  	echo str_replace("\n", '<br />', $messageStack->debug_info); 
+		  	echo str_replace("\n", '<br />', $messageStack->debug_info);
 			ob_end_flush();
   			session_write_close();
 			die;
 		  }
-		} else { 
-		    echo str_replace("\n", '<br />', $messageStack->debug_info); 
+		} else {
+		    echo str_replace("\n", '<br />', $messageStack->debug_info);
 			ob_end_flush();
   			session_write_close();
 			die;
@@ -233,7 +233,7 @@ class queryFactory {
 	} else {
 		$obj->EOF = true;
 	}
-	
+
 	$time_end = explode (' ', microtime());
 	$query_time = $time_end[1] + $time_end[0] - $time_start[1] - $time_start[0];
 	$this->total_query_time += $query_time;
@@ -254,7 +254,7 @@ class queryFactoryResult {
 	public $EOF			= false;
 	public $result		= array();
 	public $resource	= '';
- 
+
   function MoveNext() {
     global $zc_cache;
     $this->cursor++;

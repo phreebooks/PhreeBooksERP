@@ -73,7 +73,7 @@ class toolbar {
 
   function build_toolbar($add_search = false, $add_period = false, $cal_props = false) { // build the main toolbar
 	global $messageStack;
-	if ($this->id == '') throw new \Exception("the toolbar id can't be empty as of release 4.0");//normal exeption this isn't a users failt
+	if ($this->id == '') throw new \core\classes\userException("the toolbar id can't be empty as of release 4.0");//normal exeption this isn't a users failt
     $output = '';
 	if ($add_search) $output .= $this->add_search();
 	if ($add_period) $output .= $this->add_period();

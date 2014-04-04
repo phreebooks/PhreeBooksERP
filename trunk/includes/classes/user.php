@@ -33,7 +33,7 @@ class user {
 			//allow the user to continu to with the login action.
 			if (!isset($_REQUEST['action']) || !in_array($_REQUEST['action'], array('validate','pw_lost_sub','pw_lost_req'))){
 				$_REQUEST['action'] = 'login';
-				throw new \core\classes\userExeception(SORRY_YOU_ARE_LOGGED_OUT, array("phreedom","template_login.php"));
+				throw new \core\classes\userException("u bent uitgelogd".SORRY_YOU_ARE_LOGGED_OUT, "phreedom","main","template_login");
 			}
 		}
 	}
@@ -72,7 +72,7 @@ class user {
 
 	final static function validate($token = 0, $user_active = false) {
   		$security_level = $_SESSION['admin_security'][$token];
-  		if (!in_array($security_level, array(1,2,3,4)) && !$user_active) throw new \Exception(ERROR_NO_PERMISSION, 10, $e);
+  		if (!in_array($security_level, array(1,2,3,4)) && !$user_active) throw new \core\classes\userException(ERROR_NO_PERMISSION, 10, $e);
   		return $user_active ? 1 : $security_level;
 	}
 
@@ -83,7 +83,7 @@ class user {
 	 */
 
 	final static function validate_security($current_security_level = 0, $required_level = 1) {
-		if ($current_security_level < $required_level) throw new \Exception(ERROR_NO_PERMISSION);
+		if ($current_security_level < $required_level) throw new \core\classes\userException(ERROR_NO_PERMISSION);
 	}
 
 	/**

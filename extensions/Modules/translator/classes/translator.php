@@ -42,9 +42,9 @@ class translator {
 	$upload_filename = DIR_FS_MY_FILES . 'translator/translate.zip';
 	validate_upload('zipfile', 'zip', 'zip');
 	if (file_exists($upload_filename)) unlink ($upload_filename);
-	if (!copy($_FILES['zipfile']['tmp_name'], $upload_filename)) throw new \Exception('Error copying to ' . $upload_filename);
+	if (!copy($_FILES['zipfile']['tmp_name'], $upload_filename)) throw new \core\classes\userException('Error copying to ' . $upload_filename);
 	validate_path($dir_dest);
-	if ($backup->unzip_file($upload_filename, $dir_dest)) throw new \Exception('Error unzipping file');
+	if ($backup->unzip_file($upload_filename, $dir_dest)) throw new \core\classes\userException('Error unzipping file');
 	$this->import_language($dir_dest, $mod, $lang);
 	if (file_exists($upload_filename)) unlink ($upload_filename);
 	$backup->delete_dir($dir_dest); // remove unzipped files
@@ -108,7 +108,7 @@ if ($const == 'GEN_COUNTRY_CODE')echo 'writing const = '.$const.' with value = '
 	// retrieve highest version
 	$result = $db->Execute("select max(version) as version from " . TABLE_TRANSLATOR . "
 	  where module = '" . $mod . "' and language = '" . $source . "'");
-	if ($result->RecordCount() == 0) throw new \Exception(TRANS_ERROR_NO_SOURCE);
+	if ($result->RecordCount() == 0) throw new \core\classes\userException(TRANS_ERROR_NO_SOURCE);
 	$ver = $result->fields['version'];
 	// delete all from the version being written, prevents dups
 	$db->Execute("delete from " . TABLE_TRANSLATOR . "
@@ -150,7 +150,7 @@ if ($const == 'GEN_COUNTRY_CODE')echo 'writing const = '.$const.' with value = '
 	global $db, $backup, $messageStack;
 	$result = $db->Execute("select pathtofile, defined_constant, translation from " . TABLE_TRANSLATOR . "
 	  where module = '" . $mod . "' and language = '" . $lang . "' and version = '" . $ver . "'");
-	if ($result->RecordCount() == 0) throw new \Exception(GEN_BACKUP_DOWNLOAD_EMPTY);
+	if ($result->RecordCount() == 0) throw new \core\classes\userException(GEN_BACKUP_DOWNLOAD_EMPTY);
 	$output  = array();
 	$header  = '<' . '?' . 'php'  . chr(10);
 	$header .= '// +-----------------------------------------------------------------+' . chr(10);
@@ -201,7 +201,7 @@ if ($const == 'GEN_COUNTRY_CODE')echo 'writing const = '.$const.' with value = '
   	$runaway = 0;
   	$output = array();
   	while(true) {
-  		if ($runaway++ > 50000) throw new \Exception('hit runaway counter');
+  		if ($runaway++ > 50000) throw new \core\classes\userException('hit runaway counter');
   		if (strpos($langFile, 'define') === false) break;
   		$langFile = trim(substr($langFile, strpos($langFile, 'define')+6)); // find first define
   		$langFile = trim(substr($langFile, 1)); // remove '('

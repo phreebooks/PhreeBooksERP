@@ -21,7 +21,7 @@ function bank_import_csv($structure, $filename, $bank_gl_acct) {
   $bankimport = new \import_bank\classes\import_banking();
   $data = file($_FILES[$filename]['tmp_name']);
   // read the header and build array
-  if (sizeof($data) < 2) throw new \Exception('The number of lines in the file is to small, a csv file must contain a header line and at least on input line!');
+  if (sizeof($data) < 2) throw new \core\classes\userException('The number of lines in the file is to small, a csv file must contain a header line and at least on input line!');
   $header = csv_explode(trim(array_shift($data)));
   // build the map structure
   $temp = $structure->Module->Table;
@@ -85,6 +85,6 @@ function bank_import_csv($structure, $filename, $bank_gl_acct) {
   }
   if ( $countline <> 0 ) $messageStack->add('succesfully posted '.$countline. ' number of lines','caution');
   if ( DEBUG )           $messageStack->write_debug();
-  
+
 }
 ?>

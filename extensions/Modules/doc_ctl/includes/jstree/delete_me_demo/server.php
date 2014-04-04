@@ -29,7 +29,7 @@ if($_REQUEST["operation"] && strpos($_REQUEST["operation"], "_") !== 0 && method
   	session_write_close();
 	die();
 }
-throw new \Exception("HTTP/1.0 404 Not Found");
+throw new \core\classes\userException("HTTP/1.0 404 Not Found");
 ?>
 
 <?php

@@ -29,7 +29,7 @@ switch ($_REQUEST['action']) {
   case 'save':
     $enc_key = db_prepare_input($_POST['enc_key']);
     $enc_key_confirm = db_prepare_input($_POST['enc_key_confirm']);
-	if ($enc_key <> $enc_key_confirm) throw new \Exception(TEXT_ERROR_ENCRYPTION_KEY_MATCH);
+	if ($enc_key <> $enc_key_confirm) throw new \core\classes\userException(TEXT_ERROR_ENCRYPTION_KEY_MATCH);
 	\core\classes\encryption::validate_password($enc_key, ENCRYPTION_VALUE);
 	$_SESSION['admin_encrypt'] = $enc_key;
     $messageStack->add(GEN_ENCRYPTION_KEY_SET,'success');
@@ -43,11 +43,11 @@ switch ($_REQUEST['action']) {
 		try{
 			\core\classes\encryption::validate_password($old_key, ENCRYPTION_VALUE);
 		}catch(Exception $e){
-			throw new \Exception(ERROR_OLD_ENCRYPT_NOT_CORRECT,$e->getCode(),$e);
+			throw new \core\classes\userException(ERROR_OLD_ENCRYPT_NOT_CORRECT,$e->getCode(),$e);
 		}
 	}
-	if (strlen($new_key) < ENTRY_PASSWORD_MIN_LENGTH) throw new \Exception(sprintf(ENTRY_PASSWORD_NEW_ERROR, ENTRY_PASSWORD_MIN_LENGTH));
-	if ($new_key != $new_key_confirm) throw new \Exception(ENTRY_PASSWORD_NEW_ERROR_NOT_MATCHING);
+	if (strlen($new_key) < ENTRY_PASSWORD_MIN_LENGTH) throw new \core\classes\userException(sprintf(ENTRY_PASSWORD_NEW_ERROR, ENTRY_PASSWORD_MIN_LENGTH));
+	if ($new_key != $new_key_confirm) throw new \core\classes\userException(ENTRY_PASSWORD_NEW_ERROR_NOT_MATCHING);
 	write_configure('ENCRYPTION_VALUE', \core\classes\encryption::password($new_key));
     $messageStack->add(GEN_ENCRYPTION_KEY_CHANGED,'success');
     break;

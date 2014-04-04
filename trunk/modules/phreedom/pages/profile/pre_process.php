@@ -34,7 +34,7 @@ switch ($_REQUEST['action']) {
 	$prefs['theme']  = db_prepare_input($_POST['theme']);
 	$prefs['menu']   = db_prepare_input($_POST['menu']);
 	$prefs['colors'] = db_prepare_input($_POST['colors']);
-	if (!$prefs['colors']) throw new \Exception(GEN_ERROR_NO_THEME_COLORS);
+	if (!$prefs['colors']) throw new \core\classes\userException(GEN_ERROR_NO_THEME_COLORS);
 	db_perform(TABLE_USERS, array('admin_prefs'=>serialize($prefs)), 'update', 'admin_id = '.$_SESSION['admin_id']);
 	$_SESSION['admin_prefs']['theme']  = $prefs['theme'];
 	$_SESSION['admin_prefs']['menu']   = $prefs['menu'];

@@ -57,8 +57,8 @@ function build_audit_xml($date_from, $date_to, $select){
 			$output .= "\t" . xmlEntry('accountType',		(in_array($result->fields['account_type'],$income_types))? TEXT_INCOME_STATEMENT : TEXT_BALANCE_SHEET ,true); //generalLedger Type balance or income
 			$output .= "\t" . xmlEntry('leadCode',			$result->fields['account_type'],						 			true); //gl account type id *)
 			$output .= "\t" . xmlEntry('leadDescription',	constant($coa_types_list[$result->fields['account_type']]['text']),	true); //GL account Type description *)
-			$output .= "\t" . '</ledgerAccount>' .chr(10);	
-			$result->MoveNext();	
+			$output .= "\t" . '</ledgerAccount>' .chr(10);
+			$result->MoveNext();
 		}
 	$output .= '</generalLedger>'.chr(10);
 	$output .= '<customersSuppliers>'.chr(10);// all contacts
@@ -82,7 +82,7 @@ function build_audit_xml($date_from, $date_to, $select){
 					$output .= "\t" . xmlEntry('website',				htmlspecialchars($address->fields['website']),true); //company URL website
 					//company billing address
 					$output .= "\t\t" . '<postalAddress>' .chr(10);
-					$output .= "\t\t" . xmlEntry('address',			substr(htmlspecialchars($address->fields['address1'] . ' ' . $address->fields['address2']),0,50)		,true); 	
+					$output .= "\t\t" . xmlEntry('address',			substr(htmlspecialchars($address->fields['address1'] . ' ' . $address->fields['address2']),0,50)		,true);
 					$output .= "\t\t" . xmlEntry('city',			htmlspecialchars($address->fields['city_town'])			,true);
 					$output .= "\t\t" . xmlEntry('postalCode',		htmlspecialchars($address->fields['postal_code'])		,true);
 					$output .= "\t\t" . xmlEntry('region',			htmlspecialchars($address->fields['state_province'])	,true);
@@ -90,17 +90,17 @@ function build_audit_xml($date_from, $date_to, $select){
 					$output .= "\t\t" . '</postalAddress>' .chr(10);
 				}else if(substr($address->fields['type'],1,2) == 's') {//company shipping address
 					$output .= "\t\t" . '<streetAddress>' .chr(10);
-					$output .= "\t\t" . xmlEntry('address',			substr(htmlspecialchars($address->fields['address1'] . ' ' . $address->fields['address2']),0,50)		,true); 	
+					$output .= "\t\t" . xmlEntry('address',			substr(htmlspecialchars($address->fields['address1'] . ' ' . $address->fields['address2']),0,50)		,true);
 					$output .= "\t\t" . xmlEntry('city',			htmlspecialchars($address->fields['city_town'])			,true);
 					$output .= "\t\t" . xmlEntry('postalCode',		htmlspecialchars($address->fields['postal_code'])		,true);
 					$output .= "\t\t" . xmlEntry('region',			htmlspecialchars($address->fields['state_province'])	,true);
 					$output .= "\t\t" . xmlEntry('country',			$address->fields['country_code']						,true);
-					$output .= "\t\t" . '</streetAddress>' .chr(10);  	
-				}	
+					$output .= "\t\t" . '</streetAddress>' .chr(10);
+				}
 				$address->MoveNext();
 			}
-			$output .= "\t" . '</customerSupplier>' .chr(10);	
-			$result->MoveNext();	
+			$output .= "\t" . '</customerSupplier>' .chr(10);
+			$result->MoveNext();
 		}
 	$output .= '</customersSuppliers>'.chr(10);
 	$output .= '<transactions>'.chr(10);// all journal lines.
@@ -122,7 +122,7 @@ function build_audit_xml($date_from, $date_to, $select){
 				if($previous_journal_id <> ''){
 					$output .= "\t" . '</journal>' .chr(10);
 					$output .= "\t" . '<journal>' .chr(10);
-				} 
+				}
 				$output .= "\t" . xmlEntry('journalID',		$result->fields['journal_id']			,true);//the journal id
 				$output .= "\t" . xmlEntry('description',	constant('GEN_ADM_TOOLS_J' . str_pad($result->fields['journal_id'], 2, '0', STR_PAD_LEFT))		,true);//the journal description
 				$output .= "\t" . xmlEntry('type',			''			,true);//type of journal
@@ -167,7 +167,7 @@ function build_audit_xml($date_from, $date_to, $select){
 				}
 				$output .= "\t\t\t" . '</line>' .chr(10);
 				$previous_journal_id = $result->fields['journal_id'];
-				$line->MoveNext();	
+				$line->MoveNext();
 			}
 			if((float)(string)$line_debit != (float)(string)$line_credit) {
 				if(DEBUG){
@@ -177,16 +177,16 @@ function build_audit_xml($date_from, $date_to, $select){
 					$output .= xmlEntry('lineCredit', $line_credit	        ,true);
 					$output .= '</lineError>' .chr(10);
 				}
-				throw new \Exception('The journal with id ' . $result->fields['id'] . ' is out of balance total Debit = ' . $line_debit . ' total Credit = ' . $line_credit);
+				throw new \core\classes\userException('The journal with id ' . $result->fields['id'] . ' is out of balance total Debit = ' . $line_debit . ' total Credit = ' . $line_credit);
 			}
 			$total_debit  += $line_debit;
 			$total_credit += $line_credit;
 			$output .= "\t\t" . '</transaction>' .chr(10);
-			$result->MoveNext();	
+			$result->MoveNext();
 		}
 		$output .= "\t" . '</journal>' .chr(10);
 		if((float)(string)$total_debit != (float)(string)$total_credit){
-			throw new \Exception('Totals are out of balance total Debit = ' . $total_debit . ' total Credit = ' . $total_credit);
+			throw new \core\classes\userException('Totals are out of balance total Debit = ' . $total_debit . ' total Credit = ' . $total_credit);
 		}
 		$output .= xmlEntry('totalDedit',			$total_debit	,true);
 		$output .= xmlEntry('totalCredit',			$total_credit	,true);

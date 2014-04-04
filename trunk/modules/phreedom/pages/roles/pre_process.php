@@ -61,7 +61,7 @@ switch ($_REQUEST['action']) {
 		);
 		if (!$admin_id) { // check for duplicate user name
 		  	$result = $db->Execute("select admin_id from " . TABLE_USERS . " where admin_name = '" . db_prepare_input($_POST['admin_name']) . "'");
-		  	if ($result->RecordCount() != 0) throw new \Exception(ENTRY_DUP_USER_NEW_ERROR);
+		  	if ($result->RecordCount() != 0) throw new \core\classes\userException(ENTRY_DUP_USER_NEW_ERROR);
 		}
 
 		if ($admin_id) {
@@ -88,7 +88,7 @@ switch ($_REQUEST['action']) {
 		// check for duplicate user names
 		$result = $db->Execute("select admin_name from " . TABLE_USERS . " where admin_name = '" . $new_name . "'");
 		// error and reload
-		if ($result->Recordcount() > 0) throw new \Exception(GEN_ERROR_DUPLICATE_ID);
+		if ($result->Recordcount() > 0) throw new \core\classes\userException(GEN_ERROR_DUPLICATE_ID);
 		$result   = $db->Execute("select * from " . TABLE_USERS . " where admin_id = " . $admin_id);
 		$old_name = $result->fields['admin_name'];
 		// clean up the fields (especially the system fields, retain the custom fields)

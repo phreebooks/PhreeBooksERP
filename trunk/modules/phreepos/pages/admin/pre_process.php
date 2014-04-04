@@ -28,7 +28,7 @@ switch ($_REQUEST['action']) {
   case 'save':
   	\core\classes\user::validate_security($security_level, 3); // security check
 	if(AR_TAX_BEFORE_DISCOUNT == false && PHREEPOS_DISCOUNT_OF == true && $_POST['phreepos_discount_of'] == 1 ){ // tax after discount
-		throw new \Exception("your setting tax before discount and discount over total don't work together, <br/>This has circulair logic. one can't preceed the other");
+		throw new \core\classes\userException("your setting tax before discount and discount over total don't work together, <br/>This has circulair logic. one can't preceed the other");
 	}else{
 		// save general tab
 		foreach ($admin_classes['phreepos']->keys as $key => $default) {

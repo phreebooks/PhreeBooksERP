@@ -35,7 +35,7 @@ class admin extends \core\classes\admin {
 		);
 	    // Load tables
 	    //@todo maybe the toaddress_id and fromadress_id can be removed.
-		$this->tables = array(	  
+		$this->tables = array(
 		  TABLE_PHREEMAIL => "CREATE TABLE ".TABLE_PHREEMAIL."  (
 	  		`id` int(11) NOT NULL auto_increment,
 	  		`message_id` varchar(255) NOT NULL default '0',
@@ -67,7 +67,7 @@ class admin extends \core\classes\admin {
 	  		KEY `message_id` (`message_id`),
 	  		KEY `from` (`fromaddress`)
 		) ENGINE=MyISAM;",
-	
+
 		TABLE_PHREEMAIL_DIR => "CREATE TABLE ".TABLE_PHREEMAIL_DIR." (
 	  		`IDdir` int(11) NOT NULL auto_increment,
 	  		`IDsubdir` int(11) NOT NULL default '0',
@@ -79,7 +79,7 @@ class admin extends \core\classes\admin {
 	  		PRIMARY KEY  (`IDdir`),
 	  		KEY `IDsubdir` (`IDsubdir`)
 		) ENGINE=MyISAM;",
-	
+
 		TABLE_PHREEMAIL_LIST => "CREATE TABLE ".TABLE_PHREEMAIL_LIST." (
 	  		`IDlist` int(11) NOT NULL auto_increment,
 	  		`Email` varchar(255) NOT NULL default '',
@@ -87,14 +87,14 @@ class admin extends \core\classes\admin {
 	  		PRIMARY KEY  (`IDlist`),
 	  		KEY `Email` (`Email`)
 			) ENGINE=MyISAM;",
-	
+
 		TABLE_PHREEMAIL_WORDS => "CREATE TABLE ". TABLE_PHREEMAIL_WORDS ." (
 	  		`IDw` int(11) NOT NULL auto_increment,
 	  		`Word` varchar(100)  NOT NULL default '',
 	  		PRIMARY KEY  (`IDw`),
 	  		KEY `Word` (`Word`)
 			) ENGINE=MyISAM;",
-	
+
 		TABLE_PHREEMAIL_ATTACH => "CREATE TABLE ". TABLE_PHREEMAIL_ATTACH ." (
 	  		`ID` int(11) NOT NULL auto_increment,
 	  		`IDEmail` int(11) NOT NULL default '0',
@@ -109,7 +109,7 @@ class admin extends \core\classes\admin {
 	function install($path_my_files, $demo = false) {
 	    global $db, $messageStack;
 		parent::install($path_my_files, $demo);
-	  	$db->Execute("INSERT INTO " . TABLE_PHREEMAIL_WORDS . " VALUES(1, 'viagvra');"); 
+	  	$db->Execute("INSERT INTO " . TABLE_PHREEMAIL_WORDS . " VALUES(1, 'viagvra');");
 	  	$db->Execute("INSERT INTO " . TABLE_PHREEMAIL_WORDS . " VALUES(2, 'rjolex');");
 	  	$db->Execute("INSERT INTO " . TABLE_PHREEMAIL_WORDS . " VALUES(3, 'viajagra');");
 		$db->Execute("INSERT INTO " . TABLE_PHREEMAIL_LIST  . " VALUES (1, 'spam@spamserver.com', 'B');");
@@ -132,14 +132,14 @@ class admin extends \core\classes\admin {
 				//while(!$mail->EOF){
 					$mail->do_action();
 					//$mail->MoveNext();
-				//}	
+				//}
 			}
-			
+
 			/*while(!$mail->EOF){
 				$mail->do_action();
 				$mail->MoveNext();
 			}*/
-		}catch (Exception $exception){
+		}catch (\Exception $exception){
 			$messageStack->add($exception->getMessage(), 'error');
 		}
 		$messageStack->debug("\n\n*************** End Retrieving Mail from ".EMAIL_SMTPAUTH_MAILBOX." *******************");
@@ -154,7 +154,7 @@ class admin extends \core\classes\admin {
 				//while(!$mail->EOF){
 					$mail->do_action();
 					//$mail->MoveNext();
-				//}	
+				//}
 			}
 			/*
 			while(!$mail->EOF){
@@ -162,7 +162,7 @@ class admin extends \core\classes\admin {
 				$mail->MoveNext();
 			}*/
 			$messageStack->debug("\n\n*************** End Retrieving Mail from ".$_SESSION['admin_email']." *******************");
-		}catch (Exception $exception){
+		}catch (\Exception $exception){
 			$messageStack->add($exception->getMessage(), 'error');
 		}
 		if ( DEBUG )   $messageStack->write_debug();

@@ -33,7 +33,7 @@ switch ($_REQUEST['action']) {
   	case 'save':
 	  	// check if menu isn't empty when saving.
 	  	if(!isset($_POST['inactive']) && isset($_POST['catalog']) && $_POST['category_id'] == ''){
-	  		throw new \Exception(ZENCART_INVENTORY_CATALOG_IS_EMPTY);
+	  		throw new \core\classes\userException(ZENCART_INVENTORY_CATALOG_IS_EMPTY);
 	  		$_REQUEST['action'] = 'edit';
 	  	}
 // End - Upload operation added by PhreeSoft

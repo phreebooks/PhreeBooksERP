@@ -46,7 +46,7 @@ $custom_path = DIR_FS_MODULES . 'phreepos/custom/ajax/save_main.php';
 if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 
-	\core\classes\user::validate_security($security_level, 2); // security check		
+	\core\classes\user::validate_security($security_level, 2); // security check
 	$tills->get_till_info($_POST['till_id']);
 	// load bill to and ship to information
 	$order->short_name          = db_prepare_input(($_POST['search'] <> TEXT_SEARCH) ? $_POST['search'] : '');
@@ -105,17 +105,17 @@ if (file_exists($custom_path)) { include($custom_path); }
 	  	$sku         = db_prepare_input($_POST['sku_' . $x]);
 	  	if ($fixed_price == 0 ) $fixed_price = $price;
 		// Error check some input fields
-	  	if ($_POST['acct_' . $x] == "") throw new \Exception(GEN_ERRMSG_NO_DATA . TEXT_GL_ACCOUNT);
+	  	if ($_POST['acct_' . $x] == "") throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . TEXT_GL_ACCOUNT);
 	  	//check if discount per row doens't exceed the max
 	  	if($tills->max_discount <> ''){
 	  		$wt_total_fixed += $fixed_price * ($wtprice / $price)* $qty;
 	  		$total_fixed += $fixed_price * $qty;
 	  		if( $price < $fixed_price ){ //the price in lower than the price set in the pricesheet
 	  			$total_discount += ($fixed_price * $qty) - ($price * $qty );
-	  			if($disc >= $tills->max_discount)  throw new \Exception(sprintf(EXCEED_MAX_DISCOUNT_SKU, $tills->max_discount, $sku ));
+	  			if($disc >= $tills->max_discount)  throw new \core\classes\userException(sprintf(EXCEED_MAX_DISCOUNT_SKU, $tills->max_discount, $sku ));
 	  		}
 	  	}
-	  
+
 	    $order->item_rows[] = array(
 		  'id'        => db_prepare_input($_POST['id_' . $x]),
 	      'sku'       => ($_POST['sku_' . $x] == TEXT_SEARCH) ? '' : $sku,
@@ -126,7 +126,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 		  'acct'      => db_prepare_input($_POST['acct_' . $x]),
 		  'tax'       => db_prepare_input($_POST['tax_' . $x]),
 	      'serial'    => db_prepare_input($_POST['serial_' . $x]),
-/*rest is not used	    
+/*rest is not used
 		  'price'     => $price,
 		  'weight'    => db_prepare_input($_POST['weight_' . $x]),
 		  'stock'     => db_prepare_input($_POST['stock_' . $x]),
@@ -137,15 +137,15 @@ if (file_exists($custom_path)) { include($custom_path); }
 	}//print($total_discount.'+'.$order->discount);
 	//check if the total discount doesn;t exceed the max
 	if($tills->max_discount <> ''){
-		//calculate the discount percent used by all rows, use basis set in the phreepos admin ( subtotal or total.) 
+		//calculate the discount percent used by all rows, use basis set in the phreepos admin ( subtotal or total.)
 		if(PHREEPOS_DISCOUNT_OF){//total
 		//print( round((1-(($wt_total_fixed - ($total_discount + $order->discount) )/$wt_total_fixed))* 100,1) .'>='.  round($tills->max_discount,1));
 			if( round((1-(($wt_total_fixed - ($total_discount + $order->discount) )/$wt_total_fixed))* 100,1) >=  round($tills->max_discount,1)){
-	  			throw new \Exception(sprintf(EXCEED_MAX_DISCOUNT, $tills->max_discount));
+	  			throw new \core\classes\userException(sprintf(EXCEED_MAX_DISCOUNT, $tills->max_discount));
 	  		}
-		}else{//subtotal				
+		}else{//subtotal
 			if( round((1-(($total_fixed - ($total_discount + $order->discount) )/$total_fixed))* 100,1) >=  round($tills->max_discount,1)){
-	  			throw new \Exception(sprintf(EXCEED_MAX_DISCOUNT, $tills->max_discount));
+	  			throw new \core\classes\userException(sprintf(EXCEED_MAX_DISCOUNT, $tills->max_discount));
 	  		}
 		}
 	}
@@ -172,7 +172,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 	  	  'f6'   => db_prepare_input($_POST['f6_' . $x]),
 	  	);
 	  	// initialize payment methods
-	  	// preset some post variables to fake out the payment methods, 
+	  	// preset some post variables to fake out the payment methods,
 	  	// the following lines should be in place because the payment module uses them to return journal lines.
 	  	$_POST[$pmt_meth . '_field_0'] = $_POST['f0_' . $x];
 	  	$_POST[$pmt_meth . '_field_1'] = $_POST['f1_' . $x];
@@ -186,40 +186,40 @@ if (file_exists($custom_path)) { include($custom_path); }
 	$order->shipper_code = $pmt_meth;  // store last payment method in shipper_code field
     // adding the rounding of line
     $order->rounding_amt 		= $currencies->clean_value(db_prepare_input($_POST['rounded_of']), $order->currencies_code);
-    $order->rounding_gl_acct_id = $tills->rounding_gl_acct_id;	
+    $order->rounding_gl_acct_id = $tills->rounding_gl_acct_id;
 	// check for errors (address fields)
 	if (PHREEPOS_REQUIRE_ADDRESS) {
 		if (!$order->bill_acct_id && !$order->bill_add_update) {
-			throw new \Exception(POS_ERROR_CONTACT_REQUIRED);
+			throw new \core\classes\userException(POS_ERROR_CONTACT_REQUIRED);
 	  	} else {
-		    if ($order->bill_primary_name   === false) throw new \Exception(GEN_ERRMSG_NO_DATA . GEN_PRIMARY_NAME);
-	    	if ($order->bill_contact        === false) throw new \Exception(GEN_ERRMSG_NO_DATA . GEN_CONTACT);
-	    	if ($order->bill_address1       === false) throw new \Exception(GEN_ERRMSG_NO_DATA . GEN_ADDRESS1);
-	    	if ($order->bill_address2       === false) throw new \Exception(GEN_ERRMSG_NO_DATA . GEN_ADDRESS2);
-	    	if ($order->bill_city_town      === false) throw new \Exception( GEN_ERRMSG_NO_DATA . GEN_CITY_TOWN);
-	    	if ($order->bill_state_province === false) throw new \Exception(GEN_ERRMSG_NO_DATA . GEN_STATE_PROVINCE);
-	    	if ($order->bill_postal_code    === false) throw new \Exception(GEN_ERRMSG_NO_DATA . GEN_POSTAL_CODE);
+		    if ($order->bill_primary_name   === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . GEN_PRIMARY_NAME);
+	    	if ($order->bill_contact        === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . GEN_CONTACT);
+	    	if ($order->bill_address1       === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . GEN_ADDRESS1);
+	    	if ($order->bill_address2       === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . GEN_ADDRESS2);
+	    	if ($order->bill_city_town      === false) throw new \core\classes\userException( GEN_ERRMSG_NO_DATA . GEN_CITY_TOWN);
+	    	if ($order->bill_state_province === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . GEN_STATE_PROVINCE);
+	    	if ($order->bill_postal_code    === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . GEN_POSTAL_CODE);
 	  	}
 	}
-	// Payment errors 
+	// Payment errors
 	if ($currencies->clean_value(db_prepare_input($_POST['bal_due']),  $order->currencies_code) / $order->currencies_value <> $currencies->clean_value(0)) {
-	  	throw new \Exception("The total payment was not equal to the order total!<br/> $tot_paid  +  $order->rounding_amt + $order->total_amount");
+	  	throw new \core\classes\userException("The total payment was not equal to the order total!<br/> $tot_paid  +  $order->rounding_amt + $order->total_amount");
 	}
 	if(substr($_REQUEST['action'],0,5) == 'print') {
 		$order->printed = true;
 	}else{
 		$order->printed = FALSE;
-	} 
+	}
 	// End of error checking, process the order
 	// Post the order
-	if (!$order->item_rows) throw new \Exception( GL_ERROR_NO_ITEMS);
+	if (!$order->item_rows) throw new \core\classes\userException( GL_ERROR_NO_ITEMS);
 	$order->post_ordr($_REQUEST['action']);	// Post the order class to the db
 	gen_add_audit_log(MENU_HEADING_PHREEPOS . ' - ' . ($_POST['id'] ? TEXT_EDIT : TEXT_ADD), $order->purchase_invoice_id, $order->total_amount);
-	
+
 	if($order->printed){
 		//print
 		$result = $db->Execute("select id from " . TABLE_PHREEFORM . " where doc_group = '" . POPUP_FORM_TYPE . "' and doc_ext = 'frm'");
-	    if ($result->RecordCount() == 0) throw new \Exception('No form was found for this type ('.POPUP_FORM_TYPE.'). ');
+	    if ($result->RecordCount() == 0) throw new \core\classes\userException('No form was found for this type ('.POPUP_FORM_TYPE.'). ');
 		if ($result->RecordCount() > 1) {
 		   	if(DEBUG) $massage .= 'More than one form was found for this type ('.POPUP_FORM_TYPE.'). Using the first form found.';
 		}

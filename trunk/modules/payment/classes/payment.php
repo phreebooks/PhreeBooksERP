@@ -167,7 +167,7 @@ class payment {
 	      	$numSum += $currentNum;
 	    }
 	    // If the total has remainder it's bad
-	    if ($numSum % 10 <> 0) throw new \Exception(TEXT_CCVAL_ERROR_INVALID_NUMBER);
+	    if ($numSum % 10 <> 0) throw new \core\classes\userException(TEXT_CCVAL_ERROR_INVALID_NUMBER);
 	    return true;
 	}
 }

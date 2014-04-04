@@ -23,16 +23,16 @@ class tax_rates {
 	public $db_table    = TABLE_TAX_RATES;
     public $help_path   = '07.08.03.02';
     public $type        = 'c'; // choices are c for customers and v for vendors
-	
+
     public function __construct(){
-         $this->security_id = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
+         $this->security_id = \core\classes\user::security_level(SECURITY_ID_CONFIGURATION);
          foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
          $this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
     }
-    
+
   function btn_save($id = '') {
   	global $db;
-	\core\classes\user::validate_security($this->security_id, 2); // security check		
+	\core\classes\user::validate_security($this->security_id, 2); // security check
 	$this->combine_rates();
     $sql_data_array = array(
 		'type'              => $this->type,
@@ -53,7 +53,7 @@ class tax_rates {
 
   function btn_delete($id = 0) {
   	global $db;
-	\core\classes\user::validate_security($this->security_id, 4); // security check		
+	\core\classes\user::validate_security($this->security_id, 4); // security check
 	// Check for this rate as part of a journal entry, if so do not delete
 	// Since tax rates are not used explicitly, they can be deleted at any time.
 	$result = $db->Execute("select description_short from " . $this->db_table . " where tax_rate_id = '" . $id . "'");
@@ -70,7 +70,7 @@ class tax_rates {
 	  'value' => array(SETUP_TAX_DESC_SHORT, TEXT_DESCRIPTION, SETUP_HEADING_TOTAL_TAX, SETUP_HEADING_TAX_FREIGHT, TEXT_ACTION),
 	  'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 	);
-    $result = $db->Execute("select tax_rate_id, description_short, description_long, rate_accounts, freight_taxable 
+    $result = $db->Execute("select tax_rate_id, description_short, description_long, rate_accounts, freight_taxable
 		from " . $this->db_table . " where type = '" . $this->type . "'");
     $rowCnt = 0;
 	while (!$result->EOF) {
@@ -80,7 +80,7 @@ class tax_rates {
 	  $content['tbody'][$rowCnt] = array(
 	    array('value' => htmlspecialchars($result->fields['description_short']),
 			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\''.$this->code.'_edit\',\''.$result->fields['tax_rate_id'].'\')"'),
-		array('value' => htmlspecialchars($result->fields['description_long']), 
+		array('value' => htmlspecialchars($result->fields['description_long']),
 			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\''.$this->code.'_edit\',\''.$result->fields['tax_rate_id'].'\')"'),
 		array('value' => gen_calculate_tax_rate($result->fields['rate_accounts'], $tax_authorities_array),
 			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\''.$this->code.'_edit\',\''.$result->fields['tax_rate_id'].'\')"'),
@@ -100,7 +100,7 @@ class tax_rates {
 	require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
     $tax_authorities_array = gen_build_tax_auth_array();
     if ($action <> 'new') {
-        $sql = "select description_short, description_long, rate_accounts, freight_taxable 
+        $sql = "select description_short, description_long, rate_accounts, freight_taxable
 	       from " . $this->db_table . " where tax_rate_id = " . $id;
         $result = $db->Execute($sql);
         foreach ($result->fields as $key => $value) $this->$key = $value;
@@ -184,7 +184,7 @@ class tax_rates {
     $tax_auth_array[] = array('id' => '', 'text' => TEXT_NONE);
 	while ($chosen_auth = array_shift($chosen_auth_array)) {
       $tax_auth_array[] = array(
-	    'id'   => $chosen_auth, 
+	    'id'   => $chosen_auth,
 	  	'text' => $tax_auth_choices[$chosen_auth]['description_short'],
 	  );
 	}
@@ -192,7 +192,7 @@ class tax_rates {
   }
 
 ////
-// regenerate listing string for tax authorities 
+// regenerate listing string for tax authorities
   function combine_rates(){//$rate_accounts, $tax_auth_id_add = '', $tax_auth_id_delete = '') {
 	$tax_auth_array = explode(':', $this->rate_accounts);
 	$new_tax_auth_array = array();
