@@ -20,7 +20,7 @@
 require_once('classes/parser.php');
 
 class xml_confirm extends parser {
-  function xml_confirm() {
+  function __construct() {
   }
 
   function processXML($rawXML) {

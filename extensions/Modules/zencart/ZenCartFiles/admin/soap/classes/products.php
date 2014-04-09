@@ -20,7 +20,7 @@
 require_once('classes/parser.php');
 
 class xml_products extends parser {
-  function xml_products() {
+  function __construct() {
   }
 
   function processXML($rawXML) {
@@ -137,7 +137,7 @@ if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/extra_product_reads.php')) in
 	// verify that it is the lowest level of category tree (required by zencart)
 	$result = $db->Execute("select categories_id from " . TABLE_CATEGORIES . " where parent_id = '" . $categories_id . "'");
 	if ($result->RecordCount() <> 0) {
-		return $this->responseXML('15', SOAP_BAD_CATEGORY_A, 'error');
+		return $this->responseXML('15', sprintf(SOAP_BAD_CATEGORY_A, $categories_name, $product['sku']), 'error');
 	}
 
 	// verify the image and storage location - save image

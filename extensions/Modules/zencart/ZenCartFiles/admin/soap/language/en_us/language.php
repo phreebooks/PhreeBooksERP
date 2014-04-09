@@ -27,7 +27,7 @@ define('SOAP_BAD_LANGUAGE_CODE','The language ISO code submitted could not be fo
 define('SOAP_BAD_PRODUCT_TYPE','The product type name could not be found in the Zencart product_types table. Expecting to find type_name %s for sku %s.');
 define('SOAP_BAD_MANUFACTURER','The manufacturers name could not be found in the Zencart manufacturers table. Expecting to find manufacturer name %s for sku %s.');
 define('SOAP_BAD_CATEGORY','The category name could not be found or is not unique in the Zencart categories_description table. Expecting to find category name %s for sku %s.');
-define('SOAP_BAD_CATEGORY_A','The category name submitted is not at the lowest level in the category tree. This is a Zencart requirement!');
+define('SOAP_BAD_CATEGORY_A','The category name submitted is not at the lowest level in the category tree. This is a Zencart requirement! Category name %s for sku %s.');
 define('SOAP_NO_SKU','No SKU was found. A SKU must be present in the submitted XML string!');
 define('SOAP_BAD_ACTION','A bad action was submitted.');
 define('SOAP_OPEN_FAILED','Error opening the image file to write. Trying to write to: ');

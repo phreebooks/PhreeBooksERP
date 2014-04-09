@@ -21,7 +21,7 @@
 if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/extra_order_actions.php')) { include (DIR_FS_ADMIN . 'soap/extra_actions/extra_order_actions.php'); }
 // EOF - Hook for customization
 
-// pull in the general phreedom parser and general functions
+// pull in the general phreebooks parser and general functions
 require_once(DIR_FS_ADMIN . 'soap/classes/parser.php');
 
 class phreebooks extends parser {
@@ -33,7 +33,7 @@ class phreebooks extends parser {
 		$strXML = $this->buildOrderDownloadXML($data);
 		$strXML = utf8_encode($strXML);
 //echo 'Zencart order array = '; print_r($data); echo '<br>';
-//echo 'Submit XML string = ' . htmlspecialchars($strXML) . '</pre><br>';
+//echo 'Submit XML string = <pre>' . htmlspecialchars($strXML) . '</pre><br>';
 		$this->response = $this->doCURLRequest('POST', MODULE_PHREEBOOKS_ORDER_DOWNLOAD_URL . '?db=' . MODULE_PHREEBOOKS_ORDER_DOWNLOAD_DB, $strXML);
 //echo 'XML response (at the ZenCart Side from PhreeBooks) => <pre>' . htmlspecialchars($this->response) . '</pre><br>' . chr(10);
 		if (!$this->response) return false;

@@ -20,7 +20,7 @@
 require_once('classes/parser.php');
 
 class xml_sync extends parser {
-  function xml_sync() {
+  	function __construct() {
   }
 
   function processXML($rawXML) {
@@ -56,8 +56,10 @@ class xml_sync extends parser {
 	return $products;
   }
 
-// The remaining functions are specific to ZenCart. they need to be modified for the specific application.
-// It also needs to check for errors, i.e. missing information, bad data, etc. 
+	/**
+ 	 * The remaining functions are specific to ZenCart. they need to be modified for the specific application.
+ 	 * It also needs to check for errors, i.e. missing information, bad data, etc.
+ 	 */ 
   function syncProducts($products) {
 	global $db, $messageStack;
 	// error check input
