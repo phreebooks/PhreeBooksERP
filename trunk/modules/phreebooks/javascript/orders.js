@@ -19,6 +19,7 @@
 var bill_add = new Array(0);
 var ship_add = new Array(0);
 var force_clear = false;
+var default_sales_tax = -1; // tax defaults to what is specified by SKU
 
 function ClearForm() {
   var numRows = 0;
@@ -642,7 +643,7 @@ function addInvRow() {
   newCell.style.whiteSpace = 'nowrap'; 
   cell    = '<input type="text" name="sku_'+rowCnt+'" id="sku_'+rowCnt+'" size="'+(max_sku_len+1)+'" maxlength="'+max_sku_len+'" onfocus="clearField(\'sku_'+rowCnt+'\', \''+text_search+'\')" onkeydown="checkEnterEvent(event, '+rowCnt+');" onblur="setField(\'sku_'+rowCnt+'\', \''+text_search+'\'); loadSkuDetails(0, '+rowCnt+')" />&nbsp;';
   cell   += buildIcon(icon_path+'16x16/actions/system-search.png', text_search, 'id="sku_open_'+rowCnt+'" align="top" style="cursor:pointer" onclick="InventoryList('+rowCnt+')"');
-  cell   += buildIcon(icon_path+'16x16/actions/document-properties.png', text_properties, 'id="sku_prop_'+rowCnt+'" align="top" style="cursor:pointer" onclick="InventoryProp('+rowCnt+')"');
+  cell   += buildIcon(icon_path+'16x16/actions/document-properties.png', text_properties, 'id="sku_prop_'+rowCnt+'" align="top" style="cursor:pointer; display:none;" onclick="InventoryProp('+rowCnt+')"');
   newCell = newRow.insertCell(-1);
   newCell.innerHTML = cell;
   newCell.align  = 'center';
@@ -689,7 +690,7 @@ function addInvRow() {
     newCell.align  = 'center';
     newCell.style.whiteSpace = 'nowrap'; 
   }
-  cell  = '<input type="text" name="price_'+rowCnt+'" id="price_'+rowCnt+'" size="10" maxlength="15" onchange="updateRowTotal('+rowCnt+', false)" style="text-align:right" />&nbsp;';
+  cell  = '<output type="text" name="price_'+rowCnt+'" id="price_'+rowCnt+'" size="10" maxlength="15" onchange="updateRowTotal('+rowCnt+', false)" style="text-align:right" />&nbsp;';
   cell += buildIcon(icon_path+'16x16/mimetypes/x-office-spreadsheet.png', text_price_manager, 'align="top" style="cursor:pointer" onclick="PriceManagerList('+rowCnt+')"');
   if (single_line_list != '1') {
     newCell = newRow2.insertCell(-1);
@@ -1230,6 +1231,7 @@ function fillInventory(sXml) {
   if (imgSerial != null && $(xml).find("inventory_type").text() == 'sr'){
     document.getElementById('imgSerial_'+rowCnt).style.display = '';
   }
+  document.getElementById('sku_prop_'+rowCnt).style.display = '';
   document.getElementById('weight_'  +rowCnt).value       = $(xml).find("item_weight").text();
   document.getElementById('stock_'   +rowCnt).value       = $(xml).find("branch_qty_in_stock").text(); // stock at this branch
 //document.getElementById('stock_'   +rowCnt).value       = $(xml).find("quantity_on_hand").text(); // to insert total stock available

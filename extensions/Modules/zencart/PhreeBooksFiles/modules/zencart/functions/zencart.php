@@ -33,11 +33,8 @@ function doCURLRequest($method = 'GET', $url, $vars) {
 	$error = curl_error($ch);
 	$error_nr = curl_errno($ch);
   	curl_close($ch);
-  	if ($error_nr == 0) {
-		return $data;
-  	} else {
-  		 throw new \Exception('cURL error nr:'. curl_errno($ch).' cURL error: ' . curl_error($ch)); 
-  	}
+  	if ($error_nr != 0) throw new Exception("cURL error nr: $error_nr cURL error: $error"); //@todo
+	return $data;
 }
 
 function pull_down_price_sheet_list() {

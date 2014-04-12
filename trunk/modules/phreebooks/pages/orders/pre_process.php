@@ -43,12 +43,14 @@ if (defined('MODULE_SHIPPING_STATUS')) {
   require_once(DIR_FS_MODULES . 'shipping/defaults.php');
 }
 /**************   page specific initialization  *************************/
+$post_success = false;
+$order        = new \phreebooks\classes\orders();
 switch (JOURNAL_ID) {
   case 3:		// Vendor Quote Journal
 	define('ORD_ACCT_ID',GEN_VENDOR_ID);
-	define('GL_TYPE','poo');				// code to use for journal rows
+	$order->gl_type = 'poo';				// code to use for journal rows
 	define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);	// default account to use for item rows
-	define('DEF_GL_ACCT',$_SESSION['admin_prefs']['def_ap_acct'] ? $_SESSION['admin_prefs']['def_ap_acct'] : AP_DEFAULT_PURCHASE_ACCOUNT);
+	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ap_acct'] ? $_SESSION['admin_prefs']['def_ap_acct'] : AP_DEFAULT_PURCHASE_ACCOUNT;
 	define('DEF_GL_ACCT_TITLE',ORD_AP_ACCOUNT);
 	define('TEXT_COLUMN_1_TITLE',TEXT_QUANTITY);
 	define('TEXT_COLUMN_2_TITLE',TEXT_RECEIVED);
@@ -60,9 +62,9 @@ switch (JOURNAL_ID) {
 	break;
   case 4:		// Purchase Order Journal
 	define('ORD_ACCT_ID',GEN_VENDOR_ID);
-	define('GL_TYPE','poo');				// code to use for journal rows
+	$order->gl_type = 'poo';				// code to use for journal rows
 	define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);	// default account to use for item rows
-	define('DEF_GL_ACCT',$_SESSION['admin_prefs']['def_ap_acct'] ? $_SESSION['admin_prefs']['def_ap_acct'] : AP_DEFAULT_PURCHASE_ACCOUNT);
+	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ap_acct'] ? $_SESSION['admin_prefs']['def_ap_acct'] : AP_DEFAULT_PURCHASE_ACCOUNT;
 	define('DEF_GL_ACCT_TITLE',ORD_AP_ACCOUNT);
 	define('TEXT_COLUMN_1_TITLE',TEXT_QUANTITY);
 	define('TEXT_COLUMN_2_TITLE',TEXT_RECEIVED);
@@ -74,9 +76,9 @@ switch (JOURNAL_ID) {
 	break;
   case 6:		// Purchase Journal (accounts payable - pay later)
 	define('ORD_ACCT_ID',GEN_VENDOR_ID);
-	define('GL_TYPE','por');
+	$order->gl_type = 'por';	
 	define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);
-	define('DEF_GL_ACCT',$_SESSION['admin_prefs']['def_ap_acct'] ? $_SESSION['admin_prefs']['def_ap_acct'] : AP_DEFAULT_PURCHASE_ACCOUNT);
+	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ap_acct'] ? $_SESSION['admin_prefs']['def_ap_acct'] : AP_DEFAULT_PURCHASE_ACCOUNT;
 	define('DEF_GL_ACCT_TITLE',ORD_AP_ACCOUNT);
 	define('TEXT_COLUMN_1_TITLE',TEXT_PO_BAL);
 	define('TEXT_COLUMN_2_TITLE',TEXT_RECEIVED);
@@ -88,9 +90,9 @@ switch (JOURNAL_ID) {
 	break;
   case 7:		// Vendor Credit Memo Journal (unpaid invoice returned product to vendor)
 	define('ORD_ACCT_ID',GEN_VENDOR_ID);
-	define('GL_TYPE','por');
+	$order->gl_type = 'por';	
 	define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);
-	define('DEF_GL_ACCT',$_SESSION['admin_prefs']['def_ap_acct'] ? $_SESSION['admin_prefs']['def_ap_acct'] : AP_DEFAULT_PURCHASE_ACCOUNT);
+	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ap_acct'] ? $_SESSION['admin_prefs']['def_ap_acct'] : AP_DEFAULT_PURCHASE_ACCOUNT;
 	define('DEF_GL_ACCT_TITLE',ORD_AP_ACCOUNT);
 	define('TEXT_COLUMN_1_TITLE',TEXT_RECEIVED);
 	define('TEXT_COLUMN_2_TITLE',TEXT_RETURNED);
@@ -102,9 +104,9 @@ switch (JOURNAL_ID) {
 	break;
   case 9:		// Customer Quote Journal
 	define('ORD_ACCT_ID',GEN_CUSTOMER_ID);
-	define('GL_TYPE','soo');				// code to use for journal rows
+	$order->gl_type = 'soo';				// code to use for journal rows
 	define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);	// default account to use for item rows
-	define('DEF_GL_ACCT',$_SESSION['admin_prefs']['def_ar_acct'] ? $_SESSION['admin_prefs']['def_ar_acct'] : AR_DEFAULT_GL_ACCT);
+	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ar_acct'] ? $_SESSION['admin_prefs']['def_ar_acct'] : AR_DEFAULT_GL_ACCT;
 	define('DEF_GL_ACCT_TITLE',ORD_AR_ACCOUNT);
 	define('TEXT_COLUMN_1_TITLE',TEXT_QUANTITY);
 	define('TEXT_COLUMN_2_TITLE',TEXT_INVOICED);
@@ -116,9 +118,9 @@ switch (JOURNAL_ID) {
 	break;
   case 10:	// Sales Order Journal
 	define('ORD_ACCT_ID',GEN_CUSTOMER_ID);
-	define('GL_TYPE','soo');
+	$order->gl_type = 'soo';	
 	define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);
-	define('DEF_GL_ACCT',$_SESSION['admin_prefs']['def_ar_acct'] ? $_SESSION['admin_prefs']['def_ar_acct'] : AR_DEFAULT_GL_ACCT);
+	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ar_acct'] ? $_SESSION['admin_prefs']['def_ar_acct'] : AR_DEFAULT_GL_ACCT;
 	define('DEF_GL_ACCT_TITLE',ORD_AR_ACCOUNT);
 	define('TEXT_COLUMN_1_TITLE',TEXT_QUANTITY);
 	define('TEXT_COLUMN_2_TITLE',TEXT_INVOICED);
@@ -130,9 +132,9 @@ switch (JOURNAL_ID) {
 	break;
   case 12:	// Sales/Invoice Journal (invoice for payment later)
 	define('ORD_ACCT_ID',GEN_CUSTOMER_ID);
-	define('GL_TYPE','sos');
+	$order->gl_type = 'sos';	
 	define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);
-	define('DEF_GL_ACCT',$_SESSION['admin_prefs']['def_ar_acct'] ? $_SESSION['admin_prefs']['def_ar_acct'] : AR_DEFAULT_GL_ACCT);
+	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ar_acct'] ? $_SESSION['admin_prefs']['def_ar_acct'] : AR_DEFAULT_GL_ACCT;
 	define('DEF_GL_ACCT_TITLE',ORD_AR_ACCOUNT);
 	define('TEXT_COLUMN_1_TITLE',TEXT_SO_BAL);
 	define('TEXT_COLUMN_2_TITLE',TEXT_QUANTITY);
@@ -144,9 +146,9 @@ switch (JOURNAL_ID) {
 	break;
   case 13:	// Customer Credit Memo Journal (unpaid invoice returned product from customer)
 	define('ORD_ACCT_ID',GEN_CUSTOMER_ID);
-	define('GL_TYPE','sos');
+	$order->gl_type = 'sos';	
 	define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);
-	define('DEF_GL_ACCT',$_SESSION['admin_prefs']['def_ar_acct'] ? $_SESSION['admin_prefs']['def_ar_acct'] : AR_DEFAULT_GL_ACCT);
+	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ar_acct'] ? $_SESSION['admin_prefs']['def_ar_acct'] : AR_DEFAULT_GL_ACCT;
 	define('DEF_GL_ACCT_TITLE',ORD_AR_ACCOUNT);
 	define('TEXT_COLUMN_1_TITLE',TEXT_SHIPPED);
 	define('TEXT_COLUMN_2_TITLE',TEXT_RETURNED);
@@ -158,9 +160,6 @@ switch (JOURNAL_ID) {
 	break;
   default:
 }
-
-$post_success = false;
-$order        = new \phreebooks\classes\orders();
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/orders/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }

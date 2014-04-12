@@ -52,9 +52,13 @@ class zencart {
 		$this->result = $results->Response->Result;
 		$this->code   = $results->Response->Code;
 		$this->text   = $results->Response->Text;
-
-		if (!$hide_success && $this->result) $messageStack->add($this->text, strtolower($this->result));
-		return true;
+		if ($this->code == 0) {
+			if (!$hide_success) $messageStack->add($this->text, strtolower($this->result));
+			return true;
+		} else {
+			$messageStack->add(ZENCART_TEXT_ERROR . $this->code . ' - ' . $this->text, strtolower($this->result));
+			return false;
+		}
 	}
 
 /*************************************************************************************/

@@ -29,14 +29,15 @@ require_once(DIR_FS_MODULES . 'phreeform/defaults.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
 /**************   page specific initialization  *************************/
+$order        = new \phreepos\classes\journal\journal_19();
 define('ORD_ACCT_ID',		GEN_CUSTOMER_ID);
 define('GL_TYPE',			'sos');
 define('DEF_INV_GL_ACCT',	AR_DEF_GL_SALES_ACCT);
-define('DEF_GL_ACCT',		AR_DEFAULT_GL_ACCT);
+$order->gl_acct_id 		= AR_DEFAULT_GL_ACCT;
 define('DEF_GL_ACCT_TITLE',	ORD_AR_ACCOUNT);
 define('POPUP_FORM_TYPE',	'pos:rcpt');
 $account_type = 'c';
-$order        = new \phreepos\classes\journal\journal_19();
+
 $tills        = new \phreepos\classes\tills();
 $trans	 	  = new \phreepos\classes\other_transactions();
 $extra_ThirdToolbar_buttons = null;

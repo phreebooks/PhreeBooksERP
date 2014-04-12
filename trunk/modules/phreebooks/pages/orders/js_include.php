@@ -46,7 +46,7 @@ var text_price_manager   = '<?php echo TEXT_PRICE_MANAGER; ?>';
 var text_acct_ID         = '<?php echo TEXT_GL_ACCOUNT; ?>';
 var default_inv_acct     = '<?php echo DEF_INV_GL_ACCT; ?>';
 var default_sales_tax    = '0';
-var default_GL_acct      = '<?php echo DEF_GL_ACCT; ?>';
+var default_GL_acct      = '<?php echo $order->gl_acct_id; ?>';
 var default_disc_acct    = '<?php echo ($account_type == "v") ? AP_DISCOUNT_PURCHASE_ACCOUNT : AR_DISCOUNT_SALES_ACCOUNT; ?>';
 var default_freight_acct = '<?php echo ($account_type == "v") ? AP_DEF_FREIGHT_ACCT : AR_DEF_FREIGHT_ACCT; ?>';
 var image_delete_text    = '<?php echo TEXT_DELETE; ?>';

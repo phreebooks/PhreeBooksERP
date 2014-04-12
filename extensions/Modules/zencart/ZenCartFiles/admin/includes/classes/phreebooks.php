@@ -21,7 +21,7 @@
 if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/extra_order_actions.php')) { include (DIR_FS_ADMIN . 'soap/extra_actions/extra_order_actions.php'); }
 // EOF - Hook for customization
 
-// pull in the general phreedom parser and general functions
+// pull in the general phreebooks parser and general functions
 require_once(DIR_FS_ADMIN . 'soap/classes/parser.php');
 
 class phreebooks extends parser {
