@@ -20,6 +20,7 @@ var bill_add = new Array(0);
 var ship_add = new Array(0);
 var force_clear = false;
 var default_sales_tax = -1; // tax defaults to what is specified by SKU
+var products = new Array();
 
 function ClearForm() {
   var numRows = 0;
@@ -590,6 +591,30 @@ function copyAddress() {
 		}
 	}
 	document.getElementById('ship_country_code').selectedIndex = document.getElementById('bill_country_code').selectedIndex;
+}
+
+function Product(id, sku, desc, qty, pstd, proj, price, acct, tax, so_po_item_ref_id, weight, stock, inactive, lead, serial, full, desc, purch_package_quantity, total){
+	this.id               		= id;
+	this.sku               		= sku
+	this.desc              		= desc;
+	this.qty               		= qty;
+	this.pstd              		= pstd;
+	this.proj              		= proj;
+	this.price             		= price;
+	this.acct              		= acct;
+	this.tax		       		= tax;
+// Hidden fields
+	this.so_po_item_ref_id 		= so_po_item_ref_id;
+	this.weight           		= weight;
+	this.stock             		= stock;
+	this.inactive          		= inactive;
+	this.lead              		= lead;
+	this.serial            		= serial;
+	this.full              		= full;
+	this.disc   	    		= disc;
+	this.purch_package_quantity	= purch_package_quantity;
+// End hidden fields
+	this.total            		= total;
 }
 
 function addInvRow() {
