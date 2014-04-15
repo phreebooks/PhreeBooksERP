@@ -26,13 +26,14 @@ class messageStack {
     function add($message, $type = 'error') {
       	if ($type == 'error') {
         	$_SESSION['messageToStack'][] = array('type' => $type, 'params' => 'class="ui-state-error"', 'text' => html_icon('emblems/emblem-unreadable.png', TEXT_ERROR) . '&nbsp;' . $message, 'message' => $message);
-        	trigger_error($message, E_USER_NOTICE);
+        	if (DEBUG) error_log("messageStack error:".$message . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
       	} elseif ($type == 'success') {
 	    	if (!HIDE_SUCCESS_MESSAGES) $_SESSION['messageToStack'][] = array('type' => $type, 'params' => 'class="ui-state-active"', 'text' => html_icon('emotes/face-smile.png', TEXT_SUCCESS) . '&nbsp;' . $message, 'message' => $message);
       	} elseif ($type == 'caution' || $type == 'warning') {
         	$_SESSION['messageToStack'][] = array('type' => $type, 'params' => 'class="ui-state-highlight"', 'text' => html_icon('emblems/emblem-important.png', TEXT_CAUTION) . '&nbsp;' . $message, 'message' => $message);
       	} else {
         	$_SESSION['messageToStack'][] = array('type' => $type, 'params' => 'class="ui-state-error"', 'text' => $message, 'message' => $message);
+        	if (DEBUG) error_log("messageStack error:".$message . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
       	}
       	$this->debug("\n On screen displaying '$type' message = $message");
 	  	return true;
@@ -100,7 +101,7 @@ class messageStack {
 	  	$this->debug_header_info .= "\nREQUEST Vars = " . arr2string($_REQUEST);
 	  	$this->debug_header_info .= "\nSESSION Vars = " . arr2string($_SESSION);
 	  	if (strlen($this->debug_info) < 1) return;
-	  	$this->debug_info .= "\n\nPage trace stats: Execution Time: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, " . $db->count_queries . " queries taking " . (int)($db->total_query_time * 1000)." ms";
+	  	$this->debug_info .= "\n\nPage trace stats: Execution Time: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, {$db->count_queries} queries taking " . (int)($db->total_query_time * 1000)." ms";
       	$filename = DIR_FS_MY_FILES . 'trace.txt';
       	if (!$handle = @fopen($filename, 'w')) 				throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
       	if (!@fwrite($handle, $this->debug_header_info)) 	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $filename));

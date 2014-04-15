@@ -269,7 +269,8 @@ if (file_exists(DIR_FS_MODULES . 'magento/custom/extra_product_attrs.php')) {
     global $shipping_defaults;
 	$method_array = array();
 	// load standard shipping methods
-	$methods = scandir(DIR_FS_MODULES . 'shipping/methods/');
+	$methods = @scandir(DIR_FS_MODULES . 'shipping/methods/');
+	if($methods === false) throw new \core\classes\userException("couldn't read or find directory " . DIR_FS_MODULES . 'shipping/methods/');
 	foreach ($methods as $method) {
 	  if ($method <> '.' && $method <> '..' && defined('MODULE_SHIPPING_' . strtoupper($method) . '_STATUS')) {
 	    $method_array[] = $method;

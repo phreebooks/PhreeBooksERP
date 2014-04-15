@@ -45,6 +45,10 @@
   	}
 
   	function gen_pull_language($page, $file = 'language') {//@todo add switch for core files.
+  		if(!isset($_SESSION['language'])){
+  			$_SESSION['language'] = defined('DEFAULT_LANGUAGE') ? DEFAULT_LANGUAGE : 'en_us';
+  			if (isset($_COOKIE['pb_language'])) $_SESSION['language'] = $_COOKIE['pb_language'];
+  		}
 	  	if (!is_dir(DIR_FS_MODULES . $page)) return;
 	  	if       (file_exists(DIR_FS_MODULES . "$page/custom/language/{$_SESSION['language']}/$file.php")) {
 	      	include_once     (DIR_FS_MODULES . "$page/custom/language/{$_SESSION['language']}/$file.php");
@@ -1190,7 +1194,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
 	  $id = str_replace('[','_', $name); // clean up for array inputs causing html errors
 	  $id = str_replace(']','',  $id);
     }
-    $field = '<select class="easyui-combobox" name="' . $name . '"';
+    $field = '<select name="' . $name . '"';
 	if ($id) $field .= ' id="' . $id . '"';
     if (gen_not_null($parameters)) $field .= ' ' . $parameters;
     if ($required)				$field .= ' required="required" ';
@@ -1921,7 +1925,7 @@ function Phreebooks_autoloader($temp){
 				include_once(DIR_FS_ADMIN."modules/$path[0]/$path[1]/$path[2].php");
 			}
 		}
-		if (!class_exists($temp, false)) throw new \ErrorException("Unable to load module = $path[0] <br/>$path[1] = $path[2]<br/> called = $temp<br/>file = $file");
+		if (!class_exists($temp, false)) throw new \core\classes\userException("Unable to load module = $path[0] <br/>$path[1] = $path[2]<br/> called = $temp<br/>file = $file");
     }
 }
 ?>

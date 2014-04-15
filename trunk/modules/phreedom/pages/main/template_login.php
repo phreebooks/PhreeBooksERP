@@ -17,9 +17,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreedom/pages/main/template_main.php
 //
-echo html_form('login', FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;action=validate', 'post', 'onsubmit="return submit_wait();"').chr(10);
-if ($single_company)  echo html_hidden_field('company',  $companies[1]['file']) . chr(10);
-if ($single_language) echo html_hidden_field('language', $languages[0]['id']) . chr(10);
+echo html_form('login', FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;action=validateLogin', 'post', 'onsubmit="return submit_wait();"').chr(10);
 ?>
 <div style="margin-left:25%;margin-right:25%;margin-top:50px;">
 	  <table class="ui-widget">
@@ -43,18 +41,22 @@ if ($single_language) echo html_hidden_field('language', $languages[0]['id']) . 
                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_LOGIN_PASS; ?></td>
                 <td><?php echo html_password_field('admin_pass', '', true); ?></td>
               </tr>
-<?php if (!$single_company) { ?>
+<?php if (sizeof($_SESSION['companies']) != 1) { ?>
               <tr>
                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_LOGIN_COMPANY; ?></td>
-                <td><?php echo html_pull_down_menu('company', $_SESSION['companies'], $company_index, '', true); ?></td>
+                <td><?php echo html_pull_down_menu('company', $_SESSION['companies'], $_SESSION['company'], '', true); ?></td>
               </tr>
-<?php } ?>
-<?php if (!$single_language) { ?>
+<?php } else{
+		echo html_hidden_field('company',  $_SESSION['company']) . chr(10);
+}?>
+<?php if (sizeof($_SESSION['languages']) != 1) { ?>
               <tr>
                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_LOGIN_LANGUAGE; ?></td>
-                <td><?php echo html_pull_down_menu('language', $languages, $language_index, '', true); ?></td>
+                <td><?php echo html_pull_down_menu('language', $_SESSION['languages'], $_SESSION['language'], '', true); ?></td>
               </tr>
-<?php } ?>
+<?php } else{
+			echo html_hidden_field('language', $_SESSION['language']) . chr(10);
+}?>
               <tr>
                 <td colspan="2" align="right">&nbsp;
 				  <div id="wait_msg" style="display:none;"><?php echo TEXT_FORM_PLEASE_WAIT; ?></div>

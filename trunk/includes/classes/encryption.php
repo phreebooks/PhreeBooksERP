@@ -23,7 +23,7 @@ class encryption {
   	private $adj		= 1.75;
   	private $mod		= 3;
 
-  	final static function __construct() {
+  	final function __construct() {
 		$this->scramble1 = '! #$%&()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~';
 		$this->scramble2 = 'f^jAE]okIOzU[2&q1{3`h5w_794p@6s8?BgP>dFV=m D<TcS%Ze|r:lGK/uCy.Jx)HiQ!#$~(;Lt-R}Ma,NvW+Ynb*0X';
 		if (strlen($this->scramble1) <> strlen($this->scramble2)) {

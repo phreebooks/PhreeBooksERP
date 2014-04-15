@@ -111,7 +111,8 @@ class backup {
 
   	function addFolderToZip($dir, $zipArchive, $dest_path = NULL) {
     	validate_path($dir);
-		$files = scandir($dir);
+		$files = @scandir($dir);
+		if($files === false) throw new \core\classes\userException("couldn't read or find directory $dir");
 		foreach ($files as $file) {
 	  		if (is_file($dir . $file)){
 				$zipArchive->addFile($dir . $file, $dest_path . $file);
@@ -171,13 +172,15 @@ class backup {
 
 	function delete_dir($dir) {
 	    if (!is_dir($dir)) return;
-		$files = scandir($dir);
+		$files = @scandir($dir);
+		if($files === false) throw new \core\classes\userException("couldn't read or find directory $dir");
 		foreach ($files as $file) {
 		  	if ($file == "." || $file == "..") continue;
 		  	if (is_file($dir . '/' . $file)) {
 				if (!@unlink($dir . '/' . $file)) throw new \core\classes\userException("can not un link file $file from dir $dir");
 		  	} else { // it's a directory
-		    	$subdir = scandir($dir . '/' . $file);
+		    	$subdir = @scandir($dir . '/' . $file);
+		    	if($subdir === false) throw new \core\classes\userException("couldn't read or find directory $dir/$file");
 				if (sizeof($subdir) > 2) $this->delete_dir($dir . '/' . $file); // directory is not empty, recurse
 				if (!@rmdir("$dir/$file")) throw new \core\classes\userException("can not remove dir $dir/$file");
 		  	}
@@ -187,7 +190,8 @@ class backup {
 
   	function copy_dir($dir_source, $dir_dest) {
     	if (!is_dir($dir_source))  throw new \core\classes\userException("can not find dir $dir_source");
-		$files = scandir($dir_source);
+		$files = @scandir($dir_source);
+		if($files === false) throw new \core\classes\userException("couldn't read or find directory $dir_source");
 		foreach ($files as $file) {
 	  		if ($file == "." || $file == "..") continue;
 	  		if (is_file($dir_source . $file)) {

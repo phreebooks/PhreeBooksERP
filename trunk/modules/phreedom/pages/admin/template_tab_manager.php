@@ -60,7 +60,7 @@
 	    <th width="20%"><?php echo TEXT_DEMO_DATA; ?></th>
 	    <th width="20%"><?php echo TEXT_ALL_DATA;  ?></th>
 	  </tr>
-<?php foreach ($admin_classes as $mod) { // load modules and query for copy 
+<?php foreach ($admin_classes as $mod) { // load modules and query for copy
 		if ($mod->id == 'phreedom') continue;
 ?>
 	  <tr>
@@ -79,7 +79,7 @@
 	    <td colspan="3" style="color:red"><?php echo SETUP_CO_MGR_DELETE_CONFIRM; ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo SETUP_CO_MGR_SELECT_DELETE . html_pull_down_menu('del_company', load_company_dropdown(true)); ?></td>
+	    <td colspan="3"><?php echo SETUP_CO_MGR_SELECT_DELETE . html_pull_down_menu('del_company', gen_build_pull_down($_SESSION['companies'], false, true)); ?></td>
 	    <td align="right"><?php echo html_button_field('del_button', TEXT_DELETE, 'onclick="if (confirm(\'' . SETUP_CO_MGR_JS_DELETE_CONFIRM . '\')) submitToDo(\'delete_co\')"'); ?></td>
 	  </tr>
 	 </table>

@@ -26,12 +26,10 @@ else                            $module = 'phreedom';
 if (isset($_POST['page']))      $page = $_POST['page'];
 elseif (isset($_GET['page']))   $page = $_GET['page'];
 else                     		$page = 'main';
-$include_template = null;
-$cInfo = null;
-
-require_once('includes/application_top.php');
 try{
 	try{
+		$cInfo = null;
+		require_once('includes/application_top.php');
 		$messageStack->debug("\n starting new page");
 		$page_template = new \core\classes\page();
 		$messageStack->debug("\n checking if user is validated");
@@ -43,9 +41,9 @@ try{
     			$module_class->$ActionBefore();
     		}
     	}
-    	$Action = "{$_REQUEST['module']}_.{$_REQUEST['page']}_{$_REQUEST['action']}";
-    	if ($admin_classes[$_REQUEST['module']]->installed == false )throw new \core\classes\userException("module {$admin_classes[$_REQUEST['module']]->id} isn't installed");
-    	if (method_exists($admin_classes[$_REQUEST['module']], $Action) == false) throw new \core\classes\userException("module {$admin_classes[$_REQUEST['module']]->id} hasn't got action method $Action ");
+    	$Action = "{$_REQUEST['module']}_{$_REQUEST['page']}_{$_REQUEST['action']}";
+    	if ($admin_classes[$_REQUEST['module']]->installed === false ) 				throw new \core\classes\userException("module {$admin_classes[$_REQUEST['module']]->id} isn't installed");
+    	if (method_exists($admin_classes[$_REQUEST['module']], $Action) === false)	throw new \core\classes\userException("module {$admin_classes[$_REQUEST['module']]->id} hasn't got action method $Action ");
     	$messageStack->debug("class {$admin_classes[$_REQUEST['module']]->id} has action method $Action");
     	$cInfo = $admin_classes[$_REQUEST['module']]->$Action();
     	$ActionAfter  = "{$_REQUEST['module']}_.{$_REQUEST['page']}_after_{$_REQUEST['action']}";
@@ -65,6 +63,7 @@ try{
 			echo json_encode($cInfo);
 		}
    	}catch (\core\classes\userException $e) {
+   		if (!isset($page_template)) $page_template = new \core\classes\page();
    		if ($_REQUEST['page'] == 'ajax'){
    			echo createXmlHeader();
    			echo xmlEntry("messageStack_error", $e->getMessage());
@@ -75,85 +74,24 @@ try{
    			echo json_encode($temp);
    		} else{
    			$messageStack->add($e->getMessage());
+   			if (is_object($db)) gen_add_audit_log($e->getMessage());
    			$messageStack->debug("\n\n".$e->getTraceAsString());
-   			if (DEBUG) $messageStack->write_debug();
    			if ($e->ReturnToTemplate) {
   				$page_template->loadPage($e->ReturnToModule, $e->ReturnToPage, $e->ReturnToTemplate);
   			} else{
-	  			$page_template->loadPage("phreedom","main","template_crash");
+	  			$page_template->loadPage("phreedom", "main", "template_crash");
   			}
   		}
 	}
 }catch (\Exception $e) {
-	$messageStack->add("other Exception ".$e->getMessage(), $e->getCode());
+	if (!isset($page_template)) $page_template = new \core\classes\page();
+	$messageStack->add("other Exception ".$e->getMessage());
 	$messageStack->debug("\n\n".$e->getTraceAsString());
-	$messageStack->write_debug();
-	$page_template = new \core\classes\page();
 	$page_template->loadPage("phreedom","main","template_main");
 }
+if (DEBUG) $messageStack->write_debug();
 require('includes/template_index.php');
 ob_end_flush();
 session_write_close();
 die;
-if ($page == 'ajax') {
-  	$custom_pre_process_path = DIR_FS_MODULES . $module . "custom/ajax/{$_GET['op']}.php";
-  	$pre_process_path = DIR_FS_MODULES . $module . "/ajax/{$_GET['op']}.php";
-  	if (file_exists($custom_pre_process_path)) {
-  		require($custom_pre_process_path);
-  		ob_end_flush();
-		session_write_close();
-  		die;
-  	}elseif (file_exists($pre_process_path)) {
-	  	require($pre_process_path);
-	  	ob_end_flush();
-		session_write_close();
-	  	die;
-  	}
-  	trigger_error("cant find ajax page {$_GET['op']} in module $module", E_USER_ERROR);
-}else if (stristr($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
-	header('Content-Type: application/json; charset=utf-8');
-  	$pre_process_path = DIR_FS_MODULES . $module . 'custom/json/' . $_GET['op'] . '.php';
-  	if (file_exists($pre_process_path)) { require($pre_process_path); die; }
-  	$pre_process_path = DIR_FS_MODULES . $module . '/json/' . $_GET['op'] . '.php';
-  	if (file_exists($pre_process_path)) { require($pre_process_path); die; }
- 	trigger_error("No json file, looking for the file: $pre_process_path", E_USER_ERROR);
-}
-$custom_html      = false;
-$include_header   = false;
-$include_footer   = false;
-$include_template = 'template_main.php';
-$pre_process_path = DIR_FS_MODULES . $module . '/pages/' . $page . '/pre_process.php';
-try{
-	if ( file_exists($pre_process_path)) {
-		define('DIR_FS_WORKING', DIR_FS_MODULES . $module . '/');
-	} else {
-		trigger_error("No pre_process file, looking for the file: $pre_process_path", E_USER_ERROR);
-	}
-	require($pre_process_path);
-	if ( file_exists(DIR_FS_WORKING . "custom/pages/$page/$include_template")) {
-		$template_path = DIR_FS_WORKING . "custom/pages/$page/$include_template";
-	} else {
-		$template_path = DIR_FS_WORKING . "pages/$page/$include_template";
-	}
-}catch(\Exception $e){
-	$include_header = true;
-	$include_footer = true;
-	if (isset($_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_REFERER'] != ''){
-		$template_path = $_SERVER['HTTP_REFERER'];
-	}else{
-		$template_path = DIR_FS_MODULES . "phreedom/pages/main/template_main.php";
-	}
-}
-
-require($pre_process_path);
-if ( file_exists(DIR_FS_WORKING . "custom/pages/$page/$include_template")) {
-  	$template_path = DIR_FS_WORKING . "custom/pages/$page/$include_template";
-} else {
-  	$template_path = DIR_FS_WORKING . "pages/$page/$include_template";
-}
-require('includes/template_index.php');
-require('includes/application_bottom.php');
-ob_end_flush();
-session_encode();
-session_write_close();
 ?>

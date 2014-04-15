@@ -23,14 +23,14 @@ class admin extends \core\classes\admin {
 	public $description = MODULE_WORK_ORDERS_DESCRIPTION;
 	public $module		= 'work_orders';
 	public $version		= '3.6';
-	
+
 	function __construct() {
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom'   => '3.3',
 		  'inventory'  => '3.3',
 		  'phreebooks' => '3.3',
 		);
-		
+
 		// Load tables
 		$this->tables = array(
 		  TABLE_WO_MAIN => "CREATE TABLE " . TABLE_WO_MAIN  . " (
@@ -133,12 +133,12 @@ class admin extends \core\classes\admin {
 				}
 				$db->Execute("update " . TABLE_CURRENT_STATUS . " set next_wo_num = 'WO-" . str_pad($id+1, 5, '0', STR_PAD_LEFT) . "'");
 			}
-		} 
+		}
 	}
 
-	function delete() {
+	function delete($path_my_files) {
 	    global $db;
-	    parent::delete();
+	    parent::delete($path_my_files);
 	    if (db_field_exists(TABLE_CURRENT_STATUS, 'next_wo_num')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_wo_num");
 		write_configure('PHREEHELP_FORCE_RELOAD', '1');
 	}

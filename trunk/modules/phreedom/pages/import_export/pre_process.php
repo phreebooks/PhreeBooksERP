@@ -64,7 +64,8 @@ while (!$result->EOF) {
 }
 
 $page_list = array();
-$dir = scandir(DIR_FS_MODULES);
+$dir = @scandir(DIR_FS_MODULES);
+if($dir === false) throw new \core\classes\userException("couldn't read or find directory ". DIR_FS_MODULES);
 foreach ($dir as $file) {
   if (is_dir(DIR_FS_MODULES . $file) && $file <> '.' && $file <> '..') {
 	if (file_exists(DIR_FS_MODULES . $file . '/' . $file . '.xml')) {

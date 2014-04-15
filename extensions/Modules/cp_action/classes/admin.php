@@ -23,7 +23,7 @@ class admin extends \core\classes\admin {
 	public $text		= MODULE_CP_ACTION_TITLE;
 	public $description = MODULE_CP_ACTION_DESCRIPTION;
 	public $version		= '3.3';
-	
+
 	function __construct() {
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom'   => '3.3',
@@ -89,9 +89,9 @@ class admin extends \core\classes\admin {
     	if (db_field_exists(TABLE_CURRENT_STATUS, 'next_capa_desc')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_capa_desc");
   	}
 
-  	function delete() {
+  	function delete($path_my_files) {
     	global $db;
-    	parent::delete();
+    	parent::delete($path_my_files);
     	if (db_field_exists(TABLE_CURRENT_STATUS, 'next_capa_num')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_capa_num");
     	if (db_field_exists(TABLE_CURRENT_STATUS, 'next_capa_desc')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_capa_desc");
   	}

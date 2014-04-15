@@ -17,6 +17,8 @@
 //  Path: /modules/zencart/classes/admin.php
 //
 namespace zencart\classes;
+require_once(DIR_FS_MODULES . 'zencart/config.php');
+require_once(DIR_FS_MODULES . 'inventory/config.php');
 class admin extends \core\classes\admin {
 	public $id 			= 'zencart';
 	public $text		= MODULE_ZENCART_TITLE;

@@ -54,7 +54,8 @@ class translator {
   function import_language($dir_source=DIR_FS_MODULES, $mod='all', $lang='en_us', $ver=false, $module_dir=false, $chk_method=false, $method_dir=false) {
 	global $db, $messageStack;
     if (!is_dir($dir_source)) return;
-	$files = scandir($dir_source);
+	$files = @scandir($dir_source);
+	if($files === false) throw new \core\classes\userException("couldn't read or find directory $dir_source");
 	foreach ($files as $file) {
 	  if ($file == "." || $file == "..") continue;
 	  if (is_file($dir_source . $file) && substr($dir_source . $file, -4) == '.php') {

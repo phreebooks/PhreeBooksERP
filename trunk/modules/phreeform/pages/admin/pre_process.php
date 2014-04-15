@@ -51,7 +51,8 @@ switch ($_REQUEST['action']) {
 	$rpt_cnt  = 0;
 	$orph_cnt = 0;
 	$name_map = array();
-	$reports  = scandir(PF_DIR_MY_REPORTS);
+	$reports  = @scandir(PF_DIR_MY_REPORTS);
+	if($reports === false) throw new \core\classes\userException("couldn't read or find directory ". PF_DIR_MY_REPORTS);
 	foreach ($reports as $report) {
 	  if (substr($report, 0, 3) <> 'pf_') continue;
 	  $rpt_id = substr($report, 3);

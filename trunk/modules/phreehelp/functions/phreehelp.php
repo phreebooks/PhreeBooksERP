@@ -24,7 +24,8 @@ function synchronize() {
   // recursively read file and store in db
   $extensions = explode(',', VALID_EXTENSIONS);
   $file_list = array();
-  $modules = scandir(DIR_FS_MODULES);
+  $modules = @scandir(DIR_FS_MODULES);
+  if($modules === false) throw new \core\classes\userException("couldn't read or find directory ". DIR_FS_MODULES);
   foreach ($modules as $module) {
     if ($module <> '.' && $module <> '..') {
       if       (file_exists(DIR_WS_MODULES . $module . '/language/' . $_SESSION['language'] . '/manual')) {
@@ -65,7 +66,8 @@ function synchronize() {
 
 function directory_to_array($directory, $extension = "", $full_path = true) {
   $array_items = array();
-  if (!$contents = scandir($directory)) return $array_items;
+  $contents = @scandir($directory);
+  if($contents === false) throw new \core\classes\userException("couldn't read or find directory $directory");
   foreach ($contents as $file) {
 	if ($file <> "." && $file <> "..") {
 	  if (is_dir($directory. "/" . $file)) {

@@ -119,9 +119,11 @@ $sel_inv_due = array( // invoice date versus due date for aging
 
 // load available charts based on language
 if (is_dir($dir = DIR_FS_WORKING."language/{$_SESSION['language']}/charts")) {
-	$charts = scandir($dir);
+	$charts = @scandir($dir);
+	if($charts === false) throw new \core\classes\userException("couldn't read or find directory $dir");
 }else {
-	$charts = scandir(DIR_FS_WORKING . 'language/en_us/charts');
+	$charts = @scandir(DIR_FS_WORKING . 'language/en_us/charts');
+	if($charts === false) throw new \core\classes\userException("couldn't read or find directory " . DIR_FS_WORKING . 'language/en_us/charts');
 }
 $sel_chart = array(array('id' => '0', 'text' => TEXT_SELECT));
 foreach ($charts as $chart) {

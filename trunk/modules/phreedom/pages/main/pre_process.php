@@ -30,7 +30,7 @@ switch ($_REQUEST['action']) {
   	case 'validate':
 	  	try{
 	  		// Errors will happen here if there was a problem logging in, logout and restart
-	 	 	if (!is_object($db)) throw new \ErrorException("Database isn't created", '',E_USER_ERROR);
+	 	 	if (!is_object($db)) throw new \core\classes\userException("Database isn't created", '',E_USER_ERROR);
 		    $admin_name     = db_prepare_input($_POST['admin_name']);
 		    $admin_pass     = db_prepare_input($_POST['admin_pass']);
 		    $admin_company  = db_prepare_input($_POST['company']);
@@ -38,7 +38,7 @@ switch ($_REQUEST['action']) {
 		    $sql = "select admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security
 				from " . TABLE_USERS . " where admin_name = '" . db_input($admin_name) . "'";
 		    if ($db->db_connected) $result = $db->Execute($sql);
-			if (!$result || $admin_name <> $result->fields['admin_name'] || $result->fields['inactive']) throw new \core\classes\userException(ERROR_WRONG_LOGIN);
+			if (!$result || $admin_name <> $result->fields['admin_name'] || $result->fields['inactive']) throw new \core\classes\userException(ERROR_WRONG_LOGIN,  "phreedom", "main", 'template_login');
 		    \core\classes\encryption::validate_password($admin_pass, $result->fields['admin_pass']);
 		    $_SESSION['admin_id']       = $result->fields['admin_id'];
 		    $_SESSION['display_name']   = $result->fields['display_name'];
@@ -80,8 +80,7 @@ switch ($_REQUEST['action']) {
 			    gen_redirect(html_href_link(FILENAME_DEFAULT, $get_params, 'SSL'));
 			}
 			// check safe mode is allowed to log in.
-			if (get_cfg_var('safe_mode')) throw new \core\classes\userException(SAFE_MODE_ERROR);
-		    $_REQUEST['action'] = '';
+			if (get_cfg_var('safe_mode')) throw new \core\classes\userException(SAFE_MODE_ERROR); //@todo is this removed asof php 5.3??
 		    break;
 		}catch(\Exception $e) {
 			$messageStack->add($e->getMessage(), $e->getCode());

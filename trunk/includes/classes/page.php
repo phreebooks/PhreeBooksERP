@@ -17,18 +17,19 @@ class page {
     private $js_override;
     // page elements
     public  $title = '';
-    public $custom_html		= false;
-    public $include_header		= false;
-    public $include_footer		= false;
-    public $include_template	= 'phreedom/pages/main/template_main';
+    public  $custom_html		= false;
+    public  $include_header		= false;
+    public  $include_footer		= false;
+    public  $include_template	= '';
     private $ModuleAndPage		= "phreedom/main";
-    public  $page_title			= '';
+    public  $page_title			= TITLE;
 
     /**
      * Constructor...
      */
     function __construct() {
        	require_once(DIR_FS_ADMIN . DIR_WS_THEMES . '/config.php');
+       	$this->include_template = DIR_FS_ADMIN .'modules/phreedom/pages/main/template_main.php';
        	$this->js_files[] = "includes/jquery-1.6.2.min.js";
   		$this->js_files[] = "includes/jquery-ui-1.8.16.custom.min.js";
   		$this->js_files[] = "includes/jquery.dataTables.min.js";
@@ -74,8 +75,8 @@ class page {
 
     public function loadPage ($Module, $Page, $template){
     	$this->include_template = DIR_FS_ADMIN . "modules/$Module/pages/$Page/$template.php";
-    	if ( file_exists(DIR_FS_ADMIN . "modules/$module/custom/pages/$page/$template")) {
-    		$this->include_template = DIR_FS_ADMIN . "modules/$module/custom/pages/$page/$template";
+    	if ( file_exists(DIR_FS_ADMIN . "modules/$module/custom/pages/$page/$template.php")) {
+    		$this->include_template = DIR_FS_ADMIN . "modules/$module/custom/pages/$page/$template.php";
     	}
 		$this->ModuleAndPage	= "$Module/$Page";
 		// load the javascript specific, required

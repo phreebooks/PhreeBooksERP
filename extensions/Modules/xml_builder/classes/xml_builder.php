@@ -25,7 +25,8 @@ class xml_builder {
   	}
 
   	function make_dir_tree($source, $cur_path) {
-		$files = scandir($source . $cur_path);
+		$files = @scandir($source . $cur_path);
+		if($files === false) throw new \core\classes\userException("couldn't read or find directory ".$source . $cur_path);
 		foreach ($files as $file) {
 		  	if ($file == '.' || $file == '..') continue;
 		  	if (is_file($source . $cur_path . $file)){
@@ -36,7 +37,7 @@ class xml_builder {
 		  	} else { // If it's a folder, run the function again!
 		    	$this->make_dir_tree($source, $cur_path . $file . "/");
 		  	}
-		} 
+		}
 	}
 
 	function make_db_info($tables) {
@@ -59,7 +60,7 @@ class xml_builder {
 		  	foreach ($lines as $line) {
 		    	$line   = trim($line);
 				$field  = substr($line, 0, strpos($line, ' '));
-				if ($field == ')') $field = 'params'; 
+				if ($field == ')') $field = 'params';
 				$line   = trim(substr($line, strpos($line,' ')));
 				switch ($field) {
 				  	case 'CREATE':
@@ -115,20 +116,20 @@ class xml_builder {
 		}
 		/*
 		CREATE TABLE `assets` (
-		 `id` int(11) NOT NULL AUTO_INCREMENT, 
+		 `id` int(11) NOT NULL AUTO_INCREMENT,
 		 `asset_id` varchar(32) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-		 `inactive` enum('0','1') COLLATE utf8_unicode_ci NOT NULL DEFAULT '0', 
-		 `asset_type` char(2) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'si', 
-		 `purch_cond` enum('n','u') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'n', 
-		 `serial_number` varchar(32) COLLATE utf8_unicode_ci NOT NULL DEFAULT '', 
-		 `account_maintenance` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL, 
-		 `asset_cost` float NOT NULL DEFAULT '0', 
-		 `depreciation_method` enum('a','f','l') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'f', 
-		 `full_price` float NOT NULL DEFAULT '0', 
-		 `maintenance_date` date NOT NULL DEFAULT '0000-00-00', 
-		 `terminal_date` date NOT NULL DEFAULT '0000-00-00', 
-		 `asset_group` varchar(4) COLLATE utf8_unicode_ci DEFAULT '', 
-		 PRIMARY KEY (`id`) 
+		 `inactive` enum('0','1') COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
+		 `asset_type` char(2) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'si',
+		 `purch_cond` enum('n','u') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'n',
+		 `serial_number` varchar(32) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+		 `account_maintenance` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
+		 `asset_cost` float NOT NULL DEFAULT '0',
+		 `depreciation_method` enum('a','f','l') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'f',
+		 `full_price` float NOT NULL DEFAULT '0',
+		 `maintenance_date` date NOT NULL DEFAULT '0000-00-00',
+		 `terminal_date` date NOT NULL DEFAULT '0000-00-00',
+		 `asset_group` varchar(4) COLLATE utf8_unicode_ci DEFAULT '',
+		 PRIMARY KEY (`id`)
 		 ) ENGINE=InnoDB AUTO_INCREMENT=111 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
 		*/
 	}

@@ -22,7 +22,7 @@ class admin extends \core\classes\admin {
 	public $text		= MODULE_RMA_TITLE;
 	public $description = MODULE_RMA_DESCRIPTION;
 	public $version		= '3.6';
-	
+
 	function __construct() {
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom'   => 3.3,
@@ -63,7 +63,7 @@ class admin extends \core\classes\admin {
 			  closed_date date NOT NULL default '0000-00-00',
 	          attachments text,
 			  PRIMARY KEY  (id)
-		    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",	
+		    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
 		);
 		parent::__construct();
 	}
@@ -110,9 +110,9 @@ class admin extends \core\classes\admin {
 	    }
 	}
 
-	function delete() {
+	function delete($path_my_files) {
 	    global $db;
-	    parent::delete();
+	    parent::delete($path_my_files);
 	    if (db_field_exists(TABLE_CURRENT_STATUS, 'next_rma_num'))  $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_rma_num");
 	}
 

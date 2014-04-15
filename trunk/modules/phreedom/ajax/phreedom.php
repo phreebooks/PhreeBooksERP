@@ -25,7 +25,8 @@ $xml    = NULL;
 switch ($_REQUEST['action']) {
 	case 'pull_colors':
 		$theme = $_GET['theme'];
-		$contents = scandir(DIR_FS_ADMIN.'themes/'.$theme.'/css/');
+		$contents = @scandir(DIR_FS_ADMIN."themes/$theme/css/");
+		if($contents === false) throw new \core\classes\userException("couldn't read or find directory " . DIR_FS_ADMIN."themes/$theme/css/");
 		include(DIR_FS_ADMIN.'themes/'.$theme.'/config.php');
 		foreach ($contents as $color) {
 			if ($color <> '.' && $color <> '..' && is_dir(DIR_FS_ADMIN.DIR_WS_THEMES.'/css/'.$color)) {

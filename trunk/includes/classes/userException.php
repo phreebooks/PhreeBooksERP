@@ -27,6 +27,7 @@ class userException extends \Exception {
 		$this->ReturnToModule 	= $Module;
 		$this->ReturnToPage 	= $Page;
 		$this->ReturnToTemplate = $template;
+		parent::__construct($message, $code, $previous);
 	}
 
 	function __destruct(){

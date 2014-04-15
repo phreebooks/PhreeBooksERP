@@ -110,9 +110,9 @@ class admin extends \core\classes\admin {
     	xtra_field_sync_list('assets', TABLE_ASSETS);// Best to always sync fields after install
 	}
 
-	function delete() {
+	function delete($path_my_files) {
 	    global $db;
-	    parent::delete();
+	    parent::delete($path_my_files);
 		$db->Execute("delete from " . TABLE_EXTRA_FIELDS . " where module_id = 'assets'");
 		$db->Execute("delete from " . TABLE_EXTRA_TABS   . " where module_id = 'assets'");
 	}

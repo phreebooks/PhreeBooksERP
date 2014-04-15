@@ -89,7 +89,8 @@ while (!$configuration->EOF) {
 // load general language translation
 gen_pull_language('phreedom', 'menu');
   require_once(DIR_FS_MODULES . 'phreedom/config.php');
-  $dirs = scandir(DIR_FS_MODULES);
+  $dirs = @scandir(DIR_FS_MODULES);
+  if($dirs === false) throw new \core\classes\userException("couldn't read or find directory ". DIR_FS_MODULES);
   foreach ($dirs as $dir) { // first pull all module language files, loaded or not
     if ($dir == '.' || $dir == '..') continue;
 	if (is_dir(DIR_FS_MODULES . $dir)) gen_pull_language($dir, 'menu');

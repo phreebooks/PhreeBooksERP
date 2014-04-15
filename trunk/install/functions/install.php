@@ -19,7 +19,8 @@
 
 function load_lang_dropdown() {
 	$output   = array();
-	$contents = scandir('language');
+	$contents = @scandir('language');
+	if($contents === false) throw new \core\classes\userException("couldn't read or find directory language");
 	foreach ($contents as $lang) {
 		if ($lang <> '.' && $lang <> '..' && file_exists('language/' . $lang . '/language.php')) {
 	  if ($config_file = file('language/' . $lang . '/language.php')) {
@@ -47,17 +48,19 @@ function install_pull_language($lang = 'en_us') {
 }
 
 function install_lang($module, $lang = 'en_us', $file = 'menu') {
-	if (file_exists('../modules/' . $module . '/language/' . $lang . '/' . $file . '.php')) {
-		include_once ('../modules/' . $module . '/language/' . $lang . '/' . $file . '.php');
-	} elseif (file_exists('../modules/' . $module . '/language/en_us/' . $file . '.php')) {
-		include_once ('../modules/' . $module . '/language/en_us/' . $file . '.php');
+	if (file_exists("../modules/$module/language/$lang/$file.php")) {
+		include_once ("../modules/$module/language/$lang/$file.php");
+	} elseif (file_exists("../modules/$module/language/en_us/$file.php")) {
+		include_once ("../modules/$module/language/en_us/$file.php");
+	} else {
+		throw new \core\classes\userException("required language file doesn't exist ../modules/$module/language/en_us/$file.php")
 	}
 }
 
 function load_full_access_security() {
 	global $mainmenu;
 	$securitys = null;
-	foreach($mainmenu as $menu_item){ 
+	foreach($mainmenu as $menu_item){
 		$securitys .= create_id($menu_item);
 	}
 	if ($securitys == null) return '1:4,';
@@ -66,7 +69,7 @@ function load_full_access_security() {
 
 function create_id($array){
 	$securitys = '';
-	if(isset($array['submenu'])) foreach($array['submenu'] as $menu_item){ 
+	if(isset($array['submenu'])) foreach($array['submenu'] as $menu_item){
 		$securitys .= create_id($menu_item);
 	}else{
 		if(isset($array['security_id'])) $securitys = $array['security_id'] . ':4,';

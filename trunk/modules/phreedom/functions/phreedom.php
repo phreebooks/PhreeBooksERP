@@ -21,7 +21,8 @@ function load_company_dropdown($include_select = false) {
   $the_list = array();
   if ($include_select) $the_list[0] = array('text' => TEXT_NONE, 'file' => 'none');
   $i = 1;
-  $contents = scandir(DIR_FS_MY_FILES);
+  $contents = @scandir(DIR_FS_MY_FILES);
+  if($contents === false) throw new \core\classes\userException("couldn't read or find directory ". DIR_FS_MY_FILES);
   foreach ($contents as $file) {
 	if ($file <> '.' && $file <> '..' && is_dir(DIR_FS_MY_FILES . $file)) {
 	  if (file_exists(DIR_FS_MY_FILES . $file . '/config.txt')) convert_cfg($file);
@@ -45,7 +46,8 @@ function load_company_dropdown($include_select = false) {
 
 function load_language_dropdown($language_directory = 'modules/phreedom/language/') {
   $output   = array();
-  $contents = scandir($language_directory);
+  $contents = @scandir($language_directory);
+  if($contents === false) throw new \core\classes\userException("couldn't read or find directory $language_directory");
   foreach ($contents as $lang) {
 	if ($lang <> '.' && $lang <> '..' && is_dir($language_directory. $lang) && file_exists($language_directory . $lang . '/language.php')) {
 	  if ($config_file = file($language_directory . $lang . '/language.php')) {
@@ -68,7 +70,8 @@ function load_theme_dropdown() {
   $include_header  = false;
   $include_calendar= false;
   $output          = array();
-  $contents        = scandir(DIR_FS_THEMES);
+  $contents        = @scandir(DIR_FS_THEMES);
+  if($contents === false) throw new \core\classes\userException("couldn't read or find directory ". DIR_FS_THEMES);
   foreach ($contents as $value) {
 	if ($value <> '.' && $value <> '..' && is_dir(DIR_FS_THEMES . $value)) {
 	  if (file_exists(DIR_FS_THEMES . $value . '/config.php')) {
@@ -91,7 +94,8 @@ function load_menu_dropdown() {
 
 function load_colors_dropdown() {
   $output   = array();
-  $contents = scandir(DIR_FS_ADMIN . DIR_WS_THEMES .'/css/');
+  $contents = @scandir(DIR_FS_ADMIN . DIR_WS_THEMES .'/css/');
+  if($contents === false) throw new \core\classes\userException("couldn't read or find directory ". DIR_FS_ADMIN . DIR_WS_THEMES .'/css/');
   foreach ($contents as $color) {
 	if ($color <> '.' && $color <> '..' && is_dir(DIR_FS_ADMIN . DIR_WS_THEMES . '/css/'.$color)) {
 	  $output[$color] = array('id' => $color, 'text' => $color);
@@ -137,7 +141,8 @@ function admin_add_reports($module, $save_path = PF_DIR_MY_REPORTS) {
 	} else {
 	    return; // nothing to import
 	}
-	$files = scandir($read_path);
+	$files = @scandir($read_path);
+	if($files === false) throw new \core\classes\userException("couldn't read or find directory $read_path");
 	foreach ($files as $file) if (strtolower(substr($file, -4)) == '.xml') {
 	    	ImportReport('', $file, $read_path, $save_path);
 	}

@@ -267,7 +267,7 @@ function ImportReport($RptName = '', $RptFileName = '', $import_path = PF_DIR_DE
 	} else {
 	  	throw new \core\classes\userException(PHREEFORM_IMPORT_ERROR);
 	}
-	if (!$handle = @fopen($path, "r") 					throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $path));
+	if (!$handle = @fopen($path, "r")) 					throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $path));
 	if (!$contents = @fread($handle, filesize($path))) 	throw new \core\classes\userException(sprintf(ERROR_READ_FILE,  	$path));
 	if (!@fclose($handle)) 								throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 	$path));
 	if (strpos($contents, 'Report Builder Export Tool')) { // it's an old style report

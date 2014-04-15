@@ -118,8 +118,8 @@ class queryFactory {
       $obj = new queryFactoryResult;
       $obj->sql_query = $zf_sql;
       if (!$this->db_connected) throw new \core\classes\userException(DB_ERROR_NOT_CONNECTED);
-      $zp_db_resource = @mysql_query($zf_sql, $this->link);
-      if (!$zp_db_resource) throw new \core\classes\userException(@mysql_error());
+      $zp_db_resource = mysql_query($zf_sql, $this->link);
+      if (!$zp_db_resource) throw new \core\classes\userException(mysql_error());
       $obj->resource = $zp_db_resource;
       $obj->cursor = 0;
       $obj->is_cached = true;
@@ -127,7 +127,7 @@ class queryFactory {
         $obj->EOF = false;
         $zp_ii = 0;
 		while (!$obj->EOF) {
-			  $zp_result_array = @mysql_fetch_array($zp_db_resource);
+			  $zp_result_array = mysql_fetch_array($zp_db_resource);
 			  if ($zp_result_array) {
 				while (list($key, $value) = each($zp_result_array)) {
 				  if (!preg_match('/^[0-9]/', $key)) {
@@ -162,23 +162,10 @@ class queryFactory {
       $zp_db_resource = @mysql_query($zf_sql, $this->link);
       if (!$zp_db_resource) {
 		if (method_exists($messageStack, 'debug')) {
-		  $messageStack->debug("\n\nThe failing sql was: " . $zf_sql);
+		  $messageStack->debug("\n\nThe failing sql was: $zf_sql");
 		  $messageStack->debug("\n\nmySQL returned: " . @mysql_errno($this->link) . ' ' . @mysql_error($this->link));
-		  if (defined('FILENAME_DEFAULT')) {
-		    $messageStack->write_debug();
-		    throw new \core\classes\userException('The last transaction had a SQL database error.');
-		  } else{
-		  	echo str_replace("\n", '<br />', $messageStack->debug_info);
-			ob_end_flush();
-  			session_write_close();
-			die;
-		  }
-		} else {
-		    echo str_replace("\n", '<br />', $messageStack->debug_info);
-			ob_end_flush();
-  			session_write_close();
-			die;
 		}
+		throw new \core\classes\userException('The last transaction had a SQL database error.');
 	  }
       $obj->resource = $zp_db_resource;
       $obj->cursor = 0;

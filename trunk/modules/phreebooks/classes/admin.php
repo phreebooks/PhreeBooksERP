@@ -352,9 +352,9 @@ class admin extends \core\classes\admin {
 		}
 	}
 
-	function delete() {
+	function delete($path_my_files) {
 	    global $db;
-	    parent::delete();
+	    parent::delete($path_my_files);
 	    if (db_field_exists(TABLE_CURRENT_STATUS, 'next_po_num'))       $db->Execute("ALTER TABLE ".TABLE_CURRENT_STATUS." DROP next_po_num");
 	    if (db_field_exists(TABLE_CURRENT_STATUS, 'next_so_num'))       $db->Execute("ALTER TABLE ".TABLE_CURRENT_STATUS." DROP next_so_num");
 	    if (db_field_exists(TABLE_CURRENT_STATUS, 'next_inv_num'))      $db->Execute("ALTER TABLE ".TABLE_CURRENT_STATUS." DROP next_inv_num");

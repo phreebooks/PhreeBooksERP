@@ -192,7 +192,8 @@ switch ($_REQUEST['action']) {
 		}
 		if (!$error) {
 	  		$params   = array();
-	  		$contents = scandir(DIR_FS_MODULES);
+	  		$contents = @scandir(DIR_FS_MODULES);
+	  		if($contents === false) throw new \core\classes\userException("couldn't read or find directory ". DIR_FS_MODULES);
 			// fake the install status of all modules found to 1, so all gets installed
 	  		foreach ($contents as $entry) define('MODULE_' . strtoupper($entry) . '_STATUS','1');
 	  		require_once (DIR_FS_MODULES . 'phreedom/config.php'); // needed here to avoid breaking menu array

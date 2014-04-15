@@ -123,9 +123,9 @@ class admin extends \core\classes\admin {
 		if (!db_field_exists(TABLE_PHREEPOS_TILLS, 'tax_id')) $db->Execute("ALTER TABLE " . TABLE_PHREEPOS_TILLS . " ADD tax_id INT(11) default '-1' AFTER max_discount");
   	}
 
-	function delete() {
+	function delete($path_my_files) {
 	    global $db;
-	    parent::delete();
+	    parent::delete($path_my_files);
 	    // Don't allow delete if there is activity
 		$sql = "select id from " . TABLE_JOURNAL_MAIN . " where journal_id = '19'";
 		$result = $db->Execute($sql);

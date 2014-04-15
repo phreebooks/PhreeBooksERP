@@ -29,13 +29,51 @@ class user {
 	 */
 
 	final static public function is_validated(){
+		global $page_template;
 		if (!isset($_SESSION['admin_id']) || $_SESSION['admin_id'] == ''){
 			//allow the user to continu to with the login action.
-			if (!isset($_REQUEST['action']) || !in_array($_REQUEST['action'], array('validate','pw_lost_sub','pw_lost_req'))){
-				$_REQUEST['action'] = 'login';
-				throw new \core\classes\userException("u bent uitgelogd".SORRY_YOU_ARE_LOGGED_OUT, "phreedom","main","template_login");
+			if (!isset($_REQUEST['action']) || !in_array($_REQUEST['action'], array('validateLogin','pw_lost_sub','pw_lost_req'))){
+				self::load_companies();
+				self::load_languages();
+				if (!isset($_SESSION['company'])) {
+					if (isset($_REQUEST['company'])) {
+						$_SESSION['company'] = $_REQUEST['company'];
+					} else { // find default company
+						$_SESSION['company'] = defined('DEFAULT_COMPANY') ? DEFAULT_COMPANY : '';
+						if (isset($_COOKIE['pb_company'])) $_SESSION['company'] = $_COOKIE['pb_company'];
+					}
+				}
+				if ( $_SESSION['company'] == ''){
+					reset($_SESSION['companies']);
+					$_SESSION['company'] = key($_SESSION['companies']);
+				}
+				if (!isset($_SESSION['language'])) {
+					if (isset($_REQUEST['language'])) {
+						$_SESSION['language'] = $_REQUEST['language'];
+					} else {
+						$_SESSION['language'] = defined('DEFAULT_LANGUAGE') ? DEFAULT_LANGUAGE : 'en_us';
+						if (isset($_COOKIE['pb_language'])) $_SESSION['language'] = $_COOKIE['pb_language'];
+					}
+				}
+				if ( $_SESSION['language'] == ''){
+					reset($_SESSION['languages']);
+					$_SESSION['language'] = key($_SESSION['languages']);
+				}
+				// load general language translation, Check for global define overrides first
+				$path = DIR_FS_MODULES . "phreedom/custom/language/{$_SESSION['language']}/language.php";
+				if (file_exists($path)) { require_once($path);}
+				$path = DIR_FS_MODULES . "phreedom/language/{$_SESSION['language']}/language.php";
+				if (file_exists($path)) { require_once($path);}
+				else { require_once(DIR_FS_MODULES . "phreedom/language/en_us/language.php");}
+				$template = $_REQUEST['action'] == 'pw_lost_req' ? 'template_pw_lost' : 'template_login';
+				throw new \core\classes\userException(SORRY_YOU_ARE_LOGGED_OUT, "phreedom", "main", $template);
 			}
 		}
+		$path = DIR_FS_MODULES . "phreedom/custom/language/{$_SESSION['language']}/language.php";
+		if (file_exists($path)) { require_once($path); }
+		$path = DIR_FS_MODULES . "phreedom/language/{$_SESSION['language']}/language.php";
+		if (file_exists($path)) { require_once($path); }
+		else { require_once(DIR_FS_MODULES . "phreedom/language/en_us/language.php"); }
 	}
 
 	/**
@@ -103,5 +141,40 @@ class user {
 		return $result;
   	}
 
+  	final static function load_companies() {
+		$contents = @scandir(DIR_FS_MY_FILES);
+		if($contents === false) throw new \core\classes\userException("couldn't read or find directory ". DIR_FS_MY_FILES);
+		foreach ($contents as $file) {
+			if ($file <> '.' && $file <> '..' && is_dir(DIR_FS_MY_FILES . $file)) {
+			  	if (file_exists(DIR_FS_MY_FILES   . $file . '/config.php')) {
+					require_once (DIR_FS_MY_FILES . $file . '/config.php');
+					$_SESSION['companies'][$file] = array(
+				  	  'id'   => $file,
+				  	  'text' => constant($file . '_TITLE'),
+					);
+			  	}
+			}
+		}
+	}
+
+	final static function load_languages() {//@todo rewrite for other language files and loading of core language
+		$contents = @scandir('modules/phreedom/language/');
+		if($contents === false) throw new \core\classes\userException("couldn't read or find directory modules/phreedom/language/");
+		foreach ($contents as $lang) {
+			if ($lang <> '.' && $lang <> '..' && is_dir('modules/phreedom/language/'. $lang) && file_exists("modules/phreedom/language/$lang/language.php")) {
+		  		if ($config_file = file("modules/phreedom/language/$lang/language.php")) {
+		  			foreach ($config_file as $line) {
+		  				if (strstr($line,'\'LANGUAGE\'') !== false) {
+			    			$start_pos     = strpos($line, ',') + 2;
+			    			$end_pos       = strpos($line, ')') + 1;
+				    		$language_name = substr($line, $start_pos, $end_pos - $start_pos);
+				    		break;
+			  			}
+		  			}
+		  			$_SESSION['languages'][$lang] = array('id' => $lang, 'text' => $language_name);
+		  		}
+			}
+		}
+	}
 
 }

@@ -224,7 +224,10 @@ class admin {
 	function return_all_methods($type ='methods') {
 	    $choices     = array();
 	    $method_dir  = DIR_FS_MODULES . "$this->id/$type/";
-	    if ($methods = @scandir($method_dir)) foreach ($methods as $method) {
+	    if (!is_dir($method_dir)) return $choices;
+	    $methods = @scandir($method_dir);
+	    if($methods === false) throw new \core\classes\userException("couldn't read or find directory $method_dir");
+	    foreach ($methods as $method) {
 			if ($method == '.' || $method == '..' || !is_dir($method_dir . $method)) continue;
 		  	load_method_language($method_dir, $method);
 		  	$class = "\\$this->id\\$type\\$method\\$method";
@@ -232,6 +235,60 @@ class admin {
 	    }
 		uasort($choices, "arange_object_by_sort_order");
 	    return $choices;
+	}
+
+	final function phreedom_main_validateLogin(){
+		global $db, $admin_classes;
+  		// Errors will happen here if there was a problem logging in, logout and restart
+ 	 	if (!is_object($db)) throw new \core\classes\userException("Database isn't created", "phreedom", "main", "template_login");
+	    $admin_name     = db_prepare_input($_POST['admin_name']);
+	    $admin_pass     = db_prepare_input($_POST['admin_pass']);
+	    $_SESSION['company']	= db_prepare_input($_POST['company']);
+	    $_SESSION['language']	= db_prepare_input($_POST['language']);
+	    $sql = "select admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security
+		  from " . TABLE_USERS . " where admin_name = '" . db_input($admin_name) . "'";
+	    if ($db->db_connected) $result = $db->Execute($sql);
+		if (!$result || $admin_name <> $result->fields['admin_name'] || $result->fields['inactive']) throw new \core\classes\userException(sprintf(GEN_LOG_LOGIN_FAILED, ERROR_WRONG_LOGIN, $admin_name),  "phreedom", "main", 'template_login');
+		\core\classes\encryption::validate_password($admin_pass, $result->fields['admin_pass']);
+		$_SESSION['admin_id']       = $result->fields['admin_id'];
+		$_SESSION['display_name']   = $result->fields['display_name'];
+		$_SESSION['admin_email']    = $result->fields['admin_email'];
+		$_SESSION['admin_prefs']    = unserialize($result->fields['admin_prefs']);
+		$_SESSION['account_id']     = $result->fields['account_id'];
+		$_SESSION['admin_security'] = \core\classes\user::parse_permissions($result->fields['admin_security']);
+		// set some cookies for the next visit to remember the company, language, and theme
+		$cookie_exp = 2592000 + time(); // one month
+		setcookie('pb_company' , $_SESSION['company'],  $cookie_exp);
+		setcookie('pb_language', $_SESSION['language'], $cookie_exp);
+		// load init functions for each module and execute
+		foreach ($admin_classes as $key => $module_class) {
+		  	if ($module_class->should_update()) $module_class->upgrade();
+		}
+	  	foreach ($admin_classes as $key => $module_class){
+	  		if ($module_class->installed === true) $module_class->initialize();
+	  	}
+		if (defined('TABLE_CONTACTS')) {
+		    $dept = $db->Execute("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result->fields['account_id']);
+		    $_SESSION['department'] = $dept->fields['dept_rep_id'];
+		}
+		gen_add_audit_log(GEN_LOG_LOGIN . $admin_name);
+		// check for session timeout to reload to requested page
+		$get_params = '';
+		if (isset($_SESSION['pb_module']) && $_SESSION['pb_module']) {
+			$get_params  = 'module='    . $_SESSION['pb_module'];
+		    if (isset($_SESSION['pb_page']) && $_SESSION['pb_page']) $get_params .= '&amp;page=' . $_SESSION['pb_page'];
+		    if (isset($_SESSION['pb_jID'])  && $_SESSION['pb_jID'])  $get_params .= '&amp;jID='  . $_SESSION['pb_jID'];
+		    if (isset($_SESSION['pb_type']) && $_SESSION['pb_type']) $get_params .= '&amp;type=' . $_SESSION['pb_type'];
+		    if (isset($_SESSION['pb_list']) && $_SESSION['pb_list']) $get_params .= '&amp;list=' . $_SESSION['pb_list'];
+		    unset($_SESSION['pb_module']);
+  			unset($_SESSION['pb_page']);
+  			unset($_SESSION['pb_jID']);
+  			unset($_SESSION['pb_type']);
+  			unset($_SESSION['pb_list']);
+		    gen_redirect(html_href_link(FILENAME_DEFAULT, $get_params, 'SSL'));
+		}
+		// check safe mode is allowed to log in.
+		if (get_cfg_var('safe_mode')) throw new \core\classes\userException(SAFE_MODE_ERROR); //@todo is this removed asof php 5.3??
 	}
 }
 ?>

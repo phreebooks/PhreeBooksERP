@@ -199,9 +199,9 @@ class admin extends \core\classes\admin {
 		xtra_field_sync_list('contacts', TABLE_CONTACTS);
   	}
 
-	function delete() {
+	function delete($path_my_files) {
 	    global $db;
-	    parent::delete();
+	    parent::delete($path_my_files);
 	    if (db_field_exists(TABLE_CURRENT_STATUS, 'next_cust_id_num'))  $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cust_id_num");
 		if (db_field_exists(TABLE_CURRENT_STATUS, 'next_cust_id_desc')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cust_id_desc");
 	    if (db_field_exists(TABLE_CURRENT_STATUS, 'next_vend_id_num'))  $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_vend_id_num");

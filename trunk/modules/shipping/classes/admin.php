@@ -117,9 +117,9 @@ class admin extends \core\classes\admin {
 		}
 	}
 
-	function delete() {
+	function delete($path_my_files) {
 	    global $db;
-	    parent::delete();
+	    parent::delete($path_my_files);
 	    if (db_field_exists(TABLE_CURRENT_STATUS, 'next_shipment_num'))  $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_shipment_num");
 		if (db_field_exists(TABLE_CURRENT_STATUS, 'next_shipment_desc')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_shipment_desc");
 	}

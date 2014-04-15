@@ -56,18 +56,6 @@ session_start();
 $_REQUEST = array_merge($_GET, $_POST);
 if(!isset($_REQUEST['module']))	$_REQUEST['module']	= 'phreedom';
 if(!isset($_REQUEST['page'])) 	$_REQUEST['page'] 	= 'main';
-// set the language
-if ( !isset($_SESSION['language']) && isset($_GET['language'])) {
-	$_SESSION['language'] = $_GET['language'];
-}elseif (!isset($_SESSION['language'])) {
-	$_SESSION['language'] = defined('DEFAULT_LANGUAGE') ? DEFAULT_LANGUAGE : 'en_us';
-}
-// load general language translation, Check for global define overrides first
-$path = DIR_FS_MODULES . 'phreedom/custom/language/' . $_SESSION['language'] . '/language.php';
-if (file_exists($path)) { require_once($path); }
-$path = DIR_FS_MODULES . 'phreedom/language/' . $_SESSION['language'] . '/language.php';
-if (file_exists($path)) { require_once($path); }
-else { require_once(DIR_FS_MODULES . 'phreedom/language/en_us/language.php'); }
 // define general functions and classes used application-wide
 require_once(DIR_FS_MODULES  . 'phreedom/defaults.php');
 require_once(DIR_FS_INCLUDES . 'common_functions.php');
@@ -87,9 +75,9 @@ else { define('DIR_WS_ICONS', 'themes/default/icons/'); } // use default
 $messageStack 	= new \core\classes\messageStack;
 $toolbar      	= new \core\classes\toolbar;
 $currencies		= APC_EXTENSION_LOADED ? apc_fetch("currencies") : false;
-if ($currencies === false) $currencies  	= new \core\classes\currencies;
+if ($currencies === false) $currencies = new \core\classes\currencies;
 // determine what company to connect to
-if ($_REQUEST['action']=="validate") $_SESSION['company'] = $_POST['company'];
+if ($_REQUEST['action']=="validateLogin") $_SESSION['company'] = $_POST['company'];
 if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php')) {
 	define('DB_DATABASE', $_SESSION['company']);
 	require_once(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php');
@@ -117,11 +105,13 @@ if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR
   	gen_pull_language('phreedom', 'menu');
   	gen_pull_language('phreebooks', 'menu');
   	require(DIR_FS_MODULES . 'phreedom/config.php');
+  	$admin_classes	= array();
+  	$mainmenu		= array();
   	$admin_classes 	= APC_EXTENSION_LOADED ? apc_fetch("admin_classes")	: false;
   	$mainmenu 		= APC_EXTENSION_LOADED ? apc_fetch("mainmenu")		: false;
-  	if($admin_classes === false || $mainmenu === false) {
-	  	$admin_classes = array();
-	  	$dirs = scandir(DIR_FS_MODULES);
+  	if(empty($admin_classes) || empty($mainmenu)) {
+	  	$dirs = @scandir(DIR_FS_MODULES);
+	  	if($dirs === false) throw new \core\classes\userException("couldn't read or find directory ".DIR_FS_MODULES);
 	  	foreach ($dirs as $dir) { // first pull all module language files, loaded or not
 	    	if ($dir == '.' || $dir == '..') continue;
 	    	gen_pull_language($dir, 'menu');
@@ -131,11 +121,11 @@ if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR
 			}
 	  	}
 	  	uasort($admin_classes, "arange_object_by_sort_order");
-	  	if (APC_EXTENSION_LOADED && apc_add("admin_classes", $admin_classes, 600) == false) throw new \core\classes\userException("can not cache admin classes");
-	  	$currencies->load_currencies();
-	  	if (APC_EXTENSION_LOADED && apc_add("currencies", $currencies, 600) == false) 		throw new \core\classes\userException("can not cache currencies");
-	  	if (APC_EXTENSION_LOADED && apc_add("mainmenu", $mainmenu, 600) == false)     		throw new \core\classes\userException("can not cache mainmenu");
+	  	if (APC_EXTENSION_LOADED) apc_add("admin_classes", $admin_classes, 600);
+	  	if (APC_EXTENSION_LOADED) apc_add("currencies", $currencies, 600);
+	  	if (APC_EXTENSION_LOADED) apc_add("mainmenu", $mainmenu, 600);
   	}
+  	$currencies->load_currencies();
 	// pull in the custom language over-rides for this module (to pre-define the standard language)
   	$path = DIR_FS_MODULES . "{$_REQUEST['module']}/custom/pages/{$_REQUEST['page']}/extra_menus.php";
   	if (file_exists($path)) { include($path); }
