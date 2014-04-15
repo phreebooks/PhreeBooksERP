@@ -634,7 +634,7 @@ function addInvRow() {
   newCell.style.whiteSpace = 'nowrap'; 
   cell    = '<input type="text" name="sku_'+rowCnt+'" id="sku_'+rowCnt+'" size="'+(max_sku_len+1)+'" maxlength="'+max_sku_len+'" onfocus="clearField(\'sku_'+rowCnt+'\', \''+text_search+'\')" onkeydown="checkEnterEvent(event, '+rowCnt+');" onblur="setField(\'sku_'+rowCnt+'\', \''+text_search+'\'); loadSkuDetails(0, '+rowCnt+')" />&nbsp;';
   cell   += buildIcon(icon_path+'16x16/actions/system-search.png', text_search, 'id="sku_open_'+rowCnt+'" align="top" style="cursor:pointer" onclick="InventoryList('+rowCnt+')"');
-  cell   += buildIcon(icon_path+'16x16/actions/document-properties.png', text_properties, 'id="sku_prop_'+rowCnt+'" align="top" style="cursor:pointer" onclick="InventoryProp('+rowCnt+')"');
+  cell   += buildIcon(icon_path+'16x16/actions/document-properties.png', text_properties, 'id="sku_prop_'+rowCnt+'" align="top" style="cursor:pointer; display:none;" onclick="InventoryProp('+rowCnt+')"');
   newCell = newRow.insertCell(-1);
   newCell.innerHTML = cell;
   newCell.align  = 'center';
@@ -1222,6 +1222,7 @@ function fillInventory(sXml) {
   if (imgSerial != null && $(xml).find("inventory_type").text() == 'sr'){
     document.getElementById('imgSerial_'+rowCnt).style.display = '';
   }
+  document.getElementById('sku_prop_'+rowCnt).style.display = '';
   document.getElementById('weight_'  +rowCnt).value       = $(xml).find("item_weight").text();
   document.getElementById('stock_'   +rowCnt).value       = $(xml).find("branch_qty_in_stock").text(); // stock at this branch
 //document.getElementById('stock_'   +rowCnt).value       = $(xml).find("quantity_on_hand").text(); // to insert total stock available
@@ -1423,6 +1424,7 @@ function PostProcessLowStock(sXml) {
 		document.getElementById('acct_'    +rowCnt).value     	= $(this).find("account_inventory_wage").text();
 		document.getElementById('price_'   +rowCnt).value     	= formatPrecise($(this).find("item_cost").text() * exchange_rate);
 		document.getElementById('tax_'     +rowCnt).value		= $(this).find("purch_taxable").text();
+		document.getElementById('sku_prop_'+rowCnt).style.display = '';
 		document.getElementById('purch_package_quantity_'+rowCnt).value	 = $(this).find("purch_package_quantity").text();
 		if ($(this).find("description_purchase").text()) {
 			document.getElementById('desc_'+rowCnt).value   	= $(this).find("description_purchase").text();
