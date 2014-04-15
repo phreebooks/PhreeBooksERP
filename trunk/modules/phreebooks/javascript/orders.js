@@ -690,7 +690,7 @@ function addInvRow() {
     newCell.align  = 'center';
     newCell.style.whiteSpace = 'nowrap'; 
   }
-  cell  = '<output type="text" name="price_'+rowCnt+'" id="price_'+rowCnt+'" size="10" maxlength="15" onchange="updateRowTotal('+rowCnt+', false)" style="text-align:right" />&nbsp;';
+  cell  = '<input type="text" name="price_'+rowCnt+'" id="price_'+rowCnt+'" size="10" maxlength="15" onchange="updateRowTotal('+rowCnt+', false)" style="text-align:right" />&nbsp;';
   cell += buildIcon(icon_path+'16x16/mimetypes/x-office-spreadsheet.png', text_price_manager, 'align="top" style="cursor:pointer" onclick="PriceManagerList('+rowCnt+')"');
   if (single_line_list != '1') {
     newCell = newRow2.insertCell(-1);
@@ -1433,6 +1433,7 @@ function PostProcessLowStock(sXml) {
 		document.getElementById('acct_'    +rowCnt).value     	= $(this).find("account_inventory_wage").text();
 		document.getElementById('price_'   +rowCnt).value     	= formatPrecise($(this).find("item_cost").text() * exchange_rate);
 		document.getElementById('tax_'     +rowCnt).value		= $(this).find("purch_taxable").text();
+		document.getElementById('sku_prop_'+rowCnt).style.display = '';
 		document.getElementById('purch_package_quantity_'+rowCnt).value	 = $(this).find("purch_package_quantity").text();
 		if ($(this).find("description_purchase").text()) {
 			document.getElementById('desc_'+rowCnt).value   	= $(this).find("description_purchase").text();
