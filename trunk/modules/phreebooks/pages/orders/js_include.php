@@ -44,9 +44,9 @@ var text_gl_acct         = '<?php echo TEXT_GL_ACCOUNT; ?>';
 var text_sales_tax       = '<?php echo ORD_TAXABLE; ?>';
 var text_price_manager   = '<?php echo TEXT_PRICE_MANAGER; ?>';
 var text_acct_ID         = '<?php echo TEXT_GL_ACCOUNT; ?>';
-var post_error           = <?php echo $error ? "true;" : "false;"; ?>
+var post_error           = <?php echo $error ? "true" : "false"; ?>;
 var default_inv_acct     = '<?php echo DEF_INV_GL_ACCT; ?>';
-var default_sales_tax    = '0';
+var default_sales_tax    = '-1';
 var default_GL_acct      = '<?php echo DEF_GL_ACCT; ?>';
 var default_disc_acct    = '<?php echo ($account_type == "v") ? AP_DISCOUNT_PURCHASE_ACCOUNT : AR_DISCOUNT_SALES_ACCOUNT; ?>';
 var default_freight_acct = '<?php echo ($account_type == "v") ? AP_DEF_FREIGHT_ACCT : AR_DEF_FREIGHT_ACCT; ?>';

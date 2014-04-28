@@ -18,7 +18,6 @@
 //
 ?>
 <script type="text/javascript">
-<!--
 // pass some php variables
 var image_delete_text 	= '<?php echo TEXT_DELETE; ?>';
 var image_delete_msg  	= '<?php echo INV_MSG_DELETE_INV_ITEM; ?>';
@@ -230,8 +229,10 @@ function priceMgr(id, cost, price, type) {
 }
 
 function InventoryList(rowCnt) {
-	if(rowCnt == '') return;
-  	window.open("index.php?module=inventory&page=popup_inv&rowID="+rowCnt+"&search_text="+document.getElementById('sku_'+rowCnt).value,"inventory","width=700,height=550,resizable=1,scrollbars=1,top=150,left=200");
+	if (rowCnt == '') return;
+	var url = "index.php?module=inventory&page=popup_inv&rowID="+rowCnt;
+	if ($('#sku_'+rowCnt).val() != '') url += "&search_text="+$('#sku_'+rowCnt).val();
+  	window.open(url,"inventory","width=700,height=550,resizable=1,scrollbars=1,top=150,left=200");
 }
 // ******* BOF - MASTER STOCK functions *********/
 
@@ -753,6 +754,4 @@ $(document).keydown(function(e) {
  <?php }?>
 // *********** EOF - filter functions *****************/
 
-
-// -->
 </script>

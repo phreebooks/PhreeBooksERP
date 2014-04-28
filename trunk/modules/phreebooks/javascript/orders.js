@@ -38,7 +38,7 @@ function ClearForm() {
   document.getElementById('printed').value            = '0';
   document.getElementById('so_po_ref_id').value       = '0';
   document.getElementById('purch_order_id').value     = '';
-  document.getElementById('store_id').value           = '';
+  document.getElementById('store_id').value           = '0';
   document.getElementById('post_date').value          = defaultPostDate;
   document.getElementById('terminal_date').value      = defaultTerminalDate;
   document.getElementById('gl_acct_id').value         = default_GL_acct;
@@ -457,7 +457,6 @@ function convertSO() {
 function serialList(id) {
 	switch (journalID) {
 		default: // for purchases
-			alert('looking for id = '+id);
 			var newChoice = prompt(serial_num_prompt, $('#'+id).val());
 			$('#'+id).val(newChoice);
 			break;
@@ -469,6 +468,7 @@ function serialList(id) {
 			var rowID   = id.replace("serial_", "");
 			var sku     = $("#sku_"+rowID).val();
 			var storeID = $("#store_id").val();
+			alert('storeID = '+storeID);
 			window.open("index.php?module=inventory&page=popup_serial&def="+curDef+"&sku="+sku+"&rowID="+rowID+"&storeID="+storeID,"serialize","width=700px,height=550px,resizable=1,scrollbars=1,top=150,left=200");
 			break;
 	}
@@ -905,6 +905,7 @@ function updateTotalPrices() {
   var shipment_weight  = 0;
   var subtotal         = 0;
   var taxable_subtotal = 0;
+  var freight_def_tax = default_sales_tax;
   var lineTotal        = '';
   if (single_line_list == '1') {
 	numRows = document.getElementById('item_table').rows.length;
@@ -945,6 +946,7 @@ function updateTotalPrices() {
 	  } else { 
         taxable_subtotal += lineTotal * (tax_rates[tax_index].rate / 100);
 	  }
+	  freight_def_tax = tax_index;
 	}
 	subtotal += lineTotal;
   }
@@ -959,7 +961,7 @@ function updateTotalPrices() {
   if (isNaN(freight)) freight = 0;
   strFreight = new String(freight);
   document.getElementById('freight').value = formatCurrency(strFreight);
-  if (tax_freight != 0 && default_sales_tax != 0) for (keyVar in tax_rates) {
+  if (tax_freight != 0 && freight_def_tax != 0) for (keyVar in tax_rates) {
     if (tax_rates[keyVar].id == tax_freight) taxable_subtotal += parseFloat(freight) * tax_rates[keyVar].rate / 100;
   }
 
@@ -1219,7 +1221,7 @@ function fillInventory(sXml) {
   document.getElementById('sku_'     +rowCnt).style.backgroundColor = '';
   document.getElementById('sku_'     +rowCnt).removeAttribute("title");
   var imgSerial = document.getElementById('imgSerial_'+rowCnt);
-  if (imgSerial != null && $(xml).find("inventory_type").text() == 'sr'){
+  if (imgSerial != null && ($(xml).find("inventory_type").text() == 'sr' || $(xml).find("inventory_type").text() == 'sa')){
     document.getElementById('imgSerial_'+rowCnt).style.display = '';
   }
   document.getElementById('sku_prop_'+rowCnt).style.display = '';
