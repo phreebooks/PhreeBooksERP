@@ -120,10 +120,10 @@ class journal {
 				$messageStack->debug("\n  rePosting array now looks like = " . arr2string($this->repost_ids));
 			}
 		}
+		if (!$glEntry->check_for_closed_po_so('Post')) return false;
+		$messageStack->debug("\n*************** end Posting Journal ******************* id = $this->id\n");
 	}
 	if (!$skip_balance) if (!$this->update_chart_history_periods($this->first_period)) return false;
-	if (!$this->check_for_closed_po_so('Post')) return false;
-	$messageStack->debug("\n*************** end Posting Journal ******************* id = $this->id\n");
 	return true;
   }
 
@@ -1353,18 +1353,20 @@ class journal {
 		// continue like sales order
 	  case 10: if (!$gl_type) $gl_type = 'soo';
 		// determine if shipped/received items are still outstanding
-		$ordr_diff = false;
+		$ordr_diff = 0;
 		if (is_array($this->so_po_balance_array)) {
 		  foreach($this->so_po_balance_array as $counts) {
-			if ($counts['ordered'] > $counts['processed']) $ordr_diff = true;
+		  	$messageStack->debug("\n  ordered = ".$counts['ordered']." and processed = ".$counts['processed']);
+			if ($counts['ordered'] > $counts['processed']) $ordr_diff = 1;
 		  }
 		}
 		// determine if all items quantities have been entered as zero
-		$item_rows_all_zero = true;
+		$item_rows_all_zero = 1;
 		for ($i = 0; $i < count($this->journal_rows); $i++) {
-		  if ($this->journal_rows[$i]['qty'] && $this->journal_rows[$i]['gl_type'] == $gl_type) $item_rows_all_zero = false; // at least one qty is non-zero
+		  if ($this->journal_rows[$i]['qty'] && $this->journal_rows[$i]['gl_type'] == $gl_type) $item_rows_all_zero = 0; // at least one qty is non-zero
 		}
 		// also close if the 'Close' box was checked
+		$messageStack->debug("\n  order_diff = $ordr_diff and item_rows = $item_rows_all_zero and closed = $this->closed");
 		if (!$ordr_diff || $item_rows_all_zero || $this->closed) $this->close_so_po($this->id, true);
 		break;
 	  case  6:
