@@ -90,6 +90,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 		    'gl_type'		=> 'tax',
 			'gl_account'    => $tax_auths[$_POST['ot_rate']]['account_id'],
 			'description'   => $transaction->description,
+			'taxable'       => db_prepare_input($_POST['ot_rate']),
 			'debit_amount'  => $tax,
 			'credit_amount' => $debit_amount,
 			'post_date'     => date('Y-m-d'));
