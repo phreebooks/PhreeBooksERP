@@ -72,8 +72,7 @@ switch ($_REQUEST['action']) {
 		    if (!db_perform(TABLE_WO_TASK, $sql_data_array, 'insert')) throw new \core\classes\userException("unable to insert in the database");
 			gen_add_audit_log(sprintf(WO_AUDIT_LOG_TASK, TEXT_ADD) . $task_name);
 		}
-
-		$messageStack->add(($id ? WO_MESSAGE_SUCCESS_UPDATE : WO_MESSAGE_SUCCESS_ADD),'success');
+		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS,($id ? TEXT_UPDATED : TEXT_ADDED), TEXT_WORK_ORDER_TASK , $task_name),'success');
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
   	}catch(Exception $e){
   		$messageStack->add($e->getMessage());
@@ -109,7 +108,7 @@ $yes_no_array = array(
 
 // build departments
 $result = $db->Execute("select id, description from " . TABLE_DEPARTMENTS . " order by description");
-$departments = array(array('id' => '', 'text' => GEN_HEADING_PLEASE_SELECT));
+$departments = array(array('id' => '', 'text' => TEXT_PLEASE_SELECT));
 while (!$result->EOF) {
   $departments[$result->fields['id']] = array('id' => $result->fields['id'], 'text' => $result->fields['description']);
   $result->MoveNext();
@@ -119,7 +118,7 @@ while (!$result->EOF) {
 $heading_array = array(
   'task_name'   => TEXT_TASK_NAME,
   'description' => TEXT_DESCRIPTION,
-  'ref_doc'     => TEXT_DOCUMENTS,
+  'ref_doc'     => TEXT_DOCUMENT_LIST,
   'ref_spec'    => TEXT_DRAWINGS,
   'dept_id'     => TEXT_DEPARTMENT,
 );
@@ -147,6 +146,6 @@ history_save('wo_tasks');
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', BOX_WORK_ORDERS_MODULE_TASK);
+define('PAGE_TITLE', TEXT_WORK_ORDERS_TASK);
 
 ?>

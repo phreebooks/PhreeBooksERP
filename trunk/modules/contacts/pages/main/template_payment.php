@@ -30,10 +30,10 @@
 		$field .= '<table class="ui-widget" style="border-collapse:collapse;width:600px;margin-left:auto;margin-right:auto;">';
 		$field .= ' <thead class="ui-widget-header">';
 		$field .= '<tr>' . chr(10);
-		$field .= '  <th>' . ACT_CARDHOLDER_NAME . '</th>' . chr(10);
-		$field .= '  <th>' . ACT_CARD_HINT       . '</th>' . chr(10);
-		$field .= '  <th>' . ACT_EXP             . '</th>' . chr(10);
-		$field .= '  <th>' . TEXT_ACTION         . '</th>' . chr(10);
+		$field .= '  <th>' . TEXT_CARDHOLDER_NAME . '</th>' . chr(10);
+		$field .= '  <th>' . TEXT_CARD_HINT       . '</th>' . chr(10);
+		$field .= '  <th>' . TEXT_EXPIRE_SHORT    . '</th>' . chr(10);
+		$field .= '  <th>' . TEXT_ACTION          . '</th>' . chr(10);
 		$field .= '</tr>' . chr(10);
 		$field .= ' </thead>';
 		$field .= ' <tbody id="pmt_table" class="ui-widget-content">';
@@ -60,17 +60,17 @@
       <tr><td colspan="2"><?php echo '&nbsp;'; ?></td></tr>
       <tr><th colspan="2"><?php echo ACT_PAYMENT_MESSAGE; ?></th></tr>
 	  <tr>
-	    <td align="right"><?php echo ACT_CARDHOLDER_NAME; ?></td>
+	    <td align="right"><?php echo TEXT_CARDHOLDER_NAME; ?></td>
 		<td><?php echo html_input_field('payment_cc_name', $cInfo->payment_cc_name, 'size="50" maxlength="48"'); ?>
 		  <?php echo html_icon('actions/view-refresh.png', TEXT_RESET, 'small', 'onclick="clearPayment()"'); ?></td>
 	  </tr>
 	  <tr>
-	    <td align="right"><?php echo ACT_PAYMENT_CREDIT_CARD_NUMBER; ?></td>
+	    <td align="right"><?php echo TEXT_CREDIT_CARD_NUMBER; ?></td>
 		<td><?php echo html_input_field('payment_cc_number', $cInfo->payment_cc_number, 'size="20" maxlength="19"'); ?></td>
 	  </tr>
 	  <tr>
 	    <td align="right"><?php echo ACT_PAYMENT_CREDIT_CARD_EXPIRES; ?></td>
-		<td><?php echo html_pull_down_menu('payment_exp_month', $expires_month, $cInfo->payment_exp_month) . '&nbsp;' . 
+		<td><?php echo html_pull_down_menu('payment_exp_month', $expires_month, $cInfo->payment_exp_month) . '&nbsp;' .
 		    		   html_pull_down_menu('payment_exp_year', $expires_year, $cInfo->payment_exp_year); ?></td>
 	  </tr>
 	  <tr>

@@ -30,7 +30,7 @@ require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
 /**************   page specific initialization  *************************/
 $order        = new \phreepos\classes\journal\journal_19();
-define('ORD_ACCT_ID',		GEN_CUSTOMER_ID);
+define('ORD_ACCT_ID',		TEXT_CUSTOMER_ID.': ');
 define('GL_TYPE',			'sos');
 define('DEF_INV_GL_ACCT',	AR_DEF_GL_SALES_ACCT);
 $order->gl_acct_id 		= AR_DEFAULT_GL_ACCT;
@@ -75,7 +75,7 @@ foreach ($admin_classes['payment']->methods as $method) {
   		}
 	}
 }
-//check if setting are right for usage of phreepos 
+//check if setting are right for usage of phreepos
 if($number_of_methods < 1 )	throw new \core\classes\userException(ERROR_NO_PAYMENT_METHODES);
 // tax after discount
 if(AR_TAX_BEFORE_DISCOUNT == false && PHREEPOS_DISCOUNT_OF == true ) throw new \core\classes\userException("your setting tax before discount and discount over total don't work together, <br/>This has circulair logic one can't preceed the other");
@@ -95,17 +95,17 @@ $include_header   = false;
 $include_footer   = false;
 
 switch ($_REQUEST['action']) {
-  	case 'pos_return': 
+  	case 'pos_return':
     	$include_template = 'template_return.php';
 		define('PAGE_TITLE', BOX_PHREEPOS_RETURN);
     	break;
-  	default: 
+  	default:
 	    $include_template = 'template_main.php';
-		define('PAGE_TITLE', BOX_PHREEPOS);
+		define('PAGE_TITLE', TEXT_POINT_OF_SALE);
 		break;
 }
 
 
 define('PAYMENT_TITLE', PHREEPOS_PAYMENT_TITLE);
- 
+
 ?>

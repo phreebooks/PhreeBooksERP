@@ -46,11 +46,11 @@ class departments {
 		'department_inactive' => db_prepare_input($_POST['department_inactive'] ? '1' : '0'));
     if ($id) {
 	  db_perform($this->db_table, $sql_data_array, 'update', "id = '" . $id . "'");
-      gen_add_audit_log(HR_LOG_DEPARTMENTS . TEXT_UPDATE, $id);
+      gen_add_audit_log(TEXT_DEPARTMENTS . ' - ' . TEXT_UPDATE, $id);
 	} else  {
 	  $sql_data_array['id'] = db_prepare_input($_POST['id']);
       db_perform($this->db_table, $sql_data_array);
-	  gen_add_audit_log(HR_LOG_DEPARTMENTS . TEXT_ADD, $id);
+	  gen_add_audit_log(TEXT_DEPARTMENTS . ' - ' . TEXT_ADD, $id);
 	}
 	return true;
   }
@@ -63,7 +63,7 @@ class departments {
 	// OK to delete
 	$db->Execute("delete from " . $this->db_table . " where id = '" . $this->id . "'");
 	modify_account_history_records($this->id, $add_acct = false);
-	gen_add_audit_log(HR_LOG_DEPARTMENTS . TEXT_DELETE, $this->id);
+	gen_add_audit_log(TEXT_DEPARTMENTS . ' - ' . TEXT_DELETE, $this->id);
 	return true;
   }
 
@@ -71,7 +71,7 @@ class departments {
   	global $db;
     $content = array();
 	$content['thead'] = array(
-	  'value' => array(HR_ACCOUNT_ID, TEXT_DESCRIPTION, HR_HEADING_SUBACCOUNT, TEXT_INACTIVE, TEXT_ACTION),
+	  'value' => array(TEXT_DEPARTMENT_ID, TEXT_DESCRIPTION, HR_HEADING_SUBACCOUNT, TEXT_INACTIVE, TEXT_ACTION),
 	  'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 	);
     $result = $db->Execute("select id, description_short, description, subdepartment, primary_dept_id, department_inactive from ".$this->db_table);
@@ -108,15 +108,15 @@ class departments {
 	$output  = '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);
 	$output .= '  <thead class="ui-widget-header">' . "\n";
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <th colspan="2">' . ($action=='new' ? HR_INFO_NEW_ACCOUNT : HR_INFO_EDIT_ACCOUNT) . '</th>' . chr(10);
+	$output .= '    <th colspan="2">' . ($action=='new' ? sprintf(TEXT_NEW_ARGS, TEXT_DEPARTMENT) : sprintf(TEXT_EDIT_ARGS, TEXT_DEPARTMENT)) . '</th>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  </thead>' . "\n";
 	$output .= '  <tbody class="ui-widget-content">' . "\n";
     $output .= '  <tr>' . chr(10);
-	$output .= '    <td colspan="2">' . ($action=='new' ? HR_INFO_INSERT_INTRO : HR_EDIT_INTRO) . '</td>' . chr(10);
+	$output .= '    <td colspan="2">' . ($action=='new' ? HR_INFO_INSERT_INTRO : TEXT_EDIT_INTRO) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . HR_ACCOUNT_ID . html_hidden_field('id', $this->id) . '</td>' . chr(10);
+	$output .= '    <td>' . TEXT_DEPARTMENT_ID . html_hidden_field('id', $this->id) . '</td>' . chr(10);
 	$output .= '    <td>' . html_input_field('description_short', $this->description_short) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
@@ -132,11 +132,11 @@ class departments {
 	$output .= '    <td>' . html_pull_down_menu('primary_dept_id', gen_get_pull_down($this->db_table, false, '1', 'id', 'description_short'), $this->primary_dept_id) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . HR_INFO_ACCOUNT_TYPE . '</td>' . chr(10);
+	$output .= '    <td>' . TEXT_DEPARTMENT_TYPE . '</td>' . chr(10);
 	$output .= '    <td>' . html_pull_down_menu('department_type', gen_get_pull_down(TABLE_DEPT_TYPES, false, '1'), $this->department_type) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . HR_INFO_ACCOUNT_INACTIVE . '</td>' . chr(10);
+	$output .= '    <td>' . TEXT_INACTIVE . '</td>' . chr(10);
 	$output .= '    <td>' . html_checkbox_field('department_inactive', '1', $this->department_inactive ? true : false) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  </tbody>' . "\n";

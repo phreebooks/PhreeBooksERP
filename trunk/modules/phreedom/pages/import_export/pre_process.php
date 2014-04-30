@@ -259,7 +259,7 @@ switch ($_REQUEST['action']) {
   case 'import_so':
   case 'import_ar':
     $include_template = 'template_beg_bal.php';
-    define('PAGE_TITLE', GL_HEADING_BEGINNING_BALANCES);
+    define('PAGE_TITLE', TEXT_CHART_OF_ACCOUNTS. " - " . TEXT_BEGINNING_BALANCES);
     break;
   case 'module':
     // find the available tables based on $subject

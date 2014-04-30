@@ -20,17 +20,17 @@
 namespace inventory\classes;
 class fields extends \core\classes\fields{
 	public  $help_path   = '07.04.05';
-	public  $title       = TEXT_EXTRA_FIELDS;
+	public  $title       = TEXT_CUSTOM_FIELDS;
 	public  $module      = 'inventory';
 	public  $db_table    = TABLE_INVENTORY;
 	public  $type_params = 'inventory_type';
 	public  $extra_buttons = '';
-  
+
 	public function __construct(){
 	  	gen_pull_language('inventory');
 	  	require(DIR_FS_MODULES . 'inventory/defaults.php');
 	  	foreach ($inventory_types_plus as $key => $value) $this->type_array[] = array('id'=>$key, 'text'=>$value);
-	    $this->type_desc    = INV_ENTRY_INVENTORY_TYPE;
+	    $this->type_desc    = TEXT_INVENTORY_TYPES;
 	    parent::__construct();
 	}
 
@@ -40,7 +40,7 @@ class fields extends \core\classes\fields{
   		db_perform(TABLE_EXTRA_FIELDS, $sql_data_array, 'update', "id = {$this->id}");
   		return true;
   	}
-  	
+
 	public function build_form_html($action, $id = '') {
 	  	$output  = parent::build_form_html($action, $id = '');
 	  	$output .= '<table style="border-collapse:collapse;width:100%;">' . chr(10);

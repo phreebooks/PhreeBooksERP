@@ -19,21 +19,21 @@
 // Enter the new menu category heading if necessary
 define('TEXT_HOME', 'Home');
 define('TEXT_LOGOUT','Log Out');
-define('MENU_HEADING_COMPANY','Company');
+define('TEXT_COMPANY','Company');
 define('MENU_HEADING_TOOLS','Tools');
-define('BOX_HEADING_PROFILE','My Profile');
+define('TEXT_MY_PROFILE','My Profile');
 define('HEADING_TITLE_USERS','Users');
-define('BOX_HEADING_ROLES','Roles');
-define('MENU_HEADING_INVENTORY', 'Inventory');
-define('MENU_HEADING_MODULES','Modules');
-define('MENU_HEADING_QUALITY','Quality');
+define('TEXT_ROLES','Roles');
+define('TEXT_INVENTORY', 'Inventory');
+define('TEXT_MODULES','Modules');
+define('TEXT_QUALITY','Quality');
 // Menu Titles
 define('BOX_HEADING_USERS','Users');
-define('BOX_HEADING_BACKUP','Company Backup');
-define('BOX_HEADING_ENCRYPTION', 'Data Encryption');
+define('TEXT_COMPANY_BACKUP','Company Backup');
+define('TEXT_DATA_ENCRYPTION', 'Data Encryption');
 define('BOX_IMPORT_EXPORT', 'Import/Export');
-define('BOX_COMPANY_MANAGER', 'Company Manager');
-define('BOX_HEADING_ADMIN_TOOLS', 'Administrative Tools');
+define('TEXT_COMPANY_MANAGER', 'Company Manager');
+define('TEXT_ADMINISTRATIVE_TOOLS', 'Administrative Tools');
 define('BOX_HEADING_CONFIGURATION','Module Administration');
 define('BOX_GENERAL_ADMIN','General Settings');
 define('BOX_HEADING_DEBUG_DL','Download Debug File');

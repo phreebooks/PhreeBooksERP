@@ -31,7 +31,7 @@ $toolbar->add_help('');
 echo $toolbar->build_toolbar();
 // Build the page
 ?>
-<h1><?php echo BOX_HEADING_ENCRYPTION; ?></h1>
+<h1><?php echo TEXT_DATA_ENCRYPTION; ?></h1>
 <fieldset>
 <legend><?php echo GEN_ADM_TOOLS_SET_ENCRYPTION_KEY; ?></legend>
 <p><?php echo GEN_ENCRYPTION_GEN_INFO; ?></p>
@@ -63,7 +63,7 @@ echo $toolbar->build_toolbar();
 	  <td><?php  echo html_password_field('old_encrypt_key'); ?></td>
 	</tr>
     <tr>
-	  <td><?php echo GEN_ADM_TOOLS_ENCRYPT_PW; ?></td>
+	  <td><?php echo sprintf(TEXT_NEW_ARGS, TEXT_ENCRYPTION_KEY); ?></td>
 	  <td><?php echo html_password_field('new_encrypt_key'); ?></td>
 	</tr>
     <tr>

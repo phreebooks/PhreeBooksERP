@@ -32,7 +32,7 @@ if ($security_level > 1) {
   $toolbar->icon_list['import']['text'] = TEXT_IMPORT_CURRENT_LANGUAGE;
   $toolbar->icon_list['export']['text'] = TEXT_EXPORT_CURRENT_LANGUAGE;
   $toolbar->icon_list['upload'] = array(
-    'show'   => true, 
+    'show'   => true,
     'icon'   => 'actions/document-save.png',
     'params' => 'onclick="submitToDo(\'upload\')"',
     'text'   => TEXT_UPLOAD_LANGUAGE_FILE,
@@ -49,7 +49,7 @@ echo $toolbar->build_toolbar(true);
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
  <tbody class="ui-widget-content">
   <tr>
-	<td><?php echo TEXT_FILTERS . '&nbsp;' . TEXT_MODULE . html_pull_down_menu('f0', $sel_modules,  $mod); ?></td>
+	<td><?php echo TEXT_FILTERS. " : " . '&nbsp;' . TEXT_MODULE . html_pull_down_menu('f0', $sel_modules,  $mod); ?></td>
 	<td><?php echo '&nbsp;' . TEXT_LANGUAGE .   '&nbsp;' . html_pull_down_menu('f1', $sel_language, $lang); ?></td>
 	<td><?php echo '&nbsp;' . TEXT_VERSION  .   '&nbsp;' . html_pull_down_menu('f2', $sel_version,  $ver); ?></td>
 	<td><?php echo '&nbsp;' . html_button_field('apply', TEXT_APPLY, 'onclick="submitToDo(\'filter_main\')"'); ?></td>
@@ -64,7 +64,7 @@ echo $toolbar->build_toolbar(true);
  <tbody class="ui-widget-content">
 <?php
   $odd = true;
-  while (!$query_result->EOF) { 
+  while (!$query_result->EOF) {
     $mod   = $query_result->fields['module'];
     $lang  = $query_result->fields['language'];
     $ver   = $query_result->fields['version'];
@@ -78,13 +78,13 @@ echo $toolbar->build_toolbar(true);
 	<td align="center" onclick="submitSeq('<?php echo $id; ?>', 'edit')"><?php echo $query_result->fields['version']; ?></td>
 	<td align="center" onclick="submitSeq('<?php echo $id; ?>', 'edit')"><?php echo sprintf(TEXT_STATS_VALUES, $t['trans'], $t['total'], $pct); ?></td>
 	<td align="right" >
-<?php 
+<?php
 	  if ($mod <> 'all' && $security_level > 2) echo html_icon('actions/edit-find-replace.png',    TEXT_EDIT,   'small', 'onclick="submitSeq(\'' . $id . '\', \'edit\')"') . chr(10);
 	  if ($mod <> 'all' && $security_level > 2) echo html_icon('emblems/emblem-symbolic-link.png', TEXT_EXPORT, 'small', 'onclick="submitSeq(\'' . $id . '\', \'export\', true)"') . chr(10);
 	  if ($security_level > 3) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . MESSAGE_DELETE_TRANSLATION . '\')) submitSeq(\'' . $id . '\', \'delete\')"') . chr(10);
 ?>
 	</td>
-  </tr> 
+  </tr>
 <?php
       $query_result->MoveNext();
       $odd = !$odd;

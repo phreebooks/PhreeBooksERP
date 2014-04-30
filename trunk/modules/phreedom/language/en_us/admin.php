@@ -18,12 +18,12 @@
 //
 
 // headings
-define('MENU_HEADING_MY_COMPANY','My Company');
-define('MENU_HEADING_CONFIG','Configuration');
+define('TEXT_MY_COMPANY','My Company');
+define('TEXT_CONFIGURATION','Configuration');
 define('TEXT_DEFAULT_GL_ACCOUNTS','Default GL Accounts');
 define('MENU_HEADING_EMAIL','Email Preferences');
-define('TEXT_EXTRA_TABS', 'Custom Tabs');
-define('TEXT_EXTRA_FIELDS', 'Custom Fields');
+define('TEXT_CUSTOM_TABS', 'Custom Tabs');
+define('TEXT_CUSTOM_FIELDS', 'Custom Fields');
 define('TEXT_LOCAL','Local');
 define('TEXT_DEBUG','Debug and Troubleshooting');
 define('TEXT_LEGEND','Legend');
@@ -41,7 +41,7 @@ define('TEXT_USE_IN_FILTER','Use in inventory filter');
 define('TEXT_SETTINGS','Settings');
 
 // Defines for login screen
-define('HEADING_TITLE', 'PhreeBooks Login');
+define('TEXT_PHREEBOOKS_LOGIN', 'PhreeBooks Login');
 define('TEXT_LOGIN_NAME', 'Username: ');
 define('TEXT_LOGIN_PASS', 'Password: ');
 define('TEXT_LOGIN_COMPANY','Select Company: ');
@@ -50,7 +50,7 @@ define('TEXT_LOGIN_THEME','Select Theme');
 define('TEXT_LOGIN_MENU','Select Menu Location');
 define('TEXT_LOGIN_COLORS','Select Color Scheme');
 define('TEXT_PASSWORD_FORGOTTEN', 'Resend Password');
-define('TEXT_LOGIN_BUTTON','Login');
+define('TEXT_LOGIN','Login');
 define('TEXT_FORM_PLEASE_WAIT','Please wait ... If upgrading, this may take a while.');
 define('TEXT_COPYRIGHT_NOTICE','This program is free software: you can redistribute it and/or
 modify it under the terms of the GNU General Public License as
@@ -92,7 +92,7 @@ define('ERROR_CANNOT_CREATE_MODULE_DIR','Error creating directory: %s. Check you
 define('ERROR_CANNOT_REMOVE_MODULE_DIR','Error removing directory: %s. The directory may not exist or may not be empty! It must be removed by hand.');
 define('GEN_ADM_TOOLS_CLEAN_LOG','Backup/Clean Audit Logs');
 define('GEN_ADM_TOOLS_CLEAN_LOG_DESC','This operation creates a downloaded backup of your audit log database file. This will help keep the database size down and reduce company backup file sizes. Backing up this log is recommended before cleaning out to preserve PhreeBooks transaction history. <br />INFORMATION: Cleaning out the audit log will leave the current periods data in the database table and remove all other records.');
-define('GEN_ADM_TOOLS_CLEAN_LOG_BACKUP','Backup Audit Log');
+define('TEXT_BACKUP_AUDIT_LOG','Backup Audit Log');
 define('GEN_ADM_TOOLS_CLEAN_LOG_CLEAN','Clean Out Audit Log');
 define('GEN_ADM_TOOLS_BTN_CLEAN_CONFIRM','Are you sure you want to delete these log records?');
 define('GEN_ADM_TOOLS_BTN_BACKUP','Backup Now!');
@@ -108,17 +108,17 @@ define('GL_UTIL_BEG_BAL_LEGEND','General Journal Beginning Balances');
 define('GL_UTIL_BEG_BAL_TEXT','For initial set-ups and transfers from another accounting system.');
 define('GL_BTN_BEG_BAL','Enter Beginning Balances');
 define('TEXT_IMPORT_JOURNAL_ENTRIES','Import Journal Entries');
-define('GL_BB_IMPORT_INVENTORY','Import Inventory');
+define('TEXT_IMPORT_INVENTORY','Import Inventory');
 define('GL_BB_IMPORT_PAYABLES','Import Accounts Payable');
 define('GL_BB_IMPORT_RECEIVABLES','Import Accounts Receivable');
-define('GL_BB_IMPORT_SALES_ORDERS','Import Sales Orders');
+define('TEXT_IMPORT_SALES_ORDERS','Import Sales Orders');
 define('GL_BB_IMPORT_PURCH_ORDERS','Import Purchase Orders');
 define('GL_BB_IMPORT_HELP_MSG','Refer to the help file for format requirements.');
 define('HEADING_MODULE_IMPORT_EXPORT','Import/Export Database Tables');
 define('TEXT_IMPORT_EXPORT_INFO','Table Information');
 define('GEN_IMPORT_EXPORT_MESSAGE','Importing can be through XML or CSV format. Click on the sample button to download a sample file to use for formatting purposes.');
-define('SAMPLE_XML','Sample XML');
-define('SAMPLE_CSV','Sample CSV');
+define('TEXT_SAMPLE_XML','Sample XML');
+define('TEXT_SAMPLE_CSV','Sample CSV');
 define('GEN_IMPORT_MESSAGE','The list below displays the tables available for import. Select a format, upload a file and press the Import button to continue.');
 define('GEN_EXPORT_MESSAGE','Select a format and press the Export button to continue.');
 define('GEN_TABLES_AVAILABLE','Tables Available to: ');
@@ -173,7 +173,7 @@ define('CD_12_74_DESC', 'What currency conversions do you need for Text emails? 
 /************************** Currencies Settings ***********************************************/
 define('TEXT_CURRENCIES', 'Currencies');
 define('TEXT_CURRENCY', 'Currency');
-define('TEXT_CURRENCY_CODE', 'Code');
+define('TEXT_CURRENCY_CODE', 'Currency Code');
 define('SETUP_UPDATE_EXC_RATE','Update Exchange Rate');
 define('SETUP_CURR_EDIT_INTRO', 'Please make any necessary changes');
 define('TEXT_TITLE', 'Title:');
@@ -217,19 +217,19 @@ define('GEN_BACKUP_ICON_TITLE','Start Backup');
 define('GEN_BACKUP_GEN_INFO','Please select the backup compression type and options below.');
 define('GEN_BACKUP_COMP_TYPE','Compression Type: ');
 define('GEN_COMP_BZ2',' bz2 (Linux)');
-define('GEN_COMP_ZIP',' Zip');
+define('TEXT_COMPRESSION_ZIP',' Zip');
 define('GEN_COMP_NONE','None (Database Only)');
 define('GEN_BACKUP_DB_ONLY',' Database Only');
 define('GEN_BACKUP_FULL',' Database and Company Data Files');
 define('GEN_BACKUP_SAVE_LOCAL',' Save a local copy in webserver (my_files/backups) directory');
 define('GEN_BACKUP_WARNING','Warning! This operation will delete and re-write the database. Are you sure you want to continue?');
 define('GEN_BACKUP_NO_ZIP_CLASS','The zip class cannot be found. PHP needs the zip library installed to back up with zip compression.');
-define('GEN_BACKUP_FILE_ERROR','The zip file cannot be created. Check permissions for the directory: ');
+define('TEXT_ERROR_ZIP_FILE','The zip file cannot be created. Check permissions for the directory: ');
 define('GEN_BACKUP_DOWNLOAD_EMPTY','The download file does not contain any data!');
 // company manager
 define('SETUP_CO_MGR_COPY_CO','New/Copy Company');
 define('SETUP_CO_MGR_DEL_CO','Delete Company');
-define('TEXT_DEF_DATA','Basic Data');
+define('TEXT_BASIC_DATA','Basic Data');
 define('TEXT_ALL_DATA','All Data');
 define('TEXT_DEMO_DATA','Demo Data');
 define('SETUP_CO_MGR_COPY_HDR','Enter the database information for the new company. (Must conform to mysql naming conventions, typically 8-12 alphanumeric characters) This name is used as the database name and will be added to the my_files directory to hold company specific data. The database must exist prior to creating the company.');
@@ -267,28 +267,28 @@ define('EXTRA_FIELD_RESERVED_WORD','The field name you entered is a MySQL reserv
 define('EXTRA_FIELD_DELETE_INTRO', 'Are you sure you want to delete this field?');
 define('EXTRA_FIELDS_ERROR_NO_TABS','There are no custom tabs, please add at least one custom tab before adding fields.');
 /************************** ( Tabs/Fields) ***********************************************/
-define('INV_LABEL_DEFAULT_TEXT_VALUE', 'Default Value: ');
+define('TEXT_DEFAULT_VALUE', 'Default Value');
 define('INV_LABEL_MAX_NUM_CHARS', 'Maximum Number of Characters (Length)');
 define('INV_LABEL_FIXED_255_CHARS', 'Fixed at 255 Characters Maximum');
 define('INV_LABEL_MAX_255', '(for lengths less than 256 Characters)');
 define('INV_LABEL_CHOICES', 'Enter Selection String');
-define('INV_LABEL_TEXT_FIELD', 'Text Field');
-define('INV_LABEL_HTML_TEXT_FIELD', 'HTML Code');
+define('TEXT_TEXT_FIELD', 'Text Field');
+define('TEXT_HTML_TEXT_FIELD', 'HTML Code');
 define('INV_LABEL_HYPERLINK', 'Hyper-Link');
 define('INV_LABEL_IMAGE_LINK', 'Image File Name');
 define('INV_LABEL_INVENTORY_LINK', 'Inventory Link <br>(Link pointing to another inventory item (URL))');
 define('INV_LABEL_INTEGER_FIELD', 'Integer Number');
-define('INV_LABEL_INTEGER_RANGE', 'Integer Range');
+define('TEXT_INTEGER_RANGE', 'Integer Range');
 define('INV_LABEL_DECIMAL_FIELD', 'Decimal Number');
-define('INV_LABEL_DECIMAL_RANGE', 'Decimal Range');
+define('TEXT_DECIMAL_RANGE', 'Decimal Range');
 define('INV_LABEL_DEFAULT_DISPLAY_VALUE', 'Display Format (Max,Decimal)');
 define('INV_LABEL_DROP_DOWN_FIELD', 'Dropdown List');
 define('INV_LABEL_MULTI_SELECT_FIELD','Multiple Options Checkboxes');
 define('INV_LABEL_RADIO_FIELD', 'Radio Button');
 define('INV_LABEL_RADIO_EXPLANATION','Enter choices, separated by commas as:<br />value1:desc1:def1,value2:desc2:def2<br /><u>Key:</u><br />value = The value to place into the database<br />desc = Textual description of the choice<br />def = Default 0 or 1, 1 being the default choice<br />Note: Only 1 default is allowed per list');
 define('INV_LABEL_DATE_TIME_FIELD', 'Date and Time');
-define('INV_LABEL_CHECK_BOX_FIELD', 'Check Box <br>(Yes or No Choice)');
-define('INV_LABEL_TIME_STAMP_FIELD', 'Time Stamp');
+define('TEXT_CHECK_BOX_FIELD', 'Check Box <br>(Yes or No Choice)');
+define('TEXT_TIME_STAMP', 'Time Stamp');
 define('INV_LABEL_TIME_STAMP_VALUE', 'System field to track the last date and time <br> a change to a particular inventory item was made.');
 define('INV_FIELD_NAME_RULES','Fieldnames cannot contain spaces or special characters and must be 64 characters or less.');
 define('INV_CATEGORY_CANNOT_DELETE','Cannot delete category. It is being used by field: ');
@@ -298,7 +298,7 @@ define('INV_IMAGE_FILE_TYPE_ERROR','Error in the uploaded image file. Not an acc
 define('INV_IMAGE_FILE_WRITE_ERROR','There was a problem writing the image file to the specified directory.');
 define('INV_FIELD_RESERVED_WORD','The field name entered is a reserved word. Please choose a new field name.');
 // Audit Log Messages
-define('GEN_LOG_LOGIN','User Login -> ');
+define('TEXT_USER_LOGIN','User Login');
 define('GEN_LOG_LOGIN_FAILED','Failed User Login - reason : %s id -> %s ');
 define('GEN_LOG_LOGOFF','User Logoff -> ');
 define('GEN_LOG_RESEND_PW','Re-sent Password to email -> ');

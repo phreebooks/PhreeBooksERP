@@ -34,7 +34,7 @@ if ($security_level < 2) $toolbar->icon_list['save']['show']   = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 // add the help file index and build the toolbar
 $toolbar->add_help('07.04.03.01');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
@@ -44,7 +44,7 @@ echo $toolbar->build_toolbar();
     <td valign="top"><table class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto;">
 <?php if (ENABLE_MULTI_BRANCH) { ?>
      <tr>
-	    <td><?php echo GEN_STORE_ID . '&nbsp;'; ?></td>
+	    <td><?php echo TEXT_STORE_ID . '&nbsp;'; ?></td>
         <td align="right"><?php echo html_pull_down_menu('store_id', gen_get_store_ids(), $cInfo->store_id ? $cInfo->store_id : $_SESSION['admin_prefs']['def_store_id']); ?></td>
       </tr>
 <?php } else $hidden_fields .= html_hidden_field('store_id', $_SESSION['admin_prefs']['def_store_id']) . chr(10); ?>
@@ -74,7 +74,7 @@ echo $toolbar->build_toolbar();
 		<td align="right"><?php echo html_input_field('qty_1', $cInfo->qty_1, 'style="text-align:right" size="13" maxlength="10" onchange="updateBalance()"'); ?></td>
 	  </tr>
   	  <tr id="serial_row" style="display:none">
-		<td><?php echo INV_HEADING_SERIAL_NUMBER; ?></td>
+		<td><?php echo TEXT_SERIAL_NUMBER; ?></td>
 		<td align="right"><?php echo html_input_field('serial_1', $cInfo->serial_1, 'style="text-align:right" size="25" maxlength="24"'); ?></td>
 	  </tr>
 	  <tr>
@@ -89,8 +89,8 @@ echo $toolbar->build_toolbar();
 		  <tr>
 			<th><?php echo TEXT_SKU; ?></th>
 			<th><?php echo TEXT_DESCRIPTION; ?></th>
-			<th nowrap="nowrap"><?php echo TEXT_NUM_REQUIRED; ?></th>
-			<th nowrap="nowrap"><?php echo TEXT_NUM_AVAILABLE; ?></th>
+			<th nowrap="nowrap"><?php echo TEXT_REQUIRED; ?></th>
+			<th nowrap="nowrap"><?php echo TEXT_AVAILABLE; ?></th>
 		  </tr>
 		</thead>
 		<tbody id="item_table" class="ui-widget-content">
@@ -105,7 +105,7 @@ echo $toolbar->build_toolbar();
 			  echo '  <td>' . html_input_field('stk_'       . $i, $_POST['stk_'       . $i], 'readonly="readonly" style="text-align:right" size="10"') . '</td>' . chr(10);
 			  echo '</tr>' . chr(10);
 			  $i++;
-		    } 
+		    }
 		  ?>
 		</tbody>
 	    <tfoot>

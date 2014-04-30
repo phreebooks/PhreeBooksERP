@@ -1,4 +1,4 @@
-<?php 
+<?php
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
@@ -15,7 +15,7 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreeform/language/en_us/language.php
-// 
+//
 
 // Page titles
 define('PHREEFORM_DOC_IMPORT','PhreeForm Import Tool');
@@ -38,9 +38,9 @@ define('TEXT_DATABASE_SETUP','Database Setup');
 define('TEXT_DATABASE_TABLES','Database Tables');
 define('TEXT_DELIVERY_METHOD','Delivery Method');
 define('TEXT_DESTINATION_PATH','Destination Path');
-define('TEXT_DETAIL_DESCRIPTION','Detailed Description');
+define('TEXT_DETAILED_DESCRIPTION','Detailed Description');
 define('TEXT_DISPLAY_ON','Display On:');
-define('TEXT_DOCUMENT_TITLE','Report Title');
+define('TEXT_REPORT_TITLE','Report Title');
 define('TEXT_DOCUMENTS','Document List');
 define('TEXT_EMAIL_MSG_DETAIL','E-mail Message Body Text');
 define('TEXT_FILENAME_SOURCE','Download Filename Source');
@@ -48,7 +48,7 @@ define('TEXT_DUPLICATE','Duplicate');
 define('TEXT_EMPTY_FOLDER','The Folder does not contain any documents.');
 define('TEXT_ENTER_SEARCH_PARAMS_A','Search For available reports/forms. Select module:');
 define('TEXT_ENTER_SEARCH_PARAMS_B','Select language:');
-define('TEXT_ENTER_SEARCH_PARAMS_C','and press:');
+define('TEXT_AND_PRESS','and press');
 define('TEXT_FIELD_LIST','Field List');
 define('TEXT_FIELD_SETUP','Field Setup');
 define('TEXT_FIELDNAME','Fieldname');
@@ -84,7 +84,7 @@ define('TEXT_ORDINATE','Ordinate');
 define('TEXT_PAGE_BREAK_FIELD','Form Page Break Field');
 define('TEXT_PAGE_SETUP','Page Setup');
 define('TEXT_PATH','Path');
-define('TEXT_POINTS','(pts)');
+define('TEXT_POINTS_SHORT','pts');
 define('TEXT_PREFIX','Prefix:');
 define('TEXT_PRINTED_INDICATOR','Printed Indicator');
 define('TEXT_RECENTLY_ADDED','Recently Added Reports/Forms');
@@ -123,15 +123,15 @@ define('PHREEFORM_DISPNAME','Name to Display');
 define('PHREEFORM_PGFILDESC','Report Filter Description');
 define('PHREEFORM_PGHEADER','Header Information / Formatting');
 define('PHREEFORM_PGLAYOUT','Page Layout');
-define('PHREEFORM_PGMARGIN_L','Left Margin');
+define('TEXT_LEFT_MARGIN','Left Margin');
 define('PHREEFORM_PGMARGIN_R','Right Margin');
 define('PHREEFORM_PGMARGIN','Page Margins');
 define('PHREEFORM_PGTITL1','Report Title 1');
 define('PHREEFORM_PGTITL2','Report Title 2');
 define('PHREEFORM_RPTDATA','Report Data Heading');
 define('PHREEFORM_SORTLIST','Sorting Information');
-define('PHREEFORM_TEXTDISP','Text to Display');
-define('PHREEFORM_TEXTPROC','Text Processing');
+define('TEXT_TEXT_TO_DISPLAY','Text to Display');
+define('TEXT_TEXT_PROCESSING','Text Processing');
 define('PHREEFORM_TBLFNAME','Fieldname');
 define('PHREEFORM_TOTALS','Report Totals');
 define('PHREEFORM_TABLE_HEADING_PROP','Table Heading Properties');
@@ -196,7 +196,7 @@ define('PHREEFORM_JS_TABLE_CHECK_ERROR','At a minimum, two tables and the asscoi
 define('PHREEFORM_AJAX_BAD_DB_REFERENCE','The sql returned an error (%s). Please check your relationships and retry! The sql tested was: %s');
 define('PHREEFORM_AJAX_NO_TABLE_DATA','Your table statements did not return any rows. Either the tables are empty or there is an error in the link statements!');
 define('PHREEFORM_AJAX_DB_SUCCESS','The database relationships returned at least one row. They appear to be OK.');
-// Page setup 
+// Page setup
 define('TEXT_PAPER','Paper Size');
 define('TEXT_ORIEN','Orientation');
 define('TEXT_MM','mm');
@@ -208,42 +208,42 @@ define('TEXT_TABLOID','Tabloid');
 // Text formatting for text and company blocks
 define('PF_FRM_COMMA','Comma (,)');
 define('PF_FRM_COMMASP','Comma-Space');
-define('PF_FRM_NEWLINE','Line Break');
+define('TEXT_NEWLINE','Line Break');
 define('PF_FRM_SEMISP','Semicolon-space');
 define('PF_FRM_DELNL','Skip Blank-Line Break');
 define('PF_FRM_SPACE1','Single Space');
 define('PF_FRM_SPACE2','Double Space');
 // Form element types
-define('PF_FRM_BAR_CODE','Bar Code Image');
-define('PF_FRM_DATABLOCK','Data Block');
-define('PF_FRM_DATALINE','Data Line');
-define('PF_FRM_DATATABLE','Data Table');
+define('TEXT_BAR_CODE_IMAGE','Bar Code Image');
+define('TEXT_DATA_BLOCK','Data Block');
+define('TEXT_DATA_LINE','Data Line');
+define('TEXT_DATA_TABLE','Data Table');
 define('PF_FRM_DATATABLEDUP','Copy of Data Table');
-define('PF_FRM_DATATOTAL','Data Total');
-define('PF_FRM_LETTER_TEMPLATE','Letter Template');
-define('PF_FRM_LETTER_DATA','Letter Data');
+define('TEXT_DATA_TOTAL','Data Total');
+define('TEXT_LETTER_TEMPLATE','Letter Template');
+define('TEXT_LETTER_DATA','Letter Data');
 define('PF_FRM_FIXEDTXT','Fixed Text Field');
 define('PF_FRM_IMAGE','Image - JPG or PNG');
-define('PF_FRM_IMAGE_LINK','Image Link');
-define('PF_FRM_LINE','Line');
+define('TEXT_IMAGE_LINK','Image Link');
+define('TEXT_LINE','Line');
 define('PF_FRM_PAGENUM','Page Number');
-define('PF_FRM_RECTANGLE','Rectangle');
+define('TEXT_RECTANGLE','Rectangle');
 // Data processing
-define('PF_FRM_NEGATE','Negate');
-define('PF_FRM_LOWERCASE','Lowercase');
-define('PF_FRM_UPPERCASE','Uppercase');
+define('TEXT_NEGATE','Negate');
+define('TEXT_LOWERCASE','Lowercase');
+define('TEXT_UPPERCASE','Uppercase');
 define('PF_FRM_DATE','Formatted Date');
 define('PF_FRM_RNDR2','Round (2 decimal)');
 define('PF_FRM_CNVTDLR','Convert Dollars');
 define('PF_FRM_NULLDLR','Null if 0 - Dollars');
 define('PF_FRM_CNVTEURO','Convert Euros');
 define('PF_FRM_NUM_2_WORDS','Number to Words');
-define('PF_FRM_BLANK_DATA','Blank Out Data');
+define('TEXT_BLANK_OUT_DATA','Blank Out Data');
 // Standard fonts
-define('PF_FONT_HELVETICA','Helvetica');
-define('PF_FONT_COURIER','Courier');
+define('TEXT_FONT_HELVETICA','Helvetica');
+define('TEXT_FONT_COURIER','Courier');
 define('PF_FONT_TIMES','Times Roman');
-define('PF_FONT_SERIF','Serif');
+define('TEXT_FONT_SERIF','Serif');
 // Color definitions
 define('TEXT_RED','Red');
 define('TEXT_GREEN','Green');
@@ -281,7 +281,7 @@ define('TEXT_SIXTY','sixty');
 define('TEXT_SEVENTY','seventy');
 define('TEXT_EIGHTY','eighty');
 define('TEXT_NINETY','ninety');
-define('TEXT_HUNDERD','hundred');
+define('TEXT_HUNDRED','hundred');
 define('TEXT_THOUSAND','thousand');
 define('TEXT_MILLION','million');
 define('TEXT_BILLION','billion');

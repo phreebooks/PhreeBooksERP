@@ -42,7 +42,7 @@
 	<tr>
 	  <td align="right"><?php echo GEN_BACKUP_COMP_TYPE; ?></td>
 	  <td>
-	    <?php echo html_radio_field('conv_type', 'zip',  true,  '', '') . GEN_COMP_ZIP . '&nbsp;&nbsp;&nbsp;&nbsp;'; ?>
+	    <?php echo html_radio_field('conv_type', 'zip',  true,  '', '') . TEXT_COMPRESSION_ZIP . '&nbsp;&nbsp;&nbsp;&nbsp;'; ?>
 	    <?php echo html_radio_field('conv_type', 'bz2',  false, '', '') . GEN_COMP_BZ2; ?>
 	  </td>
     </tr>

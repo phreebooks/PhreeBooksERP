@@ -96,7 +96,7 @@ class admin {
 	    		foreach ($method->key() as $key) if(!defined($key['key'])) write_configure($key['key'], $key['default']);
 				if (method_exists($method, 'upgrade')) $method->upgrade();
 				write_configure('MODULE_' . strtoupper($this->id) . '_' . strtoupper($method->id) . '_STATUS', $method->version);
-				gen_add_audit_log(sprintf(GEN_LOG_INSTALL_SUCCESS, $method->text) . TEXT_UPDATE, $method->version);
+				gen_add_audit_log(sprintf(TEXT_MODULE_ARGS, $method->text) . TEXT_UPDATE, $method->version);
 	   			$messageStack->add(sprintf(GEN_MODULE_UPDATE_SUCCESS, $method->id, $method->version), 'success');
 			}
 		}
@@ -271,7 +271,7 @@ class admin {
 		    $dept = $db->Execute("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result->fields['account_id']);
 		    $_SESSION['department'] = $dept->fields['dept_rep_id'];
 		}
-		gen_add_audit_log(GEN_LOG_LOGIN . $admin_name);
+		gen_add_audit_log(TEXT_USER_LOGIN ." -->" . $admin_name);
 		// check for session timeout to reload to requested page
 		$get_params = '';
 		if (isset($_SESSION['pb_module']) && $_SESSION['pb_module']) {

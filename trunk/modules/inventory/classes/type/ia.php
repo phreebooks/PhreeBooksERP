@@ -23,7 +23,7 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 	function __construct(){
 		parent::__construct();
 		$this->tab_list['master'] = array('file'=>'template_tab_ms',	'tag'=>'master',    'order'=>30, 'text'=>INV_MS_ATTRIBUTES);
-		$this->tab_list['bom'] = array('file'=>'template_tab_bom',	'tag'=>'bom',    'order'=>30, 'text'=>INV_BOM);
+		$this->tab_list['bom'] = array('file'=>'template_tab_bom',	'tag'=>'bom',    'order'=>30, 'text'=>TEXT_BILL_OF_MATERIALS);
 	}
 
 	function get_item_by_id($id){

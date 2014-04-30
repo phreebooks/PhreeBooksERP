@@ -23,7 +23,7 @@ require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 
 class chart_of_accounts {
 	public $db_table      = TABLE_CHART_OF_ACCOUNTS;
-    public $title         = GL_POPUP_WINDOW_TITLE;
+    public $title         = TEXT_CHART_OF_ACCOUNTS;
     public $extra_buttons = false;
     public $help_path     = '07.06.01';
 
@@ -60,11 +60,11 @@ class chart_of_accounts {
 	);
     if ($this->rowSeq <> 0) {
 	  db_perform($this->db_table, $sql_data_array, 'update', "id = '" . $this->id . "'");
-      gen_add_audit_log(GL_LOG_CHART_OF_ACCOUNTS . TEXT_UPDATE, $this->id);
+      gen_add_audit_log(TEXT_CHART_OF_ACCOUNTS. " - " . TEXT_UPDATE, $this->id);
 	} else  {
 	  $sql_data_array['id'] = $this->id;
       db_perform($this->db_table, $sql_data_array);
-	  gen_add_audit_log(GL_LOG_CHART_OF_ACCOUNTS . TEXT_ADD, $this->id);
+	  gen_add_audit_log(TEXT_CHART_OF_ACCOUNTS. " - " . TEXT_ADD, $this->id);
 	}
 	build_and_check_account_history_records(); // add/modify account to history table
 	return true;
@@ -83,7 +83,7 @@ class chart_of_accounts {
 	// OK to delete
 	$db->Execute("delete from " . $this->db_table . " where id = '" . $id . "'");
 	modify_account_history_records($id, $add_acct = false);
-	gen_add_audit_log(GL_LOG_CHART_OF_ACCOUNTS . TEXT_DELETE, $id);
+	gen_add_audit_log(TEXT_CHART_OF_ACCOUNTS. " - " . TEXT_DELETE, $id);
 	return true;
   }
 
@@ -91,7 +91,7 @@ class chart_of_accounts {
   	global $db;
     $content = array();
 	$content['thead'] = array(
-	  'value'  => array(GL_HEADING_ACCOUNT_NAME, TEXT_ACCT_DESCRIPTION, GL_INFO_ACCOUNT_TYPE, GL_HEADING_SUBACCOUNT, TEXT_ACTION),
+	  'value'  => array(TEXT_ACCOUNT_ID, TEXT_ACCT_DESCRIPTION, TEXT_ACCOUNT_TYPE, TEXT_SUBACCOUNT, TEXT_ACTION),
 	  'params' => 'width="100%" cellspacing="0" cellpadding="1"',
 	);
     $result = $db->Execute("select id, description, heading_only, primary_acct_id, account_type, account_inactive from " . $this->db_table);
@@ -135,12 +135,12 @@ class chart_of_accounts {
 	$output .= '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . "\n";
 	$output .= '  <thead class="ui-widget-header">' . "\n";
 	$output .= '  <tr>' . "\n";
-	$output .= '    <th colspan="2">' . ($action == 'new' ? GL_INFO_NEW_ACCOUNT : GL_INFO_EDIT_ACCOUNT) . '</th>' . "\n";
+	$output .= '    <th colspan="2">' . ($action == 'new' ? sprintf(TEXT_NEW_ARGS, TEXT_ACCOUNT) : sprintf(TEXT_EDIT_ARGS, TEXT_ACCOUNT)) . '</th>' . "\n";
     $output .= '  </tr>' . "\n";
 	$output .= '  </thead>' . "\n";
 	$output .= '  <tbody class="ui-widget-content">' . "\n";
 	$output .= '  <tr>' . "\n";
-	$output .= '    <td colspan="2">' . ($action == 'new' ? GL_INFO_INSERT_INTRO : GL_EDIT_INTRO) . '</td>' . "\n";
+	$output .= '    <td colspan="2">' . ($action == 'new' ? GL_INFO_INSERT_INTRO : TEXT_EDIT_INTRO) . '</td>' . "\n";
     $output .= '  </tr>' . "\n";
 	$output .= '  <tr>' . "\n";
 	$output .= '    <td>' . TEXT_GL_ACCOUNT . '</td>' . "\n";
@@ -160,7 +160,7 @@ class chart_of_accounts {
     $output .= '  </tr>' . "\n";
     if ($this->primary_acct_id == ''){
 	    $output .= '  <tr>' . "\n";
-	    $output .= '    <td>' . GL_INFO_ACCOUNT_TYPE . '</td>' . "\n";
+	    $output .= '    <td>' . TEXT_ACCOUNT_TYPE .'('. TEXT_REQUIRED . ')</td>' . "\n";
 	    $output .= '    <td>' . html_pull_down_menu('account_type', $coa_types_list, $this->account_type) . '</td>' . "\n";
         $output .= '  </tr>' . "\n";
     }else{
@@ -169,7 +169,7 @@ class chart_of_accounts {
         $output .= html_hidden_field('account_type', $result->fields['account_type'] )   . chr(10);
     }
 	$output .= '  <tr>' . "\n";
-	$output .= '    <td>' . GL_INFO_ACCOUNT_INACTIVE . '</td>' . "\n";
+	$output .= '    <td>' . TEXT_INACTIVE . '</td>' . "\n";
 	$output .= '    <td>' . html_checkbox_field('account_inactive', '1', $this->account_inactive == 1 ? true : false) . '</td>' . "\n";
     $output .= '  </tr>'  . "\n";
 	$output .= '  </tbody>' . "\n";

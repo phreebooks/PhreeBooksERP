@@ -74,8 +74,8 @@
  </thead>
  <tbody class="ui-widget-content">
     <tr>
-	  <td align="center"><?php echo html_checkbox_field('user_all',  '1', (in_array('0', $security['u'], true) ? true : false)) . ' ' . TEXT_ALL_USERS; ?></td>
-	  <td align="center"><?php echo html_checkbox_field('group_all', '1', (in_array('0', $security['g'], true) ? true : false)) . ' ' . TEXT_ALL_GROUPS; ?></td>
+	  <td align="center"><?php echo html_checkbox_field('user_all',  '1', (in_array('0', $security['u'], true) ? true : false)) . ' ' . TEXT_ALLOW_ALL_USERS; ?></td>
+	  <td align="center"><?php echo html_checkbox_field('group_all', '1', (in_array('0', $security['g'], true) ? true : false)) . ' ' . TEXT_ALLOW_ALL_GROUPS; ?></td>
     </tr>
     <tr>
 	  <td width="50%" align="center"><?php echo html_pull_down_menu('users[]',  gen_get_pull_down(TABLE_USERS,  true, '1', 'admin_id', 'display_name'), $security['u'], 'multiple="multiple" size="20"'); ?></td>

@@ -18,6 +18,6 @@
 //
 // Menu Titles
 define('MENU_HEADING_TRANSLATOR', 'Language Translator Tool');
-define('BOX_TRANSLATOR_MODULE', 'Translator Assistant');
+define('TEXT_TRANSLATOR_ASS', 'Translator Assistant');
 
 ?>

@@ -32,10 +32,10 @@ switch (JOURNAL_ID) {
   case 20: $toolbar->add_help('07.05.01'); break;
 }
 $toolbar->search_period = $acct_period;
-echo $toolbar->build_toolbar($add_search = true, $add_period = true); 
+echo $toolbar->build_toolbar($add_search = true, $add_period = true);
 // Build the page
 ?>
-<h1><?php echo GEN_HEADING_PLEASE_SELECT; ?></h1>
+<h1><?php echo TEXT_PLEASE_SELECT; ?></h1>
 <div style="height:19px"><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . (JOURNAL_ID == 18 ? TEXT_RECEIPTS : TEXT_PAYMENTS)); ?>
 <div style="float:right"><?php echo $query_split->display_links(); ?></div>
 </div>

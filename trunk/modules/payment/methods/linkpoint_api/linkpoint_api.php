@@ -140,11 +140,11 @@ class linkpoint_api extends \payment\classes\payment {
 	  'id'     => $this->id,
 	  'page'   => $this->text,
 	  'fields' => array (
-	    array(  'title' => MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_OWNER,
+	    array(  'title' => TEXT_CREDIT_CARD_OWNER .' : ',
 			    'field' => html_input_field('linkpoint_api_field_0', $this->field_0)),
-	    array(  'title' => MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_NUMBER,
+	    array(  'title' => TEXT_CREDIT_CARD_NUMBER . ' : ',
 		     	'field' => html_input_field('linkpoint_api_field_1', $this->field_1)),
-	    array(	'title' => MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_EXPIRES,
+	    array(	'title' => TEXT_CREDIT_CARD_EXPIRY_DATE . ' : ',
 			    'field' => html_pull_down_menu('linkpoint_api_field_2', $expires_month, $this->field_2) . '&nbsp;' . html_pull_down_menu('linkpoint_api_field_3', $expires_year, $this->field_3)),
 		array ( 'title' => MODULE_PAYMENT_CC_TEXT_CVV,
 				'field' => html_input_field('linkpoint_api_field_4', $this->field_4, 'size="4" maxlength="4"' . ' id="' . $this->id . '-cc-cvv"' ) . ' ' . '<a href="javascript:popupWindow(\'' . html_href_link(FILENAME_POPUP_CVV_HELP) . '\')">' . TEXT_MORE_INFO . '</a>',)
@@ -246,11 +246,11 @@ class linkpoint_api extends \payment\classes\payment {
 		$confirmation = array (
 			'title' => $this->text . ': ' . $this->cc_card_type,
 			'fields' => array (
-				array ( 'title' => MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_OWNER,
+				array ( 'title' => TEXT_CREDIT_CARD_OWNER .' : ',
 						'field' => $this->field_0 ),
-				array (	'title' => MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_NUMBER,
+				array (	'title' => TEXT_CREDIT_CARD_NUMBER . ' : ',
 						'field' => str_repeat('X', (strlen($this->cc_card_number) - 4)) . substr($this->cc_card_number, -4)	),
-				array (	'title' => MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_EXPIRES,
+				array (	'title' => TEXT_CREDIT_CARD_EXPIRY_DATE . ' : ',
 						'field' => strftime('%B, %Y', mktime(0, 0, 0, $this->field_2, 1, '20' . $this->field_3)))
 			));
 
@@ -557,7 +557,7 @@ class linkpoint_api extends \payment\classes\payment {
 
 	function get_error() {
 		$error = array (
-			'title' => MODULE_PAYMENT_CC_TEXT_ERROR,
+			'title' => TEXT_CREDIT_CARD . TEXT_ERROR,
 			'error' => stripslashes(urldecode($_GET['error']))
 		);
 		return $error;

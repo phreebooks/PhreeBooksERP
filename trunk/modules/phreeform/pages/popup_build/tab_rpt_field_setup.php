@@ -26,13 +26,13 @@
     <thead class="ui-widget-header">
 	<tr><th id="fieldListHeading" colspan="10"><?php echo TEXT_FIELD_LIST; ?></th></tr>
     <tr>
-      <th><?php echo PHREEFORM_TBLFNAME; ?></th>
+      <th><?php echo TEXT_FIELDNAME; ?></th>
       <th><?php echo PHREEFORM_DISPNAME; ?></th>
       <th><?php echo TEXT_COLUMN . '<br />' . TEXT_BREAK; ?></th>
       <th><?php echo TEXT_COLUMN . '<br />' . TEXT_WIDTH; ?></th>
       <th><?php echo TEXT_TOTAL  . '<br />' . TEXT_WIDTH; ?></th>
       <th><?php echo TEXT_SHOW   . '<br />' . TEXT_FIELD; ?></th>
-      <th><?php echo PHREEFORM_TEXTPROC; ?></th>
+      <th><?php echo TEXT_TEXT_PROCESSING; ?></th>
       <th><?php echo TEXT_TOTAL  . '<br />' . TEXT_COLUMN; ?></th>
       <th><?php echo TEXT_ALIGN; ?></th>
       <th><?php echo TEXT_ACTION; ?></th>
@@ -51,7 +51,7 @@
       <td><?php echo html_pull_down_menu('fld_tot[]',  $nyChoice,   $report->fieldlist[$i]->total); ?></td>
 	  <td><?php echo html_pull_down_menu('fld_algn[]', $kFontAlign, $report->fieldlist[$i]->align); ?></td>
       <td nowrap="nowrap" align="right">
-		<?php 
+		<?php
 		  echo html_icon('actions/view-fullscreen.png',   TEXT_MOVE,   'small', 'style="cursor:move"', '', '', 'move_fld_' . $i) . chr(10);
 		  echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'class="delete" calculateWidth();"') . chr(10);
 		?>

@@ -28,7 +28,7 @@ require_once(DIR_FS_MODULES . 'phreeform/defaults.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 /**************   page specific initialization  *************************/
 $order           = new \core\classes\journal();
-define('ORD_ACCT_ID',GEN_CUSTOMER_ID);
+define('ORD_ACCT_ID', TEXT_CUSTOMER_ID.': ');
 define('GL_TYPE','sos');
 define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);
 $order->gl_acct_id = AR_DEFAULT_GL_ACCT;
@@ -41,13 +41,13 @@ $tills           = new \phreepos\classes\tills();
 $custom_path = DIR_FS_MODULES . 'phreepos/custom/ajax/other_transactions.php';
 if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
-	\core\classes\user::validate_security($security_level, 2); // security check		
+	\core\classes\user::validate_security($security_level, 2); // security check
 	$transaction->get_transaction_info($_POST['Other_trans_type']);
 	$tills->get_till_info($_POST['ot_till_id']);
 	// currency values (convert to DEFAULT_CURRENCY to store in db)
 	$order->currencies_code     = db_prepare_input($_POST['ot_currencies_code']);
 	$order->currencies_value    = db_prepare_input($_POST['ot_currencies_value']);
-	// load journal main data	
+	// load journal main data
 	$order->journal_main_array = array(
 		'period'              => CURRENT_ACCOUNTING_PERIOD,
 		'journal_id'          => JOURNAL_ID,
@@ -80,7 +80,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 			'debit_amount'  => $debit_amount,
 			'credit_amount' => $credit_amount,
 			'post_date'     => date('Y-m-d'));
-	
+
 	if($transaction->type == 'expenses'){
 		$tax = $currencies->clean_value(db_prepare_input($_POST['ot_tax']), $order->currencies_code) / $order->currencies_value;
 		$tax_auths      = gen_build_tax_auth_array();
@@ -113,8 +113,8 @@ if (file_exists($custom_path)) { include($custom_path); }
 			'credit_amount' => $debit_amount,
 			'post_date'     => date('Y-m-d'));
 	}
-	
-	
+
+
 	$order->Post('insert', true);
 	if ( DEBUG )           $messageStack->write_debug();
 						$xml .= "\t" . xmlEntry("action",			$_REQUEST['action']);

@@ -56,7 +56,7 @@ if (count($extra_toolbar_buttons_detail) > 0) {
 echo $toolbar->build_toolbar();
 $fields->set_fields_to_display($cInfo->inventory_type);
 ?>
-<h1 id='heading_title'><?php echo MENU_HEADING_INVENTORY . ' - ' . TEXT_SKU . '# ' . $cInfo->sku . ' (' . $cInfo->description_short . ')'; ?></h1>
+<h1 id='heading_title'><?php echo TEXT_INVENTORY . ' - ' . TEXT_SKU . '# ' . $cInfo->sku . ' (' . $cInfo->description_short . ')'; ?></h1>
 <div class="easyui-tabs" id="detailtabs">
 <?php
 foreach ($cInfo->tab_list as $value) {

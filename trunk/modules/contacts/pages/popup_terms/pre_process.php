@@ -24,14 +24,14 @@ $security_level = \core\classes\user::validate(0, true);
 $account_type = (isset($_GET['type']) ? $_GET['type'] : 'c');	// current types are c (customer) and v (vendor)
 switch ($account_type) {
   default:
-  case 'c': 
+  case 'c':
 	$terms_type       = 'AR';
 	$credit_limit     = AR_CREDIT_LIMIT_AMOUNT;
 	$discount_percent = AR_PREPAYMENT_DISCOUNT_PERCENT;
 	$discount_days    = AR_PREPAYMENT_DISCOUNT_DAYS;
 	$num_days_due     = AR_NUM_DAYS_DUE;
 	break;
-  case 'v': 
+  case 'v':
 	$terms_type       = 'AP';
 	$credit_limit     = AP_CREDIT_LIMIT_AMOUNT;
 	$discount_percent = AP_PREPAYMENT_DISCOUNT_PERCENT;
@@ -61,6 +61,6 @@ $cal_terms = array(
 $include_header   = false;
 $include_footer   = false;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', ACT_POPUP_TERMS_WINDOW_TITLE);
+define('PAGE_TITLE', TEXT_PAYMENT_TERMS);
 
 ?>

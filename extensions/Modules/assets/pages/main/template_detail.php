@@ -32,10 +32,10 @@ if ($security_level > 2) {
 }
 $toolbar->icon_list['print']['show'] = false;
 $toolbar->add_help('');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 $fields->set_fields_to_display($asset_type);
 ?>
-<h1><?php echo MENU_HEADING_ASSETS . ' - ' . TEXT_ASSET_ID . '# ' . $cInfo->asset_id; ?></h1>
+<h1><?php echo TEXT_ASSETS . ' - ' . TEXT_ASSET_ID . '# ' . $cInfo->asset_id; ?></h1>
 
   <div class="easyui-dialog" data-options="closed: true," id="inv_image" title="<?php echo TEXT_IMAGE; ?>" style="width:800px;padding:10px">
     <?php if ($cInfo->image_with_path) echo html_image(DIR_WS_FULL_PATH . 'my_files/' . $_SESSION['company'] . '/assets/images/' . $cInfo->image_with_path, '', 600) . chr(10);
@@ -65,12 +65,12 @@ $fields->set_fields_to_display($asset_type);
 	  <td><?php echo TEXT_IMAGE . ' (' . TEXT_REMOVE . ' ' . html_checkbox_field('remove_image', '1', $cInfo->remove_image) . ')'; ?></td>
 	</tr>
 	<tr>
-	  <td><?php echo TEXT_DESCRIPTION_SHORT; ?></td>
+	  <td><?php echo TEXT_SHORT_DESCRIPTION; ?></td>
 	  <td><?php echo html_input_field('description_short', $cInfo->description_short, 'size="33" maxlength="32"', false); ?></td>
 	  <td><?php echo html_file_field('asset_image'); ?></td>
 	</tr>
 	<tr>
-	  <td><?php echo ASSETS_ENTRY_ASSETS_TYPE; ?></td>
+	  <td><?php echo TEXT_ASSET_TYPE; ?></td>
 	  <td><?php echo html_hidden_field('asset_type', $cInfo->asset_type);
 		echo html_input_field('inv_type_desc', $assets_types[$cInfo->asset_type], 'readonly="readonly"', false); ?> </td>
 	  <td><?php echo ASSETS_ENTRY_IMAGE_PATH; ?></td>
@@ -78,22 +78,22 @@ $fields->set_fields_to_display($asset_type);
 	<tr>
 	  <td><?php echo ASSETS_ENTRY_FULL_PRICE; ?></td>
 	  <td>
-	  	<?php echo html_input_field('full_price', $currencies->format($cInfo->full_price), 'size="11" maxlength="10" style="text-align:right"', false) . (ENABLE_MULTI_CURRENCY ? (' (' . DEFAULT_CURRENCY . ')') : ''); 
+	  	<?php echo html_input_field('full_price', $currencies->format($cInfo->full_price), 'size="11" maxlength="10" style="text-align:right"', false) . (ENABLE_MULTI_CURRENCY ? (' (' . DEFAULT_CURRENCY . ')') : '');
 		?>
 	  </td>
 	  <td>
-		<?php echo html_hidden_field('image_with_path', $cInfo->image_with_path); 
+		<?php echo html_hidden_field('image_with_path', $cInfo->image_with_path);
 		echo html_input_field('asset_path', substr($cInfo->image_with_path, 0, strrpos($cInfo->image_with_path, '/'))); ?>
 	  </td>
 	</tr>
 	<tr>
 	  <td><?php echo ASSETS_ENTRY_ASSETS_SERIALIZE; ?></td>
 	  <td><?php echo html_input_field('serial_number', $cInfo->serial_number, 'size="33" maxlength="32"'); ?></td>
-	  <td><?php echo ASSETS_PURCHASE_CONDITION; ?></td>
+	  <td><?php echo TEXT_PURCHASE_CONDITION; ?></td>
 	  <td><?php echo html_pull_down_menu('purch_cond', $purch_cond_array, $cInfo->purch_cond); ?></td>
 	</tr>
 	<tr>
-	  <td valign="top"><?php echo TEXT_DETAIL_DESCRIPTION; ?></td>
+	  <td valign="top"><?php echo TEXT_DETAILED_DESCRIPTION; ?></td>
 	  <td colspan="3"><?php echo html_textarea_field('description_long', 75, 3, $cInfo->description_long, '', $reinsert_value = true); ?></td>
 	</tr>
 	<tr>
@@ -130,8 +130,8 @@ $fields->set_fields_to_display($asset_type);
       <th><?php echo TEXT_FILENAME; ?></th>
       <th><?php echo TEXT_ACTION; ?></th>
      </tr>
-<?php 
-if (sizeof($attachments) > 0) { 
+<?php
+if (sizeof($attachments) > 0) {
   foreach ($attachments as $key => $value) {
     echo '<tr>';
     echo ' <td>' . html_checkbox_field('rm_attach_'.$key, '1', false) . '</td>' . chr(10);
@@ -140,7 +140,7 @@ if (sizeof($attachments) > 0) {
     echo '</tr>' . chr(10);
   }
 } else {
-  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS . '</td></tr>'; 
+  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS . '</td></tr>';
 } ?>
     </tbody>
    </table>

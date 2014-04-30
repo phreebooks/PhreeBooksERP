@@ -43,10 +43,10 @@ class tax_auths {
 	);
     if ($id) {
 	  db_perform($this->db_table, $sql_data_array, 'update', "tax_auth_id = '" . $id . "'");
-	  gen_add_audit_log(SETUP_TAX_AUTHS_LOG . TEXT_UPDATE, $this->description_short);
+	  gen_add_audit_log(TEXT_TAX_AUTHORITY ." - " . TEXT_UPDATE, $this->description_short);
 	} else  {
       db_perform($this->db_table, $sql_data_array);
-	  gen_add_audit_log(SETUP_TAX_AUTHS_LOG . TEXT_ADD, $this->description_short);
+	  gen_add_audit_log(TEXT_TAX_AUTHORITY ." - " . TEXT_ADD, $this->description_short);
 	}
 	return true;
   }
@@ -68,7 +68,7 @@ class tax_auths {
 	// OK to delete
 	$result = $db->Execute("select description_short from " . $this->db_table . " where tax_auth_id = '" . $id . "'");
 	$db->Execute("delete from " . $this->db_table . " where tax_auth_id = '" . $id . "'");
-	gen_add_audit_log(SETUP_TAX_AUTHS_LOG . TEXT_DELETE, $result->fields['description_short']);
+	gen_add_audit_log(TEXT_TAX_AUTHORITY ." - " . TEXT_DELETE, $result->fields['description_short']);
 	return true;
   }
 
@@ -76,7 +76,7 @@ class tax_auths {
   	global $db;
     $content = array();
 	$content['thead'] = array(
-	  'value' => array(SETUP_TAX_DESC_SHORT, TEXT_DESCRIPTION, SETUP_TAX_GL_ACCT, SETUP_TAX_RATE, TEXT_ACTION),
+	  'value' => array(TEXT_SHORT_NAME, TEXT_DESCRIPTION, SETUP_TAX_GL_ACCT, TEXT_TAX_RATE_PERCENT, TEXT_ACTION),
 	  'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 	);
     $result = $db->Execute("select tax_auth_id, description_short, description_long, account_id, tax_rate
@@ -115,12 +115,12 @@ class tax_auths {
 	$output  = '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);
 	$output .= '  <thead class="ui-widget-header">' . "\n";
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <th colspan="2">' . ($action=='new' ? SETUP_INFO_HEADING_NEW_TAX_AUTH : SETUP_INFO_HEADING_EDIT_TAX_AUTH) . '</th>' . chr(10);
+	$output .= '    <th colspan="2">' . ($action=='new' ? sprintf(TEXT_NEW_ARGS, TEXT_TAX_AUTHORITY) : sprintf(TEXT_EDIT_ARGS, TEXT_TAX_AUTHORITY)) . '</th>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  </thead>' . "\n";
 	$output .= '  <tbody class="ui-widget-content">' . "\n";
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td colspan="2">' . ($action=='new' ? SETUP_TAX_AUTH_INSERT_INTRO : SETUP_TAX_AUTH_EDIT_INTRO) . '</td>' . chr(10);
+	$output .= '    <td colspan="2">' . ($action=='new' ? SETUP_TAX_AUTH_INSERT_INTRO : TEXT_EDIT_INTRO) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
 	$output .= '    <td>' . SETUP_INFO_DESC_SHORT . '</td>' . chr(10);
@@ -139,7 +139,7 @@ class tax_auths {
 	$output .= '    <td>' . html_pull_down_menu('vendor_id', gen_get_contact_array_by_type('v'), $this->vendor_id) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . SETUP_INFO_TAX_RATE . '</td>' . chr(10);
+	$output .= '    <td>' . TEXT_TAX_RATE_PERCENT . '</td>' . chr(10);
 	$output .= '    <td>' . html_input_field('tax_rate', $this->tax_rate) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  </tbody>' . "\n";

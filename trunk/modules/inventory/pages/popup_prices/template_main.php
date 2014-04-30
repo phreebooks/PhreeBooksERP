@@ -29,7 +29,7 @@ $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('07.04.06');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE . ' - ' . $sku; ?></h1>
@@ -41,25 +41,25 @@ echo $toolbar->build_toolbar();
   </tr>
 <?php if ($type == 'v') { ?>
   <tr onclick="setReturnPrice('<?php echo $rowId; ?>', 'cost');">
-    <td style="cursor:pointer"><?php echo INV_ENTRY_INV_ITEM_COST . ': '; ?></td>
+    <td style="cursor:pointer"><?php echo TEXT_ITEM_COST . ': '; ?></td>
     <td style="cursor:pointer"><?php echo html_input_field('cost', $currencies->precise($inventory_details->fields['item_cost']), 'style="cursor:pointer" readonly="readonly" size="10" style="text-align:right"'); ?></td>
   </tr>
-<?php } else { ?> 
+<?php } else { ?>
   <tr onclick="setReturnPrice('<?php echo $rowId; ?>', 'full');">
-    <td style="cursor:pointer"><?php echo INV_ENTRY_FULL_PRICE . ': '; ?></td>
+    <td style="cursor:pointer"><?php echo TEXT_FULL_PRICE . ': '; ?></td>
     <td style="cursor:pointer"><?php echo html_input_field('full', $currencies->precise($inventory_details->fields['full_price']), 'style="cursor:pointer" readonly="readonly" size="10" style="text-align:right"'); ?></td>
   </tr>
-<?php } ?> 
+<?php } ?>
  </tbody>
 </table>
 <?php
 if (is_object($price_sheets)) {
   if ($price_sheets->RecordCount() > 0) {
     $cnt = 0;
-	while (!$price_sheets->EOF) { 
+	while (!$price_sheets->EOF) {
 	  echo '<table class="ui-widget" style="border-collapse:collapse;width:300px">';
  	  echo '<thead class="ui-widget-header">';
-	  echo '<tr><th colspan="2">' . PRICE_SHEETS_LOG . $price_sheets->fields['sheet_name'] . '</th></tr>';
+	  echo '<tr><th colspan="2">' . TEXT_PRICE_SHEET. " - " . $price_sheets->fields['sheet_name'] . '</th></tr>';
  	  echo '<tr><th>' . TEXT_QUANTITY . '</th><th align="center">' . TEXT_PRICE . '</th></tr>';
 	  echo ' </thead><tbody class="ui-widget-content">' . chr(10);
  	  // remove the first and last element from the price level source array (not used and Level 1 price source)
@@ -79,9 +79,9 @@ if (is_object($price_sheets)) {
 	  echo '</tbody></table>';
 	}
 	echo html_hidden_field('num_prices', $cnt);
-  } 
+  }
 } else {
   echo '<div align="center"><p>' . INV_NO_PRICE_SHEETS . '</p></div>';
-} // end if ($price_sheets->RecordCount() > 0) 
+} // end if ($price_sheets->RecordCount() > 0)
 ?>
 </form>

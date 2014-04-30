@@ -24,8 +24,8 @@
 var image_delete_text = '<?php echo TEXT_DELETE; ?>';
 var image_delete_msg  = '<?php echo GL_DELETE_GL_ROW; ?>';
 var text_acct_ID      = '<?php echo TEXT_GL_ACCOUNT; ?>';
-var text_increased    = '<?php echo GL_ACCOUNT_INCREASED; ?>';
-var text_decreased    = '<?php echo GL_ACCOUNT_DECREASED; ?>';
+var text_increased    = '<?php echo TEXT_ACCOUNT_WILL_INCREASED; ?>';
+var text_decreased    = '<?php echo TEXT_ACCOUNT_WILL_DECREASED; ?>';
 var journalID         = '<?php echo JOURNAL_ID; ?>';
 var securityLevel     = <?php echo $security_level; ?>;
 <?php echo js_calendar_init($cal_gl); ?>
@@ -69,7 +69,7 @@ function check_form() {
 	  document.getElementById('recur_frequency').value = '1';
 	} else {
 	  document.getElementById('recur_frequency').value = '0';
-	}		    
+	}
   }
   // Check for purchase_invoice_id exists with a recurring entry
   if (document.getElementById('purchase_invoice_id').value == "" && document.getElementById('recur_id').value > 0) {
@@ -136,7 +136,7 @@ function processEditJournal(sXml) {
   } else {
 //	alert ('Not showing attach val = '+$(xml).find("attach_exist").text());
   }
-  
+
   // delete the rows
   while (document.getElementById("item_table").rows.length > 0) document.getElementById("item_table").deleteRow(-1);
   // turn off some icons
@@ -255,9 +255,9 @@ function showAction(rowID, DebitOrCredit) {
     textValue = ' ';
   }
   if(document.all) { // IE browsers
-    document.getElementById("item_table").rows[(rowID*2)-1].cells[1].innerText = textValue;  
+    document.getElementById("item_table").rows[(rowID*2)-1].cells[1].innerText = textValue;
   } else { //firefox
-    document.getElementById("item_table").rows[(rowID*2)-1].cells[1].textContent = textValue;  
+    document.getElementById("item_table").rows[(rowID*2)-1].cells[1].textContent = textValue;
   }
 }
 

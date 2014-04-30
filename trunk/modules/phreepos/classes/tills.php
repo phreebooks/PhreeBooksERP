@@ -58,10 +58,10 @@ class tills {
 
     if ($id) {
 	  db_perform($this->db_table, $sql_data_array, 'update', "till_id = '" . $id . "'");
-	  gen_add_audit_log(SETUP_TAX_AUTHS_LOG . TEXT_UPDATE, $this->description);
+	  gen_add_audit_log(TEXT_TILL ." - " . TEXT_UPDATE, $this->description);
 	} else  {
       db_perform($this->db_table, $sql_data_array);
-	  gen_add_audit_log(SETUP_TAX_AUTHS_LOG . TEXT_ADD, $this->description);
+	  gen_add_audit_log(TEXT_TILL ." - " . TEXT_ADD, $this->description);
 	}
 	return true;
   }
@@ -71,15 +71,15 @@ class tills {
 	\core\classes\user::validate_security($this->security_id, 4);
 	// Don't allow delete if there is account activity for this account
 	$sql = "select max(debit_amount) as debit, max(credit_amount) as credit, max(beginning_balance) as beg_bal
-		from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '" . $this->gl_acct_id . "'";
+		from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '{$this->gl_acct_id}'";
 	$result = $db->Execute($sql);
 	if ($result->fields['debit'] <> 0 || $result->fields['credit'] <> 0 || $result->fields['beg_bal'] <> 0) {
 	  throw new \core\classes\userException(GL_ERROR_CANT_DELETE);
 	}
 	// OK to delete
-	$result = $db->Execute("select description from " . $this->db_table . " where till_id = '" . $id . "'");
-	$db->Execute("delete from " . $this->db_table . " where till_id = '" . $id . "'");
-	gen_add_audit_log(SETUP_TAX_AUTHS_LOG . TEXT_DELETE, $result->fields['description']);
+	$result = $db->Execute("select description from " . $this->db_table . " where till_id = '$id'");
+	$db->Execute("delete from " . $this->db_table . " where till_id = '$id'");
+	gen_add_audit_log(TEXT_TILL ." - " . TEXT_DELETE, $result->fields['description']);
 	return true;
   }
 
@@ -87,7 +87,7 @@ class tills {
   	global $db, $currencies;
     $content = array();
 	$content['thead'] = array(
-	  'value' => array(TEXT_DESCRIPTION, GEN_STORE_ID, TEXT_GL_ACCOUNT, TEXT_ACTION, TEXT_BALANCE),
+	  'value' => array(TEXT_DESCRIPTION, TEXT_STORE_ID, TEXT_GL_ACCOUNT, TEXT_ACTION, TEXT_BALANCE),
 	  'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 	);
     $result = $db->Execute("select * from " . $this->db_table );
@@ -125,7 +125,7 @@ class tills {
 	$output  = '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);
 	$output .= '  <thead class="ui-widget-header">' . "\n";
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <th colspan="2">' . ($action=='new' ? TEXT_ENTER_NEW_TILL : TEXT_EDIT_TILL) . '</th>' . chr(10);
+	$output .= '    <th colspan="2">' . ($action=='new' ? sprintf(TEXT_NEW_ARGS, TEXT_TILL) : sprintf(TEXT_EDIT_ARGS, TEXT_TILL)) . '</th>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  </thead>' . "\n";
 	$output .= '  <tbody class="ui-widget-content">' . "\n";
@@ -134,7 +134,7 @@ class tills {
 	$output .= '    <td>' . html_input_field('description', $this->description, 'size="16" maxlength="15"') . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . GEN_STORE_ID . '</td>' . chr(10);
+	$output .= '    <td>' . TEXT_STORE_ID . '</td>' . chr(10);
 	$output .= '    <td>' . html_pull_down_menu('store_id', $this->store_ids, $this->store_id) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
@@ -229,7 +229,7 @@ class tills {
   	}
   	$sql = "select till_id, description from " . $this->db_table . " where store_id in (" . implode(',', $temp) . ")";
     $result = $db->Execute($sql);
-    if ($inc_select) $result_array[] = array('id' => '0', 'text' => GEN_HEADING_PLEASE_SELECT);
+    if ($inc_select) $result_array[] = array('id' => '0', 'text' => TEXT_PLEASE_SELECT);
     while(!$result->EOF){
     	$result_array[] = array('id' => $result->fields['till_id'], 'text' => $result->fields['description']);
     	$result->MoveNext();

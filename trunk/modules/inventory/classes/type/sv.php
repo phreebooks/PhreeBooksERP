@@ -1,7 +1,7 @@
 <?php
 namespace inventory\classes\type;
 class sv extends \inventory\classes\inventory {//Service
-	public $title       			= INV_TYPES_SV;
+	public $title       			= TEXT_SERVICE;
 	public $account_sales_income	= INV_SERVICE_DEFAULT_SALES;
 	public $account_inventory_wage	= INV_SERVICE_DEFAULT_INVENTORY;
 	public $account_cost_of_sales	= INV_SERVICE_DEFAULT_COS;

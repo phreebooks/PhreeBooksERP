@@ -131,8 +131,8 @@ class inventory {
 	  		$this->qty_table ='<table class="ui-widget" style="border-collapse:collapse;width:100%">'. chr(10);
 			$this->qty_table .='  <thead class="ui-widget-header">'. chr(10);
 		  	$this->qty_table .='	  <tr>';
-		    $this->qty_table .='		<th>'. GEN_STORE_ID.'</th>';
-		    $this->qty_table .='		<th>'. INV_HEADING_QTY_IN_STOCK .'</th>';
+		    $this->qty_table .='		<th>'. TEXT_STORE_ID.'</th>';
+		    $this->qty_table .='		<th>'. TEXT_QUANTITY_IN_STOCK_SHORT .'</th>';
 		  	$this->qty_table .='    </tr>'. chr(10);
 		 	$this->qty_table .='  </thead>'. chr(10);
 		 	$this->qty_table .='  <tbody class="ui-widget-content">'. chr(10);
@@ -192,7 +192,7 @@ class inventory {
 			);
 		db_perform(TABLE_INVENTORY, $sql_data_array, 'insert');
 		$this->get_item_by_id(db_insert_id());
-		gen_add_audit_log(INV_LOG_INVENTORY . TEXT_ADD, TEXT_TYPE . ': ' . $this->inventory_type . ' - ' . $this->sku );
+		gen_add_audit_log(TEXT_INVENTORY_ITEM . ' - '  . TEXT_ADD, TEXT_TYPE . ': ' . $this->inventory_type . ' - ' . $this->sku );
 		return true;
 	}
 
@@ -251,7 +251,7 @@ class inventory {
 			db_perform(TABLE_INVENTORY_PURCHASE, $sql_data_array, 'insert');
 	  		$result->MoveNext();
 		}
-		gen_add_audit_log(INV_LOG_INVENTORY . TEXT_COPY, $this->old_sku . ' => ' . $this->sku);
+		gen_add_audit_log(TEXT_INVENTORY_ITEM . ' - ' . TEXT_COPY, $this->old_sku . ' => ' . $this->sku);
 		$this->get_item_by_sku($this->sku);
 		return true;
 	}
@@ -322,7 +322,7 @@ class inventory {
 		}
 	  	$db->Execute("delete from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = '" . $this->id . "'");
 	  	$db->Execute("delete from " . TABLE_INVENTORY_PURCHASE . " where sku = '" . $this->sku . "'");
-		gen_add_audit_log(INV_LOG_INVENTORY . TEXT_DELETE, $this->sku);
+		gen_add_audit_log(TEXT_INVENTORY_ITEM . ' - ' . TEXT_DELETE, $this->sku);
 	}
 
 	// this is the general save function.
@@ -391,7 +391,7 @@ class inventory {
 		if ($this->id != ''){
 			unset($sql_data_array['creation_date]']);
 			db_perform(TABLE_INVENTORY, $sql_data_array, 'update', "id = " . $this->id);
-			gen_add_audit_log(INV_LOG_INVENTORY . TEXT_UPDATE, $this->sku . ' - ' . $sql_data_array['description_short']);
+			gen_add_audit_log(TEXT_INVENTORY_ITEM . ' - ' . TEXT_UPDATE, $this->sku . ' - ' . $sql_data_array['description_short']);
 		}else{
 			db_perform(TABLE_INVENTORY, $sql_data_array, 'insert');
 			$this->id = db_insert_id();
@@ -405,7 +405,7 @@ class inventory {
 	  			db_perform(TABLE_INVENTORY_SPECIAL_PRICES, $output_array, 'insert');
 	  			$result->MoveNext();
 			}
-			gen_add_audit_log(INV_LOG_INVENTORY . TEXT_COPY, " id " . $this->id . ' new sku = ' . $this->sku);
+			gen_add_audit_log(TEXT_INVENTORY_ITEM . ' - ' . TEXT_COPY, " id " . $this->id . ' new sku = ' . $this->sku);
 		}
 		return $sql_data_array;
 	}

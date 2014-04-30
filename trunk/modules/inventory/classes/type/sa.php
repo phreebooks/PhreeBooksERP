@@ -14,7 +14,7 @@ class sa extends \inventory\classes\inventory {//Serialized Assembly
 
 	function __construct(){
 		parent::__construct();
-		$this->tab_list['bom'] 		 = array('file'=>'template_tab_bom',	'tag'=>'bom',    'order'=>30, 'text'=>INV_BOM);
+		$this->tab_list['bom'] 		 = array('file'=>'template_tab_bom',	'tag'=>'bom',    'order'=>30, 'text'=>TEXT_BILL_OF_MATERIALS);
 		$this->tab_list['orderhist'] = array('file'=>'template_tab_hist_sr', 'tag'=>'orderhist', 'order'=>40, 'text'=>'Unit History');
 	}
 
@@ -100,9 +100,9 @@ class sa extends \inventory\classes\inventory {//Serialized Assembly
   		$this->qty_table ='<table class="ui-widget" style="border-collapse:collapse;width:100%">'. chr(10);
 		$this->qty_table .='  <thead class="ui-widget-header">'. chr(10);
 	  	$this->qty_table .='	  <tr>';
-	    $this->qty_table .='		<th>'. GEN_STORE_ID.'</th>';
+	    $this->qty_table .='		<th>'. TEXT_STORE_ID.'</th>';
 	    $this->qty_table .='		<th>'. TEXT_QUANTITY.'</th>';
-	    $this->qty_table .='		<th>'. INV_HEADING_SERIAL_NUMBER .'</th>';
+	    $this->qty_table .='		<th>'. TEXT_SERIAL_NUMBER .'</th>';
 	  	$this->qty_table .='    </tr>'. chr(10);
 	 	$this->qty_table .='  </thead>'. chr(10);
 	 	$this->qty_table .='  <tbody class="ui-widget-content">'. chr(10);

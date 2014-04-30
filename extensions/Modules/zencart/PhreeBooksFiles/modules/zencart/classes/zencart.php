@@ -56,7 +56,7 @@ class zencart {
 			if (!$hide_success) $messageStack->add($this->text, strtolower($this->result));
 			return true;
 		} else {
-			$messageStack->add(ZENCART_TEXT_ERROR . $this->code . ' - ' . $this->text, strtolower($this->result));
+			$messageStack->add(TEXT_ERROR . $this->code . ' - ' . $this->text, strtolower($this->result));
 			return false;
 		}
 	}

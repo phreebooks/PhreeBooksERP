@@ -33,14 +33,14 @@ if (defined('MODULE_RMA_STATUS')) {
   // Set the title menu
   define('MENU_HEADING_RMA_ORDER',  77);
   $pb_headings[MENU_HEADING_RMA_ORDER] = array(
-    'text' => MENU_HEADING_RMA, 
+    'text' => MENU_HEADING_RMA,
     'link' => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=index&amp;mID=cat_rma', 'SSL'),
   );
 */
   // Set the menu
   $mainmenu["customers"]['submenu']['rma'] = array(
-    'text'        => BOX_RMA_MODULE, 
-    'order'       => BOX_RMA_MODULE_ORDER, 
+    'text'        => TEXT_RMA,
+    'order'       => BOX_RMA_MODULE_ORDER,
     'security_id' => SECURITY_RMA_MGT,
     'link'        => html_href_link(FILENAME_DEFAULT, 'module=rma&amp;page=main', 'SSL'),
     'show_in_users_settings' => true,

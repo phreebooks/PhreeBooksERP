@@ -27,7 +27,7 @@ $toolbar->icon_list['save']['show']     = false;
 $toolbar->icon_list['print']['params']  = 'onclick="submitToDo(\'print\')"';
 if ($security_level < 2) $toolbar->icon_list['print']['show'] = false;
 $toolbar->add_icon('ship_all', 'onclick="checkShipAll()"', 20);
-$toolbar->icon_list['ship_all']['text'] = BNK_TEXT_CHECK_ALL;
+$toolbar->icon_list['ship_all']['text'] = TEXT_CHECK_ALL;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('07.05.01');
 echo $toolbar->build_toolbar();
@@ -41,11 +41,11 @@ echo $toolbar->build_toolbar();
 	  <td width="45%" align="right" valign="top">
 		<table class="ui-widget" style="border-collapse:collapse">
 		  <tr>
-			<td align="right"><?php echo BNK_CHECK_DATE . '&nbsp;'; ?></td>
+			<td align="right"><?php echo TEXT_CHECK_DATE . '&nbsp;'; ?></td>
 			<td align="right"><?php echo html_calendar_field($cal_bills0); ?></td>
 		  </tr>
 		  <tr>
-			<td align="right"><?php echo BNK_TEXT_FIRST_CHECK_NUM . '&nbsp;'; ?></td>
+			<td align="right"><?php echo TEXT_FIRST_CHECK_NUMBER . '&nbsp;'; ?></td>
 			<td align="right"><?php echo html_input_field('purchase_invoice_id', $purchase_invoice_id, 'style="text-align:right"'); ?></td>
 		  </tr>
 		  <tr>
@@ -58,11 +58,11 @@ echo $toolbar->build_toolbar();
 	  <td width="45%" valign="top">
 		<table class="ui-widget" style="border-collapse:collapse">
 		  <tr>
-			<td align="right"><?php echo BNK_CASH_ACCOUNT . '&nbsp;'; ?></td>
+			<td align="right"><?php echo TEXT_CASH_ACCOUNT . '&nbsp;'; ?></td>
 			<td align="right"><?php echo html_pull_down_menu('gl_acct_id', $gl_array_list, $gl_acct_id, 'onchange="loadNewBalance()"'); ?></td>
 		  </tr>
 		  <tr>
-			<td align="right"><?php echo BNK_DISCOUNT_ACCOUNT . '&nbsp;'; ?></td>
+			<td align="right"><?php echo TEXT_DISCOUNT_ACCOUNT . '&nbsp;'; ?></td>
 			<td align="right"><?php echo html_pull_down_menu('gl_disc_acct_id', $gl_array_list, $gl_disc_acct_id, ''); ?></td>
 		  </tr>
 		</table>
@@ -73,7 +73,7 @@ echo $toolbar->build_toolbar();
 	</tr>
 	<tr>
 	  <td align="right" valign="top">
-	    <?php echo BNK_INVOICES_DUE_BY . '&nbsp;' . html_calendar_field($cal_bills1); ?>
+	    <?php echo TEXT_INVOICES_DUE_BY . '&nbsp;' . html_calendar_field($cal_bills1); ?>
 	    <?php echo '<br />' . BNK_DISCOUNT_LOST_BY . '&nbsp;' . html_calendar_field($cal_bills2); ?>
 	  </td>
 	  <td align="center">

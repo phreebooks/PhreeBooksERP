@@ -90,7 +90,7 @@ function get_fiscal_year_pulldown() {
 
 function load_coa_types() {
   global $coa_types_list;
-  if (!is_array($coa_types_list)) { 
+  if (!is_array($coa_types_list)) {
     require_once(DIR_FS_MODULES . 'phreebooks/defaults.php');
   }
   $coa_types = array();
@@ -130,7 +130,7 @@ function fill_paid_invoice_array($id, $account_id, $type = 'c') {
 	$negate = ((JOURNAL_ID == 20 && $type == 'c') || (JOURNAL_ID == 18 && $type == 'v')) ? true : false;
 	// first read all currently open invoices and the payments of interest and put into an array
 	$paid_indeces = array();
-	if ($id > 0) { 
+	if ($id > 0) {
 	  $result = $db->Execute("select distinct so_po_item_ref_id from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $id);
 	  while (!$result->EOF) {
 	    if ($result->fields['so_po_item_ref_id']) $paid_indeces[] = $result->fields['so_po_item_ref_id'];
@@ -143,8 +143,8 @@ function fill_paid_invoice_array($id, $account_id, $type = 'c') {
 	  default: throw new \core\classes\userException("unknown type $type");
 	}
 	$open_invoices = array();
-	$sql = "select id, journal_id, post_date, terms, purch_order_id, purchase_invoice_id, total_amount, gl_acct_id 
-	  from " . TABLE_JOURNAL_MAIN . " 
+	$sql = "select id, journal_id, post_date, terms, purch_order_id, purchase_invoice_id, total_amount, gl_acct_id
+	  from " . TABLE_JOURNAL_MAIN . "
 	  where (journal_id in " . $search_journal . " and closed = '0' and bill_acct_id = " . $account_id . ")";
 	if (sizeof($paid_indeces) > 0) $sql .= " or (id in (" . implode(',',$paid_indeces) . ") and closed = '0')";
 	$sql .= " order by post_date";
@@ -161,7 +161,7 @@ function fill_paid_invoice_array($id, $account_id, $type = 'c') {
 	  $result->MoveNext();
 	}
 	// next read the record of interest and add/adjust open invoice array with amounts
-	$sql = "select id, ref_id, so_po_item_ref_id, gl_type, description, debit_amount, credit_amount, gl_account 
+	$sql = "select id, ref_id, so_po_item_ref_id, gl_type, description, debit_amount, credit_amount, gl_account
 	  from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $id;
 	$result = $db->Execute($sql);
 	while (!$result->EOF) {
@@ -192,7 +192,7 @@ function fill_paid_invoice_array($id, $account_id, $type = 'c') {
 	$item_list = array();
 	foreach ($open_invoices as $key => $line_item) {
 	  // fetch some information about the invoice
-	  $sql = "select id, post_date, terms, purchase_invoice_id, purch_order_id, gl_acct_id, waiting  
+	  $sql = "select id, post_date, terms, purchase_invoice_id, purch_order_id, gl_acct_id, waiting
 		from " . TABLE_JOURNAL_MAIN . " where id = " . $key;
 	  $result = $db->Execute($sql);
 	  $due_dates = calculate_terms_due_dates($result->fields['post_date'], $result->fields['terms'], ($type == 'v' ? 'AP' : 'AR'));
@@ -233,9 +233,9 @@ function fill_paid_invoice_array($id, $account_id, $type = 'c') {
 
 function fetch_partially_paid($id) {
   global $db;
-  $sql = "select sum(i.debit_amount) as debit, sum(i.credit_amount) as credit 
-	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id 
-	where i.so_po_item_ref_id = " . $id . " and m.journal_id in (18, 20) and i.gl_type in ('chk', 'pmt') 
+  $sql = "select sum(i.debit_amount) as debit, sum(i.credit_amount) as credit
+	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
+	where i.so_po_item_ref_id = " . $id . " and m.journal_id in (18, 20) and i.gl_type in ('chk', 'pmt')
 	group by m.journal_id";
   $result = $db->Execute($sql);
   if($result->RecordCount() == 0) return 0;
@@ -290,7 +290,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
   global $db, $messageStack;
   $acct_balance = 0;
   if (!$gl_acct_id) return $acct_balance;
-  $sql = "select beginning_balance from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " 
+  $sql = "select beginning_balance from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
 	where account_id = '" . $gl_acct_id . "' and period = " . $period;
   $result = $db->Execute($sql);
   $acct_balance = $result->fields['beginning_balance'];
@@ -299,7 +299,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
   $bank_list = array();
   $sql = "select i.debit_amount, i.credit_amount
 	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
-	where m.period = " . $period . " and i.gl_account = '" . $gl_acct_id . "' and m.post_date <= '" . $post_date . "' 
+	where m.period = " . $period . " and i.gl_account = '" . $gl_acct_id . "' and m.post_date <= '" . $post_date . "'
 	order by m.post_date, m.journal_id";
   $result = $db->Execute($sql);
   while (!$result->EOF) {
@@ -350,7 +350,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 	while (!$tax_rates->EOF) {
 	  $tax_rate_drop_down[] = array(
 	    'id'    => $tax_rates->fields['tax_rate_id'],
-		'rate'  => gen_calculate_tax_rate($tax_rates->fields['rate_accounts'], $tax_auth_array), 
+		'rate'  => gen_calculate_tax_rate($tax_rates->fields['rate_accounts'], $tax_auth_array),
 		'text'  => $tax_rates->fields['description_short'],
 		'auths' => $tax_rates->fields['rate_accounts'],
 	  );
@@ -422,7 +422,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 	  write_configure('CURRENT_ACCOUNTING_PERIOD',       $period);
 	  write_configure('CURRENT_ACCOUNTING_PERIOD_START', $result->fields['start_date']);
 	  write_configure('CURRENT_ACCOUNTING_PERIOD_END',   $result->fields['end_date']);
-	  gen_add_audit_log(GEN_LOG_PERIOD_CHANGE);
+	  gen_add_audit_log(TEXT_CHANGED . " " . TEXT_ACCOUNTING_PERIOD);
 	  if ($show_message) {
 	    $messageStack->add(sprintf(ERROR_MSG_ACCT_PERIOD_CHANGE, $period),'success');
 	  }
@@ -431,7 +431,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 
   function build_search_sql($fields, $id, $id_from = '', $id_to = '') {
     $crit = array();
-    foreach ($fields as $field) {	
+    foreach ($fields as $field) {
 	  $output = '';
 	  switch ($id) {
 	    default:
@@ -448,7 +448,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
     }
     return ($crit) ? ('(' . implode(' or ', $crit) . ')') : '';
   }
-  
+
   	/**
   	 * this function will repost journals
   	 * @param unknown $journals
@@ -462,7 +462,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 		global $db;
 		try{
 			if (sizeof($journals) == 0) throw new \core\classes\userException('no journals received to repost');
-			$sql = "SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE journal_id IN (".implode(',', $journals).") 
+			$sql = "SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE journal_id IN (".implode(',', $journals).")
 			  AND post_date>= '$start_date' AND post_date<'".gen_specific_date($end_date, 1)."' ORDER BY post_date, id";
 			$result = $db->Execute($sql);
 			$cnt = 0;
@@ -505,7 +505,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 	$pmt_jid = ($type == 'v') ? '20' : '18';
 	$total_outstanding = 0;
 	$past_due          = 0;
-	$sql = "select id from " . TABLE_JOURNAL_MAIN . " 
+	$sql = "select id from " . TABLE_JOURNAL_MAIN . "
 		where bill_acct_id = " . $id . " and journal_id in (" . $inv_jid . ") and closed = '0'";
 	$open_inv = $db->Execute($sql);
 	while(!$open_inv->EOF) {
@@ -513,7 +513,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 	  $result2 = $db->Execute("select journal_id, post_date from " . TABLE_JOURNAL_MAIN . " where id = " . $open_inv->fields['id']);
 	  $total_billed = $result->fields['debit_amount'] - $result->fields['credit_amount'];
 	  $post_date = $result2->fields['post_date'];
-	  $result = $db->Execute("select sum(debit_amount) as debits, sum(credit_amount) as credits 
+	  $result = $db->Execute("select sum(debit_amount) as debits, sum(credit_amount) as credits
 	    from " . TABLE_JOURNAL_ITEM . " where so_po_item_ref_id = '" . $open_inv->fields['id'] . "' and gl_type in ('pmt', 'chk')");
 	  $total_paid = $result->fields['credits'] - $result->fields['debits'];
 	  $balance = $total_billed - $total_paid;

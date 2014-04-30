@@ -19,11 +19,11 @@
 //
 
 // Window heading label
-define('HEADING_TITLE','Phreedom Help - Powered by PhreeHelp');
+define('HEADING_TITLE_PHREEHELP','Phreedom Help - Powered by PhreeHelp');
 
 // Tab Labels
-define('HEADING_CONTENTS','Contents');
-define('HEADING_INDEX','Index');
+define('TEXT_CONTENTS','Contents');
+define('TEXT_INDEX','Index');
 
 // General text definitions
 define('TEXT_DOCUMENT','Document');

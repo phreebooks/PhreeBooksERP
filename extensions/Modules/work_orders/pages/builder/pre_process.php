@@ -96,7 +96,7 @@ switch ($_REQUEST['action']) {
 			}
 		}
 		// update the task list
-		if ($_POST['id']) { // delete the previous
+		if (isset($_POST['id'])) { // delete the previous
 		    $db->Execute("delete from " . TABLE_WO_STEPS . " where ref_id = " . $id);
 		}
 	    while (list($key, $val) = each($step_list)) {
@@ -110,7 +110,7 @@ switch ($_REQUEST['action']) {
 		$db->transCommit();
 		// finish
 		gen_add_audit_log(($id  ? sprintf(WO_AUDIT_LOG_BUILDER, TEXT_UPDATE) : sprintf(WO_AUDIT_LOG_BUILDER, TEXT_ADD)) . $task_id);
-		$messageStack->add(($id ? WO_MESSAGE_SUCCESS_MAIN_UPDATE : WO_MESSAGE_SUCCESS_MAIN_ADD),'success');
+		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS,(isset($_POST['id']) ? TEXT_UPDATED : TEXT_ADDED), TEXT_WORK_ORDER_RECORD , $wo_title),'success');
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	} catch(Exception $e) {
 		$db->transRollback();
@@ -199,19 +199,19 @@ switch ($_REQUEST['action']) {
 	}
 	break;
   case 'delete':
-	\core\classes\user::validate_security($security_level, 4);
-      $id = db_prepare_input($_GET['id']);
-	if (!$id) throw new \core\classes\userException(sprintf(ERROR_EMPTY_VARIABLE, 'id');
-	// error check
-	$result = $db->Execute("select wo_title, last_usage from " . TABLE_WO_MAIN . " where id = " . $id);
-	if ($result->fields['last_usage'] <> '0000-00-00') throw new \core\classes\userException(WO_ERROR_CANNOT_DELETE_BUILDER);
-	// finish
-	$db->Execute("delete from " . TABLE_WO_MAIN  . " where id = " . $id);
-	$db->Execute("delete from " . TABLE_WO_STEPS . " where ref_id = " . $id);
-	gen_add_audit_log(sprintf(WO_AUDIT_LOG_BUILDER, TEXT_DELETE) . $result->fields['wo_title']);
-	$messageStack->add(WO_MESSAGE_SUCCESS_MAIN_DELETE,'success');
-    $_REQUEST['action'] = '';
-	break;
+		\core\classes\user::validate_security($security_level, 4);
+    	$id = db_prepare_input($_GET['id']);
+		if (!$id) throw new \core\classes\userException(sprintf(ERROR_EMPTY_VARIABLE, 'id'));
+		// error check
+		$result = $db->Execute("select wo_title, last_usage from " . TABLE_WO_MAIN . " where id = " . $id);
+		if ($result->fields['last_usage'] <> '0000-00-00') throw new \core\classes\userException(WO_ERROR_CANNOT_DELETE_BUILDER);
+		// finish
+		$db->Execute("delete from " . TABLE_WO_MAIN  . " where id = " . $id);
+		$db->Execute("delete from " . TABLE_WO_STEPS . " where ref_id = " . $id);
+		gen_add_audit_log(sprintf(WO_AUDIT_LOG_BUILDER, TEXT_DELETE) . $result->fields['wo_title']);
+		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_WORK_ORDER_RECORD , $result->fields['wo_title']),'success');
+    	$_REQUEST['action'] = '';
+		break;
   case 'go_first':    $_REQUEST['list'] = 1;       break;
   case 'go_previous': $_REQUEST['list'] = max($_REQUEST['list']-1, 1); break;
   case 'go_next':     $_REQUEST['list']++;         break;

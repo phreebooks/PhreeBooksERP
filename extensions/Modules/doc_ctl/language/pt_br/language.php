@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:45
 // Module/Method: doc_ctl
 // ISO Language: pt_br
@@ -16,7 +16,7 @@ define('TEXT_CHECKOUT_DOC','Conferir Documento');
 define('TEXT_CREATE_DATE','Data Criação');
 define('TEXT_DETAILS','Detalhes');
 define('TEXT_DOCUMENT','Documento:');
-define('TEXT_DOCUMENT_TITLE','Conteúdo de:');
+define('TEXT_CONTENTS_OF','Conteúdo de');
 define('TEXT_DOCUMENTS','Lista Documentos');
 define('TEXT_DOWNLOAD_DOCUMENT','Baixar Documento');
 define('TEXT_FILENAME','Nome Arquivo');

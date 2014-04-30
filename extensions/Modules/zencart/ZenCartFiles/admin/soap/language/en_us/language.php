@@ -22,7 +22,7 @@ define('ZENCART_PRODUCT_TAX_CLASS_ID',2); // sets the record id for the default 
 define('SOAP_NO_USER_PW','The username and password submitted cannot be found in the XML string.');
 define('SOAP_USER_NOT_FOUND','The username submitted is not valid.');
 define('SOAP_PASSWORD_NOT_FOUND','The password submitted is not valid.');
-define('SOAP_UNEXPECTED_ERROR','An unexpected error code was returned by the processing server.');
+define('TEXT_UNEXPECTED_ERROR','An unexpected error code was returned by the processing server.');
 define('SOAP_BAD_LANGUAGE_CODE','The language ISO code submitted could not be found in the Zencart languages table. Expecting to find code = ');
 define('SOAP_BAD_PRODUCT_TYPE','The product type name could not be found in the Zencart product_types table. Expecting to find type_name %s for sku %s.');
 define('SOAP_BAD_MANUFACTURER','The manufacturers name could not be found in the Zencart manufacturers table. Expecting to find manufacturer name %s for sku %s.');

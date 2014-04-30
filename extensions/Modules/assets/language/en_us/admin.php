@@ -17,7 +17,7 @@
 //  Path: /modules/assets/language/en_us/admin.php
 //
 // Module information
-define('MODULE_ASSETS_TITLE','Assets Module');
+define('TEXT_ASSETS_MODULE','Assets Module');
 define('MODULE_ASSETS_DESCRIPTION','The assets module maintains a record of company property. The module allows the creation of additional tabs and fields for customization to the users needs.');
 // Headings
 define('BOX_ASSETS_ADMIN','Assets Module Administration');

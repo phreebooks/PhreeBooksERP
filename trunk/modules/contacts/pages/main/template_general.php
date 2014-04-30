@@ -19,7 +19,7 @@
 ?>
 <div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
   <fieldset>
-    <legend><?php echo ACT_CATEGORY_CONTACT; ?></legend>
+    <legend><?php echo TEXT_CONTACT_INFORMATION; ?></legend>
     <table>
       <tr>
         <td align="right"><?php echo constant('ACT_' . strtoupper($type) . '_SHORT_NAME') . ($cInfo->auto_type == false ? '' : ' ' . ACT_ID_AUTO_FILL ); ?></td>
@@ -30,11 +30,11 @@
         <td><?php echo html_pull_down_menu('dept_rep_id', $sales_rep_array, $cInfo->dept_rep_id ? $cInfo->dept_rep_id : '0'); ?></td>
       </tr>
       <tr>
-        <td align="right"><?php echo GEN_FIRST_NAME; ?></td>
+        <td align="right"><?php echo TEXT_FIRST_NAME; ?></td>
         <td><?php echo html_input_field('contact_first', $cInfo->contact_first, 'size="33" maxlength="32"', false); ?></td>
-        <td align="right"><?php echo GEN_MIDDLE_NAME; ?></td>
+        <td align="right"><?php echo TEXT_MIDDLE_NAME; ?></td>
         <td><?php echo html_input_field('contact_middle', $cInfo->contact_middle, 'size="33" maxlength="32"', false); ?></td>
-        <td align="right"><?php echo GEN_LAST_NAME; ?></td>
+        <td align="right"><?php echo TEXT_LAST_NAME; ?></td>
         <td><?php echo html_input_field('contact_last', $cInfo->contact_last, 'size="33" maxlength="32"', false); ?></td>
       </tr>
       <tr>
@@ -50,11 +50,11 @@
        <td><?php echo html_input_field('gov_id_number', $cInfo->gov_id_number, 'size="17" maxlength="16"'); ?></td>
 	   <td align="right"><?php echo INV_ENTRY_ITEM_TAXABLE; ?></td>
        <td><?php echo html_pull_down_menu('tax_id', $tax_rates, $cInfo->tax_id); ?></td>
-       <td><?php  echo ACT_CATEGORY_PAYMENT_TERMS; ?></td>
-	   <td><?php 
+       <td><?php echo TEXT_PAYMENT_TERMS; ?></td>
+	   <td><?php
     	  echo html_hidden_field('terms', $cInfo->special_terms) . chr(10);
 	      echo html_input_field('terms_text', gen_terms_to_language($cInfo->special_terms, true, $cInfo->terms_type), 'readonly="readonly" size="20"') . '&nbsp;' . chr(10);
-    	  echo html_icon('apps/accessories-text-editor.png', ACT_TERMS_DUE, 'small', 'style="cursor:pointer" onclick="TermsList()"'); ?>
+    	  echo html_icon('apps/accessories-text-editor.png', TEXT_TERMS_DUE, 'small', 'style="cursor:pointer" onclick="TermsList()"'); ?>
 	   </td>
       </tr>
     </table>
@@ -82,7 +82,7 @@
       <th><?php echo TEXT_FILENAME; ?></th>
       <th><?php echo TEXT_ACTION; ?></th>
      </tr>
-<?php 
+<?php
 if (sizeof($cInfo->attachments) > 0) {
   foreach ($cInfo->attachments as $key => $value) {
     echo '<tr>';
@@ -92,7 +92,7 @@ if (sizeof($cInfo->attachments) > 0) {
     echo '</tr>' . chr(10);
   }
 } else {
-  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS . '</td></tr>'; 
+  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS . '</td></tr>';
 } ?>
     </tbody>
    </table>

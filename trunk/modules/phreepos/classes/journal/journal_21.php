@@ -31,12 +31,12 @@ class journal_21 extends \core\classes\journal {
     public $bill_address_id		= '';
     public $bill_add_update		= false;
     public $bill_primary_name   = GEN_PRIMARY_NAME;
-    public $bill_contact        = GEN_CONTACT;
-    public $bill_address1       = GEN_ADDRESS1;
-    public $bill_address2       = GEN_ADDRESS2;
-    public $bill_city_town      = GEN_CITY_TOWN;
-    public $bill_state_province = GEN_STATE_PROVINCE;
-    public $bill_postal_code    = GEN_POSTAL_CODE;
+    public $bill_contact        = TEXT_ATTENTION;
+    public $bill_address1       = TEXT_ADDRESS1;
+    public $bill_address2       = TEXT_ADDRESS2;
+    public $bill_city_town      = TEXT_CITY_TOWN;
+    public $bill_state_province = TEXT_STATE_PROVINCE;
+    public $bill_postal_code    = TEXT_POSTAL_CODE;
     public $bill_country_code   = COMPANY_COUNTRY;
     public $bill_telephone1		= '';
     public $bill_email			= '';
@@ -95,7 +95,7 @@ class journal_21 extends \core\classes\journal {
 		$messageStack->debug("\n  committed order post purchase_invoice_id = " . $this->purchase_invoice_id . " and id = " . $this->id . "\n\n");
 		$db->transCommit();
 		// ***************************** END TRANSACTION *******************************
-		$messageStack->add('Successfully posted ' . MENU_HEADING_PHREEPOS . ' Ref # ' . $this->purchase_invoice_id, 'success');
+		$messageStack->add('Successfully posted ' . TEXT_POINT_OF_SALE . ' Ref # ' . $this->purchase_invoice_id, 'success');
 		return true;
 	}
 
@@ -114,7 +114,7 @@ class journal_21 extends \core\classes\journal {
 	  $total = 0;
 	  for ($i = 0; $i < count($this->pmt_rows); $i++) {
 		if ($this->pmt_rows[$i]['pmt']) { // make sure the payment line is set and not zero
-		  $desc = MENU_HEADING_PHREEPOS . '-' . TEXT_TOTAL;
+		  $desc = TEXT_POINT_OF_SALE . '-' . TEXT_TOTAL;
 		  $method     = $this->pmt_rows[$i]['meth'];
 		  if ($method) {
 		    $pay_meth = "\payment\methods\\$method\\$method";
@@ -147,7 +147,7 @@ class journal_21 extends \core\classes\journal {
 		  'qty'                     => '1',
 		  'gl_type'                 => 'dsc',		// code for discount charges
 		  'credit_amount' 			=> $this->discount,
-		  'description'             => MENU_HEADING_PHREEPOS . '-' . TEXT_DISCOUNT,
+		  'description'             => TEXT_POINT_OF_SALE . '-' . TEXT_DISCOUNT,
 		  'gl_account'              => $this->disc_gl_acct_id,
 		  'taxable'                 => '0',
 		  'post_date'               => $this->post_date,
@@ -243,7 +243,7 @@ class journal_21 extends \core\classes\journal {
 			'gl_type'        => 'rnd',		// code for discount charges
 			'debit_amount'   => ($this->rounding_amt > 0) ? -$this->rounding_amt : '',
 			'credit_amount'  => ($this->rounding_amt < 0) ? $this->rounding_amt  : '',
-			'description'    => MENU_HEADING_PHREEPOS . '-' . TEXT_ROUNDING_OF,
+			'description'    => TEXT_POINT_OF_SALE . '-' . TEXT_ROUNDING_OF,
 			'gl_account'     => $this->rounding_gl_acct_id,
 			'taxable'        => '0',
 			'post_date'      => $this->post_date,

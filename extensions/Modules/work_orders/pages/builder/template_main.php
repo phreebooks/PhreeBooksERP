@@ -28,14 +28,14 @@ $toolbar->icon_list['print']['show']    = false;
 if ($security_level > 1) $toolbar->add_icon('new', 'onclick="submitToDo(\'new\')"', $order = 10);
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('07.04.WO.03');
-echo $toolbar->build_toolbar($add_search = true); 
+echo $toolbar->build_toolbar($add_search = true);
 ?>
 <h1><?php echo BOX_WORK_ORDERS_BUILDER; ?></h1>
 <div id="filter_bar">
 <table class="ui-widget" style="border-style:none;width:100%">
  <tbody class="ui-widget-content">
   <tr>
-	<td><?php echo TEXT_FILTERS . '&nbsp;' . TEXT_SHOW_INACTIVE . '&nbsp;' . html_checkbox_field('f0', '1', $f0); ?></td>
+	<td><?php echo TEXT_FILTERS. " : " . '&nbsp;' . TEXT_SHOW_INACTIVE . '&nbsp;' . html_checkbox_field('f0', '1', $f0); ?></td>
 	<td><?php echo '&nbsp;' . html_button_field('apply', TEXT_APPLY, 'onclick="form.submit();"'); ?></td>
   </tr>
  </tbody>
@@ -62,7 +62,7 @@ echo $toolbar->build_toolbar($add_search = true);
 	<td onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'edit\''; ?>)"><?php echo $query_result->fields['revision']; ?></td>
 	<td onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'edit\''; ?>)"><?php echo gen_locale_date($query_result->fields['revision_date']); ?></td>
 	<td align="right">
-<?php 
+<?php
 // build the action toolbar
 	  // first pull in any extra buttons, this is dynamic since each row can have different buttons
 	  if (function_exists('add_extra_action_bar_buttons')) echo add_extra_action_bar_buttons($query_result->fields);
@@ -74,7 +74,7 @@ echo $toolbar->build_toolbar($add_search = true);
 	  }
 ?>
 	</td>
-  </tr> 
+  </tr>
 <?php
       $query_result->MoveNext();
       $odd = !$odd;

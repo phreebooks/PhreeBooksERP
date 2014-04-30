@@ -47,7 +47,7 @@ $fields = new \contacts\classes\fields();
 $custom_path = DIR_FS_WORKING . 'custom/pages/main/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
- 
+
 switch ($_REQUEST['action']) {
     case 'new':
         \core\classes\user::validate_security($security_level, 2);
@@ -59,7 +59,7 @@ switch ($_REQUEST['action']) {
 			// error check
 			$cInfo->data_complete();
 			// start saving data
-		  	$cInfo->save_contact(); 
+		  	$cInfo->save_contact();
 		  	$cInfo->save_addres();
 		  	if ($type <> 'i' && ($_POST['i_short_name'] || $_POST['address']['im']['primary_name'])) { // is null
 		  		$crmInfo = new \contacts\classes\type\i;
@@ -88,7 +88,7 @@ switch ($_REQUEST['action']) {
 				  'ref_2'     => $cInfo->address[$type.'m']['address_id'],
 				  'exp_date'  => $enc_value['exp_date'],
 				);
-				db_perform(TABLE_DATA_SECURITY, $payment_array, $_POST['payment_id'] ? 'update' : 'insert', 'id = '.$_POST['payment_id']);				
+				db_perform(TABLE_DATA_SECURITY, $payment_array, $_POST['payment_id'] ? 'update' : 'insert', 'id = '.$_POST['payment_id']);
 		  	}
 		  	// Check attachments
 		  	$result = $db->Execute("select attachments from ".TABLE_CONTACTS." where id = $id");
@@ -121,14 +121,14 @@ switch ($_REQUEST['action']) {
 				  'action'     => $_POST['crm_action'],
 				  'notes'      => db_prepare_input($_POST['crm_note']),
 				);
-				db_perform(TABLE_CONTACTS_LOG, $sql_data_array, 'insert');	
+				db_perform(TABLE_CONTACTS_LOG, $sql_data_array, 'insert');
 		  	}
 		  	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		}catch(Exception $e){
 			$messageStack->add($e->getMessage());
 			$_REQUEST['action'] = 'edit';
 		}
-		
+
 		break;
 
     case 'edit':
@@ -141,7 +141,7 @@ switch ($_REQUEST['action']) {
 	    \core\classes\user::validate_security($security_level, 4);
 	    $short_name = gen_get_contact_name($cInfo->id);
 	   	$cInfo->delete();
-	    gen_add_audit_log(TEXT_CONTACTS.'-'.TEXT_DELETE.'-'.constant('ACT_'.strtoupper($type).'_TYPE_NAME'), $short_name);
+	    gen_add_audit_log(TEXT_CONTACTS.'-'.TEXT_DELETE.'-'.$cInfo->title, $short_name);
 	    break;
 
     case 'download':
@@ -214,56 +214,55 @@ switch ($_REQUEST['action']) {
 	  		$result->MoveNext();
 		}
 	    $include_template = 'template_detail.php';
-		define('PAGE_TITLE', ($_REQUEST['action'] == 'new') ? $cInfo->page_title_new : constant('ACT_'.strtoupper($type).'_PAGE_TITLE_EDIT').' - ('.$cInfo->short_name.') '.$cInfo->address[m][0]->primary_name);
+		define('PAGE_TITLE', ($_REQUEST['action'] == 'new') ? $cInfo->page_title_new : $cInfo->page_title_edit ." - ({$cInfo->short_name}) {$cInfo->address[m][0]->primary_name}");
 		break;
   default:
 		$heading_array = array('c.short_name' => constant('ACT_' . strtoupper($type) . '_SHORT_NAME'));
 	    if ($type == 'e') {
-			$heading_array['c.contact_last,c.contact_first'] = GEN_EMPLOYEE_NAME;
+			$heading_array['c.contact_last,c.contact_first'] = TEXT_EMPLOYEE_NAME;
 		} else {
 			$heading_array['a.primary_name'] = GEN_PRIMARY_NAME;
 		}
-		$heading_array['address1']       = GEN_ADDRESS1;
-		$heading_array['city_town']      = GEN_CITY_TOWN;
-		$heading_array['state_province'] = GEN_STATE_PROVINCE;
-		$heading_array['postal_code']    = GEN_POSTAL_CODE;
-		$heading_array['telephone1']     = GEN_TELEPHONE1;
+		$heading_array['address1']       = TEXT_ADDRESS1;
+		$heading_array['city_town']      = TEXT_CITY_TOWN;
+		$heading_array['state_province'] = TEXT_STATE_PROVINCE;
+		$heading_array['postal_code']    = TEXT_POSTAL_CODE;
+		$heading_array['telephone1']     = TEXT_TELEPHONE;
 		$result      = html_heading_bar($heading_array);
 		$list_header = $result['html_code'];
 		$disp_order  = $result['disp_order'];
 		// build the list for the page selected
 	    $criteria[] = "a.type = '" . $type . "m'";
 	    if (isset($_REQUEST['search_text']) && $_REQUEST['search_text'] <> '') {
-	      $search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.address1', 
+	      $search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.address1',
 		  	'a.address2', 'a.city_town', 'a.postal_code', 'c.short_name');
 		  // hook for inserting new search fields to the query criteria.
 		  if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
 		  $criteria[] = '(' . implode(' like \'%' . $_REQUEST['search_text'] . '%\' or ', $search_fields) . ' like \'%' . $_REQUEST['search_text'] . '%\')';
 		}
 		if (!$_SESSION['f0']) $criteria[] = "(c.inactive = '0' or c.inactive = '')"; // inactive flag
-	
+
 		$search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
-		$field_list = array('c.id', 'c.inactive', 'c.short_name', 'c.contact_first', 'c.contact_last', 
-			'a.telephone1', 'c.attachments', 'c.first_date', 'c.last_update', 'c.last_date_1', 'c.last_date_2', 
+		$field_list = array('c.id', 'c.inactive', 'c.short_name', 'c.contact_first', 'c.contact_last',
+			'a.telephone1', 'c.attachments', 'c.first_date', 'c.last_update', 'c.last_date_1', 'c.last_date_2',
 			'a.primary_name', 'a.address1', 'a.city_town', 'a.state_province', 'a.postal_code');
 		// hook to add new fields to the query return results
 		if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
-	    $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . " 
+	    $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . "
 			from " . TABLE_CONTACTS . " c left join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id " . $search . " order by $disp_order";
 	    $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     	$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     	history_save('contacts'.$type);
 	    $include_template = 'template_main.php'; // include display template (required)
 	    switch ($type) {
-	    	default: define('PAGE_TITLE', constant('ACT_' . strtoupper($type) . '_HEADING_TITLE')); break;
-	    	case 'b':define('PAGE_TITLE', sprintf(BOX_STATUS_MGR, TEXT_BRANCHES)); break;
-	    	case 'c':define('PAGE_TITLE', sprintf(BOX_STATUS_MGR, TEXT_CUSTOMER)); break;
-	    	case 'e':define('PAGE_TITLE', sprintf(BOX_STATUS_MGR, TEXT_EMPLOYEE)); break;
-	    	case 'i':define('PAGE_TITLE', BOX_PHREECRM_MODULE); break;
-	    	case 'j':define('PAGE_TITLE', sprintf(BOX_STATUS_MGR, TEXT_PROJECT)); break;
-	    	case 'v':define('PAGE_TITLE', sprintf(BOX_STATUS_MGR, TEXT_VENDOR)); break;
+	    	case 'b':define('PAGE_TITLE', sprintf(TEXT_MANAGER_ARGS, TEXT_BRANCH));	break;
+	    	case 'c':define('PAGE_TITLE', sprintf(TEXT_MANAGER_ARGS, TEXT_CUSTOMER));	break;
+	    	case 'e':define('PAGE_TITLE', sprintf(TEXT_MANAGER_ARGS, TEXT_EMPLOYEE));	break;
+	    	case 'i':define('PAGE_TITLE', TEXT_PHREECRM); break;
+	    	case 'j':define('PAGE_TITLE', sprintf(TEXT_MANAGER_ARGS, TEXT_PROJECT));	break;
+	    	case 'v':define('PAGE_TITLE', sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR));	break;
 	    }
-		
+
 }
 
 ?>

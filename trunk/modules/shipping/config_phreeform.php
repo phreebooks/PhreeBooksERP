@@ -18,7 +18,7 @@
 //  Path: /modules/shipping/config_phreeform.php
 //
 
-$FormProcessing['ship_name'] = PB_PF_SHIP_METHOD;
+$FormProcessing['ship_name'] = TEXT_SHIP_METHOD;
 // Extra form processing operations
 function pf_process_shipping($strData, $Process) {
   switch ($Process) {

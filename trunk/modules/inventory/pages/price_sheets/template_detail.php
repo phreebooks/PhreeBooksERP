@@ -33,14 +33,14 @@ $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('07.04.06');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE . $sheet_name . ' (' . TEXT_REVISION . ' ' . $revision . ')'; ?></h1>
 <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto">
  <tbody class="ui-widget-content">
   <tr>
-    <td><?php echo PRICE_SHEET_NAME; ?></td>
+    <td><?php echo TEXT_PRICE_SHEET_NAME; ?></td>
     <td><?php echo html_input_field('sheet_name', $sheet_name, '', false); ?></td>
     <td align="right"><?php echo TEXT_INACTIVE . html_checkbox_field('inactive', '1', ($inactive) ? ' checked' : ''); ?></td>
     <td align="right"><?php echo TEXT_REVISION . html_input_field('revision', $revision, 'readonly="readonly" size="5"', false); ?></td>
@@ -62,7 +62,7 @@ echo $toolbar->build_toolbar();
         <th><?php echo TEXT_SOURCE;     ?></th>
         <th><?php echo TEXT_ADJUSTMENT; ?></th>
         <th><?php echo INV_ADJ_VALUE;   ?></th>
-        <th><?php echo INV_ROUNDING;    ?></th>
+        <th><?php echo TEXT_ROUNDING;   ?></th>
         <th><?php echo INV_RND_VALUE;   ?></th>
         <th><?php echo TEXT_PRICE;      ?></th>
       </tr>

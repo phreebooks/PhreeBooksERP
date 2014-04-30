@@ -27,7 +27,7 @@ if ($security_level > 1) $dept_types_toolbar->add_icon('new', 'onclick="loadPopU
 if ($dept_types->extra_buttons) $dept_types->customize_buttons($dept_types_toolbar);
 
 ?>
-<div title="<?php echo SETUP_TITLE_DEPT_TYPES;?>" id="tab_dept_types">
+<div title="<?php echo TEXT_DEPARTMENT_TYPES;?>" id="tab_dept_types">
   <?php echo $dept_types_toolbar->build_toolbar(); ?>
   <h1><?php echo $dept_types->title; ?></h1>
   <div id="dept_types_content"><?php echo $dept_types->build_main_html(); ?></div>

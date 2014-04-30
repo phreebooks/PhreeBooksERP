@@ -1,4 +1,4 @@
-﻿<?php 
+﻿<?php
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
@@ -20,7 +20,7 @@
 // | If not, see http://www.gnu.org/licenses/                        |
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreeform/language/en_us/language.php
-// 
+//
 
 //Seitentitel
 define ('PHREEFORM_DOC_IMPORT', 'PhreeForm Import Tool');
@@ -29,9 +29,9 @@ define ('PHREEFORM_REPORT_GEN', 'Report Generator');
 define ('PHREEFORM_GROUP', 'PhreeForm Group:');
 //Allgemeine
 define ('TEXT_ABSCISSA', 'Abszisse');
-define ('TEXT_ALL_GROUPS', 'Alle zulassen Gruppen');
+define ('TEXT_ALLOW_ALL_GROUPS', 'Alle zulassen Gruppen');
 define ('TEXT_ALL_PAGES', 'Alle Seiten');
-define ('TEXT_ALL_USERS', 'damit alle Benutzer');
+define ('TEXT_ALLOW_ALL_USERS', 'damit alle Benutzer');
 define ('TEXT_ATTRIBUTES', 'Attribute');
 define ('TEXT_BORDER_AREA', 'Border');
 define ('TEXT_BROWSER', 'Browser');
@@ -46,16 +46,16 @@ define ('TEXT_DATABASE_SETUP', 'Setup der Datenbank');
 define ('TEXT_DATABASE_TABLES', 'Database Tables');
 define ('TEXT_DELIVERY_METHOD', 'Delivery Method');
 define ('TEXT_DESTINATION_PATH', 'Destination Path ');
-define ('TEXT_DETAIL_DESCRIPTION', 'Beschreibung von');
+define ('TEXT_DETAILED_DESCRIPTION', 'Beschreibung von');
 define ('TEXT_DISPLAY_ON', 'Display an:');
-define ('TEXT_DOCUMENT_TITLE', 'Titel des Berichts');
+define ('TEXT_REPORT_TITLE', 'Titel des Berichts');
 define ('TEXT_DOCUMENTS', 'Report / Form-Liste');
 define ('TEXT_DOWNLOAD', 'Download:');
 define ('TEXT_EMAIL_MSG_DETAIL', 'E-Mail-Body Text Message');
 define ('TEXT_FILENAME_SOURCE', 'Download Dateiname Quelle');
 define ('TEXT_DUPLICATE', 'Duplizieren');
 define ('TEXT_EMPTY_FOLDER', 'Der Ordner enthält keine Dokumente.');
-define ('TEXT_ENTER_NEW_PATH', 'Geben Neuer Pfad für die Suche nach Berichten (aus PhreeBooks Wurzel):'); 
+define ('TEXT_ENTER_NEW_PATH', 'Geben Neuer Pfad für die Suche nach Berichten (aus PhreeBooks Wurzel):');
 define ('TEXT_FIELD_LIST', 'field list');
 define ('TEXT_FIELD_SETUP', 'Field Setup');
 define ('TEXT_FIELDNAME', 'Feldname');
@@ -88,7 +88,7 @@ define ('TEXT_ORDINATE', 'Ordinate');
 define ('TEXT_PAGE_BREAK_FIELD', 'Form Seitenumbruch Field');
 define ('TEXT_PAGE_SETUP', 'Seite einrichten');
 define ('TEXT_PATH', 'Pfad');
-define ('TEXT_POINTS', '(pts)');
+define ('TEXT_POINTS_SHORT', 'pts');
 define ('TEXT_PREFIX', 'Präfix:');
 define ('TEXT_PRINTED_INDICATOR', 'Gedruckte Anzeige');
 define ('TEXT_RECENTLY_ADDED', 'Vor kurzem hinzugefügt Berichte / Formulare');
@@ -127,15 +127,15 @@ define ('PHREEFORM_DISPNAME', 'Name zur Anzeige');
 define ('PHREEFORM_PGFILDESC', 'Bericht Filter Beschreibung');
 define ('PHREEFORM_PGHEADER', 'Kopfinformationen / Formatierung');
 define ('PHREEFORM_PGLAYOUT "," Page Layout ');
-define ('PHREEFORM_PGMARGIN_L', 'Left Margin ');
+define ('TEXT_LEFT_MARGIN', 'Left Margin ');
 define ('PHREEFORM_PGMARGIN_R', 'Right Margin');
 define ('PHREEFORM_PGMARGIN', 'Seitenränder');
 define ('PHREEFORM_PGTITL1', 'Titel des Berichts 1');
 define ('PHREEFORM_PGTITL2', 'Bericht Titel 2 ');
 define ('PHREEFORM_RPTDATA', 'Berichtsdaten Unterwegs');
 define ('PHREEFORM_SORTLIST', 'Sortieren von Informationen');
-define ('PHREEFORM_TEXTDISP', 'Text zur Anzeige');
-define ('PHREEFORM_TEXTPROC', 'Text Processing ');
+define ('TEXT_TEXT_TO_DISPLAY', 'Text zur Anzeige');
+define ('TEXT_TEXT_PROCESSING', 'Text Processing ');
 define ('PHREEFORM_TBLFNAME', 'Feldname');
 define ('PHREEFORM_TOTALS', 'Berichtgesamtsumme');
 define ('PHREEFORM_TABLE_HEADING_PROP', 'Tabelle Unterwegs Eigenschaften');
@@ -212,39 +212,39 @@ define ('TEXT_LETTER', 'Letter');
 //Text-Formatierung für Text und Unternehmen Blöcke
 define ('PF_FRM_COMMA', 'Durch Komma (,)');
 define ('PF_FRM_COMMASP', 'Durch Komma-Space');
-define ('PF_FRM_NEWLINE', 'Zeilenumbruch');
+define ('TEXT_NEWLINE', 'Zeilenumbruch');
 define ('PF_FRM_SEMISP', 'Semikolon-Raum');
 define ('PF_FRM_DELNL', 'Skip Blank-Line Break');
 define ('PF_FRM_SPACE1', 'Single Space');
 define ('PF_FRM_SPACE2', 'Double Space');
 //Formularelement-Typen
-define ('PF_FRM_BAR_CODE', 'Barcode Image');
-define ('PF_FRM_DATABLOCK', 'Data Block');
-define ('PF_FRM_DATALINE', 'Data Line');
-define ('PF_FRM_DATATABLE', 'Datentabelle');
+define ('TEXT_BAR_CODE_IMAGE', 'Barcode Image');
+define ('TEXT_DATA_BLOCK', 'Data Block');
+define ('TEXT_DATA_LINE', 'Data Line');
+define ('TEXT_DATA_TABLE', 'Datentabelle');
 define ('PF_FRM_DATATABLEDUP', 'Kopieren von Daten-Tabelle ');
-define ('PF_FRM_DATATOTAL', 'Data Total');
+define ('TEXT_DATA_TOTAL', 'Data Total');
 define ('PF_FRM_FIXEDTXT', 'Fixed Textfeld');
 define ('PF_FRM_IMAGE', 'Bild - JPG-oder PNG');
-define ('PF_FRM_LINE', 'Line');
+define ('TEXT_LINE', 'Line');
 define ('PF_FRM_PAGENUM', 'Seite Nummer');
-define ('PF_FRM_RECTANGLE', 'Rechteck');
+define ('TEXT_RECTANGLE', 'Rechteck');
 //Datenverarbeitung
-define ('PF_FRM_NEGATE', 'Negativ');
-define ('PF_FRM_LOWERCASE', 'kleinen');
-define ('PF_FRM_UPPERCASE', 'Groß');
+define ('TEXT_NEGATE', 'Negativ');
+define ('TEXT_LOWERCASE', 'kleinen');
+define ('TEXT_UPPERCASE', 'Groß');
 define ('PF_FRM_DATE', 'Formatiert Datum');
 define ('PF_FRM_RNDR2', 'Round (2 Nachkommastellen)');
 define ('PF_FRM_CNVTDLR', 'Convert Dollar');
 define ('PF_FRM_NULLDLR', 'Null, wenn 0 - Dollar');
 define ('PF_FRM_CNVTEURO', 'Convert Euro');
 define ('PF_FRM_NUM_2_WORDS', 'Anzahl an Words');
-define ('PF_FRM_BLANK_DATA', 'Blank Out Data');
+define ('TEXT_BLANK_OUT_DATA', 'Blank Out Data');
 //Standard-Schriften
-define ('PF_FONT_HELVETICA', 'Helvetica');
-define ('PF_FONT_COURIER', 'Courier');
+define ('TEXT_FONT_HELVETICA', 'Helvetica');
+define ('TEXT_FONT_COURIER', 'Courier');
 define ('PF_FONT_TIMES', 'Times New Roman');
-define ('PF_FONT_SERIF', 'serif');
+define ('TEXT_FONT_SERIF', 'serif');
 //Farbdefinitionen
 define ('TEXT_RED', 'Red');
 define ('TEXT_GREEN', 'Grün');
@@ -282,7 +282,7 @@ define ('TEXT_SIXTY', 'sechzig');
 define ('TEXT_SEVENTY', 'siebzig');
 define ('TEXT_EIGHTY', 'achtzig');
 define ('TEXT_NINETY', 'neunzig');
-define ('TEXT_HUNDERD','hundert');
+define ('TEXT_HUNDRED','hundert');
 define ('TEXT_THOUSAND', 'tausend');
 define ('TEXT_MILLION', 'Millionen');
 define ('TEXT_BILLION', 'Milliarden');

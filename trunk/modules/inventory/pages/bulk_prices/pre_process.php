@@ -47,7 +47,7 @@ switch ($_REQUEST['action']) {
 		}
 		$j++;
 	}
-	gen_add_audit_log(PRICE_SHEETS_LOG_BULK . TEXT_UPDATE);
+	gen_add_audit_log(INV_BULK_SKU_ENTRY_TITLE. ' - ' . TEXT_UPDATE);
 	break;
   case 'go_first':    $_REQUEST['list'] = 1;       break;
   case 'go_previous': $_REQUEST['list'] = max($_REQUEST['list']-1, 1); break;
@@ -65,11 +65,11 @@ $heading_array = array(
   'sku'               => TEXT_SKU,
   'inactive'          => TEXT_INACTIVE,
   'description_short' => TEXT_DESCRIPTION,
-  'lead_time'         => INV_HEADING_LEAD_TIME,
-  'minimum_stock_level' => INV_ENTRY_ITEM_MINIMUM_STOCK,
-  'reorder_quantity'  => INV_ENTRY_ITEM_REORDER_QUANTITY,
-  'item_cost'         => INV_ENTRY_INV_ITEM_COST . (ENABLE_MULTI_CURRENCY ? ' (' . DEFAULT_CURRENCY . ')' : ''),
-  'full_price'        => INV_ENTRY_FULL_PRICE . (ENABLE_MULTI_CURRENCY ? ' (' . DEFAULT_CURRENCY . ')' : ''));
+  'lead_time'         => TEXT_LEAD_TIME_DAYS,
+  'minimum_stock_level' => TEXT_MINIMUM_STOCK_LEVEL,
+  'reorder_quantity'  => TEXT_REORDER_QUANTITY,
+  'item_cost'         => TEXT_ITEM_COST . (ENABLE_MULTI_CURRENCY ? ' (' . DEFAULT_CURRENCY . ')' : ''),
+  'full_price'        => TEXT_FULL_PRICE . (ENABLE_MULTI_CURRENCY ? ' (' . DEFAULT_CURRENCY . ')' : ''));
 $result      = html_heading_bar($heading_array);
 $list_header = $result['html_code'];
 $disp_order  = $result['disp_order'];

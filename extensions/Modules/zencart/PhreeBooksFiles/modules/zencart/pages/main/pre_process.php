@@ -20,12 +20,12 @@ $security_level = \core\classes\user::validate(SECURITY_ID_ZENCART_INTERFACE);
 /**************  include page specific files    *********************/
 gen_pull_language('shipping');
 gen_pull_language('inventory');
-require_once(DIR_FS_MODULES . 'inventory/defaults.php'); 
-require_once(DIR_FS_MODULES . 'shipping/defaults.php'); 
-require_once(DIR_FS_WORKING . 'functions/zencart.php'); 
-require_once(DIR_FS_MODULES . 'inventory/functions/inventory.php'); 
-require_once(DIR_FS_WORKING . 'classes/zencart.php'); 
-require_once(DIR_FS_WORKING . 'classes/bulk_upload.php'); 
+require_once(DIR_FS_MODULES . 'inventory/defaults.php');
+require_once(DIR_FS_MODULES . 'shipping/defaults.php');
+require_once(DIR_FS_WORKING . 'functions/zencart.php');
+require_once(DIR_FS_MODULES . 'inventory/functions/inventory.php');
+require_once(DIR_FS_WORKING . 'classes/zencart.php');
+require_once(DIR_FS_WORKING . 'classes/bulk_upload.php');
 
 /**************   page specific initialization  *************************/
 $ship_date = $_POST['ship_date'] ? gen_db_date($_POST['ship_date']) : date('Y-m-d');
@@ -49,7 +49,7 @@ switch ($_REQUEST['action']) {
 	  	try{
 	  		$inc_image = isset($_POST['include_images']) ? true : false;
 	    	\zencart\classes\bulk_upload($inc_image);
-			gen_add_audit_log(ZENCART_BULK_UPLOAD);
+			gen_add_audit_log(TEXT_BULK_UPLOAD);
 			write_configure('MODULE_ZENCART_LAST_UPDATE', date('Y-m-d H:i:s'));
 	  	}catch(Exception $e) {
 	  		$messageStack->add($e->getMessage());
@@ -59,7 +59,7 @@ switch ($_REQUEST['action']) {
 	  	try{
 	    	$upXML = new \zencart\classes\zencart();
 			$upXML->submitXML(0, 'product_sync');
-			gen_add_audit_log(ZENCART_PRODUCT_SYNC);
+			gen_add_audit_log(TEXT_ZENCART_PRODUCT_SYNC);
 		}catch(Exception $e) {
 	  		$messageStack->add($e->getMessage());
 		}

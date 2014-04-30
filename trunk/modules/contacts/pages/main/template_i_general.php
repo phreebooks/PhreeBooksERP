@@ -22,10 +22,10 @@ $acct_def = (!$cInfo->dept_rep_id) ? array() : array(array('id'=>$cInfo->dept_re
 // *********************** Display account information ****************************** ?>
 <div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
   <fieldset>
-    <legend><?php echo ACT_CATEGORY_CONTACT; ?></legend>
+    <legend><?php echo TEXT_CONTACT_INFORMATION; ?></legend>
     <table>
       <tr>
-       <td align="right"><?php echo ACT_SHORT_NAME; ?></td>
+       <td align="right"><?php echo TEXT_CONTACT_ID; ?></td>
        <td>
 	     <?php echo html_input_field('short_name', $cInfo->short_name, 'size="21" maxlength="20"', true); ?>
          <?php echo ' ' . TEXT_INACTIVE . ' '; ?>
@@ -35,9 +35,9 @@ $acct_def = (!$cInfo->dept_rep_id) ? array() : array(array('id'=>$cInfo->dept_re
        <td><?php echo html_input_field('contact_middle', $cInfo->contact_middle, 'size="33" maxlength="32"', false); ?></td>
       </tr>
       <tr>
-        <td align="right"><?php echo GEN_FIRST_NAME; ?></td>
+        <td align="right"><?php echo TEXT_FIRST_NAME; ?></td>
         <td><?php echo html_input_field('contact_first', $cInfo->contact_first, 'size="33" maxlength="32"', false); ?></td>
-        <td align="right"><?php echo GEN_LAST_NAME; ?></td>
+        <td align="right"><?php echo TEXT_LAST_NAME; ?></td>
         <td><?php echo html_input_field('contact_last', $cInfo->contact_last, 'size="33" maxlength="32"', false); ?></td>
       </tr>
       <tr>
@@ -77,7 +77,7 @@ $acct_def = (!$cInfo->dept_rep_id) ? array() : array(array('id'=>$cInfo->dept_re
       <th><?php echo TEXT_FILENAME; ?></th>
       <th><?php echo TEXT_ACTION; ?></th>
      </tr>
-<?php 
+<?php
 if (sizeof($cInfo->attachments) > 0) {
   foreach ($cInfo->attachments as $key => $value) {
     echo '<tr>';
@@ -87,7 +87,7 @@ if (sizeof($cInfo->attachments) > 0) {
     echo '</tr>' . chr(10);
   }
 } else {
-  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS . '</td></tr>'; 
+  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS . '</td></tr>';
 } ?>
     </tbody>
    </table>

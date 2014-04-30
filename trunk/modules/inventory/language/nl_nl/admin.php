@@ -20,7 +20,7 @@ define('TEXT_COGS_ACCOUNT','Grootboek Kostprijs van verkopen');
 define('TEXT_COST_METHOD','Kosten Methode');
 define('TEXT_STOCK_ITEMS','Voorraad');
 define('TEXT_MS_ITEMS','Hoofd Voorraad');
-define('TEXT_ASSY_ITEMS','Assemblages');
+define('TEXT_ASSEMBLIES','Assemblages');
 define('TEXT_SERIAL_ITEMS','Serie');
 define('TEXT_NS_ITEMS','Niet-voorraad');
 define('TEXT_SRV_ITEMS','Service');
@@ -55,6 +55,6 @@ define('INV_TOOLS_OUT_OF_BALANCE','Art.nr.: %s -> op voorraad %s maar volgens de
 define('INV_TOOLS_IN_BALANCE','Uw voorraad balans is in orde.');
 define('INV_TOOLS_STOCK_ROUNDING_ERROR','Art.nr: %s -> Voorraad geeft aan %s dit is minder dan uw precisie. Repareer uw voorraad balans de voorraad zal worden afgerond naar %s.');
 define('INV_TOOLS_BALANCE_CORRECTED','Art.nr.: %s -> De aanwezige voorraad is veranderd naar %s.');
-define('NEXT_SKU_NUM_DESC','Volgend Artikel Nummer');
+define('TEXT_NEXT_SKU','Volgend Artikel Nummer');
 
 ?>

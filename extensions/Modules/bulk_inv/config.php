@@ -28,7 +28,7 @@ define('SECURITY_ID_MAINTAIN_INVENTORY', 151);
 
 $mainmenu["inventory"]["submenu"]["bulk_inventory"] = array(
   	'order'		  => 95,
-    'text'        => MODULE_BULK_INV_TITLE,
+    'text'        => TEXT_BULK_INVENTORY_TOOL,
     'security_id' => SECURITY_ID_MAINTAIN_INVENTORY,
     'link'        => html_href_link(FILENAME_DEFAULT, 'module=bulk_inv&amp;page=bulk_inv', 'SSL'),
 	'show_in_users_settings' => false, // set with inventory permissions

@@ -26,7 +26,7 @@
   <div style="float:left;width:50%">
   <table class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto" width="250px">
    <thead class="ui-widget-header">
-	  <tr><th colspan="2"><?php echo INV_TEXT_ATTRIBUTE_1; ?></th></tr>
+	  <tr><th colspan="2"><?php echo TEXT_ATTRIBUTE_1; ?></th></tr>
     </thead>
     <tbody class="ui-widget-content">
 	  <tr>
@@ -44,7 +44,7 @@
 	    <td><?php echo html_input_field('attr_desc_0', '', '', true); ?></td>
 	  </tr>
 	  <tr>
-	    <th colspan="2"><?php echo INV_TEXT_ATTRIBUTES; ?></th>
+	    <th colspan="2"><?php echo TEXT_ATTRIBUTES; ?></th>
 		  </tr>
 		  <tr>
       		<td align="center" colspan="2">
@@ -62,7 +62,7 @@
  <div style="width:50%">
   <table class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto" width="250px">
    <thead class="ui-widget-header">
-	  <tr><th colspan="2"><?php echo INV_TEXT_ATTRIBUTE_2; ?></th></tr>
+	  <tr><th colspan="2"><?php echo TEXT_ATTRIBUTE_2; ?></th></tr>
     </thead>
     <tbody class="ui-widget-content">
 	  <tr>
@@ -80,7 +80,7 @@
 	    <td><?php echo html_input_field('attr_desc_1', '', '', true); ?></td>
 	  </tr>
 	  <tr>
-	    <th colspan="2"><?php echo INV_TEXT_ATTRIBUTES; ?></th>
+	    <th colspan="2"><?php echo TEXT_ATTRIBUTES; ?></th>
 		  </tr>
 		  <tr>
       		<td align="center" colspan="2">
@@ -97,7 +97,7 @@
  </div>
  <?php } ?>
  <div>
- 
+
   <table id="sku_list" class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto;margin-top:20px">
    <thead class="ui-widget-header">
     <tr>
@@ -111,14 +111,14 @@
 	  <th width="20px" style="padding:0px 5px"><?php echo INV_QTY_ON_HAND; ?></th>
 	  <th width="20px" style="padding:0px 5px"><?php echo INV_QTY_ON_ORDER; ?></th>
 	  <th width="20px" style="padding:0px 5px"><?php echo INV_QTY_ON_SALES_ORDER; ?></th>
-	  <th width="20px" style="padding:0px 5px"><?php echo INV_ENTRY_ITEM_MINIMUM_STOCK; ?></th>
-	  <th width="20px" style="padding:0px 5px"><?php echo INV_ENTRY_ITEM_REORDER_QUANTITY; ?></th>
-	  <th width="20px" style="padding:0px 5px"><?php echo INV_ENTRY_INV_ITEM_COST; ?></th>
-	  <th width="20px" style="padding:0px 5px"><?php echo INV_ENTRY_FULL_PRICE; ?></th>
+	  <th width="20px" style="padding:0px 5px"><?php echo TEXT_MINIMUM_STOCK_LEVEL; ?></th>
+	  <th width="20px" style="padding:0px 5px"><?php echo TEXT_REORDER_QUANTITY; ?></th>
+	  <th width="20px" style="padding:0px 5px"><?php echo TEXT_ITEM_COST; ?></th>
+	  <th width="20px" style="padding:0px 5px"><?php echo TEXT_FULL_PRICE; ?></th>
     </tr>
     </thead>
     <tbody id="sku_list_body" class="ui-widget-content">
-    	<?php 
+    	<?php
     	$odd = false;
     	 if(!empty($cInfo->child_array)){
     		foreach ($cInfo->child_array as $value) {
@@ -144,6 +144,6 @@
     </tbody>
   </table>
  </div>
- 
+
 </div>
 </div>

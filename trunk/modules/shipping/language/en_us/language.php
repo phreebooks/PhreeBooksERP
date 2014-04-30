@@ -18,7 +18,7 @@
 //  Path: /modules/shipping/language/en_us/language.php
 //
 
-// Headings 
+// Headings
 define('HEADING_TITLE_MODULES_SHIPPING','Shipping Services');
 define('SHIPPING_HEADING_SHIP_MGR','Shipping Module Manager');
 // General Defines
@@ -31,83 +31,83 @@ define('TEXT_PAGKAGE_DEFAULTS','Package Defaults');
 define('TEXT_SHIPMENT_DEFAULTS','Shipment Defaults');
 define('TEXT_SHIPMENTS_ON','Shipments On: ');
 define('TEXT_REMOVE_MESSAGE','Are you sure you want to remove this shipping method?');
-define('SHIPPING_BUTTON_CREATE_LOG_ENTRY','Create a Shipment Entry');
-define('SHIPPING_SET_BY_SYSTEM',' (Set by the system)');
+define('TEXT_CREATE_SHIPMENT_ENTRY','Create a Shipment Entry');
+define('TEXT_SET_BY_SYSTEM','Set by the system');
 define('SHIPPING_POPUP_WINDOW_TITLE','Shipping Rate Estimator');
 define('SHIPPING_POPUP_WINDOW_RATE_TITLE','Shipping Estimator - Rates');
 define('SHIPPING_ESTIMATOR_OPTIONS','Shipping Estimator - Shipment Options');
-define('SHIPPING_TEXT_SHIPPER','Shipper:');
-define('SHIPPING_TEXT_SHIPMENT_DATE','Shipment Date');
-define('SHIPPING_TEXT_SHIP_FROM_CITY','Ship From City: ');
-define('SHIPPING_TEXT_SHIP_TO_CITY','Ship To City: ');
-define('SHIPPING_RESIDENTIAL_ADDRESS','Residential Address');
-define('SHIPPING_TEXT_SHIP_FROM_STATE','Ship From State: ');
-define('SHIPPING_TEXT_SHIP_TO_STATE','Ship To State: ');
-define('SHIPPING_TEXT_SHIP_FROM_ZIP','Ship From Postal Code: ');
-define('SHIPPING_TEXT_SHIP_TO_ZIP','Ship To Postal Code: ');
-define('SHIPPING_TEXT_SHIP_FROM_COUNTRY','Ship From Country: ');
-define('SHIPPING_TEXT_SHIP_TO_COUNTRY','Ship To Country: ');
-define('SHIPPING_TEXT_PACKAGE_INFORMATION','Package Information');
-define('SHIPPING_TEXT_PACKAGE_TYPE','Type of Packaging ');
-define('SHIPPING_TEXT_PICKUP_SERVICE','Pickup Service ');
-define('SHIPPING_TEXT_DIMENSIONS','Dimensions: ');
+define('TEXT_SHIPPER','Shipper:');
+define('TEXT_SHIPMENT_DATE','Shipment Date');
+define('TEXT_SHIP_FROM_CITY','Ship From City: ');
+define('TEXT_SHIP_TO_CITY','Ship To City: ');
+define('TEXT_RESIDENTIAL_ADDRESS','Residential Address');
+define('TEXT_SHIP_FROM_STATE','Ship From State: ');
+define('TEXT_SHIP_TO_STATE','Ship To State: ');
+define('TEXT_SHIP_FROM_ZIP','Ship From Postal Code: ');
+define('TEXT_SHIP_TO_ZIP','Ship To Postal Code: ');
+define('TEXT_SHIP_FROM_COUNTRY','Ship From Country: ');
+define('TEXT_SHIP_TO_COUNTRY','Ship To Country: ');
+define('TEXT_PACKAGE_INFORMATION','Package Information');
+define('TEXT_TYPE_OF_PACKAGING','Type of Packaging ');
+define('TEXT_PICKUP_SERVICE','Pickup Service ');
+define('TEXT_DIMENSIONS','Dimensions');
 define('SHIPPING_ADDITIONAL_HANDLING','Additional Handling Applies (Oversize)');
 define('SHIPPING_INSURANCE_AMOUNT','Insurance: Amount ');
 define('SHIPPING_SPLIT_LARGE_SHIPMENTS','Split large shipments for small pkg carrier ');
-define('SHIPPING_TEXT_PER_BOX',' per box');
-define('SHIPPING_TEXT_DELIVERY_CONFIRM','Delivery Confirmation ');
-define('SHIPPING_SPECIAL_OPTIONS','Special Options');
-define('SHIPPING_SERVICE_TYPE','Service Type');
+define('TEXT_PER_BOX',' per box');
+define('TEXT_DELIVERY_CONFIRM','Delivery Confirmation ');
+define('TEXT_SPECIAL_OPTIONS','Special Options');
+define('TEXT_SERVICE_TYPE','Service Type');
 define('SHIPPING_HANDLING_CHARGE','Handling Charge: Amount ');
 define('SHIPPING_COD_AMOUNT','COD: Collect ');
-define('SHIPPING_SATURDAY_PICKUP','Saturday Pickup');
-define('SHIPPING_SATURDAY_DELIVERY','Saturday Delivery');
-define('SHIPPING_HAZARDOUS_MATERIALS','Hazardous Material');
-define('SHIPPING_TEXT_DRY_ICE','Dry Ice');
-define('SHIPPING_TEXT_RETURN_SERVICES','Return Services ');
-define('SHIPPING_TEXT_METHODS','Shipping Methods');
+define('TEXT_SATURDAY_PICKUP','Saturday Pickup');
+define('TEXT_SATURDAY_DELIVERY','Saturday Delivery');
+define('TEXT_HAZARDOUS_MATERIALS','Hazardous Material');
+define('TEXT_DRY_ICE','Dry Ice');
+define('TEXT_RETURN_SERVICES','Return Services ');
+define('TEXT_SHIPPING_METHODS','Shipping Methods');
 define('SHIPPING_TOTAL_WEIGHT','Total Shipment Weight');
 define('SHIPPING_TOTAL_VALUE','Total Shipment Value');
 define('SHIPPING_EMAIL_SENDER','E-mail Sender');
 define('SHIPPING_EMAIL_RECIPIENT','E-mail Recipient');
 define('SHIPPING_EMAIL_SENDER_ADD','Sender E-mail Address');
 define('SHIPPING_EMAIL_RECIPIENT_ADD','Recipient E-mail Address');
-define('SHIPPING_TEXT_EXCEPTION','Exception');
-define('SHIPPING_TEXT_DELIVER','Deliver');
-define('SHIPPING_BILL_CHARGES_TO','Bill charges to');
+define('TEXT_EXCEPTION','Exception');
+define('TEXT_DELIVER','Deliver');
+define('TEXT_BILL_CHARGES_TO','Bill charges to');
 define('SHIPPING_THIRD_PARTY','Recpt/Third Party Acct #');
 define('SHIPPING_THIRD_PARTY_ZIP','Third Party Postal Code');
-define('SHIPPING_LTL_FREIGHT_CLASS','LTL Freight Class');
+define('TEXT_LTL_FREIGHT_CLASS','LTL Freight Class');
 define('SHIPPING_NUM_PIECES','Number of Pieces');
 define('SHIPPNIG_SUMMARY','Shipment Summary');
-define('SHIPPING_SHIPMENT_DETAILS','Shipment Details');
-define('SHIPPING_PACKAGE_DETAILS','Package Details');
+define('TEXT_SHIPMENT_DETAILS','Shipment Details');
+define('TEXT_PACKAGE_DETAILS','Package Details');
 define('SHIPPING_VOID_SHIPMENT','Void Shipment');
 
 define('SHIPPING_TEXT_CARRIER','Carrier');
 define('SHIPPING_TEXT_SERVICE','Service');
-define('SHIPPING_TEXT_FREIGHT_QUOTE','Freight Quote');
-define('SHIPPING_TEXT_BOOK_PRICE','Book Price');
-define('SHIPPING_TEXT_COST','Cost');
+define('TEXT_FREIGHT_QUOTE','Freight Quote');
+define('TEXT_BOOK_PRICE','Book Price');
+define('TEXT_COST','Cost');
 define('SHIPPING_TEXT_NOTES','Notes');
-define('SHIPPING_TEXT_PRINT_LABEL','Print Label');
+define('TEXT_PRINT_LABEL','Print Label');
 define('SHIPPING_TEXT_CLOSE_DAY','Daily Close');
 define('SHIPPING_TEXT_DELETE_LABEL','Delete Shipment');
-define('SHIPPING_TEXT_SHIPMENT_ID','Shipment ID');
-define('SHIPPING_TEXT_REFERENCE_ID','Reference ID');
-define('SHIPPING_TEXT_TRACKING_NUM','Tracking Number');
-define('SHIPPING_TEXT_EXPECTED_DATE','Expected Delivery Date');
-define('SHIPPING_TEXT_ACTUAL_DATE','Actual Delivery Date');
+define('TEXT_SHIPMENT_ID','Shipment ID');
+define('TEXT_REFERENCE_ID','Reference ID');
+define('TEXT_TRACKING_NUMBER','Tracking Number');
+define('TEXT_EXPECTED_DELIVERY_DATE','Expected Delivery Date');
+define('TEXT_ACTUAL_DELIVERY_DATE','Actual Delivery Date');
 define('SHIPPING_TEXT_DOWNLOAD','Download Thermal Label');
 define('SHIPPING_THERMAL_INST','<br />The file is pre-formatted for thermal label printers. To print the label:<br /><br />
 		1. Click the Download button to start the download.<br />
 		2. Click on \'Save\' on the confirmation popup to save the file to you local machine.<br />
 		3. Copy the file directly to the printer port. (the file must be copied in raw format)');
-define('SHIPPING_TEXT_NO_LABEL','No Label Found!');
+define('TEXT_NO_LABEL_FOUND','No Label Found!');
 define('SHIPPING_NO_PACKAGES','There were no packages to ship, either the total quantity or weight was zero.');
 define('SHIPPING_DELETE_ERROR','Error - Cannot delete the shipment, not enough information provided.');
 define('SHIPPING_CANNOT_DELETE','Error - Cannot delete a shipment whose label was generated prior to today.');
-define('SHIPPING_LABEL_DELETED','Label Deleted');
+define('TEXT_LABEL_DELETED','Label Deleted');
 define('SHIPPING_END_OF_DAY','End of Day Close - %s');
 
 define('SHIPPING_ERROR_WEIGHT_ZERO','Shipment weight cannot be zero.');
@@ -116,7 +116,7 @@ define('SHIPPING_NO_SHIPMENTS', 'There are no shipments from this carrier today!
 define('SHIPPING_ERROR_CONFIGURATION', '<strong>Shipping Configuration errors!</strong>');
 define('SHIPPING_BAD_QUOTE_DATE','The Shipment date cannot be before today for a quote. The ship date has been changed to today for quoting purposes.');
 // Audit log messages
-define('SHIPPING_LOG_LABEL_PRINTED','Label Generated');
+define('TEXT_LABEL_GENERATED','Label Generated');
 // shipping options
 define('SHIPPING_1DEAM','1 Day Early a.m.');
 define('SHIPPING_1DAM','1 Day a.m.');
@@ -140,10 +140,10 @@ define('SHIPPING_CREATE_ENTRY','Create a Shipment Entry');
 define('SHIPPING_RECON_BILL','Reconcile Bill');
 define('SHIPPING_RECP_INFO','Recepient Information');
 define('SHIPPING_EMAIL_NOTIFY','Email Notifications');
-define('SHIPPING_BILL_DETAIL','Billing Details');
-define('SHIPPING_LTL_FREIGHT','LTL Freight');
+define('TEXT_BILLING_DETAILS','Billing Details');
+define('TEXT_LTL_FREIGHT','LTL Freight');
 define('SHIPPING_LTL_CLASS','Freight Class');
-define('TEXT_TRACK_CONFIRM','Confirm Delivery');
+define('TEXT_CONFIRM_DELIVERY','Confirm Delivery');
 
 define('SHIPPING_DAILY','Daily Pickup');
 define('SHIPPING_CARRIER','Carrier Customer Counter');
@@ -153,11 +153,11 @@ define('SHIPPING_RETAIL','Suggested Retail Rates');
 define('SHIPPING_DROP_BOX','Drop Box/Center');
 define('SHIPPING_AIR_SRV','Air Service Center');
 
-define('SHIPPING_TEXT_LBS','lbs');
-define('SHIPPING_TEXT_KGS','kgs');
+define('TEXT_POUND_SHORT','lbs');
+define('TEXT_KILOGRAMS_SHORT','kgs');
 
-define('SHIPPING_TEXT_IN','in');
-define('SHIPPING_TEXT_CM','cm');
+define('TEXT_INCHES_SHORT','in');
+define('TEXT_CENTIMETERS_SHORT','cm');
 
 define('SHIPPING_ENVENLOPE','Envelope/Letter');
 define('SHIPPING_CUST_SUPP','Customer Supplied');
@@ -168,10 +168,10 @@ define('SHIPPING_25KG','25kg Box');
 define('SHIPPING_10KG','10kg Box');
 
 define('SHIPPING_CASH','Cash');
-define('SHIPPING_CHECK','Check');
+define('TEXT_CHECK','Check');
 define('SHIPPING_CASHIERS','Cashier\'s Check');
 define('SHIPPING_MO','Money Order');
-define('SHIPPING_ANY','Any');
+define('TEXT_ANY','Any');
 
 define('SHIPPING_NO_CONF','No delivery confirmation');
 define('SHIPPING_NO_SIG_RQD','No Signature Required');
@@ -182,10 +182,10 @@ define('SHIPPING_RET_CARRIER','Carrier Return Label');
 define('SHIPPING_RET_LOCAL','Print Local Return Label');
 define('SHIPPING_RET_MAILS','Carrier Prints and Mails Return Label');
 
-define('SHIPPING_SENDER','Sender');
-define('SHIPPING_RECEIPIENT','Receipient');
-define('SHIPPING_THIRD_PARTY','Third Party');
-define('SHIPPING_COLLECT','Collect');
+define('TEXT_SENDER','Sender');
+define('TEXT_RECEIPIENT','Receipient');
+define('TEXT_THIRD_PARTY','Third Party');
+define('TEXT_COLLECT','Collect');
 
 // Key descriptions
 define('SHIPPING_TITLE_DESC', 'Title to use for display purposes on shipping rate estimator');

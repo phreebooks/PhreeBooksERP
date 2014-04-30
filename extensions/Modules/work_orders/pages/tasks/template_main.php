@@ -24,7 +24,7 @@ echo html_hidden_field('rowSeq', '') . chr(10);
 $toolbar->icon_list['cancel']['params'] = 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, '', 'SSL') . '\'"';
 $toolbar->icon_list['open']['show']     = false;
 $toolbar->icon_list['delete']['show']   = false;
-if ($security_level > 1) { 
+if ($security_level > 1) {
   $toolbar->icon_list['save']['params'] = 'onclick="submitToDo(\'save\')"';
 } else {
   $toolbar->icon_list['save']['show']   = false;
@@ -33,9 +33,9 @@ $toolbar->icon_list['print']['show']    = false;
 if ($security_level > 1) $toolbar->add_icon('new', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL') . '\'"', $order = 10);
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('07.04.WO.02');
-echo $toolbar->build_toolbar($add_search = true); 
+echo $toolbar->build_toolbar($add_search = true);
 ?>
-<h1><?php echo BOX_WORK_ORDERS_MODULE_TASK; ?></h1>
+<h1><?php echo TEXT_WORK_ORDERS_TASK; ?></h1>
 <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto">
  <tbody class="ui-widget-content">
   <tr>
@@ -43,7 +43,7 @@ echo $toolbar->build_toolbar($add_search = true);
 	<td><?php echo html_input_field('task_name', $task_name); ?></td>
 	<td align="right"><?php echo TEXT_DEPARTMENT; ?></td>
 	<td><?php echo html_pull_down_menu('dept_id', $departments, $dept_id); ?></td>
-	<td align="right"><?php echo TEXT_DOCUMENTS; ?></td>
+	<td align="right"><?php echo TEXT_DOCUMENT_LIST; ?></td>
 	<td><?php echo html_input_field('ref_doc', $ref_doc); ?></td>
 	<td align="right"><?php echo TEXT_MFG_INIT; ?></td>
 	<td><?php echo html_pull_down_menu('mfg', $yes_no_array, $mfg); ?></td>
@@ -58,8 +58,8 @@ echo $toolbar->build_toolbar($add_search = true);
   </tr>
   <tr>
 	<td align="right"><?php echo TEXT_TASK_TIME; ?></td>
-	<td><?php 
-	  echo html_input_field('job_time', $job_time, 'size="10" maxlength="10"'); 
+	<td><?php
+	  echo html_input_field('job_time', $job_time, 'size="10" maxlength="10"');
 	  echo html_pull_down_menu('job_unit', gen_build_pull_down($job_units), $job_unit ? $job_unit : '1');
 	  ?>
 	</td>
@@ -83,7 +83,7 @@ echo $toolbar->build_toolbar($add_search = true);
  </thead>
  <tbody class="ui-widget-content">
 <?php
-  $odd = true; 
+  $odd = true;
   while (!$query_result->EOF) { ?>
   <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer">
 	<td onclick="editTask(<?php echo $query_result->fields['id']; ?>)"><?php echo htmlspecialchars($query_result->fields['task_name']); ?></td>
@@ -99,7 +99,7 @@ echo $toolbar->build_toolbar($add_search = true);
 	  if ($security_level > 3) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . WORK_ORDER_MSG_DELETE_WO . '\')) deleteItem(' . $query_result->fields['id'] . ')"') . chr(10);
 ?>
 	</td>
-  </tr> 
+  </tr>
 <?php
       $query_result->MoveNext();
       $odd = !$odd;

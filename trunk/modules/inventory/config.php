@@ -49,7 +49,7 @@ define('TABLE_PRICE_SHEETS',             DB_PREFIX . 'price_sheets');
 // Set the menus
 $mainmenu["inventory"]["submenu"]["new_inventory"] = array(
   'order' 		=> 1,
-  'text' 		=> BOX_INV_NEW,
+  'text' 		=> sprintf(TEXT_NEW_ARGS, TEXT_INVENTORY_ITEM),
   'security_id' => SECURITY_ID_MAINTAIN_INVENTORY,
   'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=main&amp;action=new', 'SSL'),
   'show_in_users_settings' => false,
@@ -57,33 +57,33 @@ $mainmenu["inventory"]["submenu"]["new_inventory"] = array(
 );
 $mainmenu["inventory"]["submenu"]["inventory_mgr"] = array(
   'order' 		=> 5,
-  'text' 		=> BOX_INV_MAINTAIN,
+  'text' 		=> sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY),
   'security_id' => SECURITY_ID_MAINTAIN_INVENTORY,
   'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=main&amp;list=1', 'SSL'),
   'show_in_users_settings' => true,
   'params'      => '',
 );
 $mainmenu["inventory"]["submenu"]["adjustment"] = array(
-  'text'        => ORD_TEXT_16_WINDOW_TITLE, 
-  'order'        => 15, 
-  'security_id' => SECURITY_ID_ADJUST_INVENTORY, 
+  'text'        => TEXT_ADJUSTMENTS,
+  'order'        => 15,
+  'security_id' => SECURITY_ID_ADJUST_INVENTORY,
   'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=adjustments', 'SSL'),
   'show_in_users_settings' => true,
   'params'      => '',
 );
 $mainmenu["inventory"]["submenu"]["assemble"] = array(
-  'text'        => ORD_TEXT_14_WINDOW_TITLE, 
-  'order'        => 20, 
-  'security_id' => SECURITY_ID_ASSEMBLE_INVENTORY, 
+  'text'        => TEXT_ASSEMBLIES,
+  'order'        => 20,
+  'security_id' => SECURITY_ID_ASSEMBLE_INVENTORY,
   'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=assemblies', 'SSL'),
   'show_in_users_settings' => true,
   'params'      => '',
 );
-if (defined('ENABLE_MULTI_BRANCH') && ENABLE_MULTI_BRANCH){ 
+if (defined('ENABLE_MULTI_BRANCH') && ENABLE_MULTI_BRANCH){
 	$mainmenu["inventory"]["submenu"]["transfer"] = array(
-	  'text'        => BOX_INV_TRANSFER, 
-	  'order'       => 80, 
-	  'security_id' => SECURITY_ID_TRANSFER_INVENTORY, 
+	  'text'        => BOX_INV_TRANSFER,
+	  'order'       => 80,
+	  'security_id' => SECURITY_ID_TRANSFER_INVENTORY,
 	  'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=transfer', 'SSL'),
 	  'show_in_users_settings' => true,
 	  'params'      => '',
@@ -91,7 +91,7 @@ if (defined('ENABLE_MULTI_BRANCH') && ENABLE_MULTI_BRANCH){
 }
 $mainmenu["customers"]["submenu"]["pricesheet"] = array(
   'text'        => BOX_SALES_PRICE_SHEETS,
-  'order'       => 65, 
+  'order'       => 65,
   'security_id' => SECURITY_ID_PRICE_SHEET_MANAGER,
   'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=price_sheets&amp;type=c&amp;list=1', 'SSL'),
   'show_in_users_settings' => true,
@@ -99,7 +99,7 @@ $mainmenu["customers"]["submenu"]["pricesheet"] = array(
 );
 $mainmenu["vendors"]["submenu"]["pricesheet"] = array(
   'text'        => BOX_PURCHASE_PRICE_SHEETS,
-  'order'       => 65, 
+  'order'       => 65,
   'security_id' => SECURITY_ID_VEND_PRICE_SHEET_MGR,
   'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=price_sheets&amp;type=v&amp;list=1', 'SSL'),
   'show_in_users_settings' => true,
@@ -111,7 +111,7 @@ if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
   $mainmenu["company"]['submenu']["configuration"]['submenu']["inventory"] = array(
 	'order'	      => MODULE_INVENTORY_TITLE,
 	'text'        => MODULE_INVENTORY_TITLE,
-	'security_id' => SECURITY_ID_CONFIGURATION, 
+	'security_id' => SECURITY_ID_CONFIGURATION,
 	'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=admin', 'SSL'),
     'show_in_users_settings' => false,
 	'params'      => '',

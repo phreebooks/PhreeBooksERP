@@ -29,12 +29,12 @@ $inventory_types = array(
   'ma' => INV_TYPES_AS,
   'sa' => INV_TYPES_SA,
   'ns' => INV_TYPES_NS,
-  'lb' => INV_TYPES_LB,
-  'sv' => INV_TYPES_SV,
+  'lb' => TEXT_LABOR,
+  'sv' => TEXT_SERVICE,
   'sf' => INV_TYPES_SF,
   'ci' => INV_TYPES_CI,
-  'ai' => INV_TYPES_AI,
-  'ds' => INV_TYPES_DS,
+  'ai' => TEXT_ACTIVITY,
+  'ds' => TEXT_DESCRIPTION,
 );
 // used for identifying inventory types in reports and forms that are not selectable by the user
 $inventory_types_plus       = $inventory_types;
@@ -45,20 +45,20 @@ asort ($inventory_types);
 asort ($inventory_types_plus);
 
 $cost_methods = array(
-  'f' => INV_TEXT_FIFO,	   // First-in, First-out
-  'l' => INV_TEXT_LIFO,	   // Last-in, First-out
-  'a' => INV_TEXT_AVERAGE, // Average Costing
-); 
+  'f' => TEXT_FIFO,	   // First-in, First-out
+  'l' => TEXT_LIFO,	   // Last-in, First-out
+  'a' => TEXT_AVERAGE, // Average Costing
+);
 
 $price_mgr_sources = array(
   '0' => TEXT_NOT_USED,	// Do not remove this selection, leave as first entry
   '1' => TEXT_DIR_ENTRY,
-  '2' => INV_ENTRY_INV_ITEM_COST,
-  '3' => INV_ENTRY_FULL_PRICE,
+  '2' => TEXT_ITEM_COST,
+  '3' => TEXT_FULL_PRICE,
 // Price Level 1 needs to always be at the end (it is pulled from the first row to avoid a circular reference)
 // The index can change but must be matched with the javascript to update the price source values.
   '4' => TEXT_PRICE_LVL_1,
-);	
+);
 $price_mgr_adjustments = array(
   '0' => TEXT_NONE,
   '1' => TEXT_DEC_AMT,

@@ -42,7 +42,7 @@ switch ($_REQUEST['action']) {
 	    'last_update' => date('Y-m-d'),
 	  );
 	  db_perform(TABLE_PHREEFORM, $sql_array, 'update', 'id = ' . $rID);
-	  $message = PHREEFORM_RENAME_SUCCESS;
+	  $message = sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_SAVED, TEXT_REPORT , $doc_title);
 	} else {
 	  $result = $db->Execute("select * from " . TABLE_PHREEFORM . " where id = '" . $rID . "'");
 	  $sql_array = array(
@@ -55,7 +55,7 @@ switch ($_REQUEST['action']) {
 	  );
 	  db_perform(TABLE_PHREEFORM, $sql_array, 'insert');
 	  $rID     = db_insert_id();
-	  $message = PHREEFORM_COPY_SUCCESS;
+	  $message = sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_COPIED, TEXT_REPORT , $doc_title);
 	}
 	$filename = PF_DIR_MY_REPORTS . 'pf_' . $rID;
 	$output   = object_to_xml($report);
@@ -78,7 +78,7 @@ switch ($_REQUEST['action']) {
 	if (!class_exists('ZipArchive')) throw new \core\classes\userException(PHREEFORM_NO_ZIP);
 	$zip = new \ZipArchive;
 	$res = $zip->open($dest_dir . $backup_filename, \ZipArchive::CREATE);
-	if ($res === false) 									throw new \core\classes\userException(PHREEFORM_ZIP_ERROR . $dest_dir);
+	if ($res === false) 									throw new \core\classes\userException(TEXT_ERROR_ZIP_FILE . $dest_dir);
 	if (($temp = @file_get_contents($filename)) === false)	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, $filename));
 	$res = $zip->addFromString($source_filename, $temp);
 	$zip->close();
@@ -131,7 +131,7 @@ if ($group) {
 switch ($_REQUEST['action']) { // figure which detail page to load
   case 'search':
   case 'view':
-  	$result      = html_heading_bar(array(),array(' ', TEXT_DOCUMENT_TITLE, TEXT_ACTION));
+  	$result      = html_heading_bar(array(),array(' ', TEXT_REPORT_TITLE, TEXT_ACTION));
 	$list_header = $result['html_code'];
 	// build the list for the page selected
 	if (isset($_REQUEST['search_text']) && $_REQUEST['search_text'] <> '') {

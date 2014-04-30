@@ -32,23 +32,23 @@ switch ($account_type) {
   case 'c': $toolbar->add_help('07.03.02.04'); break;
   case 'v': $toolbar->add_help('07.02.02.04'); break;
 }
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
-<h1><?php echo $jID == 3 ? ORD_CONVERT_TO_RFQ_PO : ORD_CONVERT_TO_SO_INV; ?></h1>
+<h1><?php echo $jID == 3 ? TEXT_CONVERT_TO_PURCHASE_ORDER : TEXT_CONVERT_TO_SALES_ORDER; ?></h1>
 <table class="ui-widget" style="border-style:none;width:100%">
  <tbody class="ui-widget-content">
   <tr>
-	<td> <?php echo html_radio_field('conv_type', 'so', true, '', '') . ($jID == 3 ? ORD_CONVERT_TO_PO : ORD_CONVERT_TO_SO) . chr(10); ?></td>
-	<td><?php echo ($jID == 3 ? ORD_HEADING_NUMBER_4 : ORD_HEADING_NUMBER_10) . html_input_field('so_num', $so_num, '') . '<br />' . chr(10); ?></td>
+	<td> <?php echo html_radio_field('conv_type', 'so', true, '', '') . ($jID == 3 ? TEXT_CONVERT_TO_PURCHASE_ORDER_SHORT : TEXT_CONVERT_TO_SALES_ORDER_SHORT) . chr(10); ?></td>
+	<td><?php echo ($jID == 3 ? TEXT_PO_NUMBER : TEXT_SO_NUMBER) . html_input_field('so_num', $so_num, '') . '<br />' . chr(10); ?></td>
   </tr>
 <?php if ($jID <> 3) { ?>
   <tr>
-	<td><?php echo html_radio_field('conv_type', 'inv', false, '', '') . ORD_CONVERT_TO_INV . '<br />' . chr(10); ?></td>
-	<td><?php echo ORD_HEADING_NUMBER_12 . html_input_field('inv_num', $inv_num, '') . '<br />' . chr(10); ?></td>
+	<td><?php echo html_radio_field('conv_type', 'inv', false, '', '') . TEXT_CONVERT_TO_INVOICE . '<br />' . chr(10); ?></td>
+	<td><?php echo TEXT_INVOICE . " # " . html_input_field('inv_num', $inv_num, '') . '<br />' . chr(10); ?></td>
   </tr>
 <?php } ?>
  </tbody>
 </table>
-<?php echo ORD_SO_INV_MESSAGE; ?> 
+<?php echo ORD_SO_INV_MESSAGE; ?>
 </form>

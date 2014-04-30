@@ -21,11 +21,11 @@
 namespace payment\methods\cod;
 class cod extends \payment\classes\payment {
 	public $id        	= 'cod'; // needs to match class name
-  	public $text		= MODULE_PAYMENT_COD_TEXT_TITLE;
+  	public $text		= TEXT_CASH_ON_DELIVERY;
   	public $description = MODULE_PAYMENT_COD_TEXT_DESCRIPTION;
-  	public $sort_order  = 40; 
+  	public $sort_order  = 40;
   	public $version		= '3.3';
-  
+
   	public function __construct(){
 		parent::__construct();
   		$this->payment_fields = implode(':', array($_POST['bill_primary_name']));

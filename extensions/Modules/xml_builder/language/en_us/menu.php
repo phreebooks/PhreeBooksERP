@@ -19,6 +19,6 @@
 //
 
 // Title to use in the pull down menu
-define('BOX_XML_BUILDER_TITLE', 'XML Builder');
+define('TEXT_XML_BUILDER', 'XML Builder');
 
 ?>

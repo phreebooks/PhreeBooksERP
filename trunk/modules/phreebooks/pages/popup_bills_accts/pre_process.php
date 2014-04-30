@@ -55,9 +55,9 @@ switch ($_REQUEST['action']) {
 // build the list header
 $heading_array = array(
   'm.bill_primary_name'                     => GEN_PRIMARY_NAME,
-  'm.bill_city_town, m.bill_state_province' => GEN_CITY_TOWN,
-  'm.bill_state_province, m.bill_city_town' => GEN_STATE_PROVINCE,
-  'm.postal_code'                           => GEN_POSTAL_CODE,
+  'm.bill_city_town, m.bill_state_province' => TEXT_CITY_TOWN,
+  'm.bill_state_province, m.bill_city_town' => TEXT_STATE_PROVINCE,
+  'm.postal_code'                           => TEXT_POSTAL_CODE,
   'total_amount'                            => TEXT_BALANCE . (ENABLE_MULTI_CURRENCY ? ' (' . DEFAULT_CURRENCY . ')' : ''));
 $result      = html_heading_bar($heading_array, array());
 $list_header = $result['html_code'];

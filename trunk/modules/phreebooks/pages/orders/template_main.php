@@ -70,12 +70,12 @@ if ($security_level > 1 && in_array(JOURNAL_ID, array(4, 6, 10, 12))) {
 if ($security_level > 1 && in_array(JOURNAL_ID, array(3, 9))) {
   $toolbar->add_icon('cvt_quote', 'onclick="convertQuote()"', 13);
   $toolbar->icon_list['cvt_quote']['icon'] = 'emblems/emblem-symbolic-link.png';
-  $toolbar->icon_list['cvt_quote']['text'] = JOURNAL_ID == 3 ? ORD_CONVERT_TO_RFQ_PO : ORD_CONVERT_TO_SO_INV;
+  $toolbar->icon_list['cvt_quote']['text'] = JOURNAL_ID == 3 ? TEXT_CONVERT_TO_PURCHASE_ORDER : TEXT_CONVERT_TO_SALES_ORDER;
 }
 if ($security_level > 1 && JOURNAL_ID == 10 && \core\classes\user::security_level(SECURITY_ID_PURCHASE_ORDER) > 1) {
   $toolbar->add_icon('cvt_quote', 'onclick="convertSO()"', 13);
   $toolbar->icon_list['cvt_quote']['icon'] = 'emblems/emblem-symbolic-link.png';
-  $toolbar->icon_list['cvt_quote']['text'] = ORD_CONVERT_TO_PO;
+  $toolbar->icon_list['cvt_quote']['text'] = TEXT_CONVERT_TO_PURCHASE_ORDER_SHORT;
 }
 if ($security_level > 1 && (JOURNAL_ID == 6 || JOURNAL_ID == 12)) {
   $toolbar->add_icon('payment', 'onclick="submitToDo(\'payment\')"', 15); // POS and POP (Purchase)
@@ -145,7 +145,7 @@ echo $toolbar->build_toolbar();
 		  <td><?php echo TEXT_DATE . ' ' . html_calendar_field($cal_order); ?></td>
 		</tr>
 		<tr>
-		  <td width="33%"><?php echo in_array(JOURNAL_ID, array(3,4,6,7)) ? TEXT_REMIT_TO : TEXT_BILL_TO; ?>
+		  <td width="33%"><?php echo in_array(JOURNAL_ID, array(3,4,6,7)) ? TEXT_REMIT_TO : TEXT_BILL_TO; ?> :
 		    <?php echo html_pull_down_menu('bill_to_select', gen_null_pull_down(), '', 'onchange="fillAddress(\'bill\')"'); ?>
 		  </td>
 		  <td width="40%"><?php echo (defined('MODULE_SHIPPING_STATUS')) ? ORD_SHIP_TO : '&nbsp;'; ?>
@@ -193,33 +193,33 @@ echo $toolbar->build_toolbar();
 		  <td nowrap="nowrap" valign="top">
 <?php
 echo html_input_field('bill_primary_name', $order->bill_primary_name, 'size="33" maxlength="32" onfocus="clearField(\'bill_primary_name\', \'' . GEN_PRIMARY_NAME . '\')" onblur="setField(\'bill_primary_name\', \'' . GEN_PRIMARY_NAME . '\')"', true) . chr(10);
-echo html_checkbox_field('bill_add_update', '1', ($order->bill_add_update) ? true : false, '', '') . ORD_ADD_UPDATE . '<br />' . chr(10);
-echo html_input_field('bill_contact', $order->bill_contact, 'size="33" maxlength="32" onfocus="clearField(\'bill_contact\', \'' . GEN_CONTACT . '\')" onblur="setField(\'bill_contact\', \'' . GEN_CONTACT . '\')"', ADDRESS_BOOK_CONTACT_REQUIRED) . chr(10);
-echo(defined('MODULE_SHIPPING_STATUS') ? html_button_field('copy_ship', ORD_COPY_BILL, 'onclick="copyAddress()"') : '') . '<br />' . chr(10);
-echo html_input_field('bill_address1', $order->bill_address1, 'size="33" maxlength="32" onfocus="clearField(\'bill_address1\', \'' . GEN_ADDRESS1 . '\')" onblur="setField(\'bill_address1\', \'' . GEN_ADDRESS1 . '\')"', ADDRESS_BOOK_ADDRESS1_REQUIRED) . '<br />' . chr(10);
-echo html_input_field('bill_address2', $order->bill_address2, 'size="33" maxlength="32" onfocus="clearField(\'bill_address2\', \'' . GEN_ADDRESS2 . '\')" onblur="setField(\'bill_address2\', \'' . GEN_ADDRESS2 . '\')"', ADDRESS_BOOK_ADDRESS2_REQUIRED) . '<br />' . chr(10);
-echo html_input_field('bill_city_town', $order->bill_city_town, 'size="25" maxlength="24" onfocus="clearField(\'bill_city_town\', \'' . GEN_CITY_TOWN . '\')" onblur="setField(\'bill_city_town\', \'' . GEN_CITY_TOWN . '\')"', ADDRESS_BOOK_CITY_TOWN_REQUIRED) . chr(10);
-echo html_input_field('bill_state_province', $order->bill_state_province, 'size="3" maxlength="5" onfocus="clearField(\'bill_state_province\', \'' . GEN_STATE_PROVINCE . '\')" onblur="setField(\'bill_state_province\', \'' . GEN_STATE_PROVINCE . '\')"', ADDRESS_BOOK_STATE_PROVINCE_REQUIRED) . chr(10);
-echo html_input_field('bill_postal_code', $order->bill_postal_code, 'size="11" maxlength="10" onfocus="clearField(\'bill_postal_code\', \'' . GEN_POSTAL_CODE . '\')" onblur="setField(\'bill_postal_code\', \'' . GEN_POSTAL_CODE . '\')"', ADDRESS_BOOK_POSTAL_CODE_REQUIRED) . '<br />' . chr(10);
+echo html_checkbox_field('bill_add_update', '1', ($order->bill_add_update) ? true : false, '', '') . TEXT_ADD_UPDATE . '<br />' . chr(10);
+echo html_input_field('bill_contact', $order->bill_contact, 'size="33" maxlength="32" onfocus="clearField(\'bill_contact\', \'' . TEXT_ATTENTION . '\')" onblur="setField(\'bill_contact\', \'' . TEXT_ATTENTION . '\')"', ADDRESS_BOOK_CONTACT_REQUIRED) . chr(10);
+echo(defined('MODULE_SHIPPING_STATUS') ? html_button_field('copy_ship', TEXT_COPY. "-->", 'onclick="copyAddress()"') : '') . '<br />' . chr(10);
+echo html_input_field('bill_address1', $order->bill_address1, 'size="33" maxlength="32" onfocus="clearField(\'bill_address1\', \'' . TEXT_ADDRESS1 . '\')" onblur="setField(\'bill_address1\', \'' . TEXT_ADDRESS1 . '\')"', ADDRESS_BOOK_ADDRESS1_REQUIRED) . '<br />' . chr(10);
+echo html_input_field('bill_address2', $order->bill_address2, 'size="33" maxlength="32" onfocus="clearField(\'bill_address2\', \'' . TEXT_ADDRESS2 . '\')" onblur="setField(\'bill_address2\', \'' . TEXT_ADDRESS2 . '\')"', ADDRESS_BOOK_ADDRESS2_REQUIRED) . '<br />' . chr(10);
+echo html_input_field('bill_city_town', $order->bill_city_town, 'size="25" maxlength="24" onfocus="clearField(\'bill_city_town\', \'' . TEXT_CITY_TOWN . '\')" onblur="setField(\'bill_city_town\', \'' . TEXT_CITY_TOWN . '\')"', ADDRESS_BOOK_CITY_TOWN_REQUIRED) . chr(10);
+echo html_input_field('bill_state_province', $order->bill_state_province, 'size="3" maxlength="5" onfocus="clearField(\'bill_state_province\', \'' . TEXT_STATE_PROVINCE . '\')" onblur="setField(\'bill_state_province\', \'' . TEXT_STATE_PROVINCE . '\')"', ADDRESS_BOOK_STATE_PROVINCE_REQUIRED) . chr(10);
+echo html_input_field('bill_postal_code', $order->bill_postal_code, 'size="11" maxlength="10" onfocus="clearField(\'bill_postal_code\', \'' . TEXT_POSTAL_CODE . '\')" onblur="setField(\'bill_postal_code\', \'' . TEXT_POSTAL_CODE . '\')"', ADDRESS_BOOK_POSTAL_CODE_REQUIRED) . '<br />' . chr(10);
 echo html_pull_down_menu('bill_country_code', gen_get_countries(), $order->bill_country_code) . '<br />' . chr(10);
-echo html_input_field('bill_telephone1', $order->bill_telephone1, 'size="21" maxlength="20" onfocus="clearField(\'bill_telephone1\', \'' . GEN_TELEPHONE1 . '\')" onblur="setField(\'bill_telephone1\', \'' . GEN_TELEPHONE1 . '\')"', ADDRESS_BOOK_TELEPHONE1_REQUIRED) . chr(10);
-echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48" onfocus="clearField(\'bill_email\', \'' . GEN_EMAIL . '\')" onblur="setField(\'bill_email\', \'' . GEN_EMAIL . '\')"', ADDRESS_BOOK_EMAIL_REQUIRED) . chr(10);
+echo html_input_field('bill_telephone1', $order->bill_telephone1, 'size="21" maxlength="20" onfocus="clearField(\'bill_telephone1\', \'' . TEXT_TELEPHONE . '\')" onblur="setField(\'bill_telephone1\', \'' . TEXT_TELEPHONE . '\')"', ADDRESS_BOOK_TELEPHONE1_REQUIRED) . chr(10);
+echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48" onfocus="clearField(\'bill_email\', \'' . TEXT_EMAIL . '\')" onblur="setField(\'bill_email\', \'' . TEXT_EMAIL . '\')"', ADDRESS_BOOK_EMAIL_REQUIRED) . chr(10);
 ?>
 		  </td>
 		  <td nowrap="nowrap" width="33%" valign="top">
 <?php if (defined('MODULE_SHIPPING_STATUS')) { // show shipping address
   echo html_input_field('ship_primary_name', $order->ship_primary_name, 'size="33" maxlength="32" onfocus="clearField(\'ship_primary_name\', \'' . GEN_PRIMARY_NAME . '\')" onblur="setField(\'ship_primary_name\', \'' . GEN_PRIMARY_NAME . '\')"', true) . chr(10);
-  echo html_checkbox_field('ship_add_update', '1', ($order->ship_add_update) ? true : false, '', '') . ORD_ADD_UPDATE . '<br />' . chr(10);
-  echo html_input_field('ship_contact', $order->ship_contact, 'size="33" maxlength="32" onfocus="clearField(\'ship_contact\', \'' . GEN_CONTACT . '\')" onblur="setField(\'ship_contact\', \'' . GEN_CONTACT . '\')"', ADDRESS_BOOK_SHIP_CONTACT_REQ) . chr(10);
-  echo html_checkbox_field('drop_ship', '1', ($order->drop_ship) ? true : false, '','onclick="DropShipView(this)"') . ORD_DROP_SHIP . '<br />' . chr(10);
-  echo html_input_field('ship_address1', $order->ship_address1, 'size="33" maxlength="32" onfocus="clearField(\'ship_address1\', \'' . GEN_ADDRESS1 . '\')" onblur="setField(\'ship_address1\', \'' . GEN_ADDRESS1 . '\')"', ADDRESS_BOOK_SHIP_ADD1_REQ) . '<br />' . chr(10);
-  echo html_input_field('ship_address2', $order->ship_address2, 'size="33" maxlength="32" onfocus="clearField(\'ship_address2\', \'' . GEN_ADDRESS2 . '\')" onblur="setField(\'ship_address2\', \'' . GEN_ADDRESS2 . '\')"', ADDRESS_BOOK_SHIP_ADD2_REQ) . '<br />' . chr(10);
-  echo html_input_field('ship_city_town', $order->ship_city_town, 'size="25" maxlength="24" onfocus="clearField(\'ship_city_town\', \'' . GEN_CITY_TOWN . '\')" onblur="setField(\'ship_city_town\', \'' . GEN_CITY_TOWN . '\')"', ADDRESS_BOOK_SHIP_CITY_REQ) . chr(10);
-  echo html_input_field('ship_state_province', $order->ship_state_province, 'size="3" maxlength="5" onfocus="clearField(\'ship_state_province\', \'' . GEN_STATE_PROVINCE . '\')" onblur="setField(\'ship_state_province\', \'' . GEN_STATE_PROVINCE . '\')"', ADDRESS_BOOK_SHIP_STATE_REQ) . chr(10);
-  echo html_input_field('ship_postal_code', $order->ship_postal_code, 'size="11" maxlength="10" onfocus="clearField(\'ship_postal_code\', \'' . GEN_POSTAL_CODE . '\')" onblur="setField(\'ship_postal_code\', \'' . GEN_POSTAL_CODE . '\')"', ADDRESS_BOOK_SHIP_POSTAL_CODE_REQ) . '<br />' . chr(10);
+  echo html_checkbox_field('ship_add_update', '1', ($order->ship_add_update) ? true : false, '', '') . TEXT_ADD_UPDATE . '<br />' . chr(10);
+  echo html_input_field('ship_contact', $order->ship_contact, 'size="33" maxlength="32" onfocus="clearField(\'ship_contact\', \'' . TEXT_ATTENTION . '\')" onblur="setField(\'ship_contact\', \'' . TEXT_ATTENTION . '\')"', ADDRESS_BOOK_SHIP_CONTACT_REQ) . chr(10);
+  echo html_checkbox_field('drop_ship', '1', ($order->drop_ship) ? true : false, '','onclick="DropShipView(this)"') . TEXT_DROP_SHIP . '<br />' . chr(10);
+  echo html_input_field('ship_address1', $order->ship_address1, 'size="33" maxlength="32" onfocus="clearField(\'ship_address1\', \'' . TEXT_ADDRESS1 . '\')" onblur="setField(\'ship_address1\', \'' . TEXT_ADDRESS1 . '\')"', ADDRESS_BOOK_SHIP_ADD1_REQ) . '<br />' . chr(10);
+  echo html_input_field('ship_address2', $order->ship_address2, 'size="33" maxlength="32" onfocus="clearField(\'ship_address2\', \'' . TEXT_ADDRESS2 . '\')" onblur="setField(\'ship_address2\', \'' . TEXT_ADDRESS2 . '\')"', ADDRESS_BOOK_SHIP_ADD2_REQ) . '<br />' . chr(10);
+  echo html_input_field('ship_city_town', $order->ship_city_town, 'size="25" maxlength="24" onfocus="clearField(\'ship_city_town\', \'' . TEXT_CITY_TOWN . '\')" onblur="setField(\'ship_city_town\', \'' . TEXT_CITY_TOWN . '\')"', ADDRESS_BOOK_SHIP_CITY_REQ) . chr(10);
+  echo html_input_field('ship_state_province', $order->ship_state_province, 'size="3" maxlength="5" onfocus="clearField(\'ship_state_province\', \'' . TEXT_STATE_PROVINCE . '\')" onblur="setField(\'ship_state_province\', \'' . TEXT_STATE_PROVINCE . '\')"', ADDRESS_BOOK_SHIP_STATE_REQ) . chr(10);
+  echo html_input_field('ship_postal_code', $order->ship_postal_code, 'size="11" maxlength="10" onfocus="clearField(\'ship_postal_code\', \'' . TEXT_POSTAL_CODE . '\')" onblur="setField(\'ship_postal_code\', \'' . TEXT_POSTAL_CODE . '\')"', ADDRESS_BOOK_SHIP_POSTAL_CODE_REQ) . '<br />' . chr(10);
   echo html_pull_down_menu('ship_country_code', gen_get_countries(), $order->ship_country_code) . '<br />' . chr(10);
-  echo html_input_field('ship_telephone1', $order->ship_telephone1, 'size="21" maxlength="20" onfocus="clearField(\'ship_telephone1\', \'' . GEN_TELEPHONE1 . '\')" onblur="setField(\'ship_telephone1\', \'' . GEN_TELEPHONE1 . '\')"', ADDRESS_BOOK_TELEPHONE1_REQUIRED) . chr(10);
-  echo html_input_field('ship_email', $order->ship_email, 'size="35" maxlength="48" onfocus="clearField(\'ship_email\', \'' . GEN_EMAIL . '\')" onblur="setField(\'ship_email\', \'' . GEN_EMAIL . '\')"', ADDRESS_BOOK_EMAIL_REQUIRED) . chr(10);
+  echo html_input_field('ship_telephone1', $order->ship_telephone1, 'size="21" maxlength="20" onfocus="clearField(\'ship_telephone1\', \'' . TEXT_TELEPHONE . '\')" onblur="setField(\'ship_telephone1\', \'' . TEXT_TELEPHONE . '\')"', ADDRESS_BOOK_TELEPHONE1_REQUIRED) . chr(10);
+  echo html_input_field('ship_email', $order->ship_email, 'size="35" maxlength="48" onfocus="clearField(\'ship_email\', \'' . TEXT_EMAIL . '\')" onblur="setField(\'ship_email\', \'' . TEXT_EMAIL . '\')"', ADDRESS_BOOK_EMAIL_REQUIRED) . chr(10);
 } else {
   echo html_hidden_field('ship_primary_name', '')   . chr(10);
   echo html_hidden_field('ship_add_update', '0')    . chr(10);
@@ -245,11 +245,11 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
       <table style="border-collapse:collapse;width:100%;">
 		<thead class="ui-widget-header">
         <tr>
-          <th><?php echo in_array(JOURNAL_ID, array(6,9,10,12)) ? ORD_HEADING_NUMBER_4 : TEXT_REFERENCE_NUMBER; ?></th>
-          <?php if (JOURNAL_ID==12) echo '<th>' . ORD_HEADING_NUMBER_10 . '</th>' . chr(10); ?>
-          <?php if (ENABLE_MULTI_BRANCH) echo '<th>' . GEN_STORE_ID . '</th>' . chr(10); ?>
+          <th><?php echo in_array(JOURNAL_ID, array(6,9,10,12)) ? TEXT_PO_NUMBER : TEXT_REFERENCE_NUMBER; ?></th>
+          <?php if (JOURNAL_ID==12) echo '<th>' . TEXT_SO_NUMBER . '</th>' . chr(10); ?>
+          <?php if (ENABLE_MULTI_BRANCH) echo '<th>' . TEXT_STORE_ID . '</th>' . chr(10); ?>
           <th><?php echo (in_array(JOURNAL_ID, array(3,4,6,7,9)) ? TEXT_BUYER : TEXT_SALES_REP); ?></th>
-<?php if ($template_options['terms']) echo '<th>' . ACT_TERMS_DUE . '</th>'; ?>
+<?php if ($template_options['terms']) echo '<th>' . TEXT_TERMS_DUE . '</th>'; ?>
 <?php if ($template_options['terminal_date']) echo '<th>' . (in_array(JOURNAL_ID, array(3,4,9)) ? TEXT_EXPIRATION_DATE : TEXT_SHIP_BY_DATE) . '</th>'; ?>
           <th><?php echo DEF_GL_ACCT_TITLE; ?></th>
         </tr>
@@ -264,7 +264,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
             <td align="center"><?php echo html_pull_down_menu('store_id', gen_get_store_ids(), $order->store_id ? $order->store_id : $_SESSION['admin_prefs']['def_store_id']); ?></td>
 		  <?php } ?>
           <td align="center"><?php echo html_pull_down_menu('rep_id', gen_get_rep_ids($account_type), $order->rep_id ? $order->rep_id : $default_sales_rep); ?></td>
-<?php if ($template_options['terms']) echo '<td align="center">' . html_input_field('terms_text', gen_terms_to_language('0', true, 'ap'), 'readonly="readonly" size="25"') . '&nbsp;' . html_icon('apps/accessories-text-editor.png', ACT_TERMS_DUE, 'small', 'align="top" style="cursor:pointer" onclick="TermsList()"') . '</td>'; ?>
+<?php if ($template_options['terms']) echo '<td align="center">' . html_input_field('terms_text', gen_terms_to_language('0', true, 'ap'), 'readonly="readonly" size="25"') . '&nbsp;' . html_icon('apps/accessories-text-editor.png', TEXT_TERMS_DUE, 'small', 'align="top" style="cursor:pointer" onclick="TermsList()"') . '</td>'; ?>
 <?php if ($template_options['terminal_date']) echo '<td align="center">' . html_calendar_field($cal_terminal) . '</td>'; ?>
           <td align="center">
 			<?php echo html_pull_down_menu('gl_acct_id', $gl_array_list, $order->gl_acct_id, ''); ?>
@@ -288,7 +288,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
           <th><?php echo TEXT_DESCRIPTION; ?></th>
           <th><?php echo TEXT_GL_ACCOUNT; ?></th>
           <th><?php echo TEXT_UNIT_PRICE; ?></th>
-          <th><?php echo ORD_TAX_RATE; ?></th>
+          <th><?php echo TEXT_TAX_RATE; ?></th>
           <th><?php echo TEXT_AMOUNT; ?></th>
         </tr>
 <?php } else { // two line order screen ?>
@@ -306,7 +306,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
           <th><?php echo TEXT_PRICE; ?></th>
           <th><?php echo TEXT_DISCOUNT; ?></th>
           <th><?php echo TEXT_UNIT_PRICE; ?></th>
-          <th><?php echo ORD_TAX_RATE; ?></th>
+          <th><?php echo TEXT_TAX_RATE; ?></th>
           <th><?php echo TEXT_AMOUNT; ?></th>
         </tr>
 <?php } // end if single line order screen ?>
@@ -355,7 +355,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
 				}
 				echo '  <td nowrap="nowrap" align="center">';
 				echo html_input_field('price_' . $i, $currencies->precise($order->item_rows[$j]['price'], true, $order->currencies_code, $order->currencies_value), 'size="8" maxlength="20" onchange="updateRowTotal(' . $i . ', false)" style="text-align:right"') . chr(10);
-				echo html_icon('mimetypes/x-office-spreadsheet.png', TEXT_PRICE_MANAGER, 'small', 'align="top" style="cursor:pointer" onclick="PriceManagerList(' . $i . ')"');
+				echo html_icon('mimetypes/x-office-spreadsheet.png', TEXT_PRICE_SHEETS, 'small', 'align="top" style="cursor:pointer" onclick="PriceManagerList(' . $i . ')"');
 				echo '</td>' . chr(10);
 				echo '  <td>' . html_pull_down_menu('tax_' . $i, $tax_rates, $order->item_rows[$j]['tax'], 'onchange="updateRowTotal(' . $i . ', false)"') . '</td>' . chr(10);
 				echo '  <td align="center">' . chr(10);
@@ -396,7 +396,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
         <tr>
           <td>&nbsp;</td>
           <td align="right">
-<?php echo ORD_SUBTOTAL . ' '; ?>
+<?php echo TEXT_SUBTOTAL . ' '; ?>
 <?php echo html_input_field('subtotal', $currencies->format($order->subtotal, true, $order->currencies_code, $order->currencies_value), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?>
 		  </td>
         </tr>
@@ -425,9 +425,9 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
 		  </td>
           <td align="right">
 <?php echo html_button_field('estimate', TEXT_ESTIMATE, 'onclick="FreightList()"');
-  echo ORD_SHIP_CARRIER . ' ' . html_pull_down_menu('ship_carrier', gen_build_pull_down($admin_classes['shipping']->methods, true, true), $default = '', "onchange='buildFreightDropdown()'");
-  echo ' ' . ORD_FREIGHT_SERVICE . ' ' . html_pull_down_menu('ship_service', gen_null_pull_down(), '');
-  echo ' ' . ORD_FREIGHT . ' ';
+  echo TEXT_CARRIER . ' ' . html_pull_down_menu('ship_carrier', gen_build_pull_down($admin_classes['shipping']->methods, true, true), $default = '', "onchange='buildFreightDropdown()'");
+  echo ' ' . TEXT_SERVICE . ' ' . html_pull_down_menu('ship_service', gen_null_pull_down(), '');
+  echo ' ' . TEXT_FREIGHT . ' ';
   echo html_input_field('freight', $currencies->format(($order->freight ? $order->freight : '0.00'), true, $order->currencies_code, $order->currencies_value), 'size="15" maxlength="20" onchange="updateTotalPrices()" style="text-align:right"'); ?>
 		  </td>
         </tr>
@@ -442,7 +442,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
         <tr>
           <td><?php echo TEXT_SELECT_FILE_TO_ATTACH . ' ' . html_file_field('file_name'); ?></td>
           <td align="right">
-<?php echo ($account_type == 'v') ? ORD_PURCHASE_TAX . ' ' : ORD_SALES_TAX . ' '; ?>
+<?php echo ($account_type == 'v') ? TEXT_PURCHASE_TAX . ' ' : TEXT_SALES_TAX . ' '; ?>
 <?php echo ' ' . html_input_field('sales_tax', $currencies->format(($order->sales_tax ? $order->sales_tax : '0.00'), true, $order->currencies_code, $order->currencies_value), 'readonly="readonly" size="15" maxlength="20" onchange="updateTotalPrices()" style="text-align:right"'); ?>
 		  </td>
         </tr>
@@ -453,7 +453,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
 		    </div>&nbsp;
 		  </td>
           <td align="right">
-<?php echo ORD_INVOICE_TOTAL . ' '; ?>
+<?php echo TEXT_INVOICE_TOTAL . ' '; ?>
 <?php echo html_input_field('total', $currencies->format($order->total_amount, true, $order->currencies_code, $order->currencies_value), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?>
 		  </td>
         </tr>

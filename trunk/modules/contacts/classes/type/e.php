@@ -17,22 +17,22 @@
 //  Path: /modules/contacts/classes/type/e.php
 //  employees
 namespace contacts\classes\type;
-class e extends \contacts\classes\contacts{	
-	public $security_token = SECURITY_ID_MAINTAIN_EMPLOYEES;
-	public $help		   = '07.07.01.02';
-	public $address_types  = array('em', 'es', 'eb', 'im');
-    public $type           = 'e';
-	
+class e extends \contacts\classes\contacts{
+	public $security_token	= SECURITY_ID_MAINTAIN_EMPLOYEES;
+	public $help			= '07.07.01.02';
+	public $address_types	= array('em', 'es', 'eb', 'im');
+    public $type			= 'e';
+    public $title			= TEXT_EMPLOYEE;
+
 	public function __construct(){
-		$this->page_title_new = sprintf(BOX_TEXT_NEW_TITLE, TEXT_EMPLOYEE);
 		$this->tab_list[] = array('file'=>'template_e_history',	'tag'=>'history',  'order'=>10, 'text'=>TEXT_HISTORY);
 		$this->tab_list[] = array('file'=>'template_notes',		'tag'=>'notes',    'order'=>40, 'text'=>TEXT_NOTES);
 		$this->tab_list[] = array('file'=>'template_e_general',	'tag'=>'general',  'order'=> 1, 'text'=>TEXT_GENERAL);
 		parent::__construct();
 	}
-	
+
   	function delete($id) {
-	  	global $db; 
+	  	global $db;
 	  	if ( $this->id == '' ) $this->id = $id;
   		$result = $db->Execute("select admin_id from ".TABLE_USERS." where account_id =". $this->id);
 		if ($result->RecordCount() == 0) {

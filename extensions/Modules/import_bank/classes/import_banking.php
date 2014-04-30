@@ -163,14 +163,14 @@ class import_banking extends \phreebooks\classes\journal {
 			$gl_acct_id         		= AR_DEFAULT_GL_ACCT ;
 			$gl_disc_acct_id			= AR_DISCOUNT_SALES_ACCOUNT;
 			$this->purchase_invoice_id 	= 'DP' . $this->post_date;
-			$this->description			= sprintf(TEXT_JID_ENTRY, constant('ORD_TEXT_18_C_WINDOW_TITLE'));
+			$this->description			= sprintf(TEXT_ARGS_ENTRY, constant('ORD_TEXT_18_C_WINDOW_TITLE'));
 			define('GL_TYPE','pmt');
 		}else{
 			$this->_firstjid 			= 20;
 			$gl_acct_id         		= AP_DEFAULT_PURCHASE_ACCOUNT ;
 			$gl_disc_acct_id			= AP_DISCOUNT_PURCHASE_ACCOUNT;
 			$result 					= $db->Execute("select next_check_num from " . TABLE_CURRENT_STATUS);
-			$this->description			= sprintf(TEXT_JID_ENTRY, constant('ORD_TEXT_20_V_WINDOW_TITLE'));
+			$this->description			= sprintf(TEXT_ARGS_ENTRY, constant('ORD_TEXT_20_V_WINDOW_TITLE'));
 			define('GL_TYPE','chk');
 		}
 		$this->journal_id = $this->_firstjid;

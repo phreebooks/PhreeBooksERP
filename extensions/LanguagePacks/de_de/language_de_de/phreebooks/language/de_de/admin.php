@@ -51,7 +51,7 @@ define ('COA_06_DESC', 'Sonstiges Umlaufvermögen');
 define ('COA_08_DESC "," Sachanlagen ');
 define ('COA_10_DESC', 'Kumulierte Abschreibungen');
 define ('COA_12_DESC', 'Sonstige Vermögensgegenstände');
-define ('COA_20_DESC', 'Kreditorenbuchhaltung');
+define ('TEXT_ACCOUNTS_PAYABLE', 'Kreditorenbuchhaltung');
 define ('COA_22_DESC', 'Sonstige kurzfristige Verbindlichkeiten ');
 define ('COA_24_DESC', 'Langfristige Verbindlichkeiten');
 define ('COA_30_DESC', 'Erträge');
@@ -62,8 +62,8 @@ define ('COA_42_DESC', 'Equity - wird geschlossen ');
 define ('COA_44_DESC', 'Equity - Gewinnrücklagen');
 
 // Formular-Definitionen
-define ('PB_PF_BANK_CHECK', 'Bank Checks');
-define ('PB_PF_BANK_DEP_SLIP', 'Überweisung Slips');
+define ('TEXT_BANK_CHECKS', 'Bank Checks');
+define ('TEXT_BANK_DEPOSIT_SLIPS', 'Überweisung Slips');
 define ('PB_PF_COLLECT_LTR', 'Collection Letters');
 define ('PB_PF_CUST_CRD_MEMO', 'Gutschrift - Kunde');
 define ('PB_PF_CUST_LABEL', 'Etiketten - Kunde');
@@ -72,8 +72,8 @@ define ('PB_PF_CUST_STATEMENT', 'Kunden-Statements');
 define ('PB_PF_DEP_SLIP', 'Einzahlungsscheine');
 define ('PB_PF_INV_PKG_SLIP', 'Rechnungen / Lieferscheine');
 define ('PB_PF_PURCH_ORDER', 'Bestellungen');
-define ('PB_PF_SALES_ORDER', 'Sales Orders');
-define ('PB_PF_SALES_REC', 'Sales Receipts ');
+define ('TEXT_SALES_ORDER', 'Sales Orders');
+define ('TEXT_SALES_RECEIPTS', 'Sales Receipts ');
 define ('PB_PF_VENDOR_CRD_MEMO', 'Gutschrift - Vendor');
 define ('PB_PF_VENDOR_LABEL', 'Etiketten - Hersteller');
 define ('PB_PF_VENDOR_QUOTE', 'Hersteller Quotes');
@@ -110,7 +110,7 @@ define ('GEN_ADM_TOOLS_REPAIR_LOG_ENTRY', 'repariert GL Salden');
 define ('GL_UTIL_HEADING_TITLE', 'General Journal Wartung, Installation und Utilities');
 define ('GL_UTIL_PERIOD_LEGEND', 'Rechnungswesen und Epochen Geschäftsjahre');
 define ('GL_UTIL_PURGE_ALL', 'Purge alle Journal Transaktionen (Neustart)');
-define ('GL_FISCAL_YEAR', 'Geschäftsjahr');
+define ('TEXT_FISCAL_YEAR', 'Geschäftsjahr');
 define ('GL_UTIL_FISCAL_YEAR_TEXT', 'Geschäftsperiode Kalenderdaten können hier geändert werden Bitte beachten Sie, dass das Geschäftsjahr Termine können nicht für einen beliebigen Zeitraum bis zu geändert werden und auch die letzte allgemeine Journaleintrag in das System..');
 define ('GL_UTIL_PURGE_DB', 'Löschen Sie alle Journaleinträge (Typ \' purge \'in das Textfeld ein und drücken Sie Luftdusche) <br />');
 define ('GL_UTIL_PURGE_DB_CONFIRM', 'Sind Sie sicher, dass Sie alle Journaleinträge löschen?');
@@ -219,9 +219,9 @@ define ('GL_INFO_HEADING_ONLY', 'Dieses Konto ist eine Überschrift und kann nic
 define ('GL_INFO_PRIMARY_ACCT_ID', 'Wenn dieses Konto ein Sub-Account, wählen primäre Konto:');
 define ('ERROR_ACCT_TYPE_REQ', 'Der GL Kontotyp ist erforderlich!');
 define ('GL_ERROR_CANT_MAKE_HEADING', 'Dieses Konto verfügt über ein ausgewogenes Es kann nicht zu einer Kopf-Konto umgewandelt werden..');
-define ('GL_POPUP_WINDOW_TITLE', 'Kontenplan');
+define ('TEXT_CHART_OF_ACCOUNTS', 'Kontenplan');
 define ('GL_HEADING_ACCOUNT_NAME', 'Konto-ID');
-define ('GL_HEADING_SUBACCOUNT', 'Unterkonto');
+define ('TEXT_SUBACCOUNT', 'Unterkonto');
 define ('GL_EDIT_INTRO', 'Bitte führen Sie alle notwendigen Änderungen durch');
 define ('GL_INFO_ACCOUNT_TYPE', 'Kontotyp (Erforderlich)');
 define ('GL_INFO_ACCOUNT_INACTIVE', 'Account inaktiv');
@@ -235,7 +235,7 @@ define ('GL_LOG_CHART_OF_ACCOUNTS', 'Kontenplan -');
 
 /************************** (Vertrieb / Einkauf Authorities) ***************** ******************************/
 define ('SETUP_TITLE_TAX_AUTHS_VEND', 'Bestellen Finanzamt');
-define ('SETUP_TITLE_TAX_AUTHS', 'Sales Tax Authorities');
+define ('TEXT_SALES_TAX_AUTHORITIES', 'Sales Tax Authorities');
 define ('SETUP_TAX_DESC_SHORT', 'Short Name');
 define ('SETUP_TAX_GL_ACCT', 'GL Konto-ID');
 define ('SETUP_TAX_RATE', 'Steuersatz (in Prozent)');
@@ -255,13 +255,13 @@ define ('SETUP_DISPLAY_NUMBER_OF_TAX_AUTH', TEXT_DISPLAY_NUMBER . 'Steuerbehörd
 /************************** (Vertrieb / Einkauf Steuersätze) **************** *******************************/
 define ('SETUP_TITLE_TAX_RATES', 'Sales Tax Preise');
 define ('SETUP_TITLE_TAX_RATES_VEND', 'Bestellen Steuersätze');
-define ('SETUP_HEADING_TAX_FREIGHT', 'Tax Freight ');
+define ('TEXT_TAX_FREIGHT', 'Tax Freight ');
 define ('SETUP_HEADING_TOTAL_TAX', 'Total Tax (in Prozent)');
 define ('SETUP_TAX_EDIT_INTRO', 'Bitte führen Sie alle notwendigen Änderungen durch');
 define ('SETUP_INFO_TAX_AUTHORITIES', 'Finanzamt');
 define ('SETUP_INFO_TAX_AUTH_ADD', 'Wählen Sie eine Steuerbehörde hinzufügen');
 define ('SETUP_INFO_TAX_AUTH_DELETE', 'Wählen Sie eine Steuerbehörde zu entfernen');
-define ('SETUP_INFO_FREIGHT_TAXABLE', 'Freight Steuerpflichtige');
+define ('TEXT_FREIGHT_TAXABLE', 'Freight Steuerpflichtige');
 define ('SETUP_TAX_INSERT_INTRO', 'Bitte geben Sie den neuen Steuersatz mit seinen Eigenschaften');
 define ('SETUP_TAX_DELETE_INTRO', 'Sind Sie sicher, dass Sie diesen Steuersatz löschen?');
 define ('SETUP_HEADING_NEW_TAX_RATE', 'New Tax Rate');

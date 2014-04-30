@@ -18,7 +18,7 @@
 //  Path: /modules/bulk_inv/language/en_us/admin.php
 //
 // Module information
-define('MODULE_BULK_INV_TITLE','Bulk Inventory Tool');
+define('TEXT_BULK_INVENTORY_TOOL','Bulk Inventory Tool');
 define('MODULE_BULK_INV_DESCRIPTION','This tool helps enter database information quicker than the normal Inventory Manager.');
 
 ?>

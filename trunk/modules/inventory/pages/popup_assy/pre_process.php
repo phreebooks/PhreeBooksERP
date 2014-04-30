@@ -79,5 +79,5 @@ history_save('inv_pop_assy');
 $include_header   = false;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', GEN_HEADING_PLEASE_SELECT);
+define('PAGE_TITLE', TEXT_PLEASE_SELECT);
 ?>

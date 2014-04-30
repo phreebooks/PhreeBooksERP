@@ -68,9 +68,9 @@ foreach ($inventory_types_plus as $key => $value) $type_select_list[] = array('i
 $heading_array = array(
   'a.sku'               => TEXT_SKU,
   'a.description_short' => TEXT_DESCRIPTION,
-  'a.full_price'        => ($account_type == 'v') ? INV_ENTRY_INV_ITEM_COST : INV_ENTRY_FULL_PRICE,
-  'a.quantity_on_hand'  => INV_HEADING_QTY_ON_HAND,
-  'a.quantity_on_order' => INV_HEADING_QTY_ON_ORDER,
+  'a.full_price'        => ($account_type == 'v') ? TEXT_ITEM_COST : TEXT_FULL_PRICE,
+  'a.quantity_on_hand'  => TEXT_QUANTITY_ON_HAND_SHORT,
+  'a.quantity_on_order' => TEXT_QUANTITY_ON_ORDER_SHORT,
 );
 $extras      = (ENABLE_MULTI_BRANCH) ? array(TEXT_QTY_THIS_STORE) : array();
 $result      = html_heading_bar($heading_array, $extras);
@@ -88,7 +88,7 @@ if (isset($_REQUEST['search_text']) && $_REQUEST['search_text'] <> '') {
 if (!$f0) $criteria[] = "inactive = '0'"; // inactive flag
 if ($f1) { // sort by inventory type
   switch ($f1) {
-    case 'cog': 
+    case 'cog':
 	  $cog_types = explode(',',COG_ITEM_TYPES);
 	  $criteria[] = "a.inventory_type in ('" . implode("','", $cog_types) . "')"; break;
 	default:    $criteria[] = "a.inventory_type = '$f1'";                     break;
@@ -98,7 +98,7 @@ if ($f2 && $contactID) $criteria[] = "p.vendor_id = " . $contactID; // limit to 
 // build search filter string
 $search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
 
-$field_list = array('a.id as id', 'a.sku as sku', 'inactive', 'inventory_type', 'quantity_on_hand', 'quantity_on_order', 
+$field_list = array('a.id as id', 'a.sku as sku', 'inactive', 'inventory_type', 'quantity_on_hand', 'quantity_on_order',
   'description_short');
 
 // hook to add new fields to the query return results

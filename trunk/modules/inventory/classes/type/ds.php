@@ -2,7 +2,7 @@
 namespace inventory\classes\type;
 class ds extends \inventory\classes\inventory {//Description
 	public $inventory_type			= 'ds';
-	public $title					= INV_TYPES_DS;
+	public $title					= TEXT_DESCRIPTION;
 	public $account_sales_income	= INV_DESC_DEFAULT_SALES;
 	public $account_inventory_wage	= null;
 	public $account_cost_of_sales	= null;

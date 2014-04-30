@@ -149,7 +149,7 @@ switch ($_REQUEST['action']) {
 
 /*****************   prepare to display templates  *************************/
 $fill_all_values = array(
-  array('id' => '-1', 'text' => GEN_HEADING_PLEASE_SELECT),
+  array('id' => '-1', 'text' => TEXT_PLEASE_SELECT),
   array('id' => '0',  'text' => TEXT_NONE),
   array('id' => '1',  'text' => TEXT_READ_ONLY),
   array('id' => '2',  'text' => TEXT_ADD),
@@ -171,7 +171,7 @@ switch ($_REQUEST['action']) {
   default:
 	// build the list header
 	$heading_array = array(
-	  'admin_name'   => GEN_USERNAME,
+	  'admin_name'   => TEXT_USERNAME,
 	  'inactive'     => TEXT_INACTIVE,
 	);
 	$result      = html_heading_bar($heading_array);
@@ -196,7 +196,7 @@ switch ($_REQUEST['action']) {
     history_save('roles');
 
 	$include_template = 'template_main.php';
-	define('PAGE_TITLE', BOX_HEADING_ROLES);
+	define('PAGE_TITLE', TEXT_ROLES);
 }
 
 ?>

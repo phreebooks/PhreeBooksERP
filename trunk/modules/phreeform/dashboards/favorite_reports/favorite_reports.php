@@ -35,9 +35,9 @@ class favorite_reports extends \core\classes\ctl_panel {
 		$contents = '';
 		$control  = '';
 		// load the report list
-		$result = $db->Execute("select id, security, doc_title from " . TABLE_PHREEFORM . " 
+		$result = $db->Execute("select id, security, doc_title from " . TABLE_PHREEFORM . "
 		  where doc_ext in ('rpt','frm') order by doc_title");
-		$data_array = array(array('id' => '', 'text' => GEN_HEADING_PLEASE_SELECT));
+		$data_array = array(array('id' => '', 'text' => TEXT_PLEASE_SELECT));
 		$type_array = array();
 		while(!$result->EOF) {
 		  	if (security_check($result->fields['security'])) {
@@ -53,7 +53,7 @@ class favorite_reports extends \core\classes\ctl_panel {
 		$control .= html_submit_field('sub_favorite_reports', TEXT_ADD);
 		$control .= html_hidden_field('favorite_reports_rId', '');
 		$control .= '</div></div>';
-	
+
 		// Build content box
 		$contents = '';
 		if (is_array($params)) {
@@ -80,10 +80,10 @@ class favorite_reports extends \core\classes\ctl_panel {
 		$description = $result->fields['doc_title'];
 		$remove_id   = db_prepare_input($_POST['favorite_reports_rId']);
 		// do nothing if no title or url entered
-		if (!$remove_id && $report_id == '') return; 
+		if (!$remove_id && $report_id == '') return;
 		// fetch the current params
 		$result = $db->Execute("select params from " . TABLE_USERS_PROFILES . "
-		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "' 
+		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "'
 		  and dashboard_id = '" . $this->id . "'");
 		if ($remove_id) { // remove element
 		  	$this->params = unserialize($result->fields['params']);
@@ -101,8 +101,8 @@ class favorite_reports extends \core\classes\ctl_panel {
 			$this->params = array($report_id => $description);
 		}
 		asort($this->params);
-		$db->Execute("update " . TABLE_USERS_PROFILES . " set params = '" . serialize($this->params) . "' 
-		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "' 
+		$db->Execute("update " . TABLE_USERS_PROFILES . " set params = '" . serialize($this->params) . "'
+		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "'
 		  and dashboard_id = '" . $this->id . "'");
 	}
 }

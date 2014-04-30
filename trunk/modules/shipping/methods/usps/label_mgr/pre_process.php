@@ -48,7 +48,7 @@ switch ($_REQUEST['action']) {
 		'cost' => $sInfo->cost);
 	db_perform(TABLE_SHIPPING_LOG, $sql_array, 'insert');
 	$db->Execute("update " . TABLE_CURRENT_STATUS . " set next_shipment_num = next_shipment_num + 1");
-	gen_add_audit_log(SHIPPING_LOG_LABEL_PRINTED, $sInfo->purchase_invoice_id);
+	gen_add_audit_log(TEXT_LABEL_GENERATED, $sInfo->purchase_invoice_id);
 	break;
 
   case 'delete':
@@ -64,7 +64,7 @@ switch ($_REQUEST['action']) {
 	}
 
 	$db->Execute("delete from " . TABLE_SHIPPING_LOG . " where shipment_id = " . $shipment_id);
-	gen_add_audit_log(SHIPPING_LABEL_DELETED, $tracking_id);
+	gen_add_audit_log(TEXT_LABEL_DELETED, $tracking_id);
 	break;
 
   default:

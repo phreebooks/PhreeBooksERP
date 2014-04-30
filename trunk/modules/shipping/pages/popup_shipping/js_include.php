@@ -22,8 +22,8 @@
 <!--
 // pass any php variables generated during pre-process that are used in the javascript functions.
 // Include translations here as well.
-var action   = '<?php echo $_REQUEST['action']; ?>'; 
-var formName = '<?php echo $_GET['form']; ?>'; 
+var action   = '<?php echo $_REQUEST['action']; ?>';
+var formName = '<?php echo $_GET['form']; ?>';
 <?php echo js_calendar_init($cal_ship); ?>
 
 function init() {
@@ -31,13 +31,13 @@ function init() {
 	  case 'rates':
 	    break;
 	  default:
-		if (window.opener.document.getElementById('ship_city_town').value != '<?php echo GEN_CITY_TOWN ?>') {
+		if (window.opener.document.getElementById('ship_city_town').value != '<?php echo TEXT_CITY_TOWN ?>') {
 			document.step1.ship_to_city.value = window.opener.document.getElementById('ship_city_town').value;
 		}
-		if (window.opener.document.getElementById('ship_state_province').value != '<?php echo GEN_STATE_PROVINCE ?>') {
+		if (window.opener.document.getElementById('ship_state_province').value != '<?php echo TEXT_STATE_PROVINCE ?>') {
 			document.step1.ship_to_state.value = window.opener.document.getElementById('ship_state_province').value;
 		}
-		if (window.opener.document.getElementById('ship_postal_code').value != '<?php echo GEN_POSTAL_CODE ?>') {
+		if (window.opener.document.getElementById('ship_postal_code').value != '<?php echo TEXT_POSTAL_CODE ?>') {
 			document.step1.ship_to_postal_code.value = window.opener.document.getElementById('ship_postal_code').value;
 		}
 		var ship_to_country = window.opener.document.getElementById('ship_country_code').value;

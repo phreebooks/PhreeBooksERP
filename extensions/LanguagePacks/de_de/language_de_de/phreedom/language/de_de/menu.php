@@ -25,17 +25,17 @@
 // Geben Sie das neue Menü Kategorie Überschrift gegebenenfalls
 define ('HEADER_TITLE_TOP', 'Home');
 define ('HEADER_TITLE_LOGOFF', 'Abmelden');
-define ('MENU_HEADING_COMPANY', 'Gesellschaft');
+define ('TEXT_COMPANY', 'Gesellschaft');
 define ('MENU_HEADING_TOOLS', 'Extras');
 define ('HEADING_TITLE_USERS', 'Benutzer');
-define ('MENU_HEADING_MODULES', 'Module');
+define ('TEXT_MODULES', 'Module');
 // Menü Titel
 define ('BOX_HEADING_USERS', 'Benutzer');
-define ('BOX_HEADING_BACKUP', 'Gesellschaft Backup');
-define ('BOX_HEADING_ENCRYPTION', 'Data Encryption');
+define ('TEXT_COMPANY_BACKUP', 'Gesellschaft Backup');
+define ('TEXT_DATA_ENCRYPTION', 'Data Encryption');
 define ('BOX_IMPORT_EXPORT', 'Import / Export');
-define ('BOX_COMPANY_MANAGER', 'Company Manager');
-define ('BOX_HEADING_ADMIN_TOOLS', 'Verwaltung');
+define ('TEXT_COMPANY_MANAGER', 'Company Manager');
+define ('TEXT_ADMINISTRATIVE_TOOLS', 'Verwaltung');
 define ('BOX_HEADING_CONFIGURATION', 'Modul Administration');
 define ('BOX_GENERAL_ADMIN', 'Allgemeine Einstellungen');
 define ('BOX_HEADING_DEBUG_DL', 'Download-Debug-Datei');

@@ -8,6 +8,6 @@
 // +-----------------------------------------------------------------+
 // Path: /modules/shipping/language/nl_nl/menu.php
 
-define('BOX_SHIPPING_MANAGER','Verzendings Manager');
+define('TEXT_SHIPPING_MANAGER','Verzendings Manager');
 
 ?>

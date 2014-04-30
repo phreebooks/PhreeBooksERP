@@ -27,12 +27,12 @@ $toolbar->icon_list['save']['show'] = false;
 $toolbar->icon_list['print']['show'] = false;
 $toolbar->add_icon('continue', 'onclick="submitToDo(\'create\')"', $order = 10);
 $toolbar->add_help('');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 ?>
-  <h1><?php echo ASSETS_HEADING_NEW_ITEM; ?></h1>
+  <h1><?php echo sprintf(TEXT_NEW_ARGS, TEXT_ASSET); ?></h1>
   <table>
     <tr>
-	  <th nowrap="nowrap" colspan="2"><?php echo ASSETS_ENTER_ASSET_ID; ?></th>
+	  <th nowrap="nowrap" colspan="2"><?php echo sprintf(TEXT_NEW_ARGS, TEXT_ASSET); ?></th>
     </tr>
     <tr>
 	  <td align="right"><?php echo TEXT_ASSET_ID; ?></td>

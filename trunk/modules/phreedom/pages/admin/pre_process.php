@@ -56,12 +56,12 @@ switch ($_REQUEST['action']) {
 			if ($_REQUEST['action'] == 'install') {
 		  		$admin_classes[$method]->install(DIR_FS_MY_FILES.$_SESSION['company'].'/', false);
 		  		write_configure('MODULE_' . strtoupper($admin_classes[$method]->id) . '_STATUS', $admin_classes[$method]->version);
- 				gen_add_audit_log(sprintf(GEN_LOG_INSTALL_SUCCESS, $admin_classes[$method]->text) . TEXT_INSTALL , $admin_classes[$method]->version);
- 				$messageStack->add(sprintf(GEN_LOG_INSTALL_SUCCESS, $admin_classes[$method]->text). TEXT_INSTALL . $admin_classes[$method]->version, 'success');
+ 				gen_add_audit_log(sprintf(TEXT_MODULE_ARGS, $admin_classes[$method]->text) . TEXT_INSTALL , $admin_classes[$method]->version);
+ 				$messageStack->add(sprintf(TEXT_MODULE_ARGS, $admin_classes[$method]->text). TEXT_INSTALL . $admin_classes[$method]->version, 'success');
 			} else {
 		  		$admin_classes[$method]->update();
 		  		write_configure('MODULE_' . strtoupper($admin_classes[$method]->id) . '_STATUS', $admin_classes[$method]->version);
- 				gen_add_audit_log(sprintf(GEN_LOG_INSTALL_SUCCESS, $admin_classes[$method]->text) . TEXT_UPDATE, $admin_classes[$method]->version);
+ 				gen_add_audit_log(sprintf(TEXT_MODULE_ARGS, $admin_classes[$method]->text) . TEXT_UPDATE, $admin_classes[$method]->version);
 	   			$messageStack->add(sprintf(GEN_MODULE_UPDATE_SUCCESS, $admin_classes[$method]->id, $admin_classes[$method]->version), 'success');
 			}
 			if (sizeof($admin_classes[$method]->notes) > 0) foreach ($admin_classes[$method]->notes as $note) $messageStack->add($note, 'caution');
@@ -162,8 +162,8 @@ switch ($_REQUEST['action']) {
 				  	case 'demo':
 				  		$class->install(DIR_FS_MY_FILES . $db_name . '/', $task == 'demo');
 						write_configure('MODULE_' . strtoupper($class->id) . '_STATUS', $class->version);
- 						gen_add_audit_log(sprintf(GEN_LOG_INSTALL_SUCCESS, $class->text) . TEXT_INSTALL , $class->version);
- 						$messageStack->add(sprintf(GEN_LOG_INSTALL_SUCCESS, $class->text). TEXT_INSTALL . $class->version, 'success');
+ 						gen_add_audit_log(sprintf(TEXT_MODULE_ARGS, $class->text) . TEXT_INSTALL , $class->version);
+ 						$messageStack->add(sprintf(TEXT_MODULE_ARGS, $class->text). TEXT_INSTALL . $class->version, 'success');
  						if (sizeof($admin_classes[$method]->notes) > 0) foreach ($class->notes as $note) $messageStack->add($note, 'caution');
 				    	break;
 				  	case 'data':
@@ -198,7 +198,7 @@ switch ($_REQUEST['action']) {
 			$db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '" . $co_name . "'
 			  where configuration_key = 'COMPANY_NAME'");
 			$messageStack->add(SETUP_CO_MGR_CREATE_SUCCESS,'success');
-			gen_add_audit_log(SETUP_CO_MGR_LOG . TEXT_COPY, $db_name);
+			gen_add_audit_log(TEXT_COMPANY_MANAGER. ' - ' . TEXT_COPY, $db_name);
 			$_SESSION['db_server'] = $db_server;
 			$_SESSION['company']   = $db_name;
 			$_SESSION['db_user']   = $db_user;
@@ -241,8 +241,8 @@ switch ($_REQUEST['action']) {
 	    if (is_array($tables)) foreach ($tables as $table) $del_db->Execute("drop table " . $table);
 	    $backup->delete_dir(DIR_FS_MY_FILES . $db_name);
 	    unset($_SESSION['companies'][$_POST['del_company']]);
-	    gen_add_audit_log(SETUP_CO_MGR_LOG . TEXT_DELETE, $db_name);
-	    $messageStack->add(SETUP_CO_MGR_DELETE_SUCCESS, 'success');
+	    gen_add_audit_log(TEXT_COMPANY_MANAGER. ' - ' . TEXT_DELETE, $db_name);
+	    $messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_COMPANY, $_POST['del_company']), 'success');
 	}
 	$default_tab_id = 'manager';
 	break;
@@ -268,7 +268,7 @@ switch ($_REQUEST['action']) {
 	$clean_date = gen_db_date($_POST['clean_date']);
 	if (!$clean_date) break;
 	$result = $db->Execute("delete from ".TABLE_DATA_SECURITY." where exp_date < '".$clean_date."'");
-	$messageStack->add(sprintf(TEXT_CLEAN_SECURITY_SUCCESS, $result->AffectedRows()), 'success');
+	$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, $result->AffectedRows(), TEXT_DATA_SECURITY_RECORDS), 'success');
 	break;
   default:
 }

@@ -27,7 +27,7 @@ define('SECURITY_ID_SKU_PRICER', 999);
 // Menu Locations
 if (defined('MODULE_SKU_PRICER_STATUS')) {
   $mainmenu["inventory"]['submenu']['sku_pricer'] = array(
-    'text'        => BOX_SKU_PRICER_TITLE,
+    'text'        => TEXT_SKU_PRICER,
     'order'       => 159,
     'security_id' => SECURITY_ID_SKU_PRICER,
     'link'        => html_href_link(FILENAME_DEFAULT, 'module=sku_pricer&amp;page=main', 'SSL'),

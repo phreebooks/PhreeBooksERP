@@ -272,7 +272,7 @@ $include_header   = true;
 $include_footer   = true;
 switch ($_REQUEST['action']) {
   case 'new':
-    define('PAGE_TITLE', BOX_ASSET_MODULE);
+    define('PAGE_TITLE', TEXT_ASSET);
     $include_template = 'template_id.php';
     break;
   case 'edit':
@@ -301,14 +301,14 @@ switch ($_REQUEST['action']) {
 	  'default'   => isset($cInfo->terminal_date) ? gen_locale_date($cInfo->terminal_date) : '',
 	  'params'    => array('align' => 'left'),
 	);
-    define('PAGE_TITLE', BOX_ASSET_MODULE);
+    define('PAGE_TITLE', TEXT_ASSET);
     $include_template = 'template_detail.php';
     break;
   default:
     // build the list header
 	$heading_array = array(
 	  'asset_id'          => TEXT_ASSET_ID,
-	  'asset_type'        => ASSETS_ENTRY_ASSETS_TYPE,
+	  'asset_type'        => TEXT_ASSET_TYPE,
 	  'purch_cond'        => TEXT_CONDITION,
 	  'serial_number'     => ASSETS_ENTRY_ASSETS_SERIALIZE,
 	  'description_short' => TEXT_DESCRIPTION,
@@ -337,7 +337,7 @@ switch ($_REQUEST['action']) {
     $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     history_save('assets');
 
-	define('PAGE_TITLE', BOX_ASSET_MODULE);
+	define('PAGE_TITLE', TEXT_ASSET);
     $include_template = 'template_main.php';
 	break;
 }

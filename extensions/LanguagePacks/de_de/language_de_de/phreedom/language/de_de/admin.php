@@ -23,8 +23,8 @@
 //
 
 // Überschriften
-define ('MENU_HEADING_MY_COMPANY', 'My Company');
-define ('MENU_HEADING_CONFIG', 'Einstellungen');
+define ('TEXT_MY_COMPANY', 'My Company');
+define ('TEXT_CONFIGURATION', 'Einstellungen');
 define ('TEXT_DEFAULT_GL_ACCOUNTS', 'Default GL-Konten');
 define ('MENU_HEADING_EMAIL', 'E-Mail-Einstellungen');
 define ('TEXT_LOCAL', 'Lokale');
@@ -35,14 +35,14 @@ define ('TEXT_REQUIRED', 'required');
 define ('HEADING_MODULE_IMPORT', 'Modul Data Import / Export');
 define ('IE_HEADING_TITLE', 'Import / Export und Anfang Balances');
 // Definiert für Login-Bildschirm
-define ('HEADING_TITLE', 'PhreeBooks Login');
+define ('TEXT_PHREEBOOKS_LOGIN', 'PhreeBooks Login');
 define ('TEXT_LOGIN_NAME', 'Benutzername:');
 define ('TEXT_LOGIN_PASS', 'Passwort');
 define ('TEXT_LOGIN_COMPANY', 'Select Company:');
 define ('TEXT_LOGIN_LANGUAGE', 'Select Language:');
 define ('TEXT_LOGIN_THEME', 'Wählen Thema:');
 define ('TEXT_PASSWORD_FORGOTTEN', 'Passwort zusenden');
-define ('TEXT_LOGIN_BUTTON', 'Login');
+define ('TEXT_LOGIN', 'Login');
 define ('TEXT_FORM_PLEASE_WAIT', 'Bitte warten ... Wenn Sie ein Upgrade, das kann eine Weile dauern.');
 define ('TEXT_COPYRIGHT_NOTICE', 'Dieses Programm ist freie Software: Sie können es weiterverbreiten und / oder
 modifizieren unter den Bedingungen der GNU General Public License
@@ -72,7 +72,7 @@ define ('ERROR_CANNOT_CREATE_MODULE_DIR', 'Fehler beim Erstellen des Verzeichnis
 define ('ERROR_CANNOT_REMOVE_MODULE_DIR', 'Fehler beim Entfernen Verzeichnis: %s . Das Verzeichnis ist nicht vorhanden oder kann nicht leer sein Es muss von Hand entfernt werden!.');
 define ('GEN_ADM_TOOLS_CLEAN_LOG', 'Backup / Clean Audit Logs');
 define ('GEN_ADM_TOOLS_CLEAN_LOG_DESC', 'Dieser Vorgang erstellt eine Sicherungskopie Ihrer heruntergeladen Audit-Log-Datenbank-Datei. Dies wird dazu beitragen, dass die Größe der Datenbank ab und reduzieren Unternehmen Backup-Dateien. Sichern Sie dieses Protokoll ist vor der Reinigung aus, um Geschichte zu bewahren PhreeBooks Transaktion empfohlen. <br /> INFORMATIONEN: Reinigen Sie die Audit-Log werden die aktuellen Zeiten Daten in der Datenbank Tisch verlassen und entfernen Sie alle anderen Aufzeichnungen ');
-define ('GEN_ADM_TOOLS_CLEAN_LOG_BACKUP', 'Backup-Audit-Log');
+define ('TEXT_BACKUP_AUDIT_LOG', 'Backup-Audit-Log');
 define ('GEN_ADM_TOOLS_CLEAN_LOG_CLEAN', 'Clean Out-Audit-Log');
 define ('GEN_ADM_TOOLS_BTN_CLEAN_CONFIRM', 'Sind Sie sicher, dass Sie diese Log-Einträge löschen?');
 define ('GEN_ADM_TOOLS_BTN_BACKUP', 'Jetzt sichern!');
@@ -84,17 +84,17 @@ define ('GL_UTIL_BEG_BAL_LEGEND', 'General Journal Beginn Balances');
 define ('GL_UTIL_BEG_BAL_TEXT', 'Für die erste Set-ups und Transfers aus einem anderen Abrechnungssystem.');
 define ('GL_BTN_BEG_BAL', 'Geben Anfang Balances');
 define ('TEXT_IMPORT_JOURNAL_ENTRIES', 'Import Journal Entries');
-define ('GL_BB_IMPORT_INVENTORY', 'Import Inventory');
+define ('TEXT_IMPORT_INVENTORY', 'Import Inventory');
 define ('GL_BB_IMPORT_PAYABLES', 'Import Kreditorenbuchhaltung');
 define ('GL_BB_IMPORT_RECEIVABLES', 'Import Debitoren');
-define ('GL_BB_IMPORT_SALES_ORDERS', 'Import Kundenauftrag');
+define ('TEXT_IMPORT_SALES_ORDERS', 'Import Kundenauftrag');
 define ('GL_BB_IMPORT_PURCH_ORDERS', 'Import von Bestellungen');
 define ('GL_BB_IMPORT_HELP_MSG', 'finden Sie in der Hilfedatei für Format Anforderungen.');
 define ('HEADING_MODULE_IMPORT_EXPORT', 'Import / Export von Datenbanktabellen');
 define ('TEXT_IMPORT_EXPORT_INFO', 'Information Table');
 define ('GEN_IMPORT_EXPORT_MESSAGE', '. Importieren können über XML-oder CSV-Format werden auf die Probe Klicken Sie die Schaltfläche, um eine Probe-Datei für die Formatierung zu verwenden herunterladen.');
-define ('SAMPLE_XML', 'Beispiel für eine XML');
-define ('SAMPLE_CSV', 'Sample CSV');
+define ('TEXT_SAMPLE_XML', 'Beispiel für eine XML');
+define ('TEXT_SAMPLE_CSV', 'Sample CSV');
 define ('GEN_IMPORT_MESSAGE', 'Die folgende Liste zeigt die Tabellen für den Import Wählen Sie ein Format, eine Datei hochladen und drücken Sie die Schaltfläche "Importieren", um fortzufahren..');
 define ('GEN_EXPORT_MESSAGE', 'Wählen Sie ein Format und drücken Sie die Schaltfläche "Exportieren", um fortzufahren.');
 define ('GEN_TABLES_AVAILABLE', 'Tabellen zur Verfügung, um:');
@@ -149,7 +149,7 @@ define ('CD_12_74_DESC', 'Was Währungsumrechnungen benötigen Sie für Text-E-M
 /************************** Währungen Einstellungen ********************* **************************/
 define ('TEXT_CURRENCIES', 'Währungen');
 define ('TEXT_CURRENCY', 'Währung');
-define ('TEXT_CURRENCY_CODE', 'Code');
+define ('TEXT_CURRENCY_CODE', 'Währung Code');
 define ('SETUP_UPDATE_EXC_RATE', 'Update Exchange Rate');
 define ('SETUP_CURR_EDIT_INTRO', 'Bitte führen Sie alle notwendigen Änderungen durch');
 define ('TEXT_TITLE', 'Titel:');
@@ -195,19 +195,19 @@ define ('GEN_BACKUP_ICON_TITLE', 'Start Backup ');
 define ('GEN_BACKUP_GEN_INFO', 'Bitte wählen Sie die Backup-Komprimierung und-Optionen aus.');
 define ('GEN_BACKUP_COMP_TYPE', 'Komprimierungstyp:');
 define ('GEN_COMP_BZ2', 'bz2 (Linux)');
-define ('GEN_COMP_ZIP', 'Zip');
+define ('TEXT_COMPRESSION_ZIP', 'Zip');
 define ('GEN_COMP_NONE', 'Keine (Database Only)');
 define ('GEN_BACKUP_DB_ONLY', 'Database Only');
 define ('GEN_BACKUP_FULL', 'Datenbank-und Data Files Company');
 define ('GEN_BACKUP_SAVE_LOCAL', 'Speichern einer lokalen Kopie in Webserver (my_files / Backups) Verzeichnis');
 define ('GEN_BACKUP_WARNING', 'Warnung Diese Operation wird löschen und neu schreiben der Datenbank sind Sie sicher, dass Sie weitermachen!.?');
 define ('GEN_BACKUP_NO_ZIP_CLASS', 'Die ZIP-Klasse kann nicht gefunden PHP muss die Zip-Bibliothek installiert haben, um wieder mit ZIP-Komprimierung werden..');
-define ('GEN_BACKUP_FILE_ERROR', 'Die ZIP-Datei kann nicht erstellt werden Überprüfen Sie die Berechtigungen für das Verzeichnis:.');
+define ('TEXT_ERROR_ZIP_FILE', 'Die ZIP-Datei kann nicht erstellt werden Überprüfen Sie die Berechtigungen für das Verzeichnis:.');
 define ('GEN_BACKUP_DOWNLOAD_EMPTY', 'Die Download-Datei enthält keine Daten!');
 // Betriebsleiter
 define ('SETUP_CO_MGR_COPY_CO', 'Copy Company');
 define ('SETUP_CO_MGR_DEL_CO', 'Lösche Gesellschaft');
-define ('TEXT_DEF_DATA', 'Grunddaten');
+define ('TEXT_BASIC_DATA', 'Grunddaten');
 define ('TEXT_ALL_DATA', 'Alle Daten');
 define ('TEXT_DEMO_DATA', 'Demo-Daten');
 define ('SETUP_CO_MGR_COPY_HDR', 'Geben Sie den Datenbank-Informationen für das neue Unternehmen. (Muss entsprechen Namenskonventionen, in der Regel 8-12 alphanumerische Zeichen) Dieser Name wird als der Name der Datenbank MySQL verwendet und wird dem my_files Verzeichnis hinzugefügt werden, um Unternehmen zu halten . Daten der Datenbank vorhanden sein müssen, vor der Schaffung des Unternehmens');
@@ -230,7 +230,7 @@ define ('SETUP_CO_MGR_JS_DELETE_CONFIRM', 'Sind Sie sicher, dass Sie dieses Unte
 define ('SETUP_CO_MGR_NO_SELECTION', 'Kein Unternehmen wurde ausgewählt, um zu löschen!');
 
 // Audit-Log-Nachrichten
-define ('GEN_LOG_LOGIN', 'Benutzer-Login ->');
+define ('TEXT_USER_LOGIN', 'Benutzer-Login');
 define ('GEN_LOG_LOGIN_FAILED', 'Keine Benutzer-Login - id ->');
 define ('GEN_LOG_LOGOFF', 'Benutzer abmelden ->');
 define ('GEN_LOG_RESEND_PW', 'Re-Passwort per E-Mail geschickt ->');

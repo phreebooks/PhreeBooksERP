@@ -40,8 +40,8 @@ define ('CD_10_20_DESC', 'Erlaube schwere Sendungen zu untergliedern, um kleine 
 define ('CD_10_26_DESC', 'Lieferbestätigung Checkbox');
 define ('CD_10_32_DESC', 'Zusätzliche Bearbeitungsgebühr Checkbox');
 define ('CD_10_38_DESC', 'Aktivieren Sie die Checkbox und CSB-Optionen');
-define ('CD_10_44_DESC', 'Saturday Pickup Checkbox');
-define ('CD_10_48_DESC', 'Samstagszustellung Checkbox');
+define ('TEXT_SATURDAY_PICKUP_CHECKBOX', 'Saturday Pickup Checkbox');
+define ('TEXT_SATURDAY_DELIVERY_CHECKBOX', 'Samstagszustellung Checkbox');
 define ('CD_10_52_DESC', 'Gefährliche Stoffe Checkbox');
 define ('CD_10_56_DESC', 'Trockeneis Checkbox');
 define ('CD_10_60_DESC', 'Return Service Checkbox');

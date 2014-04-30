@@ -30,11 +30,11 @@ var text_no 			= '<?php echo TEXT_NO; ?>';
 var text_yes			= '<?php echo TEXT_YES; ?>';
 var filter_equal_to 	= '<?php echo FILTER_EQUAL_TO;?>';
 var filter_not_equal_to = '<?php echo FILTER_NOT_EQUAL_TO;?>';
-var filter_like			= '<?php echo FILTER_LIKE;?>';
+var filter_like			= '<?php echo TEXT_LIKE. ': ';?>';
 var filter_not_like		= '<?php echo FILTER_NOT_LIKE;?>';
-var filter_bigger_than	= '<?php echo FILTER_BIGGER_THAN;?>';
-var filter_less_than	= '<?php echo FILTER_LESS_THAN;?>';
-var filter_contains		= '<?php echo FILTER_CONTAINS;?>';
+var filter_bigger_than	= '<?php echo TEXT_BIGGER_THAN. ': ';?>';
+var filter_less_than	= '<?php echo TEXT_LESS_THAN;?>';
+var filter_contains		= '<?php echo TEXT_CONTAINS;?>';
 var text_properties     = '<?php echo TEXT_PROPERTIES;?>';
 
 <?php echo $js_tax_rates;?>
@@ -45,7 +45,7 @@ var text_properties     = '<?php echo TEXT_PROPERTIES;?>';
 <?php if(isset($SecondFieldId)) 	echo $SecondFieldId; ?>;
 // required function called with every page load
 function init() {
-	<?php 
+	<?php
 	$action_array = array('edit','properties','create');
   	if(in_array($_REQUEST['action'], $action_array)&& empty($cInfo->purchase_array)) {
   		echo "  addVendorRow();";
@@ -108,7 +108,7 @@ function deleteItem(id, type) {
 }
 
 function showImage() {
-	$('#inv_image').window('open');	
+	$('#inv_image').window('open');
 }
 
 function copyItem(id, type) {
@@ -137,7 +137,7 @@ function printOrder(id) {
 function product_margin_change(){
 	var highest = 0;
 	var x=document.getElementsByName("item_cost_array[]");
-	for (var i = 0; i < x.length; i++) { 
+	for (var i = 0; i < x.length; i++) {
        	var current = cleanCurrency(x.item(i).value);
        	if(current > highest){
        		 highest = current;
@@ -153,7 +153,7 @@ function what_to_update(){
 	margin = cleanCurrency(document.getElementById('product_margin' ).value);
 	var highest = 0;
 	var x=document.getElementsByName("item_cost_array[]");
-	for (var i = 0; i < x.length; i++) { 
+	for (var i = 0; i < x.length; i++) {
     	var temp = x.item(i).value;
     	var calculate = cleanCurrency(temp);
     	if(calculate > highest){
@@ -176,7 +176,7 @@ function update_full_price_incl_tax(margin, inclTax, fullprice) {
 	if(margin){
 		var highest = 0;
 		var x=document.getElementsByName("item_cost_array[]");
-		for (var i = 0; i < x.length; i++) { 
+		for (var i = 0; i < x.length; i++) {
         	var temp = x.item(i).value;
         	var calculate = cleanCurrency(temp);
         	if(calculate > highest){
@@ -185,7 +185,7 @@ function update_full_price_incl_tax(margin, inclTax, fullprice) {
         }
         document.getElementById('product_margin' ).value = formatCurrency(cleanCurrency(document.getElementById('full_price_with_tax' ).value) / highest);
 	}
-//calculate full_price_with_tax	
+//calculate full_price_with_tax
 	if(inclTax){
 		if(document.getElementById('full_price' ).value!== '' && document.getElementById('item_taxable' ).value!== ''){
 			tax_index = document.getElementById('item_taxable' ).value;
@@ -194,7 +194,7 @@ function update_full_price_incl_tax(margin, inclTax, fullprice) {
 			document.getElementById('full_price_with_tax' ).value = '';
 		}
 	}
-//calculate full_price	
+//calculate full_price
 	if(fullprice){
 		if(document.getElementById('full_price_with_tax' ).value !== '' && document.getElementById('item_taxable' ).value!== ''){
 			tax_index = document.getElementById('item_taxable' ).value;
@@ -203,18 +203,18 @@ function update_full_price_incl_tax(margin, inclTax, fullprice) {
 			document.getElementById('full_price' ).value = '';
 		}
 	}
-//check to see if phreebooks would calculate the same full_price_with_tax if this is not the case high lite full_price_with_tax red. 
+//check to see if phreebooks would calculate the same full_price_with_tax if this is not the case high lite full_price_with_tax red.
 	document.getElementById('full_price_with_tax' ).value = formatCurrency(cleanCurrency(document.getElementById('full_price_with_tax' ).value));
 	var tax_index = document.getElementById('item_taxable' ).value;
 	var text = formatCurrency(cleanCurrency(document.getElementById('full_price' ).value)* (1+(tax_rates[tax_index].rate / 100)));
 	var full = document.getElementById('full_price_with_tax' ).value;
 	if(full !== text ){
-		$("#full_price_with_tax").css({  
+		$("#full_price_with_tax").css({
 			"background":"#FF3300"
-		});  
+		});
 		$("#full_price_with_tax").attr("title","<?php echo INV_CALCULATING_ERROR?>" + text);
 	}else {
-		$("#full_price_with_tax").css({  
+		$("#full_price_with_tax").css({
 			"background":"#FFFFFF"
 		});
 		$("#full_price_with_tax").removeAttr("title");
@@ -252,11 +252,11 @@ function masterStockBuildList(action, id) {
 	  if(str.search(",") == true){
 		  $.messager.alert('error','<?php echo JS_MS_COMMA_NOT_ALLOWED; ?>','error');
 		  return;
-	  } 
+	  }
 	  if(str.search(":") == true){
 		  $.messager.alert('error','<?php echo JS_MS_COLON_NOT_ALLOWED; ?>','error');
 		  return;
-	  } 
+	  }
 	  var newOpt = document.createElement("option");
 	  newOpt.text = document.getElementById('attr_id_'+id).value + ' : ' + document.getElementById('attr_desc_'+id).value;
 	  newOpt.value = document.getElementById('attr_id_'+id).value + ':' + document.getElementById('attr_desc_'+id).value;
@@ -324,7 +324,7 @@ function insertTableRow(newValue0, newValue1, newValue2) {
 	$('#sku_list_body tr').each(function() {
    		 if (newValue0 == $(this).find("td").eq(0).html()){
    			add = false;
-   		 }  
+   		 }
 	});
 	if(add){
 		newRow = document.getElementById('sku_list_body').insertRow(-1);
@@ -393,7 +393,7 @@ function insertTableRow(newValue0, newValue1, newValue2) {
 	   	 	newCell.style.paddingLeft		='15px';
 	   	 	newCell.style.paddingRight		='15px';
 	   	 	newCell = newRow.insertCell(-1);
-	   	 	newCell.textContent = 0; 
+	   	 	newCell.textContent = 0;
 	   	 	newCell.style.textAlign= 'center';
 	   		newCell = newRow.insertCell(-1);
 	   		newCell.textContent = 0;
@@ -477,7 +477,7 @@ function processSkuDetails(sXml) { // call back function
 	if(document.getElementById('qty_'+rowID).value == 0)       document.getElementById('qty_'+rowID).value = 1;
 	document.getElementById('item_cost_'+rowID).value        = formatCurrency($(xml).find("item_cost").text());
 	document.getElementById('sales_price_'+rowID).value      = formatCurrency($(xml).find("sales_price").text());
-	bomTotalValues();	 
+	bomTotalValues();
 }
 // ******* EOF - AJAX BOM load sku pair *********/
 // ******* BOF - AJAX BOM item Properties pair *********/
@@ -574,7 +574,7 @@ function showWhereUsed(sXml) {
   }
 }
 // ******* EOF - AJAX Where Used pair *********/
-																							
+
 function addVendorRow(){
 	var newCell = '';
 	var cell    = '';
@@ -583,54 +583,54 @@ function addVendorRow(){
 	var odd 	= (newRow.rowIndex%2 == 0) ? 'even' : 'odd';
 	newRow.setAttribute("className", odd);
 	newRow.setAttribute("class", odd);
-	var rowId = Math.floor((Math.random()*100)+1); 
+	var rowId = Math.floor((Math.random()*100)+1);
 	newRow.setAttribute("id", "row_id_"+rowId );
 	cell    = buildIcon(icon_path+'16x16/emblems/emblem-unreadable.png', image_delete_text, 'onclick="if (confirm(\'<?php echo INV_MSG_DELETE_VENDOR_ROW;?>\')) removeVendorRow('+rowId+');"');
 	newCell = newRow.insertCell(-1);
 	newCell.innerHTML = cell;
-	<?php 
+	<?php
 	if(isset($cInfo->vendor_id)) {
 		echo "cell  ='". str_replace("'", "\'", html_pull_down_menu('vendor_id_array[]', gen_get_contact_array_by_type('v'), ''))."';".chr(13);
-	}else{ 
+	}else{
 		echo "cell  ='';".chr(13);
 	} ?>
 	newCell = newRow.insertCell(-1);
 	newCell.innerHTML = cell;
-	<?php 
-	if(isset($cInfo->description_purchase)){ 
+	<?php
+	if(isset($cInfo->description_purchase)){
 		echo "cell  ='". str_replace("'", "\'", html_textarea_field('description_purchase_array[]', 75, 2, '', '', $reinsert_value = true))."';".chr(13);
-	}else{ 
-		echo "cell  ='';".chr(13);
-	} ?>
-	newCell = newRow.insertCell(-1);
-	newCell.innerHTML = cell;
-	<?php 
-	if(isset($cInfo->item_cost)){
-		echo "cell  ='". str_replace("'", "\'", html_input_field('item_cost_array[]', $currencies->precise(0), 'onchange="what_to_update();" size="15" maxlength="20" style="text-align:right"', false))."';".chr(13);
-	}else{ 
+	}else{
 		echo "cell  ='';".chr(13);
 	} ?>
 	newCell = newRow.insertCell(-1);
 	newCell.innerHTML = cell;
 	<?php
 	if(isset($cInfo->item_cost)){
-		echo "cell  ='". str_replace("'", "\'", html_input_field('purch_package_quantity_array[]', 1, 'size="6" maxlength="5" style="text-align:right"'))."';".chr(13); 
-	}else{ 
+		echo "cell  ='". str_replace("'", "\'", html_input_field('item_cost_array[]', $currencies->precise(0), 'onchange="what_to_update();" size="15" maxlength="20" style="text-align:right"', false))."';".chr(13);
+	}else{
 		echo "cell  ='';".chr(13);
 	} ?>
 	newCell = newRow.insertCell(-1);
 	newCell.innerHTML = cell;
-	<?php 
+	<?php
+	if(isset($cInfo->item_cost)){
+		echo "cell  ='". str_replace("'", "\'", html_input_field('purch_package_quantity_array[]', 1, 'size="6" maxlength="5" style="text-align:right"'))."';".chr(13);
+	}else{
+		echo "cell  ='';".chr(13);
+	} ?>
+	newCell = newRow.insertCell(-1);
+	newCell.innerHTML = cell;
+	<?php
 	if(isset($cInfo->purch_taxable)){
 		echo "cell  ='". str_replace("'", "\'", html_pull_down_menu('purch_taxable_array[]', $purch_tax_rates, INVENTORY_DEFAULT_PURCH_TAX))."';".chr(13);
-	}else{ 
+	}else{
 		echo "cell  ='';".chr(13);
 	} ?>
 	newCell = newRow.insertCell(-1);
 	newCell.innerHTML = cell;
-	<?php 
+	<?php
 	if(isset($cInfo->price_sheet_v)){
-		echo "cell  ='".str_replace("'", "\'", html_pull_down_menu('price_sheet_v_array[]', get_price_sheet_data('v'), ''))."';".chr(13); 
+		echo "cell  ='".str_replace("'", "\'", html_pull_down_menu('price_sheet_v_array[]', get_price_sheet_data('v'), ''))."';".chr(13);
 	}else{ print('onwaar');
 		echo "cell  ='';".chr(13);
 	} ?>
@@ -640,19 +640,19 @@ function addVendorRow(){
 
 function removeVendorRow(index){
 	var row = document.getElementById('row_id_'+index);
-	row.parentElement.removeChild(row); 	
+	row.parentElement.removeChild(row);
 }
 
 $(document).ready(function(){
 	//event for change of textbox
 	$("#description_short").change(function(){
 		var value = document.getElementById('description_short').value;
-		$("#heading_title").html(<?php echo '"'. MENU_HEADING_INVENTORY . ' - ' . TEXT_SKU . '# ' . $cInfo->sku . ' (" ';?> + value +  ')'); 
+		$("#heading_title").html(<?php echo '"'. TEXT_INVENTORY . ' - ' . TEXT_SKU . '# ' . $cInfo->sku . ' (" ';?> + value +  ')');
 	});
 });
 // ******* EOF - AJAX BOM Where Used pair *********/
-// ******* BOF - filter functions *****************/ 
- 
+// ******* BOF - filter functions *****************/
+
 function updateFilter(rowCnt, start){
 	var text 	 = document.getElementById('filter_field'+ rowCnt ).value;
 	var RowCells = document.getElementById('filter_table').rows[rowCnt].cells;
@@ -669,7 +669,7 @@ function updateFilter(rowCnt, start){
 	switch (SecondField[text]) {
     	case  'drop_down':
     	case  'multi_check_box':
-    	case  'radio': 
+    	case  'radio':
         	var tempValue 	=  SecondFieldId[text];
         	var tempId     	=  SecondFieldValue[text];
         	RowCells[3].innerHTML =	'<select name="filter_value[]" id="filter_value'+ rowCnt + '" ></select>';
@@ -690,8 +690,8 @@ function updateFilter(rowCnt, start){
     			RowCells[3].innerHTML = '<input type="text" name="filter_value[]" id="filter_value' + rowCnt + '" size="64" maxlength="64" value="'+valueFilterValue+'" />';
     		}else {
     			RowCells[3].innerHTML = '<input type="text" name="filter_value[]" id="filter_value' + rowCnt + '" size="64" maxlength="64" />';
-    		}	    		
-   	}	
+    		}
+   	}
 }
 
 function addFilterRow(){
@@ -718,7 +718,7 @@ function addFilterRow(){
 	newCell.innerHTML = cell;
 	buildSelect('filter_field'+ rowCnt, FirstValue, FirstId);
 	updateFilter(rowCnt, true);
-	  
+
 }
 
 function buildSelect(selElement, value, id) {
@@ -745,7 +745,7 @@ function TableStartValues( valueFilterField, valueCriteriaField, valueValueField
 <?php if($include_template == 'template_main.php'){?>
 $(document).keydown(function(e) {
     if(e.keyCode == 13) {
-    	submitToDo('filter'); 
+    	submitToDo('filter');
     }
  });
  <?php }?>

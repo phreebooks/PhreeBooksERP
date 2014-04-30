@@ -158,12 +158,12 @@ $acct_balance = load_cash_acct_balance($post_date, $gl_acct_id, $period);
 $gl_array_list = gen_coa_pull_down();
 // build the list header
 $heading_array = array(
-  'post_date'           => BNK_INVOICE_DATE,
-  'bill_primary_name'   => BNK_VENDOR_NAME,
-  'purchase_invoice_id' => BNK_INVOICE_NUM,
-  'total_amount'        => BNK_AMOUNT_DUE,
+  'post_date'           => TEXT_INVOICE_DATE,
+  'bill_primary_name'   => TEXT_VENDOR_NAME,
+  'purchase_invoice_id' => TEXT_INVOICE ." #",
+  'total_amount'        => TEXT_AMOUNT_DUE,
 );
-$result      = html_heading_bar($heading_array, array(TEXT_NOTES, BNK_DUE_DATE, TEXT_DISCOUNT, BNK_20_AMOUNT_PAID, TEXT_PAY));
+$result      = html_heading_bar($heading_array, array(TEXT_NOTES, TEXT_DUE_DATE, TEXT_DISCOUNT, TEXT_AMOUNT_PAID, TEXT_PAY));
 $list_header = $result['html_code'];
 $disp_order  = $result['disp_order'];
 if (!$disp_order) $disp_order = 'post_date';

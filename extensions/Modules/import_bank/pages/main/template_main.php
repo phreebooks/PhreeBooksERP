@@ -70,7 +70,7 @@ foreach ($page_list as $mod => $params) {
 			<?php echo html_button_field('import_table', TEXT_IMPORT , 'onclick="submitToDo(\'import_csv\')"'); ?>
 	      </td>
 	       <td>
-		    <?php echo html_button_field('sample_csv', SAMPLE_CSV, 'onclick="submitToDo(\'sample_csv\')"'); ?>
+		    <?php echo html_button_field('sample_csv', TEXT_SAMPLE_CSV, 'onclick="submitToDo(\'sample_csv\')"'); ?>
 	      </td>
 		</tr>
 <?php

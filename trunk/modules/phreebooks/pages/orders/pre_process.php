@@ -47,7 +47,7 @@ $post_success = false;
 $order        = new \phreebooks\classes\orders();
 switch (JOURNAL_ID) {
   case 3:		// Vendor Quote Journal
-	define('ORD_ACCT_ID',GEN_VENDOR_ID);
+	define('ORD_ACCT_ID',TEXT_VENDOR_ID.': ');
 	$order->gl_type = 'poo';				// code to use for journal rows
 	define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);	// default account to use for item rows
 	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ap_acct'] ? $_SESSION['admin_prefs']['def_ap_acct'] : AP_DEFAULT_PURCHASE_ACCOUNT;
@@ -61,7 +61,7 @@ switch (JOURNAL_ID) {
 	$account_type = 'v';					// choices are v - vendor or c - customer
 	break;
   case 4:		// Purchase Order Journal
-	define('ORD_ACCT_ID',GEN_VENDOR_ID);
+	define('ORD_ACCT_ID',TEXT_VENDOR_ID.': ');
 	$order->gl_type = 'poo';				// code to use for journal rows
 	define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);	// default account to use for item rows
 	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ap_acct'] ? $_SESSION['admin_prefs']['def_ap_acct'] : AP_DEFAULT_PURCHASE_ACCOUNT;
@@ -75,8 +75,8 @@ switch (JOURNAL_ID) {
 	$account_type = 'v';					// choices are v - vendor or c - customer
 	break;
   case 6:		// Purchase Journal (accounts payable - pay later)
-	define('ORD_ACCT_ID',GEN_VENDOR_ID);
-	$order->gl_type = 'por';	
+	define('ORD_ACCT_ID',TEXT_VENDOR_ID.': ');
+	$order->gl_type = 'por';
 	define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);
 	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ap_acct'] ? $_SESSION['admin_prefs']['def_ap_acct'] : AP_DEFAULT_PURCHASE_ACCOUNT;
 	define('DEF_GL_ACCT_TITLE',ORD_AP_ACCOUNT);
@@ -89,8 +89,8 @@ switch (JOURNAL_ID) {
 	$account_type = 'v';
 	break;
   case 7:		// Vendor Credit Memo Journal (unpaid invoice returned product to vendor)
-	define('ORD_ACCT_ID',GEN_VENDOR_ID);
-	$order->gl_type = 'por';	
+	define('ORD_ACCT_ID', TEXT_VENDOR_ID.': ');
+	$order->gl_type = 'por';
 	define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);
 	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ap_acct'] ? $_SESSION['admin_prefs']['def_ap_acct'] : AP_DEFAULT_PURCHASE_ACCOUNT;
 	define('DEF_GL_ACCT_TITLE',ORD_AP_ACCOUNT);
@@ -103,7 +103,7 @@ switch (JOURNAL_ID) {
 	$account_type = 'v';
 	break;
   case 9:		// Customer Quote Journal
-	define('ORD_ACCT_ID',GEN_CUSTOMER_ID);
+	define('ORD_ACCT_ID', TEXT_CUSTOMER_ID.': ');
 	$order->gl_type = 'soo';				// code to use for journal rows
 	define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);	// default account to use for item rows
 	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ar_acct'] ? $_SESSION['admin_prefs']['def_ar_acct'] : AR_DEFAULT_GL_ACCT;
@@ -117,8 +117,8 @@ switch (JOURNAL_ID) {
 	$account_type = 'c';					// choices are v - vendor or c - customer
 	break;
   case 10:	// Sales Order Journal
-	define('ORD_ACCT_ID',GEN_CUSTOMER_ID);
-	$order->gl_type = 'soo';	
+	define('ORD_ACCT_ID', TEXT_CUSTOMER_ID.': ');
+	$order->gl_type = 'soo';
 	define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);
 	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ar_acct'] ? $_SESSION['admin_prefs']['def_ar_acct'] : AR_DEFAULT_GL_ACCT;
 	define('DEF_GL_ACCT_TITLE',ORD_AR_ACCOUNT);
@@ -131,8 +131,8 @@ switch (JOURNAL_ID) {
 	$account_type = 'c';
 	break;
   case 12:	// Sales/Invoice Journal (invoice for payment later)
-	define('ORD_ACCT_ID',GEN_CUSTOMER_ID);
-	$order->gl_type = 'sos';	
+	define('ORD_ACCT_ID', TEXT_CUSTOMER_ID.': ');
+	$order->gl_type = 'sos';
 	define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);
 	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ar_acct'] ? $_SESSION['admin_prefs']['def_ar_acct'] : AR_DEFAULT_GL_ACCT;
 	define('DEF_GL_ACCT_TITLE',ORD_AR_ACCOUNT);
@@ -145,8 +145,8 @@ switch (JOURNAL_ID) {
 	$account_type = 'c';
 	break;
   case 13:	// Customer Credit Memo Journal (unpaid invoice returned product from customer)
-	define('ORD_ACCT_ID',GEN_CUSTOMER_ID);
-	$order->gl_type = 'sos';	
+	define('ORD_ACCT_ID', TEXT_CUSTOMER_ID.': ');
+	$order->gl_type = 'sos';
 	define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);
 	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ar_acct'] ? $_SESSION['admin_prefs']['def_ar_acct'] : AR_DEFAULT_GL_ACCT;
 	define('DEF_GL_ACCT_TITLE',ORD_AR_ACCOUNT);
@@ -185,30 +185,30 @@ switch ($_REQUEST['action']) {
 		$order->bill_acct_id        = db_prepare_input($_POST['bill_acct_id']);
 		$order->bill_address_id     = db_prepare_input($_POST['bill_address_id']);
 		$order->bill_primary_name   = db_prepare_input(($_POST['bill_primary_name']   <> GEN_PRIMARY_NAME)   ? $_POST['bill_primary_name']   : '', true);
-		$order->bill_contact        = db_prepare_input(($_POST['bill_contact']        <> GEN_CONTACT)        ? $_POST['bill_contact']        : '', ADDRESS_BOOK_CONTACT_REQUIRED);
-		$order->bill_address1       = db_prepare_input(($_POST['bill_address1']       <> GEN_ADDRESS1)       ? $_POST['bill_address1']       : '', ADDRESS_BOOK_ADDRESS1_REQUIRED);
-		$order->bill_address2       = db_prepare_input(($_POST['bill_address2']       <> GEN_ADDRESS2)       ? $_POST['bill_address2']       : '', ADDRESS_BOOK_ADDRESS2_REQUIRED);
-		$order->bill_city_town      = db_prepare_input(($_POST['bill_city_town']      <> GEN_CITY_TOWN)      ? $_POST['bill_city_town']      : '', ADDRESS_BOOK_CITY_TOWN_REQUIRED);
-		$order->bill_state_province = db_prepare_input(($_POST['bill_state_province'] <> GEN_STATE_PROVINCE) ? $_POST['bill_state_province'] : '', ADDRESS_BOOK_STATE_PROVINCE_REQUIRED);
-		$order->bill_postal_code    = db_prepare_input(($_POST['bill_postal_code']    <> GEN_POSTAL_CODE)    ? $_POST['bill_postal_code']    : '', ADDRESS_BOOK_POSTAL_CODE_REQUIRED);
+		$order->bill_contact        = db_prepare_input(($_POST['bill_contact']        <> TEXT_ATTENTION)        ? $_POST['bill_contact']        : '', ADDRESS_BOOK_CONTACT_REQUIRED);
+		$order->bill_address1       = db_prepare_input(($_POST['bill_address1']       <> TEXT_ADDRESS1)       ? $_POST['bill_address1']       : '', ADDRESS_BOOK_ADDRESS1_REQUIRED);
+		$order->bill_address2       = db_prepare_input(($_POST['bill_address2']       <> TEXT_ADDRESS2)       ? $_POST['bill_address2']       : '', ADDRESS_BOOK_ADDRESS2_REQUIRED);
+		$order->bill_city_town      = db_prepare_input(($_POST['bill_city_town']      <> TEXT_CITY_TOWN)      ? $_POST['bill_city_town']      : '', ADDRESS_BOOK_CITY_TOWN_REQUIRED);
+		$order->bill_state_province = db_prepare_input(($_POST['bill_state_province'] <> TEXT_STATE_PROVINCE) ? $_POST['bill_state_province'] : '', ADDRESS_BOOK_STATE_PROVINCE_REQUIRED);
+		$order->bill_postal_code    = db_prepare_input(($_POST['bill_postal_code']    <> TEXT_POSTAL_CODE)    ? $_POST['bill_postal_code']    : '', ADDRESS_BOOK_POSTAL_CODE_REQUIRED);
 		$order->bill_country_code   = db_prepare_input($_POST['bill_country_code']);
-		$order->bill_telephone1     = db_prepare_input(($_POST['bill_telephone1']     <> GEN_TELEPHONE1)     ? $_POST['bill_telephone1']     : '', ADDRESS_BOOK_TELEPHONE1_REQUIRED);
-		$order->bill_email          = db_prepare_input(($_POST['bill_email']          <> GEN_EMAIL)          ? $_POST['bill_email']          : '', ADDRESS_BOOK_EMAIL_REQUIRED);
+		$order->bill_telephone1     = db_prepare_input(($_POST['bill_telephone1']     <> TEXT_TELEPHONE)     ? $_POST['bill_telephone1']     : '', ADDRESS_BOOK_TELEPHONE1_REQUIRED);
+		$order->bill_email          = db_prepare_input(($_POST['bill_email']          <> TEXT_EMAIL)          ? $_POST['bill_email']          : '', ADDRESS_BOOK_EMAIL_REQUIRED);
 		if (defined('MODULE_SHIPPING_STATUS')) {
 			$order->ship_short_name     = db_prepare_input($_POST['ship_search']);
 		  	$order->ship_add_update     = isset($_POST['ship_add_update']) ? $_POST['ship_add_update'] : 0;
 		  	$order->ship_acct_id        = db_prepare_input($_POST['ship_acct_id']);
 		  	$order->ship_address_id     = db_prepare_input($_POST['ship_address_id']);
 		  	$order->ship_primary_name   = db_prepare_input(($_POST['ship_primary_name']   <> GEN_PRIMARY_NAME)   ? $_POST['ship_primary_name']   : '', true);
-		  	$order->ship_contact        = db_prepare_input(($_POST['ship_contact']        <> GEN_CONTACT)        ? $_POST['ship_contact']        : '', ADDRESS_BOOK_SHIP_CONTACT_REQ);
-		  	$order->ship_address1       = db_prepare_input(($_POST['ship_address1']       <> GEN_ADDRESS1)       ? $_POST['ship_address1']       : '', ADDRESS_BOOK_SHIP_ADD1_REQ);
-		  	$order->ship_address2       = db_prepare_input(($_POST['ship_address2']       <> GEN_ADDRESS2)       ? $_POST['ship_address2']       : '', ADDRESS_BOOK_SHIP_ADD2_REQ);
-		  	$order->ship_city_town      = db_prepare_input(($_POST['ship_city_town']      <> GEN_CITY_TOWN)      ? $_POST['ship_city_town']      : '', ADDRESS_BOOK_SHIP_CITY_REQ);
-		  	$order->ship_state_province = db_prepare_input(($_POST['ship_state_province'] <> GEN_STATE_PROVINCE) ? $_POST['ship_state_province'] : '', ADDRESS_BOOK_SHIP_STATE_REQ);
-		  	$order->ship_postal_code    = db_prepare_input(($_POST['ship_postal_code']    <> GEN_POSTAL_CODE)    ? $_POST['ship_postal_code']    : '', ADDRESS_BOOK_SHIP_POSTAL_CODE_REQ);
+		  	$order->ship_contact        = db_prepare_input(($_POST['ship_contact']        <> TEXT_ATTENTION)        ? $_POST['ship_contact']        : '', ADDRESS_BOOK_SHIP_CONTACT_REQ);
+		  	$order->ship_address1       = db_prepare_input(($_POST['ship_address1']       <> TEXT_ADDRESS1)       ? $_POST['ship_address1']       : '', ADDRESS_BOOK_SHIP_ADD1_REQ);
+		  	$order->ship_address2       = db_prepare_input(($_POST['ship_address2']       <> TEXT_ADDRESS2)       ? $_POST['ship_address2']       : '', ADDRESS_BOOK_SHIP_ADD2_REQ);
+		  	$order->ship_city_town      = db_prepare_input(($_POST['ship_city_town']      <> TEXT_CITY_TOWN)      ? $_POST['ship_city_town']      : '', ADDRESS_BOOK_SHIP_CITY_REQ);
+		  	$order->ship_state_province = db_prepare_input(($_POST['ship_state_province'] <> TEXT_STATE_PROVINCE) ? $_POST['ship_state_province'] : '', ADDRESS_BOOK_SHIP_STATE_REQ);
+		  	$order->ship_postal_code    = db_prepare_input(($_POST['ship_postal_code']    <> TEXT_POSTAL_CODE)    ? $_POST['ship_postal_code']    : '', ADDRESS_BOOK_SHIP_POSTAL_CODE_REQ);
 		  	$order->ship_country_code   = db_prepare_input($_POST['ship_country_code']);
-		  	$order->ship_telephone1     = db_prepare_input(($_POST['ship_telephone1']     <> GEN_TELEPHONE1)     ? $_POST['ship_telephone1']     : '', ADDRESS_BOOK_TELEPHONE1_REQUIRED);
-		  	$order->ship_email          = db_prepare_input(($_POST['ship_email']          <> GEN_EMAIL)          ? $_POST['ship_email']          : '', ADDRESS_BOOK_EMAIL_REQUIRED);
+		  	$order->ship_telephone1     = db_prepare_input(($_POST['ship_telephone1']     <> TEXT_TELEPHONE)     ? $_POST['ship_telephone1']     : '', ADDRESS_BOOK_TELEPHONE1_REQUIRED);
+		  	$order->ship_email          = db_prepare_input(($_POST['ship_email']          <> TEXT_EMAIL)          ? $_POST['ship_email']          : '', ADDRESS_BOOK_EMAIL_REQUIRED);
 		  	$order->shipper_code        = implode(':', array(db_prepare_input($_POST['ship_carrier']), db_prepare_input($_POST['ship_service'])));
 		  	$order->drop_ship           = isset($_POST['drop_ship']) ? $_POST['drop_ship'] : 0;
 		  	$order->freight             = $currencies->clean_value(db_prepare_input($_POST['freight']), $order->currencies_code) / $order->currencies_value;
@@ -225,7 +225,7 @@ switch ($_REQUEST['action']) {
 		$order->purch_order_id      = db_prepare_input($_POST['purch_order_id']);  // customer PO/Ref number
 		$order->store_id            = db_prepare_input($_POST['store_id']);
 		if ($order->store_id == '') $order->store_id = 0;
-		$order->description         = sprintf(TEXT_JID_ENTRY, constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE'));
+		$order->description         = sprintf(TEXT_ARGS_ENTRY, constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE'));
 		$order->recur_id            = db_prepare_input($_POST['recur_id']);
 		$order->recur_frequency     = db_prepare_input($_POST['recur_frequency']);
 	//	$order->sales_tax_auths     = db_prepare_input($_POST['sales_tax_auths']);
@@ -285,27 +285,27 @@ switch ($_REQUEST['action']) {
 		}
 		// check for errors (address fields)
 		if (!$order->bill_acct_id && !$order->bill_add_update) {
-		  $contact_type = $account_type=='c' ? TEXT_LC_CUSTOMER : TEXT_LC_VENDOR;
-		  throw new \core\classes\userException(sprintf(ERROR_NO_CONTACT_SELECTED, $contact_type, $contact_type, ORD_ADD_UPDATE));
+		  $contact_type = $account_type=='c' ? strtolower (TEXT_CUSTOMER) : strtolower (TEXT_VENDOR);
+		  throw new \core\classes\userException(sprintf(ERROR_NO_CONTACT_SELECTED, $contact_type, $contact_type, TEXT_ADD_UPDATE));
 		}
-		$base_msg = in_array(JOURNAL_ID, array(3,4,6,7)) ? TEXT_REMIT_TO : TEXT_BILL_TO;
+		$base_msg = in_array(JOURNAL_ID, array(3,4,6,7)) ? TEXT_REMIT_TO : TEXT_BILL_TO . ':' ;
 		if ($order->bill_primary_name     === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_PRIMARY_NAME);
-		if ($order->bill_contact          === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_CONTACT);
-		if ($order->bill_address1         === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_ADDRESS1);
-		if ($order->bill_address2         === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_ADDRESS2);
-		if ($order->bill_city_town        === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_CITY_TOWN);
-		if ($order->bill_state_province   === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_STATE_PROVINCE);
-		if ($order->bill_postal_code      === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_POSTAL_CODE);
+		if ($order->bill_contact          === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . TEXT_ATTENTION);
+		if ($order->bill_address1         === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . TEXT_ADDRESS1);
+		if ($order->bill_address2         === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . TEXT_ADDRESS2);
+		if ($order->bill_city_town        === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . TEXT_CITY_TOWN);
+		if ($order->bill_state_province   === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . TEXT_STATE_PROVINCE);
+		if ($order->bill_postal_code      === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . TEXT_POSTAL_CODE);
 		if (ENABLE_SHIPPING_FUNCTIONS) {
 		  if ($order->ship_primary_name   === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_PRIMARY_NAME);
-		  if ($order->ship_contact        === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_CONTACT);
-		  if ($order->ship_address1       === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_ADDRESS1);
-		  if ($order->ship_address2       === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_ADDRESS2);
-		  if ($order->ship_city_town      === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_CITY_TOWN);
-		  if ($order->ship_state_province === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_STATE_PROVINCE);
-		  if ($order->ship_postal_code    === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_POSTAL_CODE);
-		  if ($order->ship_telephone1     === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_TELEPHONE1);
-		  if ($order->ship_email          === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_EMAIL);
+		  if ($order->ship_contact        === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . TEXT_ATTENTION);
+		  if ($order->ship_address1       === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . TEXT_ADDRESS1);
+		  if ($order->ship_address2       === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . TEXT_ADDRESS2);
+		  if ($order->ship_city_town      === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . TEXT_CITY_TOWN);
+		  if ($order->ship_state_province === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . TEXT_STATE_PROVINCE);
+		  if ($order->ship_postal_code    === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . TEXT_POSTAL_CODE);
+		  if ($order->ship_telephone1     === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . TEXT_TELEPHONE);
+		  if ($order->ship_email          === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . TEXT_EMAIL);
 		}
 		// Item row errors
 		if (!$order->item_rows) throw new \core\classes\userException(GL_ERROR_NO_ITEMS);
@@ -462,14 +462,14 @@ switch(JOURNAL_ID) {
 	$req_date = gen_locale_date(gen_specific_date('', 0, 1, 0));
 	$template_options['terms'] = true;
 	$template_options['waiting'] = array(
-	  'title' => ORD_WAITING_FOR_INVOICE,
+	  'title' => TEXT_WAITING_FOR_INVOICE,
 	  'field' => html_checkbox_field('waiting', '1', ($order->waiting) ? true : false, '', ''));
 	break;
   case  7:
 	$req_date = date(DATE_FORMAT);
 	$template_options['terms'] = true;
 	$template_options['waiting'] = array(
-	  'title' => ORD_WAITING_FOR_INVOICE,
+	  'title' => TEXT_WAITING_FOR_INVOICE,
 	  'field' => html_checkbox_field('waiting', '1', ($order->waiting) ? true : false, '', ''));
 	break;
   case  9:

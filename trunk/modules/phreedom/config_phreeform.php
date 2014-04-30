@@ -24,7 +24,7 @@ $FormProcessing['def_cur']    = TEXT_DEFAULT_CURRENCY;
 $FormProcessing['null_dcur']  = TEXT_NULL_DEFAULT_CURRENCY;
 $FormProcessing['posted_cur'] = TEXT_POSTED_CURRENCY;
 $FormProcessing['null_pcur']  = TEXT_NULL_POSTED_CURRENCY;
-$FormProcessing['rep_id']     = TEXT_USER_NAME;
+$FormProcessing['rep_id']     = TEXT_USERNAME;
 // Extra form processing operations
 function pf_process_phreedom($strData, $Process) {
   global $currencies, $posted_currencies;

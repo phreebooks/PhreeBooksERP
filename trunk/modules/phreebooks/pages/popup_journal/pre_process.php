@@ -43,7 +43,7 @@ $coa_types = load_coa_types();
 
 // build the list header
 $heading_array = array('post_date' => TEXT_DATE);
-if (ENABLE_MULTI_BRANCH) $heading_array['store_id'] = GEN_STORE_ID;
+if (ENABLE_MULTI_BRANCH) $heading_array['store_id'] = TEXT_STORE_ID;
 $heading_array['purchase_invoice_id'] = TEXT_REFERENCE;
 $heading_array['total_amount']        = TEXT_AMOUNT;
 $result      = html_heading_bar($heading_array, array(TEXT_DESCRIPTION));

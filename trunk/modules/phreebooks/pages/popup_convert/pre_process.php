@@ -35,14 +35,14 @@ switch ($_REQUEST['action']) {
 		$inv_num   = $_POST['inv_num'];
 		$order     = new \core\classes\journal($id);
 		switch ($order->journal_id) {
-		  	case  3: 
+		  	case  3:
 		    	define('JOURNAL_ID', 4);
 				define('GL_TYPE', 'poo');
 				$search_gl_type      = 'poo';
 				$purchase_invoice_id = $so_num;
 				break;
 		  	default:
-		  	case  9: 
+		  	case  9:
 				if ($selection == 'inv') { // invoice
 			  		define('JOURNAL_ID',12);
 			  		define('GL_TYPE', 'sos');
@@ -66,7 +66,7 @@ switch ($_REQUEST['action']) {
 		$order->journal_main_array['journal_id']  = $order->journal_id;
 		$order->journal_main_array['post_date']   = $order->post_date;
 		$order->journal_main_array['period']      = $order->period;
-		$order->journal_main_array['description'] = sprintf(TEXT_JID_ENTRY, constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE'));
+		$order->journal_main_array['description'] = sprintf(TEXT_ARGS_ENTRY, constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE'));
 		for ($i = 0; $i < sizeof($order->journal_rows); $i++) {
 		  	$order->journal_rows[$i]['id']                = '';
 		  	$order->journal_rows[$i]['so_po_item_ref_id'] = '';
@@ -107,6 +107,6 @@ $account_type = ($jID == 3 ? 'v' : 'c');
 $include_header   = false;
 $include_footer   = false;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', $jID == 3 ? ORD_CONVERT_TO_RFQ_PO : ORD_CONVERT_TO_SO_INV);
+define('PAGE_TITLE', $jID == 3 ? TEXT_CONVERT_TO_PURCHASE_ORDER : TEXT_CONVERT_TO_SALES_ORDER);
 
 ?>

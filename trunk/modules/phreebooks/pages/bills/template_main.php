@@ -56,12 +56,12 @@ echo $toolbar->build_toolbar();
 	<tr>
 	  <td valign="top">
 <?php
-echo (($account_type == 'c') ? GEN_CUSTOMER_ID : GEN_VENDOR_ID) . ' ' . html_input_field('search', $order->search, 'onfocus="clearField(\'search\', \'' . TEXT_SEARCH . '\')" onblur="setField(\'search\', \'' . TEXT_SEARCH . '\');"');
+echo (($account_type == 'c') ? TEXT_CUSTOMER_ID : TEXT_VENDOR_ID) . ': ' . html_input_field('search', $order->search, 'onfocus="clearField(\'search\', \'' . TEXT_SEARCH . '\')" onblur="setField(\'search\', \'' . TEXT_SEARCH . '\');"');
 echo '&nbsp;' . html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'align="top" style="cursor:pointer" onclick="AccountList()"');
 ?>
 	  </td>
 	  <td align="right">
-	    <?php echo ((JOURNAL_ID == 20 || !isset($_SESSION['admin_encrypt'])) ? '&nbsp;' : BNK_TEXT_SAVE_PAYMENT_INFO . html_checkbox_field('save_payment', '1', ($order->save_payment ? true : false), '', '')); ?>
+	    <?php echo ((JOURNAL_ID == 20 || !isset($_SESSION['admin_encrypt'])) ? '&nbsp;' : TEXT_SAVE_PAYMENT_INFO . html_checkbox_field('save_payment', '1', ($order->save_payment ? true : false), '', '')); ?>
 	  </td>
 	  <td>
 	    <?php echo html_pull_down_menu('payment_id', gen_null_pull_down(), '', 'style="visibility:hidden" onchange=\'fillPayment()\'') . chr(10); ?>
@@ -73,21 +73,21 @@ echo '&nbsp;' . html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'al
 echo JOURNAL_ID == 18 ? TEXT_RECEIVE_FROM : TEXT_PAY_TO;
 echo html_pull_down_menu('bill_to_select', gen_null_pull_down(), '', 'onchange=\'fillAddress("bill")\'') . chr(10);
 echo '<br />' . html_input_field('bill_primary_name', $order->bill_primary_name, 'size="33" maxlength="32" onfocus="clearField(\'bill_primary_name\', \'' . GEN_PRIMARY_NAME . '\')" onblur="setField(\'bill_primary_name\', \'' . GEN_PRIMARY_NAME . '\')"') . chr(10);
-echo '<br />' . html_input_field('bill_contact', $order->bill_contact, 'size="33" maxlength="32" onfocus="clearField(\'bill_contact\', \'' . GEN_CONTACT . '\')" onblur="setField(\'bill_contact\', \'' . GEN_CONTACT . '\')"') . chr(10);
-echo '<br />' . html_input_field('bill_address1', $order->bill_address1, 'size="33" maxlength="32" onfocus="clearField(\'bill_address1\', \'' . GEN_ADDRESS1 . '\')" onblur="setField(\'bill_address1\', \'' . GEN_ADDRESS1 . '\')"') . chr(10);
-echo '<br />' . html_input_field('bill_address2', $order->bill_address2, 'size="33" maxlength="32" onfocus="clearField(\'bill_address2\', \'' . GEN_ADDRESS2 . '\')" onblur="setField(\'bill_address2\', \'' . GEN_ADDRESS2 . '\')"') . chr(10);
-echo '<br />' . html_input_field('bill_city_town', $order->bill_city_town, 'size="25" maxlength="24" onfocus="clearField(\'bill_city_town\', \'' . GEN_CITY_TOWN . '\')" onblur="setField(\'bill_city_town\', \'' . GEN_CITY_TOWN . '\')"') . chr(10);
-echo html_input_field('bill_state_province', $order->bill_state_province, 'size="3" maxlength="5" onfocus="clearField(\'bill_state_province\', \'' . GEN_STATE_PROVINCE . '\')" onblur="setField(\'bill_state_province\', \'' . GEN_STATE_PROVINCE . '\')"') . chr(10);
-echo html_input_field('bill_postal_code', $order->bill_postal_code, 'size="11" maxlength="10" onfocus="clearField(\'bill_postal_code\', \'' . GEN_POSTAL_CODE . '\')" onblur="setField(\'bill_postal_code\', \'' . GEN_POSTAL_CODE . '\')"') . chr(10);
+echo '<br />' . html_input_field('bill_contact', $order->bill_contact, 'size="33" maxlength="32" onfocus="clearField(\'bill_contact\', \'' . TEXT_ATTENTION . '\')" onblur="setField(\'bill_contact\', \'' . TEXT_ATTENTION . '\')"') . chr(10);
+echo '<br />' . html_input_field('bill_address1', $order->bill_address1, 'size="33" maxlength="32" onfocus="clearField(\'bill_address1\', \'' . TEXT_ADDRESS1 . '\')" onblur="setField(\'bill_address1\', \'' . TEXT_ADDRESS1 . '\')"') . chr(10);
+echo '<br />' . html_input_field('bill_address2', $order->bill_address2, 'size="33" maxlength="32" onfocus="clearField(\'bill_address2\', \'' . TEXT_ADDRESS2 . '\')" onblur="setField(\'bill_address2\', \'' . TEXT_ADDRESS2 . '\')"') . chr(10);
+echo '<br />' . html_input_field('bill_city_town', $order->bill_city_town, 'size="25" maxlength="24" onfocus="clearField(\'bill_city_town\', \'' . TEXT_CITY_TOWN . '\')" onblur="setField(\'bill_city_town\', \'' . TEXT_CITY_TOWN . '\')"') . chr(10);
+echo html_input_field('bill_state_province', $order->bill_state_province, 'size="3" maxlength="5" onfocus="clearField(\'bill_state_province\', \'' . TEXT_STATE_PROVINCE . '\')" onblur="setField(\'bill_state_province\', \'' . TEXT_STATE_PROVINCE . '\')"') . chr(10);
+echo html_input_field('bill_postal_code', $order->bill_postal_code, 'size="11" maxlength="10" onfocus="clearField(\'bill_postal_code\', \'' . TEXT_POSTAL_CODE . '\')" onblur="setField(\'bill_postal_code\', \'' . TEXT_POSTAL_CODE . '\')"') . chr(10);
 echo '<br />' . html_pull_down_menu('bill_country_code', gen_get_countries(), $order->bill_country_code) . chr(10);
-echo '<br />' . html_input_field('bill_email', $order->bill_email, 'size="40" maxlength="64" onfocus="clearField(\'bill_email\', \'' . GEN_EMAIL . '\')" onblur="setField(\'bill_email\', \'' . GEN_EMAIL . '\')"') . chr(10);
+echo '<br />' . html_input_field('bill_email', $order->bill_email, 'size="40" maxlength="64" onfocus="clearField(\'bill_email\', \'' . TEXT_EMAIL . '\')" onblur="setField(\'bill_email\', \'' . TEXT_EMAIL . '\')"') . chr(10);
 ?>
 	  </td>
 	  <td valign="top">
 		<table class="ui-widget" style="border-style:none;">
 		 <tbody class="ui-widget-content">
 		  <tr>
-			<td align="right"><?php echo ((JOURNAL_ID == 18) ? BNK_TEXT_DEPOSIT_ID : BNK_TEXT_PAYMENT_ID) . '&nbsp;'; ?></td>
+			<td align="right"><?php echo ((JOURNAL_ID == 18) ? TEXT_DEPOSIT_ID : TEXT_PAYMENT_ID) . '&nbsp;'; ?></td>
 			<td align="right"><?php echo html_input_field('purchase_invoice_id', $order->purchase_invoice_id, 'style="text-align:right"'); ?></td>
 		  </tr>
 		  <tr>
@@ -96,7 +96,7 @@ echo '<br />' . html_input_field('bill_email', $order->bill_email, 'size="40" ma
 		  </tr>
 	  <?php if (ENABLE_MULTI_BRANCH) { ?>
 		  <tr>
-		    <td align="right"><?php echo GEN_STORE_ID . '&nbsp;'; ?></td>
+		    <td align="right"><?php echo TEXT_STORE_ID . '&nbsp;'; ?></td>
 			<td align="right"><?php echo html_pull_down_menu('store_id', gen_get_store_ids(), $order->store_id ? $order->store_id : $_SESSION['admin_prefs']['def_store_id']); ?></td>
 		  </tr>
 	  <?php } ?>
@@ -109,11 +109,11 @@ echo '<br />' . html_input_field('bill_email', $order->bill_email, 'size="40" ma
             <td align="right"><?php echo html_pull_down_menu('rep_id', gen_get_rep_ids($account_type), $order->rep_id ? $order->rep_id : $default_sales_rep); ?></td>
 		  </tr>
 		  <tr>
-			<td align="right"><?php echo BNK_CASH_ACCOUNT . '&nbsp;'; ?></td>
+			<td align="right"><?php echo TEXT_CASH_ACCOUNT . '&nbsp;'; ?></td>
 			<td align="right"><?php echo html_pull_down_menu('gl_acct_id', $gl_array_list, $order->gl_acct_id, 'onchange="loadNewBalance()"'); ?></td>
 		  </tr>
 		  <tr>
-			<td align="right"><?php echo BNK_DISCOUNT_ACCOUNT . '&nbsp;'; ?></td>
+			<td align="right"><?php echo TEXT_DISCOUNT_ACCOUNT . '&nbsp;'; ?></td>
 			<td align="right"><?php echo html_pull_down_menu('gl_disc_acct_id', $gl_array_list, $order->gl_disc_acct_id, ''); ?></td>
 		  </tr>
 		  <tr>
@@ -179,12 +179,12 @@ echo '<br />' . html_input_field('bill_email', $order->bill_email, 'size="40" ma
   <table class="ui-widget" style="border-collapse:collapse;width:100%">
    <thead class="ui-widget-header">
 	<tr>
-	  <th align="center"><?php echo BNK_INVOICE_NUM; ?></th>
-	  <th align="center"><?php echo BNK_DUE_DATE; ?></th>
-	  <th align="center"><?php echo BNK_AMOUNT_DUE . (ENABLE_MULTI_CURRENCY ? ' (' . DEFAULT_CURRENCY . ')' : ''); ?></th>
+	  <th align="center"><?php echo TEXT_INVOICE ." #"; ?></th>
+	  <th align="center"><?php echo TEXT_DUE_DATE; ?></th>
+	  <th align="center"><?php echo TEXT_AMOUNT_DUE . (ENABLE_MULTI_CURRENCY ? ' (' . DEFAULT_CURRENCY . ')' : ''); ?></th>
 	  <th align="center"><?php echo TEXT_NOTES; ?></th>
 	  <th align="center"><?php echo TEXT_DISCOUNT . (ENABLE_MULTI_CURRENCY ? ' (' . DEFAULT_CURRENCY . ')' : ''); ?></th>
-	  <th align="center"><?php echo constant('BNK_' . JOURNAL_ID . '_AMOUNT_PAID') . (ENABLE_MULTI_CURRENCY ? ' (' . DEFAULT_CURRENCY . ')' : ''); ?></th>
+	  <th align="center"><?php echo (JOURNAL_ID == 20) ? TEXT_AMOUNT_PAID : BNK_18_AMOUNT_PAID . (ENABLE_MULTI_CURRENCY ? ' (' . DEFAULT_CURRENCY . ')' : ''); ?></th>
 	  <th align="center"><?php echo TEXT_PAY; ?></th>
 	</tr>
 	</thead>

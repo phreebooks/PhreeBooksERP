@@ -21,13 +21,13 @@
 <div title="<?php echo TEXT_HISTORY;?>" id="tab_history">
 <?php // ***********************  History Section  ****************************** ?>
   <fieldset>
-    <legend><?php echo ACT_ACT_HISTORY; ?></legend>
+    <legend><?php echo TEXT_ACCOUNT_HISTORY; ?></legend>
     <p><?php echo constant('ACT_'.strtoupper($type).'_FIRST_DATE').' '.gen_locale_date($cInfo->first_date); ?></p>
     <p width="50%"><?php echo constant('ACT_'.strtoupper($type).'_LAST_DATE1').' '.gen_locale_date($cInfo->last_update); ?></p>
   </fieldset>
 
   <fieldset>
-    <legend><?php echo ACT_ORDER_HISTORY; ?></legend>
+    <legend><?php echo TEXT_ORDER_HISTORY; ?></legend>
     <table class="ui-widget" style="border-style:none;width:100%;">
 	  <tr><td valign="top" width="50%">
 		<table class="ui-widget" style="border-collapse:collapse;width:100%;">
@@ -35,11 +35,11 @@
 			<?php if($type == 'c'){ ?>
 		  <tr><th colspan="5"><?php echo sprintf(ACT_SO_HIST, LIMIT_HISTORY_RESULTS); ?></th></tr>
 			<?php }else{ ?>
- 		  <tr><th colspan="5"><?php echo sprintf(ACT_PO_HIST, LIMIT_HISTORY_RESULTS); ?></th></tr>
+ 		  <tr><th colspan="5"><?php echo sprintf(TEXT_PO_HISTORY_ARGS, LIMIT_HISTORY_RESULTS); ?></th></tr>
 			<?php } ?>
 		  <tr>
-		    <th><?php if($type == 'c') echo ACT_SO_NUMBER; ?></th>
-		    <th><?php echo ACT_PO_NUMBER; ?></th>
+		    <th><?php if($type == 'c') echo TEXT_SO_NUMBER; ?></th>
+		    <th><?php echo TEXT_PO_NUMBER; ?></th>
 		    <th><?php echo TEXT_DATE; ?></th>
 		    <th><?php echo TEXT_OPEN; ?></th>
 		    <th><?php echo TEXT_AMOUNT; ?></th>
@@ -71,9 +71,9 @@
 	  </td><td valign="top" width="50%">
 		<table class="ui-widget" style="border-collapse:collapse;width:100%;">
 		 <thead class="ui-widget-header">
-		  <tr><th colspan="5"><?php echo sprintf(ACT_INV_HIST, LIMIT_HISTORY_RESULTS); ?></th></tr>
-		  <tr><th><?php echo ACT_INV_NUMBER; ?></th>
-		  <th><?php echo ACT_PO_NUMBER; ?></th>
+		  <tr><th colspan="5"><?php echo sprintf(TEXT_INVOICE_HISTORY_ARGS, LIMIT_HISTORY_RESULTS); ?></th></tr>
+		  <tr><th><?php echo TEXT_INVOICE_NUMBER; ?></th>
+		  <th><?php echo TEXT_PO_NUMBER; ?></th>
 		  <th><?php echo TEXT_DATE; ?></th>
 		  <th><?php echo TEXT_PAID; ?></th>
 		  <th><?php echo TEXT_AMOUNT; ?></th></tr>

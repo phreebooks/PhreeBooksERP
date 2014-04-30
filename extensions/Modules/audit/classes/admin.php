@@ -23,10 +23,10 @@
 namespace audit\classes;
 class admin extends \core\classes\admin {
 	public $id 			= 'audit';
-	public $text		= MODULE_AUDIT_TITLE;
+	public $text		= TEXT_AUDIT;
 	public $description = MODULE_AUDIT_DESCRIPTION;
 	public $version		= '1.0';
-	
+
   	function __construct() {
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 	  	  'phreedom'   => 3.0,

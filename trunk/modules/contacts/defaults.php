@@ -27,7 +27,7 @@ $employee_types = array(
 );
 
 $project_cost_types = array(
- 'LBR' => COST_TYPE_LBR,
+ 'LBR' => TEXT_LABOR,
  'MAT' => COST_TYPE_MAT,
  'CNT' => COST_TYPE_CNT,
  'EQT' => COST_TYPE_EQT,
@@ -36,11 +36,11 @@ $project_cost_types = array(
 
 $crm_actions = array(
   ''     => TEXT_NONE,
-  'new'  => TEXT_NEW_CALL,
+  'new'  => sprintf(TEXT_NEW_ARGS, TEXT_CALL),
   'ret'  => TEXT_RETURN_CALL,
   'flw'  => TEXT_FOLLOW_UP_CALL,
   'inac' => TEXT_INACTIVE,
-  'lead' => TEXT_NEW_LEAD,
+  'lead' => sprintf(TEXT_NEW_ARGS, TEXT_LEAD),
   'mail_in'  => TEXT_EMAIL_RECEIVED,
   'mail_out' => TEXT_EMAIL_SEND,
 );

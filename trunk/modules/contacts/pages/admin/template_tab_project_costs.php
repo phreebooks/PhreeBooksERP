@@ -27,7 +27,7 @@ if ($security_level > 1) $project_costs_toolbar->add_icon('new', 'onclick="loadP
 if ($project_costs->extra_buttons) $project_costs->customize_buttons($project_costs_toolbar);
 
 ?>
-<div title="<?php echo SETUP_TITLE_PROJECTS_COSTS;?>" id="tab_project_costs">
+<div title="<?php echo TEXT_PROJECT_COSTS;?>" id="tab_project_costs">
   <?php echo $project_costs_toolbar->build_toolbar(); ?>
   <h1><?php echo $project_costs->title; ?></h1>
   <div id="project_costs_content"><?php echo $project_costs->build_main_html(); ?></div>

@@ -24,7 +24,7 @@
 // Include translations here as well.
 var securityLevel = <?php echo $security_level; ?>;
 var text_search   = '<?php echo TEXT_SEARCH; ?>';
-var ItemIsInactive	 = '<?php echo ITEM_IS_INACTIVE; ?>';
+var ItemIsInactive	 = '<?php echo TEXT_ITEM_IS_INACTIVE; ?>';
 <?php echo js_calendar_init($cal_adj); ?>
 
 function init() {

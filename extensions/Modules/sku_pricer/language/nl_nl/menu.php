@@ -8,6 +8,6 @@
 // +-----------------------------------------------------------------+
 // Path: /modules/sku_pricer/language/nl_nl/menu.php
 
-define('BOX_SKU_PRICER_TITLE','Artikel Prijzer');
+define('TEXT_SKU_PRICER','Artikel Prijzer');
 
 ?>

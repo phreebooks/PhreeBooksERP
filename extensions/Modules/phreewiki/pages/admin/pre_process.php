@@ -26,7 +26,7 @@ $security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 /**************  include page specific files    *********************/
 gen_pull_language($module);
 gen_pull_language($module, 'admin');
-/**************   page specific initialization  *************************/ 
+/**************   page specific initialization  *************************/
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save':
@@ -58,6 +58,6 @@ $sel_yes_no = array(
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', BOX_BANK_IMPORT_ADMIN);
+define('PAGE_TITLE', BOX_PHREEWIKI_ADMIN);
 
 ?>

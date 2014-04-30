@@ -911,7 +911,7 @@ function BuildSQL($report) { // for reports only
 	// Fetch the Criteria
 	$criteria = build_criteria($report);
 	$strCrit  = $criteria['sql'];
-	if ($criteria['description']) $filterdesc .= PHREEFORM_CRITBY . ' ' . $criteria['description'] . '; ';
+	if ($criteria['description']) $filterdesc .= TEXT_FILTERS. " : " . ' ' . $criteria['description'] . '; ';
 	// fetch the tables to query
 	$sqlTable = '';
 	foreach ($report->tables as $table) {

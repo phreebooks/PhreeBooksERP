@@ -30,7 +30,7 @@ class xml_orders extends parser {
 		global $messageStack;
 //echo '<pre>' . $rawXML . '</pre>';
 	  $rawXML = utf8_decode($rawXML);
-	  $rawXML = iconv("UTF-8", "UTF-8//IGNORE", $rawXML); 
+	  $rawXML = iconv("UTF-8", "UTF-8//IGNORE", $rawXML);
 //echo '<pre>' . $rawXML . '</pre>';
 	  if (!$objXML = xml_to_object($rawXML)) return false;  // parse the submitted string, check for errors
 //echo 'parsed string = '; print_r($objXML); echo '<br />';
@@ -158,7 +158,7 @@ class xml_orders extends parser {
   }
 
 // The remaining functions are specific to PhreeBooks. They need to be modified for the specific application.
-// It also needs to check for errors, i.e. missing information, bad data, etc. 
+// It also needs to check for errors, i.e. missing information, bad data, etc.
   function buildJournalEntry() {
 	global $db, $messageStack, $currencies;
 	// set some preliminary information
@@ -245,7 +245,7 @@ class xml_orders extends parser {
 	// load the item rows
 	switch (JOURNAL_ID) {
 	  case 12: $index = 'pstd'; break;
-	  case 10: 
+	  case 10:
 	  default: $index = 'qty';  break;
 	}
 	for ($i = 0; $i < count($this->order['items']); $i++) {
@@ -262,35 +262,35 @@ class xml_orders extends parser {
 	}
 	// error check input
 	$missing_fields = array();
-	if (!$psOrd->short_name && !AUTO_INC_CUST_ID)                             $missing_fields[] = ACT_SHORT_NAME;
+	if (!$psOrd->short_name && !AUTO_INC_CUST_ID)                             $missing_fields[] = TEXT_CONTACT_ID;
 	if (!$psOrd->post_date)                                                   $missing_fields[] = TEXT_POST_DATE;
 	if (!$psOrd->period)                                                      $missing_fields[] = TEXT_PERIOD;
 	if (!$psOrd->bill_primary_name)                                           $missing_fields[] = GEN_PRIMARY_NAME;
 	if (!$psOrd->bill_country_code)                                           $missing_fields[] = GEN_COUNTRY_CODE;
-	if (ADDRESS_BOOK_CONTACT_REQUIRED        && !$psOrd->bill_contact)        $missing_fields[] = GEN_CONTACT;
-	if (ADDRESS_BOOK_ADDRESS1_REQUIRED       && !$psOrd->bill_address1)       $missing_fields[] = GEN_ADDRESS1;
-	if (ADDRESS_BOOK_ADDRESS2_REQUIRED       && !$psOrd->bill_address2)       $missing_fields[] = GEN_ADDRESS2;
-	if (ADDRESS_BOOK_CITY_TOWN_REQUIRED      && !$psOrd->bill_city_town)      $missing_fields[] = GEN_CITY_TOWN;
-	if (ADDRESS_BOOK_STATE_PROVINCE_REQUIRED && !$psOrd->bill_state_province) $missing_fields[] = GEN_STATE_PROVINCE;
-	if (ADDRESS_BOOK_POSTAL_CODE_REQUIRED    && !$psOrd->bill_postal_code)    $missing_fields[] = GEN_POSTAL_CODE;
+	if (ADDRESS_BOOK_CONTACT_REQUIRED        && !$psOrd->bill_contact)        $missing_fields[] = TEXT_ATTENTION;
+	if (ADDRESS_BOOK_ADDRESS1_REQUIRED       && !$psOrd->bill_address1)       $missing_fields[] = TEXT_ADDRESS1;
+	if (ADDRESS_BOOK_ADDRESS2_REQUIRED       && !$psOrd->bill_address2)       $missing_fields[] = TEXT_ADDRESS2;
+	if (ADDRESS_BOOK_CITY_TOWN_REQUIRED      && !$psOrd->bill_city_town)      $missing_fields[] = TEXT_CITY_TOWN;
+	if (ADDRESS_BOOK_STATE_PROVINCE_REQUIRED && !$psOrd->bill_state_province) $missing_fields[] = TEXT_STATE_PROVINCE;
+	if (ADDRESS_BOOK_POSTAL_CODE_REQUIRED    && !$psOrd->bill_postal_code)    $missing_fields[] = TEXT_POSTAL_CODE;
 	if (defined('MODULE_SHIPPING_STATUS')) {
-//	  if (!$psOrd->ship_primary_name)                                         $missing_fields[] = GEN_PRIMARY_NAME;
-//	  if (!$psOrd->ship_country_code)                                         $missing_fields[] = GEN_COUNTRY_CODE;
-	  if (ADDRESS_BOOK_SHIP_CONTACT_REQ      && !$psOrd->ship_contact)        $missing_fields[] = GEN_CONTACT;
-	  if (ADDRESS_BOOK_SHIP_ADD1_REQ         && !$psOrd->ship_address1)       $missing_fields[] = GEN_ADDRESS1;
-	  if (ADDRESS_BOOK_SHIP_ADD2_REQ         && !$psOrd->ship_address2)       $missing_fields[] = GEN_ADDRESS2;
-	  if (ADDRESS_BOOK_SHIP_CITY_REQ         && !$psOrd->ship_city_town)      $missing_fields[] = GEN_CITY_TOWN;
-	  if (ADDRESS_BOOK_SHIP_STATE_REQ        && !$psOrd->ship_state_province) $missing_fields[] = GEN_STATE_PROVINCE;
-	  if (ADDRESS_BOOK_SHIP_POSTAL_CODE_REQ  && !$psOrd->ship_postal_code)    $missing_fields[] = GEN_POSTAL_CODE;
+//	  	if (!$psOrd->ship_primary_name)                                         $missing_fields[] = GEN_PRIMARY_NAME;
+//	  	if (!$psOrd->ship_country_code)                                         $missing_fields[] = GEN_COUNTRY_CODE;
+	  	if (ADDRESS_BOOK_SHIP_CONTACT_REQ      && !$psOrd->ship_contact)        $missing_fields[] = TEXT_ATTENTION;
+	  	if (ADDRESS_BOOK_SHIP_ADD1_REQ         && !$psOrd->ship_address1)       $missing_fields[] = TEXT_ADDRESS1;
+	  	if (ADDRESS_BOOK_SHIP_ADD2_REQ         && !$psOrd->ship_address2)       $missing_fields[] = TEXT_ADDRESS2;
+	  	if (ADDRESS_BOOK_SHIP_CITY_REQ         && !$psOrd->ship_city_town)      $missing_fields[] = TEXT_CITY_TOWN;
+	  	if (ADDRESS_BOOK_SHIP_STATE_REQ        && !$psOrd->ship_state_province) $missing_fields[] = TEXT_STATE_PROVINCE;
+	  	if (ADDRESS_BOOK_SHIP_POSTAL_CODE_REQ  && !$psOrd->ship_postal_code)    $missing_fields[] = TEXT_POSTAL_CODE;
 	}
 	if (sizeof($missing_fields) > 0) {
-	  $this->failed[]   = $this->order['reference'];
-	  $this->response[] = sprintf(SOAP_MISSING_FIELDS, $this->order['reference'], implode(', ', $missing_fields));
-	  return;
+	  	$this->failed[]   = $this->order['reference'];
+	  	$this->response[] = sprintf(SOAP_MISSING_FIELDS, $this->order['reference'], implode(', ', $missing_fields));
+	  	return;
 	}
 
 	if (function_exists('xtra_order_before_post')) xtra_order_before_post($psOrd, $this->order);
-	
+
 	// post the sales order
 //echo 'ready to post =><br />'; echo 'psOrd object = '; print_r($psOrd); echo '<br />';
 	$post_success = $psOrd->post_ordr($action);
@@ -314,7 +314,7 @@ class xml_orders extends parser {
   function checkForCustomerExists($psOrd) {
 	global $db;
 	$output = array();
-	$result = $db->Execute("select id, special_terms from ".TABLE_CONTACTS." 
+	$result = $db->Execute("select id, special_terms from ".TABLE_CONTACTS."
 		where type = 'c' and short_name = '" . $psOrd->short_name . "'");
 	if ($result->RecordCount() == 0) { // create new record
 	  $output['bill_acct_id']    = '';
@@ -325,7 +325,7 @@ class xml_orders extends parser {
 	  $output['ship_acct_id'] = $output['bill_acct_id']; // no drop ships allowed
 	  $output['terms']        = $result->fields['special_terms'];
 	  // find main address to update as billing address
-	  $result = $db->Execute("select address_id from ".TABLE_ADDRESS_BOOK." 
+	  $result = $db->Execute("select address_id from ".TABLE_ADDRESS_BOOK."
 		where type = 'cm' and ref_id = " . $output['bill_acct_id']);
 	  if ($result->RecordCount() == 0) {
 	    $this->failed[] = $this->order['reference'];
@@ -337,9 +337,9 @@ class xml_orders extends parser {
 	// check to see if billing and shipping are different, if so set ship update flag
 	// for now look at the primary name or address1 to be different, can be expanded to differentiate further if necessary
 	if (($psOrd->bill_primary_name <> $psOrd->ship_primary_name) || ($psOrd->bill_address1 <> $psOrd->ship_address1)) {
-	  $result = $db->Execute("select address_id from " . TABLE_ADDRESS_BOOK . " 
-		where primary_name = '" . $psOrd->ship_primary_name . "' and 
-			address1 = '" . $psOrd->ship_address1 . "' and 
+	  $result = $db->Execute("select address_id from " . TABLE_ADDRESS_BOOK . "
+		where primary_name = '" . $psOrd->ship_primary_name . "' and
+			address1 = '" . $psOrd->ship_address1 . "' and
 			type = 'cs' and ref_id = " . $output['bill_acct_id']);
 	  $output['ship_add_update'] = 1;
 	  $output['ship_address_id'] =  ($result->RecordCount() == 0) ? '' : $result->fields['address_id'];

@@ -31,11 +31,11 @@ if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key =
 // add the help file index and build the toolbar
 $toolbar->add_help('07.04.02');
 $toolbar->search_period = $acct_period;
-echo $toolbar->build_toolbar($add_search = true, $add_period = true); 
+echo $toolbar->build_toolbar($add_search = true, $add_period = true);
 // Build the page
-$list_types = ($adj_type == 'xfr') ? TEXT_TRANSFERS : ORD_TEXT_16_WINDOW_TITLE;
+$list_types = ($adj_type == 'xfr') ? TEXT_TRANSFERS : TEXT_ADJUSTMENTS;
 ?>
-<h1><?php echo GEN_HEADING_PLEASE_SELECT; ?></h1>
+<h1><?php echo TEXT_PLEASE_SELECT; ?></h1>
 <div style="height:19px"><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . $list_types); ?>
 <div style="float:right"><?php echo $query_split->display_links(); ?></div>
 </div>
@@ -45,10 +45,10 @@ $list_types = ($adj_type == 'xfr') ? TEXT_TRANSFERS : ORD_TEXT_16_WINDOW_TITLE;
  </thead>
  <tbody class="ui-widget-content">
     <?php
-    $odd = true; 
-    while (!$query_result->EOF) { 
-	  $sku_text = $query_result->fields['sku_cnt'] > 1 ? sprintf(TEXT_ADJ_ITEMS, $query_result->fields['sku_cnt']) : $query_result->fields['sku'];
-	  $sku_desc = $query_result->fields['sku_cnt'] > 1 ? TEXT_MULTIPLE_ENTRIES : $query_result->fields['description'];
+    $odd = true;
+    while (!$query_result->EOF) {
+	  $sku_text = $query_result->fields['sku_cnt'] > 1 ? sprintf(TEXT_ARGS_ITEMS, $query_result->fields['sku_cnt']) : $query_result->fields['sku'];
+	  $sku_desc = $query_result->fields['sku_cnt'] > 1 ? TEXT_MULTIPLE_ADJUSTMENTS : $query_result->fields['description'];
 	?>
     <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer" onclick='setReturnEntry(<?php echo $query_result->fields['id']; ?>)'>
 	  <td><?php echo gen_locale_date($query_result->fields['post_date']); ?></td>
@@ -56,14 +56,14 @@ $list_types = ($adj_type == 'xfr') ? TEXT_TRANSFERS : ORD_TEXT_16_WINDOW_TITLE;
 	  <td><?php echo ($adj_type == 'xfr') ? -$query_result->fields['qty'] : $query_result->fields['qty']; ?></td>
 	  <td><?php echo $sku_text; ?></td>
 	  <td><?php echo $sku_desc; ?></td>
-	  <?php 
+	  <?php
 	    if (ENABLE_MULTI_BRANCH) {
 	  	  $store_name = $query_result->fields['store_id'] == '0' ? COMPANY_ID : gen_get_contact_name($query_result->fields['store_id']);
-	      echo '	  <td align="center">' . $store_name . '</td>' . chr(10); 
+	      echo '	  <td align="center">' . $store_name . '</td>' . chr(10);
 		}
 	    if (ENABLE_MULTI_BRANCH && $adj_type == 'xfr') {
 	  	  $store_name = $query_result->fields['bill_acct_id'] == '0' ? COMPANY_ID : gen_get_contact_name($query_result->fields['bill_acct_id']);
-	      echo '	  <td align="center">' . $store_name . '</td>' . chr(10); 
+	      echo '	  <td align="center">' . $store_name . '</td>' . chr(10);
 		}
 	  ?>
     </tr>

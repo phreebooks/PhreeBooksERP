@@ -227,7 +227,7 @@ $include_template = 'template_main.php';
 switch ($_REQUEST['action']) {
   case 'new':
 	$include_template = 'template_new.php';
-	define('PAGE_TITLE', TEXT_NEW_TRANSLATION);
+	define('PAGE_TITLE', sprintf(TEXT_NEW_ARGS, TEXT_TRANSLATION));
     break;
   case 'edit':
   case 'filter':
@@ -296,7 +296,7 @@ switch ($_REQUEST['action']) {
     $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 	history_save();
-    define('PAGE_TITLE', BOX_TRANSLATOR_MODULE);
+    define('PAGE_TITLE', TEXT_TRANSLATOR_ASS);
 	break;
 }
 

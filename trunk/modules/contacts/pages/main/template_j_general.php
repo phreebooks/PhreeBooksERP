@@ -41,22 +41,22 @@ $cal_j_gen2 = array(
 
 <div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
   <fieldset>
-    <legend><?php echo ACT_CATEGORY_CONTACT; ?></legend>
+    <legend><?php echo TEXT_CONTACT_INFORMATION; ?></legend>
     <table>
       <tr>
-        <td align="right"><?php echo constant('ACT_' . strtoupper($type) . '_SHORT_NAME'); ?></td>
+        <td align="right"><?php echo ACT_J_SHORT_NAME; ?></td>
         <td><?php echo html_input_field('short_name', $cInfo->short_name, 'size="21" maxlength="20"', true); ?></td>
         <td align="right"><?php echo TEXT_INACTIVE; ?></td>
         <td>
 	      <?php echo html_checkbox_field('inactive', '1', $cInfo->inactive) . ' ';
-            echo constant('ACT_' . strtoupper($type) . '_ACCOUNT_NUMBER') . ' ';
+            echo ACT_J_ACCOUNT_NUMBER . ' ';
             echo html_radio_field('account_number', 1, ($cInfo->account_number == '1' ? true : false)) . TEXT_YES . chr(10);
             echo html_radio_field('account_number', 2, (($cInfo->account_number == '' || $cInfo->account_number == '2') ? true : false)) . TEXT_NO  . chr(10);
           ?>
 	   </td>
       </tr>
       <tr>
-        <td align="right"><?php echo constant('ACT_' . strtoupper($type) . '_REP_ID'); ?></td>
+        <td align="right"><?php echo ACT_J_REP_ID; ?></td>
         <td>
 		  <?php
 			$default_selection = ($_REQUEST['action'] == 'new' ? AR_DEF_GL_SALES_ACCT : $cInfo->dept_rep_id);
@@ -68,7 +68,7 @@ $cal_j_gen2 = array(
         <td><?php echo html_calendar_field($cal_j_gen1); ?></td>
       </tr>
       <tr>
-        <td align="right"><?php echo constant('ACT_' . strtoupper($type) . '_ID_NUMBER'); ?></td>
+        <td align="right"><?php echo ACT_J_ID_NUMBER; ?></td>
         <td><?php echo html_input_field('gov_id_number', $cInfo->gov_id_number, 'size="17" maxlength="16"'); ?></td>
         <td align="right"><?php echo TEXT_END_DATE; ?></td>
         <td><?php echo html_calendar_field($cal_j_gen2); ?></td>
@@ -98,7 +98,7 @@ $cal_j_gen2 = array(
       <th><?php echo TEXT_FILENAME; ?></th>
       <th><?php echo TEXT_ACTION; ?></th>
      </tr>
-<?php 
+<?php
 if (sizeof($cInfo->attachments) > 0) {
   foreach ($cInfo->attachments as $key => $value) {
     echo '<tr>';
@@ -108,7 +108,7 @@ if (sizeof($cInfo->attachments) > 0) {
     echo '</tr>' . chr(10);
   }
 } else {
-  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS . '</td></tr>'; 
+  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS . '</td></tr>';
 } ?>
     </tbody>
    </table>

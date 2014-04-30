@@ -19,7 +19,9 @@
 namespace contacts\classes;
 class contacts {
 	public  $terms_type         = 'AP';
-	public  $page_title_new     = '';
+	public  $title;
+	public  $page_title_new;
+	public  $page_title_edit;
 	public  $auto_type          = false;
 	public  $inc_auto_id 		= false;
 	public  $auto_field         = '';
@@ -43,6 +45,8 @@ class contacts {
 
     public function __construct(){
     	global $db;
+    	$this->page_title_new = sprintf(TEXT_NEW_ARGS, $this->title);
+    	$this->page_title_edit = sprintf(TEXT_EDIT_ARGS, $this->title);
     	//set defaults
         $this->crm_date        = date('Y-m-d');
         $this->crm_rep_id      = $_SESSION['account_id'] <> 0 ? $_SESSION['account_id'] : $_SESSION['admin_id'];
@@ -173,14 +177,14 @@ class contacts {
         	  ($this->address[$value]['primary_name'] <> '')) { // optional billing, shipping, and contact
           		$msg_add_type = GEN_ERRMSG_NO_DATA . constant('ACT_CATEGORY_' . strtoupper(substr($value, 1, 1)) . '_ADDRESS');
 	      		if (false === db_prepare_input($this->address[$value]['primary_name'],   $required = true))                     throw new \core\classes\userException($msg_add_type.' - '.GEN_PRIMARY_NAME);
-	      		if (false === db_prepare_input($this->address[$value]['contact'],        ADDRESS_BOOK_CONTACT_REQUIRED))        throw new \core\classes\userException($msg_add_type.' - '.GEN_CONTACT);
-	      		if (false === db_prepare_input($this->address[$value]['address1'],       ADDRESS_BOOK_ADDRESS1_REQUIRED))       throw new \core\classes\userException($msg_add_type.' - '.GEN_ADDRESS1);
-	      		if (false === db_prepare_input($this->address[$value]['address2'],       ADDRESS_BOOK_ADDRESS2_REQUIRED))       throw new \core\classes\userException($msg_add_type.' - '.GEN_ADDRESS2);
-	      		if (false === db_prepare_input($this->address[$value]['city_town'],      ADDRESS_BOOK_CITY_TOWN_REQUIRED))      throw new \core\classes\userException($msg_add_type.' - '.GEN_CITY_TOWN);
-	      		if (false === db_prepare_input($this->address[$value]['state_province'], ADDRESS_BOOK_STATE_PROVINCE_REQUIRED)) throw new \core\classes\userException($msg_add_type.' - '.GEN_STATE_PROVINCE);
-	      		if (false === db_prepare_input($this->address[$value]['postal_code'],    ADDRESS_BOOK_POSTAL_CODE_REQUIRED))    throw new \core\classes\userException($msg_add_type.' - '.GEN_POSTAL_CODE);
-	      		if (false === db_prepare_input($this->address[$value]['telephone1'],     ADDRESS_BOOK_TELEPHONE1_REQUIRED))     throw new \core\classes\userException($msg_add_type.' - '.GEN_TELEPHONE1);
-	      		if (false === db_prepare_input($this->address[$value]['email'],          ADDRESS_BOOK_EMAIL_REQUIRED))          throw new \core\classes\userException($msg_add_type.' - '.GEN_EMAIL);
+	      		if (false === db_prepare_input($this->address[$value]['contact'],        ADDRESS_BOOK_CONTACT_REQUIRED))        throw new \core\classes\userException($msg_add_type.' - '.TEXT_ATTENTION);
+	      		if (false === db_prepare_input($this->address[$value]['address1'],       ADDRESS_BOOK_ADDRESS1_REQUIRED))       throw new \core\classes\userException($msg_add_type.' - '.TEXT_ADDRESS1);
+	      		if (false === db_prepare_input($this->address[$value]['address2'],       ADDRESS_BOOK_ADDRESS2_REQUIRED))       throw new \core\classes\userException($msg_add_type.' - '.TEXT_ADDRESS2);
+	      		if (false === db_prepare_input($this->address[$value]['city_town'],      ADDRESS_BOOK_CITY_TOWN_REQUIRED))      throw new \core\classes\userException($msg_add_type.' - '.TEXT_CITY_TOWN);
+	      		if (false === db_prepare_input($this->address[$value]['state_province'], ADDRESS_BOOK_STATE_PROVINCE_REQUIRED)) throw new \core\classes\userException($msg_add_type.' - '.TEXT_STATE_PROVINCE);
+	      		if (false === db_prepare_input($this->address[$value]['postal_code'],    ADDRESS_BOOK_POSTAL_CODE_REQUIRED))    throw new \core\classes\userException($msg_add_type.' - '.TEXT_POSTAL_CODE);
+	      		if (false === db_prepare_input($this->address[$value]['telephone1'],     ADDRESS_BOOK_TELEPHONE1_REQUIRED))     throw new \core\classes\userException($msg_add_type.' - '.TEXT_TELEPHONE);
+	      		if (false === db_prepare_input($this->address[$value]['email'],          ADDRESS_BOOK_EMAIL_REQUIRED))          throw new \core\classes\userException($msg_add_type.' - '.TEXT_EMAIL);
       		}
     	}
     	$this->duplicate_id();
@@ -234,10 +238,10 @@ class contacts {
             $next_id = string_increment($this->short_name);
             $db->Execute("update ".TABLE_CURRENT_STATUS." set $this->auto_field = '$next_id'");
         }
-        gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_ADD . '-' . constant('ACT_' . strtoupper($this->type) . '_TYPE_NAME'), $this->short_name);
+        gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_ADD . '-' . $this->title, $this->short_name);
     } else { // update record
         db_perform(TABLE_CONTACTS, $sql_data_array, 'update', "id = '$this->id'");
-        gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_UPDATE . '-' . constant('ACT_' . strtoupper($this->type) . '_TYPE_NAME'), $this->short_name);
+        gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_UPDATE . '-' . $this->title, $this->short_name);
     }
   }
 

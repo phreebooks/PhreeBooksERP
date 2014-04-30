@@ -24,15 +24,15 @@ define('CD_10_20_DESC','Toon de checkbox om zware zendingen worden uitgesplitst 
 define('CD_10_26_DESC','Toon Bevestiging van aflevering Checkbox');
 define('CD_10_32_DESC','Toon de administratiekosten selectievakje.');
 define('CD_10_38_DESC','Schakel het selectievakje rembours en opties in');
-define('CD_10_44_DESC','Toon Zaterdag pickup checkbox');
-define('CD_10_48_DESC','Toon Zaterdag Bezorg checkbox');
+define('TEXT_SATURDAY_PICKUP_CHECKBOX','Toon Zaterdag pickup checkbox');
+define('TEXT_SATURDAY_DELIVERY_CHECKBOX','Toon Zaterdag Bezorg checkbox');
 define('CD_10_52_DESC','Toon Gevaarlijk Materiaal checkbox');
 define('CD_10_56_DESC','Toon Droog IJS checkbox');
 define('CD_10_60_DESC','Toon retour service checkbox');
 define('NEXT_SHIPMENT_NUM_DESC','Volgend Verzendings Nummer');
 define('TEXT_SHIPPING_PREFS','Verzend Adres Instellingen');
 define('CONTACT_SHIP_FIELD_REQ','Of het verplicht is of het veld: %s in gevuld moet worden voor een nieuw verzend adres');
-define('PB_PF_SHIP_METHOD','Verzend Methode');
+define('TEXT_SHIP_METHOD','Verzend Methode');
 define('SHIPPING_METHOD','Selecteer Methode:');
 define('SHIPPING_MONTH','Selecteer Maand:');
 define('SHIPPING_YEAR','Selecteer Jaar:');

@@ -63,7 +63,7 @@ switch ($_REQUEST['action']) {
 			    $dept = $db->Execute("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result->fields['account_id']);
 			    $_SESSION['department'] = $dept->fields['dept_rep_id'];
 			}
-			gen_add_audit_log(GEN_LOG_LOGIN . $admin_name);
+			gen_add_audit_log(TEXT_USER_LOGIN ." -->" . $admin_name);
 			// check for session timeout to reload to requested page
 			$get_params = '';
 			if (isset($_SESSION['pb_module']) && $_SESSION['pb_module']) {

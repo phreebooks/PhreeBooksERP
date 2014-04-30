@@ -108,9 +108,9 @@ switch ($_REQUEST['action']) {
 			  'credit_amount' => ($currencies->clean_value($_POST['balance']) > 0) ? $currencies->clean_value($_POST['balance']) : '' ,
 			  'reconciled'    => ($security_level > 2) ? $period : 0,
 			  'post_date'     => $glEntry->post_date
-			);		
+			);
 		}
-		
+
 		$glEntry->journal_main_array = array(
 		  'period'              => $glEntry->period,
 		  'journal_id'          => JOURNAL_ID,
@@ -154,16 +154,16 @@ switch ($_REQUEST['action']) {
 				$result->MoveNext();
 			}
 		}
-		if (count($mains)) { 
+		if (count($mains)) {
 			// closes if any cash records within the journal main that are reconciled
 			$db->Execute("update " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
-			  set m.closed = '1' 
-			  where i.reconciled > 0 
-			  and i.gl_account = '" . $tills->gl_acct_id . "' 
+			  set m.closed = '1'
+			  where i.reconciled > 0
+			  and i.gl_account = '" . $tills->gl_acct_id . "'
 			  and m.id in (" . implode(",", $mains) . ")");
 		}
-		$messageStack->add(BNK_RECON_POST_SUCCESS,'success');
-		gen_add_audit_log(BNK_LOG_ACCT_RECON . $period, $tills->gl_acct_id);
+		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_SAVED, TEXT_RECONCILIATION , ''),'success');
+		gen_add_audit_log(TEXT_ACCOUNT_RECONCILIATION." ". TEXT_PERIOD ." : " . $period, $tills->gl_acct_id);
 		$post_date = ''; // reset for new form
   	}catch(Exception $e){
   		$db->transRollback();
@@ -178,9 +178,9 @@ switch ($_REQUEST['action']) {
 /*****************   prepare to display templates  *************************/
 if ($post_date){
 	$bank_list = array();
-	
+
 	// load the payments and deposits that are open
-	$sql = "select i.id, m.post_date, i.debit_amount, i.credit_amount, m.purchase_invoice_id, i.gl_type, i.description, m.journal_id, i.gl_account, a.description as gl_name 
+	$sql = "select i.id, m.post_date, i.debit_amount, i.credit_amount, m.purchase_invoice_id, i.gl_type, i.description, m.journal_id, i.gl_account, a.description as gl_name
 		from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 		 join " . TABLE_CHART_OF_ACCOUNTS . " a on i.gl_account = a.id
 		where m.gl_acct_id = '" . $tills->gl_acct_id . "' and i.reconciled = 0  and i.gl_type in ('" . implode("','", $gl_types) . "') and m.post_date = '" . $post_date . "'";
@@ -202,9 +202,9 @@ if ($post_date){
 	  );
 	  $result->MoveNext();
 	}
-	
+
 	// check to see if in partial reconciliation, if so add checked items
-	$sql = "select statement_balance, cleared_items from " . TABLE_RECONCILIATION . " 
+	$sql = "select statement_balance, cleared_items from " . TABLE_RECONCILIATION . "
 		where period = " . $period . " and gl_account = '" . $tills->gl_acct_id . "'";
 	$result = $db->Execute($sql);
 	if ($result->RecordCount() <> 0) { // there are current cleared items in the present accounting period (edit)
@@ -237,14 +237,14 @@ if ($post_date){
 			);
 		  }
 		  $result->MoveNext();
-		} 
+		}
 	  }
 	}
-	
+
 	// combine by reference number
 	$combined_list = array();
 	if (is_array($bank_list)) foreach ($bank_list as $id => $value) {
-	//	$index = ($value['payment'] ? 'p_' : 'd_') . $value['reference']; // this will separate deposits from payments with the same referenece 
+	//	$index = ($value['payment'] ? 'p_' : 'd_') . $value['reference']; // this will separate deposits from payments with the same referenece
 		$index = $value['reference'];
 		if (isset($combined_list[$index])) { // the reference already exists
 			$combined_list[$index]['dep_amount'] += $value['dep_amount'];
@@ -263,7 +263,7 @@ if ($post_date){
 		}
 		// How about the name=description rather than source for sub-items?
 		$combined_list[$index]['detail'][]  = array(
-			'id'         => $id, 
+			'id'         => $id,
 			'post_date'  => $value['post_date'],
 			//'name'       => $value['name'],
 			//'description'=> $value['description'],
@@ -280,7 +280,7 @@ if ($post_date){
 		$combined_list[$index]['edit']       = $value['edit'];
 		$combined_list[$index]['gl_account'] = $value['gl_account'];
 	}
-	
+
 	// sort by user choice for display
 	$sort_value = explode('-',$_GET['list_order']);
 	switch ($sort_value[0]) {
@@ -300,7 +300,7 @@ if ($post_date){
 		}
 	}
 	usort($combined_list, "my_sort");
-	
+
 	// load the end balance
 	$till_balance = $currencies->format($tills->balance);
 	if (empty($combined_list) && $tills->till_id <> '' ) $messageStack->add('No Items were found for till and period.!','warning');

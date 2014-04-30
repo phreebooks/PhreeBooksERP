@@ -19,7 +19,7 @@
 // Release History
 // 1.0 => 2011-04-15 - Initial Release
 // 1.1 => rene added starting and closing line (admin main/js_include and language)
-//        bugg fix added InventoryProp and processSkuProp to js_include, replaced ORD_TEXT_19_WINDOW_TITLE with MENU_HEADING_PHREEPOS
+//        bugg fix added InventoryProp and processSkuProp to js_include, replaced ORD_TEXT_19_WINDOW_TITLE with TEXT_POINT_OF_SALE
 // 3.3 => 2012-11 compleet rewrite
 // 3.4 => 2012-12 added other transactions
 // 3.5 => 2013-04 bug fix
@@ -43,14 +43,14 @@ if (defined('MODULE_PHREEPOS_STATUS')) {
 /*
   // Set the title menu
   $pb_headings[MENU_HEADING_PHREEPOS_ORDER] = array(
-    'text' => MENU_HEADING_PHREEPOS,
+    'text' => TEXT_POINT_OF_SALE,
     'link' => html_href_link(FILENAME_DEFAULT, 'module=phreepos&amp;page=main&amp;mID=cat_pos', 'SSL'),
   );
 */
   // Set the menus
   $mainmenu["customers"]['submenu']["phreepos"] = array(
   	'order' 	  => 51,
-  	'text'        => BOX_PHREEPOS,
+  	'text'        => TEXT_POINT_OF_SALE,
     'security_id' => SECURITY_ID_PHREEPOS,
     'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreepos&amp;page=main', 'SSL'),
     'show_in_users_settings' => true,
@@ -58,7 +58,7 @@ if (defined('MODULE_PHREEPOS_STATUS')) {
   );
   $mainmenu["banking"]['submenu']['phreepos'] = array(
   	'order' 	  => 50,
-  	'text'        => BOX_PHREEPOS,
+  	'text'        => TEXT_POINT_OF_SALE,
     'show_in_users_settings' => false,
     'params'      => '',
   );
@@ -79,7 +79,7 @@ if (defined('MODULE_PHREEPOS_STATUS')) {
     'params'      => '',
   );
   $mainmenu["banking"]['submenu']["receipts"]['submenu']['customer_deposit'] = array(
-    'text'        => BOX_CUSTOMER_DEPOSITS,
+    'text'        => TEXT_CUSTOMER_DEPOSITS,
     'order'       => 60,
     'security_id' => SECURITY_ID_CUSTOMER_DEPOSITS,
     'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreepos&amp;page=deposit&amp;type=c', 'SSL'),
@@ -87,7 +87,7 @@ if (defined('MODULE_PHREEPOS_STATUS')) {
     'params'      => '',
   );
   $mainmenu["banking"]['submenu']["vendor_payments"]['submenu']['vendor_deposit'] = array(
-    'text'        => BOX_VENDOR_DEPOSITS,
+    'text'        => TEXT_VENDOR_DEPOSITS,
     'order'       => 60,
     'security_id' => SECURITY_ID_VENDOR_DEPOSITS,
     'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreepos&amp;page=deposit&amp;type=v', 'SSL'),

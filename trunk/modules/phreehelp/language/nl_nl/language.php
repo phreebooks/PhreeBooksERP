@@ -9,8 +9,8 @@
 // Path: /modules/phreehelp/language/nl_nl/language.php
 
 define('HEADING_TITLE','PhreeBooks Login');
-define('HEADING_CONTENTS','Inhoud');
-define('HEADING_INDEX','Index');
+define('TEXT_CONTENTS','Inhoud');
+define('TEXT_INDEX','Index');
 define('TEXT_DOCUMENT','Document');
 define('TEXT_EXIT','Exit');
 define('TEXT_FOLDER','Map');

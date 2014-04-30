@@ -51,7 +51,7 @@ switch ($_REQUEST['action']) {
 /*****************   prepare to display templates  *************************/
 // build the list header
 $heading_array = array('post_date' => TEXT_DATE);
-if (ENABLE_MULTI_BRANCH) $heading_array['store_id'] = GEN_STORE_ID;
+if (ENABLE_MULTI_BRANCH) $heading_array['store_id'] = TEXT_STORE_ID;
 $heading_array['purchase_invoice_id'] = TEXT_REFERENCE;
 $heading_array['total_amount']        = TEXT_AMOUNT;
 $heading_array['bill_primary_name']   = GEN_PRIMARY_NAME;

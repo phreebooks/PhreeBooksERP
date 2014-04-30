@@ -24,7 +24,7 @@ class fields extends \core\classes\fields{
 	public  $db_table    = TABLE_ASSETS;
 	public  $type_params = 'asset_type';
 	public  $extra_buttons = '';
-  
+
 	public function __construct(){
   		gen_pull_language('assets');
   		$this->type_array[] = array('id' =>'vh', 'text' => TEXT_VEHICLE);
@@ -34,8 +34,8 @@ class fields extends \core\classes\fields{
   		$this->type_array[] = array('id' =>'te', 'text' => TEXT_EQUIP);
   		$this->type_array[] = array('id' =>'ld', 'text' => TEXT_LAND);
   		$this->type_array[] = array('id' =>'sw', 'text' => TEXT_SOFTWARE);
-	 	$this->type_desc    = ASSETS_ENTRY_ASSETS_TYPE;
-    	parent::__construct();    
+	 	$this->type_desc    = TEXT_ASSET_TYPE;
+    	parent::__construct();
 	}
 }
 ?>

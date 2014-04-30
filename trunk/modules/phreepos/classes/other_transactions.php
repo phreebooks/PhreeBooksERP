@@ -43,10 +43,10 @@ class other_transactions {
 		);
     	if ($id) {
 			db_perform($this->db_table, $sql_data_array, 'update', "ot_id = '" . $id . "'");
-			gen_add_audit_log(SETUP_TAX_AUTHS_LOG . TEXT_UPDATE, $this->description);
+			gen_add_audit_log(TEXT_OTHER_TRANSACTION ." - " . TEXT_UPDATE, $this->description);
 		} else {
       		db_perform($this->db_table, $sql_data_array);
-			gen_add_audit_log(SETUP_TAX_AUTHS_LOG . TEXT_ADD, $this->description);
+			gen_add_audit_log(TEXT_OTHER_TRANSACTION ." - " . TEXT_ADD, $this->description);
 		}
 		return true;
   	}
@@ -55,9 +55,9 @@ class other_transactions {
   		global $db;
   		\core\classes\user::validate_security($this->security_id, 4);
 		// 	OK to delete
-		$result = $db->Execute("select description from " . $this->db_table . " where ot_id = '" . $id . "'");
-		$db->Execute("delete from " . $this->db_table . " where ot_id = '" . $id . "'");
-		gen_add_audit_log(SETUP_TAX_AUTHS_LOG . TEXT_DELETE, $result->fields['description']);
+		$result = $db->Execute("select description from " . $this->db_table . " where ot_id = '$id'");
+		$db->Execute("delete from " . $this->db_table . " where ot_id = '$id'");
+		gen_add_audit_log(TEXT_OTHER_TRANSACTION ." - " . TEXT_DELETE, $result->fields['description']);
 		return true;
   	}
 
@@ -66,7 +66,7 @@ class other_transactions {
   		require_once(DIR_FS_MODULES . 'phreepos/defaults.php');
     	$content = array();
 		$content['thead'] = array(
-	  		'value' => array(TEXT_DESCRIPTION, GEN_STORE_ID, TEXT_GL_ACCOUNT, TEXT_ACTION),
+	  		'value' => array(TEXT_DESCRIPTION, TEXT_STORE_ID, TEXT_GL_ACCOUNT, TEXT_ACTION),
 	  		'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 		);
     	$result = $db->Execute("select * from " . $this->db_table );
@@ -121,7 +121,7 @@ class other_transactions {
 		$output .= '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);
 		$output .= '  <thead class="ui-widget-header">' . "\n";
 		$output .= '  <tr>' . chr(10);
-		$output .= '    <th colspan="2">' . ($action=='new' ? TEXT_ENTER_NEW_OTHER_TRANSACTION : TEXT_EDIT_OTHER_TRANSACTION) . '</th>' . chr(10);
+		$output .= '    <th colspan="2">' . ($action=='new' ? sprintf(TEXT_NEW_ARGS, TEXT_OTHER_TRANSACTION) : sprintf(TEXT_EDIT_ARGS, TEXT_OTHER_TRANSACTION)) . '</th>' . chr(10);
     	$output .= '  </tr>' . chr(10);
 		$output .= '  </thead>' . "\n";
 		$output .= '  <tbody class="ui-widget-content">' . "\n";

@@ -49,10 +49,10 @@ echo $toolbar->build_toolbar();
 		else if (is_file($def_filename . '.png'))  { $filename = $def_filename . '.png'; }
 		else if (is_file($def_filename . '.jpg'))  { $filename = $def_filename . '.jpg'; }
 		echo '<th width="30%" align="center">' . ($filename ? html_image($filename, $alt = $method, '', '30') : constant('MODULE_SHIPPING_'.strtoupper($carrier).'_TITLE_SHORT')) . '</th>' . chr(10);
-		echo '<th width="15%">' . SHIPPING_TEXT_FREIGHT_QUOTE . '</th>' . chr(10);
-		echo '<th width="15%">' . SHIPPING_TEXT_BOOK_PRICE    . '</th>' . chr(10);
-		echo '<th width="15%">' . SHIPPING_TEXT_COST          . '</th>' . chr(10);
-		echo '<th width="30%">' . SHIPPING_TEXT_NOTES         . '</th>' . chr(10);
+		echo '<th width="15%">' . TEXT_FREIGHT_QUOTE . '</th>' . chr(10);
+		echo '<th width="15%">' . TEXT_BOOK_PRICE    . '</th>' . chr(10);
+		echo '<th width="15%">' . TEXT_COST          . '</th>' . chr(10);
+		echo '<th width="30%">' . TEXT_NOTES         . '</th>' . chr(10);
 		echo '</tr></thead><tbody class="ui-widget-content">' . chr(10);
 		$odd = true;
 		if (is_array($value)) foreach ($value as $key => $prices) {

@@ -44,7 +44,7 @@ class toolbar {
 	  case 'next':       $image = 'actions/go-next.png';                $text = TEXT_CONTINUE;   break;
 	  case 'copy':       $image = 'actions/edit-copy.png';              $text = TEXT_COPY;       break;
 	  case 'edit':       $image = 'actions/edit-find-replace.png';      $text = TEXT_EDIT;       break;
-	  case 'email':      $image = 'apps/internet-mail.png';             $text = GEN_EMAIL;       break;
+	  case 'email':      $image = 'apps/internet-mail.png';             $text = TEXT_EMAIL;      break;
 	  case 'export':     $image = 'actions/format-indent-more.png';     $text = TEXT_EXPORT;     break;
 	  case 'export_csv': $image = 'mimetypes/x-office-spreadsheet.png'; $text = TEXT_EXPORT_CSV; break;
 	  case 'finish':     $image = 'actions/document-save.png';          $text = TEXT_FINISH;     break;
@@ -105,7 +105,7 @@ class toolbar {
 
 	function add_period() {
 		$output = '<div id="tb_period_' . $this->id . '" class="ui-state-hover" style="float:right; border:0px;">' . "\n";
-		$output .= TEXT_INFO_SEARCH_PERIOD_FILTER . '<br />' . "\n";
+		$output .= TEXT_ACCOUNTING_PERIOD . ':<br />' . "\n";
 		$output .= html_pull_down_menu('search_period', gen_get_period_pull_down($this->period_strict), $this->search_period, 'onchange="periodPage(\'' . gen_get_all_get_params(array('action', 'list')) . '\')"');
 		$output .= '</div>' . "\n";
 		return $output;

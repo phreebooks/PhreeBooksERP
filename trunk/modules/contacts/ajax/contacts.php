@@ -25,7 +25,7 @@ require_once(DIR_FS_MODULES . 'contacts/classes/contacts.php');
 /**************   page specific initialization  *************************/
 $xml     = NULL;
 $message = array();
- 
+
 switch ($_REQUEST['action']) {
 	case 'get_address':
 		$id   = $_GET['aID'];
@@ -40,7 +40,7 @@ switch ($_REQUEST['action']) {
 			$xml .= '</Address>'.chr(10);
 		}
 		// if it's a CRM entry, we need some primary information
-		$result = $db->Execute("select id, short_name, contact_first, contact_middle, contact_last, account_number, gov_id_number 
+		$result = $db->Execute("select id, short_name, contact_first, contact_middle, contact_last, account_number, gov_id_number
 			from ".TABLE_CONTACTS." where id = ".$result->fields['ref_id']." limit 1");
 		$xml .= xmlEntry('contact_id',    $result->fields['id']);
 		$xml .= xmlEntry('short_name',    $result->fields['short_name']);
@@ -58,7 +58,7 @@ switch ($_REQUEST['action']) {
 			$short_name = gen_get_contact_name($id);
 			$contact = new \contacts\classes\contacts();
 			if ($contact->delete($result->fields['ref_id'])) {
-	  			gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_DELETE . '-' . constant('ACT_' . strtoupper($type) . '_TYPE_NAME'), $short_name);
+	  			gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_DELETE . '-' . $contact->title), $short_name);
 				$message[] = 'The record was successfully deleted!';
 			} else {
 				$message[] = ACT_ERROR_CANNOT_DELETE;
@@ -103,7 +103,7 @@ switch ($_REQUEST['action']) {
 
 	default:
 		ob_end_flush();
-  		session_write_close(); 
+  		session_write_close();
 		die;
 }
 

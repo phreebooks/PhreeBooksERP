@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:46
 // Module/Method: work_orders
 // ISO Language: pt_br
@@ -72,7 +72,7 @@ define('WO_ROLL_REVISION','A Ordem de Serviço foi utilizada no sistema, quaisqu
 define('WO_ERROR_CANNOT_DELETE','A tarefa da Ordem de Serviço não pode ser removida porque está sendo utilizada em uma Ordem de Serviço! Veja a Ordem de Serviço #');
 define('WO_DUPLICATE_TASK_ID','O registro não foi alterado, uma ID de Tarefa com este nome já existe no sistema!');
 define('WO_TASK_ID_MISSING','Campos ID Tarefa e Descrição são obrigatórios!');
-define('WO_TEXT_PARTS_SHORTAGE','(%s de %s) necessários do sku %s - %s');
+define('TEXT_PARTS_SHORTAGE_ARGS','(%s de %s) necessários do sku %s - %s');
 define('WO_AUDIT_LOG_MAIN','OS Principal (%s) - ');
 define('WO_AUDIT_LOG_BUILDER','OS Construtor (%s) - ');
 define('WO_AUDIT_LOG_TASK','OS Tarefa ($s) - ');

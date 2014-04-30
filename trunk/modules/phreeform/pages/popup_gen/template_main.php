@@ -29,18 +29,18 @@ $toolbar->icon_list['delete']['show']   = false;
 if ($report->reporttype == 'rpt') {
   $toolbar->icon_list['save']['params'] = 'onclick="entrySave();"';
   $toolbar->icon_list['export_html']    = array(
-    'show'   => true, 
+    'show'   => true,
     'icon'   => 'mimetypes/text-html.png',
-    'params' => 'onclick="submitToDo(\'exp_html\', true)"', 
-    'text'   => TEXT_GENERATE_HTML, 
+    'params' => 'onclick="submitToDo(\'exp_html\', true)"',
+    'text'   => TEXT_GENERATE_HTML,
     'order'  => '9',
   );
   $toolbar->add_icon('export_csv', 'onclick="submitToDo(\'exp_csv\', true)"', $order = 10);
   $toolbar->icon_list['export_xml']    = array(
-    'show'   => true, 
+    'show'   => true,
     'icon'   => 'mimetypes/text-x-script.png',
-    'params' => 'onclick="submitToDo(\'exp_xml\', true)"', 
-    'text'   => 'export xml', 
+    'params' => 'onclick="submitToDo(\'exp_xml\', true)"',
+    'text'   => 'export xml',
     'order'  => '12',
   );
   $toolbar->add_icon('copy',       'onclick="querySaveAs()"',           $order = 13);
@@ -101,13 +101,13 @@ echo $toolbar->build_toolbar();
 	</div>
 <?php if (sizeof($r_list) > 1) { ?>
 	<div id="frm_select">
-	<p><?php echo GEN_HEADING_PLEASE_SELECT; ?></p>
+	<p><?php echo TEXT_PLEASE_SELECT; ?></p>
 	  <?php foreach ($r_list as $value) {
 		echo '<div>' . html_radio_field('rID', $value['id'], false, '', 'onchange="fetchEmailMsg()"');
 		echo '&nbsp;' . $value['text'] . '</div>' . chr(10);
 	  } ?>
 	</div>
-<?php } elseif (!$rID) { 
+<?php } elseif (!$rID) {
     echo PHREEFORM_NO_DOCUMENTS;
 	  } else {
     echo html_hidden_field('rID', $rID) . chr(10);
@@ -121,7 +121,7 @@ echo $toolbar->build_toolbar();
 		<tr><th colspan="4"><?php echo TEXT_CRITERIA_SETUP; ?></th></tr>
 	   </thead>
 	   <tbody class="ui-widget-content">
-		<?php if ($report->datelist <> '') { 
+		<?php if ($report->datelist <> '') {
 			if ($report->datelist == 'z') { // special case for period pull-down
 				echo '<tr><td>' . TEXT_PERIOD . '</td>';
 				echo '<td colspan="3">' . chr(10);
@@ -139,7 +139,7 @@ echo $toolbar->build_toolbar();
 				  <td><?php echo html_calendar_field($cal_from); ?></td>
 				  <td><?php echo html_calendar_field($cal_to); ?></td>
 				</tr>
-			<?php } 
+			<?php }
 		}
 		if ($report->reporttype == 'rpt' && $report->grouplist <> '') { ?>
 		<tr>
@@ -211,13 +211,13 @@ echo $toolbar->build_toolbar();
 	  <thead  class="ui-widget-header">
 		<tr><th id="fieldListHeading" colspan="10"><?php echo TEXT_FIELD_LIST; ?></th></tr>
 		<tr>
-		  <th><?php echo PHREEFORM_TBLFNAME; ?></th>
+		  <th><?php echo TEXT_FIELDNAME; ?></th>
 		  <th><?php echo PHREEFORM_DISPNAME; ?></th>
 		  <th><?php echo TEXT_COLUMN . '<br />' . TEXT_BREAK; ?></th>
 		  <th><?php echo TEXT_COLUMN . '<br />' . TEXT_WIDTH; ?></th>
 		  <th><?php echo TEXT_TOTAL  . '<br />' . TEXT_WIDTH; ?></th>
 		  <th><?php echo TEXT_SHOW   . '<br />' . TEXT_FIELD; ?></th>
-		  <th><?php echo PHREEFORM_TEXTPROC; ?></th>
+		  <th><?php echo TEXT_TEXT_PROCESSING; ?></th>
 		  <th><?php echo TEXT_TOTAL  . '<br />' . TEXT_COLUMN; ?></th>
 		  <th><?php echo TEXT_ALIGN; ?></th>
 		  <th><?php echo TEXT_ACTION; ?></th>
@@ -236,7 +236,7 @@ echo $toolbar->build_toolbar();
 		  <td><?php echo html_pull_down_menu('fld_tot[]',  $nyChoice,   $report->fieldlist[$i]->total); ?></td>
 		  <td><?php echo html_pull_down_menu('fld_algn[]', $kFontAlign, $report->fieldlist[$i]->align); ?></td>
 		  <td nowrap="nowrap" align="center">
-			<?php 
+			<?php
 		  	  echo html_icon('actions/view-fullscreen.png',   TEXT_MOVE,   'small', 'style="cursor:move"', '', '', 'move_fld_' . $i) . chr(10);
 			  echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . TEXT_DELETE_ENTRY . '\')) rowAction(\'field_setup\', \'delete\'); calculateWidth();"');
 			?>
@@ -286,7 +286,7 @@ echo $toolbar->build_toolbar();
       <td align="center"><?php echo TEXT_ALIGN; ?></td>
     </tr>
     <tr>
-      <td colspan="3"><?php echo TEXT_PGCOYNM; ?></td>
+      <td colspan="3"><?php echo TEXT_COMPANY_NAME; ?></td>
 	  <td align="center"><?php echo html_checkbox_field('coynameshow', '1', ($report->page->heading->show == '1') ? true : false); ?></td>
       <td align="center"><?php echo html_pull_down_menu('coynamefont',  $kFonts, $report->page->heading->font); ?></td>
       <td align="center"><?php echo html_pull_down_menu('coynamesize',  $kFontSizes, $report->page->heading->size); ?></td>

@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:46
 // Module/Method: shipping
 // ISO Language: pt_br
@@ -8,6 +8,6 @@
 // +-----------------------------------------------------------------+
 // Path: /modules/shipping/language/pt_br/menu.php
 
-define('BOX_SHIPPING_MANAGER','Entregas');
+define('TEXT_SHIPPING_MANAGER','Entregas');
 
 ?>

@@ -19,7 +19,7 @@
 $security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 /**************  include page specific files    *********************/
 gen_pull_language($module, 'admin');
-/**************   page specific initialization  *************************/ 
+/**************   page specific initialization  *************************/
 // see if installing or removing a method
 if (substr($_REQUEST['action'], 0, 8) == 'install_') {
   $method = substr($_REQUEST['action'], 8);
@@ -66,6 +66,6 @@ $sel_yes_no = array(
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', MENU_HEADING_PHREEPAY);
+define('PAGE_TITLE', TEXT_PAYMENT_MODULE);
 
 ?>

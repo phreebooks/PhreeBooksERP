@@ -40,7 +40,7 @@ if (!isset($_REQUEST['inventory_type'])){
 	else $result = $db->Execute("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE sku='{$_REQUEST['sku']}'");
 	if ($result->RecordCount()>0) $type = $result->fields['inventory_type'];
 	else $type ='si';
-} 
+}
 $temp = '\inventory\classes\type\\'. $type;
 $cInfo = new $temp;
 /***************   hook for custom actions  ***************************/
@@ -58,7 +58,7 @@ switch ($_REQUEST['action']) {
   		$_REQUEST['action'] = 'new';
   	}
 	break;
-	
+
   case 'save':
   	try{
 		\core\classes\user::validate_security($security_level, 2); // security check
@@ -82,7 +82,7 @@ switch ($_REQUEST['action']) {
 	$cInfo->copy($id, $sku);
 	$_REQUEST['action'] = 'edit';
 	break;
-	
+
   case 'edit':
   case 'properties':
 	if($id != ''){
@@ -125,11 +125,11 @@ switch ($_REQUEST['action']) {
 		   	}
   	    }
   case 'reset':
-  		$_SESSION['filter_field']	 = null; 
+  		$_SESSION['filter_field']	 = null;
   		$_REQUEST['filter_field']	 = null;
-  		$_SESSION['filter_criteria'] = null; 
+  		$_SESSION['filter_criteria'] = null;
   		$_REQUEST['filter_criteria'] = null;
-  		$_SESSION['filter_value'] 	 = null; 
+  		$_SESSION['filter_value'] 	 = null;
   		$_REQUEST['filter_value'] 	 = null;
 		break;
   case 'go_first':    $_REQUEST['list'] = 1;       break;
@@ -180,16 +180,16 @@ $include_footer   = true;
 
 switch ($_REQUEST['action']) {
   case 'new':
-    define('PAGE_TITLE', BOX_INV_NEW);
+    define('PAGE_TITLE', sprintf(TEXT_NEW_ARGS, TEXT_INVENTORY_ITEM);
     $include_template = 'template_id.php';
 	break;
   case 'create':
   case 'edit':
-    define('PAGE_TITLE', BOX_INV_MAINTAIN);
+    define('PAGE_TITLE', sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY));
     $include_template = 'template_detail.php';
     break;
   case 'properties':
-    define('PAGE_TITLE', BOX_INV_MAINTAIN);
+    define('PAGE_TITLE', sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY));
 	$include_header   = false;
 	$include_footer   = false;
     $include_template = 'template_detail.php';
@@ -202,34 +202,34 @@ switch ($_REQUEST['action']) {
   	$filter_criteria = Array(" = "," != "," LIKE "," NOT LIKE "," > "," < ");
 	$x = 0;
 	while (isset($_SESSION['filter_field'][$x])) {
-		if(      $filter_criteria[$_SESSION['filter_criteria'][$x]] == " LIKE " || $_SESSION['filter_criteria'][$x] == FILTER_CONTAINS){
+		if(      $filter_criteria[$_SESSION['filter_criteria'][$x]] == " LIKE " || $_SESSION['filter_criteria'][$x] == TEXT_CONTAINS){
 			if ( $_SESSION['filter_value'][$x] <> '' ) $criteria[] = $_SESSION['filter_field'][$x] . ' Like "%'    . $_SESSION['filter_value'][$x] . '%" ';
-			
+
 		}elseif( $filter_criteria[$_SESSION['filter_criteria'][$x]] == " NOT LIKE "){
 			if ( $_SESSION['filter_value'][$x] <> '' ) $criteria[] = $_SESSION['filter_field'][$x] . ' Not Like "%' . $_SESSION['filter_value'][$x] . '%" ';
-			
+
 		}elseif( $filter_criteria[$_SESSION['filter_criteria'][$x]] == " = "  && $_SESSION['filter_value'][$x] == ''){
 			if ( $_SESSION['filter_field'][$x] == 'a.sku' && $_SESSION['filter_value'][$x] == '' ) { $x++; continue; }
 			$criteria[] = '(' . $_SESSION['filter_field'][$x] . $filter_criteria[$_SESSION['filter_criteria'][$x]] . ' "' . $_SESSION['filter_value'][$x] . '" or ' . $_SESSION['filter_field'][$x] . ' IS NULL ) ';
-			
+
 		}elseif( $filter_criteria[$_SESSION['filter_criteria'][$x]] == " != " && $_SESSION['filter_value'][$x] == ''){
 			$criteria[] = '(' . $_SESSION['filter_field'][$x] . $filter_criteria[$_SESSION['filter_criteria'][$x]] . ' "' . $_SESSION['filter_value'][$x] . '" or ' . $_SESSION['filter_field'][$x] . ' IS NOT NULL ) ';
-			
-		}else{	
+
+		}else{
 			$criteria[] = $_SESSION['filter_field'][$x] . $filter_criteria[$_SESSION['filter_criteria'][$x]]. ' "' . $_SESSION['filter_value'][$x] . '" ';
-		}		
+		}
 		$x++;
-	}	
-  	
+	}
+
     // build the list header
 	$heading_array = array(
 	  'a.sku'                     => TEXT_SKU,
 	  'a.inactive'                => TEXT_INACTIVE,
 	  'a.description_short'       => TEXT_DESCRIPTION,
-	  'a.quantity_on_hand'        => INV_HEADING_QTY_ON_HAND,
+	  'a.quantity_on_hand'        => TEXT_QUANTITY_ON_HAND_SHORT,
 	  'a.quantity_on_sales_order' => INV_HEADING_QTY_ON_SO,
 	  'a.quantity_on_allocation'  => INV_HEADING_QTY_ON_ALLOC,
-	  'a.quantity_on_order'       => INV_HEADING_QTY_ON_ORDER,
+	  'a.quantity_on_order'       => TEXT_QUANTITY_ON_ORDER_SHORT,
 	);
 	$result      = html_heading_bar($heading_array);
 	$list_header = $result['html_code'];
@@ -245,7 +245,7 @@ switch ($_REQUEST['action']) {
 	}
 	// build search filter string
 	$search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
-	$field_list = array('a.id as id', 'a.sku as sku', 'inactive', 'inventory_type', 'description_short', 'full_price', 
+	$field_list = array('a.id as id', 'a.sku as sku', 'inactive', 'inventory_type', 'description_short', 'full_price',
 			'quantity_on_hand', 'quantity_on_order', 'quantity_on_sales_order', 'quantity_on_allocation', 'last_journal_date');
 	// hook to add new fields to the query return results
 	if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
@@ -310,7 +310,7 @@ switch ($_REQUEST['action']) {
 				$SecondField		.= 'SecondField["' 		. $append . $result->fields['field_name'] . '"] = "drop_down";' . chr(10);
 				$SecondFieldValue	.= 'SecondFieldValue["'	. $append . $result->fields['field_name'] . '"] = '. $tempValue . ';' . chr(10);
 				$SecondFieldId		.= 'SecondFieldId["' 	. $append . $result->fields['field_name'] . '"] = '. $tempId . ';' . chr(10);
-				break;	
+				break;
 			default:
 				$SecondField.= 'SecondField["' . $append . $result->fields['field_name'] . '"] ="'. $result->fields['entry_type'] . '";' . chr(10);
 				if(in_array($result->fields['entry_type'], array('drop_down','radio','multi_check_box'))){
@@ -329,12 +329,12 @@ switch ($_REQUEST['action']) {
 					$SecondFieldValue	.= 'SecondFieldValue["' . $append . $result->fields['field_name'] . '"] ='. $tempValue . ';' . chr(10);
 					$SecondFieldId		.= 'SecondFieldId["' 	. $append . $result->fields['field_name'] . '"] ='. $tempId . ';' . chr(10);
 				}
-		}	
+		}
 		$i++;
 	   	$result->MoveNext();
 	}
     //end building array's for filter dropdown selection
-	define('PAGE_TITLE', BOX_INV_MAINTAIN);
+	define('PAGE_TITLE', sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY));
     $include_template = 'template_main.php';
 	break;
 }

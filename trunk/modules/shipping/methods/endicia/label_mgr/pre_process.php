@@ -73,7 +73,7 @@ switch ($_REQUEST['action']) {
 			$labels_array[] = $shipment['tracking'];
 	  	}
 	  	$db->Execute("update ".TABLE_CURRENT_STATUS." set next_shipment_num = next_shipment_num + 1");
-	  	gen_add_audit_log(SHIPPING_LOG_LABEL_PRINTED, $shipment_num . '-' . $sInfo->purchase_invoice_id);
+	  	gen_add_audit_log(TEXT_LABEL_GENERATED, $shipment_num . '-' . $sInfo->purchase_invoice_id);
 	  	$file_path = SHIPPING_DEFAULT_LABEL_DIR . $admin_classes['shipping']->methods[$method]->id . '/' . str_replace('-', '/', $date) . '/';
 		// fetch the tracking labels
 	  	foreach ($labels_array as $tracking_num) {
@@ -158,7 +158,7 @@ switch ($_REQUEST['action']) {
 	}
 	// delete log since deleting label from FedEx is just a courtesy
 	$db->Execute("delete from " . TABLE_SHIPPING_LOG . " where shipment_id = " . $shipment_id);
-	gen_add_audit_log(SHIPPING_LABEL_DELETED, $shipment_id);
+	gen_add_audit_log(TEXT_LABEL_DELETED, $shipment_id);
 	break;
 
   default:
@@ -185,6 +185,6 @@ foreach ($shipping_defaults['service_levels'] as $key => $value) {
 $include_header   = false;
 $include_footer   = false;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', SHIPPING_TEXT_PRINT_LABEL);
+define('PAGE_TITLE', TEXT_PRINT_LABEL);
 
 ?>

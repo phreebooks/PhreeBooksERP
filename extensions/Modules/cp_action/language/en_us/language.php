@@ -18,24 +18,24 @@
 //  Path: /modules/cp_action/language/en_us/language.php
 //
 
-// Headings 
+// Headings
 define('BOX_CAPA_MAINTAIN','Corrective/Preventative Action');
 define('MENU_HEADING_NEW_CAPA','Create New Corrective Action');
 // General Defines
 define('TEXT_ACTION_EFFECTIVE','Was Action Taken Effective?');
 define('TEXT_ACTION_TAKEN','Action Taken');
 define('TEXT_AGREED_TO_BY','Agreed To By');
-define('TEXT_AGREED_TO_DATE','Agreed Date');
+define('TEXT_AGREED_DATE','Agreed Date');
 define('TEXT_ASSIGNED_BY_SYSTEM','(Assigned By System)');
 define('TEXT_ASSIGNED_DATE','Assigned Date');
-define('TEXT_ASSIGEND_TO','Assigned To');
+define('TEXT_ASSIGNED_TO','Assigned To');
 define('TEXT_AUDIT','Audit');
 define('TEXT_AUDIT_NOTES','Audit Notes');
 define('TEXT_CA','CA');
 define('TEXT_CAPAS','CAPAs');
 define('TEXT_CAPA_ID','CAPA Num');
 define('TEXT_CAPA_NOTES','Description of Issue');
-define('TEXT_CAPA_TYPE','Action Type');
+define('TEXT_ACTION_TYPE','Action Type');
 define('TEXT_PURCHASE_INVOICE_ID','Sales/Invoice #');
 define('TEXT_CREATION_DATE','Creation Date');
 define('TEXT_CLOSED_BY','Closed By');

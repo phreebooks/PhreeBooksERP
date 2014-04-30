@@ -17,7 +17,7 @@
 //  Path: /modules/assets/language/nl_nl/admin.php
 //
 // Module information
-define('MODULE_ASSETS_TITLE','Activa Module');
+define('TEXT_ASSETS_MODULE','Activa Module');
 define('MODULE_ASSETS_DESCRIPTION','De activa module houdt een record van bedrijfseigendommen. De module maakt het mogelijk extra tabbladen en velden toetevoegen en aanpassen aan de wensen van de gebruiker.');
 // Headings
 define('BOX_ASSETS_ADMIN','Activa Module Admin');

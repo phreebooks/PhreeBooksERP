@@ -58,13 +58,13 @@ $shipping_defaults['pickup_service'] = array(
 // Weight Unit of Measure
 // Value: char(3), Values "LBS" or "KGS"
 $shipping_defaults['weight_unit'] = array(
-  'LBS' => SHIPPING_TEXT_LBS,
-  'KGS' => SHIPPING_TEXT_KGS,
+  'LBS' => TEXT_POUND_SHORT,
+  'KGS' => TEXT_KILOGRAMS_SHORT,
 );
 // Package Dimensions Unit of Measure
 $shipping_defaults['dimension_unit'] = array(
-  'IN' => SHIPPING_TEXT_IN,
-  'CM' => SHIPPING_TEXT_CM,
+  'IN' => TEXT_INCHES_SHORT,
+  'CM' => TEXT_CENTIMETERS_SHORT,
 );
 // Package Type
 $shipping_defaults['package_type'] = array(
@@ -78,11 +78,11 @@ $shipping_defaults['package_type'] = array(
 );
 // COD Funds Code
 $shipping_defaults['cod_funds_code'] = array(
-  '0' => SHIPPING_CASH,
-  '1' => SHIPPING_CHECK,
+  '0' => TEXT_CASH,
+  '1' => TEXT_CHECK,
   '2' => SHIPPING_CASHIERS,
   '3' => SHIPPING_MO,
-  '4' => SHIPPING_ANY,
+  '4' => TEXT_ANY,
 );
 // Delivery Confirmation
 // Package delivery confirmation only allowed for shipments with US origin/destination combination.
@@ -100,10 +100,10 @@ $shipping_defaults['return_label'] = array(
 );
 // Billing options
 $shipping_defaults['bill_options'] = array(
-  '0' => SHIPPING_SENDER,
-  '1' => SHIPPING_RECEIPIENT,
-  '2' => SHIPPING_THIRD_PARTY,
-  '3' => SHIPPING_COLLECT,
+  '0' => TEXT_SENDER,
+  '1' => TEXT_RECEIPIENT,
+  '2' => TEXT_THIRD_PARTY,
+  '3' => TEXT_COLLECT,
 );
 $ltl_classes = array(
   '0' => TEXT_SELECT,
@@ -111,7 +111,7 @@ $ltl_classes = array(
   '055' => '55',
   '060' => '60',
   '065' => '65',
-  '070' => '70', 
+  '070' => '70',
   '077' => '77.5',
   '085' => '85',
   '092' => '92.5',

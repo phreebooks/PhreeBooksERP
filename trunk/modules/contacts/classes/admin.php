@@ -20,7 +20,7 @@ namespace contacts\classes;
 class admin extends \core\classes\admin {
 	public $sort_order  = 3;
 	public $id 			= 'contacts';
-	public $text		= MODULE_CONTACTS_TITLE;
+	public $text		= TEXT_CONTACTS_MODULE;
 	public $description = MODULE_CONTACTS_DESCRIPTION;
 	public $core		= true;
 	public $version		= '3.71';
@@ -212,11 +212,11 @@ class admin extends \core\classes\admin {
 	}
 
 	function load_reports() {
-		$id = $this->add_report_heading(MENU_HEADING_CUSTOMERS,   'cust');
+		$id = $this->add_report_heading(TEXT_CUSTOMERS,   'cust');
 		$this->add_report_folder($id, TEXT_REPORTS,           'cust', 'fr');
-		$id = $this->add_report_heading(MENU_HEADING_EMPLOYEES,   'hr');
+		$id = $this->add_report_heading(TEXT_EMPLOYEES,   'hr');
 		$this->add_report_folder($id, TEXT_REPORTS,           'hr',   'fr');
-		$id = $this->add_report_heading(MENU_HEADING_VENDORS,     'vend');
+		$id = $this->add_report_heading(TEXT_VENDORS,     'vend');
 		$this->add_report_folder($id, TEXT_REPORTS,           'vend', 'fr');
 		parent::load_reports();
 	}

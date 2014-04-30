@@ -85,7 +85,7 @@ switch ($_REQUEST['action']) {
 		      'closed'     => $closed,
 			  'close_date' => $close_date,
 		    );
-		    if (!db_perform(TABLE_WO_JOURNAL_MAIN, $sql_data_array, 'insert'))throw new \core\classes\userException("wasn't able to insert");
+		    if (!db_perform(TABLE_WO_JOURNAL_MAIN, $sql_data_array, 'insert')) throw new \core\classes\userException("wasn't able to insert");
 			$id = db_insert_id();
 			$result   = $db->Execute("update " . TABLE_CURRENT_STATUS . " set next_wo_num = '" . string_increment($wo_num) . "'");
 			$temp     = $db->Execute("select allocate from " . TABLE_WO_MAIN . " where id = '" . $wo_id . "'");
@@ -117,7 +117,7 @@ switch ($_REQUEST['action']) {
 		}
 		// finish
 		gen_add_audit_log($id  ? sprintf(WO_AUDIT_LOG_MAIN, TEXT_UPDATE) . $wo_id : sprintf(WO_AUDIT_LOG_MAIN, TEXT_ADD) . $wo_id);
-		$messageStack->add($id ? WO_MESSAGE_SUCCESS_MAIN_UPDATE : WO_MESSAGE_SUCCESS_MAIN_ADD, 'success');
+		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS,(isset($_POST['id']) ? TEXT_UPDATED : TEXT_ADDED), TEXT_WORK_ORDER_RECORD , $wo_title),'success');
 		if ($_REQUEST['action'] == 'save') gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	} catch(Exception $e) {
 	  $messageStack->add($e->getMessage(), 'error');
@@ -206,8 +206,8 @@ switch ($_REQUEST['action']) {
 			//	  'serialize_number' => $serial,
 				);
 				$glEntry->Post('insert');
-				gen_add_audit_log(INV_LOG_ASSY . TEXT_SAVE, $sku, $qty);
-				$messageStack->add(INV_POST_ASSEMBLY_SUCCESS . $sku, 'success');
+				gen_add_audit_log(TEXT_INVENTORY_ASSEMBLY . ' - ' . TEXT_SAVE, $sku, $qty);
+				$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_ASSEMBLED, TEXT_SKU , $sku), 'success');
 			}
 			$db->Execute("update " . TABLE_WO_JOURNAL_ITEM . " set complete = '1', admin_id = " . $_SESSION['admin_id'] . "
 			  where ref_id = $id and step = $step");
@@ -217,18 +217,18 @@ switch ($_REQUEST['action']) {
 				$db->Execute("update " . TABLE_WO_JOURNAL_MAIN . "
 				  set closed = '1', close_date = '" . date('Y-m-d H:i:s') . "' where id = " . $id);
 			   	// check to un-allocate inventory
-				$result   = $db->Execute("select qty, sku_id, wo_id from " . TABLE_WO_JOURNAL_MAIN . " where id = $id");
-				$temp     = $db->Execute("select allocate from ".TABLE_WO_MAIN." where id = '".$result->fields['wo_id']."'");
+				$result   = $db->Execute("select qty, sku_id, wo_id, wo_title from " . TABLE_WO_JOURNAL_MAIN . " where id = $id");
+				$temp     = $db->Execute("select allocate from ".TABLE_WO_MAIN." where id = '{$result->fields['wo_id']}'");
 				$allocate = $temp->fields['allocate'];
 				if ($allocate) allocation_adjustment($result->fields['sku_id'], 0, $result->fields['qty']);
 				gen_add_audit_log(sprintf(WO_AUDIT_LOG_WO_COMPLETE, $id));
-				$messageStack->add(sprintf(WO_MESSAGE_SUCCESS_COMPLETE, $id),'success');
+				$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_COMPLETED, TEXT_WORK_ORDER_RECORD , $result->fields['wo_title']),'success');
 				gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 			}
 		}
 		$db->transCommit();	// post the chart of account values
 		gen_add_audit_log(sprintf(WO_AUDIT_LOG_STEP_COMPLETE, $step));
-		$messageStack->add(sprintf(WO_MESSAGE_STEP_UPDATE_SUCCESS, $step),'success');
+		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_UPDATED, TEXT_WORK_ORDER_STEP , $step),'success');
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')) . '&action=build&id=' . $id, 'SSL'));
 	} catch(Exception $e) {
 		$db->transRollback();
@@ -273,14 +273,14 @@ switch ($_REQUEST['action']) {
     $id = db_prepare_input($_GET['id']);
 	if (!$id) throw new \core\classes\userException("the requird varible 'id' isn't set");
 	// check to un-allocate inventory
-	$result   = $db->Execute("select qty, sku_id, wo_id from " . TABLE_WO_JOURNAL_MAIN . " where id = " . $id);
+	$result   = $db->Execute("select qty, sku_id, wo_id, wo_title from " . TABLE_WO_JOURNAL_MAIN . " where id = " . $id);
 	$temp     = $db->Execute("select allocate from " . TABLE_WO_MAIN . " where id = '" . $result->fields['wo_id'] . "'");
 	$allocate = $temp->fields['allocate'];
 	if ($allocate) allocation_adjustment($result->fields['sku_id'], 0, $result->fields['qty']);
 	$db->Execute("delete from " . TABLE_WO_JOURNAL_MAIN  . " where id = " . $id);
 	$db->Execute("delete from " . TABLE_WO_JOURNAL_ITEM  . " where ref_id = " . $id);
 	gen_add_audit_log(sprintf(WO_AUDIT_LOG_MAIN, TEXT_DELETE) . $result->fields['wo_title']);
-	$messageStack->add(WO_MESSAGE_SUCCESS_MAIN_DELETE,'success');
+	$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_WORK_ORDER_RECORD , $result->fields['wo_title']),'success');
     $_REQUEST['action'] = '';
 	break;
   case 'go_first':    $_REQUEST['list'] = 1;       break;
@@ -310,7 +310,7 @@ switch ($_REQUEST['action']) {
     // build priority drop-down
 	$priority_list = array();
 	for ($i = 1; $i < 10; $i++) $priority_list[] = array('id' => $i, 'text' => $i);
-	define('PAGE_TITLE', ($_REQUEST['action'] == 'edit') ? HEADING_WORK_ORDER_MODULE_EDIT : HEADING_WORK_ORDER_MODULE_NEW);
+	define('PAGE_TITLE', ($_REQUEST['action'] == 'edit') ? sprintf(TEXT_EDIT_ARGS, TEXT_WORK_ORDER) : sprintf(TEXT_NEW_ARGS, TEXT_WORK_ORDER) );
     $include_template = 'template_new.php';
     break;
   case 'build':

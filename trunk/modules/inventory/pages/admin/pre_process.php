@@ -58,7 +58,7 @@ switch ($_REQUEST['action']) {
 	  $result->MoveNext();
 	}
 	// fetch the inventory items that we track COGS and get qty on hand
-	$result = $db->Execute("select sku, quantity_on_hand from " . TABLE_INVENTORY . " 
+	$result = $db->Execute("select sku, quantity_on_hand from " . TABLE_INVENTORY . "
 	  where inventory_type in ('" . implode("', '", $cog_type) . "') order by sku");
 	// for each item, find the history remaining Qty's
 	$cnt = 0;
@@ -74,7 +74,7 @@ switch ($_REQUEST['action']) {
 		}
 	  }
 	  // now check with inventory history
-	  $sql = "select sum(remaining) as remaining from " . TABLE_INVENTORY_HISTORY . " 
+	  $sql = "select sum(remaining) as remaining from " . TABLE_INVENTORY_HISTORY . "
 		where sku = '" . $result->fields['sku'] . "'";
 	    $inv_hist = $db->Execute($sql);
 		$cog_qty  = round($inv_hist->fields['remaining'], $currencies->currencies[DEFAULT_CURRENCY]['decimal_precise']);
@@ -94,7 +94,7 @@ switch ($_REQUEST['action']) {
 	  $result = $db->Execute("update " . TABLE_INVENTORY_HISTORY . " set remaining = 0 where remaining < " . $precision); // remove rounding errors
 	  if (sizeof($repair) > 0) {
 	    foreach ($repair as $key => $value) {
-		  $sql = "update " . TABLE_INVENTORY . " set quantity_on_hand = " . $value . " 
+		  $sql = "update " . TABLE_INVENTORY . " set quantity_on_hand = " . $value . "
 		  	where sku = '" . $key . "'";
 		  $db->Execute($sql);
 		  $messageStack->add(sprintf(INV_TOOLS_BALANCE_CORRECTED, $key, $value), 'success');
@@ -112,7 +112,7 @@ switch ($_REQUEST['action']) {
 	$inv = array();
 	$po  = array();
 	$so  = array();
-	$items = $db->Execute("select id, sku, quantity_on_order, quantity_on_sales_order from " . TABLE_INVENTORY . " 
+	$items = $db->Execute("select id, sku, quantity_on_order, quantity_on_sales_order from " . TABLE_INVENTORY . "
 	  where inventory_type in ('" . implode("', '", $cog_type) . "') order by sku");
 	while(!$items->EOF) {
 	  $inv[$items->fields['sku']] = array(
@@ -155,15 +155,15 @@ $sel_yes_no = array(
  array('id' => '1', 'text' => TEXT_YES),
 );
 $cost_methods = array(
- array('id' => 'f', 'text' => INV_TEXT_FIFO),
- array('id' => 'l', 'text' => INV_TEXT_LIFO),
- array('id' => 'a', 'text' => INV_TEXT_AVERAGE),
-); 
+ array('id' => 'f', 'text' => TEXT_FIFO),
+ array('id' => 'l', 'text' => TEXT_LIFO),
+ array('id' => 'a', 'text' => TEXT_AVERAGE),
+);
 $sel_item_cost = array(
  array('id' => '0',  'text' => TEXT_NO),
  array('id' => 'PO', 'text' => TEXT_PURCH_ORDER),
  array('id' => 'PR', 'text' => TEXT_PURCHASE),
-); 
+);
 $sel_sales_tax = ord_calculate_tax_drop_down('c');
 $sel_purch_tax = ord_calculate_tax_drop_down('v');
 // some pre-defined gl accounts

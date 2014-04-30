@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:45
 // Module/Method: payment
 // ISO Language: pt_br
@@ -14,10 +14,10 @@ define('MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE','A transação de cartão de cr
 define('MODULE_PAYMENT_CC_TEXT_CVV','CVV Número');
 define('MODULE_PAYMENT_CC_TEXT_JS_CC_OWNER','* O nome do propprietário do cartão de crédito deve ter pelo menos %s caracteres.');
 define('MODULE_PAYMENT_CC_TEXT_JS_CC_NUMBER','* O número do cartão de crédito deve ter pelo menos %s caracteres.');
-define('MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_EXPIRES','Cartão Crédito Data Validade:');
-define('MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_NUMBER','Cartão Crédito Número:');
-define('MODULE_PAYMENT_CC_TEXT_CATALOG_TITLE','Cartão Crédito');
-define('MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_OWNER','Cartão Crédito Proprietário:');
+define('TEXT_CREDIT_CARD_EXPIRY_DATE','Cartão Crédito Data Validade');
+define('TEXT_CREDIT_CARD_NUMBER','Cartão Crédito Número');
+define('TEXT_CREDIT_CARD','Cartão Crédito');
+define('TEXT_CREDIT_CARD_OWNER','Cartão Crédito Proprietário');
 define('TEXT_MORE_INFO','Mais Informação');
 define('MODULE_PAYMENT_CC_TEXT_ERROR','Erro Cartão de Crédito!');
 

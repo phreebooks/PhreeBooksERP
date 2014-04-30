@@ -19,12 +19,12 @@
 namespace payment\classes;
 class admin extends \core\classes\admin {
 	public $id 			= 'payment';
-	public $text		= MODULE_PAYMENT_TITLE;
+	public $text		= TEXT_PAYMENT_MODULE;
 	public $description = MODULE_PAYMENT_DESCRIPTION;
 	public $core		= true;
 	public $sort_order  = 7;
 	public $version		= '3.6';
-	
+
   	function __construct() {
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 	  	  'contacts'   => 3.71,

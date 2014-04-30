@@ -110,7 +110,7 @@ switch ($_REQUEST['action']) {
 switch ($_REQUEST['action']) { // figure which detail page to load
   case 'search':
   case 'view':
-	$result      = html_heading_bar(array(), array(' ', TEXT_DOCUMENT_TITLE, TEXT_ACTION));
+	$result      = html_heading_bar(array(), array(' ', TEXT_CONTENTS_OF, TEXT_ACTION));
 	$list_header = $result['html_code'];
 	// build the list for the page selected
 	if (isset($_REQUEST['search_text']) && $_REQUEST['search_text'] <> '') {

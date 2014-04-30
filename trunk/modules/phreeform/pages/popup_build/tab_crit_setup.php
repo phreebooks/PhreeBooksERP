@@ -45,7 +45,7 @@ $extra_stuff = NULL;
 			?>
 		  </td>
 		  <td width="33%">
-			<?php 
+			<?php
 			echo html_checkbox_field('date_range[]', 'f', (strpos($report->datelist, 'f') === false) ? false : true) . $DateChoices['f'] .'<br />';
 			echo html_checkbox_field('date_range[]', 'g', (strpos($report->datelist, 'g') === false) ? false : true) . $DateChoices['g'] .'<br />';
 			echo html_checkbox_field('date_range[]', 'h', (strpos($report->datelist, 'h') === false) ? false : true) . $DateChoices['h'] .'<br />';
@@ -74,11 +74,11 @@ $extra_stuff = NULL;
 		<thead class="ui-widget-header">
 		<tr><th colspan="20"><?php echo PHREEFORM_GRPLIST; ?></th></tr>
 		<tr>
-		  <th><?php echo PHREEFORM_TBLFNAME;   ?></th>
+		  <th><?php echo TEXT_FIELDNAME;   ?></th>
 		  <th><?php echo PHREEFORM_DISPNAME;   ?></th>
 		  <th><?php echo TEXT_DEFAULT;      ?></th>
 		  <th><?php echo TEXT_GROUP_PAGE_BREAK; ?></th>
-		  <th><?php echo PHREEFORM_TEXTPROC;   ?></th>
+		  <th><?php echo TEXT_TEXT_PROCESSING;   ?></th>
 		  <th><?php echo TEXT_ACTION;       ?></th>
 		</tr>
 		</thead>
@@ -91,9 +91,9 @@ $extra_stuff = NULL;
 			<td><?php echo html_pull_down_menu('grp_brk[]', $nyChoice, $report->grouplist[$i]->page_break); ?></td>
 			<td><?php echo html_pull_down_menu('grp_prc[]', $pFields, $report->grouplist[$i]->processing); ?></td>
 			<td align="right">
-			  <?php 
+			  <?php
 		  	    echo html_icon('actions/view-fullscreen.png',   TEXT_MOVE,   'small', 'style="cursor:move"', '', '', 'move_grp_' . $i) . chr(10);
-				echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'class="delete"'); 
+				echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'class="delete"');
 			  ?>
 			</td>
 		  </tr>
@@ -110,7 +110,7 @@ $extra_stuff = NULL;
 		<thead class="ui-widget-header">
 		<tr><th colspan="20"><?php echo PHREEFORM_SORTLIST; ?></th></tr>
 		<tr>
-		  <th><?php echo PHREEFORM_TBLFNAME; ?></th>
+		  <th><?php echo TEXT_FIELDNAME; ?></th>
 		  <th><?php echo PHREEFORM_DISPNAME; ?></th>
 		  <th><?php echo TEXT_DEFAULT;       ?></th>
 		  <th><?php echo TEXT_ACTION;        ?></th>
@@ -123,9 +123,9 @@ $extra_stuff = NULL;
 			<td><?php echo html_input_field('sort_desc[]',   $report->sortlist[$i]->description); ?></td>
 			<td><?php echo html_pull_down_menu('srt_def[]',  $nyChoice, $report->sortlist[$i]->default); ?></td>
 			<td align="right">
-			  <?php 
+			  <?php
 		  	    echo html_icon('actions/view-fullscreen.png',   TEXT_MOVE,   'small', 'style="cursor:move"', '', '', 'move_sort_' . $i) . chr(10);
-				echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'class="delete"'); 
+				echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'class="delete"');
 			  ?>
 			</td>
 		  </tr>
@@ -141,7 +141,7 @@ $extra_stuff = NULL;
 		<thead class="ui-widget-header">
 		<tr><th colspan="20"><?php echo TEXT_CRITERIA; ?></th></tr>
 		<tr>
-		  <th><?php echo PHREEFORM_TBLFNAME;   ?></th>
+		  <th><?php echo TEXT_FIELDNAME;   ?></th>
 		  <th><?php echo PHREEFORM_DISPNAME;   ?></th>
 		  <th><?php echo TEXT_SHOW;         ?></th>
 		  <th><?php echo PHREEFORM_CRITTYPE;   ?></th>
@@ -160,9 +160,9 @@ $extra_stuff = NULL;
 			<td><?php echo html_input_field   ('crit_min[]',  $report->filterlist[$i]->min_val, 'size="10"'); ?></td>
 			<td><?php echo html_input_field   ('crit_max[]',  $report->filterlist[$i]->max_val, 'size="10"'); ?></td>
 			<td align="right">
-			  <?php 
+			  <?php
 		  	    echo html_icon('actions/view-fullscreen.png',   TEXT_MOVE,   'small', 'style="cursor:move"', '', '', 'move_crit_' . $i) . chr(10);
-				echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'class="delete"'); 
+				echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'class="delete"');
 			  ?>
 			</td>
 		  </tr>

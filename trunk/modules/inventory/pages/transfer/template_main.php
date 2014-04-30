@@ -33,7 +33,7 @@ if ($security_level < 4) $toolbar->icon_list['delete']['show'] = false;
 if ($security_level < 2) $toolbar->icon_list['save']['show']   = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('07.04.02');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
@@ -64,7 +64,7 @@ echo $toolbar->build_toolbar();
       <tr>
 	    <th><?php echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small'); ?></th>
 	    <th><?php echo TEXT_QUANTITY; ?></th>
-	    <th><?php echo INV_HEADING_QTY_IN_STOCK; ?></th>
+	    <th><?php echo TEXT_QUANTITY_IN_STOCK_SHORT; ?></th>
 	    <th><?php echo TEXT_BALANCE; ?></th>
 	    <th><?php echo TEXT_SKU; ?></th>
 	    <th><?php echo TEXT_DESCRIPTION; ?></th>

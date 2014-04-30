@@ -18,6 +18,6 @@
 //
 
 // Title to use in the pull down menu
-define('BOX_SKU_PRICER_TITLE', 'SKU Pricer');
+define('TEXT_SKU_PRICER', 'SKU Pricer');
 
 ?>

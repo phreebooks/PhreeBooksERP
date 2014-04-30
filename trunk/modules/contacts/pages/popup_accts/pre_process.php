@@ -52,17 +52,17 @@ $js_arrays = gen_build_company_arrays();
 // build the list header
 $heading_array = array(
 	'primary_name'             => GEN_PRIMARY_NAME,
-	'address1'                 => GEN_ADDRESS1,
-	'city_town,state_province' => GEN_CITY_TOWN,
-	'state_province,city_town' => GEN_STATE_PROVINCE,
-	'postal_code'              => GEN_POSTAL_CODE,
-	'telephone1'               => GEN_TELEPHONE1,
+	'address1'                 => TEXT_ADDRESS1,
+	'city_town,state_province' => TEXT_CITY_TOWN,
+	'state_province,city_town' => TEXT_STATE_PROVINCE,
+	'postal_code'              => TEXT_POSTAL_CODE,
+	'telephone1'               => TEXT_TELEPHONE,
 );
 switch (JOURNAL_ID) {
 	case  6:
-	case 12: $extra_headings = array(ACT_LIST_OPEN_ORDERS); break;
+	case 12: $extra_headings = array(TEXT_OPEN_ORDERS); break;
 	case  7:
-	case 13: $extra_headings = array(ACT_LIST_OPEN_INVOICES); break;
+	case 13: $extra_headings = array(TEXT_OPEN_INVOICES); break;
 	default: $extra_headings = array('&nbsp;'); break;
 }
 $result      = html_heading_bar($heading_array, $extra_headings);
@@ -97,6 +97,6 @@ history_save('contacts_popup');
 $include_header   = false;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', ACT_POPUP_WINDOW_TITLE);
+define('PAGE_TITLE', TEXT_CONTACT_SEARCH);
 
 ?>

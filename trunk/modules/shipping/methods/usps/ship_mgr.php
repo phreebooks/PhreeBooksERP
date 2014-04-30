@@ -21,7 +21,7 @@
 <table class="ui-widget" style="border-style:none;width:100%">
  <tbody class="ui-widget-content">
   <tr>
-	<td colspan="8"><?php echo SHIPPING_BUTTON_CREATE_LOG_ENTRY . ' => ' . html_button_field('close', SHIPPING_BUTTON_CREATE_LOG_ENTRY, 'onclick="window.open(\'index.php?module=shipping&amp;page=popup_tracking&amp;method=usps&amp;action=new\',\'popup_tracking\',\'width=550,height=350,resizable=1,scrollbars=1,top=150,left=200\')"') . chr(10); ?></td>
+	<td colspan="8"><?php echo TEXT_CREATE_SHIPMENT_ENTRY . ' => ' . html_button_field('close', TEXT_CREATE_SHIPMENT_ENTRY, 'onclick="window.open(\'index.php?module=shipping&amp;page=popup_tracking&amp;method=usps&amp;action=new\',\'popup_tracking\',\'width=550,height=350,resizable=1,scrollbars=1,top=150,left=200\')"') . chr(10); ?></td>
   </tr>
  </tbody>
 </table>
@@ -31,22 +31,22 @@
     <th colspan="8"><?php echo TEXT_SHIPMENTS_ON . gen_locale_date($date); ?></th>
   </tr>
   <tr>
-	<th><?php echo SHIPPING_TEXT_SHIPMENT_ID; ?></th>
-	<th><?php echo SHIPPING_TEXT_REFERENCE_ID; ?></th>
-	<th><?php echo SHIPPING_TEXT_SERVICE; ?></th>
-	<th><?php echo SHIPPING_TEXT_EXPECTED_DATE; ?></th>
-	<th><?php echo SHIPPING_TEXT_ACTUAL_DATE;   ?></th>
-	<th><?php echo SHIPPING_TEXT_TRACKING_NUM;  ?></th>
-	<th><?php echo SHIPPING_TEXT_COST;          ?></th>
+	<th><?php echo TEXT_SHIPMENT_ID; ?></th>
+	<th><?php echo TEXT_REFERENCE_ID; ?></th>
+	<th><?php echo TEXT_SERVICE; ?></th>
+	<th><?php echo TEXT_EXPECTED_DELIVERY_DATE; ?></th>
+	<th><?php echo TEXT_ACTUAL_DELIVERY_DATE;   ?></th>
+	<th><?php echo TEXT_TRACKING_NUMBER;  ?></th>
+	<th><?php echo TEXT_COST;          ?></th>
 	<th><?php echo TEXT_ACTION;                 ?></th>
   </tr>
  </thead>
  <tbody class="ui-widget-content">
-	<?php 
+	<?php
 	$start_date = date('Y-m-d', strtotime("-1 day"));
 	$end_date   = date('Y-m-d', strtotime("+1 day"));
-	$result = $db->Execute("select id, shipment_id, ref_id, method, deliver_date, deliver_late, actual_date, tracking_id, cost 
-		from " . TABLE_SHIPPING_LOG . " where carrier = '" . $method->id . "' 
+	$result = $db->Execute("select id, shipment_id, ref_id, method, deliver_date, deliver_late, actual_date, tracking_id, cost
+		from " . TABLE_SHIPPING_LOG . " where carrier = '" . $method->id . "'
 		  and ship_date like '" . $date . "%'");
 	if ($result->RecordCount() > 0) {
 		$odd = true;

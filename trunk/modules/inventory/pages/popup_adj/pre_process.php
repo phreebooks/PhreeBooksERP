@@ -64,7 +64,7 @@ if (isset($_REQUEST['search_text']) && $_REQUEST['search_text'] <> '') {
   if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
   $filters[] = '(' . implode(' like \'%' . $_REQUEST['search_text'] . '%\' or ', $search_fields) . ' like \'%' . $_REQUEST['search_text'] . '%\')';
 }
-$field_list = array('m.id', 'm.purchase_invoice_id', 'm.post_date', 'm.store_id', 'm.bill_acct_id', 'sum(i.qty) as qty', 
+$field_list = array('m.id', 'm.purchase_invoice_id', 'm.post_date', 'm.store_id', 'm.bill_acct_id', 'sum(i.qty) as qty',
 	'i.sku', 'count(i.sku) as sku_cnt', 'i.description');
 // hook to add new fields to the query return results
 if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
@@ -72,8 +72,8 @@ $filters[] = "i.gl_type = 'adj'";
 $filters[] = 'm.journal_id = 16';
 $filters[] = ($adj_type == 'xfr') ? 'm.so_po_ref_id = -1' : 'm.so_po_ref_id = 0';
 //if ($adj_type == 'xfr') $filters[] = 'm.bill_acct_id > 0'; // only pull the first record
-$query_raw    = "SELECT SQL_CALC_FOUND_ROWS DISTINCT " . implode(', ', $field_list) . " 
-	FROM " . TABLE_JOURNAL_MAIN . " m JOIN " . TABLE_JOURNAL_ITEM . " i ON m.id = i.ref_id 
+$query_raw    = "SELECT SQL_CALC_FOUND_ROWS DISTINCT " . implode(', ', $field_list) . "
+	FROM " . TABLE_JOURNAL_MAIN . " m JOIN " . TABLE_JOURNAL_ITEM . " i ON m.id = i.ref_id
 	WHERE " . implode(' AND ', $filters) . " GROUP BY m.id ORDER BY $disp_order, m.id";
 $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
@@ -82,5 +82,5 @@ history_save('inv_pop_adj');
 $include_header   = false;
 $include_footer   = false;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', GEN_HEADING_PLEASE_SELECT);
+define('PAGE_TITLE', TEXT_PLEASE_SELECT);
 ?>

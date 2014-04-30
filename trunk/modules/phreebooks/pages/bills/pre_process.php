@@ -85,12 +85,12 @@ switch ($_REQUEST['action']) {
 		$order->bill_acct_id        = db_prepare_input($_POST['bill_acct_id']);
 		$order->bill_address_id     = db_prepare_input($_POST['bill_address_id']);
 		$order->bill_primary_name   = $_POST['bill_primary_name'] <> GEN_PRIMARY_NAME ? db_prepare_input($_POST['bill_primary_name']) : '';
-		$order->bill_contact        = $_POST['bill_contact'] <> GEN_CONTACT ? db_prepare_input($_POST['bill_contact']) : '';
-		$order->bill_address1       = $_POST['bill_address1'] <> GEN_ADDRESS1 ? db_prepare_input($_POST['bill_address1']) : '';
-		$order->bill_address2       = $_POST['bill_address2'] <> GEN_ADDRESS2 ? db_prepare_input($_POST['bill_address2']) : '';
-		$order->bill_city_town      = $_POST['bill_city_town'] <> GEN_CITY_TOWN ? db_prepare_input($_POST['bill_city_town']) : '';
-		$order->bill_state_province = $_POST['bill_state_province'] <> GEN_STATE_PROVINCE ? db_prepare_input($_POST['bill_state_province']) : '';
-		$order->bill_postal_code    = $_POST['bill_postal_code'] <> GEN_POSTAL_CODE ? db_prepare_input($_POST['bill_postal_code']) : '';
+		$order->bill_contact        = $_POST['bill_contact'] <> TEXT_ATTENTION ? db_prepare_input($_POST['bill_contact']) : '';
+		$order->bill_address1       = $_POST['bill_address1'] <> TEXT_ADDRESS1 ? db_prepare_input($_POST['bill_address1']) : '';
+		$order->bill_address2       = $_POST['bill_address2'] <> TEXT_ADDRESS2 ? db_prepare_input($_POST['bill_address2']) : '';
+		$order->bill_city_town      = $_POST['bill_city_town'] <> TEXT_CITY_TOWN ? db_prepare_input($_POST['bill_city_town']) : '';
+		$order->bill_state_province = $_POST['bill_state_province'] <> TEXT_STATE_PROVINCE ? db_prepare_input($_POST['bill_state_province']) : '';
+		$order->bill_postal_code    = $_POST['bill_postal_code'] <> TEXT_POSTAL_CODE ? db_prepare_input($_POST['bill_postal_code']) : '';
 		$order->bill_country_code   = db_prepare_input($_POST['bill_country_code']);
 		$order->bill_email          = db_prepare_input($_POST['bill_email']);
 
@@ -107,7 +107,7 @@ switch ($_REQUEST['action']) {
 		$order->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);	// PhreeBooks order/invoice ID
 		$order->shipper_code        = db_prepare_input($_POST['shipper_code']);  // store payment method in shipper_code field
 		$order->purch_order_id      = db_prepare_input($_POST['purch_order_id']);  // customer PO/Ref number
-		$order->description         = sprintf(TEXT_JID_ENTRY, constant('ORD_TEXT_' . JOURNAL_ID . '_' . strtoupper($type) . '_WINDOW_TITLE'));
+		$order->description         = sprintf(TEXT_ARGS_ENTRY, constant('ORD_TEXT_' . JOURNAL_ID . '_' . strtoupper($type) . '_WINDOW_TITLE'));
 
 		$order->total_amount        = $currencies->clean_value(db_prepare_input($_POST['total']), DEFAULT_CURRENCY);
 		$order->gl_acct_id          = $gl_acct_id;
@@ -139,8 +139,8 @@ switch ($_REQUEST['action']) {
 
 		// error check input
 		if (!$order->bill_acct_id) { // no account was selected, error
-		  $contact_type = $type=='c' ? TEXT_LC_CUSTOMER : TEXT_LC_VENDOR;
-		  throw new \core\classes\userException(sprintf(ERROR_NO_CONTACT_SELECTED, $contact_type, $contact_type, ORD_ADD_UPDATE));
+		  $contact_type = $type=='c' ? strtolower (TEXT_CUSTOMER) : strtolower (TEXT_VENDOR);
+		  throw new \core\classes\userException(sprintf(ERROR_NO_CONTACT_SELECTED, $contact_type, $contact_type, TEXT_ADD_UPDATE));
 		}
 		if (!$order->item_rows) throw new \core\classes\userException(GL_ERROR_NO_ITEMS);
 		// check to make sure the payment method is valid

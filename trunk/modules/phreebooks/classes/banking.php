@@ -25,14 +25,14 @@ class banking extends \core\classes\journal {
 		$this->save_payment        = false;
 		$this->search              = TEXT_SEARCH;
 		$this->bill_primary_name   = GEN_PRIMARY_NAME;
-		$this->bill_contact        = GEN_CONTACT;
-		$this->bill_address1       = GEN_ADDRESS1;
-		$this->bill_address2       = GEN_ADDRESS2;
-		$this->bill_city_town      = GEN_CITY_TOWN;
-		$this->bill_state_province = GEN_STATE_PROVINCE;
-		$this->bill_postal_code    = GEN_POSTAL_CODE;
+		$this->bill_contact        = TEXT_ATTENTION;
+		$this->bill_address1       = TEXT_ADDRESS1;
+		$this->bill_address2       = TEXT_ADDRESS2;
+		$this->bill_city_town      = TEXT_CITY_TOWN;
+		$this->bill_state_province = TEXT_STATE_PROVINCE;
+		$this->bill_postal_code    = TEXT_POSTAL_CODE;
 		$this->bill_country_code   = COMPANY_COUNTRY;
-		$this->bill_email          = GEN_EMAIL;
+		$this->bill_email          = TEXT_EMAIL;
 		switch ($this->journal_id) {
 			case 18:
 				$this->gl_acct_id          = $_SESSION['admin_prefs']['def_cash_acct'] ? $_SESSION['admin_prefs']['def_cash_acct'] : AR_SALES_RECEIPTS_ACCOUNT;
@@ -111,7 +111,7 @@ class banking extends \core\classes\journal {
 
 		$db->transCommit();	// finished successfully
 		// ***************************** END TRANSACTION *******************************
-		$messageStack->add(sprintf(TEXT_POST_SUCCESSFUL, constant('ORD_HEADING_NUMBER_' . $this->journal_id), $this->purchase_invoice_id), 'success');
+		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, constant('ORD_HEADING_NUMBER_' . $this->journal_id), $this->purchase_invoice_id), 'success');
 		return true;
 	}
 
@@ -150,7 +150,7 @@ class banking extends \core\classes\journal {
 		$this->unPost('delete');
 		$db->transCommit();
 		// *************** END TRANSACTION *************************
-		$messageStack->add(sprintf(TEXT_DELETE_SUCCESSFUL, constant('ORD_HEADING_NUMBER_' . $this->journal_id), $this->purchase_invoice_id), 'success');
+		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, constant('ORD_HEADING_NUMBER_' . $this->journal_id), $this->purchase_invoice_id), 'success');
 		return true;
 	}
 

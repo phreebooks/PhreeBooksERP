@@ -93,7 +93,7 @@ function deleteTiddler($tiddler) {
   if( $result === FALSE ) {
     return GL_ERROR_NO_DELETE;
   }
-  return sprintf(TEXT_DELETE_SUCCESSFUL, BOX_PHREEWIKI_MODULE , $tiddler['title']);
+  return sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, BOX_PHREEWIKI_MODULE , $tiddler['title']);
 }
 
 /*

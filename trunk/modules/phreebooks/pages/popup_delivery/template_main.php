@@ -34,7 +34,7 @@ switch (JOURNAL_ID) {
   case 4: $toolbar->add_help('07.02.03.04'); break;
   case 6: $toolbar->add_help('07.03.03.04'); break;
 }
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo ORD_EXPECTED_DATES . constant('ORD_HEADING_NUMBER_' . JOURNAL_ID) . ' ' . $ordr_items->fields['purchase_invoice_id']; ?></h1>
@@ -44,8 +44,8 @@ echo $toolbar->build_toolbar();
 	<th><?php echo TEXT_QUANTITY; ?></th>
 	<th><?php echo TEXT_SKU; ?></th>
 	<th><?php echo TEXT_DESCRIPTION; ?></th>
-	<th><?php echo ORD_DELIVERY_DATES; ?></th>
-	<th><?php echo ORD_NEW_DELIVERY_DATES; ?></th>
+	<th><?php echo TEXT_DELIVERY_DATES; ?></th>
+	<th><?php echo sprintf(TEXT_NEW_ARGS, TEXT_DELIVERY_DATES); ?></th>
   </tr>
  </thead>
  <tbody class="ui-widget-content">

@@ -25,8 +25,8 @@ require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
 $id = (int)$_GET['id'];
 /***************   Act on the action request   *************************/
 // Load the customer status
-$customer = $db->Execute("select c.type, c.inactive, c.special_terms, a.notes 
-  from " . TABLE_CONTACTS . " c inner join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id 
+$customer = $db->Execute("select c.type, c.inactive, c.special_terms, a.notes
+  from " . TABLE_CONTACTS . " c inner join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id
   where c.id = " . $id . " and a.type like '%m'");
 $notes    = $customer->fields['notes'] ? str_replace(chr(10), "<br />", $customer->fields['notes']) : '&nbsp;';
 $type     = $customer->fields['type'] == 'v' ? 'AP' : 'AR';
@@ -43,11 +43,16 @@ if ($customer->fields['inactive']) {
   $status_text = ACT_OVER_CREDIT_LIMIT;
 } else {
   $inactive_flag = 'class="ui-state-active"';
-  $status_text = ACT_GOOD_STANDING;
+  $status_text = TEXT_ACOUNT_IN_GOOD_STANDING;
 }
 /*****************   prepare to display templates  *************************/
 $include_header   = false;
 $include_footer   = false;
 $include_template = 'template_main.php'; // include display template (required)
-define('PAGE_TITLE', constant($type . '_CONTACT_STATUS'));
+if($customer->fields['type'] == 'v' ){
+	define('PAGE_TITLE', TEXT_CUSTOMER_STATUS);
+}else{
+	define('PAGE_TITLE', AP_CONTACT_STATUS);
+}
+
 ?>

@@ -31,7 +31,7 @@ $toolbar->icon_list['save']['show']     = false;
 $toolbar->icon_list['print']['show']    = false;
 $toolbar->icon_list['delete']['show']   = false;
 $toolbar->add_help('11.01.01');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
@@ -43,7 +43,7 @@ echo $toolbar->build_toolbar();
 		<?php echo html_pull_down_menu('mod',  gen_build_pull_down($admin_classes, true, true),  $def_module); ?>
 	    <?php echo TEXT_ENTER_SEARCH_PARAMS_B; ?>
 		<?php echo html_pull_down_menu('lang', $sel_language, $def_lang); ?>
-	    <?php echo TEXT_ENTER_SEARCH_PARAMS_C; ?>
+	    <?php echo TEXT_AND_PRESS; ?>
 		<?php echo html_button_field('refresh_dir', TEXT_SEARCH, 'onclick="submitToDo(\'refresh_dir\')"'); ?>
 	  </td>
     </tr>

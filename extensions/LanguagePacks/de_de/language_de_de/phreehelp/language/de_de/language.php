@@ -23,11 +23,11 @@
 //
 
 // Fenster Überschrift Etikett
-define ('HEADING_TITLE', 'Phreedom Hilfe - Powered by PhreeHelp');
+define ('HEADING_TITLE_PHREEHELP', 'Phreedom Hilfe - Powered by PhreeHelp');
 
 // Tab-Etiketten
-define ('HEADING_CONTENTS', 'Inhalt');
-define ('HEADING_INDEX', 'Index');
+define ('TEXT_CONTENTS', 'Inhalt');
+define ('TEXT_INDEX', 'Index');
 
 // Allgemeine Textdefinitionen
 define ('TEXT_DOCUMENT', 'Document');

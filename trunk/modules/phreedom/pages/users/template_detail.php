@@ -42,14 +42,14 @@ echo $toolbar->build_toolbar();
   <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto;">
    <tbody class="ui-widget-content">
    <tr>
-    <td align="right"><?php echo GEN_USERNAME . ' '  . html_input_field('admin_name', $uInfo->admin_name, 'size="25"'); ?></td>
+    <td align="right"><?php echo TEXT_USERNAME . ' '  . html_input_field('admin_name', $uInfo->admin_name, 'size="25"'); ?></td>
     <td><?php echo TEXT_INACTIVE . ' ' . html_checkbox_field('inactive', '1', ($uInfo->inactive ? true : false)); ?></td>
-    <td><?php echo GEN_DISPLAY_NAME . ' ' . html_input_field('display_name', $uInfo->display_name, 'size="25"'); ?></td>
+    <td><?php echo TEXT_DISPLAY_NAME . ' ' . html_input_field('display_name', $uInfo->display_name, 'size="25"'); ?></td>
    </tr>
    <tr>
     <td align="right"><?php echo TEXT_PASSWORD . ' ' . html_password_field('password_new', ''); ?></td>
     <td><?php echo '&nbsp;'; ?></td>
-    <td><?php echo GEN_EMAIL . ' ' . html_input_field('admin_email', $uInfo->admin_email, 'size="33"'); ?></td>
+    <td><?php echo TEXT_EMAIL . ' ' . html_input_field('admin_email', $uInfo->admin_email, 'size="33"'); ?></td>
    </tr>
    <tr>
     <td align="right"><?php echo TEXT_CONFIRM_PASSWORD . ' ' . html_password_field('password_conf', ''); ?></td>
@@ -125,7 +125,7 @@ function create_row($array){
 	if(!empty($array['submenu']) && $array['text'] <> BOX_HEADING_CONFIGURATION) foreach($array['submenu'] as $menu_item){
 		create_row($menu_item);
 	}else{
-		if ($array['security_id'] == '') return;// && $item['heading'] <> MENU_HEADING_TOOLS) continue;  // special case for reports listings not in Tools menu
+		if ($array['security_id'] == '') return;// && $item['heading'] <> TEXT_TOOLS) continue;  // special case for reports listings not in Tools menu
 		$checked = array();
 		if ($array['show_in_users_settings'] === false) {
 			return; // skip if menu only item

@@ -18,13 +18,13 @@
 //  Path: /modules/contacts/classes/type/j.php
 //  jobs/projects
 namespace contacts\classes\type;
-class j extends \contacts\classes\contacts{	
-	public $security_token = SECURITY_ID_MAINTAIN_PROJECTS;
-	public $address_types  = array('jm', 'js', 'jb', 'im');
+class j extends \contacts\classes\contacts{
+	public $security_token	= SECURITY_ID_MAINTAIN_PROJECTS;
+	public $address_types	= array('jm', 'js', 'jb', 'im');
 	public $type            = 'j';
-	
+	public $title			= TEXT_PROJECT;
+
 	public function __construct(){
-		$this->page_title_new = sprintf(BOX_TEXT_NEW_TITLE, TEXT_PROJECT);
 		$this->tab_list[] = array('file'=>'template_notes',		'tag'=>'notes',    'order'=>40, 'text'=>TEXT_NOTES);
 		$this->tab_list[] = array('file'=>'template_j_general',	'tag'=>'general',  'order'=> 1, 'text'=>TEXT_GENERAL);
 		parent::__construct();

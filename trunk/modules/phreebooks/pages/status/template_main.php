@@ -31,7 +31,7 @@ $toolbar->add_icon('new', 'onclick="location.href = \'' . html_href_link(FILENAM
 
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 switch (JOURNAL_ID) {
-  case  2: 
+  case  2:
 	$toolbar->add_icon('new', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=journal', 'SSL') . '\'"', 2);
   	$toolbar->add_help('');
   	break;
@@ -43,17 +43,17 @@ switch (JOURNAL_ID) {
   case 10: $toolbar->add_help('07.03.03.04'); break;
   case 12: $toolbar->add_help('07.03.03.04'); break;
   case 13: $toolbar->add_help('07.03.03.04'); break;
-  case 18: 
+  case 18:
   	$toolbar->add_icon('new', 'onclick="location.href=\''.html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=bills&amp;type=c&amp;jID='.JOURNAL_ID, 'SSL') . '\'"', 2);
   	$toolbar->add_help('');
   	break;
-  case 20: 
+  case 20:
   	$toolbar->add_icon('new', 'onclick="location.href=\''.html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=bills&amp;type=v&amp;jID='.JOURNAL_ID, 'SSL') . '\'"', 2);
   	$toolbar->add_help('');
   	break;
 }
 $toolbar->search_period = $_REQUEST['search_period'];
-echo $toolbar->build_toolbar($add_search = true, $add_periods = true); 
+echo $toolbar->build_toolbar($add_search = true, $add_periods = true);
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
@@ -81,21 +81,21 @@ echo $toolbar->build_toolbar($add_search = true, $add_periods = true);
 	switch (JOURNAL_ID) {
 	  case  2:
 	    $link_page = html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=journal&amp;oID=' . $oID . '&amp;jID=' . JOURNAL_ID . '&amp;action=edit', 'SSL');
-	    break; 
-	  case  3: 
-	  case  4: 
-	  case  6: 
-	  case  7: 
-	  case  9: 
-	  case 10: 
-	  case 12: 
-	  case 13: 
+	    break;
+	  case  3:
+	  case  4:
+	  case  6:
+	  case  7:
+	  case  9:
+	  case 10:
+	  case 12:
+	  case 13:
 	    $link_page = html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;oID=' . $oID . '&amp;jID=' . JOURNAL_ID . '&amp;action=edit', 'SSL');
 	    break;
-	  case 18: 
+	  case 18:
 	    $link_page = html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=bills&amp;oID=' . $oID . '&amp;jID=' . JOURNAL_ID . '&amp;type=c&amp;action=edit', 'SSL');
 	    break;
-	  case 20: 
+	  case 20:
 	    $link_page = html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=bills&amp;oID=' . $oID . '&amp;jID=' . JOURNAL_ID . '&amp;type=v&amp;action=edit', 'SSL');
 	    break;
 	}
@@ -107,7 +107,7 @@ echo $toolbar->build_toolbar($add_search = true, $add_periods = true);
 	<td onclick="window.open('<?php echo $link_page; ?>','_blank')"><?php echo $purch_order_id; ?></td>
 	<td onclick="window.open('<?php echo $link_page; ?>','_blank')"><?php echo $closed; ?></td>
 	<td align="right" onclick="window.open('<?php echo $link_page; ?>','_blank')"><?php echo $total_amount; ?></td>
-<?php if (defined('MODULE_SHIPPING_STATUS') && JOURNAL_ID == 12) { 
+<?php if (defined('MODULE_SHIPPING_STATUS') && JOURNAL_ID == 12) {
       $sID            = 0;
       $shipped        = false;
 	  $result = $db->Execute("select id, shipment_id, ship_date from " . TABLE_SHIPPING_LOG . " where ref_id like '" . $query_result->fields['purchase_invoice_id'] . "%'");
@@ -128,36 +128,36 @@ echo $toolbar->build_toolbar($add_search = true, $add_periods = true);
 	if (function_exists('add_extra_action_bar_buttons')) echo add_extra_action_bar_buttons($query_result->fields);
 	switch (JOURNAL_ID) {
 	  case  2:
-	    break; 
-	  case  3: 
-	    echo html_icon('actions/system-shutdown.png',   TEXT_TOGGLE, 'small', 'onclick="submitSeq(' . $oID . ', \'toggle\')"') . chr(10);
+	    break;
+	  case  3:
+	    echo html_icon('actions/system-shutdown.png',   TEXT_TOGGLE_STATUS, 'small', 'onclick="submitSeq(' . $oID . ', \'toggle\')"') . chr(10);
 		echo html_icon('actions/document-print.png',    TEXT_PRINT,  'small', 'onclick="printOrder('. $oID . ')"') . chr(10);
 	    break;
-	  case  4: 
+	  case  4:
 		if (!$query_result->fields['closed']) echo html_button_field('invoice_' . $oID, TEXT_RECEIVE, 'onclick="window.open(\'' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;oID=' . $oID . '&amp;jID=6&amp;action=prc_so', 'SSL') . '\',\'_blank\')"') . chr(10);
-		echo html_button_field('delivery_' . $oID, ORD_DELIVERY_DATES, 'onclick="deliveryList(' . $oID . ')"') . chr(10);
-	    echo html_icon('actions/system-shutdown.png',   TEXT_TOGGLE, 'small', 'onclick="submitSeq(' . $oID . ', \'toggle\')"') . chr(10);
+		echo html_button_field('delivery_' . $oID, TEXT_DELIVERY_DATES, 'onclick="deliveryList(' . $oID . ')"') . chr(10);
+	    echo html_icon('actions/system-shutdown.png',   TEXT_TOGGLE_STATUS, 'small', 'onclick="submitSeq(' . $oID . ', \'toggle\')"') . chr(10);
 		echo html_icon('actions/document-print.png',    TEXT_PRINT,  'small', 'onclick="printOrder('. $oID . ')"') . chr(10);
 	    break;
-	  case  6: 
+	  case  6:
 	    break;
-	  case  7: 
+	  case  7:
 		echo html_icon('actions/document-print.png',    TEXT_PRINT,  'small', 'onclick="printOrder('. $oID . ')"') . chr(10);
 	    break;
-	  case  9: 
-	    echo html_icon('actions/system-shutdown.png',   TEXT_TOGGLE, 'small', 'onclick="submitSeq(' . $oID . ', \'toggle\')"') . chr(10);
+	  case  9:
+	    echo html_icon('actions/system-shutdown.png',   TEXT_TOGGLE_STATUS, 'small', 'onclick="submitSeq(' . $oID . ', \'toggle\')"') . chr(10);
 		echo html_icon('actions/document-print.png',    TEXT_PRINT,  'small', 'onclick="printOrder('. $oID . ')"') . chr(10);
 	    break;
-	  case 10: 
+	  case 10:
 		if (!$query_result->fields['closed']) echo html_button_field('invoice_' . $oID, TEXT_INVOICE, 'onclick="window.open(\'' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;oID=' . $oID . '&amp;jID=12&amp;action=prc_so', 'SSL') . '\',\'_blank\')"') . chr(10);
-		echo html_button_field('delivery_' . $oID, ORD_DELIVERY_DATES, 'onclick="deliveryList(' . $oID . ')"') . chr(10);
-	    echo html_icon('actions/system-shutdown.png',   TEXT_TOGGLE, 'small', 'onclick="submitSeq(' . $oID . ', \'toggle\')"') . chr(10);
+		echo html_button_field('delivery_' . $oID, TEXT_DELIVERY_DATES, 'onclick="deliveryList(' . $oID . ')"') . chr(10);
+	    echo html_icon('actions/system-shutdown.png',   TEXT_TOGGLE_STATUS, 'small', 'onclick="submitSeq(' . $oID . ', \'toggle\')"') . chr(10);
 		echo html_icon('actions/document-print.png',    TEXT_PRINT,  'small', 'onclick="printOrder('. $oID . ')"') . chr(10);
 	    break;
 	  case 12:
 	    if (defined('MODULE_SHIPPING_STATUS') && $shipper_code) {
 		  if ($sID) {
-		    if ($date_shipped == $date_today) echo html_icon('phreebooks/void-truck-icon.png', ORD_VOID_SHIP, 'small', 'onclick="if (confirm(\'Are you sure you want to delete this shipment?\')) voidShipment('.$shipped.', \''.$shipper_code.'\')"').chr(10);
+		    if ($date_shipped == $date_today) echo html_icon('phreebooks/void-truck-icon.png', TEXT_VOID_SHIPMENT, 'small', 'onclick="if (confirm(\'Are you sure you want to delete this shipment?\')) voidShipment('.$shipped.', \''.$shipper_code.'\')"').chr(10);
 	  	    echo html_icon('phreebooks/stock_id.png', TEXT_VIEW_SHIP_LOG, 'small', 'onclick="loadPopUp(\'' . $shipper_code . '\', \'edit\', ' . $sID . ')"') . chr(10);
 		  } elseif (!$shipped) {
 		    echo html_icon('phreebooks/truck-icon.png', TEXT_SHIP, 'small', 'onclick="shipList(' . $oID . ', \'' . $shipper_code . '\')"') . chr(10);
@@ -166,13 +166,13 @@ echo $toolbar->build_toolbar($add_search = true, $add_periods = true);
 	    if (!$closed) echo html_icon('apps/accessories-calculator.png', TEXT_PAYMENT, 'small', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=bills&amp;type=c&amp;jID=18&amp;oID=' . $oID . '&amp;action=pmt', 'SSL') . '\';"') . chr(10);
 		echo html_icon('actions/document-print.png',    TEXT_PRINT,  'small', 'onclick="printOrder('. $oID . ')"') . chr(10);
 		break;
-	  case 13: 
+	  case 13:
 		echo html_icon('actions/document-print.png',    TEXT_PRINT,  'small', 'onclick="printOrder('. $oID . ')"') . chr(10);
 	    break;
-	  case 18: 
+	  case 18:
 		echo html_icon('actions/document-print.png',    TEXT_PRINT,  'small', 'onclick="printOrder('. $oID . ')"') . chr(10);
 	    break;
-	  case 20: 
+	  case 20:
 		echo html_icon('actions/document-print.png',    TEXT_PRINT,  'small', 'onclick="printOrder('. $oID . ')"') . chr(10);
 	    break;
 	}

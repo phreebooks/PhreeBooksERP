@@ -38,12 +38,12 @@ class orders extends \core\classes\journal {
 	public $currencies_code     = DEFAULT_CURRENCY;
 	public $currencies_value    = '1.0';
 	public $bill_primary_name   = GEN_PRIMARY_NAME;
-	public $bill_contact        = GEN_CONTACT;
-	public $bill_address1       = GEN_ADDRESS1;
-	public $bill_address2       = GEN_ADDRESS2;
-	public $bill_city_town      = GEN_CITY_TOWN;
-	public $bill_state_province = GEN_STATE_PROVINCE;
-	public $bill_postal_code    = GEN_POSTAL_CODE;
+	public $bill_contact        = TEXT_ATTENTION;
+	public $bill_address1       = TEXT_ADDRESS1;
+	public $bill_address2       = TEXT_ADDRESS2;
+	public $bill_city_town      = TEXT_CITY_TOWN;
+	public $bill_state_province = TEXT_STATE_PROVINCE;
+	public $bill_postal_code    = TEXT_POSTAL_CODE;
 	public $bill_country_code   = COMPANY_COUNTRY;
 	// shipping defaults
 	public $ship_short_name     = '';
@@ -80,14 +80,14 @@ class orders extends \core\classes\journal {
 			$this->disc_gl_acct_id     = AR_DISCOUNT_SALES_ACCOUNT;
 			$this->ship_gl_acct_id     = AR_DEF_FREIGHT_ACCT;
 			$this->ship_primary_name   = GEN_PRIMARY_NAME;
-			$this->ship_contact        = GEN_CONTACT;
-			$this->ship_address1       = GEN_ADDRESS1;
-			$this->ship_address2       = GEN_ADDRESS2;
-			$this->ship_city_town      = GEN_CITY_TOWN;
-			$this->ship_state_province = GEN_STATE_PROVINCE;
-			$this->ship_postal_code    = GEN_POSTAL_CODE;
-			$this->ship_telephone1     = GEN_TELEPHONE1;
-			$this->ship_email          = GEN_EMAIL;
+			$this->ship_contact        = TEXT_ATTENTION;
+			$this->ship_address1       = TEXT_ADDRESS1;
+			$this->ship_address2       = TEXT_ADDRESS2;
+			$this->ship_city_town      = TEXT_CITY_TOWN;
+			$this->ship_state_province = TEXT_STATE_PROVINCE;
+			$this->ship_postal_code    = TEXT_POSTAL_CODE;
+			$this->ship_telephone1     = TEXT_TELEPHONE;
+			$this->ship_email          = TEXT_EMAIL;
 			break;
 		  default:
 		}
@@ -258,7 +258,7 @@ class orders extends \core\classes\journal {
 	$db->transCommit();	// finished successfully
 //echo 'committed transaction - bailing!'; exit();
 	// ***************************** END TRANSACTION *******************************
-	$messageStack->add(sprintf(TEXT_SUCCESSFULLY_POSTED, constant('ORD_HEADING_NUMBER_' . $this->journal_id) . ' ' . $this->purchase_invoice_id), 'success');
+	$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, constant('ORD_HEADING_NUMBER_' . $this->journal_id), $this->purchase_invoice_id), 'success');
 	return true;
   }
 

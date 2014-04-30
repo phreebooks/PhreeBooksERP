@@ -24,6 +24,6 @@
 
 // Menu Titles
 define ('MENU_HEADING_TRANSLATOR', 'Sprache Übersetzer-Tool');
-define ('BOX_TRANSLATOR_MODULE', 'Translator Assistant');
+define ('TEXT_TRANSLATOR_ASS', 'Translator Assistant');
 
 ?>

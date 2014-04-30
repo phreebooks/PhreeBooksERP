@@ -28,7 +28,7 @@ $toolbar->icon_list['print']['show']    = false;
 if ($security_level < 3) $toolbar->icon_list['save']['show'] = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('07.04.06');
-echo $toolbar->build_toolbar($add_search = true); 
+echo $toolbar->build_toolbar($add_search = true);
 // Build the page
 ?>
 <h1><?php echo INV_BULK_SKU_ENTRY_TITLE; ?></h1>
@@ -54,7 +54,7 @@ echo $toolbar->build_toolbar($add_search = true);
 	<td><?php echo html_input_field('reOrd_' . $j, $currencies->precise($query_result->fields['reorder_quantity']), 'size="11" style="text-align:right"'); ?></td>
 	<td><?php echo html_input_field('cost_'  . $j, $currencies->precise($query_result->fields['item_cost']), 'size="11" style="text-align:right"'); ?></td>
 	<td><?php echo html_input_field('sell_'  . $j, $currencies->precise($query_result->fields['full_price']), 'size="11" style="text-align:right"'); ?></td>
-	<td><?php if ($security_level > 1) echo html_icon('mimetypes/x-office-spreadsheet.png', BOX_PRICE_SHEET_MANAGER, 'small', $params = 'onclick="priceMgr(' . $j . ', ' . $query_result->fields['id'] . ')"'); ?></td>
+	<td><?php if ($security_level > 1) echo html_icon('mimetypes/x-office-spreadsheet.png', TEXT_PRICE_SHEETS, 'small', $params = 'onclick="priceMgr(' . $j . ', ' . $query_result->fields['id'] . ')"'); ?></td>
   </tr>
 <?php
 	  $j++;

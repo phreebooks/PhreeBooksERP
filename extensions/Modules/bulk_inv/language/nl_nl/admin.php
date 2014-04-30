@@ -18,7 +18,7 @@
 //  Path: /modules/bulk_inv/language/nl_nl/admin.php
 //
 // Module information
-define('MODULE_BULK_INV_TITLE','Bulk Voorraad Tool');
+define('TEXT_BULK_INVENTORY_TOOL','Bulk Voorraad Tool');
 define('MODULE_BULK_INV_DESCRIPTION','deze tool helpt om sneller informatie in de database te zetten dan de voorraad manager.');
 
 ?>

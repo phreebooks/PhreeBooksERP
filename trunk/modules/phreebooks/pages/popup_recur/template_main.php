@@ -28,7 +28,7 @@ $toolbar->icon_list['delete']['show'] = false;
 $toolbar->icon_list['print']['show'] = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('07');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
@@ -41,11 +41,11 @@ echo $toolbar->build_toolbar();
   <tr>
 	<td>
 		<?php
-		echo html_radio_field('recur_frequency', 1, false) . ORD_TEXT_WEEKLY . '<br />' . chr(10);
-		echo html_radio_field('recur_frequency', 2, false) . ORD_TEXT_BIWEEKLY . '<br />' . chr(10);
-		echo html_radio_field('recur_frequency', 3, true) . ORD_TEXT_MONTHLY . '<br />' . chr(10);
-		echo html_radio_field('recur_frequency', 4, false) . ORD_TEXT_QUARTERLY . '<br />' . chr(10);
-		echo html_radio_field('recur_frequency', 5, false) . ORD_TEXT_YEARLY . chr(10);
+		echo html_radio_field('recur_frequency', 1, false) . TEXT_WEEKLY . '<br />' . chr(10);
+		echo html_radio_field('recur_frequency', 2, false) . TEXT_BIWEEKLY . '<br />' . chr(10);
+		echo html_radio_field('recur_frequency', 3, true)  . TEXT_MONTHLY . '<br />' . chr(10);
+		echo html_radio_field('recur_frequency', 4, false) . TEXT_QUARTERLY . '<br />' . chr(10);
+		echo html_radio_field('recur_frequency', 5, false) . TEXT_YEARLY . chr(10);
 		?>
 	</td>
   </tr>

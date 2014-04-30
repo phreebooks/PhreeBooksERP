@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:46
 // Module/Method: shipping
 // ISO Language: pt_br
@@ -10,7 +10,7 @@
 
 define('SHIPPING_YEAR','Selecionar Ano:');
 define('SHIPPING_MONTH','Selecionar Mês:');
-define('PB_PF_SHIP_METHOD','Método Entrega');
+define('TEXT_SHIP_METHOD','Método Entrega');
 define('SHIPPING_METHOD','Selecionar Método:');
 define('CONTACT_SHIP_FIELD_REQ','Exigir ou não o campo: %s ser digitado para um novo endereço de entrega');
 define('NEXT_SHIPMENT_NUM_DESC','Número Próxima Entrega');
@@ -18,8 +18,8 @@ define('TEXT_SHIPPING_PREFS','Propriedades Livro Endereços de Entrega');
 define('CD_10_60_DESC','Serviços de retorno');
 define('CD_10_56_DESC','Gelo seco');
 define('CD_10_52_DESC','Material perigoso');
-define('CD_10_48_DESC','Entrega Sábado');
-define('CD_10_44_DESC','Coleta Sábado');
+define('TEXT_SATURDAY_DELIVERY_CHECKBOX','Entrega Sábado');
+define('TEXT_SATURDAY_PICKUP_CHECKBOX','Coleta Sábado');
 define('CD_10_38_DESC','Habilitar caixa de COD e opções');
 define('CD_10_32_DESC','Taxa adicional de manuseio');
 define('CD_10_26_DESC','Confirmação de Entrega');

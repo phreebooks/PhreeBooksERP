@@ -23,7 +23,7 @@
 namespace payment\methods\paypal_nvp;
 class paypal_nvp extends \payment\classes\payment {
   public $id				= 'paypal_nvp'; // needs to match class name
-  public $text				= MODULE_PAYMENT_CC_TEXT_CATALOG_TITLE;
+  public $text				= TEXT_CREDIT_CARD;
   public $description       = MODULE_PAYMENT_PAYPAL_NVP_TEXT_DESCRIPTION;
   public $enable_encryption = 1; // set to field position of credit card to create hint, false to turn off encryption
   public $sort_order        = 3;
@@ -128,9 +128,9 @@ class paypal_nvp extends \payment\classes\payment {
 	   'fields' => array(
 			array(	'title' => MODULE_PAYMENT_PAYPAL_NVP_TEXT_CREDIT_CARD_OWNER,
 					'field' => html_input_field('paypal_nvp_field_0', $order->paypal_nvp_field_0, 'size="12" maxlength="25"') . '&nbsp;' . html_input_field('paypal_nvp_field_5', $order->paypal_nvp_field_5, 'size="12" maxlength="25"')),
-			array( 	'title' => MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_NUMBER,
+			array( 	'title' => TEXT_CREDIT_CARD_NUMBER . ' : ',
 					'field' => html_input_field('paypal_nvp_field_1', $order->paypal_nvp_field_1)),
-			array( 	'title' => MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_EXPIRES,
+			array( 	'title' => TEXT_CREDIT_CARD_EXPIRY_DATE . ' : ',
 					'field' => html_pull_down_menu('paypal_nvp_field_2', $expires_month, $order->paypal_nvp_field_2) . '&nbsp;' . html_pull_down_menu('paypal_nvp_field_3', $expires_year, $order->paypal_nvp_field_3)),
 			array(	'title' => MODULE_PAYMENT_CC_TEXT_CVV,
 					'field' => html_input_field('paypal_nvp_field_4', $order->paypal_nvp_field_4, 'size="4" maxlength="4"')),

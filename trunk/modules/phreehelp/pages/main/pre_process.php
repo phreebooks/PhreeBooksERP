@@ -49,10 +49,10 @@ switch ($frame_id) {
   default:
   case 'main': $include_template = 'template_main.php'; break;
   case 'top':  $include_template = 'template_top.php';  break;
-  case 'left': 
+  case 'left':
     $include_template = 'template_left.php';
     break;
 }
-define('PAGE_TITLE', HEADING_TITLE);
+define('PAGE_TITLE', HEADING_TITLE_PHREEHELP);
 
 ?>

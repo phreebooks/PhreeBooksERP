@@ -51,10 +51,10 @@ switch ($_REQUEST['action']) {
 	  $sql_data_array['shipment_id'] = $result->fields['next_shipment_num'];
 	  db_perform(TABLE_SHIPPING_LOG, $sql_data_array, 'insert');
 	  $db->Execute("update " . TABLE_CURRENT_STATUS . " set next_shipment_num = next_shipment_num + 1");
-      gen_add_audit_log(SHIPPING_SHIPMENT_DETAILS . ' - ' . TEXT_INSERT, $sID);
+      gen_add_audit_log(TEXT_SHIPMENT_DETAILS . ' - ' . TEXT_INSERT, $sID);
 	} else { // update
 	  db_perform(TABLE_SHIPPING_LOG, $sql_data_array, 'update', "id = " . $sID);
-      gen_add_audit_log(SHIPPING_SHIPMENT_DETAILS . ' - ' . TEXT_UPDATE, $sID);
+      gen_add_audit_log(TEXT_SHIPMENT_DETAILS . ' - ' . TEXT_UPDATE, $sID);
 	}
 	$close_popup = true;
     break;

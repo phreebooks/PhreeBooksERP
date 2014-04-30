@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:45
 // Module/Method: phreebooks
 // ISO Language: pt_br
@@ -8,13 +8,13 @@
 // +-----------------------------------------------------------------+
 // Path: /modules/phreebooks/language/pt_br/menu.php
 
-define('BOX_STATUS_MGR','%s Gerenciador');
+define('TEXT_MANAGER_ARGS','%s Gerenciador');
 define('BOX_PHREEBOOKS_MODULE_ADM','Contabilidade Administração');
 define('BOX_GL_UTILITIES','Utilitários Diário Geral');
-define('BOX_BANKING_VOID_CHECKS','Cheques Cancelados');
-define('BOX_GL_BUDGET','Orçamento');
+define('TEXT_VOID_CHECKS','Cheques Cancelados');
+define('TEXT_BUDGETING','Orçamento');
 define('BOX_BANKING_ACCOUNT_RECONCILIATION','Reconciliação Conta');
-define('BOX_BANKING_BANK_ACCOUNT_REGISTER','Registro Conta Bancária');
+define('TEXT_BANK_ACCOUNT_REGISTER','Registro Conta Bancária');
 define('ORD_TEXT_20_V_WINDOW_TITLE','Pagar Contas');
 define('BOX_BANKING_SELECT_FOR_PAYMENT','Selecionar para Pagamento');
 define('ORD_TEXT_20_C_WINDOW_TITLE','Cliente Reembolso');
@@ -32,7 +32,7 @@ define('ORD_TEXT_3_WINDOW_TITLE','Solicitação Cotações');
 define('ORD_TEXT_4_WINDOW_TITLE','Compras Ordens');
 define('ORD_TEXT_2_WINDOW_TITLE','Diário Geral');
 define('ORD_TEXT_0_WINDOW_TITLE','Saldos Iniciais');
-define('MENU_HEADING_BANKING','Bancos');
+define('TEXT_BANKING','Bancos');
 define('MENU_HEADING_GL','Contabilidade');
 
 ?>

@@ -45,10 +45,10 @@ class project_phases {
 		);
 	    if (!$this->id == '') {
 		  	db_perform($this->db_table, $sql_data_array, 'update', "phase_id = '" . $this->id . "'");
-		  	gen_add_audit_log(SETUP_PROJECT_PHASESS_LOG . TEXT_UPDATE, $description_short);
+		  	gen_add_audit_log(TEXT_PROJECT_PHASE . ' - ' . TEXT_UPDATE, $description_short);
 		} else  {
 	      	db_perform($this->db_table, $sql_data_array);
-			gen_add_audit_log(SETUP_PROJECT_PHASESS_LOG . TEXT_ADD, $description_short);
+			gen_add_audit_log(TEXT_PROJECT_PHASE . ' - ' . TEXT_ADD, $description_short);
 		}
 		return true;
 	}
@@ -73,7 +73,7 @@ class project_phases {
 		// OK to delete
 		$result = $db->Execute("select description_short from " . $this->db_table . " where phase_id = '" . $this->id . "'");
 		$db->Execute("delete from " . $this->db_table . " where phase_id = '" . $this->id . "'");
-		gen_add_audit_log(SETUP_PROJECT_PHASESS_LOG . TEXT_DELETE, $result->fields['description_short']);
+		gen_add_audit_log(TEXT_PROJECT_PHASE . ' - ' . TEXT_DELETE, $result->fields['description_short']);
 		return true;
 	}
 
@@ -122,12 +122,12 @@ class project_phases {
 	$output  = '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);
 	$output .= '  <thead class="ui-widget-header">' . "\n";
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <th colspan="2">' . ($action=='new' ? SETUP_INFO_HEADING_NEW_PROJECT_PHASES : SETUP_INFO_HEADING_EDIT_PROJECT_PHASES) . '</th>' . chr(10);
+	$output .= '    <th colspan="2">' . ($action=='new' ? sprintf(TEXT_NEW_ARGS, TEXT_PROJECT_PHASE) : sprintf(TEXT_EDIT_ARGS, TEXT_PROJECT_PHASE)) . '</th>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  </thead>' . "\n";
 	$output .= '  <tbody class="ui-widget-content">' . "\n";
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td colspan="2">' . ($action=='new' ? SETUP_PROJECT_PHASES_INSERT_INTRO : HR_EDIT_INTRO) . '</td>' . chr(10);
+	$output .= '    <td colspan="2">' . ($action=='new' ? SETUP_PROJECT_PHASES_INSERT_INTRO : TEXT_EDIT_INTRO) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
 	$output .= '    <td>' . SETUP_INFO_DESC_SHORT . '</td>' . chr(10);
@@ -138,7 +138,7 @@ class project_phases {
 	$output .= '    <td>' . html_input_field('description_long', $this->description_long, 'size="50" maxlength="64"') . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . SETUP_INFO_COST_TYPE . '</td>' . chr(10);
+	$output .= '    <td>' . TEXT_COST_TYPE . '</td>' . chr(10);
 	$output .= '    <td>' . html_pull_down_menu('cost_type', gen_build_pull_down($project_cost_types), $this->cost_type) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);

@@ -47,7 +47,7 @@ define('COA_06_DESC','Other Current Assets');
 define('COA_08_DESC','Fixed Assets');
 define('COA_10_DESC','Accumulated Depreciation');
 define('COA_12_DESC','Other Assets');
-define('COA_20_DESC','Accounts Payable');
+define('TEXT_ACCOUNTS_PAYABLE','Accounts Payable');
 define('COA_22_DESC','Other Current Liabilities');
 define('COA_24_DESC','Long Term Liabilities');
 define('COA_30_DESC','Income');
@@ -57,8 +57,8 @@ define('COA_40_DESC','Equity - Doesn\'t Close');
 define('COA_42_DESC','Equity - Gets Closed');
 define('COA_44_DESC','Equity - Retained Earnings');
 // Form Group Definitions
-define('PB_PF_BANK_CHECK','Bank Checks');
-define('PB_PF_BANK_DEP_SLIP','Bank Deposit Slips');
+define('TEXT_BANK_CHECKS','Bank Checks');
+define('TEXT_BANK_DEPOSIT_SLIPS','Bank Deposit Slips');
 define('PB_PF_COLLECT_LTR','Collection Letters');
 define('PB_PF_CUST_CRD_MEMO','Credit Memos - Customer');
 define('PB_PF_CUST_LABEL','Labels - Customer');
@@ -67,8 +67,8 @@ define('PB_PF_CUST_STATEMENT','Customer Statements');
 define('PB_PF_DEP_SLIP','Deposit Slips');
 define('PB_PF_INV_PKG_SLIP','Invoices/Packing Slips');
 define('PB_PF_PURCH_ORDER','Purchase Orders');
-define('PB_PF_SALES_ORDER','Sales Orders');
-define('PB_PF_SALES_REC','Sales Receipts');
+define('TEXT_SALES_ORDER','Sales Orders');
+define('TEXT_SALES_RECEIPTS','Sales Receipts');
 define('PB_PF_VENDOR_CRD_MEMO','Credit Memos - Vendor');
 define('PB_PF_VENDOR_LABEL','Labels - Vendor');
 define('PB_PF_VENDOR_QUOTE','Vendor Quotes');
@@ -208,9 +208,9 @@ define('GL_INFO_HEADING_ONLY', 'This account is a heading and cannot accept post
 define('GL_INFO_PRIMARY_ACCT_ID', 'If this account is a sub-account, select primary account:');
 define('ERROR_ACCT_TYPE_REQ','The GL Account Type is required!');
 define('GL_ERROR_CANT_MAKE_HEADING','This account has a balance. It cannot be converted to a header account.');
-define('GL_POPUP_WINDOW_TITLE','Chart of Accounts');
+define('TEXT_CHART_OF_ACCOUNTS','Chart of Accounts');
 define('GL_HEADING_ACCOUNT_NAME', 'Account ID');
-define('GL_HEADING_SUBACCOUNT', 'Subaccount');
+define('TEXT_SUBACCOUNT', 'Subaccount');
 define('GL_EDIT_INTRO', 'Please make any necessary changes');
 define('GL_INFO_ACCOUNT_TYPE', 'Account type (Required)');
 define('GL_INFO_ACCOUNT_INACTIVE', 'Account inactive');
@@ -223,7 +223,7 @@ define('GL_ERROR_CANT_DELETE','This account cannot be deleted because there are 
 define('GL_LOG_CHART_OF_ACCOUNTS','Chart of Accounts - ');
 /************************** (Sales/Purchase Authorities) ***********************************************/
 define('SETUP_TITLE_TAX_AUTHS_VEND', 'Purchase Tax Authorities');
-define('SETUP_TITLE_TAX_AUTHS', 'Sales Tax Authorities');
+define('TEXT_SALES_TAX_AUTHORITIES', 'Sales Tax Authorities');
 define('SETUP_TAX_DESC_SHORT', 'Short Name');
 define('SETUP_TAX_GL_ACCT', 'GL Account ID');
 define('SETUP_TAX_RATE', 'Tax Rate (percent)');
@@ -243,13 +243,13 @@ define('SETUP_DISPLAY_NUMBER_OF_TAX_AUTH', TEXT_DISPLAY_NUMBER . 'tax authoritie
 /************************** (Sales/Purchase Tax Rates) ***********************************************/
 define('SETUP_TITLE_TAX_RATES', 'Sales Tax Rates');
 define('SETUP_TITLE_TAX_RATES_VEND', 'Purchase Tax Rates');
-define('SETUP_HEADING_TAX_FREIGHT', 'Tax Freight');
+define('TEXT_TAX_FREIGHT', 'Tax Freight');
 define('SETUP_HEADING_TOTAL_TAX', 'Total Tax (percent)');
 define('SETUP_TAX_EDIT_INTRO', 'Please make any necessary changes');
 define('SETUP_INFO_TAX_AUTHORITIES', 'Tax Authorities');
 define('SETUP_INFO_TAX_AUTH_ADD', 'Select a tax authority to add');
 define('SETUP_INFO_TAX_AUTH_DELETE', 'Select a tax authority to remove');
-define('SETUP_INFO_FREIGHT_TAXABLE', 'Freight Taxable');
+define('TEXT_FREIGHT_TAXABLE', 'Freight Taxable');
 define('SETUP_TAX_INSERT_INTRO', 'Please enter the new tax rate with its properties');
 define('SETUP_TAX_DELETE_INTRO', 'Are you sure you want to delete this tax rate?');
 define('SETUP_HEADING_NEW_TAX_RATE', 'New Tax Rate');

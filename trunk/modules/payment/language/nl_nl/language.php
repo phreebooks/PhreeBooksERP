@@ -9,10 +9,10 @@
 // Path: /modules/payment/language/nl_nl/language.php
 
 define('TEXT_MORE_INFO','Meer Info');
-define('MODULE_PAYMENT_CC_TEXT_CATALOG_TITLE','Credit Card');
-define('MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_OWNER','Credit Card Eigenaar:');
-define('MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_NUMBER','Credit Card Nummer:');
-define('MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_EXPIRES','Credit Card Expiratie Datum:');
+define('TEXT_CREDIT_CARD','Credit Card');
+define('TEXT_CREDIT_CARD_OWNER','Credit Card Eigenaar');
+define('TEXT_CREDIT_CARD_NUMBER','Credit Card Nummer');
+define('TEXT_CREDIT_CARD_EXPIRY_DATE','Credit Card Expiratie Datum');
 define('MODULE_PAYMENT_CC_TEXT_CVV','CVV Nummer');
 define('MODULE_PAYMENT_CC_TEXT_JS_CC_OWNER','* De eigenaars naam moet minstens %s tekens lang zijn.');
 define('MODULE_PAYMENT_CC_TEXT_JS_CC_NUMBER','* Het credit card nummer moet minstens %s tekens lang zijn.');

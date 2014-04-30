@@ -23,7 +23,7 @@
 //
 
 // Konto Tabellenfelder - für alle Kontoarten
-define ('ACT_POPUP_WINDOW_TITLE', 'Kontakt Suche');
+define ('TEXT_CONTACT_SEARCH', 'Kontakt Suche');
 define ('ACT_POPUP_TERMS_WINDOW_TITLE', 'Zahlungsbedingungen');
 
 // Allgemeine definiert
@@ -39,28 +39,28 @@ define ('TEXT_COPY_ADDRESS', 'Transfer-Adresse');
 
 // Adresse / Kontakt Identifikatoren
 define ('GEN_PRIMARY_NAME', 'Name / Firma');
-define ('GEN_EMPLOYEE_NAME', 'Employee Name');
-define ('GEN_CONTACT', 'Achtung');
-define ('GEN_ADDRESS1', 'Adresse1');
-define ('GEN_ADDRESS2', 'Address2');
-define ('GEN_CITY_TOWN', 'City');
-define ('GEN_STATE_PROVINCE '," Staat ");
-define ('GEN_POSTAL_CODE', 'Postleitzahl');
-define ('GEN_COUNTRY', 'Land');
+define ('TEXT_EMPLOYEE_NAME', 'Employee Name');
+define ('TEXT_ATTENTION', 'Achtung');
+define ('TEXT_ADDRESS1', 'Adresse1');
+define ('TEXT_ADDRESS2', 'Address2');
+define ('TEXT_CITY_TOWN', 'City');
+define ('TEXT_STATE_PROVINCE '," Staat ");
+define ('TEXT_POSTAL_CODE', 'Postleitzahl');
+define ('TEXT_COUNTRY', 'Land');
 define ('GEN_COUNTRY_CODE', 'ISO-Code');
-define ('GEN_FIRST_NAME', 'Vorname');
-define ('GEN_MIDDLE_NAME', 'Vornamen');
-define ('GEN_LAST_NAME', 'Nachname');
+define ('TEXT_FIRST_NAME', 'Vorname');
+define ('TEXT_MIDDLE_NAME', 'Vornamen');
+define ('TEXT_LAST_NAME', 'Nachname');
 define ('GEN_TELEPHONE1', 'Telefon');
 define ('GEN_TELEPHONE2', 'Alt Telefon');
-define ('GEN_FAX', 'Fax');
+define ('TEXT_FAX', 'Fax');
 define ('GEN_TELEPHONE4', 'Handy');
 define ('GEN_ACCOUNT_ID', 'Konto-ID');
 define ('GEN_CUSTOMER_ID', 'Kunden-ID:');
 define ('GEN_VENDOR_ID', 'Vendor ID:');
 define ('ACT_ACCOUNT_NUMBER', 'Facebook-ID');
 define ('ACT_ID_NUMBER', 'Twitter-ID');
-define ('GEN_WEBSITE', 'Website');
+define ('TEXT_WEBSITE', 'Website');
 define ('GEN_ACCOUNT_LINK', 'Link to Employee Konto');
 
 // Gezielte definiert (zum Wortlaut Unterschiede für verschiedene Kontoarten differenzieren)
@@ -127,7 +127,7 @@ define ('ACT_V_LAST_DATE2', 'Letzte Auszahlung:');
 define ('ACT_V_PAGE_TITLE_EDIT', 'Edit Hersteller');
 
 // Kategorie Überschriften
-define ('ACT_CATEGORY_CONTACT', 'Kontakt');
+define ('TEXT_CONTACT_INFORMATION', 'Kontakt');
 define ('ACT_CATEGORY_M_ADDRESS', 'Main Postanschrift');
 define ('ACT_CATEGORY_S_ADDRESS', 'Versandkosten Adressen');
 define ('ACT_CATEGORY_B_ADDRESS', 'Billing Adressen');
@@ -136,43 +136,43 @@ define ('ACT_CATEGORY_PAYMENT_TERMS', 'Zahlungsbedingungen');
 define ('TEXT_ADDRESS_BOOK', 'Adressbuch');
 define ('TEXT_EMPLOYEE_ROLES', 'Mitarbeiterrollen');
 define ('ACT_ACT_HISTORY', 'Account History');
-define ('ACT_ORDER_HISTORY', 'Order History');
+define ('TEXT_ORDER_HISTORY', 'Order History');
 define ('ACT_SO_HIST', 'Sales Order History (Neueste Ergebnisse %s)');
-define ('ACT_PO_HIST', 'Bestellung Geschichte (Neueste Ergebnisse %s)');
-define ('ACT_INV_HIST', 'Invoice Geschichte (Neueste Ergebnisse %s)');
+define ('TEXT_PO_HISTORY_ARGS', 'Bestellung Geschichte (Neueste Ergebnisse %s)');
+define ('TEXT_INVOICE_HISTORY_ARGS', 'Invoice Geschichte (Neueste Ergebnisse %s)');
 define ('ACT_SO_NUMBER', 'SO Anzahl');
 define ('ACT_PO_NUMBER', 'Bestellnummer');
-define ('ACT_INV_NUMBER', 'Invoice Number');
+define ('TEXT_INVOICE_NUMBER', 'Invoice Number');
 define ('ACT_NO_RESULTS', 'Keine Ergebnisse gefunden');
 define ('ACT_PAYMENT_MESSAGE', 'Geben Sie die Zahlungsinformationen in PhreeBooks gespeichert werden.');
-define ('ACT_CARDHOLDER_NAME', 'Name des Karteninhabers');
-define ('ACT_PAYMENT_CREDIT_CARD_NUMBER', 'Kreditkarten-Nummer');
+define ('TEXT_CARDHOLDER_NAME', 'Name des Karteninhabers');
+define ('TEXT_CREDIT_CARD_NUMBER', 'Kreditkarten-Nummer');
 define ('ACT_PAYMENT_CREDIT_CARD_EXPIRES', 'Ablaufdatum der Kreditkarte');
-define ('ACT_CARD_HINT', 'Hinweis Card');
-define ('ACT_EXP', 'Exp');
+define ('TEXT_CARD_HINT', 'Hinweis Card');
+define ('TEXT_EXPIRE_SHORT', 'Exp');
 define ('ACT_PAYMENT_CREDIT_CARD_CVV2', 'Sicherheits-Code');
 
 // Kontobedingungen
 define ('ACT_SPECIAL_TERMS', 'Besondere');
-define ('ACT_TERMS_DUE', 'Terms (Due)');
+define ('TEXT_TERMS_DUE', 'Terms (Due)');
 define ('ACT_TERMS_DEFAULT', 'Default');
 define ('ACT_TERMS_USE_DEFAULTS', 'Use Default AGB');
-define ('ACT_COD_SHORT', 'COD');
-define ('ACT_COD_LONG', 'Nachnahme');
-define ('ACT_PREPAID', 'Prepaid');
+define ('TEXT_CASH_ON_DELIVERY_SHORT', 'COD');
+define ('TEXT_CASH_ON_DELIVERY', 'Nachnahme');
+define ('TEXT_PREPAID', 'Prepaid');
 define ('ACT_SPECIAL_TERMS', 'Aufgrund der Anzahl der Tage');
 define ('ACT_END_OF_MONTH', 'Durch Ende des Monats');
 define ('ACT_DAY_NEXT_MONTH', 'Aufgrund von bestimmten Datum');
 define ('ACT_DUE_ON', 'Durch auf:');
-define ('ACT_DISCOUNT', 'Discount');
-define ('ACT_EARLY_DISCOUNT', 'Prozent.');
-define ('ACT_EARLY_DISCOUNT_SHORT', '%');
+define ('TEXT_DISCOUNT', 'Discount');
+define ('TEXT_PERCENT', 'Prozent.');
+define ('TEXT_PERCENT_SHORT', '%');
 define ('ACT_DUE_IN', 'Durch in');
-define ('ACT_TERMS_EARLY_DAYS', 'Tag (e).');
+define ('TEXT_DAY_S', 'Tag (e).');
 define ('ACT_TERMS_NET', 'Net');
 define ('ACT_TERMS_STANDARD_DAYS', 'Tag (e).');
 define ('ACT_TERMS_CREDIT_LIMIT', 'Credit Limit:');
-define ('ACT_AMT_PAST_DUE', 'Amount überfällig:');
+define ('TEXT_AMOUNT_PAST_DUE', 'Amount überfällig');
 
 // Misc Informationen Nachrichten
 define ('RECORD_NUM_REF_ONLY', 'Datensatz-ID (nur zur Referenz) =');
@@ -186,10 +186,10 @@ define ('ACT_ERROR_ACCOUNT_NOT_FOUND', 'Die Rechnung, die Sie suchen konnte nich
 define ('ACT_BILLING_MESSAGE', 'Diese Felder sind nicht erforderlich, es sei denn, eine Rechnungsadresse hinzugefügt wird.');
 define ('ACT_SHIPPING_MESSAGE', 'Diese Felder sind nicht erforderlich, es sei denn, eine Lieferadresse hinzugefügt wird.');
 define ('ACT_NO_ENCRYPT_KEY_ENTERED', 'ACHTUNG:.! Der Schlüssel wurde nicht eingegeben gespeicherten Kreditkartendaten werden nicht angezeigt und hier eingegebenen Werte werden nicht gespeichert werden');
-define ('ACT_PAYMENT_REF', 'Die Zahlung Ref');
-define ('ACT_LIST_OPEN_ORDERS', 'Offene Bestellungen');
-define ('ACT_LIST_OPEN_INVOICES', 'Offene Rechnungen');
-define ('ACT_NO_KEY_EXISTS', 'Eine Zahlung angegeben wurde, aber den Schlüssel nicht eingegeben wurde Die Zahlung Adresse gespeichert wurde aber die Zahlung Informationen war es nicht..');
+define ('TEXT_PAYMENT_REF', 'Die Zahlung Ref');
+define ('TEXT_OPEN_ORDERS', 'Offene Bestellungen');
+define ('TEXT_OPEN_INVOICES', 'Offene Rechnungen');
+define ('TEXT_WARNING_NO_ENCRYPTION_KEY', 'Eine Zahlung angegeben wurde, aber den Schlüssel nicht eingegeben wurde Die Zahlung Adresse gespeichert wurde aber die Zahlung Informationen war es nicht..');
 define ('ACT_ERROR_DUPLICATE_CONTACT', 'Die Kontakt-ID bereits im System vorhanden, geben Sie bitte einen neuen Kontakt-ID.');
 
 // Java Script Fehler

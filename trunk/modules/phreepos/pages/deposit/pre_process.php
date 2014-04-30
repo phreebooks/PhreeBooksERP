@@ -24,17 +24,17 @@ switch ($type) {
 	define('JOURNAL_ID', 18);
 	define('GL_TYPE','pmt');
 	define('POPUP_FORM_TYPE','bnk:rcpt');
-	define('AUDIT_LOG_DESC',BOX_CUSTOMER_DEPOSITS);
+	define('AUDIT_LOG_DESC',TEXT_CUSTOMER_DEPOSITS);
 	define('DEF_DEP_GL_ACCT',AR_DEF_DEP_LIAB_ACCT);
-	define('PAGE_TITLE', BOX_CUSTOMER_DEPOSITS);
+	define('PAGE_TITLE', TEXT_CUSTOMER_DEPOSITS);
     break;
   case 'v': // vendors
 	define('JOURNAL_ID', 20);
 	define('GL_TYPE','chk');
 	define('POPUP_FORM_TYPE','bnk:chk');
-	define('AUDIT_LOG_DESC',BOX_VENDOR_DEPOSITS);
+	define('AUDIT_LOG_DESC',TEXT_VENDOR_DEPOSITS);
 	define('DEF_DEP_GL_ACCT',AP_DEF_DEP_LIAB_ACCT);
-	define('PAGE_TITLE', BOX_VENDOR_DEPOSITS);
+	define('PAGE_TITLE', TEXT_VENDOR_DEPOSITS);
     break;
   default:
     throw new \core\classes\userException('Illegal Access type');
@@ -71,12 +71,12 @@ switch ($_REQUEST['action']) {
 	$order->bill_acct_id        = db_prepare_input($_POST['bill_acct_id']);
 	$order->bill_address_id     = db_prepare_input($_POST['bill_address_id']);
 	$order->bill_primary_name   = $_POST['bill_primary_name']   <> GEN_PRIMARY_NAME   ? db_prepare_input($_POST['bill_primary_name'])   : '';
-	$order->bill_contact        = $_POST['bill_contact']        <> GEN_CONTACT        ? db_prepare_input($_POST['bill_contact'])        : '';
-	$order->bill_address1       = $_POST['bill_address1']       <> GEN_ADDRESS1       ? db_prepare_input($_POST['bill_address1'])       : '';
-	$order->bill_address2       = $_POST['bill_address2']       <> GEN_ADDRESS2       ? db_prepare_input($_POST['bill_address2'])       : '';
-	$order->bill_city_town      = $_POST['bill_city_town']      <> GEN_CITY_TOWN      ? db_prepare_input($_POST['bill_city_town'])      : '';
-	$order->bill_state_province = $_POST['bill_state_province'] <> GEN_STATE_PROVINCE ? db_prepare_input($_POST['bill_state_province']) : '';
-	$order->bill_postal_code    = $_POST['bill_postal_code']    <> GEN_POSTAL_CODE    ? db_prepare_input($_POST['bill_postal_code'])    : '';
+	$order->bill_contact        = $_POST['bill_contact']        <> TEXT_ATTENTION        ? db_prepare_input($_POST['bill_contact'])        : '';
+	$order->bill_address1       = $_POST['bill_address1']       <> TEXT_ADDRESS1       ? db_prepare_input($_POST['bill_address1'])       : '';
+	$order->bill_address2       = $_POST['bill_address2']       <> TEXT_ADDRESS2       ? db_prepare_input($_POST['bill_address2'])       : '';
+	$order->bill_city_town      = $_POST['bill_city_town']      <> TEXT_CITY_TOWN      ? db_prepare_input($_POST['bill_city_town'])      : '';
+	$order->bill_state_province = $_POST['bill_state_province'] <> TEXT_STATE_PROVINCE ? db_prepare_input($_POST['bill_state_province']) : '';
+	$order->bill_postal_code    = $_POST['bill_postal_code']    <> TEXT_POSTAL_CODE    ? db_prepare_input($_POST['bill_postal_code'])    : '';
 	$order->bill_country_code   = db_prepare_input($_POST['bill_country_code']);
 	// load journal main data
 	$order->id                  = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
@@ -87,7 +87,7 @@ switch ($_REQUEST['action']) {
 	$order->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);	// PhreeBooks order/invoice ID
 	$order->shipper_code        = db_prepare_input($_POST['shipper_code']);  // store payment method in shipper_code field
 	$order->purch_order_id      = db_prepare_input($_POST['purch_order_id']);  // customer PO/Ref number
-	$order->description         = sprintf(TEXT_JID_ENTRY, JOURNAL_ID==18 ? BOX_CUSTOMER_DEPOSITS: BOX_VENDOR_DEPOSITS);
+	$order->description         = sprintf(TEXT_ARGS_ENTRY, JOURNAL_ID==18 ? TEXT_CUSTOMER_DEPOSITS: TEXT_VENDOR_DEPOSITS);
 	$order->total_amount        = $currencies->clean_value(db_prepare_input($_POST['total']), DEFAULT_CURRENCY);
 	$order->gl_acct_id          = $gl_acct_id;
 	$order->payment_id          = db_prepare_input($_POST['payment_id']);
@@ -134,7 +134,7 @@ switch ($_REQUEST['action']) {
 	}
 	// error check input
 	if (!$order->period)                throw new \core\classes\userException("Period isn't set");
-	if (!$order->bill_acct_id)          throw new \core\classes\userException(sprintf(ERROR_NO_CONTACT_SELECTED, TEXT_LC_CUSTOMER, TEXT_LC_CUSTOMER, ORD_ADD_UPDATE));
+	if (!$order->bill_acct_id)          throw new \core\classes\userException(sprintf(ERROR_NO_CONTACT_SELECTED, strtolower (TEXT_CUSTOMER), strtolower (TEXT_CUSTOMER), TEXT_ADD_UPDATE));
 	if (!$order->item_rows[0]['total']) throw new \core\classes\userException(GL_ERROR_NO_ITEMS);
 	// post the receipt/payment
 	if ($post_success = $order->post_ordr($_REQUEST['action'])) {
@@ -145,12 +145,12 @@ switch ($_REQUEST['action']) {
 	  $order->bill_acct_id        = db_prepare_input($_POST['bill_acct_id']);
 	  $order->bill_address_id     = db_prepare_input($_POST['bill_address_id']);
 	  $order->bill_primary_name   = $_POST['bill_primary_name']   <> GEN_PRIMARY_NAME   ? db_prepare_input($_POST['bill_primary_name'])   : '';
-	  $order->bill_contact        = $_POST['bill_contact']        <> GEN_CONTACT        ? db_prepare_input($_POST['bill_contact'])        : '';
-	  $order->bill_address1       = $_POST['bill_address1']       <> GEN_ADDRESS1       ? db_prepare_input($_POST['bill_address1'])       : '';
-	  $order->bill_address2       = $_POST['bill_address2']       <> GEN_ADDRESS2       ? db_prepare_input($_POST['bill_address2'])       : '';
-	  $order->bill_city_town      = $_POST['bill_city_town']      <> GEN_CITY_TOWN      ? db_prepare_input($_POST['bill_city_town'])      : '';
-	  $order->bill_state_province = $_POST['bill_state_province'] <> GEN_STATE_PROVINCE ? db_prepare_input($_POST['bill_state_province']) : '';
-	  $order->bill_postal_code    = $_POST['bill_postal_code']    <> GEN_POSTAL_CODE    ? db_prepare_input($_POST['bill_postal_code'])    : '';
+	  $order->bill_contact        = $_POST['bill_contact']        <> TEXT_ATTENTION        ? db_prepare_input($_POST['bill_contact'])        : '';
+	  $order->bill_address1       = $_POST['bill_address1']       <> TEXT_ADDRESS1       ? db_prepare_input($_POST['bill_address1'])       : '';
+	  $order->bill_address2       = $_POST['bill_address2']       <> TEXT_ADDRESS2       ? db_prepare_input($_POST['bill_address2'])       : '';
+	  $order->bill_city_town      = $_POST['bill_city_town']      <> TEXT_CITY_TOWN      ? db_prepare_input($_POST['bill_city_town'])      : '';
+	  $order->bill_state_province = $_POST['bill_state_province'] <> TEXT_STATE_PROVINCE ? db_prepare_input($_POST['bill_state_province']) : '';
+	  $order->bill_postal_code    = $_POST['bill_postal_code']    <> TEXT_POSTAL_CODE    ? db_prepare_input($_POST['bill_postal_code'])    : '';
 	  $order->bill_country_code   = db_prepare_input($_POST['bill_country_code']);
 	  // load journal main data
 	  $order->id                  = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
@@ -160,7 +160,7 @@ switch ($_REQUEST['action']) {
 	  $order->period              = $period;
 	  $order->admin_id            = $_SESSION['admin_id'];
 	  $order->purch_order_id      = db_prepare_input($_POST['purch_order_id']);  // customer PO/Ref number
-	  $order->description         = sprintf(TEXT_JID_ENTRY, constant('ORD_TEXT_' . $order->journal_id . '_WINDOW_TITLE'));
+	  $order->description         = sprintf(TEXT_ARGS_ENTRY, constant('ORD_TEXT_' . $order->journal_id . '_WINDOW_TITLE'));
 	  $order->total_amount        = $currencies->clean_value(db_prepare_input($_POST['total']), DEFAULT_CURRENCY);
 	  $order->gl_acct_id          = (JOURNAL_ID == 18) ? AR_DEFAULT_GL_ACCT : AP_DEFAULT_PURCHASE_ACCOUNT;
 	  $order->item_rows[0] = array(

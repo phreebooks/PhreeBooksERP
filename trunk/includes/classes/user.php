@@ -66,7 +66,7 @@ class user {
 				if (file_exists($path)) { require_once($path);}
 				else { require_once(DIR_FS_MODULES . "phreedom/language/en_us/language.php");}
 				$template = $_REQUEST['action'] == 'pw_lost_req' ? 'template_pw_lost' : 'template_login';
-				throw new \core\classes\userException(SORRY_YOU_ARE_LOGGED_OUT, "phreedom", "main", $template);
+				throw new \core\classes\userException(TEXT_SORRY_YOU_ARE_LOGGED_OUT, "phreedom", "main", $template);
 			}
 		}
 		$path = DIR_FS_MODULES . "phreedom/custom/language/{$_SESSION['language']}/language.php";

@@ -1,4 +1,4 @@
-<?php 
+<?php
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
@@ -16,10 +16,10 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/contacts/config_phreeform.php
-// 
+//
 
-$FormProcessing['terms']  = PB_PF_TERMS_TO_LANGUAGE;
-$FormProcessing['branch'] = PB_PF_CONTACT_ID;
+$FormProcessing['terms']  = TEXT_TERMS_TO_LANGUAGE;
+$FormProcessing['branch'] = TEXT_CONTACT_ID;
 // Extra form processing operations
 function pf_process_contacts($strData, $Process) {
   switch ($Process) {

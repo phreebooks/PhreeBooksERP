@@ -22,12 +22,12 @@
 
 define('FILTER_EQUAL_TO'				,'Equal To: ');
 define('FILTER_NOT_EQUAL_TO'			,'Not Equal To: ');
-define('FILTER_LIKE'					,'Like: ');
+define('TEXT_LIKE'					,'Like');
 define('FILTER_NOT_LIKE'				,'Not Like: ');
-define('FILTER_BIGGER_THAN'				,'Bigger than: ');
-define('FILTER_LESS_THAN'				,'Less than: ');
+define('TEXT_BIGGER_THAN'				,'Bigger than');
+define('TEXT_LESS_THAN'				,'Less than: ');
 define('FILTER_CONTAINS'				,'Contains: ');
 define('FILTER_TABEL_HEAD_FIELD'		,'Field: ');
-define('FILTER_TABEL_HEAD_COPAIRISON'	,'Comparison: ');
+define('TEXT_COMPARISON'	,'Comparison');
 define('FILTER_TABEL_HEAD_VALUE'		,'Value: ');
 ?>

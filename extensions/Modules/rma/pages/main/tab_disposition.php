@@ -22,7 +22,7 @@
 
 <fieldset>
   <legend><?php echo TEXT_DETAILS; ?></legend>
-  <p><?php echo RMA_DISPOSITION_DESC; ?></p>
+  <p><b><?php echo RMA_DISPOSITION_DESC; ?></b></p>
 <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto">
  <tbody class="ui-widget-content">
    <tr>
@@ -42,7 +42,7 @@
         </tr>
 	  </thead>
 	 <tbody id="item_table" class="ui-widget-content">
-<?php 
+<?php
 if (sizeof($close_details) > 0) {
 	for ($i=0; $i<sizeof($close_details); $i++) { ?>
 		<tr>

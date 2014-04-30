@@ -18,7 +18,7 @@
 //
 
 class parser {
-   
+
   function validateUser($username = '', $password = '') {
 	global $db;
 	if (!$username || !$password) {
@@ -56,7 +56,7 @@ class parser {
 		break;
 	  default:
 		$strResponse .= xmlEntry('Result', 'error');
-		$strResponse .= xmlEntry('Text',   SOAP_UNEXPECTED_ERROR);
+		$strResponse .= xmlEntry('Text',   TEXT_UNEXPECTED_ERROR);
 	}
 	if ($extra_xml) $strResponse .= $extra_xml;
 	$strResponse .= '</Response>';
@@ -68,7 +68,7 @@ class parser {
 
   function get_account_id($short_name, $type = '') {
 	global $db;
-	$result = $db->Execute("select id from " . TABLE_CONTACTS . " 
+	$result = $db->Execute("select id from " . TABLE_CONTACTS . "
 		where short_name = '" . $short_name . "' and type = '" . $type . "'");
 	return ($result->RecordCount() == 0) ? 0 : $result->fields['id'];
   }

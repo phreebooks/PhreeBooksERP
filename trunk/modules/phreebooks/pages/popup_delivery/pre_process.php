@@ -38,14 +38,14 @@ switch ($_REQUEST['action']) {
 	  }
 	  $i++;
 	}
-	gen_add_audit_log(ORD_DELIVERY_DATES . TEXT_EDIT, $result->fields['purchase_invoice_id']);
+	gen_add_audit_log(TEXT_DELIVERY_DATES.' - ' . TEXT_EDIT, $result->fields['purchase_invoice_id']);
 	break;
   default:
 }
 /*****************   prepare to display templates  *************************/
 $gl_type = (JOURNAL_ID == 4 || JOURNAL_ID == 6) ? 'poo' : 'soo';
-$sql = " select m.purchase_invoice_id, i.id, i.sku, i.qty, i.description, i.date_1 
-	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id 
+$sql = " select m.purchase_invoice_id, i.id, i.sku, i.qty, i.description, i.date_1
+	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 	where i.ref_id = " . $oID . " and i.gl_type = '" . $gl_type . "'";
 $ordr_items = $db->Execute($sql);
 $num_items  = $ordr_items->RecordCount();

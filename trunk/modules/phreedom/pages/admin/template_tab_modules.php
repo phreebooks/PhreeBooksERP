@@ -18,7 +18,7 @@
 //  Path: /modules/phreedom/pages/admin/template_tab_modules.php
 //
 ?>
-<div title="<?php echo MENU_HEADING_MODULES;?>" id="tab_modules">
+<div title="<?php echo TEXT_MODULES;?>" id="tab_modules">
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
  <thead class="ui-widget-header">
   <tr><th colspan="5"><?php echo TEXT_AVAILABLE_MODULES; ?></th></tr>

@@ -20,10 +20,10 @@
 namespace xml_builder\classes;
 class admin extends \core\classes\admin{
 	public $id 			= 'xml_builder';
-	public $text		= MODULE_XML_BUILDER_TITLE;
+	public $text		= TEXT_XML_BUILDER;
 	public $description = MODULE_XML_BUILDER_DESCRIPTION;
 	public $version		= '1.0';
-	
+
 	function __construct() {
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom'   => '3.3',

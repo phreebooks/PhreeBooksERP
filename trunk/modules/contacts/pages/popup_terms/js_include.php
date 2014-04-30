@@ -159,31 +159,31 @@ function js_terms_to_language(terms_encoded) { // modified from /includes/genera
 		default:
 		case '0': // Default terms
 			if (prepayment_discount_percent != '0') {
-				result =  prepayment_discount_percent + '<?php echo ACT_EARLY_DISCOUNT_SHORT; ?>' + prepayment_discount_days + ', ';
+				result =  prepayment_discount_percent + '<?php echo TEXT_PERCENT_SHORT; ?>' + prepayment_discount_days + ', ';
 			}
 			result += '<?php echo ACT_TERMS_NET; ?>' + num_days_due;
 			break;
 		case '1': // Cash on Delivery (COD)
-			result = '<?php echo ACT_COD_SHORT; ?>';
+			result = '<?php echo TEXT_CASH_ON_DELIVERY_SHORT; ?>';
 			break;
 		case '2': // Prepaid
-			result = '<?php echo ACT_PREPAID; ?>';
+			result = '<?php echo TEXT_PREPAID; ?>';
 			break;
 		case '3': // Special terms
 			if (terms[1] != 0) {
-				result = terms[1] + '<?php echo ACT_EARLY_DISCOUNT_SHORT; ?>' + terms[2] + ', ';
+				result = terms[1] + '<?php echo TEXT_PERCENT_SHORT; ?>' + terms[2] + ', ';
 			}
 			result += '<?php echo ACT_TERMS_NET; ?>' + terms[3];
 			break;
 		case '4': // Due on day of next month
 			if (terms[1] != 0) {
-				result = terms[1] + '<?php echo ACT_EARLY_DISCOUNT_SHORT; ?>' + terms[2] + ', ';
+				result = terms[1] + '<?php echo TEXT_PERCENT_SHORT; ?>' + terms[2] + ', ';
 			}
 			result += '<?php echo ACT_DUE_ON; ?>' + terms[3];
 			break;
 		case '5': // Due at end of month
 			if (terms[1] != 0) {
-				result = terms[1] + '<?php echo ACT_EARLY_DISCOUNT_SHORT; ?>' + terms[2] + ', ';
+				result = terms[1] + '<?php echo TEXT_PERCENT_SHORT; ?>' + terms[2] + ', ';
 			}
 			result += '<?php echo ACT_END_OF_MONTH; ?>';
 	}

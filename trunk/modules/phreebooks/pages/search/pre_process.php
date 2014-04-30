@@ -37,7 +37,7 @@ $journal_choices = array('0' => TEXT_ALL);
 for ($i = 1; $i < 30; $i++) {
   $j_constant = str_pad($i, 2, '0', STR_PAD_LEFT);
   if (defined('GEN_ADM_TOOLS_J' . $j_constant)) {
-	$journal_choices[$i] = sprintf(TEXT_JID_ENTRY, constant('GEN_ADM_TOOLS_J' . $j_constant));
+	$journal_choices[$i] = sprintf(TEXT_ARGS_ENTRY, constant('GEN_ADM_TOOLS_J' . $j_constant));
   }
 }
 $_SESSION['search_date_id']      = $_REQUEST['search_date_id']     ? $_REQUEST['search_date_id']     : (isset($_SESSION['search_date_id'])     ? $_SESSION['search_date_id']     : 'l'); // default to current period
@@ -95,7 +95,7 @@ switch ($_REQUEST['action']) {
 	$_SESSION['search_main_id']      = 'all';
 	$_SESSION['search_main_from']    = '';
 	$_SESSION['search_main_to']      = '';
-  	$_REQUEST['list']                = 1; 
+  	$_REQUEST['list']                = 1;
 	unset($_REQUEST['list_order']);
 	break;
   case 'search':
@@ -172,9 +172,9 @@ $temp = gen_build_sql_date($date_prefs['params'], $date_prefs['fieldname']);
 if ($temp['sql']) $criteria[] = '(' . $temp['sql'] . ')';
 
 $crit = ($criteria) ? (" where " . implode(' and ', $criteria)) : '';
-$query_raw = "select SQL_CALC_FOUND_ROWS distinct m.id, m.journal_id, m.post_date, m.description, m.total_amount, 
-	m.purchase_invoice_id, m.bill_primary_name, m.bill_acct_id   
-	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i 
+$query_raw = "select SQL_CALC_FOUND_ROWS distinct m.id, m.journal_id, m.post_date, m.description, m.total_amount,
+	m.purchase_invoice_id, m.bill_primary_name, m.bill_acct_id
+	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i
 	on m.id = i.ref_id " . $crit . " order by $disp_order";
 //echo 'sql = '; print_r($query_raw); echo '<br>';
 $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);

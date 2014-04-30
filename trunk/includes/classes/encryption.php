@@ -32,7 +32,7 @@ class encryption {
   	}
 
   	final static function encrypt_cc($params) {
-		if (strlen($_SESSION['admin_encrypt']) < 1) throw new \core\classes\userException(ACT_NO_KEY_EXISTS);
+		if (strlen($_SESSION['admin_encrypt']) < 1) throw new \core\classes\userException(TEXT_WARNING_NO_ENCRYPTION_KEY);
 		if ($params['number']) {
 	  		$params['number'] = preg_replace("/[^0-9]/", "", $params['number']);
 	  		$hint  = substr($params['number'], 0, 4);
@@ -55,7 +55,7 @@ class encryption {
   	}
 
   	final static function decrypt ($key, $source) {
-  		if (strlen($_SESSION['admin_encrypt']) < 1) throw new \core\classes\userException(ACT_NO_KEY_EXISTS);
+  		if (strlen($_SESSION['admin_encrypt']) < 1) throw new \core\classes\userException(TEXT_WARNING_NO_ENCRYPTION_KEY);
 		$fudgefactor = $this->_convertKey($key);
 		if (empty($source)) throw new \core\classes\userException('No value has been supplied for decryption');
 		$target  = null;
@@ -77,7 +77,7 @@ class encryption {
   	}
 
   	final static function encrypt ($key, $source, $sourcelen = 0) {
-  		if (strlen($_SESSION['admin_encrypt']) < 1) throw new \core\classes\userException(ACT_NO_KEY_EXISTS);
+  		if (strlen($_SESSION['admin_encrypt']) < 1) throw new \core\classes\userException(TEXT_WARNING_NO_ENCRYPTION_KEY);
 		$fudgefactor  = $this->_convertKey($key);
 		if (empty($source)) throw new \core\classes\userException('No value has been supplied for encryption');
 	  	while (strlen($source) < $sourcelen) $source .= ' ';

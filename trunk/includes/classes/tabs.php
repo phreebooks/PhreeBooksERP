@@ -41,13 +41,13 @@ class tabs {
 		);
 	    if (!$this->id == 0) {
 		  db_perform(TABLE_EXTRA_TABS, $sql_data_array, 'update', "id = " . $this->id);
-	      gen_add_audit_log(sprintf(EXTRA_TABS_LOG, TEXT_UPDATE), $this->tab_name);
+	      gen_add_audit_log($this->module .' '. TEXT_TABS . ' - '.  TEXT_UPDATE, $this->tab_name);
 		} else {
 		  // Test for duplicates.
 		  $result = $db->Execute("select id from " . TABLE_EXTRA_TABS . " where module_id='" . $this->module . "' and tab_name='" . $this->tab_name . "'");
 		  if ($result->RecordCount() > 0) throw new \core\classes\userException(EXTRA_TABS_DELETE_ERROR);
 		  db_perform(TABLE_EXTRA_TABS, $sql_data_array);
-		  gen_add_audit_log(sprintf(EXTRA_TABS_LOG, TEXT_ADD), $this->tab_name);
+		  gen_add_audit_log($this->module .' '. TEXT_TABS . ' - '. TEXT_ADD, $this->tab_name);
 		}
 		return true;
 	}
@@ -59,7 +59,7 @@ class tabs {
 		if ($result->RecordCount() > 0) throw new \core\classes\userException(INV_CATEGORY_CANNOT_DELETE . $result->fields['field_name']);
 		$result = $db->Execute("SELECT tab_name FROM ".TABLE_EXTRA_TABS." WHERE id='$id'");
 		$db->Execute("DELETE FROM ".TABLE_EXTRA_TABS." WHERE id=$id");
-		gen_add_audit_log(sprintf(EXTRA_TABS_LOG, TEXT_DELETE), $result->fields['tab_name']);
+		gen_add_audit_log($this->module .' '. TEXT_TABS . ' - '. TEXT_DELETE, $result->fields['tab_name']);
 		return true;
 	}
 
@@ -101,12 +101,12 @@ class tabs {
 	   $output  = '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);
 	   $output .= '  <thead class="ui-widget-header">' . "\n";
 	   $output .= '  <tr>' . chr(10);
-	   $output .= '    <th colspan="2">' . ($action=='new' ? sprintf(BOX_TEXT_NEW_TITLE, TEXT_TAB) : INV_INFO_HEADING_EDIT_CATEGORY) . '</th>' . chr(10);
+	   $output .= '    <th colspan="2">' . ($action=='new' ? sprintf(TEXT_NEW_ARGS, TEXT_TAB) : sprintf(TEXT_EDIT_ARGS, TEXT_TAB)) . '</th>' . chr(10);
 	   $output .= '  </tr>' . chr(10);
 	   $output .= '  </thead>' . "\n";
 	   $output .= '  <tbody class="ui-widget-content">' . "\n";
 	   $output .= '  <tr>' . chr(10);
-	   $output .= '    <td colspan="2">' . ($action=='new' ? TEXT_TAB_INSERT_INTRO : SETUP_CURR_EDIT_INTRO) . '</td>' . chr(10);
+	   $output .= '    <td colspan="2">' . ($action=='new' ? TEXT_TAB_INSERT_INTRO : TEXT_EDIT_INTRO) . '</td>' . chr(10);
 	   $output .= '  </tr>' . chr(10);
 	   $output .= '  <tr>' . chr(10);
 	   $output .= '    <td>' . TEXT_TAB_NAME . '</td>' . chr(10);

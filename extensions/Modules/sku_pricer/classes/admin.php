@@ -19,10 +19,10 @@
 namespace sku_pricer\classes;
 class admin extends \core\classes\admin {
 	public $id 			= 'sku_pricer';
-	public $text		= MODULE_SKU_PRICER_TITLE;
+	public $text		= TEXT_SKU_PRICER;
 	public $description = MODULE_SKU_PRICER_DESCRIPTION;
 	public $version		= '1.0';
-	
+
   function __construct() {
 	$this->prerequisites = array( // modules required and rev level for this module to work properly
 	  'phreedom'   => 3.0,

@@ -47,5 +47,5 @@ switch ($_REQUEST['action']) {
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', BOX_HEADING_PROFILE);
+define('PAGE_TITLE', TEXT_MY_PROFILE);
 ?>

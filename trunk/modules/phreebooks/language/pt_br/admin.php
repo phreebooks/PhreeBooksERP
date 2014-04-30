@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:45
 // Module/Method: phreebooks
 // ISO Language: pt_br
@@ -11,14 +11,14 @@
 define('SETUP_HEADING_NEW_TAX_RATE','Nova Taxa');
 define('SETUP_TAX_INSERT_INTRO','Por favor, entre a nova taxa e suas propriedades');
 define('SETUP_TAX_DELETE_INTRO','Tem certeza dse que quer remover esta taxa?');
-define('SETUP_INFO_FREIGHT_TAXABLE','Imposto Frete ');
+define('TEXT_FREIGHT_TAXABLE','Imposto Frete ');
 define('SETUP_INFO_TAX_AUTH_DELETE','Selecione uma autoridade fiscal para remover');
 define('SETUP_INFO_TAX_AUTHORITIES','Autoridades Fiscais');
 define('SETUP_INFO_TAX_AUTH_ADD','Selecione uma autoridade fiscal para inserir');
 define('SETUP_HEADING_TOTAL_TAX','Taxa Total (percentual)');
 define('SETUP_TAX_EDIT_INTRO','Por favor, faça as alterações necessárias');
 define('SETUP_TITLE_TAX_RATES_VEND','Impostos Compras');
-define('SETUP_HEADING_TAX_FREIGHT','Frete');
+define('TEXT_TAX_FREIGHT','');
 define('SETUP_TAX_AUTHS_LOG','Autoridades Fiscais - ');
 define('SETUP_TITLE_TAX_RATES','Impostos Vendas');
 define('SETUP_INFO_HEADING_NEW_TAX_AUTH','Nova Autoridade Fiscal');
@@ -36,7 +36,7 @@ define('SETUP_TAX_GL_ACCT','ID COnta CG');
 define('SETUP_TAX_RATE','Taxa (percentual)');
 define('SETUP_TAX_DESC_SHORT','Nome Curto');
 define('SETUP_TITLE_TAX_AUTHS_VEND','Autoridades Fiscais Compras');
-define('SETUP_TITLE_TAX_AUTHS','Autoridades Fiscais Vendas');
+define('TEXT_SALES_TAX_AUTHORITIES','Autoridades Fiscais Vendas');
 define('GL_ERROR_CANT_DELETE','Esta conta não pode ser removida porque há lançamentos no diário.');
 define('GL_LOG_CHART_OF_ACCOUNTS','Plano de Contas - ');
 define('GL_INFO_EDIT_ACCOUNT','Alterar Conta');
@@ -45,9 +45,9 @@ define('GL_INFO_INSERT_INTRO','Por favor, entre a nova Conta CG e suas proprieda
 define('GL_INFO_NEW_ACCOUNT','Nova Conta');
 define('GL_INFO_ACCOUNT_TYPE','Tipo Conta (Obrigatório)');
 define('GL_INFO_ACCOUNT_INACTIVE','Conta inativa');
-define('GL_HEADING_SUBACCOUNT','Subconta');
+define('TEXT_SUBACCOUNT','Subconta');
 define('GL_EDIT_INTRO','Por favor, faça as alterações necessárias');
-define('GL_POPUP_WINDOW_TITLE','Plano de Contas');
+define('TEXT_CHART_OF_ACCOUNTS','Plano de Contas');
 define('GL_HEADING_ACCOUNT_NAME','ID Conta');
 define('GL_ERROR_CANT_MAKE_HEADING','Esta conta tem saldo. Não pode ser convertida em conta resumo.');
 define('GL_INFO_PRIMARY_ACCT_ID','Esta conta é uma sub-conta, selecione uma conta primária:');
@@ -172,8 +172,8 @@ define('PB_PF_VENDOR_STATEMENT','Fornecedor Diretivas');
 define('GEN_ADM_TOOLS_AR','Clientes/Recebimentos');
 define('PB_PF_VENDOR_CRD_MEMO','Fornecedor - Memo Crédito');
 define('PB_PF_VENDOR_LABEL','Labels - Fornecedor');
-define('PB_PF_SALES_ORDER','Ordens Venda');
-define('PB_PF_SALES_REC','Comprovantes Venda');
+define('TEXT_SALES_ORDER','Ordens Venda');
+define('TEXT_SALES_RECEIPTS','Comprovantes Venda');
 define('PB_PF_PURCH_ORDER','Ordens Compra');
 define('PB_PF_CUST_STATEMENT','Customer Statements');
 define('PB_PF_DEP_SLIP','Recibos Depósito');
@@ -183,7 +183,7 @@ define('PB_PF_CUST_QUOTE','Customer Quotes');
 define('PB_PF_CUST_CRD_MEMO','Cliente - Memo Crédito');
 define('PB_PF_COLLECT_LTR','Collection Letters');
 define('PB_PF_BANK_DEP_SLIP','Bancos Recibos Depósito');
-define('PB_PF_BANK_CHECK','Bancos Cheques');
+define('TEXT_BANK_CHECKS','Bancos Cheques');
 define('COA_44_DESC','Equity - Retained Earnings');
 define('COA_42_DESC','Equity - Gets Closed');
 define('COA_34_DESC','Despesas');
@@ -192,7 +192,7 @@ define('COA_32_DESC','Custo Vendas');
 define('COA_24_DESC','Passivo Longo Prazo');
 define('COA_30_DESC','Receita');
 define('COA_22_DESC','Outros Passivos Correntes');
-define('COA_20_DESC','Contas Pagar');
+define('TEXT_ACCOUNTS_PAYABLE','Contas Pagar');
 define('COA_12_DESC','Outros Ativos');
 define('COA_10_DESC','Depreciação Acumulada');
 define('COA_08_DESC','Ativo FIxo');

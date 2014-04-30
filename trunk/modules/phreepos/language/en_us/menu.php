@@ -25,6 +25,6 @@ define('BOX_PHREEPOS', 'Point of Sale');
 define('BOX_POS_MGR', 'POS/POP Manager');
 define('BOX_POS_CLOSING', 'Closing POS/POP');
 define('BOX_CUSTOMER_DEPOSITS', 'Customer Deposits');
-define('BOX_VENDOR_DEPOSITS', 'Vendor Deposits');
+define('TEXT_VENDOR_DEPOSITS', 'Vendor Deposits');
 
 ?>

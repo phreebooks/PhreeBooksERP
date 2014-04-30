@@ -84,7 +84,7 @@ switch ($_REQUEST['action']) {
 	// set expiration date of previous rev if there is a older rev of this price sheet
 	if ($id != '') $db->Execute("update " . TABLE_PRICE_SHEETS . " set expiration_date = '" . gen_specific_date($effective_date, -1) . "'
 	  where sheet_name = '".addslashes($sheet_name)."' and type = '$type' and ( expiration_date IS NULL or expiration_date = '0000-00-00' or expiration_date >= '$effective_date' ) and id < $id");
-	gen_add_audit_log(PRICE_SHEETS_LOG . ($_REQUEST['action'] == 'save') ? TEXT_SAVE : TEXT_UPDATE, $sheet_name);
+	gen_add_audit_log(TEXT_PRICE_SHEET. " - "  . ($_REQUEST['action'] == 'save') ? TEXT_SAVE : TEXT_UPDATE, $sheet_name);
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('psID', 'action')), 'SSL'));
 	break;
 
@@ -97,7 +97,7 @@ switch ($_REQUEST['action']) {
 	if ($result->fields['default_sheet'] == '1') $messageStack->add(PRICE_SHEET_DEFAULT_DELETED, 'caution');
 	$db->Execute("delete from " . TABLE_PRICE_SHEETS . " where id = '" . $id . "'");
 	$db->Execute("delete from " . TABLE_INVENTORY_SPECIAL_PRICES . " where price_sheet_id = '" . $id . "'");
-	gen_add_audit_log(PRICE_SHEETS_LOG . TEXT_DELETE, $sheet_name);
+	gen_add_audit_log(TEXT_PRICE_SHEET. " - "  . TEXT_DELETE, $sheet_name);
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('psID', 'action')).'&type='.$type, 'SSL'));
 	break;
 
@@ -125,7 +125,7 @@ switch ($_REQUEST['action']) {
 	  price_sheet_id = $id, price_levels = '$levels->fields['price_levels']'");
 	  $levels->MoveNext();
 	}
-	gen_add_audit_log(PRICE_SHEETS_LOG . TEXT_REVISE, $result->fields['sheet_name'] . ' Rev. ' . $old_rev . ' => ' . ($old_rev + 1));
+	gen_add_audit_log(TEXT_PRICE_SHEET. " - "  . TEXT_REVISE, $result->fields['sheet_name'] . ' Rev. ' . $old_rev . ' => ' . ($old_rev + 1));
 	$_REQUEST['action'] = 'edit'; // continue with edit.
   case 'edit':
 	if(!isset($id)) $id = db_prepare_input($_POST['rowSeq']);
@@ -164,7 +164,7 @@ switch ($_REQUEST['action']) {
   case 'new':
   case 'edit':
     $include_template = 'template_detail.php';
-    define('PAGE_TITLE', ($_REQUEST['action'] == 'new') ? PRICE_SHEET_NEW_TITLE : PRICE_SHEET_EDIT_TITLE);
+    define('PAGE_TITLE', ($_REQUEST['action'] == 'new') ? sprintf(TEXT_NEW_ARGS, TEXT_PRICE_SHEET) : sprintf(TEXT_EDIT_ARGS, TEXT_PRICE_SHEET));
 	break;
   default:
 	$heading_array = array(

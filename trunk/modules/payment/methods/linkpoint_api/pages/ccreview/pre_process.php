@@ -40,9 +40,9 @@ if (!isset($_REQUEST['so'])) $_REQUEST['so'] = 'desc';// default to descending b
 
 $heading_array = array(
 	'id'            => GEN_LINK_POINT_ID,
-	'short_name'    => GEN_CUSTOMER,
-	'contact_last'  => GEN_LAST_NAME,
-	'contact_first' => GEN_FIRST_NAME,
+	'short_name'    => TEXT_CUSTOMER,
+	'contact_last'  => TEXT_LAST_NAME,
+	'contact_first' => TEXT_FIRST_NAME,
 	'empty_1'       => '',
 	'empty_2'       => '',
 	'empty_3'       => '',

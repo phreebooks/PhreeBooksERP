@@ -29,11 +29,11 @@ $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('07.04.03');
 $toolbar->search_period = $acct_period;
-echo $toolbar->build_toolbar($add_search = true, $add_period = true); 
+echo $toolbar->build_toolbar($add_search = true, $add_period = true);
 // Build the page
 ?>
-<h1><?php echo GEN_HEADING_PLEASE_SELECT; ?></h1>
-<div style="height:19px"><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . ORD_TEXT_14_WINDOW_TITLE); ?>
+<h1><?php echo TEXT_PLEASE_SELECT; ?></h1>
+<div style="height:19px"><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . TEXT_ASSEMBLIES); ?>
 <div style="float:right"><?php echo $query_split->display_links(); ?></div>
 </div>
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
@@ -43,7 +43,7 @@ echo $toolbar->build_toolbar($add_search = true, $add_period = true);
  <tbody class="ui-widget-content">
   <?php
   $odd = true;
-	while (!$query_result->EOF) { 
+	while (!$query_result->EOF) {
 	  if ($query_result->fields['store_id'] == '0') {
 	    $store_name = COMPANY_ID;
 	  } else {
@@ -66,5 +66,5 @@ echo $toolbar->build_toolbar($add_search = true, $add_period = true);
  </tbody>
 </table>
 <div style="float:right"><?php echo $query_split->display_links(); ?></div>
-<div><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . ORD_TEXT_14_WINDOW_TITLE); ?></div>
+<div><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . TEXT_ASSEMBLIES); ?></div>
 </form>

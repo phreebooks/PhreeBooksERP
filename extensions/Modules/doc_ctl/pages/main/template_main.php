@@ -27,10 +27,10 @@ $toolbar->icon_list['save']['show']     = false;
 $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['print']['show']    = false;
 $toolbar->icon_list['home'] = array(
-	'show'   => true, 
+	'show'   => true,
 	'icon'   => 'actions/go-home.png',
-	'params' => 'onclick="fetch_home()"', 
-	'text'   => TEXT_HOME, 
+	'params' => 'onclick="fetch_home()"',
+	'text'   => TEXT_HOME,
 	'order'  => '35',
 );
 $toolbar->add_help();
@@ -42,16 +42,16 @@ echo $toolbar->build_toolbar();
   <tr>
     <td width="30%" valign="top">
 	  <fieldset>
-        <legend><?php echo TEXT_DOCUMENTS; ?></legend>
+        <legend><?php echo TEXT_DOCUMENT_LIST; ?></legend>
 		<div id="description">
 		  <div id="mmenu" style="height:50px; overflow:auto;">
-		    <?php echo html_icon('actions/folder-new.png', TEXT_NEW_FOLDER, 'medium', '', NULL, NULL, 'add_folder') . chr(10); ?>
-		  	<?php echo html_icon('actions/document-new.png', TEXT_NEW_DOCUMENT, 'medium', '', NULL, NULL, 'add_default') . chr(10); ?>
+		    <?php echo html_icon('actions/folder-new.png', sprintf(TEXT_NEW_ARGS, TEXT_FOLDER), 'medium', '', NULL, NULL, 'add_folder') . chr(10); ?>
+		  	<?php echo html_icon('actions/document-new.png', sprintf(TEXT_NEW_ARGS, TEXT_DOCUMENT), 'medium', '', NULL, NULL, 'add_default') . chr(10); ?>
 		  	<?php echo html_icon('apps/accessories-text-editor.png', TEXT_RENAME, 'medium', '', NULL, NULL, 'rename') . chr(10); ?>
 		  	<?php echo html_input_field('text', '', '') . chr(10); ?>
 		  	<?php echo html_icon('actions/system-search.png', TEXT_SEARCH, 'medium', '', NULL, NULL, 'search') . chr(10); ?>
 		  	<?php echo html_icon('actions/view-refresh.png', TEXT_CLEAR,  'medium', '', NULL, NULL, 'clear_search') . chr(10); ?>
-		  </div>		
+		  </div>
 		  <!-- the tree container -->
 		  <div id="demo" class="demo"></div>
 		</div>
@@ -62,7 +62,7 @@ echo $toolbar->build_toolbar();
       <fieldset>
         <legend><?php echo TEXT_DETAILS; ?></legend>
 	    <div id="rightColumn">
-			<?php if (file_exists($div_template)) { 
+			<?php if (file_exists($div_template)) {
 				include ($div_template);
 				echo $fieldset_content;
 			} ?>

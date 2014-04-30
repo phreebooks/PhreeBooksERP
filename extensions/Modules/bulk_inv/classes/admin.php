@@ -20,10 +20,10 @@
 namespace bulk_inv\classes;
 class admin extends \core\classes\admin {
 	public $id 			= 'bulk_inv';
-	public $text		= MODULE_BULK_INV_TITLE;
+	public $text		= TEXT_BULK_INVENTORY_TOOL;
 	public $description = MODULE_BULK_INV_DESCRIPTION;
 	public $version		= '1.0';
-	
+
 	function __construct() {
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 	  	  'phreedom'  => '3.3',

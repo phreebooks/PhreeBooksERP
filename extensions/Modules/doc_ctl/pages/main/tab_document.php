@@ -32,53 +32,53 @@ if ($security_level > 3) {
 }
 if ($bookmarked) {
 	$docbar->icon_list['del_bookmark'] = array(
-		'show'   => true, 
+		'show'   => true,
 		'icon'   => 'actions/bookmark-new.png',
 		'params' => 'onclick="docAction(\'del_bookmark\')"',
-		'text'   => TEXT_REMOVE_BOOKMARK, 
+		'text'   => TEXT_REMOVE_BOOKMARK,
 		'order'  => 20,
 	);
 } else {
 	$docbar->icon_list['bookmark'] = array(
-		'show'   => true, 
+		'show'   => true,
 		'icon'   => 'actions/bookmark-new.png',
 		'params' => 'onclick="docAction(\'bookmark\')"',
-		'text'   => TEXT_BOOKMARK_DOC, 
+		'text'   => TEXT_BOOKMARK_DOC,
 		'order'  => 20,
 	);
 }
 if ($locked && $_SESSION['admin_id'] == $doc_details->fields['doc_owner']) {
 	$docbar->icon_list['del_lock'] = array(
-		'show'   => true, 
+		'show'   => true,
 		'icon'   => 'actions/system-lock-screen.png',
 		'params' => 'onclick="docAction(\'del_lock\')"',
-		'text'   => TEXT_UNLOCK_DOC, 
+		'text'   => TEXT_UNLOCK_DOC,
 		'order'  => 50,
 	);
 } elseif ($security_level > 1 && !$locked) {
 	$docbar->icon_list['lock'] = array(
-		'show'   => true, 
+		'show'   => true,
 		'icon'   => 'actions/system-lock-screen.png',
 		'params' => 'onclick="docAction(\'lock\')"',
-		'text'   => TEXT_LOCK_DOC, 
+		'text'   => TEXT_LOCK_DOC,
 		'order'  => 50,
 	);
 }
 if ($security_level > 2 && !$checked_out) {
 	$docbar->icon_list['check_out'] = array(
-		'show'   => true, 
+		'show'   => true,
 		'icon'   => 'actions/mail-forward.png',
 		'params' => 'onclick="submitSeq(' . $id . ',\'check_out\', true)"',
-		'text'   => TEXT_CHECKOUT_DOC, 
+		'text'   => TEXT_CHECKOUT_DOC,
 		'order'  => 60,
 	);
 }
 if ($security_level > 3 && $checked_out && $checkout_id == $_SESSION['admin_id']) {
 	$docbar->icon_list['del_checkout'] = array(
-		'show'   => true, 
+		'show'   => true,
 		'icon'   => 'actions/mail-mark-not-junk.png',
 		'params' => 'onclick="submitSeq(' . $id . ',\'del_checkout\')"',
-		'text'   => TEXT_CANCEL_CHECKOUT, 
+		'text'   => TEXT_CANCEL_CHECKOUT,
 		'order'  => 65,
 	);
 }
@@ -156,8 +156,8 @@ if ($security_level > 3) {
 	$fieldset_content .= ' </thead>' . chr(10);
 	$fieldset_content .= ' <tbody class="ui-widget-content">' . chr(10);
 	$fieldset_content .= '  <tr>' . chr(10);
-	$fieldset_content .= '   <td align="center">' . html_checkbox_field('user_all',  '1', (in_array('0', $security['u'], true) ? true : false)) . ' ' . TEXT_ALL_USERS . '</td>' . chr(10);
-	$fieldset_content .= '   <td align="center">' . html_checkbox_field('group_all', '1', (in_array('0', $security['g'], true) ? true : false)) . ' ' . TEXT_ALL_GROUPS .'</td>' . chr(10);
+	$fieldset_content .= '   <td align="center">' . html_checkbox_field('user_all',  '1', (in_array('0', $security['u'], true) ? true : false)) . ' ' . TEXT_ALLOW_ALL_USERS . '</td>' . chr(10);
+	$fieldset_content .= '   <td align="center">' . html_checkbox_field('group_all', '1', (in_array('0', $security['g'], true) ? true : false)) . ' ' . TEXT_ALLOW_ALL_GROUPS .'</td>' . chr(10);
 	$fieldset_content .= '  </tr>' . chr(10);
 	$fieldset_content .= '  <tr>' . chr(10);
 	$fieldset_content .= '   <td width="50%" align="center">' . html_pull_down_menu('users[]',  gen_get_pull_down(TABLE_USERS,  true, '1', 'admin_id', 'display_name'), $security['u'], 'multiple="multiple" size="20"') .'</td>' . chr(10);
@@ -180,9 +180,9 @@ if (sizeof($doc_history) > 0) {
   $fieldset_content .= '  <tr>' . chr(10);
   $fieldset_content .= '    <th>' . TEXT_REVISION . '</th>' . chr(10);
   $fieldset_content .= '    <th>' . TEXT_SIZE     . '</th>' . chr(10);
-  $fieldset_content .= '    <th>' . TEXT_CREATE_DATE . '</th>' . chr(10);
+  $fieldset_content .= '    <th>' . TEXT_CREATION_DATE . '</th>' . chr(10);
   $fieldset_content .= '    <th>' . TEXT_LAST_VIEW  . '</th>' . chr(10);
-  $fieldset_content .= '  </tr>' . chr(10); 
+  $fieldset_content .= '  </tr>' . chr(10);
   $fieldset_content .= '  </thead>' . chr(10);
   $fieldset_content .= '  <tbody class="ui-widget-content">' . chr(10);
   for ($i = 0; $i < sizeof($doc_history); $i++) {
@@ -191,7 +191,7 @@ if (sizeof($doc_history) > 0) {
     $fieldset_content .= '    <td align="right">' . $doc_history[$i]['size']  . '</td>' . chr(10);
     $fieldset_content .= '    <td align="center">' . date(DATE_FORMAT, $doc_history[$i]['mtime']) . '</td>' . chr(10);
     $fieldset_content .= '    <td align="center">' . date(DATE_FORMAT, $doc_history[$i]['atime']) . '</td>' . chr(10);
-    $fieldset_content .= '  </tr>' . chr(10); 
+    $fieldset_content .= '  </tr>' . chr(10);
   }
 } else {
   $fieldset_content .= '  </thead>' . chr(10);

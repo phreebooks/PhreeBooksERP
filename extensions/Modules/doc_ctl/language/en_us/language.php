@@ -25,7 +25,7 @@ define('TEXT_CHECKOUT_DOC','Check-out Document');
 define('TEXT_CREATE_DATE','Creation Date');
 define('TEXT_DETAILS','Details');
 define('TEXT_DOCUMENT','Document: ');
-define('TEXT_DOCUMENT_TITLE','Contents of: ');
+define('TEXT_CONTENTS_OF','Contents of');
 define('TEXT_DOCUMENTS','Document List');
 define('TEXT_DOWNLOAD_DOCUMENT','Download Document');
 define('TEXT_FILENAME','Filename');
@@ -58,5 +58,5 @@ define('DOC_CTL_DELETE_DIRECTORY','Are you sure you want to delete this director
 // Javascript defines
 define('DOC_CTL_JS_DEL_BOOKMARK','Are you sure you want to delete this bookmark?');
 define('DOC_CTL_JS_DIR_DELETED_ERROR','The directory is not empty, it cannot be deleted!');
- 
+
 ?>

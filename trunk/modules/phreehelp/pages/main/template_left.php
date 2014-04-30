@@ -6,7 +6,7 @@
   <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/stylesheet.css'; ?>" />
   <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/jquery-ui.css'; ?>" />
   <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/easyui.css'; ?>" />
-  <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/icon.css'; ?>" />	
+  <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/icon.css'; ?>" />
   <link rel="shortcut icon" type="image/ico" href="favicon.ico" />
   <script type="text/javascript">
     var icon_path        = '<?php echo DIR_WS_ICONS; ?>';
@@ -24,10 +24,10 @@
 
 <body>
 <div class="easyui-tabs" id="helptabs">
-<div title="<?php echo HEADING_CONTENTS;?>" id="tab_contents">
+<div title="<?php echo TEXT_CONTENTS;?>" id="tab_contents">
 	<fieldset><?php echo retrieve_toc(); ?></fieldset>
 </div>
-<div title="<?php echo HEADING_INDEX;?>" id="tab_index">
+<div title="<?php echo TEXT_INDEX;?>" id="tab_index">
     <fieldset><?php echo retrieve_index(); ?></fieldset>
 </div>
 <div title="<?php echo TEXT_SEARCH;?>" id="tab_search">

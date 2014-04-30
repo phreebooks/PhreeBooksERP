@@ -83,6 +83,6 @@ $all_chart = gen_coa_pull_down(2, false, true, false);
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', BOX_BANK_IMPORT_ADMIN);
+define('PAGE_TITLE', TEXT_BANK_IMPORT_SETTINGS);
 
 ?>

@@ -20,14 +20,14 @@
 ?>
 <div title="<?php echo TEXT_HISTORY;?>" id="tab_history">
   <fieldset>
-    <legend><?php echo ACT_ACT_HISTORY; ?></legend>
+    <legend><?php echo TEXT_ACCOUNT_HISTORY; ?></legend>
 	  <table class="ui-widget" style="border-collapse:collapse;width:100%;">
 		<tbody class="ui-widget-content">
 	  <tr>
-	    <td width="50%"><?php echo constant('ACT_' . strtoupper($type) . '_FIRST_DATE') . ' ' . gen_locale_date($cInfo->first_date); ?></td>
+	    <td width="50%"><?php echo ACT_E_FIRST_DATE . ' ' . gen_locale_date($cInfo->first_date); ?></td>
 	  </tr>
 	  <tr>
-	    <td width="50%"><?php echo constant('ACT_' . strtoupper($type) . '_LAST_DATE1') . ' ' . gen_locale_date($cInfo->last_update); ?></td>
+	    <td width="50%"><?php echo ACT_E_LAST_DATE1 . ' ' . gen_locale_date($cInfo->last_update); ?></td>
 	  </tr>
 	   </tbody>
 	</table>

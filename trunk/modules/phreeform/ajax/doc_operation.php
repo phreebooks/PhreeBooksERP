@@ -27,7 +27,7 @@ require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
 $id     = (int)$_GET['id'];
 
 if (!isset($_GET['id'])) throw new \core\classes\userException("variable ID isn't set");
-$doc_details = $db->Execute("select * from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
+$doc_details = $db->Execute("select * from " . TABLE_PHREEFORM . " where id = '$id'");
 switch ($_REQUEST['action']) {
   case 'bookmark':
 	$sql_array = array(
@@ -41,7 +41,7 @@ switch ($_REQUEST['action']) {
     break;
   case 'del_bookmark':
 	$result = $db->Execute("delete from " . TABLE_DC_PROPERTIES . "
-		where doc_id = '" . $id . "' and type = 'b' and admin_id = '" . $_SESSION['admin_id'] . "'");
+		where doc_id = '$id' and type = 'b' and admin_id = '{$_SESSION['admin_id']}'");
 	$ajax_text = DOC_CTL_JS_BOOKMARK_REMOVE;
     break;
   case 'lock':
@@ -55,15 +55,15 @@ switch ($_REQUEST['action']) {
 	$ajax_text = DOC_CTL_JS_DOC_LOCKED;
     break;
   case 'del_lock':
-	$db->Execute("delete from " . TABLE_DC_PROPERTIES . " where doc_id = '" . $id . "' and type = 'l'");
+	$db->Execute("delete from " . TABLE_DC_PROPERTIES . " where doc_id = '$id' and type = 'l'");
 	$ajax_text  = DOC_CTL_JS_DOC_UNLOCKED;
     break;
   case 'delete':
 	$file_path = PF_DIR_MY_REPORTS . 'pf_' . $id;
-	$db->Execute("delete from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
+	$db->Execute("delete from " . TABLE_PHREEFORM . " where id = '$id'");
 	if (file_exists($file_path)) unlink($file_path);
 	$id = $doc_details->fields['parent_id']; // set the id to the parent to display refreshed page
-	$ajax_text = PHREEFORM_JS_RPT_DELETED;
+	$ajax_text = sprintf( TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_REPORT, $doc_details->fields['doc_title']);
 	break;
   default:
   	throw new \core\classes\userException("don't know action {$_REQUEST['action']}");

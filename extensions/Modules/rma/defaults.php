@@ -20,7 +20,7 @@
 define('RMA_DIR_ATTACHMENTS',  DIR_FS_MY_FILES . $_SESSION['company'] . '/rma/main/');
 
 $status_codes = array(
-  '0'  => RMA_STATUS_0, // do not remove from top position
+  '0'  => TEXT_PLEASE_SELECT, // do not remove from top position
   '1'  => RMA_STATUS_1,
   '2'  => RMA_STATUS_2,
   '3'  => RMA_STATUS_3,
@@ -32,7 +32,7 @@ $status_codes = array(
   '9'  => RMA_STATUS_9,
   '10' => RMA_STATUS_10,
   '90' => RMA_STATUS_90,
-  '99' => RMA_STATUS_99,
+  '99' => TEXT_CLOSED,
 );
 
 $reason_codes = array(

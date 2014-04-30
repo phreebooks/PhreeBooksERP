@@ -27,7 +27,7 @@ if ($security_level > 1) $tabs_toolbar->add_icon('new', 'onclick="loadPopUp(\'ta
 if ($tabs->extra_buttons) $tabs->customize_buttons($tabs_toolbar);
 
 ?>
-<div title="<?php echo TEXT_EXTRA_TABS;?>" id="tab_tabs">
+<div title="<?php echo TEXT_CUSTOM_TABS;?>" id="tab_tabs">
   <?php echo $tabs_toolbar->build_toolbar(); ?>
   <h1><?php echo $tabs->title; ?></h1>
   <div id="tabs_content"><?php echo $tabs->build_main_html(); ?></div>

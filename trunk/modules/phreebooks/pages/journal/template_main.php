@@ -37,7 +37,7 @@ $toolbar->add_icon('copy',  'onclick="verifyCopy()"', 9);
 if (!$cInfo->id) $toolbar->add_icon('recur', 'onclick="OpenRecurList(this)"', 10);
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('07.06.02');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo GL_ENTRY_TITLE; ?></h1>
@@ -52,7 +52,7 @@ echo $toolbar->build_toolbar();
 		<td><?php echo TEXT_AUTO_COMPLETE . ' ' . html_checkbox_field('auto_complete', '1', '1'); ?></td>
 
 	  <?php if (ENABLE_MULTI_BRANCH) { ?>
-		<td><?php echo GEN_STORE_ID . ' ' . html_pull_down_menu('store_id', gen_get_store_ids(), $cInfo->store_id ? $cInfo->store_id : $_SESSION['admin_prefs']['def_store_id']); ?></td>
+		<td><?php echo TEXT_STORE_ID . ' ' . html_pull_down_menu('store_id', gen_get_store_ids(), $cInfo->store_id ? $cInfo->store_id : $_SESSION['admin_prefs']['def_store_id']); ?></td>
 	  <?php } ?>
 	  </tr>
 	 </tbody>

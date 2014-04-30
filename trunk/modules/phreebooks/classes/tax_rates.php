@@ -43,10 +43,10 @@ class tax_rates {
 	);
     if ($id) {
 	  db_perform($this->db_table, $sql_data_array, 'update', "tax_rate_id = '" . $id . "'");
-	  gen_add_audit_log(SETUP_TAX_RATES_LOG . TEXT_UPDATE, $this->description_short);
+	  gen_add_audit_log(TEXT_TAX_RATE . " - " . TEXT_UPDATE, $this->description_short);
 	} else  {
       db_perform($this->db_table, $sql_data_array);
-	  gen_add_audit_log(SETUP_TAX_RATES_LOG . TEXT_ADD, $this->description_short);
+	  gen_add_audit_log(TEXT_TAX_RATE . " - " . TEXT_ADD, $this->description_short);
 	}
 	return true;
   }
@@ -58,7 +58,7 @@ class tax_rates {
 	// Since tax rates are not used explicitly, they can be deleted at any time.
 	$result = $db->Execute("select description_short from " . $this->db_table . " where tax_rate_id = '" . $id . "'");
     $db->Execute("delete from " . $this->db_table . " where tax_rate_id = '" . $id . "'");
-	gen_add_audit_log(SETUP_TAX_RATES_LOG . TEXT_DELETE, $result->fields['description_short']);
+	gen_add_audit_log(TEXT_TAX_RATE . " - " . TEXT_DELETE, $result->fields['description_short']);
 	return true;
   }
 
@@ -67,7 +67,7 @@ class tax_rates {
     $tax_authorities_array = gen_build_tax_auth_array();
     $content = array();
 	$content['thead'] = array(
-	  'value' => array(SETUP_TAX_DESC_SHORT, TEXT_DESCRIPTION, SETUP_HEADING_TOTAL_TAX, SETUP_HEADING_TAX_FREIGHT, TEXT_ACTION),
+	  'value' => array(TEXT_SHORT_NAME, TEXT_DESCRIPTION, SETUP_HEADING_TOTAL_TAX, TEXT_TAX_FREIGHT, TEXT_ACTION),
 	  'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 	);
     $result = $db->Execute("select tax_rate_id, description_short, description_long, rate_accounts, freight_taxable
@@ -109,12 +109,12 @@ class tax_rates {
 	$output  = '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);
 	$output .= '  <thead class="ui-widget-header">' . "\n";
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <th colspan="2">' . ($action=='new' ? SETUP_HEADING_NEW_TAX_RATE : SETUP_HEADING_EDIT_TAX_RATE) . '</th>' . chr(10);
+	$output .= '    <th colspan="2">' . ($action=='new' ? sprintf(TEXT_NEW_ARGS, TEXT_TAX_RATE) : sprintf(TEXT_EDIT_ARGS, TEXT_TAX_AUTHORITY)) . '</th>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  </thead>' . "\n";
 	$output .= '  <tbody class="ui-widget-content">' . "\n";
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td colspan="2">' . ($action=='new' ? SETUP_TAX_INSERT_INTRO : SETUP_TAX_EDIT_INTRO) . '</td>' . chr(10);
+	$output .= '    <td colspan="2">' . ($action=='new' ? SETUP_TAX_INSERT_INTRO : TEXT_EDIT_INTRO) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
 	$output .= '    <td>' . SETUP_INFO_DESC_SHORT . '</td>' . chr(10);
@@ -125,7 +125,7 @@ class tax_rates {
 	$output .= '    <td>' . html_input_field('description_long', $this->description_long, 'size="33" maxlength="64"') . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . SETUP_INFO_TAX_AUTHORITIES . '</td>' . chr(10);
+	$output .= '    <td>' . TEXT_TAX_AUTHORITY . '</td>' . chr(10);
 	$output .= '    <td>' . html_hidden_field('rate_accounts', $this->rate_accounts) . $this->draw_tax_auths($this->rate_accounts, $tax_authorities_array) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
@@ -137,7 +137,7 @@ class tax_rates {
 	$output .= '    <td>' . html_pull_down_menu('tax_auth_id_delete', $this->get_selected_tax_auths($this->rate_accounts, $tax_authorities_array)) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . SETUP_INFO_FREIGHT_TAXABLE . '</td>' . chr(10);
+	$output .= '    <td>' . TEXT_FREIGHT_TAXABLE . '</td>' . chr(10);
 	$output .= '    <td>' . html_radio_field('freight_taxable', '0', !$this->freight_taxable) . TEXT_NO . html_radio_field('freight_taxable', '1', $this->freight_taxable) . TEXT_YES . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  </tbody>' . "\n";

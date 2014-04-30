@@ -28,7 +28,7 @@ $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('07.04.06');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
@@ -45,14 +45,14 @@ echo $toolbar->build_toolbar();
 	<td nowrap="nowrap"><?php echo INV_QTY_ON_HAND . ': '; ?></td>
 	<td nowrap="nowrap"><?php echo $inventory_details->fields['quantity_on_hand']; ?></td>
 	<td nowrap="nowrap">&nbsp;</td>
-	<td nowrap="nowrap"><?php echo INV_ENTRY_INV_ITEM_COST . ': '; ?></td>
+	<td nowrap="nowrap"><?php echo TEXT_ITEM_COST . ': '; ?></td>
 	<td nowrap="nowrap"><?php echo $currencies->precise($item_cost); ?></td>
   </tr>
   <tr>
 	<td nowrap="nowrap"><?php echo INV_QTY_ON_SALES_ORDER . ': '; ?></td>
 	<td nowrap="nowrap"><?php echo $inventory_details->fields['quantity_on_sales_order']; ?></td>
 	<td nowrap="nowrap">&nbsp;</td>
-	<td nowrap="nowrap"><?php echo INV_ENTRY_FULL_PRICE . ': '; ?></td>
+	<td nowrap="nowrap"><?php echo TEXT_FULL_PRICE . ': '; ?></td>
 	<td nowrap="nowrap"><?php echo $currencies->precise($full_price); ?></td>
   </tr>
   <tr>
@@ -94,7 +94,7 @@ echo $toolbar->build_toolbar();
 			<th align="center"><?php echo TEXT_SOURCE; ?></th>
 			<th align="center"><?php echo TEXT_ADJUSTMENT; ?></th>
 			<th align="center"><?php echo INV_ADJ_VALUE; ?></th>
-			<th align="center"><?php echo INV_ROUNDING; ?></th>
+			<th align="center"><?php echo TEXT_ROUNDING; ?></th>
 			<th align="center"><?php echo INV_RND_VALUE; ?></th>
 			<th align="center"><?php echo TEXT_PRICE; ?></th>
 			<th align="center"><?php echo TEXT_MARGIN; ?></th>
@@ -118,7 +118,7 @@ echo $toolbar->build_toolbar();
 			$adj_val = $level_info[4] ? $level_info[4] : '0';
 			$rnd = $level_info[5] ? $level_info[5] : 0;
 			$rnd_val = $level_info[6] ? $level_info[6] : '0';
-	
+
 			echo '<tr>' . chr(10);
 			echo '  <td align="center">' . $j . '</td>' . chr(10);
 			echo '  <td>' . html_input_field('qty_'     . $objID, $qty, 'size="5" style="text-align:right" onchange="updatePrice(' . $m . ')"') . '</td>' . chr(10);
@@ -136,13 +136,13 @@ echo $toolbar->build_toolbar();
 		</table>
 	  </div>
 	  <!-- end of tabsets -->
-<?php 
+<?php
 	  $price_sheets->MoveNext();
 	  $m++;
     }
     echo '</div>' . chr(10);
   } else {
     echo '<p><div align="center"><h3>' . INV_NO_PRICE_SHEETS . '</h3></div></p>';
-  } // end ($price_sheets->RecordCount() > 0) 
+  } // end ($price_sheets->RecordCount() > 0)
 ?>
 </form>

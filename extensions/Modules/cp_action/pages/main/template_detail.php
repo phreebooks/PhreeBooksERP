@@ -37,7 +37,7 @@ if (($cInfo->id && $security_level > 2) || (!$cInfo->id && $security_level > 1))
 }
 $toolbar->icon_list['print']['show']    = false;
 //$toolbar->add_help('');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 ?>
 <h1><?php echo ($_REQUEST['action'] == 'new') ? MENU_HEADING_NEW_CAPA : (MENU_HEADING_CAPA . ' - ' . TEXT_CAPA_ID . '# ' . $cInfo->capa_num); ?></h1>
 
@@ -45,7 +45,7 @@ echo $toolbar->build_toolbar();
   <legend><?php echo TEXT_GENERAL; ?></legend>
   <table>
 	<tr>
-	  <td align="right"><?php echo TEXT_CAPA_TYPE; ?></td>
+	  <td align="right"><?php echo TEXT_ACTION_TYPE; ?></td>
 	  <td>
 	    <?php echo TEXT_CA . ' ' . html_radio_field('capa_type', 'c', (!$cInfo->capa_type || $cInfo->capa_type == 'c') ? true : false); ?>
 	    <?php echo TEXT_PA . ' ' . html_radio_field('capa_type', 'p', ($cInfo->capa_type == 'p') ? true : false); ?>
@@ -56,7 +56,7 @@ echo $toolbar->build_toolbar();
 	  <td><?php echo html_pull_down_menu('capa_status', gen_build_pull_down($status_codes), $cInfo->capa_status); ?></td>
 	</tr>
 	<tr>
-	  <td align="right"><?php echo TEXT_CAPA_ID . ' ' . TEXT_ASSIGNED_BY_SYSTEM; ?></td>
+	  <td align="right"><?php echo TEXT_CAPA_ID . ' (' . TEXT_ASSIGNED_BY_SYSTEM . ') '; ?></td>
 	  <td><?php echo html_input_field('capa_num', $cInfo->capa_num, 'readonly="readonly"'); ?> </td>
 	  <td align="right"><?php echo TEXT_ENTERED_BY; ?></td>
 	  <td><?php echo html_pull_down_menu('entered_by', gen_get_pull_down(TABLE_USERS, true, '1', 'admin_id', 'display_name'), ($cInfo->entered_by ? $cInfo->entered_by : $_SESSION['admin_id'])); ?></td>
@@ -77,13 +77,13 @@ echo $toolbar->build_toolbar();
 	  <td><?php echo html_input_field('customer_name', $cInfo->customer_name, 'size="33" maxlength="32"', false); ?></td>
 	  <td align="right"><?php echo TEXT_CUSTOMER_ID; ?></td>
 	  <td><?php echo html_input_field('customer_id', $cInfo->customer_id, 'size="17" maxlength="16"', false); ?></td>
-	  <td align="right"><?php echo TEXT_CUSTOMER_TELEPHONE; ?></td>
+	  <td align="right"><?php echo TEXT_TELEPHONE; ?></td>
 	  <td><?php echo html_input_field('customer_telephone', $cInfo->customer_telephone, 'size="22" maxlength="20"'); ?></td>
 	</tr>
 	<tr>
-	  <td align="right"><?php echo TEXT_PURCHASE_INVOICE_ID; ?></td>
+	  <td align="right"><?php echo TEXT_PURCHASE_INVOICE_ID. " #"; ?></td>
 	  <td><?php echo html_input_field('customer_invoice', $cInfo->customer_invoice); ?></td>
-	  <td align="right"><?php echo TEXT_CUSTOMER_EMAIL; ?></td>
+	  <td align="right"><?php echo TEXT_EMAIL; ?></td>
 	  <td><?php echo html_input_field('customer_email', $cInfo->customer_email, 'size="49" maxlength="48"'); ?></td>
 	  <td>&nbsp;</td>
 	  <td>&nbsp;</td>
@@ -99,7 +99,7 @@ echo $toolbar->build_toolbar();
   <table>
 	<tr>
 	  <th>&nbsp;</th>
-	  <th><?php echo TEXT_ASSIGEND_TO;   ?></th>
+	  <th><?php echo TEXT_ASSIGNED_TO;   ?></th>
 	  <th><?php echo TEXT_ASSIGNED_DATE; ?></th>
 	  <th><?php echo TEXT_CLOSED_BY;     ?></th>
 	  <th><?php echo TEXT_CLOSED_DATE;   ?></th>
@@ -137,7 +137,7 @@ echo $toolbar->build_toolbar();
 <fieldset>
   <legend><?php echo TEXT_INVESTIGATION; ?></legend>
   <table>
-	<tr><th><?php echo TEXT_INVESTIGATION_TITLE; ?></th></tr>
+	<tr><th><?php echo TEXT_INVESTIGATION; ?></th></tr>
 	<tr><td><?php echo html_textarea_field('notes_investigation', 80, 3, $cInfo->notes_investigation, '', true); ?></td></tr>
   </table>
 </fieldset>
@@ -147,7 +147,7 @@ echo $toolbar->build_toolbar();
 	<tr>
 	  <td align="right"><?php echo TEXT_AGREED_TO_BY; ?></td>
 	  <td><?php echo html_pull_down_menu('agreed_by', gen_get_pull_down(TABLE_USERS, true, '1', 'admin_id', 'display_name'), $cInfo->agreed_by); ?></td>
-	  <td align="right"><?php echo TEXT_AGREED_TO_DATE; ?></td>
+	  <td align="right"><?php echo TEXT_AGREED_DATE; ?></td>
 	  <td><?php echo html_calendar_field($cal_date9); ?></td>
 	</tr>
 	<tr>

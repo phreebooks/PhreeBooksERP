@@ -29,7 +29,7 @@ $doc_details = $db->Execute("select * from " . TABLE_DC_DOCUMENT . " where id = 
 if ($id == -1) { // home page
 	include (DIR_FS_MODULES . 'doc_ctl/pages/main/tab_home.php');
 } elseif ($id == 0 || $doc_details->fields['type'] == 'drive' || $doc_details->fields['type'] == 'folder') { // folder
-	$dir_path     = TEXT_DOCUMENT_TITLE . '/' . build_dir_path($id);
+	$dir_path     = TEXT_CONTENTS_OF. ': ' . '/' . build_dir_path($id);
 	$result       = html_heading_bar(array(), array(' ', $dir_path, TEXT_ACTION));
 	$list_header  = $result['html_code'];
 	$field_list   = array('id', 'file_name', 'title', 'type', 'doc_ext', 'description', 'security');

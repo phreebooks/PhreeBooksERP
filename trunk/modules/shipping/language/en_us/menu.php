@@ -18,5 +18,5 @@
 //  Path: /modules/shipping/language/en_us/menu.php
 //
 
-define('BOX_SHIPPING_MANAGER','Shipping Manager');
+define('TEXT_SHIPPING_MANAGER','Shipping Manager');
 ?>

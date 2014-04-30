@@ -27,22 +27,22 @@ $toolbar->icon_list['save']['show']     = false;
 $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('01');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
-<h1><?php echo GEN_ADM_TOOLS_TITLE; ?></h1>
+<h1><?php echo TEXT_ADMINISTRATIVE_TOOLS; ?></h1>
 <fieldset>
 <legend><?php echo GL_UTIL_PERIOD_LEGEND; ?></legend>
  <table class="ui-widget" style="border-style:none;width:100%">
  <tbody class="ui-widget-content">
     <tr>
 	  <td width="33%" valign="top">
-		<?php echo '<p>' . GL_CURRENT_PERIOD . $period . '</p>'; 
+		<?php echo '<p>' . GL_CURRENT_PERIOD . $period . '</p>';
 		echo '<p>' . GL_UTIL_FISCAL_YEAR_TEXT . '</p>'; ?>
 	  </td>
 	  <td width="33%" valign="top"><table>
 	    <tr>
-		  <th><?php echo GL_FISCAL_YEAR; ?>
+		  <th><?php echo TEXT_FISCAL_YEAR; ?>
 		  <?php echo html_pull_down_menu('fy', get_fiscal_year_pulldown(), $fy, 'onchange="submit()"'); ?></th>
 	    </tr>
 	    <tr>
@@ -57,7 +57,7 @@ echo $toolbar->build_toolbar();
 		   <tbody class="ui-widget-content">
 		    <?php
 		  $i = 0;
-		  foreach ($fy_array as $key => $value) { 
+		  foreach ($fy_array as $key => $value) {
 			echo '<tr><td width="33%" align="center">' . $key . html_hidden_field('per_' . $i, $key) . '</td>' . chr(10);
 			if ($key > $max_period) { // only allow changes if nothing has been posted above this period
 				echo '<td width="33%" nowrap="nowrap">' . html_calendar_field($cal_start[$i]) . '</td>' . chr(10);
@@ -68,7 +68,7 @@ echo $toolbar->build_toolbar();
 			}
 			echo '</tr>' . chr(10);
 			$i++;
-		  } ?>		  
+		  } ?>
 		   </tbody>
 		  </table></td>
 	    </tr>
@@ -103,7 +103,7 @@ echo $toolbar->build_toolbar();
 	  <td><?php echo GEN_ADM_TOOLS_J03; ?></td>
 	  <td><?php echo  html_checkbox_field('jID_2', '1', false); ?></td>
 	  <td><?php echo GEN_ADM_TOOLS_J02; ?></td>
-  	  <td colspan="2"><?php echo GEN_ADM_TOOLS_START_DATE; ?></td>
+  	  <td colspan="2"><?php echo TEXT_START_DATE; ?></td>
 	</tr>
 	<tr>
 	  <td><?php echo  html_checkbox_field('jID_10', '1', false); ?></td>
@@ -121,7 +121,7 @@ echo $toolbar->build_toolbar();
 	  <td><?php echo GEN_ADM_TOOLS_J06; ?></td>
 	  <td><?php echo  html_checkbox_field('jID_14', '1', false); ?></td>
 	  <td><?php echo GEN_ADM_TOOLS_J14; ?></td>
-  	  <td colspan="2"><?php echo GEN_ADM_TOOLS_END_DATE; ?></td>
+  	  <td colspan="2"><?php echo TEXT_END_DATE; ?></td>
 	</tr>
 	<tr>
 	  <td><?php echo  html_checkbox_field('jID_13', '1', false); ?></td>

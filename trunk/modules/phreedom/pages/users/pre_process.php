@@ -190,7 +190,7 @@ switch ($_REQUEST['action']) {
   case 'fill_all':
   case 'fill_role':
 	$fill_all_values = array(
-	  array('id' => '-1', 'text' => GEN_HEADING_PLEASE_SELECT),
+	  array('id' => '-1', 'text' => TEXT_PLEASE_SELECT),
 	  array('id' => '0',  'text' => TEXT_NONE),
 	  array('id' => '1',  'text' => TEXT_READ_ONLY),
 	  array('id' => '2',  'text' => TEXT_ADD),
@@ -205,15 +205,15 @@ switch ($_REQUEST['action']) {
 	}
     $include_template = 'template_detail.php';
 	$role_name = isset($uInfo->admin_name) ? (' - ' . $uInfo->admin_name) : '';
-    define('PAGE_TITLE', HEADING_TITLE_USER_INFORMATION . $role_name);
+    define('PAGE_TITLE', TEXT_USER_INFORMATION . $role_name);
 	break;
   default:
 	// build the list header
 	$heading_array = array(
-	  'admin_name'   => GEN_USERNAME,
+	  'admin_name'   => TEXT_USERNAME,
 	  'inactive'     => TEXT_INACTIVE,
-	  'display_name' => GEN_DISPLAY_NAME,
-	  'admin_email'  => GEN_EMAIL,
+	  'display_name' => TEXT_DISPLAY_NAME,
+	  'admin_email'  => TEXT_EMAIL,
 	);
 	$result      = html_heading_bar($heading_array);
 	$list_header = $result['html_code'];
@@ -236,7 +236,7 @@ switch ($_REQUEST['action']) {
     history_save('users');
 
 	$include_template = 'template_main.php';
-	define('PAGE_TITLE', BOX_HEADING_USERS);
+	define('PAGE_TITLE', TEXT_USERS);
 }
 
 ?>

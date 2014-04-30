@@ -6,7 +6,7 @@ class sr extends \inventory\classes\inventory {//Serialized Item
     public $serialize 				= 1;
     public $account_sales_income	= INV_SERIALIZE_DEFAULT_SALES;
 	public $account_inventory_wage	= INV_SERIALIZE_DEFAULT_INVENTORY;
-	public $account_cost_of_sales	= INV_SERIALIZE_DEFAULT_COS; 
+	public $account_cost_of_sales	= INV_SERIALIZE_DEFAULT_COS;
 	public $cost_method				= 'f';
 	public $posible_cost_methodes   = array('f');
 
@@ -14,29 +14,29 @@ class sr extends \inventory\classes\inventory {//Serialized Item
 		parent::__construct();
 		$this->tab_list['orderhist'] = array('file'=>'template_tab_hist_sr', 'tag'=>'orderhist', 'order'=>40, 'text'=>'Unit History');
 	}
-	
+
 	function get_item_by_id($id){
 		parent::get_item_by_id($id);
 		$this->get_sr_list();
 	}
-	
+
 	function get_item_by_sku($sku){
 		parent::get_item_by_sku($sku);
 		$this->get_sr_list();
 	}
-	
+
 	function get_sr_list(){
 		global $db;
 		$branches = gen_get_store_ids();
 		$this->quantity_on_hand = 0;
-		$result = $db->Execute("select store_id, qty, serialize_number from " . TABLE_INVENTORY_HISTORY . " 
+		$result = $db->Execute("select store_id, qty, serialize_number from " . TABLE_INVENTORY_HISTORY . "
 	  		where sku = '" . $this->sku . "' and remaining > 0 order by store_id");
   		$this->qty_table ='<table class="ui-widget" style="border-collapse:collapse;width:100%">'. chr(10);
 		$this->qty_table .='  <thead class="ui-widget-header">'. chr(10);
 	  	$this->qty_table .='	  <tr>';
-	    $this->qty_table .='		<th>'. GEN_STORE_ID.'</th>';
+	    $this->qty_table .='		<th>'. TEXT_STORE_ID.'</th>';
 	    $this->qty_table .='		<th>'. TEXT_QUANTITY.'</th>';
-	    $this->qty_table .='		<th>'. INV_HEADING_SERIAL_NUMBER .'</th>';
+	    $this->qty_table .='		<th>'. TEXT_SERIAL_NUMBER .'</th>';
 	  	$this->qty_table .='    </tr>'. chr(10);
 	 	$this->qty_table .='  </thead>'. chr(10);
 	 	$this->qty_table .='  <tbody class="ui-widget-content">'. chr(10);

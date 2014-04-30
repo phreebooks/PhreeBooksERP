@@ -20,7 +20,7 @@ define('MODULE_IMPORT_BANK_TITLE',  'Import Bank Statement');
 define('HEADING_MODULE_IMPORT_BANK','Import Bank Statement');
 define('GEN_BANK_IMPORT_MESSAGE',	'Select the. csv file to import and click Import <br> If there is no bank account column in your .csv then select a bank account from the drop down box.');
 define('TEXT_IMPORT',				'Import');
-define('SAMPLE_CSV',				'Sample CSV');
+define('TEXT_SAMPLE_CSV',				'Sample CSV');
 define('TEXT_REQUIRED',				'REQUIRED');
 
 define('TEXT_BIMP_ERMSG1','ouwer bank account is empty');

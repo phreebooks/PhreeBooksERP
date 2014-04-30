@@ -33,7 +33,7 @@
 	  <td><?php echo html_input_field('caller_telephone1', $cInfo->caller_telephone1, 'size="33"'); ?></td>
 	</tr>
 	<tr>
-	  <td align="right"><?php echo GEN_EMAIL; ?></td>
+	  <td align="right"><?php echo TEXT_EMAIL; ?></td>
 	  <td><?php echo html_input_field('caller_email', $cInfo->caller_email, 'size="33"'); ?></td>
 	</tr>
 	<tr>
@@ -73,7 +73,7 @@
  <table class="ui-widget" style="border-style:none;width:100%">
   <tbody class="ui-widget-content">
 	<tr>
-	  <td align="right"><?php echo TEXT_PURCHASE_INVOICE_ID; ?></td>
+	  <td align="right"><?php echo TEXT_PURCHASE_INVOICE_ID. " #"; ?></td>
 	  <td><?php echo html_input_field('purchase_invoice_id', $cInfo->purchase_invoice_id); ?></td>
 	</tr>
 	<tr>
@@ -116,8 +116,8 @@
       <th><?php echo TEXT_FILENAME; ?></th>
       <th><?php echo TEXT_ACTION; ?></th>
      </tr>
-<?php 
-if (sizeof($attachments) > 0) { 
+<?php
+if (sizeof($attachments) > 0) {
   foreach ($attachments as $key => $value) {
     echo '<tr>';
     echo ' <td>' . html_checkbox_field('rm_attach_'.$key, '1', false) . '</td>' . chr(10);
@@ -126,7 +126,7 @@ if (sizeof($attachments) > 0) {
     echo '</tr>' . chr(10);
   }
 } else {
-  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS . '</td></tr>'; 
+  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS . '</td></tr>';
 } ?>
     </tbody>
    </table>

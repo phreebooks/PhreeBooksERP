@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:46
 // Module/Method: phreepos
 // ISO Language: pt_br
@@ -34,14 +34,14 @@ define('TEXT_SALES','Vendas');
 define('PHREEPOS_HANDELING_CASH_DIFFERENCE','Lançada Diferença Caixa ');
 define('POS_HEADING_CLOSING','Fechamento Dia');
 define('NEW_BALANCE','Novo Balanço Caixa');
-define('PAYMENTS_SHOULD_BE','Pagamentos Devem Ser');
+define('TEXT_PAYMENTS_SHOULD_BE','Pagamentos Devem Ser');
 define('PAYMENTS_RECEIVED','Pagamentos Recebidos:');
 define('TILL_BALANCE','Saldo Inicial Caixa:');
 define('TILL_END_BALANCE','Diferença');
 define('TEXT_SHOW_COUNT_HELP','Mostrar auxílio contagem');
 define('EXCEED_MAX_DISCOUNT','Você excedeu o desconto máximo de %s porcento.');
 define('EXCEED_MAX_DISCOUNT_SKU','Você excedeu o desconto máximo de %s porcentoe para o SKU %s.');
-define('OTHER_OPTIONS','Outras Opções');
+define('TEXT_OTHER_OPTIONS','Outras Opções');
 define('POS_PRINT_OTHER','Imprimir Outro Cupom');
 define('TEXT_CASH_IN','Entradas');
 define('TEXT_CASH_OUT','Saídas');

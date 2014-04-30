@@ -68,7 +68,7 @@ function build_audit_xml($date_from, $date_to, $select){
 			$contacts[$result->fields['id']] = $result->fields['short_name'];
 			$output .= "\t" . '<customerSupplier>'  .chr(10);
 			$output .= "\t" . xmlEntry('custSupID',				$result->fields['short_name'],			true); // vendor- of customer id
-			$output .= "\t" . xmlEntry('type',					($result->fields['type']=='v') ? ACT_V_TYPE_NAME : ACT_C_TYPE_NAME,	true); // type Vendor or customer
+			$output .= "\t" . xmlEntry('type',					($result->fields['type']=='v') ? TEXT_VENDORS : TEXT_CUSTOMERS,	true); // type Vendor or customer
 			$output .= "\t" . xmlEntry('taxRegistrationNr',		htmlspecialchars($result->fields['gov_id_number']),true); //tax id
 			$output .= "\t" . xmlEntry('taxVerificationDate',	$result->fields['gov_id_number_date'],true); //tax verification date (not present in phreedom) maybe in custom fields
 			$address = $db->Execute("select * from " . TABLE_ADDRESS_BOOK . " where ref_id = '".$result->fields['id']."'");

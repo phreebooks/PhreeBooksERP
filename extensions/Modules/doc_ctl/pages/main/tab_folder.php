@@ -59,7 +59,7 @@ if ($found_one) {
   $fieldset_content .= '<div>' . $query_split->display_count(TEXT_DISPLAY_NUMBER . DOC_CTL_ITEMS) . '</div>' . chr(10);
 } else {
   $fieldset_content .= '  <tr>' . chr(10);
-  $fieldset_content .= '	<td colspan="3">' . DOC_CTL_EMPTY_FOLDER . '</td>' . chr(10);
+  $fieldset_content .= '	<td colspan="3">' . TEXT_EMPTY_FOLDER . '</td>' . chr(10);
   $fieldset_content .= '  </tr>' . chr(10);
   $fieldset_content .= '</table>' . chr(10);
 }

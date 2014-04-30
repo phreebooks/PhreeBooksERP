@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:45
 // Module/Method: assets
 // ISO Language: pt_br
@@ -15,7 +15,7 @@ define('TEXT_FURNITURE','Móveis');
 define('TEXT_EQUIP','Máquinas e Equipamentos');
 define('TEXT_DETAIL_DESCRIPTION','Descrição Detalhada');
 define('TEXT_CONDITION','Condição');
-define('TEXT_DESCRIPTION_SHORT','Descrição Curta');
+define('TEXT_SHORT_DESCRIPTION','Descrição Curta');
 define('TEXT_COMPUTER','Computador');
 define('TEXT_BUILDING','Construção');
 define('TEXT_ASSETS','ativos');
@@ -25,7 +25,7 @@ define('ASSETS_MSG_DELETE_ASSET','Tem certeza de que quer excluir este ativo?');
 define('ASSETS_MSG_RENAME_INTRO','Entre a nova ID Ativo para este ativo.');
 define('ASSETS_ENTRY_IMAGE_PATH','Imagem Caminho Relativo');
 define('ASSETS_MSG_COPY_INTRO','Entre a nova ID Ativo para o novo ativo.');
-define('ASSETS_PURCHASE_CONDITION','Condição Compra');
+define('TEXT_PURCHASE_CONDITION','Condição Compra');
 define('ASSETS_DATE_LAST_JOURNAL_DATE','Data Baixa Ativo');
 define('ASSETS_DATE_LAST_UPDATE','Data Última Manutenção');
 define('ASSETS_DATE_ACCOUNT_CREATION','Data Aquisição Ativo');
@@ -34,7 +34,7 @@ define('ASSETS_ENTRY_ACCT_COS','CG Conta Manutenção');
 define('ASSETS_ENTRY_ACCT_INV','CG Conta Depreciação');
 define('ASSETS_ENTRY_ACCT_SALES','CG Conta Ativo Patrimonial');
 define('ASSETS_ENTRY_FULL_PRICE','Custo Original');
-define('ASSETS_ENTRY_ASSETS_TYPE','Tipo Ativo');
+define('TEXT_ASSET_TYPE','Tipo Ativo');
 define('ASSETS_ENTRY_ASSET_TYPE','Entre o Tipo de Ativo');
 define('ASSETS_ENTER_ASSET_ID','Criar um Novo Ativo');
 define('ASSETS_HEADING_NEW_ITEM','Novo Ativo');

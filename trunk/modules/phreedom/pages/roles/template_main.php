@@ -29,11 +29,11 @@ $toolbar->icon_list['print']['show']    = false;
 if ($security_level > 1) $toolbar->add_icon('new', 'onclick="submitToDo(\'new\')"', $order = 10);
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('07.08.07');
-echo $toolbar->build_toolbar($add_search = true); 
+echo $toolbar->build_toolbar($add_search = true);
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
-<div style="height:19px"><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . BOX_HEADING_ROLES); ?>
+<div style="height:19px"><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . TEXT_ROLES); ?>
 <div style="float:right"><?php echo $query_split->display_links(); ?></div>
 </div>
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
@@ -49,7 +49,7 @@ echo $toolbar->build_toolbar($add_search = true);
 	<td onclick="submitSeq(<?php echo $query_result->fields['admin_id']; ?>, 'edit')"><?php echo $query_result->fields['admin_name']; ?></td>
 	<td onclick="submitSeq(<?php echo $query_result->fields['admin_id']; ?>, 'edit')"><?php echo $query_result->fields['inactive'] ? TEXT_YES : ''; ?></td>
 	<td align="right">
-<?php 
+<?php
 // build the action toolbar
 	  // first pull in any extra buttons, this is dynamic since each row can have different buttons
 	  if (function_exists('add_extra_action_bar_buttons')) echo add_extra_action_bar_buttons($query_result->fields);
@@ -67,5 +67,5 @@ echo $toolbar->build_toolbar($add_search = true);
  </tbody>
 </table>
 <div style="float:right"><?php echo $query_split->display_links(); ?></div>
-<div><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . BOX_HEADING_ROLES); ?></div>
+<div><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . TEXT_ROLES); ?></div>
 </form>

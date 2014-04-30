@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:45
 // Module/Method: cp_action
 // ISO Language: pt_br
@@ -13,17 +13,17 @@ define('MENU_HEADING_NEW_CAPA','Criar Nova Ação Corretiva');
 define('TEXT_ACTION_EFFECTIVE','A ação tomada foi efetiva?');
 define('TEXT_ACTION_TAKEN','Ação Tomada');
 define('TEXT_AGREED_TO_BY','Aceite');
-define('TEXT_AGREED_TO_DATE','Data Aceite');
+define('TEXT_AGREED_DATE','Data Aceite');
 define('TEXT_ASSIGNED_BY_SYSTEM','(Atribuído pelo Sistema)');
 define('TEXT_ASSIGNED_DATE','Data Atribuição');
-define('TEXT_ASSIGEND_TO','Atribuído a');
+define('TEXT_ASSIGNED_TO','Atribuído a');
 define('TEXT_AUDIT','Auditoria');
 define('TEXT_AUDIT_NOTES','Anotações Auditoria');
 define('TEXT_CA','AC');
 define('TEXT_CAPAS','ACAPs');
 define('TEXT_CAPA_ID','ACAP Num');
 define('TEXT_CAPA_NOTES','Descrição Item');
-define('TEXT_CAPA_TYPE','Tipo Ação');
+define('TEXT_ACTION_TYPE','Tipo Ação');
 define('TEXT_PURCHASE_INVOICE_ID','Vendas/Fatura#');
 define('TEXT_CREATION_DATE','Data Criação');
 define('TEXT_CLOSED_BY','Finalizado por');

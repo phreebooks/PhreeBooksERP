@@ -18,14 +18,14 @@
 //  Path: /modules/payment/language/en_us/language.php
 //
 
-// Headings 
+// Headings
 
 // General Defines
 define('TEXT_MORE_INFO','More Info');
-define('MODULE_PAYMENT_CC_TEXT_CATALOG_TITLE', 'Credit Card');
-define('MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_OWNER', 'Credit Card Owner:');
-define('MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_NUMBER', 'Credit Card Number:');
-define('MODULE_PAYMENT_CC_TEXT_CREDIT_CARD_EXPIRES', 'Credit Card Expiry Date:');
+define('TEXT_CREDIT_CARD', 'Credit Card');
+define('TEXT_CREDIT_CARD_OWNER', 'Credit Card Owner');
+define('TEXT_CREDIT_CARD_NUMBER', 'Credit Card Number');
+define('TEXT_CREDIT_CARD_EXPIRY_DATE', 'Credit Card Expiry Date');
 define('MODULE_PAYMENT_CC_TEXT_CVV', 'CVV Number');
 define('MODULE_PAYMENT_CC_TEXT_JS_CC_OWNER', '* The owner\'s name of the credit card must be at least %s characters.');
 define('MODULE_PAYMENT_CC_TEXT_JS_CC_NUMBER', '* The credit card number must be at least %s characters.');

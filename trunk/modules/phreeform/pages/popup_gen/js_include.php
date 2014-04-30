@@ -31,10 +31,10 @@ var tableCount    = 0;
 <?php echo js_calendar_init($cal_from); ?>
 <?php echo js_calendar_init($cal_to); ?>
 
-<?php 
+<?php
   if ($report->reporttype == 'rpt') {
     echo "tableInit[tableCount] = 'field_setup'; tableCount++;" . chr(10);
-  } 
+  }
 ?>
 <?php echo $jsArray; ?>
 
@@ -162,10 +162,10 @@ function calculateWidth() {	// total up the columns
 	var paperValue   = document.getElementById('papersize').options[index].value;
 	var marginValues = paperValue.split(':');
 	pageWidth = (orientation == 'P') ? marginValues[1] : marginValues[2];
-	var pageProperties = '<?php echo PHREEFORM_FLDLIST; ?>';
+	var pageProperties = '<?php echo TEXT_FIELD_LIST; ?>';
 	pageProperties += ' ('+'<?php echo TEXT_ORIEN; ?>'+': '+orienText;
 	pageProperties += ', '+'<?php echo TEXT_WIDTH; ?>'+': '+pageWidth;
-	pageProperties += ', '+'<?php echo PHREEFORM_PGMARGIN_L; ?>'+': '+document.getElementById('marginleft').value;
+	pageProperties += ', '+'<?php echo TEXT_LEFT_MARGIN; ?>'+': '+document.getElementById('marginleft').value;
 	pageProperties += ', '+'<?php echo PHREEFORM_PGMARGIN_R; ?>'+': '+document.getElementById('marginright').value+')';
 	if (document.all) { // IE browsers
 	  document.getElementById('fieldListHeading').innerText   = pageProperties;
@@ -192,7 +192,7 @@ function calculateWidth() {	// total up the columns
 /**************************************************************************/
 /** Keep hold of the current table being dragged */
 var currenttable = null;
-var rClick       = 0; // stores the row position that was moved 
+var rClick       = 0; // stores the row position that was moved
 
 /** Capture the onmousemove so that we can see if a row from the current
  *  table if any is being dragged.

@@ -73,7 +73,7 @@ switch ($_REQUEST['action']) {
 $heading_array = array(
   'post_date'           => TEXT_DATE,
   'purchase_invoice_id' => constant('ORD_HEADING_NUMBER_' . JOURNAL_ID),
-  'bill_primary_name'   => in_array(JOURNAL_ID, array(9,10,12,13,19)) ? ORD_CUSTOMER_NAME : ORD_VENDOR_NAME,
+  'bill_primary_name'   => in_array(JOURNAL_ID, array(9,10,12,13,19)) ? TEXT_CUSTOMER_NAME : TEXT_VENDOR_NAME,
   'purch_order_id'      => TEXT_REFERENCE,
   'closed'              => TEXT_CLOSED,
   'total_amount'        => TEXT_AMOUNT,
@@ -95,7 +95,7 @@ switch (JOURNAL_ID) {
 	break;
   case  4:	// Purchase Order Journal
 	define('POPUP_FORM_TYPE','vend:po');
-	$page_title = ORD_TEXT_4_WINDOW_TITLE;
+	$page_title = TEXT_PURCH_ORDER;
 	break;
   case  6:	// Purchase Journal
 	define('POPUP_FORM_TYPE','');
@@ -164,6 +164,6 @@ history_save('pb'.JOURNAL_ID);
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', sprintf(BOX_STATUS_MGR, $page_title));
+define('PAGE_TITLE', sprintf(TEXT_MANAGER_ARGS, $page_title));
 
 ?>

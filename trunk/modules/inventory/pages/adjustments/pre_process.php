@@ -95,8 +95,8 @@ switch ($_REQUEST['action']) {
 	$glEntry->override_cogs_acct = $adj_account; // force cogs account to be users specified account versus default inventory account
 	if ($glEntry->Post($glEntry->id ? 'edit' : 'insert')) {
 	    $db->transCommit();	// post the chart of account values
-	    gen_add_audit_log(INV_LOG_ADJ . ($_REQUEST['action']=='save' ? TEXT_SAVE : TEXT_EDIT), $sku, $qty);
-	    $messageStack->add(INV_POST_SUCCESS . $glEntry->purchase_invoice_id, 'success');
+	    gen_add_audit_log(TEXT_INVENTORY_ADJUSTMENT . ' - ' . ($_REQUEST['action']=='save' ? TEXT_SAVE : TEXT_EDIT), $sku, $qty);
+	    $messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, TEXT_INVENTORY_ADJUSTMENT, $glEntry->purchase_invoice_id), 'success');
 	    if (DEBUG) $messageStack->write_debug();
 	    gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	}
@@ -113,7 +113,7 @@ switch ($_REQUEST['action']) {
 	$db->transStart();
 	if ($delOrd->unPost('delete')) {
 		$db->transCommit(); // if not successful rollback will already have been performed
-		gen_add_audit_log(INV_LOG_ADJ . TEXT_DELETE, $delOrd->journal_rows[0]['sku'], $delOrd->journal_rows[0]['qty']);
+		gen_add_audit_log(TEXT_INVENTORY_ADJUSTMENT . ' - ' . TEXT_DELETE, $delOrd->journal_rows[0]['sku'], $delOrd->journal_rows[0]['qty']);
 		if (DEBUG) $messageStack->write_debug();
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		break;
@@ -142,6 +142,6 @@ $cal_adj = array(
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', INV_POPUP_ADJ_WINDOW_TITLE);
+define('PAGE_TITLE', TEXT_INVENTORY_ADJUSTMENTS);
 
 ?>

@@ -11,7 +11,7 @@
 define('SOAP_NO_USER_PW','De gebruikersnaam en wachtwoord zijn niet gevonden in de XML tekst.');
 define('SOAP_USER_NOT_FOUND','De gebruikersnaam is niet gelding.');
 define('SOAP_PASSWORD_NOT_FOUND','Het wachtwoord is niet gelding.');
-define('SOAP_UNEXPECTED_ERROR','Een onverwachte error code is geretourneerd door de server.');
+define('TEXT_UNEXPECTED_ERROR','Een onverwachte error code is geretourneerd door de server.');
 define('SOAP_XML_SUBMITTED_SO','XML ingediende Verkoop Order');
 define('SOAP_ACCOUNT_PROBLEM','Kan het hoofd adres van een bestaande klant niet vinden. Groot probleem in de PhreeBooks adderessen database.');
 define('SOAP_MISSING_FIELDS','Order # %s mist de volgende vereiste velden: %s');

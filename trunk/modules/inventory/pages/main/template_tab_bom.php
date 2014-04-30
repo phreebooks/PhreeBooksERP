@@ -18,7 +18,7 @@
 //
 // start the bill of materials tab html
 ?>
-<div title="<?php echo INV_BOM;?>" id="tab_bom">
+<div title="<?php echo TEXT_BILL_OF_MATERIALS;?>" id="tab_bom">
  <div style="width:850px;margin-left:auto;margin-right:auto">
   <div>
    <table class="ui-widget" style="border-collapse:collapse;width:100%">
@@ -28,8 +28,8 @@
 	  <th><?php echo TEXT_SKU; ?></th>
 	  <th><?php echo INV_ENTRY_INVENTORY_DESC_SHORT; ?></th>
 	  <th><?php echo TEXT_QUANTITY; ?></th>
-	  <th><?php echo INV_ENTRY_INV_ITEM_COST; ?></th>
-	  <th><?php echo INV_ENTRY_FULL_PRICE; ?></th>
+	  <th><?php echo TEXT_ITEM_COST; ?></th>
+	  <th><?php echo TEXT_FULL_PRICE; ?></th>
 	 </tr>
     </thead>
     <tbody id="bom_table_body" class="ui-widget-content">

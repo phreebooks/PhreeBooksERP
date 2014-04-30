@@ -37,10 +37,10 @@ $bank_acct = (isset($_GET['bank_acct']) ? $_GET['bank_acct'] : $_POST['bank_acct
 $page_list = array();
 
 	  $page_list[$file] = array(
-	    'title'     => constant('MODULE_IMPORT_BANK_TITLE'),
+	    'title'     => constant('TEXT_IMPORT_BANK_STATEMENT'),
 		'structure' => load_module_xml('import_bank/file'),
 	  );
-	
+
 
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_MODULES . 'import_bank/custom/pages/main/extra_actions.php';
@@ -62,7 +62,7 @@ switch ($_REQUEST['action']) {
 		header('Expires: ' . date('r', time()+3600));
 		header('Last-Modified: ' . date('r'));
 		print $output;
-		exit();  
+		exit();
   default:
 }
 
@@ -72,6 +72,6 @@ $cash_chart = gen_coa_pull_down(2, false, true, false, $restrict_types = array(0
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', HEADING_MODULE_IMPORT_BANK);
+define('PAGE_TITLE', TEXT_IMPORT_BANK_STATEMENT);
 
 ?>

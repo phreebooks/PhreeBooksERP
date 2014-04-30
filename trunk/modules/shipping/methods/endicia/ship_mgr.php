@@ -21,7 +21,7 @@
 <table class="ui-widget" style="border-style:none;width:100%">
   <tr>
 	<td><?php echo ($security_level < 2) ? '&nbsp;' : html_button_field('ship_'    .$method->id, SHIPPING_SHIP_PACKAGE, 'onclick="window.open(\'index.php?module=shipping&amp;page=popup_label_mgr&amp;method='.$method->id.'\',\'popup_label_mgr\',\'width=800,height=700,resizable=1,scrollbars=1,top=50,left=50\')"'); ?></td>
-	<td><?php echo ($security_level < 2) ? '&nbsp;' : html_button_field('ship_log_'.$method->id, SHIPPING_CREATE_ENTRY, 'onclick="window.open(\'index.php?module=shipping&amp;page=popup_tracking&amp;method=' .$method->id.'&amp;action=new\',\'popup_tracking\',\'width=550,height=350,resizable=1,scrollbars=1,top=150,left=200\')"'); ?></td>
+	<td><?php echo ($security_level < 2) ? '&nbsp;' : html_button_field('ship_log_'.$method->id, TEXT_CREATE_SHIPMENT_ENTRY, 'onclick="window.open(\'index.php?module=shipping&amp;page=popup_tracking&amp;method=' .$method->id.'&amp;action=new\',\'popup_tracking\',\'width=550,height=350,resizable=1,scrollbars=1,top=150,left=200\')"'); ?></td>
 	<td><?php echo ($security_level < 3) ? '&nbsp;' : html_button_field('phrase_'  .$method->id, ENDICIA_CHANGE_PASSPHRASE,'onclick="getDialog(\''.$method->id.'\', \'passphrase\')"'); ?></td>
 <?php
 if ($security_level > 2) {
@@ -47,22 +47,22 @@ if ($security_level > 2) {
     <th colspan="8"><?php echo TEXT_SHIPMENTS_ON . gen_locale_date($date); ?></th>
   </tr>
   <tr>
-	<th><?php echo SHIPPING_TEXT_SHIPMENT_ID;   ?></th>
-	<th><?php echo SHIPPING_TEXT_REFERENCE_ID;  ?></th>
-	<th><?php echo SHIPPING_TEXT_SERVICE;       ?></th>
-	<th><?php echo SHIPPING_TEXT_EXPECTED_DATE; ?></th>
-	<th><?php echo SHIPPING_TEXT_ACTUAL_DATE;   ?></th>
-	<th><?php echo SHIPPING_TEXT_TRACKING_NUM;  ?></th>
-	<th><?php echo SHIPPING_TEXT_COST;          ?></th>
+	<th><?php echo TEXT_SHIPMENT_ID;   ?></th>
+	<th><?php echo TEXT_REFERENCE_ID;  ?></th>
+	<th><?php echo TEXT_SERVICE;       ?></th>
+	<th><?php echo TEXT_EXPECTED_DELIVERY_DATE; ?></th>
+	<th><?php echo TEXT_ACTUAL_DELIVERY_DATE;   ?></th>
+	<th><?php echo TEXT_TRACKING_NUMBER;  ?></th>
+	<th><?php echo TEXT_COST;          ?></th>
 	<th><?php echo TEXT_ACTION;                 ?></th>
   </tr>
  </thead>
  <tbody class="ui-widget-content">
-	<?php 
+	<?php
 	$start_date = date('Y-m-d', strtotime("-1 day"));
 	$end_date   = date('Y-m-d', strtotime("+1 day"));
-	$result = $db->Execute("select id, shipment_id, ref_id, method, deliver_date, deliver_late, actual_date, tracking_id, cost 
-		from " . TABLE_SHIPPING_LOG . " where carrier = '" . $method->id . "' 
+	$result = $db->Execute("select id, shipment_id, ref_id, method, deliver_date, deliver_late, actual_date, tracking_id, cost
+		from " . TABLE_SHIPPING_LOG . " where carrier = '" . $method->id . "'
 		  and ship_date like '" . $date . "%'");
 	if ($result->RecordCount() > 0) {
 		$odd = true;
@@ -82,8 +82,8 @@ if ($security_level > 2) {
 			echo '    <td align="right"><a href="#" onclick="trackPackage(\''.$method->id.'\', \''.$result->fields['id'].'\')">' . $result->fields['tracking_id'] . '</a></td>' . chr(10);
 			echo '    <td align="right">' . $currencies->format_full($result->fields['cost']) . '</td>' . chr(10);
 			echo '    <td align="right" nowrap="nowrap">';
-			if ($result->fields['actual_date'] == '0000-00-00 00:00:00') // not tracked yet, show the tracking icon 
-		  		echo html_icon('phreebooks/truck-icon.png',	TEXT_TRACK_CONFIRM,'small', 'onclick="submitShipSequence(\'' . $method->id . '\', ' . $result->fields['id'] . ', \'track\')"') . chr(10);
+			if ($result->fields['actual_date'] == '0000-00-00 00:00:00') // not tracked yet, show the tracking icon
+		  		echo html_icon('phreebooks/truck-icon.png',	TEXT_CONFIRM_DELIVERY,'small', 'onclick="submitShipSequence(\'' . $method->id . '\', ' . $result->fields['id'] . ', \'track\')"') . chr(10);
 			echo html_icon('phreebooks/stock_id.png', 		TEXT_VIEW_SHIP_LOG,	'small', 'onclick="loadPopUp(\'' . $method->id . '\', \'edit\', ' . $result->fields['id'] . ')"') . chr(10);
 			echo html_icon('actions/document-print.png',	TEXT_PRINT,			'small', 'onclick="window.open(\'index.php?module=shipping&page=popup_label_mgr&action=view&method=' . $method->id . '&date=' . $date . '&labels=' . $result->fields['tracking_id'] . '\',\'label_mgr\',\'width=800,height=700,resizable=1,scrollbars=1,top=50,left=50\')"') . chr(10);
 			echo html_icon('emblems/emblem-unreadable.png',	TEXT_DELETE,		'small', 'onclick="if (confirm(\'' . SHIPPING_DELETE_CONFIRM . '\')) window.open(\'index.php?module=shipping&page=popup_label_mgr&method=' . $method->id . '&sID=' . $result->fields['shipment_id'] . '&action=delete\',\'popup_label_mgr\',\'width=800,height=700,resizable=1,scrollbars=1,top=50,left=50\')"') . chr(10);

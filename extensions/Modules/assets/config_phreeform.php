@@ -18,7 +18,7 @@
 //
 
 // Extra processing on reports/forms (add to the processing pull down menu)
-$FormProcessing['NewUsed'] = TEXT_NEW_USED;
+$FormProcessing['NewUsed'] = sprintf(TEXT_NEW_ARGS, " / "  TEXT_USED);
 // Extra form processing operations
 function pf_process_assets($strData, $Process) {
   switch ($Process) {

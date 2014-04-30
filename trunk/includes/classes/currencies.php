@@ -143,10 +143,10 @@ class currencies {
 		);
 	    if ($id) {
 		  db_perform($this->db_table, $sql_data_array, 'update', "currencies_id = " . (int)$id);
-	      gen_add_audit_log(SETUP_LOG_CURRENCY . TEXT_UPDATE, $title);
+	      gen_add_audit_log(TEXT_CURRENCIES . ' - ' . TEXT_UPDATE, $title);
 		} else  {
 	      db_perform($this->db_table, $sql_data_array);
-	      gen_add_audit_log(SETUP_LOG_CURRENCY . TEXT_ADD, $title);
+	      gen_add_audit_log(TEXT_CURRENCIES . ' - ' . TEXT_ADD, $title);
 		}
 
 		if (isset($_POST['default']) && ($_POST['default'] == 'on')) {
@@ -227,7 +227,7 @@ class currencies {
 		$test_1 = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " where currencies_code = '" . $result->fields['code'] . "' limit 1");
 		if ($test_1->RecordCount() > 0) throw new \core\classes\userException(ERROR_CURRENCY_DELETE_IN_USE);
 		$db->Execute("delete from " . $this->db_table . " where currencies_id = '" . $id . "'");
-		gen_add_audit_log(SETUP_LOG_CURRENCY . TEXT_DELETE, $result->fields['title']);
+		gen_add_audit_log(TEXT_CURRENCIES . ' - ' . TEXT_DELETE, $result->fields['title']);
 		return true;
 	}
 
@@ -265,12 +265,12 @@ class currencies {
 		$output  = '<table class="ui-widget" style="border-style:none;width:100%">' . chr(10);
 		$output .= '  <thead class="ui-widget-header">' . "\n";
 		$output .= '  <tr>' . chr(10);
-		$output .= '    <th colspan="2">' . ($action=='new' ? SETUP_INFO_HEADING_NEW_CURRENCY : SETUP_INFO_HEADING_EDIT_CURRENCY) . '</th>' . chr(10);
+		$output .= '    <th colspan="2">' . ($action=='new' ? sprintf(TEXT_NEW_ARGS, TEXT_CURRENCY) : sprintf(TEXT_EDIT_ARGS, TEXT_CURRENCY)) . '</th>' . chr(10);
 	    $output .= '  </tr>' . chr(10);
 		$output .= '  </thead>' . "\n";
 		$output .= '  <tbody class="ui-widget-content">' . "\n";
 		$output .= '  <tr>' . chr(10);
-		$output .= '    <td colspan="2">' . ($action=='new' ? SETUP_CURR_INSERT_INTRO : SETUP_CURR_EDIT_INTRO) . '</td>' . chr(10);
+		$output .= '    <td colspan="2">' . ($action=='new' ? SETUP_CURR_INSERT_INTRO : TEXT_EDIT_INTRO) . '</td>' . chr(10);
 	    $output .= '  </tr>' . chr(10);
 		$output .= '  <tr>' . chr(10);
 		$output .= '    <td>' . TEXT_TITLE . '</td>' . chr(10);

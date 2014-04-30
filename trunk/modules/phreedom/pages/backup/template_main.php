@@ -26,26 +26,26 @@ $toolbar->icon_list['save']['show']     = false;
 $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['print']['show']    = false;
 $toolbar->icon_list['restore'] = array(
-  'show'   => true, 
+  'show'   => true,
   'icon'   => 'devices/drive-optical.png',
-  'params' => 'onclick="if (confirm(\'' . GEN_BACKUP_WARNING . '\')) submitToDo(\'restore\')"', 
-  'text'   => BOX_HEADING_RESTORE, 
+  'params' => 'onclick="if (confirm(\'' . GEN_BACKUP_WARNING . '\')) submitToDo(\'restore\')"',
+  'text'   => BOX_HEADING_RESTORE,
   'order'  => 10,
 );
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 // add the help file index and build the toolbar
 $toolbar->add_help('01');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
-<h1><?php echo BOX_HEADING_BACKUP; ?></h1>
+<h1><?php echo TEXT_COMPANY_BACKUP; ?></h1>
 <fieldset>
 <legend><?php echo GEN_ADM_TOOLS_CLEAN_LOG; ?></legend>
 <p><?php echo GEN_ADM_TOOLS_CLEAN_LOG_DESC; ?></p>
 <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto;">
  <thead class="ui-widget-header">
     <tr>
-	  <th><?php echo GEN_ADM_TOOLS_CLEAN_LOG_BACKUP; ?></th>
+	  <th><?php echo TEXT_BACKUP_AUDIT_LOG; ?></th>
 	  <th><?php echo GEN_ADM_TOOLS_CLEAN_LOG_CLEAN; ?></th>
 	</tr>
  </thead>
@@ -59,15 +59,15 @@ echo $toolbar->build_toolbar();
 </fieldset>
 
 <fieldset>
-<legend><?php echo BOX_HEADING_BACKUP; ?></legend>
+<legend><?php echo TEXT_COMPANY_BACKUP; ?></legend>
 <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto;">
  <thead class="ui-widget-header">
   <tr><th colspan="3"><?php echo GEN_BACKUP_COMP_TYPE; ?></th></tr>
  </thead>
  <tbody class="ui-widget-content">
-  <tr><td colspan="3"><?php echo GEN_BACKUP_GEN_INFO; ?></td></tr> 
+  <tr><td colspan="3"><?php echo GEN_BACKUP_GEN_INFO; ?></td></tr>
   <tr>
-	<td align="center"><?php echo html_radio_field('conv_type', 'zip',  true,  '', '') . GEN_COMP_ZIP; ?></td>
+	<td align="center"><?php echo html_radio_field('conv_type', 'zip',  true,  '', '') . TEXT_COMPRESSION_ZIP; ?></td>
 	<td align="center"><?php echo html_radio_field('conv_type', 'bz2',  false, '', '') . GEN_COMP_BZ2; ?></td>
 	<td align="center" nowrap="nowrap"><?php echo html_radio_field('conv_type', 'none', false, '', '') . GEN_COMP_NONE; ?></td>
   </tr>

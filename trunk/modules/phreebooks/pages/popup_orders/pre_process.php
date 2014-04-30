@@ -80,21 +80,21 @@ $heading_array['purchase_invoice_id'] = constant('ORD_HEADING_NUMBER_' . JOURNAL
 switch (JOURNAL_ID) {
   case  6:
   case  7:
-	$heading_array['so_po_ref_id']   = ORD_HEADING_NUMBER_4;
-	$heading_array['waiting']        = ORD_WAITING;
+	$heading_array['so_po_ref_id']   = TEXT_PO_NUMBER;
+	$heading_array['waiting']        = TEXT_WAITING."?";
 	break;
   case 12:
   case 13:
-	$heading_array['so_po_ref_id']   = ORD_HEADING_NUMBER_10;
+	$heading_array['so_po_ref_id']   = TEXT_SO_NUMBER;
 	$heading_array['closed']         = TEXT_PAID;
 	break;
   case 19:
-	$heading_array['so_po_ref_id']   = ORD_HEADING_NUMBER_10;
+	$heading_array['so_po_ref_id']   = TEXT_SO_NUMBER;
 	$heading_array['closed']         = TEXT_CLOSED; break;
   default:
 	$heading_array['closed']         = TEXT_CLOSED;
 }
-$heading_array['bill_primary_name'] = in_array(JOURNAL_ID, array(12,13)) ? ORD_CUSTOMER_NAME : ORD_VENDOR_NAME;
+$heading_array['bill_primary_name'] = in_array(JOURNAL_ID, array(12,13)) ? TEXT_CUSTOMER_NAME : TEXT_VENDOR_NAME;
 $heading_array['total_amount']      = TEXT_AMOUNT;
 $result      = html_heading_bar($heading_array, array());
 $list_header = $result['html_code'];
@@ -137,6 +137,6 @@ history_save('pb_pop_orders');
 $include_header   = false;
 $include_footer   = false;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', GEN_HEADING_PLEASE_SELECT);
+define('PAGE_TITLE', TEXT_PLEASE_SELECT);
 
 ?>

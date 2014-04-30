@@ -70,6 +70,6 @@ history_save('wo_poptask');
 $include_header   = false;
 $include_footer   = false;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', WO_POPUP_TASK_WINDOW_TITLE);
+define('PAGE_TITLE', TEXT_WORK_ORDERS_TASK);
 
 ?>

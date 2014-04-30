@@ -24,7 +24,7 @@
 
 // Geben Sie das neue Menü Kategorie Überschrift gegebenenfalls
 define ('MENU_HEADING_GL', 'Hauptbuch');
-define ('MENU_HEADING_BANKING', 'Banking');
+define ('TEXT_BANKING', 'Banking');
 
 // Menü Titel
 define ('BOX_AR_QUOTE', 'Sales Quotes');
@@ -53,11 +53,11 @@ define ('BOX_BANKING_CUSTOMER_PAYMENTS', 'Customer Erstattungen');
 define ('BOX_BANKING_PAY_BILLS', 'Rechnungen bezahlen');
 define ('BOX_BANKING_VENDOR_RECEIPTS', 'Hersteller Erstattungen');
 define ('BOX_BANKING_SELECT_FOR_PAYMENT', 'Wählen Sie für die Zahlung');
-define ('BOX_BANKING_BANK_ACCOUNT_REGISTER', 'Bank Account Registrieren');
+define ('TEXT_BANK_ACCOUNT_REGISTER', 'Bank Account Registrieren');
 define ('BOX_BANKING_ACCOUNT_RECONCILIATION', 'Konto-Versöhnung');
-define ('BOX_BANKING_VOID_CHECKS', 'Void Checks');
+define ('TEXT_VOID_CHECKS', 'Void Checks');
 
-define ('BOX_GL_BUDGET', 'Budgetierung');
+define ('TEXT_BUDGETING', 'Budgetierung');
 define ('BOX_GL_JOURNAL_ENTRY', 'Journal Entry');
 define ('BOX_GL_UTILITIES', 'Allgemeine Zeitschrift Utilities');
 define ('BOX_PRICE_SHEET_MANAGER', 'Preisblatt Manager');

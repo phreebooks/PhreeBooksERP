@@ -17,7 +17,7 @@
 //  Path: /modules/work_orders/language/en_us/language.php
 //
 
-// Headings 
+// Headings
 define('WO_POPUP_TASK_WINDOW_TITLE','Work Order Tasks');
 define('HEADING_WORK_ORDER_MODULE_NEW','Create Work Order');
 define('HEADING_WORK_ORDER_MODULE_EDIT','Edit Work Order');
@@ -83,7 +83,7 @@ define('WO_ROLL_REVISION','This work order has been used in the system, any chan
 define('WO_ERROR_CANNOT_DELETE','The work order task cannot be deleted because it is being used in a work order! See work order # ');
 define('WO_DUPLICATE_TASK_ID','The record was not changed, a Task ID with this name is already in the system!');
 define('WO_TASK_ID_MISSING','Both the Task ID and the Description fields are required!');
-define('WO_TEXT_PARTS_SHORTAGE','(%s of %s) needed of sku %s - %s');
+define('TEXT_PARTS_SHORTAGE_ARGS','(%s of %s) needed of sku %s - %s');
 // Audit log defines
 define('WO_AUDIT_LOG_MAIN','WO Main (%s) - ');
 define('WO_AUDIT_LOG_BUILDER','WO Builder (%s) - ');

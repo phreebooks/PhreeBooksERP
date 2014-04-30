@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:45
 // Module/Method: inventory
 // ISO Language: pt_br
@@ -41,7 +41,7 @@ define('TEXT_LABOR_ITEMS','Mão Obra');
 define('TEXT_SRV_ITEMS','Serviço');
 define('TEXT_NS_ITEMS','Não Estoque');
 define('TEXT_MS_ITEMS','Estoque Mestre');
-define('TEXT_ASSY_ITEMS','Montagens');
+define('TEXT_ASSEMBLIES','Montagens');
 define('TEXT_SERIAL_ITEMS','Serializado');
 define('TEXT_COST_METHOD','Método Custo');
 define('TEXT_STOCK_ITEMS','Estoque');
@@ -54,6 +54,6 @@ define('INV_HEADING_FIELD_PROPERTIES','Tipo e Propriedades de Campo (Selecione U
 define('BOX_INV_ADMIN','Administração Inventário');
 define('MODULE_INVENTORY_DESCRIPTION','O Módulo Inventário contém todas as funcionalidades para armazenar e manipular produtos e serviços utilizados em sua empresa. Isto inclui itens para uso interno e externo e produtos vendidos. <b>ATENÇÃO: Este é um módulo central e não deve ser removido!</b>');
 define('MODULE_INVENTORY_TITLE','Módulo Inventário');
-define('NEXT_SKU_NUM_DESC','Próximo SKU');
+define('TEXT_NEXT_SKU','Próximo SKU');
 
 ?>

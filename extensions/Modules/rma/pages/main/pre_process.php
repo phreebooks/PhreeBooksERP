@@ -77,12 +77,12 @@ switch ($_REQUEST['action']) {
 		}
 		$db->transStart();
 		// Check attachments
-		$result = $db->Execute("select attachments from " . TABLE_RMA . " where id = '" . $id . "'");
+		$result = $db->Execute("select attachments from " . TABLE_RMA . " where id = '$id'");
 		$attachments = $result->fields['attachments'] ? unserialize($result->fields['attachments']) : array();
 		$image_id = 0;
 		while ($image_id < 100) { // up to 100 images
 		  	if (isset($_POST['rm_attach_'.$image_id])) {
-				@unlink(RMA_DIR_ATTACHMENTS . 'rma_'.$id.'_'.$image_id.'.zip');
+				@unlink(RMA_DIR_ATTACHMENTS . "rma_{$id}_{$image_id}.zip");
 				unset($attachments[$image_id]);
 		  	}
 		  	$image_id++;
@@ -118,9 +118,9 @@ switch ($_REQUEST['action']) {
 		  'receive_carrier'     => $receive_carrier,
 		  'receive_tracking'    => $receive_tracking,
 		  'receive_notes'       => $receive_notes,
-		  'receive_details'	  => serialize($receive_details),
+		  'receive_details'	  	=> serialize($receive_details),
 		  'close_notes'         => $close_notes,
-		  'close_details'	      => serialize($close_details),
+		  'close_details'	    => serialize($close_details),
 		  'creation_date'       => $creation_date,
 		  'invoice_date'        => $invoice_date,
 		  'closed_date'         => $closed_date,
@@ -129,7 +129,6 @@ switch ($_REQUEST['action']) {
 		);
 		if ($id) {
 		    db_perform(TABLE_RMA, $sql_data_array, 'update', 'id = ' . $id);
-			gen_add_audit_log(RMA_LOG_USER_UPDATE . $rma_num);
 		} else {
 		    // fetch the RMA number
 			$result = $db->Execute("select next_rma_num from " . TABLE_CURRENT_STATUS);
@@ -140,10 +139,10 @@ switch ($_REQUEST['action']) {
 			$id = db_insert_id();
 			$next_num = string_increment($sql_data_array['rma_num']);
 			$db->Execute("update " . TABLE_CURRENT_STATUS . " set next_rma_num = '" . $next_num . "'");
-			gen_add_audit_log(RMA_LOG_USER_ADD . $rma_num);
 		}
 		$db->transCommit();
-		$messageStack->add(($_POST['id'] ? RMA_MESSAGE_SUCCESS_UPDATE : RMA_MESSAGE_SUCCESS_ADD) . $rma_num, 'success');
+		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, ($_POST['id'] ? TEXT_UPDATED : TEXT_ADDED ), TEXT_RMA , $rma_num), 'success');
+		gen_add_audit_log(sprintf(TEXT_SUCCESSFULLY_ARGS, ($_POST['id'] ? TEXT_UPDATED : TEXT_ADDED ), TEXT_RMA , $rma_num));
   	}catch(Exception $e){
   		$db->transRollback();
   		$messageStack->add($e->getMessage());
@@ -164,8 +163,8 @@ switch ($_REQUEST['action']) {
 	$result = $db->Execute("select rma_num from " . TABLE_RMA . " where id = " . $id);
 	if ($result->RecordCount() > 0) {
 	  $db->Execute("delete from " . TABLE_RMA . " where id = " . $id);
-	  foreach (glob(RMA_DIR_ATTACHMENTS.'ram_'.$id.'_*.zip') as $filename) unlink($filename); // remove attachments
-	  gen_add_audit_log(RMA_MESSAGE_DELETE, $result->fields['rma_num']);
+	  foreach (glob(RMA_DIR_ATTACHMENTS."ram_$id_*.zip") as $filename) unlink($filename); // remove attachments
+	  gen_add_audit_log(sprintf( TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_RMA, $result->fields['rma_num']));
 	  gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('cID', 'action')), 'SSL'));
 	} else {
 	  $messageStack->add(RMA_ERROR_CANNOT_DELETE, 'error');

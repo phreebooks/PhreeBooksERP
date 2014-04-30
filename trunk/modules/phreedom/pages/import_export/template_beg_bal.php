@@ -28,7 +28,7 @@ $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('03.04.02');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
@@ -82,12 +82,12 @@ echo $toolbar->build_toolbar();
 	 </thead>
 	 <tbody class="ui-widget-content">
 	  <tr>
-		<td><h3><?php echo GL_BB_IMPORT_INVENTORY; ?></h3></td>
+		<td><h3><?php echo TEXT_IMPORT_INVENTORY; ?></h3></td>
 		<td align="right"><?php echo html_file_field('file_name_inv'); ?></td>
 	  </tr>
 	  <tr>
 		<td><?php echo GL_BB_IMPORT_HELP_MSG; ?></td>
-		<td align="right"><?php echo html_button_field('import_inv', GL_BB_IMPORT_INVENTORY, 'onclick="submitToDo(\'import_inv\')"'); ?></td>
+		<td align="right"><?php echo html_button_field('import_inv', TEXT_IMPORT_INVENTORY, 'onclick="submitToDo(\'import_inv\')"'); ?></td>
 	  </tr>
 	  <tr><td colspan="2"><hr /></td></tr>
 	  <tr>
@@ -109,12 +109,12 @@ echo $toolbar->build_toolbar();
 	  </tr>
 	  <tr><td colspan="2"><hr /></td></tr>
 	  <tr>
-		<td><h3><?php echo GL_BB_IMPORT_SALES_ORDERS; ?></h3></td>
+		<td><h3><?php echo TEXT_IMPORT_SALES_ORDERS; ?></h3></td>
 		<td align="right"><?php echo html_file_field('file_name_so'); ?></td>
 	  </tr>
 	  <tr>
 		<td><?php echo GL_BB_IMPORT_HELP_MSG; ?></td>
-		<td align="right"><?php echo html_button_field('import_so', GL_BB_IMPORT_SALES_ORDERS, 'onclick="submitToDo(\'import_so\')"'); ?></td>
+		<td align="right"><?php echo html_button_field('import_so', TEXT_IMPORT_SALES_ORDERS, 'onclick="submitToDo(\'import_so\')"'); ?></td>
 	  </tr>
 	  <tr><td colspan="2"><hr /></td></tr>
 	  <tr>

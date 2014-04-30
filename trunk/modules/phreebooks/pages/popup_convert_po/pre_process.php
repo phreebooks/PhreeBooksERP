@@ -44,7 +44,7 @@ switch ($_REQUEST['action']) {
 	    $order->purchase_invoice_id = $purchase_invoice_id;
 		$order->admin_id = $_SESSION['admin_id'];
 		$order->terminal_date = $order->post_date; // make ship date the same as post date
-		$order->description = sprintf(TEXT_JID_ENTRY, constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE'));
+		$order->description = sprintf(TEXT_ARGS_ENTRY, constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE'));
 		$order->drop_ship = $drop_ship;
 
 		$temp_rows = $order->journal_rows;
@@ -151,6 +151,6 @@ switch ($_REQUEST['action']) {
 $include_header   = false;
 $include_footer   = false;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', ORD_CONVERT_TO_PO);
+define('PAGE_TITLE', TEXT_CONVERT_TO_PURCHASE_ORDER_SHORT);
 
 ?>

@@ -431,7 +431,7 @@ class admin extends \core\classes\admin {
 
 	function load_reports() {
 		parent::load_reports();
-		$id    = $this->add_report_heading(MENU_HEADING_INVENTORY, 'inv');
+		$id    = $this->add_report_heading(TEXT_INVENTORY, 'inv');
 		$this->add_report_folder($id, TEXT_REPORTS, 'inv', 'fr');
 	}
 

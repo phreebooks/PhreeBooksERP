@@ -40,7 +40,7 @@ class so_status extends \core\classes\ctl_panel {
 		for ($i = 0; $i <= $this->max_length; $i++) $list_length[] = array('id' => $i, 'text' => $i);
 		$list_order = array(
 		  array('id'=>'asc', 'text'=>TEXT_ASC),
-		  array('id'=>'desc','text'=>TEXT_DESC),
+		  array('id'=>'desc','text'=>TEXT_DESCENDING_SHORT),
 		);
 		$list_limit = array(
 		  array('id'=>'0', 'text'=>TEXT_NO),
@@ -56,7 +56,7 @@ class so_status extends \core\classes\ctl_panel {
 		$control .= '  </div>';
 		$control .= '</div>';
 		// Build content box
-		$sql = "select id, post_date, purchase_invoice_id, bill_primary_name, total_amount, currencies_code, currencies_value 
+		$sql = "select id, post_date, purchase_invoice_id, bill_primary_name, total_amount, currencies_code, currencies_value
 		  from " . TABLE_JOURNAL_MAIN . " where journal_id = 10 and closed = '0'";
 		if ($params['limit']=='1')    $sql .= " and post_date <= '".date('Y-m-d')."'";
 		if ($params['order']=='desc') $sql .= " order by post_date desc";
@@ -68,7 +68,7 @@ class so_status extends \core\classes\ctl_panel {
 			while (!$result->EOF) {
 			  	$contents .= '<div style="float:right">' ;
 			  	$contents .= html_button_field('invoice_' . $result->fields['id'], TEXT_INVOICE, 'onclick="window.open(\'' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;oID=' . $result->fields['id'] . '&amp;jID=12&amp;action=prc_so', 'SSL') . '\',\'_blank\')"') . "  ";
-				$contents .= $currencies->format_full($result->fields['total_amount'], true, $result->fields['currencies_code'], $result->fields['currencies_value']); 
+				$contents .= $currencies->format_full($result->fields['total_amount'], true, $result->fields['currencies_code'], $result->fields['currencies_value']);
 				$contents .= '</div>';
 				$contents .= '<div>';
 				$contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;oID=' . $result->fields['id'] . '&amp;jID=10&amp;action=edit', 'SSL') . '">';

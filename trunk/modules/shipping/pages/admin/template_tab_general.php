@@ -25,27 +25,27 @@
  </thead>
  <tbody class="ui-widget-content">
 	  <tr>
-	    <td colspan="3"><?php echo sprintf(CONTACT_SHIP_FIELD_REQ, GEN_CONTACT); ?></td>
+	    <td colspan="3"><?php echo sprintf(CONTACT_SHIP_FIELD_REQ, TEXT_ATTENTION); ?></td>
 	    <td><?php echo html_pull_down_menu('address_book_ship_contact_req', $sel_yes_no, $_POST['address_book_ship_contact_req'] ? $_POST['address_book_ship_contact_req'] : ADDRESS_BOOK_SHIP_CONTACT_REQ, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo sprintf(CONTACT_SHIP_FIELD_REQ, GEN_ADDRESS1); ?></td>
+	    <td colspan="3"><?php echo sprintf(CONTACT_SHIP_FIELD_REQ, TEXT_ADDRESS1); ?></td>
 	    <td><?php echo html_pull_down_menu('address_book_ship_add1_req', $sel_yes_no, $_POST['address_book_ship_add1_req'] ? $_POST['address_book_ship_add1_req'] : ADDRESS_BOOK_SHIP_ADD1_REQ, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo sprintf(CONTACT_SHIP_FIELD_REQ, GEN_ADDRESS2); ?></td>
+	    <td colspan="3"><?php echo sprintf(CONTACT_SHIP_FIELD_REQ, TEXT_ADDRESS2); ?></td>
 	    <td><?php echo html_pull_down_menu('address_book_ship_add2_req', $sel_yes_no, $_POST['address_book_ship_add2_req'] ? $_POST['address_book_ship_add2_req'] : ADDRESS_BOOK_SHIP_ADD2_REQ, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo sprintf(CONTACT_SHIP_FIELD_REQ, GEN_CITY_TOWN); ?></td>
+	    <td colspan="3"><?php echo sprintf(CONTACT_SHIP_FIELD_REQ, TEXT_CITY_TOWN); ?></td>
 	    <td><?php echo html_pull_down_menu('address_book_ship_city_req', $sel_yes_no, $_POST['address_book_ship_city_req'] ? $_POST['address_book_ship_city_req'] : ADDRESS_BOOK_SHIP_CITY_REQ, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo sprintf(CONTACT_SHIP_FIELD_REQ, GEN_STATE_PROVINCE); ?></td>
+	    <td colspan="3"><?php echo sprintf(CONTACT_SHIP_FIELD_REQ, TEXT_STATE_PROVINCE); ?></td>
 	    <td><?php echo html_pull_down_menu('address_book_ship_state_req', $sel_yes_no, $_POST['address_book_ship_state_req'] ? $_POST['address_book_ship_state_req'] : ADDRESS_BOOK_SHIP_STATE_REQ, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo sprintf(CONTACT_SHIP_FIELD_REQ, GEN_POSTAL_CODE); ?></td>
+	    <td colspan="3"><?php echo sprintf(CONTACT_SHIP_FIELD_REQ, TEXT_POSTAL_CODE); ?></td>
 	    <td><?php echo html_pull_down_menu('address_book_ship_postal_code_req', $sel_yes_no, $_POST['address_book_ship_postal_code_req'] ? $_POST['address_book_ship_postal_code_req'] : ADDRESS_BOOK_SHIP_POSTAL_CODE_REQ, ''); ?></td>
 	  </tr>
 
@@ -118,13 +118,13 @@
 	    <td nowrap="nowrap"><?php echo TEXT_VALUE . ' ' . html_pull_down_menu('shipping_default_payment_type', gen_build_pull_down($shipping_defaults['cod_funds_code']), $_POST['shipping_default_payment_type'] ? $_POST['shipping_default_payment_type'] : SHIPPING_DEFAULT_PAYMENT_TYPE, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo CD_10_44_DESC; ?></td>
+	    <td><?php echo TEXT_SATURDAY_PICKUP_CHECKBOX; ?></td>
 	    <td><?php echo html_pull_down_menu('shipping_default_saturday_pickup_show', $sel_show, $_POST['shipping_default_saturday_pickup_show'] ? $_POST['shipping_default_saturday_pickup_show'] : SHIPPING_DEFAULT_SATURDAY_PICKUP_SHOW, ''); ?></td>
 	    <td nowrap="nowrap"><?php echo TEXT_DEFAULT . ' ' . html_pull_down_menu('shipping_default_saturday_pickup_checked', $sel_checked, $_POST['shipping_default_saturday_pickup_checked'] ? $_POST['shipping_default_saturday_pickup_checked'] : SHIPPING_DEFAULT_SATURDAY_PICKUP_CHECKED, ''); ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo CD_10_48_DESC; ?></td>
+	    <td><?php echo TEXT_SATURDAY_DELIVERY_CHECKBOX; ?></td>
 	    <td><?php echo html_pull_down_menu('shipping_default_saturday_delivery_show', $sel_show, $_POST['shipping_default_saturday_delivery_show'] ? $_POST['shipping_default_saturday_delivery_show'] : SHIPPING_DEFAULT_SATURDAY_DELIVERY_SHOW, ''); ?></td>
 	    <td nowrap="nowrap"><?php echo TEXT_DEFAULT . ' ' . html_pull_down_menu('shipping_default_saturday_delivery_checked', $sel_checked, $_POST['shipping_default_saturday_delivery_checked'] ? $_POST['shipping_default_saturday_delivery_checked'] : SHIPPING_DEFAULT_SATURDAY_DELIVERY_CHECKED, ''); ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>

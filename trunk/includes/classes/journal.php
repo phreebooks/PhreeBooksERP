@@ -652,7 +652,7 @@ class journal {
 	  $temp_array = array(
 		'ref_id'        => $this->id,
 		'gl_type'       => 'cog',		// code for cost of goods charges
-		'description'   => GL_JOURNAL_ENTRY_COGS,
+		'description'   => TEXT_COST_OF_GOODS_SOLD,
 		'gl_account'    => $gl_acct,
 		'credit_amount' => $values['credit'] ? $values['credit'] : 0,
 		'debit_amount'  => $values['debit']  ? $values['debit']  : 0,
@@ -1282,7 +1282,7 @@ class journal {
 	if (isset($this->journal_id))          $main_record['journal_id']          = $this->journal_id;
 	if (isset($this->post_date))           $main_record['post_date']           = $this->post_date;
 	if (isset($this->store_id))            $main_record['store_id']            = $this->store_id;
-	$main_record['description'] = (isset($this->description)) ? $this->description : sprintf(TEXT_JID_ENTRY, constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE'));
+	$main_record['description'] = (isset($this->description)) ? $this->description : sprintf(TEXT_ARGS_ENTRY, constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE'));
 	if (isset($this->closed))              $main_record['closed']              = $this->closed;
 	if (isset($this->closed_date))         $main_record['closed_date']         = $this->closed_date;
 	if (isset($this->freight))             $main_record['freight']             = $this->freight;
@@ -1465,7 +1465,7 @@ class journal {
 		default: // continue
 	  }
 	  $sql = "select purchase_invoice_id from " . TABLE_JOURNAL_MAIN . "
-		where purchase_invoice_id = '" . $this->purchase_invoice_id . "' and journal_id = '" . $this->journal_id . "'";
+		where purchase_invoice_id = '{$this->purchase_invoice_id}' and journal_id = '{$this->journal_id}'";
 	  if ($this->id) $sql .= " and id <> " . $this->id;
 	  $result = $db->Execute($sql);
 	  if ($result->RecordCount() > 0) throw new \core\classes\userException(sprintf(GL_ERROR_2, constant('ORD_HEADING_NUMBER_' . $this->journal_id)));
@@ -1487,7 +1487,7 @@ class journal {
 		case 21: $str_field = 'next_check_num';    break;
 	  }
 	  if ($str_field) {
-		$result = $db->Execute("select " . $str_field . " from " . TABLE_CURRENT_STATUS . " limit 1");
+		$result = $db->Execute("select $str_field from " . TABLE_CURRENT_STATUS . " limit 1");
 		if (!$result) throw new \core\classes\userException(sprintf(GL_ERROR_CANNOT_FIND_NEXT_ID, TABLE_CURRENT_STATUS));
 		$this->journal_main_array['purchase_invoice_id'] = $result->fields[$str_field];
 	  } else {

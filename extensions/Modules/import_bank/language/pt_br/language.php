@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:45
 // Module/Method: import_bank
 // ISO Language: pt_br
@@ -12,7 +12,7 @@ define('MODULE_IMPORT_BANK_TITLE','Importar lançamentos bancários');
 define('HEADING_MODULE_IMPORT_BANK','Importar lançamentos bancários');
 define('GEN_BANK_IMPORT_MESSAGE','Seleciona o arquivo .csv para importar e tecle Importar <br> Se não existe a coluna conta bancária no seu .csv selecione uma conta bancária na caixa de seleção.');
 define('TEXT_IMPORT','Importar');
-define('SAMPLE_CSV','Exemplo de CSV');
+define('TEXT_SAMPLE_CSV','Exemplo de CSV');
 define('TEXT_REQUIRED','OBRIGATÓRIO');
 define('TEXT_BIMP_ERMSG1','proprietário conta bancária está vazio');
 define('TEXT_BIMP_ERMSG2','existem duas ou mais contas CG com a descrição: ');

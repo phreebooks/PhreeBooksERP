@@ -287,7 +287,7 @@ switch ($_REQUEST['action']) {
     break;
   case 'import_one':
     if ($success = ImportReport($_POST['reportname'], $_POST['RptFileName'], $import_path)) {
-	  $messageStack->add(PHREEFORM_IMPORT_SUCCESS, 'success');
+	  $messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_IMPORTED, TEXT_REPORT , $doc_title), 'success');
 	  $self_close = true;
 	}
 	break;

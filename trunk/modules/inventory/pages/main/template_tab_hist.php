@@ -20,13 +20,13 @@
 ?>
 <div title="<?php echo TEXT_HISTORY;?>" id="tab_history">
   <fieldset>
-    <legend><?php echo INV_SKU_HISTORY; ?></legend>
+    <legend><?php echo TEXT_SKU_HISTORY; ?></legend>
 	<table class="ui-widget" style="border-style:none;">
 	 <tbody class="ui-widget-content">
 	  <tr>
-	    <td><?php echo INV_DATE_ACCOUNT_CREATION; ?></td>
+	    <td><?php echo TEXT_CREATION_DATE; ?></td>
 	    <td><?php echo html_input_field('creation_date', gen_locale_date($cInfo->creation_date), 'readonly="readonly" size="20"', false); ?></td>
-	    <td><?php echo INV_DATE_LAST_UPDATE; ?></td>
+	    <td><?php echo TEXT_LAST_UPDATE; ?></td>
 	    <td><?php echo html_input_field('last_update', gen_locale_date($cInfo->last_update), 'readonly="readonly" size="20"', false); ?></td>
 	    <td><?php echo INV_DATE_LAST_JOURNAL_DATE; ?></td>
 	    <td><?php echo html_input_field('last_journal_date', gen_locale_date($cInfo->last_journal_date), 'readonly="readonly" size="20"', false); ?></td>
@@ -35,7 +35,7 @@
 	</table>
   </fieldset>
   <fieldset>
-   <legend><?php echo INV_SKU_ACTIVITY; ?></legend>
+   <legend><?php echo TEXT_SKU_ACTIVITY; ?></legend>
    <table class="ui-widget" style="border-collapse:collapse;width:100%">
 	  <tr><td valign="top" width="50%">
 	  <?php if(in_array('purchase',$cInfo->posible_transactions)){?>
@@ -43,14 +43,14 @@
 		 <thead class="ui-widget-header">
 		  <tr><th colspan="4"><?php echo INV_OPEN_PO; ?></th></tr>
 		  <tr>
-		    <th width="25%"><?php echo INV_PO_NUMBER; ?></th>
-		    <th width="25%"><?php echo INV_PO_DATE; ?></th>
+		    <th width="25%"><?php echo TEXT_PO_NUMBER; ?></th>
+		    <th width="25%"><?php echo TEXT_PO_DATE; ?></th>
 		    <th width="25%"><?php echo TEXT_QUANTITY; ?></th>
 		    <th width="25%"><?php echo INV_PO_RCV_DATE; ?></th>
 		  </tr>
 		 </thead>
 		 <tbody class="ui-widget-content">
-		  <?php 
+		  <?php
 			if ($cInfo->history['open_po']) {
 			  $odd = true;
 			  foreach ($cInfo->history['open_po'] as $value) {
@@ -74,14 +74,14 @@
 		 <thead class="ui-widget-header">
 		  <tr><th colspan="4"><?php echo INV_OPEN_SO; ?></th></tr>
 		  <tr>
-		    <th width="25%"><?php echo INV_SO_NUMBER; ?></th>
-		    <th width="25%"><?php echo INV_SO_DATE; ?></th>
+		    <th width="25%"><?php echo TEXT_SO_NUMBER; ?></th>
+		    <th width="25%"><?php echo TEXT_SO_DATE; ?></th>
 		    <th width="25%"><?php echo TEXT_QUANTITY; ?></th>
 		    <th width="25%"><?php echo TEXT_REQUIRED_DATE; ?></th>
 		  </tr>
 		 </thead>
 		 <tbody class="ui-widget-content">
-		  <?php 
+		  <?php
 			if ($cInfo->history['open_so']) {
 			  $odd = true;
 			  foreach ($cInfo->history['open_so'] as $value) {
@@ -105,8 +105,8 @@
 		  <tr><th colspan="4"><?php echo TEXT_AVERAGE_USE; ?></th></tr>
 		  <tr>
 		    <th width="25%"><?php echo TEXT_LAST_MONTH; ?></th>
-		    <th width="25%"><?php echo TEXT_LAST_3_MONTH; ?></th>
-		    <th width="25%"><?php echo TEXT_LAST_6_MONTH; ?></th>
+		    <th width="25%"><?php echo TEXT_3_MONTHS; ?></th>
+		    <th width="25%"><?php echo TEXT_6_MONTHS; ?></th>
 		    <th width="25%"><?php echo TEXT_LAST_12_MONTH; ?></th>
 		  </tr>
 		 </thead>
@@ -133,7 +133,7 @@
 		  </tr>
 		 </thead>
 		 <tbody class="ui-widget-content">
-		  <?php 
+		  <?php
 		if ($cInfo->purchases_history) {
 		  $odd = true;
 		  foreach ($cInfo->purchases_history as $value) {
@@ -158,16 +158,16 @@
 	  	<?php if(isset($cInfo->sales_history)){?>
 		<table class="ui-widget" style="border-collapse:collapse;width:100%">
 		 <thead class="ui-widget-header">
-		  <tr><th colspan="4"><?php echo INV_SALES_BY_MONTH; ?></th></tr>
+		  <tr><th colspan="4"><?php echo TEXT_SALES_BY_MONTH; ?></th></tr>
 		  <tr>
 		    <th><?php echo TEXT_YEAR; ?></th>
 		    <th><?php echo TEXT_MONTH; ?></th>
 		    <th><?php echo TEXT_QUANTITY; ?></th>
-		    <th><?php echo INV_SALES_INCOME; ?></th>
+		    <th><?php echo TEXT_SALES_INCOME; ?></th>
 		  </tr>
 		 </thead>
 		 <tbody class="ui-widget-content">
-		  <?php 
+		  <?php
 		if ($cInfo->sales_history) {
 		  $odd = true;
 		  foreach ($cInfo->sales_history as $value) {

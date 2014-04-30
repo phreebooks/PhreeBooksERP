@@ -35,8 +35,8 @@
 			</tr>
 		</thead>
 		<tbody class="ui-widget-content">
-			
-			
+
+
 		<?php if ($error || $caution) { ?>
 			<tr>
 				<td colspan="2"><?php echo MSG_INSPECT_ERRORS; ?></td>
@@ -44,10 +44,10 @@
 			<tr>
 				<td colspan="2"><?php echo $messageStack->output(); ?></td>
 			</tr>
-			
-			
-			
-			
+
+
+
+
 <?php } ?>
    <tr><td colspan="2"><?php echo MSG_INSTALL_INTRO; ?></td></tr>
    <tr class="ui-widget-header"><th colspan="2"><?php echo TEXT_COMPANY_INFO; ?></th></tr>
@@ -59,10 +59,10 @@
 	<td><?php echo TEXT_INSTALL_DEMO_DATA; ?></td>
 	<td><?php echo html_pull_down_menu('company_demo', $sel_yes_no, $_POST['company_demo'] ? $_POST['company_demo'] : 0); ?></td>
    </tr>
-   
+
    <tr class="ui-widget-header"><th colspan="2"><?php echo TEXT_ADMIN_INFO; ?></th></tr>
    <tr>
-	<td><?php echo TEXT_USER_NAME; ?></td>
+	<td><?php echo TEXT_USERNAME; ?></td>
 	<td><?php echo html_input_field('user_username', $_POST['user_username']); ?></td>
    </tr>
    <tr>

@@ -54,21 +54,21 @@ define('DEFAULT_F0_SETTING','1'); // inactive filter set to show inactive contac
 // Set the title menu
 $mainmenu["customers"] = array(
   'order' 		=> MENU_HEADING_CUSTOMERS_ORDER,
-  'text' 		=> MENU_HEADING_CUSTOMERS,
+  'text' 		=> TEXT_CUSTOMERS,
   'security_id' => '',
   'link' 		=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_ar', 'SSL'),
   'params'      => '',
 );
 $mainmenu["vendors"] = array(
   'order' 		=> MENU_HEADING_VENDORS_ORDER,
-  'text' 		=> MENU_HEADING_VENDORS,
+  'text' 		=> TEXT_VENDORS,
   'security_id' => '',
   'link' 		=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_ap', 'SSL'),
   'params'      => '',
 );
 $mainmenu["employees"] = array(
   'order' 		=> MENU_HEADING_EMPLOYEES_ORDER,
-  'text' 		=> MENU_HEADING_EMPLOYEES,
+  'text' 		=> TEXT_EMPLOYEES,
   'security_id' => '',
   'link' 		=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_hr', 'SSL'),
   'params'      => '',
@@ -77,13 +77,13 @@ $mainmenu["employees"] = array(
 // Set the menus
 $mainmenu["customers"]['submenu']["contact"] = array(
 	'order'		  => 10,
-	'text'        => MENU_HEADING_CUSTOMERS,
+	'text'        => TEXT_CUSTOMERS,
 	'link'        => '',//html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=c&amp;list=1', 'SSL'),
 	'show_in_users_settings' => false,
     'params'      => '',
 );
 $mainmenu["customers"]['submenu']["contact"]['submenu']["new_customer"] = array(
-  'text'        => sprintf(BOX_TEXT_NEW_TITLE, TEXT_CUSTOMER),
+  'text'        => sprintf(TEXT_NEW_ARGS, TEXT_CUSTOMER),
   'order'       => 5,
   'security_id' => SECURITY_ID_MAINTAIN_CUSTOMERS,
   'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;action=new&amp;type=c', 'SSL'),
@@ -91,7 +91,7 @@ $mainmenu["customers"]['submenu']["contact"]['submenu']["new_customer"] = array(
   'params'	    => '',
 );
 $mainmenu["customers"]['submenu']["contact"]['submenu']["customer_mgr"] = array(
-  'text'        => sprintf(BOX_STATUS_MGR, TEXT_CUSTOMER),
+  'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_CUSTOMER),
   'order'       => 10,
   'security_id' => SECURITY_ID_MAINTAIN_CUSTOMERS,
   'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=c&amp;list=1', 'SSL'),
@@ -99,7 +99,7 @@ $mainmenu["customers"]['submenu']["contact"]['submenu']["customer_mgr"] = array(
   'params'	    => '',
 );
 $mainmenu["customers"]['submenu']["crm"] = array(
-  'text'        => BOX_PHREECRM_MODULE,
+  'text'        => TEXT_PHREECRM,
   'order'       => 15,
   'link'        => '',//html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=i&amp;list=1', 'SSL'),
   'show_in_users_settings' => true,
@@ -107,13 +107,13 @@ $mainmenu["customers"]['submenu']["crm"] = array(
 );
 $mainmenu["vendors"]['submenu']["contact"] = array(
   'order'		  => 10,
-  'text'        => MENU_HEADING_VENDORS,
+  'text'        => TEXT_VENDORS,
   'link'        => '',//html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=v&amp;list=1', 'SSL'),
   'show_in_users_settings' => false,
   'params'      => '',
 );
 $mainmenu["vendors"]['submenu']["contact"]['submenu']["new_vendor"] = array(
-  'text'        => sprintf(BOX_TEXT_NEW_TITLE, TEXT_VENDOR),
+  'text'        => sprintf(TEXT_NEW_ARGS, TEXT_VENDOR),
   'order'       => 5,
   'security_id' => SECURITY_ID_MAINTAIN_VENDORS,
   'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;action=new&amp;type=v', 'SSL'),
@@ -121,7 +121,7 @@ $mainmenu["vendors"]['submenu']["contact"]['submenu']["new_vendor"] = array(
   'params'      => '',
 );
 $mainmenu["vendors"]['submenu']["contact"]['submenu']["vendor_mgr"] = array(
-  'text'        => sprintf(BOX_STATUS_MGR, TEXT_VENDOR),
+  'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR),
   'order'       => 10,
   'security_id' => SECURITY_ID_MAINTAIN_VENDORS,
   'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=v&amp;list=1', 'SSL'),
@@ -130,13 +130,13 @@ $mainmenu["vendors"]['submenu']["contact"]['submenu']["vendor_mgr"] = array(
 );
 $mainmenu["employees"]['submenu']["contact"] = array(
   'order'		  => 10,
-  'text'        => MENU_HEADING_EMPLOYEES,
+  'text'        => TEXT_EMPLOYEES,
   'link'        => '',//html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=e&amp;list=1', 'SSL'),
   'show_in_users_settings' => false,
   'params'      => '',
 );
 $mainmenu["employees"]['submenu']["contact"]['submenu']["new_employee"] = array(
-  'text'        => sprintf(BOX_TEXT_NEW_TITLE, TEXT_EMPLOYEE),
+  'text'        => sprintf(TEXT_NEW_ARGS, TEXT_EMPLOYEE),
   'order'       => 5,
   'security_id' => SECURITY_ID_MAINTAIN_EMPLOYEES,
   'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;action=new&amp;type=e', 'SSL'),
@@ -144,7 +144,7 @@ $mainmenu["employees"]['submenu']["contact"]['submenu']["new_employee"] = array(
   'params'      => '',
 );
 $mainmenu["employees"]['submenu']["contact"]['submenu']["employee_mgr"] = array(
-  'text'        => sprintf(BOX_STATUS_MGR, TEXT_EMPLOYEE),
+  'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_EMPLOYEE),
   'order'       => 10,
   'security_id' => SECURITY_ID_MAINTAIN_EMPLOYEES,
   'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=e&amp;list=1', 'SSL'),
@@ -160,7 +160,7 @@ if (defined('ENABLE_MULTI_BRANCH') && ENABLE_MULTI_BRANCH == true) { // don't sh
     	'params'      => '',
 	);
 	$mainmenu["company"]['submenu']["branches"]['submenu']["new_branch"] = array(
-		'text'        => sprintf(BOX_TEXT_NEW_TITLE, TEXT_BRANCH),
+		'text'        => sprintf(TEXT_NEW_ARGS, TEXT_BRANCH),
 		'order'        => 55,
 		'security_id' => SECURITY_ID_MAINTAIN_BRANCH,
     	'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;action=new&amp;type=b', 'SSL'),
@@ -168,7 +168,7 @@ if (defined('ENABLE_MULTI_BRANCH') && ENABLE_MULTI_BRANCH == true) { // don't sh
     	'params'      => '',
   	);
   	$mainmenu["company"]['submenu']["branches"]['submenu']["branch_mgr"] = array(
-		'text'        => sprintf(BOX_STATUS_MGR, TEXT_BRANCH),
+		'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_BRANCH),
 		'order'       => 56,
 		'security_id' => SECURITY_ID_MAINTAIN_BRANCH,
 		'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=b&amp;list=1', 'SSL'),
@@ -184,7 +184,7 @@ $mainmenu["customers"]['submenu']['projects'] = array(
     'params'      => '',
 );
 $mainmenu["customers"]['submenu']['projects']['submenu']["new_project"] = array(
-  'text'        => sprintf(BOX_TEXT_NEW_TITLE, TEXT_PROJECT),
+  'text'        => sprintf(TEXT_NEW_ARGS, TEXT_PROJECT),
   'order'       => 5,
   'security_id' => SECURITY_ID_MAINTAIN_PROJECTS,
   'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;action=new&amp;type=j', 'SSL'),
@@ -192,7 +192,7 @@ $mainmenu["customers"]['submenu']['projects']['submenu']["new_project"] = array(
   'params'      => '',
 );
 $mainmenu["customers"]['submenu']['projects']['submenu']["project_mgr"] = array(
-  'text'        => sprintf(BOX_STATUS_MGR, TEXT_PROJECT),
+  'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_PROJECT),
   'order'       => 10,
   'security_id' => SECURITY_ID_MAINTAIN_PROJECTS,
   'show_in_users_settings' => true,
@@ -203,8 +203,8 @@ $mainmenu["customers"]['submenu']['projects']['submenu']["project_mgr"] = array(
 if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
   gen_pull_language('contacts', 'admin');
   $mainmenu["company"]['submenu']["configuration"]['submenu']["contacts"] = array(
-	'order'	      => MODULE_CONTACTS_TITLE,
-	'text'        => MODULE_CONTACTS_TITLE,
+	'order'	      => TEXT_CONTACTS_MODULE,
+	'text'        => TEXT_CONTACTS_MODULE,
 	'security_id' => SECURITY_ID_CONFIGURATION,
 	'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=admin', 'SSL'),
     'show_in_users_settings' => false,

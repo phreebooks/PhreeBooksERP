@@ -185,7 +185,7 @@ switch ($_REQUEST['action']) {
 	    	$db->transCommit();	// post the chart of account values
 	    	// *************** END TRANSACTION *************************
 			gen_add_audit_log(sprintf(INV_LOG_TRANSFER, $source_store_id, $dest_store_id), $sku, $qty);
-	   		$messageStack->add(INV_POST_SUCCESS . $glEntry->purchase_invoice_id, 'success');
+	   		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, TEXT_INVENTORY_ADJUSTMENT, $glEntry->purchase_invoice_id), 'success');
 	   		if (DEBUG) $messageStack->write_debug();
 	   		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	  	}catch(Exception $e){
@@ -209,7 +209,7 @@ switch ($_REQUEST['action']) {
 		  	$delOrd = new \core\classes\journal($xfer_to_id);
 		  	if ($delOrd->unPost('delete')) throw new \core\classes\userException('cannot unpost record!');
 		   	$db->transCommit(); // if not successful rollback will already have been performed
-		    gen_add_audit_log(INV_LOG_ADJ . TEXT_DELETE, $delOrd->journal_rows[0]['sku'], $delOrd->journal_rows[0]['qty']);
+		    gen_add_audit_log(TEXT_INVENTORY_ADJUSTMENT . ' - ' . TEXT_DELETE, $delOrd->journal_rows[0]['sku'], $delOrd->journal_rows[0]['qty']);
 		    if (DEBUG) $messageStack->write_debug();
 		    gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		}catch(Exception $e){

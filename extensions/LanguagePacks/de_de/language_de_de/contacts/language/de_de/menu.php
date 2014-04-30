@@ -23,10 +23,10 @@
 //
 
 // Geben Sie das neue Menü Kategorie Überschrift gegebenenfalls
-define ('MENU_HEADING_CUSTOMERS', 'Kunden');
-define ('MENU_HEADING_VENDORS', 'Vendors');
-define ('MENU_HEADING_EMPLOYEES', 'Mitarbeiter');
-define ('BOX_PHREECRM_MODULE', 'PhreeCRM');
+define ('TEXT_CUSTOMERS', 'Kunden');
+define ('TEXT_VENDORS', 'Vendors');
+define ('TEXT_EMPLOYEES', 'Mitarbeiter');
+define ('TEXT_PHREECRM', 'PhreeCRM');
 
 // Menü Titel
 define ('BOX_CONTACTS_NEW_BRANCH','Neue Branch');
@@ -42,6 +42,6 @@ define ('BOX_CONTACTS_MAINTAIN_VENDORS', 'pflegen Vendors');
 define ('BOX_CONTACTS_NEW_CONTACT', 'Neuer Kontakt');
 define ('BOX_HR_DEPARTMENTS', 'Kategorien');
 define ('BOX_PROJECTS_PHASES', 'Projektphasen');
-define ('BOX_PROJECTS_COSTS', 'Project Costs ');
+define ('TEXT_PROJECT_COSTS', 'Project Costs ');
 
 ?>

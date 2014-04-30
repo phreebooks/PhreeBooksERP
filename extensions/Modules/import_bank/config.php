@@ -21,7 +21,7 @@
 // 0.1 01-03-2011 created.
 // 0.2 04-03-2011 location of xml changed and sample added.
 // 0.3 22-03-2011 Added install functions for contacts 3.1
-// 0.4 31-01-2011 removed bugg from install class 
+// 0.4 31-01-2011 removed bugg from install class
 // 1   15-01-2013 added the function so that multiple bank could be attached to one contact and added iban support.
 // 1.1 27-1-2013  added the transaction templates (aka known transactions). plus support for payment of multiple invoices.
 // 2   28-1-2013  	complete rewrite reduced the number of sql calles.
@@ -39,20 +39,20 @@ define('TABLE_IMPORT_BANK',    			DB_PREFIX . 'import_bank');
 gen_pull_language('phreebooks');
 if (defined('MODULE_IMPORT_BANK_STATUS')) {
 	$mainmenu["banking"]['submenu']['import_banking'] = array(
-    	'text'        => BOX_IMPORT_BANK_MODULE,
+    	'text'        => TEXT_IMPORT_BANK_STATEMENT,
     	'order'       => 55,
     	'security_id' => SECURITY_ID_IMPORT_BANK,
     	'link'        => html_href_link(FILENAME_DEFAULT, 'module=import_bank&amp;page=main', 'SSL'),
 		'show_in_users_settings' => true,
     	'params'      => '',
   	);
-  
+
 	if(\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
   		gen_pull_language('import_bank', 'admin');
   		$mainmenu["company"]['submenu']["configuration"]['submenu']["import_bank"] = array(
-			'order'	      => MODULE_IMPORT_BANK_TITLE,
-			'text'        => MODULE_IMPORT_BANK_TITLE,
-			'security_id' => SECURITY_ID_CONFIGURATION, 
+			'order'	      => TEXT_IMPORT_BANK_STATEMENT,
+			'text'        => TEXT_IMPORT_BANK_STATEMENT,
+			'security_id' => SECURITY_ID_CONFIGURATION,
 			'link'        => html_href_link(FILENAME_DEFAULT, 'module=import_bank&amp;page=admin', 'SSL'),
     		'show_in_users_settings' => false,
 			'params'      => '',

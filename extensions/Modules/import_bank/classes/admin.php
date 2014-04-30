@@ -23,10 +23,10 @@
 namespace import_bank\classes;
 class admin extends \core\classes\admin {
 	public $id 			= 'import_bank';
-	public $text		= MODULE_IMPORT_BANK_TITLE;
+	public $text		= TEXT_IMPORT_BANK_STATEMENT;
 	public $description = MODULE_IMPORT_BANK_DESCRIPTION;
 	public $version		= '2.1';
-	
+
 	function __construct() {
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom'   => 3.0,
@@ -55,7 +55,7 @@ class admin extends \core\classes\admin {
   	function install($path_my_files, $demo = false) {
     	global $db, $messageStack;
     	parent::install($path_my_files, $demo);
-		if (!db_field_exists(TABLE_CONTACTS, 'bank_account_1')) { 
+		if (!db_field_exists(TABLE_CONTACTS, 'bank_account_1')) {
 			$sql = "select id from " . TABLE_EXTRA_FIELDS . " where module_id = 'contacts' and field_name = 'bank_account'";
 			$result = $db->Execute($sql);
 			if ( $result->RecordCount() == 0 ){
@@ -66,7 +66,7 @@ class admin extends \core\classes\admin {
 									'sort_order'=> '100' );
 					db_perform(TABLE_EXTRA_TABS, $entry, 'insert');
 					$tab_id = $db->insert_ID();
-				}else {	
+				}else {
 					$tab_id = $result->fields['id'];
 				}
 				$entry = array(	'module_id'	  => 'contacts',
@@ -81,7 +81,7 @@ class admin extends \core\classes\admin {
 			}
 		}
   	}
-  
+
 	function upgrade() {
 	  	global $db;
 	  	parent::upgrade();
@@ -92,7 +92,7 @@ class admin extends \core\classes\admin {
 			if ( $result->RecordCount() == 0 ){
 				$db->Execute("INSERT INTO " . TABLE_EXTRA_TABS . " VALUES('', 'contacts','import_banking','100')");
 				$tab_id = $db->insert_ID();
-			}else {	
+			}else {
 				$tab_id = $result->fields['id'];
 			}
 			$db->Execute("INSERT INTO " . TABLE_EXTRA_FIELDS . " VALUES ('', 'contacts', ". $tab_id .",'text', 'bank_account', 'Bank Account','c:v:', 'a:4:{s:4:'type';s:4:'text';s:12:'contact_type';s:16:'customer:vendor:';s:6:'length';i:32;s:7:'default';s:0:'';}' );");

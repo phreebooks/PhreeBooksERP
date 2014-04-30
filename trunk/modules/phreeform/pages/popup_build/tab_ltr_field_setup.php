@@ -26,9 +26,9 @@
     <thead class="ui-widget-header">
 	<tr><th id="fieldListHeading" colspan="10"><?php echo TEXT_FIELD_LIST; ?></th></tr>
     <tr>
-      <th><?php echo PHREEFORM_TBLFNAME; ?></th>
+      <th><?php echo TEXT_FIELDNAME; ?></th>
       <th><?php echo PHREEFORM_DISPNAME; ?></th>
-      <th><?php echo PHREEFORM_TEXTPROC; ?></th>
+      <th><?php echo TEXT_TEXT_PROCESSING; ?></th>
       <th><?php echo TEXT_ACTION; ?></th>
     </tr>
 	</thead>
@@ -39,7 +39,7 @@
       <td><?php echo html_input_field('fld_desc[]', $report->fieldlist[$i]->description, 'size="20" maxlength="25"'); ?></td>
      <td><?php  echo html_pull_down_menu('fld_proc[]', $pFields, $report->fieldlist[$i]->processing); ?></td>
       <td nowrap="nowrap" align="right">
-		<?php 
+		<?php
 		  echo html_icon('actions/view-fullscreen.png',   TEXT_MOVE,   'small', 'style="cursor:move"', '', '', 'move_fld_' . $i) . chr(10);
 		  echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'class="delete" calculateWidth();"') . chr(10);
 		?>

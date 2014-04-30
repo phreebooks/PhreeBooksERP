@@ -32,7 +32,7 @@ define('TEXT_COGS_ACCOUNT','Cost of Sales Account');
 define('TEXT_COST_METHOD','Cost Method');
 define('TEXT_STOCK_ITEMS','Stock');
 define('TEXT_MS_ITEMS','Master Stock');
-define('TEXT_ASSY_ITEMS','Assemblies');
+define('TEXT_ASSEMBLIES','Assemblies');
 define('TEXT_SERIAL_ITEMS','Serialized');
 define('TEXT_NS_ITEMS','Non-Stock');
 define('TEXT_SRV_ITEMS','Service');
@@ -70,6 +70,6 @@ define('INV_TOOLS_OUT_OF_BALANCE','SKU: %s -> stock indicates %s on hand but COG
 define('INV_TOOLS_IN_BALANCE','Your inventory balances are OK.');
 define('INV_TOOLS_STOCK_ROUNDING_ERROR','SKU: %s -> Stock indicates %s on hand but is less than your precision. Please repair your inventory balances, the stock on hand will be rounded to %s.');
 define('INV_TOOLS_BALANCE_CORRECTED','SKU: %s -> The inventory stock on hand has been changed to %s.');
-define('NEXT_SKU_NUM_DESC','Next SKU');
+define('TEXT_NEXT_SKU','Next SKU');
 
 ?>

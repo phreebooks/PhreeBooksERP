@@ -17,7 +17,7 @@
 //  Path: /modules/phreedom/defaults.php
 //
 
-// set the locale 
+// set the locale
 if (defined('TIMEZONE') && TIMEZONE <> '') date_default_timezone_set(TIMEZONE);
 $locale = (defined('LOCALE') && LOCALE <> '') ? LOCALE : 'en_US';
 setlocale(LC_ALL, $locale.'.UTF-8');
@@ -38,14 +38,14 @@ $DateChoices = array(
   'a' => TEXT_ALL,
   'b' => TEXT_RANGE,
   'c' => TEXT_TODAY,
-  'd' => TEXT_WEEK,
+  'd' => TEXT_THIS_WEEK,
   'e' => TEXT_WTD,
-  'l' => TEXT_CUR_PERIOD,
+  'l' => TEXT_CURRENT_PERIOD,
   'f' => TEXT_MONTH,
   'g' => TEXT_MTD,
-  'h' => TEXT_QUARTER,
+  'h' => TEXT_THIS_QUARTER,
   'i' => TEXT_QTD,
-  'j' => TEXT_YEAR,
+  'j' => TEXT_THIS_YEAR,
   'k' => TEXT_YTD,
 );
 
@@ -64,7 +64,7 @@ $decimal_lengths = array(
 );
 
 $check_box_choices = array(
-  '0' => TEXT_UNCHECKED, 
+  '0' => TEXT_UNCHECKED,
   '1' => TEXT_CHECKED,
 );
 

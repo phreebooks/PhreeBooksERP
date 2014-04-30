@@ -8,7 +8,7 @@
 // +-----------------------------------------------------------------+
 // Path: /modules/inventory/language/nl_nl/menu.php
 
-define('MENU_HEADING_INVENTORY','Voorraad');
+define('TEXT_INVENTORY','Voorraad');
 define('BOX_INV_MAINTAIN','Voorraad Manager');
 define('BOX_INV_NEW','Voorraad Toevoegen');
 define('BOX_INV_TRANSFER','Transporteer Voorraad');

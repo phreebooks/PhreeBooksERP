@@ -30,12 +30,12 @@ $phreeformTypes = array(
 );
 
 $Fonts = array (
-  'helvetica' => PF_FONT_HELVETICA,
-  'courier'   => PF_FONT_COURIER,
+  'helvetica' => TEXT_FONT_HELVETICA,
+  'courier'   => TEXT_FONT_COURIER,
   'times'     => PF_FONT_TIMES,
 );
 if (PDF_APP == 'TCPDF') {
-  $Fonts['freeserif'] = PF_FONT_SERIF;
+  $Fonts['freeserif'] = TEXT_FONT_SERIF;
   define('PDF_DEFAULT_FONT','freeserif');
 } else {
   define('PDF_DEFAULT_FONT','helvetica');
@@ -62,34 +62,34 @@ if (PDF_APP == 'TCPDF') { // TCPDF supports more paper sizes, see website for al
 
 // Available font sizes in units: points
 $FontSizes = array (
-  '8'  => '8', 
-  '9'  => '9', 
-  '10' => '10', 
-  '11' => '11', 
-  '12' => '12', 
-  '14' => '14', 
-  '16' => '16', 
-  '18' => '18', 
-  '20' => '20', 
-  '24' => '24', 
-  '28' => '28', 
-  '32' => '32', 
-  '36' => '36', 
-  '40' => '40', 
+  '8'  => '8',
+  '9'  => '9',
+  '10' => '10',
+  '11' => '11',
+  '12' => '12',
+  '14' => '14',
+  '16' => '16',
+  '18' => '18',
+  '20' => '20',
+  '24' => '24',
+  '28' => '28',
+  '32' => '32',
+  '36' => '36',
+  '40' => '40',
   '50' => '50',
 );
 
 // Available font sizes in units: points
 $LineSizes = array (
-  '1' => '1', 
-  '2' => '2', 
-  '3' => '3', 
-  '4' => '4', 
-  '5' => '5', 
-  '6' => '6', 
-  '7' => '7', 
-  '8' => '8', 
-  '9' => '9', 
+  '1' => '1',
+  '2' => '2',
+  '3' => '3',
+  '4' => '4',
+  '5' => '5',
+  '6' => '6',
+  '7' => '7',
+  '8' => '8',
+  '9' => '9',
   '10'=>'10',
 );
 
@@ -135,15 +135,15 @@ function build_1000_words($number, $position) {
   $number   = intval($number / 10);
   if ($number >= 1) $output = build_1000_words($number, $position);
   switch ($hundreds) {
-	case 1: $output .= ' ' . TEXT_ONE   . ' ' . TEXT_HUNDERD; break;
-	case 2: $output .= ' ' . TEXT_TWO   . ' ' . TEXT_HUNDERD; break;
-	case 3: $output .= ' ' . TEXT_THREE . ' ' . TEXT_HUNDERD; break;
-	case 4: $output .= ' ' . TEXT_FOUR  . ' ' . TEXT_HUNDERD; break;
-	case 5: $output .= ' ' . TEXT_FIVE  . ' ' . TEXT_HUNDERD; break;
-	case 6: $output .= ' ' . TEXT_SIX   . ' ' . TEXT_HUNDERD; break;
-	case 7: $output .= ' ' . TEXT_SEVEN . ' ' . TEXT_HUNDERD; break;
-	case 8: $output .= ' ' . TEXT_EIGHT . ' ' . TEXT_HUNDERD; break;
-	case 9: $output .= ' ' . TEXT_NINE  . ' ' . TEXT_HUNDERD; break;
+	case 1: $output .= ' ' . TEXT_ONE   . ' ' . TEXT_HUNDRED; break;
+	case 2: $output .= ' ' . TEXT_TWO   . ' ' . TEXT_HUNDRED; break;
+	case 3: $output .= ' ' . TEXT_THREE . ' ' . TEXT_HUNDRED; break;
+	case 4: $output .= ' ' . TEXT_FOUR  . ' ' . TEXT_HUNDRED; break;
+	case 5: $output .= ' ' . TEXT_FIVE  . ' ' . TEXT_HUNDRED; break;
+	case 6: $output .= ' ' . TEXT_SIX   . ' ' . TEXT_HUNDRED; break;
+	case 7: $output .= ' ' . TEXT_SEVEN . ' ' . TEXT_HUNDRED; break;
+	case 8: $output .= ' ' . TEXT_EIGHT . ' ' . TEXT_HUNDRED; break;
+	case 9: $output .= ' ' . TEXT_NINE  . ' ' . TEXT_HUNDRED; break;
   }
   $output .= build_100_words($tens);
   return $output . $suffix;
@@ -191,7 +191,7 @@ function build_100_words($number) {
   return $output;
 }
 
-// This array is imploded with the first entry = number of text boxes to build (0, 1 or 2), 
+// This array is imploded with the first entry = number of text boxes to build (0, 1 or 2),
 // the remaining is the dropdown menu listings
 $CritChoices = array(
    0 => '2:ALL:RANGE:EQUAL',
@@ -212,7 +212,7 @@ $PaperOrientation = array (
   'P' => TEXT_PORTRAIT,
   'L' => TEXT_LANDSCAPE,
 );
-	
+
 $FontAlign = array (
   'L' => TEXT_LEFT,
   'R' => TEXT_RIGHT,
@@ -223,33 +223,33 @@ $FontAlign = array (
 // A corresponding class function needs to be generated for each new function added.
 // The index code is also used to identify the form to include to set the properties.
 $FormEntries = array(
-  'Data'    => PF_FRM_DATALINE,
-  'TBlk'    => PF_FRM_DATABLOCK,
-  'Tbl'     => PF_FRM_DATATABLE,
+  'Data'    => TEXT_DATA_LINE,
+  'TBlk'    => TEXT_DATA_BLOCK,
+  'Tbl'     => TEXT_DATA_TABLE,
   'TDup'    => PF_FRM_DATATABLEDUP,
-  'Ttl'     => PF_FRM_DATATOTAL,
-  'LtrTpl'  => PF_FRM_LETTER_TEMPLATE,
-  'LtrData' => PF_FRM_LETTER_DATA,
+  'Ttl'     => TEXT_DATA_TOTAL,
+  'LtrTpl'  => TEXT_LETTER_TEMPLATE,
+  'LtrData' => TEXT_LETTER_DATA,
   'Text'    => PF_FRM_FIXEDTXT,
   'Img'     => PF_FRM_IMAGE,
-  'ImgLink' => PF_FRM_IMAGE_LINK,
-  'Rect'    => PF_FRM_RECTANGLE,
-  'Line'    => PF_FRM_LINE,
+  'ImgLink' => TEXT_IMAGE_LINK,
+  'Rect'    => TEXT_RECTANGLE,
+  'Line'    => TEXT_LINE,
   'CDta'    => PB_PF_COMPANY_DATA,
   'CBlk'    => PB_PF_COMPANY_BLOCK,
   'PgNum'   => PF_FRM_PAGENUM,
 );
 if (PDF_APP == 'TCPDF') {
-  $FormEntries['BarCode'] = PF_FRM_BAR_CODE;
+  $FormEntries['BarCode'] = TEXT_BAR_CODE_IMAGE;
 }
 
 // The function to process these values is: ProcessData
 // A case statement needs to be generated to process each new value
 $FormProcessing = array(
   ''         => TEXT_NONE,
-  'uc'       => PF_FRM_UPPERCASE,
-  'lc'       => PF_FRM_LOWERCASE,
-  'neg'      => PF_FRM_NEGATE,
+  'uc'       => TEXT_UPPERCASE,
+  'lc'       => TEXT_LOWERCASE,
+  'neg'      => TEXT_NEGATE,
   'n2wrd'    => PF_FRM_NUM_2_WORDS,
   'rnd2d'    => PF_FRM_RNDR2,
   'date'     => PF_FRM_DATE,
@@ -257,7 +257,7 @@ $FormProcessing = array(
   'null-dlr' => PF_FRM_NULLDLR,
   'euro'     => PF_FRM_CNVTEURO,
   'yesBno'   => PB_PF_YES_SKIP_NO,
-  'blank'    => PF_FRM_BLANK_DATA,
+  'blank'    => TEXT_BLANK_OUT_DATA,
   'printed'  => TEXT_PRINTED_INDICATOR,
 );
 
@@ -269,7 +269,7 @@ $TextProcessing = array(
   '2sp'     => PF_FRM_SPACE2,
   'comma'   => PF_FRM_COMMA,
   'com-sp'  => PF_FRM_COMMASP,
-  'nl'      => PF_FRM_NEWLINE,
+  'nl'      => TEXT_NEWLINE,
   'semi-sp' => PF_FRM_SEMISP,
   'del-nl'  => PF_FRM_DELNL,
 );
@@ -311,7 +311,7 @@ $joinSyntax = array(
 if (file_exists(DIR_FS_MODULES."phreeform/custom/extra_phreeform.php")) { // user custom additions
 	require_once (DIR_FS_MODULES . "phreeform/custom/extra_phreeform.php");
 }
-foreach ($admin_classes as $key => $class) { 
+foreach ($admin_classes as $key => $class) {
   if (file_exists(DIR_FS_MODULES . "$key/config_phreeform.php")) {
 	gen_pull_language($key, 'admin');
     require_once (DIR_FS_MODULES . "$key/config_phreeform.php");
@@ -341,7 +341,7 @@ function ProcessData($strData, $Process) {
 		case 'printed': return ($strData) ? '' : TEXT_DUPLICATE;
   	}
   	// now try loaded modules for processing
-  	foreach ($admin_classes as $key => $class) { 
+  	foreach ($admin_classes as $key => $class) {
     	$mod_function = "pf_process_$key";
     	if (function_exists($mod_function)) $strData = $mod_function($strData, $Process);
   	}

@@ -29,7 +29,7 @@ define ("TEXT_ASSETS", "Vermögen");
 define ("TEXT_BUILDING", "Bauen");
 define ("TEXT_COMPUTER", "Computer");
 define ("TEXT_CONDITION", "Zustand");
-define ("TEXT_DETAIL_DESCRIPTION", "Beschreibung von");
+define ("TEXT_DETAILED_DESCRIPTION", "Beschreibung von");
 define ("TEXT_EQUIP", "Werkzeuge und Geräte");
 define ("TEXT_FURNITURE", "Möbel");
 define ("text_image", "Bild");
@@ -44,7 +44,7 @@ define ("TEXT_VEHICLE", "Fahrzeug");
 define ("ASSETS_HEADING_NEW_ITEM", "Neue Asset");
 define ("ASSETS_ENTER_ASSET_ID", "Create a New Asset");
 define ("ASSETS_ENTRY_ASSET_TYPE", "Geben Sie den Asset-Typ");
-define ("ASSETS_ENTRY_ASSETS_TYPE", "Asset-Typ");
+define ("TEXT_ASSET_TYPE", "Asset-Typ");
 define ("ASSETS_ENTRY_FULL_PRICE", "Ursprünglichen Kosten");
 define ("ASSETS_ENTRY_ACCT_SALES", "GL Asset Konto");
 define ("ASSETS_ENTRY_ACCT_INV", "GL Abschreibungen Konto");
@@ -53,11 +53,11 @@ define ("ASSETS_ENTRY_ASSETS_SERIALIZE", "Hersteller / Modell / VIN");
 define ("ASSETS_DATE_ACCOUNT_CREATION", "Asset Purchase Date");
 define ("ASSETS_DATE_LAST_UPDATE", "Letzte Mantainence Datum");
 define ("ASSETS_DATE_LAST_JOURNAL_DATE", "Asset Pensionieren Datum");
-define ("ASSETS_PURCHASE_CONDITION", "Bestellen Zustand");
+define ("TEXT_PURCHASE_CONDITION", "Bestellen Zustand");
 define ("ASSETS_ENTRY_IMAGE_PATH", "Bild Relative Path");
 define ("ASSETS_MSG_COPY_INTRO", "Geben Sie die Asset-ID für die neue Anlageklasse.");
 define ("ASSETS_MSG_RENAME_INTRO", "Geben Sie die neue Asset-ID, um diese Anlageklasse umzubenennen.");
 /************ Javascript definiert *********/
-define ("ASSETS_MSG_DELETE_ASSET", "Sind Sie sicher, dass Sie diese Anlageklasse löschen?"); 
+define ("ASSETS_MSG_DELETE_ASSET", "Sind Sie sicher, dass Sie diese Anlageklasse löschen?");
 
 ?>

@@ -23,10 +23,10 @@
 //
 
 // Modul-Informationen
-define ('MODULE_CONTACTS_TITLE', 'Modul Kontakte');
+define ('TEXT_CONTACTS_MODULE', 'Modul Kontakte');
 define ('MODULE_CONTACTS_DESCRIPTION', 'Die Kontakte Modul verwaltet alle Kunden, Lieferanten, Mitarbeiter, Niederlassungen und Projekten in den PhreeSoft Business Toolkit verwendet <b>. HINWEIS:! Dies ist ein Kernmodul und sollte nicht entfernt werden </ b>') ;
 // Überschriften
-define ('BOX_CONTACTS_ADMIN', 'Kontakte Administration');
+define ('TEXT_CONTACTS_ADMINISTRATION', 'Kontakte Administration');
 define ('TEXT_BILLING_PREFS', 'Billing Address Book Einstellungen');
 define ('TEXT_SHIPPING_PREFS', 'Versandkosten Adressbuch Einstellungen');
 // Allgemeine
@@ -42,7 +42,7 @@ define ('CONTACT_SHIP_FIELD_REQ', 'Ob zu verlangen Feld: %s, um eine neue Versan
 define ('HR_POPUP_WINDOW_TITLE', 'Kategorien');
 define ('HR_HEADING_SUBACCOUNT', 'Lehrstuhlgruppe');
 define ('HR_EDIT_INTRO', 'Bitte führen Sie alle notwendigen Änderungen durch');
-define ('HR_ACCOUNT_ID', 'Department ID');
+define ('TEXT_DEPARTMENT_ID', 'Department ID');
 define ('HR_INFO_SUBACCOUNT', 'Ist diese Abteilung eine Unterabteilung?');
 define ('HR_INFO_PRIMARY_ACCT_ID', 'Ja, auch wählen primären Abteilung:');
 define ('HR_INFO_ACCOUNT_TYPE', 'Abteilung Art');
@@ -55,7 +55,7 @@ define ('HR_DISPLAY_NUMBER_OF_DEPTS', TEXT_DISPLAY_NUMBER . "Abteilungen");
 define ('HR_DEPARTMENT_REF_ERROR', 'Die Abteilung kann nicht dieselbe sein wie dieser Unterabteilung gerettet!');
 define ('HR_LOG_DEPARTMENTS', 'Kategorien -');
 /************************** (Abteilung Typen) ******************* ****************************/
-define ('SETUP_TITLE_DEPT_TYPES', 'Abteilung Typen');
+define ('TEXT_DEPARTMENT_TYPES', 'Abteilung Typen');
 define ('SETUP_INFO_DEPT_TYPES_NAME', 'Abteilung Typ Name');
 define ('SETUP_DEPT_TYPES_INSERT_INTRO', 'Bitte geben Sie die neue Abteilung Art');
 define ('SETUP_DEPT_TYPES_DELETE_INTRO', 'Sind Sie sicher, dass Sie diese Abteilung Typ löschen?');
@@ -79,7 +79,7 @@ define ('SETUP_PROJECT_COSTS_LOG', 'Projektkosten -');
 define ('SETUP_PROJECT_COSTS_DELETE_ERROR', 'kann nicht gelöscht werden dieses Projekt kosten, sie wird die Verwendung in einem Tagebucheintrag.');
 define ('SETUP_DISPLAY_NUMBER_OF_PROJECT_COSTS', TEXT_DISPLAY_NUMBER . "Projektkosten");
 /************************** (Projektphasen) ******************* ****************************/
-define ('SETUP_TITLE_PROJECTS_PHASES', 'Projektphasen');
+define ('TEXT_PROJECT_PHASES', 'Projektphasen');
 define ('TEXT_COST_BREAKDOWN', 'Cost Breakdown');
 define ('SETUP_INFO_COST_BREAKDOWN', 'Verwenden Sie Kostenaufstellungen für diese Phase?');
 define ('SETUP_PROJECT_PHASES_INSERT_INTRO', 'Bitte geben Sie die neue Projektphase mit seinen Eigenschaften');

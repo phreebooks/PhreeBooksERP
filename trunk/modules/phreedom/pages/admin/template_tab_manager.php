@@ -19,9 +19,9 @@
 //
 
 ?>
-<div title="<?php echo BOX_COMPANY_MANAGER;?>" id="tab_manager">
+<div title="<?php echo TEXT_COMPANY_MANAGER;?>" id="tab_manager">
   <fieldset>
-  <legend><?php echo SETUP_CO_MGR_COPY_CO; ?></legend>
+  <legend><?php echo TEXT_NEW_COPY_COMPANY; ?></legend>
     <table>
 	  <tr>
 	    <td colspan="2" align="right"><?php echo html_button_field('add_button', TEXT_COPY, 'onclick="submitToDo(\'copy_co\')"'); ?></td>
@@ -56,7 +56,7 @@
 	  </tr>
 	  <tr>
 	    <th width="40%"><?php echo TEXT_MODULE;    ?></th>
-	    <th width="20%"><?php echo TEXT_DEF_DATA;  ?></th>
+	    <th width="20%"><?php echo TEXT_BASIC_DATA;  ?></th>
 	    <th width="20%"><?php echo TEXT_DEMO_DATA; ?></th>
 	    <th width="20%"><?php echo TEXT_ALL_DATA;  ?></th>
 	  </tr>

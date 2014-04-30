@@ -2,11 +2,11 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <title><?php echo HEADING_TITLE; ?></title>
+  <title><?php echo HEADING_TITLE_PHREEHELP; ?></title>
   <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/stylesheet.css'; ?>" />
   <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/jquery-ui.css'; ?>" />
   <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/easyui.css'; ?>" />
-  <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/icon.css'; ?>" />	
+  <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/icon.css'; ?>" />
   <link rel="shortcut icon" type="image/ico" href="favicon.ico" />
   <script type="text/javascript">
     var icon_path        = '<?php echo DIR_WS_ICONS; ?>';

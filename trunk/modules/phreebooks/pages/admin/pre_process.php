@@ -113,8 +113,8 @@ $sel_order_lines = array(
 );
 
 $sel_inv_due = array( // invoice date versus due date for aging
- array('id' => '0', 'text' => BNK_INVOICE_DATE),
- array('id' => '1', 'text' => BNK_DUE_DATE),
+ array('id' => '0', 'text' => TEXT_INVOICE_DATE),
+ array('id' => '1', 'text' => TEXT_DUE_DATE),
 );
 
 // load available charts based on language

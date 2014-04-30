@@ -29,7 +29,7 @@ $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('07.04.01');
 $toolbar->search_period = $acct_period;
-echo $toolbar->build_toolbar($add_search = true); 
+echo $toolbar->build_toolbar($add_search = true);
 // Build the page
 ?>
 <h1><?php echo INV_POPUP_WINDOW_TITLE; ?></h1>
@@ -37,10 +37,10 @@ echo $toolbar->build_toolbar($add_search = true);
 <table class="ui-widget" style="border-style:none;">
  <tbody class="ui-widget-content">
   <tr>
-	<td><?php echo TEXT_FILTERS . '&nbsp;' . TEXT_SHOW_INACTIVE . '&nbsp;' . html_checkbox_field('f0', '1', $f0); ?></td>
-	<td><?php echo '&nbsp;' . INV_ENTRY_INVENTORY_TYPE . '&nbsp;' . html_pull_down_menu('f1', $type_select_list, $f1, ''); ?></td>
+	<td><?php echo TEXT_FILTERS. " : " . '&nbsp;' . TEXT_SHOW_INACTIVE . '&nbsp;' . html_checkbox_field('f0', '1', $f0); ?></td>
+	<td><?php echo '&nbsp;' . TEXT_INVENTORY_TYPES . '&nbsp;' . html_pull_down_menu('f1', $type_select_list, $f1, ''); ?></td>
 <?php if ($account_type == 'v' && $contactID) {?>
-	<td><?php echo '&nbsp;' . INV_HEADING_PREFERRED_VENDOR . '&nbsp;' . html_checkbox_field('f2', '1', $f2); ?></td>
+	<td><?php echo '&nbsp;' . TEXT_PREFERRED_VENDOR . '&nbsp;' . html_checkbox_field('f2', '1', $f2); ?></td>
 <?php } ?>
 	<td><?php echo '&nbsp;' . html_button_field('apply', TEXT_APPLY, 'onclick="submitToDo();"'); ?></td>
   </tr>

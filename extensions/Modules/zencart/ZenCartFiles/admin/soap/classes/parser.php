@@ -27,7 +27,7 @@ class parser {
 	curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
 //	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 10); // times out after 10 seconds 
+	curl_setopt($ch, CURLOPT_TIMEOUT, 10); // times out after 10 seconds
 //	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 	if (strtoupper($method) == 'POST') {
 	  curl_setopt($ch, CURLOPT_POST, true);
@@ -73,7 +73,7 @@ class parser {
 	    if (strpos($xml, $end_tag) === false) throw new Exception('ZenCart XML parse error looking for end tag: ' . $tag . ' but could not find it!');
 	    while(true) {
 		  $runaway++;
-		  if ($runaway > 10000) throw new Exception('ZenCart Runaway counter 1 reached. There is an error in the xml entry!');	
+		  if ($runaway > 10000) throw new Exception('ZenCart Runaway counter 1 reached. There is an error in the xml entry!');
 	      $data = trim(substr($xml, $taglen, strpos($xml, $end_tag) - $taglen));
 		  if (isset($output->$tag)) {
 		    if (!is_array($output->$tag)) $output->$tag = array($output->$tag);
@@ -89,7 +89,7 @@ class parser {
 	    return $xml;
 	  }
 	  $runaway++;
-	  if ($runaway > 10000) throw new Exception('ZenCart Runaway counter 2 reached. There is an error in the xml entry!');	
+	  if ($runaway > 10000) throw new Exception('ZenCart Runaway counter 2 reached. There is an error in the xml entry!');
     }
     return $output;
   }
@@ -144,7 +144,7 @@ class parser {
 	  default:
 		$strResponse .= $this->xmlEntry('Result', 'error');
 		$strResponse .= $this->xmlEntry('Code', $code);
-		$strResponse .= $this->xmlEntry('Text', SOAP_UNEXPECTED_ERROR);
+		$strResponse .= $this->xmlEntry('Text', TEXT_UNEXPECTED_ERROR);
 	}
 	$strResponse .= '</Response>';
 	echo $strResponse;

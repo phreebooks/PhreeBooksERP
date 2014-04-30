@@ -367,27 +367,27 @@ class admin extends \core\classes\admin {
 	}
 
 	function load_reports() {
-		$id = $this->add_report_heading(MENU_HEADING_CUSTOMERS,   'cust');
+		$id = $this->add_report_heading(TEXT_CUSTOMERS,   'cust');
 		$this->add_report_folder($id, TEXT_REPORTS,           'cust',      'fr');
 		$this->add_report_folder($id, PB_PF_CUST_QUOTE,       'cust:quot', 'ff');
-		$this->add_report_folder($id, PB_PF_SALES_ORDER,      'cust:so',   'ff');
+		$this->add_report_folder($id, TEXT_SALES_ORDER,      'cust:so',   'ff');
 		$this->add_report_folder($id, PB_PF_INV_PKG_SLIP,     'cust:inv',  'ff');
 		$this->add_report_folder($id, PB_PF_CUST_CRD_MEMO,    'cust:cm',   'ff');
 		$this->add_report_folder($id, PB_PF_CUST_STATEMENT,   'cust:stmt', 'ff');
 		$this->add_report_folder($id, PB_PF_COLLECT_LTR,      'cust:col',  'ff');
 		$this->add_report_folder($id, PB_PF_CUST_LABEL,       'cust:lblc', 'ff');
-		$id = $this->add_report_heading(MENU_HEADING_VENDORS,     'vend');
+		$id = $this->add_report_heading(TEXT_VENDORS,     'vend');
 		$this->add_report_folder($id, TEXT_REPORTS,           'vend',      'fr');
 		$this->add_report_folder($id, PB_PF_VENDOR_QUOTE,     'vend:quot', 'ff');
-		$this->add_report_folder($id, PB_PF_PURCH_ORDER,      'vend:po',   'ff');
+		$this->add_report_folder($id, TEXT_PURCH_ORDER,      'vend:po',   'ff');
 		$this->add_report_folder($id, PB_PF_VENDOR_CRD_MEMO,  'vend:cm',   'ff');
 		$this->add_report_folder($id, PB_PF_VENDOR_LABEL,     'vend:lblv', 'ff');
 		$this->add_report_folder($id, PB_PF_VENDOR_STATEMENT, 'vend:stmt', 'ff');
-		$id = $this->add_report_heading(MENU_HEADING_BANKING,     'bnk');
+		$id = $this->add_report_heading(TEXT_BANKING,     'bnk');
 		$this->add_report_folder($id, TEXT_REPORTS,           'bnk',       'fr');
 		$this->add_report_folder($id, PB_PF_DEP_SLIP,         'bnk:deps',  'ff');
-		$this->add_report_folder($id, PB_PF_BANK_CHECK,       'bnk:chk',   'ff');
-		$this->add_report_folder($id, PB_PF_SALES_REC,        'bnk:rcpt',  'ff');
+		$this->add_report_folder($id, TEXT_BANK_CHECKS,       'bnk:chk',   'ff');
+		$this->add_report_folder($id, TEXT_SALES_RECEIPTS,        'bnk:rcpt',  'ff');
 		$id = $this->add_report_heading(MENU_HEADING_GL,          'gl');
 		$this->add_report_folder($id, TEXT_REPORTS,           'gl',        'fr');
 		parent::load_reports();

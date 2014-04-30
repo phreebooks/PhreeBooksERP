@@ -61,7 +61,7 @@ switch ($_REQUEST['action']) {
 				}
 		    }
 			$db->transCommit();
-		    gen_add_audit_log(TEXT_JID_ENTRY, JOURNAL_ID==19 ? BOX_CUSTOMER_DEPOSITS: BOX_VENDOR_DEPOSITS . ' - ' . TEXT_DELETE, $delOrd->purchase_invoice_id, $delOrd->total_amount);
+		    gen_add_audit_log(TEXT_ARGS_ENTRY, JOURNAL_ID==19 ? TEXT_CUSTOMER_DEPOSITS: TEXT_VENDOR_DEPOSITS . ' - ' . TEXT_DELETE, $delOrd->purchase_invoice_id, $delOrd->total_amount);
 		    gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		    // *************** END TRANSACTION *************************
 		}catch(Exception $e){

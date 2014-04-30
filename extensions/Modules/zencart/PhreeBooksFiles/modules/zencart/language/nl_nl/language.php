@@ -11,12 +11,12 @@
 define('BOX_ZENCART_ADMIN','ZenCart Administratie');
 define('ZENCART_CONFIRM_MESSAGE','Uw order verzonden %s via %s %s, tracking nummer: %s');
 define('ZENCART_BULK_UPLOAD_SUCCESS','Succesvol %s item(s) geüpload naar de ZenCart e-store.');
-define('ZENCART_TEXT_ERROR','Error # ');
+define('TEXT_ERROR','Error # ');
 define('ZENCART_IVENTORY_UPLOAD','ZenCart Upload');
 define('ZENCART_BULK_UPLOAD_TITLE','Bulk Upload');
 define('ZENCART_BULK_UPLOAD_INFO','Bulk upload alle geselecteerde producten naar de ZenCart e-commerce site. Afbeeldingen zijn uitgesloten tenzij de checkbox is geselecteerd.');
 define('ZENCART_BULK_UPLOAD_TEXT','Bulk upload producten naar e-store');
-define('ZENCART_INCLUDE_IMAGES','Inclusief Afbeeldingen');
+define('TEXT_INCLUDE_IMAGES','Inclusief Afbeeldingen');
 define('ZENCART_BULK_UPLOAD_BTN','Bulk Upload');
 define('ZENCART_PRODUCT_SYNC_TITLE','Synchroniseer Producten');
 define('ZENCART_PRODUCT_SYNC_INFO','Synchroniseer actieve producten van uit de PhreeBooks database. Alle Artikelen die niet getoond mogen worden worden weer gegeven. Zij moeten handmatig verwijderd worden uit ZenCart, via het Admin gedeelte van ZenCart.');
@@ -34,7 +34,7 @@ define('ZENCART_INVALID_ACTION','Ongeldige Actie in ZenCart interface class. Gea
 define('ZENCART_INVALID_SKU','Error in voorraad artikel id, kon het record niet in database vinden.');
 define('ZENCART_UPLOAD_PRODUCT','ZenCart Product Upload');
 define('ZENCART_BULK_UPLOAD','ZenCart Bulk Upload');
-define('ZENCART_PRODUCT_SYNC','ZenCart Product Sync');
+define('TEXT_ZENCART_PRODUCT_SYNC','ZenCart Product Sync');
 define('ZENCART_SHIP_CONFIRM','ZenCart Verzending Bevestigen');
 define('ZENCART_INVENTORY_CATALOG_IS_EMPTY','Het veld webshop menu / catalog is leeg. Dit veld is vereist wanneer u een product wil uploaden.');
 define('ZENCART_CATALOG_URL','ZenCart - product URL.');

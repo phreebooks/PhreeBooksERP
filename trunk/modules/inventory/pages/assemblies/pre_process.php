@@ -73,8 +73,8 @@ switch ($_REQUEST['action']) {
 			$db->transStart();
 			if (!$glEntry->Post($glEntry->id ? 'edit' : 'insert')) throw new \core\classes\userException(GL_ERROR_NO_POST);
 	  		$db->transCommit();	// post the chart of account values
-	  		gen_add_audit_log(INV_LOG_ASSY . ($_REQUEST['action']=='save' ? TEXT_SAVE : TEXT_EDIT), $sku, $qty);
-	  		$messageStack->add(INV_POST_ASSEMBLY_SUCCESS . $sku, 'success');
+	  		gen_add_audit_log(TEXT_INVENTORY_ASSEMBLY . ' - ' . ($_REQUEST['action']=='save' ? TEXT_SAVE : TEXT_EDIT), $sku, $qty);
+	  		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_ASSEMBLED, TEXT_SKU , $sku), 'success');
 	  		if (DEBUG) $messageStack->write_debug();
 	  		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 			// *************** END TRANSACTION *************************
@@ -94,7 +94,7 @@ switch ($_REQUEST['action']) {
 		  	$db->transStart();
 		  	if ($delAssy->unPost('delete')) {	// unpost the prior assembly
 				$db->transCommit(); // if not successful rollback will already have been performed
-				gen_add_audit_log(INV_LOG_ASSY . TEXT_DELETE, $delAssy->journal_rows[0]['sku'], $delAssy->journal_rows[0]['qty']);
+				gen_add_audit_log(TEXT_INVENTORY_ASSEMBLY . ' - ' . TEXT_DELETE, $delAssy->journal_rows[0]['sku'], $delAssy->journal_rows[0]['qty']);
 				if (DEBUG) $messageStack->write_debug();
 				gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 				// *************** END TRANSACTION *************************

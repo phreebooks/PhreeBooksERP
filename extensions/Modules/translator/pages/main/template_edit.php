@@ -28,14 +28,14 @@ $toolbar->icon_list['save']['params']   = 'onclick="submitToDo(\'save\')"';
 $toolbar->icon_list['print']['show']    = false;
 echo $toolbar->build_toolbar();
 ?>
-<h1><?php echo BOX_TRANSLATOR_MODULE; ?></h1>
+<h1><?php echo TEXT_TRANSLATOR_ASS; ?></h1>
 <div id="filter_bar">
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
  <tbody class="ui-widget-content">
   <tr>
     <td><?php echo html_button_field('export', TEXT_CHECK_ALL, 'onclick="checkAllBoxes()"'); ?></td>
     <td>&nbsp;&nbsp;</td>
-	<td><?php echo TEXT_FILTERS . '&nbsp;' . TEXT_MODULE . html_pull_down_menu('f0', $sel_modules,    $mod); ?></td>
+	<td><?php echo TEXT_FILTERS. " : " . '&nbsp;' . TEXT_MODULE . html_pull_down_menu('f0', $sel_modules,    $mod); ?></td>
 	<td><?php echo '&nbsp;' . TEXT_LANGUAGE .   '&nbsp;' . html_pull_down_menu('f1', $sel_language,   $lang); ?></td>
 	<td><?php echo '&nbsp;' . TEXT_VERSION  .   '&nbsp;' . html_pull_down_menu('f2', $sel_version,    $ver); ?></td>
 	<td><?php echo '&nbsp;' . TEXT_TRANSLATED . '&nbsp;' . html_pull_down_menu('f3', $sel_translated, $f3); ?></td>
@@ -71,7 +71,7 @@ echo $toolbar->build_toolbar();
 	<td><?php echo html_textarea_field('x:'.$i,   46, 3, htmlspecialchars(constant($const)), 'readonly="readonly"'); ?></td>
 <?php } ?>
 	<td><?php echo html_input_field('c:'.$i, $const, 'readonly="readonly" size="48"'); ?></td>
-  </tr> 
+  </tr>
 <?php
 	  $i++;
       $query_result->MoveNext();

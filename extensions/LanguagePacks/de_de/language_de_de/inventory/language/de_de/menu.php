@@ -23,7 +23,7 @@
 //
 
 // Enter the new menu category heading if necessary
-define ('MENU_HEADING_INVENTORY', 'Inventory');
+define ('TEXT_INVENTORY', 'Inventory');
 
 // Menü Titel
 define ('BOX_INV_MAINTAIN', 'Edit / pflegen');

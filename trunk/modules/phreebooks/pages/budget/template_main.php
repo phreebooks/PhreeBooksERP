@@ -33,17 +33,17 @@ $toolbar->add_icon('copy', 'onclick="if (confirm(\'' . GL_COPY_ACTUAL_CONFIRM  .
 $toolbar->icon_list['copy']['text']     = GL_BUDGET_COPY_HINT;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help();
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
-<h1><?php echo GL_BUDGET_HEADING_TITLE; ?></h1>
+<h1><?php echo sprintf(TEXT_MANAGER_ARGS, TEXT_BUDGET); ?></h1>
   <div style="text-align:center"><?php echo '<p>' . GL_BUDGET_INTRO_TEXT . '</p>'; ?></div>
   <div style="text-align:center">
     <?php echo TEXT_GL_ACCOUNT; ?>
     <?php echo html_pull_down_menu('gl_acct', gen_coa_pull_down(), $gl_acct, 'onchange="submit()"'); ?>
     <?php echo html_icon('actions/view-refresh.png', TEXT_LOAD_ACCT_PRIOR, 'small', 'onclick="fetchAcct();"'); ?>
     <?php echo html_icon('actions/window-new.png', TEXT_CLEAR, 'small', 'onclick="copyBudget(\'clear\');"'); ?>
-    <?php echo GL_FISCAL_YEAR; ?>
+    <?php echo TEXT_FISCAL_YEAR; ?>
     <?php echo html_pull_down_menu('fy', get_fiscal_year_pulldown(), $fy, 'onchange="submit()"'); ?>
   </div>
   <table class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto">
@@ -60,7 +60,7 @@ echo $toolbar->build_toolbar();
    <tbody class="ui-widget-content">
 	<?php
 	$i = 0;
-	foreach ($fy_array as $value) { 
+	foreach ($fy_array as $value) {
 	  echo '<tr>' . chr(10);
 	  echo '  <td align="center">' . $value['period'] . html_hidden_field('id_' . $i, $value['id']) . '</td>' . chr(10);
 	  echo '  <td align="center">' . html_input_field('prior_'  . $i, $currencies->format($value['prior']), 'readonly="readonly" style="text-align:right"') . '</td>' . chr(10);

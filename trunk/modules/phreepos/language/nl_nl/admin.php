@@ -41,5 +41,5 @@ define('TEXT_MAX_DISCOUNT', 'stel het maximum aan korting in dat gegeven kan wor
 define('TEXT_PHREEPOS_TRANSACTION_TYPE','Selecteer het transactie type');
 define('TEXT_USE_TAX','Kan btw gebruikt worden.');
 define('TEXT_TAX','standaard btw');
-define('TEXT_OTHER_TRANS','Overige Transacties');
+define('TEXT_OTHER_TRANSACTION','Overige Transacties');
 ?>

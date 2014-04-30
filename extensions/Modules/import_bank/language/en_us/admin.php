@@ -27,5 +27,5 @@ define('IMPORT_BANK_CONFIG_SAVED','Saved import_bank config');
 define('TEXT_BANK_ACCOUNT','Bank account or iban');
 define('TEXT_ENTER_TRANSACTION','Enter new transaction template');
 define('TEXT_EDIT_TRANSACTION','Edit transaction template');
-define('TEXT_KNOWN_TRANSACTION','Transaction template');
+define('TEXT_TRANSACTION_TEMPLATE','Transaction template');
 ?>

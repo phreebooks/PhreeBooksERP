@@ -17,17 +17,17 @@
 //  Path: /modules/zencart/language/en_us/language.php
 //
 
-// Headings 
+// Headings
 define('BOX_ZENCART_ADMIN','Zencart Configuration');
 // General Defines
 define('ZENCART_CONFIRM_MESSAGE','Your order shipped %s via %s %s, tracking number: %s');
 define('ZENCART_BULK_UPLOAD_SUCCESS','Successfully uploaded %s item(s) to the ZenCart e-store.');
-define('ZENCART_TEXT_ERROR','Error # ');
+define('TEXT_ERROR','Error # ');
 define('ZENCART_IVENTORY_UPLOAD','ZenCart Upload');
 define('ZENCART_BULK_UPLOAD_TITLE','Bulk Upload');
 define('ZENCART_BULK_UPLOAD_INFO','Bulk upload all products selected to be displayed in the ZenCart e-commerce site. Images are not included unless the checkbox is checked.');
 define('ZENCART_BULK_UPLOAD_TEXT','Bulk upload products to e-store');
-define('ZENCART_INCLUDE_IMAGES','Include Images');
+define('TEXT_INCLUDE_IMAGES','Include Images');
 define('ZENCART_BULK_UPLOAD_BTN','Bulk Upload');
 define('ZENCART_PRODUCT_SYNC_TITLE','Synchronize Products');
 define('ZENCART_PRODUCT_SYNC_INFO','Synchronize active products from the PhreeBooks database (set to show in the catalog and active) with current listings from ZenCart. Any SKUs that should not be listed on Zencart are displayed. They need to be removed from ZenCart manually through the ZenCart admin interface.');
@@ -49,7 +49,7 @@ define('ZENCART_INVALID_SKU','Error in inventory item id, could not find the rec
 // Audit Log Messages
 define('ZENCART_UPLOAD_PRODUCT','ZenCart Product Upload');
 define('ZENCART_BULK_UPLOAD','ZenCart Bulk Upload');
-define('ZENCART_PRODUCT_SYNC','ZenCart Product Sync');
+define('TEXT_ZENCART_PRODUCT_SYNC','ZenCart Product Sync');
 define('ZENCART_SHIP_CONFIRM','ZenCart Ship Confirmation');
 define('ZENCART_INVENTORY_CATALOG_IS_EMPTY','The field webshop menu / catalog is empty. this field is required when you want to upload a product.');
 

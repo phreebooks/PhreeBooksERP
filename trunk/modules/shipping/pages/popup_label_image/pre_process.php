@@ -27,7 +27,7 @@ $label  = $_GET['label'];
 switch ($todo) {
   case 'notify':
   default:
-	$image = (!$label) ? SHIPPING_TEXT_NO_LABEL : '';
+	$image = (!$label) ? TEXT_NO_LABEL_FOUND : '';
 	// show the form with a button to download
 	break;
   case 'download':
@@ -47,7 +47,7 @@ switch ($todo) {
 	  echo $image;
 	  exit();
 	} else {
-	  $image = SHIPPING_TEXT_NO_LABEL;
+	  $image = TEXT_NO_LABEL_FOUND;
 	}
 	break;
 }

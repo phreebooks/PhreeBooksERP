@@ -52,7 +52,7 @@ $hidden_fields = '';
 	  <td><?php echo html_input_field('description', $description, 'size="65"', false); ?></td>
 	</tr>
 	<tr>
-	  <td align="right"><?php echo TEXT_DOCUMENTS . '&nbsp;'; ?></td>
+	  <td align="right"><?php echo TEXT_DOCUMENT_LIST . '&nbsp;'; ?></td>
 	  <td><?php echo html_input_field('ref_doc', $ref_doc, 'size="32"', false); ?></td>
 	  <td align="right"><?php echo TEXT_DRAWINGS . '&nbsp;'; ?></td>
 	  <td><?php echo html_input_field('ref_spec', $ref_spec, 'size="32"', false); ?></td>
@@ -69,7 +69,7 @@ $hidden_fields = '';
         </tr>
    </thead>
    <tbody id="wo_table" class="ui-widget-content">
-<?php 
+<?php
 if ($step_list) {
 	$odd = true;
 	for ($j=0, $i=1; $j<count($step_list); $j++, $i++) { ?>
@@ -81,7 +81,7 @@ if ($step_list) {
 		  </td>
 		  <td align="center"><?php echo html_input_field('desc_' . $i, $step_list[$j]['desc'], 'readonly="readonly" size="65" maxlength="64"'); ?></td>
 		  <td align="center">
-		    <?php 
+		    <?php
 		      echo html_icon('actions/go-up.png',             TEXT_MOVE_UP,   'small', 'onclick="moveUpTaskRow(' . $i . ');"');
 		      echo html_icon('actions/go-down.png',           TEXT_MOVE_DOWN, 'small', 'onclick="moveDownTaskRow(' . $i . ');"');
 		      echo html_icon('actions/edit-undo.png',         TEXT_INSERT,    'small', 'onclick="insertTaskRow(' . $i . ');"');

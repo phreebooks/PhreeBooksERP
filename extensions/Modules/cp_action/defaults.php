@@ -19,7 +19,7 @@
 //
 
 $status_codes = array(
-  '0'  => CAPA_STATUS_0, // do not remove from top position
+  '0'  => TEXT_PLEASE_SELECT, // do not remove from top position
   '1'  => CAPA_STATUS_1,
   '2'  => CAPA_STATUS_2,
   '3'  => CAPA_STATUS_3,

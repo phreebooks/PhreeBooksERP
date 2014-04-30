@@ -18,21 +18,21 @@
 //  Path: /modules/contacts/classes/type/b.php
 //  branches
 namespace contacts\classes\type;
-class b extends \contacts\classes\contacts{	
-	public $security_token = SECURITY_ID_MAINTAIN_BRANCH;
-	public $help		       = '07.08.04';
-	public $address_types  = array('bm', 'bs', 'bb', 'im');
-	public $type            = 'b';
-	
+class b extends \contacts\classes\contacts{
+	public $security_token	= SECURITY_ID_MAINTAIN_BRANCH;
+	public $help			= '07.08.04';
+	public $address_types	= array('bm', 'bs', 'bb', 'im');
+	public $type			= 'b';
+	public $title			= TEXT_BRANCH;
+
 	public function __construct(){
-		$this->page_title_new = sprintf(BOX_TEXT_NEW_TITLE, TEXT_BRANCH);
 		$this->tab_list[] = array('file'=>'template_notes',		'tag'=>'notes',    'order'=>40, 'text'=>TEXT_NOTES);
 		$this->tab_list[] = array('file'=>'template_b_general',	'tag'=>'general',  'order'=> 1, 'text'=>TEXT_GENERAL);
 		parent::__construct();
 	}
-	
+
   	function delete($id) {
-	  	global $db; 
+	  	global $db;
 	  	if ( $this->id == '' ) $this->id = $id;
 		// error check
 		return parent::do_delete();

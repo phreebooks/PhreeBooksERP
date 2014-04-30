@@ -53,35 +53,35 @@ echo $toolbar->build_toolbar();
 		<td class="dataTableContent"><?php echo html_input_field('ship_primary_name', $sInfo->ship_primary_name, 'size="33" maxlength="32"', true); ?></td>
 	</tr>
 	<tr>
-		<td class="dataTableContent"><?php echo GEN_CONTACT; ?></td>
+		<td class="dataTableContent"><?php echo TEXT_ATTENTION; ?></td>
 		<td class="dataTableContent"><?php echo html_input_field('ship_contact', $sInfo->ship_contact, 'size="33" maxlength="32"'); ?></td>
 	</tr>
 	<tr>
-		<td class="dataTableContent"><?php echo GEN_ADDRESS1; ?></td>
+		<td class="dataTableContent"><?php echo TEXT_ADDRESS1; ?></td>
 		<td class="dataTableContent"><?php echo html_input_field('ship_address1', $sInfo->ship_address1, 'size="33" maxlength="32"', true); ?></td>
 	</tr>
 	<tr>
-		<td class="dataTableContent"><?php echo GEN_ADDRESS2; ?></td>
+		<td class="dataTableContent"><?php echo TEXT_ADDRESS2; ?></td>
 		<td class="dataTableContent"><?php echo html_input_field('ship_address2', $sInfo->ship_address2, 'size="33" maxlength="32"'); ?></td>
 	</tr>
 	<tr>
-		<td class="dataTableContent"><?php echo GEN_CITY_TOWN; ?></td>
+		<td class="dataTableContent"><?php echo TEXT_CITY_TOWN; ?></td>
 		<td class="dataTableContent"><?php echo html_input_field('ship_city_town', $sInfo->ship_city_town, 'size="25" maxlength="24"', true); ?></td>
 	</tr>
 	<tr>
-		<td class="dataTableContent"><?php echo GEN_STATE_PROVINCE; ?></td>
+		<td class="dataTableContent"><?php echo TEXT_STATE_PROVINCE; ?></td>
 		<td class="dataTableContent"><?php echo html_input_field('ship_state_province', strtoupper($sInfo->ship_state_province), 'size="3" maxlength="2"', true); ?></td>
 	</tr>
 	<tr>
-		<td class="dataTableContent"><?php echo GEN_POSTAL_CODE; ?></td>
+		<td class="dataTableContent"><?php echo TEXT_POSTAL_CODE; ?></td>
 		<td class="dataTableContent"><?php echo html_input_field('ship_postal_code', $sInfo->ship_postal_code, 'size="11" maxlength="10"', true); ?></td>
 	</tr>
 	<tr>
-		<td class="dataTableContent"><?php echo GEN_COUNTRY; ?></td>
+		<td class="dataTableContent"><?php echo TEXT_COUNTRY; ?></td>
 		<td class="dataTableContent"><?php echo html_pull_down_menu('ship_country_code', gen_get_countries(), $sInfo->ship_country_code) . chr(10); ?></td>
 	</tr>
 	<tr>
-		<td class="dataTableContent"><?php echo GEN_TELEPHONE1; ?></td>
+		<td class="dataTableContent"><?php echo TEXT_TELEPHONE; ?></td>
 		<td class="dataTableContent"><?php echo html_input_field('ship_telephone1', $sInfo->ship_telephone1, 'size="17" maxlength="16"', true); ?></td>
 	</tr>
 </table>
@@ -93,8 +93,8 @@ echo $toolbar->build_toolbar();
 		<td class="dataTableContent"><?php echo SHIPPING_EMAIL_RECIPIENT; ?></td>
 		<td class="dataTableContent">
 			<?php echo html_checkbox_field('email_rcp_ship', '0', $sInfo->email_rcp_ship = true, '') . ' ' . TEXT_SHIP . ' ';
-			echo html_checkbox_field('email_rcp_excp', '1', $sInfo->email_rcp_excp, '') . ' ' . SHIPPING_TEXT_EXCEPTION . ' ';
-			echo html_checkbox_field('email_rcp_dlvr', '2', $sInfo->email_rcp_dlvr, '') . ' ' . SHIPPING_TEXT_DELIVER; ?>
+			echo html_checkbox_field('email_rcp_excp', '1', $sInfo->email_rcp_excp, '') . ' ' . TEXT_EXCEPTION . ' ';
+			echo html_checkbox_field('email_rcp_dlvr', '2', $sInfo->email_rcp_dlvr, '') . ' ' . TEXT_DELIVER; ?>
 		</td>
 	</tr>
 	<tr>
@@ -105,8 +105,8 @@ echo $toolbar->build_toolbar();
 		<td class="dataTableContent"><?php echo SHIPPING_EMAIL_SENDER; ?></td>
 		<td class="dataTableContent">
 			<?php echo html_checkbox_field('email_sndr_ship', '0', $sInfo->email_sndr_ship, '') . ' ' . TEXT_SHIP . ' ';
-			echo html_checkbox_field('email_sndr_excp', '1', $sInfo->email_sndr_excp = true, '') . ' ' . SHIPPING_TEXT_EXCEPTION . ' ';
-			echo html_checkbox_field('email_sndr_dlvr', '2', $sInfo->email_sndr_dlvr, '') . ' ' . SHIPPING_TEXT_DELIVER; ?>
+			echo html_checkbox_field('email_sndr_excp', '1', $sInfo->email_sndr_excp = true, '') . ' ' . TEXT_EXCEPTION . ' ';
+			echo html_checkbox_field('email_sndr_dlvr', '2', $sInfo->email_sndr_dlvr, '') . ' ' . TEXT_DELIVER; ?>
 		</td>
 	</tr>
 	<tr>
@@ -119,11 +119,11 @@ echo $toolbar->build_toolbar();
 <legend><?php echo SRV_SHIP_UPS_BILL_DETAIL; ?></legend>
 <table border="0">
 	<tr>
-		<td class="dataTableContent"><?php echo SHIPPING_BILL_CHARGES_TO; ?></td>
+		<td class="dataTableContent"><?php echo TEXT_BILL_CHARGES_TO; ?></td>
 		<td class="dataTableContent"><?php echo html_pull_down_menu('bill_charges', gen_build_pull_down($shipping_defaults['bill_options']), $sInfo->bill_charges); ?></td>
 	</tr>
 	<tr>
-		<td class="dataTableContent"><?php echo SHIPPING_THIRD_PARTY; ?></td>
+		<td class="dataTableContent"><?php echo TEXT_THIRD_PARTY; ?></td>
 		<td class="dataTableContent"><?php echo html_input_field('bill_acct', $sInfo->bill_acct); ?></td>
 	</tr>
 	<tr>
@@ -146,14 +146,14 @@ echo $toolbar->build_toolbar();
 	</tr>
 </table>
 </fieldset>
-<fieldset id="recp"><legend><?php echo SHIPPING_SHIPMENT_DETAILS; ?></legend>
+<fieldset id="recp"><legend><?php echo TEXT_SHIPMENT_DETAILS; ?></legend>
 <table border="0">
 	<tr>
-		<td class="dataTableContent"><?php echo SHIPPING_TEXT_SHIPMENT_DATE; ?></td>
+		<td class="dataTableContent"><?php echo TEXT_SHIPMENT_DATE; ?></td>
 		<td class="dataTableContent"><?php echo html_calendar_field($cal_ship); ?></td>
 	</tr>
 	<tr>
-		<td class="dataTableContent"><?php echo SHIPPING_SERVICE_TYPE; ?></td>
+		<td class="dataTableContent"><?php echo TEXT_SERVICE_TYPE; ?></td>
 		<td class="dataTableContent"><?php echo html_pull_down_menu('ship_method', gen_build_pull_down($shipping_methods), $sInfo->ship_method); ?></td>
 	</tr>
 	<tr>
@@ -165,17 +165,17 @@ echo $toolbar->build_toolbar();
 		<td class="dataTableContent"><?php echo html_input_field('so_po_ref_id', $sInfo->so_po_ref_id); ?></td>
 	</tr>
 	<tr>
-		<td class="dataTableContent"><?php echo SHIPPING_TEXT_PACKAGE_TYPE; ?>
+		<td class="dataTableContent"><?php echo TEXT_TYPE_OF_PACKAGING; ?>
 		<td class="dataTableContent"><?php echo html_pull_down_menu('pkg_type', gen_build_pull_down($shipping_defaults['package_type']), $sInfo->pkg_type); ?></td>
 	</tr>
 	<tr>
-		<td class="dataTableContent"><?php echo SHIPPING_TEXT_PICKUP_SERVICE; ?>
+		<td class="dataTableContent"><?php echo TEXT_PICKUP_SERVICE; ?>
 		<td class="dataTableContent"><?php echo html_pull_down_menu('pickup_service', gen_build_pull_down($shipping_defaults['pickup_service']), $sInfo->pickup_service); ?></td>
 	</tr>
 	<tr>
 		<td class="dataTableContent" colspan="2">
 			<?php echo html_checkbox_field('residential_address', '1', $sInfo->residential_address);
-			echo SHIPPING_RESIDENTIAL_ADDRESS; ?>
+			echo TEXT_RESIDENTIAL_ADDRESS; ?>
 		</td>
 	</tr>
 	<tr>
@@ -187,14 +187,14 @@ echo $toolbar->build_toolbar();
 	<tr>
 		<td class="dataTableContent" colspan="2" >
 			<?php  echo html_checkbox_field('delivery_confirmation', '1', $sInfo->delivery_confirmation);
-			echo SHIPPING_TEXT_DELIVERY_CONFIRM;
+			echo TEXT_DELIVERY_CONFIRM;
 			echo html_pull_down_menu('delivery_confirmation_type', gen_build_pull_down($shipping_defaults['delivery_confirmation']), $sInfo->delivery_confirmation_type); ?>
 		</td>
 	</tr>
 	<tr>
 		<td class="dataTableContent" colspan="2">
 			<?php  echo html_checkbox_field('saturday_delivery', '1', $sInfo->saturday_delivery);
-			echo SHIPPING_SATURDAY_DELIVERY; ?>
+			echo TEXT_SATURDAY_DELIVERY; ?>
 		</td>
 	</tr>
 	<tr>
@@ -209,7 +209,7 @@ echo $toolbar->build_toolbar();
 	<tr>
 		<td class="dataTableContent" colspan="2">
 			<?php echo html_checkbox_field('return_service', '1', $sInfo->return_service);
-			echo SHIPPING_TEXT_RETURN_SERVICES;
+			echo TEXT_RETURN_SERVICES;
 			echo html_pull_down_menu('return_service_value', gen_build_pull_down($shipping_defaults['return_label']), $sInfo->return_service_value); ?>
 		</td>
 	</tr>
@@ -234,7 +234,7 @@ echo $toolbar->build_toolbar();
 </td></tr></table>
 <table border="0">
   <tr>
-	<th><?php echo SHIPPING_PACKAGE_DETAILS; ?></th>
+	<th><?php echo TEXT_PACKAGE_DETAILS; ?></th>
   </tr>
   <tr>
     <td id="productList" class="formArea">
@@ -247,7 +247,7 @@ echo $toolbar->build_toolbar();
 			<td class="dataTableHeadingContent" align="center"><?php echo TEXT_WEIGHT;
 				echo html_pull_down_menu('pkg_weight_unit', gen_build_pull_down($shipping_defaults['weight_unit']), $sInfo->pkg_weight_unit) . '&nbsp;'; ?>
 			</td>
-			<td class="dataTableHeadingContent" align="center" colspan="3"><?php echo SHIPPING_TEXT_DIMENSIONS;
+			<td class="dataTableHeadingContent" align="center" colspan="3"><?php echo TEXT_DIMENSIONS . " : ";
 				echo html_pull_down_menu('pkg_dimension_unit', gen_build_pull_down($shipping_defaults['dimension_unit']), $sInfo->pkg_dimension_unit); ?>
 			</td>
 			<td class="dataTableHeadingContent" align="center"><?php echo TEXT_VALUE;

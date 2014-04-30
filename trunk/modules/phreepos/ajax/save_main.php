@@ -29,7 +29,7 @@ require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
 /**************   page specific initialization  *************************/
 $order           = new \phreepos\classes\journal\journal_19();
-define('ORD_ACCT_ID',GEN_CUSTOMER_ID);
+define('ORD_ACCT_ID', TEXT_CUSTOMER_ID.': ');
 define('GL_TYPE','sos');
 define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);
 $order->gl_acct_id = AR_DEFAULT_GL_ACCT;
@@ -55,15 +55,15 @@ if (file_exists($custom_path)) { include($custom_path); }
 	$order->bill_acct_id        = db_prepare_input($_POST['bill_acct_id']);
 	$order->bill_address_id     = db_prepare_input($_POST['bill_address_id']);
 	$order->bill_primary_name   = db_prepare_input(($_POST['bill_primary_name']   <> GEN_PRIMARY_NAME)   ? $_POST['bill_primary_name'] : '', true);
-	$order->bill_contact        = db_prepare_input(($_POST['bill_contact']        <> GEN_CONTACT)        ? $_POST['bill_contact'] : '', ADDRESS_BOOK_CONTACT_REQUIRED);
-	$order->bill_address1       = db_prepare_input(($_POST['bill_address1']       <> GEN_ADDRESS1)       ? $_POST['bill_address1'] : '', ADDRESS_BOOK_ADDRESS1_REQUIRED);
-	$order->bill_address2       = db_prepare_input(($_POST['bill_address2']       <> GEN_ADDRESS2)       ? $_POST['bill_address2'] : '', ADDRESS_BOOK_ADDRESS2_REQUIRED);
-	$order->bill_city_town      = db_prepare_input(($_POST['bill_city_town']      <> GEN_CITY_TOWN)      ? $_POST['bill_city_town'] : '', ADDRESS_BOOK_CITY_TOWN_REQUIRED);
-	$order->bill_state_province = db_prepare_input(($_POST['bill_state_province'] <> GEN_STATE_PROVINCE) ? $_POST['bill_state_province'] : '', ADDRESS_BOOK_STATE_PROVINCE_REQUIRED);
-	$order->bill_postal_code    = db_prepare_input(($_POST['bill_postal_code']    <> GEN_POSTAL_CODE)    ? $_POST['bill_postal_code'] : '', ADDRESS_BOOK_POSTAL_CODE_REQUIRED);
+	$order->bill_contact        = db_prepare_input(($_POST['bill_contact']        <> TEXT_ATTENTION)        ? $_POST['bill_contact'] : '', ADDRESS_BOOK_CONTACT_REQUIRED);
+	$order->bill_address1       = db_prepare_input(($_POST['bill_address1']       <> TEXT_ADDRESS1)       ? $_POST['bill_address1'] : '', ADDRESS_BOOK_ADDRESS1_REQUIRED);
+	$order->bill_address2       = db_prepare_input(($_POST['bill_address2']       <> TEXT_ADDRESS2)       ? $_POST['bill_address2'] : '', ADDRESS_BOOK_ADDRESS2_REQUIRED);
+	$order->bill_city_town      = db_prepare_input(($_POST['bill_city_town']      <> TEXT_CITY_TOWN)      ? $_POST['bill_city_town'] : '', ADDRESS_BOOK_CITY_TOWN_REQUIRED);
+	$order->bill_state_province = db_prepare_input(($_POST['bill_state_province'] <> TEXT_STATE_PROVINCE) ? $_POST['bill_state_province'] : '', ADDRESS_BOOK_STATE_PROVINCE_REQUIRED);
+	$order->bill_postal_code    = db_prepare_input(($_POST['bill_postal_code']    <> TEXT_POSTAL_CODE)    ? $_POST['bill_postal_code'] : '', ADDRESS_BOOK_POSTAL_CODE_REQUIRED);
 	$order->bill_country_code   = db_prepare_input($_POST['bill_country_code']);
-	$order->bill_telephone1     = db_prepare_input(($_POST['bill_telephone1']     <> GEN_TELEPHONE1)     ? $_POST['bill_telephone1'] : '', ADDRESS_BOOK_TELEPHONE1_REQUIRED);
-	$order->bill_email          = db_prepare_input(($_POST['bill_email'] <> GEN_EMAIL) ? $_POST['bill_email'] : '', ADDRESS_BOOK_EMAIL_REQUIRED);
+	$order->bill_telephone1     = db_prepare_input(($_POST['bill_telephone1']     <> TEXT_TELEPHONE)     ? $_POST['bill_telephone1'] : '', ADDRESS_BOOK_TELEPHONE1_REQUIRED);
+	$order->bill_email          = db_prepare_input(($_POST['bill_email'] <> TEXT_EMAIL) ? $_POST['bill_email'] : '', ADDRESS_BOOK_EMAIL_REQUIRED);
 	// load journal main data
 	$order->id                  = ''; // all POS are new
 	$order->journal_id          = JOURNAL_ID;
@@ -73,7 +73,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 	$order->purchase_invoice_id = '';  // Assume new POS
 	$order->store_id            = $tills->store_id;
 	if ($order->store_id == '') $order->store_id = 0;
-	$order->description         = MENU_HEADING_PHREEPOS;
+	$order->description         = TEXT_POINT_OF_SALE;
 	$order->admin_id            = $_SESSION['admin_id'];
 	$order->rep_id              = db_prepare_input($_POST['rep_id']);
 	$order->gl_acct_id          = $tills->gl_acct_id;
@@ -193,12 +193,12 @@ if (file_exists($custom_path)) { include($custom_path); }
 			throw new \core\classes\userException(POS_ERROR_CONTACT_REQUIRED);
 	  	} else {
 		    if ($order->bill_primary_name   === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . GEN_PRIMARY_NAME);
-	    	if ($order->bill_contact        === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . GEN_CONTACT);
-	    	if ($order->bill_address1       === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . GEN_ADDRESS1);
-	    	if ($order->bill_address2       === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . GEN_ADDRESS2);
-	    	if ($order->bill_city_town      === false) throw new \core\classes\userException( GEN_ERRMSG_NO_DATA . GEN_CITY_TOWN);
-	    	if ($order->bill_state_province === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . GEN_STATE_PROVINCE);
-	    	if ($order->bill_postal_code    === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . GEN_POSTAL_CODE);
+	    	if ($order->bill_contact        === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . TEXT_ATTENTION);
+	    	if ($order->bill_address1       === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . TEXT_ADDRESS1);
+	    	if ($order->bill_address2       === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . TEXT_ADDRESS2);
+	    	if ($order->bill_city_town      === false) throw new \core\classes\userException( GEN_ERRMSG_NO_DATA . TEXT_CITY_TOWN);
+	    	if ($order->bill_state_province === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . TEXT_STATE_PROVINCE);
+	    	if ($order->bill_postal_code    === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . TEXT_POSTAL_CODE);
 	  	}
 	}
 	// Payment errors
@@ -214,7 +214,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 	// Post the order
 	if (!$order->item_rows) throw new \core\classes\userException( GL_ERROR_NO_ITEMS);
 	$order->post_ordr($_REQUEST['action']);	// Post the order class to the db
-	gen_add_audit_log(MENU_HEADING_PHREEPOS . ' - ' . ($_POST['id'] ? TEXT_EDIT : TEXT_ADD), $order->purchase_invoice_id, $order->total_amount);
+	gen_add_audit_log(TEXT_POINT_OF_SALE . ' - ' . ($_POST['id'] ? TEXT_EDIT : TEXT_ADD), $order->purchase_invoice_id, $order->total_amount);
 
 	if($order->printed){
 		//print

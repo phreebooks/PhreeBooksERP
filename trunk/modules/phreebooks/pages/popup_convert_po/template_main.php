@@ -29,21 +29,21 @@ $toolbar->icon_list['delete']['show'] = false;
 $toolbar->icon_list['print']['show'] = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('07.03.02.04');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
-<h1><?php echo ORD_CONVERT_TO_PO; ?></h1>
+<h1><?php echo TEXT_CONVERT_TO_PURCHASE_ORDER_SHORT; ?></h1>
 <table class="ui-widget" style="border-style:none;width:100%">
  <tbody class="ui-widget-content">
   <tr>
-	<td> <?php echo ORD_DROP_SHIP; ?></td>
+	<td> <?php echo TEXT_DROP_SHIP; ?></td>
 	<td> <?php echo html_checkbox_field('drop_ship', '1', ($drop_ship) ? true : false); ?></td>
   </tr>
   <tr>
-	<td><?php echo ORD_HEADING_NUMBER_4; ?></td>
+	<td><?php echo TEXT_PO_NUMBER; ?></td>
 	<td><?php echo html_input_field('po_num', $purchase_invoice_id, ''); ?></td>
   </tr>
  </tbody>
 </table>
-<?php echo ORD_PO_MESSAGE; ?> 
+<?php echo ORD_PO_MESSAGE; ?>
 </form>

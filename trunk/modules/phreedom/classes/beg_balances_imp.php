@@ -31,7 +31,7 @@ class beg_bal_import {
 	  		$current_order = $this->records[$row_id];
 	  		// pre-process and check for errors
 		  	if (!in_array($current_order['gl_acct'], $coa) || !in_array($current_order['inv_gl_acct'], $coa)) {
-				throw new \core\classes\userException(GL_BEG_BAL_ERROR_1 . ($row_id + 1));
+				throw new \core\classes\userException(sprintf(TEXT_ERROR_INVALID_GL_ACCT, $row_id + 1));
 		  	}
 			if (!$current_order['order_id']) {
 				switch (JOURNAL_ID) {
@@ -102,7 +102,7 @@ class beg_bal_import {
 			// build journal main entry
 			$glEntry->journal_id          = JOURNAL_ID;
 			$glEntry->post_date           = $order['post_date'];
-			$glEntry->description         = sprintf(TEXT_JID_ENTRY, constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE'));
+			$glEntry->description         = sprintf(TEXT_ARGS_ENTRY, constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE'));
 			$glEntry->short_name          = $order['account_id'];
 			$glEntry->ship_short_name     = $order['account_id'];
 			$glEntry->gl_acct_id          = $order['gl_acct'];
@@ -232,7 +232,7 @@ class beg_bal_import {
 			$qty = $currencies->clean_value($row['quantity']);
 			// check for errors and report/exit if error found
 			$admin_classes['inventory']->validate_name($row['sku']);
-			if (!in_array($row['inv_gl_acct'], $coa) || !in_array($row['gl_acct'], $coa)) throw new \core\classes\userException(GL_BEG_BAL_ERROR_6 . $j);
+			if (!in_array($row['inv_gl_acct'], $coa) || !in_array($row['gl_acct'], $coa)) throw new \core\classes\userException(sprintf(TEXT_ERROR_INVALID_GL_ACCT, $j));
 			if ($qty == 0) {
 				$messageStack->add(GL_BEG_BAL_ERROR_7 . $j,'caution');
 			} else {

@@ -29,15 +29,12 @@ $toolbar->icon_list['print']['show']    = false;
 // pull in extra toolbar overrides and additions
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 // add the help file index and build the toolbar
-switch ($account_type) {
-  case 'c': $toolbar->add_help('07.02.02'); break;
-  case 'v': $toolbar->add_help('07.03.02'); break;
-}
-echo $toolbar->build_toolbar($add_search = true); 
+if( !$cInfo->help == '' ) $toolbar->add_help($cInfo->help);
+echo $toolbar->build_toolbar($add_search = true);
 // Build the page
 ?>
-<h1><?php echo GEN_HEADING_PLEASE_SELECT; ?></h1>
-<div style="height:19px"><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . constant('ACT_' . strtoupper($account_type) . '_TYPE_NAME')); ?>
+<h1><?php echo TEXT_PLEASE_SELECT; ?></h1>
+<div style="height:19px"><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . $cInfo->title); ?>
 <div style="float:right"><?php echo $query_split->display_links(); ?></div>
 </div>
 <table class="ui-widget" style="border-collapse:collapse;width:100%;">
@@ -81,7 +78,7 @@ echo $toolbar->build_toolbar($add_search = true);
 			break;
 		default:
 			$selection = html_hidden_field('open_order_' . $pointer, '') . '&nbsp;';
-	} 
+	}
 	if ($cancel_single_result_exit) { ?>
 	  <td ><?php echo $selection; ?></td>
 	<?php } else { ?>
@@ -92,15 +89,15 @@ echo $toolbar->build_toolbar($add_search = true);
 	  $pointer++;
 	  $query_result->MoveNext();
 	  $odd = !$odd;
-	} 
+	}
 ?>
  </tbody>
 </table>
 <div style="float:right"><?php echo $query_split->display_links(); ?></div>
-<div><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . constant('ACT_' . strtoupper($account_type) . '_TYPE_NAME')); ?></div>
+<div><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . $cInfo->title); ?></div>
 </form>
 
-<?php 
+<?php
 if (($query_result->RecordCount() == 1) && ($_POST['page'] == 1) && (!$cancel_single_result_exit)) { // then only one entry return with it
   echo '<script type="text/javascript">' . chr(10);
   echo 'setReturnAccount(' . $acct_id . ');' . chr(10);

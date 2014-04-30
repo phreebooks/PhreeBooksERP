@@ -19,7 +19,7 @@
 namespace assets\classes;
 class admin extends \core\classes\admin {
 	public $id 			= 'assets';
-	public $text		= MODULE_ASSETS_TITLE;
+	public $text		= TEXT_ASSETS_MODULE;
 	public $description = MODULE_ASSETS_DESCRIPTION;
 	public $version		= '3.6';
 

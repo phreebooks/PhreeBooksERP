@@ -60,6 +60,6 @@ $sel_yes_no = array(
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', BOX_CONTACTS_ADMIN);
+define('PAGE_TITLE', TEXT_CONTACTS_ADMINISTRATION);
 
 ?>

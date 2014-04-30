@@ -30,12 +30,12 @@ $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('09');
-echo $toolbar->build_toolbar($add_search = false, false, $cal_ship); 
+echo $toolbar->build_toolbar($add_search = false, false, $cal_ship);
 // Build the page
 ?>
-<h1><?php echo BOX_SHIPPING_MANAGER; ?></h1>
+<h1><?php echo TEXT_SHIPPING_MANAGER; ?></h1>
 <div class="easyui-tabs" id="shippingtabs">
- 
+
 <?php
   foreach ($admin_classes['shipping']->methods as $method) {
   	if (!$method->installed) continue;

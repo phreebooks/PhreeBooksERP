@@ -49,14 +49,14 @@ if($_REQUEST['action'] = 'send'){
 	$cc_address    = ($_POST['cc_email'])        ? $_POST['cc_email']        : '';
 	$email_subject = ($_POST['message_subject']) ? $_POST['message_subject'] : $message_subject;
 	$email_text    = ($_POST['message_body'])    ? $_POST['message_body']    : $message_body;
-	
+
 	$block = array();
 	if ($cc_address) {
 		$block['EMAIL_CC_NAME']    = $cc_name;
 		$block['EMAIL_CC_ADDRESS'] = $cc_address;
 	}
 	validate_send_mail($to_name, $to_address, $email_subject, $email_text, $from_name, $from_address, $block);
-	$messageStack->add(EMAIL_SEND_SUCCESS, 'success');
+	$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_SEND, TEXT_EMAIL , ''), 'success');
 	echo '<script type="text/javascript"> window.opener.location.reload();' . chr(10);
 	echo'self.close();</script>' . chr(10);
 }
@@ -85,7 +85,7 @@ if($cID != ''){
 		}
 		$result->MoveNext();
 	}
-	if($result->RecordCount() != 0){ 
+	if($result->RecordCount() != 0){
   		$recpt_email 	= $result->fields['email'];
   		$recpt_name   	= $result->fields['primary_name'];
 	}
@@ -93,7 +93,7 @@ if($cID != ''){
 
 
 
-  
+
 $include_template = 'template_main.php'; // include display template (required)
 define('PAGE_TITLE', TITLE . ' - ' . COMPANY_NAME);
 

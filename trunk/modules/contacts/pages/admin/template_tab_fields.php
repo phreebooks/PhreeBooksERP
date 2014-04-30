@@ -25,7 +25,7 @@ $field_toolbar->icon_list['save']['show']   = false;
 $field_toolbar->icon_list['print']['show']  = false;
 if ($security_level > 1) $field_toolbar->add_icon('new', 'onclick="loadPopUp(\'fields_new\', 0)"', $order = 10);
 ?>
-<div title="<?php echo TEXT_EXTRA_FIELDS;?>" id="tab_fields">
+<div title="<?php echo TEXT_CUSTOM_FIELDS;?>" id="tab_fields">
   <?php echo $field_toolbar->build_toolbar(); ?>
   <h1><?php echo $fields->title; ?></h1>
   <div id="fields_content"><?php echo $fields->build_main_html(); ?></div>

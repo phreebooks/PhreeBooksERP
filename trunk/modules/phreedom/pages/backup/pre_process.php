@@ -115,7 +115,7 @@ switch ($_REQUEST['action']) {
   case 'save':
   default:
     $include_template = 'template_main.php';
-    define('PAGE_TITLE', BOX_HEADING_BACKUP);
+    define('PAGE_TITLE', TEXT_COMPANY_BACKUP);
 	break;
 }
 

@@ -19,7 +19,7 @@
 //
 // Enter the new menu category heading if necessary
 define('MENU_HEADING_GL', 'General Ledger');
-define('MENU_HEADING_BANKING','Banking');
+define('TEXT_BANKING','Banking');
 // Menu Titles
 define('ORD_TEXT_0_WINDOW_TITLE', 'Beginning Balances');
 define('ORD_TEXT_2_WINDOW_TITLE', 'General Journal');
@@ -40,18 +40,18 @@ define('ORD_TEXT_20_C_WINDOW_TITLE','Customer Refunds');
 define('ORD_TEXT_20_V_WINDOW_TITLE','Vendor Payments');
 
 define('BOX_BANKING_SELECT_FOR_PAYMENT', 'Pay by Due Date');
-define('BOX_BANKING_BANK_ACCOUNT_REGISTER', 'Bank Account Register');
+define('TEXT_BANK_ACCOUNT_REGISTER', 'Bank Account Register');
 define('BOX_BANKING_ACCOUNT_RECONCILIATION', 'Account Reconciliation');
-define('BOX_BANKING_VOID_CHECKS', 'Void Checks');
-define('BOX_GL_BUDGET', 'Budgeting');
+define('TEXT_VOID_CHECKS', 'Void Checks');
+define('TEXT_BUDGETING', 'Budgeting');
 define('BOX_GL_UTILITIES', 'General Journal Utilities');
 define('BOX_PHREEBOOKS_MODULE_ADM','PhreeBooks Admin');
-define('BOX_STATUS_MGR','%s Manager');
+define('TEXT_MANAGER_ARGS','%s Manager');
 define('ORD_TEXT_RECEIPTS_TITLE','Receipts');
 define('ORD_TEXT_PAYMENTS_TITLE','Payments');
-define('ORD_TEXT_QUOTES_TITLE','Quotes');
-define('BOX_TEXT_NEW_TITLE','New %s');
-define('ORD_TEXT_ORDERS_TITLE','Orders');
+define('TEXT_QUOTES','Quotes');
+define('TEXT_NEW_ARGS','New %s');
+define('TEXT_ORDERS','Orders');
 define('ORD_TEXT_INVOICE_TITLE','Invoices');
-define('ORD_TEXT_CREDIT_TITLE','Credit');
+define('TEXT_CREDIT','Credit');
 ?>

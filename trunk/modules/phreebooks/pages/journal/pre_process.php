@@ -169,7 +169,7 @@ switch ($_REQUEST['action']) {
 			$messageStack->debug('Saving file to: '.PHREEBOOKS_DIR_MY_ORDERS.'order_'.$glEntry->id.'.zip');
 		  	saveUploadZip('file_name', PHREEBOOKS_DIR_MY_ORDERS, 'order_'.$glEntry->id.'.zip');
 		}
-		gen_add_audit_log(GL_LOG_ADD_JOURNAL . (($glEntry->id) ? TEXT_EDIT : TEXT_ADD), $glEntry->purchase_invoice_id);
+		gen_add_audit_log(GL_ENTRY_TITLE. " - " . (($glEntry->id) ? TEXT_EDIT : TEXT_ADD), $glEntry->purchase_invoice_id);
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		// *************** END TRANSACTION *************************
   	}catch(Exception $e){
@@ -184,7 +184,7 @@ switch ($_REQUEST['action']) {
   	try{
 		\core\classes\user::validate_security($security_level, 4);
 		// check for errors and prepare extra values
-		if (!$glEntry->id) throw new \core\classes\userException(sprintf(ERROR_EMPTY_VARIABLE, "id");
+		if (!$glEntry->id) throw new \core\classes\userException(sprintf(ERROR_EMPTY_VARIABLE, "id"));
 		$delGL = new \core\classes\journal();
 		$delGL->journal($glEntry->id); // load the posted record based on the id submitted
 		$recur_id        = db_prepare_input($_POST['recur_id']);
@@ -204,7 +204,7 @@ switch ($_REQUEST['action']) {
 			$delGL->unPost('delete');
 		}
 		$db->transCommit(); // if not successful rollback will already have been performed
-		gen_add_audit_log(GL_LOG_ADD_JOURNAL . TEXT_DELETE, $delGL->purchase_invoice_id);
+		gen_add_audit_log(GL_ENTRY_TITLE. " - " . TEXT_DELETE, $delGL->purchase_invoice_id);
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
   	}catch(Exception $e){
 		$db->transRollback();

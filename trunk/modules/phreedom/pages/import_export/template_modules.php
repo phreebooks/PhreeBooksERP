@@ -29,7 +29,7 @@ $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('10');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
@@ -43,8 +43,8 @@ echo $toolbar->build_toolbar();
 	    <tr><th colspan="4"><?php echo GEN_TABLES_AVAILABLE . TEXT_IMPORT . '/' . TEXT_EXPORT; ?></th></tr>
 	 </thead>
 	 <tbody class="ui-widget-content">
-<?php 
-foreach ($page_list as $mod => $params) { 
+<?php
+foreach ($page_list as $mod => $params) {
   if ($subject <> $mod) continue; // only this module
   $structure = $params['structure'];
   if (!$structure->Module->Table) continue; // no tables to import
@@ -54,13 +54,13 @@ foreach ($page_list as $mod => $params) {
 		  <td><?php echo TEXT_MODULE . ' - ' . $mod; ?></td>
 		  <td><?php echo TEXT_TABLE  . ' - ' . $table->Name; ?></td>
 	      <td>
-		    <?php echo html_button_field('sample_xml_' . $table->Name, SAMPLE_XML, 'onclick="submitToDo(\'sample_xml_' . $table->Name . '\')"') . ' '; ?>
-		    <?php echo html_button_field('sample_csv_' . $table->Name, SAMPLE_CSV, 'onclick="submitToDo(\'sample_csv_' . $table->Name . '\')"'); ?>
+		    <?php echo html_button_field('sample_xml_' . $table->Name, TEXT_SAMPLE_XML, 'onclick="submitToDo(\'sample_xml_' . $table->Name . '\')"') . ' '; ?>
+		    <?php echo html_button_field('sample_csv_' . $table->Name, TEXT_SAMPLE_CSV, 'onclick="submitToDo(\'sample_csv_' . $table->Name . '\')"'); ?>
 	      </td>
 		</tr>
 <?php
   }
-} 
+}
 ?>
 	  </tbody>
 	 </table>
@@ -78,8 +78,8 @@ foreach ($page_list as $mod => $params) {
 	    <tr><th colspan="4"><?php echo GEN_TABLES_AVAILABLE . TEXT_IMPORT; ?></th></tr>
 	 </thead>
 	 <tbody class="ui-widget-content">
-<?php 
-foreach ($page_list as $mod => $params) { 
+<?php
+foreach ($page_list as $mod => $params) {
   if ($subject <> $mod) continue; // only this module
   $structure = $params['structure'];
   if (!$structure->Module->Table) continue; // no tables to import
@@ -100,7 +100,7 @@ foreach ($page_list as $mod => $params) {
 <?php
     }
   }
-} 
+}
 ?>
 	  </tbody>
 	 </table>
@@ -118,8 +118,8 @@ foreach ($page_list as $mod => $params) {
 	    <tr><th colspan="4"><?php echo GEN_TABLES_AVAILABLE . TEXT_EXPORT; ?></th></tr>
 	 </thead>
 	 <tbody class="ui-widget-content">
-<?php 
-foreach ($page_list as $mod => $params) { 
+<?php
+foreach ($page_list as $mod => $params) {
   if ($subject <> $mod) continue; // only this module
   $structure = $params['structure'];
   if (!$structure->Module->Table) continue; // no tables to import
@@ -137,7 +137,7 @@ foreach ($page_list as $mod => $params) {
 		</tr>
 <?php
   }
-} 
+}
 ?>
 	  </tbody>
 	 </table>

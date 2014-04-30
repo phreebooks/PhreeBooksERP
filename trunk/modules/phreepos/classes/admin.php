@@ -133,7 +133,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function load_reports() {
-		$id = $this->add_report_heading(MENU_HEADING_PHREEPOS, 'pos');
+		$id = $this->add_report_heading(TEXT_POINT_OF_SALE, 'pos');
 		$this->add_report_folder($id, TEXT_REPORTS,        'pos',      'fr');
 		$this->add_report_folder($id, TEXT_RECEIPTS,       'pos:rcpt', 'ff');
 		parent::load_reports();

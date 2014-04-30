@@ -29,7 +29,7 @@
 	  <td colspan="3" align="center"><?php echo html_input_field('title', $report->title, 'size="60"'); ?></td>
     </tr>
     <tr class="ui-widget-header">
-      <th><?php echo TEXT_DETAIL_DESCRIPTION; ?></th>
+      <th><?php echo TEXT_DETAILED_DESCRIPTION; ?></th>
       <th colspan="2"><?php echo PHREEFORM_PGLAYOUT; ?></th>
     </tr>
     <tr>
@@ -82,7 +82,7 @@
    </thead>
    <tbody class="ui-widget-content">
     <tr>
-      <td><?php echo TEXT_PGCOYNM; ?></td>
+      <td><?php echo TEXT_COMPANY_NAME; ?></td>
 	  <td align="center"><?php echo html_checkbox_field('headingshow', '1', ($report->page->heading->show == '1') ? true : false); ?></td>
       <td align="center"><?php echo html_pull_down_menu('headingfont',  $kFonts,      $report->page->heading->font);  ?></td>
       <td align="center"><?php echo html_pull_down_menu('headingsize',  $kFontSizes,  $report->page->heading->size);  ?></td>

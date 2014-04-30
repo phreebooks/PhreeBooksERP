@@ -96,14 +96,14 @@ switch ($_REQUEST['action']) {
 	\core\classes\user::validate_security($security_level, 3);
   	$period = (int)db_prepare_input($_POST['period']);
 	if ($period <= 0 || $period > $highest_period) throw new \core\classes\userException(GL_ERROR_BAD_ACCT_PERIOD);
-	$result = $db->Execute("select start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . " where period = " . $period);
-	$db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = " . $period . "
+	$result = $db->Execute("select start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . " where period = $period");
+	$db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = $period
 		where configuration_key = 'CURRENT_ACCOUNTING_PERIOD'");
-	$db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '" . $result->fields['start_date'] . "'
+	$db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '{$result->fields['start_date']}'
 		where configuration_key = 'CURRENT_ACCOUNTING_PERIOD_START'");
-	$db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '" . $result->fields['end_date'] . "'
+	$db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '{$result->fields['end_date']}'
 		where configuration_key = 'CURRENT_ACCOUNTING_PERIOD_END'");
-	gen_add_audit_log(GEN_LOG_PERIOD_CHANGE);
+	gen_add_audit_log(TEXT_CHANGED . " " . TEXT_ACCOUNTING_PERIOD);
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	break;
   case 'beg_balances': // Enter beginning balances
@@ -140,7 +140,7 @@ switch ($_REQUEST['action']) {
 	  $messageStack->add(GEN_ADM_TOOLS_RE_POST_FAILED,'caution');
 	} else {
 	  $messageStack->add(sprintf(GEN_ADM_TOOLS_RE_POST_SUCCESS, $repost_cnt),'success');
-	  gen_add_audit_log(GEN_ADM_TOOLS_AUDIT_LOG_RE_POST, implode(',', $journals));
+	  gen_add_audit_log(GEN_ADM_TOOLS_BTN_REPOST . ' - ', implode(',', $journals));
 	}
 	if (DEBUG) $messageStack->write_debug();
 	break;
@@ -160,7 +160,7 @@ switch ($_REQUEST['action']) {
 			}
 		    $db->transCommit();
 		    $messageStack->add(sprintf(GEN_ADM_TOOLS_RE_POST_SUCCESS, $cnt), 'success');
-			gen_add_audit_log(GEN_ADM_TOOLS_AUDIT_LOG_RE_POST, "inventory owed");
+			gen_add_audit_log(GEN_ADM_TOOLS_BTN_REPOST . ' - ', "inventory owed");
 		}catch(Exception $e){
 			$db->transRollback();
 			$messageStack->add($e->getMessage());
@@ -323,6 +323,6 @@ $cogs_owed = $result->RecordCount();
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', BOX_HEADING_ADMIN_TOOLS);
+define('PAGE_TITLE', TEXT_ADMINISTRATIVE_TOOLS);
 
 ?>

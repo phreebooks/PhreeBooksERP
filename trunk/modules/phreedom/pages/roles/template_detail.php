@@ -103,7 +103,7 @@ foreach ($mainmenu as $key => $menu_heading) {
 	if(!empty($array['submenu'])) foreach($array['submenu'] as $menu_item){
 		create_row($menu_item);
 	}else{
-		if ($array['text'] == TEXT_REPORTS || $array['security_id'] == '') return;// && $item['heading'] <> MENU_HEADING_TOOLS) continue;  // special case for reports listings not in Tools menu
+		if ($array['text'] == TEXT_REPORTS || $array['security_id'] == '') return;// && $item['heading'] <> TEXT_TOOLS) continue;  // special case for reports listings not in Tools menu
 		$checked = array();
 		if ($array['show_in_users_settings'] === false) {
 			return; // skip if menu only item

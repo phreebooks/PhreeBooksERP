@@ -173,14 +173,14 @@ class fields {
 		  }
 	  }
 	  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array, 'update', "id = " . $this->id );
-	  gen_add_audit_log($this->module .' '. sprintf(EXTRA_FIELDS_LOG , TEXT_UPDATE), $this->id  . ' - ' . $this->field_name);
+	  gen_add_audit_log($this->module .' '. TEXT_CUSTOM_FIELDS . ' - ' . TEXT_UPDATE, $this->id  . ' - ' . $this->field_name);
 	} else {
 	  $sql = "alter table " . $this->db_table . "
 		add column " . $this->field_name . " " . $values['entry_type'] . (isset($values['entry_params']) ? $values['entry_params'] : '');
 	  $db->Execute($sql);
 	  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array, 'insert');
 	  $this->id  = db_insert_id();
-	  gen_add_audit_log($this->module .' '. sprintf(EXTRA_FIELDS_LOG , TEXT_NEW), $this->id  . ' - ' . $this->field_name);
+	  gen_add_audit_log($this->module .' '. TEXT_CUSTOM_FIELDS . ' - ' . TEXT_NEW, $this->id  . ' - ' . $this->field_name);
 	}
 	return true;
   }
@@ -193,7 +193,7 @@ class fields {
 		if ($this->tab_id == '0') throw new \core\classes\userException (INV_CANNOT_DELETE_SYSTEM); // don't allow deletion of system fields
 		$db->Execute("DELETE FROM ".TABLE_EXTRA_FIELDS." WHERE id=$this->id");
 		$db->Execute("ALTER TABLE $this->db_table DROP COLUMN $this->field_name");
-		gen_add_audit_log ($this->module.' '.sprintf(EXTRA_FIELDS_LOG, TEXT_DELETE), "$id - $this->field_name");
+		gen_add_audit_log ($this->module.' '. TEXT_CUSTOM_FIELDS . ' - ' . TEXT_DELETE, "$id - $this->field_name");
 		return true;
 	}
 
@@ -202,7 +202,7 @@ class fields {
 	$tab_array = $this->get_tabs($this->module);
     $content = array();
 	$content['thead'] = array(
-	  'value' => array(TEXT_DESCRIPTION, TEXT_FLDNAME, TEXT_TAB_NAME, TEXT_TYPE, $this->type_desc, TEXT_SORT_ORDER, TEXT_GROUP, TEXT_ACTION),
+	  'value' => array(TEXT_DESCRIPTION, TEXT_FIELD_NAME, TEXT_TAB_NAME, TEXT_TYPE, $this->type_desc, TEXT_SORT_ORDER, TEXT_GROUP, TEXT_ACTION),
 	  'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 	);
 	$field_list = array('id', 'field_name', 'entry_type', 'description', 'tab_id', 'params', 'sort_order', 'group_by');
@@ -283,12 +283,12 @@ class fields {
 	$output  = '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);
 	$output .= '  <thead class="ui-widget-header">' . "\n";
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <th colspan="2">' . ($action=='new' ? TEXT_NEW_FIELD : TEXT_SETTINGS) . '</th>' . chr(10);
+	$output .= '    <th colspan="2">' . ($action=='new' ? sprintf(TEXT_NEW_ARGS, TEXT_FIELD) : TEXT_SETTINGS) . '</th>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  </thead>' . "\n";
 	$output .= '  <tbody class="ui-widget-content">' . "\n";
 	$output .= '  <tr>' . chr(10);
-	$output .= '	<td>' . INV_FIELD_NAME . '</td>' . chr(10);
+	$output .= '	<td>' . TEXT_FIELD_NAME . ':</td>' . chr(10);
 	$output .= '	<td>' . html_input_field('field_name', $this->field_name, $readonly . 'size="33" maxlength="32"') . '</td>' . chr(10);
 	$output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
@@ -340,11 +340,11 @@ class fields {
 	$output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
 	$output .= '	<td>';
-	$output .= html_radio_field('entry_type', 'text', ($this->entry_type=='text' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_TEXT_FIELD . '<br />';
-	$output .= html_radio_field('entry_type', 'html', ($this->entry_type=='html' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_HTML_TEXT_FIELD . '</td>' . chr(10);
+	$output .= html_radio_field('entry_type', 'text', ($this->entry_type=='text' ? true : false), '', $disabled) . '&nbsp;' . TEXT_TEXT_FIELD . '<br />';
+	$output .= html_radio_field('entry_type', 'html', ($this->entry_type=='html' ? true : false), '', $disabled) . '&nbsp;' . TEXT_HTML_TEXT_FIELD . '</td>' . chr(10);
 	$output .= '	<td>' . INV_LABEL_MAX_NUM_CHARS;
 	$output .= '<br />' . html_input_field('length', ($this->length ? $this->length : DEFAULT_TEXT_LENGTH), $readonly . 'size="10" maxlength="9"');
-	$output .= '<br />' . INV_LABEL_DEFAULT_TEXT_VALUE . '<br />' . INV_LABEL_MAX_255;
+	$output .= '<br />' . TEXT_DEFAULT_VALUE . ' :<br />' . INV_LABEL_MAX_255;
 	$output .= '<br />' . html_textarea_field('text_default', 35, 6, $this->text_default, $readonly);
 	$output .= '	</td>' . chr(10);
 	$output .= '  </tr>' . chr(10);
@@ -355,23 +355,23 @@ class fields {
 	$output .= html_radio_field('entry_type', 'inventory_link', ($this->entry_type=='inventory_link' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_INVENTORY_LINK;
 	$output .= '	</td>' . chr(10);
 	$output .= '	<td>' . INV_LABEL_FIXED_255_CHARS;
-	$output .= '<br />' . INV_LABEL_DEFAULT_TEXT_VALUE;
+	$output .= '<br />' . TEXT_DEFAULT_VALUE ." :";
 	$output .= '<br />' . html_textarea_field('link_default', 35, 3, $this->link_default, $readonly);
 	$output .= '	</td>' . chr(10);
 	$output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
 	$output .= '	<td>' . html_radio_field('entry_type', 'integer', ($this->entry_type=='integer' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_INTEGER_FIELD . '</td>' . chr(10);
-	$output .= '	<td>' . INV_LABEL_INTEGER_RANGE;
+	$output .= '	<td>' . TEXT_INTEGER_RANGE;
 	$output .= '<br />' . html_pull_down_menu('integer_range', gen_build_pull_down($integer_lengths), $this->integer_range, $disabled);
-	$output .= '<br />' . INV_LABEL_DEFAULT_TEXT_VALUE . html_input_field('integer_default', $this->integer_default, $readonly . 'size="16"');
+	$output .= '<br />' . TEXT_DEFAULT_VALUE." : " . html_input_field('integer_default', $this->integer_default, $readonly . 'size="16"');
 	$output .= '	</td>' . chr(10);
 	$output .= '  </tr>' . chr(10);
 	$output .= '  <tr class="ui-widget-content">' . chr(10);
 	$output .= '	<td>' . html_radio_field('entry_type', 'decimal', ($this->entry_type=='decimal' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_DECIMAL_FIELD . '</td>' . chr(10);
-	$output .= '	<td>' . INV_LABEL_DECIMAL_RANGE;
+	$output .= '	<td>' . TEXT_DECIMAL_RANGE;
 	$output .= html_pull_down_menu('decimal_range', gen_build_pull_down($decimal_lengths), $this->decimal_range, $disabled);
 	$output .= '<br />' . INV_LABEL_DEFAULT_DISPLAY_VALUE . html_input_field('decimal_display', ($this->decimal_display ? $this->decimal_display : DEFAULT_REAL_DISPLAY_FORMAT), $readonly . 'size="6" maxlength="5"');
-	$output .= '<br />' . INV_LABEL_DEFAULT_TEXT_VALUE . html_input_field('decimal_default', $this->decimal_default, $readonly . 'size="16"');
+	$output .= '<br />' . TEXT_DEFAULT_VALUE." : " . html_input_field('decimal_default', $this->decimal_default, $readonly . 'size="16"');
 	$output .= '	</td>' . chr(10);
 	$output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
@@ -384,15 +384,15 @@ class fields {
 	$output .= INV_LABEL_RADIO_EXPLANATION . '</td>' . chr(10);
 	$output .= '  </tr>' . chr(10);
 	$output .= '  <tr class="ui-widget-content">' . chr(10);
-	$output .= '	<td>' . html_radio_field('entry_type', 'check_box', ($this->entry_type=='check_box' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_CHECK_BOX_FIELD . '</td>' . chr(10);
-	$output .= '	<td>' . INV_LABEL_DEFAULT_TEXT_VALUE . html_pull_down_menu('check_box_range', gen_build_pull_down($check_box_choices), $this->check_box_range, $disabled) . '</td>' . chr(10);
+	$output .= '	<td>' . html_radio_field('entry_type', 'check_box', ($this->entry_type=='check_box' ? true : false), '', $disabled) . '&nbsp;' . TEXT_CHECK_BOX_FIELD . '</td>' . chr(10);
+	$output .= '	<td>' . TEXT_DEFAULT_VALUE. " : " . html_pull_down_menu('check_box_range', gen_build_pull_down($check_box_choices), $this->check_box_range, $disabled) . '</td>' . chr(10);
 	$output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
 	$output .= '   <td>';
 	$output .= html_radio_field('entry_type', 'date',       ($this->entry_type=='date'       ? true : false), '', $disabled) . '&nbsp;' . TEXT_DATE . '<br />';
 	$output .= html_radio_field('entry_type', 'time',       ($this->entry_type=='time'       ? true : false), '', $disabled) . '&nbsp;' . TEXT_TIME . '<br />';
 	$output .= html_radio_field('entry_type', 'date_time',  ($this->entry_type=='date_time'  ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_DATE_TIME_FIELD . '<br />';
-	$output .= html_radio_field('entry_type', 'time_stamp', ($this->entry_type=='time_stamp' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_TIME_STAMP_FIELD ;
+	$output .= html_radio_field('entry_type', 'time_stamp', ($this->entry_type=='time_stamp' ? true : false), '', $disabled) . '&nbsp;' . TEXT_TIME_STAMP ;
 	$output .= '   </td>' . chr(10);
 	$output .= '	<td>' . INV_LABEL_TIME_STAMP_VALUE . '</td>' . chr(10);
 	$output .= '  </tr>' . chr(10);

@@ -166,7 +166,7 @@
    */
   function gen_build_pull_down($keyed_array, $installed_only = false, $inc_select = false) {
 	$values = array();
-	if ($inc_select) $values[] = array('id' => '0', 'text' => GEN_HEADING_PLEASE_SELECT);
+	if ($inc_select) $values[] = array('id' => '0', 'text' => TEXT_PLEASE_SELECT);
 	if (is_array($keyed_array)) {
 	  	foreach($keyed_array as $key => $value) {
 	  		if(is_array($key)){
@@ -250,7 +250,7 @@
 	$sql .= (sizeof($params) == 0) ? '' : ' where ' . implode(' and ', $params);
 	$sql .= " order by id";
     $result = $db->Execute($sql);
-    if ($first_none) $output[] = array('id' => '', 'text' => GEN_HEADING_PLEASE_SELECT);
+    if ($first_none) $output[] = array('id' => '', 'text' => TEXT_PLEASE_SELECT);
     while (!$result->EOF) {
 	  switch ($show_id) {
 		default:
@@ -375,32 +375,32 @@
 	  default:
 	  case '0': // Default terms
 		if ((int)constant($type . '_PREPAYMENT_DISCOUNT_PERCENT') <> 0) {
-		  $result['long']  = ACT_DISCOUNT . constant($type . '_PREPAYMENT_DISCOUNT_PERCENT') . ACT_EARLY_DISCOUNT . ACT_DUE_IN . constant($type . '_PREPAYMENT_DISCOUNT_DAYS') . ACT_TERMS_EARLY_DAYS;
-		  $result['short'] = constant($type . '_PREPAYMENT_DISCOUNT_PERCENT') . ACT_EARLY_DISCOUNT_SHORT . constant($type . '_PREPAYMENT_DISCOUNT_DAYS') . ', ';
+		  $result['long']  = TEXT_DISCOUNT . constant($type . '_PREPAYMENT_DISCOUNT_PERCENT') . TEXT_PERCENT . ACT_DUE_IN . constant($type . '_PREPAYMENT_DISCOUNT_DAYS') . TEXT_DAY_S;
+		  $result['short'] = constant($type . '_PREPAYMENT_DISCOUNT_PERCENT') . TEXT_PERCENT_SHORT . constant($type . '_PREPAYMENT_DISCOUNT_DAYS') . ', ';
 		}
-		$result['long']  .= ACT_TERMS_NET . constant($type . '_NUM_DAYS_DUE') . ACT_TERMS_STANDARD_DAYS;
+		$result['long']  .= ACT_TERMS_NET . constant($type . '_NUM_DAYS_DUE') . TEXT_DAY_S;
 		$result['short'] .= ACT_TERMS_NET . constant($type . '_NUM_DAYS_DUE');
 		break;
 	  case '1': // Cash on Delivery (COD)
-		$result['long']  = ACT_COD_LONG;
-		$result['short'] = ACT_COD_SHORT;
+		$result['long']  = TEXT_CASH_ON_DELIVERY;
+		$result['short'] = TEXT_CASH_ON_DELIVERY_SHORT;
 		break;
 	  case '2': // Prepaid
-		$result['long']  = ACT_PREPAID;
-		$result['short'] = ACT_PREPAID;
+		$result['long']  = TEXT_PREPAID;
+		$result['short'] = TEXT_PREPAID;
 		break;
 	  case '3': // Special terms
 		if ($terms[1] <> 0) {
-		  $result['long']  = ACT_DISCOUNT . $terms[1] . ACT_EARLY_DISCOUNT . ACT_DUE_IN . $terms[2] . ACT_TERMS_EARLY_DAYS;
-		  $result['short'] = $terms[1] . ACT_EARLY_DISCOUNT_SHORT . $terms[2] . ', ';
+		  $result['long']  = TEXT_DISCOUNT . $terms[1] . TEXT_PERCENT . ACT_DUE_IN . $terms[2] . TEXT_DAY_S;
+		  $result['short'] = $terms[1] . TEXT_PERCENT_SHORT . $terms[2] . ', ';
 		}
-		$result['long']  .= ACT_TERMS_NET . $terms[3] . ACT_TERMS_STANDARD_DAYS;
+		$result['long']  .= ACT_TERMS_NET . $terms[3] . TEXT_DAY_S;
 		$result['short'] .=  ACT_TERMS_NET . $terms[3];
 		break;
 	  case '4': // Due on day of next month
 		if ($terms[1] <> 0) {
-		  $result['long']  = ACT_DISCOUNT . $terms[1] . ACT_EARLY_DISCOUNT . ACT_DUE_IN . $terms[2] . ACT_TERMS_EARLY_DAYS;
-		  $result['short'] = $terms[1] . ACT_EARLY_DISCOUNT_SHORT . $terms[2] . ', ';
+		  $result['long']  = TEXT_DISCOUNT . $terms[1] . TEXT_PERCENT . ACT_DUE_IN . $terms[2] . TEXT_DAY_S;
+		  $result['short'] = $terms[1] . TEXT_PERCENT_SHORT . $terms[2] . ', ';
 		}
 		$result['long']  .= ACT_DUE_ON . $terms[3];
 		$result['short'] .=  ACT_DUE_ON . $terms[3];
@@ -408,8 +408,8 @@
 	  case '5': // Due at end of month
 		if ($terms[1] <> 0) {
 		} else {
-		  $result['long']  = ACT_DISCOUNT . $terms[1] . ACT_EARLY_DISCOUNT . ACT_DUE_IN . $terms[2] . ACT_TERMS_EARLY_DAYS;
-		  $result['short'] = $terms[1] . ACT_EARLY_DISCOUNT_SHORT . $terms[2] . ', ';
+		  $result['long']  = TEXT_DISCOUNT . $terms[1] . TEXT_PERCENT . ACT_DUE_IN . $terms[2] . TEXT_DAY_S;
+		  $result['short'] = $terms[1] . TEXT_PERCENT_SHORT . $terms[2] . ', ';
 		}
 		$result['long']  .= ACT_END_OF_MONTH;
 		$result['short'] .=  ACT_END_OF_MONTH;
@@ -812,7 +812,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
     if (!$countries) $countries = gen_pull_countries();
     foreach ($countries->country as $value) $temp[$value->iso3] = $value->name;
     asort($temp); // for language translations, sort to alphabetical
-    if ($choose) $output[] = array('id' => '0', 'text' => GEN_HEADING_PLEASE_SELECT);
+    if ($choose) $output[] = array('id' => '0', 'text' => TEXT_PLEASE_SELECT);
     foreach ($temp as $iso3 => $country) $output[] = array('id' => $iso3, 'text' => $country);
     return $output;
   }
@@ -1302,7 +1302,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
 	  $output .= '<th nowrap="nowrap">' . chr(10);
 	  if ($value) $output .= html_image(DIR_WS_IMAGES . $image_asc  , TEXT_ASC,  '', '', 'onclick="submitSortOrder(\''.$value.'\',\'asc\')"'). chr(10);
 	  $output .= $value;
-	  if ($value) $output .= html_image(DIR_WS_IMAGES . $image_desc , TEXT_DESC, '', '', 'onclick="submitSortOrder(\''.$value.'\',\'desc\')"'). chr(10);
+	  if ($value) $output .= html_image(DIR_WS_IMAGES . $image_desc , TEXT_DESCENDING_SHORT, '', '', 'onclick="submitSortOrder(\''.$value.'\',\'desc\')"'). chr(10);
 	  $output .= '</th>' . chr(10);
 	}
 	if (sizeof($extra_headings) > 0) foreach ($extra_headings as $value) {

@@ -9,11 +9,11 @@ define('MODULE_IMPORT_BANK_TITLE','Importeer Bank rekening');
 define('GEN_IMPORT_MESSAGE','Selecteer het .csv bestand dat u wilt importeren en klik op importeer');
 define('TEXT_REQUIRED','VEREIST');
 define('TEXT_IMPORT','Importeer');
-define('SAMPLE_CSV','Voorbeeld CSV');
+define('TEXT_SAMPLE_CSV','Voorbeeld CSV');
 define('HEADING_MODULE_IMPORT_BANK','Importeer bankrekening overzicht');
 define('GEN_BANK_IMPORT_MESSAGE',	'Selecteer het .csv bestand dat u wilt importeren en klik op importeer.<br> Als er geen bank rekening kolom in het .csv bestand staat selecteer er dan een uit het keuze veld.');
 define('TEXT_IMPORT',				'Importeer');
-define('SAMPLE_CSV',				'Voorbeeld CSV');
+define('TEXT_SAMPLE_CSV',				'Voorbeeld CSV');
 define('TEXT_REQUIRED',				'VEREIST');
 
 define('TEXT_BIMP_ERMSG1','Uw eigen rekeningnummer is Leeg');

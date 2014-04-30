@@ -26,25 +26,25 @@ $toolbar->icon_list['open']['show']     = false;
 $toolbar->icon_list['save']['show']     = false;
 $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['print']['show']    = false;
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
 <div style="text-align:center" <?php echo $inactive_flag; ?>><?php echo $status_text; ?></div>
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
  <thead class="ui-widget-header">
-  <tr><th colspan="5"><?php echo ACT_POPUP_TERMS_WINDOW_TITLE; ?></th></tr>
+  <tr><th colspan="5"><?php echo TEXT_PAYMENT_TERMS; ?></th></tr>
  </thead>
  <tbody class="ui-widget-content">
-  <tr><td colspan="5"><?php echo ACT_TERMS_DUE . ': ' . $new_data['terms_lang'] . ACT_TERMS_CREDIT_LIMIT . $currencies->format($new_data['credit_limit']); ?></td></tr>
+  <tr><td colspan="5"><?php echo TEXT_TERMS_DUE . ': ' . $new_data['terms_lang'] . ACT_TERMS_CREDIT_LIMIT . $currencies->format($new_data['credit_limit']); ?></td></tr>
 <?php if ($new_data['past_due'] <> 0) { ?>
-  <tr><td colspan="5"><?php echo ACT_AMT_PAST_DUE . $currencies->format($new_data['past_due']); ?></td></tr>
+  <tr><td colspan="5"><?php echo TEXT_AMOUNT_PAST_DUE .': ' . $currencies->format($new_data['past_due']); ?></td></tr>
 <?php } ?>
  </tbody>
 </table>
 <table class="ui-widget" style="border-collapse:collapse;width:100%;">
  <thead class="ui-widget-header">
-  <tr><th colspan="5"><?php echo ACT_ACT_HISTORY; ?></th></tr>
+  <tr><th colspan="5"><?php echo TEXT_ACCOUNT_HISTORY; ?></th></tr>
   <tr>
 	<th><?php echo ($type == 'AP') ? AP_AGING_HEADING_1 : AR_AGING_HEADING_1; ?></th>
 	<th><?php echo ($type == 'AP') ? AP_AGING_HEADING_2 : AR_AGING_HEADING_2; ?></th>

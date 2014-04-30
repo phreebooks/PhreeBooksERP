@@ -23,7 +23,7 @@ require_once(DIR_FS_WORKING . 'pages/popup_build/box_html.php'); // box template
 <tr><td>
   <table id="field_setup_frm" class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto;">
   <thead class="ui-widget-header">
-    <tr><th id="fieldListHeading" colspan="8"><?php echo PHREEFORM_FLDLIST; ?></th></tr>
+    <tr><th id="fieldListHeading" colspan="8"><?php echo TEXT_FIELD_LIST; ?></th></tr>
     <tr>
       <th width="25%"><?php echo PHREEFORM_DISPNAME; ?></th>
       <th width="10%"><?php echo TEXT_ABSCISSA; ?></th>
@@ -44,13 +44,13 @@ require_once(DIR_FS_WORKING . 'pages/popup_build/box_html.php'); // box template
     <tr>
 	  <td colspan="8" nowrap="nowrap">
 	   <div >
-		<?php 
-		  echo html_input_field('fld_desc[]',   $report->fieldlist[$i]->description, 'size="20" maxlength="25"'); 
-		  echo html_input_field('fld_abs[]',    $report->fieldlist[$i]->abscissa,    'size="6" maxlength="4"'); 
-		  echo html_input_field('fld_ord[]',    $report->fieldlist[$i]->ordinate,    'size="6" maxlength="4"'); 
-		  echo html_input_field('fld_wid[]',    $report->fieldlist[$i]->width,       'size="6" maxlength="4"'); 
-		  echo html_input_field('fld_hgt[]',    $report->fieldlist[$i]->height,      'size="6" maxlength="4"'); 
-if ($report->serialform) { 
+		<?php
+		  echo html_input_field('fld_desc[]',   $report->fieldlist[$i]->description, 'size="20" maxlength="25"');
+		  echo html_input_field('fld_abs[]',    $report->fieldlist[$i]->abscissa,    'size="6" maxlength="4"');
+		  echo html_input_field('fld_ord[]',    $report->fieldlist[$i]->ordinate,    'size="6" maxlength="4"');
+		  echo html_input_field('fld_wid[]',    $report->fieldlist[$i]->width,       'size="6" maxlength="4"');
+		  echo html_input_field('fld_hgt[]',    $report->fieldlist[$i]->height,      'size="6" maxlength="4"');
+if ($report->serialform) {
 		  echo html_pull_down_menu('fld_brk[]', $sel_yes_no, $report->fieldlist[$i]->rowbreak);
 }
 		  echo html_pull_down_menu('fld_type_'.$i, gen_build_pull_down($FormEntries), $report->fieldlist[$i]->type, 'onchange="boxLoad(this.value, ' . $i . ')"');

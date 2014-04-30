@@ -30,10 +30,10 @@ if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key =
 $toolbar->add_help('07.05.04');
 $toolbar->search_period = $period;
 $toolbar->period_strict = false; // hide the All option in period selection
-echo $toolbar->build_toolbar($add_search = false, $add_period = true); 
+echo $toolbar->build_toolbar($add_search = false, $add_period = true);
 // Build the page
 ?>
-<h1><?php echo BANKING_HEADING_REGISTER; ?></h1>
+<h1><?php echo TEXT_CASH_ACCOUNT_REGISTER; ?></h1>
 <div align="center"><?php echo TEXT_CASH_ACCOUNT . '&nbsp;' . html_pull_down_menu('gl_account', $account_array, $gl_account, 'onchange="submit();"'); ?></div>
 <?php if (ENABLE_MULTI_CURRENCY) echo '<p> ' . sprintf(GEN_PRICE_SHEET_CURRENCY_NOTE, $currencies->currencies[DEFAULT_CURRENCY]['title']) . '</p>'; ?>
 <table class="ui-widget" style="border-collapse:collapse;width:900px;margin-left:auto;margin-right:auto;">
@@ -58,16 +58,16 @@ echo $toolbar->build_toolbar($add_search = false, $add_period = true);
 	<td><?php echo '&nbsp;'; ?></td>
 	<td align="right"><?php echo $currencies->format($beginning_balance); ?></td>
   </tr>
-  <?php 
+  <?php
   $i = 0;
   $odd = true;
-  if (is_array($bank_list)) foreach ($bank_list as $values) { 
+  if (is_array($bank_list)) foreach ($bank_list as $values) {
 	$beginning_balance += $values['dep_amount'] - $values['pmt_amount'];
   ?>
 	<tr class="<?php echo $odd?'odd':'even'; ?>">
 		<td id="td_<?php echo $i; ?>_4"><?php echo gen_locale_date($values['post_date']); ?></td>
 		<td id="td_<?php echo $i; ?>_1"><?php echo $values['reference']; ?></td>
-		<td id="td_<?php echo $i; ?>_2"><?php echo $values['pmt_amount'] ? BNK_TEXT_WITHDRAWAL : TEXT_DEPOSIT; ?></td>
+		<td id="td_<?php echo $i; ?>_2"><?php echo $values['pmt_amount'] ? TEXT_WITHDRAWAL : TEXT_DEPOSIT; ?></td>
 		<td id="td_<?php echo $i; ?>_5"><?php echo htmlspecialchars($values['name']); ?></td>
 		<td id="td_<?php echo $i; ?>_6" align="right"><?php echo $values['dep_amount'] ? $currencies->format($values['dep_amount']) : '&nbsp;'; ?></td>
 		<td id="td_<?php echo $i; ?>_3" align="right"><?php echo $values['pmt_amount'] ? $currencies->format($values['pmt_amount']) : '&nbsp;'; ?></td>

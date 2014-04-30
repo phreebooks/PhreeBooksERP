@@ -28,9 +28,9 @@ define('SECURITY_ID_XML_BUILDER', 499);
 // Menu Locations
 if (defined('MODULE_XML_BUILDER_STATUS')) {
 	$mainmenu["tools"]['submenu']['xml_builder'] = array(
-    	'text'        => BOX_XML_BUILDER_TITLE,  
-    	'order'       => 99, 
-    	'security_id' => SECURITY_ID_XML_BUILDER, 
+    	'text'        => TEXT_XML_BUILDER,
+    	'order'       => 99,
+    	'security_id' => SECURITY_ID_XML_BUILDER,
     	'link'        => html_href_link(FILENAME_DEFAULT, 'module=xml_builder&amp;page=main', 'SSL'),
 	    'show_in_users_settings' => true,
   	);

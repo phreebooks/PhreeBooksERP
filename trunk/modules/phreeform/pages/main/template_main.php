@@ -29,25 +29,25 @@ $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['print']['show']    = false;
 if ($security_level > 1) $toolbar->add_icon('import', 'onclick="ReportPopup(\'import\')"', $order = 50);
 $toolbar->icon_list['home'] = array(
-	'show'   => true, 
+	'show'   => true,
 	'icon'   => 'actions/go-home.png',
-	'params' => 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL') . '\'"', 
-	'text'   => TEXT_HOME, 
+	'params' => 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL') . '\'"',
+	'text'   => TEXT_HOME,
 	'order'  => '25',
 );
 if ($security_level > 1) {
   $toolbar->icon_list['new_rpt'] = array(
-	'show'   => true, 
+	'show'   => true,
 	'icon'   => 'mimetypes/text-x-generic.png',
-	'params' => 'onclick="ReportPopup(\'new_rpt\')"', 
-	'text'   => TEXT_NEW_REPORT, 
+	'params' => 'onclick="ReportPopup(\'new_rpt\')"',
+	'text'   => sprintf(TEXT_NEW_ARGS, TEXT_REPORT),
 	'order'  => '30',
   );
   $toolbar->icon_list['new_frm'] = array(
-	'show'   => true, 
+	'show'   => true,
 	'icon'   => 'mimetypes/text-html.png',
-	'params' => 'onclick="ReportPopup(\'new_frm\')"', 
-	'text'   => TEXT_NEW_FORM, 
+	'params' => 'onclick="ReportPopup(\'new_frm\')"',
+	'text'   =>  sprintf(TEXT_NEW_ARGS, TEXT_FORM) ,
 	'order'  => '35',
   );
 }
@@ -60,7 +60,7 @@ echo $toolbar->build_toolbar($add_search = true);
   <tr>
     <td width="30%" valign="top">
       <fieldset>
-        <legend><?php echo TEXT_DOCUMENTS; ?></legend>
+        <legend><?php echo TEXT_DOCUMENT_LIST; ?></legend>
 		<?php echo '<a href="javascript:Expand(\'' . 'dc_' . '\');">' . TEXT_EXPAND_ALL . '</a> - <a href="javascript:Collapse(\'' . 'dc_' . '\');">' . TEXT_COLLAPSE_ALL . '</a><br />' . chr(10); ?>
 	    <?php echo build_dir_html('dir_tree', $toc_array); ?>
 	  </fieldset>
@@ -69,7 +69,7 @@ echo $toolbar->build_toolbar($add_search = true);
       <fieldset>
         <legend><?php echo TEXT_DETAILS; ?></legend>
 	    <div id="rightColumn">
-			<?php if (file_exists($div_template)) { 
+			<?php if (file_exists($div_template)) {
 				include ($div_template);
 				echo $fieldset_content;
 			} ?>

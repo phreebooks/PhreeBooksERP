@@ -34,11 +34,11 @@ echo html_form('login', FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;act
 			    <td colspan="2"><?php echo $messageStack->output(); ?></td>
 			  </tr>
               <tr>
-                <td width="35%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_LOGIN_NAME; ?></td>
+                <td width="35%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_USERNAME; ?>:</td>
                 <td width="65%"><?php echo html_input_field('admin_name', (isset($_POST['admin_name']) ? $_POST['admin_name'] : ''), '', true); ?></td>
               </tr>
               <tr>
-                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_LOGIN_PASS; ?></td>
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_PASSWORD; ?>:</td>
                 <td><?php echo html_password_field('admin_pass', '', true); ?></td>
               </tr>
 <?php if (sizeof($_SESSION['companies']) != 1) { ?>
@@ -60,7 +60,7 @@ echo html_form('login', FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;act
               <tr>
                 <td colspan="2" align="right">&nbsp;
 				  <div id="wait_msg" style="display:none;"><?php echo TEXT_FORM_PLEASE_WAIT; ?></div>
-				  <?php echo html_submit_field('submit', TEXT_LOGIN_BUTTON); ?>
+				  <?php echo html_submit_field('submit', TEXT_LOGIN); ?>
 				</td>
               </tr>
               <tr>

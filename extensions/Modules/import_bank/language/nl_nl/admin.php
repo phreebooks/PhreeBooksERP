@@ -16,5 +16,5 @@ define('IMPORT_BANK_CONFIG_SAVED','saved import_bank config');
 define('TEXT_BANK_ACCOUNT','Bank account or iban');
 define('TEXT_ENTER_TRANSACTION','Nieuw Transactie Sjabloon');
 define('TEXT_EDIT_TRANSACTION','Bewerk transactie sjabloon');
-define('TEXT_KNOWN_TRANSACTION','Transactie Sjabloon');
+define('TEXT_TRANSACTION_TEMPLATE','Transactie Sjabloon');
 ?>

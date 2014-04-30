@@ -27,9 +27,9 @@ $toolbar->icon_list['save']['show']     = false;
 $toolbar->icon_list['print']['show']    = false;
 $toolbar->add_icon('continue', 'onclick="submitToDo(\'create\')"', $order = 10);
 $toolbar->add_help('07.04.01.01');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 ?>
-  <h1><?php echo INV_HEADING_NEW_ITEM; ?></h1>
+  <h1><?php echo sprintf(TEXT_NEW_ARGS, TEXT_INVENTORY_ITEM); ?></h1>
   <table class="ui-widget" style="border-collapse:collapse;width:600px;margin-left:auto;margin-right:auto">
    <thead class="ui-widget-header">
     <tr>
@@ -42,12 +42,12 @@ echo $toolbar->build_toolbar();
 	  <td><?php echo html_input_field('sku', $sku, 'size="' . (MAX_INVENTORY_SKU_LENGTH + 2) . '" maxlength="' . MAX_INVENTORY_SKU_LENGTH . '"'); ?></td>
     </tr>
     <tr>
-	  <td align="right"><?php echo INV_ENTRY_INVENTORY_TYPE; ?></td>
+	  <td align="right"><?php echo TEXT_INVENTORY_TYPES; ?></td>
 	  <td><?php echo html_pull_down_menu('inventory_type', gen_build_pull_down($inventory_types), isset($inventory_type) ? $inventory_type : 'si', 'onchange="setSkuLength()"'); ?></td>
     </tr>
     <?php /*?>
     <tr>
-	  <td align="right"><?php echo INV_ENTRY_INVENTORY_COST_METHOD; ?></td>
+	  <td align="right"><?php echo TEXT_COST_METHOD; ?></td>
 	  <td><?php echo html_pull_down_menu('cost_method', gen_build_pull_down($cost_methods), isset($cost_method) ? $cost_method : 'f'); ?></td>
     </tr><?php */?>
     <tr>

@@ -27,7 +27,7 @@ var tableInit   = new Array();
 var dFields     = new Array(); // holds the field list which changes with table selection
 var tableCount  = 0;
 var rClick      = 0;
-<?php 
+<?php
 echo "  tableInit[tableCount] = 'table_setup'; tableCount++;" . chr(10);
 echo "  tableInit[tableCount] = 'sort_setup';  tableCount++;" . chr(10);
 echo "  tableInit[tableCount] = 'crit_setup';  tableCount++;" . chr(10);
@@ -35,7 +35,7 @@ switch ($report->reporttype) {
   case 'frm': echo "  tableInit[tableCount] = 'field_setup_frm'; tableCount++;" . chr(10); break;
   case 'rpt': echo "  tableInit[tableCount] = 'field_setup';     tableCount++;" . chr(10);
 			  echo "  tableInit[tableCount] = 'group_setup';     tableCount++;" . chr(10); break;
-  } 
+  }
 ?>
 var textPortrait  = '<?php echo TEXT_PORTRAIT; ?>';
 var textLandscape = '<?php echo TEXT_LANDSCAPE; ?>';
@@ -45,17 +45,17 @@ function init() {
     var rID = document.getElementById('rID').value;
     var popupWin = window.open("index.php?module=phreeform&page=popup_gen&rID="+rID+"&action=open&preview=1","popup_gen","width=900,height=650,resizable=1,scrollbars=1,top=150,left=200");
   }
-<?php 
+<?php
   if ($self_close) {
     echo 'window.opener.location="index.php?module=phreeform&page=main";' . chr(10);
-    echo 'self.close();' . chr(10); 
+    echo 'self.close();' . chr(10);
   }
   if ($report->reporttype == 'frm') {
     if (!$report->fieldlist)  echo '  rowAction("field_setup_frm", "add");' . chr(10);
   } else if ($report->reporttype == 'rpt') {
   	if (!$report->fieldlist)  echo '  rowAction("field_setup",     "add");' . chr(10);
     if (!$report->grouplist)  echo '  rowAction("group_setup",     "add");' . chr(10);
-  } 
+  }
   if (!$report->sortlist)   echo '  rowAction("sort_setup", "add");' . chr(10);
   if (!$report->filterlist) echo '  rowAction("crit_setup", "add");' . chr(10);
   ?>
@@ -90,7 +90,7 @@ function validateDB() {
   for (i=0, j=1; i<document.getElementById('table_setup').rows.length - 2; i++, j++) {
     table   = document.forms[0].elements['table[]'][i].value;
     joinOpt = document.forms[0].elements['joinopt[]'][i].value;
-    if (table) { 
+    if (table) {
       tableCrit = document.forms[0].elements['table_crit[]'][i].value;
       if (tableCrit || (table && i==0)) {
 	    fields += '&joinopt'+j+'='+joinOpt+'&table'+j+'='+table+'&table'+j+'criteria='+tableCrit;
@@ -249,10 +249,10 @@ function calculateWidth() {	// total up the columns
 	var paperValue   = document.getElementById('papersize').options[index].value;
 	var marginValues = paperValue.split(':');
 	pageWidth = (orientation == 'P') ? marginValues[1] : marginValues[2];
-	var pageProperties = '<?php echo PHREEFORM_FLDLIST; ?>';
+	var pageProperties = '<?php echo TEXT_FIELD_LIST; ?>';
 	pageProperties += ' ('+'<?php echo TEXT_ORIEN; ?>'+': '+orienText;
 	pageProperties += ', '+'<?php echo TEXT_WIDTH; ?>'+': '+pageWidth;
-	pageProperties += ', '+'<?php echo PHREEFORM_PGMARGIN_L; ?>'+': '+document.getElementById('marginleft').value;
+	pageProperties += ', '+'<?php echo TEXT_LEFT_MARGIN; ?>'+': '+document.getElementById('marginleft').value;
 	pageProperties += ', '+'<?php echo PHREEFORM_PGMARGIN_R; ?>'+': '+document.getElementById('marginright').value+')';
 	if (document.all) { // IE browsers
 	  document.getElementById('fieldListHeading').innerText   = pageProperties;
@@ -365,8 +365,8 @@ function buildRow(idTable, rIndex, boxID) {
       break;
 	case 'field_setup_frm':
       newCell = newRow.insertCell(-1);
-	  newCell.colSpan = '8'; 
-	  newCell.nowrap = 'nowrap'; 
+	  newCell.colSpan = '8';
+	  newCell.nowrap = 'nowrap';
 	  var proptable   = document.createElement("div");
 	  newCell.appendChild(proptable);
 	  cell[0]  = '<?php echo html_input_field('fld_desc[]', '','size="20" maxlength="25"'); ?>';
@@ -386,7 +386,7 @@ function buildRow(idTable, rIndex, boxID) {
 	  newCell.innerHTML = cell[0];
 	  var boxDiv     = document.createElement("div");
 	  boxDiv.id      = 'fld_box_'+rowCnt;
-	  boxDiv.colSpan = '8'; 
+	  boxDiv.colSpan = '8';
 	  boxDiv.bgColor = '#bbd8d8';
 	  boxDiv.border  = 'solid 1px #000';
 	  newCell.appendChild(boxDiv);
@@ -460,7 +460,7 @@ function buildRow(idTable, rIndex, boxID) {
   if (!skipBuild) for (var i=0; i<cell.length; i++) {
     newCell = newRow.insertCell(-1);
 	newCell.innerHTML = cell[i];
-	if (attr[i]) newCell.align  = attr[i]; 
+	if (attr[i]) newCell.align  = attr[i];
 	if (wrap[i]) newCell.nowrap = wrap[i];
   }
   if (updateList) {
@@ -550,7 +550,7 @@ function moved(e, idWheel, idTD, idField) {
     while (c.length < 6) c = "0" + c;
   }
   document.getElementById(idTD).style.backgroundColor = "#" + c;
-  var color = h2d(c.substr(0, 2)) + ':' + h2d(c.substr(2, 2)) + ':' + h2d(c.substr(4, 2)); 
+  var color = h2d(c.substr(0, 2)) + ':' + h2d(c.substr(2, 2)) + ':' + h2d(c.substr(4, 2));
   document.getElementById(idField).value = color;
   return false;
 }
@@ -667,7 +667,7 @@ function TableDnD() {
     /** Initialise the drag and drop by capturing mouse move events */
     this.init = function(table) {
         this.table = table;
-        var rows = table.getElementsByTagName("tr"); 
+        var rows = table.getElementsByTagName("tr");
 //alert('init table = '+table.id+' and number of rows = '+rows.length);
         for (var i=0; i<rows.length; i++) {
 			// John Tarr: added to ignore rows that I've added the NoDnD attribute to (Category and Header rows)

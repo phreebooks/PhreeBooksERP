@@ -31,24 +31,24 @@ define('SECURITY_ID_AUDIT',      500);
 if (defined('MODULE_AUDIT_STATUS')) {
 	$mainmenu["gl"]['submenu']["audit"] = array(
 	  	'order'		  => 80,
-		'text'        => BOX_AUDIT_MODULE,  
+		'text'        => BOX_AUDIT_MODULE,
 		'show_in_users_settings' => true,
-	    'security_id' => SECURITY_ID_AUDIT, 
+	    'security_id' => SECURITY_ID_AUDIT,
 	    'link'        => html_href_link(FILENAME_DEFAULT, 'module=audit&amp;page=main', 'SSL'),
 		'params'	  => '',
 	);
 	if(\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
   		gen_pull_language('audit', 'admin');
   		$mainmenu["company"]['submenu']["configuration"]['submenu']["audit"] = array(
-			'order'	      => MODULE_AUDIT_TITLE,
-			'text'        => MODULE_AUDIT_TITLE,
-			'security_id' => SECURITY_ID_CONFIGURATION, 
+			'order'	      => TEXT_AUDIT,
+			'text'        => TEXT_AUDIT,
+			'security_id' => SECURITY_ID_CONFIGURATION,
 			'link'        => html_href_link(FILENAME_DEFAULT, 'module=audit&amp;page=admin', 'SSL'),
     		'show_in_users_settings' => false,
 			'params'      => '',
   		);
 	}
-	
+
 }
 
 ?>

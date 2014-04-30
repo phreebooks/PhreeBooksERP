@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:45
 // Module/Method: import_bank
 // ISO Language: pt_br
@@ -19,6 +19,6 @@ define('IMPORT_BANK_CONFIG_SAVED','config import-bank gravado');
 define('TEXT_BANK_ACCOUNT','Conta bancária ou IBAN');
 define('TEXT_ENTER_TRANSACTION','Entre novo modelo de transação');
 define('TEXT_EDIT_TRANSACTION','Editar modelo de transação');
-define('TEXT_KNOWN_TRANSACTION','Modelo de Transação');
+define('TEXT_TRANSACTION_TEMPLATE','Modelo de Transação');
 
 ?>

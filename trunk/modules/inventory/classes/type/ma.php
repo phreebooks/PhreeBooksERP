@@ -13,7 +13,7 @@ class ma extends \inventory\classes\inventory { //Item Assembly formerly know as
 
 	function __construct(){
 		parent::__construct();
-		$this->tab_list['bom'] = array('file'=>'template_tab_bom',	'tag'=>'bom',    'order'=>30, 'text'=>INV_BOM);
+		$this->tab_list['bom'] = array('file'=>'template_tab_bom',	'tag'=>'bom',    'order'=>30, 'text'=>TEXT_BILL_OF_MATERIALS);
 	}
 
 	function get_item_by_id($id){

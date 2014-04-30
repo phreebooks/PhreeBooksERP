@@ -36,15 +36,15 @@ echo $toolbar->build_toolbar();
 <h1><?php echo BOX_ZENCART_MODULE; ?></h1>
   <table align="center" width="600" border="0">
 	<tr><td colspan="2" align="right"><img src="<?php echo DIR_WS_ADMIN . 'modules/zencart/images/zen-cart-logo.png'; ?>" alt="ZenCart Logo" /></td></tr>
-    <tr><th colspan="2"><?php echo ZENCART_BULK_UPLOAD_TITLE; ?></th></tr>
+    <tr><th colspan="2"><?php echo TEXT_BULK_UPLOAD; ?></th></tr>
     <tr><td colspan="2"><?php echo ZENCART_BULK_UPLOAD_INFO; ?></td></tr>
     <tr>
-      <td align="right"><?php echo ZENCART_INCLUDE_IMAGES; ?></td>
+      <td align="right"><?php echo TEXT_INCLUDE_IMAGES; ?></td>
       <td><?php echo html_checkbox_field('include_images', '1', false); ?></td>
     </tr>
     <tr>
       <td align="right"><?php echo ZENCART_BULK_UPLOAD_TEXT; ?></td>
-      <td><?php echo html_button_field('bulkupload', ZENCART_BULK_UPLOAD_BTN, 'onclick="submitToDo(\'bulkupload\')"'); ?></td>
+      <td><?php echo html_button_field('bulkupload', TEXT_BULK_UPLOAD, 'onclick="submitToDo(\'bulkupload\')"'); ?></td>
 	</tr>
     <tr><td colspan="2">&nbsp;</td></tr>
     <tr><th colspan="2"><?php echo ZENCART_PRODUCT_SYNC_TITLE; ?></th></tr>
@@ -54,7 +54,7 @@ echo $toolbar->build_toolbar();
       <td><?php echo html_button_field('sync', ZENCART_PRODUCT_SYNC_BTN, 'onclick="submitToDo(\'sync\')"'); ?></td>
 	</tr>
     <tr><td colspan="2">&nbsp;</td></tr>
-    <tr><th colspan="2"><?php echo ZENCART_SHIP_CONFIRM_TITLE; ?></th></tr>
+    <tr><th colspan="2"><?php echo TEXT_CONFIRM_SHIPMENTS; ?></th></tr>
     <tr><td colspan="2"><?php echo ZENCART_SHIP_CONFIRM_INFO; ?></td></tr>
     <tr>
       <td align="right"><?php echo ZENCART_TEXT_CONFIRM_ON; ?></td>
@@ -62,7 +62,7 @@ echo $toolbar->build_toolbar();
 	</tr>
     <tr>
       <td align="right"><?php echo ZENCART_SHIP_CONFIRM_TEXT; ?></td>
-      <td><?php echo html_button_field('confirm', ZENCART_SHIP_CONFIRM_BTN, 'onclick="submitToDo(\'confirm\')"'); ?></td>
+      <td><?php echo html_button_field('confirm', TEXT_CONFIRM_SHIPMENTS, 'onclick="submitToDo(\'confirm\')"'); ?></td>
 	</tr>
   </table>
 </form>

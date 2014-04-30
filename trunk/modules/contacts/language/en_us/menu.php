@@ -17,15 +17,15 @@
 //  Path: /modules/contacts/language/en_us/menu.php
 //
 // Enter the new menu category heading if necessary
-define('MENU_HEADING_CUSTOMERS', 'Customers');
-define('MENU_HEADING_VENDORS', 'Vendors');
-define('MENU_HEADING_EMPLOYEES', 'Employees');
-define('BOX_PHREECRM_MODULE','PhreeCRM');
+define('TEXT_CUSTOMERS', 'Customers');
+define('TEXT_VENDORS', 'Vendors');
+define('TEXT_EMPLOYEES', 'Employees');
+define('TEXT_PHREECRM','PhreeCRM');
 // Menu Titles
 define('BOX_CONTACTS_NEW_CONTACT','New Contact');
 define('BOX_HR_DEPARTMENTS', 'Departments');
 define('BOX_PROJECTS_PHASES','Project Phases');
-define('BOX_PROJECTS_COSTS','Project Costs');
+define('TEXT_PROJECT_COSTS','Project Costs');
 define('BOX_BRANCHES', 'Branch');
 define('TEXT_CUSTOMER','Customer');
 define('TEXT_VENDOR','Vendor');

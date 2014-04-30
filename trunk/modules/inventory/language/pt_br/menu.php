@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:45
 // Module/Method: inventory
 // ISO Language: pt_br
@@ -16,6 +16,6 @@ define('ORD_TEXT_14_WINDOW_TITLE','Montagens');
 define('BOX_INV_TRANSFER','Transferir Estoque');
 define('BOX_INV_NEW','Novo Estoque');
 define('BOX_INV_MAINTAIN','Estoque');
-define('MENU_HEADING_INVENTORY','Estoque');
+define('TEXT_INVENTORY','Estoque');
 
 ?>

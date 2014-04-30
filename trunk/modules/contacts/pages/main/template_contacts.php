@@ -18,10 +18,10 @@
 //
 ?>
 <div title="<?php echo TEXT_CONTACTS;?>" id="tab_contacts">
-<?php 
-  if (is_array($cInfo->contacts)) { 
+<?php
+  if (is_array($cInfo->contacts)) {
 	$heading_array  = array(); // don't sort
-	$non_sort_array = array(GEN_LAST_NAME, GEN_FIRST_NAME, TEXT_TITLE, GEN_TELEPHONE1, GEN_TELEPHONE4, GEN_EMAIL, TEXT_ACTION);
+	$non_sort_array = array(TEXT_LAST_NAME, TEXT_FIRST_NAME, TEXT_TITLE, TEXT_TELEPHONE, GEN_TELEPHONE4, TEXT_EMAIL, TEXT_ACTION);
 	$crm_headings   = html_heading_bar($heading_array, $non_sort_array);
 ?>
   <fieldset>
@@ -58,7 +58,7 @@
   <?php } ?>
   <?php // *********************** Mailing/Main Address (only one allowed) ****************************** ?>
   <fieldset>
-    <legend><?php echo ACT_CATEGORY_I_ADDRESS; ?></legend>
+    <legend><?php echo TEXT_ADD_UPDATE .' ' . TEXT_CONTACT; ?></legend>
       <table class="ui-widget" style="border-collapse:collapse;width:100%;">
       <tr>
        <td>
@@ -71,7 +71,7 @@
 	$ctoolbar->icon_list['print']['show']  = false;
 	$ctoolbar->add_icon('new', 'onclick="clearAddress(\'im\')"', $order = 10);
 	$ctoolbar->icon_list['new']['icon']    = 'actions/contact-new.png';
-	$ctoolbar->icon_list['new']['text']    = TEXT_NEW_CONTACT;
+	$ctoolbar->icon_list['new']['text']    = sprintf(TEXT_NEW_ARGS, TEXT_CONTACT);
 	$ctoolbar->add_icon('copy', 'onclick="copyContactAddress(\'' . $type . '\')"', 20);
 	$ctoolbar->icon_list['copy']['text']   = TEXT_COPY_ADDRESS;
 	echo $output;
@@ -81,15 +81,15 @@
     </table>
     <table class="ui-widget" style="border-collapse:collapse;width:100%;">
       <tr>
-       <td align="right"><?php echo ACT_SHORT_NAME . html_hidden_field('i_id', ''); ?></td>
+       <td align="right"><?php echo TEXT_CONTACT_ID . html_hidden_field('i_id', ''); ?></td>
        <td><?php echo html_input_field('i_short_name', $cInfo->i_short_name, 'size="21" maxlength="20"', true); ?></td>
        <td align="right"><?php echo TEXT_TITLE; ?></td>
        <td><?php echo html_input_field('i_contact_middle', $cInfo->i_contact_middle, 'size="33" maxlength="32"', false); ?></td>
       </tr>
       <tr>
-        <td align="right"><?php echo GEN_FIRST_NAME; ?></td>
+        <td align="right"><?php echo TEXT_FIRST_NAME; ?></td>
         <td><?php echo html_input_field('i_contact_first', $cInfo->i_contact_first, 'size="33" maxlength="32"', false); ?></td>
-        <td align="right"><?php echo GEN_LAST_NAME; ?></td>
+        <td align="right"><?php echo TEXT_LAST_NAME; ?></td>
         <td><?php echo html_input_field('i_contact_last', $cInfo->i_contact_last, 'size="33" maxlength="32"', false); ?></td>
       </tr>
       <tr>

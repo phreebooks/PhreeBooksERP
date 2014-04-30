@@ -39,11 +39,11 @@ class known_transactions {
 	);
 
     if ($id) {
-	  db_perform($this->db_table, $sql_data_array, 'update', "kt_id = '" . $id . "'");
-	  gen_add_audit_log(SETUP_TAX_AUTHS_LOG . TEXT_UPDATE, $this->description);
+	  db_perform($this->db_table, $sql_data_array, 'update', "kt_id = '$id'");
+	  gen_add_audit_log(TEXT_TRANSACTION_TEMPLATE ." - " . TEXT_UPDATE, $this->description);
 	} else  {
       db_perform($this->db_table, $sql_data_array);
-	  gen_add_audit_log(SETUP_TAX_AUTHS_LOG . TEXT_ADD, $this->description);
+	  gen_add_audit_log(TEXT_TRANSACTION_TEMPLATE ." - " . TEXT_ADD, $this->description);
 	}
 	return true;
   }
@@ -52,9 +52,9 @@ class known_transactions {
   	global $db;
 	\core\classes\user::validate_security($this->security_id, 4);
 	// OK to delete
-	$result = $db->Execute("select description from " . $this->db_table . " where kt_id = '" . $id . "'");
-	$db->Execute("delete from " . $this->db_table . " where kt_id = '" . $id . "'");
-	gen_add_audit_log(SETUP_TAX_AUTHS_LOG . TEXT_DELETE, $result->fields['description']);
+	$result = $db->Execute("select description from " . $this->db_table . " where kt_id = '$id'");
+	$db->Execute("delete from " . $this->db_table . " where kt_id = '$id'");
+	gen_add_audit_log(TEXT_TRANSACTION_TEMPLATE ." - " . TEXT_DELETE, $result->fields['description']);
 	return true;
   }
 
@@ -97,7 +97,7 @@ class known_transactions {
 	$output  = '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);
 	$output .= '  <thead class="ui-widget-header">' . "\n";
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <th colspan="2">' . ($action=='new' ? TEXT_ENTER_TRANSACTION : TEXT_EDIT_TRANSACTION) . '</th>' . chr(10);
+	$output .= '    <th colspan="2">' . ($action=='new' ? sprintf(TEXT_NEW_ARGS, TEXT_TRANSACTION_TEMPLATE) : sprintf(TEXT_EDIT_ARGS, TEXT_TRANSACTION_TEMPLATE)) . '</th>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  </thead>' . "\n";
 	$output .= '  <tbody class="ui-widget-content">' . "\n";

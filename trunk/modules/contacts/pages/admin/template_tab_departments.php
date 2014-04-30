@@ -27,7 +27,7 @@ if ($security_level > 1) $departments_toolbar->add_icon('new', 'onclick="loadPop
 if ($departments->extra_buttons) $departments->customize_buttons($departments_toolbar);
 
 ?>
-<div title="<?php echo HR_POPUP_WINDOW_TITLE;?>" id="tab_departments">
+<div title="<?php echo TEXT_DEPARTMENTS;?>" id="tab_departments">
   <?php echo $departments_toolbar->build_toolbar(); ?>
   <h1><?php echo $departments->title; ?></h1>
   <div id="departments_content"><?php echo $departments->build_main_html(); ?></div>

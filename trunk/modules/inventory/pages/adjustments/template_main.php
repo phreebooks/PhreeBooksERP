@@ -35,7 +35,7 @@ if ($security_level < 2) $toolbar->icon_list['save']['show']   = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 // add the help file index and build the toolbar
 $toolbar->add_help('07.04.02.01');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
@@ -44,17 +44,17 @@ echo $toolbar->build_toolbar();
    <tbody>
 <?php if (ENABLE_MULTI_BRANCH) { ?>
 	<tr>
-	  <td><?php echo GEN_STORE_ID . '&nbsp;' .  html_pull_down_menu('store_id', gen_get_store_ids(), $cInfo->store_id ? $cInfo->store_id : $_SESSION['admin_prefs']['def_store_id']); ?></td>
+	  <td><?php echo TEXT_STORE_ID . '&nbsp;' .  html_pull_down_menu('store_id', gen_get_store_ids(), $cInfo->store_id ? $cInfo->store_id : $_SESSION['admin_prefs']['def_store_id']); ?></td>
 	</tr>
 <?php } else $hidden_fields .= html_hidden_field('store_id', $_SESSION['admin_prefs']['def_store_id']) . chr(10); ?>
 	<tr>
-	  <td align="right"><?php echo INV_REASON_FOR_ADJUSTMENT; ?></td>
+	  <td align="right"><?php echo TEXT_REASON_FOR_ADJUSTMENT; ?></td>
 	  <td><?php echo html_input_field('adj_reason', $cInfo->adj_reason, 'size="50"'); ?></td>
 	  <td align="right"><?php echo TEXT_POST_DATE . '&nbsp;'; ?></td>
 	  <td><?php echo html_calendar_field($cal_adj); ?></td>
 	</tr>
 	<tr>
-	  <td colspan="2"><?php echo INV_ADJUSTMENT_ACCOUNT . '&nbsp;' . html_pull_down_menu('gl_acct', $gl_array_list, $cInfo->gl_acct ? $cInfo->gl_acct : INV_STOCK_DEFAULT_INVENTORY, ''); ?></td>
+	  <td colspan="2"><?php echo TEXT_ADJUSTMENT_ACCOUNT . '&nbsp;' . html_pull_down_menu('gl_acct', $gl_array_list, $cInfo->gl_acct ? $cInfo->gl_acct : INV_STOCK_DEFAULT_INVENTORY, ''); ?></td>
 	  <td align="right"><?php echo TEXT_REFERENCE; ?></td>
 	  <td><?php echo html_input_field('purchase_invoice_id', $cInfo->purchase_invoice_id); ?></td>
 	</tr>
@@ -67,7 +67,7 @@ echo $toolbar->build_toolbar();
 	<tr>
 	  <th><?php echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small'); ?></th>
 	  <th><?php echo TEXT_SKU; ?></th>
-	  <th><?php echo INV_HEADING_QTY_IN_STOCK; ?></th>
+	  <th><?php echo TEXT_QUANTITY_IN_STOCK_SHORT; ?></th>
 	  <th><?php echo INV_ADJ_QUANTITY; ?></th>
 	  <th><?php echo TEXT_ITEM_COST; ?></th>
 	  <th><?php echo TEXT_BALANCE; ?></th>

@@ -19,10 +19,10 @@
 //
 
 ?>
-<div title="<?php echo MENU_HEADING_CONFIG;?>" id="tab_config">
+<div title="<?php echo TEXT_CONFIGURATION;?>" id="tab_config">
 <table class="ui-widget" style="border-style:none;width:100%">
  <thead class="ui-widget-header">
- <tr><th colspan="2"><?php echo MENU_HEADING_CONFIG; ?></th></tr>
+ <tr><th colspan="2"><?php echo TEXT_CONFIGURATION; ?></th></tr>
  </thead>
  <tbody class="ui-widget-content">
   <tr>

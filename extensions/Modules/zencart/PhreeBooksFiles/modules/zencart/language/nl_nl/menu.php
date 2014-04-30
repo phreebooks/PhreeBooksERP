@@ -8,7 +8,7 @@
 // +-----------------------------------------------------------------+
 // Path: /modules/zencart/language/nl_nl/menu.php
 
-define('MENU_HEADING_ZENCART','ZenCart');
+define('TEXT_ZENCART','ZenCart');
 define('BOX_ZENCART_MODULE','ZenCart Interface');
 
 ?>

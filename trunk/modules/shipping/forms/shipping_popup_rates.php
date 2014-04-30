@@ -1,4 +1,4 @@
-<?php 
+<?php
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
@@ -29,7 +29,7 @@ $toolbar->icon_list['delete']['show'] = false;
 $toolbar->icon_list['print']['show'] = false;
 $toolbar->add_icon('back', 'onclick="submitToDo(\'back\')"', $order = 9);
 $toolbar->add_help('09');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 ?>
 <h1><?php echo SHIPPING_POPUP_WINDOW_RATE_TITLE; ?></h1>
 <table>
@@ -42,12 +42,12 @@ echo $toolbar->build_toolbar();
 			echo '<tr><th colspan="6"><div align="center">';
 			echo $shipping_defaults['service_levels'][$key] . '</div></th></tr>' . chr(10);
 			echo '<tr>';
-			echo '<th>' . SHIPPING_TEXT_CARRIER . '</th>' . chr(10);
-			echo '<th>' . SHIPPING_TEXT_SERVICE . '</th>' . chr(10);
-			echo '<th>' . SHIPPING_TEXT_FREIGHT_QUOTE . '</th>' . chr(10);
-			echo '<th>' . SHIPPING_TEXT_BOOK_PRICE . '</th>' . chr(10);
-			echo '<th>' . SHIPPING_TEXT_COST . '</th>' . chr(10);
-			echo '<th>' . SHIPPING_TEXT_NOTES . '</th>' . chr(10);
+			echo '<th>' . TEXT_CARRIER . '</th>' . chr(10);
+			echo '<th>' . TEXT_SERVICE . '</th>' . chr(10);
+			echo '<th>' . TEXT_FREIGHT_QUOTE . '</th>' . chr(10);
+			echo '<th>' . TEXT_BOOK_PRICE . '</th>' . chr(10);
+			echo '<th>' . TEXT_COST . '</th>' . chr(10);
+			echo '<th>' . TEXT_NOTES . '</th>' . chr(10);
 			echo '</tr>';
 			$odd = true;
 			if (is_array($value)) foreach ($value as $carrier => $prices) {

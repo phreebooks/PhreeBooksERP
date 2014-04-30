@@ -37,10 +37,10 @@ class dept_types {
 	$sql_data_array = array('description' => $description);
     if (!$this->id == '') {
 	  db_perform($this->db_table, $sql_data_array, 'update', "id = '" .$this->id . "'");
-      gen_add_audit_log(SETUP_DEPT_TYPES_LOG . TEXT_UPDATE, $description);
+      gen_add_audit_log(TEXT_DEPARTMENT_TYPE . ' - ' . TEXT_UPDATE, $description);
 	} else  {
       db_perform($this->db_table, $sql_data_array);
-	  gen_add_audit_log(SETUP_DEPT_TYPES_LOG . TEXT_ADD, $description);
+	  gen_add_audit_log(TEXT_DEPARTMENT_TYPE . ' - ' . TEXT_ADD, $description);
 	}
 	return true;
   }
@@ -57,7 +57,7 @@ class dept_types {
 	// OK to delete
 	$result = $db->Execute("select description from " . $this->db_table . " where id = '" . $this->id . "'");
 	$db->Execute("delete from " . $this->db_table . " where id = '" . $this->id . "'");
-	gen_add_audit_log(SETUP_DEPT_TYPES_LOG . TEXT_DELETE, $result->fields['description']);
+	gen_add_audit_log(TEXT_DEPARTMENT_TYPE . ' - ' . TEXT_DELETE, $result->fields['description']);
 	return true;
   }
 
@@ -65,7 +65,7 @@ class dept_types {
   	global $db;
     $content = array();
 	$content['thead'] = array(
-	  'value' => array(SETUP_INFO_DEPT_TYPES_NAME, TEXT_ACTION),
+	  'value' => array(TEXT_DESCRIPTION, TEXT_ACTION),
 	  'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 	);
     $result = $db->Execute("select id, description from " . $this->db_table);
@@ -96,15 +96,15 @@ class dept_types {
 	$output  = '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);
 	$output .= '  <thead class="ui-widget-header">' . "\n";
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <th colspan="2">' . ($action=='new' ? SETUP_INFO_HEADING_NEW_DEPT_TYPES : SETUP_INFO_HEADING_EDIT_DEPT_TYPES) . '</th>' . chr(10);
+	$output .= '    <th colspan="2">' . ($action=='new' ? sprintf(TEXT_NEW_ARGS, TEXT_DEPARTMENT_TYPE) : sprintf(TEXT_EDIT_ARGS, TEXT_DEPARTMENT_TYPE)) . '</th>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  </thead>' . "\n";
 	$output .= '  <tbody class="ui-widget-content">' . "\n";
     $output .= '  <tr>' . chr(10);
-	$output .= '    <td colspan="2">' . ($action=='new' ? SETUP_DEPT_TYPES_INSERT_INTRO : HR_EDIT_INTRO) . '</td>' . chr(10);
+	$output .= '    <td colspan="2">' . ($action=='new' ? SETUP_DEPT_TYPES_INSERT_INTRO : TEXT_EDIT_INTRO) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . SETUP_INFO_DEPT_TYPES_NAME . '</td>' . chr(10);
+	$output .= '    <td>' . TEXT_DESCRIPTION . '</td>' . chr(10);
 	$output .= '    <td>' . html_input_field('description', $this->description) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  </tbody>' . "\n";
