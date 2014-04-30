@@ -1356,7 +1356,6 @@ class journal {
 		$ordr_diff = 0;
 		if (is_array($this->so_po_balance_array)) {
 		  foreach($this->so_po_balance_array as $counts) {
-		  	$messageStack->debug("\n  ordered = ".$counts['ordered']." and processed = ".$counts['processed']);
 			if ($counts['ordered'] > $counts['processed']) $ordr_diff = 1;
 		  }
 		}
@@ -1366,7 +1365,6 @@ class journal {
 		  if ($this->journal_rows[$i]['qty'] && $this->journal_rows[$i]['gl_type'] == $gl_type) $item_rows_all_zero = 0; // at least one qty is non-zero
 		}
 		// also close if the 'Close' box was checked
-		$messageStack->debug("\n  order_diff = $ordr_diff and item_rows = $item_rows_all_zero and closed = $this->closed");
 		if (!$ordr_diff || $item_rows_all_zero || $this->closed) $this->close_so_po($this->id, true);
 		break;
 	  case  6:

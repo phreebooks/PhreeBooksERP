@@ -332,6 +332,7 @@ function fillOrder(xml) {
 		  if (imgSerial != null && $(xml).find("inventory_type").text() == 'sr') {
 			  document.getElementById('imgSerial_'+jIndex).style.display = '';
 		  }
+		  document.getElementById('sku_prop_'+jIndex).style.display = '';
 	      if ($(this).find("so_po_item_ref_id").text() || ((journalID == 4 || journalID == 10) && $(this).find("pstd").text())) {
 	        // don't allow sku to change, hide the sku search icon
 	        document.getElementById('sku_' + jIndex).readOnly = true;
