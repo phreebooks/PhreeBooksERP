@@ -32,9 +32,8 @@ switch ($_REQUEST['action']) {
 	if (!validate_upload($upload_name, 'text', 'csv')) {
 	  $messageStack->add(TEXT_IMP_ERMSG10,'error');
 	} else {
-	  $lines_array = file($_FILES[$upload_name]['tmp_name']);
 	  $post_pay = new sku_pricer();
-	  $post_pay->processCSV($lines_array);
+	  $post_pay->processCSV($upload_name);
     }
 	break;
   default:
