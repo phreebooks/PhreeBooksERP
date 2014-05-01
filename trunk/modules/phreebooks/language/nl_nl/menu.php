@@ -12,7 +12,7 @@ define('MENU_HEADING_GL','Boekhouden');
 define('MENU_HEADING_BANKING','Bankieren');
 define('ORD_TEXT_0_WINDOW_TITLE','Begin Balans');
 define('ORD_TEXT_2_WINDOW_TITLE','Journaal');
-define('ORD_TEXT_3_WINDOW_TITLE','Inkoop Verzoek');
+define('ORD_TEXT_3_WINDOW_TITLE','Inkoop Offerte');
 define('ORD_TEXT_4_WINDOW_TITLE','Inkoop Order');
 define('ORD_TEXT_6_WINDOW_TITLE','Inkoop Factuur');
 define('ORD_TEXT_7_WINDOW_TITLE','Inkoop Credit');

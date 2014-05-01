@@ -28,7 +28,7 @@
 // 3.7.1 => 2013-06-30 - Bug fixes 
 // Module software version information
 gen_pull_language('phreedom', 'menu');
-define('MODULE_CONTACTS_VERSION',     3.71);
+define('MODULE_CONTACTS_VERSION',     3.72);
 // Menu Sort Positions
 define('MENU_HEADING_CUSTOMERS_ORDER',   10);
 define('MENU_HEADING_VENDORS_ORDER',     20);
