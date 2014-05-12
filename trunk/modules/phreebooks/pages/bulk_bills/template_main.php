@@ -27,7 +27,7 @@ $toolbar->icon_list['save']['show']     = false;
 $toolbar->icon_list['print']['params']  = 'onclick="submitToDo(\'print\')"';
 if ($security_level < 2) $toolbar->icon_list['print']['show'] = false;
 $toolbar->add_icon('ship_all', 'onclick="checkShipAll()"', 20);
-$toolbar->icon_list['ship_all']['text'] = TEXT_CHECK_ALL;
+$toolbar->icon_list['ship_all']['text'] = TEXT_CHECK_ALL_CHECKBOXES;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('07.05.01');
 echo $toolbar->build_toolbar();

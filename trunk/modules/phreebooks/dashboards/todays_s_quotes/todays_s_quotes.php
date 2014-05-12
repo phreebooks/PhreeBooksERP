@@ -46,16 +46,16 @@ class todays_s_quotes extends \core\classes\ctl_panel {
 		$control .= html_pull_down_menu('todays_s_quotes_field_0', $list_length, $params['num_rows']);
 		$control .= html_submit_field('sub_todays_s_quotes', TEXT_SAVE);
 		$control .= '</div></div>';
-	
+
 		// Build content box
 		$total = 0;
-		$sql = "select id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value 
-		  from " . TABLE_JOURNAL_MAIN . " 
+		$sql = "select id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value
+		  from " . TABLE_JOURNAL_MAIN . "
 		  where journal_id = 9 and post_date = '" . date('Y-m-d') . "' order by purchase_invoice_id";
 		if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
 		$result = $db->Execute($sql);
 		if ($result->RecordCount() < 1) {
-		  	$contents = ACT_NO_RESULTS;
+		  	$contents = TEXT_NO_RESULTS_FOUND;
 		} else {
 		  	while (!$result->EOF) {
 			 	$total += $result->fields['total_amount'];
@@ -63,7 +63,7 @@ class todays_s_quotes extends \core\classes\ctl_panel {
 				$contents .= '<div>';
 	//			$contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;oID=' . $result->fields['id'] . '&amp;jID=10&amp;action=edit', 'SSL') . '">';
 	            $contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;oID=' . $result->fields['id'] . '&amp;jID=9&amp;action=edit', 'SSL') . '">';
-	//          $contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, 'cat=orders&amp;module=orders&amp;oID=' . $result->fields['id'] . '&amp;jID=9&amp;action=edit', 'SSL') . '">';                
+	//          $contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, 'cat=orders&amp;module=orders&amp;oID=' . $result->fields['id'] . '&amp;jID=9&amp;action=edit', 'SSL') . '">';
 				$contents .= $result->fields['purchase_invoice_id'] . ' - ';
 				$contents .= htmlspecialchars(gen_trim_string($result->fields['bill_primary_name'], 20, true));
 				$contents .= '</a></div>' . chr(10);

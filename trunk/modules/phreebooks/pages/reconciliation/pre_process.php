@@ -190,7 +190,7 @@ if (is_array($bank_list)) foreach ($bank_list as $id => $value) {
 	if ($index != '' && isset($combined_list[$index])) { // the reference already exists
 		$combined_list[$index]['dep_amount'] += $value['dep_amount'];
 		$combined_list[$index]['pmt_amount'] += $value['pmt_amount'];
-		$combined_list[$index]['name']        = $value['payment'] ? TEXT_MULTIPLE_PAYMENTS : TEXT_CUSTOMER_DEPOSITS;
+		$combined_list[$index]['name']        = $value['payment'] ? TEXT_VENDOR_PAYMENTS : TEXT_CUSTOMER_DEPOSITS;
 		if ( ($combined_list[$index]['cleared'] && !$value['cleared'])  ||
 		    (!$combined_list[$index]['cleared'] &&  $value['cleared'])) {
 		  $combined_list[$index]['cleared'] = 0; // uncheck summary box

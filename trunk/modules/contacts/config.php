@@ -203,8 +203,8 @@ $mainmenu["customers"]['submenu']['projects']['submenu']["project_mgr"] = array(
 if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
   gen_pull_language('contacts', 'admin');
   $mainmenu["company"]['submenu']["configuration"]['submenu']["contacts"] = array(
-	'order'	      => TEXT_CONTACTS_MODULE,
-	'text'        => TEXT_CONTACTS_MODULE,
+	'order'	      => sprintf(TEXT_MODULE_ARGS, TEXT_CONTACTS),
+	'text'        => sprintf(TEXT_MODULE_ARGS, TEXT_CONTACTS),
 	'security_id' => SECURITY_ID_CONFIGURATION,
 	'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=admin', 'SSL'),
     'show_in_users_settings' => false,

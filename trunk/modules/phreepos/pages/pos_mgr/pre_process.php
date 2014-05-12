@@ -149,6 +149,6 @@ $cal_gl = array(
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', BOX_POS_MGR);
+define('PAGE_TITLE', sprintf(TEXT_MANAGER_ARGS, TEXT_POS_POP));
 
 ?>

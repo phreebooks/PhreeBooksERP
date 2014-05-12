@@ -16,7 +16,7 @@ define('MODULE_BANK_IMPORT_CONFIG_INFO','Por favor defina  o valor de configura�
 define('BANK_IMPORT_QUESTION_POSTS','Para garantir que lançamentos sejam lançados pelo script como último recurso os lançamentos são armazenados como itens em dúvida.</B> Isto deve ser preenchido ou o sript não funcionará.</B>');
 define('BANK_IMPORT_DEBIT_CREDIT','A descrição quando valores são creditados em sua conta <br> <B> isto é para o campo xml debit_credit</B>');
 define('IMPORT_BANK_CONFIG_SAVED','config import-bank gravado');
-define('TEXT_BANK_ACCOUNT','Conta bancária ou IBAN');
+define('TEXT_BANK_ACCOUNT_OR_IBAN','Conta bancária ou IBAN');
 define('TEXT_ENTER_TRANSACTION','Entre novo modelo de transação');
 define('TEXT_EDIT_TRANSACTION','Editar modelo de transação');
 define('TEXT_TRANSACTION_TEMPLATE','Modelo de Transação');

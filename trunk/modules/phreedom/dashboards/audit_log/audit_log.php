@@ -28,10 +28,10 @@ class audit_log extends \core\classes\ctl_panel {
 	public $security_id  		= SECURITY_ID_CONFIGURATION;
 	public $text		 		= CP_AUDIT_LOG_TITLE;
 	public $module_id 			= 'phreedom';
-	public $version      		= '3.5'; 
+	public $version      		= '3.5';
 	public $size_params			= 1;
 	public $default_params 		= array('num_rows'=> 50, 'today_minus' => '0');
-	
+
 	function install($column_id = 1, $row_id = 0) {
 		$this->params['num_rows']    = $this->max_length;	// defaults to 20 rows
 	    $this->params['today_minus'] = '0';         		// defaults to today
@@ -66,14 +66,14 @@ class audit_log extends \core\classes\ctl_panel {
         $control .= '</div></div>';
 
 // Build content box
-        $sql = "select a.action_date, a.action, a.reference_id, a.amount, u.display_name from ".TABLE_AUDIT_LOG." as a, ".TABLE_USERS." as u 
-          where a.user_id = u.admin_id and a.action_date >= '" . date('Y-m-d', strtotime('-' . $params['today_minus'] . ' day')) . "'  
+        $sql = "select a.action_date, a.action, a.reference_id, a.amount, u.display_name from ".TABLE_AUDIT_LOG." as a, ".TABLE_USERS." as u
+          where a.user_id = u.admin_id and a.action_date >= '" . date('Y-m-d', strtotime('-' . $params['today_minus'] . ' day')) . "'
           and a.action_date <= '" . date('Y-m-d', strtotime('-' . $params['today_minus'] + 1 . ' day')) . "' order by a.action_date desc";
 
        	if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
        	$result = $db->Execute($sql);
         if ($result->RecordCount() < 1) {
-        	$contents = ACT_NO_RESULTS;
+        	$contents = TEXT_NO_RESULTS_FOUND;
         } else {
         	while (!$result->EOF) {
             	$contents .= '<div style="float:right">' . $currencies->format_full($result->fields['amount'], true, DEFAULT_CURRENCY, 1, 'fpdf') . '</div>';
@@ -88,7 +88,7 @@ class audit_log extends \core\classes\ctl_panel {
         $this->text = CP_AUDIT_LOG_TITLE . " " . date('Y-m-d', strtotime('-' . $params['today_minus'] . ' day'));
        	return $this->build_div('', $contents, $control);
  	}
-  
+
  	function update() {
  		if(count($this->params) == 0){
         	$this->params['num_rows'] 		= db_prepare_input($_POST['audit_log_num_rows']);
@@ -96,7 +96,7 @@ class audit_log extends \core\classes\ctl_panel {
  		}
 		parent::update();
   	}
-  
+
 }
 
 ?>

@@ -41,7 +41,7 @@ echo $toolbar->build_toolbar();
  <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto">
   <tbody class="ui-widget-content">
 	<tr>
-	  <td align="right"><?php echo INV_XFER_FROM_STORE; ?></td>
+	  <td align="right"><?php echo TEXT_TRANSFER_FROM_STORE_ID; ?></td>
 	  <td>
 	    <?php echo html_pull_down_menu('source_store_id', gen_get_store_ids(), $cInfo->source_store_id ? $cInfo->source_store_id : $_SESSION['admin_prefs']['def_store_id']); ?>
 	    <?php echo INV_XFER_TO_STORE . html_pull_down_menu('dest_store_id',   gen_get_store_ids(), $cInfo->dest_store_id); ?>

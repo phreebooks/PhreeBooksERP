@@ -19,11 +19,11 @@
 namespace phreepos\classes;
 class admin extends \core\classes\admin {
 	public $id 			= 'phreepos';
-	public $text		= MODULE_PHREEPOS_TITLE;
 	public $description = MODULE_PHREEPOS_DESCRIPTION;
 	public $version		= '3.9';
 
 	function __construct(){
+		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_PHREEPOS);
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'contacts'  => '3.7.1',
 		  'inventory' => '3.6',

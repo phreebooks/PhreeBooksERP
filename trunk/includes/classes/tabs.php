@@ -109,7 +109,7 @@ class tabs {
 	   $output .= '    <td colspan="2">' . ($action=='new' ? TEXT_TAB_INSERT_INTRO : TEXT_EDIT_INTRO) . '</td>' . chr(10);
 	   $output .= '  </tr>' . chr(10);
 	   $output .= '  <tr>' . chr(10);
-	   $output .= '    <td>' . TEXT_TAB_NAME . '</td>' . chr(10);
+	   $output .= '    <td>' . TEXT_TAB_TITLE . '</td>' . chr(10);
 	   $output .= '    <td>' . html_input_field('tab_name', $this->tab_name) . '</td>' . chr(10);
 	   $output .= '  </tr>' . chr(10);
 	   $output .= '  <tr>' . chr(10);

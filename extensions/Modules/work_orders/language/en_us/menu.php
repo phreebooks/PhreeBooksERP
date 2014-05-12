@@ -21,7 +21,7 @@
 define('MENU_HEADING_WORK_ORDERS',    'Work Orders');
 // Menu Titles
 define('BOX_WORK_ORDERS_MODULE',      'Work Order Manager');
-define('BOX_WORK_ORDERS_BUILDER',     'Work Order Builder');
+define('TEXT_WORK_ORDER_BUILDER',     'Work Order Builder');
 define('BOX_WORK_ORDERS_MODULE_TASK', 'Work Order Tasks');
 
 ?>

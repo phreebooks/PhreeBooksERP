@@ -118,7 +118,7 @@ if (defined('MODULE_PHREEBOOKS_STATUS')) {
 	if (\core\classes\user::security_level(SECURITY_ID_PAYMENTS_STATUS) > 0) $mainmenu["banking"]['submenu']["vendor_payments"]['link'] = html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=bills&amp;jID=20&amp;type=v', 'SSL');
 	$mainmenu["banking"]['submenu']["vendor_payments"]['submenu']["pay_bills"] = array(
 	  	'order'		  => 15,
-	    'text'        => ORD_TEXT_20_V_WINDOW_TITLE,
+	    'text'        => TEXT_VENDOR_PAYMENTS,
 	    'security_id' => SECURITY_ID_PAY_BILLS,
 	    'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=bills&amp;jID=20&amp;type=v', 'SSL'),
 	    'show_in_users_settings' => true,
@@ -134,7 +134,7 @@ if (defined('MODULE_PHREEBOOKS_STATUS')) {
 	);
 	$mainmenu["banking"]['submenu']["vendor_payments"]['submenu']["pay_bills_mgr"] = array(
 	    'order'		  => 25,
-	    'text'        => sprintf(TEXT_MANAGER_ARGS, ORD_TEXT_20_V_WINDOW_TITLE),
+	    'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR_PAYMENTS),
 	    'security_id' => SECURITY_ID_PAYMENTS_STATUS,
 	    'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=status&amp;jID=20&amp;list=1', 'SSL'),
 	    'show_in_users_settings' => true,
@@ -209,7 +209,7 @@ if (defined('MODULE_PHREEBOOKS_STATUS')) {
     if (\core\classes\user::security_level(SECURITY_ID_SALES_STATUS) > 0)  $mainmenu["customers"]['submenu']["orders"]['link'] = html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=status&amp;jID=10&amp;list=1', 'SSL');
   	$mainmenu["customers"]['submenu']["orders"]['submenu']["new_order"]= array(
   	    'order'		  => 30,
-	    'text'        => sprintf(TEXT_NEW_ARGS, ORD_TEXT_10_WINDOW_TITLE),
+	    'text'        => sprintf(TEXT_NEW_ARGS, TEXT_SALES_ORDER),
 	    'security_id' => SECURITY_ID_SALES_ORDER,
 	    'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;jID=10', 'SSL'),
   	    'show_in_users_settings' => true,
@@ -218,7 +218,7 @@ if (defined('MODULE_PHREEBOOKS_STATUS')) {
 	);
 	$mainmenu["customers"]['submenu']["orders"]['submenu']["order_mgr"] = array(
 		'order'		  => 35,
-	    'text'        => sprintf(TEXT_MANAGER_ARGS, ORD_TEXT_10_WINDOW_TITLE),
+	    'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_SALES_ORDER),
 	    'security_id' => SECURITY_ID_SALES_STATUS,
 	    'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=status&amp;jID=10&amp;list=1', 'SSL'),
 	    'show_in_users_settings' => true,
@@ -419,8 +419,8 @@ if (defined('MODULE_PHREEBOOKS_STATUS')) {
   	if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
   		gen_pull_language('phreebooks', 'admin');
 		$mainmenu["company"]['submenu']["configuration"]['submenu']["phreebooks"] = array(
-	  		'order'	      => MODULE_PHREEBOOKS_TITLE,
-	  		'text'        => MODULE_PHREEBOOKS_TITLE,
+	  		'order'	      => sprintf(TEXT_MODULE_ARGS, TEXT_PHREEBOOKS),
+	  		'text'        => sprintf(TEXT_MODULE_ARGS, TEXT_PHREEBOOKS),
 	  		'security_id' => SECURITY_ID_CONFIGURATION,
 	  		'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=admin', 'SSL'),
 			'show_in_users_settings' => false,

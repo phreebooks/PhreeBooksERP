@@ -93,7 +93,7 @@ echo $toolbar->build_toolbar();
 			<th align="center"><?php echo TEXT_QUANTITY; ?></th>
 			<th align="center"><?php echo TEXT_SOURCE; ?></th>
 			<th align="center"><?php echo TEXT_ADJUSTMENT; ?></th>
-			<th align="center"><?php echo INV_ADJ_VALUE; ?></th>
+			<th align="center"><?php echo TEXT_ADJUSTMENT_VALUE_SHORT; ?></th>
 			<th align="center"><?php echo TEXT_ROUNDING; ?></th>
 			<th align="center"><?php echo INV_RND_VALUE; ?></th>
 			<th align="center"><?php echo TEXT_PRICE; ?></th>

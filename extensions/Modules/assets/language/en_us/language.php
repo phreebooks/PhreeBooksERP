@@ -45,9 +45,9 @@ define('ASSETS_ENTRY_ACCT_SALES','GL Asset Account');
 define('ASSETS_ENTRY_ACCT_INV','GL Depreciation Account');
 define('ASSETS_ENTRY_ACCT_COS','GL Maintenance Account');
 define('ASSETS_ENTRY_ASSETS_SERIALIZE','Make/Model/VIN');
-define('ASSETS_DATE_ACCOUNT_CREATION','Asset Purchase Date');
+define('TEXT_ASSET_PURCHASE_DATE','Asset Purchase Date');
 define('ASSETS_DATE_LAST_UPDATE','Last Mantainence Date');
-define('ASSETS_DATE_LAST_JOURNAL_DATE','Asset Retire Date');
+define('TEXT_ASSET_RETIRE_DATE','Asset Retire Date');
 define('TEXT_PURCHASE_CONDITION','Purchase Condition');
 define('ASSETS_ENTRY_IMAGE_PATH','Image Relative Path');
 /************ Javascript defines *********/

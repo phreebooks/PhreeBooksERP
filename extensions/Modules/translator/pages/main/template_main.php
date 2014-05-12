@@ -35,7 +35,7 @@ if ($security_level > 1) {
     'show'   => true,
     'icon'   => 'actions/document-save.png',
     'params' => 'onclick="submitToDo(\'upload\')"',
-    'text'   => TEXT_UPLOAD_LANGUAGE_FILE,
+    'text'   => TEXT_UPLOAD_FROM_ZIPPED_FILE,
     'order'  => '20',
   );
 }

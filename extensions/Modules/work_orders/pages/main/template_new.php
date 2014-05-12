@@ -36,7 +36,7 @@ if (!$hide_save && $security_level > 1) {
 $toolbar->icon_list['print']['params'] = 'onclick="submitToDo(\'print\')"';
 if ($security_level > 1) $toolbar->add_icon('new', 'onclick="submitToDo(\'new\')"', $order = 2);
 $toolbar->add_help('07.04.WO.04');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
 <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto">
@@ -52,7 +52,7 @@ echo $toolbar->build_toolbar();
 	<td id="image_here" rowspan="4">&nbsp;</td>
   </tr>
   <tr>
-	<td align="right"><?php echo TEXT_WO_TITLE; ?> </td>
+	<td align="right"><?php echo TEXT_WORK_ORDER_TITLE; ?> </td>
     <td><?php echo html_input_field('wo_title', $wo_title, 'readonly="readonly" size="33"') . '&nbsp;'; ?></td>
 	<td align="right"><?php echo TEXT_PRIORITY; ?></td>
 	<td><?php echo html_pull_down_menu('priority', $priority_list, $priority); ?></td>
@@ -60,7 +60,7 @@ echo $toolbar->build_toolbar();
 	<td><?php echo html_checkbox_field('closed', '1', $closed ? true : false) . ($closed ? (' ' . gen_locale_date($close_date)) : ''); ?></td>
   </tr>
   <tr>
-    <td colspan="6"><?php echo TEXT_SPECIAL_NOTES; ?></td>
+    <td colspan="6"><?php echo TEXT_WORK_ORDER_NOTES_AND_COMMENTS; ?></td>
   </tr>
   <tr>
 	<td colspan="6"><?php echo html_textarea_field('notes', 80, 3, $notes, $params = ''); ?></td>

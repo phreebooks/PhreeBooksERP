@@ -36,7 +36,7 @@ define('HR_INFO_PRIMARY_ACCT_ID','Sim, selecione também o departamento primári
 define('TEXT_DEPARTMENT_ID','ID Departamento');
 define('HR_INFO_SUBACCOUNT','Isto é um Departamento ou SubDepartamento?');
 define('HR_EDIT_INTRO','Por favor, faça as alterações necessárias');
-define('HR_HEADING_SUBACCOUNT','Subdepartamento');
+define('TEXT_SUB_DEPARTMENT','Subdepartamento');
 define('HR_POPUP_WINDOW_TITLE','Departamentos');
 define('CONTACT_BILL_FIELD_REQ','Campo obrigatório ou não: %s deve ser inserido para um novo endereço principal/faturamento (para fornecedores, clientes e funcionários)');
 define('NEXT_VEND_ID_NUM_DESC','Próxima ID Fornecedor');

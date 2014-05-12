@@ -24,10 +24,10 @@ define('TEXT_EXPORT_TRANSLATION','Export Translation');
 define('TEXT_UPLOAD_TRANSLATION','Upload Translation');
 define('TEXT_IMPORT_CURRENT_LANGUAGE','Import from Current Installation');
 define('TEXT_EXPORT_CURRENT_LANGUAGE','Export All for a language and version');
-define('TEXT_UPLOAD_LANGUAGE_FILE','Upload from Zipped File');
-define('TEXT_EDIT_TRANSLATION','Translate Module');
+define('TEXT_UPLOAD_FROM_ZIPPED_FILE','Upload from Zipped File');
+define('TEXT_TRANSLATE_MODULE','Translate Module');
 // General defines
-define('TEXT_CHECK_ALL','Check All Checkboxes');
+define('TEXT_CHECK_ALL_CHECKBOXES','Check All Checkboxes');
 define('TEXT_LANGUAGE','Language');
 define('TEXT_LATEST','Latest');
 define('TEXT_UPLOAD','Upload');
@@ -37,8 +37,8 @@ define('TEXT_TRANSLATIONS','Translations');
 define('TEXT_TRANSLATED','Translated');
 define('TEXT_CREATE_NEW_TRANSLATION','Create New Translation');
 define('TRANSLATOR_NEW_DESC','This form creates a new translation release. If you want translation guesses from prior releases to override the source language check the Overwrite box and enter an ISO language to use. Note that this language must be loaded into the translator database. The source module and language must also be in the translator database. (Release # will be created automatically)');
-define('TRANSLATOR_NEW_SOURCE','Source Module:');
-define('TEXT_SOURCE_LANGUAGE','Source Language:');
+define('TEXT_SOURCE_MODULE','Source Module');
+define('TEXT_SOURCE_LANGUAGE','Source Language');
 define('TRANSLATOR_NEW_OVERRIDE','Then overwrite (if available) from installed language:');
 define('TRANSLATOR_IMPORT_DESC','This page imports loaded languages from the currently installed module or modules into the translator database. If the install module is selected and the directory has been renamed, the new directory needs to be entered into the form below.');
 define('TRANSLATOR_EXPORT_DESC','This page exports all modules from a given translated language and version to a single .zip file.');
@@ -55,7 +55,7 @@ define('MESSAGE_DELETE_TRANSLATION','Are you sure you want to delete this transl
 define('TEXT_CONSTANT','Defined Constant');
 define('TEXT_DEFAULT_TRANSLATION','Current Translation');
 define('TEXT_STATS_VALUES','%s of %s translated (%s percent)');
-define('TEXT_TRANSLATIONS_SAVED','Translation records saved.');
+define('TEXT_TRANSLATION_RECORDS_SAVED','Translation records saved.');
 define('TRANSLATION_HEADER','Phreedom Language Translation File');
 // Error Messages
 define('TRANS_ERROR_NO_SOURCE','No available versions of the source language were found! Please import the source language.');

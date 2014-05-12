@@ -41,7 +41,7 @@ define('NEXT_VEND_ID_NUM_DESC','Next Vendor ID');
 define('CONTACT_BILL_FIELD_REQ', 'Whether or not to require field: %s to be entered for a new main/billing address (for vendors, customers, and employees)');
 /************************** (Departments) ***********************************************/
 define('HR_POPUP_WINDOW_TITLE','Departments');
-define('HR_HEADING_SUBACCOUNT', 'Subdepartment');
+define('TEXT_SUB_DEPARTMENT', 'Subdepartment');
 define('HR_EDIT_INTRO', 'Please make any necessary changes');
 define('TEXT_DEPARTMENT_ID', 'Department ID');
 define('HR_INFO_SUBACCOUNT', 'Is this department a subdepartment?');

@@ -54,7 +54,7 @@ $toolbar->add_icon('new', 'onclick="location.href = \'' . html_href_link(FILENAM
 if ($security_level > 1 && ENABLE_BAR_CODE_READERS) {
   $toolbar->add_icon('bar_code', 'onclick="openBarCode()"', 9);
   $toolbar->icon_list['bar_code']['icon'] = 'devices/network-wired.png';
-  $toolbar->icon_list['bar_code']['text'] = TEXT_UPC_CODE;
+  $toolbar->icon_list['bar_code']['text'] = TEXT_BAR_CODE;
 }
 if (JOURNAL_ID == 12 && $security_level > 2) {
   $toolbar->add_icon ('post_previous', 'onclick="submitToDo(\'post_previous\')"', 10);

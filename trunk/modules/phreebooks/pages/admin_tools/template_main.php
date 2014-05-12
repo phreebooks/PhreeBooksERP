@@ -157,7 +157,7 @@ echo $toolbar->build_toolbar();
  <table class="ui-widget" style="border-style:none;width:100%">
   <tbody class="ui-widget-content">
     <tr><th><?php echo GEN_ADM_TOOLS_OWED_FIX; ?></th></tr>
-	<tr><td align="center"><?php echo html_button_field('inv_owed_fix', GEN_ADM_TOOLS_BTN_OWED, 'onclick="if (confirm(\'' . GEN_ADM_TOOLS_OWED_CONFIRM . '\')) submitToDo(\'inv_owed_fix\')"'); ?></td></tr>
+	<tr><td align="center"><?php echo html_button_field('inv_owed_fix', TEXT_START_RE-POST, 'onclick="if (confirm(\'' . GEN_ADM_TOOLS_OWED_CONFIRM . '\')) submitToDo(\'inv_owed_fix\')"'); ?></td></tr>
   </tbody>
  </table>
 </fieldset>

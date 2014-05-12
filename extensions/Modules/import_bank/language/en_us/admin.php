@@ -24,7 +24,7 @@ define('MODULE_BANK_IMPORT_CONFIG_INFO','Please Set your configuration value');
 define('BANK_IMPORT_QUESTION_POSTS','To ensure that bookings are not booked by the script as a last resort the entries are stored in the ledger question items <B> This must be completed otherwise the script does not work</B>');
 define('BANK_IMPORT_DEBIT_CREDIT','The description when amounts are credited to your account <br> <B> this is for the xml field debit_credit</B>');
 define('IMPORT_BANK_CONFIG_SAVED','Saved import_bank config');
-define('TEXT_BANK_ACCOUNT','Bank account or iban');
+define('TEXT_BANK_ACCOUNT_OR_IBAN','Bank account or iban');
 define('TEXT_ENTER_TRANSACTION','Enter new transaction template');
 define('TEXT_EDIT_TRANSACTION','Edit transaction template');
 define('TEXT_TRANSACTION_TEMPLATE','Transaction template');

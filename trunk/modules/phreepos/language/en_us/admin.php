@@ -44,7 +44,7 @@ define('PHREEPOS_ROUNDING_DESC','How do you wish that the end total is rounded.<
 define('TEXT_INTEGER','Integer');
 define('TEXT_10_CENTS','10 Cents');
 define('TEXT_NEUTRAL','Neutral');
-define('TEXT_ROUNDING_OF','Rounded of');
+define('TEXT_ROUNDED_OF','Rounded of');
 define('TEXT_GL_ACCOUNT_ROUNDING','GL account for rounding of:');
 define('TEXT_DIF_GL_ACCOUNT','GL account for end of the day differences:');
 

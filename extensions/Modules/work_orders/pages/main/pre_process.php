@@ -321,12 +321,12 @@ switch ($_REQUEST['action']) {
   default:
     // build the list header
 	$heading_array = array(
-	  'm.wo_num'     => TEXT_WO_ID,
+	  'm.wo_num'     => TEXT_WORK_ORDER_ID,
 	  'm.priority'   => TEXT_PRIORITY,
 	  'm.post_date'  => TEXT_POST_DATE,
 	  'm.qty'        => TEXT_QUANTITY,
 	  'i.sku'        => TEXT_SKU,
-	  'm.wo_title'   => TEXT_WO_TITLE,
+	  'm.wo_title'   => TEXT_WORK_ORDER_TITLE,
 	  'm.closed'     => TEXT_CLOSED,
 	  'm.close_date' => TEXT_CLOSE_DATE,
 	);
@@ -351,7 +351,7 @@ switch ($_REQUEST['action']) {
     $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     history_save('wo_main');
 
-    define('PAGE_TITLE', BOX_WORK_ORDERS_MODULE);
+    define('PAGE_TITLE', sprintf(TEXT_MANAGER_ARGS, TEXT_WORK_ORDER));
     $include_template = 'template_main.php';
 	break;
 }

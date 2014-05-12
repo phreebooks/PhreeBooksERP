@@ -64,7 +64,7 @@ if (defined('MODULE_PHREEPOS_STATUS')) {
   );
   $mainmenu["banking"]['submenu']['phreepos']['submenu']["phreepos_mgr"] = array(
   	'order' 	  => 53,
-  	'text'        => BOX_POS_MGR,
+  	'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_POS_POP),
     'security_id' => SECURITY_ID_POS_MGR,
     'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreepos&amp;page=pos_mgr&amp;list=1', 'SSL'),
     'show_in_users_settings' => true,
@@ -72,7 +72,7 @@ if (defined('MODULE_PHREEPOS_STATUS')) {
   );
   $mainmenu["banking"]['submenu']['phreepos']['submenu']["phreepos_closing"] = array(
   	'order' 	  => 54,
-  	'text'        => BOX_POS_CLOSING,
+  	'text'        => TEXT_CLOSING_POS/POP,
     'security_id' => SECURITY_ID_POS_CLOSING,
     'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreepos&amp;page=closing', 'SSL'),
     'show_in_users_settings' => true,
@@ -97,8 +97,8 @@ if (defined('MODULE_PHREEPOS_STATUS')) {
   if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0) {
 	  gen_pull_language('phreepos', 'admin');
 	  $mainmenu["company"]['submenu']["configuration"]['submenu']["phreepos"] = array(
-		'order'	      => MODULE_PHREEPOS_TITLE,
-		'text'        => MODULE_PHREEPOS_TITLE,
+		'order'	      => sprintf(TEXT_MODULE_ARGS, TEXT_PHREEPOS),
+		'text'        => sprintf(TEXT_MODULE_ARGS, TEXT_PHREEPOS),
 		'security_id' => SECURITY_ID_CONFIGURATION,
 		'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreepos&amp;page=admin', 'SSL'),
 	    'show_in_users_settings' => false,

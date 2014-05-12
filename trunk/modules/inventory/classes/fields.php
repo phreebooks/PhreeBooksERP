@@ -46,7 +46,7 @@ class fields extends \core\classes\fields{
 	  	$output .= '<table style="border-collapse:collapse;width:100%;">' . chr(10);
 	  	$output .= '  <thead class="ui-widget-header"><tr><th>'.TEXT_OPTIONS."</th></tr></thead>\n";
 	  	$output .= '  <tbody class="ui-widget-content"><tr><td>'."\n";
-	  	$output .= html_checkbox_field('use_in_inventory_filter', true,  $this->use_in_inventory_filter, '').'&nbsp;'.TEXT_USE_IN_FILTER."<br />\n";
+	  	$output .= html_checkbox_field('use_in_inventory_filter', true,  $this->use_in_inventory_filter, '').'&nbsp;'.TEXT_USE_IN_INVENTORY_FILTER."<br />\n";
 	  	$output .= '  </td></tr></tbody>'."\n";
 	  	$output .= "</table>\n";
 	  	return $output;

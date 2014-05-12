@@ -40,7 +40,7 @@ define ('TEXT_COST_METHOD', 'Cost Method');
 define ('TEXT_STOCK_ITEMS', 'Stock');
 define ('TEXT_MS_ITEMS', 'Master Stock');
 define ('TEXT_ASSEMBLIES', 'Versammlungen');
-define ('TEXT_SERIAL_ITEMS', 'Serialisierte');
+define ('TEXT_SERIALIZED', 'Serialisierte');
 define ('TEXT_NS_ITEMS', 'Non-Stock');
 define ('TEXT_SRV_ITEMS', 'Service');
 define ('TEXT_LABOR_ITEMS', 'Arbeit');
@@ -67,9 +67,9 @@ define ('INV_INFO_DELETE_ERROR', 'Diese Registerkarte Name bereits vorhanden ist
 define ('TEXT_DISPLAY_NUMBER_OF_TABS', TEXT_DISPLAY_NUMBER . "Inventar ein");
 define ('TEXT_DISPLAY_NUMBER_OF_FIELDS', TEXT_DISPLAY_NUMBER . "Inventar Felder");
 define ('INV_TABS_LOG', 'Inventory Tabs -');
-define ('INV_CATEGORY_MEMBER', 'Tab Mitglied:');
+define ('TEXT_TAB_MEMBER', 'Tab Mitglied');
 define ('INV_FIELD_NAME', 'Field Name:');
-define ('TEXT_SGL_PREC', 'Single Precision');
+define ('TEXT_SINGLE_PRECISION', 'Single Precision');
 define ('TEXT_DBL_PREC', 'Double Precision');
 
 define ('TEXT_DEFAULT_VALUE', 'Default-Wert');
@@ -114,7 +114,7 @@ define ('INV_TOOLS_VALIDATE_INV_DESC', 'Diese Operation durchführen, um sicherz
 define ('INV_TOOLS_REPAIR_TEST', 'Test Inventory Guthaben bei COGS Geschichte');
 define ('INV_TOOLS_REPAIR_FIX', 'Repair Inventory Guthaben bei COGS Geschichte');
 define ('INV_TOOLS_REPAIR_CONFIRM', 'Sind Sie sicher, dass Sie das Inventar Lagerbestand Reparatur der PhreeBooks COGS Geschichte berechneten Werten überein?');
-define ('INV_TOOLS_BTN_TEST', 'Überprüfen Bestandsaufnahme');
+define ('TEXT_VERIFY_STOCK_BALANCES', 'Überprüfen Bestandsaufnahme');
 define ('INV_TOOLS_BTN_REPAIR', 'Sync Menge auf Lager');
 define ('INV_TOOLS_OUT_OF_BALANCE', 'Artikel-Nr: %s -> stock gibt%s auf der Hand, aber COGS History-Liste%s verfügbar');
 define ('INV_TOOLS_IN_BALANCE', 'Ihr Inventar Guthaben sind in Ordnung.');

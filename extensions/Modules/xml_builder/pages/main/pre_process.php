@@ -98,6 +98,6 @@ switch ($_REQUEST['action']) {
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', XML_BUILDER_PAGE_TITLE);
+define('PAGE_TITLE', sprintf(TEXT_MODULE_ARGS, TEXT_XML_BUILDER));
 
 ?>

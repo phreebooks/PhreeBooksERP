@@ -28,7 +28,7 @@ $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo POPUP_BAR_CODE_TITLE; ?></h1>
@@ -42,7 +42,7 @@ echo $toolbar->build_toolbar();
 	<td><?php echo html_input_field('qty', '1', 'size="6"'); ?></td>
   </tr>
   <tr>
-	<td align="right"><?php echo TEXT_UPC_CODE; ?></td>
+	<td align="right"><?php echo TEXT_BAR_CODE; ?></td>
 	<td>
 	  <?php echo html_input_field('upc', '', 'size="16"'); ?>
 	  <?php echo html_icon('devices/media-floppy.png', TEXT_SAVE, 'small', 'onclick="setReturnItem(true)"'); ?>

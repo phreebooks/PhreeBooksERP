@@ -29,14 +29,14 @@ $toolbar->icon_list['save']['params']   = 'onclick="submitToDo(\'save\')"';
 $toolbar->icon_list['print']['show']    = false;
 $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['preview'] = array(
-  'show'   => true, 
+  'show'   => true,
   'icon'   => 'actions/edit-find.png',
-  'params' => 'onclick="submitToDo(\'preview\')"', 
-  'text'   => TEXT_SAVE_PREVIEW, 
+  'params' => 'onclick="submitToDo(\'preview\')"',
+  'text'   => TEXT_SAVE_AND_PREVIEW,
   'order'  => '20',
 );
 $toolbar->add_help('11.01.01');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 
 // Build the page
 ?>

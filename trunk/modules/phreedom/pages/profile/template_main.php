@@ -27,7 +27,7 @@ $toolbar->icon_list['save']['params']   = 'onclick="submitToDo(\'save\')"';
 $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
@@ -40,7 +40,7 @@ echo $toolbar->build_toolbar();
  </thead>
  <tbody class="ui-widget-content">
    <tr>
-     <td><?php echo TEXT_LOGIN_THEME; ?></td>
+     <td><?php echo sprintf(TEXT_SELECT_ARGS, TEXT_THEME); ?> : </td>
      <td><?php echo html_pull_down_menu('theme', load_theme_dropdown(), $prefs['theme']?$prefs['theme']:DEFAULT_THEME, 'onchange="updateColors()"'); ?></td>
    </tr>
    <tr>

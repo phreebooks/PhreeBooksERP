@@ -23,7 +23,7 @@
 <legend><?php echo GEN_ADM_TOOLS_SEQ_HEADING; ?></legend>
 <p><?php echo GEN_ADM_TOOLS_SEQ_DESC; ?></p>
   <table>
-<?php 
+<?php
   foreach ($status_fields as $field_name) {
     $desc = strtoupper($field_name) . '_DESC';
 	echo '    <tr>' . chr(10);
@@ -33,7 +33,7 @@
   }
 ?>
 	<tr>
-	  <td colspan="2" align="right"><?php echo html_button_field('ordr_nums', GEN_ADM_TOOLS_BTN_SAVE, 'onclick="submitToDo(\'ordr_nums\')"'); ?></td>
+	  <td colspan="2" align="right"><?php echo html_button_field('ordr_nums', TEXT_SAVE_CHANGES, 'onclick="submitToDo(\'ordr_nums\')"'); ?></td>
     </tr>
   </table>
 </fieldset>
@@ -43,7 +43,7 @@
   <p><?php echo GEN_ADM_TOOLS_SECURITY_DESC; ?></p>
   <p align="center">
     <?php echo TEXT_CLEAN_BEFORE . ' ' . html_calendar_field($cal_clean); ?>
-	<?php echo html_button_field('clean_security', GEN_ADM_TOOLS_BTN_CLEAN, 'onclick="submitToDo(\'clean_security\')"'); ?>
+	<?php echo html_button_field('clean_security', TEXT_CLEAN_NOW.'!', 'onclick="submitToDo(\'clean_security\')"'); ?>
   </p>
 </fieldset>
 

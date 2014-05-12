@@ -32,16 +32,16 @@ class pos_this_week extends \core\classes\ctl_panel {
 		for($i=0; $i<=7; $i++){
 			if ('Mon'== strftime("%a", time()-($i * 24 * 60 * 60)) ){
 				$a = $i;
-			} 
+			}
 		}
 		// Build content box
 		$total = 0;
-		$sql = "select SUM(total_amount) as day_total, currencies_code, currencies_value, post_date 
-		  from " . TABLE_JOURNAL_MAIN . " 
+		$sql = "select SUM(total_amount) as day_total, currencies_code, currencies_value, post_date
+		  from " . TABLE_JOURNAL_MAIN . "
 		  where journal_id = 19 and post_date >= '" . date('Y-m-d', time()-($a * 24 * 60 * 60)) . "' GROUP BY post_date ORDER BY post_date";
 		$result = $db->Execute($sql);
 		if ($result->RecordCount() < 1) {
-			$contents = ACT_NO_RESULTS;
+			$contents = TEXT_NO_RESULTS_FOUND;
 		} else {
 			$week = array();
 		  	while (!$result->EOF) {

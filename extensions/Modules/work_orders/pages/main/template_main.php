@@ -28,9 +28,9 @@ $toolbar->icon_list['print']['show']    = false;
 if ($security_level > 1) $toolbar->add_icon('new', 'onclick="submitToDo(\'new\')"', $order = 10);
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('07.04.WO');
-echo $toolbar->build_toolbar(true); 
+echo $toolbar->build_toolbar(true);
 ?>
-<h1><?php echo BOX_WORK_ORDERS_MODULE; ?></h1>
+<h1><?php echo sprintf(TEXT_MANAGER_ARGS, TEXT_WORK_ORDER); ?></h1>
 <div style="height:19px"><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . TEXT_WORK_ORDERS); ?>
 <div style="float:right"><?php echo $query_split->display_links(); ?></div>
 </div>
@@ -52,12 +52,12 @@ echo $toolbar->build_toolbar(true);
 	<td align="center" onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'build\''; ?>)"><?php echo $query_result->fields['closed'] ? TEXT_YES : ''; ?></td>
 	<td align="center" onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'build\''; ?>)"><?php echo gen_locale_date($query_result->fields['close_date']); ?></td>
 	<td align="right">
-<?php 
+<?php
 // build the action toolbar
 	  // first pull in any extra buttons, this is dynamic since each row can have different buttons
 	  if (function_exists('add_extra_action_bar_buttons')) echo add_extra_action_bar_buttons($query_result->fields);
 
-	  if ($security_level > 1) echo html_icon('categories/applications-development.png', TEXT_BUILD,  'small', 'onclick="submitSeq(' . $query_result->fields['id'] . ', \'build\')"') . chr(10);
+	  if ($security_level > 1) echo html_icon('categories/applications-development.png', TEXT_BUILD_WORK_ORDER,  'small', 'onclick="submitSeq(' . $query_result->fields['id'] . ', \'build\')"') . chr(10);
 	  if ($security_level > 1) echo html_icon('actions/edit-find-replace.png',           TEXT_EDIT,   'small', 'onclick="submitSeq(' . $query_result->fields['id'] . ', \'edit\')"') . chr(10);
 	  echo html_icon('actions/document-print.png', TEXT_PRINT, 'small', 'onclick="printWOrder(' . $query_result->fields['id'] . ')"') . chr(10);
 	  if (!$hide_action) {
@@ -65,7 +65,7 @@ echo $toolbar->build_toolbar(true);
 	  }
 ?>
 	</td>
-  </tr> 
+  </tr>
 <?php
     $query_result->MoveNext();
     $odd = !$odd;

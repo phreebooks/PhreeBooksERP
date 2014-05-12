@@ -49,7 +49,7 @@ $reason_codes = array(
 );
 
 $action_codes = array(
-  '0'  => RMA_ACTION_0, // do not remove from top position
+  '0'  => sprintf(TEXT_SELECT_ARGS, TEXT_ACTION), // do not remove from top position
   '1'  => RMA_ACTION_1,
   '2'  => RMA_ACTION_2,
   '3'  => RMA_ACTION_3,

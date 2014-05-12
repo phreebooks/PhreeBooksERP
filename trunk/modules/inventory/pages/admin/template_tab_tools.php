@@ -28,7 +28,7 @@
 	  <th><?php echo INV_TOOLS_REPAIR_FIX; ?></th>
 	</tr>
 	<tr>
-	  <td align="center"><?php echo html_button_field('inv_hist_test', INV_TOOLS_BTN_TEST,   'onclick="submitToDo(\'inv_hist_test\')"'); ?></td>
+	  <td align="center"><?php echo html_button_field('inv_hist_test', TEXT_VERIFY_STOCK_BALANCES,   'onclick="submitToDo(\'inv_hist_test\')"'); ?></td>
 	  <td align="center"><?php echo html_button_field('inv_hist_fix',  INV_TOOLS_BTN_REPAIR, 'onclick="if (confirm(\'' . INV_TOOLS_REPAIR_CONFIRM . '\')) submitToDo(\'inv_hist_fix\')"'); ?></td>
 	</tr>
   </table>

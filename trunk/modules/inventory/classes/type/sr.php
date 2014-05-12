@@ -2,7 +2,7 @@
 namespace inventory\classes\type;
 class sr extends \inventory\classes\inventory {//Serialized Item
 	public $inventory_type			= 'sr';
-	public $title       			= INV_TYPES_SR;
+	public $title       			= TEXT_SERIALIZED_ITEM;
     public $serialize 				= 1;
     public $account_sales_income	= INV_SERIALIZE_DEFAULT_SALES;
 	public $account_inventory_wage	= INV_SERIALIZE_DEFAULT_INVENTORY;

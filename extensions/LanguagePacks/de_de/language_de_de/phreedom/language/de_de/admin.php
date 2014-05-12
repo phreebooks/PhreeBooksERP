@@ -39,8 +39,8 @@ define ('TEXT_PHREEBOOKS_LOGIN', 'PhreeBooks Login');
 define ('TEXT_LOGIN_NAME', 'Benutzername:');
 define ('TEXT_LOGIN_PASS', 'Passwort');
 define ('TEXT_LOGIN_COMPANY', 'Select Company:');
-define ('TEXT_LOGIN_LANGUAGE', 'Select Language:');
-define ('TEXT_LOGIN_THEME', 'Wählen Thema:');
+define ('TEXT_SELECT_LANGUAGE', 'Select Language');
+define ('TEXT_SELECT_THEME', 'Wählen Thema:');
 define ('TEXT_PASSWORD_FORGOTTEN', 'Passwort zusenden');
 define ('TEXT_LOGIN', 'Login');
 define ('TEXT_FORM_PLEASE_WAIT', 'Bitte warten ... Wenn Sie ein Upgrade, das kann eine Weile dauern.');
@@ -73,10 +73,10 @@ define ('ERROR_CANNOT_REMOVE_MODULE_DIR', 'Fehler beim Entfernen Verzeichnis: %s
 define ('GEN_ADM_TOOLS_CLEAN_LOG', 'Backup / Clean Audit Logs');
 define ('GEN_ADM_TOOLS_CLEAN_LOG_DESC', 'Dieser Vorgang erstellt eine Sicherungskopie Ihrer heruntergeladen Audit-Log-Datenbank-Datei. Dies wird dazu beitragen, dass die Größe der Datenbank ab und reduzieren Unternehmen Backup-Dateien. Sichern Sie dieses Protokoll ist vor der Reinigung aus, um Geschichte zu bewahren PhreeBooks Transaktion empfohlen. <br /> INFORMATIONEN: Reinigen Sie die Audit-Log werden die aktuellen Zeiten Daten in der Datenbank Tisch verlassen und entfernen Sie alle anderen Aufzeichnungen ');
 define ('TEXT_BACKUP_AUDIT_LOG', 'Backup-Audit-Log');
-define ('GEN_ADM_TOOLS_CLEAN_LOG_CLEAN', 'Clean Out-Audit-Log');
+define ('TEXT_CLEAN_OUT_AUDIT_LOG', 'Clean Out-Audit-Log');
 define ('GEN_ADM_TOOLS_BTN_CLEAN_CONFIRM', 'Sind Sie sicher, dass Sie diese Log-Einträge löschen?');
-define ('GEN_ADM_TOOLS_BTN_BACKUP', 'Jetzt sichern!');
-define ('GEN_ADM_TOOLS_BTN_CLEAN', 'Clean Now!');
+define ('TEXT_BACKUP_NOW', 'Jetzt sichern');
+define ('TEXT_CLEAN_NOW', 'Clean Now');
 define ('GL_HEADING_BEGINNING_BALANCES', 'Kontenplan - Beginn Balances');
 define ('GL_HEADING_IMPORT_BEG_BALANCES', 'Import Anfang Balances');
 define ('GL_BTN_IMP_BEG_BALANCES', 'Import Inventory, Kreditorenbuchhaltung, Debitorenbuchhaltung Anfang Balances');
@@ -137,7 +137,7 @@ define ('CD_01_30_DESC', 'Ob erlauben Speicherung der verschlüsselten Felder au
 /************************** E-Mail-Einstellungen ******************* ****************************/
 define ('CD_12_01_DESC', 'Definiert die Methode zum Senden von Mail. <br /> <strong> PHP </ strong> ist der Standard und nutzt integrierte PHP-Wrapper für die Verarbeitung. <br /> Server unter Windows und MacOS Diese Einstellung sollte auf <strong> SMTP </ strong> zu ändern. <br /> <strong> smtpauth </ strong> nur verwendet werden sollten, wenn Ihr Server erfordert SMTP-Autorisierung, um Nachrichten zu senden. Darüber hinaus müssen Sie Ihre smtpauth Einstellungen in den entsprechenden Felder in diesem Abschnitt admin. <br /> <strong> sendmail </ strong> ist für Linux / Unix-Hosts mit dem sendmail-Programm auf dem Server <br /> <strong> "sendmail-f" </ strong> ist nur für Server, die die Verwendung der Parameter-f verlangen, schicken Sie eine Mail. Dies ist eine Sicherheitseinstellung oft verwendet, um Spoofing zu verhindern. Will Fehler verursachen, wenn Ihr Host Mailserver nicht konfiguriert ist, es zu benutzen. <br /> <strong> Qmail </ strong > ist für Linux / Unix Hosts mit Qmail als sendmail-Wrapper in / var / qmail / bin / sendmail benutzt ').
 define ('CD_12_02_DESC', 'Definiert die Zeichenfolge verwendet, um separate Mail-Header.');
-define ('CD_12_04_DESC', 'E-Mails im HTML-Format');
+define ('TEXT_SEND_E-MAILS_IN_HTML_FORMAT', 'E-Mails im HTML-Format');
 define ('CD_12_10_DESC', '. E-Mail-Adresse des Shop-Besitzer als Gebrauchtwagen "nur Anzeige", wenn die Information der Verbraucher darüber, wie Sie zu erreichen.');
 define ('CD_12_11_DESC', 'Adresse, unter der E-Mails "geschickt" werden standardmäßig kann über-geritten komponieren-Zeit im Admin-Module..');
 define ('CD_12_15_DESC', 'Bitte wählen Sie die Admin extra E-Mail-Format');
@@ -191,7 +191,7 @@ define ('GEN_ADM_TOOLS_ENCRYPT_PW_CONFIRM', 'Re-enter New Encryption Key');
 define ('ERROR_OLD_ENCRYPT_NOT_CORRECT', 'Die aktuelle verschlüsselten Schlüssel stimmt nicht mit dem gespeicherten Wert');
 // Backup definiert
 define ('BOX_HEADING_RESTORE', 'Gesellschaft Restore');
-define ('GEN_BACKUP_ICON_TITLE', 'Start Backup ');
+define ('TEXT_START_BACKUP', 'Start Backup ');
 define ('GEN_BACKUP_GEN_INFO', 'Bitte wählen Sie die Backup-Komprimierung und-Optionen aus.');
 define ('GEN_BACKUP_COMP_TYPE', 'Komprimierungstyp:');
 define ('GEN_COMP_BZ2', 'bz2 (Linux)');

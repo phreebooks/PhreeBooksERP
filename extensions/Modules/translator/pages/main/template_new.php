@@ -40,10 +40,10 @@ echo $toolbar->build_toolbar();
 	</tr>
 	<tr>
 	  <td>
-	    <?php echo TRANSLATOR_NEW_SOURCE . html_pull_down_menu('mod', $sel_modules);  ?>
+	    <?php echo TEXT_SOURCE_MODULE .': '. html_pull_down_menu('mod', $sel_modules);  ?>
 	  </td>
 	  <td>
-	    <?php echo TEXT_SOURCE_LANGUAGE . ' ' . html_input_field('source_lang', 'en_us'); ?>
+	    <?php echo TEXT_SOURCE_LANGUAGE . ': ' . html_input_field('source_lang', 'en_us'); ?>
 	  </td>
 	</tr>
 	<tr><th colspan="2"><?php echo TEXT_OPTIONS; ?></th></tr>

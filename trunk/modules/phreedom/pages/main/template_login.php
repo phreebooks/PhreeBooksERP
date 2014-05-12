@@ -43,7 +43,7 @@ echo html_form('login', FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;act
               </tr>
 <?php if (sizeof($_SESSION['companies']) != 1) { ?>
               <tr>
-                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_LOGIN_COMPANY; ?></td>
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo sprintf(TEXT_SELECT_ARGS, TEXT_COMPANY); ?></td>
                 <td><?php echo html_pull_down_menu('company', $_SESSION['companies'], $_SESSION['company'], '', true); ?></td>
               </tr>
 <?php } else{
@@ -51,7 +51,7 @@ echo html_form('login', FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;act
 }?>
 <?php if (sizeof($_SESSION['languages']) != 1) { ?>
               <tr>
-                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_LOGIN_LANGUAGE; ?></td>
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_SELECT_LANGUAGE; ?>: </td>
                 <td><?php echo html_pull_down_menu('language', $_SESSION['languages'], $_SESSION['language'], '', true); ?></td>
               </tr>
 <?php } else{

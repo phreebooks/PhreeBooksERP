@@ -53,7 +53,7 @@ $shipping_defaults['pickup_service'] = array(
   '07' => SHIPPING_ON_CALL,
   '11' => SHIPPING_RETAIL,
   '19' => SHIPPING_DROP_BOX,
-  '20' => SHIPPING_AIR_SRV,
+  '20' => TEXT_AIR_SERVICE_CENTER,
 );
 // Weight Unit of Measure
 // Value: char(3), Values "LBS" or "KGS"
@@ -89,8 +89,8 @@ $shipping_defaults['cod_funds_code'] = array(
 $shipping_defaults['delivery_confirmation'] = array(
 //'0' => SHIPPING_NO_CONF,
   '1' => SHIPPING_NO_SIG_RQD,
-  '2' => SHIPPING_SIG_REQ,
-  '3' => SHIPPING_ADULT_SIG,
+  '2' => TEXT_SIGNATURE_REQUIRED,
+  '3' => TEXT_ADULT_SIGNATURE_REQUIRED,
 );
 // Return label services
 $shipping_defaults['return_label'] = array(

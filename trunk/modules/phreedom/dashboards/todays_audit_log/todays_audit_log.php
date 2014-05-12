@@ -31,7 +31,7 @@ class todays_audit_log extends \core\classes\ctl_panel {
 	public $size_params			= 1;
 	public $default_params 		= array('num_rows'=> 0);
 	public $module_id 			= 'phreedom';
- 
+
 	function output($params) {
 		global $db, $currencies;
 		if(count($params) != $this->size_params){ //upgrading
@@ -41,20 +41,20 @@ class todays_audit_log extends \core\classes\ctl_panel {
 		$contents = '';
 		$control  = '';
 		for ($i = 0; $i <= $this->max_length; $i++) $list_length[] = array('id' => $i, 'text' => $i);
-	 
+
 	// Build control box form data
 	    $control  = '<div class="row">';
 	    $control .= '<div style="white-space:nowrap">' . TEXT_SHOW . TEXT_SHOW_NO_LIMIT;
 	    $control .= html_pull_down_menu('todays_audit_log_num_rows', $list_length, $params['num_rows']);
 	    $control .= html_submit_field('sub_todays_audit_log', TEXT_SAVE);
 	    $control .= '</div></div>';
-	
+
 	// Build content box
 	    $sql = "select a.action_date, a.action, a.reference_id, a.amount, u.display_name from ".TABLE_AUDIT_LOG." as a, ".TABLE_USERS." as u where a.user_id = u.admin_id and a.action_date >= '" . date('Y-m-d',  time()) . "' order by a.action_date desc";
 	    if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
 	    $result = $db->Execute($sql);
 	    if ($result->RecordCount() < 1) {
-	    	$contents = ACT_NO_RESULTS;
+	    	$contents = TEXT_NO_RESULTS_FOUND;
 	    } else {
 	    	while (!$result->EOF) {
 	        	$contents .= '<div style="float:right">' . $currencies->format_full($result->fields['amount'], true, DEFAULT_CURRENCY, 1, 'fpdf') . '</div>';
@@ -68,14 +68,14 @@ class todays_audit_log extends \core\classes\ctl_panel {
 	    }
 		return $this->build_div('', $contents, $control);
 	}
- 
+
  	function update() {
  		if(count($this->params) == 0){
         	$this->params['num_rows'] = db_prepare_input($_POST['todays_audit_log_num_rows']);
  		}
 		parent::update();
  	}
-  
+
 }
 
 ?>

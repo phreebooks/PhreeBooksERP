@@ -19,11 +19,11 @@
 namespace rma\classes;
 class admin extends \core\classes\admin {
 	public $id 			= 'rma';
-	public $text		= MODULE_RMA_TITLE;
 	public $description = MODULE_RMA_DESCRIPTION;
 	public $version		= '3.6';
 
 	function __construct() {
+		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_RMA);
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom'   => 3.3,
 		  'inventory'  => 3.3,

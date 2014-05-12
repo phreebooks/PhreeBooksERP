@@ -2,7 +2,7 @@
 namespace inventory\classes\type;
 class sa extends \inventory\classes\inventory {//Serialized Assembly
 	public $inventory_type			= 'sa';
-	public $title 					= INV_TYPES_SA;
+	public $title 					= TEXT_SERIALIZED_ASSEMBLY;
 	public $serialize 				= 1;
     public $account_sales_income	= INV_SERIALIZE_DEFAULT_SALES;
 	public $account_inventory_wage	= INV_SERIALIZE_DEFAULT_INVENTORY;

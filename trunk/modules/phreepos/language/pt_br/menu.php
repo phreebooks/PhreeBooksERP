@@ -11,7 +11,7 @@
 define('MENU_HEADING_PHREEPOS','Ponto de Venda');
 define('BOX_PHREEPOS','Ponto de Venda');
 define('BOX_POS_MGR','Gerenciador PDV');
-define('BOX_POS_CLOSING','Fechando PDV');
+define('TEXT_CLOSING_POS/POP','Fechando PDV');
 define('BOX_CUSTOMER_DEPOSITS','Depósitos Clientes');
 define('TEXT_VENDOR_DEPOSITS','Depósitos Fornecedores');
 

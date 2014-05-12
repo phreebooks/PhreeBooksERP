@@ -5,7 +5,8 @@ namespace core\classes;
      * It is a seperate object to allow some interesting extra functionality to be added
      * Some ideas: passwording pages, adding page specific css/js files, etc
      */
-class page {
+
+class outputPage implements \SplObserver {
 
 	// header elements
     private $css_files			= array();
@@ -71,6 +72,29 @@ class page {
        	} else{
        		echo "<div>\n";
        	}
+    }
+
+    /**
+     * this method is called by the basis object when it is done with all actions.
+     * @param \SplSubject $subject
+     */
+
+    public function update(\SplSubject $cInfo) {//@todo
+    	if($_REQUEST['page'] != 'json' && $_REQUEST['page'] != 'ajax'){
+    		$this->include_template = DIR_FS_ADMIN . "modules/{$cInfo->Module}/pages/{$cInfo->Page}/{$cInfo->template}.php";
+	    	if ( file_exists(DIR_FS_ADMIN . "modules/{$cInfo->module}/custom/pages/{$cInfo->page}/{$cInfo->template}.php")) {
+	    		$this->include_template = DIR_FS_ADMIN . "modules/{$cInfo->module}/custom/pages/{$cInfo->page}/{$cInfo->template}.php";
+	    	}
+			$this->ModuleAndPage	= "{$cInfo->Module}/{$cInfo->Page}";
+			// load the javascript specific, required
+			$this->include_php_js_files[] = DIR_FS_ADMIN . "modules/{$cInfo->Module}/pages/{$cInfo->Page}/js_include.php";
+			if(!file_exists(DIR_FS_ADMIN . "modules/{$cInfo->Module}/pages/{$cInfo->Page}/js_include.php")) trigger_error("No js_include file, looking for the file: {$cInfo->Module}/pages/{$cInfo->Page}/js_include.php", E_USER_ERROR);
+			//load the custom javascript if present
+			if (file_exists(DIR_FS_ADMIN . "modules/{$cInfo->Module}/custom/pages/{$cInfo->Page}/extra_js.php")) $this->include_php_js_files[] = DIR_FS_ADMIN . "modules/{$cInfo->Module}/custom/pages/{$cInfo->Page}/extra_js.php";
+	    	ob_end_flush();
+	    	session_write_close();
+	    	die;
+    	}
     }
 
     public function loadPage ($Module, $Page, $template){

@@ -190,7 +190,7 @@
 	  <td>
 		<?php foreach ($cost_methods as $key=>$value) if (in_array($key, $cInfo->posible_cost_methodes)) $cost_pulldown_array[] = array('id' => $key, 'text' => $value); ?>
 		<?php if(!empty($cInfo->posible_cost_methodes)) echo html_pull_down_menu('cost_method', $cost_pulldown_array, $cInfo->cost_method, ($cInfo->last_journal_date == '0000-00-00 00:00:00' || is_null($cInfo->last_journal_date) ? '' : 'disabled="disabled"')); ?>
-	    <?php if(isset($cInfo->serialize)) echo ' ' . INV_ENTRY_INVENTORY_SERIALIZE ; ?>
+	    <?php if(isset($cInfo->serialize)) echo ' ' . TEXT_SERIALIZE_ITEM ; ?>
 	  </td>
 	  <td align="right"><?php if(isset($cInfo->image_with_path)) echo INV_ENTRY_IMAGE_PATH; ?></td>
 	  <td colspan="2"><?php if(isset($cInfo->image_with_path)) echo html_hidden_field('image_with_path', $cInfo->image_with_path);

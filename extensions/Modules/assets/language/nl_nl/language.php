@@ -45,9 +45,9 @@ define('ASSETS_ENTRY_ACCT_SALES','Grootbook Activa Rekening');
 define('ASSETS_ENTRY_ACCT_INV','Grootbook Activa Afschrijving');
 define('ASSETS_ENTRY_ACCT_COS','Grootbook Activa Onderhoud');
 define('ASSETS_ENTRY_ASSETS_SERIALIZE','Merk/Model/VIN');
-define('ASSETS_DATE_ACCOUNT_CREATION','Activa Aankoop Datum');
+define('TEXT_ASSET_PURCHASE_DATE','Activa Aankoop Datum');
 define('ASSETS_DATE_LAST_UPDATE','Laatste Onderhouds Datum');
-define('ASSETS_DATE_LAST_JOURNAL_DATE','Activa Pension Datum');
+define('TEXT_ASSET_RETIRE_DATE','Activa Pension Datum');
 define('TEXT_PURCHASE_CONDITION','Aankoop Conditie');
 define('ASSETS_ENTRY_IMAGE_PATH','Afbeelding Adres');
 /************ Javascript defines *********/

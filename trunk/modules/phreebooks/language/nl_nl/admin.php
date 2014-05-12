@@ -20,7 +20,7 @@ define('TEXT_ACCOUNT_AGING','Account Ouderdom');
 define('TEXT_GENERAL_JOURNAL','Algemene Journaal Instellingen');
 define('TEXT_NUMBER','Nummer');
 define('TEXT_BOTH','Beide');
-define('TEXT_SINGLE_MODE','Enkele Regel Modus');
+define('TEXT_SINGLE_LINE_ENTRY','Enkele Regel Modus');
 define('TEXT_DOUBLE_MODE','Dubbele Regel Modus');
 define('PB_PF_JOURNAL_DESC','Journaal Omschrijving');
 define('PB_PF_ORDER_QTY','Aantal Besteld');
@@ -55,8 +55,8 @@ define('TEXT_SALES_ORDER','Verkoop Orders');
 define('TEXT_SALES_RECEIPTS','Verkoop Bonnen');
 define('PB_PF_VENDOR_CRD_MEMO','Credit Boekingen - Leverancier');
 define('PB_PF_VENDOR_LABEL','Labels - Leveranciers');
-define('PB_PF_VENDOR_QUOTE','Leverancier Offertes');
-define('PB_PF_VENDOR_STATEMENT','Samenvatting Leverancier');
+define('TEXT_VENDOR_QUOTES','Leverancier Offertes');
+define('TEXT_VENDOR_STATEMENTS','Samenvatting Leverancier');
 define('GEN_ADM_TOOLS_AR','Klant/Te innen facturen');
 define('GEN_ADM_TOOLS_AP','Leveranciers/te betalen facturen');
 define('GEN_ADM_TOOLS_RE_POST_FAILED','Er zijn geen journaal boekingen opnieuw opgeslagen.');
@@ -222,7 +222,7 @@ define('SETUP_TAX_RATES_LOG','Belasting Tarieven - ');
 define('GEN_ADM_TOOLS_INVENTORY_OWED','Voorraad Kosten van de Verkoop');
 define('GEN_ADM_TOOLS_INVENTORY_DESC','Uw inventory_cogs_owed tabel heeft op dit moment %s regels.<br> Deze tool zal alle regels controleren en opnieuw op slaan. <br>De inventory_cogs_owed tabel zou geen regels moeten bevatten tenzij de voorraad niveau\'s negatief zijn. <br>Als de tabel items bevat en de voorraad niveaus zijn nul of groter dan zal deze tool proberen om de tabel te repareren door het her-opslaan van de journaal posten. <br>Er waren problemen met release R3.6 en ouder. U kunt in een rapport be kijken welke items in uw cogs_owed tabel staan.');
 define('GEN_ADM_TOOLS_OWED_FIX','Opnieuw opslaan kosten van verkoop ');
-define('GEN_ADM_TOOLS_BTN_OWED','Start Opnieuw Opslaan');
+define('TEXT_START_RE-POST','Start Opnieuw Opslaan');
 define('GEN_ADM_TOOLS_OWED_CONFIRM','Weet u zeker dat u de kosten van de verkoop opnieuw wil opslaan?\n\nU ZOU EEN BACKUP MOETEN MAKEN VOORDAT U DIT DOET!');
 
 ?>

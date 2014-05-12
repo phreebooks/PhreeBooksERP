@@ -54,7 +54,7 @@ class personal_links extends \core\classes\ctl_panel {
 				$index++;
 			}
 		} else {
-			$contents = ACT_NO_RESULTS;
+			$contents = TEXT_NO_RESULTS_FOUND;
 		}
 		return $this->build_div('', $contents, $control);
 	}
@@ -65,10 +65,10 @@ class personal_links extends \core\classes\ctl_panel {
 		$my_url    = db_prepare_input($_POST['personal_links_field_1']);
 		$remove_id = db_prepare_input($_POST['personal_links_rId']);
 		// do nothing if no title or url entered
-		if (!$remove_id && ($my_title == '' || $my_url == '')) return; 
+		if (!$remove_id && ($my_title == '' || $my_url == '')) return;
 		// fetch the current params
 		$result = $db->Execute("select params from " . TABLE_USERS_PROFILES . "
-		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "' 
+		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "'
 		  and dashboard_id = '" . $this->id . "'");
 		if ($remove_id) { // remove element
 		  	$this->params	= unserialize($result->fields['params']);
@@ -81,7 +81,7 @@ class personal_links extends \core\classes\ctl_panel {
 		} else { // first entry
 		  	$this->params[$my_title] = $my_url;
 		}
-		ksort($this->params);	
+		ksort($this->params);
 		db_perform(TABLE_USERS_PROFILES, array('params' => serialize($this->params)), "update", "user_id = ".$_SESSION['admin_id']." and menu_id = '".$this->menu_id."' and dashboard_id = '".$this->id."'");
 	}
 }

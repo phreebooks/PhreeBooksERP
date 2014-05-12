@@ -118,7 +118,7 @@ switch ($_REQUEST['action']) {
 	      	  'qty'           => '',
 	      	  'gl_type'       => 'ttl',
 	      	  'gl_account'    => $result->fields['account_inventory_wage'],
-	      	  'description'   => BOX_INV_TRANSFER .' - '. $adj_reason,
+	      	  'description'   => TEXT_TRANSFER_INVENTORY .' - '. $adj_reason,
 	      	  'debit_amount'  => 0,
 	      	  'credit_amount' => 0,
 	      	  'post_date'     => $post_date,
@@ -169,7 +169,7 @@ switch ($_REQUEST['action']) {
 		       		  'qty'           => '',
 		       		  'gl_type'       => 'ttl',
 		       		  'gl_account'    => $_POST['cogs_acct_'.$rowCnt],
-		       		  'description'   => BOX_INV_TRANSFER .' - '. $adj_reason,
+		       		  'description'   => TEXT_TRANSFER_INVENTORY .' - '. $adj_reason,
 		       		  'debit_amount'  => 0,
 		       		  'credit_amount' => $cost,
 		       		  'post_date'     => $post_date,
@@ -238,6 +238,6 @@ $cal_xfr = array(
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', BOX_INV_TRANSFER);
+define('PAGE_TITLE', TEXT_TRANSFER_INVENTORY);
 
 ?>

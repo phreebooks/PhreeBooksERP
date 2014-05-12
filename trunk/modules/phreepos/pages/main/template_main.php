@@ -138,7 +138,7 @@ echo $toolbar->build_toolbar();
 	<?php   echo TEXT_SALES_TAX . ' ' . html_input_field('sales_tax', $currencies->format(($order->sales_tax ? $order->sales_tax : '0.00'), true, $order->currencies_code, $order->currencies_value), 'readonly="readonly" size="10" maxlength="20" onchange="updateTotalPrices()"'); ?>
 		</label></li>
 	<?php if(!PHREEPOS_ROUNDING == 0) {
-			echo '<li><label>' . TEXT_ROUNDING_OF . ' ' . html_input_field('rounded_of', $currencies->format($order->rounded_of, true, $order->currencies_code, $order->currencies_value), 'readonly="readonly" size="10" maxlength="20"') . '</label></li> ';
+			echo '<li><label>' . TEXT_ROUNDED_OF . ' ' . html_input_field('rounded_of', $currencies->format($order->rounded_of, true, $order->currencies_code, $order->currencies_value), 'readonly="readonly" size="10" maxlength="20"') . '</label></li> ';
 		 }?>
 		<li><label>
 	<?php   echo TEXT_TOTAL . ' ' . html_input_field('total', $currencies->format($order->total_amount, true, $order->currencies_code, $order->currencies_value), 'readonly="readonly" size="10" maxlength="20"'); ?>

@@ -34,7 +34,7 @@
     <td><?php echo html_pull_down_menu('email_linefeed', $sel_linefeed, $_POST['email_linefeed'] ? $_POST['email_linefeed'] : EMAIL_LINEFEED, ''); ?></td>
   </tr>
   <tr>
-    <td><?php echo CD_12_04_DESC; ?></td>
+    <td><?php echo TEXT_SEND_E-MAILS_IN_HTML_FORMAT; ?></td>
     <td><?php echo html_pull_down_menu('email_use_html', $sel_yes_no, $_POST['email_use_html'] ? $_POST['email_use_html'] : EMAIL_USE_HTML, ''); ?></td>
   </tr>
   <tr>

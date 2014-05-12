@@ -32,7 +32,7 @@ define('TABLE_TRANSLATOR', DB_PREFIX.'translator');
 // Set the menus
 if (defined('MODULE_TRANSLATOR_STATUS')) {
 	$mainmenu["tools"]['submenu']['translator'] = array(
-    	'text'        => TEXT_TRANSLATOR_ASS,
+    	'text'        => TEXT_TRANSLATOR_ASSISTANT,
     	'order'       => BOX_TRANSLATOR_MODULE_ORDER,
     	'security_id' => SECURITY_TRANSLATOR_MGT,
     	'link'        => html_href_link(FILENAME_DEFAULT, 'module=translator&amp;page=main', 'SSL'),

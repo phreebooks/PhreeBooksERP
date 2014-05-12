@@ -20,12 +20,12 @@ namespace contacts\classes;
 class admin extends \core\classes\admin {
 	public $sort_order  = 3;
 	public $id 			= 'contacts';
-	public $text		= TEXT_CONTACTS_MODULE;
 	public $description = MODULE_CONTACTS_DESCRIPTION;
 	public $core		= true;
 	public $version		= '3.71';
 
 	function __construct() {
+		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_CONTACTS);
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom'   => 3.6,
 		  'phreebooks' => 3.6,

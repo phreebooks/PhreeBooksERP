@@ -26,8 +26,8 @@ class company_links extends \core\classes\ctl_panel {
 	private $security_level		= 0;
 	public  $text		 		= CP_COMPANY_LINKS_TITLE;
 	public $module_id 			= 'phreedom';
-	public  $version      		= '3.5'; 
-	
+	public  $version      		= '3.5';
+
   	function install($column_id = 1, $row_id = 0) {
   		global $db;
 		// fetch the pages params to copy to new install
@@ -68,7 +68,7 @@ class company_links extends \core\classes\ctl_panel {
 				$index++;
 		  	}
 		} else {
-			$contents = ACT_NO_RESULTS;
+			$contents = TEXT_NO_RESULTS_FOUND;
 		}
 		return $this->build_div('', $contents, $control);
   	}
@@ -79,7 +79,7 @@ class company_links extends \core\classes\ctl_panel {
 		$my_url    = db_prepare_input($_POST['company_links_field_1']);
 		$remove_id = db_prepare_input($_POST[$this->id . '_rId']);
 		// do nothing if no title or url entered
-		if (!$remove_id && ($my_title == '' || $my_url == '')) return; 
+		if (!$remove_id && ($my_title == '' || $my_url == '')) return;
 		// fetch the current params
 		$result = $db->Execute("select params from " . TABLE_USERS_PROFILES . "
 		  where menu_id = '" . $this->menu_id . "' and dashboard_id = '" . $this->id . "'"); // just need one

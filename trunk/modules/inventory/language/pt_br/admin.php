@@ -13,7 +13,7 @@ define('INV_TOOLS_STOCK_ROUNDING_ERROR','SKU: %s -> Estoque indica saldo %s mas 
 define('INV_TOOLS_BALANCE_CORRECTED','SKU: %s -> O saldo de estoque foi alterado para %s.');
 define('INV_TOOLS_OUT_OF_BALANCE','SKU: %s -> Estoque indica saldo de %s mas Histórico lista somente %s disponível');
 define('INV_TOOLS_BTN_REPAIR','Sinc Qtd em Estoque');
-define('INV_TOOLS_BTN_TEST','Verificar Saldos Estoque');
+define('TEXT_VERIFY_STOCK_BALANCES','Verificar Saldos Estoque');
 define('INV_TOOLS_REPAIR_FIX','Corrigir Saldos Inventário com Histórico');
 define('INV_TOOLS_REPAIR_CONFIRM','Tem certeza de que quer corrigir os saldos de estoque para acertar com o Histórico?');
 define('INV_TOOLS_REPAIR_TEST','Testar Saldos Inventário com Histórico');
@@ -42,7 +42,7 @@ define('TEXT_SRV_ITEMS','Serviço');
 define('TEXT_NS_ITEMS','Não Estoque');
 define('TEXT_MS_ITEMS','Estoque Mestre');
 define('TEXT_ASSEMBLIES','Montagens');
-define('TEXT_SERIAL_ITEMS','Serializado');
+define('TEXT_SERIALIZED','Serializado');
 define('TEXT_COST_METHOD','Método Custo');
 define('TEXT_STOCK_ITEMS','Estoque');
 define('TEXT_COGS_ACCOUNT','Conta Custo Vendas');

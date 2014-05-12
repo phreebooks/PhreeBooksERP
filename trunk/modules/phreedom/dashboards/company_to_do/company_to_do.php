@@ -24,11 +24,11 @@ class company_to_do extends \core\classes\ctl_panel {
 	public $description	 		= CP_COMPANY_TO_DO_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_PHREEFORM;
 	public $text		 		= CP_COMPANY_TO_DO_TITLE;
-	public $version      		= '3.5'; 
+	public $version      		= '3.5';
 	public $module_id 			= 'phreedom';
-	
+
   	function install($column_id = 1, $row_id = 0) {
-		global $db;		
+		global $db;
 		// fetch the pages params to copy to new install
 		$result = $db->Execute("select params from " . TABLE_USERS_PROFILES . "
 	  	  where menu_id = '".$this->menu_id."' and dashboard_id = '".$this->id."'"); // just need one
@@ -63,7 +63,7 @@ class company_to_do extends \core\classes\ctl_panel {
 				$index++;
 		  	}
 		} else {
-		  	$contents = ACT_NO_RESULTS;
+		  	$contents = TEXT_NO_RESULTS_FOUND;
 		}
 		return $this->build_div('', $contents, $control);
 	}
@@ -76,7 +76,7 @@ class company_to_do extends \core\classes\ctl_panel {
 		if (!$remove_id && $add_to_do == '') return;
 		// fetch the current params
 		$result = $db->Execute("select params from " . TABLE_USERS_PROFILES . "
-	  	  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "' 
+	  	  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "'
 		  and dashboard_id = '" . $this->id . "'");
 		if ($remove_id) { // remove element
 			$this->params	= unserialize($result->fields['params']);

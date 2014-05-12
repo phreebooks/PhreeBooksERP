@@ -233,13 +233,13 @@ $include_footer   = true;
 switch ($_REQUEST['action']) {
   case 'new':
   case 'edit':
-    define('PAGE_TITLE', BOX_WORK_ORDERS_BUILDER);
+    define('PAGE_TITLE', TEXT_WORK_ORDER_BUILDER);
     $include_template = 'template_detail.php';
     break;
   default:
     // build the list header
 	$heading_array = array(
-	  'm.wo_title'      => TEXT_WO_TITLE,
+	  'm.wo_title'      => TEXT_WORK_ORDER_TITLE,
 	  'i.sku'           => TEXT_SKU,
 	  'm.description'   => TEXT_DESCRIPTION,
 	  'm.revision'      => TEXT_REVISION,
@@ -276,7 +276,7 @@ switch ($_REQUEST['action']) {
 	}
 	$query_result->Move(0);
 	$query_result->MoveNext();
-	define('PAGE_TITLE', BOX_WORK_ORDERS_BUILDER);
+	define('PAGE_TITLE', TEXT_WORK_ORDER_BUILDER);
     $include_template = 'template_main.php';
 	break;
 }

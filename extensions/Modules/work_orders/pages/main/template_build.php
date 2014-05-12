@@ -34,7 +34,7 @@ if (!$hide_save && ((!$id && $security_level > 1) || ($id && $security_level > 2
 }
 $toolbar->icon_list['print']['show']    = false;
 $toolbar->add_help('07.04.WO.04');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 ?>
 <h1><?php echo HEADING_WORK_ORDER_MODULE_BUILD . (!$id ? '' : ' - ' . $id); ?></h1>
   <div id="inv_image" title="<?php echo $sku; ?>">
@@ -63,7 +63,7 @@ echo $toolbar->build_toolbar();
 } ?>
   </tr>
   <tr>
-	<td align="right"><?php echo TEXT_WO_TITLE; ?> </td>
+	<td align="right"><?php echo TEXT_WORK_ORDER_TITLE; ?> </td>
     <td><?php echo html_input_field('wo_title', $wo_title, 'readonly="readonly" size="33"') . '&nbsp;'; ?></td>
 	<td align="right"><?php echo TEXT_PRIORITY; ?></td>
 	<td><?php echo html_input_field('priority', $priority, 'readonly="readonly" size="5" style="text-align:right"'); ?></td>
@@ -71,7 +71,7 @@ echo $toolbar->build_toolbar();
 	<td><?php echo html_checkbox_field('closed', '1', $closed ? true : false, '', 'disabled="disabled"') . ($closed ? (' ' . gen_locale_date($close_date)) : ''); ?></td>
   </tr>
   <tr>
-    <td colspan="6"><?php echo TEXT_SPECIAL_NOTES; ?></td>
+    <td colspan="6"><?php echo TEXT_WORK_ORDER_NOTES_AND_COMMENTS; ?></td>
   </tr>
   <tr>
 	<td colspan="6"><?php echo html_textarea_field('notes', 80, 3, $notes, $params = ''); ?></td>
@@ -83,7 +83,7 @@ echo $toolbar->build_toolbar();
 	<tr>
 	  <th><?php echo TEXT_STEP; ?></th>
 	  <th><?php echo TEXT_TASK_NAME; ?></th>
-	  <th><?php echo TEXT_TASK_DESC; ?></th>
+	  <th><?php echo TEXT_TASK_DESCRIPTION; ?></th>
 	  <th><?php echo TEXT_MFG_INIT; ?></th>
 	  <th><?php echo TEXT_QA_INIT; ?></th>
 	  <th><?php echo TEXT_ACTION; ?></th>

@@ -149,7 +149,7 @@ switch ($_REQUEST['action']) {
 			$db->Execute("update " . TABLE_TRANSLATOR . "
 			  set translation = '" . db_input($trans) . "', translated = '" . $status . "' where id = '" . $id . "'");
 		}
-		$messageStack->add(TEXT_TRANSLATIONS_SAVED,'success');
+		$messageStack->add(TEXT_TRANSLATION_RECORDS_SAVED,'success');
 		$_REQUEST['action'] = 'edit';
 		break;
   	case 'delete':
@@ -171,7 +171,7 @@ switch ($_REQUEST['action']) {
 		$translator->export_language($mod, $lang, $ver);
 		$backup->make_zip('dir');
 		$backup->delete_dir($backup->source_dir);
-		gen_add_audit_log(TEXT_EDIT_TRANSLATION . ' (' . TEXT_EXPORT . ')', $mod . ' ' . lang . ' R' . $ver);
+		gen_add_audit_log(TEXT_TRANSLATE_MODULE . ' (' . TEXT_EXPORT . ')', $mod . ' ' . lang . ' R' . $ver);
 		$backup->download($backup->dest_dir, $backup->dest_file); // will not return if successful
 		break;
   	case 'export_all_go':
@@ -194,7 +194,7 @@ switch ($_REQUEST['action']) {
 		if ($have_data) {
 	  		$backup->make_zip('dir');
 	  		$backup->delete_dir($backup->source_dir);
-	  	    gen_add_audit_log(TEXT_EDIT_TRANSLATION . ' (' . TEXT_EXPORT . ')', 'all ' . lang . ' R' . $ver);
+	  	    gen_add_audit_log(TEXT_TRANSLATE_MODULE . ' (' . TEXT_EXPORT . ')', 'all ' . lang . ' R' . $ver);
 	    	$backup->download($backup->dest_dir, $backup->dest_file); // will not return if successful
 		}
 		break;
@@ -254,7 +254,7 @@ switch ($_REQUEST['action']) {
 	  from " . TABLE_TRANSLATOR . ' where ' . implode(' and ', $criteria);
     $query_result = $db->Execute($query_raw);
 	$include_template = 'template_edit.php';
-	define('PAGE_TITLE', TEXT_EDIT_TRANSLATION);
+	define('PAGE_TITLE', TEXT_TRANSLATE_MODULE);
 	break;
   case 'import':
 	$include_template = 'template_import.php';
@@ -296,7 +296,7 @@ switch ($_REQUEST['action']) {
     $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 	history_save();
-    define('PAGE_TITLE', TEXT_TRANSLATOR_ASS);
+    define('PAGE_TITLE', TEXT_TRANSLATOR_ASSISTANT);
 	break;
 }
 

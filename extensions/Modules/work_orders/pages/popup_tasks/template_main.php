@@ -31,7 +31,7 @@ $toolbar->add_help('07.04.WO.02');
 echo $toolbar->build_toolbar($add_search = true);
 // Build the page
 ?>
-<h1><?php echo TEXT_WORK_ORDERS_TASK; ?></h1>
+<h1><?php echo TEXT_WORK_ORDER_TASKS; ?></h1>
 <div style="height:19px"><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . TEXT_TASKS); ?>
 <div style="float:right"><?php echo $query_split->display_links(); ?></div>
 </div>

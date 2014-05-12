@@ -47,7 +47,7 @@ echo $toolbar->build_toolbar();
 	<td align="center"><?php echo TEXT_ENCRYPTION_KEY_CONFIRM . html_password_field('enc_key_confirm', ''); ?></td>
   </tr>
   <tr>
-	<td colspan="2" align="right"><?php echo html_button_field('encrypt_key', GEN_ADM_TOOLS_BTN_SAVE, 'onclick="submitToDo(\'save\')"'); ?></td>
+	<td colspan="2" align="right"><?php echo html_button_field('encrypt_key', TEXT_SAVE_CHANGES, 'onclick="submitToDo(\'save\')"'); ?></td>
   </tr>
  </tbody>
 </table>
@@ -71,7 +71,7 @@ echo $toolbar->build_toolbar();
 	  <td><?php echo html_password_field('new_encrypt_confirm'); ?></td>
 	</tr>
     <tr>
-	  <td colspan="2" align="right"><?php echo html_button_field('encrypt_key', GEN_ADM_TOOLS_BTN_SAVE, 'onclick="submitToDo(\'encrypt_key\')"'); ?></td>
+	  <td colspan="2" align="right"><?php echo html_button_field('encrypt_key', TEXT_SAVE_CHANGES, 'onclick="submitToDo(\'encrypt_key\')"'); ?></td>
 	</tr>
  </tbody>
 </table>

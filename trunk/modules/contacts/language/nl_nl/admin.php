@@ -27,7 +27,7 @@ define('NEXT_CUST_ID_NUM_DESC','Volgende Klant ID');
 define('NEXT_VEND_ID_NUM_DESC','Volgende Leverancier ID');
 define('CONTACT_BILL_FIELD_REQ','Of het verplicht is of het veld: %s in gevult moet worden voor een nieuw hoofd/factuur adres(voor Leveranciers, Klanten en Personeel)');
 define('HR_POPUP_WINDOW_TITLE','Departement');
-define('HR_HEADING_SUBACCOUNT','Sub departement');
+define('TEXT_SUB_DEPARTMENT','Sub departement');
 define('HR_EDIT_INTRO','Wijzig waar nodig');
 define('TEXT_DEPARTMENT_ID','Departement ID');
 define('HR_INFO_SUBACCOUNT','Is dit departement een sub departement?');

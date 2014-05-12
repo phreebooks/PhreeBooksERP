@@ -30,6 +30,6 @@ define ('BOX_INV_MAINTAIN', 'Edit / pflegen');
 define ('BOX_INV_NEW', 'Add Inventory');
 define ('BOX_INV_ADJUSTMENTS', 'Einstellungen');
 define ('BOX_INV_ASSEMBLIES', 'Versammlungen');
-define ('BOX_INV_TRANSFER', 'Transfer Inventory');
+define ('TEXT_TRANSFER_INVENTORY', 'Transfer Inventory');
 
 ?>

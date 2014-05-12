@@ -19,12 +19,12 @@
 namespace shipping\classes;
 class admin extends \core\classes\admin {
 	public $id 			= 'shipping';
-	public $text		= MODULE_SHIPPING_TITLE;
 	public $description = MODULE_SHIPPING_DESCRIPTION;
 	public $sort_order  = 5;
 	public $version		= '3.6';
 
 	function __construct() {
+		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_SHIPPING);
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom'   => 3.6,
 		  'phreebooks' => 3.6,

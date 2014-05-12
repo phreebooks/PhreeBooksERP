@@ -27,7 +27,7 @@ class company_notes extends \core\classes\ctl_panel {
 	public $text		 		= CP_COMPANY_NOTES_TITLE;
 	public $version      		= '3.5';
 	public $module_id 			= 'phreedom';
-	
+
 	function install($column_id = 1, $row_id = 0) {
 		global $db;
 		// fetch the pages params to copy to new install
@@ -64,7 +64,7 @@ class company_notes extends \core\classes\ctl_panel {
 				$index++;
 		  	}
 		} else {
-			$contents = ACT_NO_RESULTS;
+			$contents = TEXT_NO_RESULTS_FOUND;
 		}
 		return $this->build_div('', $contents, $control);
 	}
@@ -74,10 +74,10 @@ class company_notes extends \core\classes\ctl_panel {
 		$my_note   = db_prepare_input($_POST['company_notes_field_0']);
 		$remove_id = db_prepare_input($_POST['company_notes_rId']);
 		// do nothing if no title or url entered
-		if (!$remove_id && $my_note == '') return; 
+		if (!$remove_id && $my_note == '') return;
 		// fetch the current params
 		$result = $db->Execute("select params from " . TABLE_USERS_PROFILES . "
-		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "' 
+		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "'
 		  and dashboard_id = '" . $this->id . "'");
 		if ($remove_id) { // remove element
 		  	$this->params		= unserialize($result->fields['params']);

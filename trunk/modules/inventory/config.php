@@ -81,7 +81,7 @@ $mainmenu["inventory"]["submenu"]["assemble"] = array(
 );
 if (defined('ENABLE_MULTI_BRANCH') && ENABLE_MULTI_BRANCH){
 	$mainmenu["inventory"]["submenu"]["transfer"] = array(
-	  'text'        => BOX_INV_TRANSFER,
+	  'text'        => TEXT_TRANSFER_INVENTORY,
 	  'order'       => 80,
 	  'security_id' => SECURITY_ID_TRANSFER_INVENTORY,
 	  'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=transfer', 'SSL'),
@@ -109,8 +109,8 @@ $mainmenu["vendors"]["submenu"]["pricesheet"] = array(
 if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
   gen_pull_language('inventory', 'admin');
   $mainmenu["company"]['submenu']["configuration"]['submenu']["inventory"] = array(
-	'order'	      => MODULE_INVENTORY_TITLE,
-	'text'        => MODULE_INVENTORY_TITLE,
+	'order'	      => sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY),
+	'text'        => sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY),
 	'security_id' => SECURITY_ID_CONFIGURATION,
 	'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=admin', 'SSL'),
     'show_in_users_settings' => false,

@@ -25,7 +25,7 @@ $id         = (int)$_GET['iID'];
 $full_price = $_GET['price'];
 $type       = isset($_GET['type']) ? $_GET['type'] : 'c';
 // retrieve some item details
-$inventory_details = $db->Execute("select sku, description_short, quantity_on_hand, quantity_on_order, item_cost, 
+$inventory_details = $db->Execute("select sku, description_short, quantity_on_hand, quantity_on_order, item_cost,
 	quantity_on_allocation, quantity_on_sales_order from " . TABLE_INVENTORY . " where id = " . $id);
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/popup_price_mgr/extra_actions.php';
@@ -40,7 +40,7 @@ switch ($_REQUEST['action']) {
 	  $sheet_id = (int)$_POST['id_' . $tab_id];
 	  $default_checked = isset($_POST['def_' . $tab_id]) ? true : false;
 	  if ($default_checked) {
-		$db->Execute("delete from " . TABLE_INVENTORY_SPECIAL_PRICES . " 
+		$db->Execute("delete from " . TABLE_INVENTORY_SPECIAL_PRICES . "
 			where inventory_id = " . $id . " and price_sheet_id = " . $sheet_id);
 	  } else {
 		$encoded_prices = array();
@@ -55,13 +55,13 @@ switch ($_REQUEST['action']) {
 		  $encoded_prices[] = $level_data;
 		}
 		$price_levels = implode(';', $encoded_prices);
-		$result = $db->Execute("select id from " . TABLE_INVENTORY_SPECIAL_PRICES . " 
+		$result = $db->Execute("select id from " . TABLE_INVENTORY_SPECIAL_PRICES . "
 			where inventory_id = " . $id . " and price_sheet_id = " . $sheet_id);
 		if ($result->RecordCount() == 0) {
-		  $db->Execute("insert into " . TABLE_INVENTORY_SPECIAL_PRICES . " 
+		  $db->Execute("insert into " . TABLE_INVENTORY_SPECIAL_PRICES . "
 			set inventory_id = " . $id . ", price_sheet_id = " . $sheet_id . ", price_levels = '" . $price_levels . "'");
 		} else {
-		  $db->Execute("update " . TABLE_INVENTORY_SPECIAL_PRICES . " set price_levels = '" . $price_levels . "' 
+		  $db->Execute("update " . TABLE_INVENTORY_SPECIAL_PRICES . " set price_levels = '" . $price_levels . "'
 			where inventory_id = " . $id . " and price_sheet_id = " . $sheet_id);
 		}
 		$sql_data_array = array();
@@ -72,7 +72,7 @@ switch ($_REQUEST['action']) {
 	  }
 	  $tab_id++;
 	}
-	gen_add_audit_log(INV_LOG_PRICE_MGR . TEXT_UPDATE, $inventory_details->fields['sku'] . ' - ' . $inventory_details->fields['description_short']);
+	gen_add_audit_log(($type == 'v' ? BOX_PURCHASE_PRICE_SHEETS : BOX_SALES_PRICE_SHEETS) . TEXT_UPDATE, $inventory_details->fields['sku'] . ' - ' . $inventory_details->fields['description_short']);
 	break;
   default:
 }
@@ -82,13 +82,13 @@ $temp = inv_calculate_sales_price(1, $id, 0, 'v');
 $item_cost = $temp['price'];
 
 // some preliminary information
-$sql = "select id, sheet_name, revision, default_sheet, default_levels from " . TABLE_PRICE_SHEETS . " 
-	where inactive = '0' and type = '" . $type . "' and 
-	(expiration_date is null or expiration_date = '0000-00-00' or expiration_date >= '" . date('Y-m-d') . "') 
+$sql = "select id, sheet_name, revision, default_sheet, default_levels from " . TABLE_PRICE_SHEETS . "
+	where inactive = '0' and type = '" . $type . "' and
+	(expiration_date is null or expiration_date = '0000-00-00' or expiration_date >= '" . date('Y-m-d') . "')
 	order by sheet_name";
 $price_sheets = $db->Execute($sql);
 // retrieve special pricing for this inventory item
-$result = $db->Execute("select price_sheet_id, price_levels 
+$result = $db->Execute("select price_sheet_id, price_levels
 	from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = " . $id);
 $special_prices = array();
 while (!$result->EOF) {

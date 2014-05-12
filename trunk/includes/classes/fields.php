@@ -202,7 +202,7 @@ class fields {
 	$tab_array = $this->get_tabs($this->module);
     $content = array();
 	$content['thead'] = array(
-	  'value' => array(TEXT_DESCRIPTION, TEXT_FIELD_NAME, TEXT_TAB_NAME, TEXT_TYPE, $this->type_desc, TEXT_SORT_ORDER, TEXT_GROUP, TEXT_ACTION),
+	  'value' => array(TEXT_DESCRIPTION, TEXT_FIELD_NAME, TEXT_TAB_TITLE, TEXT_TYPE, $this->type_desc, TEXT_SORT_ORDER, TEXT_GROUP, TEXT_ACTION),
 	  'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 	);
 	$field_list = array('id', 'field_name', 'entry_type', 'description', 'tab_id', 'params', 'sort_order', 'group_by');
@@ -332,7 +332,7 @@ class fields {
 		$output .= '</tr>' . chr(10);
 	}
 	$output .= '  <tr>' . chr(10);
-	$output .= '	<td>' . INV_CATEGORY_MEMBER . '</td>' . chr(10);
+	$output .= '	<td>' . TEXT_TAB_MEMBER . ': </td>' . chr(10);
 	$output .= '	<td>' . html_pull_down_menu('tab_id', $tab_list, $this->tab_id, $disabled) . '</td>' . chr(10);
 	$output .= '  </tr>' . chr(10);
 	$output .= '  <tr class="ui-widget-header">' . chr(10);

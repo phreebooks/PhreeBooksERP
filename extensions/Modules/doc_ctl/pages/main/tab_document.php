@@ -43,7 +43,7 @@ if ($bookmarked) {
 		'show'   => true,
 		'icon'   => 'actions/bookmark-new.png',
 		'params' => 'onclick="docAction(\'bookmark\')"',
-		'text'   => TEXT_BOOKMARK_DOC,
+		'text'   => TEXT_BOOKMARK_DOCUMENT,
 		'order'  => 20,
 	);
 }
@@ -52,7 +52,7 @@ if ($locked && $_SESSION['admin_id'] == $doc_details->fields['doc_owner']) {
 		'show'   => true,
 		'icon'   => 'actions/system-lock-screen.png',
 		'params' => 'onclick="docAction(\'del_lock\')"',
-		'text'   => TEXT_UNLOCK_DOC,
+		'text'   => TEXT_UNLOCK_DOCUMENT,
 		'order'  => 50,
 	);
 } elseif ($security_level > 1 && !$locked) {
@@ -69,7 +69,7 @@ if ($security_level > 2 && !$checked_out) {
 		'show'   => true,
 		'icon'   => 'actions/mail-forward.png',
 		'params' => 'onclick="submitSeq(' . $id . ',\'check_out\', true)"',
-		'text'   => TEXT_CHECKOUT_DOC,
+		'text'   => TEXT_CHECK_OUT_DOCUMENT,
 		'order'  => 60,
 	);
 }
@@ -90,7 +90,7 @@ $fieldset_content .= TEXT_DOCUMENT . html_input_field('title', $doc_details->fie
 $fieldset_content .= '<table width="100%" cellspacing="0" cellpadding="4">' . chr(10);
 $fieldset_content .= '<tr><td colspan="2">' . $dir_path . '</td></tr>' . chr(10);
 $fieldset_content .= '<tr><td colspan="2">' . html_textarea_field('description', 75, 3, $doc_details->fields['description'], '', true) . '</td></tr>' . chr(10);
-$fieldset_content .= '<tr><td colspan="2">' . TEXT_UPLOAD_FILE . ' ' . html_file_field('docfile') . '</td></tr>' . chr(10);
+$fieldset_content .= '<tr><td colspan="2">' . TEXT_UPLOAD_REVISION . ' ' . html_file_field('docfile') . '</td></tr>' . chr(10);
 // column 1
 $fieldset_content .= '<tr><td width="50%" valign="top">' . chr(10);
 $fieldset_content .= '  <table class="ui-widget" style="border-collapse:collapse;width:100%">';

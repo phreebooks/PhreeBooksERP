@@ -13,7 +13,7 @@ define('BOX_PURCHASE_PRICE_SHEETS','Tabelas Preço Fornecedores');
 define('BOX_PRICE_SHEET_MANAGER','Tabelas Preço');
 define('ORD_TEXT_16_WINDOW_TITLE','Ajustes');
 define('ORD_TEXT_14_WINDOW_TITLE','Montagens');
-define('BOX_INV_TRANSFER','Transferir Estoque');
+define('TEXT_TRANSFER_INVENTORY','Transferir Estoque');
 define('BOX_INV_NEW','Novo Estoque');
 define('BOX_INV_MAINTAIN','Estoque');
 define('TEXT_INVENTORY','Estoque');

@@ -23,7 +23,7 @@ $hidden_fields = '';
     <?php if ($image_with_path) echo html_image(DIR_WS_MY_FILES . $_SESSION['company'] . '/inventory/images/' . $image_with_path, '', 600) . chr(10);
 			else echo TEXT_NO_IMAGE; ?>
     <div>
-	  <h2><?php echo TEXT_WO_TITLE . ': ' . $wo_title; ?></h2>
+	  <h2><?php echo TEXT_WORK_ORDER_TITLE . ': ' . $wo_title; ?></h2>
 	  <p><?php echo '<br />' . $description; ?></p>
     </div>
   </div>
@@ -31,7 +31,7 @@ $hidden_fields = '';
   <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto">
    <tbody class="ui-widget-content">
     <tr>
-	  <td align="right"><?php echo TEXT_WO_TITLE . '&nbsp;'; ?></td>
+	  <td align="right"><?php echo TEXT_WORK_ORDER_TITLE . '&nbsp;'; ?></td>
 	  <td><?php echo html_input_field('wo_title', $wo_title, 'size="33" maxlength="32"', true); ?></td>
 	  <td align="right"><?php echo TEXT_REVISION . '&nbsp;'; ?></td>
 	  <td>

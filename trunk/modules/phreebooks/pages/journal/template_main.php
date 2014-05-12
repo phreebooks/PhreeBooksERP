@@ -112,7 +112,7 @@ echo $toolbar->build_toolbar();
         <td colspan="5" align="left"><?php echo html_icon('actions/list-add.png', TEXT_ADD, 'medium', 'onclick="addGLRow()"'); ?></td>
       </tr>
       <tr>
-	    <td width="70%" colspan="3" align="right"><?php echo GL_TOTALS; ?></td>
+	    <td width="70%" colspan="3" align="right"><?php echo TEXT_TOTALS .': '; ?></td>
 	    <td width="15%" align="right"><?php echo html_input_field('debit_total', '0', 'readonly="readonly" style="text-align:right" size="13"'); ?></td>
 	    <td width="15%" align="right"><?php echo html_input_field('credit_total', '0', 'readonly="readonly" style="text-align:right" size="13"'); ?></td>
       </tr>

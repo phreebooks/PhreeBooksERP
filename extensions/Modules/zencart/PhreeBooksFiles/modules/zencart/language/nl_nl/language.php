@@ -24,7 +24,7 @@ define('ZENCART_PRODUCT_SYNC_TEXT','Synchroniseer producten met e-store');
 define('ZENCART_PRODUCT_SYNC_BTN','Synchroniseer');
 define('ZENCART_SHIP_CONFIRM_TITLE','Bevestig Verzendingen');
 define('ZENCART_SHIP_CONFIRM_INFO','Bevestigd alle verzendingen op de datum geselecteerd van de Verzendings Manager en veranderd de status in ZenCart. Complete en gedeeltelijk verzonden orders worden geüpdatet. Email Bevestiging wordt niet naar de klant gestuurd.');
-define('ZENCART_SHIP_CONFIRM_TEXT','Zend Verzendings Bevestingen');
+define('TEXT_SEND_SHIPMENT_CONFIRMATIONS','Zend Verzendings Bevestingen');
 define('ZENCART_TEXT_CONFIRM_ON','Voor orders Verzonden op');
 define('ZENCART_SHIP_CONFIRM_BTN','Bevestig Verzending');
 define('ZENCART_ERROR_NO_ITEMS','Geen voorraad was geselecteerd om up te loaden naar de ZenCart catalogus. Gezocht naar checkbox veld genaamd  catalog om voorraad te identificeren voor het uploaden.');

@@ -39,7 +39,7 @@ if (substr($_REQUEST['action'], 0, 8) == 'install_') {
 switch ($_REQUEST['action']) {
   case 'install':
   	\core\classes\user::validate_security($security_level, 4);
-	$admin_classes['shipping']->methods[$method]->install(); 
+	$admin_classes['shipping']->methods[$method]->install();
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	break;
   case 'remove';
@@ -70,18 +70,18 @@ switch ($_REQUEST['action']) {
 	$fy_month  = db_prepare_input($_POST['fy_month']);
 	$fy_year   = db_prepare_input($_POST['fy_year']);
   	$conv_type = db_prepare_input($_POST['conv_type']);
-	// set execution time limit to a large number to allow extra time 
+	// set execution time limit to a large number to allow extra time
 	if (ini_get('max_execution_time') < 20000) set_time_limit(20000);
 	$backup              = new \phreedom\classes\backup;
 	$backup->source_dir  = DIR_FS_MY_FILES . $_SESSION['company'].'/shipping/labels/'.$carrier.'/'.$fy_year.'/'.$fy_month.'/';
 	$backup->dest_dir    = DIR_FS_MY_FILES . 'backups/';
 	switch ($conv_type) {
-		case 'bz2': 
+		case 'bz2':
 			$backup->dest_file = 'ship_' . $carrier . '_' . $fy_year . $fy_month . '.tar.bz2';
 		    $backup->make_bz2('dir');
 			break;
 		default:
-		case 'zip': 
+		case 'zip':
 			$backup->dest_file = 'ship_' . $carrier . '_' . $fy_year . $fy_month . '.zip';
 			$backup->make_zip('dir');
 			break;
@@ -138,5 +138,5 @@ for ($i = 0; $i < 8; $i++) {
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', MODULE_SHIPPING_TITLE);
+define('PAGE_TITLE', sprintf(TEXT_MODULE_ARGS, TEXT_SHIPPING));
 ?>

@@ -63,7 +63,7 @@ class so_status extends \core\classes\ctl_panel {
 		if ($params['num_rows'])      $sql .= " limit " . $params['num_rows'];
 		$result = $db->Execute($sql);
 		if ($result->RecordCount() < 1) {
-			$contents = ACT_NO_RESULTS;
+			$contents = TEXT_NO_RESULTS_FOUND;
 		} else {
 			while (!$result->EOF) {
 			  	$contents .= '<div style="float:right">' ;

@@ -151,7 +151,7 @@ define('SHIPPING_ONE_TIME','Request/One Time Pickup');
 define('SHIPPING_ON_CALL','On Call Air');
 define('SHIPPING_RETAIL','Suggested Retail Rates');
 define('SHIPPING_DROP_BOX','Drop Box/Center');
-define('SHIPPING_AIR_SRV','Air Service Center');
+define('TEXT_AIR_SERVICE_CENTER','Air Service Center');
 
 define('TEXT_POUND_SHORT','lbs');
 define('TEXT_KILOGRAMS_SHORT','kgs');
@@ -175,8 +175,8 @@ define('TEXT_ANY','Any');
 
 define('SHIPPING_NO_CONF','No delivery confirmation');
 define('SHIPPING_NO_SIG_RQD','No Signature Required');
-define('SHIPPING_SIG_REQ','Signature Required');
-define('SHIPPING_ADULT_SIG','Adult Signature Required');
+define('TEXT_SIGNATURE_REQUIRED','Signature Required');
+define('TEXT_ADULT_SIGNATURE_REQUIRED','Adult Signature Required');
 
 define('SHIPPING_RET_CARRIER','Carrier Return Label');
 define('SHIPPING_RET_LOCAL','Print Local Return Label');

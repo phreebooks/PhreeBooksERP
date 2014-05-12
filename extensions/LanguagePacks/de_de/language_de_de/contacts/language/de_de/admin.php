@@ -40,7 +40,7 @@ define ('CONTACT_BILL_FIELD_REQ', 'Ob zu verlangen Feld: %s für einen neuen Hau
 define ('CONTACT_SHIP_FIELD_REQ', 'Ob zu verlangen Feld: %s, um eine neue Versandadresse eingegeben werden');
 /************************** (Abteilungen) ******************** ***************************/
 define ('HR_POPUP_WINDOW_TITLE', 'Kategorien');
-define ('HR_HEADING_SUBACCOUNT', 'Lehrstuhlgruppe');
+define ('TEXT_SUB_DEPARTMENT', 'Lehrstuhlgruppe');
 define ('HR_EDIT_INTRO', 'Bitte führen Sie alle notwendigen Änderungen durch');
 define ('TEXT_DEPARTMENT_ID', 'Department ID');
 define ('HR_INFO_SUBACCOUNT', 'Ist diese Abteilung eine Unterabteilung?');

@@ -195,7 +195,7 @@ function box_build($properties, $i) {
       $output .= '  </tr>'  . nl;
       $output .= ' </thead><tbody class="ui-widget-content">' . nl;
       $output .= '  <tr>'   . nl;
-      $output .= '    <td>' . html_radio_field('img_sel_' . $i, 'U', false) . TEXT_UPLOAD_MAGE . '</td>' . nl;
+      $output .= '    <td>' . html_radio_field('img_sel_' . $i, 'U', false) . TEXT_UPLOAD_NEW_IMAGE . '</td>' . nl;
       $output .= '    <td>' . html_file_field ('img_upload_' . $i) . '</td>' . nl;
       $output .= '  </tr>'  . nl;
       $output .= '  <tr>'   . nl;

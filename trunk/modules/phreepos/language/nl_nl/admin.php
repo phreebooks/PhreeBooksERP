@@ -32,7 +32,7 @@ define('PHREEPOS_ROUNDING_DESC','Hoe wil u dat het eindtotaal wordt afgerond.<br
 define('TEXT_INTEGER','geheel getal');
 define('TEXT_10_CENTS','10 Centen');
 define('TEXT_NEUTRAL','Neutraal');
-define('TEXT_ROUNDING_OF','Afronden');
+define('TEXT_ROUNDED_OF','Afronden');
 define('TEXT_GL_ACCOUNT_ROUNDING','Grootboek rekening voor afronden:');
 define('TEXT_RESTRICT_CURRENCY','Beperk kassa tot deze valuta');
 define('TEXT_DRAWER_CODES','open lade codes');

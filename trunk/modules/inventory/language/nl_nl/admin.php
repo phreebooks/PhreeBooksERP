@@ -21,7 +21,7 @@ define('TEXT_COST_METHOD','Kosten Methode');
 define('TEXT_STOCK_ITEMS','Voorraad');
 define('TEXT_MS_ITEMS','Hoofd Voorraad');
 define('TEXT_ASSEMBLIES','Assemblages');
-define('TEXT_SERIAL_ITEMS','Serie');
+define('TEXT_SERIALIZED','Serie');
 define('TEXT_NS_ITEMS','Niet-voorraad');
 define('TEXT_SRV_ITEMS','Service');
 define('TEXT_LABOR_ITEMS','Arbeid');
@@ -49,7 +49,7 @@ define('INV_TOOLS_VALIDATE_INV_DESC','Deze operatie tests om te controleren of u
 define('INV_TOOLS_REPAIR_TEST','Test Voorraad Balans met Art. Historie');
 define('INV_TOOLS_REPAIR_FIX','Repareer Voorraad Balans met Art. Historie');
 define('INV_TOOLS_REPAIR_CONFIRM','Weet u zeker dat u de Voorraad wil repareren aan de hand van PhreeBooks Art. historie berekende waardes?');
-define('INV_TOOLS_BTN_TEST','Controleer de voorraad aantallen');
+define('TEXT_VERIFY_STOCK_BALANCES','Controleer de voorraad aantallen');
 define('INV_TOOLS_BTN_REPAIR','Synchroniseer aantallen op voorraad');
 define('INV_TOOLS_OUT_OF_BALANCE','Art.nr.: %s -> op voorraad %s maar volgens de artikel historie zijn/is er %s beschikbaar');
 define('INV_TOOLS_IN_BALANCE','Uw voorraad balans is in orde.');

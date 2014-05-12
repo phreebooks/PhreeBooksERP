@@ -63,7 +63,7 @@
 		    $odd = !$odd;
 		  }
 		} else {
-		  echo '<tr><td align="center" colspan="5">' . ACT_NO_RESULTS . '</td></tr>';
+		  echo '<tr><td align="center" colspan="5">' . TEXT_NO_RESULTS_FOUND . '</td></tr>';
 		}
 	  ?>
 		</tbody>
@@ -97,7 +97,7 @@
 		    $odd = !$odd;
 		  }
 		} else {
-		  echo '<tr><td align="center" colspan="5">' . ACT_NO_RESULTS . '</td></tr>';
+		  echo '<tr><td align="center" colspan="5">' . TEXT_NO_RESULTS_FOUND . '</td></tr>';
 		}
 	  ?>
 		</tbody>

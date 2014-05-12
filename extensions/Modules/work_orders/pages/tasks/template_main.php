@@ -35,7 +35,7 @@ if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key =
 $toolbar->add_help('07.04.WO.02');
 echo $toolbar->build_toolbar($add_search = true);
 ?>
-<h1><?php echo TEXT_WORK_ORDERS_TASK; ?></h1>
+<h1><?php echo TEXT_WORK_ORDER_TASKS; ?></h1>
 <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto">
  <tbody class="ui-widget-content">
   <tr>
@@ -74,7 +74,7 @@ echo $toolbar->build_toolbar($add_search = true);
   <tr><td colspan="8">&nbsp;</td></tr>
  </tbody>
 </table>
-<div style="height:19px"><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . TEXT_WORK_ORDERS_TASK); ?>
+<div style="height:19px"><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . TEXT_WORK_ORDER_TASKS); ?>
 <div style="float:right"><?php echo $query_split->display_links(); ?></div>
 </div>
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
@@ -108,5 +108,5 @@ echo $toolbar->build_toolbar($add_search = true);
  </tbody>
 </table>
 <div style="float:right"><?php echo $query_split->display_links(); ?></div>
-<div><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . TEXT_WORK_ORDERS_TASK); ?></div>
+<div><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . TEXT_WORK_ORDER_TASKS); ?></div>
 </form>

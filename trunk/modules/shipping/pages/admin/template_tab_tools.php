@@ -28,15 +28,15 @@
 	  <td colspan="2"><?php echo SHIPPING_TOOLS_CLEAN_LOG_DESC; ?></td>
 	</tr>
 	<tr>
-	  <td align="right"><?php echo SHIPPING_METHOD; ?></td>
+	  <td align="right"><?php echo sprintf(TEXT_SELECT_ARGS, TEXT_METHOD); ?></td>
 	  <td><?php echo html_pull_down_menu('carrier', gen_build_pull_down($admin_classes['shipping']->methods, true), $_POST['carrier'] ? $_POST['carrier'] : ''); ?></td>
 	</tr>
 	<tr>
-	  <td align="right"><?php echo SHIPPING_MONTH; ?></td>
+	  <td align="right"><?php echo sprintf(TEXT_SELECT_ARGS, TEXT_MONTH); ?> : </td>
 	  <td><?php echo html_pull_down_menu('fy_month', $sel_fy_month, $_POST['fy_month'] ? $_POST['fy_month'] : '01'); ?></td>
 	</tr>
 	<tr>
-	  <td align="right"><?php echo SHIPPING_YEAR; ?></td>
+	  <td align="right"><?php echo sprintf(TEXT_SELECT_ARGS, TEXT_YEAR); ?> : </td>
 	  <td><?php echo html_pull_down_menu('fy_year', $sel_fy_year, $_POST['fy_year'] ? $_POST['fy_year'] : date('Y')); ?></td>
 	</tr>
 	<tr>
@@ -47,8 +47,8 @@
 	  </td>
     </tr>
 	<tr>
-	  <td align="right"><?php echo html_button_field('backup', GEN_ADM_TOOLS_BTN_BACKUP, 'onclick="submitToDo(\'backup\', true)"'); ?></td>
-	  <td><?php echo html_button_field('clean',  GEN_ADM_TOOLS_BTN_CLEAN,  'onclick="if (confirm(\'' . GEN_ADM_TOOLS_BTN_CLEAN_CONFIRM . '\')) submitToDo(\'clean\')"'); ?></td>
+	  <td align="right"><?php echo html_button_field('backup', TEXT_BACKUP_NOW . '!', 'onclick="submitToDo(\'backup\', true)"'); ?></td>
+	  <td><?php echo html_button_field('clean',  TEXT_CLEAN_NOW.'!',  'onclick="if (confirm(\'' . GEN_ADM_TOOLS_BTN_CLEAN_CONFIRM . '\')) submitToDo(\'clean\')"'); ?></td>
 	</tr>
   </tbody>
 </table>

@@ -19,13 +19,13 @@
 namespace phreehelp\classes;
 class admin extends \core\classes\admin {
 	public $id 			= 'phreehelp';
-	public $text		= MODULE_PHREEHELP_TITLE;
 	public $description = MODULE_PHREEHELP_DESCRIPTION;
 	public $core		= true;
 	public $sort_order  = 6;
 	public $version		= '3.6';
-	
+
 	function __construct() {
+		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_PHREEHELP);
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom' => 3.6,
 		);

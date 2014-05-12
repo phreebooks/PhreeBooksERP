@@ -19,11 +19,11 @@
 namespace assets\classes;
 class admin extends \core\classes\admin {
 	public $id 			= 'assets';
-	public $text		= TEXT_ASSETS_MODULE;
 	public $description = MODULE_ASSETS_DESCRIPTION;
 	public $version		= '3.6';
 
 	function __construct() {
+		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_ASSETS);
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom'   => 3.5,
 		  'phreebooks' => 3.3,

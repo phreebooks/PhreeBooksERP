@@ -39,13 +39,13 @@
 		<tbody class="ui-widget-content">
 		<tr>
 		  <td><?php echo '&nbsp;'; ?></td>
-		  <td><?php 
+		  <td><?php
 		    echo html_pull_down_menu('table[]', $kTables, $report->tables[0]->tablename, 'onchange="fieldLoad()"');
 		    echo html_hidden_field('joinopt[]');
 		    echo html_hidden_field('table_crit[]');
 		      ?>
 		  </td>
-		  <td colspan="2"><?php echo PHREEFORM_SPECIAL_REPORT . ' ' . html_input_field('special_class', $report->special_class); ?></td>
+		  <td colspan="2"><?php echo TEXT_SPECIAL_REPORT . ' ' . html_input_field('special_class', $report->special_class); ?></td>
 		</tr>
 		<?php for ($i = 1; $i < sizeof($report->tables); $i++) { ?>
 		  <tr>
@@ -53,9 +53,9 @@
 			<td><?php echo html_pull_down_menu('table[]',   $kTables,     $report->tables[$i]->tablename, 'onchange="fieldLoad()"'); ?></td>
 			<td nowrap="nowrap"><?php echo ' on ' . html_input_field('table_crit[]', $report->tables[$i]->relationship, 'size="80"');  ?></td>
 			<td align="right">
-			  <?php 
+			  <?php
 		  	    echo html_icon('actions/view-fullscreen.png',   TEXT_MOVE,   'small', 'style="cursor:move"', '', '', 'move_table_' . $i) . chr(10);
-				echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'class="delete"'); 
+				echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'class="delete"');
 			  ?>
 			</td>
 		  </tr>

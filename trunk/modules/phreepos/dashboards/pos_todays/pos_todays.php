@@ -42,16 +42,16 @@ class pos_todays extends \core\classes\ctl_panel {
 		$control .= html_pull_down_menu('pos_todays_field_0', $list_length, $params['num_rows']);
 		$control .= html_submit_field('sub_pos_todays', TEXT_SAVE);
 		$control .= '</div></div>';
-	
+
 		// Build content box
 		$total = 0;
-		$sql = "select id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value 
-		  from " . TABLE_JOURNAL_MAIN . " 
+		$sql = "select id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value
+		  from " . TABLE_JOURNAL_MAIN . "
 		  where journal_id = 19 and post_date = '" . date('Y-m-d', time()) . "' order by purchase_invoice_id";
 		if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
 		$result = $db->Execute($sql);
 		if ($result->RecordCount() < 1) {
-		  	$contents = ACT_NO_RESULTS;
+		  	$contents = TEXT_NO_RESULTS_FOUND;
 		} else {
 			while (!$result->EOF) {
 			 	$total += $result->fields['total_amount'];

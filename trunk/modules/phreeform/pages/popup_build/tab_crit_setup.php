@@ -108,7 +108,7 @@ $extra_stuff = NULL;
 	  <td>
 		<table class="ui-widget" style="border-collapse:collapse;width:100%">
 		<thead class="ui-widget-header">
-		<tr><th colspan="20"><?php echo PHREEFORM_SORTLIST; ?></th></tr>
+		<tr><th colspan="20"><?php echo TEXT_SORTING_INFORMATION; ?></th></tr>
 		<tr>
 		  <th><?php echo TEXT_FIELDNAME; ?></th>
 		  <th><?php echo PHREEFORM_DISPNAME; ?></th>
@@ -144,7 +144,7 @@ $extra_stuff = NULL;
 		  <th><?php echo TEXT_FIELDNAME;   ?></th>
 		  <th><?php echo PHREEFORM_DISPNAME;   ?></th>
 		  <th><?php echo TEXT_SHOW;         ?></th>
-		  <th><?php echo PHREEFORM_CRITTYPE;   ?></th>
+		  <th><?php echo TEXT_TYPE_OF_CRITERIA;   ?></th>
 		  <th><?php echo TEXT_MIN_VALUE; ?></th>
 		  <th><?php echo TEXT_MAX_VALUE; ?></th>
 		  <th><?php echo TEXT_ACTION;       ?></th>

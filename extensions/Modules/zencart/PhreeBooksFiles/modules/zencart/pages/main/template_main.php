@@ -61,7 +61,7 @@ echo $toolbar->build_toolbar();
       <td><?php echo html_calendar_field($cal_zc); ?></td>
 	</tr>
     <tr>
-      <td align="right"><?php echo ZENCART_SHIP_CONFIRM_TEXT; ?></td>
+      <td align="right"><?php echo TEXT_SEND_SHIPMENT_CONFIRMATIONS; ?></td>
       <td><?php echo html_button_field('confirm', TEXT_CONFIRM_SHIPMENTS, 'onclick="submitToDo(\'confirm\')"'); ?></td>
 	</tr>
   </table>

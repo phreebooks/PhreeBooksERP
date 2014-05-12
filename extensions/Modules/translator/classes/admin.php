@@ -19,11 +19,11 @@
 namespace translator\classes;
 class admin extends \core\classes\admin {
 	public $id 			= 'translator';
-	public $text		= MODULE_TRANSLATOR_TITLE;
 	public $description = MODULE_TRANSLATOR_DESCRIPTION;
 	public $version		= '3.3';
-	
+
 	function __construct() {
+		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_TRANSLATOR);
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom' => 3.3,
 		);

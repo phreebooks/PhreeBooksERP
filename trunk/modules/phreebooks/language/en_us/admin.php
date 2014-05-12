@@ -33,7 +33,7 @@ define('TEXT_ACCOUNT_AGING','Account Aging');
 define('TEXT_GENERAL_JOURNAL','General Journal Settings');
 define('TEXT_NUMBER','Number');
 define('TEXT_BOTH', 'Both');
-define('TEXT_SINGLE_MODE','Single Line Entry');
+define('TEXT_SINGLE_LINE_ENTRY','Single Line Entry');
 define('TEXT_DOUBLE_MODE','Double Line Entry');
 // PhreeForm processing Titles
 define('PB_PF_JOURNAL_DESC','Journal Description');
@@ -71,8 +71,8 @@ define('TEXT_SALES_ORDER','Sales Orders');
 define('TEXT_SALES_RECEIPTS','Sales Receipts');
 define('PB_PF_VENDOR_CRD_MEMO','Credit Memos - Vendor');
 define('PB_PF_VENDOR_LABEL','Labels - Vendor');
-define('PB_PF_VENDOR_QUOTE','Vendor Quotes');
-define('PB_PF_VENDOR_STATEMENT','Vendor Statements');
+define('TEXT_VENDOR_QUOTES','Vendor Quotes');
+define('TEXT_VENDOR_STATEMENTS','Vendor Statements');
 /************************** (PhreeBooks Utilities) ***********************************************/
 define('GEN_ADM_TOOLS_AR','Customer/Receivables');
 define('GEN_ADM_TOOLS_AP','Vendors/Payables');
@@ -90,7 +90,7 @@ define('GEN_ADM_TOOLS_BTN_REPOST','Re-post Journals');
 define('GEN_ADM_TOOLS_INVENTORY_OWED','Re-post Inventory Owed');
 define('GEN_ADM_TOOLS_INVENTORY_DESC','Your inventory_cogs_owed table currently has %s entries in it. This tool will attempt to re-post all entries in the inventory_cogs_owed table. The inventory_cogs_owed table should not have any entries in it unless the stock levels are negative. If the table has items listed and the stock levels are zero or greater, this tool will attempt to fix the table by re-posting the pending journal entries. There have been issues in R3.6 and earlier that have caused this table to fill up waiting for inventory to show up and certain cases when partial stock is available. You can run a report to see a list of the items in your cogs_owed table.');
 define('GEN_ADM_TOOLS_OWED_FIX','Re-post Inventory Owed');
-define('GEN_ADM_TOOLS_BTN_OWED','Start Re-post');
+define('TEXT_START_RE-POST','Start Re-post');
 define('GEN_ADM_TOOLS_OWED_CONFIRM','Are you sure you want to re-post the inventory owed?\n\nYOU SHOULD BACKUP YOUR COMPANY BEFORE DOING THIS!');
 
 define('GEN_ADM_TOOLS_REPAIR_CHART_HISTORY','Validate and Repair General Ledger Account Balances');

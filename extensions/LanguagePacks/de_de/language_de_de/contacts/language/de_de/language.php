@@ -35,7 +35,7 @@ define ('TEXT_EMPLOYEE', 'Mitarbeiter');
 define ('TEXT_LINK_TO', 'Link zu:');
 define ('TEXT_NEW_CONTACT', 'Neuer Kontakt');
 define ('TEXT_SALES_REP', 'Sales Rep');
-define ('TEXT_COPY_ADDRESS', 'Transfer-Adresse');
+define ('TEXT_TRANSFER_ADDRESS', 'Transfer-Adresse');
 
 // Adresse / Kontakt Identifikatoren
 define ('GEN_PRIMARY_NAME', 'Name / Firma');
@@ -52,7 +52,7 @@ define ('TEXT_FIRST_NAME', 'Vorname');
 define ('TEXT_MIDDLE_NAME', 'Vornamen');
 define ('TEXT_LAST_NAME', 'Nachname');
 define ('GEN_TELEPHONE1', 'Telefon');
-define ('GEN_TELEPHONE2', 'Alt Telefon');
+define ('TEXT_ALTERNATIVE_TELEPHONE_SHORT', 'Alt Telefon');
 define ('TEXT_FAX', 'Fax');
 define ('GEN_TELEPHONE4', 'Handy');
 define ('GEN_ACCOUNT_ID', 'Konto-ID');
@@ -143,7 +143,7 @@ define ('TEXT_INVOICE_HISTORY_ARGS', 'Invoice Geschichte (Neueste Ergebnisse %s)
 define ('ACT_SO_NUMBER', 'SO Anzahl');
 define ('ACT_PO_NUMBER', 'Bestellnummer');
 define ('TEXT_INVOICE_NUMBER', 'Invoice Number');
-define ('ACT_NO_RESULTS', 'Keine Ergebnisse gefunden');
+define ('TEXT_NO_RESULTS_FOUND', 'Keine Ergebnisse gefunden');
 define ('ACT_PAYMENT_MESSAGE', 'Geben Sie die Zahlungsinformationen in PhreeBooks gespeichert werden.');
 define ('TEXT_CARDHOLDER_NAME', 'Name des Karteninhabers');
 define ('TEXT_CREDIT_CARD_NUMBER', 'Kreditkarten-Nummer');

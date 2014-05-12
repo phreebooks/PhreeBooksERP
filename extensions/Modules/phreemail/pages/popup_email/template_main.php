@@ -63,7 +63,7 @@ echo $toolbar->build_toolbar();
 </datalist>
 <table border="0">
   <tr>
-	<td align="right"><?php echo TEXT_SENDER_NAME; ?></td>
+	<td align="right"><?php echo TEXT_SENDER_NAME . ': '; ?></td>
 	<td><?php echo html_input_field('sender_name', $sender_name,'list="senderlist"') . ' ' . TEXT_EMAIL . html_input_field('sender_email', $sender_email, 'size="40" list="sendermaillist"'); ?></td>
   </tr>
   <tr>

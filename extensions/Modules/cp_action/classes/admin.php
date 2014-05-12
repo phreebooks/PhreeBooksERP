@@ -20,11 +20,11 @@
 namespace cp_action\classes;
 class admin extends \core\classes\admin {
 	public $id 			= 'cp_action';
-	public $text		= MODULE_CP_ACTION_TITLE;
 	public $description = MODULE_CP_ACTION_DESCRIPTION;
 	public $version		= '3.3';
 
 	function __construct() {
+		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_CORRECTIVE_ACTION_PREVENTATIVE_ACTION);
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom'   => '3.3',
 		);

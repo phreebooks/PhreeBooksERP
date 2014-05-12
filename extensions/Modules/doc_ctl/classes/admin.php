@@ -19,11 +19,11 @@
 namespace doc_ctl\classes;
 class admin extends \core\classes\admin {
 	public $id 			= 'doc_ctl';
-	public $text		= MODULE_DOC_CTL_TITLE;
 	public $description = MODULE_DOC_CTL_DESCRIPTION;
 	public $version		= '3.6';
-	
+
 	function __construct() {
+		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_DOCUMENT_CONTROLE);
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom'   => '3.3',
 		);
@@ -69,14 +69,14 @@ class admin extends \core\classes\admin {
 		require_once(DIR_FS_MODULES . 'doc_ctl/defaults.php');
 		$right = (INSTALL_NUMBER_OF_DRIVES+1)*2;
 		$db->Execute("TRUNCATE TABLE " . TABLE_DC_DOCUMENT);
-		$db->Execute("INSERT INTO " . TABLE_DC_DOCUMENT . " (`id`, `parent_id`, `position`, `left`, `right`, `level`, `title`, `type`) 
+		$db->Execute("INSERT INTO " . TABLE_DC_DOCUMENT . " (`id`, `parent_id`, `position`, `left`, `right`, `level`, `title`, `type`)
 			VALUES (1, 0, 0, 1, " . $right . ", 0, 'ROOT', '')");
 		for ($i = 0; $i < INSTALL_NUMBER_OF_DRIVES; $i++) {
 		  $id    = $i+2;
 		  $left  = ($i+1)*2;
 		  $right = $left+1;
 		  $title = $i==0 ? TEXT_HOME : (TEXT_DRIVE.$i);
-		  $db->Execute("INSERT INTO " . TABLE_DC_DOCUMENT . " (`id`, `parent_id`, `position`, `left`, `right`, `level`, `title`, `type`) 
+		  $db->Execute("INSERT INTO " . TABLE_DC_DOCUMENT . " (`id`, `parent_id`, `position`, `left`, `right`, `level`, `title`, `type`)
 		  	VALUES (" . $id . ", 1, 0, " . $left . ", " . $right . ", 1, '" . $title . "', 'drive')");
 		}
 	}

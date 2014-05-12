@@ -75,7 +75,7 @@ function draw_address_fields($entries, $add_type, $reset_button = false, $hide_l
 	$field .= '<tr>';
 	$field .= '  <td align="right">' . TEXT_ATTENTION . html_hidden_field("address[$add_type][address_id]", $entries->address[$add_type]['address_id']) . '</td>' . chr(10);
 	$field .= '  <td>' . html_input_field("address[$add_type][contact]", $entries->address[$add_type]['contact'], 'size="33" maxlength="32"', ADDRESS_BOOK_CONTACT_REQUIRED) . '</td>' . chr(10);
-	$field .= '  <td align="right">' . GEN_TELEPHONE2 . '</td>' . chr(10);
+	$field .= '  <td align="right">' . TEXT_ALTERNATIVE_TELEPHONE_SHORT . '</td>' . chr(10);
 	$field .= '  <td>' . html_input_field("address[$add_type][telephone2]", $entries->address[$add_type]['telephone2'], 'size="21" maxlength="20"') . '</td>' . chr(10);
 	$field .= '</tr>';
 

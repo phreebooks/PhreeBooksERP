@@ -19,7 +19,7 @@
 //
 
 ?>
-<div title="<?php echo TEXT_COMPANY_MANAGER;?>" id="tab_manager">
+<div title="<?php echo sprintf(TEXT_MANAGER_ARGS, TEXT_COMPANY);?>" id="tab_manager">
   <fieldset>
   <legend><?php echo TEXT_NEW_COPY_COMPANY; ?></legend>
     <table>

@@ -101,7 +101,7 @@ print_R($mail);
 	<tr>
 	  <td><?php echo ASSETS_ENTRY_ACCT_SALES; ?></td>
 	  <td><?php echo html_pull_down_menu('account_asset', $gl_array_list, $cInfo->account_asset); ?></td>
-	  <td><?php echo ASSETS_DATE_ACCOUNT_CREATION; ?></td>
+	  <td><?php echo TEXT_ASSET_PURCHASE_DATE; ?></td>
 	  <td><?php echo html_calendar_field($cal_date1); ?></td>
 	</tr>
 	<tr>
@@ -113,7 +113,7 @@ print_R($mail);
 	<tr>
 	  <td><?php echo ASSETS_ENTRY_ACCT_COS; ?></td>
 	  <td><?php echo html_pull_down_menu('account_maintenance', $gl_array_list, $cInfo->account_maintenance); ?></td>
-	  <td><?php echo ASSETS_DATE_LAST_JOURNAL_DATE; ?></td>
+	  <td><?php echo TEXT_ASSET_RETIRE_DATE; ?></td>
 	  <td><?php echo html_calendar_field($cal_date3); ?></td>
 	</tr>
   </table>

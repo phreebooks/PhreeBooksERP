@@ -33,7 +33,7 @@ define('TEXT_COST_METHOD','Cost Method');
 define('TEXT_STOCK_ITEMS','Stock');
 define('TEXT_MS_ITEMS','Master Stock');
 define('TEXT_ASSEMBLIES','Assemblies');
-define('TEXT_SERIAL_ITEMS','Serialized');
+define('TEXT_SERIALIZED','Serialized');
 define('TEXT_NS_ITEMS','Non-Stock');
 define('TEXT_SRV_ITEMS','Service');
 define('TEXT_LABOR_ITEMS','Labor');
@@ -64,7 +64,7 @@ define('INV_TOOLS_VALIDATE_INV_DESC','This operation tests to make sure your inv
 define('INV_TOOLS_REPAIR_TEST','Test Inventory Balances with COGS History');
 define('INV_TOOLS_REPAIR_FIX','Repair Inventory Balances with COGS History');
 define('INV_TOOLS_REPAIR_CONFIRM','Are you sure you want to repair the inventory stock on hand to match the PhreeBooks COGS history calculated values?');
-define('INV_TOOLS_BTN_TEST','Verify Stock Balances');
+define('TEXT_VERIFY_STOCK_BALANCES','Verify Stock Balances');
 define('INV_TOOLS_BTN_REPAIR','Sync Qty in Stock');
 define('INV_TOOLS_OUT_OF_BALANCE','SKU: %s -> stock indicates %s on hand but COGS history list %s available');
 define('INV_TOOLS_IN_BALANCE','Your inventory balances are OK.');

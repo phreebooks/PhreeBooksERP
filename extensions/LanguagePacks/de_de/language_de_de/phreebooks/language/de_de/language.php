@@ -40,7 +40,7 @@ define ('TEXT_DISCOUNT_ACCOUNT', 'Discount-Konto');
 define ('TEXT_AMOUNT_DUE', 'Amount Due');
 define ('TEXT_DUE_DATE', 'Due Date');
 define ('BNK_INVOICE_NUM', 'Invoice #');
-define ('BNK_TEXT_CHECK_ALL', 'Alles überprüfen ');
+define ('TEXT_CHECK_ALL_CHECKBOXES', 'Alles überprüfen ');
 define ('TEXT_DEPOSIT_ID', 'Kaution Ticket-ID');
 define ('TEXT_PAYMENT_ID', 'Die Zahlung Ref #');
 define ('TEXT_WITHDRAWAL', 'Rücktritt');
@@ -96,7 +96,7 @@ define ('TEXT_GENERAL_LEDGER_ACCOUNT', 'Hauptbuch Konto');
 define ('TEXT_JOURNAL_RECORD_ID', 'Journal Record-ID');
 define ('TEXT_NOT_SPECIFIED', 'Nicht angegeben');
 define ('TEXT_COST_OF_GOODS_SOLD', 'Cost of Goods Sold');
-define ('GL_TOTALS', 'Gesamt:');
+define ('TEXT_TOTALS', 'Gesamt');
 define ('TEXT_ACCOUNT_WILL_INCREASED', 'Konto erhöht werden');
 define ('TEXT_ACCOUNT_WILL_DECREASED', 'Konto wird verringert');
 
@@ -161,7 +161,7 @@ define ('ORD_DISCOUNT_GL_ACCT', 'Nachlass FIBU-Konto ');
 define ('ORD_FREIGHT_GL_ACCT', 'Freight FIBU-Konto ');
 define ('ORD_JS_NO_CID', 'Der Kontakt Information muss in dieser Form geladen werden, bevor die Eigenschaften abgerufen werden kann.');
 define ('ORD_BAR_CODE_INTRO', 'Geben Sie die Menge und scannen Sie das Element.');
-define ('TEXT_UPC_CODE', 'Bar-Code');
+define ('TEXT_BAR_CODE', 'Bar-Code');
 
 // Erneut auftreten Transaktionen
 define ('ORD_RECUR_INTRO', 'Diese Transaktion kann in der Zukunft, indem Sie die Anzahl der Einträge erstellt werden und die Frequenz, für die sie geschrieben vervielfältigt Der aktuelle Eintrag wird der erste Wiederholung angesehen..');
@@ -201,7 +201,7 @@ define ('BNK_END_BALANCE', 'Unversöhnte Difference');
 define ('BNK_DEPOSIT_CREDIT', 'Ein-/ Credit');
 define ('BNK_CHECK_PAYMENT', 'Überprüfen / Payment ');
 define ('TEXT_MULTIPLE_DEPOSITS', 'Kunde Einlagen');
-define ('TEXT_MULTIPLE_PAYMENTS', 'Hersteller Zahlungen');
+define ('TEXT_VENDOR_PAYMENTS', 'Hersteller Zahlungen');
 define ('TEXT_CASH_ACCOUNT', 'Cash Konto ');
 define ('TEXT_ERROR_PERIOD_CAN_NOT_BE_ALL', 'Rechnungswesen ausgewählten Zeitraum kann nicht sein \' all \' für Kontenabstimmung Betrieb.');
 define ('BNK_RECON_POST_SUCCESS', 'erfolgreich gespeichert Veränderungen.');

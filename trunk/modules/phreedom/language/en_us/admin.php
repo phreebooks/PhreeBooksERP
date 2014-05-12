@@ -27,7 +27,7 @@ define('TEXT_CUSTOM_FIELDS', 'Custom Fields');
 define('TEXT_LOCAL','Local');
 define('TEXT_DEBUG','Debug and Troubleshooting');
 define('TEXT_LEGEND','Legend');
-define('TEXT_TAB_NAME','Tab Title');
+define('TEXT_TAB_TITLE','Tab Title');
 define('TEXT_TABS','Tabs');
 define('TEXT_REQUIRED','REQUIRED');
 define('HEADING_MODULE_IMPORT','Module Data Import/Export');
@@ -37,7 +37,7 @@ define('TEXT_ENGINE','DB Engine');
 define('TEXT_NUM_ROWS','Number of Rows');
 define('TEXT_COLLATION','Collation');
 define('TEXT_NEXT_ID','Next Row ID');
-define('TEXT_USE_IN_FILTER','Use in inventory filter');
+define('TEXT_USE_IN_INVENTORY_FILTER','Use in inventory filter');
 define('TEXT_SETTINGS','Settings');
 
 // Defines for login screen
@@ -45,8 +45,8 @@ define('TEXT_PHREEBOOKS_LOGIN', 'PhreeBooks Login');
 define('TEXT_LOGIN_NAME', 'Username: ');
 define('TEXT_LOGIN_PASS', 'Password: ');
 define('TEXT_LOGIN_COMPANY','Select Company: ');
-define('TEXT_LOGIN_LANGUAGE','Select Language: ');
-define('TEXT_LOGIN_THEME','Select Theme');
+define('TEXT_SELECT_LANGUAGE','Select Language');
+define('TEXT_SELECT_THEME','Select Theme');
 define('TEXT_LOGIN_MENU','Select Menu Location');
 define('TEXT_LOGIN_COLORS','Select Color Scheme');
 define('TEXT_PASSWORD_FORGOTTEN', 'Resend Password');
@@ -93,10 +93,10 @@ define('ERROR_CANNOT_REMOVE_MODULE_DIR','Error removing directory: %s. The direc
 define('GEN_ADM_TOOLS_CLEAN_LOG','Backup/Clean Audit Logs');
 define('GEN_ADM_TOOLS_CLEAN_LOG_DESC','This operation creates a downloaded backup of your audit log database file. This will help keep the database size down and reduce company backup file sizes. Backing up this log is recommended before cleaning out to preserve PhreeBooks transaction history. <br />INFORMATION: Cleaning out the audit log will leave the current periods data in the database table and remove all other records.');
 define('TEXT_BACKUP_AUDIT_LOG','Backup Audit Log');
-define('GEN_ADM_TOOLS_CLEAN_LOG_CLEAN','Clean Out Audit Log');
+define('TEXT_CLEAN_OUT_AUDIT_LOG','Clean Out Audit Log');
 define('GEN_ADM_TOOLS_BTN_CLEAN_CONFIRM','Are you sure you want to delete these log records?');
-define('GEN_ADM_TOOLS_BTN_BACKUP','Backup Now!');
-define('GEN_ADM_TOOLS_BTN_CLEAN','Clean Now!');
+define('TEXT_BACKUP_NOW','Backup Now');
+define('TEXT_CLEAN_NOW','Clean Now');
 define('GEN_ADM_TOOLS_SECURITY_HEADING','Clean Data Security Values');
 define('GEN_ADM_TOOLS_SECURITY_DESC','This tool cleans all data security values with a expiration date prior to a selected date. WARNING: This operation cannot be undone!');
 define('TEXT_CLEAN_BEFORE','Clean all values with expiration date before:');
@@ -161,7 +161,7 @@ define('CD_01_30_DESC', 'Whether or not allow storage of encrypted fields.');
 /************************** E-mail Settings ***********************************************/
 define('CD_12_01_DESC', 'Defines the method for sending mail.<br /><strong>PHP</strong> is the default, and uses built-in PHP wrappers for processing.<br />Servers running on Windows and MacOS should change this setting to <strong>SMTP</strong>.<br /><strong>SMTPAUTH</strong> should only be used if your server requires SMTP authorization to send messages. You must also configure your SMTPAUTH settings in the appropriate fields in this admin section.<br /><strong>sendmail</strong> is for linux/unix hosts using the sendmail program on the server<br /><strong>"sendmail -f"</strong> is only for servers which require the use of the -f parameter to send mail. This is a security setting often used to prevent spoofing. Will cause errors if your host mailserver is not configured to use it.<br /><strong>Qmail</strong> is used for linux/unix hosts running Qmail as sendmail wrapper at /var/qmail/bin/sendmail.');
 define('CD_12_02_DESC', 'Defines the character sequence used to separate mail headers.');
-define('CD_12_04_DESC', 'Send e-mails in HTML format');
+define('TEXT_SEND_E-MAILS_IN_HTML_FORMAT', 'Send e-mails in HTML format');
 define('CD_12_10_DESC', 'Email address of Store Owner.  Used as "display only" when informing customers of how to contact you.');
 define('CD_12_11_DESC', 'Address from which email messages will be "sent" by default. Can be over-ridden at compose-time in admin modules.');
 define('CD_12_15_DESC', 'Please select the Admin extra email format');
@@ -195,7 +195,7 @@ define('SETUP_ERROR_CURRENCY_INVALID', 'Error: The exchange rate for %s (%s) was
 define('SETUP_WARN_PRIMARY_SERVER_FAILED', 'Warning: The primary exchange rate server (%s) failed for %s (%s) - trying the secondary exchange rate server.');
 define('SETUP_LOG_CURRENCY','Currencies - ');
 // Encryption defines
-define('GEN_ADM_TOOLS_BTN_SAVE','Save Changes');
+define('TEXT_SAVE_CHANGES','Save Changes');
 define('GEN_ADM_TOOLS_SET_ENCRYPTION_KEY','Enter Encryption Key');
 define('GEN_ENCRYPTION_GEN_INFO','Encryption services depend on a key used to encrypt data in the database. DO NOT LOSE THE KEY, otherwise data can not be decrypted!');
 define('GEN_ENCRYPTION_COMP_TYPE','Enter the Encryption key used to store secure data.');
@@ -213,7 +213,7 @@ define('GEN_ADM_TOOLS_ENCRYPT_PW_CONFIRM','Re-enter New Encryption Key');
 define('ERROR_OLD_ENCRYPT_NOT_CORRECT','The current encrypted key does not match the stored value!');
 // backup defines
 define('BOX_HEADING_RESTORE','Company Restore');
-define('GEN_BACKUP_ICON_TITLE','Start Backup');
+define('TEXT_START_BACKUP','Start Backup');
 define('GEN_BACKUP_GEN_INFO','Please select the backup compression type and options below.');
 define('GEN_BACKUP_COMP_TYPE','Compression Type: ');
 define('GEN_COMP_BZ2',' bz2 (Linux)');
@@ -259,7 +259,7 @@ define('EXTRA_TABS_DELETE_INTRO', 'Are you sure you want to delete this tab?\nTa
 define('EXTRA_TABS_DELETE_ERROR','This tab name already exists, please use another name.');
 define('EXTRA_FIELDS_LOG','Extra Fields (%s)');
 define('EXTRA_TABS_LOG','Asset Tabs (%s)');
-define('INV_CATEGORY_MEMBER', 'Tab Member:');
+define('TEXT_TAB_MEMBER', 'Tab Member');
 define('INV_FIELD_NAME', 'Field Name:');
 define('EXTRA_ERROR_FIELD_BLANK','The asset field name is blank, please enter a field name and re-check all entries in this form!');
 define('EXTRA_FIELD_ERROR_DUPLICATE','The field name you entered is already in use, please enter a new field name!');

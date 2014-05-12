@@ -22,5 +22,5 @@ define('MODULE_PAYMENT_CC_NO_DUPS','De credit card is niet verwerkt omdat hij al
 define('MODULE_PAYMENT_CC_TEXT_ERROR','Credit Card Error!');
 define('OPEN_POS_DRAWER_DESC','Toe staan dat de kassala open gaat bij het selecteren van deze betaal methode');
 define('POS_GL_ACCT_DESC','Kassa betaalwijze rekening');
-define('SHOW_IN_POS_DESC','Deze Betaalwijze in PhreePOS laten zien');
+define('TEXT_SHOW_THIS_PAYMENT_IN_PHREEPOS','Deze Betaalwijze in PhreePOS laten zien');
 ?>

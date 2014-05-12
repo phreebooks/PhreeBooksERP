@@ -69,7 +69,7 @@ $cal_c_gen = array(
 	   <tr id="tr_crm_b_<?php echo $value->log_id; ?>">
 	    <td colspan="4"><?php echo htmlspecialchars($value->notes); ?></td>
 	   </tr>
-<?php } else { echo '<tr><td colspan="4">'.ACT_NO_RESULTS.'</td></tr>'; } ?>
+<?php } else { echo '<tr><td colspan="4">'.TEXT_NO_RESULTS_FOUND.'</td></tr>'; } ?>
 	  </tbody>
 	 </table>
 	</div>

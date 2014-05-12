@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:46
 // Module/Method: translator
 // ISO Language: pt_br
@@ -15,9 +15,9 @@ define('TEXT_EXPORT_TRANSLATION','Exportar Tradução');
 define('TEXT_UPLOAD_TRANSLATION','Subir Tradução');
 define('TEXT_IMPORT_CURRENT_LANGUAGE','Imporar da Instalação Atual');
 define('TEXT_EXPORT_CURRENT_LANGUAGE','Exportar Tudo para uma linguagem e Versão');
-define('TEXT_UPLOAD_LANGUAGE_FILE','Subir de um arquivo Zip');
-define('TEXT_EDIT_TRANSLATION','Módulo Tradução');
-define('TEXT_CHECK_ALL','Marcar todas as caixas');
+define('TEXT_UPLOAD_FROM_ZIPPED_FILE','Subir de um arquivo Zip');
+define('TEXT_TRANSLATE_MODULE','Módulo Tradução');
+define('TEXT_CHECK_ALL_CHECKBOXES','Marcar todas as caixas');
 define('TEXT_LANGUAGE','Idioma');
 define('TEXT_LATEST','Ùltimo');
 define('TEXT_UPLOAD','Subir');
@@ -27,8 +27,8 @@ define('TEXT_TRANSLATIONS','Traduções');
 define('TEXT_TRANSLATED','Traduzido');
 define('TEXT_CREATE_NEW_TRANSLATION','Criar Nova Tradução');
 define('TRANSLATOR_NEW_DESC','Esta página cria uma nova versão de tradução. Se você quiser que dicas de tradução de versões anteriores sobrescrevam o Idioma fonte, clique na caixa Sobrescrever e entre um Idioma ISO para usar. Note que esta linguagem dee estar carregada na base de dados de raduções. O módulo fonte a Idioma também devem estar na base de dados de traduções. (Número de versão # vai ser criado automaticamente).');
-define('TRANSLATOR_NEW_SOURCE','Módulo Fonte:');
-define('TEXT_SOURCE_LANGUAGE','Idioma Fonte:');
+define('TEXT_SOURCE_MODULE','Módulo Fonte:');
+define('TEXT_SOURCE_LANGUAGE','Idioma Fonte');
 define('TRANSLATOR_NEW_OVERRIDE','Sobrescreva (se disponível) com o Idioma instalado:');
 define('TRANSLATOR_IMPORT_DESC','Esta página importa idiomas carregados do módulo correntemente instalado ou módulos na base de dados de traduções. Se o módulo install é selecionado a a pasta install foi renomeada, a nova pasta deve ser especificada.');
 define('TRANSLATOR_EXPORT_DESC','Esta página exporta todos os módulos de um idioma e versão especificados para um arquivo .zip.');
@@ -45,7 +45,7 @@ define('MESSAGE_DELETE_TRANSLATION','Tem certeza de que quer remover esta tradu�
 define('TEXT_CONSTANT','Constante Definida');
 define('TEXT_DEFAULT_TRANSLATION','Tradução Corrente:');
 define('TEXT_STATS_VALUES','%s de %s traduziods (%s porcento)');
-define('TEXT_TRANSLATIONS_SAVED','Registros de Tradução Gravados:');
+define('TEXT_TRANSLATION_RECORDS_SAVED','Registros de Tradução Gravados:');
 define('TRANSLATION_HEADER','Arquivo Tradução Idioma  Phreedom ');
 define('TRANS_ERROR_NO_SOURCE','Não foram encontradas versões disponíveis  do Idioma fonte. Por favor importe o Idioma fonte.');
 

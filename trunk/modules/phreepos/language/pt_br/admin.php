@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:46
 // Module/Method: phreepos
 // ISO Language: pt_br
@@ -13,7 +13,7 @@ define('TEXT_RESTRICT_CURRENCY','Restringir caixa a esta moeda');
 define('TEXT_DRAWER_CODES','abrir códigos gaveta');
 define('TEXT_DIF_GL_ACCOUNT','Conta CG para diferenças final dia:');
 define('TEXT_GL_ACCOUNT_ROUNDING','Conta CG para arredondamento:');
-define('TEXT_ROUNDING_OF','Arredondamento de');
+define('TEXT_ROUNDED_OF','Arredondamento de');
 define('TEXT_NEUTRAL','Neutro');
 define('TEXT_10_CENTS','10 Centavos');
 define('TEXT_INTEGER','Inteiro');

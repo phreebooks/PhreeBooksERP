@@ -28,12 +28,12 @@ $toolbar->icon_list['save']['params']   = 'onclick="submitToDo(\'save\')"';
 $toolbar->icon_list['print']['show']    = false;
 echo $toolbar->build_toolbar();
 ?>
-<h1><?php echo TEXT_TRANSLATOR_ASS; ?></h1>
+<h1><?php echo TEXT_TRANSLATOR_ASSISTANT; ?></h1>
 <div id="filter_bar">
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
  <tbody class="ui-widget-content">
   <tr>
-    <td><?php echo html_button_field('export', TEXT_CHECK_ALL, 'onclick="checkAllBoxes()"'); ?></td>
+    <td><?php echo html_button_field('export', TEXT_CHECK_ALL_CHECKBOXES, 'onclick="checkAllBoxes()"'); ?></td>
     <td>&nbsp;&nbsp;</td>
 	<td><?php echo TEXT_FILTERS. " : " . '&nbsp;' . TEXT_MODULE . html_pull_down_menu('f0', $sel_modules,    $mod); ?></td>
 	<td><?php echo '&nbsp;' . TEXT_LANGUAGE .   '&nbsp;' . html_pull_down_menu('f1', $sel_language,   $lang); ?></td>

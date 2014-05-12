@@ -105,11 +105,11 @@ if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR
   	gen_pull_language('phreedom', 'menu');
   	gen_pull_language('phreebooks', 'menu');
   	require(DIR_FS_MODULES . 'phreedom/config.php');
-  	$admin_classes	= array();
+  	$admin_classes	= new \core\classes\basis;
   	$mainmenu		= array();
   	$admin_classes 	= APC_EXTENSION_LOADED ? apc_fetch("admin_classes")	: false;
   	$mainmenu 		= APC_EXTENSION_LOADED ? apc_fetch("mainmenu")		: false;
-  	if(empty($admin_classes) || empty($mainmenu)) {
+  	if($admin_classes->getNumberOfAdminClasses() == 0 || empty($mainmenu)) {
 	  	$dirs = @scandir(DIR_FS_MODULES);
 	  	if($dirs === false) throw new \core\classes\userException("couldn't read or find directory ".DIR_FS_MODULES);
 	  	foreach ($dirs as $dir) { // first pull all module language files, loaded or not
@@ -117,10 +117,9 @@ if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR
 	    	gen_pull_language($dir, 'menu');
 	  		if (is_dir(DIR_FS_MODULES . $dir)){
 	    		$class = "\\$dir\classes\admin";
-		  		$admin_classes[$dir]  = new $class;
+		  		$admin_classes->attachAdminClasses($dir, new $class);
 			}
 	  	}
-	  	uasort($admin_classes, "arange_object_by_sort_order");
 	  	if (APC_EXTENSION_LOADED) apc_add("admin_classes", $admin_classes, 600);
 	  	if (APC_EXTENSION_LOADED) apc_add("currencies", $currencies, 600);
 	  	if (APC_EXTENSION_LOADED) apc_add("mainmenu", $mainmenu, 600);

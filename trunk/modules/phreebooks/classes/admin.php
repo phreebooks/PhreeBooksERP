@@ -20,12 +20,12 @@ namespace phreebooks\classes;
 class admin extends \core\classes\admin {
 	public $sort_order  = 2;
 	public $id 			= 'phreebooks';
-	public $text		= MODULE_PHREEBOOKS_TITLE;
 	public $description = MODULE_PHREEBOOKS_DESCRIPTION;
 	public $core		= true;
 	public $version		= '3.6';
 
 	function __construct() {
+		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_PHREEBOOKS);
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom'  => 3.6,
 		  'contacts'  => 3.71,
@@ -378,11 +378,11 @@ class admin extends \core\classes\admin {
 		$this->add_report_folder($id, PB_PF_CUST_LABEL,       'cust:lblc', 'ff');
 		$id = $this->add_report_heading(TEXT_VENDORS,     'vend');
 		$this->add_report_folder($id, TEXT_REPORTS,           'vend',      'fr');
-		$this->add_report_folder($id, PB_PF_VENDOR_QUOTE,     'vend:quot', 'ff');
+		$this->add_report_folder($id, TEXT_VENDOR_QUOTES,     'vend:quot', 'ff');
 		$this->add_report_folder($id, TEXT_PURCH_ORDER,      'vend:po',   'ff');
 		$this->add_report_folder($id, PB_PF_VENDOR_CRD_MEMO,  'vend:cm',   'ff');
 		$this->add_report_folder($id, PB_PF_VENDOR_LABEL,     'vend:lblv', 'ff');
-		$this->add_report_folder($id, PB_PF_VENDOR_STATEMENT, 'vend:stmt', 'ff');
+		$this->add_report_folder($id, TEXT_VENDOR_STATEMENTS, 'vend:stmt', 'ff');
 		$id = $this->add_report_heading(TEXT_BANKING,     'bnk');
 		$this->add_report_folder($id, TEXT_REPORTS,           'bnk',       'fr');
 		$this->add_report_folder($id, PB_PF_DEP_SLIP,         'bnk:deps',  'ff');

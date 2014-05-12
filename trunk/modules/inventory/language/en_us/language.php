@@ -19,17 +19,17 @@
 
 define('INV_HEADING_NEW_ITEM', 'New Inventory Item');
 
-define('INV_TYPES_SI','Stock Item');
-define('INV_TYPES_SR','Serialized Item');
+define('TEXT_STOCK_ITEM','Stock Item');
+define('TEXT_SERIALIZED_ITEM','Serialized Item');
 define('INV_TYPES_MS','Master Stock Item');
 define('INV_TYPES_MB','Master Stock Assembly');
 define('INV_TYPES_AS','Item Assembly');
-define('INV_TYPES_SA','Serialized Assembly');
+define('TEXT_SERIALIZED_ASSEMBLY','Serialized Assembly');
 define('INV_TYPES_NS','Non-stock Item');
 define('INV_TYPES_LB','Labor');
 define('INV_TYPES_SV','Service');
 define('INV_TYPES_SF','Flat Rate - Service');
-define('INV_TYPES_CI','Charge Item');
+define('TEXT_CHARGE_ITEM','Charge Item');
 define('INV_TYPES_AI','Activity Item');
 define('INV_TYPES_DS','Description');
 define('INV_TYPES_IA','Item Assembly Part');
@@ -74,7 +74,7 @@ define('INV_ENTRY_PURCH_TAX','Default Purchase Tax');
 define('TEXT_LAST_MONTH','Last Month');
 define('TEXT_3_MONTHS','3 Months');
 define('TEXT_6_MONTHS','6 Months');
-define('TEXT_LAST_12_MONTH','12 Months');
+define('TEXT_12_MONTHS','12 Months');
 define('TEXT_WHERE_USED','Where Used');
 define('TEXT_CURRENT_COST','Current Assembly Cost');
 define('JS_INV_TEXT_ASSY_COST','The current price to assemble this SKU is: ');
@@ -89,7 +89,7 @@ define('INV_POPUP_WINDOW_TITLE', 'Inventory Items');
 define('TEXT_INVENTORY_ADJUSTMENTS','Inventory Adjustments');
 define('TEXT_ADJUSTMENT_ACCOUNT','Adjustment Account');
 define('INV_BULK_SKU_ENTRY_TITLE','Bulk SKU Pricing Entry');
-define('INV_POPUP_XFER_WINDOW_TITLE','Transfer Inventory Between Stores');
+define('TEXT_TRANSFER_INVENTORY_BETWEEN_STORES','Transfer Inventory Between Stores');
 
 define('TEXT_QUANTITY_ON_HAND_SHORT', 'Qty on Hand');
 define('INV_QTY_ON_HAND', 'Quantity on Hand');
@@ -111,18 +111,18 @@ define('INV_TEXT_UNIT_COST','Unit Cost');
 define('TEXT_CURRENT_VALUE','Current Value');
 define('INV_TEXT_NEW_VALUE','New Value');
 
-define('INV_ADJ_QUANTITY','Adj Qty');
+define('TEXT_ADJUSTMENT_QUANTITY_SHORT','Adj Qty');
 define('TEXT_REASON_FOR_ADJUSTMENT','Reason for Adjustment');
-define('INV_ADJ_VALUE', 'Adj. Value');
+define('TEXT_ADJUSTMENT_VALUE_SHORT', 'Adj. Value');
 define('TEXT_ROUNDING', 'Rounding');
 define('INV_RND_VALUE', 'Rnd. Value');
 define('TEXT_BILL_OF_MATERIALS','Bill of Materials');
 define('INV_ADJ_DELETE_ALERT', 'Are you sure you want to delete this Inventory Adjustment?');
 define('INV_MSG_DELETE_INV_ITEM', 'Are you sure you want to delete this inventory item?');
 
-define('INV_XFER_FROM_STORE','Transfer From Store ID');
+define('TEXT_TRANSFER_FROM_STORE_ID','Transfer From Store ID');
 define('INV_XFER_TO_STORE','To Store ID');
-define('INV_XFER_QTY','Transfer Quantity');
+define('TEXT_TRANSFER_QUANTITY','Transfer Quantity');
 define('INV_XFER_ERROR_SAME_STORE_ID','The source and destination store ID\'s are the same, the transfer was not performed!');
 define('INV_XFER_ERROR_NOT_ENOUGH_SKU','Transfer of inventory item %s was skipped, there is not enough in stock!');
 
@@ -149,7 +149,7 @@ define('TEXT_ITEM_WEIGHT', 'Item Weight');
 define('TEXT_MINIMUM_STOCK_LEVEL', 'Minimum Stock Level');
 define('TEXT_REORDER_QUANTITY', 'Reorder Quantity');
 define('INV_ENTRY_INVENTORY_COST_METHOD', 'Cost Method');
-define('INV_ENTRY_INVENTORY_SERIALIZE', 'Serialize Item');
+define('TEXT_SERIALIZE_ITEM', 'Serialize Item');
 define('INV_MASTER_STOCK_ATTRIB_ID','ID (Max 2 Chars)');
 define('TEXT_CUSTOMER_DETAILS','Customer Details');
 define('TEXT_VENDOR_DETAILS','Vendor Details');

@@ -900,7 +900,7 @@ function BuildSQL($report) { // for reports only
 	for ($i = 0; $i < sizeof($report->sortlist); $i++) {
 	  if ($report->sortlist[$i]->default) {
 		$strSort    .= ($strSort <> '' ? ', ' : '') . prefixTables($report->sortlist[$i]->fieldname);
-		$filterdesc .= PHREEFORM_SORTBY . ' ' . $report->sortlist[$i]->description . '; ';
+		$filterdesc .= TEXT_SORTED_BY . ':  ' . $report->sortlist[$i]->description . '; ';
 		break;
 	  }
 	}
@@ -1232,7 +1232,7 @@ function ReadImages() {
 
 function CreateCompanyArray() {
   $company_array = array(
-	array('id' => '',                    'text' => TEXT_SLCTFIELD),
+	array('id' => '',                    'text' => sprintf(TEXT_SELECT_ARGS, TEXT_FIELD)),
 	array('id' => 'COMPANY_NAME',        'text' => COMPANY_NAME),
 	array('id' => 'COMPANY_ADDRESS1',    'text' => COMPANY_ADDRESS1),
 	array('id' => 'COMPANY_ADDRESS2',    'text' => COMPANY_ADDRESS2),

@@ -41,7 +41,7 @@ define ('TEXT_ACCOUNT_AGING', 'Account Aging');
 define ('TEXT_GENERAL_JOURNAL', 'Allgemeine Einstellungen Journal');
 define ('TEXT_NUMBER', 'Anzahl');
 define ('TEXT_BOTH', 'Beide');
-define ('TEXT_SINGLE_MODE', 'Single Line Entry');
+define ('TEXT_SINGLE_LINE_ENTRY', 'Single Line Entry');
 define ('TEXT_DOUBLE_MODE', 'Double Line Entry');
 
 define ('COA_00_DESC', 'Cash');
@@ -76,8 +76,8 @@ define ('TEXT_SALES_ORDER', 'Sales Orders');
 define ('TEXT_SALES_RECEIPTS', 'Sales Receipts ');
 define ('PB_PF_VENDOR_CRD_MEMO', 'Gutschrift - Vendor');
 define ('PB_PF_VENDOR_LABEL', 'Etiketten - Hersteller');
-define ('PB_PF_VENDOR_QUOTE', 'Hersteller Quotes');
-define ('PB_PF_VENDOR_STATEMENT', 'Hersteller Statements');
+define ('TEXT_VENDOR_QUOTES', 'Hersteller Quotes');
+define ('TEXT_VENDOR_STATEMENTS', 'Hersteller Statements');
 
 /************************** (PhreeBooks Utilities) ******************* ****************************/
 define ('GEN_ADM_TOOLS_AR', 'Kunden / Forderungen');
@@ -140,7 +140,7 @@ define ('GEN_ADM_TOOLS_SEQ_HEADING', 'Change Verschiedene Sequence Numbers');
 define ('GEN_ADM_TOOLS_SEQ_DESC', 'Änderungen an der Sequenzierung können hier vorgenommen werden <br /> Hinweis 1:. PhreeBooks nicht erlaubt doppelte Sequenzen sicher, dass die neue Startreihenfolge wird keine Konflikte mit derzeit gebuchten Werte <br /> Hinweis. 2: Die next_deposit_num wird vom System generiert und verwendet das aktuelle Datum <br /> Anmerkung 3: Die next_check_num bei der Zahlung Bildschirm können vor der Buchung einer Zahlung und wird aus den eingegebenen Wert weiter ');
 define ('GEN_ADM_TOOLS_BNK', 'Banking');
 define ('GEN_ADM_TOOLS_OTHER', 'Andere');
-define ('GEN_ADM_TOOLS_BTN_SAVE', 'Save Changes');
+define ('TEXT_SAVE_CHANGES', 'Save Changes');
 
 define ('GEN_ADM_TOOLS_ARQ', 'Next Kundennummer Zitat');
 define ('GEN_ADM_TOOLS_APQ', 'Next Hersteller Anzahl Zitat');

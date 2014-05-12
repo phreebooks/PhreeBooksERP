@@ -29,8 +29,8 @@ define ('TEXT_EXPORT_TRANSLATION', 'Export Übersetzung');
 define ('TEXT_UPLOAD_TRANSLATION', 'Upload Übersetzung');
 define ('TEXT_IMPORT_CURRENT_LANGUAGE', 'Import von aktuellen Installation');
 define ('TEXT_EXPORT_CURRENT_LANGUAGE', 'Export Alle für eine Sprache und Version');
-define ('TEXT_UPLOAD_LANGUAGE_FILE', 'Upload von Zip-Datei');
-define ('TEXT_EDIT_TRANSLATION', 'Übersetzen Modul');
+define ('TEXT_UPLOAD_FROM_ZIPPED_FILE', 'Upload von Zip-Datei');
+define ('TEXT_TRANSLATE_MODULE', 'Übersetzen Modul');
 // Allgemeine definiert
 define ('TEXT_APPLY', 'Filter anwenden');
 define ('TEXT_FILTERS', 'Filter');
@@ -42,8 +42,8 @@ define ('TEXT_TRANSLATIONS', 'Übersetzungen');
 define ('TEXT_TRANSLATED', 'übersetzten');
 define ('TEXT_CREATE_NEW_TRANSLATION', 'Create New Translation');
 define ('TRANSLATOR_NEW_DESC', 'Diese Form schafft eine neue Übersetzung veröffentlichen. Wenn Sie Übersetzung Vermutungen von früheren Versionen überschreiben möchten die Ausgangssprache überprüfen überschreiben "und geben Sie ein ISO-Sprache zu verwenden. Beachten Sie, dass diese Sprache in der Übersetzer muss geladen werden . Datenbank Die Quelle-Modul und Sprache muss auch in der Übersetzer-Datenbank sein (Release # wird automatisch erstellt werden). ');
-define ('TRANSLATOR_NEW_SOURCE', 'Quelle Modul:');
-define ('TEXT_SOURCE_LANGUAGE', 'Quelle Sprache:');
+define ('TEXT_SOURCE_MODULE', 'Quelle Modul');
+define ('TEXT_SOURCE_LANGUAGE', 'Quelle Sprache');
 define ('TRANSLATOR_NEW_OVERRIDE', 'Dann überschreiben (falls vorhanden) von installierten Sprache:');
 define ('TRANSLATOR_IMPORT_DESC', 'Diese Seite Einfuhren Sprachen aus der aktuell installierten Modul oder Module in die Übersetzer-Datenbank geladen. Wenn die Installation Modul aktiviert ist, und das Verzeichnis umbenannt wurde, muss das neue Verzeichnis in das unten stehende Formular eingegeben werden.' );
 define ('TRANSLATOR_EXPORT_DESC', 'Diese Seite exportiert alle Module aus einer gegebenen Sprache übersetzt und die Version auf einem einzigen ZIP-Datei..');
@@ -60,7 +60,7 @@ define ('MESSAGE_DELETE_TRANSLATION', 'Sind Sie sicher, dass Sie diese Übersetz
 define ('TEXT_CONSTANT', 'definierte Konstante');
 define ('TEXT_DEFAULT_TRANSLATION', 'Aktuelle Übersetzung');
 define ('TEXT_STATS_VALUES', '% s von% s übersetzt (% s Prozent)');
-define ('TEXT_TRANSLATIONS_SAVED', 'Übersetzung Datensätze gespeichert.');
+define ('TEXT_TRANSLATION_RECORDS_SAVED', 'Übersetzung Datensätze gespeichert.');
 define ('TRANSLATION_HEADER', 'Phreedom Language Translation Datei');
 // Fehlermeldungen
 define ('TRANS_ERROR_NO_SOURCE', 'Keine verfügbaren Versionen der Ausgangssprache gefunden Importieren Sie die Ausgangssprache!.');

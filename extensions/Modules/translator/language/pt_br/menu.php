@@ -9,6 +9,6 @@
 // Path: /modules/translator/language/pt_br/menu.php
 
 define('MENU_HEADING_TRANSLATOR','Ferramenta Assistente Tradução');
-define('TEXT_TRANSLATOR_ASS','Assistente Tradução');
+define('TEXT_TRANSLATOR_ASSISTANT','Assistente Tradução');
 
 ?>

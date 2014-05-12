@@ -17,11 +17,11 @@
 //  Path: /modules/doc_ctl/language/en_us/language.php
 //
 // General
-define('TEXT_BOOKMARK_DOC','Bookmark Document');
+define('TEXT_BOOKMARK_DOCUMENT','Bookmark Document');
 define('TEXT_BOOKMARKED','Bookmarked');
 define('TEXT_CANCEL_CHECKOUT','Cancel Check-out Flag');
 define('TEXT_CHECKED_OUT','Checked Out');
-define('TEXT_CHECKOUT_DOC','Check-out Document');
+define('TEXT_CHECK_OUT_DOCUMENT','Check-out Document');
 define('TEXT_CREATE_DATE','Creation Date');
 define('TEXT_DETAILS','Details');
 define('TEXT_DOCUMENT','Document: ');
@@ -35,7 +35,7 @@ define('TEXT_LAST_VIEW','Last View');
 define('TEXT_LOCK_DOC','Lock Document');
 define('TEXT_LOCKED','Locked');
 define('TEXT_MY_BOOKMARKS','My Bookmarks');
-define('TEXT_MY_CHECKED_OUT','Checked Out Files');
+define('TEXT_CHECKED_OUT_FILES','Checked Out Files');
 define('TEXT_NEW_FOLDER','New Folder');
 define('TEXT_NEW_DOCUMENT','New Document');
 define('TEXT_NO_BOOKMARKS','No Bookmarks Have Been Set.');
@@ -47,8 +47,8 @@ define('TEXT_RECENTLY_ADDED','Recently Added Documents');
 define('TEXT_REMOVE_BOOKMARK','Remove Bookmark');
 define('TEXT_REVISION','Revision');
 define('TEXT_THUMBNAIL','Thumbnail');
-define('TEXT_UNLOCK_DOC','Unlock Document');
-define('TEXT_UPLOAD_FILE','Upload Revision');
+define('TEXT_UNLOCK_DOCUMENT','Unlock Document');
+define('TEXT_UPLOAD_REVISION','Upload Revision');
 // Specific to this module
 define('DOC_CTL_EMPTY_FOLDER','The Folder does not contain any documents.');
 define('DOC_CTL_FILE_WRITE_ERROR','There was an error writing the file. Check directory permissions of directory (%s) and try again.');

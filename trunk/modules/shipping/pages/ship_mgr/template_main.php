@@ -33,7 +33,7 @@ $toolbar->add_help('09');
 echo $toolbar->build_toolbar($add_search = false, false, $cal_ship);
 // Build the page
 ?>
-<h1><?php echo TEXT_SHIPPING_MANAGER; ?></h1>
+<h1><?php echo sprintf(TEXT_MANAGER_ARGS, TEXT_SHIPPING); ?></h1>
 <div class="easyui-tabs" id="shippingtabs">
 
 <?php

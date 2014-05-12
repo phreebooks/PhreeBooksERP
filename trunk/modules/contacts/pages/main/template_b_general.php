@@ -23,7 +23,7 @@
     <legend><?php echo TEXT_CONTACT_INFORMATION; ?></legend>
     <table>
       <tr>
-        <td align="right"><?php echo ACT_B_SHORT_NAME; ?></td>
+        <td align="right"><?php echo TEXT_BRANCH_ID; ?></td>
         <td><?php echo html_input_field('short_name', $cInfo->short_name, 'size="21" maxlength="20"', true); ?></td>
         <td align="right">&nbsp;</td>
         <td>&nbsp;</td>

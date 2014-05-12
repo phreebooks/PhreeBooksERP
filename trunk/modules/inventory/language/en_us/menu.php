@@ -20,7 +20,7 @@
 // Menu Titles
 define('BOX_INV_MAINTAIN', 'Inventory Manager');
 define('BOX_INV_NEW', 'New Inventory');
-define('BOX_INV_TRANSFER','Transfer Inventory');
+define('TEXT_TRANSFER_INVENTORY','Transfer Inventory');
 define('ORD_TEXT_14_WINDOW_TITLE','Assemblies');
 define('ORD_TEXT_16_WINDOW_TITLE','Adjustments');
 define('BOX_PRICE_SHEET_MANAGER','Price Sheet Manager');

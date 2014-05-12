@@ -36,7 +36,7 @@ define('ZENCART_DELETE_ZENCART','Also delete products in ZenCart that are not fa
 define('ZENCART_PRODUCT_SYNC_BTN','Synchronize');
 define('ZENCART_SHIP_CONFIRM_TITLE','Confirm Shipments');
 define('ZENCART_SHIP_CONFIRM_INFO','Confirms all shipments on the date selected from the Shipping Manager and sets the status in ZenCart. Completed orders and partially shipped orders are updated. Email notifications to the customer are not sent.');
-define('ZENCART_SHIP_CONFIRM_TEXT','Send shipment confirmations');
+define('TEXT_SEND_SHIPMENT_CONFIRMATIONS','Send shipment confirmations');
 define('ZENCART_TEXT_CONFIRM_ON','For orders shipped on');
 define('ZENCART_SHIP_CONFIRM_BTN','Confirm Shipments');
 // Error Messages

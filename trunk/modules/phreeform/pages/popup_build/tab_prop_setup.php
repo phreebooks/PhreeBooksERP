@@ -33,7 +33,7 @@
 	  </td>
 	</tr>
 	<tr>
-	  <td><?php echo TEXT_TOTAL_ONLY; ?></td>
+	  <td><?php echo TEXT_SHOW_TOTALS_ONLY; ?></td>
 	  <td>
         <?php echo html_radio_field('totalonly', '1', ($report->totalonly == '1') ? true : false) . TEXT_YES; ?>
 	    <?php echo html_radio_field('totalonly', '0', ($report->totalonly <> '1') ? true : false) . TEXT_NO; ?>
@@ -63,7 +63,7 @@
     </tr>
     <tr>
       <td><?php echo '&nbsp;'; ?></td>
-	  <td><?php echo TEXT_SOURCE_FIELD . html_pull_down_menu('filename_field', $kFields, $report->filenamefield, 'onclick="updateFieldList(this)"'); ?></td>
+	  <td><?php echo TEXT_SOURCE_FIELD . ': ' . html_pull_down_menu('filename_field', $kFields, $report->filenamefield, 'onclick="updateFieldList(this)"'); ?></td>
     </tr>
   </tbody>
 </table>

@@ -68,7 +68,7 @@ class favorite_reports extends \core\classes\ctl_panel {
 				$index++;
 		  	}
 		} else {
-		  	$contents = ACT_NO_RESULTS;
+		  	$contents = TEXT_NO_RESULTS_FOUND;
 		}
 		return $this->build_div('', $contents, $control);
 	}

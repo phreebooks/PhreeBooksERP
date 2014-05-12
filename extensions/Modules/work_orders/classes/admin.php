@@ -19,12 +19,12 @@
 namespace work_orders\classes;
 class admin extends \core\classes\admin {
 	public $id 			= 'work_orders';
-	public $text		= MODULE_WORK_ORDERS_TITLE;
 	public $description = MODULE_WORK_ORDERS_DESCRIPTION;
 	public $module		= 'work_orders';
 	public $version		= '3.6';
 
 	function __construct() {
+		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_WORK_ORDER);
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom'   => '3.3',
 		  'inventory'  => '3.3',

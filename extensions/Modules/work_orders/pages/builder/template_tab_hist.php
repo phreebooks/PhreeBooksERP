@@ -17,7 +17,7 @@
 //  Path: /modules/work_orders/pages/builder/template_tab_hist.php
 //
 if ($id) {
-$result = $db->Execute("select wo_num, qty, post_date, close_date from " . TABLE_WO_JOURNAL_MAIN . " 
+$result = $db->Execute("select wo_num, qty, post_date, close_date from " . TABLE_WO_JOURNAL_MAIN . "
   where wo_id = " . $id . " order by post_date desc limit 20");
 }
 ?>
@@ -28,7 +28,7 @@ $result = $db->Execute("select wo_num, qty, post_date, close_date from " . TABLE
 	 <thead class="ui-widget-header">
 	  <tr><th colspan="5"><?php echo sprintf(TEXT_WO_HISTORY, LIMIT_HISTORY_RESULTS); ?></th></tr>
 	  <tr>
-	    <th><?php echo TEXT_WO_ID ; ?></th>
+	    <th><?php echo TEXT_WORK_ORDER_ID ; ?></th>
 	    <th><?php echo TEXT_QUANTITY; ?></th>
 	    <th><?php echo TEXT_POST_DATE; ?></th>
 	    <th><?php echo TEXT_CLOSE_DATE; ?></th>
@@ -49,7 +49,7 @@ $result = $db->Execute("select wo_num, qty, post_date, close_date from " . TABLE
 	  $result->MoveNext();
     }
   } else {
-	echo '<tr><td align="center" colspan="4">' . ACT_NO_RESULTS . '</td></tr>';
+	echo '<tr><td align="center" colspan="4">' . TEXT_NO_RESULTS_FOUND . '</td></tr>';
   }
 ?>
 	</tbody>

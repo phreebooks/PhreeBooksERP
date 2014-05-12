@@ -21,11 +21,11 @@ require_once(DIR_FS_MODULES . 'zencart/config.php');
 require_once(DIR_FS_MODULES . 'inventory/config.php');
 class admin extends \core\classes\admin {
 	public $id 			= 'zencart';
-	public $text		= MODULE_ZENCART_TITLE;
 	public $description = MODULE_ZENCART_DESCRIPTION;
 	public $version		= '3.5';
 
 	function __construct() {
+		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_ZENCART);
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom'   => 3.6,
 		  'contacts'   => 3.6,

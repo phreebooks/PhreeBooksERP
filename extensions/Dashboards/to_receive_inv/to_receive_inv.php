@@ -29,7 +29,7 @@ class to_receive_inv extends \core\classes\ctl_panel {
 	public $size_params			= 1;
 	public $default_params 		= array('num_rows'=> 0);
 	public $module_id 			= 'phreebooks';
-	
+
 	function output($params) {
 		global $db, $currencies;
 		if(count($params) != $this->size_params){ //upgrading
@@ -47,13 +47,13 @@ class to_receive_inv extends \core\classes\ctl_panel {
 		$control .= '</div></div>';
 		// Build content box
 		$total = 0;
-		$sql = "select id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value, post_date 
-		  from " . TABLE_JOURNAL_MAIN . " 
+		$sql = "select id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value, post_date
+		  from " . TABLE_JOURNAL_MAIN . "
 		  where journal_id = 6 and waiting = '1' order by post_date DESC, purchase_invoice_id DESC";
 		if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
 		$result = $db->Execute($sql);
 		if ($result->RecordCount() < 1) {
-		  	$contents = ACT_NO_RESULTS;
+		  	$contents = TEXT_NO_RESULTS_FOUND;
 		} else {
 			while (!$result->EOF) {
 			  	$inv_balance = $result->fields['total_amount'] - fetch_partially_paid($result->fields['id']);

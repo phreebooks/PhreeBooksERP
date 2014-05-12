@@ -22,17 +22,17 @@ define('MAX_NUM_PRICE_LEVELS', 5);
 // the inventory type indexes should not be changed or the inventory module won't work.
 // system generated types (not to be displayed are: ai - assembly item, mi - master stock with attributes)
 $inventory_types = array(
-  'si' => INV_TYPES_SI,
-  'sr' => INV_TYPES_SR,
+  'si' => TEXT_STOCK_ITEM,
+  'sr' => TEXT_SERIALIZED_ITEM,
   'ms' => INV_TYPES_MS,
   'mb' => INV_TYPES_MB,
   'ma' => INV_TYPES_AS,
-  'sa' => INV_TYPES_SA,
+  'sa' => TEXT_SERIALIZED_ASSEMBLY,
   'ns' => INV_TYPES_NS,
   'lb' => TEXT_LABOR,
   'sv' => TEXT_SERVICE,
   'sf' => INV_TYPES_SF,
-  'ci' => INV_TYPES_CI,
+  'ci' => TEXT_CHARGE_ITEM,
   'ai' => TEXT_ACTIVITY,
   'ds' => TEXT_DESCRIPTION,
 );

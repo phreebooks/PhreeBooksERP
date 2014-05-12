@@ -36,7 +36,7 @@ define ("TEXT_NEW_TAB", "Neue Asset Tab");
 define ("TEXT_EDIT_TAB", "Edit Asset Tab");
 define ("TEXT_NEW_FIELD", "Neue Asset Field");
 define ("TEXT_EDIT_FIELD", "Edit Asset Field");
-define ("TEXT_SGL_PREC", "Single Precision");
+define ("TEXT_SINGLE_PRECISION", "Single Precision");
 define ("TEXT_DBL_PREC", "Double Precision");
 define ("TEXT_GREATER_THAN", "Größer als");
 define ("ASSETS_INFO_CATEGORY_NAME", "Asset Tab Name <br/> Name sollte kurz sein (10) mit keine Sonderzeichen oder Leerzeichen enthalten.");
@@ -46,7 +46,7 @@ define ("ASSETS_INFO_DELETE_ERROR", "Diese Registerkarte Name bereits vorhanden 
 define ("ASSETS_TABS_LOG", "Asset Tabs ( %s)");
 // Felder
 define ("INV_FIELD_NAME", "Field Name:");
-define ("INV_CATEGORY_MEMBER", "Tab Mitglied:");
+define ("TEXT_TAB_MEMBER", "Tab Mitglied");
 define ("TEXT_DEFAULT_VALUE", "Default-Wert");
 define ("INV_LABEL_MAX_NUM_CHARS", "Maximale Anzahl der Zeichen (Länge)");
 define ("INV_LABEL_FIXED_255_CHARS", "Fixed auf maximal 255 Zeichen");

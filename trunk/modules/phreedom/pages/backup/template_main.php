@@ -46,13 +46,13 @@ echo $toolbar->build_toolbar();
  <thead class="ui-widget-header">
     <tr>
 	  <th><?php echo TEXT_BACKUP_AUDIT_LOG; ?></th>
-	  <th><?php echo GEN_ADM_TOOLS_CLEAN_LOG_CLEAN; ?></th>
+	  <th><?php echo TEXT_CLEAN_OUT_AUDIT_LOG; ?></th>
 	</tr>
  </thead>
  <tbody class="ui-widget-content">
 	<tr>
-	  <td align="center"><?php echo html_button_field('backup_log', GEN_ADM_TOOLS_BTN_BACKUP, 'onclick="submitToDo(\'backup_log\', true)"'); ?></td>
-	  <td align="center"><?php echo html_button_field('clean_log',  GEN_ADM_TOOLS_BTN_CLEAN,  'onclick="if (confirm(\'' . GEN_ADM_TOOLS_BTN_CLEAN_CONFIRM . '\')) submitToDo(\'clean_log\')"'); ?></td>
+	  <td align="center"><?php echo html_button_field('backup_log', TEXT_BACKUP_NOW . '!', 'onclick="submitToDo(\'backup_log\', true)"'); ?></td>
+	  <td align="center"><?php echo html_button_field('clean_log',  TEXT_CLEAN_NOW.'!',  'onclick="if (confirm(\'' . GEN_ADM_TOOLS_BTN_CLEAN_CONFIRM . '\')) submitToDo(\'clean_log\')"'); ?></td>
 	</tr>
  </tbody>
 </table>
@@ -80,7 +80,7 @@ echo $toolbar->build_toolbar();
   </tr>
   <tr>
 	<td colspan="2"><?php echo html_checkbox_field('save_local', '1', false, '', '') . GEN_BACKUP_SAVE_LOCAL; ?></td>
-	<td align="right"><?php echo html_button_field('backup_db', GEN_BACKUP_ICON_TITLE, 'onclick="submitToDo(\'save\', true)"'); ?></td>
+	<td align="right"><?php echo html_button_field('backup_db', TEXT_START_BACKUP, 'onclick="submitToDo(\'save\', true)"'); ?></td>
   </tr>
  </tbody>
 </table>

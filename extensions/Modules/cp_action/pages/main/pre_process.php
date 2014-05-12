@@ -88,7 +88,7 @@ switch ($_REQUEST['action']) {
 		  	$db->Execute("update " . TABLE_CURRENT_STATUS . " set next_capa_num = '" . $next_num . "'");
 		  	gen_add_audit_log(CAPA_LOG_USER_ADD . $capa_num);
 	  }
-	  $messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, ($_POST['rowSeq'] ? TEXT_UPDATED : TEXT_ADDED ), TEXT_CAPA , $capa_num), 'success');
+	  $messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, ($_POST['rowSeq'] ? TEXT_UPDATED : TEXT_ADDED ), TEXT_CORRECTIVE_ACTION_PREVENTATIVE_ACTION , $capa_num), 'success');
 	break;
 
   case 'edit':
@@ -103,7 +103,7 @@ switch ($_REQUEST['action']) {
 	$result = $db->Execute("select capa_num from " . TABLE_CAPA . " where id = " . $id);
 	if ($result->RecordCount() == 0) throw new \core\classes\userException(CAPA_ERROR_CANNOT_DELETE);
 	$db->Execute("delete from " . TABLE_CAPA . " where id = " . $id);
-	gen_add_audit_log(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_CAPA, $result->fields['capa_num']));
+	gen_add_audit_log(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_CORRECTIVE_ACTION_PREVENTATIVE_ACTION, $result->fields['capa_num']));
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('cID', 'action')), 'SSL'));
 	break;
 

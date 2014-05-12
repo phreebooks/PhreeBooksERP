@@ -28,7 +28,7 @@ class customer_websites extends \core\classes\ctl_panel {
 	public $size_params			= 0;
 	public $default_params 		= array();
 	public $module_id 			= 'contacts';
-	
+
 	function output($params) {
 		global $db;
 		if(count($params) != $this->size_params){ //upgrading
@@ -36,14 +36,14 @@ class customer_websites extends \core\classes\ctl_panel {
 		}
 		$contents = '';
 		$control  = '';
-		$sql = "select a.primary_name, a.website 
-		  from " . TABLE_CONTACTS . " c left join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id 
+		$sql = "select a.primary_name, a.website
+		  from " . TABLE_CONTACTS . " c left join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id
 		  where  c.type = 'c' and c.inactive = '0' and a.website !='' order by a.primary_name";
 		$result = $db->Execute($sql);
 		// Build control box form data
 		// Build content box
 		if ($result->RecordCount() < 1) {
-			$contents = ACT_NO_RESULTS;
+			$contents = TEXT_NO_RESULTS_FOUND;
 		} else {
 		  	while (!$result->EOF) {
 				$contents .= '<div style="height:16px;">';
@@ -52,7 +52,7 @@ class customer_websites extends \core\classes\ctl_panel {
 				$index++;
 				$result->MoveNext();
 		  	}
-		} 
+		}
 		return $this->build_div('', $contents, $control);
 	}
 }

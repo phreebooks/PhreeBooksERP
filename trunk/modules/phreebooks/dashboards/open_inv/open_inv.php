@@ -18,7 +18,7 @@
 //
 // Revision history
 // 2011-07-01 - Added version number for revision control
-// 2011-12-20 - Updated to show invoice balance, was total invoice amount 
+// 2011-12-20 - Updated to show invoice balance, was total invoice amount
 namespace phreebooks\dashboards\open_inv;
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 class open_inv extends \core\classes\ctl_panel {
@@ -30,7 +30,7 @@ class open_inv extends \core\classes\ctl_panel {
 	public $size_params			= 1;
 	public $default_params 		= array('num_rows'=> 0);
 	public $module_id 			= 'phreebooks';
-	
+
 	function output($params) {
 		global $db, $currencies;
 		if(count($params) != $this->size_params){ //upgrading
@@ -48,13 +48,13 @@ class open_inv extends \core\classes\ctl_panel {
 		$control .= '</div></div>';
 		// Build content box
 		$total = 0;
-		$sql = "select id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value 
-		  from " . TABLE_JOURNAL_MAIN . " 
+		$sql = "select id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value
+		  from " . TABLE_JOURNAL_MAIN . "
 		  where journal_id = 12 and closed = '0' order by post_date DESC, purchase_invoice_id DESC";
 		if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
 		$result = $db->Execute($sql);
 		if ($result->RecordCount() < 1) {
-		  	$contents = ACT_NO_RESULTS;
+		  	$contents = TEXT_NO_RESULTS_FOUND;
 		} else {
 		  	while (!$result->EOF) {
 		  		$inv_balance = $result->fields['total_amount'] - fetch_partially_paid($result->fields['id']);

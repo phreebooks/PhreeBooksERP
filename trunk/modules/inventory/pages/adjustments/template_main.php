@@ -68,7 +68,7 @@ echo $toolbar->build_toolbar();
 	  <th><?php echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small'); ?></th>
 	  <th><?php echo TEXT_SKU; ?></th>
 	  <th><?php echo TEXT_QUANTITY_IN_STOCK_SHORT; ?></th>
-	  <th><?php echo INV_ADJ_QUANTITY; ?></th>
+	  <th><?php echo TEXT_ADJUSTMENT_QUANTITY_SHORT; ?></th>
 	  <th><?php echo TEXT_ITEM_COST; ?></th>
 	  <th><?php echo TEXT_BALANCE; ?></th>
 	  <th><?php echo TEXT_DESCRIPTION; ?></th>

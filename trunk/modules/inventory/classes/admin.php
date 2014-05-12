@@ -20,12 +20,12 @@ namespace inventory\classes;
 class admin extends \core\classes\admin {
 	public $sort_order  = 4;
 	public $id 			= 'inventory';
-	public $text		= MODULE_INVENTORY_TITLE;
 	public $description = MODULE_INVENTORY_DESCRIPTION;
 	public $core		= true;
 	public $version		= '3.7.1';
 
 	function __construct() {
+		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY);
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'contacts'   => 3.71,
 		  'phreedom'   => 3.6,

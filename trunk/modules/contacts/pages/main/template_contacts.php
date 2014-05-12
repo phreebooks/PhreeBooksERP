@@ -73,7 +73,7 @@
 	$ctoolbar->icon_list['new']['icon']    = 'actions/contact-new.png';
 	$ctoolbar->icon_list['new']['text']    = sprintf(TEXT_NEW_ARGS, TEXT_CONTACT);
 	$ctoolbar->add_icon('copy', 'onclick="copyContactAddress(\'' . $type . '\')"', 20);
-	$ctoolbar->icon_list['copy']['text']   = TEXT_COPY_ADDRESS;
+	$ctoolbar->icon_list['copy']['text']   = TEXT_TRANSFER_ADDRESS;
 	echo $output;
 	echo $ctoolbar->build_toolbar();
 ?>

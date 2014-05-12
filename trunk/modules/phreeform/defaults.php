@@ -251,7 +251,7 @@ $FormProcessing = array(
   'lc'       => TEXT_LOWERCASE,
   'neg'      => TEXT_NEGATE,
   'n2wrd'    => PF_FRM_NUM_2_WORDS,
-  'rnd2d'    => PF_FRM_RNDR2,
+  'rnd2d'    => TEXT_ROUND_2DECIMALS,
   'date'     => PF_FRM_DATE,
   'dlr'      => PF_FRM_CNVTDLR,
   'null-dlr' => PF_FRM_NULLDLR,
@@ -265,7 +265,7 @@ $FormProcessing = array(
 // A case statement needs to be generated to process each new value
 $TextProcessing = array(
   ''        => TEXT_NONE,
-  'sp'      => PF_FRM_SPACE1,
+  'sp'      => TEXT_SINGLE_SPACE,
   '2sp'     => PF_FRM_SPACE2,
   'comma'   => PF_FRM_COMMA,
   'com-sp'  => PF_FRM_COMMASP,

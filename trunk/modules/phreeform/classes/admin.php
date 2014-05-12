@@ -19,12 +19,12 @@
 namespace phreeform\classes;
 class admin extends \core\classes\admin {
 	public $id 			= 'phreeform';
-	public $text		= MODULE_PHREEFORM_TITLE;
 	public $description = MODULE_PHREEFORM_DESCRIPTION;
 	public $sort_order  = 8;
 	public $version		= '3.6';
 
 	function __construct() {
+		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_PHREEFORM);
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom'  => 3.6,
 		);

@@ -30,7 +30,7 @@ if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key =
 $toolbar->add_help('07.04.WO.03');
 echo $toolbar->build_toolbar($add_search = true);
 ?>
-<h1><?php echo BOX_WORK_ORDERS_BUILDER; ?></h1>
+<h1><?php echo TEXT_WORK_ORDER_BUILDER; ?></h1>
 <div id="filter_bar">
 <table class="ui-widget" style="border-style:none;width:100%">
  <tbody class="ui-widget-content">

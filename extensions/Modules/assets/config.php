@@ -82,8 +82,8 @@ if (defined('MODULE_ASSETS_STATUS')) {
   	if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
   		gen_pull_language('assets', 'admin');
 		$mainmenu["company"]['submenu']["configuration"]['submenu']["asset"] = array(
-	  		'order'		  => TEXT_ASSETS_MODULE,
-	  		'text'        => TEXT_ASSETS_MODULE,
+	  		'order'		  => sprintf(TEXT_MODULE_ARGS, TEXT_ASSETS),
+	  		'text'        => sprintf(TEXT_MODULE_ARGS, TEXT_ASSETS),
 	  		'security_id' => SECURITY_ID_CONFIGURATION,
 	  		'link'        => html_href_link(FILENAME_DEFAULT, 'module=assets&amp;page=admin', 'SSL'),
 			'show_in_users_settings' => false,

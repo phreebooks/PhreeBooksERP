@@ -34,7 +34,7 @@ define('TABLE_SHIPPING_LOG', DB_PREFIX . 'shipping_log');
 // Set the menus
 if (defined('MODULE_SHIPPING_STATUS')) {
   $mainmenu["tools"]['submenu']['shipping'] = array(
-    	'text'        => TEXT_SHIPPING_MANAGER,
+    	'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_SHIPPING),
     	'order'       => 5,
     	'security_id' => SECURITY_ID_SHIPPING_MANAGER,
     	'link'        => html_href_link(FILENAME_DEFAULT, 'module=shipping&amp;page=ship_mgr', 'SSL'),
@@ -43,8 +43,8 @@ if (defined('MODULE_SHIPPING_STATUS')) {
   if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
 	  gen_pull_language('shipping', 'admin');
 	  $mainmenu["company"]['submenu']["configuration"]['submenu']["shipping"] = array(
-		'order'	      => MODULE_SHIPPING_TITLE,
-		'text'        => MODULE_SHIPPING_TITLE,
+		'order'	      => sprintf(TEXT_MODULE_ARGS, TEXT_SHIPPING),
+		'text'        => sprintf(TEXT_MODULE_ARGS, TEXT_SHIPPING),
 		'security_id' => SECURITY_ID_CONFIGURATION,
 		'link'        => html_href_link(FILENAME_DEFAULT, 'module=shipping&amp;page=admin', 'SSL'),
 	    'show_in_users_settings' => false,

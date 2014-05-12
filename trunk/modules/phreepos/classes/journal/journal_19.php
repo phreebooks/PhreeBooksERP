@@ -262,7 +262,7 @@ class journal_19 extends \core\classes\journal {
 			'gl_type'        => 'rnd',		// code for discount charges
 			'debit_amount'   => ($this->rounding_amt < 0) ? -$this->rounding_amt : '',
 			'credit_amount'  => ($this->rounding_amt > 0) ? $this->rounding_amt  : '',
-			'description'    => TEXT_POINT_OF_SALE . '-' . TEXT_ROUNDING_OF,
+			'description'    => TEXT_POINT_OF_SALE . '-' . TEXT_ROUNDED_OF,
 			'gl_account'     => $this->rounding_gl_acct_id,
 			'taxable'        => '0',
 			'post_date'      => $this->post_date,

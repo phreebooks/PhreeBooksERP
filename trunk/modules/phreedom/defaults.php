@@ -39,14 +39,14 @@ $DateChoices = array(
   'b' => TEXT_RANGE,
   'c' => TEXT_TODAY,
   'd' => TEXT_THIS_WEEK,
-  'e' => TEXT_WTD,
+  'e' => TEXT_WEEK_TO_DATE,
   'l' => TEXT_CURRENT_PERIOD,
-  'f' => TEXT_MONTH,
+  'f' => TEXT_THIS_MONTH,
   'g' => TEXT_MTD,
   'h' => TEXT_THIS_QUARTER,
   'i' => TEXT_QTD,
   'j' => TEXT_THIS_YEAR,
-  'k' => TEXT_YTD,
+  'k' => TEXT_YEAR_TO_DATE,
 );
 
 // extra tabs/fields selections
@@ -59,7 +59,7 @@ $integer_lengths = array(
 );
 
 $decimal_lengths = array(
-  '0' => TEXT_SGL_PREC,
+  '0' => TEXT_SINGLE_PRECISION,
   '1' => TEXT_DBL_PREC,
 );
 

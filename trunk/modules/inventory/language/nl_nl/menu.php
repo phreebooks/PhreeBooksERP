@@ -11,7 +11,7 @@
 define('TEXT_INVENTORY','Voorraad');
 define('BOX_INV_MAINTAIN','Voorraad Manager');
 define('BOX_INV_NEW','Voorraad Toevoegen');
-define('BOX_INV_TRANSFER','Transporteer Voorraad');
+define('TEXT_TRANSFER_INVENTORY','Transporteer Voorraad');
 define('ORD_TEXT_14_WINDOW_TITLE','Assemblage');
 define('ORD_TEXT_16_WINDOW_TITLE','Wijzigingen');
 define('BOX_PRICE_SHEET_MANAGER','Prijslijst Manager');

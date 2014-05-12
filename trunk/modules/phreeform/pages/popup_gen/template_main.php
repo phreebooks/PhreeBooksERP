@@ -63,7 +63,7 @@ echo $toolbar->build_toolbar();
 	 </thead>
 	 <tbody class="ui-widget-content">
 	    <tr>
-		  <td align="center"><?php echo TEXT_BROWSER  . html_radio_field('delivery_method', 'I', ($delivery_method == 'I') ? true : false, '', 'onclick="hideEmail();"', false); ?></td>
+		  <td align="center"><?php echo TEXT_BROWSER . ': ' . html_radio_field('delivery_method', 'I', ($delivery_method == 'I') ? true : false, '', 'onclick="hideEmail();"', false); ?></td>
 		  <td align="center"><?php echo TEXT_DOWNLOAD . html_radio_field('delivery_method', 'D', ($delivery_method == 'D') ? true : false, '', 'onclick="hideEmail();"', false); ?></td>
 		  <td align="center"><?php echo TEXT_EMAIL    . html_radio_field('delivery_method', 'S', ($delivery_method == 'S') ? true : false, '', 'onclick="hideEmail();"', false); ?></td>
 	    </tr>
@@ -77,7 +77,7 @@ echo $toolbar->build_toolbar();
 	   </thead>
 	   <tbody class="ui-widget-content">
 	    <tr>
-		  <td align="right"><?php echo TEXT_SENDER_NAME; ?></td>
+		  <td align="right"><?php echo TEXT_SENDER_NAME . ': '; ?></td>
 		  <td><?php echo html_input_field('from_name', $from_name) . ' ' . TEXT_EMAIL . html_input_field('from_email', $from_email, 'size="40"'); ?></td>
 	    </tr>
 	    <tr>

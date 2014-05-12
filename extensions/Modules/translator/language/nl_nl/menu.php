@@ -9,6 +9,6 @@
 // Path: /modules/translator/language/nl_nl/menu.php
 
 define('MENU_HEADING_TRANSLATOR','Vertaal Tool');
-define('TEXT_TRANSLATOR_ASS','Vertaal Assistant');
+define('TEXT_TRANSLATOR_ASSISTANT','Vertaal Assistant');
 
 ?>

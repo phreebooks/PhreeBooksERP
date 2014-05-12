@@ -83,7 +83,7 @@ switch ($_REQUEST['action']) {
 			$admin_classes[$method]->delete(DIR_FS_MY_FILES.$_SESSION['company'].'/');
 			$db->transCommit();
 			if (sizeof($admin_classes[$method]->notes) > 0) foreach ($admin_classes[$method]->notes as $note) $messageStack->add($note, 'caution');
-			gen_add_audit_log(sprintf(AUDIT_LOG_REMOVE_SUCCESS, $admin_classes[$method]->text));
+			gen_add_audit_log(sprintf(TEXT_UNINSTALLED_MODULE, $admin_classes[$method]->text));
 			break;
   		}catch (Exception $e){
   			$db->transRollback();
@@ -198,7 +198,7 @@ switch ($_REQUEST['action']) {
 			$db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '" . $co_name . "'
 			  where configuration_key = 'COMPANY_NAME'");
 			$messageStack->add(SETUP_CO_MGR_CREATE_SUCCESS,'success');
-			gen_add_audit_log(TEXT_COMPANY_MANAGER. ' - ' . TEXT_COPY, $db_name);
+			gen_add_audit_log(sprintf(TEXT_MANAGER_ARGS, TEXT_COMPANY). ' - ' . TEXT_COPY, $db_name);
 			$_SESSION['db_server'] = $db_server;
 			$_SESSION['company']   = $db_name;
 			$_SESSION['db_user']   = $db_user;
@@ -241,7 +241,7 @@ switch ($_REQUEST['action']) {
 	    if (is_array($tables)) foreach ($tables as $table) $del_db->Execute("drop table " . $table);
 	    $backup->delete_dir(DIR_FS_MY_FILES . $db_name);
 	    unset($_SESSION['companies'][$_POST['del_company']]);
-	    gen_add_audit_log(TEXT_COMPANY_MANAGER. ' - ' . TEXT_DELETE, $db_name);
+	    gen_add_audit_log(sprintf(TEXT_MANAGER_ARGS, TEXT_COMPANY). ' - ' . TEXT_DELETE, $db_name);
 	    $messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_COMPANY, $_POST['del_company']), 'success');
 	}
 	$default_tab_id = 'manager';
@@ -297,7 +297,7 @@ $sel_format = array(
 );
 $sel_order_lines = array(
   array('id' => '0', 'text' => TEXT_DOUBLE_MODE),
-  array('id' => '1', 'text' => TEXT_SINGLE_MODE),
+  array('id' => '1', 'text' => TEXT_SINGLE_LINE_ENTRY),
 );
 $sel_ie_method = array(
   array('id' => 'l', 'text' => TEXT_LOCAL),

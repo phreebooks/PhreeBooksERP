@@ -51,7 +51,7 @@
 	    <td align="center"><?php echo html_pull_down_menu('inv_assy_default_costing',  $cost_methods, $_POST['inv_assy_default_costing'] ? $_POST['inv_assy_default_costing'] : INV_ASSY_DEFAULT_COSTING, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo TEXT_SERIAL_ITEMS; ?></td>
+	    <td><?php echo TEXT_SERIALIZED; ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_serialize_default_sales', $inc_chart,  $_POST['inv_serialize_default_sales'] ? $_POST['inv_serialize_default_sales'] : INV_SERIALIZE_DEFAULT_SALES, ''); ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_serialize_default_inventory', $inv_chart,  $_POST['inv_serialize_default_inventory'] ? $_POST['inv_serialize_default_inventory'] : INV_SERIALIZE_DEFAULT_INVENTORY, ''); ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_serialize_default_cos', $cog_chart,  $_POST['inv_serialize_default_cos'] ? $_POST['inv_serialize_default_cos'] : INV_SERIALIZE_DEFAULT_COS, ''); ?></td>

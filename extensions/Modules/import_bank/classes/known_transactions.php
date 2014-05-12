@@ -102,7 +102,7 @@ class known_transactions {
 	$output .= '  </thead>' . "\n";
 	$output .= '  <tbody class="ui-widget-content">' . "\n";
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . TEXT_BANK_ACCOUNT . '</td>' . chr(10);
+	$output .= '    <td>' . TEXT_BANK_ACCOUNT_OR_IBAN . '</td>' . chr(10);
 	$output .= '    <td>' . html_input_field('bank_account', $this->bank_account) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);

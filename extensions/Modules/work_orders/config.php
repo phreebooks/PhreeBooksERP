@@ -47,21 +47,21 @@ $pb_headings[MENU_HEADING_WORK_ORDER_ORDER] = array(
 if (defined('MODULE_WORK_ORDERS_STATUS')) {
   // Set the menus
   $mainmenu["inventory"]['submenu']['wo_module'] = array(
-    'text'        => BOX_WORK_ORDERS_MODULE,
+    'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_WORK_ORDER),
     'order'       => BOX_WORK_ORDERS_MODULE_ORDER,
     'security_id' => SECURITY_WORK_ORDERS,
     'link'        => html_href_link(FILENAME_DEFAULT, 'module=work_orders&amp;page=main', 'SSL'),
     'show_in_users_settings' => true,
   );
   $mainmenu["inventory"]['submenu']['wo_builder'] = array(
-    'text'        => BOX_WORK_ORDERS_BUILDER,
+    'text'        => TEXT_WORK_ORDER_BUILDER,
     'order'        => BOX_WORK_ORDERS_BUILDER_ORDER,
     'security_id' => SECURITY_WORK_ORDERS_BUILDER,
     'link'        => html_href_link(FILENAME_DEFAULT, 'module=work_orders&amp;page=builder', 'SSL'),
     'show_in_users_settings' => true,
   );
   $mainmenu["inventory"]['submenu']['wo_task'] = array(
-    'text'        => TEXT_WORK_ORDERS_TASK,
+    'text'        => TEXT_WORK_ORDER_TASKS,
     'order'        => BOX_WORK_ORDERS_MODULE_TASK_ORDER,
     'security_id' => SECURITY_WORK_ORDERS_TASK,
     'link'        => html_href_link(FILENAME_DEFAULT, 'module=work_orders&amp;page=tasks', 'SSL'),

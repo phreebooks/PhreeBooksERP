@@ -109,7 +109,7 @@ $sel_gl_desc = array(
 
 $sel_order_lines = array(
   array('id' => '0', 'text' => TEXT_DOUBLE_MODE),
-  array('id' => '1', 'text' => TEXT_SINGLE_MODE),
+  array('id' => '1', 'text' => TEXT_SINGLE_LINE_ENTRY),
 );
 
 $sel_inv_due = array( // invoice date versus due date for aging

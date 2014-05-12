@@ -113,7 +113,7 @@ switch (JOURNAL_ID) {
 	break;
   case 10:	// Sales Order Journal
 	define('POPUP_FORM_TYPE','cust:so');
-	$page_title = ORD_TEXT_10_WINDOW_TITLE;
+	$page_title = TEXT_SALES_ORDER;
 	break;
   case 12:	// Invoice Journal
 	if (defined('MODULE_SHIPPING_STATUS')) {
@@ -134,7 +134,7 @@ switch (JOURNAL_ID) {
 	break;
   case 20:	// Cash Distribution Journal
 	define('POPUP_FORM_TYPE','bnk:chk');
-	$page_title = ORD_TEXT_20_V_WINDOW_TITLE;
+	$page_title = TEXT_VENDOR_PAYMENTS;
 	break;
   default:
 }

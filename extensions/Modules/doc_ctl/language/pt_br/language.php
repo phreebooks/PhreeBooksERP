@@ -8,11 +8,11 @@
 // +-----------------------------------------------------------------+
 // Path: /modules/doc_ctl/language/pt_br/language.php
 
-define('TEXT_BOOKMARK_DOC','Marcar Documento');
+define('TEXT_BOOKMARK_DOCUMENT','Marcar Documento');
 define('TEXT_BOOKMARKED','Marcado');
 define('TEXT_CANCEL_CHECKOUT','Cancelar Flag Conferido');
 define('TEXT_CHECKED_OUT','Conferido');
-define('TEXT_CHECKOUT_DOC','Conferir Documento');
+define('TEXT_CHECK_OUT_DOCUMENT','Conferir Documento');
 define('TEXT_CREATE_DATE','Data Criação');
 define('TEXT_DETAILS','Detalhes');
 define('TEXT_DOCUMENT','Documento:');
@@ -26,7 +26,7 @@ define('TEXT_LAST_VIEW','Última Visualização');
 define('TEXT_LOCK_DOC','Travar Documento');
 define('TEXT_LOCKED','Travado');
 define('TEXT_MY_BOOKMARKS','Minhas Marcações');
-define('TEXT_MY_CHECKED_OUT','Arquivos Verificados');
+define('TEXT_CHECKED_OUT_FILES','Arquivos Verificados');
 define('TEXT_NEW_FOLDER','Nova Pasta');
 define('TEXT_NEW_DOCUMENT','Novo Documento');
 define('TEXT_NO_BOOKMARKS','Não foram feitas marcações');
@@ -38,8 +38,8 @@ define('TEXT_RECENTLY_ADDED','Documentos Recentes');
 define('TEXT_REMOVE_BOOKMARK','Remover Marcação');
 define('TEXT_REVISION','Revisão');
 define('TEXT_THUMBNAIL','Miniatura');
-define('TEXT_UNLOCK_DOC','Destravar Documentos');
-define('TEXT_UPLOAD_FILE','Subir Revisão');
+define('TEXT_UNLOCK_DOCUMENT','Destravar Documentos');
+define('TEXT_UPLOAD_REVISION','Subir Revisão');
 define('DOC_CTL_EMPTY_FOLDER','A pasta não contém nenhum documento.');
 define('DOC_CTL_FILE_WRITE_ERROR','Houve um erro ao gravar o arquivo. Verifique as permissões da pasta (%s)e tente novamente.');
 define('DOC_CTL_ITEMS','Pastas e Documentos');

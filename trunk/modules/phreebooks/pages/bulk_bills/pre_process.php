@@ -204,6 +204,6 @@ $cal_bills2 = array(
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', ORD_TEXT_20_V_WINDOW_TITLE);
+define('PAGE_TITLE', TEXT_VENDOR_PAYMENTS);
 
 ?>

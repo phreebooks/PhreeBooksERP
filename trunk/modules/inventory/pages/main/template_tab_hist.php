@@ -63,7 +63,7 @@
 				$odd = !$odd;
 			  }
 			} else {
-			  echo '<tr><td align="center" colspan="4">' . ACT_NO_RESULTS . '</td></tr>' . chr(10);
+			  echo '<tr><td align="center" colspan="4">' . TEXT_NO_RESULTS_FOUND . '</td></tr>' . chr(10);
 			}
 		  ?>
 		 </tbody>
@@ -94,7 +94,7 @@
 				$odd = !$odd;
 			  }
 			} else {
-			  echo '<tr><td align="center" colspan="4">' . ACT_NO_RESULTS . '</td></tr>' . chr(10);
+			  echo '<tr><td align="center" colspan="4">' . TEXT_NO_RESULTS_FOUND . '</td></tr>' . chr(10);
 			}
 		  ?>
 		 </tbody>
@@ -107,7 +107,7 @@
 		    <th width="25%"><?php echo TEXT_LAST_MONTH; ?></th>
 		    <th width="25%"><?php echo TEXT_3_MONTHS; ?></th>
 		    <th width="25%"><?php echo TEXT_6_MONTHS; ?></th>
-		    <th width="25%"><?php echo TEXT_LAST_12_MONTH; ?></th>
+		    <th width="25%"><?php echo TEXT_12_MONTHS; ?></th>
 		  </tr>
 		 </thead>
 		 <tbody class="ui-widget-content">
@@ -127,7 +127,7 @@
 		  <tr><th colspan="4"><?php echo INV_PURCH_BY_MONTH; ?></th></tr>
 		  <tr>
 		    <th><?php echo TEXT_YEAR; ?></th>
-		    <th><?php echo TEXT_MONTH; ?></th>
+		    <th><?php echo TEXT_THIS_MONTH; ?></th>
 		    <th><?php echo TEXT_QUANTITY; ?></th>
 		    <th><?php echo INV_PURCH_COST; ?></th>
 		  </tr>
@@ -147,7 +147,7 @@
 			$odd = !$odd;
 		  }
 		} else {
-		  echo '<tr><td align="center" colspan="4">' . ACT_NO_RESULTS . '</td></tr>' . chr(10);
+		  echo '<tr><td align="center" colspan="4">' . TEXT_NO_RESULTS_FOUND . '</td></tr>' . chr(10);
 		}
 	  ?>
 		</tbody>
@@ -161,7 +161,7 @@
 		  <tr><th colspan="4"><?php echo TEXT_SALES_BY_MONTH; ?></th></tr>
 		  <tr>
 		    <th><?php echo TEXT_YEAR; ?></th>
-		    <th><?php echo TEXT_MONTH; ?></th>
+		    <th><?php echo TEXT_THIS_MONTH; ?></th>
 		    <th><?php echo TEXT_QUANTITY; ?></th>
 		    <th><?php echo TEXT_SALES_INCOME; ?></th>
 		  </tr>
@@ -181,7 +181,7 @@
 			$odd = !$odd;
 		  }
 		} else {
-		  echo '<tr><td align="center" colspan="4">' . ACT_NO_RESULTS . '</td></tr>' . chr(10);
+		  echo '<tr><td align="center" colspan="4">' . TEXT_NO_RESULTS_FOUND . '</td></tr>' . chr(10);
 		}
 	  ?>
 		</tbody>
