@@ -174,13 +174,13 @@ function what_to_update(){
 
 function update_full_price_incl_tax(margin, inclTax, fullprice) {
 //calculate margin
+	var highest = 0;
 	if(margin){
-		var highest = 0;
 		var x=document.getElementsByName("item_cost_array[]");
 		for (var i = 0; i < x.length; i++) { 
         	var temp = x.item(i).value;
         	var calculate = cleanCurrency(temp);
-        	if(calculate > highest){
+        	if(parseFloat(calculate) > parseFloat(highest)){
         		 highest = calculate;
         	}
         }

@@ -1304,7 +1304,7 @@ function fillInventory(sXml) {
 			  document.getElementById('sku_'+rowCnt).style.backgroundColor = 'MediumOrchid';
 			  document.getElementById('sku_'+rowCnt).title = ItemIsOnOrder;
 		  }else if($(xml).find("branch_qty_in_stock").text() == 0) {
-			  document.getElementById('sku_'+rowCnt).style.backgroundColor = 'MediumPurple ';
+			  document.getElementById('sku_'+rowCnt).style.backgroundColor = 'FF6633';
 			  document.getElementById('sku_'+rowCnt).title = ItemMustBeOrderd;
 		  }
 	  } else {

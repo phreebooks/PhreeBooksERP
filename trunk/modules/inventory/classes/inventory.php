@@ -63,7 +63,7 @@ class inventory {
 	 * this function gets inventory details from the database by id
 	 * @param integer $id
 	 */
-	function get_item_by_id(integer $id) {
+	function get_item_by_id($id) {
 		global $db;
 		$this->purchases_history = null;
 		$this->sales_history	 = null;
@@ -87,7 +87,7 @@ class inventory {
 	 * @param char $sku
 	 */
 	
-	function get_item_by_sku(char $sku){
+	function get_item_by_sku($sku){
 		global $db;
 		$this->purchases_history = null;
 		$this->sales_history	 = null;

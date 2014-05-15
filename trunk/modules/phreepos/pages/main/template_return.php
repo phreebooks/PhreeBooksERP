@@ -208,10 +208,12 @@ echo $hidden_fields;
   	<param name="archive"   value="<?php echo DIR_WS_ADMIN . 'modules/phreedom/includes/jzebra/jzebra.jar'; ?>" />
   	<param name="code"      value="jzebra.PrintApplet.class" />
   	<param name="mayscript" value="true" />
+	<param name="cache_option" value="yes"/>
 </object>
 -->
   <applet id="qz" name="QZ Print Plugin" code="qz.PrintApplet.class" archive="<?php echo DIR_WS_ADMIN . 'modules/phreedom/includes/jzebra/qz-print.jar'; ?>" width="16px" height="16px">
 	<param name="permissions" value="all-permissions" />
+	<param name="cache_option" value="yes"/>
   </applet>
 <div id="popupPayment">
 <?php 

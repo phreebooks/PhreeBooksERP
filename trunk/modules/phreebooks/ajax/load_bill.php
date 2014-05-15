@@ -34,13 +34,13 @@ $jID   = db_prepare_input($_GET['jID']); // journal ID
 define('JOURNAL_ID', $jID);
 
 if ($bID) {
-  $bill = $db->Execute("select * from " . TABLE_JOURNAL_MAIN . " where id = '" . $bID . "'");
+  $bill = $db->Execute("select * from " . TABLE_JOURNAL_MAIN . " where id = '$bID'");
   if ($bill->fields['bill_acct_id']) $cID = $bill->fields['bill_acct_id']; // replace bID with ID from payment
 } else {
   $bill = new objectInfo();
 }
 // select the customer and build the contact record
-$contact = $db->Execute("select * from " . TABLE_CONTACTS . " where id = '" . $cID . "'");
+$contact = $db->Execute("select * from " . TABLE_CONTACTS . " where id = '$cID'");
 $type = $contact->fields['type'];
 define('ACCOUNT_TYPE', $type);
 $bill_add  = $db->Execute("select * from " . TABLE_ADDRESS_BOOK . " 

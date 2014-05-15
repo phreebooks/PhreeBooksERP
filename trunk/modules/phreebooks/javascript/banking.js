@@ -196,7 +196,7 @@ function fillBill(xml) {
 	insertValue('dscnt_' + jIndex, $(this).find("discount").text());
 	insertValue('total_' + jIndex, $(this).find("amount_paid").text());
 	if ($(this).find("waiting").text() == '1') { // waiting for invoice (no invoice number)
-		document.getElementById('desc_' + jIndex).readOnly  = true;
+		document.getElementById('desc_'  + jIndex).readOnly = true;
 		document.getElementById('dscnt_' + jIndex).readOnly = true;
 		document.getElementById('total_' + jIndex).readOnly = true;
 		document.getElementById('item_table').rows[rowCnt-1].className = 'ui-state-error';
