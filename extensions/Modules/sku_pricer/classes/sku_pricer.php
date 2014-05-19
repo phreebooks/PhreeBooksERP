@@ -63,7 +63,7 @@ class sku_pricer {
 			} elseif (isset($row['description_purchase'])) {
 				$where = " b.description_purchase like '%{$row['description_purchase']}%'";
 			}
-			if (isset($row['vendor_id'])) $where .= " b.vendor_id = '{$row['vendor_id']}'";
+			if (isset($row['vendor_id']) && $row['vendor_id']) $where .= " AND b.vendor_id = '{$row['vendor_id']}'";
 			$query = "";
 			foreach ($valid_fields as $key => $value) {
 				if (isset($row[$key])) $query .= " $value='" . db_input($row[$key]) . "',";
