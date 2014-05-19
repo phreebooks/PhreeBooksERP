@@ -92,12 +92,12 @@ class inventory_admin {
 		  account_cost_of_sales varchar(15) default NULL,
 		  item_taxable int(11) NOT NULL default '0',
 		  purch_taxable int(11) NOT NULL default '0',
-		  item_cost float NOT NULL default '0',
+		  item_cost double NOT NULL default '0',
 		  cost_method enum('a','f','l') NOT NULL default 'f',
 		  price_sheet varchar(32) default NULL,
 		  price_sheet_v varchar(32) default NULL,
-		  full_price float NOT NULL default '0',
-		  full_price_with_tax float NOT NULL default '0',
+		  full_price double NOT NULL default '0',
+		  full_price_with_tax double NOT NULL default '0',
 		  margin float NOT NULL default '0',
 		  item_weight float NOT NULL default '0',
 		  quantity_on_hand float NOT NULL default '0',
@@ -154,8 +154,8 @@ class inventory_admin {
 		  qty float NOT NULL default '0',
 		  serialize_number varchar(24) NOT NULL default '',
 		  remaining float NOT NULL default '0',
-		  unit_cost float NOT NULL default '0',
-		  avg_cost float NOT NULL default '0',
+		  unit_cost double NOT NULL default '0',
+		  avg_cost double NOT NULL default '0',
 	  	  post_date datetime default NULL,
 		  PRIMARY KEY (id),
 		  KEY sku (sku),
@@ -180,7 +180,7 @@ class inventory_admin {
 		  description_purchase varchar(255) default NULL,
 		  purch_package_quantity float NOT NULL default '1',
 		  purch_taxable int(11) NOT NULL default '0',
-		  item_cost float NOT NULL default '0', 
+		  item_cost double NOT NULL default '0', 
 		  price_sheet_v varchar(32) default NULL,
 		  PRIMARY KEY (id),
 		  INDEX (sku)
@@ -422,6 +422,14 @@ class inventory_admin {
 		$temp = unserialize($result->fields['params']);
 		$temp['inventory_type'] = 'ai:ci:ds:ia:lb:ma:mb:mi:ms:ns:sa:sf:si:sr:sv';
 		$updateDB = $db->Execute("update ".TABLE_EXTRA_FIELDS." set params='".serialize($temp)."' where id='".$result->fields['id']."'");
+		$db->Execute("ALTER TABLE ".TABLE_INVENTORY." 
+			CHANGE `item_cost` `item_cost` DOUBLE NOT NULL DEFAULT '0',
+			CHANGE `full_price` `full_price` DOUBLE NOT NULL DEFAULT '0',
+			CHANGE `full_price_with_tax` `full_price_with_tax` DOUBLE NOT NULL DEFAULT '0'");
+		$db->Execute("ALTER TABLE ".TABLE_INVENTORY_HISTORY."
+			CHANGE `unit_cost` `unit_cost` DOUBLE NOT NULL DEFAULT '0',
+			CHANGE `avg_cost` `avg_cost` DOUBLE NOT NULL DEFAULT '0'");
+		$db->Execute("ALTER TABLE ".TABLE_INVENTORY_PURCHASE." CHANGE `item_cost` `item_cost` DOUBLE NOT NULL DEFAULT '0'");
 	}
 	if (!$error) {
 		xtra_field_sync_list('inventory', TABLE_INVENTORY);
