@@ -46,9 +46,9 @@ if (!isset($_REQUEST['inventory_type'])){
 if ($type == 'as') $type = 'ma'; 
 if (file_exists(DIR_FS_WORKING . 'custom/classes/type/'.$type.'.php')) { 
 	require_once(DIR_FS_WORKING . 'custom/classes/type/'.$type.'.php'); 
-} else {
+} elseif (file_exists(DIR_FS_WORKING . 'classes/type/'.$type.'.php')) {
 	require_once(DIR_FS_WORKING . 'classes/type/'.$type.'.php'); // is needed here for the defining of the class and retriving the security_token
-}
+} else die('Bad inventory type');
 $cInfo = new $type();
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/main/extra_actions.php';
@@ -57,7 +57,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 switch ($_REQUEST['action']) {
   case 'create':
 	validate_security($security_level, 2); // security check
-	if($cInfo->check_create_new())	$_REQUEST['action'] = 'edit';
+	$_REQUEST['action'] = ($cInfo->check_create_new()) ? 'edit' : 'new'; 
 	break;
 	
   case 'save':
@@ -174,6 +174,7 @@ $include_footer   = true;
 switch ($_REQUEST['action']) {
   case 'new':
     define('PAGE_TITLE', BOX_INV_NEW);
+    $sku = isset($_REQUEST['sku']) ? $_REQUEST['sku'] : '';
     $include_template = 'template_id.php';
 	break;
   case 'create':
