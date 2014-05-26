@@ -205,7 +205,7 @@ switch ($_REQUEST['action']) {
 			$expires_year[] = array('id' => $year, 'text' => $year);
 		}
 		// load the tax rates
-		$tax_rates       = inv_calculate_tax_drop_down($type);
+		$tax_rates       = ord_calculate_tax_drop_down($type, true);
 		$sales_rep_array = gen_get_rep_ids($type);
 		$result = $db->Execute("select id, contact_first, contact_last, gl_type_account from ".TABLE_CONTACTS." where type='e'");
 		$reps       = array();

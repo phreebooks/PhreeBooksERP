@@ -17,7 +17,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreedom/pages/pw_lost/template_main.php
 //
-echo html_form('pw_lost', FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;action=lost_pw&amp;req=pw_lost_sub') . chr(10);
+echo html_form('pw_lost', FILENAME_DEFAULT, 'action=SendLostPassWord') . chr(10);
 ?>
 <div style="margin-left:25%;margin-right:25%;margin-top:50px;">
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
@@ -28,11 +28,11 @@ echo html_form('pw_lost', FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;a
   <tr><td colspan="2"><h2><?php echo TEXT_PASSWORD_FORGOTTEN; ?></h2></td></tr>
   <tr>
    <td nowrap="nowrap">&nbsp;&nbsp;<?php echo TEXT_ADMIN_EMAIL; ?></td>
-   <td><?php echo html_input_field('admin_email', $_POST['admin_email'], 'size="60"'); ?></td>
+   <td><?php echo html_input_field('admin_email', $cInfo->admin_email, 'size="60"'); ?></td>
   </tr>
   <tr>
    <td nowrap="nowrap">&nbsp;&nbsp;<?php echo sprintf(TEXT_SELECT_ARGS, TEXT_COMPANY); ?></td>
-   <td><?php echo html_pull_down_menu('company', $_SESSION['companies'], $company_index, '', true); ?></td>
+   <td><?php echo html_pull_down_menu('company', $_SESSION['companies'], $cInfo->company_index, '', true); ?></td>
   </tr>
   <tr><td colspan="2" align="right"><?php echo html_submit_field('submit', TEXT_PASSWORD_FORGOTTEN) . '&nbsp;&nbsp;'; ?></td></tr>
  </tbody>

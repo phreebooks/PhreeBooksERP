@@ -32,7 +32,7 @@ class orders extends \core\classes\journal {
 	public $purchase_invoice_id;
 	public $bill_add_update		= false;
  	public $closed 				= false;
- 	public $journal_id          = JOURNAL_ID;
+ 	public $journal_id          = JOURNAL_ID;//@todo remove
 	public $gl_type             = GL_TYPE;
 	public $gl_acct_id          = DEF_GL_ACCT;
 	public $currencies_code     = DEFAULT_CURRENCY;

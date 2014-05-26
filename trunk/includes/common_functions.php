@@ -349,23 +349,6 @@
     return $result_array;
   }
 
-  function inv_calculate_tax_drop_down($type = 'c', $contactForm = true) {
-    global $db;
-    $tax_rates = $db->Execute("select tax_rate_id, description_short
-		from " . TABLE_TAX_RATES . " where type = '" . $type . "'");
-    $tax_rate_drop_down = array();
-    if ($contactForm) $tax_rate_drop_down[] = array('id' => '-1', 'text' => TEXT_PRODUCT_DEFAULT);
-    $tax_rate_drop_down[] = array('id' => '0', 'text' => TEXT_NONE);
-	while (!$tax_rates->EOF) {
-	  $tax_rate_drop_down[] = array(
-	    'id'   => $tax_rates->fields['tax_rate_id'],
-		'text' => $tax_rates->fields['description_short'],
-	  );
-	  $tax_rates->MoveNext();
-	}
-	return $tax_rate_drop_down;
-  }
-
   function gen_terms_to_language($terms_encoded, $short = true, $type = 'AR') {
 	gen_pull_language('contacts'); // required for calculating terms
 	$type   = strtoupper($type);

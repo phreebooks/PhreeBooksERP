@@ -517,5 +517,444 @@ class admin extends \core\classes\admin {
 		$result = $db->Execute("select id from " . TABLE_INVENTORY . " where sku = '$sku'");
 		if ($result->RecordCount() <> 0) throw new \core\classes\userException(sprintf(ERROR_DUPLICATE_SKU, $name));
 	}
+
+	// functions part
+
+	/**
+	 * this will delete a inventory item
+	 * @param \core\classes\basis $basis
+	 */
+	function DeleteInventoryItem (\core\classes\basis $basis){
+		\core\classes\user::validate_security_by_token(SECURITY_ID_MAINTAIN_INVENTORY, 4); // security check
+		if (!isset($basis->cInfo['inventory_type'])) throw new \core\classes\userException();//@todo
+		$temp = '\inventory\classes\type\\'. $basis->cInfo['inventory_type'];
+		$cInfo = new $temp;
+		$cInfo->check_remove($basis->cInfo['id']);
+		$basis->cInfo = null;
+		$basis->fireEvent("LoadInventoryManager");
+	}
+
+	function RenameInventoryItem (\core\classes\basis $basis){
+		\core\classes\user::validate_security_by_token(SECURITY_ID_MAINTAIN_INVENTORY, 4); // security check
+		if (!isset($basis->cInfo['inventory_type'])) throw new \core\classes\userException();//@todo
+		$temp = '\inventory\classes\type\\'. $basis->cInfo['inventory_type'];
+		$cInfo = new $temp;
+		$cInfo->rename($basis->cInfo['id'], $basis->cInfo['sku']);
+		$basis->cInfo = null;
+		$basis->fireEvent("LoadInventoryManager");
+	}
+
+	function CopyInventoryItem (\core\classes\basis $basis){
+		\core\classes\user::validate_security_by_token(SECURITY_ID_MAINTAIN_INVENTORY, 2); // security check
+		if (!isset($basis->cInfo['inventory_type'])) throw new \core\classes\userException();//@todo
+		$temp = '\inventory\classes\type\\'. $basis->cInfo['inventory_type'];
+		$cInfo = new $temp;
+		$cInfo->copy($basis->cInfo['id'], $basis->cInfo['sku']);
+		$basis->cInfo = null;
+		$basis->fireEvent("LoadEditInventoryItem");
+	}
+
+	function CreateInventoryItem (\core\classes\basis $basis){
+		\core\classes\user::validate_security_by_token(SECURITY_ID_MAINTAIN_INVENTORY, 2); // security check
+		if (!isset($basis->cInfo['inventory_type'])) throw new \core\classes\userException();//@todo
+		$temp = '\inventory\classes\type\\'. $basis->cInfo['inventory_type'];
+		$cInfo->check_create_new();
+		$basis->cInfo = null;
+		$basis->fireEvent("LoadEditInventoryItem");
+	}
+
+	function LoadEditInventoryItem (\core\classes\basis $basis){
+		$basis->security_level	= \core\classes\user::validate(SECURITY_ID_MAINTAIN_INVENTORY);
+		if (!isset($basis->cInfo['inventory_type'])) throw new \core\classes\userException();//@todo
+		$temp = '\inventory\classes\type\\'. $basis->cInfo['inventory_type'];
+		if(isset($basis->cInfo['id'])) 		$cInfo->get_item_by_id($basis->cInfo['id']);
+		if(isset($basis->cInfo['rowSeq'])) 	$cInfo->get_item_by_id($basis->cInfo['rowSeq']);
+		if(isset($basis->cInfo['sku'])) 	$cInfo->get_item_by_sku($basis->cInfo['sku']);
+		$basis->page_title		= sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY);
+		$basis->module			= 'inventory';
+		$basis->page			= 'main';
+		$basis->template 		= 'template_detail';
+		$basis->notify();//final line
+	}
+
+  	function LoadPropertiesInventoryItem (\core\classes\basis $basis){
+  		$basis->security_level	= \core\classes\user::validate(SECURITY_ID_MAINTAIN_INVENTORY);
+		$basis->include_header	= false;
+		$basis->include_footer	= false;
+		$this->LoadEditInventoryItem ($basis);
+  	}
+
+  	function LoadNewInventoryItem (\core\classes\basis $basis){
+  		$basis->security_level	= \core\classes\user::validate(SECURITY_ID_MAINTAIN_INVENTORY);
+  		$basis->page_title		= sprintf(TEXT_NEW_ARGS, TEXT_INVENTORY_ITEM);
+  		$basis->module			= 'inventory';
+  		$basis->page			= 'main';
+  		$basis->template 		= 'template_id';
+  		$basis->notify();//final line
+  	}
+
+  	function LoadInventoryManager (\core\classes\basis $basis){
+  		$basis->security_level	= \core\classes\user::validate(SECURITY_ID_MAINTAIN_INVENTORY);
+  		//building filter criteria
+  		$_SESSION['filter_field'] 	 = isset( $basis->cInfo['filter_field']) 	?  $basis->cInfo['filter_field'] : $_SESSION['filter_field'];
+  		$_SESSION['filter_criteria'] = isset( $basis->cInfo['filter_criteria']) ?  $basis->cInfo['filter_criteria'] : $_SESSION['filter_criteria'];
+  		$_SESSION['filter_value'] 	 = isset( $basis->cInfo['filter_value']) 	?  $basis->cInfo['filter_value'] : $_SESSION['filter_value'];
+  		$filter_criteria = Array(" = "," != "," LIKE "," NOT LIKE "," > "," < ");
+  		$x = 0;
+  		history_filter('inventory');
+  		while (isset($_SESSION['filter_field'][$x])) {
+  			if(      $filter_criteria[$_SESSION['filter_criteria'][$x]] == " LIKE " || $_SESSION['filter_criteria'][$x] == TEXT_CONTAINS){
+  				if ( $_SESSION['filter_value'][$x] <> '' ) $criteria[] = "{$_SESSION['filter_field'][$x]} Like '%{$_SESSION['filter_value'][$x]}%' ";
+  			}elseif( $filter_criteria[$_SESSION['filter_criteria'][$x]] == " NOT LIKE "){
+  				if ( $_SESSION['filter_value'][$x] <> '' ) $criteria[] = "{$_SESSION['filter_field'][$x]} Not Like '%{$_SESSION['filter_value'][$x]}%' ";
+  			}elseif( $filter_criteria[$_SESSION['filter_criteria'][$x]] == " = "  && $_SESSION['filter_value'][$x] == ''){
+  				if ( $_SESSION['filter_field'][$x] == 'a.sku' && $_SESSION['filter_value'][$x] == '' ) { $x++; continue; }
+  				$criteria[] = "({$_SESSION['filter_field'][$x]} {$filter_criteria[$_SESSION['filter_criteria'][$x]]} '{$_SESSION['filter_value'][$x]}' or '{$_SESSION['filter_field'][$x]}' IS NULL ) ";
+  			}elseif( $filter_criteria[$_SESSION['filter_criteria'][$x]] == " != " && $_SESSION['filter_value'][$x] == ''){
+  				$criteria[] = "({$_SESSION['filter_field'][$x]} {$filter_criteria[$_SESSION['filter_criteria'][$x]]} '{$_SESSION['filter_value'][$x]}' or '{$_SESSION['filter_field'][$x]}' IS NOT NULL ) ";
+  			}else{
+  				$criteria[] = $_SESSION['filter_field'][$x] . $filter_criteria[$_SESSION['filter_criteria'][$x]]. ' "' . $_SESSION['filter_value'][$x] . '" ';
+  			}
+  			$x++;
+  		}
+
+  		// build the list header
+  		$heading_array = array(
+  				'a.sku'                     => TEXT_SKU,
+  				'a.inactive'                => TEXT_INACTIVE,
+  				'a.description_short'       => TEXT_DESCRIPTION,
+  				'a.quantity_on_hand'        => TEXT_QUANTITY_ON_HAND_SHORT,
+  				'a.quantity_on_sales_order' => INV_HEADING_QTY_ON_SO,
+  				'a.quantity_on_allocation'  => INV_HEADING_QTY_ON_ALLOC,
+  				'a.quantity_on_order'       => TEXT_QUANTITY_ON_ORDER_SHORT,
+  		);
+  		$result      = html_heading_bar($heading_array);
+  		$list_header = $result['html_code'];
+  		$disp_order  = $result['disp_order'];
+  		//	if ($disp_order == 'a.sku ASC') $disp_order ='LPAD(a.sku,'.MAX_INVENTORY_SKU_LENGTH.',0) ASC';
+  		//	if ($disp_order == 'a.sku DESC')$disp_order ='LPAD(a.sku,'.MAX_INVENTORY_SKU_LENGTH.',0) DESC';
+  		// build the list for the page selected
+  		if (isset($basis->cInfo['search_text']) && $basis->cInfo['search_text'] <> '') {
+  			$search_fields = array('a.sku', 'a.description_short', 'a.description_sales', 'p.description_purchase');
+  			// hook for inserting new search fields to the query criteria.
+  			if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
+  			$criteria[] = '(' . implode(' like \'%' . $basis->cInfo['search_text'] . '%\' or ', $search_fields) . ' like \'%' . $_REQUEST['search_text'] . '%\')';
+  		}
+  		// build search filter string
+  		$search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
+  		$field_list = array('a.id as id', 'a.sku as sku', 'inactive', 'inventory_type', 'description_short', 'full_price',
+  				'quantity_on_hand', 'quantity_on_order', 'quantity_on_sales_order', 'quantity_on_allocation', 'last_journal_date');
+  		// hook to add new fields to the query return results
+  		if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
+  		$query_raw    = "SELECT SQL_CALC_FOUND_ROWS DISTINCT " . implode(', ', $field_list)  . " from " . TABLE_INVENTORY ." a LEFT JOIN " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku ". $search . " order by $disp_order ";
+  		//check if sql is executed before otherwise retrieve from memorie.
+  		if (isset($basis->sqls[$query_raw])) $query_result = $basis->sqls[$query_raw];
+  		else $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($basis->cInfo['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+  		$query_split  = new \core\classes\splitPageResults($basis->cInfo['list'], '');
+  		$basis->sqls[$query_raw] = $query_result; // storing data into cache memory
+  		history_save('inventory');
+  		// the following should save loading time.
+  		if ($this->FirstValue == '' || $this->FirstId  == '' || $this->SecondField  == '' || $this->SecondFieldValue  == '' || $this->SecondFieldId	 == '' ) $this->LoadInventoryFilter();
+  		//end building array's for filter dropdown selection
+  		$basis->page_title		= sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY);
+  		$basis->module			= 'inventory';
+  		$basis->page			= 'main';
+  		$basis->template 		= 'template_main';
+  		$basis->notify();//final line
+  	}
+
+  	function LoadInventoryFilter(){
+  		global $db;
+  		//building array's for filter dropdown selection
+  		$i=0;
+  		$result = $db->Execute("SELECT * FROM " . TABLE_EXTRA_FIELDS ." WHERE module_id = 'inventory' AND use_in_inventory_filter = '1' ORDER BY description ASC");
+  		$this->FirstValue 		= 'var FirstValue = new Array();' 		. chr(10);
+  		$this->FirstId 			= 'var FirstId = new Array();' 			. chr(10);
+  		$this->SecondField 		= 'var SecondField = new Array();' 		. chr(10);
+  		$this->SecondFieldValue	= 'var SecondFieldValue = new Array();'	. chr(10);
+  		$this->SecondFieldId		= 'var SecondFieldId = new Array();' 	. chr(10);
+  		while (!$result->EOF) {
+  			if(in_array($result->fields['field_name'], array('vendor_id','description_purchase','item_cost','purch_package_quantity','purch_taxable','price_sheet_v')) ){
+  				$append 	= 'p.';
+  			}else{
+  				$append 	= 'a.';
+  			}
+  			$this->FirstValue 	.= "FirstValue[$i] = '{$result->fields['description']}';" . chr(10);
+  			$this->FirstId 		.= "FirstId[$i] = '$append{$result->fields['field_name']}';" . chr(10);
+  			Switch($result->fields['field_name']){
+  				case 'vendor_id':
+  					$contacts = gen_get_contact_array_by_type('v');
+  					$tempValue  ='Array("'  ;
+  					$tempId 	='Array("' ;
+  					while ($contact = array_shift($contacts)) {
+  						$tempValue .= $contact['id'].'","';
+  						$tempId    .= str_replace( array("/","'",chr(34),) , ' ', $contact['text']).'","';
+  					}
+  					$tempValue  .='")' ;
+  					$tempId 	.='")' ;
+  					$this->SecondField		.= "SecondField['$append{$result->fields['field_name']}'] = 'drop_down';" . chr(10);
+  					$this->SecondFieldValue	.= "SecondFieldValue['$append{$result->fields['field_name']}] = $tempValue;" . chr(10);
+  					$this->SecondFieldId	.= "SecondFieldId['$append . $result->fields['field_name']	. '] = $tempId;" . chr(10);
+  					break;
+
+  				case'inventory_type':
+  					$tempValue 	='Array("'  ;
+  					$tempId 	='Array("' ;
+  					foreach ($inventory_types_plus as $key => $value){
+  						$tempValue .= $key.'","';
+  						$tempId    .= $value.'","';
+  					}
+  					$tempValue 	.='")' ;
+  					$tempId 	.='")' ;
+  					$this->SecondField		.= "SecondField['$append{$result->fields['field_name']}'] = 'drop_down';" . chr(10);
+  					$this->SecondFieldValue	.= "SecondFieldValue['$append{$result->fields['field_name']}'] = $tempValue;" . chr(10);
+  					$this->SecondFieldId	.= "SecondFieldId['$append{$result->fields['field_name']}'] = $tempId;" . chr(10);
+  					break;
+  				case'cost_method':
+  					$tempValue 	='Array("'  ;
+  					$tempId 	='Array("' ;
+  					foreach ($cost_methods as $key => $value){
+  						$tempValue .= $key.'","';
+  						$tempId    .= $value.'","';
+  					}
+  					$tempValue .='")' ;
+  					$tempId .='")' ;
+  					$this->SecondField		.= "SecondField['$append{$result->fields['field_name']}'] = 'drop_down';" . chr(10);
+  					$this->SecondFieldValue	.= "SecondFieldValue['$append{$result->fields['field_name']}'] = $tempValue;" . chr(10);
+  					$this->SecondFieldId	.= "SecondFieldId['$append{$result->fields['field_name']}'] = $tempId;" . chr(10);
+  					break;
+  				default:
+  					$this->SecondField.= "SecondField['$append{$result->fields['field_name']}'] ='{$result->fields['entry_type']}';" . chr(10);
+  					if(in_array($result->fields['entry_type'], array('drop_down','radio','multi_check_box'))){
+  						$tempValue 	='Array("';
+  						$tempId 	='Array("' ;
+  						//explode params and splits value form id
+  						$params  = unserialize($result->fields['params']);
+  						$choices = explode(',',$params['default']);
+  						while ($choice = array_shift($choices)) {
+  							$values 	 = explode(':',$choice);
+  							$tempValue	.= $values[0].'","';
+  							$tempId		.= $values[1].'","';
+  						}
+  						$tempValue 	.='")' ;
+  						$tempId 	.='")' ;
+  						$this->SecondFieldValue	.= "SecondFieldValue['$append{$result->fields['field_name']}'] = $tempValue;" . chr(10);
+  						$this->SecondFieldId	.= "SecondFieldId['$append{$result->fields['field_name']}'] = $tempId;" . chr(10);
+  					}
+  			}
+  			$i++;
+  			$result->MoveNext();
+  		}
+  	}
+
+  	function SaveInventoryAdjustment (\core\classes\basis $basis){
+  		\core\classes\user::validate_security_by_token(SECURITY_ID_ADJUST_INVENTORY, 2);
+  		define('GL_TYPE', '');//@todo remove
+  		$post_date           = isset($_POST['post_date'])? gen_db_date($_POST['post_date']) : date('Y-m-d');
+  		$glEntry             = new \core\classes\journal();
+  		$glEntry->id         = isset($_POST['id'])       ? $_POST['id']       : '';
+  		$glEntry->journal_id = 16;
+  		$glEntry->store_id   = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
+  		// retrieve and clean input values
+  		$glEntry->post_date           = $post_date;
+  		$glEntry->period              = gen_calculate_period($post_date);
+  		$glEntry->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);
+  		$glEntry->admin_id            = $_SESSION['admin_id'];
+  		$glEntry->closed              = '1'; // closes by default
+  		$glEntry->closed_date         = $post_date;
+  		$glEntry->currencies_code     = DEFAULT_CURRENCY;
+  		$glEntry->currencies_value    = 1;
+  		$adj_reason                   = db_prepare_input($_POST['adj_reason']);
+  		$adj_account                  = db_prepare_input($_POST['gl_acct']);
+  		// process the request
+  		$glEntry->journal_main_array  = $glEntry->build_journal_main_array();
+  		// build journal entry based on adding or subtracting from inventory
+  		$rowCnt    = 1;
+  		$adj_total = 0;
+  		$adj_lines = 0;
+  		while (true) {
+  			if (!isset($_POST['sku_'.$rowCnt])) break;
+  			$sku              = db_prepare_input($_POST['sku_'.$rowCnt]);
+  			$qty              = db_prepare_input($_POST['qty_'.$rowCnt]);
+  			$serialize_number = db_prepare_input($_POST['serial_'.$rowCnt]);
+  			$desc             = db_prepare_input($_POST['desc_'.$rowCnt]);
+  			$acct             = db_prepare_input($_POST['acct_'.$rowCnt]);
+  			$price            = $currencies->clean_value($_POST['price_'.$rowCnt]);
+  			if ($qty > 0) $adj_total += $qty * $price;
+  			if ($qty && $sku <> '' && $sku <> TEXT_SEARCH) { // ignore blank rows
+  				$glEntry->journal_rows[] = array(
+  				  'sku'              => $sku,
+  				  'qty'              => $qty,
+  				  'gl_type'          => 'adj',
+  				  'serialize_number' => $serialize_number,
+  				  'gl_account'       => $acct,
+  				  'description'      => $desc,
+  				  'credit_amount'    => 0,
+  				  'debit_amount'     => $qty > 0 ? $qty * $price : 0,
+  				  'post_date'        => $post_date,
+  				);
+  				$adj_lines++;
+  			}
+  			$rowCnt++;
+  		}
+  		if ($adj_lines == 0) throw new \core\classes\userException(INV_ADJ_QTY_ZERO);
+  		$glEntry->journal_main_array['total_amount'] = $adj_total;
+  		$glEntry->journal_rows[] = array(
+  				'sku'           => '',
+  				'qty'           => '',
+  				'gl_type'       => 'ttl',
+  				'gl_account'    => $adj_account,
+  				'description'   => $adj_reason,
+  				'debit_amount'  => 0,
+  				'credit_amount' => $adj_total,
+  				'post_date'     => $post_date,
+  		);
+  		// *************** START TRANSACTION *************************
+  		$db->transStart();
+  		$glEntry->override_cogs_acct = $adj_account; // force cogs account to be users specified account versus default inventory account
+  		if ($glEntry->Post($glEntry->id ? 'edit' : 'insert')) {
+  			$db->transCommit();	// post the chart of account values
+  			gen_add_audit_log(TEXT_INVENTORY_ADJUSTMENT . ' - ' . ($_REQUEST['action']=='save' ? TEXT_SAVE : TEXT_EDIT), $sku, $qty);
+  			$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, TEXT_INVENTORY_ADJUSTMENT, $glEntry->purchase_invoice_id), 'success');
+  			if (DEBUG) $messageStack->write_debug();
+  			$basis->cInfo = null;
+  			$basis->fireEvent("LoadInventoryAdjustments");
+  		}
+  		// *************** END TRANSACTION *************************
+  	}
+
+  	function DeleteInventoryAdjustment (\core\classes\basis $basis){
+  		\core\classes\user::validate_security_by_token(SECURITY_ID_ADJUST_INVENTORY, 4); // security check
+  		if (!$glEntry->id) throw new \core\classes\userException(GL_ERROR_NO_DELETE);
+  		$delOrd = new \core\classes\journal();
+  		$delOrd->journal($glEntry->id); // load the posted record based on the id submitted
+  		// *************** START TRANSACTION *************************
+  		$db->transStart();
+  		if ($delOrd->unPost('delete')) {
+  			$db->transCommit(); // if not successful rollback will already have been performed
+  			gen_add_audit_log(TEXT_INVENTORY_ADJUSTMENT . ' - ' . TEXT_DELETE, $delOrd->journal_rows[0]['sku'], $delOrd->journal_rows[0]['qty']);
+  			if (DEBUG) $messageStack->write_debug();
+  			$basis->cInfo = null;
+  			$basis->fireEvent("LoadInventoryAdjustments");
+  		}
+  	}
+
+  	function EditInventoryAdjustment (\core\classes\basis $basis){
+  		\core\classes\user::validate_security_by_token(SECURITY_ID_ADJUST_INVENTORY, 2); // security check
+  		$basis->cInfo = null;
+  		$basis->fireEvent("LoadInventoryAdjustments");
+  	}
+
+  	function LoadInventoryAdjustments (\core\classes\basis $basis){
+  		$basis->security_level = \core\classes\user::validate(SECURITY_ID_ADJUST_INVENTORY);
+  		$gl_array_list = gen_coa_pull_down(); // load gl accounts
+  		$cal_adj = array(
+  				'name'      => 'dateReference',
+  				'form'      => 'inv_adj',
+  				'fieldname' => 'post_date',
+  				'imagename' => 'btn_date_1',
+  				'default'   => gen_locale_date($post_date),
+  		);
+  		$basis->cInfo->gl_acct	= INV_STOCK_DEFAULT_COS;
+  		$basis->page_title		= TEXT_INVENTORY_ADJUSTMENTS;
+  		$basis->module			= 'inventory';
+  		$basis->page			= 'adjustments';
+  		$basis->template 		= 'template_main';
+  		$basis->notify();//final line
+  	}
+
+  	function SaveInventoryAssemblies (\core\classes\basis $basis){
+  		\core\classes\user::validate_security_by_token(SECURITY_ID_ASSEMBLE_INVENTORY, 2); // security check
+  		// 	retrieve and clean input values
+  		define('GL_TYPE', '');//@todo remove
+  		$glEntry             = new \core\classes\journal();
+  		$glEntry->id         = ($_POST['id'] <> '')      ? $_POST['id'] : ''; // will be null unless opening an existing gl entry
+  		$glEntry->journal_id = 14;
+  		$glEntry->store_id   = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
+  		$glEntry->post_date  = $_POST['post_date']       ? gen_db_date($_POST['post_date']) : date('Y-m-d');
+  		$glEntry->admin_id            = $_SESSION['admin_id'];
+  		$glEntry->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);
+  		$sku                          = db_prepare_input($_POST['sku_1']);
+  		$qty                          = db_prepare_input($_POST['qty_1']);
+  		$desc                         = db_prepare_input($_POST['desc_1']);
+  		$stock                        = db_prepare_input($_POST['stock_1']);
+  		$serial                       = db_prepare_input($_POST['serial_1']);
+  		// check for errors and prepare extra values
+  		$glEntry->period              = gen_calculate_period($glEntry->post_date);
+  		if (!$glEntry->period) throw new \core\classes\userException("period isn't set");
+  		// if unbuild, test for stock to go negative
+  		$result = $db->Execute("select account_inventory_wage, quantity_on_hand
+	  		  from " . TABLE_INVENTORY . " where sku = '$sku'");
+  		$sku_inv_acct = $result->fields['account_inventory_wage'];
+  		if (!$result->RecordCount()) throw new \core\classes\userException(INV_ERROR_SKU_INVALID);
+  		if ($qty < 0 && ($result->fields['quantity_on_hand'] + $qty) < 0 ) throw new \core\classes\userException(INV_ERROR_NEGATIVE_BALANCE);
+  		if (!$qty) throw new \core\classes\userException(JS_ASSY_VALUE_ZERO);
+  		// finished checking errors, reload if any errors found
+  		$cInfo = new \core\classes\objectInfo($_POST);
+  		// 	process the request, build main record
+  		$glEntry->closed = '1'; // closes by default
+  		$glEntry->journal_main_array = $glEntry->build_journal_main_array();
+  		// build journal entry based on adding or subtracting from inventory, debit/credit will be calculated by COGS
+  		$glEntry->journal_rows[] = array(
+  				'gl_type'          => 'asy',
+  				'sku'              => $sku,
+  				'qty'              => $qty,
+  				'serialize_number' => $serial,
+  				'gl_account'       => $sku_inv_acct,
+  				'description'      => $desc,
+  		);
+  		// *************** START TRANSACTION *************************
+  		$db->transStart();
+  		if (!$glEntry->Post($glEntry->id ? 'edit' : 'insert')) throw new \core\classes\userException(GL_ERROR_NO_POST);
+  		$db->transCommit();	// post the chart of account values
+  		gen_add_audit_log(TEXT_INVENTORY_ASSEMBLY . ' - ' . ($_REQUEST['action']=='save' ? TEXT_SAVE : TEXT_EDIT), $sku, $qty);
+  		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_ASSEMBLED, TEXT_SKU , $sku), 'success');
+  		if (DEBUG) $messageStack->write_debug();
+  		$basis->cInfo = null;
+  		$basis->fireEvent("LoadInventoryAssemblies");
+  	}
+
+  	function DeleteInventoryAssemblies (\core\classes\basis $basis){
+  		\core\classes\user::validate_security_by_token(SECURITY_ID_ASSEMBLE_INVENTORY, 4); // security check
+  		define('GL_TYPE', '');//@todo remove
+  		$glEntry             = new \core\classes\journal();
+  		$glEntry->id         = ($_POST['id'] <> '')      ? $_POST['id'] : ''; // will be null unless opening an existing gl entry
+  		$glEntry->journal_id = 14;
+  		$glEntry->store_id   = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
+  		$glEntry->post_date  = $_POST['post_date']       ? gen_db_date($_POST['post_date']) : date('Y-m-d');
+  		if (!$glEntry->id) throw new \core\classes\userException(GL_ERROR_NO_DELETE);
+  		$delAssy = new \core\classes\journal($glEntry->id); // load the posted record based on the id submitted
+  		// *************** START TRANSACTION *************************
+  		$db->transStart();
+  		if ($delAssy->unPost('delete')) {	// unpost the prior assembly
+  			$db->transCommit(); // if not successful rollback will already have been performed
+  			gen_add_audit_log(TEXT_INVENTORY_ASSEMBLY . ' - ' . TEXT_DELETE, $delAssy->journal_rows[0]['sku'], $delAssy->journal_rows[0]['qty']);
+  			if (DEBUG) $messageStack->write_debug();
+  			gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
+  			// *************** END TRANSACTION *************************
+  		}
+  	}
+
+  	function EditInventoryAssemblies (\core\classes\basis $basis){
+  		\core\classes\user::validate_security_by_token(SECURITY_ID_ASSEMBLE_INVENTORY, 2); // security check
+  		$basis->cInfo = null;
+  	}
+
+  	function LoadInventoryAssemblies (\core\classes\basis $basis){
+  		$basis->security_level = \core\classes\user::validate(SECURITY_ID_ASSEMBLE_INVENTORY);
+  		$cal_assy = array(
+		  'name'      => 'datePost',
+		  'form'      => 'inv_assy',
+		  'fieldname' => 'post_date',
+		  'imagename' => 'btn_date_1',
+		  'default'   => isset($glEntry->post_date) ? gen_locale_date($glEntry->post_date) : date(DATE_FORMAT),
+		);
+  		$basis->cInfo->gl_acct	= INV_STOCK_DEFAULT_COS;
+  		$basis->page_title		= INV_ASSY_HEADING_TITLE;
+  		$basis->module			= 'inventory';
+  		$basis->page			= 'assemblies';
+  		$basis->template 		= 'template_main';
+  		$basis->notify();//final line
+  	}
 }
 ?>

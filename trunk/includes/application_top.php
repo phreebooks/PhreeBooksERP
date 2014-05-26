@@ -76,12 +76,16 @@ $messageStack 	= new \core\classes\messageStack;
 $toolbar      	= new \core\classes\toolbar;
 $currencies		= APC_EXTENSION_LOADED ? apc_fetch("currencies") : false;
 if ($currencies === false) $currencies = new \core\classes\currencies;
+$admin_classes 	= APC_EXTENSION_LOADED ? apc_fetch("admin_classes")	: false;
+if ($admin_classes === false) $admin_classes = new \core\classes\basis;
 // determine what company to connect to
 if ($_REQUEST['action']=="validateLogin") $_SESSION['company'] = $_POST['company'];
 if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php')) {
 	define('DB_DATABASE', $_SESSION['company']);
 	require_once(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php');
 	define('DB_SERVER_HOST',DB_SERVER); // for old PhreeBooks installs
+
+	//$admin_classes->dataBaseConnection = new PDO();//@todo
   	// Load queryFactory db classes
   	require_once(DIR_FS_INCLUDES . 'db/' . DB_TYPE . '/query_factory.php');
   	$db = new queryFactory();
@@ -105,25 +109,9 @@ if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR
   	gen_pull_language('phreedom', 'menu');
   	gen_pull_language('phreebooks', 'menu');
   	require(DIR_FS_MODULES . 'phreedom/config.php');
-  	$admin_classes	= new \core\classes\basis;
-  	$mainmenu		= array();
-  	$admin_classes 	= APC_EXTENSION_LOADED ? apc_fetch("admin_classes")	: false;
-  	$mainmenu 		= APC_EXTENSION_LOADED ? apc_fetch("mainmenu")		: false;
-  	if($admin_classes->getNumberOfAdminClasses() == 0 || empty($mainmenu)) {
-	  	$dirs = @scandir(DIR_FS_MODULES);
-	  	if($dirs === false) throw new \core\classes\userException("couldn't read or find directory ".DIR_FS_MODULES);
-	  	foreach ($dirs as $dir) { // first pull all module language files, loaded or not
-	    	if ($dir == '.' || $dir == '..') continue;
-	    	gen_pull_language($dir, 'menu');
-	  		if (is_dir(DIR_FS_MODULES . $dir)){
-	    		$class = "\\$dir\classes\admin";
-		  		$admin_classes->attachAdminClasses($dir, new $class);
-			}
-	  	}
-	  	if (APC_EXTENSION_LOADED) apc_add("admin_classes", $admin_classes, 600);
-	  	if (APC_EXTENSION_LOADED) apc_add("currencies", $currencies, 600);
-	  	if (APC_EXTENSION_LOADED) apc_add("mainmenu", $mainmenu, 600);
-  	}
+	if (APC_EXTENSION_LOADED) apc_add("admin_classes", $admin_classes, 600);
+	if (APC_EXTENSION_LOADED) apc_add("currencies", $currencies, 600);
+	if (APC_EXTENSION_LOADED) apc_add("mainmenu", $mainmenu, 600);
   	$currencies->load_currencies();
 	// pull in the custom language over-rides for this module (to pre-define the standard language)
   	$path = DIR_FS_MODULES . "{$_REQUEST['module']}/custom/pages/{$_REQUEST['page']}/extra_menus.php";

@@ -126,7 +126,7 @@
 	  </tr>
 	  <tr>
 	    <td colspan="3"><?php echo CD_02_30_DESC; ?></td>
-	    <td><?php echo html_pull_down_menu('ar_add_sales_tax_to_shipping', inv_calculate_tax_drop_down('c',true), $_POST['ar_add_sales_tax_to_shipping'] ? $_POST['ar_add_sales_tax_to_shipping'] : AR_ADD_SALES_TAX_TO_SHIPPING, ''); ?></td>
+	    <td><?php echo html_pull_down_menu('ar_add_sales_tax_to_shipping', ord_calculate_tax_drop_down('c',true), $_POST['ar_add_sales_tax_to_shipping'] ? $_POST['ar_add_sales_tax_to_shipping'] : AR_ADD_SALES_TAX_TO_SHIPPING, ''); ?></td>
 	  </tr>
 	  <tr>
 	    <td colspan="3"><?php echo CD_02_35_DESC; ?></td>

@@ -104,7 +104,7 @@ function setSkuLength() {
 }
 
 function deleteItem(id, type) {
-	location.href = 'index.php?module=inventory&page=main&action=delete&cID='+id+'&inventory_type='+type;
+	location.href = 'index.php?action=DeleteInventoryItem&id='+id+'&inventory_type='+type;
 }
 
 function showImage() {
@@ -114,7 +114,7 @@ function showImage() {
 function copyItem(id, type) {
 	$.messager.prompt('<?php echo TEXT_COPY;?>', '<?php echo TEXT_COPY_TO; ?>', function(skuID){
 		if (skuID){
-			return location.href = 'index.php?module=inventory&page=main&action=copy&cID='+id+'&sku='+skuID+'&inventory_type='+type;
+			return location.href = 'index.php?action=CopyInventoryItem&id='+id+'&sku='+skuID+'&inventory_type='+type;
 		}
 		return false;
 	});
@@ -123,7 +123,7 @@ function copyItem(id, type) {
 function renameItem(id, type) {
 	$.messager.prompt('<?php echo TEXT_RENAME;?>', '<?php echo TEXT_RENAME_TO; ?>', function(skuID){
 		if (skuID){
-			return location.href = 'index.php?module=inventory&page=main&action=rename&cID='+id+'&sku='+skuID+'&inventory_type='+type;
+			return location.href = 'index.php?action=RenameInventoryItem&id='+id+'&sku='+skuID+'&inventory_type='+type;
 		}
 		return false;
 	});

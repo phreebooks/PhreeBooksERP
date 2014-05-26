@@ -91,6 +91,8 @@ class outputPage implements \SplObserver {
 			if(!file_exists(DIR_FS_ADMIN . "modules/{$cInfo->Module}/pages/{$cInfo->Page}/js_include.php")) trigger_error("No js_include file, looking for the file: {$cInfo->Module}/pages/{$cInfo->Page}/js_include.php", E_USER_ERROR);
 			//load the custom javascript if present
 			if (file_exists(DIR_FS_ADMIN . "modules/{$cInfo->Module}/custom/pages/{$cInfo->Page}/extra_js.php")) $this->include_php_js_files[] = DIR_FS_ADMIN . "modules/{$cInfo->Module}/custom/pages/{$cInfo->Page}/extra_js.php";
+			if (DEBUG) $messageStack->write_debug();
+			require('includes/template_index.php');
 	    	ob_end_flush();
 	    	session_write_close();
 	    	die;

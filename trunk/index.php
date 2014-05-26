@@ -29,12 +29,12 @@ else                     		$page = 'main';
 try{
 	try{
 		require_once('includes/application_top.php');
-		$messageStack->debug("\n checking if user is validated");
     	$admin_classes->attach(new \core\classes\outputPage);
     	$admin_classes->attach(new \core\classes\outputXml);
     	$admin_classes->attach(new \core\classes\outputJson);
-    	\core\classes\user::is_validated();
-    	$admin_classes->fireEvent($_REQUEST['action']);
+    	$messageStack->debug("\n checking if user is validated");
+    	\core\classes\user::is_validated($admin_classes);
+    	$admin_classes->fireEvent($admin_classes->action);
    	}catch (\core\classes\userException $e) {
    		$messageStack->add($e->getMessage());
    		if (is_object($db)) gen_add_audit_log($e->getMessage());
@@ -46,14 +46,10 @@ try{
   		}
 	}
 }catch (\Exception $e) {
-	if (!isset($page_template)) $page_template = new \core\classes\page();
 	$messageStack->add("other Exception ".$e->getMessage());
 	$messageStack->debug("\n\n".$e->getTraceAsString());
-	$page_template->loadPage("phreedom","main","template_main");
+	$admin_classes->fireEvent("loadCrashPage");
 }
-if (DEBUG) $messageStack->write_debug();
-require('includes/template_index.php');
-ob_end_flush();
-session_write_close();
-die;
+$messageStack->write_debug();
+$admin_classes->dataBaseConnection = null;
 ?>

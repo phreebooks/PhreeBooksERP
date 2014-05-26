@@ -21,7 +21,7 @@ class banking extends \core\classes\journal {
 
 	function __construct() {
 		global $db;
-		$this->journal_id          = JOURNAL_ID;
+		$this->journal_id          = JOURNAL_ID;//@todo remove
 		$this->save_payment        = false;
 		$this->search              = TEXT_SEARCH;
 		$this->bill_primary_name   = GEN_PRIMARY_NAME;

@@ -129,7 +129,7 @@ class journal_19 extends \core\classes\journal {
 		  			$pay_meth = "\payment\methods\\$method\\$method";
 		    		$$method    = new $pay_meth;
 		    		$deposit_id = $$method->def_deposit_id ? $$method->def_deposit_id : ('DP' . date('Ymd'));
-					$desc       = JOURNAL_ID . ':' . $method . ':' . $$method->payment_fields;
+					$desc       = $this->journal_id . ':' . $method . ':' . $$method->payment_fields;
 					$gl_acct_id = $$method->pos_gl_acct;
 					if ($this->opendrawer == false) $this->opendrawer = $$method->open_pos_drawer;
 					$messageStack->debug("\n payment type = ".$method." gl account id = " .$gl_acct_id. " open drawer = ".$$method->open_pos_drawer);

@@ -17,7 +17,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreedom/pages/main/template_main.php
 //
-echo html_form('login', FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;action=validateLogin', 'post', 'onsubmit="return submit_wait();"').chr(10);
+echo html_form('login', FILENAME_DEFAULT, 'action=ValidateUser', 'post', 'onsubmit="return submit_wait();"').chr(10);
 ?>
 <div style="margin-left:25%;margin-right:25%;margin-top:50px;">
 	  <table class="ui-widget">
@@ -35,7 +35,7 @@ echo html_form('login', FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;act
 			  </tr>
               <tr>
                 <td width="35%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_USERNAME; ?>:</td>
-                <td width="65%"><?php echo html_input_field('admin_name', (isset($_POST['admin_name']) ? $_POST['admin_name'] : ''), '', true); ?></td>
+                <td width="65%"><?php echo html_input_field('admin_name', (isset($cInfo->admin_name) ? $cInfo->admin_name : ''), '', true); ?></td>
               </tr>
               <tr>
                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_PASSWORD; ?>:</td>
@@ -44,7 +44,7 @@ echo html_form('login', FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;act
 <?php if (sizeof($_SESSION['companies']) != 1) { ?>
               <tr>
                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo sprintf(TEXT_SELECT_ARGS, TEXT_COMPANY); ?></td>
-                <td><?php echo html_pull_down_menu('company', $_SESSION['companies'], $_SESSION['company'], '', true); ?></td>
+                <td><?php echo html_pull_down_menu('company', $_SESSION['companies'], \core\classes\user::get_company(), '', true); ?></td>
               </tr>
 <?php } else{
 		echo html_hidden_field('company',  $_SESSION['company']) . chr(10);
@@ -52,7 +52,7 @@ echo html_form('login', FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;act
 <?php if (sizeof($_SESSION['languages']) != 1) { ?>
               <tr>
                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_SELECT_LANGUAGE; ?>: </td>
-                <td><?php echo html_pull_down_menu('language', $_SESSION['languages'], $_SESSION['language'], '', true); ?></td>
+                <td><?php echo html_pull_down_menu('language', $_SESSION['languages'], \core\classes\user::get_language(), '', true); ?></td>
               </tr>
 <?php } else{
 			echo html_hidden_field('language', $_SESSION['language']) . chr(10);
@@ -64,7 +64,7 @@ echo html_form('login', FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;act
 				</td>
               </tr>
               <tr>
-                <td colspan="2"><?php echo '<a href="' . html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;action=pw_lost_req', 'SSL') . '">' . TEXT_PASSWORD_FORGOTTEN . '</a>'; ?></td>
+                <td colspan="2"><?php echo '<a href="' . html_href_link(FILENAME_DEFAULT, 'action=LoadLostPassword', 'SSL') . '">' . TEXT_PASSWORD_FORGOTTEN . '</a>'; ?></td>
               </tr>
               <tr>
                 <td colspan="2">

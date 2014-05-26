@@ -20,6 +20,10 @@
 echo $messageStack->output();
 $column = 1;
 $row_started = true;
+$classes = $admin_classes->ReturnAdminClasses();
+// include hidden fields
+echo html_hidden_field('action', '') . chr(10);
+echo html_hidden_field('dashboard_id', '') . chr(10);
 ?>
 <div><a href="<?php echo html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=ctl_panel&amp;mID=' . $menu_id, 'SSL'); ?>"><?php echo CP_CHANGE_PROFILE; ?></a></div>
 <table style="width:100%;margin-left:auto;margin-right:auto;">
@@ -29,6 +33,7 @@ $row_started = true;
     <td width="33%" valign="top">
       <div id="col_<?php echo $column; ?>" style="position:relative;">
 <?php
+
 while(!$cp_boxes->EOF) {
 	if ($cp_boxes->fields['column_id'] <> $column) {
   		$row_started = true;
@@ -43,12 +48,12 @@ while(!$cp_boxes->EOF) {
   	$dashboard 	  = $cp_boxes->fields['dashboard_id'];
   	$module_id    = $cp_boxes->fields['module_id'];
   	load_method_language(DIR_FS_MODULES . "$module_id/dashboards/$dashboard");
-    if($admin_classes[$module_id]->dashboards[$dashboard]->valid_user){
-    		$admin_classes[$module_id]->dashboards[$dashboard]->menu_id      = $menu_id;
-    		$admin_classes[$module_id]->dashboards[$dashboard]->column_id    = $cp_boxes->fields['column_id'];
-    		$admin_classes[$module_id]->dashboards[$dashboard]->row_started  = $row_started; 
-    		$admin_classes[$module_id]->dashboards[$dashboard]->row_id       = $cp_boxes->fields['row_id'];
-    		echo $admin_classes[$module_id]->dashboards[$dashboard]->output(unserialize($cp_boxes->fields['params']));
+    if($classes[$module_id]->dashboards[$dashboard]->valid_user){
+    		$classes[$module_id]->dashboards[$dashboard]->menu_id      = $menu_id;
+    		$classes[$module_id]->dashboards[$dashboard]->column_id    = $cp_boxes->fields['column_id'];
+    		$classes[$module_id]->dashboards[$dashboard]->row_started  = $row_started;
+    		$classes[$module_id]->dashboards[$dashboard]->row_id       = $cp_boxes->fields['row_id'];
+    		echo $classes[$module_id]->dashboards[$dashboard]->output(unserialize($cp_boxes->fields['params']));
     }
   	$cp_boxes->MoveNext();
   	$row_started = false;

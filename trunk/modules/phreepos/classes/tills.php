@@ -121,7 +121,7 @@ class tills {
         $result = $db->Execute($sql);
         foreach ($result->fields as $key => $value) $this->$key = $value;
 	}
-	$tax_rates = inv_calculate_tax_drop_down('c');
+	$tax_rates = ord_calculate_tax_drop_down('c', true);
 	$output  = '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);
 	$output .= '  <thead class="ui-widget-header">' . "\n";
 	$output .= '  <tr>' . chr(10);

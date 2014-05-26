@@ -28,33 +28,19 @@ class user {
 	 * @return bool if user is logged in.
 	 */
 
-	final static public function is_validated(){
+	final static public function is_validated(&$admin_classes){
 		global $page_template;
 		if (!isset($_SESSION['admin_id']) || $_SESSION['admin_id'] == ''){
 			//allow the user to continu to with the login action.
 			if (!isset($_REQUEST['action']) || !in_array($_REQUEST['action'], array('validateLogin','pw_lost_sub','pw_lost_req'))){
 				self::load_companies();
 				self::load_languages();
-				if (!isset($_SESSION['company'])) {
-					if (isset($_REQUEST['company'])) {
-						$_SESSION['company'] = $_REQUEST['company'];
-					} else { // find default company
-						$_SESSION['company'] = defined('DEFAULT_COMPANY') ? DEFAULT_COMPANY : '';
-						if (isset($_COOKIE['pb_company'])) $_SESSION['company'] = $_COOKIE['pb_company'];
-					}
-				}
+				self::get_company();
 				if ( $_SESSION['company'] == ''){
 					reset($_SESSION['companies']);
 					$_SESSION['company'] = key($_SESSION['companies']);
 				}
-				if (!isset($_SESSION['language'])) {
-					if (isset($_REQUEST['language'])) {
-						$_SESSION['language'] = $_REQUEST['language'];
-					} else {
-						$_SESSION['language'] = defined('DEFAULT_LANGUAGE') ? DEFAULT_LANGUAGE : 'en_us';
-						if (isset($_COOKIE['pb_language'])) $_SESSION['language'] = $_COOKIE['pb_language'];
-					}
-				}
+				self::get_language();
 				if ( $_SESSION['language'] == ''){
 					reset($_SESSION['languages']);
 					$_SESSION['language'] = key($_SESSION['languages']);
@@ -65,8 +51,13 @@ class user {
 				$path = DIR_FS_MODULES . "phreedom/language/{$_SESSION['language']}/language.php";
 				if (file_exists($path)) { require_once($path);}
 				else { require_once(DIR_FS_MODULES . "phreedom/language/en_us/language.php");}
-				$template = $_REQUEST['action'] == 'pw_lost_req' ? 'template_pw_lost' : 'template_login';
-				throw new \core\classes\userException(TEXT_SORRY_YOU_ARE_LOGGED_OUT, "phreedom", "main", $template);
+				if($_REQUEST['action'] == 'pw_lost_req') {
+					$admin_classes->action	= 'LoadLostPassword';
+				}else{
+					$admin_classes->action	= 'LoadLogIn';
+				}
+				print($admin_classes->action);
+				//throw new \core\classes\userException(TEXT_SORRY_YOU_ARE_LOGGED_OUT, "");//@todo
 			}
 		}
 		$path = DIR_FS_MODULES . "phreedom/custom/language/{$_SESSION['language']}/language.php";
@@ -77,21 +68,47 @@ class user {
 	}
 
 	/**
+	 * returns the current company and sets it in the Session variable.
+	 */
+	final static public function get_company(){
+		if (isset($_SESSION['company'])) return $_SESSION['company'];
+		if (isset($_REQUEST['company'])) {
+			$_SESSION['company'] = $_REQUEST['company'];
+		} else { // find default company
+			if(defined('DEFAULT_COMPANY')) {
+				$_SESSION['company'] = DEFAULT_COMPANY;
+			}else{
+				if (isset($_COOKIE['pb_company'])) $_SESSION['company'] = $_COOKIE['pb_company'];
+			}
+		}
+		return $_SESSION['company'];
+	}
+
+	/**
 	 * returns the current language and sets it in the Session variable.
 	 */
 
 	final static public function get_language(){
-		if (isset($_REQUEST['language'])) {
-			 $_SESSION['language'] = $_REQUEST['language'];
-		} elseif (!isset($_SESSION['language'])) {
-			$_SESSION['language'] = defined('DEFAULT_LANGUAGE') ? DEFAULT_LANGUAGE : $this->language;
+		if (isset($_SESSION['language'])) return $_SESSION['language'];
+		if( isset($_REQUEST['language'])) {
+			$_SESSION['language'] = $_REQUEST['language'];
+		} elseif ( !isset($_SESSION['language'])) {
+			if(defined('DEFAULT_LANGUAGE')) {
+				$_SESSION['language'] = DEFAULT_LANGUAGE;
+			}else if( isset($_COOKIE['pb_language'])){
+				$_SESSION['language'] = $_COOKIE['pb_language'];
+			}else if( isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) && strlen($_SERVER['HTTP_ACCEPT_LANGUAGE']) == 5){
+				$_SESSION['language'] = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+			}else{
+				$_SESSION['language'] = $this->language;
+			}
 		}
 		return $_SESSION['language'];
 	}
 
 	/**
-	 * function will return current security level, will check if it is set.
-	 * this function will not validate nor throw exceptions.
+	 * method will return current security level, will check if it is set.
+	 * this method will not validate nor throw exceptions.
 	 * @param unknown_type $token
 	 */
 
@@ -101,7 +118,7 @@ class user {
 	}
 
 	/**
-	 * This function returns the current security_level of the requested token.
+	 * This method returns the current security_level of the requested token.
 	 * If token isn't set a exception will be thrown
 	 * @param int $token
 	 * @param bool $user_active
@@ -115,7 +132,7 @@ class user {
 	}
 
 	/**
-	 * This function will check if user has security clearance if not a exception will be throw.
+	 * This method will check if user has security clearance if not a exception will be throw.
 	 * @param int $security_level
 	 * @param int $required_level
 	 */
@@ -124,6 +141,17 @@ class user {
 		if ($current_security_level < $required_level) throw new \core\classes\userException(ERROR_NO_PERMISSION);
 	}
 
+	/**
+	 * This method will check if user has security clearance if not a exception will be throw.
+	 * If token isn't set a exception will be thrown
+	 * @param number $token
+	 * @param number $required_level
+	 * @param bool $user_active
+	 * @throws \core\classes\userException
+	 */
+	final static function validate_security_by_token($token = 0, $required_level = 1, $user_active = false) {
+		if (self::validate($token = 0, $user_active = false) < $required_level) throw new \core\classes\userException(ERROR_NO_PERMISSION);
+	}
 	/**
 	 * this will return a array of permissions
 	 * @param string $imploded_permissions

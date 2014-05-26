@@ -118,7 +118,7 @@
 	 <tbody class="ui-widget-content">
 	  <tr>
 	    <td colspan="3"><?php echo CD_03_30_DESC; ?></td>
-	    <td><?php echo html_pull_down_menu('ap_add_sales_tax_to_shipping', inv_calculate_tax_drop_down('v',true), $_POST['ap_add_sales_tax_to_shipping'] ? $_POST['ap_add_sales_tax_to_shipping'] : AP_ADD_SALES_TAX_TO_SHIPPING, ''); ?></td>
+	    <td><?php echo html_pull_down_menu('ap_add_sales_tax_to_shipping', ord_calculate_tax_drop_down('v',true), $_POST['ap_add_sales_tax_to_shipping'] ? $_POST['ap_add_sales_tax_to_shipping'] : AP_ADD_SALES_TAX_TO_SHIPPING, ''); ?></td>
 	  </tr>
 	  <tr>
 	    <td colspan="3"><?php echo CD_03_35_DESC; ?></td>

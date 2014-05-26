@@ -23,7 +23,7 @@ class journal {
 	public 	$cogs_entry			= array();
 	private $first_period		= 0;
 
-	public function __construct( int $id = 0, $verbose=true) {
+	public function __construct( $id = 0, $verbose=true) {
 		global $db;
 		if ($id != 0) {
 			$result = $db->Execute("select * from " . TABLE_JOURNAL_MAIN . " where id = $id");
@@ -1282,7 +1282,7 @@ class journal {
 	if (isset($this->journal_id))          $main_record['journal_id']          = $this->journal_id;
 	if (isset($this->post_date))           $main_record['post_date']           = $this->post_date;
 	if (isset($this->store_id))            $main_record['store_id']            = $this->store_id;
-	$main_record['description'] = (isset($this->description)) ? $this->description : sprintf(TEXT_ARGS_ENTRY, constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE'));
+	$main_record['description'] = (isset($this->description)) ? $this->description : sprintf(TEXT_ARGS_ENTRY, constant('ORD_TEXT_' . $this->journal_id . '_WINDOW_TITLE'));
 	if (isset($this->closed))              $main_record['closed']              = $this->closed;
 	if (isset($this->closed_date))         $main_record['closed_date']         = $this->closed_date;
 	if (isset($this->freight))             $main_record['freight']             = $this->freight;

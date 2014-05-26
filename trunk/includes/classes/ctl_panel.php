@@ -62,8 +62,7 @@ class ctl_panel {
   	 */
   	function remove() {
 		global $db;
-		$result = $db->Execute("delete from " . TABLE_USERS_PROFILES . "
-	  	where user_id = {$_SESSION['admin_id']} and menu_id = '{$this->menu_id}' and dashboard_id = '{$this->id }'");
+		$result = $db->Execute("delete from " . TABLE_USERS_PROFILES . " where user_id = {$_SESSION['admin_id']} and menu_id = '{$this->menu_id}' and dashboard_id = '{$this->id }'");
   	}
 
   	/**
@@ -80,17 +79,17 @@ class ctl_panel {
   	function update() {
   		global $db;
   		$db->Execute("update " . TABLE_USERS_PROFILES . " set params = '" . serialize($this->params) . "'
-	  		where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "'
-	    	and dashboard_id = '" . $this->id . "'");
+	  		where user_id = {$_SESSION['admin_id']} and menu_id = '{$this->menu_id}'
+	    	and dashboard_id = '{$this->id}'");
   	}
 
   	function build_div($title, $contents, $controls) {
 	  	$output = '';
-	  	if($this->version < 3.5 || ! $this->version ) $output .= 'update dashboard ' . $this->text . '<br/>';
-		$output .= '<!--// start: ' . $this->id . ' //-->' . chr(10);
+	  	if($this->version < 3.5 || ! $this->version ) $output .= "update dashboard {$this->text}<br/>";
+		$output .= "<!--// start: {$this->id} //-->" . chr(10);
 		$output .= '<div id="'.$this->id.'" style="position:relative;" class="easyui-panel" title="'.$this->text.'" data-options="collapsible:true,tools:\'#'.$this->id.'_tt\'">' . chr(10);
 		// heading text
-		$output .= '<div id="'.$this->id.'_tt">' . chr(10);
+		$output .= "<div id='{$this->id}_tt>" . chr(10);
 		if ($this->column_id > 1) 				$output .= '	<a href="javascript:void(0)" class="icon-go_previous"	onclick="return move_box(\'' . $this->id . '\', \'move_left\')"></a>' . chr(10);
 		if ($this->column_id < MAX_CP_COLUMNS)	$output .= '	<a href="javascript:void(0)" class="icon-go_next"		onclick="return move_box(\'' . $this->id . '\', \'move_right\')"></a>' . chr(10);
 		if ($this->row_started == false)		$output .= '	<a href="javascript:void(0)" class="icon-go_up"    onclick="return move_box(\'' . $this->id . '\', \'move_up\')"></a>' . chr(10);
@@ -110,18 +109,17 @@ class ctl_panel {
 		$output .= '<input type="hidden" name="dashboard_id" value="' . $this->id . '" />' . chr(10);
 		$output .= '<input type="hidden" name="column_id" value="' . $this->column_id . '" />' . chr(10);
 		$output .= '<input type="hidden" name="row_id" value="' . $this->row_id . '" />' . chr(10);
-		$output .= '<input type="hidden" name="action" id="' . $this->id . '_action" value="save" />' . chr(10);
 		$output .= '</form></td></tr>' . chr(10);
 		$output .= '<tr id="' . $this->id . '_hr" style="display:none"><td colspan="4"><hr /></td></tr>' . chr(10);
 		// box contents
 		$output .= '<tr><td colspan="4">' . chr(10);
-		$output .= '<div id="' . $this->id . '_body">' . chr(10);
+		$output .= "<div id='{$this->id}_body'>" . chr(10);
 		$output .= $contents;
 		$output .= '</div>';
 		$output .= '</td></tr></tbody></table>' . chr(10);
 		// finish it up
 		$output .= '</div>' . chr(10);
-		$output .= '<!--// end: ' . $this->id . ' //--><br />' . chr(10) . chr(10);
+		$output .= "<!--// end: {$this->id} //--><br />" . chr(10) . chr(10);
 		return $output;
   	}
 

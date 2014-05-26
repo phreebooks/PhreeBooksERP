@@ -158,7 +158,7 @@ class other_transactions {
 	    //default tax
 	    $output .= '  <tr id="tax_row">' . chr(10);
 		$output .= '    <td>' . TEXT_TAX . '</td>' . chr(10);
-		$output .= '    <td>' . html_pull_down_menu('taxable', inv_calculate_tax_drop_down('v',false), $this->taxable) . '</td>' . chr(10);
+		$output .= '    <td>' . html_pull_down_menu('taxable', ord_calculate_tax_drop_down('v',false), $this->taxable) . '</td>' . chr(10);
 	    $output .= '  </tr>' . chr(10);
     	$output .= '  <tr>' . chr(10);
 

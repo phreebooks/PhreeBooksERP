@@ -25,8 +25,8 @@ echo html_hidden_field('id', $cInfo->id) . chr(10);
 // customize the toolbar actions
 $toolbar->icon_list['cancel']['params'] = 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, '', 'SSL') . '\'"';
 $toolbar->icon_list['open']['params']   = 'onclick="OpenAdjList()"';
-$toolbar->icon_list['save']['params']   = 'onclick="submitToDo(\'save\')"';
-$toolbar->icon_list['delete']['params'] = 'onclick="if (confirm(\'' . INV_ADJ_DELETE_ALERT . '\')) submitToDo(\'delete\')"';
+$toolbar->icon_list['save']['params']   = 'onclick="submitToDo(\'SaveInventoryAdjustment\')"';
+$toolbar->icon_list['delete']['params'] = 'onclick="if (confirm(\'' . INV_ADJ_DELETE_ALERT . '\')) submitToDo(\'DeleteInventoryAdjustment\')"';
 $toolbar->icon_list['print']['show']    = false;
 $toolbar->add_icon('new', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL') . '\'"', $order = 2);
 if ($security_level < 4) $toolbar->icon_list['delete']['show'] = false;

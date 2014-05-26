@@ -334,30 +334,31 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 	return $total_tax_rate;
   }
 
-  function ord_calculate_tax_drop_down($type = 'c') {
-    global $db;
-	$tax_auth_array = gen_build_tax_auth_array();
-    $sql = "select tax_rate_id, description_short, rate_accounts from " . TABLE_TAX_RATES;
-	switch ($type) {
-	  default:
-	  case 'c':
-	  case 'v': $sql .= " where type = '" . $type . "'"; break;
-	  case 'b': // both
-	}
-	$tax_rates = $db->Execute($sql);
-    $tax_rate_drop_down = array();
-    $tax_rate_drop_down[] = array('id' => '0', 'rate' => '0', 'text' => TEXT_NONE, 'auths' => '');
-	while (!$tax_rates->EOF) {
-	  $tax_rate_drop_down[] = array(
-	    'id'    => $tax_rates->fields['tax_rate_id'],
-		'rate'  => gen_calculate_tax_rate($tax_rates->fields['rate_accounts'], $tax_auth_array),
-		'text'  => $tax_rates->fields['description_short'],
-		'auths' => $tax_rates->fields['rate_accounts'],
-	  );
-	  $tax_rates->MoveNext();
-	}
-	return $tax_rate_drop_down;
-  }
+  	function ord_calculate_tax_drop_down($type = 'c', $contactForm = false) {
+	    global $db;
+		$tax_auth_array = gen_build_tax_auth_array();
+	    $sql = "select tax_rate_id, description_short, rate_accounts from " . TABLE_TAX_RATES;
+		switch ($type) {
+			  default:
+			  case 'c':
+			  case 'v': $sql .= " where type = '$type'"; break;
+			  case 'b': // both
+		}
+		$tax_rates = $db->Execute($sql);
+	    $tax_rate_drop_down = array();
+	    if ($contactForm == true) $tax_rate_drop_down[] = array('id' => '-1', 'text' => TEXT_PRODUCT_DEFAULT);
+	    $tax_rate_drop_down[] = array('id' => '0', 'rate' => '0', 'text' => TEXT_NONE, 'auths' => '');
+		while (!$tax_rates->EOF) {
+			$tax_rate_drop_down[] = array(
+			  'id'    => $tax_rates->fields['tax_rate_id'],
+			  'rate'  => gen_calculate_tax_rate($tax_rates->fields['rate_accounts'], $tax_auth_array),
+			  'text'  => $tax_rates->fields['description_short'],
+			  'auths' => $tax_rates->fields['rate_accounts'],
+			);
+			$tax_rates->MoveNext();
+		}
+		return $tax_rate_drop_down;
+  	}
 
   function ord_get_so_po_num($id = '') {
 	global $db;

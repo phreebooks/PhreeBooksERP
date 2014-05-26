@@ -51,7 +51,7 @@ $mainmenu["inventory"]["submenu"]["new_inventory"] = array(
   'order' 		=> 1,
   'text' 		=> sprintf(TEXT_NEW_ARGS, TEXT_INVENTORY_ITEM),
   'security_id' => SECURITY_ID_MAINTAIN_INVENTORY,
-  'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=main&amp;action=new', 'SSL'),
+  'link'        => html_href_link(FILENAME_DEFAULT, 'action=LoadNewInventoryItem', 'SSL'),
   'show_in_users_settings' => false,
   'params'      => '',
 );

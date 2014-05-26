@@ -19,14 +19,10 @@
 // this class will allow us to catch user errors and return them to theire pevious page.
 namespace core\classes;
 class userException extends \Exception {
-	public $ReturnToModule;
-	public $ReturnToPage;
-	public $ReturnToTemplate;
+	public $action;
 
-	function __construct ($message = "",  $Module = "phreedom", $Page = "main", $template = "template_crash", $code = 0,  Exception $previous = NULL){
-		$this->ReturnToModule 	= $Module;
-		$this->ReturnToPage 	= $Page;
-		$this->ReturnToTemplate = $template;
+	function __construct ($message = "", $action, $code = 0, Exception $previous = NULL){
+		$this->action = $action;
 		parent::__construct($message, $code, $previous);
 	}
 

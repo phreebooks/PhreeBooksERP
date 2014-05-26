@@ -23,6 +23,7 @@ class admin extends \core\classes\admin {
 	public $text;
 	public $description;
 	public $version		= '3.6';
+	public $installed	= true;
 
   function __construct() {
 	// Load configuration constants for this module, must match entries in admin tabs
@@ -253,6 +254,166 @@ class admin extends \core\classes\admin {
 		  	if (!db_field_exists(TABLE_AUDIT_LOG, 'stats'))        $db->Execute("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
 	  	}
 	  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'required'))  $db->Execute("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD required enum('0','1') NOT NULL DEFAULT '0'");
+	}
+
+	// EVENTS PART OF THE CLASS
+	/**
+	 * method validates user
+	 * @param \core\classes\basis $basis
+	 * @throws \core\classes\userException
+	 */
+	function ValidateUser (\core\classes\basis $basis){
+		global $db;
+		// Errors will happen here if there was a problem logging in, logout and restart
+		if (!is_object($db)) throw new \core\classes\userException("Database isn't created");
+		$sql = "select admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security
+		  from " . TABLE_USERS . " where admin_name = '{$basis->admin_name}'";
+		if ($db->db_connected) $result = $db->Execute($sql);
+		if (!$result || $basis->admin_name <> $result->fields['admin_name'] || $result->fields['inactive']) throw new \core\classes\userException(sprintf(GEN_LOG_LOGIN_FAILED, ERROR_WRONG_LOGIN));
+		\core\classes\encryption::validate_password($basis->admin_pass, $result->fields['admin_pass']);
+		$_SESSION['admin_id']       = $result->fields['admin_id'];
+		$_SESSION['display_name']   = $result->fields['display_name'];
+		$_SESSION['admin_email']    = $result->fields['admin_email'];
+		$_SESSION['admin_prefs']    = unserialize($result->fields['admin_prefs']);
+		$_SESSION['account_id']     = $result->fields['account_id'];
+		$_SESSION['admin_security'] = \core\classes\user::parse_permissions($result->fields['admin_security']);
+		// set some cookies for the next visit to remember the company, language, and theme
+		$cookie_exp = 2592000 + time(); // one month
+		setcookie('pb_company' , \core\classes\user::get_company(),  $cookie_exp);
+		setcookie('pb_language', \core\classes\user::get_language(), $cookie_exp);
+		// load init functions for each module and execute
+		foreach ($admin_classes->ReturnAdminClasses() as $key => $module_class) {
+			if ($module_class->installed && $module_class->should_update()) $module_class->update();
+		}
+		foreach ($admin_classes->ReturnAdminClasses() as $key => $module_class) {
+			if ($module_class->installed) $module_class->initialize();
+		}
+		if (defined('TABLE_CONTACTS')) {
+			$dept = $db->Execute("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result->fields['account_id']);
+			$_SESSION['department'] = $dept->fields['dept_rep_id'];
+		}
+		gen_add_audit_log(TEXT_USER_LOGIN .' -->' . $basis->admin_name);
+		// check for session timeout to reload to requested page
+		$get_params = '';
+		if (isset($_SESSION['pb_module']) && $_SESSION['pb_module']) {
+			$get_params  = 'module='    . $_SESSION['pb_module'];
+			if (isset($_SESSION['pb_page']) && $_SESSION['pb_page']) $get_params .= '&amp;page=' . $_SESSION['pb_page'];
+			if (isset($_SESSION['pb_jID'])  && $_SESSION['pb_jID'])  $get_params .= '&amp;jID='  . $_SESSION['pb_jID'];
+			if (isset($_SESSION['pb_type']) && $_SESSION['pb_type']) $get_params .= '&amp;type=' . $_SESSION['pb_type'];
+			if (isset($_SESSION['pb_list']) && $_SESSION['pb_list']) $get_params .= '&amp;list=' . $_SESSION['pb_list'];
+			unset($_SESSION['pb_module']);
+			unset($_SESSION['pb_page']);
+			unset($_SESSION['pb_jID']);
+			unset($_SESSION['pb_type']);
+			unset($_SESSION['pb_list']);
+			gen_redirect(html_href_link(FILENAME_DEFAULT, $get_params, 'SSL'));
+		}
+		// check safe mode is allowed to log in.
+		if (get_cfg_var('safe_mode')) throw new \core\classes\userException(SAFE_MODE_ERROR); //@todo is this removed asof php 5.3??
+		$basis->fireEvent("LoadMainPage");
+	}
+
+	/**
+	 * is for loading main page.
+	 * @param \core\classes\basis $basis
+	 * @throws \core\classes\userException
+	 */
+	function LoadMainPage (\core\classes\basis $basis){
+		global $db;
+		$menu_id      = isset($basis->mID) ? $basis->mID : 'index'; // default to index unless heading is passed
+		if (!class_exists('queryFactory')) { // Errors will happen here if there was a problem logging in, logout and restart
+			session_destroy();
+			throw new \core\classes\userException("class queryFactory doesn't exist");
+		}
+		$basis->cp_boxes 	= $db->Execute("select * from ".TABLE_USERS_PROFILES." where user_id = '{$_SESSION['admin_id']}' and menu_id = '$menu_id' order by column_id, row_id");
+		$basis->template 	= 'template_main';
+		$basis->page_title 	= COMPANY_NAME.' - '.TITLE;
+	}
+
+	/**
+	 * logout of phreebooks
+	 * @param \core\classes\basis $basis
+	 */
+	function logout (\core\classes\basis $basis){
+		global $db;
+		$result = $db->Execute("select admin_name from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
+		gen_add_audit_log(GEN_LOG_LOGOFF . $result->fields['admin_name']);
+		session_destroy();
+		$basis->fireEvent("LoadLogIn");
+	}
+
+	/**
+	 * load varibles for login page
+	 * @param \core\classes\basis $basis
+	 */
+	function LoadLogIn (\core\classes\basis $basis){
+		$basis->companies       = load_company_dropdown();
+		$basis->single_company  = sizeof($companies) == 1 ? true : false;
+		$basis->languages       = load_language_dropdown();
+		$basis->single_language = sizeof($languages) == 1 ? true : false;
+		$basis->include_header  = false;
+		$basis->include_footer  = false;
+		$basis->page_title		= TITLE;
+		$basis->module			= 'phreedom';
+		$basis->page			= 'main';
+		$basis->template 		= 'template_login';
+		$basis->notify();//final line
+	}
+
+	function LoadLostPassword (\core\classes\basis $basis){
+		$basis->companies       = load_company_dropdown();
+		$basis->single_company  = sizeof($companies) == 1 ? true : false;
+		$basis->languages       = load_language_dropdown();
+		$basis->single_language = sizeof($languages) == 1 ? true : false;
+		$basis->include_header  = false;
+		$basis->include_footer  = false;
+		$basis->page_title		= TITLE;
+		$basis->module			= 'phreedom';
+		$basis->page			= 'main';
+		$basis->template 		= 'template_pw_lost';
+		$basis->notify();//final line
+	}
+
+	function LoadCrash (\core\classes\basis $basis){
+		$basis->module			= 'phreedom';
+		$basis->page			= 'main';
+		$basis->template 		= 'template_crash.php';
+		$basis->page_title		=  TITLE;
+		$basis->notify();//final line
+	}
+
+	function SendLostPassWord (\core\classes\basis $basis){
+		global $db;
+		$result = $db->Execute("select admin_id, admin_name, admin_email from " . TABLE_USERS . " where admin_email = '{$basis->admin_email}'");
+		if ($basis->admin_email == '' || $basis->admin_email <> $result->fields['admin_email']) throw new \core\classes\userException(ERROR_WRONG_EMAIL);
+		$new_password = \core\classes\encryption::random_password(ENTRY_PASSWORD_MIN_LENGTH);
+		$admin_pass   = \core\classes\encryption::password($new_password);
+		$db->Execute("update " . TABLE_USERS . " set admin_pass = '$admin_pass' where admin_id = " . $result->fields['admin_id']);
+		$html_msg['EMAIL_CUSTOMERS_NAME'] = $result->fields['admin_name'];
+		$html_msg['EMAIL_MESSAGE_HTML']   = sprintf(TEXT_EMAIL_MESSAGE, COMPANY_NAME, $new_password);
+		validate_send_mail($result->fields['admin_name'], $result->fields['admin_email'], TEXT_EMAIL_SUBJECT, $html_msg['EMAIL_MESSAGE_HTML'], COMPANY_NAME, EMAIL_FROM, $html_msg);
+		$messageStack->add(SUCCESS_PASSWORD_SENT, 'success');
+		gen_add_audit_log(GEN_LOG_RESEND_PW . $basis->admin_email);
+		$basis->fireEvent("LoadLogIn");
+	}
+
+	function DownloadDebug (\core\classes\basis $basis){
+		$filename = 'trace.txt';
+		if (!$handle = @fopen(DIR_FS_MY_FILES . $filename, "r")) 					throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, DIR_FS_MY_FILES . $filename));
+		if (!$contents = @fread($handle, filesize(DIR_FS_MY_FILES . $filename)))	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, 		DIR_FS_MY_FILES . $filename));
+		if (!@fclose($handle)) 														throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 	DIR_FS_MY_FILES . $filename));
+		$file_size = strlen($contents);
+		header('Content-type: text/html; charset=utf-8');
+		header("Content-disposition: attachment; filename=$filename; size=$file_size");
+		header('Pragma: cache');
+		header('Cache-Control: public, must-revalidate, max-age=0');
+		header('Connection: close');
+		header('Expires: ' . date('r', time() + 60 * 60));
+		header('Last-Modified: ' . date('r', time()));
+		print $contents;
+		ob_end_flush();
+	    session_write_close();
+	    die;
 	}
 
 }
