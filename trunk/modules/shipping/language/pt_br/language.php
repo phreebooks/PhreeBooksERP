@@ -70,7 +70,7 @@ define('SHIPPING_VOID_SHIPMENT','Entrega Cancelada');
 define('TEXT_PACKAGE_DETAILS','Detalhes Embalagem');
 define('TEXT_SHIPMENT_DETAILS','Detalhes Entrega');
 define('SHIPPNIG_SUMMARY','Sumário Entrega');
-define('SHIPPING_NUM_PIECES','Número Volumes');
+define('TEXT_NUMBER_OF_PIECES','Número Volumes');
 define('TEXT_LTL_FREIGHT_CLASS','LTL Classe Frete');
 define('SHIPPING_THIRD_PARTY_ZIP','Terceiro CEP');
 define('SHIPPING_THIRD_PARTY','Recibo/Terceiro Conta #');
@@ -121,7 +121,7 @@ define('TEXT_CREATE_SHIPMENT_ENTRY','Criar uma Entrada de EntregaCreate a Shipme
 define('TEXT_REMOVE_MESSAGE','Tem certeza de que quer remover este método de entrega?');
 define('TEXT_SHIPMENTS_ON','Entregas em: ');
 define('TEXT_SHIPMENT_DEFAULTS','Padrão Entrega');
-define('TEXT_PAGKAGE_DEFAULTS','Padrão Embalagem');
+define('TEXT_PACKAGE_DEFAULTS','Padrão Embalagem');
 define('TEXT_THERMAL','Térmica');
 define('TEXT_GIF','GIF');
 define('TEXT_PDF','PDF');

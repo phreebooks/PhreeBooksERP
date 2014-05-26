@@ -16,7 +16,7 @@ define('TEXT_BUDGETING','Orçamento');
 define('BOX_BANKING_ACCOUNT_RECONCILIATION','Reconciliação Conta');
 define('TEXT_BANK_ACCOUNT_REGISTER','Registro Conta Bancária');
 define('ORD_TEXT_20_V_WINDOW_TITLE','Pagar Contas');
-define('BOX_BANKING_SELECT_FOR_PAYMENT','Selecionar para Pagamento');
+define('TEXT_PAY_BY_DUE_DATE','Selecionar para Pagamento');
 define('ORD_TEXT_20_C_WINDOW_TITLE','Cliente Reembolso');
 define('ORD_TEXT_18_V_WINDOW_TITLE','Fornecedor Reembolso');
 define('ORD_TEXT_18_C_WINDOW_TITLE','Clientes Recibos');

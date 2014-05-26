@@ -49,7 +49,7 @@ define('PHREEPOS_HANDELING_CASH_DIFFERENCE','Posted Cash difference in till');
 define('POS_HEADING_CLOSING','Day Closing');
 define('NEW_BALANCE','New Till Balance');
 define('TEXT_PAYMENTS_SHOULD_BE','Payments Should Be');
-define('PAYMENTS_RECEIVED','Payments Received:');
+define('TEXT_PAYMENTS_RECEIVED','Payments Received');
 define('TILL_BALANCE','Start balance Till:');
 define('TILL_END_BALANCE','Difference');
 define('TEXT_SHOW_COUNT_HELP','Show count help');

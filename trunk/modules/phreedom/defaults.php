@@ -44,7 +44,7 @@ $DateChoices = array(
   'f' => TEXT_THIS_MONTH,
   'g' => TEXT_MTD,
   'h' => TEXT_THIS_QUARTER,
-  'i' => TEXT_QTD,
+  'i' => TEXT_QUARTER_TO_DATE,
   'j' => TEXT_THIS_YEAR,
   'k' => TEXT_YEAR_TO_DATE,
 );

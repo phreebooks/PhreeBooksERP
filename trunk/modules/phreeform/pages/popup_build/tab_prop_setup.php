@@ -59,7 +59,7 @@
     </tr>
     <tr>
       <td><?php echo TEXT_FILENAME_SOURCE; ?></td>
-	  <td><?php echo TEXT_PREFIX . html_input_field('filename_prefix', $report->filenameprefix, 'size="24"'); ?></td>
+	  <td><?php echo TEXT_PREFIX .': ' . html_input_field('filename_prefix', $report->filenameprefix, 'size="24"'); ?></td>
     </tr>
     <tr>
       <td><?php echo '&nbsp;'; ?></td>

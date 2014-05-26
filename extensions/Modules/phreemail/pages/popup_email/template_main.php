@@ -75,11 +75,11 @@ echo $toolbar->build_toolbar();
 	<td><?php echo html_input_field('cc_name', $cc_name,'list="receiverlist"') . ' ' . TEXT_EMAIL . html_input_field('cc_email', $cc_email, 'size="40" list="receivermaillist"'); ?></td>
   </tr>
   <tr>
-	<td align="right"><?php echo TEXT_MESSAGE_SUBJECT; ?></td>
+	<td align="right"><?php echo TEXT_MESSAGE_SUBJECT . ': '; ?></td>
 	<td><?php echo html_input_field('message_subject', $subject, 'size="75"'); ?></td>
   </tr>
   <tr>
-	<td align="right" valign="top"><?php echo TEXT_MESSAGE_BODY; ?></td>
+	<td align="right" valign="top"><?php echo TEXT_MESSAGE_BODY . ': '; ?></td>
 	<td><?php echo html_textarea_field('message_body', '60', '8', $message); ?></td>
   </tr>
 </table>

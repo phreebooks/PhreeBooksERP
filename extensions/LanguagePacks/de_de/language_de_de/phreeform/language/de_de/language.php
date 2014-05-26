@@ -89,7 +89,7 @@ define ('TEXT_PAGE_BREAK_FIELD', 'Form Seitenumbruch Field');
 define ('TEXT_PAGE_SETUP', 'Seite einrichten');
 define ('TEXT_PATH', 'Pfad');
 define ('TEXT_POINTS_SHORT', 'pts');
-define ('TEXT_PREFIX', 'Präfix:');
+define ('TEXT_PREFIX', 'Präfix');
 define ('TEXT_PRINTED_INDICATOR', 'Gedruckte Anzeige');
 define ('TEXT_RECENTLY_ADDED', 'Vor kurzem hinzugefügt Berichte / Formulare');
 define ('TEXT_REPORT_GENERATED', 'Report Generated');
@@ -126,10 +126,10 @@ define ('PHREEFORM_LINE_TYPE', 'Wählen Zeilenlayout');
 define ('PHREEFORM_DISPNAME', 'Name zur Anzeige');
 define ('PHREEFORM_PGFILDESC', 'Bericht Filter Beschreibung');
 define ('PHREEFORM_PGHEADER', 'Kopfinformationen / Formatierung');
-define ('PHREEFORM_PGLAYOUT "," Page Layout ');
+define ('TEXT_PAGE_LAYOUT "," Page Layout ');
 define ('TEXT_LEFT_MARGIN', 'Left Margin ');
 define ('PHREEFORM_PGMARGIN_R', 'Right Margin');
-define ('PHREEFORM_PGMARGIN', 'Seitenränder');
+define ('TEXT_PAGE_MARGINS', 'Seitenränder');
 define ('PHREEFORM_PGTITL1', 'Titel des Berichts 1');
 define ('PHREEFORM_PGTITL2', 'Bericht Titel 2 ');
 define ('PHREEFORM_RPTDATA', 'Berichtsdaten Unterwegs');
@@ -202,7 +202,7 @@ define ('PHREEFORM_AJAX_BAD_DB_REFERENCE', 'Der SQL einen Fehler zurückgegeben 
 define ('PHREEFORM_AJAX_NO_TABLE_DATA', 'Ihr Tisch Aussagen ergab keine Zeilen Entweder die Tische sind leer oder es ist ein Fehler in der Link-Anweisungen.');
 define ('PHREEFORM_AJAX_DB_SUCCESS', 'Die Datenbank Beziehungen mindestens eine Zeile zurückgegeben Sie scheinen in Ordnung zu sein..');
 //Seite einrichten
-define ('TEXT_PAPER', 'Paper Size');
+define ('TEXT_PAPER_SIZE', 'Paper Size');
 define ('TEXT_ORIEN', 'Orientierung');
 define ('TEXT_MM', 'mm');
 define ('TEXT_PORTRAIT', 'Portrait');
@@ -227,7 +227,7 @@ define ('TEXT_DATA_TOTAL', 'Data Total');
 define ('PF_FRM_FIXEDTXT', 'Fixed Textfeld');
 define ('PF_FRM_IMAGE', 'Bild - JPG-oder PNG');
 define ('TEXT_LINE', 'Line');
-define ('PF_FRM_PAGENUM', 'Seite Nummer');
+define ('TEXT_PAGE_NUMBER', 'Seite Nummer');
 define ('TEXT_RECTANGLE', 'Rechteck');
 //Datenverarbeitung
 define ('TEXT_NEGATE', 'Negativ');
@@ -238,7 +238,7 @@ define ('TEXT_ROUND_2DECIMALS', 'Round (2 Nachkommastellen)');
 define ('PF_FRM_CNVTDLR', 'Convert Dollar');
 define ('PF_FRM_NULLDLR', 'Null, wenn 0 - Dollar');
 define ('PF_FRM_CNVTEURO', 'Convert Euro');
-define ('PF_FRM_NUM_2_WORDS', 'Anzahl an Words');
+define ('TEXT_NUMBER_TO_WORDS', 'Anzahl an Words');
 define ('TEXT_BLANK_OUT_DATA', 'Blank Out Data');
 //Standard-Schriften
 define ('TEXT_FONT_HELVETICA', 'Helvetica');

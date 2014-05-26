@@ -39,7 +39,7 @@ define('MODULE_INVENTORY_NOTES_1','PRIORIDADE MÉDIA: Especifique contas padrão
 define('TEXT_CHARGE_ITEMS','Taxar');
 define('TEXT_LABOR_ITEMS','Mão Obra');
 define('TEXT_SRV_ITEMS','Serviço');
-define('TEXT_NS_ITEMS','Não Estoque');
+define('TEXT_NON-STOCK','Não Estoque');
 define('TEXT_MS_ITEMS','Estoque Mestre');
 define('TEXT_ASSEMBLIES','Montagens');
 define('TEXT_SERIALIZED','Serializado');

@@ -89,11 +89,11 @@ echo $toolbar->build_toolbar();
 	      <td><?php echo html_input_field('cc_name', $cc_name) . ' ' . TEXT_EMAIL . html_input_field('cc_email', $cc_email, 'size="40"'); ?></td>
         </tr>
 	    <tr>
-		  <td align="right"><?php echo TEXT_MESSAGE_SUBJECT; ?></td>
+		  <td align="right"><?php echo TEXT_MESSAGE_SUBJECT. ': '; ?></td>
 		  <td><?php echo html_input_field('message_subject', $message_subject, 'size="75"'); ?></td>
 	    </tr>
 	    <tr>
-		  <td align="right" valign="top"><?php echo TEXT_MESSAGE_BODY; ?></td>
+		  <td align="right" valign="top"><?php echo TEXT_MESSAGE_BODY . ': '; ?></td>
 		  <td><?php echo html_textarea_field('message_body', '60', '8', $message_body); ?></td>
 	    </tr>
 	   </tbody>
@@ -257,19 +257,19 @@ echo $toolbar->build_toolbar();
 <div title="<?php echo TEXT_PAGE_SETUP;?>" id="tab_page">
     <table  class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto;">
 	 <thead class="ui-widget-header">
-      <tr><th colspan="8"><?php echo PHREEFORM_PGLAYOUT ?></th></tr>
+      <tr><th colspan="8"><?php echo TEXT_PAGE_LAYOUT ?></th></tr>
 	 </thead>
 	 <tbody class="ui-widget-content">
     <tr>
       <td colspan="4" align="center">
-        <?php echo TEXT_PAPER . ' ' . html_pull_down_menu('papersize', gen_build_pull_down($PaperSizes), $report->page->size, 'onchange="calculateWidth()"'); ?>
+        <?php echo TEXT_PAPER_SIZE . ' ' . html_pull_down_menu('papersize', gen_build_pull_down($PaperSizes), $report->page->size, 'onchange="calculateWidth()"'); ?>
       </td>
       <td colspan="4" align="center">
 	  	<?php echo TEXT_ORIEN . ' ' . html_radio_field('paperorientation', 'P', ($report->page->orientation == 'P') ? true : false, '', 'onchange="calculateWidth()"') . ' ' . TEXT_PORTRAIT; ?>
 	  	<?php echo              ' ' . html_radio_field('paperorientation', 'L', ($report->page->orientation == 'L') ? true : false, '', 'onchange="calculateWidth()"') . '  ' . TEXT_LANDSCAPE; ?>
 	  </td>
     </tr>
-    <tr  class="ui-widget-header"><th colspan="8"><?php echo PHREEFORM_PGMARGIN; ?></th></tr>
+    <tr  class="ui-widget-header"><th colspan="8"><?php echo TEXT_PAGE_MARGINS; ?></th></tr>
     <tr>
       <td colspan="2" align="center"><?php echo TEXT_TOP    . ' ' . html_input_field('margintop',    $report->page->margin->top,    'size="5" maxlength="3"') . ' ' . TEXT_MM; ?></td>
       <td colspan="2" align="center"><?php echo TEXT_BOTTOM . ' ' . html_input_field('marginbottom', $report->page->margin->bottom, 'size="5" maxlength="3"') . ' ' . TEXT_MM; ?></td>

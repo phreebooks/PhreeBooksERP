@@ -52,7 +52,7 @@ define ('BOX_BANKING_CUSTOMER_RECEIPTS', 'Customer Receipts ');
 define ('BOX_BANKING_CUSTOMER_PAYMENTS', 'Customer Erstattungen');
 define ('BOX_BANKING_PAY_BILLS', 'Rechnungen bezahlen');
 define ('BOX_BANKING_VENDOR_RECEIPTS', 'Hersteller Erstattungen');
-define ('BOX_BANKING_SELECT_FOR_PAYMENT', 'Wählen Sie für die Zahlung');
+define ('TEXT_PAY_BY_DUE_DATE', 'Wählen Sie für die Zahlung');
 define ('TEXT_BANK_ACCOUNT_REGISTER', 'Bank Account Registrieren');
 define ('BOX_BANKING_ACCOUNT_RECONCILIATION', 'Konto-Versöhnung');
 define ('TEXT_VOID_CHECKS', 'Void Checks');

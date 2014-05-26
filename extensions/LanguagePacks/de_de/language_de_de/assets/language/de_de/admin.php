@@ -63,7 +63,7 @@ define ("INV_LABEL_DECIMAL_FIELD", "Dezimalklassifikation");
 define ("TEXT_DECIMAL_RANGE", "Dezimalbereich");
 define ("INV_LABEL_DEFAULT_DISPLAY_VALUE", "Anzeigeformat (Max, Decimal)");
 define ("INV_LABEL_DROP_DOWN_FIELD", "Dropdown-Liste");
-define ("INV_LABEL_RADIO_FIELD", "Radio-Button-Auswahl <br/> Auswahl eingeben und durch Komma getrennt als: <br/> Wert1: desc1: Def1, Wert2: desc2: def2 <br/> <U>: </ u> <br/> value = Der Wert, der in die Datenbank <br/> desc = Textbeschreibung der Wahl <br/> def = Default 0 oder 1, 1 Stelle ist der Standardwert Wahl <br/> Hinweis: Nur 1 Standardwert ist erlaubt pro Liste ");
+define ("TEXT_RADIO_BUTTON", "Radio-Button");
 define ("INV_LABEL_DATE_TIME_FIELD", "Datum und Zeit");
 define ("TEXT_CHECK_BOX_FIELD", "Check Box (Ja oder Nein Choice)");
 define ("TEXT_TIME_STAMP", "Time Stamp");

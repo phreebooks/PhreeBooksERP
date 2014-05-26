@@ -59,7 +59,7 @@ echo $toolbar->build_toolbar();
 <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto">
  <tbody class="ui-widget-content">
     <tr>
-	  <td><?php  echo GEN_ADM_TOOLS_ENCRYPT_OLD_PW; ?></td>
+	  <td><?php  echo TEXT_OLD_ENCRYPTION_KEY; ?></td>
 	  <td><?php  echo html_password_field('old_encrypt_key'); ?></td>
 	</tr>
     <tr>

@@ -37,7 +37,7 @@ define('TEXT_SINGLE_LINE_ENTRY','Single Line Entry');
 define('TEXT_DOUBLE_MODE','Double Line Entry');
 // PhreeForm processing Titles
 define('PB_PF_JOURNAL_DESC','Journal Description');
-define('PB_PF_ORDER_QTY','Quantity Ordered');
+define('TEXT_QUANTITY_ORDERED','Quantity Ordered');
 define('PB_PF_COA_TYPE_DESC','Chart of Account Type');
 // Chart of Account Type definitions
 define('COA_00_DESC','Cash');
@@ -222,7 +222,7 @@ define('GL_DISPLAY_NUMBER_OF_COA', TEXT_DISPLAY_NUMBER . 'accounts');
 define('GL_ERROR_CANT_DELETE','This account cannot be deleted because there are journal entries against it.');
 define('GL_LOG_CHART_OF_ACCOUNTS','Chart of Accounts - ');
 /************************** (Sales/Purchase Authorities) ***********************************************/
-define('SETUP_TITLE_TAX_AUTHS_VEND', 'Purchase Tax Authorities');
+define('TEXT_PURCHASE_TAX_AUTHORITIES', 'Purchase Tax Authorities');
 define('TEXT_SALES_TAX_AUTHORITIES', 'Sales Tax Authorities');
 define('SETUP_TAX_DESC_SHORT', 'Short Name');
 define('SETUP_TAX_GL_ACCT', 'GL Account ID');
@@ -242,7 +242,7 @@ define('SETUP_TAX_AUTHS_LOG','Tax Authorities - ');
 define('SETUP_DISPLAY_NUMBER_OF_TAX_AUTH', TEXT_DISPLAY_NUMBER . 'tax authorities');
 /************************** (Sales/Purchase Tax Rates) ***********************************************/
 define('SETUP_TITLE_TAX_RATES', 'Sales Tax Rates');
-define('SETUP_TITLE_TAX_RATES_VEND', 'Purchase Tax Rates');
+define('TEXT_PURCHASE_TAX_RATES', 'Purchase Tax Rates');
 define('TEXT_TAX_FREIGHT', 'Tax Freight');
 define('SETUP_HEADING_TOTAL_TAX', 'Total Tax (percent)');
 define('SETUP_TAX_EDIT_INTRO', 'Please make any necessary changes');

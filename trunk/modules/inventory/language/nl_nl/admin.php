@@ -22,7 +22,7 @@ define('TEXT_STOCK_ITEMS','Voorraad');
 define('TEXT_MS_ITEMS','Hoofd Voorraad');
 define('TEXT_ASSEMBLIES','Assemblages');
 define('TEXT_SERIALIZED','Serie');
-define('TEXT_NS_ITEMS','Niet-voorraad');
+define('TEXT_NON-STOCK','Niet-voorraad');
 define('TEXT_SRV_ITEMS','Service');
 define('TEXT_LABOR_ITEMS','Arbeid');
 define('TEXT_ACT_ITEMS','Activiteit');

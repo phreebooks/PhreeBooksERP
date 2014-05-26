@@ -95,7 +95,7 @@ switch (JOURNAL_ID) {
 	break;
   case  4:	// Purchase Order Journal
 	define('POPUP_FORM_TYPE','vend:po');
-	$page_title = TEXT_PURCH_ORDER;
+	$page_title = TEXT_PURCHASE_ORDERS;
 	break;
   case  6:	// Purchase Journal
 	define('POPUP_FORM_TYPE','');

@@ -169,7 +169,7 @@ echo html_hidden_field('post_date', gen_locale_date($post_date))      . chr(10);
 	<td colspan="2" align="right"><?php echo html_input_field('open_checks', '0', 'disabled="disabled" style="text-align:right" size="13"'); ?></td>
   </tr>
   <tr>
-	<td colspan="5" align="right"><?php echo PAYMENTS_RECEIVED . '&nbsp;'; ?></td>
+	<td colspan="5" align="right"><?php echo TEXT_PAYMENTS_RECEIVED . ': &nbsp;'; ?></td>
 	<td colspan="2" align="right"><?php echo html_input_field('open_deposits', '0', 'disabled="disabled" style="text-align:right" size="13"'); ?></td>
   </tr>
   <tr>

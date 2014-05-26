@@ -49,7 +49,7 @@
 	    <td><?php echo html_pull_down_menu('address_book_ship_postal_code_req', $sel_yes_no, $_POST['address_book_ship_postal_code_req'] ? $_POST['address_book_ship_postal_code_req'] : ADDRESS_BOOK_SHIP_POSTAL_CODE_REQ, ''); ?></td>
 	  </tr>
 
-	  <tr class="ui-widget-header"><th colspan="4"><?php echo TEXT_PAGKAGE_DEFAULTS; ?></th></tr>
+	  <tr class="ui-widget-header"><th colspan="4"><?php echo TEXT_PACKAGE_DEFAULTS; ?></th></tr>
 	  <tr>
 	    <td colspan="3"><?php echo CD_10_01_DESC; ?></td>
 	    <td><?php echo html_pull_down_menu('shipping_default_weight_unit', gen_build_pull_down($shipping_defaults['weight_unit']), $_POST['shipping_default_weight_unit'] ? $_POST['shipping_default_weight_unit'] : SHIPPING_DEFAULT_WEIGHT_UNIT, ''); ?></td>

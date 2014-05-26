@@ -378,7 +378,7 @@ class fields {
 	$output .= '	<td>';
 	$output .= html_radio_field('entry_type', 'multi_check_box', ($this->entry_type=='multi_check_box' ? true : false),'', $disabled) . '&nbsp;' . INV_LABEL_MULTI_SELECT_FIELD . '<br />';
 	$output .= html_radio_field('entry_type', 'drop_down', ($this->entry_type=='drop_down' ? true : false),'', $disabled)             . '&nbsp;' . INV_LABEL_DROP_DOWN_FIELD . '<br />';
-	$output .= html_radio_field('entry_type', 'radio',     ($this->entry_type=='radio'     ? true : false),'', $disabled)             . '&nbsp;' . INV_LABEL_RADIO_FIELD;
+	$output .= html_radio_field('entry_type', 'radio',     ($this->entry_type=='radio'     ? true : false),'', $disabled)             . '&nbsp;' . TEXT_RADIO_BUTTON;
 	$output .= '	</td>' . chr(10);
 	$output .= '	<td>' . INV_LABEL_CHOICES . '<br />' . html_textarea_field('radio_default', 35, 6, $this->radio_default, $readonly) . '<br />';
 	$output .= INV_LABEL_RADIO_EXPLANATION . '</td>' . chr(10);

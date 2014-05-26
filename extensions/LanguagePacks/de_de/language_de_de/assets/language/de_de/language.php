@@ -45,7 +45,7 @@ define ("ASSETS_HEADING_NEW_ITEM", "Neue Asset");
 define ("ASSETS_ENTER_ASSET_ID", "Create a New Asset");
 define ("ASSETS_ENTRY_ASSET_TYPE", "Geben Sie den Asset-Typ");
 define ("TEXT_ASSET_TYPE", "Asset-Typ");
-define ("ASSETS_ENTRY_FULL_PRICE", "Ursprünglichen Kosten");
+define ("TEXT_ORIGINAL_COST", "Ursprünglichen Kosten");
 define ("ASSETS_ENTRY_ACCT_SALES", "GL Asset Konto");
 define ("ASSETS_ENTRY_ACCT_INV", "GL Abschreibungen Konto");
 define ("ASSETS_ENTRY_ACCT_COS", "GL Aufrechterhaltung-Konto");

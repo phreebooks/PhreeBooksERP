@@ -132,7 +132,7 @@ echo $toolbar->build_toolbar($add_search = false, $add_period = false);
 	<td colspan="2" align="right"><?php echo html_input_field('open_checks', '0', 'disabled="disabled" style="text-align:right" size="13"'); ?></td>
   </tr>
   <tr>
-	<td colspan="5" align="right"><?php echo BNK_OPEN_DEPOSITS . '&nbsp;'; ?></td>
+	<td colspan="5" align="right"><?php echo '+ '. TEXT_DEPOSITS_IN_TRANSITS . '&nbsp;'; ?></td>
 	<td colspan="2" align="right"><?php echo html_input_field('open_deposits', '0', 'disabled="disabled" style="text-align:right" size="13"'); ?></td>
   </tr>
   <tr>

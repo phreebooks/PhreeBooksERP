@@ -85,7 +85,7 @@ define('TEXT_PAGE_BREAK_FIELD','Form Page Break Field');
 define('TEXT_PAGE_SETUP','Page Setup');
 define('TEXT_PATH','Path');
 define('TEXT_POINTS_SHORT','pts');
-define('TEXT_PREFIX','Prefix:');
+define('TEXT_PREFIX','Prefix');
 define('TEXT_PRINTED_INDICATOR','Printed Indicator');
 define('TEXT_RECENTLY_ADDED','Recently Added Reports/Forms');
 define('TEXT_REPORT_GENERATED','Report Generated');
@@ -122,10 +122,10 @@ define('PHREEFORM_LINE_TYPE','Select Line Layout');
 define('PHREEFORM_DISPNAME','Name to Display');
 define('PHREEFORM_PGFILDESC','Report Filter Description');
 define('PHREEFORM_PGHEADER','Header Information / Formatting');
-define('PHREEFORM_PGLAYOUT','Page Layout');
+define('TEXT_PAGE_LAYOUT','Page Layout');
 define('TEXT_LEFT_MARGIN','Left Margin');
 define('PHREEFORM_PGMARGIN_R','Right Margin');
-define('PHREEFORM_PGMARGIN','Page Margins');
+define('TEXT_PAGE_MARGINS','Page Margins');
 define('PHREEFORM_PGTITL1','Report Title 1');
 define('PHREEFORM_PGTITL2','Report Title 2');
 define('PHREEFORM_RPTDATA','Report Data Heading');
@@ -197,7 +197,7 @@ define('PHREEFORM_AJAX_BAD_DB_REFERENCE','The sql returned an error (%s). Please
 define('PHREEFORM_AJAX_NO_TABLE_DATA','Your table statements did not return any rows. Either the tables are empty or there is an error in the link statements!');
 define('PHREEFORM_AJAX_DB_SUCCESS','The database relationships returned at least one row. They appear to be OK.');
 // Page setup
-define('TEXT_PAPER','Paper Size');
+define('TEXT_PAPER_SIZE','Paper Size');
 define('TEXT_ORIEN','Orientation');
 define('TEXT_MM','mm');
 define('TEXT_PORTRAIT','Portrait');
@@ -226,7 +226,7 @@ define('PF_FRM_FIXEDTXT','Fixed Text Field');
 define('PF_FRM_IMAGE','Image - JPG or PNG');
 define('TEXT_IMAGE_LINK','Image Link');
 define('TEXT_LINE','Line');
-define('PF_FRM_PAGENUM','Page Number');
+define('TEXT_PAGE_NUMBER','Page Number');
 define('TEXT_RECTANGLE','Rectangle');
 // Data processing
 define('TEXT_NEGATE','Negate');
@@ -237,7 +237,7 @@ define('TEXT_ROUND_2DECIMALS','Round (2 decimal)');
 define('PF_FRM_CNVTDLR','Convert Dollars');
 define('PF_FRM_NULLDLR','Null if 0 - Dollars');
 define('PF_FRM_CNVTEURO','Convert Euros');
-define('PF_FRM_NUM_2_WORDS','Number to Words');
+define('TEXT_NUMBER_TO_WORDS','Number to Words');
 define('TEXT_BLANK_OUT_DATA','Blank Out Data');
 // Standard fonts
 define('TEXT_FONT_HELVETICA','Helvetica');

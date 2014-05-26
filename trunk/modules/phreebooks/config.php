@@ -126,7 +126,7 @@ if (defined('MODULE_PHREEBOOKS_STATUS')) {
 	);
 	$mainmenu["banking"]['submenu']["vendor_payments"]['submenu']["select_for_payment"] = array(
 	  	'order'		  => 20,
-	    'text'        => BOX_BANKING_SELECT_FOR_PAYMENT,
+	    'text'        => TEXT_PAY_BY_DUE_DATE,
 	    'security_id' => SECURITY_ID_SELECT_PAYMENT,
 	    'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=bulk_bills', 'SSL'),
 	    'show_in_users_settings' => true,
@@ -298,7 +298,7 @@ if (defined('MODULE_PHREEBOOKS_STATUS')) {
 	);
   	$mainmenu["vendors"]['submenu']["orders"] = array(
   	  	'order'		  => 20,
-    	'text'        => TEXT_PURCH_ORDER,
+    	'text'        => TEXT_PURCHASE_ORDERS,
 	    'link'        => '',//html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=status&amp;jID=4&amp;list=1', 'SSL'),
   		'show_in_users_settings' => false,
 	    'params'      => '',
@@ -306,7 +306,7 @@ if (defined('MODULE_PHREEBOOKS_STATUS')) {
 	if (\core\classes\user::security_level(SECURITY_ID_PURCHASE_STATUS) > 0) $mainmenu["vendors"]['submenu']["orders"]['link'] = html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=status&amp;jID=4&amp;list=1', 'SSL');
   	$mainmenu["vendors"]['submenu']["orders"]['submenu']["new_order"] = array(
   	    'order'		  => 30,
-	    'text'        => sprintf(TEXT_NEW_ARGS, TEXT_PURCH_ORDER),
+	    'text'        => sprintf(TEXT_NEW_ARGS, TEXT_PURCHASE_ORDERS),
 	    'security_id' => SECURITY_ID_PURCHASE_ORDER,
 	    'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;jID=4', 'SSL'),
   		'show_in_users_settings' => true,
@@ -314,7 +314,7 @@ if (defined('MODULE_PHREEBOOKS_STATUS')) {
 	  );
 	$mainmenu["vendors"]['submenu']["orders"]['submenu']["order_mgr"] = array(
 		'order'		  => 35,
-	    'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_PURCH_ORDER),
+	    'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_PURCHASE_ORDERS),
 	    'security_id' => SECURITY_ID_PURCHASE_STATUS,
 	    'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=status&amp;jID=4&amp;list=1', 'SSL'),
 		'show_in_users_settings' => true,

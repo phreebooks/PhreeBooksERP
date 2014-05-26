@@ -33,7 +33,7 @@ define ('TEXT_TEST', 'Test');
 define ('TEXT_PDF', 'PDF');
 define ('TEXT_GIF', 'GIF');
 define ('TEXT_THERMAL', 'Thermal');
-define ('TEXT_PAGKAGE_DEFAULTS', 'Paket Defaults');
+define ('TEXT_PACKAGE_DEFAULTS', 'Paket Defaults');
 define ('TEXT_SHIPMENT_DEFAULTS', 'Versand Defaults');
 define ('TEXT_REMOVE_MESSAGE', 'Sind Sie sicher, dass Sie diese Versandart entfernen?');
 

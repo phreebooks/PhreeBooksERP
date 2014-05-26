@@ -58,7 +58,7 @@
 	    <td><?php echo '&nbsp;'; ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo TEXT_NS_ITEMS; ?></td>
+	    <td><?php echo TEXT_NON-STOCK_ITEM; ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_non_stock_default_sales', $inc_chart,  $_POST['inv_non_stock_default_sales'] ? $_POST['inv_non_stock_default_sales'] : INV_NON_STOCK_DEFAULT_SALES, ''); ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_non_stock_default_inventory', $inv_chart,  $_POST['inv_non_stock_default_inventory'] ? $_POST['inv_non_stock_default_inventory'] : INV_NON_STOCK_DEFAULT_INVENTORY, ''); ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_non_stock_default_cos', $cog_chart,  $_POST['inv_non_stock_default_cos'] ? $_POST['inv_non_stock_default_cos'] : INV_SERIALIZE_DEFAULT_COS, ''); ?></td>

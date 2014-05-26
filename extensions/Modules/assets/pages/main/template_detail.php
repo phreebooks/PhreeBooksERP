@@ -76,7 +76,7 @@ $fields->set_fields_to_display($asset_type);
 	  <td><?php echo ASSETS_ENTRY_IMAGE_PATH; ?></td>
 	</tr>
 	<tr>
-	  <td><?php echo ASSETS_ENTRY_FULL_PRICE; ?></td>
+	  <td><?php echo TEXT_ORIGINAL_COST; ?></td>
 	  <td>
 	  	<?php echo html_input_field('full_price', $currencies->format($cInfo->full_price), 'size="11" maxlength="10" style="text-align:right"', false) . (ENABLE_MULTI_CURRENCY ? (' (' . DEFAULT_CURRENCY . ')') : '');
 		?>

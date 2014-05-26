@@ -108,9 +108,9 @@
 	  <th><?php echo INV_ENTRY_INVENTORY_DESC_SHORT; ?></th>
 	  <th><?php echo $cInfo->attr_name_0; ?></th>
 	  <th><?php echo $cInfo->attr_name_1; ?></th>
-	  <th width="20px" style="padding:0px 5px"><?php echo INV_QTY_ON_HAND; ?></th>
-	  <th width="20px" style="padding:0px 5px"><?php echo INV_QTY_ON_ORDER; ?></th>
-	  <th width="20px" style="padding:0px 5px"><?php echo INV_QTY_ON_SALES_ORDER; ?></th>
+	  <th width="20px" style="padding:0px 5px"><?php echo TEXT_QUANTITY_ON_HAND; ?></th>
+	  <th width="20px" style="padding:0px 5px"><?php echo TEXT_QUANTITY_ON_PURCHASE_ORDER; ?></th>
+	  <th width="20px" style="padding:0px 5px"><?php echo TEXT_QUANTITY_ON_SALES_ORDER; ?></th>
 	  <th width="20px" style="padding:0px 5px"><?php echo TEXT_MINIMUM_STOCK_LEVEL; ?></th>
 	  <th width="20px" style="padding:0px 5px"><?php echo TEXT_REORDER_QUANTITY; ?></th>
 	  <th width="20px" style="padding:0px 5px"><?php echo TEXT_ITEM_COST; ?></th>

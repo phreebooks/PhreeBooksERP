@@ -40,7 +40,7 @@ define('ASSETS_HEADING_NEW_ITEM','New Asset');
 define('ASSETS_ENTER_ASSET_ID','Create a New Asset');
 define('ASSETS_ENTRY_ASSET_TYPE','Enter the Asset Type');
 define('TEXT_ASSET_TYPE','Asset Type');
-define('ASSETS_ENTRY_FULL_PRICE','Original Cost');
+define('TEXT_ORIGINAL_COST','Original Cost');
 define('ASSETS_ENTRY_ACCT_SALES','GL Asset Account');
 define('ASSETS_ENTRY_ACCT_INV','GL Depreciation Account');
 define('ASSETS_ENTRY_ACCT_COS','GL Maintenance Account');

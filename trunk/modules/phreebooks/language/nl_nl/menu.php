@@ -27,7 +27,7 @@ define('ORD_TEXT_18_V_WINDOW_TITLE','Restituties');
 define('ORD_TEXT_19_WINDOW_TITLE','Kassa');
 define('ORD_TEXT_20_C_WINDOW_TITLE','Klant Restituties');
 define('ORD_TEXT_20_V_WINDOW_TITLE','Leverancier Betalingen');
-define('BOX_BANKING_SELECT_FOR_PAYMENT','Selecteer voor Betaling');
+define('TEXT_PAY_BY_DUE_DATE','Betaal per Verval Datum');
 define('TEXT_BANK_ACCOUNT_REGISTER','Bank Rekening Register');
 define('BOX_BANKING_ACCOUNT_RECONCILIATION','Grootboek Verrekening');
 define('TEXT_VOID_CHECKS','Ingetrokken Checks');

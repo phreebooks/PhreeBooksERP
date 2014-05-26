@@ -35,7 +35,7 @@ define('PHREEPOS_HANDELING_CASH_DIFFERENCE','Lançada Diferença Caixa ');
 define('POS_HEADING_CLOSING','Fechamento Dia');
 define('NEW_BALANCE','Novo Balanço Caixa');
 define('TEXT_PAYMENTS_SHOULD_BE','Pagamentos Devem Ser');
-define('PAYMENTS_RECEIVED','Pagamentos Recebidos:');
+define('TEXT_PAYMENTS_RECEIVED','Pagamentos Recebidos');
 define('TILL_BALANCE','Saldo Inicial Caixa:');
 define('TILL_END_BALANCE','Diferença');
 define('TEXT_SHOW_COUNT_HELP','Mostrar auxílio contagem');

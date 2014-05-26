@@ -18,7 +18,7 @@
 //
 ?>
 <div title="<?php echo TEXT_STATISTICS;?>" id="tab_stats">
-<?php 
+<?php
   if (sizeof($admin_classes['phreepos']->tables) > 0) {
     echo "  <fieldset><!-- db table stats -->\n";
     echo "    <legend>" . TEXT_TABLE_STATS . "</legend>\n";
@@ -27,10 +27,10 @@
     echo "        <tr>\n";
 	echo "          <th>" . TEXT_TABLE . "</th>\n";
 	echo "          <th>" . TEXT_ENGINE . "</th>\n";
-	echo "          <th>" . TEXT_NUM_ROWS . "</th>\n";
+	echo "          <th>" . TEXT_NUMBER_OF_ROWS . "</th>\n";
 	echo "          <th>" . TEXT_COLLATION . "</th>\n";
 	echo "          <th>" . TEXT_SIZE . "</th>\n";
-	echo "          <th>" . TEXT_NEXT_ID . "</th>\n";
+	echo "          <th>" . TEXT_NEXT_ROW_ID . "</th>\n";
     echo "        </tr>\n";
     echo "      </thead>\n";
     echo "      <tbody class=\"ui-widget-content\">\n";

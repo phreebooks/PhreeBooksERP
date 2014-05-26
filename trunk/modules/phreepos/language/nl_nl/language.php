@@ -36,7 +36,7 @@ define('POS_HEADING_CLOSING','Dag Afsluiting');
 
 define('NEW_BALANCE','Nieuw Kassa Saldo');
 define('TEXT_PAYMENTS_SHOULD_BE','te Ontvangen Betalingen:');
-define('PAYMENTS_RECEIVED','Ontvangen Betalingen:');
+define('TEXT_PAYMENTS_RECEIVED','Ontvangen Betalingen');
 define('TILL_BALANCE','Start Saldo Kassa:');
 define('TILL_END_BALANCE','Kasverschil');
 define('TEXT_SHOW_COUNT_HELP','Toon tel hulp');

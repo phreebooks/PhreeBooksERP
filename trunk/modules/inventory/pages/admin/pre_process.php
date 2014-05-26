@@ -161,8 +161,8 @@ $cost_methods = array(
 );
 $sel_item_cost = array(
  array('id' => '0',  'text' => TEXT_NO),
- array('id' => 'PO', 'text' => TEXT_PURCH_ORDER),
- array('id' => 'PR', 'text' => TEXT_PURCHASE),
+ array('id' => 'PO', 'text' => TEXT_PURCHASE_ORDERS),
+ array('id' => 'PR', 'text' => TEXT_PURCHASES),
 );
 $sel_sales_tax = ord_calculate_tax_drop_down('c');
 $sel_purch_tax = ord_calculate_tax_drop_down('v');

@@ -91,7 +91,7 @@ while (!$result->EOF) {
 if (!defined('ENABLE_AUTO_ITEM_COST')) {
   $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . "
            ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` , `set_function` )
-    VALUES ( 'CD_05_75_TITLE', 'ENABLE_AUTO_ITEM_COST', '0', 'CD_05_75_DESC', '5', '75', NULL , now(), NULL, 'cfg_keyed_select_option(array(0=>\'" . TEXT_NO . "\', \'PO\'=>\'" . TEXT_PURCH_ORDER . "\', \'PR\'=>\'" . TEXT_PURCHASE . "\'),' );");
+    VALUES ( 'CD_05_75_TITLE', 'ENABLE_AUTO_ITEM_COST', '0', 'CD_05_75_DESC', '5', '75', NULL , now(), NULL, 'cfg_keyed_select_option(array(0=>\'" . TEXT_NO . "\', \'PO\'=>\'" . TEXT_PURCHASE_ORDERS . "\', \'PR\'=>\'" . TEXT_PURCHASE . "\'),' );");
 }
 
 ?>

@@ -40,7 +40,7 @@ define('ASSETS_HEADING_NEW_ITEM','Nieuwe Activa');
 define('ASSETS_ENTER_ASSET_ID','Creer Nieuwe Activa');
 define('ASSETS_ENTRY_ASSET_TYPE','Selecteer Activa Type');
 define('TEXT_ASSET_TYPE','Activa Type');
-define('ASSETS_ENTRY_FULL_PRICE','Oorspronkelijke Kosten');
+define('TEXT_ORIGINAL_COST','Oorspronkelijke Kosten');
 define('ASSETS_ENTRY_ACCT_SALES','Grootbook Activa Rekening');
 define('ASSETS_ENTRY_ACCT_INV','Grootbook Activa Afschrijving');
 define('ASSETS_ENTRY_ACCT_COS','Grootbook Activa Onderhoud');

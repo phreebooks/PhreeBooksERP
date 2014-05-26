@@ -24,7 +24,7 @@ class splitPageResults {
 	public	$page_start				= 0;
 	public	$total_num_rows			= 0;
 	public  $total_num_pages		= 1;
-  	
+
 	function __construct($current_page_number, $query_num_rows) {
     	global $db;
     	if($query_num_rows == '') {
@@ -37,7 +37,7 @@ class splitPageResults {
 		if ($this->total_num_pages == 0) $this->total_num_pages = 1;
       	if ($this->total_num_pages < $_REQUEST['list']) $_REQUEST['list'] = max(1, $this->total_num_pages);
     }
-    
+
     function display_links($page_name = 'list') {
 	    $pages_array = array();
 	    for ($i = 1; $i <= $this->total_num_pages; $i++) $pages_array[] = array('id' => $i, 'text' => $i);
@@ -57,7 +57,7 @@ class splitPageResults {
 				$display_links .= sprintf(TEXT_RESULT_PAGE, $_REQUEST['list'], $this->total_num_pages);
 			}
 	        if (($_REQUEST['list'] < $this->total_num_pages) && ($this->total_num_pages != 1)) {
-				$display_links .= html_icon('actions/media-playback-start.png', TEXT_GO_NEXT, 'small', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')) . '&action=go_next', 'SSL') . '\'" style="cursor:pointer;"');
+				$display_links .= html_icon('actions/media-playback-start.png', TEXT_NEXT_PAGE, 'small', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')) . '&action=go_next', 'SSL') . '\'" style="cursor:pointer;"');
 				$display_links .= html_icon('actions/media-skip-forward.png', TEXT_GO_LAST, 'small', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')) . '&action=go_last', 'SSL') . '\'" style="cursor:pointer;"');
 	        } else {
 				$display_links .= html_icon('actions/media-playback-start.png', '', 'small', '');
@@ -68,7 +68,7 @@ class splitPageResults {
 	    }
 	    return $display_links;
     }
-    
+
     function display_ajax($page_name = 'list', $id = '') {
       	$display_links   = '';
       	$pages_array     = array();
@@ -88,7 +88,7 @@ class splitPageResults {
 		  		$display_links .= sprintf(TEXT_RESULT_PAGE, $_REQUEST['list'], $this->total_num_pages);
 			}
         	if (($_REQUEST['list'] < $this->total_num_pages) && ($this->total_num_pages != 1)) {
-		  		$display_links .= html_icon('actions/media-playback-start.png', TEXT_GO_NEXT, 'small', 'onclick="tabPage(\'' . $id . '\', \'go_next\')" style="cursor:pointer;"');
+		  		$display_links .= html_icon('actions/media-playback-start.png', TEXT_NEXT_PAGE, 'small', 'onclick="tabPage(\'' . $id . '\', \'go_next\')" style="cursor:pointer;"');
 		  		$display_links .= html_icon('actions/media-skip-forward.png', TEXT_GO_LAST, 'small', 'onclick="tabPage(\'' . $id . '\', \'go_last\')" style="cursor:pointer;"');
         	} else {
 		  	$display_links .= html_icon('actions/media-playback-start.png', '', 'small', '');

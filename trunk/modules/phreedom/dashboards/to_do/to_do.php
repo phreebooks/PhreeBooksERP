@@ -34,7 +34,7 @@ class to_do extends \core\classes\ctl_panel {
 		// Build control box form data
 		$control  = '  <div class="row">' . chr(10);
 		$control .= '    <div style="white-space:nowrap">';
-		$control .= TEXT_NOTE . '&nbsp;' . html_input_field('to_do_field_0', '', 'size="50"') . '<br />';
+		$control .= TEXT_NOTE . ': &nbsp;' . html_input_field('to_do_field_0', '', 'size="50"') . '<br />';
 		$control .= '&nbsp;&nbsp;&nbsp;&nbsp;';
 		$control .= html_submit_field('sub_to_do', TEXT_ADD);
 		$control .= html_hidden_field('to_do_rId', '');

@@ -34,7 +34,7 @@ define('TEXT_STOCK_ITEMS','Stock');
 define('TEXT_MS_ITEMS','Master Stock');
 define('TEXT_ASSEMBLIES','Assemblies');
 define('TEXT_SERIALIZED','Serialized');
-define('TEXT_NS_ITEMS','Non-Stock');
+define('TEXT_NON-STOCK','Non-Stock');
 define('TEXT_SRV_ITEMS','Service');
 define('TEXT_LABOR_ITEMS','Labor');
 define('TEXT_ACT_ITEMS','Activity');

@@ -42,28 +42,28 @@ echo $toolbar->build_toolbar();
 	<td nowrap="nowrap"><?php echo $inventory_details->fields['description_short']; ?></td>
   </tr>
   <tr>
-	<td nowrap="nowrap"><?php echo INV_QTY_ON_HAND . ': '; ?></td>
+	<td nowrap="nowrap"><?php echo TEXT_QUANTITY_ON_HAND . ': '; ?></td>
 	<td nowrap="nowrap"><?php echo $inventory_details->fields['quantity_on_hand']; ?></td>
 	<td nowrap="nowrap">&nbsp;</td>
 	<td nowrap="nowrap"><?php echo TEXT_ITEM_COST . ': '; ?></td>
 	<td nowrap="nowrap"><?php echo $currencies->precise($item_cost); ?></td>
   </tr>
   <tr>
-	<td nowrap="nowrap"><?php echo INV_QTY_ON_SALES_ORDER . ': '; ?></td>
+	<td nowrap="nowrap"><?php echo TEXT_QUANTITY_ON_SALES_ORDER . ': '; ?></td>
 	<td nowrap="nowrap"><?php echo $inventory_details->fields['quantity_on_sales_order']; ?></td>
 	<td nowrap="nowrap">&nbsp;</td>
 	<td nowrap="nowrap"><?php echo TEXT_FULL_PRICE . ': '; ?></td>
 	<td nowrap="nowrap"><?php echo $currencies->precise($full_price); ?></td>
   </tr>
   <tr>
-	<td nowrap="nowrap"><?php echo INV_QTY_ON_ALLOCATION . ': '; ?></td>
+	<td nowrap="nowrap"><?php echo TEXT_QUANTITY_ON_ALLOCATION . ': '; ?></td>
 	<td nowrap="nowrap"><?php echo $inventory_details->fields['quantity_on_allocation']; ?></td>
 	<td nowrap="nowrap">&nbsp;</td>
 	<td nowrap="nowrap">&nbsp;</td>
 	<td nowrap="nowrap">&nbsp;</td>
   </tr>
   <tr>
-	<td nowrap="nowrap"><?php echo INV_QTY_ON_ORDER . ': '; ?></td>
+	<td nowrap="nowrap"><?php echo TEXT_QUANTITY_ON_PURCHASE_ORDER . ': '; ?></td>
 	<td nowrap="nowrap"><?php echo $inventory_details->fields['quantity_on_order']; ?></td>
 	<td nowrap="nowrap">&nbsp;</td>
 	<td nowrap="nowrap">&nbsp;</td>

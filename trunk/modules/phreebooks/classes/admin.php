@@ -379,7 +379,7 @@ class admin extends \core\classes\admin {
 		$id = $this->add_report_heading(TEXT_VENDORS,     'vend');
 		$this->add_report_folder($id, TEXT_REPORTS,           'vend',      'fr');
 		$this->add_report_folder($id, TEXT_VENDOR_QUOTES,     'vend:quot', 'ff');
-		$this->add_report_folder($id, TEXT_PURCH_ORDER,      'vend:po',   'ff');
+		$this->add_report_folder($id, TEXT_PURCHASE_ORDERS,      'vend:po',   'ff');
 		$this->add_report_folder($id, PB_PF_VENDOR_CRD_MEMO,  'vend:cm',   'ff');
 		$this->add_report_folder($id, PB_PF_VENDOR_LABEL,     'vend:lblv', 'ff');
 		$this->add_report_folder($id, TEXT_VENDOR_STATEMENTS, 'vend:stmt', 'ff');

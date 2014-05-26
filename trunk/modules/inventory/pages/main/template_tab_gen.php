@@ -43,7 +43,7 @@
 		<?php echo TEXT_INACTIVE; ?>
 		<?php echo html_checkbox_field('inactive', '1', $cInfo->inactive); ?>
 	  </td>
-	  <td align="right"><?php if(isset($cInfo->quantity_on_hand)) echo INV_QTY_ON_HAND; ?></td>
+	  <td align="right"><?php if(isset($cInfo->quantity_on_hand)) echo TEXT_QUANTITY_ON_HAND; ?></td>
 	  <td><?php if(isset($cInfo->quantity_on_hand)) echo html_input_field('quantity_on_hand', $currencies->precise($cInfo->quantity_on_hand), 'disabled="disabled" size="6" maxlength="5" style="text-align:right"', false); ?></td>
 	  <td rowspan="5" align="center">
 		<?php if (isset($cInfo->image_with_path)) { // show image if it is defined
@@ -57,19 +57,19 @@
 	  	<?php echo html_input_field('description_short', $cInfo->description_short, 'size="33" maxlength="32"', false); ?>
 		<?php if ($cInfo->id) echo '&nbsp;' . html_icon('categories/preferences-system.png', TEXT_WHERE_USED, 'small', 'onclick="ajaxWhereUsed()"') . chr(10); ?>
 	  </td>
-	  <td align="right"><?php if(isset($cInfo->quantity_on_order)) echo INV_QTY_ON_ORDER; ?></td>
+	  <td align="right"><?php if(isset($cInfo->quantity_on_order)) echo TEXT_QUANTITY_ON_PURCHASE_ORDER; ?></td>
 	  <td><?php if(isset($cInfo->quantity_on_order)) echo html_input_field('quantity_on_order', $currencies->precise($cInfo->quantity_on_order), 'disabled="disabled" size="6" maxlength="5" style="text-align:right"', false); ?></td>
 	</tr>
 	<tr>
 	  <td align="right"><?php if(isset($cInfo->minimum_stock_level)) echo TEXT_MINIMUM_STOCK_LEVEL; ?></td>
 	  <td><?php if(isset($cInfo->minimum_stock_level)) echo html_input_field('minimum_stock_level', $currencies->precise($cInfo->minimum_stock_level), 'size="6" maxlength="5" style="text-align:right"', false); ?></td>
-	  <td align="right"><?php if(isset($cInfo->quantity_on_allocation)) echo INV_QTY_ON_ALLOCATION; ?></td>
+	  <td align="right"><?php if(isset($cInfo->quantity_on_allocation)) echo TEXT_QUANTITY_ON_ALLOCATION; ?></td>
 	  <td><?php if(isset($cInfo->quantity_on_allocation)) echo html_input_field('quantity_on_allocation', $currencies->precise($cInfo->quantity_on_allocation), 'disabled="disabled" size="6" maxlength="5" style="text-align:right"', false); ?></td>
 	</tr>
 	<tr>
 	  <td align="right"><?php if(isset($cInfo->reorder_quantity)) echo TEXT_REORDER_QUANTITY; ?></td>
 	  <td><?php if(isset($cInfo->reorder_quantity)) echo html_input_field('reorder_quantity', $currencies->precise($cInfo->reorder_quantity), 'size="6" maxlength="5" style="text-align:right"', false); ?></td>
-	  <td align="right"><?php if(isset($cInfo->quantity_on_sales_order)) echo INV_QTY_ON_SALES_ORDER; ?></td>
+	  <td align="right"><?php if(isset($cInfo->quantity_on_sales_order)) echo TEXT_QUANTITY_ON_SALES_ORDER; ?></td>
 	  <td><?php if(isset($cInfo->quantity_on_sales_order)) echo html_input_field('quantity_on_sales_order', $currencies->precise($cInfo->quantity_on_sales_order), 'disabled="disabled" size="6" maxlength="5" style="text-align:right"', false); ?></td>
 	</tr>
 	<tr>
@@ -127,7 +127,7 @@
 	   		<tr>
 	   			<th width="5%"></th>
 	   			<th><?php echo TEXT_PREFERRED_VENDOR; ?></th>
-	   			<th><?php echo INV_ENTRY_INVENTORY_DESC_PURCHASE; ?></th>
+	   			<th><?php echo TEXT_PURCHASE_DESCRIPTION; ?></th>
 	   			<th><?php echo TEXT_ITEM_COST; ?></th>
 	   			<th><?php echo TEXT_PACKAGE_QUANTITY;?></th>
 	   			<th><?php echo INV_ENTRY_PURCH_TAX;?></th>

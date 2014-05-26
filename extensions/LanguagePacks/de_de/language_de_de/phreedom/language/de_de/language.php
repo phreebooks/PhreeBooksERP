@@ -159,7 +159,7 @@ define ('TEXT_LENGTH', 'Länge');
 define ('TEXT_LESS_THAN', 'kleiner');
 define ('TEXT_LEVEL', 'Level');
 define ('TEXT_MESSAGE_BODY', 'Nachricht');
-define ('TEXT_MESSAGE_SUBJECT', 'Betreff:');
+define ('TEXT_MESSAGE_SUBJECT', 'Betreff');
 define ('TEXT_METHODS', 'Methoden');
 define ('TEXT_MISC', 'Verschiedenes');
 define ('TEXT_MODULE', 'Modul');
@@ -173,7 +173,7 @@ define ('TEXT_NA', 'N / A'); // nicht anwendbar
 define ('TEXT_NO', 'Keine');
 define ('TEXT_NONE', '- Keine -');
 define ('TEXT_NOT_USED', 'nicht verwendet ');
-define ('TEXT_NOTE', 'Hinweis:');
+define ('TEXT_NOTE', 'Hinweis');
 define ('TEXT_NOTES', 'Notizen');
 define ('TEXT_NEW', 'Neu');
 define ('TEXT_NOT_EQUAL', 'ungleich');
@@ -204,9 +204,9 @@ define ('TEXT_PROJECT', 'Projekt');
 define ('TEXT_PROPERTIES', 'Eigenschaften');
 define ('TEXT_PO_NUMBER', 'PO #');
 define ('GEN_PRIMARY_NAME', 'Name / Firma');
-define ('TEXT_PURCH_ORDER', 'Bestellungen');
+define ('TEXT_PURCHASE_ORDERS', 'Bestellungen');
 define ('TEXT_PURCHASE_TAX', 'Umsatzsteuer-');
-define ('TEXT_PURCHASE', 'Käufe');
+define ('TEXT_PURCHASES', 'Käufe');
 define ('TEXT_QUANTITY', 'Menge');
 define ('TEXT_READ_ONLY', 'Nur Lesen');
 define ('TEXT_RECEIVE', 'Receive');
@@ -299,7 +299,7 @@ define ('TEXT_WEEK_TO_DATE', 'Week To Date ');
 define ('TEXT_THIS_MONTH', 'This Month');
 define ('TEXT_MTD', 'Monat To Date ');
 define ('TEXT_THIS_QUARTER', 'Dies Quarter');
-define ('TEXT_QTD', 'Quarter To Date ');
+define ('TEXT_QUARTER_TO_DATE', 'Quarter To Date ');
 define ('TEXT_THIS_YEAR', 'Dieses Jahr');
 define ('TEXT_YEAR_TO_DATE', 'Year to Date');
 define ('TEXT_CURRENT_PERIOD', 'Aktuelle Periode');
@@ -385,7 +385,7 @@ define('TEXT_IMP_ERMSG15','The import file needs an index reference value to pro
 // Tooltip Nachrichten
 define ('TEXT_GO_FIRST', 'Zur ersten Seite');
 define ('TEXT_GO_PREVIOUS', 'zurück');
-define ('TEXT_GO_NEXT', 'Nächste Seite');
+define ('TEXT_NEXT_PAGE', 'Nächste Seite');
 define ('TEXT_GO_LAST', 'Zur letzten Seite');
 // Javascript-Nachrichten
 define('JS_ERROR', 'Errors have occurred during the processing of your form!\nPlease make the following corrections:\n\n');

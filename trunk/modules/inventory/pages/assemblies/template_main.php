@@ -66,7 +66,7 @@ echo $toolbar->build_toolbar();
 		<td align="right"><?php echo html_calendar_field($cal_assy); ?></td>
 	  </tr>
 	  <tr>
-		<td><?php echo INV_QTY_ON_HAND; ?></td>
+		<td><?php echo TEXT_QUANTITY_ON_HAND; ?></td>
 		<td align="right"><?php echo html_input_field('stock_1', $cInfo->stock_1, 'readonly="readonly" style="text-align:right" size="13"'); ?></td>
 	  </tr>
 	  <tr>

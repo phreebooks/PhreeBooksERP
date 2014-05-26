@@ -195,7 +195,7 @@ define ('BNK_LOG_ACCT_RECON', 'Konto-Versöhnung, Zeitraum:');
 define ('BANKING_HEADING_RECONCILIATION', 'Konto-Versöhnung');
 define ('BNK_START_BALANCE', 'Statement Ending Balance');
 define ('TEXT_OUTSTANDING_CHECKS', 'Hervorragende Checks');
-define ('BNK_OPEN_DEPOSITS', '+ Einlagen in Transit');
+define ('TEXT_DEPOSITS_IN_TRANSIT', 'Einlagen in Transit');
 define ('TEXT_ACCOUNT_BALANCE', 'GL Kontostand');
 define ('BNK_END_BALANCE', 'Unversöhnte Difference');
 define ('BNK_DEPOSIT_CREDIT', 'Ein-/ Credit');

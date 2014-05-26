@@ -237,7 +237,7 @@ $FormEntries = array(
   'Line'    => TEXT_LINE,
   'CDta'    => PB_PF_COMPANY_DATA,
   'CBlk'    => PB_PF_COMPANY_BLOCK,
-  'PgNum'   => PF_FRM_PAGENUM,
+  'PgNum'   => TEXT_PAGE_NUMBER,
 );
 if (PDF_APP == 'TCPDF') {
   $FormEntries['BarCode'] = TEXT_BAR_CODE_IMAGE;
@@ -250,7 +250,7 @@ $FormProcessing = array(
   'uc'       => TEXT_UPPERCASE,
   'lc'       => TEXT_LOWERCASE,
   'neg'      => TEXT_NEGATE,
-  'n2wrd'    => PF_FRM_NUM_2_WORDS,
+  'n2wrd'    => TEXT_NUMBER_TO_WORDS,
   'rnd2d'    => TEXT_ROUND_2DECIMALS,
   'date'     => PF_FRM_DATE,
   'dlr'      => PF_FRM_CNVTDLR,

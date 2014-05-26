@@ -185,7 +185,7 @@ define ('GEN_ENCRYPTION_KEY_SET', 'Der Schlüssel gesetzt wurde.');
 define ('GEN_ENCRYPTION_KEY_CHANGED', 'Der Schlüssel wurde geändert.');
 define ('GEN_ADM_TOOLS_SET_ENCRYPTION_PW', 'Erstellen / Ändern Encryption Key');
 define ('GEN_ADM_TOOLS_SET_ENCRYPTION_PW_DESC', 'Stellen Sie den Schlüssel zu benutzen, wenn \' Verschlüsselung aktiviert \'eingeschaltet ist Wenn Einstellung zum ersten Mal, wird der alte Schlüssel leer..');
-define ('GEN_ADM_TOOLS_ENCRYPT_OLD_PW', 'Old Encryption Key');
+define ('TEXT_OLD_ENCRYPTION_KEY', 'Old Encryption Key');
 define ('GEN_ADM_TOOLS_ENCRYPT_PW', 'Neue Encryption Key');
 define ('GEN_ADM_TOOLS_ENCRYPT_PW_CONFIRM', 'Re-enter New Encryption Key');
 define ('ERROR_OLD_ENCRYPT_NOT_CORRECT', 'Die aktuelle verschlüsselten Schlüssel stimmt nicht mit dem gespeicherten Wert');

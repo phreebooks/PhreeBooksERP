@@ -30,11 +30,11 @@
     </tr>
     <tr class="ui-widget-header">
       <th><?php echo TEXT_DETAILED_DESCRIPTION; ?></th>
-      <th colspan="2"><?php echo PHREEFORM_PGLAYOUT; ?></th>
+      <th colspan="2"><?php echo TEXT_PAGE_LAYOUT; ?></th>
     </tr>
     <tr>
       <td rowspan="2"><?php echo html_textarea_field('description', 80, 3, $report->description, ''); ?></td>
-      <td align="right"><?php echo TEXT_PAPER; ?></td>
+      <td align="right"><?php echo TEXT_PAPER_SIZE; ?></td>
       <td><?php echo html_pull_down_menu('papersize', gen_build_pull_down($PaperSizes), $report->page->size); ?></td>
     </tr>
     <tr>
@@ -46,7 +46,7 @@
     </tr>
     <tr class="ui-widget-header">
       <th><?php echo TEXT_EMAIL_MSG_DETAIL; ?></th>
-      <th colspan="2"><?php echo PHREEFORM_PGMARGIN; ?></th>
+      <th colspan="2"><?php echo TEXT_PAGE_MARGINS; ?></th>
     </tr>
     <tr>
       <td rowspan="4"><?php echo html_textarea_field('emailmessage', 80, 3, $report->emailmessage, ''); ?></td>

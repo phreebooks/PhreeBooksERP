@@ -28,10 +28,10 @@ $employee_types = array(
 
 $project_cost_types = array(
  'LBR' => TEXT_LABOR,
- 'MAT' => COST_TYPE_MAT,
+ 'MAT' => TEXT_MATERIALS,
  'CNT' => COST_TYPE_CNT,
  'EQT' => COST_TYPE_EQT,
- 'OTH' => COST_TYPE_OTH,
+ 'OTH' => TEXT_OTHER,
 );
 
 $crm_actions = array(

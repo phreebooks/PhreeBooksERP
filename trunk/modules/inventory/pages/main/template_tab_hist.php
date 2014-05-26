@@ -124,12 +124,12 @@
 	  	<?php if(isset($cInfo->purchases_history)){?>
 		<table class="ui-widget" style="border-collapse:collapse;width:100%">
 		 <thead class="ui-widget-header">
-		  <tr><th colspan="4"><?php echo INV_PURCH_BY_MONTH; ?></th></tr>
+		  <tr><th colspan="4"><?php echo TEXT_PURCHASES_BY_MONTH; ?></th></tr>
 		  <tr>
 		    <th><?php echo TEXT_YEAR; ?></th>
 		    <th><?php echo TEXT_THIS_MONTH; ?></th>
 		    <th><?php echo TEXT_QUANTITY; ?></th>
-		    <th><?php echo INV_PURCH_COST; ?></th>
+		    <th><?php echo TEXT_PURCHASE_COST; ?></th>
 		  </tr>
 		 </thead>
 		 <tbody class="ui-widget-content">

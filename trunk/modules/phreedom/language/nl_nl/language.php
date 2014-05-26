@@ -8,7 +8,7 @@
 // +-----------------------------------------------------------------+
 // Path: /modules/phreedom/language/nl_nl/language.php
 
-define('TEXT_QTD','Dit Kwartaal  tot Vandaag');
+define('TEXT_QUARTER_TO_DATE','Dit Kwartaal  tot Vandaag');
 define('TEXT_XML','XML');
 define('TEXT_URL','URL');
 define('TEXT_UP','Omhoog');
@@ -122,10 +122,10 @@ define('TEXT_READ_ONLY','Alleen lezen');
 define('TEXT_RECEIVE','Ontvangen');
 define('TEXT_RECEIVE_ALL','Ontvang Inkoop Order');
 define('TEXT_PURCHASE_TAX','Inkoop Belasting');
-define('TEXT_PURCHASE','Inkopen');
+define('TEXT_PURCHASES','Inkopen');
 define('TEXT_PO_NUMBER','Inkoop Order #');
 define('GEN_PRIMARY_NAME','Naam/Bedrijf');
-define('TEXT_PURCH_ORDER','Inkoop Orders');
+define('TEXT_PURCHASE_ORDERS','Inkoop Orders');
 define('TEXT_PROFILE','Profiel');
 define('TEXT_PROJECT','Project');
 define('TEXT_PROPERTIES','Eigenschappen');
@@ -155,7 +155,7 @@ define('TEXT_NOT_EQUAL','Niet gelijk aan');
 define('TEXT_AVAILABLE','Beschikbaar');
 define('TEXT_NOTES','Aantekeningen');
 define('TEXT_NEW','Nieuw');
-define('TEXT_NOTE','Aantekening:');
+define('TEXT_NOTE','Aantekening');
 define('TEXT_NOT_USED','Niet Gebruikt');
 define('TEXT_NONE','Geen');
 define('TEXT_MOVE','Verplaats');
@@ -172,8 +172,8 @@ define('TEXT_MODULE_STATS','Module Statistieken');
 define('TEXT_MODULE','Module');
 define('TEXT_METHODS','Methods');
 define('TEXT_MISC','Diversen');
-define('TEXT_MESSAGE_BODY','Bericht Tekst: ');
-define('TEXT_MESSAGE_SUBJECT','Bericht Onderwerp: ');
+define('TEXT_MESSAGE_BODY','Bericht Tekst');
+define('TEXT_MESSAGE_SUBJECT','Bericht Onderwerp');
 define('TEXT_MARGIN','Marge');
 define('TEXT_LESS_THAN','Minder Dan');
 define('TEXT_LEVEL','Niveau');
@@ -384,7 +384,7 @@ define('TEXT_IMP_ERMSG14','Error in input bestand. Meer dan twee tekst markeerde
 define('TEXT_IMP_ERMSG15','Het import bestand moet een index bevatten om de gegevens te verwerken! Omvatten gegevens en vink de \'Toon\' box voor het veld : ');
 define('TEXT_GO_FIRST','Spring naar de eerste pagina');
 define('TEXT_GO_PREVIOUS','Vorige Pagina');
-define('TEXT_GO_NEXT','Volgende Pagina');
+define('TEXT_NEXT_PAGE','Volgende Pagina');
 define('TEXT_GO_LAST','Spring naar Laatste pagina');
 define('JS_ERROR','Er heeft zich een fout voor gedaan tijdens het verwerken van het formulier!\\n Voer de volgende wijzigingen uit:\\n\\n');
 define('JS_CTL_PANEL_DELETE_BOX','weet u zeker dat u deze box wilt verwijderen?');

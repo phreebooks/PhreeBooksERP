@@ -128,7 +128,7 @@ define('TEXT_SELECT_FILE','File to import: ');
 define('BANKING_HEADING_RECONCILIATION','Account Reconciliation');
 define('BNK_START_BALANCE','Statement Ending Balance');
 define('TEXT_OUTSTANDING_CHECKS','Outstanding Checks');
-define('BNK_OPEN_DEPOSITS','+ Deposits in Transit');
+define('TEXT_DEPOSITS_IN_TRANSIT','Deposits in Transit');
 define('TEXT_ACCOUNT_BALANCE','GL Account Balance');
 define('BNK_END_BALANCE','Unreconciled Difference');
 define('BNK_DEPOSIT_CREDIT','Deposit/Credit');
@@ -264,9 +264,9 @@ define('TEXT_ITEM_IS_ON_ORDER', 'item is on order');
 define('TEXT_ITEM_MUST_BE_ORDERD', 'item must be orderd');
 // Low Stock messages
 define('LOW_STOCK_BUTTON','Fill order with items with low stock');
-define('LOW_STOCK_PROCESSED','Procesed');
+define('TEXT_PROCESED','Procesed');
 define('LOW_STOCK_NO_PRODUCTS','There are no products that need to be orderd for this vendor.');
-define('LOW_STOCK_NO_VENDOR','No vendor found');
+define('TEXT_NO_VENDOR_FOUND','No vendor found');
 define('LOW_STOCK_ALREADY_EXECUTED','This action was executed before and is now blocked to prevent double entry. Reload the form to try again!');
 // Audit Log Messages
 define('BNK_LOG_ACCT_RECON','Account Reconciliation, period: ');

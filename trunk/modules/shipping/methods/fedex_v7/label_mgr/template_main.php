@@ -230,7 +230,7 @@ echo $toolbar->build_toolbar();
 	  </tr>
 	  <tr>
 		<td colspan="2">
-		  <?php echo SHIPPING_NUM_PIECES . ' ' . html_input_field('ltl_num_pieces', $sInfo->ltl_num_pieces ? $sInfo->ltl_num_pieces : $shipping_defaults['ltl_num_pieces'], 'size="4" maxlength="3"');
+		  <?php echo TEXT_NUMBER_OF_PIECES . ' ' . html_input_field('ltl_num_pieces', $sInfo->ltl_num_pieces ? $sInfo->ltl_num_pieces : $shipping_defaults['ltl_num_pieces'], 'size="4" maxlength="3"');
 		        echo SHIPPING_LTL_CLASS . ' ' . html_pull_down_menu('ltl_class', gen_build_pull_down($ltl_classes), $sInfo->ltl_class ? $sInfo->ltl_class : $shipping_defaults['ltl_class']); ?>
 		</td>
 	  </tr>

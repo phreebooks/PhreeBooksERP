@@ -33,7 +33,7 @@ define('ASSETS_ENTRY_ASSETS_SERIALIZE','Marca/Modelo/Nº Série');
 define('ASSETS_ENTRY_ACCT_COS','CG Conta Manutenção');
 define('ASSETS_ENTRY_ACCT_INV','CG Conta Depreciação');
 define('ASSETS_ENTRY_ACCT_SALES','CG Conta Ativo Patrimonial');
-define('ASSETS_ENTRY_FULL_PRICE','Custo Original');
+define('TEXT_ORIGINAL_COST','Custo Original');
 define('TEXT_ASSET_TYPE','Tipo Ativo');
 define('ASSETS_ENTRY_ASSET_TYPE','Entre o Tipo de Ativo');
 define('ASSETS_ENTER_ASSET_ID','Criar um Novo Ativo');

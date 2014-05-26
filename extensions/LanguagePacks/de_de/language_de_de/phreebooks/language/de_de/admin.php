@@ -234,7 +234,7 @@ define ('GL_ERROR_CANT_DELETE', 'Dieses Konto kann nicht gelöscht werden, da gi
 define ('GL_LOG_CHART_OF_ACCOUNTS', 'Kontenplan -');
 
 /************************** (Vertrieb / Einkauf Authorities) ***************** ******************************/
-define ('SETUP_TITLE_TAX_AUTHS_VEND', 'Bestellen Finanzamt');
+define ('TEXT_PURCHASE_TAX_AUTHORITIES', 'Bestellen Finanzamt');
 define ('TEXT_SALES_TAX_AUTHORITIES', 'Sales Tax Authorities');
 define ('SETUP_TAX_DESC_SHORT', 'Short Name');
 define ('SETUP_TAX_GL_ACCT', 'GL Konto-ID');
@@ -254,7 +254,7 @@ define ('SETUP_TAX_AUTHS_LOG', 'Finanzamt -');
 define ('SETUP_DISPLAY_NUMBER_OF_TAX_AUTH', TEXT_DISPLAY_NUMBER . 'Steuerbehörden');
 /************************** (Vertrieb / Einkauf Steuersätze) **************** *******************************/
 define ('SETUP_TITLE_TAX_RATES', 'Sales Tax Preise');
-define ('SETUP_TITLE_TAX_RATES_VEND', 'Bestellen Steuersätze');
+define ('TEXT_PURCHASE_TAX_RATES', 'Bestellen Steuersätze');
 define ('TEXT_TAX_FREIGHT', 'Tax Freight ');
 define ('SETUP_HEADING_TOTAL_TAX', 'Total Tax (in Prozent)');
 define ('SETUP_TAX_EDIT_INTRO', 'Bitte führen Sie alle notwendigen Änderungen durch');
