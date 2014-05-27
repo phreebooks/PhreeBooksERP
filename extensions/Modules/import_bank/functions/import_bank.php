@@ -87,8 +87,8 @@ function bank_import_csv($structure, $filename, $bank_gl_acct) {
 	  }
 	}
   }
-  if ( $countline <> 0 ) $messageStack->add('succesfully posted '.$countline. ' number of lines','caution');
-  if ( DEBUG )           $messageStack->write_debug();
+  if ( $countline <> 0 ) $messageStack->add("succesfully posted $countline number of lines",'caution');
+  $messageStack->write_debug();
   
 }
 ?>

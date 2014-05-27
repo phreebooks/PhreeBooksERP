@@ -58,7 +58,7 @@ class impbanking extends journal {
 				return false;
 				exit;
 			}
-		 	$sql ="select id, description from " . TABLE_CHART_OF_ACCOUNTS. " where description like '%".$ouwer_bank."%'";
+		 	$sql ="select id, description from " . TABLE_CHART_OF_ACCOUNTS. " where description like '%{$ouwer_bank}%'";
 			$result = $db->Execute($sql);
 			If($result->RecordCount()== 0){
 				$messageStack->add(TEXT_BIMP_ERMSG5 .' '. $ouwer_bank, 'error');
@@ -96,8 +96,13 @@ class impbanking extends journal {
 	$messageStack->debug("\n\n*************** End Processing Import Payment *******************");
 	}
 	
-	private function find_contact($other_bank_account_number, $other_bank_account_iban){
+	private function find_contact(&$other_bank_account_number, &$other_bank_account_iban){
 		global $db, $messageStack;
+		// check if bankaccount number is iban if that is the case use it as iban.
+		if ($this->checkIBAN($other_bank_account_number)){
+			$other_bank_account_iban 	= $other_bank_account_number;
+			$other_bank_account_number 	= null;
+		}
 		$criteria = false;
 		$messageStack->debug("\n trying to find a contact ");
 		if($other_bank_account_number =='' && $other_bank_account_iban ==''){
@@ -117,10 +122,10 @@ class impbanking extends journal {
 			}
 		} 
 		
-		$sql ="SELECT * FROM ". TABLE_CONTACTS ." WHERE (`type` ='v' or `type`='c' ) and ".$criteria;
+		$sql ="SELECT * FROM ". TABLE_CONTACTS ." WHERE (type ='v' or type='c') and ".$criteria;
 		$result1 = $db->Execute($sql);
 		$contact = false;
-		if(!$result1->RecordCount()== 0){
+		if($result1->RecordCount() !== 0){
 			$messageStack->debug("\n found a costumer or vender with the bankaccountnumber ". ltrim($other_bank_account_number,0));
 			if (!$result1->RecordCount()> 1){
 				//TEXT_IMP_ERMSG17 = two or more accounts with the same account
@@ -136,7 +141,7 @@ class impbanking extends journal {
 			$messageStack->debug("\n was unable to find a 1 matching contact. ");		
 			return false;
 		}
-		$result2 = $db->Execute("SELECT * FROM ". TABLE_ADDRESS_BOOK ." WHERE (`type` ='vm' or `type`='vb' or `type` ='cm' or `type` ='cb' ) and `ref_id` = '" . $contact['id']."'");
+		$result2 = $db->Execute("SELECT * FROM ". TABLE_ADDRESS_BOOK ." WHERE (type ='vm' or type='vb' or type ='cm' or type ='cb' ) and ref_id = '{$contact['id']}'");
 		$this->bill_short_name     	= $contact['id'];
 		$this->bill_acct_id        	= $contact['id'];
 		$this->bill_addres_id		= $contact['id'];
@@ -492,7 +497,6 @@ class impbanking extends journal {
 		  where journal_id in (6, 7, 12, 13) and closed = '0' and gl_type = 'ttl'";
 		$sql .= " order by m.post_date";
 		$result = $db->Execute($sql);
-		print($result->RecordCount());
 		$open_invoices = array();
 		while (!$result->EOF) {
 			$result->fields['total_amount'] = ($result->fields['debit_amount']) ? $result->fields['debit_amount'] : $result->fields['credit_amount'];
@@ -582,6 +586,37 @@ class impbanking extends journal {
 		$this->bill_email			= null;
 		$this->recur_id				= null;
 	}
+	
+
+
+	function checkIBAN($iban) {
+	  	// Normalize input (remove spaces and make upcase)
+	  	$iban = strtoupper(str_replace(' ', '', $iban));
+	 
+	  	if (preg_match('/^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/', $iban)) {
+		    $country = substr($iban, 0, 2);
+		    $check = intval(substr($iban, 2, 2));
+		    $account = substr($iban, 4);
+		 
+		    // To numeric representation
+		    $search = range('A','Z');
+		    foreach (range(10,35) as $tmp) $replace[]=strval($tmp);
+	    	$numstr=str_replace($search, $replace, $account.$country.'00');
+	 
+		    // Calculate checksum
+		    $checksum = intval(substr($numstr, 0, 1));
+	    	for ($pos = 1; $pos < strlen($numstr); $pos++) {
+		      	$checksum *= 10;
+		      	$checksum += intval(substr($numstr, $pos,1));
+		      	$checksum %= 97;
+	    	}
+	    	return ((98-$checksum) == $check); // returns true or false
+	  	} else{
+	    	return false;
+	  	}
+	}
+	
+	
 	
 	public function __destruct(){
 		global $messageStack;
