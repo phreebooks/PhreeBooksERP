@@ -99,8 +99,9 @@ class impbanking extends journal {
 	private function find_contact(&$other_bank_account_number, &$other_bank_account_iban){
 		global $db, $messageStack;
 		// check if bankaccount number is iban if that is the case use it as iban.
+		$other_bank_account_iban = strtoupper(str_replace(' ', '', $other_bank_account_iban));
 		if ($this->checkIBAN($other_bank_account_number)){
-			$other_bank_account_iban 	= $other_bank_account_number;
+			$other_bank_account_iban 	= strtoupper(str_replace(' ', '', $other_bank_account_number));
 			$other_bank_account_number 	= null;
 		}
 		$criteria = false;

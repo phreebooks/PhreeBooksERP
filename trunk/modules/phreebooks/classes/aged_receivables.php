@@ -23,7 +23,7 @@
 class aged_receivables {
   function __construct() {
 	// List the special fields as an array to substitute out for the sql, must match from the selection menu generation
-	$this->special_field_array = array('balance_due', 'balance_0', 'balance_30', 'balance_60', 'balance_90');
+	$this->special_field_array = array('balance_due', 'balance_futre', 'balance_0', 'balance_30', 'balance_60', 'balance_90');
   }
 
   function load_report_data($report, $Seq, $sql = '', $GrpField = '') {
@@ -160,6 +160,7 @@ class aged_receivables {
 	$output[] = array('id' => 'contacts.account_number',          'text' => RW_AR_ACCOUNT_NUMBER);
 	$output[] = array('id' => 'journal_main.terminal_date',       'text' => RW_AR_SHIP_DATE);
 	$output[] = array('id' => 'balance_due',         			  'text' => RW_AR_BALANCE_DUE);
+	$output[] = array('id' => 'balance_futre',         			  'text' => RW_AR_BALANCE_FUTRE);
 	$output[] = array('id' => 'balance_0',                        'text' => TEXT_AGE . ' ' . AR_AGING_HEADING_1);
 	$output[] = array('id' => 'balance_30',                       'text' => TEXT_AGE . ' ' . AR_AGING_HEADING_2);
 	$output[] = array('id' => 'balance_60',                       'text' => TEXT_AGE . ' ' . AR_AGING_HEADING_3);
@@ -222,6 +223,7 @@ class aged_receivables {
 	}
 	$balance = $total_billed - $total_paid;
 	$new_data['balance_due'] = $balance;
+	$new_data['balance_futre']  = 0;
 	$new_data['balance_0']  = 0;
 	$new_data['balance_30'] = 0;
 	$new_data['balance_60'] = 0;
@@ -232,6 +234,8 @@ class aged_receivables {
 		$new_data['balance_60'] = $balance;
 	} elseif ($post_date < $late_30) {
 		$new_data['balance_30'] = $balance;
+	} elseif ($post_date > $today) {
+		$new_data['balance_futre'] = $balance;
 	} else {
 		$new_data['balance_0']  = $balance;
 	}

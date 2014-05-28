@@ -258,7 +258,7 @@ function calculate_terms_due_dates($post_date, $terms_encoded, $type = 'AR') {
 		if ($result['discount'] <> 0) {
 		  $result['early_date'] = gen_specific_date($post_date, constant($type . '_PREPAYMENT_DISCOUNT_DAYS'));
 		} else {
-		  $result['early_date'] = gen_specific_date($post_date, 1000); // move way out @todo shouldn't this be a negative date
+		  $result['early_date'] = $post_date; // move way out
 		}
 		break;
 	case '1': // Cash on Delivery (COD)

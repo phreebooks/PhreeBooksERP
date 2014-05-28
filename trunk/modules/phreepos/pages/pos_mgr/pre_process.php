@@ -31,7 +31,7 @@ define('POPUP_FORM_TYPE','pos:rcpt');
 $error      = false;
 history_filter('pos_mgr');
 /***************   hook for custom actions  ***************************/
-$date        = $_REQUEST['search_date'];
+$date        = gen_db_date($_REQUEST['search_date']);
 $acct_period = $_REQUEST['search_period'];
 $oid		 = isset($_GET['oID']) ? $_GET['oID'] : false;
 /***************   hook for custom actions  ***************************/
@@ -122,7 +122,7 @@ $list_header = $result['html_code'];
 $disp_order  = $result['disp_order'];
 // build the list for the page selected
 if (!$date == false){
-	$period_filter = (" and post_date = '" . $date."'");
+	$period_filter = (" and post_date = '$date'");
 	$acct_period   = '';
 }else{
 	if ($acct_period == false) $acct_period = CURRENT_ACCOUNTING_PERIOD;

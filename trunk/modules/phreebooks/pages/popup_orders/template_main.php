@@ -40,7 +40,7 @@ switch(JOURNAL_ID) {
 	case 20: $toolbar->add_help('07.05.01');    break;
 }
 $toolbar->search_period = $acct_period;
-echo $toolbar->build_toolbar($add_search = true, $add_period = true); 
+echo $toolbar->build_toolbar($add_search = true, $add_period = true, $cal_date); 
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
