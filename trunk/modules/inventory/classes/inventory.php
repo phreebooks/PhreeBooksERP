@@ -199,6 +199,13 @@ class inventory {
 			);
 		db_perform(TABLE_INVENTORY, $sql_data_array, 'insert');
 		$this->get_item_by_id(db_insert_id());
+		$sql_data_array = array (
+				'sku'					=> $this->sku,
+				'description_purchase'	=> '',
+				'purch_package_quantity'=> 1,
+				'price_sheet_v'			=> '',
+		);
+		db_perform(TABLE_INVENTORY_PURCHASE, $sql_data_array, 'insert');
 		gen_add_audit_log(INV_LOG_INVENTORY . TEXT_ADD, TEXT_TYPE . ': ' . $this->inventory_type . ' - ' . $this->sku );
 		return true;
 	}
@@ -469,7 +476,7 @@ class inventory {
 
 	function store_purchase_array(){
 		global $db, $currencies;
-		$lowest_cost = 99999999999;
+		$lowest_cost = isset($this->item_cost) ? $this->item_cost : 99999999999;
 		$this->backup_purchase_array = array();
 		$result = $db->Execute("SELECT * FROM ".TABLE_INVENTORY_PURCHASE." WHERE sku='$this->sku'");
 		while(!$result->EOF){
@@ -482,7 +489,7 @@ class inventory {
 				'purch_taxable'	 			=> $result->fields['purch_taxable'],
 				'price_sheet_v'				=> $result->fields['price_sheet_v'],
 				'action'					=> 'delete',
-			);// mark delete by default overwrite later if 
+			); // mark delete by default overwrite later if 
 			$result->MoveNext();
 		}
 		$i = 0;

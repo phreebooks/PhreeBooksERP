@@ -33,48 +33,66 @@ class sku_pricer {
   		$rows = $this->csv_to_array($_FILES[$filename]['tmp_name'], $delimiter=',');
   		$messageStack->debug("\nfinished parsing, extracted number of rows = ".sizeof($rows));
 		$valid_fields = array(
-			'description_short'		=> 'a.description_short',
-			'description_sales'		=> 'a.description_sales',
-			'account_sales_income'	=> 'a.account_sales_income',
-			'account_inventory_wage'=> 'a.account_inventory_wage',
-			'account_cost_of_sales'	=> 'a.account_cost_of_sales',
-			'item_taxable'			=> 'a.item_taxable',
-			'price_sheet'			=> 'a.price_sheet',
-			'full_price'			=> 'a.full_price',
-			'full_price_with_tax'	=> 'a.full_price_with_tax',
-			'item_weight'			=> 'a.item_weight',
-			'minimum_stock_level'	=> 'a.minimum_stock_level',
-			'reorder_quantity'		=> 'a.reorder_quantity',
-			'lead_time'				=> 'a.lead_time',
-			'upc_code'				=> 'a.upc_code',
-			'description_purchase'	=> 'b.description_purchase',
-			'price_sheet_v'			=> 'b.price_sheet_v',
-			'purch_taxable'			=> 'b.purch_taxable',
-			'item_cost'				=> 'b.item_cost',
-			'vendor_id'				=> 'b.vendor_id',
+			'description_short'		=> 'description_short',
+			'description_sales'		=> 'description_sales',
+			'description_purchase'	=> 'description_purchase',
+			'account_sales_income'	=> 'account_sales_income',
+			'account_inventory_wage'=> 'account_inventory_wage',
+			'account_cost_of_sales'	=> 'account_cost_of_sales',
+			'item_taxable'			=> 'item_taxable',
+			'price_sheet'			=> 'price_sheet',
+			'full_price'			=> 'full_price',
+			'full_price_with_tax'	=> 'full_price_with_tax',
+			'item_weight'			=> 'item_weight',
+			'minimum_stock_level'	=> 'minimum_stock_level',
+			'reorder_quantity'		=> 'reorder_quantity',
+			'lead_time'				=> 'lead_time',
+			'upc_code'				=> 'upc_code',
+			'item_cost'				=> 'item_cost',
+			'price_sheet_v'			=> 'price_sheet_v',
+			'purch_taxable'			=> 'purch_taxable',
+			'item_cost'				=> 'item_cost',
+			'vendor_id'				=> 'vendor_id',
+		);
+		$purch_fields = array(
+			'description_purchase'	=> 'description_purchase',
+			'price_sheet_v'			=> 'price_sheet_v',
+			'purch_taxable'			=> 'purch_taxable',
+			'item_cost'				=> 'item_cost',
+			'vendor_id'				=> 'vendor_id',
 		);
   		$count = 0;
   		foreach ($rows as $row) {
-			$where = '';
+			$where = false;
 			if (isset($row['sku']) && strlen($row['sku']) > 0) {
-				$where = "b.sku='{$row['sku']}'";
+				$where = "sku='{$row['sku']}'";
 			} elseif (isset($row['upc_code']) && strlen($row['upc_code']) > 0) {
-				$where = "a.upc_code='{$row['upc_code']}'";
-			} elseif (isset($row['description_purchase'])) {
-				$where = " b.description_purchase like '%{$row['description_purchase']}%'";
+				$where = "upc_code='{$row['upc_code']}'";
 			}
-			if (isset($row['vendor_id']) && $row['vendor_id']) $where .= " AND b.vendor_id = '{$row['vendor_id']}'";
+			if (!$where) {
+				$messageStack->add("No search field was found. Either the SKU or UPC Code field must be included in the csv file.", 'error');
+				break; // no valid search fields
+			}
 			$query = "";
-			foreach ($valid_fields as $key => $value) {
-				if (isset($row[$key])) $query .= " $value='" . db_input($row[$key]) . "',";
+			foreach ($valid_fields as $key => $value) if (isset($row[$key])) $query .= " $value='".db_input($row[$key])."',";
+			$query .= "last_update='".date('Y-m-d')."'";
+			$sql = "UPDATE ".TABLE_INVENTORY." SET $query WHERE $where";
+			$messageStack->debug("\nExecuting sql = $sql");
+			$result = $db->Execute($sql);
+			if ($result->AffectedRows() > 0) $count++;
+			// now update the purchase table (need the sku, upc_code will not work)
+			if (!isset($row['sku'])) {
+				$result = $db->Execute("SELECT sku from ".TABLE_INVENTORY." WHERE upc_code='{$row['upc_code']}'");
+				$row['sku'] = $result->fields['sku'];
+				$where = "sku='{$row['sku']}'";
 			}
-			$query .= "a.last_update = '". date('Y-m-d')."'";
-			if ($where) {
-				$sql = "UPDATE ".TABLE_INVENTORY.' a JOIN '.TABLE_INVENTORY_PURCHASE." b ON a.sku=b.sku SET $query WHERE $where";
-				$messageStack->debug("\nExecuting sql = $sql");
-				$result = $db->Execute($sql);
-				if ($result->AffectedRows() > 0) $count++;
-			}
+			if (isset($row['vendor_id']) && $row['vendor_id']) $where .= " AND vendor_id = '{$row['vendor_id']}'";
+			$query = "";
+			foreach ($purch_fields as $key => $value) if (isset($row[$key])) $query .= " $value='".db_input($row[$key])."',";
+			$query = substr($query, 0, strlen($query)-1); // remove last comma
+			$sql = "UPDATE ".TABLE_INVENTORY_PURCHASE." SET $query WHERE $where";
+			$messageStack->debug("\nExecuting sql = $sql");
+			$result = $db->Execute($sql);
 		}
 		if (DEBUG) $messageStack->write_debug();
 		$messageStack->add("Total lines processed: ".sizeof($rows).". Total affected rows = $count.", "success");
