@@ -19,42 +19,42 @@
 class sku_pricer {
 	public $records = array();
 
-  	function __construct() {
-  		$this->records = array();
-  	}
+	function __construct() {
+		$this->records = array();
+	}
 
-  	/**
-  	 * this function will update the sku's that are in the csv files.
-  	 * @param string $lines_array
-  	 * @return void|boolean
-  	 */
-  	function processCSV($filename) { //Master
-  		global $db, $messageStack;
-  		$rows = $this->csv_to_array($_FILES[$filename]['tmp_name'], $delimiter=',');
-  		$messageStack->debug("\nfinished parsing, extracted number of rows = ".sizeof($rows));
+	/**
+	 * this function will update the sku's that are in the csv files.
+	 * @param string $lines_array
+	 * @return void|boolean
+	 */
+	function processCSV($filename) { //Master
+		global $db, $messageStack;
+		$rows = $this->csv_to_array($_FILES[$filename]['tmp_name'], $delimiter=',');
+		$messageStack->debug("\nfinished parsing, extracted number of rows = ".sizeof($rows));
 		$valid_fields = array(
-			'description_short'		=> 'a.description_short',
-			'description_sales'		=> 'a.description_sales',
-			'account_sales_income'	=> 'a.account_sales_income',
-			'account_inventory_wage'=> 'a.account_inventory_wage',
-			'account_cost_of_sales'	=> 'a.account_cost_of_sales',
-			'item_taxable'			=> 'a.item_taxable',
-			'price_sheet'			=> 'a.price_sheet',
-			'full_price'			=> 'a.full_price',
-			'full_price_with_tax'	=> 'a.full_price_with_tax',
-			'item_weight'			=> 'a.item_weight',
-			'minimum_stock_level'	=> 'a.minimum_stock_level',
-			'reorder_quantity'		=> 'a.reorder_quantity',
-			'lead_time'				=> 'a.lead_time',
-			'upc_code'				=> 'a.upc_code',
-			'description_purchase'	=> 'b.description_purchase',
-			'price_sheet_v'			=> 'b.price_sheet_v',
-			'purch_taxable'			=> 'b.purch_taxable',
-			'item_cost'				=> 'b.item_cost',
-			'vendor_id'				=> 'b.vendor_id',
+				'description_short'		=> 'a.description_short',
+				'description_sales'		=> 'a.description_sales',
+				'account_sales_income'	=> 'a.account_sales_income',
+				'account_inventory_wage'=> 'a.account_inventory_wage',
+				'account_cost_of_sales'	=> 'a.account_cost_of_sales',
+				'item_taxable'			=> 'a.item_taxable',
+				'price_sheet'			=> 'a.price_sheet',
+				'full_price'			=> 'a.full_price',
+				'full_price_with_tax'	=> 'a.full_price_with_tax',
+				'item_weight'			=> 'a.item_weight',
+				'minimum_stock_level'	=> 'a.minimum_stock_level',
+				'reorder_quantity'		=> 'a.reorder_quantity',
+				'lead_time'				=> 'a.lead_time',
+				'upc_code'				=> 'a.upc_code',
+				'description_purchase'	=> 'b.description_purchase',
+				'price_sheet_v'			=> 'b.price_sheet_v',
+				'purch_taxable'			=> 'b.purch_taxable',
+				'item_cost'				=> 'b.item_cost',
+				'vendor_id'				=> 'b.vendor_id',
 		);
-  		$count = 0;
-  		foreach ($rows as $row) {
+		$count = 0;
+		foreach ($rows as $row) {
 			$where = '';
 			if (isset($row['sku']) && strlen($row['sku']) > 0) {
 				$where = "a.sku='{$row['sku']}'";
@@ -78,21 +78,21 @@ class sku_pricer {
 		}
 		if (DEBUG) $messageStack->write_debug();
 		$messageStack->add("Total lines processed: ".sizeof($rows).". Total affected rows = $count.", "success");
-  	}
+	}
 
-  	function csv_to_array($filename='', $delimiter=',') {
-  		if(!file_exists($filename) || !is_readable($filename)) return FALSE;
-  		$header = NULL;
-  		$data = array();
-  		if (($handle = fopen($filename, 'r')) !== FALSE) {
-  			while (($row = fgetcsv($handle, 1000, $delimiter)) !== FALSE) {
-  				if (!$header) $header = $row;
-  				else $data[] = array_combine($header, $row);
-  			}
-  			fclose($handle);
-  		}
-  		return $data;
-  	}
+	function csv_to_array($filename='', $delimiter=',') {
+		if(!file_exists($filename) || !is_readable($filename)) return FALSE;
+		$header = NULL;
+		$data = array();
+		if (($handle = fopen($filename, 'r')) !== FALSE) {
+			while (($row = fgetcsv($handle, 1000, $delimiter)) !== FALSE) {
+				if (!$header) $header = $row;
+				else $data[] = array_combine($header, $row);
+			}
+			fclose($handle);
+		}
+		return $data;
+	}
 
 }
 
