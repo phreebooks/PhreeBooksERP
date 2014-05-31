@@ -57,7 +57,7 @@ class sku_pricer {
   		foreach ($rows as $row) {
 			$where = '';
 			if (isset($row['sku']) && strlen($row['sku']) > 0) {
-				$where = "b.sku='{$row['sku']}'";
+				$where = "a.sku='{$row['sku']}'";
 			} elseif (isset($row['upc_code']) && strlen($row['upc_code']) > 0) {
 				$where = "a.upc_code='{$row['upc_code']}'";
 			} elseif (isset($row['description_purchase'])) {
