@@ -19,7 +19,7 @@
 var bill_add = new Array(0);
 var ship_add = new Array(0);
 var force_clear = false;
-var default_sales_tax = -1; // tax defaults to what is specified by SKU
+//var default_sales_tax = -1; // set in js_include.php
 
 function ClearForm() {
   var numRows = 0;
@@ -1239,7 +1239,7 @@ function fillInventory(sXml) {
 	  document.getElementById('acct_'  +rowCnt).value     = $(xml).find("account_inventory_wage").text();
 	  document.getElementById('price_' +rowCnt).value     = formatPrecise($(xml).find("sales_price").text() * exchange_rate);
 	  document.getElementById('full_'  +rowCnt).value     = formatCurrency($(xml).find("item_cost").text() * exchange_rate);
-	  if(default_sales_tax == -1) document.getElementById('tax_'   +rowCnt).value     = $(xml).find("purch_taxable").text();
+	  if(default_sales_tax == -1) document.getElementById('tax_'+rowCnt).value = $(xml).find("purch_taxable").text();
 	  if ($(xml).find("description_purchase").text()) {
 	    document.getElementById('desc_'  +rowCnt).value   = $(xml).find("description_purchase").text();
 	  } else {
