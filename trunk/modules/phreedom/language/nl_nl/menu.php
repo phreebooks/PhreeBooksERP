@@ -20,11 +20,11 @@ define('TEXT_MODULES','Modules');
 define('BOX_HEADING_USERS','Gebruikers');
 define('TEXT_COMPANY_BACKUP','Bedrijfs Backup');
 define('TEXT_DATA_ENCRYPTION','Data Versleuteling');
-define('BOX_IMPORT_EXPORT','Import/Export');
+define('TEXT_IMPORT_OR_EXPORT','Import/Export');
 define('TEXT_COMPANY_MANAGER','Bedrijfs Manager');
 define('TEXT_ADMINISTRATIVE_TOOLS','Administratieve Tools');
-define('BOX_HEADING_CONFIGURATION','Module Administratie');
-define('BOX_GENERAL_ADMIN','Algemene Instellingen');
-define('BOX_HEADING_DEBUG_DL','Download Debug Bestand');
+define('TEXT_MODULE_ADMINISTRATION','Module Administratie');
+define('TEXT_GENERAL_SETTINGS','Algemene Instellingen');
+define('TEXT_DOWNLOAD_DEBUG_FILE','Download Debug Bestand');
 define('TEXT_INVENTORY', 'Voorraad');
 ?>

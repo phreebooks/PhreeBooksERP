@@ -26,7 +26,7 @@
 define ('MODULE_PHREEFORM_TITLE', 'PhreeForm Modul');
 define ('MODULE_PHREEFORM_DESCRIPTION','Die phreeform Modul enthält alle den Bericht und die Form notwendigen Werkzeuge, um Berichte im PDF-oder HTML-Format drucken <b>. HINWEIS:! Dies ist ein Kernmodul und sollte nicht entfernt </ b> werden ');
 // Titel
-define ('BOX_PHREEFORM_MODULE_ADM', 'PhreeForm Admin');
+define ('TEXT_PHREEFORM_ADMINISTRATION', 'PhreeForm Admin');
 // Überschriften und Helfer
 define ('PB_CONVERT_REPORTS', 'Convert txt Reports PhreeForm.');
 // admin definiert

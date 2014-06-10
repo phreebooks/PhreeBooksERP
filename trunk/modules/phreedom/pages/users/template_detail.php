@@ -122,7 +122,7 @@ foreach ($mainmenu as $key => $menu_heading) {
 <?php
 function create_row($array){
 	global $odd, $settings;
-	if(!empty($array['submenu']) && $array['text'] <> BOX_HEADING_CONFIGURATION) foreach($array['submenu'] as $menu_item){
+	if(!empty($array['submenu']) && $array['text'] <> TEXT_MODULE_ADMINISTRATION) foreach($array['submenu'] as $menu_item){
 		create_row($menu_item);
 	}else{
 		if ($array['security_id'] == '') return;// && $item['heading'] <> TEXT_TOOLS) continue;  // special case for reports listings not in Tools menu

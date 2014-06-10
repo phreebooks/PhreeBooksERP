@@ -221,11 +221,11 @@ if (is_array($bank_list)) foreach ($bank_list as $id => $value) {
 // sort by user choice for display
 $sort_value = explode('-',$_REQUEST['list_order']);
 switch ($_REQUEST['sf']) {
-	case BNK_DEPOSIT_CREDIT: define('RECON_SORT_KEY','dep_amount'); break;
-	case TEXT_CHECK_OR_PAYMENT:  define('RECON_SORT_KEY','pmt_amount'); break;
-	case TEXT_DATE:          define('RECON_SORT_KEY','post_date');  break;
+	case TEXT_DEPOSIT_OR_CREDIT	: define('RECON_SORT_KEY','dep_amount'); break;
+	case TEXT_CHECK_OR_PAYMENT	: define('RECON_SORT_KEY','pmt_amount'); break;
+	case TEXT_DATE				: define('RECON_SORT_KEY','post_date');  break;
 	default:
-	case TEXT_REFERENCE:     define('RECON_SORT_KEY','reference');  break;
+	case TEXT_REFERENCE			: define('RECON_SORT_KEY','reference');  break;
 }
 define('RECON_SORT_DESC', $_REQUEST['so']=='desc' ? true : false);
 function my_sort($a, $b) {

@@ -39,7 +39,7 @@ define('TEXT_LAST_NAME','Familienaam');
 define('GEN_TELEPHONE1','Telefoon');
 define('TEXT_ALTERNATIVE_TELEPHONE_SHORT','Alt Telefoon');
 define('TEXT_FAX','Fax');
-define('GEN_TELEPHONE4','Mobiele nummer');
+define('TEXT_MOBILE_PHONE','Mobiele nummer');
 define('GEN_ACCOUNT_ID','Account ID');
 define('GEN_CUSTOMER_ID','Klant ID:');
 define('GEN_VENDOR_ID','Leverancier ID:');

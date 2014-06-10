@@ -33,7 +33,7 @@ define ('TEXT_SHIPPING_PREFS', 'Versandkosten Adressbuch Einstellungen');
 define ('COST_TYPE_LBR', 'Arbeit');
 define ('TEXT_MATERIALS', 'Material');
 define ('TEXT_CONTRACTORS', 'Contractors');
-define ('COST_TYPE_EQT', 'Ausrüstung');
+define ('TEXT_EQUIPMENT', 'Ausrüstung');
 define ('TEXT_OTHER', 'Andere');
 /************************** (Adressbuch Defaults) ****************** *****************************/
 define ('CONTACT_BILL_FIELD_REQ', 'Ob zu verlangen Feld: %s für einen neuen Haupt-/ Rechnungsadresse eingegeben werden (für Lieferanten, Kunden und Mitarbeiter)');

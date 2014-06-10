@@ -21,7 +21,7 @@
 <?php
   if (is_array($cInfo->contacts)) {
 	$heading_array  = array(); // don't sort
-	$non_sort_array = array(TEXT_LAST_NAME, TEXT_FIRST_NAME, TEXT_TITLE, TEXT_TELEPHONE, GEN_TELEPHONE4, TEXT_EMAIL, TEXT_ACTION);
+	$non_sort_array = array(TEXT_LAST_NAME, TEXT_FIRST_NAME, TEXT_TITLE, TEXT_TELEPHONE, TEXT_MOBILE_PHONE, TEXT_EMAIL, TEXT_ACTION);
 	$crm_headings   = html_heading_bar($heading_array, $non_sort_array);
 ?>
   <fieldset>

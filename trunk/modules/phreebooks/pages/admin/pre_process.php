@@ -146,6 +146,6 @@ $inv_chart  = gen_coa_pull_down(2, false, true, false, $restrict_types = array(4
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', BOX_PHREEBOOKS_MODULE_ADM);
+define('PAGE_TITLE', TEXT_PHREEBOOKS_ADMINISTRATION);
 
 ?>

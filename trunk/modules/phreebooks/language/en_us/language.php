@@ -131,7 +131,7 @@ define('TEXT_OUTSTANDING_CHECKS','Outstanding Checks');
 define('TEXT_DEPOSITS_IN_TRANSIT','Deposits in Transit');
 define('TEXT_ACCOUNT_BALANCE','GL Account Balance');
 define('TEXT_UNRECONCILED_DIFFERENCE','Unreconciled Difference');
-define('BNK_DEPOSIT_CREDIT','Deposit/Credit');
+define('TEXT_DEPOSIT_OR_CREDIT','Deposit/Credit');
 define('TEXT_CHECK_OR_PAYMENT','Check/Payment');
 define('TEXT_MULTIPLE_DEPOSITS','Customer Deposits');
 define('TEXT_VENDOR_PAYMENTS','Vendor Payments');

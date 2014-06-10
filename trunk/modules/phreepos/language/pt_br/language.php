@@ -8,7 +8,7 @@
 // +-----------------------------------------------------------------+
 // Path: /modules/phreepos/language/pt_br/language.php
 
-define('BOX_PHREEPOS_RETURN','Ponto Venda - Devolução');
+define('TEXT_POINT_OF_SALE_RETURN','Ponto Venda - Devolução');
 define('TEXT_ENTER_PAYMENT','Entrar Pagamento');
 define('BNK_19_AMOUNT_PAID','Valor Recebido');
 define('TEXT_ADD_UPDATE','Inserir/Atualizar');

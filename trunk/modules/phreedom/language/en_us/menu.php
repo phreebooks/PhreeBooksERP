@@ -31,11 +31,11 @@ define('TEXT_QUALITY','Quality');
 define('BOX_HEADING_USERS','Users');
 define('TEXT_COMPANY_BACKUP','Company Backup');
 define('TEXT_DATA_ENCRYPTION', 'Data Encryption');
-define('BOX_IMPORT_EXPORT', 'Import/Export');
+define('TEXT_IMPORT_OR_EXPORT', 'Import/Export');
 define('TEXT_COMPANY_MANAGER', 'Company Manager');
 define('TEXT_ADMINISTRATIVE_TOOLS', 'Administrative Tools');
-define('BOX_HEADING_CONFIGURATION','Module Administration');
-define('BOX_GENERAL_ADMIN','General Settings');
-define('BOX_HEADING_DEBUG_DL','Download Debug File');
+define('TEXT_MODULE_ADMINISTRATION','Module Administration');
+define('TEXT_GENERAL_SETTINGS','General Settings');
+define('TEXT_DOWNLOAD_DEBUG_FILE','Download Debug File');
 
 ?>

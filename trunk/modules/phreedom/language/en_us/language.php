@@ -25,7 +25,7 @@ define('CHARSET', 'UTF-8');
 // Page Page titles, toolbar commmon, headers and footers
 define('TEXT_INFO_SEARCH_PERIOD_FILTER','Accounting Period: ');
 define('HEADING_TITLE_SEARCH_DETAIL','Search: ');
-define('CP_ADD_REMOVE_BOXES','Add/Remove Dashboard Boxes');
+define('TEXT_ADD_OR_REMOVE_DASHBOARD_BOXES','Add or Remove Dashboard Boxes');
 define('CP_CHANGE_PROFILE','Add Dashboard Items to this Menu ...');
 define('TEXT_USER_INFORMATION','User Information');
 define('HEADING_TITLE_ROLE_DETAIL','Role Detail Information');

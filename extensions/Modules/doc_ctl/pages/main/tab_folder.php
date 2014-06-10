@@ -56,7 +56,7 @@ if ($query_result->RecordCount() > 0) {
 if ($found_one) {
   $fieldset_content .= '</table>' . chr(10);
   $fieldset_content .= '<div style="float:right">' . $query_split->display_links() . '</div>' . chr(10);
-  $fieldset_content .= '<div>' . $query_split->display_count(TEXT_DISPLAY_NUMBER . DOC_CTL_ITEMS) . '</div>' . chr(10);
+  $fieldset_content .= '<div>' . $query_split->display_count(TEXT_DISPLAY_NUMBER . TEXT_FOLDERS_AND_DOCUMENTS) . '</div>' . chr(10);
 } else {
   $fieldset_content .= '  <tr>' . chr(10);
   $fieldset_content .= '	<td colspan="3">' . TEXT_EMPTY_FOLDER . '</td>' . chr(10);

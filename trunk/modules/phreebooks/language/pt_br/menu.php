@@ -9,8 +9,8 @@
 // Path: /modules/phreebooks/language/pt_br/menu.php
 
 define('TEXT_MANAGER_ARGS','%s Gerenciador');
-define('BOX_PHREEBOOKS_MODULE_ADM','Contabilidade Administração');
-define('BOX_GL_UTILITIES','Utilitários Diário Geral');
+define('TEXT_PHREEBOOKS_ADMINISTRATION','Contabilidade Administração');
+define('TEXT_GENERAL_JOURNAL_UTILITIES','Utilitários Diário Geral');
 define('TEXT_VOID_CHECKS','Cheques Cancelados');
 define('TEXT_BUDGETING','Orçamento');
 define('BOX_BANKING_ACCOUNT_RECONCILIATION','Reconciliação Conta');

@@ -101,7 +101,7 @@ define('TEXT_FACEBOOK_ID','ID Facebook');
 define('GEN_VENDOR_ID','ID Fornecedor:');
 define('GEN_CUSTOMER_ID','ID Cliente:');
 define('GEN_ACCOUNT_ID','ID Conta');
-define('GEN_TELEPHONE4','Celular');
+define('TEXT_MOBILE_PHONE','Celular');
 define('TEXT_FAX','Fax');
 define('TEXT_ALTERNATIVE_TELEPHONE_SHORT','Alt Telefone');
 define('GEN_TELEPHONE1','Telefone');

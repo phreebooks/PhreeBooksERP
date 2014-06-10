@@ -171,7 +171,7 @@ define('TEXT_MULTIPLE_DEPOSITS','Depósitos Cliente');
 define('TEXT_VENDOR_PAYMENTS','Pagamentos Fornecedores');
 define('TEXT_CASH_ACCOUNT','Conta Caixa');
 define('TEXT_CHECK_OR_PAYMENT','Cheque/Pagamento');
-define('BNK_DEPOSIT_CREDIT','Depóstio/Crédito');
+define('TEXT_DEPOSIT_OR_CREDIT','Depóstio/Crédito');
 define('TEXT_UNRECONCILED_DIFFERENCE','Diferenças Não Conciliadas');
 define('TEXT_ACCOUNT_BALANCE','CG Balanço Contas');
 define('TEXT_OUTSTANDING_CHECKS','Cheques Pendentes');

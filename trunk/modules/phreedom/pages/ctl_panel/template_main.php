@@ -30,7 +30,7 @@ $toolbar->add_help('07.09.01');
 echo $toolbar->build_toolbar();
 // Build the page
 ?>
-<h1><?php echo CP_ADD_REMOVE_BOXES; ?></h1>
+<h1><?php echo TEXT_ADD_OR_REMOVE_DASHBOARD_BOXES; ?></h1>
   <table class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto;">
 	<thead class="ui-widget-header">
 	  <tr>

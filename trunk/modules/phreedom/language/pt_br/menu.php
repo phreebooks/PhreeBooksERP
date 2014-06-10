@@ -8,10 +8,10 @@
 // +-----------------------------------------------------------------+
 // Path: /modules/phreedom/language/pt_br/menu.php
 
-define('BOX_HEADING_CONFIGURATION','Administração Módulos');
+define('TEXT_MODULE_ADMINISTRATION','Administração Módulos');
 define('TEXT_COMPANY_MANAGER','Empresa');
 define('TEXT_ADMINISTRATIVE_TOOLS','Ferramentas Adiministrativas');
-define('BOX_IMPORT_EXPORT','Importar/Exportar');
+define('TEXT_IMPORT_OR_EXPORT','Importar/Exportar');
 define('TEXT_DATA_ENCRYPTION','Criptografia Dados');
 define('TEXT_COMPANY_BACKUP','Backup Empresa');
 define('BOX_HEADING_USERS','Usuários');
@@ -35,7 +35,7 @@ define('HTML_PARAMS','lang=\"pt-BR\" xml:lang=\"pt-BR\"');
 define('TEXT_PHREEDOM_INFO','EDS Brasil Business Solutions');
 define('TITLE','EDS Brasil ERP');
 define('LANGUAGE','Portugues (BR)');
-define('BOX_GENERAL_ADMIN','Configurações Gerais');
-define('BOX_HEADING_DEBUG_DL','Baixar Arquivo Debug');
+define('TEXT_GENERAL_SETTINGS','Configurações Gerais');
+define('TEXT_DOWNLOAD_DEBUG_FILE','Baixar Arquivo Debug');
 
 ?>

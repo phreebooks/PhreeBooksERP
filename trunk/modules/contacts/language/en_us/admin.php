@@ -29,7 +29,7 @@ define('TEXT_TERMS_TO_LANGUAGE','Terms to Language');
 define('COST_TYPE_LBR','Labor');
 define('TEXT_MATERIALS','Materials');
 define('TEXT_CONTRACTORS','Contractors');
-define('COST_TYPE_EQT','Equipment');
+define('TEXT_EQUIPMENT','Equipment');
 define('TEXT_OTHER','Other');
 define('TEXT_CUSTOMER','Customer');
 define('TEXT_VENDOR','Vendor');

@@ -263,7 +263,7 @@ switch ($_REQUEST['action']) {
 	}
 	$cInfo->status = '1';
   case 'edit':
-  	define('PAGE_TITLE', BOX_RMA_MAINTAIN);
+  	define('PAGE_TITLE', TEXT_RETURN_MATERIAL_AUTHORIZATIONS);
     $include_template = 'template_detail.php';
     break;
   default:
@@ -295,7 +295,7 @@ switch ($_REQUEST['action']) {
     $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 	history_save();
-    define('PAGE_TITLE', BOX_RMA_MAINTAIN);
+    define('PAGE_TITLE', TEXT_RETURN_MATERIAL_AUTHORIZATIONS);
     $include_template = 'template_main.php';
 	break;
 }

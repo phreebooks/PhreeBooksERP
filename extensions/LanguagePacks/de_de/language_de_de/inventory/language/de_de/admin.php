@@ -26,7 +26,7 @@
 define ('MODULE_INVENTORY_TITLE', 'Inventory-Modul');
 define ('MODULE_INVENTORY_DESCRIPTION', 'Das Inventar Modul enthält alle Funktionen zum Speichern und manipulted Produkt-und Service Produkte in Ihrem Unternehmen eingesetzt Dazu gehören Begriffe für interne und externe Verwendung wie auch die Produkte die Sie verkaufen <b> Hinweis:.. Diese ist ein Kernmodul und sollte nicht entfernt werden </ b> ');
 // Überschriften
-define ('BOX_INV_ADMIN', 'Inventory-Administration');
+define ('TEXT_INVENTORY_ADMINISTRATION', 'Inventory-Administration');
 define ('INV_TABS_HEADING_TITLE', 'Custom Tabs');
 define ('INV_FIELDS_HEADING_TITLE', 'Custom Fields');
 define ('INV_HEADING_FIELD_PROPERTIES', 'Feld Typ und Eigenschaften (eine Auswahl)');

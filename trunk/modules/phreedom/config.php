@@ -125,7 +125,7 @@ $mainmenu["company"]['submenu']["profile"] = array(
 
 $mainmenu["company"]['submenu']["configuration"] = array(
   'order' 		=> 10,
-  'text'        => BOX_HEADING_CONFIGURATION,
+  'text'        => TEXT_MODULE_ADMINISTRATION,
   'security_id' => SECURITY_ID_CONFIGURATION,
   'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=admin', 'SSL'),
   'show_in_users_settings' => true,
@@ -134,7 +134,7 @@ $mainmenu["company"]['submenu']["configuration"] = array(
 
 if (defined('DEBUG') && DEBUG == true) $mainmenu["tools"]['submenu']["debug"] = array(
   'order' 		=> 0,
-  'text'        => BOX_HEADING_DEBUG_DL,
+  'text'        => TEXT_DOWNLOAD_DEBUG_FILE,
   'security_id' => SECURITY_ID_CONFIGURATION,
   'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;action=debug', 'SSL'),
   'show_in_users_settings' => false,
@@ -150,7 +150,7 @@ if (defined('ENABLE_ENCRYPTION') && ENABLE_ENCRYPTION == true) $mainmenu["tools"
 );
 $mainmenu["tools"]['submenu']["import_export"] = array(
   'order' 		=> 50,
-  'text'        => BOX_IMPORT_EXPORT,
+  'text'        => TEXT_IMPORT_OR_EXPORT,
   'security_id' => SECURITY_ID_IMPORT_EXPORT,
   'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=import_export', 'SSL'),
   'show_in_users_settings' => true,

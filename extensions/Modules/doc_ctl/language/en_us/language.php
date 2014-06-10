@@ -52,7 +52,7 @@ define('TEXT_UPLOAD_REVISION','Upload Revision');
 // Specific to this module
 define('DOC_CTL_EMPTY_FOLDER','The Folder does not contain any documents.');
 define('DOC_CTL_FILE_WRITE_ERROR','There was an error writing the file. Check directory permissions of directory (%s) and try again.');
-define('DOC_CTL_ITEMS', 'Folders and Documents');
+define('TEXT_FOLDERS_AND_DOCUMENTS', 'Folders and Documents');
 define('DOC_CTL_DELETE_DOCUMENT','Are you sure you want to delete this document?');
 define('DOC_CTL_DELETE_DIRECTORY','Are you sure you want to delete this directory?');
 // Javascript defines

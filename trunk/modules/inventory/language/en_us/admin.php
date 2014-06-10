@@ -21,7 +21,7 @@
 define('MODULE_INVENTORY_TITLE','Inventory Module');
 define('MODULE_INVENTORY_DESCRIPTION','The inventory module contains all of the functionality to store and manipulated product and service items used in your company.<br/> This includes items for internal and external use as was well as products you sell.');
 // Headings
-define('BOX_INV_ADMIN','Inventory Administration');
+define('TEXT_INVENTORY_ADMINISTRATION','Inventory Administration');
 define('INV_HEADING_FIELD_PROPERTIES', 'Field Type and Properties (Select One)');
 // General Defines
 define('TEXT_DEFAULT_GL_ACCOUNTS','Default GL Accounts');

@@ -305,7 +305,7 @@ define('TEXT_PLEASE_SELECT','Selecteer alstublieft...');
 define('HEADING_TITLE_ROLE_DETAIL','Detail Informatie Rol');
 define('TEXT_USER_INFORMATION','Gebruikers Informatie');
 define('CP_CHANGE_PROFILE','Voeg Dashboard Items toe aan dit Menu ...');
-define('CP_ADD_REMOVE_BOXES','Voeg toe/verwijder Profiel Boxen');
+define('TEXT_ADD_OR_REMOVE_DASHBOARD_BOXES','Voeg toe of verwijder Profiel Boxen');
 define('HEADING_TITLE_SEARCH_DETAIL','Zoek: ');
 define('CHARSET','UTF-8');
 define('TEXT_INFO_SEARCH_PERIOD_FILTER','Boekhoud Periode: ');

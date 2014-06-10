@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:46
 // Module/Method: phreeform
 // ISO Language: pt_br
@@ -10,7 +10,7 @@
 
 define('MODULE_PHREEFORM_TITLE','Módulo Relatórios');
 define('MODULE_PHREEFORM_DESCRIPTION','O Módulo Relatórios contém todas as ferramentas e formulários para imprimir relatórios em  formato PDF ou HTML. <b>ATENÇÃO: Este é um módulo central e não deve ser removido!</b>');
-define('BOX_PHREEFORM_MODULE_ADM','PhreeForm Administração');
+define('TEXT_PHREEFORM_ADMINISTRATION','PhreeForm Administração');
 define('PB_CONVERT_REPORTS','Converter Relatórios .txt para PhreeForm');
 define('PB_CONVERT_SAVE_ERROR','Aconteceu um erro ao salvar o relatório convertido: %s');
 define('PB_CONVERT_SUCCESS','Conversão bem sucedida de %s relatórios e formulários. Se houve algum erra durante a conversão, ele deve ter sido mostrado em uma mensagem anterior.');

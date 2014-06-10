@@ -61,6 +61,6 @@ switch ($_REQUEST['action']) {
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', CP_ADD_REMOVE_BOXES);
+define('PAGE_TITLE', TEXT_ADD_OR_REMOVE_DASHBOARD_BOXES);
 
 ?>

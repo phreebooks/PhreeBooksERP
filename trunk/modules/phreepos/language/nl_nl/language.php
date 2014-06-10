@@ -8,7 +8,7 @@
 // +-----------------------------------------------------------------+
 // Path: /modules/phreepos/language/nl_nl/language.php
 
-define('BOX_PHREEPOS_RETURN','Kassa - Teruggave');
+define('TEXT_POINT_OF_SALE_RETURN','Kassa - Teruggave');
 define('TEXT_ENTER_PAYMENT','Betaal Wijze');
 define('BNK_19_AMOUNT_PAID','Bedrag Ontv');
 define('TEXT_ADD_UPDATE','Toevoegen/Updaten');

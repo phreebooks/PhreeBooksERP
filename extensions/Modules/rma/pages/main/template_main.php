@@ -28,9 +28,9 @@ $toolbar->icon_list['print']['show'] = false;
 if ($security_level > 1) $toolbar->add_icon('new', 'onclick="submitToDo(\'new\')"', $order = 10);
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('');
-echo $toolbar->build_toolbar($add_search = true); 
+echo $toolbar->build_toolbar($add_search = true);
 ?>
-<h1><?php echo BOX_RMA_MAINTAIN; ?></h1>
+<h1><?php echo TEXT_RETURN_MATERIAL_AUTHORIZATIONS; ?></h1>
 <div style="height:19px"><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . TEXT_RMAS); ?>
 <div style="float:right"><?php echo $query_split->display_links(); ?></div>
 </div>
@@ -52,7 +52,7 @@ echo $toolbar->build_toolbar($add_search = true);
 	<td onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo $status_codes[$query_result->fields['status']]; ?></td>
 	<td onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo $query_result->fields['closed_date'] == '0000-00-00' ? '&nbsp;' : gen_locale_date($query_result->fields['closed_date']); ?></td>
 	<td align="right">
-<?php 
+<?php
 // build the action toolbar
 	  // first pull in any extra buttons, this is dynamic since each row can have different buttons
 	  if (function_exists('add_extra_action_bar_buttons')) echo add_extra_action_bar_buttons($query_result->fields);
@@ -64,7 +64,7 @@ echo $toolbar->build_toolbar($add_search = true);
 	  if ($security_level > 3) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . RMA_MSG_DELETE_RMA . '\')) deleteItem(' . $query_result->fields['id'] . ')"') . chr(10);
 ?>
 	</td>
-  </tr> 
+  </tr>
 <?php
       $query_result->MoveNext();
       $odd = !$odd;

@@ -18,7 +18,7 @@
 //
 
 // Page Titles
-define('BOX_PHREEPOS_RETURN','Point of Sale - Return');
+define('TEXT_POINT_OF_SALE_RETURN','Point of Sale - Return');
 define('TEXT_ENTER_PAYMENT','Enter Payment');
 
 // General Text

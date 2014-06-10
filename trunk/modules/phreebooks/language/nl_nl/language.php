@@ -119,7 +119,7 @@ define('TEXT_OUTSTANDING_CHECKS','Checks Onderweg');
 define('TEXT_DEPOSITS_IN_TRANSIT','Stortingen onder weg');
 define('TEXT_ACCOUNT_BALANCE','Balans');
 define('TEXT_UNRECONCILED_DIFFERENCE','Onopgelost verschil');
-define('BNK_DEPOSIT_CREDIT','Vooruitbetalingen/Credit');
+define('TEXT_DEPOSIT_OR_CREDIT','Vooruitbetalingen/Credit');
 define('TEXT_CHECK_OR_PAYMENT','Checks /Betalingen');
 define('TEXT_MULTIPLE_DEPOSITS','Klant Vooruitbetalingen');
 define('TEXT_VENDOR_PAYMENTS','Leverancier Betalingen');

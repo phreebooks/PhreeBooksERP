@@ -33,11 +33,11 @@ define ('TEXT_MODULES', 'Module');
 define ('BOX_HEADING_USERS', 'Benutzer');
 define ('TEXT_COMPANY_BACKUP', 'Gesellschaft Backup');
 define ('TEXT_DATA_ENCRYPTION', 'Data Encryption');
-define ('BOX_IMPORT_EXPORT', 'Import / Export');
+define ('TEXT_IMPORT_OR_EXPORT', 'Import / Export');
 define ('TEXT_COMPANY_MANAGER', 'Company Manager');
 define ('TEXT_ADMINISTRATIVE_TOOLS', 'Verwaltung');
-define ('BOX_HEADING_CONFIGURATION', 'Modul Administration');
-define ('BOX_GENERAL_ADMIN', 'Allgemeine Einstellungen');
-define ('BOX_HEADING_DEBUG_DL', 'Download-Debug-Datei');
+define ('TEXT_MODULE_ADMINISTRATION', 'Modul Administration');
+define ('TEXT_GENERAL_SETTINGS', 'Allgemeine Einstellungen');
+define ('TEXT_DOWNLOAD_DEBUG_FILE', 'Download-Debug-Datei');
 
 ?>

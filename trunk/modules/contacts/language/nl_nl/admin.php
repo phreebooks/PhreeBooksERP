@@ -17,7 +17,7 @@ define('TEXT_TERMS_TO_LANGUAGE','Voorwaarden naar Taal');
 define('COST_TYPE_LBR','Arbeidt');
 define('TEXT_MATERIALS','Materialen');
 define('TEXT_CONTRACTORS','Aannemers');
-define('COST_TYPE_EQT','Gereedschap');
+define('TEXT_EQUIPMENT','Gereedschap');
 define('TEXT_OTHER','Overige');
 define('TEXT_CUSTOMER','Klant');
 define('TEXT_VENDOR','Leverancier');

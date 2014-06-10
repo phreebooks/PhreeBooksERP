@@ -8,7 +8,7 @@
 // +-----------------------------------------------------------------+
 // Path: /modules/rma/language/pt_br/language.php
 
-define('BOX_RMA_MAINTAIN','Autorização Retorno Mercadoria');
+define('TEXT_RETURN_MATERIAL_AUTHORIZATIONS','Autorização Retorno Mercadoria');
 define('MENU_HEADING_NEW_RMA','Criar Nova ARM');
 define('TEXT_RMAS','ARMs');
 define('TEXT_RMA_ID','Número ARM');

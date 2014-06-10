@@ -59,9 +59,9 @@ define ('TEXT_VOID_CHECKS', 'Void Checks');
 
 define ('TEXT_BUDGETING', 'Budgetierung');
 define ('BOX_GL_JOURNAL_ENTRY', 'Journal Entry');
-define ('BOX_GL_UTILITIES', 'Allgemeine Zeitschrift Utilities');
+define ('TEXT_GENERAL_JOURNAL_UTILITIES', 'Allgemeine Zeitschrift Utilities');
 define ('BOX_PRICE_SHEET_MANAGER', 'Preisblatt Manager');
 
-define ('BOX_PHREEBOOKS_MODULE_ADM', 'PhreeBooks Admin');
+define ('TEXT_PHREEBOOKS_ADMINISTRATION', 'PhreeBooks Admin');
 
 ?>

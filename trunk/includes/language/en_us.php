@@ -312,7 +312,7 @@ $en_us['CHARSET'] = 'UTF-8';
 // Page Page titles] = toolbar commmon] = headers and footers
 $en_us['TEXT_INFO_SEARCH_PERIOD_FILTER'] ='Accounting Period: ';
 $en_us['HEADING_TITLE_SEARCH_DETAIL'] ='Search: ';
-$en_us['CP_ADD_REMOVE_BOXES'] ='Add/Remove Dashboard Boxes';
+$en_us['TEXT_ADD_OR_REMOVE_DASHBOARD_BOXES'] ='Add or Remove Dashboard Boxes';
 $en_us['CP_CHANGE_PROFILE'] ='Add Dashboard Items to this Menu ...';
 $en_us['TEXT_USER_INFORMATION'] ='User Information';
 $en_us['HEADING_TITLE_ROLE_DETAIL'] ='Role Detail Information';
@@ -726,10 +726,10 @@ $en_us['TEXT_QUALITY'] ='Quality';
 $en_us['BOX_HEADING_USERS'] ='Users';
 $en_us['TEXT_COMPANY_BACKUP'] ='Company Backup';
 $en_us['TEXT_DATA_ENCRYPTION'] = 'Data Encryption';
-$en_us['BOX_IMPORT_EXPORT'] = 'Import/Export';
+$en_us['TEXT_IMPORT_OR_EXPORT'] = 'Import/Export';
 $en_us['TEXT_COMPANY_MANAGER'] = 'Company Manager';
 $en_us['TEXT_ADMINISTRATIVE_TOOLS'] = 'Administrative Tools';
-$en_us['BOX_HEADING_CONFIGURATION'] ='Module Administration';
-$en_us['BOX_GENERAL_ADMIN'] ='General Settings';
-$en_us['BOX_HEADING_DEBUG_DL'] ='Download Debug File';
+$en_us['TEXT_MODULE_ADMINISTRATION'] ='Module Administration';
+$en_us['TEXT_GENERAL_SETTINGS'] ='General Settings';
+$en_us['TEXT_DOWNLOAD_DEBUG_FILE'] ='Download Debug File';
 

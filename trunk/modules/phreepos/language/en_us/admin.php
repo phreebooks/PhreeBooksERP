@@ -22,7 +22,7 @@ define('MODULE_PHREEPOS_TITLE','PhreePOS Module');
 define('MODULE_PHREEPOS_DESCRIPTION','The PhreePOS module provides a Point of Sale interface. This module is a supplement to the phreebooks module and is not a replacement for it.');
 define('TEXT_PHREEPOS_SETTINGS', 'PhreePOS Module Settings');
 // Headings
-define('BOX_PHREEPOS_ADMIN','Point of Sale Administration');
+define('TEXT_POINT_OF_SALE_ADMINISTRATION','Point of Sale Administration');
 // General Defines
 define('PHREEPOS_REQUIRE_ADDRESS_DESC','Require address information for every POS/POP Sale?');
 define('PHREEPOS_RECEIPT_PRINTER_NAME_DESC','Sets then name of the printer to use for printing receipts as defined in the printer preferences for the local workstation.');

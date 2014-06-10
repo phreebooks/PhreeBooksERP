@@ -51,7 +51,7 @@ define('TEXT_INVENTORY_TYPES','Tipo Inventário');
 define('TEXT_SALES_ACCOUNT','Conta Vendas');
 define('TEXT_DEFAULT_GL_ACCOUNTS','Contas Padrão Contabilidade Geral');
 define('INV_HEADING_FIELD_PROPERTIES','Tipo e Propriedades de Campo (Selecione Uma)');
-define('BOX_INV_ADMIN','Administração Inventário');
+define('TEXT_INVENTORY_ADMINISTRATION','Administração Inventário');
 define('MODULE_INVENTORY_DESCRIPTION','O Módulo Inventário contém todas as funcionalidades para armazenar e manipular produtos e serviços utilizados em sua empresa. Isto inclui itens para uso interno e externo e produtos vendidos. <b>ATENÇÃO: Este é um módulo central e não deve ser removido!</b>');
 define('MODULE_INVENTORY_TITLE','Módulo Inventário');
 define('TEXT_NEXT_SKU','Próximo SKU');

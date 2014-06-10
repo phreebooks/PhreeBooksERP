@@ -23,7 +23,7 @@
 //
 
 // Überschriften
-define ('BOX_RMA_MAINTAIN', 'Return Material Berechtigungen');
+define ('TEXT_RETURN_MATERIAL_AUTHORIZATIONS', 'Return Material Berechtigungen');
 define ('MENU_HEADING_NEW_RMA', 'Create New RMA');
 
 // Allgemeine Definiert

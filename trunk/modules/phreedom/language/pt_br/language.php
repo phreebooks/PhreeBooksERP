@@ -381,7 +381,7 @@ define('TEXT_PLEASE_SELECT','Por favor selecione ...');
 define('TEXT_USER_INFORMATION','Informação Usuário');
 define('HEADING_TITLE_ROLE_DETAIL','Informação Detalhada de Direitos');
 define('CP_CHANGE_PROFILE','Á Inserir Itens Dashboard neste Menu ...');
-define('CP_ADD_REMOVE_BOXES','Inserir/Remover Caixas Dashboard');
+define('TEXT_ADD_OR_REMOVE_DASHBOARD_BOXES','Inserir/Remover Caixas Dashboard');
 define('HEADING_TITLE_SEARCH_DETAIL','Procurar: ');
 define('TEXT_INFO_SEARCH_PERIOD_FILTER','Período Fiscal: ');
 define('CHARSET','UTF-8');

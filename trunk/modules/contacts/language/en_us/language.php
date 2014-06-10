@@ -54,7 +54,7 @@ define('TEXT_LAST_NAME','Last Name');
 define('GEN_TELEPHONE1', 'Telephone');
 define('TEXT_ALTERNATIVE_TELEPHONE_SHORT', 'Alt Telephone');
 define('TEXT_FAX','Fax');
-define('GEN_TELEPHONE4', 'Mobile Phone');
+define('TEXT_MOBILE_PHONE', 'Mobile Phone');
 define('GEN_ACCOUNT_ID', 'Account ID');
 define('GEN_CUSTOMER_ID', 'Customer ID:');
 define('GEN_VENDOR_ID', 'Vendor ID:');

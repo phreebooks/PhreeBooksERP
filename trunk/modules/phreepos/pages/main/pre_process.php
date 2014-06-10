@@ -97,7 +97,7 @@ $include_footer   = false;
 switch ($_REQUEST['action']) {
   	case 'pos_return':
     	$include_template = 'template_return.php';
-		define('PAGE_TITLE', BOX_PHREEPOS_RETURN);
+		define('PAGE_TITLE', TEXT_POINT_OF_SALE_RETURN);
     	break;
   	default:
 	    $include_template = 'template_main.php';

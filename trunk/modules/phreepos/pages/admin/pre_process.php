@@ -65,6 +65,6 @@ $sel_rounding = array(
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', BOX_PHREEPOS_ADMIN);
+define('PAGE_TITLE', TEXT_POINT_OF_SALE_ADMINISTRATION);
 
 ?>

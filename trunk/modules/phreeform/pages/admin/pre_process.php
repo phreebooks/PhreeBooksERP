@@ -138,6 +138,6 @@ $pdf_choices = array(
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', BOX_PHREEFORM_MODULE_ADM);
+define('PAGE_TITLE', TEXT_PHREEFORM_ADMINISTRATION);
 
 ?>

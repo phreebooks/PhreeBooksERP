@@ -18,7 +18,7 @@
 //
 
 // Headings
-define('BOX_RMA_MAINTAIN','Return Material Authorizations');
+define('TEXT_RETURN_MATERIAL_AUTHORIZATIONS','Return Material Authorizations');
 define('MENU_HEADING_NEW_RMA','Create New RMA');
 
 // General Defines

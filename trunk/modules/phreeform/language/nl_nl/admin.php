@@ -10,7 +10,7 @@
 
 define('MODULE_PHREEFORM_TITLE','PhreeForm Module');
 define('MODULE_PHREEFORM_DESCRIPTION','De phreeform module bevat alle rapport en formulier tools die nodig zijn om rapporten in PDF of HTML-formaat af te drukken.');
-define('BOX_PHREEFORM_MODULE_ADM','PhreeForm Admin');
+define('TEXT_PHREEFORM_ADMINISTRATION','PhreeForm Admin');
 define('PB_CONVERT_REPORTS','Converteren .txt Rapporten naar PhreeForm');
 define('PB_CONVERT_SAVE_ERROR','Er was en fout bij het opslaan van het geconverteerde rapport: %s');
 define('PB_CONVERT_SUCCESS','Succesvol geconverteerd %s rapporten en formulieren. Eventuele fouten tijdens de conversie, zouden verschijnen in een voorafgaande melding.');

@@ -46,7 +46,7 @@ define('TEXT_EMPLOYEE','Funcionário');
 define('TEXT_VENDOR','Fornecedor');
 define('TEXT_CUSTOMER','Cliente');
 define('TEXT_OTHER','Outros');
-define('COST_TYPE_EQT','Equipamento');
+define('TEXT_EQUIPMENT','Equipamento');
 define('TEXT_CONTRACTORS','Empreiteiros');
 define('TEXT_MATERIALS','Materiais');
 define('COST_TYPE_LBR','Mão Obra');

@@ -45,7 +45,7 @@ echo $toolbar->build_toolbar($add_search = false, $add_period = false);
 	$heading_array = array(
 	  'reference'  => TEXT_REFERENCE,
 	  'post_date'  => TEXT_DATE,
-	  'dep_amount' => BNK_DEPOSIT_CREDIT,
+	  'dep_amount' => TEXT_DEPOSIT_OR_CREDIT,
 	  'pmt_amount' => TEXT_CHECK_OR_PAYMENT,
 	);
 	$result      = html_heading_bar($heading_array, array(TEXT_SOURCE, TEXT_CLEAR, '&nbsp;'));

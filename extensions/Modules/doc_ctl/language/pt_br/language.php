@@ -42,7 +42,7 @@ define('TEXT_UNLOCK_DOCUMENT','Destravar Documentos');
 define('TEXT_UPLOAD_REVISION','Subir Revisão');
 define('DOC_CTL_EMPTY_FOLDER','A pasta não contém nenhum documento.');
 define('DOC_CTL_FILE_WRITE_ERROR','Houve um erro ao gravar o arquivo. Verifique as permissões da pasta (%s)e tente novamente.');
-define('DOC_CTL_ITEMS','Pastas e Documentos');
+define('TEXT_FOLDERS_AND_DOCUMENTS','Pastas e Documentos');
 define('DOC_CTL_DELETE_DOCUMENT','Tem certeza de que quer remover este documento?');
 define('DOC_CTL_DELETE_DIRECTORY','Tem certeza de que quer remover esta pasta?');
 define('DOC_CTL_JS_DEL_BOOKMARK','Tem certeza de que quer remover esta marcação?');

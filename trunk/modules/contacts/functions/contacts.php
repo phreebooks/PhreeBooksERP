@@ -89,7 +89,7 @@ function draw_address_fields($entries, $add_type, $reset_button = false, $hide_l
 	$field .= '<tr>';
 	$field .= '  <td align="right">' . TEXT_ADDRESS2 . '</td>' . chr(10);
 	$field .= '  <td>' . html_input_field("address[$add_type][address2]", $entries->address[$add_type]['address2'], 'size="33" maxlength="32"', ADDRESS_BOOK_ADDRESS2_REQUIRED) . '</td>' . chr(10);
-	$field .= '  <td align="right">' . GEN_TELEPHONE4 . '</td>' . chr(10);
+	$field .= '  <td align="right">' . TEXT_MOBILE_PHONE . '</td>' . chr(10);
 	$field .= '  <td>' . html_input_field("address[$add_type][telephone4]", $entries->address[$add_type]['telephone4'], 'size="21" maxlength="20"') . '</td>' . chr(10);
 	$field .= '</tr>';
 
