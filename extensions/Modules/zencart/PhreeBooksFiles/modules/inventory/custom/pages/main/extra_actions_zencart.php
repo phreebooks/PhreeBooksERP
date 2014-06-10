@@ -27,7 +27,7 @@ switch ($_REQUEST['action']) {
 		require_once(DIR_FS_MODULES . 'zencart/functions/zencart.php');
 		$upXML = new \zencart\classes\zencart();
 		$upXML->submitXML($id, 'product_ul');
-		gen_add_audit_log(ZENCART_UPLOAD_PRODUCT, $upXML->sku);
+		gen_add_audit_log(TEXT_UPLOAD_PRODUCT, $upXML->sku);
 		$_REQUEST['action'] = '';
 		break;
   	case 'save':

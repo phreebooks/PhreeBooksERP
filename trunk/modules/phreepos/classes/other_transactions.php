@@ -152,7 +152,7 @@ class other_transactions {
 		//Only show this when it are expenses
 		//use show tax
     	$output .= '  <tr id="use_tax_row">' . chr(10);
-		$output .= '    <td>' . TEXT_USE_TAX . '</td>'  . chr(10);
+		$output .= '    <td>' . TEXT_ALLOW_USE_OF_TAX . '</td>'  . chr(10);
 		$output .= '    <td>' . html_checkbox_field('use_tax', '0', $this->use_tax) . '</td>'  . chr(10);
     	$output .= '  </tr>' . chr(10);
 	    //default tax

@@ -39,7 +39,7 @@ echo $toolbar->build_toolbar();
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
  <tbody class="ui-widget-content">
   <tr>
-	<td colspan="2"><?php echo ACT_TERMS_DEFAULT . ' ' . gen_terms_to_language('0', false, $terms_type) . '<br />' . chr(10); ?></td>
+	<td colspan="2"><?php echo TEXT_DEFAULT . ': ' . gen_terms_to_language('0', false, $terms_type) . '<br />' . chr(10); ?></td>
   </tr>
   <tr>
 	<td>
@@ -50,7 +50,7 @@ if ($_GET['val']) {
 	$terms = array('0' => 0);
 }
 //echo 'terms='; print_r($terms); echo '<br />';
-echo html_radio_field('special_terms', 0, ($terms[0] == '0' ? true : false), '', 'onclick="changeOptions()"') . ACT_TERMS_USE_DEFAULTS . '<br />' . chr(10);
+echo html_radio_field('special_terms', 0, ($terms[0] == '0' ? true : false), '', 'onclick="changeOptions()"') . TEXT_USE_DEFAULT_TERMS . '<br />' . chr(10);
 echo html_radio_field('special_terms', 1, ($terms[0] == '1' ? true : false), '', 'onclick="changeOptions()"') . TEXT_CASH_ON_DELIVERY_SHORT . '<br />' . chr(10);
 echo html_radio_field('special_terms', 2, ($terms[0] == '2' ? true : false), '', 'onclick="changeOptions()"') . TEXT_PREPAID . '<br />' . chr(10);
 echo html_radio_field('special_terms', 3, ($terms[0] == '3' ? true : false), '', 'onclick="changeOptions()"') . TEXT_SPECIAL_TERMS . '<br />' . chr(10);
@@ -61,7 +61,7 @@ echo html_radio_field('special_terms', 5, ($terms[0] == '5' ? true : false), '',
 	<td valign="top">
 <?php
 echo TEXT_DISCOUNT . html_input_field('early_percent', (isset($terms[1]) ? $terms[1] : $discount_percent), 'size="4"') . TEXT_PERCENT . '<br />' . chr(10);
-echo ACT_DUE_IN . html_input_field('early_days', (isset($terms[2]) ? $terms[2] : $discount_days), 'size="3"') . TEXT_DAY_S . '<br />' . chr(10);
+echo TEXT_DUE_IN . ' ' . html_input_field('early_days', (isset($terms[2]) ? $terms[2] : $discount_days), 'size="3"') . TEXT_DAY_S . '<br />' . chr(10);
 if ($terms[0] == '0' || $terms[0] == '1' || $terms[0] == '2' || $terms[0] == '3') {
 	$field_value = isset($terms[3]) ? $terms[3] : $num_days_due;
 } else {
@@ -77,7 +77,7 @@ if ($terms[0] == '4' || $terms[0] == '5') {
 ?>
 	</td>
   </tr>
-  <tr><td colspan="2"><?php echo ACT_TERMS_CREDIT_LIMIT.' '.html_input_field('credit_limit', (isset($terms[4]) ? $terms[4] : $credit_limit)) . chr(10); ?></td></tr>
+  <tr><td colspan="2"><?php echo TEXT_CREDIT_LIMIT.': '.html_input_field('credit_limit', (isset($terms[4]) ? $terms[4] : $credit_limit)) . chr(10); ?></td></tr>
  </tbody>
 </table>
 </form>

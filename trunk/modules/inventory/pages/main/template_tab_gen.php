@@ -91,7 +91,7 @@
 	  <td colspan="5"><?php if(isset($cInfo->description_sales)) echo html_textarea_field('description_sales', 75, 2, $cInfo->description_sales, '', $reinsert_value = true); ?></td>
 	</tr>
 	<tr>
-	  <td align="right"><?php if(isset($cInfo->full_price_with_tax)) echo INV_ENTRY_FULL_PRICE_WT; ?> </td>
+	  <td align="right"><?php if(isset($cInfo->full_price_with_tax)) echo TEXT_FULL_PRICE_WITH_TAX; ?> </td>
 	  <td><?php if(isset($cInfo->full_price_with_tax)) echo html_input_field('full_price_with_tax', $currencies->precise($cInfo->full_price_with_tax), 'onchange="update_full_price_incl_tax(true, false, true);" size="15" maxlength="20" style="text-align:right" ', false);
 	  if (isset($cInfo->full_price_with_tax) && ENABLE_MULTI_CURRENCY) echo ' (' . DEFAULT_CURRENCY . ')';
 	  if(isset($cInfo->full_price_with_tax)) echo '   <i>'.$cInfo->full_price_with_tax.'</i>';
@@ -104,7 +104,7 @@
 	  	<?php if(isset($cInfo->full_price)) echo html_input_field('full_price', $currencies->precise($cInfo->full_price), 'onchange="update_full_price_incl_tax(true, true, false);" size="15" maxlength="20" style="text-align:right"', false);
 			if (isset($cInfo->full_price) && ENABLE_MULTI_CURRENCY) echo ' (' . DEFAULT_CURRENCY . ')';
 			if (isset($cInfo->full_price)) echo '   <i>'.$currencies->precise($cInfo->full_price).'</i>';
-		    if(isset($cInfo->price_sheet)) echo '&nbsp;' . html_icon('mimetypes/x-office-spreadsheet.png', BOX_SALES_PRICE_SHEETS, 'small', $params = 'onclick="priceMgr(' . $cInfo->id . ', 0, 0, \'c\')"') . chr(10); ?>
+		    if(isset($cInfo->price_sheet)) echo '&nbsp;' . html_icon('mimetypes/x-office-spreadsheet.png', TEXT_CUSTOMER_PRICE_SHEETS, 'small', $params = 'onclick="priceMgr(' . $cInfo->id . ', 0, 0, \'c\')"') . chr(10); ?>
 	  </td>
 	  <td align="right"><?php if(isset($cInfo->item_taxable)) echo INV_ENTRY_ITEM_TAXABLE; ?></td>
 	  <td colspan="2"><?php if(isset($cInfo->item_taxable)) echo html_pull_down_menu('item_taxable', $tax_rates, $cInfo->item_taxable,'onchange="update_full_price_incl_tax(true, true, false);"'); ?></td>
@@ -130,7 +130,7 @@
 	   			<th><?php echo TEXT_PURCHASE_DESCRIPTION; ?></th>
 	   			<th><?php echo TEXT_ITEM_COST; ?></th>
 	   			<th><?php echo TEXT_PACKAGE_QUANTITY;?></th>
-	   			<th><?php echo INV_ENTRY_PURCH_TAX;?></th>
+	   			<th><?php echo TEXT_DEFAULT_PURCHASE_TAX;?></th>
 	   			<th><?php echo TEXT_DEFAULT_PRICE_SHEET;?></th>
 	   		</tr>
 	 	</thead>
@@ -212,7 +212,7 @@
 		     <tr><td colspan="3"><?php echo TEXT_SELECT_FILE_TO_ATTACH . ' ' . html_file_field('file_name'); ?></td></tr>
 		     <tr  class="ui-widget-header">
 		      <th><?php echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small'); ?></th>
-		      <th><?php echo TEXT_FILENAME; ?></th>
+		      <th><?php echo TEXT_FILE_NAME; ?></th>
 		      <th><?php echo TEXT_ACTION; ?></th>
 		     </tr>
 			<?php
@@ -236,7 +236,7 @@
 	  <td><?php if(isset($cInfo->account_inventory_wage)) echo html_pull_down_menu('account_inventory_wage', $gl_array_list, $cInfo->account_inventory_wage); ?></td>
 	</tr>
 	<tr>
-	  <td align="right"><?php if(isset($cInfo->account_cost_of_sales)) echo TEXT_COGS_ACCOUNT; ?></td>
+	  <td align="right"><?php if(isset($cInfo->account_cost_of_sales)) echo TEXT_COST_OF_SALES_ACCOUNT; ?></td>
 	  <td><?php if(isset($cInfo->account_cost_of_sales)) echo html_pull_down_menu('account_cost_of_sales', $gl_array_list, $cInfo->account_cost_of_sales); ?></td>
 	</tr>
 	<tr></tr>

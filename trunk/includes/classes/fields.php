@@ -344,14 +344,14 @@ class fields {
 	$output .= html_radio_field('entry_type', 'html', ($this->entry_type=='html' ? true : false), '', $disabled) . '&nbsp;' . TEXT_HTML_TEXT_FIELD . '</td>' . chr(10);
 	$output .= '	<td>' . INV_LABEL_MAX_NUM_CHARS;
 	$output .= '<br />' . html_input_field('length', ($this->length ? $this->length : DEFAULT_TEXT_LENGTH), $readonly . 'size="10" maxlength="9"');
-	$output .= '<br />' . TEXT_DEFAULT_VALUE . ' :<br />' . INV_LABEL_MAX_255;
+	$output .= '<br />' . TEXT_DEFAULT_VALUE . ' :<br />(' . TEXT_FOR_LENGTHS_LESS_THAN_256_CHARACTERS. ')';
 	$output .= '<br />' . html_textarea_field('text_default', 35, 6, $this->text_default, $readonly);
 	$output .= '	</td>' . chr(10);
 	$output .= '  </tr>' . chr(10);
 	$output .= '  <tr class="ui-widget-content">' . chr(10);
 	$output .= '	<td>';
 	$output .= html_radio_field('entry_type', 'hyperlink',      ($this->entry_type=='hyperlink'      ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_HYPERLINK  . '<br />';
-	$output .= html_radio_field('entry_type', 'image_link',     ($this->entry_type=='image_link'     ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_IMAGE_LINK . '<br />';
+	$output .= html_radio_field('entry_type', 'image_link',     ($this->entry_type=='image_link'     ? true : false), '', $disabled) . '&nbsp;' . TEXT_IMAGE_FILE_NAME . '<br />';
 	$output .= html_radio_field('entry_type', 'inventory_link', ($this->entry_type=='inventory_link' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_INVENTORY_LINK;
 	$output .= '	</td>' . chr(10);
 	$output .= '	<td>' . INV_LABEL_FIXED_255_CHARS;
@@ -367,7 +367,7 @@ class fields {
 	$output .= '	</td>' . chr(10);
 	$output .= '  </tr>' . chr(10);
 	$output .= '  <tr class="ui-widget-content">' . chr(10);
-	$output .= '	<td>' . html_radio_field('entry_type', 'decimal', ($this->entry_type=='decimal' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_DECIMAL_FIELD . '</td>' . chr(10);
+	$output .= '	<td>' . html_radio_field('entry_type', 'decimal', ($this->entry_type=='decimal' ? true : false), '', $disabled) . '&nbsp;' . TEXT_DECIMAL_NUMBER . '</td>' . chr(10);
 	$output .= '	<td>' . TEXT_DECIMAL_RANGE;
 	$output .= html_pull_down_menu('decimal_range', gen_build_pull_down($decimal_lengths), $this->decimal_range, $disabled);
 	$output .= '<br />' . INV_LABEL_DEFAULT_DISPLAY_VALUE . html_input_field('decimal_display', ($this->decimal_display ? $this->decimal_display : DEFAULT_REAL_DISPLAY_FORMAT), $readonly . 'size="6" maxlength="5"');
@@ -391,7 +391,7 @@ class fields {
 	$output .= '   <td>';
 	$output .= html_radio_field('entry_type', 'date',       ($this->entry_type=='date'       ? true : false), '', $disabled) . '&nbsp;' . TEXT_DATE . '<br />';
 	$output .= html_radio_field('entry_type', 'time',       ($this->entry_type=='time'       ? true : false), '', $disabled) . '&nbsp;' . TEXT_TIME . '<br />';
-	$output .= html_radio_field('entry_type', 'date_time',  ($this->entry_type=='date_time'  ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_DATE_TIME_FIELD . '<br />';
+	$output .= html_radio_field('entry_type', 'date_time',  ($this->entry_type=='date_time'  ? true : false), '', $disabled) . '&nbsp;' . TEXT_DATE_AND_TIME . '<br />';
 	$output .= html_radio_field('entry_type', 'time_stamp', ($this->entry_type=='time_stamp' ? true : false), '', $disabled) . '&nbsp;' . TEXT_TIME_STAMP ;
 	$output .= '   </td>' . chr(10);
 	$output .= '	<td>' . INV_LABEL_TIME_STAMP_VALUE . '</td>' . chr(10);

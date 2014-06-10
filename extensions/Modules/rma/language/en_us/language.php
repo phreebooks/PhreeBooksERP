@@ -17,7 +17,7 @@
 //  Path: /modules/rma/language/en_us/language.php
 //
 
-// Headings 
+// Headings
 define('BOX_RMA_MAINTAIN','Return Material Authorizations');
 define('MENU_HEADING_NEW_RMA','Create New RMA');
 
@@ -33,12 +33,12 @@ define('TEXT_CALLER_NAME','Caller Name');
 define('TEXT_CUSTOMER_ID','Customer ID');
 define('TEXT_TELEPHONE','Telephone');
 define('TEXT_DATE_MANUFACTURE','Manufacturer DLC');
-define('TEXT_DATE_WARRANTY','Date Warranty Expires');
+define('TEXT_DATE_WARRANTY_EXPIRES','Date Warranty Expires');
 define('TEXT_DETAILS','Details');
 define('TEXT_DISPOSITION','Disposition');
 define('TEXT_REASON_FOR_RETURN','Reason for Return');
 define('TEXT_ENTERED_BY','Entered By');
-define('TEXT_RECEIVE_DATE','Date Received');
+define('TEXT_DATE_RECEIVED','Date Received');
 define('TEXT_RECEIVED_BY','Received By');
 define('TEXT_RECEIVE_CARRIER','Shipment Carrier');
 define('TEXT_RECEIVE_TRACKING_NUM','Shipment Tracking #');

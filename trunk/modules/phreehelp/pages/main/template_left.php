@@ -38,7 +38,7 @@
     </form>
     <br />
     <?php if ($search_text) {
-      echo TEXT_SEARCH_RESULTS . '<br />' . chr(10);
+      echo TEXT_YOUR_SEARCH_RESULTS . ':<br />' . chr(10);
       echo '<fieldset>' . chr(10);
 	  echo search_results($search_text) . chr(10);
       echo '</fieldset>' . chr(10);

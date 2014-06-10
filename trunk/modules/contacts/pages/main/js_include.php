@@ -28,8 +28,8 @@ var account_type    = '<?php echo $type; ?>';
 
 function init() {
 <?php if ($include_template == 'template_main.php') {
- 	echo '  document.getElementById("search_text").focus();'  . chr(10); 
-  	echo '  document.getElementById("search_text").select();' . chr(10); 
+ 	echo '  document.getElementById("search_text").focus();'  . chr(10);
+  	echo '  document.getElementById("search_text").select();' . chr(10);
   }
 ?>
   if (window.extra_init) { extra_init() } // hook for additional initializations
@@ -78,7 +78,7 @@ function fillContacts(sXml) {
   var iIndex = 0;
   $(xml).find("guesses").each(function() {
 	newOpt = document.createElement("option");
-	newOpt.text = $(this).find("guess").text() ? $(this).find("guess").text() : '<?php echo TEXT_FIND; ?>';
+	newOpt.text = $(this).find("guess").text() ? $(this).find("guess").text() : '<?php echo TEXT_FIND. ' ...'; ?>';
 	document.getElementById('comboseldept_rep_id').options.add(newOpt);
 	document.getElementById('comboseldept_rep_id').options[iIndex].value = $(this).find("id").text();
 	if (!fActiveMenu) cbMmenuActivate('dept_rep_id', 'combodivdept_rep_id', 'comboseldept_rep_id', 'imgNamedept_rep_id');

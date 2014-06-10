@@ -8,9 +8,9 @@
 // +-----------------------------------------------------------------+
 // Path: /modules/cp_action/language/pt_br/language.php
 
-define('BOX_CAPA_MAINTAIN','Ação Corretiva/Preventiva');
-define('MENU_HEADING_NEW_CAPA','Criar Nova Ação Corretiva');
-define('TEXT_ACTION_EFFECTIVE','A ação tomada foi efetiva?');
+define('TEXT_CORRECTIVE_OR_PREVENTATIVE_ACTION','Ação Corretiva/Preventiva');
+define('TEXT_CREATE_NEW_CORRECTIVE_ACTION','Criar Nova Ação Corretiva');
+define('TEXT_WAS_ACTION_TAKEN_EFFECTIVE','A ação tomada foi efetiva?');
 define('TEXT_ACTION_TAKEN','Ação Tomada');
 define('TEXT_AGREED_TO_BY','Aceite');
 define('TEXT_AGREED_DATE','Data Aceite');
@@ -21,7 +21,7 @@ define('TEXT_AUDIT','Auditoria');
 define('TEXT_AUDIT_NOTES','Anotações Auditoria');
 define('TEXT_CA','AC');
 define('TEXT_CAPAS','ACAPs');
-define('TEXT_CAPA_ID','ACAP Num');
+define('TEXT_CAPA_NUM','ACAP Num');
 define('TEXT_CAPA_NOTES','Descrição Item');
 define('TEXT_ACTION_TYPE','Tipo Ação');
 define('TEXT_PURCHASE_INVOICE_ID','Vendas/Fatura#');
@@ -32,7 +32,7 @@ define('TEXT_CUSTOMER_TELEPHONE','Telefone');
 define('TEXT_CUSTOMER_EMAIL','Email');
 define('TEXT_CUSTOMER_NOTES','Cliente Anotações');
 define('TEXT_CUSTOMER_ID','Cliente ID');
-define('TEXT_CUSTOMER_INFO','Cliente Informação');
+define('TEXT_CUSTOMER_INFORMATION','Cliente Informação');
 define('TEXT_CUSTOMER_NAME','Cliente Nome');
 define('TEXT_DETAILS','Detalhes');
 define('TEXT_ENTERED_BY','Inserido por');

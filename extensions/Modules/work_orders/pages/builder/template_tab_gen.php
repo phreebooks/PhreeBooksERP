@@ -85,7 +85,7 @@ if ($step_list) {
 		      echo html_icon('actions/go-up.png',             TEXT_MOVE_UP,   'small', 'onclick="moveUpTaskRow(' . $i . ');"');
 		      echo html_icon('actions/go-down.png',           TEXT_MOVE_DOWN, 'small', 'onclick="moveDownTaskRow(' . $i . ');"');
 		      echo html_icon('actions/edit-undo.png',         TEXT_INSERT,    'small', 'onclick="insertTaskRow(' . $i . ');"');
-		      echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE,    'small', 'onclick="if (confirm(\'' . WORK_ORDER_MSG_DELETE_WO . '\')) removeTaskRow(' . $i . ');"');
+		      echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE,    'small', 'onclick="if (confirm(\'' . TEXT_DELETE_ENTRY . '\')) removeTaskRow(' . $i . ');"');
 		    ?>
 		  </td>
 		</tr>

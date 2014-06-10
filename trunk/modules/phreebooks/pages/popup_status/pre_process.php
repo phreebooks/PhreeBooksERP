@@ -37,13 +37,13 @@ if ($customer->fields['inactive']) {
   $status_text = TEXT_INACTIVE;
 } elseif ($new_data['past_due'] > 0) {
   $inactive_flag = 'class="ui-state-highlight"';
-  $status_text = ACT_HAS_PAST_DUE_AMOUNT;
+  $status_text = TEXT_ACCOUNT_HAS_PAST_DUE_BALANCE;
 } elseif ($new_data['total'] > $new_data['credit_limit']) {
   $inactive_flag = 'class="ui-state-highlight"';
-  $status_text = ACT_OVER_CREDIT_LIMIT;
+  $status_text = TEXT_ACCOUNT_IS_OVER_CREDIT_LIMIT;
 } else {
   $inactive_flag = 'class="ui-state-active"';
-  $status_text = TEXT_ACOUNT_IN_GOOD_STANDING;
+  $status_text = TEXT_ACCOUNT_IN_GOOD_STANDING;
 }
 /*****************   prepare to display templates  *************************/
 $include_header   = false;
@@ -52,7 +52,7 @@ $include_template = 'template_main.php'; // include display template (required)
 if($customer->fields['type'] == 'v' ){
 	define('PAGE_TITLE', TEXT_CUSTOMER_STATUS);
 }else{
-	define('PAGE_TITLE', AP_CONTACT_STATUS);
+	define('PAGE_TITLE', TEXT_VENDOR_STATUS);
 }
 
 ?>

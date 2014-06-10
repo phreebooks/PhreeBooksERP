@@ -32,7 +32,7 @@ define('TEXT_FOLDER','Folder');
 define('TEXT_FORWARD','Forward');
 define('TEXT_SUPPORT','PhreeSoft Online Support');
 define('TEXT_KEYWORD','Type in the keyword to find:');
-define('TEXT_SEARCH_RESULTS','Your search results:');
+define('TEXT_YOUR_SEARCH_RESULTS','Your search results');
 define('TEXT_UNTITLED','Untitled Document');
 define('TEXT_MANUAL','Manual');
 

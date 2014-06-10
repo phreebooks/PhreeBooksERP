@@ -24,7 +24,7 @@ define('TEXT_TRANSFER_INVENTORY','Transfer Inventory');
 define('ORD_TEXT_14_WINDOW_TITLE','Assemblies');
 define('ORD_TEXT_16_WINDOW_TITLE','Adjustments');
 define('BOX_PRICE_SHEET_MANAGER','Price Sheet Manager');
-define('BOX_SALES_PRICE_SHEETS','Customer Price Sheets');
-define('BOX_PURCHASE_PRICE_SHEETS','Vendor Price Sheets');
+define('TEXT_CUSTOMER_PRICE_SHEETS','Customer Price Sheets');
+define('TEXT_VENDOR_PRICE_SHEETS','Vendor Price Sheets');
 
 ?>

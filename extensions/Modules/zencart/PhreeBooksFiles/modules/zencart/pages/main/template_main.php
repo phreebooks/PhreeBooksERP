@@ -33,7 +33,7 @@ if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key =
 //$toolbar->add_help('');
 echo $toolbar->build_toolbar();
 ?>
-<h1><?php echo BOX_ZENCART_MODULE; ?></h1>
+<h1><?php echo TEXT_ZENCART_INTERFACE; ?></h1>
   <table align="center" width="600" border="0">
 	<tr><td colspan="2" align="right"><img src="<?php echo DIR_WS_ADMIN . 'modules/zencart/images/zen-cart-logo.png'; ?>" alt="ZenCart Logo" /></td></tr>
     <tr><th colspan="2"><?php echo TEXT_BULK_UPLOAD; ?></th></tr>
@@ -43,7 +43,7 @@ echo $toolbar->build_toolbar();
       <td><?php echo html_checkbox_field('include_images', '1', false); ?></td>
     </tr>
     <tr>
-      <td align="right"><?php echo ZENCART_BULK_UPLOAD_TEXT; ?></td>
+      <td align="right"><?php echo TEXT_BULK_UPLOAD_PRODUCTS_TO_E-STORE; ?></td>
       <td><?php echo html_button_field('bulkupload', TEXT_BULK_UPLOAD, 'onclick="submitToDo(\'bulkupload\')"'); ?></td>
 	</tr>
     <tr><td colspan="2">&nbsp;</td></tr>

@@ -66,7 +66,7 @@
 	  <td valign="bottom"><?php echo html_icon('actions/list-add.png', TEXT_ADD, 'small', 'onclick="rowAction(\'table_setup\', \'add\')"'); ?></td>
 	</tr>
 	<tr>
-	  <td colspan="3"><?php echo html_button_field('db_validate', TEXT_VALIDATE_RELATIONSHIPS, 'onclick="validateDB()"'); ?></td>
+	  <td colspan="3"><?php echo html_button_field('db_validate', TEXT_VALIDATE_DATABASE_RELATIONSHIPS, 'onclick="validateDB()"'); ?></td>
 	</tr>
 	<tr>
 	  <td colspan="3"><?php echo PHREEFORM_DB_LINK_HELP; ?></td>

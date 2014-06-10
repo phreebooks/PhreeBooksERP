@@ -85,7 +85,7 @@ echo $toolbar->build_toolbar();
 		  <td><?php echo html_input_field('to_name', $to_name) . ' ' . TEXT_EMAIL . html_input_field('to_email', $to_email, 'size="40"'); ?></td>
 	    </tr>
         <tr>
-	      <td align="right"><?php echo TEXT_CC_NAME; ?></td>
+	      <td align="right"><?php echo TEXT_CC. ': '; ?></td>
 	      <td><?php echo html_input_field('cc_name', $cc_name) . ' ' . TEXT_EMAIL . html_input_field('cc_email', $cc_email, 'size="40"'); ?></td>
         </tr>
 	    <tr>

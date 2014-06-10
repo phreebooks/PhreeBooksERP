@@ -88,7 +88,7 @@
     <td><?php echo html_pull_down_menu('cfg_auto_update_check', $sel_yes_no, $_POST['cfg_auto_update_check'] ? $_POST['cfg_auto_update_check'] : CFG_AUTO_UPDATE_CHECK, ''); ?></td>
   </tr>
 
-  <tr><th colspan="2" class="ui-widget-header"><?php echo TEXT_DEBUG; ?></th></tr>
+  <tr><th colspan="2" class="ui-widget-header"><?php echo TEXT_DEBUG_AND_TROUBLESHOOTING; ?></th></tr>
   <tr>
     <td><?php echo CD_20_99_DESC; ?></td>
     <td><?php echo html_pull_down_menu('debug', $sel_yes_no, $_POST['debug'] ? $_POST['debug'] : DEBUG, ''); ?></td>

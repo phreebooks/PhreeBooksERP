@@ -38,7 +38,7 @@ define ('TEXT_TELEPHONE', 'Telefon');
 define ('TEXT_DETAILS', 'Details');
 define ('TEXT_REASON_FOR_RETURN', 'Grund für die Rückgabe');
 define ('TEXT_ENTERED_BY', 'Eingetragen von');
-define ('TEXT_RECEIVE_DATE', 'Date Received');
+define ('TEXT_DATE_RECEIVED', 'Date Received');
 define ('TEXT_RECEIVED_BY', 'Received von');
 define ('TEXT_RECEIVE_CARRIER', 'Versand Carrier');
 define ('TEXT_RECEIVE_TRACKING_NUM', 'Sendungsverfolgung #');

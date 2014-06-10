@@ -26,7 +26,7 @@
 	    <th><?php echo TEXT_INVENTORY_TYPES;   ?></th>
 	    <th><?php echo TEXT_SALES_ACCOUNT;     ?></th>
 	    <th><?php echo TEXT_INVENTORY_ACCOUNT; ?></th>
-	    <th><?php echo TEXT_COGS_ACCOUNT;      ?></th>
+	    <th><?php echo TEXT_COST_OF_SALES_ACCOUNT;      ?></th>
 	    <th><?php echo TEXT_COST_METHOD;       ?></th>
 	  </tr>
 	  <tr>

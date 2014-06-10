@@ -20,6 +20,6 @@
 // Enter the new menu category heading if necessary
 define('TEXT_ZENCART','ZenCart');
 // Title to use in the pull down menu
-define('BOX_ZENCART_MODULE', 'ZenCart Interface');
+define('TEXT_ZENCART_INTERFACE', 'ZenCart Interface');
 
 ?>

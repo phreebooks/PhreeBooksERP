@@ -31,7 +31,7 @@ $toolbar->add_help('07.04.06');
 echo $toolbar->build_toolbar($add_search = true);
 // Build the page
 ?>
-<h1><?php echo INV_BULK_SKU_ENTRY_TITLE; ?></h1>
+<h1><?php echo TEXT_BULK_SKU_PRICING_ENTRY; ?></h1>
 <div style="height:19px"><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . TEXT_ITEMS); ?>
 <div style="float:right"><?php echo $query_split->display_links(); ?></div>
 </div>

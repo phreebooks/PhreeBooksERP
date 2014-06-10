@@ -30,7 +30,7 @@ define('TABLE_CAPA', DB_PREFIX . 'capa_module');
 
 $mainmenu["quality"]['submenu']["quality"] = array(
   'order' 		=> BOX_CAPA_MODULE_ORDER,
-  'text'        => BOX_CAPA_MODULE,
+  'text'        => TEXT_CAPA_ACTION,
   'security_id' => SECURITY_CAPA_MGT,
   'link'        => html_href_link(FILENAME_DEFAULT, 'module=cp_action&amp;page=main', 'SSL'),
   'show_in_users_settings' => true,

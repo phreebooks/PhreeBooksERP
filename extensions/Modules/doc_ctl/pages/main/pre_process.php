@@ -133,6 +133,6 @@ switch ($_REQUEST['action']) { // figure which detail page to load
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php'; // include display template (required)
-define('PAGE_TITLE', BOX_DOC_CTL_MODULE);
+define('PAGE_TITLE', TEXT_DOCUMENT_CONTROL);
 
 ?>

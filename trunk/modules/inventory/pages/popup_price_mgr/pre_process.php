@@ -72,7 +72,7 @@ switch ($_REQUEST['action']) {
 	  }
 	  $tab_id++;
 	}
-	gen_add_audit_log(($type == 'v' ? BOX_PURCHASE_PRICE_SHEETS : BOX_SALES_PRICE_SHEETS) . TEXT_UPDATE, $inventory_details->fields['sku'] . ' - ' . $inventory_details->fields['description_short']);
+	gen_add_audit_log(($type == 'v' ? TEXT_VENDOR_PRICE_SHEETS : TEXT_CUSTOMER_PRICE_SHEETS) . TEXT_UPDATE, $inventory_details->fields['sku'] . ' - ' . $inventory_details->fields['description_short']);
 	break;
   default:
 }
@@ -98,5 +98,5 @@ while (!$result->EOF) {
 $include_header   = false;
 $include_footer   = false;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', $type == 'v' ? BOX_PURCHASE_PRICE_SHEETS : BOX_SALES_PRICE_SHEETS);
+define('PAGE_TITLE', $type == 'v' ? TEXT_VENDOR_PRICE_SHEETS : TEXT_CUSTOMER_PRICE_SHEETS);
 ?>

@@ -21,7 +21,7 @@
 define('WO_POPUP_TASK_WINDOW_TITLE','Work Order Tasks');
 define('HEADING_WORK_ORDER_MODULE_NEW','Create Work Order');
 define('HEADING_WORK_ORDER_MODULE_EDIT','Edit Work Order');
-define('HEADING_WORK_ORDER_MODULE_BUILD','Build and Track Work Order');
+define('TEXT_BUILD_AND_TRACK_WORK_ORDER','Build and Track Work Order');
 // General Defines
 define('TEXT_APPROVALS','Approvals');
 define('TEXT_BUILD_WORK_ORDER','Build Work Order');

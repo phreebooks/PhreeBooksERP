@@ -93,9 +93,9 @@
         <td><?php echo html_input_field('i_contact_last', $cInfo->i_contact_last, 'size="33" maxlength="32"', false); ?></td>
       </tr>
       <tr>
-        <td align="right"><?php echo ACT_ACCOUNT_NUMBER; ?></td>
+        <td align="right"><?php echo TEXT_FACEBOOK_ID; ?></td>
         <td><?php echo html_input_field('i_account_number', $cInfo->i_account_number, 'size="17" maxlength="16"'); ?></td>
-        <td align="right"><?php echo ACT_ID_NUMBER; ?></td>
+        <td align="right"><?php echo TEXT_TWITTER_ID; ?></td>
         <td><?php echo html_input_field('i_gov_id_number', $cInfo->i_gov_id_number, 'size="17" maxlength="16"'); ?></td>
       </tr>
     </table>

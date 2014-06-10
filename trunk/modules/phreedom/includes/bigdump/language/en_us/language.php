@@ -17,7 +17,7 @@
 //  Path: /modules/phreedom/includes/bigdump/language/en_us/language.php
 //
 
-define('TEXT_FILENAME','Filename');
+define('TEXT_FILE_NAME','Filename');
 define('TEXT_MISC','Misc');
 define('TEXT_QUERY','Query: ');
 define('TEXT_MYSQL','MYSQL: ');

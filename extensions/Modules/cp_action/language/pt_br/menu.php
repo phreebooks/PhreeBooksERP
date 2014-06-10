@@ -9,7 +9,7 @@
 // Path: /modules/cp_action/language/pt_br/menu.php
 
 define('TEXT_QUALITY','Qualidade');
-define('MENU_HEADING_CAPA','Ação Corretiva/Preventiva');
-define('BOX_CAPA_MODULE','Ação C/P');
+define('TEXT_CORRECTIVE_OR_PREVENTATIVE_ACTION','Ação Corretiva/Preventiva');
+define('TEXT_CAPA_ACTION','Ação C/P');
 
 ?>

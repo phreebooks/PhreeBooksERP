@@ -38,9 +38,9 @@ define('TEXT_DOUBLE_MODE','Double Line Entry');
 // PhreeForm processing Titles
 define('PB_PF_JOURNAL_DESC','Journal Description');
 define('TEXT_QUANTITY_ORDERED','Quantity Ordered');
-define('PB_PF_COA_TYPE_DESC','Chart of Account Type');
+define('TEXT_CHART_OF_ACCOUNT_TYPE','Chart of Account Type');
 // Chart of Account Type definitions
-define('COA_00_DESC','Cash');
+define('TEXT_CASH','Cash');
 define('COA_02_DESC','Accounts Receivable');
 define('COA_04_DESC','Inventory');
 define('COA_06_DESC','Other Current Assets');
@@ -51,7 +51,7 @@ define('TEXT_ACCOUNTS_PAYABLE','Accounts Payable');
 define('COA_22_DESC','Other Current Liabilities');
 define('COA_24_DESC','Long Term Liabilities');
 define('COA_30_DESC','Income');
-define('COA_32_DESC','Cost of Sales');
+define('TEXT_COST_OF_SALES','Cost of Sales');
 define('COA_34_DESC','Expenses');
 define('COA_40_DESC','Equity - Doesn\'t Close');
 define('COA_42_DESC','Equity - Gets Closed');
@@ -59,12 +59,12 @@ define('COA_44_DESC','Equity - Retained Earnings');
 // Form Group Definitions
 define('TEXT_BANK_CHECKS','Bank Checks');
 define('TEXT_BANK_DEPOSIT_SLIPS','Bank Deposit Slips');
-define('PB_PF_COLLECT_LTR','Collection Letters');
+define('TEXT_COLLECTION_LETTERS','Collection Letters');
 define('PB_PF_CUST_CRD_MEMO','Credit Memos - Customer');
 define('PB_PF_CUST_LABEL','Labels - Customer');
-define('PB_PF_CUST_QUOTE','Customer Quotes');
-define('PB_PF_CUST_STATEMENT','Customer Statements');
-define('PB_PF_DEP_SLIP','Deposit Slips');
+define('TEXT_CUSTOMER_QUOTES','Customer Quotes');
+define('TEXT_CUSTOMER_STATEMENTS','Customer Statements');
+define('TEXT_DEPOSIT_SLIPS','Deposit Slips');
 define('PB_PF_INV_PKG_SLIP','Invoices/Packing Slips');
 define('PB_PF_PURCH_ORDER','Purchase Orders');
 define('TEXT_SALES_ORDER','Sales Orders');
@@ -75,7 +75,7 @@ define('TEXT_VENDOR_QUOTES','Vendor Quotes');
 define('TEXT_VENDOR_STATEMENTS','Vendor Statements');
 /************************** (PhreeBooks Utilities) ***********************************************/
 define('GEN_ADM_TOOLS_AR','Customer/Receivables');
-define('GEN_ADM_TOOLS_AP','Vendors/Payables');
+define('TEXT_VENDORS_PAYABLES','Vendors/Payables');
 define('GEN_ADM_TOOLS_RE_POST_FAILED','No journals were selected to re-post, no action was taken.');
 define('GEN_ADM_TOOLS_RE_POST_SUCCESS','The selected journals were re-posted successfully. The number of records re-posted was: %s');
 define('GEN_ADM_TOOLS_AUDIT_LOG_RE_POST','Re-post Journals: ');
@@ -107,14 +107,14 @@ define('GEN_ADM_TOOLS_REPAIR_COMPLETE','The chart balances have been repaired.')
 define('GEN_ADM_TOOLS_REPAIR_LOG_ENTRY','Repaired GL balances');
 
 define('GL_UTIL_HEADING_TITLE', 'General Journal Maintenance, Setup and Utilities');
-define('GL_UTIL_PERIOD_LEGEND','Accounting Periods and Fiscal Years');
+define('TEXT_ACCOUNTING_PERIODS_AND_FISCAL_YEARS','Accounting Periods and Fiscal Years');
 define('GL_UTIL_PURGE_ALL','Purge all Journal Transactions (re-start)');
 define('GL_UTIL_FISCAL_YEAR_TEXT','Fiscal period calendar dates can be modified here. Please note that fiscal year dates cannot be changed for any period up to and including the last general journal entry in the system.');
 define('GL_UTIL_PURGE_DB','Delete all Journal Entries (type \'purge\' in the text box and press purge button)<br />');
 define('GL_UTIL_PURGE_DB_CONFIRM','Are you sure you want to clear all journal entries?');
 define('GL_UTIL_PURGE_CONFIRM','Deleted all journal records and cleaned up databases.');
 define('GL_UTIL_PURGE_FAIL','No journal entries were affected!');
-define('GL_CURRENT_PERIOD','Current Accounting Period is: ');
+define('TEXT_CURRENT_ACCOUNTING_PERIOD_IS','Current Accounting Period is');
 define('GL_WARN_ADD_FISCAL_YEAR','Are you sure you want to add fiscal year : %s ');
 define('GL_ERROR_FISCAL_YEAR_SEQ','The last period of the modified fiscal year does not align with the start date of the next fiscal year. The start date of the next fiscal year has been modified and should be reviewed.');
 define('GL_WARN_CHANGE_ACCT_PERIOD','Enter the accounting period to make current:');
@@ -162,7 +162,7 @@ define('CD_02_06_DESC', 'Default account to use for cash receipts on a customer 
 define('CD_02_07_DESC', 'Default account to use for the credit holding for a customer deposits. Typically an Other Current Liabilities type account.');
 
 define('CD_02_10_DESC', 'Early payment discounts. Leave percent zero or early days zero to disable early payment discounts.');
-define('CD_02_11_DESC', 'Check customer credit limit when processing orders.');
+define('TEXT_CHECK_CUSTOMER_CREDIT_LIMIT_WHEN_PROCESSING_ORDERS', 'Check customer credit limit when processing orders.');
 define('CD_02_12_DESC', 'Default amount to use for customer credit limit. (%s)');
 define('CD_02_13_DESC', 'Percent (%) discount if paid in');
 define('CD_02_14_DESC', 'days. Total due in');

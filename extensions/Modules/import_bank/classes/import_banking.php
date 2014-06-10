@@ -327,7 +327,7 @@ class import_banking extends \phreebooks\classes\journal {
 			$this->journal_id          	= ($this->_firstjid == 20) ? 7 : 13;
 			$this->gl_acct_id          	= $gl_acct_id;
 			$this->id				 	= null;
-			$this->description			= GENERAL_JOURNAL_7_DESC;
+			$this->description			= TEXT_CREDIT_MEMO;
 			$this->purchase_invoice_id  = '';
 			$this->journal_rows 		= null;
 			$this->journal_rows[] = array(

@@ -19,10 +19,10 @@
 //
 
 // Headings
-define('BOX_CAPA_MAINTAIN','Corrective/Preventative Action');
-define('MENU_HEADING_NEW_CAPA','Create New Corrective Action');
+define('TEXT_CORRECTIVE_OR_PREVENTATIVE_ACTION','Corrective/Preventative Action');
+define('TEXT_CREATE_NEW_CORRECTIVE_ACTION','Create New Corrective Action');
 // General Defines
-define('TEXT_ACTION_EFFECTIVE','Was Action Taken Effective?');
+define('TEXT_WAS_ACTION_TAKEN_EFFECTIVE','Was Action Taken Effective?');
 define('TEXT_ACTION_TAKEN','Action Taken');
 define('TEXT_AGREED_TO_BY','Agreed To By');
 define('TEXT_AGREED_DATE','Agreed Date');
@@ -33,7 +33,7 @@ define('TEXT_AUDIT','Audit');
 define('TEXT_AUDIT_NOTES','Audit Notes');
 define('TEXT_CA','CA');
 define('TEXT_CAPAS','CAPAs');
-define('TEXT_CAPA_ID','CAPA Num');
+define('TEXT_CAPA_NUM','CAPA Num');
 define('TEXT_CAPA_NOTES','Description of Issue');
 define('TEXT_ACTION_TYPE','Action Type');
 define('TEXT_PURCHASE_INVOICE_ID','Sales/Invoice #');
@@ -44,7 +44,7 @@ define('TEXT_CUSTOMER_TELEPHONE','Telephone');
 define('TEXT_CUSTOMER_EMAIL','Email');
 define('TEXT_CUSTOMER_NOTES','Customer Notes');
 define('TEXT_CUSTOMER_ID','Customer ID');
-define('TEXT_CUSTOMER_INFO','Customer Information');
+define('TEXT_CUSTOMER_INFORMATION','Customer Information');
 define('TEXT_CUSTOMER_NAME','Customer Name');
 define('TEXT_DETAILS','Details');
 define('TEXT_ENTERED_BY','Entered By');

@@ -37,7 +37,7 @@ define('TEXT_PHREEPOS_SETTINGS','Propriedades Módulo PhreePOS ');
 define('MODULE_PHREEPOS_DESCRIPTION','O Módulo PhreePOS fornece uma interface de Ponto De Venda. Este módulo é complementar ao Módulo Phreebooks e não o substitui.');
 define('MODULE_PHREEPOS_TITLE','Módulo PhreePOS ');
 define('TEXT_PHREEPOS_TRANSACTION_TYPE','Selecione o tipo de transação');
-define('TEXT_USE_TAX','Não pode ser utilizado imposto');
+define('TEXT_ALLOW_USE_OF_TAX','Não pode ser utilizado imposto');
 define('TEXT_TAX','imposto padrão');
 define('TEXT_OTHER_TRANS','Outras Transações');
 

@@ -75,7 +75,7 @@
 		  <?php echo html_input_field('ap_prepayment_discount_days', $_POST['ap_prepayment_discount_days'] ? $_POST['ap_prepayment_discount_days'] : AP_PREPAYMENT_DISCOUNT_DAYS, 'size="5" style="text-align:right"'); ?>
 	      <?php echo CD_02_14_DESC; ?>
 		  <?php echo html_input_field('ap_num_days_due', $_POST['ap_num_days_due'] ? $_POST['ap_num_days_due'] : AP_NUM_DAYS_DUE, 'size="5" style="text-align:right"'); ?>
-	      <?php echo CD_02_15_DESC; ?>
+	      <?php echo TEXT_DAYS; ?>
 		</td>
 	  </tr>
 	 </tbody>

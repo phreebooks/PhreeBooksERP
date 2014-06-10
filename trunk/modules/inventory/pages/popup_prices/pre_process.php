@@ -25,18 +25,18 @@ $sku   = $_GET['sku'];
 $type  = isset($_GET['type']) ? $_GET['type'] : 'c';
 $rowId = $_GET['rowId'];
 // retrieve some inventory item details
-$inventory_details = $db->Execute("select id, sku, description_short, item_cost, full_price, item_weight 
+$inventory_details = $db->Execute("select id, sku, description_short, item_cost, full_price, item_weight
 	 from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
 $id = $inventory_details->fields['id'];
 
 if ($id) { // then the sku was valid, get item information, cost and full price
-  $sql = "select id, sheet_name, revision, default_sheet, default_levels from " . TABLE_PRICE_SHEETS . " 
+  $sql = "select id, sheet_name, revision, default_sheet, default_levels from " . TABLE_PRICE_SHEETS . "
 	where inactive = '0' and type = '" . $type . "' and
-	(expiration_date is null or expiration_date = '0000-00-00' or expiration_date >= '" . date('Y-m-d') . "') 
+	(expiration_date is null or expiration_date = '0000-00-00' or expiration_date >= '" . date('Y-m-d') . "')
 	order by sheet_name";
   $price_sheets = $db->Execute($sql);
   // retrieve special pricing for this inventory item
-  $result = $db->Execute("select price_sheet_id, price_levels 
+  $result = $db->Execute("select price_sheet_id, price_levels
 	from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = " . $id);
   $special_prices = array();
   while (!$result->EOF) {
@@ -59,5 +59,5 @@ switch ($_REQUEST['action']) {
 $include_header   = false;
 $include_footer   = false;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', $type == 'v' ? BOX_PURCHASE_PRICE_SHEETS : BOX_SALES_PRICE_SHEETS);
+define('PAGE_TITLE', $type == 'v' ? TEXT_VENDOR_PRICE_SHEETS : TEXT_CUSTOMER_PRICE_SHEETS);
 ?>

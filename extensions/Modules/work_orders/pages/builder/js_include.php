@@ -22,7 +22,7 @@
 <!--
 // pass some php variables
 var image_delete_text = '<?php echo TEXT_DELETE; ?>';
-var image_delete_msg  = '<?php echo WORK_ORDER_MSG_DELETE_WO; ?>';
+var image_delete_msg  = '<?php echo TEXT_DELETE_ENTRY; ?>';
 var text_sku          = '<?php echo TEXT_SKU; ?>';
 var text_search       = '<?php echo TEXT_SEARCH; ?>';
 
@@ -90,7 +90,7 @@ function copyItem(id) {
 		if (title){
 			return location.href = 'index.php?module=work_orders&page=builder&action=copy&cID='+id+'&title='+title;
 		}
-		return false;  
+		return false;
 	});
 }
 
@@ -122,14 +122,14 @@ function addTaskRow() {
   for (var i=0; i<cell.length; i++) {
     newCell = newRow.insertCell(-1);
 	newCell.innerHTML = cell[i];
-    newCell.setAttribute('align', 'center'); 
+    newCell.setAttribute('align', 'center');
   }
   setField('task_'+rowCnt, text_search);
   return rowCnt;
 }
 
 function moveUpTaskRow(rowCnt) {
-  if (rowCnt < 2) return; 
+  if (rowCnt < 2) return;
   var id   = document.getElementById('task_id_'+rowCnt).value;
   var task = document.getElementById('task_'+rowCnt).value;
   var desc = document.getElementById('desc_'+rowCnt).value;
@@ -146,7 +146,7 @@ function moveUpTaskRow(rowCnt) {
 }
 
 function moveDownTaskRow(rowCnt) {
-  if (rowCnt > (document.getElementById('wo_table').rows.length-2)) return; 
+  if (rowCnt > (document.getElementById('wo_table').rows.length-2)) return;
   var id   = document.getElementById('task_id_'+rowCnt).value;
   var task = document.getElementById('task_'+rowCnt).value;
   var desc = document.getElementById('desc_'+rowCnt).value;
@@ -185,7 +185,7 @@ function removeTaskRow(delRowCnt) {
 	setField('task_'+i, text_search);
   }
   document.getElementById('wo_table').deleteRow(-1);
-} 
+}
 
 // -->
 </script>

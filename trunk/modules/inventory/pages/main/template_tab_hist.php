@@ -102,7 +102,7 @@
 		<?php }?>
 		<table class="ui-widget" style="border-collapse:collapse;width:100%">
 		 <thead class="ui-widget-header">
-		  <tr><th colspan="4"><?php echo TEXT_AVERAGE_USE; ?></th></tr>
+		  <tr><th colspan="4"><?php echo TEXT_AVERAGE_USAGE_EXCLUDING_THIS_MONTH; ?></th></tr>
 		  <tr>
 		    <th width="25%"><?php echo TEXT_LAST_MONTH; ?></th>
 		    <th width="25%"><?php echo TEXT_3_MONTHS; ?></th>

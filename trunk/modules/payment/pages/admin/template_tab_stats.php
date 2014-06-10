@@ -27,7 +27,7 @@
     echo "      <thead>\n";
     echo "        <tr>\n";
 	echo "          <th>" . TEXT_TABLE . "</th>\n";
-	echo "          <th>" . TEXT_ENGINE . "</th>\n";
+	echo "          <th>" . TEXT_DB_ENGINE . "</th>\n";
 	echo "          <th>" . TEXT_NUMBER_OF_ROWS . "</th>\n";
 	echo "          <th>" . TEXT_COLLATION . "</th>\n";
 	echo "          <th>" . TEXT_SIZE . "</th>\n";

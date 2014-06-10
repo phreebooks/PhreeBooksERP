@@ -16,5 +16,5 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/audit/language/en_us/menu.php
 //
-define('BOX_AUDIT_MODULE','Audit / export xaf');
+define('TEXT_AUDIT_EXPORT_XAF','Audit / export xaf');
 ?>

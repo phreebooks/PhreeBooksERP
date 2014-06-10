@@ -21,7 +21,7 @@
 ?>
 <div title="<?php echo TEXT_PAYMENT;?>" id="tab_payment">
   <fieldset>
-    <legend><?php echo ACT_CATEGORY_P_ADDRESS; ?></legend>
+    <legend><?php echo TEXT_CREDIT_CARD_PAYMENT_INFORMATION; ?></legend>
     <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto;">
      <tbody id="pmt_table" class="ui-widget-content">
 <?php
@@ -69,12 +69,12 @@
 		<td><?php echo html_input_field('payment_cc_number', $cInfo->payment_cc_number, 'size="20" maxlength="19"'); ?></td>
 	  </tr>
 	  <tr>
-	    <td align="right"><?php echo ACT_PAYMENT_CREDIT_CARD_EXPIRES; ?></td>
+	    <td align="right"><?php echo TEXT_CREDIT_CARD_EXPIRATION_DATE; ?></td>
 		<td><?php echo html_pull_down_menu('payment_exp_month', $expires_month, $cInfo->payment_exp_month) . '&nbsp;' .
 		    		   html_pull_down_menu('payment_exp_year', $expires_year, $cInfo->payment_exp_year); ?></td>
 	  </tr>
 	  <tr>
-	    <td align="right"><?php echo ACT_PAYMENT_CREDIT_CARD_CVV2; ?></td>
+	    <td align="right"><?php echo TEXT_SECURITY_CODE; ?></td>
 		<td><?php echo html_input_field('payment_cc_cvv2', $cInfo->payment_cc_cvv2, 'size="5" maxlength="4"'); ?></td>
 	  </tr>
 	 </tbody>

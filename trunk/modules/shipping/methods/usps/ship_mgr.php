@@ -21,7 +21,7 @@
 <table class="ui-widget" style="border-style:none;width:100%">
  <tbody class="ui-widget-content">
   <tr>
-	<td colspan="8"><?php echo TEXT_CREATE_SHIPMENT_ENTRY . ' => ' . html_button_field('close', TEXT_CREATE_SHIPMENT_ENTRY, 'onclick="window.open(\'index.php?module=shipping&amp;page=popup_tracking&amp;method=usps&amp;action=new\',\'popup_tracking\',\'width=550,height=350,resizable=1,scrollbars=1,top=150,left=200\')"') . chr(10); ?></td>
+	<td colspan="8"><?php echo TEXT_CREATE_A_SHIPMENT_ENTRY . ' => ' . html_button_field('close', TEXT_CREATE_A_SHIPMENT_ENTRY, 'onclick="window.open(\'index.php?module=shipping&amp;page=popup_tracking&amp;method=usps&amp;action=new\',\'popup_tracking\',\'width=550,height=350,resizable=1,scrollbars=1,top=150,left=200\')"') . chr(10); ?></td>
   </tr>
  </tbody>
 </table>

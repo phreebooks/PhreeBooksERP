@@ -9,7 +9,7 @@
 // Path: /modules/phreepos/language/pt_br/language.php
 
 define('BOX_PHREEPOS_RETURN','Ponto Venda - Devolução');
-define('PHREEPOS_PAYMENT_TITLE','Entrar Pagamento');
+define('TEXT_ENTER_PAYMENT','Entrar Pagamento');
 define('BNK_19_AMOUNT_PAID','Valor Recebido');
 define('TEXT_ADD_UPDATE','Inserir/Atualizar');
 define('TEXT_SUBTOTAL','Subtotal');
@@ -32,7 +32,7 @@ define('TEXT_PRINT_PREVIOUS','Imprimir Cupom Anterior');
 define('TEXT_AMOUNT_ORIGINAL_CURRENCY','Valor Original');
 define('TEXT_SALES','Vendas');
 define('PHREEPOS_HANDELING_CASH_DIFFERENCE','Lançada Diferença Caixa ');
-define('POS_HEADING_CLOSING','Fechamento Dia');
+define('TEXT_DAY_CLOSING','Fechamento Dia');
 define('NEW_BALANCE','Novo Balanço Caixa');
 define('TEXT_PAYMENTS_SHOULD_BE','Pagamentos Devem Ser');
 define('TEXT_PAYMENTS_RECEIVED','Pagamentos Recebidos');

@@ -104,7 +104,7 @@ switch ($_REQUEST['action']) {
 				}
 			}
 		    $db->transCommit();
-			$messageStack->add(TEXT_CONFIG_SAVED,'success');
+			$messageStack->add(TEXT_CONFIGURATION_VALUES_HAVE_BEEN_SAVED,'success');
 			$default_tab_id = 'company';
 		    break;
   		}catch (Exception $e){

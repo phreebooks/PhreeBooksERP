@@ -289,7 +289,7 @@ class currencies {
 		$output .= '    <td>' . html_input_field('symbol_right', htmlspecialchars($value['symbol_right'])) . '</td>' . chr(10);
 	    $output .= '  </tr>' . chr(10);
 		$output .= '  <tr>' . chr(10);
-		$output .= '    <td>' . SETUP_INFO_CURRENCY_DECIMAL_POINT . '</td>' . chr(10);
+		$output .= '    <td>' . TEXT_DECIMAL_POINT . ':</td>' . chr(10);
 		$output .= '    <td nowrap="nowrap">' . html_input_field('decimal_point', $value['decimal_point'], '', true) . '</td>' . chr(10);
 	    $output .= '  </tr>' . chr(10);
 		$output .= '  <tr>' . chr(10);
@@ -297,7 +297,7 @@ class currencies {
 		$output .= '    <td>' . html_input_field('thousands_point', $value['thousands_point']) . '</td>' . chr(10);
 	    $output .= '  </tr>' . chr(10);
 		$output .= '  <tr>' . chr(10);
-		$output .= '    <td>' . SETUP_INFO_CURRENCY_DECIMAL_PLACES . '</td>' . chr(10);
+		$output .= '    <td>' . TEXT_DECIMAL_PLACES . ':</td>' . chr(10);
 		$output .= '    <td>' . html_input_field('decimal_places', $value['decimal_places'], '', true) . '</td>' . chr(10);
 	    $output .= '  </tr>' . chr(10);
 		$output .= '  <tr>' . chr(10);

@@ -36,7 +36,7 @@ $toolbar->icon_list['print']['show']    = false;
 $toolbar->add_help('07.04.WO.04');
 echo $toolbar->build_toolbar();
 ?>
-<h1><?php echo HEADING_WORK_ORDER_MODULE_BUILD . (!$id ? '' : ' - ' . $id); ?></h1>
+<h1><?php echo TEXT_BUILD_AND_TRACK_WORK_ORDER . (!$id ? '' : ' - ' . $id); ?></h1>
   <div id="inv_image" title="<?php echo $sku; ?>">
     <?php if ($image) echo html_image(DIR_WS_MY_FILES . $_SESSION['company'] . '/inventory/images/' . $image, '', 600) . chr(10);
 			else echo TEXT_NO_IMAGE; ?>

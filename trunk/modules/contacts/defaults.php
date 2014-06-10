@@ -29,7 +29,7 @@ $employee_types = array(
 $project_cost_types = array(
  'LBR' => TEXT_LABOR,
  'MAT' => TEXT_MATERIALS,
- 'CNT' => COST_TYPE_CNT,
+ 'CNT' => TEXT_CONTRACTORS,
  'EQT' => COST_TYPE_EQT,
  'OTH' => TEXT_OTHER,
 );

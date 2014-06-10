@@ -73,7 +73,7 @@ $fields->set_fields_to_display($asset_type);
 	  <td><?php echo TEXT_ASSET_TYPE; ?></td>
 	  <td><?php echo html_hidden_field('asset_type', $cInfo->asset_type);
 		echo html_input_field('inv_type_desc', $assets_types[$cInfo->asset_type], 'readonly="readonly"', false); ?> </td>
-	  <td><?php echo ASSETS_ENTRY_IMAGE_PATH; ?></td>
+	  <td><?php echo TEXT_IMAGE_RELATIVE_PATH; ?></td>
 	</tr>
 	<tr>
 	  <td><?php echo TEXT_ORIGINAL_COST; ?></td>
@@ -97,19 +97,19 @@ $fields->set_fields_to_display($asset_type);
 	  <td colspan="3"><?php echo html_textarea_field('description_long', 75, 3, $cInfo->description_long, '', $reinsert_value = true); ?></td>
 	</tr>
 	<tr>
-	  <td><?php echo ASSETS_ENTRY_ACCT_SALES; ?></td>
+	  <td><?php echo TEXT_GL_ASSET_ACCOUNT; ?></td>
 	  <td><?php echo html_pull_down_menu('account_asset', $gl_array_list, $cInfo->account_asset); ?></td>
 	  <td><?php echo TEXT_ASSET_PURCHASE_DATE; ?></td>
 	  <td><?php echo html_calendar_field($cal_date1); ?></td>
 	</tr>
 	<tr>
-	  <td><?php echo ASSETS_ENTRY_ACCT_INV; ?></td>
+	  <td><?php echo TEXT_GL_DEPRECIATION_ACCOUNT; ?></td>
 	  <td><?php echo html_pull_down_menu('account_depreciation', $gl_array_list, $cInfo->account_depreciation); ?></td>
 	  <td><?php echo ASSETS_DATE_LAST_UPDATE; ?></td>
 	  <td><?php echo html_calendar_field($cal_date2); ?></td>
 	</tr>
 	<tr>
-	  <td><?php echo ASSETS_ENTRY_ACCT_COS; ?></td>
+	  <td><?php echo TEXT_GL_MAINTENANCE_ACCOUNT; ?></td>
 	  <td><?php echo html_pull_down_menu('account_maintenance', $gl_array_list, $cInfo->account_maintenance); ?></td>
 	  <td><?php echo TEXT_ASSET_RETIRE_DATE; ?></td>
 	  <td><?php echo html_calendar_field($cal_date3); ?></td>
@@ -127,7 +127,7 @@ $fields->set_fields_to_display($asset_type);
      <tr><td colspan="3"><?php echo TEXT_SELECT_FILE_TO_ATTACH . ' ' . html_file_field('file_name'); ?></td></tr>
      <tr  class="ui-widget-header">
       <th><?php echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small'); ?></th>
-      <th><?php echo TEXT_FILENAME; ?></th>
+      <th><?php echo TEXT_FILE_NAME; ?></th>
       <th><?php echo TEXT_ACTION; ?></th>
      </tr>
 <?php

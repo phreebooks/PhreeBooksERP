@@ -39,7 +39,7 @@ echo $toolbar->build_toolbar();
 	  <td><?php echo html_input_field('asset_id', $asset_id, 'size="17" maxlength="16"'); ?></td>
     </tr>
     <tr>
-	  <td align="right"><?php echo ASSETS_ENTRY_ASSET_TYPE; ?></td>
+	  <td align="right"><?php echo TEXT_ENTER_THE_ASSET_TYPE; ?></td>
 	  <td><?php echo html_pull_down_menu('asset_type', gen_build_pull_down($assets_types), isset($asset_type) ? $asset_type : 'vh'); ?></td>
     </tr>
     <tr>

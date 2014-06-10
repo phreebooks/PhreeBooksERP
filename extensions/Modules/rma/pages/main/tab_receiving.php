@@ -24,7 +24,7 @@
 <table class="ui-widget" style="border-style:none;width:100%">
  <tbody class="ui-widget-content">
 	<tr>
-	  <td align="right"><?php echo TEXT_RECEIVE_DATE; ?></td>
+	  <td align="right"><?php echo TEXT_DATE_RECEIVED; ?></td>
 	  <td><?php echo html_calendar_field($cal_rcv); ?></td>
 	  <td align="right"><?php echo TEXT_RECEIVE_CARRIER; ?></td>
 	  <td><?php echo html_input_field('receive_carrier', $cInfo->receive_carrier); ?> </td>
@@ -53,11 +53,11 @@
           <th><?php echo TEXT_SKU; ?></th>
           <th><?php echo TEXT_DESCRIPTION; ?></th>
           <th><?php echo TEXT_DATE_MANUFACTURE; ?></th>
-          <th><?php echo TEXT_DATE_WARRANTY; ?></th>
+          <th><?php echo TEXT_DATE_WARRANTY_EXPIRES; ?></th>
         </tr>
 	  </thead>
 	 <tbody id="rcv_table" class="ui-widget-content">
-<?php 
+<?php
 if (sizeof($receive_details) > 0) {
 	for ($i=0; $i<count($receive_details); $i++) { ?>
 		<tr>

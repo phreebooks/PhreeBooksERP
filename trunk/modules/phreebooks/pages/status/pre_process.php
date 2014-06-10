@@ -105,7 +105,7 @@ switch (JOURNAL_ID) {
   case  7:	// Vendor Credit Memo Journal
 	define('POPUP_FORM_TYPE','vend:cm');
 	$heading_array['closed'] = TEXT_PAID;
-	$page_title = ORD_TEXT_7_WINDOW_TITLE;
+	$page_title = TEXT_VENDOR_CREDIT_MEMOS;
 	break;
   case  9:	// Sales Quote Journal
 	define('POPUP_FORM_TYPE','cust:quot');
@@ -126,7 +126,7 @@ switch (JOURNAL_ID) {
   case 13:	// Customer Credit Memo Journal
 	define('POPUP_FORM_TYPE','cust:cm');
 	$heading_array['closed'] = TEXT_PAID;
-	$page_title = ORD_TEXT_13_WINDOW_TITLE;
+	$page_title = TEXT_CUSTOMER_CREDIT_MEMOS;
 	break;
   case 18:	// Cash Receipts Journal
 	define('POPUP_FORM_TYPE','bnk:rcpt');

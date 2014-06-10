@@ -31,7 +31,7 @@ $toolbar->add_help('');
 echo $toolbar->build_toolbar();
 // Build the page
 ?>
-<h1><?php echo POPUP_BAR_CODE_TITLE; ?></h1>
+<h1><?php echo TEXT_BAR_CODE_ENTRY; ?></h1>
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
  <thead class="ui-widget-header">
   <tr><th colspan="2"><?php echo ORD_BAR_CODE_INTRO; ?></th></tr>

@@ -36,7 +36,7 @@ echo $toolbar->build_toolbar();
   <tr><th colspan="5"><?php echo TEXT_PAYMENT_TERMS; ?></th></tr>
  </thead>
  <tbody class="ui-widget-content">
-  <tr><td colspan="5"><?php echo TEXT_TERMS_DUE . ': ' . $new_data['terms_lang'] . ACT_TERMS_CREDIT_LIMIT . $currencies->format($new_data['credit_limit']); ?></td></tr>
+  <tr><td colspan="5"><?php echo TEXT_TERMS_DUE . ': ' . $new_data['terms_lang'] . TEXT_CREDIT_LIMIT . ': ' . $currencies->format($new_data['credit_limit']); ?></td></tr>
 <?php if ($new_data['past_due'] <> 0) { ?>
   <tr><td colspan="5"><?php echo TEXT_AMOUNT_PAST_DUE .': ' . $currencies->format($new_data['past_due']); ?></td></tr>
 <?php } ?>

@@ -47,8 +47,8 @@ $shipping_defaults['service_levels'] = array( // order determines sequence in pu
 );
 // Pickup Type Code - conforms to UPS standards per the XML specification
 $shipping_defaults['pickup_service'] = array(
-  '01' => SHIPPING_DAILY,
-  '03' => SHIPPING_CARRIER,
+  '01' => TEXT_DAILY_PICKUP,
+  '03' => TEXT_CARRIER_CUSTOMER_COUNTER,
   '06' => SHIPPING_ONE_TIME,
   '07' => SHIPPING_ON_CALL,
   '11' => SHIPPING_RETAIL,
@@ -69,10 +69,10 @@ $shipping_defaults['dimension_unit'] = array(
 // Package Type
 $shipping_defaults['package_type'] = array(
   '01' => SHIPPING_ENVENLOPE,
-  '02' => SHIPPING_CUST_SUPP,
-  '03' => SHIPPING_TUBE,
-  '04' => SHIPPING_PAK,
-  '21' => SHIPPING_BOX,
+  '02' => TEXT_CUSTOMER_SUPPLIED,
+  '03' => TEXT_CARRIER_TUBE,
+  '04' => TEXT_CARRIER_PAK,
+  '21' => TEXT_CARRIER_BOX,
   '24' => SHIPPING_25KG,
   '25' => SHIPPING_10KG,
 );
@@ -80,7 +80,7 @@ $shipping_defaults['package_type'] = array(
 $shipping_defaults['cod_funds_code'] = array(
   '0' => TEXT_CASH,
   '1' => TEXT_CHECK,
-  '2' => SHIPPING_CASHIERS,
+  '2' => TEXT_CASHIERS_CHECK,
   '3' => SHIPPING_MO,
   '4' => TEXT_ANY,
 );
@@ -94,9 +94,9 @@ $shipping_defaults['delivery_confirmation'] = array(
 );
 // Return label services
 $shipping_defaults['return_label'] = array(
-  '0' => SHIPPING_RET_CARRIER,
+  '0' => TEXT_CARRIER_RETURN_LABEL,
   '1' => SHIPPING_RET_LOCAL,
-  '2' => SHIPPING_RET_MAILS,
+  '2' => TEXT_CARRIER_PRINTS_AND_MAILS_RETURN_LABEL,
 );
 // Billing options
 $shipping_defaults['bill_options'] = array(

@@ -24,8 +24,8 @@
 var image_delete_text = '<?php echo TEXT_DELETE; ?>';
 var image_delete_msg  = '<?php echo GL_DELETE_GL_ROW; ?>';
 var text_acct_ID      = '<?php echo TEXT_GL_ACCOUNT; ?>';
-var text_increased    = '<?php echo TEXT_ACCOUNT_WILL_INCREASED; ?>';
-var text_decreased    = '<?php echo TEXT_ACCOUNT_WILL_DECREASED; ?>';
+var text_increased    = '<?php echo TEXT_ACCOUNT_WILL_BE_INCREASED; ?>';
+var text_decreased    = '<?php echo TEXT_ACCOUNT_WILL_BE_DECREASED; ?>';
 var journalID         = '<?php echo JOURNAL_ID; ?>';
 var securityLevel     = <?php echo $security_level; ?>;
 <?php echo js_calendar_init($cal_gl); ?>

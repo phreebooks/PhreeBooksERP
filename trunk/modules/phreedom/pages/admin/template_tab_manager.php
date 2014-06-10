@@ -30,23 +30,23 @@
 	    <td colspan="2"><?php echo SETUP_CO_MGR_COPY_HDR; ?></td>
 	  </tr>
 	  <tr>
-		<td><?php echo SETUP_CO_MGR_SRVR_NAME; ?></td>
+		<td><?php echo TEXT_DATABASE_SERVER; ?></td>
 		<td><?php echo html_input_field('db_server', $db_server ? $db_server : 'localhost', 'size="40"', true); ?></td>
 	  </tr>
 	  <tr>
-		<td><?php echo SETUP_CO_MGR_DB_NAME; ?></td>
+		<td><?php echo TEXT_DATABASE_NAME; ?></td>
 		<td><?php echo html_input_field('db_name', $db_name, '', true); ?></td>
 	  </tr>
 	  <tr>
-		<td><?php echo SETUP_CO_MGR_DB_USER; ?></td>
+		<td><?php echo TEXT_DATABASE_USER_NAME; ?></td>
 		<td><?php echo html_input_field('db_user', $db_user, '', true); ?></td>
 	  </tr>
 	  <tr>
-		<td><?php echo SETUP_CO_MGR_DB_PW; ?></td>
+		<td><?php echo TEXT_DATABASE_PASSWORD; ?></td>
 		<td><?php echo html_password_field('db_pw', '', true); ?></td>
 	  </tr>
 	  <tr>
-		<td><?php echo SETUP_CO_MGR_CO_NAME; ?></td>
+		<td><?php echo TEXT_COMPANY_FULL_NAME; ?></td>
 		<td><?php echo html_input_field('co_name', $co_name, 'size="50"', true); ?></td>
 	  </tr>
 	</table>
@@ -73,7 +73,7 @@
 	</table>
   </fieldset>
   <fieldset>
-  <legend><?php echo SETUP_CO_MGR_DEL_CO; ?></legend>
+  <legend><?php echo TEXT_DELETE_COMPANY; ?></legend>
     <table>
 	  <tr>
 	    <td colspan="3" style="color:red"><?php echo SETUP_CO_MGR_DELETE_CONFIRM; ?></td>

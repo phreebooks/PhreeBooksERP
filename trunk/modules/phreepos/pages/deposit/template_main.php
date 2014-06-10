@@ -145,11 +145,11 @@ echo '<br />' . html_pull_down_menu('bill_country_code', gen_get_countries(), $o
 	  <td align="right" valign="top">
 		<table border="0">
 		  <tr>
-			<td class="main" align="right"><?php echo BNK_ACCOUNT_BALANCE . '&nbsp;'; ?></td>
+			<td class="main" align="right"><?php echo TEXT_BALANCE_BEFORE_PAYMENTS . '&nbsp;'; ?></td>
 			<td class="main" align="right"><?php echo html_input_field('acct_balance', $currencies->format($acct_balance), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?></td>
 		  </tr>
 		  <tr>
-			<td class="main" align="right"><?php echo BNK_BALANCE_AFTER_CHECKS . '&nbsp;'; ?></td>
+			<td class="main" align="right"><?php echo TEXT_BALANCE_AFTER_PAYMENTS . '&nbsp;'; ?></td>
 			<td class="main" align="right"><?php echo html_input_field('end_balance', $currencies->format($acct_balance), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?></td>
 		  </tr>
 		</table>

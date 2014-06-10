@@ -82,7 +82,7 @@ echo $toolbar->build_toolbar();
 	  <div title="<?php echo $price_sheets->fields['sheet_name'] . ' (Rev. ' . $price_sheets->fields['revision'] . ')';?>" id="tab_<?php echo $price_sheets->fields['id']; ?>">
 <?php
 		$checked = isset($special_prices[$price_sheets->fields['id']]) ? false : true;
-		echo html_checkbox_field('def_' . $m, '1', $checked, '', $parameters = '') . '&nbsp;' . TEXT_USE_DEFAULT_PRICE_SHEET . '<br />';
+		echo html_checkbox_field('def_' . $m, '1', $checked, '', $parameters = '') . '&nbsp;' . TEXT_USE_DEFAULT_PRICE_SHEET_SETTINGS . '<br />';
 		echo html_hidden_field('id_' . $m, $price_sheets->fields['id']) . chr(10);
 		echo html_hidden_field('sheet_name_'.$m, $price_sheets->fields['sheet_name']) . chr(10);
 ?>

@@ -140,9 +140,9 @@ class firstdata extends \payment\classes\payment {
 			    'field' => html_input_field('firstdata_field_0', $this->field_0)),
 	    array(  'title' => TEXT_CREDIT_CARD_NUMBER . ' : ' ,
 		     	'field' => html_input_field('firstdata_field_1', $this->field_1)),
-	    array(	'title' => TEXT_CREDIT_CARD_EXPIRY_DATE . ' : ',
+	    array(	'title' => TEXT_CREDIT_CARD_EXPIRATION_DATE . ' : ',
 			    'field' => html_pull_down_menu('firstdata_field_2', $expires_month, $this->field_2) . '&nbsp;' . html_pull_down_menu('firstdata_field_3', $expires_year, $this->field_3)),
-		array ( 'title' => MODULE_PAYMENT_CC_TEXT_CVV,
+		array ( 'title' => TEXT_CVV_NUMBER,
 				'field' => html_input_field('firstdata_field_4', $this->field_4, 'size="4" maxlength="4"' . ' id="' . $this->id . '-cc-cvv"' ) . ' ' . '<a href="javascript:popupWindow(\'' . html_href_link(FILENAME_POPUP_CVV_HELP) . '\')">' . TEXT_MORE_INFO . '</a>',)
 	  ));
     return $selection;

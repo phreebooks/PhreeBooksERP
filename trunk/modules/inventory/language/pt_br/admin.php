@@ -8,7 +8,7 @@
 // +-----------------------------------------------------------------+
 // Path: /modules/inventory/language/pt_br/admin.php
 
-define('INV_TOOLS_IN_BALANCE','Seus saldos de inventário estão OK.');
+define('TEXT_YOUR_INVENTORY_BALANCES_ARE_OK','Seus saldos de inventário estão OK.');
 define('INV_TOOLS_STOCK_ROUNDING_ERROR','SKU: %s -> Estoque indica saldo %s mas é menos do que a precisão exigida. Por favor, corrija seus saldos de estoque, o saldo será arredondado para %s.');
 define('INV_TOOLS_BALANCE_CORRECTED','SKU: %s -> O saldo de estoque foi alterado para %s.');
 define('INV_TOOLS_OUT_OF_BALANCE','SKU: %s -> Estoque indica saldo de %s mas Histórico lista somente %s disponível');
@@ -19,15 +19,15 @@ define('INV_TOOLS_REPAIR_CONFIRM','Tem certeza de que quer corrigir os saldos de
 define('INV_TOOLS_REPAIR_TEST','Testar Saldos Inventário com Histórico');
 define('INV_TOOLS_VALIDATE_INV_DESC','Esta operação testa para assegurar que a quantidade no inventário listada na tabela de inventário e mostrada nas telas de inventário são iguais às quantidades no histórico de inventário calculadas pelo PhreeBooks quando há movimentos de inventário. Os únicos itens testados são aqueles que são rastreados no cálculo de custo de mercadoria vendida. Corrigir saldos de inventário corrigirá a quantidade em estoque e não alterará o histórico de inventário. ');
 define('INV_TOOLS_AUTDIT_LOG_SO_PO','Inv Ferramentas - Corrigir OV/OC Qtd (%s)');
-define('INV_TOOLS_VALIDATE_INVENTORY','Validar Quantidade Mostrada Saldo Inventário');
+define('TEXT_VALIDATE_INVENTORY_DISPLAYED_STOCK','Validar Quantidade Mostrada Saldo Inventário');
 define('INV_TOOLS_SO_PO_RESULT','Finalizado processamento quantidades ordens no Inventário. O número total de itens processados foi %s. O número de registros com erro foi %s.');
 define('INV_TOOLS_PO_ERROR','SKU: %s tinha uma quantidade na Ordem de Compra de %s e deveria ser %s. O saldo na tabela de inventário foi corrigido.');
 define('INV_TOOLS_SO_ERROR','SKU: %s tinha uma quantidade na Ordem de Venda de %s e deveria ser %s. O saldo na tabela de inventário foi corrigido.');
 define('INV_TOOLS_REPAIR_SO_PO','Testar e Corrigir Quantidade Inventário nos Valores de Ordens');
-define('INV_TOOLS_BTN_SO_PO_FIX','Inciar Testar e Corrigir');
+define('TEXT_BEGIN_TEST_AND_REPAIR','Inciar Testar e Corrigir');
 define('INV_TOOLS_VALIDATE_SO_PO_DESC','Esta operação testa para assegurar que a quantidade no inventário da OC e a quantidade da OV batem com os lançamentos no diário. Os valores calculados nos lançamentos do diário sobrescrevem os valores da tabela de inventário.');
 define('CD_05_75_DESC','Quando habilitado, PhreeBooks atualizará o custo do item na tabela de inventário ou com o preço da OC ou com o preço Compra/Recepção. Útil para compras rápidas e atualização de preços a partir da tela da OC sem necessidade de atualizar as tabelas de inventário primeiro.');
-define('INV_TOOLS_VALIDATE_SO_PO','Validar Quantidade Inventário nos Valores da OC');
+define('TEXT_VALIDATE_INVENTORY_QUANTITY_ON_ORDER_VALUES','Validar Quantidade Inventário nos Valores da OC');
 define('CD_05_70_DESC','Estabelece o número de caracteres esperados quando leitores de código de barra são utilizados. PhreeBooks só realiza a busca quando o número de caracteres foi atingido. Valores típicos são 12 ou 13 caracteres.');
 define('CD_05_65_DESC','Quando habilitado, PhreeBooks procura por um comprimento de SKU na ordem igual ao comprimento do código de barra e quando este comprimento é encontrado, tenta encontrar um item no inventário. Isto permite a entrada mais rápida de itens quando leitores de código de barra são utilizados.');
 define('CD_05_60_DESC','Permite uma chamada ajax preencher possíveis opções a medida que dados são digitados no campo SKU. Esta função é importante quando os SKUs são conhecidos e agiliza o preenchimento de ordens de compras. Pode tornar lentas entradas de SKU quando leitores de código de barra são utilizados.');
@@ -45,7 +45,7 @@ define('TEXT_ASSEMBLIES','Montagens');
 define('TEXT_SERIALIZED','Serializado');
 define('TEXT_COST_METHOD','Método Custo');
 define('TEXT_STOCK_ITEMS','Estoque');
-define('TEXT_COGS_ACCOUNT','Conta Custo Vendas');
+define('TEXT_COST_OF_SALES_ACCOUNT','Conta Custo Vendas');
 define('TEXT_INVENTORY_ACCOUNT','Conta Inventário');
 define('TEXT_INVENTORY_TYPES','Tipo Inventário');
 define('TEXT_SALES_ACCOUNT','Conta Vendas');

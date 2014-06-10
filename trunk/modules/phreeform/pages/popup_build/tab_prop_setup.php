@@ -49,7 +49,7 @@
 	  <td><?php echo html_pull_down_menu('setprintedfield', $kFields, $report->setprintedfield, 'onclick="updateFieldList(this)"'); ?></td>
 	</tr>
 	<tr>
-	  <td><?php echo TEXT_PAGE_BREAK_FIELD; ?></td>
+	  <td><?php echo TEXT_FORM_PAGE_BREAK_FIELD; ?></td>
 	  <td><?php echo html_pull_down_menu('formbreakfield', $kFields, $report->formbreakfield, 'onclick="updateFieldList(this)"'); ?></td>
 	</tr>
 <?php } ?>

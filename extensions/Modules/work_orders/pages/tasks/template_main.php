@@ -96,7 +96,7 @@ echo $toolbar->build_toolbar($add_search = true);
 	  // first pull in any extra buttons, this is dynamic since each row can have different buttons
 	  if (function_exists('add_extra_action_bar_buttons')) echo add_extra_action_bar_buttons($query_result->fields);
 	  if ($security_level > 1) echo html_icon('actions/edit-find-replace.png', TEXT_EDIT, 'small', 'onclick="editTask(' . $query_result->fields['id'] . ')"') . chr(10);
-	  if ($security_level > 3) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . WORK_ORDER_MSG_DELETE_WO . '\')) deleteItem(' . $query_result->fields['id'] . ')"') . chr(10);
+	  if ($security_level > 3) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . TEXT_DELETE_ENTRY . '\')) deleteItem(' . $query_result->fields['id'] . ')"') . chr(10);
 ?>
 	</td>
   </tr>

@@ -72,7 +72,7 @@ if (defined('MODULE_PHREEPOS_STATUS')) {
   );
   $mainmenu["banking"]['submenu']['phreepos']['submenu']["phreepos_closing"] = array(
   	'order' 	  => 54,
-  	'text'        => TEXT_CLOSING_POS/POP,
+  	'text'        => TEXT_CLOSING_POS_OR_POP,
     'security_id' => SECURITY_ID_POS_CLOSING,
     'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreepos&amp;page=closing', 'SSL'),
     'show_in_users_settings' => true,

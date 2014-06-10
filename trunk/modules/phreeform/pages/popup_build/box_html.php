@@ -191,7 +191,7 @@ function box_build($properties, $i) {
       $output .= '    </td>'  . nl;
       $output .= '  </tr>'  . nl;
       $output .= '  <tr>'   . nl;
-      $output .= '    <th colspan="2">' . PHREEFORM_IMAGESEL . '</th>' . nl;
+      $output .= '    <th colspan="2">' . TEXT_IMAGE_SELECTION . '</th>' . nl;
       $output .= '  </tr>'  . nl;
       $output .= ' </thead><tbody class="ui-widget-content">' . nl;
       $output .= '  <tr>'   . nl;

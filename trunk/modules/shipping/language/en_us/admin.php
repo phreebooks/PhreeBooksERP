@@ -30,7 +30,7 @@ define('CD_10_04_DESC', 'Default residential ship box (unchecked - Commercial, c
 define('CD_10_05_DESC', 'Default package type to use for shipping');
 define('CD_10_06_DESC', 'Default type of pickup service for your package service');
 define('CD_10_07_DESC', 'Default package dimensions to use for a standard shipment (in units specified above).');
-define('CD_10_10_DESC', 'Additional handling charge checkbox');
+define('TEXT_ADDITIONAL_HANDLING_CHARGE_CHECKBOX', 'Additional handling charge checkbox');
 define('CD_10_14_DESC', 'Shipment insurance selection option.');
 define('CD_10_20_DESC', 'Allow heavy shipments to be broken down to use small package service');
 define('CD_10_26_DESC', 'Delivery confirmation checkbox');

@@ -34,7 +34,7 @@ define ('CD_10_04_DESC', 'Default Wohnschiff Box (ungeprüft - Kommerzielle, gep
 define ('CD_10_05_DESC', 'Default-Paket Typ für den Versand verwenden');
 define ('CD_10_06_DESC', 'Default Art der Pick-up Service für Ihr Paket Dienst');
 define ('CD_10_07_DESC', 'Default-Paket Dimensionen für ein Standard-Versand verwenden (in Einheiten oben angegebenen ).');
-define ('CD_10_10_DESC', 'Zusätzliche Bearbeitungsgebühr Checkbox');
+define ('TEXT_ADDITIONAL_HANDLING_CHARGE_CHECKBOX', 'Zusätzliche Bearbeitungsgebühr Checkbox');
 define ('CD_10_14_DESC', 'Versicherung der Sendung Auswahlmöglichkeit.');
 define ('CD_10_20_DESC', 'Erlaube schwere Sendungen zu untergliedern, um kleine Paket-Dienst verwenden');
 define ('CD_10_26_DESC', 'Lieferbestätigung Checkbox');

@@ -9,6 +9,6 @@
 // Path: /modules/zencart/language/nl_nl/menu.php
 
 define('TEXT_ZENCART','ZenCart');
-define('BOX_ZENCART_MODULE','ZenCart Interface');
+define('TEXT_ZENCART_INTERFACE','ZenCart Interface');
 
 ?>

@@ -29,7 +29,7 @@ $toolbar->icon_list['restore'] = array(
   'show'   => true,
   'icon'   => 'devices/drive-optical.png',
   'params' => 'onclick="if (confirm(\'' . GEN_BACKUP_WARNING . '\')) submitToDo(\'restore\')"',
-  'text'   => BOX_HEADING_RESTORE,
+  'text'   => TEXT_COMPANY_RESTORE,
   'order'  => 10,
 );
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
@@ -62,7 +62,7 @@ echo $toolbar->build_toolbar();
 <legend><?php echo TEXT_COMPANY_BACKUP; ?></legend>
 <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto;">
  <thead class="ui-widget-header">
-  <tr><th colspan="3"><?php echo GEN_BACKUP_COMP_TYPE; ?></th></tr>
+  <tr><th colspan="3"><?php echo TEXT_COMPRESSION_TYPE; ?></th></tr>
  </thead>
  <tbody class="ui-widget-content">
   <tr><td colspan="3"><?php echo GEN_BACKUP_GEN_INFO; ?></td></tr>
@@ -73,7 +73,7 @@ echo $toolbar->build_toolbar();
   </tr>
   <tr class="ui-widget-header"><th colspan="3"><?php echo TEXT_OPTIONS; ?></th></tr>
   <tr>
-	<td colspan="3"><?php echo html_radio_field('dl_type', 'file', true, '', '') . GEN_BACKUP_DB_ONLY; ?></td>
+	<td colspan="3"><?php echo html_radio_field('dl_type', 'file', true, '', '') . TEXT_DATABASE_ONLY; ?></td>
   </tr>
   <tr>
 	<td colspan="3"><?php echo html_radio_field('dl_type', 'dir', false, '', '') . GEN_BACKUP_FULL; ?></td>

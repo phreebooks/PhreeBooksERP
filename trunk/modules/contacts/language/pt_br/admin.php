@@ -47,7 +47,7 @@ define('TEXT_VENDOR','Fornecedor');
 define('TEXT_CUSTOMER','Cliente');
 define('TEXT_OTHER','Outros');
 define('COST_TYPE_EQT','Equipamento');
-define('COST_TYPE_CNT','Empreiteiros');
+define('TEXT_CONTRACTORS','Empreiteiros');
 define('TEXT_MATERIALS','Materiais');
 define('COST_TYPE_LBR','Mão Obra');
 define('TEXT_TERMS_TO_LANGUAGE','Condições da Linguagem');

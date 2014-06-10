@@ -23,7 +23,7 @@ define('MENU_HEADING_PHREEPOS', 'Point of Sale');
 // Menu Titles
 define('BOX_PHREEPOS', 'Point of Sale');
 define('BOX_POS_MGR', 'POS/POP Manager');
-define('TEXT_CLOSING_POS/POP', 'Closing POS/POP');
+define('TEXT_CLOSING_POS_OR_POP', 'Closing POS or POP');
 define('BOX_CUSTOMER_DEPOSITS', 'Customer Deposits');
 define('TEXT_VENDOR_DEPOSITS', 'Vendor Deposits');
 

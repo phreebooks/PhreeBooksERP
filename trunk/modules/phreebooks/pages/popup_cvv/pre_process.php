@@ -35,6 +35,6 @@ switch ($_REQUEST['action']) {
 $include_header = false; // include header flag
 $include_footer = false; // include footer flag
 $include_template = 'template_main.php'; // include display template (required)
-define('PAGE_TITLE', HEADING_CVV);
+define('PAGE_TITLE', TEXT_WHAT_IS_CVV. '?');
 
 ?>

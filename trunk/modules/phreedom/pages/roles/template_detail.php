@@ -57,7 +57,7 @@ echo $toolbar->build_toolbar();
    </tr>
    <tr>
     <td><?php echo TEXT_RESTRICT_PERIOD . ' ' . html_checkbox_field('restrict_period', '1', ((isset($_POST['restrict_period']) && $_POST['restrict_period']) || $uInfo->restrict_period) ? true : false); ?></td>
-    <td><?php echo TEXT_DEFAULT_AP_ACCOUNT     . ' ' . html_pull_down_menu('def_ap_acct', gen_coa_pull_down(), isset($_POST['restrict_period']) ? $_POST['def_ap_acct'] : $uInfo->def_ap_acct, ''); ?></td>
+    <td><?php echo TEXT_DEFAULT_PAYABLES_ACCOUNT     . ' ' . html_pull_down_menu('def_ap_acct', gen_coa_pull_down(), isset($_POST['restrict_period']) ? $_POST['def_ap_acct'] : $uInfo->def_ap_acct, ''); ?></td>
     <td><?php echo '&nbsp;'; ?></td>
    </tr>
    </tbody>

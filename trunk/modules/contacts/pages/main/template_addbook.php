@@ -31,7 +31,7 @@
   }
   // *********************** BILLING/BRANCH ADDRESSES  *********************************
     echo '<fieldset>';
-    echo '  <legend>' . ACT_CATEGORY_B_ADDRESS . '</legend>'; 
+    echo '  <legend>' . TEXT_BILLING_ADDRESSES . '</legend>';
     echo '  <table id="'.$type.'b_address_form" class="ui-widget" style="border-collapse:collapse;width:100%;">';
     echo '    <tr><td>' . ACT_BILLING_MESSAGE . '</td></tr>';
     echo draw_address_fields($cInfo, $type.'b', true);

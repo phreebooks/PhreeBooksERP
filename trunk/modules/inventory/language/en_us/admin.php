@@ -28,7 +28,7 @@ define('TEXT_DEFAULT_GL_ACCOUNTS','Default GL Accounts');
 define('TEXT_INVENTORY_TYPES','Inventory Type');
 define('TEXT_SALES_ACCOUNT','Sales GL Account');
 define('TEXT_INVENTORY_ACCOUNT','Inventory GL Account');
-define('TEXT_COGS_ACCOUNT','Cost of Sales Account');
+define('TEXT_COST_OF_SALES_ACCOUNT','Cost of Sales Account');
 define('TEXT_COST_METHOD','Cost Method');
 define('TEXT_STOCK_ITEMS','Stock');
 define('TEXT_MS_ITEMS','Master Stock');
@@ -51,15 +51,15 @@ define('CD_05_65_DESC', 'When enabled, PhreeBooks looks for a SKU length in the 
 define('CD_05_70_DESC', 'Sets the number of characters to expect when reading inventory bar code values. PhreeBooks only searches when the number of characters has been reached. Typical values are 12 and 13 characters.');
 define('CD_05_75_DESC', 'When enabled, PhreeBooks will update the item cost in the inventory table with either the PO price or Purchase/Receive price. Usefule for on the fly PO/Purchases and updating prices from the order screen without having to update the inventory tables first.');
 
-define('INV_TOOLS_VALIDATE_SO_PO','Validate Inventory Quantity on Order Values');
+define('TEXT_VALIDATE_INVENTORY_QUANTITY_ON_ORDER_VALUES','Validate Inventory Quantity on Order Values');
 define('INV_TOOLS_VALIDATE_SO_PO_DESC','This operation tests to make sure your inventory quantity on Purchase Order and quantity of Sales Order match with the journal entries. The calculated values from the journal entries override the value in the inventory table.');
 define('INV_TOOLS_REPAIR_SO_PO','Test and Repair Inventory Quantity on Order Values');
-define('INV_TOOLS_BTN_SO_PO_FIX','Begin Test and Repair');
+define('TEXT_BEGIN_TEST_AND_REPAIR','Begin Test and Repair');
 define('INV_TOOLS_PO_ERROR','SKU: %s had a quantity on Purchase Order of %s and should be %s. The inventory table balance was fixed.');
 define('INV_TOOLS_SO_ERROR','SKU: %s had a quantity on Sales Order of %s and should be %s. The inventory table balance was fixed.');
 define('INV_TOOLS_SO_PO_RESULT','Finished processing Inventory order quantities. The total number of items processed was %s. The number of records with errors was %s.');
 define('INV_TOOLS_AUTDIT_LOG_SO_PO','Inv Tools - Repair SO/PO Qty (%s)');
-define('INV_TOOLS_VALIDATE_INVENTORY','Validate Inventory Displayed Stock');
+define('TEXT_VALIDATE_INVENTORY_DISPLAYED_STOCK','Validate Inventory Displayed Stock');
 define('INV_TOOLS_VALIDATE_INV_DESC','This operation tests to make sure your inventory quantities listed in the inventory database and displayed in the inventory screens are the same as the quantities in the inventory history database as calculated by PhreeBooks when inventory movements occur. The only items tested are the ones that are tracked in the cost of goods sold calculation. Repairing inventory balances will correct the quantity in stock and leave the inventory history data alone. ');
 define('INV_TOOLS_REPAIR_TEST','Test Inventory Balances with COGS History');
 define('INV_TOOLS_REPAIR_FIX','Repair Inventory Balances with COGS History');
@@ -67,7 +67,7 @@ define('INV_TOOLS_REPAIR_CONFIRM','Are you sure you want to repair the inventory
 define('TEXT_VERIFY_STOCK_BALANCES','Verify Stock Balances');
 define('INV_TOOLS_BTN_REPAIR','Sync Qty in Stock');
 define('INV_TOOLS_OUT_OF_BALANCE','SKU: %s -> stock indicates %s on hand but COGS history list %s available');
-define('INV_TOOLS_IN_BALANCE','Your inventory balances are OK.');
+define('TEXT_YOUR_INVENTORY_BALANCES_ARE_OK','Your inventory balances are OK.');
 define('INV_TOOLS_STOCK_ROUNDING_ERROR','SKU: %s -> Stock indicates %s on hand but is less than your precision. Please repair your inventory balances, the stock on hand will be rounded to %s.');
 define('INV_TOOLS_BALANCE_CORRECTED','SKU: %s -> The inventory stock on hand has been changed to %s.');
 define('TEXT_NEXT_SKU','Next SKU');

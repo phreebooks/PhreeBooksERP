@@ -54,14 +54,14 @@ switch (JOURNAL_ID) {
   case 18:	// Cash Receipts Journal
 	define('GL_TYPE','pmt');
 	define('POPUP_FORM_TYPE','bnk:rcpt');
-	define('AUDIT_LOG_DESC',ORD_TEXT_18_WINDOW_TITLE);
-	define('AUDIT_LOG_DEL_DESC',ORD_TEXT_18_WINDOW_TITLE . '-' . TEXT_DELETE);
+	define('AUDIT_LOG_DESC',TEXT_CASH_RECEIPTS);
+	define('AUDIT_LOG_DEL_DESC',TEXT_CASH_RECEIPTS . '-' . TEXT_DELETE);
 	break;
   case 20:	// Cash Disbursements Journal
 	define('GL_TYPE','chk');
 	define('POPUP_FORM_TYPE','bnk:chk');
-	define('AUDIT_LOG_DESC',ORD_TEXT_20_WINDOW_TITLE);
-	define('AUDIT_LOG_DEL_DESC',ORD_TEXT_20_WINDOW_TITLE . '-' . TEXT_DELETE);
+	define('AUDIT_LOG_DESC',TEXT_CASH_DISTRIBUTIONS);
+	define('AUDIT_LOG_DEL_DESC',TEXT_CASH_DISTRIBUTIONS . '-' . TEXT_DELETE);
 	break;
   default: // this should never happen
 	throw new \core\classes\userException('No valid journal id found (module bills), Journal ID needs to be passed to this script to identify the action');

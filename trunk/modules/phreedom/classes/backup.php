@@ -141,7 +141,7 @@ class backup {
 		  	$this->backup_mime = 'application/x-tar';
 		  	exec("cd " . $this->source_dir . "; nice -n 19 tar -jcf " . $this->dest_dir . $this->dest_file . " " . $this->source_dir . " 2>&1", $output, $res);
 		}
-		if ($res > 0) throw new \core\classes\userException(ERROR_COMPRESSION_FAILED . implode(": ", $output));
+		if ($res > 0) throw new \core\classes\userException(TEXT_BACKUP_COMPRESSION_FAILED .': '. implode(": ", $output));
 	}
 
   	function download($path, $filename, $save_source = false) {

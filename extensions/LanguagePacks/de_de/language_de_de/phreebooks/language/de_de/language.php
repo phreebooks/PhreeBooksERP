@@ -30,7 +30,7 @@ define ('GENERAL_JOURNAL_20_V_DESC', 'Hersteller Zahlung Eintrag');
 define ('GENERAL_JOURNAL_20_C_DESC', 'Customer Payment Eintrag');
 define ('BNK_DEP_20_V_WINDOW_TITLE', BOX_BANKING_VENDOR_DEPOSITS);
 define ('BNK_DEP_18_C_WINDOW_TITLE', BOX_BANKING_CUSTOMER_DEPOSITS);
-define ('POPUP_BAR_CODE_TITLE', 'Bar Code-Eingabe');
+define ('TEXT_BAR_CODE_ENTRY', 'Bar Code-Eingabe');
 define ('HEADING_TITLE_SEARCH_INFORMATION', 'Suche nach Journal Entries');
 define ('ORD_RECUR_WINDOW_TITLE', 'Rezidiven Eigenschaften');
 
@@ -46,8 +46,8 @@ define ('TEXT_PAYMENT_ID', 'Die Zahlung Ref #');
 define ('TEXT_WITHDRAWAL', 'Rücktritt');
 define ('TEXT_SAVE_PAYMENT_INFO', 'Save Zahlungsinformationen');
 define ('ORD_ADD_UPDATE', 'Hinzufügen / Aktualisieren');
-define ('ORD_AP_ACCOUNT', 'A / P-Konto ');
-define ('ORD_AR_ACCOUNT', 'A / R-Konto ');
+define ('TEXT_AP_ACCOUNT', 'A / P-Konto ');
+define ('TEXT_AR_ACCOUNT', 'A / R-Konto ');
 define ('ORD_CASH_ACCOUNT', 'Cash Konto ');
 define ('ORD_CLOSED', 'Closed');
 define ('ORD_COPY_BILL', 'Kopieren -->');
@@ -90,15 +90,15 @@ define ('TEXT_CONVERT_TO_SALES_ORDER', 'Convert to Kundenauftrag');
 define ('TEXT_CONVERT_TO_PURCHASE_ORDER_SHORT', 'Auto Generate Bestellung');
 define ('TEXT_TRANSACTION_AMOUNT', 'Transaktionsbetrag');
 define ('TEXT_REFERENCE_NUMBER', 'Rechnung / Bestellnummer');
-define ('TEXT_CUST_VEND_ACCT', 'Debitor / Kreditor Kontakt');
+define ('TEXT_CUSTOMER_OR_VENDOR_CONTACT', 'Debitor / Kreditor Kontakt');
 define ('TEXT_INVENTORY_ITEM', 'Inventory Item');
 define ('TEXT_GENERAL_LEDGER_ACCOUNT', 'Hauptbuch Konto');
 define ('TEXT_JOURNAL_RECORD_ID', 'Journal Record-ID');
 define ('TEXT_NOT_SPECIFIED', 'Nicht angegeben');
 define ('TEXT_COST_OF_GOODS_SOLD', 'Cost of Goods Sold');
 define ('TEXT_TOTALS', 'Gesamt');
-define ('TEXT_ACCOUNT_WILL_INCREASED', 'Konto erhöht werden');
-define ('TEXT_ACCOUNT_WILL_DECREASED', 'Konto wird verringert');
+define ('TEXT_ACCOUNT_WILL_BE_INCREASED', 'Konto erhöht werden');
+define ('TEXT_ACCOUNT_WILL_BE_DECREASED', 'Konto wird verringert');
 
 // Formular-Nachrichten
 define ('GENERAL_JOURNAL_0_DESC', 'Import Inventory Anfang Guthaben Eintrag');
@@ -148,17 +148,17 @@ define ('GEN_ADM_TOOLS_J21', 'POP Journal (21)');
 // Kontakt Kontostatus
 define ('ACT_ERROR_NO_ACCOUNT_ID', 'Beim Hinzufügen einer neuen Debitor / Kreditor, das ID-Feld ist erforderlich, bitte geben Sie eine eindeutige ID.');
 define ('TEXT_CUSTOMER_STATUS', 'Kundenstatus');
-define ('AP_CONTACT_STATUS', 'Vendor Status');
-define ('ACT_GOOD_STANDING', 'Benutzerkonto in " Good Standing');
-define ('ACT_OVER_CREDIT_LIMIT', 'Account is Over Kreditlimit');
-define ('ACT_HAS_PAST_DUE_AMOUNT', 'Konto hat überfällig Balance');
+define ('TEXT_VENDOR_STATUS', 'Vendor Status');
+define ('TEXT_ACCOUNT_IN_GOOD_STANDING', 'Benutzerkonto in Good Standing');
+define ('TEXT_ACCOUNT_IS_OVER_CREDIT_LIMIT', 'Account is Over Kreditlimit');
+define ('TEXT_ACCOUNT_HAS_PAST_DUE_BALANCE', 'Konto hat überfällig Balance');
 define ('TEXT_SAVE_OPEN_PREVIOUS', 'Save - Offene Rechnung zurück');
 define ('TEXT_SAVE_OPEN_NEXT', 'Save - Open nächsten Rechnung');
 define ('ORD_WARN_FORM_MODIFIED', 'Es scheint, um Daten in dieser Form bereits Wollen Sie für einen vorhandenen Kontakt suchen.?');
 define ('ORD_ERROR_NOT_CUR_PERIOD', 'Deine Berechtigungen verhindern, dass Sie von der Buchung zu einer anderen Zeit als der aktuellen Periode');
 define ('ORD_ERROR_DEL_NOT_CUR_PERIOD', 'Deine Berechtigungen verhindern, dass Sie das Löschen eines Auftrags aus einer anderen Zeit als der aktuellen Periode');
 define ('ORD_DISCOUNT_GL_ACCT', 'Nachlass FIBU-Konto ');
-define ('ORD_FREIGHT_GL_ACCT', 'Freight FIBU-Konto ');
+define ('TEXT_FREIGHT_GL_ACCOUNT', 'Freight FIBU-Konto ');
 define ('ORD_JS_NO_CID', 'Der Kontakt Information muss in dieser Form geladen werden, bevor die Eigenschaften abgerufen werden kann.');
 define ('ORD_BAR_CODE_INTRO', 'Geben Sie die Menge und scannen Sie das Element.');
 define ('TEXT_BAR_CODE', 'Bar-Code');
@@ -193,13 +193,13 @@ define ('BNK_LOG_ACCT_RECON', 'Konto-Versöhnung, Zeitraum:');
 
 // Konto Versöhnung
 define ('BANKING_HEADING_RECONCILIATION', 'Konto-Versöhnung');
-define ('BNK_START_BALANCE', 'Statement Ending Balance');
+define ('TEXT_STATEMENT_ENDING_BALANCE', 'Statement Ending Balance');
 define ('TEXT_OUTSTANDING_CHECKS', 'Hervorragende Checks');
 define ('TEXT_DEPOSITS_IN_TRANSIT', 'Einlagen in Transit');
 define ('TEXT_ACCOUNT_BALANCE', 'GL Kontostand');
-define ('BNK_END_BALANCE', 'Unversöhnte Difference');
+define ('TEXT_UNRECONCILED_DIFFERENCE', 'Unversöhnte Difference');
 define ('BNK_DEPOSIT_CREDIT', 'Ein-/ Credit');
-define ('BNK_CHECK_PAYMENT', 'Überprüfen / Payment ');
+define ('TEXT_CHECK_OR_PAYMENT', 'Überprüfen / Payment ');
 define ('TEXT_MULTIPLE_DEPOSITS', 'Kunde Einlagen');
 define ('TEXT_VENDOR_PAYMENTS', 'Hersteller Zahlungen');
 define ('TEXT_CASH_ACCOUNT', 'Cash Konto ');
@@ -213,7 +213,7 @@ define ('TEXT_ENDING_BALANCE', 'Ending Balance');
 define ('TEXT_DEPOSIT ',' Einzahlung ');
 
 // CVV Zeug für Kreditkarten
-define ('HEADING_CVV', 'Was ist CVV?');
+define ('TEXT_WHAT_IS_CVV', 'Was ist CVV?');
 define ('TEXT_CVV_HELP1', 'Visa, Mastercard, Discover 3-stellige Kartenprüfnummer <br /> <br />
                     Für Ihre Sicherheit und die Sicherheit verlangen wir, dass Sie Ihre Karte eingeben \' s Prüfnummer. <br /> <br />
                     Die Prüfnummer ist eine 3-stellige Nummer auf der Rückseite Ihrer Karte aufgedruckt.
@@ -230,18 +230,18 @@ define ('TEXT_CVV_HELP2', 'American Express 4-stellige Kartenprüfnummer <br /> 
 define ('GL_BUDGET_HEADING_TITLE', 'Budget-Manager');
 define ('GL_BUDGET_INTRO_TEXT', 'Dieses Tool stellt die Haushaltspläne für Sachkonten <br /> Hinweis: Der Speichern-Symbol nach Dateneingabe, bevor das Konto oder das Geschäftsjahr gedrückt werden muss geändert wird.');
 define ('GL_COPY_ACTUAL_CONFIRM', 'Sind Sie sicher, dass Sie das Budget beläuft sich in allen Sachkonten für das ausgewählte Geschäftsjahr ersetzen Werte aus der vorherigen Geschäftsjahres Dieser Vorgang nicht rückgängig gemacht werden kann?');
-define ('GL_BUDGET_COPY_HINT', 'Copy-Werte aus Vor FY');
+define ('TEXT_COPY_ACTUALS_FROM_PRIOR_FINANCIAL_YEAR', 'Copy-Werte aus Vor FY');
 define ('GL_CLEAR_ACTUAL_CONFIRM', 'Sind Sie sicher, dass Sie das Budget beläuft sich in allen Sachkonten für das ausgewählte Geschäftsjahr klar Dieser Vorgang nicht rückgängig gemacht werden kann?');
-define ('TEXT_BUDGET_CLEAR_HINT', 'Clear All Budgets für dieses Geschäftsjahr');
+define ('TEXT_CLEAR_ALL_BUDGETS_FOR_THIS_FINANCIAL_YEAR', 'Clear All Budgets für dieses Geschäftsjahr');
 define ('TEXT_LOAD_ACCT_PRIOR', 'Load-Werte aus Vor FY');
 define ('ERROR_NO_GL_ACCT_INFO', 'Es gibt keine Daten für das vorangegangene Geschäftsjahr ausgewählt!');
 define ('TEXT_PERIOD_DATES', 'Zeitraum / Termine');
 define ('TEXT_PRIOR_FY', 'Vor FY');
 define ('TEXT_BUDGET', 'Budget');
 define ('TEXT_NEXT_FY', 'Next FY');
-define ('GL_TEXT_COPY_PRIOR', 'Kopieren Vor Budget zu Aktuelles Budget');
-define ('GL_TEXT_ALLOCATE', 'Total Allocate Durch Geschäftsjahr');
-define ('GL_TEXT_COPY_NEXT', 'Kopieren nächsten Haushalt zu Aktuelles Budget');
+define ('TEXT_COPY_PRIOR_BUDGET_TO_CURRENT_BUDGET', 'Kopieren Vor Budget zu Aktuelles Budget');
+define ('TEXT_ALLOCATE_TOTAL_THROUGH_FISCAL_YEAR', 'Total Allocate Durch Geschäftsjahr');
+define ('TEXT_COPY_NEXT_BUDGET_TO_CURRENT_BUDGET', 'Kopieren nächsten Haushalt zu Aktuelles Budget');
 define ('GL_JS_CANNOT_COPY', 'Dieser Datensatz kann nicht, da sie noch nicht gespeichert kopiert werden!');
 Define ('GL_JS_COPY_CONFIRM', 'Sie haben sich entschieden, diese Zeitschrift Aktenexemplar Dadurch wird eine Kopie des aktuellen Datensatzes mit dem modifizierten Felder erstellen Hinweis:... Die Kennzeichnung muss anders oder diese Operation fehlschlagen Entsendung Weiter mit OK oder Abbrechen , um zum Formular zurückzukehren. ');
 
@@ -257,7 +257,7 @@ define ('GL_LOG_PURGE_DB', 'General Journal - Purge Database');
 
 // Spezielle Tasten
 define ('GL_BTN_PURGE_DB', 'Purge Journal Entries');
-define ('GL_BTN_CHG_ACCT_PERIOD', 'Change aktuellen Berichtsperiode');
+define ('TEXT_CHANGE_CURRENT_ACCOUNTING_PERIOD', 'Change aktuellen Berichtsperiode');
 define ('GL_BTN_NEW_FY', 'Generate nächsten Geschäftsjahr');
 define ('GL_BTN_UPDATE_FY', 'Update Geschäftsjahr Änderungen');
 
@@ -302,13 +302,13 @@ define ('GL_DISPLAY_NUMBER_OF_ENTRIES', TEXT_DISPLAY_NUMBER . 'GL Einträge');
 // Bulk Rechnungen bezahlen
 define ('TEXT_CHECK_DATE', 'Überprüfen Datum');
 define ('TEXT_FIRST_CHECK_NUMBER', 'First Check-Nummer');
-define ('BNK_TOTAL_TO_BE_PAID', 'Total aller Zahlungen');
+define ('TEXT_TOTAL_OF_ALL_PAYMENTS', 'Total aller Zahlungen');
 define ('TEXT_INVOICES_DUE_BY', 'fälligen Rechnungen von');
-define ('BNK_DISCOUNT_LOST_BY', 'Lost Rabatte von');
+define ('TEXT_DISCOUNTS_LOST_BY', 'Lost Rabatte von');
 define ('BNK_INVOICE_DATE', 'Invoice Datum');
 define ('TEXT_VENDOR_NAME', 'Vendor Name');
-define ('BNK_ACCOUNT_BALANCE', 'Balance vor Zahlungen');
-define ('BNK_BALANCE_AFTER_CHECKS', 'Bilanz nach Zahlung');
+define ('TEXT_BALANCE_BEFORE_PAYMENTS', 'Balance vor Zahlungen');
+define ('TEXT_BALANCE_AFTER_PAYMENTS', 'Bilanz nach Zahlung');
 
 // Journal bestimmte Einträge
 define ('GENERAL_JOURNAL_2_DESC', 'Allgemeine Journaleintrag');

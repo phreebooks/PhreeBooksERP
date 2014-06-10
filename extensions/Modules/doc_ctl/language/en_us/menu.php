@@ -18,6 +18,6 @@
 //
 
 // Title to use in the pull down menu
-define('BOX_DOC_CTL_MODULE','Document Control');
+define('TEXT_DOCUMENT_CONTROL','Document Control');
 
 ?>

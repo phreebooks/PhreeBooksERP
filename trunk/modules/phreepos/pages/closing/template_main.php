@@ -40,7 +40,7 @@ $toolbar->add_help('07.05.04');
 echo $toolbar->build_toolbar($add_search = false, $add_period = false);
 // Build the page
 ?>
-<h1><?php echo POS_HEADING_CLOSING; ?></h1>
+<h1><?php echo TEXT_DAY_CLOSING; ?></h1>
 <?php if (empty($combined_list) ){ ?>
 <fieldset id="search_part" align="center">
 	<ol>

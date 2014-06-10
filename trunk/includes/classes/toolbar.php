@@ -53,7 +53,7 @@ class toolbar {
 	  case 'recur':      $image = 'actions/go-jump.png';                $text = TEXT_RECUR;      break;
 	  case 'rename':     $image = 'apps/accessories-text-editor.png';   $text = TEXT_RENAME;     break;
 	  case 'payment':    $image = 'apps/accessories-calculator.png';    $text = TEXT_PAYMENT;    break;
-	  case 'ship_all':   $image = 'mimetypes/package-x-generic.png';    $text = TEXT_SHIP_ALL;   break;
+	  case 'ship_all':   $image = 'mimetypes/package-x-generic.png';    $text = TEXT_FILL_SO;   break;
 	  case 'search':     $image = 'actions/system-search.png';          $text = TEXT_SEARCH;     break;
 	  case 'update':     $image = 'apps/system-software-update.png';    $text = TEXT_UPDATE;     break;
 	  default:           $image = 'emblems/emblem-important.png';       $text = $name . ' ICON NOT FOUND';

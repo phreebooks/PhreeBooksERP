@@ -11,7 +11,7 @@
 define('MENU_HEADING_PHREEPOS','Kassa / Point of Sale');
 define('BOX_PHREEPOS','Kassa / Point of Sale');
 define('BOX_POS_MGR','POS/POP Manager');
-define('TEXT_CLOSING_POS/POP', 'Kassa Afsluiten');
+define('TEXT_CLOSING_POS_OR_POP', 'Kassa Afsluiten');
 define('BOX_CUSTOMER_DEPOSITS','Klant Stortingen');
 define('TEXT_VENDOR_DEPOSITS','Stortingen');
 

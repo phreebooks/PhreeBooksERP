@@ -24,7 +24,7 @@
 	  <table class="ui-widget" style="border-collapse:collapse;width:100%;">
 		<tbody class="ui-widget-content">
 	  <tr>
-	    <td width="50%"><?php echo ACT_E_FIRST_DATE . ' ' . gen_locale_date($cInfo->first_date); ?></td>
+	    <td width="50%"><?php echo TEXT_HIRE_DATE . ': ' . gen_locale_date($cInfo->first_date); ?></td>
 	  </tr>
 	  <tr>
 	    <td width="50%"><?php echo ACT_E_LAST_DATE1 . ' ' . gen_locale_date($cInfo->last_update); ?></td>

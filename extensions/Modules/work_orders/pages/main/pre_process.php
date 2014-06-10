@@ -315,7 +315,7 @@ switch ($_REQUEST['action']) {
     break;
   case 'build':
     $user_list = wo_build_users();
-    define('PAGE_TITLE', HEADING_WORK_ORDER_MODULE_BUILD);
+    define('PAGE_TITLE', TEXT_BUILD_AND_TRACK_WORK_ORDER);
     $include_template = 'template_build.php';
     break;
   default:

@@ -61,15 +61,15 @@ $price_mgr_sources = array(
 );
 $price_mgr_adjustments = array(
   '0' => TEXT_NONE,
-  '1' => TEXT_DEC_AMT,
-  '2' => TEXT_DEC_PCNT,
+  '1' => TEXT_DECREASE_BY_AMOUNT,
+  '2' => TEXT_DECREASE_BY_PERCENT,
   '3' => TEXT_INC_AMT,
   '4' => TEXT_INC_PCNT,
 );
 $price_mgr_rounding = array(
   '0' => TEXT_NONE,
   '1' => TEXT_NEXT_WHOLE,
-  '2' => TEXT_NEXT_FRACTION,
+  '2' => TEXT_CONSTANT_CENTS,
   '3' => TEXT_NEXT_INCREMENT,
 );
 

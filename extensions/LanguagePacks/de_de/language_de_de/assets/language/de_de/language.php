@@ -43,18 +43,18 @@ define ("TEXT_VEHICLE", "Fahrzeug");
 /************ Assets definiert *********************/
 define ("ASSETS_HEADING_NEW_ITEM", "Neue Asset");
 define ("ASSETS_ENTER_ASSET_ID", "Create a New Asset");
-define ("ASSETS_ENTRY_ASSET_TYPE", "Geben Sie den Asset-Typ");
+define ("TEXT_ENTER_THE_ASSET_TYPE", "Geben Sie den Asset-Typ");
 define ("TEXT_ASSET_TYPE", "Asset-Typ");
 define ("TEXT_ORIGINAL_COST", "Ursprünglichen Kosten");
-define ("ASSETS_ENTRY_ACCT_SALES", "GL Asset Konto");
-define ("ASSETS_ENTRY_ACCT_INV", "GL Abschreibungen Konto");
-define ("ASSETS_ENTRY_ACCT_COS", "GL Aufrechterhaltung-Konto");
+define ("TEXT_GL_ASSET_ACCOUNT", "GL Asset Konto");
+define ("TEXT_GL_DEPRECIATION_ACCOUNT", "GL Abschreibungen Konto");
+define ("TEXT_GL_MAINTENANCE_ACCOUNT", "GL Aufrechterhaltung-Konto");
 define ("ASSETS_ENTRY_ASSETS_SERIALIZE", "Hersteller / Modell / VIN");
 define ("TEXT_ASSET_PURCHASE_DATE", "Asset Purchase Date");
 define ("ASSETS_DATE_LAST_UPDATE", "Letzte Mantainence Datum");
 define ("TEXT_ASSET_RETIRE_DATE", "Asset Pensionieren Datum");
 define ("TEXT_PURCHASE_CONDITION", "Bestellen Zustand");
-define ("ASSETS_ENTRY_IMAGE_PATH", "Bild Relative Path");
+define ("TEXT_IMAGE_RELATIVE_PATH", "Bild Relative Path");
 define ("ASSETS_MSG_COPY_INTRO", "Geben Sie die Asset-ID für die neue Anlageklasse.");
 define ("ASSETS_MSG_RENAME_INTRO", "Geben Sie die neue Asset-ID, um diese Anlageklasse umzubenennen.");
 /************ Javascript definiert *********/

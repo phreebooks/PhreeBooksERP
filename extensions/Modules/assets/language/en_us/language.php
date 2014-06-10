@@ -38,18 +38,18 @@ define('TEXT_VEHICLE','Vehicle');
 /************ Assets defines *********************/
 define('ASSETS_HEADING_NEW_ITEM','New Asset');
 define('ASSETS_ENTER_ASSET_ID','Create a New Asset');
-define('ASSETS_ENTRY_ASSET_TYPE','Enter the Asset Type');
+define('TEXT_ENTER_THE_ASSET_TYPE','Enter the Asset Type');
 define('TEXT_ASSET_TYPE','Asset Type');
 define('TEXT_ORIGINAL_COST','Original Cost');
-define('ASSETS_ENTRY_ACCT_SALES','GL Asset Account');
-define('ASSETS_ENTRY_ACCT_INV','GL Depreciation Account');
-define('ASSETS_ENTRY_ACCT_COS','GL Maintenance Account');
+define('TEXT_GL_ASSET_ACCOUNT','GL Asset Account');
+define('TEXT_GL_DEPRECIATION_ACCOUNT','GL Depreciation Account');
+define('TEXT_GL_MAINTENANCE_ACCOUNT','GL Maintenance Account');
 define('ASSETS_ENTRY_ASSETS_SERIALIZE','Make/Model/VIN');
 define('TEXT_ASSET_PURCHASE_DATE','Asset Purchase Date');
 define('ASSETS_DATE_LAST_UPDATE','Last Mantainence Date');
 define('TEXT_ASSET_RETIRE_DATE','Asset Retire Date');
 define('TEXT_PURCHASE_CONDITION','Purchase Condition');
-define('ASSETS_ENTRY_IMAGE_PATH','Image Relative Path');
+define('TEXT_IMAGE_RELATIVE_PATH','Image Relative Path');
 /************ Javascript defines *********/
 define('ASSETS_MSG_DELETE_ASSET','Are you sure you want to delete this asset?');
 

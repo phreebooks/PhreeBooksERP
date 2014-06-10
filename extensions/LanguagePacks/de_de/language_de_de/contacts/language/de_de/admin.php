@@ -32,7 +32,7 @@ define ('TEXT_SHIPPING_PREFS', 'Versandkosten Adressbuch Einstellungen');
 // Allgemeine
 define ('COST_TYPE_LBR', 'Arbeit');
 define ('TEXT_MATERIALS', 'Material');
-define ('COST_TYPE_CNT', 'Contractors');
+define ('TEXT_CONTRACTORS', 'Contractors');
 define ('COST_TYPE_EQT', 'Ausrüstung');
 define ('TEXT_OTHER', 'Andere');
 /************************** (Adressbuch Defaults) ****************** *****************************/

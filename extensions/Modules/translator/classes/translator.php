@@ -70,7 +70,7 @@ class translator {
 //		preg_match_all("|define\('(.*)',[\s]*'(.*)'\);|imU", $langfile, $langtemp); // broken for UTF-8
 		$db->Execute("DELETE FROM ".TABLE_TRANSLATOR." WHERE module='$mod' AND language='$lang' AND version='$ver' AND pathtofile='$pathtofile'");
 		foreach ($langtemp as $const => $value) {
-if ($const == 'GEN_COUNTRY_CODE')echo 'writing const = '.$const.' with value = '.$value.'<br>';
+if ($const == 'TEXT_COUNTRY_ISO_CODE')echo 'writing const = '.$const.' with value = '.$value.'<br>';
 			$sql = "INSERT INTO ".TABLE_TRANSLATOR." SET
 			module='$mod', language='$lang', version='$ver', pathtofile='$pathtofile',
 			defined_constant='".db_input($const)."', translation='".db_input($value)."', translated='1'";

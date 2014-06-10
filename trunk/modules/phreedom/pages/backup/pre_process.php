@@ -65,7 +65,7 @@ switch ($_REQUEST['action']) {
 			@rename($backup->source_dir . $backup->source_file, $backup->dest_dir . $backup->dest_file);
 			break;
 		}
-		gen_add_audit_log(GEN_DB_DATA_BACKUP);
+		gen_add_audit_log(TEXT_COMPANY_DATABASE_BACKUP);
 		$backup->download($backup->dest_dir, $backup->dest_file, $save_local); // will not return if successful
 	}catch(Exception $e){
 		$messageStack->add($e->getMessage());
@@ -110,7 +110,7 @@ switch ($_REQUEST['action']) {
   case 'restore':
     $custom_html      = true;
     $include_template = 'template_restore.php';
-    define('PAGE_TITLE', BOX_HEADING_RESTORE);
+    define('PAGE_TITLE', TEXT_COMPANY_RESTORE);
     break;
   case 'save':
   default:

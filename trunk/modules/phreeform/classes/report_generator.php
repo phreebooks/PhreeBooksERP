@@ -17,8 +17,8 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreeform/classes/report_generator.php
 //
-namespace phreeform\classes; 
-if (PDF_APP == 'TCPDF') { 
+namespace phreeform\classes;
+if (PDF_APP == 'TCPDF') {
   define ('K_PATH_MAIN', DIR_FS_MODULES . 'phreeform/includes/tcpdf/');
   define ('K_PATH_URL',  DIR_WS_MODULES . 'phreeform/includes/tcpdf/');
   require_once (DIR_FS_MODULES . 'phreeform/includes/tcpdf/tcpdf.php'); // TCPDF class to generate reports, default
@@ -35,7 +35,7 @@ class report_generator extends TCPDF {
 		global $report;
 		$PaperSize = explode(':', $report->page->size);
 		if (PDF_APP == 'TCPDF') {
-			parent::__construct($report->page->orientation, 'mm', $PaperSize[0], true, 'UTF-8', false); 
+			parent::__construct($report->page->orientation, 'mm', $PaperSize[0], true, 'UTF-8', false);
 			$this->SetCellPadding(0);
 		} else {
 			$this->FPDF($report->page->orientation, 'mm', $PaperSize[0]);
@@ -126,7 +126,7 @@ class report_generator extends TCPDF {
 			// truncate data if selected
 			if ($trunc) $value = $this->TruncData($value, $CellXPos[$col] - $CellXPos[$col-1]);
 			$this->MultiCell($CellXPos[$col] - $CellXPos[$col-1], $CellHeight, $value, 0, $report->page->data->align);
-			if ($ColBreak[$key]) { 
+			if ($ColBreak[$key]) {
 				$col++;
 				$LastY = $this->y0;
 			} else $LastY = $this->GetY();
@@ -200,7 +200,7 @@ class report_generator extends TCPDF {
 					$this->SetLeftMargin($CellXPos[0]);
 					$this->SetX($CellXPos[0]);
 					$this->SetY($this->y0);
-					$Desc  = ($todo[0] == 'g') ? TEXT_GROUP_TOTAL_FOR : TEXT_REPORT_TOTAL_FOR;
+					$Desc  = ($todo[0] == 'g') ? TEXT_GROUP_TOTAL_FOR . ': ' : TEXT_REPORT_TOTAL_FOR;
 					$this->Cell(0, $CellHeight, $Desc . $todo[1], 1, 1, 'C');
 					$this->y0 = $this->GetY() + 0.35;
 					$NeedTop = 'Next';
@@ -209,15 +209,15 @@ class report_generator extends TCPDF {
 					// now fall into the 'd' case to show the data
 				case "d": // data element
 				default:
-					// figure out if a border needs to be drawn for total separation 
+					// figure out if a border needs to be drawn for total separation
 					// and fill color (draws an empty box over the row just written with the fill color)
 					$brdr = 0;
 					if ($NeedTop == 'Yes') {
-						$brdr = 'T'; 
+						$brdr = 'T';
 						$fill = false; // set so first data after total will not be filled
 						$NeedTop = 'No';
 					} elseif ($NeedTop == 'Next') {
-						$brdr = 'LR'; 
+						$brdr = 'LR';
 						$NeedTop = 'Yes';
 					}
 					// Draw a fill box
@@ -238,10 +238,10 @@ class report_generator extends TCPDF {
 						// truncate data if necessary
 						if ($trunc) $value = $this->TruncData($value, $CellXPos[$col] - $CellXPos[$col-1]);
 						$this->MultiCell($CellXPos[$col] - $CellXPos[$col-1], $CellHeight, $value, 0, $align[$key]);
-						if ($ColBreak[$key]) { 
+						if ($ColBreak[$key]) {
 							$col++;
 							$LastY = $this->y0;
-						} else { 
+						} else {
 							$LastY = $this->GetY();
 						}
 						if ($this->GetY() > $maxY) $maxY = $this->GetY();
@@ -265,7 +265,7 @@ class report_generator extends TCPDF {
 		$this->SetY($this->y0);
 		$this->SetFillColor(255);
 		$this->Cell(0, $this->pageY - $this->y0 + 0.25, '', 'T', 0, 'L', 1);
-		// restore the margins 
+		// restore the margins
 		$this->SetMargins($report->page->margin->left, $report->page->margin->top, $report->page->margin->right);
 		$this->SetLeftMargin($CellXPos[0]);
 		$this->SetX($CellXPos[0]);

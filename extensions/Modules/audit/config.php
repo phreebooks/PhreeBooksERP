@@ -31,7 +31,7 @@ define('SECURITY_ID_AUDIT',      500);
 if (defined('MODULE_AUDIT_STATUS')) {
 	$mainmenu["gl"]['submenu']["audit"] = array(
 	  	'order'		  => 80,
-		'text'        => BOX_AUDIT_MODULE,
+		'text'        => TEXT_AUDIT_EXPORT_XAF,
 		'show_in_users_settings' => true,
 	    'security_id' => SECURITY_ID_AUDIT,
 	    'link'        => html_href_link(FILENAME_DEFAULT, 'module=audit&amp;page=main', 'SSL'),

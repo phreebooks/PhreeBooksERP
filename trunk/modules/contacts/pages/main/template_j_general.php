@@ -49,7 +49,7 @@ $cal_j_gen2 = array(
         <td align="right"><?php echo TEXT_INACTIVE; ?></td>
         <td>
 	      <?php echo html_checkbox_field('inactive', '1', $cInfo->inactive) . ' ';
-            echo ACT_J_ACCOUNT_NUMBER . ' ';
+            echo TEXT_BREAK_INTO_PHASES . ': ';
             echo html_radio_field('account_number', 1, ($cInfo->account_number == '1' ? true : false)) . TEXT_YES . chr(10);
             echo html_radio_field('account_number', 2, (($cInfo->account_number == '' || $cInfo->account_number == '2') ? true : false)) . TEXT_NO  . chr(10);
           ?>
@@ -95,7 +95,7 @@ $cal_j_gen2 = array(
      <tr><td colspan="3"><?php echo TEXT_SELECT_FILE_TO_ATTACH . ' ' . html_file_field('file_name'); ?></td></tr>
      <tr  class="ui-widget-header">
       <th><?php echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small'); ?></th>
-      <th><?php echo TEXT_FILENAME; ?></th>
+      <th><?php echo TEXT_FILE_NAME; ?></th>
       <th><?php echo TEXT_ACTION; ?></th>
      </tr>
 <?php

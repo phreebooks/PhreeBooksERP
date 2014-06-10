@@ -38,7 +38,7 @@ if (defined('MODULE_ZENCART_STATUS')) {
 */
   // Menu Locations
   $mainmenu["tools"]['submenu']['zencart'] = array(
-    'text'        => BOX_ZENCART_MODULE,
+    'text'        => TEXT_ZENCART_INTERFACE,
     'rank'        => 31,
     'security_id' => SECURITY_ID_ZENCART_INTERFACE,
     'link'        => html_href_link(FILENAME_DEFAULT, 'module=zencart&amp;page=main', 'SSL'),

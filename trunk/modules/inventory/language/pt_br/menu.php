@@ -8,8 +8,8 @@
 // +-----------------------------------------------------------------+
 // Path: /modules/inventory/language/pt_br/menu.php
 
-define('BOX_SALES_PRICE_SHEETS','Tabelas Preço Clientes');
-define('BOX_PURCHASE_PRICE_SHEETS','Tabelas Preço Fornecedores');
+define('TEXT_CUSTOMER_PRICE_SHEETS','Tabelas Preço Clientes');
+define('TEXT_VENDOR_PRICE_SHEETS','Tabelas Preço Fornecedores');
 define('BOX_PRICE_SHEET_MANAGER','Tabelas Preço');
 define('ORD_TEXT_16_WINDOW_TITLE','Ajustes');
 define('ORD_TEXT_14_WINDOW_TITLE','Montagens');

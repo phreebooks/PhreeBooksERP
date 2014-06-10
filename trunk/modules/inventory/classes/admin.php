@@ -950,7 +950,7 @@ class admin extends \core\classes\admin {
 		  'default'   => isset($glEntry->post_date) ? gen_locale_date($glEntry->post_date) : date(DATE_FORMAT),
 		);
   		$basis->cInfo->gl_acct	= INV_STOCK_DEFAULT_COS;
-  		$basis->page_title		= INV_ASSY_HEADING_TITLE;
+  		$basis->page_title		= TEXT_ASSEMBLE_DISASSEMBLE_INVENTORY;
   		$basis->module			= 'inventory';
   		$basis->page			= 'assemblies';
   		$basis->template 		= 'template_main';

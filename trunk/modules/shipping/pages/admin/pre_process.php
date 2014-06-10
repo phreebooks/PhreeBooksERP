@@ -86,7 +86,7 @@ switch ($_REQUEST['action']) {
 			$backup->make_zip('dir');
 			break;
 	}
-	gen_add_audit_log(GEN_DB_DATA_BACKUP, TABLE_AUDIT_LOG);
+	gen_add_audit_log(TEXT_COMPANY_DATABASE_BACKUP, TABLE_AUDIT_LOG);
 	$backup->download($backup->dest_dir, $backup->dest_file); // will not return if successful
 	$default_tab_id = 'tools';
     break;

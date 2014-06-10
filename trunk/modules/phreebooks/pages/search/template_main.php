@@ -27,7 +27,7 @@ $toolbar->icon_list['save']['show']     = false;
 $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo HEADING_TITLE_SEARCH_INFORMATION; ?></h1>
@@ -60,7 +60,7 @@ echo $toolbar->build_toolbar();
     <td><?php echo html_input_field('search_ref_to', $_SESSION['search_ref_to'], $params = ''); ?></td>
   </tr>
   <tr>
-    <td><?php echo TEXT_CUST_VEND_ACCT; ?></td>
+    <td><?php echo TEXT_CUSTOMER_OR_VENDOR_CONTACT; ?></td>
     <td><?php echo html_pull_down_menu('search_account_id', gen_build_pull_down($choices), $_SESSION['search_account_id'], $params = ''); ?></td>
     <td><?php echo html_input_field('search_account_from', $_SESSION['search_account_from'], $params = ''); ?></td>
     <td><?php echo html_input_field('search_account_to', $_SESSION['search_account_to'], $params = ''); ?></td>
@@ -104,85 +104,85 @@ echo $toolbar->build_toolbar();
 	while (!$query_result->EOF) {
 	  $jID = (int)$query_result->fields['journal_id'];
 	  switch ($jID) {
-	    case  2: 
-		  $security_level = \core\classes\user::validate(SECURITY_ID_JOURNAL_ENTRY); 
-		  $module = 'phreebooks'; 
-		  $mod = 'journal'; 
+	    case  2:
+		  $security_level = \core\classes\user::validate(SECURITY_ID_JOURNAL_ENTRY);
+		  $module = 'phreebooks';
+		  $mod = 'journal';
 		  break;
-		case  3: 
-		  $security_level = \core\classes\user::validate(SECURITY_ID_PURCHASE_QUOTE); 
-		  $module = 'phreebooks'; 
-		  $mod = 'orders'; 
+		case  3:
+		  $security_level = \core\classes\user::validate(SECURITY_ID_PURCHASE_QUOTE);
+		  $module = 'phreebooks';
+		  $mod = 'orders';
 		  break;
-		case  4: 
-		  $security_level = \core\classes\user::validate(SECURITY_ID_PURCHASE_ORDER); 
-		  $module = 'phreebooks'; 
-		  $mod = 'orders'; 
+		case  4:
+		  $security_level = \core\classes\user::validate(SECURITY_ID_PURCHASE_ORDER);
+		  $module = 'phreebooks';
+		  $mod = 'orders';
 		  break;
-		case  6: 
-		  $security_level = \core\classes\user::validate(SECURITY_ID_PURCHASE_INVENTORY); 
-		  $module = 'phreebooks'; 
-		  $mod = 'orders'; 
+		case  6:
+		  $security_level = \core\classes\user::validate(SECURITY_ID_PURCHASE_INVENTORY);
+		  $module = 'phreebooks';
+		  $mod = 'orders';
 		  break;
-		case  7: 
-		  $security_level = \core\classes\user::validate(SECURITY_ID_PURCHASE_CREDIT); 
-		  $module = 'phreebooks'; 
-		  $mod = 'orders'; 
+		case  7:
+		  $security_level = \core\classes\user::validate(SECURITY_ID_PURCHASE_CREDIT);
+		  $module = 'phreebooks';
+		  $mod = 'orders';
 		  break;
-		case  9: 
-		  $security_level = \core\classes\user::validate(SECURITY_ID_SALES_QUOTE); 
-		  $module = 'orders'; 
-		  $mod = 'orders'; 
+		case  9:
+		  $security_level = \core\classes\user::validate(SECURITY_ID_SALES_QUOTE);
+		  $module = 'orders';
+		  $mod = 'orders';
 		  break;
-		case 10: 
-		  $security_level = \core\classes\user::validate(SECURITY_ID_SALES_ORDER); 
-		  $module = 'phreebooks'; 
-		  $mod = 'orders'; 
+		case 10:
+		  $security_level = \core\classes\user::validate(SECURITY_ID_SALES_ORDER);
+		  $module = 'phreebooks';
+		  $mod = 'orders';
 		  break;
-		case 12: 
-		  $security_level = \core\classes\user::validate(SECURITY_ID_SALES_INVOICE); 
-		  $module = 'phreebooks'; 
-		  $mod = 'orders'; 
+		case 12:
+		  $security_level = \core\classes\user::validate(SECURITY_ID_SALES_INVOICE);
+		  $module = 'phreebooks';
+		  $mod = 'orders';
 		  break;
-		case 13: 
-		  $security_level = \core\classes\user::validate(SECURITY_ID_SALES_CREDIT); 
-		  $module = 'phreebooks'; 
-		  $mod = 'orders'; 
+		case 13:
+		  $security_level = \core\classes\user::validate(SECURITY_ID_SALES_CREDIT);
+		  $module = 'phreebooks';
+		  $mod = 'orders';
 		  break;
-	    case 14: 
-		  $security_level = \core\classes\user::validate(SECURITY_ID_ASSEMBLE_INVENTORY); 
-		  $module = 'inventory'; 
-		  $mod = 'assemblies'; 
+	    case 14:
+		  $security_level = \core\classes\user::validate(SECURITY_ID_ASSEMBLE_INVENTORY);
+		  $module = 'inventory';
+		  $mod = 'assemblies';
 		  break;
-	    case 16: 
-		  $security_level = \core\classes\user::validate(SECURITY_ID_ADJUST_INVENTORY); 
-		  $module = 'inventory'; 
-		  $mod = 'adjustments'; 
+	    case 16:
+		  $security_level = \core\classes\user::validate(SECURITY_ID_ADJUST_INVENTORY);
+		  $module = 'inventory';
+		  $mod = 'adjustments';
 		  break;
 	    case 18:
-		  $security_level = \core\classes\user::validate(SECURITY_ID_CUSTOMER_RECEIPTS); 
-		  $module = 'phreebooks'; 
-		  $mod = 'bills'; 
+		  $security_level = \core\classes\user::validate(SECURITY_ID_CUSTOMER_RECEIPTS);
+		  $module = 'phreebooks';
+		  $mod = 'bills';
 		  $type = gen_get_contact_type($query_result->fields['bill_acct_id']);
 		  break;
-	    case 19: 
-		  $security_level = \core\classes\user::validate(SECURITY_ID_POS_MGR); 
-		  $module = 'phreepos'; $mod = 'pos_mgr'; 
+	    case 19:
+		  $security_level = \core\classes\user::validate(SECURITY_ID_POS_MGR);
+		  $module = 'phreepos'; $mod = 'pos_mgr';
 		  break;
-	    case 20: 
-		  $security_level = \core\classes\user::validate(SECURITY_ID_PAY_BILLS); 
-		  $module = 'phreebooks'; 
-		  $mod = 'bills'; 
+	    case 20:
+		  $security_level = \core\classes\user::validate(SECURITY_ID_PAY_BILLS);
+		  $module = 'phreebooks';
+		  $mod = 'bills';
 		  $type = gen_get_contact_type($query_result->fields['bill_acct_id']);
 		  break;
-	    case 21: 
-		  $security_level = \core\classes\user::validate(SECURITY_ID_POS_MGR); 
-		  $module = 'phreepos'; $mod = 'pos_mgr'; 
+	    case 21:
+		  $security_level = \core\classes\user::validate(SECURITY_ID_POS_MGR);
+		  $module = 'phreepos'; $mod = 'pos_mgr';
 		  break;
-		default: 
-		  $security_level = \core\classes\user::validate(SECURITY_ID_SEARCH); 
-		  $module = 'phreebooks'; 
-		  $mod = 'orders'; 
+		default:
+		  $security_level = \core\classes\user::validate(SECURITY_ID_SEARCH);
+		  $module = 'phreebooks';
+		  $mod = 'orders';
 		  break;
 	  }
 	  if ($security_level > 0) {
@@ -205,7 +205,7 @@ echo $toolbar->build_toolbar();
   </tr>
 <?php } else { // no permission ?>
   <tr><td colspan="7"><?php echo $query_result->fields['description'] . ' - ' . ERROR_NO_SEARCH_PERMISSION; ?></td></tr>
-<?php	  
+<?php
 	  }
 	  $query_result->MoveNext();
 	  $odd = !$odd;

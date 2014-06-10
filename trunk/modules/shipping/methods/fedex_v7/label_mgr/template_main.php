@@ -204,7 +204,7 @@ echo $toolbar->build_toolbar();
 	  <tr>
 		<td colspan="2">
 			<?php echo html_checkbox_field('cod', '1', $sInfo->cod);
-			echo SHIPPING_COD_AMOUNT;
+			echo TEXT_CASH_ON_DELIVERY_AMOUNT;
 			echo html_input_field('total_amount',  $sInfo->total_amount, 'size="6" style="text-align:right"') . '&nbsp;';
 			echo html_pull_down_menu('cod_currency', gen_get_pull_down(TABLE_CURRENCIES, false, false, 'code', 'title'), $sInfo->cod_currency) . '&nbsp;';
 			echo html_pull_down_menu('cod_payment_type', gen_build_pull_down($shipping_defaults['cod_funds_code']), $sInfo->cod_payment_type); ?>
@@ -231,7 +231,7 @@ echo $toolbar->build_toolbar();
 	  <tr>
 		<td colspan="2">
 		  <?php echo TEXT_NUMBER_OF_PIECES . ' ' . html_input_field('ltl_num_pieces', $sInfo->ltl_num_pieces ? $sInfo->ltl_num_pieces : $shipping_defaults['ltl_num_pieces'], 'size="4" maxlength="3"');
-		        echo SHIPPING_LTL_CLASS . ' ' . html_pull_down_menu('ltl_class', gen_build_pull_down($ltl_classes), $sInfo->ltl_class ? $sInfo->ltl_class : $shipping_defaults['ltl_class']); ?>
+		        echo TEXT_FREIGHT_CLASS . ' ' . html_pull_down_menu('ltl_class', gen_build_pull_down($ltl_classes), $sInfo->ltl_class ? $sInfo->ltl_class : $shipping_defaults['ltl_class']); ?>
 		</td>
 	  </tr>
     </table>

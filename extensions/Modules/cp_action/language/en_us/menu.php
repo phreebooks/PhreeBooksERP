@@ -17,9 +17,9 @@
 //  Path: /modules/cp_action/language/en_us/menu.php
 //
 // Menu Headings
-define('MENU_HEADING_CAPA','Corrective/Preventative Action');
+define('TEXT_CORRECTIVE_OR_PREVENTATIVE_ACTION','Corrective or Preventative Action');
 
 // Menu Titles
-define('BOX_CAPA_MODULE','C/P Action');
+define('TEXT_CAPA_ACTION','C/P Action');
 
 ?>

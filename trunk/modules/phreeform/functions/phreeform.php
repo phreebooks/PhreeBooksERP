@@ -891,7 +891,7 @@ function BuildSQL($report) { // for reports only
 	for ($i = 0; $i < sizeof($report->grouplist); $i++) {
 	  if ($report->grouplist[$i]->default) {
 		$strGroup   .= prefixTables($report->grouplist[$i]->fieldname);
-		$filterdesc .= PHREEFORM_GROUPBY . ' ' . $report->grouplist[$i]->description . '; ';
+		$filterdesc .= TEXT_GROUPED_BY . ': ' . $report->grouplist[$i]->description . '; ';
 		break;
 	  }
 	}
@@ -1079,7 +1079,7 @@ function GenerateCSVFile($Data, $report, $delivery_method = 'D') { // for csv re
 	  switch ($todo[0]) {
 		case "r": // Report Total
 		case "g": // Group Total
-		  $Desc = ($todo[0] == 'g') ? TEXT_GROUP_TOTAL_FOR : TEXT_REPORT_TOTAL_FOR;
+		  $Desc = ($todo[0] == 'g') ? TEXT_GROUP_TOTAL_FOR . ': ' : TEXT_REPORT_TOTAL_FOR;
 		  $CSVOutput .= $Desc . $todo[1] . chr(10);
 		  // Now write the total data like any other data row
 		case "d": // Data
@@ -1116,7 +1116,7 @@ function GenerateXMLFile($Data, $report, $delivery_method = 'D') { // for csv re
 	  	switch ($todo[0]) {
 			case "r": // Report Total
 			case "g": // Group Total
-		  		$Desc = ($todo[0] == 'g') ? TEXT_GROUP_TOTAL_FOR : TEXT_REPORT_TOTAL_FOR;
+		  		$Desc = ($todo[0] == 'g') ? TEXT_GROUP_TOTAL_FOR . ': ' : TEXT_REPORT_TOTAL_FOR;
 		  		$xml .= '<' . $Desc .'>' . $todo[1] . '</' . $Desc .'>'. chr(10);
 			  // Now write the total data like any other data row
 			case "d": // Data

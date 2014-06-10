@@ -90,7 +90,7 @@ if (defined('ENABLE_MULTI_BRANCH') && ENABLE_MULTI_BRANCH){
 	);
 }
 $mainmenu["customers"]["submenu"]["pricesheet"] = array(
-  'text'        => BOX_SALES_PRICE_SHEETS,
+  'text'        => TEXT_CUSTOMER_PRICE_SHEETS,
   'order'       => 65,
   'security_id' => SECURITY_ID_PRICE_SHEET_MANAGER,
   'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=price_sheets&amp;type=c&amp;list=1', 'SSL'),
@@ -98,7 +98,7 @@ $mainmenu["customers"]["submenu"]["pricesheet"] = array(
   'params'      => '',
 );
 $mainmenu["vendors"]["submenu"]["pricesheet"] = array(
-  'text'        => BOX_PURCHASE_PRICE_SHEETS,
+  'text'        => TEXT_VENDOR_PRICE_SHEETS,
   'order'       => 65,
   'security_id' => SECURITY_ID_VEND_PRICE_SHEET_MGR,
   'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=price_sheets&amp;type=v&amp;list=1', 'SSL'),

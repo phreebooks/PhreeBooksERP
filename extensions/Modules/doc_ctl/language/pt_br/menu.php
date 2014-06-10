@@ -9,6 +9,6 @@
 // Path: /modules/doc_ctl/language/pt_br/menu.php
 
 define('TEXT_QUALITY','Qualidade');
-define('BOX_DOC_CTL_MODULE','Controle Documento');
+define('TEXT_DOCUMENT_CONTROL','Controle Documento');
 
 ?>

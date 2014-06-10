@@ -358,7 +358,7 @@
 	  default:
 	  case '0': // Default terms
 		if ((int)constant($type . '_PREPAYMENT_DISCOUNT_PERCENT') <> 0) {
-		  $result['long']  = TEXT_DISCOUNT . constant($type . '_PREPAYMENT_DISCOUNT_PERCENT') . TEXT_PERCENT . ACT_DUE_IN . constant($type . '_PREPAYMENT_DISCOUNT_DAYS') . TEXT_DAY_S;
+		  $result['long']  = TEXT_DISCOUNT . constant($type . '_PREPAYMENT_DISCOUNT_PERCENT') . TEXT_PERCENT . TEXT_DUE_IN . ' ' . constant($type . '_PREPAYMENT_DISCOUNT_DAYS') . TEXT_DAY_S;
 		  $result['short'] = constant($type . '_PREPAYMENT_DISCOUNT_PERCENT') . TEXT_PERCENT_SHORT . constant($type . '_PREPAYMENT_DISCOUNT_DAYS') . ', ';
 		}
 		$result['long']  .= ACT_TERMS_NET . constant($type . '_NUM_DAYS_DUE') . TEXT_DAY_S;
@@ -374,7 +374,7 @@
 		break;
 	  case '3': // Special terms
 		if ($terms[1] <> 0) {
-		  $result['long']  = TEXT_DISCOUNT . $terms[1] . TEXT_PERCENT . ACT_DUE_IN . $terms[2] . TEXT_DAY_S;
+		  $result['long']  = TEXT_DISCOUNT . $terms[1] . TEXT_PERCENT . TEXT_DUE_IN . ' ' . $terms[2] . TEXT_DAY_S;
 		  $result['short'] = $terms[1] . TEXT_PERCENT_SHORT . $terms[2] . ', ';
 		}
 		$result['long']  .= ACT_TERMS_NET . $terms[3] . TEXT_DAY_S;
@@ -382,7 +382,7 @@
 		break;
 	  case '4': // Due on day of next month
 		if ($terms[1] <> 0) {
-		  $result['long']  = TEXT_DISCOUNT . $terms[1] . TEXT_PERCENT . ACT_DUE_IN . $terms[2] . TEXT_DAY_S;
+		  $result['long']  = TEXT_DISCOUNT . $terms[1] . TEXT_PERCENT . TEXT_DUE_IN . ' ' . $terms[2] . TEXT_DAY_S;
 		  $result['short'] = $terms[1] . TEXT_PERCENT_SHORT . $terms[2] . ', ';
 		}
 		$result['long']  .= ACT_DUE_ON . $terms[3];
@@ -391,7 +391,7 @@
 	  case '5': // Due at end of month
 		if ($terms[1] <> 0) {
 		} else {
-		  $result['long']  = TEXT_DISCOUNT . $terms[1] . TEXT_PERCENT . ACT_DUE_IN . $terms[2] . TEXT_DAY_S;
+		  $result['long']  = TEXT_DISCOUNT . $terms[1] . TEXT_PERCENT . TEXT_DUE_IN . ' ' . $terms[2] . TEXT_DAY_S;
 		  $result['short'] = $terms[1] . TEXT_PERCENT_SHORT . $terms[2] . ', ';
 		}
 		$result['long']  .= ACT_END_OF_MONTH;
@@ -564,7 +564,7 @@ function get_dir_tree($dir, $root = true)  {
 		break;
 	  case "b": // Date Range
 		$d = '';
-		$fildesc = RW_RPT_DATERANGE;
+		$fildesc = TEXT_DATE_RANGE. ': ';
 		if ($DateArray[1] <> '') {
 		  $ds = gen_db_date($DateArray[1]);
 		  $d .= $df . " >= '" . $ds . "'";
@@ -582,31 +582,31 @@ function get_dir_tree($dir, $root = true)  {
 		$ds = $dates['Today'];
 		$de = gen_specific_date($dates['Today'], 1);
 		$d  = $df . " >= '" . $ds . "' and " . $df . " < '" . $de . "'";
-		$fildesc = RW_RPT_DATERANGE . ' = ' . gen_locale_date($dates['Today']) . '; ';
+		$fildesc = TEXT_DATE_RANGE . ' = ' . gen_locale_date($dates['Today']) . '; ';
 		break;
 	  case "d": // This Week
 		$ds = date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], date('j', $t) - date('w', $t), $dates['ThisYear']));
 		$de = gen_specific_date(date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], date('j', $t) - date('w', $t)+6, $dates['ThisYear'])), 1);
 		$d  = $df . " >= '" . $ds . "' and " . $df . " < '" . $de . "'";
-		$fildesc = RW_RPT_DATERANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date(gen_specific_date($de, -1)) . '; ';
+		$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date(gen_specific_date($de, -1)) . '; ';
 		break;
 	  case "e": // This Week to Date
 		$ds = date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], date('j', $t)-date('w', $t), $dates['ThisYear']));
 		$de = gen_specific_date($dates['Today'], 1);
 		$d  = $df . " >= '" . $ds . "' and " . $df . " < '" . $de . "'";
-		$fildesc = RW_RPT_DATERANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date($dates['Today']) . '; ';
+		$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date($dates['Today']) . '; ';
 		break;
 	  case "f": // This Month
 		$ds = date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], 1, $dates['ThisYear']));
 		$de = gen_specific_date(date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], $dates['TotalDays'], $dates['ThisYear'])), 1);
 		$d  = $df . " >= '" . $ds . "' and " . $df . " < '" . $de . "'";
-		$fildesc = RW_RPT_DATERANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date(gen_specific_date($de, -1)) . '; ';
+		$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date(gen_specific_date($de, -1)) . '; ';
 		break;
 	  case "g": // This Month to Date
 		$ds = date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], 1, $dates['ThisYear']));
 		$de = gen_specific_date($dates['Today'], 1);
 		$d  = $df . " >= '" . $ds . "' and " . $df . " < '" . $de . "'";
-		$fildesc = RW_RPT_DATERANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date($dates['Today']) . '; ';
+		$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date($dates['Today']) . '; ';
 		break;
 	  case "h": // This Quarter
 		$QtrStrt = CURRENT_ACCOUNTING_PERIOD - ((CURRENT_ACCOUNTING_PERIOD - 1) % 3);
@@ -615,7 +615,7 @@ function get_dir_tree($dir, $root = true)  {
 		$temp = gen_calculate_fiscal_dates($QtrStrt + 2);
 		$de = gen_specific_date($temp['end_date'], 1);
 		$d  = $df . " >= '" . $ds . "' and " . $df . " < '" . $de . "'";
-		$fildesc = RW_RPT_DATERANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date($temp['end_date']) . '; ';
+		$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date($temp['end_date']) . '; ';
 		break;
 	  case "i": // Quarter to Date
 		$QtrStrt = CURRENT_ACCOUNTING_PERIOD - ((CURRENT_ACCOUNTING_PERIOD - 1) % 3);
@@ -623,7 +623,7 @@ function get_dir_tree($dir, $root = true)  {
 		$ds = $temp['start_date'];
 		$de = gen_specific_date($dates['Today'], 1);
 		$d  = $df . " >= '" . $ds . "' and " . $df . " < '" . $de . "'";
-		$fildesc = RW_RPT_DATERANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date($dates['Today']) . '; ';
+		$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date($dates['Today']) . '; ';
 		break;
 	  case "j": // This Year
 		$YrStrt = CURRENT_ACCOUNTING_PERIOD - ((CURRENT_ACCOUNTING_PERIOD - 1) % 12);
@@ -632,7 +632,7 @@ function get_dir_tree($dir, $root = true)  {
 		$temp = gen_calculate_fiscal_dates($YrStrt + 11);
 		$de = gen_specific_date($temp['end_date'], 1);
 		$d  = $df . " >= '" . $ds . "' and " . $df . " < '" . $de . "'";
-		$fildesc = RW_RPT_DATERANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date($temp['end_date']) . '; ';
+		$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date($temp['end_date']) . '; ';
 		break;
 	  case "k": // Year to Date
 		$YrStrt = CURRENT_ACCOUNTING_PERIOD - ((CURRENT_ACCOUNTING_PERIOD - 1) % 12);
@@ -640,7 +640,7 @@ function get_dir_tree($dir, $root = true)  {
 		$ds = $temp['start_date'];
 		$de = gen_specific_date($dates['Today'], 1);
 		$d  = $df . " >= '" . $ds . "' and " . $df . " < '" . $de . "'";
-		$fildesc = RW_RPT_DATERANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date($dates['Today']) . '; ';
+		$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date($dates['Today']) . '; ';
 		break;
 	  case "l": // This Period
 		$ds = CURRENT_ACCOUNTING_PERIOD_START;

@@ -26,7 +26,7 @@
 		<td><?php echo SRV_SHIP_UPS . ' => ' . html_button_field('ship_ups', SRV_SHIP_UPS, 'onclick="window.open(\'index.php?module=shipping&amp;page=popup_label_mgr&amp;method=ups\',\'popup_label_mgr\',\'width=800,height=700,resizable=1,scrollbars=1,top=50,left=50\')"') . chr(10); ?></td>
 	  </tr>
 	  <tr>
-		<td><?php echo TEXT_CREATE_SHIPMENT_ENTRY . ' => ' . html_button_field('ship_log', TEXT_CREATE_SHIPMENT_ENTRY, 'onclick="window.open(\'index.php?module=shipping&amp;page=popup_tracking&amp;method=ups&amp;action=new\',\'popup_tracking\',\'width=550,height=350,resizable=1,scrollbars=1,top=150,left=200\')"') . chr(10); ?></td>
+		<td><?php echo TEXT_CREATE_A_SHIPMENT_ENTRY . ' => ' . html_button_field('ship_log', TEXT_CREATE_A_SHIPMENT_ENTRY, 'onclick="window.open(\'index.php?module=shipping&amp;page=popup_tracking&amp;method=ups&amp;action=new\',\'popup_tracking\',\'width=550,height=350,resizable=1,scrollbars=1,top=150,left=200\')"') . chr(10); ?></td>
 	  </tr>
 	 </table>
 	</td>

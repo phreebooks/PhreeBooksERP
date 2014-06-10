@@ -9,7 +9,7 @@
 // Path: /modules/phreepos/language/nl_nl/language.php
 
 define('BOX_PHREEPOS_RETURN','Kassa - Teruggave');
-define('PHREEPOS_PAYMENT_TITLE','Betaal Wijze');
+define('TEXT_ENTER_PAYMENT','Betaal Wijze');
 define('BNK_19_AMOUNT_PAID','Bedrag Ontv');
 define('TEXT_ADD_UPDATE','Toevoegen/Updaten');
 define('TEXT_SUBTOTAL','Subtotaal');
@@ -32,7 +32,7 @@ define('TEXT_SELECT_CUSTOMER','Selecteer Klant');
 define('TEXT_AMOUNT_ORIGINAL_CURRENCY','Oorspr Bedrag');
 define('TEXT_SALES','Verkopen');
 define('PHREEPOS_HANDELING_CASH_DIFFERENCE','Geboekt Kasverschil');
-define('POS_HEADING_CLOSING','Dag Afsluiting');
+define('TEXT_DAY_CLOSING','Dag Afsluiting');
 
 define('NEW_BALANCE','Nieuw Kassa Saldo');
 define('TEXT_PAYMENTS_SHOULD_BE','te Ontvangen Betalingen:');

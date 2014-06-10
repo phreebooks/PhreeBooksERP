@@ -36,6 +36,6 @@ switch ($_REQUEST['action']) {
 $include_header   = false;
 $include_footer   = false;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', POPUP_BAR_CODE_TITLE);
+define('PAGE_TITLE', TEXT_BAR_CODE_ENTRY);
 
 ?>

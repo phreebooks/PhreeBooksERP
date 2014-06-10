@@ -19,7 +19,7 @@
 
 // Page Titles
 define('BOX_PHREEPOS_RETURN','Point of Sale - Return');
-define('PHREEPOS_PAYMENT_TITLE','Enter Payment');
+define('TEXT_ENTER_PAYMENT','Enter Payment');
 
 // General Text
 define('BNK_19_AMOUNT_PAID','Amt Rcvd');
@@ -46,7 +46,7 @@ define('TEXT_PRINT_PREVIOUS','Print Previous Receipt');
 define('TEXT_AMOUNT_ORIGINAL_CURRENCY','Orig Amount');
 define('TEXT_SALES','Sales');
 define('PHREEPOS_HANDELING_CASH_DIFFERENCE','Posted Cash difference in till');
-define('POS_HEADING_CLOSING','Day Closing');
+define('TEXT_DAY_CLOSING','Day Closing');
 define('NEW_BALANCE','New Till Balance');
 define('TEXT_PAYMENTS_SHOULD_BE','Payments Should Be');
 define('TEXT_PAYMENTS_RECEIVED','Payments Received');

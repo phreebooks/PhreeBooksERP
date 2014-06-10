@@ -25,7 +25,7 @@ define('CD_10_32_DESC','Taxa adicional de manuseio');
 define('CD_10_26_DESC','Confirmação de Entrega');
 define('CD_10_20_DESC','Pewrmite que entregas gandes possam ser divididas para utilizar serviço de embalagem menor');
 define('CD_10_14_DESC','Seleçãpo de opção de seguro de entrega.');
-define('CD_10_10_DESC','Taxa adicional de manuseio do pacote');
+define('TEXT_ADDITIONAL_HANDLING_CHARGE_CHECKBOX','Taxa adicional de manuseio do pacote');
 define('CD_10_07_DESC','Dimensões padrão para utilizar em uma entrega normal (nas unidades especificadas acima).');
 define('CD_10_06_DESC','Tipo padrão de serviço de coleta para seu serviço de entrega');
 define('CD_10_05_DESC','Tipo padrão pacote entrega');

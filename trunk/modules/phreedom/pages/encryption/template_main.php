@@ -54,7 +54,7 @@ echo $toolbar->build_toolbar();
 </fieldset>
 <?php if ($security_level > 2) { ?>
 <fieldset>
-<legend><?php echo GEN_ADM_TOOLS_SET_ENCRYPTION_PW; ?></legend>
+<legend><?php echo TEXT_CREATE_OR_CHANGE_ENCRYPTION_KEY; ?></legend>
 <p><?php echo GEN_ADM_TOOLS_SET_ENCRYPTION_PW_DESC; ?></p>
 <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto">
  <tbody class="ui-widget-content">

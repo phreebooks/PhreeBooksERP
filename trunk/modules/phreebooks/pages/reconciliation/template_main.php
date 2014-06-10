@@ -46,7 +46,7 @@ echo $toolbar->build_toolbar($add_search = false, $add_period = false);
 	  'reference'  => TEXT_REFERENCE,
 	  'post_date'  => TEXT_DATE,
 	  'dep_amount' => BNK_DEPOSIT_CREDIT,
-	  'pmt_amount' => BNK_CHECK_PAYMENT,
+	  'pmt_amount' => TEXT_CHECK_OR_PAYMENT,
 	);
 	$result      = html_heading_bar($heading_array, array(TEXT_SOURCE, TEXT_CLEAR, '&nbsp;'));
 	echo $result['html_code'];
@@ -124,7 +124,7 @@ echo $toolbar->build_toolbar($add_search = false, $add_period = false);
  </tbody>
  <tfoot class="ui-widget-header">
   <tr>
-	<td colspan="5" align="right"><?php echo BNK_START_BALANCE . '&nbsp;'; ?></td>
+	<td colspan="5" align="right"><?php echo TEXT_STATEMENT_ENDING_BALANCE . '&nbsp;'; ?></td>
 	<td colspan="2" align="right"><?php echo html_input_field('start_balance', $statement_balance, 'style="text-align:right" size="13" onchange="updateBalance()"'); ?></td>
   </tr>
   <tr>
@@ -140,7 +140,7 @@ echo $toolbar->build_toolbar($add_search = false, $add_period = false);
 	<td colspan="2" align="right"><?php echo html_input_field('gl_balance', $gl_balance, 'disabled="disabled" style="text-align:right" size="13"'); ?></td>
   </tr>
   <tr>
-	<td colspan="5" align="right"><?php echo BNK_END_BALANCE . '&nbsp;'; ?></td>
+	<td colspan="5" align="right"><?php echo TEXT_UNRECONCILED_DIFFERENCE . '&nbsp;'; ?></td>
 	<td colspan="2" id="balance_total" align="right"><?php echo html_input_field('balance', '0', 'readonly="readonly" style="text-align:right" size="13"'); ?></td>
   </tr>
  </tfoot>

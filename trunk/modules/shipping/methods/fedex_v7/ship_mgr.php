@@ -21,7 +21,7 @@
 <table class="ui-widget" style="border-style:none;width:100%">
   <tr>
 	<td><?php echo html_button_field('ship_'     . $method->id, SHIPPING_SHIP_PACKAGE, 'onclick="window.open(\'index.php?module=shipping&amp;page=popup_label_mgr&amp;method=' . $method->id . '\',\'popup_label_mgr\',\'width=800,height=700,resizable=1,scrollbars=1,top=50,left=50\')"'); ?></td>
-	<td><?php echo html_button_field('ship_log_' . $method->id, TEXT_CREATE_SHIPMENT_ENTRY, 'onclick="window.open(\'index.php?module=shipping&amp;page=popup_tracking&amp;method='  . $method->id . '&amp;action=new\',\'popup_tracking\',\'width=550,height=350,resizable=1,scrollbars=1,top=150,left=200\')"'); ?></td>
+	<td><?php echo html_button_field('ship_log_' . $method->id, TEXT_CREATE_A_SHIPMENT_ENTRY, 'onclick="window.open(\'index.php?module=shipping&amp;page=popup_tracking&amp;method='  . $method->id . '&amp;action=new\',\'popup_tracking\',\'width=550,height=350,resizable=1,scrollbars=1,top=150,left=200\')"'); ?></td>
 	<td><?php echo html_button_field('close_'    . $method->id, SRV_TRACK_FEDEX_V7,    'onclick="submitAction(\'' . $method->id . '\', \'track\')"'); ?></td>
 	<td>
 	  <?php echo html_file_field('file_name') . ' '; ?>

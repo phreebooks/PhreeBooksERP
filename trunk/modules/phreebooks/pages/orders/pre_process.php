@@ -51,7 +51,7 @@ switch (JOURNAL_ID) {
 	$order->gl_type = 'poo';				// code to use for journal rows
 	define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);	// default account to use for item rows
 	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ap_acct'] ? $_SESSION['admin_prefs']['def_ap_acct'] : AP_DEFAULT_PURCHASE_ACCOUNT;
-	define('DEF_GL_ACCT_TITLE',ORD_AP_ACCOUNT);
+	define('DEF_GL_ACCT_TITLE',TEXT_AP_ACCOUNT);
 	define('TEXT_COLUMN_1_TITLE',TEXT_QUANTITY);
 	define('TEXT_COLUMN_2_TITLE',TEXT_RECEIVED);
 	define('TEXT_ORDER_CLOSED_FIELD',TEXT_CLOSE);
@@ -65,7 +65,7 @@ switch (JOURNAL_ID) {
 	$order->gl_type = 'poo';				// code to use for journal rows
 	define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);	// default account to use for item rows
 	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ap_acct'] ? $_SESSION['admin_prefs']['def_ap_acct'] : AP_DEFAULT_PURCHASE_ACCOUNT;
-	define('DEF_GL_ACCT_TITLE',ORD_AP_ACCOUNT);
+	define('DEF_GL_ACCT_TITLE',TEXT_AP_ACCOUNT);
 	define('TEXT_COLUMN_1_TITLE',TEXT_QUANTITY);
 	define('TEXT_COLUMN_2_TITLE',TEXT_RECEIVED);
 	define('TEXT_ORDER_CLOSED_FIELD',TEXT_CLOSE);
@@ -79,7 +79,7 @@ switch (JOURNAL_ID) {
 	$order->gl_type = 'por';
 	define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);
 	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ap_acct'] ? $_SESSION['admin_prefs']['def_ap_acct'] : AP_DEFAULT_PURCHASE_ACCOUNT;
-	define('DEF_GL_ACCT_TITLE',ORD_AP_ACCOUNT);
+	define('DEF_GL_ACCT_TITLE',TEXT_AP_ACCOUNT);
 	define('TEXT_COLUMN_1_TITLE',TEXT_PO_BAL);
 	define('TEXT_COLUMN_2_TITLE',TEXT_RECEIVED);
 	define('TEXT_ORDER_CLOSED_FIELD',TEXT_INVOICE_PAID);
@@ -93,7 +93,7 @@ switch (JOURNAL_ID) {
 	$order->gl_type = 'por';
 	define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);
 	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ap_acct'] ? $_SESSION['admin_prefs']['def_ap_acct'] : AP_DEFAULT_PURCHASE_ACCOUNT;
-	define('DEF_GL_ACCT_TITLE',ORD_AP_ACCOUNT);
+	define('DEF_GL_ACCT_TITLE',TEXT_AP_ACCOUNT);
 	define('TEXT_COLUMN_1_TITLE',TEXT_RECEIVED);
 	define('TEXT_COLUMN_2_TITLE',TEXT_RETURNED);
 	define('TEXT_ORDER_CLOSED_FIELD',TEXT_CREDIT_TAKEN);
@@ -107,7 +107,7 @@ switch (JOURNAL_ID) {
 	$order->gl_type = 'soo';				// code to use for journal rows
 	define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);	// default account to use for item rows
 	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ar_acct'] ? $_SESSION['admin_prefs']['def_ar_acct'] : AR_DEFAULT_GL_ACCT;
-	define('DEF_GL_ACCT_TITLE',ORD_AR_ACCOUNT);
+	define('DEF_GL_ACCT_TITLE',TEXT_AR_ACCOUNT);
 	define('TEXT_COLUMN_1_TITLE',TEXT_QUANTITY);
 	define('TEXT_COLUMN_2_TITLE',TEXT_INVOICED);
 	define('TEXT_ORDER_CLOSED_FIELD',TEXT_CLOSE);
@@ -121,7 +121,7 @@ switch (JOURNAL_ID) {
 	$order->gl_type = 'soo';
 	define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);
 	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ar_acct'] ? $_SESSION['admin_prefs']['def_ar_acct'] : AR_DEFAULT_GL_ACCT;
-	define('DEF_GL_ACCT_TITLE',ORD_AR_ACCOUNT);
+	define('DEF_GL_ACCT_TITLE',TEXT_AR_ACCOUNT);
 	define('TEXT_COLUMN_1_TITLE',TEXT_QUANTITY);
 	define('TEXT_COLUMN_2_TITLE',TEXT_INVOICED);
 	define('TEXT_ORDER_CLOSED_FIELD',TEXT_CLOSE);
@@ -135,7 +135,7 @@ switch (JOURNAL_ID) {
 	$order->gl_type = 'sos';
 	define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);
 	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ar_acct'] ? $_SESSION['admin_prefs']['def_ar_acct'] : AR_DEFAULT_GL_ACCT;
-	define('DEF_GL_ACCT_TITLE',ORD_AR_ACCOUNT);
+	define('DEF_GL_ACCT_TITLE',TEXT_AR_ACCOUNT);
 	define('TEXT_COLUMN_1_TITLE',TEXT_SO_BAL);
 	define('TEXT_COLUMN_2_TITLE',TEXT_QUANTITY);
 	define('TEXT_ORDER_CLOSED_FIELD',TEXT_PAID_IN_FULL);
@@ -149,7 +149,7 @@ switch (JOURNAL_ID) {
 	$order->gl_type = 'sos';
 	define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);
 	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ar_acct'] ? $_SESSION['admin_prefs']['def_ar_acct'] : AR_DEFAULT_GL_ACCT;
-	define('DEF_GL_ACCT_TITLE',ORD_AR_ACCOUNT);
+	define('DEF_GL_ACCT_TITLE',TEXT_AR_ACCOUNT);
 	define('TEXT_COLUMN_1_TITLE',TEXT_SHIPPED);
 	define('TEXT_COLUMN_2_TITLE',TEXT_RETURNED);
 	define('TEXT_ORDER_CLOSED_FIELD',TEXT_CREDIT_PAID);

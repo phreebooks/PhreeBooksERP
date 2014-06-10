@@ -126,13 +126,13 @@ class paypal_nvp extends \payment\classes\payment {
 	   'id'     => $this->id,
 	   'page'   => $this->text,
 	   'fields' => array(
-			array(	'title' => MODULE_PAYMENT_PAYPAL_NVP_TEXT_CREDIT_CARD_OWNER,
+			array(	'title' => TEXT_CREDIT_CARD_OWNER,
 					'field' => html_input_field('paypal_nvp_field_0', $order->paypal_nvp_field_0, 'size="12" maxlength="25"') . '&nbsp;' . html_input_field('paypal_nvp_field_5', $order->paypal_nvp_field_5, 'size="12" maxlength="25"')),
 			array( 	'title' => TEXT_CREDIT_CARD_NUMBER . ' : ',
 					'field' => html_input_field('paypal_nvp_field_1', $order->paypal_nvp_field_1)),
-			array( 	'title' => TEXT_CREDIT_CARD_EXPIRY_DATE . ' : ',
+			array( 	'title' => TEXT_CREDIT_CARD_EXPIRATION_DATE . ' : ',
 					'field' => html_pull_down_menu('paypal_nvp_field_2', $expires_month, $order->paypal_nvp_field_2) . '&nbsp;' . html_pull_down_menu('paypal_nvp_field_3', $expires_year, $order->paypal_nvp_field_3)),
-			array(	'title' => MODULE_PAYMENT_CC_TEXT_CVV,
+			array(	'title' => TEXT_CVV_NUMBER,
 					'field' => html_input_field('paypal_nvp_field_4', $order->paypal_nvp_field_4, 'size="4" maxlength="4"')),
 		));
     return $selection;

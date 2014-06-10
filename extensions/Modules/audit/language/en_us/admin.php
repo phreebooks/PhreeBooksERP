@@ -19,7 +19,7 @@
 define('MODULE_AUDIT_TITLE','Audit');
 define('MODULE_AUDIT_DESCRIPTION','This module will create a page on witch you can select a period you want to export as a .xaf file for your accountant or tax autoroty.');
 //admin
-define('BOX_AUDIT_ADMIN','Audit configuration.');
+define('TEXT_AUDIT_CONFIGURATION','Audit configuration.');
 define('TEXT_AUDIT_SETTINGS','Audit settings');
 define('MODULE_AUDIT_CONFIG_INFO','Please Set your configuration value');
 define('TEXT_AUDIT_DEBIT_NUMBER','Your number or id you have at your accountant');

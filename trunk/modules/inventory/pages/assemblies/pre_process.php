@@ -131,6 +131,6 @@ $cal_assy = array(
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', INV_ASSY_HEADING_TITLE);
+define('PAGE_TITLE', TEXT_ASSEMBLE_DISASSEMBLE_INVENTORY);
 
 ?>

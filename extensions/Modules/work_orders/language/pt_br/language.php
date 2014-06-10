@@ -11,7 +11,7 @@
 define('WO_POPUP_TASK_WINDOW_TITLE','Tarefas Ordem Serviço');
 define('HEADING_WORK_ORDER_MODULE_NEW','Criar Ordem Serviço');
 define('HEADING_WORK_ORDER_MODULE_EDIT','Alterar Ordem Serviço');
-define('HEADING_WORK_ORDER_MODULE_BUILD','Construir e Rastrear Ordem Serviço');
+define('TEXT_BUILD_AND_TRACK_WORK_ORDER','Construir e Rastrear Ordem Serviço');
 define('TEXT_APPROVALS','Aprovações');
 define('TEXT_BUILD_WORK_ORDER','Construir Ordem Serviço');
 define('TEXT_CLOSE_DATE','Data Fechamento');

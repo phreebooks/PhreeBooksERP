@@ -38,18 +38,18 @@ define('TEXT_VEHICLE','Voertuig');
 /************ Assets defines *********************/
 define('ASSETS_HEADING_NEW_ITEM','Nieuwe Activa');
 define('ASSETS_ENTER_ASSET_ID','Creer Nieuwe Activa');
-define('ASSETS_ENTRY_ASSET_TYPE','Selecteer Activa Type');
+define('TEXT_ENTER_THE_ASSET_TYPE','Selecteer Activa Type');
 define('TEXT_ASSET_TYPE','Activa Type');
 define('TEXT_ORIGINAL_COST','Oorspronkelijke Kosten');
-define('ASSETS_ENTRY_ACCT_SALES','Grootbook Activa Rekening');
-define('ASSETS_ENTRY_ACCT_INV','Grootbook Activa Afschrijving');
-define('ASSETS_ENTRY_ACCT_COS','Grootbook Activa Onderhoud');
+define('TEXT_GL_ASSET_ACCOUNT','Grootbook Activa Rekening');
+define('TEXT_GL_DEPRECIATION_ACCOUNT','Grootbook Activa Afschrijving');
+define('TEXT_GL_MAINTENANCE_ACCOUNT','Grootbook Activa Onderhoud');
 define('ASSETS_ENTRY_ASSETS_SERIALIZE','Merk/Model/VIN');
 define('TEXT_ASSET_PURCHASE_DATE','Activa Aankoop Datum');
 define('ASSETS_DATE_LAST_UPDATE','Laatste Onderhouds Datum');
 define('TEXT_ASSET_RETIRE_DATE','Activa Pension Datum');
 define('TEXT_PURCHASE_CONDITION','Aankoop Conditie');
-define('ASSETS_ENTRY_IMAGE_PATH','Afbeelding Adres');
+define('TEXT_IMAGE_RELATIVE_PATH','Afbeelding Adres');
 /************ Javascript defines *********/
 define('ASSETS_MSG_DELETE_ASSET','Weet u zeker dat u dit wil verwijderen?');
 

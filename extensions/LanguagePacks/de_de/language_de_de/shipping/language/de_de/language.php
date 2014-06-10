@@ -37,7 +37,7 @@ define ('TEXT_PACKAGE_DEFAULTS', 'Paket Defaults');
 define ('TEXT_SHIPMENT_DEFAULTS', 'Versand Defaults');
 define ('TEXT_REMOVE_MESSAGE', 'Sind Sie sicher, dass Sie diese Versandart entfernen?');
 
-define ('TEXT_CREATE_SHIPMENT_ENTRY', 'Sendung erstellen Eintrag');
+define ('TEXT_CREATE_A_SHIPMENT_ENTRY', 'Sendung erstellen Eintrag');
 define ('TEXT_SET_BY_SYSTEM', 'Durch das System');
 
 define ('SHIPPING_POPUP_WINDOW_TITLE', 'Liefer-Rate Estimator');
@@ -66,7 +66,7 @@ define ('TEXT_DELIVERY_CONFIRM', 'Zustellbestätigung');
 define ('TEXT_SPECIAL_OPTIONS', 'Spezielle Optionen');
 define ('TEXT_SERVICE_TYPE', 'Service-Typ');
 define ('SHIPPING_HANDLING_CHARGE', 'Handling Charge: Menge');
-define ('SHIPPING_COD_AMOUNT', 'COD: Sammeln');
+define ('TEXT_CASH_ON_DELIVERY_AMOUNT', 'COD: Sammeln');
 define ('TEXT_SATURDAY_PICKUP', 'Saturday Pickup');
 define ('TEXT_SATURDAY_DELIVERY', 'Saturday Delivery');
 define ('SHIPPING_HAZARDOUS_MATERIALS', 'Hazardous Material');
@@ -139,8 +139,8 @@ define ('SHIPPING_I2DAM', 'Worldwide Express');
 define ('SHIPPING_I3D', 'Worldwide Expedited');
 define ('SHIPPING_IGND', 'Ground (Kanada)');
 
-define ('SHIPPING_DAILY', 'Daily Pickup');
-define ('SHIPPING_CARRIER', 'Carrier Customer Counter');
+define ('TEXT_DAILY_PICKUP', 'Daily Pickup');
+define ('TEXT_CARRIER_CUSTOMER_COUNTER', 'Carrier Customer Counter');
 define ('SHIPPING_ONE_TIME', 'Request / One Time Pickup');
 define ('SHIPPING_ON_CALL', 'On Call Air');
 define ('SHIPPING_RETAIL', 'unverb. Preise');
@@ -154,16 +154,16 @@ define ('TEXT_INCHES_SHORT', 'in');
 define ('TEXT_CENTIMETERS_SHORT', 'cm');
 
 define ('SHIPPING_ENVENLOPE', 'Envelope / Letter');
-define ('SHIPPING_CUST_SUPP', 'Kunde angegeben');
-define ('SHIPPING_TUBE', 'Carrier Tube');
-define ('SHIPPING_PAK', 'Carrier Pak');
-define ('SHIPPING_BOX', 'Carrier-Box');
+define ('TEXT_CUSTOMER_SUPPLIED', 'Kunde angegeben');
+define ('TEXT_CARRIER_TUBE', 'Carrier Tube');
+define ('TEXT_CARRIER_PAK', 'Carrier Pak');
+define ('TEXT_CARRIER_BOX', 'Carrier-Box');
 define ('SHIPPING_25KG', '25kg Box ');
 define ('SHIPPING_10KG', '10kg Box ');
 
 define ('SHIPPING_CASH', 'Cash');
 define ('TEXT_CHECK', 'Check');
-define ('SHIPPING_CASHIERS', 'Kassierer \' s Check ');
+define ('TEXT_CASHIERS_CHECK', 'Kassierer\'s Check ');
 define ('SHIPPING_MO', 'Money Order');
 define ('TEXT_ANY', 'Jeder');
 
@@ -172,9 +172,9 @@ define ('SHIPPING_NO_SIG_RQD', 'Keine Unterschrift erforderlich');
 define ('TEXT_SIGNATURE_REQUIRED', 'Signatur');
 define ('TEXT_ADULT_SIGNATURE_REQUIRED', 'Adult Signature Required ');
 
-define ('SHIPPING_RET_CARRIER', 'Carrier Return Label');
+define ('TEXT_CARRIER_RETURN_LABEL', 'Carrier Return Label');
 define ('SHIPPING_RET_LOCAL', 'Print Lokale Rückholaufkleber');
-define ('SHIPPING_RET_MAILS', 'Carrier Drucke und Mails Rückholaufkleber');
+define ('TEXT_CARRIER_PRINTS_AND_MAILS_RETURN_LABEL', 'Carrier Drucke und Mails Rückholaufkleber');
 
 define ('TEXT_SENDER', 'Absender');
 define ('TEXT_RECEIPIENT', 'Empfängername');

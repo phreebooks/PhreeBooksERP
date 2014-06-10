@@ -191,12 +191,12 @@ class paymentech {
     }
     $selection = array('id' => $this->code,
 	 'module' => MODULE_PAYMENT_PAYMENTECH_TEXT_CATALOG_TITLE,
-	 'fields' => array(array('title' => MODULE_PAYMENT_PAYMENTECH_TEXT_CREDIT_CARD_OWNER,
-								 'field' => html_input_field('paymentech_field_0', $order->paymentech_field_0)),
-						   array('title' => MODULE_PAYMENT_PAYMENTECH_TEXT_CREDIT_CARD_NUMBER,
-								 'field' => html_input_field('paymentech_field_1', $order->paymentech_field_1)),
-						   array('title' => MODULE_PAYMENT_PAYMENTECH_TEXT_CREDIT_CARD_EXPIRES,
-								 'field' => html_pull_down_menu('paymentech_field_2', $expires_month, $order->paymentech_field_2) . '&nbsp;' . html_pull_down_menu('paymentech_field_3', $expires_year, $order->paymentech_field_3)),
+	 'fields' => array(	array('title' => TEXT_CREDIT_CARD_OWNER. ': ',
+							  'field' => html_input_field('paymentech_field_0', $order->paymentech_field_0)),
+						array('title' => TEXT_CREDIT_CARD_NUMBER. ': ',
+							  'field' => html_input_field('paymentech_field_1', $order->paymentech_field_1)),
+						array('title' => TEXT_CREDIT_CARD_EXPIRATION_DATE. ': ',
+							  'field' => html_pull_down_menu('paymentech_field_2', $expires_month, $order->paymentech_field_2) . '&nbsp;' . html_pull_down_menu('paymentech_field_3', $expires_year, $order->paymentech_field_3)),
 		));
     if (MODULE_PAYMENT_PAYMENTECH_USE_CVV == 'True') {
       $selection['fields'][] = array('title' => MODULE_PAYMENT_PAYMENTECH_TEXT_CVV,

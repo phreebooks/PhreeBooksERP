@@ -56,11 +56,11 @@ $extra_stuff = NULL;
 		  </td>
 		</tr>
 		<tr>
-		  <td><?php echo PHREEFORM_DATEDEF; ?></td>
+		  <td><?php echo TEXT_DEFAULT_DATE_SELECTED; ?></td>
 		  <td colspan="2"><?php echo html_pull_down_menu('date_default', gen_build_pull_down($DateChoices), $report->datedefault); ?></td>
 		</tr>
 		<tr>
-		  <td><?php echo PHREEFORM_DATEFNAME; ?></td>
+		  <td><?php echo TEXT_DATE_FIELDNAME; ?></td>
 		  <td colspan="4"><?php echo html_pull_down_menu('date_field', $kFields, $report->datefield, 'onclick="updateFieldList(this)"'); ?></td>
 		</tr>
 		</tbody></table>
@@ -72,7 +72,7 @@ $extra_stuff = NULL;
 	  <td>
 		<table class="ui-widget" style="border-collapse:collapse;width:100%">
 		<thead class="ui-widget-header">
-		<tr><th colspan="20"><?php echo PHREEFORM_GRPLIST; ?></th></tr>
+		<tr><th colspan="20"><?php echo TEXT_GROUPING_LIST; ?></th></tr>
 		<tr>
 		  <th><?php echo TEXT_FIELDNAME;   ?></th>
 		  <th><?php echo PHREEFORM_DISPNAME;   ?></th>

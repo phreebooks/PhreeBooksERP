@@ -101,7 +101,7 @@ switch ($_REQUEST['action']) {
 		}
 	  }
 	}
-	if ($cnt == 0) $messageStack->add(INV_TOOLS_IN_BALANCE, 'success');
+	if ($cnt == 0) $messageStack->add(TEXT_YOUR_INVENTORY_BALANCES_ARE_OK, 'success');
 	$default_tab_id = 'tools';
     break;
   case 'inv_on_order_fix':

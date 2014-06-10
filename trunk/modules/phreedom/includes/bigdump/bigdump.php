@@ -285,7 +285,7 @@ if (count($extra_toolbar_buttons) > 0) {
 $toolbar->add_help('01');
 echo $toolbar->build_toolbar();
 
-echo '<h1>' . BOX_HEADING_RESTORE . '</h1>';
+echo '<h1>' . TEXT_COMPANY_RESTORE . '</h1>';
 // ****************************** EOF - Mods by PhreeSoft **************************************** ?>
 
 <center>
@@ -425,7 +425,7 @@ if (!$error && !isset($_REQUEST["fn"]) && $filename=="")
     { if ($dirfile != "." && $dirfile != ".." && $dirfile!=basename($_SERVER["SCRIPT_FILENAME"]))
       { if (!$dirhead)
         { echo ("<table width=\"100%\" cellspacing=\"2\" cellpadding=\"2\">\n");
-          echo ("<tr><th>".TEXT_FILENAME."</th><th>".TEXT_SIZE."</th><th>".TEXT_DATE."&amp;".TEXT_TIME."</th><th>".TEXT_TYPE."</th><th>&nbsp;</th><th>&nbsp;</th></tr>\n");
+          echo ("<tr><th>".TEXT_FILE_NAME."</th><th>".TEXT_SIZE."</th><th>".TEXT_DATE."&amp;".TEXT_TIME."</th><th>".TEXT_TYPE."</th><th>&nbsp;</th><th>&nbsp;</th></tr>\n");
           $dirhead=true;
         }
 // ****************************** BOF - Mods by PhreeSoft ****************************************

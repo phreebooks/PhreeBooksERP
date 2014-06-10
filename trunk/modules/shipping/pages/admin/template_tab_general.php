@@ -81,7 +81,7 @@
 	    <td nowrap="nowrap"><?php echo html_input_field('shipping_default_height', $_POST['shipping_default_height'] ? $_POST['shipping_default_height'] : SHIPPING_DEFAULT_HEIGHT, 'size="10" style="text-align:right"') . TEXT_HEIGHT; ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo CD_10_10_DESC; ?></td>
+	    <td><?php echo TEXT_ADDITIONAL_HANDLING_CHARGE_CHECKBOX; ?></td>
 	    <td><?php echo html_pull_down_menu('shipping_default_additional_handling_show', $sel_show, $_POST['shipping_default_additional_handling_show'] ? $_POST['shipping_default_additional_handling_show'] : SHIPPING_DEFAULT_ADDITIONAL_HANDLING_SHOW, ''); ?></td>
 	    <td nowrap="nowrap"><?php echo TEXT_DEFAULT . ' ' . html_pull_down_menu('shipping_default_additional_handling_checked', $sel_checked, $_POST['shipping_default_additional_handling_checked'] ? $_POST['shipping_default_additional_handling_checked'] : SHIPPING_DEFAULT_ADDITIONAL_HANDLING_CHECKED, ''); ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
@@ -106,7 +106,7 @@
 	    <td nowrap="nowrap"><?php echo TEXT_VALUE . ' ' . html_pull_down_menu('shipping_default_delivery_confirmation_type', gen_build_pull_down($shipping_defaults['delivery_confirmation']), $_POST['shipping_default_delivery_confirmation_type'] ? $_POST['shipping_default_delivery_confirmation_type'] : SHIPPING_DEFAULT_DELIVERY_COMFIRMATION_TYPE, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo CD_10_32_DESC; ?></td>
+	    <td><?php echo TEXT_ADDITIONAL_HANDLING_CHARGE_CHECKBOX; ?></td>
 	    <td><?php echo html_pull_down_menu('shipping_default_handling_charge_show', $sel_show, $_POST['shipping_default_handling_charge_show'] ? $_POST['shipping_default_handling_charge_show'] : SHIPPING_DEFAULT_HANDLING_CHARGE_SHOW, ''); ?></td>
 	    <td nowrap="nowrap"><?php echo TEXT_DEFAULT . ' ' . html_pull_down_menu('shipping_default_handling_charge_checked', $sel_checked, $_POST['shipping_default_handling_charge_checked'] ? $_POST['shipping_default_handling_charge_checked'] : SHIPPING_DEFAULT_HANDLING_CHARGE_CHECKED, ''); ?></td>
 	    <td nowrap="nowrap"><?php echo TEXT_VALUE . ' ' . html_input_field('shipping_default_handling_charge_value', $_POST['shipping_default_handling_charge_value'] ? $_POST['shipping_default_handling_charge_value'] : SHIPPING_DEFAULT_HANDLING_CHARGE_VALUE, 'size="10" style="text-align:right"'); ?></td>

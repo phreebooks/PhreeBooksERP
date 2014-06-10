@@ -28,7 +28,7 @@ define('PB_PF_CONTACT_ID','Contact ID');
 define('TEXT_TERMS_TO_LANGUAGE','Terms to Language');
 define('COST_TYPE_LBR','Labor');
 define('TEXT_MATERIALS','Materials');
-define('COST_TYPE_CNT','Contractors');
+define('TEXT_CONTRACTORS','Contractors');
 define('COST_TYPE_EQT','Equipment');
 define('TEXT_OTHER','Other');
 define('TEXT_CUSTOMER','Customer');

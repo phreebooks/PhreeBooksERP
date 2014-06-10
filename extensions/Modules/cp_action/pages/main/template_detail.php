@@ -39,7 +39,7 @@ $toolbar->icon_list['print']['show']    = false;
 //$toolbar->add_help('');
 echo $toolbar->build_toolbar();
 ?>
-<h1><?php echo ($_REQUEST['action'] == 'new') ? MENU_HEADING_NEW_CAPA : (MENU_HEADING_CAPA . ' - ' . TEXT_CAPA_ID . '# ' . $cInfo->capa_num); ?></h1>
+<h1><?php echo ($_REQUEST['action'] == 'new') ? TEXT_CREATE_NEW_CORRECTIVE_ACTION : (TEXT_CORRECTIVE_OR_PREVENTATIVE_ACTION . ' - ' . TEXT_CAPA_NUM . '# ' . $cInfo->capa_num); ?></h1>
 
 <fieldset>
   <legend><?php echo TEXT_GENERAL; ?></legend>
@@ -56,7 +56,7 @@ echo $toolbar->build_toolbar();
 	  <td><?php echo html_pull_down_menu('capa_status', gen_build_pull_down($status_codes), $cInfo->capa_status); ?></td>
 	</tr>
 	<tr>
-	  <td align="right"><?php echo TEXT_CAPA_ID . ' (' . TEXT_ASSIGNED_BY_SYSTEM . ') '; ?></td>
+	  <td align="right"><?php echo TEXT_CAPA_NUM . ' (' . TEXT_ASSIGNED_BY_SYSTEM . ') '; ?></td>
 	  <td><?php echo html_input_field('capa_num', $cInfo->capa_num, 'readonly="readonly"'); ?> </td>
 	  <td align="right"><?php echo TEXT_ENTERED_BY; ?></td>
 	  <td><?php echo html_pull_down_menu('entered_by', gen_get_pull_down(TABLE_USERS, true, '1', 'admin_id', 'display_name'), ($cInfo->entered_by ? $cInfo->entered_by : $_SESSION['admin_id'])); ?></td>
@@ -70,7 +70,7 @@ echo $toolbar->build_toolbar();
   </table>
 </fieldset>
 <fieldset>
-  <legend><?php echo TEXT_CUSTOMER_INFO; ?></legend>
+  <legend><?php echo TEXT_CUSTOMER_DETAILS; ?></legend>
   <table>
 	<tr>
 	  <td align="right"><?php echo TEXT_CUSTOMER_NAME; ?></td>
@@ -162,7 +162,7 @@ echo $toolbar->build_toolbar();
   <table>
 	<tr>
 	  <td align="right">&nbsp;</td>
-	  <td align="right"><?php echo TEXT_ACTION_EFFECTIVE; ?></td>
+	  <td align="right"><?php echo TEXT_WAS_ACTION_TAKEN_EFFECTIVE . '?'; ?></td>
 	  <td>
 	    <?php echo TEXT_YES . ' ' . html_radio_field('capa_closed', 'y', (!$cInfo->capa_closed || $cInfo->capa_closed == 'y') ? true : false); ?>
 	    <?php echo TEXT_NO  . ' ' . html_radio_field('capa_closed', 'n', ($cInfo->capa_closed == 'n') ? true : false); ?>

@@ -31,7 +31,7 @@ define('TEXT_PACKAGE_DEFAULTS','Package Defaults');
 define('TEXT_SHIPMENT_DEFAULTS','Shipment Defaults');
 define('TEXT_SHIPMENTS_ON','Shipments On: ');
 define('TEXT_REMOVE_MESSAGE','Are you sure you want to remove this shipping method?');
-define('TEXT_CREATE_SHIPMENT_ENTRY','Create a Shipment Entry');
+define('TEXT_CREATE_A_SHIPMENT_ENTRY','Create a Shipment Entry');
 define('TEXT_SET_BY_SYSTEM','Set by the system');
 define('SHIPPING_POPUP_WINDOW_TITLE','Shipping Rate Estimator');
 define('SHIPPING_POPUP_WINDOW_RATE_TITLE','Shipping Estimator - Rates');
@@ -59,7 +59,7 @@ define('TEXT_DELIVERY_CONFIRM','Delivery Confirmation ');
 define('TEXT_SPECIAL_OPTIONS','Special Options');
 define('TEXT_SERVICE_TYPE','Service Type');
 define('SHIPPING_HANDLING_CHARGE','Handling Charge: Amount ');
-define('SHIPPING_COD_AMOUNT','COD: Collect ');
+define('TEXT_CASH_ON_DELIVERY_AMOUNT','COD: Collect ');
 define('TEXT_SATURDAY_PICKUP','Saturday Pickup');
 define('TEXT_SATURDAY_DELIVERY','Saturday Delivery');
 define('TEXT_HAZARDOUS_MATERIALS','Hazardous Material');
@@ -142,11 +142,11 @@ define('SHIPPING_RECP_INFO','Recepient Information');
 define('SHIPPING_EMAIL_NOTIFY','Email Notifications');
 define('TEXT_BILLING_DETAILS','Billing Details');
 define('TEXT_LTL_FREIGHT','LTL Freight');
-define('SHIPPING_LTL_CLASS','Freight Class');
+define('TEXT_FREIGHT_CLASS','Freight Class');
 define('TEXT_CONFIRM_DELIVERY','Confirm Delivery');
 
-define('SHIPPING_DAILY','Daily Pickup');
-define('SHIPPING_CARRIER','Carrier Customer Counter');
+define('TEXT_DAILY_PICKUP','Daily Pickup');
+define('TEXT_CARRIER_CUSTOMER_COUNTER','Carrier Customer Counter');
 define('SHIPPING_ONE_TIME','Request/One Time Pickup');
 define('SHIPPING_ON_CALL','On Call Air');
 define('SHIPPING_RETAIL','Suggested Retail Rates');
@@ -160,16 +160,16 @@ define('TEXT_INCHES_SHORT','in');
 define('TEXT_CENTIMETERS_SHORT','cm');
 
 define('SHIPPING_ENVENLOPE','Envelope/Letter');
-define('SHIPPING_CUST_SUPP','Customer Supplied');
-define('SHIPPING_TUBE','Carrier Tube');
-define('SHIPPING_PAK','Carrier Pak');
-define('SHIPPING_BOX','Carrier  Box');
+define('TEXT_CUSTOMER_SUPPLIED','Customer Supplied');
+define('TEXT_CARRIER_TUBE','Carrier Tube');
+define('TEXT_CARRIER_PAK','Carrier Pak');
+define('TEXT_CARRIER_BOX','Carrier  Box');
 define('SHIPPING_25KG','25kg Box');
 define('SHIPPING_10KG','10kg Box');
 
 define('SHIPPING_CASH','Cash');
 define('TEXT_CHECK','Check');
-define('SHIPPING_CASHIERS','Cashier\'s Check');
+define('TEXT_CASHIERS_CHECK','Cashier\'s Check');
 define('SHIPPING_MO','Money Order');
 define('TEXT_ANY','Any');
 
@@ -178,9 +178,9 @@ define('SHIPPING_NO_SIG_RQD','No Signature Required');
 define('TEXT_SIGNATURE_REQUIRED','Signature Required');
 define('TEXT_ADULT_SIGNATURE_REQUIRED','Adult Signature Required');
 
-define('SHIPPING_RET_CARRIER','Carrier Return Label');
+define('TEXT_CARRIER_RETURN_LABEL','Carrier Return Label');
 define('SHIPPING_RET_LOCAL','Print Local Return Label');
-define('SHIPPING_RET_MAILS','Carrier Prints and Mails Return Label');
+define('TEXT_CARRIER_PRINTS_AND_MAILS_RETURN_LABEL','Carrier Prints and Mails Return Label');
 
 define('TEXT_SENDER','Sender');
 define('TEXT_RECEIPIENT','Receipient');
@@ -189,7 +189,7 @@ define('TEXT_COLLECT','Collect');
 
 // Key descriptions
 define('SHIPPING_TITLE_DESC', 'Title to use for display purposes on shipping rate estimator');
-define('SHIPPING_COST_DESC', 'What is the Shipping cost?');
+define('TEXT_WHAT_IS_THE_SHIPPING_COST', 'What is the Shipping cost');
 define('SHIPPING_HANDLING_DESC', 'Handling fee for this shipping method.');
 define('SORT_ORDER_DESC', 'Sort order of display. Determines the order which this method appears on all generted lists.');
 define('SHIPPING_PRINTER_TYPE_DESC','Type of printer to use for printing labels. PDF for plain paper, Thermal for Eltron/Zebra Label Printer');

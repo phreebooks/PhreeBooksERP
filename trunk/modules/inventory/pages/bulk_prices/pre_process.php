@@ -47,7 +47,7 @@ switch ($_REQUEST['action']) {
 		}
 		$j++;
 	}
-	gen_add_audit_log(INV_BULK_SKU_ENTRY_TITLE. ' - ' . TEXT_UPDATE);
+	gen_add_audit_log(TEXT_BULK_SKU_PRICING_ENTRY. ' - ' . TEXT_UPDATE);
 	break;
   case 'go_first':    $_REQUEST['list'] = 1;       break;
   case 'go_previous': $_REQUEST['list'] = max($_REQUEST['list']-1, 1); break;
@@ -91,5 +91,5 @@ $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 history_save('inv_bulk');
 
 $include_template = 'template_main.php';
-define('PAGE_TITLE', INV_BULK_SKU_ENTRY_TITLE);
+define('PAGE_TITLE', TEXT_BULK_SKU_PRICING_ENTRY);
 ?>

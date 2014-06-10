@@ -23,7 +23,7 @@ require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
 define('JOURNAL_ID',20);
 define('GL_TYPE','chk');
 define('POPUP_FORM_TYPE','bnk:chk');
-define('AUDIT_LOG_DESC',ORD_TEXT_20_WINDOW_TITLE);
+define('AUDIT_LOG_DESC',TEXT_CASH_DISTRIBUTIONS);
 $post_success      = false;
 $post_date         = isset($_REQUEST['post_date']) ? gen_db_date($_REQUEST['post_date']) : date('Y-m-d', time());
 $_GET['post_date'] = $post_date;

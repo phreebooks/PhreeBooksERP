@@ -207,17 +207,17 @@ switch ($_REQUEST['action']) {
     // set some defaults
     $cInfo->creation_date = date('Y-m-d');
 	$cInfo->capa_status   = '1';
-    define('PAGE_TITLE', MENU_HEADING_NEW_CAPA);
+    define('PAGE_TITLE', TEXT_CREATE_NEW_CORRECTIVE_ACTION);
     $include_template = 'template_detail.php';
     break;
   case 'edit':
-    define('PAGE_TITLE', BOX_CAPA_MAINTAIN);
+    define('PAGE_TITLE', TEXT_CORRECTIVE_OR_PREVENTATIVE_ACTION);
     $include_template = 'template_detail.php';
     break;
   default:
     // build the list header
 	$heading_array = array(
-	  'capa_num'      => TEXT_CAPA_ID,
+	  'capa_num'      => TEXT_CAPA_NUM,
 	  'creation_date' => TEXT_CREATION_DATE,
 	  'notes_issue'   => TEXT_DESCRIPTION,
 	  'capa_status'   => TEXT_STATUS,
@@ -244,7 +244,7 @@ switch ($_REQUEST['action']) {
     $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 	history_save();
-    define('PAGE_TITLE', BOX_CAPA_MAINTAIN);
+    define('PAGE_TITLE', TEXT_CORRECTIVE_OR_PREVENTATIVE_ACTION);
     $include_template = 'template_main.php';
 	break;
 }

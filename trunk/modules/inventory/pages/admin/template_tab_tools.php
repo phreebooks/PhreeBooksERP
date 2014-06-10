@@ -20,7 +20,7 @@
 ?>
 <div title="<?php echo TEXT_TOOLS;?>" id="tab_tools">
 <fieldset>
-<legend><?php echo INV_TOOLS_VALIDATE_INVENTORY; ?></legend>
+<legend><?php echo TEXT_VALIDATE_INVENTORY_DISPLAYED_STOCK; ?></legend>
 <p><?php echo INV_TOOLS_VALIDATE_INV_DESC; ?></p>
   <table>
     <tr>
@@ -34,14 +34,14 @@
   </table>
 </fieldset>
 <fieldset>
-<legend><?php echo INV_TOOLS_VALIDATE_SO_PO; ?></legend>
+<legend><?php echo TEXT_VALIDATE_INVENTORY_QUANTITY_ON_ORDER_VALUES; ?></legend>
 <p><?php echo INV_TOOLS_VALIDATE_SO_PO_DESC; ?></p>
   <table>
     <tr>
 	  <th><?php echo INV_TOOLS_REPAIR_SO_PO; ?></th>
 	</tr>
 	<tr>
-	  <td align="center"><?php echo html_button_field('inv_on_order_fix', INV_TOOLS_BTN_SO_PO_FIX, 'onclick="submitToDo(\'inv_on_order_fix\')"'); ?></td>
+	  <td align="center"><?php echo html_button_field('inv_on_order_fix', TEXT_BEGIN_TEST_AND_REPAIR, 'onclick="submitToDo(\'inv_on_order_fix\')"'); ?></td>
 	</tr>
   </table>
 </fieldset>

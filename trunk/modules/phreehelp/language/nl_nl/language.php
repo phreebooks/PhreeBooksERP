@@ -17,7 +17,7 @@ define('TEXT_FOLDER','Map');
 define('TEXT_FORWARD','Volgende');
 define('TEXT_SUPPORT','PhreeSoft Online Support');
 define('TEXT_KEYWORD','Voer een sleutelwoord in om te zoeken:');
-define('TEXT_SEARCH_RESULTS','Uw zoek resultaten:');
+define('TEXT_YOUR_SEARCH_RESULTS','Uw zoek resultaten');
 define('TEXT_UNTITLED','Niet getiteld document');
 define('TEXT_MANUAL','Handleiding');
 define('TEXT_NO_RESULTS','Er zijn geen resultaten gevonden. De zoekterm moet minstens vier letters, en niet een algemeen woord.');

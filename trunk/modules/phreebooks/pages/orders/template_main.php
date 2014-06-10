@@ -420,7 +420,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
 <?php if (defined('MODULE_SHIPPING_STATUS')) { ?>
         <tr>
           <td>
-<?php echo ORD_FREIGHT_GL_ACCT . ' ';
+<?php echo TEXT_FREIGHT_GL_ACCOUNT . ' ';
       echo html_pull_down_menu('ship_gl_acct_id', $gl_array_list, $order->ship_gl_acct_id, ''); ?>
 		  </td>
           <td align="right">

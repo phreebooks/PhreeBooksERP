@@ -83,7 +83,7 @@ echo $toolbar->build_toolbar();
 	  </tr>
 	</table></td>
 	<td>&nbsp;</td>
-	<td align="center" valign="top"><?php echo INV_ASSY_PARTS_REQUIRED; ?>
+	<td align="center" valign="top"><?php echo TEXT_COMPONENTS_REQUIRED_FOR_THIS_ASSEMBLY; ?>
 	  <table class="ui-widget" style="border-collapse:collapse;width:600px;margin-left:auto;margin-right:auto;">
 	    <thead class="ui-widget-header">
 		  <tr>

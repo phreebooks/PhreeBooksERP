@@ -159,11 +159,11 @@ echo '<br />' . html_input_field('bill_email', $order->bill_email, 'size="40" ma
 		<table class="ui-widget" style="border-style:none;width:100%">
 		 <tbody class="ui-widget-content">
 		  <tr>
-			<td align="right"><?php echo BNK_ACCOUNT_BALANCE . '&nbsp;'; ?></td>
+			<td align="right"><?php echo TEXT_BALANCE_BEFORE_PAYMENTS . '&nbsp;'; ?></td>
 			<td align="right"><?php echo html_input_field('acct_balance', $currencies->format($acct_balance), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?></td>
 		  </tr>
 		  <tr>
-			<td align="right"><?php echo BNK_BALANCE_AFTER_CHECKS . '&nbsp;'; ?></td>
+			<td align="right"><?php echo TEXT_BALANCE_AFTER_PAYMENTS . '&nbsp;'; ?></td>
 			<td align="right"><?php echo html_input_field('end_balance', $currencies->format($acct_balance), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?></td>
 		  </tr>
 		 </tbody>

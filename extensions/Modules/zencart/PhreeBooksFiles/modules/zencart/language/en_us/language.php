@@ -18,7 +18,7 @@
 //
 
 // Headings
-define('BOX_ZENCART_ADMIN','Zencart Configuration');
+define('TEXT_ZENCART_CONFIGURATION','Zencart Configuration');
 // General Defines
 define('ZENCART_CONFIRM_MESSAGE','Your order shipped %s via %s %s, tracking number: %s');
 define('ZENCART_BULK_UPLOAD_SUCCESS','Successfully uploaded %s item(s) to the ZenCart e-store.');
@@ -26,7 +26,7 @@ define('TEXT_ERROR','Error # ');
 define('ZENCART_IVENTORY_UPLOAD','ZenCart Upload');
 define('ZENCART_BULK_UPLOAD_TITLE','Bulk Upload');
 define('ZENCART_BULK_UPLOAD_INFO','Bulk upload all products selected to be displayed in the ZenCart e-commerce site. Images are not included unless the checkbox is checked.');
-define('ZENCART_BULK_UPLOAD_TEXT','Bulk upload products to e-store');
+define('TEXT_BULK_UPLOAD_PRODUCTS_TO_E-STORE','Bulk upload products to e-store');
 define('TEXT_INCLUDE_IMAGES','Include Images');
 define('ZENCART_BULK_UPLOAD_BTN','Bulk Upload');
 define('ZENCART_PRODUCT_SYNC_TITLE','Synchronize Products');
@@ -47,7 +47,7 @@ define('ZENCART_INVALID_ACTION','Invalid action requested in ZenCart interface c
 define('ZENCART_INVALID_SKU','Error in inventory item id, could not find the record in the database');
 // Javascrpt Defines
 // Audit Log Messages
-define('ZENCART_UPLOAD_PRODUCT','ZenCart Product Upload');
+define('TEXT_UPLOAD_PRODUCT','Product Upload');
 define('ZENCART_BULK_UPLOAD','ZenCart Bulk Upload');
 define('TEXT_ZENCART_PRODUCT_SYNC','ZenCart Product Sync');
 define('ZENCART_SHIP_CONFIRM','ZenCart Ship Confirmation');

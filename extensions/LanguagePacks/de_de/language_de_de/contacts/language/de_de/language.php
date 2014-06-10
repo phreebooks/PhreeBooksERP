@@ -47,7 +47,7 @@ define ('TEXT_CITY_TOWN', 'City');
 define ('TEXT_STATE_PROVINCE '," Staat ");
 define ('TEXT_POSTAL_CODE', 'Postleitzahl');
 define ('TEXT_COUNTRY', 'Land');
-define ('GEN_COUNTRY_CODE', 'ISO-Code');
+define ('TEXT_COUNTRY_ISO_CODE', 'ISO-Code');
 define ('TEXT_FIRST_NAME', 'Vorname');
 define ('TEXT_MIDDLE_NAME', 'Vornamen');
 define ('TEXT_LAST_NAME', 'Nachname');
@@ -58,8 +58,8 @@ define ('GEN_TELEPHONE4', 'Handy');
 define ('GEN_ACCOUNT_ID', 'Konto-ID');
 define ('GEN_CUSTOMER_ID', 'Kunden-ID:');
 define ('GEN_VENDOR_ID', 'Vendor ID:');
-define ('ACT_ACCOUNT_NUMBER', 'Facebook-ID');
-define ('ACT_ID_NUMBER', 'Twitter-ID');
+define ('TEXT_FACEBOOK_ID', 'Facebook-ID');
+define ('TEXT_TWITTER_ID', 'Twitter-ID');
 define ('TEXT_WEBSITE', 'Website');
 define ('GEN_ACCOUNT_LINK', 'Link to Employee Konto');
 
@@ -96,7 +96,7 @@ define ('ACT_E_GL_ACCOUNT_TYPE', 'Arbeitnehmertyp');
 define ('ACT_E_ID_NUMBER', 'Social Security Number');
 define ('ACT_E_REP_ID', 'Department ID');
 define ('ACT_E_ACCOUNT_NUMBER', TEXT_NOT_USED);
-define ('ACT_E_FIRST_DATE', 'Hire Date:');
+define ('TEXT_HIRE_DATE', 'Hire Date');
 define ('ACT_E_LAST_DATE1', 'letzte Erhöhung Datum:');
 define ('ACT_E_LAST_DATE2', 'Transaktionsdatum:');
 define ('ACT_E_PAGE_TITLE_EDIT', 'Edit Mitarbeiter');
@@ -112,7 +112,7 @@ define ('ACT_J_SHORT_NAME', 'Projekt-ID');
 define ('ACT_J_ID_NUMBER', 'Referenz PO');
 define ('ACT_J_REP_ID', 'Sales Rep-ID');
 define ('ACT_J_PAGE_TITLE_EDIT', 'Projekt bearbeiten');
-define ('ACT_J_ACCOUNT_NUMBER', 'Break in Phasen:');
+define ('ACT_J_ACCOUNT_NUMBER', 'Break in Phasen');
 // Text speziell für Hersteller Kontakte
 define ('ACT_V_TYPE_NAME', 'Vendors');
 define ('ACT_V_HEADING_TITLE', 'Vendors');
@@ -150,13 +150,13 @@ define ('TEXT_CREDIT_CARD_NUMBER', 'Kreditkarten-Nummer');
 define ('ACT_PAYMENT_CREDIT_CARD_EXPIRES', 'Ablaufdatum der Kreditkarte');
 define ('TEXT_CARD_HINT', 'Hinweis Card');
 define ('TEXT_EXPIRE_SHORT', 'Exp');
-define ('ACT_PAYMENT_CREDIT_CARD_CVV2', 'Sicherheits-Code');
+define ('TEXT_SECURITY_CODE', 'Sicherheits-Code');
 
 // Kontobedingungen
 define ('ACT_SPECIAL_TERMS', 'Besondere');
 define ('TEXT_TERMS_DUE', 'Terms (Due)');
-define ('ACT_TERMS_DEFAULT', 'Default');
-define ('ACT_TERMS_USE_DEFAULTS', 'Use Default AGB');
+define ('TEXT_DEFAULT', 'Default');
+define ('TEXT_USE_DEFAULT_TERMS', 'Use Default AGB');
 define ('TEXT_CASH_ON_DELIVERY_SHORT', 'COD');
 define ('TEXT_CASH_ON_DELIVERY', 'Nachnahme');
 define ('TEXT_PREPAID', 'Prepaid');
@@ -167,11 +167,11 @@ define ('ACT_DUE_ON', 'Durch auf:');
 define ('TEXT_DISCOUNT', 'Discount');
 define ('TEXT_PERCENT', 'Prozent.');
 define ('TEXT_PERCENT_SHORT', '%');
-define ('ACT_DUE_IN', 'Durch in');
+define ('TEXT_DUE_IN', 'Durch in');
 define ('TEXT_DAY_S', 'Tag (e).');
 define ('ACT_TERMS_NET', 'Net');
 define ('ACT_TERMS_STANDARD_DAYS', 'Tag (e).');
-define ('ACT_TERMS_CREDIT_LIMIT', 'Credit Limit:');
+define ('TEXT_CREDIT_LIMIT', 'Credit Limit:');
 define ('TEXT_AMOUNT_PAST_DUE', 'Amount überfällig');
 
 // Misc Informationen Nachrichten

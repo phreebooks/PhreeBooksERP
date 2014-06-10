@@ -40,7 +40,7 @@ switch ($_REQUEST['action']) {
 	    	$upXML = new \zencart\classes\zencart();
 			$id    = db_prepare_input($_POST['rowSeq']);
 			$upXML->submitXML($id, 'product_ul');
-			gen_add_audit_log(ZENCART_UPLOAD_PRODUCT, $upXML->sku);
+			gen_add_audit_log(TEXT_UPLOAD_PRODUCT, $upXML->sku);
 	  	}catch(Exception $e) {
 	  		$messageStack->add($e->getMessage());
 		}
@@ -90,6 +90,6 @@ $cal_zc = array(
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', BOX_ZENCART_MODULE);
+define('PAGE_TITLE', TEXT_ZENCART_INTERFACE);
 
 ?>

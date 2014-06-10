@@ -74,7 +74,7 @@ echo $toolbar->build_toolbar();
 	<tr>
 	  <td align="right" valign="top">
 	    <?php echo TEXT_INVOICES_DUE_BY . '&nbsp;' . html_calendar_field($cal_bills1); ?>
-	    <?php echo '<br />' . BNK_DISCOUNT_LOST_BY . '&nbsp;' . html_calendar_field($cal_bills2); ?>
+	    <?php echo '<br />' . TEXT_DISCOUNTS_LOST_BY . '&nbsp;' . html_calendar_field($cal_bills2); ?>
 	  </td>
 	  <td align="center">
 		<?php echo '&nbsp;' . html_icon('actions/system-search.png', TEXT_SEARCH, 'large', 'style="cursor:pointer;" onclick="submitToDo(\'search\')"'); ?>
@@ -82,21 +82,21 @@ echo $toolbar->build_toolbar();
 	  <td align="right" valign="top">
 		<table class="ui-widget" style="border-collapse:collapse">
 		  <tr>
-			<td align="right"><?php echo BNK_ACCOUNT_BALANCE . '&nbsp;'; ?></td>
+			<td align="right"><?php echo TEXT_BALANCE_BEFORE_PAYMENTS . '&nbsp;'; ?></td>
 			<td align="right">
 			  <?php echo html_input_field('acct_balance', $currencies->format($acct_balance), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?>
 			  <?php echo (ENABLE_MULTI_CURRENCY) ? ' (' . DEFAULT_CURRENCY . ')' : '' ; ?>
 			  </td>
 		  </tr>
 		  <tr>
-			<td align="right"><?php echo BNK_TOTAL_TO_BE_PAID . '&nbsp;'; ?></td>
+			<td align="right"><?php echo TEXT_TOTAL_OF_ALL_PAYMENTS . '&nbsp;'; ?></td>
 			<td align="right">
 			  <?php echo html_input_field('total', $currencies->format(0), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?>
 			  <?php echo (ENABLE_MULTI_CURRENCY) ? ' (' . DEFAULT_CURRENCY . ')' : '' ; ?>
 			</td>
 		  </tr>
 		  <tr>
-			<td align="right"><?php echo BNK_BALANCE_AFTER_CHECKS . '&nbsp;'; ?></td>
+			<td align="right"><?php echo TEXT_BALANCE_AFTER_PAYMENTS . '&nbsp;'; ?></td>
 			<td align="right">
 			  <?php echo html_input_field('end_balance', $currencies->format($acct_balance), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?>
 			  <?php echo (ENABLE_MULTI_CURRENCY) ? ' (' . DEFAULT_CURRENCY . ')' : '' ; ?>

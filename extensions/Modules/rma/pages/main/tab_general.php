@@ -113,7 +113,7 @@
      <tr><td colspan="3"><?php echo TEXT_SELECT_FILE_TO_ATTACH . ' ' . html_file_field('file_name'); ?></td></tr>
      <tr  class="ui-widget-header">
       <th><?php echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small'); ?></th>
-      <th><?php echo TEXT_FILENAME; ?></th>
+      <th><?php echo TEXT_FILE_NAME; ?></th>
       <th><?php echo TEXT_ACTION; ?></th>
      </tr>
 <?php

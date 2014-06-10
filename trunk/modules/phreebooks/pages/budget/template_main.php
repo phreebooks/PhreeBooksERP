@@ -28,9 +28,9 @@ $toolbar->icon_list['save']['params']   = 'onclick="submitToDo(\'save\')"';
 if ($security_level < 2) $toolbar->icon_list['save']['show'] = false;
 $toolbar->icon_list['print']['show']    = false;
 $toolbar->add_icon('new',  'onclick="if (confirm(\'' . GL_CLEAR_ACTUAL_CONFIRM . '\')) submitToDo(\'clear_fy\')"', $order = 20);
-$toolbar->icon_list['new']['text']      = TEXT_BUDGET_CLEAR_HINT;
+$toolbar->icon_list['new']['text']      = TEXT_CLEAR_ALL_BUDGETS_FOR_THIS_FINANCIAL_YEAR;
 $toolbar->add_icon('copy', 'onclick="if (confirm(\'' . GL_COPY_ACTUAL_CONFIRM  . '\')) submitToDo(\'copy_fy\')"',  $order = 25);
-$toolbar->icon_list['copy']['text']     = GL_BUDGET_COPY_HINT;
+$toolbar->icon_list['copy']['text']     = TEXT_COPY_ACTUALS_FROM_PRIOR_FINANCIAL_YEAR;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help();
 echo $toolbar->build_toolbar();
@@ -75,12 +75,12 @@ echo $toolbar->build_toolbar();
 	  <?php
 	  echo '  <th align="right">' . TEXT_TOTAL . '</th>' . chr(10);
 	  echo '  <th align="center">' . html_input_field('prior', '', 'readonly="readonly" style="text-align:right"') . '</th>' . chr(10);
-	  echo '  <th align="center">' . html_icon('actions/go-next.png', GL_TEXT_COPY_PRIOR, 'small', 'onclick="copyBudget(\'prior\');"') . '</th>' . chr(10);
+	  echo '  <th align="center">' . html_icon('actions/go-next.png', TEXT_COPY_PRIOR_BUDGET_TO_CURRENT_BUDGET, 'small', 'onclick="copyBudget(\'prior\');"') . '</th>' . chr(10);
 	  echo '  <th align="center">';
 	  echo html_input_field('total', '', 'style="text-align:right"');
-	  echo html_icon('actions/edit-undo.png', GL_TEXT_ALLOCATE, 'small', 'onclick="copyBudget(\'spread\');"');
+	  echo html_icon('actions/edit-undo.png', TEXT_ALLOCATE_TOTAL_THROUGH_FISCAL_YEAR, 'small', 'onclick="copyBudget(\'spread\');"');
 	  echo '   </th>' . chr(10);
-	  echo '  <th align="center">' . html_icon('actions/go-previous.png', GL_TEXT_COPY_NEXT, 'small', 'onclick="copyBudget(\'next\');"') . '</th>' . chr(10);
+	  echo '  <th align="center">' . html_icon('actions/go-previous.png', TEXT_COPY_NEXT_BUDGET_TO_CURRENT_BUDGET, 'small', 'onclick="copyBudget(\'next\');"') . '</th>' . chr(10);
 	  echo '  <th align="center">' . html_input_field('next', '', 'readonly="readonly" style="text-align:right"') . '</th>' . chr(10);
 	  ?>
 	</tr>

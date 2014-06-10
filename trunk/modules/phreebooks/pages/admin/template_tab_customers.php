@@ -62,7 +62,7 @@
 	 </thead>
 	 <tbody class="ui-widget-content">
 	  <tr>
-	    <td><?php echo CD_02_11_DESC; ?></td>
+	    <td><?php echo TEXT_CHECK_CUSTOMER_CREDIT_LIMIT_WHEN_PROCESSING_ORDERS; ?></td>
 	    <td><?php echo html_checkbox_field('ar_use_credit_limit', $inc_chart, $_POST['ar_use_credit_limit'] ? $_POST['ar_use_credit_limit'] : AR_USE_CREDIT_LIMIT, ''); ?></td>
 	    <td><?php echo sprintf(CD_02_12_DESC, DEFAULT_CURRENCY); ?></td>
 	    <td><?php echo html_input_field('ar_credit_limit_amount', $_POST['ar_credit_limit_amount'] ? $_POST['ar_credit_limit_amount'] : AR_CREDIT_LIMIT_AMOUNT, 'style="text-align:right"'); ?></td>
@@ -75,7 +75,7 @@
 		  <?php echo html_input_field('ar_prepayment_discount_days', $_POST['ar_prepayment_discount_days'] ? $_POST['ar_prepayment_discount_days'] : AR_PREPAYMENT_DISCOUNT_DAYS, 'size="5" style="text-align:right"'); ?>
 	      <?php echo CD_02_14_DESC; ?>
 		  <?php echo html_input_field('ar_num_days_due', $_POST['ar_num_days_due'] ? $_POST['ar_num_days_due'] : AR_NUM_DAYS_DUE, 'size="5" style="text-align:right"'); ?>
-	      <?php echo CD_02_15_DESC; ?>
+	      <?php echo TEXT_DAYS; ?>
 		</td>
 	  </tr>
 	  <tr>

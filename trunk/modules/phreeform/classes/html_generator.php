@@ -35,7 +35,7 @@ class html_generator {
 	foreach ($report->fieldlist as $value) {
 	  if ($value->visible) {
 	    $data .= htmlspecialchars($value->description);
-	    if (!$value->columnbreak) { 
+	    if (!$value->columnbreak) {
 		  $data .= '<br />';
 		  continue;
 	    }
@@ -142,7 +142,7 @@ class html_generator {
 		  break;
 		case "r": // Report Total
 		case "g": // Group Total
-		  $Desc  = ($todo[0] == 'g') ? TEXT_GROUP_TOTAL_FOR : TEXT_REPORT_TOTAL_FOR;
+		  $Desc  = ($todo[0] == 'g') ? TEXT_GROUP_TOTAL_FOR . ': ' : TEXT_REPORT_TOTAL_FOR;
    		  $rStyle = 'style="background-color:' . $this->HdColor . '"';
  		  $this->writeRow(array(array('align' => 'C', 'value' => $Desc . $todo[1])), $rStyle, $dStyle, true);
 		  // now fall into the 'd' case to show the data
@@ -153,7 +153,7 @@ class html_generator {
 		  $data = NULL;
 		  foreach ($myrow as $key => $value) {
 			$data .= htmlspecialchars($value);
-			if (!$ColBreak[$key]) { 
+			if (!$ColBreak[$key]) {
 			  $data .= '<br />';
 			  continue;
 			}

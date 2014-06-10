@@ -162,7 +162,7 @@ echo html_pull_down_menu('ship_to_country_code', $country_list, $pkg->ship_to_co
 		<tr><td colspan="2">
 		<?php  if (SHIPPING_DEFAULT_COD_SHOW) {
 			echo html_checkbox_field('cod', '1', $pkg->cod);
-			echo SHIPPING_COD_AMOUNT;
+			echo TEXT_CASH_ON_DELIVERY_AMOUNT;
 			echo html_input_field('cod_amount',  $pkg->cod_amount, 'size="6"') . '&nbsp;';
 			echo html_pull_down_menu('cod_currency', $currency_array, $pkg->cod_currency, $parameters = '', $required = false) . '&nbsp;';
 			echo html_pull_down_menu('cod_payment_type', gen_build_pull_down($shipping_defaults['cod_funds_code']), $pkg->cod_payment_type, $parameters = '', $required = false);

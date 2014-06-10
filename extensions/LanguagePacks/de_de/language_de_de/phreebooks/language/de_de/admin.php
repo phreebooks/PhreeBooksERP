@@ -44,7 +44,7 @@ define ('TEXT_BOTH', 'Beide');
 define ('TEXT_SINGLE_LINE_ENTRY', 'Single Line Entry');
 define ('TEXT_DOUBLE_MODE', 'Double Line Entry');
 
-define ('COA_00_DESC', 'Cash');
+define ('TEXT_CASH', 'Cash');
 define ('COA_02_DESC', 'Debitoren');
 define ('COA_04_DESC', 'Inventory');
 define ('COA_06_DESC', 'Sonstiges Umlaufvermögen');
@@ -55,7 +55,7 @@ define ('TEXT_ACCOUNTS_PAYABLE', 'Kreditorenbuchhaltung');
 define ('COA_22_DESC', 'Sonstige kurzfristige Verbindlichkeiten ');
 define ('COA_24_DESC', 'Langfristige Verbindlichkeiten');
 define ('COA_30_DESC', 'Erträge');
-define ('COA_32_DESC', 'Cost of Sales ');
+define ('TEXT_COST_OF_SALES', 'Cost of Sales ');
 define ('COA_34_DESC', 'Aufwendungen');
 define ('COA_40_DESC', 'Equity - kein \' t Schließen ');
 define ('COA_42_DESC', 'Equity - wird geschlossen ');
@@ -64,12 +64,12 @@ define ('COA_44_DESC', 'Equity - Gewinnrücklagen');
 // Formular-Definitionen
 define ('TEXT_BANK_CHECKS', 'Bank Checks');
 define ('TEXT_BANK_DEPOSIT_SLIPS', 'Überweisung Slips');
-define ('PB_PF_COLLECT_LTR', 'Collection Letters');
+define ('TEXT_COLLECTION_LETTERS', 'Collection Letters');
 define ('PB_PF_CUST_CRD_MEMO', 'Gutschrift - Kunde');
 define ('PB_PF_CUST_LABEL', 'Etiketten - Kunde');
-define ('PB_PF_CUST_QUOTE', 'Kundenzitate');
-define ('PB_PF_CUST_STATEMENT', 'Kunden-Statements');
-define ('PB_PF_DEP_SLIP', 'Einzahlungsscheine');
+define ('TEXT_CUSTOMER_QUOTES', 'Kundenzitate');
+define ('TEXT_CUSTOMER_STATEMENTS', 'Kunden-Statements');
+define ('TEXT_DEPOSIT_SLIPS', 'Einzahlungsscheine');
 define ('PB_PF_INV_PKG_SLIP', 'Rechnungen / Lieferscheine');
 define ('PB_PF_PURCH_ORDER', 'Bestellungen');
 define ('TEXT_SALES_ORDER', 'Sales Orders');
@@ -81,7 +81,7 @@ define ('TEXT_VENDOR_STATEMENTS', 'Hersteller Statements');
 
 /************************** (PhreeBooks Utilities) ******************* ****************************/
 define ('GEN_ADM_TOOLS_AR', 'Kunden / Forderungen');
-define ('GEN_ADM_TOOLS_AP', 'Kreditoren / Verbindlichkeiten');
+define ('TEXT_VENDORS_PAYABLES', 'Kreditoren / Verbindlichkeiten');
 define ('GEN_ADM_TOOLS_RE_POST_FAILED', 'Keine Zeitschriften wurden wieder Post, keine Maßnahmen ergriffen ausgewählt.');
 define ('GEN_ADM_TOOLS_RE_POST_SUCCESS', 'Die ausgewählten Zeitschriften wurden neu geschrieben erfolgreich Die Anzahl der Datensätze neu geschrieben wurde: %s .');
 define ('GEN_ADM_TOOLS_AUDIT_LOG_RE_POST', 'Re-post-Journals:');
@@ -108,7 +108,7 @@ define ('GEN_ADM_TOOLS_REPAIR_COMPLETE', 'Das Diagramm gleicht wurden repariert.
 define ('GEN_ADM_TOOLS_REPAIR_LOG_ENTRY', 'repariert GL Salden');
 
 define ('GL_UTIL_HEADING_TITLE', 'General Journal Wartung, Installation und Utilities');
-define ('GL_UTIL_PERIOD_LEGEND', 'Rechnungswesen und Epochen Geschäftsjahre');
+define ('TEXT_ACCOUNTING_PERIODS_AND_FISCAL_YEARS', 'Rechnungswesen und Epochen Geschäftsjahre');
 define ('GL_UTIL_PURGE_ALL', 'Purge alle Journal Transaktionen (Neustart)');
 define ('TEXT_FISCAL_YEAR', 'Geschäftsjahr');
 define ('GL_UTIL_FISCAL_YEAR_TEXT', 'Geschäftsperiode Kalenderdaten können hier geändert werden Bitte beachten Sie, dass das Geschäftsjahr Termine können nicht für einen beliebigen Zeitraum bis zu geändert werden und auch die letzte allgemeine Journaleintrag in das System..');
@@ -116,7 +116,7 @@ define ('GL_UTIL_PURGE_DB', 'Löschen Sie alle Journaleinträge (Typ \' purge \'
 define ('GL_UTIL_PURGE_DB_CONFIRM', 'Sind Sie sicher, dass Sie alle Journaleinträge löschen?');
 define ('GL_UTIL_PURGE_CONFIRM', 'Gelöschte Datensätze aller Zeitschrift und aufgeräumt Datenbanken.');
 define ('GL_UTIL_PURGE_FAIL', 'Keine Journaleinträge betroffen waren!');
-define ('GL_CURRENT_PERIOD', 'aktuelle Berichtsperiode ist:');
+define ('TEXT_CURRENT_ACCOUNTING_PERIOD_IS', 'aktuelle Berichtsperiode ist');
 define ('GL_WARN_ADD_FISCAL_YEAR', 'Sind Sie sicher, das Sie hinzufügen möchten Geschäftsjahr:');
 define ('GL_ERROR_FISCAL_YEAR_SEQ', 'Die letzte Periode des modifizierten Geschäftsjahr nicht mit dem Beginn des nächsten Geschäftsjahres ausrichten Der Starttermin des nächsten Geschäftsjahres wurde modifiziert und sollte überprüft werden..');
 define ('GL_WARN_CHANGE_ACCT_PERIOD', 'Geben Sie den Abrechnungszeitraum zu machen Strom:');
@@ -136,7 +136,7 @@ define ('GL_BEG_BAL_ERROR_9', 'Keine Aktualisierung Konto %s , der Prozess beend
 define ('GEN_ADM_TOOLS_POST_SEQ_SUCCESS', 'erfolgreich gebucht den aktuellen Bestellstatus ändert.');
 define ('GEN_ADM_TOOLS_AUDIT_LOG_SEQ', 'Aktuelle Bestell-Status - Update');
 define ('GEN_ADM_TOOLS_TITLE', 'Administrative Tools und Utilities');
-define ('GEN_ADM_TOOLS_SEQ_HEADING', 'Change Verschiedene Sequence Numbers');
+define ('TEXT_CHANGE_VARIOUS_SEQUENCE_NUMBERS', 'Change Verschiedene Sequence Numbers');
 define ('GEN_ADM_TOOLS_SEQ_DESC', 'Änderungen an der Sequenzierung können hier vorgenommen werden <br /> Hinweis 1:. PhreeBooks nicht erlaubt doppelte Sequenzen sicher, dass die neue Startreihenfolge wird keine Konflikte mit derzeit gebuchten Werte <br /> Hinweis. 2: Die next_deposit_num wird vom System generiert und verwendet das aktuelle Datum <br /> Anmerkung 3: Die next_check_num bei der Zahlung Bildschirm können vor der Buchung einer Zahlung und wird aus den eingegebenen Wert weiter ');
 define ('GEN_ADM_TOOLS_BNK', 'Banking');
 define ('GEN_ADM_TOOLS_OTHER', 'Andere');
@@ -172,7 +172,7 @@ define ('CD_02_06_DESC', 'Default-Konto für Einlagen von Kunden nutzen Typische
 define ('CD_02_07_DESC', 'Default-Konto für Einlagen von Kunden nutzen Typischerweise wird eine sonstige kurzfristige Verbindlichkeiten Typ verändern..');
 
 define ('CD_02_10_DESC', 'Skonti schreiben Prozent Null oder frühen Tagen Null zu deaktivieren Skonti..');
-define ('CD_02_11_DESC', 'Überprüfen Kunden Kreditlimit bei der Verarbeitung von Aufträgen.');
+define ('TEXT_CHECK_CUSTOMER_CREDIT_LIMIT_WHEN_PROCESSING_ORDERS', 'Überprüfen Kunden Kreditlimit bei der Verarbeitung von Aufträgen.');
 define ('CD_02_12_DESC', 'Default betragen für Kunden Kreditlimit nutzen ( %s ).');
 define ('CD_02_13_DESC', 'Prozent (%) Rabatt bei Zahlung in');
 define ('CD_02_14_DESC', 'Tage Gesamt fällig.');

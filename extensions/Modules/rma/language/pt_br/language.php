@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:46
 // Module/Method: rma
 // ISO Language: pt_br
@@ -21,12 +21,12 @@ define('TEXT_CALLER_NAME','Nome Contato');
 define('TEXT_CUSTOMER_ID','ID Cliente');
 define('TEXT_TELEPHONE','Telefone');
 define('TEXT_DATE_MANUFACTURE','Fabricante DLC');
-define('TEXT_DATE_WARRANTY','Data Expiração Garantia');
+define('TEXT_DATE_WARRANTY_EXPIRES','Data Expiração Garantia');
 define('TEXT_DETAILS','Detalhes');
 define('TEXT_DISPOSITION','Disposição');
 define('TEXT_REASON_FOR_RETURN','Motivo Retorno');
 define('TEXT_ENTERED_BY','Digitado por');
-define('TEXT_RECEIVE_DATE','Data Recebimento');
+define('TEXT_DATE_RECEIVED','Data Recebimento');
 define('TEXT_RECEIVED_BY','Recebido por');
 define('TEXT_RECEIVE_CARRIER','Transportador Entrega');
 define('TEXT_RECEIVE_TRACKING_NUM','Número Conhecimento #');

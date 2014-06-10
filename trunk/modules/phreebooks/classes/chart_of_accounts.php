@@ -88,17 +88,17 @@ class chart_of_accounts {
   }
 
   function build_main_html() {
-  	global $db;
+  	global $db, $coa_types_list;
     $content = array();
 	$content['thead'] = array(
-	  'value'  => array(TEXT_ACCOUNT_ID, TEXT_ACCT_DESCRIPTION, TEXT_ACCOUNT_TYPE, TEXT_SUBACCOUNT, TEXT_ACTION),
+	  'value'  => array(TEXT_ACCOUNT_ID, TEXT_ACCOUNT_DESCRIPTION, TEXT_ACCOUNT_TYPE, TEXT_SUBACCOUNT, TEXT_ACTION),
 	  'params' => 'width="100%" cellspacing="0" cellpadding="1"',
 	);
     $result = $db->Execute("select id, description, heading_only, primary_acct_id, account_type, account_inactive from " . $this->db_table);
     $rowCnt = 0;
 	while (!$result->EOF) {
 	  $bkgnd = ($result->fields['account_inactive']) ? 'class="ui-state-error" ' : '';
-	  $account_type_desc = constant('COA_' . str_pad($result->fields['account_type'], 2, "0", STR_PAD_LEFT) . '_DESC');
+	  $account_type_desc = $coa_types_list[str_pad($result->fields['account_type'], 2, "0", STR_PAD_LEFT)]['text'];
       if ($result->fields['heading_only']) {
 	    $account_type_desc = TEXT_HEADING;
 		$bkgnd = 'class="ui-state-active" ';
@@ -147,7 +147,7 @@ class chart_of_accounts {
 	$output .= '    <td>' . ($action == 'new' ? html_input_field('id', $this->id) : $this->id) . '</td>' . "\n";
     $output .= '  </tr>' . "\n";
 	$output .= '  <tr>' . "\n";
-	$output .= '    <td>' . TEXT_ACCT_DESCRIPTION . '</td>' . "\n";
+	$output .= '    <td>' . TEXT_ACCOUNT_DESCRIPTION . '</td>' . "\n";
 	$output .= '    <td>' . html_input_field('description', $this->description, 'size="48" maxlength="64"') . '</td>' . "\n";
     $output .= '  </tr>' . "\n";
 	$output .= '  <tr>' . "\n";

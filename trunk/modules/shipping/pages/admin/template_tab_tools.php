@@ -40,7 +40,7 @@
 	  <td><?php echo html_pull_down_menu('fy_year', $sel_fy_year, $_POST['fy_year'] ? $_POST['fy_year'] : date('Y')); ?></td>
 	</tr>
 	<tr>
-	  <td align="right"><?php echo GEN_BACKUP_COMP_TYPE; ?></td>
+	  <td align="right"><?php echo TEXT_COMPRESSION_TYPE . ': S'; ?></td>
 	  <td>
 	    <?php echo html_radio_field('conv_type', 'zip',  true,  '', '') . TEXT_COMPRESSION_ZIP . '&nbsp;&nbsp;&nbsp;&nbsp;'; ?>
 	    <?php echo html_radio_field('conv_type', 'bz2',  false, '', '') . GEN_COMP_BZ2; ?>

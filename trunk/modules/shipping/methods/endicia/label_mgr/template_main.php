@@ -144,7 +144,7 @@ echo $toolbar->build_toolbar();
 		<td><?php echo html_checkbox_field('delivery_confirmation', '1', $sInfo->delivery_confirmation ? $sInfo->delivery_confirmation : true); ?></td>
 	  </tr>
 	  <tr>
-		<td><?php echo SHIPPING_COD_AMOUNT . ' ' . html_checkbox_field('cod', '1', $sInfo->cod); ?></td>
+		<td><?php echo TEXT_CASH_ON_DELIVERY_AMOUNT . ' ' . html_checkbox_field('cod', '1', $sInfo->cod); ?></td>
 		<td><?php echo html_input_field('total_amount',  $sInfo->total_amount, 'size="6" style="text-align:right"') . '&nbsp;'; ?></td>
 	  </tr>
     </table>

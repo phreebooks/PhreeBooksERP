@@ -203,7 +203,7 @@ switch ($_REQUEST['action']) {
     history_save('inv_prices');
 
     $include_template = 'template_main.php';
-    define('PAGE_TITLE', $type == 'v' ? BOX_PURCHASE_PRICE_SHEETS : BOX_SALES_PRICE_SHEETS);
+    define('PAGE_TITLE', $type == 'v' ? TEXT_VENDOR_PRICE_SHEETS : TEXT_CUSTOMER_PRICE_SHEETS);
 }
 
 ?>

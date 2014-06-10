@@ -106,7 +106,7 @@ switch ($_REQUEST['action']) {
 // build the type filter list
 $type_select_list = array( // add some extra options
   array('id' => '0',   'text' => TEXT_ALL),
-  array('id' => 'cog', 'text' => TEXT_INV_MANAGED),
+  array('id' => 'cog', 'text' => TEXT_CONTROLLED_STOCK),
 );
 
 foreach ($inventory_types_plus as $key => $value) $type_select_list[] = array('id' => $key,  'text' => $value);

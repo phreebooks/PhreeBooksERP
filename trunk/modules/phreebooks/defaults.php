@@ -26,7 +26,7 @@ define('PHREEBOOKS_DEFAULT_BILL_SORT','invoice'); // choices are 'invoice', 'due
 // Chart of accounts types
 $coa_types_list = array(
   '0'  => array('id' =>  0, 'text' => TEXT_CASH,	'asset' => true),  // Cash
-  '2'  => array('id' =>  2, 'text' => COA_02_DESC, 	'asset' => true),  // Accounts Receivable
+  '2'  => array('id' =>  2, 'text' => TEXT_ACCOUNTS_RECEIVABLE, 	'asset' => true),  // Accounts Receivable
   '4'  => array('id' =>  4, 'text' => TEXT_INVENTORY, 'asset' => true),  // Inventory
   '6'  => array('id' =>  6, 'text' => COA_06_DESC, 	'asset' => true),  // Other Current Assets
   '8'  => array('id' =>  8, 'text' => COA_08_DESC, 'asset' => true),  // Fixed Assets
@@ -36,7 +36,7 @@ $coa_types_list = array(
   '22' => array('id' => 22, 'text' => COA_22_DESC, 'asset' => false), // Other Current Liabilities
   '24' => array('id' => 24, 'text' => COA_24_DESC, 'asset' => false), // Long Term Liabilities
   '30' => array('id' => 30, 'text' => COA_30_DESC, 'asset' => false), // Income
-  '32' => array('id' => 32, 'text' => COA_32_DESC, 'asset' => true),  // Cost of Sales
+  '32' => array('id' => 32, 'text' => TEXT_COST_OF_SALES, 'asset' => true),  // Cost of Sales
   '34' => array('id' => 34, 'text' => TEXT_EXPENSES, 'asset' => true),  // Expenses
   '40' => array('id' => 40, 'text' => COA_40_DESC, 'asset' => false), // Equity - Doesn\'t Close
   '42' => array('id' => 42, 'text' => COA_42_DESC, 'asset' => false), // Equity - Gets Closed

@@ -8,14 +8,14 @@
 // +-----------------------------------------------------------------+
 // Path: /modules/zencart/language/nl_nl/language.php
 
-define('BOX_ZENCART_ADMIN','ZenCart Administratie');
+define('TEXT_ZENCART_CONFIGURATION','ZenCart Administratie');
 define('ZENCART_CONFIRM_MESSAGE','Uw order verzonden %s via %s %s, tracking nummer: %s');
 define('ZENCART_BULK_UPLOAD_SUCCESS','Succesvol %s item(s) geüpload naar de ZenCart e-store.');
 define('TEXT_ERROR','Error # ');
 define('ZENCART_IVENTORY_UPLOAD','ZenCart Upload');
 define('ZENCART_BULK_UPLOAD_TITLE','Bulk Upload');
 define('ZENCART_BULK_UPLOAD_INFO','Bulk upload alle geselecteerde producten naar de ZenCart e-commerce site. Afbeeldingen zijn uitgesloten tenzij de checkbox is geselecteerd.');
-define('ZENCART_BULK_UPLOAD_TEXT','Bulk upload producten naar e-store');
+define('TEXT_BULK_UPLOAD_PRODUCTS_TO_E-STORE','Bulk upload producten naar e-store');
 define('TEXT_INCLUDE_IMAGES','Inclusief Afbeeldingen');
 define('ZENCART_BULK_UPLOAD_BTN','Bulk Upload');
 define('ZENCART_PRODUCT_SYNC_TITLE','Synchroniseer Producten');
@@ -32,7 +32,7 @@ define('ZENCART_ERROR_CONFRIM_NO_DATA','Geen records zijn gevonden voor deze dat
 define('ZENCART_ERROR_NO_PRICE_SHEET','Kon geen standaard prijs niveau op de prijslijst vinden: ');
 define('ZENCART_INVALID_ACTION','Ongeldige Actie in ZenCart interface class. Geannuleerd!');
 define('ZENCART_INVALID_SKU','Error in voorraad artikel id, kon het record niet in database vinden.');
-define('ZENCART_UPLOAD_PRODUCT','ZenCart Product Upload');
+define('TEXT_UPLOAD_PRODUCT','Product Upload');
 define('ZENCART_BULK_UPLOAD','ZenCart Bulk Upload');
 define('TEXT_ZENCART_PRODUCT_SYNC','ZenCart Product Sync');
 define('ZENCART_SHIP_CONFIRM','ZenCart Verzending Bevestigen');

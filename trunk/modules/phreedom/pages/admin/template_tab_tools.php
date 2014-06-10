@@ -20,7 +20,7 @@
 ?>
 <div title="<?php echo TEXT_TOOLS;?>" id="tab_tools">
 <fieldset>
-<legend><?php echo GEN_ADM_TOOLS_SEQ_HEADING; ?></legend>
+<legend><?php echo TEXT_CHANGE_VARIOUS_SEQUENCE_NUMBERS; ?></legend>
 <p><?php echo GEN_ADM_TOOLS_SEQ_DESC; ?></p>
   <table>
 <?php
@@ -39,10 +39,10 @@
 </fieldset>
 
 <fieldset>
-<legend><?php echo GEN_ADM_TOOLS_SECURITY_HEADING; ?></legend>
+<legend><?php echo TEXT_CLEAN_DATA_SECURITY_VALUES; ?></legend>
   <p><?php echo GEN_ADM_TOOLS_SECURITY_DESC; ?></p>
   <p align="center">
-    <?php echo TEXT_CLEAN_BEFORE . ' ' . html_calendar_field($cal_clean); ?>
+    <?php echo TEXT_CLEAN_ALL_VALUES_WITH_EXPIRATION_DATE_BEFORE . ': ' . html_calendar_field($cal_clean); ?>
 	<?php echo html_button_field('clean_security', TEXT_CLEAN_NOW.'!', 'onclick="submitToDo(\'clean_security\')"'); ?>
   </p>
 </fieldset>

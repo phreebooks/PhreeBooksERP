@@ -19,7 +19,7 @@
 
 $FormProcessing['ordr_qty'] = TEXT_QUANTITY_ORDERED;
 $FormProcessing['j_desc']   = PB_PF_JOURNAL_DESC;
-$FormProcessing['coa_type'] = PB_PF_COA_TYPE_DESC;
+$FormProcessing['coa_type'] = TEXT_CHART_OF_ACCOUNT_TYPE;
 // Extra form processing operations
 function pf_process_phreebooks($strData, $Process) {
   switch ($Process) {

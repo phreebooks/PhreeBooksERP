@@ -41,9 +41,9 @@ $acct_def = (!$cInfo->dept_rep_id) ? array() : array(array('id'=>$cInfo->dept_re
         <td><?php echo html_input_field('contact_last', $cInfo->contact_last, 'size="33" maxlength="32"', false); ?></td>
       </tr>
       <tr>
-        <td align="right"><?php echo ACT_ACCOUNT_NUMBER; ?></td>
+        <td align="right"><?php echo TEXT_FACEBOOK_ID; ?></td>
         <td><?php echo html_input_field('account_number', $cInfo->account_number, 'size="17" maxlength="16"'); ?></td>
-        <td align="right"><?php echo ACT_ID_NUMBER; ?></td>
+        <td align="right"><?php echo TEXT_TWITTER_ID; ?></td>
         <td><?php echo html_input_field('gov_id_number', $cInfo->gov_id_number, 'size="17" maxlength="16"'); ?></td>
       </tr>
       <tr>
@@ -74,7 +74,7 @@ $acct_def = (!$cInfo->dept_rep_id) ? array() : array(array('id'=>$cInfo->dept_re
      <tr><td colspan="3"><?php echo TEXT_SELECT_FILE_TO_ATTACH . ' ' . html_file_field('file_name'); ?></td></tr>
      <tr  class="ui-widget-header">
       <th><?php echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small'); ?></th>
-      <th><?php echo TEXT_FILENAME; ?></th>
+      <th><?php echo TEXT_FILE_NAME; ?></th>
       <th><?php echo TEXT_ACTION; ?></th>
      </tr>
 <?php

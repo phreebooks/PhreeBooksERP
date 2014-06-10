@@ -28,7 +28,7 @@ var default_tax 	  	= '<?php echo $cInfo->purch_taxable;?>';
 var delete_icon_HTML  	= '<?php echo substr(html_icon("emblems/emblem-unreadable.png", TEXT_DELETE, "small", "onclick=\"if (confirm(\'" . INV_MSG_DELETE_INV_ITEM . "\')) removeBOMRow("), 0, -2); ?>';
 var text_no 			= '<?php echo TEXT_NO; ?>';
 var text_yes			= '<?php echo TEXT_YES; ?>';
-var filter_equal_to 	= '<?php echo FILTER_EQUAL_TO;?>';
+var filter_equal_to 	= '<?php echo TEXT_EQUAL_TO;?>';
 var filter_not_equal_to = '<?php echo TEXT_NOT_EQUAL. ': ';?>';
 var filter_like			= '<?php echo TEXT_LIKE. ': ';?>';
 var filter_not_like		= '<?php echo FILTER_NOT_LIKE;?>';
@@ -250,11 +250,11 @@ function masterStockBuildList(action, id) {
 	  }
 	  var str = document.getElementById('attr_desc_'+id).value ;
 	  if(str.search(",") == true){
-		  $.messager.alert('error','<?php echo JS_MS_COMMA_NOT_ALLOWED; ?>','error');
+		  $.messager.alert('error','<?php echo TEXT_COMMA_IS_NOT_ALLOWED_IN_THE_DESCRIPTION; ?>','error');
 		  return;
 	  }
 	  if(str.search(":") == true){
-		  $.messager.alert('error','<?php echo JS_MS_COLON_NOT_ALLOWED; ?>','error');
+		  $.messager.alert('error','<?php echo TEXT_COLON_IS_NOT_ALLOWED_IN_THE_DESCRIPTION; ?>','error');
 		  return;
 	  }
 	  var newOpt = document.createElement("option");

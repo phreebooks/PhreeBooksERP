@@ -101,7 +101,7 @@ $fieldset_content .= '  </tr>' . chr(10);
 $fieldset_content .= '  </thead>' . chr(10);
 $fieldset_content .= '  <tbody class="ui-widget-content">' . chr(10);
 $fieldset_content .= '  <tr>' . chr(10);
-$fieldset_content .= '    <td>' . TEXT_FILENAME . '</td>' . chr(10);
+$fieldset_content .= '    <td>' . TEXT_FILE_NAME . '</td>' . chr(10);
 $fieldset_content .= '    <td>' . $doc_details->fields['file_name'] . '</td>' . chr(10);
 $fieldset_content .= '  </tr><tr>' . chr(10);
 $fieldset_content .= '    <td>' . TEXT_OWNER . '</td>' . chr(10);
@@ -198,7 +198,7 @@ if (sizeof($doc_history) > 0) {
   $fieldset_content .= '  <tbody class="ui-widget-content">' . chr(10);
 }
 $fieldset_content .= '    <tr><th colspan="4">' . TEXT_THUMBNAIL . '</th></tr>' . chr(10);
-$fieldset_content .= '    <tr><td colspan="4" align="center">' . TEXT_IMG_NOT_AVAILABLE . '</th></tr>' . chr(10);
+$fieldset_content .= '    <tr><td colspan="4" align="center">' . TEXT_IMAGE_NOT_AVAILABLE . '</th></tr>' . chr(10);
 $fieldset_content .= '  </tbody></table>' . chr(10);
 $fieldset_content .= '</td>' . chr(10);
 // end table

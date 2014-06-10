@@ -29,7 +29,7 @@ $sort_by = array(
 $choices = array(
   'all'  => TEXT_ALL,
   'rng'  => TEXT_RANGE,
-  'eq'   => TEXT_EQUAL,
+  'eq'   => TEXT_EQUAL_TO,
   'neq'  => TEXT_NOT_EQUAL,
   'like' => TEXT_CONTAINS,
 );

@@ -36,7 +36,7 @@ $toolbar->icon_list['home'] = array(
 $toolbar->add_help();
 echo $toolbar->build_toolbar();
 ?>
-<h1><?php echo BOX_DOC_CTL_MODULE; ?></h1>
+<h1><?php echo TEXT_DOCUMENT_CONTROL; ?></h1>
 <table class="ui-widget" style="border-style:none;width:100%">
  <tbody class="ui-widget-content">
   <tr>

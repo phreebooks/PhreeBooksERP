@@ -21,7 +21,7 @@ define('NAME_TRIM_LENGTH','24'); // TBD - needs to move to admin constant
 
 // 0.1 => 2010-09-01 - Converted from stand-alone PhreeBooks release
 // 1.0 => 2011-11-15 - Initial module release, themeroller compatible
-// 3.6 => bug fixes and compatibility issues with PhreeBooks R3.6, sync rev with PhreeBooks 
+// 3.6 => bug fixes and compatibility issues with PhreeBooks R3.6, sync rev with PhreeBooks
 // Module software version information
 // Menu Sort Positions
 define('BOX_DOC_CTL_ORDER',          10);
@@ -34,7 +34,7 @@ define('TABLE_DC_DOCUMENT', DB_PREFIX . 'doc_ctl');
 // Menu Locations
 $mainmenu["quality"]['submenu']["doc_ctl"] = array(
   'order' 		=> BOX_DOC_CTL_ORDER,
-  'text'        => BOX_DOC_CTL_MODULE,
+  'text'        => TEXT_DOCUMENT_CONTROL,
   'security_id' => SECURITY_ID_DOC_CONTROL,
   'link'        => html_href_link(FILENAME_DEFAULT, 'module=doc_ctl&amp;page=main', 'SSL'),
   'show_in_users_settings' => true,

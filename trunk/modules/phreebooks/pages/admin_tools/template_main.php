@@ -32,12 +32,12 @@ echo $toolbar->build_toolbar();
 ?>
 <h1><?php echo TEXT_ADMINISTRATIVE_TOOLS; ?></h1>
 <fieldset>
-<legend><?php echo GL_UTIL_PERIOD_LEGEND; ?></legend>
+<legend><?php echo TEXT_ACCOUNTING_PERIODS_AND_FISCAL_YEARS; ?></legend>
  <table class="ui-widget" style="border-style:none;width:100%">
  <tbody class="ui-widget-content">
     <tr>
 	  <td width="33%" valign="top">
-		<?php echo '<p>' . GL_CURRENT_PERIOD . $period . '</p>';
+		<?php echo '<p>' . TEXT_CURRENT_ACCOUNTING_PERIOD_IS . ': ' . $period . '</p>';
 		echo '<p>' . GL_UTIL_FISCAL_YEAR_TEXT . '</p>'; ?>
 	  </td>
 	  <td width="33%" valign="top"><table>
@@ -75,7 +75,7 @@ echo $toolbar->build_toolbar();
 	  </table></td>
 	  <td width="33%" valign="top" align="right">
 		<?php echo html_hidden_field('period', '') . chr(10);
-		echo '<p>' . html_button_field('change', GL_BTN_CHG_ACCT_PERIOD, 'onclick="fetchPeriod()"') . '</p>' . chr(10);
+		echo '<p>' . html_button_field('change', TEXT_CHANGE_CURRENT_ACCOUNTING_PERIOD, 'onclick="fetchPeriod()"') . '</p>' . chr(10);
 		echo '<p>' . html_button_field('update', GL_BTN_UPDATE_FY, 'onclick="submitToDo(\'update\')"') . '</p>' . chr(10);
 		echo '<p>' . html_button_field('new', GL_BTN_NEW_FY, 'onclick="confirmNewYear()"') . '</p>' . chr(10);
 		?>
@@ -92,59 +92,59 @@ echo $toolbar->build_toolbar();
  <tbody class="ui-widget-content">
     <tr>
 	  <th colspan="2"><?php echo GEN_ADM_TOOLS_AR; ?></th>
-	  <th colspan="2"><?php echo GEN_ADM_TOOLS_AP; ?></th>
+	  <th colspan="2"><?php echo TEXT_VENDORS_PAYABLES; ?></th>
 	  <th colspan="2"><?php echo GEN_ADM_TOOLS_BNK_ETC; ?></th>
 	  <th colspan="2"><?php echo GEN_ADM_TOOLS_DATE_RANGE; ?></th>
 	</tr>
 	<tr>
 	  <td><?php echo  html_checkbox_field('jID_9', '1', false); ?></td>
-	  <td><?php echo GEN_ADM_TOOLS_J09; ?></td>
+	  <td><?php echo TEXT_CUSTOMER_QUOTES		. ' (09)'; ?></td>
 	  <td><?php echo  html_checkbox_field('jID_3', '1', false); ?></td>
-	  <td><?php echo GEN_ADM_TOOLS_J03; ?></td>
+	  <td><?php echo TEXT_VENDOR_QUOTES			. ' (03)'; ?></td>
 	  <td><?php echo  html_checkbox_field('jID_2', '1', false); ?></td>
-	  <td><?php echo GEN_ADM_TOOLS_J02; ?></td>
+	  <td><?php echo ORD_TEXT_2_WINDOW_TITLE	. ' (02)'; ?></td>
   	  <td colspan="2"><?php echo TEXT_START_DATE; ?></td>
 	</tr>
 	<tr>
 	  <td><?php echo  html_checkbox_field('jID_10', '1', false); ?></td>
-	  <td><?php echo GEN_ADM_TOOLS_J10; ?></td>
+	  <td><?php echo TEXT_CUSTOMER_ORDERS . ' (10)'; ?></td>
 	  <td><?php echo  html_checkbox_field('jID_4', '1', false); ?></td>
-	  <td><?php echo GEN_ADM_TOOLS_J04; ?></td>
+	  <td><?php echo TEXT_VENDOR_ORDERS . ' (04)'; ?></td>
 	  <td><?php echo  html_checkbox_field('jID_8', '1', false); ?></td>
-	  <td><?php echo GEN_ADM_TOOLS_J08; ?></td>
+	  <td><?php echo GEN_ADM_TOOLS_J08 . ' (08)'; ?></td>
 	  <td colspan="2"><?php echo html_calendar_field($cal_repost_start); ?></td>
 	</tr>
 	<tr>
 	  <td><?php echo  html_checkbox_field('jID_12', '1', false); ?></td>
-	  <td><?php echo GEN_ADM_TOOLS_J12; ?></td>
+	  <td><?php echo GEN_ADM_TOOLS_J12 . ' (12)'; ?></td>
 	  <td><?php echo  html_checkbox_field('jID_6', '1', false); ?></td>
-	  <td><?php echo GEN_ADM_TOOLS_J06; ?></td>
+	  <td><?php echo GEN_ADM_TOOLS_J06 . ' (06)'; ?></td>
 	  <td><?php echo  html_checkbox_field('jID_14', '1', false); ?></td>
-	  <td><?php echo GEN_ADM_TOOLS_J14; ?></td>
+	  <td><?php echo GEN_ADM_TOOLS_J14 . ' (14)'; ?></td>
   	  <td colspan="2"><?php echo TEXT_END_DATE; ?></td>
 	</tr>
 	<tr>
 	  <td><?php echo  html_checkbox_field('jID_13', '1', false); ?></td>
-	  <td><?php echo GEN_ADM_TOOLS_J13; ?></td>
+	  <td><?php echo TEXT_CUSTOMER_CREDIT_MEMOS	. ' (13)'; ?></td>
 	  <td><?php echo  html_checkbox_field('jID_7', '1', false); ?></td>
-	  <td><?php echo GEN_ADM_TOOLS_J07; ?></td>
+	  <td><?php echo TEXT_VENDOR_CREDIT_MEMOS	. ' (07)'; ?></td>
 	  <td><?php echo  html_checkbox_field('jID_16', '1', false); ?></td>
-	  <td><?php echo GEN_ADM_TOOLS_J16; ?></td>
+	  <td><?php echo TEXT_INVENTORY_ADJUSTMENTS	. ' (16)'; ?></td>
 	  <td colspan="2"><?php echo html_calendar_field($cal_repost_end); ?></td>
 	</tr>
 	<tr>
 	  <td><?php echo  html_checkbox_field('jID_19', '1', false); ?></td>
-	  <td><?php echo GEN_ADM_TOOLS_J19; ?></td>
+	  <td><?php echo GEN_ADM_TOOLS_J19 . ' (19)'; ?></td>
 	  <td><?php echo  html_checkbox_field('jID_21', '1', false); ?></td>
-	  <td><?php echo GEN_ADM_TOOLS_J21; ?></td>
+	  <td><?php echo GEN_ADM_TOOLS_J21 . ' (21)'; ?></td>
 	  <td><?php echo  html_checkbox_field('jID_18', '1', false); ?></td>
-	  <td><?php echo GEN_ADM_TOOLS_J18; ?></td>
+	  <td><?php echo GEN_ADM_TOOLS_J18 . ' (18)'; ?></td>
 	</tr>
 	<tr>
 	  <td colspan="2">&nbsp;</td>
 	  <td colspan="2">&nbsp;</td>
 	  <td><?php echo  html_checkbox_field('jID_20', '1', false); ?></td>
-	  <td><?php echo GEN_ADM_TOOLS_J20; ?></td>
+	  <td><?php echo GEN_ADM_TOOLS_J20 . ' (20)'; ?></td>
 	  <td colspan="2" align="right"><?php echo html_button_field('repost', GEN_ADM_TOOLS_BTN_REPOST, 'onclick="if (confirm(\'' . GEN_ADM_TOOLS_REPOST_CONFIRM . '\')) submitToDo(\'repost\')"'); ?></td>
 	</tr>
   </tbody>
