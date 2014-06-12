@@ -203,64 +203,62 @@
 	return $history;
   }
 
-  function inv_calculate_sales_price($qty, $sku_id, $contact_id = 0, $type = 'c') {
-    global $db, $currencies;
-	$price_sheet = '';
-	$contact_tax = 1;
-	if ($contact_id) {
-	  $contact = $db->Execute("select type, price_sheet, tax_id from " . TABLE_CONTACTS . " where id = '" . $contact_id . "'");
-	  $type        = $contact->fields['type'];
-	  $price_sheet = $contact->fields['price_sheet'];
-	  $contact_tax = $contact->fields['tax_id'];
-	}
-	// get the inventory prices
-	if($type == 'v'){
-		if ($contact_id) $inventory = $db->Execute("select p.item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable from " . TABLE_INVENTORY . " a join " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku  where a.id = '" . $sku_id . "' and p.vendor_id = '" . $contact_id . "'");
-		else $inventory = $db->Execute("select MAX(p.item_cost) as item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable from " . TABLE_INVENTORY . " a join " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku  where a.id = '" . $sku_id . "'");
-		$inv_price_sheet = $inventory->fields['price_sheet_v'];
-	}else{
-		$inventory = $db->Execute("select MAX(p.item_cost) as item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable from " . TABLE_INVENTORY . " a join " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku  where a.id = '" . $sku_id . "'");
-		$inv_price_sheet = $inventory->fields['price_sheet'];
-	}
-	// set the default tax rates
-	$purch_tax = ($contact_tax == 0 && $type=='v') ? 0 : $inventory->fields['purch_taxable'];
-	$sales_tax = ($contact_tax == 0 && $type=='c') ? 0 : $inventory->fields['item_taxable'];
-	// determine what price sheet to use, priority: customer, inventory, default
-	if ($price_sheet <> '') {
-	  $sheet_name = $price_sheet;
-	} elseif ($inv_price_sheet <> '') {
-	  $sheet_name = $inv_price_sheet;
-	} else {
-	  $default_sheet = $db->Execute("select sheet_name from " . TABLE_PRICE_SHEETS . " 
-		where type = '" . $type . "' and default_sheet = '1'");
-	  $sheet_name = ($default_sheet->RecordCount() == 0) ? '' : $default_sheet->fields['sheet_name'];
-	}
-	// determine the sku price ranges from the price sheet in effect
-	$levels = false;
-	if ($sheet_name <> '') {
-	  $sql = "select id, default_levels from " . TABLE_PRICE_SHEETS . " 
-	    where inactive = '0' and type = '$type' and sheet_name = '$sheet_name' and 
-	    (expiration_date is null or expiration_date = '0000-00-00' or expiration_date >= '" . date('Y-m-d') . "')";
-	  $price_sheets = $db->Execute($sql);
-	  // retrieve special pricing for this inventory item
-	  $sql = "select price_sheet_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " 
-		where price_sheet_id = '" . $price_sheets->fields['id'] . "' and inventory_id = $sku_id";
-	  $result = $db->Execute($sql);
-	  $special_prices = array();
-	  while (!$result->EOF) {
-	    $special_prices[$result->fields['price_sheet_id']] = $result->fields['price_levels'];
-	    $result->MoveNext();
-	  }
-	  $levels = isset($special_prices[$price_sheets->fields['id']]) ? $special_prices[$price_sheets->fields['id']] : $price_sheets->fields['default_levels'];
-	}
-	if ($levels) {
-	  $prices = inv_calculate_prices($inventory->fields['item_cost'], $inventory->fields['full_price'], $levels);
-	  $price = '0.0';
-	  if(is_array($prices)) foreach ($prices as $value) if ($qty >= $value['qty']) $price = $currencies->clean_value($value['price']);
-	} else {
-	  $price = ($type=='v') ? $inventory->fields['item_cost'] : $inventory->fields['full_price'];
-	}
-	return array('price'=>$price, 'sales_tax'=>$sales_tax, 'purch_tax'=>$purch_tax);
+  	function inv_calculate_sales_price($qty, $sku_id, $contact_id = 0, $type = 'c') {
+    	global $db, $currencies;
+		$price_sheet = '';
+		$contact_tax = 1;
+		if ($contact_id) {
+		  	$contact = $db->Execute("select type, price_sheet, tax_id from " . TABLE_CONTACTS . " where id = '$contact_id'");
+		  	$type        = $contact->fields['type'];
+		  	$price_sheet = $contact->fields['price_sheet'];
+		  	$contact_tax = $contact->fields['tax_id'];
+		}
+		// get the inventory prices
+		if($type == 'v'){
+			if ($contact_id) $inventory = $db->Execute("select p.item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable from " . TABLE_INVENTORY . " a join " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku  where a.id = '" . $sku_id . "' and p.vendor_id = '" . $contact_id . "'");
+			else $inventory = $db->Execute("select MAX(p.item_cost) as item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable from " . TABLE_INVENTORY . " a join " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku  where a.id = '" . $sku_id . "'");
+			$inv_price_sheet = $inventory->fields['price_sheet_v'];
+		}else{
+			$inventory = $db->Execute("select MAX(p.item_cost) as item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable from " . TABLE_INVENTORY . " a join " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku  where a.id = '" . $sku_id . "'");
+			$inv_price_sheet = $inventory->fields['price_sheet'];
+		}
+		// set the default tax rates
+		$purch_tax = ($contact_tax == 0 && $type=='v') ? 0 : $inventory->fields['purch_taxable'];
+		$sales_tax = ($contact_tax == 0 && $type=='c') ? 0 : $inventory->fields['item_taxable'];
+		// determine what price sheet to use, priority: customer, inventory, default
+		if ($price_sheet <> '') {
+		  	$sheet_name = $price_sheet;
+		} elseif ($inv_price_sheet <> '') {
+		  	$sheet_name = $inv_price_sheet;
+		} else {
+		  	$default_sheet = $db->Execute("select sheet_name from " . TABLE_PRICE_SHEETS . " where type = '$type' and default_sheet = '1'");
+		  	$sheet_name = ($default_sheet->RecordCount() == 0) ? '' : $default_sheet->fields['sheet_name'];
+		}
+		// determine the sku price ranges from the price sheet in effect
+		$price = '0.0';
+		$levels = false;
+		if ($sheet_name <> '') {
+			$sql = "select id, default_levels from " . TABLE_PRICE_SHEETS . " 
+			  where inactive = '0' and type = '$type' and sheet_name = '$sheet_name' and 
+			  (expiration_date is null or expiration_date = '0000-00-00' or expiration_date >= '" . date('Y-m-d') . "')";
+			$price_sheets = $db->Execute($sql);
+			// retrieve special pricing for this inventory item
+			$sql = "select price_sheet_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where price_sheet_id = '{$price_sheets->fields['id']}' and inventory_id = $sku_id";
+			$result = $db->Execute($sql);
+			$special_prices = array();
+			while (!$result->EOF) {
+				$special_prices[$result->fields['price_sheet_id']] = $result->fields['price_levels'];
+				$result->MoveNext();
+			}
+			$levels = isset($special_prices[$price_sheets->fields['id']]) ? $special_prices[$price_sheets->fields['id']] : $price_sheets->fields['default_levels'];
+		}
+		if ($levels) {
+	  		$prices = inv_calculate_prices($inventory->fields['item_cost'], $inventory->fields['full_price'], $levels);
+	  		if(is_array($prices)) foreach ($prices as $value) if ($qty >= $value['qty']) $price = $currencies->clean_value($value['price']);
+		} else {
+	  		$price = ($type=='v') ? $currencies->clean_value($inventory->fields['item_cost']) : $currencies->clean_value($inventory->fields['full_price']);
+		}
+		return array('price'=>$price, 'sales_tax'=>$sales_tax, 'purch_tax'=>$purch_tax);
   }
 
 function inv_status_open_orders($journal_id, $gl_type) { // checks order status for order balances, items received/shipped

@@ -584,6 +584,7 @@ class currencies {
     $temp  = str_replace($this->currencies[$currency_type]['thousands_point'], '', trim($number));
     $value = str_replace($this->currencies[$currency_type]['decimal_point'], '.', $temp);
     $value = preg_replace("/[^-0-9.]+/","",$value);
+    if( $value == null || $value == '') $value = 0;
     return $value;
   }
 
