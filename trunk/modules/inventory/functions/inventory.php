@@ -256,8 +256,9 @@
 	  		$prices = inv_calculate_prices($inventory->fields['item_cost'], $inventory->fields['full_price'], $levels);
 	  		if(is_array($prices)) foreach ($prices as $value) if ($qty >= $value['qty']) $price = $currencies->clean_value($value['price']);
 		} else {
-	  		$price = ($type=='v') ? $currencies->clean_value($inventory->fields['item_cost']) : $currencies->clean_value($inventory->fields['full_price']);
+	  		$price = ($type=='v') ? $inventory->fields['item_cost'] : $inventory->fields['full_price'];
 		}
+		if ($price == '' || $price == null) $price = 0.0;
 		return array('price'=>$price, 'sales_tax'=>$sales_tax, 'purch_tax'=>$purch_tax);
   }
 
