@@ -84,7 +84,7 @@ class beg_bal_import {
 	$title_line = trim(array_shift($lines));	// pull header and remove extra white space characters
 	$titles = explode(",", str_replace('"', '', $title_line));
 	$records = array();
-	foreach ($lines as $line_num => $line) {    
+	foreach ($lines as $line_num => $line) {
 	  $parsed_array = $this->csv_string_to_array(trim($line));
 	  $fields = array();
 	  for ($field_num = 0; $field_num < count($titles); $field_num++) {
@@ -269,8 +269,7 @@ class beg_bal_import {
 	  $db->transStart();
 	  // update inventory balances on hand
 	  foreach ($sku_list as $sku => $details) {
-		$sql = "update " . TABLE_INVENTORY . " 
-			set quantity_on_hand = quantity_on_hand + " . $details['qty'] . " where sku = '" . $sku . "'";
+		$sql = "update " . TABLE_INVENTORY . " set quantity_on_hand = quantity_on_hand + {$details['qty']} where sku = '$sku'";
 		$result = $db->Execute($sql);
 		if ($result->AffectedRows() <> 1) {
 		  $messageStack->add(sprintf(GL_BEG_BAL_ERROR_8, $sku),'error');
@@ -279,18 +278,18 @@ class beg_bal_import {
 		}
 		$history_array = array(
 		  'ref_id'    => 0,
-		  'sku'       => $sku, 
-		  'qty'       => $details['qty'], 
+		  'sku'       => $sku,
+		  'qty'       => $details['qty'],
 		  'remaining' => $details['qty'],
-		  'unit_cost' => ($details['total'] / $details['qty']), 
+		  'unit_cost' => ($details['total'] / $details['qty']),
 		  'post_date' => $post_date,
 		);
 		$result = db_perform(TABLE_INVENTORY_HISTORY, $history_array, 'insert');
 	  }
 	  // update chart of account beginning balances for period 1
 	  foreach ($coa_list as $account => $amount) {
-		$sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " set beginning_balance = beginning_balance + " . $amount . " 
-			where account_id = '" . $account . "' and period = 1";
+		$sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " set beginning_balance = beginning_balance + $amount
+			where account_id = '$account' and period = 1";
 		$result = $db->Execute($sql);
 		if ($result->AffectedRows() <> 1) {
 		  $messageStack->add(sprintf(GL_BEG_BAL_ERROR_9, $account),'error');

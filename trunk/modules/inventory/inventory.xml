@@ -68,7 +68,7 @@
 	  <Type>varchar(255)</Type>
 	  <Description>Description for Purchase, shows up on orders to vendors</Description>
 	  <Properties>default NULL</Properties>
-	  <CanImport>1</CanImport>
+	  <CanImport>0</CanImport>
 	  <Required>0</Required>
 	</Field>
 	<Field>
@@ -131,7 +131,7 @@
 	  <Type>int(11)</Type>
 	  <Description>Links to the record ID field in the sales_tax table to set the default tax rate for purchases of the inventory item</Description>
 	  <Properties>NOT NULL default '0'</Properties>
-	  <CanImport>1</CanImport>
+	  <CanImport>0</CanImport>
 	  <Required>0</Required>
 	</Field>
 	<Field>
@@ -140,7 +140,7 @@
 	  <Type>float</Type>
 	  <Description>Specifies the default item cost used when generating purchase orders and purchases.</Description>
 	  <Properties>NOT NULL default '0'</Properties>
-	  <CanImport>1</CanImport>
+	  <CanImport>0</CanImport>
 	  <Required>0</Required>
 	</Field>
 	<Field>
@@ -755,17 +755,7 @@
 	<Engine>InnoDB</Engine>
 	<DefaultCharset>utf8</DefaultCharset>
 	<Collate>utf8_unicode_ci</Collate>
-	<PrimaryKey>id</PrimaryKey>
-	<Index>store_id</Index>
-	<Field>
-	  <Name>id</Name>
-	  <TagName>RecordID</TagName>
-	  <Type>int (11)</Type>
-	  <Description>Unique database id field</Description>
-	  <Properties>NOT NULL auto_increment</Properties>
-	  <CanImport>0</CanImport>
-	  <Required>0</Required>
-	</Field>
+	<PrimaryKey>id</PrimaryKey>	
 	<Field>
 	  <Name>id</Name>
 	  <TagName>RecordID</TagName>
@@ -781,7 +771,7 @@
 	  <Type>varchar(24)</Type>
 	  <Description>SKU to link to inventory table</Description>
 	  <Properties>NOT NULL default ''</Properties>
-	  <CanImport>0</CanImport>
+	  <CanImport>1</CanImport>
 	  <Required>1</Required>
 	</Field>
 	<Field>
@@ -790,7 +780,7 @@
 	  <Type>int (11)</Type>
 	  <Description>Unique database id field for the vendor located in the contacts table</Description>
 	  <Properties>NOT NULL default '0'</Properties>
-	  <CanImport>0</CanImport>
+	  <CanImport>1</CanImport>
 	  <Required>1</Required>
 	</Field>
 	<Field>
@@ -799,7 +789,7 @@
 	  <Type>varchar(255)</Type>
 	  <Description>Description for purchase from the vendor, may contain vendor part numbers, unique descriptions, etc.</Description>
 	  <Properties>default NULL</Properties>
-	  <CanImport>0</CanImport>
+	  <CanImport>1</CanImport>
 	  <Required>1</Required>
 	</Field>
 	<Field>
@@ -808,7 +798,7 @@
 	  <Type>float</Type>
 	  <Description>Number of units per package purchase</Description>
 	  <Properties>NOT NULL default '1'</Properties>
-	  <CanImport>0</CanImport>
+	  <CanImport>1</CanImport>
 	  <Required>0</Required>
 	</Field>
  	<Field>
@@ -817,7 +807,7 @@
 	  <Type>int(11)</Type>
 	  <Description>Contains the record id field from the tax_auths table to determine tax rate applied.</Description>
 	  <Properties>NOT NULL default '0'</Properties>
-	  <CanImport>0</CanImport>
+	  <CanImport>1</CanImport>
 	  <Required>0</Required>
 	</Field>
 	<Field>
@@ -826,16 +816,16 @@
 	  <Type>float</Type>
 	  <Description>Item cost of each unit</Description>
 	  <Properties>NOT NULL default '0'</Properties>
-	  <CanImport>0</CanImport>
+	  <CanImport>1</CanImport>
 	  <Required>1</Required>
 	</Field>
 	<Field>
 	  <Name>price_sheet_v</Name>
-	  <TagName>PriceSheet</TagName>
+	  <TagName>PurchasePriceSheet</TagName>
 	  <Type>varchar(32)</Type>
 	  <Description>Name of the price sheet to use as default when purchaing items. Must match name from table price_sheets</Description>
 	  <Properties>default NULL</Properties>
-	  <CanImport>0</CanImport>
+	  <CanImport>1</CanImport>
 	  <Required>0</Required>
 	</Field>
    </Table>
