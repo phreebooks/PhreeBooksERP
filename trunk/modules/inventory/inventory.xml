@@ -751,7 +751,7 @@
 	<Name>inventory_purchase</Name>
 	<TagName>InventoryPurchase</TagName>
 	<Description>Contains purchase and vendor information for purchasing inventory</Description>
-	<CanImport>0</CanImport>
+	<CanImport>1</CanImport>
 	<Engine>InnoDB</Engine>
 	<DefaultCharset>utf8</DefaultCharset>
 	<Collate>utf8_unicode_ci</Collate>
