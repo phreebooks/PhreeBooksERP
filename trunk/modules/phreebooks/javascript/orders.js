@@ -352,9 +352,8 @@ function fillOrder(xml) {
   });
 }
 
-function AccountList() {
+function AccountList(override) {
   var guess = document.getElementById('search').value;
-  var override = document.getElementById('bill_add_update').checked ? true : false; // force popup if Add/Update checked
   if (guess != text_search && guess != '' && !override) {
     $.ajax({
 	  type: "GET",

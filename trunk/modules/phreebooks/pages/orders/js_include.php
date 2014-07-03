@@ -160,7 +160,7 @@ function init() {
   if (ORD_ENABLE_LINE_ITEM_BAR_CODE) echo 'refreshOrderClock();'; 
 ?>
   $("#search").change(function(){
-	if(document.getElementById('search').value != ''){ AccountList(); }
+	if(document.getElementById('search').value != ''){ AccountList(false); }
   });
 }
 
