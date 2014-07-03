@@ -20,6 +20,8 @@
 $FormProcessing['ordr_qty'] = PB_PF_ORDER_QTY;
 $FormProcessing['j_desc']   = PB_PF_JOURNAL_DESC;
 $FormProcessing['coa_type'] = PB_PF_COA_TYPE_DESC;
+$FormProcessing['avg_cost'] = PB_PF_GET_AVG_COST;
+$FormProcessing['avg_total']= PB_PF_GET_AVG_TOTAL;
 // Extra form processing operations
 function pf_process_phreebooks($strData, $Process) {
   switch ($Process) {
@@ -27,7 +29,9 @@ function pf_process_phreebooks($strData, $Process) {
 	case "j_desc": 
 	  gen_pull_language('phreebooks');
       return defined('GEN_ADM_TOOLS_J' . str_pad($strData, 2, '0', STR_PAD_LEFT)) ? constant('GEN_ADM_TOOLS_J' . str_pad($strData, 2, '0', STR_PAD_LEFT)) : $strData;
-	case "coa_type": return pb_get_coa_type($strData);
+	case "coa_type":  return pb_get_coa_type($strData);
+	case "avg_cost":  return pb_get_avg_cost($strData);
+	case "avg_total": return pb_get_avg_total($strData);
 	default: // Do nothing
   }
   return $strData; // No Process recognized, return original value
@@ -47,6 +51,21 @@ function pb_pull_order_qty($ref_id = 0) {
 function pb_get_coa_type($id) {
   require(DIR_FS_MODULES . 'phreebooks/defaults.php');
   return $coa_types_list[$id]['text'];
+}
+
+function pb_get_avg_cost($sku) {
+	global $db;
+	$result = $db->Execute("SELECT avg_cost FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='$sku' ORDER BY post_date DESC LIMIT 1");
+	return number_format($result->fields['avg_cost'], 2);
+}
+
+function pb_get_avg_total($history_id) {
+	global $db;
+	$result    = $db->Execute("SELECT remaining, sku FROM ".TABLE_INVENTORY_HISTORY." WHERE id='$history_id'");
+	$remaining = $result->fields['remaining'];
+	$sku       = $result->fields['sku'];
+	$result    = $db->Execute("SELECT avg_cost FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='$sku' ORDER BY post_date DESC LIMIT 1");
+	return number_format($remaining * $result->fields['avg_cost'], 2);
 }
 
 ?>

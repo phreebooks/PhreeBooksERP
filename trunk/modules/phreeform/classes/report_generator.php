@@ -204,7 +204,7 @@ class PDF extends TCPDF {
 					$this->Cell(0, $CellHeight, $Desc . $todo[1], 1, 1, 'C');
 					$this->y0 = $this->GetY() + 0.35;
 					$NeedTop = 'Next';
-					$fill = false; // set so totals data will not be filled
+					$fill = 'total'; // set so totals data will not be filled
 					if ($todo[0] == 'g' && $report->grpbreak) $group_break = true;
 					// now fall into the 'd' case to show the data
 				case "d": // data element
@@ -225,7 +225,9 @@ class PDF extends TCPDF {
 					$this->SetLeftMargin($CellXPos[0]);
 					$this->SetX($CellXPos[0]);
 					$this->SetY($this->y0);
-					if ($fill) $this->SetFillColor($FillColor[0], $FillColor[1], $FillColor[2]); else $this->SetFillColor(255);
+					if     ($fill === 'total') $this->SetFillColor(240);
+					elseif ($fill === true)    $this->SetFillColor($FillColor[0], $FillColor[1], $FillColor[2]); 
+					else                       $this->SetFillColor(255);
 					$this->Cell(0, $this->pageY-$this->y0, '', $brdr, 0, 'L', 1);
 					// fill in the data
 					$maxY  = $this->y0; // set to current top of row
@@ -252,7 +254,7 @@ class PDF extends TCPDF {
 			$ThisRowHt = $maxY - $this->y0; // seee how tall this row was
 			if ($ThisRowHt > $this->MaxRowHt) $this->MaxRowHt = $ThisRowHt; // keep that largest row so far to track pagination
 			$this->y0 = $maxY; // set y position to largest value for next row
-			$fill = !$fill;
+			$fill = $fill ? false : true;
 			if ($group_break) {
 				$this->forcePageBreak($CellXPos[0]);
 				$group_break = false;

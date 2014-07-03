@@ -39,6 +39,8 @@ define('TEXT_DOUBLE_MODE','Double Line Entry');
 define('PB_PF_JOURNAL_DESC','Journal Description');
 define('PB_PF_ORDER_QTY','Quantity Ordered');
 define('PB_PF_COA_TYPE_DESC','Chart of Account Type');
+define('PB_PF_GET_AVG_COST','Inv Average Cost');
+define('PB_PF_GET_AVG_TOTAL','Inv Average Total');
 // Chart of Account Type definitions
 define('COA_00_DESC','Cash');
 define('COA_02_DESC','Accounts Receivable');

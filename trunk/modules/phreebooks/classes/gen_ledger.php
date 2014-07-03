@@ -1046,7 +1046,7 @@ class journal {
 
   function calculate_avg_cost($sku = '', $price = 0, $qty = 1) {
   	global $db, $messageStack;
-	$sql = "SELECT avg_cost, remaining FROM ".TABLE_INVENTORY_HISTORY." 
+	$sql = "SELECT id, avg_cost, remaining FROM ".TABLE_INVENTORY_HISTORY." 
 		WHERE ref_id<>$this->id AND sku='$sku' AND remaining>0 AND post_date<='$this->post_date'";
   	if ($this->store_id > 0) $sql .= " AND store_id='$this->store_id'";
 	$sql .= " ORDER BY post_date, id";

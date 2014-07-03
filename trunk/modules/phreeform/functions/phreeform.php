@@ -970,7 +970,7 @@ function BuildSQL($report) { // for reports only
 }
 
 function BuildDataArray($sql, $report) { // for reports only
-	global $db, $Heading, $Seq, $posted_currencies, $messageStack;
+	global $db, $Heading, $Seq, $posted_currencies, $messageStack, $currencies;
 	$posted_currencies = array('currencies_code' => DEFAULT_CURRENCY, 'currencies_value' => 1); // use default currency
 	// See if we need to group, fetch the group fieldname
 	$GrpFieldName = '';
@@ -1035,8 +1035,8 @@ function BuildDataArray($sql, $report) { // for reports only
 	    }
 	    $ColCnt++;
 	    if ($TableCtl['total']) { // add to the running total if need be
-		  $Seq[$key]['grptotal'] += $myrow[$TableCtl['fieldname']];
-		  $Seq[$key]['rpttotal'] += $myrow[$TableCtl['fieldname']];
+		  $Seq[$key]['grptotal'] += $currencies->clean_value(ProcessData($myrow[$TableCtl['fieldname']], $TableCtl['processing']));
+		  $Seq[$key]['rpttotal'] += $currencies->clean_value(ProcessData($myrow[$TableCtl['fieldname']], $TableCtl['processing']));
 	    }
 	  }
 	  $RowCnt++;
@@ -1046,7 +1046,7 @@ function BuildDataArray($sql, $report) { // for reports only
 	if ($GrpWorking !== false) { // if we collected group data show the final group total
 		$OutputArray[$RowCnt][0] = 'g:' . ProcessData($GrpWorking, $GrpFieldProcessing);
 		foreach ($Seq as $TotalCtl) {
-			$OutputArray[$RowCnt][$ColCnt] = ($TotalCtl['total'] == '1') ? ProcessData($TotalCtl['grptotal'], $TotalCtl['processing']) : ' ';
+			$OutputArray[$RowCnt][$ColCnt] = ($TotalCtl['total'] == '1') ? $TotalCtl['grptotal'] : ' ';
 			$ColCnt++;
 		}
 		$RowCnt++;
@@ -1058,7 +1058,7 @@ function BuildDataArray($sql, $report) { // for reports only
 	if ($ShowTotals) {
 		$OutputArray[$RowCnt][0] = 'r:' . $report->title;
 		foreach ($Seq as $TotalCtl) {
-			if ($TotalCtl['total']) $OutputArray[$RowCnt][$ColCnt] = ProcessData($TotalCtl['rpttotal'], $TotalCtl['processing']);
+			if ($TotalCtl['total']) $OutputArray[$RowCnt][$ColCnt] = $TotalCtl['rpttotal'];
 				else $OutputArray[$RowCnt][$ColCnt] = ' ';
 			$ColCnt++;
 		}
