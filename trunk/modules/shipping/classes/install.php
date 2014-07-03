@@ -93,7 +93,7 @@ class shipping_admin {
 		  actual_date datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
 		  deliver_late enum('0','1') NOT NULL default '0',
 		  tracking_id varchar(32) NOT NULL default '',
-		  cost float NOT NULL default '0',
+		  cost double NOT NULL default '0',
 		  notes varchar(255) NOT NULL default '',
 		  PRIMARY KEY  (id),
 		  KEY ref_id (ref_id)
@@ -125,6 +125,9 @@ class shipping_admin {
 	if (MODULE_SHIPPING_STATUS < 3.2) {
 	  if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_shipment_num')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_shipment_num VARCHAR(16) NOT NULL DEFAULT '1'");
 	  if (db_field_exists(TABLE_CURRENT_STATUS, 'next_shipment_desc')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_shipment_desc");
+	}
+	if (MODULE_SHIPPING_STATUS < 3.7) {
+		$db->Execute("ALTER TABLE ".TABLE_SHIPPING_LOG." CHANGE `cost` `cost` DOUBLE NOT NULL DEFAULT '0'");
 	}
 	if (!$error) {
 	  write_configure('MODULE_' . strtoupper($module) . '_STATUS', constant('MODULE_' . strtoupper($module) . '_VERSION'));

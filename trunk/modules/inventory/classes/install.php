@@ -98,14 +98,14 @@ class inventory_admin {
 		  price_sheet_v varchar(32) default NULL,
 		  full_price double NOT NULL default '0',
 		  full_price_with_tax double NOT NULL default '0',
-		  margin float NOT NULL default '0',
-		  item_weight float NOT NULL default '0',
-		  quantity_on_hand float NOT NULL default '0',
-		  quantity_on_order float NOT NULL default '0',
-		  quantity_on_sales_order float NOT NULL default '0',
-		  quantity_on_allocation float NOT NULL default '0',
-		  minimum_stock_level float NOT NULL default '0',
-		  reorder_quantity float NOT NULL default '0',
+		  product_margin DOUBLE NOT NULL DEFAULT '0',
+		  item_weight DOUBLE NOT NULL DEFAULT '0',
+		  quantity_on_hand DOUBLE NOT NULL DEFAULT '0',
+		  quantity_on_order DOUBLE NOT NULL DEFAULT '0',
+		  quantity_on_sales_order DOUBLE NOT NULL DEFAULT '0',
+		  quantity_on_allocation DOUBLE NOT NULL DEFAULT '0',
+		  minimum_stock_level DOUBLE NOT NULL DEFAULT '0',
+		  reorder_quantity DOUBLE NOT NULL DEFAULT '0',
 		  vendor_id int(11) NOT NULL default '0',
 		  lead_time int(3) NOT NULL default '1',
 		  upc_code varchar(13) NOT NULL DEFAULT '',
@@ -122,7 +122,7 @@ class inventory_admin {
 		  ref_id int(11) NOT NULL default '0',
 		  sku varchar(24) NOT NULL default '',
 		  description varchar(32) NOT NULL default '',
-		  qty float NOT NULL default '0',
+		  qty double NOT NULL default '0',
 		  PRIMARY KEY (id),
 		  KEY ref_id (ref_id)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci",
@@ -131,7 +131,7 @@ class inventory_admin {
 		  journal_main_id int(11) NOT NULL default '0',
 		  store_id int(11) NOT NULL default '0',
 		  sku varchar(24) NOT NULL default '',
-		  qty float NOT NULL default '0',
+		  qty double NOT NULL default '0',
 		  post_date date NOT NULL default '0000-00-00',
 		  PRIMARY KEY (id),
 		  KEY sku (sku),
@@ -140,7 +140,7 @@ class inventory_admin {
 	  TABLE_INVENTORY_COGS_USAGE => "CREATE TABLE " . TABLE_INVENTORY_COGS_USAGE . " (
 		  id int(11) NOT NULL auto_increment,
 		  journal_main_id int(11) NOT NULL default '0',
-		  qty float NOT NULL default '0',
+		  qty double NOT NULL default '0',
 		  inventory_history_id int(11) NOT NULL default '0',
 		  PRIMARY KEY (id),
 		  INDEX (journal_main_id, inventory_history_id) 
@@ -151,9 +151,9 @@ class inventory_admin {
 		  store_id int(11) NOT NULL default '0',
 		  journal_id int(2) NOT NULL default '6',
 		  sku varchar(24) NOT NULL default '',
-		  qty float NOT NULL default '0',
+		  qty double NOT NULL default '0',
 		  serialize_number varchar(24) NOT NULL default '',
-		  remaining float NOT NULL default '0',
+		  remaining double NOT NULL default '0',
 		  unit_cost double NOT NULL default '0',
 		  avg_cost double NOT NULL default '0',
 	  	  post_date datetime default NULL,
@@ -178,7 +178,7 @@ class inventory_admin {
 		  sku varchar(24) NOT NULL default '',
 		  vendor_id int(11) NOT NULL default '0',
 		  description_purchase varchar(255) default NULL,
-		  purch_package_quantity float NOT NULL default '1',
+		  purch_package_quantity double NOT NULL default '1',
 		  purch_taxable int(11) NOT NULL default '0',
 		  item_cost double NOT NULL default '0', 
 		  price_sheet_v varchar(32) default NULL,
@@ -425,11 +425,26 @@ class inventory_admin {
 		$db->Execute("ALTER TABLE ".TABLE_INVENTORY." 
 			CHANGE `item_cost` `item_cost` DOUBLE NOT NULL DEFAULT '0',
 			CHANGE `full_price` `full_price` DOUBLE NOT NULL DEFAULT '0',
-			CHANGE `full_price_with_tax` `full_price_with_tax` DOUBLE NOT NULL DEFAULT '0'");
+			CHANGE `full_price_with_tax` `full_price_with_tax` DOUBLE NOT NULL DEFAULT '0',
+			CHANGE `product_margin` `product_margin` DOUBLE NOT NULL DEFAULT '0',
+			CHANGE `item_weight` `item_weight` DOUBLE NOT NULL DEFAULT '0',
+			CHANGE `quantity_on_hand` `quantity_on_hand` DOUBLE NOT NULL DEFAULT '0',
+			CHANGE `quantity_on_order` `quantity_on_order` DOUBLE NOT NULL DEFAULT '0',
+			CHANGE `quantity_on_sales_order` `quantity_on_sales_order` DOUBLE NOT NULL DEFAULT '0',
+			CHANGE `quantity_on_allocation` `quantity_on_allocation` DOUBLE NOT NULL DEFAULT '0',
+			CHANGE `minimum_stock_level` `minimum_stock_level` DOUBLE NOT NULL DEFAULT '0',
+			CHANGE `reorder_quantity` `reorder_quantity` DOUBLE NOT NULL DEFAULT '0'");
+		$db->Execute("ALTER TABLE ".TABLE_INVENTORY_ASSY_LIST ." CHANGE `qty` `qty` double NOT NULL default '0'");
+		$db->Execute("ALTER TABLE ".TABLE_INVENTORY_COGS_OWED ." CHANGE `qty` `qty` double NOT NULL default '0'");
+		$db->Execute("ALTER TABLE ".TABLE_INVENTORY_COGS_USAGE." CHANGE `qty` `qty` double NOT NULL default '0'");
 		$db->Execute("ALTER TABLE ".TABLE_INVENTORY_HISTORY."
+			CHANGE `qty` `qty` DOUBLE NOT NULL DEFAULT '0',
+			CHANGE `remaining` `remaining` DOUBLE NOT NULL DEFAULT '0',
 			CHANGE `unit_cost` `unit_cost` DOUBLE NOT NULL DEFAULT '0',
 			CHANGE `avg_cost` `avg_cost` DOUBLE NOT NULL DEFAULT '0'");
-		$db->Execute("ALTER TABLE ".TABLE_INVENTORY_PURCHASE." CHANGE `item_cost` `item_cost` DOUBLE NOT NULL DEFAULT '0'");
+		$db->Execute("ALTER TABLE ".TABLE_INVENTORY_PURCHASE." 
+			CHANGE `purch_package_quantity` `purch_package_quantity` DOUBLE NOT NULL DEFAULT '0',
+			CHANGE `item_cost` `item_cost` DOUBLE NOT NULL DEFAULT '0'");
 	}
 	if (!$error) {
 		xtra_field_sync_list('inventory', TABLE_INVENTORY);

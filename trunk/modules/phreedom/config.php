@@ -25,7 +25,7 @@
 // 3.5 => 2012-10-01 - bug fixes
 // 3.6 => 2013-06-30 - bug fixes
 // Module software version information
-define('MODULE_PHREEDOM_VERSION',  '3.6.1');
+define('MODULE_PHREEDOM_VERSION',  3.7);
 // Menu Sort Positions
 define('MENU_HEADING_INVENTORY_ORDER',  30);
 define('MENU_HEADING_BANKING_ORDER',    40);

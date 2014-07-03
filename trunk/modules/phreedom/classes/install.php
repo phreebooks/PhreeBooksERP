@@ -88,7 +88,7 @@ class phreedom_admin {
 		  stats varchar(32) NOT NULL,
 		  reference_id varchar(32) NOT NULL default '',
 		  action varchar(64) default NULL,
-		  amount float(10,2) NOT NULL default '0.00',
+		  amount DOUBLE NOT NULL DEFAULT '0',
 		  PRIMARY KEY (id),
 		  KEY idx_page_accessed_zen (reference_id)
 		) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;",
@@ -107,7 +107,7 @@ class phreedom_admin {
 		  thousands_point char(1) default NULL,
 		  decimal_places char(1) default NULL,
 		  decimal_precise char(1) NOT NULL default '2',
-		  value float(13,8) default NULL,
+		  value DOUBLE NOT NULL DEFAULT '0',
 		  last_updated datetime default NULL,
 		  PRIMARY KEY  (currencies_id)
 		) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
@@ -265,6 +265,11 @@ class phreedom_admin {
 	  if (!db_field_exists(TABLE_EXTRA_FIELDS, 'sort_order'))$db->Execute("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD sort_order varchar(64) NOT NULL default ''");
 	  if (!db_field_exists(TABLE_AUDIT_LOG, 'stats'))        $db->Execute("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
   	}
+  	if (MODULE_PHREEDOM_STATUS < 3.7) {
+  		$db->Execute("ALTER TABLE ".TABLE_AUDIT_LOG." CHANGE `amount` `amount` DOUBLE NOT NULL DEFAULT '0'");
+  		$db->Execute("ALTER TABLE ".TABLE_CURRENCIES." CHANGE `value` `value` DOUBLE NOT NULL DEFAULT '0'");
+  	}
+  	 
     if (!$error) {
 	  write_configure('MODULE_' . strtoupper($module) . '_STATUS', constant('MODULE_' . strtoupper($module) . '_VERSION'));
    	  $messageStack->add(sprintf(GEN_MODULE_UPDATE_SUCCESS, $module, constant('MODULE_' . strtoupper($module) . '_VERSION')), 'success');

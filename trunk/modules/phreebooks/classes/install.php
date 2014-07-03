@@ -151,7 +151,7 @@ class phreebooks_admin {
 		  gl_type char(3) NOT NULL default '',
 		  reconciled int(2) NOT NULL default '0',
 		  sku varchar(24) default NULL,
-		  qty float NOT NULL default '0',
+		  qty double NOT NULL default '0',
 		  description varchar(255) default NULL,
 		  debit_amount double default '0',
 		  credit_amount double default '0',
@@ -161,7 +161,7 @@ class phreebooks_admin {
 		  serialize enum('0','1') NOT NULL default '0',
 		  serialize_number varchar(24) default NULL,
 		  project_id VARCHAR(16) default NULL,
-		  purch_package_quantity float default NULL,
+		  purch_package_quantity double default NULL,
 		  post_date date NOT NULL default '0000-00-00',
 		  date_1 datetime NOT NULL default '0000-00-00 00:00:00',
 		  PRIMARY KEY  (id),
@@ -348,6 +348,11 @@ class phreebooks_admin {
 			$result->MoveNext();
 		}
 		if (!db_field_exists(TABLE_JOURNAL_ITEM, 'purch_package_quantity')) $db->Execute("ALTER TABLE ".TABLE_JOURNAL_ITEM." ADD purch_package_quantity float default NULL AFTER project_id");
+	}
+	if (MODULE_PHREEBOOKS_STATUS < 3.7) {
+		$db->Execute("ALTER TABLE ".TABLE_JOURNAL_ITEM." 
+			CHANGE `qty` `qty` DOUBLE NOT NULL DEFAULT '0',
+			CHANGE `purch_package_quantity` `purch_package_quantity` DOUBLE NOT NULL DEFAULT '0'");
 	}
 	if (!$error) {
 	  write_configure('MODULE_'.strtoupper($module).'_STATUS', constant('MODULE_'.strtoupper($module).'_VERSION'));
