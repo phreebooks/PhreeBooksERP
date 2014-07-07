@@ -784,12 +784,12 @@ class journal {
 
 
 // *********  inventory support functions  **********
-  function update_inventory_status($sku, $field, $adjustment, $item_cost = 0, $desc = '', $full_price = 0) {
+  function update_inventory_status($sku, $field, $adjustment, $item_cost=0, $desc='', $full_price=0) {
 	global $db, $messageStack;
 	if (!$sku || $adjustment == 0) return true;
-	$messageStack->debug("\n    update_inventory_status, SKU = " . $sku . ", field = " . $field . ", adjustment = " . $adjustment . ", and item_cost = " . $item_cost);
+	$messageStack->debug("\n    update_inventory_status, SKU = $sku, field = $field, adjustment = $adjustment, and item_cost = $item_cost");
 	// catch sku's that are not in the inventory database but have been requested to post
-	$result = $db->Execute("select id, inventory_type from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
+	$result = $db->Execute("SELECT id, inventory_type FROM ".TABLE_INVENTORY." WHERE sku='$sku'");
 	if ($result->RecordCount() == 0) {
 	  if (!INVENTORY_AUTO_ADD) {
 		return $this->fail_message(GL_ERROR_UPDATING_INVENTORY_STATUS . $sku);
@@ -801,13 +801,12 @@ class journal {
 	$type = $result->fields['inventory_type'];
 	// only update items that are to be tracked in inventory (non-stock are tracked for PO/SO only)
 	if (strpos(COG_ITEM_TYPES, $type) !== false || ($type == 'ns' && $field <> 'quantity_on_hand')) {
-	  $sql = "update " . TABLE_INVENTORY . " set " . $field . " = " . $field . " + " . $adjustment . ", ";
-	  if ($item_cost) $sql .= "item_cost = " . $item_cost . ", ";
-	  $sql .= "last_journal_date = now() where sku = '" . $sku . "'";
+	  $sql = "UPDATE ".TABLE_INVENTORY." SET $field=$field+$adjustment, ";
+	  if ($item_cost) $sql .= "item_cost=$item_cost, ";
+	  $sql .= "last_journal_date = now() WHERE sku='$sku'";
 	  $result = $db->Execute($sql);
-	  if ($item_cost){
-	  	$sql = "update " . TABLE_INVENTORY_PURCHASE . " set item_cost = " . $item_cost;
-	  	$sql .= " where sku = '" . $sku . "' and vendor_id = '".$this->bill_acct_id."'";
+	  if ($item_cost) {
+	  	$sql = "UPDATE ".TABLE_INVENTORY_PURCHASE." SET item_cost=$item_cost WHERE sku='$sku' AND vendor_id='$this->bill_acct_id'";
 	  	$result = $db->Execute($sql);
 	  }
 	}
