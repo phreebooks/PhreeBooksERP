@@ -261,9 +261,11 @@ if (file_exists($custom_path)) { include($custom_path); }
 		    	// fetch the receipt and prepare to print
 		  		$receipt_data = str_replace("\r", "", addslashes($output)); // for javascript multi-line
 		  		foreach (explode("\n",$receipt_data) as $value){
-		  			$xml .= "<receipt_data>\n";
-	        		$xml .= "\t" . xmlEntry("line", $value);
-		    		$xml .= "</receipt_data>\n";
+		  			if(!empty($value)){
+		  				$xml .= "<receipt_data>\n";
+		  				$xml .= "\t" . xmlEntry("line", $value);
+		  				$xml .= "</receipt_data>\n";
+		  			}
 		  		}
 		  	}
 		}
