@@ -19,6 +19,9 @@
 
 ?>
 <script type="text/javascript">
+function init() {
+}
+
 function check_form() { return true; }
 
 function setReturnValue(rowID) {

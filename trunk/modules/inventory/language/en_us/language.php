@@ -119,6 +119,7 @@ define('INV_RND_VALUE', 'Rnd. Value');
 define('INV_BOM','Bill of Materials');
 define('INV_ADJ_DELETE_ALERT', 'Are you sure you want to delete this Inventory Adjustment?');
 define('INV_MSG_DELETE_INV_ITEM', 'Are you sure you want to delete this inventory item?');
+define('INV_SERIAL_POPUP_TITLE', 'Please select the SKU serial number from the list below:');
 
 define('INV_XFER_FROM_STORE','Transfer From Store ID');
 define('INV_XFER_TO_STORE','To Store ID');

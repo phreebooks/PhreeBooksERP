@@ -27,3 +27,4 @@ legend                   { font-family:Tahoma,Verdana,Arial,sans-serif; font-siz
 label                    { margin: 0; padding: 0; font-weight: bold; }
 #please_wait             { display:none; position:fixed; left:50%; top:50%; }
 .fieldRequired			 { color:red; }
+.imgIcon img             { border:0; }

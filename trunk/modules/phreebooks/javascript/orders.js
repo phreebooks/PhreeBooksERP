@@ -764,6 +764,7 @@ function removeInvRow(index) {
 	document.getElementById('price_'+i).value             		= document.getElementById('price_'+(i+1)).value;
 	document.getElementById('acct_'+i).value              		= document.getElementById('acct_'+(i+1)).value;
 	document.getElementById('tax_'+i).selectedIndex       		= document.getElementById('tax_'+(i+1)).selectedIndex;
+	document.getElementById('imgSerial_'+i).style.display       = $('#imgSerial_'+(i+1)).css('display') == 'none' ? 'none' : '';
 // Hidden fields
 	document.getElementById('id_'+i).value                		= document.getElementById('id_'+(i+1)).value;
 	document.getElementById('so_po_item_ref_id_'+i).value 		= document.getElementById('so_po_item_ref_id_'+(i+1)).value;
@@ -1222,6 +1223,8 @@ function fillInventory(sXml) {
   var imgSerial = document.getElementById('imgSerial_'+rowCnt);
   if (imgSerial != null && ($(xml).find("inventory_type").text() == 'sr' || $(xml).find("inventory_type").text() == 'sa')){
     document.getElementById('imgSerial_'+rowCnt).style.display = '';
+  } else {
+	document.getElementById('imgSerial_'+rowCnt).style.display = 'none';
   }
   document.getElementById('sku_prop_'+rowCnt).style.display = '';
   document.getElementById('weight_'  +rowCnt).value       = $(xml).find("item_weight").text();

@@ -42,5 +42,5 @@ if (file_exists($custom_path)) { include($custom_path); }
 $include_header   = false;
 $include_footer   = false;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', "Please select the SKU serial number from the list below:");
+define('PAGE_TITLE', INV_SERIAL_POPUP_TITLE);
 ?>

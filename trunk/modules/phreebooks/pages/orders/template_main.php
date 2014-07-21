@@ -332,12 +332,15 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
 				echo '</td>' . chr(10);
 				echo '  <td nowrap="nowrap" align="center">';
 				echo html_input_field('pstd_' . $i, $order->item_rows[$j]['pstd'], ($item_col_2_enable ? '' : ' readonly="readonly"') . ' size="7" maxlength="6" onchange="updateRowTotal(' . $i . ', true)" style="text-align:right"');
-				// for serialized items, show the icon
-				if (in_array(JOURNAL_ID, array(6,7,12,13))) echo html_icon('actions/tab-new.png', TEXT_SERIAL_NUMBER, 'small', 'id="imgSerial_'.$i.'" align="top" style="cursor:pointer; display:none;" onclick="serialList(\'serial_' . $i . '\')"');
+				// for serialized items, show the icon IF the item type is serial
+				$invType = $db->Execute("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE sku='{$order->item_rows[$j]['sku']}'");
+				$imgSerialView = in_array($invType->fields['inventory_type'], array('sr','sa')) ? "" : "display:none;";
+				if (in_array(JOURNAL_ID, array(6,7,12,13))) echo html_icon('actions/tab-new.png', TEXT_SERIAL_NUMBER, 'small', 'id="imgSerial_'.$i.'" align="top" style="cursor:pointer;'.$imgSerialView.'" onclick="serialList(\'serial_' . $i . '\')"');
 				echo '</td>' . chr(10);
 				echo '  <td nowrap="nowrap" align="center">';
 				echo html_input_field('sku_' . $i, $order->item_rows[$j]['sku'], ($sku_enable ? '' : ' readonly="readonly"') . ' size="' . (MAX_INVENTORY_SKU_LENGTH + 1) . '" maxlength="' . MAX_INVENTORY_SKU_LENGTH . '" onfocus="clearField(\'sku_' . $i . '\', \'' . TEXT_SEARCH . '\')" onkeydown="checkEnterEvent(event,' . $i . ');" onblur="setField(\'sku_' . $i . '\', \'' . TEXT_SEARCH . '\'); loadSkuDetails(0, ' . $i . ')"') . chr(10);
 				echo html_icon('status/folder-open.png', TEXT_SEARCH, 'small', 'id="sku_open_' . $i . '" align="top" style="cursor:pointer' . ($sku_enable ? '' : ';display:none') . '" onclick="InventoryList(' . $i . ')"') . chr(10);
+				echo html_icon('actions/document-properties.png', TEXT_PROPERTIES, 'small', 'id="sku_prop_' . $i . '" align="top" style="cursor:pointer;" onclick="InventoryProp('.$i.')"') . chr(10);
 				echo '</td>' . chr(10);
 // for textarea uncomment below (NOTE: the field length is set in the db to 255, this choice does not control the users input character count, or ...
 //				echo '  <td colspan="' . ((SINGLE_LINE_ORDER_SCREEN) ? 1 : 5) . '">' . html_textarea_field('desc_' . $i, (SINGLE_LINE_ORDER_SCREEN)?50:110, '1', $order->item_rows[$j]['desc'], 'maxlength="255"') . '</td>' . chr(10);

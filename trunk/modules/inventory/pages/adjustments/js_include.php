@@ -3,7 +3,6 @@
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
 // | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
-
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -22,9 +21,11 @@
 <!--
 // pass any php variables generated during pre-process that are used in the javascript functions.
 // Include translations here as well.
-var securityLevel = <?php echo $security_level; ?>;
-var text_search   = '<?php echo TEXT_SEARCH; ?>';
+var securityLevel    = <?php echo $security_level; ?>;
+var text_search      = '<?php echo TEXT_SEARCH; ?>';
 var ItemIsInactive	 = '<?php echo ITEM_IS_INACTIVE; ?>';
+var serial_num_prompt= '<?php echo ORD_JS_SERIAL_NUM_PROMPT; ?>';
+
 <?php echo js_calendar_init($cal_adj); ?>
 
 function init() {
@@ -51,10 +52,22 @@ function InventoryList(rowCnt) {
   window.open("index.php?module=inventory&page=popup_inv&rowID="+rowCnt+"&type=v&storeID="+bID+"&search_text="+sku,"inventory","width=700,height=550,resizable=1,scrollbars=1,top=150,left=200");
 }
 
-function serialList(rowID) {
-  var choice    = document.getElementById('serial_'+rowID).value;
-  var newChoice = prompt('<?php echo 'Enter Serial Number:'; ?>', choice);
-  if (newChoice) document.getElementById('serial_'+rowID).value = newChoice;
+function serialList(id) {
+	var rowID= id.replace("serial_", "");
+	var qty  = $("#qty_"+rowID).val();
+	if (qty == 1) {
+		var newChoice = prompt(serial_num_prompt, $('#'+id).val());
+		$('#'+id).val(newChoice);
+	} else if (qty == -1) {
+		var curDef  = $("#"+id).val();
+		var rowID   = id.replace("serial_", "");
+		var sku     = $("#sku_"+rowID).val();
+		var storeID = $("#store_id").val();
+		if (storeID == '') storeID = '0';
+		window.open("index.php?module=inventory&page=popup_serial&def="+curDef+"&sku="+sku+"&rowID="+rowID+"&storeID="+storeID,"serialize","width=700px,height=550px,resizable=1,scrollbars=1,top=150,left=200");
+	} else {
+		alert('<?php echo "Quantity must be 1 or -1 for serialized items!"; ?>');
+	}
 }
 
 function loadSkuDetails(iID, rowCnt, strict) {
@@ -108,7 +121,11 @@ function processSkuStock(sXml) {
   }
   document.getElementById('acct_'+rCnt).value       = $(xml).find("account_inventory_wage").text();
   document.getElementById('def_cost_'+rCnt).value   = formatCurrency($(xml).find("item_cost").text());
-  if ($(xml).find("inventory_type").text() == 'sr' || $(xml).find("inventory_type").text() == 'sa') document.getElementById('imgSerial_'+rCnt).style.display = '';
+  if ($(xml).find("inventory_type").text() == 'sr' || $(xml).find("inventory_type").text() == 'sa') {
+    document.getElementById('imgSerial_'+rCnt).style.display = '';
+  } else {
+	document.getElementById('imgSerial_'+rCnt).style.display = 'none';
+  }
   updateBalance();
   rowCnt  = document.getElementById('item_table').rows.length;
   var qty = document.getElementById('qty_'+rowCnt).value;
@@ -142,7 +159,7 @@ function addInvRow() {
   cell[0]  = buildIcon(icon_path+'16x16/emblems/emblem-unreadable.png', '<?php echo TEXT_DELETE; ?>', 'style="cursor:pointer" onclick="if (confirm(\'<?php echo TEXT_ROW_DELETE_ALERT; ?>\')) removeInvRow('+rowCnt+');"');
   cell[1]  = '    <input type="text" name="sku_'+rowCnt+'" id="sku_'+rowCnt+'" value="'+text_search+'" size="<?php echo (MAX_INVENTORY_SKU_LENGTH + 1); ?>" maxlength="<?php echo MAX_INVENTORY_SKU_LENGTH; ?>" onfocus="clearField(\'sku_'+rowCnt+'\', \''+text_search+'\')" onblur="setField(\'sku_'+rowCnt+'\', \''+text_search+'\'); loadSkuDetails(0, '+rowCnt+',1)">';
   cell[1] += buildIcon(icon_path+'16x16/actions/system-search.png', '<?php echo TEXT_SEARCH; ?>', 'style="cursor:pointer" onclick="InventoryList('+rowCnt+')"');
-  cell[1] += buildIcon(icon_path+'16x16/actions/tab-new.png', '<?php echo TEXT_SERIAL_NUMBER; ?>', 'id="imgSerial_'+rowCnt+'" style="cursor:pointer; display:none;" onclick="serialList('+rowCnt+')"');
+  cell[1] += buildIcon(icon_path+'16x16/actions/tab-new.png', '<?php echo TEXT_SERIAL_NUMBER; ?>', 'id="imgSerial_'+rowCnt+'" style="cursor:pointer; display:none;" onclick="serialList(\'serial_'+rowCnt+'\')"');
 // Hidden fields
   cell[1] += '<input type="hidden" name="serial_'+rowCnt+'" id="serial_'+rowCnt+'" value="" />';
   cell[1] += '<input type="hidden" name="acct_'+rowCnt+'" id="acct_'+rowCnt+'" value="" />';
@@ -167,6 +184,7 @@ function removeInvRow(delRowCnt) {
   var glIndex = delRowCnt;
   for (var i=delRowCnt; i<document.getElementById("item_table").rows.length; i++) {
 	document.getElementById('sku_'+i).value      = document.getElementById('sku_'+(i+1)).value;
+	document.getElementById('imgSerial_'+i).style.display = $('#imgSerial_'+(i+1)).css('display') == 'none' ? 'none' : '';
 // Hidden fields
 	document.getElementById('serial_'+i).value   = document.getElementById('serial_'+(i+1)).value;
 	document.getElementById('acct_'+i).value     = document.getElementById('acct_'+(i+1)).value;
