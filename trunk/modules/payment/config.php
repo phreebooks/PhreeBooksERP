@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -24,8 +24,9 @@
 // 3.4 => 2012-02-15 - bug fixes
 // 3.5 => 2012-05-13 - bug fixes, redesign of the classes/methods
 // 3.6 => 2013-06-30 - bug fixes
+// 3.7 => 2014-07-21 - bug fixes
 // Module software version information
-define('MODULE_PAYMENT_VERSION', 3.6);
+define('MODULE_PAYMENT_VERSION', 3.7);
 // Menu Sort Positions
 // Menu Security id's (refer to master doc to avoid security setting overlap)
 define('SECURITY_ID_PAYMENT',       81);

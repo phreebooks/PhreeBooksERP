@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -146,7 +146,7 @@ define('INV_ENTRY_FULL_PRICE', 'Full Price');
 define('INV_ENTRY_FULL_PRICE_WT', 'Full Price with tax');
 define('INV_MARGIN','Margin');
 define('INV_ENTRY_ITEM_WEIGHT', 'Item Weight');
-define('INV_ENTRY_ITEM_MINIMUM_STOCK', 'Minimum Stock Level');
+define('INV_ENTRY_ITEM_MINIMUM_STOCK', 'Reorder Level');
 define('INV_ENTRY_ITEM_REORDER_QUANTITY', 'Reorder Quantity');
 define('INV_ENTRY_INVENTORY_COST_METHOD', 'Cost Method');
 define('INV_ENTRY_INVENTORY_SERIALIZE', 'Serialize Item');

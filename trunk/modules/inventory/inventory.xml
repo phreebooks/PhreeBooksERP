@@ -219,7 +219,7 @@
 	  <Name>minimum_stock_level</Name>
 	  <TagName>MinimumStockLevel</TagName>
 	  <Type>float</Type>
-	  <Description>Specifies the minimum stock level to determine re-order notices</Description>
+	  <Description>Specifies the reorder level to determine re-order notices</Description>
 	  <Properties>NOT NULL default '0'</Properties>
 	  <CanImport>1</CanImport>
 	  <Required>0</Required>
