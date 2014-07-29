@@ -1404,15 +1404,17 @@ class journal {
 		  for ($i = 0; $i < count($invoices); $i++) {
 			$result = $db->Execute("select sum(i.debit_amount) as debits, sum(i.credit_amount) as credits 
 			  from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id 
-			  where m.id = " . $invoices[$i] . " and i.gl_type <> 'ttl'");
+			  where m.id = {$invoices[$i]} and i.gl_type <> 'ttl'");
 			$total_billed = $currencies->format($result->fields['credits'] - $result->fields['debits']);
 			$result = $db->Execute("select sum(i.debit_amount) as debits, sum(i.credit_amount) as credits 
 			  from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id 
-			  where i.so_po_item_ref_id = " . $invoices[$i] . " and i.gl_type in ('pmt', 'chk')");
+			  where i.so_po_item_ref_id = {$invoices[$i]} and i.gl_type in ('pmt', 'chk')");
 			$total_paid = $currencies->format($result->fields['credits'] - $result->fields['debits']);
 			$messageStack->debug("\n    total_billed = " . $total_billed . ' and total_paid = ' . $total_paid);
 			if ($total_billed == $total_paid) {
-			  $this->close_so_po($invoices[$i], true);
+			  	$this->close_so_po($invoices[$i], true);
+			}else{//invoice could be closed but has to be opend again.
+				$this->close_so_po($invoices[$i], false);
 			}
 		  }
 		} else { // unpost - re-open the purchase/invoices affected
