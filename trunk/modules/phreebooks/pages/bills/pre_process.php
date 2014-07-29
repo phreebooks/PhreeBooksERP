@@ -84,7 +84,7 @@ switch ($_REQUEST['action']) {
 		$order->bill_short_name     = db_prepare_input($_POST['search']);
 		$order->bill_acct_id        = db_prepare_input($_POST['bill_acct_id']);
 		$order->bill_address_id     = db_prepare_input($_POST['bill_address_id']);
-		$order->bill_primary_name   = $_POST['bill_primary_name'] <> GEN_PRIMARY_NAME ? db_prepare_input($_POST['bill_primary_name']) : '';
+		$order->bill_primary_name   = $_POST['bill_primary_name'] <> TEXT_NAME_OR_COMPANY ? db_prepare_input($_POST['bill_primary_name']) : '';
 		$order->bill_contact        = $_POST['bill_contact'] <> TEXT_ATTENTION ? db_prepare_input($_POST['bill_contact']) : '';
 		$order->bill_address1       = $_POST['bill_address1'] <> TEXT_ADDRESS1 ? db_prepare_input($_POST['bill_address1']) : '';
 		$order->bill_address2       = $_POST['bill_address2'] <> TEXT_ADDRESS2 ? db_prepare_input($_POST['bill_address2']) : '';
@@ -180,9 +180,9 @@ switch ($_REQUEST['action']) {
 			gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		}
 	} else {
-		throw new \core\classes\userException(GL_ERROR_NEVER_POSTED);
+		throw new \core\classes\userException(TEXT_CANNOT_DELETE_THIS_ENTRY_BECAUSE_IT_WAS_NEVER_POSTED);
 	}
-	throw new \core\classes\userException(GL_ERROR_NO_DELETE);
+	throw new \core\classes\userException(TEXT_THERE_WERE_ERRORS_DURING_PROCESSING . ' ' . TEXT_THE_RECORD_WAS_NOT_DELETED);
 	// if we are here, there was an error, reload page
 	$order = new \core\classes\objectInfo($_POST);
 	$order->post_date = gen_db_date($_POST['post_date']); // fix the date to original format

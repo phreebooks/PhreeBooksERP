@@ -33,7 +33,7 @@ if (defined('MODULE_RMA_STATUS')) {
   // Set the title menu
   define('MENU_HEADING_RMA_ORDER',  77);
   $pb_headings[MENU_HEADING_RMA_ORDER] = array(
-    'text' => MENU_HEADING_RMA,
+    'text' => TEXT_RETURNS,
     'link' => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=index&amp;mID=cat_rma', 'SSL'),
   );
 */

@@ -81,7 +81,7 @@ $mainmenu["banking"] = array(
 );
 $mainmenu["gl"] = array(
   'order'			=> MENU_HEADING_GL_ORDER,
-  'text' 			=> MENU_HEADING_GL,
+  'text' 			=> TEXT_GENERAL_LEDGER,
   'security_id' 	=> '',
   'link' 			=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_gl', 'SSL'),
   'params'      	=> '',
@@ -109,9 +109,9 @@ if (defined('MODULE_CP_ACTION_STATUS') || defined('MODULE_DOC_CTL_STATUS')) $mai
 );
 $mainmenu["logout"] = array(
   'order' => 999,
-  'text'  => TEXT_LOGOUT,
+  'text'  => TEXT_LOG_OUT,
   'link'  => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;action=logout', 'SSL'),
-  'icon'  => html_icon('actions/system-log-out.png', TEXT_LOGOUT, 'small'),
+  'icon'  => html_icon('actions/system-log-out.png', TEXT_LOG_OUT, 'small'),
 );
 // Set the menus
 $mainmenu["company"]['submenu']["profile"] = array(

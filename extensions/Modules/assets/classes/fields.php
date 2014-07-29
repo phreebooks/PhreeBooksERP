@@ -31,7 +31,7 @@ class fields extends \core\classes\fields{
   		$this->type_array[] = array('id' =>'bd', 'text' => TEXT_BUILDING);
   		$this->type_array[] = array('id' =>'fn', 'text' => TEXT_FURNITURE);
   		$this->type_array[] = array('id' =>'pc', 'text' => TEXT_COMPUTER);
-  		$this->type_array[] = array('id' =>'te', 'text' => TEXT_EQUIP);
+  		$this->type_array[] = array('id' =>'te', 'text' => TEXT_TOOLS_AND_EQUIPMENT);
   		$this->type_array[] = array('id' =>'ld', 'text' => TEXT_LAND);
   		$this->type_array[] = array('id' =>'sw', 'text' => TEXT_SOFTWARE);
 	 	$this->type_desc    = TEXT_ASSET_TYPE;

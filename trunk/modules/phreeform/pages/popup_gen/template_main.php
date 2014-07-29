@@ -52,7 +52,7 @@ echo $toolbar->build_toolbar();
 ?>
 <!-- start the tabsets -->
 <?php if (sizeof($r_list) > 1) { ?>
-  <h1><?php echo PHREEFORM_GROUP . $title; ?></h1>
+  <h1><?php echo TEXT_PHREEFORM_GROUP . ' : ' . $title; ?></h1>
 <?php } else { ?>
   <h1><?php echo ($report->reporttype == 'frm' ? TEXT_FORM : TEXT_REPORT) . ': ' . ($report->title); ?></h1>
 <?php } ?>
@@ -81,7 +81,7 @@ echo $toolbar->build_toolbar();
 		  <td><?php echo html_input_field('from_name', $from_name) . ' ' . TEXT_EMAIL . html_input_field('from_email', $from_email, 'size="40"'); ?></td>
 	    </tr>
 	    <tr>
-		  <td align="right"><?php echo TEXT_RECEPIENT_NAME; ?></td>
+		  <td align="right"><?php echo TEXT_RECEPIENT_NAME . ':'; ?></td>
 		  <td><?php echo html_input_field('to_name', $to_name) . ' ' . TEXT_EMAIL . html_input_field('to_email', $to_email, 'size="40"'); ?></td>
 	    </tr>
         <tr>
@@ -212,7 +212,7 @@ echo $toolbar->build_toolbar();
 		<tr><th id="fieldListHeading" colspan="10"><?php echo TEXT_FIELD_LIST; ?></th></tr>
 		<tr>
 		  <th><?php echo TEXT_FIELDNAME; ?></th>
-		  <th><?php echo PHREEFORM_DISPNAME; ?></th>
+		  <th><?php echo TEXT_NAME_TO_DISPLAY; ?></th>
 		  <th><?php echo TEXT_COLUMN . '<br />' . TEXT_BREAK; ?></th>
 		  <th><?php echo TEXT_COLUMN . '<br />' . TEXT_WIDTH; ?></th>
 		  <th><?php echo TEXT_TOTAL  . '<br />' . TEXT_WIDTH; ?></th>
@@ -265,7 +265,7 @@ echo $toolbar->build_toolbar();
         <?php echo TEXT_PAPER_SIZE . ' ' . html_pull_down_menu('papersize', gen_build_pull_down($PaperSizes), $report->page->size, 'onchange="calculateWidth()"'); ?>
       </td>
       <td colspan="4" align="center">
-	  	<?php echo TEXT_ORIEN . ' ' . html_radio_field('paperorientation', 'P', ($report->page->orientation == 'P') ? true : false, '', 'onchange="calculateWidth()"') . ' ' . TEXT_PORTRAIT; ?>
+	  	<?php echo TEXT_ORIENTATION . ' ' . html_radio_field('paperorientation', 'P', ($report->page->orientation == 'P') ? true : false, '', 'onchange="calculateWidth()"') . ' ' . TEXT_PORTRAIT; ?>
 	  	<?php echo              ' ' . html_radio_field('paperorientation', 'L', ($report->page->orientation == 'L') ? true : false, '', 'onchange="calculateWidth()"') . '  ' . TEXT_LANDSCAPE; ?>
 	  </td>
     </tr>
@@ -294,7 +294,7 @@ echo $toolbar->build_toolbar();
       <td align="center"><?php echo html_pull_down_menu('coynamealign', $kFontAlign, $report->page->heading->align); ?></td>
     </tr>
     <tr>
-      <td nowrap="nowrap" colspan="3"><?php echo PHREEFORM_PGTITL1 . ' ' . html_input_field('title1desc', $report->page->title1->text, 'size="30" maxlength="50"'); ?></td>
+      <td nowrap="nowrap" colspan="3"><?php echo TEXT_REPORT_TITLE . ' 1 ' . html_input_field('title1desc', $report->page->title1->text, 'size="30" maxlength="50"'); ?></td>
 	  <td align="center"><?php echo html_checkbox_field('title1show', '1', ($report->page->title1->show == '1') ? true : false); ?></td>
       <td align="center"><?php echo html_pull_down_menu('title1font',  $kFonts,      $report->page->title1->font); ?></td>
       <td align="center"><?php echo html_pull_down_menu('title1size',  $kFontSizes,  $report->page->title1->size); ?></td>
@@ -302,7 +302,7 @@ echo $toolbar->build_toolbar();
       <td align="center"><?php echo html_pull_down_menu('title1align', $kFontAlign,  $report->page->title1->align); ?></td>
     </tr>
     <tr>
-      <td nowrap="nowrap" colspan="3"><?php echo PHREEFORM_PGTITL2 . ' ' . html_input_field('title2desc', $report->page->title2->text, 'size="30" maxlength="50"'); ?></td>
+      <td nowrap="nowrap" colspan="3"><?php echo TEXT_REPORT_TITLE . ' 2 ' . html_input_field('title2desc', $report->page->title2->text, 'size="30" maxlength="50"'); ?></td>
 	  <td align="center"><?php echo html_checkbox_field('title2show', '1', ($report->page->title2->show == '1') ? true : false); ?></td>
       <td align="center"><?php echo html_pull_down_menu('title2font',  $kFonts,      $report->page->title2->font); ?></td>
       <td align="center"><?php echo html_pull_down_menu('title2size',  $kFontSizes,  $report->page->title2->size); ?></td>
@@ -317,7 +317,7 @@ echo $toolbar->build_toolbar();
       <td align="center"><?php echo html_pull_down_menu('filteralign', $kFontAlign,  $report->page->filter->align); ?></td>
     </tr>
     <tr>
-      <td colspan="4"><?php echo PHREEFORM_RPTDATA; ?></td>
+      <td colspan="4"><?php echo TEXT_REPORT_DATA_HEADING; ?></td>
       <td align="center"><?php echo html_pull_down_menu('datafont',    $kFonts,      $report->page->data->font); ?></td>
       <td align="center"><?php echo html_pull_down_menu('datasize',    $kFontSizes,  $report->page->data->size); ?></td>
       <td align="center"><?php echo html_pull_down_menu('datacolor',   $kFontColors, $report->page->data->color); ?></td>

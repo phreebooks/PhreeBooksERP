@@ -165,7 +165,7 @@ echo html_hidden_field('post_date', gen_locale_date($post_date))      . chr(10);
  ?>
 
   <tr>
-	<td colspan="5" align="right"><?php echo TEXT_PAYMENTS_SHOULD_BE . '&nbsp;'; ?></td>
+	<td colspan="5" align="right"><?php echo TEXT_PAYMENTS_SHOULD_BE . ': &nbsp;'; ?></td>
 	<td colspan="2" align="right"><?php echo html_input_field('open_checks', '0', 'disabled="disabled" style="text-align:right" size="13"'); ?></td>
   </tr>
   <tr>
@@ -173,11 +173,11 @@ echo html_hidden_field('post_date', gen_locale_date($post_date))      . chr(10);
 	<td colspan="2" align="right"><?php echo html_input_field('open_deposits', '0', 'disabled="disabled" style="text-align:right" size="13"'); ?></td>
   </tr>
   <tr>
-	<td colspan="5" align="right"><?php echo TILL_BALANCE . '&nbsp;'; ?></td>
+	<td colspan="5" align="right"><?php echo TEXT_START_BALANCE_TILL . ': &nbsp;'; ?></td>
 	<td colspan="2" align="right"><?php echo html_input_field('till_balance', $till_balance, 'disabled="disabled" style="text-align:right" size="13"'); ?></td>
   </tr>
   <tr>
-	<td colspan="5" align="right"><?php echo TILL_END_BALANCE . '&nbsp;'; ?></td>
+	<td colspan="5" align="right"><?php echo TEXT_DIFFERENCE . ': &nbsp;'; ?></td>
 	<td colspan="2" id="balance_total" align="right"><?php echo html_input_field('balance', '0', 'readonly="readonly" style="text-align:right" size="13"'); ?></td>
   </tr>
   <?php }else{

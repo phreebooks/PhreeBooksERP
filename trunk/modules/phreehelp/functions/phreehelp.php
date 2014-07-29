@@ -166,7 +166,7 @@ function build_href($array_tree, $ref = '') {
 		$entry_string .= $entry['doc_title'] . chr(10);
 	  }
 	} else {
-	  $entry_string .= TEXT_UNTITLED . chr(10);
+	  $entry_string .= TEXT_UNTITLED_DOCUMENT . chr(10);
 	}
 	$entry_string .= '<br />' . chr(10);
 	if (isset($entry['children'])) {

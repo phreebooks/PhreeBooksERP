@@ -40,7 +40,7 @@ echo $toolbar->build_toolbar();
 ?>
 <h1><?php echo TEXT_COMPANY_BACKUP; ?></h1>
 <fieldset>
-<legend><?php echo GEN_ADM_TOOLS_CLEAN_LOG; ?></legend>
+<legend><?php echo TEXT_BACKUP_OR_CLEAN_AUDIT_LOGS; ?></legend>
 <p><?php echo GEN_ADM_TOOLS_CLEAN_LOG_DESC; ?></p>
 <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto;">
  <thead class="ui-widget-header">
@@ -76,7 +76,7 @@ echo $toolbar->build_toolbar();
 	<td colspan="3"><?php echo html_radio_field('dl_type', 'file', true, '', '') . TEXT_DATABASE_ONLY; ?></td>
   </tr>
   <tr>
-	<td colspan="3"><?php echo html_radio_field('dl_type', 'dir', false, '', '') . GEN_BACKUP_FULL; ?></td>
+	<td colspan="3"><?php echo html_radio_field('dl_type', 'dir', false, '', '') . TEXT_DATABASE_AND_COMPANY_DATA_FILES; ?></td>
   </tr>
   <tr>
 	<td colspan="2"><?php echo html_checkbox_field('save_local', '1', false, '', '') . GEN_BACKUP_SAVE_LOCAL; ?></td>

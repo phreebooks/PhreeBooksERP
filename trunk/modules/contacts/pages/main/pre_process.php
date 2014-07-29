@@ -221,7 +221,7 @@ switch ($_REQUEST['action']) {
 	    if ($type == 'e') {
 			$heading_array['c.contact_last,c.contact_first'] = TEXT_EMPLOYEE_NAME;
 		} else {
-			$heading_array['a.primary_name'] = GEN_PRIMARY_NAME;
+			$heading_array['a.primary_name'] = TEXT_NAME_OR_COMPANY;
 		}
 		$heading_array['address1']       = TEXT_ADDRESS1;
 		$heading_array['city_town']      = TEXT_CITY_TOWN;

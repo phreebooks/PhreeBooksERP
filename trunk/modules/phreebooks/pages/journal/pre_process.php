@@ -54,7 +54,7 @@ switch ($_REQUEST['action']) {
 		// process the request, build main record
 		$x = 1;
 		$total_amount = 0;
-		$journal_entry_desc = GL_ENTRY_TITLE;
+		$journal_entry_desc = TEXT_GENERAL_JOURNAL_ENTRY;
 		while (isset($_POST['acct_' . $x])) { // while there are gl rows to read in
 			if (!$_POST['debit_' . $x] && !$_POST['credit_' . $x]) { // skip blank rows
 				$x++;
@@ -81,7 +81,7 @@ switch ($_REQUEST['action']) {
 			'journal_id'          => JOURNAL_ID,
 			'post_date'           => $glEntry->post_date,
 			'total_amount'        => $total_amount,
-			'description'         => GL_ENTRY_TITLE,
+			'description'         => TEXT_GENERAL_JOURNAL_ENTRY,
 			'purchase_invoice_id' => $glEntry->purchase_invoice_id,
 			'currencies_code'     => DEFAULT_CURRENCY,
 			'currencies_value'    => 1,
@@ -169,7 +169,7 @@ switch ($_REQUEST['action']) {
 			$messageStack->debug('Saving file to: '.PHREEBOOKS_DIR_MY_ORDERS.'order_'.$glEntry->id.'.zip');
 		  	saveUploadZip('file_name', PHREEBOOKS_DIR_MY_ORDERS, 'order_'.$glEntry->id.'.zip');
 		}
-		gen_add_audit_log(GL_ENTRY_TITLE. " - " . (($glEntry->id) ? TEXT_EDIT : TEXT_ADD), $glEntry->purchase_invoice_id);
+		gen_add_audit_log(TEXT_GENERAL_JOURNAL_ENTRY. " - " . (($glEntry->id) ? TEXT_EDIT : TEXT_ADD), $glEntry->purchase_invoice_id);
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		// *************** END TRANSACTION *************************
   	}catch(Exception $e){
@@ -204,7 +204,7 @@ switch ($_REQUEST['action']) {
 			$delGL->unPost('delete');
 		}
 		$db->transCommit(); // if not successful rollback will already have been performed
-		gen_add_audit_log(GL_ENTRY_TITLE. " - " . TEXT_DELETE, $delGL->purchase_invoice_id);
+		gen_add_audit_log(TEXT_GENERAL_JOURNAL_ENTRY. " - " . TEXT_DELETE, $delGL->purchase_invoice_id);
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
   	}catch(Exception $e){
 		$db->transRollback();
@@ -253,6 +253,6 @@ $cal_gl = array(
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', GL_ENTRY_TITLE);
+define('PAGE_TITLE', TEXT_GENERAL_JOURNAL_ENTRY);
 
 ?>

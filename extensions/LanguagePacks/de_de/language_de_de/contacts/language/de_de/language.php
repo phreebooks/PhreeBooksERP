@@ -38,7 +38,7 @@ define ('TEXT_SALES_REP', 'Sales Rep');
 define ('TEXT_TRANSFER_ADDRESS', 'Transfer-Adresse');
 
 // Adresse / Kontakt Identifikatoren
-define ('GEN_PRIMARY_NAME', 'Name / Firma');
+define ('TEXT_NAME_OR_COMPANY', 'Name / Firma');
 define ('TEXT_EMPLOYEE_NAME', 'Employee Name');
 define ('TEXT_ATTENTION', 'Achtung');
 define ('TEXT_ADDRESS1', 'Adresse1');
@@ -61,7 +61,7 @@ define ('GEN_VENDOR_ID', 'Vendor ID:');
 define ('TEXT_FACEBOOK_ID', 'Facebook-ID');
 define ('TEXT_TWITTER_ID', 'Twitter-ID');
 define ('TEXT_WEBSITE', 'Website');
-define ('GEN_ACCOUNT_LINK', 'Link to Employee Konto');
+define ('TEXT_LINK_TO_EMPLOYEE_ACCOUNT', 'Link to Employee Konto');
 
 // Gezielte definiert (zum Wortlaut Unterschiede für verschiedene Kontoarten differenzieren)
 // Text spezifische Kontakte Filiale
@@ -161,9 +161,9 @@ define ('TEXT_CASH_ON_DELIVERY_SHORT', 'COD');
 define ('TEXT_CASH_ON_DELIVERY', 'Nachnahme');
 define ('TEXT_PREPAID', 'Prepaid');
 define ('ACT_SPECIAL_TERMS', 'Aufgrund der Anzahl der Tage');
-define ('ACT_END_OF_MONTH', 'Durch Ende des Monats');
-define ('ACT_DAY_NEXT_MONTH', 'Aufgrund von bestimmten Datum');
-define ('ACT_DUE_ON', 'Durch auf:');
+define ('TEXT_DUE_END_OF_MONTH', 'Durch Ende des Monats');
+define ('TEXT_DUE_ON_SPECIFIED_DATE', 'Aufgrund von bestimmten Datum');
+define ('TEXT_DUE_ON', 'Durch auf');
 define ('TEXT_DISCOUNT', 'Discount');
 define ('TEXT_PERCENT', 'Prozent.');
 define ('TEXT_PERCENT_SHORT', '%');

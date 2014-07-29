@@ -24,7 +24,7 @@
 <div title="<?php echo TEXT_STATISTICS;?>" id="statistics" class="tabset_content">
   <h2 class="tabset_label"><?php echo TEXT_STATISTICS; ?></h2>
   <fieldset class="formAreaTitle">
-    <legend><?php echo TEXT_MODULE_STATS; ?></legend>
+    <legend><?php echo TEXT_MODULE_STATISTICS; ?></legend>
     <table border="0" width="100%">
 	  <tr>
 	    <td><?php echo 'Coming Soon'; ?></td>

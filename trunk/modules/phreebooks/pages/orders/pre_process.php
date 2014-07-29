@@ -184,7 +184,7 @@ switch ($_REQUEST['action']) {
 		$order->account_type        = $account_type;
 		$order->bill_acct_id        = db_prepare_input($_POST['bill_acct_id']);
 		$order->bill_address_id     = db_prepare_input($_POST['bill_address_id']);
-		$order->bill_primary_name   = db_prepare_input(($_POST['bill_primary_name']   <> GEN_PRIMARY_NAME)   ? $_POST['bill_primary_name']   : '', true);
+		$order->bill_primary_name   = db_prepare_input(($_POST['bill_primary_name']   <> TEXT_NAME_OR_COMPANY)   ? $_POST['bill_primary_name']   : '', true);
 		$order->bill_contact        = db_prepare_input(($_POST['bill_contact']        <> TEXT_ATTENTION)        ? $_POST['bill_contact']        : '', ADDRESS_BOOK_CONTACT_REQUIRED);
 		$order->bill_address1       = db_prepare_input(($_POST['bill_address1']       <> TEXT_ADDRESS1)       ? $_POST['bill_address1']       : '', ADDRESS_BOOK_ADDRESS1_REQUIRED);
 		$order->bill_address2       = db_prepare_input(($_POST['bill_address2']       <> TEXT_ADDRESS2)       ? $_POST['bill_address2']       : '', ADDRESS_BOOK_ADDRESS2_REQUIRED);
@@ -199,7 +199,7 @@ switch ($_REQUEST['action']) {
 		  	$order->ship_add_update     = isset($_POST['ship_add_update']) ? $_POST['ship_add_update'] : 0;
 		  	$order->ship_acct_id        = db_prepare_input($_POST['ship_acct_id']);
 		  	$order->ship_address_id     = db_prepare_input($_POST['ship_address_id']);
-		  	$order->ship_primary_name   = db_prepare_input(($_POST['ship_primary_name']   <> GEN_PRIMARY_NAME)   ? $_POST['ship_primary_name']   : '', true);
+		  	$order->ship_primary_name   = db_prepare_input(($_POST['ship_primary_name']   <> TEXT_NAME_OR_COMPANY)   ? $_POST['ship_primary_name']   : '', true);
 		  	$order->ship_contact        = db_prepare_input(($_POST['ship_contact']        <> TEXT_ATTENTION)        ? $_POST['ship_contact']        : '', ADDRESS_BOOK_SHIP_CONTACT_REQ);
 		  	$order->ship_address1       = db_prepare_input(($_POST['ship_address1']       <> TEXT_ADDRESS1)       ? $_POST['ship_address1']       : '', ADDRESS_BOOK_SHIP_ADD1_REQ);
 		  	$order->ship_address2       = db_prepare_input(($_POST['ship_address2']       <> TEXT_ADDRESS2)       ? $_POST['ship_address2']       : '', ADDRESS_BOOK_SHIP_ADD2_REQ);
@@ -288,24 +288,24 @@ switch ($_REQUEST['action']) {
 		  $contact_type = $account_type=='c' ? strtolower (TEXT_CUSTOMER) : strtolower (TEXT_VENDOR);
 		  throw new \core\classes\userException(sprintf(ERROR_NO_CONTACT_SELECTED, $contact_type, $contact_type, TEXT_ADD_UPDATE));
 		}
-		$base_msg = in_array(JOURNAL_ID, array(3,4,6,7)) ? TEXT_REMIT_TO : TEXT_BILL_TO . ':' ;
-		if ($order->bill_primary_name     === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . GEN_PRIMARY_NAME);
-		if ($order->bill_contact          === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . TEXT_ATTENTION);
-		if ($order->bill_address1         === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . TEXT_ADDRESS1);
-		if ($order->bill_address2         === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . TEXT_ADDRESS2);
-		if ($order->bill_city_town        === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . TEXT_CITY_TOWN);
-		if ($order->bill_state_province   === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . TEXT_STATE_PROVINCE);
-		if ($order->bill_postal_code      === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . $base_msg . ' / ' . TEXT_POSTAL_CODE);
+		$base_msg = in_array(JOURNAL_ID, array(3,4,6,7)) ? TEXT_REMIT_TO . ':' : TEXT_BILL_TO . ':' ;
+		if ($order->bill_primary_name     === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . $base_msg . ' / ' . TEXT_NAME_OR_COMPANY);
+		if ($order->bill_contact          === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . $base_msg . ' / ' . TEXT_ATTENTION);
+		if ($order->bill_address1         === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . $base_msg . ' / ' . TEXT_ADDRESS1);
+		if ($order->bill_address2         === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . $base_msg . ' / ' . TEXT_ADDRESS2);
+		if ($order->bill_city_town        === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . $base_msg . ' / ' . TEXT_CITY_TOWN);
+		if ($order->bill_state_province   === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . $base_msg . ' / ' . TEXT_STATE_PROVINCE);
+		if ($order->bill_postal_code      === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . $base_msg . ' / ' . TEXT_POSTAL_CODE);
 		if (ENABLE_SHIPPING_FUNCTIONS) {
-		  if ($order->ship_primary_name   === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . GEN_PRIMARY_NAME);
-		  if ($order->ship_contact        === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . TEXT_ATTENTION);
-		  if ($order->ship_address1       === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . TEXT_ADDRESS1);
-		  if ($order->ship_address2       === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . TEXT_ADDRESS2);
-		  if ($order->ship_city_town      === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . TEXT_CITY_TOWN);
-		  if ($order->ship_state_province === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . TEXT_STATE_PROVINCE);
-		  if ($order->ship_postal_code    === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . TEXT_POSTAL_CODE);
-		  if ($order->ship_telephone1     === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . TEXT_TELEPHONE);
-		  if ($order->ship_email          === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . ORD_SHIP_TO . ' / ' . TEXT_EMAIL);
+		  if ($order->ship_primary_name   === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . TEXT_SHIP_TO . ' / ' . TEXT_NAME_OR_COMPANY);
+		  if ($order->ship_contact        === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . TEXT_SHIP_TO . ' / ' . TEXT_ATTENTION);
+		  if ($order->ship_address1       === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . TEXT_SHIP_TO . ' / ' . TEXT_ADDRESS1);
+		  if ($order->ship_address2       === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . TEXT_SHIP_TO . ' / ' . TEXT_ADDRESS2);
+		  if ($order->ship_city_town      === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . TEXT_SHIP_TO . ' / ' . TEXT_CITY_TOWN);
+		  if ($order->ship_state_province === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . TEXT_SHIP_TO . ' / ' . TEXT_STATE_PROVINCE);
+		  if ($order->ship_postal_code    === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . TEXT_SHIP_TO . ' / ' . TEXT_POSTAL_CODE);
+		  if ($order->ship_telephone1     === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . TEXT_SHIP_TO . ' / ' . TEXT_TELEPHONE);
+		  if ($order->ship_email          === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . TEXT_SHIP_TO . ' / ' . TEXT_EMAIL);
 		}
 		// Item row errors
 		if (!$order->item_rows) throw new \core\classes\userException(GL_ERROR_NO_ITEMS);
@@ -360,7 +360,7 @@ switch ($_REQUEST['action']) {
   	try{
 		\core\classes\user::validate_security($security_level, 4);
 	  	$id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
-		if (!$id) throw new \core\classes\userException(GL_ERROR_NO_DELETE);
+		if (!$id) throw new \core\classes\userException(TEXT_THERE_WERE_ERRORS_DURING_PROCESSING . ' ' . TEXT_THE_RECORD_WAS_NOT_DELETED);
 		$db->transStart();
 		$delOrd = new \phreebooks\classes\orders($id);
 		$delOrd->journal($id); // load the posted record based on the id submitted

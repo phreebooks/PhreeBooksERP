@@ -36,7 +36,7 @@ echo $toolbar->build_toolbar();
  <tbody class="ui-widget-content">
   <tr><td><?php echo TEXT_CRASH_INFORMATION; ?></td></tr>
   <tr>
-	<td align="center"><?php echo html_button_field('download', TEXT_DOWNLOAD_DEBUG, 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, 'action=DownloadDebug', 'SSL') . '\'"'); ?></td>
+	<td align="center"><?php echo html_button_field('download', TEXT_DOWNLOAD_DEBUG_INFORMATION, 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, 'action=DownloadDebug', 'SSL') . '\'"'); ?></td>
   </tr>
  </tbody>
 </table>

@@ -28,7 +28,7 @@ define ('MODULE_CONTACTS_DESCRIPTION', 'Die Kontakte Modul verwaltet alle Kunden
 // Überschriften
 define ('TEXT_CONTACTS_ADMINISTRATION', 'Kontakte Administration');
 define ('TEXT_BILLING_PREFS', 'Billing Address Book Einstellungen');
-define ('TEXT_SHIPPING_PREFS', 'Versandkosten Adressbuch Einstellungen');
+define ('TEXT_SHIPPING_ADDRESS_BOOK_SETTINGS', 'Versandkosten Adressbuch Einstellungen');
 // Allgemeine
 define ('COST_TYPE_LBR', 'Arbeit');
 define ('TEXT_MATERIALS', 'Material');
@@ -44,7 +44,7 @@ define ('TEXT_SUB_DEPARTMENT', 'Lehrstuhlgruppe');
 define ('HR_EDIT_INTRO', 'Bitte führen Sie alle notwendigen Änderungen durch');
 define ('TEXT_DEPARTMENT_ID', 'Department ID');
 define ('HR_INFO_SUBACCOUNT', 'Ist diese Abteilung eine Unterabteilung?');
-define ('HR_INFO_PRIMARY_ACCT_ID', 'Ja, auch wählen primären Abteilung:');
+define ('TEXT_YES_ALSO_SELECT_PRIMARY_DEPARTMENT', 'Ja, auch wählen primären Abteilung');
 define ('HR_INFO_ACCOUNT_TYPE', 'Abteilung Art');
 define ('HR_INFO_ACCOUNT_INACTIVE', 'Abteilung inaktiv');
 define ('HR_INFO_INSERT_INTRO', 'Bitte geben Sie die neue Abteilung mit ihren Eigenschaften');
@@ -57,7 +57,7 @@ define ('HR_LOG_DEPARTMENTS', 'Kategorien -');
 /************************** (Abteilung Typen) ******************* ****************************/
 define ('TEXT_DEPARTMENT_TYPES', 'Abteilung Typen');
 define ('SETUP_INFO_DEPT_TYPES_NAME', 'Abteilung Typ Name');
-define ('SETUP_DEPT_TYPES_INSERT_INTRO', 'Bitte geben Sie die neue Abteilung Art');
+define ('TEXT_PLEASE_ENTER_THE_NEW_DEPARTMENT_TYPE', 'Bitte geben Sie die neue Abteilung Art');
 define ('SETUP_DEPT_TYPES_DELETE_INTRO', 'Sind Sie sicher, dass Sie diese Abteilung Typ löschen?');
 define ('SETUP_DEPT_TYPES_DELETE_ERROR', 'kann nicht gelöscht werden dieser Abteilung geben, sie wird die Nutzung durch eine Abteilung.');
 define ('SETUP_INFO_HEADING_NEW_DEPT_TYPES', 'Neue Abteilung Typ');
@@ -81,7 +81,7 @@ define ('SETUP_DISPLAY_NUMBER_OF_PROJECT_COSTS', TEXT_DISPLAY_NUMBER . "Projektk
 /************************** (Projektphasen) ******************* ****************************/
 define ('TEXT_PROJECT_PHASES', 'Projektphasen');
 define ('TEXT_COST_BREAKDOWN', 'Cost Breakdown');
-define ('SETUP_INFO_COST_BREAKDOWN', 'Verwenden Sie Kostenaufstellungen für diese Phase?');
+define ('TEXT_USE_COST_BREAKDOWNS_FOR_THIS_PHASE', 'Verwenden Sie Kostenaufstellungen für diese Phase?');
 define ('SETUP_PROJECT_PHASES_INSERT_INTRO', 'Bitte geben Sie die neue Projektphase mit seinen Eigenschaften');
 define ('SETUP_PROJECT_PHASES_DELETE_INTRO', 'Sind Sie sicher, dass Sie dieser Projektphase löschen?');
 define ('SETUP_INFO_HEADING_NEW_PROJECT_PHASES', 'Neues Projekt Phase');

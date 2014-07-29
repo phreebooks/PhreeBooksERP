@@ -22,7 +22,7 @@ define('TEXT_AUDIT_NOTES','Anotações Auditoria');
 define('TEXT_CA','AC');
 define('TEXT_CAPAS','ACAPs');
 define('TEXT_CAPA_NUM','ACAP Num');
-define('TEXT_CAPA_NOTES','Descrição Item');
+define('TEXT_DESCRIPTION_OF_ISSUE','Descrição Item');
 define('TEXT_ACTION_TYPE','Tipo Ação');
 define('TEXT_PURCHASE_INVOICE_ID','Vendas/Fatura#');
 define('TEXT_CREATION_DATE','Data Criação');

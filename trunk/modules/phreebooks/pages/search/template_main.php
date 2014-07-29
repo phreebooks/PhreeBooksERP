@@ -30,7 +30,7 @@ $toolbar->add_help('');
 echo $toolbar->build_toolbar();
 // Build the page
 ?>
-<h1><?php echo HEADING_TITLE_SEARCH_INFORMATION; ?></h1>
+<h1><?php echo TEXT_SEARCH_FOR_JOURNAL_ENTRIES; ?></h1>
 <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto">
  <thead class="ui-widget-header">
   <tr>
@@ -204,7 +204,7 @@ echo $toolbar->build_toolbar();
 	</td>
   </tr>
 <?php } else { // no permission ?>
-  <tr><td colspan="7"><?php echo $query_result->fields['description'] . ' - ' . ERROR_NO_SEARCH_PERMISSION; ?></td></tr>
+  <tr><td colspan="7"><?php echo $query_result->fields['description'] . ' - ' . TEXT_YOU_DO_NOT_HAVE_PERMISSION_TO_VIEW_THIS_SEARCH_RESULT; ?></td></tr>
 <?php
 	  }
 	  $query_result->MoveNext();

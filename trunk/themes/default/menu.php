@@ -56,7 +56,7 @@ function create_menu(array $array){
 		}
 	}else{
 		echo '  <li><a href="'.$array['link'].'" '.$array['params'].'>'.chr(10);
-		if ($array['text'] == TEXT_HOME && ENABLE_ENCRYPTION && strlen($_SESSION['admin_encrypt']) > 0) echo html_icon('emblems/emblem-readonly.png', TEXT_ENCRYPTION_ENABLED, 'small');
+		if ($array['text'] == TEXT_HOME && ENABLE_ENCRYPTION && strlen($_SESSION['admin_encrypt']) > 0) echo html_icon('emblems/emblem-readonly.png', TEXT_ENCRYPTION_KEY_IS_SET, 'small');
   		echo (isset($array['icon']) ? $array['icon'].' '.$array['text'] : $array['text']).'</a>  </li>'.chr(10);
 	}
 	return true;
@@ -64,7 +64,7 @@ function create_menu(array $array){
 
 function check_permission(array $array){
 	$valid = false;
-	foreach($array as $menu_item){ 
+	foreach($array as $menu_item){
 		if(is_array($menu_item['submenu'])) {
 			if(check_permission($menu_item['submenu'])) $valid = true;
 		}else{

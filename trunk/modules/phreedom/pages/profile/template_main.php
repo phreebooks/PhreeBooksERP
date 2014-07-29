@@ -44,11 +44,11 @@ echo $toolbar->build_toolbar();
      <td><?php echo html_pull_down_menu('theme', load_theme_dropdown(), $prefs['theme']?$prefs['theme']:DEFAULT_THEME, 'onchange="updateColors()"'); ?></td>
    </tr>
    <tr>
-     <td><?php echo TEXT_LOGIN_MENU; ?></td>
+     <td><?php echo TEXT_SELECT_MENU_LOCATION; ?></td>
      <td><?php echo html_pull_down_menu('menu', load_menu_dropdown(), $prefs['menu']?$prefs['menu']:DEFAULT_MENU); ?></td>
    </tr>
    <tr>
-     <td><?php echo TEXT_LOGIN_COLORS; ?></td>
+     <td><?php echo TEXT_SELECT_COLOR_SCHEME; ?></td>
      <td><?php echo html_pull_down_menu('colors', load_colors_dropdown(), $prefs['colors']?$prefs['colors']:DEFAULT_COLORS); ?></td>
    </tr>
  </tbody>

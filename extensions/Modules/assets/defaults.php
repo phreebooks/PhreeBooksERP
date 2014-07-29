@@ -24,7 +24,7 @@ $assets_types = array(
   'bd' => TEXT_BUILDING,
   'fn' => TEXT_FURNITURE,
   'pc' => TEXT_COMPUTER,
-  'te' => TEXT_EQUIP,
+  'te' => TEXT_TOOLS_AND_EQUIPMENT,
   'ld' => TEXT_LAND,
   'sw' => TEXT_SOFTWARE,
 );

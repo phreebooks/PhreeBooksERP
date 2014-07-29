@@ -20,12 +20,12 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/inventory/custom/language/en_us/filter.php
 
-define('FILTER_EQUAL_TO'				,'Gelijk aan: ');
-define('FILTER_NOT_EQUAL_TO'			,'Niet Gelijk aan: ');
+define('FILTER_EQUAL_TO'				,'Gelijk aan');
+define('FILTER_NOT_EQUAL_TO'			,'Niet Gelijk aan');
 define('TEXT_LIKE'					,'Als');
-define('FILTER_NOT_LIKE'				,'Niet Als: ');
+define('TEXT_NOT_LIKE'				,'Niet Als: ');
 define('TEXT_BIGGER_THAN'				,'Groter dan');
-define('TEXT_LESS_THAN'				,'Kleiner Dan: ');
+define('TEXT_LESS_THAN'				,'Kleiner Dan');
 define('FILTER_CONTAINS'				,'Bevat');
 define('FILTER_TABEL_HEAD_FIELD'		,'Veld');
 define('TEXT_COMPARISON'	,'Vergelijking');

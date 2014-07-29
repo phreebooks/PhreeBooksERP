@@ -35,11 +35,11 @@ define('TEXT_NEUTRAL','Neutraal');
 define('TEXT_ROUNDED_OF','Afronden');
 define('TEXT_GL_ACCOUNT_ROUNDING','Grootboek rekening voor afronden:');
 define('TEXT_RESTRICT_CURRENCY','Beperk kassa tot deze valuta');
-define('TEXT_DRAWER_CODES','open lade codes');
+define('TEXT_OPEN_DRAWER_CODES','open lade codes');
 define('TEXT_DIF_GL_ACCOUNT','Grootboek rekening voor kasverschillen:');
 define('TEXT_MAX_DISCOUNT', 'stel het maximum aan korting in dat gegeven kan worden in deze kassa, uitgesloten zijn de bestaande prijslijsten.<br> laat dit leeg als u dit niet wilt instellen.');
 define('TEXT_PHREEPOS_TRANSACTION_TYPE','Selecteer het transactie type');
 define('TEXT_ALLOW_USE_OF_TAX','Kan btw gebruikt worden.');
-define('TEXT_TAX','standaard btw');
+define('TEXT_DEFAULT_TAX','standaard btw');
 define('TEXT_OTHER_TRANSACTION','Overige Transacties');
 ?>

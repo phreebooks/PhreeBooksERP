@@ -167,7 +167,7 @@ switch ($_REQUEST['action']) {
 	  gen_add_audit_log(sprintf( TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_RMA, $result->fields['rma_num']));
 	  gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('cID', 'action')), 'SSL'));
 	} else {
-	  $messageStack->add(RMA_ERROR_CANNOT_DELETE, 'error');
+	  $messageStack->add(TEXT_THERE_WAS_AN_ERROR_DELETING_THE_RMA, 'error');
 	}
 	break;
   case 'download':

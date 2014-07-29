@@ -36,7 +36,7 @@ switch ($_REQUEST['action']) {
   	case 'delete':
 	  	try{
 	    	$id = db_prepare_input($_POST['rowSeq']);
-			if (!$id) throw new \core\classes\userException(GL_ERROR_NEVER_POSTED);
+			if (!$id) throw new \core\classes\userException(TEXT_CANNOT_DELETE_THIS_ENTRY_BECAUSE_IT_WAS_NEVER_POSTED);
 		  	$delOrd = new \phreepos\classes\journal\journal_19($id);
 		  	// verify no item rows have been acted upon (accounts reconciliation)
 		  	$result = $db->Execute("select closed from " . TABLE_JOURNAL_MAIN . " where id = " . $id);
@@ -90,15 +90,15 @@ if (ENABLE_MULTI_CURRENCY){
 	  'post_date'           => TEXT_DATE,
 	  'purchase_invoice_id' => TEXT_INVOICE,
 	  'total_amount'        => TEXT_AMOUNT,
-	  'new_total_amount'    => TEXT_AMOUNT_ORIGINAL_CURRENCY,
-	  'bill_primary_name'   => GEN_PRIMARY_NAME,
+	  'new_total_amount'    => TEXT_ORIGINAL_AMOUNT_SHORT,
+	  'bill_primary_name'   => TEXT_NAME_OR_COMPANY,
 	);
 }else{
 	$heading_array = array(
 	  'post_date'           => TEXT_DATE,
 	  'purchase_invoice_id' => TEXT_INVOICE,
 	  'total_amount'        => TEXT_AMOUNT,
-	  'bill_primary_name'   => GEN_PRIMARY_NAME,
+	  'bill_primary_name'   => TEXT_NAME_OR_COMPANY,
 	);
 }
 $result      = html_heading_bar($heading_array);

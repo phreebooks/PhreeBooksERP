@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:45
 // Module/Method: audit
 // ISO Language: pt_br
@@ -13,6 +13,6 @@ define('GL_ERROR_BALANCE','As contas CG não batem');
 define('TEXT_ALL_OR_ACTIVE','Você quer exportar todas ou todas excluindo as ordens, cotações e itens aguardando faturamento');
 define('TEXT_BALANCE_SHEET','Balancete');
 define('TEXT_INCOME_STATEMENT','Demonstrativo Resultados');
-define('HEADING_MODULE_AUDIT','exportar arquivo de auditoria');
+define('TEXT_EXPORT_AUDIT_FILE','exportar arquivo de auditoria');
 
 ?>

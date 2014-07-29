@@ -385,8 +385,8 @@
 		  $result['long']  = TEXT_DISCOUNT . $terms[1] . TEXT_PERCENT . TEXT_DUE_IN . ' ' . $terms[2] . TEXT_DAY_S;
 		  $result['short'] = $terms[1] . TEXT_PERCENT_SHORT . $terms[2] . ', ';
 		}
-		$result['long']  .= ACT_DUE_ON . $terms[3];
-		$result['short'] .=  ACT_DUE_ON . $terms[3];
+		$result['long']  .= TEXT_DUE_ON . ': ' . $terms[3];
+		$result['short'] .= TEXT_DUE_ON . ': ' . $terms[3];
 		break;
 	  case '5': // Due at end of month
 		if ($terms[1] <> 0) {
@@ -394,8 +394,8 @@
 		  $result['long']  = TEXT_DISCOUNT . $terms[1] . TEXT_PERCENT . TEXT_DUE_IN . ' ' . $terms[2] . TEXT_DAY_S;
 		  $result['short'] = $terms[1] . TEXT_PERCENT_SHORT . $terms[2] . ', ';
 		}
-		$result['long']  .= ACT_END_OF_MONTH;
-		$result['short'] .=  ACT_END_OF_MONTH;
+		$result['long']  .= TEXT_DUE_END_OF_MONTH;
+		$result['short'] .=  TEXT_DUE_END_OF_MONTH;
 	}
 	if ($short) return $result['short'];
 	return $result['long'];
@@ -1311,7 +1311,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
 	  }
 	} else {
 	  $output .= '  <tr>'."\n";
-	  $output .= '    <td>'.TEXT_NO_DATA.'</td>'."\n";
+	  $output .= '    <td>'.TEXT_THE_TABLE_DOES_NOT_CONTAIN_ANY_ROWS.': </td>'."\n";
 	  for ($i = 1; $i < sizeof($content['thead']['value']); $i++) $output .= '    <td>&nbsp;</td>'."\n";
 	  $output .= '  </tr>'."\n";
 	}
@@ -1611,7 +1611,7 @@ function charConv($string, $in, $out) {
     		} // end foreach loop thru possible multiple email addresses
     		return true;
          }catch(Exception $e) {
-      		$messageStack->add(sprintf(EMAIL_SEND_FAILED . '&nbsp;'. $mail->ErrorInfo, $to_name, $to_email_address, $email_subject),'error');
+      		$messageStack->add(sprintf(TEXT_THE_EMAIL_MESSAGE_WAS_NOT_SENT . '&nbsp;'. $mail->ErrorInfo, $to_name, $to_email_address, $email_subject),'error');
 	  		$messageStack->add($e->getMessage(), $e->getCode());
 		}
 

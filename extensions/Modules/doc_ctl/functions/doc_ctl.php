@@ -108,7 +108,7 @@ function load_recently_added() {
   $contents = NULL;
   $result = $db->Execute("select id, title, type, doc_ext from " . TABLE_DC_DOCUMENT . " where type = 'default' order by create_date desc, id desc limit 20");
   if ($result->RecordCount() == 0) {
-    $contents .= TEXT_NO_DOCUMENTS . '<br />';
+    $contents .= TEXT_NO_DOCUMENTS_HAVE_BEEN_FOUND . '<br />';
   } else {
     while (!$result->EOF) {
 	  $contents .= '  <div>';

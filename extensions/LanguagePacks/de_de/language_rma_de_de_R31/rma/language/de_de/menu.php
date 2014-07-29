@@ -23,7 +23,7 @@
 //
 
 // Headings
-define ('MENU_HEADING_RMA', 'Rücklauf');
+define ('TEXT_RETURNS', 'Rücklauf');
 define ('BOX_RMA_MODULE', 'RMA');
 
 ?>

@@ -179,13 +179,13 @@ function js_terms_to_language(terms_encoded) { // modified from /includes/genera
 			if (terms[1] != 0) {
 				result = terms[1] + '<?php echo TEXT_PERCENT_SHORT; ?>' + terms[2] + ', ';
 			}
-			result += '<?php echo ACT_DUE_ON; ?>' + terms[3];
+			result += '<?php echo TEXT_DUE_ON . ': '; ?>' + terms[3];
 			break;
 		case '5': // Due at end of month
 			if (terms[1] != 0) {
 				result = terms[1] + '<?php echo TEXT_PERCENT_SHORT; ?>' + terms[2] + ', ';
 			}
-			result += '<?php echo ACT_END_OF_MONTH; ?>';
+			result += '<?php echo TEXT_DUE_END_OF_MONTH; ?>';
 	}
 	return result;
 }

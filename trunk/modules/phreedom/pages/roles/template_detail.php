@@ -42,7 +42,7 @@ echo $toolbar->build_toolbar();
   <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto;">
    <tbody class="ui-widget-content">
    <tr>
-    <td align="right"><?php echo TEXT_ROLE_NAME . ' '  . html_input_field('admin_name', $uInfo->admin_name, 'size="25"'); ?></td>
+    <td align="right"><?php echo TEXT_ROLE_TITLE . ' '  . html_input_field('admin_name', $uInfo->admin_name, 'size="25"'); ?></td>
     <td><?php echo TEXT_INACTIVE . ' ' . html_checkbox_field('inactive', '1', ($uInfo->inactive ? true : false)); ?></td>
    </tr>
    <tr>
@@ -66,14 +66,14 @@ echo $toolbar->build_toolbar();
 
   <fieldset>
   <legend><?php echo TEXT_SECURITY_SETTINGS; ?></legend>
-    <div><?php echo TEXT_FILL_ALL_LEVELS . ' ' . html_pull_down_menu('fill_all', $fill_all_values, '-1', 'onchange="submitToDo(\'fill_all\')"'); ?></div>
+    <div><?php echo TEXT_FILL_ALL_TO_LEVEL . ' ' . html_pull_down_menu('fill_all', $fill_all_values, '-1', 'onchange="submitToDo(\'fill_all\')"'); ?></div>
 	<div class="easyui-tabs" id="accesstabs">
 <?php //@todo tables do not show in ff
 $settings     = \core\classes\user::parse_permissions($uInfo->admin_security);
 $column_break = true;
 // array pb_headings is defined in /includes/header_navigation.php
 foreach ($mainmenu as $key => $menu_heading) {
-  if ($menu_heading['text'] == TEXT_HOME || $menu_heading['text'] == TEXT_LOGOUT) continue;
+  if ($menu_heading['text'] == TEXT_HOME || $menu_heading['text'] == TEXT_LOG_OUT) continue;
 	echo '		<div title="'.$menu_heading['text'].'" id="tab_' . $key . '">' . chr(10);
 	echo '			<table  class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto;">' . chr(10);
 	echo '				<thead class="ui-widget-header">' . chr(10);

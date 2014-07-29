@@ -30,7 +30,7 @@ class journal_21 extends \core\classes\journal {
     public $bill_acct_id		= '';
     public $bill_address_id		= '';
     public $bill_add_update		= false;
-    public $bill_primary_name   = GEN_PRIMARY_NAME;
+    public $bill_primary_name   = TEXT_NAME_OR_COMPANY;
     public $bill_contact        = TEXT_ATTENTION;
     public $bill_address1       = TEXT_ADDRESS1;
     public $bill_address2       = TEXT_ADDRESS2;

@@ -5,7 +5,7 @@
 // +-----------------------------------------------------------------+
 // Path: /modules/audit/language/nl_nl/language.php
 
-define('HEADING_MODULE_AUDIT','exporteer audit bestand');
+define('TEXT_EXPORT_AUDIT_FILE','exporteer audit bestand');
 define('TEXT_INCOME_STATEMENT','WinstVerlies');
 define('TEXT_BALANCE_SHEET','Balans');
 define('TEXT_ALL_OR_ACTIVE','Wilt u alles exporteren of alles exclusief de offertes, orders en items die wachten op een factuur.');

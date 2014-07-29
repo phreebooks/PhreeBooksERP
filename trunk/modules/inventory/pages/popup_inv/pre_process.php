@@ -116,6 +116,6 @@ $auto_close = false; // disable until all modules that use this function are aja
 $include_header   = false;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', INV_POPUP_WINDOW_TITLE);
+define('PAGE_TITLE', TEXT_INVENTORY_ITEMS);
 
 ?>

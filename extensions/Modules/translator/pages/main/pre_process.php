@@ -242,7 +242,7 @@ switch ($_REQUEST['action']) {
 	  TEXT_TRANSLATED,
 	  TEXT_TRANSLATION,
 	  TEXT_DEFAULT_TRANSLATION,
-	  TEXT_CONSTANT,
+	  TEXT_DEFINED_CONSTANT,
 	);
 	$result      = html_heading_bar(array(), $heading_array);
 	$list_header = $result['html_code'];

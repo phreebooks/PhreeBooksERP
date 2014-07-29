@@ -63,7 +63,7 @@ echo $toolbar->build_toolbar();
         <th><?php echo TEXT_ADJUSTMENT; ?></th>
         <th><?php echo TEXT_ADJUSTMENT_VALUE_SHORT;   ?></th>
         <th><?php echo TEXT_ROUNDING;   ?></th>
-        <th><?php echo INV_RND_VALUE;   ?></th>
+        <th><?php echo TEXT_ROUND_VALUE;   ?></th>
         <th><?php echo TEXT_PRICE;      ?></th>
       </tr>
 	  </thead>

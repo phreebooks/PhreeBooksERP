@@ -266,12 +266,12 @@ $FormProcessing = array(
 $TextProcessing = array(
   ''        => TEXT_NONE,
   'sp'      => TEXT_SINGLE_SPACE,
-  '2sp'     => PF_FRM_SPACE2,
-  'comma'   => PF_FRM_COMMA,
+  '2sp'     => TEXT_DOUBLE_SPACE,
+  'comma'   => TEXT_COMMA . ' (,)',
   'com-sp'  => TEXT_COMMA-SPACE,
   'nl'      => TEXT_NEWLINE,
-  'semi-sp' => PF_FRM_SEMISP,
-  'del-nl'  => PF_FRM_DELNL,
+  'semi-sp' => TEXT_SEMICOLON_SPACE,
+  'del-nl'  => TEXT_SKIP_BLANK-LINE_BREAK,
 );
 
 // Bar code Types (for use with TCPDF)

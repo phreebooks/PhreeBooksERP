@@ -23,7 +23,7 @@
 //
 
 // Seitentitel
-define ('GL_ENTRY_TITLE', 'Allgemeine Journaleintrag');
+define ('TEXT_GENERAL_JOURNAL_ENTRY', 'Allgemeine Journaleintrag');
 define ('GENERAL_JOURNAL_18_C_DESC', 'Customer Receipts Eintrag');
 define ('GENERAL_JOURNAL_18_V_DESC', 'Hersteller Receipts Eintrag');
 define ('GENERAL_JOURNAL_20_V_DESC', 'Hersteller Zahlung Eintrag');
@@ -31,7 +31,7 @@ define ('GENERAL_JOURNAL_20_C_DESC', 'Customer Payment Eintrag');
 define ('BNK_DEP_20_V_WINDOW_TITLE', BOX_BANKING_VENDOR_DEPOSITS);
 define ('BNK_DEP_18_C_WINDOW_TITLE', BOX_BANKING_CUSTOMER_DEPOSITS);
 define ('TEXT_BAR_CODE_ENTRY', 'Bar Code-Eingabe');
-define ('HEADING_TITLE_SEARCH_INFORMATION', 'Suche nach Journal Entries');
+define ('TEXT_SEARCH_FOR_JOURNAL_ENTRIES', 'Suche nach Journal Entries');
 define ('ORD_RECUR_WINDOW_TITLE', 'Rezidiven Eigenschaften');
 
 // Allgemeiner Text
@@ -54,9 +54,9 @@ define ('ORD_COPY_BILL', 'Kopieren -->');
 define ('ORD_CUSTOMER_NAME', 'Customer Name');
 define ('ORD_DELETE_ALERT', 'Sind Sie sicher, dass Sie diese Bestellung löschen möchten?');
 define ('TEXT_DELIVERY_DATES', 'Liefertermine');
-define ('ORD_DISCOUNT_PERCENT', 'Nachlass Prozent (%)');
+define ('TEXT_DISCOUNT_PERCENT', 'Nachlass Prozent');
 define ('TEXT_DROP_SHIP', 'Drop Ship');
-define ('ORD_EXPECTED_DATES', 'Erwartete Liefertermine -');
+define ('TEXT_EXPECTED_DELIVERY_DATES', 'Erwartete Liefertermine');
 define ('TEXT_FREIGHT', 'Verkehr');
 define ('ORD_FREIGHT_ESTIMATE', 'Freight Estimate ');
 define ('ORD_FREIGHT_SERVICE', 'Service');
@@ -66,7 +66,7 @@ define ('ORD_NA', 'N / A');
 define ('ORD_NEW_DELIVERY_DATES', 'Neue Liefertermine');
 define ('ORD_ROW_DELETE_ALERT', 'Sind Sie sicher, dass Sie diese Zeile löschen?');
 define ('ORD_SHIP_CARRIER', 'Carrier');
-define ('ORD_SHIP_TO ',' Ship to:');
+define ('TEXT_SHIP_TO ',' Ship to');
 define ('ORD_SHIPPED', 'ausgeliefert');
 define ('ORD_SUBTOTAL', 'Zwischensumme');
 define ('ORD_TAX_RATE', 'Tax Rate');
@@ -157,10 +157,10 @@ define ('TEXT_SAVE_OPEN_NEXT', 'Save - Open nächsten Rechnung');
 define ('ORD_WARN_FORM_MODIFIED', 'Es scheint, um Daten in dieser Form bereits Wollen Sie für einen vorhandenen Kontakt suchen.?');
 define ('ORD_ERROR_NOT_CUR_PERIOD', 'Deine Berechtigungen verhindern, dass Sie von der Buchung zu einer anderen Zeit als der aktuellen Periode');
 define ('ORD_ERROR_DEL_NOT_CUR_PERIOD', 'Deine Berechtigungen verhindern, dass Sie das Löschen eines Auftrags aus einer anderen Zeit als der aktuellen Periode');
-define ('ORD_DISCOUNT_GL_ACCT', 'Nachlass FIBU-Konto ');
+define ('TEXT_DISCOUNT_GL_ACCOUNT', 'Nachlass FIBU-Konto ');
 define ('TEXT_FREIGHT_GL_ACCOUNT', 'Freight FIBU-Konto ');
 define ('ORD_JS_NO_CID', 'Der Kontakt Information muss in dieser Form geladen werden, bevor die Eigenschaften abgerufen werden kann.');
-define ('ORD_BAR_CODE_INTRO', 'Geben Sie die Menge und scannen Sie das Element.');
+define ('TEXT_ENTER_THE_QUANTITY_AND_SCAN_THE_ITEM', 'Geben Sie die Menge und scannen Sie das Element.');
 define ('TEXT_BAR_CODE', 'Bar-Code');
 
 // Erneut auftreten Transaktionen
@@ -252,14 +252,14 @@ define ('TEXT_SELECT_FILE' , 'Datei zu importieren : ');
 
 // Audit-Log-Nachrichten
 define ('GL_LOG_ADD_JOURNAL', 'Allgemeine Journaleintrag -');
-define ('GL_LOG_FY_UPDATE', 'General Journal Geschäftsjahr -');
+define ('TEXT_GENERAL_JOURNAL_FISCAL_YEAR', 'General Journal Geschäftsjahr');
 define ('GL_LOG_PURGE_DB', 'General Journal - Purge Database');
 
 // Spezielle Tasten
-define ('GL_BTN_PURGE_DB', 'Purge Journal Entries');
+define ('TEXT_PURGE_JOURNAL_ENTRIES', 'Purge Journal Entries');
 define ('TEXT_CHANGE_CURRENT_ACCOUNTING_PERIOD', 'Change aktuellen Berichtsperiode');
-define ('GL_BTN_NEW_FY', 'Generate nächsten Geschäftsjahr');
-define ('GL_BTN_UPDATE_FY', 'Update Geschäftsjahr Änderungen');
+define ('TEXT_GENERATE_NEXT_FISCAL_YEAR', 'Generate nächsten Geschäftsjahr');
+define ('TEXT_UPDATE_FISCAL_YEAR_CHANGES', 'Update Geschäftsjahr Änderungen');
 
 // General Ledger Übersetzungen
 define ('GL_ERROR_JOURNAL_BAD_ACCT', 'General Ledger Kontonummer kann nicht gefunden werden!');
@@ -274,7 +274,7 @@ define ('GL_ERROR_NO_DELETE', 'Es wurden Fehler bei der Verarbeitung, der Rekord
 define ('GL_ERROR_CANNOT_FIND_NEXT_ID', 'Konnte nicht lesen der nächsten Bestellung / Rechnung Zahl aus der Tabelle: ' . TABLE_CURRENT_STATUS);
 define ('GL_ERROR_CANNOT_DELETE_MAIN', 'Keine Streichung der Zeitschrift wichtigsten Eintrag #');
 define ('GL_ERROR_CANNOT_DELETE_ITEM', 'Keine Streichung der Zeitschrift Posten vom Eintrag # %d wurden keine Zeilen gefunden!');
-define ('GL_ERROR_NEVER_POSTED', 'kann nicht gelöscht werden diesen Eintrag, weil es nie geschrieben wurde.');
+define ('TEXT_CANNOT_DELETE_THIS_ENTRY_BECAUSE_IT_WAS_NEVER_POSTED', 'kann nicht gelöscht werden diesen Eintrag, weil es nie geschrieben wurde.');
 define ('GL_DELETE_GL_ROW', 'Sind Sie sicher, dass Sie diese Zeitschrift Zeile löschen?');
 define ('GL_DELETE_ALERT', 'Sind Sie sicher, dass Sie diese Zeitschrift Eintrag löschen?');
 define ('GL_ERROR_DIED_CREATING_RECORD', 'starben bei dem Versuch, eine Journalbuchung mit id = bauen');
@@ -284,12 +284,12 @@ define ('GL_ERROR_OUT_OF_BALANCE_B', 'und Kredite:');
 define ('GL_ERROR_OUT_OF_BALANCE_C', 'in der Periode');
 define ('GL_ERROR_NO_GL_ACCT_NUMBER', 'Keine Kontonummer / gen_ledger.php Funktion versehen:');
 define ('GL_ERROR_UPDATING_ACCOUNT_HISTORY', 'Fehler beim Aktualisieren der Debitor / Kreditor-Konto der Geschichte.');
-define ('GL_ERROR_DELETING_ACCOUNT_HISTORY', 'Fehler beim Löschen der Debitor / Kreditor-Konto Geschichte aufzeichnen');
+define ('TEXT_ERROR_DELETING_CUSTOMER_OR_VENDOR_ACCOUNT_HISTORY_RECORD', 'Fehler beim Löschen der Debitor / Kreditor-Konto Geschichte aufzeichnen');
 define ('GL_ERROR_UPDATING_INVENTORY_STATUS', 'Aktualisiere Inventar Status erfordert die sku in der Datenbank werden die andernfalls SKU war.');
 define ('GL_ERROR_CALCULATING_COGS', 'Die Berechnung der Kosten der verkauften Waren erfordert die sku in der Datenbank sein, habe die Operation.');
-define ('GL_ERROR_POSTING_INV_HISTORY', 'Fehler Entsendung Inventar Geschichte.');
+define ('TEXT_ERROR_POSTING_INVENTORY_HISTORY', 'Fehler Entsendung Inventar Geschichte.');
 define ('GL_ERROR_UNPOSTING_COGS', 'Fehler ein Rollback für die Kosten der verkauften Waren-Nr:.');
-define ('GL_ERROR_BAD_SKU_ENTERED', 'Die eingegebenen Artikelnummer konnte nicht gefunden werden keine Maßnahmen ergriffen wurden..');
+define ('TEXT_THE_SKU_ENTERED_COULD_NOT_BE_FOUND', 'Die eingegebenen Artikelnummer konnte nicht gefunden werden keine Maßnahmen ergriffen wurden..');
 define ('GL_ERROR_SKU_NOT_ASSY', 'Kann nicht montieren ein Gegenstand im Inventar hat, dass keine Komponenten-Nr:.');
 define ('GL_ERROR_NOT_ENOUGH_PARTS', 'Nicht genügend Teile, um die angeforderte Anzahl von Baugruppen bauen Artikel-Nr:.');
 define ('GL_ERROR_POSTING_NEG_INVENTORY', 'Fehler Entsendung Kosten der gut für einen Anbieter Kredit verkauft wird Inventar gehen negative und Rädchen kann nicht berechnet werden Betroffene SKU ist.');

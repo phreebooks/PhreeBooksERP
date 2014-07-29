@@ -54,7 +54,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 	$order->account_type        = $account_type;
 	$order->bill_acct_id        = db_prepare_input($_POST['bill_acct_id']);
 	$order->bill_address_id     = db_prepare_input($_POST['bill_address_id']);
-	$order->bill_primary_name   = db_prepare_input(($_POST['bill_primary_name']   <> GEN_PRIMARY_NAME)   ? $_POST['bill_primary_name'] : '', true);
+	$order->bill_primary_name   = db_prepare_input(($_POST['bill_primary_name']   <> TEXT_NAME_OR_COMPANY)   ? $_POST['bill_primary_name'] : '', true);
 	$order->bill_contact        = db_prepare_input(($_POST['bill_contact']        <> TEXT_ATTENTION)        ? $_POST['bill_contact'] : '', ADDRESS_BOOK_CONTACT_REQUIRED);
 	$order->bill_address1       = db_prepare_input(($_POST['bill_address1']       <> TEXT_ADDRESS1)       ? $_POST['bill_address1'] : '', ADDRESS_BOOK_ADDRESS1_REQUIRED);
 	$order->bill_address2       = db_prepare_input(($_POST['bill_address2']       <> TEXT_ADDRESS2)       ? $_POST['bill_address2'] : '', ADDRESS_BOOK_ADDRESS2_REQUIRED);
@@ -105,7 +105,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 	  	$sku         = db_prepare_input($_POST['sku_' . $x]);
 	  	if ($fixed_price == 0 ) $fixed_price = $price;
 		// Error check some input fields
-	  	if ($_POST['acct_' . $x] == "") throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . TEXT_GL_ACCOUNT);
+	  	if ($_POST['acct_' . $x] == "") throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . TEXT_GL_ACCOUNT);
 	  	//check if discount per row doens't exceed the max
 	  	if($tills->max_discount <> ''){
 	  		$wt_total_fixed += $fixed_price * ($wtprice / $price)* $qty;
@@ -192,13 +192,13 @@ if (file_exists($custom_path)) { include($custom_path); }
 		if (!$order->bill_acct_id && !$order->bill_add_update) {
 			throw new \core\classes\userException(POS_ERROR_CONTACT_REQUIRED);
 	  	} else {
-		    if ($order->bill_primary_name   === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . GEN_PRIMARY_NAME);
-	    	if ($order->bill_contact        === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . TEXT_ATTENTION);
-	    	if ($order->bill_address1       === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . TEXT_ADDRESS1);
-	    	if ($order->bill_address2       === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . TEXT_ADDRESS2);
-	    	if ($order->bill_city_town      === false) throw new \core\classes\userException( GEN_ERRMSG_NO_DATA . TEXT_CITY_TOWN);
-	    	if ($order->bill_state_province === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . TEXT_STATE_PROVINCE);
-	    	if ($order->bill_postal_code    === false) throw new \core\classes\userException(GEN_ERRMSG_NO_DATA . TEXT_POSTAL_CODE);
+		    if ($order->bill_primary_name   === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . TEXT_NAME_OR_COMPANY);
+	    	if ($order->bill_contact        === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . TEXT_ATTENTION);
+	    	if ($order->bill_address1       === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . TEXT_ADDRESS1);
+	    	if ($order->bill_address2       === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . TEXT_ADDRESS2);
+	    	if ($order->bill_city_town      === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . TEXT_CITY_TOWN);
+	    	if ($order->bill_state_province === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . TEXT_STATE_PROVINCE);
+	    	if ($order->bill_postal_code    === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . TEXT_POSTAL_CODE);
 	  	}
 	}
 	// Payment errors

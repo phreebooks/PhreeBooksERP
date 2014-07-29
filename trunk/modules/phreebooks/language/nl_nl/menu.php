@@ -8,7 +8,7 @@
 // +-----------------------------------------------------------------+
 // Path: /modules/phreebooks/language/nl_nl/menu.php
 
-define('MENU_HEADING_GL','Boekhouden');
+define('TEXT_GENERAL_LEDGER','Boekhouden');
 define('TEXT_BANKING','Bankieren');
 define('ORD_TEXT_0_WINDOW_TITLE','Begin Balans');
 define('ORD_TEXT_2_WINDOW_TITLE','Journaal');

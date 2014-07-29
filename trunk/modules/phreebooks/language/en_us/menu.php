@@ -18,7 +18,7 @@
 //  Path: /modules/phreebooks/language/en_us/menu.php
 //
 // Enter the new menu category heading if necessary
-define('MENU_HEADING_GL', 'General Ledger');
+define('TEXT_GENERAL_LEDGER', 'General Ledger');
 define('TEXT_BANKING','Banking');
 // Menu Titles
 define('ORD_TEXT_0_WINDOW_TITLE', 'Beginning Balances');

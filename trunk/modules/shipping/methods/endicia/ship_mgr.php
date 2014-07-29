@@ -44,7 +44,7 @@ if ($security_level > 2) {
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
  <thead class="ui-widget-header">
   <tr>
-    <th colspan="8"><?php echo TEXT_SHIPMENTS_ON . gen_locale_date($date); ?></th>
+    <th colspan="8"><?php echo TEXT_SHIPMENTS_ON . ': ' . gen_locale_date($date); ?></th>
   </tr>
   <tr>
 	<th><?php echo TEXT_SHIPMENT_ID;   ?></th>

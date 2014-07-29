@@ -24,7 +24,7 @@ class banking extends \core\classes\journal {
 		$this->journal_id          = JOURNAL_ID;//@todo remove
 		$this->save_payment        = false;
 		$this->search              = TEXT_SEARCH;
-		$this->bill_primary_name   = GEN_PRIMARY_NAME;
+		$this->bill_primary_name   = TEXT_NAME_OR_COMPANY;
 		$this->bill_contact        = TEXT_ATTENTION;
 		$this->bill_address1       = TEXT_ADDRESS1;
 		$this->bill_address2       = TEXT_ADDRESS2;
@@ -155,15 +155,15 @@ class banking extends \core\classes\journal {
 	}
 
 	function add_total_journal_row($debit_credit, $amount) {	// put total value into ledger row array
-		global $admin_classes;
+		global $admin_classes, $journal_types_list;
 		if ($debit_credit == 'debit' || $debit_credit == 'credit') {
 			switch ($this->journal_id) {
 				case '18':
-					$desc = GEN_ADM_TOOLS_J18 . '-' . TEXT_TOTAL . ':' . $admin_classes['payment']->methods[$method]->payment_fields;
+					$desc = $journal_types_list[18]['text'] . '-' . TEXT_TOTAL . ':' . $admin_classes['payment']->methods[$method]->payment_fields;
 					break;
 				case '20':
 				default:
-					$desc = GEN_ADM_TOOLS_J20 . '-' . TEXT_TOTAL;
+					$desc = $journal_types_list[20]['text'] . '-' . TEXT_TOTAL;
 			}
 			$this->journal_rows[] = array( // record for accounts receivable
 				'gl_type'              => 'ttl',

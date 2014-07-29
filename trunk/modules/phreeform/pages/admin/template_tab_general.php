@@ -22,7 +22,7 @@
 <div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
 <table class="ui-widget" style="border-style:none;width:100%">
  <thead class="ui-widget-header">
-	  <tr><th colspan="2"><?php echo PF_ADMIN_CONFIG_INFO; ?></th></tr> 
+	  <tr><th colspan="2"><?php echo TEXT_PHREEFORM_DEFAULT_PARAMETERS; ?></th></tr>
  </thead>
  <tbody class="ui-widget-content">
   <tr>

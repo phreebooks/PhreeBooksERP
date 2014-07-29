@@ -51,7 +51,7 @@ switch ($_REQUEST['action']) {
 $js_arrays = gen_build_company_arrays();
 // build the list header
 $heading_array = array(
-	'primary_name'             => GEN_PRIMARY_NAME,
+	'primary_name'             => TEXT_NAME_OR_COMPANY,
 	'address1'                 => TEXT_ADDRESS1,
 	'city_town,state_province' => TEXT_CITY_TOWN,
 	'state_province,city_town' => TEXT_STATE_PROVINCE,

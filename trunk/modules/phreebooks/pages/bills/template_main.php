@@ -70,9 +70,9 @@ echo '&nbsp;' . html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'al
 	<tr>
 	  <td valign="top">
 <?php
-echo JOURNAL_ID == 18 ? TEXT_RECEIVE_FROM : TEXT_PAY_TO;
+echo JOURNAL_ID == 18 ? TEXT_RECEIVE_FROM. ':' : TEXT_PAY_TO . ':';
 echo html_pull_down_menu('bill_to_select', gen_null_pull_down(), '', 'onchange=\'fillAddress("bill")\'') . chr(10);
-echo '<br />' . html_input_field('bill_primary_name', $order->bill_primary_name, 'size="33" maxlength="32" onfocus="clearField(\'bill_primary_name\', \'' . GEN_PRIMARY_NAME . '\')" onblur="setField(\'bill_primary_name\', \'' . GEN_PRIMARY_NAME . '\')"') . chr(10);
+echo '<br />' . html_input_field('bill_primary_name', $order->bill_primary_name, 'size="33" maxlength="32" onfocus="clearField(\'bill_primary_name\', \'' . TEXT_NAME_OR_COMPANY . '\')" onblur="setField(\'bill_primary_name\', \'' . TEXT_NAME_OR_COMPANY . '\')"') . chr(10);
 echo '<br />' . html_input_field('bill_contact', $order->bill_contact, 'size="33" maxlength="32" onfocus="clearField(\'bill_contact\', \'' . TEXT_ATTENTION . '\')" onblur="setField(\'bill_contact\', \'' . TEXT_ATTENTION . '\')"') . chr(10);
 echo '<br />' . html_input_field('bill_address1', $order->bill_address1, 'size="33" maxlength="32" onfocus="clearField(\'bill_address1\', \'' . TEXT_ADDRESS1 . '\')" onblur="setField(\'bill_address1\', \'' . TEXT_ADDRESS1 . '\')"') . chr(10);
 echo '<br />' . html_input_field('bill_address2', $order->bill_address2, 'size="33" maxlength="32" onfocus="clearField(\'bill_address2\', \'' . TEXT_ADDRESS2 . '\')" onblur="setField(\'bill_address2\', \'' . TEXT_ADDRESS2 . '\')"') . chr(10);

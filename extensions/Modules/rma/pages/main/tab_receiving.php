@@ -26,7 +26,7 @@
 	<tr>
 	  <td align="right"><?php echo TEXT_DATE_RECEIVED; ?></td>
 	  <td><?php echo html_calendar_field($cal_rcv); ?></td>
-	  <td align="right"><?php echo TEXT_RECEIVE_CARRIER; ?></td>
+	  <td align="right"><?php echo TEXT_SHIPMENT_CARRIER; ?></td>
 	  <td><?php echo html_input_field('receive_carrier', $cInfo->receive_carrier); ?> </td>
 	</tr>
 	<tr>

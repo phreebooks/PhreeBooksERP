@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/audit/language/en_us/language.php
 //
-define('HEADING_MODULE_AUDIT','export audit file');
+define('TEXT_EXPORT_AUDIT_FILE','export audit file');
 define('TEXT_INCOME_STATEMENT','Income-Statement');
 define('TEXT_BALANCE_SHEET','Balancesheet');
 define('TEXT_ALL_OR_ACTIVE','Do you wish to export all or all excluding the orders, quotes and items waiting for invoicing');

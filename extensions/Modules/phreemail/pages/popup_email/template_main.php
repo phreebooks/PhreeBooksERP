@@ -67,7 +67,7 @@ echo $toolbar->build_toolbar();
 	<td><?php echo html_input_field('sender_name', $sender_name,'list="senderlist"') . ' ' . TEXT_EMAIL . html_input_field('sender_email', $sender_email, 'size="40" list="sendermaillist"'); ?></td>
   </tr>
   <tr>
-	<td align="right"><?php echo TEXT_RECEPIENT_NAME; ?></td>
+	<td align="right"><?php echo TEXT_RECEPIENT_NAME . ':'; ?></td>
 	<td><?php echo html_input_field('recpt_name', $recpt_name,'list="receiverlist"') . ' ' . TEXT_EMAIL . html_input_field('recpt_email', $recpt_email, 'size="40" list="receivermaillist"'); ?></td>
   </tr>
   <tr>

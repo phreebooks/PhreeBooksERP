@@ -49,11 +49,11 @@ define('TEXT_GL_ACCOUNT_ROUNDING','GL account for rounding of:');
 define('TEXT_DIF_GL_ACCOUNT','GL account for end of the day differences:');
 
 define('TEXT_RESTRICT_CURRENCY','Restrict till to this currency');
-define('TEXT_DRAWER_CODES','open drawer codes');
+define('TEXT_OPEN_DRAWER_CODES','open drawer codes');
 define('TEXT_MAX_DISCOUNT', 'set the maximum amount of discount is allowed to be given at this till, this excludes discounts set in the price lists.<br> leave empty is you do not whis to set this');
 define('TEXT_PHREEPOS_TRANSACTION_TYPE','Select the transaction type');
 define('TEXT_ALLOW_USE_OF_TAX','Can tax be used');
-define('TEXT_TAX','default tax');
+define('TEXT_DEFAULT_TAX','default tax');
 //3.4
 define('TEXT_OTHER_TRANS','Other Transactions');
 

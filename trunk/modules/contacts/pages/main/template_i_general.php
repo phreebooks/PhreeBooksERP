@@ -47,7 +47,7 @@ $acct_def = (!$cInfo->dept_rep_id) ? array() : array(array('id'=>$cInfo->dept_re
         <td><?php echo html_input_field('gov_id_number', $cInfo->gov_id_number, 'size="17" maxlength="16"'); ?></td>
       </tr>
       <tr>
-        <td align="right"><?php echo TEXT_LINK_TO . ' '; ?></td>
+        <td align="right"><?php echo TEXT_LINK_TO . ': '; ?></td>
         <td><?php echo html_combo_box('dept_rep_id', $acct_def, $cInfo->dept_rep_id, 'onkeyup="loadContacts()"'); ?></td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
@@ -87,7 +87,7 @@ if (sizeof($cInfo->attachments) > 0) {
     echo '</tr>' . chr(10);
   }
 } else {
-  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS . '</td></tr>';
+  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS_HAVE_BEEN_FOUND . '</td></tr>';
 } ?>
     </tbody>
    </table>

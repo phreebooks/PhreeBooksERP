@@ -19,7 +19,7 @@
 //
 
 // Headings
-define('HEADING_TITLE_MODULES_SHIPPING','Shipping Services');
+define('TEXT_SHIPPING_SERVICES','Shipping Services');
 define('SHIPPING_HEADING_SHIP_MGR','Shipping Module Manager');
 // General Defines
 define('TEXT_PRODUCTION','Production');
@@ -29,24 +29,24 @@ define('TEXT_GIF','GIF');
 define('TEXT_THERMAL','Thermal');
 define('TEXT_PACKAGE_DEFAULTS','Package Defaults');
 define('TEXT_SHIPMENT_DEFAULTS','Shipment Defaults');
-define('TEXT_SHIPMENTS_ON','Shipments On: ');
+define('TEXT_SHIPMENTS_ON','Shipments On');
 define('TEXT_REMOVE_MESSAGE','Are you sure you want to remove this shipping method?');
 define('TEXT_CREATE_A_SHIPMENT_ENTRY','Create a Shipment Entry');
 define('TEXT_SET_BY_SYSTEM','Set by the system');
 define('SHIPPING_POPUP_WINDOW_TITLE','Shipping Rate Estimator');
 define('SHIPPING_POPUP_WINDOW_RATE_TITLE','Shipping Estimator - Rates');
 define('SHIPPING_ESTIMATOR_OPTIONS','Shipping Estimator - Shipment Options');
-define('TEXT_SHIPPER','Shipper:');
+define('TEXT_SHIPPER','Shipper');
 define('TEXT_SHIPMENT_DATE','Shipment Date');
-define('TEXT_SHIP_FROM_CITY','Ship From City: ');
+define('TEXT_SHIP_FROM_CITY','Ship From City');
 define('TEXT_SHIP_TO_CITY','Ship To City: ');
 define('TEXT_RESIDENTIAL_ADDRESS','Residential Address');
-define('TEXT_SHIP_FROM_STATE','Ship From State: ');
-define('TEXT_SHIP_TO_STATE','Ship To State: ');
-define('TEXT_SHIP_FROM_ZIP','Ship From Postal Code: ');
-define('TEXT_SHIP_TO_ZIP','Ship To Postal Code: ');
-define('TEXT_SHIP_FROM_COUNTRY','Ship From Country: ');
-define('TEXT_SHIP_TO_COUNTRY','Ship To Country: ');
+define('TEXT_SHIP_FROM_STATE','Ship From State');
+define('TEXT_SHIP_TO_STATE','Ship To State');
+define('TEXT_SHIP_FROM_POSTAL_CODE','Ship From Postal Code');
+define('TEXT_SHIP_TO_POSTAL_CODE','Ship To Postal Code');
+define('TEXT_SHIP_FROM_COUNTRY','Ship From Country');
+define('TEXT_SHIP_TO_COUNTRY','Ship To Country');
 define('TEXT_PACKAGE_INFORMATION','Package Information');
 define('TEXT_TYPE_OF_PACKAGING','Type of Packaging ');
 define('TEXT_PICKUP_SERVICE','Pickup Service ');
@@ -68,8 +68,8 @@ define('TEXT_RETURN_SERVICES','Return Services ');
 define('TEXT_SHIPPING_METHODS','Shipping Methods');
 define('SHIPPING_TOTAL_WEIGHT','Total Shipment Weight');
 define('SHIPPING_TOTAL_VALUE','Total Shipment Value');
-define('SHIPPING_EMAIL_SENDER','E-mail Sender');
-define('SHIPPING_EMAIL_RECIPIENT','E-mail Recipient');
+define('TEXT_E-MAIL_SENDER','E-mail Sender');
+define('TEXT_E-MAIL_RECIPIENT','E-mail Recipient');
 define('SHIPPING_EMAIL_SENDER_ADD','Sender E-mail Address');
 define('SHIPPING_EMAIL_RECIPIENT_ADD','Recipient E-mail Address');
 define('TEXT_EXCEPTION','Exception');
@@ -139,7 +139,7 @@ define('SHIPPING_SHIP_PACKAGE','Ship a Package');
 define('SHIPPING_CREATE_ENTRY','Create a Shipment Entry');
 define('SHIPPING_RECON_BILL','Reconcile Bill');
 define('SHIPPING_RECP_INFO','Recepient Information');
-define('SHIPPING_EMAIL_NOTIFY','Email Notifications');
+define('TEXT_EMAIL_NOTIFICATIONS','Email Notifications');
 define('TEXT_BILLING_DETAILS','Billing Details');
 define('TEXT_LTL_FREIGHT','LTL Freight');
 define('TEXT_FREIGHT_CLASS','Freight Class');
@@ -159,7 +159,7 @@ define('TEXT_KILOGRAMS_SHORT','kgs');
 define('TEXT_INCHES_SHORT','in');
 define('TEXT_CENTIMETERS_SHORT','cm');
 
-define('SHIPPING_ENVENLOPE','Envelope/Letter');
+define('TEXT_ENVELOPE_OR_LETTER','Envelope/Letter');
 define('TEXT_CUSTOMER_SUPPLIED','Customer Supplied');
 define('TEXT_CARRIER_TUBE','Carrier Tube');
 define('TEXT_CARRIER_PAK','Carrier Pak');
@@ -174,7 +174,7 @@ define('SHIPPING_MO','Money Order');
 define('TEXT_ANY','Any');
 
 define('SHIPPING_NO_CONF','No delivery confirmation');
-define('SHIPPING_NO_SIG_RQD','No Signature Required');
+define('TEXT_NO_SIGNATURE_REQUIRED','No Signature Required');
 define('TEXT_SIGNATURE_REQUIRED','Signature Required');
 define('TEXT_ADULT_SIGNATURE_REQUIRED','Adult Signature Required');
 

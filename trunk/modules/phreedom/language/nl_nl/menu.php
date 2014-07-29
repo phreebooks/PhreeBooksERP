@@ -9,7 +9,7 @@
 // Path: /modules/phreedom/language/nl_nl/menu.php
 
 define('TEXT_HOME','Home');
-define('TEXT_LOGOUT','Log Uit');
+define('TEXT_LOG_OUT','Log Uit');
 define('TEXT_COMPANY','Bedrijf');
 define('MENU_HEADING_TOOLS','Tools');
 define('TEXT_MY_PROFILE','Mijn Profiel');

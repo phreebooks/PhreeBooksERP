@@ -250,7 +250,7 @@ function calculateWidth() {	// total up the columns
 	var marginValues = paperValue.split(':');
 	pageWidth = (orientation == 'P') ? marginValues[1] : marginValues[2];
 	var pageProperties = '<?php echo TEXT_FIELD_LIST; ?>';
-	pageProperties += ' ('+'<?php echo TEXT_ORIEN; ?>'+': '+orienText;
+	pageProperties += ' ('+'<?php echo TEXT_ORIENTATION; ?>'+': '+orienText;
 	pageProperties += ', '+'<?php echo TEXT_WIDTH; ?>'+': '+pageWidth;
 	pageProperties += ', '+'<?php echo TEXT_LEFT_MARGIN; ?>'+': '+document.getElementById('marginleft').value;
 	pageProperties += ', '+'<?php echo PHREEFORM_PGMARGIN_R; ?>'+': '+document.getElementById('marginright').value+')';

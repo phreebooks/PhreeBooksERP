@@ -94,7 +94,7 @@ if ($security_level < 3 && $order->id) {
 }
 if ($security_level >1 && JOURNAL_ID == 4 ) {
   $toolbar->add_icon('import', 'onclick=PreProcessLowStock()');
-  $toolbar->icon_list['import']['text'] = LOW_STOCK_BUTTON;
+  $toolbar->icon_list['import']['text'] = TEXT_FILL_ORDER_WITH_ITEMS_WITH_LOW_STOCK;
 }
 // pull in extra toolbar overrides and additions
 if (count($extra_toolbar_buttons) > 0) {
@@ -122,8 +122,8 @@ echo $toolbar->build_toolbar();
 <div class="easyui-window" id="override_order" title="<?php echo TEXT_CREDIT_LIMIT_TITLE; ?>" data-options="modal:true,closed:true,iconCls:'icon-save'">
 	<p><?php echo TEXT_CREDIT_LIMIT_DESC; ?></p>
 	<p>
-	  <?php echo TEXT_ADMIN_USER . '&nbsp;' . html_input_field('override_user', '', 'onblur="document.getElementById(\'override_user\').value = this.value;"', true); ?><br />
-	  <?php echo TEXT_ADMIN_PASS . '&nbsp;' . html_password_field('override_pass', '', true, 'onblur="document.getElementById(\'override_pass\').value = this.value;"'); ?>
+	  <?php echo TEXT_ENTER_ADMIM_USERNAME . '&nbsp;' . html_input_field('override_user', '', 'onblur="document.getElementById(\'override_user\').value = this.value;"', true); ?><br />
+	  <?php echo TEXT_ENTER_ADMIM_PASSWORD . '&nbsp;' . html_password_field('override_pass', '', true, 'onblur="document.getElementById(\'override_pass\').value = this.value;"'); ?>
 	</p>
 	<p align="right"><?php echo html_icon('actions/go-next.png', TEXT_CONTINUE, 'small', 'onclick="checkOverride();"'); ?></p>
 </div>
@@ -145,10 +145,10 @@ echo $toolbar->build_toolbar();
 		  <td><?php echo TEXT_DATE . ' ' . html_calendar_field($cal_order); ?></td>
 		</tr>
 		<tr>
-		  <td width="33%"><?php echo in_array(JOURNAL_ID, array(3,4,6,7)) ? TEXT_REMIT_TO : TEXT_BILL_TO; ?> :
+		  <td width="33%"><?php echo in_array(JOURNAL_ID, array(3,4,6,7)) ? TEXT_REMIT_TO . ':' : TEXT_BILL_TO . ':'; ?> :
 		    <?php echo html_pull_down_menu('bill_to_select', gen_null_pull_down(), '', 'onchange="fillAddress(\'bill\')"'); ?>
 		  </td>
-		  <td width="40%"><?php echo (defined('MODULE_SHIPPING_STATUS')) ? ORD_SHIP_TO : '&nbsp;'; ?>
+		  <td width="40%"><?php echo (defined('MODULE_SHIPPING_STATUS')) ? TEXT_SHIP_TO . ': ' : '&nbsp;'; ?>
 		    <?php echo html_pull_down_menu('ship_to_select', gen_null_pull_down(), '', 'disabled="disabled" onchange="fillAddress(\'ship\')"'); ?>
 		  </td>
 		  <td width="27%" rowspan="2" valign="top">
@@ -192,7 +192,7 @@ echo $toolbar->build_toolbar();
 		<tr>
 		  <td nowrap="nowrap" valign="top">
 <?php
-echo html_input_field('bill_primary_name', $order->bill_primary_name, 'size="33" maxlength="32" onfocus="clearField(\'bill_primary_name\', \'' . GEN_PRIMARY_NAME . '\')" onblur="setField(\'bill_primary_name\', \'' . GEN_PRIMARY_NAME . '\')"', true) . chr(10);
+echo html_input_field('bill_primary_name', $order->bill_primary_name, 'size="33" maxlength="32" onfocus="clearField(\'bill_primary_name\', \'' . TEXT_NAME_OR_COMPANY . '\')" onblur="setField(\'bill_primary_name\', \'' . TEXT_NAME_OR_COMPANY . '\')"', true) . chr(10);
 echo html_checkbox_field('bill_add_update', '1', ($order->bill_add_update) ? true : false, '', '') . TEXT_ADD_UPDATE . '<br />' . chr(10);
 echo html_input_field('bill_contact', $order->bill_contact, 'size="33" maxlength="32" onfocus="clearField(\'bill_contact\', \'' . TEXT_ATTENTION . '\')" onblur="setField(\'bill_contact\', \'' . TEXT_ATTENTION . '\')"', ADDRESS_BOOK_CONTACT_REQUIRED) . chr(10);
 echo(defined('MODULE_SHIPPING_STATUS') ? html_button_field('copy_ship', TEXT_COPY. "-->", 'onclick="copyAddress()"') : '') . '<br />' . chr(10);
@@ -208,7 +208,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
 		  </td>
 		  <td nowrap="nowrap" width="33%" valign="top">
 <?php if (defined('MODULE_SHIPPING_STATUS')) { // show shipping address
-  echo html_input_field('ship_primary_name', $order->ship_primary_name, 'size="33" maxlength="32" onfocus="clearField(\'ship_primary_name\', \'' . GEN_PRIMARY_NAME . '\')" onblur="setField(\'ship_primary_name\', \'' . GEN_PRIMARY_NAME . '\')"', true) . chr(10);
+  echo html_input_field('ship_primary_name', $order->ship_primary_name, 'size="33" maxlength="32" onfocus="clearField(\'ship_primary_name\', \'' . TEXT_NAME_OR_COMPANY . '\')" onblur="setField(\'ship_primary_name\', \'' . TEXT_NAME_OR_COMPANY . '\')"', true) . chr(10);
   echo html_checkbox_field('ship_add_update', '1', ($order->ship_add_update) ? true : false, '', '') . TEXT_ADD_UPDATE . '<br />' . chr(10);
   echo html_input_field('ship_contact', $order->ship_contact, 'size="33" maxlength="32" onfocus="clearField(\'ship_contact\', \'' . TEXT_ATTENTION . '\')" onblur="setField(\'ship_contact\', \'' . TEXT_ATTENTION . '\')"', ADDRESS_BOOK_SHIP_CONTACT_REQ) . chr(10);
   echo html_checkbox_field('drop_ship', '1', ($order->drop_ship) ? true : false, '','onclick="DropShipView(this)"') . TEXT_DROP_SHIP . '<br />' . chr(10);
@@ -404,11 +404,11 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
 <?php if (ENABLE_ORDER_DISCOUNT && in_array(JOURNAL_ID, array(9, 10, 12, 19))) { ?>
         <tr>
           <td>
-<?php echo ORD_DISCOUNT_GL_ACCT . ' ';
+<?php echo TEXT_DISCOUNT_GL_ACCOUNT . ' ';
       echo html_pull_down_menu('disc_gl_acct_id', $gl_array_list, $order->disc_gl_acct_id, ''); ?>
 		  </td>
           <td align="right">
-<?php echo ORD_DISCOUNT_PERCENT . ' ' . html_input_field('disc_percent', ($order->disc_percent ? number_format(100*$order->disc_percent,3) : '0'), 'size="7" maxlength="6" onchange="calculateDiscountPercent()" style="text-align:right"') . ' ' . TEXT_DISCOUNT; ?>
+<?php echo TEXT_DISCOUNT_PERCENT . '(%) ' . html_input_field('disc_percent', ($order->disc_percent ? number_format(100*$order->disc_percent,3) : '0'), 'size="7" maxlength="6" onchange="calculateDiscountPercent()" style="text-align:right"') . ' ' . TEXT_DISCOUNT; ?>
 <?php echo html_input_field('discount', $currencies->format(($order->discount ? $order->discount : '0'), true, $order->currencies_code, $order->currencies_value), 'size="15" maxlength="20" onchange="calculateDiscount()" style="text-align:right"'); ?>
 		  </td>
         </tr>

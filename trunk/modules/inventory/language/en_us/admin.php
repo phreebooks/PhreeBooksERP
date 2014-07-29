@@ -31,7 +31,7 @@ define('TEXT_INVENTORY_ACCOUNT','Inventory GL Account');
 define('TEXT_COST_OF_SALES_ACCOUNT','Cost of Sales Account');
 define('TEXT_COST_METHOD','Cost Method');
 define('TEXT_STOCK_ITEMS','Stock');
-define('TEXT_MS_ITEMS','Master Stock');
+define('TEXT_MASTER_STOCK','Master Stock');
 define('TEXT_ASSEMBLIES','Assemblies');
 define('TEXT_SERIALIZED','Serialized');
 define('TEXT_NON-STOCK','Non-Stock');

@@ -48,7 +48,7 @@
       <tr>
        <td align="right"><?php echo constant('ACT_' . strtoupper($type) . '_ID_NUMBER'); ?></td>
        <td><?php echo html_input_field('gov_id_number', $cInfo->gov_id_number, 'size="17" maxlength="16"'); ?></td>
-	   <td align="right"><?php echo INV_ENTRY_ITEM_TAXABLE; ?></td>
+	   <td align="right"><?php echo TEXT_DEFAULT_SALES_TAX; ?></td>
        <td><?php echo html_pull_down_menu('tax_id', $tax_rates, $cInfo->tax_id); ?></td>
        <td><?php echo TEXT_PAYMENT_TERMS; ?></td>
 	   <td><?php
@@ -92,7 +92,7 @@ if (sizeof($cInfo->attachments) > 0) {
     echo '</tr>' . chr(10);
   }
 } else {
-  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS . '</td></tr>';
+  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS_HAVE_BEEN_FOUND . '</td></tr>';
 } ?>
     </tbody>
    </table>

@@ -178,7 +178,7 @@ try{
 		  // fetch open orders
 		  $sku_history = gather_history($inventory_array['sku']);
 		  if (is_array($sku_history['open_po'])) {
-		    $stock_note[] = ORD_INV_OPEN_POS;
+		    $stock_note[] = TEXT_OPEN_PURCHASE_ORDERS . ': ';
 		    foreach ($sku_history['open_po'] as $value) {
 			  $store = $value['store_id'] ? gen_get_contact_name($value['store_id']) : COMPANY_NAME; // get name from id
 			  $stock_note[] = sprintf(ORD_INV_STOCK_STATUS, $store, $value['purchase_invoice_id'], $value['qty'], gen_locale_date($value['date_1']));

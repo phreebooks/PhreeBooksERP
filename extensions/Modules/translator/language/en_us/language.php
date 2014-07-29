@@ -52,7 +52,7 @@ define('TRANSLATOR_MODULE_CREATE','Module to assign translation to:');
 define('TRANSLATOR_RELEASE_CREATE','Release number to create:');
 define('TRANSLATOR_UPLOAD_ZIPFILE','Select a zipped file to upload and insert into the translator database:');
 define('MESSAGE_DELETE_TRANSLATION','Are you sure you want to delete this translation?');
-define('TEXT_CONSTANT','Defined Constant');
+define('TEXT_DEFINED_CONSTANT','Defined Constant');
 define('TEXT_DEFAULT_TRANSLATION','Current Translation');
 define('TEXT_STATS_VALUES','%s of %s translated (%s percent)');
 define('TEXT_TRANSLATION_RECORDS_SAVED','Translation records saved.');

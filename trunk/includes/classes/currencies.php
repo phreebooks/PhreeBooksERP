@@ -270,7 +270,7 @@ class currencies {
 		$output .= '  </thead>' . "\n";
 		$output .= '  <tbody class="ui-widget-content">' . "\n";
 		$output .= '  <tr>' . chr(10);
-		$output .= '    <td colspan="2">' . ($action=='new' ? SETUP_CURR_INSERT_INTRO : TEXT_EDIT_INTRO) . '</td>' . chr(10);
+		$output .= '    <td colspan="2">' . ($action=='new' ? TEXT_PLEASE_ENTER_THE_NEW_CURRENCY_WITH_ITS_RELATED_DATA : TEXT_PLEASE_MAKE_ANY_NECESSARY_CHANGES) . '</td>' . chr(10);
 	    $output .= '  </tr>' . chr(10);
 		$output .= '  <tr>' . chr(10);
 		$output .= '    <td>' . TEXT_TITLE . '</td>' . chr(10);
@@ -281,11 +281,11 @@ class currencies {
 		$output .= '    <td nowrap="nowrap">' . html_input_field('code', $code, '', true) . '</td>' . chr(10);
 	    $output .= '  </tr>' . chr(10);
 		$output .= '  <tr>' . chr(10);
-		$output .= '    <td>' . SETUP_INFO_CURRENCY_SYMBOL_LEFT . '</td>' . chr(10);
+		$output .= '    <td>' . TEXT_SYMBOL_LEFT . ':</td>' . chr(10);
 		$output .= '    <td>' . html_input_field('symbol_left', htmlspecialchars($value['symbol_left'])) . '</td>' . chr(10);
 	    $output .= '  </tr>' . chr(10);
 		$output .= '  <tr>' . chr(10);
-		$output .= '    <td>' . SETUP_INFO_CURRENCY_SYMBOL_RIGHT . '</td>' . chr(10);
+		$output .= '    <td>' . TEXT_SYMBOL_RIGHT . ':</td>' . chr(10);
 		$output .= '    <td>' . html_input_field('symbol_right', htmlspecialchars($value['symbol_right'])) . '</td>' . chr(10);
 	    $output .= '  </tr>' . chr(10);
 		$output .= '  <tr>' . chr(10);
@@ -293,7 +293,7 @@ class currencies {
 		$output .= '    <td nowrap="nowrap">' . html_input_field('decimal_point', $value['decimal_point'], '', true) . '</td>' . chr(10);
 	    $output .= '  </tr>' . chr(10);
 		$output .= '  <tr>' . chr(10);
-		$output .= '    <td>' . SETUP_INFO_CURRENCY_THOUSANDS_POINT . '</td>' . chr(10);
+		$output .= '    <td>' . TEXT_THOUSANDS_POINT . ':</td>' . chr(10);
 		$output .= '    <td>' . html_input_field('thousands_point', $value['thousands_point']) . '</td>' . chr(10);
 	    $output .= '  </tr>' . chr(10);
 		$output .= '  <tr>' . chr(10);

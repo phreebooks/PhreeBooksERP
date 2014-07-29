@@ -113,7 +113,7 @@ class departments {
 	$output .= '  </thead>' . "\n";
 	$output .= '  <tbody class="ui-widget-content">' . "\n";
     $output .= '  <tr>' . chr(10);
-	$output .= '    <td colspan="2">' . ($action=='new' ? HR_INFO_INSERT_INTRO : TEXT_EDIT_INTRO) . '</td>' . chr(10);
+	$output .= '    <td colspan="2">' . ($action=='new' ? HR_INFO_INSERT_INTRO : TEXT_PLEASE_MAKE_ANY_NECESSARY_CHANGES) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
 	$output .= '    <td>' . TEXT_DEPARTMENT_ID . html_hidden_field('id', $this->id) . '</td>' . chr(10);
@@ -125,10 +125,10 @@ class departments {
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
 	$output .= '    <td>' . HR_INFO_SUBACCOUNT . '</td>' . chr(10);
-	$output .= '    <td>' . html_radio_field('subdepartment', '0', !$this->subdepartment) . TEXT_NO . '<br />' . html_radio_field('subdepartment', '1', $this->subdepartment) . HR_INFO_PRIMARY_ACCT_ID . '</td>' . chr(10);
+	$output .= '    <td>' . html_radio_field('subdepartment', '0', !$this->subdepartment) . TEXT_NO . '<br />' . html_radio_field('subdepartment', '1', $this->subdepartment) . TEXT_YES_ALSO_SELECT_PRIMARY_DEPARTMENT . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . HR_INFO_PRIMARY_ACCT_ID . '</td>' . chr(10);
+	$output .= '    <td>' . TEXT_YES_ALSO_SELECT_PRIMARY_DEPARTMENT . '</td>' . chr(10);
 	$output .= '    <td>' . html_pull_down_menu('primary_dept_id', gen_get_pull_down($this->db_table, false, '1', 'id', 'description_short'), $this->primary_dept_id) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);

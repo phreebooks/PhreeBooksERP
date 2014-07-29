@@ -42,7 +42,7 @@ define('TRANSLATOR_MODULE_CREATE','Module om vertaling aan toe te wijzen:');
 define('TRANSLATOR_RELEASE_CREATE','Release nummer om te maken:');
 define('TRANSLATOR_UPLOAD_ZIPFILE','Selecteer een zip-bestand te uploaden en in te voegen in de vertaler database:');
 define('MESSAGE_DELETE_TRANSLATION','Weet u zeker dat u deze vertaling wil verwijderen.?');
-define('TEXT_CONSTANT','Defineer Constante');
+define('TEXT_DEFINED_CONSTANT','Defineer Constante');
 define('TEXT_DEFAULT_TRANSLATION','Huidige Vertaling');
 define('TEXT_STATS_VALUES','%s van %s vertaald (%s procent)');
 define('TEXT_TRANSLATION_RECORDS_SAVED','Vertaalde records bewaard');

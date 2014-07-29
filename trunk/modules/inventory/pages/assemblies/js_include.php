@@ -32,15 +32,15 @@ function init() {
 
 function check_form() {
   var error = 0;
-  var error_message = "<?php echo JS_ERROR; ?>";
+  var error_message = "<?php echo JS_ERROR; ?>\n";
   var sku = document.getElementById('sku_1').value;
   if (sku == '') { // check for sku not blank
-  	error_message += '<?php echo JS_NO_SKU_ENTERED; ?>';
+  	error_message += '<?php echo TEXT_A_SKU_VALUE_IS_REQUIRED; ?>\n';
 	error = 1;
   }
   var qty = document.getElementById('qty_1').value;
   if (qty == '' || qty == '0') { // check for quantity non-zero
-  	error_message += '<?php echo JS_ASSY_VALUE_ZERO; ?>';
+  	error_message += '<?php echo JS_ASSY_VALUE_ZERO; ?>\n';
 	error = 1;
   }
   if (error == 1) {
@@ -165,7 +165,7 @@ function processSkuDetails(sXml) { // call back function
   $(xml).find("bom").each(function() {
 	addListRow();
 	if ($(this).find("bom_quantity_on_hand").text() == 'NA') {
-	  var stock = '-';	
+	  var stock = '-';
 	} else {
 	  var stock = parseFloat($(this).find("bom_quantity_on_hand").text());
 	  if (document.getElementById('id').value > 0) { // add back in edit amount

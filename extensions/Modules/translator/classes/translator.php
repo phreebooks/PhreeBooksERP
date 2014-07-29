@@ -151,7 +151,7 @@ if ($const == 'TEXT_COUNTRY_ISO_CODE')echo 'writing const = '.$const.' with valu
 	global $db, $backup, $messageStack;
 	$result = $db->Execute("select pathtofile, defined_constant, translation from " . TABLE_TRANSLATOR . "
 	  where module = '" . $mod . "' and language = '" . $lang . "' and version = '" . $ver . "'");
-	if ($result->RecordCount() == 0) throw new \core\classes\userException(GEN_BACKUP_DOWNLOAD_EMPTY);
+	if ($result->RecordCount() == 0) throw new \core\classes\userException(TEXT_THE_DOWNLOAD_FILE_DOES_NOT_CONTAIN_ANY_DATA);
 	$output  = array();
 	$header  = '<' . '?' . 'php'  . chr(10);
 	$header .= '// +-----------------------------------------------------------------+' . chr(10);

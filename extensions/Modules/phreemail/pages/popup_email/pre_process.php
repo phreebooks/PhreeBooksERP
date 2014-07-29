@@ -95,6 +95,6 @@ if($cID != ''){
 
 
 $include_template = 'template_main.php'; // include display template (required)
-define('PAGE_TITLE', TITLE . ' - ' . COMPANY_NAME);
+define('PAGE_TITLE', TEXT_PHREEBOOKS_ERP . ' - ' . COMPANY_NAME);
 
 ?>

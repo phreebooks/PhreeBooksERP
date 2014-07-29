@@ -21,42 +21,42 @@ define('RMA_DIR_ATTACHMENTS',  DIR_FS_MY_FILES . $_SESSION['company'] . '/rma/ma
 
 $status_codes = array(
   '0'  => TEXT_PLEASE_SELECT, // do not remove from top position
-  '1'  => RMA_STATUS_1,
-  '2'  => RMA_STATUS_2,
-  '3'  => RMA_STATUS_3,
-  '4'  => RMA_STATUS_4,
-  '5'  => RMA_STATUS_5,
-  '6'  => RMA_STATUS_6,
-  '7'  => RMA_STATUS_7,
-  '8'  => RMA_STATUS_8,
-  '9'  => RMA_STATUS_9,
-  '10' => RMA_STATUS_10,
-  '90' => RMA_STATUS_90,
+  '1'  => TEXT_RMA_CREATED_AND_WAITING_FOR_PARTS,
+  '2'  => TEXT_PARTS_RECEIVED,
+  '3'  => TEXT_RECEIVING_INSPECTION,
+  '4'  => TEXT_IN_DISPOSITION,
+  '5'  => TEXT_IN_TEST_OR_EVALUATION,
+  '6'  => TEXT_WAITING_FOR_CREDIT,
+  '7'  => TEXT_CLOSED_AND_REPLACED,
+  '8'  => TEXT_CLOSED_NO_WARRANTY,
+  '9'  => TEXT_DAMAGE_CLAIM,
+  '10' => TEXT_CLOSED_AND_RETURNED,
+  '90' => TEXT_CLOSED_NOT_RECEIVED,
   '99' => TEXT_CLOSED,
 );
 
 $reason_codes = array(
-  '0'  => RMA_REASON_0, // do not remove from top position
-  '1'  => RMA_REASON_1,
-  '2'  => RMA_REASON_2,
-  '3'  => RMA_REASON_3,
-  '4'  => RMA_REASON_4,
-  '5'  => RMA_REASON_5,
-  '6'  => RMA_REASON_6,
-  '7'  => RMA_REASON_7,
-  '80' => RMA_REASON_80,
-  '99' => RMA_REASON_99,
+  '0'  => TEXT_PLEASE_SELECT, // do not remove from top position
+  '1'  => TEXT_DID_NOT_NEED,
+  '2'  => TEXT_ORDERED_WRONG_PART,
+  '3'  => TEXT_DID_NOT_FIT,
+  '4'  => TEXT_DEFECTIVE_OR_SWAP_OUT,
+  '5'  => TEXT_DAMAGED_IN_SHIPPING,
+  '6'  => TEXT_REFUSED_BY_CUSTOMER,
+  '7'  => TEXT_DUPLICATE_SHIPMENT,
+  '80' => TEXT_WRONG_CONNECTOR,
+  '99' => TEXT_OTHER_SPECIFY_IN_NOTES,
 );
 
 $action_codes = array(
   '0'  => sprintf(TEXT_SELECT_ARGS, TEXT_ACTION), // do not remove from top position
-  '1'  => RMA_ACTION_1,
-  '2'  => RMA_ACTION_2,
-  '3'  => RMA_ACTION_3,
-  '4'  => RMA_ACTION_4,
-  '5'  => RMA_ACTION_5,
-  '6'  => RMA_ACTION_6 ,
-  '99' => RMA_ACTION_99,
+  '1'  => TEXT_RETURN_TO_STOCK,
+  '2'  => TEXT_RETURN_TO_CUSTOMER,
+  '3'  => TEXT_TEST_AND_REPLACE,
+  '4'  => TEXT_WARRANTY_REPLACE,
+  '5'  => TEXT_SCRAP,
+  '6'  => TEXT_TEST_AND_CREDIT ,
+  '99' => TEXT_OTHER_SPECIFY_IN_NOTES,
 );
 
 ?>

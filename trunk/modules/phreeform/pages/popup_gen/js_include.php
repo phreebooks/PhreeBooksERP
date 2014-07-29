@@ -94,7 +94,7 @@ function fillEmailMsg(sXml) {
 }
 
 function querySaveAs() {
- 	$.messager.prompt('<?php echo TEXT_REPORT?>', "<?php echo PHREEFORM_RPTENTER; ?>", function(title){
+ 	$.messager.prompt('<?php echo TEXT_REPORT?>', "<?php echo TEXT_ENTER_A_NAME_FOR_THIS_REPORT; ?>", function(title){
 		if (title){
 			document.getElementById('title').value = title;
 		    submitToDo('save_as');
@@ -163,7 +163,7 @@ function calculateWidth() {	// total up the columns
 	var marginValues = paperValue.split(':');
 	pageWidth = (orientation == 'P') ? marginValues[1] : marginValues[2];
 	var pageProperties = '<?php echo TEXT_FIELD_LIST; ?>';
-	pageProperties += ' ('+'<?php echo TEXT_ORIEN; ?>'+': '+orienText;
+	pageProperties += ' ('+'<?php echo TEXT_ORIENTATION; ?>'+': '+orienText;
 	pageProperties += ', '+'<?php echo TEXT_WIDTH; ?>'+': '+pageWidth;
 	pageProperties += ', '+'<?php echo TEXT_LEFT_MARGIN; ?>'+': '+document.getElementById('marginleft').value;
 	pageProperties += ', '+'<?php echo PHREEFORM_PGMARGIN_R; ?>'+': '+document.getElementById('marginright').value+')';

@@ -198,7 +198,7 @@ switch ($_REQUEST['action']) {
   	case 'delete':
   		try{
 			\core\classes\user::validate_security($security_level, 4); // security check
-			if (!$_POST['id'])  throw new \core\classes\userException(GL_ERROR_NO_DELETE);
+			if (!$_POST['id'])  throw new \core\classes\userException(TEXT_THERE_WERE_ERRORS_DURING_PROCESSING . ' ' . TEXT_THE_RECORD_WAS_NOT_DELETED);
 	  		$delOrd = new \core\classes\journal($_POST['id']);
 	  		$result = $db->Execute("SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE so_po_ref_id = $delOrd->id");
 	  		$xfer_to_id = $result->fields['id']; // save the matching adjust ID

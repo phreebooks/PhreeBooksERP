@@ -44,12 +44,12 @@ $toolbar->add_icon('new', 'onclick="location.href = \'' . html_href_link(FILENAM
 if ($security_level > 1) {
   $toolbar->add_icon('pos_return', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action', 'jID')) . '&action=pos_return&jID='.JOURNAL_ID, 'SSL') . '\'"', 50);
   $toolbar->icon_list['pos_return']['icon'] = 'actions/document-save-as.png';
-  $toolbar->icon_list['pos_return']['text'] = TEXT_RETURN;
+  $toolbar->icon_list['pos_return']['text'] = TEXT_PROCESS_RETURN;
 }
 // print previous receipt
   $toolbar->add_icon('previous_print', 'onclick="GetPrintPreviousReceipt()"', 50);
   $toolbar->icon_list['previous_print']['icon'] = 'actions/go-previous.png';
-  $toolbar->icon_list['previous_print']['text'] = TEXT_PRINT_PREVIOUS;
+  $toolbar->icon_list['previous_print']['text'] = TEXT_PRINT_PREVIOUS_RECEIPT;
 // open drawer
 if (defined('PHREEPOS_ENABLE_DIRECT_PRINTING') && PHREEPOS_ENABLE_DIRECT_PRINTING  == true){
   $toolbar->add_icon('open_drawer', 'onclick="OpenDrawer()"', 50);
@@ -105,7 +105,7 @@ echo $toolbar->build_toolbar();
 			</label></li>
 	<?php
 
-	  echo '<li><label>' . html_input_field('bill_primary_name',$order->bill_primary_name, 'size="33" maxlength="32" onfocus="clearField(\'bill_primary_name\', \'' . GEN_PRIMARY_NAME . '\')" onblur="setField(\'bill_primary_name\', \'' . GEN_PRIMARY_NAME . '\')"', true) . chr(10);
+	  echo '<li><label>' . html_input_field('bill_primary_name',$order->bill_primary_name, 'size="33" maxlength="32" onfocus="clearField(\'bill_primary_name\', \'' . TEXT_NAME_OR_COMPANY . '\')" onblur="setField(\'bill_primary_name\', \'' . TEXT_NAME_OR_COMPANY . '\')"', true) . chr(10);
 	  echo 				   html_checkbox_field('bill_add_update', '1', ($order->bill_add_update) ? true : false, '', '') . TEXT_ADD_UPDATE . '</label></li>';
 	  echo '<li><label>' . html_input_field('bill_contact',     $order->bill_contact, 'size="33" maxlength="32" onfocus="clearField(\'bill_contact\', \'' . TEXT_ATTENTION . '\')" onblur="setField(\'bill_contact\', \'' . TEXT_ATTENTION . '\')"', ADDRESS_BOOK_CONTACT_REQUIRED) . '</label></li>';
 	  echo '<li><label>' . html_input_field('bill_address1',    $order->bill_address1, 'size="33" maxlength="32" onfocus="clearField(\'bill_address1\', \'' . TEXT_ADDRESS1 . '\')" onblur="setField(\'bill_address1\', \'' . TEXT_ADDRESS1 . '\')"', ADDRESS_BOOK_ADDRESS1_REQUIRED) . '</label></li>';
@@ -128,7 +128,7 @@ echo $toolbar->build_toolbar();
 	<?php if (ENABLE_ORDER_DISCOUNT) {
 			$hidden_fields .= html_hidden_field('disc_gl_acct_id', '') . chr(10);
         	echo '<li><label>' . TEXT_DISCOUNT_PERCENT . ' ' . html_input_field('disc_percent', ($order->disc_percent ? number_format(100*$order->disc_percent,3) : $currencies->format(0)), 'size="10" maxlength="6" onchange="calculateDiscountPercent()" ') . '</label></li> ';
-			echo '<li><label>' . TEXT_DISCOUNT_AMOUNT . ' ' . html_input_field('discount', $currencies->format(($order->discount ? $order->discount : '0'), true, $order->currencies_code, $order->currencies_value), 'size="10" maxlength="20" onchange="calculateDiscount()"'). '</label></li> ';
+			echo '<li><label>' . TEXT_DISCOUNT_AMOUNT_SHORT . ' ' . html_input_field('discount', $currencies->format(($order->discount ? $order->discount : '0'), true, $order->currencies_code, $order->currencies_value), 'size="10" maxlength="20" onchange="calculateDiscount()"'). '</label></li> ';
 		  } else {
   			$hidden_fields .= html_hidden_field('disc_gl_acct_id', '') . chr(10);
   			$hidden_fields .= html_hidden_field('discount',     '0')   . chr(10);
@@ -182,7 +182,7 @@ echo $toolbar->build_toolbar();
 <?php
   echo ORD_ACCT_ID . ' ' . html_input_field('copy_search', isset($order->short_name) ? $order->short_name : TEXT_SEARCH, 'size="21" maxlength="20" title="' . TEXT_SEARCH . '" onchange="accountGuess(true)"');
   echo '&nbsp;' . html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'align="top" style="cursor:pointer" onclick="accountGuess(true)"').'<br>'. chr(10);
-  echo html_input_field('copy_bill_primary_name',$order->bill_primary_name, 'size="33" maxlength="32" onfocus="clearField(\'bill_primary_name\', \'' . GEN_PRIMARY_NAME . '\')" onblur="setField(\'bill_primary_name\', \'' . GEN_PRIMARY_NAME . '\')"', true).'<br>'. chr(10);
+  echo html_input_field('copy_bill_primary_name',$order->bill_primary_name, 'size="33" maxlength="32" onfocus="clearField(\'bill_primary_name\', \'' . TEXT_NAME_OR_COMPANY . '\')" onblur="setField(\'bill_primary_name\', \'' . TEXT_NAME_OR_COMPANY . '\')"', true).'<br>'. chr(10);
   echo html_button_field('customer_popup_buttom', TEXT_SELECT_CUSTOMER, 'onclick="popupContact()"').'<br>'. chr(10);?>
 </div>
 
@@ -307,7 +307,7 @@ echo $thirdToolbar->build_toolbar();
 			<th class="dataTableHeadingContent ot_desc"><?php echo TEXT_DESCRIPTION; ?></th>
 			<th class="dataTableHeadingContent ot_amount"><?php echo TEXT_AMOUNT; ?></th>
 			<th class="dataTableHeadingContent ot_rate"><?php echo TEXT_TAX_RATE; ?></th>
-			<th class="dataTableHeadingContent ot_tax"><?php echo TEXT_TAX; ?></th>
+			<th class="dataTableHeadingContent ot_tax"><?php echo TEXT_DEFAULT_TAX; ?></th>
 		</tr>
 	</thead>
  	<tbody id="ot_table_body">

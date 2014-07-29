@@ -253,7 +253,7 @@ switch ($_REQUEST['action']) {
 	$doc_ext   = db_prepare_input($_POST['doc_ext']);
 	$doc_group = db_prepare_input($_POST['doc_group']);
 	// check for valid folder name
-	if (!$doc_title) throw new \core\classes\userException(PHREEFORM_FOLDER_BLANK_ERROR);
+	if (!$doc_title) throw new \core\classes\userException(TEXT_THE_FOLDER_NAME_CANNOT_BE_BLANK. '!');
 	// check to see if the directory is being moved below itself
 	if (!validate_dir_move($dir_tree, $id, $parent_id)) throw new \core\classes\userException(PHREEFORM_DIR_MOVE_ERROR);
 	$result = $db->Execute("select id from " . TABLE_PHREEFORM . " where doc_group = '" . $doc_group . "'");
@@ -324,7 +324,7 @@ switch ($_REQUEST['action']) {
   case 'import_all':
   case 'refresh_dir':
 	$sel_language = load_language_dropdown();
-	define('PAGE_TITLE', PHREEFORM_DOC_IMPORT);
+	define('PAGE_TITLE', TEXT_PHREEFORM_IMPORT_TOOL);
     $include_template = 'template_import.php';
     break;
   default:
@@ -384,7 +384,7 @@ switch ($_REQUEST['action']) {
 		  break;
 	}
 	$rFields .= '</select>'   . chr(10);
-	define('PAGE_TITLE', PHREEFORM_DOC_DESIGN);
+	define('PAGE_TITLE', TEXT_PHREEFORM_DESIGNER);
     $include_template = 'template_design.php';
     break;
 }

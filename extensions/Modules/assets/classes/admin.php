@@ -124,7 +124,7 @@ class admin extends \core\classes\admin {
 	 */
 	function validate_name($name){
 		global $db;
-		if (!$name) throw new \core\classes\userException(ERROR_SKU_BLANK);
+		if (!$name) throw new \core\classes\userException(TEXT_THE_ID_FIELD_WAS_EMPTY);
 		$result = $db->Execute("select id from " . TABLE_ASSETS . " where asset_id = '$name'");
 		if ($result->RecordCount() <> 0) throw new \core\classes\userException(sprintf(ERROR_DUPLICATE_SKU, $name));
 	}

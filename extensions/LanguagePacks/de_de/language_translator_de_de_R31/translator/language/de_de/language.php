@@ -57,7 +57,7 @@ define ('TRANSLATOR_MODULE_CREATE', 'Modul für die Übersetzung zu vergeben:');
 define ('TRANSLATOR_RELEASE_CREATE', 'Release-Nummer zu erstellen:');
 define ('TRANSLATOR_UPLOAD_ZIPFILE', 'Wählen Sie eine ZIP-Datei hochladen und einfügen in die Übersetzer-Datenbank:');
 define ('MESSAGE_DELETE_TRANSLATION', 'Sind Sie sicher, dass Sie diese Übersetzung löschen?');
-define ('TEXT_CONSTANT', 'definierte Konstante');
+define ('TEXT_DEFINED_CONSTANT', 'definierte Konstante');
 define ('TEXT_DEFAULT_TRANSLATION', 'Aktuelle Übersetzung');
 define ('TEXT_STATS_VALUES', '% s von% s übersetzt (% s Prozent)');
 define ('TEXT_TRANSLATION_RECORDS_SAVED', 'Übersetzung Datensätze gespeichert.');

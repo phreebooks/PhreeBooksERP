@@ -41,7 +41,7 @@
 	  <td><?php echo html_input_field('contact_id', $cInfo->contact_id, ''); ?></td>
 	</tr>
 	<tr>
-	  <td align="right"><?php echo GEN_PRIMARY_NAME; ?></td>
+	  <td align="right"><?php echo TEXT_NAME_OR_COMPANY; ?></td>
 	  <td><?php echo html_input_field('contact_name', $cInfo->contact_name, 'size="33"'); ?></td>
 	</tr>
   </tbody>
@@ -126,7 +126,7 @@ if (sizeof($attachments) > 0) {
     echo '</tr>' . chr(10);
   }
 } else {
-  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS . '</td></tr>';
+  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS_HAVE_BEEN_FOUND . '</td></tr>';
 } ?>
     </tbody>
    </table>

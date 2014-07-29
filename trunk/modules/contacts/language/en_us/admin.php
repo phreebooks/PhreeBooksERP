@@ -45,7 +45,7 @@ define('TEXT_SUB_DEPARTMENT', 'Subdepartment');
 define('HR_EDIT_INTRO', 'Please make any necessary changes');
 define('TEXT_DEPARTMENT_ID', 'Department ID');
 define('HR_INFO_SUBACCOUNT', 'Is this department a subdepartment?');
-define('HR_INFO_PRIMARY_ACCT_ID', 'Yes, also select primary department:');
+define('TEXT_YES_ALSO_SELECT_PRIMARY_DEPARTMENT', 'Yes, also select primary department');
 define('HR_INFO_ACCOUNT_TYPE', 'Department type');
 define('HR_INFO_ACCOUNT_INACTIVE', 'Department inactive');
 define('HR_INFO_INSERT_INTRO', 'Please enter the new department with its properties');
@@ -57,7 +57,7 @@ define('HR_LOG_DEPARTMENTS','Departments - ');
 /************************** (Department Types) ***********************************************/
 define('TEXT_DEPARTMENT_TYPES', 'Department Types');
 define('SETUP_INFO_DEPT_TYPES_NAME', 'Department Type Name');
-define('SETUP_DEPT_TYPES_INSERT_INTRO', 'Please enter the new department type');
+define('TEXT_PLEASE_ENTER_THE_NEW_DEPARTMENT_TYPE', 'Please enter the new department type');
 define('SETUP_DEPT_TYPES_DELETE_INTRO', 'Are you sure you want to delete this department type?');
 define('SETUP_DEPT_TYPES_DELETE_ERROR','Cannot delete this department type, it is being use by a department.');
 define('SETUP_INFO_HEADING_NEW_DEPT_TYPES', 'New Department Type');
@@ -78,7 +78,7 @@ define('SETUP_PROJECT_COSTS_DELETE_ERROR','Cannot delete this project cost, it i
 /************************** (Project Phases) ***********************************************/
 define('TEXT_PROJECT_PHASES', 'Project Phases');
 define('TEXT_COST_BREAKDOWN', 'Cost Breakdown');
-define('SETUP_INFO_COST_BREAKDOWN', 'Use Cost Breakdowns for this phase?');
+define('TEXT_USE_COST_BREAKDOWNS_FOR_THIS_PHASE', 'Use Cost Breakdowns for this phase?');
 define('SETUP_PROJECT_PHASES_INSERT_INTRO', 'Please enter the new project phase with its properties');
 define('SETUP_PROJECT_PHASES_DELETE_INTRO', 'Are you sure you want to delete this project phase?');
 define('SETUP_INFO_HEADING_NEW_PROJECT_PHASES', 'New Project Phase');

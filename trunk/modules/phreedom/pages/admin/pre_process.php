@@ -197,7 +197,7 @@ switch ($_REQUEST['action']) {
 			// reset SESSION['company'] to new company and redirect to install->store_setup
 			$db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '" . $co_name . "'
 			  where configuration_key = 'COMPANY_NAME'");
-			$messageStack->add(SETUP_CO_MGR_CREATE_SUCCESS,'success');
+			$messageStack->add(TEXT_SUCCESSFULY_CREATED_NEW_COMPANY,'success');
 			gen_add_audit_log(sprintf(TEXT_MANAGER_ARGS, TEXT_COMPANY). ' - ' . TEXT_COPY, $db_name);
 			$_SESSION['db_server'] = $db_server;
 			$_SESSION['company']   = $db_name;
@@ -218,7 +218,7 @@ switch ($_REQUEST['action']) {
 	$db_name = $_POST['del_company'];
 	// Failsafe to prevent current company from being deleted accidently
 	$backup = new backup;
-	if ($db_name == 'none') throw new \core\classes\userException(SETUP_CO_MGR_NO_SELECTION);
+	if ($db_name == 'none') throw new \core\classes\userException(TEXT_NO_COMPANY_WAS_SELECTED_TO_DELETE .'!');
 	if ($db_name <> $_SESSION['company']) {
 		// connect to other company, retrieve login info
 	  	$config = file(DIR_FS_MY_FILES . $db_name . '/config.php');
@@ -259,7 +259,7 @@ switch ($_REQUEST['action']) {
 	// post them to the current_status table
 	if (sizeof($sequence_array) > 0) {
 	  $result = db_perform(TABLE_CURRENT_STATUS, $sequence_array, 'update', 'id > 0');
-	  $messageStack->add(GEN_ADM_TOOLS_POST_SEQ_SUCCESS,'success');
+	  $messageStack->add(TEXT_SUCCESSFULLY_POSTED_THE_CURRENT_ORDER_NUMBER_CHANGES,'success');
 	  gen_add_audit_log(GEN_ADM_TOOLS_AUDIT_LOG_SEQ);
 	}
 	$default_tab_id = 'tools';

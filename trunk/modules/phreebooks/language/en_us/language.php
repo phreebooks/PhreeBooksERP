@@ -17,15 +17,15 @@
 //  Path: /modules/phreebooks/language/en_us/language.php
 //
 // Page Titles
-define('GL_ENTRY_TITLE','General Journal Entry');
+define('TEXT_GENERAL_JOURNAL_ENTRY','General Journal Entry');
 define('TEXT_BAR_CODE_ENTRY','Bar Code Entry');
-define('HEADING_TITLE_SEARCH_INFORMATION','Search for Journal Entries');
+define('TEXT_SEARCH_FOR_JOURNAL_ENTRIES','Search for Journal Entries');
 define('ORD_RECUR_WINDOW_TITLE','Recur Properties');
 // Special buttons
-define('GL_BTN_PURGE_DB','Purge Journal Entries');
+define('TEXT_PURGE_JOURNAL_ENTRIES','Purge Journal Entries');
 define('TEXT_CHANGE_CURRENT_ACCOUNTING_PERIOD', 'Change Current Accounting Period');
-define('GL_BTN_NEW_FY', 'Generate Next Fiscal Year');
-define('GL_BTN_UPDATE_FY', 'Update Fiscal Year Changes');
+define('TEXT_GENERATE_NEXT_FISCAL_YEAR', 'Generate Next Fiscal Year');
+define('TEXT_UPDATE_FISCAL_YEAR_CHANGES', 'Update Fiscal Year Changes');
 // General Text
 define('TEXT_AUTO_COMPLETE','Auto Complete');
 define('BNK_CASH_ACCOUNT','Cash Account');
@@ -54,9 +54,9 @@ define('TEXT_LC_VENDOR','vendor');
 define('ORD_CUSTOMER_NAME','Customer Name');
 define('ORD_DELETE_ALERT','Are you sure you want to delete this order?');
 define('TEXT_DELIVERY_DATES', 'Delivery Dates');
-define('ORD_DISCOUNT_PERCENT','Discount Percent (%)');
+define('TEXT_DISCOUNT_PERCENT','Discount Percent');
 define('TEXT_DROP_SHIP', 'Drop Ship');
-define('ORD_EXPECTED_DATES','Expected Delivery Dates - ');
+define('TEXT_EXPECTED_DELIVERY_DATES','Expected Delivery Dates');
 define('TEXT_EXPIRATION_DATE','Expiration Date');
 define('TEXT_FISCAL_YEAR','Fiscal Year');
 define('TEXT_FREIGHT', 'Freight');
@@ -83,7 +83,7 @@ define('TEXT_SO_BAL','SO Bal');
 define('TEXT_PO_BAL','PO Bal');
 define('TEXT_SALES_REP','Sales Rep');
 define('TEXT_SHIP_BY_DATE', 'Ship By Date');
-define('ORD_SHIP_TO', 'Ship to:');
+define('TEXT_SHIP_TO', 'Ship to');
 define('TEXT_SHIPPED', 'Shipped');
 define('ORD_SUBTOTAL', 'Subtotal');
 define('TEXT_SUCCESSFULLY_POSTED','Successfully posted %s');
@@ -156,10 +156,10 @@ define('ORD_WARN_FORM_MODIFIED','There appears to be data in this form already. 
 define('ORD_WARN_FORM_HAS_DATA','This form is being cleared but there are items in the table. Press OK to clear the table, Cancel to retain the items in the list.');
 define('ORD_ERROR_NOT_CUR_PERIOD','Your permissions prevent you from posting to a period other than the current period!');
 define('ORD_ERROR_DEL_NOT_CUR_PERIOD','Your permissions prevent you from deleting an order from a period other than the current period!');
-define('ORD_DISCOUNT_GL_ACCT','Discount GL Account');
+define('TEXT_DISCOUNT_GL_ACCOUNT','Discount GL Account');
 define('TEXT_FREIGHT_GL_ACCOUNT','Freight GL Account');
 define('ORD_JS_NO_CID','The contact information must be loaded into this form before the properties can be retrieved.');
-define('ORD_BAR_CODE_INTRO','Enter the quantity and scan the item.');
+define('TEXT_ENTER_THE_QUANTITY_AND_SCAN_THE_ITEM','Enter the quantity and scan the item.');
 define('TEXT_BAR_CODE','Bar Code');
 define('BNK_BAD_CASH_ACCOUNT','You have an entry in a cash account that shouldn\'t be there.');
 define('BNK_NO_GL_ENTRIES','No outstanding items found in this GL account!');
@@ -215,7 +215,7 @@ define('GL_ERROR_NO_DELETE','There were errors during processing, the record was
 define('GL_ERROR_CANNOT_FIND_NEXT_ID','Could not read the next order/invoice number from table: %s');
 define('GL_ERROR_CANNOT_DELETE_MAIN','Failed deleting the journal main record # ');
 define('GL_ERROR_CANNOT_DELETE_ITEM','Failed deleting the journal item record # %d. No rows were found!');
-define('GL_ERROR_NEVER_POSTED','Cannot delete this entry because it was never posted.');
+define('TEXT_CANNOT_DELETE_THIS_ENTRY_BECAUSE_IT_WAS_NEVER_POSTED','Cannot delete this entry because it was never posted.');
 define('GL_DELETE_GL_ROW','Are you sure you want to delete this journal row?');
 define('GL_DELETE_ALERT','Are you sure you want to delete this journal entry?');
 define('GL_ERROR_DIED_CREATING_RECORD','Died trying to build a journal entry with id = ');
@@ -223,13 +223,13 @@ define('GL_ERROR_POSTING_CHART_BALANCES','Error posting chart of account balance
 define('GL_ERROR_TRIAL_BALANCE','Trial balance is out of balance (This can usually be fixed by re-posting the transaction). Debits = %s and credits = %s in period %s');
 define('GL_ERROR_NO_GL_ACCT_NUMBER','No account number provided in /gen_ledger.php function: ');
 define('GL_ERROR_UPDATING_ACCOUNT_HISTORY','Error updating customer/vendor account history.');
-define('GL_ERROR_DELETING_ACCOUNT_HISTORY','Error deleting customer/vendor account history record');
+define('TEXT_ERROR_DELETING_CUSTOMER_OR_VENDOR_ACCOUNT_HISTORY_RECORD','Error deleting customer/vendor account history record');
 define('GL_ERROR_UPDATING_INVENTORY_STATUS','Updating inventory status requires the sku to be in the database. The failing SKU was: ');
 define('GL_ERROR_CALCULATING_COGS','Calculating the cost of goods sold requires the sku to be in the database, the operation failed.');
-define('GL_ERROR_POSTING_INV_HISTORY','Error posting inventory history.');
+define('TEXT_ERROR_POSTING_INVENTORY_HISTORY','Error posting inventory history.');
 define('GL_ERROR_POSTING_NEGATIVE_INV','This entry cannot be posted because it would make your inventory go negative. Your settings do not allow inventory to go negative!');
 define('GL_ERROR_UNPOSTING_COGS','Error rolling back the cost of goods sold. SKU: ');
-define('GL_ERROR_BAD_SKU_ENTERED','The sku entered could not be found. No action was taken.');
+define('TEXT_THE_SKU_ENTERED_COULD_NOT_BE_FOUND','The sku entered could not be found');
 define('GL_ERROR_SKU_NOT_ASSY','Cannot assemble an inventory item that has no components. SKU: ');
 define('GL_ERROR_NOT_ENOUGH_PARTS','Not enough parts to build the requested number of assemblies. SKU: ');
 define('GL_ERROR_POSTING_NEG_INVENTORY','Error posting cost of good sold for a vendor credit, inventory will go negative and cogs cannot be calculated. Affected SKU is: ');
@@ -240,7 +240,7 @@ define('GL_ERROR_NO_RETAINED_EARNINGS_ACCOUNT','Zero or more than one retained e
 define('PB_ERROR_NO_PREFERRED_VENDOR','No valid vendor could be found, make sure at least one sku has a prefered vendor setup for the inventory item.');
 define('GL_ERROR_2','The %s you entered is a duplicate, please enter a new unique value!');
 define('GL_ERROR_5','There was an error incrementing the %s!');
-define('ERROR_SKU_BLANK','The id field was empty');
+define('TEXT_THE_ID_FIELD_WAS_EMPTY','The id field was empty');
 define('ERROR_DUPLICATE_SKU','The id $s is not unique');
 // Javascript Messages
 define('ORD_JS_RECUR_NO_INVOICE','For a recurring transaction, a starting invoice number needs to be entered. PhreeBooks will increment it for each recurring entry.');
@@ -263,7 +263,7 @@ define('THERE_IS_SALES_ORDER_FOR_THIS_ITEM', 'there is a sales order for this it
 define('TEXT_ITEM_IS_ON_ORDER', 'item is on order');
 define('TEXT_ITEM_MUST_BE_ORDERD', 'item must be orderd');
 // Low Stock messages
-define('LOW_STOCK_BUTTON','Fill order with items with low stock');
+define('TEXT_FILL_ORDER_WITH_ITEMS_WITH_LOW_STOCK','Fill order with items with low stock');
 define('TEXT_PROCESED','Procesed');
 define('LOW_STOCK_NO_PRODUCTS','There are no products that need to be orderd for this vendor.');
 define('TEXT_NO_VENDOR_FOUND','No vendor found');
@@ -271,7 +271,7 @@ define('LOW_STOCK_ALREADY_EXECUTED','This action was executed before and is now 
 // Audit Log Messages
 define('BNK_LOG_ACCT_RECON','Account Reconciliation, period: ');
 define('GL_LOG_ADD_JOURNAL','General Journal Entry - ');
-define('GL_LOG_FY_UPDATE','General Journal Fiscal Year - ');
+define('TEXT_GENERAL_JOURNAL_FISCAL_YEAR','General Journal Fiscal Year');
 define('GL_LOG_PURGE_DB','General Journal - Purge Database');
 // Tooltip messages
 define('ORD_TT_PURCH_INV_NUM','If you leave this field blank, Phreebooks will automatically assign a number.');
@@ -317,8 +317,8 @@ define('GENERAL_JOURNAL_20_ERROR_6','VP - A payment cannot be deleted if the ent
 // credit limit overlay
 define('TEXT_CREDIT_LIMIT_TITLE','!!! Over Credit Limit !!!');
 define('TEXT_CREDIT_LIMIT_DESC','This order will exceed the customers credit limit! Authorization is necessary to continue.');
-define('TEXT_ADMIN_USER','Enter Admim Username');
-define('TEXT_ADMIN_PASS','Enter Admim Password');
+define('TEXT_ENTER_ADMIM_USERNAME','Enter Admim Username');
+define('TEXT_ENTER_ADMIM_PASSWORD','Enter Admim Password');
 define('TEXT_ADMIN_NOT_VALIDATED','The override username and password was not valid. Please try again.');
 
 ?>

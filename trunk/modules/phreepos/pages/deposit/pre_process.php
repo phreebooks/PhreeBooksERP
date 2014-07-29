@@ -70,7 +70,7 @@ switch ($_REQUEST['action']) {
 	$order->bill_short_name     = db_prepare_input($_POST['search']);
 	$order->bill_acct_id        = db_prepare_input($_POST['bill_acct_id']);
 	$order->bill_address_id     = db_prepare_input($_POST['bill_address_id']);
-	$order->bill_primary_name   = $_POST['bill_primary_name']   <> GEN_PRIMARY_NAME   ? db_prepare_input($_POST['bill_primary_name'])   : '';
+	$order->bill_primary_name   = $_POST['bill_primary_name']   <> TEXT_NAME_OR_COMPANY   ? db_prepare_input($_POST['bill_primary_name'])   : '';
 	$order->bill_contact        = $_POST['bill_contact']        <> TEXT_ATTENTION        ? db_prepare_input($_POST['bill_contact'])        : '';
 	$order->bill_address1       = $_POST['bill_address1']       <> TEXT_ADDRESS1       ? db_prepare_input($_POST['bill_address1'])       : '';
 	$order->bill_address2       = $_POST['bill_address2']       <> TEXT_ADDRESS2       ? db_prepare_input($_POST['bill_address2'])       : '';
@@ -115,7 +115,7 @@ switch ($_REQUEST['action']) {
 		$order->pmt_rows[] = array(
 		  'meth' => $pmt_meth,
 		  'pmt'  => $order->total_amount,
-		  'desc' => GEN_ADM_TOOLS_J18 . '-' . TEXT_TOTAL . ':' . $admin_classes['payment']->methods[$pmt_meth]->payment_fields,
+		  'desc' => $journal_types_list[18]['text'] . '-' . TEXT_TOTAL . ':' . $admin_classes['payment']->methods[$pmt_meth]->payment_fields,
 		  'f0'   => db_prepare_input($_POST[$pmt_meth . '_field_0']),
 		  'f1'   => db_prepare_input($_POST[$pmt_meth . '_field_1']),
 		  'f2'   => db_prepare_input($_POST[$pmt_meth . '_field_2']),
@@ -127,7 +127,7 @@ switch ($_REQUEST['action']) {
 	  case 20:
 		$order->pmt_rows[] = array(
 		  'meth' => '',
-		  'desc' => GEN_ADM_TOOLS_J20 . '-' . TEXT_TOTAL,
+		  'desc' => $journal_types_list[20]['text'] . '-' . TEXT_TOTAL,
 		  'pmt'  => $order->total_amount,
 		);
 	    break;
@@ -144,7 +144,7 @@ switch ($_REQUEST['action']) {
 	  $order->bill_short_name     = db_prepare_input($_POST['search']);
 	  $order->bill_acct_id        = db_prepare_input($_POST['bill_acct_id']);
 	  $order->bill_address_id     = db_prepare_input($_POST['bill_address_id']);
-	  $order->bill_primary_name   = $_POST['bill_primary_name']   <> GEN_PRIMARY_NAME   ? db_prepare_input($_POST['bill_primary_name'])   : '';
+	  $order->bill_primary_name   = $_POST['bill_primary_name']   <> TEXT_NAME_OR_COMPANY   ? db_prepare_input($_POST['bill_primary_name'])   : '';
 	  $order->bill_contact        = $_POST['bill_contact']        <> TEXT_ATTENTION        ? db_prepare_input($_POST['bill_contact'])        : '';
 	  $order->bill_address1       = $_POST['bill_address1']       <> TEXT_ADDRESS1       ? db_prepare_input($_POST['bill_address1'])       : '';
 	  $order->bill_address2       = $_POST['bill_address2']       <> TEXT_ADDRESS2       ? db_prepare_input($_POST['bill_address2'])       : '';

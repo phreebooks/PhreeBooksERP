@@ -53,6 +53,6 @@ $num_items  = $ordr_items->RecordCount();
 $include_header   = false;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', ORD_EXPECTED_DATES);
+define('PAGE_TITLE', TEXT_EXPECTED_DELIVERY_DATES);
 
 ?>

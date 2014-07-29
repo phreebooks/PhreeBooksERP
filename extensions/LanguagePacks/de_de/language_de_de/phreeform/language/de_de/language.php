@@ -23,10 +23,10 @@
 //
 
 //Seitentitel
-define ('PHREEFORM_DOC_IMPORT', 'PhreeForm Import Tool');
-define ('PHREEFORM_DOC_DESIGN', 'Report / Form-Designer');
-define ('PHREEFORM_REPORT_GEN', 'Report Generator');
-define ('PHREEFORM_GROUP', 'PhreeForm Group:');
+define ('TEXT_PHREEFORM_IMPORT_TOOL', 'PhreeForm Import Tool');
+define ('TEXT_PHREEFORM_DESIGNER', 'Report / Form-Designer');
+define ('TEXT_PHREEFORM_GENERATOR', 'Report Generator');
+define ('TEXT_PHREEFORM_GROUP', 'PhreeForm Group');
 //Allgemeine
 define ('TEXT_ABSCISSA', 'Abszisse');
 define ('TEXT_ALLOW_ALL_GROUPS', 'Alle zulassen Gruppen');
@@ -79,8 +79,8 @@ define ('TEXT_MAX_VALUE', 'Max Value');
 define ('TEXT_MY_REPORTS', 'Meine Berichte');
 define ('TEXT_NEW_FORM', 'Neues Formular');
 define ('TEXT_NEW_REPORT', 'Neuer Bericht');
-define ('TEXT_NO_DATA', 'Der Bericht / Formular enthält keine Daten!');
-define ('TEXT_NO_DOCUMENTS', 'Keine Berichte / Formulare gefunden worden sein.');
+define ('TEXT_THE_TABLE_DOES_NOT_CONTAIN_ANY_ROWS', 'Der Bericht / Formular enthält keine Daten!');
+define ('TEXT_NO_DOCUMENTS_HAVE_BEEN_FOUND', 'Keine Berichte / Formulare gefunden worden sein.');
 define ('TEXT_NO_IMAGE', 'Kein Bild');
 define ('TEXT_NO_IMAGE_SELECTED', 'Kein Bild ausgewählt!');
 define ('TEXT_NO_PROPERTIES', 'Es sind keine Attribute für diesen Typ gesetzt.');
@@ -105,34 +105,34 @@ define ('TEXT_SHOW_TOTALS_ONLY', 'Zeige belaufen sich lediglich auf');
 define ('TEXT_SAVE_AND_PREVIEW', 'Speichern und Vorschau');
 define ('TEXT_SET_PRINTED_FLAG', 'Set Bedruckt Flag');
 define ('TEXT_STORED_IMAGES', 'Gespeicherte Bilder');
-define ('TEXT_UNCAT_FORM', 'Uncategorized Form');
+define ('TEXT_UNCATEGORIZED_FORM', 'Uncategorized Form');
 define ('TEXT_UPLOAD_NEW_IMAGE', 'Upload New Image');
 define ('TEXT_VALIDATE_DATABASE_RELATIONSHIPS', 'Datenbank validieren Beziehungen');
 
-define ('PHREEFORM_RPTFILTER', 'Bericht Filter:');
+define ('TEXT_REPORT_FILTERS', 'Bericht Filter');
 define ('TEXT_GROUPED_BY', 'Gruppiert nach');
 define ('TEXT_SORTED_BY', 'Sortiert nach');
 define ('PHREEFORM_CRITBY', 'Filter');
 define ('TEXT_TYPE_OF_CRITERIA', 'Art der Kriterien');
 define ('TEXT_DEFAULT_DATE_SELECTED', 'Default Datum ausgewählt');
 define ('TEXT_DATE_FIELDNAME', 'Datum Feldname');
-define ('PHREEFORM_DATEINFO', 'Bericht Aktuelle Informationen');
+define ('TEXT_REPORT_DATE_INFORMATION', 'Bericht Aktuelle Informationen');
 define ('PHREEFORM_DATELIST', 'Datum Feldliste <br /> (Zutreffendes bitte ankreuzen)');
 define ('PHREEFORM_ENDPOS', 'oder Select Line Endposition (mm)');
 define ('PHREEFORM_FLDLIST', 'field list');
 define ('TEXT_GROUPING_LIST', 'Gruppierung Liste');
 define ('TEXT_IMAGE_SELECTION', 'Bild Auswahl');
-define ('PHREEFORM_LINE_TYPE', 'Wählen Zeilenlayout');
-define ('PHREEFORM_DISPNAME', 'Name zur Anzeige');
+define ('TEXT_SELECT_LINE_LAYOUT', 'Wählen Zeilenlayout');
+define ('TEXT_NAME_TO_DISPLAY', 'Name zur Anzeige');
 define ('PHREEFORM_PGFILDESC', 'Bericht Filter Beschreibung');
 define ('PHREEFORM_PGHEADER', 'Kopfinformationen / Formatierung');
 define ('TEXT_PAGE_LAYOUT "," Page Layout ');
 define ('TEXT_LEFT_MARGIN', 'Left Margin ');
 define ('PHREEFORM_PGMARGIN_R', 'Right Margin');
 define ('TEXT_PAGE_MARGINS', 'Seitenränder');
-define ('PHREEFORM_PGTITL1', 'Titel des Berichts 1');
-define ('PHREEFORM_PGTITL2', 'Bericht Titel 2 ');
-define ('PHREEFORM_RPTDATA', 'Berichtsdaten Unterwegs');
+define ('TEXT_REPORT_TITLE', 'Titel des Berichts');
+
+define ('TEXT_REPORT_DATA_HEADING', 'Berichtsdaten Unterwegs');
 define ('TEXT_SORTING_INFORMATION', 'Sortieren von Informationen');
 define ('TEXT_TEXT_TO_DISPLAY', 'Text zur Anzeige');
 define ('TEXT_TEXT_PROCESSING', 'Text Processing ');
@@ -160,7 +160,7 @@ define ('PHREEFORM_EMAIL_BODY "," Beigefügt ist Ihre %s von %s \n \n Wenn die A
 define ('PHREEFORM_EMPTYFIELD', 'Ein Datenfeld ist leer an Sequenz-Nummer zu finden:');
 define ('PHREEFORM_EMPTYTABLE', 'Ein originelles Datentabelle Eintrag wurde nicht gefunden, um eine der in Sequenz-Nummer doppelt:');
 define ('PHREEFORM_FIELD_HELP', 'Hinweise: Die Wenn mehrere Felder in der gleichen Spalte angezeigt werden, das Feld mit dem größten Spaltenbreite die Breite der Spalte zu bestimmen.');
-define ('PHREEFORM_FOLDER_BLANK_ERROR', 'Der Name des Ordners kann nicht leer sein!');
+define ('TEXT_THE_FOLDER_NAME_CANNOT_BE_BLANK', 'Der Name des Ordners kann nicht leer sein');
 define ('PHREEFORM_FOLDER_TYPE_BASE', 'Base Folder (zur report, form Ordner halten)');
 define ('PHREEFORM_FOLDER_TYPE_FRM', 'Formular-Ordner (zur Formen der gleichen Kategorie) halten');
 define ('PHREEFORM_FOLDER_TYPE_RPT', 'Report Folder (zur Berichte der gleichen Kategorie) halten');
@@ -182,7 +182,7 @@ define ('PHREEFORM_PRINTED_NOTE', 'Legt das Feld ausgewählt, um 1 nach jedem Fo
 define ('PHREEFORM_RENAME_SUCCESS', 'Der Bericht wurde umbenannt erfolgreich!');
 define ('PHREEFORM_REPDUP', 'Der eingegebene Name: (%s) ist bereits im Einsatz Bitte geben Sie einen neuen Bericht Namen.');
 define ('PHREEFORM_RPTBROWSE', 'Oder suchen Sie nach einem Bericht zum Hochladen.');
-define ('PHREEFORM_RPTENTER', 'Geben Sie einen Namen für diesen Bericht.');
+define ('TEXT_ENTER_A_NAME_FOR_THIS_REPORT', 'Geben Sie einen Namen für diesen Bericht.');
 define ('PHREEFORM_RPTNOENTER', '(Leer lassen zum ursprünglichen Bericht Namen von Import-Datei) zu verwenden');
 define ('PHREEFORM_SAVE_SUCCESS', 'Der Bericht / Formular wurde erfolgreich gespeichert.');
 define ('PHREEFORM_SERIAL_FORM', 'Machen Sie diesen eine sequentielle Form (vor allem für Bondrucker und Zeilendrucker verwendet). Page Eigenschaften wird begrenzt, da die Ausgabe auf die Reihenfolge der Feldliste beruht. Wenn Sie unsicher sind, lassen Sie dieses Feld nicht aktiviert.') ;
@@ -190,7 +190,7 @@ define ('PHREEFORM_WASSAVED', 'wurde gerettet und kopiert zu berichten:');
 define ('PHREEFORM_WRITE_ERROR', 'Kann Datei nicht öffnen (%s) für das Schreiben überprüfen Sie Ihre Berechtigungen.');
 define ('PHREEFORM_ZIP_ERROR', 'Die ZIP-Datei kann nicht erstellt werden Überprüfen Sie die Berechtigungen für das Verzeichnis:.');
 //Admin definiert
-define ('PF_ADMIN_CONFIG_INFO', 'PhreeForm Defaultparameter');
+define ('TEXT_PHREEFORM_DEFAULT_PARAMETERS', 'PhreeForm Defaultparameter');
 //Javascript definiert
 define ('PHREEFORM_JS_RPT_DELETED', 'Der Bericht wurde erfolgreich gelöscht.');
 define ('PHREEFORM_JS_RPT_COPY', 'Bitte geben Sie einen neuen Bericht Name zu diesem Bericht zu kopieren:');
@@ -203,20 +203,20 @@ define ('PHREEFORM_AJAX_NO_TABLE_DATA', 'Ihr Tisch Aussagen ergab keine Zeilen E
 define ('PHREEFORM_AJAX_DB_SUCCESS', 'Die Datenbank Beziehungen mindestens eine Zeile zurückgegeben Sie scheinen in Ordnung zu sein..');
 //Seite einrichten
 define ('TEXT_PAPER_SIZE', 'Paper Size');
-define ('TEXT_ORIEN', 'Orientierung');
+define ('TEXT_ORIENTATION', 'Orientierung');
 define ('TEXT_MM', 'mm');
 define ('TEXT_PORTRAIT', 'Portrait');
 define ('TEXT_LANDSCAPE', 'Landschaft');
 define ('TEXT_LEGAL', 'Legal');
 define ('TEXT_LETTER', 'Letter');
 //Text-Formatierung für Text und Unternehmen Blöcke
-define ('PF_FRM_COMMA', 'Durch Komma (,)');
+define ('TEXT_COMMA', 'Durch Komma');
 define ('TEXT_COMMA-SPACE', 'Durch Komma-Space');
 define ('TEXT_NEWLINE', 'Zeilenumbruch');
-define ('PF_FRM_SEMISP', 'Semikolon-Raum');
-define ('PF_FRM_DELNL', 'Skip Blank-Line Break');
+define ('TEXT_SEMICOLON_SPACE', 'Semikolon-Raum');
+define ('TEXT_SKIP_BLANK-LINE_BREAK', 'Skip Blank-Line Break');
 define ('TEXT_SINGLE_SPACE', 'Single Space');
-define ('PF_FRM_SPACE2', 'Double Space');
+define ('TEXT_DOUBLE_SPACE', 'Double Space');
 //Formularelement-Typen
 define ('TEXT_BAR_CODE_IMAGE', 'Barcode Image');
 define ('TEXT_DATA_BLOCK', 'Data Block');

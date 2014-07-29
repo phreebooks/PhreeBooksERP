@@ -23,10 +23,10 @@
   <legend></legend>
 <table class="ui-widget" style="border-style:none;width:100%">
  <thead class="ui-widget-header">
-  <tr><th colspan="2"><?php echo MODULE_ZENCART_CONFIG_INFO; ?></th></tr>
+  <tr><th colspan="2"><?php echo TEXT_PLEASE_SET_THE_CONFIGURATION_VALUES_TO_YOUR_ZENCART_E-STORE; ?></th></tr>
  </thead>
  <tbody class="ui-widget-content">
-	  
+
 	  <tr>
 	    <td colspan="4"><?php echo ZENCART_ADMIN_URL; ?></td>
 	    <td><?php echo html_input_field('zencart_url', $_POST['zencart_url'] ? $_POST['zencart_url'] : ZENCART_URL, 'size="64"'); ?></td>
@@ -44,11 +44,11 @@
 	    <td><?php echo html_input_field('zencart_product_tax_class', $_POST['zencart_product_tax_class'] ? $_POST['zencart_product_tax_class'] : ZENCART_PRODUCT_TAX_CLASS, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="4"><?php echo ZENCART_USE_PRICES; ?></td>
+	    <td colspan="4"><?php echo TEXT_DO_YOU_WANT_TO_USE_PRICE_SHEETS . '?'; ?></td>
 	    <td><?php echo html_pull_down_menu('zencart_use_price_sheets', $sel_yes_no, $_POST['zencart_use_price_sheets'] ? $_POST['zencart_use_price_sheets'] : ZENCART_USE_PRICE_SHEETS, 'onclick="togglePriceSheets()"'); ?></td>
 	  </tr>
   	  <tr id="price_sheet_row">
-	    <td colspan="4"><?php echo ZENCART_TEXT_PRICE_SHEET; ?></td>
+	    <td colspan="4"><?php echo TEXT_PRICE_SHEET_TO_USE; ?></td>
         <td><?php echo html_pull_down_menu('zencart_price_sheet', pull_down_price_sheet_list(), $_POST['zencart_price_sheet'] ? $_POST['zencart_price_sheet'] : ZENCART_PRICE_SHEET, ''); ?></td>
 	  </tr>
 	  <tr>

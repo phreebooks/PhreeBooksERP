@@ -31,7 +31,7 @@ class known_transactions {
   function btn_save($id = '') {
   	global $db, $currencies;
 	\core\classes\user::validate_security($this->security_id, 2);
-	if ($this->gl_acct_id == '') throw new \core\classes\userException(GL_SELECT_STD_CHART);
+	if ($this->gl_acct_id == '') throw new \core\classes\userException(TEXT_SELECT_A_STANDARD_CHART);
 	$sql_data_array = array(
 		'description' 		    => $this->description,
 		'gl_acct_id'  		    => $this->gl_acct_id,

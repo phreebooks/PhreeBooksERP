@@ -2,7 +2,7 @@
 namespace inventory\classes\type;
 class ia extends \inventory\classes\inventory { //Master Build Sub Item. child of mb (master assembly) combination of mi and ma
 	public $inventory_type			= 'ia';
-	public $title 					= INV_TYPES_IA;
+	public $title 					= TEXT_ITEM_ASSEMBLY_PART;
 	public $edit_ms_list			= false;
 	public $master					= '';
 	public $account_sales_income	= INV_ASSY_DEFAULT_SALES;
@@ -22,7 +22,7 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 
 	function __construct(){
 		parent::__construct();
-		$this->tab_list['master'] = array('file'=>'template_tab_ms',	'tag'=>'master',    'order'=>30, 'text'=>INV_MS_ATTRIBUTES);
+		$this->tab_list['master'] = array('file'=>'template_tab_ms',	'tag'=>'master',    'order'=>30, 'text'=>TEXT_MASTER_STOCK_ATTRIBUTES);
 		$this->tab_list['bom'] = array('file'=>'template_tab_bom',	'tag'=>'bom',    'order'=>30, 'text'=>TEXT_BILL_OF_MATERIALS);
 	}
 

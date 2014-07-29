@@ -513,7 +513,7 @@ class admin extends \core\classes\admin {
 	 */
 	function validate_name($sku){
 		global $db;
-		if (!$sku) throw new \core\classes\userException(ERROR_SKU_BLANK);
+		if (!$sku) throw new \core\classes\userException(TEXT_THE_ID_FIELD_WAS_EMPTY);
 		$result = $db->Execute("select id from " . TABLE_INVENTORY . " where sku = '$sku'");
 		if ($result->RecordCount() <> 0) throw new \core\classes\userException(sprintf(ERROR_DUPLICATE_SKU, $name));
 	}
@@ -825,7 +825,7 @@ class admin extends \core\classes\admin {
 
   	function DeleteInventoryAdjustment (\core\classes\basis $basis){
   		\core\classes\user::validate_security_by_token(SECURITY_ID_ADJUST_INVENTORY, 4); // security check
-  		if (!$glEntry->id) throw new \core\classes\userException(GL_ERROR_NO_DELETE);
+  		if (!$glEntry->id) throw new \core\classes\userException(TEXT_THERE_WERE_ERRORS_DURING_PROCESSING . ' ' . TEXT_THE_RECORD_WAS_NOT_DELETED);
   		$delOrd = new \core\classes\journal();
   		$delOrd->journal($glEntry->id); // load the posted record based on the id submitted
   		// *************** START TRANSACTION *************************
@@ -922,7 +922,7 @@ class admin extends \core\classes\admin {
   		$glEntry->journal_id = 14;
   		$glEntry->store_id   = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
   		$glEntry->post_date  = $_POST['post_date']       ? gen_db_date($_POST['post_date']) : date('Y-m-d');
-  		if (!$glEntry->id) throw new \core\classes\userException(GL_ERROR_NO_DELETE);
+  		if (!$glEntry->id) throw new \core\classes\userException(TEXT_THERE_WERE_ERRORS_DURING_PROCESSING . ' ' . TEXT_THE_RECORD_WAS_NOT_DELETED);
   		$delAssy = new \core\classes\journal($glEntry->id); // load the posted record based on the id submitted
   		// *************** START TRANSACTION *************************
   		$db->transStart();

@@ -38,7 +38,7 @@
       <td><?php echo html_pull_down_menu('papersize', gen_build_pull_down($PaperSizes), $report->page->size); ?></td>
     </tr>
     <tr>
-      <td><?php echo TEXT_ORIEN; ?></td>
+      <td><?php echo TEXT_ORIENTATION; ?></td>
       <td>
 		<?php echo html_radio_field('paperorientation', 'P', ($report->page->orientation == 'P') ? true : false) . ' ' . TEXT_PORTRAIT . '<br />'; ?>
 	  	<?php echo html_radio_field('paperorientation', 'L', ($report->page->orientation == 'L') ? true : false) . ' ' . TEXT_LANDSCAPE; ?>
@@ -90,7 +90,7 @@
       <td align="center"><?php echo html_pull_down_menu('headingalign', $kFontAlign,  $report->page->heading->align); ?></td>
     </tr>
     <tr>
-      <td nowrap="nowrap"><?php echo PHREEFORM_PGTITL1 . ' ' . html_input_field('title1desc', $report->page->title1->text, 'size="30" maxlength="50"'); ?></td>
+      <td nowrap="nowrap"><?php echo TEXT_REPORT_TITLE . ' 1 ' . html_input_field('title1desc', $report->page->title1->text, 'size="30" maxlength="50"'); ?></td>
 	  <td align="center"><?php echo html_checkbox_field('title1show', '1', ($report->page->title1->show == '1') ? true : false); ?></td>
       <td align="center"><?php echo html_pull_down_menu('title1font',  $kFonts,      $report->page->title1->font);  ?></td>
       <td align="center"><?php echo html_pull_down_menu('title1size',  $kFontSizes,  $report->page->title1->size);  ?></td>
@@ -98,7 +98,7 @@
       <td align="center"><?php echo html_pull_down_menu('title1align', $kFontAlign,  $report->page->title1->align); ?></td>
     </tr>
     <tr>
-      <td nowrap="nowrap"><?php echo PHREEFORM_PGTITL2 . ' ' . html_input_field('title2desc', $report->page->title2->text, 'size="30" maxlength="50"'); ?></td>
+      <td nowrap="nowrap"><?php echo TEXT_REPORT_TITLE . ' 2 ' . html_input_field('title2desc', $report->page->title2->text, 'size="30" maxlength="50"'); ?></td>
 	  <td align="center"><?php echo html_checkbox_field('title2show', '1', ($report->page->title2->show == '1') ? true : false); ?></td>
       <td align="center"><?php echo html_pull_down_menu('title2font',  $kFonts,      $report->page->title2->font); ?></td>
       <td align="center"><?php echo html_pull_down_menu('title2size',  $kFontSizes,  $report->page->title2->size); ?></td>
@@ -113,7 +113,7 @@
       <td align="center"><?php echo html_pull_down_menu('filteralign', $kFontAlign,  $report->page->filter->align); ?></td>
     </tr>
     <tr>
-      <td colspan="2"><?php echo PHREEFORM_RPTDATA; ?></td>
+      <td colspan="2"><?php echo TEXT_REPORT_DATA_HEADING; ?></td>
       <td align="center"><?php echo html_pull_down_menu('datafont',  $kFonts,      $report->page->data->font); ?></td>
       <td align="center"><?php echo html_pull_down_menu('datasize',  $kFontSizes,  $report->page->data->size); ?></td>
       <td align="center"><?php echo html_pull_down_menu('datacolor', $kFontColors, $report->page->data->color); ?></td>

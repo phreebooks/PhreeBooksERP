@@ -70,7 +70,7 @@ switch ($_REQUEST['action']) {
 			$fy++;
 		}
 	}
-	gen_add_audit_log(GL_LOG_FY_UPDATE . TEXT_UPDATE);
+	gen_add_audit_log(TEXT_GENERAL_JOURNAL_FISCAL_YEAR . ' - ' . TEXT_UPDATE);
 	break;
   case 'new':
 	\core\classes\user::validate_security($security_level, 2);
@@ -89,7 +89,7 @@ switch ($_REQUEST['action']) {
 	}
 	$glEntry->update_chart_history_periods(CURRENT_ACCOUNTING_PERIOD); // from current period through new fiscal year
 	$fy = $next_fy;	// set the pointer to open the fiscal year added
-	gen_add_audit_log(GL_LOG_FY_UPDATE . TEXT_ADD);
+	gen_add_audit_log(TEXT_GENERAL_JOURNAL_FISCAL_YEAR . ' - ' . TEXT_ADD);
 	break;
   case "change":
 	// retrieve the desired period and update the system default values.
@@ -137,10 +137,10 @@ switch ($_REQUEST['action']) {
 	foreach ($valid_journals as $journal_id) if (isset($_POST['jID_' . $journal_id])) $journals[] = $journal_id;
 	$repost_cnt = repost_journals($journals, $start_date, $end_date);
 	if ($repost_cnt === false) {
-	  $messageStack->add(GEN_ADM_TOOLS_RE_POST_FAILED,'caution');
+	  	$messageStack->add(TEXT_NO_JOURNALS_WERE_SELECTED_TO_RE-POST . '. ' . TEXT_NO_ACTION_WAS_TAKEN,'caution');
 	} else {
 	  $messageStack->add(sprintf(GEN_ADM_TOOLS_RE_POST_SUCCESS, $repost_cnt),'success');
-	  gen_add_audit_log(GEN_ADM_TOOLS_BTN_REPOST . ' - ', implode(',', $journals));
+	  gen_add_audit_log(TEXT_RE-POST_JOURNALS . ' - ', implode(',', $journals));
 	}
 	if (DEBUG) $messageStack->write_debug();
 	break;
@@ -160,7 +160,7 @@ switch ($_REQUEST['action']) {
 			}
 		    $db->transCommit();
 		    $messageStack->add(sprintf(GEN_ADM_TOOLS_RE_POST_SUCCESS, $cnt), 'success');
-			gen_add_audit_log(GEN_ADM_TOOLS_BTN_REPOST . ' - ', "inventory owed");
+			gen_add_audit_log(TEXT_RE-POST_JOURNALS . ' - ', "inventory owed");
 		}catch(Exception $e){
 			$db->transRollback();
 			$messageStack->add($e->getMessage());
@@ -258,12 +258,12 @@ switch ($_REQUEST['action']) {
 		$min_period = max($first_error_period, 2); // avoid a crash if min_period is the first period
 		if ($glEntry->update_chart_history_periods($min_period - 1)) { // from prior period than the error account
 			$db->transCommit();
-			$messageStack->add(GEN_ADM_TOOLS_REPAIR_COMPLETE,'success');
-			gen_add_audit_log(GEN_ADM_TOOLS_REPAIR_LOG_ENTRY);
+			$messageStack->add(TEXT_THE_CHART_BALANCES_HAVE_BEEN_REPAIRED,'success');
+			gen_add_audit_log(TEXT_REPAIRED_GL_BALANCES);
 		}
 	}
 	if (sizeof($bad_accounts) == 0) {
-	  $messageStack->add(GEN_ADM_TOOLS_REPAIR_SUCCESS,'success');
+	  $messageStack->add(TEXT_YOUR_CHART_OF_ACCOUNTS_ARE_IN_BALANCE,'success');
 	} else {
 	  $messageStack->add(GEN_ADM_TOOLS_REPAIR_ERROR,'error');
 	}

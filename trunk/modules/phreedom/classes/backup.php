@@ -36,7 +36,7 @@ class backup {
 		if (is_array($table_list)) foreach($table_list as $table) {
 	  		$this->dump_db_table($source_db, $table, $type, $params);
 		  	$result = $this->db_executeSql($this->source_dir . $this->source_file);
-	  		if (count($result['errors']) > 0) throw new \core\classes\userException(SETUP_CO_MGR_ERROR_1);
+	  		if (count($result['errors']) > 0) throw new \core\classes\userException(TEXT_ERROR_CREATING_DATABASE_TABLES);
 		}
   	}
 
@@ -150,7 +150,7 @@ class backup {
 		if (!$contents = @fread($handle, filesize($source_file)))	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, 		$source_file));
 		if (!@fclose($handle)) 										throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 	$source_file));
 		if (!$save_source) unlink($source_file);
-		if (strlen($contents) == 0) throw new \core\classes\userException(GEN_BACKUP_DOWNLOAD_EMPTY);
+		if (strlen($contents) == 0) throw new \core\classes\userException(TEXT_THE_DOWNLOAD_FILE_DOES_NOT_CONTAIN_ANY_DATA);
 		header("Content-type: " . $this->backup_mime);
 		header("Content-disposition: attachment; filename=" . $filename . "; size=" . strlen($contents));
 		header('Pragma: cache');

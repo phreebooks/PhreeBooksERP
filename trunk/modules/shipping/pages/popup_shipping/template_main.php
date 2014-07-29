@@ -37,14 +37,14 @@ echo $toolbar->build_toolbar();
 <table class="ui-widget" style="border-style:none;width:100%">
  <tbody class="ui-widget-content">
   <tr>
-	<td><?php echo TEXT_SHIPPER; ?></td>
+	<td><?php echo TEXT_SHIPPER . ': '; ?></td>
 	<td><?php echo TEXT_SHIPMENT_DATE . ' ' . html_calendar_field($cal_ship); ?></td>
   </tr>
   <tr>
-	<td><?php echo TEXT_SHIP_FROM_CITY; ?>
+	<td><?php echo TEXT_SHIP_FROM_CITY . ': '; ?>
 <?php echo html_input_field('ship_city_town', $pkg->ship_city_town, $parameters = ''); ?>
 	</td>
-	<td><?php echo TEXT_SHIP_TO_CITY; ?>
+	<td><?php echo TEXT_SHIP_TO_CITY . ': '; ?>
 <?php
 echo html_input_field('ship_to_city', $pkg->ship_to_city, $parameters = '');
 echo html_checkbox_field('residential_address', '1', $pkg->residential_address);
@@ -54,32 +54,32 @@ echo TEXT_RESIDENTIAL_ADDRESS;
   </tr>
   <tr>
 	<td>
-<?php echo TEXT_SHIP_FROM_STATE;
+<?php echo TEXT_SHIP_FROM_STATE . ': ';
 echo html_input_field('ship_state_province', $pkg->ship_state_province, $parameters = ''); ?></td>
 	<td>
-<?php echo TEXT_SHIP_TO_STATE;
+<?php echo TEXT_SHIP_TO_STATE . ': ';
 echo html_input_field('ship_to_state', $pkg->ship_to_state, $parameters = ''); ?>
 	</td>
   </tr>
   <tr>
 	<td>
-<?php echo TEXT_SHIP_FROM_ZIP;
+<?php echo TEXT_SHIP_FROM_POSTAL_CODE . ': ';
 echo html_input_field('ship_postal_code', $pkg->ship_postal_code, $parameters = ''); ?>
 	</td>
 	<td>
-<?php echo TEXT_SHIP_TO_ZIP;
+<?php echo TEXT_SHIP_TO_POSTAL_CODE . ': ';
 echo html_input_field('ship_to_postal_code', $pkg->ship_to_postal_code, $parameters = ''); ?>
 	</td>
   </tr>
   <tr>
 	<td>
-<?php echo TEXT_SHIP_FROM_COUNTRY;
+<?php echo TEXT_SHIP_FROM_COUNTRY . ': ';
 $country_list = gen_get_countries();
 echo html_pull_down_menu('ship_country_code', $country_list, $pkg->ship_country_code) . chr(10);
 ?>
 	 </td>
 	 <td>
-<?php echo TEXT_SHIP_TO_COUNTRY;
+<?php echo TEXT_SHIP_TO_COUNTRY . ': ';
 echo html_pull_down_menu('ship_to_country_code', $country_list, $pkg->ship_to_country_code) . chr(10); ?>
 	 </td>
   </tr>

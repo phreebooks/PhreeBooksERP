@@ -440,7 +440,7 @@ if (!$error && !isset($_REQUEST["fn"]) && $filename=="")
         elseif (preg_match("/\.csv$/i",$dirfile))
           echo ("<td>CSV</td>");
         else
-          echo ("<td>".TEXT_MISC."</td>");
+          echo ("<td>".TEXT_MISCELLANEOUS."</td>");
 
         if ((preg_match("/\.gz$/i",$dirfile) && function_exists("gzopen")) || preg_match("/\.sql$/i",$dirfile) || preg_match("/\.csv$/i",$dirfile))
 // ****************************** BOF - Mods by PhreeSoft ****************************************

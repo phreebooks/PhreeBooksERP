@@ -8,7 +8,7 @@
 // +-----------------------------------------------------------------+
 // Path: /modules/translator/language/nl_nl/menu.php
 
-define('MENU_HEADING_TRANSLATOR','Vertaal Tool');
+define('TEXT_LANGUAGE_TRANSLATOR_TOOL','Vertaal Tool');
 define('TEXT_TRANSLATOR_ASSISTANT','Vertaal Assistant');
 
 ?>

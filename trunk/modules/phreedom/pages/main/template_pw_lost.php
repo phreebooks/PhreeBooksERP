@@ -25,16 +25,16 @@ echo html_form('pw_lost', FILENAME_DEFAULT, 'action=SendLostPassWord') . chr(10)
    <tr height="70"><th colspan="2" align="right"><img src="modules/phreedom/images/phreesoft_logo.png" alt="Phreedom Business Toolkit" height="50" /></th></tr>
  </thead>
  <tbody class="ui-widget-content">
-  <tr><td colspan="2"><h2><?php echo TEXT_PASSWORD_FORGOTTEN; ?></h2></td></tr>
+  <tr><td colspan="2"><h2><?php echo TEXT_RESEND_PASSWORD; ?></h2></td></tr>
   <tr>
-   <td nowrap="nowrap">&nbsp;&nbsp;<?php echo TEXT_ADMIN_EMAIL; ?></td>
+   <td nowrap="nowrap">&nbsp;&nbsp;<?php echo TEXT_EMAIL_ADDRESS . ': '; ?></td>
    <td><?php echo html_input_field('admin_email', $cInfo->admin_email, 'size="60"'); ?></td>
   </tr>
   <tr>
    <td nowrap="nowrap">&nbsp;&nbsp;<?php echo sprintf(TEXT_SELECT_ARGS, TEXT_COMPANY); ?></td>
    <td><?php echo html_pull_down_menu('company', $_SESSION['companies'], $cInfo->company_index, '', true); ?></td>
   </tr>
-  <tr><td colspan="2" align="right"><?php echo html_submit_field('submit', TEXT_PASSWORD_FORGOTTEN) . '&nbsp;&nbsp;'; ?></td></tr>
+  <tr><td colspan="2" align="right"><?php echo html_submit_field('submit', TEXT_RESEND_PASSWORD) . '&nbsp;&nbsp;'; ?></td></tr>
  </tbody>
 </table>
 </div>

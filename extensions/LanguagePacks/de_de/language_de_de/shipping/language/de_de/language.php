@@ -23,7 +23,7 @@
 //
 
 // Überschriften
-define ('HEADING_TITLE_MODULES_SHIPPING', 'Shipping Services');
+define ('TEXT_SHIPPING_SERVICES', 'Shipping Services');
 define ('SHIPPING_HEADING_SHIP_MGR', 'Versandkosten Module Manager');
 define ('TEXT_SHIPPING_MODULES_AVAILABLE', 'Versand-Methoden verfügbar');
 
@@ -43,17 +43,17 @@ define ('TEXT_SET_BY_SYSTEM', 'Durch das System');
 define ('SHIPPING_POPUP_WINDOW_TITLE', 'Liefer-Rate Estimator');
 define ('SHIPPING_POPUP_WINDOW_RATE_TITLE', 'Versandkosten Estimator - Preise');
 define ('SHIPPING_ESTIMATOR_OPTIONS', 'Versandkosten Estimator - Versand-Optionen');
-define ('TEXT_SHIPPER', 'Absender:');
+define ('TEXT_SHIPPER', 'Absender');
 define ('TEXT_SHIPMENT_DATE', 'Versand Datum');
-define ('TEXT_SHIP_FROM_CITY', 'Schiff aus der Stadt:');
+define ('TEXT_SHIP_FROM_CITY', 'Schiff aus der Stadt');
 define ('TEXT_SHIP_TO_CITY "," Ship to City:');
 define ('TEXT_RESIDENTIAL_ADDRESS', 'Wohn-Adresse');
-define ('TEXT_SHIP_FROM_STATE', 'Schiff Vom Staat:');
-define ('TEXT_SHIP_TO_STATE', 'Ship To Staat:');
-define ('TEXT_SHIP_FROM_ZIP', 'Ship Von PLZ:');
-define ('TEXT_SHIP_TO_ZIP', 'Ship To PLZ:');
-define ('TEXT_SHIP_FROM_COUNTRY', 'Ship Von Land:');
-define ('TEXT_SHIP_TO_COUNTRY', 'Schiff zu Land:');
+define ('TEXT_SHIP_FROM_STATE', 'Schiff Vom Staat');
+define ('TEXT_SHIP_TO_STATE', 'Ship To Staat');
+define ('TEXT_SHIP_FROM_POSTAL_CODE', 'Ship Von PLZ');
+define ('TEXT_SHIP_TO_POSTAL_CODE', 'Ship To PLZ');
+define ('TEXT_SHIP_FROM_COUNTRY', 'Ship Von Land');
+define ('TEXT_SHIP_TO_COUNTRY', 'Schiff zu Land');
 define ('TEXT_PACKAGE_INFORMATION', 'Paket-Informationen');
 define ('TEXT_TYPE_OF_PACKAGING', 'Art der Verpackung');
 define ('TEXT_PICKUP_SERVICE', 'Pickup-Service ');
@@ -75,8 +75,8 @@ define ('TEXT_RETURN_SERVICES', 'Return Services');
 define ('TEXT_SHIPPING_METHODS', 'Versand-Methoden');
 define ('SHIPPING_TOTAL_WEIGHT', 'Total Versand Gewicht');
 define ('SHIPPING_TOTAL_VALUE', 'Total Versand Value');
-define ('SHIPPING_EMAIL_SENDER', 'E-Mail-Absender');
-define ('SHIPPING_EMAIL_RECIPIENT', 'E-Mail-Empfänger');
+define ('TEXT_E-MAIL_SENDER', 'E-Mail-Absender');
+define ('TEXT_E-MAIL_RECIPIENT', 'E-Mail-Empfänger');
 define ('SHIPPING_EMAIL_SENDER_ADD', 'Absender E-Mail-Adresse');
 define ('SHIPPING_EMAIL_RECIPIENT_ADD', 'Empfänger E-Mail-Adresse');
 define ('TEXT_EXCEPTION', 'Exception');
@@ -153,7 +153,7 @@ define ('TEXT_KILOGRAMS_SHORT', 'kg');
 define ('TEXT_INCHES_SHORT', 'in');
 define ('TEXT_CENTIMETERS_SHORT', 'cm');
 
-define ('SHIPPING_ENVENLOPE', 'Envelope / Letter');
+define ('TEXT_ENVELOPE_OR_LETTER', 'Envelope / Letter');
 define ('TEXT_CUSTOMER_SUPPLIED', 'Kunde angegeben');
 define ('TEXT_CARRIER_TUBE', 'Carrier Tube');
 define ('TEXT_CARRIER_PAK', 'Carrier Pak');
@@ -168,7 +168,7 @@ define ('SHIPPING_MO', 'Money Order');
 define ('TEXT_ANY', 'Jeder');
 
 define ('SHIPPING_NO_CONF', 'Keine Empfangsbestätigung');
-define ('SHIPPING_NO_SIG_RQD', 'Keine Unterschrift erforderlich');
+define ('TEXT_NO_SIGNATURE_REQUIRED', 'Keine Unterschrift erforderlich');
 define ('TEXT_SIGNATURE_REQUIRED', 'Signatur');
 define ('TEXT_ADULT_SIGNATURE_REQUIRED', 'Adult Signature Required ');
 

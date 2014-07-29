@@ -264,10 +264,10 @@ switch ($_REQUEST['action']) {
   case 'module':
     // find the available tables based on $subject
     $include_template = 'template_modules.php';
-    define('PAGE_TITLE', HEADING_MODULE_IMPORT_EXPORT);
+    define('PAGE_TITLE', TEXT_IMPORT_OR_EXPORT_DATABASE_TABLES);
 	break;
   default:
     $include_template = 'template_main.php';
-    define('PAGE_TITLE', IE_HEADING_TITLE);
+    define('PAGE_TITLE', TEXT_IMPORT_OR_EXPORT_AND_BEGINNING_BALANCES);
 }
 ?>

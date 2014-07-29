@@ -32,7 +32,7 @@ $toolbar->search_period = $acct_period;
 echo $toolbar->build_toolbar($add_search = true);
 // Build the page
 ?>
-<h1><?php echo INV_POPUP_WINDOW_TITLE; ?></h1>
+<h1><?php echo TEXT_INVENTORY_ITEMS; ?></h1>
 <div id="filter_bar">
 <table class="ui-widget" style="border-style:none;">
  <tbody class="ui-widget-content">

@@ -6,7 +6,7 @@
   <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/stylesheet.css'; ?>">
   <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/jquery-ui.css'; ?>" />
   <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/easyui.css'; ?>" />
-  <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/icon.css'; ?>" />	
+  <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/icon.css'; ?>" />
   <link rel="shortcut icon" type="image/ico" href="favicon.ico">
   <script type="text/javascript">
     var icon_path        = '<?php echo DIR_WS_ICONS; ?>';
@@ -27,7 +27,7 @@
     <?php echo html_icon('actions/go-previous.png',       TEXT_BACK,    'large', 'style="cursor:pointer;" onclick="parent.mainFrame.history.back()"') . "\n"; ?>
     <?php echo html_icon('actions/go-next.png',           TEXT_FORWARD, 'large', 'style="cursor:pointer;" onclick="parent.mainFrame.history.forward()"') . "\n"; ?>
     <?php echo html_icon('devices/printer.png',           TEXT_PRINT,   'large', 'style="cursor:pointer;" onclick="parent.mainFrame.focus(); parent.mainFrame.print()"') . "\n"; ?>
-    <?php echo html_icon('apps/internet-web-browser.png', TEXT_SUPPORT, 'large', 'style="cursor:pointer;" onclick="parent.mainFrame.location.href=\'http://www.phreesoft.com\'"') . "\n"; ?>
+    <?php echo html_icon('apps/internet-web-browser.png', TEXT_PHREESOFT_ONLINE_SUPPORT, 'large', 'style="cursor:pointer;" onclick="parent.mainFrame.location.href=\'http://www.phreesoft.com\'"') . "\n"; ?>
     <?php echo html_icon('actions/system-log-out.png',    TEXT_EXIT,    'large', 'style="cursor:pointer;" onclick="parent.window.close()"') . "\n"; ?>
   </div>
 </body>

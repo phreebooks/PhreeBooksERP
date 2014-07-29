@@ -381,14 +381,14 @@ class admin extends \core\classes\admin {
 		$this->add_report_folder($id, TEXT_VENDOR_QUOTES,     'vend:quot', 'ff');
 		$this->add_report_folder($id, TEXT_PURCHASE_ORDERS,      'vend:po',   'ff');
 		$this->add_report_folder($id, TEXT_VENDOR_CREDIT_MEMOS,  'vend:cm',   'ff');
-		$this->add_report_folder($id, PB_PF_VENDOR_LABEL,     'vend:lblv', 'ff');
+		$this->add_report_folder($id, TEXT_LABELS . ' - ' . TEXT_VENDOR,     'vend:lblv', 'ff');
 		$this->add_report_folder($id, TEXT_VENDOR_STATEMENTS, 'vend:stmt', 'ff');
 		$id = $this->add_report_heading(TEXT_BANKING,     'bnk');
 		$this->add_report_folder($id, TEXT_REPORTS,           'bnk',       'fr');
 		$this->add_report_folder($id, TEXT_DEPOSIT_SLIPS,         'bnk:deps',  'ff');
 		$this->add_report_folder($id, TEXT_BANK_CHECKS,       'bnk:chk',   'ff');
 		$this->add_report_folder($id, TEXT_SALES_RECEIPTS,        'bnk:rcpt',  'ff');
-		$id = $this->add_report_heading(MENU_HEADING_GL,          'gl');
+		$id = $this->add_report_heading(TEXT_GENERAL_LEDGER,          'gl');
 		$this->add_report_folder($id, TEXT_REPORTS,           'gl',        'fr');
 		parent::load_reports();
 	}

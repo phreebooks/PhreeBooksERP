@@ -106,7 +106,7 @@
 			if (isset($cInfo->full_price)) echo '   <i>'.$currencies->precise($cInfo->full_price).'</i>';
 		    if(isset($cInfo->price_sheet)) echo '&nbsp;' . html_icon('mimetypes/x-office-spreadsheet.png', TEXT_CUSTOMER_PRICE_SHEETS, 'small', $params = 'onclick="priceMgr(' . $cInfo->id . ', 0, 0, \'c\')"') . chr(10); ?>
 	  </td>
-	  <td align="right"><?php if(isset($cInfo->item_taxable)) echo INV_ENTRY_ITEM_TAXABLE; ?></td>
+	  <td align="right"><?php if(isset($cInfo->item_taxable)) echo TEXT_DEFAULT_SALES_TAX; ?></td>
 	  <td colspan="2"><?php if(isset($cInfo->item_taxable)) echo html_pull_down_menu('item_taxable', $tax_rates, $cInfo->item_taxable,'onchange="update_full_price_incl_tax(true, true, false);"'); ?></td>
 	</tr>
 	<tr>
@@ -192,7 +192,7 @@
 		<?php if(!empty($cInfo->posible_cost_methodes)) echo html_pull_down_menu('cost_method', $cost_pulldown_array, $cInfo->cost_method, ($cInfo->last_journal_date == '0000-00-00 00:00:00' || is_null($cInfo->last_journal_date) ? '' : 'disabled="disabled"')); ?>
 	    <?php if(isset($cInfo->serialize)) echo ' ' . TEXT_SERIALIZE_ITEM ; ?>
 	  </td>
-	  <td align="right"><?php if(isset($cInfo->image_with_path)) echo INV_ENTRY_IMAGE_PATH; ?></td>
+	  <td align="right"><?php if(isset($cInfo->image_with_path)) echo TEXT_RELATIVE_IMAGE_PATH; ?></td>
 	  <td colspan="2"><?php if(isset($cInfo->image_with_path)) echo html_hidden_field('image_with_path', $cInfo->image_with_path);
 		if(isset($cInfo->image_with_path)) echo html_input_field('inventory_path', substr($cInfo->image_with_path, 0, strrpos($cInfo->image_with_path, '/'))); ?>
 	  </td>
@@ -225,7 +225,7 @@
 				    echo '</tr>' . chr(10);
 				  }
 				} else {
-				  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS . '</td></tr>';
+				  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS_HAVE_BEEN_FOUND . '</td></tr>';
 				} ?>
 		     </tbody>
 		   </table>

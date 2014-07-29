@@ -24,22 +24,22 @@ define('MAX_NUM_PRICE_LEVELS', 5);
 $inventory_types = array(
   'si' => TEXT_STOCK_ITEM,
   'sr' => TEXT_SERIALIZED_ITEM,
-  'ms' => INV_TYPES_MS,
-  'mb' => INV_TYPES_MB,
-  'ma' => INV_TYPES_AS,
+  'ms' => TEXT_MASTER_STOCK_ITEM,
+  'mb' => TEXT_MASTER_STOCK_ASSEMBLY,
+  'ma' => TEXT_ITEM_ASSEMBLY,
   'sa' => TEXT_SERIALIZED_ASSEMBLY,
   'ns' => TEXT_NON-STOCK_ITEM,
   'lb' => TEXT_LABOR,
   'sv' => TEXT_SERVICE,
-  'sf' => INV_TYPES_SF,
+  'sf' => TEXT_FLAT_RATE_SERVICE,
   'ci' => TEXT_CHARGE_ITEM,
   'ai' => TEXT_ACTIVITY,
   'ds' => TEXT_DESCRIPTION,
 );
 // used for identifying inventory types in reports and forms that are not selectable by the user
 $inventory_types_plus       = $inventory_types;
-$inventory_types_plus['ia'] = INV_TYPES_IA;
-$inventory_types_plus['mi'] = INV_TYPES_MI;
+$inventory_types_plus['ia'] = TEXT_ITEM_ASSEMBLY_PART;
+$inventory_types_plus['mi'] = TEXT_MASTER_STOCK_SUB_ITEM;
 
 asort ($inventory_types);
 asort ($inventory_types_plus);
@@ -63,8 +63,8 @@ $price_mgr_adjustments = array(
   '0' => TEXT_NONE,
   '1' => TEXT_DECREASE_BY_AMOUNT,
   '2' => TEXT_DECREASE_BY_PERCENT,
-  '3' => TEXT_INC_AMT,
-  '4' => TEXT_INC_PCNT,
+  '3' => TEXT_INCREASE_BY_AMOUNT,
+  '4' => TEXT_INCREASE_BY_PERCENT,
 );
 $price_mgr_rounding = array(
   '0' => TEXT_NONE,

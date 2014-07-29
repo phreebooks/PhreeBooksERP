@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:46
 // Module/Method: phreedom
 // ISO Language: pt_br
@@ -10,7 +10,7 @@
 
 define('HTML_PARAMS','lang=\"pt-BR\" xml:lang=\"pt-BR\"');
 define('TEXT_PHREEDOM_INFO','EDS Brasil Business Solutions');
-define('TITLE','EDS Brasil ERP');
+define('TEXT_PHREEBOOKS_ERP','EDS Brasil ERP');
 define('LANGUAGE','Portugues (BR)');
 define('CHARSET','utf-8');
 

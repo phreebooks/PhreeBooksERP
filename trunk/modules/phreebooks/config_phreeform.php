@@ -18,7 +18,7 @@
 //
 
 $FormProcessing['ordr_qty'] = TEXT_QUANTITY_ORDERED;
-$FormProcessing['j_desc']   = PB_PF_JOURNAL_DESC;
+$FormProcessing['j_desc']   = TEXT_JOURNAL_DESCRIPTION;
 $FormProcessing['coa_type'] = TEXT_CHART_OF_ACCOUNT_TYPE;
 // Extra form processing operations
 function pf_process_phreebooks($strData, $Process) {
@@ -26,7 +26,7 @@ function pf_process_phreebooks($strData, $Process) {
 	case "ordr_qty": return pb_pull_order_qty($strData);
 	case "j_desc":
 	  gen_pull_language('phreebooks');
-      return defined('GEN_ADM_TOOLS_J' . str_pad($strData, 2, '0', STR_PAD_LEFT)) ? constant('GEN_ADM_TOOLS_J' . str_pad($strData, 2, '0', STR_PAD_LEFT)) : $strData;
+      return isset($journal_types_list[$strData]) ? $journal_types_list[$strData]['text'] : $strData;
 	case "coa_type": return pb_get_coa_type($strData);
 	default: // Do nothing
   }

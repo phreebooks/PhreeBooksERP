@@ -116,7 +116,7 @@ switch ($_REQUEST['action']) {
 		  'journal_id'          => JOURNAL_ID,
 		  'post_date'           => $glEntry->post_date,
 		  'total_amount'        => $currencies->clean_value($_POST['balance']),
-		  'description'         => GL_ENTRY_TITLE,
+		  'description'         => TEXT_GENERAL_JOURNAL_ENTRY,
 		  'purchase_invoice_id' => $glEntry->purchase_invoice_id,
 		  'admin_id'            => $glEntry->admin_id,
 		  'bill_primary_name'   => PHREEPOS_HANDELING_CASH_DIFFERENCE,

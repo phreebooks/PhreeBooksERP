@@ -28,7 +28,7 @@
 	    <td><?php echo html_input_field('creation_date', gen_locale_date($cInfo->creation_date), 'readonly="readonly" size="20"', false); ?></td>
 	    <td><?php echo TEXT_LAST_UPDATE; ?></td>
 	    <td><?php echo html_input_field('last_update', gen_locale_date($cInfo->last_update), 'readonly="readonly" size="20"', false); ?></td>
-	    <td><?php echo INV_DATE_LAST_JOURNAL_DATE; ?></td>
+	    <td><?php echo TEXT_LAST_ENTRY_DATE; ?></td>
 	    <td><?php echo html_input_field('last_journal_date', gen_locale_date($cInfo->last_journal_date), 'readonly="readonly" size="20"', false); ?></td>
 	  </tr>
 	  </tbody>
@@ -41,12 +41,12 @@
 	  <?php if(in_array('purchase',$cInfo->posible_transactions)){?>
 		<table class="ui-widget" style="border-collapse:collapse;width:100%">
 		 <thead class="ui-widget-header">
-		  <tr><th colspan="4"><?php echo INV_OPEN_PO; ?></th></tr>
+		  <tr><th colspan="4"><?php echo TEXT_OPEN_PURCHASE_ORDERS; ?></th></tr>
 		  <tr>
 		    <th width="25%"><?php echo TEXT_PO_NUMBER; ?></th>
 		    <th width="25%"><?php echo TEXT_PO_DATE; ?></th>
 		    <th width="25%"><?php echo TEXT_QUANTITY; ?></th>
-		    <th width="25%"><?php echo INV_PO_RCV_DATE; ?></th>
+		    <th width="25%"><?php echo TEXT_RECEIVE_DATE; ?></th>
 		  </tr>
 		 </thead>
 		 <tbody class="ui-widget-content">
@@ -72,7 +72,7 @@
 		<?php if(in_array('sell',$cInfo->posible_transactions)){?>
 		<table class="ui-widget" style="border-collapse:collapse;width:100%">
 		 <thead class="ui-widget-header">
-		  <tr><th colspan="4"><?php echo INV_OPEN_SO; ?></th></tr>
+		  <tr><th colspan="4"><?php echo TEXT_OPEN_SALES_ORDERS; ?></th></tr>
 		  <tr>
 		    <th width="25%"><?php echo TEXT_SO_NUMBER; ?></th>
 		    <th width="25%"><?php echo TEXT_SO_DATE; ?></th>

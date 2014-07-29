@@ -38,7 +38,7 @@ class chart_of_accounts {
 	\core\classes\user::validate_security($this->security_id, 2); // security check
 	$this->heading_only     = $this->heading_only == 1 ? '1' : '0';
 	$this->account_inactive = $this->account_inactive == 1 ? '1' : '0';
-	if ($this->account_type == '') throw new \core\classes\userException(ERROR_ACCT_TYPE_REQ);
+	if ($this->account_type == '') throw new \core\classes\userException(TEXT_THE_GL_ACCOUNT_TYPE_IS_REQUIRED);
 	if (!$this->primary_acct_id == ''){
 	    $result = $db->Execute("select account_type from " . $this->db_table . " where id = '" . $this->primary_acct_id . "'");
         if( $result->fields['account_type'] <> $this->account_type) throw new \core\classes\userException('set account_type to '. $coa_types_list[$result->fields['account_type']]['text']. ' this is the same as the parent');
@@ -140,7 +140,7 @@ class chart_of_accounts {
 	$output .= '  </thead>' . "\n";
 	$output .= '  <tbody class="ui-widget-content">' . "\n";
 	$output .= '  <tr>' . "\n";
-	$output .= '    <td colspan="2">' . ($action == 'new' ? GL_INFO_INSERT_INTRO : TEXT_EDIT_INTRO) . '</td>' . "\n";
+	$output .= '    <td colspan="2">' . ($action == 'new' ? GL_INFO_INSERT_INTRO : TEXT_PLEASE_MAKE_ANY_NECESSARY_CHANGES) . '</td>' . "\n";
     $output .= '  </tr>' . "\n";
 	$output .= '  <tr>' . "\n";
 	$output .= '    <td>' . TEXT_GL_ACCOUNT . '</td>' . "\n";

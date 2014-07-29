@@ -27,7 +27,7 @@ $extra_stuff = NULL;
 	<tr>
 	  <td>
 		<table class="ui-widget" style="border-collapse:collapse;width:100%">
-		<thead class="ui-widget-header"><tr><th colspan="3"><?php echo PHREEFORM_DATEINFO; ?></th></tr></thead>
+		<thead class="ui-widget-header"><tr><th colspan="3"><?php echo TEXT_REPORT_DATE_INFORMATION; ?></th></tr></thead>
 		<tbody class="ui-widget-content">
 		<tr>
 		  <td width="33%" valign="top"><?php
@@ -75,7 +75,7 @@ $extra_stuff = NULL;
 		<tr><th colspan="20"><?php echo TEXT_GROUPING_LIST; ?></th></tr>
 		<tr>
 		  <th><?php echo TEXT_FIELDNAME;   ?></th>
-		  <th><?php echo PHREEFORM_DISPNAME;   ?></th>
+		  <th><?php echo TEXT_NAME_TO_DISPLAY;   ?></th>
 		  <th><?php echo TEXT_DEFAULT;      ?></th>
 		  <th><?php echo TEXT_GROUP_PAGE_BREAK; ?></th>
 		  <th><?php echo TEXT_TEXT_PROCESSING;   ?></th>
@@ -111,7 +111,7 @@ $extra_stuff = NULL;
 		<tr><th colspan="20"><?php echo TEXT_SORTING_INFORMATION; ?></th></tr>
 		<tr>
 		  <th><?php echo TEXT_FIELDNAME; ?></th>
-		  <th><?php echo PHREEFORM_DISPNAME; ?></th>
+		  <th><?php echo TEXT_NAME_TO_DISPLAY; ?></th>
 		  <th><?php echo TEXT_DEFAULT;       ?></th>
 		  <th><?php echo TEXT_ACTION;        ?></th>
 		</tr>
@@ -142,7 +142,7 @@ $extra_stuff = NULL;
 		<tr><th colspan="20"><?php echo TEXT_CRITERIA; ?></th></tr>
 		<tr>
 		  <th><?php echo TEXT_FIELDNAME;   ?></th>
-		  <th><?php echo PHREEFORM_DISPNAME;   ?></th>
+		  <th><?php echo TEXT_NAME_TO_DISPLAY;   ?></th>
 		  <th><?php echo TEXT_SHOW;         ?></th>
 		  <th><?php echo TEXT_TYPE_OF_CRITERIA;   ?></th>
 		  <th><?php echo TEXT_MIN_VALUE; ?></th>

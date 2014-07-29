@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:46
 // Module/Method: rma
 // ISO Language: pt_br
@@ -8,7 +8,7 @@
 // +-----------------------------------------------------------------+
 // Path: /modules/rma/language/pt_br/menu.php
 
-define('MENU_HEADING_RMA','Retornar');
+define('TEXT_RETURNS','Retornar');
 define('BOX_RMA_MODULE','ARM');
 
 ?>

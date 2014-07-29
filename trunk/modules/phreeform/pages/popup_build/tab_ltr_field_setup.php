@@ -27,7 +27,7 @@
 	<tr><th id="fieldListHeading" colspan="10"><?php echo TEXT_FIELD_LIST; ?></th></tr>
     <tr>
       <th><?php echo TEXT_FIELDNAME; ?></th>
-      <th><?php echo PHREEFORM_DISPNAME; ?></th>
+      <th><?php echo TEXT_NAME_TO_DISPLAY; ?></th>
       <th><?php echo TEXT_TEXT_PROCESSING; ?></th>
       <th><?php echo TEXT_ACTION; ?></th>
     </tr>

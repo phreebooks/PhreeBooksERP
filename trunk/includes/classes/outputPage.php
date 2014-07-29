@@ -23,7 +23,7 @@ class outputPage implements \SplObserver {
     public  $include_footer		= false;
     public  $include_template	= '';
     private $ModuleAndPage		= "phreedom/main";
-    public  $page_title			= TITLE;
+    public  $page_title			= TEXT_PHREEBOOKS_ERP;
 
     /**
      * Constructor...

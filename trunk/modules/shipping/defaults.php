@@ -68,7 +68,7 @@ $shipping_defaults['dimension_unit'] = array(
 );
 // Package Type
 $shipping_defaults['package_type'] = array(
-  '01' => SHIPPING_ENVENLOPE,
+  '01' => TEXT_ENVELOPE_OR_LETTER,
   '02' => TEXT_CUSTOMER_SUPPLIED,
   '03' => TEXT_CARRIER_TUBE,
   '04' => TEXT_CARRIER_PAK,
@@ -88,7 +88,7 @@ $shipping_defaults['cod_funds_code'] = array(
 // Package delivery confirmation only allowed for shipments with US origin/destination combination.
 $shipping_defaults['delivery_confirmation'] = array(
 //'0' => SHIPPING_NO_CONF,
-  '1' => SHIPPING_NO_SIG_RQD,
+  '1' => TEXT_NO_SIGNATURE_REQUIRED,
   '2' => TEXT_SIGNATURE_REQUIRED,
   '3' => TEXT_ADULT_SIGNATURE_REQUIRED,
 );

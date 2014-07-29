@@ -33,6 +33,6 @@ define('ORD_TEXT_4_WINDOW_TITLE','Compras Ordens');
 define('ORD_TEXT_2_WINDOW_TITLE','Diário Geral');
 define('ORD_TEXT_0_WINDOW_TITLE','Saldos Iniciais');
 define('TEXT_BANKING','Bancos');
-define('MENU_HEADING_GL','Contabilidade');
+define('TEXT_GENERAL_LEDGER','Contabilidade');
 
 ?>

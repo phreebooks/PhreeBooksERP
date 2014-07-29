@@ -355,119 +355,119 @@ class journal {
 		}
   	}
 
-// *********  chart of account support functions  **********
-  function update_chart_history_periods($period = CURRENT_ACCOUNTING_PERIOD) {
-	global $db, $messageStack;
-	switch ($this->journal_id) {
-	  case  3: // Purchase Quote
-	  case  4: // Purchase Order
-	  case  9: // Sales Quote
-	  case 10: // Sales Order
-		$messageStack->debug("\n    Returning from Update Chart History Periods with no action required.");
+	// *********  chart of account support functions  **********
+  	function update_chart_history_periods($period = CURRENT_ACCOUNTING_PERIOD) {
+		global $db, $messageStack;
+		switch ($this->journal_id) {
+		  	case  3: // Purchase Quote
+		  	case  4: // Purchase Order
+		  	case  9: // Sales Quote
+		  	case 10: // Sales Order
+				$messageStack->debug("\n    Returning from Update Chart History Periods with no action required.");
+				return true;
+		  	default:
+		}
+		// first find out the last period with data in the system from the current_status table
+		$sql = "select fiscal_year from " . TABLE_ACCOUNTING_PERIODS . " where period = " . $period;
+		$result = $db->Execute($sql);
+		if ($result->EOF) throw new \core\classes\userException(GL_ERROR_BAD_ACCT_PERIOD);
+		$fiscal_year = $result->fields['fiscal_year'];
+
+		$sql = "select max(period) as period from " . TABLE_ACCOUNTING_PERIODS . " where fiscal_year = " . $fiscal_year;
+		$result = $db->Execute($sql);
+		$max_period = $result->fields['period'];
+		$affected_acct_string = (is_array($this->affected_accounts)) ? implode("', '", array_keys($this->affected_accounts)) : '';
+		$messageStack->debug("\n  Updating chart history for fiscal year: " . $fiscal_year . " and period: " . $period . " for accounts: ('" . $affected_acct_string . "')");
+		for ($i = $period; $i <= $max_period; $i++) {
+			$this->validate_balance($i);//will throw exceptions
+		  	// update future months
+		  	$sql = "select account_id, beginning_balance + debit_amount - credit_amount as beginning_balance
+			  from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
+			  where account_id in ('" . $affected_acct_string . "') and period = " . $i;
+		  	$result = $db->Execute($sql);
+		  	while (!$result->EOF) {
+				$sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
+			  	  set beginning_balance = " . $result->fields['beginning_balance'] . "
+			  	  where period = " . ($i + 1) . " and account_id = '" . $result->fields['account_id'] . "'";
+				$db->Execute($sql);
+				$result->MoveNext();
+		  	}
+		}
+		// see if there is another fiscal year to roll into
+		$sql = "select fiscal_year from " . TABLE_ACCOUNTING_PERIODS . " where period = " . ($max_period + 1);
+		$result = $db->Execute($sql);
+		if ($result->RecordCount() > 0) { // close balances for end of this fiscal year and roll post into next fiscal year
+			// select retained earnings account
+			$sql = "select id from " . TABLE_CHART_OF_ACCOUNTS . " where account_type = 44";
+			$result = $db->Execute($sql);
+			if ($result->RecordCount() <> 1) throw new \core\classes\userException(GL_ERROR_NO_RETAINED_EARNINGS_ACCOUNT);
+			$retained_earnings_acct = $result->fields['id'];
+			$this->affected_accounts[$retained_earnings_acct] = 1;
+			// select list of accounts that need to be closed, adjusted
+			$sql = "select id from " . TABLE_CHART_OF_ACCOUNTS . " where account_type in (30, 32, 34, 42, 44)";
+			$result = $db->Execute($sql);
+			$acct_list = array();
+			while(!$result->EOF) {
+				$acct_list[] = $result->fields['id'];
+				$result->MoveNext();
+	  		}
+	  		$acct_string = implode("','",$acct_list);
+	  		// fetch the totals for the closed accounts
+	  		$sql = "select sum(beginning_balance + debit_amount - credit_amount) as retained_earnings
+			  from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
+			  where account_id in ('$acct_string') and period = " . $max_period;
+	  		$result = $db->Execute($sql);
+	  		$retained_earnings = $result->fields['retained_earnings'];
+			// clear out the expense, sales, cogs, and other year end accounts that need to be closed
+			// needs to be before writing retained earnings account, since retained earnings is part of acct_string
+	  		$sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
+			  set beginning_balance = 0
+			  where account_id in ('$acct_string') and period = " . ($max_period + 1);
+	  		$result = $db->Execute($sql);
+	  		// update the retained earnings account
+	  		$sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
+			  set beginning_balance = $retained_earnings
+			  where account_id = '$retained_earnings_acct' and period = " . ($max_period + 1);
+	  		$result = $db->Execute($sql);
+			// now continue rolling in current post into next fiscal year
+	  		$this->update_chart_history_periods($max_period + 1);
+		}
+		// all historical chart of account balances from period on should be OK at this point.
+		$messageStack->debug("\n  end Updating chart history periods. Fiscal Year: " . $fiscal_year);;
 		return true;
-	  default:
-	}
-	// first find out the last period with data in the system from the current_status table
-	$sql = "select fiscal_year from " . TABLE_ACCOUNTING_PERIODS . " where period = " . $period;
-	$result = $db->Execute($sql);
-	if ($result->EOF) throw new \core\classes\userException(GL_ERROR_BAD_ACCT_PERIOD);
-	$fiscal_year = $result->fields['fiscal_year'];
+  	}
 
-	$sql = "select max(period) as period from " . TABLE_ACCOUNTING_PERIODS . " where fiscal_year = " . $fiscal_year;
-	$result = $db->Execute($sql);
-	$max_period = $result->fields['period'];
-	$affected_acct_string = (is_array($this->affected_accounts)) ? implode("', '", array_keys($this->affected_accounts)) : '';
-	$messageStack->debug("\n  Updating chart history for fiscal year: " . $fiscal_year . " and period: " . $period . " for accounts: ('" . $affected_acct_string . "')");
-	for ($i = $period; $i <= $max_period; $i++) {
-	  	$this->validate_balance($i);//will throw exceptions
-	  	// update future months
-	  	$sql = "select account_id, beginning_balance + debit_amount - credit_amount as beginning_balance
-		  from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
-		  where account_id in ('" . $affected_acct_string . "') and period = " . $i;
-	  	$result = $db->Execute($sql);
-	  	while (!$result->EOF) {
-			$sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
-		  	  set beginning_balance = " . $result->fields['beginning_balance'] . "
-		  	  where period = " . ($i + 1) . " and account_id = '" . $result->fields['account_id'] . "'";
-			$db->Execute($sql);
-			$result->MoveNext();
-	  	}
-	}
-	// see if there is another fiscal year to roll into
-	$sql = "select fiscal_year from " . TABLE_ACCOUNTING_PERIODS . " where period = " . ($max_period + 1);
-	$result = $db->Execute($sql);
-	if ($result->RecordCount() > 0) { // close balances for end of this fiscal year and roll post into next fiscal year
-	  // select retained earnings account
-	  $sql = "select id from " . TABLE_CHART_OF_ACCOUNTS . " where account_type = 44";
-	  $result = $db->Execute($sql);
-	  if ($result->RecordCount() <> 1) throw new \core\classes\userException(GL_ERROR_NO_RETAINED_EARNINGS_ACCOUNT);
-	  $retained_earnings_acct = $result->fields['id'];
-	  $this->affected_accounts[$retained_earnings_acct] = 1;
-	  // select list of accounts that need to be closed, adjusted
-	  $sql = "select id from " . TABLE_CHART_OF_ACCOUNTS . " where account_type in (30, 32, 34, 42, 44)";
-	  $result = $db->Execute($sql);
-	  $acct_list = array();
-	  while(!$result->EOF) {
-		$acct_list[] = $result->fields['id'];
-		$result->MoveNext();
-	  }
-	  $acct_string = implode("','",$acct_list);
-	  // fetch the totals for the closed accounts
-	  $sql = "select sum(beginning_balance + debit_amount - credit_amount) as retained_earnings
-		from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
-		where account_id in ('" . $acct_string . "') and period = " . $max_period;
-	  $result = $db->Execute($sql);
-	  $retained_earnings = $result->fields['retained_earnings'];
-	  // clear out the expense, sales, cogs, and other year end accounts that need to be closed
-	  // needs to be before writing retained earnings account, since retained earnings is part of acct_string
-	  $sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
-		set beginning_balance = 0
-		where account_id in ('" . $acct_string . "') and period = " . ($max_period + 1);
-	  $result = $db->Execute($sql);
-	  // update the retained earnings account
-	  $sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
-		set beginning_balance = " . $retained_earnings . "
-		where account_id = '" . $retained_earnings_acct . "' and period = " . ($max_period + 1);
-	  $result = $db->Execute($sql);
-	  // now continue rolling in current post into next fiscal year
-	  $this->update_chart_history_periods($max_period + 1);
-	}
-	// all historical chart of account balances from period on should be OK at this point.
-	$messageStack->debug("\n  end Updating chart history periods. Fiscal Year: " . $fiscal_year);;
-	return true;
-  }
-
-  function validate_balance($period = CURRENT_ACCOUNTING_PERIOD) {
-	global $db, $currencies, $messageStack;
-	$messageStack->debug("\n    Validating trial balance for period: " . $period . " ... ");
-	$sql = "select sum(debit_amount) as debit, sum(credit_amount) as credit
-		from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where period = " . $period;
-	$result = $db->Execute($sql);
-	// check to see if we are still in balance, round debits and credits and compare
-	$messageStack->debug(" debits = " . $result->fields['debit'] . " and credits = " . $result->fields['credit']);
-	$debit_total  = round($result->fields['debit'],  $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
-	$credit_total = round($result->fields['credit'], $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
-	if ($debit_total <> $credit_total) { // Trouble in paradise, fraction of cents adjustment next
-	  $tolerance = 2 * (1 / pow(10, $currencies->currencies[DEFAULT_CURRENCY]['decimal_places'])); // i.e. 2 cents in USD
-	  $adjustment = $result->fields['credit'] - $result->fields['debit'];
-	  if (abs($adjustment) > $tolerance) throw new \core\classes\userException(sprintf(GL_ERROR_TRIAL_BALANCE, $result->fields['debit'], $result->fields['credit'], $period));
-	  // find the adjustment account
-	  if (!defined('ROUNDING_GL_ACCOUNT') || ROUNDING_GL_ACCOUNT == '') {
-		$result = $db->Execute("select id from " . TABLE_CHART_OF_ACCOUNTS . " where account_type = 44 limit 1");
-		if ($result->RecordCount() == 0) throw new \core\classes\userException('Failed trying to locate retained earnings account to make rounding adjustment. There must be one and only one Retained Earnings account in the chart of accounts!');
-		$adj_gl_account = $result->fields['id'];
-	  } else {
-		$adj_gl_account = ROUNDING_GL_ACCOUNT;
-	  }
-	  $messageStack->debug("\n      Adjusting balance, adjustment = " . $adjustment . " and gl account = " . $adj_gl_account);
-	  $sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
-		set debit_amount = debit_amount + " . $adjustment . "
-		where period = " . $period . " and account_id = '" . $adj_gl_account . "'";
-	  $result = $db->Execute($sql);
-	}
-	$messageStack->debug(" ... End Validating trial balance.");
-	return true;
-  }
+  	function validate_balance($period = CURRENT_ACCOUNTING_PERIOD) {
+		global $db, $currencies, $messageStack;
+		$messageStack->debug("\n    Validating trial balance for period: $period ... ");
+		$sql = "select sum(debit_amount) as debit, sum(credit_amount) as credit
+		  from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where period = " . $period;
+		$result = $db->Execute($sql);
+		// check to see if we are still in balance, round debits and credits and compare
+		$messageStack->debug(" debits = {$result->fields['debit']} and credits = {$result->fields['credit']}");
+		$debit_total  = round($result->fields['debit'],  $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
+		$credit_total = round($result->fields['credit'], $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
+		if ($debit_total <> $credit_total) { // Trouble in paradise, fraction of cents adjustment next
+		  	$tolerance = 2 * (1 / pow(10, $currencies->currencies[DEFAULT_CURRENCY]['decimal_places'])); // i.e. 2 cents in USD
+		  	$adjustment = $result->fields['credit'] - $result->fields['debit'];
+		  	if (abs($adjustment) > $tolerance) throw new \core\classes\userException(sprintf(GL_ERROR_TRIAL_BALANCE, $result->fields['debit'], $result->fields['credit'], $period));
+		  	// find the adjustment account
+		  	if (!defined('ROUNDING_GL_ACCOUNT') || ROUNDING_GL_ACCOUNT == '') {
+				$result = $db->Execute("select id from " . TABLE_CHART_OF_ACCOUNTS . " where account_type = 44 limit 1");
+				if ($result->RecordCount() == 0) throw new \core\classes\userException('Failed trying to locate retained earnings account to make rounding adjustment. There must be one and only one Retained Earnings account in the chart of accounts!');
+				$adj_gl_account = $result->fields['id'];
+		  	} else {
+				$adj_gl_account = ROUNDING_GL_ACCOUNT;
+		  	}
+		  	$messageStack->debug("\n      Adjusting balance, adjustment = $adjustment and gl account = $adj_gl_account");
+		  	$sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
+			  set debit_amount = debit_amount + $adjustment
+			  where period = $period and account_id = '$adj_gl_account'";
+		  	$result = $db->Execute($sql);
+		}
+		$messageStack->debug(" ... End Validating trial balance.");
+		return true;
+  	}
 
 /*******************************************************************************************************************/
 // END Chart of Accout Functions
@@ -475,45 +475,45 @@ class journal {
 // START Customer/Vendor Account Functions
 /*******************************************************************************************************************/
 // Post the customers/vendors sales/purchases values for the given period
-  function Post_account_sales_purchases() {
-	global $db, $messageStack;
-	$messageStack->debug("\n  Posting account sales and purchases ...");
-	switch ($this->journal_id) {
-	  case 19:
-	  case 21: if (!$this->bill_acct_id) return true; // no sales history in POS if no bill account id, else continue
-	  case  6:
-	  case  7:
-	  case 12:
-	  case 13:
-	  case 18:
-	  case 20:
-		if (!$this->bill_acct_id) throw new \core\classes\userException(GL_ERROR_NO_GL_ACCT_NUMBER . 'post_account_sales_purchases.');
-		$purchase_invoice_id = $this->purchase_invoice_id ? $this->purchase_invoice_id : $this->journal_main_array['purchase_invoice_id'];
-		$history_array = array(
-		  'ref_id'              => $this->id,
-		  'so_po_ref_id'        => $this->so_po_ref_id,
-		  'acct_id'             => $this->bill_acct_id,
-		  'journal_id'          => $this->journal_id,
-		  'purchase_invoice_id' => $purchase_invoice_id,
-		  'amount'              => $this->total_amount,
-		  'post_date'           => $this->post_date,
-		);
-		$result = db_perform(TABLE_ACCOUNTS_HISTORY, $history_array, 'insert');
-		if ($result->AffectedRows() <> 1 ) throw new \core\classes\userException(GL_ERROR_UPDATING_ACCOUNT_HISTORY);
-		$messageStack->debug(" end Posting account sales and purchases.");
-		break;
-	  case  2:
-	  case  3:
-	  case  4:
-	  case  9:
-	  case 10:
-	  case 14:
-	  case 16:
-	  default: // nothing required to do
-		$messageStack->debug(" end Posting account sales and purchases with no action.");
-	}
-	return true;
-  }
+  	function Post_account_sales_purchases() {
+		global $db, $messageStack;
+		$messageStack->debug("\n  Posting account sales and purchases ...");
+		switch ($this->journal_id) {
+			case 19:
+			case 21: if (!$this->bill_acct_id) return true; // no sales history in POS if no bill account id, else continue
+			case  6:
+			case  7:
+			case 12:
+			case 13:
+			case 18:
+			case 20:
+				if (!$this->bill_acct_id) throw new \core\classes\userException(TEXT_NO_ACCOUNT_NUMBER_PROVIDED_IN_CORE_JOURNAL_FUNCTION . ': '  . 'post_account_sales_purchases.');
+				$purchase_invoice_id = $this->purchase_invoice_id ? $this->purchase_invoice_id : $this->journal_main_array['purchase_invoice_id'];
+				$history_array = array(
+				  'ref_id'              => $this->id,
+				  'so_po_ref_id'        => $this->so_po_ref_id,
+				  'acct_id'             => $this->bill_acct_id,
+				  'journal_id'          => $this->journal_id,
+				  'purchase_invoice_id' => $purchase_invoice_id,
+				  'amount'              => $this->total_amount,
+				  'post_date'           => $this->post_date,
+				);
+				$result = db_perform(TABLE_ACCOUNTS_HISTORY, $history_array, 'insert');
+				if ($result->AffectedRows() <> 1 ) throw new \core\classes\userException(GL_ERROR_UPDATING_ACCOUNT_HISTORY);
+				$messageStack->debug(" end Posting account sales and purchases.");
+				break;
+		  	case  2:
+		  	case  3:
+		  	case  4:
+		  	case  9:
+		  	case 10:
+		  	case 14:
+		  	case 16:
+		  	default: // nothing required to do
+				$messageStack->debug(" end Posting account sales and purchases with no action.");
+		}
+		return true;
+  	}
 
   	/**
   	 * this function will delete the customer/vendor history for this journal
@@ -532,9 +532,9 @@ class journal {
 		  	case 13:
 		  	case 18:
 		  	case 20:
-				if (!$this->bill_acct_id) throw new \core\classes\userException(GL_ERROR_NO_GL_ACCT_NUMBER . 'unPost_account_sales_purchases.');
+				if (!$this->bill_acct_id) throw new \core\classes\userException(TEXT_NO_ACCOUNT_NUMBER_PROVIDED_IN_CORE_JOURNAL_FUNCTION . ': ' . 'unPost_account_sales_purchases.');
 				$result = $db->Execute("delete from " . TABLE_ACCOUNTS_HISTORY . " where ref_id = " . $this->id);
-				if ($result->AffectedRows() != 1) throw new \core\classes\userException(GL_ERROR_DELETING_ACCOUNT_HISTORY);
+				if ($result->AffectedRows() != 1) throw new \core\classes\userException(TEXT_ERROR_DELETING_CUSTOMER_OR_VENDOR_ACCOUNT_HISTORY_RECORD);
 				$messageStack->debug(" end unPosting account sales and purchases.");
 				break;
 			case  2:
@@ -840,13 +840,13 @@ class journal {
 				default:
 			  		throw new \core\classes\userException(GL_ERROR_CALCULATING_COGS);
 		  	}
-	  $id = $this->inventory_auto_add($item['sku'], $item['description'], $item_cost, $full_price);
+	  		$id = $this->inventory_auto_add($item['sku'], $item['description'], $item_cost, $full_price);
 		  	$result = $db->Execute($sql); // re-load now that item was created
 		}
 		// only calculate cogs for certain inventory_types
 		if (strpos(COG_ITEM_TYPES, $result->fields['inventory_type']) === false) {
-		  $messageStack->debug(". Exiting COGS, no work to be done with this SKU.");
-		  return true;
+		  	$messageStack->debug(". Exiting COGS, no work to be done with this SKU.");
+		  	return true;
 		}
 		$defaults = $result->fields;
 		if (ENABLE_MULTI_BRANCH) $defaults['quantity_on_hand'] = $this->branch_qty_on_hand($item['sku'], $defaults['quantity_on_hand']);
@@ -892,7 +892,7 @@ class journal {
 		  	}
 		  	$messageStack->debug("\n      Inserting into inventory history = " . arr2string($history_array));
 		  	$result = db_perform(TABLE_INVENTORY_HISTORY, $history_array, 'insert');
-		  	if ($result->AffectedRows() <> 1) throw new \core\classes\userException(GL_ERROR_POSTING_INV_HISTORY);
+		  	if ($result->AffectedRows() <> 1) throw new \core\classes\userException(TEXT_ERROR_POSTING_INVENTORY_HISTORY);
 		} else { // for negative quantities, i.e. sales, negative inv adjustments, assemblies, vendor credit memos
 		  	// if insert, calculate COGS pulling from one or more history records (inv may go negative)
 			// update should never happen because COGS is backed out during the unPost inventory function
@@ -1171,7 +1171,7 @@ class journal {
 		$sku = $inv_list['sku'];
 		$qty = $inv_list['qty'];
 		$result = $db->Execute("select id from " . TABLE_INVENTORY . " where sku = '$sku'");
-		if ($result->RecordCount() == 0) throw new \core\classes\userException(GL_ERROR_BAD_SKU_ENTERED);
+		if ($result->RecordCount() == 0) throw new \core\classes\userException(TEXT_THE_SKU_ENTERED_COULD_NOT_BE_FOUND);
 
 		$sku_id = $result->fields['id'];
 		$sql = "select a.sku, a.description, a.qty, i.inventory_type, i.quantity_on_hand, i.account_inventory_wage, i.item_cost as price
@@ -1498,34 +1498,34 @@ class journal {
 	return true;
   }
 
-  function increment_purchase_invoice_id($force = false) {
-	global $db;
-	if ($this->purchase_invoice_id == '' || $force) { // increment the po/so/invoice number
-	  switch ($this->journal_id) { // select the field to increment the number
-		case  3: $str_field = 'next_ap_quote_num'; break;
-		case  4: $str_field = 'next_po_num';       break;
-		case  6: $str_field = false;               break; // not applicable
-		case  7: $str_field = 'next_vcm_num';      break;
-		case  9: $str_field = 'next_ar_quote_num'; break;
-		case 10: $str_field = 'next_so_num';       break;
-		case 12:
-		case 19: $str_field = 'next_inv_num';      break;
-		case 13: $str_field = 'next_cm_num';       break;
-		case 18: $str_field = 'next_deposit_num';  break;
-		case 20:
-		case 21: $str_field = 'next_check_num';    break;
-	  }
-	  if ($str_field) {
-		$next_id = string_increment($this->journal_main_array['purchase_invoice_id']);
-		$sql = "update " . TABLE_CURRENT_STATUS . " set " . $str_field . " = '" . $next_id . "'";
-		if (!$force) $sql .= " where " . $str_field . " = '" . $this->journal_main_array['purchase_invoice_id'] . "'";
-		$result = $db->Execute($sql);
-		if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(GL_ERROR_5, constant('ORD_HEADING_NUMBER_' . $this->journal_id)));
-	  }
-	}
-	$this->purchase_invoice_id = $this->journal_main_array['purchase_invoice_id'];
-	return true;
-  }
+  	function increment_purchase_invoice_id($force = false) {
+		global $db;
+		if ($this->purchase_invoice_id == '' || $force) { // increment the po/so/invoice number
+	  		switch ($this->journal_id) { // select the field to increment the number
+				case  3: $str_field = 'next_ap_quote_num'; break;
+				case  4: $str_field = 'next_po_num';       break;
+				case  6: $str_field = false;               break; // not applicable
+				case  7: $str_field = 'next_vcm_num';      break;
+				case  9: $str_field = 'next_ar_quote_num'; break;
+				case 10: $str_field = 'next_so_num';       break;
+				case 12:
+				case 19: $str_field = 'next_inv_num';      break;
+				case 13: $str_field = 'next_cm_num';       break;
+				case 18: $str_field = 'next_deposit_num';  break;
+				case 20:
+				case 21: $str_field = 'next_check_num';    break;
+			}
+	  		if ($str_field) {
+				$next_id = string_increment($this->journal_main_array['purchase_invoice_id']);
+				$sql = "update " . TABLE_CURRENT_STATUS . " set $str_field = '$next_id'";
+				if (!$force) $sql .= " where $str_field = '{$this->journal_main_array['purchase_invoice_id']}'";
+				$result = $db->Execute($sql);
+				if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(GL_ERROR_5, constant('ORD_HEADING_NUMBER_' . $this->journal_id)));
+	  		}
+		}
+		$this->purchase_invoice_id = $this->journal_main_array['purchase_invoice_id'];
+		return true;
+  	}
 
   function add_account($type, $acct_id = 0, $address_id = 0, $allow_overwrite = false) {
 	global $db;

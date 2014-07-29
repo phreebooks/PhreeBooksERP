@@ -38,7 +38,7 @@ switch ($_REQUEST['action']) {
 		$admin_id  = db_prepare_input($_POST['rowSeq']);
 		$fill_all  = db_prepare_input($_POST['fill_all']);
 		$fill_role = db_prepare_input($_POST['fill_role']);
-		if ($security_level < 3 && $admin_id) throw new \core\classes\userException(GEN_ADMIN_CANNOT_CHANGE_ROLES);
+		if ($security_level < 3 && $admin_id) throw new \core\classes\userException(TEXT_YOUR_PERMISSIONS_DO_NOT_ALLOW_THE_USERS_ROLE_OR_SECURITY_TO_BE_CHANGED);
 		if ($_REQUEST['action'] == 'fill_role' ) {
 		  	$result = $db->Execute("select admin_prefs, admin_security from " . TABLE_USERS . " where admin_id = " . $fill_role);
 		  	$admin_security = $result->fields['admin_security'];
@@ -120,7 +120,7 @@ switch ($_REQUEST['action']) {
 		$new_name = db_prepare_input($_GET['name']);
 		// check for duplicate user names
 		$result = $db->Execute("select admin_name from " . TABLE_USERS . " where admin_name = '" . $new_name . "'");
-		if ($result->Recordcount() > 0) throw new \core\classes\userException(GEN_ERROR_DUPLICATE_ID);
+		if ($result->Recordcount() > 0) throw new \core\classes\userException(TEXT_THE_USERNAME_IS_ALREADY_IN_USE_PLEASE_SELECT_A_DIFFERENT_NAME);
 
 		$result   = $db->Execute("select * from " . TABLE_USERS . " where admin_id = " . $admin_id);
 		$old_name = $result->fields['admin_name'];

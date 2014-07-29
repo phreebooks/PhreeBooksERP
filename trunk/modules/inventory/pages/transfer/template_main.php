@@ -44,13 +44,13 @@ echo $toolbar->build_toolbar();
 	  <td align="right"><?php echo TEXT_TRANSFER_FROM_STORE_ID; ?></td>
 	  <td>
 	    <?php echo html_pull_down_menu('source_store_id', gen_get_store_ids(), $cInfo->source_store_id ? $cInfo->source_store_id : $_SESSION['admin_prefs']['def_store_id']); ?>
-	    <?php echo INV_XFER_TO_STORE . html_pull_down_menu('dest_store_id',   gen_get_store_ids(), $cInfo->dest_store_id); ?>
+	    <?php echo TEXT_TO_STORE_ID . html_pull_down_menu('dest_store_id',   gen_get_store_ids(), $cInfo->dest_store_id); ?>
 	  </td>
 	  <td align="right"><?php echo TEXT_POST_DATE . '&nbsp;'; ?></td>
 	  <td><?php echo html_calendar_field($cal_xfr); ?></td>
 	</tr>
 	<tr>
-	  <td align="right"><?php echo TEXT_TRANSFER_REASON; ?></td>
+	  <td align="right"><?php echo TEXT_REASON_FOR_TRANSFER; ?></td>
 	  <td><?php echo html_input_field('adj_reason', $cInfo->adj_reason, 'size="50"'); ?></td>
 	  <td align="right"><?php echo TEXT_REFERENCE; ?></td>
 	  <td><?php echo html_input_field('purchase_invoice_id', $cInfo->purchase_invoice_id); ?></td>

@@ -118,7 +118,7 @@ function load_recently_added() {
 	$sql = "select id, security, doc_title from " . TABLE_PHREEFORM . " where doc_type <> '0' order by create_date desc, id desc limit 20";
 	$result = $db->Execute($sql);
 	if ($result->RecordCount() == 0) {
-	  $contents .= TEXT_NO_DOCUMENTS . '<br />';
+	  $contents .= TEXT_NO_DOCUMENTS_HAVE_BEEN_FOUND . '<br />';
 	} else {
 	  while (!$result->EOF) {
 	    if (pf_validate_security($result->fields['security'], true)) {
@@ -141,7 +141,7 @@ function load_my_reports() {
 	  where doc_type <> '0' order by doc_title";
 	$result = $db->Execute($sql);
 	if ($result->RecordCount() == 0) {
-	  $contents .= TEXT_NO_DOCUMENTS . '<br />';
+	  $contents .= TEXT_NO_DOCUMENTS_HAVE_BEEN_FOUND . '<br />';
 	} else {
 	  while (!$result->EOF) {
 		if (pf_validate_security($result->fields['security'], false)) {
@@ -174,7 +174,7 @@ function load_special_language($path, $class_name) {
 }
 
 function ReadDefReports($name, $path) {
-  if (!$dh = @opendir(DIR_FS_ADMIN . $path)) return TEXT_NO_DOCUMENTS;
+  if (!$dh = @opendir(DIR_FS_ADMIN . $path)) return TEXT_NO_DOCUMENTS_HAVE_BEEN_FOUND;
   $i = 0;
   while ($DefRpt = readdir($dh)) {
 	$pinfo = pathinfo(DIR_FS_ADMIN . $path . '/' . $DefRpt);
@@ -218,10 +218,10 @@ function ReadDefReports($name, $path) {
     foreach ($ReportList as $GrpName => $members) {
 	  $group_split = explode(':', $GrpName); // if it's a form then remove the report from category id
 	  $GrpMember = $groups['reports'][$group_split[0]];
-	  if (!$GrpMember) $GrpMember = TEXT_MISC;
+	  if (!$GrpMember) $GrpMember = TEXT_MISCELLANEOUS;
 	  if (isset($group_split[1])) {
 	    $form_group = $groups['forms'][$GrpName];
-	    if (!$form_group) $form_group = TEXT_UNCAT_FORM;
+	    if (!$form_group) $form_group = TEXT_UNCATEGORIZED_FORM;
 	    $label = $GrpMember . ' - ' . TEXT_FORMS . ' - ' . $form_group;
 	  } else {
 	    $label = $GrpMember . ' - ' . TEXT_REPORTS;
@@ -885,7 +885,7 @@ function BuildSQL($report) { // for reports only
 	if (!$strField) return array('level' => 'error', 'message' => PHREEFORM_NOROWS);
 	$strField = implode(', ', $strField);
 
-	$filterdesc = PHREEFORM_RPTFILTER; // Initialize the filter display string
+	$filterdesc = TEXT_REPORT_FILTERS. ': '; // Initialize the filter display string
 	//fetch the groupings and build first level of SORT BY string (for sub totals)
 	$strGroup = NULL;
 	for ($i = 0; $i < sizeof($report->grouplist); $i++) {

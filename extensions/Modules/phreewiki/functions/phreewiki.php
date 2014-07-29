@@ -91,7 +91,7 @@ function deleteTiddler($tiddler) {
 
   $result = $db->Execute("DELETE FROM ". TABLE_PHREEWIKI ." WHERE `id` = '". $tiddler['id'] ."'");
   if( $result === FALSE ) {
-    return GL_ERROR_NO_DELETE;
+    return TEXT_THERE_WERE_ERRORS_DURING_PROCESSING . ' ' . TEXT_THE_RECORD_WAS_NOT_DELETED;
   }
   return sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, BOX_PHREEWIKI_MODULE , $tiddler['title']);
 }

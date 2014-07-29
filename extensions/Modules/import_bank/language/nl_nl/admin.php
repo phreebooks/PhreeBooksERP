@@ -12,7 +12,7 @@ define('TEXT_BANK_IMPORT_SETTINGS','Bank Import Instellingen');
 define('MODULE_BANK_IMPORT_CONFIG_INFO','Stel alstublieft uw configuratie waarde in');
 define('BANK_IMPORT_QUESTION_POSTS','Om te voorkomen dat boekingen niet geboekt worden wordt door het script wordt als laatste optie de boekingen opgeslagen op de grootboek vraag posten. <B>Dit moet ingevuld worden anders werkt het script niet</B>');
 define('BANK_IMPORT_DEBIT_CREDIT','De omschrijving als er bedragen op uw rekening bijgeschreven zijn. <br><B>dit is voor het xml veld debit_credit</B>');
-define('IMPORT_BANK_CONFIG_SAVED','saved import_bank config');
+define('TEXT_SAVED_IMPORT_BANK_CONFIG','saved import_bank config');
 define('TEXT_BANK_ACCOUNT_OR_IBAN','Bank account or iban');
 define('TEXT_ENTER_TRANSACTION','Nieuw Transactie Sjabloon');
 define('TEXT_EDIT_TRANSACTION','Bewerk transactie sjabloon');

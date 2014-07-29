@@ -30,10 +30,10 @@ define('TEXT_DOCUMENT','Document');
 define('TEXT_EXIT','Exit');
 define('TEXT_FOLDER','Folder');
 define('TEXT_FORWARD','Forward');
-define('TEXT_SUPPORT','PhreeSoft Online Support');
+define('TEXT_PHREESOFT_ONLINE_SUPPORT','PhreeSoft Online Support');
 define('TEXT_KEYWORD','Type in the keyword to find:');
 define('TEXT_YOUR_SEARCH_RESULTS','Your search results');
-define('TEXT_UNTITLED','Untitled Document');
+define('TEXT_UNTITLED_DOCUMENT','Untitled Document');
 define('TEXT_MANUAL','Manual');
 
 // error messages

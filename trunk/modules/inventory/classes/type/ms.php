@@ -2,7 +2,7 @@
 namespace inventory\classes\type;
 class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 	public $inventory_type			= 'ms';
-	public $title       			= INV_TYPES_MS;
+	public $title       			= TEXT_MASTER_STOCK_ITEM;
 	public $account_sales_income	= INV_MASTER_STOCK_DEFAULT_SALES;
 	public $account_inventory_wage	= INV_MASTER_STOCK_DEFAULT_INVENTORY;
 	public $account_cost_of_sales	= INV_MASTER_STOCK_DEFAULT_COS;
@@ -18,7 +18,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 
 	function __construct(){
 		parent::__construct();
-		$this->tab_list['master'] = array('file'=>'template_tab_ms',	'tag'=>'master',    'order'=>30, 'text'=>INV_MS_ATTRIBUTES);
+		$this->tab_list['master'] = array('file'=>'template_tab_ms',	'tag'=>'master',    'order'=>30, 'text'=>TEXT_MASTER_STOCK_ATTRIBUTES);
 	}
 
 	function get_item_by_id($id){

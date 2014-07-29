@@ -34,7 +34,7 @@ echo $toolbar->build_toolbar();
 <h1><?php echo TEXT_BAR_CODE_ENTRY; ?></h1>
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
  <thead class="ui-widget-header">
-  <tr><th colspan="2"><?php echo ORD_BAR_CODE_INTRO; ?></th></tr>
+  <tr><th colspan="2"><?php echo TEXT_ENTER_THE_QUANTITY_AND_SCAN_THE_ITEM; ?></th></tr>
  </thead>
  <tbody class="ui-widget-content">
   <tr>

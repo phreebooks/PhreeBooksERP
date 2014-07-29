@@ -43,7 +43,7 @@ define('TEXT_PROCEDURE','Procedure');
 define('TEXT_QA','QA');
 define('TEXT_QA_INIT','QA Sign-off');
 define('TEXT_REVISION','Revision');
-define('TEXT_REVISION_DATE','Rev Date');
+define('TEXT_REVISION_DATE_SHORT','Rev Date');
 define('TEXT_WORK_ORDER_NOTES_AND_COMMENTS','Work Order Notes and Comments');
 define('TEXT_STEP','Step');
 define('TEXT_TASKS','Tasks');

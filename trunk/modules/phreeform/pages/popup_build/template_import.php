@@ -60,7 +60,7 @@ echo $toolbar->build_toolbar();
     </tr>
     <tr>
       <td>
-	    <?php echo PHREEFORM_RPTENTER . '<br />' . PHREEFORM_RPTNOENTER; ?>
+	    <?php echo TEXT_ENTER_A_NAME_FOR_THIS_REPORT . '<br />' . PHREEFORM_RPTNOENTER; ?>
 	    <?php echo html_input_field('reportname', $reportname, 'size="32" maxlength="30"'); ?>
 	  </td>
 	  <td align="right">

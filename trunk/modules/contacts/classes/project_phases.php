@@ -127,7 +127,7 @@ class project_phases {
 	$output .= '  </thead>' . "\n";
 	$output .= '  <tbody class="ui-widget-content">' . "\n";
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td colspan="2">' . ($action=='new' ? SETUP_PROJECT_PHASES_INSERT_INTRO : TEXT_EDIT_INTRO) . '</td>' . chr(10);
+	$output .= '    <td colspan="2">' . ($action=='new' ? SETUP_PROJECT_PHASES_INSERT_INTRO : TEXT_PLEASE_MAKE_ANY_NECESSARY_CHANGES) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
 	$output .= '    <td>' . SETUP_INFO_DESC_SHORT . '</td>' . chr(10);
@@ -142,7 +142,7 @@ class project_phases {
 	$output .= '    <td>' . html_pull_down_menu('cost_type', gen_build_pull_down($project_cost_types), $this->cost_type) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . SETUP_INFO_COST_BREAKDOWN . '</td>' . chr(10);
+	$output .= '    <td>' . TEXT_USE_COST_BREAKDOWNS_FOR_THIS_PHASE . '</td>' . chr(10);
 	$output .= '    <td>' . html_checkbox_field('cost_breakdown', '1', $this->cost_breakdown ? true : false) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);

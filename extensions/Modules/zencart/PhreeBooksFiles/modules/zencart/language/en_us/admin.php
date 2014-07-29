@@ -23,10 +23,10 @@ define('MODULE_ZENCART_DESCRIPTION','The ZenCart module interfaces PhreeBooks wi
 define('ZENCART_ADMIN_URL','ZenCart path to Admin (no trailing slash)');
 define('ZENCART_ADMIN_USERNAME','ZenCart admin username (can be unique to PhreeBooks Interface');
 define('ZENCART_ADMIN_PASSWORD','ZenCart admin password (can be unique to PhreeBooks Interface)');
-define('MODULE_ZENCART_CONFIG_INFO','Please set the configuration values to your ZenCart e-store.');
+define('TEXT_PLEASE_SET_THE_CONFIGURATION_VALUES_TO_YOUR_ZENCART_E-STORE','Please set the configuration values to your ZenCart e-store.');
 define('ZENCART_TAX_CLASS','Enter the ZenCart Tax Class Text field (Must match exactly to the entry in ZenCart if tax is charged)');
-define('ZENCART_USE_PRICES','Do you want to use price sheets?');
-define('ZENCART_TEXT_PRICE_SHEET','ZenCart Price Sheet to use');
+define('TEXT_DO_YOU_WANT_TO_USE_PRICE_SHEETS','Do you want to use price sheets');
+define('TEXT_PRICE_SHEET_TO_USE','Price Sheet to use');
 define('ZENCART_SHIP_ID','ZenCart numeric status code for Shipped Orders');
 define('ZENCART_PARTIAL_ID','ZenCart numeric status code for Partially Shipped Orders');
 define('ZENCART_CONFIG_SAVED','Zencart configuration values updated/saved.');

@@ -67,7 +67,7 @@ class tax_rates {
     $tax_authorities_array = gen_build_tax_auth_array();
     $content = array();
 	$content['thead'] = array(
-	  'value' => array(TEXT_SHORT_NAME, TEXT_DESCRIPTION, SETUP_HEADING_TOTAL_TAX, TEXT_TAX_FREIGHT, TEXT_ACTION),
+	  'value' => array(TEXT_SHORT_NAME, TEXT_DESCRIPTION, TEXT_TOTAL_TAX_PERCENT, TEXT_TAX_FREIGHT, TEXT_ACTION),
 	  'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 	);
     $result = $db->Execute("select tax_rate_id, description_short, description_long, rate_accounts, freight_taxable
@@ -114,7 +114,7 @@ class tax_rates {
 	$output .= '  </thead>' . "\n";
 	$output .= '  <tbody class="ui-widget-content">' . "\n";
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td colspan="2">' . ($action=='new' ? SETUP_TAX_INSERT_INTRO : TEXT_EDIT_INTRO) . '</td>' . chr(10);
+	$output .= '    <td colspan="2">' . ($action=='new' ? SETUP_TAX_INSERT_INTRO : TEXT_PLEASE_MAKE_ANY_NECESSARY_CHANGES) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
 	$output .= '    <td>' . SETUP_INFO_DESC_SHORT . '</td>' . chr(10);
@@ -129,11 +129,11 @@ class tax_rates {
 	$output .= '    <td>' . html_hidden_field('rate_accounts', $this->rate_accounts) . $this->draw_tax_auths($this->rate_accounts, $tax_authorities_array) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . SETUP_INFO_TAX_AUTH_ADD . '</td>' . chr(10);
+	$output .= '    <td>' . TEXT_SELECT_A_TAX_AUTHORITY_TO_ADD . '</td>' . chr(10);
 	$output .= '    <td>' . html_pull_down_menu('tax_auth_id_add', $this->get_tax_auths()) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . SETUP_INFO_TAX_AUTH_DELETE . '</td>' . chr(10);
+	$output .= '    <td>' . TEXT_SELECT_A_TAX_AUTHORITY_TO_REMOVE . '</td>' . chr(10);
 	$output .= '    <td>' . html_pull_down_menu('tax_auth_id_delete', $this->get_selected_tax_auths($this->rate_accounts, $tax_authorities_array)) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);

@@ -30,7 +30,7 @@ if ($security_level > 1) $toolbar->add_icon('new', 'onclick="submitToDo(\'new\')
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 // add the help file index and build the toolbar
 $toolbar->add_help('07.04.06');
-echo $toolbar->build_toolbar($add_search = true); 
+echo $toolbar->build_toolbar($add_search = true);
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
@@ -45,7 +45,7 @@ echo $toolbar->build_toolbar($add_search = true);
  <?php
  $odd = true;
  while (!$query_result->EOF) {
-	$result = $db->Execute("select id from " . TABLE_INVENTORY_SPECIAL_PRICES . " 
+	$result = $db->Execute("select id from " . TABLE_INVENTORY_SPECIAL_PRICES . "
 		where price_sheet_id = " . $query_result->fields['id']);
 	$special_price = ($result->RecordCount() > 0) ? TEXT_YES : '';
 ?>
@@ -58,7 +58,7 @@ echo $toolbar->build_toolbar($add_search = true);
 	<td style="text-align:center" onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo gen_locale_date($query_result->fields['expiration_date']); ?></td>
 	<td style="text-align:center" onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo $special_price; ?></td>
 	<td style="text-align:right" >
-<?php 
+<?php
 	if (function_exists('add_extra_action_bar_buttons')) echo add_extra_action_bar_buttons($query_result->fields);
 	if ($query_result->fields['revision'] == $rev_levels[$query_result->fields['sheet_name']]) {
 		if ($security_level > 1) echo html_button_field('revise_' . $query_result->fields['id'], TEXT_REVISE, 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action', 'list', 'psID')) . '&amp;list=' . $_REQUEST['list'] . '&amp;action=revise&amp;psID=' . $query_result->fields['id'], 'SSL') . '\'"');
@@ -77,5 +77,5 @@ echo $toolbar->build_toolbar($add_search = true);
 </table>
 <div style="float:right"><?php echo $query_split->display_links(); ?></div>
 <div><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . TEXT_PRICE_SHEETS); ?></div>
-<?php echo html_button_field('prices', TEXT_BULK_EDIT, 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=bulk_prices', 'SSL') . '\'"'); ?>
+<?php echo html_button_field('prices', TEXT_LOAD_ITEM_PRICING, 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=bulk_prices', 'SSL') . '\'"'); ?>
 </form>

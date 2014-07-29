@@ -97,6 +97,6 @@ $cal_to = array(
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', HEADING_MODULE_AUDIT);
+define('PAGE_TITLE', TEXT_EXPORT_AUDIT_FILE);
 
 ?>

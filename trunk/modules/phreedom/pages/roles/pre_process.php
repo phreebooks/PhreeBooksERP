@@ -88,7 +88,7 @@ switch ($_REQUEST['action']) {
 		// check for duplicate user names
 		$result = $db->Execute("select admin_name from " . TABLE_USERS . " where admin_name = '" . $new_name . "'");
 		// error and reload
-		if ($result->Recordcount() > 0) throw new \core\classes\userException(GEN_ERROR_DUPLICATE_ID);
+		if ($result->Recordcount() > 0) throw new \core\classes\userException(TEXT_THE_USERNAME_IS_ALREADY_IN_USE_PLEASE_SELECT_A_DIFFERENT_NAME);
 		$result   = $db->Execute("select * from " . TABLE_USERS . " where admin_id = " . $admin_id);
 		$old_name = $result->fields['admin_name'];
 		// clean up the fields (especially the system fields, retain the custom fields)
@@ -166,7 +166,7 @@ switch ($_REQUEST['action']) {
   case 'fill_all':
     $include_template = 'template_detail.php';
 	$role_name = isset($uInfo->admin_name) ? (' - ' . $uInfo->admin_name) : '';
-    define('PAGE_TITLE', HEADING_TITLE_ROLE_DETAIL . $role_name);
+    define('PAGE_TITLE', TEXT_ROLE_DETAIL_INFORMATION . ' ' . $role_name);
 	break;
   default:
 	// build the list header

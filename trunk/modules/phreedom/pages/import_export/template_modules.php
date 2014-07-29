@@ -40,7 +40,7 @@ echo $toolbar->build_toolbar();
 	<tr><td>
 	<table class="ui-widget" style="border-collapse:collapse;width:100%">
 	 <thead class="ui-widget-header">
-	    <tr><th colspan="4"><?php echo GEN_TABLES_AVAILABLE . TEXT_IMPORT . '/' . TEXT_EXPORT; ?></th></tr>
+	    <tr><th colspan="4"><?php echo TEXT_TABLES_AVAILABLE_TO . ': ' . TEXT_IMPORT . '/' . TEXT_EXPORT; ?></th></tr>
 	 </thead>
 	 <tbody class="ui-widget-content">
 <?php
@@ -75,7 +75,7 @@ foreach ($page_list as $mod => $params) {
 	<tr><td>
 	<table class="ui-widget" style="border-collapse:collapse;width:100%">
 	 <thead class="ui-widget-header">
-	    <tr><th colspan="4"><?php echo GEN_TABLES_AVAILABLE . TEXT_IMPORT; ?></th></tr>
+	    <tr><th colspan="4"><?php echo TEXT_TABLES_AVAILABLE_TO . ': ' . TEXT_IMPORT; ?></th></tr>
 	 </thead>
 	 <tbody class="ui-widget-content">
 <?php
@@ -111,11 +111,11 @@ foreach ($page_list as $mod => $params) {
 <fieldset>
 <legend><?php echo TEXT_EXPORT; ?></legend>
   <table class="ui-widget" style="border-style:none;width:100%">
-	<tr><td><?php echo GEN_EXPORT_MESSAGE; ?></td></tr>
+	<tr><td><?php echo TEXT_SELECT_A_FORMAT_AND_PRESS_THE_EXPORT_BUTTON_TO_CONTINUE; ?></td></tr>
 	<tr><td>
 	<table class="ui-widget" style="border-collapse:collapse;width:100%">
 	 <thead class="ui-widget-header">
-	    <tr><th colspan="4"><?php echo GEN_TABLES_AVAILABLE . TEXT_EXPORT; ?></th></tr>
+	    <tr><th colspan="4"><?php echo TEXT_TABLES_AVAILABLE_TO . ': ' . TEXT_EXPORT; ?></th></tr>
 	 </thead>
 	 <tbody class="ui-widget-content">
 <?php

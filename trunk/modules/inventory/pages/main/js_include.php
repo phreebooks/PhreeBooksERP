@@ -28,14 +28,13 @@ var default_tax 	  	= '<?php echo $cInfo->purch_taxable;?>';
 var delete_icon_HTML  	= '<?php echo substr(html_icon("emblems/emblem-unreadable.png", TEXT_DELETE, "small", "onclick=\"if (confirm(\'" . INV_MSG_DELETE_INV_ITEM . "\')) removeBOMRow("), 0, -2); ?>';
 var text_no 			= '<?php echo TEXT_NO; ?>';
 var text_yes			= '<?php echo TEXT_YES; ?>';
-var filter_equal_to 	= '<?php echo TEXT_EQUAL_TO;?>';
-var filter_not_equal_to = '<?php echo TEXT_NOT_EQUAL. ': ';?>';
+var filter_equal_to 	= '<?php echo TEXT_EQUAL_TO. ': ';?>';
+var filter_not_equal_to = '<?php echo TEXT_NOT_EQUAL_TO. ': ';?>';
 var filter_like			= '<?php echo TEXT_LIKE. ': ';?>';
-var filter_not_like		= '<?php echo FILTER_NOT_LIKE;?>';
+var filter_not_like		= '<?php echo TEXT_NOT_LIKE. ': ';?>';
 var filter_bigger_than	= '<?php echo TEXT_BIGGER_THAN. ': ';?>';
-var filter_less_than	= '<?php echo TEXT_LESS_THAN;?>';
+var filter_less_than	= '<?php echo TEXT_LESS_THAN. ': ';?>';
 var filter_contains		= '<?php echo TEXT_CONTAINS;?>';
-var text_properties     = '<?php echo TEXT_PROPERTIES;?>';
 
 <?php echo $js_tax_rates;?>
 <?php if(isset($FirstValue)) 		echo $FirstValue;?>;

@@ -18,10 +18,10 @@
 //
 
 // Page titles
-define('PHREEFORM_DOC_IMPORT','PhreeForm Import Tool');
-define('PHREEFORM_DOC_DESIGN','Phreeform Designer');
-define('PHREEFORM_REPORT_GEN','Phreeform Generator');
-define('PHREEFORM_GROUP','PhreeForm Group: ');
+define('TEXT_PHREEFORM_IMPORT_TOOL','PhreeForm Import Tool');
+define('TEXT_PHREEFORM_DESIGNER','Phreeform Designer');
+define('TEXT_PHREEFORM_GENERATOR','Phreeform Generator');
+define('TEXT_PHREEFORM_GROUP','PhreeForm Group');
 // General
 define('TEXT_ABSCISSA','Abscissa');
 define('TEXT_ALL_PAGES','All Pages');
@@ -101,34 +101,34 @@ define('TEXT_SHOW_TOTALS_ONLY','Show Totals Only');
 define('TEXT_SAVE_AND_PREVIEW','Save and Preview');
 define('TEXT_SET_PRINTED_FLAG','Set Printed Flag');
 define('TEXT_STORED_IMAGES','Stored Images');
-define('TEXT_UNCAT_FORM','Uncategorized Form');
+define('TEXT_UNCATEGORIZED_FORM','Uncategorized Form');
 define('TEXT_UPLOAD_NEW_IMAGE','Upload New Image');
 define('TEXT_VALIDATE_DATABASE_RELATIONSHIPS','Validate Database Relationships');
 
-define('PHREEFORM_RPTFILTER','Report Filters:');
+define('TEXT_REPORT_FILTERS','Report Filters');
 define('TEXT_GROUPED_BY','Grouped by');
 define('TEXT_SORTED_BY','Sorted by');
 define('PHREEFORM_CRITBY','Filters:');
 define('TEXT_TYPE_OF_CRITERIA','Type of Criteria');
 define('TEXT_DEFAULT_DATE_SELECTED','Default Date Selected');
 define('TEXT_DATE_FIELDNAME','Date Fieldname');
-define('PHREEFORM_DATEINFO','Report Date Information');
+define('TEXT_REPORT_DATE_INFORMATION','Report Date Information');
 define('PHREEFORM_DATELIST','Date Field List<br />(check all that apply)');
 define('PHREEFORM_ENDPOS','or Select Line End Position (mm)');
 define('PHREEFORM_FLDLIST','Field List');
 define('TEXT_GROUPING_LIST','Grouping List');
 define('TEXT_IMAGE_SELECTION','Image Selection');
-define('PHREEFORM_LINE_TYPE','Select Line Layout');
-define('PHREEFORM_DISPNAME','Name to Display');
+define('TEXT_SELECT_LINE_LAYOUT','Select Line Layout');
+define('TEXT_NAME_TO_DISPLAY','Name to Display');
 define('PHREEFORM_PGFILDESC','Report Filter Description');
 define('PHREEFORM_PGHEADER','Header Information / Formatting');
 define('TEXT_PAGE_LAYOUT','Page Layout');
 define('TEXT_LEFT_MARGIN','Left Margin');
 define('PHREEFORM_PGMARGIN_R','Right Margin');
 define('TEXT_PAGE_MARGINS','Page Margins');
-define('PHREEFORM_PGTITL1','Report Title 1');
-define('PHREEFORM_PGTITL2','Report Title 2');
-define('PHREEFORM_RPTDATA','Report Data Heading');
+define('TEXT_REPORT_TITLE','Report Title');
+
+define('TEXT_REPORT_DATA_HEADING','Report Data Heading');
 define('TEXT_SORTING_INFORMATION','Sorting Information');
 define('TEXT_TEXT_TO_DISPLAY','Text to Display');
 define('TEXT_TEXT_PROCESSING','Text Processing');
@@ -156,7 +156,7 @@ define('PHREEFORM_EMAIL_BODY',"Attached is your %s from %s \n\nTo view the attac
 define('PHREEFORM_EMPTYFIELD','A data field has been left empty located at sequence number: ');
 define('PHREEFORM_EMPTYTABLE','An original data table entry was not found to create a duplicate of in sequence number: ');
 define('PHREEFORM_FIELD_HELP','Notes: The If multiple fields are displayed in the same column, the field with the largest column width will determine the width of column.');
-define('PHREEFORM_FOLDER_BLANK_ERROR','The folder name cannot be blank!');
+define('TEXT_THE_FOLDER_NAME_CANNOT_BE_BLANK','The folder name cannot be blank');
 define('PHREEFORM_FOLDER_TYPE_BASE','Base Folder (used to hold report and form folders)');
 define('PHREEFORM_FOLDER_TYPE_FRM','Form Folder (used to hold forms of the same category)');
 define('PHREEFORM_FOLDER_TYPE_RPT','Report Folder (used to hold reports of the same category)');
@@ -178,7 +178,7 @@ define('PHREEFORM_PRINTED_NOTE','Sets the field selected to 1 after each form ha
 define('PHREEFORM_RENAME_SUCCESS','The report was renamed successfully!');
 define('PHREEFORM_REPDUP','The name you entered: (%s) is already in use. Please enter a new report name!');
 define('PHREEFORM_RPTBROWSE','Select a report/form above or browse for a report to upload:');
-define('PHREEFORM_RPTENTER','Enter a name for this report.');
+define('TEXT_ENTER_A_NAME_FOR_THIS_REPORT','Enter a name for this report.');
 define('PHREEFORM_RPTNOENTER','(Leave blank to use default report name from import file)');
 define('PHREEFORM_SAVE_SUCCESS','The report/form was successfully saved.');
 define('PHREEFORM_SERIAL_FORM','Make this a sequential form (primarily used for receipt printers and line printers). Page properties will be limited as output is based on the sequence of the field list. If unsure, leave this box unchecked.');
@@ -187,7 +187,7 @@ define('PHREEFORM_WRITE_ERROR', 'Cannot open file (%s) for writing check your pe
 define('PHREEFORM_ZIP_ERROR','The zip file cannot be created. Check permissions for the directory: ');
 define('PHREEFORM_NO_ACCESS','No valid users/groups have been selected to view this report!. Please allow access at least one user/group in the properties tab.');
 // Admin defines
-define('PF_ADMIN_CONFIG_INFO','PhreeForm Default Parameters');
+define('TEXT_PHREEFORM_DEFAULT_PARAMETERS','PhreeForm Default Parameters');
 // Javascript defines
 define('PHREEFORM_JS_RPT_DELETED','The report was successfully deleted.');
 define('PHREEFORM_JS_RPT_BLANK','No report name was entered. Please try again.');
@@ -198,7 +198,7 @@ define('PHREEFORM_AJAX_NO_TABLE_DATA','Your table statements did not return any 
 define('PHREEFORM_AJAX_DB_SUCCESS','The database relationships returned at least one row. They appear to be OK.');
 // Page setup
 define('TEXT_PAPER_SIZE','Paper Size');
-define('TEXT_ORIEN','Orientation');
+define('TEXT_ORIENTATION','Orientation');
 define('TEXT_MM','mm');
 define('TEXT_PORTRAIT','Portrait');
 define('TEXT_LANDSCAPE','Landscape');
@@ -206,13 +206,13 @@ define('TEXT_LEGAL','Legal');
 define('TEXT_LETTER','Letter');
 define('TEXT_TABLOID','Tabloid');
 // Text formatting for text and company blocks
-define('PF_FRM_COMMA','Comma (,)');
+define('TEXT_COMMA','Comma');
 define('TEXT_COMMA-SPACE','Comma-Space');
 define('TEXT_NEWLINE','Line Break');
-define('PF_FRM_SEMISP','Semicolon-space');
-define('PF_FRM_DELNL','Skip Blank-Line Break');
+define('TEXT_SEMICOLON_SPACE','Semicolon-space');
+define('TEXT_SKIP_BLANK-LINE_BREAK','Skip Blank-Line Break');
 define('TEXT_SINGLE_SPACE','Single Space');
-define('PF_FRM_SPACE2','Double Space');
+define('TEXT_DOUBLE_SPACE','Double Space');
 // Form element types
 define('TEXT_BAR_CODE_IMAGE','Bar Code Image');
 define('TEXT_DATA_BLOCK','Data Block');

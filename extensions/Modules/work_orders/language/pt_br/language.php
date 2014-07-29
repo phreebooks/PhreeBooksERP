@@ -32,7 +32,7 @@ define('TEXT_PROCEDURE','Processo');
 define('TEXT_QA','QA');
 define('TEXT_QA_INIT','QA Sign-off');
 define('TEXT_REVISION','Revisão');
-define('TEXT_REVISION_DATE','Data Rev');
+define('TEXT_REVISION_DATE_SHORT','Data Rev');
 define('TEXT_WORK_ORDER_NOTES_AND_COMMENTS','Anotações e Comentários Ordem Serviço');
 define('TEXT_STEP','Passo');
 define('TEXT_TASKS','Tarefas');

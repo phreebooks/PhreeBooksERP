@@ -20,7 +20,7 @@
 namespace xml_builder\classes;
 class admin extends \core\classes\admin{
 	public $id 			= 'xml_builder';
-	public $description = MODULE_XML_BUILDER_DESCRIPTION;
+	public $description = TEXT_THIS_MODULE_BUILDS_THE_XML_INFORMATION_FILES;
 	public $version		= '1.0';
 
 	function __construct() {

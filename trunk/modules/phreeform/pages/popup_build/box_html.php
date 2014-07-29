@@ -187,7 +187,7 @@ function box_build($properties, $i) {
       $output .= '  <tr>' . nl;
       $output .= '    <td>' . TEXT_CURRENT_IMAGE . '</td>' . nl;
       $output .= '    <td align="center">' . nl;
-	  $output .= !$properties->filename ? TEXT_NO_IMAGE_SELECTED : html_image(PF_WEB_MY_REPORTS . 'images/' . $properties->filename, '', '', '32');
+	  $output .= !$properties->filename ? TEXT_NO_IMAGE_SELECTED . '!' : html_image(PF_WEB_MY_REPORTS . 'images/' . $properties->filename, '', '', '32');
       $output .= '    </td>'  . nl;
       $output .= '  </tr>'  . nl;
       $output .= '  <tr>'   . nl;
@@ -227,7 +227,7 @@ function box_build($properties, $i) {
       $output  = '<table class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto;">' . nl;
       $output .= ' <thead class="ui-widget-header">' . nl;
       $output .= '  <tr>'   . nl;
-      $output .= '    <th colspan="3">' . PHREEFORM_LINE_TYPE . '</th>' . nl;
+      $output .= '    <th colspan="3">' . TEXT_SELECT_LINE_LAYOUT . '</th>' . nl;
       $output .= '  </tr>'  . nl;
       $output .= ' </thead><tbody class="ui-widget-content">' . nl;
       $output .= '  <tr>'   . nl;

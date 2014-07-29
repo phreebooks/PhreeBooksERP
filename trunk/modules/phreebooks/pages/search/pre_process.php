@@ -30,14 +30,14 @@ $choices = array(
   'all'  => TEXT_ALL,
   'rng'  => TEXT_RANGE,
   'eq'   => TEXT_EQUAL_TO,
-  'neq'  => TEXT_NOT_EQUAL,
+  'neq'  => TEXT_NOT_EQUAL_TO,
   'like' => TEXT_CONTAINS,
 );
 $journal_choices = array('0' => TEXT_ALL);
 for ($i = 1; $i < 30; $i++) {
   $j_constant = str_pad($i, 2, '0', STR_PAD_LEFT);
-  if (defined('GEN_ADM_TOOLS_J' . $j_constant)) {
-	$journal_choices[$i] = sprintf(TEXT_ARGS_ENTRY, constant('GEN_ADM_TOOLS_J' . $j_constant));
+  if (isset($journal_types_list[$j_constant])) {
+	$journal_choices[$i] = sprintf(TEXT_ARGS_ENTRY, $journal_types_list[$j_constant]['text']);
   }
 }
 $_SESSION['search_date_id']      = $_REQUEST['search_date_id']     ? $_REQUEST['search_date_id']     : (isset($_SESSION['search_date_id'])     ? $_SESSION['search_date_id']     : 'l'); // default to current period
@@ -128,7 +128,7 @@ $gl_array_list = gen_coa_pull_down(SHOW_FULL_GL_NAMES, true, false, true);
 $heading_array = array(
   'm.id'                  => TEXT_JOURNAL_RECORD_ID,
   'm.description'         => TEXT_DESCRIPTION,
-  'm.bill_primary_name'   => GEN_PRIMARY_NAME,
+  'm.bill_primary_name'   => TEXT_NAME_OR_COMPANY,
   'm.post_date'           => TEXT_POST_DATE,
   'm.purchase_invoice_id' => TEXT_REFERENCE,
   'm.total_amount'        => TEXT_TOTAL,
@@ -184,5 +184,5 @@ history_save('pb_search');
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php'; // include display template (required)
-define('PAGE_TITLE', HEADING_TITLE_SEARCH_INFORMATION);
+define('PAGE_TITLE', TEXT_SEARCH_FOR_JOURNAL_ENTRIES);
 ?>

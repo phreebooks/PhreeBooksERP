@@ -44,8 +44,8 @@ class splitPageResults {
 	    if ($this->total_num_pages > 1) {
 	        $display_links = '';
 	        if ($_REQUEST['list'] > 1) {
-			  	$display_links .= html_icon('actions/media-skip-backward.png', TEXT_GO_FIRST, 'small', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')) . '&action=go_first', 'SSL') . '\'" style="cursor:pointer;"');
-			  	$display_links .= html_icon('phreebooks/media-playback-previous.png', TEXT_GO_PREVIOUS, 'small', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')) . '&action=go_previous', 'SSL') . '\'" style="cursor:pointer;"');
+			  	$display_links .= html_icon('actions/media-skip-backward.png', TEXT_JUMP_TO_FIRST_PAGE, 'small', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')) . '&action=go_first', 'SSL') . '\'" style="cursor:pointer;"');
+			  	$display_links .= html_icon('phreebooks/media-playback-previous.png', TEXT_PREVIOUS_PAGE, 'small', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')) . '&action=go_previous', 'SSL') . '\'" style="cursor:pointer;"');
 	        } else {
 			  	$display_links .= html_icon('actions/media-skip-backward.png', '', 'small', '');
 			  	$display_links .= html_icon('phreebooks/media-playback-previous.png', '', 'small', '');
@@ -58,7 +58,7 @@ class splitPageResults {
 			}
 	        if (($_REQUEST['list'] < $this->total_num_pages) && ($this->total_num_pages != 1)) {
 				$display_links .= html_icon('actions/media-playback-start.png', TEXT_NEXT_PAGE, 'small', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')) . '&action=go_next', 'SSL') . '\'" style="cursor:pointer;"');
-				$display_links .= html_icon('actions/media-skip-forward.png', TEXT_GO_LAST, 'small', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')) . '&action=go_last', 'SSL') . '\'" style="cursor:pointer;"');
+				$display_links .= html_icon('actions/media-skip-forward.png', TEXT_JUMP_TO_LAST_PAGE, 'small', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')) . '&action=go_last', 'SSL') . '\'" style="cursor:pointer;"');
 	        } else {
 				$display_links .= html_icon('actions/media-playback-start.png', '', 'small', '');
 				$display_links .= html_icon('actions/media-skip-forward.png', '', 'small', '');
@@ -75,8 +75,8 @@ class splitPageResults {
       	for ($i = 1; $i <= $this->total_num_pages; $i++) $pages_array[] = array('id' => $i, 'text' => $i);
       	if ($this->total_num_pages > 1) {
         	if ($_REQUEST['list'] > 1) {
-		  		$display_links .= html_icon('actions/media-skip-backward.png', TEXT_GO_FIRST, 'small', 'onclick="tabPage(\'' . $id . '\', \'go_first\')" style="cursor:pointer;"');
-		  		$display_links .= html_icon('phreebooks/media-playback-previous.png', TEXT_GO_PREVIOUS, 'small', 'onclick="tabPage(\'' . $id . '\', \'go_previous\')" style="cursor:pointer;"');
+		  		$display_links .= html_icon('actions/media-skip-backward.png', TEXT_JUMP_TO_FIRST_PAGE, 'small', 'onclick="tabPage(\'' . $id . '\', \'go_first\')" style="cursor:pointer;"');
+		  		$display_links .= html_icon('phreebooks/media-playback-previous.png', TEXT_PREVIOUS_PAGE, 'small', 'onclick="tabPage(\'' . $id . '\', \'go_previous\')" style="cursor:pointer;"');
         	} else {
 		  		$display_links .= html_icon('actions/media-skip-backward.png', '', 'small', '');
 				$display_links .= html_icon('phreebooks/media-playback-previous.png', '', 'small', '');
@@ -89,7 +89,7 @@ class splitPageResults {
 			}
         	if (($_REQUEST['list'] < $this->total_num_pages) && ($this->total_num_pages != 1)) {
 		  		$display_links .= html_icon('actions/media-playback-start.png', TEXT_NEXT_PAGE, 'small', 'onclick="tabPage(\'' . $id . '\', \'go_next\')" style="cursor:pointer;"');
-		  		$display_links .= html_icon('actions/media-skip-forward.png', TEXT_GO_LAST, 'small', 'onclick="tabPage(\'' . $id . '\', \'go_last\')" style="cursor:pointer;"');
+		  		$display_links .= html_icon('actions/media-skip-forward.png', TEXT_JUMP_TO_LAST_PAGE, 'small', 'onclick="tabPage(\'' . $id . '\', \'go_last\')" style="cursor:pointer;"');
         	} else {
 		  	$display_links .= html_icon('actions/media-playback-start.png', '', 'small', '');
 		  	$display_links .= html_icon('actions/media-skip-forward.png', '', 'small', '');

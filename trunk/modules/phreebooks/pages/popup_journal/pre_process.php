@@ -77,5 +77,5 @@ history_save('pb_pop_journal');
 $include_header   = false;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', GL_ENTRY_TITLE);
+define('PAGE_TITLE', TEXT_GENERAL_JOURNAL_ENTRY);
 ?>

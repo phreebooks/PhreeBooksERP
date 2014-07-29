@@ -124,7 +124,7 @@ function build_audit_xml($date_from, $date_to, $select){
 					$output .= "\t" . '<journal>' .chr(10);
 				}
 				$output .= "\t" . xmlEntry('journalID',		$result->fields['journal_id']			,true);//the journal id
-				$output .= "\t" . xmlEntry('description',	constant('GEN_ADM_TOOLS_J' . str_pad($result->fields['journal_id'], 2, '0', STR_PAD_LEFT))		,true);//the journal description
+				$output .= "\t" . xmlEntry('description',	$journal_types_list[$result->fields['journal_id']]['text']		,true);//the journal description
 				$output .= "\t" . xmlEntry('type',			''			,true);//type of journal
 			}
 			$output .= "\t\t" . '<transaction>' .chr(10);

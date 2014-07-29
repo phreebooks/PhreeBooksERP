@@ -64,7 +64,7 @@ echo $toolbar->build_toolbar();
 	  <td><?php echo html_calendar_field($cal_date0); ?></td>
 	</tr>
 	<tr>
-	  <td align="right" valign="top"><?php echo TEXT_CAPA_NOTES; ?></td>
+	  <td align="right" valign="top"><?php echo TEXT_DESCRIPTION_OF_ISSUE; ?></td>
 	  <td colspan="5"><?php echo html_textarea_field('notes_issue', 80, 3, $cInfo->notes_issue, '', true); ?></td>
 	</tr>
   </table>

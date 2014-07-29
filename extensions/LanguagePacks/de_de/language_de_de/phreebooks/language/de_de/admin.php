@@ -38,7 +38,7 @@ define ('MODULE_PHREEBOOKS_NOTES_4', 'PRIORITÄT: Set Default Sachkonten für Ku
 define ('TEXT_DEFAULT_GL_ACCOUNTS', 'Default GL-Konten');
 define ('TEXT_PAYMENT_TERMS', 'Zahlungsbedingungen');
 define ('TEXT_ACCOUNT_AGING', 'Account Aging');
-define ('TEXT_GENERAL_JOURNAL', 'Allgemeine Einstellungen Journal');
+define ('TEXT_GENERAL_JOURNAL_SETTINGS', 'Allgemeine Einstellungen Journal');
 define ('TEXT_NUMBER', 'Anzahl');
 define ('TEXT_BOTH', 'Beide');
 define ('TEXT_SINGLE_LINE_ENTRY', 'Single Line Entry');
@@ -47,19 +47,19 @@ define ('TEXT_DOUBLE_MODE', 'Double Line Entry');
 define ('TEXT_CASH', 'Cash');
 define ('COA_02_DESC', 'Debitoren');
 define ('COA_04_DESC', 'Inventory');
-define ('COA_06_DESC', 'Sonstiges Umlaufvermögen');
-define ('COA_08_DESC "," Sachanlagen ');
-define ('COA_10_DESC', 'Kumulierte Abschreibungen');
-define ('COA_12_DESC', 'Sonstige Vermögensgegenstände');
+define ('TEXT_OTHER_CURRENT_ASSETS', 'Sonstiges Umlaufvermögen');
+define ('TEXT_FIXED_ASSETS','Sachanlagen');
+define ('TEXT_ACCUMULATED_DEPRECIATION', 'Kumulierte Abschreibungen');
+define ('TEXT_OTHER_ASSETS', 'Sonstige Vermögensgegenstände');
 define ('TEXT_ACCOUNTS_PAYABLE', 'Kreditorenbuchhaltung');
-define ('COA_22_DESC', 'Sonstige kurzfristige Verbindlichkeiten ');
-define ('COA_24_DESC', 'Langfristige Verbindlichkeiten');
-define ('COA_30_DESC', 'Erträge');
+define ('TEXT_OTHER_CURRENT_LIABILITIES', 'Sonstige kurzfristige Verbindlichkeiten ');
+define ('TEXT_LONG_TERM_LIABILITIES', 'Langfristige Verbindlichkeiten');
+define ('TEXT_INCOME', 'Erträge');
 define ('TEXT_COST_OF_SALES', 'Cost of Sales ');
 define ('COA_34_DESC', 'Aufwendungen');
-define ('COA_40_DESC', 'Equity - kein \' t Schließen ');
-define ('COA_42_DESC', 'Equity - wird geschlossen ');
-define ('COA_44_DESC', 'Equity - Gewinnrücklagen');
+define ('TEXT_DOESNT_CLOSE', 'kein\'t Schließen ');
+define ('TEXT_GETS_CLOSED', 'wird geschlossen ');
+define ('TEXT_RETAINED_EARNINGS', 'Gewinnrücklagen');
 
 // Formular-Definitionen
 define ('TEXT_BANK_CHECKS', 'Bank Checks');
@@ -80,32 +80,32 @@ define ('TEXT_VENDOR_QUOTES', 'Hersteller Quotes');
 define ('TEXT_VENDOR_STATEMENTS', 'Hersteller Statements');
 
 /************************** (PhreeBooks Utilities) ******************* ****************************/
-define ('GEN_ADM_TOOLS_AR', 'Kunden / Forderungen');
+define ('TEXT_CUSTOMER_RECEIVABLES', 'Kunden / Forderungen');
 define ('TEXT_VENDORS_PAYABLES', 'Kreditoren / Verbindlichkeiten');
 define ('GEN_ADM_TOOLS_RE_POST_FAILED', 'Keine Zeitschriften wurden wieder Post, keine Maßnahmen ergriffen ausgewählt.');
 define ('GEN_ADM_TOOLS_RE_POST_SUCCESS', 'Die ausgewählten Zeitschriften wurden neu geschrieben erfolgreich Die Anzahl der Datensätze neu geschrieben wurde: %s .');
 define ('GEN_ADM_TOOLS_AUDIT_LOG_RE_POST', 'Re-post-Journals:');
-define ('GEN_ADM_TOOLS_REPOST_HEADING', 'Re-post-Journal Entries');
+define ('TEXT_RE-POST_JOURNAL_ENTRIES', 'Re-post-Journal Entries');
 define ('GEN_ADM_TOOLS_REPOST_DESC', '<b> Sie stets Sicherungskopien Ihrer Daten, bevor Sie wieder posten, ZEITSCHRIFTEN </b> <br/> Anmerkung 1: Re-Posting Zeitschriften einige Zeit dauern kann, können Sie zur Begrenzung der re-Beiträge durch Eingabe eines kleineren Zeitraum oder eine begrenzte Anzahl von Zeitschriften ').
 define ('GEN_ADM_TOOLS_REPOST_CONFIRM', "Sind Sie sicher, dass Sie wieder nach den ausgewählten Zeitschriften \n \n Sie sollten BACKUP Ihr Unternehmen vor dies zu tun?");
-define ('GEN_ADM_TOOLS_BNK_ETC', 'Banking / Inventar / Sonstige');
-define ('GEN_ADM_TOOLS_DATE_RANGE', 'Re-post-Zeitraum ');
+define ('TEXT_BANKING_OR_INVENTORY_OR_OTHER', 'Banking / Inventar / Sonstige');
+define ('TEXT_RE-POST_DATE_RANGE', 'Re-post-Zeitraum ');
 define ('GEN_ADM_TOOLS_START_DATE', 'Startdatum');
 define ('GEN_ADM_TOOLS_END_DATE', 'Angebotsende');
-define ('GEN_ADM_TOOLS_BTN_REPOST', 'Re-post-Journals');
+define ('TEXT_RE-POST_JOURNALS', 'Re-post-Journals');
 
-define ('GEN_ADM_TOOLS_REPAIR_CHART_HISTORY', 'Überprüfen und Reparieren Hauptbuch Kontensalden');
+define ('TEXT_VALIDATE_AND_REPAIR_GENERAL_LEDGER_ACCOUNT_BALANCES', 'Überprüfen und Reparieren Hauptbuch Kontensalden');
 define ('GEN_ADM_TOOLS_REPAIR_CHART_DESC', 'Diese Operation prüft und repariert die Tabelle über Kontoguthaben. Wenn die Kontenbilanz oder eine Jahresbilanzsumme von nicht im Gleichgewicht, das wo ich anfangen soll. Erstens bestätigen die Bilanzen zu sehen, ob es einen Fehler und reparieren, wenn sich erforderlich ').
-define ('GEN_ADM_TOOLS_REPAIR_TEST', 'Test Chart Balances');
-define ('GEN_ADM_TOOLS_REPAIR_FIX', 'Fix Chart Balance Fehler');
-define ('GEN_ADM_TOOLS_BTN_TEST', 'Test GL Balances');
-define ('GEN_ADM_TOOLS_BTN_REPAIR', 'Repair GL Balance Fehler');
+define ('TEXT_TEST_CHART_BALANCES', 'Test Chart Balances');
+define ('TEXT_FIX_CHART_BALANCE_ERRORS', 'Fix Chart Balance Fehler');
+define ('TEXT_TEST_GL_BALANCES', 'Test GL Balances');
+define ('TEXT_REPAIR_GL_BALANCE_ERRORS', 'Repair GL Balance Fehler');
 define ('GEN_ADM_TOOLS_REPAIR_CONFIRM', 'Sind Sie sicher, dass Sie das Hauptbuch Salden repair  \n   \n Sie sollten PRINT FINANCIAL SATEMENTS und sichern Sie Ihre Firma vor dies zu tun?');
 define ('GEN_ADM_TOOLS_REPAIR_ERROR_MSG', 'Es ist eine Unwucht in der Periode %s  %s  Konto verglichen: %s  mit: %s ');
-define ('GEN_ADM_TOOLS_REPAIR_SUCCESS', 'Sie \' re Diagramm über Kontoguthaben sind OK ');
+define ('TEXT_YOUR_CHART_OF_ACCOUNTS_ARE_IN_BALANCE', 'Sie \' re Diagramm über Kontoguthaben sind OK ');
 define ('GEN_ADM_TOOLS_REPAIR_ERROR', 'Du solltest das Diagramm Gleichgewicht reparieren. HINWEIS:! BACKUP SIE VOR REPARATUR DES BUCHUNGSPLANS balances ');
-define ('GEN_ADM_TOOLS_REPAIR_COMPLETE', 'Das Diagramm gleicht wurden repariert.');
-define ('GEN_ADM_TOOLS_REPAIR_LOG_ENTRY', 'repariert GL Salden');
+define ('TEXT_THE_CHART_BALANCES_HAVE_BEEN_REPAIRED', 'Das Diagramm gleicht wurden repariert.');
+define ('TEXT_REPAIRED_GL_BALANCES', 'repariert GL Salden');
 
 define ('GL_UTIL_HEADING_TITLE', 'General Journal Wartung, Installation und Utilities');
 define ('TEXT_ACCOUNTING_PERIODS_AND_FISCAL_YEARS', 'Rechnungswesen und Epochen Geschäftsjahre');
@@ -133,7 +133,7 @@ define ('GL_BEG_BAL_ERROR_6', 'Ungültige Kontenrahmen der id in Zeile gefunden'
 define ('GL_BEG_BAL_ERROR_7', 'Skipping Inventargegenstand Zero Menge auf Linie.');
 define ('GL_BEG_BAL_ERROR_8', 'Keine Aktualisierung sku %s , der Prozess beendet wurde.');
 define ('GL_BEG_BAL_ERROR_9', 'Keine Aktualisierung Konto %s , der Prozess beendet wurde.');
-define ('GEN_ADM_TOOLS_POST_SEQ_SUCCESS', 'erfolgreich gebucht den aktuellen Bestellstatus ändert.');
+define ('TEXT_SUCCESSFULLY_POSTED_THE_CURRENT_ORDER_NUMBER_CHANGES', 'erfolgreich gebucht den aktuellen Bestellstatus ändert.');
 define ('GEN_ADM_TOOLS_AUDIT_LOG_SEQ', 'Aktuelle Bestell-Status - Update');
 define ('GEN_ADM_TOOLS_TITLE', 'Administrative Tools und Utilities');
 define ('TEXT_CHANGE_VARIOUS_SEQUENCE_NUMBERS', 'Change Verschiedene Sequence Numbers');
@@ -178,11 +178,11 @@ define ('CD_02_13_DESC', 'Prozent (%) Rabatt bei Zahlung in');
 define ('CD_02_14_DESC', 'Tage Gesamt fällig.');
 define ('CD_02_15_DESC', 'Tage.');
 
-define ('CD_02_16_DESC', 'Legt den Starttermin für Rechnung Alterung.');
+define ('TEXT_SETS_THE_START_DATE_FOR_ACCOUNT_AGING', 'Legt den Starttermin für Rechnung Alterung.');
 define ('CD_02_17_DESC', 'Bestimmt die Anzahl der Tage für die erste Warnung von überfälligen Rechnungen Die Frist beginnt ab dem Konto Aging Feld Startdatum..');
 define ('CD_02_18_DESC', 'Bestimmt die Anzahl der Tage für die zweite Mahnung von überfälligen Rechnungen Die Frist beginnt ab dem Konto Aging Feld Startdatum..');
 define ('CD_02_19_DESC', 'Bestimmt die Anzahl der Tage für die dritte Mahnung von überfälligen Rechnungen Die Frist beginnt ab dem Konto Aging Feld Startdatum..');
-define ('CD_02_20_DESC', 'Text Überschrift auf Berichten verwendet für Alterung Fälligkeit Nummer 1.');
+define ('TEXT_TEXT_HEADING_USED_ON_REPORTS_TO_SHOW_AGING_FOR_DUE_DATE_NUMBER', 'Text Überschrift auf Berichten verwendet für Alterung Fälligkeit Nummer 1.');
 define ('CD_02_21_DESC', 'Text Überschrift auf Berichten verwendet für Alterung Fälligkeit Nummer 2.');
 define ('CD_02_22_DESC', 'Text Überschrift auf Berichten verwendet für Alterung Fälligkeit Nummer 3.');
 define ('CD_02_23_DESC', 'Text Überschrift auf Berichten verwendet für Alterung Fälligkeit Nummer 4.');
@@ -201,7 +201,7 @@ define ('CD_03_04_DESC', 'Default-Konto für Frachtkosten für Sendungen von Anb
 define ('CD_03_05_DESC', 'Default-Konto für den Kauf Rabatte mit frühen Rabatt Zahlungsbedingungen bezahlt verwenden Typischerweise wird eine Kreditorenbuchhaltung Typ verändern..');
 define ('CD_03_06_DESC', 'Default-Konto für Auszahlungen an Lieferanten für Einlagen verwenden Typischerweise wird eine Cash-Typ verändern..');
 define ('CD_03_07_DESC', 'Default-Konto für Verkäufer Einlagen verwenden Typischerweise wird eine sonstige kurzfristige Verbindlichkeiten Typ verändern..');
-define ('CD_03_11_DESC', 'Default Bedingungen für die Zahlung');
+define ('TEXT_DEFAULT_TERMS_FOR_PAYMENT', 'Default Bedingungen für die Zahlung');
 define ('CD_03_12_DESC', 'Default Betrag für Verkäufer Kreditlimit nutzen ( %s ).');
 define ('CD_03_30_DESC', 'Falls aktiviert, Versandkosten für die Berechnung der Umsatzsteuer Wenn nicht aktiviert, Schifffahrt wird nicht besteuert werden hinzukommen..');
 define ('CD_03_35_DESC', 'Wenn auf true gesetzt, wird diese Option automatisch eine ID zuweisen, um neue Lieferanten, wenn sie erstellt werden.');
@@ -209,15 +209,15 @@ define ('CD_03_40_DESC', 'Diese Funktion zeigt einen Lieferanten Status Popup au
 define ('CD_03_50_DESC', 'Wenn Auftragsbestand Rabatte aktiviert sind, bestimmt dieser Schalter, ob die Umsatzsteuer vor oder nach dem Rabatt zu Bestellungen, Einkauf angewandt wird berechnet und Hersteller Quotes.');
 
 /************************** (Kontenplan) ****************** *****************************/
-define ('GL_SELECT_STD_CHART', 'Wählen Sie eine Standard-Tabelle:');
-define ('GL_CHART_REPLACE', 'Ersetzen aktuellen Kontenplan');
-define ('GL_CHART_IMPORT_DESC', 'oder benutzerdefinierte Tabelle zu importieren:');
+define ('TEXT_SELECT_A_STANDARD_CHART', 'Wählen Sie eine Standard-Tabelle');
+define ('TEXT_REPLACE_CURRENT_CHART_OF_ACCOUNTS', 'Ersetzen aktuellen Kontenplan');
+define ('TEXT_OR_CUSTOM_CHART_TO_IMPORT', 'oder benutzerdefinierte Tabelle zu importieren');
 define ('GL_CHART_DELETE_WARNING', 'Hinweis: Aktuelle Kontenplan kann nicht gelöscht werden, wenn Journaleinträge vorhanden sind!');
 define ('GL_JOURNAL_NOT_EMTPY', 'Die allgemeine Journal nicht leer ist, den aktuellen Kontenplan kann nicht gelöscht werden!');
 define ('GL_ACCOUNT_DUPLICATE', 'Die GL-Konto: %s  existiert bereits Das Konto wird nicht hinzugefügt werden!..');
 define ('GL_INFO_HEADING_ONLY', 'Dieses Konto ist eine Überschrift und kann nicht akzeptieren gebuchten Werte?');
 define ('GL_INFO_PRIMARY_ACCT_ID', 'Wenn dieses Konto ein Sub-Account, wählen primäre Konto:');
-define ('ERROR_ACCT_TYPE_REQ', 'Der GL Kontotyp ist erforderlich!');
+define ('TEXT_THE_GL_ACCOUNT_TYPE_IS_REQUIRED', 'Der GL Kontotyp ist erforderlich!');
 define ('GL_ERROR_CANT_MAKE_HEADING', 'Dieses Konto verfügt über ein ausgewogenes Es kann nicht zu einer Kopf-Konto umgewandelt werden..');
 define ('TEXT_CHART_OF_ACCOUNTS', 'Kontenplan');
 define ('GL_HEADING_ACCOUNT_NAME', 'Konto-ID');
@@ -243,7 +243,7 @@ define ('SETUP_TAX_AUTH_EDIT_INTRO', 'Bitte führen Sie alle notwendigen Änderu
 define ('SETUP_INFO_DESC_SHORT', 'Short Name (15 Zeichen max)');
 define ('SETUP_INFO_DESC_LONG', 'Lange Beschreibung (64 Zeichen max)');
 define ('SETUP_INFO_GL_ACCOUNT', 'GL-Konto, um Steuern Rekord:');
-define ('SETUP_INFO_VENDOR_ID', 'Hersteller, Gelder zu übermitteln:');
+define ('TEXT_VENDOR_TO_SUBMIT_FUNDS_TO', 'Hersteller, Gelder zu übermitteln:');
 define ('SETUP_INFO_TAX_RATE', 'Steuersatz (in Prozent)');
 define ('SETUP_TAX_AUTH_INSERT_INTRO', 'Bitte geben Sie die neue Finanzamt mit seinen Eigenschaften');
 define ('SETUP_TAX_AUTH_DELETE_INTRO', 'Sind Sie sicher, dass Sie diese Steuerbehörde löschen?');
@@ -256,11 +256,11 @@ define ('SETUP_DISPLAY_NUMBER_OF_TAX_AUTH', TEXT_DISPLAY_NUMBER . 'Steuerbehörd
 define ('SETUP_TITLE_TAX_RATES', 'Sales Tax Preise');
 define ('TEXT_PURCHASE_TAX_RATES', 'Bestellen Steuersätze');
 define ('TEXT_TAX_FREIGHT', 'Tax Freight ');
-define ('SETUP_HEADING_TOTAL_TAX', 'Total Tax (in Prozent)');
+define ('TEXT_TOTAL_TAX_PERCENT', 'Total Tax (in Prozent)');
 define ('SETUP_TAX_EDIT_INTRO', 'Bitte führen Sie alle notwendigen Änderungen durch');
 define ('SETUP_INFO_TAX_AUTHORITIES', 'Finanzamt');
-define ('SETUP_INFO_TAX_AUTH_ADD', 'Wählen Sie eine Steuerbehörde hinzufügen');
-define ('SETUP_INFO_TAX_AUTH_DELETE', 'Wählen Sie eine Steuerbehörde zu entfernen');
+define ('TEXT_SELECT_A_TAX_AUTHORITY_TO_ADD', 'Wählen Sie eine Steuerbehörde hinzufügen');
+define ('TEXT_SELECT_A_TAX_AUTHORITY_TO_REMOVE', 'Wählen Sie eine Steuerbehörde zu entfernen');
 define ('TEXT_FREIGHT_TAXABLE', 'Freight Steuerpflichtige');
 define ('SETUP_TAX_INSERT_INTRO', 'Bitte geben Sie den neuen Steuersatz mit seinen Eigenschaften');
 define ('SETUP_TAX_DELETE_INTRO', 'Sind Sie sicher, dass Sie diesen Steuersatz löschen?');

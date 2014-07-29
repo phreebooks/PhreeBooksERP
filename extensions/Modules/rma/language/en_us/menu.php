@@ -18,7 +18,7 @@
 //
 
 // Headings
-define('MENU_HEADING_RMA', 'Returns');
+define('TEXT_RETURNS', 'Returns');
 define('BOX_RMA_MODULE',   'RMA');
 
 ?>

@@ -32,7 +32,7 @@ switch ($_REQUEST['action']) {
 	if ($enc_key <> $enc_key_confirm) throw new \core\classes\userException(TEXT_ERROR_ENCRYPTION_KEY_MATCH);
 	\core\classes\encryption::validate_password($enc_key, ENCRYPTION_VALUE);
 	$_SESSION['admin_encrypt'] = $enc_key;
-    $messageStack->add(GEN_ENCRYPTION_KEY_SET,'success');
+    $messageStack->add(TEXT_THE_ENCRYPTION_KEY_IS_SET,'success');
 	break;
   case 'encrypt_key':
 	\core\classes\user::validate_security($security_level, 4);
@@ -43,13 +43,13 @@ switch ($_REQUEST['action']) {
 		try{
 			\core\classes\encryption::validate_password($old_key, ENCRYPTION_VALUE);
 		}catch(Exception $e){
-			throw new \core\classes\userException(ERROR_OLD_ENCRYPT_NOT_CORRECT,$e->getCode(),$e);
+			throw new \core\classes\userException(TEXT_THE_CURRENT_ENCRYPTED_KEY_DOES_NOT_MATCH_THE_STORED_VALUE,$e->getCode(),$e);
 		}
 	}
 	if (strlen($new_key) < ENTRY_PASSWORD_MIN_LENGTH) throw new \core\classes\userException(sprintf(ENTRY_PASSWORD_NEW_ERROR, ENTRY_PASSWORD_MIN_LENGTH));
 	if ($new_key != $new_key_confirm) throw new \core\classes\userException(ENTRY_PASSWORD_NEW_ERROR_NOT_MATCHING);
 	write_configure('ENCRYPTION_VALUE', \core\classes\encryption::password($new_key));
-    $messageStack->add(GEN_ENCRYPTION_KEY_CHANGED,'success');
+    $messageStack->add(TEXT_THE_ENCRYPTION_KEY_IS_CHANGED,'success');
     break;
   default:
 }

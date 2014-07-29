@@ -2,7 +2,7 @@
 namespace inventory\classes\type;
 class mb extends \inventory\classes\inventory {//Master Build (combination of Master Stock Item and assembly) parent of ia
 	public $inventory_type			= 'mb';
-	public $title       			= INV_TYPES_MB;
+	public $title       			= TEXT_MASTER_STOCK_ASSEMBLY;
 	public $account_sales_income	= INV_ASSY_DEFAULT_SALES;
 	public $account_inventory_wage	= INV_ASSY_DEFAULT_INVENTORY;
 	public $account_cost_of_sales	= INV_ASSY_DEFAULT_COS;
@@ -21,7 +21,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 
 	function __construct(){
 		parent::__construct();
-		$this->tab_list['master'] = array('file'=>'template_tab_ms',	'tag'=>'master',    'order'=>30, 'text'=>INV_MS_ATTRIBUTES);
+		$this->tab_list['master'] = array('file'=>'template_tab_ms',	'tag'=>'master',    'order'=>30, 'text'=>TEXT_MASTER_STOCK_ATTRIBUTES);
 		$this->tab_list['bom'] 	  = array('file'=>'template_tab_bom',	'tag'=>'bom',    	'order'=>40, 'text'=>TEXT_BILL_OF_MATERIALS);
 	}
 

@@ -265,7 +265,7 @@ class xml_orders extends parser {
 	if (!$psOrd->short_name && !AUTO_INC_CUST_ID)                             $missing_fields[] = TEXT_CONTACT_ID;
 	if (!$psOrd->post_date)                                                   $missing_fields[] = TEXT_POST_DATE;
 	if (!$psOrd->period)                                                      $missing_fields[] = TEXT_PERIOD;
-	if (!$psOrd->bill_primary_name)                                           $missing_fields[] = GEN_PRIMARY_NAME;
+	if (!$psOrd->bill_primary_name)                                           $missing_fields[] = TEXT_NAME_OR_COMPANY;
 	if (!$psOrd->bill_country_code)                                           $missing_fields[] = TEXT_COUNTRY_ISO_CODE;
 	if (ADDRESS_BOOK_CONTACT_REQUIRED        && !$psOrd->bill_contact)        $missing_fields[] = TEXT_ATTENTION;
 	if (ADDRESS_BOOK_ADDRESS1_REQUIRED       && !$psOrd->bill_address1)       $missing_fields[] = TEXT_ADDRESS1;
@@ -274,7 +274,7 @@ class xml_orders extends parser {
 	if (ADDRESS_BOOK_STATE_PROVINCE_REQUIRED && !$psOrd->bill_state_province) $missing_fields[] = TEXT_STATE_PROVINCE;
 	if (ADDRESS_BOOK_POSTAL_CODE_REQUIRED    && !$psOrd->bill_postal_code)    $missing_fields[] = TEXT_POSTAL_CODE;
 	if (defined('MODULE_SHIPPING_STATUS')) {
-//	  	if (!$psOrd->ship_primary_name)                                         $missing_fields[] = GEN_PRIMARY_NAME;
+//	  	if (!$psOrd->ship_primary_name)                                         $missing_fields[] = TEXT_NAME_OR_COMPANY;
 //	  	if (!$psOrd->ship_country_code)                                         $missing_fields[] = TEXT_COUNTRY_ISO_CODE;
 	  	if (ADDRESS_BOOK_SHIP_CONTACT_REQ      && !$psOrd->ship_contact)        $missing_fields[] = TEXT_ATTENTION;
 	  	if (ADDRESS_BOOK_SHIP_ADD1_REQ         && !$psOrd->ship_address1)       $missing_fields[] = TEXT_ADDRESS1;

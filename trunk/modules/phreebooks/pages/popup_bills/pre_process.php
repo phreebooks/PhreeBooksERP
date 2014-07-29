@@ -54,7 +54,7 @@ $heading_array = array('post_date' => TEXT_DATE);
 if (ENABLE_MULTI_BRANCH) $heading_array['store_id'] = TEXT_STORE_ID;
 $heading_array['purchase_invoice_id'] = TEXT_REFERENCE;
 $heading_array['total_amount']        = TEXT_AMOUNT;
-$heading_array['bill_primary_name']   = GEN_PRIMARY_NAME;
+$heading_array['bill_primary_name']   = TEXT_NAME_OR_COMPANY;
 $result      = html_heading_bar($heading_array, array());
 $list_header = $result['html_code'];
 $disp_order  = $result['disp_order'];

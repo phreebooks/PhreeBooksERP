@@ -20,7 +20,7 @@
 
 // Module information
 define('MODULE_XML_BUILDER_TITLE','XML Builder');
-define('MODULE_XML_BUILDER_DESCRIPTION','This module builds the XML information files.');
+define('TEXT_THIS_MODULE_BUILDS_THE_XML_INFORMATION_FILES','This module builds the XML information files.');
 // Headings
 // Defaults
 

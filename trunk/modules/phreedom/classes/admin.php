@@ -269,7 +269,7 @@ class admin extends \core\classes\admin {
 		$sql = "select admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security
 		  from " . TABLE_USERS . " where admin_name = '{$basis->admin_name}'";
 		if ($db->db_connected) $result = $db->Execute($sql);
-		if (!$result || $basis->admin_name <> $result->fields['admin_name'] || $result->fields['inactive']) throw new \core\classes\userException(sprintf(GEN_LOG_LOGIN_FAILED, ERROR_WRONG_LOGIN));
+		if (!$result || $basis->admin_name <> $result->fields['admin_name'] || $result->fields['inactive']) throw new \core\classes\userException(sprintf(GEN_LOG_LOGIN_FAILED, TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD));
 		\core\classes\encryption::validate_password($basis->admin_pass, $result->fields['admin_pass']);
 		$_SESSION['admin_id']       = $result->fields['admin_id'];
 		$_SESSION['display_name']   = $result->fields['display_name'];
@@ -327,7 +327,7 @@ class admin extends \core\classes\admin {
 		}
 		$basis->cp_boxes 	= $db->Execute("select * from ".TABLE_USERS_PROFILES." where user_id = '{$_SESSION['admin_id']}' and menu_id = '$menu_id' order by column_id, row_id");
 		$basis->template 	= 'template_main';
-		$basis->page_title 	= COMPANY_NAME.' - '.TITLE;
+		$basis->page_title 	= COMPANY_NAME.' - '.TEXT_PHREEBOOKS_ERP;
 	}
 
 	/**
@@ -337,7 +337,7 @@ class admin extends \core\classes\admin {
 	function logout (\core\classes\basis $basis){
 		global $db;
 		$result = $db->Execute("select admin_name from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
-		gen_add_audit_log(GEN_LOG_LOGOFF . $result->fields['admin_name']);
+		gen_add_audit_log(TEXT_USER_LOGOFF . ' -> ' . $result->fields['admin_name']);
 		session_destroy();
 		$basis->fireEvent("LoadLogIn");
 	}
@@ -353,7 +353,7 @@ class admin extends \core\classes\admin {
 		$basis->single_language = sizeof($languages) == 1 ? true : false;
 		$basis->include_header  = false;
 		$basis->include_footer  = false;
-		$basis->page_title		= TITLE;
+		$basis->page_title		= TEXT_PHREEBOOKS_ERP;
 		$basis->module			= 'phreedom';
 		$basis->page			= 'main';
 		$basis->template 		= 'template_login';
@@ -367,7 +367,7 @@ class admin extends \core\classes\admin {
 		$basis->single_language = sizeof($languages) == 1 ? true : false;
 		$basis->include_header  = false;
 		$basis->include_footer  = false;
-		$basis->page_title		= TITLE;
+		$basis->page_title		= TEXT_PHREEBOOKS_ERP;
 		$basis->module			= 'phreedom';
 		$basis->page			= 'main';
 		$basis->template 		= 'template_pw_lost';
@@ -378,14 +378,14 @@ class admin extends \core\classes\admin {
 		$basis->module			= 'phreedom';
 		$basis->page			= 'main';
 		$basis->template 		= 'template_crash.php';
-		$basis->page_title		=  TITLE;
+		$basis->page_title		=  TEXT_PHREEBOOKS_ERP;
 		$basis->notify();//final line
 	}
 
 	function SendLostPassWord (\core\classes\basis $basis){
 		global $db;
 		$result = $db->Execute("select admin_id, admin_name, admin_email from " . TABLE_USERS . " where admin_email = '{$basis->admin_email}'");
-		if ($basis->admin_email == '' || $basis->admin_email <> $result->fields['admin_email']) throw new \core\classes\userException(ERROR_WRONG_EMAIL);
+		if ($basis->admin_email == '' || $basis->admin_email <> $result->fields['admin_email']) throw new \core\classes\userException(TEXT_YOU_ENTERED_THE_WRONG_EMAIL_ADDRESS);
 		$new_password = \core\classes\encryption::random_password(ENTRY_PASSWORD_MIN_LENGTH);
 		$admin_pass   = \core\classes\encryption::password($new_password);
 		$db->Execute("update " . TABLE_USERS . " set admin_pass = '$admin_pass' where admin_id = " . $result->fields['admin_id']);
@@ -393,7 +393,7 @@ class admin extends \core\classes\admin {
 		$html_msg['EMAIL_MESSAGE_HTML']   = sprintf(TEXT_EMAIL_MESSAGE, COMPANY_NAME, $new_password);
 		validate_send_mail($result->fields['admin_name'], $result->fields['admin_email'], TEXT_EMAIL_SUBJECT, $html_msg['EMAIL_MESSAGE_HTML'], COMPANY_NAME, EMAIL_FROM, $html_msg);
 		$messageStack->add(SUCCESS_PASSWORD_SENT, 'success');
-		gen_add_audit_log(GEN_LOG_RESEND_PW . $basis->admin_email);
+		gen_add_audit_log(TEXT_RE-SENT_PASSWORD_TO_EMAIL . ' -> ' . $basis->admin_email);
 		$basis->fireEvent("LoadLogIn");
 	}
 

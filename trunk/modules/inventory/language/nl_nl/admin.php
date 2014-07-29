@@ -19,7 +19,7 @@ define('TEXT_INVENTORY_ACCOUNT','Grootboek Voorraad');
 define('TEXT_COST_OF_SALES_ACCOUNT','Grootboek Kostprijs van verkopen');
 define('TEXT_COST_METHOD','Kosten Methode');
 define('TEXT_STOCK_ITEMS','Voorraad');
-define('TEXT_MS_ITEMS','Hoofd Voorraad');
+define('TEXT_MASTER_STOCK','Hoofd Voorraad');
 define('TEXT_ASSEMBLIES','Assemblages');
 define('TEXT_SERIALIZED','Serie');
 define('TEXT_NON-STOCK','Niet-voorraad');

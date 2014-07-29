@@ -18,7 +18,7 @@
 //
 //
 // Titles and Headings
-define('CONTACTS_CHART_SALES_TITLE','Monthly Sales');
+define('TEXT_MONTHLY_SALES','Monthly Sales');
 // Account table fields - common to all account types
 define('TEXT_CONTACT_SEARCH', 'Contact Search');
 define('ACT_POPUP_TERMS_WINDOW_TITLE', 'Payment Terms');
@@ -33,12 +33,12 @@ define('TEXT_NEW_CONTACT','New Contact');
 define('TEXT_SALES_REP','Sales Rep');
 define('TEXT_TRANSFER_ADDRESS','Transfer Address');
 define('TEXT_NEW_CALL','New Call');
-define('TEXT_RETURN_CALL','Returned Call');
+define('TEXT_RETURNED_CALL','Returned Call');
 define('TEXT_FOLLOW_UP_CALL','Follow Up');
 define('TEXT_NEW_LEAD','New Lead');
 
 // Address/contact identifiers
-define('GEN_PRIMARY_NAME', 'Name/Company');
+define('TEXT_NAME_OR_COMPANY', 'Name or Company');
 define('TEXT_EMPLOYEE_NAME', 'Employee Name');
 define('TEXT_ATTENTION', 'Attention');
 define('TEXT_ADDRESS1', 'Address1');
@@ -61,7 +61,7 @@ define('GEN_VENDOR_ID', 'Vendor ID:');
 define('TEXT_FACEBOOK_ID','Facebook ID');
 define('TEXT_TWITTER_ID','Twitter ID');
 define('TEXT_WEBSITE','Website');
-define('GEN_ACCOUNT_LINK','Link to Employee Account');
+define('TEXT_LINK_TO_EMPLOYEE_ACCOUNT','Link to Employee Account');
 // Targeted defines (to differentiate wording differences for different account types)
 // Text specific to branch contacts
 define('ACT_B_TYPE_NAME','Branches');
@@ -150,9 +150,9 @@ define('TEXT_CASH_ON_DELIVERY_SHORT','COD');
 define('TEXT_CASH_ON_DELIVERY','Cash On Delivery');
 define('TEXT_PREPAID','Prepaid');
 define('ACT_SPECIAL_TERMS', 'Due in number of days');
-define('ACT_END_OF_MONTH','Due end of month');
-define('ACT_DAY_NEXT_MONTH','Due on specified date');
-define('ACT_DUE_ON', 'Due on: ');
+define('TEXT_DUE_END_OF_MONTH','Due end of month');
+define('TEXT_DUE_ON_SPECIFIED_DATE','Due on specified date');
+define('TEXT_DUE_ON', 'Due on');
 define('TEXT_DISCOUNT', 'Discount ');
 define('TEXT_PERCENT', ' percent. ');
 define('TEXT_PERCENT_SHORT', '% ');

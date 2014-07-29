@@ -79,7 +79,7 @@ echo $toolbar->build_toolbar();
     <legend><?php echo SHIPPING_RECP_INFO; ?></legend>
     <table>
 	  <tr>
-		<td><?php echo GEN_PRIMARY_NAME; ?></td>
+		<td><?php echo TEXT_NAME_OR_COMPANY; ?></td>
 		<td><?php echo html_input_field('ship_primary_name', $sInfo->ship_primary_name, 'size="33" maxlength="32"', true); ?></td>
 	  </tr>
 	  <tr>

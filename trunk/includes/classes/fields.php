@@ -341,7 +341,7 @@ class fields {
 	$output .= '  <tr>' . chr(10);
 	$output .= '	<td>';
 	$output .= html_radio_field('entry_type', 'text', ($this->entry_type=='text' ? true : false), '', $disabled) . '&nbsp;' . TEXT_TEXT_FIELD . '<br />';
-	$output .= html_radio_field('entry_type', 'html', ($this->entry_type=='html' ? true : false), '', $disabled) . '&nbsp;' . TEXT_HTML_TEXT_FIELD . '</td>' . chr(10);
+	$output .= html_radio_field('entry_type', 'html', ($this->entry_type=='html' ? true : false), '', $disabled) . '&nbsp;' . TEXT_HTML_CODE . '</td>' . chr(10);
 	$output .= '	<td>' . INV_LABEL_MAX_NUM_CHARS;
 	$output .= '<br />' . html_input_field('length', ($this->length ? $this->length : DEFAULT_TEXT_LENGTH), $readonly . 'size="10" maxlength="9"');
 	$output .= '<br />' . TEXT_DEFAULT_VALUE . ' :<br />(' . TEXT_FOR_LENGTHS_LESS_THAN_256_CHARACTERS. ')';
@@ -350,7 +350,7 @@ class fields {
 	$output .= '  </tr>' . chr(10);
 	$output .= '  <tr class="ui-widget-content">' . chr(10);
 	$output .= '	<td>';
-	$output .= html_radio_field('entry_type', 'hyperlink',      ($this->entry_type=='hyperlink'      ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_HYPERLINK  . '<br />';
+	$output .= html_radio_field('entry_type', 'hyperlink',      ($this->entry_type=='hyperlink'      ? true : false), '', $disabled) . '&nbsp;' . TEXT_HYPER-LINK  . '<br />';
 	$output .= html_radio_field('entry_type', 'image_link',     ($this->entry_type=='image_link'     ? true : false), '', $disabled) . '&nbsp;' . TEXT_IMAGE_FILE_NAME . '<br />';
 	$output .= html_radio_field('entry_type', 'inventory_link', ($this->entry_type=='inventory_link' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_INVENTORY_LINK;
 	$output .= '	</td>' . chr(10);
@@ -360,7 +360,7 @@ class fields {
 	$output .= '	</td>' . chr(10);
 	$output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '	<td>' . html_radio_field('entry_type', 'integer', ($this->entry_type=='integer' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_INTEGER_FIELD . '</td>' . chr(10);
+	$output .= '	<td>' . html_radio_field('entry_type', 'integer', ($this->entry_type=='integer' ? true : false), '', $disabled) . '&nbsp;' . TEXT_INTEGER_NUMBER . '</td>' . chr(10);
 	$output .= '	<td>' . TEXT_INTEGER_RANGE;
 	$output .= '<br />' . html_pull_down_menu('integer_range', gen_build_pull_down($integer_lengths), $this->integer_range, $disabled);
 	$output .= '<br />' . TEXT_DEFAULT_VALUE." : " . html_input_field('integer_default', $this->integer_default, $readonly . 'size="16"');
@@ -376,11 +376,11 @@ class fields {
 	$output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
 	$output .= '	<td>';
-	$output .= html_radio_field('entry_type', 'multi_check_box', ($this->entry_type=='multi_check_box' ? true : false),'', $disabled) . '&nbsp;' . INV_LABEL_MULTI_SELECT_FIELD . '<br />';
-	$output .= html_radio_field('entry_type', 'drop_down', ($this->entry_type=='drop_down' ? true : false),'', $disabled)             . '&nbsp;' . INV_LABEL_DROP_DOWN_FIELD . '<br />';
+	$output .= html_radio_field('entry_type', 'multi_check_box', ($this->entry_type=='multi_check_box' ? true : false),'', $disabled) . '&nbsp;' . TEXT_MULTIPLE_OPTIONS_CHECKBOXES . '<br />';
+	$output .= html_radio_field('entry_type', 'drop_down', ($this->entry_type=='drop_down' ? true : false),'', $disabled)             . '&nbsp;' . TEXT_DROPDOWN_LIST . '<br />';
 	$output .= html_radio_field('entry_type', 'radio',     ($this->entry_type=='radio'     ? true : false),'', $disabled)             . '&nbsp;' . TEXT_RADIO_BUTTON;
 	$output .= '	</td>' . chr(10);
-	$output .= '	<td>' . INV_LABEL_CHOICES . '<br />' . html_textarea_field('radio_default', 35, 6, $this->radio_default, $readonly) . '<br />';
+	$output .= '	<td>' . TEXT_ENTER_SELECTION_STRING . '<br />' . html_textarea_field('radio_default', 35, 6, $this->radio_default, $readonly) . '<br />';
 	$output .= INV_LABEL_RADIO_EXPLANATION . '</td>' . chr(10);
 	$output .= '  </tr>' . chr(10);
 	$output .= '  <tr class="ui-widget-content">' . chr(10);

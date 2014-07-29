@@ -107,7 +107,7 @@ print_R($mail);
 	<tr>
 	  <td><?php echo TEXT_GL_DEPRECIATION_ACCOUNT; ?></td>
 	  <td><?php echo html_pull_down_menu('account_depreciation', $gl_array_list, $cInfo->account_depreciation); ?></td>
-	  <td><?php echo ASSETS_DATE_LAST_UPDATE; ?></td>
+	  <td><?php echo TEXT_LAST_MANTAINENCE_DATE; ?></td>
 	  <td><?php echo html_calendar_field($cal_date2); ?></td>
 	</tr>
 	<tr>
@@ -142,7 +142,7 @@ if (sizeof($attachments) > 0) {
     echo '</tr>' . chr(10);
   }
 } else {
-  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS . '</td></tr>';
+  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS_HAVE_BEEN_FOUND . '</td></tr>';
 } ?>
     </tbody>
    </table>

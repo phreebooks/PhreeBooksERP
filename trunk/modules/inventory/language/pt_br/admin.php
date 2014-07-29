@@ -40,7 +40,7 @@ define('TEXT_CHARGE_ITEMS','Taxar');
 define('TEXT_LABOR_ITEMS','Mão Obra');
 define('TEXT_SRV_ITEMS','Serviço');
 define('TEXT_NON-STOCK','Não Estoque');
-define('TEXT_MS_ITEMS','Estoque Mestre');
+define('TEXT_MASTER_STOCK','Estoque Mestre');
 define('TEXT_ASSEMBLIES','Montagens');
 define('TEXT_SERIALIZED','Serializado');
 define('TEXT_COST_METHOD','Método Custo');

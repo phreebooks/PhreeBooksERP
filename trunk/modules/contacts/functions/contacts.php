@@ -26,7 +26,7 @@ function draw_address_fields($entries, $add_type, $reset_button = false, $hide_l
 		$field .= '<tr><td><table class="ui-widget" style="border-collapse:collapse;width:100%;">';
 		$field .= '<thead class="ui-widget-header">' . chr(10);
 		$field .= '<tr>' . chr(10);
-		$field .= '  <th>' . GEN_PRIMARY_NAME .   '</th>' . chr(10);
+		$field .= '  <th>' . TEXT_NAME_OR_COMPANY .   '</th>' . chr(10);
 		$field .= '  <th>' . TEXT_ATTENTION .        '</th>' . chr(10);
 		$field .= '  <th>' . TEXT_ADDRESS1 .       '</th>' . chr(10);
 		$field .= '  <th>' . TEXT_CITY_TOWN .      '</th>' . chr(10);
@@ -66,7 +66,7 @@ function draw_address_fields($entries, $add_type, $reset_button = false, $hide_l
     $field .= '<tr><td><table class="ui-widget" style="border-collapse:collapse;width:100%;">' . chr(10);
 	if (!$short) {
 		$field .= '<tr>';
-		$field .= '  <td align="right">' . GEN_PRIMARY_NAME . '</td>' . chr(10);
+		$field .= '  <td align="right">' . TEXT_NAME_OR_COMPANY . '</td>' . chr(10);
 		$field .= '  <td>' . html_input_field("address[$add_type][primary_name]", $entries->address[$add_type]['primary_name'], 'size="49" maxlength="48"', true) . '</td>' . chr(10);
 		$field .= '  <td align="right">' . TEXT_TELEPHONE . '</td>' . chr(10);
 		$field .= '  <td>' . html_input_field("address[$add_type][telephone1]", $entries->address[$add_type]['telephone1'], 'size="21" maxlength="20"', ADDRESS_BOOK_TELEPHONE1_REQUIRED) . '</td>' . chr(10);
@@ -136,7 +136,7 @@ function get_chart_data($operation, $data) {
   switch ($operation) {
   	case 'annual_sales':
   		$output['type']       = 'column';
-  		$output['title']      = CONTACTS_CHART_SALES_TITLE;
+  		$output['title']      = TEXT_MONTHLY_SALES;
   		$output['label_text'] = TEXT_DATE;
   		$output['value_text'] = TEXT_TOTAL;
   		$id = $data[0];

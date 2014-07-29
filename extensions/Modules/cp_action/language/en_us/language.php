@@ -34,7 +34,7 @@ define('TEXT_AUDIT_NOTES','Audit Notes');
 define('TEXT_CA','CA');
 define('TEXT_CAPAS','CAPAs');
 define('TEXT_CAPA_NUM','CAPA Num');
-define('TEXT_CAPA_NOTES','Description of Issue');
+define('TEXT_DESCRIPTION_OF_ISSUE','Description of Issue');
 define('TEXT_ACTION_TYPE','Action Type');
 define('TEXT_PURCHASE_INVOICE_ID','Sales/Invoice #');
 define('TEXT_CREATION_DATE','Creation Date');

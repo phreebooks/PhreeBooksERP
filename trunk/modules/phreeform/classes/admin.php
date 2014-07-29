@@ -77,15 +77,15 @@ class admin extends \core\classes\admin {
     	parent::upgrade();
     	if (version_compare($this->status, '3.3', '==') ) write_configure('PDF_APP', 'TCPDF');
     	if (version_compare($this->status, '3.5', '<') ) {
-//			$id = $this->add_report_heading(TEXT_MISC, 'cust');
+//			$id = $this->add_report_heading(TEXT_MISCELLANEOUS, 'cust');
 //			$this->add_report_folder($id, TEXT_LETTERS, 'cust:ltr', 'fl');
-//			$id = $this->add_report_heading(TEXT_MISC, 'vend');
+//			$id = $this->add_report_heading(TEXT_MISCELLANEOUS, 'vend');
 //			$this->add_report_folder($id, TEXT_LETTERS, 'vend:ltr', 'fl');
 		}
 	}
 
 	function load_reports() {
-		$id = $this->add_report_heading(TEXT_MISC, 'misc');
+		$id = $this->add_report_heading(TEXT_MISCELLANEOUS, 'misc');
 		$this->add_report_folder($id, TEXT_REPORTS, 'misc',      'fr');
 		$this->add_report_folder($id, TEXT_FORMS,   'misc:misc', 'ff');
 		parent::load_reports();

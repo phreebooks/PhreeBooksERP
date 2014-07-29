@@ -21,7 +21,7 @@
 <div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
  <thead class="ui-widget-header">
-	  <tr><th colspan="4"><?php echo TEXT_SHIPPING_PREFS; ?></th></tr>
+	  <tr><th colspan="4"><?php echo TEXT_SHIPPING_ADDRESS_BOOK_SETTINGS; ?></th></tr>
  </thead>
  <tbody class="ui-widget-content">
 	  <tr>
@@ -67,7 +67,7 @@
 	    <td><?php echo html_pull_down_menu('shipping_default_residential', $sel_checked, $_POST['shipping_default_residential'] ? $_POST['shipping_default_residential'] : SHIPPING_DEFAULT_RESIDENTIAL, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo CD_10_05_DESC; ?></td>
+	    <td colspan="3"><?php echo TEXT_DEFAULT_PACKAGE_TYPE_TO_USE_FOR_SHIPPING; ?></td>
 	    <td><?php echo html_pull_down_menu('shipping_default_package_type', gen_build_pull_down($shipping_defaults['package_type']), $_POST['shipping_default_package_type'] ? $_POST['shipping_default_package_type'] : SHIPPING_DEFAULT_PACKAGE_TYPE, ''); ?></td>
 	  </tr>
 	  <tr>
@@ -87,7 +87,7 @@
 	    <td><?php echo '&nbsp;'; ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo CD_10_14_DESC; ?></td>
+	    <td><?php echo TEXT_SHIPMENT_INSURANCE_SELECTION_OPTION; ?></td>
 	    <td><?php echo html_pull_down_menu('shipping_default_insurance_show', $sel_show, $_POST['shipping_default_insurance_show'] ? $_POST['shipping_default_insurance_show'] : SHIPPING_DEFAULT_INSURANCE_SHOW, ''); ?></td>
 	    <td nowrap="nowrap"><?php echo TEXT_DEFAULT . ' ' . html_pull_down_menu('shipping_default_insurance_checked', $sel_checked, $_POST['shipping_default_insurance_checked'] ? $_POST['shipping_default_insurance_checked'] : SHIPPING_DEFAULT_INSURANCE_CHECKED, ''); ?></td>
 	    <td nowrap="nowrap"><?php echo TEXT_VALUE . ' ' . html_input_field('shipping_default_insurance_value', $_POST['shipping_default_insurance_value'] ? $_POST['shipping_default_insurance_value'] : SHIPPING_DEFAULT_INSURANCE_VALUE, 'size="10" style="text-align:right"'); ?></td>
@@ -100,7 +100,7 @@
 	  </tr>
 	  <tr class="ui-widget-header"><th colspan="4"><?php echo TEXT_SHIPMENT_DEFAULTS; ?></th></tr>
 	  <tr>
-	    <td><?php echo CD_10_26_DESC; ?></td>
+	    <td><?php echo TEXT_DELIVERY_CONFIRMATION_CHECKBOX; ?></td>
 	    <td><?php echo html_pull_down_menu('shipping_default_delivery_confirmation_show', $sel_show, $_POST['shipping_default_delivery_confirmation_show'] ? $_POST['shipping_default_delivery_confirmation_show'] : SHIPPING_DEFAULT_DELIVERY_COMFIRMATION_SHOW, ''); ?></td>
 	    <td nowrap="nowrap"><?php echo TEXT_DEFAULT . ' ' . html_pull_down_menu('shipping_default_delivery_confirmation_checked', $sel_checked, $_POST['shipping_default_delivery_confirmation_checked'] ? $_POST['shipping_default_delivery_confirmation_checked'] : SHIPPING_DEFAULT_DELIVERY_COMFIRMATION_CHECKED, ''); ?></td>
 	    <td nowrap="nowrap"><?php echo TEXT_VALUE . ' ' . html_pull_down_menu('shipping_default_delivery_confirmation_type', gen_build_pull_down($shipping_defaults['delivery_confirmation']), $_POST['shipping_default_delivery_confirmation_type'] ? $_POST['shipping_default_delivery_confirmation_type'] : SHIPPING_DEFAULT_DELIVERY_COMFIRMATION_TYPE, ''); ?></td>
@@ -112,7 +112,7 @@
 	    <td nowrap="nowrap"><?php echo TEXT_VALUE . ' ' . html_input_field('shipping_default_handling_charge_value', $_POST['shipping_default_handling_charge_value'] ? $_POST['shipping_default_handling_charge_value'] : SHIPPING_DEFAULT_HANDLING_CHARGE_VALUE, 'size="10" style="text-align:right"'); ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo CD_10_38_DESC; ?></td>
+	    <td><?php echo TEXT_ENABLE_THE_COD_CHECKBOX_AND_OPTIONS; ?></td>
 	    <td><?php echo html_pull_down_menu('shipping_default_cod_show', $sel_show, $_POST['shipping_default_cod_show'] ? $_POST['shipping_default_cod_show'] : SHIPPING_DEFAULT_COD_SHOW, ''); ?></td>
 	    <td nowrap="nowrap"><?php echo TEXT_DEFAULT . ' ' . html_pull_down_menu('shipping_default_cod_checked', $sel_checked, $_POST['shipping_default_cod_checked'] ? $_POST['shipping_default_cod_checked'] : SHIPPING_DEFAULT_COD_CHECKED, ''); ?></td>
 	    <td nowrap="nowrap"><?php echo TEXT_VALUE . ' ' . html_pull_down_menu('shipping_default_payment_type', gen_build_pull_down($shipping_defaults['cod_funds_code']), $_POST['shipping_default_payment_type'] ? $_POST['shipping_default_payment_type'] : SHIPPING_DEFAULT_PAYMENT_TYPE, ''); ?></td>
@@ -130,19 +130,19 @@
 	    <td><?php echo '&nbsp;'; ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo CD_10_52_DESC; ?></td>
+	    <td><?php echo TEXT_HAZARDOUS_MATERIAL_CHECKBOX; ?></td>
 	    <td><?php echo html_pull_down_menu('shipping_default_hazardous_show', $sel_show, $_POST['shipping_default_hazardous_show'] ? $_POST['shipping_default_hazardous_show'] : SHIPPING_DEFAULT_HAZARDOUS_SHOW, ''); ?></td>
 	    <td nowrap="nowrap"><?php echo TEXT_DEFAULT . ' ' . html_pull_down_menu('shipping_default_hazardous_checked', $sel_checked, $_POST['shipping_default_hazardous_checked'] ? $_POST['shipping_default_hazardous_checked'] : SHIPPING_DEFAULT_HAZARDOUS_MATERIAL_CHECKED, ''); ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo CD_10_56_DESC; ?></td>
+	    <td><?php echo TEXT_DRY_ICE_CHECKBOX; ?></td>
 	    <td><?php echo html_pull_down_menu('shipping_default_dry_ice_show', $sel_show, $_POST['shipping_default_dry_ice_show'] ? $_POST['shipping_default_dry_ice_show'] : SHIPPING_DEFAULT_DRY_ICE_SHOW, ''); ?></td>
 	    <td nowrap="nowrap"><?php echo TEXT_DEFAULT . ' ' . html_pull_down_menu('shipping_default_dry_ice_checked', $sel_checked, $_POST['shipping_default_dry_ice_checked'] ? $_POST['shipping_default_dry_ice_checked'] : SHIPPING_DEFAULT_DRY_ICE_CHECKED, ''); ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo CD_10_60_DESC; ?></td>
+	    <td><?php echo TEXT_RETURN_SERVICES_CHECKBOX; ?></td>
 	    <td><?php echo html_pull_down_menu('shipping_default_return_service_show', $sel_show, $_POST['shipping_default_return_service_show'] ? $_POST['shipping_default_return_service_show'] : SHIPPING_DEFAULT_RETURN_SERVICE_SHOW, ''); ?></td>
 	    <td nowrap="nowrap"><?php echo TEXT_DEFAULT . ' ' . html_pull_down_menu('shipping_default_return_service_checked', $sel_checked, $_POST['shipping_default_return_service_checked'] ? $_POST['shipping_default_return_service_checked'] : SHIPPING_DEFAULT_RETURN_SERVICE_CHECKED, ''); ?></td>
 	    <td nowrap="nowrap"><?php echo TEXT_VALUE . ' ' . html_pull_down_menu('shipping_default_return_service', gen_build_pull_down($shipping_defaults['return_label']), $_POST['shipping_default_return_service'] ? $_POST['shipping_default_return_service'] : SHIPPING_DEFAULT_RETURN_SERVICE, ''); ?></td>

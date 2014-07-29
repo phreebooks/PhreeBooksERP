@@ -88,7 +88,7 @@ switch ($_REQUEST['action']) {
   	case 'delete':
 	  	try{
 			\core\classes\user::validate_security($security_level, 4); // security check
-			if (!$glEntry->id) throw new \core\classes\userException(GL_ERROR_NO_DELETE);
+			if (!$glEntry->id) throw new \core\classes\userException(TEXT_THERE_WERE_ERRORS_DURING_PROCESSING . ' ' . TEXT_THE_RECORD_WAS_NOT_DELETED);
 			$delAssy = new \core\classes\journal($glEntry->id); // load the posted record based on the id submitted
 			// *************** START TRANSACTION *************************
 		  	$db->transStart();

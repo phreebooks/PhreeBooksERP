@@ -31,20 +31,20 @@ define ('CD_10_01_DESC', '. Legt die Standard-Maßeinheit für alle Pakete Gült
 define ('CD_10_02_DESC', '. Standardwährung für Sendungen nutzen Gültige Werte sind: US-Dollar, Euro');
 define ('CD_10_03_DESC', '. Paket Maßeinheit Gültige Werte sind: Zoll, Zentimeter');
 define ('CD_10_04_DESC', 'Default Wohnschiff Box (ungeprüft - Kommerzielle, geprüft - Wohn-)');
-define ('CD_10_05_DESC', 'Default-Paket Typ für den Versand verwenden');
+define ('TEXT_DEFAULT_PACKAGE_TYPE_TO_USE_FOR_SHIPPING', 'Default-Paket Typ für den Versand verwenden');
 define ('CD_10_06_DESC', 'Default Art der Pick-up Service für Ihr Paket Dienst');
 define ('CD_10_07_DESC', 'Default-Paket Dimensionen für ein Standard-Versand verwenden (in Einheiten oben angegebenen ).');
 define ('TEXT_ADDITIONAL_HANDLING_CHARGE_CHECKBOX', 'Zusätzliche Bearbeitungsgebühr Checkbox');
-define ('CD_10_14_DESC', 'Versicherung der Sendung Auswahlmöglichkeit.');
+define ('TEXT_SHIPMENT_INSURANCE_SELECTION_OPTION', 'Versicherung der Sendung Auswahlmöglichkeit.');
 define ('CD_10_20_DESC', 'Erlaube schwere Sendungen zu untergliedern, um kleine Paket-Dienst verwenden');
-define ('CD_10_26_DESC', 'Lieferbestätigung Checkbox');
+define ('TEXT_DELIVERY_CONFIRMATION_CHECKBOX', 'Lieferbestätigung Checkbox');
 define ('CD_10_32_DESC', 'Zusätzliche Bearbeitungsgebühr Checkbox');
-define ('CD_10_38_DESC', 'Aktivieren Sie die Checkbox und CSB-Optionen');
+define ('TEXT_ENABLE_THE_COD_CHECKBOX_AND_OPTIONS', 'Aktivieren Sie die Checkbox und CSB-Optionen');
 define ('TEXT_SATURDAY_PICKUP_CHECKBOX', 'Saturday Pickup Checkbox');
 define ('TEXT_SATURDAY_DELIVERY_CHECKBOX', 'Samstagszustellung Checkbox');
-define ('CD_10_52_DESC', 'Gefährliche Stoffe Checkbox');
-define ('CD_10_56_DESC', 'Trockeneis Checkbox');
-define ('CD_10_60_DESC', 'Return Service Checkbox');
+define ('TEXT_HAZARDOUS_MATERIAL_CHECKBOX', 'Gefährliche Stoffe Checkbox');
+define ('TEXT_DRY_ICE_CHECKBOX', 'Trockeneis Checkbox');
+define ('TEXT_RETURN_SERVICES_CHECKBOX', 'Return Service Checkbox');
 
 define ('SHIPPING_METHOD', 'Select "-Methode:');
 define ('SHIPPING_MONTH', 'Wählen Sie Monat:');

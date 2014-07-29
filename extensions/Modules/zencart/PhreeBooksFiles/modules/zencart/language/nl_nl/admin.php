@@ -13,10 +13,10 @@ define('MODULE_ZENCART_DESCRIPTION','De Zen Cart module interfaces PhreeBooks me
 define('ZENCART_ADMIN_URL','ZenCart Adres naar Admin (zonder slash aan het eind)');
 define('ZENCART_ADMIN_USERNAME','ZenCart admin gebruikesnaam (Kan het zelfde zijn aan die van PhreeBooks)');
 define('ZENCART_ADMIN_PASSWORD','ZenCart admin wachtwoord (Kan het zelfde zijn aan die van PhreeBooks)');
-define('MODULE_ZENCART_CONFIG_INFO','Configureer alstublieft de instellingen voor uw ZenCart e-store.');
+define('TEXT_PLEASE_SET_THE_CONFIGURATION_VALUES_TO_YOUR_ZENCART_E-STORE','Configureer alstublieft de instellingen voor uw ZenCart e-store.');
 define('ZENCART_TAX_CLASS','Voer de ZenCart Btw tarief in (Moet exact overeen komen met de die in ZenCart als Btw geïnd wordt)');
-define('ZENCART_USE_PRICES','Wilt u gebruik maken van prijslijsten?');
-define('ZENCART_TEXT_PRICE_SHEET','ZenCart gebruik Prijslijst');
+define('TEXT_DO_YOU_WANT_TO_USE_PRICE_SHEETS','Wilt u gebruik maken van prijslijsten');
+define('TEXT_PRICE_SHEET_TO_USE','Te Gebruiken Prijslijst');
 define('ZENCART_SHIP_ID','ZenCart numerieke code voor Verzonden Orders');
 define('ZENCART_PARTIAL_ID','ZenCart numerieke code voor Gedeeltelijk Verstuurde Orders');
 define('ZENCART_CONFIG_SAVED','Zencart configuratie waardes bijgewerkt / opgeslagen.');

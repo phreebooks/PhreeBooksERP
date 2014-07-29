@@ -47,17 +47,17 @@ echo $toolbar->build_toolbar();
       <td><?php echo html_button_field('bulkupload', TEXT_BULK_UPLOAD, 'onclick="submitToDo(\'bulkupload\')"'); ?></td>
 	</tr>
     <tr><td colspan="2">&nbsp;</td></tr>
-    <tr><th colspan="2"><?php echo ZENCART_PRODUCT_SYNC_TITLE; ?></th></tr>
+    <tr><th colspan="2"><?php echo TEXT_SYNCHRONIZE_PRODUCTS; ?></th></tr>
     <tr><td colspan="2"><?php echo ZENCART_PRODUCT_SYNC_INFO; ?></td></tr>
     <tr>
       <td align="right"><?php echo ZENCART_PRODUCT_SYNC_TEXT; ?></td>
-      <td><?php echo html_button_field('sync', ZENCART_PRODUCT_SYNC_BTN, 'onclick="submitToDo(\'sync\')"'); ?></td>
+      <td><?php echo html_button_field('sync', TEXT_SYNCHRONIZE, 'onclick="submitToDo(\'sync\')"'); ?></td>
 	</tr>
     <tr><td colspan="2">&nbsp;</td></tr>
     <tr><th colspan="2"><?php echo TEXT_CONFIRM_SHIPMENTS; ?></th></tr>
     <tr><td colspan="2"><?php echo ZENCART_SHIP_CONFIRM_INFO; ?></td></tr>
     <tr>
-      <td align="right"><?php echo ZENCART_TEXT_CONFIRM_ON; ?></td>
+      <td align="right"><?php echo TEXT_FOR_ORDERS_SHIPPED_ON; ?></td>
       <td><?php echo html_calendar_field($cal_zc); ?></td>
 	</tr>
     <tr>

@@ -28,7 +28,7 @@ $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('10');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build_toolbar();
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
@@ -38,14 +38,14 @@ echo $toolbar->build_toolbar();
  <tbody class="ui-widget-content">
     <tr>
 	  <td><?php echo GL_UTIL_BEG_BAL_TEXT; ?></td>
-	  <td align="right"><?php echo html_button_field('beg_balances', GL_BTN_BEG_BAL, 'onclick="submitToDo(\'beg_balances\')"'); ?></td>
+	  <td align="right"><?php echo html_button_field('beg_balances', TEXT_ENTER_BEGINNING_BALANCES, 'onclick="submitToDo(\'beg_balances\')"'); ?></td>
     </tr>
  </tbody>
 </table>
 </fieldset>
 
 <fieldset>
-<legend><?php echo HEADING_MODULE_IMPORT; ?></legend>
+<legend><?php echo TEXT_MODULE_DATA_IMPORT_OR_EXPORT; ?></legend>
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
  <thead class="ui-widget-header">
 	<tr><th colspan="4"><?php echo TEXT_AVAILABLE_MODULES; ?></th></tr>

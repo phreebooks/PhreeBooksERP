@@ -21,7 +21,7 @@
 <?php
   if (sizeof($admin_classes['shipping']->tables) > 0) {
     echo "  <fieldset><!-- db table stats -->\n";
-    echo "    <legend>" . TEXT_TABLE_STATS . "</legend>\n";
+    echo "    <legend>" . TEXT_TABLE_STATISTICS . "</legend>\n";
     echo "    <table class=\"ui-widget\" style=\"border-style:none;width:100%\">\n";
     echo "      <thead class=\"ui-widget-header\">\n";
     echo "        <tr>\n";

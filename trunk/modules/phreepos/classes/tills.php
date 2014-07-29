@@ -38,7 +38,7 @@ class tills {
   function btn_save($id = '') {
   	global $db, $currencies;
 	\core\classes\user::validate_security($this->security_id, 2);
-	if ($this->gl_acct_id == '') throw new \core\classes\userException(GL_SELECT_STD_CHART);
+	if ($this->gl_acct_id == '') throw new \core\classes\userException(TEXT_SELECT_A_STANDARD_CHART);
 	$sql_data_array = array(
 		'description' 		    => $this->description,
 		'store_id'    		    => $this->store_id,
@@ -150,7 +150,7 @@ class tills {
 	$output .= '    <td>' . html_pull_down_menu('dif_gl_acct_id', gen_coa_pull_down(SHOW_FULL_GL_NAMES, true, true, false, $restrict_types = array(30)), $this->dif_gl_acct_id) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
     $output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . INV_ENTRY_ITEM_TAXABLE . '</td>' . chr(10);
+	$output .= '    <td>' . TEXT_DEFAULT_SALES_TAX . '</td>' . chr(10);
 	$output .= '    <td>' . html_pull_down_menu('tax_id', $tax_rates, $this->tax_id) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
     $output .= '  <tr>' . chr(10);
@@ -184,7 +184,7 @@ class tills {
 	$output .= '    <td>' . html_input_field('printer_starting_line', $this->printer_starting_line) . '</td>' . chr(10);
 	$output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . PHREEPOS_RECEIPT_PRINTER_CLOSING_LINE_DESC . '<a href="' . DIR_WS_ADMIN.'modules/phreepos/printer_codes.htm">'. TEXT_DRAWER_CODES . '</a> <br><br></td>' . chr(10);
+	$output .= '    <td>' . PHREEPOS_RECEIPT_PRINTER_CLOSING_LINE_DESC . '<a href="' . DIR_WS_ADMIN.'modules/phreepos/printer_codes.htm">'. TEXT_OPEN_DRAWER_CODES . '</a> <br><br></td>' . chr(10);
 	$output .= '    <td>' . html_input_field('printer_closing_line', $this->printer_closing_line) . '</td>' . chr(10);
 	$output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);

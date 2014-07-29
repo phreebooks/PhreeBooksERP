@@ -334,6 +334,6 @@ $cal_to = array(
 $include_header   = false;
 $include_footer   = false;
 $include_template = $IncludePage;
-define('PAGE_TITLE', PHREEFORM_REPORT_GEN);
+define('PAGE_TITLE', TEXT_PHREEFORM_GENERATOR);
 
 ?>

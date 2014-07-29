@@ -18,7 +18,7 @@
 //
 // Enter the new menu category heading if necessary
 define('TEXT_HOME', 'Home');
-define('TEXT_LOGOUT','Log Out');
+define('TEXT_LOG_OUT','Log Out');
 define('TEXT_COMPANY','Company');
 define('MENU_HEADING_TOOLS','Tools');
 define('TEXT_MY_PROFILE','My Profile');

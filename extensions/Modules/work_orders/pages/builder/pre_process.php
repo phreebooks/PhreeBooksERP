@@ -243,7 +243,7 @@ switch ($_REQUEST['action']) {
 	  'i.sku'           => TEXT_SKU,
 	  'm.description'   => TEXT_DESCRIPTION,
 	  'm.revision'      => TEXT_REVISION,
-	  'm.revision_date' => TEXT_REVISION_DATE,
+	  'm.revision_date' => TEXT_REVISION_DATE_SHORT,
 	);
 	$result      = html_heading_bar($heading_array);
 	$list_header = $result['html_code'];

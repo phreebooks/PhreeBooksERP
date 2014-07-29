@@ -37,7 +37,7 @@ class orders extends \core\classes\journal {
 	public $gl_acct_id          = DEF_GL_ACCT;
 	public $currencies_code     = DEFAULT_CURRENCY;
 	public $currencies_value    = '1.0';
-	public $bill_primary_name   = GEN_PRIMARY_NAME;
+	public $bill_primary_name   = TEXT_NAME_OR_COMPANY;
 	public $bill_contact        = TEXT_ATTENTION;
 	public $bill_address1       = TEXT_ADDRESS1;
 	public $bill_address2       = TEXT_ADDRESS2;
@@ -79,7 +79,7 @@ class orders extends \core\classes\journal {
 		  case 13:
 			$this->disc_gl_acct_id     = AR_DISCOUNT_SALES_ACCOUNT;
 			$this->ship_gl_acct_id     = AR_DEF_FREIGHT_ACCT;
-			$this->ship_primary_name   = GEN_PRIMARY_NAME;
+			$this->ship_primary_name   = TEXT_NAME_OR_COMPANY;
 			$this->ship_contact        = TEXT_ATTENTION;
 			$this->ship_address1       = TEXT_ADDRESS1;
 			$this->ship_address2       = TEXT_ADDRESS2;

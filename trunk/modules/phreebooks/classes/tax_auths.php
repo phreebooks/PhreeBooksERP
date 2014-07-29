@@ -120,7 +120,7 @@ class tax_auths {
 	$output .= '  </thead>' . "\n";
 	$output .= '  <tbody class="ui-widget-content">' . "\n";
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td colspan="2">' . ($action=='new' ? SETUP_TAX_AUTH_INSERT_INTRO : TEXT_EDIT_INTRO) . '</td>' . chr(10);
+	$output .= '    <td colspan="2">' . ($action=='new' ? SETUP_TAX_AUTH_INSERT_INTRO : TEXT_PLEASE_MAKE_ANY_NECESSARY_CHANGES) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
 	$output .= '    <td>' . SETUP_INFO_DESC_SHORT . '</td>' . chr(10);
@@ -135,7 +135,7 @@ class tax_auths {
 	$output .= '    <td>' . html_pull_down_menu('account_id', gen_coa_pull_down(), $this->account_id) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . SETUP_INFO_VENDOR_ID . '</td>' . chr(10);
+	$output .= '    <td>' . TEXT_VENDOR_TO_SUBMIT_FUNDS_TO . ':</td>' . chr(10);
 	$output .= '    <td>' . html_pull_down_menu('vendor_id', gen_get_contact_array_by_type('v'), $this->vendor_id) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);

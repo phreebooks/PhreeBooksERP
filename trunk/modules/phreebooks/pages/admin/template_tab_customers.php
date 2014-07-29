@@ -73,7 +73,7 @@
 		  <?php echo html_input_field('ar_prepayment_discount_percent', $_POST['ar_prepayment_discount_percent'] ? $_POST['ar_prepayment_discount_percent'] : AR_PREPAYMENT_DISCOUNT_PERCENT, 'size="10" style="text-align:right"'); ?>
 	      <?php echo CD_02_13_DESC; ?>
 		  <?php echo html_input_field('ar_prepayment_discount_days', $_POST['ar_prepayment_discount_days'] ? $_POST['ar_prepayment_discount_days'] : AR_PREPAYMENT_DISCOUNT_DAYS, 'size="5" style="text-align:right"'); ?>
-	      <?php echo CD_02_14_DESC; ?>
+	      <?php echo TEXT_DAYS . ' ' .  TEXT_TOTAL_DUE_IN; ?>
 		  <?php echo html_input_field('ar_num_days_due', $_POST['ar_num_days_due'] ? $_POST['ar_num_days_due'] : AR_NUM_DAYS_DUE, 'size="5" style="text-align:right"'); ?>
 	      <?php echo TEXT_DAYS; ?>
 		</td>
@@ -90,27 +90,27 @@
 	 </thead>
 	 <tbody class="ui-widget-content">
 	  <tr>
-	    <td><?php echo CD_02_20_DESC; ?></td>
+	    <td><?php echo TEXT_TEXT_HEADING_USED_ON_REPORTS_TO_SHOW_AGING_FOR_DUE_DATE_NUMBER . ' 1'; ?></td>
 	    <td><?php echo html_input_field('ar_aging_heading_1', $_POST['ar_aging_heading_1'] ? $_POST['ar_aging_heading_1'] : AR_AGING_HEADING_1, ''); ?></td>
-	    <td><?php echo CD_02_16_DESC; ?></td>
+	    <td><?php echo TEXT_SETS_THE_START_DATE_FOR_ACCOUNT_AGING; ?></td>
 	    <td><?php echo html_pull_down_menu('ar_account_aging_start', $sel_inv_due, $_POST['ar_account_aging_start'] ? $_POST['ar_account_aging_start'] : AR_ACCOUNT_AGING_START, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo CD_02_21_DESC; ?></td>
+	    <td><?php echo TEXT_TEXT_HEADING_USED_ON_REPORTS_TO_SHOW_AGING_FOR_DUE_DATE_NUMBER . ' 2'; ?></td>
 	    <td><?php echo html_input_field('ar_aging_heading_2', $_POST['ar_aging_heading_2'] ? $_POST['ar_aging_heading_2'] : AR_AGING_HEADING_2, ''); ?></td>
-	    <td><?php echo CD_02_17_DESC; ?></td>
+	    <td><?php echo TEXT_DETERMINES_THE_NUMBER_OF_DAYS_FOR_THE_FIRST_WARNING_OF_PAST_DUE_INVOICES . ' ' . TEXT_THE_PERIOD_STARTS_FROM_THE_ACCOUNT_AGING_START_DATE_FIELD; ?></td>
 	    <td><?php echo html_input_field('ar_aging_period_1', $_POST['ar_aging_period_1'] ? $_POST['ar_aging_period_1'] : AR_AGING_PERIOD_1, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo CD_02_22_DESC; ?></td>
+	    <td><?php echo TEXT_TEXT_HEADING_USED_ON_REPORTS_TO_SHOW_AGING_FOR_DUE_DATE_NUMBER . ' 3'; ?></td>
 	    <td><?php echo html_input_field('ar_aging_heading_3', $_POST['ar_aging_heading_3'] ? $_POST['ar_aging_heading_3'] : AR_AGING_HEADING_3, ''); ?></td>
-	    <td><?php echo CD_02_18_DESC; ?></td>
+	    <td><?php echo TEXT_DETERMINES_THE_NUMBER_OF_DAYS_FOR_THE_SECOND_WARNING_OF_PAST_DUE_INVOICES . ' ' . TEXT_THE_PERIOD_STARTS_FROM_THE_ACCOUNT_AGING_START_DATE_FIELD; ?></td>
 	    <td><?php echo html_input_field('ar_aging_period_2', $_POST['ar_aging_period_2'] ? $_POST['ar_aging_period_2'] : AR_AGING_PERIOD_2, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo CD_02_23_DESC; ?></td>
+	    <td><?php echo TEXT_TEXT_HEADING_USED_ON_REPORTS_TO_SHOW_AGING_FOR_DUE_DATE_NUMBER . ' 4'; ?></td>
 	    <td><?php echo html_input_field('ar_aging_heading_4', $_POST['ar_aging_heading_4'] ? $_POST['ar_aging_heading_4'] : AR_AGING_HEADING_4, ''); ?></td>
-	    <td><?php echo CD_02_19_DESC; ?></td>
+	    <td><?php echo TEXT_DETERMINES_THE_NUMBER_OF_DAYS_FOR_THE_THIRD_WARNING_OF_PAST_DUE_INVOICES . ' ' . TEXT_THE_PERIOD_STARTS_FROM_THE_ACCOUNT_AGING_START_DATE_FIELD;; ?></td>
 	    <td><?php echo html_input_field('ar_aging_period_3', $_POST['ar_aging_period_3'] ? $_POST['ar_aging_period_3'] : AR_AGING_PERIOD_3, ''); ?></td>
 	  </tr>
 	 </tbody>

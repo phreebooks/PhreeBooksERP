@@ -26,7 +26,7 @@ var num_price_levels = <?php echo MAX_NUM_PRICE_LEVELS; ?>;
 <?php echo js_calendar_init($cal_ps); ?>
 
 function init() {
-  <?php 
+  <?php
   if ($_REQUEST['action'] <> 'new' && $_REQUEST['action'] <> 'edit') {
     echo '  document.getElementById(\'search_text\').focus();';
     echo '  document.getElementById(\'search_text\').select();';
@@ -41,7 +41,7 @@ function check_form() {
   var sheetName = document.getElementById('sheet_name').value;
   if (!sheetName) {
   	error = 1;
-  	error_message += '<?php echo JS_ERROR_NO_SHEET_NAME; ?>';
+  	error_message += '<?php echo TEXT_THE_PRICE_SHEET_NAME_CANNOT_BE_EMPTY; ?>';
   }
 <?php } ?>
 

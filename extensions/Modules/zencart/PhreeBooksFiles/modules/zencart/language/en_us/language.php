@@ -29,15 +29,15 @@ define('ZENCART_BULK_UPLOAD_INFO','Bulk upload all products selected to be displ
 define('TEXT_BULK_UPLOAD_PRODUCTS_TO_E-STORE','Bulk upload products to e-store');
 define('TEXT_INCLUDE_IMAGES','Include Images');
 define('ZENCART_BULK_UPLOAD_BTN','Bulk Upload');
-define('ZENCART_PRODUCT_SYNC_TITLE','Synchronize Products');
+define('TEXT_SYNCHRONIZE_PRODUCTS','Synchronize Products');
 define('ZENCART_PRODUCT_SYNC_INFO','Synchronize active products from the PhreeBooks database (set to show in the catalog and active) with current listings from ZenCart. Any SKUs that should not be listed on Zencart are displayed. They need to be removed from ZenCart manually through the ZenCart admin interface.');
 define('ZENCART_PRODUCT_SYNC_TEXT','Synchronize products with e-store');
 define('ZENCART_DELETE_ZENCART','Also delete products in ZenCart that are not falgged to be there.');
-define('ZENCART_PRODUCT_SYNC_BTN','Synchronize');
+define('TEXT_SYNCHRONIZE','Synchronize');
 define('ZENCART_SHIP_CONFIRM_TITLE','Confirm Shipments');
 define('ZENCART_SHIP_CONFIRM_INFO','Confirms all shipments on the date selected from the Shipping Manager and sets the status in ZenCart. Completed orders and partially shipped orders are updated. Email notifications to the customer are not sent.');
 define('TEXT_SEND_SHIPMENT_CONFIRMATIONS','Send shipment confirmations');
-define('ZENCART_TEXT_CONFIRM_ON','For orders shipped on');
+define('TEXT_FOR_ORDERS_SHIPPED_ON','For orders shipped on');
 define('ZENCART_SHIP_CONFIRM_BTN','Confirm Shipments');
 // Error Messages
 define('ZENCART_ERROR_NO_ITEMS','No inventory items were selected to upload to the ZenCart catalog. Looking for the checkbox field named catalog to identify items to be uploaded.');

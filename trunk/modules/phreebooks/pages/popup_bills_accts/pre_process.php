@@ -54,7 +54,7 @@ switch ($_REQUEST['action']) {
 /*****************   prepare to display templates  *************************/
 // build the list header
 $heading_array = array(
-  'm.bill_primary_name'                     => GEN_PRIMARY_NAME,
+  'm.bill_primary_name'                     => TEXT_NAME_OR_COMPANY,
   'm.bill_city_town, m.bill_state_province' => TEXT_CITY_TOWN,
   'm.bill_state_province, m.bill_city_town' => TEXT_STATE_PROVINCE,
   'm.postal_code'                           => TEXT_POSTAL_CODE,

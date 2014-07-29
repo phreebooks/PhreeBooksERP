@@ -45,7 +45,7 @@ class tabs {
 		} else {
 		  // Test for duplicates.
 		  $result = $db->Execute("select id from " . TABLE_EXTRA_TABS . " where module_id='" . $this->module . "' and tab_name='" . $this->tab_name . "'");
-		  if ($result->RecordCount() > 0) throw new \core\classes\userException(EXTRA_TABS_DELETE_ERROR);
+		  if ($result->RecordCount() > 0) throw new \core\classes\userException(TEXT_THIS_TAB_NAME_ALREADY_EXISTS_PLEASE_USE_ANOTHER_NAME);
 		  db_perform(TABLE_EXTRA_TABS, $sql_data_array);
 		  gen_add_audit_log($this->module .' '. TEXT_TABS . ' - '. TEXT_ADD, $this->tab_name);
 		}
@@ -106,7 +106,7 @@ class tabs {
 	   $output .= '  </thead>' . "\n";
 	   $output .= '  <tbody class="ui-widget-content">' . "\n";
 	   $output .= '  <tr>' . chr(10);
-	   $output .= '    <td colspan="2">' . ($action=='new' ? TEXT_TAB_INSERT_INTRO : TEXT_EDIT_INTRO) . '</td>' . chr(10);
+	   $output .= '    <td colspan="2">' . ($action=='new' ? TEXT_TAB_INSERT_INTRO : TEXT_PLEASE_MAKE_ANY_NECESSARY_CHANGES) . '</td>' . chr(10);
 	   $output .= '  </tr>' . chr(10);
 	   $output .= '  <tr>' . chr(10);
 	   $output .= '    <td>' . TEXT_TAB_TITLE . '</td>' . chr(10);

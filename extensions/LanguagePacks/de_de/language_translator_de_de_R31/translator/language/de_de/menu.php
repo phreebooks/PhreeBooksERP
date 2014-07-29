@@ -23,7 +23,7 @@
 //
 
 // Menu Titles
-define ('MENU_HEADING_TRANSLATOR', 'Sprache Übersetzer-Tool');
+define ('TEXT_LANGUAGE_TRANSLATOR_TOOL', 'Sprache Übersetzer-Tool');
 define ('TEXT_TRANSLATOR_ASSISTANT', 'Translator Assistant');
 
 ?>

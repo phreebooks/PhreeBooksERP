@@ -248,7 +248,7 @@ class admin {
 	    $sql = "select admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security
 		  from " . TABLE_USERS . " where admin_name = '" . db_input($admin_name) . "'";
 	    if ($db->db_connected) $result = $db->Execute($sql);
-		if (!$result || $admin_name <> $result->fields['admin_name'] || $result->fields['inactive']) throw new \core\classes\userException(sprintf(GEN_LOG_LOGIN_FAILED, ERROR_WRONG_LOGIN, $admin_name),  "phreedom", "main", 'template_login');
+		if (!$result || $admin_name <> $result->fields['admin_name'] || $result->fields['inactive']) throw new \core\classes\userException(sprintf(GEN_LOG_LOGIN_FAILED, TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD, $admin_name),  "phreedom", "main", 'template_login');
 		\core\classes\encryption::validate_password($admin_pass, $result->fields['admin_pass']);
 		$_SESSION['admin_id']       = $result->fields['admin_id'];
 		$_SESSION['display_name']   = $result->fields['display_name'];

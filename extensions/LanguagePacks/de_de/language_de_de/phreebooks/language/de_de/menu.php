@@ -23,7 +23,7 @@
 //
 
 // Geben Sie das neue Menü Kategorie Überschrift gegebenenfalls
-define ('MENU_HEADING_GL', 'Hauptbuch');
+define ('TEXT_GENERAL_LEDGER', 'Hauptbuch');
 define ('TEXT_BANKING', 'Banking');
 
 // Menü Titel

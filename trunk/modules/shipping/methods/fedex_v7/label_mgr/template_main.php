@@ -47,7 +47,7 @@ echo $toolbar->build_toolbar();
     <legend><?php echo SHIPPING_RECP_INFO; ?></legend>
     <table>
 	  <tr>
-		<td><?php echo GEN_PRIMARY_NAME; ?></td>
+		<td><?php echo TEXT_NAME_OR_COMPANY; ?></td>
 		<td><?php echo html_input_field('ship_primary_name', $sInfo->ship_primary_name, 'size="33" maxlength="32"', true); ?></td>
 	  </tr>
 	  <tr>
@@ -87,10 +87,10 @@ echo $toolbar->build_toolbar();
   </div>
   <div>
     <fieldset>
-    <legend><?php echo SHIPPING_EMAIL_NOTIFY; ?></legend>
+    <legend><?php echo TEXT_EMAIL_NOTIFICATIONS; ?></legend>
     <table>
 	  <tr>
-		<td><?php echo SHIPPING_EMAIL_RECIPIENT; ?></td>
+		<td><?php echo TEXT_E-MAIL_RECIPIENT; ?></td>
 		<td>
 			<?php echo html_checkbox_field('email_rcp_ship', '0', $sInfo->email_rcp_ship = true, '') . ' ' . TEXT_SHIP . ' ';
 			echo html_checkbox_field('email_rcp_excp', '1', $sInfo->email_rcp_excp, '') . ' ' . TEXT_EXCEPTION . ' ';
@@ -102,7 +102,7 @@ echo $toolbar->build_toolbar();
 		<td><?php echo html_input_field('ship_email', $sInfo->ship_email, 'size="33" maxlength="32"'); ?></td>
 	  </tr>
 	  <tr>
-		<td><?php echo SHIPPING_EMAIL_SENDER; ?></td>
+		<td><?php echo TEXT_E-MAIL_SENDER; ?></td>
 		<td>
 			<?php echo html_checkbox_field('email_sndr_ship', '0', $sInfo->email_sndr_ship, '') . ' ' . TEXT_SHIP . ' ';
 			echo html_checkbox_field('email_sndr_excp', '1', $sInfo->email_sndr_excp = true, '') . ' ' . TEXT_EXCEPTION . ' ';

@@ -53,7 +53,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 		'journal_id'          => JOURNAL_ID,
 		'post_date'           => date('Y-m-d'),
 		'total_amount'        => $total_amount,
-		'description'         => GL_ENTRY_TITLE,
+		'description'         => TEXT_GENERAL_JOURNAL_ENTRY,
 		'bill_primary_name'   => $transaction->description,
 		'purchase_invoice_id' => '',
 		'admin_id'            => $_SESSION['admin_id'],

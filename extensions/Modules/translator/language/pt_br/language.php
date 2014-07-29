@@ -42,7 +42,7 @@ define('TRANSLATOR_MODULE_CREATE','Módulo para atribuir tradução:');
 define('TRANSLATOR_RELEASE_CREATE','Número versão para criar:');
 define('TRANSLATOR_UPLOAD_ZIPFILE','Selecione um arquivo zip para subir e inserir na base de dados de traduções:');
 define('MESSAGE_DELETE_TRANSLATION','Tem certeza de que quer remover esta tradução?');
-define('TEXT_CONSTANT','Constante Definida');
+define('TEXT_DEFINED_CONSTANT','Constante Definida');
 define('TEXT_DEFAULT_TRANSLATION','Tradução Corrente:');
 define('TEXT_STATS_VALUES','%s de %s traduziods (%s porcento)');
 define('TEXT_TRANSLATION_RECORDS_SAVED','Registros de Tradução Gravados:');

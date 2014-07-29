@@ -37,7 +37,7 @@
 	    <td align="center"><?php echo html_pull_down_menu('inv_stock_default_costing',  $cost_methods, $_POST['inv_stock_default_costing'] ? $_POST['inv_stock_default_costing'] : INV_STOCK_DEFAULT_COSTING, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo TEXT_MS_ITEMS; ?></td>
+	    <td><?php echo TEXT_MASTER_STOCK; ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_master_stock_default_sales', $inc_chart,  $_POST['inv_master_stock_default_sales'] ? $_POST['inv_master_stock_default_sales'] : INV_MASTER_STOCK_DEFAULT_SALES, ''); ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_master_stock_default_inventory', $inv_chart,  $_POST['inv_master_stock_default_inventory'] ? $_POST['inv_master_stock_default_inventory'] : INV_MASTER_STOCK_DEFAULT_INVENTORY, ''); ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_master_stock_default_cos', $cog_chart,  $_POST['inv_master_stock_default_cos'] ? $_POST['inv_master_stock_default_cos'] : INV_MASTER_STOCK_DEFAULT_COS, ''); ?></td>

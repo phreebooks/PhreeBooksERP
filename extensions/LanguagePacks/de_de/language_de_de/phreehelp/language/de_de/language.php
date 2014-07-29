@@ -34,10 +34,10 @@ define ('TEXT_DOCUMENT', 'Document');
 define ('TEXT_EXIT', 'Beenden');
 define ('TEXT_FOLDER', 'Ordner');
 define ('TEXT_FORWARD', 'Sturm');
-define ('TEXT_SUPPORT', 'PhreeSoft Online Support');
+define ('TEXT_PHREESOFT_ONLINE_SUPPORT', 'PhreeSoft Online Support');
 define ('TEXT_KEYWORD', 'Geben Sie das Stichwort zu finden:');
 define ('TEXT_YOUR_SEARCH_RESULTS', 'Ihre Resultate');
-define ('TEXT_UNTITLED', 'Untitled Document');
+define ('TEXT_UNTITLED_DOCUMENT', 'Untitled Document');
 define ('TEXT_MANUAL', 'Manual');
 
 // Fehlermeldungen

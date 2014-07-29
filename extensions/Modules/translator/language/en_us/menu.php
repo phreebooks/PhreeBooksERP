@@ -17,7 +17,7 @@
 //  Path: /modules/translator/language/en_us/menu.php
 //
 // Menu Titles
-define('MENU_HEADING_TRANSLATOR', 'Language Translator Tool');
+define('TEXT_LANGUAGE_TRANSLATOR_TOOL', 'Language Translator Tool');
 define('TEXT_TRANSLATOR_ASSISTANT', 'Translator Assistant');
 
 ?>

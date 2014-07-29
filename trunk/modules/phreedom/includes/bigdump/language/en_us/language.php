@@ -18,7 +18,7 @@
 //
 
 define('TEXT_FILE_NAME','Filename');
-define('TEXT_MISC','Misc');
+define('TEXT_MISCELLANEOUS','Misc');
 define('TEXT_QUERY','Query: ');
 define('TEXT_MYSQL','MYSQL: ');
 define('TEXT_PROCESSING_FILE','Processing file: ');

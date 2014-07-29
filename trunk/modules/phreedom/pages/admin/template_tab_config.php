@@ -42,7 +42,7 @@
     <td><?php echo html_pull_down_menu('enable_encryption', $sel_yes_no, $_POST['enable_encryption'] ? $_POST['enable_encryption'] : ENABLE_ENCRYPTION, ''); ?></td>
   </tr>
   <tr>
-    <td><?php echo CD_07_17_DESC; ?></td>
+    <td><?php echo TEXT_MINIMUM_LENGTH_OF_PASSWORD; ?></td>
     <td><?php echo html_input_field('entry_password_min_length', $_POST['entry_password_min_length'] ? $_POST['entry_password_min_length'] : ENTRY_PASSWORD_MIN_LENGTH, ''); ?></td>
   </tr>
   <tr>

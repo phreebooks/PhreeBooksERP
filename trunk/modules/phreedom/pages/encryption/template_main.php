@@ -33,11 +33,11 @@ echo $toolbar->build_toolbar();
 ?>
 <h1><?php echo TEXT_DATA_ENCRYPTION; ?></h1>
 <fieldset>
-<legend><?php echo GEN_ADM_TOOLS_SET_ENCRYPTION_KEY; ?></legend>
+<legend><?php echo TEXT_ENTER_ENCRYPTION_KEY; ?></legend>
 <p><?php echo GEN_ENCRYPTION_GEN_INFO; ?></p>
 <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto">
  <thead class="ui-widget-header">
-  <tr><th colspan="2"><?php echo GEN_ENCRYPTION_COMP_TYPE; ?></th></tr>
+  <tr><th colspan="2"><?php echo TEXT_ENTER_THE_ENCRYPTION_KEY_USED_TO_STORE_SECURE_DATA; ?></th></tr>
  </thead>
  <tbody class="ui-widget-content">
   <tr>
@@ -67,7 +67,7 @@ echo $toolbar->build_toolbar();
 	  <td><?php echo html_password_field('new_encrypt_key'); ?></td>
 	</tr>
     <tr>
-	  <td><?php echo GEN_ADM_TOOLS_ENCRYPT_PW_CONFIRM; ?></td>
+	  <td><?php echo TEXT_RE-ENTER_NEW_ENCRYPTION_KEY; ?></td>
 	  <td><?php echo html_password_field('new_encrypt_confirm'); ?></td>
 	</tr>
     <tr>

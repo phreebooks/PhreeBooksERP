@@ -69,7 +69,7 @@ echo $toolbar->build_toolbar();
 		<td align="right"><?php echo html_input_field('credit_total', '0', 'readonly="readonly" style="text-align:right" size="13"'); ?></td>
 	  </tr>
 	  <tr>
-		<td colspan="4" align="right"><?php echo GL_OUT_OF_BALANCE; ?></td>
+		<td colspan="4" align="right"><?php echo TEXT_OUT_OF_BALANCE. ': '; ?></td>
 		<td align="right"><?php echo html_input_field('balance_total', '0', 'readonly="readonly" style="text-align:right" size="13"'); ?></td>
 	  </tr>
 	 </tfoot>
@@ -86,26 +86,26 @@ echo $toolbar->build_toolbar();
 		<td align="right"><?php echo html_file_field('file_name_inv'); ?></td>
 	  </tr>
 	  <tr>
-		<td><?php echo GL_BB_IMPORT_HELP_MSG; ?></td>
+		<td><?php echo TEXT_REFER_TO_THE_HELP_FILE_FOR_FORMAT_REQUIREMENTS; ?></td>
 		<td align="right"><?php echo html_button_field('import_inv', TEXT_IMPORT_INVENTORY, 'onclick="submitToDo(\'import_inv\')"'); ?></td>
 	  </tr>
 	  <tr><td colspan="2"><hr /></td></tr>
 	  <tr>
-		<td><h3><?php echo GL_BB_IMPORT_PURCH_ORDERS; ?></h3></td>
+		<td><h3><?php echo TEXT_IMPORT_PURCHASE_ORDERS; ?></h3></td>
 		<td align="right"><?php echo html_file_field('file_name_po'); ?></td>
 	  </tr>
 	  <tr>
-		<td><?php echo GL_BB_IMPORT_HELP_MSG; ?></td>
-		<td align="right"><?php echo html_button_field('import_po', GL_BB_IMPORT_PURCH_ORDERS, 'onclick="submitToDo(\'import_po\')"'); ?></td>
+		<td><?php echo TEXT_REFER_TO_THE_HELP_FILE_FOR_FORMAT_REQUIREMENTS; ?></td>
+		<td align="right"><?php echo html_button_field('import_po', TEXT_IMPORT_PURCHASE_ORDERS, 'onclick="submitToDo(\'import_po\')"'); ?></td>
 	  </tr>
 	  <tr><td colspan="2"><hr /></td></tr>
 	  <tr>
-		<td><h3><?php echo GL_BB_IMPORT_PAYABLES; ?></h3></td>
+		<td><h3><?php echo TEXT_IMPORT_ACCOUNTS_PAYABLE; ?></h3></td>
 		<td align="right"><?php echo html_file_field('file_name_ap'); ?></td>
 	  </tr>
 	  <tr>
-		<td><?php echo GL_BB_IMPORT_HELP_MSG; ?></td>
-		<td align="right"><?php echo html_button_field('import_ap', GL_BB_IMPORT_PAYABLES, 'onclick="submitToDo(\'import_ap\')"'); ?></td>
+		<td><?php echo TEXT_REFER_TO_THE_HELP_FILE_FOR_FORMAT_REQUIREMENTS; ?></td>
+		<td align="right"><?php echo html_button_field('import_ap', TEXT_IMPORT_ACCOUNTS_PAYABLE, 'onclick="submitToDo(\'import_ap\')"'); ?></td>
 	  </tr>
 	  <tr><td colspan="2"><hr /></td></tr>
 	  <tr>
@@ -113,17 +113,17 @@ echo $toolbar->build_toolbar();
 		<td align="right"><?php echo html_file_field('file_name_so'); ?></td>
 	  </tr>
 	  <tr>
-		<td><?php echo GL_BB_IMPORT_HELP_MSG; ?></td>
+		<td><?php echo TEXT_REFER_TO_THE_HELP_FILE_FOR_FORMAT_REQUIREMENTS; ?></td>
 		<td align="right"><?php echo html_button_field('import_so', TEXT_IMPORT_SALES_ORDERS, 'onclick="submitToDo(\'import_so\')"'); ?></td>
 	  </tr>
 	  <tr><td colspan="2"><hr /></td></tr>
 	  <tr>
-		<td><h3><?php echo GL_BB_IMPORT_RECEIVABLES; ?></h3></td>
+		<td><h3><?php echo TEXT_IMPORT_ACCOUNTS_RECEIVABLE; ?></h3></td>
 		<td align="right"><?php echo html_file_field('file_name_ar'); ?></td>
 	  </tr>
 	  <tr>
-		<td><?php echo GL_BB_IMPORT_HELP_MSG; ?></td>
-		<td align="right"><?php echo html_button_field('import_ar', GL_BB_IMPORT_RECEIVABLES, 'onclick="submitToDo(\'import_ar\')"'); ?></td>
+		<td><?php echo TEXT_REFER_TO_THE_HELP_FILE_FOR_FORMAT_REQUIREMENTS; ?></td>
+		<td align="right"><?php echo html_button_field('import_ar', TEXT_IMPORT_ACCOUNTS_RECEIVABLE, 'onclick="submitToDo(\'import_ar\')"'); ?></td>
 	  </tr>
 	 </tbody>
 	</table>

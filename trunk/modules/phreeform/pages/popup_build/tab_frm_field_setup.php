@@ -25,7 +25,7 @@ require_once(DIR_FS_WORKING . 'pages/popup_build/box_html.php'); // box template
   <thead class="ui-widget-header">
     <tr><th id="fieldListHeading" colspan="8"><?php echo TEXT_FIELD_LIST; ?></th></tr>
     <tr>
-      <th width="25%"><?php echo PHREEFORM_DISPNAME; ?></th>
+      <th width="25%"><?php echo TEXT_NAME_TO_DISPLAY; ?></th>
       <th width="10%"><?php echo TEXT_ABSCISSA; ?></th>
       <th width="10%"><?php echo TEXT_ORDINATE; ?></th>
       <th width="10%"><?php echo TEXT_WIDTH;    ?></th>

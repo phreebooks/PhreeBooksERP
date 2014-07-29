@@ -60,7 +60,7 @@ if ($locked && $_SESSION['admin_id'] == $doc_details->fields['doc_owner']) {
 		'show'   => true,
 		'icon'   => 'actions/system-lock-screen.png',
 		'params' => 'onclick="docAction(\'lock\')"',
-		'text'   => TEXT_LOCK_DOC,
+		'text'   => TEXT_LOCK_DOCUMENT,
 		'order'  => 50,
 	);
 }

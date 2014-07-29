@@ -31,10 +31,10 @@ class statement_builder {
 	$today = date('Y-m-d');
 	$this->bill_acct_id = $tableValue;
 	// fetch the main contact information, only one record
-	$sql = "select c.id, c.type, c.short_name, c.special_terms, 
-		a.primary_name, a.contact, a.address1, a.address2, a.city_town, a.state_province, a.postal_code, 
-		a.country_code, a.telephone1, a.telephone2, a.telephone3, a.telephone4, a.email, a.website 
-	  from " . TABLE_CONTACTS . " c inner join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id 
+	$sql = "select c.id, c.type, c.short_name, c.special_terms,
+		a.primary_name, a.contact, a.address1, a.address2, a.city_town, a.state_province, a.postal_code,
+		a.country_code, a.telephone1, a.telephone2, a.telephone3, a.telephone4, a.email, a.website
+	  from " . TABLE_CONTACTS . " c inner join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id
 	  where c.id = " . $this->bill_acct_id . " and a.type like '%m'";
 	$result = $db->Execute($sql);
 	while (list($key, $value) = each($result->fields)) $this->$key = db_prepare_input($value);
@@ -50,11 +50,11 @@ class statement_builder {
 //  $this->terms_lang    = $result['terms_lang'];
 	// now prior balance
 	$dates  = gen_build_sql_date($report->datedefault, $report->datefield);
-	$sql = "select m.id, (i.debit_amount - i.credit_amount) as balance 
-		from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id 
-		where m.bill_acct_id = " . $this->bill_acct_id . " 
-		and m.post_date < '" . $dates['start_date'] . "' 
-		and (m.closed_date >= '" . $dates['start_date'] . "' or m.closed = '0') 
+	$sql = "select m.id, (i.debit_amount - i.credit_amount) as balance
+		from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
+		where m.bill_acct_id = " . $this->bill_acct_id . "
+		and m.post_date < '" . $dates['start_date'] . "'
+		and (m.closed_date >= '" . $dates['start_date'] . "' or m.closed = '0')
 		and m.journal_id in (6, 7, 12, 13) and i.gl_type in ('ttl', 'dsc')";
 	$result = $db->Execute($sql);
 	$prior_balance = 0;
@@ -66,9 +66,9 @@ class statement_builder {
 	}
 	if (sizeof($partials) > 0) {
 	  $sql = "select sum(i.debit_amount - i.credit_amount) as payment
-		from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id 
-		where i.so_po_item_ref_id in (".implode(',',$partials).") 
-		and m.post_date < '" . $dates['start_date'] . "' 
+		from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
+		where i.so_po_item_ref_id in (".implode(',',$partials).")
+		and m.post_date < '" . $dates['start_date'] . "'
 		and m.journal_id in (18, 20) and i.gl_type = 'pmt'";
 	  $result = $db->Execute($sql);
 	  $this->prior_balance = $prior_balance + $result->fields['payment'];
@@ -78,9 +78,9 @@ class statement_builder {
 
 	$strDates = str_replace('post_date', 'm.post_date', $dates['sql']);
 	$this->line_items = array();
-	$sql = "select m.post_date, m.journal_id, m.terms, i.debit_amount, i.credit_amount, m.purchase_invoice_id, 
-	    m.purch_order_id, i.gl_type 
-	  from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id 
+	$sql = "select m.post_date, m.journal_id, m.terms, i.debit_amount, i.credit_amount, m.purchase_invoice_id,
+	    m.purch_order_id, i.gl_type
+	  from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 	  where m.bill_acct_id = " . $this->bill_acct_id;
 	if ($strDates) $sql .= " and " . $strDates;
 	$sql .= " and m.journal_id in (6, 7, 12, 13, 18, 20) and i.gl_type in ('ttl', 'dsc') order by m.post_date";
@@ -88,7 +88,7 @@ class statement_builder {
 	$this->statememt_total = 0;
 	while (!$result->EOF) {
 	  $reverse    = in_array($result->fields['journal_id'], array(6, 7, 12, 13)) ? true : false;
-	  $line_desc  = defined('GEN_ADM_TOOLS_J' . str_pad($result->fields['journal_id'], 2, '0', STR_PAD_LEFT)) ? constant('GEN_ADM_TOOLS_J' . str_pad($result->fields['journal_id'], 2, '0', STR_PAD_LEFT)) : $result->fields['journal_id'];
+	  $line_desc  = isset($journal_types_list[$result->fields['journal_id']]) ? $journal_types_list[$result->fields['journal_id']]['text'] : $result->fields['journal_id'];
 	  $terms_date = calculate_terms_due_dates($result->fields['post_date'], $this->special_terms);
 	  $credit     = ($reverse) ? $result->fields['debit_amount']  : $result->fields['credit_amount'];
 	  $debit      = ($reverse) ? $result->fields['credit_amount'] : $result->fields['debit_amount'];
@@ -113,7 +113,7 @@ class statement_builder {
 	}
 	$this->balance_due = $this->prior_balance + $this->statememt_total;
 	if ($this->type == 'v') { // invert amount for vendors for display purposes
-		$this->prior_balance = -$this->prior_balance; 
+		$this->prior_balance = -$this->prior_balance;
 		$this->balance_due   = -$this->balance_due;
 	}
 	$this->post_date = date(DATE_FORMAT);
@@ -207,6 +207,6 @@ class statement_builder {
 	$output[] = array('id' => 'total_amount',        'text' => RW_SB_BALANCE_DUE);
 	return $output;
   }
-  
+
 }
 ?>

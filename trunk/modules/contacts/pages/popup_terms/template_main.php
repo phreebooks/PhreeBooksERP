@@ -54,8 +54,8 @@ echo html_radio_field('special_terms', 0, ($terms[0] == '0' ? true : false), '',
 echo html_radio_field('special_terms', 1, ($terms[0] == '1' ? true : false), '', 'onclick="changeOptions()"') . TEXT_CASH_ON_DELIVERY_SHORT . '<br />' . chr(10);
 echo html_radio_field('special_terms', 2, ($terms[0] == '2' ? true : false), '', 'onclick="changeOptions()"') . TEXT_PREPAID . '<br />' . chr(10);
 echo html_radio_field('special_terms', 3, ($terms[0] == '3' ? true : false), '', 'onclick="changeOptions()"') . TEXT_SPECIAL_TERMS . '<br />' . chr(10);
-echo html_radio_field('special_terms', 4, ($terms[0] == '4' ? true : false), '', 'onclick="changeOptions()"') . ACT_DAY_NEXT_MONTH . '<br />' . chr(10);
-echo html_radio_field('special_terms', 5, ($terms[0] == '5' ? true : false), '', 'onclick="changeOptions()"') . ACT_END_OF_MONTH . chr(10);
+echo html_radio_field('special_terms', 4, ($terms[0] == '4' ? true : false), '', 'onclick="changeOptions()"') . TEXT_DUE_ON_SPECIFIED_DATE . '<br />' . chr(10);
+echo html_radio_field('special_terms', 5, ($terms[0] == '5' ? true : false), '', 'onclick="changeOptions()"') . TEXT_DUE_END_OF_MONTH . chr(10);
 ?>
 	</td>
 	<td valign="top">

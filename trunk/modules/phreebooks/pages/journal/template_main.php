@@ -40,7 +40,7 @@ $toolbar->add_help('07.06.02');
 echo $toolbar->build_toolbar();
 // Build the page
 ?>
-<h1><?php echo GL_ENTRY_TITLE; ?></h1>
+<h1><?php echo TEXT_GENERAL_JOURNAL_ENTRY; ?></h1>
 <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto">
  <tbody class="ui-widget-content">
   <tr>
@@ -118,7 +118,7 @@ echo $toolbar->build_toolbar();
       </tr>
 	  <tr>
 	    <td width="20%" colspan="2" align="right">&nbsp;</td>
-	    <td width="65%" colspan="2" align="right"><?php echo GL_OUT_OF_BALANCE; ?></td>
+	    <td width="65%" colspan="2" align="right"><?php echo TEXT_OUT_OF_BALANCE . ': '; ?></td>
 	    <td width="15%" align="right"><?php echo html_input_field('balance_total', '0', 'readonly="readonly" style="text-align:right" size="13"'); ?></td>
 	  </tr>
 	 </tbody>
