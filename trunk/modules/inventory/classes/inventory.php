@@ -417,7 +417,7 @@ class inventory {
 			$image_id = 0;
 	  		while ($image_id < 100) { // up to 100 images
 	    		if (isset($_POST['rm_attach_'.$image_id])) {
-					@unlink(INVENTORY_DIR_ATTACHMENTS . 'inventory_'.$this->id.'_'.$image_id.'.zip');
+					@unlink(INVENTORY_DIR_ATTACHMENTS . "inventory_{$this->id}_{$image_id}.zip");
 			  		unset($this->attachments[$image_id]);
 	    		}
 	    		$image_id++;
