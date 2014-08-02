@@ -30,13 +30,13 @@ class fields {
     public  $extra_tab_li   = '';
 	public  $extra_tab_html = ''; 
     
-  public function __construct($sync = true){ 
-  	$this->security_id = $_SESSION['admin_security'][SECURITY_ID_CONFIGURATION];
-	require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
-  	foreach ($_POST as $key => $value) $this->$key = $value;
-  	$this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
-	if ($sync) xtra_field_sync_list($this->module, $this->db_table);
-  }
+	public function __construct($sync = true){ 
+	  	$this->security_id = $_SESSION['admin_security'][SECURITY_ID_CONFIGURATION];
+		require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
+	  	foreach ($_POST as $key => $value) $this->$key = $value;
+	  	$this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
+		if ($sync) xtra_field_sync_list($this->module, $this->db_table);
+	}
 
   function btn_save($id = '') {
   	global $db, $messageStack, $currencies;
@@ -143,6 +143,7 @@ class fields {
 		}
 		$values['entry_type'] = 'char(' . $max_choice_size . ')';
 		break;
+	  case 'data_list':	
 	  case 'multi_check_box':	
 		$params['default']    = db_prepare_input($_POST['radio_default']);
 		$values['entry_type'] = 'text';
@@ -260,240 +261,243 @@ class fields {
     return html_datatable('field_table', $content);
   }
 
-  function build_form_html($action, $id = '') {
-    global $db, $messageStack, $currencies, $integer_lengths, $decimal_lengths, $check_box_choices;
-	if ($action <> 'new' && $this->error == false) {
-	   $result = $db->Execute("select * from ".TABLE_EXTRA_FIELDS." where id='$this->id'");
-	   $params = unserialize($result->fields['params']);
-	   foreach ($result->fields as $key => $value) $this->$key = $value;
-	   if (is_array($params)) foreach ($params as $key => $value) $this->$key = $value;
-	   switch ($this->entry_type){
-	       case 'multi_check_box':
-	  	   case 'drop_down':
-	  	   case 'radio' :
-	  	        $this->radio_default = $this->default;
-	  	        break;
-	       case 'hyperlink':
-	       case 'image_link':
-	       case 'inventory_link':
-	  	        $this->link_default = $this->default;
-	  	        break;
-	       case 'text':
-	  	   case 'html':
-	  	        $this->text_default = $this->default;
-	  	        break;
-	       case 'decimal':
-	       	    $this->decimal_range   = $this->select;
-	  	        $this->decimal_default = number_format($this->default, $this->display, $currencies->currencies[DEFAULT_CURRENCY]['decimal_point'], $currencies->currencies[DEFAULT_CURRENCY]['thousands_point']);
-	  	        $this->decimal_display = $this->display;
-	  	        break;
-	       case 'integer':
-	       	    $this->integer_range   = $this->select;
-	  	        $this->integer_default = $this->default;
-	  	        break;
-	       case 'check_box':
-	  	        $this->check_box_range = $this->select;
-	  	        break;
-	   }
-	}
-	// build the tab list
-	$tab_list = gen_build_pull_down(xtra_field_get_tabs($this->module));
-	array_shift($tab_list);
-	if ($action == 'new' && sizeof($tab_list) < 1) {
-	  $messageStack->add(EXTRA_FIELDS_ERROR_NO_TABS, 'error');
-	}
-    $choices  =  explode(':',$params[$this->type_params]);
-	$disabled = ($this->tab_id !== '0') ? '' : 'disabled="disabled" ';
-	$readonly = ($this->tab_id !== '0') ? '' : 'readonly="readonly" ';
-	$output  = '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);
-	$output .= '  <thead class="ui-widget-header">' . "\n";
-	$output .= '  <tr>' . chr(10);
-	$output .= '    <th colspan="2">' . ($action=='new' ? TEXT_NEW_FIELD : TEXT_SETTINGS) . '</th>' . chr(10);
-    $output .= '  </tr>' . chr(10);
-	$output .= '  </thead>' . "\n";
-	$output .= '  <tbody class="ui-widget-content">' . "\n";
-	$output .= '  <tr>' . chr(10);
-	$output .= '	<td>' . INV_FIELD_NAME . '</td>' . chr(10);
-	$output .= '	<td>' . html_input_field('field_name', $this->field_name, $readonly . 'size="33" maxlength="32"') . '</td>' . chr(10);
-	$output .= '  </tr>' . chr(10);
-	$output .= '  <tr>' . chr(10);
-	$output .= '	<td colspan="2">' . INV_FIELD_NAME_RULES . '</td>' . chr(10);
-	$output .= '  </tr>' . chr(10);
-	$output .= '  <tr>' . chr(10);
-	$output .= '	<td>' . TEXT_DESCRIPTION . '</td>' . chr(10);
-	$output .= '	<td>' . html_input_field('description', $this->description, 'size="65" maxlength="64"') . '</td>' . chr(10);
-	$output .= '  </tr>' . chr(10);
-	$output .= '  <tr>' . chr(10);
-	$output .= '	<td>' . TEXT_SORT_ORDER . '</td>' . chr(10);
-	$output .= '	<td>' . html_input_field('sort_order', $this->sort_order, 'size="65" maxlength="64"') . '</td>' . chr(10);
-	$output .= '  </tr>' . chr(10);
-	$output .= '  <tr>' . chr(10);
-	$output .= '	<td>' . TEXT_GROUP . '</td>' . chr(10);
-	$output .= '	<td>' . html_input_field('group_by', $this->group_by, 'size="65" maxlength="64"') . '</td>' . chr(10);
-	$output .= '  </tr>' . chr(10);
-	
-	if (is_array($this->type_array)){
-		$output .= '  <tr>' . chr(10);
-		$output .= '	<td>' . $this->type_desc . '</td>' . chr(10);
-		$output .= '	<td>' ;
-		while ($type = array_shift($this->type_array)){
-			if (!is_array($choices)){
-				$output .= html_checkbox_field('type_'. $type['id'] , true , false,'', ''). $type['text'] ;
-				$output .= '<br />';
-			}elseif(in_array($type['id'],$choices)){
-				$output .= html_checkbox_field('type_'. $type['id'],  true , true ,'', ''). $type['text'] ;
-				$output .= '<br />';
-			}else{
-				$output .= html_checkbox_field('type_'. $type['id'],  true , false,'', ''). $type['text'] ;
-				$output .= '<br />';
-			}
+  	function build_form_html($action, $id = '') {
+    	global $db, $messageStack, $currencies, $integer_lengths, $decimal_lengths, $check_box_choices;
+		if ($action <> 'new' && $this->error == false) {
+	   		$result = $db->Execute("select * from ".TABLE_EXTRA_FIELDS." where id='$this->id'");
+	   		$params = unserialize($result->fields['params']);
+	   		foreach ($result->fields as $key => $value) $this->$key = $value;
+	   		if (is_array($params)) foreach ($params as $key => $value) $this->$key = $value;
+	   		switch ($this->entry_type){
+	   	  		case 'data_list':
+	       		case 'multi_check_box':
+	  	   		case 'drop_down':
+	  	   		case 'radio' :
+		  	        $this->radio_default = $this->default;
+	  		        break;
+	       		case 'hyperlink':
+	       		case 'image_link':
+	       		case 'inventory_link':
+	  	        	$this->link_default = $this->default;
+	  	        	break;
+		       case 'text':
+		  	   case 'html':
+	  		        $this->text_default = $this->default;
+	  	    	    break;
+		       case 'decimal':
+		       	    $this->decimal_range   = $this->select;
+	  		        $this->decimal_default = number_format($this->default, $this->display, $currencies->currencies[DEFAULT_CURRENCY]['decimal_point'], $currencies->currencies[DEFAULT_CURRENCY]['thousands_point']);
+	  	    	    $this->decimal_display = $this->display;
+	  	        	break;
+		       case 'integer':
+		       	    $this->integer_range   = $this->select;
+	  		        $this->integer_default = $this->default;
+	  	    	    break;
+		       case 'check_box':
+		  	        $this->check_box_range = $this->select;
+	  		        break;
+	   		}
 		}
-		$output .= '	</td>' ;
-		$output .= '</tr>' . chr(10);
-	}
-	$output .= '  <tr>' . chr(10);
-	$output .= '	<td>' . INV_CATEGORY_MEMBER . '</td>' . chr(10);
-	$output .= '	<td>' . html_pull_down_menu('tab_id', $tab_list, $this->tab_id, $disabled) . '</td>' . chr(10);
-	$output .= '  </tr>' . chr(10);
-	$output .= '  <tr class="ui-widget-header">' . chr(10);
-	$output .= '	<th colspan="2">' . TEXT_PROPERTIES . '</th>' . chr(10);
-	$output .= '  </tr>' . chr(10);
-	$output .= '  <tr>' . chr(10);
-	$output .= '	<td>';
-	$output .= html_radio_field('entry_type', 'text', ($this->entry_type=='text' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_TEXT_FIELD . '<br />';
-	$output .= html_radio_field('entry_type', 'html', ($this->entry_type=='html' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_HTML_TEXT_FIELD . '</td>' . chr(10);
-	$output .= '	<td>' . INV_LABEL_MAX_NUM_CHARS;
-	$output .= '<br />' . html_input_field('length', ($this->length ? $this->length : DEFAULT_TEXT_LENGTH), $readonly . 'size="10" maxlength="9"');
-	$output .= '<br />' . INV_LABEL_DEFAULT_TEXT_VALUE . '<br />' . INV_LABEL_MAX_255;
-	$output .= '<br />' . html_textarea_field('text_default', 35, 6, $this->text_default, $readonly);
-	$output .= '	</td>' . chr(10);
-	$output .= '  </tr>' . chr(10);
-	$output .= '  <tr class="ui-widget-content">' . chr(10);
-	$output .= '	<td>';
-	$output .= html_radio_field('entry_type', 'hyperlink',      ($this->entry_type=='hyperlink'      ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_HYPERLINK  . '<br />';
-	$output .= html_radio_field('entry_type', 'image_link',     ($this->entry_type=='image_link'     ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_IMAGE_LINK . '<br />';
-	$output .= html_radio_field('entry_type', 'inventory_link', ($this->entry_type=='inventory_link' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_INVENTORY_LINK;
-	$output .= '	</td>' . chr(10);
-	$output .= '	<td>' . INV_LABEL_FIXED_255_CHARS;
-	$output .= '<br />' . INV_LABEL_DEFAULT_TEXT_VALUE;
-	$output .= '<br />' . html_textarea_field('link_default', 35, 3, $this->link_default, $readonly);
-	$output .= '	</td>' . chr(10);
-	$output .= '  </tr>' . chr(10);
-	$output .= '  <tr>' . chr(10);
-	$output .= '	<td>' . html_radio_field('entry_type', 'integer', ($this->entry_type=='integer' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_INTEGER_FIELD . '</td>' . chr(10);
-	$output .= '	<td>' . INV_LABEL_INTEGER_RANGE;
-	$output .= '<br />' . html_pull_down_menu('integer_range', gen_build_pull_down($integer_lengths), $this->integer_range, $disabled);
-	$output .= '<br />' . INV_LABEL_DEFAULT_TEXT_VALUE . html_input_field('integer_default', $this->integer_default, $readonly . 'size="16"');
-	$output .= '	</td>' . chr(10);
-	$output .= '  </tr>' . chr(10);
-	$output .= '  <tr class="ui-widget-content">' . chr(10);
-	$output .= '	<td>' . html_radio_field('entry_type', 'decimal', ($this->entry_type=='decimal' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_DECIMAL_FIELD . '</td>' . chr(10);
-	$output .= '	<td>' . INV_LABEL_DECIMAL_RANGE;
-	$output .= html_pull_down_menu('decimal_range', gen_build_pull_down($decimal_lengths), $this->decimal_range, $disabled);
-	$output .= '<br />' . INV_LABEL_DEFAULT_DISPLAY_VALUE . html_input_field('decimal_display', ($this->decimal_display ? $this->decimal_display : DEFAULT_REAL_DISPLAY_FORMAT), $readonly . 'size="6" maxlength="5"');
-	$output .= '<br />' . INV_LABEL_DEFAULT_TEXT_VALUE . html_input_field('decimal_default', $this->decimal_default, $readonly . 'size="16"');
-	$output .= '	</td>' . chr(10);
-	$output .= '  </tr>' . chr(10);
-	$output .= '  <tr>' . chr(10);
-	$output .= '	<td>';
-	$output .= html_radio_field('entry_type', 'multi_check_box', ($this->entry_type=='multi_check_box' ? true : false),'', $disabled) . '&nbsp;' . INV_LABEL_MULTI_SELECT_FIELD . '<br />';	
-	$output .= html_radio_field('entry_type', 'drop_down', ($this->entry_type=='drop_down' ? true : false),'', $disabled)             . '&nbsp;' . INV_LABEL_DROP_DOWN_FIELD . '<br />';
-	$output .= html_radio_field('entry_type', 'radio',     ($this->entry_type=='radio'     ? true : false),'', $disabled)             . '&nbsp;' . INV_LABEL_RADIO_FIELD;
-	$output .= '	</td>' . chr(10);
-	$output .= '	<td>' . INV_LABEL_CHOICES . '<br />' . html_textarea_field('radio_default', 35, 6, $this->radio_default, $readonly) . '<br />'; 
-	$output .= INV_LABEL_RADIO_EXPLANATION . '</td>' . chr(10);
-	$output .= '  </tr>' . chr(10);
-	$output .= '  <tr class="ui-widget-content">' . chr(10);
-	$output .= '	<td>' . html_radio_field('entry_type', 'check_box', ($this->entry_type=='check_box' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_CHECK_BOX_FIELD . '</td>' . chr(10);
-	$output .= '	<td>' . INV_LABEL_DEFAULT_TEXT_VALUE . html_pull_down_menu('check_box_range', gen_build_pull_down($check_box_choices), $this->check_box_range, $disabled) . '</td>' . chr(10);
-	$output .= '  </tr>' . chr(10);
-	$output .= '  <tr>' . chr(10);
-	$output .= '   <td>';
-	$output .= html_radio_field('entry_type', 'date',       ($this->entry_type=='date'       ? true : false), '', $disabled) . '&nbsp;' . TEXT_DATE . '<br />';  
-	$output .= html_radio_field('entry_type', 'time',       ($this->entry_type=='time'       ? true : false), '', $disabled) . '&nbsp;' . TEXT_TIME . '<br />';  
-	$output .= html_radio_field('entry_type', 'date_time',  ($this->entry_type=='date_time'  ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_DATE_TIME_FIELD . '<br />';  
-	$output .= html_radio_field('entry_type', 'time_stamp', ($this->entry_type=='time_stamp' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_TIME_STAMP_FIELD ;
-	$output .= '   </td>' . chr(10);
-	$output .= '	<td>' . INV_LABEL_TIME_STAMP_VALUE . '</td>' . chr(10);
-	$output .= '  </tr>' . chr(10);
-	$output .= '  </tbody>' . "\n";
-	$output .= '</table>' . chr(10);
-    return $output;
-  }
-  
-  /*
-   * returns a array to the caller with the info what to store in the table contact / inventory
-   */
-  
-  public function what_to_save(){
-  	global $db, $currencies;
-  	$sql_data_array = array();
-    $xtra_db_fields = $db->Execute("select field_name, entry_type, params 
-        from " . TABLE_EXTRA_FIELDS . " where module_id='$this->module'");
-    while (!$xtra_db_fields->EOF) {
-    	if ($xtra_db_fields->fields['field_name'] == 'id' )  $xtra_db_fields->MoveNext();
-        $field_name = $xtra_db_fields->fields['field_name'];
-        if ($xtra_db_fields->fields['entry_type'] == 'multi_check_box') {
-            $temp ='';
-            $params = unserialize($xtra_db_fields->fields['params']);
-            $choices = explode(',',$params['default']);
-            while ($choice = array_shift($choices)) {
-                $values = explode(':',$choice);
-                if(isset($_POST[$field_name.$values[0]])){
-                    $temp.= $_POST[$field_name.$values[0]].',';
-            }}
-            $sql_data_array[$field_name] = $temp;
-        }elseif (!isset($_POST[$field_name]) && $xtra_db_fields->fields['entry_type'] == 'check_box') {
-            $sql_data_array[$field_name] = '0'; // special case for unchecked check boxes
-        }elseif (isset($_POST[$field_name]) && $field_name <> 'id') {
-            $sql_data_array[$field_name] = db_prepare_input($_POST[$field_name]);
-        }
-        if ($xtra_db_fields->fields['entry_type'] == 'date_time') {
-            $sql_data_array[$field_name] = ($sql_data_array[$field_name]) ? gen_db_date($sql_data_array[$field_name]) : '';
-        }
-    	if ($xtra_db_fields->fields['entry_type'] == 'decimal') {
-            $sql_data_array[$field_name] = ($sql_data_array[$field_name]) ? $currencies->clean_value($sql_data_array[$field_name]) : '';
-        }
-        $xtra_db_fields->MoveNext();
-    }
-    return $sql_data_array;
-  }
-  
-  public function set_fields_to_display($type = null){
-  	global $db, $cInfo;
-  	$tab_array = array();
-	$result = $db->Execute("select fields.tab_id, tabs.tab_name as tab_name, fields.description as description, fields.params as params, fields.group_by, fields.field_name, fields.entry_type from ".TABLE_EXTRA_FIELDS." as fields join ".TABLE_EXTRA_TABS." as tabs on (fields.tab_id = tabs.id) where fields.module_id='".$this->module."' order by tabs.sort_order asc, fields.group_by asc, fields.sort_order asc");
-  	while (!$result->EOF) {
-  		$tab_id = $result->fields['tab_id'];
-  		if (!in_array($tab_id, $tab_array)){
-  			if (!empty($tab_array)){
-  				$this->extra_tab_html .= '  </table>';
-	  			$this->extra_tab_html .= '</div>' . chr(10);
-  			}
-  			$tab_array[] = $tab_id;
-  			$this->extra_tab_li    .= '  <li><a href="#tab_' . $tab_id . '">' . $result->fields['tab_name'] . '</a></li>' . chr(10);
-  			$this->extra_tab_html .= '<div id="tab_' . $tab_id . '">' . chr(10);
-	  		$this->extra_tab_html .= '  <table>' . chr(10);
-  		}else if($previous_group <> $result->fields['group_by']){
-  			$this->extra_tab_html .= '<tr class="ui-widget-header" height="5px"><td colspan="2"></td></tr>' . chr(10);
-  		}
-	    $xtra_params = unserialize($result->fields['params']);
-	    if($this->type_params && !$type == null ){
-	    	$temp = explode(':',$xtra_params[$this->type_params]);
-	    	while ($value = array_shift($temp)){
-	    		if ($value == $type) {
-					$this->extra_tab_html .= xtra_field_build_entry($result->fields, $cInfo) . chr(10);
+		// build the tab list
+		$tab_list = gen_build_pull_down(xtra_field_get_tabs($this->module));
+		array_shift($tab_list);
+		if ($action == 'new' && sizeof($tab_list) < 1) {
+	  		$messageStack->add(EXTRA_FIELDS_ERROR_NO_TABS, 'error');
+		}
+    	$choices  =  explode(':',$params[$this->type_params]);
+		$disabled = ($this->tab_id !== '0') ? '' : 'disabled="disabled" ';
+		$readonly = ($this->tab_id !== '0') ? '' : 'readonly="readonly" ';
+		$output  = '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);
+		$output .= '  <thead class="ui-widget-header">' . "\n";
+		$output .= '  <tr>' . chr(10);
+		$output .= '    <th colspan="2">' . ($action=='new' ? TEXT_NEW_FIELD : TEXT_SETTINGS) . '</th>' . chr(10);
+    	$output .= '  </tr>' . chr(10);
+		$output .= '  </thead>' . "\n";
+		$output .= '  <tbody class="ui-widget-content">' . "\n";
+		$output .= '  <tr>' . chr(10);
+		$output .= '	<td>' . INV_FIELD_NAME . '</td>' . chr(10);
+		$output .= '	<td>' . html_input_field('field_name', $this->field_name, $readonly . 'size="33" maxlength="32"') . '</td>' . chr(10);
+		$output .= '  </tr>' . chr(10);
+		$output .= '  <tr>' . chr(10);
+		$output .= '	<td colspan="2">' . INV_FIELD_NAME_RULES . '</td>' . chr(10);
+		$output .= '  </tr>' . chr(10);
+		$output .= '  <tr>' . chr(10);
+		$output .= '	<td>' . TEXT_DESCRIPTION . '</td>' . chr(10);
+		$output .= '	<td>' . html_input_field('description', $this->description, 'size="65" maxlength="64"') . '</td>' . chr(10);
+		$output .= '  </tr>' . chr(10);
+		$output .= '  <tr>' . chr(10);
+		$output .= '	<td>' . TEXT_SORT_ORDER . '</td>' . chr(10);
+		$output .= '	<td>' . html_input_field('sort_order', $this->sort_order, 'size="65" maxlength="64"') . '</td>' . chr(10);
+		$output .= '  </tr>' . chr(10);
+		$output .= '  <tr>' . chr(10);
+		$output .= '	<td>' . TEXT_GROUP . '</td>' . chr(10);
+		$output .= '	<td>' . html_input_field('group_by', $this->group_by, 'size="65" maxlength="64"') . '</td>' . chr(10);
+		$output .= '  </tr>' . chr(10);
+	
+		if (is_array($this->type_array)){
+			$output .= '  <tr>' . chr(10);
+			$output .= '	<td>' . $this->type_desc . '</td>' . chr(10);
+			$output .= '	<td>' ;
+			while ($type = array_shift($this->type_array)){
+				if (!is_array($choices)){
+					$output .= html_checkbox_field('type_'. $type['id'] , true , false,'', ''). $type['text'] ;
+					$output .= '<br />';
+				}elseif(in_array($type['id'],$choices)){
+					$output .= html_checkbox_field('type_'. $type['id'],  true , true ,'', ''). $type['text'] ;
+					$output .= '<br />';
+				}else{
+					$output .= html_checkbox_field('type_'. $type['id'],  true , false,'', ''). $type['text'] ;
+					$output .= '<br />';
 				}
 			}
-	    }else{
-	    	$this->extra_tab_html .= xtra_field_build_entry($result->fields, $cInfo) . chr(10);
-	    }
-	    $previous_group = $result->fields['group_by'];
-		$result->MoveNext();
-	}
-	$this->extra_tab_html .= '  </table>';
-	$this->extra_tab_html .= '</div>' . chr(10); 
-  }
+			$output .= '	</td>' ;
+			$output .= '</tr>' . chr(10);
+		}
+		$output .= '  <tr>' . chr(10);
+		$output .= '	<td>' . INV_CATEGORY_MEMBER . '</td>' . chr(10);
+		$output .= '	<td>' . html_pull_down_menu('tab_id', $tab_list, $this->tab_id, $disabled) . '</td>' . chr(10);
+		$output .= '  </tr>' . chr(10);
+		$output .= '  <tr class="ui-widget-header">' . chr(10);
+		$output .= '	<th colspan="2">' . TEXT_PROPERTIES . '</th>' . chr(10);
+		$output .= '  </tr>' . chr(10);
+		$output .= '  <tr>' . chr(10);
+		$output .= '	<td>';
+		$output .= html_radio_field('entry_type', 'text', ($this->entry_type=='text' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_TEXT_FIELD . '<br />';
+		$output .= html_radio_field('entry_type', 'html', ($this->entry_type=='html' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_HTML_TEXT_FIELD . '</td>' . chr(10);
+		$output .= '	<td>' . INV_LABEL_MAX_NUM_CHARS;
+		$output .= '<br />' . html_input_field('length', ($this->length ? $this->length : DEFAULT_TEXT_LENGTH), $readonly . 'size="10" maxlength="9"');
+		$output .= '<br />' . INV_LABEL_DEFAULT_TEXT_VALUE . '<br />' . INV_LABEL_MAX_255;
+		$output .= '<br />' . html_textarea_field('text_default', 35, 6, $this->text_default, $readonly);
+		$output .= '	</td>' . chr(10);
+		$output .= '  </tr>' . chr(10);
+		$output .= '  <tr class="ui-widget-content">' . chr(10);
+		$output .= '	<td>';
+		$output .= html_radio_field('entry_type', 'hyperlink',      ($this->entry_type=='hyperlink'      ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_HYPERLINK  . '<br />';
+		$output .= html_radio_field('entry_type', 'image_link',     ($this->entry_type=='image_link'     ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_IMAGE_LINK . '<br />';
+		$output .= html_radio_field('entry_type', 'inventory_link', ($this->entry_type=='inventory_link' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_INVENTORY_LINK;
+		$output .= '	</td>' . chr(10);
+		$output .= '	<td>' . INV_LABEL_FIXED_255_CHARS;
+		$output .= '<br />' . INV_LABEL_DEFAULT_TEXT_VALUE;
+		$output .= '<br />' . html_textarea_field('link_default', 35, 3, $this->link_default, $readonly);
+		$output .= '	</td>' . chr(10);
+		$output .= '  </tr>' . chr(10);
+		$output .= '  <tr>' . chr(10);
+		$output .= '	<td>' . html_radio_field('entry_type', 'integer', ($this->entry_type=='integer' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_INTEGER_FIELD . '</td>' . chr(10);
+		$output .= '	<td>' . INV_LABEL_INTEGER_RANGE;
+		$output .= '<br />' . html_pull_down_menu('integer_range', gen_build_pull_down($integer_lengths), $this->integer_range, $disabled);
+		$output .= '<br />' . INV_LABEL_DEFAULT_TEXT_VALUE . html_input_field('integer_default', $this->integer_default, $readonly . 'size="16"');
+		$output .= '	</td>' . chr(10);
+		$output .= '  </tr>' . chr(10);
+		$output .= '  <tr class="ui-widget-content">' . chr(10);
+		$output .= '	<td>' . html_radio_field('entry_type', 'decimal', ($this->entry_type=='decimal' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_DECIMAL_FIELD . '</td>' . chr(10);
+		$output .= '	<td>' . INV_LABEL_DECIMAL_RANGE;
+		$output .= html_pull_down_menu('decimal_range', gen_build_pull_down($decimal_lengths), $this->decimal_range, $disabled);
+		$output .= '<br />' . INV_LABEL_DEFAULT_DISPLAY_VALUE . html_input_field('decimal_display', ($this->decimal_display ? $this->decimal_display : DEFAULT_REAL_DISPLAY_FORMAT), $readonly . 'size="6" maxlength="5"');
+		$output .= '<br />' . INV_LABEL_DEFAULT_TEXT_VALUE . html_input_field('decimal_default', $this->decimal_default, $readonly . 'size="16"');
+		$output .= '	</td>' . chr(10);
+		$output .= '  </tr>' . chr(10);
+		$output .= '  <tr>' . chr(10);
+		$output .= '	<td>';
+		$output .= html_radio_field('entry_type', 'multi_check_box', ($this->entry_type=='multi_check_box' ? true : false),'', $disabled) . '&nbsp;' . INV_LABEL_MULTI_SELECT_FIELD . '<br />';	
+		$output .= html_radio_field('entry_type', 'drop_down', ($this->entry_type=='drop_down' ? true : false),'', $disabled)             . '&nbsp;' . INV_LABEL_DROP_DOWN_FIELD . '<br />';
+		$output .= html_radio_field('entry_type', 'data_list', ($this->entry_type=='data_list' ? true : false),'', $disabled)             . '&nbsp;' . TEXT_DATA_LIST . '<br />';
+		$output .= html_radio_field('entry_type', 'radio',     ($this->entry_type=='radio'     ? true : false),'', $disabled)             . '&nbsp;' . INV_LABEL_RADIO_FIELD;
+		$output .= '	</td>' . chr(10);
+		$output .= '	<td>' . INV_LABEL_CHOICES . '<br />' . html_textarea_field('radio_default', 35, 6, $this->radio_default, $readonly) . '<br />'; 
+		$output .= INV_LABEL_RADIO_EXPLANATION . '<br />' . TEXT_DATA_LIST_EXPLANATION . '</td>' . chr(10);
+		$output .= '  </tr>' . chr(10);
+		$output .= '  <tr class="ui-widget-content">' . chr(10);
+		$output .= '	<td>' . html_radio_field('entry_type', 'check_box', ($this->entry_type=='check_box' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_CHECK_BOX_FIELD . '</td>' . chr(10);
+		$output .= '	<td>' . INV_LABEL_DEFAULT_TEXT_VALUE . html_pull_down_menu('check_box_range', gen_build_pull_down($check_box_choices), $this->check_box_range, $disabled) . '</td>' . chr(10);
+		$output .= '  </tr>' . chr(10);
+		$output .= '  <tr>' . chr(10);
+		$output .= '   <td>';
+		$output .= html_radio_field('entry_type', 'date',       ($this->entry_type=='date'       ? true : false), '', $disabled) . '&nbsp;' . TEXT_DATE . '<br />';  
+		$output .= html_radio_field('entry_type', 'time',       ($this->entry_type=='time'       ? true : false), '', $disabled) . '&nbsp;' . TEXT_TIME . '<br />';  
+		$output .= html_radio_field('entry_type', 'date_time',  ($this->entry_type=='date_time'  ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_DATE_TIME_FIELD . '<br />';  
+		$output .= html_radio_field('entry_type', 'time_stamp', ($this->entry_type=='time_stamp' ? true : false), '', $disabled) . '&nbsp;' . INV_LABEL_TIME_STAMP_FIELD ;
+		$output .= '   </td>' . chr(10);
+		$output .= '	<td>' . INV_LABEL_TIME_STAMP_VALUE . '</td>' . chr(10);
+		$output .= '  </tr>' . chr(10);
+		$output .= '  </tbody>' . "\n";
+		$output .= '</table>' . chr(10);
+    	return $output;
+  	}
+  
+	/*
+	 * returns a array to the caller with the info what to store in the table contact / inventory
+	 */
+  
+  	public function what_to_save(){
+  		global $db, $currencies;
+  		$sql_data_array = array();
+    	$xtra_db_fields = $db->Execute("select field_name, entry_type, params 
+          from " . TABLE_EXTRA_FIELDS . " where module_id='{$this->module}'");
+    	while (!$xtra_db_fields->EOF) {
+    		if ($xtra_db_fields->fields['field_name'] == 'id' )  $xtra_db_fields->MoveNext();
+        	$field_name = $xtra_db_fields->fields['field_name'];
+        	if ($xtra_db_fields->fields['entry_type'] == 'multi_check_box') {
+            	$temp ='';
+            	$params = unserialize($xtra_db_fields->fields['params']);
+            	$choices = explode(',',$params['default']);
+            	while ($choice = array_shift($choices)) {
+                	$values = explode(':',$choice);
+                	if(isset($_POST[$field_name.$values[0]])){
+                    	$temp.= $_POST[$field_name.$values[0]].',';
+            		}
+            	}
+            	$sql_data_array[$field_name] = $temp;
+        	}elseif (!isset($_POST[$field_name]) && $xtra_db_fields->fields['entry_type'] == 'check_box') {
+            	$sql_data_array[$field_name] = '0'; // special case for unchecked check boxes
+        	}elseif (isset($_POST[$field_name]) && $field_name <> 'id') {
+            	$sql_data_array[$field_name] = db_prepare_input($_POST[$field_name]);
+        	}
+        	if ($xtra_db_fields->fields['entry_type'] == 'date_time') {
+            	$sql_data_array[$field_name] = ($sql_data_array[$field_name]) ? gen_db_date($sql_data_array[$field_name]) : '';
+        	}
+    		if ($xtra_db_fields->fields['entry_type'] == 'decimal') {
+            	$sql_data_array[$field_name] = ($sql_data_array[$field_name]) ? $currencies->clean_value($sql_data_array[$field_name]) : '';
+        	}
+        	$xtra_db_fields->MoveNext();
+    	}
+    	return $sql_data_array;
+  	}
+  
+  	public function set_fields_to_display($type = null){
+  		global $db, $cInfo;
+  		$tab_array = array();
+		$result = $db->Execute("select fields.tab_id, tabs.tab_name as tab_name, fields.description as description, fields.params as params, fields.group_by, fields.field_name, fields.entry_type from ".TABLE_EXTRA_FIELDS." as fields join ".TABLE_EXTRA_TABS." as tabs on (fields.tab_id = tabs.id) where fields.module_id='".$this->module."' order by tabs.sort_order asc, fields.group_by asc, fields.sort_order asc");
+  		while (!$result->EOF) {
+  			$tab_id = $result->fields['tab_id'];
+  			if (!in_array($tab_id, $tab_array)){
+  				if (!empty($tab_array)){
+	  				$this->extra_tab_html .= '  </table>';
+		  			$this->extra_tab_html .= '</div>' . chr(10);
+  				}
+	  			$tab_array[] = $tab_id;
+  				$this->extra_tab_li    .= "  <li><a href='#tab_{$tab_id}'>{$result->fields['tab_name']}</a></li>" . chr(10);
+  				$this->extra_tab_html .= "<div id='tab_{$tab_id}'>" . chr(10);
+	  			$this->extra_tab_html .= '  <table>' . chr(10);
+  			}else if($previous_group <> $result->fields['group_by']){
+  				$this->extra_tab_html .= '<tr class="ui-widget-header" height="5px"><td colspan="2"></td></tr>' . chr(10);
+  			}
+		    $xtra_params = unserialize($result->fields['params']);
+		    if($this->type_params && !$type == null ){
+	    		$temp = explode(':',$xtra_params[$this->type_params]);
+	    		while ($value = array_shift($temp)){
+	    			if ($value == $type) {
+						$this->extra_tab_html .= xtra_field_build_entry($result->fields, $cInfo) . chr(10);
+					}
+				}
+	    	}else{
+	    		$this->extra_tab_html .= xtra_field_build_entry($result->fields, $cInfo) . chr(10);
+	    	}
+	    	$previous_group = $result->fields['group_by'];
+			$result->MoveNext();
+		}
+		$this->extra_tab_html .= '  </table>';
+		$this->extra_tab_html .= '</div>' . chr(10); 
+  	}
   
   public function unwanted_fields($type = null){
   	global $db;
