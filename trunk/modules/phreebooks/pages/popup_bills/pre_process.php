@@ -87,6 +87,6 @@ history_save('pb_pop_bills');
 $include_header   = false;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', constant('ORD_TEXT_' . JOURNAL_ID . '_' . strtoupper(ACCOUNT_TYPE) . '_WINDOW_TITLE'));
+define('PAGE_TITLE', $journal_types_list[JOURNAL_ID]['text']);
 
 ?>

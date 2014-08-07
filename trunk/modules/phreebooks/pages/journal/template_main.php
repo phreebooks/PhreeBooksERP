@@ -27,7 +27,7 @@ if (!ENABLE_MULTI_BRANCH) echo html_hidden_field('store_id', '0') . chr(10);
 // customize the toolbar actions
 $toolbar->icon_list['cancel']['params'] = 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, '', 'SSL') . '\'"';
 $toolbar->icon_list['open']['params']   = 'onclick="OpenGLList()"';
-$toolbar->icon_list['delete']['params'] = 'onclick="if (confirm(\'' . GL_DELETE_ALERT . '\')) submitToDo(\'delete\')"';
+$toolbar->icon_list['delete']['params'] = 'onclick="if (confirm(\'' . TEXT_ARE_YOU_SURE_YOU_WANT_TO_DELETE_THIS_JOURNAL_ENTRY . '\')) submitToDo(\'delete\')"';
 if ($security_level < 4) $toolbar->icon_list['delete']['show'] = false;
 $toolbar->icon_list['save']['params']   = 'onclick="submitToDo(\'save\')"';
 if ($security_level < 2) $toolbar->icon_list['save']['show'] = false;

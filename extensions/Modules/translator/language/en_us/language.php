@@ -44,19 +44,19 @@ define('TRANSLATOR_IMPORT_DESC','This page imports loaded languages from the cur
 define('TRANSLATOR_EXPORT_DESC','This page exports all modules from a given translated language and version to a single .zip file.');
 define('TRANSLATOR_ISO_IMPORT','ISO language to import (form xx_xx):');
 define('TRANSLATOR_ISO_EXPORT','ISO language to export:');
-define('TRANSLATOR_MODULE_IMPORT','Module name to import:');
+define('TEXT_MODULE_NAME_TO_IMPORT','Module name to import:');
 define('TRANSLATOR_INSTALL_IMPORT','Directory name of install directory (if moved after install):');
 define('TRANSLATOR_UPLOAD_DESC','This form will upload a zipped language file and import all defines into the database. It should be used for assisting in upconverting older versions to new or modifying translations to new languages.');
 define('TRANSLATOR_ISO_CREATE','ISO language to create (form xx_xx):');
 define('TRANSLATOR_MODULE_CREATE','Module to assign translation to:');
-define('TRANSLATOR_RELEASE_CREATE','Release number to create:');
+define('TEXT_RELEASE_NUMBER_TO_CREATE','Release number to create:');
 define('TRANSLATOR_UPLOAD_ZIPFILE','Select a zipped file to upload and insert into the translator database:');
 define('MESSAGE_DELETE_TRANSLATION','Are you sure you want to delete this translation?');
 define('TEXT_DEFINED_CONSTANT','Defined Constant');
 define('TEXT_DEFAULT_TRANSLATION','Current Translation');
 define('TEXT_STATS_VALUES','%s of %s translated (%s percent)');
 define('TEXT_TRANSLATION_RECORDS_SAVED','Translation records saved.');
-define('TRANSLATION_HEADER','Phreedom Language Translation File');
+define('TEXT_PHREEDOM_LANGUAGE_TRANSLATION_FILE','Phreedom Language Translation File');
 // Error Messages
 define('TRANS_ERROR_NO_SOURCE','No available versions of the source language were found! Please import the source language.');
 // Javascrpt defines

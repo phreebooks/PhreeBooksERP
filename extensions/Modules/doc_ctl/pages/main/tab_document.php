@@ -78,7 +78,7 @@ if ($security_level > 3 && $checked_out && $checkout_id == $_SESSION['admin_id']
 		'show'   => true,
 		'icon'   => 'actions/mail-mark-not-junk.png',
 		'params' => 'onclick="submitSeq(' . $id . ',\'del_checkout\')"',
-		'text'   => TEXT_CANCEL_CHECKOUT,
+		'text'   => TEXT_CANCEL_CHECK-OUT_FLAG,
 		'order'  => 65,
 	);
 }

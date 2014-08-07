@@ -35,7 +35,7 @@
 	    <td><?php echo html_combo_box('ap_default_purchase_account', $ap_chart, $_POST['ap_default_purchase_account'] ? $_POST['ap_default_purchase_account'] : AP_DEFAULT_PURCHASE_ACCOUNT, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo CD_03_03_DESC; ?></td>
+	    <td colspan="3"><?php echo TEXT_DEFAULT_ACCOUNT_TO_USE_FOR_PAYMENTS_TO_WHEN_INVOICES_ARE_PAID_TYPICALLY_A_CASH_TYPE_ACCOUNT; ?></td>
 	    <td><?php echo html_combo_box('ap_purchase_invoice_account', $cash_chart, $_POST['ap_purchase_invoice_account'] ? $_POST['ap_purchase_invoice_account'] : AP_PURCHASE_INVOICE_ACCOUNT, ''); ?></td>
 	  </tr>
 	  <tr>
@@ -64,7 +64,7 @@
 	  <tr>
 	    <td><?php echo TEXT_DEFAULT_TERMS_FOR_PAYMENT; ?></td>
 	    <td><?php echo html_checkbox_field('ap_use_credit_limit', $inc_chart, $_POST['ap_use_credit_limit'] ? $_POST['ap_use_credit_limit'] : AP_USE_CREDIT_LIMIT, ''); ?></td>
-	    <td><?php echo sprintf(CD_03_12_DESC, DEFAULT_CURRENCY); ?></td>
+	    <td><?php echo sprintf(TEXT_DEFAULT_AMOUNT_TO_USE_FOR_CREDIT_LIMIT_ARGS, DEFAULT_CURRENCY); ?></td>
 	    <td><?php echo html_input_field('ap_credit_limit_amount', $_POST['ap_credit_limit_amount'] ? $_POST['ap_credit_limit_amount'] : AP_CREDIT_LIMIT_AMOUNT, 'style="text-align:right"'); ?></td>
 	  </tr>
 	  <tr>

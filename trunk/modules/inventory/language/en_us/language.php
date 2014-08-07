@@ -134,7 +134,7 @@ define('INV_TEXT_ATTRIBUTES','Attributes');
 define('INV_MS_CREATED_SKUS','The followng SKUs will be created');
 
 define('INV_ENTRY_INVENTORY_TYPE', 'Inventory Type');
-define('INV_ENTRY_INVENTORY_DESC_SHORT', 'Short Description');
+define('TEXT_SHORT_DESCRIPTION', 'Short Description');
 define('TEXT_PURCHASE_DESCRIPTION', 'Purchase Description');
 define('TEXT_RELATIVE_IMAGE_PATH','Relative Image Path');
 define('TEXT_SELECT_IMAGE','Select Image');
@@ -181,12 +181,12 @@ define('ORD_JS_SKU_NOT_UNIQUE','No unique matches for row %s could be found. Eit
 define('SRVCS_DUPLICATE_SHEET_NAME','The price sheet name already exists. Please enter a new sheet name.');
 define('INV_ERROR_DELETE_HISTORY_EXISTS','Cannot delete this inventory item since there is a record in the inventory_history table.');
 define('INV_ERROR_DELETE_ASSEMBLY_PART','Cannot delete this inventory item since it is part of an assembly.');
-define('INV_ADJ_QTY_ZERO','Cannot adjust inventory with a zero quantity!');
+define('TEXT_CANNOT_ADJUST_INVENTORY_WITH_A_ZERO_QUANTITY','Cannot adjust inventory with a zero quantity!');
 define('INV_MS_ERROR_DELETE_HISTORY_EXISTS','Cannot delete sku %s since there is a record in the inventory_history table.');
 define('INV_MS_ERROR_DELETE_ASSEMBLY_PART','Cannot delete sku %s since it is part of an assembly. Will mark as inactive.');
 define('INV_MS_ERROR_CANNOT_DELETE','The sku %s cannot be deleted because there are matching journal entries. Will mark as inactive.');
 // java script errors and messages
-define('AJAX_INV_NO_INFO','Not enough information was passed to retrieve the item details');
+define('TEXT_NOT_ENOUGH_INFORMATION_WAS_PASSED_TO_RETRIEVE_THE_ITEM_DETAILS','Not enough information was passed to retrieve the item details');
 define('JS_SKU_BLANK', '* The new item needs a SKU or UPC Code\n');
 define('JS_COGS_AUTO_CALC','Note: For negative quantities, the unit price will be calculated by the system.');
 define('TEXT_A_SKU_VALUE_IS_REQUIRED','A SKU value is required.');
@@ -215,7 +215,7 @@ define('TEXT_REVISION','Rev. Level');
 define('TEXT_EFFECTIVE_DATE','Effective Date');
 define('TEXT_LOAD_ITEM_PRICING','Load Item Pricing');
 define('TEXT_SPECIAL_PRICING','Special Pricing');
-define('PRICE_SHEET_MSG_DELETE','Are you sure you want to delete this price sheet?');
+define('TEXT_ARE_YOU_SURE_YOU_WANT_TO_DELETE_THIS_PRICE_SHEET','Are you sure you want to delete this price sheet?');
 define('PRICE_SHEET_DEFAULT_DELETED','The default price sheet as been deleted, please select a new price sheet!');
 define('TEXT_AVERAGE_USAGE_EXCLUDING_THIS_MONTH','Average use (excluding this month)');
 define('TEXT_MS_HELP','When saving the %s written in one of the descriptions will be replaced by the description of that field.');

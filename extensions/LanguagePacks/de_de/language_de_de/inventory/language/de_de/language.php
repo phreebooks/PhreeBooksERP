@@ -142,7 +142,7 @@ define ('INV_TEXT_ATTRIBUTES', 'Attribute');
 define ('INV_MS_CREATED_SKUS', 'Die followng SKUs erstellt werden');
 
 define ('INV_ENTRY_INVENTORY_TYPE', 'Inventory Typ');
-define ('INV_ENTRY_INVENTORY_DESC_SHORT', 'Kurzbeschreibung');
+define ('TEXT_SHORT_DESCRIPTION', 'Kurzbeschreibung');
 define ('TEXT_PURCHASE_DESCRIPTION', 'Bestellen Beschreibung');
 define ('TEXT_RELATIVE_IMAGE_PATH', 'Relativ Image Path');
 define ('TEXT_SELECT_IMAGE', 'Bild auswählen');
@@ -185,7 +185,7 @@ define ('INV_ERROR_DELETE_HISTORY_EXISTS', 'kann nicht gelöscht werden Inventar
 define ('INV_ERROR_DELETE_ASSEMBLY_PART', 'kann nicht gelöscht werden Inventar Punkt, da es Teil einer Baugruppe ist.');
 
 // Java Script Fehler und Meldungen
-define ('AJAX_INV_NO_INFO', 'Nicht genügend Informationen übergeben wurde, um das Element Details abrufen');
+define ('TEXT_NOT_ENOUGH_INFORMATION_WAS_PASSED_TO_RETRIEVE_THE_ITEM_DETAILS', 'Nicht genügend Informationen übergeben wurde, um das Element Details abrufen');
 define ('JS_SKU_BLANK', "* Der neue Eintrag muss eine SKU oder UPC Code \n ");
 define ('JS_COGS_AUTO_CALC', 'Stückpreis wird durch das System berechnet werden.');
 define ('TEXT_A_SKU_VALUE_IS_REQUIRED', "Ein SKU Wert ist erforderlich.");
@@ -219,5 +219,5 @@ define ('TEXT_EFFECTIVE_DATE', 'Effective Date');
 define ('TEXT_EXPIRATION_DATE', 'Verfallsdatum');
 define ('TEXT_LOAD_ITEM_PRICING', 'Load Pricing Artikel');
 define ('TEXT_SPECIAL_PRICING', 'Special Pricing');
-define ('PRICE_SHEET_MSG_DELETE', 'Sind Sie sicher, dass Sie diesen Preis Blatt löschen?');
+define ('TEXT_ARE_YOU_SURE_YOU_WANT_TO_DELETE_THIS_PRICE_SHEET', 'Sind Sie sicher, dass Sie diesen Preis Blatt löschen?');
 ?>

@@ -52,7 +52,7 @@ define('TEXT_MATERIALS','Materiais');
 define('COST_TYPE_LBR','Mão Obra');
 define('TEXT_TERMS_TO_LANGUAGE','Condições da Linguagem');
 define('PB_PF_CONTACT_ID','ID Cliente');
-define('TEXT_BILLING_PREFS','Especificações Livro Endereços Faturamento');
+define('TEXT_BILLING_ADDRESS_BOOK_SETTINGS','Especificações Livro Endereços Faturamento');
 define('TEXT_CONTACTS_ADMINISTRATION','Administração Contatos');
 define('TEXT_CONTACTS_MODULE','Módulo Contatos');
 define('MODULE_CONTACTS_DESCRIPTION','O Módulo Contatos gerencia todos os clientes, fornecedores, funcionários, filiais e projetos utilizados no PhreeSoft Business Toolkit. <b>ATENÇÃO: Este é um módulo central e não deve ser removido!</b>');

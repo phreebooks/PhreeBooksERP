@@ -116,7 +116,7 @@ echo html_pull_down_menu('ship_to_country_code', $country_list, $pkg->ship_to_co
 		<tr><td>
 		<?php  if (SHIPPING_DEFAULT_INSURANCE_SHOW) {
 			echo html_checkbox_field('insurance', '1', $pkg->insurance);
-			echo SHIPPING_INSURANCE_AMOUNT;
+			echo TEXT_INSURANCE . ' ' . TEXT_AMOUNT . ': ' ;
 			echo html_input_field('insurance_value', $pkg->insurance_value, 'size="6"') . '&nbsp;';
 			echo html_pull_down_menu('insurance_currency', $currency_array, $pkg->insurance_currency, $parameters = '', $required = false);
 		} else echo '&nbsp;'; ?>
@@ -124,7 +124,7 @@ echo html_pull_down_menu('ship_to_country_code', $country_list, $pkg->ship_to_co
 		<tr><td colspan="2">
 		<?php  if (SHIPPING_DEFAULT_SPLIT_LARGE_SHIPMENTS_SHOW) {
 			echo html_checkbox_field('split_large_shipments', '1', $pkg->split_large_shipments);
-			echo SHIPPING_SPLIT_LARGE_SHIPMENTS;
+			echo TEXT_SPLIT_LARGE_SHIPMENTS_FOR_SMALL_PKG_CARRIER;
 			echo html_input_field('split_large_shipments_value', $pkg->split_large_shipments_value, 'size="5"') . '&nbsp;';
 			echo html_pull_down_menu('split_large_shipments_unit', gen_build_pull_down($shipping_defaults['weight_unit']), $pkg->split_large_shipments_unit, $parameters = '', $required = false);
 			echo TEXT_PER_BOX;
@@ -143,7 +143,7 @@ echo html_pull_down_menu('ship_to_country_code', $country_list, $pkg->ship_to_co
 		<tr><td colspan="2">
 		<?php  if (SHIPPING_DEFAULT_HANDLING_CHARGE_SHOW) {
 			echo html_checkbox_field('handling_charge', '1', $pkg->handling_charge);
-			echo SHIPPING_HANDLING_CHARGE;
+			echo TEXT_HANDLING_CHARGE . ' ' . TEXT_AMOUNT . ': ';
 			echo html_input_field('handling_charge_value', $pkg->handling_charge_value, 'size="6"') . '&nbsp;';
 			echo html_pull_down_menu('handling_charge_currency', $currency_array, $pkg->handling_charge_currency, $parameters = '', $required = false);
 		} else echo '&nbsp;'; ?>

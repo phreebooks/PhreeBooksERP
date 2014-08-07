@@ -33,7 +33,7 @@ echo $toolbar->build_toolbar($add_search = true, $add_periods = true);
 ?>
 <h1><?php echo TEXT_PLEASE_SELECT; ?></h1>
 <div style="float:right"><?php echo $query_split->display_links(); ?></div>
-<div><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . ORD_TEXT_2_WINDOW_TITLE); ?></div>
+<div><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . TEXT_GENERAL_JOURNAL); ?></div>
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
  <thead class="ui-widget-header">
   <tr><?php echo $list_header; ?></tr>
@@ -59,5 +59,5 @@ echo $toolbar->build_toolbar($add_search = true, $add_periods = true);
  </tbody>
 </table>
 <div style="float:right"><?php echo $query_split->display_links(); ?></div>
-<div><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . ORD_TEXT_2_WINDOW_TITLE); ?></div>
+<div><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . TEXT_GENERAL_JOURNAL); ?></div>
 </form>

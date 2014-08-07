@@ -26,7 +26,7 @@
 	 <tr>
 	  <th></th>
 	  <th><?php echo TEXT_SKU; ?></th>
-	  <th><?php echo INV_ENTRY_INVENTORY_DESC_SHORT; ?></th>
+	  <th><?php echo TEXT_SHORT_DESCRIPTION; ?></th>
 	  <th><?php echo TEXT_QUANTITY; ?></th>
 	  <th><?php echo TEXT_ITEM_COST; ?></th>
 	  <th><?php echo TEXT_FULL_PRICE; ?></th>

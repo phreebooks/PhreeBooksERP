@@ -139,7 +139,7 @@ define('ACT_TERMS_STANDARD_DAYS',' dag(en). ');
 define('TEXT_CREDIT_LIMIT','Credit Limit: ');
 define('TEXT_AMOUNT_PAST_DUE','Totaal Vervallen: ');
 define('RECORD_NUM_REF_ONLY','record ID (alleen voor Referentie) = ');
-define('ACT_ID_AUTO_FILL','(Leeg laten voor een systeem gegenereerd ID)');
+define('TEXT_LEAVE_BLANK_FOR_SYSTEM_GENERATED_ID','(Leeg laten voor een systeem gegenereerd ID)');
 define('ACT_WARN_DELETE_ADDRESS','Weet u zeker dat u dit adres wilt verwijderen?');
 define('ACT_WARN_DELETE_ACCOUNT','Weet u zeker dat u dit account wilt verwijderen?');
 define('ACT_WARN_DELETE_PAYMENT','Weet u zeker dat u dit betalingsboeking wilt verwijderen?');
@@ -156,5 +156,5 @@ define('TEXT_OPEN_INVOICES','Open Facturen');
 define('TEXT_WARNING_NO_ENCRYPTION_KEY','Omdat er geen versleuteling is. is het factuuradres wel opgeslagen maar de rest van de betalingsgegevens niet.');
 define('ACT_ERROR_DUPLICATE_CONTACT','De Contact-ID bestaat al in het systeem, geef dan een nieuwe Contact-ID.');
 define('CRM_ROW_DELETE_ALERT','Weet u zeker dat u deze CRM notitie wil verwijderen?');
-define('ACT_JS_SHORT_NAME','* Het \'ID\' veld mag niet leeg zijn.');
+define('TEXT_THE_ID_ENTRY_CANNOT_BE_EMPTY','Het \'ID\' veld mag niet leeg zijn.');
 ?>

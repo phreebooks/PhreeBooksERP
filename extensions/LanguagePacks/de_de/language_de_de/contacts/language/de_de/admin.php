@@ -27,7 +27,7 @@ define ('TEXT_CONTACTS_MODULE', 'Modul Kontakte');
 define ('MODULE_CONTACTS_DESCRIPTION', 'Die Kontakte Modul verwaltet alle Kunden, Lieferanten, Mitarbeiter, Niederlassungen und Projekten in den PhreeSoft Business Toolkit verwendet <b>. HINWEIS:! Dies ist ein Kernmodul und sollte nicht entfernt werden </ b>') ;
 // Überschriften
 define ('TEXT_CONTACTS_ADMINISTRATION', 'Kontakte Administration');
-define ('TEXT_BILLING_PREFS', 'Billing Address Book Einstellungen');
+define ('TEXT_BILLING_ADDRESS_BOOK_SETTINGS', 'Billing Address Book Einstellungen');
 define ('TEXT_SHIPPING_ADDRESS_BOOK_SETTINGS', 'Versandkosten Adressbuch Einstellungen');
 // Allgemeine
 define ('COST_TYPE_LBR', 'Arbeit');

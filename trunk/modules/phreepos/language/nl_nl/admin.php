@@ -12,7 +12,7 @@ define('MODULE_PHREEPOS_TITLE','PhreePOS Module');
 define('TEXT_PHREEPOS_SETTINGS', 'PhreePOS Module Instellingen');
 define('MODULE_PHREEPOS_DESCRIPTION','De PhreePOS module biedt een kassa / Point of Sale-interface Deze module is een aanvulling op de phreebooks module en is geen vervanging voor.');
 define('TEXT_POINT_OF_SALE_ADMINISTRATION','Kassa / Point of Sale Administration');
-define('PHREEPOS_REQUIRE_ADDRESS_DESC','Is adres informatie bij iedere handeling vereist');
+define('TEXT_REQUIRE_ADDRESS_INFORMATION_FOR_EVERY_POS_OR_POP_SALE','Is adres informatie bij iedere handeling vereist');
 define('PHREEPOS_RECEIPT_PRINTER_NAME_DESC','Stelt de naam van de printer in te gebruiken voor het afdrukken van kassa bonnen,<br> zoals gedefinieerd in de printer voorkeuren voor het lokale werkstation');
 define('PHREEPOS_RECEIPT_PRINTER_STARTING_LINE_DESC','Hier kunt u code invoeren om die aan het begin van de pagina hoort <br> Scheid de codes door een: en regels en door een , zoals: <i> 27:112:48:55:121,27:109 </ i> <br> De codes zijn een nummers van de chr dwz chr (13) is 13 <br><b> Plaats hier alleen de code geen tekst dit kan leiden tot fouten. </ b><br><br> Bekijk de printer documentatie voor de codes.');
 define('PHREEPOS_RECEIPT_PRINTER_CLOSING_LINE_DESC','Hier kunt u code invoeren om lade te openen en / of bon af te snijden <br> Scheid de codes door een: en regels en door een , zoals: <i> 27:112:48:55:121,27:109 </ i> <br> De codes zijn een nummers van de chr dwz chr (13) is 13 <br><b> Plaats hier alleen de code geen tekst dit kan leiden tot fouten. </ b>');

@@ -44,7 +44,7 @@ class payment {
 		$this->show_in_pos      = defined('MODULE_PAYMENT_'.strtoupper($this->id).'_SHOW_IN_POS')      ? constant('MODULE_PAYMENT_'.strtoupper($this->id).'_SHOW_IN_POS')      : $this->show_in_pos;
 		$this->keys[] = array('key' => 'MODULE_PAYMENT_'.strtoupper($this->id).'_OPEN_POS_DRAWER', 'default' => $this->open_pos_drawer, 'text' => OPEN_POS_DRAWER_DESC );
 		$this->keys[] = array('key' => 'MODULE_PAYMENT_'.strtoupper($this->id).'_SORT_ORDER', 	    'default' => $this->sort_order,      'text' => SORT_ORDER_DESC);
-		$this->keys[] = array('key' => 'MODULE_PAYMENT_'.strtoupper($this->id).'_POS_GL_ACCT', 	'default' => $this->pos_gl_acct,     'text' => POS_GL_ACCT_DESC);
+		$this->keys[] = array('key' => 'MODULE_PAYMENT_'.strtoupper($this->id).'_POS_GL_ACCT', 	'default' => $this->pos_gl_acct,     'text' => TEXT_POS_GL_ACCOUNT_PAYMENT_TYPE);
 		$this->keys[] = array('key' => 'MODULE_PAYMENT_'.strtoupper($this->id).'_SHOW_IN_POS', 	'default' => $this->show_in_pos,     'text' => TEXT_SHOW_THIS_PAYMENT_IN_PHREEPOS);
 		$this->field_0 = isset($_POST[$this->id.'_field_0']) ? $_POST[$this->id.'_field_0'] : '';//$this->cc_card_owner_last
 		$this->field_1 = isset($_POST[$this->id.'_field_1']) ? $_POST[$this->id.'_field_1'] : '';//$this->cc_card_number

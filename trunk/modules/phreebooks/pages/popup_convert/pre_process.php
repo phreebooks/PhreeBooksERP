@@ -66,7 +66,7 @@ switch ($_REQUEST['action']) {
 		$order->journal_main_array['journal_id']  = $order->journal_id;
 		$order->journal_main_array['post_date']   = $order->post_date;
 		$order->journal_main_array['period']      = $order->period;
-		$order->journal_main_array['description'] = sprintf(TEXT_ARGS_ENTRY, constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE'));
+		$order->journal_main_array['description'] = sprintf(TEXT_ARGS_ENTRY, $journal_types_list[JOURNAL_ID]['text']);
 		for ($i = 0; $i < sizeof($order->journal_rows); $i++) {
 		  	$order->journal_rows[$i]['id']                = '';
 		  	$order->journal_rows[$i]['so_po_item_ref_id'] = '';
@@ -86,7 +86,7 @@ switch ($_REQUEST['action']) {
 	    if ($order->purchase_invoice_id == '') {
 		  	$order->increment_purchase_invoice_id();
 		}
-		gen_add_audit_log(constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE') . ' - ' . TEXT_ADD, $order->purchase_invoice_id, $order->total_amount);
+		gen_add_audit_log($journal_types_list[JOURNAL_ID]['text'] . ' - ' . TEXT_ADD, $order->purchase_invoice_id, $order->total_amount);
 		// set the closed flag on the quote
 		$result = $db->Execute("update " . TABLE_JOURNAL_MAIN . " set closed = '1' where id = " . $id);
 		$db->transCommit();	// finished successfully

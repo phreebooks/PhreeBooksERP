@@ -86,6 +86,6 @@ foreach ($shipping_defaults['service_levels'] as $key => $value) {
 $include_header = false; // include header flag
 $include_footer = false; // include footer flag
 $include_template = 'template_main.php'; // include display template (required)
-define('PAGE_TITLE', SHIPPING_POPUP_WINDOW_TITLE);
+define('PAGE_TITLE', TEXT_SHIPPING_RATE_ESTIMATOR);
 
 ?>

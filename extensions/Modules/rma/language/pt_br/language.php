@@ -31,7 +31,7 @@ define('TEXT_RECEIVED_BY','Recebido por');
 define('TEXT_SHIPMENT_CARRIER','Transportador Entrega');
 define('TEXT_RECEIVE_TRACKING_NUM','Número Conhecimento #');
 define('TEXT_RECEIVING','Recepção');
-define('RMA_DISPOSITION_DESC','<b>Atribuir situação Fechado e fechar quando completado!</b>');
+define('TEXT_SET_STATUS_TO_CLOSED_AND_CLOSE_WHEN_COMPLETED','Atribuir situação Fechado e fechar quando completado!');
 define('TEXT_THERE_WAS_AN_ERROR_CREATING_OR_UPDATING_THE_RMA','Houve um erro criando/atualizando a ARM.');
 define('RMA_MESSAGE_SUCCESS_ADD','ARM  # criada com sucesso');
 define('RMA_MESSAGE_SUCCESS_UPDATE','ARM  # atualizada com sucesso');

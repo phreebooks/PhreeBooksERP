@@ -38,7 +38,7 @@
     <td><?php echo html_input_field('date_time_format', $_POST['date_time_format'] ? $_POST['date_time_format'] : DATE_TIME_FORMAT, ''); ?></td>
   </tr>
   <tr>
-    <td><?php echo CD_01_30_DESC; ?></td>
+    <td><?php echo TEXT_ALLOW_STORAGE_OF_ENCRYPTED_FIELDS; ?></td>
     <td><?php echo html_pull_down_menu('enable_encryption', $sel_yes_no, $_POST['enable_encryption'] ? $_POST['enable_encryption'] : ENABLE_ENCRYPTION, ''); ?></td>
   </tr>
   <tr>
@@ -46,7 +46,7 @@
     <td><?php echo html_input_field('entry_password_min_length', $_POST['entry_password_min_length'] ? $_POST['entry_password_min_length'] : ENTRY_PASSWORD_MIN_LENGTH, ''); ?></td>
   </tr>
   <tr>
-    <td><?php echo CD_08_01_DESC; ?></td>
+    <td><?php echo TEXT_MAXIMUM_NUMBER_OF_SEARCH_RESULTS_RETURNED_PER_PAGE; ?></td>
     <td><?php echo html_input_field('max_display_search_results', $_POST['max_display_search_results'] ? $_POST['max_display_search_results'] : MAX_DISPLAY_SEARCH_RESULTS, ''); ?></td>
   </tr>
   <tr>

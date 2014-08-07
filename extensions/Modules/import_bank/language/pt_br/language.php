@@ -14,11 +14,11 @@ define('GEN_BANK_IMPORT_MESSAGE','Seleciona o arquivo .csv para importar e tecle
 define('TEXT_IMPORT','Importar');
 define('TEXT_SAMPLE_CSV','Exemplo de CSV');
 define('TEXT_REQUIRED','OBRIGATÓRIO');
-define('TEXT_BIMP_ERMSG1','proprietário conta bancária está vazio');
-define('TEXT_BIMP_ERMSG2','existem duas ou mais contas CG com a descrição: ');
+define('TEXT_OUWER_BANK_ACCOUNT_IS_EMPTY','proprietário conta bancária está vazio');
+define('TEXT_THERE_ARE_TWO_OR_MORE_GL_ACCOUNTS_WITH_THE_DESCRIPTION','existem duas ou mais contas CG com a descrição');
 define('TEXT_BIMP_ERMSG3','a outra conta bancária está vazia');
-define('TEXT_BIMP_ERMSG4','existem duas ou mais contas com a mesma conta bancária');
-define('TEXT_BIMP_ERMSG5','não existem contas CG com a descrição:');
+define('TEXT_THERE_ARE_TWO_OR_MORE_ACCOUNTS_WITH_THE_SAME_BANK_ACCOUNT','existem duas ou mais contas com a mesma conta bancária');
+define('TEXT_THERE_IS_NO_GL_ACCOUNTS_WITH_THE_DESCRIPTION','não existem contas CG com a descrição');
 define('GENERAL_JOURNAL_7_DESC','Crédito');
 define('TEXT_NEW_BANK','Encontrado um novo número de Banco. Você pode adicionar o  número de Banco = %s ao Contato = %s ');
 define('TEXT_NEW_IBAN','Encontrado um novo número IBAN. Você pode adicionar o IBAN = %s ao Contato = %s ');

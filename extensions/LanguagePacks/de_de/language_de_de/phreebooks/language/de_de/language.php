@@ -32,7 +32,7 @@ define ('BNK_DEP_20_V_WINDOW_TITLE', BOX_BANKING_VENDOR_DEPOSITS);
 define ('BNK_DEP_18_C_WINDOW_TITLE', BOX_BANKING_CUSTOMER_DEPOSITS);
 define ('TEXT_BAR_CODE_ENTRY', 'Bar Code-Eingabe');
 define ('TEXT_SEARCH_FOR_JOURNAL_ENTRIES', 'Suche nach Journal Entries');
-define ('ORD_RECUR_WINDOW_TITLE', 'Rezidiven Eigenschaften');
+define ('TEXT_RECUR_PROPERTIES', 'Rezidiven Eigenschaften');
 
 // Allgemeiner Text
 define ('BNK_CASH_ACCOUNT', 'Cash Konto ');
@@ -172,11 +172,11 @@ define ('ORD_HEADING_NUMBER_3', 'Zitat Anzahl');
 define ('ORD_HEADING_NUMBER_4', 'Bestellnummer');
 define ('ORD_HEADING_NUMBER_6', 'Invoice #');
 define ('ORD_HEADING_NUMBER_7', 'Credit Memo Nummer');
-define ('ORD_HEADING_NUMBER_9', 'Zitat Anzahl');
+define ('TEXT_QUOTE_NUMBER', 'Zitat Anzahl');
 define ('ORD_HEADING_NUMBER_10', 'SO Anzahl');
 define ('ORD_HEADING_NUMBER_12', 'Invoice #');
 define ('ORD_HEADING_NUMBER_13', 'Credit Memo Nummer');
-define ('ORD_HEADING_NUMBER_19', 'Quittung Anzahl');
+define ('TEXT_RECEIPT', 'Quittung Anzahl');
 define ('ORD_HEADING_NUMBER_21', 'Die Zahlung Anzahl');
 
 // Allgemeine
@@ -253,7 +253,7 @@ define ('TEXT_SELECT_FILE' , 'Datei zu importieren : ');
 // Audit-Log-Nachrichten
 define ('GL_LOG_ADD_JOURNAL', 'Allgemeine Journaleintrag -');
 define ('TEXT_GENERAL_JOURNAL_FISCAL_YEAR', 'General Journal Geschäftsjahr');
-define ('GL_LOG_PURGE_DB', 'General Journal - Purge Database');
+define ('TEXT_GENERAL_JOURNAL_PURGE_DATABASE', 'General Journal - Purge Database');
 
 // Spezielle Tasten
 define ('TEXT_PURGE_JOURNAL_ENTRIES', 'Purge Journal Entries');
@@ -275,10 +275,10 @@ define ('GL_ERROR_CANNOT_FIND_NEXT_ID', 'Konnte nicht lesen der nächsten Bestel
 define ('GL_ERROR_CANNOT_DELETE_MAIN', 'Keine Streichung der Zeitschrift wichtigsten Eintrag #');
 define ('GL_ERROR_CANNOT_DELETE_ITEM', 'Keine Streichung der Zeitschrift Posten vom Eintrag # %d wurden keine Zeilen gefunden!');
 define ('TEXT_CANNOT_DELETE_THIS_ENTRY_BECAUSE_IT_WAS_NEVER_POSTED', 'kann nicht gelöscht werden diesen Eintrag, weil es nie geschrieben wurde.');
-define ('GL_DELETE_GL_ROW', 'Sind Sie sicher, dass Sie diese Zeitschrift Zeile löschen?');
-define ('GL_DELETE_ALERT', 'Sind Sie sicher, dass Sie diese Zeitschrift Eintrag löschen?');
-define ('GL_ERROR_DIED_CREATING_RECORD', 'starben bei dem Versuch, eine Journalbuchung mit id = bauen');
-define ('GL_ERROR_POSTING_CHART_BALANCES', 'Fehler Entsendung Diagramm über Kontoguthaben auf Konto-ID:');
+define ('TEXT_ARE_YOU_SURE_YOU_WANT_TO_DELETE_THIS_JOURNAL_ROW', 'Sind Sie sicher, dass Sie diese Zeitschrift Zeile löschen?');
+define ('TEXT_ARE_YOU_SURE_YOU_WANT_TO_DELETE_THIS_JOURNAL_ENTRY', 'Sind Sie sicher, dass Sie diese Zeitschrift Eintrag löschen?');
+define ('TEXT_DIED_TRYING_TO_BUILD_A_JOURNAL_ENTRY_WITH_ID', 'starben bei dem Versuch, eine Journalbuchung mit id = bauen');
+define ('TEXT_ERROR_POSTING_CHART_OF_ACCOUNT_BALANCES_TO_ACCOUNT_ID', 'Fehler Entsendung Diagramm über Kontoguthaben auf Konto-ID:');
 define ('GL_ERROR_OUT_OF_BALANCE_A', 'Trial Balance aus dem Gleichgewicht geraten ist Lastschriften.');
 define ('GL_ERROR_OUT_OF_BALANCE_B', 'und Kredite:');
 define ('GL_ERROR_OUT_OF_BALANCE_C', 'in der Periode');
@@ -316,7 +316,7 @@ define ('GENERAL_JOURNAL_2_ERROR_2', 'GL - Die allgemeine Zeitschrift Referenz e
 // Kauf Zitat Spezifische
 define ('ORD_TEXT_3_BILL_TO', 'Auftrag,:');
 define ('ORD_TEXT_3_REF_NUM', 'Reference #');
-define ('ORD_TEXT_3_WINDOW_TITLE', 'Online Anfrage');
+define ('TEXT_REQUEST_FOR_QUOTES', 'Online Anfrage');
 define ('ORD_TEXT_3_EXPIRES', 'Verfallsdatum');
 define ('ORD_TEXT_3_NUMBER', 'Zitat Anzahl');
 define ('ORD_TEXT_3_TEXT_REP', 'Käufer');
@@ -355,7 +355,7 @@ define ('GL_MSG_IMPORT_4', 'Importierte Bestellungen');
 // Kauf / Empfangen Spezifische
 define ('ORD_TEXT_6_BILL_TO', 'Auftrag,:');
 define ('ORD_TEXT_6_REF_NUM', 'Reference #');
-define ('ORD_TEXT_6_WINDOW_TITLE', 'Kauf / Empfangen Inventory');
+define ('TEXT_PURCHASE_OR_RECEIVE_INVENTORY', 'Kauf / Empfangen Inventory');
 define ('ORD_TEXT_6_ERROR_NO_VENDOR', 'Kein Anbieter ausgewählt wurde Entweder wählen Sie einen Lieferanten aus dem Popup-Menü oder geben Sie die Informationen und wählen: ' . ORD_ADD_UPDATE);
 define ('ORD_TEXT_6_NUMBER', 'Invoice Number');
 define ('ORD_TEXT_6_TEXT_REP', 'Käufer');
@@ -392,7 +392,7 @@ define ('GENERAL_JOURNAL_7_LEDGER_HEADING', 'Hersteller Gutschrift Total');
 // Customer Specific Zitat
 define ('ORD_TEXT_9_BILL_TO', 'Bill');
 define ('ORD_TEXT_9_REF_NUM', 'Auftragsnummer');
-define ('ORD_TEXT_9_WINDOW_TITLE', 'Customer Zitat');
+define ('TEXT_SALES_QUOTES', 'Customer Zitat');
 define ('ORD_TEXT_9_EXPIRES', 'Verfallsdatum');
 define ('ORD_TEXT_9_NUMBER', 'Zitat Anzahl');
 define ('ORD_TEXT_9_TEXT_REP', 'Sales Rep');
@@ -431,7 +431,7 @@ define ('GL_MSG_IMPORT_10', 'Importierte Kundenauftrag');
 // Vertrieb / Invoice Spezifische
 define ('ORD_TEXT_12_BILL_TO', 'Bill');
 define ('ORD_TEXT_12_REF_NUM', 'Auftragsnummer');
-define ('ORD_TEXT_12_WINDOW_TITLE', 'Sales / Rechnung');
+define ('TEXT_SALES_INVOICES', 'Sales / Rechnung');
 define ('ORD_TEXT_12_EXPIRES', 'Schiff nach Datum');
 define ('ORD_TEXT_12_ERROR_NO_VENDOR', 'Keine Kunden ausgewählt wurde!');
 define ('ORD_TEXT_12_NUMBER', 'Invoice Number');

@@ -11,7 +11,7 @@
 define('TEXT_CONTACTS_MODULE','Contact module');
 define('MODULE_CONTACTS_DESCRIPTION','De contact module beheert alle klanten, leveranciers, medewerkers, brances en projecten in de PhreeSoft Business Toolkit.');
 define('TEXT_CONTACTS_ADMINISTRATION','Contact Administratie');
-define('TEXT_BILLING_PREFS','Factuur Adres Instellingen');
+define('TEXT_BILLING_ADDRESS_BOOK_SETTINGS','Factuur Adres Instellingen');
 define('PB_PF_CONTACT_ID','Contact ID');
 define('TEXT_TERMS_TO_LANGUAGE','Voorwaarden naar Taal');
 define('COST_TYPE_LBR','Arbeidt');

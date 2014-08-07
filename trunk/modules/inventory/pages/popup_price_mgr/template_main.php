@@ -38,7 +38,7 @@ echo $toolbar->build_toolbar();
 	<td nowrap="nowrap"><?php echo TEXT_SKU . ': '; ?></td>
 	<td nowrap="nowrap"><?php echo $inventory_details->fields['sku']; ?></td>
 	<td nowrap="nowrap" width="10%">&nbsp;</td>
-	<td nowrap="nowrap"><?php echo INV_ENTRY_INVENTORY_DESC_SHORT . ': '; ?></td>
+	<td nowrap="nowrap"><?php echo TEXT_SHORT_DESCRIPTION . ': '; ?></td>
 	<td nowrap="nowrap"><?php echo $inventory_details->fields['description_short']; ?></td>
   </tr>
   <tr>

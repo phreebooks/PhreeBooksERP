@@ -70,7 +70,7 @@
 <?php if ($report->reporttype == 'rpt') { ?>
   <table class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto;">
    <thead class="ui-widget-header">
-    <tr><th colspan="8"><?php echo PHREEFORM_PGHEADER; ?></th></tr>
+    <tr><th colspan="8"><?php echo TEXT_HEADER_INFORMATION_AND_FORMATTING; ?></th></tr>
     <tr>
       <th>&nbsp;</th>
       <th><?php echo TEXT_SHOW;  ?></th>
@@ -106,7 +106,7 @@
       <td align="center"><?php echo html_pull_down_menu('title2align', $kFontAlign,  $report->page->title2->align); ?></td>
     </tr>
     <tr>
-      <td colspan="2"><?php echo PHREEFORM_PGFILDESC; ?></td>
+      <td colspan="2"><?php echo TEXT_REPORT_FILTER_DESCRIPTION; ?></td>
       <td align="center"><?php echo html_pull_down_menu('filterfont',  $kFonts,      $report->page->filter->font); ?></td>
       <td align="center"><?php echo html_pull_down_menu('filtersize',  $kFontSizes,  $report->page->filter->size); ?></td>
       <td align="center"><?php echo html_pull_down_menu('filtercolor', $kFontColors, $report->page->filter->color); ?></td>
@@ -120,7 +120,7 @@
       <td align="center"><?php echo html_pull_down_menu('dataalign', $kFontAlign,  $report->page->data->align); ?></td>
     </tr>
     <tr>
-      <td colspan="2"><?php echo PHREEFORM_TOTALS; ?></td>
+      <td colspan="2"><?php echo TEXT_REPORT_TOTALS; ?></td>
       <td align="center"><?php echo html_pull_down_menu('totalsfont' , $kFonts,      $report->page->totals->font); ?></td>
       <td align="center"><?php echo html_pull_down_menu('totalssize',  $kFontSizes,  $report->page->totals->size); ?></td>
       <td align="center"><?php echo html_pull_down_menu('totalscolor', $kFontColors, $report->page->totals->color); ?></td>

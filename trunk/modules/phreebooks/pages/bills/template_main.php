@@ -49,7 +49,7 @@ switch (JOURNAL_ID) {
 echo $toolbar->build_toolbar();
 // Build the page
 ?>
-<h1><?php echo constant('ORD_TEXT_' . JOURNAL_ID . '_' . strtoupper($account_type) . '_WINDOW_TITLE'); ?></h1>
+<h1><?php echo $journal_types_list[JOURNAL_ID]['text']; ?></h1>
 <div>
  <table class="ui-widget" style="border-style:none;width:100%">
   <tbody class="ui-widget-content">

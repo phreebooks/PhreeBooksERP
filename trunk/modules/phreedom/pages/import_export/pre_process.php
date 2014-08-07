@@ -160,20 +160,15 @@ switch ($_REQUEST['action']) {
 	// *************** START TRANSACTION *************************
 	$db->transStart();
 	foreach ($glEntry->beg_bal as $account => $values) {
-	  $sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
-		set beginning_balance = " . $values['beg_bal'] . "
-		where period = 1 and account_id = '" . $account . "'";
+	  $sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " set beginning_balance = {$values['beg_bal']} where period = 1 and account_id = '$account'";
 	  $result = $db->Execute($sql);
 	}
 	$glEntry->update_chart_history_periods($period = 1); // roll the beginning balances into chart history table
-	$glEntry->fail_message(GL_ERROR_UPDATE_COA_HISTORY);
 	$db->transCommit();	// post the chart of account values
 	gen_add_audit_log('Enter Beginning Balances');
 	if (DEBUG) $messageStack->write_debug();
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	// *************** END TRANSACTION *************************
-	if (DEBUG) $messageStack->write_debug();
-	throw new \core\classes\userException(GL_ERROR_NO_POST);
 	break;
 
   case 'import_inv':
@@ -237,8 +232,8 @@ switch ($_REQUEST['action']) {
 		  	case 'import_so':
 		  	case 'import_ar':  $so_po->processCSV($upload_name);
 		}
-		$messageStack->add(TEXT_SUCCESS . '-' . constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE') . '-' . TEXT_IMPORT . ': ' . sprintf(SUCCESS_IMPORT_COUNT, $so_po->line_count),'success');
-		gen_add_audit_log(constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE') . '-' . TEXT_IMPORT, $so_po->line_count);
+		$messageStack->add(TEXT_SUCCESS . '-' . $journal_types_list[JOURNAL_ID]['text'] . '-' . TEXT_IMPORT . ': ' . sprintf(SUCCESS_IMPORT_COUNT, $so_po->line_count),'success');
+		gen_add_audit_log($journal_types_list[JOURNAL_ID]['text'] . '-' . TEXT_IMPORT, $so_po->line_count);
 		$db->transCommit();
   	}catch(Exception $e){
   		$db->transRollback();

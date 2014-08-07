@@ -163,7 +163,7 @@ switch ($_REQUEST['action']) {
 	$_REQUEST['action'] = 'edit'; // fall through to edit case
   case 'edit':
     $id = db_prepare_input($_POST['rowSeq']);
-	if (!$id) throw new \core\classes\userException(sprintf(ERROR_EMPTY_VARIABLE, 'rowSeq'));
+	if (!$id) throw new \core\classes\userException(sprintf(TEXT_FIELD_IS_REQUIRED_BUT_HAS_BEEN_LEFT_BLANK_ARGS, 'rowSeq'));
 	$result = $db->Execute("select id, wo_title, sku_id, description, allocate, ref_doc, ref_spec, revision, last_usage
 		from " . TABLE_WO_MAIN . " where id = " . $id);
 	foreach ($result->fields as $key => $value) $$key = $value;
@@ -201,7 +201,7 @@ switch ($_REQUEST['action']) {
   case 'delete':
 		\core\classes\user::validate_security($security_level, 4);
     	$id = db_prepare_input($_GET['id']);
-		if (!$id) throw new \core\classes\userException(sprintf(ERROR_EMPTY_VARIABLE, 'id'));
+		if (!$id) throw new \core\classes\userException(sprintf(TEXT_FIELD_IS_REQUIRED_BUT_HAS_BEEN_LEFT_BLANK_ARGS, 'id'));
 		// error check
 		$result = $db->Execute("select wo_title, last_usage from " . TABLE_WO_MAIN . " where id = " . $id);
 		if ($result->fields['last_usage'] <> '0000-00-00') throw new \core\classes\userException(WO_ERROR_CANNOT_DELETE_BUILDER);

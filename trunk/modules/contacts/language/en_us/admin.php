@@ -22,7 +22,7 @@ define('TEXT_CONTACTS_MODULE','Contacts module');
 define('MODULE_CONTACTS_DESCRIPTION','The contacts module manages all customer, vendors, employees, branches and projects used in the PhreeSoft Business Toolkit.');
 // Headings
 define('TEXT_CONTACTS_ADMINISTRATION','Contacts Administration');
-define('TEXT_BILLING_PREFS','Billing Address Book Settings');
+define('TEXT_BILLING_ADDRESS_BOOK_SETTINGS','Billing Address Book Settings');
 // General
 define('PB_PF_CONTACT_ID','Contact ID');
 define('TEXT_TERMS_TO_LANGUAGE','Terms to Language');

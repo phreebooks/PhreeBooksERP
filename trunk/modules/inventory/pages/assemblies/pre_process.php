@@ -71,7 +71,7 @@ switch ($_REQUEST['action']) {
 			);
 			// *************** START TRANSACTION *************************
 			$db->transStart();
-			if (!$glEntry->Post($glEntry->id ? 'edit' : 'insert')) throw new \core\classes\userException(GL_ERROR_NO_POST);
+			$glEntry->Post($glEntry->id ? 'edit' : 'insert');
 	  		$db->transCommit();	// post the chart of account values
 	  		gen_add_audit_log(TEXT_INVENTORY_ASSEMBLY . ' - ' . ($_REQUEST['action']=='save' ? TEXT_SAVE : TEXT_EDIT), $sku, $qty);
 	  		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_ASSEMBLED, TEXT_SKU , $sku), 'success');

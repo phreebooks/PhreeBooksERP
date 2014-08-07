@@ -119,9 +119,9 @@ class parser {
 //	if (!is_object($db)) { echo 'the database is not open ...'; return false; }
 	// validate user with db (call validation function)
 	$result = $db->Execute("select admin_pass from " . DB_PREFIX . "admin where admin_name = '" . $this->username . "'");
-	if ($result->RecordCount() == 0) throw new Exception( SOAP_USER_NOT_FOUND, 11);
+	if ($result->RecordCount() == 0) throw new Exception( TEXT_THE_USERNAME_SUBMITTED_IS_NOT_VALID, 11);
 	if (!zen_validate_password($this->password, $result->fields['admin_pass'])) {
-	  throw new Exception(SOAP_PASSWORD_NOT_FOUND, 12);
+	  throw new Exception(TEXT_THE_PASSWORD_SUBMITTED_IS_NOT_VALID, 12);
 	}
 	return true; // if both the username and password are correct
   }

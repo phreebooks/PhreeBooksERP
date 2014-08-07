@@ -88,8 +88,8 @@ switch ($_REQUEST['action']) {
 		if ($_POST['password_new']) {
 		  	$password_new  = db_prepare_input($_POST['password_new']);
 		  	$password_conf = db_prepare_input($_POST['password_conf']);
-		  	if (strlen($password_new) < ENTRY_PASSWORD_MIN_LENGTH) throw new \core\classes\userException(sprintf(ENTRY_PASSWORD_NEW_ERROR, ENTRY_PASSWORD_MIN_LENGTH));
-		  	if ($password_new != $password_conf) throw new \core\classes\userException(ENTRY_PASSWORD_NEW_ERROR_NOT_MATCHING);
+		  	if (strlen($password_new) < ENTRY_PASSWORD_MIN_LENGTH) throw new \core\classes\userException(sprintf(TEXT_YOUR_NEW_PASSWORD_MUST_CONTAIN_A_MINIMUM_OF_CHARACTERS_ARGS, ENTRY_PASSWORD_MIN_LENGTH));
+		  	if ($password_new != $password_conf) throw new \core\classes\userException(TEXT_THE_PASSWORD_CONFIRMATION_MUST_MATCH_YOUR_NEW_PASSWORD);
 		  	$sql_data_array['admin_pass'] = \core\classes\encryption::password($password_new);
 		}
 		if (!$admin_id) { // check for duplicate user name

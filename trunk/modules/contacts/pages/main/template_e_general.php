@@ -74,7 +74,7 @@ echo html_hidden_field('account_number', $cInfo->account_number); // not used fo
 
 <?php // *********************** Mailing/Main Address (only one allowed) ****************************** ?>
   <fieldset>
-    <legend><?php echo ACT_CATEGORY_M_ADDRESS; ?></legend>
+    <legend><?php echo TEXT_MAIN_MAILING_ADDRESS; ?></legend>
     <table id="<?php echo $type; ?>m_address_form" class="ui-widget" style="border-collapse:collapse;width:100%;">
       <?php echo draw_address_fields($cInfo, $type.'m', false, true, false); ?>
     </table>

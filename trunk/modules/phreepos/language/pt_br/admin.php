@@ -31,7 +31,7 @@ define('PHREEPOS_RECEIPT_PRINTER_OPEN_DRAWER_DESC','Aqui você pode inserir cód
 define('PHREEPOS_RECEIPT_PRINTER_CLOSING_LINE_DESC','Aqui você pode inserir código para abrir a gaveta ou cortar o cupom.<br>Separe os códigos com um : e linhas com , . <br>Os códigos são números de chr como chr(13) é 13<br><b>Não coloque nenhum texto nos códigos. Isto pode resultar em erro.</b> ');
 define('PHREEPOS_RECEIPT_PRINTER_STARTING_LINE_DESC','Aqui você pode inserir código que deve aparecer no cabeçalho do cupom.<br>Separe os códigos com um : e linhas com , . <br>Os códigos são números de chr como chr(13) é 13<br><b>Não coloque nenhum texto nos códigos. Isto pode resultar em erro.</b> Veja a documentação de sua impressora  para ter os códigos corretos.');
 define('PHREEPOS_RECEIPT_PRINTER_NAME_DESC','Especifica o nome da impressora para imprimir cupons conforme especificada nas preferências de impressora de sua estação local.');
-define('PHREEPOS_REQUIRE_ADDRESS_DESC','Solicitar informação de endereço para cada venda PDV?');
+define('TEXT_REQUIRE_ADDRESS_INFORMATION_FOR_EVERY_POS_OR_POP_SALE','Solicitar informação de endereço para cada venda PDV?');
 define('TEXT_POINT_OF_SALE_ADMINISTRATION','Administração de Ponto de Venda');
 define('TEXT_PHREEPOS_SETTINGS','Propriedades Módulo PhreePOS ');
 define('MODULE_PHREEPOS_DESCRIPTION','O Módulo PhreePOS fornece uma interface de Ponto De Venda. Este módulo é complementar ao Módulo Phreebooks e não o substitui.');

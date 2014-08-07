@@ -126,7 +126,7 @@ class admin extends \core\classes\admin {
 		global $db;
 		if (!$name) throw new \core\classes\userException(TEXT_THE_ID_FIELD_WAS_EMPTY);
 		$result = $db->Execute("select id from " . TABLE_ASSETS . " where asset_id = '$name'");
-		if ($result->RecordCount() <> 0) throw new \core\classes\userException(sprintf(ERROR_DUPLICATE_SKU, $name));
+		if ($result->RecordCount() <> 0) throw new \core\classes\userException(sprintf(TEXT_THE_ID_IS_NOT_UNIQUE_ARGS, $name));
 	}
 }
 ?>

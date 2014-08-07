@@ -35,6 +35,6 @@ switch ($_REQUEST['action']) {
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', SKU_PRICER_PAGE_TITLE);
+define('PAGE_TITLE', TEXT_SKU_PRICE_IMPORTER);
 
 ?>

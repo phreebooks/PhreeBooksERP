@@ -44,7 +44,7 @@ echo $toolbar->build_toolbar();
   <tr><td width="50%" valign="top">
   <div>
     <fieldset>
-    <legend><?php echo SHIPPING_RECP_INFO; ?></legend>
+    <legend><?php echo TEXT_RECEPIENT_INFORMATION; ?></legend>
     <table>
 	  <tr>
 		<td><?php echo TEXT_NAME_OR_COMPANY; ?></td>
@@ -98,7 +98,7 @@ echo $toolbar->build_toolbar();
 		</td>
 	  </tr>
 	  <tr>
-		<td><?php echo SHIPPING_EMAIL_RECIPIENT_ADD; ?></td>
+		<td><?php echo TEXT_RECIPIENT_E-MAIL_ADDRESS; ?></td>
 		<td><?php echo html_input_field('ship_email', $sInfo->ship_email, 'size="33" maxlength="32"'); ?></td>
 	  </tr>
 	  <tr>
@@ -110,7 +110,7 @@ echo $toolbar->build_toolbar();
 		</td>
 	  </tr>
 	  <tr>
-		<td><?php echo SHIPPING_EMAIL_SENDER_ADD; ?></td>
+		<td><?php echo TEXT_SENDER_E-MAIL_ADDRESS; ?></td>
 		<td><?php echo html_input_field('sender_email_address', COMPANY_EMAIL, 'size="33" maxlength="32"'); ?></td>
 	  </tr>
     </table>
@@ -135,14 +135,14 @@ echo $toolbar->build_toolbar();
   <td width="50%" valign="top">
   <div>
     <fieldset>
-    <legend><?php echo SHIPPNIG_SUMMARY; ?></legend>
+    <legend><?php echo TEXT_SHIPMENT_SUMMARY; ?></legend>
     <table>
 	  <tr>
-		<td><?php echo SHIPPING_TOTAL_WEIGHT; ?></td>
+		<td><?php echo TEXT_TOTAL_SHIPMENT_WEIGHT; ?></td>
 		<td><?php echo html_input_field('total_weight', $sInfo->total_weight, 'readonly="readonly" size="6" maxlength="5" style="text-align:right"'); ?></td>
 	  </tr>
 	  <tr>
-		<td><?php echo SHIPPING_TOTAL_VALUE; ?></td>
+		<td><?php echo TEXT_TOTAL_SHIPMENT_VALUE; ?></td>
 		<td><?php echo html_input_field('total_value', $sInfo->total_value, 'readonly="readonly" size="8" maxlength="7" style="text-align:right"'); ?></td>
 	  </tr>
     </table>

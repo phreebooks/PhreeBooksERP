@@ -64,7 +64,7 @@ echo $toolbar->build_toolbar($add_search = true);
 		if ($security_level > 1) echo html_button_field('revise_' . $query_result->fields['id'], TEXT_REVISE, 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action', 'list', 'psID')) . '&amp;list=' . $_REQUEST['list'] . '&amp;action=revise&amp;psID=' . $query_result->fields['id'], 'SSL') . '\'"');
 	}
 	if ($security_level > 1) echo html_icon('actions/edit-find-replace.png', TEXT_EDIT, 'small', 'onclick="submitSeq(' . $query_result->fields['id'] . ', \'edit\')"') . chr(10);
-	if ($security_level > 3) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . PRICE_SHEET_MSG_DELETE . '\')) deleteItem(' . $query_result->fields['id'] . ')"') . chr(10);
+	if ($security_level > 3) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . TEXT_ARE_YOU_SURE_YOU_WANT_TO_DELETE_THIS_PRICE_SHEET . '\')) deleteItem(' . $query_result->fields['id'] . ')"') . chr(10);
 ?>
 	</td>
   </tr>

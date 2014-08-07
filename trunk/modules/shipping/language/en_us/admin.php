@@ -28,11 +28,11 @@ define('CD_10_02_DESC', 'Default currency to use for shipments. Valid values are
 define('CD_10_03_DESC', 'Package unit of measure. Valid values are: Inches, Centimeters');
 define('CD_10_04_DESC', 'Default residential ship box (unchecked - Commercial, checked - Residential)');
 define('TEXT_DEFAULT_PACKAGE_TYPE_TO_USE_FOR_SHIPPING', 'Default package type to use for shipping');
-define('CD_10_06_DESC', 'Default type of pickup service for your package service');
-define('CD_10_07_DESC', 'Default package dimensions to use for a standard shipment (in units specified above).');
+define('TEXT_DEFAULT_TYPE_OF_PICKUP_SERVICE_FOR_YOUR_PACKAGE_SERVICE', 'Default type of pickup service for your package service');
+define('TEXT_DEFAULT_PACKAGE_DIMENSIONS_TO_USE_FOR_A_STANDARD_SHIPMENT', 'Default package dimensions to use for a standard shipment (in units specified above).');
 define('TEXT_ADDITIONAL_HANDLING_CHARGE_CHECKBOX', 'Additional handling charge checkbox');
 define('TEXT_SHIPMENT_INSURANCE_SELECTION_OPTION', 'Shipment insurance selection option.');
-define('CD_10_20_DESC', 'Allow heavy shipments to be broken down to use small package service');
+define('TEXT_ALLOW_HEAVY_SHIPMENTS_TO_BE_BROKEN_DOWN_TO_USE_SMALL_PACKAGE_SERVICE', 'Allow heavy shipments to be broken down to use small package service');
 define('TEXT_DELIVERY_CONFIRMATION_CHECKBOX', 'Delivery confirmation checkbox');
 define('CD_10_32_DESC', 'Additional handling charge checkbox');
 define('TEXT_ENABLE_THE_COD_CHECKBOX_AND_OPTIONS', 'Enable the COD checkbox and options');

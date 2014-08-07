@@ -25,7 +25,7 @@ $classes = $admin_classes->ReturnAdminClasses();
 echo html_hidden_field('action', '') . chr(10);
 echo html_hidden_field('dashboard_id', '') . chr(10);
 ?>
-<div><a href="<?php echo html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=ctl_panel&amp;mID=' . $menu_id, 'SSL'); ?>"><?php echo CP_CHANGE_PROFILE; ?></a></div>
+<div><a href="<?php echo html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=ctl_panel&amp;mID=' . $menu_id, 'SSL'); ?>"><?php echo TEXT_ADD_DASHBOARD_ITEMS_TO_THIS_PAGE; ?></a></div>
 <table style="width:100%;margin-left:auto;margin-right:auto;">
   <tr>
   </tr>

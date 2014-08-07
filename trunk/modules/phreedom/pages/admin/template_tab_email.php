@@ -30,7 +30,7 @@
     <td><?php echo html_pull_down_menu('email_transport', $sel_transport, $_POST['email_transport'] ? $_POST['email_transport'] : EMAIL_TRANSPORT, ''); ?></td>
   </tr>
   <tr>
-    <td><?php echo CD_12_02_DESC; ?></td>
+    <td><?php echo TEXT_DEFINES_THE_CHARACTER_SEQUENCE_USED_TO_SEPARATE_MAIL_HEADERS; ?></td>
     <td><?php echo html_pull_down_menu('email_linefeed', $sel_linefeed, $_POST['email_linefeed'] ? $_POST['email_linefeed'] : EMAIL_LINEFEED, ''); ?></td>
   </tr>
   <tr>
@@ -46,7 +46,7 @@
     <td><?php echo html_input_field('email_from', $_POST['email_from'] ? $_POST['email_from'] : EMAIL_FROM, ''); ?></td>
   </tr>
   <tr>
-    <td><?php echo CD_12_15_DESC; ?></td>
+    <td><?php echo TEXT_PLEASE_SELECT_THE_ADMIN_EXTRA_EMAIL_FORMAT; ?></td>
     <td><?php echo html_pull_down_menu('admin_extra_email_format', $sel_format, $_POST['admin_extra_email_format'] ? $_POST['admin_extra_email_format'] : ADMIN_EXTRA_EMAIL_FORMAT, ''); ?></td>
   </tr>
   <tr>

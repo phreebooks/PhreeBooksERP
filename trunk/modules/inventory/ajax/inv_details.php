@@ -36,7 +36,7 @@ $qty    = db_prepare_input($_GET['qty']); // specifes the quantity (for pricing)
 $strict = isset($_GET['strict']) ? $_GET['strict'] : false; // specifes strict match of sku value
 // some error checking
 try{
-	if (!$sku && !$UPC && !$iID) throw new \core\classes\userException(AJAX_INV_NO_INFO);
+	if (!$sku && !$UPC && !$iID) throw new \core\classes\userException(TEXT_NOT_ENOUGH_INFORMATION_WAS_PASSED_TO_RETRIEVE_THE_ITEM_DETAILS);
 	if(!$UPC && !$iID && (validate_UPCABarcode($sku) || validate_EAN13Barcode($sku) )){
 		$UPC = $sku;
 	}

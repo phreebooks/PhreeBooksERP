@@ -76,7 +76,7 @@ switch ($_REQUEST['action']) {
 /*****************   prepare to display templates  *************************/
 // build the list header
 $heading_array['post_date'] = TEXT_DATE;
-$heading_array['purchase_invoice_id'] = constant('ORD_HEADING_NUMBER_' . JOURNAL_ID);
+$heading_array['purchase_invoice_id'] = $journal_types_list[JOURNAL_ID]['id_field_name'];
 switch (JOURNAL_ID) {
   case  6:
   case  7:

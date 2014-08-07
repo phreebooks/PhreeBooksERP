@@ -176,13 +176,13 @@ define ('TEXT_AMOUNT_PAST_DUE', 'Amount überfällig');
 
 // Misc Informationen Nachrichten
 define ('RECORD_NUM_REF_ONLY', 'Datensatz-ID (nur zur Referenz) =');
-define ('ACT_ID_AUTO_FILL', '(Lassen Sie für System generierten ID) leer');
+define ('TEXT_LEAVE_BLANK_FOR_SYSTEM_GENERATED_ID', '(Lassen Sie für System generierten ID) leer');
 define ('ACT_WARN_DELETE_ADDRESS', 'Sind Sie sicher, dass Sie an diese Adresse löschen?');
 define ('ACT_WARN_DELETE_ACCOUNT', 'Sind Sie sicher, dass Sie dieses Konto löschen wollen?');
 define ('ACT_WARN_DELETE_PAYMENT', 'Sind Sie sicher, dass Sie diese Zahlung Datensatz wirklich löschen?');
 define ('ACT_ERROR_CANNOT_DELETE', 'kann nicht gelöscht werden, weil an einer Zeitschrift Datensatz enthält dieses Konto');
 define ('ACT_ERROR_DUPLICATE_ACCOUNT', 'Die Konto-ID bereits im System vorhanden, geben Sie bitte eine neue ID.');
-define ('ACT_ERROR_ACCOUNT_NOT_FOUND', 'Die Rechnung, die Sie suchen konnte nicht gefunden werden!');
+define ('TEXT_THE_ACCOUNT_YOU_ARE_LOOKING_FOR_COULD_NOT_BE_FOUND', 'Die Rechnung, die Sie suchen konnte nicht gefunden werden!');
 define ('ACT_BILLING_MESSAGE', 'Diese Felder sind nicht erforderlich, es sei denn, eine Rechnungsadresse hinzugefügt wird.');
 define ('ACT_SHIPPING_MESSAGE', 'Diese Felder sind nicht erforderlich, es sei denn, eine Lieferadresse hinzugefügt wird.');
 define ('ACT_NO_ENCRYPT_KEY_ENTERED', 'ACHTUNG:.! Der Schlüssel wurde nicht eingegeben gespeicherten Kreditkartendaten werden nicht angezeigt und hier eingegebenen Werte werden nicht gespeichert werden');
@@ -193,6 +193,6 @@ define ('TEXT_WARNING_NO_ENCRYPTION_KEY', 'Eine Zahlung angegeben wurde, aber de
 define ('ACT_ERROR_DUPLICATE_CONTACT', 'Die Kontakt-ID bereits im System vorhanden, geben Sie bitte einen neuen Kontakt-ID.');
 
 // Java Script Fehler
-define ('ACT_JS_SHORT_NAME', "* Die 'ID' Eintrag darf nicht leer sein. \n ");
+define ('TEXT_THE_ID_ENTRY_CANNOT_BE_EMPTY', "* Die 'ID' Eintrag darf nicht leer sein. \n ");
 
 ?>

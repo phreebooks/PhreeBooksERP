@@ -33,7 +33,7 @@ $toolbar->add_help('09');
 echo $toolbar->build_toolbar();
 // Build the page
 ?>
-<h1><?php echo SHIPPING_POPUP_WINDOW_RATE_TITLE; ?></h1>
+<h1><?php echo TEXT_SHIPPING_RATE_ESTIMATOR; ?></h1>
 <?php
   $temp = $rates['rates'];
 //echo 'temp array = '; print_r($temp); echo '<br />';

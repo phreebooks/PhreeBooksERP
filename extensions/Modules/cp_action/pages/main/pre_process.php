@@ -75,7 +75,7 @@ switch ($_REQUEST['action']) {
 
 	  if ($id) {
 	    	if (!db_perform(TABLE_CAPA, $sql_data_array, 'update', 'id = ' . $id)) throw new \core\classes\userException(CAPA_MESSAGE_ERROR);
-		 	gen_add_audit_log(CAPA_LOG_USER_UPDATE . $_POST['capa_num']);
+		 	gen_add_audit_log(TEXT_CAPA_UPDATED_CAPA . ' # ' . $_POST['capa_num']);
 		  	$capa_num = $_POST['capa_num'];
 	  } else {
 	    	// fetch the CAPA number
@@ -86,7 +86,7 @@ switch ($_REQUEST['action']) {
 		  	$id = db_insert_id();
 		  	$next_num = string_increment($capa_num);
 		  	$db->Execute("update " . TABLE_CURRENT_STATUS . " set next_capa_num = '" . $next_num . "'");
-		  	gen_add_audit_log(CAPA_LOG_USER_ADD . $capa_num);
+		  	gen_add_audit_log(TEXT_CAPA_CREATED_CAPA . ' # ' . $capa_num);
 	  }
 	  $messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, ($_POST['rowSeq'] ? TEXT_UPDATED : TEXT_ADDED ), TEXT_CORRECTIVE_ACTION_PREVENTATIVE_ACTION , $capa_num), 'success');
 	break;

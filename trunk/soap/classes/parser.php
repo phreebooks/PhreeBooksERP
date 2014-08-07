@@ -28,7 +28,7 @@ class parser {
 	// validate user with db (call validation function)
 	$result = $db->Execute("select admin_pass from " . TABLE_USERS . " where admin_name = '" . $username . "'");
 	if ($result->RecordCount() == 0) {
-	  return $this->responseXML('11', SOAP_USER_NOT_FOUND, 'error');
+	  return $this->responseXML('11', TEXT_THE_USERNAME_SUBMITTED_IS_NOT_VALID, 'error');
 	}
 	try{
 		\core\classes\encryption::validate_password($password, $result->fields['admin_pass']);

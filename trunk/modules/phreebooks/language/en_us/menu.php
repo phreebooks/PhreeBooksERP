@@ -3,7 +3,6 @@
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
 // | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
-
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -22,21 +21,21 @@ define('TEXT_GENERAL_LEDGER', 'General Ledger');
 define('TEXT_BANKING','Banking');
 // Menu Titles
 define('ORD_TEXT_0_WINDOW_TITLE', 'Beginning Balances');
-define('ORD_TEXT_2_WINDOW_TITLE', 'General Journal');
-define('ORD_TEXT_3_WINDOW_TITLE', 'Request for Quotes');
+define('TEXT_GENERAL_JOURNAL', 'General Journal');
+define('TEXT_REQUEST_FOR_QUOTES', 'Request for Quotes');
 define('ORD_TEXT_4_WINDOW_TITLE', 'Purchase Orders');
-define('ORD_TEXT_6_WINDOW_TITLE', 'Purchase/Receive Inventory');
+define('TEXT_PURCHASE_OR_RECEIVE_INVENTORY', 'Purchase/Receive Inventory');
 define('ORD_TEXT_7_WINDOW_TITLE', 'Vendor Credit Memos');
-define('ORD_TEXT_9_WINDOW_TITLE', 'Sales Quotes');
+define('TEXT_SALES_QUOTES', 'Sales Quotes');
 define('ORD_TEXT_10_WINDOW_TITLE','Sales Orders');
-define('ORD_TEXT_12_WINDOW_TITLE','Sales/Invoices');
+define('TEXT_SALES_INVOICES','Sales/Invoices');
 define('ORD_TEXT_13_WINDOW_TITLE','Customer Credit Memos');
 define('ORD_TEXT_18_WINDOW_TITLE','Cash Receipts');
 define('ORD_TEXT_20_WINDOW_TITLE','Cash Distributions');
 define('ORD_TEXT_18_C_WINDOW_TITLE','Customer Receipts');
 define('ORD_TEXT_18_V_WINDOW_TITLE','Vendor Refunds');
 define('ORD_TEXT_19_WINDOW_TITLE','Pos Sales');
-define('ORD_TEXT_20_C_WINDOW_TITLE','Customer Refunds');
+define('TEXT_CUSTOMER_REFUNDS','Customer Refunds');
 define('ORD_TEXT_20_V_WINDOW_TITLE','Vendor Payments');
 
 define('TEXT_PAY_BY_DUE_DATE', 'Pay by Due Date');

@@ -140,7 +140,7 @@ define('ACT_TERMS_STANDARD_DAYS',' dia(s). ');
 define('TEXT_CREDIT_LIMIT','Limite Crédito: ');
 define('TEXT_AMOUNT_PAST_DUE','Valor Após Vencimento');
 define('RECORD_NUM_REF_ONLY','ID registro (Só para Referência) = ');
-define('ACT_ID_AUTO_FILL','(Deixe em branco para geração de ID pelo sistema)');
+define('TEXT_LEAVE_BLANK_FOR_SYSTEM_GENERATED_ID','(Deixe em branco para geração de ID pelo sistema)');
 define('ACT_WARN_DELETE_ADDRESS','Você tem certeza de que quer excluir este endereço?');
 define('ACT_WARN_DELETE_ACCOUNT','Você tem certeza de que quer excluir esta conta?');
 define('ACT_WARN_DELETE_PAYMENT','Você tem certeza de que quer excluir este registro de pagamento?');
@@ -157,6 +157,6 @@ define('TEXT_OPEN_INVOICES','Faturas em Aberto');
 define('TEXT_WARNING_NO_ENCRYPTION_KEY','Um pagamento foi espeficicado mas achave de criptografia não foi inserida. O endereço de pagamento foi gravado, mas a informação do pagamento não foi.');
 define('ACT_ERROR_DUPLICATE_CONTACT','O ID de contato já existe no sistema, por favor entre um novo ID de contato.');
 define('CRM_ROW_DELETE_ALERT','Você tem certeza de que quer excluir esta anotação de CRM?');
-define('ACT_JS_SHORT_NAME','* A entrada de \\\'ID\\\' não pode estar em branco.');
+define('TEXT_THE_ID_ENTRY_CANNOT_BE_EMPTY','A entrada de \'ID\' não pode estar em branco.');
 
 ?>

@@ -18,8 +18,8 @@
 //
 
 define('SOAP_NO_USER_PW','The username and password submitted cannot be found in the XML string.');
-define('SOAP_USER_NOT_FOUND','The username submitted is not valid.');
-define('SOAP_PASSWORD_NOT_FOUND','The password submitted is not valid.');
+define('TEXT_THE_USERNAME_SUBMITTED_IS_NOT_VALID','The username submitted is not valid.');
+define('TEXT_THE_PASSWORD_SUBMITTED_IS_NOT_VALID','The password submitted is not valid.');
 define('TEXT_UNEXPECTED_ERROR','An unexpected error code was returned by the processing server.');
 define('SOAP_XML_SUBMITTED_SO','XML submitted Sales Order');
 define('SOAP_ACCOUNT_PROBLEM','Could not find main address for an existing customer. Major problem with the PhreeBooks address database.');

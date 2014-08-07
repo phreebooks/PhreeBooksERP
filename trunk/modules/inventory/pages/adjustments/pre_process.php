@@ -78,7 +78,7 @@ switch ($_REQUEST['action']) {
 	  }
 	  $rowCnt++;
 	}
-	if ($adj_lines == 0) throw new \core\classes\userException(INV_ADJ_QTY_ZERO);
+	if ($adj_lines == 0) throw new \core\classes\userException(TEXT_CANNOT_ADJUST_INVENTORY_WITH_A_ZERO_QUANTITY);
 	$glEntry->journal_main_array['total_amount'] = $adj_total;
 	$glEntry->journal_rows[] = array(
 	    'sku'           => '',

@@ -28,7 +28,7 @@ class journal {
 		if ($id != 0) {
 			$result = $db->Execute("select * from " . TABLE_JOURNAL_MAIN . " where id = $id");
 			// make sure we have a record or die (there's a problem that needs to be fixed)
-		  	if ($result->RecordCount() == 0) throw new \core\classes\userException(GL_ERROR_DIED_CREATING_RECORD . $id);
+		  	if ($result->RecordCount() == 0) throw new \core\classes\userException(TEXT_DIED_TRYING_TO_BUILD_A_JOURNAL_ENTRY_WITH_ID . ' = ' . $id);
 		  	foreach ($result->fields as $key => $value) $this->$key = $value;
 		  	$this->journal_main_array = $this->build_journal_main_array();	// build ledger main record
 		  	$result = $db->Execute("select * from " . TABLE_JOURNAL_ITEM . " where ref_id = " . (int)$id);
@@ -302,7 +302,7 @@ class journal {
 			  last_update = '$this->post_date' WHERE account_id = '$gl_acct' AND period = $this->period";
 		    $messageStack->debug("\n    Post chart balances: credit_amount = ".$values['credit'].", debit_amount = ".$values['debit'].", acct = $gl_acct, period = $this->period");
 		    $result = $db->Execute($sql);
-		    if ($result->AffectedRows() <> 1) throw new \core\classes\userException(GL_ERROR_POSTING_CHART_BALANCES . ($gl_acct ? $gl_acct : TEXT_NOT_SPECIFIED));
+		    if ($result->AffectedRows() <> 1) throw new \core\classes\userException(TEXT_ERROR_POSTING_CHART_OF_ACCOUNT_BALANCES_TO_ACCOUNT_ID .": " . ($gl_acct ? $gl_acct : TEXT_NOT_SPECIFIED));
 		  }
 		}
 		$messageStack->debug("\n  end Posting Chart Balances.");
@@ -377,18 +377,18 @@ class journal {
 		$result = $db->Execute($sql);
 		$max_period = $result->fields['period'];
 		$affected_acct_string = (is_array($this->affected_accounts)) ? implode("', '", array_keys($this->affected_accounts)) : '';
-		$messageStack->debug("\n  Updating chart history for fiscal year: " . $fiscal_year . " and period: " . $period . " for accounts: ('" . $affected_acct_string . "')");
+		$messageStack->debug("\n  Updating chart history for fiscal year: $fiscal_year and period: $period for accounts: ('$affected_acct_string')");
 		for ($i = $period; $i <= $max_period; $i++) {
 			$this->validate_balance($i);//will throw exceptions
 		  	// update future months
 		  	$sql = "select account_id, beginning_balance + debit_amount - credit_amount as beginning_balance
 			  from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
-			  where account_id in ('" . $affected_acct_string . "') and period = " . $i;
+			  where account_id in ('$affected_acct_string') and period = " . $i;
 		  	$result = $db->Execute($sql);
 		  	while (!$result->EOF) {
 				$sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
 			  	  set beginning_balance = " . $result->fields['beginning_balance'] . "
-			  	  where period = " . ($i + 1) . " and account_id = '" . $result->fields['account_id'] . "'";
+			  	  where period = " . ($i + 1) . " and account_id = '{$result->fields['account_id']}'";
 				$db->Execute($sql);
 				$result->MoveNext();
 		  	}
@@ -421,13 +421,11 @@ class journal {
 			// clear out the expense, sales, cogs, and other year end accounts that need to be closed
 			// needs to be before writing retained earnings account, since retained earnings is part of acct_string
 	  		$sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
-			  set beginning_balance = 0
-			  where account_id in ('$acct_string') and period = " . ($max_period + 1);
+			  set beginning_balance = 0 where account_id in ('$acct_string') and period = " . ($max_period + 1);
 	  		$result = $db->Execute($sql);
 	  		// update the retained earnings account
 	  		$sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
-			  set beginning_balance = $retained_earnings
-			  where account_id = '$retained_earnings_acct' and period = " . ($max_period + 1);
+			  set beginning_balance = $retained_earnings where account_id = '$retained_earnings_acct' and period = " . ($max_period + 1);
 	  		$result = $db->Execute($sql);
 			// now continue rolling in current post into next fiscal year
 	  		$this->update_chart_history_periods($max_period + 1);
@@ -499,7 +497,7 @@ class journal {
 				  'post_date'           => $this->post_date,
 				);
 				$result = db_perform(TABLE_ACCOUNTS_HISTORY, $history_array, 'insert');
-				if ($result->AffectedRows() <> 1 ) throw new \core\classes\userException(GL_ERROR_UPDATING_ACCOUNT_HISTORY);
+				if ($result->AffectedRows() <> 1 ) throw new \core\classes\userException(TEXT_ERROR_UPDATING_CONTACT_HISTORY);
 				$messageStack->debug(" end Posting account sales and purchases.");
 				break;
 		  	case  2:
@@ -1282,7 +1280,7 @@ class journal {
 	if (isset($this->journal_id))          $main_record['journal_id']          = $this->journal_id;
 	if (isset($this->post_date))           $main_record['post_date']           = $this->post_date;
 	if (isset($this->store_id))            $main_record['store_id']            = $this->store_id;
-	$main_record['description'] = (isset($this->description)) ? $this->description : sprintf(TEXT_ARGS_ENTRY, constant('ORD_TEXT_' . $this->journal_id . '_WINDOW_TITLE'));
+	$main_record['description'] = (isset($this->description)) ? $this->description : sprintf(TEXT_ARGS_ENTRY, $journal_types_list[$this->journal_id]['text']);
 	if (isset($this->closed))              $main_record['closed']              = $this->closed;
 	if (isset($this->closed_date))         $main_record['closed_date']         = $this->closed_date;
 	if (isset($this->freight))             $main_record['freight']             = $this->freight;
@@ -1468,7 +1466,7 @@ class journal {
 		where purchase_invoice_id = '{$this->purchase_invoice_id}' and journal_id = '{$this->journal_id}'";
 	  if ($this->id) $sql .= " and id <> " . $this->id;
 	  $result = $db->Execute($sql);
-	  if ($result->RecordCount() > 0) throw new \core\classes\userException(sprintf(GL_ERROR_2, constant('ORD_HEADING_NUMBER_' . $this->journal_id)));
+	  if ($result->RecordCount() > 0) throw new \core\classes\userException(sprintf(TEXT_THE_YOU_ENTERED_IS_A_DUPLICATE,_PLEASE_ENTER_A_NEW_UNIQUE_VALUE_ARGS, $journal_types_list[ $this->journal_id]['id_field_name']));
 	  $this->journal_main_array['purchase_invoice_id'] = $this->purchase_invoice_id;
 	  $messageStack->debug(" specified ID but no dups, returning OK. ");
 	} else {	// generate a new order/invoice value
@@ -1520,7 +1518,7 @@ class journal {
 				$sql = "update " . TABLE_CURRENT_STATUS . " set $str_field = '$next_id'";
 				if (!$force) $sql .= " where $str_field = '{$this->journal_main_array['purchase_invoice_id']}'";
 				$result = $db->Execute($sql);
-				if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(GL_ERROR_5, constant('ORD_HEADING_NUMBER_' . $this->journal_id)));
+				if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(TEXT_THERE_WAS_AN_ERROR_INCREMENTING_THE_ARGS, $journal_types_list[ $this->journal_id]['id_field_name']));
 	  		}
 		}
 		$this->purchase_invoice_id = $this->journal_main_array['purchase_invoice_id'];

@@ -63,7 +63,7 @@ define ('TEXT_DEFAULT_PAYABLES_ACCOUNT', 'Default Verbindlichkeiten Konto');
 define ('TEXT_RESTRICT_PERIOD', 'einschränken Beiträge des aktuellen Berichtszeitraums?');
 define ('TEXT_AUDIT_DB_DATA_BACKUP', 'Audit-Log-Datenbank Tabelle Backed Up');
 define ('TEXT_AUDIT_DB_DATA_CLEAN', 'Audit-Log-Datenbank Tabelle Gereinigt');
-define ('TEXT_CRASH_TITLE', 'PhreeBooks SQL-Fehler Trace Information');
+define ('TEXT_PHREEBOOKS_SQL_ERROR_TRACE_INFORMATION', 'PhreeBooks SQL-Fehler Trace Information');
 define ('TEXT_CRASH_INFORMATION', 'PhreeBooks hat ein unerwarteter Fehler aufgetreten Klicken Sie auf den untenstehenden Button zum Download der Debug-Trace-Datei Informationen an die PhreeBooks Development Team für Unterstützung bei der Fehlerbehebung zu senden..');
 define ('TEXT_DOWNLOAD_DEBUG_INFORMATION', 'Download Debug-Informationen');
 define ('TEXT_CONFIGURATION_VALUES_HAVE_BEEN_SAVED', 'haben Configuration Werte gespeichert.');
@@ -80,7 +80,7 @@ define ('TEXT_CLEAN_NOW', 'Clean Now');
 define ('GL_HEADING_BEGINNING_BALANCES', 'Kontenplan - Beginn Balances');
 define ('TEXT_IMPORT_BEGINNING_BALANCES', 'Import Anfang Balances');
 define ('GL_BTN_IMP_BEG_BALANCES', 'Import Inventory, Kreditorenbuchhaltung, Debitorenbuchhaltung Anfang Balances');
-define ('GL_UTIL_BEG_BAL_LEGEND', 'General Journal Beginn Balances');
+define ('TEXT_GENERAL_JOURNAL_BEGINNING_BALANCES', 'General Journal Beginn Balances');
 define ('GL_UTIL_BEG_BAL_TEXT', 'Für die erste Set-ups und Transfers aus einem anderen Abrechnungssystem.');
 define ('TEXT_ENTER_BEGINNING_BALANCES', 'Geben Anfang Balances');
 define ('TEXT_IMPORT_JOURNAL_ENTRIES', 'Import Journal Entries');
@@ -100,7 +100,7 @@ define ('TEXT_SELECT_A_FORMAT_AND_PRESS_THE_EXPORT_BUTTON_TO_CONTINUE', 'Wählen
 define ('TEXT_TABLES_AVAILABLE_TO', 'Tabellen zur Verfügung, um');
 /************************** (General) ******************** ***************************/
 define ('TEXT_MINIMUM_LENGTH_OF_PASSWORD', 'Minimum Länge des Passwort');
-define ('CD_08_01_DESC', 'Maximale Anzahl der Suchergebnisse pro Seite zurück');
+define ('TEXT_MAXIMUM_NUMBER_OF_SEARCH_RESULTS_RETURNED_PER_PAGE', 'Maximale Anzahl der Suchergebnisse pro Seite zurück');
 define ('CD_08_03_DESC', 'Automatisch nach Aktualisierungen suchen Programm bei der Anmeldung zu PhreeBooks.');
 define ('CD_08_05_DESC', 'Versteckt Meldungen über erfolgreiche Operationen Nur Vorsicht und Fehlermeldungen angezeigt werden..');
 define ('CD_08_07_DESC', '. Updates der Wechselkurs geladen Währungen bei jedem Login <br /> Wenn deaktiviert, kann Währungen manuell in das Setup => Währungen Menü aktualisiert werden.');
@@ -133,14 +133,14 @@ define ('CD_01_18_DESC', '. Aktivieren mehrerer Niederlassung Funktionalität <b
 define ('CD_01_19_DESC', 'Aktivieren mehrerer Währungen im User-Eingabemasken <br /> Wenn Nein ausgewählt ist, nur die Standard-Währung wil verwendet werden..');
 define ('CD_01_20_DESC', 'wird automatisch in der Sprache \' s Währung, wenn es geändert wird ');
 define ('CD_01_25_DESC', 'Ob der Versand-Funktionen und Versand Felder zu ermöglichen.');
-define ('CD_01_30_DESC', 'Ob erlauben Speicherung der verschlüsselten Felder aus.');
+define ('TEXT_ALLOW_STORAGE_OF_ENCRYPTED_FIELDS', 'Ob erlauben Speicherung der verschlüsselten Felder aus.');
 /************************** E-Mail-Einstellungen ******************* ****************************/
 define ('CD_12_01_DESC', 'Definiert die Methode zum Senden von Mail. <br /> <strong> PHP </ strong> ist der Standard und nutzt integrierte PHP-Wrapper für die Verarbeitung. <br /> Server unter Windows und MacOS Diese Einstellung sollte auf <strong> SMTP </ strong> zu ändern. <br /> <strong> smtpauth </ strong> nur verwendet werden sollten, wenn Ihr Server erfordert SMTP-Autorisierung, um Nachrichten zu senden. Darüber hinaus müssen Sie Ihre smtpauth Einstellungen in den entsprechenden Felder in diesem Abschnitt admin. <br /> <strong> sendmail </ strong> ist für Linux / Unix-Hosts mit dem sendmail-Programm auf dem Server <br /> <strong> "sendmail-f" </ strong> ist nur für Server, die die Verwendung der Parameter-f verlangen, schicken Sie eine Mail. Dies ist eine Sicherheitseinstellung oft verwendet, um Spoofing zu verhindern. Will Fehler verursachen, wenn Ihr Host Mailserver nicht konfiguriert ist, es zu benutzen. <br /> <strong> Qmail </ strong > ist für Linux / Unix Hosts mit Qmail als sendmail-Wrapper in / var / qmail / bin / sendmail benutzt ').
-define ('CD_12_02_DESC', 'Definiert die Zeichenfolge verwendet, um separate Mail-Header.');
+define ('TEXT_DEFINES_THE_CHARACTER_SEQUENCE_USED_TO_SEPARATE_MAIL_HEADERS', 'Definiert die Zeichenfolge verwendet, um separate Mail-Header.');
 define ('TEXT_SEND_E-MAILS_IN_HTML_FORMAT', 'E-Mails im HTML-Format');
 define ('CD_12_10_DESC', '. E-Mail-Adresse des Shop-Besitzer als Gebrauchtwagen "nur Anzeige", wenn die Information der Verbraucher darüber, wie Sie zu erreichen.');
 define ('CD_12_11_DESC', 'Adresse, unter der E-Mails "geschickt" werden standardmäßig kann über-geritten komponieren-Zeit im Admin-Module..');
-define ('CD_12_15_DESC', 'Bitte wählen Sie die Admin extra E-Mail-Format');
+define ('TEXT_PLEASE_SELECT_THE_ADMIN_EXTRA_EMAIL_FORMAT', 'Bitte wählen Sie die Admin extra E-Mail-Format');
 define ('CD_12_70_DESC', 'Geben Sie die Mailbox Account-Namen (me@mydomain.com) geliefert von Ihrem Gastgeber Dies ist der Kontoname, Ihr Gastgeber für SMTP-Authentifizierung erfordert (Nur erforderlich, wenn Sie SMTP-Authentifizierung für E-Mail)..');
 define ('CD_12_71_DESC', '. Geben Sie das Passwort für Ihren SMTP-Postfach (nur bei Verwendung der SMTP-Authentifizierung für E-Mail erforderlich)');
 define ('CD_12_72_DESC', 'Geben Sie den DNS-Namen Ihres SMTP-Mailserver, dh mail.mydomain.com oder 55.66.77.88 (nur bei Verwendung der SMTP-Authentifizierung für E-Mail) erforderlich.');
@@ -150,7 +150,7 @@ define ('CD_12_74_DESC', 'Was Währungsumrechnungen benötigen Sie für Text-E-M
 define ('TEXT_CURRENCIES', 'Währungen');
 define ('TEXT_CURRENCY', 'Währung');
 define ('TEXT_CURRENCY_CODE', 'Währung Code');
-define ('SETUP_UPDATE_EXC_RATE', 'Update Exchange Rate');
+define ('TEXT_UPDATE_EXCHANGE_RATE', 'Update Exchange Rate');
 define ('SETUP_CURR_EDIT_INTRO', 'Bitte führen Sie alle notwendigen Änderungen durch');
 define ('TEXT_TITLE', 'Titel:');
 define ('TEXT_SYMBOL_LEFT', 'Symbol Linke');

@@ -21,6 +21,6 @@ define('MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE','De credit card transactie is n
 define('MODULE_PAYMENT_CC_NO_DUPS','De credit card is niet verwerkt omdat hij al eerder verwerkt was. Om de credit card opnieuw te belasten moet het credit card nummer gecomplementeerd worden het mag dan geen * meer bevatten.');
 define('MODULE_PAYMENT_CC_TEXT_ERROR','Credit Card Error!');
 define('OPEN_POS_DRAWER_DESC','Toe staan dat de kassala open gaat bij het selecteren van deze betaal methode');
-define('POS_GL_ACCT_DESC','Kassa betaalwijze rekening');
+define('TEXT_POS_GL_ACCOUNT_PAYMENT_TYPE','Kassa betaalwijze rekening');
 define('TEXT_SHOW_THIS_PAYMENT_IN_PHREEPOS','Deze Betaalwijze in PhreePOS laten zien');
 ?>

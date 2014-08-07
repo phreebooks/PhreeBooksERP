@@ -26,11 +26,11 @@ var method = '<?php echo $shipping_module; ?>';
 <?php echo js_calendar_init($cal_ship); ?>
 
 function init() {
-  <?php 
+  <?php
     if (!$auto_print && ($_REQUEST['action'] == 'label' || $_REQUEST['action'] == 'delete')) {
 	  echo '  window.opener.location.reload();' . chr(10);
 	  echo '  self.close();' . chr(10);
-    } 
+    }
     if (!$auto_print) echo '  document.getElementById("wt_1").focus();' . chr(10);
   ?>
   validateAddress();
@@ -40,7 +40,7 @@ function check_form() {
   var error = 0;
   var error_message = "<?php echo JS_ERROR; ?>";
   if (!document.getElementById('wt_1').value) {
-  	error_message += '<?php echo SHIPPING_ERROR_WEIGHT_ZERO; ?>' + '\n';
+  	error_message += '<?php echo TEXT_SHIPMENT_WEIGHT_CANNOT_BE_ZERO; ?>' + '\n';
 	error = 1;
   }
   if (error == 1) {

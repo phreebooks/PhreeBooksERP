@@ -37,15 +37,15 @@ define('TEXT_SELECT_CUSTOMER','Select Customer');
 
 define('PHREEPOS_ITEM_NOTES','Cursor must be in the SKU box for bar code scanners to record an item.<br><b>ESC</b> = Clear Screen.<br><b>Alt+R</b> = Switch between returns and normal sales.<br><b>F7</b> = Show inventory pop-up.<br><b>F8</b> = Show customer pop-up.<br><b>F9</b> = Show payment pop-up.');
 define('PHREEPOS_PAYMENT_NOTES','<b>ESC</b> = Close pop-up.<br><b>F11</b>  = Save.<br><b>F12</b>  = Print<br><b>arrow up & down<b> = different paymenttype');
-define('POS_MSG_DELETE_CONFIRM','Are you sure you want to void/delete this POS entry?');
+define('TEXT_ARE_YOU_SURE_YOU_WANT_TO_VOID_AND_DELETE_THIS_POS_ENTRY','Are you sure you want to void/delete this POS entry?');
 
-define('GENERAL_JOURNAL_19_ERROR_6','A possale cannot be deleted if it is closed!');
+define('TEXT_A_POS_SALE_CANNOT_BE_DELETED_IF_IT_IS_CLOSED','A possale cannot be deleted if it is closed!');
 define('TEXT_TILL','Till');
 define('TEXT_OPEN_DRAWER','Open Drawer');
 define('TEXT_PRINT_PREVIOUS_RECEIPT','Print Previous Receipt');
 define('TEXT_ORIGINAL_AMOUNT_SHORT','Orig Amount');
 define('TEXT_SALES','Sales');
-define('PHREEPOS_HANDELING_CASH_DIFFERENCE','Posted Cash difference in till');
+define('TEXT_POSTED_CASH_DIFFERENCE_IN_TILL','Posted Cash difference in till');
 define('TEXT_DAY_CLOSING','Day Closing');
 define('NEW_BALANCE','New Till Balance');
 define('TEXT_PAYMENTS_SHOULD_BE','Payments Should Be');
@@ -56,7 +56,7 @@ define('TEXT_SHOW_COUNT_HELP','Show count help');
 define('EXCEED_MAX_DISCOUNT','You have exceded the maximum discount of %s percentage.');
 define('EXCEED_MAX_DISCOUNT_SKU','You have exceded the maximum discount of %s percentage for sku %s.');
 define('TEXT_OTHER_OPTIONS','Other Options');
-define('POS_PRINT_OTHER','Print Other Receipt');
+define('TEXT_PRINT_OTHER_RECEIPT','Print Other Receipt');
 
 define('TEXT_CASH_IN','Cash In');
 define('TEXT_CASH_OUT','Cash Out');

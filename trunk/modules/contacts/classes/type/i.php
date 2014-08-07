@@ -61,7 +61,7 @@ class i extends \contacts\classes\contacts{
       		if (($value == 'im') || // contact main address when editing the contact directly
           	  ($this->address[$value]['primary_name'] <> '')) { // optional billing, shipping, and contact
         		$msg_add_type = TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . TEXT_ADD_UPDATE .' ' . TEXT_CONTACT;
-        		if (false === db_prepare_input($this->address[$value]['primary_name'],   $required = true))                     throw new \core\classes\userException(TEXT_CONTACTS . ': ' . ACT_JS_SHORT_NAME);
+        		if (false === db_prepare_input($this->address[$value]['primary_name'],   $required = true))                     throw new \core\classes\userException(TEXT_CONTACTS . ': ' . TEXT_THE_ID_ENTRY_CANNOT_BE_EMPTY);
         		if (false === db_prepare_input($this->address[$value]['contact'],        ADDRESS_BOOK_CONTACT_REQUIRED))        throw new \core\classes\userException($msg_add_type.' - '.TEXT_ATTENTION);
         		if (false === db_prepare_input($this->address[$value]['address1'],       ADDRESS_BOOK_ADDRESS1_REQUIRED))       throw new \core\classes\userException($msg_add_type.' - '.TEXT_ADDRESS1);
         		if (false === db_prepare_input($this->address[$value]['address2'],       ADDRESS_BOOK_ADDRESS2_REQUIRED))       throw new \core\classes\userException($msg_add_type.' - '.TEXT_ADDRESS2);

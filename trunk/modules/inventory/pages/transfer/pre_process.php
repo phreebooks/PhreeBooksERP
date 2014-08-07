@@ -111,7 +111,7 @@ switch ($_REQUEST['action']) {
 	    		$tot_amount += $cost;
 	    		$rowCnt++;
 	  		}
-	  		if ($adj_lines == 0) throw new \core\classes\userException(INV_ADJ_QTY_ZERO);
+	  		if ($adj_lines == 0) throw new \core\classes\userException(TEXT_CANNOT_ADJUST_INVENTORY_WITH_A_ZERO_QUANTITY);
 	    	$glEntry->journal_main_array['total_amount'] = $tot_amount;
 	    	$glEntry->journal_rows[] = array(
 	      	  'sku'           => '',
@@ -125,7 +125,7 @@ switch ($_REQUEST['action']) {
 	    	);
 			// *************** START TRANSACTION *************************
 //			$glEntry->override_cogs_acct = $adj_account; // force cogs account to be users specified account versus default inventory account
-	    	if ($glEntry->Post($glEntry->id ? 'edit' : 'insert'))  throw new \core\classes\userException(GL_ERROR_NO_POST);
+	    	$glEntry->Post($glEntry->id ? 'edit' : 'insert');
 		  	$first_id = $glEntry->id;
 	      	$glEntry                      = new \core\classes\journal();
 	  	  	$glEntry->id                  = isset($_POST['ref_id']) ? $_POST['ref_id'] : '';
@@ -179,7 +179,7 @@ switch ($_REQUEST['action']) {
 				$rowCnt++;
 			}
 	    	$glEntry->journal_main_array['total_amount'] = $tot_amount;
-	    	if (!$glEntry->Post($glEntry->id ? 'edit' : 'insert')) throw new \core\classes\userException(GL_ERROR_NO_POST);
+	    	$glEntry->Post($glEntry->id ? 'edit' : 'insert');
 			// 	link first record to second record
 //			$db->Execute("UPDATE ".TABLE_JOURNAL_MAIN." SET so_po_ref_id=$glEntry->id WHERE id=$first_id");
 	    	$db->transCommit();	// post the chart of account values

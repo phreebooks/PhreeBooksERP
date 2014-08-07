@@ -19,7 +19,7 @@
 // General
 define('TEXT_BOOKMARK_DOCUMENT','Bookmark Document');
 define('TEXT_BOOKMARKED','Bookmarked');
-define('TEXT_CANCEL_CHECKOUT','Cancel Check-out Flag');
+define('TEXT_CANCEL_CHECK-OUT_FLAG','Cancel Check-out Flag');
 define('TEXT_CHECKED_OUT','Checked Out');
 define('TEXT_CHECK_OUT_DOCUMENT','Check-out Document');
 define('TEXT_CREATE_DATE','Creation Date');
@@ -57,6 +57,6 @@ define('DOC_CTL_DELETE_DOCUMENT','Are you sure you want to delete this document?
 define('DOC_CTL_DELETE_DIRECTORY','Are you sure you want to delete this directory?');
 // Javascript defines
 define('DOC_CTL_JS_DEL_BOOKMARK','Are you sure you want to delete this bookmark?');
-define('DOC_CTL_JS_DIR_DELETED_ERROR','The directory is not empty, it cannot be deleted!');
+define('TEXT_THE_DIRECTORY_IS_NOT_EMPTY_IT_CANNOT_BE_DELETED','The directory is not empty, it cannot be deleted!');
 
 ?>

@@ -16,7 +16,7 @@ define('TEXT_PRODUCTION','Produção');
 define('TEXT_AUTHORIZE','Autorizar');
 define('TEXT_CAPTURE','Capturar');
 define('TEXT_PAYMENT_MODULES_AVAILABLE','Métodos de Pagamento Disponíveis');
-define('POS_GL_ACCT_DESC','PDV tipo conta pagamento');
+define('TEXT_POS_GL_ACCOUNT_PAYMENT_TYPE','PDV tipo conta pagamento');
 define('MODULE_PAYMENT_DESCRIPTION','O Módulo Pagamento permite configurar métodos de pagamento. SAlguns métodos são incluídos na instalação e outros estão disponpiveis para download no website PhreeSoft. <b>ATENÇÃO: Este é um módulo central e não deve ser removido!</b>');
 define('MODULE_PAYMENT_TITLE','Módulo Pagamento');
 define('TEXT_SHOW_THIS_PAYMENT_IN_PHREEPOS','Mostrar este pagamento no PhreePOS');

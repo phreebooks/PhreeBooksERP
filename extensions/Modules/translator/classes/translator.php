@@ -155,7 +155,7 @@ if ($const == 'TEXT_COUNTRY_ISO_CODE')echo 'writing const = '.$const.' with valu
 	$output  = array();
 	$header  = '<' . '?' . 'php'  . chr(10);
 	$header .= '// +-----------------------------------------------------------------+' . chr(10);
-	$header .= '// ' . TRANSLATION_HEADER . chr(10);
+	$header .= '// ' . TEXT_PHREEDOM_LANGUAGE_TRANSLATION_FILE . chr(10);
 	$header .= '// Generated: '     . date('Y-m-d h:i:s') . chr(10);
 	$header .= '// Module/Method: ' . $mod  . chr(10);
 	$header .= '// ISO Language: '  . $lang . chr(10);

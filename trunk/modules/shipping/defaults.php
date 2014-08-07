@@ -26,8 +26,8 @@ define('SHIPPING_DEFAULT_LTL_CLASS','125');
 // Set up choices for dropdown menus for general shipping methods, not all are used for each method
 $shipping_defaults = array();
 $shipping_defaults['service_levels'] = array( // order determines sequence in pull down
-  'GND'    => SHIPPING_GND,
-  'GDR'    => SHIPPING_GDR,
+  'GND'    => TEXT_GROUND,
+  'GDR'    => TEXT_GROUND_RESIDENTIAL,
   'GndFrt' => SHIPPING_GNDFRT,
   'EcoFrt' => SHIPPING_ECOFRT,
   '1DEam'  => SHIPPING_1DEAM,
@@ -40,19 +40,19 @@ $shipping_defaults['service_levels'] = array( // order determines sequence in pu
   '3Dam'   => SHIPPING_3DAM,
   '3Dpm'   => SHIPPING_3DPM,
   '3DFrt'  => SHIPPING_3DFRT,
-  'I2DEam' => SHIPPING_I2DEAM,
-  'I2Dam'  => SHIPPING_I2DAM,
-  'I3D'    => SHIPPING_I3D,
+  'I2DEam' => TEXT_WORLDWIDE_EARLY_EXPRESS,
+  'I2Dam'  => TEXT_WORLDWIDE_EXPRESS,
+  'I3D'    => TEXT_WORLDWIDE_EXPEDITED,
   'IGND'   => SHIPPING_IGND,
 );
 // Pickup Type Code - conforms to UPS standards per the XML specification
 $shipping_defaults['pickup_service'] = array(
   '01' => TEXT_DAILY_PICKUP,
   '03' => TEXT_CARRIER_CUSTOMER_COUNTER,
-  '06' => SHIPPING_ONE_TIME,
-  '07' => SHIPPING_ON_CALL,
-  '11' => SHIPPING_RETAIL,
-  '19' => SHIPPING_DROP_BOX,
+  '06' => TEXT_REQUEST_ONE_TIME_PICKUP,
+  '07' => TEXT_ON_CALL_AIR,
+  '11' => TEXT_SUGGESTED_RETAIL_RATES,
+  '19' => TEXT_DROP_BOX_OR_CENTER,
   '20' => TEXT_AIR_SERVICE_CENTER,
 );
 // Weight Unit of Measure
@@ -81,13 +81,13 @@ $shipping_defaults['cod_funds_code'] = array(
   '0' => TEXT_CASH,
   '1' => TEXT_CHECK,
   '2' => TEXT_CASHIERS_CHECK,
-  '3' => SHIPPING_MO,
+  '3' => TEXT_MONEY_ORDER,
   '4' => TEXT_ANY,
 );
 // Delivery Confirmation
 // Package delivery confirmation only allowed for shipments with US origin/destination combination.
 $shipping_defaults['delivery_confirmation'] = array(
-//'0' => SHIPPING_NO_CONF,
+//'0' => TEXT_NO_DELIVERY_CONFIRMATION,
   '1' => TEXT_NO_SIGNATURE_REQUIRED,
   '2' => TEXT_SIGNATURE_REQUIRED,
   '3' => TEXT_ADULT_SIGNATURE_REQUIRED,
@@ -95,7 +95,7 @@ $shipping_defaults['delivery_confirmation'] = array(
 // Return label services
 $shipping_defaults['return_label'] = array(
   '0' => TEXT_CARRIER_RETURN_LABEL,
-  '1' => SHIPPING_RET_LOCAL,
+  '1' => TEXT_PRINT_LOCAL_RETURN_LABEL,
   '2' => TEXT_CARRIER_PRINTS_AND_MAILS_RETURN_LABEL,
 );
 // Billing options

@@ -49,19 +49,19 @@ define ('TRANSLATOR_IMPORT_DESC', 'Diese Seite Einfuhren Sprachen aus der aktuel
 define ('TRANSLATOR_EXPORT_DESC', 'Diese Seite exportiert alle Module aus einer gegebenen Sprache übersetzt und die Version auf einem einzigen ZIP-Datei..');
 define ('TRANSLATOR_ISO_IMPORT', 'ISO-Sprache zu importieren (Formular xx_xx ):');
 define ('TRANSLATOR_ISO_EXPORT', 'ISO-Sprache zu exportieren:');
-define ('TRANSLATOR_MODULE_IMPORT', 'Modulname zu importieren:');
+define ('TEXT_MODULE_NAME_TO_IMPORT', 'Modulname zu importieren:');
 define ('TRANSLATOR_INSTALL_IMPORT', 'Verzeichnis Namen Installationsverzeichnis (falls nach der Installation bewegt ):');
 define ('TRANSLATOR_UPLOAD_DESC', 'Dieses Formular wird Upload eine gezippte Datei Sprache und importieren Sie alle in der Datenbank definiert Es sollte für die Unterstützung in upconverting älteren Versionen auf neuer oder die Änderung Übersetzungen, neue Sprachen verwendet werden..');
 define ('TRANSLATOR_ISO_CREATE', 'ISO-Sprache zu erstellen (Formular xx_xx ):');
 define ('TRANSLATOR_MODULE_CREATE', 'Modul für die Übersetzung zu vergeben:');
-define ('TRANSLATOR_RELEASE_CREATE', 'Release-Nummer zu erstellen:');
+define ('TEXT_RELEASE_NUMBER_TO_CREATE', 'Release-Nummer zu erstellen:');
 define ('TRANSLATOR_UPLOAD_ZIPFILE', 'Wählen Sie eine ZIP-Datei hochladen und einfügen in die Übersetzer-Datenbank:');
 define ('MESSAGE_DELETE_TRANSLATION', 'Sind Sie sicher, dass Sie diese Übersetzung löschen?');
 define ('TEXT_DEFINED_CONSTANT', 'definierte Konstante');
 define ('TEXT_DEFAULT_TRANSLATION', 'Aktuelle Übersetzung');
 define ('TEXT_STATS_VALUES', '% s von% s übersetzt (% s Prozent)');
 define ('TEXT_TRANSLATION_RECORDS_SAVED', 'Übersetzung Datensätze gespeichert.');
-define ('TRANSLATION_HEADER', 'Phreedom Language Translation Datei');
+define ('TEXT_PHREEDOM_LANGUAGE_TRANSLATION_FILE', 'Phreedom Language Translation Datei');
 // Fehlermeldungen
 define ('TRANS_ERROR_NO_SOURCE', 'Keine verfügbaren Versionen der Ausgangssprache gefunden Importieren Sie die Ausgangssprache!.');
 define ('TRANS_ERROR_DUPLICATE', 'Fehler beim Importieren Modul:% s, Sprache:% s, Version:% s, die Sprache Datei bereits vorhanden Import übersprungen.');

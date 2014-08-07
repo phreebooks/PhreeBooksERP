@@ -31,7 +31,7 @@ $toolbar->add_icon('back', 'onclick="submitToDo(\'back\')"', $order = 9);
 $toolbar->add_help('09');
 echo $toolbar->build_toolbar();
 ?>
-<h1><?php echo SHIPPING_POPUP_WINDOW_RATE_TITLE; ?></h1>
+<h1><?php echo TEXT_SHIPPING_RATE_ESTIMATOR; ?></h1>
 <table>
 <?php
 	$temp = $rates['rates'];

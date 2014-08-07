@@ -184,7 +184,7 @@ switch ($_REQUEST['action']) {
   	try{
 		\core\classes\user::validate_security($security_level, 4);
 		// check for errors and prepare extra values
-		if (!$glEntry->id) throw new \core\classes\userException(sprintf(ERROR_EMPTY_VARIABLE, "id"));
+		if (!$glEntry->id) throw new \core\classes\userException(sprintf(TEXT_FIELD_IS_REQUIRED_BUT_HAS_BEEN_LEFT_BLANK_ARGS, "id"));
 		$delGL = new \core\classes\journal();
 		$delGL->journal($glEntry->id); // load the posted record based on the id submitted
 		$recur_id        = db_prepare_input($_POST['recur_id']);

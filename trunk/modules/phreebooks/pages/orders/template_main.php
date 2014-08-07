@@ -127,7 +127,7 @@ echo $toolbar->build_toolbar();
 	</p>
 	<p align="right"><?php echo html_icon('actions/go-next.png', TEXT_CONTINUE, 'small', 'onclick="checkOverride();"'); ?></p>
 </div>
-<h1><?php echo constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE'); ?></h1>
+<h1><?php echo $journal_types_list[JOURNAL_ID]['text']; ?></h1>
 <table class="ui-widget" style="width:97%;">
  <tbody class="ui-widget-content">
   <tr>
@@ -168,7 +168,7 @@ echo $toolbar->build_toolbar();
 			  </tr>
 <?php } ?>
 			  <tr>
-				<td align="right"><?php echo constant('ORD_HEADING_NUMBER_' . JOURNAL_ID); ?></td>
+				<td align="right"><?php echo $journal_types_list[JOURNAL_ID]['id_field_name']; ?></td>
 				<td><?php echo html_input_field('purchase_invoice_id', $order->purchase_invoice_id, 'onmouseover="Tip(\'' . ORD_TT_PURCH_INV_NUM . '\')"'); ?></td>
 			  </tr>
 <?php if (isset($template_options['waiting'])) {	// show waiting for invoice (purchase_receive, vendor cm) checkbox ?>
@@ -245,7 +245,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
       <table style="border-collapse:collapse;width:100%;">
 		<thead class="ui-widget-header">
         <tr>
-          <th><?php echo in_array(JOURNAL_ID, array(6,9,10,12)) ? TEXT_PO_NUMBER : TEXT_REFERENCE_NUMBER; ?></th>
+          <th><?php echo in_array(JOURNAL_ID, array(6,9,10,12)) ? TEXT_PO_NUMBER : TEXT_REFERENCE; ?></th>
           <?php if (JOURNAL_ID==12) echo '<th>' . TEXT_SO_NUMBER . '</th>' . chr(10); ?>
           <?php if (ENABLE_MULTI_BRANCH) echo '<th>' . TEXT_STORE_ID . '</th>' . chr(10); ?>
           <th><?php echo (in_array(JOURNAL_ID, array(3,4,6,7,9)) ? TEXT_BUYER : TEXT_SALES_REP); ?></th>

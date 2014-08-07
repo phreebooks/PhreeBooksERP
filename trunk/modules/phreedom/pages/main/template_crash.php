@@ -31,7 +31,7 @@ $toolbar->add_help('');
 echo $toolbar->build_toolbar();
 // Build the page
 ?>
-<h1><?php echo TEXT_CRASH_TITLE; ?></h1>
+<h1><?php echo TEXT_PHREEBOOKS_SQL_ERROR_TRACE_INFORMATION; ?></h1>
 <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto">
  <tbody class="ui-widget-content">
   <tr><td><?php echo TEXT_CRASH_INFORMATION; ?></td></tr>

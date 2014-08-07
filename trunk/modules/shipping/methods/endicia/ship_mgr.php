@@ -20,7 +20,7 @@
 <h1><?php echo $method->text; ?></h1>
 <table class="ui-widget" style="border-style:none;width:100%">
   <tr>
-	<td><?php echo ($security_level < 2) ? '&nbsp;' : html_button_field('ship_'    .$method->id, SHIPPING_SHIP_PACKAGE, 'onclick="window.open(\'index.php?module=shipping&amp;page=popup_label_mgr&amp;method='.$method->id.'\',\'popup_label_mgr\',\'width=800,height=700,resizable=1,scrollbars=1,top=50,left=50\')"'); ?></td>
+	<td><?php echo ($security_level < 2) ? '&nbsp;' : html_button_field('ship_'    .$method->id, TEXT_SHIP_A_PACKAGE, 'onclick="window.open(\'index.php?module=shipping&amp;page=popup_label_mgr&amp;method='.$method->id.'\',\'popup_label_mgr\',\'width=800,height=700,resizable=1,scrollbars=1,top=50,left=50\')"'); ?></td>
 	<td><?php echo ($security_level < 2) ? '&nbsp;' : html_button_field('ship_log_'.$method->id, TEXT_CREATE_A_SHIPMENT_ENTRY, 'onclick="window.open(\'index.php?module=shipping&amp;page=popup_tracking&amp;method=' .$method->id.'&amp;action=new\',\'popup_tracking\',\'width=550,height=350,resizable=1,scrollbars=1,top=150,left=200\')"'); ?></td>
 	<td><?php echo ($security_level < 3) ? '&nbsp;' : html_button_field('phrase_'  .$method->id, ENDICIA_CHANGE_PASSPHRASE,'onclick="getDialog(\''.$method->id.'\', \'passphrase\')"'); ?></td>
 <?php
@@ -93,7 +93,7 @@ if ($security_level > 2) {
 			$odd = !$odd;
 		}
 	} else {
-		echo '  <tr><td align="center" colspan="8">' . SHIPPING_NO_SHIPMENTS . '</td></tr>';
+		echo '  <tr><td align="center" colspan="8">' . TEXT_THERE_ARE_NO_SHIPMENTS_FROM_THIS_CARRIER_TODAY . '</td></tr>';
 	}
 	?>
  </tbody>

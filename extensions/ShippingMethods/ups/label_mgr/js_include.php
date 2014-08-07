@@ -22,7 +22,7 @@
 <!--
 // pass any php variables generated during pre-process that are used in the javascript functions.
 // Include translations here as well.
-var formName          = "<?php echo $_GET['form']; ?>"; 
+var formName          = "<?php echo $_GET['form']; ?>";
 var image_delete_text = '<?php echo TEXT_DELETE; ?>';
 var image_delete_msg  = '<?php echo SHIPPING_DELETE_CONFIRM; ?>';
 <?php echo js_calendar_init($cal_ship); ?>
@@ -41,7 +41,7 @@ function check_form() {
   var error_message = "<?php echo JS_ERROR; ?>";
 
   if (!document.getElementById('total_weight').value) {
-  	error_message += '<?php echo SHIPPING_ERROR_WEIGHT_ZERO; ?>' + '\n';
+  	error_message += '<?php echo TEXT_SHIPMENT_WEIGHT_CANNOT_BE_ZERO; ?>' + '\n';
 	error = 1;
   }
 

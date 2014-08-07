@@ -253,7 +253,7 @@ function calculateWidth() {	// total up the columns
 	pageProperties += ' ('+'<?php echo TEXT_ORIENTATION; ?>'+': '+orienText;
 	pageProperties += ', '+'<?php echo TEXT_WIDTH; ?>'+': '+pageWidth;
 	pageProperties += ', '+'<?php echo TEXT_LEFT_MARGIN; ?>'+': '+document.getElementById('marginleft').value;
-	pageProperties += ', '+'<?php echo PHREEFORM_PGMARGIN_R; ?>'+': '+document.getElementById('marginright').value+')';
+	pageProperties += ', '+'<?php echo TEXT_RIGHT_MARGIN; ?>'+': '+document.getElementById('marginright').value+')';
 	if (document.all) { // IE browsers
 	  document.getElementById('fieldListHeading').innerText   = pageProperties;
 	} else { //firefox

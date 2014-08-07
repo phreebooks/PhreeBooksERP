@@ -117,7 +117,7 @@ class queryFactory {
       $time_start = explode(' ', microtime());
       $obj = new queryFactoryResult;
       $obj->sql_query = $zf_sql;
-      if (!$this->db_connected) throw new \core\classes\userException(DB_ERROR_NOT_CONNECTED);
+      if (!$this->db_connected) throw new \core\classes\userException(TEXT_DATABASE_ERROR . ' ' . TEXT_COULD_NOT_CONNECT_TO_THE_DATABASE);
       $zp_db_resource = mysql_query($zf_sql, $this->link);
       if (!$zp_db_resource) throw new \core\classes\userException(mysql_error());
       $obj->resource = $zp_db_resource;
@@ -158,7 +158,7 @@ class queryFactory {
     } else {
       $time_start = explode(' ', microtime());
       $obj = new queryFactoryResult;
-      if (!$this->db_connected) throw new \core\classes\userException( DB_ERROR_NOT_CONNECTED);
+      if (!$this->db_connected) throw new \core\classes\userException(TEXT_DATABASE_ERROR . ' ' .  TEXT_COULD_NOT_CONNECT_TO_THE_DATABASE);
       $zp_db_resource = @mysql_query($zf_sql, $this->link);
       if (!$zp_db_resource) {
 		if (method_exists($messageStack, 'debug')) {
@@ -198,7 +198,7 @@ class queryFactory {
   function Execute_return_error($zf_sql) {
 	$time_start = explode(' ', microtime());
 	$obj = new queryFactoryResult;
-	if (!$this->db_connected) $this->set_error('0', DB_ERROR_NOT_CONNECTED);
+	if (!$this->db_connected) $this->set_error('0', TEXT_DATABASE_ERROR . ' ' .  TEXT_COULD_NOT_CONNECT_TO_THE_DATABASE);
 	$zp_db_resource = @mysql_query($zf_sql, $this->link);
 	if (!$zp_db_resource) {
 		$this->set_error(@mysql_errno($this->link), @mysql_error($this->link), false);

@@ -41,7 +41,7 @@ function check_form() {
   <?php if ($cInfo->auto_type == false && ($_REQUEST['action'] == 'edit' || $_REQUEST['action'] == 'update' || $_REQUEST['action'] == 'new')) { ?> // if showing the edit/update detail form
   var acctId = document.getElementById('short_name').value;
   if (acctId == '') {
-      error_message += "<?php echo ACT_JS_SHORT_NAME; ?>";
+      error_message += "* <?php echo TEXT_THE_ID_ENTRY_CANNOT_BE_EMPTY; ?>";
 	  error = 1;
   }
   <?php } ?>

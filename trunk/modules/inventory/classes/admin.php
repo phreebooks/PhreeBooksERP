@@ -515,7 +515,7 @@ class admin extends \core\classes\admin {
 		global $db;
 		if (!$sku) throw new \core\classes\userException(TEXT_THE_ID_FIELD_WAS_EMPTY);
 		$result = $db->Execute("select id from " . TABLE_INVENTORY . " where sku = '$sku'");
-		if ($result->RecordCount() <> 0) throw new \core\classes\userException(sprintf(ERROR_DUPLICATE_SKU, $name));
+		if ($result->RecordCount() <> 0) throw new \core\classes\userException(sprintf(TEXT_THE_ID_IS_NOT_UNIQUE_ARGS, $name));
 	}
 
 	// functions part
@@ -797,7 +797,7 @@ class admin extends \core\classes\admin {
   			}
   			$rowCnt++;
   		}
-  		if ($adj_lines == 0) throw new \core\classes\userException(INV_ADJ_QTY_ZERO);
+  		if ($adj_lines == 0) throw new \core\classes\userException(TEXT_CANNOT_ADJUST_INVENTORY_WITH_A_ZERO_QUANTITY);
   		$glEntry->journal_main_array['total_amount'] = $adj_total;
   		$glEntry->journal_rows[] = array(
   				'sku'           => '',
@@ -905,7 +905,7 @@ class admin extends \core\classes\admin {
   		);
   		// *************** START TRANSACTION *************************
   		$db->transStart();
-  		if (!$glEntry->Post($glEntry->id ? 'edit' : 'insert')) throw new \core\classes\userException(GL_ERROR_NO_POST);
+  		$glEntry->Post($glEntry->id ? 'edit' : 'insert');
   		$db->transCommit();	// post the chart of account values
   		gen_add_audit_log(TEXT_INVENTORY_ASSEMBLY . ' - ' . ($_REQUEST['action']=='save' ? TEXT_SAVE : TEXT_EDIT), $sku, $qty);
   		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_ASSEMBLED, TEXT_SKU , $sku), 'success');

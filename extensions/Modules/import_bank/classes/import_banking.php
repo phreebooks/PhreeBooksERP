@@ -53,14 +53,14 @@ class import_banking extends \phreebooks\classes\journal {
 	 	$messageStack->debug("\n\n*************** Start Processing Import Payment *******************");
 	 	if ($ouwer_bank_account_number <> '') {
 			$ouwer_bank = ltrim($ouwer_bank_account_number,0);
-		 	if ($ouwer_bank == '') throw new \core\classes\userException(TEXT_BIMP_ERMSG1);
-		 	$sql ="select id, description from " . TABLE_CHART_OF_ACCOUNTS. " where description like '%".$ouwer_bank."%'";
+		 	if ($ouwer_bank == '') throw new \core\classes\userException(TEXT_OUWER_BANK_ACCOUNT_IS_EMPTY);
+		 	$sql ="select id, description from " . TABLE_CHART_OF_ACCOUNTS. " where description like '%{$ouwer_bank}%'";
 			$result = $db->Execute($sql);
-			if ($result->RecordCount()== 0) throw new \core\classes\userException(TEXT_BIMP_ERMSG5 .' '. $ouwer_bank);
-			if (!$result->RecordCount()> 1) throw new \core\classes\userException(TEXT_BIMP_ERMSG2 .' '. $ouwer_bank);
+			if ($result->RecordCount()== 0) throw new \core\classes\userException(TEXT_THERE_IS_NO_GL_ACCOUNTS_WITH_THE_DESCRIPTION .': '. $ouwer_bank);
+			if (!$result->RecordCount()> 1) throw new \core\classes\userException(TEXT_THERE_ARE_TWO_OR_MORE_GL_ACCOUNTS_WITH_THE_DESCRIPTION .': '. $ouwer_bank);
 			$this->gl_acct_id 			= $result->fields['id'];
 		}else{
-			if($bank_gl_acct == '') throw new \core\classes\userException(TEXT_BIMP_ERMSG1);
+			if($bank_gl_acct == '') throw new \core\classes\userException(TEXT_OUWER_BANK_ACCOUNT_IS_EMPTY);
 			$this->gl_acct_id 			= $bank_gl_acct;
 		}
 		$this->_description			= $description;
@@ -108,7 +108,7 @@ class import_banking extends \phreebooks\classes\journal {
 			$messageStack->debug("\n found a costumer or vender with the bankaccountnumber ". ltrim($other_bank_account_number,0));
 			if (!$result1->RecordCount()> 1){
 				//TEXT_IMP_ERMSG17 = two or more accounts with the same account
-				$messageStack->add(TEXT_BIMP_ERMSG4 . $other_bank_account_number, 'error');
+				$messageStack->add(TEXT_THERE_ARE_TWO_OR_MORE_ACCOUNTS_WITH_THE_SAME_BANK_ACCOUNT . ': ' . $other_bank_account_number, 'error');
 				return false;
 			}
 			$contact['id']   = $result1->fields['id'];
@@ -163,7 +163,7 @@ class import_banking extends \phreebooks\classes\journal {
 			$gl_acct_id         		= AR_DEFAULT_GL_ACCT ;
 			$gl_disc_acct_id			= AR_DISCOUNT_SALES_ACCOUNT;
 			$this->purchase_invoice_id 	= 'DP' . $this->post_date;
-			$this->description			= sprintf(TEXT_ARGS_ENTRY, ORD_TEXT_18_C_WINDOW_TITLE);
+			$this->description			= sprintf(TEXT_ARGS_ENTRY, TEXT_CUSTOMER_PAYMENTS);
 			define('GL_TYPE','pmt');
 		}else{
 			$this->_firstjid 			= 20;

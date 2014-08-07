@@ -124,7 +124,7 @@ class departments {
 	$output .= '    <td>' . html_input_field('description', $this->description) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . HR_INFO_SUBACCOUNT . '</td>' . chr(10);
+	$output .= '    <td>' . TEXT_IS_THIS_A_SUBDEPARTMENT . '</td>' . chr(10);
 	$output .= '    <td>' . html_radio_field('subdepartment', '0', !$this->subdepartment) . TEXT_NO . '<br />' . html_radio_field('subdepartment', '1', $this->subdepartment) . TEXT_YES_ALSO_SELECT_PRIMARY_DEPARTMENT . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);

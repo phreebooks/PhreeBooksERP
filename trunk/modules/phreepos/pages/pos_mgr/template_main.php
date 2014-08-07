@@ -31,7 +31,7 @@ if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key =
 // add the help file index and build the toolbar
 $toolbar->add_help('');
 $toolbar->search_period = $acct_period;
-echo $toolbar->build_toolbar($add_search = true, $add_periods = true, $cal_date); 
+echo $toolbar->build_toolbar($add_search = true, $add_periods = true, $cal_date);
 $date_today = date('Y-m-d');
 // Build the page
 ?>
@@ -53,13 +53,13 @@ $date_today = date('Y-m-d');
 	<td><?php echo gen_locale_date($query_result->fields['post_date']); ?></td>
 	<td align="center"><?php echo $query_result->fields['purchase_invoice_id']; ?></td>
 	<td align="center"><?php echo $currencies->format_full($query_result->fields['total_amount']); ?></td>
-	<?php if (ENABLE_MULTI_CURRENCY) echo '<td align="center">' . $currencies->format_full($query_result->fields['total_amount'], true, $query_result->fields['currencies_code'], $query_result->fields['currencies_value']) . '</td>';?> 
+	<?php if (ENABLE_MULTI_CURRENCY) echo '<td align="center">' . $currencies->format_full($query_result->fields['total_amount'], true, $query_result->fields['currencies_code'], $query_result->fields['currencies_value']) . '</td>';?>
 	<td><?php echo htmlspecialchars($query_result->fields['bill_primary_name']); ?></td>
 	<td align="right">
 <?php // first pull in any extra buttons, this is dynamic since each row can have different buttons
 	  if (function_exists('add_extra_action_bar_buttons')) echo add_extra_action_bar_buttons($query_result->fields);
 	  echo html_icon('actions/document-print.png',    TEXT_PRINT,  'small', 'onclick="printOrder(' . $oID . ')"') . chr(10);
-	  if ($security_level > 3) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . POS_MSG_DELETE_CONFIRM . '\')) submitSeq(' . $oID . ', \'delete\')"') . chr(10);
+	  if ($security_level > 3) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . TEXT_ARE_YOU_SURE_YOU_WANT_TO_VOID_AND_DELETE_THIS_POS_ENTRY . '\')) submitSeq(' . $oID . ', \'delete\')"') . chr(10);
 ?>
 	</td>
   </tr>

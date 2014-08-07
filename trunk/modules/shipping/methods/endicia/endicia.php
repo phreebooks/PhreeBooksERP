@@ -137,10 +137,10 @@ class endicia extends \shipping\classes\shipping {
   	function __construct() {
 		$this->keys[] = array('key' => 'MODULE_SHIPPING_ENDICIA_ACCOUNT_NUMBER',	'default' => '',										'text' => MODULE_SHIPPING_ENDICIA_ACCOUNT_NUMBER_DESC);
 	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_ENDICIA_PASS_PHRASE',   	'default' => '',										'text' => MODULE_SHIPPING_ENDICIA_PASS_PHRASE_DESC);
-      	$this->keys[] = array('key' => 'MODULE_SHIPPING_ENDICIA_TEST_MODE',     	'default' => 'Test',									'text' => SHIPPING_TEST_MODE_DESC);
+      	$this->keys[] = array('key' => 'MODULE_SHIPPING_ENDICIA_TEST_MODE',     	'default' => 'Test',									'text' => TEXT_PRODUCTION_OR_TEST_MODE_USED_FOR_TESTING_SHIPPING_LABELS);
 	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_ENDICIA_PRINTER_TYPE',  	'default' => 'ZPLII',									'text' => SHIPPING_PRINTER_TYPE_DESC);
 	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_ENDICIA_PRINTER_NAME',  	'default' => 'zebra',									'text' => SHIPPING_PRINTER_NAME_DESC);
-	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_ENDICIA_TYPES',         	'default' => '1DEam,1Dam,1Dpm,2Dam,3Dam,3Dpm,GND,GDR',	'text' => SHIPPING_DEFAULT_SERVICE_DESC);
+	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_ENDICIA_TYPES',         	'default' => '1DEam,1Dam,1Dpm,2Dam,3Dam,3Dpm,GND,GDR',	'text' => TEXT_SELECT_THE_SERVICES_TO_BE_OFFERED_BY_DEFAULT);
 	  	parent::__construct();
   	}
 
@@ -253,7 +253,7 @@ class endicia extends \shipping\classes\shipping {
 // ***************************************************************************************************************
   function quote($pkg) { // assumes only one package at a time
   	global $messageStack, $currencies;
-	if ($pkg->pkg_weight == 0) throw new \core\classes\userException(SHIPPING_ERROR_WEIGHT_ZERO);
+	if ($pkg->pkg_weight == 0) throw new \core\classes\userException(TEXT_SHIPMENT_WEIGHT_CANNOT_BE_ZERO);
 	if ($pkg->ship_to_postal_code == '') throw new \core\classes\userException(SHIPPING_ENDICIA_ERROR_POSTAL_CODE);
 	if ($pkg->pkg_weight > ENDICIA_MAX_SINGLE_BOX_WEIGHT) throw new \core\classes\userException(SHIPPING_ENDICIA_ERROR_TOO_HEAVY);
 	$request = array(

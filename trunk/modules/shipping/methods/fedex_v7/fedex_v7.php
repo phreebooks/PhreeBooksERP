@@ -169,10 +169,10 @@ class fedex_v7 extends \shipping\classes\shipping {
       	$this->keys[] = array('key' => 'MODULE_SHIPPING_FEDEX_V7_NAT_ACCOUNT_NUMBER',    'default' => '',										'text' => MODULE_SHIPPING_FEDEX_V7_NAT_ACCOUNT_NUMBER_DESC);
 	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_FEDEX_V7_AUTH_KEY',  			'default' => '',										'text' => MODULE_SHIPPING_FEDEX_V7_AUTH_KEY_DESC);
 	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_FEDEX_V7_AUTH_PWD',  			'default' => '',										'text' => MODULE_SHIPPING_FEDEX_V7_AUTH_PWD_DESC);
-	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_FEDEX_V7_TEST_MODE',     		'default' => 'Test',									'text' => SHIPPING_TEST_MODE_DESC);
+	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_FEDEX_V7_TEST_MODE',     		'default' => 'Test',									'text' => TEXT_PRODUCTION_OR_TEST_MODE_USED_FOR_TESTING_SHIPPING_LABELS);
 	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_FEDEX_V7_PRINTER_TYPE',  		'default' => 'PDF',										'text' => SHIPPING_PRINTER_TYPE_DESC);
 	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_FEDEX_V7_PRINTER_NAME',  		'default' => 'zebra',									'text' => SHIPPING_PRINTER_NAME_DESC);
-	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_FEDEX_V7_TYPES',         		'default' => '1DEam,1Dam,1Dpm,1DFrt,2Dam,2Dpm,2DFrt,3Dpm,3DFrt,GND,GDR,GndFrt,EcoFrt,I2DEam,I2Dam,I3D,IGND',	'text' => SHIPPING_DEFAULT_SERVICE_DESC);
+	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_FEDEX_V7_TYPES',         		'default' => '1DEam,1Dam,1Dpm,1DFrt,2Dam,2Dpm,2DFrt,3Dpm,3DFrt,GND,GDR,GndFrt,EcoFrt,I2DEam,I2Dam,I3D,IGND',	'text' => TEXT_SELECT_THE_SERVICES_TO_BE_OFFERED_BY_DEFAULT);
 	  	parent::__construct();
   	}
 
@@ -242,7 +242,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 // ***************************************************************************************************************
   function quote($pkg) {
 	global $messageStack, $currencies;
-	if ($pkg->pkg_weight == 0) throw new \core\classes\userException(SHIPPING_ERROR_WEIGHT_ZERO);
+	if ($pkg->pkg_weight == 0) throw new \core\classes\userException(TEXT_SHIPMENT_WEIGHT_CANNOT_BE_ZERO);
 	if ($pkg->ship_to_postal_code == '') throw new \core\classes\userException(SHIPPING_FEDEX_V7_ERROR_POSTAL_CODE);
 
 	$FedExQuote = array();	// Initialize the Response Array
@@ -1337,7 +1337,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 	}
 
 	function fedExParse($lines) { // csv parse with all fields enclosed in double quotes
-	  if (!$lines) throw new \core\classes\userException(sprintf(ERROR_EMPTY_VARIABLE, "lines"));
+	  if (!$lines) throw new \core\classes\userException(sprintf(TEXT_FIELD_IS_REQUIRED_BUT_HAS_BEEN_LEFT_BLANK_ARGS, "lines"));
 	  $title_line = trim(array_shift($lines)); // pull header
 	  if (strlen($title_line) < 10) $title_line = trim(array_shift($lines)); // for blank first line
 	  $title_line = substr($title_line, 1, strlen($title_line) - 2); // strip the starting and ending double quote

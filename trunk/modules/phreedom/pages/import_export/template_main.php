@@ -33,7 +33,7 @@ echo $toolbar->build_toolbar();
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
 <fieldset>
-<legend><?php echo GL_UTIL_BEG_BAL_LEGEND; ?></legend>
+<legend><?php echo TEXT_GENERAL_JOURNAL_BEGINNING_BALANCES; ?></legend>
 <table class="ui-widget" style="border-style:none;width:100%">
  <tbody class="ui-widget-content">
     <tr>

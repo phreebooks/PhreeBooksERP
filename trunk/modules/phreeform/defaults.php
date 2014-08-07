@@ -32,7 +32,7 @@ $phreeformTypes = array(
 $Fonts = array (
   'helvetica' => TEXT_FONT_HELVETICA,
   'courier'   => TEXT_FONT_COURIER,
-  'times'     => PF_FONT_TIMES,
+  'times'     => TEXT_FONT_TIMES_ROMAN,
 );
 if (PDF_APP == 'TCPDF') {
   $Fonts['freeserif'] = TEXT_FONT_SERIF;
@@ -231,7 +231,7 @@ $FormEntries = array(
   'LtrTpl'  => TEXT_LETTER_TEMPLATE,
   'LtrData' => TEXT_LETTER_DATA,
   'Text'    => TEXT_FIXED_TEXT_FIELD,
-  'Img'     => PF_FRM_IMAGE,
+  'Img'     => TEXT_IMAGE_JPG_OR_PNG,
   'ImgLink' => TEXT_IMAGE_LINK,
   'Rect'    => TEXT_RECTANGLE,
   'Line'    => TEXT_LINE,

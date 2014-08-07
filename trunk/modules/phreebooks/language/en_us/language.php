@@ -20,7 +20,7 @@
 define('TEXT_GENERAL_JOURNAL_ENTRY','General Journal Entry');
 define('TEXT_BAR_CODE_ENTRY','Bar Code Entry');
 define('TEXT_SEARCH_FOR_JOURNAL_ENTRIES','Search for Journal Entries');
-define('ORD_RECUR_WINDOW_TITLE','Recur Properties');
+define('TEXT_RECUR_PROPERTIES','Recur Properties');
 // Special buttons
 define('TEXT_PURGE_JOURNAL_ENTRIES','Purge Journal Entries');
 define('TEXT_CHANGE_CURRENT_ACCOUNTING_PERIOD', 'Change Current Accounting Period');
@@ -216,10 +216,10 @@ define('GL_ERROR_CANNOT_FIND_NEXT_ID','Could not read the next order/invoice num
 define('GL_ERROR_CANNOT_DELETE_MAIN','Failed deleting the journal main record # ');
 define('GL_ERROR_CANNOT_DELETE_ITEM','Failed deleting the journal item record # %d. No rows were found!');
 define('TEXT_CANNOT_DELETE_THIS_ENTRY_BECAUSE_IT_WAS_NEVER_POSTED','Cannot delete this entry because it was never posted.');
-define('GL_DELETE_GL_ROW','Are you sure you want to delete this journal row?');
-define('GL_DELETE_ALERT','Are you sure you want to delete this journal entry?');
-define('GL_ERROR_DIED_CREATING_RECORD','Died trying to build a journal entry with id = ');
-define('GL_ERROR_POSTING_CHART_BALANCES','Error posting chart of account balances to account id: ');
+define('TEXT_ARE_YOU_SURE_YOU_WANT_TO_DELETE_THIS_JOURNAL_ROW','Are you sure you want to delete this journal row?');
+define('TEXT_ARE_YOU_SURE_YOU_WANT_TO_DELETE_THIS_JOURNAL_ENTRY','Are you sure you want to delete this journal entry?');
+define('TEXT_DIED_TRYING_TO_BUILD_A_JOURNAL_ENTRY_WITH_ID','Died trying to build a journal entry with id = ');
+define('TEXT_ERROR_POSTING_CHART_OF_ACCOUNT_BALANCES_TO_ACCOUNT_ID','Error posting chart of account balances to account id: ');
 define('GL_ERROR_TRIAL_BALANCE','Trial balance is out of balance (This can usually be fixed by re-posting the transaction). Debits = %s and credits = %s in period %s');
 define('GL_ERROR_NO_GL_ACCT_NUMBER','No account number provided in /gen_ledger.php function: ');
 define('GL_ERROR_UPDATING_ACCOUNT_HISTORY','Error updating customer/vendor account history.');
@@ -238,10 +238,10 @@ define('GL_ERROR_SERIALIZE_EMPTY','Error calculating COGS for a serialized item,
 define('GL_ERROR_SERIALIZE_COGS','COGS Error. Either did not find serial number or more than one item with matching serial numbers were found.');
 define('GL_ERROR_NO_RETAINED_EARNINGS_ACCOUNT','Zero or more than one retained earnings accounts found. There needs to be one and only one retained earnings account in PhreeBooks to operate properly!');
 define('PB_ERROR_NO_PREFERRED_VENDOR','No valid vendor could be found, make sure at least one sku has a prefered vendor setup for the inventory item.');
-define('GL_ERROR_2','The %s you entered is a duplicate, please enter a new unique value!');
-define('GL_ERROR_5','There was an error incrementing the %s!');
+define('TEXT_THE_YOU_ENTERED_IS_A_DUPLICATE,_PLEASE_ENTER_A_NEW_UNIQUE_VALUE_ARGS','The %s you entered is a duplicate, please enter a new unique value!');
+define('TEXT_THERE_WAS_AN_ERROR_INCREMENTING_THE_ARGS','There was an error incrementing the %s!');
 define('TEXT_THE_ID_FIELD_WAS_EMPTY','The id field was empty');
-define('ERROR_DUPLICATE_SKU','The id $s is not unique');
+define('TEXT_THE_ID_IS_NOT_UNIQUE_ARGS','The id %s is not unique');
 // Javascript Messages
 define('ORD_JS_RECUR_NO_INVOICE','For a recurring transaction, a starting invoice number needs to be entered. PhreeBooks will increment it for each recurring entry.');
 define('ORD_JS_RECUR_ROLL_REQD','This is a recurring entry. Do you want to update future entries as well? (Press Cancel to update only this entry)');
@@ -259,7 +259,7 @@ define('TEXT_ITEM_IS_ALREADY_ON_ORDER', 'item is already on order');
 define('TEXT_ITEM_IS_ON_HAND', 'item is on hand');
 define('TEXT_ITEM_IS_INACTIVE', 'item is inactive');
 define('TEXT_ITEM_IS_OUT_OF_STOCK_AND_INACTIVE', 'item is out of stock and inactive');
-define('THERE_IS_SALES_ORDER_FOR_THIS_ITEM', 'there is a sales order for this item');
+define('TEXT_THERE_IS_A_SALES_ORDER_FOR_THIS_ITEM', 'there is a sales order for this item');
 define('TEXT_ITEM_IS_ON_ORDER', 'item is on order');
 define('TEXT_ITEM_MUST_BE_ORDERD', 'item must be orderd');
 // Low Stock messages
@@ -272,7 +272,7 @@ define('LOW_STOCK_ALREADY_EXECUTED','This action was executed before and is now 
 define('BNK_LOG_ACCT_RECON','Account Reconciliation, period: ');
 define('GL_LOG_ADD_JOURNAL','General Journal Entry - ');
 define('TEXT_GENERAL_JOURNAL_FISCAL_YEAR','General Journal Fiscal Year');
-define('GL_LOG_PURGE_DB','General Journal - Purge Database');
+define('TEXT_GENERAL_JOURNAL_PURGE_DATABASE','General Journal - Purge Database');
 // Tooltip messages
 define('ORD_TT_PURCH_INV_NUM','If you leave this field blank, Phreebooks will automatically assign a number.');
 // Journals
@@ -298,13 +298,13 @@ define('ORD_HEADING_NUMBER_3', 'RFQ Number');
 define('ORD_HEADING_NUMBER_4', 'PO Number');
 define('ORD_HEADING_NUMBER_6', 'Invoice #');
 define('ORD_HEADING_NUMBER_7', 'Credit Memo #');
-define('ORD_HEADING_NUMBER_9', 'Quote Number');
+define('TEXT_QUOTE_NUMBER', 'Quote Number');
 define('ORD_HEADING_NUMBER_10','SO Number');
 define('ORD_HEADING_NUMBER_12','Invoice #');
 define('ORD_HEADING_NUMBER_13','Credit Memo #');
-define('ORD_HEADING_NUMBER_18','Receipt Number');
-define('ORD_HEADING_NUMBER_19','Receipt #');
-define('ORD_HEADING_NUMBER_20','Payment Number');
+define('TEXT_RECEIPT_NUMBER','Receipt Number');
+define('TEXT_RECEIPT','Receipt #');
+define('TEXT_PAYMENT_NUMBER','Payment Number');
 // Delete Messages
 define('GENERAL_JOURNAL_4_ERROR_6','PO - A purchase order cannot be deleted if there are items that have been received!');
 define('GENERAL_JOURNAL_6_ERROR_6','PR - A purchase cannot be deleted if there has been a credit memo or payment applied!');

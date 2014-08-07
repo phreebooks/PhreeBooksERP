@@ -62,8 +62,8 @@ define('MODULE_CAPA_REMOVE_CONFIRM','Are you sure you want to remove the CAPA Mo
 define('CAPAS_ERROR_DELETE_MSG','The database files have been deleted. To completely remove the module, remove all files in the directory /my_files/custom/cp_action and the configuration file /my_files/custom/extra_menus/cp_action.php');
 define('CAPA_MSG_DELETE_CAPA','Are you sure you want to delete this Corrective/Preventative Action?');
 // audit log messages
-define('CAPA_LOG_USER_ADD','CAPA Created - CAPA # ');
-define('CAPA_LOG_USER_UPDATE','CAPA Updated - CAPA # ');
+define('TEXT_CAPA_CREATED_CAPA','CAPA Created - CAPA # ');
+define('TEXT_CAPA_UPDATED_CAPA','CAPA Updated - CAPA # ');
 define('CAPA_MESSAGE_SUCCESS_ADD','Successfully created CAPA # ');
 define('CAPA_MESSAGE_SUCCESS_UPDATE','Successfully updated CAPA # ');
 define('CAPA_MESSAGE_ERROR','There was an error creating/updating the CAPA.');
@@ -72,12 +72,12 @@ define('CAPA_ERROR_CANNOT_DELETE','There was an error deleting the CAPA.');
 //  codes for status and CAPA reason
 define('CAPA_STATUS_0','Select Status ...');
 define('CAPA_STATUS_1','CA/PA Created');
-define('CAPA_STATUS_2','In Process');
-define('CAPA_STATUS_3','Created & Assigned');
-define('CAPA_STATUS_4','Investigated');
-define('CAPA_STATUS_5','Implemented');
-define('CAPA_STATUS_6','Audited');
-define('CAPA_STATUS_90','Closed Unsuccessful');
-define('CAPA_STATUS_99','Closed Successful');
+define('TEXT_IN_PROCESS','In Process');
+define('TEXT_CREATED_AND_ASSIGNED','Created & Assigned');
+define('TEXT_INVESTIGATED','Investigated');
+define('TEXT_IMPLEMENTED','Implemented');
+define('TEXT_AUDITED','Audited');
+define('TEXT_CLOSED_UNSUCCESSFUL','Closed Unsuccessful');
+define('TEXT_CLOSED_SUCCESSFUL','Closed Successful');
 
 ?>

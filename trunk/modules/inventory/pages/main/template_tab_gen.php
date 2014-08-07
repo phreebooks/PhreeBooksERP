@@ -52,7 +52,7 @@
 	  </td>
 	</tr>
 	<tr>
-	  <td align="right"><?php echo INV_ENTRY_INVENTORY_DESC_SHORT; ?></td>
+	  <td align="right"><?php echo TEXT_SHORT_DESCRIPTION; ?></td>
 	  <td>
 	  	<?php echo html_input_field('description_short', $cInfo->description_short, 'size="33" maxlength="32"', false); ?>
 		<?php if ($cInfo->id) echo '&nbsp;' . html_icon('categories/preferences-system.png', TEXT_WHERE_USED, 'small', 'onclick="ajaxWhereUsed()"') . chr(10); ?>

@@ -80,15 +80,15 @@ class ups extends \shipping\classes\shipping {
       	$this->keys[] = array('key' => 'MODULE_SHIPPING_UPS_PASSWORD',   		'default' => '',										'text' => MODULE_SHIPPING_UPS_PASSWORD_DESC);
 	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_UPS_ACCESS_KEY',  		'default' => '',										'text' => MODULE_SHIPPING_UPS_ACCESS_KEY_DESC);
 	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_UPS_LABEL_SIZE',  		'default' => 6,											'text' => MODULE_SHIPPING_UPS_LABEL_SIZE_DESC);
-	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_UPS_TEST_MODE',     		'default' => 'Test',									'text' => SHIPPING_TEST_MODE_DESC);
+	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_UPS_TEST_MODE',     		'default' => 'Test',									'text' => TEXT_PRODUCTION_OR_TEST_MODE_USED_FOR_TESTING_SHIPPING_LABELS);
 	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_UPS_PRINTER_TYPE',  		'default' => 'GIF',										'text' => MODULE_SHIPPING_UPS_PRINTER_TYPE_DESC);
-	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_UPS_TYPES',         		'default' => '1DEam, 1Dam, 1Dpm, 2Dam, 2Dpm, 3Dpm, GND, I2DEam, I2Dam, I3D, IGND',	'text' => SHIPPING_DEFAULT_SERVICE_DESC);
+	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_UPS_TYPES',         		'default' => '1DEam, 1Dam, 1Dpm, 2Dam, 2Dpm, 3Dpm, GND, I2DEam, I2Dam, I3D, IGND',	'text' => TEXT_SELECT_THE_SERVICES_TO_BE_OFFERED_BY_DEFAULT);
 	  	parent::__construct();
   	}
 
   function quote($pkg) {
 	global $messageStack;
-	if ($pkg->pkg_weight == 0) throw new \core\classes\userException(SHIPPING_ERROR_WEIGHT_ZERO);
+	if ($pkg->pkg_weight == 0) throw new \core\classes\userException(TEXT_SHIPMENT_WEIGHT_CANNOT_BE_ZERO);
 	if (!$pkg->split_large_shipments && $pkg->pkg_weight > 150) throw new \core\classes\userException(SHIPPING_UPS_ERROR_WEIGHT_150);
 	if ($pkg->ship_to_postal_code == '') throw new \core\classes\userException(SHIPPING_UPS_ERROR_POSTAL_CODE);
 	$status = $this->getUPSrates($pkg);

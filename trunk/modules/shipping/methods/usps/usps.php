@@ -34,9 +34,9 @@ class usps extends \shipping\classes\shipping {
   	public $sort_order		= 15;
   	public $version			= '3.2';
   	public $shipping_cost	= 0.00;
-  	public $handling_cost	= 1.00; 
+  	public $handling_cost	= 1.00;
   	// FedEx Rate code maps
- 	public $USPSRateCodes = array(	
+ 	public $USPSRateCodes = array(
 	  'Express Mail'                       => '1DEam',
 	  'Express Mail Flat Rate Envelope'    => '1Dam',
 	  'Priority Mail'                      => '1Dpm',
@@ -47,12 +47,12 @@ class usps extends \shipping\classes\shipping {
 	  'Parcel Post'                        => 'GND',
 	  'Media Mail'                         => 'GDR',
   	);
-  	
+
 	function __construct() {
     	$this->keys[] = array('key' => 'MODULE_SHIPPING_USPS_USERID',		'default' => '',				'text' => MODULE_SHIPPING_USPS_USERID_DESC);
 	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_USPS_MACHINABLE',	'default' => 1,					'text' => MODULE_SHIPPING_USPS_MACHINABLE_DESC);
-      	$this->keys[] = array('key' => 'MODULE_SHIPPING_USPS_SERVER',     	'default' => 'Test',			'text' => SHIPPING_TEST_MODE_DESC);
-	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_USPS_TYPES',      	'default' => '1DEam,1Dpm,GND',	'text' => SHIPPING_DEFAULT_SERVICE_DESC);
+      	$this->keys[] = array('key' => 'MODULE_SHIPPING_USPS_SERVER',     	'default' => 'Test',			'text' => TEXT_PRODUCTION_OR_TEST_MODE_USED_FOR_TESTING_SHIPPING_LABELS);
+	  	$this->keys[] = array('key' => 'MODULE_SHIPPING_USPS_TYPES',      	'default' => '1DEam,1Dpm,GND',	'text' => TEXT_SELECT_THE_SERVICES_TO_BE_OFFERED_BY_DEFAULT);
 	  	parent::__construct();
   	}
 
@@ -136,7 +136,7 @@ class usps extends \shipping\classes\shipping {
 // ***************************************************************************************************************
     function quote($pkg) {
 		global $messageStack;
-		if ($pkg->pkg_weight == 0) throw new \core\classes\userException(SHIPPING_ERROR_WEIGHT_ZERO);
+		if ($pkg->pkg_weight == 0) throw new \core\classes\userException(TEXT_SHIPMENT_WEIGHT_CANNOT_BE_ZERO);
 		if ($pkg->ship_to_postal_code == '') throw new \core\classes\userException(SHIPPING_USPS_ERROR_POSTAL_CODE);
 		$status = $this->getUSPSRates($pkg);
 		if ($status['result'] == 'error') throw new \core\classes\userException(SHIPPING_USPS_RATE_ERROR . $status['message']);
@@ -227,9 +227,9 @@ class usps extends \shipping\classes\shipping {
 	}
 
 	function GetUSPSRateArray($SearchObj) {
-	  $user_choices = explode(',', str_replace(' ', '', MODULE_SHIPPING_USPS_TYPES));  
+	  $user_choices = explode(',', str_replace(' ', '', MODULE_SHIPPING_USPS_TYPES));
 	  $arrXML = array();
-	  foreach ($SearchObj->RateV2Response->Package->Postage as $postage) { 
+	  foreach ($SearchObj->RateV2Response->Package->Postage as $postage) {
 		foreach ($this->USPSRateCodes as $key => $service) {
 		  if ($postage->MailService == $key && in_array($service, $user_choices)) {
 		    $arrXML[$this->id][$service]['book']  = $postage->Rate;

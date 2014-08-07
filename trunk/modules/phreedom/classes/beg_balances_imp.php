@@ -36,11 +36,11 @@ class beg_bal_import {
 			if (!$current_order['order_id']) {
 				switch (JOURNAL_ID) {
 				  	case 6:
-						$messageStack->add(sprintf(GL_BEG_BAL_ERROR_2, ($row_id + 1)),'caution');
+						$messageStack->add(sprintf(TEXT_NO_INVOICE_NUMBER_FOUND_ON_LINE_FLAGGED_AS_WAITING_FOR_PAYMENT_ARGS, ($row_id + 1)),'caution');
 						$this->records[$row_id]['waiting'] = 1;
 						break;
 				  	default:
-						throw new \core\classes\userException(GL_BEG_BAL_ERROR_3 . ($row_id + 1));
+						throw new \core\classes\userException(TEXT_EXITING_IMPORT_NO_INVOICE_NUMBER_FOUND_ON_LINE . ' ' . ($row_id + 1));
 				}
 			}
 	  		$this->records[$row_id]['post_date'] = gen_db_date($current_order['post_date']); // from mm/dd/yyyy to YYYY-MM-DD
@@ -50,7 +50,7 @@ class beg_bal_import {
 				case 12:
 				  	$this->records[$row_id]['total_amount'] = $currencies->clean_value($current_order['total_amount']);
 				  	if ($current_order['total_amount'] == 0) {
-						$messageStack->add(GL_BEG_BAL_ERROR_5 . ($row_id + 1),'caution');
+						$messageStack->add(TEXT_SKIPPING_LINE._ZERO_TOTAL_AMOUNT_FOUND_ON_LINE . ' ' . ($row_id + 1),'caution');
 						$this->records[$row_id]['skip_this_record'] = 1;
 				  	}
 				default:
@@ -102,7 +102,7 @@ class beg_bal_import {
 			// build journal main entry
 			$glEntry->journal_id          = JOURNAL_ID;
 			$glEntry->post_date           = $order['post_date'];
-			$glEntry->description         = sprintf(TEXT_ARGS_ENTRY, constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE'));
+			$glEntry->description         = sprintf(TEXT_ARGS_ENTRY, $journal_types_list[JOURNAL_ID]['text']);
 			$glEntry->short_name          = $order['account_id'];
 			$glEntry->ship_short_name     = $order['account_id'];
 			$glEntry->gl_acct_id          = $order['gl_acct'];
@@ -179,7 +179,7 @@ class beg_bal_import {
 						$glEntry->journal_rows[] = array(
 							'gl_type'      => BB_GL_TYPE,
 							'qty'          => '1',
-							'description'  => constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE') . '-' . TEXT_IMPORT,
+							'description'  => $journal_types_list[JOURNAL_ID]['text'] . '-' . TEXT_IMPORT,
 							'gl_account'   => $order['inv_gl_acct'],
 							'taxable'      => $order['taxable'] ? $order['taxable'] : 0,
 							$credit_debit  => $currencies->clean_value($order['total_amount']),
@@ -205,7 +205,7 @@ class beg_bal_import {
 			}
 			$glEntry->journal_rows[] = array(
 			  'gl_type'     => 'ttl',
-			  'description' => constant('ORD_TEXT_' . $glEntry->journal_id . '_WINDOW_TITLE') . '-' . TEXT_TOTAL,
+			  'description' => $journal_types_list[ $glEntry->journal_id]['text'] . '-' . TEXT_TOTAL,
 			  'gl_account'  => $order['gl_acct'],
 			  $debit_credit => $total_amount,
 			  'post_date'   => $post_date,
@@ -234,7 +234,7 @@ class beg_bal_import {
 			$admin_classes['inventory']->validate_name($row['sku']);
 			if (!in_array($row['inv_gl_acct'], $coa) || !in_array($row['gl_acct'], $coa)) throw new \core\classes\userException(sprintf(TEXT_ERROR_INVALID_GL_ACCT, $j));
 			if ($qty == 0) {
-				$messageStack->add(GL_BEG_BAL_ERROR_7 . $j,'caution');
+				$messageStack->add(TEXT_SKIPPING_INVENTORY_ITEM._ZERO_QUANTITY_FOUND_ON_LINE . ' ' . $j,'caution');
 			} else {
 				$affected_accounts[$row['inv_gl_acct']] = true;	// need list of accounts to update history
 				$affected_accounts[$row['gl_acct']]     = true;	// both credit and debit
@@ -252,7 +252,7 @@ class beg_bal_import {
 				$sql = "update " . TABLE_INVENTORY . "
 				  set quantity_on_hand = quantity_on_hand + " . $details['qty'] . " where sku = '" . $sku . "'";
 				$result = $db->Execute($sql);
-				if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(GL_BEG_BAL_ERROR_8, $sku));
+				if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(TEXT_FAILED_UPDATING_SKU_THE_PROCESS_WAS_TERMINATED_ARGS, $sku));
 				$history_array = array(
 				  'ref_id'    => 0,
 				  'sku'       => $sku,
@@ -268,7 +268,7 @@ class beg_bal_import {
 				$sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " set beginning_balance = beginning_balance + " . $amount . "
 				  where account_id = '" . $account . "' and period = 1";
 				$result = $db->Execute($sql);
-				if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(GL_BEG_BAL_ERROR_9, $account));
+				if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(TEXT_FAILED_UPDATING_ACCOUNT_THE_PROCESS_WAS_TERMINATED_ARGS, $account));
 		  }
 		  // update the chart of accounts history through the existing periods
 		  $glEntry->update_chart_history_periods($period = 1);

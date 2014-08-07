@@ -91,6 +91,23 @@ class orders extends \core\classes\journal {
 			break;
 		  default:
 		}
+		if($this->journal_id == 3){
+			$this->error_6 = GENERAL_JOURNAL_3_ERROR_6;
+		}else if($this->journal_id == 4){
+			$this->error_6 = GENERAL_JOURNAL_4_ERROR_6;
+		}else if($this->journal_id == 6){
+			$this->error_6 = GENERAL_JOURNAL_6_ERROR_6;
+		}else if($this->journal_id == 7){
+			$this->error_6 = GENERAL_JOURNAL_7_ERROR_6;
+		}else if($this->journal_id == 9){
+			$this->error_6 = GENERAL_JOURNAL_9_ERROR_6;
+		}else if($this->journal_id == 10){
+			$this->error_6 = GENERAL_JOURNAL_10_ERROR_6;
+		}else if($this->journal_id == 12){
+			$this->error_6 = GENERAL_JOURNAL_12_ERROR_6;
+		}else if($this->journal_id == 13){
+			$this->error_6 = GENERAL_JOURNAL_13_ERROR_6;
+		}
 		parent::__construct($id);
 	}
 
@@ -254,11 +271,11 @@ class orders extends \core\classes\journal {
 	  default:
 		break;
 	}
-	$messageStack->debug("\n  committed order post purchase_invoice_id = " . $this->purchase_invoice_id . " and id = " . $this->id);
+	$messageStack->debug("\n  committed order post purchase_invoice_id = {$this->purchase_invoice_id} and id = {$this->id}");
 	$db->transCommit();	// finished successfully
 //echo 'committed transaction - bailing!'; exit();
 	// ***************************** END TRANSACTION *******************************
-	$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, constant('ORD_HEADING_NUMBER_' . $this->journal_id), $this->purchase_invoice_id), 'success');
+	$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, $journal_types_list[ $this->journal_id]['id_field_name'], $this->purchase_invoice_id), 'success');
 	return true;
   }
 
@@ -269,7 +286,7 @@ class orders extends \core\classes\journal {
 	  case  4: // Purchase Order Journal
 	  case 10: // Sales Order Journal
 		$result = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " where so_po_ref_id = " . $this->id);
-		if ($result->RecordCount() > 0) throw new \core\classes\userException(constant('GENERAL_JOURNAL_' . $this->journal_id . '_ERROR_6'));
+		if ($result->RecordCount() > 0) throw new \core\classes\userException($this->error_6);
 		break;
 	  case  6: // Purchase Journal
 	  case  7: // Vendor Credit Memo Journal
@@ -277,11 +294,11 @@ class orders extends \core\classes\journal {
 	  case 13: // Customer Credit Memo Journal
 		// first check for main entries that refer to delete id (credit memos)
 		$result = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " where so_po_ref_id = " . $this->id);
-		if ($result->RecordCount() > 0) throw new \core\classes\userException(constant('GENERAL_JOURNAL_' . $this->journal_id . '_ERROR_6'));
+		if ($result->RecordCount() > 0) throw new \core\classes\userException($this->error_6);
 		// next check for payments that link to deleted id (payments)
 		$result = $db->Execute("select id from " . TABLE_JOURNAL_ITEM . "
 			where gl_type = 'pmt' and so_po_item_ref_id = " . $this->id);
-		if ($result->RecordCount() > 0) throw new \core\classes\userException(constant('GENERAL_JOURNAL_' . $this->journal_id . '_ERROR_6'));
+		if ($result->RecordCount() > 0) throw new \core\classes\userException($this->error_6);
 		break;
 	  case  3: // Purchase Quote Journal
 	  case  9: // Sales Quote Journal
@@ -311,7 +328,7 @@ class orders extends \core\classes\journal {
 	  $this->journal_rows[] = array( // record for accounts receivable
 		'gl_type'                 => 'ttl',
 		$debit_credit . '_amount' => $this->total_amount,
-		'description'             => constant('ORD_TEXT_' . $this->journal_id . '_WINDOW_TITLE') . '-' . TEXT_TOTAL,
+		'description'             => $journal_types_list[$this->journal_id]['text'] . ' - ' . TEXT_TOTAL,
 		'gl_account'              => $this->gl_acct_id,
 		'post_date'               => $this->post_date,
 	  );
@@ -328,7 +345,7 @@ class orders extends \core\classes\journal {
 		  'qty'                     => '1',
 		  'gl_type'                 => 'dsc',		// code for discount charges
 		  $debit_credit . '_amount' => $this->discount,
-		  'description'             => constant('ORD_TEXT_' . $this->journal_id . '_WINDOW_TITLE') . '-' . TEXT_DISCOUNT,
+		  'description'             => $journal_types_list[$this->journal_id]['text'] . ' - ' . TEXT_DISCOUNT,
 		  'gl_account'              => $this->disc_gl_acct_id,
 		  'taxable'                 => '0',
 		  'post_date'               => $this->post_date,
@@ -357,7 +374,7 @@ class orders extends \core\classes\journal {
 		  'qty'                     => '1',
 		  'gl_type'                 => 'frt',		// code for shipping/freight charges
 		  $debit_credit . '_amount' => $this->freight,
-		  'description'             => constant('ORD_TEXT_' . $this->journal_id . '_WINDOW_TITLE') . '-' . TEXT_SHIPPING,
+		  'description'             => $journal_types_list[$this->journal_id]['text'] . ' - ' . TEXT_SHIPPING,
 		  'gl_account'              => $this->ship_gl_acct_id,
 		  'taxable'                 => $freight_tax_id,
 		  'post_date'               => $this->post_date,

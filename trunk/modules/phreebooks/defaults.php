@@ -44,22 +44,26 @@ $coa_types_list = array(
 );
 
 $journal_types_list = array(
-		'2'  => array('id' => 02, 'text' => ORD_TEXT_2_WINDOW_TITLE),
-		'3'  => array('id' => 03, 'text' => TEXT_VENDOR_QUOTES),
-		'4'  => array('id' => 04, 'text' => TEXT_VENDOR_ORDERS),
-		'6'  => array('id' => 06, 'text' => TEXT_PUCHASES_JOURNAL),
-		'7'  => array('id' => 07, 'text' => TEXT_VENDOR_CREDIT_MEMOS),
-		'8'  => array('id' => 08, 'text' => TEXT_PAYROLL),
-		'9'  => array('id' => 09, 'text' => TEXT_CUSTOMER_QUOTES),
-		'10' => array('id' => 10, 'text' => TEXT_CUSTOMER_ORDERS),
-		'12' => array('id' => 12, 'text' => ORD_TEXT_12_WINDOW_TITLE),
-		'13' => array('id' => 13, 'text' => TEXT_CUSTOMER_CREDIT_MEMOS),
-		'14' => array('id' => 14, 'text' => GEN_ADM_TOOLS_J14),
-		'16' => array('id' => 16, 'text' => TEXT_INVENTORY_ADJUSTMENTS),
-		'18' => array('id' => 18, 'text' => TEXT_VENDOR_REFUNDS),
-		'19' => array('id' => 19, 'text' => TEXT_POINT_OF_SALE),
-		'20' => array('id' => 20, 'text' => TEXT_VENDOR_PAYMENTS),
-		'21' => array('id' => 21, 'text' => GEN_ADM_TOOLS_J21),//@todo
+		'0'  => array('id' => 00, 'text' => TEXT_BEGINNING_BALANCES,			'id_field_name' => TEXT_REFERENCE),			//@todo
+		'2'  => array('id' => 02, 'text' => TEXT_GENERAL_JOURNAL,				'id_field_name' => TEXT_REFERENCE),			//@todo
+		'3'  => array('id' => 03, 'text' => TEXT_PURCHASE_QUOTES,				'id_field_name' => TEXT_QUOTE_NUMBER),
+		'4'  => array('id' => 04, 'text' => TEXT_PURCHASE_ORDERS,				'id_field_name' => TEXT_PO_NUMBER),
+		'6'  => array('id' => 06, 'text' => TEXT_PURCHASE_OR_RECEIVE_INVENTORY,	'id_field_name' => TEXT_INVOICE),
+		'7'  => array('id' => 07, 'text' => TEXT_VENDOR_CREDIT_MEMOS,			'id_field_name' => TEXT_CREDIT_MEMO),
+		'8'  => array('id' => 08, 'text' => TEXT_PAYROLL,						'id_field_name' => TEXT_PAYROL_NUMBER),
+		'9'  => array('id' => 09, 'text' => TEXT_SALES_QUOTES,					'id_field_name' => TEXT_QUOTE_NUMBER),
+		'10' => array('id' => 10, 'text' => TEXT_SALES_ORDERS,					'id_field_name' => TEXT_SO_NUMBER),
+		'12' => array('id' => 12, 'text' => TEXT_SALES_INVOICES,				'id_field_name' => TEXT_INVOICE),			//@todo
+		'13' => array('id' => 13, 'text' => TEXT_CUSTOMER_CREDIT_MEMOS,			'id_field_name' => TEXT_CREDIT_MEMO),
+		'14' => array('id' => 14, 'text' => TEXT_INVENTORY_ASSEMBLY,			'id_field_name' => TEXT_ASSEMBLY_NUMBER),
+		'16' => array('id' => 16, 'text' => TEXT_INVENTORY_ADJUSTMENTS,			'id_field_name' => TEXT_ADJUSTMENT_NUMBER),
+		'18' => array('id' => 18, 'text' => TEXT_VENDOR_REFUNDS,				'id_field_name' => TEXT_RECEIPT_NUMBER), 	// @todo dit alleen nog maar leverancier restituties nr 22 is klant betalingen.
+		'19' => array('id' => 19, 'text' => TEXT_POINT_OF_SALE,					'id_field_name' => TEXT_RECEIPT),
+		'20' => array('id' => 20, 'text' => TEXT_VENDOR_PAYMENTS,				'id_field_name' => TEXT_PAYMENT_NUMBER), 	//@todo dit alleen nog maar leverancier betalingen nr 23 is klant restitutie.
+		'21' => array('id' => 21, 'text' => TEXT_POINT_OF_PURCHASE,				'id_field_name' => TEXT_RECEIPT),
+		'22' => array('id' => 22, 'text' => TEXT_CUSTOMER_PAYMENTS,				'id_field_name' => TEXT_PAYMENT_NUMBER), 	//@todo dit alleen nog maar klant betalingen nr 18 is leverancier restituties.
+		'23' => array('id' => 23, 'text' => TEXT_CUSTOMER_REFUNDS,				'id_field_name' => TEXT_RECEIPT_NUMBER), 	// @todo dit alleen nog maar klant restituties nr 20 is leverancier betalingen.
+
 );
 
 ?>

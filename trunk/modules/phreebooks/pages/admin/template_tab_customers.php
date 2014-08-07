@@ -35,7 +35,7 @@
 	    <td><?php echo html_combo_box('ar_def_gl_sales_acct', $inc_chart, $_POST['ar_def_gl_sales_acct'] ? $_POST['ar_def_gl_sales_acct'] : AR_DEF_GL_SALES_ACCT, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo CD_02_03_DESC; ?></td>
+	    <td colspan="3"><?php echo TEXT_DEFAULT_ACCOUNT_TO_USE_FOR_PAYMENTS_TO_WHEN_INVOICES_ARE_PAID_TYPICALLY_A_CASH_TYPE_ACCOUNT; ?></td>
 	    <td><?php echo html_combo_box('ar_sales_receipts_account', $cash_chart, $_POST['ar_sales_receipts_account'] ? $_POST['ar_sales_receipts_account'] : AR_SALES_RECEIPTS_ACCOUNT, ''); ?></td>
 	  </tr>
 	  <tr>
@@ -64,7 +64,7 @@
 	  <tr>
 	    <td><?php echo TEXT_CHECK_CUSTOMER_CREDIT_LIMIT_WHEN_PROCESSING_ORDERS; ?></td>
 	    <td><?php echo html_checkbox_field('ar_use_credit_limit', $inc_chart, $_POST['ar_use_credit_limit'] ? $_POST['ar_use_credit_limit'] : AR_USE_CREDIT_LIMIT, ''); ?></td>
-	    <td><?php echo sprintf(CD_02_12_DESC, DEFAULT_CURRENCY); ?></td>
+	    <td><?php echo sprintf(TEXT_DEFAULT_AMOUNT_TO_USE_FOR_CREDIT_LIMIT_ARGS, DEFAULT_CURRENCY); ?></td>
 	    <td><?php echo html_input_field('ar_credit_limit_amount', $_POST['ar_credit_limit_amount'] ? $_POST['ar_credit_limit_amount'] : AR_CREDIT_LIMIT_AMOUNT, 'style="text-align:right"'); ?></td>
 	  </tr>
 	  <tr>

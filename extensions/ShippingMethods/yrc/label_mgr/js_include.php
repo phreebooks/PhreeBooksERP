@@ -22,18 +22,18 @@
 <!--
 // pass any php variables generated during pre-process that are used in the javascript functions.
 // Include translations here as well.
-var formName          = "<?php echo $_GET['form']; ?>"; 
+var formName          = "<?php echo $_GET['form']; ?>";
 var image_delete_text = '<?php echo TEXT_DELETE; ?>';
 var image_delete_msg  = '<?php echo SHIPPING_DELETE_CONFIRM; ?>';
 <?php echo js_calendar_init($cal_ship); ?>
 <?php echo js_calendar_init($cal_exp); ?>
 
 function init() {
-  <?php 
+  <?php
     if (!$error && !$auto_print && ($action == 'label' || $action == 'delete')) {
 	  echo '  window.opener.location.reload();' . chr(10);
 	  echo '  self.close();' . chr(10);
-    } 
+    }
     if (!$auto_print) echo '  document.getElementById("wt_1").focus();' . chr(10);
   ?>
 }
@@ -42,7 +42,7 @@ function check_form() {
   var error = 0;
   var error_message = "<?php echo JS_ERROR; ?>";
   if (!document.getElementById('total_weight').value) {
-  	error_message += '<?php echo SHIPPING_ERROR_WEIGHT_ZERO; ?>' + '\n';
+  	error_message += '<?php echo TEXT_SHIPMENT_WEIGHT_CANNOT_BE_ZERO; ?>' + '\n';
 	error = 1;
   }
   if (error == 1) {

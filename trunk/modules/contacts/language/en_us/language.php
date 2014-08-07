@@ -164,14 +164,14 @@ define('TEXT_CREDIT_LIMIT', 'Credit limit: ');
 define('TEXT_AMOUNT_PAST_DUE','Amount Past Due');
 // misc information messages
 define('RECORD_NUM_REF_ONLY','record ID (Reference only) = ');
-define('ACT_ID_AUTO_FILL','(Leave blank for system generated ID)');
+define('TEXT_LEAVE_BLANK_FOR_SYSTEM_GENERATED_ID','(Leave blank for system generated ID)');
 define('ACT_WARN_DELETE_ADDRESS','Are you sure you want to delete this address?');
 define('ACT_WARN_DELETE_ACCOUNT', 'Are you sure you want to delete this account?');
 define('ACT_WARN_DELETE_PAYMENT', 'Are you sure you want to delete this payment record?');
 define('ACT_ERROR_CANNOT_DELETE','Cannot delete this contact because a journal record contains this account');
 define('ACT_ERROR_CANNOT_DELETE_EMPLOYEE','Cannot delete this employee because it is used by a user.');
 define('ACT_ERROR_DUPLICATE_ACCOUNT','The account ID already exists in the system, please enter a new id.');
-define('ACT_ERROR_ACCOUNT_NOT_FOUND','The account you are looking for could not be found!');
+define('TEXT_THE_ACCOUNT_YOU_ARE_LOOKING_FOR_COULD_NOT_BE_FOUND','The account you are looking for could not be found!');
 define('ACT_BILLING_MESSAGE','These fields are not required unless a billing address is being added.');
 define('ACT_SHIPPING_MESSAGE','These fields are not required unless a shipping address is being added.');
 define('ACT_NO_ENCRYPT_KEY_ENTERED','CAUTION: The encryption key has not been entered. Stored credit card information will not be displayed and values entered here will not be saved!');
@@ -182,6 +182,6 @@ define('TEXT_WARNING_NO_ENCRYPTION_KEY','A payment was specified but the encrypt
 define('ACT_ERROR_DUPLICATE_CONTACT','The contact ID already exists in the system, please enter a new contact ID.');
 define('CRM_ROW_DELETE_ALERT','Are you sure you want to remove this CRM note?');
 // java script errors
-define('ACT_JS_SHORT_NAME', '* The \'ID\' entry cannot be blank.');
+define('TEXT_THE_ID_ENTRY_CANNOT_BE_EMPTY', 'The \'ID\' entry cannot be blank.');
 
 ?>

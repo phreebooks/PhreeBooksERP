@@ -10,7 +10,7 @@
 
 define('TEXT_BOOKMARK_DOCUMENT','Marcar Documento');
 define('TEXT_BOOKMARKED','Marcado');
-define('TEXT_CANCEL_CHECKOUT','Cancelar Flag Conferido');
+define('TEXT_CANCEL_CHECK-OUT_FLAG','Cancelar Flag Conferido');
 define('TEXT_CHECKED_OUT','Conferido');
 define('TEXT_CHECK_OUT_DOCUMENT','Conferir Documento');
 define('TEXT_CREATE_DATE','Data Criação');
@@ -46,6 +46,6 @@ define('TEXT_FOLDERS_AND_DOCUMENTS','Pastas e Documentos');
 define('DOC_CTL_DELETE_DOCUMENT','Tem certeza de que quer remover este documento?');
 define('DOC_CTL_DELETE_DIRECTORY','Tem certeza de que quer remover esta pasta?');
 define('DOC_CTL_JS_DEL_BOOKMARK','Tem certeza de que quer remover esta marcação?');
-define('DOC_CTL_JS_DIR_DELETED_ERROR','A pasta não está vazia, não pode ser removida!');
+define('TEXT_THE_DIRECTORY_IS_NOT_EMPTY_IT_CANNOT_BE_DELETED','A pasta não está vazia, não pode ser removida!');
 
 ?>

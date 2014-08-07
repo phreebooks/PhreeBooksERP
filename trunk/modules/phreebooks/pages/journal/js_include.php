@@ -22,7 +22,7 @@
 // pass any php variables generated during pre-process that are used in the javascript functions.
 // Include translations here as well.
 var image_delete_text = '<?php echo TEXT_DELETE; ?>';
-var image_delete_msg  = '<?php echo GL_DELETE_GL_ROW; ?>';
+var image_delete_msg  = '<?php echo TEXT_ARE_YOU_SURE_YOU_WANT_TO_DELETE_THIS_JOURNAL_ROW; ?>';
 var text_acct_ID      = '<?php echo TEXT_GL_ACCOUNT; ?>';
 var text_increased    = '<?php echo TEXT_ACCOUNT_WILL_BE_INCREASED; ?>';
 var text_decreased    = '<?php echo TEXT_ACCOUNT_WILL_BE_DECREASED; ?>';

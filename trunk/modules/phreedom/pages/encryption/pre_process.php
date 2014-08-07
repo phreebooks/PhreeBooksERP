@@ -46,8 +46,8 @@ switch ($_REQUEST['action']) {
 			throw new \core\classes\userException(TEXT_THE_CURRENT_ENCRYPTED_KEY_DOES_NOT_MATCH_THE_STORED_VALUE,$e->getCode(),$e);
 		}
 	}
-	if (strlen($new_key) < ENTRY_PASSWORD_MIN_LENGTH) throw new \core\classes\userException(sprintf(ENTRY_PASSWORD_NEW_ERROR, ENTRY_PASSWORD_MIN_LENGTH));
-	if ($new_key != $new_key_confirm) throw new \core\classes\userException(ENTRY_PASSWORD_NEW_ERROR_NOT_MATCHING);
+	if (strlen($new_key) < ENTRY_PASSWORD_MIN_LENGTH) throw new \core\classes\userException(sprintf(TEXT_YOUR_NEW_PASSWORD_MUST_CONTAIN_A_MINIMUM_OF_CHARACTERS_ARGS, ENTRY_PASSWORD_MIN_LENGTH));
+	if ($new_key != $new_key_confirm) throw new \core\classes\userException(TEXT_THE_PASSWORD_CONFIRMATION_MUST_MATCH_YOUR_NEW_PASSWORD);
 	write_configure('ENCRYPTION_VALUE', \core\classes\encryption::password($new_key));
     $messageStack->add(TEXT_THE_ENCRYPTION_KEY_IS_CHANGED,'success');
     break;

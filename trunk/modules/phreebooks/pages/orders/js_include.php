@@ -90,7 +90,7 @@ var ItemIsAlreadyOnOrder = '<?php echo TEXT_ITEM_IS_ALREADY_ON_ORDER; ?>';
 var ItemIsOnHand		 = '<?php echo TEXT_ITEM_IS_ON_HAND; ?>';
 var ItemIsInactive		 = '<?php echo TEXT_ITEM_IS_INACTIVE; ?>';
 var ItemIsOutOfStockAndInactive  = '<?php echo TEXT_ITEM_IS_OUT_OF_STOCK_AND_INACTIVE; ?>';
-var SalesOrderForItem	 = '<?php echo THERE_IS_SALES_ORDER_FOR_THIS_ITEM; ?>';
+var SalesOrderForItem	 = '<?php echo TEXT_THERE_IS_A_SALES_ORDER_FOR_THIS_ITEM; ?>';
 var ItemIsOnOrder		 = '<?php echo TEXT_ITEM_IS_ON_ORDER; ?>';
 var ItemMustBeOrderd	 = '<?php echo TEXT_ITEM_MUST_BE_ORDERD; ?>';
 <?php

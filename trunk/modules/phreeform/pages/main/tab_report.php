@@ -29,7 +29,7 @@ if ($security_level > 2) $docbar->add_icon('rename', 'onclick="ReportPopup(\'ren
 if ($security_level > 1) $docbar->add_icon('copy',   'onclick="ReportPopup(\'copy\', '   . $id . ')"', $order = 13);
 if ($security_level > 1) $docbar->add_icon('export', 'onclick="ReportPopup(\'export\', ' . $id . ')"', $order = 15);
 if ($security_level > 3) {
-  $docbar->icon_list['delete']['params'] = 'onclick="if (confirm(\'' . PHREEFORM_DELETE_DOCUMENT . '\')) docAction(\'delete\')"';
+  $docbar->icon_list['delete']['params'] = 'onclick="if (confirm(\'' . TEXT_ARE_YOU_SURE_YOU_WANT_TO_DELETE_THIS_REPORT . '\')) docAction(\'delete\')"';
 } else {
   $docbar->icon_list['delete']['show']   = false;
 }

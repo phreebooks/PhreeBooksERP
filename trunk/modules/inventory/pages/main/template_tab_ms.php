@@ -105,7 +105,7 @@
     </tr>
     <tr>
 	  <th><?php echo TEXT_SKU; ?></th>
-	  <th><?php echo INV_ENTRY_INVENTORY_DESC_SHORT; ?></th>
+	  <th><?php echo TEXT_SHORT_DESCRIPTION; ?></th>
 	  <th><?php echo $cInfo->attr_name_0; ?></th>
 	  <th><?php echo $cInfo->attr_name_1; ?></th>
 	  <th width="20px" style="padding:0px 5px"><?php echo TEXT_QUANTITY_ON_HAND; ?></th>

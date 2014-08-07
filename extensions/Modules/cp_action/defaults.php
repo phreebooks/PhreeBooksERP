@@ -20,14 +20,14 @@
 
 $status_codes = array(
   '0'  => TEXT_PLEASE_SELECT, // do not remove from top position
-  '1'  => CAPA_STATUS_1,
-  '2'  => CAPA_STATUS_2,
-  '3'  => CAPA_STATUS_3,
-  '4'  => CAPA_STATUS_4,
-  '5'  => CAPA_STATUS_5,
-  '6'  => CAPA_STATUS_6,
-  '90' => CAPA_STATUS_90,
-  '99' => CAPA_STATUS_99,
+  '1'  => TEXT_CREATED,
+  '2'  => TEXT_IN_PROCESS,
+  '3'  => TEXT_CREATED_AND_ASSIGNED,
+  '4'  => TEXT_INVESTIGATED,
+  '5'  => TEXT_IMPLEMENTED,
+  '6'  => TEXT_AUDITED,
+  '90' => TEXT_CLOSED_UNSUCCESSFUL,
+  '99' => TEXT_CLOSED_SUCCESSFUL,
 );
 
 ?>

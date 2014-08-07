@@ -22,7 +22,7 @@
 <?php // *********************** SHIPPING ADDRESSES  *************************************
   if (defined('MODULE_SHIPPING_STATUS')) { // show shipping address for customers and vendors
     echo '  <fieldset>';
-    echo '    <legend>' . ACT_CATEGORY_S_ADDRESS . '</legend>';
+    echo '    <legend>' . TEXT_SHIPPING_ADDRESSES . '</legend>';
     echo '    <table id="'.$type.'s_address_form" class="ui-widget" style="border-style:none;width:100%;">';
     echo '      <tr><td>' . ACT_SHIPPING_MESSAGE . '</td></tr>';
     echo draw_address_fields($cInfo, $type.'s', true);

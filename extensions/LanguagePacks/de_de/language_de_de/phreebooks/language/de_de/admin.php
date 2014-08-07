@@ -70,7 +70,7 @@ define ('PB_PF_CUST_LABEL', 'Etiketten - Kunde');
 define ('TEXT_CUSTOMER_QUOTES', 'Kundenzitate');
 define ('TEXT_CUSTOMER_STATEMENTS', 'Kunden-Statements');
 define ('TEXT_DEPOSIT_SLIPS', 'Einzahlungsscheine');
-define ('PB_PF_INV_PKG_SLIP', 'Rechnungen / Lieferscheine');
+define ('TEXT_INVOICES_OR_PACKING_SLIPS', 'Rechnungen / Lieferscheine');
 define ('PB_PF_PURCH_ORDER', 'Bestellungen');
 define ('TEXT_SALES_ORDER', 'Sales Orders');
 define ('TEXT_SALES_RECEIPTS', 'Sales Receipts ');
@@ -125,14 +125,14 @@ define ('GL_ERROR_NO_BALANCE', 'kann nicht aktualisiert werden, weil Anfang Sald
 define ('GL_ERROR_UPDATE_COA_HISTORY', 'Fehler beim Aktualisieren der Kontenplan Geschichte nach Einstellung Anfang Salden!');
 define ('GL_BEG_BAL_ERROR_0', 'auf Linie');
 define ('GL_BEG_BAL_ERROR_1', 'Ungültige Kontenrahmen der id in Zeile gefunden');
-define ('GL_BEG_BAL_ERROR_2', 'Keine Rechnungsnummer in Zeile %d gefunden markiert als erwartet Zahlung!');
-define ('GL_BEG_BAL_ERROR_3', 'Beenden Import Nr. Rechnungsnummer auf Linie gefunden.');
+define ('TEXT_NO_INVOICE_NUMBER_FOUND_ON_LINE_FLAGGED_AS_WAITING_FOR_PAYMENT_ARGS', 'Keine Rechnungsnummer in Zeile %d gefunden markiert als erwartet Zahlung!');
+define ('TEXT_EXITING_IMPORT_NO_INVOICE_NUMBER_FOUND_ON_LINE', 'Beenden Import Nr. Rechnungsnummer auf Linie gefunden.');
 define ('GL_BEG_BAL_ERROR_4', '. Verlassen Skript Bad Datumsformat auf Zeile %d. Erwartung Format:');
-define ('GL_BEG_BAL_ERROR_5', 'Skipping Linie Zero Gesamtbetrag auf Linie gefunden.');
+define ('TEXT_SKIPPING_LINE._ZERO_TOTAL_AMOUNT_FOUND_ON_LINE', 'Skipping Linie Zero Gesamtbetrag auf Linie gefunden.');
 define ('GL_BEG_BAL_ERROR_6', 'Ungültige Kontenrahmen der id in Zeile gefunden');
-define ('GL_BEG_BAL_ERROR_7', 'Skipping Inventargegenstand Zero Menge auf Linie.');
-define ('GL_BEG_BAL_ERROR_8', 'Keine Aktualisierung sku %s , der Prozess beendet wurde.');
-define ('GL_BEG_BAL_ERROR_9', 'Keine Aktualisierung Konto %s , der Prozess beendet wurde.');
+define ('TEXT_SKIPPING_INVENTORY_ITEM._ZERO_QUANTITY_FOUND_ON_LINE', 'Skipping Inventargegenstand Zero Menge auf Linie.');
+define ('TEXT_FAILED_UPDATING_SKU_THE_PROCESS_WAS_TERMINATED_ARGS', 'Keine Aktualisierung sku %s , der Prozess beendet wurde.');
+define ('TEXT_FAILED_UPDATING_ACCOUNT_THE_PROCESS_WAS_TERMINATED_ARGS', 'Keine Aktualisierung Konto %s , der Prozess beendet wurde.');
 define ('TEXT_SUCCESSFULLY_POSTED_THE_CURRENT_ORDER_NUMBER_CHANGES', 'erfolgreich gebucht den aktuellen Bestellstatus ändert.');
 define ('GEN_ADM_TOOLS_AUDIT_LOG_SEQ', 'Aktuelle Bestell-Status - Update');
 define ('GEN_ADM_TOOLS_TITLE', 'Administrative Tools und Utilities');
@@ -173,7 +173,7 @@ define ('CD_02_07_DESC', 'Default-Konto für Einlagen von Kunden nutzen Typische
 
 define ('CD_02_10_DESC', 'Skonti schreiben Prozent Null oder frühen Tagen Null zu deaktivieren Skonti..');
 define ('TEXT_CHECK_CUSTOMER_CREDIT_LIMIT_WHEN_PROCESSING_ORDERS', 'Überprüfen Kunden Kreditlimit bei der Verarbeitung von Aufträgen.');
-define ('CD_02_12_DESC', 'Default betragen für Kunden Kreditlimit nutzen ( %s ).');
+define ('TEXT_DEFAULT_AMOUNT_TO_USE_FOR_CREDIT_LIMIT_ARGS', 'Default betragen für Kreditlimit nutzen ( %s ).');
 define ('CD_02_13_DESC', 'Prozent (%) Rabatt bei Zahlung in');
 define ('CD_02_14_DESC', 'Tage Gesamt fällig.');
 define ('CD_02_15_DESC', 'Tage.');
@@ -214,7 +214,7 @@ define ('TEXT_REPLACE_CURRENT_CHART_OF_ACCOUNTS', 'Ersetzen aktuellen Kontenplan
 define ('TEXT_OR_CUSTOM_CHART_TO_IMPORT', 'oder benutzerdefinierte Tabelle zu importieren');
 define ('GL_CHART_DELETE_WARNING', 'Hinweis: Aktuelle Kontenplan kann nicht gelöscht werden, wenn Journaleinträge vorhanden sind!');
 define ('GL_JOURNAL_NOT_EMTPY', 'Die allgemeine Journal nicht leer ist, den aktuellen Kontenplan kann nicht gelöscht werden!');
-define ('GL_ACCOUNT_DUPLICATE', 'Die GL-Konto: %s  existiert bereits Das Konto wird nicht hinzugefügt werden!..');
+define ('TEXT_THE_GL_ACCOUNT_ALREADY_EXISTS_THE_ACCOUNT_WILL_NOT_BE_ADDED_ARGS', 'Die GL-Konto: %s  existiert bereits Das Konto wird nicht hinzugefügt werden!..');
 define ('GL_INFO_HEADING_ONLY', 'Dieses Konto ist eine Überschrift und kann nicht akzeptieren gebuchten Werte?');
 define ('GL_INFO_PRIMARY_ACCT_ID', 'Wenn dieses Konto ein Sub-Account, wählen primäre Konto:');
 define ('TEXT_THE_GL_ACCOUNT_TYPE_IS_REQUIRED', 'Der GL Kontotyp ist erforderlich!');

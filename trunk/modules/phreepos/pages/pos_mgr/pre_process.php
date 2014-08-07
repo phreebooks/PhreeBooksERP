@@ -40,7 +40,7 @@ switch ($_REQUEST['action']) {
 		  	$delOrd = new \phreepos\classes\journal\journal_19($id);
 		  	// verify no item rows have been acted upon (accounts reconciliation)
 		  	$result = $db->Execute("select closed from " . TABLE_JOURNAL_MAIN . " where id = " . $id);
-		  	if ($result->fields['closed'] == '1') throw new \core\classes\userException(constant('GENERAL_JOURNAL_' . $delOrd ->journal_id . '_ERROR_6'));
+		  	if ($result->fields['closed'] == '1') throw new \core\classes\userException(TEXT_A_POS_SALE_CANNOT_BE_DELETED_IF_IT_IS_CLOSED);
 		  	// *************** START TRANSACTION *************************
 		  	$db->transStart();
 		  	$delOrd->unPost('delete');

@@ -126,7 +126,7 @@ switch ($_REQUEST['action']) {
 	} else {
 		$messageStack->add(GL_UTIL_PURGE_FAIL, 'caution');
 	}
-	gen_add_audit_log(GL_LOG_PURGE_DB);
+	gen_add_audit_log(TEXT_GENERAL_JOURNAL_PURGE_DATABASE);
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	break;
   case 'repost':

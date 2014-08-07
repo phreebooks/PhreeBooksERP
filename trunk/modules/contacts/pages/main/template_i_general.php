@@ -57,7 +57,7 @@ $acct_def = (!$cInfo->dept_rep_id) ? array() : array(array('id'=>$cInfo->dept_re
 
 <?php // *********************** Mailing/Main Address (only one allowed) ****************************** ?>
   <fieldset>
-    <legend><?php echo ACT_CATEGORY_M_ADDRESS; ?></legend>
+    <legend><?php echo TEXT_MAIN_MAILING_ADDRESS; ?></legend>
     <table id="<?php echo $type; ?>m_address_form" class="ui-widget" style="border-collapse:collapse;width:100%;">
       <?php echo draw_address_fields($cInfo, $type.'m', false, true, false); ?>
     </table>

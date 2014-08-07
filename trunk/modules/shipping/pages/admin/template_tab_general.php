@@ -59,7 +59,7 @@
 	    <td><?php echo html_pull_down_menu('shipping_default_currency', gen_get_pull_down(TABLE_CURRENCIES, false, false, 'code', 'title'), $_POST['shipping_default_currency'] ? $_POST['shipping_default_currency'] : SHIPPING_DEFAULT_CURRENCY, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo CD_10_03_DESC; ?></td>
+	    <td colspan="3"><?php echo TEXT_PACKAGE_UNIT_OF_MEASURE; ?></td>
 	    <td><?php echo html_pull_down_menu('shipping_default_pkg_dim_unit', gen_build_pull_down($shipping_defaults['dimension_unit']), $_POST['shipping_default_pkg_dim_unit'] ? $_POST['shipping_default_pkg_dim_unit'] : SHIPPING_DEFAULT_PKG_DIM_UNIT, ''); ?></td>
 	  </tr>
 	  <tr>
@@ -71,11 +71,11 @@
 	    <td><?php echo html_pull_down_menu('shipping_default_package_type', gen_build_pull_down($shipping_defaults['package_type']), $_POST['shipping_default_package_type'] ? $_POST['shipping_default_package_type'] : SHIPPING_DEFAULT_PACKAGE_TYPE, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo CD_10_06_DESC; ?></td>
+	    <td colspan="3"><?php echo TEXT_DEFAULT_TYPE_OF_PICKUP_SERVICE_FOR_YOUR_PACKAGE_SERVICE; ?></td>
 	    <td><?php echo html_pull_down_menu('shipping_default_pickup_service', gen_build_pull_down($shipping_defaults['pickup_service']), $_POST['shipping_default_pickup_service'] ? $_POST['shipping_default_pickup_service'] : SHIPPING_DEFAULT_PICKUP_SERVICE, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo CD_10_07_DESC; ?></td>
+	    <td><?php echo TEXT_DEFAULT_PACKAGE_DIMENSIONS_TO_USE_FOR_A_STANDARD_SHIPMENT; ?></td>
 	    <td nowrap="nowrap"><?php echo html_input_field('shipping_default_length', $_POST['shipping_default_length'] ? $_POST['shipping_default_length'] : SHIPPING_DEFAULT_LENGTH, 'size="10" style="text-align:right"') . TEXT_LENGTH; ?></td>
 	    <td nowrap="nowrap"><?php echo html_input_field('shipping_default_width',  $_POST['shipping_default_width']  ? $_POST['shipping_default_width']  : SHIPPING_DEFAULT_WIDTH,  'size="10" style="text-align:right"') . TEXT_WIDTH; ?></td>
 	    <td nowrap="nowrap"><?php echo html_input_field('shipping_default_height', $_POST['shipping_default_height'] ? $_POST['shipping_default_height'] : SHIPPING_DEFAULT_HEIGHT, 'size="10" style="text-align:right"') . TEXT_HEIGHT; ?></td>
@@ -93,7 +93,7 @@
 	    <td nowrap="nowrap"><?php echo TEXT_VALUE . ' ' . html_input_field('shipping_default_insurance_value', $_POST['shipping_default_insurance_value'] ? $_POST['shipping_default_insurance_value'] : SHIPPING_DEFAULT_INSURANCE_VALUE, 'size="10" style="text-align:right"'); ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo CD_10_20_DESC; ?></td>
+	    <td><?php echo TEXT_ALLOW_HEAVY_SHIPMENTS_TO_BE_BROKEN_DOWN_TO_USE_SMALL_PACKAGE_SERVICE; ?></td>
 	    <td><?php echo html_pull_down_menu('shipping_default_split_large_shipments_show', $sel_show, $_POST['shipping_default_split_large_shipments_show'] ? $_POST['shipping_default_split_large_shipments_show'] : SHIPPING_DEFAULT_SPLIT_LARGE_SHIPMENTS_SHOW, ''); ?></td>
 	    <td nowrap="nowrap"><?php echo TEXT_DEFAULT . ' ' . html_pull_down_menu('shipping_default_split_large_shipments_checked', $sel_checked, $_POST['shipping_default_split_large_shipments_checked'] ? $_POST['shipping_default_split_large_shipments_checked'] : SHIPPING_DEFAULT_SPLIT_LARGE_SHIPMENTS_CHECKED, ''); ?></td>
 	    <td nowrap="nowrap"><?php echo TEXT_VALUE . ' ' . html_input_field('shipping_default_split_large_shipments_value', $_POST['shipping_default_split_large_shipments_value'] ? $_POST['shipping_default_split_large_shipments_value'] : SHIPPING_DEFAULT_SPLIT_LARGE_SHIPMENTS_VALUE, 'size="10" style="text-align:right"'); ?></td>

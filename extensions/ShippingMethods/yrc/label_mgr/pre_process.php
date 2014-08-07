@@ -239,6 +239,6 @@ $include_footer   = false;
 $include_tabs     = false;
 $include_calendar = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', SHIPPING_POPUP_WINDOW_TITLE);
+define('PAGE_TITLE', TEXT_SHIPPING_RATE_ESTIMATOR);
 
 ?>

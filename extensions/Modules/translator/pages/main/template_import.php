@@ -37,7 +37,7 @@ echo $toolbar->build_toolbar();
 	<td><?php echo html_input_field('lang', DEFAULT_LANGUAGE); ?></td>
   </tr>
   <tr>
-	<td><?php echo TRANSLATOR_MODULE_IMPORT . '&nbsp;';  ?></td>
+	<td><?php echo TEXT_MODULE_NAME_TO_IMPORT . ': &nbsp;';  ?></td>
 	<td><?php echo html_pull_down_menu('mod', $sel_modules); ?></td>
   </tr>
   <tr>

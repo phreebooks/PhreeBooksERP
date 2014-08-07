@@ -76,7 +76,7 @@ echo $toolbar->build_toolbar();
   <tr><td width="50%" valign="top">
   <div>
     <fieldset>
-    <legend><?php echo SHIPPING_RECP_INFO; ?></legend>
+    <legend><?php echo TEXT_RECEPIENT_INFORMATION; ?></legend>
     <table>
 	  <tr>
 		<td><?php echo TEXT_NAME_OR_COMPANY; ?></td>

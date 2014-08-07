@@ -48,8 +48,8 @@ define('MODULE_CAPA_REMOVE_INFO','Remover Módulo de Autorização de Retorno de
 define('MODULE_CAPA_REMOVE_CONFIRM','Tem certeza de que quer remover o módulo ACAP?');
 define('CAPAS_ERROR_DELETE_MSG','Os arquivos da base de dados foram removidos. Para remover completamente o módulo, remova todos os arquivos na pasta /my_files/custom/cp_action e o arquivo de configuração /my_files/custom/extra_menus/cp_action.php');
 define('CAPA_MSG_DELETE_CAPA',' Tem certeza de que quer remover esta Ação Corretiva/Preventiva?');
-define('CAPA_LOG_USER_ADD','ACAP Criado - ACAP # ');
-define('CAPA_LOG_USER_UPDATE','ACAP Atualizado - ACAP # ');
+define('TEXT_CAPA_CREATED_CAPA','ACAP Criado - ACAP # ');
+define('TEXT_CAPA_UPDATED_CAPA','ACAP Atualizado - ACAP # ');
 define('CAPA_MESSAGE_SUCCESS_ADD','Criado com sucesso ACAP # ');
 define('CAPA_MESSAGE_SUCCESS_UPDATE','Atualizado com sucesso ACAP # ');
 define('CAPA_MESSAGE_ERROR','Houve um erro criando/atualizando o arquivo ACAP .');
@@ -57,12 +57,12 @@ define('CAPA_MESSAGE_DELETE','O CAPA foi removido com sucesso.');
 define('CAPA_ERROR_CANNOT_DELETE','Houve um erro removendo o arquivo ACAP .');
 define('CAPA_STATUS_0','Selecione Situação ...');
 define('CAPA_STATUS_1','AC/AP Criado');
-define('CAPA_STATUS_2','Em processo');
-define('CAPA_STATUS_3','Criado & Atribuído');
-define('CAPA_STATUS_4','Investigado');
-define('CAPA_STATUS_5','Implementado');
-define('CAPA_STATUS_6','Auditado');
-define('CAPA_STATUS_90','Fechamento Sem Sucesso');
-define('CAPA_STATUS_99','Fechamento Com Sucesso');
+define('TEXT_IN_PROCESS','Em processo');
+define('TEXT_CREATED_AND_ASSIGNED','Criado & Atribuído');
+define('TEXT_INVESTIGATED','Investigado');
+define('TEXT_IMPLEMENTED','Implementado');
+define('TEXT_AUDITED','Auditado');
+define('TEXT_CLOSED_UNSUCCESSFUL','Fechamento Sem Sucesso');
+define('TEXT_CLOSED_SUCCESSFUL','Fechamento Com Sucesso');
 
 ?>

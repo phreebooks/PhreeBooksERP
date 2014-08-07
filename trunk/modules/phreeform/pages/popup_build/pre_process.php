@@ -54,7 +54,7 @@ switch ($_REQUEST['action']) {
 		$report->reporttype           = db_prepare_input($_POST['reporttype']);
 		// posted fields
 		$report->title                = db_prepare_input($_POST['title']);
-		if (!$report->title) throw new \core\classes\userException(sprintf(ERROR_EMPTY_VARIABLE, TEXT_TITLE));
+		if (!$report->title) throw new \core\classes\userException(sprintf(TEXT_FIELD_IS_REQUIRED_BUT_HAS_BEEN_LEFT_BLANK_ARGS, TEXT_TITLE));
 		$report->groupname            = db_prepare_input($_POST['groupname']);
 		$report->description          = db_prepare_input($_POST['description']);
 		$report->emailmessage         = db_prepare_input($_POST['emailmessage']);
@@ -255,8 +255,8 @@ switch ($_REQUEST['action']) {
 	// check for valid folder name
 	if (!$doc_title) throw new \core\classes\userException(TEXT_THE_FOLDER_NAME_CANNOT_BE_BLANK. '!');
 	// check to see if the directory is being moved below itself
-	if (!validate_dir_move($dir_tree, $id, $parent_id)) throw new \core\classes\userException(PHREEFORM_DIR_MOVE_ERROR);
-	$result = $db->Execute("select id from " . TABLE_PHREEFORM . " where doc_group = '" . $doc_group . "'");
+	if (!validate_dir_move($dir_tree, $id, $parent_id)) throw new \core\classes\userException(TEXT_THE_DIRECTORY_CANNOT_BE_MOVED_UNDER_ITSELF);
+	$result = $db->Execute("select id from " . TABLE_PHREEFORM . " where doc_group = '$doc_group'");
 	if ($result->RecordCount() > 0) {
 	  	if ($result->fields['id'] <> $id) throw new \core\classes\userException(PHREEFORM_DIR_GROUP_DUP_ERROR);
 	}
@@ -278,12 +278,12 @@ switch ($_REQUEST['action']) {
 	$doc_title = ''; // clear the doc title
     break;
   case 'delete_dir':
-	if (!$id) throw new \core\classes\userException(PHREEFORM_DIR_DELETE_ERROR);
+	if (!$id) throw new \core\classes\userException(TEXT_NO_DIRECTORY_WAS_SELECTED_TO_DELETE);
 	// check for directory empty
 	$result = $db->Execute("select id from " . TABLE_PHREEFORM . " where parent_id = " . $id);
-	if ($result->RecordCount() > 0) throw new \core\classes\userException(PHREEFORM_DIR_NOT_EMPTY_ERROR);
+	if ($result->RecordCount() > 0) throw new \core\classes\userException(TEXT_THE_DIRECTORY_CANNOT_BE_DELETED_BECAUSE_IT_IS_NOT_EMPTY);
 	$db->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $id);
-	$messageStack->add(PHREEFORM_DIR_DELETE_SUCCESS,'success');
+	$messageStack->add(TEXT_THE_DIRECTORY_WAS_SUCESSFULLY_DELETED,'success');
     break;
   case 'import_one':
     if ($success = ImportReport($_POST['reportname'], $_POST['RptFileName'], $import_path)) {
@@ -303,7 +303,7 @@ switch ($_REQUEST['action']) {
 		}
 	    closedir($handle);
 		foreach ($output as $file) ImportReport(NULL, $file, $import_path);
-	    $messageStack->add(PHREEFORM_DIR_IMPORT_SUCCESS, 'success');
+	    $messageStack->add(TEXT_THE_DIRECTORY_OF_REPORTS_WAS_IMPORTED_SUCCESSFULLY, 'success');
 		$self_close = true;
   	}catch(Exception $e){
   		$messageStack->add($e->getMessage());

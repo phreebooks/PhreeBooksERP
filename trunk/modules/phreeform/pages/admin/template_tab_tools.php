@@ -20,8 +20,8 @@
 ?>
 <div title="<?php echo TEXT_TOOLS;?>" id="tab_tools">
 <fieldset>
-  <legend><?php echo PHREEFORM_TOOLS_REBUILD_TITLE; ?></legend>
+  <legend><?php echo TEXT_PHREEFORM_STUCTURE_VERIFICATION_AND_REBUILD; ?></legend>
   <p><?php echo PHREEFORM_TOOLS_REBUILD_DESC; ?></p>
-  <p align="center"><?php echo PHREEFORM_TOOLS_REBUILD_SUBMIT . ' ' . html_button_field('fix', TEXT_SUBMIT, 'onclick="submitToDo(\'fix\')"'); ?>
+  <p align="center"><?php echo TEXT_START_STRUCTURE_VERIFY_AND_REBUILD . ' ' . html_button_field('fix', TEXT_SUBMIT, 'onclick="submitToDo(\'fix\')"'); ?>
 </fieldset>
 </div>

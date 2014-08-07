@@ -24,9 +24,9 @@ define('PF_DEFAULT_TRIM_LENGTH_TEXT','Stelt de trim lengte in van rapport en for
 define('PF_DEFAULT_ROWSPACE_TEXT','Stelt de scheiding in tussen de koptekst rijen voor rapporten (standaard: 2)');
 define('PDF_APP_TEXT','Stelt de standaard PDF generator in. Aantekening: TCPDF is vereist voor UTF-8 en Bar Code.');
 // Tools
-define('PHREEFORM_TOOLS_REBUILD_TITLE','PhreeForm Stuctuur verificatie en herbouw');
+define('TEXT_PHREEFORM_STUCTURE_VERIFICATION_AND_REBUILD','PhreeForm Stuctuur verificatie en herbouw');
 define('PHREEFORM_TOOLS_REBUILD_DESC','Deze tool verifieerd, en herbouwt de rapport en menu structuur. Het zal de mappen structuur opnieuw laden, en voorkomen dat er ontkoppelde rapporten zijn');
-define('PHREEFORM_TOOLS_REBUILD_SUBMIT','Start Structuur Verificatie en herbouw');
+define('TEXT_START_STRUCTURE_VERIFY_AND_REBUILD','Start Structuur Verificatie en herbouw');
 define('PHREEFORM_TOOLS_REBUILD_SUCCESS','Succesvol de rapporten tabel herbouwt. %s rapporten herbouwd. %s ontkoppelde rapporten zijn in de Miscellaneous map geplaatst.');
 
 ?>

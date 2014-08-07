@@ -78,7 +78,7 @@ define('TEXT_DEFAULT_PAYABLES_ACCOUNT','Default Payables Account');
 define('TEXT_RESTRICT_PERIOD','Restrict Posts to Current Period?');
 define('TEXT_AUDIT_DB_DATA_BACKUP','Audit Log Database Table Backed Up');
 define('TEXT_AUDIT_DB_DATA_CLEAN','Audit Log Database Table Cleaned');
-define('TEXT_CRASH_TITLE','PhreeBooks SQL Error Trace Information');
+define('TEXT_PHREEBOOKS_SQL_ERROR_TRACE_INFORMATION','PhreeBooks SQL Error Trace Information');
 define('TEXT_CRASH_INFORMATION','PhreeBooks has encountered an unexpected error. Click on the button below to download the debug trace file information to send to the PhreeBooks Development Team for troubleshooting assistance.');
 define('TEXT_DOWNLOAD_DEBUG_INFORMATION','Download Debug Information');
 define('TEXT_CONFIGURATION_VALUES_HAVE_BEEN_SAVED','Configuration values have been saved.');
@@ -104,7 +104,7 @@ define('TEXT_CLEAN_SECURITY_SUCCESS','Successfully removed %s data security reco
 define('GL_HEADING_BEGINNING_BALANCES','Chart of Accounts - Beginning Balances');
 define('TEXT_IMPORT_BEGINNING_BALANCES','Import Beginning Balances');
 define('GL_BTN_IMP_BEG_BALANCES','Import Inventory, Accounts Payable, Accounts Receivable Beginning Balances');
-define('GL_UTIL_BEG_BAL_LEGEND','General Journal Beginning Balances');
+define('TEXT_GENERAL_JOURNAL_BEGINNING_BALANCES','General Journal Beginning Balances');
 define('GL_UTIL_BEG_BAL_TEXT','For initial set-ups and transfers from another accounting system.');
 define('TEXT_ENTER_BEGINNING_BALANCES','Enter Beginning Balances');
 define('TEXT_IMPORT_JOURNAL_ENTRIES','Import Journal Entries');
@@ -124,7 +124,7 @@ define('TEXT_SELECT_A_FORMAT_AND_PRESS_THE_EXPORT_BUTTON_TO_CONTINUE','Select a 
 define('TEXT_TABLES_AVAILABLE_TO','Tables Available to');
 /************************** (General) ***********************************************/
 define('TEXT_MINIMUM_LENGTH_OF_PASSWORD', 'Minimum length of password');
-define('CD_08_01_DESC', 'Maximum number of search results returned per page');
+define('TEXT_MAXIMUM_NUMBER_OF_SEARCH_RESULTS_RETURNED_PER_PAGE', 'Maximum number of search results returned per page');
 define('CD_08_03_DESC', 'Automatically check for program updates at login to PhreeBooks.');
 define('CD_08_05_DESC', 'Hides messages on successful operations. Only caution and error messages will be displayed.');
 define('CD_08_07_DESC', 'Updates the exchange rate for loaded currencies at every login.<br />If disabled, currencies may be manually updated in the Setup => Currencies menu.');
@@ -157,14 +157,14 @@ define('CD_01_18_DESC', 'Enable multiple branch functionality.<br />If No is sel
 define('CD_01_19_DESC', 'Enable multiple currencies in user entry screens.<br />If No is selected, only the default currency wil be used.');
 define('CD_01_20_DESC', 'Automatically switch to the language\'s currency when it is changed');
 define('CD_01_25_DESC', 'Whether or not to enable the shipping functions and shipping fields.');
-define('CD_01_30_DESC', 'Whether or not allow storage of encrypted fields.');
+define('TEXT_ALLOW_STORAGE_OF_ENCRYPTED_FIELDS', 'Allow storage of encrypted fields.');
 /************************** E-mail Settings ***********************************************/
 define('CD_12_01_DESC', 'Defines the method for sending mail.<br /><strong>PHP</strong> is the default, and uses built-in PHP wrappers for processing.<br />Servers running on Windows and MacOS should change this setting to <strong>SMTP</strong>.<br /><strong>SMTPAUTH</strong> should only be used if your server requires SMTP authorization to send messages. You must also configure your SMTPAUTH settings in the appropriate fields in this admin section.<br /><strong>sendmail</strong> is for linux/unix hosts using the sendmail program on the server<br /><strong>"sendmail -f"</strong> is only for servers which require the use of the -f parameter to send mail. This is a security setting often used to prevent spoofing. Will cause errors if your host mailserver is not configured to use it.<br /><strong>Qmail</strong> is used for linux/unix hosts running Qmail as sendmail wrapper at /var/qmail/bin/sendmail.');
-define('CD_12_02_DESC', 'Defines the character sequence used to separate mail headers.');
+define('TEXT_DEFINES_THE_CHARACTER_SEQUENCE_USED_TO_SEPARATE_MAIL_HEADERS', 'Defines the character sequence used to separate mail headers.');
 define('TEXT_SEND_E-MAILS_IN_HTML_FORMAT', 'Send e-mails in HTML format');
 define('CD_12_10_DESC', 'Email address of Store Owner.  Used as "display only" when informing customers of how to contact you.');
 define('CD_12_11_DESC', 'Address from which email messages will be "sent" by default. Can be over-ridden at compose-time in admin modules.');
-define('CD_12_15_DESC', 'Please select the Admin extra email format');
+define('TEXT_PLEASE_SELECT_THE_ADMIN_EXTRA_EMAIL_FORMAT', 'Please select the Admin extra email format');
 define('CD_12_70_DESC', 'Enter the mailbox account name (me@mydomain.com) supplied by your host. This is the account name that your host requires for SMTP authentication. (Only required if using SMTP Authentication for email)');
 define('CD_12_71_DESC', 'Enter the password for your SMTP mailbox. (Only required if using SMTP Authentication for email)');
 define('CD_12_72_DESC', 'Enter the DNS name of your SMTP mail server. i.e. mail.mydomain.com or 55.66.77.88 (Only required if using SMTP Authentication for email)');
@@ -174,7 +174,7 @@ define('CD_12_74_DESC', 'What currency conversions do you need for Text emails? 
 define('TEXT_CURRENCIES', 'Currencies');
 define('TEXT_CURRENCY', 'Currency');
 define('TEXT_CURRENCY_CODE', 'Currency Code');
-define('SETUP_UPDATE_EXC_RATE','Update Exchange Rate');
+define('TEXT_UPDATE_EXCHANGE_RATE','Update Exchange Rate');
 define('SETUP_CURR_EDIT_INTRO', 'Please make any necessary changes');
 define('TEXT_TITLE', 'Title:');
 define('TEXT_SYMBOL_LEFT', 'Symbol Left');

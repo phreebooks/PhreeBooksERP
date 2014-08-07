@@ -288,7 +288,7 @@ function box_build($properties, $i) {
       $output .= '</td>' . nl;
       $output .= '<td valign="bottom">' . html_icon('actions/list-add.png', TEXT_ADD, 'small', 'onclick="rowAction(\'box_Tbl\', \'add\', ' . $i . ')"') . '</td>' . nl;
       $output .= '</tr></table>' . nl;
-	  $output .= box_build_attributes($properties, $i, false, true,  true, true, 'h', PHREEFORM_TABLE_HEADING_PROP);
+	  $output .= box_build_attributes($properties, $i, false, true,  true, true, 'h', TEXT_TABLE_HEADING_PROPERTIES);
 	  $output .= box_build_attributes($properties, $i, false, false, true, true, '',  TEXT_TABLE_BODY_PROPERTIES);
 	  $output .= PHREEFORM_FORM_TABLE_NOTES;
 	  $output .= '<script type="text/javascript">tableInit[tableCount] = \'box_Tbl'  . $i . '\'; tableCount++;</script>' . nl;

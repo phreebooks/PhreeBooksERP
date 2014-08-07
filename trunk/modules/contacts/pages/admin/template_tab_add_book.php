@@ -22,7 +22,7 @@
 <div title="<?php echo TEXT_ADDRESS_BOOK;?>" id="tab_add_book">
   <fieldset>
     <table>
-	  <tr><th colspan="2"><?php echo TEXT_BILLING_PREFS; ?></th></tr>
+	  <tr><th colspan="2"><?php echo TEXT_BILLING_ADDRESS_BOOK_SETTINGS; ?></th></tr>
 	  <tr>
 	    <td><?php echo sprintf(CONTACT_BILL_FIELD_REQ, TEXT_ATTENTION); ?></td>
 	    <td><?php echo html_pull_down_menu('address_book_contact_required', $sel_yes_no, $_POST['address_book_contact_required'] ? $_POST['address_book_contact_required'] : ADDRESS_BOOK_CONTACT_REQUIRED, ''); ?></td>

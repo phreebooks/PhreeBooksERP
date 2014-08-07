@@ -23,9 +23,9 @@ define('PF_DEFAULT_ORIENTATION_TEXT','Especifica a orientação de página padr�
 define('PF_DEFAULT_TRIM_LENGTH_TEXT','Especifica a abreviaçãode nomes de relatórios e formulários ao listar em formato de diretório (padrão: 25)');
 define('PF_DEFAULT_ROWSPACE_TEXT','Especifica a separação entre as linhas de cabeçalho para relatórios (padrão: 2)');
 define('PDF_APP_TEXT','Especifica a aplicação geredora de PDF padrão . Atenção: TCPDF é exigido para UTF-8 e geração de código de barras.');
-define('PHREEFORM_TOOLS_REBUILD_TITLE','PhreeForm Verificação Estrutura / Reconstruir');
+define('TEXT_PHREEFORM_STUCTURE_VERIFICATION_AND_REBUILD','PhreeForm Verificação Estrutura / Reconstruir');
 define('PHREEFORM_TOOLS_REBUILD_DESC','Este ferramente verifica e reconstrói a estrutura de relatórios e formulários. Vai recarregar a estrutura da pasta, certificar-se de que não há relatórios órfãos e limpar qualquer entrada na tabela que não tenha um relatório/formulário associado a ela');
-define('PHREEFORM_TOOLS_REBUILD_SUBMIT','Iniciar Verificação Estrutura / Reconstruir');
+define('TEXT_START_STRUCTURE_VERIFY_AND_REBUILD','Iniciar Verificação Estrutura / Reconstruir');
 define('PHREEFORM_TOOLS_REBUILD_SUCCESS','Reconstrução de tabela de relatórios bem sucedida. O número de relatórios reconstruido foi %s. %s relatórios órfãos foram colocados na pasta Miscellaneous.');
 
 ?>

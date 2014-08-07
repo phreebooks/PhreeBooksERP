@@ -76,7 +76,7 @@ switch ($_REQUEST['action']) {
 	// check for directory not empty
 	$result = $db->Execute("select id from " . TABLE_DC_DOCUMENT . " where parent_id = " . $id);
 	if ($result->RecordCount() > 0) {
-	  $ajax_text = DOC_CTL_JS_DIR_DELETED_ERROR;
+	  $ajax_text = TEXT_THE_DIRECTORY_IS_NOT_EMPTY_IT_CANNOT_BE_DELETED;
 	  break;
 	}
 	// jstree initialization

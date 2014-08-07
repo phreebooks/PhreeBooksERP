@@ -34,19 +34,19 @@ define('TRANSLATOR_IMPORT_DESC','Dit formulier laad talen van de momenteel geïn
 define('TRANSLATOR_EXPORT_DESC','Deze pagina exporteert alle modules van een bepaalde vertaalde taal en versie naar een . zip-bestand.');
 define('TRANSLATOR_ISO_IMPORT','ISO taal om te importen: (volgens xx_xx):');
 define('TRANSLATOR_ISO_EXPORT','ISO taal om te exprteren:');
-define('TRANSLATOR_MODULE_IMPORT','Module naam om te importeren:');
+define('TEXT_MODULE_NAME_TO_IMPORT','Module naam om te importeren:');
 define('TRANSLATOR_INSTALL_IMPORT','Directory naam van install directory (indien verplaatst na de installatie):');
 define('TRANSLATOR_UPLOAD_DESC','Dit formulier zal het uploaden van een zip taalbestand en importeer alle definieert in de database. Het moet worden gebruikt om te helpen bij converteren van oudere versies van nieuwe of de wijziging vertalingen naar nieuwe talen.');
 define('TRANSLATOR_ISO_CREATE','ISO Taal om te maken (volgens xx_xx):');
 define('TRANSLATOR_MODULE_CREATE','Module om vertaling aan toe te wijzen:');
-define('TRANSLATOR_RELEASE_CREATE','Release nummer om te maken:');
+define('TEXT_RELEASE_NUMBER_TO_CREATE','Release nummer om te maken:');
 define('TRANSLATOR_UPLOAD_ZIPFILE','Selecteer een zip-bestand te uploaden en in te voegen in de vertaler database:');
 define('MESSAGE_DELETE_TRANSLATION','Weet u zeker dat u deze vertaling wil verwijderen.?');
 define('TEXT_DEFINED_CONSTANT','Defineer Constante');
 define('TEXT_DEFAULT_TRANSLATION','Huidige Vertaling');
 define('TEXT_STATS_VALUES','%s van %s vertaald (%s procent)');
 define('TEXT_TRANSLATION_RECORDS_SAVED','Vertaalde records bewaard');
-define('TRANSLATION_HEADER','Phreedom Taal Vertaal Bestand');
+define('TEXT_PHREEDOM_LANGUAGE_TRANSLATION_FILE','Phreedom Taal Vertaal Bestand');
 define('TRANS_ERROR_NO_SOURCE','Geen van de beschikbare versies van de brontaal gevonden! Gelieve de invoer van de brontaal.');
 
 ?>

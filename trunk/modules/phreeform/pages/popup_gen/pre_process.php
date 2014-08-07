@@ -203,7 +203,7 @@ switch ($_REQUEST['action']) {
 	  }
 	  if (!@fwrite($handle, $output)) 	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));
 	  if (!@fclose($handle)) 			throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
-	  $messageStack->add(TEXT_REPORT . $report->description . PHREEFORM_WASSAVED . $report->title, 'success');
+	  $messageStack->add(TEXT_REPORT . $report->description . TEXT_WAS_SAVED_AND_COPIED_TO_REPORT . ': ' . $report->title, 'success');
 	  break; // we're done
 	} elseif ($_REQUEST['action'] == 'save') {
 	  $messageStack->add(PHREEFORM_CANNOT_EDIT,'caution');
@@ -229,7 +229,7 @@ switch ($_REQUEST['action']) {
 	  }
 	  if (@fwrite($handle, $output)) 	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));
 	  if (!@fclose($handle))			throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
-	  $messageStack->add(TEXT_REPORT . $report->description . PHREEFORM_WASSAVED . $report->title, 'success');
+	  $messageStack->add(TEXT_REPORT . $report->description . TEXT_WAS_SAVED_AND_COPIED_TO_REPORT . ': ' . $report->title, 'success');
 	  break; // we're done
 	}
 

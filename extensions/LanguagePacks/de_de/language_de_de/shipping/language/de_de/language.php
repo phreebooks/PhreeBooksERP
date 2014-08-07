@@ -40,7 +40,7 @@ define ('TEXT_REMOVE_MESSAGE', 'Sind Sie sicher, dass Sie diese Versandart entfe
 define ('TEXT_CREATE_A_SHIPMENT_ENTRY', 'Sendung erstellen Eintrag');
 define ('TEXT_SET_BY_SYSTEM', 'Durch das System');
 
-define ('SHIPPING_POPUP_WINDOW_TITLE', 'Liefer-Rate Estimator');
+define ('TEXT_SHIPPING_RATE_ESTIMATOR', 'Liefer-Rate Estimator');
 define ('SHIPPING_POPUP_WINDOW_RATE_TITLE', 'Versandkosten Estimator - Preise');
 define ('SHIPPING_ESTIMATOR_OPTIONS', 'Versandkosten Estimator - Versand-Optionen');
 define ('TEXT_SHIPPER', 'Absender');
@@ -60,7 +60,7 @@ define ('TEXT_PICKUP_SERVICE', 'Pickup-Service ');
 define ('TEXT_DIMENSIONS', 'Maße');
 define ('SHIPPING_ADDITIONAL_HANDLING', 'Zusätzliche Handhabung Gilt (Oversize)');
 define ('SHIPPING_INSURANCE_AMOUNT', 'Versicherung: Anzahl');
-define ('SHIPPING_SPLIT_LARGE_SHIPMENTS', 'Split große Sendungen für kleine Träger pkg');
+define ('TEXT_SPLIT_LARGE_SHIPMENTS_FOR_SMALL_PKG_CARRIER', 'Split große Sendungen für kleine Träger pkg');
 define ('TEXT_PER_BOX', 'pro Schachtel');
 define ('TEXT_DELIVERY_CONFIRM', 'Zustellbestätigung');
 define ('TEXT_SPECIAL_OPTIONS', 'Spezielle Optionen');
@@ -73,21 +73,21 @@ define ('SHIPPING_HAZARDOUS_MATERIALS', 'Hazardous Material');
 define ('TEXT_DRY_ICE', 'Dry Ice');
 define ('TEXT_RETURN_SERVICES', 'Return Services');
 define ('TEXT_SHIPPING_METHODS', 'Versand-Methoden');
-define ('SHIPPING_TOTAL_WEIGHT', 'Total Versand Gewicht');
-define ('SHIPPING_TOTAL_VALUE', 'Total Versand Value');
+define ('TEXT_TOTAL_SHIPMENT_WEIGHT', 'Total Versand Gewicht');
+define ('TEXT_TOTAL_SHIPMENT_VALUE', 'Total Versand Value');
 define ('TEXT_E-MAIL_SENDER', 'E-Mail-Absender');
 define ('TEXT_E-MAIL_RECIPIENT', 'E-Mail-Empfänger');
-define ('SHIPPING_EMAIL_SENDER_ADD', 'Absender E-Mail-Adresse');
-define ('SHIPPING_EMAIL_RECIPIENT_ADD', 'Empfänger E-Mail-Adresse');
+define ('TEXT_SENDER_E-MAIL_ADDRESS', 'Absender E-Mail-Adresse');
+define ('TEXT_RECIPIENT_E-MAIL_ADDRESS', 'Empfänger E-Mail-Adresse');
 define ('TEXT_EXCEPTION', 'Exception');
 define ('TEXT_DELIVER', 'Deliver');
 define ('SHIPPING_PRINT_LABEL', 'Print Label');
 define ('TEXT_BILL_CHARGES_TO', 'Bill Gebühren für');
 define ('SHIPPING_THIRD_PARTY', 'Recpt / Third Party Account #');
-define ('SHIPPING_THIRD_PARTY_ZIP', 'Third Party PLZ');
+define ('TEXT_THIRD_PARTY_POSTAL_CODE', 'Third Party PLZ');
 define ('TEXT_LTL_FREIGHT_CLASS', 'LTL Freight Klasse');
 define ('SHIPPING_DEFAULT_LTL_CLASS', '125 ');
-define ('SHIPPNIG_SUMMARY', 'Versand Zusammenfassung');
+define ('TEXT_SHIPMENT_SUMMARY', 'Versand Zusammenfassung');
 define ('TEXT_SHIPMENT_DETAILS', 'Versand Details');
 define ('TEXT_PACKAGE_DETAILS', 'Paket-Details');
 define ('SHIPPING_VOID_SHIPMENT', 'Sendung stornieren');
@@ -106,16 +106,16 @@ define ('TEXT_REFERENCE_ID', 'Referenz-ID');
 define ('TEXT_TRACKING_NUMBER', 'Tracking-Nummer');
 define ('TEXT_EXPECTED_DELIVERY_DATE', 'Voraussichtlicher Liefertermin');
 define ('TEXT_ACTUAL_DELIVERY_DATE', 'tatsächlichem Lieferdatum');
-define ('SHIPPING_TEXT_DOWNLOAD', 'Download Thermotransfer-Etikettendrucker');
+define ('TEXT_DOWNLOAD_THERMAL_LABEL', 'Download Thermotransfer-Etikettendrucker');
 define ('SHIPPING_THERMAL_INST', '<br/> Die Datei wird vorformatiert für Thermo-Etikettendrucker Um das Etikett zu drucken. <br/> <br/>
 1. Klicken Sie auf die Schaltfläche Download, um den Download zu starten. <br/>
 2. Klicken Sie auf  "Speichern" auf der Bestätigungs-Popup, um die Datei zu sparen lokalen Rechner. <br/>
 3. Kopieren Sie die Datei direkt an den Drucker-Port. (Die Datei muss im RAW-Format kopiert werden) ');
 define ('TEXT_NO_LABEL_FOUND', 'No Label gefunden!');
 
-define ('SHIPPING_ERROR_WEIGHT_ZERO', 'Versand Gewicht kann nicht Null sein.');
+define ('TEXT_SHIPMENT_WEIGHT_CANNOT_BE_ZERO', 'Versand Gewicht kann nicht Null sein.');
 define ('SHIPPING_DELETE_CONFIRM', 'Sind Sie sicher, dass Sie dieses Paket wirklich löschen?');
-define ('SHIPPING_NO_SHIPMENTS', 'Es gibt keine Lieferungen aus diesem Träger noch heute!');
+define ('TEXT_THERE_ARE_NO_SHIPMENTS_FROM_THIS_CARRIER_TODAY', 'Es gibt keine Lieferungen aus diesem Träger noch heute!');
 define ('SHIPPING_ERROR_CONFIGURATION', '<strong> Versandkosten Konfigurationsfehler </ strong>');
 
 // Audit Log-Meldungen
@@ -131,20 +131,20 @@ define ('SHIPPING_2DPM', '2 Day p.m. ');
 define ('SHIPPING_2DFRT', '2 Day Freight ');
 define ('SHIPPING_3DPM', '3 Tage ');
 define ('SHIPPING_3DFRT', '3 Day Freight ');
-define ('SHIPPING_GND', 'Ground');
-define ('SHIPPING_GDR', 'Ground Residential');
+define ('TEXT_GROUND', 'Ground');
+define ('TEXT_GROUND_RESIDENTIAL', 'Ground Residential');
 define ('SHIPPING_GNDFRT', 'Ground LTL Freight ');
-define ('SHIPPING_I2DEAM', 'Worldwide Express Frühe');
-define ('SHIPPING_I2DAM', 'Worldwide Express');
-define ('SHIPPING_I3D', 'Worldwide Expedited');
+define ('TEXT_WORLDWIDE_EARLY_EXPRESS', 'Worldwide Express Frühe');
+define ('TEXT_WORLDWIDE_EXPRESS', 'Worldwide Express');
+define ('TEXT_WORLDWIDE_EXPEDITED', 'Worldwide Expedited');
 define ('SHIPPING_IGND', 'Ground (Kanada)');
 
 define ('TEXT_DAILY_PICKUP', 'Daily Pickup');
 define ('TEXT_CARRIER_CUSTOMER_COUNTER', 'Carrier Customer Counter');
-define ('SHIPPING_ONE_TIME', 'Request / One Time Pickup');
-define ('SHIPPING_ON_CALL', 'On Call Air');
-define ('SHIPPING_RETAIL', 'unverb. Preise');
-define ('SHIPPING_DROP_BOX', 'Drop Box / Center');
+define ('TEXT_REQUEST_ONE_TIME_PICKUP', 'Request / One Time Pickup');
+define ('TEXT_ON_CALL_AIR', 'On Call Air');
+define ('TEXT_SUGGESTED_RETAIL_RATES', 'unverb. Preise');
+define ('TEXT_DROP_BOX_OR_CENTER', 'Drop Box / Center');
 define ('TEXT_AIR_SERVICE_CENTER', 'Air Service Center ');
 
 define ('TEXT_POUND_SHORT', 'lbs');
@@ -164,16 +164,16 @@ define ('SHIPPING_10KG', '10kg Box ');
 define ('SHIPPING_CASH', 'Cash');
 define ('TEXT_CHECK', 'Check');
 define ('TEXT_CASHIERS_CHECK', 'Kassierer\'s Check ');
-define ('SHIPPING_MO', 'Money Order');
+define ('TEXT_MONEY_ORDER', 'Money Order');
 define ('TEXT_ANY', 'Jeder');
 
-define ('SHIPPING_NO_CONF', 'Keine Empfangsbestätigung');
+define ('TEXT_NO_DELIVERY_CONFIRMATION', 'Keine Empfangsbestätigung');
 define ('TEXT_NO_SIGNATURE_REQUIRED', 'Keine Unterschrift erforderlich');
 define ('TEXT_SIGNATURE_REQUIRED', 'Signatur');
 define ('TEXT_ADULT_SIGNATURE_REQUIRED', 'Adult Signature Required ');
 
 define ('TEXT_CARRIER_RETURN_LABEL', 'Carrier Return Label');
-define ('SHIPPING_RET_LOCAL', 'Print Lokale Rückholaufkleber');
+define ('TEXT_PRINT_LOCAL_RETURN_LABEL', 'Print Lokale Rückholaufkleber');
 define ('TEXT_CARRIER_PRINTS_AND_MAILS_RETURN_LABEL', 'Carrier Drucke und Mails Rückholaufkleber');
 
 define ('TEXT_SENDER', 'Absender');

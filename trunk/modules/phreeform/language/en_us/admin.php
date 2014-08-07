@@ -38,8 +38,8 @@ define('PF_DEFAULT_TRIM_LENGTH_TEXT','Sets the trim length of report and form na
 define('PF_DEFAULT_ROWSPACE_TEXT','Sets the separation between the heading rows for reports (default: 2)');
 define('PDF_APP_TEXT','Sets the default PDF generator application. Note: TCPDF is required for UTF-8 and Bar Code generation.');
 // Tools
-define('PHREEFORM_TOOLS_REBUILD_TITLE','PhreeForm Stucture Verification / Rebuild');
+define('TEXT_PHREEFORM_STUCTURE_VERIFICATION_AND_REBUILD','PhreeForm Stucture Verification / Rebuild');
 define('PHREEFORM_TOOLS_REBUILD_DESC','This tool verifies, and rebuilds the report and form structure. It will re-load the folder structure, make sure there are no orphaned reports and clean out any phreefom table entries that don\'t have a report/form file associated with it');
-define('PHREEFORM_TOOLS_REBUILD_SUBMIT','Start Structure Verify/Rebuild');
+define('TEXT_START_STRUCTURE_VERIFY_AND_REBUILD','Start Structure Verify/Rebuild');
 define('PHREEFORM_TOOLS_REBUILD_SUCCESS','Successfully rebuilt report table. The number of reports rebuilt was %s. %s orphaned reports were placed in the Miscellaneous folder.');
 ?>

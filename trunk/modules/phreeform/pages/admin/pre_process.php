@@ -84,7 +84,7 @@ switch ($_REQUEST['action']) {
 	foreach ($name_map as $old => $new) {
 	  rename(PF_DIR_MY_REPORTS.'tmp_'.$old, PF_DIR_MY_REPORTS.'pf_'.$new);
 	}
-	gen_add_audit_log(PHREEFORM_TOOLS_REBUILD_TITLE);
+	gen_add_audit_log(TEXT_PHREEFORM_STUCTURE_VERIFICATION_AND_REBUILD);
 	$messageStack->add(sprintf(PHREEFORM_TOOLS_REBUILD_SUCCESS, $rpt_cnt, $orph_cnt), 'success');
   	break;
 

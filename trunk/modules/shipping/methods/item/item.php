@@ -25,11 +25,11 @@ class item extends \shipping\classes\shipping {
   	public $version			= '3.2';
   	public $shipping_cost	= 0.00;
   	public $handling_cost	= 1.00;
-  	
+
 	function __construct(){
 		//@todo
  		$this->service_levels[] = array('id' => 'GND', 		'text' => item_GND, 		'quote' => ('pkg_item_count' * MODULE_SHIPPING_ITEM_COST) + MODULE_SHIPPING_ITEM_HANDLING, 'book' => '', 'cost' => '', 'note' => '');
-//		$this->service_levels[] = array('id' => 'GDR', 		'text' => SHIPPING_GDR, 	'quote' => ('pkg_item_count' * MODULE_SHIPPING_ITEM_COST) + MODULE_SHIPPING_ITEM_HANDLING, 'book' => '', 'cost' => '', 'note' => '');
+//		$this->service_levels[] = array('id' => 'GDR', 		'text' => TEXT_GROUND_RESIDENTIAL, 	'quote' => ('pkg_item_count' * MODULE_SHIPPING_ITEM_COST) + MODULE_SHIPPING_ITEM_HANDLING, 'book' => '', 'cost' => '', 'note' => '');
 // 		$this->service_levels[] = array('id' => 'GndFrt', 	'text' => SHIPPING_GNDFRT, 	'quote' => ('pkg_item_count' * MODULE_SHIPPING_ITEM_COST) + MODULE_SHIPPING_ITEM_HANDLING, 'book' => '', 'cost' => '', 'note' => '');
 // 		$this->service_levels[] = array('id' => 'EcoFrt', 	'text' => SHIPPING_ECOFRT, 	'quote' => ('pkg_item_count' * MODULE_SHIPPING_ITEM_COST) + MODULE_SHIPPING_ITEM_HANDLING, 'book' => '', 'cost' => '', 'note' => '');
  		$this->service_levels[] = array('id' => '1DEam', 	'text' => SHIPPING_1DEAM, 	'quote' => ('pkg_item_count' * MODULE_SHIPPING_ITEM_COST) + MODULE_SHIPPING_ITEM_HANDLING, 'book' => '', 'cost' => '', 'note' => '');
@@ -41,13 +41,13 @@ class item extends \shipping\classes\shipping {
 // 		$this->service_levels[] = array('id' => '2DFrt', 	'text' => SHIPPING_2DFRT, 	'quote' => ('pkg_item_count' * MODULE_SHIPPING_ITEM_COST) + MODULE_SHIPPING_ITEM_HANDLING, 'book' => '', 'cost' => '', 'note' => '');
 // 		$this->service_levels[] = array('id' => '3Dam', 	'text' => SHIPPING_3DAM, 	'quote' => ('pkg_item_count' * MODULE_SHIPPING_ITEM_COST) + MODULE_SHIPPING_ITEM_HANDLING, 'book' => '', 'cost' => '', 'note' => '');
  		$this->service_levels[] = array('id' => '3Dpm', 	'text' => SHIPPING_3DPM, 	'quote' => ('pkg_item_count' * MODULE_SHIPPING_ITEM_COST) + MODULE_SHIPPING_ITEM_HANDLING, 'book' => '', 'cost' => '', 'note' => '');
-// 		$this->service_levels[] = array('id' => 'I2DEam', 	'text' => SHIPPING_I2DEAM, 	'quote' => ('pkg_item_count' * MODULE_SHIPPING_ITEM_COST) + MODULE_SHIPPING_ITEM_HANDLING, 'book' => '', 'cost' => '', 'note' => '');
-// 		$this->service_levels[] = array('id' => 'I2Dam', 	'text' => SHIPPING_I2DAM, 	'quote' => ('pkg_item_count' * MODULE_SHIPPING_ITEM_COST) + MODULE_SHIPPING_ITEM_HANDLING, 'book' => '', 'cost' => '', 'note' => '');
-// 		$this->service_levels[] = array('id' => 'I3D', 		'text' => SHIPPING_I3D, 	'quote' => ('pkg_item_count' * MODULE_SHIPPING_ITEM_COST) + MODULE_SHIPPING_ITEM_HANDLING, 'book' => '', 'cost' => '', 'note' => '');
+// 		$this->service_levels[] = array('id' => 'I2DEam', 	'text' => TEXT_WORLDWIDE_EARLY_EXPRESS, 	'quote' => ('pkg_item_count' * MODULE_SHIPPING_ITEM_COST) + MODULE_SHIPPING_ITEM_HANDLING, 'book' => '', 'cost' => '', 'note' => '');
+// 		$this->service_levels[] = array('id' => 'I2Dam', 	'text' => TEXT_WORLDWIDE_EXPRESS, 	'quote' => ('pkg_item_count' * MODULE_SHIPPING_ITEM_COST) + MODULE_SHIPPING_ITEM_HANDLING, 'book' => '', 'cost' => '', 'note' => '');
+// 		$this->service_levels[] = array('id' => 'I3D', 		'text' => TEXT_WORLDWIDE_EXPEDITED, 	'quote' => ('pkg_item_count' * MODULE_SHIPPING_ITEM_COST) + MODULE_SHIPPING_ITEM_HANDLING, 'book' => '', 'cost' => '', 'note' => '');
 // 		$this->service_levels[] = array('id' => 'IGND', 	'text' => SHIPPING_IGND, 	'quote' => ('pkg_item_count' * MODULE_SHIPPING_ITEM_COST) + MODULE_SHIPPING_ITEM_HANDLING, 'book' => '', 'cost' => '', 'note' => '');
   		parent::__construct();
   	}
-  	
+
 	function quote($pkg = '') {
 		if (!$pkg->pkg_item_count) $pkg->pkg_item_count = 1;
 		$arrRates = array();

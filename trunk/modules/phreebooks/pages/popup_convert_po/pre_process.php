@@ -44,7 +44,7 @@ switch ($_REQUEST['action']) {
 	    $order->purchase_invoice_id = $purchase_invoice_id;
 		$order->admin_id = $_SESSION['admin_id'];
 		$order->terminal_date = $order->post_date; // make ship date the same as post date
-		$order->description = sprintf(TEXT_ARGS_ENTRY, constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE'));
+		$order->description = sprintf(TEXT_ARGS_ENTRY, $journal_types_list[JOURNAL_ID]['text']);
 		$order->drop_ship = $drop_ship;
 
 		$temp_rows = $order->journal_rows;
@@ -75,7 +75,7 @@ switch ($_REQUEST['action']) {
 		// add total row
 		$order->journal_rows[] = array(
 		  'gl_type'       => 'ttl',
-		  'description'   => constant('ORD_TEXT_' . $order->journal_id . '_WINDOW_TITLE') . '-' . TEXT_TOTAL,
+		  'description'   => $journal_types_list[$order->journal_id]['text'] . '-' . TEXT_TOTAL,
 		  'credit_amount' => $total_amount,
 		  'gl_account'    => AP_DEFAULT_PURCHASE_ACCOUNT,
 		);
@@ -136,7 +136,7 @@ switch ($_REQUEST['action']) {
 	    if ($order->purchase_invoice_id == '') {	// it's a new record, increment the po/so/inv to next number
 		  	$order->increment_purchase_invoice_id();
 		}
-		gen_add_audit_log(constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE') . ' - ' . TEXT_ADD, $order->purchase_invoice_id, $order->total_amount);
+		gen_add_audit_log($journal_types_list[JOURNAL_ID]['text']. ' - ' . TEXT_ADD, $order->purchase_invoice_id, $order->total_amount);
 		$db->transCommit();	// finished successfully
 		// ***************************** END TRANSACTION *******************************
   	}catch(Exception $e){

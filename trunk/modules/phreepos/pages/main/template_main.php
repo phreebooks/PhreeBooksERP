@@ -70,7 +70,7 @@ echo $toolbar->build_toolbar();
 <h3 id='open_other_options' class="ui-state-default ui-corner-all"><?php echo TEXT_OTHER_OPTIONS; ?></h3>
 <div id='other_options' class="ui-state-default ui-corner-all">
 <?php echo html_button_field('home', TEXT_HOME, 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, '', 'SSL') . '\'"'); ?><br/><br/>
-<?php echo html_button_field('open_sales', POS_PRINT_OTHER,'onclick="OpenOrdrList(this)"');?><br/><br/>
+<?php echo html_button_field('open_sales', TEXT_PRINT_OTHER_RECEIPT,'onclick="OpenOrdrList(this)"');?><br/><br/>
 <?php echo html_button_field('other_trans', TEXT_OTHER_TRANSACTION,'onclick="ShowOtherTrans()"');?><br/><br/>
 <?php if(in_array(\core\classes\user::security_level(SECURITY_ID_POS_CLOSING), array(1,2,3,4))) echo html_button_field('close_till', TEXT_DAY_CLOSING, 'onclick="CloseTill()"' ).'<br/><br/>'; ?>
 </div>

@@ -24,7 +24,7 @@
 	<table>
 	  <tr><th colspan="2"><?php echo TEXT_CONFIGURATION; ?></th></tr>
 	  <tr>
-		<td><?php echo PHREEPOS_REQUIRE_ADDRESS_DESC; ?></td>
+		<td><?php echo TEXT_REQUIRE_ADDRESS_INFORMATION_FOR_EVERY_POS_OR_POP_SALE; ?></td>
 		<td><?php echo html_pull_down_menu('phreepos_require_address', $sel_yes_no, $_POST['phreepos_require_address'] ? $_POST['phreepos_require_address'] : PHREEPOS_REQUIRE_ADDRESS, ''); ?></td>
 	  </tr>
 	  <tr>

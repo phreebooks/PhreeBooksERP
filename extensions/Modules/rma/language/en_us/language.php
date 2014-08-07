@@ -44,7 +44,7 @@ define('TEXT_SHIPMENT_CARRIER','Shipment Carrier');
 define('TEXT_RECEIVE_TRACKING_NUM','Shipment Tracking #');
 define('TEXT_RECEIVING','Receiving');
 // Messages
-define('RMA_DISPOSITION_DESC','<b>Set status to closed and close when completed!</b>');
+define('TEXT_SET_STATUS_TO_CLOSED_AND_CLOSE_WHEN_COMPLETED','Set status to closed and close when completed!');
 define('TEXT_THERE_WAS_AN_ERROR_CREATING_OR_UPDATING_THE_RMA','There was an error creating/updating the RMA.');
 define('RMA_MESSAGE_SUCCESS_ADD','Successfully created RMA # ');
 define('RMA_MESSAGE_SUCCESS_UPDATE','Successfully updated RMA # ');

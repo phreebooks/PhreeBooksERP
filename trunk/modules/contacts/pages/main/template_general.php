@@ -22,7 +22,7 @@
     <legend><?php echo TEXT_CONTACT_INFORMATION; ?></legend>
     <table>
       <tr>
-        <td align="right"><?php echo constant('ACT_' . strtoupper($type) . '_SHORT_NAME') . ($cInfo->auto_type == false ? '' : ' ' . ACT_ID_AUTO_FILL ); ?></td>
+        <td align="right"><?php echo constant('ACT_' . strtoupper($type) . '_SHORT_NAME') . ($cInfo->auto_type == false ? '' : ' (' . TEXT_LEAVE_BLANK_FOR_SYSTEM_GENERATED_ID. ') ' ); ?></td>
         <td><?php echo html_input_field('short_name', $cInfo->short_name, 'size="21" maxlength="20"', $cInfo->auto_type == false ? true : false); ?></td>
         <td align="right"><?php echo TEXT_INACTIVE; ?></td>
         <td><?php echo html_checkbox_field('inactive', '1', $cInfo->inactive); ?></td>
@@ -62,7 +62,7 @@
 
 <?php // *********************** Mailing/Main Address (only one allowed) ****************************** ?>
   <fieldset>
-    <legend><?php echo ACT_CATEGORY_M_ADDRESS; ?></legend>
+    <legend><?php echo TEXT_MAIN_MAILING_ADDRESS; ?></legend>
     <table id="<?php echo $type; ?>m_address_form" class="ui-widget" style="border-collapse:collapse;width:100%;">
       <?php echo draw_address_fields($cInfo, $type.'m', false, true, false); ?>
     </table>

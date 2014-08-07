@@ -58,7 +58,7 @@ switch ($_REQUEST['action']) {
 			}
   		}catch(Exception $e){
   			$messageStack->add($e->getMessage());
-  			$_REQUEST['action'] = ''; // reload selection form	
+  			$_REQUEST['action'] = ''; // reload selection form
   		}
 		break;
   	default:
@@ -77,7 +77,7 @@ $include_footer   = false;
 switch ($_REQUEST['action']) {
   case 'rates':
     $include_template = 'template_detail.php';
-    define('PAGE_TITLE', SHIPPING_POPUP_WINDOW_RATE_TITLE);
+    define('PAGE_TITLE', TEXT_SHIPPING_RATE_ESTIMATOR);
 	break;
   default:
     $include_template = 'template_main.php';

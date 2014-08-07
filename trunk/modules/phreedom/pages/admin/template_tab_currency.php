@@ -26,7 +26,7 @@ $currency_toolbar->icon_list['print']['show']  = false;
 if ($security_level > 1) $currency_toolbar->add_icon('new', 'onclick="loadPopUp(\'currency_new\', \'\')"', $order = 10);
 if (ENABLE_MULTI_CURRENCY) {
   $currency_toolbar->add_icon('update', 'onclick="tabPage(\'currency\', \'update\')"', $order = 10);
-  $currency_toolbar->icon_list['update']['text'] = SETUP_UPDATE_EXC_RATE;
+  $currency_toolbar->icon_list['update']['text'] = TEXT_UPDATE_EXCHANGE_RATE;
 }
 
 ?>

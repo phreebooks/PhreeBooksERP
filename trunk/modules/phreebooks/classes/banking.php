@@ -38,12 +38,14 @@ class banking extends \core\classes\journal {
 				$this->gl_acct_id          = $_SESSION['admin_prefs']['def_cash_acct'] ? $_SESSION['admin_prefs']['def_cash_acct'] : AR_SALES_RECEIPTS_ACCOUNT;
 				$this->gl_disc_acct_id     = AR_DISCOUNT_SALES_ACCOUNT;
 				$this->purchase_invoice_id = 'DP' . date('Ymd');
+				$this->error_6				= GENERAL_JOURNAL_18_ERROR_6;
 				break;
 			case 20:
 				$this->gl_acct_id          = $_SESSION['admin_prefs']['def_cash_acct'] ? $_SESSION['admin_prefs']['def_cash_acct'] : AP_PURCHASE_INVOICE_ACCOUNT;
 				$this->gl_disc_acct_id     = AP_DISCOUNT_PURCHASE_ACCOUNT;
 				$result = $db->Execute("select next_check_num from " . TABLE_CURRENT_STATUS);
 				$this->purchase_invoice_id = $result->fields['next_check_num'];
+				$this->error_6				= GENERAL_JOURNAL_20_ERROR_6;
 				break;
 			default: throw new \core\classes\userException('bad journal ID in phreebooks/classes/banking.php!');
 		}
@@ -111,7 +113,7 @@ class banking extends \core\classes\journal {
 
 		$db->transCommit();	// finished successfully
 		// ***************************** END TRANSACTION *******************************
-		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, constant('ORD_HEADING_NUMBER_' . $this->journal_id), $this->purchase_invoice_id), 'success');
+		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, $journal_types_list[$this->journal_id]['id_field_name'], $this->purchase_invoice_id), 'success');
 		return true;
 	}
 
@@ -144,13 +146,13 @@ class banking extends \core\classes\journal {
 		global $db;
 		// verify no item rows have been acted upon (accounts reconciliation)
 		$result = $db->Execute("select closed from " . TABLE_JOURNAL_MAIN . " where id = " . $this->id);
-		if ($result->fields['closed'] == '1') throw new \core\classes\userException(constant('GENERAL_JOURNAL_' . $this->journal_id . '_ERROR_6'));
+		if ($result->fields['closed'] == '1') throw new \core\classes\userException($this->error_6);
 		// *************** START TRANSACTION *************************
 		$db->transStart();
 		$this->unPost('delete');
 		$db->transCommit();
 		// *************** END TRANSACTION *************************
-		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, constant('ORD_HEADING_NUMBER_' . $this->journal_id), $this->purchase_invoice_id), 'success');
+		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, $journal_types_list[ $this->journal_id]['id_field_name'], $this->purchase_invoice_id), 'success');
 		return true;
 	}
 

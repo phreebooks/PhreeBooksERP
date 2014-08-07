@@ -50,7 +50,7 @@ switch ($_REQUEST['action']) {
 	if (is_array($accounts->account)) foreach ($accounts->account as $account) {
 	  	$result = $db->Execute("select id from " . TABLE_CHART_OF_ACCOUNTS . " where id = '" . $account->id . "'");
 	  	if ($result->RecordCount() > 0) {
-	    	$messageStack->add(sprintf(GL_ACCOUNT_DUPLICATE, $account->id),'error');
+	    	$messageStack->add(sprintf(TEXT_THE_GL_ACCOUNT_ALREADY_EXISTS_THE_ACCOUNT_WILL_NOT_BE_ADDED_ARGS, $account->id),'error');
 			continue;
 	  	}
 		$sql_data_array = array(

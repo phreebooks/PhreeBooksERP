@@ -37,7 +37,7 @@ switch (JOURNAL_ID) {
 echo $toolbar->build_toolbar();
 // Build the page
 ?>
-<h1><?php echo TEXT_EXPECTED_DELIVERY_DATES . ' - ' . constant('ORD_HEADING_NUMBER_' . JOURNAL_ID) . ' ' . $ordr_items->fields['purchase_invoice_id']; ?></h1>
+<h1><?php echo TEXT_EXPECTED_DELIVERY_DATES . ' - ' . $journal_types_list[JOURNAL_ID]['id_field_name'] . ' ' . $ordr_items->fields['purchase_invoice_id']; ?></h1>
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
  <thead class="ui-widget-header">
   <tr>

@@ -137,7 +137,7 @@ switch ($_REQUEST['action']) {
 	if (!$order->bill_acct_id)          throw new \core\classes\userException(sprintf(ERROR_NO_CONTACT_SELECTED, strtolower (TEXT_CUSTOMER), strtolower (TEXT_CUSTOMER), TEXT_ADD_UPDATE));
 	if (!$order->item_rows[0]['total']) throw new \core\classes\userException(GL_ERROR_NO_ITEMS);
 	// post the receipt/payment
-	if ($post_success = $order->post_ordr($_REQUEST['action'])) {
+	if($order->post_ordr($_REQUEST['action'])){
 	  $oID = $order->id; // save id for printing
 	  // now create a credit memo to show a credit on customers account
 	  $order                      = new \phreebooks\classes\orders();
@@ -160,7 +160,7 @@ switch ($_REQUEST['action']) {
 	  $order->period              = $period;
 	  $order->admin_id            = $_SESSION['admin_id'];
 	  $order->purch_order_id      = db_prepare_input($_POST['purch_order_id']);  // customer PO/Ref number
-	  $order->description         = sprintf(TEXT_ARGS_ENTRY, constant('ORD_TEXT_' . $order->journal_id . '_WINDOW_TITLE'));
+	  $order->description         = sprintf(TEXT_ARGS_ENTRY, $journal_types_list[$order->journal_id]['text']);
 	  $order->total_amount        = $currencies->clean_value(db_prepare_input($_POST['total']), DEFAULT_CURRENCY);
 	  $order->gl_acct_id          = (JOURNAL_ID == 18) ? AR_DEFAULT_GL_ACCT : AP_DEFAULT_PURCHASE_ACCOUNT;
 	  $order->item_rows[0] = array(
@@ -170,12 +170,10 @@ switch ($_REQUEST['action']) {
 		'total' => $currencies->clean_value(db_prepare_input($_POST['total_1'])),
 		'acct'  => db_prepare_input($_POST['acct_1']),
 	  );
-	  $post_credit = $order->post_ordr($_REQUEST['action']);
-	  if (!$post_credit) {
+	  if (!$order->post_ordr($_REQUEST['action'])) {
 		$order            = new \core\classes\objectInfo($_POST);
 		$order->post_date = gen_db_date($_POST['post_date']); // fix the date to original format
 		$order->id        = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
-		$messageStack->add(GL_ERROR_NO_POST, 'error');
 	  }
 	  gen_add_audit_log(AUDIT_LOG_DESC, $order->purchase_invoice_id, $order->total_amount);
 	  if (DEBUG) $messageStack->write_debug();
@@ -186,7 +184,6 @@ switch ($_REQUEST['action']) {
 	  $order = new \core\classes\objectInfo($_POST);
 	  $order->post_date = gen_db_date($_POST['post_date']); // fix the date to original format
 	  $order->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
-	  $messageStack->add(GL_ERROR_NO_POST, 'error');
 	}
 	break;
   default:

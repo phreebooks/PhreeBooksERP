@@ -64,7 +64,7 @@ class yrc {
 // ***************************************************************************************************************
     function quote($pkg) {
 		global $messageStack;
-		if ($pkg->pkg_weight == 0) throw new \core\classes\userException(SHIPPING_ERROR_WEIGHT_ZERO);
+		if ($pkg->pkg_weight == 0) throw new \core\classes\userException(TEXT_SHIPMENT_WEIGHT_CANNOT_BE_ZERO);
 		if ($pkg->ship_to_postal_code == '') throw new \core\classes\userException(SHIPPING_YRC_ERROR_POSTAL_CODE);
 		$status = $this->getYRCRates($pkg);
 		if ($status['result'] == 'error') throw new \core\classes\userException(SHIPPING_YRC_RATE_ERROR . $status['message']);
@@ -81,7 +81,7 @@ class yrc {
     	if ($pkg->pkg_weight > YRC_MIN_SINGLE_BOX_WEIGHT) $arrRates = $this->queryYRC($pkg);
     	return $YRCQuote = array('result' => 'success', 'rates' => $arrRates);
     }
-    
+
 	function queryYRC($pkg) {
 	  global $messageStack;
 	  $arrRates = array();
@@ -98,7 +98,7 @@ class yrc {
 	  $rates = $response->BodyMain->RateQuote->QuoteMatrix->TransitOptions;
 	  $user_choices = explode(',', str_replace(' ', '', MODULE_SHIPPING_YRC_TYPES));
 	  $arrRates = array();
-	  foreach ($rates as $value) { 
+	  foreach ($rates as $value) {
 	  	$delDate = $value->DeliveryDate;
 	  	$attr = $value->PriceOption->attributes();
 		switch ($attr['Class']) {
@@ -128,14 +128,14 @@ class yrc {
 		if (function_exists('yrc_shipping_rate_calc')) {
 			$arrRates[$this->code][$service]['quote'] = yrc_shipping_rate_calc($arrRates[$this->code][$service]['cost']);
 		}
-		
+
 	  }
 	  return $arrRates;
 	}
 
 	function GetYRCRateArray($SearchObj) {
 	}
-  
+
   function FormatYRCRateRequest($pkg) {
 	global $messageStack, $debug;
   	// check the ship date to see if it is within range

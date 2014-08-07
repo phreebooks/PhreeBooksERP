@@ -93,7 +93,7 @@
 			$odd = !$odd;
 		}
 	} else {
-		echo '  <tr><td align="center" colspan="8">' . SHIPPING_NO_SHIPMENTS . '</td></tr>';
+		echo '  <tr><td align="center" colspan="8">' . TEXT_THERE_ARE_NO_SHIPMENTS_FROM_THIS_CARRIER_TODAY . '</td></tr>';
 	}
 	?>
  </tbody>

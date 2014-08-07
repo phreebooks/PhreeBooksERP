@@ -49,6 +49,6 @@ switch ($_REQUEST['action']) {
 $include_header = false; // include header flag
 $include_footer = false; // include footer flag
 $include_template = 'template_main.php'; // include display template (required)
-define('PAGE_TITLE', ORD_RECUR_WINDOW_TITLE);
+define('PAGE_TITLE', TEXT_RECUR_PROPERTIES);
 
 ?>

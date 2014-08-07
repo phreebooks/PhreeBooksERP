@@ -54,7 +54,7 @@ echo $toolbar->build_toolbar();
     <td><?php echo html_calendar_field($cal_to); ?></td>
   </tr>
   <tr>
-    <td><?php echo TEXT_REFERENCE_NUMBER; ?></td>
+    <td><?php echo TEXT_REFERENCE; ?></td>
     <td><?php echo html_pull_down_menu('search_ref_id', gen_build_pull_down($choices), $_SESSION['search_ref_id'], $params = ''); ?></td>
     <td><?php echo html_input_field('search_ref_from', $_SESSION['search_ref_from'], $params = ''); ?></td>
     <td><?php echo html_input_field('search_ref_to', $_SESSION['search_ref_to'], $params = ''); ?></td>
