@@ -79,6 +79,9 @@ $inventory = $db->Execute("select * from " . TABLE_INVENTORY . $search . " and i
 if ($inventory->RecordCount() == 0 ){//second try with inactive items
 	$inventory = $db->Execute("select * from " . TABLE_INVENTORY . $search);
 }
+if ($inventory->RecordCount() != 1) {
+	$inventory = $db->Execute("select * from " . TABLE_INVENTORY .  " where sku = '$sku' and inactive = '0'");
+}
 if ($inventory->RecordCount() != 1) { // need to return something to avoid error in FireFox
 	if($UPC) 	$xml .= xmlEntry('error', ORD_JS_SKU_NOT_UNIQUE); // for UPC codes submitted only, send an error
 	else 		$xml .= xmlEntry('result', 'Not enough or too many hits, exiting!');

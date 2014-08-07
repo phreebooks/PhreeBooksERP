@@ -313,7 +313,7 @@ switch ($_REQUEST['action']) {
 				break;	
 			default:
 				$SecondField.= 'SecondField["' . $append . $result->fields['field_name'] . '"] ="'. $result->fields['entry_type'] . '";' . chr(10);
-				if(in_array($result->fields['entry_type'], array('drop_down','radio','multi_check_box'))){
+				if(in_array($result->fields['entry_type'], array('drop_down','radio','multi_check_box','data_list'))){
 					$tempValue 	='Array("';
 					$tempId 	='Array("' ;
 					//explode params and splits value form id
