@@ -52,7 +52,8 @@ switch ($_REQUEST['action']) {
 		$_REQUEST['action'] = 'new';
 		break;
 	}
-	if (gen_validate_sku($asset_id)) {
+	$result = $db->Execute("select id from " . TABLE_ASSETS . " where asset_id = '$asset_id'");
+	if ($result->RecordCount() <> 0) {
 		$messageStack->add(ASSETS_ERROR_DUPLICATE_SKU, 'error');
 		$_REQUEST['action'] = 'new';
 		break;
