@@ -63,7 +63,7 @@ switch ($_REQUEST['action']) {
   case 'save':
 	validate_security($security_level, 2); // security check
 	if (!$error) $error = $cInfo->save() == false;
-	if($error) $_REQUEST['action'] = 'edit';
+	if ($error) $_REQUEST['action'] = 'edit';
 	break;
 
   case 'delete':

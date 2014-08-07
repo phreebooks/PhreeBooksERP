@@ -33,8 +33,8 @@ switch ($_REQUEST['action']) {
 			$re_order   = $currencies->clean_value($_POST['reOrd_' . $j]);
 			$min_stock  = $currencies->clean_value($_POST['min_'   . $j]);
 			$lead_time  = $currencies->clean_value($_POST['lead_'  . $j]);
-			$item_cost = $currencies->clean_value($_POST['cost_' . $j]);
-			$full_price = $currencies->clean_value($_POST['sell_' . $j]);
+			$item_cost  = $currencies->clean_value($_POST['cost_'  . $j]);
+			$full_price = $currencies->clean_value($_POST['sell_'  . $j]);
 			$db->Execute("update " . TABLE_INVENTORY . " set
 				lead_time  = '$lead_time', 
 				item_cost  = '$item_cost', 
