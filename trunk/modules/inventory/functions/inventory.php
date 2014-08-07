@@ -20,17 +20,17 @@
   function load_store_stock($sku, $store_id) {
 	global $db;
 	$sql = "select sum(remaining) as remaining from " . TABLE_INVENTORY_HISTORY . " 
-		where store_id = '" . $store_id . "' and sku = '" . $sku . "'";
+		where store_id = '$store_id' and sku = '$sku'";
 	$result = $db->Execute($sql);
 	$store_bal = $result->fields['remaining'];
 	$sql = "select sum(qty) as qty from " . TABLE_INVENTORY_COGS_OWED . " 
-		where store_id = '" . $store_id . "' and sku = '" . $sku . "'";
+		where store_id = '$store_id' and sku = '$sku'";
 	$result = $db->Execute($sql);
 	$qty_owed = $result->fields['qty'];
 	return ($store_bal - $qty_owed);
   }
 
-  function inv_calculate_prices($item_cost, $full_price, $encoded_price_levels) {
+  function inv_calculate_prices($item_cost, $full_price, $encoded_price_levels, $qty = 1) {
     global $currencies, $messageStack;
 	if (!defined('MAX_NUM_PRICE_LEVELS')) {
 	  $messageStack->add('Constant MAX_NUM_PRICE_LEVELS is not defined! returning from inv_calculate_prices','error');
@@ -58,11 +58,14 @@
 		}
 
 		switch ($adj) {
-			case 0:                                      break; // None
-			case 1: $price -= $adj_val;                  break; // Decrease by Amount
-			case 2: $price -= $price * ($adj_val / 100); break; // Decrease by Percent
-			case 3: $price += $adj_val;                  break; // Increase by Amount
-			case 4: $price += $price * ($adj_val / 100); break; // Increase by Percent
+			case 0:                                      	break; // None
+			case 1: $price -= $adj_val;                  	break; // Decrease by Amount
+			case 2: $price -= $price * ($adj_val / 100); 	break; // Decrease by Percent
+			case 3: $price += $adj_val;                  	break; // Increase by Amount
+			case 4: $price += $price * ($adj_val / 100); 	break; // Increase by Percent
+			case 5: $price =  $price * (1+($adj_val / 100));break; // Mark up by Percent
+			case 6: $price =  $price / ($adj_val / 100); 	break; // Margin by Percent
+			case 7: $price =  $price / ($adj_val / 100); 	break; // tiered pricing@todo
 		}
 
 		switch ($rnd) {
@@ -215,11 +218,11 @@
 		}
 		// get the inventory prices
 		if($type == 'v'){
-			if ($contact_id) $inventory = $db->Execute("select p.item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable from " . TABLE_INVENTORY . " a join " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku  where a.id = '" . $sku_id . "' and p.vendor_id = '" . $contact_id . "'");
-			else $inventory = $db->Execute("select MAX(p.item_cost) as item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable from " . TABLE_INVENTORY . " a join " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku  where a.id = '" . $sku_id . "'");
+			if ($contact_id) $inventory = $db->Execute("select p.item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable from " . TABLE_INVENTORY . " a join " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku  where a.id = '$sku_id' and p.vendor_id = '$contact_id'");
+			else $inventory = $db->Execute("select MAX(p.item_cost) as item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable from " . TABLE_INVENTORY . " a join " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku  where a.id = '$sku_id'");
 			$inv_price_sheet = $inventory->fields['price_sheet_v'];
 		}else{
-			$inventory = $db->Execute("select MAX(p.item_cost) as item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable from " . TABLE_INVENTORY . " a join " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku  where a.id = '" . $sku_id . "'");
+			$inventory = $db->Execute("select MAX(p.item_cost) as item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable from " . TABLE_INVENTORY . " a join " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku  where a.id = '$sku_id'");
 			$inv_price_sheet = $inventory->fields['price_sheet'];
 		}
 		// set the default tax rates
@@ -253,7 +256,7 @@
 			$levels = isset($special_prices[$price_sheets->fields['id']]) ? $special_prices[$price_sheets->fields['id']] : $price_sheets->fields['default_levels'];
 		}
 		if ($levels) {
-	  		$prices = inv_calculate_prices($inventory->fields['item_cost'], $inventory->fields['full_price'], $levels);
+	  		$prices = inv_calculate_prices($inventory->fields['item_cost'], $inventory->fields['full_price'], $levels, $qty);
 	  		if(is_array($prices)) foreach ($prices as $value) if ($qty >= $value['qty']) $price = $currencies->clean_value($value['price']);
 		} else {
 	  		$price = ($type=='v') ? $inventory->fields['item_cost'] : $inventory->fields['full_price'];
@@ -266,12 +269,12 @@ function inv_status_open_orders($journal_id, $gl_type) { // checks order status 
   global $db;
   $item_list = array();
   $orders = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " 
-  	where journal_id = " . $journal_id . " and closed = '0'");
+  	where journal_id = $journal_id and closed = '0'");
   while (!$orders->EOF) {
     $total_ordered = array(); // track this SO/PO sku for totals, to keep >= 0
     $id = $orders->fields['id'];
 	// retrieve information for requested id
-	$sql = " select sku, qty from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $id . " and gl_type = '" . $gl_type . "'";
+	$sql = " select sku, qty from " . TABLE_JOURNAL_ITEM . " where ref_id = $id and gl_type = '$gl_type'";
 	$ordr_items = $db->Execute($sql);
 	while (!$ordr_items->EOF) {
 	  $item_list[$ordr_items->fields['sku']] += $ordr_items->fields['qty'];
