@@ -1224,7 +1224,7 @@ function fillInventory(sXml) {
   if (imgSerial != null && ($(xml).find("inventory_type").text() == 'sr' || $(xml).find("inventory_type").text() == 'sa')){
     document.getElementById('imgSerial_'+rowCnt).style.display = '';
   } else {
-	document.getElementById('imgSerial_'+rowCnt).style.display = 'none';
+	  if (imgSerial != null) document.getElementById('imgSerial_'+rowCnt).style.display = 'none';
   }
   document.getElementById('sku_prop_'+rowCnt).style.display = '';
   document.getElementById('weight_'  +rowCnt).value       = $(xml).find("item_weight").text();
