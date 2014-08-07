@@ -39,7 +39,7 @@ class impbanking extends journal {
 	 	$messageStack->debug("\n\n*************** Start Import Payment Class *******************");
 	 	$temp = $db->Execute("describe " . TABLE_CONTACTS);
 	 	while (!$temp->EOF) {
-	 		if(strripos($temp->fieldsbank_account['Field'],'')!==false) $this->bank_account_fields[] = $temp->fields['Field'];
+	 		if(strripos($temp->fields['Field'],'bank_account')!==false) $this->bank_account_fields[] = $temp->fields['Field'];
 	 		if(strripos($temp->fields['Field'],'iban')!==false)         $this->iban_fields[] = $temp->fields['Field'];
 			$temp->MoveNext();
 		}
@@ -110,12 +110,8 @@ class impbanking extends journal {
 			$messageStack->debug("\n there is no other bank account number or iban. can not find contact. ");
 			return false;
 		}
-		if($other_bank_account_iban != ''){
-			if(count($this->iban_fields) > 0){
-				$messageStack->debug("\n there are no iban fields. Iban supplied was: $other_bank_account_iban ");
-				return false;
-			}
-			$criteria = '(' . implode(" = '$other_bank_account_iban' or ", $this->iban_fields) . " = '$other_bank_account_iban')";
+		if($other_bank_account_iban != '' && count($this->iban_fields) > 0 ){
+			$criteria = '(' . implode(' = "' . $other_bank_account_iban . '" or ', $this->iban_fields) . ' = "' . $other_bank_account_iban . '")';
 		}   
 		if($other_bank_account_number != '' && $criteria == false){
 			if(count($this->bank_account_fields) > 0){
