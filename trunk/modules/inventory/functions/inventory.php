@@ -38,6 +38,8 @@
 	}
 	$price_levels = explode(';', $encoded_price_levels);
 	$prices = array();
+	$previous_price = 0;
+	$previous_qty   = 0;
 	for ($i=0, $j=1; $i < MAX_NUM_PRICE_LEVELS; $i++, $j++) {
 		$level_info = explode(':', $price_levels[$i]);
 		$price      = $level_info[0] ? $level_info[0] : ($i==0 ? $full_price : 0);
@@ -65,7 +67,15 @@
 			case 4: $price += $price * ($adj_val / 100); 	break; // Increase by Percent
 			case 5: $price =  $price * (1+($adj_val / 100));break; // Mark up by Percent
 			case 6: $price =  $price / ($adj_val / 100); 	break; // Margin by Percent
+<<<<<<< HEAD
 			case 7: $price =  $price / ($adj_val / 100); 	break; // tiered pricing@todo
+=======
+			case 7:// tiered pricing
+				$price =  (($previous_price * $previous_qty) + ($price * ($qty - $previous_qty))/ $qty);
+				$previous_price = $price; 
+				$previous_qty = $qty;
+				break; 
+>>>>>>> origin/master
 		}
 
 		switch ($rnd) {
