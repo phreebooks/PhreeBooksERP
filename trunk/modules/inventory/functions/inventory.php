@@ -30,7 +30,7 @@
 	return ($store_bal - $qty_owed);
   }
 
-  function inv_calculate_prices($item_cost, $full_price, $encoded_price_levels, $qty = 1) {
+  function inv_calculate_prices($item_cost, $full_price, $encoded_price_levels) {
     global $currencies, $messageStack;
 	if (!defined('MAX_NUM_PRICE_LEVELS')) {
 	  $messageStack->add('Constant MAX_NUM_PRICE_LEVELS is not defined! returning from inv_calculate_prices','error');
@@ -38,6 +38,8 @@
 	}
 	$price_levels = explode(';', $encoded_price_levels);
 	$prices = array();
+	$previous_price = 0;
+	$previous_qty   = 0;
 	for ($i=0, $j=1; $i < MAX_NUM_PRICE_LEVELS; $i++, $j++) {
 		$level_info = explode(':', $price_levels[$i]);
 		$price      = $level_info[0] ? $level_info[0] : ($i==0 ? $full_price : 0);
@@ -65,7 +67,11 @@
 			case 4: $price += $price * ($adj_val / 100); 	break; // Increase by Percent
 			case 5: $price =  $price * (1+($adj_val / 100));break; // Mark up by Percent
 			case 6: $price =  $price / ($adj_val / 100); 	break; // Margin by Percent
-			case 7: $price =  $price / ($adj_val / 100); 	break; // tiered pricing@todo
+			case 7:// tiered pricing
+				$price =  (($previous_price * $previous_qty) + ($price * ($qty - $previous_qty))/ $qty);
+				$previous_price = $price; 
+				$previous_qty = $qty;
+				break; 
 		}
 
 		switch ($rnd) {
@@ -256,7 +262,7 @@
 			$levels = isset($special_prices[$price_sheets->fields['id']]) ? $special_prices[$price_sheets->fields['id']] : $price_sheets->fields['default_levels'];
 		}
 		if ($levels) {
-	  		$prices = inv_calculate_prices($inventory->fields['item_cost'], $inventory->fields['full_price'], $levels, $qty);
+	  		$prices = inv_calculate_prices($inventory->fields['item_cost'], $inventory->fields['full_price'], $levels);
 	  		if(is_array($prices)) foreach ($prices as $value) if ($qty >= $value['qty']) $price = $currencies->clean_value($value['price']);
 		} else {
 	  		$price = ($type=='v') ? $inventory->fields['item_cost'] : $inventory->fields['full_price'];

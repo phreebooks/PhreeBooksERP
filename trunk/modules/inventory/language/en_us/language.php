@@ -47,6 +47,11 @@ define('TEXT_DEC_AMT','Decrease by Amount');
 define('TEXT_DEC_PCNT','Decrease by Percent');
 define('TEXT_INC_AMT','Increase by Amount');
 define('TEXT_INC_PCNT','Increase by Percent');
+define('TEXT_MARK_UP_BY_PERCENT', 'Mark up by Percent');
+define('TEXT_MARGIN', 'Margin by Percent');
+define('TEXT_TIERED_PRICING', 'tiered pricing');
+
+
 define('TEXT_NEXT_WHOLE','Next Dollar');
 define('TEXT_NEXT_FRACTION','Constant Cents');
 define('TEXT_NEXT_INCREMENT','Next Increment');
