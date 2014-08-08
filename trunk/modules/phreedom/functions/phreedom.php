@@ -503,6 +503,7 @@ function csv_explode($str, $delim = ',', $enclose = '"', $preserve = false){
 	global $db, $messageStack;
 	if (!$module || !$db_table) {
 	  $messageStack->add('Sync fields called without all necessary parameters!','error');
+	  return;
 	}
 	// First check to see if inventory field table is synced with actual inventory table
 	$temp = $db->Execute("describe " . $db_table);
@@ -511,7 +512,7 @@ function csv_explode($str, $delim = ',', $enclose = '"', $preserve = false){
 		$temp->MoveNext();
 	}
 	sort($table_fields);
-	$temp = $db->Execute("select field_name from " . TABLE_EXTRA_FIELDS . " where module_id = '" . $module . "' order by field_name");
+	$temp = $db->Execute("select field_name from " . TABLE_EXTRA_FIELDS . " where module_id = '$module' order by field_name");
 	while (!$temp->EOF) {
 		$field_list[]=$temp->fields['field_name'];
 		$temp->MoveNext();
@@ -533,7 +534,7 @@ function csv_explode($str, $delim = ',', $enclose = '"', $preserve = false){
 		if (is_array($field_list)) $delete_list = array_diff($field_list, $table_fields);
 		if (isset($add_list)) {
 			foreach ($add_list as $value) { // find the field attributes and copy to field list table
-				$myrow = $db->Execute("show fields from " . $db_table . " like '" . $value . "'");
+				$myrow = $db->Execute("show fields from $db_table like '$value'");
 				$Params = array('default' => $myrow->fields['Default']);
 				$type = $myrow->fields['Type'];
 				if (strpos($type,'(') === false) {
@@ -605,17 +606,17 @@ function csv_explode($str, $delim = ',', $enclose = '"', $preserve = false){
 					default:
 				}
 				$temp = $db->Execute("insert into " . TABLE_EXTRA_FIELDS . " set 
-					module_id = '" . $module . "', 
+					module_id = '$module', 
 					tab_id = 0, 
-					entry_type = '" . $Params['type'] . "', 
-					field_name = '" . $value . "', 
-					description = '" . $value . "', 
+					entry_type = '{$Params['type']}', 
+					field_name = '$value', 
+					description = '$value', 
 					params = '" . serialize($Params) . "'");  // tab_id = 0 for System category
 			}
 		}
 		if ($delete_list) {
 			foreach ($delete_list as $value) {
-				$temp = $db->Execute("delete from " . TABLE_EXTRA_FIELDS . " where module_id='" . $module . "' and field_name='" . $value . "'");
+				$temp = $db->Execute("delete from " . TABLE_EXTRA_FIELDS . " where module_id='$module' and field_name='$value'");
 			}
 		}
 	}
@@ -626,7 +627,7 @@ function csv_explode($str, $delim = ',', $enclose = '"', $preserve = false){
     global $db;
     $tab_array = array(0 => TEXT_SYSTEM);
 	if (!$module) return $tab_array;
-    $result = $db->Execute("select id, tab_name from " . TABLE_EXTRA_TABS . " where module_id = '" . $module . "' order by tab_name");
+    $result = $db->Execute("select id, tab_name from " . TABLE_EXTRA_TABS . " where module_id = '$module' order by tab_name");
     while (!$result->EOF) {
       $tab_array[$result->fields['id']] = $result->fields['tab_name'];
       $result->MoveNext();

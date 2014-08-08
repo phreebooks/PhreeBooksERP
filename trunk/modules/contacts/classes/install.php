@@ -195,7 +195,7 @@ class contacts_admin {
 	  if ( db_field_exists(TABLE_CURRENT_STATUS, 'next_vend_id_desc')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_vend_id_desc");
 	  if (!db_field_exists(TABLE_CONTACTS, 'attachments')) $db->Execute("ALTER TABLE " . TABLE_CONTACTS . " ADD attachments TEXT NOT NULL AFTER tax_id");
     }
-      if (MODULE_CONTACTS_STATUS < 3.7) {
+    if (MODULE_CONTACTS_STATUS < 3.7) {
       if (!db_field_exists(TABLE_CONTACTS_LOG, 'entered_by')) $db->Execute("ALTER TABLE " . TABLE_CONTACTS_LOG . " ADD entered_by INT(11) NOT NULL DEFAULT '0' AFTER contact_id");
     }
     if (MODULE_CONTACTS_STATUS < 3.72) {

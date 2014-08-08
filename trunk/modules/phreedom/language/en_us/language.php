@@ -115,6 +115,8 @@ define('TEXT_EXPAND_ALL','Expand All');
 define('TEXT_EXPORT','Export');
 define('TEXT_EXPORT_CSV','Export CSV');
 define('TEXT_EXPORT_PDF','Export PDF');
+define('TEXT_DATA_LIST', 'DataList (text field with suggestions)');
+define('TEXT_DATA_LIST_EXPLANATION', 'For the datalist the only database value will be used. Both description and default have no meaning.');
 define('TEXT_FALSE','False');
 define('TEXT_FIELD', 'Field');
 define('TEXT_FIELD_REQUIRED', '&nbsp;<span class="fieldRequired">*</span>');

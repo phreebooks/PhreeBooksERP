@@ -1443,6 +1443,17 @@ function charConv($string, $in, $out) {
 				$output .= '<td>' . html_textarea_field($param_array['field_name'], DEFAULT_INPUT_FIELD_LENGTH, 4, $cInfo->$param_array['field_name']) . '</td></tr>';
 			}
 			break;
+		case 'data_list':	
+			$length = ($params['length'] > 120) ? 'size="120"' : ('size="' . $params['length'] . '"');
+			$output .= '<td>' . html_input_field($param_array['field_name'], $cInfo->$param_array['field_name'], $length . " list='{$param_array['field_name']}'") . '</td>';
+			$output .= "<datalist id='{$param_array['field_name']}'>";
+			$choices = explode(',',$params['default']);
+			while ($choice = array_shift($choices)) {
+				$values = explode(':',$choice);
+				if($values[0] != '') $output .= "<option value='$values[0]'>";
+			}
+			$output .= '</datalist></tr>';
+			break;
 		case 'hyperlink':
 		case 'image_link':
 		case 'inventory_link':

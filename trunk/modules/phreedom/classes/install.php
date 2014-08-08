@@ -70,7 +70,7 @@ class phreedom_admin {
       'DATE_FORMAT'                => 'm/d/Y', // this is used for date(), use only values: Y, m and d (case sensitive)
       'DATE_DELIMITER'             => '/', // must match delimiter used in DATE_FORMAT
       'DATE_TIME_FORMAT'           => 'm/d/Y h:i:s a',
-'SERVER_ADDRESS'			   => '',
+	  'SERVER_ADDRESS'			   => '',
 	);
 	// add new directories to store images and data
 	$this->dirlist = array(

@@ -67,17 +67,30 @@ if ($vendor && !$iID && $strict == false && $UPC == false) { // just search for 
   	$purchase     = $db->Execute("select DISTINCT a.id as id, p.vendor_id as vendor_id, p.description_purchase as description_purchase, p.purch_package_quantity as purch_package_quantity, 
   	p.purch_taxable as purch_taxable, p.item_cost as item_cost, p.price_sheet_v as price_sheet_v from " . TABLE_INVENTORY . " a LEFT JOIN " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku $first_search GROUP BY a.sku");
   	if($purchase->recordCount() == 1){
-  		$search = " where id = '" . $purchase->fields['id'] . "'";
+  		$search = " where id = '{$purchase->fields['id']}'";
   	}elseif($purchase->recordCount() != 0){
   		$xml .= xmlEntry('result', 'Too many hits!');
 		$xml .= xmlEntry("qty", 1);
   		echo createXmlHeader() . $xml . createXmlFooter();  
   		die;
   	}
-} 
-$inventory = $db->Execute("select * from " . TABLE_INVENTORY . $search . " and inactive = '0'");
-if ($inventory->RecordCount() == 0 ){//second try with inactive items
-	$inventory = $db->Execute("select * from " . TABLE_INVENTORY . $search);
+}
+for ($step = 1; $step < 4; $step++){
+	switch($step){
+		case 1:
+			if ($vendor == true  || $iID == true || $strict == true || $UPC == true) break;
+			$inventory =  $db->Execute("select * from " . TABLE_INVENTORY .  " where sku = '$sku' and inactive = '0'");
+			break; 
+		case 2:
+			$inventory =  $db->Execute("select * from " . TABLE_INVENTORY . $search . " and inactive = '0'");
+			break;
+		case 3:
+			$inventory =  $db->Execute("select * from " . TABLE_INVENTORY . $search);
+			break;
+		default:
+			break 2; 
+	}
+	if(isset($inventory) && $inventory->RecordCount() == 1) break;
 }
 if ($inventory->RecordCount() != 1) { // need to return something to avoid error in FireFox
 	if($UPC) 	$xml .= xmlEntry('error', ORD_JS_SKU_NOT_UNIQUE); // for UPC codes submitted only, send an error

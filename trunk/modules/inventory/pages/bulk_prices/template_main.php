@@ -49,11 +49,11 @@ echo $toolbar->build_toolbar($add_search = true);
 	<td><?php echo html_hidden_field('id_' . $j, $query_result->fields['id']) . $query_result->fields['sku']; ?></td>
 	<td><?php echo $query_result->fields['inactive'] == '1' ? TEXT_YES : ''; ?></td>
 	<td><?php echo $query_result->fields['description_short']; ?></td>
-	<td><?php echo html_input_field('lead_' . $j, $query_result->fields['lead_time'], 'size="11" style="text-align:right"'); ?></td>
+	<td><?php echo html_input_field('lead_'  . $j, $query_result->fields['lead_time'], 'size="11" style="text-align:right"'); ?></td>
 	<td><?php echo html_input_field('min_'   . $j, $currencies->precise($query_result->fields['minimum_stock_level']), 'size="11" style="text-align:right"'); ?></td>
 	<td><?php echo html_input_field('reOrd_' . $j, $currencies->precise($query_result->fields['reorder_quantity']), 'size="11" style="text-align:right"'); ?></td>
-	<td><?php echo html_input_field('cost_' . $j, $currencies->precise($query_result->fields['item_cost']), 'size="11" style="text-align:right"'); ?></td>
-	<td><?php echo html_input_field('sell_' . $j, $currencies->precise($query_result->fields['full_price']), 'size="11" style="text-align:right"'); ?></td>
+	<td><?php echo html_input_field('cost_'  . $j, $currencies->precise($query_result->fields['item_cost']), 'size="11" style="text-align:right"'); ?></td>
+	<td><?php echo html_input_field('sell_'  . $j, $currencies->precise($query_result->fields['full_price']), 'size="11" style="text-align:right"'); ?></td>
 	<td><?php if ($security_level > 1) echo html_icon('mimetypes/x-office-spreadsheet.png', BOX_PRICE_SHEET_MANAGER, 'small', $params = 'onclick="priceMgr(' . $j . ', ' . $query_result->fields['id'] . ')"'); ?></td>
   </tr>
 <?php
