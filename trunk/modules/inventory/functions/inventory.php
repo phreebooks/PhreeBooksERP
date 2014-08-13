@@ -67,15 +67,11 @@
 			case 4: $price += $price * ($adj_val / 100); 	break; // Increase by Percent
 			case 5: $price =  $price * (1+($adj_val / 100));break; // Mark up by Percent
 			case 6: $price =  $price / ($adj_val / 100); 	break; // Margin by Percent
-<<<<<<< HEAD
-			case 7: $price =  $price / ($adj_val / 100); 	break; // tiered pricing@todo
-=======
 			case 7:// tiered pricing
 				$price =  (($previous_price * $previous_qty) + ($price * ($qty - $previous_qty))/ $qty);
-				$previous_price = $price; 
+				$previous_price = $price;
 				$previous_qty = $qty;
 				break; 
->>>>>>> origin/master
 		}
 
 		switch ($rnd) {
