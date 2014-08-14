@@ -218,6 +218,7 @@ function admin_add_report_folder($parent_id, $doc_title, $doc_group, $doc_ext) {
 
 function admin_add_reports($module, $save_path = PF_DIR_MY_REPORTS) {
   $error = false;
+  if (!is_dir(DIR_FS_MODULES . $module)) return $error;
   if (file_exists(DIR_FS_MODULES . $module . '/language/' . $_SESSION['language'] . '/reports/')) {
     $read_path = DIR_FS_MODULES . $module . '/language/' . $_SESSION['language'] . '/reports/';
   } elseif (file_exists(DIR_FS_MODULES . $module . '/language/en_us/reports/')) {
