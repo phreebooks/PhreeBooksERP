@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -25,7 +25,7 @@ class to_receive_inv extends \core\classes\ctl_panel {
 	public $description	 		= CP_TO_RECEIVE_INV_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_PURCHASE_INVENTORY;
 	public $text		 		= CP_TO_RECEIVE_INV_TITLE;
-	public $version      		= '3.5';
+	public $version      		= '3.6';
 	public $size_params			= 1;
 	public $default_params 		= array('num_rows'=> 0);
 	public $module_id 			= 'phreebooks';
@@ -49,7 +49,7 @@ class to_receive_inv extends \core\classes\ctl_panel {
 		$total = 0;
 		$sql = "select id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value, post_date
 		  from " . TABLE_JOURNAL_MAIN . "
-		  where journal_id = 6 and waiting = '1' order by post_date DESC, purchase_invoice_id DESC";
+		  where journal_id in (6,7) and waiting = '1' order by post_date DESC, purchase_invoice_id DESC";
 		if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
 		$result = $db->Execute($sql);
 		if ($result->RecordCount() < 1) {
@@ -57,6 +57,7 @@ class to_receive_inv extends \core\classes\ctl_panel {
 		} else {
 			while (!$result->EOF) {
 			  	$inv_balance = $result->fields['total_amount'] - fetch_partially_paid($result->fields['id']);
+			  	if ($result->fields['journal_id'] == 7) $inv_balance = -$inv_balance;
 			 	$total += $inv_balance;
 				$contents .= '<div style="float:right">' . $currencies->format_full($inv_balance, true, $result->fields['currencies_code'], $result->fields['currencies_value']) . '</div>';
 				$contents .= '<div>';
