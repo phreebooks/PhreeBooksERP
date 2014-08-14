@@ -202,6 +202,8 @@ switch ($_REQUEST['action']) {
 	header('Last-Modified: ' . date('r', time()));
 	print $contents;
 	exit();
+  case 'php_info':
+  	die(phpinfo());
   default:
 }
 

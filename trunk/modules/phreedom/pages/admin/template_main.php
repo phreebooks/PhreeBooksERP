@@ -45,6 +45,7 @@ echo $toolbar->build_toolbar();
   echo add_tab_list('tab_manager', BOX_COMPANY_MANAGER);
   echo add_tab_list('tab_tools',   TEXT_TOOLS);
   echo add_tab_list('tab_stats',   TEXT_STATISTICS);
+  echo add_tab_list('tab_php_info',  "php info");
 ?>
 </ul>
 <?php
@@ -59,6 +60,7 @@ echo $toolbar->build_toolbar();
   require (DIR_FS_MODULES . $module . '/pages/admin/template_tab_manager.php');
   require (DIR_FS_MODULES . $module . '/pages/admin/template_tab_tools.php');
   require (DIR_FS_MODULES . $module . '/pages/admin/template_tab_stats.php');
+  require (DIR_FS_MODULES . $module . '/pages/admin/template_tab_php_info.php');
 ?>
 </div>
 </form>
