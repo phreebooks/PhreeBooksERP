@@ -26,12 +26,12 @@ class inventory_fields extends fields{
 	public  $type_params = 'inventory_type';
 	public  $extra_buttons = '';
   
-  public function __construct(){
+  public function __construct($sync = true){
   	gen_pull_language('inventory');
   	require(DIR_FS_MODULES . 'inventory/defaults.php');
   	foreach ($inventory_types_plus as $key => $value) $this->type_array[] = array('id'=>$key, 'text'=>$value);
     $this->type_desc    = INV_ENTRY_INVENTORY_TYPE;
-    parent::__construct();
+    parent::__construct($sync);
   }
 
   function btn_save($id = '') {

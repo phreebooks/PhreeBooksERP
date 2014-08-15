@@ -30,7 +30,7 @@
 	return ($store_bal - $qty_owed);
   }
 
-  function inv_calculate_prices($item_cost, $full_price, $encoded_price_levels, $qty = 1) {
+  function inv_calculate_prices($item_cost, $full_price, $encoded_price_levels) {
     global $currencies, $messageStack;
 	if (!defined('MAX_NUM_PRICE_LEVELS')) {
 	  $messageStack->add('Constant MAX_NUM_PRICE_LEVELS is not defined! returning from inv_calculate_prices','error');
@@ -262,7 +262,7 @@
 			$levels = isset($special_prices[$price_sheets->fields['id']]) ? $special_prices[$price_sheets->fields['id']] : $price_sheets->fields['default_levels'];
 		}
 		if ($levels) {
-	  		$prices = inv_calculate_prices($inventory->fields['item_cost'], $inventory->fields['full_price'], $levels, $qty);
+	  		$prices = inv_calculate_prices($inventory->fields['item_cost'], $inventory->fields['full_price'], $levels);
 	  		if(is_array($prices)) foreach ($prices as $value) if ($qty >= $value['qty']) $price = $currencies->clean_value($value['price']);
 		} else {
 	  		$price = ($type=='v') ? $inventory->fields['item_cost'] : $inventory->fields['full_price'];

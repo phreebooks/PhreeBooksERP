@@ -27,7 +27,7 @@ gen_pull_language('inventory','filter');
 $error       = false;
 $processed   = false;
 $criteria    = array();
-$fields		 = new inventory_fields();
+$fields		 = new inventory_fields(false);
 $type        = isset($_REQUEST['inventory_type']) ? $_REQUEST['inventory_type'] : null; // default to stock item
 history_filter('inventory');
 $first_entry = isset($_GET['add']) ? true : false;
@@ -39,17 +39,18 @@ $id = isset($_POST['rowSeq']) ? db_prepare_input($_POST['rowSeq']) : db_prepare_
 if (!isset($_REQUEST['inventory_type'])){
 	if(isset($_REQUEST['cID'])) $result = $db->Execute("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE id='{$_REQUEST['cID']}'");
 	else if (isset($_REQUEST['rowSeq'])) $result = $db->Execute("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE id='{$_REQUEST['rowSeq']}'");
-	else $result = $db->Execute("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE sku='{$_REQUEST['sku']}'");
+	else if (isset($_REQUEST['sku']))	 $result = $db->Execute("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE sku='{$_REQUEST['sku']}'");
 	if ($result->RecordCount()>0) $type = $result->fields['inventory_type'];
-	else $type ='si';
 } 
 if ($type == 'as') $type = 'ma'; 
-if (file_exists(DIR_FS_WORKING . 'custom/classes/type/'.$type.'.php')) { 
-	require_once(DIR_FS_WORKING . 'custom/classes/type/'.$type.'.php'); 
-} elseif (file_exists(DIR_FS_WORKING . 'classes/type/'.$type.'.php')) {
-	require_once(DIR_FS_WORKING . 'classes/type/'.$type.'.php'); // is needed here for the defining of the class and retriving the security_token
-} else die('Bad inventory type');
-$cInfo = new $type();
+if ( in_array($_REQUEST['action'], array('create', 'save', 'delete', 'copy', 'edit', 'properties', 'rename'))) {
+	if (file_exists(DIR_FS_WORKING . 'custom/classes/type/'.$type.'.php')) { 
+		require_once(DIR_FS_WORKING . 'custom/classes/type/'.$type.'.php'); 
+	} elseif (file_exists(DIR_FS_WORKING . 'classes/type/'.$type.'.php')) {
+		require_once(DIR_FS_WORKING . 'classes/type/'.$type.'.php'); // is needed here for the defining of the class and retriving the security_token
+	} else die('Bad inventory type');
+	$cInfo = new $type();
+}
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/main/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
@@ -142,32 +143,33 @@ $type_select_list = array( // add some extra options
   array('id' => '0',   'text' => TEXT_ALL),
   array('id' => 'cog', 'text' => TEXT_INV_MANAGED),
 );
-
-foreach ($inventory_types_plus as $key => $value) $type_select_list[] = array('id' => $key,  'text' => $value);
-// generate the vendors and fill js arrays for dynamic pull downs
-$vendors = gen_get_contact_array_by_type('v');
-$js_vendor_array = 'var js_vendor_array = new Array();' . chr(10);
-for ($i = 0; $i < count($vendors); $i++) {
-  $js_vendor_array .= 'js_vendor_array[' . $i . '] = new dropDownData("' . $vendors[$i]['id'] . '", "' . $vendors[$i]['text'] . '");' . chr(10);
+if ( in_array($_REQUEST['action'], array('create', 'edit','properties'))) {
+	foreach ($inventory_types_plus as $key => $value) $type_select_list[] = array('id' => $key,  'text' => $value);
+	// generate the vendors and fill js arrays for dynamic pull downs
+	$vendors = gen_get_contact_array_by_type('v');
+	$js_vendor_array = 'var js_vendor_array = new Array();' . chr(10);
+	for ($i = 0; $i < count($vendors); $i++) {
+	  $js_vendor_array .= 'js_vendor_array[' . $i . '] = new dropDownData("' . $vendors[$i]['id'] . '", "' . $vendors[$i]['text'] . '");' . chr(10);
+	}
+	// generate the pricesheets and fill js arrays for dynamic pull downs
+	$pur_pricesheets = get_price_sheet_data('v');
+	$js_pricesheet_array = 'var js_pricesheet_array = new Array();' . chr(10);
+	for ($i = 0; $i < count($pur_pricesheets); $i++) {
+	  $js_pricesheet_array .= 'js_pricesheet_array[' . $i . '] = new dropDownData("' . $pur_pricesheets[$i]['id'] . '", "' . $pur_pricesheets[$i]['text'] . '");' . chr(10);
+	}
+	
+	// load the tax rates
+	$tax_rates        = ord_calculate_tax_drop_down('c');
+	$purch_tax_rates  = inv_calculate_tax_drop_down('v',false);
+	// generate a rate array parallel to the drop down for javascript
+	$js_tax_rates = 'var tax_rates = new Array(' . count($tax_rates) . ');' . chr(10);
+	for ($i = 0; $i < count($tax_rates); $i++) {
+	  $js_tax_rates .= 'tax_rates[' . $i . '] = new tax("' . $tax_rates[$i]['id'] . '", "' . $tax_rates[$i]['text'] . '", "' . $tax_rates[$i]['rate'] . '");' . chr(10);
+	}
+	
+	// load gl accounts
+	$gl_array_list    = gen_coa_pull_down();
 }
-// generate the pricesheets and fill js arrays for dynamic pull downs
-$pur_pricesheets = get_price_sheet_data('v');
-$js_pricesheet_array = 'var js_pricesheet_array = new Array();' . chr(10);
-for ($i = 0; $i < count($pur_pricesheets); $i++) {
-  $js_pricesheet_array .= 'js_pricesheet_array[' . $i . '] = new dropDownData("' . $pur_pricesheets[$i]['id'] . '", "' . $pur_pricesheets[$i]['text'] . '");' . chr(10);
-}
-
-// load the tax rates
-$tax_rates        = ord_calculate_tax_drop_down('c');
-$purch_tax_rates  = inv_calculate_tax_drop_down('v',false);
-// generate a rate array parallel to the drop down for javascript
-$js_tax_rates = 'var tax_rates = new Array(' . count($tax_rates) . ');' . chr(10);
-for ($i = 0; $i < count($tax_rates); $i++) {
-  $js_tax_rates .= 'tax_rates[' . $i . '] = new tax("' . $tax_rates[$i]['id'] . '", "' . $tax_rates[$i]['text'] . '", "' . $tax_rates[$i]['rate'] . '");' . chr(10);
-}
-
-// load gl accounts
-$gl_array_list    = gen_coa_pull_down();
 $include_header   = true;
 $include_footer   = true;
 
