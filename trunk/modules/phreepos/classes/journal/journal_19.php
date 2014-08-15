@@ -218,50 +218,50 @@ class journal_19 extends journal {
 	  return $total;
   }
 
-  function add_tax_journal_rows() {
-	global $currencies;
-	  $total        = 0;
-	  $auth_array   = array();
-	  $tax_rates    = ord_calculate_tax_drop_down('b');
-	  $tax_auths    = gen_build_tax_auth_array();
-	  $tax_discount = $this->account_type == 'v' ? AP_TAX_BEFORE_DISCOUNT : AR_TAX_BEFORE_DISCOUNT;
-	  // calculate each tax value by authority per line item
-	  foreach ($this->journal_rows as $idx => $line_item) {
-	    if ($line_item['taxable'] > 0 && ($line_item['gl_type'] == $this->gl_type || $line_item['gl_type'] == 'frt')) {
-		  foreach ($tax_rates as $rate) {
-		    if ($rate['id'] == $line_item['taxable']) {
-			  $auths = explode(':', $rate['auths']);
-			  foreach ($auths as $auth) {
-			    $line_total = $line_item['debit_amount'] + $line_item['credit_amount']; // one will always be zero
-			    if (ENABLE_ORDER_DISCOUNT && $tax_discount == '0') {
-				  $line_total = $line_total * (1 - $this->disc_percent);
+	function add_tax_journal_rows() {
+		global $currencies;
+		$total        = 0;
+		$auth_array   = array();
+		$tax_rates    = ord_calculate_tax_drop_down('b');
+		$tax_auths    = gen_build_tax_auth_array();
+		$tax_discount = $this->account_type == 'v' ? AP_TAX_BEFORE_DISCOUNT : AR_TAX_BEFORE_DISCOUNT;
+		// calculate each tax value by authority per line item
+		foreach ($this->journal_rows as $idx => $line_item) {
+		    if ($line_item['taxable'] > 0 && ($line_item['gl_type'] == $this->gl_type || $line_item['gl_type'] == 'frt')) {
+			  foreach ($tax_rates as $rate) {
+			    if ($rate['id'] == $line_item['taxable']) {
+				  $auths = explode(':', $rate['auths']);
+				  foreach ($auths as $auth) {
+				    $line_total = $line_item['debit_amount'] + $line_item['credit_amount']; // one will always be zero
+				    if (ENABLE_ORDER_DISCOUNT && $tax_discount == '0') {
+					  $line_total = $line_total * (1 - $this->disc_percent);
+				    }
+					$auth_array[$auth] += ($tax_auths[$auth]['tax_rate'] / 100) * $line_total;
+				  }
 			    }
-				$auth_array[$auth] += ($tax_auths[$auth]['tax_rate'] / 100) * $line_total;
 			  }
 		    }
-		  }
-	    }
-	  }
-	  // calculate each tax total by authority and put into journal row array
-	  foreach ($auth_array as $auth => $auth_tax_collected) {
-		if ($auth_tax_collected == '' && $tax_auths[$auth]['account_id'] == '') continue;
-	  	if( ROUND_TAX_BY_AUTH == true ){
-			$amount = number_format($auth_tax_collected, $currencies->currencies[DEFAULT_CURRENCY]['decimal_places'], '.', '');
-		}else {
-			$amount = $auth_tax_collected;
-		} 
-	    $this->journal_rows[] = array( // record for specific tax authority
-		  'qty'                     => '1',
-		  'gl_type'                 => 'tax',		// code for tax entry
-		  'credit_amount' 			=> $amount,
-		  'description'             => $tax_auths[$auth]['description_short'],
-		  'gl_account'              => $tax_auths[$auth]['account_id'],
-		  'post_date'               => $this->post_date,
-	    );
-	    $total += $amount;
-	  }
-	  return $total;
-  }
+		}
+		// calculate each tax total by authority and put into journal row array
+		foreach ($auth_array as $auth => $auth_tax_collected) {
+			if ($auth_tax_collected == '' && $tax_auths[$auth]['account_id'] == '') continue;
+		  	if( ROUND_TAX_BY_AUTH == true ){
+				$amount = number_format($auth_tax_collected, $currencies->currencies[DEFAULT_CURRENCY]['decimal_places'], '.', '');
+			}else {
+				$amount = $auth_tax_collected;
+			} 
+		    $this->journal_rows[] = array( // record for specific tax authority
+			  'qty'                     => '1',
+			  'gl_type'                 => 'tax',		// code for tax entry
+			  'credit_amount' 			=> $amount,
+			  'description'             => $tax_auths[$auth]['description_short'],
+			  'gl_account'              => $tax_auths[$auth]['account_id'],
+			  'post_date'               => $this->post_date,
+		    );
+		    $total += $amount;
+		}
+		return $total;
+	}
 
   // this function adjusts the posted total to the calculated one to take into account fractions of a cent
   function adjust_total($amount) {

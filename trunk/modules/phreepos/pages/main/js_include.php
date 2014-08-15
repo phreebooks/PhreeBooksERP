@@ -1238,8 +1238,7 @@ function ajaxPrintAndClean(sXml) { // call back function
 }
 
 function jzebraReady(){
-//	alert('POS is now ready');
-	//qz = document.getElementById('qz');
+	changeOfTill();
 }
 
 //Automatically gets called when applet is done appending a file
