@@ -1460,8 +1460,9 @@ class journal {
 		default: // continue
 	  }
 	  $sql = "select purchase_invoice_id from " . TABLE_JOURNAL_MAIN . " 
-		where purchase_invoice_id = '" . $this->purchase_invoice_id . "' and journal_id = '" . $this->journal_id . "'";
+		where purchase_invoice_id = '{$this->purchase_invoice_id}' and journal_id = '{$this->journal_id}'";
 	  if ($this->id) $sql .= " and id <> " . $this->id;
+	  if (in_array($this->journal_id, array(6,7))) $sql .= " and bill_acct_id = " . $this->bill_acct_id;
 	  $result = $db->Execute($sql);
 	  if ($result->RecordCount() > 0) return $this->fail_message(sprintf(GL_ERROR_2, constant('ORD_HEADING_NUMBER_' . $this->journal_id)));
 	  $this->journal_main_array['purchase_invoice_id'] = $this->purchase_invoice_id;
@@ -1482,7 +1483,7 @@ class journal {
 		case 21: $str_field = 'next_check_num';    break;
 	  }
 	  if ($str_field) {
-		$result = $db->Execute("select " . $str_field . " from " . TABLE_CURRENT_STATUS . " limit 1");
+		$result = $db->Execute("select $str_field from " . TABLE_CURRENT_STATUS . " limit 1");
 		if (!$result) return $this->fail_message(sprintf(GL_ERROR_CANNOT_FIND_NEXT_ID, TABLE_CURRENT_STATUS));
 		$this->journal_main_array['purchase_invoice_id'] = $result->fields[$str_field];
 	  } else {
