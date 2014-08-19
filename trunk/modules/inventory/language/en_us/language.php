@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -47,6 +47,11 @@ define('TEXT_DECREASE_BY_AMOUNT','Decrease by Amount');
 define('TEXT_DECREASE_BY_PERCENT','Decrease by Percent');
 define('TEXT_INCREASE_BY_AMOUNT','Increase by Amount');
 define('TEXT_INCREASE_BY_PERCENT','Increase by Percent');
+define('TEXT_MARK_UP_BY_PERCENT', 'Mark up by Percent');
+define('TEXT_MARGIN', 'Margin by Percent');
+define('TEXT_TIERED_PRICING', 'tiered pricing');
+
+
 define('TEXT_NEXT_WHOLE','Next Dollar');
 define('TEXT_CONSTANT_CENTS','Constant Cents');
 define('TEXT_NEXT_INCREMENT','Next Increment');
@@ -119,6 +124,7 @@ define('TEXT_ROUND_VALUE', 'Rnd. Value');
 define('TEXT_BILL_OF_MATERIALS','Bill of Materials');
 define('INV_ADJ_DELETE_ALERT', 'Are you sure you want to delete this Inventory Adjustment?');
 define('INV_MSG_DELETE_INV_ITEM', 'Are you sure you want to delete this inventory item?');
+define('INV_SERIAL_POPUP_TITLE', 'Please select the SKU serial number from the list below:');
 
 define('TEXT_TRANSFER_FROM_STORE_ID','Transfer From Store ID');
 define('TEXT_TO_STORE_ID','To Store ID');
@@ -146,7 +152,7 @@ define('TEXT_FULL_PRICE', 'Full Price');
 define('TEXT_FULL_PRICE_WITH_TAX', 'Full Price with tax');
 define('INV_MARGIN','Margin');
 define('TEXT_ITEM_WEIGHT', 'Item Weight');
-define('TEXT_MINIMUM_STOCK_LEVEL', 'Minimum Stock Level');
+define('TEXT_MINIMUM_STOCK_LEVEL', 'Reorder Level');
 define('TEXT_REORDER_QUANTITY', 'Reorder Quantity');
 define('INV_ENTRY_INVENTORY_COST_METHOD', 'Cost Method');
 define('TEXT_SERIALIZE_ITEM', 'Serialize Item');

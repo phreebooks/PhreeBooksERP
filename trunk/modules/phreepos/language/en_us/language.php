@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -62,5 +62,5 @@ define('TEXT_CASH_IN','Cash In');
 define('TEXT_CASH_OUT','Cash Out');
 define('TEXT_EXPENSES','Expenses');
 define('TEXT_TYPE_OF_TRANSACTION','Type transaction');
-define('ERROR_NO_PAYMENT_METHODES','Can not open POS because there are no payment methodes. Goto company > module administration > payment module and set payments to show in pos and add gl accounts to payments');
+define('ERROR_NO_PAYMENT_METHODES','Cannot open POS because there are no payment methods defined. To set - Company -> Module Administration -> Payment Module Properties and set payments to show in POS and add gl accounts to payments.');
 ?>

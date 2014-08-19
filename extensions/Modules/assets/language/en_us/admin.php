@@ -27,5 +27,4 @@ define('TEXT_NEW_TAB', 'New Asset Tab');
 define('TEXT_EDIT_TAB', 'Edit Asset Tab');
 define('TEXT_NEW_FIELD', 'New Asset Field');
 define('TEXT_EDIT_FIELD', 'Edit Asset Field');
-
 ?>

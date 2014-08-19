@@ -27,5 +27,4 @@ define('TEXT_NEW_TAB', 'Nieuw Activa Tabblad');
 define('TEXT_EDIT_TAB', 'Bewerk Activa Tabblad');
 define('TEXT_NEW_FIELD', 'Nieuw Activa Veld');
 define('TEXT_EDIT_FIELD', 'Bewerk Activa Veld');
-
 ?>

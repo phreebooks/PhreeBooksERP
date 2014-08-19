@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -440,7 +440,7 @@ function csv_explode($str, $delim = ',', $enclose = '"', $preserve = false){
 		if (is_array($field_list)) $delete_list = array_diff($field_list, $table_fields);
 		if (isset($add_list)) {
 			foreach ($add_list as $value) { // find the field attributes and copy to field list table
-				$myrow = $db->Execute("show fields from " . $db_table . " like '" . $value . "'");
+				$myrow = $db->Execute("show fields from $db_table like '$value'");
 				$Params = array('default' => $myrow->fields['Default']);
 				$type = $myrow->fields['Type'];
 				if (strpos($type,'(') === false) {
@@ -512,12 +512,12 @@ function csv_explode($str, $delim = ',', $enclose = '"', $preserve = false){
 					default:
 				}
 				$temp = $db->Execute("insert into " . TABLE_EXTRA_FIELDS . " set
-					module_id = '$module',
-					tab_id = 0,
-					entry_type = '{$Params['type']}',
-					field_name = '$value',
-					description = '$value',
-					params = '" . serialize($Params) . "'");  // tab_id = 0 for System category
+				  module_id = '$module',
+				  tab_id = 0,
+				  entry_type = '{$Params['type']}',
+				  field_name = '$value',
+				  description = '$value',
+				  params = '" . serialize($Params) . "'");  // tab_id = 0 for System category
 			}
 		}
 		if ($delete_list) {

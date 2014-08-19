@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -24,6 +24,7 @@
 // 3.4 => 2012-02-15 - Bug fixes
 // 3.5 => 2012-10-01 - bug fixes
 // 3.6 => 2013-06-30 - bug fixes
+// 3.7 => 2014-07-21 - bug fixes, average costing fix
 // Module software version information
 // Menu Security id's (refer to master doc to avoid security setting overlap)
 define('SECURITY_ID_SEARCH',               4);
@@ -182,7 +183,7 @@ if (defined('MODULE_PHREEBOOKS_STATUS')) {
   	    'show_in_users_settings' => false,
 	    'params'      => '',
 	);
-	if (\core\classes\user::security_level(SECURITY_ID_QUOTE_STATUS) > 0)  $mainmenu["customers"]['submenu']["quotes"]['link'] = html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;jID=9', 'SSL');
+	if (\core\classes\user::security_level(SECURITY_ID_QUOTE_STATUS) > 0)  $mainmenu["customers"]['submenu']["quotes"]['link'] = html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=status&amp;jID=9&amp;list=1', 'SSL');
 	$mainmenu["customers"]['submenu']["quotes"]['submenu']["new_quote"] = array(
 	  	'order'		  => 20,
 	    'text'        => sprintf(TEXT_NEW_ARGS, TEXT_SALES_QUOTES),

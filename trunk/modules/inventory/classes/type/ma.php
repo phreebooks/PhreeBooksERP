@@ -10,7 +10,7 @@ class ma extends \inventory\classes\inventory { //Item Assembly formerly know as
 	public $bom		 				= array();
 	public $allow_edit_bom			= true;
 //	public $posible_transactions	= array('sell','purchase');
-
+ 
 	function __construct(){
 		parent::__construct();
 		$this->tab_list['bom'] = array('file'=>'template_tab_bom',	'tag'=>'bom',    'order'=>30, 'text'=>TEXT_BILL_OF_MATERIALS);

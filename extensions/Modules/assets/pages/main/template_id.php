@@ -46,4 +46,4 @@ echo $toolbar->build_toolbar();
 	  <td nowrap="nowrap" colspan="2"><?php echo '&nbsp;'; ?></td>
     </tr>
   </table>
-</form>
+</form> 

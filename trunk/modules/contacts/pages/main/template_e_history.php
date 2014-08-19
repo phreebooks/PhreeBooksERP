@@ -2,8 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
-
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -25,9 +24,6 @@
 		<tbody class="ui-widget-content">
 	  <tr>
 	    <td width="50%"><?php echo TEXT_HIRE_DATE . ': ' . gen_locale_date($cInfo->first_date); ?></td>
-	  </tr>
-	  <tr>
-	    <td width="50%"><?php echo ACT_E_LAST_DATE1 . ' ' . gen_locale_date($cInfo->last_update); ?></td>
 	  </tr>
 	   </tbody>
 	</table>

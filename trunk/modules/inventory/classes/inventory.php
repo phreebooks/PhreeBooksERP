@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -192,6 +192,13 @@ class inventory {
 			);
 		db_perform(TABLE_INVENTORY, $sql_data_array, 'insert');
 		$this->get_item_by_id(db_insert_id());
+		$sql_data_array = array (
+				'sku'					=> $this->sku,
+				'description_purchase'	=> '',
+				'purch_package_quantity'=> 1,
+				'price_sheet_v'			=> '',
+		);
+		db_perform(TABLE_INVENTORY_PURCHASE, $sql_data_array, 'insert');
 		gen_add_audit_log(TEXT_INVENTORY_ITEM . ' - '  . TEXT_ADD, TEXT_TYPE . ': ' . $this->inventory_type . ' - ' . $this->sku );
 		return true;
 	}
@@ -371,7 +378,7 @@ class inventory {
 			$image_id = 0;
 	  		while ($image_id < 100) { // up to 100 images
 	    		if (isset($_POST['rm_attach_'.$image_id])) {
-					@unlink(INVENTORY_DIR_ATTACHMENTS . 'inventory_'.$this->id.'_'.$image_id.'.zip');
+					@unlink(INVENTORY_DIR_ATTACHMENTS . "inventory_{$this->id}_{$image_id}.zip");
 			  		unset($this->attachments[$image_id]);
 	    		}
 	    		$image_id++;
@@ -430,7 +437,7 @@ class inventory {
 
 	function store_purchase_array(){
 		global $db, $currencies;
-		$lowest_cost = 99999999999;
+		$lowest_cost = isset($this->item_cost) ? $this->item_cost : 99999999999;
 		$this->backup_purchase_array = array();
 		$result = $db->Execute("SELECT * FROM ".TABLE_INVENTORY_PURCHASE." WHERE sku='$this->sku'");
 		while(!$result->EOF){
@@ -501,7 +508,7 @@ class inventory {
 		foreach($this->backup_purchase_array as $key => $value){
 			if($value['action'] == 'delete') $result = $db->Execute("delete from " . TABLE_INVENTORY_PURCHASE . " where id = '" . $value['id'] . "'");
 		}
-		return $lowest_cost;
+		return $lowest_cost == 99999999999 ? 0 : $lowest_cost; //added in case no purchase data entered when creating new product
 	}
 
 	function gather_history() {

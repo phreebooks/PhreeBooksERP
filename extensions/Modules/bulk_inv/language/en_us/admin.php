@@ -20,5 +20,4 @@
 // Module information
 define('TEXT_BULK_INVENTORY_TOOL','Bulk Inventory Tool');
 define('MODULE_BULK_INV_DESCRIPTION','This tool helps enter database information quicker than the normal Inventory Manager.');
-
 ?>

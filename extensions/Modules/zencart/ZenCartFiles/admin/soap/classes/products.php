@@ -133,7 +133,6 @@ if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/extra_product_reads.php')) in
 	// verify that it is the lowest level of category tree (required by zencart)
 	$result = $db->Execute("select categories_id from " . TABLE_CATEGORIES . " where parent_id = '" . $categories_id . "'");
 	if ($result->RecordCount() <> 0) throw new Exception(SOAP_BAD_CATEGORY_A, 15);
-
 	// verify the image and storage location - save image
 	$image_directory = $product['image_directory'];
 	// directory cannot be more than one level down

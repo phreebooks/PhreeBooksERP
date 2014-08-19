@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -27,7 +27,7 @@ switch ($_REQUEST['action']) {
 		validate_upload($upload_name, 'text', 'csv');
 		$lines_array = file($_FILES[$upload_name]['tmp_name']);
 		$post_pay = new \sku_pricer\classes\sku_pricer();
-		$post_pay->processCSV($lines_array);
+		$post_pay->processCSV($upload_name);
 		break;
   	default:
 }

@@ -19,5 +19,4 @@
 
 define('MENU_HEADING_ASSETS', 'Activa');
 define('TEXT_ASSET',    'Activa');
-
 ?>

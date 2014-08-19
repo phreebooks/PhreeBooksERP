@@ -15,7 +15,7 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/audit/language/en_us/admin.php
-//
+// 
 define('MODULE_AUDIT_TITLE','Audit');
 define('MODULE_AUDIT_DESCRIPTION','Deze module zal een pagina maken waar op je een periode kunt selecteren die je wilt exporteren als .xaf bestand voor uw accountant of de belastingdienst.');
 //admin

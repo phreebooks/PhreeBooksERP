@@ -19,5 +19,4 @@
 
 define('MENU_HEADING_ASSETS', 'Assets');
 define('TEXT_ASSET',    'Asset');
-
 ?>

@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -81,24 +81,25 @@
 	  <tr>
 	    <td><?php echo TEXT_ACTIVITY; ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_activity_default_sales', $inc_chart,  $_POST['inv_activity_default_sales'] ? $_POST['inv_activity_default_sales'] : INV_ACTIVITY_DEFAULT_SALES, ''); ?></td>
-	    <td><?php echo '&nbsp;'; ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_activity_default_inventory', $inv_chart,  $_POST['inv_activity_default_inventory'] ? $_POST['inv_activity_default_inventory'] : INV_ACTIVITY_DEFAULT_INVENTORY, ''); ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
 	  </tr>
 	  <tr>
 	    <td><?php echo TEXT_CHARGE_ITEMS; ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_charge_default_sales', $inc_chart,  $_POST['inv_charge_default_sales'] ? $_POST['inv_charge_default_sales'] : INV_CHARGE_DEFAULT_SALES, ''); ?></td>
-	    <td><?php echo '&nbsp;'; ?></td>
+	    	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_charge_default_inventory', $inv_chart,  $_POST['inv_charge_default_inventory'] ? $_POST['inv_charge_default_inventory'] : INV_CHARGE_DEFAULT_INVENTORY, ''); ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
 	  </tr>
 	  <tr>
 	    <td><?php echo TEXT_DESCRIPTION; ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_desc_default_sales', $inc_chart,  $_POST['inv_desc_default_sales'] ? $_POST['inv_desc_default_sales'] : INV_DESC_DEFAULT_SALES, ''); ?></td>
-	    <td><?php echo '&nbsp;'; ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_desc_default_inventory', $inv_chart,  $_POST['inv_desc_default_inventory'] ? $_POST['inv_desc_default_inventory'] : INV_DESC_DEFAULT_INVENTORY, ''); ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
 	  </tr>
+	  
 	  <tr><th colspan="5"><?php echo TEXT_PREFERENCES; ?></th></tr>
 	  <tr>
 	    <td colspan="4"><?php echo CD_05_50_DESC; ?></td>

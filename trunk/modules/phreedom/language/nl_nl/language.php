@@ -77,6 +77,8 @@ define('TEXT_SOURCE','Bron');
 define('TEXT_SIZE','Grote');
 define('TEXT_SKU','Art.nr.');
 define('TEXT_SORT','Sorteer');
+define('TEXT_DATA_LIST', 'DataLijst (text veld met suggesties)');
+define('TEXT_DATA_LIST_EXPLANATION', 'Voor de datalijst alleen de database waarde zal gebruikt worden. Zowel de omschrijving als de standaard hebben geen betekenings.');
 define('TEXT_SORT_ORDER','Sorteer Volgorde');
 define('TEXT_SHOW_INACTIVE','Bekijk Inactief');
 define('TEXT_SEQ','Volgorde');

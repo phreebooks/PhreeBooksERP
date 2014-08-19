@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -1007,7 +1007,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
 		case 'large':  $subdir = '32x32/'; $height='32'; break;
 		case 'svg' :   $subdir = 'scalable/';            break;
 	}
-    $image_html = '<img src="' . DIR_WS_ICONS . $subdir . $image . '" alt="' . $alt . '" style="border:none;"';
+    $image_html = '<img src="' . DIR_WS_ICONS . $subdir . $image . '" alt="' . $alt . '" class="imgIcon"';
     if (gen_not_null($alt))    $image_html .= ' title="'  . $alt    . '"';
     if (gen_not_null($id))     $image_html .= ' id="'     . $id     . '"';
     if ($width > 0)            $image_html .= ' width="'  . $width  . '"';
@@ -1494,96 +1494,102 @@ function charConv($string, $in, $out) {
 	function validate_send_mail($to_name, $to_address, $email_subject, $email_text, $from_email_name, $from_email_address, $block = array(), $attachments_list = '' ) {
     	global $db, $messageStack;
     	try{
-	    	// 	check for injection attempts. If new-line characters found in header fields, simply fail to send the message
-    		foreach(array($from_email_address, $to_address, $from_email_name, $to_name, $email_subject) as $key => $value) {
-      			if (!$value) continue;
-	  			if (strpos("\r", $value) !== false || strpos("\n", $value) !== false) throw new \core\classes\userException("There are new line or line return chariters the adresses or the subject.");
-	    	}
+	    	// check for injection attempts. If new-line characters found in header fields, simply fail to send the message
+		    foreach(array($from_email_address, $to_address, $from_email_name, $to_name, $email_subject) as $key => $value) {
+		      if (!$value) continue;
+			  if (strpos("\r", $value) !== false || strpos("\n", $value) !== false) return false;
+		    }
 		    // if no text or html-msg supplied, exit
-	    	if (!gen_not_null($email_text) && !gen_not_null($block['EMAIL_MESSAGE_HTML'])) throw new \core\classes\userException("There is no text in your email.");
-	    	// if email name is same as email address, use the Store Name as the senders 'Name'
-	    	if ($from_email_name == $from_email_address) $from_email_name = COMPANY_NAME;
+		    if (!gen_not_null($email_text) && !gen_not_null($block['EMAIL_MESSAGE_HTML'])) return false;
+		    // if email name is same as email address, use the Store Name as the senders 'Name'
+		    if ($from_email_name == $from_email_address) $from_email_name = COMPANY_NAME;
 		    // loop thru multiple email recipients if more than one listed  --- (esp for the admin's "Extra" emails)...
-	    	foreach(explode(',', $to_address) as $key => $to_email_address) {
-		    	//define some additional html message blocks available to templates, then build the html portion.
-	      		if ($block['EMAIL_TO_NAME'] == '')      $block['EMAIL_TO_NAME']      = $to_name;
-	      		if ($block['EMAIL_TO_ADDRESS'] == '')   $block['EMAIL_TO_ADDRESS']   = $to_email_address;
-	      		if ($block['EMAIL_SUBJECT'] == '')      $block['EMAIL_SUBJECT']      = $email_subject;
-	      		if ($block['EMAIL_FROM_NAME'] == '')    $block['EMAIL_FROM_NAME']    = $from_email_name;
-	      		if ($block['EMAIL_FROM_ADDRESS'] == '') $block['EMAIL_FROM_ADDRESS'] = $from_email_address;
-	      		$email_html = $email_text;
-	      		//  if ($attachments_list == '') $attachments_list= array();
-	      		// clean up &amp; and && from email text
-	      		while (strstr($email_text, '&amp;&amp;')) $email_text = str_replace('&amp;&amp;', '&amp;', $email_text);
-	      		while (strstr($email_text, '&amp;'))      $email_text = str_replace('&amp;', '&', $email_text);
-	      		while (strstr($email_text, '&&'))         $email_text = str_replace('&&', '&', $email_text);
-	      		// clean up currencies for text emails
-	      		$fix_currencies = explode(":", CURRENCIES_TRANSLATIONS);
-	      		$size = sizeof($fix_currencies);
-	      		for ($i=0, $n=$size; $i<$n; $i+=2) {
-	        		$fix_current = $fix_currencies[$i];
-	        		$fix_replace = $fix_currencies[$i+1];
-	        		if (strlen($fix_current)>0) {
-	          			while (strpos($email_text, $fix_current)) $email_text = str_replace($fix_current, $fix_replace, $email_text);
-	        		}
-	      		}
-	      		// fix double quotes
-	      		while (strstr($email_text, '&quot;')) $email_text = str_replace('&quot;', '"', $email_text);
-	      		// fix slashes
-	      		$email_text = stripslashes($email_text);
-	      		$email_html = stripslashes($email_html);
-	      		// Build the email based on whether customer has selected HTML or TEXT, and whether we have supplied HTML or TEXT-only components
-	      		if (!gen_not_null($email_text)) {
-	        		$text = str_replace('<br[[:space:]]*/?[[:space:]]*>', "\n", $block['EMAIL_MESSAGE_HTML']);
-	        		$text = str_replace('</p>', "</p>\n", $text);
-	        		$text = htmlspecialchars(stripslashes(strip_tags($text)));
-	      		} else {
-	        		$text = strip_tags($email_text);
-	      		}
+		    foreach(explode(',', $to_address) as $key => $to_email_address) {
+		      	//define some additional html message blocks available to templates, then build the html portion.
+		      	if ($block['EMAIL_TO_NAME'] == '')      $block['EMAIL_TO_NAME']      = $to_name;
+		      	if ($block['EMAIL_TO_ADDRESS'] == '')   $block['EMAIL_TO_ADDRESS']   = $to_email_address;
+		      	if ($block['EMAIL_SUBJECT'] == '')      $block['EMAIL_SUBJECT']      = $email_subject;
+		      	if ($block['EMAIL_FROM_NAME'] == '')    $block['EMAIL_FROM_NAME']    = $from_email_name;
+		      	if ($block['EMAIL_FROM_ADDRESS'] == '') $block['EMAIL_FROM_ADDRESS'] = $from_email_address;
+		      	$email_html = $email_text;
+		      	//  if ($attachments_list == '') $attachments_list= array();
+		     	// clean up &amp; and && from email text
+		      	while (strstr($email_text, '&amp;&amp;')) $email_text = str_replace('&amp;&amp;', '&amp;', $email_text);
+		      	while (strstr($email_text, '&amp;'))      $email_text = str_replace('&amp;', '&', $email_text);
+		      	while (strstr($email_text, '&&'))         $email_text = str_replace('&&', '&', $email_text);
+		      	// clean up currencies for text emails
+		      	$fix_currencies = explode(":", CURRENCIES_TRANSLATIONS);
+		      	$size = sizeof($fix_currencies);
+		      	for ($i=0, $n=$size; $i<$n; $i+=2) {
+		      		$fix_current = $fix_currencies[$i];
+		        	$fix_replace = $fix_currencies[$i+1];
+		        	if (strlen($fix_current)>0) {
+		          		while (strpos($email_text, $fix_current)) $email_text = str_replace($fix_current, $fix_replace, $email_text);
+		        	}
+		      	}
+		      	// fix double quotes
+		      	while (strstr($email_text, '&quot;')) $email_text = str_replace('&quot;', '"', $email_text);
+		      	// fix slashes
+		      	$email_text = stripslashes($email_text);
+		      	$email_html = stripslashes($email_html);
+		      	// Build the email based on whether customer has selected HTML or TEXT, and whether we have supplied HTML or TEXT-only components
+		      	if (!gen_not_null($email_text)) {
+		        	$text = str_replace('<br[[:space:]]*/?[[:space:]]*>', "\n", $block['EMAIL_MESSAGE_HTML']);
+		        	$text = str_replace('</p>', "</p>\n", $text);
+		        	$text = htmlspecialchars(stripslashes(strip_tags($text)));
+		      	} else {
+		        	$text = strip_tags($email_text);
+		      	}
 		      	// now lets build the mail object with the phpmailer class
 			  	require_once(DIR_FS_MODULES . 'phreedom/includes/PHPMailer/class.phpmailer.php');
 		      	$mail = new PHPMailer(true);
 		      	$mail->SetLanguage();
+			  	$mail->isMail(); //default
 		      	$mail->CharSet =  (defined('CHARSET')) ? CHARSET : "iso-8859-1";
-		      	if ($debug_mode=='on') $mail->SMTPDebug = true;
+		      	if (defined('DEBUG') && DEBUG == true) $mail->SMTPDebug = 4;
+				if (defined('SERVER_ADDRESS') && SERVER_ADDRESS != ''){
+				   	$mail->Hello	= SERVER_ADDRESS;
+				   	$mail->Hostname = SERVER_ADDRESS;
+				}
 		      	if (EMAIL_TRANSPORT=='smtp' || EMAIL_TRANSPORT=='smtpauth') {
-	        		$mail->IsSMTP();                           // set mailer to use SMTP
-	        		$mail->Host = EMAIL_SMTPAUTH_MAIL_SERVER;
-	        		if (EMAIL_SMTPAUTH_MAIL_SERVER_PORT != '25' && EMAIL_SMTPAUTH_MAIL_SERVER_PORT != '') $mail->Port = EMAIL_SMTPAUTH_MAIL_SERVER_PORT;
-	        		if (EMAIL_TRANSPORT=='smtpauth') {
-	          			$mail->SMTPAuth = true;     // turn on SMTP authentication
-	          			$mail->Username = (gen_not_null(EMAIL_SMTPAUTH_MAILBOX)) ? EMAIL_SMTPAUTH_MAILBOX : EMAIL_FROM;  // SMTP username
-	          			$mail->Password = EMAIL_SMTPAUTH_PASSWORD; // SMTP password
-	        		}
-	      		}
-	      		$mail->Subject  = $email_subject;
-	      		$mail->From     = $from_email_address;
-	      		$mail->FromName = $from_email_name;
-	      		$mail->AddAddress($to_email_address, $to_name);
-	      		$mail->AddReplyTo($from_email_address, $from_email_name);
-		  		if (isset($block['EMAIL_CC_ADDRESS'])) $mail->AddCC($block['EMAIL_CC_ADDRESS'], $block['EMAIL_CC_NAME']);
-	      		// 	set proper line-endings based on switch ... important for windows vs linux hosts:
-	      		$mail->LE = (EMAIL_LINEFEED == 'CRLF') ? "\r\n" : "\n";
-	      		$mail->WordWrap = 76;    // set word wrap to 76 characters
-	      		// if mailserver requires that all outgoing mail must go "from" an email address matching domain on server, set it to store address
-	      		if (EMAIL_TRANSPORT=='sendmail-f' || EMAIL_TRANSPORT=='sendmail') {
-		    		$mail->Mailer = 'sendmail';
-	        		$mail->Sender = $mail->From;
-	      		}
-	      		// process attachments
-	      		// Note: $attachments_list array requires that the 'file' portion contains the full path to the file to be attached
-	      		if (EMAIL_ATTACHMENTS_ENABLED && gen_not_null($attachments_list) ) {
-	        		$mail->AddAttachment($attachments_list['file']);          // add attachments
-	      		} //endif attachments
-	      		if (EMAIL_USE_HTML && trim($email_html) != '' && ADMIN_EXTRA_EMAIL_FORMAT == 'HTML') {
-	        		$mail->IsHTML(true);           // set email format to HTML
-	        		$mail->Body    = $email_html;  // HTML-content of message
-	        		$mail->AltBody = $text;        // text-only content of message
-	      		}  else {                        // use only text portion if not HTML-formatted
-	        		$mail->Body    = $text;        // text-only content of message
-	      		}
-	      		$mail->Send();
-	      		$temp = $db->Execute("select address_id, ref_id from " . TABLE_ADDRESS_BOOK . " where email ='".$to_email_address."' and ref_id <> 0");
+		        	$mail->IsSMTP();                           // set mailer to use SMTP
+		        	$mail->Host = EMAIL_SMTPAUTH_MAIL_SERVER;
+		        	if (EMAIL_SMTPAUTH_MAIL_SERVER_PORT != '25' && EMAIL_SMTPAUTH_MAIL_SERVER_PORT != '') $mail->Port = EMAIL_SMTPAUTH_MAIL_SERVER_PORT;
+		        	if (EMAIL_TRANSPORT=='smtpauth') {
+		          		$mail->SMTPAuth = true;     // turn on SMTP authentication
+		          		$mail->Username = (gen_not_null(EMAIL_SMTPAUTH_MAILBOX)) ? EMAIL_SMTPAUTH_MAILBOX : EMAIL_FROM;  // SMTP username
+		          		$mail->Password = EMAIL_SMTPAUTH_PASSWORD; // SMTP password
+		        	}
+		      	}
+		      	$mail->Subject  = $email_subject;
+		      	$mail->From     = $from_email_address;
+		      	$mail->FromName = $from_email_name;
+		      	$mail->AddAddress($to_email_address, $to_name);
+		      	$mail->AddReplyTo($from_email_address, $from_email_name);
+			  	if (isset($block['EMAIL_CC_ADDRESS'])) $mail->AddCC($block['EMAIL_CC_ADDRESS'], $block['EMAIL_CC_NAME']);
+		      	// set proper line-endings based on switch ... important for windows vs linux hosts:
+		      	$mail->LE = (EMAIL_LINEFEED == 'CRLF') ? "\r\n" : "\n";
+      			$mail->WordWrap = 76;    // set word wrap to 76 characters
+      			// if mailserver requires that all outgoing mail must go "from" an email address matching domain on server, set it to store address
+      			if (EMAIL_TRANSPORT=='sendmail-f' || EMAIL_TRANSPORT=='sendmail') {
+	    			$mail->Mailer = 'sendmail';
+        			$mail->Sender = $mail->From;
+	        		$mail->isSendmail();
+      			}
+      			// process attachments
+      			// Note: $attachments_list array requires that the 'file' portion contains the full path to the file to be attached
+      			if (EMAIL_ATTACHMENTS_ENABLED && gen_not_null($attachments_list) ) {
+        			$mail->AddAttachment($attachments_list['file']);          // add attachments
+      			} //endif attachments
+      			if (EMAIL_USE_HTML && trim($email_html) != '' && ADMIN_EXTRA_EMAIL_FORMAT == 'HTML') {
+				    $mail->IsHTML(true);           // set email format to HTML
+				    $mail->Body    = $email_html;  // HTML-content of message
+        			$mail->AltBody = $text;        // text-only content of message
+      			}  else {                        // use only text portion if not HTML-formatted
+      				$mail->Body    = $text;        // text-only content of message
+      			}
+      			$mail->Send();
+				$temp = $db->Execute("select address_id, ref_id from " . TABLE_ADDRESS_BOOK . " where email ='".$to_email_address."' and ref_id <> 0");
 				$sql_data_array['address_id_from'] 	= $temp->fields['address_id'];
 				$ref_id = $temp->fields['ref_id'];
 				$temp = $db->Execute("select address_id, ref_id from " . TABLE_ADDRESS_BOOK . " where email ='".$from_email_address."'");
@@ -1599,8 +1605,8 @@ function charConv($string, $in, $out) {
 				$sql_data_array['DateDb'] 		= date("Y-m-d H:i:s");
 				$sql_data_array['Subject']		= $email_subject;
 				//$sql_data_array['MsgSize'] 		= $email["SIZE"];?? Rene Unknown
-		  		if(db_table_exists(TABLE_PHREEMAIL)) db_perform(TABLE_PHREEMAIL, $sql_data_array, 'insert');
-		  		// save in crm_notes
+				if(db_table_exists(TABLE_PHREEMAIL)) db_perform(TABLE_PHREEMAIL, $sql_data_array, 'insert');
+				// save in crm_notes
 				$temp = $db->Execute("select account_id from " . TABLE_USERS . " where admin_email = '" . $from_email_address . "'");
 				$sql_array['contact_id'] = $ref_id;
 				$sql_array['log_date']   = $sql_data_array['DateE'];
@@ -1608,7 +1614,7 @@ function charConv($string, $in, $out) {
 				$sql_array['action']     = 'mail_out';
 				$sql_array['notes']      = $email_subject;
 				db_perform(TABLE_CONTACTS_LOG, $sql_array, 'insert');
-    		} // end foreach loop thru possible multiple email addresses
+			} // end foreach loop thru possible multiple email addresses
     		return true;
          }catch(Exception $e) {
       		$messageStack->add(sprintf(TEXT_THE_EMAIL_MESSAGE_WAS_NOT_SENT . '&nbsp;'. $mail->ErrorInfo, $to_name, $to_email_address, $email_subject),'error');

@@ -15,7 +15,7 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/bulk_inv/functions/bulk_inv.php
-//
+// 
 /*
   function doCURLRequest($method = 'GET', $url, $vars) {
 	global $messageStack;

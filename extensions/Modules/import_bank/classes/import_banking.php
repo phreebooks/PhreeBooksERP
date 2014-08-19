@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -80,8 +80,14 @@ class import_banking extends \phreebooks\classes\journal {
 	$messageStack->debug("\n\n*************** End Processing Import Payment *******************");
 	}
 
-	private function find_contact($other_bank_account_number, $other_bank_account_iban){
+	private function find_contact(&$other_bank_account_number, &$other_bank_account_iban){
 		global $db, $messageStack;
+		// check if bankaccount number is iban if that is the case use it as iban.
+		$other_bank_account_iban = strtoupper(str_replace(' ', '', $other_bank_account_iban));
+		if ($this->checkIBAN($other_bank_account_number)){
+			$other_bank_account_iban 	= strtoupper(str_replace(' ', '', $other_bank_account_number));
+			$other_bank_account_number 	= null;
+		}
 		$criteria = false;
 		$messageStack->debug("\n trying to find a contact ");
 		if($other_bank_account_number =='' && $other_bank_account_iban ==''){
@@ -100,11 +106,11 @@ class import_banking extends \phreebooks\classes\journal {
 				return false;
 			}
 		}
-
-		$sql ="SELECT * FROM ". TABLE_CONTACTS ." WHERE (`type` ='v' or `type`='c' ) and ".$criteria;
+		if($criteria == false) return false;
+		$sql ="SELECT * FROM ". TABLE_CONTACTS ." WHERE (type ='v' or type='c') and $criteria";
 		$result1 = $db->Execute($sql);
 		$contact = false;
-		if(!$result1->RecordCount()== 0){
+		if($result1->RecordCount() !== 0){
 			$messageStack->debug("\n found a costumer or vender with the bankaccountnumber ". ltrim($other_bank_account_number,0));
 			if (!$result1->RecordCount()> 1){
 				//TEXT_IMP_ERMSG17 = two or more accounts with the same account
@@ -120,7 +126,7 @@ class import_banking extends \phreebooks\classes\journal {
 			$messageStack->debug("\n was unable to find a 1 matching contact. ");
 			return false;
 		}
-		$result2 = $db->Execute("SELECT * FROM ". TABLE_ADDRESS_BOOK ." WHERE (`type` ='vm' or `type`='vb' or `type` ='cm' or `type` ='cb' ) and `ref_id` = '" . $contact['id']."'");
+		$result2 = $db->Execute("SELECT * FROM ". TABLE_ADDRESS_BOOK ." WHERE (type ='vm' or type='vb' or type ='cm' or type ='cb' ) and ref_id = '{$contact['id']}'");
 		$this->bill_short_name     	= $contact['id'];
 		$this->bill_acct_id        	= $contact['id'];
 		$this->bill_addres_id		= $contact['id'];
@@ -187,11 +193,11 @@ class import_banking extends \phreebooks\classes\journal {
 					case 6:
 					case 1: // full amount is payed
 						$found_invoices[$i]['discount'] = false;
-						$messageStack->debug("\n step ".$step." trying if we get totals balanced when the full amount is payed. ");
+						$messageStack->debug("\n step $step trying if we get totals balanced when the full amount is payed. ");
 						break;
 					case 7:
 					case 2: // make use of discount full
-						$messageStack->debug("\n step ".$step." trying if we get totals balanced when the full discount is used. ");
+						$messageStack->debug("\n step $step trying if we get totals balanced when the full discount is used. ");
 						if($found_invoices[$i]['early_date'] >= $this->post_date){// if post_date is smaller than early_date allow discount
 							$found_invoices[$i]['discount'] = round($found_invoices[$i]['total_amount'] * $found_invoices[$i]['percent'],  $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
 							$messageStack->debug("\n discount could be used for invoice ".$found_invoices[$i]['purchase_invoice_id']." Payed = ". $found_invoices[$i]['amount']." Discount = ". $found_invoices[$i]['discount']);
@@ -199,7 +205,7 @@ class import_banking extends \phreebooks\classes\journal {
 						break;
 					case 8:
 					case 3: // make use of less discount than is allowed.
-						$messageStack->debug("\n step ".$step." trying if we get totals balanced when less than the full discount is used. ");
+						$messageStack->debug("\n step $step trying if we get totals balanced when less than the full discount is used. ");
 						if( $found_invoices[$i]['discount'] && $difference > 0 ){
 							$messageStack->debug("\n for invoice ".$found_invoices[$i]['purchase_invoice_id']." discount = ".$found_invoices[$i]['discount']." difference = ". $difference);
 							if($found_invoices[$i]['discount'] >= $difference){
@@ -215,7 +221,7 @@ class import_banking extends \phreebooks\classes\journal {
 						}
 						break;
 					case 5:// unset items that where not found by invoice_number
-						$messageStack->debug("\n step ".$step." removing items that were not found by invoice number. ");
+						$messageStack->debug("\n step $step removing items that were not found by invoice number. ");
 						if(!$found_invoices[$i]['found_by_number']) {
 							$messageStack->debug("\n removing invoice number. ".$found_invoices[$i]['purchase_invoice_id']);
 							$found_invoices[$i]['total_amount'] = 0;
@@ -240,7 +246,7 @@ class import_banking extends \phreebooks\classes\journal {
 						}
 					    break;
 					case 4;//try the first invoice
-						$messageStack->debug("\n step ".$step." trying the first invoice. ");
+						$messageStack->debug("\n step $step trying the first invoice. ");
 						if($i > 0){
 							$found_invoices[$i]['discount'] 	 = false;
 							$found_invoices[$i]['amount']   	 = 0;
@@ -277,7 +283,7 @@ class import_banking extends \phreebooks\classes\journal {
 			if( $step == 5 ) $difference_perc = $amount_used / $this->total_amount;
 			$difference = $this->total_amount - $amount_used;
 			$good = abs($this->total_amount - $amount_used) < $epsilon;
-			$messageStack->debug("\n contiune = ".$good." total_amount = ".$this->total_amount .' amount_used = '.$amount_used .' difference percent = '.$difference_perc);
+			$messageStack->debug("\n contiune = $good total_amount = {$this->total_amount} amount_used = $amount_used difference percent = $difference_perc");
 			$step++;
 		}
 		if ($good == false){
@@ -463,18 +469,19 @@ class import_banking extends \phreebooks\classes\journal {
 		// to build this data array, all current open invoices need to be gathered and then the paid part needs
 		// to be applied along with discounts taken by row.
 		global $db, $currencies;
-		$sql = "select m.id as id, m.journal_id as journal_id, m.post_date as post_date, m.terms as terms, m.purch_order_id as purch_order_id,
-		 m.purchase_invoice_id as purchase_invoice_id, m.total_amount as total_amount, m.gl_acct_id as gl_acct_id, m.bill_acct_id as bill_acct_id, c.type as type, c.short_name as short_name
-		  from " . TABLE_JOURNAL_MAIN . " m join ".TABLE_CONTACTS." c on m.bill_acct_id = c.id
-		  where journal_id in (6, 7, 12, 13) and closed = '0'";
+		$sql = "select m.id as id, m.journal_id as journal_id, m.post_date as post_date, m.terms as terms, m.purch_order_id as purch_order_id, i.debit_amount as debit_amount, i.credit_amount as credit_amount,
+		 m.purchase_invoice_id as purchase_invoice_id, m.total_amount as total_amount, m.gl_acct_id as gl_acct_id, m.bill_acct_id as bill_acct_id, c.type as type, c.short_name as short_name, m.waiting as waiting  
+		  from " . TABLE_JOURNAL_MAIN . " m join ".TABLE_CONTACTS." c on m.bill_acct_id = c.id join " .TABLE_JOURNAL_ITEM. " i on m.id = i.ref_id
+		  where journal_id in (6, 7, 12, 13) and closed = '0' and gl_type = 'ttl'";
 		$sql .= " order by m.post_date";
 		$result = $db->Execute($sql);
 		$open_invoices = array();
 		while (!$result->EOF) {
+			$result->fields['total_amount'] = ($result->fields['debit_amount']) ? $result->fields['debit_amount'] : $result->fields['credit_amount'];
+			$result->fields['total_amount'] -= fetch_partially_paid($result->fields['id']);
 			if ($result->fields['journal_id'] == 7 || $result->fields['journal_id'] == 13) {
 				 $result->fields['total_amount'] = -$result->fields['total_amount'];
 			}
-			$result->fields['total_amount'] -= fetch_partially_paid($result->fields['id']);
 			$result->fields['description']   = $result->fields['purch_order_id'];
 			$result->fields['discount']      = '';
 			$result->fields['amount_paid']   = '';
@@ -487,10 +494,7 @@ class import_banking extends \phreebooks\classes\journal {
 
 		foreach ($open_invoices as $key => $line_item) {
 			// fetch some information about the invoice
-		  	$sql = "select id, post_date, terms, purchase_invoice_id, purch_order_id, gl_acct_id, waiting
-				from " . TABLE_JOURNAL_MAIN . " where id = " . $key;
-		  	$result = $db->Execute($sql);
-		  	$due_dates = calculate_terms_due_dates($result->fields['post_date'], $result->fields['terms'], ($type == 'v' ? 'AP' : 'AR'));
+			$due_dates = calculate_terms_due_dates($line_item['post_date'], $line_item['terms'], ($line_item['type'] == 'v' ? 'AP' : 'AR'));
 		  	$negate = (($line_item['journal_id'] == 20 && $line_item['type'] == 'c') || ($line_item['journal_id'] == 18 && $line_item['type'] == 'v')) ? true : false;
 		  	if ($negate) {
 		    	$line_item['total_amount'] = -$line_item['total_amount'];
@@ -498,17 +502,17 @@ class import_banking extends \phreebooks\classes\journal {
 		    	$line_item['amount_paid']  = -$line_item['amount_paid'];
 		  	}
 		  	$balance += $line_item['total_amount'];
-		  	$this->open_inv[$line_item['bill_acct_id']][$result->fields['id']] = array(
-				'id'                  => $result->fields['id'],
-				'waiting'             => $result->fields['waiting'],
-				'purchase_invoice_id' => $result->fields['purchase_invoice_id'],
-				'purch_order_id'      => $result->fields['purch_order_id'],
+		  	$this->open_inv[$line_item['bill_acct_id']][$line_item['id']] = array(
+				'id'                  => $line_item['id'],
+				'waiting'             => $line_item['waiting'],
+				'purchase_invoice_id' => $line_item['purchase_invoice_id'],
+				'purch_order_id'      => $line_item['purch_order_id'],
 				'percent'             => $due_dates['discount'],
-				'post_date'           => $result->fields['post_date'],
+				'post_date'           => $line_item['post_date'],
 				'early_date'          => $due_dates['early_date'],
 				'net_date'            => $due_dates['net_date'],
 				'total_amount'        => round($line_item['total_amount'],  $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']),
-				'gl_acct_id'          => $result->fields['gl_acct_id'],
+				'gl_acct_id'          => $line_item['gl_acct_id'],
 				'description'         => $line_item['description'],
 		  		'type'		          => $line_item['type'],
 		  		'short_name'		  => $line_item['short_name'],
@@ -517,7 +521,6 @@ class import_banking extends \phreebooks\classes\journal {
 		  	);
 		  	$index++;
 		}
-
 	}
 
 	private function reset(){
@@ -562,6 +565,37 @@ class import_banking extends \phreebooks\classes\journal {
 		$this->recur_id				= null;
 	}
 
+
+
+	function checkIBAN($iban) {
+	  	// Normalize input (remove spaces and make upcase)
+	  	$iban = strtoupper(str_replace(' ', '', $iban));
+	 
+	  	if (preg_match('/^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/', $iban)) {
+		    $country = substr($iban, 0, 2);
+		    $check = intval(substr($iban, 2, 2));
+		    $account = substr($iban, 4);
+		 
+		    // To numeric representation
+		    $search = range('A','Z');
+		    foreach (range(10,35) as $tmp) $replace[]=strval($tmp);
+	    	$numstr=str_replace($search, $replace, $account.$country.'00');
+	 
+		    // Calculate checksum
+		    $checksum = intval(substr($numstr, 0, 1));
+	    	for ($pos = 1; $pos < strlen($numstr); $pos++) {
+		      	$checksum *= 10;
+		      	$checksum += intval(substr($numstr, $pos,1));
+		      	$checksum %= 97;
+	    	}
+	    	return ((98-$checksum) == $check); // returns true or false
+	  	} else{
+	    	return false;
+	  	}
+	}
+	
+	
+	
 	public function __destruct(){
 		global $messageStack;
 		$messageStack->debug("\n\n*************** end Import Payment Class*******************");

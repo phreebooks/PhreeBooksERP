@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -45,7 +45,7 @@ var text_sales_tax       = '<?php echo TEXT_TAXABLE; ?>';
 var text_price_manager   = '<?php echo TEXT_PRICE_SHEETS; ?>';
 var text_acct_ID         = '<?php echo TEXT_GL_ACCOUNT; ?>';
 var default_inv_acct     = '<?php echo DEF_INV_GL_ACCT; ?>';
-var default_sales_tax    = '0';
+var default_sales_tax    = '<?php echo ($account_type == "v") ? INVENTORY_DEFAULT_PURCH_TAX : INVENTORY_DEFAULT_TAX; ?>';
 var default_GL_acct      = '<?php echo $order->gl_acct_id; ?>';
 var default_disc_acct    = '<?php echo ($account_type == "v") ? AP_DISCOUNT_PURCHASE_ACCOUNT : AR_DISCOUNT_SALES_ACCOUNT; ?>';
 var default_freight_acct = '<?php echo ($account_type == "v") ? AP_DEF_FREIGHT_ACCT : AR_DEF_FREIGHT_ACCT; ?>';
@@ -159,7 +159,7 @@ function init() {
   	if (ORD_ENABLE_LINE_ITEM_BAR_CODE) echo 'refreshOrderClock();';
 ?>
   	$("#search").change(function(){
-		if(document.getElementById('search').value != ''){ AccountList(); }
+		if(document.getElementById('search').value != ''){ AccountList(false); }
   	});
 }
 

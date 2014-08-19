@@ -1,8 +1,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
-
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -196,7 +195,7 @@ function fillBill(xml) {
 	insertValue('dscnt_' + jIndex, $(this).find("discount").text());
 	insertValue('total_' + jIndex, $(this).find("amount_paid").text());
 	if ($(this).find("waiting").text() == '1') { // waiting for invoice (no invoice number)
-		document.getElementById('desc_' + jIndex).readOnly  = true;
+		document.getElementById('desc_'  + jIndex).readOnly = true;
 		document.getElementById('dscnt_' + jIndex).readOnly = true;
 		document.getElementById('total_' + jIndex).readOnly = true;
 		document.getElementById('item_table').rows[rowCnt-1].className = 'ui-state-error';

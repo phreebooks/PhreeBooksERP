@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -223,9 +223,9 @@ function clearAddress(type) {
 	document.getElementById(type+'_country_code').value         = store_country_code;
 	document.getElementById(type+'_to_select').style.visibility = 'hidden';
   	if (document.getElementById(type+'_to_select')) {
-      while (document.getElementById(type+'_to_select').options.length) {
-	    document.getElementById(type+'_to_select').remove(0);
-      }
+      	while (document.getElementById(type+'_to_select').options.length) {
+	    	document.getElementById(type+'_to_select').remove(0);
+      	}
   	}
     document.getElementById('copy_bill_primary_name').value       = default_array[0];
   	document.getElementById('copy_bill_primary_name').style.color = inactive_text_color;
@@ -333,13 +333,18 @@ function orderFillAddress(xml, type, fill_address) {
     document.getElementById(type+'_to_select').style.visibility      = 'visible';
     document.getElementById(type+'_to_select').disabled              = false;
   });
-  numRows = document.getElementById('item_table_body').rows.length;
-  for (i=1; i<=numRows; i++) {
-	if(document.getElementById('sku_'+i).value !=''){
-  	  updateRowTotal(i, true);
-	}
-  }
-  document.getElementById('sku').focus();
+  	numRows = document.getElementById('item_table_body').rows.length;
+  	for (rowCnt=1; rowCnt<=numRows; rowCnt++) {
+		if(document.getElementById('sku_'+rowCnt).value !=''){
+		  	if(default_sales_tax == -1){
+				document.getElementById('tax_'   +rowCnt).value     = document.getElementById('product_tax_'+rowCnt).value;
+		  	}else{
+				document.getElementById('tax_'   +rowCnt).value     = default_sales_tax;
+		  	}
+  	  		updateRowTotal(rowCnt, true);
+		}
+  	}
+  	document.getElementById('sku').focus();
 }
 
 function fillOrder(xml) {
@@ -433,14 +438,14 @@ function accountGuess(force) {
 }
 
 function processAccountGuess(sXml) {
-  var xml = parseXml(sXml);
-  if (!xml) return;
-  var result = $(xml).find("result").text();
-  if (result == 'success') {
-    fillOrderData(xml);
-  } else {
-	AccountList();
-  }
+	var xml = parseXml(sXml);
+	if (!xml) return;
+	var result = $(xml).find("result").text();
+	if (result == 'success') {
+		fillOrderData(xml);
+	} else {
+		AccountList();
+	}
 }
 
 function AccountList(currObj) {
@@ -451,7 +456,7 @@ function AccountList(currObj) {
 	if( firstguess != secondguess && firstguess != text_search && firstguess != ''){
 		  guess = firstguess;
 	}
-	window.open("index.php?module=contacts&page=popup_accts&type="+account_type+"&form=orders&fill=bill&jID=19&search_text="+guess,"accounts","width=850px,height=550px,resizable=1,scrollbars=1,top=150,left=100");
+	window.open("index.php?module=contacts&page=popup_accts&type=c&fill=bill&jID=19&search_text="+guess,"accounts","width=850px,height=550px,resizable=1,scrollbars=1,top=150,left=100");
 }
 
 function InventoryList(rowCnt) {
@@ -514,7 +519,7 @@ function addInvRow() {
   var rowCnt = newRow.rowIndex;
   // NOTE: any change here also need to be made to template form for reload if action fails
   cell  = '<td align="center">';
-  cell += buildIcon(icon_path+'16x16/emblems/emblem-unreadable.png', image_delete_text, 'onclick="if (confirm(\''+image_delete_msg+'\')) removeInvRow('+rowCnt+');"') + '</td>';
+  cell += buildIcon(icon_path+'16x16/emblems/emblem-unreadable.png', image_delete_text, '  id="delete_'+rowCnt+'" onclick="if (confirm(\''+image_delete_msg+'\')) removeInvRow('+rowCnt+');"') + '</td>';
   newCell = newRow.insertCell(-1);
   newCell.innerHTML = cell;
   cell  = '<td align="left"><input type="text" name="pstd_'+rowCnt+'" id="pstd_'+rowCnt+'" size="5" maxlength="6" onchange="updateRowTotal('+rowCnt+', true)" style="text-align:right" />';
@@ -566,36 +571,43 @@ function addInvRow() {
 }
 
 function removeInvRow(index) {
-  var i, acctIndex, offset, newOffset;
-  var numRows = document.getElementById('item_table_body').rows.length;
-  // remove row from display by reindexing and then deleting last row
-  for (i=index; i<numRows; i++) {
-	// move the delete icon from the previous row
-	offset    = i+1;
-	newOffset = i;
-	document.getElementById('item_table_body').rows[newOffset].cells[0].innerHTML = delete_icon_HTML + i + ');">';
-	document.getElementById('pstd_'+i).value     	= document.getElementById('pstd_'+(i+1)).value;
-	document.getElementById('sku_'+i).value      	= document.getElementById('sku_'+(i+1)).value;
-	document.getElementById('desc_'+i).value     	= document.getElementById('desc_'+(i+1)).value;
-	document.getElementById('price_'+i).value    	= document.getElementById('price_'+(i+1)).value;
-	document.getElementById('acct_'+i).value     	= document.getElementById('acct_'+(i+1)).value;
-	document.getElementById('tax_'+i).value      	= document.getElementById('tax_'+(i+1)).value;
-	document.getElementById('product_tax_'+i).value = document.getElementById('product_tax_'+(i+1)).value;
-// Hidden fields
-	document.getElementById('id_'+i).value       	= document.getElementById('id_'+(i+1)).value;
-	document.getElementById('stock_'+i).value    	= document.getElementById('stock_'+(i+1)).value;
-	document.getElementById('inactive_'+i).value 	= document.getElementById('inactive_'+(i+1)).value;
-	document.getElementById('serial_'+i).value   	= document.getElementById('serial_'+(i+1)).value;
-	document.getElementById('full_'+i).value     	= document.getElementById('full_'+(i+1)).value;
-	document.getElementById('fixed_price_'+i).value	= document.getElementById('fixed_price_'+(i+1)).value;
-	document.getElementById('disc_'+i).value     	= document.getElementById('disc_'+(i+1)).value;
-// End hidden fields
-	document.getElementById('total_'+i).value    	= document.getElementById('total_'+(i+1)).value;
-	document.getElementById('wttotal_'+i).value  	= document.getElementById('wttotal_'+(i+1)).value;
-	document.getElementById('wtprice_'+i).value  	= document.getElementById('wtprice_'+(i+1)).value;
-  }
-  document.getElementById('item_table_body').deleteRow(-1);
-  updateTotalPrices();
+  	var i, acctIndex, offset, newOffset;
+  	var numRows = document.getElementById('item_table_body').rows.length;
+  	// remove row from display by reindexing and then deleting last row
+  	for (i=index; i<numRows; i++) {
+		// move the delete icon from the previous row
+		offset    = i+1;
+		newOffset = i;
+		$('#delete_'+i).unbind('click').click(function(){
+			if (confirm(image_delete_msg)) removeInvRow(i);
+		});
+		document.getElementById('pstd_'+i).value     	= document.getElementById('pstd_'+(i+1)).value;
+		document.getElementById('sku_'+i).value      	= document.getElementById('sku_'+(i+1)).value;
+		document.getElementById('desc_'+i).value     	= document.getElementById('desc_'+(i+1)).value;
+		document.getElementById('price_'+i).value    	= document.getElementById('price_'+(i+1)).value;
+		document.getElementById('acct_'+i).value     	= document.getElementById('acct_'+(i+1)).value;
+		document.getElementById('tax_'+i).value      	= document.getElementById('tax_'+(i+1)).value;
+		document.getElementById('product_tax_'+i).value = document.getElementById('product_tax_'+(i+1)).value;
+		// Hidden fields
+		document.getElementById('id_'+i).value       	= document.getElementById('id_'+(i+1)).value;
+		document.getElementById('stock_'+i).value    	= document.getElementById('stock_'+(i+1)).value;
+		document.getElementById('inactive_'+i).value 	= document.getElementById('inactive_'+(i+1)).value;
+		document.getElementById('serial_'+i).value   	= document.getElementById('serial_'+(i+1)).value;
+		document.getElementById('full_'+i).value     	= document.getElementById('full_'+(i+1)).value;
+		document.getElementById('fixed_price_'+i).value	= document.getElementById('fixed_price_'+(i+1)).value;
+		document.getElementById('disc_'+i).value     	= document.getElementById('disc_'+(i+1)).value;
+		// End hidden fields
+		document.getElementById('total_'+i).value    	= document.getElementById('total_'+(i+1)).value;
+		document.getElementById('wttotal_'+i).value  	= document.getElementById('wttotal_'+(i+1)).value;
+		document.getElementById('wtprice_'+i).value  	= document.getElementById('wtprice_'+(i+1)).value;
+		if(document.getElementById('sku_'+i).value != ''){
+			$('#pstd_' + i).prop('disabled', false);
+			$('#sku_prop_'+i).show();
+			$('#sku_'+i).show();
+		} 
+  	}
+  	document.getElementById('item_table_body').deleteRow(-1);
+  	updateTotalPrices();
 } 
 
 function addPmtRow() {
@@ -677,8 +689,8 @@ function updateRowTotal(rowCnt, useAjax) {
 	document.getElementById('wtprice_' +rowCnt).value	 = formatCurrency(wtunit_price);
 	// calculate discount
 	if (full_price > 0) {
-	  var discount = (full_price - unit_price) / full_price;
-	  document.getElementById('disc_'+rowCnt).value = new String(Math.round(1000*discount)/10);
+	  	var discount = (full_price - unit_price) / full_price;
+	  	document.getElementById('disc_'+rowCnt).value = new String(Math.round(1000*discount)/10);
 	}
 	updateTotalPrices();
 	// call the ajax price sheet update based on customer
@@ -967,23 +979,33 @@ function startSkuSearch($sku){
  * this function is called after you click on a row in the inventory pop_up
  */
 function loadSkuDetails(iID, rowCnt) {
-  var sku;
-  if (!iID) return;
-  // search if item is aready present then increment it by one
-  var qty = 1;
-  var rowCnt = 0;
-  var cID = document.getElementById('bill_acct_id').value;
-  var bID = document.getElementById('store_id').value;
-  $.ajax({
-    type: "GET",
-    contentType: "application/xml; charset=utf-8",
-	url: 'index.php?module=inventory&page=ajax&op=inv_details&fID=skuDetails&bID='+bID+'&cID='+cID+'&qty='+qty+'&iID='+iID+'&strict=1&sku='+sku+'&rID='+rowCnt+'&jID='+journalID,
-    dataType: ($.browser.msie) ? "text" : "xml",
-    error: function(XMLHttpRequest, textStatus, errorThrown) {
-    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
-    },
-    success: fillInventory
-  });
+  	var qty, sku;
+	// check to see if there is a sku present
+  	if (!iID) sku = document.getElementById('sku').value; // read the search field as the real value
+  	if (!iID && (sku == '' || sku === text_search)) return;
+	// search if item is aready present then increment it by one
+  	var numRows = document.getElementById('item_table_body').rows.length;
+  	var qty = 1;
+  	var rowCnt = 0;
+  	for (var i=1; i<=numRows; i++) {
+		if (document.getElementById('sku_' +i).value == sku && document.getElementById('fixed_price_' +i).value > formatted_zero){
+	  		qty = document.getElementById('pstd_' +i).value;
+	  		qty++;
+	  		rowCnt = i;
+		}
+  	}
+  	var cID = document.getElementById('bill_acct_id').value;
+  	var bID = document.getElementById('store_id').value;
+	$.ajax({
+	    type: "GET",
+	    contentType: "application/xml; charset=utf-8",
+		url: 'index.php?module=inventory&page=ajax&op=inv_details&fID=skuDetails&bID='+bID+'&cID='+cID+'&qty='+qty+'&iID='+iID+'&strict=1&sku='+sku+'&rID='+rowCnt+'&jID='+journalID,
+	    dataType: ($.browser.msie) ? "text" : "xml",
+	    error: function(XMLHttpRequest, textStatus, errorThrown) {
+	    	alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+	    },
+	    success: fillInventory
+	});
 }
 
 function fillInventory(sXml) {

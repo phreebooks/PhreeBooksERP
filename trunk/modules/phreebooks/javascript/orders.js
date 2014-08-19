@@ -1,7 +1,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -19,7 +19,6 @@
 var bill_add = new Array(0);
 var ship_add = new Array(0);
 var force_clear = false;
-var default_sales_tax = -1; // tax defaults to what is specified by SKU
 var products = new Array();
 
 function ClearForm() {
@@ -39,7 +38,7 @@ function ClearForm() {
   document.getElementById('printed').value            = '0';
   document.getElementById('so_po_ref_id').value       = '0';
   document.getElementById('purch_order_id').value     = '';
-  document.getElementById('store_id').value           = '';
+  document.getElementById('store_id').value           = '0';
   document.getElementById('post_date').value          = defaultPostDate;
   document.getElementById('terminal_date').value      = defaultTerminalDate;
   document.getElementById('gl_acct_id').value         = default_GL_acct;
@@ -333,6 +332,7 @@ function fillOrder(xml) {
 		  if (imgSerial != null && $(xml).find("inventory_type").text() == 'sr') {
 			  document.getElementById('imgSerial_'+jIndex).style.display = '';
 		  }
+		  document.getElementById('sku_prop_'+jIndex).style.display = '';
 	      if ($(this).find("so_po_item_ref_id").text() || ((journalID == 4 || journalID == 10) && $(this).find("pstd").text())) {
 	        // don't allow sku to change, hide the sku search icon
 	        document.getElementById('sku_' + jIndex).readOnly = true;
@@ -352,9 +352,8 @@ function fillOrder(xml) {
   });
 }
 
-function AccountList() {
+function AccountList(override) {
   var guess = document.getElementById('search').value;
-  var override = document.getElementById('bill_add_update').checked ? true : false; // force popup if Add/Update checked
   if (guess != text_search && guess != '' && !override) {
     $.ajax({
 	  type: "GET",
@@ -458,10 +457,9 @@ function convertSO() {
 function serialList(id) {
 	switch (journalID) {
 		default: // for purchases
-			alert('looking for id = '+id);
 			var newChoice = prompt(serial_num_prompt, $('#'+id).val());
 			$('#'+id).val(newChoice);
-			break;
+			break; //@todo replace promt
 		case  '9':
 		case '10':
 		case '12':
@@ -939,6 +937,7 @@ function updateTotalPrices() {
   var shipment_weight  = 0;
   var subtotal         = 0;
   var taxable_subtotal = 0;
+  var freight_def_tax = default_sales_tax;
   var lineTotal        = '';
   if (single_line_list == '1') {
 	numRows = document.getElementById('item_table').rows.length;
@@ -979,6 +978,7 @@ function updateTotalPrices() {
 	  } else { 
         taxable_subtotal += lineTotal * (tax_rates[tax_index].rate / 100);
 	  }
+	  freight_def_tax = tax_index;
 	}
 	subtotal += lineTotal;
   }
@@ -993,7 +993,7 @@ function updateTotalPrices() {
   if (isNaN(freight)) freight = 0;
   strFreight = new String(freight);
   document.getElementById('freight').value = formatCurrency(strFreight);
-  if (tax_freight != 0 && default_sales_tax != 0) for (keyVar in tax_rates) {
+  if (tax_freight != 0 && freight_def_tax != 0) for (keyVar in tax_rates) {
     if (tax_rates[keyVar].id == tax_freight) taxable_subtotal += parseFloat(freight) * tax_rates[keyVar].rate / 100;
   }
 
@@ -1253,7 +1253,7 @@ function fillInventory(sXml) {
   document.getElementById('sku_'     +rowCnt).style.backgroundColor = '';
   document.getElementById('sku_'     +rowCnt).removeAttribute("title");
   var imgSerial = document.getElementById('imgSerial_'+rowCnt);
-  if (imgSerial != null && $(xml).find("inventory_type").text() == 'sr'){
+  if (imgSerial != null && ($(xml).find("inventory_type").text() == 'sr' || $(xml).find("inventory_type").text() == 'sa')){
     document.getElementById('imgSerial_'+rowCnt).style.display = '';
   }
   document.getElementById('sku_prop_'+rowCnt).style.display = '';
@@ -1271,7 +1271,7 @@ function fillInventory(sXml) {
 	  document.getElementById('acct_'  +rowCnt).value     = $(xml).find("account_inventory_wage").text();
 	  document.getElementById('price_' +rowCnt).value     = formatPrecise($(xml).find("sales_price").text() * exchange_rate);
 	  document.getElementById('full_'  +rowCnt).value     = formatCurrency($(xml).find("item_cost").text() * exchange_rate);
-	  if(default_sales_tax == -1) document.getElementById('tax_'   +rowCnt).value     = $(xml).find("purch_taxable").text();
+	  if(default_sales_tax == -1) document.getElementById('tax_'+rowCnt).value = $(xml).find("purch_taxable").text();
 	  if ($(xml).find("description_purchase").text()) {
 	    document.getElementById('desc_'  +rowCnt).value   = $(xml).find("description_purchase").text();
 	  } else {
@@ -1317,17 +1317,17 @@ function fillInventory(sXml) {
 	case  '9':
 	case '10':
 	  qty_pstd = 'qty_';
-	  document.getElementById('qty_'   +rowCnt).value     = $(xml).find("qty").first().text();
-	  document.getElementById('acct_'  +rowCnt).value     = $(xml).find("account_sales_income").text();
-	  document.getElementById('price_' +rowCnt).value     = formatPrecise($(xml).find("sales_price").text() * exchange_rate);
-	  document.getElementById('full_'    +rowCnt).value   = formatCurrency($(xml).find("full_price").text() * exchange_rate);
-	  if(default_sales_tax == -1) document.getElementById('tax_'   +rowCnt).value     = $(xml).find("item_taxable").text();
+	  document.getElementById('qty_'  +rowCnt).value = $(xml).find("qty").first().text();
+	  document.getElementById('acct_' +rowCnt).value = $(xml).find("account_sales_income").text();
+	  document.getElementById('price_'+rowCnt).value = formatPrecise($(xml).find("sales_price").text() * exchange_rate);
+	  document.getElementById('full_' +rowCnt).value = formatCurrency($(xml).find("full_price").text() * exchange_rate);
+	  if (default_sales_tax == -1) document.getElementById('tax_'+rowCnt).value = $(xml).find("item_taxable").text();
 	  if ($(xml).find("description_sales").text()) {
 	    document.getElementById('desc_'  +rowCnt).value   = $(xml).find("description_sales").text();
 	  } else {
 	    document.getElementById('desc_'  +rowCnt).value   = $(xml).find("description_short").text();
 	  }
-	  if(journalID == 10){
+	  if (journalID == 10) {
 		  if($(xml).find("inactive").text() == 1 && $(xml).find("branch_qty_in_stock").text() == 0) {
 			  document.getElementById('sku_'+rowCnt).style.backgroundColor = 'pink';
 			  document.getElementById('sku_'+rowCnt).title = ItemIsOutOfStockAndInactive;
@@ -1335,10 +1335,10 @@ function fillInventory(sXml) {
 			  document.getElementById('sku_'+rowCnt).style.backgroundColor = 'MediumOrchid';
 			  document.getElementById('sku_'+rowCnt).title = ItemIsOnOrder;
 		  }else if($(xml).find("branch_qty_in_stock").text() == 0) {
-			  document.getElementById('sku_'+rowCnt).style.backgroundColor = 'MediumPurple ';
+			  document.getElementById('sku_'+rowCnt).style.backgroundColor = 'FF6633';
 			  document.getElementById('sku_'+rowCnt).title = ItemMustBeOrderd;
 		  }
-	  }else{
+	  } else {
 		  if($(xml).find("inactive").text() == 1 && $(xml).find("branch_qty_in_stock").text() == 0) {
 			  document.getElementById('sku_'+rowCnt).style.backgroundColor = 'pink';
 			  document.getElementById('sku_'+rowCnt).title = ItemIsOutOfStockAndInactive;
@@ -1349,15 +1349,15 @@ function fillInventory(sXml) {
 	case '13':
 	case '19':
 	  qty_pstd = 'pstd_';
-	  document.getElementById('pstd_'  +rowCnt).value     = $(xml).find("qty").first().text();
-	  document.getElementById('acct_'  +rowCnt).value     = $(xml).find("account_sales_income").text();
-	  document.getElementById('price_' +rowCnt).value     = formatPrecise($(xml).find("sales_price").text() * exchange_rate);
-	  document.getElementById('full_'    +rowCnt).value   = formatCurrency($(xml).find("full_price").text() * exchange_rate);
-	  if(default_sales_tax == -1) document.getElementById('tax_'   +rowCnt).value     = $(xml).find("item_taxable").text();
+	  document.getElementById('pstd_' +rowCnt).value = $(xml).find("qty").first().text();
+	  document.getElementById('acct_' +rowCnt).value = $(xml).find("account_sales_income").text();
+	  document.getElementById('price_'+rowCnt).value = formatPrecise($(xml).find("sales_price").text() * exchange_rate);
+	  document.getElementById('full_' +rowCnt).value = formatCurrency($(xml).find("full_price").text() * exchange_rate);
+	  if (default_sales_tax == -1) document.getElementById('tax_'+rowCnt).value = $(xml).find("item_taxable").text();
 	  if ($(xml).find("description_sales").text()) {
-	    document.getElementById('desc_'  +rowCnt).value   = $(xml).find("description_sales").text();
+	    document.getElementById('desc_'  +rowCnt).value = $(xml).find("description_sales").text();
 	  } else {
-	    document.getElementById('desc_'  +rowCnt).value   = $(xml).find("description_short").text();
+	    document.getElementById('desc_'  +rowCnt).value = $(xml).find("description_short").text();
 	  }
 	  if(journalID == 12 && $(xml).find("inactive").text() == 1 && $(xml).find("branch_qty_in_stock").text() == 0) {
 		  document.getElementById('sku_'+rowCnt).style.backgroundColor = 'pink';

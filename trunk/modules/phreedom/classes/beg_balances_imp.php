@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
@@ -67,6 +67,7 @@ class beg_bal_import {
 	 * @param string $upload_name
 	 * @throws Exception
 	 */
+  	
 	function cyberParse($upload_name) {
 		$lines = file($_FILES[$upload_name]['tmp_name']);
 		if(!$lines) throw new \core\classes\userException("there are no line in file $upload_name");

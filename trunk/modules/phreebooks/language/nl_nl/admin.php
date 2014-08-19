@@ -77,7 +77,9 @@ define('TEXT_FIX_CHART_BALANCE_ERRORS','Repareer Balans Errors');
 define('TEXT_TEST_GL_BALANCES','Controleer Algemeen grootboek Balans');
 define('TEXT_REPAIR_GL_BALANCE_ERRORS','Repareer Algemeen grootboek Balans Errors');
 define('GEN_ADM_TOOLS_REPAIR_CONFIRM','Weet u zeker dat u de balans van de grootboekrekeningen wilt repareren?\\n\\nHET IS VERSTANDIG OM VERSCHILLENDE RAPPORTEN TE PRINTEN EN UW DATA TE BACK-UPPEN VOORDAT U VERDER GAAT!');
-define('GEN_ADM_TOOLS_REPAIR_ERROR_MSG','Er is een balans error in periode %s rekening %s waarde vergeleken: %s met: %s');
+define('GEN_ADM_TOOLS_REPAIR_BALANCE_ERROR_MSG','De start balans in periode %s voor rekening %s is: %s en zou moeten zijn: %s');
+define('GEN_ADM_TOOLS_REPAIR_ERROR_MSG','Het totaal aan wijziging in periode %s voor rekening %s is: %s en zou moeten zijn: %s, U kunt dit repararen door op nieuw op te slaan en dan de balans waardes te repararen.');
+
 define('TEXT_YOUR_CHART_OF_ACCOUNTS_ARE_IN_BALANCE','De rekeningen zijn in balans');
 define('GEN_ADM_TOOLS_REPAIR_ERROR','U zou de balans moeten repareren. BELANGRIJK: MAAK EEN BACK-UP VOORDAT U DE BALANS GAAT REPAREREN!');
 define('TEXT_THE_CHART_BALANCES_HAVE_BEEN_REPAIRED','De rekeningen zijn gerepareerd en in balans');

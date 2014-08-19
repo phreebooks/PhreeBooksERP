@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
@@ -131,8 +131,8 @@ class html_generator {
 	  }
 	}
 	// Ready to draw the column data
-	$fill           = false;
-	$NeedTop        = 'No';
+	$fill    = false;
+	$NeedTop = 'No';
 	foreach ($Data as $myrow) {
 	  $Action = array_shift($myrow);
 	  $todo = explode(':', $Action); // contains a letter of the date type and title/groupname
@@ -146,7 +146,7 @@ class html_generator {
    		  $rStyle = 'style="background-color:' . $this->HdColor . '"';
  		  $this->writeRow(array(array('align' => 'C', 'value' => $Desc . $todo[1])), $rStyle, $dStyle, true);
 		  // now fall into the 'd' case to show the data
-		  $fill = false;
+		  $fill = 'total';
 		case "d": // data element
 		default:
 		  $temp = array();
@@ -163,11 +163,13 @@ class html_generator {
 		  if ($data !== NULL) { // catches not checked column break at end of row
 			$temp[] = array('align' => $align[$key], 'value' => $data);
 		  }
-		  $rStyle = $fill ? $bgStyle : '';
- 		  $this->writeRow($temp, $rStyle, $dStyle);
+		  if     ($fill === 'total')$rStyle = 'style="background-color:'.$this->HdColor.'"';
+		  elseif ($fill === true)   $rStyle = $bgStyle;
+		  else                      $rStyle = '';
+		  $this->writeRow($temp, $rStyle, $dStyle);
 		  break;
 	  }
-	  $fill = !$fill;
+	  $fill = $fill ? false : true;
 	}
 	// send a blank header row
    	$rStyle = 'style="background-color:' . $this->HdColor . '"';

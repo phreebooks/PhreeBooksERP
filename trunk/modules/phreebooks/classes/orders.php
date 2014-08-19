@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -359,16 +359,22 @@ class orders extends \core\classes\journal {
 
   function add_freight_journal_row($debit_credit) {	// put freight into journal row array
     if ($debit_credit == 'debit' || $debit_credit == 'credit') {
-	  switch ($this->journal_id) {
+      // if no line items are charged tax, do not charge tax on shipping. ADDED 2014-04-28 by Dave
+      $tax_freight = false;
+      foreach ($this->journal_rows as $line_item) {
+    	if ($line_item['taxable'] > 0 && $line_item['gl_type'] == $this->gl_type) $tax_freight = true;
+      }
+
+      switch ($this->journal_id) {
 	    case  3:
 	    case  4:
 	    case  6:
-	    case  7: $freight_tax_id = AP_ADD_SALES_TAX_TO_SHIPPING; break;
+	    case  7: $freight_tax_id = $tax_freight ? AP_ADD_SALES_TAX_TO_SHIPPING : 0; break;
 	    case  9:
 	    case 10:
 	    case 12:
-	    case 13: $freight_tax_id = AR_ADD_SALES_TAX_TO_SHIPPING; break;
-	  }
+	    case 13: $freight_tax_id = $tax_freight ? AR_ADD_SALES_TAX_TO_SHIPPING : 0; break;
+	  }	   
 	  if ($this->freight) { // calculate freight charges
 		$this->journal_rows[] = array(
 		  'qty'                     => '1',

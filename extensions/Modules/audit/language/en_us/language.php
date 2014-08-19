@@ -15,7 +15,7 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/audit/language/en_us/language.php
-//
+// 
 define('TEXT_EXPORT_AUDIT_FILE','export audit file');
 define('TEXT_INCOME_STATEMENT','Income-Statement');
 define('TEXT_BALANCE_SHEET','Balancesheet');

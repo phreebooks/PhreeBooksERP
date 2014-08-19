@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -233,9 +233,9 @@ function fill_paid_invoice_array($id, $account_id, $type = 'c') {
 
 function fetch_partially_paid($id) {
   global $db;
-  $sql = "select sum(i.debit_amount) as debit, sum(i.credit_amount) as credit
-	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
-	where i.so_po_item_ref_id = " . $id . " and m.journal_id in (18, 20) and i.gl_type in ('chk', 'pmt')
+  $sql = "select sum(i.debit_amount) as debit, sum(i.credit_amount) as credit 
+	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id 
+	where i.so_po_item_ref_id = $id and m.journal_id in (18, 20) and i.gl_type in ('chk', 'pmt') 
 	group by m.journal_id";
   $result = $db->Execute($sql);
   if($result->RecordCount() == 0) return 0;
@@ -258,7 +258,7 @@ function calculate_terms_due_dates($post_date, $terms_encoded, $type = 'AR') {
 		if ($result['discount'] <> 0) {
 		  $result['early_date'] = gen_specific_date($post_date, constant($type . '_PREPAYMENT_DISCOUNT_DAYS'));
 		} else {
-		  $result['early_date'] = gen_specific_date($post_date, 1000); // move way out
+		  $result['early_date'] = $post_date; // move way out
 		}
 		break;
 	case '1': // Cash on Delivery (COD)

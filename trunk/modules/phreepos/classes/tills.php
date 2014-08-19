@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -210,6 +210,7 @@ class tills {
 	  	}
 	  	$sql = "select till_id, description from " . $this->db_table . " where store_id in (" . implode(',', $temp) . ")";
 	    $result = $db->Execute($sql);
+	    if (defined('ENABLE_ENCRYPTION') && ENABLE_ENCRYPTION == true && (!isset($_SESSION['admin_encrypt']) || $_SESSION['admin_encrypt'] == '')) throw new \core\classes\userException("Error - Encryption key not set! The encryption key must be set to use the POS module.");
 	    if ($result->RecordCount()== 0) throw new \core\classes\userException("Before continuing set a till for this store. This will contain default values to allow this page to work", E_USER_ERROR);// there should always be a till because of defaults values.
 	    if ($result->RecordCount()== 1) return false;
 	    return true;

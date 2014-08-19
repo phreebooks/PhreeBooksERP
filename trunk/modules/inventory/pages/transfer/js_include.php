@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -21,8 +21,10 @@
 <!--
 // pass any php variables generated during pre-process that are used in the javascript functions.
 // Include translations here as well.
-var securityLevel = <?php echo $security_level; ?>;
-var text_search   = '<?php echo TEXT_SEARCH; ?>';
+var securityLevel    = <?php echo $security_level; ?>;
+var text_search      = '<?php echo TEXT_SEARCH; ?>';
+var serial_num_prompt= '<?php echo ORD_JS_SERIAL_NUM_PROMPT; ?>';
+
 <?php echo js_calendar_init($cal_xfr); ?>
 
 function init() {
@@ -51,15 +53,27 @@ function InventoryList(rowCnt) {
   window.open("index.php?module=inventory&page=popup_inv&rowID="+rowCnt+"&type=v&storeID="+bID+"&f1=cog&search_text="+sku,"inventory","width=700,height=550,resizable=1,scrollbars=1,top=150,left=200");
 }
 
-function serialList(rowID) {
-	var choice    = document.getElementById('serial_'+rowID).value;
-  	$.messager.prompt('<?php echo TEXT_SERIAL_NUMBER?>', "<?php echo ORD_JS_SERIAL_NUM_PROMPT; ?>", function(newChoice){
-		if (newChoice){
-			document.getElementById('serial_'+rowID).value = newChoice;
-		}
-		return false;
-	});
-	$('.messager-input').val(choice).focus();
+function serialList(id) {
+	var rowID= id.replace("serial_", "");
+	var qty  = $("#qty_"+rowID).val();
+	var choice    = $('#'+id).val();
+	if (qty == 1) {
+		$.messager.prompt('<?php echo TEXT_SERIAL_NUMBER?>', serial_num_prompt, function(newChoice){
+			if (newChoice){
+				document.getElementById('serial_'+rowID).value = newChoice;
+			}
+			return false;
+		});
+		$('.messager-input').val(choice).focus();
+	} else if (qty == -1) {
+		var curDef  = $("#"+id).val();
+		var sku     = $("#sku_"+rowID).val();
+		var storeID = $("#source_store_id").val();
+		if (storeID == '') storeID = '0';
+		window.open("index.php?module=inventory&page=popup_serial&def="+curDef+"&sku="+sku+"&rowID="+rowID+"&storeID="+storeID,"serialize","width=700px,height=550px,resizable=1,scrollbars=1,top=150,left=200");
+	} else {
+		alert('<?php echo "Quantity must be 1 or -1 for serialized items!"; ?>');
+	}
 }
 
 function loadSkuDetails(iID, rowCnt) {

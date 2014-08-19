@@ -20,5 +20,4 @@
 // Module information
 define('TEXT_BULK_INVENTORY_TOOL','Bulk Voorraad Tool');
 define('MODULE_BULK_INV_DESCRIPTION','deze tool helpt om sneller informatie in de database te zetten dan de voorraad manager.');
-
 ?>

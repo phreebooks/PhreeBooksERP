@@ -1,88 +1,50 @@
 <?php
 // +-----------------------------------------------------------------+
-// | PhreeBooks Open Source ERP |
+// |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com) |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
-// | This program is free software: you can redistribute it and/or |
-// | modify it under the terms of the GNU General Public License as |
-// | published by the Free Software Foundation, either version 3 of |
-// | the License, or any later version. |
-// | |
+// | This program is free software: you can redistribute it and/or   |
+// | modify it under the terms of the GNU General Public License as  |
+// | published by the Free Software Foundation, either version 3 of  |
+// | the License, or any later version.                              |
+// |                                                                 |
 // | This program is distributed in the hope that it will be useful, |
-// | but WITHOUT ANY WARRANTY; without even the implied warranty of |
-// | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the |
-// | GNU General Public License for more details. |
+// | but WITHOUT ANY WARRANTY; without even the implied warranty of  |
+// | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the   |
+// | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
-// Path: /modules/phreebooks/pages/status/pre_process.php
+//  Path: /modules/phreebooks/pages/status/pre_process.php
 //
-/**
- * ************ Check user security ****************************
- */
-define ( 'JOURNAL_ID', $_GET ['jID'] );
+/**************   Check user security   *****************************/
+define('JOURNAL_ID', $_GET['jID']);
 switch (JOURNAL_ID) {
-	case 2 :
-		$security_token = SECURITY_ID_JOURNAL_ENTRY;
-		break;
-	case 3 :
-		$security_token = SECURITY_ID_PURCHASE_QUOTE;
-		break;
-	case 4 :
-		$security_token = SECURITY_ID_PURCHASE_ORDER;
-		break;
-	case 6 :
-		$security_token = SECURITY_ID_PURCHASE_INVENTORY;
-		break;
-	case 7 :
-		$security_token = SECURITY_ID_PURCHASE_CREDIT;
-		break;
-	case 9 :
-		$security_token = SECURITY_ID_SALES_QUOTE;
-		break;
-	case 10 :
-		$security_token = SECURITY_ID_SALES_ORDER;
-		break;
-	case 12 :
-		$security_token = SECURITY_ID_SALES_INVOICE;
-		break;
-	case 13 :
-		$security_token = SECURITY_ID_SALES_CREDIT;
-		break;
-	case 18 :
-		$security_token = SECURITY_ID_CUSTOMER_RECEIPTS;
-		break;
-	case 20 :
-		$security_token = SECURITY_ID_PAY_BILLS;
-		break;
-	default :
-		trigger_error ( 'Bad or missing journal id found (filename: modules/phreebooks/status.php), Journal_ID needs to be passed to this script to identify the correct procedure.', E_USER_ERROR );
+  case  2: $security_token = SECURITY_ID_JOURNAL_ENTRY;      break;
+  case  3: $security_token = SECURITY_ID_PURCHASE_QUOTE;     break;
+  case  4: $security_token = SECURITY_ID_PURCHASE_ORDER;     break;
+  case  6: $security_token = SECURITY_ID_PURCHASE_INVENTORY; break;
+  case  7: $security_token = SECURITY_ID_PURCHASE_CREDIT;    break;
+  case  9: $security_token = SECURITY_ID_SALES_QUOTE;        break;
+  case 10: $security_token = SECURITY_ID_SALES_ORDER;        break;
+  case 12: $security_token = SECURITY_ID_SALES_INVOICE;      break;
+  case 13: $security_token = SECURITY_ID_SALES_CREDIT;       break;
+  case 18: $security_token = SECURITY_ID_CUSTOMER_RECEIPTS;  break;
+  case 20: $security_token = SECURITY_ID_PAY_BILLS;          break;
+  default:
+    die('Bad or missing journal id found (filename: modules/phreebooks/status.php), Journal_ID needs to be passed to this script to identify the correct procedure.');
 }
 $security_level = \core\classes\user::validate ( $security_token );
-/**
- * ************ include page specific files ********************
- */
-require (DIR_FS_WORKING . 'defaults.php');
-require (DIR_FS_WORKING . 'functions/phreebooks.php');
-/**
- * ************ page specific initialization ************************
- */
-history_filter ( 'pb' . JOURNAL_ID, $defaults = array (
-		'sf' => TEXT_DATE,
-		'so' => 'desc',
-		'search_period' => CURRENT_ACCOUNTING_PERIOD
-) );
-$date_today = date ( 'Y-m-d' );
-/**
- * ************* hook for custom actions **************************
- */
+**************  include page specific files    *********************/
+require(DIR_FS_WORKING . 'defaults.php');
+require(DIR_FS_WORKING . 'functions/phreebooks.php');
+/**************   page specific initialization  *************************/
+history_filter('pb'.JOURNAL_ID, $defaults = array('sf'=>TEXT_DATE, 'so'=>'desc', 'search_period'=>CURRENT_ACCOUNTING_PERIOD));
+$date_today = date('Y-m-d');
+/***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/status/extra_actions.php';
-if (file_exists ( $custom_path )) {
-	include ($custom_path);
-}
-/**
- * ************* Act on the action request ************************
- */
-switch ($_REQUEST ['action']) {
+if (file_exists($custom_path)) { include($custom_path); }
+/***************   Act on the action request   *************************/
+switch ($_REQUEST['action']) {
 	case 'toggle' :
 		$id = db_prepare_input ( $_POST ['rowSeq'] );
 		$result = $db->Execute ( "select waiting from " . TABLE_JOURNAL_MAIN . " where id = '$id'" );
@@ -229,8 +191,14 @@ if (is_array ( $extra_query_list_fields ) > 0)
 $query_raw = "select SQL_CALC_FOUND_ROWS " . implode ( ', ', $field_list ) . " from " . TABLE_JOURNAL_MAIN . "
 	where journal_id = " . JOURNAL_ID . $period_filter . $search . " order by $disp_order, purchase_invoice_id DESC";
 $query_result = $db->Execute ( $query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST ['list'] - 1)) . ", " . MAX_DISPLAY_SEARCH_RESULTS );
-$query_split = new \core\classes\splitPageResults ( $_REQUEST ['list'], '' );
-history_save ( 'pb' . JOURNAL_ID );
+// the splitPageResults should be run directly after the query that contains SQL_CALC_FOUND_ROWS
+$query_split  = new splitPageResults($_REQUEST['list'], '');
+if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results
+	$_REQUEST['list'] = $query_split->current_page_number;
+	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+	$query_split  = new splitPageResults($_REQUEST['list'], '');
+}
+history_save('pb'.JOURNAL_ID);
 
 $include_header = true;
 $include_footer = true;

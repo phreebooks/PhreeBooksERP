@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -216,10 +216,12 @@ if (defined('PHREEPOS_ENABLE_DIRECT_PRINTING') && PHREEPOS_ENABLE_DIRECT_PRINTIN
   	<param name="code"      value="qz.PrintApplet.class" />
   	<param name="mayscript" value="true" />
   	<param name="permissions" value="all-permissions" />
+	<param name="cache_option" value="yes"/>
 </object>
 -->
 <applet id="qz" name="QZ Print Plugin" code="qz.PrintApplet.class" archive="<?php echo DIR_WS_ADMIN . 'modules/phreedom/includes/jzebra/qz-print.jar'; ?>" width="16px" height="16px">
 	<param name="permissions" value="all-permissions" />
+	<param name="cache_option" value="yes"/>
 </applet>
 <?php }else{
 	echo html_hidden_field("qz");

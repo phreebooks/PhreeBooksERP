@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -23,7 +23,7 @@ switch ($type) {
   case 'c': // customers
 	define('JOURNAL_ID', 18);
 	define('GL_TYPE','pmt');
-	define('POPUP_FORM_TYPE','bnk:rcpt');
+	define('POPUP_FORM_TYPE','cust:cm');
 	define('AUDIT_LOG_DESC',TEXT_CUSTOMER_DEPOSITS);
 	define('DEF_DEP_GL_ACCT',AR_DEF_DEP_LIAB_ACCT);
 	define('PAGE_TITLE', TEXT_CUSTOMER_DEPOSITS);
@@ -137,8 +137,7 @@ switch ($_REQUEST['action']) {
 	if (!$order->bill_acct_id)          throw new \core\classes\userException(sprintf(ERROR_NO_CONTACT_SELECTED, strtolower (TEXT_CUSTOMER), strtolower (TEXT_CUSTOMER), TEXT_ADD_UPDATE));
 	if (!$order->item_rows[0]['total']) throw new \core\classes\userException(GL_ERROR_NO_ITEMS);
 	// post the receipt/payment
-	if($order->post_ordr($_REQUEST['action'])){
-	  $oID = $order->id; // save id for printing
+	if (!$error && $post_success = $order->post_ordr($_REQUEST['action'])) {
 	  // now create a credit memo to show a credit on customers account
 	  $order                      = new \phreebooks\classes\orders();
 	  $order->bill_short_name     = db_prepare_input($_POST['search']);
@@ -170,7 +169,10 @@ switch ($_REQUEST['action']) {
 		'total' => $currencies->clean_value(db_prepare_input($_POST['total_1'])),
 		'acct'  => db_prepare_input($_POST['acct_1']),
 	  );
-	  if (!$order->post_ordr($_REQUEST['action'])) {
+	  $post_credit = $order->post_ordr($_REQUEST['action']);
+	  $messageStack->add("order id is now: $order->id", 'caution');
+	  $oID = $order->id; // need to fetch id for printing
+	  if (!$post_credit) {
 		$order            = new \core\classes\objectInfo($_POST);
 		$order->post_date = gen_db_date($_POST['post_date']); // fix the date to original format
 		$order->id        = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive

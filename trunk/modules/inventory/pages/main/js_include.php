@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -18,7 +18,6 @@
 //
 ?>
 <script type="text/javascript">
-<!--
 // pass some php variables
 var image_delete_text 	= '<?php echo TEXT_DELETE; ?>';
 var image_delete_msg  	= '<?php echo INV_MSG_DELETE_INV_ITEM; ?>';
@@ -172,13 +171,13 @@ function what_to_update(){
 
 function update_full_price_incl_tax(margin, inclTax, fullprice) {
 //calculate margin
+	var highest = 0;
 	if(margin){
-		var highest = 0;
 		var x=document.getElementsByName("item_cost_array[]");
 		for (var i = 0; i < x.length; i++) {
         	var temp = x.item(i).value;
         	var calculate = cleanCurrency(temp);
-        	if(calculate > highest){
+        	if(parseFloat(calculate) > parseFloat(highest)){
         		 highest = calculate;
         	}
         }
@@ -227,8 +226,10 @@ function priceMgr(id, cost, price, type) {
 }
 
 function InventoryList(rowCnt) {
-	if(rowCnt == '') return;
-  	window.open("index.php?module=inventory&page=popup_inv&rowID="+rowCnt+"&search_text="+document.getElementById('sku_'+rowCnt).value,"inventory","width=700,height=550,resizable=1,scrollbars=1,top=150,left=200");
+	if (rowCnt == '') return;
+	var url = "index.php?module=inventory&page=popup_inv&rowID="+rowCnt;
+	if ($('#sku_'+rowCnt).val() != '') url += "&search_text="+$('#sku_'+rowCnt).val();
+  	window.open(url,"inventory","width=700,height=550,resizable=1,scrollbars=1,top=150,left=200");
 }
 // ******* BOF - MASTER STOCK functions *********/
 
@@ -589,7 +590,7 @@ function addVendorRow(){
 	newCell.innerHTML = cell;
 	<?php
 	if(isset($cInfo->vendor_id)) {
-		echo "cell  ='". str_replace("'", "\'", html_pull_down_menu('vendor_id_array[]', gen_get_contact_array_by_type('v'), ''))."';".chr(13);
+		echo "cell  ='". str_replace("'", "\'", html_pull_down_menu('vendor_id_array[]', gen_get_contact_array_by_type('v'), ""))."';".chr(13);
 	}else{
 		echo "cell  ='';".chr(13);
 	} ?>

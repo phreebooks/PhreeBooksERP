@@ -47,8 +47,8 @@ class to_receive_inv extends \core\classes\ctl_panel {
 		$control .= '</div></div>';
 		// Build content box
 		$total = 0;
-		$sql = "select id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value, post_date
-		  from " . TABLE_JOURNAL_MAIN . "
+		$sql = "select id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value, post_date, journal_id 
+		  from " . TABLE_JOURNAL_MAIN . " 
 		  where journal_id in (6,7) and waiting = '1' order by post_date DESC, purchase_invoice_id DESC";
 		if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
 		$result = $db->Execute($sql);
@@ -61,10 +61,10 @@ class to_receive_inv extends \core\classes\ctl_panel {
 			 	$total += $inv_balance;
 				$contents .= '<div style="float:right">' . $currencies->format_full($inv_balance, true, $result->fields['currencies_code'], $result->fields['currencies_value']) . '</div>';
 				$contents .= '<div>';
-				$contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;oID='.$result->fields['id'].'&amp;jID=6&amp;action=edit', 'SSL') . '">';
+				$contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;oID={$result->fields['id']}&amp;jID={$result->fields['journal_id']}&amp;action=edit", 'SSL') . '">';
 				$contents .= gen_locale_date($result->fields['post_date']) . ' - ';
-				if($result->fields['purchase_invoice_id'] != '')$contents .= $result->fields['purchase_invoice_id'] . ' - ';
-				$contents .= htmlspecialchars(gen_trim_string($result->fields['bill_primary_name'], 20, true));
+				if ($result->fields['purchase_invoice_id'] != '')$contents .= $result->fields['purchase_invoice_id'] . ' - ';
+				$contents .= htmlspecialchars($result->fields['bill_primary_name']);
 				$contents .= '</a></div>' . chr(10);
 				$result->MoveNext();
 			}

@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -37,7 +37,7 @@ define('DIR_FS_MY_FILES',  DIR_FS_ADMIN . 'my_files/');
 define('FILENAME_DEFAULT', 'index');
 
 // define the inventory types that are tracked in cost of goods sold
-define('COG_ITEM_TYPES','si,sr,ms,mi,as');
+define('COG_ITEM_TYPES','si,sr,ms,mi,ma');
 
 // set the type of request (secure or not)
 $request_type = (strtolower($_SERVER['HTTPS']) == 'on' || $_SERVER['HTTPS'] == '1' || strstr(strtoupper($_SERVER['HTTP_X_FORWARDED_BY']),'SSL') || strstr(strtoupper($_SERVER['HTTP_X_FORWARDED_HOST']),'SSL'))  ? 'SSL' : 'NONSSL';

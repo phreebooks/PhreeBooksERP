@@ -336,7 +336,6 @@ switch ($_REQUEST['action']) {
     $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     history_save('assets');
-
 	define('PAGE_TITLE', TEXT_ASSET);
     $include_template = 'template_main.php';
 	break;

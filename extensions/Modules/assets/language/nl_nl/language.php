@@ -16,7 +16,6 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/assets/language/nl_nl/language.php
 //
-
 // General Defines
 define('TEXT_ACQ_DATE','Aankoop Datum');
 define('TEXT_ASSET_ID','Activa ID');

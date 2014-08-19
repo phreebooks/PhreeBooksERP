@@ -39,12 +39,11 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 		parent::copy($id, $newSku);
 		$result = $db->Execute("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->old_sku . "'");
 		$data_array = array(
-		  'sku'         => $this->sku,
-		  'ms_attr_0'      => $result->fields['ms_attr_0'],
-		  'attr_name_0' => $result->fields['attr_name_0'],
-		  'ms_attr_1'      => $result->fields['ms_attr_1'],
-		  'attr_name_1' => $result->fields['attr_name_1'],
-		);
+			'sku'			=> $this->sku,
+			'attr_0'   		=> $result->fields['attr_0'],
+			'attr_name_0'	=> $result->fields['attr_name_0'],
+			'attr_1'   		=> $result->fields['attr_1'],
+			'attr_name_1'	=> $result->fields['attr_name_1']);
 		db_perform(TABLE_INVENTORY_MS_LIST, $data_array, 'insert');
 		$this->get_ms_list();
 		return true;
@@ -144,8 +143,8 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 	}
 
 	function save(){
-		global $db, $messageStack, $security_level;
-		$current_situation = $db->Execute("select * from " . TABLE_INVENTORY . " where id = '" . $this->id  . "'");
+		global $db, $messageStack, $security_level, $currencies;
+		$current_situation = $db->Execute("select * from " . TABLE_INVENTORY . " where id = '{$this->id}'");
 		$sql_data_array = parent::save();
 		$sql_data_array['inventory_type'] = 'mi';
 		// 	split attributes
@@ -178,7 +177,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 			}
 		}
 		// either update, delete or insert sub skus depending on sku list
-		$result = $db->Execute("select sku from " . TABLE_INVENTORY . " where inventory_type = 'mi' and sku like '" . $this->sku . "-%'");
+		$result = $db->Execute("select sku from " . TABLE_INVENTORY . " where inventory_type = 'mi' and sku like '{$this->sku}-%'");
 		$existing_sku_list = array();
 		while (!$result->EOF) {
 			$existing_sku_list[] = $result->fields['sku'];
@@ -213,6 +212,8 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 					case 'description_short': 		if($this->description_short == $value) 		unset($sql_data_array[$key]); Break;
 					case 'description_purchase': 	if($this->description_purchase == $value) 	unset($sql_data_array[$key]); Break;
 					case 'description_sales': 		if($this->description_sales == $value) 		unset($sql_data_array[$key]); Break;
+					case 'minimum_stock_level': 	if($currencies->clean_value($this->minimum_stock_level) == $currencies->clean_value($value)) 	unset($sql_data_array[$key]); Break;
+					case 'reorder_quantity': 		if($currencies->clean_value($this->reorder_quantity) == $currencies->clean_value($value))		unset($sql_data_array[$key]); Break;
 					default:						if($sql_data_array[$key] == $value) 		unset($sql_data_array[$key]);
 				}
 			}
@@ -227,7 +228,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 				$backUpRow['description_purchase'] = sprintf($backUpRow['description_purchase'], 	$variables[$sku]['idx0'], $variables[$sku]['idx1'] );
 				$purchase_data_array = null;
 				if($backUpRow['action'] == 'delete'){
-					$result = $db->Execute("delete from " . TABLE_INVENTORY_PURCHASE . " where sku = '" . $sku . "' and vendor_id = '".$backUpRow['vendor_id']."'");
+					$result = $db->Execute("delete from " . TABLE_INVENTORY_PURCHASE . " where sku = '$sku' and vendor_id = '{$backUpRow['vendor_id']}'");
 				} else if($backUpRow['action'] == 'insert'){
 					$purchase_data_array = $backUpRow;
 					unset($purchase_data_array['id']);
@@ -256,14 +257,14 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 		foreach($delete_list as $sku) {
 			$temp = $this->mi_check_remove($sku);
 			if($temp === true){
-				$result = $db->Execute("delete from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
-				$result = $db->Execute("delete from " . TABLE_INVENTORY_PURCHASE . " where sku = '" . $sku . "'");
+				$result = $db->Execute("delete from " . TABLE_INVENTORY . " where sku = '$sku'");
+				$result = $db->Execute("delete from " . TABLE_INVENTORY_PURCHASE . " where sku = '$sku'");
 			}elseif ($temp === false){
-				$result = $db->Execute("update " . TABLE_INVENTORY . " set inactive = '1' where sku = '" . $sku . "'");
+				$result = $db->Execute("update " . TABLE_INVENTORY . " set inactive = '1' where sku = '$sku'");
 			}
 		}
 		// update/insert into inventory_ms_list table
-		$result = $db->Execute("select id from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->sku . "'");
+		$result = $db->Execute("select id from " . TABLE_INVENTORY_MS_LIST . " where sku = '{$this->sku}'");
 		$exists = $result->RecordCount();
 		$data_array = array(
 			'sku'         => $this->sku,

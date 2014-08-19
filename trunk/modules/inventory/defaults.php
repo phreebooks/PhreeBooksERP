@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -65,6 +65,9 @@ $price_mgr_adjustments = array(
   '2' => TEXT_DECREASE_BY_PERCENT,
   '3' => TEXT_INCREASE_BY_AMOUNT,
   '4' => TEXT_INCREASE_BY_PERCENT,
+  '5' => TEXT_MARK_UP_BY_PERCENT, // Mark up by Percent
+  '6' => TEXT_MARGIN, // Margin by Percent
+  '7' => TEXT_TIERED_PRICING, // tiered pricing
 );
 $price_mgr_rounding = array(
   '0' => TEXT_NONE,

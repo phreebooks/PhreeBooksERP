@@ -27,5 +27,4 @@ function pf_process_assets($strData, $Process) {
   }
   return $strData; // No Process recognized, return original value
 }
-
 ?>

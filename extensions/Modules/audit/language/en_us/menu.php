@@ -15,6 +15,6 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/audit/language/en_us/menu.php
-//
+// 
 define('TEXT_AUDIT_EXPORT_XAF','Audit / export xaf');
 ?>

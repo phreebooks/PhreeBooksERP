@@ -28,5 +28,4 @@ $assets_types = array(
   'ld' => TEXT_LAND,
   'sw' => TEXT_SOFTWARE,
 );
-
 ?>

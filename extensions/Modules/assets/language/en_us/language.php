@@ -16,7 +16,6 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/assets/language/en_us/language.php
 //
-
 // General Defines
 define('TEXT_ACQ_DATE','Acq Date');
 define('TEXT_ASSET_ID','Asset ID');

@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
@@ -68,6 +68,10 @@
   <tr>
     <td><?php echo CD_12_74_DESC; ?></td>
     <td><?php echo html_input_field('currencies_translations', $_POST['currencies_translations'] ? $_POST['currencies_translations'] : CURRENCIES_TRANSLATIONS, ''); ?></td>
+  </tr>
+  <tr>
+    <td><?php echo SETUP_SERVER_ADDRESS; ?></td>
+    <td><?php echo html_input_field('server_address', $_POST['server_address'] ? $_POST['server_address'] : SERVER_ADDRESS, ''); ?></td>
   </tr>
  </tbody>
 </table>

@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -39,6 +39,8 @@ define('TEXT_DOUBLE_MODE','Double Line Entry');
 define('TEXT_JOURNAL_DESCRIPTION','Journal Description');
 define('TEXT_QUANTITY_ORDERED','Quantity Ordered');
 define('TEXT_CHART_OF_ACCOUNT_TYPE','Chart of Account Type');
+define('PB_PF_GET_AVG_COST','Inv Average Cost');
+define('PB_PF_GET_AVG_TOTAL','Inv Average Total');
 // Chart of Account Type definitions
 define('TEXT_CASH','Cash');
 define('COA_02_DESC','Accounts Receivable');
@@ -100,7 +102,8 @@ define('TEXT_FIX_CHART_BALANCE_ERRORS','Fix Chart Balance Errors');
 define('TEXT_TEST_GL_BALANCES','Test GL Balances');
 define('TEXT_REPAIR_GL_BALANCE_ERRORS','Repair GL Balance Errors');
 define('GEN_ADM_TOOLS_REPAIR_CONFIRM','Are you sure you want to repair the general ledger balances?\n\nYOU SHOULD PRINT FINANCIAL SATEMENTS AND BACKUP YOUR COMPANY BEFORE DOING THIS!');
-define('GEN_ADM_TOOLS_REPAIR_ERROR_MSG','There is a balance error in period %s account %s values compared: %s with: %s');
+define('GEN_ADM_TOOLS_REPAIR_BALANCE_ERROR_MSG','The starting balance in period %s for account %s is: %s compaired with: %s');
+define('GEN_ADM_TOOLS_REPAIR_ERROR_MSG','The total of adjustments in period %s for account %s values is: %s compaired with: %s. This can be fixed by reposting and than running the repaire balance error');
 define('TEXT_YOUR_CHART_OF_ACCOUNTS_ARE_IN_BALANCE','Your chart of accounts are in balance.');
 define('GEN_ADM_TOOLS_REPAIR_ERROR','You should repair the chart balance. NOTE: BACKUP BEFORE YOU REPAIR THE CHART OF ACCOUNTS BALANCES!');
 define('TEXT_THE_CHART_BALANCES_HAVE_BEEN_REPAIRED','The chart balances have been repaired.');

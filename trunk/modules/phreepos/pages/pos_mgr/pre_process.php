@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -23,7 +23,7 @@ define('JOURNAL_ID','19');
 define('POPUP_FORM_TYPE','pos:rcpt');
 history_filter('pos_mgr');
 /***************   hook for custom actions  ***************************/
-$date        = ($_REQUEST['search_date']!= '') ? gen_db_date($_REQUEST['search_date']): false;
+$date        = gen_db_date($_REQUEST['search_date']);
 $acct_period = $_REQUEST['search_period'];
 $oid		 = isset($_GET['oID']) ? $_GET['oID'] : false;
 if ($acct_period == false) $acct_period = CURRENT_ACCOUNTING_PERIOD;

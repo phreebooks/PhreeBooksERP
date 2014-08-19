@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -26,15 +26,11 @@ require_once('pages/main/pre_process.php');
 <html xmlns="http://www.w3.org/1999/xhtml"  <?php echo HTML_PARAMS; ?>>
 <head>
 <title><?php echo PAGE_TITLE; ?></title>
-<meta http-equiv="Content-Type"
-	content="text/html; charset=<?php echo CHARSET; ?>" />
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo CHARSET; ?>" />
 <link rel="shortcut icon" type="image/ico" href="../favicon.ico" />
-<link rel="stylesheet" type="text/css"
-	href="../themes/default/css/start/stylesheet.css" />
-<link rel="stylesheet" type="text/css"
-	href="../themes/default/css/start/jquery_datatables.css" />
-<link rel="stylesheet" type="text/css"
-	href="../themes/default/css/start/jquery-ui.css" />
+<link rel="stylesheet" type="text/css" href="../themes/default/css/start/stylesheet.css" />
+<link rel="stylesheet" type="text/css" href="../themes/default/css/start/jquery_datatables.css" />
+<link rel="stylesheet" type="text/css" href="../themes/default/css/start/jquery-ui.css" />
 
 <script type="text/javascript">
 	var pbBrowser       = (document.all) ? 'IE' : 'FF';
@@ -42,10 +38,8 @@ require_once('pages/main/pre_process.php');
     var combo_image_off = '';
   </script>
 <script type="text/javascript" src="../includes/jquery-1.6.2.min.js"></script>
-<script type="text/javascript"
-	src="../includes/jquery-ui-1.8.16.custom.min.js"></script>
-<script type="text/javascript"
-	src="../includes/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="../includes/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="../includes/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="../includes/common.js"></script>
   <?php require_once('pages/main/js_include.php'); ?>
  </head>

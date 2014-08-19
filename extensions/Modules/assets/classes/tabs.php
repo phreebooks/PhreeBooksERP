@@ -24,5 +24,4 @@ class tabs extends \core\classes\tabs{
     public  $extra_buttons = '';
 
 }
-
 ?>

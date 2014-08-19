@@ -92,5 +92,4 @@ if (defined('MODULE_ASSETS_STATUS')) {
 		);
   	}
 }
-
 ?>

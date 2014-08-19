@@ -2,8 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
-
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -35,13 +34,10 @@ class acct_recon {
 	    if (!$gl_account) throw new \core\classes\userException("no gl account"); // No gl account so bail now
 
 	    //Load open Journal Items
-		$sql = "SELECT m.id, m.post_date, i.debit_amount, i.credit_amount, m.purchase_invoice_id, i.description " .
-			"FROM " . TABLE_JOURNAL_MAIN . " m " . "INNER JOIN " . TABLE_JOURNAL_ITEM . " i " .	"ON m.id = i.ref_id " .
-			"WHERE i.gl_account = '" . $gl_account . "' " .
-				"AND i.reconciled = 0 " .
-				"AND m.post_date <= '" . $fiscal_dates['end_date'] . "' " .
-			"ORDER BY post_date";
-			
+		$sql = "SELECT m.id, m.post_date, i.debit_amount, i.credit_amount, m.purchase_invoice_id, i.description 
+			FROM ".TABLE_JOURNAL_MAIN." m INNER JOIN ".TABLE_JOURNAL_ITEM." i ON m.id = i.ref_id 
+			WHERE i.gl_account='$gl_account' AND (i.reconciled=0 OR i.reconciled>$period) AND m.post_date<='{$fiscal_dates['end_date']}' 
+			ORDER BY post_date";
 		$result = $db->Execute($sql);
 		while (!$result->EOF) {
 		  $new_total      = $result->fields['debit_amount'] - $result->fields['credit_amount'];
