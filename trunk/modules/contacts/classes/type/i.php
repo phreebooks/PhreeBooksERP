@@ -23,6 +23,7 @@ class i extends \contacts\classes\contacts{
 	public  $type                   = 'i';
 	private $duplicate_id_error     = ACT_ERROR_DUPLICATE_CONTACT;
 	public 	$auto_field    			= 'next_crm_id_num';
+	public 	$auto_field    			= 'next_crm_id_num';
 	public $title					= TEXT_CONTACT;
 
   	public function __construct(){

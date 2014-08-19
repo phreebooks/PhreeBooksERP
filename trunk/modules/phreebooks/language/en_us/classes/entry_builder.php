@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
@@ -111,5 +111,6 @@ define('RW_EB_INV_PRICE_W_TAX','invoice_price_w_tax');
 define('RW_EB_INV_SKU','invoice_sku');
 define('RW_EB_INV_SERIAL_NUM','invoice_serial_num');
 define('RW_EB_INV_LINE_TAX','invoice_line_tax');
+define('RW_EB_INV_LINE_TAX_RATE','invoice_line_tax_rate');
 
 ?>

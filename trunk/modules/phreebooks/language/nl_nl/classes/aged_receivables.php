@@ -20,6 +20,7 @@ define('RW_AR_FRT_SERVICE','Vracht Dienst');
 define('RW_AR_TERMS','Voorwaarden');
 define('RW_AR_SALES_TAX','Verkoop BTW');
 define('RW_AR_TAX_AUTH','BTW Tarief');
+define('RW_AR_BALANCE_FUTRE','Toekomst');
 define('RW_AR_INV_TOTAL','Factuur Bedrag');
 define('RW_AR_BALANCE_DUE','Openstaand bedrag');
 define('RW_AR_CUR_CODE','Valuta code');

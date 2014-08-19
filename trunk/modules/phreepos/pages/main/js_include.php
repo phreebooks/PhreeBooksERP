@@ -208,7 +208,7 @@ function resetForm() {
 	// handle checkboxes
 	document.getElementById('bill_add_update').checked  = false;
 	changeOfTill();
-// remove all item rows and add a new blank one
+	// remove all item rows and add a new blank one
 	while (document.getElementById('item_table_body').rows.length >= 1) document.getElementById('item_table_body').deleteRow(-1);
 	while (document.getElementById('payment_table_body').rows.length >= 1) document.getElementById('payment_table_body').deleteRow(-1);
 	updateTotalPrices();
@@ -1275,8 +1275,7 @@ function ajaxPrintAndClean(sXml) { // call back function
 }
 
 function jzebraReady(){
-//	alert('POS is now ready');
-	//qz = document.getElementById('qz');
+	changeOfTill();
 }
 
 //Automatically gets called when applet is done appending a file

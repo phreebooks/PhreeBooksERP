@@ -68,6 +68,9 @@ $price_mgr_adjustments = array(
   '5' => TEXT_MARK_UP_BY_PERCENT, // Mark up by Percent
   '6' => TEXT_MARGIN, // Margin by Percent
   '7' => TEXT_TIERED_PRICING, // tiered pricing
+  '5' => TEXT_MARK_UP_BY_PERCENT, // Mark up by Percent
+  '6' => TEXT_MARGIN, // Margin by Percent
+  '7' => TEXT_TIERED_PRICING, // tiered pricing
 );
 $price_mgr_rounding = array(
   '0' => TEXT_NONE,

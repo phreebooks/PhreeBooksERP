@@ -1,7 +1,7 @@
 /* +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -27,3 +27,4 @@ legend                   { font-family:Tahoma,Verdana,Arial,sans-serif; font-siz
 label                    { margin: 0; padding: 0; font-weight: bold; }
 #please_wait             { display:none; position:fixed; left:50%; top:50%; }
 .fieldRequired			 { color:red; }
+.imgIcon img             { border:0; }

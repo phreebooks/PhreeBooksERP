@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
@@ -32,6 +32,7 @@ define('RW_AR_SALES_TAX','Sales Tax');
 define('RW_AR_TAX_AUTH','Tax Authorities');
 define('RW_AR_INV_TOTAL','Invoice Amount');
 define('RW_AR_BALANCE_DUE','Balance Due');
+define('RW_AR_BALANCE_FUTRE','Futre');
 define('RW_AR_CUR_CODE','Currency Code');
 define('RW_AR_CUR_EXC_RATE','Currency Exc. Rate');
 define('RW_AR_SO_NUM','Sales Order Number');

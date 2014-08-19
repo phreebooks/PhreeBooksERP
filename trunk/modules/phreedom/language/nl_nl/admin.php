@@ -75,6 +75,7 @@ define('TEXT_DATABASE_USER_NAME','Database gebruikers Naam ');
 define('TEXT_DATABASE_NAME','Database Naam ');
 define('TEXT_DATABASE_SERVER','Database Server ');
 define('SETUP_SERVER_ADDRESS', 'Vanaf php 5.4 sommige linux server kunnen niet vaststellen wat uw web adres is en zullen uw email weigeren te accepteren (smtp_auth) de oplossing: voer hier uw website adres in<br/>Hoe weet u dat u deze fout heeft.? Zet debug "on" en u zou de volgende regels boven in beeld zien als: "Access denied - Invalid HELO name (See RFC2821 4.1.1 .1)"');
+define('SETUP_SERVER_ADDRESS', 'Vanaf php 5.4 sommige linux server kunnen niet vaststellen wat uw web adres is en zullen uw email weigeren te accepteren (smtp_auth) de oplossing: voer hier uw website adres in<br/>Hoe weet u dat u deze fout heeft.? Zet debug "on" en u zou de volgende regels boven in beeld zien als: "Access denied - Invalid HELO name (See RFC2821 4.1.1 .1)"');
 define('TEXT_DEMO_DATA','Demo Data');
 define('SETUP_CO_MGR_COPY_HDR','Voer de database naam in voor het nieuwe bedrijf. (Moet conform  mysql naam conventies, normaal 8-12 alfanumerieke karakters) Deze naam zal gebruikt worden als database naam en zal toegevoegd worden aan de my_files directory voor bedrijfs specifieke data. De database moet bestaan voordat u het bedrijf probeert te maken.');
 define('TEXT_ALL_DATA','Alle Data');
