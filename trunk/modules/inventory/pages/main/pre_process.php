@@ -43,7 +43,7 @@ if (!isset($_REQUEST['inventory_type'])){
 	if ($result->RecordCount()>0) $type = $result->fields['inventory_type'];
 } 
 if ($type == 'as') $type = 'ma'; 
-if ( in_array($_REQUEST['action'], array('create', 'save', 'delete', 'copy', 'edit', 'properties', 'rename'))) {
+if ( in_array($_REQUEST['action'], array('create', 'save', 'delete', 'copy', 'edit', 'properties', 'rename', 'saveAndColse'))) {
 	if (file_exists(DIR_FS_WORKING . 'custom/classes/type/'.$type.'.php')) { 
 		require_once(DIR_FS_WORKING . 'custom/classes/type/'.$type.'.php'); 
 	} elseif (file_exists(DIR_FS_WORKING . 'classes/type/'.$type.'.php')) {
