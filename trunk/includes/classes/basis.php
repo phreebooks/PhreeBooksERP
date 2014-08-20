@@ -1,18 +1,18 @@
 <?php
 namespace core\classes;
 class basis implements \SplSubject {
-	public  $_admin_classes	= array();
+	public  $_admin_classes		= array();
 	public  $_observers;
-	public  $module			= 'phreedom';
-	public 	$page			= 'main';
-	public	$template		= 'template';
+	public  $module				= 'phreedom';
+	public 	$page				= 'main';
+	public	$template			= 'template';
 	public  $dataBaseConnection = null;
 	public  $mainmenu			= array();
+	private $events				= array();
 
 	public function __construct() {
 		global $mainmenu;
 		$this->_observers 		= new \SplObjectStorage();
-		//$this->_admin_classes	= new \ArrayObject();
 		$this->journal			= new \core\classes\journal();
 		$this->cInfo = array_merge($_GET, $_POST);
 		if($this->getNumberOfAdminClasses() == 0 || empty($this->mainmenu)) {
@@ -79,39 +79,90 @@ class basis implements \SplSubject {
 	}
 
 	/**
-	 * this function is for sorting a array of objects by the sort_order variable
+	 * this method is for sorting a array of objects by the sort_order variable
 	 */
 
 	function arangeObjectBySortOrder($a, $b){
 		return strcmp($a->sort_order, $b->sort_order);
 	}
 
+	/**
+	 * this method add the event to the second position of the array.
+	 * this will allow the program to finish the first position and then continue with the second.
+	 * @param string $event
+	 */
+
 	public function fireEvent($event) {
+		$this->events = array_slice($this->events, 0, 1) + array($event) + array_slice($this->events, 1);
+	}
+
+	/**
+	 * this method walks over the event stack.
+	 * tries to call before_event, event, after_event on all admin_classes.
+	 * then removes event from event stack to prevent it from returning.
+	 * @throws exception if the event stack is empty
+	 */
+
+	public function startProcessingEvents(){
 		global $messageStack;
-		if (strlen($event) == 0) $event = $this->action;
-		else $this->action = $event;
-		$messageStack->debug("\n event fired: $event");
-		$ActionBefore  = "before_$event";
-		foreach ($this->_admin_classes as $module_class){
-			if ($module_class->installed && method_exists($module_class, $ActionBefore)) {
-				$messageStack->debug("\n class {$module_class->id} has action method $ActionBefore");
-				$module_class->$ActionBefore($this);
+		if(size($this->events)) throw new exception("trying to start processing events but the events array is empty");
+		while (list($key, $event) = each($this->events)) {
+			$messageStack->debug("\n starting with event: $event");
+			if (!$event) throw new exception("found a empty event in the array.");
+			$ActionBefore  = "before_$event";
+			foreach ($this->_admin_classes as $module_class){
+				if ($module_class->installed && method_exists($module_class, $ActionBefore)) {
+					$messageStack->debug("\n class {$module_class->id} has action method $ActionBefore");
+					$module_class->$ActionBefore($this);
+				}
 			}
-		}
 
-		foreach ($this->_admin_classes as $module_class){
-			if ($module_class->installed && method_exists($module_class, $event)) {
-				$messageStack->debug("\n class {$module_class->id} has action method $event");
-				$module_class->$event($this);
+			foreach ($this->_admin_classes as $module_class){
+				if ($module_class->installed && method_exists($module_class, $event)) {
+					$messageStack->debug("\n class {$module_class->id} has action method $event");
+					$module_class->$event($this);
+				}
 			}
+			$ActionBefore  = "after_$event";
+			foreach ($this->_admin_classes as $module_class) {
+				if ($module_class->installed && method_exists($module_class, $ActionAfter)) {
+					$messageStack->debug("\n class {$module_class->id} has action method $ActionAfter");
+					$admin_classes->$ActionAfter($this);
+				}
+			}
+			unset($this->events[$key]);
+			reset($this->events);
 		}
+	}
 
-		foreach ($this->_admin_classes as $module_class) {
-			if ($module_class->installed && method_exists($module_class, $ActionAfter)) {
-				$messageStack->debug("\n class {$module_class->id} has action method $ActionAfter");
-				$admin_classes->$ActionAfter($this);
-			}
-		}
+	/**
+	 * This method will add the requested event to the end of the stack.
+	 * @param string $event
+	 * @throws exception if event is emtpy
+	 */
+	public function addEventToStack($event){
+		if(!$event) throw new exception("in the basis class method addEventToStack we received a empty event.");
+		array_push( $this->events, $event);
+	}
+
+	/**
+	 * empties the event stack and then adds the new event
+	 * @param string $event
+	 * @throws exception if event is empty
+	 */
+
+	public function removeEventsAndAddNewEvent($event){
+		if(!$event) throw new exception("in the basis class method  we received a empty event.");
+		$this->events = null;
+		addEventToStack($event);
+	}
+
+	/**
+	 * this method empties the event stack
+	 */
+
+	public function clearEventsStack(){
+		$this->events = null;
 	}
 
 	function __destruct(){
