@@ -593,7 +593,7 @@ function addVendorRow(){
 	newCell.innerHTML = cell;
 	<?php 
 	if(isset($cInfo->vendor_id)) {
-		echo "cell  ='". str_replace("'", "\'", html_pull_down_menu('vendor_id_array[]', gen_get_contact_array_by_type('v'), $cInfo->vendor_id))."';".chr(13);
+		echo "cell  ='". str_replace("'", "\'", html_pull_down_menu('vendor_id_array[]', gen_get_contact_array_by_type('v'), ''))."';".chr(13);
 	}else{ 
 		echo "cell  ='';".chr(13);
 	} ?>
@@ -601,7 +601,7 @@ function addVendorRow(){
 	newCell.innerHTML = cell;
 	<?php 
 	if(isset($cInfo->description_purchase)){ 
-		echo "cell  ='". str_replace("'", "\'", html_textarea_field('description_purchase_array[]', 75, 2, $cInfo->description_purchase, '', $reinsert_value = true))."';".chr(13);
+		echo "cell  ='". str_replace("'", "\'", html_textarea_field('description_purchase_array[]', 75, 2, '', '', $reinsert_value = true))."';".chr(13);
 	}else{ 
 		echo "cell  ='';".chr(13);
 	} ?>
@@ -609,7 +609,7 @@ function addVendorRow(){
 	newCell.innerHTML = cell;
 	<?php 
 	if(isset($cInfo->item_cost)){
-		echo "cell  ='". str_replace("'", "\'", html_input_field('item_cost_array[]', $currencies->precise($cInfo->item_cost), 'onchange="what_to_update();" size="15" maxlength="20" style="text-align:right"', false))."';".chr(13);
+		echo "cell  ='". str_replace("'", "\'", html_input_field('item_cost_array[]', '', 'onchange="what_to_update();" size="15" maxlength="20" style="text-align:right"', false))."';".chr(13);
 	}else{ 
 		echo "cell  ='';".chr(13);
 	} ?>
@@ -633,7 +633,7 @@ function addVendorRow(){
 	newCell.innerHTML = cell;
 	<?php 
 	if(isset($cInfo->price_sheet_v)){
-		echo "cell  ='".str_replace("'", "\'", html_pull_down_menu('price_sheet_v_array[]', get_price_sheet_data('v'), $cInfo->price_sheet_v))."';".chr(13); 
+		echo "cell  ='".str_replace("'", "\'", html_pull_down_menu('price_sheet_v_array[]', get_price_sheet_data('v'), ''))."';".chr(13); 
 	}else{ print('onwaar');
 		echo "cell  ='';".chr(13);
 	} ?>
