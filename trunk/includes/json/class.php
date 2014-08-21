@@ -2,8 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
-
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -21,7 +20,7 @@
 print_($_REQUEST);
 /**************   page specific initialization  *************************/
 $class = new $_REQUEST['class'];
-if (method_exists($class, $_REQUEST['action'])) $class->$_REQUEST['action'](); 
+if (method_exists($class, $_REQUEST['action'])) $class->$_REQUEST['action']();
 json_encode(get_object_vars ($class));
 json_encode($messageStack);
 die;

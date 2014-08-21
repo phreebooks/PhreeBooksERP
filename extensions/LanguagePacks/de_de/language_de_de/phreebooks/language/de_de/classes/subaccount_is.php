@@ -2,8 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright (c) 2008, 2009, 2010 PhreeSoft, LLC                   |
-// | http://www.PhreeSoft.com                                        |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -22,7 +21,7 @@
 //  Path: /modules/reportwriter/language/en_us/classes/subaccount_is.php
 //
 
-// Fill in the account to roll up the income statement data, typically the 
+// Fill in the account to roll up the income statement data, typically the
 // last line of the Liabilities and Capital account number
 //define('RW_SUB_ACT_BAL_SHT_IS_ACCT','0');
 //define('RW_FIN_NET_INCOME','Net Income');

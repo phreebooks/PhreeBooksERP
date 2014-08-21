@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -20,10 +20,10 @@ $security_level = \core\classes\user::validate(SECURITY_ID_MAGENTO_INTERFACE);
 /**************  include page specific files    *********************/
 gen_pull_language('shipping');
 gen_pull_language('inventory');
-require_once(DIR_FS_MODULES . 'inventory/defaults.php'); 
-require_once(DIR_FS_MODULES . 'shipping/defaults.php'); 
-require_once(DIR_FS_WORKING . 'functions/magento.php'); 
-require_once(DIR_FS_MODULES . 'inventory/functions/inventory.php'); 
+require_once(DIR_FS_MODULES . 'inventory/defaults.php');
+require_once(DIR_FS_MODULES . 'shipping/defaults.php');
+require_once(DIR_FS_WORKING . 'functions/magento.php');
+require_once(DIR_FS_MODULES . 'inventory/functions/inventory.php');
 require_once(DIR_FS_WORKING . 'functions/magento.php');
 $magento = new \magento\classes\magento();
 $magento->update_inventory_catalog_options();

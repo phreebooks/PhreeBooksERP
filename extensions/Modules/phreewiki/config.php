@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -38,14 +38,14 @@ if (defined('MODULE_PHREEWIKI_STATUS')) {
     	'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreewiki&amp;page=ccTiddly', 'SSL'),
 	  	'show_in_users_settings' => true,
   	);
-  	
+
 
   if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
 	  gen_pull_language('phreewiki', 'admin');
 	  $mainmenu["company"]['submenu']["configuration"]['submenu']["phreewiki"] = array(
 		'order'	      => MODULE_PHREEWIKI_TITLE,
 		'text'        => MODULE_PHREEWIKI_TITLE,
-		'security_id' => SECURITY_ID_CONFIGURATION, 
+		'security_id' => SECURITY_ID_CONFIGURATION,
 		'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreewiki&amp;page=admin', 'SSL'),
 	    'show_in_users_settings' => false,
 		'params'      => '',

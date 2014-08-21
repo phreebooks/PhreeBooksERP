@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -60,13 +60,13 @@ class xml_sync extends parser {
 	/**
  	 * The remaining functions are specific to ZenCart. they need to be modified for the specific application.
  	 * It also needs to check for errors, i.e. missing information, bad data, etc.
- 	 */ 
+ 	 */
   function syncProducts($products) {
 	global $db, $messageStack;
 	// error check input
 		if (sizeof($products['product']) == 0) throw new Exception(SOAP_NO_SKUS_UPLOADED, 20);
 		if ($products['action'] <> 'Validate') throw new Exception(SOAP_BAD_ACTION, 16);
-	
+
 	$result = $db->Execute("select phreebooks_sku from " . TABLE_PRODUCTS);
 	$missing_skus = array();
 	while(!$result->EOF) {

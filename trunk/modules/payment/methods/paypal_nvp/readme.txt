@@ -1,6 +1,6 @@
 PayPal nvp Payment Module
 
-Developed by PhreeSoft, LLC.
+Developed by PhreeSoft.
 Created 2011-07-01 from PhreeBooks version 2.1 to new Phreedom framework
 
 For Preedom ERP Payment Method

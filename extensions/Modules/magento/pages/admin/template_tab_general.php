@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -26,7 +26,7 @@
   <tr><th colspan="2"><?php echo MODULE_MAGENTO_CONFIG_INFO; ?></th></tr>
  </thead>
  <tbody class="ui-widget-content">
-	  
+
 	  <tr>
 	    <td colspan="4"><?php echo MAGENTO_ADMIN_URL; ?></td>
 	    <td><?php echo html_input_field('magento_url', $_POST['magento_url'] ? $_POST['magento_url'] : MAGENTO_URL, 'size="64"'); ?></td>

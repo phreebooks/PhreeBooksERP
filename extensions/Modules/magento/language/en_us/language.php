@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                    Phreedom Open Source ERP                     |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -17,7 +17,7 @@
 //  Path: /modules/magento/language/en_us/language.php
 //
 
-// Headings 
+// Headings
 define('BOX_MAGENTO_ADMIN','Magento Configuration');
 // General Defines
 define('MAGENTO_CONFIRM_MESSAGE','Your order shipped %s via %s %s, tracking number: %s');

@@ -2,7 +2,7 @@ Phreedom UPS Shipping Method
 
 Version: 1.0
 Release Date: 2011-05-02
-Release By: PhreeSoft, LLC
+Release By: PhreeSoft,
 
 This module provides United Parcel Service rate estimates for international and domestic shipments, label support for small package US shipments.
 

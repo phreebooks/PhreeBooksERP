@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /admin/phreebooks.php
 //
-// This file is a modified version of modules.php. Changes could have been made to modules.php to add the 
+// This file is a modified version of modules.php. Changes could have been made to modules.php to add the
 // phreebooks module but this way is less disruptive when ZenCart is upgraded.
 
   require('includes/application_top.php');

@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -26,7 +26,7 @@ class admin extends \core\classes\admin {
 	public $text		= MODULE_PHREEWIKI_TITLE;
 	public $description = MODULE_PHREEWIKI_DESCRIPTION;
 	public $version		= '1.2';
-	
+
  	function __construct() {
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 	  		'phreedom'   => '3.0',
@@ -61,7 +61,7 @@ class admin extends \core\classes\admin {
 			`tags` varchar(255) NOT NULL default '',
 			PRIMARY KEY (id)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
-		
+
 		  TABLE_PHREEWIKI_VERSION =>"CREATE TABLE ".TABLE_PHREEWIKI_VERSION." (
 			`id` int(11) NOT NULL auto_increment,
 			`title` varchar(255) NOT NULL default '',
@@ -86,7 +86,7 @@ class admin extends \core\classes\admin {
 		  'SelectThemePlugin'    => "SelectThemePlugin",
 		  'XMLReader2'           => "XMLReader2",
 		  'wikibar'              => "wikibar",
-	    
+
 		/*
 		  'UploadPlugin' => "UploadPlugin",
 		  'BigThemePack' => "BigThemePack",

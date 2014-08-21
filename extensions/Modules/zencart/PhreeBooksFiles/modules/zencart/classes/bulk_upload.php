@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -18,7 +18,7 @@
 //
 namespace zencart\classes;
 class bulk_upload {
-  
+
   	function __construct($inc_image = false) {
 		global $db, $messageStack;
 		$result = $db->Execute("select id from " . TABLE_INVENTORY . " where catalog = '1' ");

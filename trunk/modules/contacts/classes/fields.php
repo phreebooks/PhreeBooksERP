@@ -2,8 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
-
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -26,13 +25,13 @@ class fields extends \core\classes\fields{
     public  $type_desc   = TEXT_CONTACT_TYPE;
 	public  $type_params = 'contact_type';
 	public  $extra_buttons = '';
-  
+
   public function __construct(){
 	$this->type_array[] = array('id' => 'c', 'text' => TEXT_CUSTOMER);
     $this->type_array[] = array('id' => 'v', 'text' => TEXT_VENDOR);
     $this->type_array[] = array('id' => 'e', 'text' => TEXT_EMPLOYEE);
     $this->type_array[] = array('id' => 'b', 'text' => TEXT_BRANCH);
-    parent::__construct();    
+    parent::__construct();
   }
 
 }

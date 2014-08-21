@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -35,13 +35,13 @@ if (defined('MODULE_MAGENTO_STATUS')) {
   		'show_in_users_settings' => true,
 		'params'	  => '',
   	);
-  
+
 	if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
 	  gen_pull_language('magento', 'admin');
 	  $mainmenu["company"]['submenu']["configuration"]['submenu']["magento"] = array(
 		'order'	      => MODULE_MAGENTO_TITLE,
 		'text'        => MODULE_MAGENTO_TITLE,
-		'security_id' => SECURITY_ID_CONFIGURATION, 
+		'security_id' => SECURITY_ID_CONFIGURATION,
 		'link'        => html_href_link(FILENAME_DEFAULT, 'module=magento&amp;page=admin', 'SSL'),
 	    'show_in_users_settings' => true,
 		'params'      => '',

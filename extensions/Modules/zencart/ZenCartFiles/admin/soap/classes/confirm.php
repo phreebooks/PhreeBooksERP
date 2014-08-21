@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -63,7 +63,7 @@ class xml_confirm extends parser {
   }
 
 // The remaining functions are specific to ZenCart. they need to be modified for the specific application.
-// It also needs to check for errors, i.e. missing information, bad data, etc. 
+// It also needs to check for errors, i.e. missing information, bad data, etc.
   function orderConfirm($orders) {
 	global $db;
 	// error check input
@@ -78,21 +78,21 @@ class xml_confirm extends parser {
 	  $result = $db->Execute("select orders_status from " . TABLE_ORDERS . " where orders_id = '$id'");
 	  if ($result->RecordCount() == 0 || $result->fields['orders_status'] == $value['status']) continue; // skip this order, not a zencart order
 	  // insert a new status in the order status table
-	  $db->Execute("insert into " . TABLE_ORDERS_STATUS_HISTORY . " set 
-		orders_id = '$id', 
-		orders_status_id = " . zen_db_input($value['status']) . ", 
-		date_added = now(), 
-		customer_notified = '0', 
+	  $db->Execute("insert into " . TABLE_ORDERS_STATUS_HISTORY . " set
+		orders_id = '$id',
+		orders_status_id = " . zen_db_input($value['status']) . ",
+		date_added = now(),
+		customer_notified = '0',
 	    comments = '" . zen_db_input($value['msg']) . "'");
       // update the status in the orders table
-	  $db->Execute("update " . TABLE_ORDERS . " set 
+	  $db->Execute("update " . TABLE_ORDERS . " set
 	    orders_status = " . zen_db_input($value['status']) . ",
-		last_modified = now() 
+		last_modified = now()
 		where orders_id = '$id'");
 	  $order_cnt++;
 	  $order_list[] = $value['id'];
 	}
-	$orders = (sizeof($order_list) > 0) ? (' (' . implode(', ', $order_list) . ')') : ''; 
+	$orders = (sizeof($order_list) > 0) ? (' (' . implode(', ', $order_list) . ')') : '';
 	$this->responseXML('0', sprintf(SOAP_CONFIRM_SUCCESS, $order_cnt . $orders), 'success');
 	return true;
   }

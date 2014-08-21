@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/inventory/custom/pages/main/extra_menus.php
 //
-// This file contains the extra defines that can be used for customizing you output and 
+// This file contains the extra defines that can be used for customizing you output and
 // adding functionality to PhreeBooks
 // Modified Language defines, used to over-ride the standard language for customization. These
 // values are loaded prior to the standard language defines and take priority.
@@ -31,8 +31,8 @@ function add_extra_action_bar_buttons($query_fields) {
   }
   return $output;
 }
-// Defines used to increase search scope (additional fields) within a module, the constant 
-// cannot change and the format should be as follows: 
+// Defines used to increase search scope (additional fields) within a module, the constant
+// cannot change and the format should be as follows:
 
 // defines to use to retrieve more fields from sql for custom processing in list generation operations
 $extra_fields = array();

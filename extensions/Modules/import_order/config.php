@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -28,9 +28,9 @@ define('SECURITY_ID_IMPORT_ORDER', 777);
 // Menu Locations
 if (defined('MODULE_IMPORT_ORDER_STATUS')) {
   $mainmenu["tools"]['submenu']['import_order'] = array(
-    'text'        => BOX_IMPORT_ORDER_TITLE, 
-    'order'       => 77, 
-    'security_id' => SECURITY_ID_IMPORT_ORDER, 
+    'text'        => BOX_IMPORT_ORDER_TITLE,
+    'order'       => 77,
+    'security_id' => SECURITY_ID_IMPORT_ORDER,
     'link'        => html_href_link(FILENAME_DEFAULT, 'module=import_order&amp;page=main', 'SSL'),
     'show_in_users_settings' => true,
     'params'      => '',

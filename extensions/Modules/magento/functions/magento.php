@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -27,27 +27,27 @@ class magento{
 	private $entry_type = 'multi_check_box';
 	private $field_name = 'magneto_category_id';
 	private $tab_id =1;
-	
+
 	function __construct(){
 		if ($this->session == '') $this->login();
 	}
-	
+
 	function login(){
 		global $messageStack;
 //		$messageStack->add('loggin in', 'caution');
-		$this->client = new \SoapClient(MAGENTO_URL.'/index.php/api/v2_soap/?wsdl'); 
-		$this->session = $this->client->login(MAGENTO_USERNAME, MAGENTO_PASSWORD); 
+		$this->client = new \SoapClient(MAGENTO_URL.'/index.php/api/v2_soap/?wsdl');
+		$this->session = $this->client->login(MAGENTO_USERNAME, MAGENTO_PASSWORD);
 	}
 
 	function get_menus(){
 		if ($this->session == '') $this->login();
-		return $this->client->catalogCategoryTree($this->session); 
-	} 
-	
-	function get_menus_options($id){
-		return $this->client->catalogCategoryInfo($this->session, $id); 
+		return $this->client->catalogCategoryTree($this->session);
 	}
-	
+
+	function get_menus_options($id){
+		return $this->client->catalogCategoryInfo($this->session, $id);
+	}
+
 	function update_inventory_catalog_options(){
 		$this->flattenArray( $this->get_menus() );
 		$params = array(
@@ -60,7 +60,7 @@ class magento{
 		);
 		return db_perform(TABLE_EXTRA_FIELDS, $sql_data_array, 'update', " field_name = '$this->field_name'" );
 	}
-	
+
 	function flattenArray($value){
 		$id = $value->category_id;
 		$this->categories[$id] = $this->get_menus_options($id);
@@ -68,7 +68,7 @@ class magento{
 			$this->flattenArray($child);
 		}
 	}
-	
+
 	function createPathNames(){
 		$data = '';
 		foreach($this->categories as $category){
@@ -90,32 +90,32 @@ class magento{
 		$inventory->set_attributeSets($attributeSets);
 		$inventory->get_item_by_sku($sku);
 		//$attributeSet = current($attributeSets);
-		
+
 		//$result = $this->client->catalogProductCreate($this->session, 'simple', $attributeSet->set_id, 'product_sku', $inventory);
-		if($result != false) $messageStack->add("uploaded with success assigend id $result", "success"); 
+		if($result != false) $messageStack->add("uploaded with success assigend id $result", "success");
 	}
-	
+
 	/**
 	 * this function searches for the pricesheet name in the costomer group list in the webshop
 	 * @param string $pricesheet_name
 	 * @return string pricesheet_id
 	 */
-	
+
 	function get_pricesheet_id($pricesheet_name){
 		if ($this->session == '') $this->login();
 		$result = $this->client->customerGroupList($this->session);
 		foreach ($result as $item){
-			if( $item['customer_group_code'] == $pricesheet_name) return $item['customer_group_id']; 
-		} 
+			if( $item['customer_group_code'] == $pricesheet_name) return $item['customer_group_id'];
+		}
 	}
-	
+
 	/**
 	 * with this function you can send tier_pricing to magento webshop
 	 * @param $sku
 	 * @param $pricesheet_id use get_pricesheet_id to retrieve the id
 	 * @param $array_qty_price this is a array of rows each row had qty and price
 	 */
-	
+
 	function update_tier_price($sku, $pricesheet_id, $array_qty_price){
 		foreach($array_qty_price as $item)
 			$tierPrices = array(
@@ -125,17 +125,17 @@ class magento{
 		if ($this->session == '') $this->login();
 		if( $this->client->catalogProductAttributeTierPriceUpdate($this->session, $sku,	$tierPrices) == true){
 			$messageStack->add("updated tier pricing for $sku with success", "success");
-		} 
+		}
 	}
-	
+
 	function set_menu_for_sku($menuId, $sku){
 		global $messageStack;
 		if ($this->session == '') $this->login();
 		if($this->client->catalogCategoryAssignProduct($this->session, $menuId, $sku, '', 'SKU') == true){
 			$messageStack->add("assigned to webshop category $menuId with success", "success");
-		} 
-	} 
-	
+		}
+	}
+
 	function delete_product($sku){
 		global $messageStack;
 		if ($this->session == '') $this->login();
@@ -143,12 +143,12 @@ class magento{
 			$messageStack->add("deleted from webshop with success", "success");
 		}
 	}
-	
+
 	function __destruct(){
 		global $messageStack;
-		$this->client->endSession($this->session);	
+		$this->client->endSession($this->session);
 	}
-	
+
 }
 
 ?>

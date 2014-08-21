@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -18,7 +18,7 @@
 //
 // Release History
 // 1.0 - created
-// 
+//
 // Module software version information
 // Menu Sort Positions
 define('BOX_PHREEMAIL_MODULE_ORDER', 70);
@@ -41,7 +41,7 @@ if (defined('MODULE_PHREEMAIL_STATUS')) {
   // Set the menu
   $mainmenu["customers"]['submenu']["email"] = array(
   	'order' 	  => BOX_PHREEMAIL_MODULE_ORDER,
-  	'text'        => BOX_PHREEMAIL_MODULE, 
+  	'text'        => BOX_PHREEMAIL_MODULE,
     'security_id' => SECURITY_PHREEMAIL_MGT,
     'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreemail&amp;page=main', 'SSL'),
     'show_in_users_settings' => false, //@todo this has to become true when module is done.

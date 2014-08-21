@@ -68,7 +68,7 @@ echo html_form('login', FILENAME_DEFAULT, 'action=ValidateUser', 'post', 'onsubm
               </tr>
               <tr>
                 <td colspan="2">
-<?php echo TEXT_COPYRIGHT; ?> (c) 2008 - 2013 <a href="http://www.PhreeSoft.com">PhreeSoft, LLC</a><br />
+<?php echo TEXT_COPYRIGHT; ?> (c) 2008-2014 <a href="http://www.PhreeSoft.com">PhreeSoft</a><br />
 <?php echo sprintf(TEXT_COPYRIGHT_NOTICE, '<a href="' . DIR_WS_MODULES . 'phreedom/language/en_us/manual/ch01-Introduction/license.html">' . TEXT_HERE . '</a>'); ?>
 				</td>
               </tr>

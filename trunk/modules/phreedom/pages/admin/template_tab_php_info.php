@@ -2,8 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
-
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -22,7 +21,7 @@
 <fieldset>
 <legend><?php echo "PHP Info";?></legend>
 <iframe src="<?php echo html_href_link(FILENAME_DEFAULT, "module=phreedom&amp;page=main&amp;action=php_info", 'SSL');?>" style="border-style:none;width:100%;height:400px;">
-</iframe> 
+</iframe>
 </fieldset>
 
 </div>

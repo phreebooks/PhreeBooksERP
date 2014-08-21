@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -17,7 +17,7 @@
 //  Path: /modules/import_order/language/en_us/language.php
 //
 
-// Headings 
+// Headings
 define('IMPORT_ORDER_PAGE_TITLE','Order Import (csv)');
 // General Defines
 define('IMPORT_ORDER_SELECT','Plese select the csv file to import');

@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -15,13 +15,13 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 // path: /admin/soap/application_top.php
- 
-/** 
+
+/**
  * boolean used to see if we are in the admin script, obviously set to false here.
  * DO NOT REMOVE THE define BELOW. WILL BREAK ADMIN
  */
 define('IS_ADMIN_FLAG', true);
-/** 
+/**
  * integer saves the time at which the script started.
  */
 // Start the clock for the page parse time log
