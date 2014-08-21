@@ -73,7 +73,7 @@ switch ($_REQUEST['action']) {
 	// read the dirs
 	$working->make_dir_tree(DIR_FS_MODULES . $mod . '/', '');
 	// read the db
-	$working->make_db_info($admin_classes[$entry]->tables);
+	$working->make_db_info($admin->classes[$entry]->tables);
 	// build the output string
 //echo 'result object = '; print_r($working->output); echo '<br><br>';
 	$xmlString  = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n";

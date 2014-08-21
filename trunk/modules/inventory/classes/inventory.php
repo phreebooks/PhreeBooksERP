@@ -167,9 +167,9 @@ class inventory {
 
 	//this is to check if you are allowed to create a new product
 	function check_create_new() {
-		global $admin_classes;
+		global $admin;
 		if (!$this->sku) $this->sku = $this->next_sku;
-		$admin_classes['inventory']->validate_name($this->sku);
+		$admin->classes['inventory']->validate_name($this->sku);
 		return $this->create_new();
 	}
 
@@ -211,9 +211,9 @@ class inventory {
 	 */
 
 	function copy($id, $newSku) {
-		global $admin_classes, $db;
+		global $admin, $db;
 		if (!$newSku) $newSku = $this->next_sku;
-		$admin_classes['inventory']->validate_name($newSku);
+		$admin->classes['inventory']->validate_name($newSku);
 		if(isset($id))$this->get_item_by_id($id);
 		else throw new \core\classes\userException("id should be submitted in order to copy");
 		$this->old_id					= $this->id;
@@ -268,9 +268,9 @@ class inventory {
  	*/
 
 	function rename($id, $newSku){
-		global $admin_classes, $db;
+		global $admin, $db;
 		if (!$newSku) $newSku = $this->next_sku;
-		$admin_classes['inventory']->validate_name($newSku);
+		$admin->classes['inventory']->validate_name($newSku);
 		if(isset($id))$this->get_item_by_id($id);
 		$sku_list = array($this->sku);
 		if (isset($this->edit_ms_list) && $this->edit_ms_list == true) { // build list of sku's to rename (without changing contents)

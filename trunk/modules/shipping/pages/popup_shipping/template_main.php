@@ -211,7 +211,7 @@ echo html_pull_down_menu('ship_to_country_code', $country_list, $pkg->ship_to_co
   </tr>
   <tr class="ui-widget-header"><th colspan="2" align="center"><?php echo TEXT_SHIPPING_METHODS; ?></th></tr>
 <?php
-foreach ($admin_classes['shipping']->methods as $method) {
+foreach ($admin->classes['shipping']->methods as $method) {
 	if ($method->installed){
   		echo '  <tr><td colspan="2">';
   		echo html_checkbox_field('ship_method_' . $method->id, '1', '1') . ' ' . $method->text;

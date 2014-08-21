@@ -29,7 +29,7 @@ switch ($_REQUEST['action']) {
   case 'save':
   	\core\classes\user::validate_security($security_level, 3); // security check
 	// save general tab
-	foreach ($admin_classes['zencart']->keys as $key => $default) {
+	foreach ($admin->classes['zencart']->keys as $key => $default) {
 	  $field = strtolower($key);
       if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
     }

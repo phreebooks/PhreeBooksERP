@@ -37,7 +37,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   	case 'save':
-  		foreach ($admin_classes as $module_class) {
+  		foreach ($admin->classes as $module_class) {
   			if ($module_class->installed){
 				// build add and delete list
 		  		// if post is set and not in my_profile -> add

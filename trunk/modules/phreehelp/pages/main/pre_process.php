@@ -31,7 +31,7 @@ $context_ref = isset($_GET['idx'])          ? $_GET['idx']          : '';
 $result = false;
 $start_page = DOC_ROOT_URL;
 if ($context_ref) {
-  $result = $db->Execute("select doc_url from " . TABLE_PHREEHELP . " where doc_pos = '" . $context_ref . "'");
+  $result = $db->Execute("select doc_url from " . TABLE_PHREEHELP . " where doc_pos = '$context_ref'");
   if ($result->RecordCount() > 0) $start_page = $result->fields['doc_url'];
 }
 $frame_url = 'index.php?module=phreehelp&amp;page=main';

@@ -34,7 +34,7 @@ var journalID          = '<?php echo JOURNAL_ID; ?>';
 var text_enter_new     = '<?php echo TEXT_ENTER_NEW; ?>';
 var account_type       = '<?php echo $account_type; ?>';
 var store_country_code = '<?php echo STORE_COUNTRY; ?>';
-var payments_installed = <?php echo count($admin_classes['payment']->methods) ? 'true' : 'false'; ?>;
+var payments_installed = <?php echo count($admin->classes['payment']->methods) ? 'true' : 'false'; ?>;
 <?php echo js_calendar_init($cal_bills); ?>
 
 function init() {
@@ -79,7 +79,7 @@ function check_form() {
     var index = document.getElementById('shipper_code').selectedIndex;
     var payment_method = document.getElementById('shipper_code').options[index].value;
 	<?php
-	  foreach ($admin_classes['payment']->methods as $method) { // fetch the javascript validation of payments module
+	  foreach ($admin->classes['payment']->methods as $method) { // fetch the javascript validation of payments module
 		if($method->installed) echo $method->javascript_validation();
 	  }
 	?>
@@ -116,7 +116,7 @@ function showNewPayment(sXml) { // call back function
   // build the dropdown
   newOpt = document.createElement("option");
   newOpt.text = '<?php echo TEXT_ENTER_NEW; ?>';
-  document.getElementById('payment_id').options.add(newOpt);	
+  document.getElementById('payment_id').options.add(newOpt);
   document.getElementById('payment_id').options[0].value = '';
   pmt_array[0] = new Object();
   pmt_array[0].field_0 = '';
@@ -152,19 +152,19 @@ function fillPayment() {
   var index = document.getElementById('shipper_code').selectedIndex;
   var pmtMethod = document.getElementById('shipper_code').options[index].value;
   var pmtIndex = document.getElementById('payment_id').selectedIndex;
-  if (document.getElementById(pmtMethod+'_field_0')) 
+  if (document.getElementById(pmtMethod+'_field_0'))
     document.getElementById(pmtMethod+'_field_0').value = pmt_array[pmtIndex].field_0;
-  if (document.getElementById(pmtMethod+'_field_1')) 
+  if (document.getElementById(pmtMethod+'_field_1'))
     document.getElementById(pmtMethod+'_field_1').value = pmt_array[pmtIndex].field_1;
-  if (document.getElementById(pmtMethod+'_field_2')) 
+  if (document.getElementById(pmtMethod+'_field_2'))
     document.getElementById(pmtMethod+'_field_2').value = pmt_array[pmtIndex].field_2;
-  if (document.getElementById(pmtMethod+'_field_3')) 
+  if (document.getElementById(pmtMethod+'_field_3'))
     document.getElementById(pmtMethod+'_field_3').value = pmt_array[pmtIndex].field_3;
-  if (document.getElementById(pmtMethod+'_field_4')) 
+  if (document.getElementById(pmtMethod+'_field_4'))
 	document.getElementById(pmtMethod+'_field_4').value = pmt_array[pmtIndex].field_4;
-  if (document.getElementById(pmtMethod+'_field_5')) 
+  if (document.getElementById(pmtMethod+'_field_5'))
 	document.getElementById(pmtMethod+'_field_5').value = pmt_array[pmtIndex].field_5;
-  if (document.getElementById(pmtMethod+'_field_6')) 
+  if (document.getElementById(pmtMethod+'_field_6'))
 	document.getElementById(pmtMethod+'_field_6').value = pmt_array[pmtIndex].field_6;
 }
 

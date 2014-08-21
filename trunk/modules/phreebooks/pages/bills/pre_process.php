@@ -144,7 +144,7 @@ switch ($_REQUEST['action']) {
 		}
 		if (!$order->item_rows) throw new \core\classes\userException(GL_ERROR_NO_ITEMS);
 		// check to make sure the payment method is valid
-		if (JOURNAL_ID == 18) $admin_classes['payment']->methods[$order->shipper_code]->pre_confirmation_check();
+		if (JOURNAL_ID == 18) $admin->classes['payment']->methods[$order->shipper_code]->pre_confirmation_check();
 
 	/* This has been commented out to allow customer refunds (negative invoices)
 		if ($order->total_amount < 0) throw new \core\classes\userException(TEXT_TOTAL_LESS_THAN_ZERO);

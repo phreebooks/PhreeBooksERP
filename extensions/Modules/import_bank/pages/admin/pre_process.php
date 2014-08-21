@@ -60,7 +60,7 @@ switch ($_REQUEST['action']) {
 
   		}
   	}
-	foreach ($admin_classes['import_bank']->keys as $key => $default) {
+	foreach ($admin->classes['import_bank']->keys as $key => $default) {
 	  $field = strtolower($key);
       if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
     }

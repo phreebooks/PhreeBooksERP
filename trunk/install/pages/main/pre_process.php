@@ -209,7 +209,7 @@ switch ($_REQUEST['action']) {
 	  		}
 	  	}
 		// install core modules first
-	  	foreach ($admin_classes as $module_class) {
+	  	foreach ($admin->classes as $module_class) {
 	  		if ($module_class->core) {
 	  			if (DEBUG) $messageStack->debug("\n  installing core module = " . $module_class->id);
 	  			$module_class->install(DIR_FS_MY_FILES.$_SESSION['company'].'/', $company_demo);
@@ -217,7 +217,7 @@ switch ($_REQUEST['action']) {
 	  	}
 		// load phreedom reports now since table exists
 	  	if (DEBUG) $messageStack->debug("\n  installing phreedom.");
-		foreach ($admin_classes as $module_class) {
+		foreach ($admin->classes as $module_class) {
 	  		if (!$module_class->core) {
 	  			if (DEBUG) $messageStack->debug("\n  installing core module = {$module_class->id}");
 	  			$module_class->install(DIR_FS_MY_FILES.$_SESSION['company'].'/', $company_demo);

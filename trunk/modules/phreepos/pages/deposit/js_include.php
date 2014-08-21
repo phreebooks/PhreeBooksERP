@@ -27,7 +27,7 @@ var add_array          = new Array("<?php echo implode('", "', $js_arrays['field
 var default_array      = new Array("<?php echo implode('", "', $js_arrays['text']); ?>");
 var journalID          = '<?php echo JOURNAL_ID; ?>';
 var account_type       = '<?php echo $type; ?>';
-var payments_installed = <?php echo count($admin_classes['payment']->methods) ? 'true' : 'false'; ?>;
+var payments_installed = <?php echo count($admin->classes['payment']->methods) ? 'true' : 'false'; ?>;
 <?php echo js_calendar_init($cal_bills); ?>
 
 // List the gl accounts for line item pull downs
@@ -45,7 +45,7 @@ function init() {
 		}
 	}
 	document.getElementById('search').focus();
-<?php 
+<?php
   if ($_REQUEST['action'] == 'pmt') echo '  loadNewPayment();' . chr(10);
   echo '  updateDepositPrice();' . chr(10);
 ?>
@@ -67,7 +67,7 @@ function check_form() {
     var index = document.getElementById('shipper_code').selectedIndex;
     var payment_method = document.getElementById('shipper_code').options[index].value;
 	<?php
-	  foreach ($admin_classes['payment']->methods as $method) { // fetch the javascript validation of payments module
+	  foreach ($admin->classes['payment']->methods as $method) { // fetch the javascript validation of payments module
 		if($method->installed) echo $method->javascript_validation();
 	  }
 	?>
@@ -121,7 +121,7 @@ function ClearForm() {
 	document.getElementById('payment_id').remove(0);
   }
   while (document.getElementById("item_table").rows.length > 1) {
-	document.getElementById("item_table").deleteRow(-1); 
+	document.getElementById("item_table").deleteRow(-1);
   }
   document.getElementById('acct_1').value = '<?php echo DEF_DEP_GL_ACCT; ?>';
   loadNewBalance('<?php echo $gl_acct_id; ?>');
@@ -171,7 +171,7 @@ function ajaxOrderData(cID, oID, jID, open_order, ship_only) {
   });
 }
 
-function fillOrderData(sXml) { // edit response form fill 
+function fillOrderData(sXml) { // edit response form fill
   var newOpt;
   var type = 'bill';
   var xml = parseXml(sXml);
@@ -204,7 +204,7 @@ function fillOrderData(sXml) { // edit response form fill
     // add a option for creating a new address
     newOpt = document.createElement("option");
     newOpt.text = '<?php echo TEXT_ENTER_NEW; ?>';
-    document.getElementById(type+'_to_select').options.add(newOpt);	
+    document.getElementById(type+'_to_select').options.add(newOpt);
     document.getElementById(type+'_to_select').options[iIndex].value = '0';
     document.getElementById(type+'_to_select').style.visibility      = 'visible';
     document.getElementById(type+'_to_select').disabled              = false;
@@ -234,7 +234,7 @@ function showNewPayment(sXml) { // call back function
   if ($(xml).find("payments").length) { // build the dropdown
     newOpt = document.createElement("option");
     newOpt.text = '<?php echo TEXT_ENTER_NEW; ?>';
-    document.getElementById('payment_id').options.add(newOpt);	
+    document.getElementById('payment_id').options.add(newOpt);
     document.getElementById('payment_id').options[0].value = '';
     pmt_array[0] = new Object();
     pmt_array[0].field_0 = '';
@@ -267,15 +267,15 @@ function fillPayment() {
   var index = document.getElementById('shipper_code').selectedIndex;
   var pmtMethod = document.getElementById('shipper_code').options[index].value;
   var pmtIndex = document.getElementById('payment_id').selectedIndex;
-  if (document.getElementById(pmtMethod+'_field_0')) 
+  if (document.getElementById(pmtMethod+'_field_0'))
     document.getElementById(pmtMethod+'_field_0').value = pmt_array[pmtIndex].field_0;
-  if (document.getElementById(pmtMethod+'_field_1')) 
+  if (document.getElementById(pmtMethod+'_field_1'))
     document.getElementById(pmtMethod+'_field_1').value = pmt_array[pmtIndex].field_1;
-  if (document.getElementById(pmtMethod+'_field_2')) 
+  if (document.getElementById(pmtMethod+'_field_2'))
     document.getElementById(pmtMethod+'_field_2').value = pmt_array[pmtIndex].field_2;
-  if (document.getElementById(pmtMethod+'_field_3')) 
+  if (document.getElementById(pmtMethod+'_field_3'))
     document.getElementById(pmtMethod+'_field_3').value = pmt_array[pmtIndex].field_3;
-  if (document.getElementById(pmtMethod+'_field_4')) 
+  if (document.getElementById(pmtMethod+'_field_4'))
     document.getElementById(pmtMethod+'_field_4').value = pmt_array[pmtIndex].field_4;
 }
 

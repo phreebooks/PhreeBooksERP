@@ -42,7 +42,7 @@ switch ($_REQUEST['action']) {
   	if (!$tID) {
   	  $message = 'No tracking ID passed!';
   	} else {
-  	  $message = $admin_classes['shipping']->methods[$method]->trackPackages('', $tID);
+  	  $message = $admin->classes['shipping']->methods[$method]->trackPackages('', $tID);
   	}
   	break;
   case 'validate':
@@ -55,7 +55,7 @@ switch ($_REQUEST['action']) {
 	$address->ship_state_province = db_prepare_input($_GET['state_province']);
 	$address->ship_postal_code    = db_prepare_input($_GET['postal_code']);
 	$address->ship_country_code   = db_prepare_input($_GET['country_code']);
-	$result = $admin_classes['shipping']->methods[$method]->validateAddress($address);
+	$result = $admin->classes['shipping']->methods[$method]->validateAddress($address);
 	if ($result['result'] == 'success') $xml .= $result['xmlString'];
 	$debug   = $result['debug'];
 	$message = $result['message'];

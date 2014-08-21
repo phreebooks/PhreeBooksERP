@@ -158,8 +158,8 @@ function load_my_reports() {
 }
 
 function find_special_class($class_name) {
-	global $admin_classes;
-  	foreach ($admin_classes as $key => $class) {
+	global $admin;
+  	foreach ($admin->classes as $key => $class) {
     	if (file_exists(DIR_FS_MODULES . $key . '/classes/' . $class_name . '.php')) return DIR_FS_MODULES . $key . '/';
   	}
   	throw new \core\classes\userException("Special class: $class_name was called but could not be found!");

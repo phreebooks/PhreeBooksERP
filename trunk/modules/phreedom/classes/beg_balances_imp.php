@@ -67,7 +67,7 @@ class beg_bal_import {
 	 * @param string $upload_name
 	 * @throws Exception
 	 */
-  	
+
 	function cyberParse($upload_name) {
 		$lines = file($_FILES[$upload_name]['tmp_name']);
 		if(!$lines) throw new \core\classes\userException("there are no line in file $upload_name");
@@ -220,7 +220,7 @@ class beg_bal_import {
 	}
 
 	function processInventory($upload_name) {
-		global $admin_classes, $coa, $db, $currencies, $messageStack;
+		global $admin, $coa, $db, $currencies, $messageStack;
 		$this->cyberParse($upload_name);
 		$post_date = gen_specific_date(date('Y-m-d'), $day_offset = -1);
 		$glEntry   = new \core\classes\journal();
@@ -232,7 +232,7 @@ class beg_bal_import {
 			$total_amount = $currencies->clean_value($row['total_amount']);
 			$qty = $currencies->clean_value($row['quantity']);
 			// check for errors and report/exit if error found
-			$admin_classes['inventory']->validate_name($row['sku']);
+			$admin->classes['inventory']->validate_name($row['sku']);
 			if (!in_array($row['inv_gl_acct'], $coa) || !in_array($row['gl_acct'], $coa)) throw new \core\classes\userException(sprintf(TEXT_ERROR_INVALID_GL_ACCT, $j));
 			if ($qty == 0) {
 				$messageStack->add(TEXT_SKIPPING_INVENTORY_ITEM._ZERO_QUANTITY_FOUND_ON_LINE . ' ' . $j,'caution');

@@ -194,7 +194,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function initialize() {
-		global $db, $messageStack, $currencies, $admin_classes;
+		global $db, $messageStack, $currencies, $admin;
 	    //load the latest currency exchange rates
 		if ($this->web_connected(false) && AUTO_UPDATE_CURRENCY && ENABLE_MULTI_CURRENCY) {
 				$currencies->btn_update();
@@ -206,11 +206,11 @@ class admin extends \core\classes\admin {
 		  	if ($revisions) {
 		   		$versions = xml_to_object($revisions);
 				$latest  = $versions->Revisions->Phreedom->Current;
-				if (version_compare($admin_classes['phreedom']->version, $latest, '<'))  $messageStack->add(sprintf(TEXT_VERSION_CHECK_NEW_VER, $admin_classes['phreedom']->version, $latest), 'caution');
+				if (version_compare($admin->classes['phreedom']->version, $latest, '<'))  $messageStack->add(sprintf(TEXT_VERSION_CHECK_NEW_VER, $admin->classes['phreedom']->version, $latest), 'caution');
 			}
 		}
 		// load installed modules and initialize them
-		if (is_array($admin_classes)) foreach ($admin_classes as $key => $module_class) {
+		foreach ($admin->classes as $key => $module_class) {
 		  	if ($key == 'phreedom') continue; // skip this module
 		  	if ($revisions) {
 		  		$latest  = $versions->Revisions->Modules->$key->Current;
@@ -262,12 +262,12 @@ class admin extends \core\classes\admin {
 	 * @param \core\classes\basis $basis
 	 * @throws \core\classes\userException
 	 */
-	function ValidateUser (\core\classes\basis $basis){
+	function ValidateUser (\core\classes\basis &$admin) {
 		global $db;
 		// Errors will happen here if there was a problem logging in, logout and restart
 		if (!is_object($db)) throw new \core\classes\userException("Database isn't created");
 		$sql = "select admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security
-		  from " . TABLE_USERS . " where admin_name = '{$basis->admin_name}'";
+		  from " . TABLE_USERS . " where admin_name = '{$admin->admin_name}'"; //@todo don't know if this works.
 		if ($db->db_connected) $result = $db->Execute($sql);
 		if (!$result || $basis->admin_name <> $result->fields['admin_name'] || $result->fields['inactive']) throw new \core\classes\userException(sprintf(GEN_LOG_LOGIN_FAILED, TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD));
 		\core\classes\encryption::validate_password($basis->admin_pass, $result->fields['admin_pass']);
@@ -282,10 +282,10 @@ class admin extends \core\classes\admin {
 		setcookie('pb_company' , \core\classes\user::get_company(),  $cookie_exp);
 		setcookie('pb_language', \core\classes\user::get_language(), $cookie_exp);
 		// load init functions for each module and execute
-		foreach ($admin_classes->ReturnAdminClasses() as $key => $module_class) {
+		foreach ($admin->classes as $key => $module_class) {
 			if ($module_class->installed && $module_class->should_update()) $module_class->update();
 		}
-		foreach ($admin_classes->ReturnAdminClasses() as $key => $module_class) {
+		foreach ($admin->classes as $key => $module_class) {
 			if ($module_class->installed) $module_class->initialize();
 		}
 		if (defined('TABLE_CONTACTS')) {

@@ -61,7 +61,6 @@ if ($custom_html) { // load the template only as the rest of the html will be ge
   </script>
   <script type="text/javascript" src="includes/jquery-1.6.2.min.js"></script>
   <script type="text/javascript" src="includes/jquery-ui-1.8.16.custom.min.js"></script>
-  <script type="text/javascript" src="includes/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="includes/jquery.easyui.min.js"></script>
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
   <script type="text/javascript" src="includes/common.js"></script>
@@ -97,7 +96,7 @@ $page_template->print_js_includes();
   <div style="clear:both;text-align:center;font-size:9px">
     <a href="http://www.PhreeSoft.com" target="_blank"><?php echo html_image($image_path, TEXT_PHREEDOM_INFO, NULL, '64'); ?></a><br />
   <?php
-  $footer_info  = COMPANY_NAME.' | '.TEXT_ACCOUNTING_PERIOD.': '.CURRENT_ACCOUNTING_PERIOD.' | '.TEXT_PHREEDOM_INFO.' ('.$admin_classes['phreedom']->version.') ';
+  $footer_info  = COMPANY_NAME.' | '.TEXT_ACCOUNTING_PERIOD.': '.CURRENT_ACCOUNTING_PERIOD.' | '.TEXT_PHREEDOM_INFO.' ('.$admin->classes['phreedom']->version.') ';
   if ($module <> 'phreedom') $footer_info .= '(' . $module . ' ' . constant('MODULE_' . strtoupper($module) . '_STATUS') . ') ';
   $footer_info .= '<br />' . TEXT_COPYRIGHT .  ' &copy;' . date('Y') . ' <a href="http://www.PhreeSoft.com" target="_blank">PhreeSoft, LLC&trade;</a>';
   $footer_info .= '(' . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . ' ms) ' . $db->count_queries . ' SQLs (' . (int)($db->total_query_time * 1000).' ms)';

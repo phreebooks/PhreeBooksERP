@@ -31,7 +31,7 @@
  </thead>
  <tbody class="ui-widget-content">
 <?php
-if (is_array($admin_classes)) foreach ($admin_classes as $key => $class) {
+if (is_array($admin->classes)) foreach ($admin->classes as $key => $class) {
 	if ($key == 'phreedom') continue;
   echo '  <tr>';
   echo '    <td' . ($class->installed ? ' class="ui-state-active"' : '') . '>' . $class->text . '</td>';

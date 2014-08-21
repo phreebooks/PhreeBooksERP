@@ -95,7 +95,7 @@ class messageStack {
 
 	function write_debug() {
 	  	global $db;
-	  	$this->debug_header_info .= "Trace information for debug purposes. Phreedom release {$admin_classes['phreedom']->version}, generated " . date('Y-m-d H:i:s') . ".\n\n";
+	  	$this->debug_header_info .= "Trace information for debug purposes. Phreedom release {$admin->classes['phreedom']->version}, generated " . date('Y-m-d H:i:s') . ".\n\n";
 	  	$this->debug_header_info .= "\nGET     Vars = " . arr2string($_GET);
 	  	$this->debug_header_info .= "\nPOST    Vars = " . arr2string($_POST);
 	  	$this->debug_header_info .= "\nREQUEST Vars = " . arr2string($_REQUEST);

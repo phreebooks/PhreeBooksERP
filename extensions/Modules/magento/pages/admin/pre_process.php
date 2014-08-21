@@ -20,7 +20,7 @@ $security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 /**************  include page specific files    *********************/
 gen_pull_language($module, 'admin');
 require_once(DIR_FS_WORKING . 'functions/magento.php');
-/**************   page specific initialization  *************************/ 
+/**************   page specific initialization  *************************/
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/admin/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
@@ -29,7 +29,7 @@ switch ($_REQUEST['action']) {
   case 'save':
   	\core\classes\user::validate_security($security_level, 3); // security check
 	// save general tab
-	foreach ($admin_classes['magento']->keys as $key => $default) {
+	foreach ($admin->classes['magento']->keys as $key => $default) {
 	  $field = strtolower($key);
       if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
     }

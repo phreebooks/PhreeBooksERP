@@ -18,7 +18,7 @@
 //
 
 function build_mod_list() {
-	global $admin_classes;
+	global $admin;
 	$sel_modules = array(
 	  array('id' => 'all',     'text' => TEXT_ALL),
 	  array('id' => 'install', 'text' => 'install'),
@@ -26,7 +26,7 @@ function build_mod_list() {
 	);
 	$dirs = @scandir(DIR_FS_MODULES);
 	if($dirs === false) throw new \core\classes\userException("couldn't read or find directory ".DIR_FS_MODULES);
-	foreach($admin_classes as $key => $class) {
+	foreach($admin->classes as $key => $class) {
 		$sel_modules[] = array('id' => $key, 'text' => $key);
 		foreach ($class->methods as $method_key => $method) 		 $sel_modules[] = array('id' => $key.'-'.$method_key, 'text' => $key.'-'.$method_key);
 		foreach ($class->dashboards as $dashboard_key => $dashboard) $sel_modules[] = array('id' => $key.'-'.$dashboard_key, 'text' => $key.'-'.$dashboard_key);

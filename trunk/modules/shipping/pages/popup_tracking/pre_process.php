@@ -61,7 +61,7 @@ switch ($_REQUEST['action']) {
 }
 
 /*****************   prepare to display templates  *************************/
-$js_shipping_options  = build_js_methods($admin_classes['shipping']->methods);
+$js_shipping_options  = build_js_methods($admin->classes['shipping']->methods);
 
 if ($sID) {
   $sql = "select id, shipment_id, carrier, ref_id, method, ship_date, deliver_date, tracking_id, cost

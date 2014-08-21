@@ -31,7 +31,7 @@ switch ($_REQUEST['action']) {
 		throw new \core\classes\userException("your setting tax before discount and discount over total don't work together, <br/>This has circulair logic. one can't preceed the other");
 	}else{
 		// save general tab
-		foreach ($admin_classes['phreepos']->keys as $key => $default) {
+		foreach ($admin->classes['phreepos']->keys as $key => $default) {
 		  $field = strtolower($key);
 	      if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
 	    }

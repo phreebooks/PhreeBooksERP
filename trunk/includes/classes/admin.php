@@ -144,11 +144,11 @@ class admin {
 	 */
 
 	function check_prerequisites_versions() {
-		global $admin_classes;
+		global $admin;
 		if (is_array($this->prerequisites) && sizeof($this->prerequisites) > 0) {
 			foreach ($this->prerequisites as $module_class => $RequiredVersion) {
-		  		if ( $admin_classes[$module_class]->installed == false) throw new \core\classes\userException (sprintf(ERROR_MODULE_NOT_INSTALLED, $this->id, $admin_classes[$module_class]->id));
-		  		if ( version_compare($admin_classes[$module_class]->version, $RequiredVersion) < 0 ) throw new \core\classes\userException (sprintf(ERROR_MODULE_VERSION_TOO_LOW, $this->id, $admin_classes[$module_class]->id, $RequiredVersion, $this->version));
+		  		if ( $admin->classes[$module_class]->installed == false) throw new \core\classes\userException (sprintf(ERROR_MODULE_NOT_INSTALLED, $this->id, $admin->classes[$module_class]->id));
+		  		if ( version_compare($admin->classes[$module_class]->version, $RequiredVersion) < 0 ) throw new \core\classes\userException (sprintf(ERROR_MODULE_VERSION_TOO_LOW, $this->id, $admin->classes[$module_class]->id, $RequiredVersion, $this->version));
 			}
 		}
 		return true;
@@ -238,7 +238,7 @@ class admin {
 	}
 
 	final function phreedom_main_validateLogin(){
-		global $db, $admin_classes;
+		global $db, $admin;
   		// Errors will happen here if there was a problem logging in, logout and restart
  	 	if (!is_object($db)) throw new \core\classes\userException("Database isn't created", "phreedom", "main", "template_login");
 	    $admin_name     = db_prepare_input($_POST['admin_name']);
@@ -261,10 +261,10 @@ class admin {
 		setcookie('pb_company' , $_SESSION['company'],  $cookie_exp);
 		setcookie('pb_language', $_SESSION['language'], $cookie_exp);
 		// load init functions for each module and execute
-		foreach ($admin_classes as $key => $module_class) {
+		foreach ($admin->classes as $key => $module_class) {
 		  	if ($module_class->should_update()) $module_class->upgrade();
 		}
-	  	foreach ($admin_classes as $key => $module_class){
+	  	foreach ($admin->classes as $key => $module_class){
 	  		if ($module_class->installed === true) $module_class->initialize();
 	  	}
 		if (defined('TABLE_CONTACTS')) {

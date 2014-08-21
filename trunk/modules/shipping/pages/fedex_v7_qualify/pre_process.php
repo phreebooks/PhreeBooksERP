@@ -59,10 +59,10 @@ switch ($_REQUEST['action']) {
 					  'value'  => $item['value'],
 					);
 			  	}
-			  	if (count($sInfo->package) > 0) $admin_classes['shipping']->methods['fedex_v7']->retrieveLabel($sInfo); // fetch label
-			  	$messageStack->add('generating label for '.$sInfo->ship_primary_name.' and label length: '.strlen($admin_classes['shipping']->methods['fedex_v7']->returned_label), 'caution');
+			  	if (count($sInfo->package) > 0) $admin->classes['shipping']->methods['fedex_v7']->retrieveLabel($sInfo); // fetch label
+			  	$messageStack->add('generating label for '.$sInfo->ship_primary_name.' and label length: '.strlen($admin->classes['shipping']->methods['fedex_v7']->returned_label), 'caution');
 			  	$ext = (MODULE_SHIPPING_FEDEX_V7_PRINTER_TYPE == 'Thermal') ? '.lpt' : '.pdf';
-			  	write_file($backup->source_dir . 'label_' . $count . $ext, $admin_classes['shipping']->methods['fedex_v7']->returned_label);
+			  	write_file($backup->source_dir . 'label_' . $count . $ext, $admin->classes['shipping']->methods['fedex_v7']->returned_label);
 			  	$count++;
 			}
 			$backup->make_zip('dir');

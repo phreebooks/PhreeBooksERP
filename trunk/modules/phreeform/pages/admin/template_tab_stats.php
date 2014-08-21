@@ -20,7 +20,7 @@
 ?>
 <div title="<?php echo TEXT_STATISTICS;?>" id="tab_stats">
 <?php
-  if (sizeof($admin_classes['phreeform']->tables) > 0) {
+  if (sizeof($admin->classes['phreeform']->tables) > 0) {
     echo "  <fieldset><!-- db table stats -->\n";
     echo "    <legend>" . TEXT_TABLE_STATISTICS . "</legend>\n";
     echo "    <table class=\"ui-widget\" style=\"border-collapse:collapse;width:100%\">\n";
@@ -35,7 +35,7 @@
     echo "        </tr>\n";
     echo "      </thead>\n";
     echo "      <tbody class=\"ui-widget-content\">\n";
-    foreach ($admin_classes['phreeform']->tables as $tablename => $tablesql) {
+    foreach ($admin->classes['phreeform']->tables as $tablename => $tablesql) {
 	  $result = $db->Execute("SHOW TABLE STATUS LIKE '" . $tablename ."'");
 	  echo "         <tr>\n";
 	  echo "          <td>" . $result->fields['Name'] . "</td>\n";

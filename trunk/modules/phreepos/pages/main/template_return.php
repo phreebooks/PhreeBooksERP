@@ -246,9 +246,9 @@ echo $SeccondToolbar->build_toolbar();
 	echo '    <fieldset>';
     echo '    <legend>'. TEXT_PAYMENT_METHOD . '</legend>';
 	echo '    <div style="position: relative; height: 150px;">';
-	echo html_pull_down_menu('payment_method', gen_build_pull_down($admin_classes['payment']->methods), $order->shipper_code, 'onchange="activateFields()"') . chr(10);
+	echo html_pull_down_menu('payment_method', gen_build_pull_down($admin->classes['payment']->methods), $order->shipper_code, 'onchange="activateFields()"') . chr(10);
 	$count = 0;
-	foreach ($admin_classes['payment']->methods as $method) {
+	foreach ($admin->classes['payment']->methods as $method) {
 	  echo '      <div id="pm_' . $count . '" style="visibility:hidden; position:absolute; top:22px; left:1px">' . chr(10);
 	  $disp_fields = $method->selection();
 	  for ($i=0; $i<count($disp_fields['fields']); $i++) {

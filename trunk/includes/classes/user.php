@@ -28,7 +28,7 @@ class user {
 	 * @return bool if user is logged in.
 	 */
 
-	final static public function is_validated(&$admin_classes){
+	final static public function is_validated (\core\classes\basis &$admin) {
 		global $page_template;
 		if (!isset($_SESSION['admin_id']) || $_SESSION['admin_id'] == ''){
 			//allow the user to continu to with the login action.
@@ -52,11 +52,10 @@ class user {
 				if (file_exists($path)) { require_once($path);}
 				else { require_once(DIR_FS_MODULES . "phreedom/language/en_us/language.php");}
 				if($_REQUEST['action'] == 'pw_lost_req') {
-					$admin_classes->action	= 'LoadLostPassword';
+					$admin->removeEventsAndAddNewEvent('LoadLostPassword');
 				}else{
-					$admin_classes->action	= 'LoadLogIn';
+					$admin->removeEventsAndAddNewEvent('LoadLogIn');
 				}
-				print($admin_classes->action);
 				//throw new \core\classes\userException(TEXT_SORRY_YOU_ARE_LOGGED_OUT, "");//@todo
 			}
 		}

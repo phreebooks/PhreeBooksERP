@@ -109,13 +109,13 @@ switch ($_REQUEST['action']) {
 	switch (JOURNAL_ID) {
 	  case 18:
 	  	$pmt_meth = db_prepare_input($_POST['shipper_code']);
-	    $admin_classes['payment']->methods[$pmt_meth]->pre_confirmation_check();
+	    $admin->classes['payment']->methods[$pmt_meth]->pre_confirmation_check();
 		$pmt_amt  = $currencies->clean_value(db_prepare_input($_POST['pmt_' . $x]), $order->currencies_code) / $order->currencies_value;
 		$tot_paid += $pmt_amt;
 		$order->pmt_rows[] = array(
 		  'meth' => $pmt_meth,
 		  'pmt'  => $order->total_amount,
-		  'desc' => $journal_types_list[18]['text'] . '-' . TEXT_TOTAL . ':' . $admin_classes['payment']->methods[$pmt_meth]->payment_fields,
+		  'desc' => $journal_types_list[18]['text'] . '-' . TEXT_TOTAL . ':' . $admin->classes['payment']->methods[$pmt_meth]->payment_fields,
 		  'f0'   => db_prepare_input($_POST[$pmt_meth . '_field_0']),
 		  'f1'   => db_prepare_input($_POST[$pmt_meth . '_field_1']),
 		  'f2'   => db_prepare_input($_POST[$pmt_meth . '_field_2']),

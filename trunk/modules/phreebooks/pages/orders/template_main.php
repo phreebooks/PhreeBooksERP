@@ -428,7 +428,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
 		  </td>
           <td align="right">
 <?php echo html_button_field('estimate', TEXT_ESTIMATE, 'onclick="FreightList()"');
-  echo TEXT_CARRIER . ' ' . html_pull_down_menu('ship_carrier', gen_build_pull_down($admin_classes['shipping']->methods, true, true), $default = '', "onchange='buildFreightDropdown()'");
+  echo TEXT_CARRIER . ' ' . html_pull_down_menu('ship_carrier', gen_build_pull_down($admin->classes['shipping']->methods, true, true), $default = '', "onchange='buildFreightDropdown()'");
   echo ' ' . TEXT_SERVICE . ' ' . html_pull_down_menu('ship_service', gen_null_pull_down(), '');
   echo ' ' . TEXT_FREIGHT . ' ';
   echo html_input_field('freight', $currencies->format(($order->freight ? $order->freight : '0.00'), true, $order->currencies_code, $order->currencies_value), 'size="15" maxlength="20" onchange="updateTotalPrices()" style="text-align:right"'); ?>

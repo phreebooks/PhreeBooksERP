@@ -19,8 +19,8 @@
 //
 
 function execute_upgrade($db_release) {
-  	global $db, $admin_classes;
-  	$code_release = $admin_classes['phreedom']->version;
+  	global $db, $admin;
+  	$code_release = $admin->classes['phreedom']->version;
 //  $db_release   = PROJECT_DB_VERSION_MAJOR . '.' . PROJECT_DB_VERSION_MINOR;
 
 	if (version_compair($db_release,'1.3.1', '<=')) { // upgrade db to Release 1.4

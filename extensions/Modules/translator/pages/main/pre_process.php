@@ -42,7 +42,7 @@ switch ($_REQUEST['action']) {
 		$lang = db_prepare_input($_POST['lang']);
 		switch($mod) {
 			case 'all':
-	  			foreach ($admin_classes as $module_class){
+	  			foreach ($admin->classes as $module_class){
 	  				$dir = DIR_FS_MODULES . $module_class->id."/language/$lang/";
 	  				$ver = $module_class->version;
 	  				$translator->import_language($dir, $value, $lang, $ver);
@@ -62,27 +62,27 @@ switch ($_REQUEST['action']) {
 	  		case 'install':
 	    		$install_dir = db_prepare_input($_POST['install_dir']);
 	    		$dir = DIR_FS_ADMIN . "$install_dir/language/$lang/";
-				$ver = $admin_classes['phreedom']->version;
+				$ver = $admin->classes['phreedom']->version;
 				$translator->import_language($dir, $mod, $lang, $ver);
 				if ($_REQUEST['action'] == 'install') break; // else fall through and do the soap directory
 	  		case 'soap':
 	    		$dir = DIR_FS_ADMIN . "soap/language/$lang/";
-				$ver = $admin_classes['phreedom']->version;
+				$ver = $admin->classes['phreedom']->version;
 				$translator->import_language($dir, $mod, $lang, $ver);
 				break;
 	  		default:
 	    		if (strpos($mod, '-') !== false) { // it's a method or dashboard within a module
 		  			$parts = explode('-', $mod);
-		  			if ( in_array($parts[1], $admin_classes[$parts[0]]->methods)){
+		  			if ( in_array($parts[1], $admin->classes[$parts[0]]->methods)){
 		  				$dir = DIR_FS_MODULES.$parts[0]."/methods/".$parts[1]."/language/$lang/";
-		  				$ver = $admin_classes[$parts[0]]->methods[$parts[1]]->version;
+		  				$ver = $admin->classes[$parts[0]]->methods[$parts[1]]->version;
 		  			}else{
 		  				$dir = DIR_FS_MODULES.$parts[0]."/dashboards/".$parts[1]."/language/$lang/";
-		  				$ver = $admin_classes[$parts[0]]->dashboards[$parts[1]]->version;
+		  				$ver = $admin->classes[$parts[0]]->dashboards[$parts[1]]->version;
 		  			}
 				} else {
 	      			$dir = DIR_FS_MODULES . "$mod/language/$lang/";
-		  			$ver = $admin_classes[$mod]->version;
+		  			$ver = $admin->classes[$mod]->version;
 				}
 				$translator->import_language($dir, $mod, $lang, $ver);
 				break;

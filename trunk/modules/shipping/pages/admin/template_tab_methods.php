@@ -29,8 +29,8 @@
 	  </tr>
 	 </thead>
 	 <tbody class="ui-widget-content">
-	  <?php 
-	if (sizeof($admin_classes['shipping']->methods) > 0) foreach ($admin_classes['shipping']->methods as $method) {
+	  <?php
+	if (sizeof($admin->classes['shipping']->methods) > 0) foreach ($admin->classes['shipping']->methods as $method) {
 		$bkgnd = $method->installed? ' class="ui-state-active"' : '';
 		if (file_exists(DIR_WS_MODULES . 'shipping/methods/' . $method->id . '/images/logo.png')) {
 			$logo = DIR_WS_MODULES . 'shipping/methods/' . $method->id . '/images/logo.png';
@@ -61,8 +61,8 @@
 		    	echo '<tr><td colspan="2">' . constant('MODULE_PAYMENT_' . strtoupper($method->id) . '_TEXT_INTRODUCTION') . '</td></tr>';
 		  	}
 		  	foreach ($method->keys as $key) {
-		    	echo '<tr><td colspan="2">' . $key['text'] . '</td><td>'; 
-				echo $method->configure($key['key']); 
+		    	echo '<tr><td colspan="2">' . $key['text'] . '</td><td>';
+				echo $method->configure($key['key']);
 				echo '</td></tr>';
 		  	}
 		  	echo '</table></td></tr>' . chr(10);

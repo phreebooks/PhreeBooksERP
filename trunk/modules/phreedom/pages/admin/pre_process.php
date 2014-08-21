@@ -50,21 +50,21 @@ switch ($_REQUEST['action']) {
   		try{
 	  		\core\classes\user::validate_security($security_level, 4);
 			// load the module installation class
-			if (!array_key_exists($method, $admin_classes)) throw new \core\classes\userException(sprintf('Looking for the installation script for module %s, but could not locate it. The module cannot be installed!', $method));
+			if (!array_key_exists($method, $admin->classes)) throw new \core\classes\userException(sprintf('Looking for the installation script for module %s, but could not locate it. The module cannot be installed!', $method));
 			$db->transStart();
 			require_once(DIR_FS_MODULES . $method . '/config.php'); // config is not loaded yet since module is not installed.
 			if ($_REQUEST['action'] == 'install') {
-		  		$admin_classes[$method]->install(DIR_FS_MY_FILES.$_SESSION['company'].'/', false);
-		  		write_configure('MODULE_' . strtoupper($admin_classes[$method]->id) . '_STATUS', $admin_classes[$method]->version);
- 				gen_add_audit_log(sprintf(TEXT_MODULE_ARGS, $admin_classes[$method]->text) . TEXT_INSTALL , $admin_classes[$method]->version);
- 				$messageStack->add(sprintf(TEXT_MODULE_ARGS, $admin_classes[$method]->text). TEXT_INSTALL . $admin_classes[$method]->version, 'success');
+		  		$admin->classes[$method]->install(DIR_FS_MY_FILES.$_SESSION['company'].'/', false);
+		  		write_configure('MODULE_' . strtoupper($admin->classes[$method]->id) . '_STATUS', $admin->classes[$method]->version);
+ 				gen_add_audit_log(sprintf(TEXT_MODULE_ARGS, $admin->classes[$method]->text) . TEXT_INSTALL , $admin->classes[$method]->version);
+ 				$messageStack->add(sprintf(TEXT_MODULE_ARGS, $admin->classes[$method]->text). TEXT_INSTALL . $admin->classes[$method]->version, 'success');
 			} else {
-		  		$admin_classes[$method]->update();
-		  		write_configure('MODULE_' . strtoupper($admin_classes[$method]->id) . '_STATUS', $admin_classes[$method]->version);
- 				gen_add_audit_log(sprintf(TEXT_MODULE_ARGS, $admin_classes[$method]->text) . TEXT_UPDATE, $admin_classes[$method]->version);
-	   			$messageStack->add(sprintf(GEN_MODULE_UPDATE_SUCCESS, $admin_classes[$method]->id, $admin_classes[$method]->version), 'success');
+		  		$admin->classes[$method]->update();
+		  		write_configure('MODULE_' . strtoupper($admin->classes[$method]->id) . '_STATUS', $admin->classes[$method]->version);
+ 				gen_add_audit_log(sprintf(TEXT_MODULE_ARGS, $admin->classes[$method]->text) . TEXT_UPDATE, $admin->classes[$method]->version);
+	   			$messageStack->add(sprintf(GEN_MODULE_UPDATE_SUCCESS, $admin->classes[$method]->id, $admin->classes[$method]->version), 'success');
 			}
-			if (sizeof($admin_classes[$method]->notes) > 0) foreach ($admin_classes[$method]->notes as $note) $messageStack->add($note, 'caution');
+			if (sizeof($admin->classes[$method]->notes) > 0) foreach ($admin->classes[$method]->notes as $note) $messageStack->add($note, 'caution');
 			$db->transCommit();
 			break;
   		}catch (Exception $e){
@@ -78,12 +78,12 @@ switch ($_REQUEST['action']) {
 		  	gen_pull_language($method, 'admin');
 			gen_pull_language($method);
 			// load the module installation class
-			if (!array_key_exists($method, $admin_classes)) throw new \core\classes\userException(sprintf('Looking for the delete script for module %s, but could not locate it. The module cannot be deleted!', $method));
+			if (!array_key_exists($method, $admin->classes)) throw new \core\classes\userException(sprintf('Looking for the delete script for module %s, but could not locate it. The module cannot be deleted!', $method));
 			$db->transStart();
-			$admin_classes[$method]->delete(DIR_FS_MY_FILES.$_SESSION['company'].'/');
+			$admin->classes[$method]->delete(DIR_FS_MY_FILES.$_SESSION['company'].'/');
 			$db->transCommit();
-			if (sizeof($admin_classes[$method]->notes) > 0) foreach ($admin_classes[$method]->notes as $note) $messageStack->add($note, 'caution');
-			gen_add_audit_log(sprintf(TEXT_UNINSTALLED_MODULE, $admin_classes[$method]->text));
+			if (sizeof($admin->classes[$method]->notes) > 0) foreach ($admin->classes[$method]->notes as $note) $messageStack->add($note, 'caution');
+			gen_add_audit_log(sprintf(TEXT_UNINSTALLED_MODULE, $admin->classes[$method]->text));
 			break;
   		}catch (Exception $e){
   			$db->transRollback();
@@ -95,7 +95,7 @@ switch ($_REQUEST['action']) {
 		  	\core\classes\user::validate_security($security_level, 3);
 			// save general tab
 			$db->transStart();
-			foreach ($admin_classes['phreedom']->keys as $key => $default) {
+			foreach ($admin->classes['phreedom']->keys as $key => $default) {
 				$field = strtolower($key);
 		     	if (isset($_POST[$field])) write_configure($key, db_prepare_input($_POST[$field]));
 				// special case for field COMPANY_NAME to update company config file
@@ -152,7 +152,7 @@ switch ($_REQUEST['action']) {
 			$backup = new \phreedom\classes\backup;
 		    $backup->source_dir  = DIR_FS_MY_FILES . $db_name . '/temp/';
 		    $backup->source_file = 'temp.sql';
-		    foreach ($admin_classes as $key => $class) {
+		    foreach ($admin->classes as $key => $class) {
 				if (!$class->core && !isset($_POST[$key])) continue;
 			  	gen_pull_language($key, 'admin');
 			    $task        = $_POST[$key . '_action'];
@@ -164,7 +164,7 @@ switch ($_REQUEST['action']) {
 						write_configure('MODULE_' . strtoupper($class->id) . '_STATUS', $class->version);
  						gen_add_audit_log(sprintf(TEXT_MODULE_ARGS, $class->text) . TEXT_INSTALL , $class->version);
  						$messageStack->add(sprintf(TEXT_MODULE_ARGS, $class->text). TEXT_INSTALL . $class->version, 'success');
- 						if (sizeof($admin_classes[$method]->notes) > 0) foreach ($class->notes as $note) $messageStack->add($note, 'caution');
+ 						if (sizeof($admin->classes[$method]->notes) > 0) foreach ($class->notes as $note) $messageStack->add($note, 'caution');
 				    	break;
 				  	case 'data':
 						$table_list = array();
@@ -184,7 +184,7 @@ switch ($_REQUEST['action']) {
 			}
 			// install reports now that categories are set up
 			if ($_POST['phreeform_action'] <> 'data') { // if=data reports have been copied, else load basic reports
-			    foreach ($admin_classes as $key => $class) admin_add_reports($key, DIR_FS_MY_FILES . $db_name . '/phreeform/');
+			    foreach ($admin->classes as $key => $class) admin_add_reports($key, DIR_FS_MY_FILES . $db_name . '/phreeform/');
 			}
 			if ($_POST['phreebooks_action'] <> 'data') { // install fiscal year if the phreebooks data is not copied
 			  	$db->Execute("TRUNCATE TABLE " . TABLE_ACCOUNTING_PERIODS);

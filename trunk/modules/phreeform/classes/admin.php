@@ -64,9 +64,9 @@ class admin extends \core\classes\admin {
 	}
 
   	function install($path_my_files, $demo = false) {
-		global $admin_classes;
+		global $admin;
 		parent::install($path_my_files, $demo);
-		if (is_array($admin_classes)) foreach ($admin_classes as $module_class) {
+		foreach ($admin->classes as $module_class) {
 		  	gen_pull_language($module_class, 'admin');
 	  		$module_class->load_reports();
 		}

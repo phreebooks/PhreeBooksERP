@@ -32,22 +32,22 @@ if (substr($_REQUEST['action'], 0, 8) == 'install_') {
 switch ($_REQUEST['action']) {
   case 'install':
 	\core\classes\user::validate_security($security_level, 4);
-	$admin_classes['payment']->methods[$method]->install();
+	$admin->classes['payment']->methods[$method]->install();
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	break;
   case 'remove';
 	\core\classes\user::validate_security($security_level, 4);
-	$admin_classes['payment']->methods[$method]->delete();
+	$admin->classes['payment']->methods[$method]->delete();
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	break;
   case 'save':
 	\core\classes\user::validate_security($security_level, 3);
   	// foreach method if enabled, save info
-	foreach ($admin_classes['payment']->methods as $method) {
+	foreach ($admin->classes['payment']->methods as $method) {
 	  	if ($method->installed) $method->update();
 	}
 	// save general tab
-	foreach ($admin_classes['payment']->keys as $key => $default) {
+	foreach ($admin->classes['payment']->keys as $key => $default) {
 	  	$field = strtolower($key);
       	if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
     }

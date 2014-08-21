@@ -42,7 +42,7 @@ echo $toolbar->build_toolbar();
 	<tbody class="ui-widget-content">
 <?php
 $odd = true;
-foreach ($admin_classes as $module_class) {
+foreach ($admin->classes as $module_class) {
 	if ($module_class->installed){
   		foreach ($module_class->dashboards as $dashboard){
   			load_method_language(DIR_FS_MODULES . "{$module_class->id}dashboards/{$dashboard->id}");

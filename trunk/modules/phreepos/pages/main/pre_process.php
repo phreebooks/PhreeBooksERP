@@ -67,7 +67,7 @@ for ($i = 0; $i < count($ot_tax_rates); $i++) {
 // generate payment choice arrays for receipt of payments
 $number_of_methods = 0;
 $js_pmt_types = "var pmt_types = new Array();" . chr(10);
-foreach ($admin_classes['payment']->methods as $method) {
+foreach ($admin->classes['payment']->methods as $method) {
 	if($method->installed) {
   		if($method->show_in_pos == true && $method->pos_gl_acct != '') {
   			$number_of_methods++;

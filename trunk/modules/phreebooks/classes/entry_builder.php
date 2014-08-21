@@ -134,7 +134,7 @@ class entry_builder {
 	// fetch the past invoices and shipments and add to item array
 	if (is_array($this->item_records)) {
 	  foreach ($this->item_records as $value) {
-		$sql = "select sum(qty) as qty_shipped_prior from " . TABLE_JOURNAL_ITEM . " 
+		$sql = "select sum(qty) as qty_shipped_prior from " . TABLE_JOURNAL_ITEM . "
 			where so_po_item_ref_id = " . $value . " and ref_id <> " . $this->id;
 		$result = $db->Execute($sql);
 		$this->line_items[$value]['qty_shipped_prior'] = $result->fields['qty_shipped_prior'];
@@ -220,7 +220,7 @@ class entry_builder {
 	$this->payment = array();
 	while (!$result->EOF) {
 	  $this->total_paid += $result->fields['credit_amount'] - $result->fields['debit_amount']; // one will be zero
-	  $sql = "select post_date, shipper_code, purchase_invoice_id, purch_order_id 
+	  $sql = "select post_date, shipper_code, purchase_invoice_id, purch_order_id
 	    from " . TABLE_JOURNAL_MAIN . " where id = " . $result->fields['ref_id'];
 	  $pmt_info = $db->Execute($sql);
 	  // keep the last payment reference, type and method
@@ -229,7 +229,7 @@ class entry_builder {
 	  $this->payment_deposit_id = $pmt_info->fields['purchase_invoice_id'];
 	  $this->payment_reference  = $pmt_info->fields['purch_order_id'];
 	  // pull the payment detail
-	  $sql = "select description from " . TABLE_JOURNAL_ITEM . " 
+	  $sql = "select description from " . TABLE_JOURNAL_ITEM . "
 		where ref_id = " . $result->fields['ref_id'] . " and gl_type = 'ttl'";
 	  $pmt_det = $db->Execute($sql);
 	  $this->payment_detail = $this->pull_desc($pmt_det->fields['description']);
@@ -253,9 +253,9 @@ class entry_builder {
 		$shipping_info		= explode(':', $this->shipper_code);
 		$method				= $shipping_info[0];
 		if ($method) {
-			$this->ship_carrier = $admin_classes['shipping']->methods[$method]->text;
+			$this->ship_carrier = $admin->classes['shipping']->methods[$method]->text;
 		  	$this->ship_service = defined($method . '_' . $shipping_info[1]) ? constant($method . '_' . $shipping_info[1]) : '';
-		  	$result = $db->Execute("SELECT tracking_id FROM ".TABLE_SHIPPING_LOG." 
+		  	$result = $db->Execute("SELECT tracking_id FROM ".TABLE_SHIPPING_LOG."
 		      WHERE ref_id='$this->purchase_invoice_id' OR ref_id LIKE '".$this->purchase_invoice_id."-%'");
 		  	if ($result->RecordCount() > 0) {
 		    	$tracking = array();

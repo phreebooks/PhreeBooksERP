@@ -427,7 +427,7 @@ $result = $db->Execute("select account_id from " . TABLE_USERS . " where admin_i
 $default_sales_rep = $result->fields['account_id'] ? $result->fields['account_id'] : '0';
 
 // Load shipping methods
-$js_shipping_options  = build_js_methods($admin_classes['shipping']->methods);
+$js_shipping_options  = build_js_methods($admin->classes['shipping']->methods);
 
 // load calendar parameters
 $cal_order = array(

@@ -50,7 +50,7 @@ switch ($_REQUEST['action']) {
 			$pkg->hazardous_material     = isset($_POST['hazardous_material']) ? '1' : '0';
 			// read the modules installed
 			$rates = array();
-			foreach ($admin_classes['shipping']->methods as $method) {
+			foreach ($admin->classes['shipping']->methods as $method) {
 			  	if (isset($_POST['ship_method_' . $method->id])) {
 					$result = $method->quote($pkg); // will return false if there was an error
 					$rates = array_merge_recursive($result, $rates);

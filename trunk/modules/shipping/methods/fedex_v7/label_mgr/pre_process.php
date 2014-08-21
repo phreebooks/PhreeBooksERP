@@ -72,7 +72,7 @@ switch ($_REQUEST['action']) {
 	    		);
 	  		}
 		}
-		if (count($sInfo->package) > 0) $result = $admin_classes['shipping']->methods[$method]->retrieveLabel($sInfo);
+		if (count($sInfo->package) > 0) $result = $admin->classes['shipping']->methods[$method]->retrieveLabel($sInfo);
 
 		$temp = $db->Execute("select next_shipment_num from " . TABLE_CURRENT_STATUS);
 	  	$shipment_num = $temp->fields['next_shipment_num'];
@@ -81,7 +81,7 @@ switch ($_REQUEST['action']) {
 			$sql_array = array(
 			  'ref_id'       => $shipment['ref_id'],
 			  'shipment_id'  => $shipment_num,
-			  'carrier'      => $admin_classes['shipping']->methods[$method]->id,
+			  'carrier'      => $admin->classes['shipping']->methods[$method]->id,
 			  'method'       => $sInfo->ship_method,
 			  'ship_date'    => $sInfo->ship_date . ' ' . date('h:i:s'),
 			  'deliver_date' => $shipment['delivery_date'],
@@ -93,7 +93,7 @@ switch ($_REQUEST['action']) {
 		}
 		$db->Execute("update " . TABLE_CURRENT_STATUS . " set next_shipment_num = next_shipment_num + 1");
 	  	gen_add_audit_log(TEXT_LABEL_GENERATED, $shipment_num . '-' . $sInfo->purchase_invoice_id);
-	  	$file_path = SHIPPING_DEFAULT_LABEL_DIR . $admin_classes['shipping']->methods[$method]->id . '/' . str_replace('-', '/', $date) . '/';
+	  	$file_path = SHIPPING_DEFAULT_LABEL_DIR . $admin->classes['shipping']->methods[$method]->id . '/' . str_replace('-', '/', $date) . '/';
 		// fetch the tracking labels
 	  	foreach ($labels_array as $tracking_num) {
 	    	foreach (glob($file_path . $tracking_num . '*.*') as $filename) {
@@ -107,7 +107,7 @@ switch ($_REQUEST['action']) {
 	      		}
 	   		}
 	    	if (!$auto_print) { // just pdf, go there now
-	      		gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=shipping&page=popup_label_viewer&method=' . $admin_classes['shipping']->methods[$method]->id . '&date=' . $sInfo->ship_date . '&labels=' . implode(':', $labels_array), 'SSL'));
+	      		gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=shipping&page=popup_label_viewer&method=' . $admin->classes['shipping']->methods[$method]->id . '&date=' . $sInfo->ship_date . '&labels=' . implode(':', $labels_array), 'SSL'));
 	    	}
 	  	}
 	  	$label_data = str_replace("\r", "", addslashes($label_data)); // for javascript multi-line
@@ -124,7 +124,7 @@ switch ($_REQUEST['action']) {
 		$labels       = $_GET['labels'];
 		$labels_array = explode(':', $labels);
 		if (count($labels_array) == 0) throw new \core\classes\userException('No labels were passed to label_viewer.php!');
-		$file_path = SHIPPING_DEFAULT_LABEL_DIR . $admin_classes['shipping']->methods[$method]->id . '/' . str_replace('-', '/', $date) . '/';
+		$file_path = SHIPPING_DEFAULT_LABEL_DIR . $admin->classes['shipping']->methods[$method]->id . '/' . str_replace('-', '/', $date) . '/';
 		// fetch the tracking labels
 		foreach ($labels_array as $tracking_num) {
 			foreach (glob($file_path . $tracking_num . '*.*') as $filename) {
@@ -141,7 +141,7 @@ switch ($_REQUEST['action']) {
 		$label_data = str_replace("\r", "", addslashes($label_data)); // for javascript multi-line
 		$label_data = str_replace("\n", "\\n", $label_data);
 		if (!$auto_print) { // just pdf, go there now
-			gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=shipping&page=popup_label_viewer&method=' . $admin_classes['shipping']->methods[$method]->id . '&date=' . $date . '&labels=' . $labels, 'SSL'));
+			gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=shipping&page=popup_label_viewer&method=' . $admin->classes['shipping']->methods[$method]->id . '&date=' . $date . '&labels=' . $labels, 'SSL'));
 		}
   	}catch(exception $e){
   		$messageStack->add($e->getMessage(),'error');
@@ -158,12 +158,12 @@ switch ($_REQUEST['action']) {
 	while (!$shipments->EOF) {
 		$tracking_number = $shipments->fields['tracking_id'];
 	  	if ($ship_method <> 'GndFrt' && $ship_method <> 'EcoFrt') { // no need to delte freight shipments,
-	    	$admin_classes['shipping']->methods[$method]->deleteLabel($ship_method, $tracking_number);
+	    	$admin->classes['shipping']->methods[$method]->deleteLabel($ship_method, $tracking_number);
 	    }
 	}
 	// delete the label file
 	$date = explode('-', substr($shipments->fields['ship_date'], 0, 10));
-	$file_path = SHIPPING_DEFAULT_LABEL_DIR.$admin_classes['shipping']->methods[$method]->id.'/'.$date[0].'/'.$date[1].'/'.$date[2].'/';
+	$file_path = SHIPPING_DEFAULT_LABEL_DIR.$admin->classes['shipping']->methods[$method]->id.'/'.$date[0].'/'.$date[1].'/'.$date[2].'/';
 	$cnt = 0;
 	while(true) {
 		$filename = $file_path . $tracking_number . ($cnt > 0 ? '-'.$cnt : '') . '.lpt';
@@ -187,9 +187,9 @@ switch ($_REQUEST['action']) {
 
   case 'close':
     $date     = ($_GET['date']) ? $_GET['date'] : date('Y-m-d');
-	$admin_classes['shipping']->methods[$method]->close_date = ($_POST['search_date']) ? gen_db_date($_POST['search_date']) : date('Y-m-d');
-	$admin_classes['shipping']->methods[$method]->closeFedEx($date);
-	gen_add_audit_log(sprintf(SHIPPING_END_OF_DAY, $admin_classes['shipping']->methods[$method]->id), $tracking_id);
+	$admin->classes['shipping']->methods[$method]->close_date = ($_POST['search_date']) ? gen_db_date($_POST['search_date']) : date('Y-m-d');
+	$admin->classes['shipping']->methods[$method]->closeFedEx($date);
+	gen_add_audit_log(sprintf(SHIPPING_END_OF_DAY, $admin->classes['shipping']->methods[$method]->id), $tracking_id);
 	break;
 
   case 'report':
@@ -214,7 +214,7 @@ switch ($_REQUEST['action']) {
 // translate shipping terms in the carriers language, style
 $shipping_methods = array();
 foreach ($shipping_defaults['service_levels'] as $key => $value) {
-  if (defined($admin_classes['shipping']->methods[$method]->id . '_' . $key)) {
+  if (defined($admin->classes['shipping']->methods[$method]->id . '_' . $key)) {
 	$shipping_methods[$key] = constant($shipping_module . '_' . $key);
   }
 }

@@ -33,7 +33,7 @@ $fields         = new \contacts\classes\fields();
 switch ($_REQUEST['action']) {
   case 'save':
 	\core\classes\user::validate_security($security_level, 3);
-  	foreach ($admin_classes['contacts']->keys as $key => $default) {
+  	foreach ($admin->classes['contacts']->keys as $key => $default) {
 	  $field = strtolower($key);
       if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
     }

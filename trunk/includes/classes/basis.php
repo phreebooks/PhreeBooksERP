@@ -1,7 +1,7 @@
 <?php
 namespace core\classes;
 class basis implements \SplSubject {
-	public  $_admin_classes		= array();
+	public  $classes			= array();
 	public  $_observers;
 	public  $module				= 'phreedom';
 	public 	$page				= 'main';
@@ -53,7 +53,7 @@ class basis implements \SplSubject {
 	}
 
 	public function ReturnAdminClasses(){
-		return $this->_admin_classes;
+		return $this->classes;
 	}
 
 	/**
@@ -62,7 +62,7 @@ class basis implements \SplSubject {
 	 */
 
 	public function getNumberOfAdminClasses() {
-		return sizeof($this->_admin_classes);
+		return sizeof($this->classes);
 	}
 
 	/**
@@ -72,10 +72,10 @@ class basis implements \SplSubject {
 	 */
 
 	public function attachAdminClasses($moduleName,\core\classes\admin $admin_class) {
-		if (array_search($admin_class, $this->_admin_classes) === false) {
-			$this->_admin_classes[$moduleName] = $admin_class;
+		if (array_search($admin_class, $this->classes) === false) {
+			$this->classes[$moduleName] = $admin_class;
 		}
-		uasort($this->_admin_classes, array($this, 'arangeObjectBySortOrder'));
+		uasort($this->classes, array($this, 'arangeObjectBySortOrder'));
 	}
 
 	/**
@@ -110,24 +110,24 @@ class basis implements \SplSubject {
 			$messageStack->debug("\n starting with event: $event");
 			if (!$event) throw new exception("found a empty event in the array.");
 			$ActionBefore  = "before_$event";
-			foreach ($this->_admin_classes as $module_class){
+			foreach ($this->classes as $module_class){
 				if ($module_class->installed && method_exists($module_class, $ActionBefore)) {
 					$messageStack->debug("\n class {$module_class->id} has action method $ActionBefore");
 					$module_class->$ActionBefore($this);
 				}
 			}
 
-			foreach ($this->_admin_classes as $module_class){
+			foreach ($this->classes as $module_class){
 				if ($module_class->installed && method_exists($module_class, $event)) {
 					$messageStack->debug("\n class {$module_class->id} has action method $event");
 					$module_class->$event($this);
 				}
 			}
-			$ActionBefore  = "after_$event";
-			foreach ($this->_admin_classes as $module_class) {
+			$ActionAfter  = "after_$event";
+			foreach ($this->classes as $module_class) {
 				if ($module_class->installed && method_exists($module_class, $ActionAfter)) {
 					$messageStack->debug("\n class {$module_class->id} has action method $ActionAfter");
-					$admin_classes->$ActionAfter($this);
+					$module_class->$ActionAfter($this);
 				}
 			}
 			unset($this->events[$key]);

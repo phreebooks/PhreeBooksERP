@@ -60,7 +60,7 @@
 	    <th width="20%"><?php echo TEXT_DEMO_DATA; ?></th>
 	    <th width="20%"><?php echo TEXT_ALL_DATA;  ?></th>
 	  </tr>
-<?php foreach ($admin_classes as $mod) { // load modules and query for copy
+<?php foreach ($admin->classes as $mod) { // load modules and query for copy
 		if ($mod->id == 'phreedom') continue;
 ?>
 	  <tr>

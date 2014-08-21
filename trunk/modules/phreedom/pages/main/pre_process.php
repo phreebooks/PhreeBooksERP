@@ -31,7 +31,7 @@ switch ($_REQUEST['action']) {
   	case 'save':
 		$dashboard_id = db_prepare_input($_POST['dashboard_id']);
 		// since we don't know where the module is, go find it.
-		foreach ($admin_classes as $module_class) {
+		foreach ($admin->classes as $module_class) {
 	  		foreach ($module_class->dashboards as $dashboard){
 		  		if ($dashboard->id == $dashboard_id) {
 		  			load_method_language(DIR_FS_MODULES . "{$module_class->id}/dashboards/{$dashboard->id}");
@@ -45,7 +45,7 @@ switch ($_REQUEST['action']) {
   	case 'delete':
 		$dashboard_id = db_prepare_input($_POST['dashboard_id']);
 		//since we don't know where the module is, go find it.
-		foreach ($admin_classes as $module_class) {
+		foreach ($admin->classes as $module_class) {
 	  		foreach ($module_class->dashboards as $dashboard){
 		  		if ($dashboard->id == $dashboard_id) {
 		  			load_method_language(DIR_FS_MODULES . "{$module_class->id}/dashboards/{$dashboard->id}");

@@ -76,7 +76,7 @@ function init() {
   contact_sales_tax    = -1;
   clearAddress('bill');
   setImage('');
-  refreshOrderClock(); 
+  refreshOrderClock();
   changeOfTill();
   disablePopup();
   document.getElementById('sku').focus();
@@ -157,7 +157,7 @@ function till (id, restrictCurrency, currenciesCode, printer, startingLine, clos
 	  this.currenciesCode 	= currenciesCode;
 	  this.printer			= printer;
 	  this.startingLine		= startingLine;
-	  this.closingLine		= closingLine;	
+	  this.closingLine		= closingLine;
 	  this.openDrawer		= openDrawer;
 	  this.defaultTax		= defaultTax;
 	  this.storeID			= storeID;
@@ -172,7 +172,7 @@ function ot_option (till_id, id, type, use_tax, taxable, description) {
 	this.description	= description;
 }
 
-function ClearForm() {	
+function ClearForm() {
 }
 
 function stripslashes (str) {
@@ -232,7 +232,7 @@ function clearAddress(type) {
   	for (var i=0; i<add_array.length; i++) {
 		var add_id = add_array[i];
 		if (add_id != 'country_code') document.getElementById(type+'_'+add_id).style.color = inactive_text_color;
-		document.getElementById(type+'_'+add_id).value = default_array[i];	
+		document.getElementById(type+'_'+add_id).value = default_array[i];
   	}
 }
 
@@ -328,7 +328,7 @@ function orderFillAddress(xml, type, fill_address) {
     // add a option for creating a new address
     newOpt = document.createElement("option");
     newOpt.text = text_enter_new;
-    document.getElementById(type+'_to_select').options.add(newOpt);	
+    document.getElementById(type+'_to_select').options.add(newOpt);
     document.getElementById(type+'_to_select').options[iIndex].value = '0';
     document.getElementById(type+'_to_select').style.visibility      = 'visible';
     document.getElementById(type+'_to_select').disabled              = false;
@@ -409,9 +409,9 @@ function accountGuess(force) {
   if (!force) {
 	AccountList();
 	return;
-  } 
+  }
   var warn = true;
-  var firstguess  = document.getElementById('copy_search').value; 
+  var firstguess  = document.getElementById('copy_search').value;
   var guess = document.getElementById('search').value;
   if( firstguess != guess && firstguess != text_search && firstguess != ''){
 	  guess = firstguess;
@@ -449,7 +449,7 @@ function processAccountGuess(sXml) {
 }
 
 function AccountList(currObj) {
-	var firstguess  = document.getElementById('copy_search').value; 
+	var firstguess  = document.getElementById('copy_search').value;
 	var secondguess = document.getElementById('search').value;
 	if ((firstguess == text_search || firstguess == '') && (secondguess == text_search || secondguess == '') ) return;
 	var guess = secondguess;
@@ -535,7 +535,7 @@ function addInvRow() {
   cell = '<td><input name="desc_'+rowCnt+'" id="desc_'+rowCnt+'" readonly="readonly" size="40" maxlength="255" style="text-overflow:ellipsis;"/></td>';
   newCell = newRow.insertCell(-1);
   newCell.innerHTML = cell;
-  if (display_with_tax) { 
+  if (display_with_tax) {
     cell  = '<td align="center"><input type="text" name="wtprice_'+rowCnt+'" id="wtprice_'+rowCnt+'" <?php if($security_level < 3) echo 'readonly="readonly"'; ?> size="10" maxlength="15" style="text-align:right" onchange="rowWithTax('+rowCnt+')" value="'+formatted_zero+'"/></td>';
   }else{
   	cell  = '<td align="center"><input type="text" name="price_'+rowCnt+'"   id="price_'+rowCnt+'"   <?php if($security_level < 3) echo 'readonly="readonly"'; ?> size="10" maxlength="15" style="text-align:right" onchange="updateRowTotal('+rowCnt+',false)" value="'+formatted_zero+'"/></td>';
@@ -555,7 +555,7 @@ function addInvRow() {
   cell += '<input type="hidden" name="acct_'+rowCnt+'" id="acct_'+rowCnt+'" value="'+default_inv_acct+'" />';
   cell += '<input type="hidden" name="tax_'+rowCnt+'" id="tax_'+rowCnt+'" value="0" />';
   cell += '<input type="hidden" name="product_tax_'+rowCnt+'" id="product_tax_'+rowCnt+'" value="0" />';
-  if (display_with_tax) { 
+  if (display_with_tax) {
 	cell += '<input type="hidden" name="price_'+rowCnt+'" id="price_'+rowCnt+'" value="'+formatted_zero+'" />';
     cell += '<input type="hidden" name="total_'+rowCnt+'" id="total_'+rowCnt+'" value="'+formatted_zero+'" />';
     cell += '<input type="text" name="wttotal_'+rowCnt+'" id="wttotal_'+rowCnt+'" value="'+formatted_zero+'" readonly="readonly" size="10" maxlength="20" style="text-align:right" /></td>';
@@ -604,11 +604,11 @@ function removeInvRow(index) {
 			$('#pstd_' + i).prop('disabled', false);
 			$('#sku_prop_'+i).show();
 			$('#sku_'+i).show();
-		} 
+		}
   	}
   	document.getElementById('item_table_body').deleteRow(-1);
   	updateTotalPrices();
-} 
+}
 
 function addPmtRow() {
   var newCell;
@@ -660,7 +660,7 @@ function removePmtRow(index) {
   }
   document.getElementById('payment_table_body').deleteRow(-1);
   updateTotalPrices();
-} 
+}
 
 function rowWithTax(rowCnt){
 	var tax_index = document.getElementById('tax_'+rowCnt).value;
@@ -717,7 +717,7 @@ function processSkuPrice(sXml) { // call back function
   	if (!xml) return;
   	var exchange_rate = document.getElementById('currencies_value').value;
   	var rowCnt = $(xml).find("rID").text();
-  	if(formatPrecise($(xml).find("sales_price").text()) != formatted_zero ){ 
+  	if(formatPrecise($(xml).find("sales_price").text()) != formatted_zero ){
 		document.getElementById('fixed_price_'  +rowCnt).value = formatPrecise($(xml).find("sales_price").text()  * exchange_rate);
   		document.getElementById('price_'   		+rowCnt).value = formatPrecise($(xml).find("sales_price").text()  * exchange_rate);
     	document.getElementById('full_'    		+rowCnt).value = formatCurrency($(xml).find("full_price").text()  * exchange_rate);
@@ -750,7 +750,7 @@ function calculateRoundingOf(new_total){
 		document.getElementById('rounded_of').value = formatCurrency(differance);
 		return result;
 		break;
-		
+
 	case 2:// rounds of to the nearest 10cents. in favor of the customer
 		var result = Math.floor (new_total * 10)/10;
 		var differance = result - (Math.round(new_total * 100) / 100);
@@ -763,7 +763,7 @@ function calculateRoundingOf(new_total){
 		document.getElementById('rounded_of').value = formatCurrency(differance);
 		return result;
 		break;
-		
+
 	}
 }
 
@@ -786,7 +786,7 @@ function updateTotalPrices() {
 	  }
 	  if (tax_before_discount == '0') { // tax after discount
         taxable_subtotal += lineTotal * (1-(discountPercent/100)) * (tax_rates[tax_index].rate / 100);
-	  } else { 
+	  } else {
         taxable_subtotal += lineTotal * (tax_rates[tax_index].rate / 100);
 	  }
 	}
@@ -848,7 +848,7 @@ function calculateDiscount() {
     var percent = 100000 * (1 - ((StartValue - discount) / StartValue));
     document.getElementById('disc_percent').value = formatCurrency(Math.round(percent) / 1000);
     document.getElementById('discount').value = formatCurrency(discount);
-  } 
+  }
   updateTotalPrices();
 }
 
@@ -900,17 +900,17 @@ function recalculateCurrencies() {
   document.getElementById('currencies_value').value = new String(newValue);
   document.getElementById('ot_currencies_code').value  = desiredCurrency;
   document.getElementById('ot_currencies_value').value = new String(newValue);
-  
+
 }
 
 function newformatCurrency(amount) { // convert to expected currency format
-  // amount needs to be a string type with thousands separator ',' and decimal point dot '.' 
+  // amount needs to be a string type with thousands separator ',' and decimal point dot '.'
   var factor  = Math.pow(10, newdecimal_places);
   var adj     = Math.pow(10, (newdecimal_places+2)); // to fix rounding (i.e. .1499999999 rounding to 0.14 s/b 0.15)
   var numExpr = parseFloat(amount);
   if (isNaN(numExpr)) return amount;
   numExpr     = Math.round((numExpr * factor) + (1/adj));
-  var minus   = (numExpr < 0) ? '-' : ''; 
+  var minus   = (numExpr < 0) ? '-' : '';
   numExpr     = Math.abs(numExpr);
   var decimal = (numExpr % factor).toString();
   while (decimal.length < newdecimal_places) decimal = '0' + decimal;
@@ -925,12 +925,12 @@ function newformatCurrency(amount) { // convert to expected currency format
 }
 
 function newformatPrecise(amount) { // convert to expected currency format with the additional precision
-  // amount needs to be a string type with thousands separator ',' and decimal point dot '.' 
+  // amount needs to be a string type with thousands separator ',' and decimal point dot '.'
   var factor = Math.pow(10, newdecimal_precise);
   var numExpr = parseFloat(amount);
   if (isNaN(numExpr)) return amount;
   numExpr = Math.round(numExpr * factor);
-  var minus = (numExpr < 0) ? '-' : ''; 
+  var minus = (numExpr < 0) ? '-' : '';
   numExpr = Math.abs(numExpr);
   var decimal = (numExpr % factor).toString();
   while (decimal.length < newdecimal_precise) decimal = '0' + decimal;
@@ -1109,7 +1109,7 @@ function monitorPrinting() {
     	$.messager.alert("printing exception occured ", e.getLocalizedMessage(),'error');
 	  }
     }
-  } 
+  }
 }
 
 function InventoryProp(elementID) {
@@ -1190,7 +1190,7 @@ function SavePayment(PrintOrSave) { // request function
   var f3 = document.getElementById(payment_method+'_field_3') ? document.getElementById(payment_method+'_field_3').value : '';
   var f4 = document.getElementById(payment_method+'_field_4') ? document.getElementById(payment_method+'_field_4').value : '';
 <?php
-  foreach ($admin_classes['payment']->methods as $method) { // fetch the javascript validation of payments module
+  foreach ($admin->classes['payment']->methods as $method) { // fetch the javascript validation of payments module
   	if ($method->installed)	echo $method->javascript_validation();
   }
 ?>
@@ -1245,7 +1245,7 @@ function ajaxPrintAndClean(sXml) { // call back function
   	var action 		= $(xml).find("action").text();
   	var print 		= action.substring(0,5) == 'print';
   	var tillId 		= document.getElementById('till_id').value;
-  	if ( print && qz.tagName.toLowerCase() == "applet" && tills[tillId].printer != '') {	
+  	if ( print && qz.tagName.toLowerCase() == "applet" && tills[tillId].printer != '') {
   	  	//print receipt and open drawer.
   	  	//qz.setEncoding(tills[tillId].printerEncoding);
 		for(var i in tills[tillId].startingLine){
@@ -1269,7 +1269,7 @@ function ajaxPrintAndClean(sXml) { // call back function
     }else if( print ){
 		var order_id = $(xml).find("order_id").text();
 		var printWin = window.open("index.php?module=phreeform&page=popup_gen&gID=<?php echo POPUP_FORM_TYPE;?>&date=a&xfld=journal_main.id&xcr=EQUAL&xmin=" + order_id ,"popup_gen","width=700px,height=550px,resizable=1,scrollbars=1,top=150px,left=200px");
-		printWin.focus();	
+		printWin.focus();
 	}
 	resetForm();
 }
@@ -1285,10 +1285,10 @@ function jzebraDoneAppending(){
 	   if (!qz.isDoneAppending()) {
 	      window.setTimeout('jzebraDoneAppending()', 50);
 	   } else {
-	      qz.print(); 
+	      qz.print();
 	      // Don't print until all of the data has been appended
           // *Note:  monitorPrinting() still works but is too complicated and
-              // outdated.  Instead create a JavaScript  function called 
+              // outdated.  Instead create a JavaScript  function called
               // "jzebraDonePrinting()" and handle your next steps there.
           monitorPrinting();
 	   }
@@ -1302,7 +1302,7 @@ function jzebraDoneFindingPrinters() {
 	if (qz.tagName.toLowerCase() == "applet") {
 		if (qz.getPrinter() == null) {
     		return $.messager.alert('error','Can not find Printer ' + tills[tillId].printer,'error');
-		} 
+		}
    	}
 }
 
@@ -1318,7 +1318,7 @@ function jzebraDonePrinting() {
 
 
 /*
- *printing previous reciept by this admin user 
+ *printing previous reciept by this admin user
  *
  */
 function GetPrintPreviousReceipt() {
@@ -1356,7 +1356,7 @@ function PrintPreviousReceipt(sXml) { // call back function
 	  } else {
 	        var order_id = $(xml).find("order_id").text();
 	        var printWin = window.open("index.php?module=phreeform&page=popup_gen&gID=<?php echo POPUP_FORM_TYPE;?>&date=a&xfld=journal_main.id&xcr=EQUAL&xmin=" + order_id ,"reportFilter","width=700px,height=550px,resizable=1,scrollbars=1,top=150px,left=200px");
-	        printWin.focus();   
+	        printWin.focus();
 	  }
 	  document.getElementById('sku').focus();
 }
@@ -1462,64 +1462,64 @@ function cleanOt(){
 // end ohter transactions
 //<!-- javascript for ajax popup
 
-var popupStatus = 0;  //0 means disabled; 1 means enabled; 
+var popupStatus = 0;  //0 means disabled; 1 means enabled;
 var optionsStatus = 0;//0 means disabled; 1 means enabled;
 
-//loading popup with jQuery magic!  
-function popupContact(){ 
+//loading popup with jQuery magic!
+function popupContact(){
 	if (document.getElementById('bill_acct_id').value == ''){
 		accountGuess(false);
 		return;
 	}
 	//loads popup only if it is disabled
-	if(popupStatus==0){  
+	if(popupStatus==0){
 		$('#customer_div').window('open');
 		popupStatus = 1;
 	}
-}  
+}
 
-//loading popup with jQuery magic!  
-function popupPayment(){  
+//loading popup with jQuery magic!
+function popupPayment(){
 	//loads popup only if it is disabled
-	if(popupStatus==0){  
+	if(popupStatus==0){
 		$('#popupPayment').window('open');
 		popupStatus = 1;
 		document.getElementById('amount').value = document.getElementById('bal_due').value;
 		activateFields();
 		document.getElementById('amount').select();
-	}	
-}  
+	}
+}
 
 function open_other_options(){
 	//loads popup only if it is disabled
-	if(optionsStatus==0){  
-		$("#other_options").fadeIn("slow");    
+	if(optionsStatus==0){
+		$("#other_options").fadeIn("slow");
 		optionsStatus = 1;
 	}else{
-		$("#other_options").fadeOut("slow"); 
+		$("#other_options").fadeOut("slow");
 		optionsStatus = 0;
 		document.getElementById('sku').focus();
 	}
 }
 
 function ShowOtherTrans(){
-	// start by fadinng out the other options menu bar then show background and 
-	$("#other_options").fadeOut("slow"); 
-	$('#popupOtherTrans').window('open');  
+	// start by fadinng out the other options menu bar then show background and
+	$("#other_options").fadeOut("slow");
+	$('#popupOtherTrans').window('open');
 	popupStatus = 1;
 }
 
-//disabling popup with jQuery magic!  
-function disablePopup(){  
-	//disables popup only if it is enabled  
-	if(popupStatus==1){  
+//disabling popup with jQuery magic!
+function disablePopup(){
+	//disables popup only if it is enabled
+	if(popupStatus==1){
 		$("#popupOtherTrans").window('close');
-		$("#popupPayment").window('close'); 
+		$("#popupPayment").window('close');
 		$("#customer_div").window('close');
-		popupStatus = 0;  
+		popupStatus = 0;
 		document.getElementById('sku').focus();
-	}  
-}  
+	}
+}
 
 // image functions
 
@@ -1531,10 +1531,10 @@ function setImage(src){
 		$('#curr_image').show();
 		$('#curr_image').attr('src', src);
 	}
-	
+
 }
 
-$(document).ready(function(){ 
+$(document).ready(function(){
 	$("#disc_percent").keydown(function(event) {
 		$("#discount").val('');
 	});
@@ -1542,17 +1542,17 @@ $(document).ready(function(){
 	$("#discount").keydown(function(event) {
 		$("#disc_percent").val('');
 	});
-	
+
 	$("#amount").keydown(function(event) {
 		if (event.keyCode == 13) SavePayment('save');
 	});
 	$("#open_other_options").click(function(){
-		open_other_options();  
+		open_other_options();
 	});
-	  
+
 });
 
-//Press Escape event!  
+//Press Escape event!
 $(document).keydown(function(event){
 	if (event.altKey && event.keyCode == 82) {
 		event.preventDefault();
@@ -1562,50 +1562,50 @@ $(document).keydown(function(event){
 		}else{
 			window.location.assign('?module=phreepos&page=main');
 		}
-		event.originalEvent.keyCode = 0;  
+		event.originalEvent.keyCode = 0;
 	}
-		
+
 	if(event.keyCode==27){
 		event.preventDefault();
 		if(optionsStatus==1) open_other_options();  //close other options menu
 		if(popupStatus==1){
-			// 	if esc is pressed and the payment popup is shown it will close the payment popup  
+			// 	if esc is pressed and the payment popup is shown it will close the payment popup
 			disablePopup();
 		}else{
 			// 	if esc is pressed and the payment popup is NOT shown the form will be emptyed.
 			resetForm();
-		} 
-		event.originalEvent.keyCode = 0; 
-	} 
-	 
+		}
+		event.originalEvent.keyCode = 0;
+	}
+
 	if(event.keyCode==38){ //arrow up
 		if(popupStatus==1){
 			event.preventDefault();
 			// 	if arrow up is pressed and the payment popup is shown it select the previous payment methode
 			if($('#payment_method option:first').is(":selected")){
 				$('#payment_method option:last-child').attr("selected", "selected");
-			}else{  
+			}else{
 				$('#payment_method option:selected').prev().prop("selected", true);
-			}  
+			}
 			event.originalEvent.keyCode = 0;
 			activateFields();
-		} 
+		}
 	}
-	  
+
 	if(event.keyCode==40){ //arrow down
 		if(popupStatus==1){
 			event.preventDefault();
 			// 	if arrow down is pressed and the payment popup is shown it select the next payment methode
 			if($('#payment_method option:last').is(":selected")){
 				$('#payment_method option:first-child').attr("selected", "selected");
-			}else{  
+			}else{
 				$('#payment_method option:selected').next().prop("selected", true);
 			}
 			event.originalEvent.keyCode = 0;
 			activateFields();
-		} 
+		}
 	}
-	
+
 	if(event.keyCode==118 && popupStatus==0){
 		event.preventDefault();
 		// if F7 is pressed the inventory search popup will be shown
@@ -1624,7 +1624,7 @@ $(document).keydown(function(event){
 		popupPayment();
 		event.originalEvent.keyCode = 0;
 	}
-	
+
 	if(event.keyCode==122){
 		event.preventDefault();
 		if (popupStatus==1){
@@ -1633,7 +1633,7 @@ $(document).keydown(function(event){
 		}else{
 			// if F11 is pressed and the payment popup is not shown the payment popup will be shown
 			popupPayment();
-		}	
+		}
 		event.originalEvent.keyCode = 0;
 	}
 	if(event.keyCode==123){
@@ -1644,10 +1644,10 @@ $(document).keydown(function(event){
 		}else{
 			//if F12 is pressed and the payment popup is not shown the payment popup will be shown
 			popupPayment();
-		}	
+		}
 		event.originalEvent.keyCode = 0;
 	}
-});  
+});
 
 
 </script>

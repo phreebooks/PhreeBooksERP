@@ -30,7 +30,7 @@ switch ($_REQUEST['action']) {
   case 'save':
 	\core\classes\user::validate_security($security_level, 3);
   	// save general tab
-	foreach ($admin_classes['phreeform']->keys as $key => $default) {
+	foreach ($admin->classes['phreeform']->keys as $key => $default) {
 	  $field = strtolower($key);
       if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
     }
@@ -41,8 +41,8 @@ switch ($_REQUEST['action']) {
 	// drop the database
 	$db->Execute("truncate ".TABLE_PHREEFORM);
 	// load all the install classes to re-build directory structure
-	$admin_classes['phreeform']->load_reports('phreeform');
-	foreach($admin_classes as $key => $class){
+	$admin->classes['phreeform']->load_reports('phreeform');
+	foreach($admin->classes as $key => $class){
 		if($class->installed && $key != 'phreeform'){
 			if (file_exists(DIR_FS_MODULES . $key . '/config.php')) $class->load_reports();
 		}

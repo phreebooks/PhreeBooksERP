@@ -32,10 +32,10 @@ if (file_exists($custom_path)) { include($custom_path); }
 if ($method) {
   switch ($_REQUEST['action']) {
     default:
-      if (method_exists($admin_classes['shipping']->methods[$method], $action)) $admin_classes['shipping']->methods[$method]->$action();
+      if (method_exists($admin->classes['shipping']->methods[$method], $action)) $admin->classes['shipping']->methods[$method]->$action();
       break;
-    case 'track':     $admin_classes['shipping']->methods[$method]->trackPackages($date, $row_seq);   break;
-    case 'reconcile': $admin_classes['shipping']->methods[$method]->reconcileInvoice();               break;
+    case 'track':     $admin->classes['shipping']->methods[$method]->trackPackages($date, $row_seq);   break;
+    case 'reconcile': $admin->classes['shipping']->methods[$method]->reconcileInvoice();               break;
     case 'search':
     case 'search_reset':
   }

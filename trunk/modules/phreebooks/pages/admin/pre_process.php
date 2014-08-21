@@ -70,7 +70,7 @@ switch ($_REQUEST['action']) {
 	$_POST['ar_use_credit_limit'] = isset($_POST['ar_use_credit_limit']) ? '1' : '0';
 	$_POST['ap_use_credit_limit'] = isset($_POST['ap_use_credit_limit']) ? '1' : '0';
 	// save general tab
-	foreach ($admin_classes['phreebooks']->keys as $key => $default) {
+	foreach ($admin->classes['phreebooks']->keys as $key => $default) {
 	  $field = strtolower($key);
       if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
     }

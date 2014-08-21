@@ -311,7 +311,7 @@ $joinSyntax = array(
 if (file_exists(DIR_FS_MODULES."phreeform/custom/extra_phreeform.php")) { // user custom additions
 	require_once (DIR_FS_MODULES . "phreeform/custom/extra_phreeform.php");
 }
-foreach ($admin_classes as $key => $class) {
+foreach ($admin->classes as $key => $class) {
   if (file_exists(DIR_FS_MODULES . "$key/config_phreeform.php")) {
 	gen_pull_language($key, 'admin');
     require_once (DIR_FS_MODULES . "$key/config_phreeform.php");
@@ -321,7 +321,7 @@ foreach ($admin_classes as $key => $class) {
 
 // Processing functions
 function ProcessData($strData, $Process) {
-  	global $admin_classes;
+  	global $admin;
 //echo 'process = ' . $Process . ' and posted cur = '; print_r($posted_currencies); echo '<br />';
   	switch ($Process) {
 		case "uc":      return strtoupper_utf8($strData);
@@ -341,7 +341,7 @@ function ProcessData($strData, $Process) {
 		case 'printed': return ($strData) ? '' : TEXT_DUPLICATE;
   	}
   	// now try loaded modules for processing
-  	foreach ($admin_classes as $key => $class) {
+  	foreach ($admin->classes as $key => $class) {
     	$mod_function = "pf_process_$key";
     	if (function_exists($mod_function)) $strData = $mod_function($strData, $Process);
   	}

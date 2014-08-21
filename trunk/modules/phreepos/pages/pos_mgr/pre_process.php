@@ -54,8 +54,8 @@ switch ($_REQUEST['action']) {
 				$pmt_field_2 = $pmt_fields[4]; // exp month
 				$pmt_field_3 = $pmt_fields[5]; // exp year
 				$pmt_field_4 = $pmt_fields[6]; // cvv2
-				if (method_exists($admin_classes['payment']->methods[$pmt_fields[1]], 'refund')) {
-			   		$admin_classes['payment']->methods[$pmt_fields[1]]->refund($value['debit_amount'], $reference, $pmt_field_0, $pmt_field_1);
+				if (method_exists($admin->classes['payment']->methods[$pmt_fields[1]], 'refund')) {
+			   		$admin->classes['payment']->methods[$pmt_fields[1]]->refund($value['debit_amount'], $reference, $pmt_field_0, $pmt_field_1);
 			   	} else {
 			  		$messageStack->add(sprintf('The payment method (%s) was not refunded with the processor. The refund in the amount of %s needs to be credited with the processor manually.', $pmt_method, $currencies->format_full($value['debit_amount'])), 'caution');
 				}

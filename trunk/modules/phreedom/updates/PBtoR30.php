@@ -82,9 +82,9 @@ if (defined('MODULE_SHIPPING_USPS_SORT_ORDER'))        write_configure('MODULE_S
 gen_pull_language('phreeform', 'admin');
 require_once (DIR_FS_MODULES . 'phreeform/config.php');
 require_once (DIR_FS_MODULES . 'phreeform/defaults.php');
-$admin_classes['phreeform']->install(DIR_FS_MY_FILES.$_SESSION['company'].'/', false);
+$admin->classes['phreeform']->install(DIR_FS_MY_FILES.$_SESSION['company'].'/', false);
 // load installed modules and build report folders
-foreach ($admin_classes as $key => $class) { // load the configuration files to load version info
+foreach ($admin->classes as $key => $class) { // load the configuration files to load version info
     if ($class->installed && $key <> 'phreeform') { // build the directories
 	  	gen_pull_language($key, 'admin');
 	  	require_once (DIR_FS_MODULES . $key . '/config.php');
@@ -93,7 +93,7 @@ foreach ($admin_classes as $key => $class) { // load the configuration files to 
 }
 
 // reload pages array since it doesn't exist at the start of the update
-foreach ($admin_classes as $key => $class) {
+foreach ($admin->classes as $key => $class) {
 	gen_pull_language($key, 'menu');
 	if ($class->installed ) require_once (DIR_FS_MODULES . $key . '/config.php');
 }

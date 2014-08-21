@@ -52,14 +52,14 @@ class banking extends \core\classes\journal {
 	}
 
 	function post_ordr($action) {
-		global $db, $currencies, $messageStack, $admin_classes;
+		global $db, $currencies, $messageStack, $admin;
 		$this->journal_main_array = $this->build_journal_main_array();	// build ledger main record
 		$this->journal_rows = array();	// initialize ledger row(s) array
 
 		switch ($this->journal_id) {
 			case 18: // Cash Receipts Journal
 				$method = (isset($this->shipper_code)) ? $this->shipper_code : 'freecharger';
-				if (!$admin_classes['payment']->methods[$method]->installed) throw new \core\clases\userException("payment methode $method is not installed");
+				if (!$admin->classes['payment']->methods[$method]->installed) throw new \core\clases\userException("payment methode $method is not installed");
 				$result        = $this->add_item_journal_rows('credit');	// read in line items and add to journal row array
 				$credit_total  = $result['total'];
 				$debit_total   = $this->add_discount_journal_row('debit');
@@ -96,12 +96,12 @@ class banking extends \core\classes\journal {
 				// Lastly, we process the payment (for receipts). NEEDS TO BE AT THE END BEFORE THE COMMIT!!!
 				// Because, if an error here we need to back out the entire post (which we can), but if
 				// the credit card has been processed and the post fails, there is no way to back out the credit card charge.
-//				$admin_classes['payment']->methods[$method]->pre_confirmation_check();
+//				$admin->classes['payment']->methods[$method]->pre_confirmation_check();
 				// Update the save payment/encryption data if requested
-				if (ENABLE_ENCRYPTION && $this->save_payment && $admin_classes['payment']->methods[$method]->enable_encryption !== false) {
-					$this->encrypt_payment($method, $admin_classes['payment']->methods[$method]->enable_encryption);
+				if (ENABLE_ENCRYPTION && $this->save_payment && $admin->classes['payment']->methods[$method]->enable_encryption !== false) {
+					$this->encrypt_payment($method, $admin->classes['payment']->methods[$method]->enable_encryption);
 				}
-				$admin_classes['payment']->methods[$method]->before_process();
+				$admin->classes['payment']->methods[$method]->before_process();
 				break;
 			case 20:
 				if ($new_post == 'insert') { // only increment if posting a new payment
@@ -157,11 +157,11 @@ class banking extends \core\classes\journal {
 	}
 
 	function add_total_journal_row($debit_credit, $amount) {	// put total value into ledger row array
-		global $admin_classes, $journal_types_list;
+		global $admin, $journal_types_list;
 		if ($debit_credit == 'debit' || $debit_credit == 'credit') {
 			switch ($this->journal_id) {
 				case '18':
-					$desc = $journal_types_list[18]['text'] . '-' . TEXT_TOTAL . ':' . $admin_classes['payment']->methods[$method]->payment_fields;
+					$desc = $journal_types_list[18]['text'] . '-' . TEXT_TOTAL . ':' . $admin->classes['payment']->methods[$method]->payment_fields;
 					break;
 				case '20':
 				default:

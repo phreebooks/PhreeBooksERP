@@ -95,11 +95,11 @@ class journal_19 extends \core\classes\journal {
 		// cycle through the payments
 		foreach ($this->pmt_rows as $pay_method) {
 	        $method   = $pay_method['meth'];
-	        $messageStack->debug("\n encryption =".ENABLE_ENCRYPTION." save_payment ={$this->save_payment} enable_encryption={$admin_classes['payment']->methods[$method]->enable_encryption}");
-	        if (ENABLE_ENCRYPTION && $this->save_payment && $admin_classes['payment']->methods[$method]->enable_encryption !== false) {
+	        $messageStack->debug("\n encryption =".ENABLE_ENCRYPTION." save_payment ={$this->save_payment} enable_encryption={$admin->classes['payment']->methods[$method]->enable_encryption}");
+	        if (ENABLE_ENCRYPTION && $this->save_payment && $admin->classes['payment']->methods[$method]->enable_encryption !== false) {
 	            $this->encrypt_payment($pay_method);
 	        }
-	        $admin_classes['payment']->methods[$method]->before_process();
+	        $admin->classes['payment']->methods[$method]->before_process();
 	    }
 		$messageStack->debug("\n  committed order post purchase_invoice_id = {$this->purchase_invoice_id} and id = {$this->id}\n\n");
 		$db->transCommit();
