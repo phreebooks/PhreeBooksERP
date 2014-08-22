@@ -73,6 +73,11 @@ function serialList(id) {
 function loadSkuDetails(iID, rowCnt, strict) {
   var bID = document.getElementById('store_id').value;
   var sku = iID == 0 ? document.getElementById('sku_'+rowCnt).value : '';
+  tempRowCnt = document.getElementById('item_table').rows.length;
+  if ((iID && rowCnt == tempRowCnt )||(document.getElementById('sku_'+tempRowCnt).value != text_search  && document.getElementById('sku_'+tempRowCnt).value != '')){
+		var value = addInvRow();
+		document.getElementById('sku_'+value).focus();
+  }
   if (sku == text_search) return;
   $.ajax({
 	type: "GET",
@@ -127,10 +132,6 @@ function processSkuStock(sXml) {
 	document.getElementById('imgSerial_'+rCnt).style.display = 'none';
   }
   updateBalance();
-  rowCnt  = document.getElementById('item_table').rows.length;
-  var qty = document.getElementById('qty_'+rowCnt).value;
-  var sku = document.getElementById('sku_'+rowCnt).value;
-  if (qty != '' && sku != '' && sku != text_search) rowCnt = addInvRow();
 }
 
 function updateBalance() {
@@ -252,6 +253,12 @@ function processEditAdjustment(sXml) {
 	  default:
 	}
   });
+}
+
+function checkEnterEvent(event, row){
+	if(event.keyCode == 13){//enter event
+		loadSkuDetails(0, row, false);
+	}
 }
 
 // -->
