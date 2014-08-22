@@ -142,7 +142,8 @@ switch ($_REQUEST['action']) {
 				);
 				db_perform(TABLE_CONTACTS_LOG, $sql_data_array, 'insert');	
 		  }
-		  gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
+		  $_REQUEST['action'] = 'main';
+		  break;
 		}
 		$_REQUEST['action'] = 'edit';
 		break;
