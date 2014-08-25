@@ -1,7 +1,7 @@
 RMA Module 
 
 Installation Procedure:
-1. unzip and install in the module directory (/path_to_phrebooks/modules/).
+1. unzip and install in the module directory (/path_to_phreebooks/modules/).
 2. Go to Admin -> Modules and install the module.
 3. You may have to set permission and re-log in.
 

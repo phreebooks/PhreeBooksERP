@@ -54,27 +54,23 @@ define('TABLE_PROJECTS_PHASES', DB_PREFIX . 'projects_phases');
 // defaults for filters
 define('DEFAULT_F0_SETTING','1'); // inactive filter set to show inactive contacts, override in phreedom custom language overrides by type, i.e. CONTACTS_F0_C for customers
 // Set the title menu
-$mainmenu["customers"] = array(
-  'order' 		=> MENU_HEADING_CUSTOMERS_ORDER,
-  'text' 		=> MENU_HEADING_CUSTOMERS,
-  'security_id' => '',
-  'link' 		=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_ar', 'SSL'),
-  'params'      => '',
-);
-$mainmenu["vendors"] = array(
-  'order' 		=> MENU_HEADING_VENDORS_ORDER,
-  'text' 		=> MENU_HEADING_VENDORS,
-  'security_id' => '',
-  'link' 		=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_ap', 'SSL'),
-  'params'      => '',
-);
-$mainmenu["employees"] = array(
-  'order' 		=> MENU_HEADING_EMPLOYEES_ORDER,
-  'text' 		=> MENU_HEADING_EMPLOYEES,
-  'security_id' => '',
-  'link' 		=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_hr', 'SSL'),
-  'params'      => '',
-);
+$mainmenu["customers"]['order'] 	= MENU_HEADING_CUSTOMERS_ORDER;
+$mainmenu["customers"]['text'] 		= MENU_HEADING_CUSTOMERS;
+$mainmenu["customers"]['security_id']= '';
+$mainmenu["customers"]['link'] 		= html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_ar', 'SSL');
+$mainmenu["customers"]['params']     = '';
+
+$mainmenu["vendors"]['order'] 	 = MENU_HEADING_VENDORS_ORDER;
+$mainmenu["vendors"]['text'] 		 = MENU_HEADING_VENDORS;
+$mainmenu["vendors"]['security_id']= '';
+$mainmenu["vendors"]['link'] 		 = html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_ap', 'SSL');
+$mainmenu["vendors"]['params']     = '';
+
+$mainmenu["employees"]['order'] 	 = MENU_HEADING_EMPLOYEES_ORDER;
+$mainmenu["employees"]['text'] 		 = MENU_HEADING_EMPLOYEES;
+$mainmenu["employees"]['security_id']= '';
+$mainmenu["employees"]['link'] 		 = html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_hr', 'SSL');
+$mainmenu["employees"]['params']     = '';
 
 // Set the menus
 $mainmenu["customers"]['submenu']["contact"] = array(
