@@ -88,13 +88,16 @@ function bank_import_csv($structure, $filename, $bank_gl_acct) {
 	  		}
 		}
   	}
-  	if (!$bankimport->update_chart_history_periods($bankimport->first_period)){
-  		$db->transRollback();
-  		$messageStack->add("Chart of accounts are out of balance. When we try to import the file");
-  		$messageStack->write_debug();
+  	if ( $countline <> 0 ) {
+  		if (!$bankimport->update_chart_history_periods($bankimport->first_period)){
+  			$db->transRollback();
+  			$messageStack->add("Chart of accounts are out of balance. When we try to import the file");
+  			$messageStack->write_debug();
+  		}else{
+  			$db->transCommit();
+  			$messageStack->add("succesfully posted $countline number of lines",'caution');
+  		}
   	}
-  	$db->transCommit();
-  	if ( $countline <> 0 ) $messageStack->add("succesfully posted $countline number of lines",'caution');
   	$messageStack->write_debug();
   
 }
