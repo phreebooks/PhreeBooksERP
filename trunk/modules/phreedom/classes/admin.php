@@ -267,7 +267,7 @@ class admin extends \core\classes\admin {
 		// Errors will happen here if there was a problem logging in, logout and restart
 		if (!is_object($db)) throw new \core\classes\userException("Database isn't created");
 		$sql = "select admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security
-		  from " . TABLE_USERS . " where admin_name = '{$admin->admin_name}'"; //@todo don't know if this works.
+		  from " . TABLE_USERS . " where admin_name = '{$basis->admin_name}'"; //@todo don't know if this works.
 		if ($db->db_connected) $result = $db->Execute($sql);
 		if (!$result || $basis->admin_name <> $result->fields['admin_name'] || $result->fields['inactive']) throw new \core\classes\userException(sprintf(GEN_LOG_LOGIN_FAILED, TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD));
 		\core\classes\encryption::validate_password($basis->admin_pass, $result->fields['admin_pass']);

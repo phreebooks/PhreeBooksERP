@@ -28,11 +28,12 @@ class basis implements \SplSubject {
 	public $dataBaseConnection = null;
 	public $mainmenu = array ();
 	private $events = array ();
+
 	public function __construct() {
 		global $mainmenu;
 		$this->_observers = new \SplObjectStorage ();
 		$this->journal = new \core\classes\journal ();
-		$this->cInfo = array_merge ( $_GET, $_POST );
+		$this->cInfo = (object)array_merge ( $_GET, $_POST );
 		if ($this->getNumberOfAdminClasses () == 0 || empty ( $this->mainmenu )) {
 			$dirs = @scandir ( DIR_FS_MODULES );
 			if ($dirs === false)
@@ -49,12 +50,16 @@ class basis implements \SplSubject {
 			$this->mainmenu = $mainmenu;
 		}
 	}
+
 	public function __wakeup() {
 		print ("basis __wakeup is called") ;
+		$this->cInfo = (object)array_merge ( $_GET, $_POST );
 	}
+
 	public function attach(\SplObserver $observer) {
 		$this->_observers->attach ( $observer );
 	}
+
 	public function detach(\SplObserver $observer) {
 		$this->_observers->detach ( $observer );
 	}

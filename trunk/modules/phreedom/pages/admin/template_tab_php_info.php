@@ -17,7 +17,7 @@
 //  Path: /modules/phreedom/pages/admin/template_tab_tools.php
 //
 ?>
-<div title="<?php echo TEXT_PHP_INFO;//@todo translate?>" id="tab_php_info">
+<div title="<?php echo TEXT_PHP_INFO;?>" id="tab_php_info">
 <fieldset>
 <legend><?php echo "PHP Info";?></legend>
 <iframe src="<?php echo html_href_link(FILENAME_DEFAULT, "module=phreedom&amp;page=main&amp;action=php_info", 'SSL');?>" style="border-style:none;width:100%;height:400px;">
