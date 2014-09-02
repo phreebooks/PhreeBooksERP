@@ -2,15 +2,16 @@
 namespace core\classes;
 class outputJson implements \SplObserver{
 
-	public function update(\SplSubject $cInfo) {
-		if($cInfo->page == 'json'){
+	public function update(\SplSubject $basis) {
+		global $messageStack;
+		if($basis->page == 'json'){
 			header('Content-Type: application/json');
-			echo json_encode($cInfo);
-			if (DEBUG) $messageStack->write_debug();
-			ob_end_flush();
-			session_write_close();
-			die;
+			echo json_encode($basis);
+			return true;
+		}else{
+			return false;
 		}
+
 	}
 }
 ?>

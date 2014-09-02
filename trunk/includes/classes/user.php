@@ -29,10 +29,9 @@ class user {
 	 */
 
 	final static public function is_validated (\core\classes\basis &$admin) {
-		global $page_template;
 		if (!isset($_SESSION['admin_id']) || $_SESSION['admin_id'] == ''){
 			//allow the user to continu to with the login action.
-			if (!isset($_REQUEST['action']) || !in_array($_REQUEST['action'], array('validateLogin','pw_lost_sub','pw_lost_req'))){
+			if (!isset($_REQUEST['action']) || !in_array($_REQUEST['action'], array('ValidateUser','pw_lost_sub','pw_lost_req'))){
 				self::load_companies();
 				self::load_languages();
 				self::get_company();
@@ -52,9 +51,9 @@ class user {
 				if (file_exists($path)) { require_once($path);}
 				else { require_once(DIR_FS_MODULES . "phreedom/language/en_us/language.php");}
 				if($_REQUEST['action'] == 'pw_lost_req') {
-					$admin->removeEventsAndAddNewEvent('LoadLostPassword');
+					$admin->fireEvent('LoadLostPassword');
 				}else{
-					$admin->removeEventsAndAddNewEvent('LoadLogIn');
+					$admin->fireEvent('LoadLogIn');
 				}
 				//throw new \core\classes\userException(TEXT_SORRY_YOU_ARE_LOGGED_OUT, "");//@todo
 			}

@@ -28,29 +28,19 @@ if (isset($_POST['page']))      $page = $_POST['page'];
 elseif (isset($_GET['page']))   $page = $_GET['page'];
 else                     		$page = 'main';
 try{
-	try{
-		require_once('includes/application_top.php');
-    	$admin->attach(new \core\classes\outputPage);
-    	$admin->attach(new \core\classes\outputXml);
-    	$admin->attach(new \core\classes\outputJson);
-    	$admin->attach(new \core\classes\outputMobile);
-    	$messageStack->debug("\n checking if user is validated");
-    	\core\classes\user::is_validated($admin);
-    	$admin->fireEvent($admin->action);
-   	}catch (\core\classes\userException $e) {
-   		$messageStack->add($e->getMessage());
-   		if (is_object($db)) gen_add_audit_log($e->getMessage());
-   		$messageStack->debug("\n\n".$e->getTraceAsString());
-   		if($e->action){
-   			$admin->fireEvent($e->action);//@todo replace fireEvent.
-  		} else{
-	  		$admin->fireEvent("loadCrashPage");
-  		}
-	}
-}catch (\Exception $e) {
-	$messageStack->add("other Exception ".$e->getMessage());
+	require_once('includes/application_top.php');
+   	$admin->attach(new \core\classes\outputXml);
+   	$admin->attach(new \core\classes\outputJson);
+   	$admin->attach(new \core\classes\outputMobile);
+   	$admin->attach(new \core\classes\outputPage);
+   	$messageStack->debug("\n checking if user is validated");
+   	\core\classes\user::is_validated($admin);
+   	$admin->fireEvent($admin->cInfo->action);
+}catch (\core\classes\userException $e) {
+	$messageStack->add($e->getMessage());
+	if (is_object($db)) gen_add_audit_log($e->getMessage());
 	$messageStack->debug("\n\n".$e->getTraceAsString());
-	$admin->fireEvent("loadCrashPage");
+	$admin->fireEvent($e->action);
 }
 $messageStack->write_debug();
 $admin->dataBaseConnection = null;

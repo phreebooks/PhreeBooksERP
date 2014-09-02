@@ -29,10 +29,10 @@ if ($custom_html) { // load the template only as the rest of the html will be ge
         return true;
     }
   </script>
-  <!-- module: <?php echo $_REQUEST['module']; ?> - page: <?php echo $_REQUEST['page']; ?> -->
+  <!-- module: <?php echo "{$basis->module} - page: {$basis->page}"; ?> -->
   <meta http-equiv="Content-Type" content="text/html; charset=<?php echo CHARSET; ?>" />
 <?php if ($force_reset_cache) { header("Cache-Control: no-cache, must-revalidate"); header("Expires: ".date('D, j M \2\0\0\0 G:i:s T')); } ?>
-  <title><?php echo $page->page_title; ?></title>
+  <title><?php echo $basis->page_title; ?></title>
   <link rel="shortcut icon" type="image/ico" href="favicon.ico" />
   <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/stylesheet.css'; ?>" />
   <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/jquery_datatables.css'; ?>" />
@@ -77,7 +77,7 @@ if      (file_exists($file = 'includes/easyui/custom/language/'.$_SESSION['langu
 } else               $file = 'includes/easyui/language/en_us/easyui_lang.js';
 echo '  <script type="text/javascript" src="'.$file.'"></script>'."\n";
 // load the javascript specific, required
-$page_template->print_js_includes();
+$basis->returnCurrentObserver()->print_js_includes();
 ?>
  </head>
  <body>
@@ -85,12 +85,12 @@ $page_template->print_js_includes();
   <script type="text/javascript" src="modules/phreedom/includes/wz_tooltip/tip_balloon.js"></script>
   <div id="please_wait"><p><?php echo html_icon('phreebooks/please_wait.gif', TEXT_PLEASE_WAIT, 'large'); ?></p></div>
   <!-- Menu -->
-  <?php $page_template->print_menu();?>
+  <?php $basis->returnCurrentObserver()->print_menu();?>
   <!-- Template -->
-  <?php require($page_template->include_template);?>
+  <?php require($basis->returnCurrentObserver()->include_template);?>
   </div>
   <!-- Footer -->
-  <?php if ($page_template->include_footer) { // Hook for custom logo
+  <?php if ($basis->include_footer) { // Hook for custom logo
   $image_path = defined('FOOTER_LOGO') ? FOOTER_LOGO : (DIR_WS_ADMIN . 'modules/phreedom/images/phreesoft_logo.png');
   ?>
   <div style="clear:both;text-align:center;font-size:9px">

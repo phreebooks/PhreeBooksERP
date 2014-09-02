@@ -20,27 +20,29 @@
 namespace core\classes;
 
 class basis implements \SplSubject {
-	public $classes = array ();
-	public $_observers;
-	public $module = 'phreedom';
-	public $page = 'main';
-	public $template = 'template';
-	public $dataBaseConnection = null;
-	public $mainmenu = array ();
-	private $events = array ();
+	public  $classes 	= array ();
+	public  $_observers = array ();
+	public  $module		= 'phreedom';
+	public  $page 		= 'main';
+	public  $template;
+	public  $observer	= 'core\classes\outputPage';
+	public  $custom_html		= false;
+    public  $include_header		= true;
+    public  $include_footer		= true;
+	public  $dataBaseConnection = null;
+	public  $mainmenu 	= array ();
+	private $events 	= array ();
 
 	public function __construct() {
 		global $mainmenu;
-		$this->_observers = new \SplObjectStorage ();
 		$this->journal = new \core\classes\journal ();
 		$this->cInfo = (object)array_merge ( $_GET, $_POST );
+		$this->events = $this->cInfo->action;
 		if ($this->getNumberOfAdminClasses () == 0 || empty ( $this->mainmenu )) {
 			$dirs = @scandir ( DIR_FS_MODULES );
-			if ($dirs === false)
-				throw new \core\classes\userException ( "couldn't read or find directory " . DIR_FS_MODULES );
+			if ($dirs === false) throw new \core\classes\userException ( "couldn't read or find directory " . DIR_FS_MODULES );
 			foreach ( $dirs as $dir ) { // first pull all module language files, loaded or not
-				if ($dir == '.' || $dir == '..')
-					continue;
+				if ($dir == '.' || $dir == '..') continue;
 				gen_pull_language ( $dir, 'menu' );
 				if (is_dir ( DIR_FS_MODULES . $dir )) {
 					$class = "\\$dir\classes\admin";
@@ -57,21 +59,33 @@ class basis implements \SplSubject {
 	}
 
 	public function attach(\SplObserver $observer) {
-		$this->_observers->attach ( $observer );
+		$this->_observers[get_class($observer)] = $observer;
 	}
 
 	public function detach(\SplObserver $observer) {
-		$this->_observers->detach ( $observer );
+		unset($this->_observers[ get_class($observer) ]);
 	}
 
 	/**
 	 * this method sends a notify to the template page to start sending information in requested format.
 	 */
 	public function notify() {
-		foreach ( $this->_observers as $observer ) {
+		global $messageStack;
+		foreach ( $this->_observers as $key => $observer ) {
+			$messageStack->debug ( "\n calling ". get_class($observer)." for output" );
+			$this->observer = get_class($observer);
 			$observer->update ( $this );
 		}
+		ob_end_flush();
+		session_write_close();
+		$messageStack->write_debug();
+		die();
 	}
+
+	public function returnCurrentObserver(){
+		return $this->_observers[$this->observer];
+	}
+
 	public function ReturnAdminClasses() {
 		return $this->classes;
 	}
@@ -115,9 +129,8 @@ class basis implements \SplSubject {
 	 * @param string $event
 	 */
 	public function fireEvent($event) {
-		$this->events = array_slice ( $this->events, 0, 1 ) + array (
-				$event
-		) + array_slice ( $this->events, 1 );
+		$this->events = array_merge(array_slice((array) $this->events, 0, 1 ), array($event), array_slice ((array)$this->events, 1 ));
+		$this->startProcessingEvents();
 	}
 
 	/**
@@ -129,12 +142,10 @@ class basis implements \SplSubject {
 	 */
 	public function startProcessingEvents() {
 		global $messageStack;
-		if (size ( $this->events ))
-			throw new exception ( "trying to start processing events but the events array is empty" );
+		if ( count($this->events ) == 0) throw new \Exception ( "trying to start processing events but the events array is empty" );
 		while ( list ( $key, $event ) = each ( $this->events ) ) {
 			$messageStack->debug ( "\n starting with event: $event" );
-			if (! $event)
-				throw new exception ( "found a empty event in the array." );
+			if (! $event) break;
 			$ActionBefore = "before_$event";
 			foreach ( $this->classes as $module_class ) {
 				if ($module_class->installed && method_exists ( $module_class, $ActionBefore )) {
@@ -170,8 +181,8 @@ class basis implements \SplSubject {
 	public function addEventToStack($event) {
 		if (! $event)
 			throw new exception ( "in the basis class method addEventToStack we received a empty event." );
-		if (! in_array ( $this->events, $event ))
-			array_push ( $this->events, $event );
+		if (! in_array ( $event, (array) $this->events))
+			array_push ($this->events, $event );
 	}
 
 	/**
@@ -181,19 +192,19 @@ class basis implements \SplSubject {
 	 * @throws exception if event is empty
 	 */
 	public function removeEventsAndAddNewEvent($event) {
-		if (! $event)
-			throw new exception ( "in the basis class method  we received a empty event." );
-		$this->events = null;
-		addEventToStack ( $event );
+		if (! $event) throw new exception ( "in the basis class method  we received a empty event." );
+		$this->events = array();
+		$this->addEventToStack ( $event );
 	}
 
 	/**
 	 * this method empties the event stack
 	 */
 	public function clearEventsStack() {
-		$this->events = null;
+		$this->events = array();
 	}
 	function __destruct() {
+//		print_r($this);
 		$this->dataBaseConnection = null;
 	}
 }

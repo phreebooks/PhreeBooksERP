@@ -1877,12 +1877,6 @@ function PhreebooksExceptionHandler($exception) {
   	$text  = date('Y-m-d H:i:s') . " User: " . $_SESSION['admin_id'] . " Company: " . $_SESSION['company'] ;
     $text .= " Uncaught Exception: '" . $exception->getMessage() . "' line " . $exception->getLine() . " in file " . $exception->getFile();
     error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
-	if ($_REQUEST['page'] == 'ajax'){
-    	echo createXmlHeader() . createXmlFooter();
-    	ob_end_flush();
-  		session_write_close();
-        die();
-    }
     header('HTTP/1.1 500 Internal Server Error');
     echo " Uncaught Exception<br/>'" . $exception->getMessage() . "'<br/>line: " . $exception->getLine() . "<br/>file: " . $exception->getFile();
     echo "<br>trace:<br/>". $exception->getTraceAsString();

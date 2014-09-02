@@ -269,7 +269,7 @@ class admin extends \core\classes\admin {
 		$sql = "select admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security
 		  from " . TABLE_USERS . " where admin_name = '{$basis->admin_name}'"; //@todo don't know if this works.
 		if ($db->db_connected) $result = $db->Execute($sql);
-		if (!$result || $basis->admin_name <> $result->fields['admin_name'] || $result->fields['inactive']) throw new \core\classes\userException(sprintf(GEN_LOG_LOGIN_FAILED, TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD));
+		if (!$result || $basis->admin_name <> $result->fields['admin_name'] || $result->fields['inactive']) throw new \core\classes\userException(sprintf(GEN_LOG_LOGIN_FAILED, TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD), 'LoadLogIn');
 		\core\classes\encryption::validate_password($basis->admin_pass, $result->fields['admin_pass']);
 		$_SESSION['admin_id']       = $result->fields['admin_id'];
 		$_SESSION['display_name']   = $result->fields['display_name'];
@@ -318,7 +318,7 @@ class admin extends \core\classes\admin {
 	 * @param \core\classes\basis $basis
 	 * @throws \core\classes\userException
 	 */
-	function LoadMainPage (\core\classes\basis $basis){
+	function LoadMainPage (\core\classes\basis &$basis){
 		global $db;
 		$menu_id      = isset($basis->mID) ? $basis->mID : 'index'; // default to index unless heading is passed
 		if (!class_exists('queryFactory')) { // Errors will happen here if there was a problem logging in, logout and restart
@@ -334,7 +334,7 @@ class admin extends \core\classes\admin {
 	 * logout of phreebooks
 	 * @param \core\classes\basis $basis
 	 */
-	function logout (\core\classes\basis $basis){
+	function logout (\core\classes\basis &$basis){
 		global $db;
 		$result = $db->Execute("select admin_name from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
 		gen_add_audit_log(TEXT_USER_LOGOFF . ' -> ' . $result->fields['admin_name']);
@@ -346,11 +346,11 @@ class admin extends \core\classes\admin {
 	 * load varibles for login page
 	 * @param \core\classes\basis $basis
 	 */
-	function LoadLogIn (\core\classes\basis $basis){
-		$basis->companies       = load_company_dropdown();
-		$basis->single_company  = sizeof($companies) == 1 ? true : false;
-		$basis->languages       = load_language_dropdown();
-		$basis->single_language = sizeof($languages) == 1 ? true : false;
+	function LoadLogIn (\core\classes\basis &$basis){
+//		$basis->companies       = load_company_dropdown();
+//		$basis->single_company  = sizeof($companies) == 1 ? true : false;
+//		$basis->languages       = load_language_dropdown();
+//		$basis->single_language = sizeof($languages) == 1 ? true : false;
 		$basis->include_header  = false;
 		$basis->include_footer  = false;
 		$basis->page_title		= TEXT_PHREEBOOKS_ERP;

@@ -19,10 +19,10 @@
 // this class will allow us to catch user errors and return them to theire pevious page.
 namespace core\classes;
 class userException extends \Exception {
-	public $action;
+	public $action = "LoadCrash";
 
 	function __construct ($message = "", $action, $code = 0, Exception $previous = NULL){
-		$this->action = $action;
+		if ($action) $this->action = $action;
 		parent::__construct($message, $code, $previous);
 	}
 

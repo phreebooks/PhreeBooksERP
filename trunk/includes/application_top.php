@@ -79,7 +79,7 @@ if ($currencies === false) $currencies = new \core\classes\currencies;
 $admin 	= APC_EXTENSION_LOADED ? apc_fetch("admin")	: false;
 if ($admin === false) $admin = new \core\classes\basis;
 // determine what company to connect to
-if ($_REQUEST['action']=="validateLogin") $_SESSION['company'] = $_POST['company'];
+if ($_REQUEST['action']=="ValidateUser") $_SESSION['company'] = $_POST['company'];
 if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php')) {
 	define('DB_DATABASE', $_SESSION['company']);
 	require_once(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php');
