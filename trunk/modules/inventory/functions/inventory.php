@@ -105,7 +105,7 @@
 
  
   function gather_history($sku) {
-    global $db;
+    global $db, $messageStack;
 	$inv_history = array();
 	$dates = gen_get_dates();
 	$cur_month = $dates['ThisYear'] . '-' . substr('0' . $dates['ThisMonth'], -2) . '-01';
@@ -127,11 +127,9 @@
 	$last_year = ($dates['ThisYear'] - 1) . '-' . substr('0' . $dates['ThisMonth'], -2) . '-01';
 
 	// load the SO's and PO's and get order, expected del date
-	$sql = "select m.id, m.journal_id, m.store_id, m.purchase_invoice_id, i.qty, i.post_date, i.date_1, 
-	i.id as item_id 
-	  from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id 
-	  where m.journal_id in (4, 10) and i.sku = '" . $sku ."' and m.closed = '0' 
-	  order by i.date_1";
+	$sql = "SELECT m.id, m.journal_id, m.store_id, m.purchase_invoice_id, i.qty, i.post_date, i.date_1, 
+	i.id AS item_id FROM ".TABLE_JOURNAL_MAIN." m JOIN ".TABLE_JOURNAL_ITEM." i ON m.id=i.ref_id 
+	  WHERE m.journal_id IN (4, 10) AND i.sku='$sku' AND m.closed = '0' ORDER BY i.date_1";
 	$result = $db->Execute($sql);
 	while(!$result->EOF) {
 	  switch ($result->fields['journal_id']) {
@@ -144,8 +142,8 @@
 		  $hist_type = 'open_so';
 		  break;
 	  }
-	  $sql = "select sum(qty) as qty from " . TABLE_JOURNAL_ITEM . " 
-		where gl_type = '" . $gl_type . "' and so_po_item_ref_id = " . $result->fields['item_id'];
+	  $sql = "SELECT SUM(qty) AS qty from ".TABLE_JOURNAL_ITEM." 
+		WHERE gl_type='$gl_type' AND so_po_item_ref_id=".$result->fields['item_id'];
 	  $adj = $db->Execute($sql); // this looks for partial received to make sure this item is still on order
 	  if ($result->fields['qty'] > $adj->fields['qty']) {
 		$history[$hist_type][] = array(
@@ -161,10 +159,10 @@
 	}
 
 	// load the units received and sold, assembled and adjusted
-	$sql = "select m.journal_id, m.post_date, i.qty, i.gl_type, i.credit_amount, i.debit_amount 
-	  from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id 
-	  where m.journal_id in (6, 12, 14, 16, 19, 21) and i.sku = '" . $sku ."' and m.post_date >= '" . $last_year . "' 
-	  order by m.post_date DESC";
+	$sql = "SELECT m.journal_id, m.post_date, i.qty, i.gl_type, i.credit_amount, i.debit_amount 
+	  FROM ".TABLE_JOURNAL_MAIN." m JOIN ".TABLE_JOURNAL_ITEM." i ON m.id=i.ref_id 
+	  WHERE m.journal_id IN (6, 12, 14, 16, 19, 21) AND i.sku='$sku' AND m.post_date >= '$last_year' 
+	  ORDER BY m.post_date DESC";
 	$result = $db->Execute($sql);
 	while(!$result->EOF) {
 	  $month = substr($result->fields['post_date'], 0, 7);
@@ -193,22 +191,42 @@
 	}
 
 	// calculate average usage
-	$cnt = 0;
+	$percent_diff   = 0.10; // the percentage differnece from current value to notify for adjustment
+	$months_of_data = 12;   // valid values are 1, 3, 6, or 12
+	$med_avg_diff   = 0.25; // the maximum percentage difference from the median and average, for large swings
+	$cnt   = 0;
+	$sales = array();
 	$history['averages'] = array();
 	foreach ($history['sales'] as $key => $value) {
-	  if ($cnt == 0) { 
-	    $cnt++;
-		continue; // skip current month since we probably don't have the full months worth
-	  }
+	  if ($cnt == 0) { $cnt++; continue; } // skip current month since we probably don't have the full months worth
 	  $history['averages']['12month'] += $history['sales'][$key]['usage'];
 	  if ($cnt < 7) $history['averages']['6month'] += $history['sales'][$key]['usage'];
 	  if ($cnt < 4) $history['averages']['3month'] += $history['sales'][$key]['usage'];
 	  if ($cnt < 2) $history['averages']['1month'] += $history['sales'][$key]['usage'];
+	  if ($cnt <= $months_of_data) $sales[] = $value['usage'];
 	  $cnt++;
 	}
 	$history['averages']['12month'] = round($history['averages']['12month'] / 12, 2);
 	$history['averages']['6month']  = round($history['averages']['6month']  /  6, 2);
 	$history['averages']['3month']  = round($history['averages']['3month']  /  3, 2);
+	
+	sort($sales);
+	$sql = "SELECT minimum_stock_level, lead_time FROM ".TABLE_INVENTORY." WHERE sku='$sku'";
+	$inv = $db->Execute($sql);
+	$idx           = ceil(count($sales) / 2);
+	$median_sales  = $sales[$idx];
+	$average_sales = ceil($history['averages'][$months_of_data . 'month']);
+	$new_min_stock = ceil($inv->fields['lead_time'] / 30) * $average_sales;
+	$high_band     = $inv->fields['minimum_stock_level'] * (1 + $percent_diff);
+	$low_band      = $inv->fields['minimum_stock_level'] * (1 - $percent_diff);
+	$high_avg      = $average_sales * (1 + $med_avg_diff);
+	$low_avg       = $average_sales * (1 - $med_avg_diff);
+	if ($new_min_stock > $high_band || $new_min_stock < $low_band) {
+	    $messageStack->add(sprintf(INV_STOCK_LEVEL_ADJ, $new_min_stock), 'caution');
+	}
+	if ($median_sales > $high_avg || $median_sales < $low_avg) {
+	    $messageStack->add(sprintf(INV_STOCK_MEDIAN, $median_sales, $average_sales), 'caution');
+	}
 	return $history;
   }
 

@@ -198,6 +198,8 @@ define('INV_ADJ_QTY_ZERO','Cannot adjust inventory with a zero quantity!');
 define('INV_MS_ERROR_DELETE_HISTORY_EXISTS','Cannot delete sku %s since there is a record in the inventory_history table.');
 define('INV_MS_ERROR_DELETE_ASSEMBLY_PART','Cannot delete sku %s since it is part of an assembly. Will mark as inactive.');
 define('INV_MS_ERROR_CANNOT_DELETE','The sku %s cannot be deleted because there are matching journal entries. Will mark as inactive.');
+define('INV_STOCK_LEVEL_ADJ','Inventory stock levels need adjusting. New minimum stock = %s');
+define('INV_STOCK_MEDIAN','Check monthly usage, median value (%s) is out of range to average sales (%s).');
 // java script errors and messages
 define('AJAX_INV_NO_INFO','Not enough information was passed to retrieve the item details');
 define('JS_SKU_BLANK', '* The new item needs a SKU or UPC Code\n');
