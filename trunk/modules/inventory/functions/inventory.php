@@ -191,7 +191,7 @@
 	}
 
 	// calculate average usage
-	$percent_diff   = 0.10; // the percentage differnece from current value to notify for adjustment
+	$percent_diff   = 0.10; // the percentage difference from current value to notify for adjustment
 	$months_of_data = 12;   // valid values are 1, 3, 6, or 12
 	$med_avg_diff   = 0.25; // the maximum percentage difference from the median and average, for large swings
 	$cnt   = 0;
