@@ -9,21 +9,21 @@ namespace core\classes;
 class outputPage implements \SplObserver {
 
 	// header elements
-    private $css_files			= array();
+    private $css_files				= array();
     private $css;
-    private $js_files			= array();
-    private $include_php_js_files = array();
+    private $js_files				= array();
+    private $include_php_js_files 	= array();
     private $js;
-    private $js_override_files	= array();
+    private $js_override_files		= array();
     private $js_override;
     // page elements
-    public  $title = '';
-    public  $custom_html		= false;
-    public  $include_header		= false;
-    public  $include_footer		= false;
-    public  $include_template	= '';
-    private $ModuleAndPage		= "phreedom/main";
-    public  $page_title			= TEXT_PHREEBOOKS_ERP;
+    public  $title 					= '';
+    public  $custom_html			= false;
+    public  $include_header			= true;
+    public  $include_footer			= true;
+    public  $include_template		= '';
+    private $ModuleAndPage			= "phreedom/main";
+    public  $page_title				= TEXT_PHREEBOOKS_ERP;
 
     /**
      * Constructor...
@@ -36,7 +36,7 @@ class outputPage implements \SplObserver {
   		$this->js_files[] = "https://www.google.com/jsapi";
   		$this->js_files[] = "includes/jquery.easyui.min.js";
   		$this->js_files[] = "includes/common.js";
-  		$this->js_files[] = DIR_FS_ADMIN . DIR_WS_THEMES . '/config.php';
+  		$this->include_php_js_files[] = DIR_FS_ADMIN . DIR_WS_THEMES . '/config.php';
   		$this->css_files[] = DIR_WS_THEMES.'css/'.MY_COLORS.'/stylesheet.css';
   		$this->css_files[] = DIR_WS_THEMES.'css/'.MY_COLORS.'/jquery_datatables.css';
   		$this->css_files[] = DIR_WS_THEMES.'css/'.MY_COLORS.'/jquery-ui.css';
@@ -44,30 +44,36 @@ class outputPage implements \SplObserver {
   		$this->css_files[] = DIR_WS_THEMES.'css/icon.css';
     }
 
-    public function print_js_includes(){
+    public function print_js_includes($basis){
        	//first normal js files
        	foreach($this->js_files as $file){
-       		echo "<script type='text/javascript' src='$file'></script>";
+       		if($file) echo "<script type='text/javascript' src='$file'></script>". chr(13);
+       	}
+    	foreach($basis->js_files as $file){
+       		if($file) echo "<script type='text/javascript' src='$file'></script>". chr(13);
        	}
        	foreach($this->include_php_js_files as $file){
-       		include_once ($file);
+       		if($file) include_once ($file);
+       	}
+       	foreach($basis->include_php_js_files as $file){
+       		if($file) include_once ($file);
        	}
        	//then the override files
-       	foreach($this->js_override_files as $file){
-       		echo "<script type='text/javascript' src='$file'></script>";
+       	foreach($basis->js_override_files as $file){
+       		if($file) echo "<script type='text/javascript' src='$file'></script>". chr(13);
        	}
        	if (SESSION_AUTO_REFRESH == '1') echo '  <script type="text/javascript">addLoadEvent(refreshSessionClock);</script>' . chr(10);
-       	echo '<script type="text/javascript">addLoadEvent(init);addUnloadEvent(clearSessionClock);</script>';
+       	echo '<script type="text/javascript">addLoadEvent(init);addUnloadEvent(clearSessionClock);</script>'. chr(13);
     }
 
-    public function print_css_includes(){
+    public function print_css_includes($basis){
       	foreach($this->css_files as $file){
-       		echo "<link rel='stylesheet' type='text/css' href='$file' />";
+       		if($file) echo "<link rel='stylesheet' type='text/css' href='$file' />". chr(13);
        	}
     }
 
-    public function print_menu(){
-       	if($this->include_header){
+    public function print_menu($basis){
+       	if($basis->include_header){
        		require_once(DIR_FS_ADMIN . DIR_WS_THEMES . '/menu.php');
        	} else{
        		echo "<div>\n";
@@ -80,7 +86,6 @@ class outputPage implements \SplObserver {
      */
 
     public function update(\SplSubject $basis) {//@todo
-    	global $messageStack;
 //    	if ($basis->page != 'json' && $basis->page != 'ajax' && $basis->page == 'mobile') {
     		$this->include_template = DIR_FS_ADMIN . "modules/{$basis->module}/pages/{$basis->page}/{$basis->template}.php";
 	    	if ( file_exists(DIR_FS_ADMIN . "modules/{$basis->module}/custom/pages/{$basis->page}/{$basis->template}.php")) {
@@ -90,6 +95,18 @@ class outputPage implements \SplObserver {
 			// load the javascript specific, required
 			$this->include_php_js_files[] = DIR_FS_ADMIN . "modules/{$basis->module}/pages/{$basis->page}/js_include.php";
 			if ( !file_exists(DIR_FS_ADMIN . "modules/{$basis->module}/pages/{$basis->page}/js_include.php")) trigger_error("No js_include file, looking for the file: {$basis->module}/pages/{$basis->page}/js_include.php", E_USER_ERROR);
+			// load the jquery and javascript translations
+			if      (file_exists("modules/phreedom/custom/language/{$_SESSION['language']}/jquery_i18n.js")) {
+				$this->js_files[] = "modules/phreedom/custom/language/{$_SESSION['language']}/jquery_i18n.js";
+			} elseif(file_exists("modules/phreedom/language/{$_SESSION['language']}/jquery_i18n.js")) {
+				$this->js_files[] = "modules/phreedom/language/{$_SESSION['language']}/jquery_i18n.js";
+			} else               $this->js_files[] = "modules/phreedom/language/en_us/jquery_i18n.js";
+			//for easyui
+			if      (file_exists("includes/easyui/custom/language/{$_SESSION['language']}/easyui_lang.js")) {
+				$this->js_files[] = "includes/easyui/custom/language/{$_SESSION['language']}/easyui_lang.js";
+			} elseif(file_exists("includes/easyui/language/{$_SESSION['language']}/easyui_lang.js")) {
+				$this->js_files[] = "includes/easyui/language/{$_SESSION['language']}/easyui_lang.js";
+			} else               $this->js_files[] = "includes/easyui/language/en_us/easyui_lang.js";
 			//load the custom javascript if present
 			if (file_exists(DIR_FS_ADMIN . "modules/{$basis->module}/custom/pages/{$basis->page}/extra_js.php")) $this->include_php_js_files[] = DIR_FS_ADMIN . "modules/{$basis->module}/custom/pages/{$basis->page}/extra_js.php";
 			require('includes/template_index.php');

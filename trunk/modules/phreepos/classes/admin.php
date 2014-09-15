@@ -17,6 +17,7 @@
 //  Path: /modules/phreepos/classes/admin.php
 //
 namespace phreepos\classes;
+require_once ('/config.php');
 class admin extends \core\classes\admin {
 	public $id 			= 'phreepos';
 	public $description = MODULE_PHREEPOS_DESCRIPTION;

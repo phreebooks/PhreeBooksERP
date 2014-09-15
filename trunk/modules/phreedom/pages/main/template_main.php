@@ -17,7 +17,7 @@
 //  Path: /modules/phreedom/pages/main/template_main.php
 //
 // display alerts/error messages, if any since the toolbar is not shown
-echo $messageStack->output();
+if(is_object($messageStack)) echo $messageStack->output();
 $column = 1;
 $row_started = true;
 // include hidden fields
@@ -32,11 +32,10 @@ echo html_hidden_field('dashboard_id', '') . chr(10);
     <td width="33%" valign="top">
       <div id="col_<?php echo $column; ?>" style="position:relative;">
 <?php
-
-while(!$cp_boxes->EOF) {
-	if ($cp_boxes->fields['column_id'] <> $column) {
+while(!$basis->cInfo->cp_boxes->EOF) {
+	if ($basis->cInfo->cp_boxes->fields['column_id'] <> $column) {
   		$row_started = true;
-		while ($cp_boxes->fields['column_id'] <> $column) {
+		while ($basis->cInfo->cp_boxes->fields['column_id'] <> $column) {
 	  		$column++;
 	  		echo '      </div>' . chr(10);
 	  		echo '    </td>' . chr(10);
@@ -44,17 +43,17 @@ while(!$cp_boxes->EOF) {
 	  		echo '      <div id="col_' . $column . '" style="position:relative;">' . chr(10);
 		}
   	}
-  	$dashboard 	  = $cp_boxes->fields['dashboard_id'];
-  	$module_id    = $cp_boxes->fields['module_id'];
+  	$dashboard 	  = $basis->cInfo->cp_boxes->fields['dashboard_id'];
+  	$module_id    = $basis->cInfo->cp_boxes->fields['module_id'];
   	load_method_language(DIR_FS_MODULES . "$module_id/dashboards/$dashboard");
-    if($admin->classes[$module_id]->dashboards[$dashboard]->valid_user){
-    		$admin->classes[$module_id]->dashboards[$dashboard]->menu_id      = $menu_id;
-    		$admin->classes[$module_id]->dashboards[$dashboard]->column_id    = $cp_boxes->fields['column_id'];
-    		$admin->classes[$module_id]->dashboards[$dashboard]->row_started  = $row_started;
-    		$admin->classes[$module_id]->dashboards[$dashboard]->row_id       = $cp_boxes->fields['row_id'];
-    		echo $admin->classes[$module_id]->dashboards[$dashboard]->output(unserialize($cp_boxes->fields['params']));
+    if($basis->classes[$module_id]->dashboards[$dashboard]->valid_user){
+    		$basis->classes[$module_id]->dashboards[$dashboard]->menu_id      = $menu_id;
+    		$basis->classes[$module_id]->dashboards[$dashboard]->column_id    = $basis->cInfo->cp_boxes->fields['column_id'];
+    		$basis->classes[$module_id]->dashboards[$dashboard]->row_started  = $row_started;
+    		$basis->classes[$module_id]->dashboards[$dashboard]->row_id       = $basis->cInfo->cp_boxes->fields['row_id'];
+    		echo $basis->classes[$module_id]->dashboards[$dashboard]->output(unserialize($basis->cInfo->cp_boxes->fields['params']));
     }
-  	$cp_boxes->MoveNext();
+  	$basis->cInfo->cp_boxes->MoveNext();
   	$row_started = false;
 }
 

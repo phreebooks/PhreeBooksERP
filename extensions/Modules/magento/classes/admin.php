@@ -17,6 +17,7 @@
 //  Path: /modules/magento/classes/install.php
 //
 namespace magento\classes;
+require_once ('/config.php');
 class admin extends \core\classes\admin {
 	public $id 			= 'magento';
 	public $text		= MODULE_MAGENTO_TITLE;

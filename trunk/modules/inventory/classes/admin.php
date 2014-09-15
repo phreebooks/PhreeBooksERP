@@ -17,6 +17,7 @@
 //  Path: /modules/inventory/classes/admin.php
 //
 namespace inventory\classes;
+require_once ('/config.php');
 class admin extends \core\classes\admin {
 	public $sort_order  = 4;
 	public $id 			= 'inventory';

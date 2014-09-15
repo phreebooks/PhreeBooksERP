@@ -17,6 +17,7 @@
 //  Path: /modules/cp_action/classes/admin.php
 //
 namespace cp_action\classes;
+require_once ('/config.php');
 class admin extends \core\classes\admin {
 	public $id 			= 'cp_action';
 	public $description = MODULE_CP_ACTION_DESCRIPTION;

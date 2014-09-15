@@ -17,6 +17,7 @@
 //  Path: /modules/bulk_inv/classes/admin.php
 //
 namespace bulk_inv\classes;
+require_once ('/config.php');
 class admin extends \core\classes\admin {
 	public $id 			= 'bulk_inv';
 	public $text		= TEXT_BULK_INVENTORY_TOOL;

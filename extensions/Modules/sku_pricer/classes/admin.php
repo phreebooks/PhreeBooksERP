@@ -17,6 +17,7 @@
 //  Path: /modules/sku_pricer/classes/admin.php
 //
 namespace sku_pricer\classes;
+require_once ('/config.php');
 class admin extends \core\classes\admin {
 	public $id 			= 'sku_pricer';
 	public $text		= TEXT_SKU_PRICER;

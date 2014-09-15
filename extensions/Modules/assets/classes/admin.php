@@ -17,6 +17,7 @@
 //  Path: /modules/assets/classes/admin.php
 //
 namespace assets\classes;
+require_once ('/config.php');
 class admin extends \core\classes\admin {
 	public $id 			= 'assets';
 	public $description = MODULE_ASSETS_DESCRIPTION;

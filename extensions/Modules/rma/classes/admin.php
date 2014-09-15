@@ -17,6 +17,7 @@
 //  Path: /modules/rma/classes/admin.php
 //
 namespace rma\classes;
+require_once ('/config.php');
 class admin extends \core\classes\admin {
 	public $id 			= 'rma';
 	public $description = MODULE_RMA_DESCRIPTION;

@@ -17,7 +17,7 @@
 // Path: /index.php
 //
 ob_start();
-ini_set('log_errors','1');
+//ini_set('log_errors','1');
 ini_set('display_errors', '1');
 ini_set('max_input_vars', '3000');
 error_reporting(E_ALL^E_NOTICE);
@@ -35,13 +35,16 @@ try{
    	$admin->attach(new \core\classes\outputPage);
    	$messageStack->debug("\n checking if user is validated");
    	\core\classes\user::is_validated($admin);
-   	$admin->fireEvent($admin->cInfo->action);
+   	if ($admin->cInfo->action){
+   		$admin->fireEvent($admin->cInfo->action);
+   	}
+   	$admin->startProcessingEvents();
 }catch (\core\classes\userException $e) {
 	$messageStack->add($e->getMessage());
 	if (is_object($db)) gen_add_audit_log($e->getMessage());
 	$messageStack->debug("\n\n".$e->getTraceAsString());
 	$admin->fireEvent($e->action);
+	$admin->startProcessingEvents();
 }
-$messageStack->write_debug();
 $admin->dataBaseConnection = null;
 ?>

@@ -21,6 +21,7 @@
 //  Path: /modules/import_bank/classes/admin.php
 //
 namespace import_bank\classes;
+require_once ('/config.php');
 class admin extends \core\classes\admin {
 	public $id 			= 'import_bank';
 	public $text		= TEXT_IMPORT_BANK_STATEMENT;

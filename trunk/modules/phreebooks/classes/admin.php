@@ -17,7 +17,7 @@
 // Path: /modules/phreebooks/classes/admin.php
 //
 namespace phreebooks\classes;
-
+require_once ('/config.php');
 class admin extends \core\classes\admin {
 	public $sort_order = 2;
 	public $id = 'phreebooks';
@@ -299,12 +299,12 @@ class admin extends \core\classes\admin {
 		$this->notes [] = MODULE_PHREEBOOKS_NOTES_4;
 	}
 
-	function initialize() {
+	function after_ValidateUser(\core\classes\basis &$basis) {
 		if (AUTO_UPDATE_PERIOD) {
 			require_once (DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 			gen_auto_update_period ();
 		}
-		parent::initialize ();
+		parent::after_ValidateUser($basis);
 	}
 
 	function upgrade() {

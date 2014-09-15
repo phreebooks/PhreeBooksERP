@@ -23,6 +23,12 @@ class user {
 	function __construct(){
 	}
 
+	final static public function __get($variable){
+		if (isset($_SESSION[$variable])) return $_SESSION[$variable];
+		if (isset(self::$variable)) 	return self::$variable;
+		return "unknown";
+	}
+
 	/**
 	 * checks if user is logged in.
 	 * @return bool if user is logged in.

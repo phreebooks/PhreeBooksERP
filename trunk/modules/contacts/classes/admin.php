@@ -17,6 +17,7 @@
 //  Path: /modules/contacts/classes/admin.php
 //
 namespace contacts\classes;
+require_once ('/config.php');
 class admin extends \core\classes\admin {
 	public $sort_order  = 3;
 	public $id 			= 'contacts';

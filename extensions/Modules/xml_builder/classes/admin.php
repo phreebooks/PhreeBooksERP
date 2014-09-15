@@ -17,6 +17,7 @@
 //  Path: /modules/xml_builder/classes/admin.php
 //
 namespace xml_builder\classes;
+require_once ('/config.php');
 class admin extends \core\classes\admin{
 	public $id 			= 'xml_builder';
 	public $description = TEXT_THIS_MODULE_BUILDS_THE_XML_INFORMATION_FILES;

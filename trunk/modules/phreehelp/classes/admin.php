@@ -17,6 +17,7 @@
 //  Path: /modules/phreehelp/classes/admin.php
 //
 namespace phreehelp\classes;
+require_once ('/config.php');
 class admin extends \core\classes\admin {
 	public $id 			= 'phreehelp';
 	public $description = MODULE_PHREEHELP_DESCRIPTION;

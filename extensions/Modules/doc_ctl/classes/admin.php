@@ -17,6 +17,7 @@
 //  Path: /modules/doc_ctl/classes/admin.php
 //
 namespace doc_ctl\classes;
+require_once ('/config.php');
 class admin extends \core\classes\admin {
 	public $id 			= 'doc_ctl';
 	public $description = MODULE_DOC_CTL_DESCRIPTION;

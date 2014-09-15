@@ -17,6 +17,7 @@
 //  Path: /modules/shipping/classes/admin.php
 //
 namespace shipping\classes;
+require_once ('/config.php');
 class admin extends \core\classes\admin {
 	public $id 			= 'shipping';
 	public $description = MODULE_SHIPPING_DESCRIPTION;

@@ -20,7 +20,7 @@ if ($custom_html) { // load the template only as the rest of the html will be ge
   if (is_file($template_path)) { require($template_path); } else trigger_error('No template file. Looking for: ' . $template_path, E_USER_ERROR);
 } else {
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html <?php echo HTML_PARAMS; ?>>
  <head>
   <script type="text/javascript">
@@ -33,12 +33,11 @@ if ($custom_html) { // load the template only as the rest of the html will be ge
   <meta http-equiv="Content-Type" content="text/html; charset=<?php echo CHARSET; ?>" />
 <?php if ($force_reset_cache) { header("Cache-Control: no-cache, must-revalidate"); header("Expires: ".date('D, j M \2\0\0\0 G:i:s T')); } ?>
   <title><?php echo $basis->page_title; ?></title>
-  <link rel="shortcut icon" type="image/ico" href="favicon.ico" />
-  <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/stylesheet.css'; ?>" />
-  <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/jquery_datatables.css'; ?>" />
-  <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/jquery-ui.css'; ?>" />
-  <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/easyui.css'; ?>" />
-  <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/icon.css'; ?>" />
+  <!-- start loading includes -->
+  <?php $basis->returnCurrentObserver()->print_css_includes($basis);
+  		$basis->returnCurrentObserver()->print_js_includes($basis);
+  ?>
+  <!-- end loading includes -->
   <script type="text/javascript">
   var module              = '<?php echo $module; ?>';
   var pbBrowser           = (document.all) ? 'IE' : 'FF';
@@ -59,33 +58,16 @@ if ($custom_html) { // load the template only as the rest of the html will be ge
   var formatted_zero      = "<?php echo $currencies->format(0); ?>";
 <?php } ?>
   </script>
-  <script type="text/javascript" src="includes/jquery-1.6.2.min.js"></script>
-  <script type="text/javascript" src="includes/jquery-ui-1.8.16.custom.min.js"></script>
-  <script type="text/javascript" src="includes/jquery.easyui.min.js"></script>
-  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-  <script type="text/javascript" src="includes/common.js"></script>
 <?php
-require_once(DIR_FS_ADMIN . DIR_WS_THEMES . '/config.php');
-// load the jquery and javascript translations
-if      (file_exists($js_i18n = 'modules/phreedom/custom/language/'.$_SESSION['language'].'/jquery_i18n.js')) {
-} elseif(file_exists($js_i18n = 'modules/phreedom/language/'       .$_SESSION['language'].'/jquery_i18n.js')) {
-} else               $js_i18n = 'modules/phreedom/language/en_us/jquery_i18n.js';
-echo '  <script type="text/javascript" src="'.$js_i18n.'"></script>'."\n";
-//for easyui
-if      (file_exists($file = 'includes/easyui/custom/language/'.$_SESSION['language'].'/easyui_lang.js')) {
-} elseif(file_exists($file = 'includes/easyui/language/'       .$_SESSION['language'].'/easyui_lang.js')) {
-} else               $file = 'includes/easyui/language/en_us/easyui_lang.js';
-echo '  <script type="text/javascript" src="'.$file.'"></script>'."\n";
-// load the javascript specific, required
-$basis->returnCurrentObserver()->print_js_includes();
+//require_once(DIR_FS_ADMIN . DIR_WS_THEMES . '/config.php');
+
 ?>
  </head>
  <body>
-  <script type="text/javascript" src="modules/phreedom/includes/wz_tooltip/wz_tooltip.js"></script>
-  <script type="text/javascript" src="modules/phreedom/includes/wz_tooltip/tip_balloon.js"></script>
   <div id="please_wait"><p><?php echo html_icon('phreebooks/please_wait.gif', TEXT_PLEASE_WAIT, 'large'); ?></p></div>
-  <!-- Menu -->
-  <?php $basis->returnCurrentObserver()->print_menu();?>
+  <!-- start Menu -->
+  <?php $basis->returnCurrentObserver()->print_menu($basis);?>
+  <!-- end Menu -->
   <!-- Template -->
   <?php require($basis->returnCurrentObserver()->include_template);?>
   </div>
@@ -96,7 +78,7 @@ $basis->returnCurrentObserver()->print_js_includes();
   <div style="clear:both;text-align:center;font-size:9px">
     <a href="http://www.PhreeSoft.com" target="_blank"><?php echo html_image($image_path, TEXT_PHREEDOM_INFO, NULL, '64'); ?></a><br />
   <?php
-  $footer_info  = COMPANY_NAME.' | '.TEXT_ACCOUNTING_PERIOD.': '.CURRENT_ACCOUNTING_PERIOD.' | '.TEXT_PHREEDOM_INFO.' ('.$admin->classes['phreedom']->version.') ';
+  $footer_info  = COMPANY_NAME.' | '.TEXT_ACCOUNTING_PERIOD.': '.CURRENT_ACCOUNTING_PERIOD.' | '.TEXT_PHREEDOM_INFO.' ('.$basis->classes['phreedom']->version.') ';
   if ($module <> 'phreedom') $footer_info .= '(' . $module . ' ' . constant('MODULE_' . strtoupper($module) . '_STATUS') . ') ';
   $footer_info .= '<br />' . TEXT_COPYRIGHT .  ' &copy;' . date('Y') . ' <a href="http://www.PhreeSoft.com" target="_blank">PhreeSoft&trade;</a>';
   $footer_info .= '(' . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . ' ms) ' . $db->count_queries . ' SQLs (' . (int)($db->total_query_time * 1000).' ms)';

@@ -30,14 +30,14 @@ class basis implements \SplSubject {
     public  $include_header		= true;
     public  $include_footer		= true;
 	public  $dataBaseConnection = null;
-	public  $mainmenu 	= array ();
-	private $events 	= array ();
+	public  $mainmenu 			= array ();
+	private $events 			= array ('LoadMainPage');
 
 	public function __construct() {
-		global $mainmenu;
+		\core\classes\messageStack::debug_log("executing __construct in class basis" );
 		$this->journal = new \core\classes\journal ();
 		$this->cInfo = (object)array_merge ( $_GET, $_POST );
-		$this->events = $this->cInfo->action;
+//		$this->events = $this->cInfo->action;
 		if ($this->getNumberOfAdminClasses () == 0 || empty ( $this->mainmenu )) {
 			$dirs = @scandir ( DIR_FS_MODULES );
 			if ($dirs === false) throw new \core\classes\userException ( "couldn't read or find directory " . DIR_FS_MODULES );
@@ -49,16 +49,74 @@ class basis implements \SplSubject {
 					$this->attachAdminClasses ( $dir, new $class () );
 				}
 			}
-			$this->mainmenu = $mainmenu;
+		}
+		$this->mainmenu["home"] = array(
+				'order' => 0,
+				'text'  => TEXT_HOME,
+				'link'  => html_href_link(FILENAME_DEFAULT),
+				'icon'  => html_icon('actions/go-home.png', TEXT_HOME, 'small'),
+		);
+		$this->mainmenu["inventory"] = array(
+				'order' 		=> MENU_HEADING_INVENTORY_ORDER,
+				'text' 		=> TEXT_INVENTORY,
+				'security_id' => '',
+				'link' 		=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_inv', 'SSL'),
+				'params'      => '',
+		);
+		$this->mainmenu["banking"] = array(
+				'order'			=> MENU_HEADING_BANKING_ORDER,
+				'text' 			=> TEXT_BANKING,
+				'security_id' 	=> '',
+				'link' 			=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_bnk', 'SSL'),
+				'params'      	=> '',
+		);
+		$this->mainmenu["gl"] = array(
+				'order'			=> MENU_HEADING_GL_ORDER,
+				'text' 			=> TEXT_GENERAL_LEDGER,
+				'security_id' 	=> '',
+				'link' 			=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_gl', 'SSL'),
+				'params'      	=> '',
+		);
+		$this->mainmenu["tools"] = array(
+				'order'			=> MENU_HEADING_TOOLS_ORDER,
+				'text' 			=> TEXT_TOOLS,
+				'security_id' 	=> '',
+				'link' 			=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_tools', 'SSL'),
+				'params'      	=> '',
+		);
+		$this->mainmenu["company"] = array(
+				'order' 		=> MENU_HEADING_COMPANY_ORDER,
+				'text' 		=> TEXT_COMPANY,
+				'security_id' => '',
+				'link' 		=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_company', 'SSL'),
+				'params'      => '',
+		);
+		if (defined('MODULE_CP_ACTION_STATUS') || defined('MODULE_DOC_CTL_STATUS')) $this->mainmenu["quality"] = array(
+				'order' 		=> MENU_HEADING_QUALITY_ORDER,
+				'text'  		=> TEXT_QUALITY,
+				'security_id' => '',
+				'link' 		=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_qa', 'SSL'),
+				'params'      => '',
+		);
+		$this->mainmenu["logout"] = array(
+				'order' => 999,
+				'text'  => TEXT_LOG_OUT,
+				'link'  => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;action=logout', 'SSL'),
+				'icon'  => html_icon('actions/system-log-out.png', TEXT_LOG_OUT, 'small'),
+		);
+		foreach ( $this->classes as $module_class ) {
+			$this->mainmenu = array_merge_recursive($this->mainmenu, $module_class->mainmenu);
 		}
 	}
 
 	public function __wakeup() {
-		print ("basis __wakeup is called") ;
+		\core\classes\messageStack::debug_log("executing __wakeup in class basis" );
 		$this->cInfo = (object)array_merge ( $_GET, $_POST );
+//		$this->events = $this->cInfo->action;
 	}
 
 	public function attach(\SplObserver $observer) {
+		\core\classes\messageStack::debug_log("attaching observer".get_class($observer));
 		$this->_observers[get_class($observer)] = $observer;
 	}
 
@@ -72,17 +130,18 @@ class basis implements \SplSubject {
 	public function notify() {
 		global $messageStack;
 		foreach ( $this->_observers as $key => $observer ) {
-			$messageStack->debug ( "\n calling ". get_class($observer)." for output" );
+			\core\classes\messageStack::debug_log( "calling ". get_class($observer)." for output" );
 			$this->observer = get_class($observer);
 			$observer->update ( $this );
 		}
 		ob_end_flush();
-		session_write_close();
 		$messageStack->write_debug();
-		die();
+		session_write_close();
+		die('dying in notify');
 	}
 
 	public function returnCurrentObserver(){
+		\core\classes\messageStack::debug_log("returning object of {$this->observer}");
 		return $this->_observers[$this->observer];
 	}
 
@@ -119,6 +178,7 @@ class basis implements \SplSubject {
 	 * this method is for sorting a array of objects by the sort_order variable
 	 */
 	function arangeObjectBySortOrder($a, $b) {
+		if(is_integer($a->sort_order) && is_integer($b->sort_order)) return $a->sort_order - $b->sort_order;
 		return strcmp ( $a->sort_order, $b->sort_order );
 	}
 
@@ -129,8 +189,7 @@ class basis implements \SplSubject {
 	 * @param string $event
 	 */
 	public function fireEvent($event) {
-		$this->events = array_merge(array_slice((array) $this->events, 0, 1 ), array($event), array_slice ((array)$this->events, 1 ));
-		$this->startProcessingEvents();
+		$this->removeEventsAndAddNewEvent($event);
 	}
 
 	/**
@@ -140,36 +199,35 @@ class basis implements \SplSubject {
 	 *
 	 * @throws exception if the event stack is empty
 	 */
-	public function startProcessingEvents() {
-		global $messageStack;
+	public function startProcessingEvents() {//die(print_r($this));
 		if ( count($this->events ) == 0) throw new \Exception ( "trying to start processing events but the events array is empty" );
-		while ( list ( $key, $event ) = each ( $this->events ) ) {
-			$messageStack->debug ( "\n starting with event: $event" );
-			if (! $event) break;
+		while ( $event = array_shift($this->events) ) {
+			\core\classes\messageStack::debug_log("starting with event: $event" );
+			if (! $event ) break;
 			$ActionBefore = "before_$event";
-			foreach ( $this->classes as $module_class ) {
+			if( ! in_array($event, array('LoadLogIn', 'ValidateUser', 'LoadLostPassword', 'SendLostPassWord')))
+				foreach ( $this->classes as $module_class ) {
 				if ($module_class->installed && method_exists ( $module_class, $ActionBefore )) {
-					$messageStack->debug ( "\n class {$module_class->id} has action method $ActionBefore" );
+					\core\classes\messageStack::debug_log("class {$module_class->id} has action method $ActionBefore" );
 					$module_class->$ActionBefore ( $this );
 				}
 			}
 
 			foreach ( $this->classes as $module_class ) {
 				if ($module_class->installed && method_exists ( $module_class, $event )) {
-					$messageStack->debug ( "\n class {$module_class->id} has action method $event" );
+					\core\classes\messageStack::debug_log("class {$module_class->id} has action method $event" );
 					$module_class->$event ( $this );
 				}
 			}
 			$ActionAfter = "after_$event";
-			foreach ( $this->classes as $module_class ) {
+			if( ! in_array($event, array('logout', 'LoadLogIn'))) foreach ( $this->classes as $module_class ) {
 				if ($module_class->installed && method_exists ( $module_class, $ActionAfter )) {
-					$messageStack->debug ( "\n class {$module_class->id} has action method $ActionAfter" );
+					\core\classes\messageStack::debug_log("class {$module_class->id} has action method $ActionAfter" );
 					$module_class->$ActionAfter ( $this );
 				}
 			}
-			unset ( $this->events [$key] );
-			reset ( $this->events );
 		}
+		$this->notify();
 	}
 
 	/**
@@ -179,10 +237,9 @@ class basis implements \SplSubject {
 	 * @throws exception if event is emtpy
 	 */
 	public function addEventToStack($event) {
-		if (! $event)
-			throw new exception ( "in the basis class method addEventToStack we received a empty event." );
-		if (! in_array ( $event, (array) $this->events))
-			array_push ($this->events, $event );
+		if (! $event) throw new \exception ( "in the basis class method addEventToStack we received a empty event." );
+		\core\classes\messageStack::debug_log("adding event $event to stack" );
+		if (! in_array ( $event, (array) $this->events)) array_push ($this->events, $event );
 	}
 
 	/**
@@ -192,8 +249,8 @@ class basis implements \SplSubject {
 	 * @throws exception if event is empty
 	 */
 	public function removeEventsAndAddNewEvent($event) {
-		if (! $event) throw new exception ( "in the basis class method  we received a empty event." );
-		$this->events = array();
+		if (! $event) throw new \exception ( "in the basis class method  we received a empty event." );
+		$this->clearEventsStack ();
 		$this->addEventToStack ( $event );
 	}
 
@@ -201,10 +258,10 @@ class basis implements \SplSubject {
 	 * this method empties the event stack
 	 */
 	public function clearEventsStack() {
+		\core\classes\messageStack::debug_log("clearing events stack" );
 		$this->events = array();
 	}
 	function __destruct() {
-//		print_r($this);
 		$this->dataBaseConnection = null;
 	}
 }

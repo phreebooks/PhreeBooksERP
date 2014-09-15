@@ -19,7 +19,7 @@
 // | If not, see http://www.gnu.org/licenses/                        |
 // +-----------------------------------------------------------------+
 //  Path: /modules/import_bank/classes/install.php
-//
+// @todo
 
 class phreewiki_admin {
  	function phreewiki_admin() {

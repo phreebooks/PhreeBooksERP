@@ -1754,6 +1754,7 @@ function csv_string_to_array($str = '') {
 /**************************************************************************************************************/
 
 function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext) {
+	global $messageStack;
     if (!(error_reporting() & $errno)) {
         // This error code is not included in error_reporting
         return;

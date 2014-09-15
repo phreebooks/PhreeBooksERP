@@ -17,6 +17,7 @@
 //  Path: /modules/phreeform/classes/admin.php
 //
 namespace phreeform\classes;
+require_once ('/config.php');
 class admin extends \core\classes\admin {
 	public $id 			= 'phreeform';
 	public $description = MODULE_PHREEFORM_DESCRIPTION;

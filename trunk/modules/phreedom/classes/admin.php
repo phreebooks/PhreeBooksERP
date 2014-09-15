@@ -17,6 +17,7 @@
 //  Path: /modules/phreedom/classes/install.php
 //
 namespace phreedom\classes;
+require_once ('/config.php');
 class admin extends \core\classes\admin {
 	public $sort_order  = 1;
 	public $id 			= 'phreedom';
@@ -174,6 +175,73 @@ class admin extends \core\classes\admin {
 		  PRIMARY KEY (id)
 		) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
     );
+	$this->mainmenu["company"]['submenu']["profile"] = array(
+			'order' 		=> 5,
+			'text'        => TEXT_MY_PROFILE,
+			'security_id' => SECURITY_ID_MY_PROFILE,
+			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=profile', 'SSL'),
+			'show_in_users_settings' => true,
+			'params'      => '',
+	);
+
+	$this->mainmenu["company"]['submenu']["configuration"] = array(
+			'order' 		=> 10,
+			'text'        => TEXT_MODULE_ADMINISTRATION,
+			'security_id' => SECURITY_ID_CONFIGURATION,
+			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=admin', 'SSL'),
+			'show_in_users_settings' => true,
+			'params'      => '',
+	);
+
+	if (defined('DEBUG') && DEBUG == true) $this->mainmenu["tools"]['submenu']["debug"] = array(
+			'order' 		=> 0,
+			'text'        => TEXT_DOWNLOAD_DEBUG_FILE,
+			'security_id' => SECURITY_ID_CONFIGURATION,
+			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;action=debug', 'SSL'),
+			'show_in_users_settings' => false,
+			'params'      => '',
+	);
+	if (defined('ENABLE_ENCRYPTION') && ENABLE_ENCRYPTION == true) $this->mainmenu["tools"]['submenu']["encryption"] = array(
+			'order' 		=> 1,
+			'text'        => TEXT_DATA_ENCRYPTION,
+			'security_id' => SECURITY_ID_ENCRYPTION,
+			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=encryption', 'SSL'),
+			'show_in_users_settings' => true,
+			'params'      => '',
+	);
+	$this->mainmenu["tools"]['submenu']["import_export"] = array(
+			'order' 		=> 50,
+			'text'        => TEXT_IMPORT_OR_EXPORT,
+			'security_id' => SECURITY_ID_IMPORT_EXPORT,
+			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=import_export', 'SSL'),
+			'show_in_users_settings' => true,
+			'params'      => '',
+	);
+	$this->mainmenu["tools"]['submenu']["backup"] = array(
+			'order' 		=> 95,
+			'text'        => TEXT_COMPANY_BACKUP,
+			'security_id' => SECURITY_ID_BACKUP,
+			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=backup', 'SSL'),
+			'show_in_users_settings' => true,
+			'params'      => '',
+	);
+	$this->mainmenu["company"]['submenu']["users"] = array(
+			'order' 		=> 90,
+			'text'        => TEXT_USERS,
+			'security_id' => SECURITY_ID_USERS,
+			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=users&amp;list=1', 'SSL'),
+			'show_in_users_settings' => true,
+			'params'      => '',
+	);
+	$this->mainmenu["company"]['submenu']["roles"] = array(
+			'order' 		=> 85,
+			'text'        => TEXT_ROLES,
+			'security_id' => SECURITY_ID_ROLES,
+			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=roles&amp;list=1', 'SSL'),
+			'show_in_users_settings' => true,
+			'params'      => '',
+	);
+
     parent::__construct();
   }
 
@@ -193,8 +261,8 @@ class admin extends \core\classes\admin {
 		$db->Execute("insert into " . TABLE_CURRENT_STATUS . " set id = 1");
 	}
 
-	function initialize() {
-		global $db, $messageStack, $currencies, $admin;
+	function after_ValidateUser(\core\classes\basis &$basis) {
+		global $db, $messageStack, $currencies;
 	    //load the latest currency exchange rates
 		if ($this->web_connected(false) && AUTO_UPDATE_CURRENCY && ENABLE_MULTI_CURRENCY) {
 				$currencies->btn_update();
@@ -202,24 +270,25 @@ class admin extends \core\classes\admin {
 		// Fix for change to audit log for upgrade to R3.6 causes perpertual crashing when writing audit log
 		if (!db_field_exists(TABLE_AUDIT_LOG, 'stats')) $db->Execute("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
 		if ($this->web_connected(false) && CFG_AUTO_UPDATE_CHECK && (SECURITY_ID_CONFIGURATION > 3)) { // check for software updates
-			if (($revisions = @file_get_contents(VERSION_CHECK_URL)) === false) throw new \core\classes\userException("can not open ". VERSION_CHECK_URL);
-		  	if ($revisions) {
-		   		$versions = xml_to_object($revisions);
+			if (!$this->$revisions) {
+				if (($this->$revisions = @file_get_contents(VERSION_CHECK_URL)) === false) throw new \core\classes\userException("can not open ". VERSION_CHECK_URL);
+			}
+		  	if ($this->$revisions) {
+		   		$versions = xml_to_object($this->$revisions);
 				$latest  = $versions->Revisions->Phreedom->Current;
-				if (version_compare($admin->classes['phreedom']->version, $latest, '<'))  $messageStack->add(sprintf(TEXT_VERSION_CHECK_NEW_VER, $admin->classes['phreedom']->version, $latest), 'caution');
+				if (version_compare($basis->classes['phreedom']->version, $latest, '<'))  $messageStack->add(sprintf(TEXT_VERSION_CHECK_NEW_VER, $basis->classes['phreedom']->version, $latest), 'caution');
+			}
+			// load installed modules and initialize them
+			foreach ($basis->classes as $key => $module_class) {
+				if ($key == 'phreedom') continue; // skip this module
+				$latest  = $versions->Revisions->Modules->$key->Current;
+				if (version_compare($module_class->version, $latest , '<'))  $messageStack->add(sprintf(TEXT_VERSION_CHECK_NEW_MOD_VER, $module_class->text, $module_class->version, $latest), 'caution');
 			}
 		}
-		// load installed modules and initialize them
-		foreach ($admin->classes as $key => $module_class) {
-		  	if ($key == 'phreedom') continue; // skip this module
-		  	if ($revisions) {
-		  		$latest  = $versions->Revisions->Modules->$key->Current;
-		  		if (version_compare($module_class->version, $latest , '<'))  $messageStack->add(sprintf(TEXT_VERSION_CHECK_NEW_MOD_VER, $module_class->text, $module_class->version, $latest), 'caution');
-		  	}
-		}
+
 		// Make sure the install directory has been moved/removed
 		if (is_dir(DIR_FS_ADMIN . 'install')) $messageStack->add(TEXT_INSTALL_DIR_PRESENT, 'caution');
-  		return true;
+		parent::after_ValidateUser($basis);
   	}
 
 	function web_connected($silent = true) {
@@ -262,15 +331,15 @@ class admin extends \core\classes\admin {
 	 * @param \core\classes\basis $basis
 	 * @throws \core\classes\userException
 	 */
-	function ValidateUser (\core\classes\basis &$admin) {
+	function ValidateUser (\core\classes\basis &$basis) {
 		global $db;
 		// Errors will happen here if there was a problem logging in, logout and restart
 		if (!is_object($db)) throw new \core\classes\userException("Database isn't created");
 		$sql = "select admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security
-		  from " . TABLE_USERS . " where admin_name = '{$basis->admin_name}'"; //@todo don't know if this works.
-		if ($db->db_connected) $result = $db->Execute($sql);
-		if (!$result || $basis->admin_name <> $result->fields['admin_name'] || $result->fields['inactive']) throw new \core\classes\userException(sprintf(GEN_LOG_LOGIN_FAILED, TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD), 'LoadLogIn');
-		\core\classes\encryption::validate_password($basis->admin_pass, $result->fields['admin_pass']);
+		  from " . TABLE_USERS . " where admin_name = '{$basis->cInfo->admin_name}'"; //@todo don't know if this works.
+		$result = $db->Execute($sql);
+		if (!$result || $basis->cInfo->admin_name <> $result->fields['admin_name'] || $result->fields['inactive']) throw new \core\classes\userException(sprintf(GEN_LOG_LOGIN_FAILED, TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD), 'LoadLogIn');
+		\core\classes\encryption::validate_password($basis->cInfo->admin_pass, $result->fields['admin_pass']);
 		$_SESSION['admin_id']       = $result->fields['admin_id'];
 		$_SESSION['display_name']   = $result->fields['display_name'];
 		$_SESSION['admin_email']    = $result->fields['admin_email'];
@@ -282,19 +351,16 @@ class admin extends \core\classes\admin {
 		setcookie('pb_company' , \core\classes\user::get_company(),  $cookie_exp);
 		setcookie('pb_language', \core\classes\user::get_language(), $cookie_exp);
 		// load init functions for each module and execute
-		foreach ($admin->classes as $key => $module_class) {
-			if ($module_class->installed && $module_class->should_update()) $module_class->update();
-		}
-		foreach ($admin->classes as $key => $module_class) {
-			if ($module_class->installed) $module_class->initialize();
+		foreach ($basis->classes as $key => $module_class) {
+			if ($module_class->installed && $module_class->should_update()) $module_class->upgrade();
 		}
 		if (defined('TABLE_CONTACTS')) {
 			$dept = $db->Execute("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result->fields['account_id']);
 			$_SESSION['department'] = $dept->fields['dept_rep_id'];
 		}
-		gen_add_audit_log(TEXT_USER_LOGIN .' -->' . $basis->admin_name);
+		gen_add_audit_log(TEXT_USER_LOGIN .' -->' . $basis->cInfo->admin_name);
 		// check for session timeout to reload to requested page
-		$get_params = '';
+		/*$get_params = '';
 		if (isset($_SESSION['pb_module']) && $_SESSION['pb_module']) {
 			$get_params  = 'module='    . $_SESSION['pb_module'];
 			if (isset($_SESSION['pb_page']) && $_SESSION['pb_page']) $get_params .= '&amp;page=' . $_SESSION['pb_page'];
@@ -307,10 +373,10 @@ class admin extends \core\classes\admin {
 			unset($_SESSION['pb_type']);
 			unset($_SESSION['pb_list']);
 			gen_redirect(html_href_link(FILENAME_DEFAULT, $get_params, 'SSL'));
-		}
+		}*/
 		// check safe mode is allowed to log in.
-		if (get_cfg_var('safe_mode')) throw new \core\classes\userException(SAFE_MODE_ERROR); //@todo is this removed asof php 5.3??
-		$basis->fireEvent("LoadMainPage");
+		if (get_cfg_var('safe_mode')) throw new \core\classes\userException(SAFE_MODE_ERROR); //@todo is this removed as of php 5.3??
+		$basis->addEventToStack("LoadMainPage");
 	}
 
 	/**
@@ -320,14 +386,12 @@ class admin extends \core\classes\admin {
 	 */
 	function LoadMainPage (\core\classes\basis &$basis){
 		global $db;
-		$menu_id      = isset($basis->mID) ? $basis->mID : 'index'; // default to index unless heading is passed
-		if (!class_exists('queryFactory')) { // Errors will happen here if there was a problem logging in, logout and restart
-			session_destroy();
-			throw new \core\classes\userException("class queryFactory doesn't exist");
-		}
-		$basis->cp_boxes 	= $db->Execute("select * from ".TABLE_USERS_PROFILES." where user_id = '{$_SESSION['admin_id']}' and menu_id = '$menu_id' order by column_id, row_id");
-		$basis->template 	= 'template_main';
+		$menu_id      		= isset($basis->cInfo->mID) ? $basis->cInfo->mID : 'index'; // default to index unless heading is passed
+		$basis->cInfo->cp_boxes 	= $db->Execute("select * from ".TABLE_USERS_PROFILES." where user_id = '{$_SESSION['admin_id']}' and menu_id = '$menu_id' order by column_id, row_id");
 		$basis->page_title 	= COMPANY_NAME.' - '.TEXT_PHREEBOOKS_ERP;
+		$basis->module		= 'phreedom';
+		$basis->page		= 'main';
+		$basis->template 	= 'template_main';
 	}
 
 	/**
@@ -347,17 +411,12 @@ class admin extends \core\classes\admin {
 	 * @param \core\classes\basis $basis
 	 */
 	function LoadLogIn (\core\classes\basis &$basis){
-//		$basis->companies       = load_company_dropdown();
-//		$basis->single_company  = sizeof($companies) == 1 ? true : false;
-//		$basis->languages       = load_language_dropdown();
-//		$basis->single_language = sizeof($languages) == 1 ? true : false;
 		$basis->include_header  = false;
 		$basis->include_footer  = false;
 		$basis->page_title		= TEXT_PHREEBOOKS_ERP;
 		$basis->module			= 'phreedom';
 		$basis->page			= 'main';
 		$basis->template 		= 'template_login';
-		$basis->notify();//final line
 	}
 
 	function LoadLostPassword (\core\classes\basis $basis){
@@ -371,7 +430,6 @@ class admin extends \core\classes\admin {
 		$basis->module			= 'phreedom';
 		$basis->page			= 'main';
 		$basis->template 		= 'template_pw_lost';
-		$basis->notify();//final line
 	}
 
 	function LoadCrash (\core\classes\basis $basis){
@@ -379,7 +437,6 @@ class admin extends \core\classes\admin {
 		$basis->page			= 'main';
 		$basis->template 		= 'template_crash.php';
 		$basis->page_title		=  TEXT_PHREEBOOKS_ERP;
-		$basis->notify();//final line
 	}
 
 	function SendLostPassWord (\core\classes\basis $basis){

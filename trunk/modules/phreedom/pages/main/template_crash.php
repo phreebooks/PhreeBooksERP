@@ -18,6 +18,7 @@
 //  Path: /modules/phreedom/pages/crash/template_main.php
 //
 echo html_form('crash', FILENAME_DEFAULT, gen_get_all_get_params(array('action'))) . chr(10);
+if(is_object($messageStack)) echo $messageStack->output();
 // include hidden fields
 echo html_hidden_field('action', '') . chr(10);
 // customize the toolbar actions

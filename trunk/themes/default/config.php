@@ -21,7 +21,7 @@ $theme_menu_options = array( // available menu location options
   'top' => TEXT_TOP,
   'left'=> TEXT_LEFT,
 );
-if ($include_header) { ?>
+if ($basis->include_header) { ?>
   <link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/ddsmoothmenu.css'; ?>" />
   <script type="text/javascript" src="themes/default/ddsmoothmenu.js">
   /***********************************************
@@ -59,4 +59,3 @@ if (!function_exists('html_calendar_field')) {
 }
 ?>
 <script type="text/javascript">var js_cal_date_format = '<?php echo DATE_FORMAT_CALENDAR; ?>';</script>
-  

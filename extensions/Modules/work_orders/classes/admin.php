@@ -17,6 +17,7 @@
 //  Path: /modules/work_orders/classes/admin.php
 //
 namespace work_orders\classes;
+require_once ('/config.php');
 class admin extends \core\classes\admin {
 	public $id 			= 'work_orders';
 	public $description = MODULE_WORK_ORDERS_DESCRIPTION;

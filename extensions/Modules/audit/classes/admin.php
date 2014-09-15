@@ -21,6 +21,7 @@
 //  Path: /modules/import_bank/classes/admin.php
 //
 namespace audit\classes;
+require_once ('/config.php');
 class admin extends \core\classes\admin {
 	public $id 			= 'audit';
 	public $text		= TEXT_AUDIT;

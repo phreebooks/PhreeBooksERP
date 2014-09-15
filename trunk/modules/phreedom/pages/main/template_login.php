@@ -31,7 +31,7 @@ echo html_form('login', FILENAME_DEFAULT, 'action=ValidateUser', 'post', 'onsubm
           <td>
 		    <table>
 			  <tr>
-			    <td colspan="2"><?php echo $messageStack->output(); ?></td>
+			    <td colspan="2"><?php if(is_object($messageStack)) echo $messageStack->output(); ?></td>
 			  </tr>
               <tr>
                 <td width="35%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_USERNAME; ?>:</td>

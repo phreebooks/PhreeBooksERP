@@ -17,6 +17,7 @@
 //  Path: /modules/translator/classes/admin.php
 //
 namespace translator\classes;
+require_once ('/config.php');
 class admin extends \core\classes\admin {
 	public $id 			= 'translator';
 	public $description = MODULE_TRANSLATOR_DESCRIPTION;

@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /themes/default/menu.php
 //
-usort($mainmenu, 'sortByOrder');
+usort($basis->mainmenu, 'sortByOrder');
 echo '<!-- Pull Down Menu -->' . chr(10);
 switch (MY_MENU) {
    case 'left': echo '<div id="smoothmenu" class="ddsmoothmenu-v" style="float:left">'.chr(10); break;
@@ -24,7 +24,7 @@ switch (MY_MENU) {
    default:     echo '<div id="smoothmenu" class="ddsmoothmenu">'.chr(10); break;
 }
 echo '  <ul>' . chr(10);
-foreach($mainmenu as $menu_item) create_menu($menu_item);
+foreach((array)$basis->mainmenu as $menu_item) create_menu($menu_item);
 echo '  </ul>' . chr(10);
 echo '<br style="clear:left" />'.chr(10);
 echo '</div>'.chr(10);
@@ -55,7 +55,7 @@ function create_menu(array $array){
 			echo '  </li>'.chr(10);
 		}
 	}else{
-		echo '  <li><a href="'.$array['link'].'" '.$array['params'].'>'.chr(10);
+		echo '  <li><a href="'.$array['link'].'" '.$array['params'].'>';
 		if ($array['text'] == TEXT_HOME && ENABLE_ENCRYPTION && strlen($_SESSION['admin_encrypt']) > 0) echo html_icon('emblems/emblem-readonly.png', TEXT_ENCRYPTION_KEY_IS_SET, 'small');
   		echo (isset($array['icon']) ? $array['icon'].' '.$array['text'] : $array['text']).'</a>  </li>'.chr(10);
 	}

@@ -17,6 +17,7 @@
 //  Path: /modules/payment/classes/admin.php
 //
 namespace payment\classes;
+require_once ('/config.php');
 class admin extends \core\classes\admin {
 	public $id 			= 'payment';
 	public $text		= TEXT_PAYMENT_MODULE;

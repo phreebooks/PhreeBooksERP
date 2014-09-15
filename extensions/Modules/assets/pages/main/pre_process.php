@@ -41,7 +41,7 @@ switch ($_REQUEST['action']) {
   	\core\classes\user::validate_security($security_level, 2); // security check
 	$asset_id   = db_prepare_input($_POST['asset_id']);
 	$asset_type = db_prepare_input($_POST['asset_type']);
-	$admin->classes['assets']->validate_name($asset_id);
+	$basis->classes['assets']->validate_name($asset_id);
 	$sql_data_array = array(
 		'asset_id'         => $asset_id,
 		'asset_type'       => $asset_type,
@@ -163,7 +163,7 @@ switch ($_REQUEST['action']) {
 	$id 		  = db_prepare_input($_GET['cID']);
 	$new_asset_id = db_prepare_input($_GET['asset_id']);
 	// check for duplicate skus
-	$admin->classes['assets']->validate_name($new_asset_id);
+	$basis->classes['assets']->validate_name($new_asset_id);
 	$result = $db->Execute("select * from " . TABLE_ASSETS . " where id = " . $id);
 	$old_asset_key = $result->fields['asset_id'];
 	// clean up the fields (especially the system fields, retain the custom fields)
@@ -205,7 +205,7 @@ switch ($_REQUEST['action']) {
 	$id = db_prepare_input($_GET['cID']);
 	$asset_id = db_prepare_input($_GET['asset_id']);
 	// check for duplicate skus
-	$admin->classes['assets']->validate_name($asset_id);
+	$basis->classes['assets']->validate_name($asset_id);
 	$result = $db->Execute("select asset_id, asset_type from " . TABLE_ASSETS . " where id = " . $id);
 	$orig_sku = $result->fields['asset_id'];
 	$asset_type = $result->fields['asset_type'];

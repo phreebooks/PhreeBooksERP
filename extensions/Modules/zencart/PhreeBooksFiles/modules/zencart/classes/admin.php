@@ -17,7 +17,7 @@
 //  Path: /modules/zencart/classes/admin.php
 //
 namespace zencart\classes;
-require_once(DIR_FS_MODULES . 'zencart/config.php');
+require_once ('/config.php');
 require_once(DIR_FS_MODULES . 'inventory/config.php');
 class admin extends \core\classes\admin {
 	public $id 			= 'zencart';
@@ -132,7 +132,7 @@ class admin extends \core\classes\admin {
 		}
 	}
 
-	function initialize() {
+	function after_ValidateUser(\core\classes\basis &$basis) {
 	  	global $db, $messageStack;
 	  	gen_pull_language('inventory');
 		require_once(DIR_FS_MODULES . 'zencart/functions/zencart.php');
@@ -152,7 +152,7 @@ class admin extends \core\classes\admin {
 		$messageStack->add(sprintf(ZENCART_BULK_UPLOAD_SUCCESS, $cnt), 'success');
 		gen_add_audit_log(TEXT_BULK_UPLOAD);
 		write_configure('MODULE_ZENCART_LAST_UPDATE', date('Y-m-d H:i:s'));
-		parent::initialize();
+		parent::after_ValidateUser($basis);
 	}
 
 	function upgrade() {

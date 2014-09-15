@@ -17,6 +17,7 @@
 //  Path: /modules/phreemail/classes/install.php
 //
 namespace phreemail\classes;
+require_once ('/config.php');
 class admin extends \core\classes\admin {
 	public $id 			= 'phreemail';
 	public $text		= MODULE_PHREEMAIL_TITLE;
@@ -120,7 +121,7 @@ class admin extends \core\classes\admin {
 		parent::install();
 	}
 
-  function Iinitialize() {
+  function Aafter_ValidateUser(\core\classes\basis &$basis) {//@todo
   		global $db, $messageStack;
   		$messageStack->debug("\n\n*************** Retrieving Mail from ".EMAIL_SMTPAUTH_MAILBOX." *******************");
 		try{
@@ -166,7 +167,7 @@ class admin extends \core\classes\admin {
 			$messageStack->add($exception->getMessage(), 'error');
 		}
 		if ( DEBUG )   $messageStack->write_debug();
-		parent::initialize();
+		parent::after_ValidateUser($basis);
   }
 
 }

@@ -29,6 +29,7 @@ class admin {
 	public $tables			= array();// Load tables
 	public $dashboards		= array();// holds all classes in a array
 	public $methods			= array();// holds all classes in a array
+	public $mainmenu		= array();// holds all menu elements
 	public $status			= 1.0; // stores the moduel status
 	public $version			= 1.0; // stores availible version of the module
 	public $installed		= false;
@@ -78,7 +79,7 @@ class admin {
 	 * this function will be called after you log in.
 	 */
 
-  	function initialize() {
+  	function after_ValidateUser(\core\classes\basis &$basis) {
   	}
 
   	/**

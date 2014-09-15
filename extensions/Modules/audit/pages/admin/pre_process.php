@@ -33,7 +33,7 @@ switch ($_REQUEST['action']) {
   	try{
 		\core\classes\user::validate_security($security_level, 3);
 		// save general tab
-		foreach ($admin->classes['audit']->keys as $key => $default) {
+		foreach ($basis->classes['audit']->keys as $key => $default) {
 		  $field = strtolower($key);
 	      if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
 	    }

@@ -21,6 +21,7 @@ class messageStack {
     public $debug_info 	= NULL;
 
     function __construct(){
+    	error_log("/***** restarting messageStack *****/". PHP_EOL, 3, DIR_FS_MY_FILES."/development.log");
     }
 
     function add($message, $type = 'error') {
@@ -82,14 +83,20 @@ class messageStack {
       	return $xml;
     }
 
+    Static function debug_log ($txt){
+    	error_log("date: " . date('Y-m-d H:i:s') . " company:" .\core\classes\user::get_company(). " user: ".\core\classes\user::__get('display_name'). ' ' . $txt . PHP_EOL, 3, DIR_FS_MY_FILES."/development.log");
+    }
+
 	function debug($txt) {
 	  	global $db;
+	  	error_log("date: " . date('Y-m-d H:i:s') . " company:" .\core\classes\user::get_company(). " user: ".\core\classes\user::__get('display_name'). ' ' . substr($txt, 1) . PHP_EOL, 3, DIR_FS_MY_FILES."/development.log");
 	  	if (substr($txt, 0, 1) == "\n") {
 //echo "\nTime: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, " . $db->count_queries . " SQLs " . (int)($db->total_query_time * 1000)." ms => " . substr($txt, 1) . '<br>';
 	    	$this->debug_info .= "\nTime: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, " . $db->count_queries . " SQLs " . (int)($db->total_query_time * 1000)." ms => ";
 	    	$this->debug_info .= substr($txt, 1);
 	  	} else {
 	    	$this->debug_info .= $txt;
+
 	  	}
 	}
 
@@ -109,5 +116,9 @@ class messageStack {
       	if (!@fclose($handle)) 								throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 	  	$this->debug_info = NULL;
 	  	$this->add("Successfully created trace.txt file.","success");
+	}
+
+	function __destruct(){
+
 	}
 }
