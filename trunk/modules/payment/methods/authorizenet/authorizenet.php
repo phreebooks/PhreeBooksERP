@@ -372,7 +372,7 @@ class authorizenet extends \payment\classes\payment {
 
 /*
   	function _doRefund($oID, $amount = 0) {
-   		global $db, $messageStack;
+   		global $admin, $messageStack;
     	$new_order_status = (int)MODULE_PAYMENT_AUTHORIZENET_REFUNDED_ORDER_STATUS_ID;
     	if ($new_order_status == 0) $new_order_status = 1;
     	$proceedToRefund = true;
@@ -415,7 +415,7 @@ class authorizenet extends \payment\classes\payment {
   	}
 
   	function _doVoid($oID, $note = '') {
-    	global $db, $messageStack;
+    	global $admin, $messageStack;
 
     	$new_order_status = (int)MODULE_PAYMENT_AUTHORIZENET_REFUNDED_ORDER_STATUS_ID;
     	if ($new_order_status == 0) $new_order_status = 1;

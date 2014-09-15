@@ -28,7 +28,7 @@ class my_notes extends \core\classes\ctl_panel {
 	public $module_id 			= 'phreedom';
 
 	function output($params) {
-		global $db;
+		global $admin;
 		$contents = '';
 		$control  = '';
 		// Build control box form data
@@ -60,7 +60,7 @@ class my_notes extends \core\classes\ctl_panel {
 	}
 
 	function update() {
-		global $db;
+		global $admin;
 		$my_note   = db_prepare_input($_POST['my_notes_field_0']);
 		$remove_id = db_prepare_input($_POST['my_notes_rId']);
 		// do nothing if no title or url entered

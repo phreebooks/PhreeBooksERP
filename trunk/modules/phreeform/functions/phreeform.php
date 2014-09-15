@@ -59,7 +59,7 @@ function convertPfColor($color = '0:0:0') {
 }
 
 function buildToggleList($id, $toggle_list = '') {
-  global $db;
+  global $admin;
   $result = $db->Execute("select parent_id from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
   if ($result->fields['parent_id'] <> '0') $toggle_list = buildToggleList($result->fields['parent_id'], $toggle_list);
   $toggle_list .= "  Toggle('dc_" . $result->fields['parent_id'] . "_" . $id . "');" . chr(10);
@@ -99,7 +99,7 @@ function pf_validate_security($security = 'u:-1;g:-1', $include_all = true) {
 }
 
 function build_groups() { // dynamically build report and form groups
-  global $db;
+  global $admin;
   $output = array();
   $result = $db->Execute("select doc_ext, doc_group, doc_title from " . TABLE_PHREEFORM . " where doc_ext in ('ff','0')");
   while (!$result->EOF) {
@@ -113,7 +113,7 @@ function build_groups() { // dynamically build report and form groups
 }
 
 function load_recently_added() {
-	global $db;
+	global $admin;
 	$contents = NULL;
 	$sql = "select id, security, doc_title from " . TABLE_PHREEFORM . " where doc_type <> '0' order by create_date desc, id desc limit 20";
 	$result = $db->Execute($sql);
@@ -135,7 +135,7 @@ function load_recently_added() {
 }
 
 function load_my_reports() {
-	global $db;
+	global $admin;
 	$contents = NULL;
 	$sql = "select id, doc_title, security from " . TABLE_PHREEFORM . "
 	  where doc_type <> '0' order by doc_title";
@@ -258,7 +258,7 @@ function get_report_details($id) {
 }
 
 function ImportReport($RptName = '', $RptFileName = '', $import_path = PF_DIR_DEF_REPORTS, $save_path = PF_DIR_MY_REPORTS) {
-	global $db;
+	global $admin;
 	$rID = '';
 	if ($RptFileName <> '') { // then a locally stored report was chosen
 	  	$path = $import_path . $RptFileName;
@@ -290,7 +290,7 @@ function ImportReport($RptName = '', $RptFileName = '', $import_path = PF_DIR_DE
 }
 
 function save_report($report, $rID = '', $save_path = PF_DIR_MY_REPORTS) {
-	global $db;
+	global $admin;
 	$output  = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . chr(10);
 	$output .= '<PhreeformReport>' . chr(10);
 	$output .= object_to_xml($report);
@@ -342,7 +342,7 @@ function truncate_string($str, $len = 32) {
 }
 
 function build_dir_path($id) {
-	global $db;
+	global $admin;
 	$result = $db->Execute("select parent_id, doc_title from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
 	$title  = ($id) ? $result->fields['doc_title'] : '';
 	if ($result->fields['parent_id']) $title = build_dir_path($result->fields['parent_id']) . '/' . $title;
@@ -356,7 +356,7 @@ function validate_dir_move($dir_tree, $id, $new_parent) {
 }
 
 function BuildForm($report, $delivery_method = 'D') { // for forms only
-	global $db, $messageStack, $FieldValues;
+	global $admin, $messageStack, $FieldValues;
 	$output = array();
 
 	// check for at least one field selected to show
@@ -452,7 +452,7 @@ function BuildForm($report, $delivery_method = 'D') { // for forms only
 }
 
 function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF style
-	global $db, $messageStack, $FieldValues, $posted_currencies;
+	global $admin, $messageStack, $FieldValues, $posted_currencies;
 	// Generate a form for each group element
 	$output = array();
 	$pdf    = new \phreeform\classes\form_generator();
@@ -606,7 +606,7 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 }
 
 function BuildSeq($report, $delivery_method = 'D') { // for forms only - Sequential mode
-  global $db, $messageStack, $FieldValues, $posted_currencies;
+  global $admin, $messageStack, $FieldValues, $posted_currencies;
   // Generate a form for each group element
   $output = NULL;
   foreach ($report->recordID as $formNum => $Fvalue) {
@@ -938,7 +938,7 @@ function BuildSQL($report) { // for reports only
 }
 
 function BuildDataArray($sql, $report) { // for reports only
-	global $db, $Heading, $Seq, $posted_currencies, $messageStack, $currencies;
+	global $admin, $Heading, $Seq, $posted_currencies, $messageStack, $currencies;
 	$posted_currencies = array('currencies_code' => DEFAULT_CURRENCY, 'currencies_value' => 1); // use default currency
 	// See if we need to group, fetch the group fieldname
 	$GrpFieldName = '';
@@ -1145,7 +1145,7 @@ function GenerateXMLFile($Data, $report, $delivery_method = 'D') { // for csv re
 }
 
 function CreateFieldArray($report) {
-  global $db;
+  global $admin;
   $output = array(array('id' => '', 'text' => TEXT_SELECT));
   if (is_array($report->tables)) foreach ($report->tables as $tObj) {
     if ($tObj->tablename) {
@@ -1169,7 +1169,7 @@ function strip_tablename($value) {
 }
 
 function CreateTableList($report) {
-  global $db;
+  global $admin;
   $output = array(array('id' => '', 'text' => TEXT_SELECT));
   $result = $db->Execute("show tables");
   while (!$result->EOF) {

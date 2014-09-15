@@ -96,7 +96,7 @@ if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/extra_product_reads.php')) in
 // The remaining functions are specific to ZenCart. they need to be modified for the specific application.
 // It also needs to check for errors, i.e. missing information, bad data, etc.
   function updateDatabase($product) {
-	global $db;
+	global $admin;
 	// error check input
 	if (!$product['sku']) throw new Exception(SOAP_NO_SKU, 10);
 	if ($product['action'] <> 'InsertUpdate') throw new Exception(SOAP_BAD_ACTION, 16);

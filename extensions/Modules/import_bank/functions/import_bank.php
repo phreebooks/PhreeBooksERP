@@ -17,7 +17,7 @@
 //  Path: /modules/import_bank/functions/import_bank.php
 //
 function bank_import_csv($structure, $filename, $bank_gl_acct) {
-  	global $db, $messageStack;
+  	global $admin, $messageStack;
 	$bankimport = new \import_bank\classes\import_banking();
   	$data = file($_FILES[$filename]['tmp_name']);
   	// read the header and build array

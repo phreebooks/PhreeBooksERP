@@ -41,7 +41,7 @@ class mi extends \inventory\classes\inventory { //Master Stock Sub Item. child o
 	}
 
 	function get_ms_list(){
-		global $db;
+		global $admin;
 		$master = explode('-',$this->sku);
 		$this->master = $master[0];
 		$result = $db->Execute("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->master . "'");

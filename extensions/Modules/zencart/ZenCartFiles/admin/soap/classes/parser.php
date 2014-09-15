@@ -111,7 +111,7 @@ class parser {
   }
 
   function validateUser($objXML) {
-	global $db;
+	global $admin;
 	$this->username = $objXML->Request->UserName;
 	$this->password = $objXML->Request->UserPassword;
 	if (!$this->username || !$this->password) throw new Exception(SOAP_NO_USER_PW, 10);

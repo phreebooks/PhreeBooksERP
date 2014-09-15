@@ -30,7 +30,7 @@ class departments {
     }
 
   function btn_save($id = '') {
-  	global $db;
+  	global $admin;
 	\core\classes\user::validate_security($this->security_id, 2); // security check
     if ( $_POST['subdepartment'] && !$_POST['primary_dept_id']) $_POST['subdepartment'] = '0';
     if (!$_POST['subdepartment']) $_POST['primary_dept_id'] = '';
@@ -55,7 +55,7 @@ class departments {
   }
 
   function btn_delete($id = 0) {
-  	global $db;
+  	global $admin;
 	\core\classes\user::validate_security($this->security_id, 4); // security check
 	// error check
 	// Departments have no pre-requisites to check prior to delete
@@ -67,7 +67,7 @@ class departments {
   }
 
   function build_main_html() {
-  	global $db;
+  	global $admin;
     $content = array();
 	$content['thead'] = array(
 	  'value' => array(TEXT_DEPARTMENT_ID, TEXT_DESCRIPTION, TEXT_SUB_DEPARTMENT, TEXT_INACTIVE, TEXT_ACTION),
@@ -98,7 +98,7 @@ class departments {
   }
 
   function build_form_html($action, $id = '') {
-    global $db;
+    global $admin;
     if ($action <> 'new') {
         $sql = "select * from " . $this->db_table . " where id = '" . $this->id . "'";
         $result = $db->Execute($sql);

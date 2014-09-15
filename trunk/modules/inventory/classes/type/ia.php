@@ -41,7 +41,7 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 	}
 
 	function get_bom_list(){
-		global $db;
+		global $admin;
 		$this->assy_cost = 0;
 		$result = $db->Execute("select i.id as inventory_id, l.id, l.sku, l.description, l.qty as qty from " . TABLE_INVENTORY_ASSY_LIST . " l join " . TABLE_INVENTORY . " i on l.sku = i.sku where l.ref_id = " . $this->id . " order by l.id");
 		$x =0;
@@ -66,7 +66,7 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 	}
 
 	function get_ms_list(){
-		global $db;
+		global $admin;
 		$master = explode('-',$this->sku);
 		$this->master = $master[0];
 		$result = $db->Execute("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->master . "'");
@@ -119,7 +119,7 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 	}
 
 	function save(){
-		global $db, $currencies;
+		global $admin, $currencies;
 		$bom_list = array();
 		for($x=0; $x < count($_POST['assy_sku']); $x++) {
 			$bom_list[$x] = array(

@@ -92,7 +92,7 @@ class phreewiki_admin {
   }
 
   function install($module) {
-    global $db, $messageStack;
+    global $admin, $messageStack;
 		$error = false;
 		require_once(DIR_FS_MODULES . 'phreewiki/functions/phreewiki.php');
 		foreach ($this->pluginArray as $key => $value){
@@ -105,7 +105,7 @@ class phreewiki_admin {
   }
 
   function update($module) {
-  	global $db;
+  	global $admin;
   	write_configure('MODULE_' . strtoupper($module) . '_STATUS', constant('MODULE_' . strtoupper($module) . '_VERSION'));
   }
 

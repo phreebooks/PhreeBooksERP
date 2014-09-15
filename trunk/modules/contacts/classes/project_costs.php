@@ -32,7 +32,7 @@ class project_costs {
     }
 
   	function btn_save($id = '') {
-  		global $db;
+  		global $admin;
 		\core\classes\user::validate_security($this->security_id, 2); // security check
    		$description_short = db_prepare_input($_POST['description_short']);
 		$sql_data_array = array(
@@ -52,7 +52,7 @@ class project_costs {
   	}
 
   	function btn_delete($id = 0) {
-  		global $db;
+  		global $admin;
 		\core\classes\user::validate_security($this->security_id, 4); // security check
 /*
 	// TBD - Check for this project phase being used in a journal entry, if so do not allow deletion
@@ -76,7 +76,7 @@ class project_costs {
   	}
 
   	function build_main_html() {
-  		global $db, $project_cost_types;
+  		global $admin, $project_cost_types;
     	$content = array();
 		$content['thead'] = array(
 	  	  'value' => array(TEXT_SHORT_NAME, TEXT_COST_TYPE, TEXT_INACTIVE, TEXT_ACTION),
@@ -106,7 +106,7 @@ class project_costs {
   	}
 
   function build_form_html($action, $id = '') {
-    global $db, $project_cost_types;
+    global $admin, $project_cost_types;
     if ($action <> 'new') {
         $sql = "select description_short, description_long, cost_type, inactive
 	       from " . $this->db_table . " where cost_id = '" . $this->id . "'";

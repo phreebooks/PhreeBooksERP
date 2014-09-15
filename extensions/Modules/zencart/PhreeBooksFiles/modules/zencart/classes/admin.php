@@ -50,7 +50,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function install($path_my_files, $demo = false) {
-		global $db;
+		global $admin;
 		parent::install($path_my_files, $demo);
 		if (!db_field_exists(TABLE_INVENTORY, 'catalog')) { // setup new tab in table inventory
 		  $result = $db->Execute("select id FROM ".TABLE_EXTRA_TABS." WHERE tab_name='ZenCart'");
@@ -133,7 +133,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function after_ValidateUser(\core\classes\basis &$basis) {
-	  	global $db, $messageStack;
+	  	global $admin, $messageStack;
 	  	gen_pull_language('inventory');
 		require_once(DIR_FS_MODULES . 'zencart/functions/zencart.php');
 		require_once(DIR_FS_MODULES . 'zencart/language/'.$_SESSION['language'].'/language.php');
@@ -156,7 +156,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function upgrade() {
-	    global $db;
+	    global $admin;
 		parent::upgrade();
 		if (version_compare($this->status, '3.4', '<') ) {
 			write_configure('MODULE_ZENCART_LAST_UPDATE', date('0000-00-00 00:00:00'));

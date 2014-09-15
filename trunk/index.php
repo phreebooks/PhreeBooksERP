@@ -46,5 +46,5 @@ try{
 	$admin->fireEvent($e->action);
 	$admin->startProcessingEvents();
 }
-$admin->dataBaseConnection = null;
+$admin->DataBase = null;
 ?>

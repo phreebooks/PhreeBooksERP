@@ -30,7 +30,7 @@ class dept_types {
     }
 
   function btn_save($id = '') {
-  	global $db;
+  	global $admin;
 	\core\classes\user::validate_security($this->security_id, 2); // security check
     $description = db_prepare_input($_POST['description']);
 	$sql_data_array = array('description' => $description);
@@ -45,7 +45,7 @@ class dept_types {
   }
 
   function btn_delete($id = 0) {
-  	global $db;
+  	global $admin;
 	\core\classes\user::validate_security($this->security_id, 4); // security check
 	// Check for this department type being used in a department, if so do not delete
 	$result = $db->Execute("select department_type from " . TABLE_DEPARTMENTS);
@@ -61,7 +61,7 @@ class dept_types {
   }
 
   function build_main_html() {
-  	global $db;
+  	global $admin;
     $content = array();
 	$content['thead'] = array(
 	  'value' => array(TEXT_DESCRIPTION, TEXT_ACTION),
@@ -86,7 +86,7 @@ class dept_types {
   }
 
   function build_form_html($action, $id = '') {
-    global $db;
+    global $admin;
     if ($action <> 'new') {
         $sql = "select description from " . $this->db_table . " where id = '" . $this->id . "'";
         $result = $db->Execute($sql);

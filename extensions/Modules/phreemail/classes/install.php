@@ -107,7 +107,7 @@ class phreemail_admin {
   }
 
   function install() {
-    global $db, $messageStack;
+    global $admin, $messageStack;
 	$error = false;
   	$db->Execute("INSERT INTO " . TABLE_PHREEMAIL_WORDS . " VALUES(1, 'viagvra');");
   	$db->Execute("INSERT INTO " . TABLE_PHREEMAIL_WORDS . " VALUES(2, 'rjolex');");
@@ -122,7 +122,7 @@ class phreemail_admin {
   }
 
   function Iinitialize() {
-  		global $db, $messageStack;
+  		global $admin, $messageStack;
   		$messageStack->debug("\n\n*************** Retrieving Mail from ".EMAIL_SMTPAUTH_MAILBOX." *******************");
 		try{
 			include_once (DIR_FS_MODULES . 'phreemail/classes/phreemail.php');
@@ -171,7 +171,7 @@ class phreemail_admin {
   }
 
   function update() {
-    global $db, $messageStack;
+    global $admin, $messageStack;
     $error = false;
 	if (!$error) {
 	  write_configure('MODULE_' . strtoupper($module) . '_STATUS', constant('MODULE_' . strtoupper($module) . '_VERSION'));
@@ -181,7 +181,7 @@ class phreemail_admin {
   }
 
   function remove() {
-    global $db;
+    global $admin;
 	$error = false;
     return $error;
   }

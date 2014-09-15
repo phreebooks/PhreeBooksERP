@@ -59,7 +59,7 @@ class journal_21 extends \core\classes\journal {
 	public $so_po_ref_id		= '';
 
     public function __construct($id = '') {
-    	global $db;
+    	global $admin;
         $result = $db->Execute("select next_check_num from " . TABLE_CURRENT_STATUS);
         $this->purchase_invoice_id = $result->fields['next_check_num'];
         $this->gl_acct_id          = $_SESSION['admin_prefs']['def_cash_acct'] ? $_SESSION['admin_prefs']['def_cash_acct'] : AP_PURCHASE_INVOICE_ACCOUNT;
@@ -67,7 +67,7 @@ class journal_21 extends \core\classes\journal {
 	}
 
 	function post_ordr($action) {
-		global $db, $messageStack;
+		global $admin, $messageStack;
 		$debit_total  = 0;
 		$credit_total = 0;
 	    $debit_total  += $this->add_item_journal_rows(); // read in line items and add to journal row array
@@ -100,7 +100,7 @@ class journal_21 extends \core\classes\journal {
 	}
 
   	function refund_ordr() {
-    	global $db, $messageStack;
+    	global $admin, $messageStack;
     	// *************** START TRANSACTION *************************
     	$db->transStart();
     	$this->unPost('delete');

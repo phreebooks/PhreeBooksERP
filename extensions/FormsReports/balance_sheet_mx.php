@@ -87,7 +87,7 @@ class balance_sheet_mx {
 	}
 
 	function add_bal_sheet_data($the_list, $negate_array, $period) {
-		global $db, $Seq;
+		global $admin, $Seq;
 		foreach($the_list as $key => $account_type) {
 			$sql = "select h.beginning_balance + h.debit_amount - h.credit_amount as balance, c.description, c.account_inactive
 				from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id

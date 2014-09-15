@@ -28,7 +28,7 @@ class to_do extends \core\classes\ctl_panel {
 	public $module_id 			= 'phreedom';
 
 	function output($params) {
-		global $db;
+		global $admin;
 		$contents = '';
 		$control  = '';
 		// Build control box form data
@@ -60,7 +60,7 @@ class to_do extends \core\classes\ctl_panel {
 	}
 
 	function update() {
-		global $db;
+		global $admin;
 		$add_to_do = db_prepare_input($_POST['to_do_field_0']);
 		$remove_id = db_prepare_input($_POST['to_do_rId']);
 		// do nothing if no title or url entered

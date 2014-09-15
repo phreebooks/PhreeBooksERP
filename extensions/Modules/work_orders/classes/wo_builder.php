@@ -22,7 +22,7 @@ class wo_builder {
   }
 
   function load_query_results($tableKey = 'id', $tableValue = 0) {
-	global $db, $report;
+	global $admin, $report;
 	if (!$tableValue) throw new \core\classes\userException("tableValue is empty");
 	$sql = "select * from " . TABLE_WO_JOURNAL_MAIN . " where id = " . $tableValue;
 	$result = $db->Execute($sql);
@@ -45,7 +45,7 @@ class wo_builder {
 		  case 'bar_code':  $output[] = $this->bar_code; break;
 		  case 'sku_image': $output[] = $this->image_with_path; break;
 		  default:
-			$output[] = $this->$field; 
+			$output[] = $this->$field;
 			break;
 		}
 	  }
@@ -70,7 +70,7 @@ class wo_builder {
   }
 
   function load_total_results($Params) {
-	
+
   }
 
   function load_text_block_data($Params) {
@@ -84,11 +84,11 @@ class wo_builder {
   }
 
   function load_item_details($id) {
-	global $db;
+	global $admin;
 	// fetch the sales order and build the item list
 	$this->invoice_subtotal = 0;
 	$sql = "select i.id, i.step, i.task_name, t.description, i.mfg, i.qa, i.complete, i.data_entry,
-	  t.ref_doc, t.ref_spec 
+	  t.ref_doc, t.ref_spec
 	  from " . TABLE_WO_JOURNAL_ITEM . " i inner join " . TABLE_WO_TASK . " t on i.task_id = t.id
 	  where i.ref_id = " . $id . " order by i.step";
 	$result = $db->Execute($sql);
@@ -109,9 +109,9 @@ class wo_builder {
   }
 
   function build_bom_list($sku_id) {
-    global $db;
+    global $admin;
 	$this->bom_list = NULL;
-	$result = $db->Execute("select sku, description, qty from " . TABLE_INVENTORY_ASSY_LIST . " 
+	$result = $db->Execute("select sku, description, qty from " . TABLE_INVENTORY_ASSY_LIST . "
 	  where ref_id = '" . $sku_id . "' order by sku");
 	$bom_list = array('Qty - SKU - Description');
 	while (!$result->EOF) {
@@ -122,7 +122,7 @@ class wo_builder {
   }
 
   function build_ref_lists() {
-    global $db;
+    global $admin;
 	$result = $db->Execute("select ref_doc, ref_spec from " . TABLE_WO_MAIN . " where id = " . $this->id);
 	$ref_docs  = ($result->fields['ref_doc']  ) ? explode(',', $result->fields['ref_doc'])   : array();
 	$ref_specs = ($result->fields['ref_specs']) ? explode(',', $result->fields['ref_specs']) : array();
@@ -180,7 +180,7 @@ class wo_builder {
 	$output[] = array('id' => 'complete',    'text' => 'Complete');
 	$output[] = array('id' => 'data_entry',  'text' => 'Data Entry Req');
 	return $output;
-  }  
- 
+  }
+
 }
 ?>

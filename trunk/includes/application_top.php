@@ -85,15 +85,15 @@ if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR
 	require_once(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php');
 	define('DB_SERVER_HOST',DB_SERVER); // for old PhreeBooks installs
 // dit is de nieuwe pdo
-/*	$dsn = DB_TYPE.":dbname={$_SESSION['company']};host=".DB_SERVER_HOST;
+	$dsn = DB_TYPE.":dbname={$_SESSION['company']};host=".DB_SERVER_HOST;
 	try {
-		$admin->dataBaseConnection = new \PDO($dsn, DB_SERVER_USERNAME, DB_SERVER_PASSWORD,array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+		$admin->DataBase = new \PDO($dsn, DB_SERVER_USERNAME, DB_SERVER_PASSWORD,array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
 	} catch (\PDOException $e) {
 		trigger_error('database connection failed: ' . $e->getMessage() , E_USER_ERROR);
 	}
 	if(APC_EXTENSION_LOADED == false || apc_load_constants('configuration') === false) {
 		try{
-		 	$temp = $db->prepare("select configuration_key, configuration_value from " . DB_PREFIX . "configuration");
+		 	$temp = $admin->DataBase->prepare("select configuration_key, configuration_value from " . DB_PREFIX . "configuration");
 		 	$temp->execute();
 		 	$array = array ();
 	    	foreach($temp->fetch(PDO::FETCH_ASSOC) as $row){
@@ -109,7 +109,7 @@ if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR
 	    }
 	}
 
-/*/
+/*
   	// Load queryFactory db classes
   	require_once(DIR_FS_INCLUDES . 'db/' . DB_TYPE . '/query_factory.php');
   	$db = new queryFactory();
@@ -128,7 +128,7 @@ if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR
 			$result->MoveNext();
   		}
   		if (APC_EXTENSION_LOADED) apc_define_constants("configuration", $array, true);
-  	}
+  	}*/
   	// search the list modules and load configuration files and language files
   	gen_pull_language('phreedom', 'menu');
   	gen_pull_language('phreebooks', 'menu');

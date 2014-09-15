@@ -20,7 +20,7 @@
 class parser {
 
   function validateUser($username = '', $password = '') {
-	global $db;
+	global $admin;
 	if (!$username || !$password) {
 	  return $this->responseXML('10', SOAP_NO_USER_PW, 'error');
 	}
@@ -67,14 +67,14 @@ class parser {
   }
 
   function get_account_id($short_name, $type = '') {
-	global $db;
+	global $admin;
 	$result = $db->Execute("select id from " . TABLE_CONTACTS . "
 		where short_name = '" . $short_name . "' and type = '" . $type . "'");
 	return ($result->RecordCount() == 0) ? 0 : $result->fields['id'];
   }
 
   function get_user_id($admin_name) {
-	global $db;
+	global $admin;
 	$result = $db->Execute("select admin_id from " . TABLE_USERS . " where admin_name = '" . $admin_name . "'");
 	return ($result->RecordCount() == 0) ? false : $result->fields['admin_id'];
   }

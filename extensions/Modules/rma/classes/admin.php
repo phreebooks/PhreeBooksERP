@@ -70,7 +70,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function install($path_my_files, $demo = false) {
-	    global $db;
+	    global $admin;
 	    parent::install($path_my_files, $demo);
 	    // add a current status field for the next rma number
 	    if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_rma_num')) {
@@ -79,7 +79,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function upgrade() {
-	    global $db;
+	    global $admin;
 	    parent::upgrade();
 	    if (version_compare($this->status, '3.13', '<') ) {
 		  	if (db_field_exists(TABLE_CURRENT_STATUS, 'next_rma_desc')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_rma_desc");
@@ -112,7 +112,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function delete($path_my_files) {
-	    global $db;
+	    global $admin;
 	    parent::delete($path_my_files);
 	    if (db_field_exists(TABLE_CURRENT_STATUS, 'next_rma_num'))  $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_rma_num");
 	}

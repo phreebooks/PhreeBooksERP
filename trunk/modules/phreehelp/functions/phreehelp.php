@@ -19,7 +19,7 @@
 //
 
 function synchronize() {
-  global $db;
+  global $admin;
   $config = $db->Execute('TRUNCATE ' . TABLE_PHREEHELP);
   // recursively read file and store in db
   $extensions = explode(',', VALID_EXTENSIONS);
@@ -84,7 +84,7 @@ function directory_to_array($directory, $extension = "", $full_path = true) {
 }
 
 function retrieve_toc() {
-  global $db;
+  global $admin;
   $toc = $db->Execute('select id, parent_id, doc_type, doc_url, doc_title from ' . TABLE_PHREEHELP . '
 	order by parent_id, doc_pos');
   $toc_array = array();
@@ -179,7 +179,7 @@ function build_href($array_tree, $ref = '') {
 }
 
 function retrieve_index() {
-  global $db;
+  global $admin;
   $index = $db->Execute('select id, doc_url, doc_index from ' . TABLE_PHREEHELP . ' order by doc_index');
   $index_array = array();
   while (!$index->EOF) {
@@ -201,7 +201,7 @@ function retrieve_index() {
 }
 
 function search_results($search_text) {
-  global $db;
+  global $admin;
   if (!$search_text) return '';
   $sql = "select id, doc_url, doc_title, MATCH (doc_title, doc_text) AGAINST ('" . $search_text . "') as score
     from " . TABLE_PHREEHELP . " where MATCH (doc_title, doc_text) AGAINST ('" . $search_text . "')";

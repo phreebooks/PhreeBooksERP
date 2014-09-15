@@ -81,7 +81,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function install($path_my_files, $demo = false){
-		global $db;
+		global $admin;
 		parent::install($path_my_files, $demo);
 		foreach (gen_get_store_ids() as $store){
 		  	$sql_data_array = array(
@@ -100,7 +100,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function upgrade() {
-	    global $db;
+	    global $admin;
 		parent::upgrade();
 		if (version_compare($this->status, '3.4', '<') ) {
 			  foreach (gen_get_store_ids() as $store){
@@ -125,7 +125,7 @@ class admin extends \core\classes\admin {
   	}
 
 	function delete($path_my_files) {
-	    global $db;
+	    global $admin;
 	    parent::delete($path_my_files);
 	    // Don't allow delete if there is activity
 		$sql = "select id from " . TABLE_JOURNAL_MAIN . " where journal_id = '19'";

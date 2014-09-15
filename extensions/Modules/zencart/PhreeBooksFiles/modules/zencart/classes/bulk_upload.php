@@ -20,7 +20,7 @@ namespace zencart\classes;
 class bulk_upload {
 
   	function __construct($inc_image = false) {
-		global $db, $messageStack;
+		global $admin, $messageStack;
 		$result = $db->Execute("select id from " . TABLE_INVENTORY . " where catalog = '1' ");
 		$cnt    = 0;
 		$prodXML = new \zencart\classes\zencart();

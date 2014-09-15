@@ -178,7 +178,7 @@ function install_build_co_config_file($company, $key, $value) {
 
 /***************************** import/export functions ******************************/
 function load_module_xml($module) {
-	global $db;
+	global $admin;
   	if (($result = @file_get_contents(DIR_FS_MODULES . $module . '/' . $module . '.xml')) === false) throw new \core\classes\userException(sprintf(ERROR_READ_FILE, DIR_FS_MODULES . $module . '/' . $module . '.xml'));
   	if (!$output = xml_to_object($result)) throw new \core\classes\userException("xml file is empty for module");
   	// fix some special cases, multi elements with single entries convert to arrays
@@ -245,7 +245,7 @@ function build_sample_csv($structure, $db_table) {
 
 function table_import_xml($structure, $db_table, $filename) {
 //echo 'structure = '; print_r($structure); echo '<br>';
-  global $db;
+  global $admin;
   if (($data = @file_get_contents($_FILES[$filename]['tmp_name'], "r")) === false) throw new \core\classes\userException(sprintf(ERROR_READ_FILE, $_FILES[$filename]['tmp_name']));
   $temp = $structure->Module->Table;
   foreach ($structure->Module->Table as $table) if ($table->Name == $db_table) {
@@ -287,7 +287,7 @@ function table_import_xml($structure, $db_table, $filename) {
 
 function table_import_csv($structure, $db_table, $filename) {
 //echo 'structure = '; print_r($structure); echo '<br>';
-  global $db;
+  global $admin;
   $data = file($_FILES[$filename]['tmp_name']);
   // read the header and build array
   if (sizeof($data) < 2) throw new \core\classes\userException('The number of lines in the file is to small, a csv file must contain a header line and at least on input line!');
@@ -354,7 +354,7 @@ function table_import_csv($structure, $db_table, $filename) {
 }
 
 function table_export_xml($structure, $db_table) {
-  global $db;
+  global $admin;
   $output = '';
   $temp   = $structure->Module->Table;
   foreach ($structure->Module->Table as $table) if ($table->Name == $db_table) {
@@ -374,7 +374,7 @@ function table_export_xml($structure, $db_table) {
 }
 
 function table_export_csv($structure, $db_table) {
-  global $db;
+  global $admin;
   $output = '';
   $header = false;
   $temp   = $structure->Module->Table;
@@ -409,7 +409,7 @@ function csv_explode($str, $delim = ',', $enclose = '"', $preserve = false){
 // Syncronizes the fields in the module db with the field parameters
 // (usually only needed for first entry to inventory field builder)
   function xtra_field_sync_list($module = '', $db_table = '') {
-	global $db;
+	global $admin;
 	if (!$module || !$db_table) throw new \core\classes\userException('Sync fields called without all necessary parameters!');
 	// First check to see if inventory field table is synced with actual inventory table
 	$temp = $db->Execute("describe " . $db_table);

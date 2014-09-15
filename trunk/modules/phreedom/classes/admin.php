@@ -246,7 +246,7 @@ class admin extends \core\classes\admin {
   }
 
 	function install($path_my_files, $demo = false) {
-	    global $db;
+	    global $admin;
 	    parent::install($path_my_files, $demo);
 		// load some default currency values
 		$db->Execute("TRUNCATE TABLE " . TABLE_CURRENCIES);
@@ -262,7 +262,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function after_ValidateUser(\core\classes\basis &$basis) {
-		global $db, $messageStack, $currencies;
+		global $admin, $messageStack, $currencies;
 	    //load the latest currency exchange rates
 		if ($this->web_connected(false) && AUTO_UPDATE_CURRENCY && ENABLE_MULTI_CURRENCY) {
 				$currencies->btn_update();
@@ -303,7 +303,7 @@ class admin extends \core\classes\admin {
   	}
 
 	function upgrade() {
-	    global $db, $messageStack;
+	    global $admin, $messageStack;
 		parent::upgrade();
 		$db_version = defined('MODULE_PHREEDOM_STATUS') ? MODULE_PHREEDOM_STATUS : 0;
 		if (version_compare($db_version, MODULE_PHREEDOM_STATUS, '<') ) {
@@ -332,7 +332,7 @@ class admin extends \core\classes\admin {
 	 * @throws \core\classes\userException
 	 */
 	function ValidateUser (\core\classes\basis &$basis) {
-		global $db;
+		global $admin;
 		// Errors will happen here if there was a problem logging in, logout and restart
 		if (!is_object($db)) throw new \core\classes\userException("Database isn't created");
 		$sql = "select admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security
@@ -385,7 +385,7 @@ class admin extends \core\classes\admin {
 	 * @throws \core\classes\userException
 	 */
 	function LoadMainPage (\core\classes\basis &$basis){
-		global $db;
+		global $admin;
 		$menu_id      		= isset($basis->cInfo->mID) ? $basis->cInfo->mID : 'index'; // default to index unless heading is passed
 		$basis->cInfo->cp_boxes 	= $db->Execute("select * from ".TABLE_USERS_PROFILES." where user_id = '{$_SESSION['admin_id']}' and menu_id = '$menu_id' order by column_id, row_id");
 		$basis->page_title 	= COMPANY_NAME.' - '.TEXT_PHREEBOOKS_ERP;
@@ -399,7 +399,7 @@ class admin extends \core\classes\admin {
 	 * @param \core\classes\basis $basis
 	 */
 	function logout (\core\classes\basis &$basis){
-		global $db;
+		global $admin;
 		$result = $db->Execute("select admin_name from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
 		gen_add_audit_log(TEXT_USER_LOGOFF . ' -> ' . $result->fields['admin_name']);
 		session_destroy();
@@ -440,7 +440,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function SendLostPassWord (\core\classes\basis $basis){
-		global $db;
+		global $admin;
 		$result = $db->Execute("select admin_id, admin_name, admin_email from " . TABLE_USERS . " where admin_email = '{$basis->admin_email}'");
 		if ($basis->admin_email == '' || $basis->admin_email <> $result->fields['admin_email']) throw new \core\classes\userException(TEXT_YOU_ENTERED_THE_WRONG_EMAIL_ADDRESS);
 		$new_password = \core\classes\encryption::random_password(ENTRY_PASSWORD_MIN_LENGTH);

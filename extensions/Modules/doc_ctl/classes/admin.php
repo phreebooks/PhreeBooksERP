@@ -65,7 +65,7 @@ class admin extends \core\classes\admin {
 	}
 
   	function install($path_my_files, $demo = false) {
-		global $db;
+		global $admin;
 		parent::install($path_my_files, $demo);
 		require_once(DIR_FS_MODULES . 'doc_ctl/defaults.php');
 		$right = (INSTALL_NUMBER_OF_DRIVES+1)*2;

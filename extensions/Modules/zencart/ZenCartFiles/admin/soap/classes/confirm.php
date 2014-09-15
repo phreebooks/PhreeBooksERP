@@ -65,7 +65,7 @@ class xml_confirm extends parser {
 // The remaining functions are specific to ZenCart. they need to be modified for the specific application.
 // It also needs to check for errors, i.e. missing information, bad data, etc.
   function orderConfirm($orders) {
-	global $db;
+	global $admin;
 	// error check input
 	if (sizeof($orders['order']) == 0)  throw new Exception(SOAP_NO_ORDERS_TO_CONFIRM, 20);
 	if ($orders['action'] <> 'Confirm') throw new Exception(SOAP_BAD_ACTION, 16);

@@ -37,7 +37,7 @@ class fields {
 	}
 
   function btn_save($id = '') {
-  	global $db, $currencies;
+  	global $admin, $currencies;
   	\core\classes\user::validate_security($this->security_id, 2); // security check
     // clean out all non-allowed values and then check if we have a empty string
 	$this->field_name   = preg_replace("[^A-Za-z0-9_]", "", $this->field_name);
@@ -186,7 +186,7 @@ class fields {
   }
 
 	function btn_delete($id = 0) {
-	  	global $db;
+	  	global $admin;
 	  	\core\classes\user::validate_security($this->security_id, 4); // security check
 		$result = $db->Execute("SELECT * FROM ".TABLE_EXTRA_FIELDS." WHERE id=$id");
 		foreach ($result->fields as $key => $value) $this->$key = $value;
@@ -198,7 +198,7 @@ class fields {
 	}
 
   function build_main_html() {
-  	global $db;
+  	global $admin;
 	$tab_array = $this->get_tabs($this->module);
     $content = array();
 	$content['thead'] = array(
@@ -238,7 +238,7 @@ class fields {
   }
 
   function build_form_html($action, $id = '') {
-    global $db, $currencies, $integer_lengths, $decimal_lengths, $check_box_choices;
+    global $admin, $currencies, $integer_lengths, $decimal_lengths, $check_box_choices;
 	if ($action <> 'new') {
 	   $result = $db->Execute("select * from ".TABLE_EXTRA_FIELDS." where id='$this->id'");
 	   $params = unserialize($result->fields['params']);
@@ -406,7 +406,7 @@ class fields {
    */
 
   public function what_to_save(){
-  	global $db, $currencies;
+  	global $admin, $currencies;
   	$sql_data_array = array();
     $xtra_db_fields = $db->Execute("select field_name, entry_type, params, required, field_name
       from " . TABLE_EXTRA_FIELDS . " where module_id='{$this->module}'");
@@ -442,7 +442,7 @@ class fields {
   }
 
   public function set_fields_to_display($type = null){
-  	global $db, $cInfo;
+  	global $admin, $cInfo;
   	$tab_array = array();
 	$result = $db->Execute("select fields.tab_id, tabs.tab_name as tab_name, fields.description as description, fields.params as params, fields.group_by, fields.field_name, fields.entry_type from ".TABLE_EXTRA_FIELDS." as fields join ".TABLE_EXTRA_TABS." as tabs on (fields.tab_id = tabs.id) where fields.module_id='{$this->module}' order by tabs.sort_order asc, fields.group_by asc, fields.sort_order asc");
   	while (!$result->EOF) {
@@ -483,7 +483,7 @@ class fields {
 	 */
 
 	public function unwanted_fields($type = null){
-	  	global $db;
+	  	global $admin;
 	  	$values = array();
 	  	if($this->type_params == '' && $type == null ) return $values;
 		$result = $db->Execute("SELECT params, field_name FROM ".TABLE_EXTRA_FIELDS." WHERE module_id='".$this->module."'");
@@ -497,7 +497,7 @@ class fields {
 	}
 
   	function get_tabs($module = '') {
-    	global $db;
+    	global $admin;
     	$tab_array = array(0 => TEXT_SYSTEM);
 		if (!$module) return $tab_array;
     	$result = $db->Execute("select id, tab_name from " . TABLE_EXTRA_TABS . " where module_id = '" . $module . "' order by tab_name");

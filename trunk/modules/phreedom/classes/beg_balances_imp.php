@@ -91,7 +91,7 @@ class beg_bal_import {
 	}
 
 	function submitJournalEntry() {
-		global $db, $currencies;
+		global $admin, $currencies;
 		$entry_count = 0;
 		$row_cnt = 0;
 		while($row_cnt < count($this->records)) {

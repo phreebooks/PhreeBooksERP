@@ -57,7 +57,7 @@ class xml_orders extends parser {
 	}
 
   function processOrder($objXML) {
-	global $db, $messageStack;
+	global $admin, $messageStack;
 	// build the tax table to set the tax rates
 	switch ($this->function) {
 	  case 'SalesInvoice':
@@ -160,7 +160,7 @@ class xml_orders extends parser {
 // The remaining functions are specific to PhreeBooks. They need to be modified for the specific application.
 // It also needs to check for errors, i.e. missing information, bad data, etc.
   function buildJournalEntry() {
-	global $db, $messageStack, $currencies;
+	global $admin, $messageStack, $currencies;
 	// set some preliminary information
 	$account_type = 'c';
 	$psOrd = new orders();
@@ -312,7 +312,7 @@ class xml_orders extends parser {
 }
 
   function checkForCustomerExists($psOrd) {
-	global $db;
+	global $admin;
 	$output = array();
 	$result = $db->Execute("select id, special_terms from ".TABLE_CONTACTS."
 		where type = 'c' and short_name = '" . $psOrd->short_name . "'");

@@ -19,7 +19,7 @@
 //
 
 function execute_upgrade($db_release) {
-  	global $db, $admin;
+  	global $admin, $admin;
   	$code_release = $admin->classes['phreedom']->version;
 //  $db_release   = PROJECT_DB_VERSION_MAJOR . '.' . PROJECT_DB_VERSION_MINOR;
 
@@ -82,7 +82,7 @@ function execute_upgrade($db_release) {
 }
 
 function update_version_db($major = PROJECT_VERSION_MAJOR, $minor = PROJECT_VERSION_MINOR) {
-	global $db;
+	global $admin;
 	$sql = "update " . TABLE_PROJECT_VERSION . " set
 	  project_version_major = '$major',
 	  project_version_minor = '$minor'

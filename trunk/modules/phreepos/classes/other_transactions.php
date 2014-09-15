@@ -30,7 +30,7 @@ class other_transactions {
     }
 
   	function btn_save($id = '') {
-  		global $db;
+  		global $admin;
 		\core\classes\user::validate_security($this->security_id, 2);
 		if ($this->gl_acct_id == '') throw new \core\classes\userException(TEXT_SELECT_A_STANDARD_CHART);
 		$sql_data_array = array(
@@ -52,7 +52,7 @@ class other_transactions {
   	}
 
   	function btn_delete($id = 0) {
-  		global $db;
+  		global $admin;
   		\core\classes\user::validate_security($this->security_id, 4);
 		// 	OK to delete
 		$result = $db->Execute("select description from " . $this->db_table . " where ot_id = '$id'");
@@ -62,7 +62,7 @@ class other_transactions {
   	}
 
   	function build_main_html() {
-  		global $db, $currencies;
+  		global $admin, $currencies;
   		require_once(DIR_FS_MODULES . 'phreepos/defaults.php');
     	$content = array();
 		$content['thead'] = array(
@@ -94,7 +94,7 @@ class other_transactions {
   	}
 
 	function build_form_html($action, $id = '') {
-    	global $db, $currencies;
+    	global $admin, $currencies;
     	require_once(DIR_FS_MODULES . 'phreepos/defaults.php');
     	if ($action <> 'new') {
         	$sql = "select * from " . $this->db_table . " where ot_id = " . $id;
@@ -173,7 +173,7 @@ class other_transactions {
    */
 
 	function javascript_array(){
-  		global $db;
+  		global $admin;
 	  	$sql = "select * from " . $this->db_table ;
     	$result = $db->Execute($sql);
 	  	$js_tills  = 'var ot_options  = new Array();' . chr(10);
@@ -187,7 +187,7 @@ class other_transactions {
   	}
 
   	function get_transaction_info($id){
-  		global $db;
+  		global $admin;
   		$sql = "select * from " . $this->db_table . " where ot_id = " . $id;
         $result = $db->Execute($sql);
         foreach ($result->fields as $key => $value) $this->$key = $value;

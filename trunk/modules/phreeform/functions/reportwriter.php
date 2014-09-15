@@ -22,7 +22,7 @@
 
 // This function preps a stored report for conversion by making it look like a already stored report
 function PrepReport($ReportID) {
-	global $db, $messageStack;
+	global $admin, $messageStack;
 	$crlf = chr(10);
 	$CSVOutput = array();
 	$CSVOutput[] = '/* Report Builder Export Tool */' . $crlf;
@@ -281,7 +281,7 @@ function pb_replace_tables($sql_array, $criteria) {
 }
 
 function convert_security($params) {
-  global $db;
+  global $admin;
   $output = array();
   $types = explode(';', $params);
   foreach ($types as $value) {

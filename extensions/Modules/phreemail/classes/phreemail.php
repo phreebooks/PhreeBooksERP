@@ -377,7 +377,7 @@ class phreemail extends PHPMailer{
  ******************************************************************************/
 
 	function spam_detect(){
-    	global $db;
+    	global $admin;
 	    $email = array();
     	$id = $this->newid; #ID email in DB
    		$result = $db->Execute("SELECT * FROM ".TABLE_PHREEMAIL." WHERE id='".$this->newid."'");
@@ -389,7 +389,7 @@ class phreemail extends PHPMailer{
 	}
 
   	function check_blacklist($email){
-  		global $db;
+  		global $admin;
    		$result = $db->Execute("SELECT Email FROM ".TABLE_PHREEMAIL_LIST." WHERE Email='".addslashes($email)."' AND Type='B'");
    		$e_mail = $result->fields['Email'];
    		if($result->RecordCount() > 0){
@@ -400,7 +400,7 @@ class phreemail extends PHPMailer{
   	}
 
     function check_words($string){
-    	global $db;
+    	global $admin;
     	$string = strtolower($string);
     	$result = $db->Execute("SELECT Word FROM ".TABLE_PHREEMAIL_WORDS);
     	while(!$result->EOF){
@@ -531,7 +531,7 @@ class phreemail extends PHPMailer{
   	}
 
   	function getEmailFromDb($id){
-  		global $db;
+  		global $admin;
 		$result = $db->Execute("select * from " . TABLE_PHREEMAIL . " where id = '" . $id  . "'");
 		foreach ($result->fields as $key => $value) {
 			if(is_null($value)) $this->$key = '';

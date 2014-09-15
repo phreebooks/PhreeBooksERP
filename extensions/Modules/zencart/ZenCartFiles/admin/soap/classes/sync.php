@@ -62,7 +62,7 @@ class xml_sync extends parser {
  	 * It also needs to check for errors, i.e. missing information, bad data, etc.
  	 */
   function syncProducts($products) {
-	global $db, $messageStack;
+	global $admin, $messageStack;
 	// error check input
 		if (sizeof($products['product']) == 0) throw new Exception(SOAP_NO_SKUS_UPLOADED, 20);
 		if ($products['action'] <> 'Validate') throw new Exception(SOAP_BAD_ACTION, 16);

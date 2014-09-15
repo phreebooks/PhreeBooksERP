@@ -18,7 +18,7 @@
 //
 
   function load_store_stock($sku, $store_id) {
-	global $db;
+	global $admin;
 	$sql = "select sum(remaining) as remaining from " . TABLE_INVENTORY_HISTORY . "
 		where store_id = '$store_id' and sku = '$sku'";
 	$result = $db->Execute($sql);
@@ -68,7 +68,7 @@
 				$price =  (($previous_price * $previous_qty) + ($price * ($qty - $previous_qty))/ $qty);
 				$previous_price = $price;
 				$previous_qty = $qty;
-				break; 
+				break;
 		}
 
 		switch ($rnd) {
@@ -102,7 +102,7 @@
 
 
   function gather_history($sku) {
-    global $db;
+    global $admin;
 	$inv_history = array();
 	$dates = gen_get_dates();
 	$cur_month = $dates['ThisYear'] . '-' . substr('0' . $dates['ThisMonth'], -2) . '-01';
@@ -210,7 +210,7 @@
   }
 
   	function inv_calculate_sales_price($qty, $sku_id, $contact_id = 0, $type = 'c') {
-    	global $db, $currencies;
+    	global $admin, $currencies;
 		$price_sheet = '';
 		$contact_tax = 1;
 		if ($contact_id) {
@@ -244,8 +244,8 @@
 		$price = '0.0';
 		$levels = false;
 		if ($sheet_name <> '') {
-			$sql = "select id, default_levels from " . TABLE_PRICE_SHEETS . " 
-			  where inactive = '0' and type = '$type' and sheet_name = '$sheet_name' and 
+			$sql = "select id, default_levels from " . TABLE_PRICE_SHEETS . "
+			  where inactive = '0' and type = '$type' and sheet_name = '$sheet_name' and
 			  (expiration_date is null or expiration_date = '0000-00-00' or expiration_date >= '" . date('Y-m-d') . "')";
 			$price_sheets = $db->Execute($sql);
 			// retrieve special pricing for this inventory item
@@ -269,9 +269,9 @@
   }
 
 function inv_status_open_orders($journal_id, $gl_type) { // checks order status for order balances, items received/shipped
-  global $db;
+  global $admin;
   $item_list = array();
-  $orders = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " 
+  $orders = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . "
   	where journal_id = $journal_id and closed = '0'");
   while (!$orders->EOF) {
     $total_ordered = array(); // track this SO/PO sku for totals, to keep >= 0

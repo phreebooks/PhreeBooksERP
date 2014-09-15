@@ -53,7 +53,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function install($path_my_files, $demo = false) {
-	    global $db, $messageStack;
+	    global $admin, $messageStack;
 		RETURN TRUE; //@TODO NOG VERDER BEWERKEN.
 		parent::install($path_my_files, $demo);
 		if (!db_field_exists(TABLE_INVENTORY, 'catalog')) { // setup new tab in table inventory
@@ -125,7 +125,7 @@ class admin extends \core\classes\admin {
 	}
 
   function initialize() {
-  	global $db, $messageStack;
+  	global $admin, $messageStack;
   	RETURN TRUE; //@TODO EVT NOG BEWERKEN OF VERWIJDEREN.
   	gen_pull_language('inventory');
   	require_once(DIR_FS_MODULES . 'magento/functions/magento.php');
@@ -149,7 +149,7 @@ class admin extends \core\classes\admin {
   }
 
   function upgrade() {
-    global $db, $messageStack;
+    global $admin, $messageStack;
     RETURN TRUE; //@TODO EVT BEWERKEN ANDERS VERWIJDEREN.
     if (version_compare($this->status, '3.4', '<') ) {
 		write_configure('MODULE_MAGENTO_LAST_UPDATE', date('0000-00-00 00:00:00'));

@@ -902,7 +902,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 //								FEDEX DELETE LABEL REQUEST
 // ***************************************************************************************************************
   function deleteLabel($method = 'FDXE', $tracking_number = '') {
-	global $db, $messageStack;
+	global $admin, $messageStack;
 	if (!$tracking_number) throw new \core\classes\userException("Cannot delete shipment, tracking number was not provided!");
 	$result = array();
 	if (MODULE_SHIPPING_FEDEX_V7_TEST_MODE == 'Test') {
@@ -973,7 +973,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 //								FEDEX TRACK REQUEST
 // ***************************************************************************************************************
 	function trackPackages($track_date = '0000-00-00', $log_id = false) {
-		global $db, $messageStack;
+		global $admin, $messageStack;
 		$result = array();
 		if (MODULE_SHIPPING_FEDEX_V7_TEST_MODE == 'Test') throw new \core\classes\userException('Tracking only works on the FedEx production server!');
 		$client = new \SoapClient(PATH_TO_TRACK_WSDL, array('trace' => 1));
@@ -1169,7 +1169,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 // This function takes a csv file downloaded for FedEx and processes reconciles the invoice to the shippping log
 // The format must be from the Invoice Summary format found on the Download Invoice link from FedEx My Account.
   function reconcileInvoice() {
-	global $db, $messageStack, $currencies;
+	global $admin, $messageStack, $currencies;
 	$reconciled = array();
 	$count      = 0;
 	// first verify the file was uploaded ok

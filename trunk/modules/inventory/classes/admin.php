@@ -209,7 +209,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function install($path_my_files, $demo = false) {
-		global $db;
+		global $admin;
 		parent::install($path_my_files, $demo);
 		$this->notes[] = MODULE_INVENTORY_NOTES_1;
 		require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
@@ -281,7 +281,7 @@ class admin extends \core\classes\admin {
 	}
 
   	function upgrade() {
-    	global $db, $currencies;
+    	global $admin, $currencies;
     	parent::upgrade();
     	if (version_compare($this->status, '3.1', '<') ) {
 	  		$tab_map = array('0' => '0');
@@ -424,7 +424,7 @@ class admin extends \core\classes\admin {
 	}
 
   	function delete($path_my_files) {
-    	global $db;
+    	global $admin;
     	parent::delete($path_my_files);
 		$db->Execute("delete from " . TABLE_EXTRA_FIELDS . " where module_id = 'inventory'");
 		$db->Execute("delete from " . TABLE_EXTRA_TABS   . " where module_id = 'inventory'");
@@ -437,7 +437,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function load_demo() {
-	    global $db;
+	    global $admin;
 		// Data for table `inventory`
 		$db->Execute("TRUNCATE TABLE " . TABLE_INVENTORY);
 		$db->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (1, 'AMD-3600-CPU', '0', 'si', 'AMD 3600+ Athlon CPU', 'AMD 3600+ Athlon CPU', 'AMD 3600+ Athlon CPU', 'demo/athlon.jpg', '4000', '1200', '5000', '1', '0', 100, 'f', '', '', 150, 150, 1.5, 1, 0, 0, 0, 0, 0, 0, 3, 1, '', '0', now(), '', '', '');");
@@ -513,7 +513,7 @@ class admin extends \core\classes\admin {
 	 * @throws Exception
 	 */
 	function validate_name($sku){
-		global $db;
+		global $admin;
 		if (!$sku) throw new \core\classes\userException(TEXT_THE_ID_FIELD_WAS_EMPTY);
 		$result = $db->Execute("select id from " . TABLE_INVENTORY . " where sku = '$sku'");
 		if ($result->RecordCount() <> 0) throw new \core\classes\userException(sprintf(TEXT_THE_ID_IS_NOT_UNIQUE_ARGS, $name));
@@ -665,7 +665,7 @@ class admin extends \core\classes\admin {
   	}
 
   	function LoadInventoryFilter(){
-  		global $db;
+  		global $admin;
   		//building array's for filter dropdown selection
   		$i=0;
   		$result = $db->Execute("SELECT * FROM " . TABLE_EXTRA_FIELDS ." WHERE module_id = 'inventory' AND use_in_inventory_filter = '1' ORDER BY description ASC");

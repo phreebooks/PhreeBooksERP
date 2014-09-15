@@ -608,7 +608,7 @@ class endicia extends \shipping\classes\shipping {
 //								Endicia Tracking Request
 // ***************************************************************************************************************
   function trackPackages($track_date = '0000-00-00', $log_id = false) { // single tracking # or date range
-	global $db, $messageStack;
+	global $admin, $messageStack;
 //	$result = array();
 	if ($log_id) {
 	  $shipments  = $db->Execute("select id, ref_id, deliver_date, actual_date, tracking_id, notes

@@ -32,7 +32,7 @@ class e extends \contacts\classes\contacts{
 	}
 
   	function delete($id) {
-	  	global $db;
+	  	global $admin;
 	  	if ( $this->id == '' ) $this->id = $id;
   		$result = $db->Execute("select admin_id from ".TABLE_USERS." where account_id =". $this->id);
 		if ($result->RecordCount() == 0) {

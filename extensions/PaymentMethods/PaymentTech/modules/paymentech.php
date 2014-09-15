@@ -420,7 +420,7 @@ class paymentech {
    * @return boolean
    */
   function check() {
-    global $db;
+    global $admin;
     if (!isset($this->_check)) {
       $check_query = $db->Execute("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = 'MODULE_PAYMENT_PAYMENTECH_STATUS'");
       $this->_check = $check_query->RecordCount();
@@ -432,7 +432,7 @@ class paymentech {
    *
    */
   function install() {
-    global $db;
+    global $admin;
     $db->Execute("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, set_function, date_added) values ('Enable Paymentech Module', 'MODULE_PAYMENT_PAYMENTECH_STATUS', 'True', 'Do you want to accept Paymentech payments?', '6', '0', 'cfg_select_option(array(\'True\', \'False\'), ', now())");
 	$db->Execute("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, set_function, date_added) values ('Transaction Mode', 'MODULE_PAYMENT_PAYMENTECH_TESTMODE', 'Test', 'Transaction mode used for processing orders.', '6', '0', 'cfg_select_option(array(\'Test\', \'Production\'), ', now())");
 	$db->Execute("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, date_added) values ('Merchant ID (Test Account)', 'MODULE_PAYMENT_PAYMENTECH_MERCHANT_ID_TEST', '', 'Your Paymentech assigned Merchant ID (6 or 12 digit). Leave blank if you do not have a test account. This is only used when in testing mode.', '6', '0', now())");
@@ -450,7 +450,7 @@ class paymentech {
    *
    */
   function remove() {
-    global $db;
+    global $admin;
     $db->Execute("delete from " . TABLE_CONFIGURATION . " where configuration_key in ('" . implode("', '", $this->keys()) . "')");
   }
   /**

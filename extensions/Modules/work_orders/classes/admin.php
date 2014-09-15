@@ -109,7 +109,7 @@ class admin extends \core\classes\admin {
 	}
 
   	function install($path_my_files, $demo = false) {
-    	global $db;
+    	global $admin;
     	parent::install($path_my_files, $demo);
     	if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_wo_num')) {
 	  		$db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_wo_num VARCHAR(16) NOT NULL DEFAULT 'WO-0001';");
@@ -118,7 +118,7 @@ class admin extends \core\classes\admin {
   	}
 
 	function upgrade() {
-	    global $db;
+	    global $admin;
 	    parent::upgrade();
 	    if (version_compare($this->status, '3.1', '<') ) {
 			if (!db_field_exists(TABLE_WO_TASK, 'erp_entry')) {
@@ -138,14 +138,14 @@ class admin extends \core\classes\admin {
 	}
 
 	function delete($path_my_files) {
-	    global $db;
+	    global $admin;
 	    parent::delete($path_my_files);
 	    if (db_field_exists(TABLE_CURRENT_STATUS, 'next_wo_num')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_wo_num");
 		write_configure('PHREEHELP_FORCE_RELOAD', '1');
 	}
 
 	function load_reports() {
-		global $db;
+		global $admin;
 		$result = $db->Execute("select id from " . TABLE_PHREEFORM . " where doc_group = 'inv' and doc_ext = '0'");
 		$this->add_report_folder($result->fields['id'], TEXT_WORK_ORDER_FORMS, 'inv:wo', 'ff');
 		parent::load_reports();

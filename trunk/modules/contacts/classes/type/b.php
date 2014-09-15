@@ -31,7 +31,7 @@ class b extends \contacts\classes\contacts{
 	}
 
   	function delete($id) {
-	  	global $db;
+	  	global $admin;
 	  	if ( $this->id == '' ) $this->id = $id;
 		// error check
 		return parent::do_delete();

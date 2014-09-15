@@ -61,7 +61,7 @@ function dc_validate_upload($filename) {
 }
 
 function build_dir_path($id) {
-	global $db;
+	global $admin;
 	$result = $db->Execute("select parent_id, title from " . TABLE_DC_DOCUMENT . " where id = '" . $id . "'");
 	$title  = ($id) ? $result->fields['title'] : '';
 	if ($result->fields['parent_id']) $title = build_dir_path($result->fields['parent_id']) . '/' . $title;
@@ -69,7 +69,7 @@ function build_dir_path($id) {
 }
 
 function load_bookmarks() {
-	global $db;
+	global $admin;
 	$contents = NULL;
 	$result = $db->Execute("select id, title from " . TABLE_DC_DOCUMENT . " where bookmarks like '%:" . $_SESSION['admin_id'] . ":%'");
 	if ($result->RecordCount() == 0) {
@@ -87,7 +87,7 @@ function load_bookmarks() {
 }
 
 function load_checked_out() {
-	global $db;
+	global $admin;
 	$contents = NULL;
 	$result = $db->Execute("select id, title from " . TABLE_DC_DOCUMENT . " where checkout_id = " . $_SESSION['admin_id']);
 	if ($result->RecordCount() == 0) {
@@ -104,7 +104,7 @@ function load_checked_out() {
 }
 
 function load_recently_added() {
-  global $db;
+  global $admin;
   $contents = NULL;
   $result = $db->Execute("select id, title, type, doc_ext from " . TABLE_DC_DOCUMENT . " where type = 'default' order by create_date desc, id desc limit 20");
   if ($result->RecordCount() == 0) {
@@ -122,13 +122,13 @@ function load_recently_added() {
 }
 
 function get_owner_name($id) {
-  global $db;
+  global $admin;
   $result = $db->Execute("select display_name from " . TABLE_USERS . " where admin_id = '" . $id . "'");
   return $result->RecordCount() ? $result->fields['display_name'] : '';
 }
 
 function test_bookmark() {
-  global $db;
+  global $admin;
   $result = $db->Execute("select id from " . TABLE_DC_DOCUMENT . " where bookmarks like '%:" . $_SESSION['admin_id'] . ":%'");
   return ($result->RecordCount() > 0) ? true : false;
 }

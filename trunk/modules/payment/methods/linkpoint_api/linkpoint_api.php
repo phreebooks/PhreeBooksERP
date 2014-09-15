@@ -539,12 +539,12 @@ class linkpoint_api extends \payment\classes\payment {
 	}
 
 	function after_order_create($zf_order_id) {
-		global $db, $lp_avs, $lp_trans_num;
+		global $admin, $lp_avs, $lp_trans_num;
 		$db->execute("update " . TABLE_LINKPOINT_API . " set order_id ='" . $zf_order_id . "' where lp_trans_num = '" . $lp_trans_num . "'");
 	}
 
 	function admin_notification($zf_order_id) {
-		global $db;
+		global $admin;
 		if (!MODULE_PAYMENT_LINKPOINT_API_STORE_DATA) return '';
 		$output = '';
 		$sql = "select * from " . TABLE_LINKPOINT_API . " where order_id = '" . $zf_order_id . "' and transaction_result = 'APPROVED' order by date_added";
@@ -563,7 +563,7 @@ class linkpoint_api extends \payment\classes\payment {
 	}
 
 	function check() {
-		global $db;
+		global $admin;
 
 		if (!isset ($this->_check)) {
 			$check_query = $db->Execute("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = 'MODULE_PAYMENT_LINKPOINT_API_STATUS'");
@@ -574,7 +574,7 @@ class linkpoint_api extends \payment\classes\payment {
 	}
 
   function install() {
-	global $db;
+	global $admin;
 	parent::install();
 	if (!db_table_exists(TABLE_LINKPOINT_API)) {
 		$sql = "CREATE TABLE " . TABLE_LINKPOINT_API . " (
@@ -604,7 +604,7 @@ class linkpoint_api extends \payment\classes\payment {
   }
 
   	function delete() {
-		global $db;
+		global $admin;
 		if (db_table_exists(TABLE_LINKPOINT_API)) { // cleanup database if contains no data
 		  	$result = $db->Execute("select count(id) as count from " . TABLE_LINKPOINT_API);
 		  	if ($result->RecordCount() != 0) throw new \core\classes\userException("Can't delete table ". TABLE_LINKPOINT_API. " because it contains data", $code, $previous);
@@ -676,7 +676,7 @@ class linkpoint_api extends \payment\classes\payment {
 	 * Used to submit a refund for a given transaction.
 	 */
 	function _doRefund($oID, $amount = 0) {
-		global $db, $messageStack;
+		global $admin, $messageStack;
 		$new_order_status = (int) MODULE_PAYMENT_LINKPOINT_API_REFUNDED_ORDER_STATUS_ID;
 		if ($new_order_status == 0) $new_order_status = 1;
 		$proceedToRefund = true;
@@ -721,7 +721,7 @@ class linkpoint_api extends \payment\classes\payment {
 	 * Used to capture part or all of a given previously-authorized transaction.
 	 */
 	function _doCapt($oID, $amt = 0, $currency = 'USD') {
-		global $db, $messageStack;
+		global $admin, $messageStack;
 
 		$new_order_status = (int) MODULE_PAYMENT_LINKPOINT_API_ORDER_STATUS_ID;
 		if ($new_order_status == 0) $new_order_status = 1;
@@ -765,7 +765,7 @@ class linkpoint_api extends \payment\classes\payment {
 	 * Used to void a given previously-authorized transaction.
 	 */
 	function _doVoid($oID, $note = '') {
-		global $db, $messageStack;
+		global $admin, $messageStack;
 
 		$new_order_status = (int) MODULE_PAYMENT_LINKPOINT_API_REFUNDED_ORDER_STATUS_ID;
 		if ($new_order_status == 0)

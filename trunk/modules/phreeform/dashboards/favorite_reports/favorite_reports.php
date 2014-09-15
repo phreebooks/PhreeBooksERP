@@ -31,7 +31,7 @@ class favorite_reports extends \core\classes\ctl_panel {
 	public $module_id 			= 'phreeform';
 
 	function output($params) {
-		global $db;
+		global $admin;
 		$contents = '';
 		$control  = '';
 		// load the report list
@@ -74,7 +74,7 @@ class favorite_reports extends \core\classes\ctl_panel {
 	}
 
 	function update() {
-		global $db;
+		global $admin;
 		$report_id   = db_prepare_input($_POST['report_id']);
 		$result      = $db->Execute("select doc_title from " . TABLE_PHREEFORM . " where id = '" . $report_id . "'");
 		$description = $result->fields['doc_title'];

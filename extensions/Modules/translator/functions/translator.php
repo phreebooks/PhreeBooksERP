@@ -36,7 +36,7 @@ function build_mod_list() {
 }
 
 function build_ver_list() {
-  global $db;
+  global $admin;
   $sel_version = array(
     array('id' => '0', 'text' => TEXT_ALL),
     array('id' => 'L', 'text' => TEXT_LATEST),
@@ -50,7 +50,7 @@ function build_ver_list() {
 }
 
 function build_lang_list() {
-  global $db;
+  global $admin;
   $sel_language = array(array('id' => '0', 'text' => TEXT_ALL));
   $result = $db->Execute("select distinct language from " . TABLE_TRANSLATOR);
   while (!$result->EOF) {

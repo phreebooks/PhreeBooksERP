@@ -104,13 +104,13 @@ class admin extends \core\classes\admin {
 	}
 
 	function install($path_my_files, $demo = false) {
-	    global $db;
+	    global $admin;
 	    parent::install($path_my_files, $demo);
 		if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_shipment_num')) $db->Execute("ALTER TABLE ".TABLE_CURRENT_STATUS." ADD next_shipment_num VARCHAR(16) NOT NULL DEFAULT '1'");
 	}
 
 	function upgrade() {
-	    global $db;
+	    global $admin;
 	    parent::upgrade();
 	    if (version_compare($this->status, '3.2', '<') ) {
 		  	if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_shipment_num')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_shipment_num VARCHAR(16) NOT NULL DEFAULT '1'");
@@ -119,7 +119,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function delete($path_my_files) {
-	    global $db;
+	    global $admin;
 	    parent::delete($path_my_files);
 	    if (db_field_exists(TABLE_CURRENT_STATUS, 'next_shipment_num'))  $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_shipment_num");
 		if (db_field_exists(TABLE_CURRENT_STATUS, 'next_shipment_desc')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_shipment_desc");

@@ -34,7 +34,7 @@ class order_dl extends base {
   }
 
   function check() {
-    global $db;
+    global $admin;
     if (!isset($this->_check)) {
       $check_query = $db->Execute("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = 'MODULE_PHREEBOOKS_ORDER_DOWNLOAD_STATUS'");
       $this->_check = $check_query->RecordCount();
@@ -43,7 +43,7 @@ class order_dl extends base {
   }
 
   function install() {
-    global $db;
+    global $admin;
     $db->Execute("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, set_function, date_added) values ('Enable Order Download Operation', 'MODULE_PHREEBOOKS_ORDER_DOWNLOAD_STATUS', 'False', 'Do you want enable the order downlaod interface to PhreeBooks?', '99', '0', 'zen_cfg_select_option(array(\'True\', \'False\'), ', now())");
     $db->Execute("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, date_added) values ('PhreeBooks XML URL', 'MODULE_PHREEBOOKS_ORDER_DOWNLOAD_URL', 'https://', 'The URL of the PhreeBooks server to process order downloads (can be secure or non-secure).', '99', '1', now())");
     $db->Execute("insert into " . TABLE_CONFIGURATION . " (configuration_title, configuration_key, configuration_value, configuration_description, configuration_group_id, sort_order, date_added) values ('PhreeBooks Database Name', 'MODULE_PHREEBOOKS_ORDER_DOWNLOAD_DB', '', 'The name of the database (company) to send the order to.', '99', '2', now())");
@@ -77,7 +77,7 @@ class order_dl extends base {
   }
 
   function remove() {
-    global $db;
+    global $admin;
     $db->Execute("delete from " . TABLE_CONFIGURATION . " where configuration_key in ('" . implode("', '", $this->keys()) . "')");
   }
 

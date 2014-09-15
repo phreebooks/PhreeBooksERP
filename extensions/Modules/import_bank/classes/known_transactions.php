@@ -29,7 +29,7 @@ class known_transactions {
     }
 
   function btn_save($id = '') {
-  	global $db, $currencies;
+  	global $admin, $currencies;
 	\core\classes\user::validate_security($this->security_id, 2);
 	if ($this->gl_acct_id == '') throw new \core\classes\userException(TEXT_SELECT_A_STANDARD_CHART);
 	$sql_data_array = array(
@@ -49,7 +49,7 @@ class known_transactions {
   }
 
   function btn_delete($id = 0) {
-  	global $db;
+  	global $admin;
 	\core\classes\user::validate_security($this->security_id, 4);
 	// OK to delete
 	$result = $db->Execute("select description from " . $this->db_table . " where kt_id = '$id'");
@@ -59,7 +59,7 @@ class known_transactions {
   }
 
   function build_main_html() {
-  	global $db, $currencies;
+  	global $admin, $currencies;
     $content = array();
 	$content['thead'] = array(
 	  'value' => array(TEXT_DESCRIPTION, TEXT_GL_ACCOUNT,  TEXT_BANK_ACCOUNT,TEXT_ACTION),
@@ -88,7 +88,7 @@ class known_transactions {
   }
 
   function build_form_html($action, $id = '') {
-    global $db;
+    global $admin;
     if ($action <> 'new') {
         $sql = "select * from " . $this->db_table . " where kt_id = " . $id;
         $result = $db->Execute($sql);

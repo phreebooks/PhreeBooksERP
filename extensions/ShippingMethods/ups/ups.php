@@ -866,7 +866,7 @@ class ups extends \shipping\classes\shipping {
 //								UPS DELETE LABEL REQUEST
 // ***************************************************************************************************************
 	function deleteLabel($shipment_id = '') {
-		global $db, $messageStack;
+		global $admin, $messageStack;
 		if (!$shipment_id) throw new \core\classes\userException("Cannot delete shipment, shipment ID was not provided!");
 
 		if ($this->tracking_number) {

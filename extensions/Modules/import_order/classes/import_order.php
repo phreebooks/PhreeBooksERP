@@ -30,7 +30,7 @@ class import_order {
   	 * @return void|boolean
   	 */
   	function processCSV($filename, $function='Sales') {
-  		global $db, $messageStack;
+  		global $admin, $messageStack;
   		$rows = $this->csv_to_array($_FILES[$filename]['tmp_name'], $delimiter=',');
   		$messageStack->debug("\nfinished parsing, extracted number of rows = ".sizeof($rows));
   	  	switch ($function) {

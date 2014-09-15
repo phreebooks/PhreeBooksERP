@@ -86,7 +86,7 @@
 	 */
 
   	function write_configure($constant, $value = '') {
-    	global $db;
+    	global $admin;
 		if (!$constant) throw new \core\classes\userException("contant isn't defined for value: $value");
 		$result = $db->Execute("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = '" . $constant . "'");
 		if ($result->RecordCount() == 0) {
@@ -114,7 +114,7 @@
   	 */
 
   	function remove_configure($constant){
-	    global $db;
+	    global $admin;
 		if (!$constant) throw new \core\classes\userException("There is no constant to remove");
 		$db->Execute("delete from " . TABLE_CONFIGURATION . " where configuration_key = '$constant'");
 		if (function_exists('apc_load_constants')) {// rebuild cache
@@ -181,7 +181,7 @@
   }
 
   function gen_get_pull_down($db_name, $first_none = false, $show_id = '0', $id = 'id', $description = 'description') {
-    global $db;
+    global $admin;
     $type_format_values = $db->Execute("select " . $id . " as id, " . $description . " as description
       from " . $db_name . " order by '" . $id . "'");
     $type_format_array = array();
@@ -208,7 +208,7 @@
   }
 
   function gen_calculate_period($post_date, $hide_error = false) {
-	global $db;
+	global $admin;
 	$post_time_stamp = strtotime($post_date);
 	$period_start_time_stamp = strtotime(CURRENT_ACCOUNTING_PERIOD_START);
 	$period_end_time_stamp = strtotime(CURRENT_ACCOUNTING_PERIOD_END);
@@ -227,7 +227,7 @@
   }
 
   function gen_get_period_pull_down($include_all = true) {
-    global $db;
+    global $admin;
     $period_values = $db->Execute("select period, start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . " order by period");
     $period_array = array();
     if ($include_all) $period_array[] = array('id' => 'all', 'text' => TEXT_ALL);
@@ -240,7 +240,7 @@
   }
 
   function gen_coa_pull_down($show_id = SHOW_FULL_GL_NAMES, $first_none = true, $hide_inactive = true, $show_all = false, $restrict_types = false) {
-    global $db;
+    global $admin;
 	$params = array();
     $output = array();
 	$sql    = "select id, description, account_type from " . TABLE_CHART_OF_ACCOUNTS;
@@ -265,7 +265,7 @@
   }
 
   function gen_get_type_description($db_name, $id, $full = true) {
-    global $db;
+    global $admin;
     $type_name = $db->Execute("select description from " . $db_name . " where id = '" . $id . "'");
     if ($type_name->RecordCount() < 1) {
       return $id;
@@ -279,7 +279,7 @@
   }
 
   function gen_get_contact_type($id) {
-    global $db;
+    global $admin;
     $vendor_type = $db->Execute("select type from " . TABLE_CONTACTS . " where id = '" . $id . "'");
     return ($vendor_type->RecordCount() == 1) ? $vendor_type->fields['type'] : false;
   }
@@ -289,14 +289,14 @@
    	 * @param unknown_type $id
    	 */
   	function gen_get_contact_name($id) {
-    	global $db;
+    	global $admin;
     	$vendor_name = $db->Execute("select short_name from " . TABLE_CONTACTS . " where id = '$id'");
     	if ($vendor_name->RecordCount() == 1) return $vendor_name->fields['short_name'];
     	throw new \core\classes\userException("couldn't find contact with $id");
   	}
 
   function gen_get_contact_array_by_type($type = 'v') {
-    global $db;
+    global $admin;
     $accounts = $db->Execute("select c.id, a.primary_name from " . TABLE_CONTACTS . " c left join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id
 	  where c.inactive <> '1' and a.type='" . $type . "m' order by a.primary_name");
     $accounts_array = array();
@@ -312,7 +312,7 @@
   }
 
   function gen_get_rep_ids($type = 'c') {
-	global $db;
+	global $admin;
 	// map the type to the employee types
 	switch ($type) {
 	  default:
@@ -332,7 +332,7 @@
   }
 
   function gen_get_store_ids() {
-	global $db;
+	global $admin;
     $result_array = array();
 	$result = $db->Execute("select id, short_name from " . TABLE_CONTACTS . " where type = 'b'");
 	if (($_SESSION['admin_prefs']['restrict_store'] && $_SESSION['admin_prefs']['def_store_id'] == 0)
@@ -402,7 +402,7 @@
   }
 
   function get_price_sheet_data($type = 'c') {
-    global $db;
+    global $admin;
     $sql = "select distinct sheet_name, default_sheet from " . TABLE_PRICE_SHEETS . "
 		where inactive = '0' and type = '" . $type . "' order by sheet_name";
     $result = $db->Execute($sql);
@@ -436,7 +436,7 @@
   }
 
   function gen_add_audit_log($action, $ref_id = '', $amount = '') {
-	global $db;
+	global $admin;
   	if ($action == '' || !isset($action)) throw new \core\classes\userException('Error, call to audit log with no description');
   	$stats = (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME))."ms, ".$db->count_queries."q ".(int)($db->total_query_time * 1000)."ms";
 	$fields = array(
@@ -550,7 +550,7 @@ function get_dir_tree($dir, $root = true)  {
    * @param df = database fieldname for the sql date search
    */
   function gen_build_sql_date($date_prefs, $df) {
-  	global $db;
+  	global $admin;
 	$dates = gen_get_dates();
 	$DateArray = explode(':', $date_prefs);
 	$t = time();
@@ -757,7 +757,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
   }
 
   function gen_calculate_fiscal_dates($period) {
-	global $db;
+	global $admin;
 	$result = $db->Execute("select fiscal_year, start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . "
 	  where period = " . $period);
 	// post_date is out of range of defined accounting periods
@@ -881,7 +881,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
 // Section 2. Database Functions
 /**************************************************************************************************************/
   function db_perform($table, $data, $action = 'insert', $parameters = '') {
-    global $db;
+    global $admin;
     if (!is_array($data)) throw new \core\classes\userException("data isn't a array for table: $table");
     reset($data);
     if ($action == 'insert') {
@@ -914,7 +914,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
   }
 
   function db_insert_id() {
-    global $db;
+    global $admin;
     return $db->insert_ID();
   }
 
@@ -940,13 +940,13 @@ function gen_db_date($raw_date = '', $separator = '/') {
   	}
 
   function db_table_exists($table_name) {
-    global $db;
+    global $admin;
     $tables = $db->Execute("SHOW TABLES like '" . $table_name . "'");
     return ($tables->RecordCount() > 0) ? true : false;
   }
 
   function db_field_exists($table_name, $field_name) {
-    global $db;
+    global $admin;
     $result = $db->Execute("show fields from " . $table_name);
     while (!$result->EOF) {
       if  ($result->fields['Field'] == $field_name) return true;
@@ -1492,7 +1492,7 @@ function charConv($string, $in, $out) {
   	}
 
 	function validate_send_mail($to_name, $to_address, $email_subject, $email_text, $from_email_name, $from_email_address, $block = array(), $attachments_list = '' ) {
-    	global $db, $messageStack;
+    	global $admin, $messageStack;
     	try{
 	    	// check for injection attempts. If new-line characters found in header fields, simply fail to send the message
 		    foreach(array($from_email_address, $to_address, $from_email_name, $to_name, $email_subject) as $key => $value) {

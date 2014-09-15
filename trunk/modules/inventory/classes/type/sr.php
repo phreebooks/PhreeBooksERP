@@ -26,7 +26,7 @@ class sr extends \inventory\classes\inventory {//Serialized Item
 	}
 
 	function get_sr_list(){
-		global $db;
+		global $admin;
 		$branches = gen_get_store_ids();
 		$this->quantity_on_hand = 0;
 		$result = $db->Execute("select store_id, qty, serialize_number from " . TABLE_INVENTORY_HISTORY . "

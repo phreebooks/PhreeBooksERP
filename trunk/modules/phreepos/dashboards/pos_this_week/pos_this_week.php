@@ -26,7 +26,7 @@ class pos_this_week extends \core\classes\ctl_panel {
 	public $module_id 			= 'phreepos';
 
 	function output($params) {
-		global $db, $currencies;
+		global $admin, $currencies;
 		$contents = '';
 		$control  = '';
 		for($i=0; $i<=7; $i++){

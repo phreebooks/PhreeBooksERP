@@ -121,7 +121,7 @@ class admin {
 	}
 
   	function release_update($version, $path = '') {
-    	global $db;
+    	global $admin;
 		if (file_exists($path)) { include_once ($path); }
 		write_configure('MODULE_' . strtoupper($this->id) . '_STATUS', $version);
 		return $version;
@@ -178,7 +178,7 @@ class admin {
 	 * @throws \core\classes\userException
 	 */
 	function install_update_tables() {
-	  	global $db;
+	  	global $admin;
 	  	foreach ($this->tables as $table => $create_table_sql) {
 	    	if (!db_table_exists($table)) {
 		  		if (!$db->Execute($create_table_sql)) throw new \core\classes\userException (sprintf("Error installing table: %s", $table));
@@ -187,7 +187,7 @@ class admin {
 	}
 
 	function remove_tables() {
-	  	global $db;
+	  	global $admin;
 	  	foreach ($this->tables as $table) {
 			if (db_table_exists($table)){
 				if ($db->Execute('DROP TABLE ' . $table)) throw new \core\classes\userException (sprintf("Error deleting table: %s", $table));
@@ -196,7 +196,7 @@ class admin {
 	}
 
 	function add_report_heading($doc_title, $doc_group) {
-	  	global $db;
+	  	global $admin;
 	  	$result = $db->Execute("select id from ".TABLE_PHREEFORM." where doc_group = '$doc_group'");
 	  	if ($result->RecordCount() < 1) {
 	    	$db->Execute("INSERT INTO ".TABLE_PHREEFORM." (parent_id, doc_type, doc_title, doc_group, doc_ext, security, create_date) VALUES
@@ -208,7 +208,7 @@ class admin {
 	}
 
 	function add_report_folder($parent_id, $doc_title, $doc_group, $doc_ext) {
-	  	global $db;
+	  	global $admin;
 	  	if ($parent_id == '') throw new \core\classes\userException("parent_id isn't set for document $doc_title");
 	  	$result = $db->Execute("select id from ".TABLE_PHREEFORM." where doc_group = '$doc_group' and doc_ext = '$doc_ext'");
 	  	if ($result->RecordCount() < 1) {
@@ -239,7 +239,7 @@ class admin {
 	}
 
 	final function phreedom_main_validateLogin(){
-		global $db, $admin;
+		global $admin, $admin;
   		// Errors will happen here if there was a problem logging in, logout and restart
  	 	if (!is_object($db)) throw new \core\classes\userException("Database isn't created", "phreedom", "main", "template_login");
 	    $admin_name     = db_prepare_input($_POST['admin_name']);

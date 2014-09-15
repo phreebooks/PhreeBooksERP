@@ -19,11 +19,11 @@
 namespace translator\classes;
 class translator {
 	function __construct() {
-		global $db;
+		global $admin;
 	}
 
   function fetch_stats($mod, $lang, $ver) {
-	global $db, $messageStack;
+	global $admin, $messageStack;
 	$total = 0;
 	$trans = 0;
 	$result = $db->Execute("select translated from " . TABLE_TRANSLATOR . "
@@ -38,7 +38,7 @@ class translator {
   }
 
   function upload_language($dir_dest, $mod, $lang) {
-	global $db, $backup, $messageStack;
+	global $admin, $backup, $messageStack;
 	$upload_filename = DIR_FS_MY_FILES . 'translator/translate.zip';
 	validate_upload('zipfile', 'zip', 'zip');
 	if (file_exists($upload_filename)) unlink ($upload_filename);
@@ -52,7 +52,7 @@ class translator {
   }
 
   function import_language($dir_source=DIR_FS_MODULES, $mod='all', $lang='en_us', $ver=false, $module_dir=false, $chk_method=false, $method_dir=false) {
-	global $db, $messageStack;
+	global $admin, $messageStack;
     if (!is_dir($dir_source)) return;
 	$files = @scandir($dir_source);
 	if($files === false) throw new \core\classes\userException("couldn't read or find directory $dir_source");
@@ -105,7 +105,7 @@ if ($const == 'TEXT_COUNTRY_ISO_CODE')echo 'writing const = '.$const.' with valu
   }
 
   function convert_language($mod, $lang, $source = 'en_us', $history = '', $subs = array()) {
-	global $db, $messageStack;
+	global $admin, $messageStack;
 	// retrieve highest version
 	$result = $db->Execute("select max(version) as version from " . TABLE_TRANSLATOR . "
 	  where module = '" . $mod . "' and language = '" . $source . "'");
@@ -148,7 +148,7 @@ if ($const == 'TEXT_COUNTRY_ISO_CODE')echo 'writing const = '.$const.' with valu
   }
 
   function export_language($mod, $lang, $ver, $hide_error = false) {
-	global $db, $backup, $messageStack;
+	global $admin, $backup, $messageStack;
 	$result = $db->Execute("select pathtofile, defined_constant, translation from " . TABLE_TRANSLATOR . "
 	  where module = '" . $mod . "' and language = '" . $lang . "' and version = '" . $ver . "'");
 	if ($result->RecordCount() == 0) throw new \core\classes\userException(TEXT_THE_DOWNLOAD_FILE_DOES_NOT_CONTAIN_ANY_DATA);

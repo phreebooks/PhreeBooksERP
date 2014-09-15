@@ -35,7 +35,7 @@ class import_banking extends \phreebooks\classes\journal {
 	public    $open_inv    = array();
 
 	 public function __construct(){
-	 	global $db, $messageStack;
+	 	global $admin, $messageStack;
 	 	$messageStack->debug("\n\n*************** Start Import Payment Class *******************");
 	 	$temp = $db->Execute("describe " . TABLE_CONTACTS);
 	 	while (!$temp->EOF) {
@@ -48,7 +48,7 @@ class import_banking extends \phreebooks\classes\journal {
 	 }
 
 	 public function start_import($ouwer_bank_account_number, $post_date, $other_bank_account_number, $credit_amount, $debit_amount, $description, $bank_gl_acct, $other_bank_account_iban){
-	 	global $db, $messageStack,$currencies;
+	 	global $admin, $messageStack,$currencies;
 	 	$this->reset();
 	 	$messageStack->debug("\n\n*************** Start Processing Import Payment *******************");
 	 	if ($ouwer_bank_account_number <> '') {
@@ -81,7 +81,7 @@ class import_banking extends \phreebooks\classes\journal {
 	}
 
 	private function find_contact(&$other_bank_account_number, &$other_bank_account_iban){
-		global $db, $messageStack;
+		global $admin, $messageStack;
 		// check if bankaccount number is iban if that is the case use it as iban.
 		$other_bank_account_iban = strtoupper(str_replace(' ', '', $other_bank_account_iban));
 		if ($this->checkIBAN($other_bank_account_number)){
@@ -145,7 +145,7 @@ class import_banking extends \phreebooks\classes\journal {
 	}
 
 	private function find_right_invoice(){
-		global $db, $messageStack, $currencies;
+		global $admin, $messageStack, $currencies;
 		$messageStack->debug("\n trying to find the right invoice");
 		$found_invoices = array();
 		$invoice_number = array();
@@ -362,7 +362,7 @@ class import_banking extends \phreebooks\classes\journal {
 	}
 
 	private function proces_mutation(){
-		global $db, $messageStack;
+		global $admin, $messageStack;
 		$messageStack->debug("\n this wil be posted as a journal ");
 		$sql ="select gl_account from " . TABLE_JOURNAL_ITEM. " where description = '".$this->_description."' and not gl_account='".$this->gl_acct_id."' and not gl_account='".$this->_questionposts."'";
 		$result = $db->Execute($sql);
@@ -396,7 +396,7 @@ class import_banking extends \phreebooks\classes\journal {
 	}
 
 	private function proces_know_mutation($other_bank_account_number, $other_bank_account_iban){
-		global $db, $messageStack;
+		global $admin, $messageStack;
 		$messageStack->debug("\n we start looking for a match with a know bank account in proces_know_mutation.\n where bank_account = '".$other_bank_account_number."' or bank_iban = '".$other_bank_account_iban );
 		if (isset($this->known_trans[$other_bank_account_iban])){
 			$temp = $other_bank_account_iban;
@@ -454,7 +454,7 @@ class import_banking extends \phreebooks\classes\journal {
 	}
 
 	private function get_known_trans(){
-		global $db, $messageStack;
+		global $admin, $messageStack;
 		$result = $db->Execute("select * from " . TABLE_IMPORT_BANK);
 	 	while(!$result->EOF){
     		$this->known_trans[$result->fields['bank_account']] = array(
@@ -468,9 +468,9 @@ class import_banking extends \phreebooks\classes\journal {
 	private function get_all_open_invoices(){
 		// to build this data array, all current open invoices need to be gathered and then the paid part needs
 		// to be applied along with discounts taken by row.
-		global $db, $currencies;
+		global $admin, $currencies;
 		$sql = "select m.id as id, m.journal_id as journal_id, m.post_date as post_date, m.terms as terms, m.purch_order_id as purch_order_id, i.debit_amount as debit_amount, i.credit_amount as credit_amount,
-		 m.purchase_invoice_id as purchase_invoice_id, m.total_amount as total_amount, m.gl_acct_id as gl_acct_id, m.bill_acct_id as bill_acct_id, c.type as type, c.short_name as short_name, m.waiting as waiting  
+		 m.purchase_invoice_id as purchase_invoice_id, m.total_amount as total_amount, m.gl_acct_id as gl_acct_id, m.bill_acct_id as bill_acct_id, c.type as type, c.short_name as short_name, m.waiting as waiting
 		  from " . TABLE_JOURNAL_MAIN . " m join ".TABLE_CONTACTS." c on m.bill_acct_id = c.id join " .TABLE_JOURNAL_ITEM. " i on m.id = i.ref_id
 		  where journal_id in (6, 7, 12, 13) and closed = '0' and gl_type = 'ttl'";
 		$sql .= " order by m.post_date";
@@ -570,17 +570,17 @@ class import_banking extends \phreebooks\classes\journal {
 	function checkIBAN($iban) {
 	  	// Normalize input (remove spaces and make upcase)
 	  	$iban = strtoupper(str_replace(' ', '', $iban));
-	 
+
 	  	if (preg_match('/^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/', $iban)) {
 		    $country = substr($iban, 0, 2);
 		    $check = intval(substr($iban, 2, 2));
 		    $account = substr($iban, 4);
-		 
+
 		    // To numeric representation
 		    $search = range('A','Z');
 		    foreach (range(10,35) as $tmp) $replace[]=strval($tmp);
 	    	$numstr=str_replace($search, $replace, $account.$country.'00');
-	 
+
 		    // Calculate checksum
 		    $checksum = intval(substr($numstr, 0, 1));
 	    	for ($pos = 1; $pos < strlen($numstr); $pos++) {
@@ -593,9 +593,9 @@ class import_banking extends \phreebooks\classes\journal {
 	    	return false;
 	  	}
 	}
-	
-	
-	
+
+
+
 	public function __destruct(){
 		global $messageStack;
 		$messageStack->debug("\n\n*************** end Import Payment Class*******************");

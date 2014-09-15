@@ -18,14 +18,14 @@
 //
 
 function get_user_name($id = 0) {
-  global $db;
+  global $admin;
   if ($id == 0) return '';
   $result = $db->Execute("select display_name from " . TABLE_USERS . " where admin_id = " . $id);
   return ($result->RecordCount() < 1) ? '' : $result->fields['display_name'];
 }
 
 function wo_build_users() {
-  global $db;
+  global $admin;
   $result = $db->Execute("select admin_id, display_name from " . TABLE_USERS . " where inactive = '0'");
   $user_list = array(array('id' => '', 'text' => TEXT_PLEASE_SELECT));
   while (!$result->EOF) {
@@ -36,7 +36,7 @@ function wo_build_users() {
 }
 
 function allocation_adjustment($sku_id, $qty = 0, $old_qty = 0) {
-  global $db;
+  global $admin;
   $result = $db->Execute("select sku, qty from ".TABLE_INVENTORY_ASSY_LIST." where ref_id = $sku_id");
   while (!$result->EOF) {
 	$total = ($qty - $old_qty) * $result->fields['qty'];

@@ -28,7 +28,7 @@ class google_calendar extends ctl_panel {
   }
 
   function Install($column_id = 1, $row_id = 0) {
-	global $db;
+	global $admin;
 	if (!$row_id) $row_id = $this->get_next_row();
 	$db->Execute("insert into " . TABLE_USERS_PROFILES . " set
 	  user_id = "       . $_SESSION['admin_id'] . ",
@@ -41,14 +41,14 @@ class google_calendar extends ctl_panel {
   }
 
   function Remove() {
-	global $db;
+	global $admin;
 	$result = $db->Execute("delete from " . TABLE_USERS_PROFILES . "
 	  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "'
 	    and dashboard_id = '" . $this->dashboard_id . "'");
   }
 
   function Output($params) {
-	global $db;
+	global $admin;
 	// Build content box
 	$contents = '';
 	$contents .= 'PASTE GOOGLE IFRAME CODE HERE, I MADE MY CALENDAR 450 X 400';

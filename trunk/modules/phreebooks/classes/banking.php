@@ -20,7 +20,7 @@ namespace phreebooks\classes;
 class banking extends \core\classes\journal {
 
 	function __construct() {
-		global $db;
+		global $admin;
 		$this->journal_id          = JOURNAL_ID;//@todo remove
 		$this->save_payment        = false;
 		$this->search              = TEXT_SEARCH;
@@ -52,7 +52,7 @@ class banking extends \core\classes\journal {
 	}
 
 	function post_ordr($action) {
-		global $db, $currencies, $messageStack, $admin;
+		global $admin, $currencies, $messageStack, $admin;
 		$this->journal_main_array = $this->build_journal_main_array();	// build ledger main record
 		$this->journal_rows = array();	// initialize ledger row(s) array
 
@@ -143,7 +143,7 @@ class banking extends \core\classes\journal {
 	}
 
 	function delete_payment() {
-		global $db;
+		global $admin;
 		// verify no item rows have been acted upon (accounts reconciliation)
 		$result = $db->Execute("select closed from " . TABLE_JOURNAL_MAIN . " where id = " . $this->id);
 		if ($result->fields['closed'] == '1') throw new \core\classes\userException($this->error_6);

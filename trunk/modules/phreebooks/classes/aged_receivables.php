@@ -27,7 +27,7 @@ class aged_receivables {
   }
 
   function load_report_data($report, $Seq, $sql = '', $GrpField = '') {
-	global $db;
+	global $admin;
 	// prepare the sql by temporarily replacing calculated fields with real fields
 	$sql_fields = substr($sql, strpos($sql,'select ') + 7, strpos($sql, ' from ') - 7);
 	$this->sql_field_array = explode(', ', $sql_fields);
@@ -35,7 +35,7 @@ class aged_receivables {
 	  $this->sql_field_karray['c' . $i] = substr($this->sql_field_array[$i], 0, strpos($this->sql_field_array[$i], ' '));
 	}
 	$sql = $this->replace_special_fields($sql);
-	
+
 	$result = $db->Execute($sql);
 	if ($result->RecordCount() == 0) throw new \core\classes\userException("no data"); // No data so bail now
 	// Generate the output data array
@@ -60,7 +60,7 @@ class aged_receivables {
 //echo 'orig myrow = '; print_r($myrow); echo '<br /><br />';
 	  $myrow = $this->replace_data_fields($myrow, $report);
 //echo 'new myrow = '; print_r($myrow); echo '<br /><br />';
-	  foreach($Seq as $key => $TableCtl) { // 
+	  foreach($Seq as $key => $TableCtl) { //
 	    if ($report->totalonly <> '1') { // insert data into output array and set to next column
 		  $OutputArray[$RowCnt][$ColCnt] = ProcessData($myrow[$TableCtl['fieldname']], $TableCtl['processing']);
 	    }
@@ -85,7 +85,7 @@ class aged_receivables {
 	}
 	// see if we have a total to send
 	$ShowTotals = false;
-	foreach ($Seq as $TotalCtl) if ($TotalCtl['total']=='1') $ShowTotals = true; 
+	foreach ($Seq as $TotalCtl) if ($TotalCtl['total']=='1') $ShowTotals = true;
 	if ($ShowTotals) {
 		$OutputArray[$RowCnt][0] = 'r:' . $report->title;
 		foreach ($Seq as $TotalCtl) {
@@ -184,9 +184,9 @@ class aged_receivables {
 	  }
 	}
     $new_data = $this->calulate_special_fields($id);
-	foreach ($myrow as $key => $value) { 
+	foreach ($myrow as $key => $value) {
 	  for ($i = 0; $i < count($this->special_field_array); $i++) {
-	    if ($this->sql_field_karray[$key] == $this->special_field_array[$i]) 
+	    if ($this->sql_field_karray[$key] == $this->special_field_array[$i])
 		  $myrow[$key] = $new_data[$this->special_field_array[$i]];
 	  }
 	}
@@ -194,7 +194,7 @@ class aged_receivables {
   }
 
   function calulate_special_fields($id) {
-	global $db;
+	global $admin;
 	$today = date('Y-m-d');
 	$new_data = array();
 	$result = $db->Execute("select debit_amount, credit_amount from " . TABLE_JOURNAL_ITEM . " where gl_type = 'ttl' and ref_id = " . $id);
@@ -212,11 +212,11 @@ class aged_receivables {
 	  $late_90 = gen_specific_date($today, -AR_AGING_PERIOD_3);
 	  if($result2->fields['journal_id'] != 12) $negate = true;
 	}
-	$result3 = $db->Execute("select sum(debit_amount) as debits, sum(credit_amount) as credits 
+	$result3 = $db->Execute("select sum(debit_amount) as debits, sum(credit_amount) as credits
 	  from " . TABLE_JOURNAL_ITEM . " where so_po_item_ref_id = '" . $id . "' and gl_type in ('pmt', 'chk')");
 	if($negate){
 		$total_billed = $result->fields['credit_amount'] - $result->fields['debit_amount'];
-		$total_paid = $result3->fields['debits'] - $result3->fields['credits'];	
+		$total_paid = $result3->fields['debits'] - $result3->fields['credits'];
 	}else{
 		$total_billed = $result->fields['debit_amount'] - $result->fields['credit_amount'];
 		$total_paid = $result3->fields['credits'] - $result3->fields['debits'];

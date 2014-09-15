@@ -15,7 +15,7 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/bulk_inv/functions/bulk_inv.php
-// 
+//
 /*
   function doCURLRequest($method = 'GET', $url, $vars) {
 	global $messageStack;
@@ -47,7 +47,7 @@
   }
 
 function pull_down_price_sheet_list() {
-  global $db;
+  global $admin;
   $output = array(array('id' => '0', 'text' => TEXT_NONE));
   $sql = "select distinct sheet_name from " . TABLE_PRICE_SHEETS . "
 	where '" . date('Y-m-d',time()) . "' >= effective_date and inactive = '0'";

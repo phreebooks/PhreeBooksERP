@@ -34,7 +34,7 @@ class chart_of_accounts {
     }
 
   function btn_save($id = '') {
-  	global $db, $coa_types_list;
+  	global $admin, $coa_types_list;
 	\core\classes\user::validate_security($this->security_id, 2); // security check
 	$this->heading_only     = $this->heading_only == 1 ? '1' : '0';
 	$this->account_inactive = $this->account_inactive == 1 ? '1' : '0';
@@ -71,7 +71,7 @@ class chart_of_accounts {
   }
 
   function btn_delete($id = 0) {
-  	global $db;
+  	global $admin;
 	\core\classes\user::validate_security($this->security_id, 4); // security check
 	// Don't allow delete if there is account activity for this account
 	$sql = "select max(debit_amount) as debit, max(credit_amount) as credit, max(beginning_balance) as beg_bal
@@ -88,7 +88,7 @@ class chart_of_accounts {
   }
 
   function build_main_html() {
-  	global $db, $coa_types_list;
+  	global $admin, $coa_types_list;
     $content = array();
 	$content['thead'] = array(
 	  'value'  => array(TEXT_ACCOUNT_ID, TEXT_ACCOUNT_DESCRIPTION, TEXT_ACCOUNT_TYPE, TEXT_SUBACCOUNT, TEXT_ACTION),
@@ -125,7 +125,7 @@ class chart_of_accounts {
   }
 
   function build_form_html($action, $id = '') {
-    global $db, $coa_types_list;
+    global $admin, $coa_types_list;
     if ($action <> 'new') {
         $sql = "select * from " . $this->db_table . " where id = '" . $this->id . "'";
         $result = $db->Execute($sql);

@@ -32,7 +32,7 @@ class is_budget {
   }
 
   function load_report_data($report, $Seq) {
-	global $db;
+	global $admin;
 	$this->period = $report->period;
 	// find the period range within the fiscal year from the first period to current requested period
 	$result = $db->Execute("select fiscal_year from " . TABLE_ACCOUNTING_PERIODS . " where period = " . $this->period);
@@ -51,12 +51,12 @@ class is_budget {
 
 	$running_total = array();
 	// Revenues
-	$this->add_heading_line(RW_FIN_REVENUES); 
+	$this->add_heading_line(RW_FIN_REVENUES);
 	$total     = $this->add_income_stmt_data(30, $negate = true); // Income account_type
 	foreach ($total as $key => $value) $grand_total[$key] = $value;
 	// Less COGS
 	$this->add_heading_line();
-	$this->add_heading_line(RW_FIN_COST_OF_SALES); 
+	$this->add_heading_line(RW_FIN_COST_OF_SALES);
 	$total  = $this->add_income_stmt_data(32, $negate = false); // Cost of Sales account_type
 	foreach ($total as $key => $value) $grand_total[$key] -= $value;
 	$line = array(0 => 'd');
@@ -73,7 +73,7 @@ class is_budget {
 	$this->inc_stmt_data[] = $line;
 	// Less Expenses
 	$this->add_heading_line();
-	$this->add_heading_line(RW_FIN_EXPENSES); 
+	$this->add_heading_line(RW_FIN_EXPENSES);
 	$total  = $this->add_income_stmt_data(34, $negate = false); // Expenses account_type
 	foreach ($total as $key => $value) $grand_total[$key] -= $value;
 	// Net Income
@@ -88,35 +88,35 @@ class is_budget {
   }
 
   function add_income_stmt_data($type, $negate = false) {
-	global $db, $report;
+	global $admin, $report;
 	$account_array = array();
 	// current period
-	$sql = "select c.id, c.description, h.debit_amount - h.credit_amount as balance, budget   
+	$sql = "select c.id, c.description, h.debit_amount - h.credit_amount as balance, budget
 		from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id
-		where h.period = " . $this->period . " and c.account_type = " . $type . " 
+		where h.period = " . $this->period . " and c.account_type = " . $type . "
 		order by c.id";
 	$cur_period = $db->Execute($sql);
-	$sql = "select (sum(h.debit_amount) - sum(h.credit_amount)) as balance, sum(budget) as budget  
+	$sql = "select (sum(h.debit_amount) - sum(h.credit_amount)) as balance, sum(budget) as budget
 		from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id
-		where h.period >= " . $this->first_period . " and h.period <= " . $this->period . " and c.account_type = " . $type . " 
+		where h.period >= " . $this->first_period . " and h.period <= " . $this->period . " and c.account_type = " . $type . "
 		group by h.account_id order by c.id";
 	$ytd_period = $db->Execute($sql);
 	// last year to date
-	$sql = "select c.id, c.description, h.debit_amount - h.credit_amount as balance, budget   
+	$sql = "select c.id, c.description, h.debit_amount - h.credit_amount as balance, budget
 		from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id
-		where h.period = " . $this->ly_period . " and c.account_type = " . $type . " 
+		where h.period = " . $this->ly_period . " and c.account_type = " . $type . "
 		order by c.id";
 	$lcur_period = $db->Execute($sql);
-	$sql = "select (sum(h.debit_amount) - sum(h.credit_amount)) as balance, sum(budget) as budget  
+	$sql = "select (sum(h.debit_amount) - sum(h.credit_amount)) as balance, sum(budget) as budget
 		from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id
-		where h.period >= " . $this->ly_first_period . " and h.period <= " . $this->ly_period . " and c.account_type = " . $type . " 
+		where h.period >= " . $this->ly_first_period . " and h.period <= " . $this->ly_period . " and c.account_type = " . $type . "
 		group by h.account_id order by c.id";
 	$lytd_period = $db->Execute($sql);
 /*
 	// beginning balances (not needed for income statement since these account types start the year at 0)
-	$sql = "select beginning_balance 
+	$sql = "select beginning_balance
 		from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id
-		where h.period = " . $this->first_period . " and c.account_type = " . $type . " 
+		where h.period = " . $this->first_period . " and c.account_type = " . $type . "
 		group by h.account_id order by c.id";
 	$beg_balance = $db->Execute($sql);
 */

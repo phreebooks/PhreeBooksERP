@@ -30,7 +30,7 @@ class tabs {
     }
 
     public function btn_save($id = '') {
-	  	global $db;
+	  	global $admin;
 	  	\core\classes\user::validate_security($this->security_id, 2); // security check
 		$sql_data_array = array(
 		  'module_id'   => $this->module,
@@ -52,7 +52,7 @@ class tabs {
 	}
 
     public function btn_delete($id = 0) {
-	  	global $db;
+	  	global $admin;
 		\core\classes\user::validate_security($this->security_id, 4); // security check
 		$result = $db->Execute("SELECT field_name FROM ".TABLE_EXTRA_FIELDS." WHERE tab_id='$id'");
 		if ($result->RecordCount() > 0) throw new \core\classes\userException(INV_CATEGORY_CANNOT_DELETE . $result->fields['field_name']);
@@ -63,7 +63,7 @@ class tabs {
 	}
 
     public function build_main_html() {
-	   global $db;
+	   global $admin;
 	   $content = array();
 	   $content['thead'] = array(
 		  'value' => array(TEXT_TITLE, TEXT_DESCRIPTION, TEXT_SORT_ORDER, TEXT_ACTION),
@@ -92,7 +92,7 @@ class tabs {
 	}
 
     public function build_form_html($action, $id = '') {
-	   global $db;
+	   global $admin;
 	   if ($action <> 'new') {
 	       $result = $db->Execute("select * from " . TABLE_EXTRA_TABS . " where id = " . $this->id);
 	       foreach ($result->fields as $key => $value) $this->$key = $value;

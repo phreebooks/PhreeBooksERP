@@ -24,14 +24,14 @@ class pos_builder {
 	public $taxes    		= array();
 	public $payment_rows	= array();
 	public $line_items		= array();
-	
+
   function __construct() {
 	$taxes = ord_calculate_tax_drop_down('c');
 	foreach ($taxes as $rate) $this->taxes[$rate['id']] = $rate['rate']/100;
   }
 
   function load_query_results($tableKey = 'id', $tableValue = 0) {
-	global $db, $report, $FieldListings;
+	global $admin, $report, $FieldListings;
 	if (!$tableValue) throw new \core\classes\userException("tableValue is empty");
 	$sql = "select * from " . TABLE_JOURNAL_MAIN . " where id = " . $tableValue;
 	$result = $db->Execute($sql);
@@ -112,7 +112,7 @@ class pos_builder {
   }
 
   function load_item_details($id) {
-	global $db, $currencies;
+	global $admin, $currencies;
 	// fetch the sales order and build the item list
 	$this->invoice_subtotal = 0;
 	$tax_list = array();
@@ -127,7 +127,7 @@ class pos_builder {
 	  	case 'por':
 			$this->line_items[$index]['invoice_full_price']  = $result->fields['full_price'];
 			$this->line_items[$index]['invoice_unit_price']  = $result->fields['qty'] ? ($price / $result->fields['qty']) : 0;
-			if ($result->fields['full_price'] != 0 && $this->line_items[$index]['invoice_unit_price'] < $result->fields['full_price']){ 
+			if ($result->fields['full_price'] != 0 && $this->line_items[$index]['invoice_unit_price'] < $result->fields['full_price']){
 				$discount    = round(-(1-($price / $result->fields['qty']) / $result->fields['full_price']) * 100,1) .'%';
 			}else{
 				$discount    = '' ;
@@ -160,7 +160,7 @@ class pos_builder {
   }
 
   function load_account_details($id) {
-	global $db;
+	global $admin;
 	$sql = "select * from " . TABLE_CONTACTS . " where id = " . $id;
 	$result = $db->Execute($sql);
 	$this->short_name     = $result->fields['short_name'];
@@ -188,7 +188,7 @@ class pos_builder {
   }
 
   function load_payment_details($id) {
-	global $db;
+	global $admin;
 	$sql = "select * from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $id . " and gl_type in ('pmt', 'chk')";
 	$result = $db->Execute($sql);
 	$this->payment_rows = array();

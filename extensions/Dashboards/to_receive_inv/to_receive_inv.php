@@ -31,7 +31,7 @@ class to_receive_inv extends \core\classes\ctl_panel {
 	public $module_id 			= 'phreebooks';
 
 	function output($params) {
-		global $db, $currencies;
+		global $admin, $currencies;
 		if(count($params) != $this->size_params){ //upgrading
 			$params = $this->upgrade($params);
 		}
@@ -47,8 +47,8 @@ class to_receive_inv extends \core\classes\ctl_panel {
 		$control .= '</div></div>';
 		// Build content box
 		$total = 0;
-		$sql = "select id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value, post_date, journal_id 
-		  from " . TABLE_JOURNAL_MAIN . " 
+		$sql = "select id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value, post_date, journal_id
+		  from " . TABLE_JOURNAL_MAIN . "
 		  where journal_id in (6,7) and waiting = '1' order by post_date DESC, purchase_invoice_id DESC";
 		if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
 		$result = $db->Execute($sql);

@@ -27,7 +27,7 @@ class backorders_report {
   }
 
   function load_report_data($report, $Seq, $sql = '', $GrpField = '') {
-	global $db;
+	global $admin;
 	// prepare the sql by temporarily replacing calculated fields with real fields
 	$sql_fields = substr($sql, strpos($sql,'select ') + 7, strpos($sql, ' from ') - 7);
 	$this->sql_field_array = explode(', ', $sql_fields);
@@ -35,7 +35,7 @@ class backorders_report {
 	  $this->sql_field_karray['c' . $i] = substr($this->sql_field_array[$i], 0, strpos($this->sql_field_array[$i], ' '));
 	}
 	$sql = $this->replace_special_fields($sql);
-	
+
 	$result = $db->Execute($sql);
 	if ($result->RecordCount() == 0) throw new \core\classes\userException("no data"); // No data so bail now
 	// Generate the output data array
@@ -66,7 +66,7 @@ class backorders_report {
 		}
 //echo 'new myrow = '; print_r($myrow); echo '<br /><br />';
 		$OutputArray[$RowCnt][0] = 'd'; // let the display class know its a data element
-		foreach($Seq as $key => $TableCtl) { // 
+		foreach($Seq as $key => $TableCtl) { //
 			// insert data into output array and set to next column
 			$OutputArray[$RowCnt][$ColCnt] = ProcessData($myrow[$TableCtl['fieldname']], $TableCtl['processing']);
 			$ColCnt++;
@@ -90,7 +90,7 @@ class backorders_report {
 	}
 	// see if we have a total to send
 	$ShowTotals = false;
-	foreach ($Seq as $TotalCtl) if ($TotalCtl['total']=='1') $ShowTotals = true; 
+	foreach ($Seq as $TotalCtl) if ($TotalCtl['total']=='1') $ShowTotals = true;
 	if ($ShowTotals) {
 		$OutputArray[$RowCnt][0] = 'r:' . $report->title;
 		foreach ($Seq as $TotalCtl) {
@@ -138,7 +138,7 @@ class backorders_report {
 	$output[] = array('id' => 'journal_main.bill_postal_code',    'text' => RW_BO_BILL_ZIP);
 	$output[] = array('id' => 'journal_main.bill_country_code',   'text' => RW_BO_BILL_COUNTRY);
 	$output[] = array('id' => 'journal_main.bill_telephone1',     'text' => RW_BO_BILL_TELE1);
-	
+
 	$output[] = array('id' => 'journal_item.qty',                 'text' => RW_BO_QTY_ORDERED);
 	$output[] = array('id' => 'journal_item.sku',                 'text' => TEXT_SKU);
 	$output[] = array('id' => 'journal_item.description',         'text' => TEXT_DESCRIPTION);
@@ -164,7 +164,7 @@ class backorders_report {
 	}
     $new_data = $this->calulate_special_fields($id);
 	if (!$new_data) return false;
-	foreach ($myrow as $key => $value) { 
+	foreach ($myrow as $key => $value) {
 	  for ($i = 0; $i < count($this->special_field_array); $i++) {
 	    if ($this->sql_field_karray[$key] == $this->special_field_array[$i]) $myrow[$key] = $new_data[$this->special_field_array[$i]];
 	  }
@@ -173,13 +173,13 @@ class backorders_report {
   }
 
   function calulate_special_fields($id) {
-	global $db;
+	global $admin;
 	$new_data = array();
 	// fetch qty on order
 	$result = $db->Execute("select qty from " . TABLE_JOURNAL_ITEM . " where id = " . $id);
 	$order_qty = $result->fields['qty'];
 	// Fetch qty invoiced
-	$sql = "select sum(qty) as qty_shipped_prior from " . TABLE_JOURNAL_ITEM . " 
+	$sql = "select sum(qty) as qty_shipped_prior from " . TABLE_JOURNAL_ITEM . "
 		where so_po_item_ref_id = " . $id . " and gl_type = 'sos'";
 	$result = $db->Execute($sql);
 	$new_data['qty_backorder']  = $order_qty - $result->fields['qty_shipped_prior'];

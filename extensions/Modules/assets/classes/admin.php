@@ -70,7 +70,7 @@ class admin extends \core\classes\admin {
   	}
 
   	function upgrade() {
-    	global $db;
+    	global $admin;
 		parent::upgrade();
 	    if (version_compare($this->status, '3.1', '<') ) {
 		  	$tab_map = array('0' => '0');
@@ -112,7 +112,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function delete($path_my_files) {
-	    global $db;
+	    global $admin;
 	    parent::delete($path_my_files);
 		$db->Execute("delete from " . TABLE_EXTRA_FIELDS . " where module_id = 'assets'");
 		$db->Execute("delete from " . TABLE_EXTRA_TABS   . " where module_id = 'assets'");
@@ -124,7 +124,7 @@ class admin extends \core\classes\admin {
 	 * @throws Exception
 	 */
 	function validate_name($name){
-		global $db;
+		global $admin;
 		if (!$name) throw new \core\classes\userException(TEXT_THE_ID_FIELD_WAS_EMPTY);
 		$result = $db->Execute("select id from " . TABLE_ASSETS . " where asset_id = '$name'");
 		if ($result->RecordCount() <> 0) throw new \core\classes\userException(sprintf(TEXT_THE_ID_IS_NOT_UNIQUE_ARGS, $name));

@@ -274,7 +274,7 @@ class queryFactoryResult {
   }
 
   function Move($zp_row) {
-    global $db;
+    global $admin;
     if (@mysql_data_seek($this->resource, $zp_row)) {
       $zp_result_array = @mysql_fetch_array($this->resource);
         while (list($key, $value) = each($zp_result_array)) {

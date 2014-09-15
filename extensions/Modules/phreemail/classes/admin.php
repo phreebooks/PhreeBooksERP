@@ -108,7 +108,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function install($path_my_files, $demo = false) {
-	    global $db, $messageStack;
+	    global $admin, $messageStack;
 		parent::install($path_my_files, $demo);
 	  	$db->Execute("INSERT INTO " . TABLE_PHREEMAIL_WORDS . " VALUES(1, 'viagvra');");
 	  	$db->Execute("INSERT INTO " . TABLE_PHREEMAIL_WORDS . " VALUES(2, 'rjolex');");
@@ -122,7 +122,7 @@ class admin extends \core\classes\admin {
 	}
 
   function Aafter_ValidateUser(\core\classes\basis &$basis) {//@todo
-  		global $db, $messageStack;
+  		global $admin, $messageStack;
   		$messageStack->debug("\n\n*************** Retrieving Mail from ".EMAIL_SMTPAUTH_MAILBOX." *******************");
 		try{
 	  		$mail = new \phreemail\classes\phreemail();

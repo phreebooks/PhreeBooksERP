@@ -145,7 +145,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function install($path_my_files, $demo = false) {
-	    global $db;
+	    global $admin;
 	    parent::install($path_my_files, $demo);
 		if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_cust_id_num')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_cust_id_num VARCHAR( 16 ) NOT NULL DEFAULT 'C10000';");
 		if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_vend_id_num')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_vend_id_num VARCHAR( 16 ) NOT NULL DEFAULT 'V10000';");
@@ -155,7 +155,7 @@ class admin extends \core\classes\admin {
 	}
 
   	function upgrade() {
-    	global $db, $messageStack;
+    	global $admin, $messageStack;
     	parent::upgrade();
     	if (version_compare($this->status, '3.3', '<') ) {
 	  		$db->Execute("ALTER TABLE " . TABLE_CONTACTS . " CHANGE short_name short_name VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT ''");
@@ -201,7 +201,7 @@ class admin extends \core\classes\admin {
   	}
 
 	function delete($path_my_files) {
-	    global $db;
+	    global $admin;
 	    parent::delete($path_my_files);
 	    if (db_field_exists(TABLE_CURRENT_STATUS, 'next_cust_id_num'))  $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cust_id_num");
 		if (db_field_exists(TABLE_CURRENT_STATUS, 'next_cust_id_desc')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cust_id_desc");
@@ -223,7 +223,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function load_demo() {
-	    global $db;
+	    global $admin;
 		// Data for table `address_book`
 		$db->Execute("TRUNCATE TABLE " . TABLE_ADDRESS_BOOK);
 		$db->Execute("INSERT INTO " . TABLE_ADDRESS_BOOK . " VALUES (1, 1, 'vm', 'Obscure Video', '', '1354 Triple A Ave', '', 'Chatsworth', 'CA', '93245', 'USA', '800.345.5678', '', '', '', 'obsvid@obscurevideo.com', '', '');");

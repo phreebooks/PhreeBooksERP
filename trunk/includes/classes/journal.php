@@ -24,7 +24,7 @@ class journal {
 	private $first_period		= 0;
 
 	public function __construct( $id = 0, $verbose=true) {
-		global $db;
+		global $admin;
 		if ($id != 0) {
 			$result = $db->Execute("select * from " . TABLE_JOURNAL_MAIN . " where id = $id");
 			// make sure we have a record or die (there's a problem that needs to be fixed)
@@ -127,7 +127,7 @@ class journal {
   	}
 
   	function unPost($action = 'delete', $skip_balance = false) {
-		global $db, $messageStack;
+		global $admin, $messageStack;
 		$messageStack->debug("\nunPosting Journal... id = $this->id and action = $action and journal_id = $this->journal_id");
 		$this->unpost_ids = $this->check_for_re_post();
 		$this->unPost_account_sales_purchases();	// unPost the customer/vendor history
@@ -165,7 +165,7 @@ class journal {
 // START re-post Functions
 /*******************************************************************************************************************/
   	function check_for_re_post() {
-		global $db, $messageStack;
+		global $admin, $messageStack;
 		$messageStack->debug("\n  Checking for re-post records ... ");
 		$repost_ids = array();
 		$gl_type 	= NULL;
@@ -270,7 +270,7 @@ class journal {
 // START Chart of Accout Functions
 /*******************************************************************************************************************/
   function Post_chart_balances() {
-	global $db, $messageStack, $currencies;
+	global $admin, $messageStack, $currencies;
 	$messageStack->debug("\n  Posting Chart Balances...");
 	switch ($this->journal_id) {
 	  case  2: // General Journal
@@ -320,7 +320,7 @@ class journal {
 	 * this function will un do the changes to the chart_of_account_history table
 	 */
   	function unPost_chart_balances() {
-		global $db, $messageStack;
+		global $admin, $messageStack;
 		$messageStack->debug("\n  unPosting Chart Balances...");
 		switch ($this->journal_id) {
 	  		case  2: // General Journal
@@ -357,7 +357,7 @@ class journal {
 
 	// *********  chart of account support functions  **********
   	function update_chart_history_periods($period = CURRENT_ACCOUNTING_PERIOD) {
-		global $db, $messageStack;
+		global $admin, $messageStack;
 		switch ($this->journal_id) {
 		  	case  3: // Purchase Quote
 		  	case  4: // Purchase Order
@@ -436,7 +436,7 @@ class journal {
   	}
 
   	function validate_balance($period = CURRENT_ACCOUNTING_PERIOD) {
-		global $db, $currencies, $messageStack;
+		global $admin, $currencies, $messageStack;
 		$messageStack->debug("\n    Validating trial balance for period: $period ... ");
 		$sql = "select sum(debit_amount) as debit, sum(credit_amount) as credit
 		  from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where period = " . $period;
@@ -474,7 +474,7 @@ class journal {
 /*******************************************************************************************************************/
 // Post the customers/vendors sales/purchases values for the given period
   	function Post_account_sales_purchases() {
-		global $db, $messageStack;
+		global $admin, $messageStack;
 		$messageStack->debug("\n  Posting account sales and purchases ...");
 		switch ($this->journal_id) {
 			case 19:
@@ -519,7 +519,7 @@ class journal {
   	 */
 
 	function unPost_account_sales_purchases() {
-		global $db, $messageStack;
+		global $admin, $messageStack;
 		$messageStack->debug("\n  unPosting account sales and purchases ...");
 		switch ($this->journal_id) {
 		  	case 19:
@@ -554,7 +554,7 @@ class journal {
 // START Inventory Functions
 /*******************************************************************************************************************/
   function Post_inventory() {
-	global $db, $messageStack;
+	global $admin, $messageStack;
 	$messageStack->debug("\n  Posting Inventory ...");
 	switch ($this->journal_id) { // Pre-posting particulars that are journal dependent
 	  case  4:
@@ -693,7 +693,7 @@ class journal {
   }
 
   function unPost_inventory() {
-	global $db, $messageStack;
+	global $admin, $messageStack;
 	$messageStack->debug("\n  unPosting Inventory ...");
 	// if remaining <> qty then some items have been sold; reduce qty and remaining by original qty (qty will be 0)
 	// and keep record. Quantity may go negative because it was used in a COGS calculation but will be corrected when
@@ -782,7 +782,7 @@ class journal {
 
 // *********  inventory support functions  **********
   	function update_inventory_status($sku, $field, $adjustment, $item_cost = 0, $desc = '', $full_price = 0) {
-		global $db, $messageStack;
+		global $admin, $messageStack;
 		if (!$sku || $adjustment == 0) return true;
 		$messageStack->debug("\n    update_inventory_status, SKU = " . $sku . ", field = " . $field . ", adjustment = " . $adjustment . ", and item_cost = " . $item_cost);
 		// catch sku's that are not in the inventory database but have been requested to post
@@ -816,7 +816,7 @@ class journal {
   	 * @throws Exception
   	 */
   	function calculate_COGS($item, $return_cogs = false) {
-		global $db, $messageStack;
+		global $admin, $messageStack;
 		$messageStack->debug("\n    Calculating COGS, SKU = " . $item['sku'] . ' and QTY = ' . $item['qty']);
 		$cogs = 0;
 		// fetch the additional inventory item fields we need
@@ -1014,7 +1014,7 @@ class journal {
   	}
 
   function calculateCost($sku, $qty=1, $serial_num='') {
-  	global $db, $messageStack;
+  	global $admin, $messageStack;
   	$messageStack->debug("\n    Calculating SKU cost, SKU = $sku and QTY = $qty");
   	$cogs = 0;
   	$defaults = $db->Execute("SELECT inventory_type, item_cost, cost_method, serialize FROM ".TABLE_INVENTORY." WHERE sku='$sku'");
@@ -1046,7 +1046,7 @@ class journal {
   }
 
   function calculate_avg_cost($sku = '', $price = 0, $qty = 1) {
-  	global $db, $messageStack;
+  	global $admin, $messageStack;
 	$sql = "SELECT avg_cost, remaining FROM ".TABLE_INVENTORY_HISTORY."
 		WHERE ref_id<>$this->id AND sku='$sku' AND remaining>0 AND post_date<='$this->post_date'";
   	if ($this->store_id > 0) $sql .= " AND store_id='$this->store_id'";
@@ -1065,7 +1065,7 @@ class journal {
   }
 
   function fetch_avg_cost($sku, $qty=1) {
-	global $db, $messageStack;
+	global $admin, $messageStack;
 	$messageStack->debug("\n      Entering fetch_avg_cost for sku: $sku and qty: $qty ... ");
 	$sql = "SELECT avg_cost, remaining, post_date FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='$sku' AND remaining>0";
 	if (ENABLE_MULTI_BRANCH) $sql .= " AND store_id='$this->store_id'";
@@ -1093,7 +1093,7 @@ class journal {
 	// Rolling back cost of goods sold required to unpost an entry involves only re-setting the inventory history.
 	// The cogs records and costing is reversed in the unPost_chart_balances function.
   function rollback_COGS() {
-	global $db, $messageStack;
+	global $admin, $messageStack;
 	$messageStack->debug("\n    Rolling back COGS ... ");
 	// only calculate cogs for certain inventory_types
 	$sql = "select id, qty, inventory_history_id from " . TABLE_INVENTORY_COGS_USAGE . " where journal_main_id = " . $this->id;
@@ -1114,7 +1114,7 @@ class journal {
   }
 
   function load_so_po_balance($ref_id, $id = '', $post = true) {
-	global $db, $messageStack;
+	global $admin, $messageStack;
 	$messageStack->debug("\n    Starting to load SO/PO balances ...");
 	$item_array = array();
 	if ($ref_id) {
@@ -1164,7 +1164,7 @@ class journal {
   }
 
   	function calculate_assembly_list($inv_list) {
-		global $db, $messageStack;
+		global $admin, $messageStack;
 		$messageStack->debug("\n    Calculating Assembly item list, SKU = " . $inv_list['sku']);
 		$sku = $inv_list['sku'];
 		$qty = $inv_list['qty'];
@@ -1235,7 +1235,7 @@ class journal {
   	}
 
   function branch_qty_on_hand($sku, $current_qty_in_stock = 0) {
-	global $db;
+	global $admin;
 	$sql = "select sum(remaining) as remaining from " . TABLE_INVENTORY_HISTORY . "
 		where store_id = " . $this->store_id . " and sku = '" . $sku . "'";
 	$result = $db->Execute($sql);
@@ -1342,7 +1342,7 @@ class journal {
   }
 
   function check_for_closed_po_so($action = 'Post') {
-	global $db, $currencies, $messageStack;
+	global $admin, $currencies, $messageStack;
 	// closed can occur many ways including:
 	//   forced closure through so/po form (from so/po journal - adjust qty on so/po)
 	//   all quantities are reduced to zero (from so/po journal - should be deleted instead but it's possible)
@@ -1438,7 +1438,7 @@ class journal {
   }
 
   function close_so_po($id, $closed) {
-    global $db, $messageStack;
+    global $admin, $messageStack;
 	$sql_data_array = array(
 	  'closed'      => ($closed) ? '1' : '0',
 	  'closed_date' => ($closed) ? $this->post_date : '0000-00-00',
@@ -1452,7 +1452,7 @@ class journal {
    * @throws Exception
    */
   function validate_purchase_invoice_id() {
-	global $db, $messageStack;
+	global $admin, $messageStack;
 	$messageStack->debug("\n  Start validating purchase_invoice_id ... ");
 	if ($this->purchase_invoice_id <> '') {	// entered a so/po/invoice value, check for dups
 	  switch ($this->journal_id) { // allow for duplicates in the following journals
@@ -1497,7 +1497,7 @@ class journal {
   }
 
   	function increment_purchase_invoice_id($force = false) {
-		global $db;
+		global $admin;
 		if ($this->purchase_invoice_id == '' || $force) { // increment the po/so/invoice number
 	  		switch ($this->journal_id) { // select the field to increment the number
 				case  3: $str_field = 'next_ap_quote_num'; break;
@@ -1526,7 +1526,7 @@ class journal {
   	}
 
   function add_account($type, $acct_id = 0, $address_id = 0, $allow_overwrite = false) {
-	global $db;
+	global $admin;
 	$acct_type = substr($type, 0, 1);
 	switch (substr($type, 1, 1)) {
 	  case 'b':
@@ -1638,7 +1638,7 @@ class journal {
   }
 
   function get_recur_ids($recur_id, $id) {
-	global $db;
+	global $admin;
 	// special case when re-posting and the post date is changed, need to fetch original post date
 	// from orginal record to include in original transaction
 	$result = $db->Execute("select post_date from " . TABLE_JOURNAL_MAIN . " where id = " . $id);

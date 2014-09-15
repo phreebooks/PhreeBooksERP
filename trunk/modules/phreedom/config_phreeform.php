@@ -48,7 +48,7 @@ function pf_process_phreedom($strData, $Process) {
 }
 
 function pb_get_user_name($id) {
-  global $db;
+  global $admin;
   if (!$id) return '';
   $result = $db->Execute("select display_name from " . TABLE_USERS . " where admin_id = " . (int)$id);
   return $result->RecordCount()==0 ? '' : $result->fields['display_name'];

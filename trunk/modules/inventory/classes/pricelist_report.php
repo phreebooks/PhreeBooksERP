@@ -32,7 +32,7 @@ class pricelist_report {
   }
 
   function load_report_data($report, $Seq, $sql = '', $GrpField = '') {
-	global $db;
+	global $admin;
 	// prepare the sql by temporarily replacing calculated fields with real fields
 	$sql_fields = substr($sql, strpos($sql,'select ') + 7, strpos($sql, ' from ') - 7);
 	$this->sql_field_array = explode(', ', $sql_fields);
@@ -40,7 +40,7 @@ class pricelist_report {
 	  $this->sql_field_karray['c' . $i] = substr($this->sql_field_array[$i], 0, strpos($this->sql_field_array[$i], ' '));
 	}
 	$sql = $this->replace_special_fields($sql);
-	
+
 	$result = $db->Execute($sql);
 	if ($result->RecordCount() == 0) throw new \core\classes\userException("No data");
 	// Generate the output data array
@@ -69,7 +69,7 @@ class pricelist_report {
 			continue; // skip the row, order has been filled
 		}
 		$OutputArray[$RowCnt][0] = 'd'; // let the display class know its a data element
-		foreach($Seq as $key => $TableCtl) { // 
+		foreach($Seq as $key => $TableCtl) { //
 			// insert data into output array and set to next column
 			$OutputArray[$RowCnt][$ColCnt] = ProcessData($myrow[$TableCtl['fieldname']], $TableCtl['processing']);
 			$ColCnt++;
@@ -93,7 +93,7 @@ class pricelist_report {
 	}
 	// see if we have a total to send
 	$ShowTotals = false;
-	foreach ($Seq as $TotalCtl) if ($TotalCtl['total']=='1') $ShowTotals = true; 
+	foreach ($Seq as $TotalCtl) if ($TotalCtl['total']=='1') $ShowTotals = true;
 	if ($ShowTotals) {
 		$OutputArray[$RowCnt][0] = 'r:' . $report->title;
 		foreach ($Seq as $TotalCtl) {
@@ -149,7 +149,7 @@ class pricelist_report {
 	  }
 	}
     $new_data = $this->calulate_special_fields($id);
-	foreach ($myrow as $key => $value) { 
+	foreach ($myrow as $key => $value) {
 	  for ($i = 0; $i < count($this->special_field_array); $i++) {
 	    if ($this->sql_field_karray[$key] == $this->special_field_array[$i]) $myrow[$key] = $new_data[$this->special_field_array[$i]];
 	  }
@@ -158,7 +158,7 @@ class pricelist_report {
   }
 
   function calulate_special_fields($id) {
-	global $db, $currencies;
+	global $admin, $currencies;
 	// get the inventory prices
 	$inventory = $db->Execute("select item_cost, full_price, price_sheet from ".TABLE_INVENTORY." where id = '$id'");
 	// determine what price sheet to use, priority: inventory, default
@@ -173,7 +173,7 @@ class pricelist_report {
 	$levels = false;
 	if ($sheet_name <> '') {
 		$sql = "select id, default_levels from " . TABLE_PRICE_SHEETS . "
-		    where inactive = '0' and type = 'c' and sheet_name = '" . $sheet_name . "' and 
+		    where inactive = '0' and type = 'c' and sheet_name = '" . $sheet_name . "' and
 		    (expiration_date is null or expiration_date = '0000-00-00' or expiration_date >= '" . date('Y-m-d') . "')";
 		$price_sheets = $db->Execute($sql);
 		// retrieve special pricing for this inventory item

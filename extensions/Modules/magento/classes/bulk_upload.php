@@ -22,7 +22,7 @@ class bulk_upload {
   }
 
   function bulkUpload($inc_image = false) {
-	global $db, $messageStack;
+	global $admin, $messageStack;
 	$result = $db->Execute("select id from " . TABLE_INVENTORY . " where catalog = '1' " . $where);
 	$cnt    = 0;
 	while(!$result->EOF) {

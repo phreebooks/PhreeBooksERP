@@ -61,7 +61,7 @@ class magento {
 //                           Product Upload XML string generation
 /*************************************************************************************/
   function buildProductUploadXML($id, $inc_image = true) {
-	global $db, $currencies;
+	global $admin, $currencies;
 	$result = $db->Execute("select * from " . TABLE_INVENTORY . " where id = " . $id);
 	if ($result->RecordCount() <> 1) throw new \core\classes\userException(MAGENTO_INVALID_SKU);
 	$this->sku = $result->fields['sku'];
@@ -192,7 +192,7 @@ if (file_exists(DIR_FS_MODULES . 'magento/custom/extra_product_attrs.php')) {
 //                           Product Syncronizer string generation
 /*************************************************************************************/
   function buildProductSyncXML() {
-	global $db;
+	global $admin;
 	$result = $db->Execute("select sku from " . TABLE_INVENTORY . " where catalog = '1'");
 	if ($result->RecordCount() == 0) throw new \core\classes\userException(MAGENTO_ERROR_NO_ITEMS);
 	$this->strXML  = '<?xml version="1.0" encoding="UTF-8" ?>' . chr(10);
@@ -218,7 +218,7 @@ if (file_exists(DIR_FS_MODULES . 'magento/custom/extra_product_attrs.php')) {
 //                           Product Shipping Confirmation String Generation
 /*************************************************************************************/
   function buildConfirmXML() {
-    global $db;
+    global $admin;
 	$methods = $this->loadShippingMethods();
 	$this->strXML  = '<?xml version="1.0" encoding="UTF-8" ?>' . chr(10);
 	$this->strXML .= '<Request>' . chr(10);

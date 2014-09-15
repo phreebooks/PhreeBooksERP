@@ -29,7 +29,7 @@ class company_links extends \core\classes\ctl_panel {
 	public  $version      		= '3.5';
 
   	function install($column_id = 1, $row_id = 0) {
-  		global $db;
+  		global $admin;
 		// fetch the pages params to copy to new install
 		$result = $db->Execute("select params from ".TABLE_USERS_PROFILES."
 	  	  where menu_id = '".$this->menu_id."' and dashboard_id = '".$this->id."'"); // just need one
@@ -38,7 +38,7 @@ class company_links extends \core\classes\ctl_panel {
   	}
 
   	function output($params) {
-		global $db;
+		global $admin;
 		$contents = '';
 		$control  = '';
 		// Build control box form data
@@ -74,7 +74,7 @@ class company_links extends \core\classes\ctl_panel {
   	}
 
 	function update() {
-		global $db;
+		global $admin;
 		$my_title  = db_prepare_input($_POST['company_links_field_0']);
 		$my_url    = db_prepare_input($_POST['company_links_field_1']);
 		$remove_id = db_prepare_input($_POST[$this->id . '_rId']);

@@ -52,7 +52,7 @@ class i extends \contacts\classes\contacts{
 	}
 
 	public function data_complete(){
-    	global $db;
+    	global $admin;
     	if ($this->auto_field && $this->short_name == '') {
     		$result = $db->Execute("select ".$this->auto_field." from ".TABLE_CURRENT_STATUS);
     		$this->short_name  = $result->fields[$this->auto_field];
@@ -79,7 +79,7 @@ class i extends \contacts\classes\contacts{
 
 
   public function save_contact(){
-    global $db;
+    global $admin;
 
     $sql_data_array['type']            = $this->type;
     $sql_data_array['short_name']      = $this->short_name;
@@ -114,7 +114,7 @@ class i extends \contacts\classes\contacts{
   }
 
   public function save_addres(){
-    global $db;
+    global $admin;
     // address book fields
     foreach ($this->address_types as $value) {
       if (($value == 'im') || // contact main address when editing the contact directly

@@ -30,7 +30,7 @@ class sku_pricer {
   	 * @return void|boolean
   	 */
   	function processCSV($filename) { //Master
-  		global $db, $messageStack;
+  		global $admin, $messageStack;
   		$rows = $this->csv_to_array($_FILES[$filename]['tmp_name'], $delimiter=',');
   		$messageStack->debug("\nfinished parsing, extracted number of rows = ".sizeof($rows));
 		$valid_fields = array(

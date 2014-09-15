@@ -27,7 +27,7 @@ require_once(DIR_FS_ADMIN . 'soap/classes/parser.php');
 class phreebooks extends parser {
 
   function submitXML($action, $data = '') {
-	global $db, $messageStack;
+	global $admin, $messageStack;
 	switch ($action) {
 	  case 'download':
 		$strXML = $this->buildOrderDownloadXML($data);
@@ -180,7 +180,7 @@ class phreebooks extends parser {
 
 // Misc function to format XML string properly
   function getCodes($country, $zone) {
-	global $db;
+	global $admin;
 	$codes = array();
 	$iso_country = $db->Execute("select countries_id, countries_iso_code_2 from " . TABLE_COUNTRIES . "
 	  where countries_name = '" . $country . "'");
@@ -216,7 +216,7 @@ class phreebooks extends parser {
   }
 
   function find_sku($id, $name) {
-	global $db;
+	global $admin;
 	$result = $db->Execute("select phreebooks_sku from " . TABLE_PRODUCTS . " where products_id = '" . $id . "'");
 	return ($result->fields['phreebooks_sku'] <> '') ? $result->fields['phreebooks_sku'] : $name;
   }

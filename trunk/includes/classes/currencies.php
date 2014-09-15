@@ -36,7 +36,7 @@ class currencies {
   	}
 
   	function load_currencies(){
-  		global $db;
+  		global $admin;
   		$currencies = $db->Execute("select * from " .$this->db_table);
     	while (!$currencies->EOF) {
 	  		$this->currencies[$currencies->fields['code']] = array(
@@ -125,7 +125,7 @@ class currencies {
 
 
   	function btn_save($id = '') {
-	  	global $db, $messageStack;
+	  	global $admin, $messageStack;
 	  	\core\classes\user::validate_security($this->security_id, 3); // security check
 		$title = db_prepare_input($_POST['title']);
 		$code = strtoupper(db_prepare_input($_POST['code']));
@@ -168,7 +168,7 @@ class currencies {
      * this functions updates currency values
      */
   	function btn_update() { // updates the currency rates
-	  	global $db, $messageStack;
+	  	global $admin, $messageStack;
 		$message = array();
 	/* commented out so everyone can update currency exchange rates
 	  	\core\classes\user::validate_security($security_level, 1);
@@ -218,7 +218,7 @@ class currencies {
 	}
 
 	function btn_delete($id = 0) {
-	  	global $db;
+	  	global $admin;
 	  	\core\classes\user::validate_security($this->security_id, 4); // security check
 		// Can't delete default currency or last currency
 		$result = $db->Execute("select currencies_id from " . $this->db_table . " where code = '" . DEFAULT_CURRENCY . "'");
@@ -232,7 +232,7 @@ class currencies {
 	}
 
 	function build_main_html() {
-	  	global $db;
+	  	global $admin;
 	    $content = array();
 		$content['thead'] = array(
 		  'value'  => array(TEXT_CURRENCY, TEXT_CURRENCY_CODE, TEXT_VALUE, TEXT_ACTION),
@@ -259,7 +259,7 @@ class currencies {
 	}
 
 	function build_form_html($action, $code) {
-	    global $db;
+	    global $admin;
 	    $this->load_currencies();
 	    $value = $this->currencies[$code];
 		$output  = '<table class="ui-widget" style="border-style:none;width:100%">' . chr(10);

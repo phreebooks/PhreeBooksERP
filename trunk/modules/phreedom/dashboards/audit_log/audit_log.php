@@ -39,7 +39,7 @@ class audit_log extends \core\classes\ctl_panel {
 	}
 
 	function output($params) {
-		global $db, $currencies;
+		global $admin, $currencies;
 		if(count($params) != $this->size_params){ //upgrading
 			$params = $this->upgrade($params);
 		}

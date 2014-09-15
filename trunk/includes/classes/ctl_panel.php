@@ -48,12 +48,12 @@ class ctl_panel {
 	}
 
   	function install($column_id = 1, $row_id = 0) {
-		global $db;
+		global $admin;
 		if (!$row_id) $row_id 		= $this->get_next_row();
 		//$this->params['num_rows']   = $this->default_num_rows;	// defaults to unlimited rows
 		$result = $db->Execute("insert into " . TABLE_USERS_PROFILES . " set
 		  user_id = {$_SESSION['admin_id']}, menu_id = '{$this->menu_id}', module_id = '{$this->module_id}',
-		  dashboard_id = '{$this->id}', column_id = $column_id, row_id = $row_id,
+		  dashboard_id = '".get_class($this)."', column_id = $column_id, row_id = $row_id,
 		  params = '"       . serialize($this->default_params) . "'");
   	}
 
@@ -61,7 +61,7 @@ class ctl_panel {
   	 * this will be called when a user unchecks the show on page check box.
   	 */
   	function remove() {
-		global $db;
+		global $admin;
 		$result = $db->Execute("delete from " . TABLE_USERS_PROFILES . " where user_id = {$_SESSION['admin_id']} and menu_id = '{$this->menu_id}' and dashboard_id = '{$this->id }'");
   	}
 
@@ -70,14 +70,14 @@ class ctl_panel {
   	 */
 
   	function delete(){
-		global $db;
+		global $admin;
 		$result = $db->Execute("delete from " . TABLE_USERS_PROFILES . " where dashboard_id = '{$this->id}' and module_id = '{$this->module_id}'");
 		foreach ($this->keys as $key) remove_configure($key['key']); // remove all of the keys from the configuration table
 		return true;
   	}
 
   	function update() {
-  		global $db;
+  		global $admin;
   		$db->Execute("update " . TABLE_USERS_PROFILES . " set params = '" . serialize($this->params) . "'
 	  		where user_id = {$_SESSION['admin_id']} and menu_id = '{$this->menu_id}'
 	    	and dashboard_id = '{$this->id}'");
@@ -124,7 +124,7 @@ class ctl_panel {
   	}
 
 	function get_next_row($column_id = 1) {
-		global $db;
+		global $admin;
 		$result = $db->Execute("select max(row_id) as max_row from " . TABLE_USERS_PROFILES . "
 		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "' and column_id = " . $column_id);
 		return ($result->fields['max_row'] + 1);

@@ -26,7 +26,7 @@ class subaccount_bs {
   }
 
   function load_report_data($report) {
-	global $db, $Seq;
+	global $admin, $Seq;
 	$period = $report->period;
 	$this->max_num_levels = sizeof($report['FieldListings']) - 1; // maximum number of indents
 	$sql = "select account_id, beginning_balance + debit_amount - credit_amount as balance

@@ -45,7 +45,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 
 	//this is to copy a product
 	function copy($id, $newSku) {
-		global $db;
+		global $admin;
 		parent::copy($id, $newSku);
 		$result = $db->Execute("select * from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = '$id'");
 		while(!$result->EOF) {
@@ -80,7 +80,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 	}
 
 	function get_bom_list(){
-		global $db;
+		global $admin;
 		$this->assy_cost = 0;
 		$result = $db->Execute("select i.id as inventory_id, l.id, l.sku, l.description, l.qty as qty from " . TABLE_INVENTORY_ASSY_LIST . " l join " . TABLE_INVENTORY . " i on l.sku = i.sku where l.ref_id = " . $this->id . " order by l.id");
 		$x =0;
@@ -97,7 +97,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 	}
 
 	function get_ms_list(){
-		global $db;
+		global $admin;
 		$result = $db->Execute("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->sku . "'");
 	  	$this->ms_attr_0   = ($result->RecordCount() > 0) ? $result->fields['attr_0'] 		: '';
 	  	$this->attr_name_0 = ($result->RecordCount() > 0) ? $result->fields['attr_name_0'] 	: '';
@@ -154,7 +154,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 	}
 
 	function check_remove($id){
-		global $db;
+		global $admin;
 		if(!isset($id)) throw new \core\classes\userException("the id field isn't set");
 		$this->get_item_by_id($id);
 		// check to see if there is inventory history remaining, if so don't allow delete
@@ -171,7 +171,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 	}
 
 	function remove(){
-		global $db;
+		global $admin;
 		$ms_array = $db->Execute("select * from " . TABLE_INVENTORY . " where sku like '" . $this->sku . "-%'");
 		parent::remove();
 		$db->Execute("delete from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->sku . "'");
@@ -191,7 +191,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 	}
 
 	function save(){
-		global $db, $security_level, $currencies;
+		global $admin, $security_level, $currencies;
 		$bom_list = array();
 		for($x=0; $x < count($_POST['assy_sku']); $x++) {
 			$bom_list[$x] = array(

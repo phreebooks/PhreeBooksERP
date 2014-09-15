@@ -35,7 +35,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 
 	//this is to copy a product
 	function copy($id, $newSku) {
-		global $db;
+		global $admin;
 		parent::copy($id, $newSku);
 		$result = $db->Execute("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->old_sku . "'");
 		$data_array = array(
@@ -50,7 +50,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 	}
 
 	function get_ms_list(){
-		global $db;
+		global $admin;
 		$result = $db->Execute("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->sku . "'");
 	  	$this->ms_attr_0   = ($result->RecordCount() > 0) ? $result->fields['attr_0'] 		: '';
 	  	$this->attr_name_0 = ($result->RecordCount() > 0) ? $result->fields['attr_name_0'] 	: '';
@@ -124,7 +124,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 	}
 
 	function remove(){
-		global $db;
+		global $admin;
 		$ms_array = $db->Execute("select * from " . TABLE_INVENTORY . " where sku like '" . $this->sku . "-%'");
 		parent::remove();
 		$db->Execute("delete from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->sku . "'");
@@ -143,7 +143,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 	}
 
 	function save(){
-		global $db, $messageStack, $security_level, $currencies;
+		global $admin, $messageStack, $security_level, $currencies;
 		$current_situation = $db->Execute("select * from " . TABLE_INVENTORY . " where id = '{$this->id}'");
 		$sql_data_array = parent::save();
 		$sql_data_array['inventory_type'] = 'mi';

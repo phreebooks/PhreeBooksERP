@@ -44,7 +44,7 @@ class contacts {
     private $sql_data_array     = array();
 
     public function __construct(){
-    	global $db;
+    	global $admin;
     	$this->page_title_new = sprintf(TEXT_NEW_ARGS, $this->title);
     	$this->page_title_edit = sprintf(TEXT_EDIT_ARGS, $this->title);
     	//set defaults
@@ -57,7 +57,7 @@ class contacts {
     }
 
 	public function getContact() {
-	  	global $db;
+	  	global $admin;
 	  	if ($this->id == '' && !$this->aid == ''){
 	  		$result = $db->Execute("select * from ".TABLE_ADDRESS_BOOK." where address_id = $this->aid ");
 	  		$this->id = $result->fields['ref_id'];
@@ -118,7 +118,7 @@ class contacts {
   }
 
   function delete($id) {
-  	global $db;
+  	global $admin;
   	if ( $this->id == '' ) $this->id = $id;	// error check, no delete if a journal entry exists
 	$result = $db->Execute("SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE bill_acct_id=$this->id OR ship_acct_id=$this->id OR store_id=$this->id LIMIT 1");
 	if ($result->RecordCount() != 0) throw new \core\classes\userException(ACT_ERROR_CANNOT_DELETE);
@@ -126,7 +126,7 @@ class contacts {
   }
 
   public function do_delete(){
-	  global $db;
+	  global $admin;
 	  $db->Execute("DELETE FROM ".TABLE_ADDRESS_BOOK ." WHERE ref_id=$this->id");
 	  $db->Execute("DELETE FROM ".TABLE_DATA_SECURITY." WHERE ref_1=$this->id");
 	  $db->Execute("DELETE FROM ".TABLE_CONTACTS     ." WHERE id=$this->id");
@@ -139,7 +139,7 @@ class contacts {
    */
 
   function load_open_orders($acct_id, $journal_id, $only_open = true, $limit = 0) {
-  	global $db;
+  	global $admin;
   	if (!$acct_id) return array();
   	$sql  = "select id, journal_id, closed, closed_date, post_date, total_amount, purchase_invoice_id, purch_order_id from ".TABLE_JOURNAL_MAIN." where";
   	$sql .= ($only_open) ? " closed = '0' and " : "";
@@ -166,7 +166,7 @@ class contacts {
   }
 
   	public function data_complete(){
-  		global $db, $messageStack;
+  		global $admin, $messageStack;
   		if ($this->auto_type && $this->short_name == '') {
     		$result = $db->Execute("select ".$this->auto_field." from ".TABLE_CURRENT_STATUS);
         	$this->short_name  = $result->fields[$this->auto_field];
@@ -196,7 +196,7 @@ class contacts {
    */
 
   public function duplicate_id(){
-  	global $db;
+  	global $admin;
   	// check for duplicate short_name IDs
     if ($this->id == '') {
       $result = $db->Execute("select id from ".TABLE_CONTACTS." where short_name = '$this->short_name' and type = '$this->type'");
@@ -211,7 +211,7 @@ class contacts {
    */
 
   public function save_contact(){
-  	global $db;
+  	global $admin;
   	$fields = new \contacts\classes\fields(false);
   	$sql_data_array = $fields->what_to_save();
     $sql_data_array['type']            = $this->type;
@@ -246,7 +246,7 @@ class contacts {
   }
 
   public function save_addres(){
-  	global $db;
+  	global $admin;
     // address book fields
     foreach ($this->address_types as $value) {
       if (($value <> 'im' && substr($value, 1, 1) == 'm') || // all main addresses except contacts which is optional

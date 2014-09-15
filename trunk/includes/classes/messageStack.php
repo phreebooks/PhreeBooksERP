@@ -88,7 +88,7 @@ class messageStack {
     }
 
 	function debug($txt) {
-	  	global $db;
+	  	global $admin;
 	  	error_log("date: " . date('Y-m-d H:i:s') . " company:" .\core\classes\user::get_company(). " user: ".\core\classes\user::__get('display_name'). ' ' . substr($txt, 1) . PHP_EOL, 3, DIR_FS_MY_FILES."/development.log");
 	  	if (substr($txt, 0, 1) == "\n") {
 //echo "\nTime: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, " . $db->count_queries . " SQLs " . (int)($db->total_query_time * 1000)." ms => " . substr($txt, 1) . '<br>';
@@ -101,7 +101,7 @@ class messageStack {
 	}
 
 	function write_debug() {
-	  	global $db;
+	  	global $admin;
 	  	$this->debug_header_info .= "Trace information for debug purposes. Phreedom release {$admin->classes['phreedom']->version}, generated " . date('Y-m-d H:i:s') . ".\n\n";
 	  	$this->debug_header_info .= "\nGET     Vars = " . arr2string($_GET);
 	  	$this->debug_header_info .= "\nPOST    Vars = " . arr2string($_POST);

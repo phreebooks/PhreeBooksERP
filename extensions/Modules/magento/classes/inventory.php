@@ -31,7 +31,7 @@ class inventory {
 	private $attributeSets = array();
 
 	function get_item_by_id(integer $id) {
-		global $db;
+		global $admin;
 		$result = $db->Execute("SELECT * FROM ".TABLE_INVENTORY." WHERE id = $id");
 		if ($result->RecordCount() == 0) throw new \core\classes\userException("couldn't find inventory with id $id");
 		$this->name 					= $result->fields['name'];
@@ -56,20 +56,20 @@ class inventory {
 		$this->custom_design 			= $result->fields['custom_design'];
 		$this->custom_layout_update 	= $result->fields['custom_layout_update'];
 		//$this->options_container 		= $result->fields[''];
-		
+
 		foreach ($this->attributeSets as $key => $value) {
 			if(isset($result->fields[$key])) $this->additional_attributes['multi_data'][] = array($key => $result->fields[$key]) ;
 		}
 		return true;
 	}
-	
-	/** 
+
+	/**
 	 * this function gets inventory details from the database by sku
 	 * @param char $sku
 	 */
-	
+
 	function get_item_by_sku(char $sku){
-		global $db;
+		global $admin;
 		$result = $db->Execute("select * from " . TABLE_INVENTORY . " where sku = '$sku'");
 		if ($result->RecordCount() != 0) throw new \core\classes\userException("couldn't find inventory with sku $sku");
 		$this->name 					= $result->fields['name'];
@@ -94,14 +94,14 @@ class inventory {
 		$this->custom_design 			= $result->fields['custom_design'];
 		$this->custom_layout_update 	= $result->fields['custom_layout_update'];
 		//$this->options_container 		= $result->fields[''];
-			
+
 		foreach ($this->attributeSets as $key => $value) {
 			print("key = $key<br/>");print_r($value);
 			if(isset($result->fields[$key])) $this->additional_attributes['multi_data'][] = array($key => $result->fields[$key]) ;
 		}
 		return true;
 	}
-	
+
 	function set_attributeSets($attributeSets){
 		$this->attributeSets = $attributeSets;
 	}

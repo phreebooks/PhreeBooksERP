@@ -38,7 +38,7 @@ function pf_process_phreebooks($strData, $Process) {
 }
 
 function pb_pull_order_qty($ref_id = 0) {
-  global $db, $ReportID;
+  global $admin, $ReportID;
   $sql = "select qty from " . TABLE_JOURNAL_ITEM  . " where id = " . (int)$ref_id;
   $result = $db->Execute($sql);
   if ($result->RecordCount() == 0) { // no sales/purchase order, was a direct invoice/POS
@@ -54,13 +54,13 @@ function pb_get_coa_type($id) {
 }
 
 function pb_get_avg_cost($sku) {
-	global $db;
+	global $admin;
 	$result = $db->Execute("SELECT avg_cost FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='$sku' ORDER BY post_date DESC LIMIT 1");
 	return number_format($result->fields['avg_cost'], 2);
 }
 
 function pb_get_avg_total($history_id) {
-	global $db;
+	global $admin;
 	$result    = $db->Execute("SELECT remaining, sku FROM ".TABLE_INVENTORY_HISTORY." WHERE id='$history_id'");
 	$remaining = $result->fields['remaining'];
 	$sku       = $result->fields['sku'];

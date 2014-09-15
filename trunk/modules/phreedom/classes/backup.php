@@ -205,7 +205,7 @@ class backup {
 
   function db_executeSql($sql_file, $table_prefix = '') {
 //echo 'start SQL execute';
-    global $db;
+    global $admin;
     $ignored_count = 0;
     // prepare for upgrader processing
     if (!get_cfg_var('safe_mode')) {

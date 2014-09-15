@@ -28,7 +28,7 @@ class personal_links extends \core\classes\ctl_panel {
 	public $module_id 			= 'phreedom';
 
 	function output($params) {
-		global $db;
+		global $admin;
 		$contents = '';
 		$control  = '';
 		// Build control box form data
@@ -60,7 +60,7 @@ class personal_links extends \core\classes\ctl_panel {
 	}
 
 	function update() {
-		global $db;
+		global $admin;
 		$my_title  = db_prepare_input($_POST['personal_links_field_0']);
 		$my_url    = db_prepare_input($_POST['personal_links_field_1']);
 		$remove_id = db_prepare_input($_POST['personal_links_rId']);

@@ -30,7 +30,7 @@ class vendor_websites extends \core\classes\ctl_panel {
 	public $module_id 			= 'contacts';
 
 	function output($params) {
-		global $db;
+		global $admin;
 		if(count($params) != $this->size_params){ //upgrading
 			$params = $this->upgrade($params);
 		}

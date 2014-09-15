@@ -30,7 +30,7 @@ class income_statement {
 	}
 
 	function load_report_data($report) {
-		global $db;
+		global $admin;
 		// see if it's a single year or year-year output
 		$this->columns = (isset($Seq[3])) ? 4 : 2;
 		$period = $report->period;
@@ -52,7 +52,7 @@ class income_statement {
 		}
 
 		// build revenues
-		$this->add_heading_line(RW_FIN_REVENUES); 
+		$this->add_heading_line(RW_FIN_REVENUES);
 		$cur_year  = $this->add_income_stmt_data(30, $first_period, $period, $negate = true); // Income account_type
 		$cur_temp  = ProcessData($this->total_2, $Seq[1]['processing']);
 		$ytd_temp  = ProcessData($this->total_3, $Seq[2]['processing']);
@@ -73,7 +73,7 @@ class income_statement {
 
 		// less COGS
 		$this->add_heading_line();
-		$this->add_heading_line(RW_FIN_COST_OF_SALES); 
+		$this->add_heading_line(RW_FIN_COST_OF_SALES);
 		$cur_year  = $this->add_income_stmt_data(32, $first_period, $period, $negate = false); // Cost of Sales account_type
 		$cur_temp  = ProcessData($this->total_2, $Seq[1]['processing']);
 		$ytd_temp  = ProcessData($this->total_3, $Seq[2]['processing']);
@@ -101,7 +101,7 @@ class income_statement {
 
 		// less expenses
 		$this->add_heading_line();
-		$this->add_heading_line(RW_FIN_EXPENSES); 
+		$this->add_heading_line(RW_FIN_EXPENSES);
 		$cur_year  = $this->add_income_stmt_data(34, $first_period, $period, $negate = false); // Expenses account_type
 		$cur_temp  = ProcessData($this->total_2, $Seq[1]['processing']);
 		$ytd_temp  = ProcessData($this->total_3, $Seq[2]['processing']);
@@ -131,21 +131,21 @@ class income_statement {
 	}
 
 	function add_income_stmt_data($type, $first_period, $period, $negate = false) {
-		global $db, $Seq;
+		global $admin, $Seq;
 		$account_array = array();
-		$sql = "select c.id, c.description, h.debit_amount - h.credit_amount as balance, budget   
+		$sql = "select c.id, c.description, h.debit_amount - h.credit_amount as balance, budget
 			from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id
-			where h.period = " . $period . " and c.account_type = " . $type . " 
+			where h.period = " . $period . " and c.account_type = " . $type . "
 			order by c.id";
 		$cur_period = $db->Execute($sql);
-		$sql = "select (sum(h.debit_amount) - sum(h.credit_amount)) as balance, sum(budget) as budget  
+		$sql = "select (sum(h.debit_amount) - sum(h.credit_amount)) as balance, sum(budget) as budget
 			from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id
-			where h.period >= " . $first_period . " and h.period <= " . $period . " and c.account_type = " . $type . " 
+			where h.period >= " . $first_period . " and h.period <= " . $period . " and c.account_type = " . $type . "
 			group by h.account_id order by c.id";
 		$ytd_period = $db->Execute($sql);
-		$sql = "select beginning_balance 
+		$sql = "select beginning_balance
 			from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id
-			where h.period = " . $first_period . " and c.account_type = " . $type . " 
+			where h.period = " . $first_period . " and c.account_type = " . $type . "
 			group by h.account_id order by c.id";
 		$beg_balance = $db->Execute($sql);
 		$cur_total_1 = 0;
@@ -196,9 +196,9 @@ class income_statement {
 	}
 	if (sizeof($temp) > 0) foreach ($temp as $data) {
 	  if ($this->columns == 4) {
-		$this->inc_stmt_data[] = array('d', $data['desc'], $data['curr'], $data['ytd'], $data['last'], $data['lytd']);		
+		$this->inc_stmt_data[] = array('d', $data['desc'], $data['curr'], $data['ytd'], $data['last'], $data['lytd']);
 	  } else {
-		$this->inc_stmt_data[] = array('d', $data['desc'], $data['curr'], $data['ytd']);		
+		$this->inc_stmt_data[] = array('d', $data['desc'], $data['curr'], $data['ytd']);
 	  }
 	}
   }
@@ -212,6 +212,6 @@ class income_statement {
 	$output = array();
 	return $output;
   }
- 
+
 }
 ?>

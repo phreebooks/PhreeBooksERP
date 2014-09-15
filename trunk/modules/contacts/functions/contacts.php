@@ -126,7 +126,7 @@ function draw_address_fields($entries, $add_type, $reset_button = false, $hide_l
 }
 
 function get_chart_data($operation, $data) {
-  global $db, $currencies;
+  global $admin, $currencies;
   $output = array(
     'type'  => 'pie',
     'width' => '600',

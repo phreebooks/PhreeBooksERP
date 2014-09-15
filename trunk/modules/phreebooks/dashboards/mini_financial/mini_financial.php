@@ -30,7 +30,7 @@ class mini_financial extends \core\classes\ctl_panel {
 	public $module_id 			= 'phreebooks';
 
 	function output($params) {
-		global $db;
+		global $admin;
 		if(count($params) != $this->size_params){ //upgrading
 			$params = $this->upgrade($params);
 		}
@@ -55,7 +55,7 @@ class mini_financial extends \core\classes\ctl_panel {
 		$contents .= $this->add_bal_sheet_data($the_list, $negate_array, $period);
 		$contents .= '<tr><td>&nbsp;&nbsp;' . htmlspecialchars(RW_FIN_CURRENT_ASSETS) . '</td>' . chr(10);
 		$contents .= '<td align="right">' . $this->ProcessData($this->bal_tot_2) . '</td></tr>' . chr(10);
-	
+
 		$this->bal_tot_2 = 0;
 		$the_list = array(8, 10, 12);
 		$negate_array = array(false, false, false);
@@ -65,7 +65,7 @@ class mini_financial extends \core\classes\ctl_panel {
 		$contents .= '<tr><td>' . htmlspecialchars(RW_FIN_ASSETS) . '</td>' . chr(10);
 		$contents .= '<td align="right">' . $this->ProcessData($this->bal_tot_3) . '</td></tr>' . chr(10);
 		$contents .= '<tr><td colspan="2">&nbsp;</td></tr>' . chr(10);
-	
+
 		// build liabilities
 		$this->bal_tot_2 = 0;
 		$this->bal_tot_3 = 0;
@@ -74,7 +74,7 @@ class mini_financial extends \core\classes\ctl_panel {
 		$this->add_bal_sheet_data($the_list, $negate_array, $period);
 		$contents .= '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;' . htmlspecialchars(RW_FIN_CUR_LIABILITIES) . '</td>' . chr(10);
 		$contents .= '<td align="right">' . $this->ProcessData($this->bal_tot_2) . '</td></tr>' . chr(10);
-	
+
 		$this->bal_tot_2 = 0;
 		$the_list = array(24);
 		$negate_array = array(true);
@@ -83,22 +83,22 @@ class mini_financial extends \core\classes\ctl_panel {
 		$contents .= '<td align="right">&nbsp;&nbsp;' . $this->ProcessData($this->bal_tot_2) . '</td></tr>' . chr(10);
 		$contents .= '<tr><td>&nbsp;&nbsp;' . htmlspecialchars(RW_FIN_TOTAL_LIABILITIES) . '</td>' . chr(10);
 		$contents .= '<td align="right">' . $this->ProcessData($this->bal_tot_3) . '</td></tr>' . chr(10);
-	
+
 		// build capital
 		$this->bal_tot_2 = 0;
 		$the_list = array(40, 42, 44);
 		$negate_array = array(true, true, true);
 		$this->add_bal_sheet_data($the_list, $negate_array, $period);
-	
+
 		$contents .= $this->load_report_data($period); // retrieve and add net income value
 		$this->bal_tot_2 += $this->ytd_net_income;
 		$this->bal_tot_3 += $this->ytd_net_income;
 		$contents .= '<tr><td>&nbsp;&nbsp;' . htmlspecialchars(RW_FIN_NET_INCOME) . '</td>' . chr(10);
 		$contents .= '<td align="right">' . $this->ProcessData($this->ytd_net_income) . '</td></tr>' . chr(10);
-	
+
 		$contents .= '<tr><td>&nbsp;&nbsp;' . htmlspecialchars(RW_FIN_CAPITAL) . '</td>' . chr(10);
 		$contents .= '<td align="right">' . $this->ProcessData($this->bal_tot_2) . '</td></tr>' . chr(10);
-	
+
 		$contents .= '<tr><td>' . htmlspecialchars(RW_FIN_TOTAL_LIABILITIES_CAPITAL) . '</td>' . chr(10);
 		$contents .= '<td align="right">' . $this->ProcessData($this->bal_tot_3) . '</td></tr>' . chr(10);
 		$contents .= '</table>' . chr(10);
@@ -106,10 +106,10 @@ class mini_financial extends \core\classes\ctl_panel {
 	}
 
 	function add_bal_sheet_data($the_list, $negate_array, $period) {
-		global $db;
+		global $admin;
 		$contents = '';
 		foreach($the_list as $key => $account_type) {
-			$sql = "select h.beginning_balance + h.debit_amount - h.credit_amount as balance, c.description  
+			$sql = "select h.beginning_balance + h.debit_amount - h.credit_amount as balance, c.description
 			  from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id
 			  where h.period = " . $period . " and c.account_type = " . $account_type;
 		  	$result = $db->Execute($sql);
@@ -136,7 +136,7 @@ class mini_financial extends \core\classes\ctl_panel {
 	}
 
 	function load_report_data($period) {
-		global $db;
+		global $admin;
 		$contents = '';
 		// find the period range within the fiscal year from the first period to current requested period
 		$result = $db->Execute("select fiscal_year from " . TABLE_ACCOUNTING_PERIODS . " where period = " . $period);
@@ -167,22 +167,22 @@ class mini_financial extends \core\classes\ctl_panel {
 	}
 
 	function add_income_stmt_data($type, $first_period, $period, $negate = false) {
-		global $db;
+		global $admin;
 		$cur_temp = '';
 		$account_array = array();
-		$sql = "select c.id, c.description, h.debit_amount - h.credit_amount as balance   
+		$sql = "select c.id, c.description, h.debit_amount - h.credit_amount as balance
 		  from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id
-		  where h.period = " . $period . " and c.account_type = " . $type . " 
+		  where h.period = " . $period . " and c.account_type = " . $type . "
 		  order by c.id";
 		$cur_period = $db->Execute($sql);
-		$sql = "select (sum(h.debit_amount) - sum(h.credit_amount)) as balance  
+		$sql = "select (sum(h.debit_amount) - sum(h.credit_amount)) as balance
 		  from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id
-		  where h.period >= " . $first_period . " and h.period <= " . $period . " and c.account_type = " . $type . " 
+		  where h.period >= " . $first_period . " and h.period <= " . $period . " and c.account_type = " . $type . "
 		  group by h.account_id order by c.id";
 		$ytd_period = $db->Execute($sql);
-		$sql = "select beginning_balance 
+		$sql = "select beginning_balance
 		  from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id
-		  where h.period = " . $first_period . " and c.account_type = " . $type . " 
+		  where h.period = " . $first_period . " and c.account_type = " . $type . "
 		  group by h.account_id order by c.id";
 		$beg_balance = $db->Execute($sql);
 		$ytd_total_1 = 0;

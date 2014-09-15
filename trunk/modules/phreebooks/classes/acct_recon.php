@@ -15,7 +15,7 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/classes/acct_recon.php
-// 
+//
 namespace phreebooks\classes;
 // this file contains special function calls to generate the data array needed to build reports not possible
 // with the current reportbuilder structure.
@@ -24,7 +24,7 @@ class acct_recon {
 	}
 
 	function load_report_data($report) {
-		global $db;
+		global $admin;
 		$bank_list         = array();
 		$dep_in_transit    = 0;
 		$chk_in_transit    = 0;
@@ -34,9 +34,9 @@ class acct_recon {
 	    if (!$gl_account) throw new \core\classes\userException("no gl account"); // No gl account so bail now
 
 	    //Load open Journal Items
-		$sql = "SELECT m.id, m.post_date, i.debit_amount, i.credit_amount, m.purchase_invoice_id, i.description 
-			FROM ".TABLE_JOURNAL_MAIN." m INNER JOIN ".TABLE_JOURNAL_ITEM." i ON m.id = i.ref_id 
-			WHERE i.gl_account='$gl_account' AND (i.reconciled=0 OR i.reconciled>$period) AND m.post_date<='{$fiscal_dates['end_date']}' 
+		$sql = "SELECT m.id, m.post_date, i.debit_amount, i.credit_amount, m.purchase_invoice_id, i.description
+			FROM ".TABLE_JOURNAL_MAIN." m INNER JOIN ".TABLE_JOURNAL_ITEM." i ON m.id = i.ref_id
+			WHERE i.gl_account='$gl_account' AND (i.reconciled=0 OR i.reconciled>$period) AND m.post_date<='{$fiscal_dates['end_date']}'
 			ORDER BY post_date";
 		$result = $db->Execute($sql);
 		while (!$result->EOF) {
@@ -61,9 +61,9 @@ class acct_recon {
 		  );
 		  $result->MoveNext();
 		}
-		
+
 		// load the gl account end of period balance
-		$sql = "select beginning_balance, debit_amount, credit_amount from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " 
+		$sql = "select beginning_balance, debit_amount, credit_amount from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
 			where account_id = '" . $gl_account . "' and period = " . $period;
 		$result        = $db->Execute($sql);
 		$gl_init_bal   = $result->fields['beginning_balance'];
@@ -75,32 +75,32 @@ class acct_recon {
 
 		$this->bal_sheet_data = array();
 		$this->bal_sheet_data[] = array('d', RW_RECON_BB, '', '', '', ProcessData($gl_init_bal, 'null_pcur'));
-		$this->bal_sheet_data[] = array('d', '', '', '', '', ''); 
-		$this->bal_sheet_data[] = array('d', RW_RECON_CR,        '', '', '', ProcessData($cash_receipts, 'null_pcur')); 
-		$this->bal_sheet_data[] = array('d', '', '', '', '', ''); 
-		$this->bal_sheet_data[] = array('d', RW_RECON_CD,   '', '', '', ProcessData(-$cash_payments, 'null_pcur')); 
-		$this->bal_sheet_data[] = array('d', '', '', '', '', ''); 
-		$this->bal_sheet_data[] = array('d', RW_RECON_EB,    '', '', '', ProcessData($end_gl_bal, 'null_pcur')); 
-		$this->bal_sheet_data[] = array('d', '', '', '', '', ''); 
-		$this->bal_sheet_data[] = array('d', RW_RECON_ADD_BACK, '', '', '', ''); 
+		$this->bal_sheet_data[] = array('d', '', '', '', '', '');
+		$this->bal_sheet_data[] = array('d', RW_RECON_CR,        '', '', '', ProcessData($cash_receipts, 'null_pcur'));
+		$this->bal_sheet_data[] = array('d', '', '', '', '', '');
+		$this->bal_sheet_data[] = array('d', RW_RECON_CD,   '', '', '', ProcessData(-$cash_payments, 'null_pcur'));
+		$this->bal_sheet_data[] = array('d', '', '', '', '', '');
+		$this->bal_sheet_data[] = array('d', RW_RECON_EB,    '', '', '', ProcessData($end_gl_bal, 'null_pcur'));
+		$this->bal_sheet_data[] = array('d', '', '', '', '', '');
+		$this->bal_sheet_data[] = array('d', RW_RECON_ADD_BACK, '', '', '', '');
 		foreach ($bank_list as $value) {
 		  if ($value['dep_amount']) {
-			$this->bal_sheet_data[] = array('d', '', ProcessData($value['post_date'], 'date'), $value['reference'], ProcessData($value['dep_amount'], 'null_pcur'), ''); 
+			$this->bal_sheet_data[] = array('d', '', ProcessData($value['post_date'], 'date'), $value['reference'], ProcessData($value['dep_amount'], 'null_pcur'), '');
 		  }
 		}
-		$this->bal_sheet_data[] = array('d', RW_RECON_DIT, '', '', '', ProcessData($dep_in_transit, 'null_pcur')); 
-		$this->bal_sheet_data[] = array('d', '', '', '', '', ''); 
-		$this->bal_sheet_data[] = array('d', RW_RECON_LOP, '', '', '', ''); 
+		$this->bal_sheet_data[] = array('d', RW_RECON_DIT, '', '', '', ProcessData($dep_in_transit, 'null_pcur'));
+		$this->bal_sheet_data[] = array('d', '', '', '', '', '');
+		$this->bal_sheet_data[] = array('d', RW_RECON_LOP, '', '', '', '');
 		foreach ($bank_list as $value) {
 		  if ($value['pmt_amount']) {
-			$this->bal_sheet_data[] = array('d', '', ProcessData($value['post_date'], 'date'), $value['reference'], ProcessData(-$value['pmt_amount'], 'null_pcur'), ''); 
+			$this->bal_sheet_data[] = array('d', '', ProcessData($value['post_date'], 'date'), $value['reference'], ProcessData(-$value['pmt_amount'], 'null_pcur'), '');
 		  }
 		}
-		$this->bal_sheet_data[] = array('d', RW_RECON_TOP, '', '', '', ProcessData(-$chk_in_transit, 'null_pcur')); 
-		$this->bal_sheet_data[] = array('d', '', '', '', '', ''); 
-		$this->bal_sheet_data[] = array('d', RW_RECON_DIFF, '', '', '', ProcessData($unrecon_diff, 'null_pcur')); 
-		$this->bal_sheet_data[] = array('d', RW_RECON_EB, '', '', '', ProcessData($end_gl_bal, 'null_pcur')); 
-		
+		$this->bal_sheet_data[] = array('d', RW_RECON_TOP, '', '', '', ProcessData(-$chk_in_transit, 'null_pcur'));
+		$this->bal_sheet_data[] = array('d', '', '', '', '', '');
+		$this->bal_sheet_data[] = array('d', RW_RECON_DIFF, '', '', '', ProcessData($unrecon_diff, 'null_pcur'));
+		$this->bal_sheet_data[] = array('d', RW_RECON_EB, '', '', '', ProcessData($end_gl_bal, 'null_pcur'));
+
 		//Load closed Journal Items
 		$this->bal_sheet_data[] = array('d', '', '', '', '', '');
 		$this->bal_sheet_data[] = array('d', RW_RECON_CLEARED, '', '', '', '');
@@ -111,7 +111,7 @@ class acct_recon {
 		"AND i.reconciled = $period " .
 		"AND m.post_date <= '" . $fiscal_dates['end_date'] . "' " .
 		"ORDER BY post_date";
-			
+
 		$result = $db->Execute($sql);
 		unset($new_total, $bank_list);
 		while (!$result->EOF) {
@@ -139,7 +139,7 @@ class acct_recon {
 		$this->bal_sheet_data[] = array('d', RW_RECON_DCLEARED, '', '', '', '' );
 		if (is_array($bank_list)) foreach ($bank_list as $value) {
 		  if ($value['dep_amount']) {
-			$this->bal_sheet_data[] = array('d', '', ProcessData($value['post_date'], 'date'), $value['reference'], ProcessData($value['dep_amount'], 'null_pcur'), ''); 
+			$this->bal_sheet_data[] = array('d', '', ProcessData($value['post_date'], 'date'), $value['reference'], ProcessData($value['dep_amount'], 'null_pcur'), '');
 		  }
 		}
 		$this->bal_sheet_data[] = array('d', RW_RECON_TDC, '', '', '', ProcessData( $dep_cleared, 'null_pcur') );
@@ -147,13 +147,13 @@ class acct_recon {
 		$this->bal_sheet_data[] = array('d', RW_RECON_PCLEARED, '', '', '', '' );
 		if (is_array($bank_list)) foreach ($bank_list as $value) {
 		  if ($value['pmt_amount']) {
-			$this->bal_sheet_data[] = array('d', '', ProcessData($value['post_date'], 'date'), $value['reference'], ProcessData(-$value['pmt_amount'], 'null_pcur'), ''); 
+			$this->bal_sheet_data[] = array('d', '', ProcessData($value['post_date'], 'date'), $value['reference'], ProcessData(-$value['pmt_amount'], 'null_pcur'), '');
 		  }
 		}
 		$this->bal_sheet_data[] = array('d', RW_RECON_TPC, '', '', '', ProcessData( $chk_cleared, 'null_pcur') );
 		$this->bal_sheet_data[] = array('d', '', '', '', '', '' );
 		$this->bal_sheet_data[] = array('d', RW_RECON_NCLEARED, '', '', '', ProcessData( $dep_cleared - $chk_cleared, 'null_pcur') );
-		
+
 		return $this->bal_sheet_data;
 	}
 

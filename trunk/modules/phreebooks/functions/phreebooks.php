@@ -18,13 +18,13 @@
 //
 
 function fetch_item_description($id) {
-  global $db;
+  global $admin;
   $result = $db->Execute("select description from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $id . " limit 1");
   return $result->fields['description'];
 }
 
 function validate_fiscal_year($next_fy, $next_period, $next_start_date, $num_periods = 12) {
-  global $db;
+  global $admin;
   for ($i = 0; $i < $num_periods; $i++) {
 	$fy_array = array(
 	  'period'      => $next_period,
@@ -41,7 +41,7 @@ function validate_fiscal_year($next_fy, $next_period, $next_start_date, $num_per
 }
 
 function modify_account_history_records($id, $add_acct = true) {
-  global $db;
+  global $admin;
   $result = $db->Execute("select max(period) as period from " . TABLE_ACCOUNTING_PERIODS);
   $max_period = $result->fields['period'];
   if (!$max_period) die ('table: '.TABLE_ACCOUNTING_PERIODS.' is not set, run setup.');
@@ -58,7 +58,7 @@ function modify_account_history_records($id, $add_acct = true) {
 }
 
 function build_and_check_account_history_records() {
-  global $db;
+  global $admin;
   $result = $db->Execute("select max(period) as period from " . TABLE_ACCOUNTING_PERIODS);
   $max_period = $result->fields['period'];
   if (!$max_period) die ('table: '.TABLE_ACCOUNTING_PERIODS.' is not set, run setup.');
@@ -78,7 +78,7 @@ function build_and_check_account_history_records() {
 }
 
 function get_fiscal_year_pulldown() {
-    global $db;
+    global $admin;
     $fy_values = $db->Execute("select distinct fiscal_year from " . TABLE_ACCOUNTING_PERIODS . " order by fiscal_year");
     $fy_array = array();
     while (!$fy_values->EOF) {
@@ -105,7 +105,7 @@ function load_coa_types() {
 }
 
 function load_coa_info($types = array()) { // includes inactive accounts
-  global $db;
+  global $admin;
   $coa_data = array();
   $sql = "select * from " . TABLE_CHART_OF_ACCOUNTS;
   if (sizeof($types > 0)) $sql .= " where account_type in (" . implode(", ", $types) . ")";
@@ -126,7 +126,7 @@ function load_coa_info($types = array()) { // includes inactive accounts
 function fill_paid_invoice_array($id, $account_id, $type = 'c') {
 	// to build this data array, all current open invoices need to be gathered and then the paid part needs
 	// to be applied along with discounts taken by row.
-	global $db, $currencies;
+	global $admin, $currencies;
 	$negate = ((JOURNAL_ID == 20 && $type == 'c') || (JOURNAL_ID == 18 && $type == 'v')) ? true : false;
 	// first read all currently open invoices and the payments of interest and put into an array
 	$paid_indeces = array();
@@ -232,10 +232,10 @@ function fill_paid_invoice_array($id, $account_id, $type = 'c') {
 }
 
 function fetch_partially_paid($id) {
-  global $db;
-  $sql = "select sum(i.debit_amount) as debit, sum(i.credit_amount) as credit 
-	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id 
-	where i.so_po_item_ref_id = $id and m.journal_id in (18, 20) and i.gl_type in ('chk', 'pmt') 
+  global $admin;
+  $sql = "select sum(i.debit_amount) as debit, sum(i.credit_amount) as credit
+	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
+	where i.so_po_item_ref_id = $id and m.journal_id in (18, 20) and i.gl_type in ('chk', 'pmt')
 	group by m.journal_id";
   $result = $db->Execute($sql);
   if($result->RecordCount() == 0) return 0;
@@ -287,7 +287,7 @@ function calculate_terms_due_dates($post_date, $terms_encoded, $type = 'AR') {
 }
 
 function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
-  global $db, $messageStack;
+  global $admin, $messageStack;
   $acct_balance = 0;
   if (!$gl_acct_id) return $acct_balance;
   $sql = "select beginning_balance from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
@@ -310,7 +310,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 }
 
   	function gen_build_tax_auth_array() {
-    	global $db;
+    	global $admin;
     	$tax_auth_values = $db->Execute("select tax_auth_id, description_short, account_id , tax_rate
       	  from " . TABLE_TAX_AUTH . " order by description_short");
     	if ($tax_auth_values->RecordCount() < 1) throw new \core\classes\userException("there are not tax records to select");
@@ -335,7 +335,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
   }
 
   	function ord_calculate_tax_drop_down($type = 'c', $contactForm = false) {
-	    global $db;
+	    global $admin;
 		$tax_auth_array = gen_build_tax_auth_array();
 	    $sql = "select tax_rate_id, description_short, rate_accounts from " . TABLE_TAX_RATES;
 		switch ($type) {
@@ -361,13 +361,13 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
   	}
 
   function ord_get_so_po_num($id = '') {
-	global $db;
+	global $admin;
 	$result = $db->Execute("select purchase_invoice_id from " . TABLE_JOURNAL_MAIN . " where id = " . $id);
 	return ($result->RecordCount()) ? $result->fields['purchase_invoice_id'] : '';
   }
 
   function ord_get_projects() {
-    global $db;
+    global $admin;
     $result_array = array();
     $result_array[] = array('id' => '', 'text' => TEXT_NONE);
 	// fetch cost structure
@@ -413,7 +413,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
   }
 
   function gen_auto_update_period($show_message = true) {
-	global $db, $messageStack;
+	global $admin, $messageStack;
 	$period = gen_calculate_period(date('Y-m-d'), true);
 	if ($period == CURRENT_ACCOUNTING_PERIOD && defined('CURRENT_ACCOUNTING_PERIOD')) return; // we're in the current period
 	if (!$period) { // we're outside of the defined fiscal years
@@ -460,7 +460,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
    	 */
 
   	function repost_journals($journals, $start_date, $end_date) {
-		global $db;
+		global $admin;
 		try{
 			if (sizeof($journals) == 0) throw new \core\classes\userException('no journals received to repost');
 			$sql = "SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE journal_id IN (".implode(',', $journals).")
@@ -485,7 +485,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
   	}
 
   function calculate_aging($id, $type = 'c', $special_terms = '0') {
-  	global $db;
+  	global $admin;
   	$output = array();
   	if (!$id) return $output;
   	$today         = date('Y-m-d');

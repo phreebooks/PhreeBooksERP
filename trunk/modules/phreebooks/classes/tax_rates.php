@@ -31,7 +31,7 @@ class tax_rates {
     }
 
   function btn_save($id = '') {
-  	global $db;
+  	global $admin;
 	\core\classes\user::validate_security($this->security_id, 2); // security check
 	$this->combine_rates();
     $sql_data_array = array(
@@ -52,7 +52,7 @@ class tax_rates {
   }
 
   function btn_delete($id = 0) {
-  	global $db;
+  	global $admin;
 	\core\classes\user::validate_security($this->security_id, 4); // security check
 	// Check for this rate as part of a journal entry, if so do not delete
 	// Since tax rates are not used explicitly, they can be deleted at any time.
@@ -63,7 +63,7 @@ class tax_rates {
   }
 
   function build_main_html() {
-  	global $db;
+  	global $admin;
     $tax_authorities_array = gen_build_tax_auth_array();
     $content = array();
 	$content['thead'] = array(
@@ -96,7 +96,7 @@ class tax_rates {
   }
 
   function build_form_html($action, $id = '') {
-    global $db;
+    global $admin;
 	require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
     $tax_authorities_array = gen_build_tax_auth_array();
     if ($action <> 'new') {
@@ -161,7 +161,7 @@ class tax_rates {
 ////
 // Get list of tax_auth for pull down
   function get_tax_auths() {
-    global $db;
+    global $admin;
     $tax_auth_values = $db->Execute("select tax_auth_id, description_short
 		from " . TABLE_TAX_AUTH . " where type = '" . $this->type . "' order by description_short");
     $tax_auth_array = array();

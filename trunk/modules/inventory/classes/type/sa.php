@@ -31,12 +31,12 @@ class sa extends \inventory\classes\inventory {//Serialized Assembly
 		$this->get_sr_list();
 		$this->allow_edit_bom = (($this->last_journal_date == '0000-00-00 00:00:00' || $this->last_journal_date == '') && ($this->quantity_on_hand == 0|| $this->quantity_on_hand == '')) ? true : false;
 	}
-	
+
 	function get_sr_list(){
-		global $db;
+		global $admin;
 		$branches = gen_get_store_ids();
 		$this->quantity_on_hand = 0;
-		$result = $db->Execute("select store_id, qty, serialize_number from " . TABLE_INVENTORY_HISTORY . " 
+		$result = $db->Execute("select store_id, qty, serialize_number from " . TABLE_INVENTORY_HISTORY . "
 	  		where sku = '" . $this->sku . "' and remaining > 0 order by store_id");
   		$this->qty_table ='<table class="ui-widget" style="border-collapse:collapse;width:100%">'. chr(10);
 		$this->qty_table .='  <thead class="ui-widget-header">'. chr(10);
@@ -67,7 +67,7 @@ class sa extends \inventory\classes\inventory {//Serialized Assembly
 	}
 
 	function get_bom_list(){
-		global $db;
+		global $admin;
 		$this->assy_cost = 0;
 		$result = $db->Execute("select i.id as inventory_id, l.id, l.sku, l.description, l.qty from " . TABLE_INVENTORY_ASSY_LIST . " l join " . TABLE_INVENTORY . " i on l.sku = i.sku where l.ref_id = " . $this->id . " order by l.id");
 		$x =0;
@@ -84,13 +84,13 @@ class sa extends \inventory\classes\inventory {//Serialized Assembly
 	}
 
 	function remove(){
-		global $db;
+		global $admin;
 		parent::remove();
 		$db->Execute("delete from " . TABLE_INVENTORY_ASSY_LIST . " where sku = '" . $this->sku . "'");
 	}
 
 	function save(){
-		global $db, $currencies, $messageStack;
+		global $admin, $currencies, $messageStack;
 		$bom_list = array();
 		for($x=0; $x < count($_POST['assy_sku']); $x++) {
 			$bom_list[$x] = array(

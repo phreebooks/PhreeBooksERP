@@ -30,7 +30,7 @@ class entry_builder {
   }
 
   function load_query_results($tableKey = 'id', $tableValue = 0) {
-	global $db, $report, $FieldListings;
+	global $admin, $report, $FieldListings;
 	if (!$tableValue) throw new \core\classes\userException("tableValue isn't set");
 	$sql = "select * from " . TABLE_JOURNAL_MAIN . " where id = " . $tableValue;
 	$result = $db->Execute($sql);
@@ -103,7 +103,7 @@ class entry_builder {
   }
 
   function load_so_po_details($id) {
-	global $db;
+	global $admin;
 	// fetch the sales order and build the item list
 	$sql = "select post_date, purchase_invoice_id from " . TABLE_JOURNAL_MAIN . " where id = " . $id;
 	$result = $db->Execute($sql);
@@ -144,7 +144,7 @@ class entry_builder {
   }
 
   function load_item_details($id) {
-	global $db, $currencies;
+	global $admin, $currencies;
 	// fetch the sales order and build the item list
 	$this->invoice_subtotal = 0;
 	$tax_list = array();
@@ -181,7 +181,7 @@ class entry_builder {
   }
 
   function load_account_details($id) {
-	global $db;
+	global $admin;
 	$sql = "select * from " . TABLE_CONTACTS . " where id = " . $id;
 	$result = $db->Execute($sql);
 	$this->short_name     = $result->fields['short_name'];
@@ -212,7 +212,7 @@ class entry_builder {
   }
 
   function load_payment_details($id) {
-	global $db;
+	global $admin;
 	$this->total_paid     = 0;
 	$this->payment_method = '';
 	$sql = "select * from " . TABLE_JOURNAL_ITEM . " where so_po_item_ref_id = " . $id . " and gl_type in ('pmt', 'chk')";
@@ -246,7 +246,7 @@ class entry_builder {
   }
 
   	function load_shipment_details($id) {
-    	global $db;
+    	global $admin;
 		$this->ship_carrier	= '';
 		$this->ship_service	= '';
 		$this->tracking_id 	= '';

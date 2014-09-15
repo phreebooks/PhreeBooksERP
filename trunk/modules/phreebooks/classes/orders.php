@@ -112,7 +112,7 @@ class orders extends \core\classes\journal {
 	}
 
   function post_ordr($action) {
-	global $db, $messageStack;
+	global $admin, $messageStack;
 	$this->journal_rows = array();	// initialize ledger row(s) array
 	$debit_total  = 0;
 	$credit_total = 0;
@@ -280,7 +280,7 @@ class orders extends \core\classes\journal {
   }
 
   function unPost($action = 'delete', $skip_balance = false) {
-	global $db;
+	global $admin;
 	// verify no item rows have been acted upon (received, shipped, paid, etc.)
 	switch ($this->journal_id) {
 	  case  4: // Purchase Order Journal
@@ -374,7 +374,7 @@ class orders extends \core\classes\journal {
 	    case 10:
 	    case 12:
 	    case 13: $freight_tax_id = $tax_freight ? AR_ADD_SALES_TAX_TO_SHIPPING : 0; break;
-	  }	   
+	  }
 	  if ($this->freight) { // calculate freight charges
 		$this->journal_rows[] = array(
 		  'qty'                     => '1',

@@ -47,7 +47,7 @@ class inventory {
 	 * this is the class construct
 	 */
 	public function __construct(){
-		global $db;
+		global $admin;
 		foreach ($_POST as $key => $value) $this->$key = $value;
 		$this->creation_date = date('Y-m-d H:i:s');
 	  	$this->last_update   = date('Y-m-d H:i:s');
@@ -64,7 +64,7 @@ class inventory {
 	 * @param integer $id
 	 */
 	function get_item_by_id($id) {
-		global $db;
+		global $admin;
 		$this->purchases_history = null;
 		$this->sales_history	 = null;
 		$this->purchase_array	 = null;
@@ -88,7 +88,7 @@ class inventory {
 	 */
 
 	function get_item_by_sku($sku){
-		global $db;
+		global $admin;
 		$this->purchases_history = null;
 		$this->sales_history	 = null;
 		$this->purchase_array	 = null;
@@ -120,7 +120,7 @@ class inventory {
 	}
 
 	function get_qty(){
-		global $db;
+		global $admin;
 		if(in_array('quantity_on_hand', $this->not_used_fields)) return;
 		$sql = " select id, short_name, primary_name from " . TABLE_CONTACTS . " c join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id where c.type = 'b' order by short_name ";
 	  	$result = $db->Execute($sql);
@@ -299,7 +299,7 @@ class inventory {
 
 	//this is to check if you are allowed to remove
 	function check_remove($id) {
-		global $db;
+		global $admin;
 		if(isset($id))$this->get_item_by_id($id);
 		else throw new \core\classes\userException("id should be submitted in order to delete");
 		// check to see if there is inventory history remaining, if so don't allow delete
@@ -318,7 +318,7 @@ class inventory {
 	// this is the general remove function
 	// the function check_remove calls this function.
 	function remove(){
-		global $db;
+		global $admin;
 		$db->Execute("delete from " . TABLE_INVENTORY . " where id = " . $this->id);
 		if($this->image_with_path != '') {
 			$result = $db->Execute("select * from " . TABLE_INVENTORY . " where image_with_path = '" . $this->image_with_path ."'");
@@ -334,7 +334,7 @@ class inventory {
 
 	// this is the general save function.
 	function save() {
-		global $db, $currencies, $fields;
+		global $admin, $currencies, $fields;
 	    $sql_data_array = $fields->what_to_save();
 	    // handle the checkboxes
 	    $sql_data_array['inactive'] = isset($_POST['inactive']) ? $_POST['inactive'] : '0'; // else unchecked
@@ -418,7 +418,7 @@ class inventory {
 	}
 
 	function create_purchase_array(){
-		global $db;
+		global $admin;
 		if(!in_array('purchase',$this->posible_transactions)) return;
 		$result = $db->Execute("select * from " . TABLE_INVENTORY_PURCHASE . " where sku = '" . $this->sku  . "'");
 		while(!$result->EOF){
@@ -436,7 +436,7 @@ class inventory {
 	}
 
 	function store_purchase_array(){
-		global $db, $currencies;
+		global $admin, $currencies;
 		$lowest_cost = isset($this->item_cost) ? $this->item_cost : 99999999999;
 		$this->backup_purchase_array = array();
 		$result = $db->Execute("SELECT * FROM ".TABLE_INVENTORY_PURCHASE." WHERE sku='$this->sku'");
@@ -512,7 +512,7 @@ class inventory {
 	}
 
 	function gather_history() {
-    	global $db;
+    	global $admin;
 		$dates = gen_get_dates();
 		$cur_month = $dates['ThisYear'] . '-' . substr('0' . $dates['ThisMonth'], -2) . '-01';
 		$temp_year = $dates['ThisYear'];

@@ -30,7 +30,7 @@ class todays_sales extends \core\classes\ctl_panel {
 	public $module_id 			= 'phreebooks';
 
 	function output($params) {
-		global $db, $currencies;
+		global $admin, $currencies;
 		if(count($params) != $this->size_params){ //upgrading
 			$params = $this->upgrade($params);
 		}

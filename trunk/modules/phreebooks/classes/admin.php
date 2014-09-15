@@ -267,7 +267,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function install($path_my_files, $demo = false) {
-		global $db;
+		global $admin;
 		parent::install ( $path_my_files, $demo );
 		// load some current status values
 		if (! db_field_exists ( TABLE_CURRENT_STATUS, 'next_po_num' ))
@@ -308,7 +308,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function upgrade() {
-		global $db;
+		global $admin;
 		parent::upgrade ();
 		$db_version = defined ( 'MODULE_PHREEBOOKS_STATUS' ) ? MODULE_PHREEBOOKS_STATUS : 0;
 		if (version_compare ( $db_version, '2.1', '<' )) { // For PhreeBooks release 2.1 or lower to update to Phreedom structure
@@ -366,7 +366,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function delete($path_my_files) {
-		global $db;
+		global $admin;
 		parent::delete ( $path_my_files );
 		if (db_field_exists ( TABLE_CURRENT_STATUS, 'next_po_num' ))
 			$db->Execute ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_po_num" );
@@ -416,7 +416,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function load_demo() {
-		global $db;
+		global $admin;
 		// Data for table `tax_authorities`
 		$db->Execute ( "TRUNCATE TABLE " . TABLE_TAX_AUTH );
 		$db->Execute ( "INSERT INTO " . TABLE_TAX_AUTH . " VALUES (1, 'c', 'City Tax', 'City Tax on Taxable Items', '2312', 0, 2.5);" );

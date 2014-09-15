@@ -84,7 +84,7 @@ function tiddler_update($oldtiddler, $newtiddler) {
  */
 
 function deleteTiddler($tiddler) {
-  global $db, $lock_title;
+  global $admin, $lock_title;
   \core\classes\user::validate_security(SECURITY_PHREEWIKI_MGT, 2); // security check
   if ( sizeof($tiddler)== 0 )											return PHREEWIKI_WARNING_TIDDLER_NOT_FOUND;
   if ( in_array($tiddler['title'], $lock_title) )	return PHREEWIKI_WARNING_IN_LOCKED_ARRAY;
@@ -101,7 +101,7 @@ function deleteTiddler($tiddler) {
  */
 
 function select_all_tiddlers() {
-	global $db;
+	global $admin;
   	$security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
   	$output_array = array();
   	$result = $db->Execute("SELECT * FROM ".TABLE_PHREEWIKI);
@@ -117,7 +117,7 @@ function select_all_tiddlers() {
 }
 
 function select_tiddler_by_title($title) {
-  global $db;
+  global $admin;
   $security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
   $tiddlers = $db->Execute("SELECT * FROM ".TABLE_PHREEWIKI."  where title ='" . $title . "'");
   foreach($tiddlers as $t) {
@@ -129,7 +129,7 @@ function select_tiddler_by_title($title) {
 }
 
 function select_all_tiddler_versions($title) {
-	global $db;
+	global $admin;
 	$security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
 	//get current tiddler id
 	$tiddler_id = select_tiddler_by_title($title);
@@ -238,7 +238,7 @@ function tiddler_bodyDecode($body) {
 }
 
 function user_getUsername()	{
-	global $db;
+	global $admin;
 	$result = $db->Execute('Select display_name From '.TABLE_USERS.' Where admin_id ="'.$_SESSION['admin_id'].'"');
 	$names = explode(' ',$result->fields['display_name']);
 	While ($name =array_shift($names)){

@@ -29,14 +29,14 @@ class basis implements \SplSubject {
 	public  $custom_html		= false;
     public  $include_header		= true;
     public  $include_footer		= true;
-	public  $dataBaseConnection = null;
+	public  $DataBase = null;
 	public  $mainmenu 			= array ();
 	private $events 			= array ('LoadMainPage');
 
 	public function __construct() {
 		\core\classes\messageStack::debug_log("executing __construct in class basis" );
 		$this->journal = new \core\classes\journal ();
-		$this->cInfo = (object)array_merge ( $_GET, $_POST );
+		$this->cInfo = (json_decode($request) != NULL) ? (object) json_decode($request) : (object)array_merge ( $_GET, $_POST );
 //		$this->events = $this->cInfo->action;
 		if ($this->getNumberOfAdminClasses () == 0 || empty ( $this->mainmenu )) {
 			$dirs = @scandir ( DIR_FS_MODULES );
@@ -111,7 +111,7 @@ class basis implements \SplSubject {
 
 	public function __wakeup() {
 		\core\classes\messageStack::debug_log("executing __wakeup in class basis" );
-		$this->cInfo = (object)array_merge ( $_GET, $_POST );
+		$this->cInfo = (json_decode($request) != NULL) ? (object) json_decode($request) : (object)array_merge ( $_GET, $_POST );
 //		$this->events = $this->cInfo->action;
 	}
 
@@ -262,7 +262,7 @@ class basis implements \SplSubject {
 		$this->events = array();
 	}
 	function __destruct() {
-		$this->dataBaseConnection = null;
+		$this->DataBase = null;
 	}
 }
 ?>

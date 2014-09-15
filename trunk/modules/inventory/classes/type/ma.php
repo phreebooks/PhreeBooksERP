@@ -10,7 +10,7 @@ class ma extends \inventory\classes\inventory { //Item Assembly formerly know as
 	public $bom		 				= array();
 	public $allow_edit_bom			= true;
 //	public $posible_transactions	= array('sell','purchase');
- 
+
 	function __construct(){
 		parent::__construct();
 		$this->tab_list['bom'] = array('file'=>'template_tab_bom',	'tag'=>'bom',    'order'=>30, 'text'=>TEXT_BILL_OF_MATERIALS);
@@ -31,7 +31,7 @@ class ma extends \inventory\classes\inventory { //Item Assembly formerly know as
 	}
 
 	function copy($id, $newSku){
-		global $db;
+		global $admin;
 		parent::copy($id, $newSku);
 		$result = $db->Execute("select * from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = '$id'");
 		while(!$result->EOF) {
@@ -49,7 +49,7 @@ class ma extends \inventory\classes\inventory { //Item Assembly formerly know as
 	}
 
 	function get_bom_list(){
-		global $db;
+		global $admin;
 		$this->assy_cost = 0;
 		$result = $db->Execute("select i.id as inventory_id, l.id, l.sku, l.description, l.qty as qty from " . TABLE_INVENTORY_ASSY_LIST . " l join " . TABLE_INVENTORY . " i on l.sku = i.sku where l.ref_id = " . $this->id . " order by l.id");
 		$x =0;
@@ -66,13 +66,13 @@ class ma extends \inventory\classes\inventory { //Item Assembly formerly know as
 	}
 
 	function remove(){
-		global $db;
+		global $admin;
 		parent::remove();
 		$db->Execute("delete from " . TABLE_INVENTORY_ASSY_LIST . " where sku = '" . $this->sku . "'");
 	}
 
 	function save(){
-		global $db, $currencies, $messageStack;
+		global $admin, $currencies, $messageStack;
 		$bom_list = array();
 		for($x=0; $x < count($_POST['assy_sku']); $x++) {
 			$bom_list[$x] = array(

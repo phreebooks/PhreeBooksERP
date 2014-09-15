@@ -28,7 +28,7 @@ class company_to_do extends \core\classes\ctl_panel {
 	public $module_id 			= 'phreedom';
 
   	function install($column_id = 1, $row_id = 0) {
-		global $db;
+		global $admin;
 		// fetch the pages params to copy to new install
 		$result = $db->Execute("select params from " . TABLE_USERS_PROFILES . "
 	  	  where menu_id = '".$this->menu_id."' and dashboard_id = '".$this->id."'"); // just need one
@@ -37,7 +37,7 @@ class company_to_do extends \core\classes\ctl_panel {
   	}
 
   	function output($params) {
-		global $db;
+		global $admin;
 		$contents = '';
 		$control  = '';
 		// Build control box form data
@@ -69,7 +69,7 @@ class company_to_do extends \core\classes\ctl_panel {
 	}
 
   	function update() {
-		global $db;
+		global $admin;
 		$add_to_do = db_prepare_input($_POST['company_to_do_field_0']);
 		$remove_id = db_prepare_input($_POST['company_to_do_rId']);
 		// do nothing if no title or url entered

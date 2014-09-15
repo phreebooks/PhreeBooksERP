@@ -23,7 +23,7 @@ gen_pull_language('phreebooks','admin');
 gen_pull_language('phreebooks');
 gen_pull_language('contacts');
 function build_audit_xml($date_from, $date_to, $select){
-	global $db, $messageStack, $coa_types_list, $currencies;
+	global $admin, $messageStack, $coa_types_list, $currencies;
 	$tax_auths      = gen_build_tax_auth_array();
 	$dates = gen_get_dates($date_from);
   	$output  = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .chr(10);

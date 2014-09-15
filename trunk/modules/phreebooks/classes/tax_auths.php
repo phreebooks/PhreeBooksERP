@@ -31,7 +31,7 @@ class tax_auths {
     }
 
   function btn_save($id = '') {
-  	global $db;
+  	global $admin;
 	\core\classes\user::validate_security($this->security_id, 2); // security check
 	$sql_data_array = array(
 		'type'              => $this->type,
@@ -52,7 +52,7 @@ class tax_auths {
   }
 
   function btn_delete($id = 0) {
-  	global $db;
+  	global $admin;
 	\core\classes\user::validate_security($this->security_id, 4); // security check
 	// Check for this authority being used in a tax rate calculation, if so do not delete
 	$result = $db->Execute("select tax_auths from " . TABLE_JOURNAL_MAIN . "
@@ -73,7 +73,7 @@ class tax_auths {
   }
 
   function build_main_html() {
-  	global $db;
+  	global $admin;
     $content = array();
 	$content['thead'] = array(
 	  'value' => array(TEXT_SHORT_NAME, TEXT_DESCRIPTION, SETUP_TAX_GL_ACCT, TEXT_TAX_RATE_PERCENT, TEXT_ACTION),
@@ -105,7 +105,7 @@ class tax_auths {
   }
 
   function build_form_html($action, $id = '') {
-    global $db;
+    global $admin;
     if ($action <> 'new') {
         $sql = "select description_short, description_long, account_id, vendor_id, tax_rate
 	       from " . $this->db_table . " where tax_auth_id = " . $id;

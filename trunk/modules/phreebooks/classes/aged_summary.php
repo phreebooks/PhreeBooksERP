@@ -28,8 +28,8 @@ class aged_summary {
   }
 
   function load_report_data($report, $Seq, $sql = '', $GrpField = '') {
-	global $db;
-	// find list of accounts within search filter 
+	global $admin;
+	// find list of accounts within search filter
 	$today = date('Y-m-d');
 	$late_30 = gen_specific_date($today, -AR_AGING_PERIOD_1);
 	$late_60 = gen_specific_date($today, -AR_AGING_PERIOD_2);
@@ -83,7 +83,7 @@ class aged_summary {
 //echo 'orig myrow = '; print_r($myrow); echo '<br /><br />';
 		$myrow = $this->replace_data_fields($myrow, $Seq);
 //echo 'new myrow = '; print_r($myrow); echo '<br /><br />';
-		foreach($Seq as $key => $TableCtl) { // 
+		foreach($Seq as $key => $TableCtl) { //
 			// insert data into output array and set to next column
 			$OutputArray[$RowCnt][$ColCnt] = ProcessData($myrow[$TableCtl['fieldname']], $TableCtl['processing']);
 			$ColCnt++;
@@ -106,7 +106,7 @@ class aged_summary {
 	}
 	// see if we have a total to send
 	$ShowTotals = false;
-	foreach ($Seq as $TotalCtl) if ($TotalCtl['total']=='1') $ShowTotals = true; 
+	foreach ($Seq as $TotalCtl) if ($TotalCtl['total']=='1') $ShowTotals = true;
 	if ($ShowTotals) {
 		$OutputArray[$RowCnt][0] = 'r:' . $report->title;
 		foreach ($Seq as $TotalCtl) {
@@ -166,7 +166,7 @@ class aged_summary {
 	  }
 	}
     $new_data = $this->calulate_special_fields($id);
-	foreach ($myrow as $key => $value) { 
+	foreach ($myrow as $key => $value) {
 	  for ($i = 0; $i < count($this->special_field_array); $i++) {
 	    if ($this->sql_field_karray[$key] == $this->special_field_array[$i]) $myrow[$key] = $new_data[$this->special_field_array[$i]];
 	  }
@@ -175,9 +175,9 @@ class aged_summary {
   }
 
   function fetch_paid_amounts($id) {
-	global $db;
+	global $admin;
 	if (!$id) return 0;
-	$result = $db->Execute("select sum(i.debit_amount) as debits, sum(i.credit_amount) as credits 
+	$result = $db->Execute("select sum(i.debit_amount) as debits, sum(i.credit_amount) as credits
 	  from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 	  where i.so_po_item_ref_id = " . $id . " and m.journal_id in (18, 20) and i.gl_type in ('pmt', 'chk')");
 	return $result->fields['credits'] - $result->fields['debits'];

@@ -66,7 +66,7 @@ class journal_19 extends \core\classes\journal {
 	}
 
 	function post_ordr($action) {
-		global $db, $messageStack;
+		global $admin, $messageStack;
 		$debit_total  = 0;
 		$credit_total = 0;
 	    $credit_total += $this->add_item_journal_rows(); // read in line items and add to journal row array
