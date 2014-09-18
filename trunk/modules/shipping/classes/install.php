@@ -122,6 +122,7 @@ class shipping_admin {
   function update($module) {
     global $db, $messageStack;
 	$error = false;
+	if (!defined('MODULE_'.strtoupper($module).'_VERSION')) return $error; // shippig module not installed, 
 	if (MODULE_SHIPPING_STATUS < 3.2) {
 	  if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_shipment_num')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_shipment_num VARCHAR(16) NOT NULL DEFAULT '1'");
 	  if (db_field_exists(TABLE_CURRENT_STATUS, 'next_shipment_desc')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_shipment_desc");
