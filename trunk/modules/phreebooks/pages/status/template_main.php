@@ -57,6 +57,17 @@ echo $toolbar->build_toolbar($add_search = true, $add_periods = true);
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
+<?php if (ENABLE_MULTI_BRANCH) {?>
+<div id="filter_bar">
+<table class="ui-widget" style="border-style:none;">
+ <tbody class="ui-widget-content">
+  <tr>
+	<td><?php echo GEN_STORE_ID . '&nbsp;' . html_pull_down_menu('store_id', gen_get_store_ids(), isset($_REQUEST['store_id']) ? $_REQUEST['store_id'] : $_SESSION['admin_prefs']['def_store_id'], 'onchange="submitToDo(\'filter\')"'); ?></td>
+  </tr>
+ </tbody>
+</table>
+</div>
+<?php } //end multi branch?>
 <div style="height:19px"><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE')); ?>
 <div style="float:right"><?php echo $query_split->display_links(); ?></div>
 </div>

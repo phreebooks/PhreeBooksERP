@@ -154,6 +154,8 @@ if (isset($_REQUEST['search_text']) && $_REQUEST['search_text'] <> '') {
 } else {
   $search = '';
 }
+
+if($_REQUEST['store_id']) $search .= " and store_id = '{$_REQUEST['store_id']}' ";
 // hook to add new fields to the query return results
 if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
 
