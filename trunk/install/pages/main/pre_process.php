@@ -214,7 +214,7 @@ switch ($_REQUEST['action']) {
 	  		}
 	  	}
 		// install core modules first
-	  	$core_modules = array('phreedom','phreeform');
+	  	$core_modules = array('phreedom', 'phreebooks', 'phreeform', 'contacts', 'inventory', 'shipping', 'phreehelp');
 	  	foreach ($core_modules as $entry) {
 	  		if (DEBUG) $messageStack->debug("\n  installing core module = " . $entry);
 	  		if ($entry <> '.' && $entry <> '..' && is_dir(DIR_FS_MODULES . $entry)) {
