@@ -453,12 +453,15 @@ if (defined('MODULE_SHIPPING_STATUS')) {
 }
 
 // load calendar parameters
+$now   = new DateTime;
+if (JOURNAL_ID == 6) $now->modify( '-1 day' );
+
 $cal_order = array(
   'name'      => 'dateOrdered',
   'form'      => 'orders',
   'fieldname' => 'post_date',
   'imagename' => 'btn_date_1',
-  'default'   => isset($order->post_date) ? gen_locale_date($order->post_date) : date(DATE_FORMAT),
+  'default'   => isset($order->post_date) ? gen_locale_date($order->post_date) : $now->format( DATE_FORMAT ),
   'params'    => array('align' => 'left'),
 );
 $cal_terminal = array(
