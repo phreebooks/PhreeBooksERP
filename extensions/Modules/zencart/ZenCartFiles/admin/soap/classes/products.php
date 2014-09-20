@@ -62,7 +62,7 @@ class xml_products extends parser {
 	$product['msrprice']              = $objXML->Request->Product->ProductPrice->MSRPrice;
 	$product['retail_price']          = $objXML->Request->Product->ProductPrice->RetailPrice;
 	$product['price_discount_type']   = $objXML->Request->Product->ProductPrice->PriceDiscounts->PriceDiscountType;
-	
+
 	$itemArray = $objXML->Request->Product->ProductPrice->PriceDiscounts->PriceLevel;
 	// if only one price level, make it an array since is is just an object
 	if (isset($itemArray->Quantity)) $itemArray = array($itemArray);
@@ -92,7 +92,7 @@ if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/extra_product_reads.php')) in
   }
 
 // The remaining functions are specific to ZenCart. they need to be modified for the specific application.
-// It also needs to check for errors, i.e. missing information, bad data, etc. 
+// It also needs to check for errors, i.e. missing information, bad data, etc.
   function updateDatabase($product) {
 	global $db, $messageStack;
 	// error check input
@@ -117,7 +117,7 @@ if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/extra_product_reads.php')) in
 		return $this->responseXML('12', sprintf(SOAP_BAD_PRODUCT_TYPE, $product_type_name, $product['sku']), 'error');
 	}
 	$product_type_id = $result->fields['type_id'];
-	
+
 	// manufacturer to id
 	$manufacturer_name = $product['manufacturer'];
 	$result = $db->Execute("select manufacturers_id from " . TABLE_MANUFACTURERS . " where manufacturers_name = '" . $manufacturer_name . "'");
@@ -128,7 +128,7 @@ if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/extra_product_reads.php')) in
 
 	// categories need to be verified to be lowest level and fetch id
 	$categories_name = $product['product_category'];
-	$result = $db->Execute("select categories_id from " . TABLE_CATEGORIES_DESCRIPTION . " 
+	$result = $db->Execute("select categories_id from " . TABLE_CATEGORIES_DESCRIPTION . "
 		where categories_name = '" . $categories_name . "' and language_id = '" . $languages_id . "'");
 	if ($result->RecordCount() <> 1) {
 		return $this->responseXML('14', sprintf(SOAP_BAD_CATEGORY, $categories_name, $product['sku']), 'error');
@@ -229,17 +229,17 @@ if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/extra_product_saves.php')) in
 		zen_db_perform(TABLE_PRODUCTS_DESCRIPTION, $prod_desc_data_array, 'update', "products_id = " . $products_id.' and language_id =' . $languages_id);
 	}
 
-// Hook for including additional product fields Rene 
+// Hook for including additional product fields Rene
 if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/additional_product_saves.php')) include (DIR_FS_ADMIN . 'soap/extra_actions/additional_product_saves.php');
-// EOF - Hook for customization		
+// EOF - Hook for customization
 	// Update the price levels, first clear out the current price level data
-	$db->Execute("delete from " . TABLE_PRODUCTS_DISCOUNT_QUANTITY . " where products_id = " . $products_id);
+	$db->Execute("delete from " . TABLE_PRODUCTS_DISCOUNT_QUANTITY . " where products_id = '$products_id'" );
 	// set the discount for each level from 2 on (level 1 set in base price)
 	for ($i=1, $j=2; $i < count($product['price_levels']); $i++, $j++) {
 	  if ($product['price_levels'][$j]['qty'])
-		$db->Execute("insert into " . TABLE_PRODUCTS_DISCOUNT_QUANTITY . " set 
-		  discount_id = "    . $i . ", 
-		  products_id = "    . $products_id . ", 
+		$db->Execute("insert into " . TABLE_PRODUCTS_DISCOUNT_QUANTITY . " set
+		  discount_id = "    . $i . ",
+		  products_id = "    . $products_id . ",
 		  discount_qty = "   . (real)$product['price_levels'][$j]['qty'] . ",
 		  discount_price = " . (real)$product['price_levels'][$j]['amount']);
 	}
