@@ -75,9 +75,9 @@ switch ($_REQUEST['action']) {
 			  'action' => $_POST['dis_action'][$key],
 			);
 		}
-		$db->transStart();
+		$admin->DataBase->transStart();
 		// Check attachments
-		$result = $db->Execute("select attachments from " . TABLE_RMA . " where id = '$id'");
+		$result = $admin->DataBase->Execute("select attachments from " . TABLE_RMA . " where id = '$id'");
 		$attachments = $result->fields['attachments'] ? unserialize($result->fields['attachments']) : array();
 		$image_id = 0;
 		while ($image_id < 100) { // up to 100 images
@@ -131,26 +131,26 @@ switch ($_REQUEST['action']) {
 		    db_perform(TABLE_RMA, $sql_data_array, 'update', 'id = ' . $id);
 		} else {
 		    // fetch the RMA number
-			$result = $db->Execute("select next_rma_num from " . TABLE_CURRENT_STATUS);
+			$result = $admin->DataBase->Execute("select next_rma_num from " . TABLE_CURRENT_STATUS);
 			$rma_num = $result->fields['next_rma_num'];
 			$sql_data_array['rma_num'] = $rma_num;
 		    $success = db_perform(TABLE_RMA, $sql_data_array, 'insert');
 			if (!db_perform(TABLE_RMA, $sql_data_array, 'insert')) throw new \core\classes\userException( "unable to add to database");
 			$id = db_insert_id();
 			$next_num = string_increment($sql_data_array['rma_num']);
-			$db->Execute("update " . TABLE_CURRENT_STATUS . " set next_rma_num = '" . $next_num . "'");
+			$admin->DataBase->Execute("update " . TABLE_CURRENT_STATUS . " set next_rma_num = '" . $next_num . "'");
 		}
-		$db->transCommit();
+		$admin->DataBase->transCommit();
 		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, ($_POST['id'] ? TEXT_UPDATED : TEXT_ADDED ), TEXT_RMA , $rma_num), 'success');
 		gen_add_audit_log(sprintf(TEXT_SUCCESSFULLY_ARGS, ($_POST['id'] ? TEXT_UPDATED : TEXT_ADDED ), TEXT_RMA , $rma_num));
   	}catch(Exception $e){
-  		$db->transRollback();
+  		$admin->DataBase->transRollback();
   		$messageStack->add($e->getMessage());
   	}
 	break;
   case 'edit':
 	$id = db_prepare_input($_POST['rowSeq']);
-	$result = $db->Execute("select * from " . TABLE_RMA . " where id = " . $id);
+	$result = $admin->DataBase->Execute("select * from " . TABLE_RMA . " where id = " . $id);
 	$attachments     = $result->fields['attachments']     ? unserialize($result->fields['attachments'])     : array();
 	$receive_details = $result->fields['receive_details'] ? unserialize($result->fields['receive_details']) : array();
 	$close_details   = $result->fields['close_details']   ? unserialize($result->fields['close_details'])   : array();
@@ -160,9 +160,9 @@ switch ($_REQUEST['action']) {
   case 'delete':
   	\core\classes\user::validate_security($security_level, 4); // security check
 	$id     = db_prepare_input($_GET['cID']);
-	$result = $db->Execute("select rma_num from " . TABLE_RMA . " where id = " . $id);
+	$result = $admin->DataBase->Execute("select rma_num from " . TABLE_RMA . " where id = " . $id);
 	if ($result->RecordCount() > 0) {
-	  $db->Execute("delete from " . TABLE_RMA . " where id = " . $id);
+	  $admin->DataBase->Execute("delete from " . TABLE_RMA . " where id = " . $id);
 	  foreach (glob(RMA_DIR_ATTACHMENTS."ram_$id_*.zip") as $filename) unlink($filename); // remove attachments
 	  gen_add_audit_log(sprintf( TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_RMA, $result->fields['rma_num']));
 	  gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('cID', 'action')), 'SSL'));
@@ -181,7 +181,7 @@ switch ($_REQUEST['action']) {
 	die;
   case 'dn_attach': // download from list, assume the first document only
 	$cID   = db_prepare_input($_POST['rowSeq']);
-	$result = $db->Execute("select attachments from " . TABLE_RMA . " where id = " . $cID);
+	$result = $admin->DataBase->Execute("select attachments from " . TABLE_RMA . " where id = " . $cID);
 	$attachments = unserialize($result->fields['attachments']);
 	foreach ($attachments as $key => $value) {
 	  $filename = 'rma_'.$cID.'_'.$key.'.zip';
@@ -292,7 +292,7 @@ switch ($_REQUEST['action']) {
 	// hook to add new fields to the query return results
 	if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
     $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . " from " . TABLE_RMA . $search . " order by $disp_order, rma_num";
-    $query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+    $query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 	history_save();
     define('PAGE_TITLE', TEXT_RETURN_MATERIAL_AUTHORIZATIONS);

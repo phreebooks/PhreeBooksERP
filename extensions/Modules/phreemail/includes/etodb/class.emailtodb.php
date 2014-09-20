@@ -429,13 +429,13 @@ class EMAIL_TO_DB {
 
     $id = $this->newid; #ID email in DB
 
-   $db->query("SELECT ID, IDEmail, EmailFrom, EmailFromP, EmailTo, Subject, Message, Message_html FROM emailtodb_email WHERE ID='".$id."'");
-   $db->next_record();
-    $ID = $db->f('ID');
-    $email['Email']       = $db->f('EmailFrom');
-    $email['Subject']     = $db->f('Subject');
-    $email['Text']        = $db->f('Message');
-    $email['Text_HTML']   = $db->f('Message_html');
+   $admin->DataBase->query("SELECT ID, IDEmail, EmailFrom, EmailFromP, EmailTo, Subject, Message, Message_html FROM emailtodb_email WHERE ID='".$id."'");
+   $admin->DataBase->next_record();
+    $ID = $admin->DataBase->f('ID');
+    $email['Email']       = $admin->DataBase->f('EmailFrom');
+    $email['Subject']     = $admin->DataBase->f('Subject');
+    $email['Text']        = $admin->DataBase->f('Message');
+    $email['Text_HTML']   = $admin->DataBase->f('Message_html');
     if($this->check_blacklist($email['Email'])){
       $this->update_folder($id, $this->spam_folder);
     }
@@ -455,9 +455,9 @@ class EMAIL_TO_DB {
 
     if (!isset($db)) $db = new DB_WL;
 
-   $db->query("SELECT Email FROM emailtodb_list WHERE Email='".addslashes($email)."' AND Type='B'");
-   $db->next_record();
-   $e_mail = $db->f('Email');
+   $admin->DataBase->query("SELECT Email FROM emailtodb_list WHERE Email='".addslashes($email)."' AND Type='B'");
+   $admin->DataBase->next_record();
+   $e_mail = $admin->DataBase->f('Email');
    if($e_mail == $email){
     return 1;
    } else {
@@ -472,10 +472,10 @@ class EMAIL_TO_DB {
 
     $string = strtolower($string);
 
-    $db->query("SELECT Word FROM emailtodb_words ");
-    while($db->next_record()){
+    $admin->DataBase->query("SELECT Word FROM emailtodb_words ");
+    while($admin->DataBase->next_record()){
 
-    $word = strtolower($db->f('Word'));
+    $word = strtolower($admin->DataBase->f('Word'));
 
         if (eregi($word, $string)) {
           return 1;
@@ -492,7 +492,7 @@ class EMAIL_TO_DB {
   function db_add_message($email){
   if (!isset($db)) $db = new DB_WL;
 
- $db->query("INSERT INTO emailtodb_email (IDEmail, EmailFrom, EmailFromP, EmailTo, DateE, DateDb, Subject, MsgSize) VALUES
+ $admin->DataBase->query("INSERT INTO emailtodb_email (IDEmail, EmailFrom, EmailFromP, EmailTo, DateE, DateDb, Subject, MsgSize) VALUES
       ('".$message_id."',
       '".$email['FROM_EMAIL']."',
       '".addslashes(strip_tags($email['FROM_NAME']))."',
@@ -502,9 +502,9 @@ class EMAIL_TO_DB {
       '".addslashes($email['SUBJECT'])."',
       '".$email["SIZE"]."')");
 
-  $db->query("select LAST_INSERT_ID() as UID");
-  $db->next_record();
-  $this->newid = $db->f("UID");
+  $admin->DataBase->query("select LAST_INSERT_ID() as UID");
+  $admin->DataBase->next_record();
+  $this->newid = $admin->DataBase->f("UID");
 
   }
  /**
@@ -514,7 +514,7 @@ class EMAIL_TO_DB {
 function db_add_attach($file_orig, $filename){
  if (!isset($db)) $db = new DB_WL;
 
-$db->query("INSERT INTO emailtodb_attach (IDEmail, FileNameOrg, Filename) VALUES
+$admin->DataBase->query("INSERT INTO emailtodb_attach (IDEmail, FileNameOrg, Filename) VALUES
           ('".$this->newid."',
           '".addslashes($file_orig)."',
           '".addslashes($filename)."')");
@@ -527,9 +527,9 @@ $db->query("INSERT INTO emailtodb_attach (IDEmail, FileNameOrg, Filename) VALUES
   function db_update_message($msg, $type= 'PLAIN'){
   if (!isset($db)) $db = new DB_WL;
 
-  if($type == 'PLAIN') $db->query("UPDATE emailtodb_email SET Message='".addslashes($msg)."' WHERE ID= '".$this->newid."'");
+  if($type == 'PLAIN') $admin->DataBase->query("UPDATE emailtodb_email SET Message='".addslashes($msg)."' WHERE ID= '".$this->newid."'");
 
-  if($type == 'HTML')  $db->query("UPDATE emailtodb_email SET Message_html='".addslashes($msg)."' WHERE ID= '".$this->newid."'");
+  if($type == 'HTML')  $admin->DataBase->query("UPDATE emailtodb_email SET Message_html='".addslashes($msg)."' WHERE ID= '".$this->newid."'");
 
   }
 
@@ -539,7 +539,7 @@ $db->query("INSERT INTO emailtodb_attach (IDEmail, FileNameOrg, Filename) VALUES
   function add_db_log($email, $info){
     if (!isset($db)) $db = new DB_WL;
 
-    $db->query("INSERT INTO emailtodb_log (IDemail, Email, Info, FSize, Date_start, Status) VALUES
+    $admin->DataBase->query("INSERT INTO emailtodb_log (IDemail, Email, Info, FSize, Date_start, Status) VALUES
       ('".$this->newid."',
       '".$email['FROM_EMAIL']."',
       '".addslashes(strip_tags($info))."',
@@ -547,9 +547,9 @@ $db->query("INSERT INTO emailtodb_attach (IDEmail, FileNameOrg, Filename) VALUES
       '".date("Y-m-d H:i:s")."',
       '2')");
 
-    $db->query("select LAST_INSERT_ID() as UID");
-    $db->next_record();
-    $this->logid = $db->f("UID");
+    $admin->DataBase->query("select LAST_INSERT_ID() as UID");
+    $admin->DataBase->next_record();
+    $this->logid = $admin->DataBase->f("UID");
 
     return  $this->logid;
 
@@ -562,7 +562,7 @@ $db->query("INSERT INTO emailtodb_attach (IDEmail, FileNameOrg, Filename) VALUES
 
     if (!isset($db)) $db = new DB_WL;
 
-    $db->query("UPDATE emailtodb_email SET Type = '".addslashes($folder)."' WHERE ID = '".$id."'");
+    $admin->DataBase->query("UPDATE emailtodb_email SET Type = '".addslashes($folder)."' WHERE ID = '".$id."'");
 
   }
 
@@ -572,7 +572,7 @@ $db->query("INSERT INTO emailtodb_attach (IDEmail, FileNameOrg, Filename) VALUES
 	function update_db_log($info, $id){
     	if (!isset($db)) $db = new DB_WL;
 
-	    $db->query("UPDATE emailtodb_log  SET Status = '1', Info='".addslashes(strip_tags($info))."', Date_finish = '".date("Y-m-d H:i:s")."' WHERE IDlog = '".$id."'");
+	    $admin->DataBase->query("UPDATE emailtodb_log  SET Status = '1', Info='".addslashes(strip_tags($info))."', Date_finish = '".date("Y-m-d H:i:s")."' WHERE IDlog = '".$id."'");
 
 	}
 
@@ -584,15 +584,15 @@ $db->query("INSERT INTO emailtodb_attach (IDEmail, FileNameOrg, Filename) VALUES
   if (!isset($db)) $db = new DB_WL;
   $email = array();
 
-   $db->query("SELECT IDlog, IDemail, Email, Info, FSize, Date_start, Date_finish, Status FROM emailtodb_log ORDER BY Date_finish DESC LIMIT 100");
-   while($db->next_record()){
-    $ID = $db->f('IDlog');
-    $email[$ID]['IDemail']     = $db->f('IDemail');
-    $email[$ID]['Email']       = $db->f('Email');
-    $email[$ID]['Info']        = $db->f('Info');
-    $email[$ID]['Size']        = $db->f('FSize');
-    $email[$ID]['Date_start']  = $db->f('Date_start');
-    $email[$ID]['Date_finish'] = $db->f('Date_finish');
+   $admin->DataBase->query("SELECT IDlog, IDemail, Email, Info, FSize, Date_start, Date_finish, Status FROM emailtodb_log ORDER BY Date_finish DESC LIMIT 100");
+   while($admin->DataBase->next_record()){
+    $ID = $admin->DataBase->f('IDlog');
+    $email[$ID]['IDemail']     = $admin->DataBase->f('IDemail');
+    $email[$ID]['Email']       = $admin->DataBase->f('Email');
+    $email[$ID]['Info']        = $admin->DataBase->f('Info');
+    $email[$ID]['Size']        = $admin->DataBase->f('FSize');
+    $email[$ID]['Date_start']  = $admin->DataBase->f('Date_start');
+    $email[$ID]['Date_finish'] = $admin->DataBase->f('Date_finish');
    }
    return $email;
   }
@@ -605,14 +605,14 @@ $db->query("INSERT INTO emailtodb_attach (IDEmail, FileNameOrg, Filename) VALUES
   if (!isset($db)) $db = new DB_WL;
   $email = array();
 
-   $db->query("SELECT ID, IDEmail, EmailFrom, EmailFromP, EmailTo, DateE, DateDb, Subject, Message, Message_html, MsgSize FROM emailtodb_email ORDER BY ID DESC LIMIT 25");
-   while($db->next_record()){
-    $ID = $db->f('ID');
-    $email[$ID]['Email']     = $db->f('EmailFrom');
-    $email[$ID]['EmailName'] = $db->f('EmailFromP');
-    $email[$ID]['Subject']   = $db->f('Subject');
-    $email[$ID]['Date']      = $db->f('DateE');
-    $email[$ID]['Size']      = $db->f('MsgSize');
+   $admin->DataBase->query("SELECT ID, IDEmail, EmailFrom, EmailFromP, EmailTo, DateE, DateDb, Subject, Message, Message_html, MsgSize FROM emailtodb_email ORDER BY ID DESC LIMIT 25");
+   while($admin->DataBase->next_record()){
+    $ID = $admin->DataBase->f('ID');
+    $email[$ID]['Email']     = $admin->DataBase->f('EmailFrom');
+    $email[$ID]['EmailName'] = $admin->DataBase->f('EmailFromP');
+    $email[$ID]['Subject']   = $admin->DataBase->f('Subject');
+    $email[$ID]['Date']      = $admin->DataBase->f('DateE');
+    $email[$ID]['Size']      = $admin->DataBase->f('MsgSize');
 
    }
    return $email;

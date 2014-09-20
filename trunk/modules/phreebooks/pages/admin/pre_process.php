@@ -37,10 +37,10 @@ switch ($_REQUEST['action']) {
 	// first verify the file was uploaded ok
 	if (!$std_chart) validate_upload('file_name', 'text', 'txt');
 	if ($delete_chart) {
-	  $result = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " limit 1");
+	  $result = $admin->DataBase->Execute("select id from " . TABLE_JOURNAL_MAIN . " limit 1");
 	  if ($result->RecordCount() > 0) throw new \core\classes\userException(GL_JOURNAL_NOT_EMTPY);
-	  $db->Execute("TRUNCATE TABLE " . TABLE_CHART_OF_ACCOUNTS);
-	  $db->Execute("TRUNCATE TABLE " . TABLE_CHART_OF_ACCOUNTS_HISTORY);
+	  $admin->DataBase->Execute("TRUNCATE TABLE " . TABLE_CHART_OF_ACCOUNTS);
+	  $admin->DataBase->Execute("TRUNCATE TABLE " . TABLE_CHART_OF_ACCOUNTS_HISTORY);
 	}
 	$filename = $std_chart ? (DIR_FS_WORKING.'language/'.$_SESSION['language'].'/charts/'.$std_chart) : $_FILES['file_name']['tmp_name'];
 	if (($temp = @file_get_contents($filename)) === false)  throw new \core\classes\userException(sprintf(ERROR_READ_FILE, $filename));
@@ -48,7 +48,7 @@ switch ($_REQUEST['action']) {
 	if (is_object($accounts->ChartofAccounts)) $accounts = $accounts->ChartofAccounts; // just pull the first one
 	if (is_object($accounts->account)) $accounts->account = array($accounts->account); // in case of only one chart entry
 	if (is_array($accounts->account)) foreach ($accounts->account as $account) {
-	  	$result = $db->Execute("select id from " . TABLE_CHART_OF_ACCOUNTS . " where id = '" . $account->id . "'");
+	  	$result = $admin->DataBase->Execute("select id from " . TABLE_CHART_OF_ACCOUNTS . " where id = '" . $account->id . "'");
 	  	if ($result->RecordCount() > 0) {
 	    	$messageStack->add(sprintf(TEXT_THE_GL_ACCOUNT_ALREADY_EXISTS_THE_ACCOUNT_WILL_NOT_BE_ADDED_ARGS, $account->id),'error');
 			continue;

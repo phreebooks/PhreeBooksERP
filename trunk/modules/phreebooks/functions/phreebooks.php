@@ -19,7 +19,7 @@
 
 function fetch_item_description($id) {
   global $admin;
-  $result = $db->Execute("select description from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $id . " limit 1");
+  $result = $admin->DataBase->Execute("select description from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $id . " limit 1");
   return $result->fields['description'];
 }
 
@@ -42,34 +42,34 @@ function validate_fiscal_year($next_fy, $next_period, $next_start_date, $num_per
 
 function modify_account_history_records($id, $add_acct = true) {
   global $admin;
-  $result = $db->Execute("select max(period) as period from " . TABLE_ACCOUNTING_PERIODS);
+  $result = $admin->DataBase->Execute("select max(period) as period from " . TABLE_ACCOUNTING_PERIODS);
   $max_period = $result->fields['period'];
   if (!$max_period) die ('table: '.TABLE_ACCOUNTING_PERIODS.' is not set, run setup.');
   if ($add_acct) {
-    $result = $db->Execute("select heading_only from " . TABLE_CHART_OF_ACCOUNTS . " where id = '" . $id . "'");
+    $result = $admin->DataBase->Execute("select heading_only from " . TABLE_CHART_OF_ACCOUNTS . " where id = '" . $id . "'");
 	if ($result->fields['heading_only'] <> '1') {
 	  for ($i = 0, $j = 1; $i < $max_period; $i++, $j++) {
-	    $db->Execute("insert into " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " (account_id, period) values('" . $id . "', '" . $j . "')");
+	    $admin->DataBase->Execute("insert into " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " (account_id, period) values('" . $id . "', '" . $j . "')");
 	  }
 	}
   } else {
-	$result = $db->Execute("delete from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '" . $id . "'");
+	$result = $admin->DataBase->Execute("delete from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '" . $id . "'");
   }
 }
 
 function build_and_check_account_history_records() {
   global $admin;
-  $result = $db->Execute("select max(period) as period from " . TABLE_ACCOUNTING_PERIODS);
+  $result = $admin->DataBase->Execute("select max(period) as period from " . TABLE_ACCOUNTING_PERIODS);
   $max_period = $result->fields['period'];
   if (!$max_period) die ('table: '.TABLE_ACCOUNTING_PERIODS.' is not set, run setup.');
-  $result = $db->Execute("select id, heading_only from " . TABLE_CHART_OF_ACCOUNTS . " order by id");
+  $result = $admin->DataBase->Execute("select id, heading_only from " . TABLE_CHART_OF_ACCOUNTS . " order by id");
   while (!$result->EOF) {
     if ($result->fields['heading_only'] <> '1') {
 	  $account_id = $result->fields['id'];
 	  for ($i = 0, $j = 1; $i < $max_period; $i++, $j++) {
-	    $record_found = $db->Execute("select id from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '" . $account_id . "' and period = " . $j);
+	    $record_found = $admin->DataBase->Execute("select id from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '" . $account_id . "' and period = " . $j);
 	    if (!$record_found->RecordCount()) {
-		  $db->Execute("insert into " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " (account_id, period) values('" . $account_id . "', '" . $j . "')");
+		  $admin->DataBase->Execute("insert into " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " (account_id, period) values('" . $account_id . "', '" . $j . "')");
 		 }
 	  }
 	}
@@ -79,7 +79,7 @@ function build_and_check_account_history_records() {
 
 function get_fiscal_year_pulldown() {
     global $admin;
-    $fy_values = $db->Execute("select distinct fiscal_year from " . TABLE_ACCOUNTING_PERIODS . " order by fiscal_year");
+    $fy_values = $admin->DataBase->Execute("select distinct fiscal_year from " . TABLE_ACCOUNTING_PERIODS . " order by fiscal_year");
     $fy_array = array();
     while (!$fy_values->EOF) {
       $fy_array[] = array('id' => $fy_values->fields['fiscal_year'], 'text' => $fy_values->fields['fiscal_year']);
@@ -109,7 +109,7 @@ function load_coa_info($types = array()) { // includes inactive accounts
   $coa_data = array();
   $sql = "select * from " . TABLE_CHART_OF_ACCOUNTS;
   if (sizeof($types > 0)) $sql .= " where account_type in (" . implode(", ", $types) . ")";
-  $result = $db->Execute($sql);
+  $result = $admin->DataBase->Execute($sql);
   while (!$result->EOF) {
     $coa_data[$result->fields['id']] = array(
 	  'id'              => $result->fields['id'],
@@ -131,7 +131,7 @@ function fill_paid_invoice_array($id, $account_id, $type = 'c') {
 	// first read all currently open invoices and the payments of interest and put into an array
 	$paid_indeces = array();
 	if ($id > 0) {
-	  $result = $db->Execute("select distinct so_po_item_ref_id from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $id);
+	  $result = $admin->DataBase->Execute("select distinct so_po_item_ref_id from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $id);
 	  while (!$result->EOF) {
 	    if ($result->fields['so_po_item_ref_id']) $paid_indeces[] = $result->fields['so_po_item_ref_id'];
 	    $result->MoveNext();
@@ -148,7 +148,7 @@ function fill_paid_invoice_array($id, $account_id, $type = 'c') {
 	  where (journal_id in " . $search_journal . " and closed = '0' and bill_acct_id = " . $account_id . ")";
 	if (sizeof($paid_indeces) > 0) $sql .= " or (id in (" . implode(',',$paid_indeces) . ") and closed = '0')";
 	$sql .= " order by post_date";
-	$result = $db->Execute($sql);
+	$result = $admin->DataBase->Execute($sql);
 	while (!$result->EOF) {
 	  if ($result->fields['journal_id'] == 7 || $result->fields['journal_id'] == 13) {
 	    $result->fields['total_amount'] = -$result->fields['total_amount'];
@@ -163,7 +163,7 @@ function fill_paid_invoice_array($id, $account_id, $type = 'c') {
 	// next read the record of interest and add/adjust open invoice array with amounts
 	$sql = "select id, ref_id, so_po_item_ref_id, gl_type, description, debit_amount, credit_amount, gl_account
 	  from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $id;
-	$result = $db->Execute($sql);
+	$result = $admin->DataBase->Execute($sql);
 	while (!$result->EOF) {
 	  $amount = ($result->fields['debit_amount']) ? $result->fields['debit_amount'] : $result->fields['credit_amount'];
 	  if ($negate) $amount = -$amount;
@@ -194,7 +194,7 @@ function fill_paid_invoice_array($id, $account_id, $type = 'c') {
 	  // fetch some information about the invoice
 	  $sql = "select id, post_date, terms, purchase_invoice_id, purch_order_id, gl_acct_id, waiting
 		from " . TABLE_JOURNAL_MAIN . " where id = " . $key;
-	  $result = $db->Execute($sql);
+	  $result = $admin->DataBase->Execute($sql);
 	  $due_dates = calculate_terms_due_dates($result->fields['post_date'], $result->fields['terms'], ($type == 'v' ? 'AP' : 'AR'));
 	  if ($negate) {
 	    $line_item['total_amount'] = -$line_item['total_amount'];
@@ -237,7 +237,7 @@ function fetch_partially_paid($id) {
 	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 	where i.so_po_item_ref_id = $id and m.journal_id in (18, 20) and i.gl_type in ('chk', 'pmt')
 	group by m.journal_id";
-  $result = $db->Execute($sql);
+  $result = $admin->DataBase->Execute($sql);
   if($result->RecordCount() == 0) return 0;
   if ($result->fields['debit'] || $result->fields['credit']) {
     return $result->fields['debit'] + $result->fields['credit'];
@@ -292,7 +292,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
   if (!$gl_acct_id) return $acct_balance;
   $sql = "select beginning_balance from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
 	where account_id = '" . $gl_acct_id . "' and period = " . $period;
-  $result = $db->Execute($sql);
+  $result = $admin->DataBase->Execute($sql);
   $acct_balance = $result->fields['beginning_balance'];
 
   // load the payments and deposits for the current period
@@ -301,7 +301,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 	where m.period = " . $period . " and i.gl_account = '" . $gl_acct_id . "' and m.post_date <= '" . $post_date . "'
 	order by m.post_date, m.journal_id";
-  $result = $db->Execute($sql);
+  $result = $admin->DataBase->Execute($sql);
   while (!$result->EOF) {
     $acct_balance += $result->fields['debit_amount'] - $result->fields['credit_amount'];
     $result->MoveNext();
@@ -311,7 +311,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 
   	function gen_build_tax_auth_array() {
     	global $admin;
-    	$tax_auth_values = $db->Execute("select tax_auth_id, description_short, account_id , tax_rate
+    	$tax_auth_values = $admin->DataBase->Execute("select tax_auth_id, description_short, account_id , tax_rate
       	  from " . TABLE_TAX_AUTH . " order by description_short");
     	if ($tax_auth_values->RecordCount() < 1) throw new \core\classes\userException("there are not tax records to select");
 		while (!$tax_auth_values->EOF) {
@@ -344,7 +344,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 			  case 'v': $sql .= " where type = '$type'"; break;
 			  case 'b': // both
 		}
-		$tax_rates = $db->Execute($sql);
+		$tax_rates = $admin->DataBase->Execute($sql);
 	    $tax_rate_drop_down = array();
 	    if ($contactForm == true) $tax_rate_drop_down[] = array('id' => '-1', 'text' => TEXT_PRODUCT_DEFAULT);
 	    $tax_rate_drop_down[] = array('id' => '0', 'rate' => '0', 'text' => TEXT_NONE, 'auths' => '');
@@ -362,7 +362,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 
   function ord_get_so_po_num($id = '') {
 	global $admin;
-	$result = $db->Execute("select purchase_invoice_id from " . TABLE_JOURNAL_MAIN . " where id = " . $id);
+	$result = $admin->DataBase->Execute("select purchase_invoice_id from " . TABLE_JOURNAL_MAIN . " where id = " . $id);
 	return ($result->RecordCount()) ? $result->fields['purchase_invoice_id'] : '';
   }
 
@@ -372,14 +372,14 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
     $result_array[] = array('id' => '', 'text' => TEXT_NONE);
 	// fetch cost structure
 	$costs = array();
-	$result = $db->Execute("select cost_id, description_short from " . TABLE_PROJECTS_COSTS . " where inactive = '0'");
+	$result = $admin->DataBase->Execute("select cost_id, description_short from " . TABLE_PROJECTS_COSTS . " where inactive = '0'");
 	while(!$result->EOF) {
 	  $costs[$result->fields['cost_id']] = $result->fields['description_short'];
 	  $result->MoveNext();
 	}
 	// fetch phase structure
 	$phases = array();
-	$result = $db->Execute("select phase_id, description_short, cost_breakdown from " . TABLE_PROJECTS_PHASES . " where inactive = '0'");
+	$result = $admin->DataBase->Execute("select phase_id, description_short, cost_breakdown from " . TABLE_PROJECTS_PHASES . " where inactive = '0'");
 	while(!$result->EOF) {
 	  $phases[$result->fields['phase_id']] = array(
 	  	'text'   => $result->fields['description_short'],
@@ -388,7 +388,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 	  $result->MoveNext();
 	}
 	// fetch projects
-	$result = $db->Execute("select id, short_name, account_number from " . TABLE_CONTACTS . " where type = 'j' and inactive <> '1'");
+	$result = $admin->DataBase->Execute("select id, short_name, account_number from " . TABLE_CONTACTS . " where type = 'j' and inactive <> '1'");
 	while(!$result->EOF) {
 	  $base_id   = $result->fields['id'];
 	  $base_text = $result->fields['short_name'];
@@ -419,7 +419,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 	if (!$period) { // we're outside of the defined fiscal years
 	  if ($show_message) $messageStack->add(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');
 	} else { // update CURRENT_ACCOUNTING_PERIOD constant with this new period
-	  $result = $db->Execute("select start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . " where period = " . $period);
+	  $result = $admin->DataBase->Execute("select start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . " where period = " . $period);
 	  write_configure('CURRENT_ACCOUNTING_PERIOD',       $period);
 	  write_configure('CURRENT_ACCOUNTING_PERIOD_START', $result->fields['start_date']);
 	  write_configure('CURRENT_ACCOUNTING_PERIOD_END',   $result->fields['end_date']);
@@ -465,9 +465,9 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 			if (sizeof($journals) == 0) throw new \core\classes\userException('no journals received to repost');
 			$sql = "SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE journal_id IN (".implode(',', $journals).")
 			  AND post_date>= '$start_date' AND post_date<'".gen_specific_date($end_date, 1)."' ORDER BY post_date, id";
-			$result = $db->Execute($sql);
+			$result = $admin->DataBase->Execute($sql);
 			$cnt = 0;
-			$db->transStart();
+			$admin->DataBase->transStart();
 			while (!$result->EOF) {
 			    $gl_entry = new \core\classes\journal($result->fields['id']);
 			    $gl_entry->remove_cogs_rows(); // they will be regenerated during the re-post
@@ -475,11 +475,11 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 				$cnt++;
 			    $result->MoveNext();
 			}
-		    $db->transCommit();
+		    $admin->DataBase->transCommit();
 			return $cnt;
 
 	  	}catch(Exception $e){
-  		  $db->transRollback();
+  		  $admin->DataBase->transRollback();
   		  throw $e;
   		}
   	}
@@ -508,13 +508,13 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 	$past_due          = 0;
 	$sql = "select id from " . TABLE_JOURNAL_MAIN . "
 		where bill_acct_id = " . $id . " and journal_id in (" . $inv_jid . ") and closed = '0'";
-	$open_inv = $db->Execute($sql);
+	$open_inv = $admin->DataBase->Execute($sql);
 	while(!$open_inv->EOF) {
-	  $result = $db->Execute("select debit_amount, credit_amount from " . TABLE_JOURNAL_ITEM . " where gl_type = 'ttl' and ref_id = " . $open_inv->fields['id']);
-	  $result2 = $db->Execute("select journal_id, post_date from " . TABLE_JOURNAL_MAIN . " where id = " . $open_inv->fields['id']);
+	  $result = $admin->DataBase->Execute("select debit_amount, credit_amount from " . TABLE_JOURNAL_ITEM . " where gl_type = 'ttl' and ref_id = " . $open_inv->fields['id']);
+	  $result2 = $admin->DataBase->Execute("select journal_id, post_date from " . TABLE_JOURNAL_MAIN . " where id = " . $open_inv->fields['id']);
 	  $total_billed = $result->fields['debit_amount'] - $result->fields['credit_amount'];
 	  $post_date = $result2->fields['post_date'];
-	  $result = $db->Execute("select sum(debit_amount) as debits, sum(credit_amount) as credits
+	  $result = $admin->DataBase->Execute("select sum(debit_amount) as debits, sum(credit_amount) as credits
 	    from " . TABLE_JOURNAL_ITEM . " where so_po_item_ref_id = '" . $open_inv->fields['id'] . "' and gl_type in ('pmt', 'chk')");
 	  $total_paid = $result->fields['credits'] - $result->fields['debits'];
 	  $balance = $total_billed - $total_paid;

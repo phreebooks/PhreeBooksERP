@@ -20,13 +20,13 @@
 function get_user_name($id = 0) {
   global $admin;
   if ($id == 0) return '';
-  $result = $db->Execute("select display_name from " . TABLE_USERS . " where admin_id = " . $id);
+  $result = $admin->DataBase->Execute("select display_name from " . TABLE_USERS . " where admin_id = " . $id);
   return ($result->RecordCount() < 1) ? '' : $result->fields['display_name'];
 }
 
 function wo_build_users() {
   global $admin;
-  $result = $db->Execute("select admin_id, display_name from " . TABLE_USERS . " where inactive = '0'");
+  $result = $admin->DataBase->Execute("select admin_id, display_name from " . TABLE_USERS . " where inactive = '0'");
   $user_list = array(array('id' => '', 'text' => TEXT_PLEASE_SELECT));
   while (!$result->EOF) {
 	$user_list[] = array('id' => $result->fields['admin_id'], 'text' => $result->fields['display_name']);
@@ -37,10 +37,10 @@ function wo_build_users() {
 
 function allocation_adjustment($sku_id, $qty = 0, $old_qty = 0) {
   global $admin;
-  $result = $db->Execute("select sku, qty from ".TABLE_INVENTORY_ASSY_LIST." where ref_id = $sku_id");
+  $result = $admin->DataBase->Execute("select sku, qty from ".TABLE_INVENTORY_ASSY_LIST." where ref_id = $sku_id");
   while (!$result->EOF) {
 	$total = ($qty - $old_qty) * $result->fields['qty'];
-	if ($total <> 0) $inv = $db->Execute("update " . TABLE_INVENTORY . "
+	if ($total <> 0) $inv = $admin->DataBase->Execute("update " . TABLE_INVENTORY . "
 	  set quantity_on_allocation = quantity_on_allocation + " . $total . " where sku = '" . $result->fields['sku'] . "'");
     $result->MoveNext();
   }

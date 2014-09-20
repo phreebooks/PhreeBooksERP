@@ -26,7 +26,7 @@ class translator {
 	global $admin, $messageStack;
 	$total = 0;
 	$trans = 0;
-	$result = $db->Execute("select translated from " . TABLE_TRANSLATOR . "
+	$result = $admin->DataBase->Execute("select translated from " . TABLE_TRANSLATOR . "
 	  where module = '" . $mod . "' and language = '" . $lang . "' and version = '" . $ver . "'");
 	while(!$result->EOF) {
 	  if ($result->fields['translated'] == '1') $trans++;
@@ -68,13 +68,13 @@ class translator {
 		$pathtofile = str_replace(DIR_FS_ADMIN, '', $dir_source . $file);
 		$langtemp = $this->extractUTF8($langfile);
 //		preg_match_all("|define\('(.*)',[\s]*'(.*)'\);|imU", $langfile, $langtemp); // broken for UTF-8
-		$db->Execute("DELETE FROM ".TABLE_TRANSLATOR." WHERE module='$mod' AND language='$lang' AND version='$ver' AND pathtofile='$pathtofile'");
+		$admin->DataBase->Execute("DELETE FROM ".TABLE_TRANSLATOR." WHERE module='$mod' AND language='$lang' AND version='$ver' AND pathtofile='$pathtofile'");
 		foreach ($langtemp as $const => $value) {
 if ($const == 'TEXT_COUNTRY_ISO_CODE')echo 'writing const = '.$const.' with value = '.$value.'<br>';
 			$sql = "INSERT INTO ".TABLE_TRANSLATOR." SET
 			module='$mod', language='$lang', version='$ver', pathtofile='$pathtofile',
 			defined_constant='".db_input($const)."', translation='".db_input($value)."', translated='1'";
-		  $db->Execute($sql);
+		  $admin->DataBase->Execute($sql);
 		}
 	  } elseif (is_dir($dir_source . $file)) {
 	    $tmp_module = $mod;
@@ -107,15 +107,15 @@ if ($const == 'TEXT_COUNTRY_ISO_CODE')echo 'writing const = '.$const.' with valu
   function convert_language($mod, $lang, $source = 'en_us', $history = '', $subs = array()) {
 	global $admin, $messageStack;
 	// retrieve highest version
-	$result = $db->Execute("select max(version) as version from " . TABLE_TRANSLATOR . "
+	$result = $admin->DataBase->Execute("select max(version) as version from " . TABLE_TRANSLATOR . "
 	  where module = '" . $mod . "' and language = '" . $source . "'");
 	if ($result->RecordCount() == 0) throw new \core\classes\userException(TRANS_ERROR_NO_SOURCE);
 	$ver = $result->fields['version'];
 	// delete all from the version being written, prevents dups
-	$db->Execute("delete from " . TABLE_TRANSLATOR . "
+	$admin->DataBase->Execute("delete from " . TABLE_TRANSLATOR . "
 	  where module = '" . $mod . "' and language = '" . $lang . "' and version = '" . $ver . "'");
 	// load the source language
-	$result = $db->Execute("select pathtofile, defined_constant, translation from " . TABLE_TRANSLATOR . "
+	$result = $admin->DataBase->Execute("select pathtofile, defined_constant, translation from " . TABLE_TRANSLATOR . "
 	  where module = '" . $mod . "' and language = '" . $source . "' and version = '" . $ver . "' order by id");
 	while (!$result->EOF) {
 	  // fix some fields
@@ -141,7 +141,7 @@ if ($const == 'TEXT_COUNTRY_ISO_CODE')echo 'writing const = '.$const.' with valu
 		defined_constant = '" . db_input($const) . "',
 		translation = '"      . db_input($trans) . "',
 		translated = '"       . $translated . "'";
-	  $db->Execute($sql);
+	  $admin->DataBase->Execute($sql);
 	  $result->MoveNext();
 	}
 	return true;
@@ -149,7 +149,7 @@ if ($const == 'TEXT_COUNTRY_ISO_CODE')echo 'writing const = '.$const.' with valu
 
   function export_language($mod, $lang, $ver, $hide_error = false) {
 	global $admin, $backup, $messageStack;
-	$result = $db->Execute("select pathtofile, defined_constant, translation from " . TABLE_TRANSLATOR . "
+	$result = $admin->DataBase->Execute("select pathtofile, defined_constant, translation from " . TABLE_TRANSLATOR . "
 	  where module = '" . $mod . "' and language = '" . $lang . "' and version = '" . $ver . "'");
 	if ($result->RecordCount() == 0) throw new \core\classes\userException(TEXT_THE_DOWNLOAD_FILE_DOES_NOT_CONTAIN_ANY_DATA);
 	$output  = array();

@@ -67,7 +67,7 @@ class xml_sync extends parser {
 		if (sizeof($products['product']) == 0) throw new Exception(SOAP_NO_SKUS_UPLOADED, 20);
 		if ($products['action'] <> 'Validate') throw new Exception(SOAP_BAD_ACTION, 16);
 
-	$result = $db->Execute("select phreebooks_sku from " . TABLE_PRODUCTS);
+	$result = $admin->DataBase->Execute("select phreebooks_sku from " . TABLE_PRODUCTS);
 	$missing_skus = array();
 	while(!$result->EOF) {
 	  if (!in_array($result->fields['phreebooks_sku'], $products['product'])) $missing_skus[] = $result->fields['phreebooks_sku'];

@@ -36,7 +36,7 @@ class sa extends \inventory\classes\inventory {//Serialized Assembly
 		global $admin;
 		$branches = gen_get_store_ids();
 		$this->quantity_on_hand = 0;
-		$result = $db->Execute("select store_id, qty, serialize_number from " . TABLE_INVENTORY_HISTORY . "
+		$result = $admin->DataBase->Execute("select store_id, qty, serialize_number from " . TABLE_INVENTORY_HISTORY . "
 	  		where sku = '" . $this->sku . "' and remaining > 0 order by store_id");
   		$this->qty_table ='<table class="ui-widget" style="border-collapse:collapse;width:100%">'. chr(10);
 		$this->qty_table .='  <thead class="ui-widget-header">'. chr(10);
@@ -62,14 +62,14 @@ class sa extends \inventory\classes\inventory {//Serialized Assembly
     	$field_list  = array('m.id', 'm.post_date', 'm.purchase_invoice_id', 'm.closed', 'm.bill_primary_name', 'm.total_amount', 'i.serialize_number');
     	$sql   = "SELECT ".implode(', ', $field_list)." FROM ".TABLE_JOURNAL_MAIN." m JOIN ".TABLE_JOURNAL_ITEM." i on m.id=i.ref_id
     	WHERE m.journal_id=12 AND i.sku='$this->sku' ORDER BY m.purchase_invoice_id DESC";
-    	$this->orderHistory = $db->Execute($sql);
+    	$this->orderHistory = $admin->DataBase->Execute($sql);
     	$this->tab_list['orderhist'] = array('file'=>'template_tab_hist_sr', 'tag'=>'orderhist', 'order'=>40, 'text'=>'Unit History');
 	}
 
 	function get_bom_list(){
 		global $admin;
 		$this->assy_cost = 0;
-		$result = $db->Execute("select i.id as inventory_id, l.id, l.sku, l.description, l.qty from " . TABLE_INVENTORY_ASSY_LIST . " l join " . TABLE_INVENTORY . " i on l.sku = i.sku where l.ref_id = " . $this->id . " order by l.id");
+		$result = $admin->DataBase->Execute("select i.id as inventory_id, l.id, l.sku, l.description, l.qty from " . TABLE_INVENTORY_ASSY_LIST . " l join " . TABLE_INVENTORY . " i on l.sku = i.sku where l.ref_id = " . $this->id . " order by l.id");
 		$x =0;
 		while (!$result->EOF) {
 	  		$this->bom[$x] = $result->fields;
@@ -86,7 +86,7 @@ class sa extends \inventory\classes\inventory {//Serialized Assembly
 	function remove(){
 		global $admin;
 		parent::remove();
-		$db->Execute("delete from " . TABLE_INVENTORY_ASSY_LIST . " where sku = '" . $this->sku . "'");
+		$admin->DataBase->Execute("delete from " . TABLE_INVENTORY_ASSY_LIST . " where sku = '" . $this->sku . "'");
 	}
 
 	function save(){
@@ -99,7 +99,7 @@ class sa extends \inventory\classes\inventory {//Serialized Assembly
 				'description' => db_prepare_input($_POST['assy_desc'][$x]),
 				'qty'         => $currencies->clean_value(db_prepare_input($_POST['assy_qty'][$x])),
 			);
-		  	$result = $db->Execute("select id from " . TABLE_INVENTORY . " where sku = '". $_POST['assy_sku'][$x]."'" );
+		  	$result = $admin->DataBase->Execute("select id from " . TABLE_INVENTORY . " where sku = '". $_POST['assy_sku'][$x]."'" );
 		  	if (($result->RecordCount() == 0 || $currencies->clean_value($_POST['assy_qty'][$x]) == 0) && $_POST['assy_sku'][$x] =! '') {
 		  		// show error, bad sku, negative quantity. error check sku is valid and qty > 0
 				throw new \core\classes\userException(INV_ERROR_BAD_SKU . db_prepare_input($_POST['assy_sku'][$x]));
@@ -112,10 +112,10 @@ class sa extends \inventory\classes\inventory {//Serialized Assembly
 		}
 		$this->bom = $bom_list;
 		parent::save();
-		$result = $db->Execute("select last_journal_date, quantity_on_hand  from " . TABLE_INVENTORY . " where id = " . $this->id);
+		$result = $admin->DataBase->Execute("select last_journal_date, quantity_on_hand  from " . TABLE_INVENTORY . " where id = " . $this->id);
 		$this->allow_edit_bom = (($result->fields['last_journal_date'] == '0000-00-00 00:00:00' || $result->fields['last_journal_date'] == '') && ($result->fields['quantity_on_hand'] == 0|| $result->fields['quantity_on_hand'] == '')) ? true : false;
 	  	if ($this->allow_edit_bom == true) { // only update if no posting has been performed
-	  		$result = $db->Execute("delete from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = " . $this->id);
+	  		$result = $admin->DataBase->Execute("delete from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = " . $this->id);
 			while ($list_array = array_shift($bom_list)) {
 				unset($list_array['item_cost']);
 				unset($list_array['full_price']);

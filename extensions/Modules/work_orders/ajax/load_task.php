@@ -23,7 +23,7 @@ $xml = NULL;
 $id  = $_GET['id'];
 if (!$id) throw new \core\classes\userException("variable id isn't set");
 
-$result = $db->Execute("select * from " . TABLE_WO_TASK . " where id = '" . $id . "' limit 1");
+$result = $admin->DataBase->Execute("select * from " . TABLE_WO_TASK . " where id = '" . $id . "' limit 1");
 $xml .= xmlEntry("id",          $result->fields['id']);
 $xml .= xmlEntry("task_name",   $result->fields['task_name']);
 $xml .= xmlEntry("description", $result->fields['description']);

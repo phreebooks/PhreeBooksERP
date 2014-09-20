@@ -21,7 +21,7 @@ class bulk_upload {
 
   	function __construct($inc_image = false) {
 		global $admin, $messageStack;
-		$result = $db->Execute("select id from " . TABLE_INVENTORY . " where catalog = '1' ");
+		$result = $admin->DataBase->Execute("select id from " . TABLE_INVENTORY . " where catalog = '1' ");
 		$cnt    = 0;
 		$prodXML = new \zencart\classes\zencart();
 		while(!$result->EOF) {

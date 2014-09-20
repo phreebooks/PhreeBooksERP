@@ -67,7 +67,7 @@ class personal_links extends \core\classes\ctl_panel {
 		// do nothing if no title or url entered
 		if (!$remove_id && ($my_title == '' || $my_url == '')) return;
 		// fetch the current params
-		$result = $db->Execute("select params from " . TABLE_USERS_PROFILES . "
+		$result = $admin->DataBase->Execute("select params from " . TABLE_USERS_PROFILES . "
 		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "'
 		  and dashboard_id = '" . $this->id . "'");
 		if ($remove_id) { // remove element

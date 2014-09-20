@@ -34,7 +34,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 switch ($_REQUEST['action']) {
   	case 'save':
   		try{
-  			$db->transStart();
+  			$admin->DataBase->transStart();
 			\core\classes\user::validate_security($security_level, 2); // security check
 			// 	retrieve and clean input values
 			$source_store_id = $_POST['source_store_id'];
@@ -90,7 +90,7 @@ switch ($_REQUEST['action']) {
 	    		$serialize_number = db_prepare_input($_POST['serial_'.$rowCnt]);
 	    		$desc             = db_prepare_input($_POST['desc_'.$rowCnt]);
 //	    		$acct             = db_prepare_input($_POST['acct_'.$rowCnt]);
-	    		$result = $db->Execute("select account_inventory_wage, account_cost_of_sales FROM ".TABLE_INVENTORY." WHERE sku='$sku'");
+	    		$result = $admin->DataBase->Execute("select account_inventory_wage, account_cost_of_sales FROM ".TABLE_INVENTORY." WHERE sku='$sku'");
 	    		$_POST['acct_'     .$rowCnt] = $result->fields['account_inventory_wage'];
 	    		$_POST['cogs_acct_'.$rowCnt] = $result->fields['account_cost_of_sales'];
 	  			$_POST['total_'    .$rowCnt] = $glEntry->calculateCost($sku, $qty, $serialize_number);
@@ -181,15 +181,15 @@ switch ($_REQUEST['action']) {
 	    	$glEntry->journal_main_array['total_amount'] = $tot_amount;
 	    	$glEntry->Post($glEntry->id ? 'edit' : 'insert');
 			// 	link first record to second record
-//			$db->Execute("UPDATE ".TABLE_JOURNAL_MAIN." SET so_po_ref_id=$glEntry->id WHERE id=$first_id");
-	    	$db->transCommit();	// post the chart of account values
+//			$admin->DataBase->Execute("UPDATE ".TABLE_JOURNAL_MAIN." SET so_po_ref_id=$glEntry->id WHERE id=$first_id");
+	    	$admin->DataBase->transCommit();	// post the chart of account values
 	    	// *************** END TRANSACTION *************************
 			gen_add_audit_log(sprintf(INV_LOG_TRANSFER, $source_store_id, $dest_store_id), $sku, $qty);
 	   		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, TEXT_INVENTORY_ADJUSTMENT, $glEntry->purchase_invoice_id), 'success');
 	   		if (DEBUG) $messageStack->write_debug();
 	   		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	  	}catch(Exception $e){
-			$db->transRollback();
+			$admin->DataBase->transRollback();
 			$messageStack->add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo($_POST);
 			if (DEBUG) $messageStack->write_debug();
@@ -200,20 +200,20 @@ switch ($_REQUEST['action']) {
 			\core\classes\user::validate_security($security_level, 4); // security check
 			if (!$_POST['id'])  throw new \core\classes\userException(TEXT_THERE_WERE_ERRORS_DURING_PROCESSING . ' ' . TEXT_THE_RECORD_WAS_NOT_DELETED);
 	  		$delOrd = new \core\classes\journal($_POST['id']);
-	  		$result = $db->Execute("SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE so_po_ref_id = $delOrd->id");
+	  		$result = $admin->DataBase->Execute("SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE so_po_ref_id = $delOrd->id");
 	  		$xfer_to_id = $result->fields['id']; // save the matching adjust ID
 	  		if ($result->RecordCount() == 0) throw new \core\classes\userException('cannot delete there is no offsetting record to delete!');
 	  		// *************** START TRANSACTION *************************
-	    	$db->transStart();
+	    	$admin->DataBase->transStart();
 	    	if (!$delOrd->unPost('delete')) throw new \core\classes\userException('cannot unpost record!');
 		  	$delOrd = new \core\classes\journal($xfer_to_id);
 		  	if ($delOrd->unPost('delete')) throw new \core\classes\userException('cannot unpost record!');
-		   	$db->transCommit(); // if not successful rollback will already have been performed
+		   	$admin->DataBase->transCommit(); // if not successful rollback will already have been performed
 		    gen_add_audit_log(TEXT_INVENTORY_ADJUSTMENT . ' - ' . TEXT_DELETE, $delOrd->journal_rows[0]['sku'], $delOrd->journal_rows[0]['qty']);
 		    if (DEBUG) $messageStack->write_debug();
 		    gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		}catch(Exception $e){
-			$db->transRollback();
+			$admin->DataBase->transRollback();
 			$messageStack->add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo($_POST);
 			if (DEBUG) $messageStack->write_debug();

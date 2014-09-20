@@ -43,7 +43,7 @@ switch ($_REQUEST['action']) {
 	// error checking
 	if (!$id) throw new \core\classes\userException(sprintf(TEXT_FIELD_IS_REQUIRED_BUT_HAS_BEEN_LEFT_BLANK_ARGS, "id"));
 	// retrieve some information about the document
-	$result   = $db->Execute("select revision from " . TABLE_DC_DOCUMENT . " where id = " . $id);
+	$result   = $admin->DataBase->Execute("select revision from " . TABLE_DC_DOCUMENT . " where id = " . $id);
 	$revision = $result->fields['revision'];
 	// save the file
 	$new_file = false;
@@ -78,13 +78,13 @@ switch ($_REQUEST['action']) {
 	db_perform(TABLE_DC_DOCUMENT, $sql_array, 'update', 'id = ' . $id);
 	break;
   case 'del_checkout':
-	$db->Execute("update " . TABLE_DC_DOCUMENT . " set checkout_id = 0 where id = " . $doc_id);
+	$admin->DataBase->Execute("update " . TABLE_DC_DOCUMENT . " set checkout_id = 0 where id = " . $doc_id);
     break;
   case 'check_out':
-	$db->Execute("update " . TABLE_DC_DOCUMENT . " set checkout_id = " . $_SESSION['admin_id'] . " where id = " . $doc_id);
+	$admin->DataBase->Execute("update " . TABLE_DC_DOCUMENT . " set checkout_id = " . $_SESSION['admin_id'] . " where id = " . $doc_id);
 	// now perform the download
   case 'download':
-	$doc_details = $db->Execute("select file_name, revision from " . TABLE_DC_DOCUMENT . " where id = '" . $doc_id . "'");
+	$doc_details = $admin->DataBase->Execute("select file_name, revision from " . TABLE_DC_DOCUMENT . " where id = '" . $doc_id . "'");
 	$filename = str_pad($doc_id, 8, '0', STR_PAD_LEFT) . '_' . $doc_details->fields['revision'] . '.dc';
 	if (($contents  = @file_get_contents(DOC_CTL_DIR_MY_DOCS . $filename)) === false) throw new \core\classes\userException(sprintf(ERROR_READ_FILE, 		$filename));
 	header('Content-type: text/plain');
@@ -121,7 +121,7 @@ switch ($_REQUEST['action']) { // figure which detail page to load
 	}
 	$field_list = array('id', 'title', 'type');
 	$query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . " from " . TABLE_DC_DOCUMENT . $search;
-	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+	$query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 	$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 	$div_template = DIR_FS_WORKING . 'pages/main/' . ($id ? 'tab_document.php' : 'tab_folder.php');
 	break;

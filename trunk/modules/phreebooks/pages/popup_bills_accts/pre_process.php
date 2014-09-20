@@ -31,7 +31,7 @@ switch (JOURNAL_ID) {
 		break;
 	case 20:
 		$terms_type = 'AP';
-		$result = $db->Execute("select next_check_num from " . TABLE_CURRENT_STATUS);
+		$result = $admin->DataBase->Execute("select next_check_num from " . TABLE_CURRENT_STATUS);
 		$default_purchase_invoice_id = $result->fields['next_check_num'];
 		break;
 	default: die ('Bad Journal id in modules/phreebooks/popup.php');
@@ -83,7 +83,7 @@ $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . "
 	and m.journal_id in " . (ACCOUNT_TYPE == 'v' ? '(6, 7)' : '(12, 13)') . " and m.closed = '0'" . $search . "
 	group by m.bill_acct_id order by $disp_order";
 
-$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+$query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 history_save('pb_pop_contacts');
 $include_header   = false;

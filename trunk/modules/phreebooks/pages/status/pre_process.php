@@ -47,9 +47,9 @@ if (file_exists($custom_path)) { include($custom_path); }
 switch ($_REQUEST['action']) {
 	case 'toggle' :
 		$id = db_prepare_input ( $_POST ['rowSeq'] );
-		$result = $db->Execute ( "select waiting from " . TABLE_JOURNAL_MAIN . " where id = '$id'" );
+		$result = $admin->DataBase->Execute ( "select waiting from " . TABLE_JOURNAL_MAIN . " where id = '$id'" );
 		$toggle = $result->fields ['waiting'] ? '0' : '1';
-		$db->Execute ( "update " . TABLE_JOURNAL_MAIN . " set waiting = '$toggle' where id = '$id'" );
+		$admin->DataBase->Execute ( "update " . TABLE_JOURNAL_MAIN . " set waiting = '$toggle' where id = '$id'" );
 		break;
 	case 'dn_attach' :
 		$oID = db_prepare_input ( $_POST ['rowSeq'] );
@@ -190,12 +190,12 @@ if (is_array ( $extra_query_list_fields ) > 0)
 
 $query_raw = "select SQL_CALC_FOUND_ROWS " . implode ( ', ', $field_list ) . " from " . TABLE_JOURNAL_MAIN . "
 	where journal_id = " . JOURNAL_ID . $period_filter . $search . " order by $disp_order, purchase_invoice_id DESC";
-$query_result = $db->Execute ( $query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST ['list'] - 1)) . ", " . MAX_DISPLAY_SEARCH_RESULTS );
+$query_result = $admin->DataBase->Execute ( $query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST ['list'] - 1)) . ", " . MAX_DISPLAY_SEARCH_RESULTS );
 // the splitPageResults should be run directly after the query that contains SQL_CALC_FOUND_ROWS
 $query_split  = new splitPageResults($_REQUEST['list'], '');
 if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results
 	$_REQUEST['list'] = $query_split->current_page_number;
-	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+	$query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 	$query_split  = new splitPageResults($_REQUEST['list'], '');
 }
 history_save('pb'.JOURNAL_ID);

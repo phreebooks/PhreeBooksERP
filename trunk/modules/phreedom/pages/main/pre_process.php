@@ -60,21 +60,21 @@ switch ($_REQUEST['action']) {
 		$dashboard_id = db_prepare_input($_POST['dashboard_id']);
 		$sql = "select column_id, row_id from " . TABLE_USERS_PROFILES . "
 		  where user_id={$_SESSION['admin_id']} and menu_id='$menu_id' and dashboard_id='$dashboard_id'";
-		$result         = $db->Execute($sql);
+		$result         = $admin->DataBase->Execute($sql);
 		$current_row    = $result->fields['row_id'];
 		$current_column = $result->fields['column_id'];
 		$new_row        = ($_REQUEST['action'] == 'move_up') ? ($current_row - 1) : ($current_row + 1);
 		$sql = "select max(row_id) as max_row from " . TABLE_USERS_PROFILES . "
 		  where user_id={$_SESSION['admin_id']} and menu_id='$menu_id' and column_id='$current_column'";
-		$result         = $db->Execute($sql);
+		$result         = $admin->DataBase->Execute($sql);
 		$max_row        = $result->fields['max_row'];
 		if (($new_row >= 1 && $_REQUEST['action'] == 'move_up') || ($new_row <= $max_row && $_REQUEST['action'] == 'move_down')) {
 		  	$sql = "update " . TABLE_USERS_PROFILES . " set row_id=0            where user_id={$_SESSION['admin_id']} and menu_id='$menu_id' and column_id=$current_column and row_id='$current_row'";
-		  	$db->Execute($sql);
+		  	$admin->DataBase->Execute($sql);
 		  	$sql = "update " . TABLE_USERS_PROFILES . " set row_id=$current_row where user_id={$_SESSION['admin_id']} and menu_id='$menu_id' and column_id=$current_column and row_id='$new_row'";
-		  	$db->Execute($sql);
+		  	$admin->DataBase->Execute($sql);
 		  	$sql = "update " . TABLE_USERS_PROFILES . " set row_id=$new_row     where user_id={$_SESSION['admin_id']} and menu_id='$menu_id' and column_id=$current_column and row_id=0";
-		  	$db->Execute($sql);
+		  	$admin->DataBase->Execute($sql);
 		}
 		break;
   	case 'move_left':
@@ -82,22 +82,22 @@ switch ($_REQUEST['action']) {
 		$dashboard_id = db_prepare_input($_POST['dashboard_id']);
 		$sql = "select column_id, row_id from " . TABLE_USERS_PROFILES . "
 		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $menu_id . "' and dashboard_id = '" . $dashboard_id . "'";
-		$result         = $db->Execute($sql);
+		$result         = $admin->DataBase->Execute($sql);
 		$current_row    = $result->fields['row_id'];
 		$current_column = $result->fields['column_id'];
 		$new_col = ($_REQUEST['action'] == 'move_left') ? ($current_column - 1) : ($current_column + 1);
 		if (($new_col >= 1 && $_REQUEST['action'] == 'move_left') || ($new_col <= MAX_CP_COLUMNS && $_REQUEST['action'] == 'move_right')) {
 	  		$sql = "select max(row_id) as max_row from " . TABLE_USERS_PROFILES . "
 			  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $menu_id . "' and column_id = '" . $new_col . "'";
-	  		$result = $db->Execute($sql);
+	  		$result = $admin->DataBase->Execute($sql);
 	  		$new_max_row = $result->fields['max_row'] + 1;
 	  		$sql = "update  " . TABLE_USERS_PROFILES . " set column_id = " . $new_col . ", row_id = " . $new_max_row . "
 			  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $menu_id . "' and dashboard_id = '" . $dashboard_id . "'";
-	  		$db->Execute($sql);
+	  		$admin->DataBase->Execute($sql);
 	  		$sql = "update  " . TABLE_USERS_PROFILES . " set row_id = row_id - 1
 			  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $menu_id . "'
 			  and column_id = " . $current_column . " and row_id >= '" . $current_row . "'";
-	  		$db->Execute($sql);
+	  		$admin->DataBase->Execute($sql);
 		}
 		break;
   	case 'php_info':

@@ -31,7 +31,7 @@ $field_list = array();
 $query_raw    = "select m.id, m.wo_title, m.description, i.image_with_path
   from " . TABLE_WO_MAIN . " m inner join " . TABLE_INVENTORY . " i on m.sku_id = i.id
   where m.inactive = '0' and i.id = '" . $iID . "'";
-$result = $db->Execute($query_raw);
+$result = $admin->DataBase->Execute($query_raw);
 $id   = $result->fields['id'];
 $xml .= xmlEntry("WOid",          $id);
 $xml .= xmlEntry("WOTitle",       $result->fields['wo_title']);
@@ -44,9 +44,9 @@ if ($result->fields['image_with_path']) { // show image if it is defined
 $xml .= xmlEntry("ImageURL", $image);
 
 if ($id) {
-  $result = $db->Execute("select * from " . TABLE_WO_STEPS . " where ref_id = '" . $id . "' order by step");
+  $result = $admin->DataBase->Execute("select * from " . TABLE_WO_STEPS . " where ref_id = '" . $id . "' order by step");
   while (!$result->EOF) {
-    $task = $db->Execute("select task_name, description from " . TABLE_WO_TASK . " where id = " . $result->fields['task_id'] . " limit 1");
+    $task = $admin->DataBase->Execute("select task_name, description from " . TABLE_WO_TASK . " where id = " . $result->fields['task_id'] . " limit 1");
     $xml .= "<Task>\n";
     $xml .= "\t" . xmlEntry("Step",        $result->fields['step']);
     $xml .= "\t" . xmlEntry("Task_id",     $result->fields['task_id']);

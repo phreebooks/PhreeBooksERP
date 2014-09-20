@@ -49,7 +49,7 @@ switch ($_REQUEST['action']) {
 			$glEntry->period              = gen_calculate_period($glEntry->post_date);
 			if (!$glEntry->period) throw new \core\classes\userException("period isn't set");
 			// if unbuild, test for stock to go negative
-			$result = $db->Execute("select account_inventory_wage, quantity_on_hand
+			$result = $admin->DataBase->Execute("select account_inventory_wage, quantity_on_hand
 	  		  from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
 			$sku_inv_acct = $result->fields['account_inventory_wage'];
 			if (!$result->RecordCount()) throw new \core\classes\userException(INV_ERROR_SKU_INVALID);
@@ -70,16 +70,16 @@ switch ($_REQUEST['action']) {
 			  'description'      => $desc,
 			);
 			// *************** START TRANSACTION *************************
-			$db->transStart();
+			$admin->DataBase->transStart();
 			$glEntry->Post($glEntry->id ? 'edit' : 'insert');
-	  		$db->transCommit();	// post the chart of account values
+	  		$admin->DataBase->transCommit();	// post the chart of account values
 	  		gen_add_audit_log(TEXT_INVENTORY_ASSEMBLY . ' - ' . ($_REQUEST['action']=='save' ? TEXT_SAVE : TEXT_EDIT), $sku, $qty);
 	  		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_ASSEMBLED, TEXT_SKU , $sku), 'success');
 	  		if (DEBUG) $messageStack->write_debug();
 	  		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 			// *************** END TRANSACTION *************************
 		}catch(Exception $e){
-			$db->transRollback();
+			$admin->DataBase->transRollback();
 			$messageStack->add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo($_POST);
 			if (DEBUG) $messageStack->write_debug();
@@ -91,16 +91,16 @@ switch ($_REQUEST['action']) {
 			if (!$glEntry->id) throw new \core\classes\userException(TEXT_THERE_WERE_ERRORS_DURING_PROCESSING . ' ' . TEXT_THE_RECORD_WAS_NOT_DELETED);
 			$delAssy = new \core\classes\journal($glEntry->id); // load the posted record based on the id submitted
 			// *************** START TRANSACTION *************************
-		  	$db->transStart();
+		  	$admin->DataBase->transStart();
 		  	if ($delAssy->unPost('delete')) {	// unpost the prior assembly
-				$db->transCommit(); // if not successful rollback will already have been performed
+				$admin->DataBase->transCommit(); // if not successful rollback will already have been performed
 				gen_add_audit_log(TEXT_INVENTORY_ASSEMBLY . ' - ' . TEXT_DELETE, $delAssy->journal_rows[0]['sku'], $delAssy->journal_rows[0]['qty']);
 				if (DEBUG) $messageStack->write_debug();
 				gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 				// *************** END TRANSACTION *************************
 		  	}
 		}catch(Exception $e){
-			$db->transRollback();
+			$admin->DataBase->transRollback();
 			$messageStack->add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo($_POST);
 			if (DEBUG) $messageStack->write_debug();
@@ -112,7 +112,7 @@ switch ($_REQUEST['action']) {
     		$oID = (int)$_GET['oID'];
 			$cInfo = new \core\classes\objectInfo(array());
     	}catch(Exception $e){
-			$db->transRollback();
+			$admin->DataBase->transRollback();
 			$messageStack->add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo(array());
 			if (DEBUG) $messageStack->write_debug();

@@ -106,23 +106,23 @@ class admin extends \core\classes\admin {
 	function install($path_my_files, $demo = false) {
 	    global $admin;
 	    parent::install($path_my_files, $demo);
-		if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_shipment_num')) $db->Execute("ALTER TABLE ".TABLE_CURRENT_STATUS." ADD next_shipment_num VARCHAR(16) NOT NULL DEFAULT '1'");
+		if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_shipment_num')) $admin->DataBase->Execute("ALTER TABLE ".TABLE_CURRENT_STATUS." ADD next_shipment_num VARCHAR(16) NOT NULL DEFAULT '1'");
 	}
 
 	function upgrade() {
 	    global $admin;
 	    parent::upgrade();
 	    if (version_compare($this->status, '3.2', '<') ) {
-		  	if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_shipment_num')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_shipment_num VARCHAR(16) NOT NULL DEFAULT '1'");
-		  	if (db_field_exists(TABLE_CURRENT_STATUS, 'next_shipment_desc')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_shipment_desc");
+		  	if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_shipment_num')) $admin->DataBase->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_shipment_num VARCHAR(16) NOT NULL DEFAULT '1'");
+		  	if (db_field_exists(TABLE_CURRENT_STATUS, 'next_shipment_desc')) $admin->DataBase->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_shipment_desc");
 		}
 	}
 
 	function delete($path_my_files) {
 	    global $admin;
 	    parent::delete($path_my_files);
-	    if (db_field_exists(TABLE_CURRENT_STATUS, 'next_shipment_num'))  $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_shipment_num");
-		if (db_field_exists(TABLE_CURRENT_STATUS, 'next_shipment_desc')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_shipment_desc");
+	    if (db_field_exists(TABLE_CURRENT_STATUS, 'next_shipment_num'))  $admin->DataBase->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_shipment_num");
+		if (db_field_exists(TABLE_CURRENT_STATUS, 'next_shipment_desc')) $admin->DataBase->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_shipment_desc");
 	}
 
 }

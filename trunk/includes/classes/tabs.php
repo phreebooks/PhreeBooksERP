@@ -43,7 +43,7 @@ class tabs {
 	      gen_add_audit_log($this->module .' '. TEXT_TABS . ' - '.  TEXT_UPDATE, $this->tab_name);
 		} else {
 		  // Test for duplicates.
-		  $result = $db->Execute("select id from " . TABLE_EXTRA_TABS . " where module_id='" . $this->module . "' and tab_name='" . $this->tab_name . "'");
+		  $result = $admin->DataBase->Execute("select id from " . TABLE_EXTRA_TABS . " where module_id='" . $this->module . "' and tab_name='" . $this->tab_name . "'");
 		  if ($result->RecordCount() > 0) throw new \core\classes\userException(TEXT_THIS_TAB_NAME_ALREADY_EXISTS_PLEASE_USE_ANOTHER_NAME);
 		  db_perform(TABLE_EXTRA_TABS, $sql_data_array);
 		  gen_add_audit_log($this->module .' '. TEXT_TABS . ' - '. TEXT_ADD, $this->tab_name);
@@ -54,10 +54,10 @@ class tabs {
     public function btn_delete($id = 0) {
 	  	global $admin;
 		\core\classes\user::validate_security($this->security_id, 4); // security check
-		$result = $db->Execute("SELECT field_name FROM ".TABLE_EXTRA_FIELDS." WHERE tab_id='$id'");
+		$result = $admin->DataBase->Execute("SELECT field_name FROM ".TABLE_EXTRA_FIELDS." WHERE tab_id='$id'");
 		if ($result->RecordCount() > 0) throw new \core\classes\userException(INV_CATEGORY_CANNOT_DELETE . $result->fields['field_name']);
-		$result = $db->Execute("SELECT tab_name FROM ".TABLE_EXTRA_TABS." WHERE id='$id'");
-		$db->Execute("DELETE FROM ".TABLE_EXTRA_TABS." WHERE id=$id");
+		$result = $admin->DataBase->Execute("SELECT tab_name FROM ".TABLE_EXTRA_TABS." WHERE id='$id'");
+		$admin->DataBase->Execute("DELETE FROM ".TABLE_EXTRA_TABS." WHERE id=$id");
 		gen_add_audit_log($this->module .' '. TEXT_TABS . ' - '. TEXT_DELETE, $result->fields['tab_name']);
 		return true;
 	}
@@ -69,7 +69,7 @@ class tabs {
 		  'value' => array(TEXT_TITLE, TEXT_DESCRIPTION, TEXT_SORT_ORDER, TEXT_ACTION),
 		  'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 	   );
-	   $result = $db->Execute("select id, tab_name, description, sort_order from " . TABLE_EXTRA_TABS . " where module_id='" . $this->module . "'");
+	   $result = $admin->DataBase->Execute("select id, tab_name, description, sort_order from " . TABLE_EXTRA_TABS . " where module_id='" . $this->module . "'");
 	   $rowCnt = 0;
 	   while (!$result->EOF) {
 		  $actions = '';
@@ -94,7 +94,7 @@ class tabs {
     public function build_form_html($action, $id = '') {
 	   global $admin;
 	   if ($action <> 'new') {
-	       $result = $db->Execute("select * from " . TABLE_EXTRA_TABS . " where id = " . $this->id);
+	       $result = $admin->DataBase->Execute("select * from " . TABLE_EXTRA_TABS . " where id = " . $this->id);
 	       foreach ($result->fields as $key => $value) $this->$key = $value;
        }
 	   $output  = '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);

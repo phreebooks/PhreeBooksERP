@@ -43,7 +43,7 @@ if (ENABLE_MULTI_BRANCH) {
     order by a.sku";
 }
 
-$result = $db->Execute($sql);
+$result = $admin->DataBase->Execute($sql);
 while (!$result->EOF) {
 	if($result->fields['purch_package_quantity'] == 0 ) $result->fields['purch_package_quantity'] = 1;
 	if( $result->fields['reorder_quantity'] >= $result->fields['qty_required']){

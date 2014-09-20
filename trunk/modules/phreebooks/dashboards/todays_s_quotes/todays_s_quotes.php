@@ -53,7 +53,7 @@ class todays_s_quotes extends \core\classes\ctl_panel {
 		  from " . TABLE_JOURNAL_MAIN . "
 		  where journal_id = 9 and post_date = '" . date('Y-m-d') . "' order by purchase_invoice_id";
 		if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
-		$result = $db->Execute($sql);
+		$result = $admin->DataBase->Execute($sql);
 		if ($result->RecordCount() < 1) {
 		  	$contents = TEXT_NO_RESULTS_FOUND;
 		} else {

@@ -151,7 +151,7 @@ class orders extends \core\classes\journal {
 
 	// ***************************** START TRANSACTION *******************************
 	$messageStack->debug("\n  started order post purchase_invoice_id = " . $this->purchase_invoice_id . " and id = " . $this->id);
-	$db->transStart();
+	$admin->DataBase->transStart();
 	// *************  Pre-POST processing *************
 	// add/update address book
 	if ($this->bill_add_update) { // billing address
@@ -272,7 +272,7 @@ class orders extends \core\classes\journal {
 		break;
 	}
 	$messageStack->debug("\n  committed order post purchase_invoice_id = {$this->purchase_invoice_id} and id = {$this->id}");
-	$db->transCommit();	// finished successfully
+	$admin->DataBase->transCommit();	// finished successfully
 //echo 'committed transaction - bailing!'; exit();
 	// ***************************** END TRANSACTION *******************************
 	$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, $journal_types_list[ $this->journal_id]['id_field_name'], $this->purchase_invoice_id), 'success');
@@ -285,7 +285,7 @@ class orders extends \core\classes\journal {
 	switch ($this->journal_id) {
 	  case  4: // Purchase Order Journal
 	  case 10: // Sales Order Journal
-		$result = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " where so_po_ref_id = " . $this->id);
+		$result = $admin->DataBase->Execute("select id from " . TABLE_JOURNAL_MAIN . " where so_po_ref_id = " . $this->id);
 		if ($result->RecordCount() > 0) throw new \core\classes\userException($this->error_6);
 		break;
 	  case  6: // Purchase Journal
@@ -293,10 +293,10 @@ class orders extends \core\classes\journal {
 	  case 12: // Sales/Invoice Journal
 	  case 13: // Customer Credit Memo Journal
 		// first check for main entries that refer to delete id (credit memos)
-		$result = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " where so_po_ref_id = " . $this->id);
+		$result = $admin->DataBase->Execute("select id from " . TABLE_JOURNAL_MAIN . " where so_po_ref_id = " . $this->id);
 		if ($result->RecordCount() > 0) throw new \core\classes\userException($this->error_6);
 		// next check for payments that link to deleted id (payments)
-		$result = $db->Execute("select id from " . TABLE_JOURNAL_ITEM . "
+		$result = $admin->DataBase->Execute("select id from " . TABLE_JOURNAL_ITEM . "
 			where gl_type = 'pmt' and so_po_item_ref_id = " . $this->id);
 		if ($result->RecordCount() > 0) throw new \core\classes\userException($this->error_6);
 		break;

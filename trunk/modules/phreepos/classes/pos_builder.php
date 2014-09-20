@@ -34,7 +34,7 @@ class pos_builder {
 	global $admin, $report, $FieldListings;
 	if (!$tableValue) throw new \core\classes\userException("tableValue is empty");
 	$sql = "select * from " . TABLE_JOURNAL_MAIN . " where id = " . $tableValue;
-	$result = $db->Execute($sql);
+	$result = $admin->DataBase->Execute($sql);
 	while (list($key, $value) = each($result->fields)) $this->$key = db_prepare_input($value);
 	$this->load_item_details($this->id);
 	$this->load_payment_details($this->id);
@@ -42,7 +42,7 @@ class pos_builder {
 	// convert particular values indexed by id to common name
 	if ($this->rep_id) {
 	  $sql = "select short_name, contact_first, contact_last from " . TABLE_CONTACTS . " where id = " . $this->rep_id;
-	  $result = $db->Execute($sql);
+	  $result = $admin->DataBase->Execute($sql);
 	  $this->rep_id   = $result->fields['short_name'] ;
 	  $this->rep_name = $result->fields['contact_first'] . ' ' . $result->fields['contact_last'];
 	} else {
@@ -117,7 +117,7 @@ class pos_builder {
 	$this->invoice_subtotal = 0;
 	$tax_list = array();
 	$sql = "select * from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $id;
-	$result = $db->Execute($sql);
+	$result = $admin->DataBase->Execute($sql);
 	while (!$result->EOF) {
 	  $index    = ($result->fields['so_po_item_ref_id']) ? $result->fields['so_po_item_ref_id'] : $result->fields['id'];
 	  $price    = $result->fields['credit_amount'] + $result->fields['debit_amount'];
@@ -162,13 +162,13 @@ class pos_builder {
   function load_account_details($id) {
 	global $admin;
 	$sql = "select * from " . TABLE_CONTACTS . " where id = " . $id;
-	$result = $db->Execute($sql);
+	$result = $admin->DataBase->Execute($sql);
 	$this->short_name     = $result->fields['short_name'];
 	$this->account_number = $result->fields['account_number'];
 	$this->gov_id_number  = $result->fields['gov_id_number'];
 	// pull the billing and shipping addresses
 	$sql = "select * from " . TABLE_ADDRESS_BOOK . " where ref_id = " . $id;
-	$result = $db->Execute($sql);
+	$result = $admin->DataBase->Execute($sql);
 	while (!$result->EOF) {
 	  $type = substr($result->fields['type'], 1, 1);
 	  switch ($type) {
@@ -190,7 +190,7 @@ class pos_builder {
   function load_payment_details($id) {
 	global $admin;
 	$sql = "select * from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $id . " and gl_type in ('pmt', 'chk')";
-	$result = $db->Execute($sql);
+	$result = $admin->DataBase->Execute($sql);
 	$this->payment_rows = array();
 	while (!$result->EOF) {
 	  // keep all payments in an array

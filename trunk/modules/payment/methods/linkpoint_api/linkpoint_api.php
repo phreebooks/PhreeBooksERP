@@ -209,7 +209,7 @@ class linkpoint_api extends \payment\classes\payment {
 	                               array('fieldName'=>'cc_expire', 'value'=>$cc_expiry_month . '/' . $cc_expiry_year, 'type'=>'string'),
 	                               array('fieldName'=>'ordertype', 'value'=>'N/A', 'type'=>'string'),
 	                               array('fieldName'=>'date_added', 'value'=>'now()', 'type'=>'noquotestring'));
-	        $db->perform(TABLE_LINKPOINT_API, $sql_data_array);
+	        $admin->DataBase->perform(TABLE_LINKPOINT_API, $sql_data_array);
 	*/
 			$sql_data_array= array(
 			  'lp_trans_num'                 => '',
@@ -452,7 +452,7 @@ class linkpoint_api extends \payment\classes\payment {
                            array('fieldName'=>'ordertype', 'value' => $myorder['ordertype'], 'type'=>'string'), // transaction type: PREAUTH or SALE
                            array('fieldName'=>'date_added', 'value' => 'now()', 'type'=>'noquotestring'));
 	    if (MODULE_PAYMENT_LINKPOINT_API_STORE_DATA) {
-	      $db->perform(TABLE_LINKPOINT_API, $sql_data_array);
+	      $admin->DataBase->perform(TABLE_LINKPOINT_API, $sql_data_array);
 	    }
 */
     	$sql_data_array= array(
@@ -540,7 +540,7 @@ class linkpoint_api extends \payment\classes\payment {
 
 	function after_order_create($zf_order_id) {
 		global $admin, $lp_avs, $lp_trans_num;
-		$db->execute("update " . TABLE_LINKPOINT_API . " set order_id ='" . $zf_order_id . "' where lp_trans_num = '" . $lp_trans_num . "'");
+		$admin->DataBase->execute("update " . TABLE_LINKPOINT_API . " set order_id ='" . $zf_order_id . "' where lp_trans_num = '" . $lp_trans_num . "'");
 	}
 
 	function admin_notification($zf_order_id) {
@@ -548,7 +548,7 @@ class linkpoint_api extends \payment\classes\payment {
 		if (!MODULE_PAYMENT_LINKPOINT_API_STORE_DATA) return '';
 		$output = '';
 		$sql = "select * from " . TABLE_LINKPOINT_API . " where order_id = '" . $zf_order_id . "' and transaction_result = 'APPROVED' order by date_added";
-		$lp_api = $db->Execute($sql);
+		$lp_api = $admin->DataBase->Execute($sql);
 		if ($lp_api->RecordCount() > 0)
 			require (DIR_FS_CATALOG . DIR_WS_MODULES . 'payment/linkpoint_api/linkpoint_api_admin_notification.php');
 		return $output;
@@ -566,7 +566,7 @@ class linkpoint_api extends \payment\classes\payment {
 		global $admin;
 
 		if (!isset ($this->_check)) {
-			$check_query = $db->Execute("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = 'MODULE_PAYMENT_LINKPOINT_API_STATUS'");
+			$check_query = $admin->DataBase->Execute("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = 'MODULE_PAYMENT_LINKPOINT_API_STATUS'");
 
 			$this->_check = $check_query->RecordCount();
 		}
@@ -599,16 +599,16 @@ class linkpoint_api extends \payment\classes\payment {
 		  date_added datetime NOT NULL default '0001-01-01 00:00:00',
 		  PRIMARY KEY  (id),
 		  KEY idx_customer_id_zen (customer_id)     )";
-		$db->Execute($sql);
+		$admin->DataBase->Execute($sql);
 	}
   }
 
   	function delete() {
 		global $admin;
 		if (db_table_exists(TABLE_LINKPOINT_API)) { // cleanup database if contains no data
-		  	$result = $db->Execute("select count(id) as count from " . TABLE_LINKPOINT_API);
+		  	$result = $admin->DataBase->Execute("select count(id) as count from " . TABLE_LINKPOINT_API);
 		  	if ($result->RecordCount() != 0) throw new \core\classes\userException("Can't delete table ". TABLE_LINKPOINT_API. " because it contains data", $code, $previous);
-		  	$db->Execute("DROP TABLE " . TABLE_LINKPOINT_API);
+		  	$admin->DataBase->Execute("DROP TABLE " . TABLE_LINKPOINT_API);
 		}
 		parent::delete();
   	}
@@ -691,7 +691,7 @@ class linkpoint_api extends \payment\classes\payment {
 		if (isset ($_POST['trans_id']) && (int) trim($_POST['trans_id']) == 0) throw new \core\classes\userException(MODULE_PAYMENT_LINKPOINT_API_TEXT_TRANS_ID_REQUIRED_ERROR);
 
 		$sql = "select lp_trans_num, transaction_time from " . TABLE_LINKPOINT_API . " where order_id = " . (int) $oID . " and transaction_result = 'APPROVED' order by transaction_time DESC";
-		$query = $db->Execute($sql);
+		$query = $admin->DataBase->Execute($sql);
 		if ($query->RecordCount() < 1) throw new \core\classes\userException(MODULE_PAYMENT_LINKPOINT_API_TEXT_NO_MATCHING_ORDER_FOUND);
 		/**
 		 * Submit refund request to gateway
@@ -737,8 +737,8 @@ class linkpoint_api extends \payment\classes\payment {
 		$sql = "select lp_trans_num, chargetotal from " . TABLE_LINKPOINT_API . " where order_id = " . (int) $oID . " and transaction_result = 'APPROVED' order by date_added";
 		if ($lp_trans_num != '')
 			$sql = "select lp_trans_num, chargetotal from " . TABLE_LINKPOINT_API . " where lp_trans_num = :trans_num: and transaction_result = 'APPROVED' order by date_added";
-		$sql = $db->bindVars($sql, ':trans_num:', $lp_trans_num, 'string');
-		$query = $db->Execute($sql);
+		$sql = $admin->DataBase->bindVars($sql, ':trans_num:', $lp_trans_num, 'string');
+		$query = $admin->DataBase->Execute($sql);
 		if ($query->RecordCount() < 1) throw new \core\classes\userException(MODULE_PAYMENT_LINKPOINT_API_TEXT_NO_MATCHING_ORDER_FOUND);
 		$captureAmt = (isset ($_POST['captamt']) && $_POST['captamt'] != '') ? (float) strip_tags(addslashes($_POST['captamt'])) : $query->fields['chargetotal'];
 		if (isset ($_POST['btndocapture']) && $_POST['btndocapture'] == MODULE_PAYMENT_LINKPOINT_API_ENTRY_CAPTURE_BUTTON_TEXT) {
@@ -778,7 +778,7 @@ class linkpoint_api extends \payment\classes\payment {
 		}
 		if ($voidAuthID == '') throw new \core\classes\userException(MODULE_PAYMENT_LINKPOINT_API_TEXT_TRANS_ID_REQUIRED_ERROR);
 		$sql = "select lp_trans_num, transaction_time from " . TABLE_LINKPOINT_API . " where order_id = " . (int) $oID . " and transaction_result = 'APPROVED' order by date_added";
-		$query = $db->Execute($sql);
+		$query = $admin->DataBase->Execute($sql);
 		if ($query->RecordCount() < 1) throw new \core\classes\userException(MODULE_PAYMENT_LINKPOINT_API_TEXT_NO_MATCHING_ORDER_FOUND);
 		/**
 		 * Submit void request to Gateway

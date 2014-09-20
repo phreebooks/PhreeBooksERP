@@ -80,7 +80,7 @@ class journal_19 extends \core\classes\journal {
 
 		// ***************************** START TRANSACTION *******************************
 		$messageStack->debug("\n  started order post purchase_invoice_id = " . $this->purchase_invoice_id . " and id = " . $this->id);
-		$db->transStart();
+		$admin->DataBase->transStart();
 		// *************  Pre-POST processing *************
 		// add/update address book
 		if ($this->bill_add_update) { // billing address
@@ -102,7 +102,7 @@ class journal_19 extends \core\classes\journal {
 	        $admin->classes['payment']->methods[$method]->before_process();
 	    }
 		$messageStack->debug("\n  committed order post purchase_invoice_id = {$this->purchase_invoice_id} and id = {$this->id}\n\n");
-		$db->transCommit();
+		$admin->DataBase->transCommit();
 		// ***************************** END TRANSACTION *******************************
 		$messageStack->add('Successfully posted ' . TEXT_POINT_OF_SALE . ' Ref # ' . $this->purchase_invoice_id, 'success');
 		return true;

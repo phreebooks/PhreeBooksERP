@@ -30,7 +30,7 @@ switch ($_REQUEST['action']) {
 		$id   = $_GET['aID'];
 		$type = $_GET['type'];
 		$xml .= xmlEntry('type', $type);
-		$result = $db->Execute("select * from ".TABLE_ADDRESS_BOOK." where address_id = $id");
+		$result = $admin->DataBase->Execute("select * from ".TABLE_ADDRESS_BOOK." where address_id = $id");
 		if ($result->RecordCount() < 1) {
 			$message[] = sprintf('The record could not be found! Looking for id = %s', $id);
 		} else {
@@ -39,7 +39,7 @@ switch ($_REQUEST['action']) {
 			$xml .= '</Address>'.chr(10);
 		}
 		// if it's a CRM entry, we need some primary information
-		$result = $db->Execute("select id, short_name, contact_first, contact_middle, contact_last, account_number, gov_id_number
+		$result = $admin->DataBase->Execute("select id, short_name, contact_first, contact_middle, contact_last, account_number, gov_id_number
 			from ".TABLE_CONTACTS." where id = ".$result->fields['ref_id']." limit 1");
 		$xml .= xmlEntry('contact_id',    $result->fields['id']);
 		$xml .= xmlEntry('short_name',    $result->fields['short_name']);
@@ -52,7 +52,7 @@ switch ($_REQUEST['action']) {
 
 	case 'rm_address':
 		$id     = $_GET['aID'];
-		$result = $db->Execute("select ref_id, type from ".TABLE_ADDRESS_BOOK." where address_id = $id");
+		$result = $admin->DataBase->Execute("select ref_id, type from ".TABLE_ADDRESS_BOOK." where address_id = $id");
 		if ($result->fields['type'] == 'im') { // it's a contact record, also delete record
 			$short_name = gen_get_contact_name($id);
 			$contact = new \contacts\classes\contacts();
@@ -63,7 +63,7 @@ switch ($_REQUEST['action']) {
 				$message[] = ACT_ERROR_CANNOT_DELETE;
 			}
 		} else { // just delete the address
-			$db->Execute('delete from '.TABLE_ADDRESS_BOOK." where address_id = $id");
+			$admin->DataBase->Execute('delete from '.TABLE_ADDRESS_BOOK." where address_id = $id");
 		}
 		$message[] = 'The record was successfully deleted!';
 		$xml .= xmlEntry('address_id', $id);
@@ -71,7 +71,7 @@ switch ($_REQUEST['action']) {
 
 	case 'get_payment':
 		$id = $_GET['pID'];
-		$result = $db->Execute("select id, hint, enc_value from ".TABLE_DATA_SECURITY." where id = $id limit 1");
+		$result = $admin->DataBase->Execute("select id, hint, enc_value from ".TABLE_DATA_SECURITY." where id = $id limit 1");
 		if ($result->RecordCount() < 1) {
 			$message[] = sprintf('The record could not be found! Looking for id = %s', $id);
 		} else {
@@ -88,14 +88,14 @@ switch ($_REQUEST['action']) {
 
 	case 'rm_payment':
 		$id = $_GET['pID'];
-		$db->Execute("delete from ".TABLE_DATA_SECURITY." where id = $id");
+		$admin->DataBase->Execute("delete from ".TABLE_DATA_SECURITY." where id = $id");
 		$xml .= xmlEntry('payment_id', $id);
 		$message[] = 'The record was successfully deleted!';
 		break;
 
 	case 'rm_crm':
 		$id = $_GET['nID'];
-		$db->Execute("delete from ".TABLE_CONTACTS_LOG." where log_id = $id");
+		$admin->DataBase->Execute("delete from ".TABLE_CONTACTS_LOG." where log_id = $id");
 		$xml .= xmlEntry('crm_id', $id);
 		$message[] = 'The record was successfully deleted!';
 		break;

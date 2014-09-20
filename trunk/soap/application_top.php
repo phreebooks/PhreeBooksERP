@@ -77,10 +77,10 @@ require_once(DIR_FS_ADMIN . 'soap/language/' . LANGUAGE . '/language.php');
 // Load queryFactory db classes
 require_once(DIR_FS_ADMIN . 'includes/db/' . DB_TYPE . '/query_factory.php');
 $db = new queryFactory();
-if (!$db->connect(DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, DB_DATABASE)) throw new \core\classes\userException('cannot connec to db!');
+if (!$admin->DataBase->connect(DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, DB_DATABASE)) throw new \core\classes\userException('cannot connec to db!');
 
 // set application wide parameters for phreebooks module
-$configuration = $db->Execute("select configuration_key, configuration_value from " . DB_PREFIX . "configuration");
+$configuration = $admin->DataBase->Execute("select configuration_key, configuration_value from " . DB_PREFIX . "configuration");
 while (!$configuration->EOF) {
   define($configuration->fields['configuration_key'], $configuration->fields['configuration_value']);
   $configuration->MoveNext();

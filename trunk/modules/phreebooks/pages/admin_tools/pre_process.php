@@ -29,14 +29,14 @@ $end_date   = ($_POST['end_date'])    ? gen_db_date($_POST['end_date'])   : CURR
 if ($_POST['fy']) {
   $fy = $_POST['fy'];
 } else {
-  $result = $db->Execute("select fiscal_year from " . TABLE_ACCOUNTING_PERIODS . " where period = " . CURRENT_ACCOUNTING_PERIOD);
+  $result = $admin->DataBase->Execute("select fiscal_year from " . TABLE_ACCOUNTING_PERIODS . " where period = " . CURRENT_ACCOUNTING_PERIOD);
   $fy = $result->fields['fiscal_year'];
 }
 // find the highest posted period to disallow accounting period changes
-$result     = $db->Execute("select max(period) as period from " . TABLE_JOURNAL_MAIN);
+$result     = $admin->DataBase->Execute("select max(period) as period from " . TABLE_JOURNAL_MAIN);
 $max_period = ($result->fields['period'] > 0) ? $result->fields['period'] : 0;
 // find the highest fiscal year and period in the system
-$result     = $db->Execute("select max(fiscal_year) as fiscal_year, max(period) as period from " . TABLE_ACCOUNTING_PERIODS);
+$result     = $admin->DataBase->Execute("select max(fiscal_year) as fiscal_year, max(period) as period from " . TABLE_ACCOUNTING_PERIODS);
 $highest_fy = ($result->fields['fiscal_year'] > 0) ? ($result->fields['fiscal_year']) : '';
 $highest_period = ($result->fields['period'] > 0) ? ($result->fields['period']) : '';
 $period     = CURRENT_ACCOUNTING_PERIOD;
@@ -61,7 +61,7 @@ switch ($_REQUEST['action']) {
 	// see if there is a disconnect between fiscal years
 	$next_period = $update_period + 1;
 	$next_start_date = date('Y-m-d', strtotime($fy_array['end_date']) + (60 * 60 * 24));
-	$result = $db->Execute("select start_date from " . TABLE_ACCOUNTING_PERIODS . " where period = " . $next_period);
+	$result = $admin->DataBase->Execute("select start_date from " . TABLE_ACCOUNTING_PERIODS . " where period = " . $next_period);
 	if ($result->RecordCount() > 0) { // next FY exists, check it
 		if ($next_start_date <> $result->fields['start_date']) {
 			$fy_array = array('start_date' =>$next_start_date);
@@ -74,7 +74,7 @@ switch ($_REQUEST['action']) {
 	break;
   case 'new':
 	\core\classes\user::validate_security($security_level, 2);
-  	$result = $db->Execute("select * from " . TABLE_ACCOUNTING_PERIODS . " where period = " . $highest_period);
+  	$result = $admin->DataBase->Execute("select * from " . TABLE_ACCOUNTING_PERIODS . " where period = " . $highest_period);
 	$next_fy         = $result->fields['fiscal_year'] + 1;
 	$next_period     = $result->fields['period'] + 1;
 	$next_start_date = date('Y-m-d', strtotime($result->fields['end_date']) + (60 * 60 * 24));
@@ -82,7 +82,7 @@ switch ($_REQUEST['action']) {
 	build_and_check_account_history_records();
 	// *************** roll account balances into next fiscal year *************************
     $glEntry = new \core\classes\journal();
-	$result = $db->Execute("select id from " . TABLE_CHART_OF_ACCOUNTS);
+	$result = $admin->DataBase->Execute("select id from " . TABLE_CHART_OF_ACCOUNTS);
 	while (!$result->EOF) {
 		$glEntry->affected_accounts[$result->fields['id']] = 1;
 		$result->MoveNext();
@@ -96,12 +96,12 @@ switch ($_REQUEST['action']) {
 	\core\classes\user::validate_security($security_level, 3);
   	$period = (int)db_prepare_input($_POST['period']);
 	if ($period <= 0 || $period > $highest_period) throw new \core\classes\userException(GL_ERROR_BAD_ACCT_PERIOD);
-	$result = $db->Execute("select start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . " where period = $period");
-	$db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = $period
+	$result = $admin->DataBase->Execute("select start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . " where period = $period");
+	$admin->DataBase->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = $period
 		where configuration_key = 'CURRENT_ACCOUNTING_PERIOD'");
-	$db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '{$result->fields['start_date']}'
+	$admin->DataBase->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '{$result->fields['start_date']}'
 		where configuration_key = 'CURRENT_ACCOUNTING_PERIOD_START'");
-	$db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '{$result->fields['end_date']}'
+	$admin->DataBase->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '{$result->fields['end_date']}'
 		where configuration_key = 'CURRENT_ACCOUNTING_PERIOD_END'");
 	gen_add_audit_log(TEXT_CHANGED . " " . TEXT_ACCOUNTING_PERIOD);
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
@@ -112,16 +112,16 @@ switch ($_REQUEST['action']) {
   case 'purge_db':
 	\core\classes\user::validate_security($security_level, 4);
   	if ($_POST['purge_confirm'] == 'purge') {
-		$db->Execute("TRUNCATE TABLE " . TABLE_JOURNAL_MAIN);
-		$db->Execute("TRUNCATE TABLE " . TABLE_JOURNAL_ITEM);
-		$db->Execute("TRUNCATE TABLE " . TABLE_ACCOUNTS_HISTORY);
-		$db->Execute("TRUNCATE TABLE " . TABLE_INVENTORY_HISTORY);
-		$db->Execute("TRUNCATE TABLE " . TABLE_INVENTORY_COGS_OWED);
-		$db->Execute("TRUNCATE TABLE " . TABLE_INVENTORY_COGS_USAGE);
-		$db->Execute("TRUNCATE TABLE " . TABLE_RECONCILIATION);
-		if (defined('MODULE_SHIPPING_STATUS')) $db->Execute("TRUNCATE TABLE " . TABLE_SHIPPING_LOG);
-		$db->Execute("update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " set beginning_balance = 0, debit_amount = 0, credit_amount = 0");
-		$db->Execute("update " . TABLE_INVENTORY . " set quantity_on_hand = 0, quantity_on_order = 0, quantity_on_sales_order = 0");
+		$admin->DataBase->Execute("TRUNCATE TABLE " . TABLE_JOURNAL_MAIN);
+		$admin->DataBase->Execute("TRUNCATE TABLE " . TABLE_JOURNAL_ITEM);
+		$admin->DataBase->Execute("TRUNCATE TABLE " . TABLE_ACCOUNTS_HISTORY);
+		$admin->DataBase->Execute("TRUNCATE TABLE " . TABLE_INVENTORY_HISTORY);
+		$admin->DataBase->Execute("TRUNCATE TABLE " . TABLE_INVENTORY_COGS_OWED);
+		$admin->DataBase->Execute("TRUNCATE TABLE " . TABLE_INVENTORY_COGS_USAGE);
+		$admin->DataBase->Execute("TRUNCATE TABLE " . TABLE_RECONCILIATION);
+		if (defined('MODULE_SHIPPING_STATUS')) $admin->DataBase->Execute("TRUNCATE TABLE " . TABLE_SHIPPING_LOG);
+		$admin->DataBase->Execute("update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " set beginning_balance = 0, debit_amount = 0, credit_amount = 0");
+		$admin->DataBase->Execute("update " . TABLE_INVENTORY . " set quantity_on_hand = 0, quantity_on_order = 0, quantity_on_sales_order = 0");
 		$messageStack->add(GL_UTIL_PURGE_CONFIRM, 'success');
 	} else {
 		$messageStack->add(GL_UTIL_PURGE_FAIL, 'caution');
@@ -148,9 +148,9 @@ switch ($_REQUEST['action']) {
 	case 'inv_owed_fix' :
 		try{
 			\core\classes\user::validate_security($security_level, 3);
-			$result = $db->Execute("SELECT journal_main_id FROM ".TABLE_INVENTORY_COGS_OWED);
+			$result = $admin->DataBase->Execute("SELECT journal_main_id FROM ".TABLE_INVENTORY_COGS_OWED);
 			$cnt = 0;
-			$db->transStart();
+			$admin->DataBase->transStart();
 			while (!$result->EOF) {
 			    $gl_entry = new journal($result->fields['journal_main_id']);
 			    $gl_entry->remove_cogs_rows(); // they will be regenerated during the re-post
@@ -158,11 +158,11 @@ switch ($_REQUEST['action']) {
 				$cnt++;
 			    $result->MoveNext();
 			}
-		    $db->transCommit();
+		    $admin->DataBase->transCommit();
 		    $messageStack->add(sprintf(GEN_ADM_TOOLS_RE_POST_SUCCESS, $cnt), 'success');
 			gen_add_audit_log(TEXT_RE-POST_JOURNALS . ' - ', "inventory owed");
 		}catch(Exception $e){
-			$db->transRollback();
+			$admin->DataBase->transRollback();
 			$messageStack->add($e->getMessage());
 		}
 		if (DEBUG) $messageStack->write_debug();
@@ -174,7 +174,7 @@ switch ($_REQUEST['action']) {
   	$tolerance    = 1 / pow(10, $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']); // i.e. 1 cent in USD
 	// pull fiscal years
 	$fiscal_years = array();
-	$result = $db->Execute("select distinct fiscal_year, max(period) as last_period
+	$result = $admin->DataBase->Execute("select distinct fiscal_year, max(period) as last_period
 	  from " . TABLE_ACCOUNTING_PERIODS . " group by fiscal_year order by fiscal_year ASC");
 	$max_periods = array();
 	while (!$result->EOF) {
@@ -185,7 +185,7 @@ switch ($_REQUEST['action']) {
 
 	// select list of accounts that need to be closed, adjusted
 	$sql = "select id, account_type from " . TABLE_CHART_OF_ACCOUNTS . " where account_type in (30, 32, 34, 42, 44)";
-	$result = $db->Execute($sql);
+	$result = $admin->DataBase->Execute($sql);
 	$acct_list = array();
 	while(!$result->EOF) {
 	  $acct_list[] = $result->fields['id'];
@@ -194,7 +194,7 @@ switch ($_REQUEST['action']) {
 	}
 	$history = array();
 	$bad_accounts = array();
-	$result = $db->Execute("select period, account_id, beginning_balance, debit_amount, credit_amount
+	$result = $admin->DataBase->Execute("select period, account_id, beginning_balance, debit_amount, credit_amount
 	    from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " order by account_id, period");
 	while(!$result->EOF) {
 	  $history[$result->fields['account_id']][$result->fields['period']] = array(
@@ -210,7 +210,7 @@ switch ($_REQUEST['action']) {
 	  foreach ($activity as $period => $data) {
 	    if ($period == $max_period || $acct == $retained_earnings_acct) continue; // skip the last period, retained earnings account
 		// read and check with journal
-		$posted = $db->Execute("select sum(debit_amount) as debit, sum(credit_amount) as credit
+		$posted = $admin->DataBase->Execute("select sum(debit_amount) as debit, sum(credit_amount) as credit
 		  from " . TABLE_JOURNAL_MAIN . " m join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 		  where period = " . $period . " and gl_account = '" . $acct . "'
 		  and journal_id in (2, 6, 7, 12, 13, 14, 16, 18, 19, 20, 21)");
@@ -247,7 +247,7 @@ switch ($_REQUEST['action']) {
 	}
 	if ($_REQUEST['action'] == 'coa_hist_fix' && sizeof($bad_accounts) > 0) {
 		// *************** START TRANSACTION *************************
-		$db->transStart();
+		$admin->DataBase->transStart();
 	    $glEntry = new \core\classes\journal();
 		foreach ($bad_accounts as $gl_acct => $acct_array) {
 		  $glEntry->affected_accounts[$gl_acct] = 1;
@@ -257,7 +257,7 @@ switch ($_REQUEST['action']) {
 		}
 		$min_period = max($first_error_period, 2); // avoid a crash if min_period is the first period
 		if ($glEntry->update_chart_history_periods($min_period - 1)) { // from prior period than the error account
-			$db->transCommit();
+			$admin->DataBase->transCommit();
 			$messageStack->add(TEXT_THE_CHART_BALANCES_HAVE_BEEN_REPAIRED,'success');
 			gen_add_audit_log(TEXT_REPAIRED_GL_BALANCES);
 		}
@@ -277,7 +277,7 @@ switch ($_REQUEST['action']) {
 $fy_array = array();
 $cal_end   = array();
 $i = 0;
-$result = $db->Execute("select period, start_date, end_date from ".TABLE_ACCOUNTING_PERIODS." where fiscal_year = $fy");
+$result = $admin->DataBase->Execute("select period, start_date, end_date from ".TABLE_ACCOUNTING_PERIODS." where fiscal_year = $fy");
 while(!$result->EOF) {
   $fy_array[$result->fields['period']] = array('start' => $result->fields['start_date'], 'end' => $result->fields['end_date']);
   $cal_start[$i] = array(
@@ -317,7 +317,7 @@ $cal_repost_end = array(
     'params'    => array('align' => 'left'),
 );
 
-$result = $db->Execute("SELECT journal_main_id FROM ".TABLE_INVENTORY_COGS_OWED);
+$result = $admin->DataBase->Execute("SELECT journal_main_id FROM ".TABLE_INVENTORY_COGS_OWED);
 $cogs_owed = $result->RecordCount();
 
 $include_header   = true;

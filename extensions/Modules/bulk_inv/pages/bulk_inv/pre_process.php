@@ -63,7 +63,7 @@ $skip   = array('id', 'sku', 'inactive', 'inventory_type', 'account_sales_income
 );
 
 $fields = array();
-$result = $db->Execute("show fields from ".TABLE_INVENTORY);
+$result = $admin->DataBase->Execute("show fields from ".TABLE_INVENTORY);
 while (!$result->EOF) {
 	if (!in_array($result->fields['Field'], $skip)) {
 		$fields[] = array('id' => $result->fields['Field'], 'text' => $result->fields['Field']);
@@ -90,7 +90,7 @@ $field_list = array('id', 'sku', 'description_short');
 for ($i = 0; $i < $field_cnt; $i++) $field_list[] = $field[$i] . ' as f'.$i;
 
 $query_raw        = "select SQL_CALC_FOUND_ROWS ".implode(', ', $field_list)." from ".TABLE_INVENTORY."$search order by $disp_order";
-$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+$query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 $query_split      = new \core\classes\splitPageResults($_REQUEST['list'], '');
 history_save();
 

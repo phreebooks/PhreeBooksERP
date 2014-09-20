@@ -91,8 +91,8 @@ class messageStack {
 	  	global $admin;
 	  	error_log("date: " . date('Y-m-d H:i:s') . " company:" .\core\classes\user::get_company(). " user: ".\core\classes\user::__get('display_name'). ' ' . substr($txt, 1) . PHP_EOL, 3, DIR_FS_MY_FILES."/development.log");
 	  	if (substr($txt, 0, 1) == "\n") {
-//echo "\nTime: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, " . $db->count_queries . " SQLs " . (int)($db->total_query_time * 1000)." ms => " . substr($txt, 1) . '<br>';
-	    	$this->debug_info .= "\nTime: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, " . $db->count_queries . " SQLs " . (int)($db->total_query_time * 1000)." ms => ";
+//echo "\nTime: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, " . $admin->DataBase->count_queries . " SQLs " . (int)($admin->DataBase->total_query_time * 1000)." ms => " . substr($txt, 1) . '<br>';
+	    	$this->debug_info .= "\nTime: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, " . $admin->DataBase->count_queries . " SQLs " . (int)($admin->DataBase->total_query_time * 1000)." ms => ";
 	    	$this->debug_info .= substr($txt, 1);
 	  	} else {
 	    	$this->debug_info .= $txt;
@@ -108,7 +108,7 @@ class messageStack {
 	  	$this->debug_header_info .= "\nREQUEST Vars = " . arr2string($_REQUEST);
 	  	$this->debug_header_info .= "\nSESSION Vars = " . arr2string($_SESSION);
 	  	if (strlen($this->debug_info) < 1) return;
-	  	$this->debug_info .= "\n\nPage trace stats: Execution Time: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, {$db->count_queries} queries taking " . (int)($db->total_query_time * 1000)." ms";
+	  	$this->debug_info .= "\n\nPage trace stats: Execution Time: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, {$admin->DataBase->count_queries} queries taking " . (int)($admin->DataBase->total_query_time * 1000)." ms";
       	$filename = DIR_FS_MY_FILES . 'trace.txt';
       	if (!$handle = @fopen($filename, 'w')) 				throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
       	if (!@fwrite($handle, $this->debug_header_info)) 	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $filename));

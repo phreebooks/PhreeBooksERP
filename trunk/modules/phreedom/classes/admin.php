@@ -249,7 +249,7 @@ class admin extends \core\classes\admin {
 	    global $admin;
 	    parent::install($path_my_files, $demo);
 		// load some default currency values
-		$db->Execute("TRUNCATE TABLE " . TABLE_CURRENCIES);
+		$admin->DataBase->Execute("TRUNCATE TABLE " . TABLE_CURRENCIES);
 		$currencies_list = array(
 		  array('title' => 'US Dollar', 'code' => 'USD', 'symbol_left' => '$', 'symbol_right' => '', 'decimal_point' => '.', 'thousands_point' => ',', 'decimal_places' => '2', 'decimal_precise' => '2', 'value' => 1.00000000, 'last_updated' => date('Y-m-d H:i:s')),
 		  array('title' => 'Euro',      'code' => 'EUR', 'symbol_left' => '€', 'symbol_right' => '', 'decimal_point' => ',', 'thousands_point' => '.', 'decimal_places' => '2', 'decimal_precise' => '2', 'value' => 0.75000000, 'last_updated' => date('Y-m-d H:i:s')),
@@ -257,8 +257,8 @@ class admin extends \core\classes\admin {
 		foreach($currencies_list as $entry) db_perform(TABLE_CURRENCIES, $entry, 'insert');
 		write_configure('DEFAULT_CURRENCY', 'USD');
 		// Enter some data into table current status
-		$db->Execute("TRUNCATE TABLE " . TABLE_CURRENT_STATUS);
-		$db->Execute("insert into " . TABLE_CURRENT_STATUS . " set id = 1");
+		$admin->DataBase->Execute("TRUNCATE TABLE " . TABLE_CURRENT_STATUS);
+		$admin->DataBase->Execute("insert into " . TABLE_CURRENT_STATUS . " set id = 1");
 	}
 
 	function after_ValidateUser(\core\classes\basis &$basis) {
@@ -268,7 +268,7 @@ class admin extends \core\classes\admin {
 				$currencies->btn_update();
 		}
 		// Fix for change to audit log for upgrade to R3.6 causes perpertual crashing when writing audit log
-		if (!db_field_exists(TABLE_AUDIT_LOG, 'stats')) $db->Execute("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
+		if (!db_field_exists(TABLE_AUDIT_LOG, 'stats')) $admin->DataBase->Execute("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
 		if ($this->web_connected(false) && CFG_AUTO_UPDATE_CHECK && (SECURITY_ID_CONFIGURATION > 3)) { // check for software updates
 			if (!$this->$revisions) {
 				if (($this->$revisions = @file_get_contents(VERSION_CHECK_URL)) === false) throw new \core\classes\userException("can not open ". VERSION_CHECK_URL);
@@ -311,18 +311,18 @@ class admin extends \core\classes\admin {
 		  	if (!$db_version) return true;
 		}
 		if (version_compare($this->status, '3.2', '<') ) {
-		  	if (!db_field_exists(TABLE_USERS, 'is_role')) $db->Execute("ALTER TABLE ".TABLE_USERS." ADD is_role ENUM('0','1') NOT NULL DEFAULT '0' AFTER admin_id");
+		  	if (!db_field_exists(TABLE_USERS, 'is_role')) $admin->DataBase->Execute("ALTER TABLE ".TABLE_USERS." ADD is_role ENUM('0','1') NOT NULL DEFAULT '0' AFTER admin_id");
 		}
 		if (version_compare($this->status, '3.4', '<') ) {
-		  	if (!db_field_exists(TABLE_DATA_SECURITY, 'exp_date')) $db->Execute("ALTER TABLE ".TABLE_DATA_SECURITY." ADD exp_date DATE NOT NULL DEFAULT '2049-12-31' AFTER enc_value");
-		  	if (!db_field_exists(TABLE_AUDIT_LOG, 'ip_address'))   $db->Execute("ALTER TABLE ".TABLE_AUDIT_LOG    ." ADD ip_address VARCHAR(15) NOT NULL AFTER user_id");
+		  	if (!db_field_exists(TABLE_DATA_SECURITY, 'exp_date')) $admin->DataBase->Execute("ALTER TABLE ".TABLE_DATA_SECURITY." ADD exp_date DATE NOT NULL DEFAULT '2049-12-31' AFTER enc_value");
+		  	if (!db_field_exists(TABLE_AUDIT_LOG, 'ip_address'))   $admin->DataBase->Execute("ALTER TABLE ".TABLE_AUDIT_LOG    ." ADD ip_address VARCHAR(15) NOT NULL AFTER user_id");
 	    }
 	    if (version_compare($this->status, '3.5', '<') ) {
-		  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'group_by'))  $db->Execute("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD group_by varchar(64) NOT NULL default ''");
-		  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'sort_order'))$db->Execute("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD sort_order varchar(64) NOT NULL default ''");
-		  	if (!db_field_exists(TABLE_AUDIT_LOG, 'stats'))        $db->Execute("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
+		  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'group_by'))  $admin->DataBase->Execute("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD group_by varchar(64) NOT NULL default ''");
+		  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'sort_order'))$admin->DataBase->Execute("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD sort_order varchar(64) NOT NULL default ''");
+		  	if (!db_field_exists(TABLE_AUDIT_LOG, 'stats'))        $admin->DataBase->Execute("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
 	  	}
-	  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'required'))  $db->Execute("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD required enum('0','1') NOT NULL DEFAULT '0'");
+	  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'required'))  $admin->DataBase->Execute("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD required enum('0','1') NOT NULL DEFAULT '0'");
 	}
 
 	// EVENTS PART OF THE CLASS
@@ -337,7 +337,7 @@ class admin extends \core\classes\admin {
 		if (!is_object($db)) throw new \core\classes\userException("Database isn't created");
 		$sql = "select admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security
 		  from " . TABLE_USERS . " where admin_name = '{$basis->cInfo->admin_name}'"; //@todo don't know if this works.
-		$result = $db->Execute($sql);
+		$result = $admin->DataBase->Execute($sql);
 		if (!$result || $basis->cInfo->admin_name <> $result->fields['admin_name'] || $result->fields['inactive']) throw new \core\classes\userException(sprintf(GEN_LOG_LOGIN_FAILED, TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD), 'LoadLogIn');
 		\core\classes\encryption::validate_password($basis->cInfo->admin_pass, $result->fields['admin_pass']);
 		$_SESSION['admin_id']       = $result->fields['admin_id'];
@@ -355,7 +355,7 @@ class admin extends \core\classes\admin {
 			if ($module_class->installed && $module_class->should_update()) $module_class->upgrade();
 		}
 		if (defined('TABLE_CONTACTS')) {
-			$dept = $db->Execute("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result->fields['account_id']);
+			$dept = $admin->DataBase->Execute("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result->fields['account_id']);
 			$_SESSION['department'] = $dept->fields['dept_rep_id'];
 		}
 		gen_add_audit_log(TEXT_USER_LOGIN .' -->' . $basis->cInfo->admin_name);
@@ -387,7 +387,7 @@ class admin extends \core\classes\admin {
 	function LoadMainPage (\core\classes\basis &$basis){
 		global $admin;
 		$menu_id      		= isset($basis->cInfo->mID) ? $basis->cInfo->mID : 'index'; // default to index unless heading is passed
-		$basis->cInfo->cp_boxes 	= $db->Execute("select * from ".TABLE_USERS_PROFILES." where user_id = '{$_SESSION['admin_id']}' and menu_id = '$menu_id' order by column_id, row_id");
+		$basis->cInfo->cp_boxes 	= $admin->DataBase->Execute("select * from ".TABLE_USERS_PROFILES." where user_id = '{$_SESSION['admin_id']}' and menu_id = '$menu_id' order by column_id, row_id");
 		$basis->page_title 	= COMPANY_NAME.' - '.TEXT_PHREEBOOKS_ERP;
 		$basis->module		= 'phreedom';
 		$basis->page		= 'main';
@@ -400,7 +400,7 @@ class admin extends \core\classes\admin {
 	 */
 	function logout (\core\classes\basis &$basis){
 		global $admin;
-		$result = $db->Execute("select admin_name from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
+		$result = $admin->DataBase->Execute("select admin_name from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
 		gen_add_audit_log(TEXT_USER_LOGOFF . ' -> ' . $result->fields['admin_name']);
 		session_destroy();
 		$basis->fireEvent("LoadLogIn");
@@ -441,11 +441,11 @@ class admin extends \core\classes\admin {
 
 	function SendLostPassWord (\core\classes\basis $basis){
 		global $admin;
-		$result = $db->Execute("select admin_id, admin_name, admin_email from " . TABLE_USERS . " where admin_email = '{$basis->admin_email}'");
+		$result = $admin->DataBase->Execute("select admin_id, admin_name, admin_email from " . TABLE_USERS . " where admin_email = '{$basis->admin_email}'");
 		if ($basis->admin_email == '' || $basis->admin_email <> $result->fields['admin_email']) throw new \core\classes\userException(TEXT_YOU_ENTERED_THE_WRONG_EMAIL_ADDRESS);
 		$new_password = \core\classes\encryption::random_password(ENTRY_PASSWORD_MIN_LENGTH);
 		$admin_pass   = \core\classes\encryption::password($new_password);
-		$db->Execute("update " . TABLE_USERS . " set admin_pass = '$admin_pass' where admin_id = " . $result->fields['admin_id']);
+		$admin->DataBase->Execute("update " . TABLE_USERS . " set admin_pass = '$admin_pass' where admin_id = " . $result->fields['admin_id']);
 		$html_msg['EMAIL_CUSTOMERS_NAME'] = $result->fields['admin_name'];
 		$html_msg['EMAIL_MESSAGE_HTML']   = sprintf(TEXT_EMAIL_MESSAGE, COMPANY_NAME, $new_password);
 		validate_send_mail($result->fields['admin_name'], $result->fields['admin_email'], TEXT_EMAIL_SUBJECT, $html_msg['EMAIL_MESSAGE_HTML'], COMPANY_NAME, EMAIL_FROM, $html_msg);

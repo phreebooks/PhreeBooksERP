@@ -47,7 +47,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 	function copy($id, $newSku) {
 		global $admin;
 		parent::copy($id, $newSku);
-		$result = $db->Execute("select * from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = '$id'");
+		$result = $admin->DataBase->Execute("select * from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = '$id'");
 		while(!$result->EOF) {
 			$bom_list = array(
 			  'ref_id'      => $this->id,
@@ -58,7 +58,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 			db_perform(TABLE_INVENTORY_ASSY_LIST, $bom_list, 'insert');
 			$result->MoveNext();
 		}
-		$result = $db->Execute("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->old_sku . "'");
+		$result = $admin->DataBase->Execute("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->old_sku . "'");
 		$data_array = array(
 				'sku'			=> $this->sku,
 				'attr_0'		=> $result->fields['attr_0'],
@@ -66,7 +66,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 				'attr_1'		=> $result->fields['attr_1'],
 				'attr_name_1'	=> $result->fields['attr_name_1']);
 			db_perform(TABLE_INVENTORY_MS_LIST, $data_array, 'insert');
-			$result = $db->Execute("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->old_sku . "'");
+			$result = $admin->DataBase->Execute("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->old_sku . "'");
 		$bom_list = array(
 		  'ref_id'      => $this->id,
 		  'sku'         => $result->fields['sku'],
@@ -82,7 +82,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 	function get_bom_list(){
 		global $admin;
 		$this->assy_cost = 0;
-		$result = $db->Execute("select i.id as inventory_id, l.id, l.sku, l.description, l.qty as qty from " . TABLE_INVENTORY_ASSY_LIST . " l join " . TABLE_INVENTORY . " i on l.sku = i.sku where l.ref_id = " . $this->id . " order by l.id");
+		$result = $admin->DataBase->Execute("select i.id as inventory_id, l.id, l.sku, l.description, l.qty as qty from " . TABLE_INVENTORY_ASSY_LIST . " l join " . TABLE_INVENTORY . " i on l.sku = i.sku where l.ref_id = " . $this->id . " order by l.id");
 		$x =0;
 		while (!$result->EOF) {
 	  		$this->bom[$x] = $result->fields;
@@ -98,7 +98,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 
 	function get_ms_list(){
 		global $admin;
-		$result = $db->Execute("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->sku . "'");
+		$result = $admin->DataBase->Execute("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->sku . "'");
 	  	$this->ms_attr_0   = ($result->RecordCount() > 0) ? $result->fields['attr_0'] 		: '';
 	  	$this->attr_name_0 = ($result->RecordCount() > 0) ? $result->fields['attr_name_0'] 	: '';
 	  	$this->ms_attr_1   = ($result->RecordCount() > 0) ? $result->fields['attr_1'] 		: '';
@@ -127,7 +127,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 			}
 			ksort($this->attr_array1);
 		}
-		$result = $db->Execute("select * from " . TABLE_INVENTORY . " where sku like '" . $this->sku . "-%' and inventory_type = 'ia' order by sku asc");
+		$result = $admin->DataBase->Execute("select * from " . TABLE_INVENTORY . " where sku like '" . $this->sku . "-%' and inventory_type = 'ia' order by sku asc");
 		$i = 0;
 		while(!$result->EOF){
 			$temp = explode('-',$result->fields['sku']);
@@ -158,12 +158,12 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 		if(!isset($id)) throw new \core\classes\userException("the id field isn't set");
 		$this->get_item_by_id($id);
 		// check to see if there is inventory history remaining, if so don't allow delete
-		$result = $db->Execute("select id from " . TABLE_INVENTORY_HISTORY . " where ( sku like '" . $this->sku  . "-%' or sku = '" . $this->sku  . "') and remaining > 0");
+		$result = $admin->DataBase->Execute("select id from " . TABLE_INVENTORY_HISTORY . " where ( sku like '" . $this->sku  . "-%' or sku = '" . $this->sku  . "') and remaining > 0");
 		if ($result->RecordCount() > 0) throw new \core\classes\userException(INV_ERROR_DELETE_HISTORY_EXISTS);
 		// check to see if this item is part of an assembly
-		$result = $db->Execute("select id from " . TABLE_INVENTORY_ASSY_LIST . " where sku like '" . $this->sku  . "-%' or sku = '" . $this->sku  . "'");
+		$result = $admin->DataBase->Execute("select id from " . TABLE_INVENTORY_ASSY_LIST . " where sku like '" . $this->sku  . "-%' or sku = '" . $this->sku  . "'");
 		if ($result->RecordCount() > 0) throw new \core\classes\userException(INV_ERROR_DELETE_ASSEMBLY_PART);
-		$result = $db->Execute( "select id from " . TABLE_JOURNAL_ITEM . " where sku like '" . $this->sku  . "-%' or sku = '" . $this->sku  . "' limit 1");
+		$result = $admin->DataBase->Execute( "select id from " . TABLE_JOURNAL_ITEM . " where sku like '" . $this->sku  . "-%' or sku = '" . $this->sku  . "' limit 1");
 		if ($result->Recordcount() > 0) throw new \core\classes\userException(INV_ERROR_CANNOT_DELETE);
 		$this->remove();
 	  	return true;
@@ -172,15 +172,15 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 
 	function remove(){
 		global $admin;
-		$ms_array = $db->Execute("select * from " . TABLE_INVENTORY . " where sku like '" . $this->sku . "-%'");
+		$ms_array = $admin->DataBase->Execute("select * from " . TABLE_INVENTORY . " where sku like '" . $this->sku . "-%'");
 		parent::remove();
-		$db->Execute("delete from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->sku . "'");
-		$db->Execute("delete from " . TABLE_INVENTORY . " where sku like '" . $this->sku . "-%'");
-		$db->Execute("delete from " . TABLE_INVENTORY_PURCHASE . " where sku like '" . $this->sku . "-%'");
-		$db->Execute("delete from " . TABLE_INVENTORY_ASSY_LIST . " where sku = '" . $this->sku . "'");
+		$admin->DataBase->Execute("delete from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->sku . "'");
+		$admin->DataBase->Execute("delete from " . TABLE_INVENTORY . " where sku like '" . $this->sku . "-%'");
+		$admin->DataBase->Execute("delete from " . TABLE_INVENTORY_PURCHASE . " where sku like '" . $this->sku . "-%'");
+		$admin->DataBase->Execute("delete from " . TABLE_INVENTORY_ASSY_LIST . " where sku = '" . $this->sku . "'");
 		while(!$ms_array->EOF){
 			if($ms_array->fields['image_with_path'] != ''){
-				$result = $db->Execute("select * from " . TABLE_INVENTORY . " where image_with_path = '" . $ms_array->fields['image_with_path'] ."'");
+				$result = $admin->DataBase->Execute("select * from " . TABLE_INVENTORY . " where image_with_path = '" . $ms_array->fields['image_with_path'] ."'");
 	  			if ( $result->RecordCount() == 0){ // delete image
 					$file_path = DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/images/';
 					if (file_exists($file_path . $ms_array->fields['image_with_path'])) unlink ($file_path . $ms_array->fields['image_with_path']);
@@ -200,7 +200,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 				'description' => db_prepare_input($_POST['assy_desc'][$x]),
 				'qty'         => $currencies->clean_value(db_prepare_input($_POST['assy_qty'][$x])),
 			);
-		  	$result = $db->Execute("select id from " . TABLE_INVENTORY . " where sku = '". $_POST['assy_sku'][$x]."'" );
+		  	$result = $admin->DataBase->Execute("select id from " . TABLE_INVENTORY . " where sku = '". $_POST['assy_sku'][$x]."'" );
 		  	if (($result->RecordCount() == 0 || $currencies->clean_value($_POST['assy_qty'][$x]) == 0) && $_POST['assy_sku'][$x] =! '') {
 		  		// show error, bad sku, negative quantity. error check sku is valid and qty > 0
 				throw new \core\classes\userException(INV_ERROR_BAD_SKU . db_prepare_input($_POST['assy_sku'][$x]));
@@ -212,13 +212,13 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 		  	}
 		}
 		$this->bom = $bom_list;
-		$current_situation = $db->Execute("select * from " . TABLE_INVENTORY . " where id = '" . $this->id  . "'");
+		$current_situation = $admin->DataBase->Execute("select * from " . TABLE_INVENTORY . " where id = '" . $this->id  . "'");
 		$sql_data_array = parent::save();
 		if ($sql_data_array == false) return false;
-		$result = $db->Execute("select last_journal_date, quantity_on_hand  from " . TABLE_INVENTORY . " where id = " . $this->id);
+		$result = $admin->DataBase->Execute("select last_journal_date, quantity_on_hand  from " . TABLE_INVENTORY . " where id = " . $this->id);
 		$this->allow_edit_bom = (($result->fields['last_journal_date'] == '0000-00-00 00:00:00' || $result->fields['last_journal_date'] == '') && ($result->fields['quantity_on_hand'] == 0|| $result->fields['quantity_on_hand'] == '')) ? true : false;
 	  	if ($this->allow_edit_bom == true) { // only update if no posting has been performed
-	  		$result = $db->Execute("delete from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = " . $this->id);
+	  		$result = $admin->DataBase->Execute("delete from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = " . $this->id);
 			foreach($bom_list as $list_array) {
 				unset($list_array['item_cost']);
 				unset($list_array['full_price']);
@@ -256,7 +256,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 			}
 		}
 		// either update, delete or insert sub skus depending on sku list
-		$result = $db->Execute("select sku from " . TABLE_INVENTORY . " where inventory_type = 'ia' and sku like '" . $this->sku . "-%'");
+		$result = $admin->DataBase->Execute("select sku from " . TABLE_INVENTORY . " where inventory_type = 'ia' and sku like '" . $this->sku . "-%'");
 		$existing_sku_list = array();
 		while (!$result->EOF) {
 			$existing_sku_list[] = $result->fields['sku'];
@@ -312,7 +312,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 				$backUpRow['description_purchase'] = sprintf($backUpRow['description_purchase'], 	$variables[$sku]['idx0'], $variables[$sku]['idx1'] );
 				$purchase_data_array = null;
 				if($backUpRow['action'] == 'delete'){
-					$result = $db->Execute("delete from " . TABLE_INVENTORY_PURCHASE . " where sku = '" . $sku . "' and vendor_id = '".$backUpRow['vendor_id']."'");
+					$result = $admin->DataBase->Execute("delete from " . TABLE_INVENTORY_PURCHASE . " where sku = '" . $sku . "' and vendor_id = '".$backUpRow['vendor_id']."'");
 				} else if($backUpRow['action'] == 'insert'){
 					$purchase_data_array = $backUpRow;
 					unset($purchase_data_array['id']);
@@ -333,10 +333,10 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 					db_perform(TABLE_INVENTORY_PURCHASE, $purchase_data_array, 'update', "sku = '" . $sku. "' and vendor_id = '".$backUpRow['vendor_id']."'");*/
 				}
 			}
-			$result = $db->Execute("select id, last_journal_date, quantity_on_hand  from " . TABLE_INVENTORY . " where sku = '" . $sku."'");
+			$result = $admin->DataBase->Execute("select id, last_journal_date, quantity_on_hand  from " . TABLE_INVENTORY . " where sku = '" . $sku."'");
 			$this->allow_edit_bom = (($result->fields['last_journal_date'] == '0000-00-00 00:00:00' || $result->fields['last_journal_date'] == '') && ($result->fields['quantity_on_hand'] == 0|| $result->fields['quantity_on_hand'] == '')) ? true : false;
 		  	if ($this->allow_edit_bom == true) { // only update if no posting has been performed
-		  		$temp = $db->Execute("delete from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = " . $result->fields['id']);
+		  		$temp = $admin->DataBase->Execute("delete from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = " . $result->fields['id']);
 		  		foreach($bom_list as $list_array) {
 					$list_array['ref_id'] = $result->fields['id'];
 					unset($list_array['item_cost']);
@@ -352,16 +352,16 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 		foreach($delete_list as $sku) {
 			$temp = $this->ia_check_remove($sku);
 			if($temp === true){
-				$result = $db->Execute("delete from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
-				$result = $db->Execute("delete from " . TABLE_INVENTORY_PURCHASE . " where sku = '" . $sku . "'");
-				$result = $db->Execute("select id, last_journal_date, quantity_on_hand  from " . TABLE_INVENTORY . " where sku = '" . $sku."'");
-				$temp   = $db->Execute("delete from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = " . $result->fields['id']);
+				$result = $admin->DataBase->Execute("delete from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
+				$result = $admin->DataBase->Execute("delete from " . TABLE_INVENTORY_PURCHASE . " where sku = '" . $sku . "'");
+				$result = $admin->DataBase->Execute("select id, last_journal_date, quantity_on_hand  from " . TABLE_INVENTORY . " where sku = '" . $sku."'");
+				$temp   = $admin->DataBase->Execute("delete from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = " . $result->fields['id']);
 			}elseif ($temp === false){
-				$result = $db->Execute("update " . TABLE_INVENTORY . " set inactive = '1' where sku = '" . $sku . "'");
+				$result = $admin->DataBase->Execute("update " . TABLE_INVENTORY . " set inactive = '1' where sku = '" . $sku . "'");
 			}
 		}
 		// update/insert into inventory_ms_list table
-		$result = $db->Execute("select id from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->sku . "'");
+		$result = $admin->DataBase->Execute("select id from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->sku . "'");
 		$exists = $result->RecordCount();
 		$data_array = array(
 			'sku'         => $this->sku,
@@ -381,18 +381,18 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 	function ia_check_remove($sku) {
 		global $messageStack, $db;
 		// check to see if there is inventory history remaining, if so don't allow delete
-		$result = $db->Execute("select id from " . TABLE_INVENTORY_HISTORY . " where sku = '" . $sku . "' and remaining > 0");
+		$result = $admin->DataBase->Execute("select id from " . TABLE_INVENTORY_HISTORY . " where sku = '" . $sku . "' and remaining > 0");
 		if ($result->RecordCount() > 0) {
 			$messageStack->add(sprintf(INV_MS_ERROR_DELETE_HISTORY_EXISTS, $sku), 'caution');
 		 	return 'remaining';
 		}
 		// check to see if this item is part of an assembly
-		$result = $db->Execute("select id from " . TABLE_INVENTORY_ASSY_LIST . " where sku = '" . $sku . "'");
+		$result = $admin->DataBase->Execute("select id from " . TABLE_INVENTORY_ASSY_LIST . " where sku = '" . $sku . "'");
 		if ($result->RecordCount() > 0) {
 			$messageStack->add(sprintf(INV_MS_ERROR_DELETE_ASSEMBLY_PART, $sku), 'caution');
 	  		return false;
 		}
-		$result = $db->Execute( "select id from " . TABLE_JOURNAL_ITEM . " where sku = '" . $sku . "' limit 1");
+		$result = $admin->DataBase->Execute( "select id from " . TABLE_JOURNAL_ITEM . " where sku = '" . $sku . "' limit 1");
 		if ($result->Recordcount() > 0) {
 			$messageStack->add(sprintf(INV_MS_ERROR_CANNOT_DELETE, $sku), 'caution');
 	  		return false;

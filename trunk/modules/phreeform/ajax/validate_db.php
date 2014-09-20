@@ -39,10 +39,10 @@ foreach ($tables as $table) { // prefix the criteria
   $strTable = str_replace($table . '.', DB_PREFIX . $table . '.', $strTable);
 }
 $sql = "select * from " . $strTable . " limit 1";
-$result = $db->Execute_return_error($sql);
+$result = $admin->DataBase->Execute_return_error($sql);
 // if we have a row, sql was valid
-if ($db->error_number) {
-  $message = sprintf(PHREEFORM_AJAX_BAD_DB_REFERENCE, $db->error_number . ' - ' . $db->error_text, $sql);
+if ($admin->DataBase->error_number) {
+  $message = sprintf(PHREEFORM_AJAX_BAD_DB_REFERENCE, $admin->DataBase->error_number . ' - ' . $admin->DataBase->error_text, $sql);
 } elseif ($result->RecordCount() == 0) { // no rows were returned, could be no data yet so just warn and continue
   $message = PHREEFORM_AJAX_NO_TABLE_DATA;
 } else {

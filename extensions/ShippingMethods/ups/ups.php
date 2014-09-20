@@ -872,7 +872,7 @@ class ups extends \shipping\classes\shipping {
 		if ($this->tracking_number) {
 			$tracking_number = $this->tracking_number;
 		} else {
-			$shipments = $db->Execute("select ship_date, tracking_id from " . TABLE_SHIPPING_LOG . " where shipment_id = " . $shipment_id);
+			$shipments = $admin->DataBase->Execute("select ship_date, tracking_id from " . TABLE_SHIPPING_LOG . " where shipment_id = " . $shipment_id);
 			$tracking_number = $shipments->fields['tracking_id'];
 		}
 

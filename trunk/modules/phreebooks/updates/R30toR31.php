@@ -22,14 +22,14 @@
 
 //********************************* END OF IMPORTANT ****************************************//
 
-if (db_field_exists(TABLE_CURRENT_STATUS, 'next_po_desc'))       $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_po_desc");
-if (db_field_exists(TABLE_CURRENT_STATUS, 'next_so_desc'))       $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_so_desc");
-if (db_field_exists(TABLE_CURRENT_STATUS, 'next_inv_desc'))      $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_inv_desc");
-if (db_field_exists(TABLE_CURRENT_STATUS, 'next_check_desc'))    $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_check_desc");
-if (db_field_exists(TABLE_CURRENT_STATUS, 'next_deposit_desc'))  $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_deposit_desc");
-if (db_field_exists(TABLE_CURRENT_STATUS, 'next_cm_desc'))       $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cm_desc");
-if (db_field_exists(TABLE_CURRENT_STATUS, 'next_vcm_desc'))      $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_vcm_desc");
-if (db_field_exists(TABLE_CURRENT_STATUS, 'next_ap_quote_desc')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_ap_quote_desc");
-if (db_field_exists(TABLE_CURRENT_STATUS, 'next_ar_quote_desc')) $db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_ar_quote_desc");
+if (db_field_exists(TABLE_CURRENT_STATUS, 'next_po_desc'))       $admin->DataBase->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_po_desc");
+if (db_field_exists(TABLE_CURRENT_STATUS, 'next_so_desc'))       $admin->DataBase->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_so_desc");
+if (db_field_exists(TABLE_CURRENT_STATUS, 'next_inv_desc'))      $admin->DataBase->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_inv_desc");
+if (db_field_exists(TABLE_CURRENT_STATUS, 'next_check_desc'))    $admin->DataBase->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_check_desc");
+if (db_field_exists(TABLE_CURRENT_STATUS, 'next_deposit_desc'))  $admin->DataBase->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_deposit_desc");
+if (db_field_exists(TABLE_CURRENT_STATUS, 'next_cm_desc'))       $admin->DataBase->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cm_desc");
+if (db_field_exists(TABLE_CURRENT_STATUS, 'next_vcm_desc'))      $admin->DataBase->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_vcm_desc");
+if (db_field_exists(TABLE_CURRENT_STATUS, 'next_ap_quote_desc')) $admin->DataBase->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_ap_quote_desc");
+if (db_field_exists(TABLE_CURRENT_STATUS, 'next_ar_quote_desc')) $admin->DataBase->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_ar_quote_desc");
 
 ?>

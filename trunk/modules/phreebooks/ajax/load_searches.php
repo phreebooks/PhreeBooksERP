@@ -31,13 +31,13 @@ if (!$search_text) throw new \core\classes\userException(sprintf(TEXT_FIELD_IS_R
 $search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.address1',
   'a.address2', 'a.city_town', 'a.postal_code', 'c.short_name');
 $search = " and (" . implode(" like %$search_text%' or ", $search_fields) . " like '%$search_text%)";
-$result = $db->Execute("select c.id from ".TABLE_CONTACTS." c left join ".TABLE_ADDRESS_BOOK." a on c.id = a.ref_id
+$result = $admin->DataBase->Execute("select c.id from ".TABLE_CONTACTS." c left join ".TABLE_ADDRESS_BOOK." a on c.id = a.ref_id
   where a.type = '".$type."m' and c.inactive='0' $search limit 2");
 // to many results
 if ($result->RecordCount() != 1) throw new \core\classes\userException("there were to many results voor $search_text");
 $cID = $result->fields['id'];
 if (in_array($jID, array(6,12))) {
-	$result = $db->Execute("select id from ".TABLE_JOURNAL_MAIN." where closed = '0' and journal_id in (4,10) and bill_acct_id = $cID limit 1");
+	$result = $admin->DataBase->Execute("select id from ".TABLE_JOURNAL_MAIN." where closed = '0' and journal_id in (4,10) and bill_acct_id = $cID limit 1");
 	if ($result->RecordCount() > 0) throw new \core\classes\userException("found open order");
 }
 

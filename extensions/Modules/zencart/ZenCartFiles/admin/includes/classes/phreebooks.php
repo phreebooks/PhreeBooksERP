@@ -45,12 +45,12 @@ class phreebooks extends parser {
 		$this->close  = $objXML->Response->SuccessfulOrders;
 		$this->failed = $objXML->Response->FailedOrders;
 		if ($this->close) {
-		  $db->Execute("update " . TABLE_ORDERS . " set phreebooks = 1, last_modified = now() where orders_id in (" . $this->close . ")");
+		  $admin->DataBase->Execute("update " . TABLE_ORDERS . " set phreebooks = 1, last_modified = now() where orders_id in (" . $this->close . ")");
 		  if (defined('MODULE_PHREEBOOKS_ORDER_DOWNLOAD_ORDER_STATUS') && MODULE_PHREEBOOKS_ORDER_DOWNLOAD_ORDER_STATUS) {
 			// insert a new status in the order status table
 			$pb_orders = explode(',', $this->close);
 			if (is_array($pb_orders)) foreach ($pb_orders as $value) {
-			  $db->Execute("insert into " . TABLE_ORDERS_STATUS_HISTORY . " set
+			  $admin->DataBase->Execute("insert into " . TABLE_ORDERS_STATUS_HISTORY . " set
 			    orders_id = '" . trim($value) . "',
 			    orders_status_id = " . MODULE_PHREEBOOKS_ORDER_DOWNLOAD_ORDER_STATUS . ",
 			    date_added = now(),
@@ -58,7 +58,7 @@ class phreebooks extends parser {
 			    comments = '" . 'Order is in process.' . "'");
 			}
 			// update the status in the orders table
-			$db->Execute("update " . TABLE_ORDERS . " set
+			$admin->DataBase->Execute("update " . TABLE_ORDERS . " set
 			  orders_status = " . MODULE_PHREEBOOKS_ORDER_DOWNLOAD_ORDER_STATUS . ",
 			  last_modified = now()
 			  where orders_id in (" . $this->close . ")");
@@ -182,7 +182,7 @@ class phreebooks extends parser {
   function getCodes($country, $zone) {
 	global $admin;
 	$codes = array();
-	$iso_country = $db->Execute("select countries_id, countries_iso_code_2 from " . TABLE_COUNTRIES . "
+	$iso_country = $admin->DataBase->Execute("select countries_id, countries_iso_code_2 from " . TABLE_COUNTRIES . "
 	  where countries_name = '" . $country . "'");
 	if ($iso_country->RecordCount() < 1) { // not found, return original choices
 	  $codes['country'] = $country;
@@ -190,7 +190,7 @@ class phreebooks extends parser {
 	  return $codes;
 	}
 	$codes['country'] = $iso_country->fields['countries_iso_code_2'];
-	$state = $db->Execute("select zone_code from " . TABLE_ZONES . "
+	$state = $admin->DataBase->Execute("select zone_code from " . TABLE_ZONES . "
 	  where zone_country_id = '" . $iso_country->fields['countries_id'] . "' and zone_name = '" . $zone . "'");
 	$codes['state'] = ($state->RecordCount() < 1) ? $zone : $state->fields['zone_code'];
 	return $codes;
@@ -217,7 +217,7 @@ class phreebooks extends parser {
 
   function find_sku($id, $name) {
 	global $admin;
-	$result = $db->Execute("select phreebooks_sku from " . TABLE_PRODUCTS . " where products_id = '" . $id . "'");
+	$result = $admin->DataBase->Execute("select phreebooks_sku from " . TABLE_PRODUCTS . " where products_id = '" . $id . "'");
 	return ($result->fields['phreebooks_sku'] <> '') ? $result->fields['phreebooks_sku'] : $name;
   }
 }

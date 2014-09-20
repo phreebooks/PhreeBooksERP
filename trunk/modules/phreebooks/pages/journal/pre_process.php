@@ -97,7 +97,7 @@ switch ($_REQUEST['action']) {
 		if (!$glEntry->journal_rows) throw new \core\classes\userException(GL_ERROR_NO_ITEMS);
 		// finished checking errors
 		// *************** START TRANSACTION *************************
-		$db->transStart();
+		$admin->DataBase->transStart();
 		if ($glEntry->recur_id > 0) { // if new record, will contain count, if edit will contain recur_id
 			$first_id                  = $glEntry->id;
 			$first_post_date           = $glEntry->post_date;
@@ -163,7 +163,7 @@ switch ($_REQUEST['action']) {
 			$glEntry->validate_purchase_invoice_id();
 			$glEntry->Post($glEntry->id ? 'edit' : 'insert');
 		}
-		$db->transCommit();
+		$admin->DataBase->transCommit();
 		if ($glEntry->rm_attach) @unlink(PHREEBOOKS_DIR_MY_ORDERS . 'order_'.$glEntry->id.'.zip');
 		if (is_uploaded_file($_FILES['file_name']['tmp_name'])) {
 			$messageStack->debug('Saving file to: '.PHREEBOOKS_DIR_MY_ORDERS.'order_'.$glEntry->id.'.zip');
@@ -173,7 +173,7 @@ switch ($_REQUEST['action']) {
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		// *************** END TRANSACTION *************************
   	}catch(Exception $e){
-		$db->transRollback();
+		$admin->DataBase->transRollback();
 		$messageStack->add($e->getMessage());
 		$cInfo = new \core\classes\objectInfo($_POST); // if we are here, there was an error, reload page
 		$cInfo->post_date = gen_db_date($_POST['post_date']);
@@ -190,7 +190,7 @@ switch ($_REQUEST['action']) {
 		$recur_id        = db_prepare_input($_POST['recur_id']);
 		$recur_frequency = db_prepare_input($_POST['recur_frequency']);
 		// *************** START TRANSACTION *************************
-		$db->transStart();
+		$admin->DataBase->transStart();
 		if ($recur_id > 0) { // will contain recur_id
 			$affected_ids = $delGL->get_recur_ids($recur_id, $delGL->id);
 			for ($i = 0; $i < count($affected_ids); $i++) {
@@ -203,11 +203,11 @@ switch ($_REQUEST['action']) {
 		} else {
 			$delGL->unPost('delete');
 		}
-		$db->transCommit(); // if not successful rollback will already have been performed
+		$admin->DataBase->transCommit(); // if not successful rollback will already have been performed
 		gen_add_audit_log(TEXT_GENERAL_JOURNAL_ENTRY. " - " . TEXT_DELETE, $delGL->purchase_invoice_id);
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
   	}catch(Exception $e){
-		$db->transRollback();
+		$admin->DataBase->transRollback();
 		$messageStack->add($e->getMessage());
 		$cInfo = new \core\classes\objectInfo($_POST); // if we are here, there was an error, reload page
 		$cInfo->post_date = gen_db_date($_POST['post_date']);

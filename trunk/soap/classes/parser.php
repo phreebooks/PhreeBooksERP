@@ -26,7 +26,7 @@ class parser {
 	}
 	// This portion is specific to the application database name, fields and password validation methods
 	// validate user with db (call validation function)
-	$result = $db->Execute("select admin_pass from " . TABLE_USERS . " where admin_name = '" . $username . "'");
+	$result = $admin->DataBase->Execute("select admin_pass from " . TABLE_USERS . " where admin_name = '" . $username . "'");
 	if ($result->RecordCount() == 0) {
 	  return $this->responseXML('11', TEXT_THE_USERNAME_SUBMITTED_IS_NOT_VALID, 'error');
 	}
@@ -68,14 +68,14 @@ class parser {
 
   function get_account_id($short_name, $type = '') {
 	global $admin;
-	$result = $db->Execute("select id from " . TABLE_CONTACTS . "
+	$result = $admin->DataBase->Execute("select id from " . TABLE_CONTACTS . "
 		where short_name = '" . $short_name . "' and type = '" . $type . "'");
 	return ($result->RecordCount() == 0) ? 0 : $result->fields['id'];
   }
 
   function get_user_id($admin_name) {
 	global $admin;
-	$result = $db->Execute("select admin_id from " . TABLE_USERS . " where admin_name = '" . $admin_name . "'");
+	$result = $admin->DataBase->Execute("select admin_id from " . TABLE_USERS . " where admin_name = '" . $admin_name . "'");
 	return ($result->RecordCount() == 0) ? false : $result->fields['admin_id'];
   }
 

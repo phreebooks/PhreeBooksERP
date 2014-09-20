@@ -75,17 +75,17 @@ class xml_confirm extends parser {
 	$order_prefix = defined('MODULE_PHREEBOOKS_ORDER_DOWNLOAD_PREFIX') ? MODULE_PHREEBOOKS_ORDER_DOWNLOAD_PREFIX : false;
     foreach ($orders['order'] as $value) {
       $id = $order_prefix ? str_replace($order_prefix, '', $value['id'], $count = 1) : $value['id'];
-	  $result = $db->Execute("select orders_status from " . TABLE_ORDERS . " where orders_id = '$id'");
+	  $result = $admin->DataBase->Execute("select orders_status from " . TABLE_ORDERS . " where orders_id = '$id'");
 	  if ($result->RecordCount() == 0 || $result->fields['orders_status'] == $value['status']) continue; // skip this order, not a zencart order
 	  // insert a new status in the order status table
-	  $db->Execute("insert into " . TABLE_ORDERS_STATUS_HISTORY . " set
+	  $admin->DataBase->Execute("insert into " . TABLE_ORDERS_STATUS_HISTORY . " set
 		orders_id = '$id',
 		orders_status_id = " . zen_db_input($value['status']) . ",
 		date_added = now(),
 		customer_notified = '0',
 	    comments = '" . zen_db_input($value['msg']) . "'");
       // update the status in the orders table
-	  $db->Execute("update " . TABLE_ORDERS . " set
+	  $admin->DataBase->Execute("update " . TABLE_ORDERS . " set
 	    orders_status = " . zen_db_input($value['status']) . ",
 		last_modified = now()
 		where orders_id = '$id'");

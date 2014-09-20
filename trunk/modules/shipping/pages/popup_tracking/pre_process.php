@@ -46,10 +46,10 @@ switch ($_REQUEST['action']) {
 		'cost'         => $currencies->clean_value($_POST['cost']),
 	);
 	if (!$sID) { // it's a new entry
-	  $result = $db->Execute("select next_shipment_num from " . TABLE_CURRENT_STATUS);
+	  $result = $admin->DataBase->Execute("select next_shipment_num from " . TABLE_CURRENT_STATUS);
 	  $sql_data_array['shipment_id'] = $result->fields['next_shipment_num'];
 	  db_perform(TABLE_SHIPPING_LOG, $sql_data_array, 'insert');
-	  $db->Execute("update " . TABLE_CURRENT_STATUS . " set next_shipment_num = next_shipment_num + 1");
+	  $admin->DataBase->Execute("update " . TABLE_CURRENT_STATUS . " set next_shipment_num = next_shipment_num + 1");
       gen_add_audit_log(TEXT_SHIPMENT_DETAILS . ' - ' . TEXT_INSERT, $sID);
 	} else { // update
 	  db_perform(TABLE_SHIPPING_LOG, $sql_data_array, 'update', "id = " . $sID);
@@ -66,7 +66,7 @@ $js_shipping_options  = build_js_methods($admin->classes['shipping']->methods);
 if ($sID) {
   $sql = "select id, shipment_id, carrier, ref_id, method, ship_date, deliver_date, tracking_id, cost
 	from " . TABLE_SHIPPING_LOG . " where id = " . (int)$sID;
-  $result = $db->Execute($sql);
+  $result = $admin->DataBase->Execute($sql);
   $cInfo = new \core\classes\objectInfo($result->fields);
   // need to build the methods pull down
   $carrier_methods = array();

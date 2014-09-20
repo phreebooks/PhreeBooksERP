@@ -62,18 +62,18 @@ class magento {
 /*************************************************************************************/
   function buildProductUploadXML($id, $inc_image = true) {
 	global $admin, $currencies;
-	$result = $db->Execute("select * from " . TABLE_INVENTORY . " where id = " . $id);
+	$result = $admin->DataBase->Execute("select * from " . TABLE_INVENTORY . " where id = " . $id);
 	if ($result->RecordCount() <> 1) throw new \core\classes\userException(MAGENTO_INVALID_SKU);
 	$this->sku = $result->fields['sku'];
 	if (MAGENTO_USE_PRICE_SHEETS == '1') {
 	  $sql = "select id, default_levels from " . TABLE_PRICE_SHEETS . "
 		where '" . date('Y-m-d',time()) . "' >= effective_date
 		and sheet_name = '" . MAGENTO_PRICE_SHEET . "' and inactive = '0'";
-	  $default_levels = $db->Execute($sql);
+	  $default_levels = $admin->DataBase->Execute($sql);
 	  if ($default_levels->RecordCount() == 0) throw new \core\classes\userException(MAGENTO_ERROR_NO_PRICE_SHEET . MAGENTO_PRICE_SHEET);
 	  $sql = "select price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . "
 		where inventory_id = " . $id . " and price_sheet_id = " . $default_levels->fields['id'];
-	  $special_levels = $db->Execute($sql);
+	  $special_levels = $admin->DataBase->Execute($sql);
 	  if ($special_levels->RecordCount() > 0) {
 		$price_levels = $special_levels->fields['price_levels'];
 	  } else {
@@ -193,7 +193,7 @@ if (file_exists(DIR_FS_MODULES . 'magento/custom/extra_product_attrs.php')) {
 /*************************************************************************************/
   function buildProductSyncXML() {
 	global $admin;
-	$result = $db->Execute("select sku from " . TABLE_INVENTORY . " where catalog = '1'");
+	$result = $admin->DataBase->Execute("select sku from " . TABLE_INVENTORY . " where catalog = '1'");
 	if ($result->RecordCount() == 0) throw new \core\classes\userException(MAGENTO_ERROR_NO_ITEMS);
 	$this->strXML  = '<?xml version="1.0" encoding="UTF-8" ?>' . chr(10);
 	$this->strXML .= '<Request>' . chr(10);
@@ -230,7 +230,7 @@ if (file_exists(DIR_FS_MODULES . 'magento/custom/extra_product_attrs.php')) {
 	$this->strXML .= xmlEntry('Action', 'Confirm');
 	$this->strXML .= xmlEntry('Reference', 'Order Ship Confirmation');
 	// fetch every shipment for the given post_date
-	$result = $db->Execute("select ref_id, carrier, method, tracking_id from " . TABLE_SHIPPING_LOG . "
+	$result = $admin->DataBase->Execute("select ref_id, carrier, method, tracking_id from " . TABLE_SHIPPING_LOG . "
 	  where ship_date like '" . $this->post_date . " %'");
 	if ($result->RecordCount() == 0) throw new \core\classes\userException(MAGENTO_ERROR_CONFRIM_NO_DATA);
 	// foreach shipment, fetch the PO Number (it is the Magento order number)
@@ -240,12 +240,12 @@ if (file_exists(DIR_FS_MODULES . 'magento/custom/extra_product_attrs.php')) {
 	  } else {
 	    $purchase_invoice_id = $result->fields['ref_id'];
 	  }
-	  $details = $db->Execute("select so_po_ref_id from " . TABLE_JOURNAL_MAIN . "
+	  $details = $admin->DataBase->Execute("select so_po_ref_id from " . TABLE_JOURNAL_MAIN . "
 	    where journal_id = 12 and purchase_invoice_id = '" . $purchase_invoice_id . "'
 		order by id desc limit 1");
 		// check to see if the order is complete
 		if ($details->fields['so_po_ref_id']) {
-		  $details = $db->Execute("select closed, purchase_invoice_id from " . TABLE_JOURNAL_MAIN . "
+		  $details = $admin->DataBase->Execute("select closed, purchase_invoice_id from " . TABLE_JOURNAL_MAIN . "
 	        where id = '" . $details->fields['so_po_ref_id'] . "'");
 		  if ($details->RecordCount() == 1) {
 		    $message = sprintf(MAGENTO_CONFIRM_MESSAGE, $this->post_date, $methods[$result->fields['carrier']]['title'], $methods[$result->fields['carrier']][$result->fields['method']], $result->fields['tracking_id']);

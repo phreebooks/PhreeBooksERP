@@ -64,7 +64,7 @@ function bank_import_csv($structure, $filename, $bank_gl_acct) {
 		foreach ($line_array as $value) {
 			$sql_array[$value['table']][$value['cnt']][$value['field']] = $value['value'];
 		}
-		$db->transStart();
+		$admin->DataBase->transStart();
 		foreach ($sql_array as $table => $count) {
 			foreach ($count as $cnt => $table_array) {
 	  			if($table_array['debit_amount']=='' && $table_array['credit_amount']=='' ){
@@ -85,11 +85,11 @@ function bank_import_csv($structure, $filename, $bank_gl_acct) {
 		}
 	}
 	if (!$bankimport->update_chart_history_periods($bankimport->first_period)){
-  		$db->transRollback();
+  		$admin->DataBase->transRollback();
   		$messageStack->add("Chart of accounts are out of balance. When we try to import the file");
   		$messageStack->write_debug();
   	}
-  	$db->transCommit();
+  	$admin->DataBase->transCommit();
   	if ( $countline <> 0 ) $messageStack->add("succesfully posted $countline number of lines",'caution');
   	$messageStack->write_debug();
 }

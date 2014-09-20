@@ -50,7 +50,7 @@ $glEntry->journal_id = JOURNAL_ID;
 $sql = "select c.id, beginning_balance, c.description, c.account_type
 	from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id
 	where h.period = 1 order by c.id";
-$result = $db->Execute($sql);
+$result = $admin->DataBase->Execute($sql);
 $glEntry->beg_bal = array();
 while (!$result->EOF) {
   $glEntry->beg_bal[$result->fields['id']] = array(
@@ -158,13 +158,13 @@ switch ($_REQUEST['action']) {
 	$total_amount = $currencies->format($total_amount);
 	if ($total_amount <> 0) throw new \core\classes\userException(GL_ERROR_NO_BALANCE);
 	// *************** START TRANSACTION *************************
-	$db->transStart();
+	$admin->DataBase->transStart();
 	foreach ($glEntry->beg_bal as $account => $values) {
 	  $sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " set beginning_balance = {$values['beg_bal']} where period = 1 and account_id = '$account'";
-	  $result = $db->Execute($sql);
+	  $result = $admin->DataBase->Execute($sql);
 	}
 	$glEntry->update_chart_history_periods($period = 1); // roll the beginning balances into chart history table
-	$db->transCommit();	// post the chart of account values
+	$admin->DataBase->transCommit();	// post the chart of account values
 	gen_add_audit_log('Enter Beginning Balances');
 	if (DEBUG) $messageStack->write_debug();
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
@@ -212,15 +212,15 @@ switch ($_REQUEST['action']) {
 			define('BB_GL_TYPE','sos');
 			break;
 		}
-		$db->transStart();
+		$admin->DataBase->transStart();
 		// preload the chart of accounts
-		$result = $db->Execute("select id from " . TABLE_CHART_OF_ACCOUNTS);
+		$result = $admin->DataBase->Execute("select id from " . TABLE_CHART_OF_ACCOUNTS);
 		$coa = array();
 		while (!$result->EOF) {
 		  $coa[] = $result->fields['id'];
 		  $result->MoveNext();
 		}
-		$result     = $db->Execute("select start_date from " . TABLE_ACCOUNTING_PERIODS . " where period = 1");
+		$result     = $admin->DataBase->Execute("select start_date from " . TABLE_ACCOUNTING_PERIODS . " where period = 1");
 		$first_date = $result->fields['start_date'];
 		// first verify the file was uploaded ok
 		validate_upload($upload_name, 'text', 'csv');
@@ -234,9 +234,9 @@ switch ($_REQUEST['action']) {
 		}
 		$messageStack->add(TEXT_SUCCESS . '-' . $journal_types_list[JOURNAL_ID]['text'] . '-' . TEXT_IMPORT . ': ' . sprintf(SUCCESS_IMPORT_COUNT, $so_po->line_count),'success');
 		gen_add_audit_log($journal_types_list[JOURNAL_ID]['text'] . '-' . TEXT_IMPORT, $so_po->line_count);
-		$db->transCommit();
+		$admin->DataBase->transCommit();
   	}catch(Exception $e){
-  		$db->transRollback();
+  		$admin->DataBase->transRollback();
   		$messageStack->add($e->getMessage());
   	}
   	default:

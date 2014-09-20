@@ -40,13 +40,13 @@ class chart_of_accounts {
 	$this->account_inactive = $this->account_inactive == 1 ? '1' : '0';
 	if ($this->account_type == '') throw new \core\classes\userException(TEXT_THE_GL_ACCOUNT_TYPE_IS_REQUIRED);
 	if (!$this->primary_acct_id == ''){
-	    $result = $db->Execute("select account_type from " . $this->db_table . " where id = '" . $this->primary_acct_id . "'");
+	    $result = $admin->DataBase->Execute("select account_type from " . $this->db_table . " where id = '" . $this->primary_acct_id . "'");
         if( $result->fields['account_type'] <> $this->account_type) throw new \core\classes\userException('set account_type to '. $coa_types_list[$result->fields['account_type']]['text']. ' this is the same as the parent');
 	}
 	if ($this->heading_only == 1 && $this->rowSeq <> 0) { // see if this was a non-heading account converted to a heading account
 	   $sql = "select max(debit_amount) as debit, max(credit_amount) as credit, max(beginning_balance) as beg_bal
 		from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '" . $this->id . "'";
-	   $result = $db->Execute($sql);
+	   $result = $admin->DataBase->Execute($sql);
 	   if ($result->fields['debit'] <> 0 || $result->fields['credit'] <> 0 || $result->fields['beg_bal'] <> 0) {
 		  throw new \core\classes\userException(GL_ERROR_CANT_MAKE_HEADING);
 	   }
@@ -76,12 +76,12 @@ class chart_of_accounts {
 	// Don't allow delete if there is account activity for this account
 	$sql = "select max(debit_amount) as debit, max(credit_amount) as credit, max(beginning_balance) as beg_bal
 		from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '" . $id . "'";
-	$result = $db->Execute($sql);
+	$result = $admin->DataBase->Execute($sql);
 	if ($result->fields['debit'] <> 0 || $result->fields['credit'] <> 0 || $result->fields['beg_bal'] <> 0) {
 	  throw new \core\classes\userException(GL_ERROR_CANT_DELETE);
 	}
 	// OK to delete
-	$db->Execute("delete from " . $this->db_table . " where id = '" . $id . "'");
+	$admin->DataBase->Execute("delete from " . $this->db_table . " where id = '" . $id . "'");
 	modify_account_history_records($id, $add_acct = false);
 	gen_add_audit_log(TEXT_CHART_OF_ACCOUNTS. " - " . TEXT_DELETE, $id);
 	return true;
@@ -94,7 +94,7 @@ class chart_of_accounts {
 	  'value'  => array(TEXT_ACCOUNT_ID, TEXT_ACCOUNT_DESCRIPTION, TEXT_ACCOUNT_TYPE, TEXT_SUBACCOUNT, TEXT_ACTION),
 	  'params' => 'width="100%" cellspacing="0" cellpadding="1"',
 	);
-    $result = $db->Execute("select id, description, heading_only, primary_acct_id, account_type, account_inactive from " . $this->db_table);
+    $result = $admin->DataBase->Execute("select id, description, heading_only, primary_acct_id, account_type, account_inactive from " . $this->db_table);
     $rowCnt = 0;
 	while (!$result->EOF) {
 	  $bkgnd = ($result->fields['account_inactive']) ? 'class="ui-state-error" ' : '';
@@ -128,7 +128,7 @@ class chart_of_accounts {
     global $admin, $coa_types_list;
     if ($action <> 'new') {
         $sql = "select * from " . $this->db_table . " where id = '" . $this->id . "'";
-        $result = $db->Execute($sql);
+        $result = $admin->DataBase->Execute($sql);
         foreach ($result->fields as $key => $value) $this->$key = $value;
     }
     $output  = ($action == 'new' ? html_hidden_field('new', 1 ) :'')  . chr(10);
@@ -165,7 +165,7 @@ class chart_of_accounts {
         $output .= '  </tr>' . "\n";
     }else{
     	$sql = "select account_type from " . $this->db_table . " where id = '" . $this->primary_acct_id . "'";
-    	$result = $db->Execute($sql);
+    	$result = $admin->DataBase->Execute($sql);
         $output .= html_hidden_field('account_type', $result->fields['account_type'] )   . chr(10);
     }
 	$output .= '  <tr>' . "\n";

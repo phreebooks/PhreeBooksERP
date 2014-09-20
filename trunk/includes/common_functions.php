@@ -88,7 +88,7 @@
   	function write_configure($constant, $value = '') {
     	global $admin;
 		if (!$constant) throw new \core\classes\userException("contant isn't defined for value: $value");
-		$result = $db->Execute("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = '" . $constant . "'");
+		$result = $admin->DataBase->Execute("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = '" . $constant . "'");
 		if ($result->RecordCount() == 0) {
 	  		$sql_array = array('configuration_key'  => $constant, 'configuration_value'=> $value);
 		  	db_perform(TABLE_CONFIGURATION,  $sql_array);
@@ -96,7 +96,7 @@
 		  	db_perform(TABLE_CONFIGURATION, array('configuration_value'=>$value), 'update', "configuration_key = '$constant'");
 		}
 		if (function_exists('apc_load_constants')) {// rebuild cache
-			$result = $db->Execute("select configuration_key, configuration_value from " . TABLE_CONFIGURATION );
+			$result = $admin->DataBase->Execute("select configuration_key, configuration_value from " . TABLE_CONFIGURATION );
 			$array = array ();
 			while (!$result->EOF) {
 				$array[$result->fields['configuration_key']] = $result->fields['configuration_value'];
@@ -116,9 +116,9 @@
   	function remove_configure($constant){
 	    global $admin;
 		if (!$constant) throw new \core\classes\userException("There is no constant to remove");
-		$db->Execute("delete from " . TABLE_CONFIGURATION . " where configuration_key = '$constant'");
+		$admin->DataBase->Execute("delete from " . TABLE_CONFIGURATION . " where configuration_key = '$constant'");
 		if (function_exists('apc_load_constants')) {// rebuild cache
-			$result = $db->Execute("select configuration_key, configuration_value from " . TABLE_CONFIGURATION );
+			$result = $admin->DataBase->Execute("select configuration_key, configuration_value from " . TABLE_CONFIGURATION );
 			$array = array ();
 			while (!$result->EOF) {
 				$array[$result->fields['configuration_key']] = $result->fields['configuration_value'];
@@ -182,7 +182,7 @@
 
   function gen_get_pull_down($db_name, $first_none = false, $show_id = '0', $id = 'id', $description = 'description') {
     global $admin;
-    $type_format_values = $db->Execute("select " . $id . " as id, " . $description . " as description
+    $type_format_values = $admin->DataBase->Execute("select " . $id . " as id, " . $description . " as description
       from " . $db_name . " order by '" . $id . "'");
     $type_format_array = array();
     if ($first_none) $type_format_array[] = array('id' => '', 'text' => TEXT_NONE);
@@ -216,7 +216,7 @@
 	if (($post_time_stamp >= $period_start_time_stamp) && ($post_time_stamp <= $period_end_time_stamp)) {
 		return CURRENT_ACCOUNTING_PERIOD;
 	} else {
-		$result = $db->Execute("select period from " . TABLE_ACCOUNTING_PERIODS . "
+		$result = $admin->DataBase->Execute("select period from " . TABLE_ACCOUNTING_PERIODS . "
 			where start_date <= '" . $post_date . "' and end_date >= '" . $post_date . "'");
 		if ($result->RecordCount() <> 1) { // post_date is out of range of defined accounting periods
 			if (!$hide_error) throw new \core\classes\userException(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR);
@@ -228,7 +228,7 @@
 
   function gen_get_period_pull_down($include_all = true) {
     global $admin;
-    $period_values = $db->Execute("select period, start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . " order by period");
+    $period_values = $admin->DataBase->Execute("select period, start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . " order by period");
     $period_array = array();
     if ($include_all) $period_array[] = array('id' => 'all', 'text' => TEXT_ALL);
     while (!$period_values->EOF) {
@@ -249,7 +249,7 @@
 	if ($restrict_types) $params[] = "account_type in (" . implode(',', $restrict_types) . ")";
 	$sql .= (sizeof($params) == 0) ? '' : ' where ' . implode(' and ', $params);
 	$sql .= " order by id";
-    $result = $db->Execute($sql);
+    $result = $admin->DataBase->Execute($sql);
     if ($first_none) $output[] = array('id' => '', 'text' => TEXT_PLEASE_SELECT);
     while (!$result->EOF) {
 	  switch ($show_id) {
@@ -266,7 +266,7 @@
 
   function gen_get_type_description($db_name, $id, $full = true) {
     global $admin;
-    $type_name = $db->Execute("select description from " . $db_name . " where id = '" . $id . "'");
+    $type_name = $admin->DataBase->Execute("select description from " . $db_name . " where id = '" . $id . "'");
     if ($type_name->RecordCount() < 1) {
       return $id;
     } else {
@@ -280,7 +280,7 @@
 
   function gen_get_contact_type($id) {
     global $admin;
-    $vendor_type = $db->Execute("select type from " . TABLE_CONTACTS . " where id = '" . $id . "'");
+    $vendor_type = $admin->DataBase->Execute("select type from " . TABLE_CONTACTS . " where id = '" . $id . "'");
     return ($vendor_type->RecordCount() == 1) ? $vendor_type->fields['type'] : false;
   }
 
@@ -290,14 +290,14 @@
    	 */
   	function gen_get_contact_name($id) {
     	global $admin;
-    	$vendor_name = $db->Execute("select short_name from " . TABLE_CONTACTS . " where id = '$id'");
+    	$vendor_name = $admin->DataBase->Execute("select short_name from " . TABLE_CONTACTS . " where id = '$id'");
     	if ($vendor_name->RecordCount() == 1) return $vendor_name->fields['short_name'];
     	throw new \core\classes\userException("couldn't find contact with $id");
   	}
 
   function gen_get_contact_array_by_type($type = 'v') {
     global $admin;
-    $accounts = $db->Execute("select c.id, a.primary_name from " . TABLE_CONTACTS . " c left join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id
+    $accounts = $admin->DataBase->Execute("select c.id, a.primary_name from " . TABLE_CONTACTS . " c left join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id
 	  where c.inactive <> '1' and a.type='" . $type . "m' order by a.primary_name");
     $accounts_array = array();
     $accounts_array[] = array('id' => '', 'text' => TEXT_NONE);
@@ -321,7 +321,7 @@
 	}
     $result_array = array();
     $result_array[] = array('id' => '0', 'text' => TEXT_NONE);
-	$result = $db->Execute("select id, contact_first, contact_last, gl_type_account from " . TABLE_CONTACTS . " where type = 'e' and inactive <> '1'");
+	$result = $admin->DataBase->Execute("select id, contact_first, contact_last, gl_type_account from " . TABLE_CONTACTS . " where type = 'e' and inactive <> '1'");
 	while(!$result->EOF) {
 	  if (strpos($result->fields['gl_type_account'], $emp_type) !== false) {
  	    $result_array[] = array('id' => $result->fields['id'], 'text' => $result->fields['contact_first'] . ' ' . $result->fields['contact_last']);
@@ -334,7 +334,7 @@
   function gen_get_store_ids() {
 	global $admin;
     $result_array = array();
-	$result = $db->Execute("select id, short_name from " . TABLE_CONTACTS . " where type = 'b'");
+	$result = $admin->DataBase->Execute("select id, short_name from " . TABLE_CONTACTS . " where type = 'b'");
 	if (($_SESSION['admin_prefs']['restrict_store'] && $_SESSION['admin_prefs']['def_store_id'] == 0)
 	  || !$_SESSION['admin_prefs']['restrict_store']) {
         $result_array[0] = array('id' => '0', 'text' => COMPANY_ID); // main branch id
@@ -405,7 +405,7 @@
     global $admin;
     $sql = "select distinct sheet_name, default_sheet from " . TABLE_PRICE_SHEETS . "
 		where inactive = '0' and type = '" . $type . "' order by sheet_name";
-    $result = $db->Execute($sql);
+    $result = $admin->DataBase->Execute($sql);
     $sheets = array();
     $sheets[] = array('id' => '', 'text' => TEXT_NONE);
     while (!$result->EOF) {
@@ -438,7 +438,7 @@
   function gen_add_audit_log($action, $ref_id = '', $amount = '') {
 	global $admin;
   	if ($action == '' || !isset($action)) throw new \core\classes\userException('Error, call to audit log with no description');
-  	$stats = (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME))."ms, ".$db->count_queries."q ".(int)($db->total_query_time * 1000)."ms";
+  	$stats = (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME))."ms, ".$admin->DataBase->count_queries."q ".(int)($admin->DataBase->total_query_time * 1000)."ms";
 	$fields = array(
 	  'user_id'   => $_SESSION['admin_id'] ? $_SESSION['admin_id'] : '1',
 	  'action'    => substr($action, 0, 64), // limit to field length
@@ -758,7 +758,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
 
   function gen_calculate_fiscal_dates($period) {
 	global $admin;
-	$result = $db->Execute("select fiscal_year, start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . "
+	$result = $admin->DataBase->Execute("select fiscal_year, start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . "
 	  where period = " . $period);
 	// post_date is out of range of defined accounting periods
 	if ($result->RecordCount() <> 1) throw new \core\classes\userException(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');
@@ -910,12 +910,12 @@ function gen_db_date($raw_date = '', $separator = '/') {
       }
       $query = substr($query, 0, -2) . ' where ' . $parameters;
     }
-    return $db->Execute($query);
+    return $admin->DataBase->Execute($query);
   }
 
   function db_insert_id() {
     global $admin;
-    return $db->insert_ID();
+    return $admin->DataBase->insert_ID();
   }
 
   function db_input($string) {
@@ -941,13 +941,13 @@ function gen_db_date($raw_date = '', $separator = '/') {
 
   function db_table_exists($table_name) {
     global $admin;
-    $tables = $db->Execute("SHOW TABLES like '" . $table_name . "'");
+    $tables = $admin->DataBase->Execute("SHOW TABLES like '" . $table_name . "'");
     return ($tables->RecordCount() > 0) ? true : false;
   }
 
   function db_field_exists($table_name, $field_name) {
     global $admin;
-    $result = $db->Execute("show fields from " . $table_name);
+    $result = $admin->DataBase->Execute("show fields from " . $table_name);
     while (!$result->EOF) {
       if  ($result->fields['Field'] == $field_name) return true;
       $result->MoveNext();
@@ -1589,10 +1589,10 @@ function charConv($string, $in, $out) {
       				$mail->Body    = $text;        // text-only content of message
       			}
       			$mail->Send();
-				$temp = $db->Execute("select address_id, ref_id from " . TABLE_ADDRESS_BOOK . " where email ='".$to_email_address."' and ref_id <> 0");
+				$temp = $admin->DataBase->Execute("select address_id, ref_id from " . TABLE_ADDRESS_BOOK . " where email ='".$to_email_address."' and ref_id <> 0");
 				$sql_data_array['address_id_from'] 	= $temp->fields['address_id'];
 				$ref_id = $temp->fields['ref_id'];
-				$temp = $db->Execute("select address_id, ref_id from " . TABLE_ADDRESS_BOOK . " where email ='".$from_email_address."'");
+				$temp = $admin->DataBase->Execute("select address_id, ref_id from " . TABLE_ADDRESS_BOOK . " where email ='".$from_email_address."'");
 				$sql_data_array['address_id_to'] 	= $temp->fields['address_id'];
 				$sql_data_array['Message'] 		= $text;
 				$sql_data_array['Message_html']	= $email_html;
@@ -1607,7 +1607,7 @@ function charConv($string, $in, $out) {
 				//$sql_data_array['MsgSize'] 		= $email["SIZE"];?? Rene Unknown
 				if(db_table_exists(TABLE_PHREEMAIL)) db_perform(TABLE_PHREEMAIL, $sql_data_array, 'insert');
 				// save in crm_notes
-				$temp = $db->Execute("select account_id from " . TABLE_USERS . " where admin_email = '" . $from_email_address . "'");
+				$temp = $admin->DataBase->Execute("select account_id from " . TABLE_USERS . " where admin_email = '" . $from_email_address . "'");
 				$sql_array['contact_id'] = $ref_id;
 				$sql_array['log_date']   = $sql_data_array['DateE'];
 				$sql_array['entered_by'] = $temp->fields['account_id'];

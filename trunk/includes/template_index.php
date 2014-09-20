@@ -81,7 +81,7 @@ if ($custom_html) { // load the template only as the rest of the html will be ge
   $footer_info  = COMPANY_NAME.' | '.TEXT_ACCOUNTING_PERIOD.': '.CURRENT_ACCOUNTING_PERIOD.' | '.TEXT_PHREEDOM_INFO.' ('.$basis->classes['phreedom']->version.') ';
   if ($module <> 'phreedom') $footer_info .= '(' . $module . ' ' . constant('MODULE_' . strtoupper($module) . '_STATUS') . ') ';
   $footer_info .= '<br />' . TEXT_COPYRIGHT .  ' &copy;' . date('Y') . ' <a href="http://www.PhreeSoft.com" target="_blank">PhreeSoft&trade;</a>';
-  $footer_info .= '(' . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . ' ms) ' . $db->count_queries . ' SQLs (' . (int)($db->total_query_time * 1000).' ms)';
+  $footer_info .= '(' . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . ' ms) ' . $admin->DataBase->count_queries . ' SQLs (' . (int)($admin->DataBase->total_query_time * 1000).' ms)';
   echo $footer_info;
   ?>
   </div>

@@ -55,7 +55,7 @@ switch ($_REQUEST['action']) {
 			if ($temp_rows[$i]['gl_type'] <> 'soo') continue; // remove all rows except valid order lines
 		  	// fetch the sku information
 		  	if ($temp_rows[$i]['sku']) {
-		    	$result = $db->Execute("select description_purchase, item_cost, account_inventory_wage, vendor_id
+		    	$result = $admin->DataBase->Execute("select description_purchase, item_cost, account_inventory_wage, vendor_id
 		    	  from " . TABLE_INVENTORY . " where sku = '" . $temp_rows[$i]['sku'] . "'");
 				if ($result->fields['vendor_id'] > 0) $vendor_id = $result->fields['vendor_id']; // save preferred vendor (takes last one)
 				$order->journal_rows[] = array(
@@ -82,7 +82,7 @@ switch ($_REQUEST['action']) {
 		$order->total_amount = $total_amount;
 
 		if (!$vendor_id) throw new \core\classes\userException(PB_ERROR_NO_PREFERRED_VENDOR);
-		$result = $db->Execute("select * from " . TABLE_ADDRESS_BOOK . " where ref_id = " . $vendor_id . " and type = 'vm'");
+		$result = $admin->DataBase->Execute("select * from " . TABLE_ADDRESS_BOOK . " where ref_id = " . $vendor_id . " and type = 'vm'");
 		if ($result->recordCount() == 0)  throw new \core\classes\userException("No valid vendors were found! for: $vendor_id");
 		$order->bill_acct_id        = $vendor_id;
 		$order->bill_address_id     = $result->fields['address_id'];
@@ -96,7 +96,7 @@ switch ($_REQUEST['action']) {
 		$order->bill_postal_code    = $result->fields['postal_code'];
 		$order->bill_telephone1     = $result->fields['telephone1'];
 		$order->bill_email          = $result->fields['email'];
-		$result = $db->Execute("select special_terms from " . TABLE_CONTACTS . " where id = " . $vendor_id);
+		$result = $admin->DataBase->Execute("select special_terms from " . TABLE_CONTACTS . " where id = " . $vendor_id);
 		$order->terms = $result->fields['terms'];
 
 		// determine whether to ship to customer or to company main address
@@ -130,17 +130,17 @@ switch ($_REQUEST['action']) {
 
 		$order->journal_main_array = $order->build_journal_main_array();	// build ledger main record
 		// ***************************** START TRANSACTION *******************************
-		$db->transStart();
+		$admin->DataBase->transStart();
 		$order->validate_purchase_invoice_id();
 		$order->Post('insert');
 	    if ($order->purchase_invoice_id == '') {	// it's a new record, increment the po/so/inv to next number
 		  	$order->increment_purchase_invoice_id();
 		}
 		gen_add_audit_log($journal_types_list[JOURNAL_ID]['text']. ' - ' . TEXT_ADD, $order->purchase_invoice_id, $order->total_amount);
-		$db->transCommit();	// finished successfully
+		$admin->DataBase->transCommit();	// finished successfully
 		// ***************************** END TRANSACTION *******************************
   	}catch(Exception $e){
-  		$db->transRollback();
+  		$admin->DataBase->transRollback();
   		$messageStack->add($e->getMessage());
   	}
 	break;

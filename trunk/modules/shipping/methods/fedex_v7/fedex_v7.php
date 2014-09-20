@@ -978,13 +978,13 @@ class fedex_v7 extends \shipping\classes\shipping {
 		if (MODULE_SHIPPING_FEDEX_V7_TEST_MODE == 'Test') throw new \core\classes\userException('Tracking only works on the FedEx production server!');
 		$client = new \SoapClient(PATH_TO_TRACK_WSDL, array('trace' => 1));
 		if ($log_id) {
-			$shipments  = $db->Execute("select id, ref_id, deliver_date, actual_date, tracking_id, notes
+			$shipments  = $admin->DataBase->Execute("select id, ref_id, deliver_date, actual_date, tracking_id, notes
 				from " . TABLE_SHIPPING_LOG . "
 				where carrier = '" . $this->id . "' and id = '" . $log_id . "'");
 		} else {
 			$start_date = $track_date;
 			$end_date   = gen_specific_date($track_date, $day_offset =  1);
-			$shipments  = $db->Execute("select id, ref_id, deliver_date, actual_date, tracking_id, notes
+			$shipments  = $admin->DataBase->Execute("select id, ref_id, deliver_date, actual_date, tracking_id, notes
 				from " . TABLE_SHIPPING_LOG . "
 				where carrier = '" . $this->id . "'
 					and ship_date >= '" . $start_date . "' and ship_date < '" . $end_date . "'");
@@ -1015,7 +1015,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 					  $messageStack->add(sprintf(SHIPPING_FEDEX_V7_TRACK_STATUS, $shipments->fields['ref_id'], $response->TrackDetails->StatusCode, $response->TrackDetails->StatusDescription), 'caution');
 					}
 					// update the log file with the actual delivery timestamp, append notes
-					$db->Execute("update " . TABLE_SHIPPING_LOG . "
+					$admin->DataBase->Execute("update " . TABLE_SHIPPING_LOG . "
 					  set actual_date = '" . $actual_date . "', deliver_late = '" . $late . "' where id = " . $shipments->fields['id']);
 //					$messageStack->add(SHIPPING_FEDEX_V7_TRACK_SUCCESS . $response->TrackDetails->ActualDeliveryTimestamp, 'success');
 				} else {
@@ -1192,7 +1192,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 	  $cost      = $record['Net Charge Amount'];
 	  if (!$payor_id) continue; // weekly service charge and other non-shipment related.
 	  if ($ref_num) {
-	    $result = $db->Execute("select cost from " . TABLE_SHIPPING_LOG . " where ref_id = '" . $ref_num . "'");
+	    $result = $admin->DataBase->Execute("select cost from " . TABLE_SHIPPING_LOG . " where ref_id = '" . $ref_num . "'");
 	    if ($result->RecordCount() == 0) {
 	      $output .= sprintf(SHIPPING_FEDEX_RECON_NO_RECORDS, $ship_date, $ref_num, $track_num, $ship_name, $rcv_name, $cost) . "\n";
 	      continue;
@@ -1209,7 +1209,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 	  	$output .= sprintf(SHIPPING_FEDEX_RECON_COST_OVER, $ship_date, $ref_num, $track_num, $cost, $result->fields['cost']) . "\n";
 	  }
 	  $inv_num = strpos($ref_num, '-') ? substr($ref_num, 0, strpos($ref_num, '-')) : $ref_num;
-	  $result = $db->Execute("select freight from ".TABLE_JOURNAL_MAIN." where purchase_invoice_id = '$inv_num'");
+	  $result = $admin->DataBase->Execute("select freight from ".TABLE_JOURNAL_MAIN." where purchase_invoice_id = '$inv_num'");
 	  $invoiced = ($result->RecordCount() == 0) ? 0 : $result->fields['freight'];
 	  $estimate = ($invoiced + FEDEX_V7_COST_OFFSET) * (1 + FEDEX_V7_COST_FACTOR);
 	  if ($cost > $estimate) {
@@ -1221,7 +1221,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 	$output .= "\n" . sprintf(SHIPPING_FEDEX_RECON_SUMMARY, $count) . "\n";
 	// set the reconciled flag
 	if (sizeof($reconciled) > 0) {
-	  $db->Execute("update " . TABLE_SHIPPING_LOG . " set reconciled = '1' where ref_id in ('" . implode("','", $reconciled) . "')");
+	  $admin->DataBase->Execute("update " . TABLE_SHIPPING_LOG . " set reconciled = '1' where ref_id in ('" . implode("','", $reconciled) . "')");
 	}
 	// output results
 	gen_add_audit_log('FedEx Reconciliation Report', 'Records: ' . $count);

@@ -29,7 +29,7 @@ class sr extends \inventory\classes\inventory {//Serialized Item
 		global $admin;
 		$branches = gen_get_store_ids();
 		$this->quantity_on_hand = 0;
-		$result = $db->Execute("select store_id, qty, serialize_number from " . TABLE_INVENTORY_HISTORY . "
+		$result = $admin->DataBase->Execute("select store_id, qty, serialize_number from " . TABLE_INVENTORY_HISTORY . "
 	  		where sku = '" . $this->sku . "' and remaining > 0 order by store_id");
   		$this->qty_table ='<table class="ui-widget" style="border-collapse:collapse;width:100%">'. chr(10);
 		$this->qty_table .='  <thead class="ui-widget-header">'. chr(10);
@@ -55,6 +55,6 @@ class sr extends \inventory\classes\inventory {//Serialized Item
     	$field_list  = array('m.id', 'm.post_date', 'm.purchase_invoice_id', 'm.closed', 'm.bill_primary_name', 'm.total_amount', 'i.serialize_number');
     	$sql   = "SELECT ".implode(', ', $field_list)." FROM ".TABLE_JOURNAL_MAIN." m JOIN ".TABLE_JOURNAL_ITEM." i on m.id=i.ref_id
     	WHERE m.journal_id=12 AND i.sku='$this->sku' ORDER BY m.purchase_invoice_id DESC";
-    	$this->orderHistory = $db->Execute($sql);
+    	$this->orderHistory = $admin->DataBase->Execute($sql);
 	}
 }

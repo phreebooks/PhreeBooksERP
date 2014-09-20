@@ -112,7 +112,7 @@ class mini_financial extends \core\classes\ctl_panel {
 			$sql = "select h.beginning_balance + h.debit_amount - h.credit_amount as balance, c.description
 			  from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id
 			  where h.period = " . $period . " and c.account_type = " . $account_type;
-		  	$result = $db->Execute($sql);
+		  	$result = $admin->DataBase->Execute($sql);
 		  	$total_1 = 0;
 		  	while (!$result->EOF) {
 				if ($negate_array[$key]) {
@@ -139,9 +139,9 @@ class mini_financial extends \core\classes\ctl_panel {
 		global $admin;
 		$contents = '';
 		// find the period range within the fiscal year from the first period to current requested period
-		$result = $db->Execute("select fiscal_year from " . TABLE_ACCOUNTING_PERIODS . " where period = " . $period);
+		$result = $admin->DataBase->Execute("select fiscal_year from " . TABLE_ACCOUNTING_PERIODS . " where period = " . $period);
 		$fiscal_year = $result->fields['fiscal_year'];
-		$result = $db->Execute("select period from " . TABLE_ACCOUNTING_PERIODS . " where fiscal_year = " . $fiscal_year . " order by period limit 1");
+		$result = $admin->DataBase->Execute("select period from " . TABLE_ACCOUNTING_PERIODS . " where fiscal_year = " . $fiscal_year . " order by period limit 1");
 		$first_period = $result->fields['period'];
 		// build revenues
 		$cur_year  = $this->add_income_stmt_data(30, $first_period, $period, $negate = true); // Income account_type
@@ -174,17 +174,17 @@ class mini_financial extends \core\classes\ctl_panel {
 		  from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id
 		  where h.period = " . $period . " and c.account_type = " . $type . "
 		  order by c.id";
-		$cur_period = $db->Execute($sql);
+		$cur_period = $admin->DataBase->Execute($sql);
 		$sql = "select (sum(h.debit_amount) - sum(h.credit_amount)) as balance
 		  from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id
 		  where h.period >= " . $first_period . " and h.period <= " . $period . " and c.account_type = " . $type . "
 		  group by h.account_id order by c.id";
-		$ytd_period = $db->Execute($sql);
+		$ytd_period = $admin->DataBase->Execute($sql);
 		$sql = "select beginning_balance
 		  from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id
 		  where h.period = " . $first_period . " and c.account_type = " . $type . "
 		  group by h.account_id order by c.id";
-		$beg_balance = $db->Execute($sql);
+		$beg_balance = $admin->DataBase->Execute($sql);
 		$ytd_total_1 = 0;
 		while (!$ytd_period->EOF) {
 			if ($negate) {

@@ -26,14 +26,14 @@ $ajax_text = '';
 $id        = (int)$_GET['id'];
 
 if (!isset($_GET['id'])) die;
-$doc_details = $db->Execute("select * from " . TABLE_DC_DOCUMENT . " where id = " . $id);
+$doc_details = $admin->DataBase->Execute("select * from " . TABLE_DC_DOCUMENT . " where id = " . $id);
 switch ($_REQUEST['action']) {
   case 'bookmark':
 	$output = array();
 	$bookmarks = explode(":", $doc_details->fields['bookmarks']);
 	if (is_array($bookmarks)) foreach ($bookmarks as $value) if ($value) $output[$value] = true;
 	$output[$_SESSION['admin_id']] = true;
-	$db->Execute("update " . TABLE_DC_DOCUMENT . " set bookmarks = ':" . implode(":",$output) . ":' where  id = " . $id);
+	$admin->DataBase->Execute("update " . TABLE_DC_DOCUMENT . " set bookmarks = ':" . implode(":",$output) . ":' where  id = " . $id);
     break;
   case 'del_bookmark':
 	$output = array();
@@ -41,13 +41,13 @@ switch ($_REQUEST['action']) {
 	if (is_array($bookmarks)) foreach ($bookmarks as $value) if ($value) $output[$value] = true;
 	if (isset($output[$_SESSION['admin_id']])) unset($output[$_SESSION['admin_id']]);
 	$result = sizeof($output) == 0 ? '' : (':' . implode(":",$output) . ':');
-	$db->Execute("update " . TABLE_DC_DOCUMENT . " set bookmarks = '" . $result. "' where  id = " . $id);
+	$admin->DataBase->Execute("update " . TABLE_DC_DOCUMENT . " set bookmarks = '" . $result. "' where  id = " . $id);
     break;
   case 'lock':
-	$db->Execute("update " . TABLE_DC_DOCUMENT . " set lock_id = " . $_SESSION['admin_id'] . " where  id = " . $id);
+	$admin->DataBase->Execute("update " . TABLE_DC_DOCUMENT . " set lock_id = " . $_SESSION['admin_id'] . " where  id = " . $id);
     break;
   case 'del_lock':
-	$db->Execute("update " . TABLE_DC_DOCUMENT . " set lock_id = 0 where  id = " . $id);
+	$admin->DataBase->Execute("update " . TABLE_DC_DOCUMENT . " set lock_id = 0 where  id = " . $id);
     break;
   case 'delete':
 	// jstree initialization
@@ -74,7 +74,7 @@ switch ($_REQUEST['action']) {
 	break;
   case 'delete_dir':
 	// check for directory not empty
-	$result = $db->Execute("select id from " . TABLE_DC_DOCUMENT . " where parent_id = " . $id);
+	$result = $admin->DataBase->Execute("select id from " . TABLE_DC_DOCUMENT . " where parent_id = " . $id);
 	if ($result->RecordCount() > 0) {
 	  $ajax_text = TEXT_THE_DIRECTORY_IS_NOT_EMPTY_IT_CANNOT_BE_DELETED;
 	  break;

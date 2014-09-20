@@ -37,12 +37,12 @@ if (substr($_REQUEST['action'], 0, 8) == 'install_') {
 }
 // load the current statuses
 $status_fields = array();
-$result = $db->Execute("show fields from " . TABLE_CURRENT_STATUS);
+$result = $admin->DataBase->Execute("show fields from " . TABLE_CURRENT_STATUS);
 while (!$result->EOF) {
   if ($result->fields['Field'] <> 'id') $status_fields[] = $result->fields['Field'];
   $result->MoveNext();
 }
-$status_values = $db->Execute("select * from " . TABLE_CURRENT_STATUS);
+$status_values = $admin->DataBase->Execute("select * from " . TABLE_CURRENT_STATUS);
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   	case 'install':
@@ -51,7 +51,7 @@ switch ($_REQUEST['action']) {
 	  		\core\classes\user::validate_security($security_level, 4);
 			// load the module installation class
 			if (!array_key_exists($method, $admin->classes)) throw new \core\classes\userException(sprintf('Looking for the installation script for module %s, but could not locate it. The module cannot be installed!', $method));
-			$db->transStart();
+			$admin->DataBase->transStart();
 			require_once(DIR_FS_MODULES . $method . '/config.php'); // config is not loaded yet since module is not installed.
 			if ($_REQUEST['action'] == 'install') {
 		  		$admin->classes[$method]->install(DIR_FS_MY_FILES.$_SESSION['company'].'/', false);
@@ -65,10 +65,10 @@ switch ($_REQUEST['action']) {
 	   			$messageStack->add(sprintf(GEN_MODULE_UPDATE_SUCCESS, $admin->classes[$method]->id, $admin->classes[$method]->version), 'success');
 			}
 			if (sizeof($admin->classes[$method]->notes) > 0) foreach ($admin->classes[$method]->notes as $note) $messageStack->add($note, 'caution');
-			$db->transCommit();
+			$admin->DataBase->transCommit();
 			break;
   		}catch (Exception $e){
-  			$db->transRollback();
+  			$admin->DataBase->transRollback();
   			$messageStack->add($e->getMessage());
   			break;
   		}
@@ -79,14 +79,14 @@ switch ($_REQUEST['action']) {
 			gen_pull_language($method);
 			// load the module installation class
 			if (!array_key_exists($method, $admin->classes)) throw new \core\classes\userException(sprintf('Looking for the delete script for module %s, but could not locate it. The module cannot be deleted!', $method));
-			$db->transStart();
+			$admin->DataBase->transStart();
 			$admin->classes[$method]->delete(DIR_FS_MY_FILES.$_SESSION['company'].'/');
-			$db->transCommit();
+			$admin->DataBase->transCommit();
 			if (sizeof($admin->classes[$method]->notes) > 0) foreach ($admin->classes[$method]->notes as $note) $messageStack->add($note, 'caution');
 			gen_add_audit_log(sprintf(TEXT_UNINSTALLED_MODULE, $admin->classes[$method]->text));
 			break;
   		}catch (Exception $e){
-  			$db->transRollback();
+  			$admin->DataBase->transRollback();
   			$messageStack->add($e->getMessage());
   			break;
   		}
@@ -94,7 +94,7 @@ switch ($_REQUEST['action']) {
   		try{
 		  	\core\classes\user::validate_security($security_level, 3);
 			// save general tab
-			$db->transStart();
+			$admin->DataBase->transStart();
 			foreach ($admin->classes['phreedom']->keys as $key => $default) {
 				$field = strtolower($key);
 		     	if (isset($_POST[$field])) write_configure($key, db_prepare_input($_POST[$field]));
@@ -103,27 +103,27 @@ switch ($_REQUEST['action']) {
 					install_build_co_config_file($_SESSION['company'], $_SESSION['company'] . '_TITLE', db_prepare_input($_POST[$field]));
 				}
 			}
-		    $db->transCommit();
+		    $admin->DataBase->transCommit();
 			$messageStack->add(TEXT_CONFIGURATION_VALUES_HAVE_BEEN_SAVED,'success');
 			$default_tab_id = 'company';
 		    break;
   		}catch (Exception $e){
-  			$db->transRollback();
+  			$admin->DataBase->transRollback();
   			$messageStack->add($e->getMessage());
   			break;
   		}
   	case 'delete':
   		try{
-  			$db->transStart();
+  			$admin->DataBase->transStart();
   			\core\classes\user::validate_security($security_level, 4);
   			$subject = $_POST['subject'];
     		$id      = $_POST['rowSeq'];
 			if (!$subject || !$id) break;
     		if ($$subject->btn_delete($id)) $close_popup = true;
-    		$db->transCommit();
+    		$admin->DataBase->transCommit();
 		   	break;
   		}catch (Exception $e){
-  			$db->transRollback();
+  			$admin->DataBase->transRollback();
   			$messageStack->add($e->getMessage());
   			break;
   		}
@@ -141,7 +141,7 @@ switch ($_REQUEST['action']) {
 			$db_orig = new queryFactory;//@todo pdo
 			if (!$db_orig->connect(DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, DB_DATABASE)) trigger_error('Problem connecting to original DB!', E_USER_ERROR);
 			$db = new queryFactory;//@todo pdo
-			if (!$db->connect($db_server, $db_user, $db_pw, $db_name)) throw new \core\classes\userException(SETUP_CO_MGR_CANNOT_CONNECT);
+			if (!$admin->DataBase->connect($db_server, $db_user, $db_pw, $db_name)) throw new \core\classes\userException(SETUP_CO_MGR_CANNOT_CONNECT);
 			// write the db config.php in the company directory
 			validate_path(DIR_FS_ADMIN . PATH_TO_MY_FILES . $db_name);
 			install_build_co_config_file($db_name, $db_name . '_TITLE',  $co_name);
@@ -187,7 +187,7 @@ switch ($_REQUEST['action']) {
 			    foreach ($admin->classes as $key => $class) admin_add_reports($key, DIR_FS_MY_FILES . $db_name . '/phreeform/');
 			}
 			if ($_POST['phreebooks_action'] <> 'data') { // install fiscal year if the phreebooks data is not copied
-			  	$db->Execute("TRUNCATE TABLE " . TABLE_ACCOUNTING_PERIODS);
+			  	$admin->DataBase->Execute("TRUNCATE TABLE " . TABLE_ACCOUNTING_PERIODS);
 			  	require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 			  	$dates = gen_get_dates();
 			  	validate_fiscal_year($dates['ThisYear'], '1', $dates['ThisYear'] . '-' . $dates['ThisMonth'] . '-01');
@@ -195,7 +195,7 @@ switch ($_REQUEST['action']) {
 			  	gen_auto_update_period(false);
 			}
 			// reset SESSION['company'] to new company and redirect to install->store_setup
-			$db->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '" . $co_name . "'
+			$admin->DataBase->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '" . $co_name . "'
 			  where configuration_key = 'COMPANY_NAME'");
 			$messageStack->add(TEXT_SUCCESSFULY_CREATED_NEW_COMPANY,'success');
 			gen_add_audit_log(sprintf(TEXT_MANAGER_ARGS, TEXT_COMPANY). ' - ' . TEXT_COPY, $db_name);
@@ -205,12 +205,12 @@ switch ($_REQUEST['action']) {
 			$_SESSION['db_pw']     = $db_pw;
 		    gen_redirect(html_href_link(FILENAME_DEFAULT, $get_parmas, ENABLE_SSL_ADMIN ? 'SSL' : 'NONSSL'));
 			$default_tab_id = 'manager';
-  			$db->transCommit();
+  			$admin->DataBase->transCommit();
 		   	break;
   		}catch (Exception $e){
-  			$db->transRollback();
+  			$admin->DataBase->transRollback();
   			$db = new queryFactory;//@todo pdo
-			$db->connect(DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, DB_DATABASE);
+			$admin->DataBase->connect(DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, DB_DATABASE);
   			$messageStack->add($e->getMessage());
   			break;
   		}
@@ -267,7 +267,7 @@ switch ($_REQUEST['action']) {
   case 'clean_security':
 	$clean_date = gen_db_date($_POST['clean_date']);
 	if (!$clean_date) break;
-	$result = $db->Execute("delete from ".TABLE_DATA_SECURITY." where exp_date < '".$clean_date."'");
+	$result = $admin->DataBase->Execute("delete from ".TABLE_DATA_SECURITY." where exp_date < '".$clean_date."'");
 	$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, $result->AffectedRows(), TEXT_DATA_SECURITY_RECORDS), 'success');
 	break;
   default:

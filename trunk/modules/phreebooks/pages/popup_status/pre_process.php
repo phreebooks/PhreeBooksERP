@@ -25,7 +25,7 @@ require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
 $id = (int)$_GET['id'];
 /***************   Act on the action request   *************************/
 // Load the customer status
-$customer = $db->Execute("select c.type, c.inactive, c.special_terms, a.notes
+$customer = $admin->DataBase->Execute("select c.type, c.inactive, c.special_terms, a.notes
   from " . TABLE_CONTACTS . " c inner join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id
   where c.id = " . $id . " and a.type like '%m'");
 $notes    = $customer->fields['notes'] ? str_replace(chr(10), "<br />", $customer->fields['notes']) : '&nbsp;';

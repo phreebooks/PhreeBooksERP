@@ -35,7 +35,7 @@ $query_raw = "select " . implode(', ', $field_list)  . "
 	from " . TABLE_CONTACTS . " c left join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id
 	where a.type in ('cm', 'vm') $search";
 
-$result = $db->Execute($query_raw);
+$result = $admin->DataBase->Execute($query_raw);
 
 $xml .= xmlEntry("guess", $_REQUEST['guess']);
 while (!$result->EOF) {

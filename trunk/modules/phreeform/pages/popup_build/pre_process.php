@@ -35,7 +35,7 @@ $def_lang    = $_POST['lang']        ? $_POST['lang']    : DEFAULT_LANGUAGE;
 $import_path = "modules/$def_module/language/$def_lang/reports/";
 $report      = new \core\classes\objectInfo();
 // load the directory tree to java array (use for page display and error checking on update
-$js_dir = $db->Execute('select id, parent_id, doc_title from ' . TABLE_PHREEFORM . ' order by id');
+$js_dir = $admin->DataBase->Execute('select id, parent_id, doc_title from ' . TABLE_PHREEFORM . ' order by id');
 $dir_tree = array();
 while (!$js_dir->EOF) {
   $dir_tree[$js_dir->fields['id']] = $js_dir->fields['parent_id'];
@@ -256,7 +256,7 @@ switch ($_REQUEST['action']) {
 	if (!$doc_title) throw new \core\classes\userException(TEXT_THE_FOLDER_NAME_CANNOT_BE_BLANK. '!');
 	// check to see if the directory is being moved below itself
 	if (!validate_dir_move($dir_tree, $id, $parent_id)) throw new \core\classes\userException(TEXT_THE_DIRECTORY_CANNOT_BE_MOVED_UNDER_ITSELF);
-	$result = $db->Execute("select id from " . TABLE_PHREEFORM . " where doc_group = '$doc_group'");
+	$result = $admin->DataBase->Execute("select id from " . TABLE_PHREEFORM . " where doc_group = '$doc_group'");
 	if ($result->RecordCount() > 0) {
 	  	if ($result->fields['id'] <> $id) throw new \core\classes\userException(PHREEFORM_DIR_GROUP_DUP_ERROR);
 	}
@@ -280,9 +280,9 @@ switch ($_REQUEST['action']) {
   case 'delete_dir':
 	if (!$id) throw new \core\classes\userException(TEXT_NO_DIRECTORY_WAS_SELECTED_TO_DELETE);
 	// check for directory empty
-	$result = $db->Execute("select id from " . TABLE_PHREEFORM . " where parent_id = " . $id);
+	$result = $admin->DataBase->Execute("select id from " . TABLE_PHREEFORM . " where parent_id = " . $id);
 	if ($result->RecordCount() > 0) throw new \core\classes\userException(TEXT_THE_DIRECTORY_CANNOT_BE_DELETED_BECAUSE_IT_IS_NOT_EMPTY);
-	$db->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $id);
+	$admin->DataBase->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $id);
 	$messageStack->add(TEXT_THE_DIRECTORY_WAS_SUCESSFULLY_DELETED,'success');
     break;
   case 'import_one':

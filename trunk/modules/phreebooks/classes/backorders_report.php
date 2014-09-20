@@ -36,7 +36,7 @@ class backorders_report {
 	}
 	$sql = $this->replace_special_fields($sql);
 
-	$result = $db->Execute($sql);
+	$result = $admin->DataBase->Execute($sql);
 	if ($result->RecordCount() == 0) throw new \core\classes\userException("no data"); // No data so bail now
 	// Generate the output data array
 	$RowCnt = 0; // Row counter for output data
@@ -176,12 +176,12 @@ class backorders_report {
 	global $admin;
 	$new_data = array();
 	// fetch qty on order
-	$result = $db->Execute("select qty from " . TABLE_JOURNAL_ITEM . " where id = " . $id);
+	$result = $admin->DataBase->Execute("select qty from " . TABLE_JOURNAL_ITEM . " where id = " . $id);
 	$order_qty = $result->fields['qty'];
 	// Fetch qty invoiced
 	$sql = "select sum(qty) as qty_shipped_prior from " . TABLE_JOURNAL_ITEM . "
 		where so_po_item_ref_id = " . $id . " and gl_type = 'sos'";
-	$result = $db->Execute($sql);
+	$result = $admin->DataBase->Execute($sql);
 	$new_data['qty_backorder']  = $order_qty - $result->fields['qty_shipped_prior'];
 	if ($new_data['qty_backorder'] == 0) return false; // skip the row as all quantities have shipped
 	return $new_data;

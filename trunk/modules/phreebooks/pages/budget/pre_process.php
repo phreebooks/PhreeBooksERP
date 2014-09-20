@@ -30,7 +30,7 @@ if (!$_REQUEST['action'] && $_REQUEST['search_text'] <> '') $_REQUEST['action'] 
 if ($_POST['fy']) {
   $fy = $_POST['fy'];
 } else {
-  $result = $db->Execute("select fiscal_year from " . TABLE_ACCOUNTING_PERIODS . " where period = " . CURRENT_ACCOUNTING_PERIOD);
+  $result = $admin->DataBase->Execute("select fiscal_year from " . TABLE_ACCOUNTING_PERIODS . " where period = " . CURRENT_ACCOUNTING_PERIOD);
   $fy = $result->fields['fiscal_year'];
 }
 $gl_acct = isset($_POST['gl_acct']) ? $_POST['gl_acct'] : '';
@@ -49,30 +49,30 @@ switch ($_REQUEST['action']) {
 	  $budget = $currencies->clean_value($_POST['budget_' . $i]);
 	  $id     = $_POST['id_' . $i];
 	  $sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " set budget = " . $budget . " where id = '" . $id . "'";
-	  $db->Execute($sql);
+	  $admin->DataBase->Execute($sql);
 	  $i++;
 	}
 	gen_add_audit_log(GL_LOG_BUDGET_UPDATE);
 	break;
 
   case 'clear_fy':
-	$result  = $db->Execute("select period from " . TABLE_ACCOUNTING_PERIODS . " where fiscal_year = '" . $fy . "'");
+	$result  = $admin->DataBase->Execute("select period from " . TABLE_ACCOUNTING_PERIODS . " where fiscal_year = '" . $fy . "'");
 	$periods = array();
 	while (!$result->EOF) {
 	  $periods[] = $result->fields['period'];
 	  $result->MoveNext();
 	}
     $sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " set budget = 0 where period in (" . implode(',', $periods) . ")";
-    $db->Execute($sql);
+    $admin->DataBase->Execute($sql);
 	break;
 
   case 'copy_fy':
-	$result  = $db->Execute("select period from " . TABLE_ACCOUNTING_PERIODS . "
+	$result  = $admin->DataBase->Execute("select period from " . TABLE_ACCOUNTING_PERIODS . "
 	  where fiscal_year = '" . $fy . "' order by period");
-	$last_fy = $db->Execute("select period from " . TABLE_ACCOUNTING_PERIODS . "
+	$last_fy = $admin->DataBase->Execute("select period from " . TABLE_ACCOUNTING_PERIODS . "
 	  where fiscal_year = '" . ($fy - 1) . "' order by period");
 	while (!$result->EOF) {
-	  $accounts = $db->Execute("select account_id, debit_amount - credit_amount as balance
+	  $accounts = $admin->DataBase->Execute("select account_id, debit_amount - credit_amount as balance
 	    from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
 		where period = '" . $last_fy->fields['period'] . "'");
 	  while(!$accounts->EOF) {
@@ -80,7 +80,7 @@ switch ($_REQUEST['action']) {
 	    $sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
 	      set budget = " . $budget . "
 		  where period = '" . $result->fields['period'] . "' and account_id = '" . $accounts->fields['account_id'] . "'";
-		$db->Execute($sql);
+		$admin->DataBase->Execute($sql);
 	    $accounts->MoveNext();
 	  }
 	  $result->MoveNext();
@@ -93,11 +93,11 @@ switch ($_REQUEST['action']) {
 
 /*****************   prepare to display templates  *************************/
 
-$result  = $db->Execute("select period, start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . "
+$result  = $admin->DataBase->Execute("select period, start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . "
 	where fiscal_year = '" . $fy . "' order by period");
-$last_fy = $db->Execute("select period from " . TABLE_ACCOUNTING_PERIODS . "
+$last_fy = $admin->DataBase->Execute("select period from " . TABLE_ACCOUNTING_PERIODS . "
 	where fiscal_year = '" . ($fy - 1) . "' order by period");
-$next_fy = $db->Execute("select period from " . TABLE_ACCOUNTING_PERIODS . "
+$next_fy = $admin->DataBase->Execute("select period from " . TABLE_ACCOUNTING_PERIODS . "
 	where fiscal_year = '" . ($fy + 1) . "' order by period");
 $periods = array();
 $lf_per = array();
@@ -110,16 +110,16 @@ while (!$result->EOF) {
   $last_fy->MoveNext();
   $next_fy->MoveNext();
 }
-$result = $db->Execute("select id, period, budget from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
+$result = $admin->DataBase->Execute("select id, period, budget from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
 	where account_id = '" . $gl_acct . "' and period in (" . implode(',', array_keys($periods)) . ")");
 if ($gl_acct && sizeof($lf_per) > 0) {
-  $last_fy = $db->Execute("select budget from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
+  $last_fy = $admin->DataBase->Execute("select budget from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
 	where account_id = '" . $gl_acct . "' and period in (" . implode(',', array_keys($lf_per)) . ")");
 } else {
   $next_fy = new \core\classes\objectInfo();
 }
 if ($gl_acct && sizeof($nf_per) > 0) {
-  $next_fy = $db->Execute("select budget from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
+  $next_fy = $admin->DataBase->Execute("select budget from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
 	where account_id = '" . $gl_acct . "' and period in (" . implode(',', array_keys($nf_per)) . ")");
 } else {
   $next_fy = new \core\classes\objectInfo();

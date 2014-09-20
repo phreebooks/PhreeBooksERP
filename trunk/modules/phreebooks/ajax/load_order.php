@@ -48,7 +48,7 @@ switch (JOURNAL_ID) {
 }
 
 if ($oID) {
-  $order = $db->Execute("select * from " . TABLE_JOURNAL_MAIN . " where id = '" . $oID . "'");
+  $order = $admin->DataBase->Execute("select * from " . TABLE_JOURNAL_MAIN . " where id = '" . $oID . "'");
   if ($order->fields['bill_acct_id']) $cID = $order->fields['bill_acct_id']; // replace cID with bill contact ID from order
   if ($order->fields['ship_acct_id']) $sID = $order->fields['ship_acct_id']; // replace sID with ship contact ID from order
   $currencies_code  = $order->fields['currencies_code'];
@@ -58,13 +58,13 @@ if ($oID) {
 }
 // select the customer and build the contact record
 if ($sID) {
-  $sContact = $db->Execute("select * from " . TABLE_CONTACTS . " where id = '" . $cID . "'");
+  $sContact = $admin->DataBase->Execute("select * from " . TABLE_CONTACTS . " where id = '" . $cID . "'");
   $type     = $sContact->fields['type'];
-  $ship_add = $db->Execute("select * from " . TABLE_ADDRESS_BOOK . " 
+  $ship_add = $admin->DataBase->Execute("select * from " . TABLE_ADDRESS_BOOK . " 
     where ref_id = '" . $cID . "' and type in ('" . $type . "m', '" . $type . "s')");
 }
 if ($cID && !$just_ship) { // build the contact data
-  $contact    = $db->Execute("select * from " . TABLE_CONTACTS . " where id = '" . $cID . "'");
+  $contact    = $admin->DataBase->Execute("select * from " . TABLE_CONTACTS . " where id = '" . $cID . "'");
   $type       = $contact->fields['type'];
   $terms_type = ($type == 'v') ? 'AP' : 'AR';
   $contact->fields['terms_text'] = gen_terms_to_language($contact->fields['special_terms'], true, $terms_type);
@@ -73,7 +73,7 @@ if ($cID && !$just_ship) { // build the contact data
   $terms    = explode(':', $contact->fields['special_terms']);
   $contact->fields['credit_limit'] = $terms[4] ? $terms[4] : ($type == 'v' ? AP_CREDIT_LIMIT_AMOUNT : AR_CREDIT_LIMIT_AMOUNT);
   $contact->fields['credit_remaining'] = $contact->fields['credit_limit'] - $invoices['balance'] + $order->fields['total_amount'];
-  $bill_add   = $db->Execute("select * from " . TABLE_ADDRESS_BOOK . " 
+  $bill_add   = $admin->DataBase->Execute("select * from " . TABLE_ADDRESS_BOOK . " 
     where ref_id = '" . $cID . "' and type in ('" . $type . "m', '" . $type . "b')");
   //fix some special fields
   if (!$contact->fields['dept_rep_id']) unset($contact->fields['dept_rep_id']); // clear the rep field if not set to a contact
@@ -126,16 +126,16 @@ if (sizeof($order->fields) > 0) {
 	$subtotal  = 0;
 	if ($so_po_ref_id) {	// then there is a purchase order/sales order to load first
       if (JOURNAL_ID == 12) { // fetch the sales order number
-	    $result = $db->Execute("select purchase_invoice_id from " . TABLE_JOURNAL_MAIN . " where id = " . $so_po_ref_id);
+	    $result = $admin->DataBase->Execute("select purchase_invoice_id from " . TABLE_JOURNAL_MAIN . " where id = " . $so_po_ref_id);
 		$order->fields['sales_order_num'] = $result->fields['purchase_invoice_id'];
 	  }
 	  // fetch the so/po line items per the original order
-	  $ordr_items = $db->Execute("select * from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $so_po_ref_id . " order by item_cnt, id");
+	  $ordr_items = $admin->DataBase->Execute("select * from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $so_po_ref_id . " order by item_cnt, id");
 	  while (!$ordr_items->EOF) {
 		$total = $ordr_items->fields['credit_amount'] + $ordr_items->fields['debit_amount'];
 	  	if (in_array($ordr_items->fields['gl_type'], array('poo', 'soo', 'por', 'sos'))) {
 		  $subtotal   += $total;
-		  $inv_details = $db->Execute("select inventory_type, inactive, item_weight, quantity_on_hand, lead_time 
+		  $inv_details = $admin->DataBase->Execute("select inventory_type, inactive, item_weight, quantity_on_hand, lead_time 
 		    from " . TABLE_INVENTORY . " where sku = '" . $ordr_items->fields['sku'] . "'");
 		  if (!in_array($inv_details->fields['inventory_type'], $cog_types)) $inv_details->fields['quantity_on_hand'] = 'NA';
 		  $item_list[] = array(
@@ -170,7 +170,7 @@ if (sizeof($order->fields) > 0) {
 	  $sql = "select i.qty, i.sku, i.so_po_item_ref_id
 			from " . TABLE_JOURNAL_MAIN . " m left join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id 
 			where m.so_po_ref_id = " . $so_po_ref_id . " and m.id <> " . $id;
-	  $posted_items = $db->Execute($sql);
+	  $posted_items = $admin->DataBase->Execute($sql);
 	  while (!$posted_items->EOF) {
 		for ($i = 0; $i < count($item_list); $i++) {
 		  if ($item_list[$i]['so_po_item_ref_id'] == $posted_items->fields['so_po_item_ref_id']) {
@@ -186,7 +186,7 @@ if (sizeof($order->fields) > 0) {
 	if ($id) {
 	  // retrieve item information
 	  $subtotal = 0;
-	  $ordr_items = $db->Execute("select * from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $id . " order by item_cnt, id");
+	  $ordr_items = $admin->DataBase->Execute("select * from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $id . " order by item_cnt, id");
 	  switch (JOURNAL_ID) { // determine where to put value, qty or pstd
 		case  3:
 		case  4:
@@ -203,7 +203,7 @@ if (sizeof($order->fields) > 0) {
 	    $total = $ordr_items->fields['credit_amount'] + $ordr_items->fields['debit_amount'];
 	  	if (in_array($ordr_items->fields['gl_type'], array('poo', 'soo', 'por', 'sos'))) {
 		  $subtotal += $total;
-		  $inv_details = $db->Execute("select inactive, inventory_type, item_weight, quantity_on_hand, lead_time 
+		  $inv_details = $admin->DataBase->Execute("select inactive, inventory_type, item_weight, quantity_on_hand, lead_time 
 		    from " . TABLE_INVENTORY . " where sku = '" . $ordr_items->fields['sku'] . "'");
 		  $inv_details->fields['quantity_on_hand'] = $ordr_items->fields['qty'] + $inv_details->fields['quantity_on_hand'];
 		  if (!in_array($inv_details->fields['inventory_type'], $cog_types)) $inv_details->fields['quantity_on_hand'] = 'NA';
@@ -272,7 +272,7 @@ if (sizeof($order->fields) > 0) {
 	  $sql = "select i.qty, i.sku, i.so_po_item_ref_id 
 		  from " . TABLE_JOURNAL_MAIN . " m left join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 		  where m.so_po_ref_id = " . $id;
-	  $posted_items = $db->Execute($sql);
+	  $posted_items = $admin->DataBase->Execute($sql);
 	  while (!$posted_items->EOF) {
 		for ($i=0; $i<count($item_list); $i++) {
 		  if ($item_list[$i]['id'] == $posted_items->fields['so_po_item_ref_id']) {

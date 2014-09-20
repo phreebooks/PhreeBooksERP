@@ -24,11 +24,11 @@ $sku   = $_GET['sku'];
 $store = isset($_GET['storeID']) ? (int)$_GET['store_id'] : 0;
 $rowID = $_GET['rowID'];
 // retrieve some inventory item details
-$result = $db->Execute("SELECT description_short FROM ".TABLE_INVENTORY." WHERE sku='$sku'");
+$result = $admin->DataBase->Execute("SELECT description_short FROM ".TABLE_INVENTORY." WHERE sku='$sku'");
 $description = $result->fields['description_short'];
 $sql = "SELECT serialize_number FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='$sku' AND remaining>0";
 if ($store) $sql .= " AND store_id='$store'";
-$result = $db->Execute($sql);
+$result = $admin->DataBase->Execute($sql);
 $snValues = array();
 while (!$result->EOF) {
 	$snValues[] = array('id'=>$result->fields['serialize_number'], 'text'=>$result->fields['serialize_number']);

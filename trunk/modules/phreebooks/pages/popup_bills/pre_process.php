@@ -80,7 +80,7 @@ $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . "
 	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_CONTACTS . " a on m.bill_acct_id = a.id
 	where a.type = '" . (ACCOUNT_TYPE == 'v' ? 'v' : 'c') . "'
 	and m.journal_id = " . JOURNAL_ID . $period_filter . $search . " order by $disp_order";
-$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+$query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 history_save('pb_pop_bills');
 

@@ -55,8 +55,8 @@ class other_transactions {
   		global $admin;
   		\core\classes\user::validate_security($this->security_id, 4);
 		// 	OK to delete
-		$result = $db->Execute("select description from " . $this->db_table . " where ot_id = '$id'");
-		$db->Execute("delete from " . $this->db_table . " where ot_id = '$id'");
+		$result = $admin->DataBase->Execute("select description from " . $this->db_table . " where ot_id = '$id'");
+		$admin->DataBase->Execute("delete from " . $this->db_table . " where ot_id = '$id'");
 		gen_add_audit_log(TEXT_OTHER_TRANSACTION ." - " . TEXT_DELETE, $result->fields['description']);
 		return true;
   	}
@@ -69,7 +69,7 @@ class other_transactions {
 	  		'value' => array(TEXT_DESCRIPTION, TEXT_STORE_ID, TEXT_GL_ACCOUNT, TEXT_ACTION),
 	  		'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 		);
-    	$result = $db->Execute("select * from " . $this->db_table );
+    	$result = $admin->DataBase->Execute("select * from " . $this->db_table );
     	$rowCnt = 0;
 		while (!$result->EOF) {
 	  		$actions = '';
@@ -98,7 +98,7 @@ class other_transactions {
     	require_once(DIR_FS_MODULES . 'phreepos/defaults.php');
     	if ($action <> 'new') {
         	$sql = "select * from " . $this->db_table . " where ot_id = " . $id;
-        	$result = $db->Execute($sql);
+        	$result = $admin->DataBase->Execute($sql);
         	foreach ($result->fields as $key => $value) $this->$key = $value;
 		}
 		$tills = new \phreepos\classes\tills();
@@ -175,7 +175,7 @@ class other_transactions {
 	function javascript_array(){
   		global $admin;
 	  	$sql = "select * from " . $this->db_table ;
-    	$result = $db->Execute($sql);
+    	$result = $admin->DataBase->Execute($sql);
 	  	$js_tills  = 'var ot_options  = new Array();' . chr(10);
   		$i = 0;
 		while (!$result->EOF){
@@ -189,7 +189,7 @@ class other_transactions {
   	function get_transaction_info($id){
   		global $admin;
   		$sql = "select * from " . $this->db_table . " where ot_id = " . $id;
-        $result = $db->Execute($sql);
+        $result = $admin->DataBase->Execute($sql);
         foreach ($result->fields as $key => $value) $this->$key = $value;
   	}
 

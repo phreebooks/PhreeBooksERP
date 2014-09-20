@@ -60,7 +60,7 @@ class journal_21 extends \core\classes\journal {
 
     public function __construct($id = '') {
     	global $admin;
-        $result = $db->Execute("select next_check_num from " . TABLE_CURRENT_STATUS);
+        $result = $admin->DataBase->Execute("select next_check_num from " . TABLE_CURRENT_STATUS);
         $this->purchase_invoice_id = $result->fields['next_check_num'];
         $this->gl_acct_id          = $_SESSION['admin_prefs']['def_cash_acct'] ? $_SESSION['admin_prefs']['def_cash_acct'] : AP_PURCHASE_INVOICE_ACCOUNT;
 		parent::__construct($id);
@@ -80,7 +80,7 @@ class journal_21 extends \core\classes\journal {
 
 		// ***************************** START TRANSACTION *******************************
 		$messageStack->debug("\n  started order post purchase_invoice_id = " . $this->purchase_invoice_id . " and id = " . $this->id);
-		$db->transStart();
+		$admin->DataBase->transStart();
 		// *************  Pre-POST processing *************
 		// add/update address book
 		if ($this->bill_add_update) { // billing address
@@ -93,7 +93,7 @@ class journal_21 extends \core\classes\journal {
 		// ************* post-POST processing *************
 		$this->increment_purchase_invoice_id();
 		$messageStack->debug("\n  committed order post purchase_invoice_id = " . $this->purchase_invoice_id . " and id = " . $this->id . "\n\n");
-		$db->transCommit();
+		$admin->DataBase->transCommit();
 		// ***************************** END TRANSACTION *******************************
 		$messageStack->add('Successfully posted ' . TEXT_POINT_OF_SALE . ' Ref # ' . $this->purchase_invoice_id, 'success');
 		return true;
@@ -102,9 +102,9 @@ class journal_21 extends \core\classes\journal {
   	function refund_ordr() {
     	global $admin, $messageStack;
     	// *************** START TRANSACTION *************************
-    	$db->transStart();
+    	$admin->DataBase->transStart();
     	$this->unPost('delete');
-   		$db->transCommit();
+   		$admin->DataBase->transCommit();
     	// *************** END TRANSACTION *************************
     	return true;
   	}

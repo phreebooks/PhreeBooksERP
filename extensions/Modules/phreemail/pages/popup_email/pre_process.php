@@ -64,7 +64,7 @@ if($_REQUEST['action'] = 'send'){
 $include_header   = false;
 $include_footer   = false;
 // fetch the email information
-$result = $db->Execute("select display_name, admin_email from " . TABLE_USERS);
+$result = $admin->DataBase->Execute("select display_name, admin_email from " . TABLE_USERS);
 while (!$result->EOF){
 	if($result->fields['admin_email'] != ''){
 		$sendermaillist[] = $result->fields['admin_email'];
@@ -72,12 +72,12 @@ while (!$result->EOF){
 	}
 	$result->MoveNext();
 }
-$result 	  = $db->Execute("select display_name, admin_email from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
+$result 	  = $admin->DataBase->Execute("select display_name, admin_email from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
 $sender_name  = $result->fields['display_name'];
 $sender_email = $result->fields['admin_email'];
 
 if($cID != ''){
-	$result 		= $db->Execute("select email, primary_name from " . TABLE_ADDRESS_BOOK . " where ref_id = '$cID' and type like '%m'");
+	$result 		= $admin->DataBase->Execute("select email, primary_name from " . TABLE_ADDRESS_BOOK . " where ref_id = '$cID' and type like '%m'");
 	while (!$result->EOF){
 		if($result->fields['email'] != ''){
 			$receivermaillist[] = $result->fields['email'];

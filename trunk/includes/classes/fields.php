@@ -48,7 +48,7 @@ class fields {
 	if (in_array($this->field_name, $reserved_names)) throw new \core\classes\userException(EXTRA_FIELD_RESERVED_WORD);
 	// if the id is empty then check for duplicate field names
 	if($this->id == ''){
-	   $result = $db->Execute("SELECT id FROM ".TABLE_EXTRA_FIELDS." WHERE module_id='$this->module' AND field_name='$this->field_name'");
+	   $result = $admin->DataBase->Execute("SELECT id FROM ".TABLE_EXTRA_FIELDS." WHERE module_id='$this->module' AND field_name='$this->field_name'");
 	   if ($result->RecordCount() > 0 && $this->id =='') throw new \core\classes\userException(EXTRA_FIELD_ERROR_DUPLICATE);
 	}
 	// condense the type array to a single string.
@@ -165,11 +165,11 @@ class fields {
 	if (!$this->id == 0) {
 	  // load old field name as it may have been changed.
 	  if ($this->tab_id <> '') {
-		  $result = $db->Execute("select field_name from " . TABLE_EXTRA_FIELDS . " where id = " . $this->id );
+		  $result = $admin->DataBase->Execute("select field_name from " . TABLE_EXTRA_FIELDS . " where id = " . $this->id );
 		  if (isset($values['entry_type']) || $this->field_name <> $result->fields['field_name']) {
 			$sql = "alter table " . $this->db_table . " change " . $result->fields['field_name'] . " " . $this->field_name . "
 			  " . $values['entry_type'] . (isset($values['entry_params']) ? $values['entry_params'] : '');
-			$result = $db->Execute($sql);
+			$result = $admin->DataBase->Execute($sql);
 		  }
 	  }
 	  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array, 'update', "id = " . $this->id );
@@ -177,7 +177,7 @@ class fields {
 	} else {
 	  $sql = "alter table " . $this->db_table . "
 		add column " . $this->field_name . " " . $values['entry_type'] . (isset($values['entry_params']) ? $values['entry_params'] : '');
-	  $db->Execute($sql);
+	  $admin->DataBase->Execute($sql);
 	  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array, 'insert');
 	  $this->id  = db_insert_id();
 	  gen_add_audit_log($this->module .' '. TEXT_CUSTOM_FIELDS . ' - ' . TEXT_NEW, $this->id  . ' - ' . $this->field_name);
@@ -188,11 +188,11 @@ class fields {
 	function btn_delete($id = 0) {
 	  	global $admin;
 	  	\core\classes\user::validate_security($this->security_id, 4); // security check
-		$result = $db->Execute("SELECT * FROM ".TABLE_EXTRA_FIELDS." WHERE id=$id");
+		$result = $admin->DataBase->Execute("SELECT * FROM ".TABLE_EXTRA_FIELDS." WHERE id=$id");
 		foreach ($result->fields as $key => $value) $this->$key = $value;
 		if ($this->tab_id == '0') throw new \core\classes\userException (INV_CANNOT_DELETE_SYSTEM); // don't allow deletion of system fields
-		$db->Execute("DELETE FROM ".TABLE_EXTRA_FIELDS." WHERE id=$this->id");
-		$db->Execute("ALTER TABLE $this->db_table DROP COLUMN $this->field_name");
+		$admin->DataBase->Execute("DELETE FROM ".TABLE_EXTRA_FIELDS." WHERE id=$this->id");
+		$admin->DataBase->Execute("ALTER TABLE $this->db_table DROP COLUMN $this->field_name");
 		gen_add_audit_log ($this->module.' '. TEXT_CUSTOM_FIELDS . ' - ' . TEXT_DELETE, "$id - $this->field_name");
 		return true;
 	}
@@ -206,7 +206,7 @@ class fields {
 	  'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 	);
 	$field_list = array('id', 'field_name', 'entry_type', 'description', 'tab_id', 'params', 'sort_order', 'group_by');
-    $result = $db->Execute("select ".implode(', ', $field_list)." from ".TABLE_EXTRA_FIELDS." where module_id='" . $this->module ."' order by group_by, sort_order");
+    $result = $admin->DataBase->Execute("select ".implode(', ', $field_list)." from ".TABLE_EXTRA_FIELDS." where module_id='" . $this->module ."' order by group_by, sort_order");
     $rowCnt = 0;
 	while (!$result->EOF) {
 	  $params  = unserialize($result->fields['params']);
@@ -240,7 +240,7 @@ class fields {
   function build_form_html($action, $id = '') {
     global $admin, $currencies, $integer_lengths, $decimal_lengths, $check_box_choices;
 	if ($action <> 'new') {
-	   $result = $db->Execute("select * from ".TABLE_EXTRA_FIELDS." where id='$this->id'");
+	   $result = $admin->DataBase->Execute("select * from ".TABLE_EXTRA_FIELDS." where id='$this->id'");
 	   $params = unserialize($result->fields['params']);
 	   foreach ($result->fields as $key => $value) $this->$key = $value;
 	   if (is_array($params)) foreach ($params as $key => $value) $this->$key = $value;
@@ -408,7 +408,7 @@ class fields {
   public function what_to_save(){
   	global $admin, $currencies;
   	$sql_data_array = array();
-    $xtra_db_fields = $db->Execute("select field_name, entry_type, params, required, field_name
+    $xtra_db_fields = $admin->DataBase->Execute("select field_name, entry_type, params, required, field_name
       from " . TABLE_EXTRA_FIELDS . " where module_id='{$this->module}'");
     while (!$xtra_db_fields->EOF) {
     	if ($xtra_db_fields->fields['field_name'] == 'id' )  $xtra_db_fields->MoveNext();
@@ -444,7 +444,7 @@ class fields {
   public function set_fields_to_display($type = null){
   	global $admin, $cInfo;
   	$tab_array = array();
-	$result = $db->Execute("select fields.tab_id, tabs.tab_name as tab_name, fields.description as description, fields.params as params, fields.group_by, fields.field_name, fields.entry_type from ".TABLE_EXTRA_FIELDS." as fields join ".TABLE_EXTRA_TABS." as tabs on (fields.tab_id = tabs.id) where fields.module_id='{$this->module}' order by tabs.sort_order asc, fields.group_by asc, fields.sort_order asc");
+	$result = $admin->DataBase->Execute("select fields.tab_id, tabs.tab_name as tab_name, fields.description as description, fields.params as params, fields.group_by, fields.field_name, fields.entry_type from ".TABLE_EXTRA_FIELDS." as fields join ".TABLE_EXTRA_TABS." as tabs on (fields.tab_id = tabs.id) where fields.module_id='{$this->module}' order by tabs.sort_order asc, fields.group_by asc, fields.sort_order asc");
   	while (!$result->EOF) {
   		$tab_id = $result->fields['tab_id'];
   		if (!in_array($tab_id, $tab_array)){
@@ -486,7 +486,7 @@ class fields {
 	  	global $admin;
 	  	$values = array();
 	  	if($this->type_params == '' && $type == null ) return $values;
-		$result = $db->Execute("SELECT params, field_name FROM ".TABLE_EXTRA_FIELDS." WHERE module_id='".$this->module."'");
+		$result = $admin->DataBase->Execute("SELECT params, field_name FROM ".TABLE_EXTRA_FIELDS." WHERE module_id='".$this->module."'");
 		while (!$result->EOF) {
 			$xtra_params = unserialize($result->fields['params']);
 	  		$temp = explode(':',$xtra_params[$this->type_params]);
@@ -500,7 +500,7 @@ class fields {
     	global $admin;
     	$tab_array = array(0 => TEXT_SYSTEM);
 		if (!$module) return $tab_array;
-    	$result = $db->Execute("select id, tab_name from " . TABLE_EXTRA_TABS . " where module_id = '" . $module . "' order by tab_name");
+    	$result = $admin->DataBase->Execute("select id, tab_name from " . TABLE_EXTRA_TABS . " where module_id = '" . $module . "' order by tab_name");
     	while (!$result->EOF) {
       		$tab_array[$result->fields['id']] = $result->fields['tab_name'];
       		$result->MoveNext();

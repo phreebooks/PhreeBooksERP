@@ -17,7 +17,7 @@
 //  Path: /modules/work_orders/pages/builder/template_tab_hist.php
 //
 if ($id) {
-$result = $db->Execute("select wo_num, qty, post_date, close_date from " . TABLE_WO_JOURNAL_MAIN . "
+$result = $admin->DataBase->Execute("select wo_num, qty, post_date, close_date from " . TABLE_WO_JOURNAL_MAIN . "
   where wo_id = " . $id . " order by post_date desc limit 20");
 }
 ?>

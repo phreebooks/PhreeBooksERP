@@ -92,7 +92,7 @@ class balance_sheet_mx {
 			$sql = "select h.beginning_balance + h.debit_amount - h.credit_amount as balance, c.description, c.account_inactive
 				from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id
 				where h.period = $period and c.account_type = $account_type";
-			$result = $db->Execute($sql);
+			$result = $admin->DataBase->Execute($sql);
 			$total_1 = 0;
 			while (!$result->EOF) {
 				if ($result->fields['account_inactive'] && $result->fields['balance'] == 0) { // skip if inactive and no balance

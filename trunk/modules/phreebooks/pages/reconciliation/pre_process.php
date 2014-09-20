@@ -37,7 +37,7 @@ $uncleared_items = array();
 $all_items       = array();
 
 // build the array of cash accounts
-$result = $db->Execute("select id, description from ".TABLE_CHART_OF_ACCOUNTS." where account_type = '0' and heading_only = '0' order by id");
+$result = $admin->DataBase->Execute("select id, description from ".TABLE_CHART_OF_ACCOUNTS." where account_type = '0' and heading_only = '0' order by id");
 $account_array = array();
 $gl_accounts   = array();
 while (!$result->EOF) {
@@ -70,7 +70,7 @@ switch ($_REQUEST['action']) {
 	  'cleared_items'     => serialize($cleared_items),
 	);
 	$sql = "select id from " . TABLE_RECONCILIATION . " where period = " . $period . " and gl_account = '" . $gl_account . "'";
-	$result = $db->Execute($sql);
+	$result = $admin->DataBase->Execute($sql);
 	if ($result->RecordCount() == 0) {
 	  $sql_data_array['period']     = $period;
 	  $sql_data_array['gl_account'] = $gl_account;
@@ -81,17 +81,17 @@ switch ($_REQUEST['action']) {
 	// set reconciled flag to period for all records that were checked
 	if (count($cleared_items)) {
 	  $sql = "update " . TABLE_JOURNAL_ITEM . " set reconciled = $period where id in (" . implode(',', $cleared_items) . ")";
-	  $result = $db->Execute($sql);
+	  $result = $admin->DataBase->Execute($sql);
 	}
 	// set reconciled flag to '0' for all records that were unchecked during this period
 	if (count($uncleared_items)) {
 	  $sql = "update " . TABLE_JOURNAL_ITEM . " set reconciled = 0 where reconciled = $period and id in (" . implode(',', $uncleared_items) . ")";
-	  $result = $db->Execute($sql);
+	  $result = $admin->DataBase->Execute($sql);
 	}
 	// check to see if the journal main closed flag should be set or cleared based on all cash accounts
 	$mains = array();
 	if (count($all_items)) {
-	  $result = $db->Execute("select ref_id from " . TABLE_JOURNAL_ITEM . " where id in (" . implode(",", $all_items) . ")");
+	  $result = $admin->DataBase->Execute("select ref_id from " . TABLE_JOURNAL_ITEM . " where id in (" . implode(",", $all_items) . ")");
 	  while (!$result->EOF) {
 		$mains[] = $result->fields['ref_id'];
 		$result->MoveNext();
@@ -99,13 +99,13 @@ switch ($_REQUEST['action']) {
 	}
 	if (count($mains)) {
 	  // closes if any cash records within the journal main that are reconciled
-	  $db->Execute("update " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
+	  $admin->DataBase->Execute("update " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 	    set m.closed = '1'
 		  where i.reconciled > 0
 		  and i.gl_account in ('" . implode("','", $gl_accounts) . "')
 		  and m.id in (" . implode(",", $mains) . ")");
 	  // re-opens if any cash records within the journal main that are not reconciled
-	  $db->Execute("update " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
+	  $admin->DataBase->Execute("update " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 	    set m.closed = '0'
 		  where i.reconciled = 0
 		  and i.gl_account in ('" . implode("','", $gl_accounts) . "')
@@ -127,7 +127,7 @@ $end_date = $fiscal_dates['end_date'];
 $sql = "select i.id, m.post_date, i.debit_amount, i.credit_amount, m.purchase_invoice_id, m.bill_primary_name, i.description, i.reconciled, m.journal_id
 	from ".TABLE_JOURNAL_MAIN." m inner join ".TABLE_JOURNAL_ITEM." i on m.id = i.ref_id
 	where i.gl_account = '$gl_account' and (i.reconciled = 0 or i.reconciled > $period) and m.post_date <= '".$fiscal_dates['end_date']."'";
-$result = $db->Execute($sql);
+$result = $admin->DataBase->Execute($sql);
 while (!$result->EOF) {
   $previous_total = $bank_list[$result->fields['id']]['dep_amount'] - $bank_list[$result->fields['id']]['pmt_amount'];
   $new_total      = $previous_total + $result->fields['debit_amount'] - $result->fields['credit_amount'];
@@ -146,7 +146,7 @@ while (!$result->EOF) {
 
 // check to see if in partial reconciliation, if so add checked items
 $sql = "select statement_balance, cleared_items from ".TABLE_RECONCILIATION." where period = $period and gl_account = '$gl_account'";
-$result = $db->Execute($sql);
+$result = $admin->DataBase->Execute($sql);
 if ($result->RecordCount() <> 0) { // there are current cleared items in the present accounting period (edit)
   $statement_balance = $currencies->format($result->fields['statement_balance']);
   $cleared_items     = unserialize($result->fields['cleared_items']);
@@ -158,7 +158,7 @@ if ($result->RecordCount() <> 0) { // there are current cleared items in the pre
   	$sql = "select i.id, m.post_date, i.debit_amount, i.credit_amount, m.purchase_invoice_id, m.bill_primary_name, i.description, m.journal_id
 		from ".TABLE_JOURNAL_MAIN." m inner join ".TABLE_JOURNAL_ITEM." i on m.id = i.ref_id
 		where i.gl_account = '$gl_account' and i.reconciled =$period";
-	$result = $db->Execute($sql);
+	$result = $admin->DataBase->Execute($sql);
 	while (!$result->EOF) {
 	  if (isset($bank_list[$result->fields['id']])) { // record exists, mark as cleared (shouldn't happen)
 		$bank_list[$result->fields['id']]['cleared'] = $period;
@@ -240,7 +240,7 @@ usort($combined_list, "my_sort");
 // load the gl account end of period balance
 $sql = "select beginning_balance + debit_amount - credit_amount as gl_balance
 	from ".TABLE_CHART_OF_ACCOUNTS_HISTORY." where account_id = '$gl_account' and period = $period";
-$result = $db->Execute($sql);
+$result = $admin->DataBase->Execute($sql);
 $gl_balance = $currencies->format($result->fields['gl_balance']);
 
 $include_header   = true;

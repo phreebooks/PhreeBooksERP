@@ -59,7 +59,7 @@ $disp_order  = $result['disp_order'];
 if ($acct_period == 'all') {
 	$period_filter = '';
 } else {
-	$periods       = $db->Execute("select * from " . TABLE_ACCOUNTING_PERIODS . " where period = $acct_period");
+	$periods       = $admin->DataBase->Execute("select * from " . TABLE_ACCOUNTING_PERIODS . " where period = $acct_period");
 	$start_date    = $periods->fields['start_date'];
 	$end_date      =  $periods->fields['end_date'];
 	$period_filter = " and DATE_FORMAT(lp.date_added,'%Y-%m-%d' ) BETWEEN  '$start_date' AND '$end_date' ";
@@ -76,7 +76,7 @@ if (isset($_REQUEST['search_text']) && $_REQUEST['search_text'] <> '') {
 $query_raw  = "select SQL_CALC_FOUND_ROWS lp.*, c.short_name, c.contact_last, c.contact_first, c.first_date
                 from  " . TABLE_CONTACTS . " c,  linkpoint_api lp
                 where c.id = lp.customer_id $search  $period_filter order by $disp_order ";
-$customers = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+$customers = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 history_save('linkpoint');
 

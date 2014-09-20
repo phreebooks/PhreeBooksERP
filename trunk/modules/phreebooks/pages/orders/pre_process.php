@@ -330,7 +330,7 @@ switch ($_REQUEST['action']) {
 		$order->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
   	}
 	if ($_REQUEST['action'] == 'post_previous') {
-		$result = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . "
+		$result = $admin->DataBase->Execute("select id from " . TABLE_JOURNAL_MAIN . "
 		  where journal_id = '12' and purchase_invoice_id < '" . $order->purchase_invoice_id . "'
 		  order by purchase_invoice_id DESC limit 1");
 		if ($result->RecordCount() > 0) {
@@ -342,7 +342,7 @@ switch ($_REQUEST['action']) {
 		}
 	}
 	if ($_REQUEST['action'] == 'post_next') {
-		$result = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . "
+		$result = $admin->DataBase->Execute("select id from " . TABLE_JOURNAL_MAIN . "
 		  where journal_id = '12' and purchase_invoice_id > '" . $order->purchase_invoice_id . "'
 		  order by purchase_invoice_id limit 1");
 		if ($result->RecordCount() > 0) {
@@ -361,13 +361,13 @@ switch ($_REQUEST['action']) {
 		\core\classes\user::validate_security($security_level, 4);
 	  	$id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
 		if (!$id) throw new \core\classes\userException(TEXT_THERE_WERE_ERRORS_DURING_PROCESSING . ' ' . TEXT_THE_RECORD_WAS_NOT_DELETED);
-		$db->transStart();
+		$admin->DataBase->transStart();
 		$delOrd = new \phreebooks\classes\orders($id);
 		$delOrd->journal($id); // load the posted record based on the id submitted
 		$delOrd->recur_frequency = db_prepare_input($_POST['recur_frequency']);
 		$delOrd->unPost('delete');
 		if (DEBUG) $messageStack->write_debug();
-		$db->transCommit();
+		$admin->DataBase->transCommit();
 		gen_add_audit_log($journal_types_list[JOURNAL_ID]['text'] . ' - Delete', $delOrd->purchase_invoice_id, $delOrd->total_amount);
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
   	}catch(Exception $e){
@@ -423,7 +423,7 @@ for ($i = 0; $i < count($proj_list); $i++) {
   $js_proj_list .= 'proj_list[' . $i . '] = new dropDownData("' . $proj_list[$i]['id'] . '", "' . $proj_list[$i]['text'] . '");' . chr(10);
 }
 // see if current user points to a employee for sales rep default
-$result = $db->Execute("select account_id from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
+$result = $admin->DataBase->Execute("select account_id from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
 $default_sales_rep = $result->fields['account_id'] ? $result->fields['account_id'] : '0';
 
 // Load shipping methods

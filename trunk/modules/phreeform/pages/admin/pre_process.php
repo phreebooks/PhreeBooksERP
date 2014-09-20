@@ -39,7 +39,7 @@ switch ($_REQUEST['action']) {
     break;
   case 'fix':
 	// drop the database
-	$db->Execute("truncate ".TABLE_PHREEFORM);
+	$admin->DataBase->Execute("truncate ".TABLE_PHREEFORM);
 	// load all the install classes to re-build directory structure
 	$admin->classes['phreeform']->load_reports('phreeform');
 	foreach($admin->classes as $key => $class){
@@ -60,11 +60,11 @@ switch ($_REQUEST['action']) {
 	  $rpt = xml_to_object($temp);
 	  if ($rpt->PhreeformReport) $rpt = $rpt->PhreeformReport; // lose the container
 	  if ($rpt->security == 'u:-1;g:-1') $rpt->security = 'u:'.$_SESSION['admin_id'].'g:-1'; // orphaned, set so current user can access
-	  $result = $db->Execute("select id from ".TABLE_PHREEFORM." where doc_group = '".$rpt->groupname."' and doc_type = '0'");
+	  $result = $admin->DataBase->Execute("select id from ".TABLE_PHREEFORM." where doc_group = '".$rpt->groupname."' and doc_type = '0'");
 	  if ($result->RecordCount() == 0) { // orphaned put into misc category
 	  	$orph_cnt++;
 	  	$search_type = $rpt->reporttype=='frm'?'misc:misc':'misc'; // put in misc
-	    $result = $db->Execute("select id from ".TABLE_PHREEFORM." where doc_group = '".$search_type."' and doc_type = '0'");
+	    $result = $admin->DataBase->Execute("select id from ".TABLE_PHREEFORM." where doc_group = '".$search_type."' and doc_type = '0'");
 	  }
 	  $sql_array = array(
 	    'parent_id'   => $result->fields['id'],
@@ -92,7 +92,7 @@ switch ($_REQUEST['action']) {
   // This script transfers stored reports from the reportwriter database used in PhreeBooks to phreeform
   case 'convert':
 	require_once(DIR_FS_MODULES . 'phreeform/functions/reportwriter.php');
-	$result = $db->Execute("select * from " . TABLE_REPORTS);
+	$result = $admin->DataBase->Execute("select * from " . TABLE_REPORTS);
 	$count = 0;
 	while (!$result->EOF) {
 	  try{
@@ -101,7 +101,7 @@ switch ($_REQUEST['action']) {
 		  // fix some fields
 		  $params->standard_report = $result->fields['standard_report'] ? 's' : 'c';
 		  // error check
-		  $duplicate = $db->Execute("select id from " . TABLE_PHREEFORM . "
+		  $duplicate = $admin->DataBase->Execute("select id from " . TABLE_PHREEFORM . "
 		    where doc_title = '" . addslashes($params->title) . "' and doc_type <> '0'");
 		  if ($duplicate->RecordCount() > 0) { // the report name already exists, error
 		    throw new \core\classes\userException(sprintf(PHREEFORM_REPDUP, $params->title));

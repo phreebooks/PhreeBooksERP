@@ -122,10 +122,10 @@ switch ($_REQUEST['action']) {
 		  'bill_primary_name'   => TEXT_POSTED_CASH_DIFFERENCE_IN_TILL,
 		  'store_id'            => $glEntry->store_id,
 		);
-		$db->transStart();
+		$admin->DataBase->transStart();
 		$glEntry->Post($glEntry->id ? 'edit' : 'insert', true);
-		$db->transCommit();
-		$newrow = $db->Execute("select i.id from " . TABLE_JOURNAL_MAIN . " m join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id where i.gl_account = '" . $tills->gl_acct_id . "' and m.id ='".$glEntry->id."'");
+		$admin->DataBase->transCommit();
+		$newrow = $admin->DataBase->Execute("select i.id from " . TABLE_JOURNAL_MAIN . " m join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id where i.gl_account = '" . $tills->gl_acct_id . "' and m.id ='".$glEntry->id."'");
 		$cleared_items[] = $newrow->fields['id'];
 		$statement_balance = $currencies->clean_value($_POST['statement_balance']);
 		// see if this is an update or new entry
@@ -134,7 +134,7 @@ switch ($_REQUEST['action']) {
 		  'cleared_items'     => serialize(array_merge($cleared_items, $current_cleard_items)),
 		);
 		$sql = "select id from " . TABLE_RECONCILIATION . " where period = $period and gl_account = '{$tills->gl_acct_id}'";
-		$result = $db->Execute($sql);
+		$result = $admin->DataBase->Execute($sql);
 		if ($result->RecordCount() == 0) {
 			$sql_data_array['period']     = $period;
 			$sql_data_array['gl_account'] = $tills->gl_acct_id;
@@ -146,9 +146,9 @@ switch ($_REQUEST['action']) {
 		$mains = array();
 		if (count($cleared_items)) {
 			$sql = "update " . TABLE_JOURNAL_ITEM . " set reconciled = $period where id in (" . implode(',', $cleared_items) . ")";
-			$result = $db->Execute($sql);
+			$result = $admin->DataBase->Execute($sql);
 			// check to see if the journal main closed flag should be set or cleared based on all cash accounts
-			$result = $db->Execute("select ref_id from " . TABLE_JOURNAL_ITEM . " where id in (" . implode(",", $cleared_items) . ")");
+			$result = $admin->DataBase->Execute("select ref_id from " . TABLE_JOURNAL_ITEM . " where id in (" . implode(",", $cleared_items) . ")");
 			while (!$result->EOF) {
 				$mains[] = $result->fields['ref_id'];
 				$result->MoveNext();
@@ -156,7 +156,7 @@ switch ($_REQUEST['action']) {
 		}
 		if (count($mains)) {
 			// closes if any cash records within the journal main that are reconciled
-			$db->Execute("update " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
+			$admin->DataBase->Execute("update " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 			  set m.closed = '1'
 			  where i.reconciled > 0
 			  and i.gl_account = '" . $tills->gl_acct_id . "'
@@ -166,7 +166,7 @@ switch ($_REQUEST['action']) {
 		gen_add_audit_log(TEXT_ACCOUNT_RECONCILIATION." ". TEXT_PERIOD ." : " . $period, $tills->gl_acct_id);
 		$post_date = ''; // reset for new form
   	}catch(Exception $e){
-  		$db->transRollback();
+  		$admin->DataBase->transRollback();
   		$messageStack->add($e->getMessage());
   		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
   	}
@@ -184,7 +184,7 @@ if ($post_date){
 		from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 		 join " . TABLE_CHART_OF_ACCOUNTS . " a on i.gl_account = a.id
 		where m.gl_acct_id = '" . $tills->gl_acct_id . "' and i.reconciled = 0  and i.gl_type in ('" . implode("','", $gl_types) . "') and m.post_date = '" . $post_date . "'";
-	$result = $db->Execute($sql);
+	$result = $admin->DataBase->Execute($sql);
 	while (!$result->EOF) {
 	  $previous_total = $bank_list[$result->fields['id']]['dep_amount'] - $bank_list[$result->fields['id']]['pmt_amount'];
 	  $new_total      = $previous_total + $result->fields['debit_amount'] - $result->fields['credit_amount'];
@@ -206,7 +206,7 @@ if ($post_date){
 	// check to see if in partial reconciliation, if so add checked items
 	$sql = "select statement_balance, cleared_items from " . TABLE_RECONCILIATION . "
 		where period = " . $period . " and gl_account = '" . $tills->gl_acct_id . "'";
-	$result = $db->Execute($sql);
+	$result = $admin->DataBase->Execute($sql);
 	if ($result->RecordCount() <> 0) { // there are current cleared items in the present accounting period (edit)
 	  $statement_balance = $currencies->format($result->fields['statement_balance']);
 	  $cleared_items     = unserialize($result->fields['cleared_items']);
@@ -216,7 +216,7 @@ if ($post_date){
 			from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 			 join " . TABLE_CHART_OF_ACCOUNTS . " a on i.gl_account = a.id
 			where m.gl_acct_id = '" . $tills->gl_acct_id . "' and i.id in (" . implode(',', $cleared_items) . ") and i.gl_type in ('" . implode("','", $gl_types) . "') and m.post_date = '" . $post_date . "'";
-		$result = $db->Execute($sql);
+		$result = $admin->DataBase->Execute($sql);
 		while (!$result->EOF) {
 		  if (isset($bank_list[$result->fields['id']])) { // record exists, mark as cleared (shouldn't happen)
 			$bank_list[$result->fields['id']]['cleared'] = 1;

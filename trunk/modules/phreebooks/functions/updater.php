@@ -87,6 +87,6 @@ function update_version_db($major = PROJECT_VERSION_MAJOR, $minor = PROJECT_VERS
 	  project_version_major = '$major',
 	  project_version_minor = '$minor'
 	  where project_version_key = 'PhreeBooks Database'";
-	$result = $db->Execute($sql);
+	$result = $admin->DataBase->Execute($sql);
 }
 ?>

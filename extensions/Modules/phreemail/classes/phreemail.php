@@ -380,7 +380,7 @@ class phreemail extends PHPMailer{
     	global $admin;
 	    $email = array();
     	$id = $this->newid; #ID email in DB
-   		$result = $db->Execute("SELECT * FROM ".TABLE_PHREEMAIL." WHERE id='".$this->newid."'");
+   		$result = $admin->DataBase->Execute("SELECT * FROM ".TABLE_PHREEMAIL." WHERE id='".$this->newid."'");
    	    $ID = $result->fields['ID'];
     	if($this->check_blacklist($result->fields['fromaddress'])||
     		$this->check_words($result->fields['subject'])||
@@ -390,7 +390,7 @@ class phreemail extends PHPMailer{
 
   	function check_blacklist($email){
   		global $admin;
-   		$result = $db->Execute("SELECT Email FROM ".TABLE_PHREEMAIL_LIST." WHERE Email='".addslashes($email)."' AND Type='B'");
+   		$result = $admin->DataBase->Execute("SELECT Email FROM ".TABLE_PHREEMAIL_LIST." WHERE Email='".addslashes($email)."' AND Type='B'");
    		$e_mail = $result->fields['Email'];
    		if($result->RecordCount() > 0){
     		return 1;
@@ -402,7 +402,7 @@ class phreemail extends PHPMailer{
     function check_words($string){
     	global $admin;
     	$string = strtolower($string);
-    	$result = $db->Execute("SELECT Word FROM ".TABLE_PHREEMAIL_WORDS);
+    	$result = $admin->DataBase->Execute("SELECT Word FROM ".TABLE_PHREEMAIL_WORDS);
     	while(!$result->EOF){
     		$word = strtolower($result->fields['Word']);
             if (stripos($word, $string)!== false) {
@@ -430,7 +430,7 @@ class phreemail extends PHPMailer{
 	    unset($email['x_to_email']);
 	    unset($email['x_date']);
 	    $remove_non_flags = array(`id`,`message_id`,`toaddress_id`,`fromaddress_id`,`toaddress`,`fromaddress`,`reply_toaddress`,`senderaddress`,`account`,`date`,`maildate`,`udate`,`database_date`,`subject`,`message`,`message_html`,`size`);
-		$temp = $db->Execute("select * from ".TABLE_PHREEMAIL." where message_id ='".$email['message_id']."'");
+		$temp = $admin->DataBase->Execute("select * from ".TABLE_PHREEMAIL." where message_id ='".$email['message_id']."'");
 		if($temp->RecordCount()> 0 ){
 			$message_id = $email['message_id'];
 			foreach ($remove_non_flags as $key) unset($email[$key]);
@@ -440,11 +440,11 @@ class phreemail extends PHPMailer{
 		}
 		$messageStack->debug("\n email ".$email['message_id']." is not in database");
 		//TABLE_ADDRESS_BOOK
-		$temp = $db->Execute("select address_id, ref_id from " . TABLE_ADDRESS_BOOK . " where email ='".$email['fromaddress']."' and ref_id <> 0");
+		$temp = $admin->DataBase->Execute("select address_id, ref_id from " . TABLE_ADDRESS_BOOK . " where email ='".$email['fromaddress']."' and ref_id <> 0");
 		if($temp->RecordCount() == 0) $email['spam'] = 'maybe'; // mark that it could be spam if contact is is unknowm
 		$email['fromaddress_id'] 	= $temp->fields['address_id'];
 		$ref_id 					= $temp->fields['ref_id'];
-		$temp = $db->Execute("select address_id, ref_id from " . TABLE_ADDRESS_BOOK . " where email ='".$email['toaddress']."'");
+		$temp = $admin->DataBase->Execute("select address_id, ref_id from " . TABLE_ADDRESS_BOOK . " where email ='".$email['toaddress']."'");
 		$email['toaddress_id'] 		= $temp->fields['address_id'];
 		$email['account']			= $this->Username;
 		$email['database_date'] 	= date("Y-m-d H:i:s");
@@ -452,7 +452,7 @@ class phreemail extends PHPMailer{
   		$this->newid = db_insert_id();
 
   		// save in crm_notes
-		$temp = $db->Execute("select account_id from " . TABLE_USERS . " where admin_email = '" . $this->Username . "'");
+		$temp = $admin->DataBase->Execute("select account_id from " . TABLE_USERS . " where admin_email = '" . $this->Username . "'");
 		$sql_array['contact_id'] 	= $ref_id;
 		$sql_array['log_date']   	= $email['date'];
 		$sql_array['entered_by'] 	= $temp->fields['account_id'];
@@ -532,7 +532,7 @@ class phreemail extends PHPMailer{
 
   	function getEmailFromDb($id){
   		global $admin;
-		$result = $db->Execute("select * from " . TABLE_PHREEMAIL . " where id = '" . $id  . "'");
+		$result = $admin->DataBase->Execute("select * from " . TABLE_PHREEMAIL . " where id = '" . $id  . "'");
 		foreach ($result->fields as $key => $value) {
 			if(is_null($value)) $this->$key = '';
 			else $this->$key = $value;
@@ -547,14 +547,14 @@ class phreemail extends PHPMailer{
   		if (!isset($db)) $db = new DB_WL;
   		$email = array();
 
-   		$db->query("SELECT ID, IDEmail, EmailFrom, EmailFromP, EmailTo, DateE, DateDb, Subject, Message, Message_html, MsgSize FROM emailtodb_email ORDER BY ID DESC LIMIT 25");
-   		while($db->next_record()){
-    		$ID = $db->f('ID');
-    		$email[$ID]['Email']     = $db->f('EmailFrom');
-    		$email[$ID]['EmailName'] = $db->f('EmailFromP');
-    		$email[$ID]['Subject']   = $db->f('Subject');
-    		$email[$ID]['Date']      = $db->f('DateE');
-    		$email[$ID]['Size']      = $db->f('MsgSize');
+   		$admin->DataBase->query("SELECT ID, IDEmail, EmailFrom, EmailFromP, EmailTo, DateE, DateDb, Subject, Message, Message_html, MsgSize FROM emailtodb_email ORDER BY ID DESC LIMIT 25");
+   		while($admin->DataBase->next_record()){
+    		$ID = $admin->DataBase->f('ID');
+    		$email[$ID]['Email']     = $admin->DataBase->f('EmailFrom');
+    		$email[$ID]['EmailName'] = $admin->DataBase->f('EmailFromP');
+    		$email[$ID]['Subject']   = $admin->DataBase->f('Subject');
+    		$email[$ID]['Date']      = $admin->DataBase->f('DateE');
+    		$email[$ID]['Size']      = $admin->DataBase->f('MsgSize');
 
    		}
    		return $email;

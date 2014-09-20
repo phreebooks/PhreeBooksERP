@@ -51,7 +51,7 @@ class to_receive_inv extends \core\classes\ctl_panel {
 		  from " . TABLE_JOURNAL_MAIN . "
 		  where journal_id in (6,7) and waiting = '1' order by post_date DESC, purchase_invoice_id DESC";
 		if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
-		$result = $db->Execute($sql);
+		$result = $admin->DataBase->Execute($sql);
 		if ($result->RecordCount() < 1) {
 		  	$contents = TEXT_NO_RESULTS_FOUND;
 		} else {

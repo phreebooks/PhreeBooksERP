@@ -74,7 +74,7 @@ switch ($_REQUEST['action']) {
 		  	if ($order->journal_rows[$i]['gl_type'] == $search_gl_type) $order->journal_rows[$i]['gl_type'] = GL_TYPE;
 		}
 		// ***************************** START TRANSACTION *******************************
-		$db->transStart();
+		$admin->DataBase->transStart();
 		if ($purchase_invoice_id) {
 		  	$order->journal_main_array['purchase_invoice_id'] = $purchase_invoice_id;
 		  	$order->purchase_invoice_id = $purchase_invoice_id;
@@ -88,11 +88,11 @@ switch ($_REQUEST['action']) {
 		}
 		gen_add_audit_log($journal_types_list[JOURNAL_ID]['text'] . ' - ' . TEXT_ADD, $order->purchase_invoice_id, $order->total_amount);
 		// set the closed flag on the quote
-		$result = $db->Execute("update " . TABLE_JOURNAL_MAIN . " set closed = '1' where id = " . $id);
-		$db->transCommit();	// finished successfully
+		$result = $admin->DataBase->Execute("update " . TABLE_JOURNAL_MAIN . " set closed = '1' where id = " . $id);
+		$admin->DataBase->transCommit();	// finished successfully
 		// ***************************** END TRANSACTION *******************************
   	}catch(Exception $e){
-  		$db->transRollback();
+  		$admin->DataBase->transRollback();
   		$messageStack->add($e->getMessage());
   	}
 	break;
@@ -100,7 +100,7 @@ switch ($_REQUEST['action']) {
 }
 
 /*****************   prepare to display templates  *************************/
-$result       = $db->Execute("select journal_id from " . TABLE_JOURNAL_MAIN . " where id = " . $id);
+$result       = $admin->DataBase->Execute("select journal_id from " . TABLE_JOURNAL_MAIN . " where id = " . $id);
 $jID          = $result->fields['journal_id'];
 $account_type = ($jID == 3 ? 'v' : 'c');
 

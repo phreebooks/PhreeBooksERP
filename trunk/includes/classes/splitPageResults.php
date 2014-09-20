@@ -28,7 +28,7 @@ class splitPageResults {
 	function __construct($current_page_number, $query_num_rows) {
     	global $admin;
     	if($query_num_rows == '') {
-    		$temp = $db->Execute('SELECT FOUND_ROWS() AS found_rows;');
+    		$temp = $admin->DataBase->Execute('SELECT FOUND_ROWS() AS found_rows;');
     		$query_num_rows = $temp->fields['found_rows'];
     	}
     	$this->total_num_rows		= $query_num_rows;

@@ -252,7 +252,7 @@ class beg_bal_import {
 			foreach ($sku_list as $sku => $details) {
 				$sql = "update " . TABLE_INVENTORY . "
 				  set quantity_on_hand = quantity_on_hand + " . $details['qty'] . " where sku = '" . $sku . "'";
-				$result = $db->Execute($sql);
+				$result = $admin->DataBase->Execute($sql);
 				if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(TEXT_FAILED_UPDATING_SKU_THE_PROCESS_WAS_TERMINATED_ARGS, $sku));
 				$history_array = array(
 				  'ref_id'    => 0,
@@ -268,7 +268,7 @@ class beg_bal_import {
 		  foreach ($coa_list as $account => $amount) {
 				$sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " set beginning_balance = beginning_balance + " . $amount . "
 				  where account_id = '" . $account . "' and period = 1";
-				$result = $db->Execute($sql);
+				$result = $admin->DataBase->Execute($sql);
 				if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(TEXT_FAILED_UPDATING_ACCOUNT_THE_PROCESS_WAS_TERMINATED_ARGS, $account));
 		  }
 		  // update the chart of accounts history through the existing periods

@@ -60,7 +60,7 @@ class departments {
 	// error check
 	// Departments have no pre-requisites to check prior to delete
 	// OK to delete
-	$db->Execute("delete from " . $this->db_table . " where id = '" . $this->id . "'");
+	$admin->DataBase->Execute("delete from " . $this->db_table . " where id = '" . $this->id . "'");
 	modify_account_history_records($this->id, $add_acct = false);
 	gen_add_audit_log(TEXT_DEPARTMENTS . ' - ' . TEXT_DELETE, $this->id);
 	return true;
@@ -73,7 +73,7 @@ class departments {
 	  'value' => array(TEXT_DEPARTMENT_ID, TEXT_DESCRIPTION, TEXT_SUB_DEPARTMENT, TEXT_INACTIVE, TEXT_ACTION),
 	  'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 	);
-    $result = $db->Execute("select id, description_short, description, subdepartment, primary_dept_id, department_inactive from ".$this->db_table);
+    $result = $admin->DataBase->Execute("select id, description_short, description, subdepartment, primary_dept_id, department_inactive from ".$this->db_table);
     $rowCnt = 0;
 	while (!$result->EOF) {
 	  $actions = '';
@@ -101,7 +101,7 @@ class departments {
     global $admin;
     if ($action <> 'new') {
         $sql = "select * from " . $this->db_table . " where id = '" . $this->id . "'";
-        $result = $db->Execute($sql);
+        $result = $admin->DataBase->Execute($sql);
         foreach ($result->fields as $key => $value) $this->$key = $value;
     }
 	$output  = '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);

@@ -51,7 +51,7 @@ class open_inv_branch extends \core\classes\ctl_panel {
 		$sql .= " and store_id = " . ($_SESSION['admin_prefs']['def_store_id'] ? $_SESSION['admin_prefs']['def_store_id'] : 0);
 		$sql .= " order by post_date DESC, purchase_invoice_id DESC";
 		if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
-		$result = $db->Execute($sql);
+		$result = $admin->DataBase->Execute($sql);
 		if ($result->RecordCount() < 1) {
 		  	$contents = TEXT_NO_RESULTS_FOUND;
 		} else {

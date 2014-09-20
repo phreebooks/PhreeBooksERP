@@ -61,7 +61,7 @@ try{
 	if ($vendor && !$iID && $strict == false && $UPC == false) { // just search for products from that vendor for purchases
 	 	$v_search_fields = array('a.sku', 'a.upc_code', 'a.description_short', 'a.description_sales', 'p.description_purchase' );
   		$first_search = " where " . implode(" like '%$sku%' or ", $v_search_fields) . " like '%$sku%' and p.vendor_id = '$cID' and a.inactive = '0'";
-	  	$purchase     = $db->Execute("select DISTINCT a.id as id, p.vendor_id as vendor_id, p.description_purchase as description_purchase, p.purch_package_quantity as purch_package_quantity, 
+	  	$purchase     = $admin->DataBase->Execute("select DISTINCT a.id as id, p.vendor_id as vendor_id, p.description_purchase as description_purchase, p.purch_package_quantity as purch_package_quantity, 
   		  p.purch_taxable as purch_taxable, p.item_cost as item_cost, p.price_sheet_v as price_sheet_v from " . TABLE_INVENTORY . " a LEFT JOIN " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku $first_search GROUP BY a.sku");
 	  	if($purchase->recordCount() == 1){
   			$search = " where id = '{$purchase->fields['id']}'";
@@ -76,13 +76,13 @@ try{
 		switch($step){
 			case 1:
 				if ($vendor == true  || $iID == true || $strict == true || $UPC == true) break;
-				$inventory =  $db->Execute("select * from " . TABLE_INVENTORY .  " where sku = '$sku' and inactive = '0'");
+				$inventory =  $admin->DataBase->Execute("select * from " . TABLE_INVENTORY .  " where sku = '$sku' and inactive = '0'");
 				break; 
 			case 2:
-				$inventory =  $db->Execute("select * from " . TABLE_INVENTORY . $search . " and inactive = '0'");
+				$inventory =  $admin->DataBase->Execute("select * from " . TABLE_INVENTORY . $search . " and inactive = '0'");
 				break;
 			case 3:
-				$inventory =  $db->Execute("select * from " . TABLE_INVENTORY . $search);
+				$inventory =  $admin->DataBase->Execute("select * from " . TABLE_INVENTORY . $search);
 				break;
 			default:
 				break 2; 
@@ -98,13 +98,13 @@ try{
 	}
 	foreach ($inventory->fields as $key => $value) $inventory_array[$key] = $value;
 	if($vendor) {
-		$purchase  = $db->Execute("select vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v from " . TABLE_INVENTORY_PURCHASE . " where sku = '" .$inventory_array['sku']."' and vendor_id = '$cID'" );
+		$purchase  = $admin->DataBase->Execute("select vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v from " . TABLE_INVENTORY_PURCHASE . " where sku = '" .$inventory_array['sku']."' and vendor_id = '$cID'" );
 		if($purchase->RecordCount() == 1 ) foreach ($purchase->fields as $key => $value) $inventory_array[$key] = $value;
-		$purchase  = $db->Execute("select MIN(item_cost) as cheapest from " . TABLE_INVENTORY_PURCHASE . " where sku = '" .$inventory_array['sku']."'" );
+		$purchase  = $admin->DataBase->Execute("select MIN(item_cost) as cheapest from " . TABLE_INVENTORY_PURCHASE . " where sku = '" .$inventory_array['sku']."'" );
 		if( $jID == 4 && $inventory_array['price_sheet_v'] == '' && $inventory_array['item_cost'] >= $purchase->fields['cheapest'] &&
 		  abs($inventory_array['item_cost'] - $purchase->fields['cheapest']) > 0.00001 ) $stock_note[] = sprintf(INV_CHEAPER_ELSEWHERE, $inventory_array['sku']);
 	}else{
-		$purchase  = $db->Execute("select vendor_id, description_purchase, purch_package_quantity, purch_taxable, MAX(item_cost) as item_cost, price_sheet_v from " . TABLE_INVENTORY_PURCHASE . " where sku = '" .$inventory_array['sku']."'" );
+		$purchase  = $admin->DataBase->Execute("select vendor_id, description_purchase, purch_package_quantity, purch_taxable, MAX(item_cost) as item_cost, price_sheet_v from " . TABLE_INVENTORY_PURCHASE . " where sku = '" .$inventory_array['sku']."'" );
 		if($purchase->RecordCount() == 1 )foreach ($purchase->fields as $key => $value) $inventory_array[$key] = $value;
 	}
 	if($inventory_array['purch_package_quantity'] == 0) $inventory_array['purch_package_quantity'] = 1;
@@ -129,11 +129,11 @@ try{
 	// Load the assembly information
 	$assy_cost = 0;
 	if ($inventory_array['inventory_type'] == 'ma' || $inventory_array['inventory_type'] == 'sa') {
-	  $result = $db->Execute("select sku, qty from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = '$iID'");
+	  $result = $admin->DataBase->Execute("select sku, qty from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = '$iID'");
 	  $bom    = array();
 	  while (!$result->EOF) {
 		$sql = "select description_short, inventory_type, item_cost, quantity_on_hand from " . TABLE_INVENTORY . " where sku = '" . $result->fields['sku'] . "'";
-		$sku_cost = $db->Execute($sql);
+		$sku_cost = $admin->DataBase->Execute($sql);
 		$assy_cost += $result->fields['qty'] * $sku_cost->fields['item_cost'];
 		if (in_array($sku_cost->fields['inventory_type'], $cog_types)) {
 		  $qty_in_stock = strval(load_store_stock($result->fields['sku'], $bID));
@@ -154,10 +154,10 @@ try{
 	}
 	// load where used
 	$sku_usage = array();
-	$result = $db->Execute("select ref_id, qty from " . TABLE_INVENTORY_ASSY_LIST . " where sku = '$sku'");
+	$result = $admin->DataBase->Execute("select ref_id, qty from " . TABLE_INVENTORY_ASSY_LIST . " where sku = '$sku'");
 	if ($result->RecordCount() > 0) {
 	  while (!$result->EOF) {
-	    $stock = $db->Execute("select sku, description_short from ".TABLE_INVENTORY." where id='" . $result->fields['ref_id'] . "' and inactive = '0'");
+	    $stock = $admin->DataBase->Execute("select sku, description_short from ".TABLE_INVENTORY." where id='" . $result->fields['ref_id'] . "' and inactive = '0'");
 	    if ($stock->RecordCount() > 0) {
 	    	$sku_usage[] =  TEXT_QUANTITY . ' ' . $result->fields['qty'] . ' ' . TEXT_SKU . ': ' . $stock->fields['sku'] . ' - ' . $stock->fields['description_short'];
 	    }

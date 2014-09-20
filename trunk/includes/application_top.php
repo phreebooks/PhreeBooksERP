@@ -113,11 +113,11 @@ if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR
   	// Load queryFactory db classes
   	require_once(DIR_FS_INCLUDES . 'db/' . DB_TYPE . '/query_factory.php');
   	$db = new queryFactory();
-  	$db->connect(DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, DB_DATABASE);
+  	$admin->DataBase->connect(DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, DB_DATABASE);
   	// set application wide parameters for phreebooks module
   	if(APC_EXTENSION_LOADED == false || apc_load_constants('configuration') === false) {
-  		$result = $db->Execute_return_error("select configuration_key, configuration_value from " . DB_PREFIX . "configuration");
-  		if ($db->error_number != '' || $result->RecordCount() == 0) trigger_error(LOAD_CONFIG_ERROR, E_USER_ERROR);
+  		$result = $admin->DataBase->Execute_return_error("select configuration_key, configuration_value from " . DB_PREFIX . "configuration");
+  		if ($admin->DataBase->error_number != '' || $result->RecordCount() == 0) trigger_error(LOAD_CONFIG_ERROR, E_USER_ERROR);
   		$array = array ();
   		while (!$result->EOF) {
   			if (APC_EXTENSION_LOADED) {

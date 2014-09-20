@@ -54,7 +54,7 @@ class inventory {
 		$this->tab_list['general'] = array('file'=>'template_tab_gen',	'tag'=>'general', 'order'=>10, 'text'=>TEXT_SYSTEM);
 		$this->tab_list['history'] = array('file'=>'template_tab_hist',	'tag'=>'history', 'order'=>20, 'text'=>TEXT_HISTORY);
 		if($this->auto_field){
-			$result = $db->Execute("select ".$this->auto_field." from ".TABLE_CURRENT_STATUS);
+			$result = $admin->DataBase->Execute("select ".$this->auto_field." from ".TABLE_CURRENT_STATUS);
         	$this->new_sku = $result->fields[$this->auto_field];
 		}
 	}
@@ -69,7 +69,7 @@ class inventory {
 		$this->sales_history	 = null;
 		$this->purchase_array	 = null;
 		$this->id = $id;
-		$result = $db->Execute("SELECT * FROM ".TABLE_INVENTORY." WHERE id = $id");
+		$result = $admin->DataBase->Execute("SELECT * FROM ".TABLE_INVENTORY." WHERE id = $id");
 		if ($result->RecordCount() != 0) foreach ($result->fields as $key => $value) {
 			if (is_null($value)) $this->$key = '';
 			else $this->$key = $value;
@@ -93,7 +93,7 @@ class inventory {
 		$this->sales_history	 = null;
 		$this->purchase_array	 = null;
 		$this->sku = $sku;
-		$result = $db->Execute("select * from " . TABLE_INVENTORY . " where sku = '" . $sku  . "'");
+		$result = $admin->DataBase->Execute("select * from " . TABLE_INVENTORY . " where sku = '" . $sku  . "'");
 		if($result->RecordCount()!=0) foreach ($result->fields as $key => $value) {
 			if(is_null($value)) $this->$key = '';
 			else $this->$key = $value;
@@ -123,7 +123,7 @@ class inventory {
 		global $admin;
 		if(in_array('quantity_on_hand', $this->not_used_fields)) return;
 		$sql = " select id, short_name, primary_name from " . TABLE_CONTACTS . " c join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id where c.type = 'b' order by short_name ";
-	  	$result = $db->Execute($sql);
+	  	$result = $admin->DataBase->Execute($sql);
 	  	$qty = load_store_stock($this->sku, 0);
 	  	$this->qty_per_store[0] = $qty;
 	  	$this->quantity_on_hand = $qty;
@@ -234,7 +234,7 @@ class inventory {
 		$this->history 						= array();
 		$this->qty_per_store				= array();
 		$this->attachments					= array();
-		$result = $db->Execute("select price_sheet_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = $id");
+		$result = $admin->DataBase->Execute("select price_sheet_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = $id");
 		while(!$result->EOF) {
 	  		$output_array = array(
 				'inventory_id'   => $this->id,
@@ -244,7 +244,7 @@ class inventory {
 	  		db_perform(TABLE_INVENTORY_SPECIAL_PRICES, $output_array, 'insert');
 	  		$result->MoveNext();
 		}
-		$result = $db->Execute("select * from " . TABLE_INVENTORY_PURCHASE . " where sku = '" . $this->old_sku . "'");
+		$result = $admin->DataBase->Execute("select * from " . TABLE_INVENTORY_PURCHASE . " where sku = '" . $this->old_sku . "'");
 		while(!$result->EOF) {
 			$sql_data_array = array (
 				'sku'						=> $this->sku,
@@ -274,26 +274,26 @@ class inventory {
 		if(isset($id))$this->get_item_by_id($id);
 		$sku_list = array($this->sku);
 		if (isset($this->edit_ms_list) && $this->edit_ms_list == true) { // build list of sku's to rename (without changing contents)
-	  		$result = $db->Execute("select sku from " . TABLE_INVENTORY . " where sku like '" . $this->sku . "-%'");
+	  		$result = $admin->DataBase->Execute("select sku from " . TABLE_INVENTORY . " where sku like '" . $this->sku . "-%'");
 	  		while(!$result->EOF) {
 				$sku_list[] = $result->fields['sku'];
 				$result->MoveNext();
 	  		}
 		}
 		// start transaction (needs to all work or reset to avoid unsyncing tables)
-		$db->transStart();
+		$admin->DataBase->transStart();
 		// rename the afffected tables
 		for ($i = 0; $i < count($sku_list); $i++) {
 	  		$new_sku = str_replace($this->sku, $newSku, $sku_list[$i], $count = 1);
-	  		$result = $db->Execute("update " . TABLE_INVENTORY .           " set sku = '" . $new_sku . "' where sku = '" . $sku_list[$i] . "'");
-	  		$result = $db->Execute("update " . TABLE_INVENTORY_ASSY_LIST . " set sku = '" . $new_sku . "' where sku = '" . $sku_list[$i] . "'");
-	  		$result = $db->Execute("update " . TABLE_INVENTORY_COGS_OWED . " set sku = '" . $new_sku . "' where sku = '" . $sku_list[$i] . "'");
-	  		$result = $db->Execute("update " . TABLE_INVENTORY_HISTORY .   " set sku = '" . $new_sku . "' where sku = '" . $sku_list[$i] . "'");
-	  		$result = $db->Execute("update " . TABLE_INVENTORY_MS_LIST .   " set sku = '" . $new_sku . "' where sku = '" . $sku_list[$i] . "'");
-	  		$result = $db->Execute("update " . TABLE_JOURNAL_ITEM .        " set sku = '" . $new_sku . "' where sku = '" . $sku_list[$i] . "'");
-	  		$result = $db->Execute("update " . TABLE_INVENTORY_PURCHASE .  " set sku = '" . $new_sku . "' where sku = '" . $sku_list[$i] . "'");
+	  		$result = $admin->DataBase->Execute("update " . TABLE_INVENTORY .           " set sku = '" . $new_sku . "' where sku = '" . $sku_list[$i] . "'");
+	  		$result = $admin->DataBase->Execute("update " . TABLE_INVENTORY_ASSY_LIST . " set sku = '" . $new_sku . "' where sku = '" . $sku_list[$i] . "'");
+	  		$result = $admin->DataBase->Execute("update " . TABLE_INVENTORY_COGS_OWED . " set sku = '" . $new_sku . "' where sku = '" . $sku_list[$i] . "'");
+	  		$result = $admin->DataBase->Execute("update " . TABLE_INVENTORY_HISTORY .   " set sku = '" . $new_sku . "' where sku = '" . $sku_list[$i] . "'");
+	  		$result = $admin->DataBase->Execute("update " . TABLE_INVENTORY_MS_LIST .   " set sku = '" . $new_sku . "' where sku = '" . $sku_list[$i] . "'");
+	  		$result = $admin->DataBase->Execute("update " . TABLE_JOURNAL_ITEM .        " set sku = '" . $new_sku . "' where sku = '" . $sku_list[$i] . "'");
+	  		$result = $admin->DataBase->Execute("update " . TABLE_INVENTORY_PURCHASE .  " set sku = '" . $new_sku . "' where sku = '" . $sku_list[$i] . "'");
 		}
-		$db->transCommit();
+		$admin->DataBase->transCommit();
 		return true;
 	}
 
@@ -303,12 +303,12 @@ class inventory {
 		if(isset($id))$this->get_item_by_id($id);
 		else throw new \core\classes\userException("id should be submitted in order to delete");
 		// check to see if there is inventory history remaining, if so don't allow delete
-		$result = $db->Execute("select id from " . TABLE_INVENTORY_HISTORY . " where sku = '" . $this->sku . "' and remaining > 0");
+		$result = $admin->DataBase->Execute("select id from " . TABLE_INVENTORY_HISTORY . " where sku = '" . $this->sku . "' and remaining > 0");
 		if ($result->RecordCount() > 0) throw new \core\classes\userException(INV_ERROR_DELETE_HISTORY_EXISTS);
 		// check to see if this item is part of an assembly
-		$result = $db->Execute("select id from " . TABLE_INVENTORY_ASSY_LIST . " where sku = '" . $this->sku . "'");
+		$result = $admin->DataBase->Execute("select id from " . TABLE_INVENTORY_ASSY_LIST . " where sku = '" . $this->sku . "'");
 		if ($result->RecordCount() > 0) throw new \core\classes\userException(INV_ERROR_DELETE_ASSEMBLY_PART);
-		$result = $db->Execute( "select id from " . TABLE_JOURNAL_ITEM . " where sku = '" . $this->sku . "' limit 1");
+		$result = $admin->DataBase->Execute( "select id from " . TABLE_JOURNAL_ITEM . " where sku = '" . $this->sku . "' limit 1");
 		if ($result->Recordcount() > 0) throw new \core\classes\userException(INV_ERROR_CANNOT_DELETE);
 		$this->remove();
 	  	return true;
@@ -319,16 +319,16 @@ class inventory {
 	// the function check_remove calls this function.
 	function remove(){
 		global $admin;
-		$db->Execute("delete from " . TABLE_INVENTORY . " where id = " . $this->id);
+		$admin->DataBase->Execute("delete from " . TABLE_INVENTORY . " where id = " . $this->id);
 		if($this->image_with_path != '') {
-			$result = $db->Execute("select * from " . TABLE_INVENTORY . " where image_with_path = '" . $this->image_with_path ."'");
+			$result = $admin->DataBase->Execute("select * from " . TABLE_INVENTORY . " where image_with_path = '" . $this->image_with_path ."'");
 	  		if ( $result->RecordCount() == 0) { // delete image
 				$file_path = DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/images/';
 				if (file_exists($file_path . $this->image_with_path)) unlink ($file_path . $this->image_with_path);
 	  		}
 		}
-	  	$db->Execute("delete from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = '" . $this->id . "'");
-	  	$db->Execute("delete from " . TABLE_INVENTORY_PURCHASE . " where sku = '" . $this->sku . "'");
+	  	$admin->DataBase->Execute("delete from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = '" . $this->id . "'");
+	  	$admin->DataBase->Execute("delete from " . TABLE_INVENTORY_PURCHASE . " where sku = '" . $this->sku . "'");
 		gen_add_audit_log(TEXT_INVENTORY_ITEM . ' - ' . TEXT_DELETE, $this->sku);
 	}
 
@@ -366,14 +366,14 @@ class inventory {
 	  		$file_name = $_FILES['inventory_image']['name'];
 	  		validate_path($file_path);
 	  		validate_upload('inventory_image', 'image', 'jpg');
-	  		$result = $db->Execute("select * from " . TABLE_INVENTORY . " where image_with_path = '" . ($this->inventory_path ? ($this->inventory_path . '/') : '') . $file_name ."'");
+	  		$result = $admin->DataBase->Execute("select * from " . TABLE_INVENTORY . " where image_with_path = '" . ($this->inventory_path ? ($this->inventory_path . '/') : '') . $file_name ."'");
 	  		if ( $result->RecordCount() != 0) throw new \core\classes\userException(INV_IMAGE_DUPLICATE_NAME);
 	  		if (!copy($temp_file_name, $file_path . '/' . $file_name)) throw new \core\classes\userException(INV_IMAGE_FILE_WRITE_ERROR);
 			$this->image_with_path = ($this->inventory_path ? ($this->inventory_path . '/') : '') . $file_name;
 		  	$sql_data_array['image_with_path'] = $this->image_with_path; // update the image with relative path
 		}
 		if ($this->id != ''){
-			$result = $db->Execute("select attachments from ".TABLE_INVENTORY." where id = $this->id");
+			$result = $admin->DataBase->Execute("select attachments from ".TABLE_INVENTORY." where id = $this->id");
 			$this->attachments = $result->fields['attachments'] ? unserialize($result->fields['attachments']) : array();
 			$image_id = 0;
 	  		while ($image_id < 100) { // up to 100 images
@@ -402,7 +402,7 @@ class inventory {
 		}else{
 			db_perform(TABLE_INVENTORY, $sql_data_array, 'insert');
 			$this->id = db_insert_id();
-			$result = $db->Execute("select price_sheet_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = " . $this->id);
+			$result = $admin->DataBase->Execute("select price_sheet_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = " . $this->id);
 			while(!$result->EOF) {
 	  			$output_array = array(
 					'inventory_id'   => $this->id,
@@ -420,7 +420,7 @@ class inventory {
 	function create_purchase_array(){
 		global $admin;
 		if(!in_array('purchase',$this->posible_transactions)) return;
-		$result = $db->Execute("select * from " . TABLE_INVENTORY_PURCHASE . " where sku = '" . $this->sku  . "'");
+		$result = $admin->DataBase->Execute("select * from " . TABLE_INVENTORY_PURCHASE . " where sku = '" . $this->sku  . "'");
 		while(!$result->EOF){
 			$this->purchase_array[]= array (
 				'id'						=> $result->fields['id'],
@@ -439,7 +439,7 @@ class inventory {
 		global $admin, $currencies;
 		$lowest_cost = isset($this->item_cost) ? $this->item_cost : 99999999999;
 		$this->backup_purchase_array = array();
-		$result = $db->Execute("SELECT * FROM ".TABLE_INVENTORY_PURCHASE." WHERE sku='$this->sku'");
+		$result = $admin->DataBase->Execute("SELECT * FROM ".TABLE_INVENTORY_PURCHASE." WHERE sku='$this->sku'");
 		while(!$result->EOF){
 			$this->backup_purchase_array[$result->fields['id']]= array (
 				'id'						=> $result->fields['id'],
@@ -506,7 +506,7 @@ class inventory {
 			$i++;
 		}
 		foreach($this->backup_purchase_array as $key => $value){
-			if($value['action'] == 'delete') $result = $db->Execute("delete from " . TABLE_INVENTORY_PURCHASE . " where id = '" . $value['id'] . "'");
+			if($value['action'] == 'delete') $result = $admin->DataBase->Execute("delete from " . TABLE_INVENTORY_PURCHASE . " where id = '" . $value['id'] . "'");
 		}
 		return $lowest_cost == 99999999999 ? 0 : $lowest_cost; //added in case no purchase data entered when creating new product
 	}
@@ -544,7 +544,7 @@ class inventory {
 	  	  from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 	  	  where m.journal_id in (4, 10) and i.sku = '" . $this->sku ."' and m.closed = '0'
 	  	  order by i.date_1";
-		$result = $db->Execute($sql);
+		$result = $admin->DataBase->Execute($sql);
 		while(!$result->EOF) {
 	  		switch ($result->fields['journal_id']) {
 	    		case  4:
@@ -558,7 +558,7 @@ class inventory {
 	  		}
 	  		$sql = "select sum(qty) as qty from " . TABLE_JOURNAL_ITEM . "
 			  where gl_type = '" . $gl_type . "' and so_po_item_ref_id = " . $result->fields['item_id'];
-	  		$adj = $db->Execute($sql); // this looks for partial received to make sure this item is still on order
+	  		$adj = $admin->DataBase->Execute($sql); // this looks for partial received to make sure this item is still on order
 	  		if ($result->fields['qty'] > $adj->fields['qty']) {
 				$this->history[$hist_type][] = array(
 		  			'id'                  => $result->fields['id'],
@@ -577,7 +577,7 @@ class inventory {
 		  from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 		  where m.journal_id in (6, 12, 14, 16, 19, 21) and i.sku = '" . $this->sku ."' and m.post_date >= '" . $last_year . "'
 		  order by m.post_date DESC";
-		$result = $db->Execute($sql);
+		$result = $admin->DataBase->Execute($sql);
 		while(!$result->EOF) {
 			$month = substr($result->fields['post_date'], 0, 7);
 	  		switch ($result->fields['journal_id']) {
@@ -666,7 +666,7 @@ class inventory {
 	function update_inventory_status($sku, $field, $adjustment, $item_cost, $vendor_id, $desc){
 		$sql = "update " . TABLE_INVENTORY_PURCHASE . " set item_cost = '$item_cost'";
 	  	$sql .= " where sku = '$sku' and vendor_id = '$vendor_id'";
-	  	$result = $db->Execute($sql);
+	  	$result = $admin->DataBase->Execute($sql);
 		if($result->RecordCount() == 0) {
 			$sql_data_array = array (
 			  'sku'						=> $sku,
@@ -680,7 +680,7 @@ class inventory {
 		}
 	  	$sql = "update " . TABLE_INVENTORY . " set $field = $field + $adjustment, ";
 	  	$sql .= "last_journal_date = now() where sku = '$sku'";
-	  	$result = $db->Execute($sql);
+	  	$result = $admin->DataBase->Execute($sql);
 		return true;
 	}
 

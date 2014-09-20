@@ -49,13 +49,13 @@
             $value = implode( ", ", $value);
             $value = preg_replace ("/, --none--/", "", $value);
           }
-          $db->Execute("update " . TABLE_CONFIGURATION . "
+          $admin->DataBase->Execute("update " . TABLE_CONFIGURATION . "
                         set configuration_value = '" . zen_db_input($value) . "'
                         where configuration_key = '" . zen_db_input($key) . "'");
         }
         $configuration_query = 'select configuration_key as cfgkey, configuration_value as cfgvalue
                                 from ' . TABLE_CONFIGURATION;
-        $configuration = $db->Execute($configuration_query);
+        $configuration = $admin->DataBase->Execute($configuration_query);
         $msg = sprintf(TEXT_EMAIL_MESSAGE_ADMIN_SETTINGS_CHANGED, preg_replace('/[^\d\w]/', '*', $_GET['module']), $admname);
         zen_mail(STORE_OWNER_EMAIL_ADDRESS, STORE_OWNER_EMAIL_ADDRESS, TEXT_EMAIL_SUBJECT_ADMIN_SETTINGS_CHANGED, $msg, STORE_NAME, EMAIL_FROM, array('EMAIL_MESSAGE_HTML'=>$msg), 'admin_settings_changed');
         zen_redirect(zen_href_link(FILENAME_PHREEBOOKS, 'set=' . $set . ($_GET['module'] != '' ? '&module=' . $_GET['module'] : ''), 'NONSSL'));
@@ -67,7 +67,7 @@
         if (file_exists($module_directory . $class . $file_extension)) {
           $configuration_query = 'select configuration_key as cfgkey, configuration_value as cfgvalue
                                   from ' . TABLE_CONFIGURATION;
-          $configuration = $db->Execute($configuration_query);
+          $configuration = $admin->DataBase->Execute($configuration_query);
           include($module_directory . $class . $file_extension);
           $module = new $class;
           $msg = sprintf(TEXT_EMAIL_MESSAGE_ADMIN_MODULE_INSTALLED, preg_replace('/[^\d\w]/', '*', $_POST['module']), $admname);
@@ -84,7 +84,7 @@
         if (file_exists($module_directory . $class . $file_extension)) {
           $configuration_query = 'select configuration_key as cfgkey, configuration_value as cfgvalue
                                   from ' . TABLE_CONFIGURATION;
-          $configuration = $db->Execute($configuration_query);
+          $configuration = $admin->DataBase->Execute($configuration_query);
           include($module_directory . $class . $file_extension);
           $module = new $class;
           $msg = sprintf(TEXT_EMAIL_MESSAGE_ADMIN_MODULE_REMOVED, preg_replace('/[^\d\w]/', '*', $_POST['module']), $admname);
@@ -189,7 +189,7 @@
           $module_keys = $module->keys();
           $keys_extra = array();
           for ($j=0, $k=sizeof($module_keys); $j<$k; $j++) {
-            $key_value = $db->Execute("select configuration_title, configuration_value, configuration_key,
+            $key_value = $admin->DataBase->Execute("select configuration_title, configuration_value, configuration_key,
                                           configuration_description, use_function, set_function
                                           from " . TABLE_CONFIGURATION . "
                                           where configuration_key = '" . zen_db_input($module_keys[$j]) . "'");
@@ -237,18 +237,18 @@
     }
   }
   ksort($installed_modules);
-  $check = $db->Execute("select configuration_value
+  $check = $admin->DataBase->Execute("select configuration_value
                          from " . TABLE_CONFIGURATION . "
                          where configuration_key = '" . zen_db_input($module_key) . "'");
 
   if ($check->RecordCount() > 0) {
     if ($check->fields['configuration_value'] != implode(';', $installed_modules)) {
-      $db->Execute("update " . TABLE_CONFIGURATION . "
+      $admin->DataBase->Execute("update " . TABLE_CONFIGURATION . "
                     set configuration_value = '" . zen_db_input(implode(';', $installed_modules)) . "', last_modified = now()
                     where configuration_key = '" . zen_db_input($module_key) . "'");
     }
   } else {
-    $db->Execute("insert into " . TABLE_CONFIGURATION . "
+    $admin->DataBase->Execute("insert into " . TABLE_CONFIGURATION . "
                 (configuration_title, configuration_key, configuration_value,
                  configuration_description, configuration_group_id, sort_order, date_added)
                  values ('Installed Modules', '" . zen_db_input($module_key) . "', '" . zen_db_input(implode(';', $installed_modules)) . "',

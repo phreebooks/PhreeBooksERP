@@ -61,7 +61,7 @@ if ($security_level > 2) {
 	<?php
 	$start_date = date('Y-m-d', strtotime("-1 day"));
 	$end_date   = date('Y-m-d', strtotime("+1 day"));
-	$result = $db->Execute("select id, shipment_id, ref_id, method, deliver_date, deliver_late, actual_date, tracking_id, cost
+	$result = $admin->DataBase->Execute("select id, shipment_id, ref_id, method, deliver_date, deliver_late, actual_date, tracking_id, cost
 		from " . TABLE_SHIPPING_LOG . " where carrier = '" . $method->id . "'
 		  and ship_date like '" . $date . "%'");
 	if ($result->RecordCount() > 0) {

@@ -31,7 +31,7 @@ class company_links extends \core\classes\ctl_panel {
   	function install($column_id = 1, $row_id = 0) {
   		global $admin;
 		// fetch the pages params to copy to new install
-		$result = $db->Execute("select params from ".TABLE_USERS_PROFILES."
+		$result = $admin->DataBase->Execute("select params from ".TABLE_USERS_PROFILES."
 	  	  where menu_id = '".$this->menu_id."' and dashboard_id = '".$this->id."'"); // just need one
 		$this->default_params = unserialize($result->fields['params']);
 		parent::install($column_id, $row_id);
@@ -81,7 +81,7 @@ class company_links extends \core\classes\ctl_panel {
 		// do nothing if no title or url entered
 		if (!$remove_id && ($my_title == '' || $my_url == '')) return;
 		// fetch the current params
-		$result = $db->Execute("select params from " . TABLE_USERS_PROFILES . "
+		$result = $admin->DataBase->Execute("select params from " . TABLE_USERS_PROFILES . "
 		  where menu_id = '" . $this->menu_id . "' and dashboard_id = '" . $this->id . "'"); // just need one
 		if ($remove_id) { // remove element
 			$this->params	= unserialize($result->fields['params']);

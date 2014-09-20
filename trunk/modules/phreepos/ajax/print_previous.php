@@ -31,12 +31,12 @@ if (file_exists($custom_path)) { include($custom_path); }
 if(isset($_GET['oID'])){
 	$journal_id = $_GET['oID'];
 }else {
-	$order = $db->Execute("select MAX(id) AS id from " . TABLE_JOURNAL_MAIN . "
+	$order = $admin->DataBase->Execute("select MAX(id) AS id from " . TABLE_JOURNAL_MAIN . "
 	    where journal_id = '" . JOURNAL_ID . "' and admin_id = '".$_SESSION['admin_id']."'");
 	$journal_id = $order->fields['id'];
 }
 //print
-$result = $db->Execute("select id from " . TABLE_PHREEFORM . " where doc_group = '" . POPUP_FORM_TYPE . "' and doc_ext = 'frm'");
+$result = $admin->DataBase->Execute("select id from " . TABLE_PHREEFORM . " where doc_group = '" . POPUP_FORM_TYPE . "' and doc_ext = 'frm'");
 if ($result->RecordCount() == 0) throw new \core\classes\userException("No form was found for this type (".POPUP_FORM_TYPE.")");
 
 if ($result->RecordCount() > 1) if(DEBUG) $massage .= 'More than one form was found for this type ('.POPUP_FORM_TYPE.'). Using the first form found.';

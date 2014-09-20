@@ -104,20 +104,20 @@ if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/extra_product_reads.php')) in
 	// set some preliminary information
 	// verify the submitted language exists on the Zencart side
 	$languages_code = strtolower(substr($this->language, 0, 2)); // Take the first two characters of the language iso code (e.g. en_us)
-	$result = $db->Execute("select languages_id from " . TABLE_LANGUAGES . " where code = '" . $languages_code . "'");
+	$result = $admin->DataBase->Execute("select languages_id from " . TABLE_LANGUAGES . " where code = '" . $languages_code . "'");
 	if ($result->RecordCount() <> 1) throw new Exception(SOAP_BAD_LANGUAGE_CODE . $product['language'], 11);
 	$languages_id = $result->fields['languages_id'];
 
 	// determine and verify the product_type
 	$product_type_name = $product['product_type'];
-	$result = $db->Execute("select type_id from " . TABLE_PRODUCT_TYPES . " where type_name = '" . $product_type_name . "'");
+	$result = $admin->DataBase->Execute("select type_id from " . TABLE_PRODUCT_TYPES . " where type_name = '" . $product_type_name . "'");
 	if ($result->RecordCount() <> 1) throw new Exception(sprintf(SOAP_BAD_PRODUCT_TYPE, $product_type_name, $product['sku']), 12);
 	$product_type_id = $result->fields['type_id'];
 
 	// manufacturer to id
 	if ($product['manufacturer'] <> ''){
 	$manufacturer_name = $product['manufacturer'];
-	$result = $db->Execute("select manufacturers_id from " . TABLE_MANUFACTURERS . " where manufacturers_name = '" . $manufacturer_name . "'");
+	$result = $admin->DataBase->Execute("select manufacturers_id from " . TABLE_MANUFACTURERS . " where manufacturers_name = '" . $manufacturer_name . "'");
 		if ($result->RecordCount() <> 1) throw new Exception(sprintf(SOAP_BAD_MANUFACTURER, $manufacturer_name, $product['sku']), 13);
 		$manufacturers_id = $result->fields['manufacturers_id'];
 	}else {
@@ -126,12 +126,12 @@ if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/extra_product_reads.php')) in
 
 	// categories need to be verified to be lowest level and fetch id
 	$categories_name = $product['product_category'];
-	$result = $db->Execute("select categories_id from " . TABLE_CATEGORIES_DESCRIPTION . "
+	$result = $admin->DataBase->Execute("select categories_id from " . TABLE_CATEGORIES_DESCRIPTION . "
 		where categories_name = '" . $categories_name . "' and language_id = '" . $languages_id . "'");
 	if ($result->RecordCount() <> 1) throw new Exception(sprintf(SOAP_BAD_CATEGORY, $categories_name, $product['sku']), 14);
 	$categories_id = $result->fields['categories_id'];
 	// verify that it is the lowest level of category tree (required by zencart)
-	$result = $db->Execute("select categories_id from " . TABLE_CATEGORIES . " where parent_id = '" . $categories_id . "'");
+	$result = $admin->DataBase->Execute("select categories_id from " . TABLE_CATEGORIES . " where parent_id = '" . $categories_id . "'");
 	if ($result->RecordCount() <> 0) throw new Exception(SOAP_BAD_CATEGORY_A, 15);
 	// verify the image and storage location - save image
 	$image_directory = $product['image_directory'];
@@ -200,18 +200,18 @@ if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/extra_product_saves.php')) in
 // EOF - Hook for customization
 	// write to the tables
 	// determine if the SKU exists, if so update else insert the products table
-	$result = $db->Execute("select products_id from " . TABLE_PRODUCTS . " where phreebooks_sku = '" . $product['sku'] . "'");
+	$result = $admin->DataBase->Execute("select products_id from " . TABLE_PRODUCTS . " where phreebooks_sku = '" . $product['sku'] . "'");
 	if ($result->RecordCount() == 0) { // new product
 		zen_db_perform(TABLE_PRODUCTS, $sql_data_array);
 		$products_id = zen_db_insert_id();
-		$result = $db->Execute("insert into " . TABLE_PRODUCTS_TO_CATEGORIES . " set categories_id = " . $categories_id . ", products_id = " . $products_id);
+		$result = $admin->DataBase->Execute("insert into " . TABLE_PRODUCTS_TO_CATEGORIES . " set categories_id = " . $categories_id . ", products_id = " . $products_id);
 		$prod_desc_data_array['products_id'] = $products_id;
 		$prod_desc_data_array['language_id'] = $languages_id;
 		zen_db_perform(TABLE_PRODUCTS_DESCRIPTION, $prod_desc_data_array);
 	} else { // update product
 		$products_id = (int)$result->fields['products_id'];
 		zen_db_perform(TABLE_PRODUCTS, $sql_data_array, 'update', "products_id = '" . $products_id . "'");
-		$result = $db->Execute("update " . TABLE_PRODUCTS_TO_CATEGORIES . " set categories_id = " . $categories_id . " where products_id = " . $products_id);
+		$result = $admin->DataBase->Execute("update " . TABLE_PRODUCTS_TO_CATEGORIES . " set categories_id = " . $categories_id . " where products_id = " . $products_id);
 		zen_db_perform(TABLE_PRODUCTS_DESCRIPTION, $prod_desc_data_array, 'update', "products_id = " . $products_id.' and language_id =' . $languages_id);
 	}
 
@@ -219,11 +219,11 @@ if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/extra_product_saves.php')) in
 if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/additional_product_saves.php')) include (DIR_FS_ADMIN . 'soap/extra_actions/additional_product_saves.php');
 // EOF - Hook for customization
 	// Update the price levels, first clear out the current price level data
-	$db->Execute("delete from " . TABLE_PRODUCTS_DISCOUNT_QUANTITY . " where products_id = " . $products_id);
+	$admin->DataBase->Execute("delete from " . TABLE_PRODUCTS_DISCOUNT_QUANTITY . " where products_id = " . $products_id);
 	// set the discount for each level from 2 on (level 1 set in base price)
 	for ($i=1, $j=2; $i < count($product['price_levels']); $i++, $j++) {
 	  if ($product['price_levels'][$j]['qty'])
-		$db->Execute("insert into " . TABLE_PRODUCTS_DISCOUNT_QUANTITY . " set
+		$admin->DataBase->Execute("insert into " . TABLE_PRODUCTS_DISCOUNT_QUANTITY . " set
 		  discount_id = "    . $i . ",
 		  products_id = "    . $products_id . ",
 		  discount_qty = "   . (real)$product['price_levels'][$j]['qty'] . ",

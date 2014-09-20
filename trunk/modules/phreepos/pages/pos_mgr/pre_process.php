@@ -39,10 +39,10 @@ switch ($_REQUEST['action']) {
 			if (!$id) throw new \core\classes\userException(TEXT_CANNOT_DELETE_THIS_ENTRY_BECAUSE_IT_WAS_NEVER_POSTED);
 		  	$delOrd = new \phreepos\classes\journal\journal_19($id);
 		  	// verify no item rows have been acted upon (accounts reconciliation)
-		  	$result = $db->Execute("select closed from " . TABLE_JOURNAL_MAIN . " where id = " . $id);
+		  	$result = $admin->DataBase->Execute("select closed from " . TABLE_JOURNAL_MAIN . " where id = " . $id);
 		  	if ($result->fields['closed'] == '1') throw new \core\classes\userException(TEXT_A_POS_SALE_CANNOT_BE_DELETED_IF_IT_IS_CLOSED);
 		  	// *************** START TRANSACTION *************************
-		  	$db->transStart();
+		  	$admin->DataBase->transStart();
 		  	$delOrd->unPost('delete');
 
 		  	// delete the payments
@@ -60,12 +60,12 @@ switch ($_REQUEST['action']) {
 			  		$messageStack->add(sprintf('The payment method (%s) was not refunded with the processor. The refund in the amount of %s needs to be credited with the processor manually.', $pmt_method, $currencies->format_full($value['debit_amount'])), 'caution');
 				}
 		    }
-			$db->transCommit();
+			$admin->DataBase->transCommit();
 		    gen_add_audit_log(TEXT_ARGS_ENTRY, JOURNAL_ID==19 ? TEXT_CUSTOMER_DEPOSITS: TEXT_VENDOR_DEPOSITS . ' - ' . TEXT_DELETE, $delOrd->purchase_invoice_id, $delOrd->total_amount);
 		    gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		    // *************** END TRANSACTION *************************
 		}catch(Exception $e){
-	  		$db->transRollback();
+	  		$admin->DataBase->transRollback();
 			$messageStack->add($e->getMessage());
 	  	}
 	  	if (DEBUG) $messageStack->write_debug();
@@ -125,7 +125,7 @@ $field_list = array('id', 'post_date', 'shipper_code', 'purchase_invoice_id', 't
 if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
 $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " from " . TABLE_JOURNAL_MAIN . "
 		where journal_id in (19,21) $period_filter $search order by $disp_order, purchase_invoice_id DESC";
-$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+$query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 history_save('pos_mgr');
 

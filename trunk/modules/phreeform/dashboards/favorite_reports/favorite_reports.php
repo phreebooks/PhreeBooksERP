@@ -35,7 +35,7 @@ class favorite_reports extends \core\classes\ctl_panel {
 		$contents = '';
 		$control  = '';
 		// load the report list
-		$result = $db->Execute("select id, security, doc_title from " . TABLE_PHREEFORM . "
+		$result = $admin->DataBase->Execute("select id, security, doc_title from " . TABLE_PHREEFORM . "
 		  where doc_ext in ('rpt','frm') order by doc_title");
 		$data_array = array(array('id' => '', 'text' => TEXT_PLEASE_SELECT));
 		$type_array = array();
@@ -76,13 +76,13 @@ class favorite_reports extends \core\classes\ctl_panel {
 	function update() {
 		global $admin;
 		$report_id   = db_prepare_input($_POST['report_id']);
-		$result      = $db->Execute("select doc_title from " . TABLE_PHREEFORM . " where id = '" . $report_id . "'");
+		$result      = $admin->DataBase->Execute("select doc_title from " . TABLE_PHREEFORM . " where id = '" . $report_id . "'");
 		$description = $result->fields['doc_title'];
 		$remove_id   = db_prepare_input($_POST['favorite_reports_rId']);
 		// do nothing if no title or url entered
 		if (!$remove_id && $report_id == '') return;
 		// fetch the current params
-		$result = $db->Execute("select params from " . TABLE_USERS_PROFILES . "
+		$result = $admin->DataBase->Execute("select params from " . TABLE_USERS_PROFILES . "
 		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "'
 		  and dashboard_id = '" . $this->id . "'");
 		if ($remove_id) { // remove element
@@ -101,7 +101,7 @@ class favorite_reports extends \core\classes\ctl_panel {
 			$this->params = array($report_id => $description);
 		}
 		asort($this->params);
-		$db->Execute("update " . TABLE_USERS_PROFILES . " set params = '" . serialize($this->params) . "'
+		$admin->DataBase->Execute("update " . TABLE_USERS_PROFILES . " set params = '" . serialize($this->params) . "'
 		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "'
 		  and dashboard_id = '" . $this->id . "'");
 	}

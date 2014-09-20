@@ -56,7 +56,7 @@ class project_costs {
 		\core\classes\user::validate_security($this->security_id, 4); // security check
 /*
 	// TBD - Check for this project phase being used in a journal entry, if so do not allow deletion
-	$result = $db->Execute("select projects from " . TABLE_JOURNAL_ITEM . "
+	$result = $admin->DataBase->Execute("select projects from " . TABLE_JOURNAL_ITEM . "
 		where projects like '%" . $id . "%'");
 	while (!$result->EOF) {
 	  $cost_ids = explode(':', $result->fields['projects']);
@@ -69,8 +69,8 @@ class project_costs {
 	}
 */
 	// OK to delete
-		$result = $db->Execute("select description_short from " . $this->db_table . " where cost_id = '" . $this->id . "'");
-		$db->Execute("delete from " . $this->db_table . " where cost_id = '" . $this->id . "'");
+		$result = $admin->DataBase->Execute("select description_short from " . $this->db_table . " where cost_id = '" . $this->id . "'");
+		$admin->DataBase->Execute("delete from " . $this->db_table . " where cost_id = '" . $this->id . "'");
 		gen_add_audit_log(TEXT_PROJECT_COST . ' - ' . TEXT_DELETE, $result->fields['description_short']);
 		return true;
   	}
@@ -82,7 +82,7 @@ class project_costs {
 	  	  'value' => array(TEXT_SHORT_NAME, TEXT_COST_TYPE, TEXT_INACTIVE, TEXT_ACTION),
 	  	  'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 		);
-    	$result = $db->Execute("select cost_id, description_short, cost_type, inactive from " . $this->db_table);
+    	$result = $admin->DataBase->Execute("select cost_id, description_short, cost_type, inactive from " . $this->db_table);
     	$rowCnt = 0;
 		while (!$result->EOF) {
 	  		$params  = unserialize($result->fields['params']);
@@ -110,7 +110,7 @@ class project_costs {
     if ($action <> 'new') {
         $sql = "select description_short, description_long, cost_type, inactive
 	       from " . $this->db_table . " where cost_id = '" . $this->id . "'";
-        $result = $db->Execute($sql);
+        $result = $admin->DataBase->Execute($sql);
         foreach ($result->fields as $key => $value) $this->$key = $value;
     }
 

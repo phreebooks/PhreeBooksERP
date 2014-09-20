@@ -38,7 +38,7 @@ switch ($_REQUEST['action']) {
 
 /*****************   prepare to display templates  *************************/
 // build the array of cash accounts
-$result = $db->Execute("select id, description from " . TABLE_CHART_OF_ACCOUNTS. " where account_type = '0' and heading_only = '0' order by id");
+$result = $admin->DataBase->Execute("select id, description from " . TABLE_CHART_OF_ACCOUNTS. " where account_type = '0' and heading_only = '0' order by id");
 $account_array = array();
 while (!$result->EOF) {
   if (!$gl_account) $gl_account = $result->fields['id'];
@@ -50,7 +50,7 @@ while (!$result->EOF) {
 // load the gl account beginning balance
 $sql = "select beginning_balance from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
 	where account_id = '" . $gl_account . "' and period = " . $period;
-$result = $db->Execute($sql);
+$result = $admin->DataBase->Execute($sql);
 $beginning_balance = $result->fields['beginning_balance'];
 
 // load the payments and deposits for the current period
@@ -60,7 +60,7 @@ $sql = "select i.description, m.id, m.journal_id, m.post_date, m.total_amount, m
    from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
    where m.period = " . $period . " and i.gl_account = '" . $gl_account . "'
    order by m.post_date, m.journal_id";
-$result = $db->Execute($sql);
+$result = $admin->DataBase->Execute($sql);
 while (!$result->EOF) {
   switch ($result->fields['journal_id']) {
    case  2:

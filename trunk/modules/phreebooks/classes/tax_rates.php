@@ -56,8 +56,8 @@ class tax_rates {
 	\core\classes\user::validate_security($this->security_id, 4); // security check
 	// Check for this rate as part of a journal entry, if so do not delete
 	// Since tax rates are not used explicitly, they can be deleted at any time.
-	$result = $db->Execute("select description_short from " . $this->db_table . " where tax_rate_id = '" . $id . "'");
-    $db->Execute("delete from " . $this->db_table . " where tax_rate_id = '" . $id . "'");
+	$result = $admin->DataBase->Execute("select description_short from " . $this->db_table . " where tax_rate_id = '" . $id . "'");
+    $admin->DataBase->Execute("delete from " . $this->db_table . " where tax_rate_id = '" . $id . "'");
 	gen_add_audit_log(TEXT_TAX_RATE . " - " . TEXT_DELETE, $result->fields['description_short']);
 	return true;
   }
@@ -70,7 +70,7 @@ class tax_rates {
 	  'value' => array(TEXT_SHORT_NAME, TEXT_DESCRIPTION, TEXT_TOTAL_TAX_PERCENT, TEXT_TAX_FREIGHT, TEXT_ACTION),
 	  'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 	);
-    $result = $db->Execute("select tax_rate_id, description_short, description_long, rate_accounts, freight_taxable
+    $result = $admin->DataBase->Execute("select tax_rate_id, description_short, description_long, rate_accounts, freight_taxable
 		from " . $this->db_table . " where type = '" . $this->type . "'");
     $rowCnt = 0;
 	while (!$result->EOF) {
@@ -102,7 +102,7 @@ class tax_rates {
     if ($action <> 'new') {
         $sql = "select description_short, description_long, rate_accounts, freight_taxable
 	       from " . $this->db_table . " where tax_rate_id = " . $id;
-        $result = $db->Execute($sql);
+        $result = $admin->DataBase->Execute($sql);
         foreach ($result->fields as $key => $value) $this->$key = $value;
 	}
 
@@ -162,7 +162,7 @@ class tax_rates {
 // Get list of tax_auth for pull down
   function get_tax_auths() {
     global $admin;
-    $tax_auth_values = $db->Execute("select tax_auth_id, description_short
+    $tax_auth_values = $admin->DataBase->Execute("select tax_auth_id, description_short
 		from " . TABLE_TAX_AUTH . " where type = '" . $this->type . "' order by description_short");
     $tax_auth_array = array();
     $tax_auth_array[] = array('id' => '', 'text' => TEXT_NONE);

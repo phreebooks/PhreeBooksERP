@@ -34,7 +34,7 @@ $id = $_GET['id'];
 if (!$id) throw new \core\classes\userException("variable ID isn't set");
 $xml = '';
 // This script checks the fieldname and field reference and validates that it is good.
-$result = $db->Execute("select * from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
+$result = $admin->DataBase->Execute("select * from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
 
 // if we have a row, id was valid
 if ($result->RecordCount() > 0) {

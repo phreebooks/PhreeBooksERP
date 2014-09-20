@@ -59,16 +59,16 @@ class contacts {
 	public function getContact() {
 	  	global $admin;
 	  	if ($this->id == '' && !$this->aid == ''){
-	  		$result = $db->Execute("select * from ".TABLE_ADDRESS_BOOK." where address_id = $this->aid ");
+	  		$result = $admin->DataBase->Execute("select * from ".TABLE_ADDRESS_BOOK." where address_id = $this->aid ");
 	  		$this->id = $result->fields['ref_id'];
 	  	}
 		// Load contact info, including custom fields
-		$result = $db->Execute("select * from ".TABLE_CONTACTS." where id = $this->id");
+		$result = $admin->DataBase->Execute("select * from ".TABLE_CONTACTS." where id = $this->id");
 		foreach ($result->fields as $key => $value) $this->$key = $value;
 		// expand attachments
 		$this->attachments = $result->fields['attachments'] ? unserialize($result->fields['attachments']) : array();
 		// Load the address book
-		$result = $db->Execute("select * from ".TABLE_ADDRESS_BOOK." where ref_id = $this->id order by primary_name");
+		$result = $admin->DataBase->Execute("select * from ".TABLE_ADDRESS_BOOK." where ref_id = $this->id order by primary_name");
 		$this->address = array();
 		while (!$result->EOF) {
 		  $type = substr($result->fields['type'], 1);
@@ -80,7 +80,7 @@ class contacts {
 		}
 		// load payment info
 		if ($_SESSION['admin_encrypt'] && ENABLE_ENCRYPTION) {
-		  $result = $db->Execute("select id, hint, enc_value from ".TABLE_DATA_SECURITY." where module='contacts' and ref_1=$this->id");
+		  $result = $admin->DataBase->Execute("select id, hint, enc_value from ".TABLE_DATA_SECURITY." where module='contacts' and ref_1=$this->id");
 		  while (!$result->EOF) {
 		    $val = explode(':', \core\classes\encryption::decrypt($_SESSION['admin_encrypt'], $result->fields['enc_value']));
 		    $this->payment_data[] = array(
@@ -93,16 +93,16 @@ class contacts {
 		  }
 		}
 		// load contacts info
-		$result = $db->Execute("select * from ".TABLE_CONTACTS." where dept_rep_id=$this->id");
+		$result = $admin->DataBase->Execute("select * from ".TABLE_CONTACTS." where dept_rep_id=$this->id");
 		$this->contacts = array();
 		while (!$result->EOF) {
 		  $cObj = new \core\classes\objectInfo();
 		  foreach ($result->fields as $key => $value) $cObj->$key = $value;
-		  $addRec = $db->Execute("select * from ".TABLE_ADDRESS_BOOK." where type='im' and ref_id=".$result->fields['id']);
+		  $addRec = $admin->DataBase->Execute("select * from ".TABLE_ADDRESS_BOOK." where type='im' and ref_id=".$result->fields['id']);
 		  $cObj->address['m'][] = new \core\classes\objectInfo($addRec->fields);
 		  $this->contacts[] = $cObj; //unserialize(serialize($cObj));
     	  // load crm notes
-		  $logs = $db->Execute("select * from ".TABLE_CONTACTS_LOG." where contact_id = ". $result->fields['id']. " order by log_date desc");
+		  $logs = $admin->DataBase->Execute("select * from ".TABLE_CONTACTS_LOG." where contact_id = ". $result->fields['id']. " order by log_date desc");
 		  while (!$logs->EOF) {
 		    $this->crm_log[] = new \core\classes\objectInfo($logs->fields);
 		    $logs->MoveNext();
@@ -110,7 +110,7 @@ class contacts {
 		  $result->MoveNext();
 		}
 		// load crm notes
-		$result = $db->Execute("select * from ".TABLE_CONTACTS_LOG." where contact_id = $this->id order by log_date desc");
+		$result = $admin->DataBase->Execute("select * from ".TABLE_CONTACTS_LOG." where contact_id = $this->id order by log_date desc");
 		while (!$result->EOF) {
 		  $this->crm_log[] = new \core\classes\objectInfo($result->fields);
 		  $result->MoveNext();
@@ -120,17 +120,17 @@ class contacts {
   function delete($id) {
   	global $admin;
   	if ( $this->id == '' ) $this->id = $id;	// error check, no delete if a journal entry exists
-	$result = $db->Execute("SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE bill_acct_id=$this->id OR ship_acct_id=$this->id OR store_id=$this->id LIMIT 1");
+	$result = $admin->DataBase->Execute("SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE bill_acct_id=$this->id OR ship_acct_id=$this->id OR store_id=$this->id LIMIT 1");
 	if ($result->RecordCount() != 0) throw new \core\classes\userException(ACT_ERROR_CANNOT_DELETE);
 	return $this->do_delete();
   }
 
   public function do_delete(){
 	  global $admin;
-	  $db->Execute("DELETE FROM ".TABLE_ADDRESS_BOOK ." WHERE ref_id=$this->id");
-	  $db->Execute("DELETE FROM ".TABLE_DATA_SECURITY." WHERE ref_1=$this->id");
-	  $db->Execute("DELETE FROM ".TABLE_CONTACTS     ." WHERE id=$this->id");
-	  $db->Execute("DELETE FROM ".TABLE_CONTACTS_LOG ." WHERE contact_id=$this->id");
+	  $admin->DataBase->Execute("DELETE FROM ".TABLE_ADDRESS_BOOK ." WHERE ref_id=$this->id");
+	  $admin->DataBase->Execute("DELETE FROM ".TABLE_DATA_SECURITY." WHERE ref_1=$this->id");
+	  $admin->DataBase->Execute("DELETE FROM ".TABLE_CONTACTS     ." WHERE id=$this->id");
+	  $admin->DataBase->Execute("DELETE FROM ".TABLE_CONTACTS_LOG ." WHERE contact_id=$this->id");
 	  foreach (glob(CONTACTS_DIR_ATTACHMENTS.'contacts_'.$this->id.'_*.zip') as $filename) unlink($filename); // remove attachments
 	  return true;
   }
@@ -145,7 +145,7 @@ class contacts {
   	$sql .= ($only_open) ? " closed = '0' and " : "";
   	$sql .= " journal_id in (" . $journal_id . ") and bill_acct_id = " . $acct_id . ' order by post_date DESC';
   	$sql .= ($limit) ? " limit " . $limit : "";
-  	$result = $db->Execute($sql);
+  	$result = $admin->DataBase->Execute($sql);
   	if ($result->RecordCount() == 0) return array();	// no open orders
   	$output = array(array('id' => '', 'text' => TEXT_NEW));
   	while (!$result->EOF) {
@@ -168,7 +168,7 @@ class contacts {
   	public function data_complete(){
   		global $admin, $messageStack;
   		if ($this->auto_type && $this->short_name == '') {
-    		$result = $db->Execute("select ".$this->auto_field." from ".TABLE_CURRENT_STATUS);
+    		$result = $admin->DataBase->Execute("select ".$this->auto_field." from ".TABLE_CURRENT_STATUS);
         	$this->short_name  = $result->fields[$this->auto_field];
         	$this->inc_auto_id = true;
     	}
@@ -199,9 +199,9 @@ class contacts {
   	global $admin;
   	// check for duplicate short_name IDs
     if ($this->id == '') {
-      $result = $db->Execute("select id from ".TABLE_CONTACTS." where short_name = '$this->short_name' and type = '$this->type'");
+      $result = $admin->DataBase->Execute("select id from ".TABLE_CONTACTS." where short_name = '$this->short_name' and type = '$this->type'");
     } else {
-      $result = $db->Execute("select id from ".TABLE_CONTACTS." where short_name = '$this->short_name' and type = '$this->type' and id <> $this->id");
+      $result = $admin->DataBase->Execute("select id from ".TABLE_CONTACTS." where short_name = '$this->short_name' and type = '$this->type' and id <> $this->id");
     }
     if ($result->RecordCount() > 0) throw new \core\classes\userException($this->duplicate_id_error);
   }
@@ -236,7 +236,7 @@ class contacts {
 		//if auto-increment see if the next id is there and increment if so.
         if ($this->inc_auto_id) { // increment the ID value
             $next_id = string_increment($this->short_name);
-            $db->Execute("update ".TABLE_CURRENT_STATUS." set $this->auto_field = '$next_id'");
+            $admin->DataBase->Execute("update ".TABLE_CURRENT_STATUS." set $this->auto_field = '$next_id'");
         }
         gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_ADD . '-' . $this->title, $this->short_name);
     } else { // update record

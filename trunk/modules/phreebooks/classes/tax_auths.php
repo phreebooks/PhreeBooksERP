@@ -55,7 +55,7 @@ class tax_auths {
   	global $admin;
 	\core\classes\user::validate_security($this->security_id, 4); // security check
 	// Check for this authority being used in a tax rate calculation, if so do not delete
-	$result = $db->Execute("select tax_auths from " . TABLE_JOURNAL_MAIN . "
+	$result = $admin->DataBase->Execute("select tax_auths from " . TABLE_JOURNAL_MAIN . "
 		where tax_auths like '%" . $id . "%'");
 	while (!$result->EOF) {
 	  $auth_ids = explode(':', $result->fields['tax_auths']);
@@ -66,8 +66,8 @@ class tax_auths {
 	}
 
 	// OK to delete
-	$result = $db->Execute("select description_short from " . $this->db_table . " where tax_auth_id = '" . $id . "'");
-	$db->Execute("delete from " . $this->db_table . " where tax_auth_id = '" . $id . "'");
+	$result = $admin->DataBase->Execute("select description_short from " . $this->db_table . " where tax_auth_id = '" . $id . "'");
+	$admin->DataBase->Execute("delete from " . $this->db_table . " where tax_auth_id = '" . $id . "'");
 	gen_add_audit_log(TEXT_TAX_AUTHORITY ." - " . TEXT_DELETE, $result->fields['description_short']);
 	return true;
   }
@@ -79,7 +79,7 @@ class tax_auths {
 	  'value' => array(TEXT_SHORT_NAME, TEXT_DESCRIPTION, SETUP_TAX_GL_ACCT, TEXT_TAX_RATE_PERCENT, TEXT_ACTION),
 	  'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 	);
-    $result = $db->Execute("select tax_auth_id, description_short, description_long, account_id, tax_rate
+    $result = $admin->DataBase->Execute("select tax_auth_id, description_short, description_long, account_id, tax_rate
 	  from " . $this->db_table . " where type = '" . $this->type . "'");
     $rowCnt = 0;
 	while (!$result->EOF) {
@@ -109,7 +109,7 @@ class tax_auths {
     if ($action <> 'new') {
         $sql = "select description_short, description_long, account_id, vendor_id, tax_rate
 	       from " . $this->db_table . " where tax_auth_id = " . $id;
-        $result = $db->Execute($sql);
+        $result = $admin->DataBase->Execute($sql);
         foreach ($result->fields as $key => $value) $this->$key = $value;
 	}
 	$output  = '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);

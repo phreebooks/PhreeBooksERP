@@ -28,7 +28,7 @@ require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
 $rID = $_GET['rID'];
 if (!$rID) throw new \core\classes\userException("variable rID isn't set");
 
-$result  = $db->Execute("select doc_title from " . TABLE_PHREEFORM . " where id = '" . $rID . "'");
+$result  = $admin->DataBase->Execute("select doc_title from " . TABLE_PHREEFORM . " where id = '" . $rID . "'");
 $subject = $result->fields['doc_title'] . ' ' . TEXT_FROM . ' ' . COMPANY_NAME;
 $report  = get_report_details($rID);
 

@@ -20,7 +20,7 @@
 
 function synchronize() {
   global $admin;
-  $config = $db->Execute('TRUNCATE ' . TABLE_PHREEHELP);
+  $config = $admin->DataBase->Execute('TRUNCATE ' . TABLE_PHREEHELP);
   // recursively read file and store in db
   $extensions = explode(',', VALID_EXTENSIONS);
   $file_list = array();
@@ -46,7 +46,7 @@ function synchronize() {
 	$doc_text  = str_replace(chr(10), ' ', $doc_text); // process out special characters
 	$sql      = "insert into " . TABLE_PHREEHELP . " (doc_url, doc_pos, doc_index, doc_title, doc_text)
 	  values ('$filename', '{$tags['doc_pos']}', '{$tags['doc_index_1']}', '$doc_title', '" . addslashes($doc_text) . "')";
-	$row      = $db->Execute($sql);
+	$row      = $admin->DataBase->Execute($sql);
 	$id       = db_insert_id();
 	$toc[$id] = $tags['doc_pos'];
   }
@@ -57,8 +57,8 @@ function synchronize() {
 	  $parent = substr($value, 0, strrpos($value, '.'));
 	  $key    = array_search($parent, $toc);
 	  if ($key !== false) { // if no parent found, default to root
-	    $db->Execute("update " . TABLE_PHREEHELP . " set parent_id = " . $key . " where id = " . $id);
-	    $db->Execute("update " . TABLE_PHREEHELP . " set doc_type = '0' where id = " . $key); // set parent to type folder
+	    $admin->DataBase->Execute("update " . TABLE_PHREEHELP . " set parent_id = " . $key . " where id = " . $id);
+	    $admin->DataBase->Execute("update " . TABLE_PHREEHELP . " set doc_type = '0' where id = " . $key); // set parent to type folder
 	  }
     }
   }
@@ -85,7 +85,7 @@ function directory_to_array($directory, $extension = "", $full_path = true) {
 
 function retrieve_toc() {
   global $admin;
-  $toc = $db->Execute('select id, parent_id, doc_type, doc_url, doc_title from ' . TABLE_PHREEHELP . '
+  $toc = $admin->DataBase->Execute('select id, parent_id, doc_type, doc_url, doc_title from ' . TABLE_PHREEHELP . '
 	order by parent_id, doc_pos');
   $toc_array = array();
   $toc_array[-1][] = array('id' => 0, 'doc_type' => '0', 'doc_title' => TEXT_MANUAL); // home dir
@@ -180,7 +180,7 @@ function build_href($array_tree, $ref = '') {
 
 function retrieve_index() {
   global $admin;
-  $index = $db->Execute('select id, doc_url, doc_index from ' . TABLE_PHREEHELP . ' order by doc_index');
+  $index = $admin->DataBase->Execute('select id, doc_url, doc_index from ' . TABLE_PHREEHELP . ' order by doc_index');
   $index_array = array();
   while (!$index->EOF) {
 	$element = explode('.', $index->fields['doc_index']);
@@ -205,7 +205,7 @@ function search_results($search_text) {
   if (!$search_text) return '';
   $sql = "select id, doc_url, doc_title, MATCH (doc_title, doc_text) AGAINST ('" . $search_text . "') as score
     from " . TABLE_PHREEHELP . " where MATCH (doc_title, doc_text) AGAINST ('" . $search_text . "')";
-  $results = $db->Execute($sql);
+  $results = $admin->DataBase->Execute($sql);
   if ($results->RecordCount() == 0) return TEXT_NO_RESULTS_FOUND;
   $search_array = array();
   $index = 0;

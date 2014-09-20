@@ -91,10 +91,10 @@ switch ($_REQUEST['action']) {
 		'post_date'     => $post_date,
     );
 	// *************** START TRANSACTION *************************
-	$db->transStart();
+	$admin->DataBase->transStart();
 	$glEntry->override_cogs_acct = $adj_account; // force cogs account to be users specified account versus default inventory account
 	if ($glEntry->Post($glEntry->id ? 'edit' : 'insert')) {
-	    $db->transCommit();	// post the chart of account values
+	    $admin->DataBase->transCommit();	// post the chart of account values
 	    gen_add_audit_log(TEXT_INVENTORY_ADJUSTMENT . ' - ' . ($_REQUEST['action']=='save' ? TEXT_SAVE : TEXT_EDIT), $sku, $qty);
 	    $messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, TEXT_INVENTORY_ADJUSTMENT, $glEntry->purchase_invoice_id), 'success');
 	    if (DEBUG) $messageStack->write_debug();
@@ -110,9 +110,9 @@ switch ($_REQUEST['action']) {
 	$delOrd = new \core\classes\journal();
 	$delOrd->journal($glEntry->id); // load the posted record based on the id submitted
 	// *************** START TRANSACTION *************************
-	$db->transStart();
+	$admin->DataBase->transStart();
 	if ($delOrd->unPost('delete')) {
-		$db->transCommit(); // if not successful rollback will already have been performed
+		$admin->DataBase->transCommit(); // if not successful rollback will already have been performed
 		gen_add_audit_log(TEXT_INVENTORY_ADJUSTMENT . ' - ' . TEXT_DELETE, $delOrd->journal_rows[0]['sku'], $delOrd->journal_rows[0]['qty']);
 		if (DEBUG) $messageStack->write_debug();
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));

@@ -44,7 +44,7 @@ switch ($_REQUEST['action']) {
 	  db_perform(TABLE_PHREEFORM, $sql_array, 'update', 'id = ' . $rID);
 	  $message = sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_SAVED, TEXT_REPORT , $doc_title);
 	} else {
-	  $result = $db->Execute("select * from " . TABLE_PHREEFORM . " where id = '" . $rID . "'");
+	  $result = $admin->DataBase->Execute("select * from " . TABLE_PHREEFORM . " where id = '" . $rID . "'");
 	  $sql_array = array(
 	    'parent_id'   => $result->fields['parent_id'],
 	    'doc_title'   => $doc_title,
@@ -60,7 +60,7 @@ switch ($_REQUEST['action']) {
 	$filename = PF_DIR_MY_REPORTS . 'pf_' . $rID;
 	$output   = object_to_xml($report);
 	if (!$handle = @fopen($filename, 'w')) {
-	  $db->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
+	  $admin->DataBase->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
 	  throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
 	}
 	if (!@fwrite($handle, $output)) throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));
@@ -68,7 +68,7 @@ switch ($_REQUEST['action']) {
 	$messageStack->add($message, 'success');
 	break;
   case 'export':
-    $result = $db->Execute("select doc_title from " . TABLE_PHREEFORM . " where id = '" . $rID . "'");
+    $result = $admin->DataBase->Execute("select doc_title from " . TABLE_PHREEFORM . " where id = '" . $rID . "'");
 	$filename        = PF_DIR_MY_REPORTS . 'pf_' . $rID;
 	$source_filename = str_replace(' ', '',  $result->fields['doc_title']);
 	$source_filename = str_replace('/', '_', $source_filename) . '.xml';
@@ -106,7 +106,7 @@ switch ($_REQUEST['action']) {
 }
 
 /*****************   prepare to display templates  *************************/
-$result = $db->Execute('select id, parent_id, doc_type, doc_title, doc_group, security from ' . TABLE_PHREEFORM . '
+$result = $admin->DataBase->Execute('select id, parent_id, doc_type, doc_title, doc_group, security from ' . TABLE_PHREEFORM . '
 	order by doc_title, id, parent_id');
 $toc_array    = array();
 $toc_array[-1][] = array('id' => 0, 'doc_type' => '0', 'doc_title' => TEXT_HOME); // home dir
@@ -124,7 +124,7 @@ while (!$result->EOF) {
 
 $toggle_list = false;
 if ($group) {
-  $result = $db->Execute("select id from " . TABLE_PHREEFORM . " where doc_group = '" . $group . "'");
+  $result = $admin->DataBase->Execute("select id from " . TABLE_PHREEFORM . " where doc_group = '" . $group . "'");
   if ($result->RecordCount() > 0) $toggle_list = buildToggleList($result->fields['id']);
 }
 
@@ -142,7 +142,7 @@ switch ($_REQUEST['action']) { // figure which detail page to load
 	}
 	$field_list = array('id', 'doc_title', 'doc_ext');
 	$query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . " from " . TABLE_PHREEFORM . $search;
-	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+	$query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     history_save();
     $div_template = DIR_FS_WORKING . 'pages/main/' . ($id ? 'tab_report.php' : 'tab_folder.php');

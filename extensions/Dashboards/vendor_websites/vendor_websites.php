@@ -39,7 +39,7 @@ class vendor_websites extends \core\classes\ctl_panel {
 		$sql = "select a.primary_name, a.website
 		  from " . TABLE_CONTACTS . " c left join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id
 		  where  c.type = 'v' and c.inactive = '0' and a.website !='' order by a.primary_name";
-		$result = $db->Execute($sql);
+		$result = $admin->DataBase->Execute($sql);
 		// Build control box form data
 		// Build content box
 		if ($result->RecordCount() < 1) {

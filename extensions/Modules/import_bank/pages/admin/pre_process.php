@@ -39,13 +39,13 @@ switch ($_REQUEST['action']) {
   		$_POST['number_of_bank_accounts'] = NUMBER_OF_BANK_ACCOUNTS;
   	}else if($_POST['number_of_bank_accounts'] > NUMBER_OF_BANK_ACCOUNTS){
   		for($x=NUMBER_OF_BANK_ACCOUNTS; $x<=$_POST['number_of_bank_accounts']; $x++){
-  			$result = $db->Execute("select id from " . TABLE_EXTRA_TABS . " where module_id='contacts' and tab_name = 'import_banking'");
+  			$result = $admin->DataBase->Execute("select id from " . TABLE_EXTRA_TABS . " where module_id='contacts' and tab_name = 'import_banking'");
 			if ( $result->RecordCount() == 0 ){
 				$entry = array(	'module_id'	=> 'contacts',
 				 				'tab_name'	=> 'import_banking',
 								'sort_order'=> '100' );
 				db_perform(TABLE_EXTRA_TABS, $entry, 'insert');
-				$tab_id = $db->insert_ID();
+				$tab_id = $admin->DataBase->insert_ID();
 			}else {
 				$tab_id = $result->fields['id'];
 			}
@@ -56,7 +56,7 @@ switch ($_REQUEST['action']) {
 							'description' => 'Bank Account',
 							'params'	  => 'a:4:{s:4:"type";s:4:"text";s:12:"contact_type";s:16:"customer:vendor:";s:6:"length";i:32;s:7:"default";s:0:"";}');
 			db_perform(TABLE_EXTRA_FIELDS, $entry, 'insert');
-			$db->Execute("ALTER TABLE ".TABLE_CONTACTS." ADD bank_account_".$x." varchar(32) default NULL");
+			$admin->DataBase->Execute("ALTER TABLE ".TABLE_CONTACTS." ADD bank_account_".$x." varchar(32) default NULL");
 
   		}
   	}
