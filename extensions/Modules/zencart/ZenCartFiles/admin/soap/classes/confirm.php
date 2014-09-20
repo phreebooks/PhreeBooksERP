@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft, LLC (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -24,13 +24,14 @@ class xml_confirm extends parser {
   }
 
   function processXML($rawXML) {
-  	try{
 //	$rawXML = str_replace('&', '&amp;', $rawXML); // this character causes parser to break
 //echo '<pre>' . $rawXML . '</pre><br>';
 //	if (!$this->parse($rawXML)) {
-		$objXML = $this->xml_to_object($rawXML);
+	if (!$objXML = $this->xml_to_object($rawXML)) {
 //echo '<pre>' . $rawXML . '</pre><br>';
 //echo 'parsed string at shopping cart = '; print_r($objXML); echo '<br>';
+	  return false;  // parse the submitted string, check for errors
+	}
 	// try to determine the language used, default to en_us
 	$this->language = $objXML->Request->Language;
 	if (file_exists('language/' . $this->language . '/language.php')) {
@@ -38,13 +39,10 @@ class xml_confirm extends parser {
 	} else {
 	  require ('language/en_us/language.php');
 	}
-		$this->validateUser($objXML);
-		$orders = $this->formatArray($objXML);
-		$this->orderConfirm($orders);
+	if (!$this->validateUser($objXML)) return false;
+	if (!$orders = $this->formatArray($objXML)) return false;
+	if (!$this->orderConfirm($orders)) return false;
 	return true;
-  	}catch(Exception $e){
-  		$this->responseXML($e->getCode(), $e->getMessage(), 'error');
-  	}
   }
 
   function formatArray($objXML) { // specific to XML spec for a order confirm
@@ -63,36 +61,36 @@ class xml_confirm extends parser {
   }
 
 // The remaining functions are specific to ZenCart. they need to be modified for the specific application.
-// It also needs to check for errors, i.e. missing information, bad data, etc.
+// It also needs to check for errors, i.e. missing information, bad data, etc. 
   function orderConfirm($orders) {
-	global $admin;
+	global $db, $messageStack;
 	// error check input
-	if (sizeof($orders['order']) == 0)  throw new Exception(SOAP_NO_ORDERS_TO_CONFIRM, 20);
-	if ($orders['action'] <> 'Confirm') throw new Exception(SOAP_BAD_ACTION, 16);
+	if (sizeof($orders['order']) == 0)  return $this->responseXML('20', SOAP_NO_ORDERS_TO_CONFIRM, 'error');
+	if ($orders['action'] <> 'Confirm') return $this->responseXML('16', SOAP_BAD_ACTION, 'error');
 
     $order_cnt = 0;
 	$order_list = array();
 	$order_prefix = defined('MODULE_PHREEBOOKS_ORDER_DOWNLOAD_PREFIX') ? MODULE_PHREEBOOKS_ORDER_DOWNLOAD_PREFIX : false;
     foreach ($orders['order'] as $value) {
       $id = $order_prefix ? str_replace($order_prefix, '', $value['id'], $count = 1) : $value['id'];
-	  $result = $admin->DataBase->Execute("select orders_status from " . TABLE_ORDERS . " where orders_id = '$id'");
+	  $result = $db->Execute("select orders_status from " . TABLE_ORDERS . " where orders_id = '$id'");
 	  if ($result->RecordCount() == 0 || $result->fields['orders_status'] == $value['status']) continue; // skip this order, not a zencart order
 	  // insert a new status in the order status table
-	  $admin->DataBase->Execute("insert into " . TABLE_ORDERS_STATUS_HISTORY . " set
-		orders_id = '$id',
-		orders_status_id = " . zen_db_input($value['status']) . ",
-		date_added = now(),
-		customer_notified = '0',
+	  $db->Execute("insert into " . TABLE_ORDERS_STATUS_HISTORY . " set 
+		orders_id = '$id', 
+		orders_status_id = " . zen_db_input($value['status']) . ", 
+		date_added = now(), 
+		customer_notified = '0', 
 	    comments = '" . zen_db_input($value['msg']) . "'");
       // update the status in the orders table
-	  $admin->DataBase->Execute("update " . TABLE_ORDERS . " set
+	  $db->Execute("update " . TABLE_ORDERS . " set 
 	    orders_status = " . zen_db_input($value['status']) . ",
-		last_modified = now()
+		last_modified = now() 
 		where orders_id = '$id'");
 	  $order_cnt++;
 	  $order_list[] = $value['id'];
 	}
-	$orders = (sizeof($order_list) > 0) ? (' (' . implode(', ', $order_list) . ')') : '';
+	$orders = (sizeof($order_list) > 0) ? (' (' . implode(', ', $order_list) . ')') : ''; 
 	$this->responseXML('0', sprintf(SOAP_CONFIRM_SUCCESS, $order_cnt . $orders), 'success');
 	return true;
   }

@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft, LLC (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -24,13 +24,14 @@ class xml_products extends parser {
   }
 
   function processXML($rawXML) {
-  	try{
 	//$rawXML = str_replace('&', '&amp;', $rawXML); // this character causes parser to break
 //echo '<pre>' . $rawXML . '</pre><br>';
 //	if (!$this->parse($rawXML)) {
-		$objXML = $this->xml_to_object($rawXML);
+	if (!$objXML = $this->xml_to_object($rawXML)) {
 //echo '<pre>' . $rawXML . '</pre><br>';
 //echo 'parsed string at shopping cart = '; print_r($objXML); echo '<br>';
+	  return false;  // parse the submitted string, check for errors
+	}
 	// try to determine the language used, default to en_us
 	$this->language = $objXML->Request->Language;
 	if (file_exists('language/' . $this->language . '/language.php')) {
@@ -38,13 +39,10 @@ class xml_products extends parser {
 	} else {
 	  require_once('language/en_us/language.php');
 	}
-		$this->validateUser($objXML);
-		$this->updateDatabase($this->formatArray($objXML));
+	if (!$this->validateUser($objXML))           return false;
+	if (!$product = $this->formatArray($objXML)) return false;
+	if (!$this->updateDatabase($product))        return false;
 	return true;
-  	}catch(Exception $e){
-  		$this->responseXML($e->getCode(), $e->getMessage(), 'error');
-  	}
-
   }
 
   function formatArray($objXML) { // specific to XML spec for a product upload
@@ -96,43 +94,52 @@ if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/extra_product_reads.php')) in
 // The remaining functions are specific to ZenCart. they need to be modified for the specific application.
 // It also needs to check for errors, i.e. missing information, bad data, etc.
   function updateDatabase($product) {
-	global $admin;
+	global $db, $messageStack;
 	// error check input
-	if (!$product['sku']) throw new Exception(SOAP_NO_SKU, 10);
-	if ($product['action'] <> 'InsertUpdate') throw new Exception(SOAP_BAD_ACTION, 16);
+	if (!$product['sku']) return $this->responseXML('10', SOAP_NO_SKU, 'error');
+	if ($product['action'] <> 'InsertUpdate') {
+		return $this->responseXML('16', SOAP_BAD_ACTION, 'error');
+	}
 
 	// set some preliminary information
 	// verify the submitted language exists on the Zencart side
 	$languages_code = strtolower(substr($this->language, 0, 2)); // Take the first two characters of the language iso code (e.g. en_us)
-	$result = $admin->DataBase->Execute("select languages_id from " . TABLE_LANGUAGES . " where code = '" . $languages_code . "'");
-	if ($result->RecordCount() <> 1) throw new Exception(SOAP_BAD_LANGUAGE_CODE . $product['language'], 11);
+	$result = $db->Execute("select languages_id from " . TABLE_LANGUAGES . " where code = '" . $languages_code . "'");
+	if ($result->RecordCount() <> 1) {
+		return $this->responseXML('11', SOAP_BAD_LANGUAGE_CODE . $product['language'], 'error');
+	}
 	$languages_id = $result->fields['languages_id'];
 
 	// determine and verify the product_type
 	$product_type_name = $product['product_type'];
-	$result = $admin->DataBase->Execute("select type_id from " . TABLE_PRODUCT_TYPES . " where type_name = '" . $product_type_name . "'");
-	if ($result->RecordCount() <> 1) throw new Exception(sprintf(SOAP_BAD_PRODUCT_TYPE, $product_type_name, $product['sku']), 12);
+	$result = $db->Execute("select type_id from " . TABLE_PRODUCT_TYPES . " where type_name = '" . $product_type_name . "'");
+	if ($result->RecordCount() <> 1) {
+		return $this->responseXML('12', sprintf(SOAP_BAD_PRODUCT_TYPE, $product_type_name, $product['sku']), 'error');
+	}
 	$product_type_id = $result->fields['type_id'];
 
 	// manufacturer to id
-	if ($product['manufacturer'] <> ''){
 	$manufacturer_name = $product['manufacturer'];
-	$result = $admin->DataBase->Execute("select manufacturers_id from " . TABLE_MANUFACTURERS . " where manufacturers_name = '" . $manufacturer_name . "'");
-		if ($result->RecordCount() <> 1) throw new Exception(sprintf(SOAP_BAD_MANUFACTURER, $manufacturer_name, $product['sku']), 13);
-		$manufacturers_id = $result->fields['manufacturers_id'];
-	}else {
-		$manufacturers_id = '';
+	$result = $db->Execute("select manufacturers_id from " . TABLE_MANUFACTURERS . " where manufacturers_name = '" . $manufacturer_name . "'");
+	if ($result->RecordCount() <> 1) {
+		return $this->responseXML('13', sprintf(SOAP_BAD_MANUFACTURER, $manufacturer_name, $product['sku']), 'error');
 	}
+	$manufacturers_id = $result->fields['manufacturers_id'];
 
 	// categories need to be verified to be lowest level and fetch id
 	$categories_name = $product['product_category'];
-	$result = $admin->DataBase->Execute("select categories_id from " . TABLE_CATEGORIES_DESCRIPTION . "
+	$result = $db->Execute("select categories_id from " . TABLE_CATEGORIES_DESCRIPTION . "
 		where categories_name = '" . $categories_name . "' and language_id = '" . $languages_id . "'");
-	if ($result->RecordCount() <> 1) throw new Exception(sprintf(SOAP_BAD_CATEGORY, $categories_name, $product['sku']), 14);
+	if ($result->RecordCount() <> 1) {
+		return $this->responseXML('14', sprintf(SOAP_BAD_CATEGORY, $categories_name, $product['sku']), 'error');
+	}
 	$categories_id = $result->fields['categories_id'];
 	// verify that it is the lowest level of category tree (required by zencart)
-	$result = $admin->DataBase->Execute("select categories_id from " . TABLE_CATEGORIES . " where parent_id = '" . $categories_id . "'");
-	if ($result->RecordCount() <> 0) throw new Exception(SOAP_BAD_CATEGORY_A, 15);
+	$result = $db->Execute("select categories_id from " . TABLE_CATEGORIES . " where parent_id = '" . $categories_id . "'");
+	if ($result->RecordCount() <> 0) {
+		return $this->responseXML('15', sprintf(SOAP_BAD_CATEGORY_A, $categories_name, $product['sku']), 'error');
+	}
+
 	// verify the image and storage location - save image
 	$image_directory = $product['image_directory'];
 	// directory cannot be more than one level down
@@ -145,13 +152,19 @@ if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/extra_product_reads.php')) in
 		// the str_replace is to necessary to fix a PHP 5 issue with spaces in the base64 encode... see php.net
 		$contents = base64_decode(str_replace(" ", "+", $image_data));
 		if ($image_directory) {
-			validate_path(DIR_FS_CATALOG_IMAGES . $image_directory);
+			if (!is_dir(DIR_FS_CATALOG_IMAGES . $image_directory)) {
+				mkdir(DIR_FS_CATALOG_IMAGES . $image_directory);
+			}
 			$full_path = $image_directory . '/' . $image_filename;
 		} else {
 			$full_path = $image_filename;
 		}
-		if (!$handle = @fopen(DIR_FS_CATALOG_IMAGES . $full_path, 'wb')) throw new Exception(SOAP_OPEN_FAILED . $full_path, 21);
-		if (@fwrite($handle, $contents) === false) throw new Exception(SOAP_ERROR_WRITING_IMAGE, 22);
+		if (!$handle = fopen(DIR_FS_CATALOG_IMAGES . $full_path, 'wb')) {
+			return $this->responseXML('21', SOAP_OPEN_FAILED . $full_path, 'error');
+		}
+		if (fwrite($handle, $contents) === false) {
+			return $this->responseXML('22', SOAP_ERROR_WRITING_IMAGE, 'error');
+		}
 		fclose($handle);
 	}
 
@@ -199,19 +212,20 @@ if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/extra_product_reads.php')) in
 if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/extra_product_saves.php')) include (DIR_FS_ADMIN . 'soap/extra_actions/extra_product_saves.php');
 // EOF - Hook for customization
 	// write to the tables
+	$upload_success = true;
 	// determine if the SKU exists, if so update else insert the products table
-	$result = $admin->DataBase->Execute("select products_id from " . TABLE_PRODUCTS . " where phreebooks_sku = '" . $product['sku'] . "'");
+	$result = $db->Execute("select products_id from " . TABLE_PRODUCTS . " where phreebooks_sku = '" . $product['sku'] . "'");
 	if ($result->RecordCount() == 0) { // new product
 		zen_db_perform(TABLE_PRODUCTS, $sql_data_array);
 		$products_id = zen_db_insert_id();
-		$result = $admin->DataBase->Execute("insert into " . TABLE_PRODUCTS_TO_CATEGORIES . " set categories_id = " . $categories_id . ", products_id = " . $products_id);
+		$result = $db->Execute("insert into " . TABLE_PRODUCTS_TO_CATEGORIES . " set categories_id = " . $categories_id . ", products_id = " . $products_id);
 		$prod_desc_data_array['products_id'] = $products_id;
 		$prod_desc_data_array['language_id'] = $languages_id;
 		zen_db_perform(TABLE_PRODUCTS_DESCRIPTION, $prod_desc_data_array);
 	} else { // update product
 		$products_id = (int)$result->fields['products_id'];
 		zen_db_perform(TABLE_PRODUCTS, $sql_data_array, 'update', "products_id = '" . $products_id . "'");
-		$result = $admin->DataBase->Execute("update " . TABLE_PRODUCTS_TO_CATEGORIES . " set categories_id = " . $categories_id . " where products_id = " . $products_id);
+		$result = $db->Execute("update " . TABLE_PRODUCTS_TO_CATEGORIES . " set categories_id = " . $categories_id . " where products_id = " . $products_id);
 		zen_db_perform(TABLE_PRODUCTS_DESCRIPTION, $prod_desc_data_array, 'update', "products_id = " . $products_id.' and language_id =' . $languages_id);
 	}
 
@@ -219,11 +233,11 @@ if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/extra_product_saves.php')) in
 if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/additional_product_saves.php')) include (DIR_FS_ADMIN . 'soap/extra_actions/additional_product_saves.php');
 // EOF - Hook for customization
 	// Update the price levels, first clear out the current price level data
-	$admin->DataBase->Execute("delete from " . TABLE_PRODUCTS_DISCOUNT_QUANTITY . " where products_id = " . $products_id);
+	$db->Execute("delete from " . TABLE_PRODUCTS_DISCOUNT_QUANTITY . " where products_id = '$products_id'" );
 	// set the discount for each level from 2 on (level 1 set in base price)
 	for ($i=1, $j=2; $i < count($product['price_levels']); $i++, $j++) {
 	  if ($product['price_levels'][$j]['qty'])
-		$admin->DataBase->Execute("insert into " . TABLE_PRODUCTS_DISCOUNT_QUANTITY . " set
+		$db->Execute("insert into " . TABLE_PRODUCTS_DISCOUNT_QUANTITY . " set
 		  discount_id = "    . $i . ",
 		  products_id = "    . $products_id . ",
 		  discount_qty = "   . (real)$product['price_levels'][$j]['qty'] . ",
@@ -231,7 +245,10 @@ if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/additional_product_saves.php'
 	}
 
 	// make sure everything went as planned
-	// extract the error message from the messageStack and return with error
+	if (!$upload_success) { // extract the error message from the messageStack and return with error
+	  $text = strip_tags($messageStack->output());
+	  return $this->responseXML('90', SOAP_PU_POST_ERROR . $text, 'error');
+	}
 // TBD - log the upload activity to the database
 
 	$this->responseXML('0', sprintf(SOAP_PRODUCT_UPLOAD_SUCCESS, $product['sku']), 'success');

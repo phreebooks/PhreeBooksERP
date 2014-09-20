@@ -21,7 +21,7 @@
   // prepare order-status pulldown list
   $orders_statuses = array();
   $orders_status_array = array();
-  $orders_status = $admin->DataBase->Execute("select orders_status_id, orders_status_name
+  $orders_status = $db->Execute("select orders_status_id, orders_status_name
                                  from " . TABLE_ORDERS_STATUS . "
                                  where language_id = '" . (int)$_SESSION['languages_id'] . "' order by orders_status_id");
   while (!$orders_status->EOF) {
@@ -43,7 +43,7 @@
     $oID = zen_db_prepare_input(trim($_GET['oID']));
   }
   if ($oID) {
-    $orders = $admin->DataBase->Execute("select orders_id from " . TABLE_ORDERS . "
+    $orders = $db->Execute("select orders_id from " . TABLE_ORDERS . "
                               where orders_id = '" . (int)$oID . "'");
     $order_exists = true;
     if ($orders->RecordCount() <= 0) {
@@ -64,7 +64,7 @@ define('PB_BULK_MESSAGE','Completed downloading orders to PhreeBooks. The number
   switch ($action) {
     case 'bulk_dl':
 	  $pb_orders = array();
-	  $pb_list   = $admin->DataBase->Execute("select orders_id from " . TABLE_ORDERS . " where phreebooks = 0");
+	  $pb_list   = $db->Execute("select orders_id from " . TABLE_ORDERS . " where phreebooks = 0");
 	  while (!$pb_list->EOF) {
 		$pb_orders[] = $pb_list->fields['orders_id'];
 		$pb_list->MoveNext();
@@ -94,13 +94,13 @@ define('PB_BULK_MESSAGE','Completed downloading orders to PhreeBooks. The number
       // reset single download to on
         if ($_GET['download_reset_on'] > 0) {
           // adjust download_maxdays based on current date
-          $check_status = $admin->DataBase->Execute("select customers_name, customers_email_address, orders_status,
+          $check_status = $db->Execute("select customers_name, customers_email_address, orders_status,
                                       date_purchased from " . TABLE_ORDERS . "
                                       where orders_id = '" . $_GET['oID'] . "'");
 
           // check for existing product attribute download days and max
           $chk_products_download_query = "SELECT orders_products_id, orders_products_filename, products_prid from " . TABLE_ORDERS_PRODUCTS_DOWNLOAD . " WHERE orders_products_download_id='" . $_GET['download_reset_on'] . "'";
-          $chk_products_download = $admin->DataBase->Execute($chk_products_download_query);
+          $chk_products_download = $db->Execute($chk_products_download_query);
 
           $chk_products_download_time_query = "SELECT pa.products_attributes_id, pa.products_id, pad.products_attributes_filename, pad.products_attributes_maxdays, pad.products_attributes_maxcount
           from " . TABLE_PRODUCTS_ATTRIBUTES . " pa, " . TABLE_PRODUCTS_ATTRIBUTES_DOWNLOAD . " pad
@@ -108,7 +108,7 @@ define('PB_BULK_MESSAGE','Completed downloading orders to PhreeBooks. The number
           and pad.products_attributes_filename = '" . $chk_products_download->fields['orders_products_filename'] . "'
           and pa.products_id = '" . (int)$chk_products_download->fields['products_prid'] . "'";
 
-          $chk_products_download_time = $admin->DataBase->Execute($chk_products_download_time_query);
+          $chk_products_download_time = $db->Execute($chk_products_download_time_query);
 
           if ($chk_products_download_time->EOF) {
             $zc_max_days = (DOWNLOAD_MAX_DAYS == 0 ? 0 : zen_date_diff($check_status->fields['date_purchased'], date('Y-m-d H:i:s', time())) + DOWNLOAD_MAX_DAYS);
@@ -118,7 +118,7 @@ define('PB_BULK_MESSAGE','Completed downloading orders to PhreeBooks. The number
             $update_downloads_query = "update " . TABLE_ORDERS_PRODUCTS_DOWNLOAD . " set download_maxdays='" . $zc_max_days . "', download_count='" . $chk_products_download_time->fields['products_attributes_maxcount'] . "' where orders_id='" . $_GET['oID'] . "' and orders_products_download_id='" . $_GET['download_reset_on'] . "'";
           }
 
-          $admin->DataBase->Execute($update_downloads_query);
+          $db->Execute($update_downloads_query);
           unset($_GET['download_reset_on']);
 
           $messageStack->add_session(SUCCESS_ORDER_UPDATED_DOWNLOAD_ON, 'success');
@@ -130,7 +130,7 @@ define('PB_BULK_MESSAGE','Completed downloading orders to PhreeBooks. The number
           // *** fix: adjust count not maxdays to cancel download
 //          $update_downloads_query = "update " . TABLE_ORDERS_PRODUCTS_DOWNLOAD . " set download_maxdays='0', download_count='0' where orders_id='" . $_GET['oID'] . "' and orders_products_download_id='" . $_GET['download_reset_off'] . "'";
           $update_downloads_query = "update " . TABLE_ORDERS_PRODUCTS_DOWNLOAD . " set download_count='0' where orders_id='" . $_GET['oID'] . "' and orders_products_download_id='" . $_GET['download_reset_off'] . "'";
-          $admin->DataBase->Execute($update_downloads_query);
+          $db->Execute($update_downloads_query);
           unset($_GET['download_reset_off']);
 
           $messageStack->add_session(SUCCESS_ORDER_UPDATED_DOWNLOAD_OFF, 'success');
@@ -150,12 +150,12 @@ define('PB_BULK_MESSAGE','Completed downloading orders to PhreeBooks. The number
         if ($status < 1) break;
 
         $order_updated = false;
-        $check_status = $admin->DataBase->Execute("select customers_name, customers_email_address, orders_status,
+        $check_status = $db->Execute("select customers_name, customers_email_address, orders_status,
                                       date_purchased from " . TABLE_ORDERS . "
                                       where orders_id = '" . (int)$oID . "'");
 
         if ( ($check_status->fields['orders_status'] != $status) || zen_not_null($comments)) {
-          $admin->DataBase->Execute("update " . TABLE_ORDERS . "
+          $db->Execute("update " . TABLE_ORDERS . "
                         set orders_status = '" . zen_db_input($status) . "', last_modified = now()
                         where orders_id = '" . (int)$oID . "'");
 
@@ -191,8 +191,8 @@ define('PB_BULK_MESSAGE','Completed downloading orders to PhreeBooks. The number
 
             // PayPal Trans ID, if any
             $sql = "select txn_id, parent_txn_id from " . TABLE_PAYPAL . " where order_id = :orderID order by last_modified DESC, date_added DESC, parent_txn_id DESC, paypal_ipn_id DESC ";
-            $sql = $admin->DataBase->bindVars($sql, ':orderID', $oID, 'integer');
-            $result = $admin->DataBase->Execute($sql);
+            $sql = $db->bindVars($sql, ':orderID', $oID, 'integer');
+            $result = $db->Execute($sql);
             if ($result->RecordCount() > 0) {
               $message .= "\n\n" . ' PayPal Trans ID: ' . $result->fields['txn_id'];
               $html_msg['EMAIL_PAYPAL_TRANSID'] = $result->fields['txn_id'];
@@ -207,7 +207,7 @@ define('PB_BULK_MESSAGE','Completed downloading orders to PhreeBooks. The number
             $customer_notified = '-1';
           }
 
-          $admin->DataBase->Execute("insert into " . TABLE_ORDERS_STATUS_HISTORY . "
+          $db->Execute("insert into " . TABLE_ORDERS_STATUS_HISTORY . "
                       (orders_id, orders_status_id, date_added, customer_notified, comments)
                       values ('" . (int)$oID . "',
                       '" . zen_db_input($status) . "',
@@ -237,7 +237,7 @@ define('PB_BULK_MESSAGE','Completed downloading orders to PhreeBooks. The number
             $chk_downloads_query = "SELECT opd.*, op.products_id from " . TABLE_ORDERS_PRODUCTS_DOWNLOAD . " opd, " . TABLE_ORDERS_PRODUCTS . " op
                                     WHERE op.orders_id='" . (int)$oID . "'
                                     and opd.orders_products_id = op.orders_products_id";
-            $chk_downloads = $admin->DataBase->Execute($chk_downloads_query);
+            $chk_downloads = $db->Execute($chk_downloads_query);
 
             while (!$chk_downloads->EOF) {
               $chk_products_download_time_query = "SELECT pa.products_attributes_id, pa.products_id, pad.products_attributes_filename, pad.products_attributes_maxdays, pad.products_attributes_maxcount
@@ -246,7 +246,7 @@ define('PB_BULK_MESSAGE','Completed downloading orders to PhreeBooks. The number
                                                     and pad.products_attributes_filename = '" . $chk_downloads->fields['orders_products_filename'] . "'
                                                     and pa.products_id = '" . $chk_downloads->fields['products_id'] . "'";
 
-              $chk_products_download_time = $admin->DataBase->Execute($chk_products_download_time_query);
+              $chk_products_download_time = $db->Execute($chk_products_download_time_query);
 
               if ($chk_products_download_time->EOF) {
                 $zc_max_days = (DOWNLOAD_MAX_DAYS == 0 ? 0 : zen_date_diff($check_status->fields['date_purchased'], date('Y-m-d H:i:s', time())) + DOWNLOAD_MAX_DAYS);
@@ -256,7 +256,7 @@ define('PB_BULK_MESSAGE','Completed downloading orders to PhreeBooks. The number
                 $update_downloads_query = "update " . TABLE_ORDERS_PRODUCTS_DOWNLOAD . " set download_maxdays='" . $zc_max_days . "', download_count='" . $chk_products_download_time->fields['products_attributes_maxcount'] . "' where orders_id='" . (int)$oID . "' and orders_products_download_id='" . $chk_downloads->fields['orders_products_download_id'] . "'";
               }
 
-              $admin->DataBase->Execute($update_downloads_query);
+              $db->Execute($update_downloads_query);
 
               $chk_downloads->MoveNext();
             }
@@ -281,14 +281,14 @@ define('PB_BULK_MESSAGE','Completed downloading orders to PhreeBooks. The number
         zen_redirect(zen_href_link(FILENAME_ORDERS, zen_get_all_get_params(array('oID', 'action')), 'NONSSL'));
         break;
       case 'delete_cvv':
-        $delete_cvv = $admin->DataBase->Execute("update " . TABLE_ORDERS . " set cc_cvv = '" . TEXT_DELETE_CVV_REPLACEMENT . "' where orders_id = '" . (int)$_GET['oID'] . "'");
+        $delete_cvv = $db->Execute("update " . TABLE_ORDERS . " set cc_cvv = '" . TEXT_DELETE_CVV_REPLACEMENT . "' where orders_id = '" . (int)$_GET['oID'] . "'");
         zen_redirect(zen_href_link(FILENAME_ORDERS, zen_get_all_get_params(array('action')) . 'action=edit', 'NONSSL'));
         break;
       case 'mask_cc':
-        $result  = $admin->DataBase->Execute("select cc_number from " . TABLE_ORDERS . " where orders_id = '" . (int)$_GET['oID'] . "'");
+        $result  = $db->Execute("select cc_number from " . TABLE_ORDERS . " where orders_id = '" . (int)$_GET['oID'] . "'");
         $old_num = $result->fields['cc_number'];
         $new_num = substr($old_num, 0, 4) . str_repeat('*', (strlen($old_num) - 8)) . substr($old_num, -4);
-        $mask_cc = $admin->DataBase->Execute("update " . TABLE_ORDERS . " set cc_number = '" . $new_num . "' where orders_id = '" . (int)$_GET['oID'] . "'");
+        $mask_cc = $db->Execute("update " . TABLE_ORDERS . " set cc_number = '" . $new_num . "' where orders_id = '" . (int)$_GET['oID'] . "'");
         zen_redirect(zen_href_link(FILENAME_ORDERS, zen_get_all_get_params(array('action')) . 'action=edit', 'NONSSL'));
         break;
 
@@ -664,7 +664,7 @@ function couponpopupWindow(url) {
             <td class="smallText" align="center"><strong><?php echo TABLE_HEADING_COMMENTS; ?></strong></td>
           </tr>
 <?php
-    $orders_history = $admin->DataBase->Execute("select orders_status_id, date_added, customer_notified, comments
+    $orders_history = $db->Execute("select orders_status_id, date_added, customer_notified, comments
                                     from " . TABLE_ORDERS_STATUS_HISTORY . "
                                     where orders_id = '" . zen_db_input($oID) . "'
                                     order by date_added");
@@ -728,7 +728,7 @@ function couponpopupWindow(url) {
       </tr>
 <?php
 // check if order has open gv
-        $gv_check = $admin->DataBase->Execute("select order_id, unique_id
+        $gv_check = $db->Execute("select order_id, unique_id
                                   from " . TABLE_COUPON_GV_QUEUE ."
                                   where order_id = '" . $_GET['oID'] . "' and release_flag='N' limit 1");
         if ($gv_check->RecordCount() > 0) {
@@ -821,7 +821,7 @@ function couponpopupWindow(url) {
     $search_distinct = ' distinct ';
     $new_table = " left join " . TABLE_ORDERS_PRODUCTS . " op on (op.orders_id = o.orders_id) ";
     $keywords = zen_db_input(zen_db_prepare_input($_GET['search_orders_products']));
-    $search = " and (op.products_model like '%$keywords%' or op.products_name like '$keywords%')";
+    $search = " and (op.products_model like '%" . $keywords . "%' or op.products_name like '" . $keywords . "%')";
     if (substr(strtoupper($_GET['search_orders_products']), 0, 3) == 'ID:') {
       $keywords = TRIM(substr($_GET['search_orders_products'], 3));
       $search = " and op.products_id ='" . (int)$keywords . "'";
@@ -834,13 +834,13 @@ function couponpopupWindow(url) {
   if (isset($_GET['search']) && zen_not_null($_GET['search'])) {
     $search_distinct = ' ';
     $keywords = zen_db_input(zen_db_prepare_input($_GET['search']));
-    $search = " and (o.customers_city like '%$keywords%' or o.customers_postcode like '%$keywords%' or o.date_purchased like '%$keywords%' or o.billing_name like '%$keywords%' or o.billing_company like '%$keywords%' or o.billing_street_address like '%$keywords%' or o.delivery_city like '%$keywords%' or o.delivery_postcode like '%$keywords%' or o.delivery_name like '%$keywords%' or o.delivery_company like '%$keywords%' or o.delivery_street_address like '%$keywords%' or o.billing_city like '%$keywords%' or o.billing_postcode like '%$keywords%' or o.customers_email_address like '%$keywords%' or o.customers_name like '%$keywords%' or o.customers_company like '%$keywords%' or o.customers_street_address  like '%$keywords%' or o.customers_telephone like '%$keywords%' or o.ip_address  like '%$keywords%')";
+    $search = " and (o.customers_city like '%" . $keywords . "%' or o.customers_postcode like '%" . $keywords . "%' or o.date_purchased like '%" . $keywords . "%' or o.billing_name like '%" . $keywords . "%' or o.billing_company like '%" . $keywords . "%' or o.billing_street_address like '%" . $keywords . "%' or o.delivery_city like '%" . $keywords . "%' or o.delivery_postcode like '%" . $keywords . "%' or o.delivery_name like '%" . $keywords . "%' or o.delivery_company like '%" . $keywords . "%' or o.delivery_street_address like '%" . $keywords . "%' or o.billing_city like '%" . $keywords . "%' or o.billing_postcode like '%" . $keywords . "%' or o.customers_email_address like '%" . $keywords . "%' or o.customers_name like '%" . $keywords . "%' or o.customers_company like '%" . $keywords . "%' or o.customers_street_address  like '%" . $keywords . "%' or o.customers_telephone like '%" . $keywords . "%' or o.ip_address  like '%" . $keywords . "%')";
     $new_table = '';
 //    $new_fields = ", o.customers_company, o.customers_email_address, o.customers_street_address, o.delivery_company, o.delivery_name, o.delivery_street_address, o.billing_company, o.billing_name, o.billing_street_address, o.payment_module_code, o.shipping_module_code, o.ip_address ";
   }
 } // eof: search orders or orders_products
     $new_fields = ", o.customers_company, o.customers_email_address, o.customers_street_address, o.delivery_company, o.delivery_name, o.delivery_street_address, o.billing_company, o.billing_name, o.billing_street_address, o.payment_module_code, o.shipping_module_code, o.ip_address ";
-// BOF - Added by PhreeSoft
+// BOF - Added by PhreeSoft 
 	if (MODULE_PHREEBOOKS_ORDER_DOWNLOAD_STATUS == 'True') $new_fields .= ", o.phreebooks ";
 // EOF -  Added by PhreeSoft
 ?>
@@ -887,7 +887,7 @@ function couponpopupWindow(url) {
 // Split Page
 // reset page when page is unknown
 if (($_GET['page'] == '' or $_GET['page'] <= 1) and $_GET['oID'] != '') {
-  $check_page = $admin->DataBase->Execute($orders_query_raw);
+  $check_page = $db->Execute($orders_query_raw);
   $check_count=1;
   if ($check_page->RecordCount() > MAX_DISPLAY_SEARCH_RESULTS_ORDERS) {
     while (!$check_page->EOF) {
@@ -905,7 +905,7 @@ if (($_GET['page'] == '' or $_GET['page'] <= 1) and $_GET['oID'] != '') {
 
 //    $orders_query_numrows = '';
     $orders_split = new splitPageResults($_GET['page'], MAX_DISPLAY_SEARCH_RESULTS_ORDERS, $orders_query_raw, $orders_query_numrows);
-    $orders = $admin->DataBase->Execute($orders_query_raw);
+    $orders = $db->Execute($orders_query_raw);
     while (!$orders->EOF) {
     if ((!isset($_GET['oID']) || (isset($_GET['oID']) && ($_GET['oID'] == $orders->fields['orders_id']))) && !isset($oInfo)) {
         $oInfo = new objectInfo($orders->fields);
@@ -933,7 +933,7 @@ if (($_GET['page'] == '' or $_GET['page'] <= 1) and $_GET['oID'] != '') {
                 <td class="dataTableContent" align="center"><?php echo zen_datetime_short($orders->fields['date_purchased']); ?></td>
                 <td class="dataTableContent" align="right"><?php echo $orders->fields['orders_status_name']; ?></td>
                 <td class="dataTableContent" align="center"><?php echo (zen_get_orders_comments($orders->fields['orders_id']) == '' ? '' : zen_image(DIR_WS_IMAGES . 'icon_yellow_on.gif', TEXT_COMMENTS_YES, 16, 16)); ?></td>
-
+				
 <?php // BOF - Download icon added by PhreeSoft to download order ?>
                 <td class="dataTableContent" align="right">
 <?php
@@ -941,12 +941,12 @@ if ($orders->fields['phreebooks'] == 0 && MODULE_PHREEBOOKS_ORDER_DOWNLOAD_STATU
   echo '<a href="' . zen_href_link(FILENAME_ORDERS, zen_get_all_get_params(array('oID', 'action')) . 'oID=' . $orders->fields['orders_id'] . '&action=download', 'NONSSL') . '">' . zen_image(DIR_WS_IMAGES . 'icons/file_download.gif', PB_TEXT_DOWNLOAD) . '</a>';
 }
 // this is the original line expanded to make it more readable
-echo '<a href="' . zen_href_link(FILENAME_ORDERS, zen_get_all_get_params(array('oID', 'action')) . 'oID=' . $orders->fields['orders_id'] . '&action=edit', 'NONSSL') . '">' . zen_image(DIR_WS_IMAGES . 'icon_edit.gif', ICON_EDIT) . '</a>';
-if (isset($oInfo) && is_object($oInfo) && ($orders->fields['orders_id'] == $oInfo->orders_id)) {
-  echo zen_image(DIR_WS_IMAGES . 'icon_arrow_right.gif', '');
-} else {
+echo '<a href="' . zen_href_link(FILENAME_ORDERS, zen_get_all_get_params(array('oID', 'action')) . 'oID=' . $orders->fields['orders_id'] . '&action=edit', 'NONSSL') . '">' . zen_image(DIR_WS_IMAGES . 'icon_edit.gif', ICON_EDIT) . '</a>'; 
+if (isset($oInfo) && is_object($oInfo) && ($orders->fields['orders_id'] == $oInfo->orders_id)) { 
+  echo zen_image(DIR_WS_IMAGES . 'icon_arrow_right.gif', ''); 
+} else { 
   echo '<a href="' . zen_href_link(FILENAME_ORDERS, zen_get_all_get_params(array('oID')) . 'oID=' . $orders->fields['orders_id'], 'NONSSL') . '">' . zen_image(DIR_WS_IMAGES . 'icon_info.gif', IMAGE_ICON_INFO) . '</a>';
-}
+} 
 ?>
 				</td>
 <?php // comment out original line since it have the table tags in it ?>
@@ -1012,7 +1012,7 @@ if (isset($oInfo) && is_object($oInfo) && ($orders->fields['orders_id'] == $oInf
         $contents[] = array('text' => '<br />' . ENTRY_SHIPPING . ' '  . $oInfo->shipping_method);
 
 // check if order has open gv
-        $gv_check = $admin->DataBase->Execute("select order_id, unique_id
+        $gv_check = $db->Execute("select order_id, unique_id
                                   from " . TABLE_COUPON_GV_QUEUE ."
                                   where order_id = '" . $oInfo->orders_id . "' and release_flag='N' limit 1");
         if ($gv_check->RecordCount() > 0) {
@@ -1023,7 +1023,7 @@ if (isset($oInfo) && is_object($oInfo) && ($orders->fields['orders_id'] == $oInf
       }
 
 // indicate if comments exist
-      $orders_history_query = $admin->DataBase->Execute("select orders_status_id, date_added, customer_notified, comments from " . TABLE_ORDERS_STATUS_HISTORY . " where orders_id = '" . $oInfo->orders_id . "' and comments !='" . "'" );
+      $orders_history_query = $db->Execute("select orders_status_id, date_added, customer_notified, comments from " . TABLE_ORDERS_STATUS_HISTORY . " where orders_id = '" . $oInfo->orders_id . "' and comments !='" . "'" );
       if ($orders_history_query->RecordCount() > 0) {
         $contents[] = array('align' => 'left', 'text' => '<br />' . TABLE_HEADING_COMMENTS);
       }

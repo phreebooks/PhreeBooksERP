@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft, LLC (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -20,6 +20,7 @@
 class parser {
 
   function doCURLRequest($method = 'GET', $url, $vars) {
+	global $messageStack;
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_VERBOSE, 0);
@@ -27,7 +28,7 @@ class parser {
 	curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
 //	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 10); // times out after 10 seconds
+	curl_setopt($ch, CURLOPT_TIMEOUT, 10); // times out after 10 seconds 
 //	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 	if (strtoupper($method) == 'POST') {
 	  curl_setopt($ch, CURLOPT_POST, true);
@@ -44,7 +45,8 @@ class parser {
 	if ($data != '') {
 	  return $data;
 	} else {
-	  throw new Exception('ZenCart Interface cURL error: ' . $error);
+	  $messageStack->add('ZenCart Interface cURL error: ' . $error, 'error');
+	  return false; 
 	}
   }
 
@@ -56,6 +58,7 @@ class parser {
   }
 
   function xml_to_object($xml = '') {
+    global $messageStack;
     $xml     = trim($xml);
     $output  = NULL;
     $runaway = 0;
@@ -70,10 +73,13 @@ class parser {
 	    $tag = substr($xml, 1, strpos($xml, '>') - 1);
 	    $taglen = strlen($tag) + 2;
 	    $end_tag = '</' . $tag . '>';
-	    if (strpos($xml, $end_tag) === false) throw new Exception('ZenCart XML parse error looking for end tag: ' . $tag . ' but could not find it!');
+	    if (strpos($xml, $end_tag) === false) {
+	      $messageStack->add('PhreeBooks XML parse error looking for end tag: ' . $tag . ' but could not find it!','error');
+	      return false;
+	    }
 	    while(true) {
 		  $runaway++;
-		  if ($runaway > 10000) throw new Exception('ZenCart Runaway counter 1 reached. There is an error in the xml entry!');
+		  if ($runaway > 10000) return $messageStack->add('Runaway counter 1 reached. There is an error in the xml entry!','error');	
 	      $data = trim(substr($xml, $taglen, strpos($xml, $end_tag) - $taglen));
 		  if (isset($output->$tag)) {
 		    if (!is_array($output->$tag)) $output->$tag = array($output->$tag);
@@ -89,7 +95,7 @@ class parser {
 	    return $xml;
 	  }
 	  $runaway++;
-	  if ($runaway > 10000) throw new Exception('ZenCart Runaway counter 2 reached. There is an error in the xml entry!');
+	  if ($runaway > 10000) $messageStack->add('Runaway counter 2 reached. There is an error in the xml entry!','error');	
     }
     return $output;
   }
@@ -111,17 +117,17 @@ class parser {
   }
 
   function validateUser($objXML) {
-	global $admin;
+	global $db;
 	$this->username = $objXML->Request->UserName;
 	$this->password = $objXML->Request->UserPassword;
-	if (!$this->username || !$this->password) throw new Exception(SOAP_NO_USER_PW, 10);
+	if (!$this->username || !$this->password) return $this->responseXML('10', SOAP_NO_USER_PW, 'error');
 // TBD - This portion is specific to the application database name, fields and password validation methods
 //	if (!is_object($db)) { echo 'the database is not open ...'; return false; }
 	// validate user with db (call validation function)
-	$result = $admin->DataBase->Execute("select admin_pass from " . DB_PREFIX . "admin where admin_name = '" . $this->username . "'");
-	if ($result->RecordCount() == 0) throw new Exception( TEXT_THE_USERNAME_SUBMITTED_IS_NOT_VALID, 11);
+	$result = $db->Execute("select admin_pass from " . DB_PREFIX . "admin where admin_name = '" . $this->username . "'");
+	if ($result->RecordCount() == 0) return $this->responseXML('11', SOAP_USER_NOT_FOUND, 'error');
 	if (!zen_validate_password($this->password, $result->fields['admin_pass'])) {
-	  throw new Exception(TEXT_THE_PASSWORD_SUBMITTED_IS_NOT_VALID, 12);
+	  return $this->responseXML('12', SOAP_PASSWORD_NOT_FOUND, 'error');
 	}
 	return true; // if both the username and password are correct
   }
@@ -144,10 +150,11 @@ class parser {
 	  default:
 		$strResponse .= $this->xmlEntry('Result', 'error');
 		$strResponse .= $this->xmlEntry('Code', $code);
-		$strResponse .= $this->xmlEntry('Text', TEXT_UNEXPECTED_ERROR);
+		$strResponse .= $this->xmlEntry('Text', SOAP_UNEXPECTED_ERROR);
 	}
 	$strResponse .= '</Response>';
 	echo $strResponse;
+	return false;
   }
 
 }

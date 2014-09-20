@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft, LLC (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -27,9 +27,9 @@ require_once(DIR_FS_ADMIN . 'soap/classes/parser.php');
 class phreebooks extends parser {
 
   function submitXML($action, $data = '') {
-	global $admin, $messageStack;
+	global $db, $messageStack;
 	switch ($action) {
-	  case 'download':
+	  case 'download': 
 		$strXML = $this->buildOrderDownloadXML($data);
 		$strXML = utf8_encode($strXML);
 //echo 'Zencart order array = '; print_r($data); echo '<br>';
@@ -45,22 +45,22 @@ class phreebooks extends parser {
 		$this->close  = $objXML->Response->SuccessfulOrders;
 		$this->failed = $objXML->Response->FailedOrders;
 		if ($this->close) {
-		  $admin->DataBase->Execute("update " . TABLE_ORDERS . " set phreebooks = 1, last_modified = now() where orders_id in (" . $this->close . ")");
+		  $db->Execute("update " . TABLE_ORDERS . " set phreebooks = 1, last_modified = now() where orders_id in (" . $this->close . ")");
 		  if (defined('MODULE_PHREEBOOKS_ORDER_DOWNLOAD_ORDER_STATUS') && MODULE_PHREEBOOKS_ORDER_DOWNLOAD_ORDER_STATUS) {
 			// insert a new status in the order status table
 			$pb_orders = explode(',', $this->close);
 			if (is_array($pb_orders)) foreach ($pb_orders as $value) {
-			  $admin->DataBase->Execute("insert into " . TABLE_ORDERS_STATUS_HISTORY . " set
-			    orders_id = '" . trim($value) . "',
-			    orders_status_id = " . MODULE_PHREEBOOKS_ORDER_DOWNLOAD_ORDER_STATUS . ",
-			    date_added = now(),
-			    customer_notified = '0',
+			  $db->Execute("insert into " . TABLE_ORDERS_STATUS_HISTORY . " set 
+			    orders_id = '" . trim($value) . "', 
+			    orders_status_id = " . MODULE_PHREEBOOKS_ORDER_DOWNLOAD_ORDER_STATUS . ", 
+			    date_added = now(), 
+			    customer_notified = '0', 
 			    comments = '" . 'Order is in process.' . "'");
 			}
 			// update the status in the orders table
-			$admin->DataBase->Execute("update " . TABLE_ORDERS . " set
+			$db->Execute("update " . TABLE_ORDERS . " set 
 			  orders_status = " . MODULE_PHREEBOOKS_ORDER_DOWNLOAD_ORDER_STATUS . ",
-			  last_modified = now()
+			  last_modified = now() 
 			  where orders_id in (" . $this->close . ")");
 		  }
 		  $messageStack->add(sprintf('Orders successfully downloaded to PhreeBooks: %s', $this->close), 'success');
@@ -180,9 +180,9 @@ class phreebooks extends parser {
 
 // Misc function to format XML string properly
   function getCodes($country, $zone) {
-	global $admin;
+	global $db;
 	$codes = array();
-	$iso_country = $admin->DataBase->Execute("select countries_id, countries_iso_code_2 from " . TABLE_COUNTRIES . "
+	$iso_country = $db->Execute("select countries_id, countries_iso_code_2 from " . TABLE_COUNTRIES . "
 	  where countries_name = '" . $country . "'");
 	if ($iso_country->RecordCount() < 1) { // not found, return original choices
 	  $codes['country'] = $country;
@@ -190,7 +190,7 @@ class phreebooks extends parser {
 	  return $codes;
 	}
 	$codes['country'] = $iso_country->fields['countries_iso_code_2'];
-	$state = $admin->DataBase->Execute("select zone_code from " . TABLE_ZONES . "
+	$state = $db->Execute("select zone_code from " . TABLE_ZONES . "
 	  where zone_country_id = '" . $iso_country->fields['countries_id'] . "' and zone_name = '" . $zone . "'");
 	$codes['state'] = ($state->RecordCount() < 1) ? $zone : $state->fields['zone_code'];
 	return $codes;
@@ -216,8 +216,8 @@ class phreebooks extends parser {
   }
 
   function find_sku($id, $name) {
-	global $admin;
-	$result = $admin->DataBase->Execute("select phreebooks_sku from " . TABLE_PRODUCTS . " where products_id = '" . $id . "'");
+	global $db;
+	$result = $db->Execute("select phreebooks_sku from " . TABLE_PRODUCTS . " where products_id = '" . $id . "'");
 	return ($result->fields['phreebooks_sku'] <> '') ? $result->fields['phreebooks_sku'] : $name;
   }
 }
