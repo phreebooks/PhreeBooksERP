@@ -247,7 +247,7 @@ class paymentech {
    * @throws \core\classes\userException
    */
   function before_process() {
-    global $order, $db, $currencies, $messageStack;
+    global $order, $admin, $currencies, $messageStack;
 
 	// if the card number has the blanked out middle number fields, it has been processed, the message that
 	// the charges were not processed were set in pre_confirmation_check, just return to continue without processing.

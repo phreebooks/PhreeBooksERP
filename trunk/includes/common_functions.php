@@ -182,8 +182,8 @@
 
   function gen_get_pull_down($db_name, $first_none = false, $show_id = '0', $id = 'id', $description = 'description') {
     global $admin;
-    $type_format_values = $admin->DataBase->Execute("select " . $id . " as id, " . $description . " as description
-      from " . $db_name . " order by '" . $id . "'");
+    $type_format_values = $admin->DataBase->Execute("select $id as id, $description as description
+      from " . $db_name . " order by '$id'");
     $type_format_array = array();
     if ($first_none) $type_format_array[] = array('id' => '', 'text' => TEXT_NONE);
     while (!$type_format_values->EOF) {
@@ -266,7 +266,7 @@
 
   function gen_get_type_description($db_name, $id, $full = true) {
     global $admin;
-    $type_name = $admin->DataBase->Execute("select description from " . $db_name . " where id = '" . $id . "'");
+    $type_name = $admin->DataBase->Execute("select description from $db_name where id = '$id'");
     if ($type_name->RecordCount() < 1) {
       return $id;
     } else {

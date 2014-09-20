@@ -276,7 +276,7 @@ class linkpoint_api extends \payment\classes\payment {
 	 */
 	function before_process() {
 
-		global $order, $db, $messageStack, $lp_avs, $lp_trans_num;
+		global $order, $admin, $messageStack, $lp_avs, $lp_trans_num;
 		$has_error = false;
 		$myorder = array ();
 

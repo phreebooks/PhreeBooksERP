@@ -23,7 +23,7 @@ class beg_bal_import {
   }
 
   	function processCSV($upload_name = '') {
-		global $coa, $db, $currencies, $messageStack;
+		global $coa, $admin, $currencies, $messageStack;
 		$this->cyberParse($upload_name);  // parse the submitted string, check for csv errors
 		//echo 'parsed string = '; print_r($this->records); echo '<br />';
 		$row_id = 0;
@@ -220,7 +220,7 @@ class beg_bal_import {
 	}
 
 	function processInventory($upload_name) {
-		global $admin, $coa, $db, $currencies, $messageStack;
+		global $admin, $coa, $currencies, $messageStack;
 		$this->cyberParse($upload_name);
 		$post_date = gen_specific_date(date('Y-m-d'), $day_offset = -1);
 		$glEntry   = new \core\classes\journal();

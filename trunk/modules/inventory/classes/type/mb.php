@@ -379,7 +379,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 	}
 
 	function ia_check_remove($sku) {
-		global $messageStack, $db;
+		global $messageStack, $admin;
 		// check to see if there is inventory history remaining, if so don't allow delete
 		$result = $admin->DataBase->Execute("select id from " . TABLE_INVENTORY_HISTORY . " where sku = '" . $sku . "' and remaining > 0");
 		if ($result->RecordCount() > 0) {

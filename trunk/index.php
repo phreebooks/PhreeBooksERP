@@ -41,7 +41,7 @@ try{
    	$admin->startProcessingEvents();
 }catch (\core\classes\userException $e) {
 	$messageStack->add($e->getMessage());
-	if (is_object($db)) gen_add_audit_log($e->getMessage());
+	if (is_object($admin->DataBase)) gen_add_audit_log($e->getMessage());
 	$messageStack->debug("\n\n".$e->getTraceAsString());
 	$admin->fireEvent($e->action);
 	$admin->startProcessingEvents();

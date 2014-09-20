@@ -161,7 +161,7 @@ class authorizenet extends \payment\classes\payment {
    *@throws Exception
    */
   function before_process() {
-    global $response, $db, $order, $messageStack;
+    global $response, $admin, $order, $messageStack;
 
 	// if the card number has the blanked out middle number fields, it has been processed, the message that
 	// the charges were not processed were set in pre_confirmation_check, just return to continue without processing.

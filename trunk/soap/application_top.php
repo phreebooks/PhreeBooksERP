@@ -76,7 +76,7 @@ require_once(DIR_FS_ADMIN . 'soap/language/' . LANGUAGE . '/language.php');
 // include the database functions
 // Load queryFactory db classes
 require_once(DIR_FS_ADMIN . 'includes/db/' . DB_TYPE . '/query_factory.php');
-$db = new queryFactory();
+$db = new queryFactory(); //@todo pdo
 if (!$admin->DataBase->connect(DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, DB_DATABASE)) throw new \core\classes\userException('cannot connec to db!');
 
 // set application wide parameters for phreebooks module

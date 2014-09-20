@@ -177,7 +177,7 @@ switch ($_REQUEST['action']) {
 		}
 		if (!$error) { // try to connect to db
 		  require('../includes/db/' . DB_TYPE . '/query_factory.php');
-		  $db = new queryFactory();
+		  $db = new queryFactory();//@todo pdo
 		  if (!$admin->DataBase->connect($db_host, $db_username, $db_password, $db_name)) {
 		  	$error = $messageStack->add(MSG_ERROR_CANNOT_CONNECT_DB . $admin->DataBase->show_error(), 'error');
 		  } else { // test for InnoDB support

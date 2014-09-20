@@ -334,7 +334,7 @@ class admin extends \core\classes\admin {
 	function ValidateUser (\core\classes\basis &$basis) {
 		global $admin;
 		// Errors will happen here if there was a problem logging in, logout and restart
-		if (!is_object($db)) throw new \core\classes\userException("Database isn't created");
+		if (!is_object($admin->DataBase)) throw new \core\classes\userException("Database isn't created");
 		$sql = "select admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security
 		  from " . TABLE_USERS . " where admin_name = '{$basis->cInfo->admin_name}'"; //@todo don't know if this works.
 		$result = $admin->DataBase->Execute($sql);

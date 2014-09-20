@@ -107,7 +107,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 	}
 
 	function check_remove($id){
-		global $messageStack, $db;
+		global $messageStack, $admin;
 		if(!isset($id)) throw new \core\classes\userException("the id field isn't set");
 		$this->get_item_by_id($id);
 		// check to see if there is inventory history remaining, if so don't allow delete
@@ -282,7 +282,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 	}
 
 	function mi_check_remove($sku) {
-		global $messageStack, $db;
+		global $messageStack, $admin;
 		// check to see if there is inventory history remaining, if so don't allow delete
 		$result = $admin->DataBase->Execute("select id from " . TABLE_INVENTORY_HISTORY . " where sku = '" . $sku . "' and remaining > 0");
 		if ($result->RecordCount() > 0) {

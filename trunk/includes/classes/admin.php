@@ -239,9 +239,9 @@ class admin {
 	}
 
 	final function phreedom_main_validateLogin(){
-		global $admin, $admin;
+		global $admin;
   		// Errors will happen here if there was a problem logging in, logout and restart
- 	 	if (!is_object($db)) throw new \core\classes\userException("Database isn't created", "phreedom", "main", "template_login");
+ 	 	if (!is_object($admin->DataBase)) throw new \core\classes\userException("Database isn't created", "phreedom", "main", "template_login");
 	    $admin_name     = db_prepare_input($_POST['admin_name']);
 	    $admin_pass     = db_prepare_input($_POST['admin_pass']);
 	    $_SESSION['company']	= db_prepare_input($_POST['company']);

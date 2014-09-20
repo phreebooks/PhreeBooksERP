@@ -211,7 +211,7 @@ class inventory {
 	 */
 
 	function copy($id, $newSku) {
-		global $admin, $db;
+		global $admin;
 		if (!$newSku) $newSku = $this->next_sku;
 		$admin->classes['inventory']->validate_name($newSku);
 		if(isset($id))$this->get_item_by_id($id);
@@ -268,7 +268,7 @@ class inventory {
  	*/
 
 	function rename($id, $newSku){
-		global $admin, $db;
+		global $admin;
 		if (!$newSku) $newSku = $this->next_sku;
 		$admin->classes['inventory']->validate_name($newSku);
 		if(isset($id))$this->get_item_by_id($id);

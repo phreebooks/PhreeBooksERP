@@ -169,7 +169,7 @@ class nova_xml extends \payment\classes\payment {
    *
    */
   function before_process() {
-    global $order, $db, $messageStack;
+    global $order, $admin, $messageStack;
 	// if the card number has the blanked out middle number fields, it has been processed, the message that
 	// the charges were not processed were set in pre_confirmation_check, just return to continue without processing.
 	if (strpos($this->field_1, '*') !== false) throw new \core\classes\userException(MODULE_PAYMENT_CC_NO_DUPS);

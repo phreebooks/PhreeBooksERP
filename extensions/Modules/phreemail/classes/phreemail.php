@@ -423,7 +423,7 @@ class phreemail extends PHPMailer{
  * @param array $email
  */
   	function db_add_message(array $email){
-		global $messageStack, $db;
+		global $messageStack, $admin;
 		unset($email['x_subject']);
 		unset($email['x_from_name']);
 	    unset($email['x_from_email']);
