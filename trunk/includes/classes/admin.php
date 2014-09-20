@@ -181,7 +181,7 @@ class admin {
 	  	global $admin;
 	  	foreach ($this->tables as $table => $create_table_sql) {
 	    	if (!db_table_exists($table)) {
-		  		if (!$db->Execute($create_table_sql)) throw new \core\classes\userException (sprintf("Error installing table: %s", $table));
+		  		if (!$admin->DataBase->Execute($create_table_sql)) throw new \core\classes\userException (sprintf("Error installing table: %s", $table));
 			}
 	  	}
 	}
@@ -190,16 +190,16 @@ class admin {
 	  	global $admin;
 	  	foreach ($this->tables as $table) {
 			if (db_table_exists($table)){
-				if ($db->Execute('DROP TABLE ' . $table)) throw new \core\classes\userException (sprintf("Error deleting table: %s", $table));
+				if ($admin->DataBase->Execute('DROP TABLE ' . $table)) throw new \core\classes\userException (sprintf("Error deleting table: %s", $table));
 			}
 	  	}
 	}
 
 	function add_report_heading($doc_title, $doc_group) {
 	  	global $admin;
-	  	$result = $db->Execute("select id from ".TABLE_PHREEFORM." where doc_group = '$doc_group'");
+	  	$result = $admin->DataBase->Execute("select id from ".TABLE_PHREEFORM." where doc_group = '$doc_group'");
 	  	if ($result->RecordCount() < 1) {
-	    	$db->Execute("INSERT INTO ".TABLE_PHREEFORM." (parent_id, doc_type, doc_title, doc_group, doc_ext, security, create_date) VALUES
+	    	$admin->DataBase->Execute("INSERT INTO ".TABLE_PHREEFORM." (parent_id, doc_type, doc_title, doc_group, doc_ext, security, create_date) VALUES
 	      	  (0, '0', '" . $doc_title . "', '".$doc_group."', '0', 'u:0;g:0', now())");
 	    	return db_insert_id();
 	  	} else {
@@ -210,9 +210,9 @@ class admin {
 	function add_report_folder($parent_id, $doc_title, $doc_group, $doc_ext) {
 	  	global $admin;
 	  	if ($parent_id == '') throw new \core\classes\userException("parent_id isn't set for document $doc_title");
-	  	$result = $db->Execute("select id from ".TABLE_PHREEFORM." where doc_group = '$doc_group' and doc_ext = '$doc_ext'");
+	  	$result = $admin->DataBase->Execute("select id from ".TABLE_PHREEFORM." where doc_group = '$doc_group' and doc_ext = '$doc_ext'");
 	  	if ($result->RecordCount() < 1) {
-	    	$db->Execute("INSERT INTO ".TABLE_PHREEFORM." (parent_id, doc_type, doc_title, doc_group, doc_ext, security, create_date) VALUES
+	    	$admin->DataBase->Execute("INSERT INTO ".TABLE_PHREEFORM." (parent_id, doc_type, doc_title, doc_group, doc_ext, security, create_date) VALUES
 	      	  (".$parent_id.", '0', '" . $doc_title . "', '".$doc_group."', '".$doc_ext."', 'u:0;g:0', now())");
 	  	}
 	}
@@ -248,7 +248,7 @@ class admin {
 	    $_SESSION['language']	= db_prepare_input($_POST['language']);
 	    $sql = "select admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security
 		  from " . TABLE_USERS . " where admin_name = '" . db_input($admin_name) . "'";
-	    if ($db->db_connected) $result = $db->Execute($sql);
+	    if ($admin->DataBase->db_connected) $result = $admin->DataBase->Execute($sql);
 		if (!$result || $admin_name <> $result->fields['admin_name'] || $result->fields['inactive']) throw new \core\classes\userException(sprintf(GEN_LOG_LOGIN_FAILED, TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD, $admin_name),  "phreedom", "main", 'template_login');
 		\core\classes\encryption::validate_password($admin_pass, $result->fields['admin_pass']);
 		$_SESSION['admin_id']       = $result->fields['admin_id'];
@@ -269,7 +269,7 @@ class admin {
 	  		if ($module_class->installed === true) $module_class->initialize();
 	  	}
 		if (defined('TABLE_CONTACTS')) {
-		    $dept = $db->Execute("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result->fields['account_id']);
+		    $dept = $admin->DataBase->Execute("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result->fields['account_id']);
 		    $_SESSION['department'] = $dept->fields['dept_rep_id'];
 		}
 		gen_add_audit_log(TEXT_USER_LOGIN ." -->" . $admin_name);

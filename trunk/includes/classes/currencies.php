@@ -37,7 +37,7 @@ class currencies {
 
   	function load_currencies(){
   		global $admin;
-  		$currencies = $db->Execute("select * from " .$this->db_table);
+  		$currencies = $admin->DataBase->Execute("select * from " .$this->db_table);
     	while (!$currencies->EOF) {
 	  		$this->currencies[$currencies->fields['code']] = array(
 	    	  'title'           => $currencies->fields['title'],
@@ -151,11 +151,11 @@ class currencies {
 
 		if (isset($_POST['default']) && ($_POST['default'] == 'on')) {
 			// first check to see if there are any general ledger entries
-		  	$result = $db->Execute("SELECT id FROM " . TABLE_JOURNAL_MAIN . " LIMIT 1");
+		  	$result = $admin->DataBase->Execute("SELECT id FROM " . TABLE_JOURNAL_MAIN . " LIMIT 1");
 		  	if ($result->RecordCount() > 0) throw new \core\classes\userException(SETUP_ERROR_CANNOT_CHANGE_DEFAULT);
 		  	write_configure('DEFAULT_CURRENCY', db_input($code));
 			db_perform($this->db_table, array('value' => 1), 'update', "code='$code'"); // change default exc rate to 1
-		    $db->Execute("alter table " . TABLE_JOURNAL_MAIN . "
+		    $admin->DataBase->Execute("alter table " . TABLE_JOURNAL_MAIN . "
 				change currencies_code currencies_code CHAR(3) NOT NULL DEFAULT '" . db_input($code) . "'");
 			$this->def_currency = db_input($code);
 			$this->btn_update();
@@ -174,7 +174,7 @@ class currencies {
 	  	\core\classes\user::validate_security($security_level, 1);
 	*/
 		$server_used = CURRENCY_SERVER_PRIMARY;
-		$currency = $db->Execute("select currencies_id, code, title from " . $this->db_table);
+		$currency = $admin->DataBase->Execute("select currencies_id, code, title from " . $this->db_table);
 		while (!$currency->EOF) {
 		  if ($currency->fields['code'] == $this->def_currency) { // skip default currency
 		    $currency->MoveNext();
@@ -190,7 +190,7 @@ class currencies {
 			$server_used = CURRENCY_SERVER_BACKUP;
 		  }
 		  if ($rate <> 0) {
-			$db->Execute("update " . $this->db_table . " set value = '" . $rate . "', last_updated = now()
+			$admin->DataBase->Execute("update " . $this->db_table . " set value = '" . $rate . "', last_updated = now()
 			  where currencies_id = '" . (int)$currency->fields['currencies_id'] . "'");
 			$message[] = sprintf(SETUP_INFO_CURRENCY_UPDATED, $currency->fields['title'], $currency->fields['code'], $server_used);
 			$messageStack->add(sprintf(SETUP_INFO_CURRENCY_UPDATED, $currency->fields['title'], $currency->fields['code'], $server_used), 'success');
@@ -221,12 +221,12 @@ class currencies {
 	  	global $admin;
 	  	\core\classes\user::validate_security($this->security_id, 4); // security check
 		// Can't delete default currency or last currency
-		$result = $db->Execute("select currencies_id from " . $this->db_table . " where code = '" . DEFAULT_CURRENCY . "'");
+		$result = $admin->DataBase->Execute("select currencies_id from " . $this->db_table . " where code = '" . DEFAULT_CURRENCY . "'");
 		if ($result->fields['currencies_id'] == $id) throw new \core\classes\userException(ERROR_CANNOT_DELETE_DEFAULT_CURRENCY);
-		$result = $db->Execute("select code, title from " . $this->db_table . " where currencies_id = '" . $id . "'");
-		$test_1 = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " where currencies_code = '" . $result->fields['code'] . "' limit 1");
+		$result = $admin->DataBase->Execute("select code, title from " . $this->db_table . " where currencies_id = '" . $id . "'");
+		$test_1 = $admin->DataBase->Execute("select id from " . TABLE_JOURNAL_MAIN . " where currencies_code = '" . $result->fields['code'] . "' limit 1");
 		if ($test_1->RecordCount() > 0) throw new \core\classes\userException(ERROR_CURRENCY_DELETE_IN_USE);
-		$db->Execute("delete from " . $this->db_table . " where currencies_id = '" . $id . "'");
+		$admin->DataBase->Execute("delete from " . $this->db_table . " where currencies_id = '" . $id . "'");
 		gen_add_audit_log(TEXT_CURRENCIES . ' - ' . TEXT_DELETE, $result->fields['title']);
 		return true;
 	}
