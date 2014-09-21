@@ -271,23 +271,23 @@ class admin extends \core\classes\admin {
 		parent::install ( $path_my_files, $demo );
 		// load some current status values
 		if (! db_field_exists ( TABLE_CURRENT_STATUS, 'next_po_num' ))
-			$admin->DataBase->Execute ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_po_num VARCHAR( 16 ) NOT NULL DEFAULT '5000';" );
+			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_po_num VARCHAR( 16 ) NOT NULL DEFAULT '5000';" );
 		if (! db_field_exists ( TABLE_CURRENT_STATUS, 'next_so_num' ))
-			$admin->DataBase->Execute ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_so_num VARCHAR( 16 ) NOT NULL DEFAULT '10000';" );
+			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_so_num VARCHAR( 16 ) NOT NULL DEFAULT '10000';" );
 		if (! db_field_exists ( TABLE_CURRENT_STATUS, 'next_inv_num' ))
-			$admin->DataBase->Execute ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_inv_num VARCHAR( 16 ) NOT NULL DEFAULT '20000';" );
+			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_inv_num VARCHAR( 16 ) NOT NULL DEFAULT '20000';" );
 		if (! db_field_exists ( TABLE_CURRENT_STATUS, 'next_check_num' ))
-			$admin->DataBase->Execute ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_check_num VARCHAR( 16 ) NOT NULL DEFAULT '100';" );
+			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_check_num VARCHAR( 16 ) NOT NULL DEFAULT '100';" );
 		if (! db_field_exists ( TABLE_CURRENT_STATUS, 'next_deposit_num' ))
-			$admin->DataBase->Execute ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_deposit_num VARCHAR( 16 ) NOT NULL DEFAULT '';" );
+			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_deposit_num VARCHAR( 16 ) NOT NULL DEFAULT '';" );
 		if (! db_field_exists ( TABLE_CURRENT_STATUS, 'next_cm_num' ))
-			$admin->DataBase->Execute ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_cm_num VARCHAR( 16 ) NOT NULL DEFAULT 'CM1000';" );
+			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_cm_num VARCHAR( 16 ) NOT NULL DEFAULT 'CM1000';" );
 		if (! db_field_exists ( TABLE_CURRENT_STATUS, 'next_vcm_num' ))
-			$admin->DataBase->Execute ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_vcm_num VARCHAR( 16 ) NOT NULL DEFAULT 'VCM1000';" );
+			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_vcm_num VARCHAR( 16 ) NOT NULL DEFAULT 'VCM1000';" );
 		if (! db_field_exists ( TABLE_CURRENT_STATUS, 'next_ap_quote_num' ))
-			$admin->DataBase->Execute ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_ap_quote_num VARCHAR( 16 ) NOT NULL DEFAULT 'RFQ1000';" );
+			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_ap_quote_num VARCHAR( 16 ) NOT NULL DEFAULT 'RFQ1000';" );
 		if (! db_field_exists ( TABLE_CURRENT_STATUS, 'next_ar_quote_num' ))
-			$admin->DataBase->Execute ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_ar_quote_num VARCHAR( 16 ) NOT NULL DEFAULT 'QU1000';" );
+			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_ar_quote_num VARCHAR( 16 ) NOT NULL DEFAULT 'QU1000';" );
 			// copy standard images to phreeform images directory
 		$dir_source = DIR_FS_MODULES . 'phreebooks/images/';
 		$dir_dest = DIR_FS_MY_FILES . $_SESSION ['company'] . '/phreeform/images/';
@@ -314,7 +314,7 @@ class admin extends \core\classes\admin {
 		if (version_compare ( $db_version, '2.1', '<' )) { // For PhreeBooks release 2.1 or lower to update to Phreedom structure
 			require (DIR_FS_MODULES . 'phreebooks/functions/updater.php');
 			if (db_table_exists ( TABLE_PROJECT_VERSION )) {
-				$result = $admin->DataBase->Execute ( "select * from " . TABLE_PROJECT_VERSION . " WHERE project_version_key = 'PhreeBooks Database'" );
+				$result = $admin->DataBase->query ( "select * from " . TABLE_PROJECT_VERSION . " WHERE project_version_key = 'PhreeBooks Database'" );
 				$db_version = $result->fields ['project_version_major'] . '.' . $result->fields ['project_version_minor'];
 				if (version_compare ( $db_version, '2.1', '<' ))
 					execute_upgrade ( $db_version );
@@ -324,7 +324,7 @@ class admin extends \core\classes\admin {
 		if (version_compare ( $db_version, '2.1', '==' )) {
 			$db_version = $this->release_update ( $this->id, 3.0, DIR_FS_MODULES . 'phreebooks/updates/R21toR30.php' );
 			// remove table project_version, no longer needed
-			$admin->DataBase->Execute ( "DROP TABLE " . TABLE_PROJECT_VERSION );
+			$admin->DataBase->query ( "DROP TABLE " . TABLE_PROJECT_VERSION );
 		}
 		if (version_compare ( $db_version, '3.0', '==' )) {
 			$db_version = $this->release_update ( $this->id, 3.1, DIR_FS_MODULES . 'phreebooks/updates/R30toR31.php' );
@@ -336,7 +336,7 @@ class admin extends \core\classes\admin {
 		}
 		if (version_compare ( $db_version, '3.2', '==' )) {
 			write_configure ( 'APPLY_CUSTOMER_CREDIT_LIMIT', '0' ); // flag for using credit limit to authorize orders
-			$admin->DataBase->Execute ( "ALTER TABLE " . TABLE_JOURNAL_MAIN . " CHANGE `shipper_code` `shipper_code` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT ''" );
+			$admin->DataBase->query ( "ALTER TABLE " . TABLE_JOURNAL_MAIN . " CHANGE `shipper_code` `shipper_code` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT ''" );
 			require_once (DIR_FS_MODULES . 'phreebooks/defaults.php');
 			if (is_array ( glob ( DIR_FS_ADMIN . 'PHREEBOOKS_DIR_MY_ORDERS*.zip' ) )) {
 				foreach ( glob ( DIR_FS_ADMIN . 'PHREEBOOKS_DIR_MY_ORDERS*.zip' ) as $file ) {
@@ -349,19 +349,19 @@ class admin extends \core\classes\admin {
 		}
 		if (version_compare ( $db_version, '3.4', '<' )) {
 			if (! db_field_exists ( TABLE_JOURNAL_ITEM, 'item_cnt' ))
-				$admin->DataBase->Execute ( "ALTER TABLE " . TABLE_JOURNAL_ITEM . " ADD item_cnt INT(11) NOT NULL DEFAULT '0' AFTER ref_id" );
+				$admin->DataBase->query ( "ALTER TABLE " . TABLE_JOURNAL_ITEM . " ADD item_cnt INT(11) NOT NULL DEFAULT '0' AFTER ref_id" );
 			$db_version = 3.4;
 		}
 		if (version_compare ( $db_version, '3.51', '<' )) {
-			$result = $admin->DataBase->Execute ( "SELECT id, so_po_ref_id FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id = 16 AND so_po_ref_id > 0" );
+			$result = $admin->DataBase->query ( "SELECT id, so_po_ref_id FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id = 16 AND so_po_ref_id > 0" );
 			while ( ! $result->EOF ) { // to fix transfers to store 0 from any other store
 				if ($result->fields ['so_po_ref_id'] > $result->fields ['id']) {
-					$admin->DataBase->Execute ( "UPDATE " . TABLE_JORNAL_MAIN . " SET so_po_ref_id = -1 WHERE id=" . $result->fields ['id'] );
+					$admin->DataBase->query ( "UPDATE " . TABLE_JORNAL_MAIN . " SET so_po_ref_id = -1 WHERE id=" . $result->fields ['id'] );
 				}
 				$result->MoveNext ();
 			}
 			if (! db_field_exists ( TABLE_JOURNAL_ITEM, 'purch_package_quantity' ))
-				$admin->DataBase->Execute ( "ALTER TABLE " . TABLE_JOURNAL_ITEM . " ADD purch_package_quantity float default NULL AFTER project_id" );
+				$admin->DataBase->query ( "ALTER TABLE " . TABLE_JOURNAL_ITEM . " ADD purch_package_quantity float default NULL AFTER project_id" );
 		}
 	}
 
@@ -369,23 +369,23 @@ class admin extends \core\classes\admin {
 		global $admin;
 		parent::delete ( $path_my_files );
 		if (db_field_exists ( TABLE_CURRENT_STATUS, 'next_po_num' ))
-			$admin->DataBase->Execute ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_po_num" );
+			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_po_num" );
 		if (db_field_exists ( TABLE_CURRENT_STATUS, 'next_so_num' ))
-			$admin->DataBase->Execute ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_so_num" );
+			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_so_num" );
 		if (db_field_exists ( TABLE_CURRENT_STATUS, 'next_inv_num' ))
-			$admin->DataBase->Execute ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_inv_num" );
+			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_inv_num" );
 		if (db_field_exists ( TABLE_CURRENT_STATUS, 'next_check_num' ))
-			$admin->DataBase->Execute ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_check_num" );
+			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_check_num" );
 		if (db_field_exists ( TABLE_CURRENT_STATUS, 'next_deposit_num' ))
-			$admin->DataBase->Execute ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_deposit_num" );
+			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_deposit_num" );
 		if (db_field_exists ( TABLE_CURRENT_STATUS, 'next_cm_num' ))
-			$admin->DataBase->Execute ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cm_num" );
+			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cm_num" );
 		if (db_field_exists ( TABLE_CURRENT_STATUS, 'next_vcm_num' ))
-			$admin->DataBase->Execute ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_vcm_num" );
+			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_vcm_num" );
 		if (db_field_exists ( TABLE_CURRENT_STATUS, 'next_ap_quote_num' ))
-			$admin->DataBase->Execute ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_ap_quote_num" );
+			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_ap_quote_num" );
 		if (db_field_exists ( TABLE_CURRENT_STATUS, 'next_ar_quote_num' ))
-			$admin->DataBase->Execute ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_ar_quote_num" );
+			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_ar_quote_num" );
 	}
 
 	function load_reports() {
@@ -418,14 +418,14 @@ class admin extends \core\classes\admin {
 	function load_demo() {
 		global $admin;
 		// Data for table `tax_authorities`
-		$admin->DataBase->Execute ( "TRUNCATE TABLE " . TABLE_TAX_AUTH );
-		$admin->DataBase->Execute ( "INSERT INTO " . TABLE_TAX_AUTH . " VALUES (1, 'c', 'City Tax', 'City Tax on Taxable Items', '2312', 0, 2.5);" );
-		$admin->DataBase->Execute ( "INSERT INTO " . TABLE_TAX_AUTH . " VALUES (2, 'c', 'State Tax', 'State Sales Tax Payable', '2316', 0, 5.1);" );
-		$admin->DataBase->Execute ( "INSERT INTO " . TABLE_TAX_AUTH . " VALUES (3, 'c', 'Special Dist', 'Special District Tax (RTD, etc)', '2316', 0, 1.1);" );
+		$admin->DataBase->query ( "TRUNCATE TABLE " . TABLE_TAX_AUTH );
+		$admin->DataBase->query ( "INSERT INTO " . TABLE_TAX_AUTH . " VALUES (1, 'c', 'City Tax', 'City Tax on Taxable Items', '2312', 0, 2.5);" );
+		$admin->DataBase->query ( "INSERT INTO " . TABLE_TAX_AUTH . " VALUES (2, 'c', 'State Tax', 'State Sales Tax Payable', '2316', 0, 5.1);" );
+		$admin->DataBase->query ( "INSERT INTO " . TABLE_TAX_AUTH . " VALUES (3, 'c', 'Special Dist', 'Special District Tax (RTD, etc)', '2316', 0, 1.1);" );
 		// Data for table `tax_rates`
-		$admin->DataBase->Execute ( "TRUNCATE TABLE " . TABLE_TAX_RATES );
-		$admin->DataBase->Execute ( "INSERT INTO " . TABLE_TAX_RATES . " VALUES (1, 'c', 'Local Tax', 'Local POS Tax', '1:2:3', '0');" );
-		$admin->DataBase->Execute ( "INSERT INTO " . TABLE_TAX_RATES . " VALUES (2, 'c', 'State Only', 'State Only Tax - Shipments', '2', '0');" );
+		$admin->DataBase->query ( "TRUNCATE TABLE " . TABLE_TAX_RATES );
+		$admin->DataBase->query ( "INSERT INTO " . TABLE_TAX_RATES . " VALUES (1, 'c', 'Local Tax', 'Local POS Tax', '1:2:3', '0');" );
+		$admin->DataBase->query ( "INSERT INTO " . TABLE_TAX_RATES . " VALUES (2, 'c', 'State Only', 'State Only Tax - Shipments', '2', '0');" );
 		parent::load_demo ();
 	}
 }

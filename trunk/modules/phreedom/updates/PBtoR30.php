@@ -25,20 +25,20 @@
 //********************************* END OF IMPORTANT ****************************************//
 // change some dashboard field names
 if (!db_field_exists(TABLE_USERS_PROFILES, 'dashboard_id')) {
-  $admin->DataBase->Execute("ALTER TABLE " . TABLE_USERS_PROFILES . " CHANGE page_id menu_id VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL");
-  $admin->DataBase->Execute("ALTER TABLE " . TABLE_USERS_PROFILES . " CHANGE module_id dashboard_id VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT ''");
-  $admin->DataBase->Execute("ALTER TABLE " . TABLE_USERS_PROFILES . " ADD module_id VARCHAR(24) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL AFTER menu_id");
+  $admin->DataBase->query("ALTER TABLE " . TABLE_USERS_PROFILES . " CHANGE page_id menu_id VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL");
+  $admin->DataBase->query("ALTER TABLE " . TABLE_USERS_PROFILES . " CHANGE module_id dashboard_id VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT ''");
+  $admin->DataBase->query("ALTER TABLE " . TABLE_USERS_PROFILES . " ADD module_id VARCHAR(24) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL AFTER menu_id");
   // relocate dashboard modules
-  $admin->DataBase->Execute("UPDATE " . TABLE_USERS_PROFILES  . " SET module_id = 'phreebooks' WHERE dashboard_id = 'po_status'");
-  $admin->DataBase->Execute("UPDATE " . TABLE_USERS_PROFILES  . " SET module_id = 'phreebooks' WHERE dashboard_id = 'so_status'");
-  $admin->DataBase->Execute("UPDATE " . TABLE_USERS_PROFILES  . " SET module_id = 'phreebooks' WHERE dashboard_id = 'open_inv'");
-  $admin->DataBase->Execute("UPDATE " . TABLE_USERS_PROFILES  . " SET module_id = 'phreebooks' WHERE dashboard_id = 'mini_financial'");
-  $admin->DataBase->Execute("UPDATE " . TABLE_USERS_PROFILES  . " SET module_id = 'phreebooks' WHERE dashboard_id = 'todays_orders'");
-  $admin->DataBase->Execute("UPDATE " . TABLE_USERS_PROFILES  . " SET module_id = 'phreebooks' WHERE dashboard_id = 'todays_sales'");
-  $admin->DataBase->Execute("UPDATE " . TABLE_USERS_PROFILES  . " SET module_id = 'phreedom'   WHERE dashboard_id = 'company_links'");
-  $admin->DataBase->Execute("UPDATE " . TABLE_USERS_PROFILES  . " SET module_id = 'phreedom'   WHERE dashboard_id = 'my_notes'");
-  $admin->DataBase->Execute("UPDATE " . TABLE_USERS_PROFILES  . " SET module_id = 'phreedom'   WHERE dashboard_id = 'personal_links'");
-  $admin->DataBase->Execute("UPDATE " . TABLE_USERS_PROFILES  . " SET module_id = 'phreeform'  WHERE dashboard_id = 'favorite_reports'");
+  $admin->DataBase->query("UPDATE " . TABLE_USERS_PROFILES  . " SET module_id = 'phreebooks' WHERE dashboard_id = 'po_status'");
+  $admin->DataBase->query("UPDATE " . TABLE_USERS_PROFILES  . " SET module_id = 'phreebooks' WHERE dashboard_id = 'so_status'");
+  $admin->DataBase->query("UPDATE " . TABLE_USERS_PROFILES  . " SET module_id = 'phreebooks' WHERE dashboard_id = 'open_inv'");
+  $admin->DataBase->query("UPDATE " . TABLE_USERS_PROFILES  . " SET module_id = 'phreebooks' WHERE dashboard_id = 'mini_financial'");
+  $admin->DataBase->query("UPDATE " . TABLE_USERS_PROFILES  . " SET module_id = 'phreebooks' WHERE dashboard_id = 'todays_orders'");
+  $admin->DataBase->query("UPDATE " . TABLE_USERS_PROFILES  . " SET module_id = 'phreebooks' WHERE dashboard_id = 'todays_sales'");
+  $admin->DataBase->query("UPDATE " . TABLE_USERS_PROFILES  . " SET module_id = 'phreedom'   WHERE dashboard_id = 'company_links'");
+  $admin->DataBase->query("UPDATE " . TABLE_USERS_PROFILES  . " SET module_id = 'phreedom'   WHERE dashboard_id = 'my_notes'");
+  $admin->DataBase->query("UPDATE " . TABLE_USERS_PROFILES  . " SET module_id = 'phreedom'   WHERE dashboard_id = 'personal_links'");
+  $admin->DataBase->query("UPDATE " . TABLE_USERS_PROFILES  . " SET module_id = 'phreeform'  WHERE dashboard_id = 'favorite_reports'");
 }
 
 // check for modules installed, set status

@@ -35,9 +35,9 @@ $f1 = $_GET['f1'] = isset($_POST['f1']) ? $_POST['f1'] : $_GET['f1']; // invento
 $id = isset($_POST['rowSeq']) ? db_prepare_input($_POST['rowSeq']) : db_prepare_input($_GET['cID']);
 // getting the right inventory type.
 if (!isset($_REQUEST['inventory_type'])){
-	if(isset($_REQUEST['cID'])) $result = $admin->DataBase->Execute("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE id='{$_REQUEST['cID']}'");
-	else if (isset($_REQUEST['rowSeq'])) $result = $admin->DataBase->Execute("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE id='{$_REQUEST['rowSeq']}'");
-	else $result = $admin->DataBase->Execute("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE sku='{$_REQUEST['sku']}'");
+	if(isset($_REQUEST['cID'])) $result = $admin->DataBase->query("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE id='{$_REQUEST['cID']}'");
+	else if (isset($_REQUEST['rowSeq'])) $result = $admin->DataBase->query("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE id='{$_REQUEST['rowSeq']}'");
+	else $result = $admin->DataBase->query("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE sku='{$_REQUEST['sku']}'");
 	if ($result->RecordCount()>0) $type = $result->fields['inventory_type'];
 	else $type ='si';
 }
@@ -70,7 +70,7 @@ switch ($_REQUEST['action']) {
         die;
   case 'dn_attach': // download from list, assume the first document only
         $cID   = db_prepare_input($_POST['rowSeq']);
-  	    $result = $admin->DataBase->Execute("select attachments from ".TABLE_INVENTORY." where id = $cID");
+  	    $result = $admin->DataBase->query("select attachments from ".TABLE_INVENTORY." where id = $cID");
   	    $attachments = unserialize($result->fields['attachments']);
   	    foreach ($attachments as $key => $value) {
 		   	$filename = 'inventory_'.$cID.'_'.$key.'.zip';

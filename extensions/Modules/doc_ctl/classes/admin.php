@@ -69,15 +69,15 @@ class admin extends \core\classes\admin {
 		parent::install($path_my_files, $demo);
 		require_once(DIR_FS_MODULES . 'doc_ctl/defaults.php');
 		$right = (INSTALL_NUMBER_OF_DRIVES+1)*2;
-		$admin->DataBase->Execute("TRUNCATE TABLE " . TABLE_DC_DOCUMENT);
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_DC_DOCUMENT . " (`id`, `parent_id`, `position`, `left`, `right`, `level`, `title`, `type`)
+		$admin->DataBase->query("TRUNCATE TABLE " . TABLE_DC_DOCUMENT);
+		$admin->DataBase->query("INSERT INTO " . TABLE_DC_DOCUMENT . " (`id`, `parent_id`, `position`, `left`, `right`, `level`, `title`, `type`)
 			VALUES (1, 0, 0, 1, " . $right . ", 0, 'ROOT', '')");
 		for ($i = 0; $i < INSTALL_NUMBER_OF_DRIVES; $i++) {
 		  $id    = $i+2;
 		  $left  = ($i+1)*2;
 		  $right = $left+1;
 		  $title = $i==0 ? TEXT_HOME : (TEXT_DRIVE.$i);
-		  $admin->DataBase->Execute("INSERT INTO " . TABLE_DC_DOCUMENT . " (`id`, `parent_id`, `position`, `left`, `right`, `level`, `title`, `type`)
+		  $admin->DataBase->query("INSERT INTO " . TABLE_DC_DOCUMENT . " (`id`, `parent_id`, `position`, `left`, `right`, `level`, `title`, `type`)
 		  	VALUES (" . $id . ", 1, 0, " . $left . ", " . $right . ", 1, '" . $title . "', 'drive')");
 		}
 	}

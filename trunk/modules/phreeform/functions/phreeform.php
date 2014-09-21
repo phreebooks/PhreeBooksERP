@@ -60,7 +60,7 @@ function convertPfColor($color = '0:0:0') {
 
 function buildToggleList($id, $toggle_list = '') {
   global $admin;
-  $result = $admin->DataBase->Execute("select parent_id from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
+  $result = $admin->DataBase->query("select parent_id from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
   if ($result->fields['parent_id'] <> '0') $toggle_list = buildToggleList($result->fields['parent_id'], $toggle_list);
   $toggle_list .= "  Toggle('dc_" . $result->fields['parent_id'] . "_" . $id . "');" . chr(10);
   return $toggle_list;
@@ -101,7 +101,7 @@ function pf_validate_security($security = 'u:-1;g:-1', $include_all = true) {
 function build_groups() { // dynamically build report and form groups
   global $admin;
   $output = array();
-  $result = $admin->DataBase->Execute("select doc_ext, doc_group, doc_title from " . TABLE_PHREEFORM . " where doc_ext in ('ff','0')");
+  $result = $admin->DataBase->query("select doc_ext, doc_group, doc_title from " . TABLE_PHREEFORM . " where doc_ext in ('ff','0')");
   while (!$result->EOF) {
     switch ($result->fields['doc_ext']) {
     	case 'ff': $output['forms'][$result->fields['doc_group']]   = $result->fields['doc_title']; break;
@@ -116,7 +116,7 @@ function load_recently_added() {
 	global $admin;
 	$contents = NULL;
 	$sql = "select id, security, doc_title from " . TABLE_PHREEFORM . " where doc_type <> '0' order by create_date desc, id desc limit 20";
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	if ($result->RecordCount() == 0) {
 	  $contents .= TEXT_NO_DOCUMENTS_HAVE_BEEN_FOUND . '<br />';
 	} else {
@@ -139,7 +139,7 @@ function load_my_reports() {
 	$contents = NULL;
 	$sql = "select id, doc_title, security from " . TABLE_PHREEFORM . "
 	  where doc_type <> '0' order by doc_title";
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	if ($result->RecordCount() == 0) {
 	  $contents .= TEXT_NO_DOCUMENTS_HAVE_BEEN_FOUND . '<br />';
 	} else {
@@ -279,7 +279,7 @@ function ImportReport($RptName = '', $RptFileName = '', $import_path = PF_DIR_DE
 	}
 	if ($RptName <> '') $report->title = $RptName; // replace the title if provided
 	// error check
-	$result = $admin->DataBase->Execute("select id from " . TABLE_PHREEFORM . "
+	$result = $admin->DataBase->query("select id from " . TABLE_PHREEFORM . "
 	  where doc_title = '" . addslashes($report->title) . "' and doc_type <> '0'");
 	if ($result->RecordCount() > 0) { // the report name already exists, if file exists error, else write
 	  	$rID = $result->fields['id'];
@@ -297,14 +297,14 @@ function save_report($report, $rID = '', $save_path = PF_DIR_MY_REPORTS) {
 	$output .= '</PhreeformReport>' . chr(10);
 //echo 'xml output = ' . str_replace(chr(10) , "<br>", htmlspecialchars($output)) . '<br>'; exit();
 	// see if a folder exists with the group to put it in
-	$result = $admin->DataBase->Execute("select id from " . TABLE_PHREEFORM . "
+	$result = $admin->DataBase->query("select id from " . TABLE_PHREEFORM . "
 	  where doc_group = '" . $report->groupname . "' and doc_type = '0' and doc_ext in ('ff', 'fr')");
 	if ($result->RecordCount() == 0) {
 	  if ($report->reporttype == 'frm') {
-	    $result = $admin->DataBase->Execute("select id from " . TABLE_PHREEFORM . "
+	    $result = $admin->DataBase->query("select id from " . TABLE_PHREEFORM . "
 	      where doc_group = 'misc:misc' and doc_type = '0'");
 	  } else {
-	    $result = $admin->DataBase->Execute("select id from " . TABLE_PHREEFORM . "
+	    $result = $admin->DataBase->query("select id from " . TABLE_PHREEFORM . "
 	      where doc_group = 'misc' and doc_type = '0'");
 	  }
 	}
@@ -343,7 +343,7 @@ function truncate_string($str, $len = 32) {
 
 function build_dir_path($id) {
 	global $admin;
-	$result = $admin->DataBase->Execute("select parent_id, doc_title from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
+	$result = $admin->DataBase->query("select parent_id, doc_title from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
 	$title  = ($id) ? $result->fields['doc_title'] : '';
 	if ($result->fields['parent_id']) $title = build_dir_path($result->fields['parent_id']) . '/' . $title;
 	return $title;
@@ -408,7 +408,7 @@ function BuildForm($report, $delivery_method = 'D') { // for forms only
 	if ($strSort) $sql .= ' order by ' . $sqlSort;
 	// execute sql to see if we have data
 //echo 'sql = ' . $sql . '<br />'; exit();
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	if (!$result->RecordCount()) throw new \core\classes\userException(PHREEFORM_NOROWS);
 
 	// set the filename for download or email
@@ -468,7 +468,7 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 	  } else {
 		if (strlen($report->sqlField) > 0) {
 //echo 'sql = select ' . $report->sqlField . $TrailingSQL . '<br />'; exit();
-		  $result      = $admin->DataBase->Execute("select " . $report->sqlField . $TrailingSQL);
+		  $result      = $admin->DataBase->query("select " . $report->sqlField . $TrailingSQL);
 		  $FieldValues = $result->fields;
 		}
 	  }
@@ -476,7 +476,7 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 	  $posted_currencies = array();
 	  if (ENABLE_MULTI_CURRENCY && strpos($report->sqlTable, TABLE_JOURNAL_MAIN) !== false) {
 	    $sql    = "select currencies_code, currencies_value " . $TrailingSQL;
-	    $result = $admin->DataBase->Execute($sql);
+	    $result = $admin->DataBase->query($sql);
 	    $posted_currencies = array(
 		  'currencies_code'  => $result->fields['currencies_code'],
 		  'currencies_value' => $result->fields['currencies_value'],
@@ -495,7 +495,7 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 		    $arrTxtBlk = array(); // Build the fieldlist
 		    foreach ($field->boxfield as $idx => $entry) $arrTxtBlk[] = prefixTables($entry->fieldname) . ' as r' . $idx;
 		    $strTxtBlk = implode(', ', $arrTxtBlk);
-		    $result    = $admin->DataBase->Execute("select " . $strTxtBlk . $TrailingSQL);
+		    $result    = $admin->DataBase->query("select " . $strTxtBlk . $TrailingSQL);
 		    $TextField = '';
 		    for ($i = 0; $i < sizeof($field->boxfield); $i++) {
 		      $temp = $field->boxfield[$i]->formatting ? ProcessData($result->fields['r'.$i], $field->boxfield[$i]->formatting) : $result->fields['r'.$i];
@@ -516,7 +516,7 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 		    $tblField = array();
 			foreach ($field->boxfield as $key => $TableField) $tblField[] = prefixTables($TableField->fieldname) . ' as `' . $TableField->description . '`';
 			$tblField = implode(', ', $tblField);
-			$result = $admin->DataBase->Execute("select " . $tblField . $TrailingSQL . " LIMIT 1");
+			$result = $admin->DataBase->query("select " . $tblField . $TrailingSQL . " LIMIT 1");
 		  	foreach ($field->boxfield as $key => $TableField) {
 		      if ($TableField->processing) $result->fields[$TableField->description] = ProcessData($result->fields[$TableField->description], $TableField->processing);
 		    }
@@ -543,7 +543,7 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 		    $tblField = array();
 			  foreach ($TableObject->boxfield as $key => $TableField) $tblField[] = prefixTables($TableField->fieldname) . ' as r' . $key;
 			  $tblField = implode(', ', $tblField);
-			  $result = $admin->DataBase->Execute("select " . $tblField . $TrailingSQL);
+			  $result = $admin->DataBase->query("select " . $tblField . $TrailingSQL);
 			  while (!$result->EOF) {
 				$data[] = $result->fields;
 				$result->MoveNext();
@@ -576,7 +576,7 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 		    $ttlField = '';
 		    foreach ($field->boxfield as $TotalField) $ttlField[] = prefixTables($TotalField->fieldname);
 		    $sql         = "select sum(" . implode(' + ', $ttlField) . ") as form_total" . $TrailingSQL;
-		    $result      = $admin->DataBase->Execute($sql);
+		    $result      = $admin->DataBase->query($sql);
 		    $FieldValues = $result->fields['form_total'];
 		  }
 		  $report->fieldlist[$key]->text = $FieldValues;
@@ -592,7 +592,7 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 		$temp     = explode('.', $report->setprintedflag);
 		if (sizeof($temp) == 2) { // need the table name and field name
 		  $sql = "update " . $temp[0] . " set " . $temp[1] . " = " . $temp[1] . " + 1 where " . $report->formbreakfield . " = '" . $Fvalue . "'";
-		  $admin->DataBase->Execute($sql);
+		  $admin->DataBase->query($sql);
 		}
 	  }
 	}
@@ -617,14 +617,14 @@ function BuildSeq($report, $delivery_method = 'D') { // for forms only - Sequent
 	  $special_form = new $form_class();//@todo needs new location
 	  $FieldValues  = $special_form->load_query_results($report->formbreakfield, $Fvalue);
     } else {
-	  $result       = $admin->DataBase->Execute("select " . $report->sqlField . $TrailingSQL);
+	  $result       = $admin->DataBase->query("select " . $report->sqlField . $TrailingSQL);
 	  $FieldValues  = $result->fields;
     }
     // load the posted currency values
     $posted_currencies = array();
     if (ENABLE_MULTI_CURRENCY && strpos($report->sqlTable, TABLE_JOURNAL_MAIN) !== false) {
 	  $sql    = "select currencies_code, currencies_value " . $TrailingSQL;
-	  $result = $admin->DataBase->Execute($sql);
+	  $result = $admin->DataBase->query($sql);
 	  $posted_currencies = array(
 	    'currencies_code'  => $result->fields['currencies_code'],
 	    'currencies_value' => $result->fields['currencies_value'],
@@ -649,7 +649,7 @@ function BuildSeq($report, $delivery_method = 'D') { // for forms only - Sequent
 			$arrTxtBlk = array(); // Build the fieldlist
 			foreach ($field->boxfield as $idx => $entry) $arrTxtBlk[] = prefixTables($entry->fieldname) . ' as r' . $idx;
 			$strTxtBlk    = implode(', ', $arrTxtBlk);
-			$result       = $admin->DataBase->Execute("select " . $strTxtBlk . $TrailingSQL);
+			$result       = $admin->DataBase->query("select " . $strTxtBlk . $TrailingSQL);
 			$TextField    = '';
 			for ($i = 0; $i < sizeof($field->boxfield); $i++) {
 		      $temp = $field->boxfield[$i]->formatting ? ProcessData($result->fields['r'.$i], $field->boxfield[$i]->formatting) : $result->fields['r'.$i];
@@ -670,7 +670,7 @@ function BuildSeq($report, $delivery_method = 'D') { // for forms only - Sequent
 			  	$tblField = array();
 			  	foreach ($field->boxfield as $key => $TableField) $tblField[] = prefixTables($TableField->fieldname) . ' as r' . $key;
 			  	$tblField = implode(', ', $tblField);
-			  	$result = $admin->DataBase->Execute("select " . $tblField . $TrailingSQL);
+			  	$result = $admin->DataBase->query("select " . $tblField . $TrailingSQL);
 			  	while (!$result->EOF) {
 					$data[] = $result->fields;
 					$result->MoveNext();
@@ -713,7 +713,7 @@ function BuildSeq($report, $delivery_method = 'D') { // for forms only - Sequent
 			$ttlField = '';
 			foreach ($field->boxfield as $TotalField) $ttlField[] = prefixTables($TotalField->fieldname);
 			$sql         = "select sum(" . implode(' + ', $ttlField) . ") as form_total" . $TrailingSQL;
-			$result      = $admin->DataBase->Execute($sql);
+			$result      = $admin->DataBase->query($sql);
 			$FieldValues = $result->fields['form_total'];
 		  }
 		  $value   = ProcessData($FieldValues, $report->boxfield[0]->processing);
@@ -731,7 +731,7 @@ function BuildSeq($report, $delivery_method = 'D') { // for forms only - Sequent
 	  $temp     = explode('.', $report->setprintedflag);
 	  if (sizeof($temp) == 2) { // need the table name and field name
 	    $sql = "update " . $temp[0] . " set " . $temp[1] . " = " . $temp[1] . " + 1 where " . $report->formbreakfield . " = '" . $Fvalue . "'";
-	    $admin->DataBase->Execute($sql);
+	    $admin->DataBase->query($sql);
 	  }
     }
     $output .= "\n\n\n\n"; // page break
@@ -975,7 +975,7 @@ function BuildDataArray($sql, $report) { // for reports only
 		return $sp_report->load_report_data($report, $Seq, $sql, $GrpField); // the special report formats all of the data, we're done
 	}
 
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	if ($result->RecordCount() == 0) throw new \core\classes\userException("no data"); // No data so bail now
 	// Generate the output data array
 	$RowCnt     = 0;
@@ -1149,7 +1149,7 @@ function CreateFieldArray($report) {
   $output = array(array('id' => '', 'text' => TEXT_SELECT));
   if (is_array($report->tables)) foreach ($report->tables as $tObj) {
     if ($tObj->tablename) {
-	  $result = $admin->DataBase->Execute("describe " . DB_PREFIX . $tObj->tablename);
+	  $result = $admin->DataBase->query("describe " . DB_PREFIX . $tObj->tablename);
 	  while (!$result->EOF) {
 	    $fieldname = $tObj->tablename . '.' . $result->fields['Field'];
 	    $output[] = array('id' => $fieldname, 'text' => DB_PREFIX . $fieldname);
@@ -1171,7 +1171,7 @@ function strip_tablename($value) {
 function CreateTableList($report) {
   global $admin;
   $output = array(array('id' => '', 'text' => TEXT_SELECT));
-  $result = $admin->DataBase->Execute("show tables");
+  $result = $admin->DataBase->query("show tables");
   while (!$result->EOF) {
     $tablename = array_shift($result->fields);
     $BaseTableName = (DB_PREFIX) ? substr($tablename, strlen(DB_PREFIX)) : $tablename;

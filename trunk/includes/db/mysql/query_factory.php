@@ -53,15 +53,15 @@ class queryFactory {
   }
 
   function transStart() {
-    $this->Execute("START TRANSACTION");
+    $this->exec("START TRANSACTION");
   }
 
   function transCommit() {
-    $this->Execute("COMMIT");
+    $this->exec("COMMIT");
   }
 
   function transRollback() {
-    $this->Execute("ROLLBACK");
+    $this->exec("ROLLBACK");
   }
 
   function prepare_input($zp_string) {

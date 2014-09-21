@@ -112,7 +112,7 @@ class admin extends \core\classes\admin {
     	global $admin;
     	parent::install($path_my_files, $demo);
     	if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_wo_num')) {
-	  		$admin->DataBase->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_wo_num VARCHAR(16) NOT NULL DEFAULT 'WO-0001';");
+	  		$admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_wo_num VARCHAR(16) NOT NULL DEFAULT 'WO-0001';");
     	}
 		write_configure('PHREEHELP_FORCE_RELOAD', '1');
   	}
@@ -122,17 +122,17 @@ class admin extends \core\classes\admin {
 	    parent::upgrade();
 	    if (version_compare($this->status, '3.1', '<') ) {
 			if (!db_field_exists(TABLE_WO_TASK, 'erp_entry')) {
-			    $admin->DataBase->Execute("ALTER TABLE " . TABLE_WO_TASK . " ADD erp_entry ENUM('0', '1') NOT NULL DEFAULT '0'");
-			    $admin->DataBase->Execute("ALTER TABLE " . TABLE_WO_MAIN . " ADD allocate ENUM('0', '1') NOT NULL DEFAULT '0' AFTER description");
-			    $admin->DataBase->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_wo_num VARCHAR(16)  NOT NULL DEFAULT 'WO0001';");
-			    $admin->DataBase->Execute("ALTER TABLE " . TABLE_WO_JOURNAL_MAIN . " ADD wo_num VARCHAR(16) NOT NULL DEFAULT 'WO-00001' AFTER id");
-				$result = $admin->DataBase->Execute("select id from " . TABLE_WO_JOURNAL_MAIN);
+			    $admin->DataBase->query("ALTER TABLE " . TABLE_WO_TASK . " ADD erp_entry ENUM('0', '1') NOT NULL DEFAULT '0'");
+			    $admin->DataBase->query("ALTER TABLE " . TABLE_WO_MAIN . " ADD allocate ENUM('0', '1') NOT NULL DEFAULT '0' AFTER description");
+			    $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_wo_num VARCHAR(16)  NOT NULL DEFAULT 'WO0001';");
+			    $admin->DataBase->query("ALTER TABLE " . TABLE_WO_JOURNAL_MAIN . " ADD wo_num VARCHAR(16) NOT NULL DEFAULT 'WO-00001' AFTER id");
+				$result = $admin->DataBase->query("select id from " . TABLE_WO_JOURNAL_MAIN);
 				while(!$result->EOF) {
 					$id = $result->fields['id'];
-				  	$admin->DataBase->Execute("update " . TABLE_WO_JOURNAL_MAIN . " set wo_num = 'WO-" . str_pad($id, 5, '0', STR_PAD_LEFT) . "' where id = " . $id);
+				  	$admin->DataBase->query("update " . TABLE_WO_JOURNAL_MAIN . " set wo_num = 'WO-" . str_pad($id, 5, '0', STR_PAD_LEFT) . "' where id = " . $id);
 				  	$result->MoveNext();
 				}
-				$admin->DataBase->Execute("update " . TABLE_CURRENT_STATUS . " set next_wo_num = 'WO-" . str_pad($id+1, 5, '0', STR_PAD_LEFT) . "'");
+				$admin->DataBase->query("update " . TABLE_CURRENT_STATUS . " set next_wo_num = 'WO-" . str_pad($id+1, 5, '0', STR_PAD_LEFT) . "'");
 			}
 		}
 	}
@@ -140,13 +140,13 @@ class admin extends \core\classes\admin {
 	function delete($path_my_files) {
 	    global $admin;
 	    parent::delete($path_my_files);
-	    if (db_field_exists(TABLE_CURRENT_STATUS, 'next_wo_num')) $admin->DataBase->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_wo_num");
+	    if (db_field_exists(TABLE_CURRENT_STATUS, 'next_wo_num')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_wo_num");
 		write_configure('PHREEHELP_FORCE_RELOAD', '1');
 	}
 
 	function load_reports() {
 		global $admin;
-		$result = $admin->DataBase->Execute("select id from " . TABLE_PHREEFORM . " where doc_group = 'inv' and doc_ext = '0'");
+		$result = $admin->DataBase->query("select id from " . TABLE_PHREEFORM . " where doc_group = 'inv' and doc_ext = '0'");
 		$this->add_report_folder($result->fields['id'], TEXT_WORK_ORDER_FORMS, 'inv:wo', 'ff');
 		parent::load_reports();
 	}

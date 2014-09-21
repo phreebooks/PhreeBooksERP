@@ -29,7 +29,7 @@ function PrepReport($ReportID) {
 	$CSVOutput[] = 'version:1.0' . $crlf;
 	// Fetch the core report data from table reports
 	$sql = "select * from " . TABLE_REPORTS . " where id = " . $ReportID;
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	$myrow = $result->fields;
 	// Fetch the language dependent db entries
 	$ReportName = $myrow['description'];
@@ -41,7 +41,7 @@ function PrepReport($ReportID) {
 	$CSVOutput[] = '/* Report Name */' . $crlf;
 	$CSVOutput[] = "ReportName:'" . addslashes($ReportName) . "'" . $crlf;
 	$sql = "select params from " . TABLE_REPORT_FIELDS . " where reportid = " . $ReportID . " and entrytype = 'pagelist'";
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	$params = unserialize($result->fields['params']);
 	$CSVOutput[] = "ReportNarr:'" . addslashes($params['narrative']) . "'" . $crlf;
 	$CSVOutput[] = "EmailMsg:'"   . addslashes($params['email_msg']) . "'" . $crlf;
@@ -49,7 +49,7 @@ function PrepReport($ReportID) {
 	// Now add the report fields
 	$CSVOutput[] = '/* Report Field Description Information */' . $crlf;
 	$sql = "select * from " . TABLE_REPORT_FIELDS . " where reportid = " . $ReportID . " order by entrytype, seqnum";
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	$i = 0;
 	$skip_array = array('dateselect', 'trunclong', 'pagelist', 'security');
 	while (!$result->EOF) {
@@ -294,7 +294,7 @@ function convert_security($params) {
 	  case 'd': // change to groups and find the id number from the departments table
 		$temp = array('g');
 		foreach ($member as $name) {
-		  $result = $admin->DataBase->Execute("select id from " . TABLE_DEPARTMENTS . " where description_short = '" . $name . "'");
+		  $result = $admin->DataBase->query("select id from " . TABLE_DEPARTMENTS . " where description_short = '" . $name . "'");
 		  if ($result->RecordCount() == 0) {
 		    $temp[] = $name;
 		  } else {

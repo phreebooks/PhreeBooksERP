@@ -25,7 +25,7 @@ $fieldset_content = 'NULL';
 $id = (int)$_GET['id'];
 if (!isset($_GET['id'])) die;
 
-$doc_details = $admin->DataBase->Execute("select * from " . TABLE_DC_DOCUMENT . " where id = '" . $id . "'");
+$doc_details = $admin->DataBase->query("select * from " . TABLE_DC_DOCUMENT . " where id = '" . $id . "'");
 if ($id == -1) { // home page
 	include (DIR_FS_MODULES . 'doc_ctl/pages/main/tab_home.php');
 } elseif ($id == 0 || $doc_details->fields['type'] == 'drive' || $doc_details->fields['type'] == 'folder') { // folder
@@ -35,7 +35,7 @@ if ($id == -1) { // home page
 	$field_list   = array('id', 'file_name', 'title', 'type', 'doc_ext', 'description', 'security');
 	$query_raw    = "select " . implode(', ', $field_list)  . " from " . TABLE_DC_DOCUMENT . " where parent_id = '" . $id . "' order by position";
 	$query_split  = new \core\classes\splitPageResults($_GET['list'], MAX_DISPLAY_SEARCH_RESULTS, $query_raw, $query_numrows);
-	$query_result = $admin->DataBase->Execute($query_raw);
+	$query_result = $admin->DataBase->query($query_raw);
 	include (DIR_FS_MODULES . 'doc_ctl/pages/main/tab_folder.php');
 } else { // load document details
 	$dir_path     = TEXT_PATH . ': /' . build_dir_path($id);

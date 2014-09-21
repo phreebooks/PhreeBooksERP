@@ -25,7 +25,7 @@ $sku   = $_GET['sku'];
 $type  = isset($_GET['type']) ? $_GET['type'] : 'c';
 $rowId = $_GET['rowId'];
 // retrieve some inventory item details
-$inventory_details = $admin->DataBase->Execute("select id, sku, description_short, item_cost, full_price, item_weight
+$inventory_details = $admin->DataBase->query("select id, sku, description_short, item_cost, full_price, item_weight
 	 from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
 $id = $inventory_details->fields['id'];
 
@@ -34,9 +34,9 @@ if ($id) { // then the sku was valid, get item information, cost and full price
 	where inactive = '0' and type = '" . $type . "' and
 	(expiration_date is null or expiration_date = '0000-00-00' or expiration_date >= '" . date('Y-m-d') . "')
 	order by sheet_name";
-  $price_sheets = $admin->DataBase->Execute($sql);
+  $price_sheets = $admin->DataBase->query($sql);
   // retrieve special pricing for this inventory item
-  $result = $admin->DataBase->Execute("select price_sheet_id, price_levels
+  $result = $admin->DataBase->query("select price_sheet_id, price_levels
 	from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = " . $id);
   $special_prices = array();
   while (!$result->EOF) {

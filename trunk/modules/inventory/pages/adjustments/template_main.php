@@ -87,7 +87,7 @@ if (!$error) {//@todo how to do this
 	echo html_input_field('sku_' . $rowCnt, $_POST['sku_'.$rowCnt], 'size="' . (MAX_INVENTORY_SKU_LENGTH + 1) . '" maxlength="' . MAX_INVENTORY_SKU_LENGTH . '" onfocus="clearField(\'sku_'.$rowCnt.'\', \''.TEXT_SEARCH.'\')" onblur="setField(\'sku_'.$rowCnt.'\', \''.TEXT_SEARCH.'\'); loadSkuDetails(0, '.$rowCnt.',0)"') . '&nbsp;';
 	echo html_icon('actions/system-search.png', TEXT_SEARCH, 'small', $params = 'align="top" style="cursor:pointer" onclick="InventoryList('.$rowCnt.')"');
 	// for serialized items, show the icon IF the item type is serial
-	$invType = $admin->DataBase->Execute("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE sku='{$_POST['sku_'.$rowCnt]}'");
+	$invType = $admin->DataBase->query("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE sku='{$_POST['sku_'.$rowCnt]}'");
 	$imgSerialView = in_array($invType->fields['inventory_type'], array('sr','sa')) ? "" : "display:none;";
 	echo html_icon('actions/tab-new.png', TEXT_SERIAL_NUMBER, 'small', 'id="imgSerial_'.$rowCnt.'" align="top" style="cursor:pointer;'.$imgSerialView.'" onclick="serialList(\'serial_'.$rowCnt.'\')"');
 // Hidden fields

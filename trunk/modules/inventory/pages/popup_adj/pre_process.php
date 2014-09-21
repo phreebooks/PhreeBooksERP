@@ -75,7 +75,7 @@ $filters[] = ($adj_type == 'xfr') ? 'm.so_po_ref_id = -1' : 'm.so_po_ref_id = 0'
 $query_raw    = "SELECT SQL_CALC_FOUND_ROWS DISTINCT " . implode(', ', $field_list) . "
 	FROM " . TABLE_JOURNAL_MAIN . " m JOIN " . TABLE_JOURNAL_ITEM . " i ON m.id = i.ref_id
 	WHERE " . implode(' AND ', $filters) . " GROUP BY m.id ORDER BY $disp_order, m.id";
-$query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+$query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 history_save('inv_pop_adj');
 

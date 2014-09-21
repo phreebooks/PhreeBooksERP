@@ -177,7 +177,7 @@ $query_raw = "select SQL_CALC_FOUND_ROWS distinct m.id, m.journal_id, m.post_dat
 	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i
 	on m.id = i.ref_id " . $crit . " order by $disp_order";
 //echo 'sql = '; print_r($query_raw); echo '<br>';
-$query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+$query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 history_save('pb_search');
 

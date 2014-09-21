@@ -611,12 +611,12 @@ class endicia extends \shipping\classes\shipping {
 	global $admin, $messageStack;
 //	$result = array();
 	if ($log_id) {
-	  $shipments  = $admin->DataBase->Execute("select id, ref_id, deliver_date, actual_date, tracking_id, notes
+	  $shipments  = $admin->DataBase->query("select id, ref_id, deliver_date, actual_date, tracking_id, notes
 		from ".TABLE_SHIPPING_LOG." where carrier = '$this->id' and id = '$log_id'");
 	} else {
 	  $start_date = $track_date;
 	  $end_date   = gen_specific_date($track_date, $day_offset =  1);
-	  $shipments  = $admin->DataBase->Execute("select id, ref_id, deliver_date, actual_date, tracking_id, notes
+	  $shipments  = $admin->DataBase->query("select id, ref_id, deliver_date, actual_date, tracking_id, notes
 		from ".TABLE_SHIPPING_LOG." where carrier = '$this->id' and ship_date >= '$start_date' and ship_date < '$end_date'");
 	}
 	if ($shipments->RecordCount() == 0) return 'No records were found!';

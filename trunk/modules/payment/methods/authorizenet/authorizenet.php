@@ -185,7 +185,7 @@ class authorizenet extends \payment\classes\payment {
     $order_time = date("F j, Y, g:i a");
 /*
     // Calculate the next expected order id (adapted from code written by Eric Stamper - 01/30/2004 Released under GPL)
-    $last_order_id = $admin->DataBase->Execute("select * from " . TABLE_ORDERS . " order by orders_id desc limit 1");
+    $last_order_id = $admin->DataBase->query("select * from " . TABLE_ORDERS . " order by orders_id desc limit 1");
     $new_order_id = $last_order_id->fields['orders_id'];
     $new_order_id = ($new_order_id + 1);
 
@@ -407,7 +407,7 @@ class authorizenet extends \payment\classes\payment {
                                 'customer_notified' => 0
                              );
         db_perform(TABLE_ORDERS_STATUS_HISTORY, $sql_data_array);
-        $admin->DataBase->Execute("update " . TABLE_ORDERS  . "
+        $admin->DataBase->query("update " . TABLE_ORDERS  . "
                       set orders_status = '" . (int)$new_order_status . "'
                       where orders_id = '" . (int)$oID . "'");
         $messageStack->add(sprintf(MODULE_PAYMENT_AUTHORIZENET_TEXT_REFUND_INITIATED, $response[9], $response[6]), 'success');
@@ -445,7 +445,7 @@ class authorizenet extends \payment\classes\payment {
                                 'customer_notified' => 0
                              );
        	db_perform(TABLE_ORDERS_STATUS_HISTORY, $sql_data_array);
-       	$admin->DataBase->Execute("update " . TABLE_ORDERS  . "
+       	$admin->DataBase->query("update " . TABLE_ORDERS  . "
                       set orders_status = '" . (int)$new_order_status . "'
                      where orders_id = '" . (int)$oID . "'");
        	$messageStack->add(sprintf(MODULE_PAYMENT_AUTHORIZENET_TEXT_VOID_INITIATED, $response[6], $response[4]), 'success');

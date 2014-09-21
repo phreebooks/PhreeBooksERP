@@ -45,7 +45,7 @@ echo $toolbar->build_toolbar($add_search = true);
  <?php
  $odd = true;
  while (!$query_result->EOF) {
-	$result = $admin->DataBase->Execute("select id from " . TABLE_INVENTORY_SPECIAL_PRICES . "
+	$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY_SPECIAL_PRICES . "
 		where price_sheet_id = " . $query_result->fields['id']);
 	$special_price = ($result->RecordCount() > 0) ? TEXT_YES : '';
 ?>

@@ -90,7 +90,7 @@ $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . "
 	from " . TABLE_CONTACTS . " c left join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id
 	where a.type = '" . $account_type . "m'" . $search . " order by $disp_order";
 
-$query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+$query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 history_save('contacts_popup');
 $include_header   = false;

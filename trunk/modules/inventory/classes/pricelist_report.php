@@ -41,7 +41,7 @@ class pricelist_report {
 	}
 	$sql = $this->replace_special_fields($sql);
 
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	if ($result->RecordCount() == 0) throw new \core\classes\userException("No data");
 	// Generate the output data array
 	$RowCnt = 0; // Row counter for output data
@@ -160,12 +160,12 @@ class pricelist_report {
   function calulate_special_fields($id) {
 	global $admin, $currencies;
 	// get the inventory prices
-	$inventory = $admin->DataBase->Execute("select item_cost, full_price, price_sheet from ".TABLE_INVENTORY." where id = '$id'");
+	$inventory = $admin->DataBase->query("select item_cost, full_price, price_sheet from ".TABLE_INVENTORY." where id = '$id'");
 	// determine what price sheet to use, priority: inventory, default
 	if ($inventory->fields['price_sheet'] <> '') {
 		$sheet_name = $inventory->fields['price_sheet'];
 	} else {
-		$default_sheet = $admin->DataBase->Execute("select sheet_name from " . TABLE_PRICE_SHEETS . "
+		$default_sheet = $admin->DataBase->query("select sheet_name from " . TABLE_PRICE_SHEETS . "
 			where type = 'c' and default_sheet = '1'");
 		$sheet_name = ($default_sheet->RecordCount() == 0) ? '' : $default_sheet->fields['sheet_name'];
 	}
@@ -175,9 +175,9 @@ class pricelist_report {
 		$sql = "select id, default_levels from " . TABLE_PRICE_SHEETS . "
 		    where inactive = '0' and type = 'c' and sheet_name = '" . $sheet_name . "' and
 		    (expiration_date is null or expiration_date = '0000-00-00' or expiration_date >= '" . date('Y-m-d') . "')";
-		$price_sheets = $admin->DataBase->Execute($sql);
+		$price_sheets = $admin->DataBase->query($sql);
 		// retrieve special pricing for this inventory item
-		$result = $admin->DataBase->Execute("select price_sheet_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . "
+		$result = $admin->DataBase->query("select price_sheet_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . "
 			where price_sheet_id = '" . $price_sheets->fields['id'] . "' and inventory_id = " . $id);
 		$special_prices = array();
 		while (!$result->EOF) {

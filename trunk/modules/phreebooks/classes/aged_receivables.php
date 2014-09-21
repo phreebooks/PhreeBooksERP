@@ -36,7 +36,7 @@ class aged_receivables {
 	}
 	$sql = $this->replace_special_fields($sql);
 
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	if ($result->RecordCount() == 0) throw new \core\classes\userException("no data"); // No data so bail now
 	// Generate the output data array
 	$RowCnt = 0; // Row counter for output data
@@ -197,8 +197,8 @@ class aged_receivables {
 	global $admin;
 	$today = date('Y-m-d');
 	$new_data = array();
-	$result = $admin->DataBase->Execute("select debit_amount, credit_amount from " . TABLE_JOURNAL_ITEM . " where gl_type = 'ttl' and ref_id = " . $id);
-	$result2 = $admin->DataBase->Execute("select journal_id, post_date from " . TABLE_JOURNAL_MAIN . " where id = " . $id);
+	$result = $admin->DataBase->query("select debit_amount, credit_amount from " . TABLE_JOURNAL_ITEM . " where gl_type = 'ttl' and ref_id = " . $id);
+	$result2 = $admin->DataBase->query("select journal_id, post_date from " . TABLE_JOURNAL_MAIN . " where id = " . $id);
 	$post_date = $result2->fields['post_date'];
 	$negate = false;
 	if (in_array($result2->fields['journal_id'], array(6,7))) {
@@ -212,7 +212,7 @@ class aged_receivables {
 	  $late_90 = gen_specific_date($today, -AR_AGING_PERIOD_3);
 	  if($result2->fields['journal_id'] != 12) $negate = true;
 	}
-	$result3 = $admin->DataBase->Execute("select sum(debit_amount) as debits, sum(credit_amount) as credits
+	$result3 = $admin->DataBase->query("select sum(debit_amount) as debits, sum(credit_amount) as credits
 	  from " . TABLE_JOURNAL_ITEM . " where so_po_item_ref_id = '" . $id . "' and gl_type in ('pmt', 'chk')");
 	if($negate){
 		$total_billed = $result->fields['credit_amount'] - $result->fields['debit_amount'];

@@ -194,8 +194,8 @@ switch ($_REQUEST['action']) {
 		bill_address2, bill_city_town, bill_state_province, bill_postal_code, bill_country_code, bill_email,
 		post_date, terms, gl_acct_id, purchase_invoice_id, total_amount from " . TABLE_JOURNAL_MAIN . "
 		where id = " . $oID;
-	$result = $admin->DataBase->Execute($sql);
-	$account_id = $admin->DataBase->Execute("select short_name from " . TABLE_CONTACTS . " where id = " . $result->fields['bill_acct_id']);
+	$result = $admin->DataBase->query($sql);
+	$account_id = $admin->DataBase->query("select short_name from " . TABLE_CONTACTS . " where id = " . $result->fields['bill_acct_id']);
 	$due_dates = calculate_terms_due_dates($result->fields['post_date'], $result->fields['terms'], 'AR');
 	$pre_paid  = fetch_partially_paid($oID);
 
@@ -222,7 +222,7 @@ switch ($_REQUEST['action']) {
 	// reset some particular values
 	$order->search = $account_id->fields['short_name']; // set the customer id in the search box
 	// show the form
-	$payment = $admin->DataBase->Execute("select description from " . TABLE_JOURNAL_ITEM . "
+	$payment = $admin->DataBase->query("select description from " . TABLE_JOURNAL_ITEM . "
 		where ref_id = " . $oID . " and gl_type = 'ttl'");
 	$temp = $payment->fields['description'];
 	$temp = strpos($temp, ':') ? substr($temp, strpos($temp, ':') + 1) : '';
@@ -255,7 +255,7 @@ $cal_bills = array(
 );
 
 // see if current user points to a employee for sales rep default
-$result = $admin->DataBase->Execute("select account_id from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
+$result = $admin->DataBase->query("select account_id from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
 $default_sales_rep = $result->fields['account_id'] ? $result->fields['account_id'] : '0';
 
 $include_header   = true;

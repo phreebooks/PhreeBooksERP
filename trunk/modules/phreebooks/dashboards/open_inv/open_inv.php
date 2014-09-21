@@ -52,7 +52,7 @@ class open_inv extends \core\classes\ctl_panel {
 		  from " . TABLE_JOURNAL_MAIN . "
 		  where journal_id = 12 and closed = '0' order by post_date DESC, purchase_invoice_id DESC";
 		if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
-		$result = $admin->DataBase->Execute($sql);
+		$result = $admin->DataBase->query($sql);
 		if ($result->RecordCount() < 1) {
 		  	$contents = TEXT_NO_RESULTS_FOUND;
 		} else {

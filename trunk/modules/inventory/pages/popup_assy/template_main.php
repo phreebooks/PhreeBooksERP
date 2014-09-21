@@ -47,7 +47,7 @@ echo $toolbar->build_toolbar($add_search = true, $add_period = true);
 	  if ($query_result->fields['store_id'] == '0') {
 	    $store_name = COMPANY_ID;
 	  } else {
-	    $result = $admin->DataBase->Execute("select short_name from " . TABLE_CONTACTS . " where id = '" . $query_result->fields['store_id'] . "'");
+	    $result = $admin->DataBase->query("select short_name from " . TABLE_CONTACTS . " where id = '" . $query_result->fields['store_id'] . "'");
         $store_name = $result->fields['short_name'];
 	  }
 ?>

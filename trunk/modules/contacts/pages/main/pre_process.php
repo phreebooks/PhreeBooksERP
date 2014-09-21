@@ -91,7 +91,7 @@ switch ($_REQUEST['action']) {
 				db_perform(TABLE_DATA_SECURITY, $payment_array, $_POST['payment_id'] ? 'update' : 'insert', 'id = '.$_POST['payment_id']);
 		  	}
 		  	// Check attachments
-		  	$result = $admin->DataBase->Execute("select attachments from ".TABLE_CONTACTS." where id = $id");
+		  	$result = $admin->DataBase->query("select attachments from ".TABLE_CONTACTS." where id = $id");
 		  	$attachments = $result->fields['attachments'] ? unserialize($result->fields['attachments']) : array();
 		  	$image_id = 0;
 		  	while ($image_id < 100) { // up to 100 images
@@ -158,7 +158,7 @@ switch ($_REQUEST['action']) {
 
     case 'dn_attach': // download from list, assume the first document only
         $cID   = db_prepare_input($_POST['rowSeq']);
-  	    $result = $admin->DataBase->Execute("select attachments from ".TABLE_CONTACTS." where id = $cID");
+  	    $result = $admin->DataBase->query("select attachments from ".TABLE_CONTACTS." where id = $cID");
   	    $attachments = unserialize($result->fields['attachments']);
   	    foreach ($attachments as $key => $value) {
 		   	$filename = 'contacts_'.$cID.'_'.$key.'.zip';
@@ -207,7 +207,7 @@ switch ($_REQUEST['action']) {
 		// load the tax rates
 		$tax_rates       = ord_calculate_tax_drop_down($type, true);
 		$sales_rep_array = gen_get_rep_ids($type);
-		$result = $admin->DataBase->Execute("select id, contact_first, contact_last, gl_type_account from ".TABLE_CONTACTS." where type='e'");
+		$result = $admin->DataBase->query("select id, contact_first, contact_last, gl_type_account from ".TABLE_CONTACTS." where type='e'");
 		$reps       = array();
 		while(!$result->EOF) {
 			$reps[$result->fields['id']] = $result->fields['contact_first'] . ' ' . $result->fields['contact_last'];
@@ -250,7 +250,7 @@ switch ($_REQUEST['action']) {
 		if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
 	    $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . "
 			from " . TABLE_CONTACTS . " c left join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id " . $search . " order by $disp_order";
-	    $query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+	    $query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     	$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     	history_save('contacts'.$type);
 	    $include_template = 'template_main.php'; // include display template (required)

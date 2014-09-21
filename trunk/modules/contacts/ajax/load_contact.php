@@ -24,16 +24,16 @@ gen_pull_language('contacts');
 /**************   page specific initialization  *************************/
 $cID   = db_prepare_input($_GET['cID']);
   // select the customer and build the contact record
-$contact    = $admin->DataBase->Execute("select * from " . TABLE_CONTACTS . " where id = '" . $cID . "'");
+$contact    = $admin->DataBase->query("select * from " . TABLE_CONTACTS . " where id = '" . $cID . "'");
 $type       = $contact->fields['type'];
 $terms_type = ($type == 'c') ? 'AR' : 'AP';
 $contact->fields['terms_text'] = gen_terms_to_language($contact->fields['special_terms'], true, $terms_type);
 $contact->fields['ship_gl_acct_id'] = ($type == 'v') ? AP_DEF_FREIGHT_ACCT : AR_DEF_FREIGHT_ACCT;
-$bill_add   = $admin->DataBase->Execute("select * from " . TABLE_ADDRESS_BOOK . " 
+$bill_add   = $admin->DataBase->query("select * from " . TABLE_ADDRESS_BOOK . " 
   where ref_id = '" . $cID . "' and type in ('" . $type . "m', '" . $type . "b')");
 //fix some special fields
 if (!$contact->fields['dept_rep_id']) unset($contact->fields['dept_rep_id']); // clear the rep field if not set to a contact
-$ship_add = $admin->DataBase->Execute("select * from " . TABLE_ADDRESS_BOOK . " 
+$ship_add = $admin->DataBase->query("select * from " . TABLE_ADDRESS_BOOK . " 
   where ref_id = '" . $cID . "' and type in ('" . $type . "m', '" . $type . "s')");
 
 // build the form data

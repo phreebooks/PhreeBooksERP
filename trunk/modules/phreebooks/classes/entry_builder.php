@@ -33,7 +33,7 @@ class entry_builder {
 	global $admin, $report, $FieldListings;
 	if (!$tableValue) throw new \core\classes\userException("tableValue isn't set");
 	$sql = "select * from " . TABLE_JOURNAL_MAIN . " where id = " . $tableValue;
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	while (list($key, $value) = each($result->fields)) $this->$key = db_prepare_input($value);
 	$this->load_so_po_details($this->so_po_ref_id);
 	$this->load_item_details($this->id);
@@ -44,7 +44,7 @@ class entry_builder {
 	// convert particular values indexed by id to common name
 	if ($this->rep_id) {
 		$sql = "select short_name from " . TABLE_CONTACTS . " where id = " . $this->rep_id;
-		$result = $admin->DataBase->Execute($sql);
+		$result = $admin->DataBase->query($sql);
 		$this->rep_id = $result->fields['short_name'];
 	} else {
 		$this->rep_id = '';
@@ -106,7 +106,7 @@ class entry_builder {
 	global $admin;
 	// fetch the sales order and build the item list
 	$sql = "select post_date, purchase_invoice_id from " . TABLE_JOURNAL_MAIN . " where id = " . $id;
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	if ($result->RecordCount() > 0) {
 	  $this->so_post_date = $result->fields['post_date'];
 	  $this->so_po_ref_id = $result->fields['purchase_invoice_id'];
@@ -116,7 +116,7 @@ class entry_builder {
 	}
 
 	$sql = "select * from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $id;
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	$this->item_records = array();
 	while (!$result->EOF) {
 	  if ($result->fields['sku']) {
@@ -136,7 +136,7 @@ class entry_builder {
 	  foreach ($this->item_records as $value) {
 		$sql = "select sum(qty) as qty_shipped_prior from " . TABLE_JOURNAL_ITEM . "
 			where so_po_item_ref_id = " . $value . " and ref_id <> " . $this->id;
-		$result = $admin->DataBase->Execute($sql);
+		$result = $admin->DataBase->query($sql);
 		$this->line_items[$value]['qty_shipped_prior'] = $result->fields['qty_shipped_prior'];
 		$this->line_items[$value]['qty_on_backorder']  = max(0, $this->line_items[$value]['qty_on_backorder'] - $result->fields['qty_shipped_prior']);
 	  }
@@ -149,7 +149,7 @@ class entry_builder {
 	$this->invoice_subtotal = 0;
 	$tax_list = array();
 	$sql = "select * from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $id;
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	while (!$result->EOF) {
 	  $index    = ($result->fields['so_po_item_ref_id']) ? $result->fields['so_po_item_ref_id'] : $result->fields['id'];
 	  $price    = $result->fields['credit_amount'] + $result->fields['debit_amount'];
@@ -183,13 +183,13 @@ class entry_builder {
   function load_account_details($id) {
 	global $admin;
 	$sql = "select * from " . TABLE_CONTACTS . " where id = " . $id;
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	$this->short_name     = $result->fields['short_name'];
 	$this->account_number = $result->fields['account_number'];
 	$this->gov_id_number  = $result->fields['gov_id_number'];
 	// pull the billing and shipping addresses
 	$sql = "select * from " . TABLE_ADDRESS_BOOK . " where ref_id = " . $id;
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	while (!$result->EOF) {
 	  $type = substr($result->fields['type'], 1, 1);
 	  switch ($type) {
@@ -216,13 +216,13 @@ class entry_builder {
 	$this->total_paid     = 0;
 	$this->payment_method = '';
 	$sql = "select * from " . TABLE_JOURNAL_ITEM . " where so_po_item_ref_id = " . $id . " and gl_type in ('pmt', 'chk')";
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	$this->payment = array();
 	while (!$result->EOF) {
 	  $this->total_paid += $result->fields['credit_amount'] - $result->fields['debit_amount']; // one will be zero
 	  $sql = "select post_date, shipper_code, purchase_invoice_id, purch_order_id
 	    from " . TABLE_JOURNAL_MAIN . " where id = " . $result->fields['ref_id'];
-	  $pmt_info = $admin->DataBase->Execute($sql);
+	  $pmt_info = $admin->DataBase->query($sql);
 	  // keep the last payment reference, type and method
 	  $this->payment_date       = $pmt_info->fields['post_date'];
 	  $this->payment_method     = $pmt_info->fields['shipper_code'];
@@ -231,7 +231,7 @@ class entry_builder {
 	  // pull the payment detail
 	  $sql = "select description from " . TABLE_JOURNAL_ITEM . "
 		where ref_id = " . $result->fields['ref_id'] . " and gl_type = 'ttl'";
-	  $pmt_det = $admin->DataBase->Execute($sql);
+	  $pmt_det = $admin->DataBase->query($sql);
 	  $this->payment_detail = $this->pull_desc($pmt_det->fields['description']);
 	  // keep all payments in an array
 	  $this->payment[] = array(
@@ -255,7 +255,7 @@ class entry_builder {
 		if ($method) {
 			$this->ship_carrier = $admin->classes['shipping']->methods[$method]->text;
 		  	$this->ship_service = defined($method . '_' . $shipping_info[1]) ? constant($method . '_' . $shipping_info[1]) : '';
-		  	$result = $admin->DataBase->Execute("SELECT tracking_id FROM ".TABLE_SHIPPING_LOG."
+		  	$result = $admin->DataBase->query("SELECT tracking_id FROM ".TABLE_SHIPPING_LOG."
 		      WHERE ref_id='$this->purchase_invoice_id' OR ref_id LIKE '".$this->purchase_invoice_id."-%'");
 		  	if ($result->RecordCount() > 0) {
 		    	$tracking = array();

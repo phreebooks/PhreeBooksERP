@@ -58,7 +58,7 @@ switch ($_REQUEST['action']) {
 	die;
   case 'dn_attach': // download from list, assume the first document only
 	$cID   = db_prepare_input($_POST['rowSeq']);
-	$result = $admin->DataBase->Execute("select attachments from " . TABLE_PHREEMAIL . " where id = " . $cID);
+	$result = $admin->DataBase->query("select attachments from " . TABLE_PHREEMAIL . " where id = " . $cID);
 	$attachments = unserialize($result->fields['attachments']);
 	foreach ($attachments as $key => $value) {
 	  $filename = 'mail_'.$cID.'_'.$key.'.zip';
@@ -118,7 +118,7 @@ switch ($_REQUEST['action']) {
 	if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
 
     $query_raw    = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . " from " . TABLE_PHREEMAIL . $search . " order by $disp_order";
-    $query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+    $query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 	define('PAGE_TITLE', TEXT_ASSET);
     $include_template = 'template_main.php';

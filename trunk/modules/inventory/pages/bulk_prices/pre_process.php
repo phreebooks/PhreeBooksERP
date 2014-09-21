@@ -35,7 +35,7 @@ switch ($_REQUEST['action']) {
 			$lead_time  = $currencies->clean_value($_POST['lead_'  . $j]);
 			$item_cost  = $currencies->clean_value($_POST['cost_'  . $j]);
 			$full_price = $currencies->clean_value($_POST['sell_'  . $j]);
-			$admin->DataBase->Execute("update " . TABLE_INVENTORY . " set
+			$admin->DataBase->query("update " . TABLE_INVENTORY . " set
 				lead_time  = '$lead_time',
 				item_cost  = '$item_cost',
 				full_price = '$full_price',
@@ -86,7 +86,7 @@ $field_list = array('id', 'sku', 'inactive', 'description_short', 'lead_time', '
 if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
 
 $query_raw    = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . " from " . TABLE_INVENTORY . $search . " order by $disp_order";
-$query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+$query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 history_save('inv_bulk');
 

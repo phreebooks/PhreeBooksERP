@@ -109,14 +109,14 @@ class phreemail_admin {
   function install() {
     global $admin, $messageStack;
 	$error = false;
-  	$admin->DataBase->Execute("INSERT INTO " . TABLE_PHREEMAIL_WORDS . " VALUES(1, 'viagvra');");
-  	$admin->DataBase->Execute("INSERT INTO " . TABLE_PHREEMAIL_WORDS . " VALUES(2, 'rjolex');");
-  	$admin->DataBase->Execute("INSERT INTO " . TABLE_PHREEMAIL_WORDS . " VALUES(3, 'viajagra');");
-	$admin->DataBase->Execute("INSERT INTO " . TABLE_PHREEMAIL_LIST  . " VALUES (1, 'spam@spamserver.com', 'B');");
-	$admin->DataBase->Execute("INSERT INTO " . TABLE_PHREEMAIL_DIR   . " VALUES (1, 0, 0, 'Spam', 1, '', '');");
-	$admin->DataBase->Execute("INSERT INTO " . TABLE_PHREEMAIL_DIR   . " VALUES (2, 0, 1, 'Trash', 1, '', '');");
-	$admin->DataBase->Execute("INSERT INTO " . TABLE_PHREEMAIL_DIR   . " VALUES (3, 0, 2, 'Orders', 1, '', '');");
-	$admin->DataBase->Execute("INSERT INTO " . TABLE_PHREEMAIL_DIR   . " VALUES (4, 0, 3, 'Personal', 1, '', '');");
+  	$admin->DataBase->query("INSERT INTO " . TABLE_PHREEMAIL_WORDS . " VALUES(1, 'viagvra');");
+  	$admin->DataBase->query("INSERT INTO " . TABLE_PHREEMAIL_WORDS . " VALUES(2, 'rjolex');");
+  	$admin->DataBase->query("INSERT INTO " . TABLE_PHREEMAIL_WORDS . " VALUES(3, 'viajagra');");
+	$admin->DataBase->query("INSERT INTO " . TABLE_PHREEMAIL_LIST  . " VALUES (1, 'spam@spamserver.com', 'B');");
+	$admin->DataBase->query("INSERT INTO " . TABLE_PHREEMAIL_DIR   . " VALUES (1, 0, 0, 'Spam', 1, '', '');");
+	$admin->DataBase->query("INSERT INTO " . TABLE_PHREEMAIL_DIR   . " VALUES (2, 0, 1, 'Trash', 1, '', '');");
+	$admin->DataBase->query("INSERT INTO " . TABLE_PHREEMAIL_DIR   . " VALUES (3, 0, 2, 'Orders', 1, '', '');");
+	$admin->DataBase->query("INSERT INTO " . TABLE_PHREEMAIL_DIR   . " VALUES (4, 0, 3, 'Personal', 1, '', '');");
 
     return $error;
   }

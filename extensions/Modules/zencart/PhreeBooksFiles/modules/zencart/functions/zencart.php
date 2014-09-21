@@ -42,7 +42,7 @@ function pull_down_price_sheet_list() {
   $output = array(array('id' => '0', 'text' => TEXT_NONE));
   $sql = "select distinct sheet_name from " . TABLE_PRICE_SHEETS . "
 	where '" . date('Y-m-d',time()) . "' >= effective_date and inactive = '0'";
-  $result = $admin->DataBase->Execute($sql);
+  $result = $admin->DataBase->query($sql);
   while(!$result->EOF) {
     $output[] = array('id' => $result->fields['sheet_name'], 'text' => $result->fields['sheet_name']);
     $result->MoveNext();

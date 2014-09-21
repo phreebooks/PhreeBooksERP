@@ -75,9 +75,9 @@ class admin extends \core\classes\admin {
 	    if (version_compare($this->status, '3.1', '<') ) {
 		  	$tab_map = array('0' => '0');
 		  	if(db_table_exists(DB_PREFIX . 'assets_tabs')){
-			  	$result = $admin->DataBase->Execute("select * from " . DB_PREFIX . 'assets_tabs');
+			  	$result = $admin->DataBase->query("select * from " . DB_PREFIX . 'assets_tabs');
 			  	while (!$result->EOF) {
-			    	$updateDB = $admin->DataBase->Execute("insert into " . TABLE_EXTRA_TABS . " set
+			    	$updateDB = $admin->DataBase->query("insert into " . TABLE_EXTRA_TABS . " set
 				  	  module_id = 'assets',
 				  	  tab_name = '"    . $result->fields['category_name']        . "',
 				  	  description = '" . $result->fields['category_description'] . "',
@@ -85,12 +85,12 @@ class admin extends \core\classes\admin {
 			    	$tab_map[$result->fields['category_id']] = db_insert_id();
 			    	$result->MoveNext();
 			  	}
-			  	$admin->DataBase->Execute("DROP TABLE " . DB_PREFIX . "assets_tabs");
+			  	$admin->DataBase->query("DROP TABLE " . DB_PREFIX . "assets_tabs");
 		  	}
 		  	if(db_table_exists(DB_PREFIX . 'assets_fields')){
-				$result = $admin->DataBase->Execute("select * from " . DB_PREFIX . 'assets_fields');
+				$result = $admin->DataBase->query("select * from " . DB_PREFIX . 'assets_fields');
 			  	while (!$result->EOF) {
-			    	$updateDB = $admin->DataBase->Execute("insert into " . TABLE_EXTRA_FIELDS . " set
+			    	$updateDB = $admin->DataBase->query("insert into " . TABLE_EXTRA_FIELDS . " set
 				  	  module_id = 'assets',
 				  	  tab_id = '"      . $tab_map[$result->fields['category_id']] . "',
 				  	  entry_type = '"  . $result->fields['entry_type']  . "',
@@ -99,12 +99,12 @@ class admin extends \core\classes\admin {
 				  	  params = '"      . $result->fields['params']      . "'");
 			    	$result->MoveNext();
 			  	}
-			  	$admin->DataBase->Execute("DROP TABLE " . DB_PREFIX . "assets_fields");
+			  	$admin->DataBase->query("DROP TABLE " . DB_PREFIX . "assets_fields");
 		  	}
 		  	xtra_field_sync_list('assets', TABLE_ASSETS);
 		}
 		if (version_compare($this->status, '3.3', '<') ) {
-	  		if (!db_field_exists(TABLE_ASSETS, 'attachments')) $admin->DataBase->Execute("ALTER TABLE " . TABLE_ASSETS . " ADD attachments TEXT NOT NULL AFTER terminal_date");
+	  		if (!db_field_exists(TABLE_ASSETS, 'attachments')) $admin->DataBase->query("ALTER TABLE " . TABLE_ASSETS . " ADD attachments TEXT NOT NULL AFTER terminal_date");
 	  		require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
 	  		xtra_field_sync_list('assets', TABLE_ASSETS);
     	}
@@ -114,8 +114,8 @@ class admin extends \core\classes\admin {
 	function delete($path_my_files) {
 	    global $admin;
 	    parent::delete($path_my_files);
-		$admin->DataBase->Execute("delete from " . TABLE_EXTRA_FIELDS . " where module_id = 'assets'");
-		$admin->DataBase->Execute("delete from " . TABLE_EXTRA_TABS   . " where module_id = 'assets'");
+		$admin->DataBase->query("delete from " . TABLE_EXTRA_FIELDS . " where module_id = 'assets'");
+		$admin->DataBase->query("delete from " . TABLE_EXTRA_TABS   . " where module_id = 'assets'");
 	}
 
 	/**
@@ -126,7 +126,7 @@ class admin extends \core\classes\admin {
 	function validate_name($name){
 		global $admin;
 		if (!$name) throw new \core\classes\userException(TEXT_THE_ID_FIELD_WAS_EMPTY);
-		$result = $admin->DataBase->Execute("select id from " . TABLE_ASSETS . " where asset_id = '$name'");
+		$result = $admin->DataBase->query("select id from " . TABLE_ASSETS . " where asset_id = '$name'");
 		if ($result->RecordCount() <> 0) throw new \core\classes\userException(sprintf(TEXT_THE_ID_IS_NOT_UNIQUE_ARGS, $name));
 	}
 }

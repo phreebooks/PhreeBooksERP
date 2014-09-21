@@ -36,7 +36,7 @@ class statement_builder {
 		a.country_code, a.telephone1, a.telephone2, a.telephone3, a.telephone4, a.email, a.website
 	  from " . TABLE_CONTACTS . " c inner join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id
 	  where c.id = " . $this->bill_acct_id . " and a.type like '%m'";
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	while (list($key, $value) = each($result->fields)) $this->$key = db_prepare_input($value);
 	// Load the prior balance and aging, first aging
 	$result = calculate_aging($this->bill_acct_id, $result->fields['type'], $result->fields['special_terms']);
@@ -56,7 +56,7 @@ class statement_builder {
 		and m.post_date < '" . $dates['start_date'] . "'
 		and (m.closed_date >= '" . $dates['start_date'] . "' or m.closed = '0')
 		and m.journal_id in (6, 7, 12, 13) and i.gl_type in ('ttl', 'dsc')";
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	$prior_balance = 0;
 	$partials = array();
 	while (!$result->EOF) {
@@ -70,7 +70,7 @@ class statement_builder {
 		where i.so_po_item_ref_id in (".implode(',',$partials).")
 		and m.post_date < '" . $dates['start_date'] . "'
 		and m.journal_id in (18, 20) and i.gl_type = 'pmt'";
-	  $result = $admin->DataBase->Execute($sql);
+	  $result = $admin->DataBase->query($sql);
 	  $this->prior_balance = $prior_balance + $result->fields['payment'];
 	} else {
 	  $this->prior_balance = $prior_balance;
@@ -84,7 +84,7 @@ class statement_builder {
 	  where m.bill_acct_id = " . $this->bill_acct_id;
 	if ($strDates) $sql .= " and " . $strDates;
 	$sql .= " and m.journal_id in (6, 7, 12, 13, 18, 20) and i.gl_type in ('ttl', 'dsc') order by m.post_date";
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	$this->statememt_total = 0;
 	while (!$result->EOF) {
 	  $reverse    = in_array($result->fields['journal_id'], array(6, 7, 12, 13)) ? true : false;

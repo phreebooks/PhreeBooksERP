@@ -25,17 +25,17 @@ $security_level = \core\classes\user::validate(SECURITY_ID_PHREEFORM);
 $id        = $_GET['id'];
 $ajax_text = '';
 if (!isset($_GET['id'])) throw new \core\classes\userException("variable ID isn't set");
-$dir_details = $admin->DataBase->Execute("select * from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
+$dir_details = $admin->DataBase->query("select * from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
 switch ($_REQUEST['action']) {
   case 'go_up':
 	$id = $dir_details->fields['parent_id']; // set the id to the parent to display refreshed page
     break;
   case 'delete':
-  	$result = $admin->DataBase->Execute("select id from " . TABLE_PHREEFORM . " where parent_id = '" . $id . "' limit 1");
+  	$result = $admin->DataBase->query("select id from " . TABLE_PHREEFORM . " where parent_id = '" . $id . "' limit 1");
 	if ($result->RecordCount() > 0) {
 	  $ajax_text = DOC_CTL_DIR_NOT_EMPTY;
 	} else {
-	  $admin->DataBase->Execute("delete from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
+	  $admin->DataBase->query("delete from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
 	  $id = $dir_details->fields['parent_id']; // set the id to the parent to display refreshed page
 	  $ajax_text = DOC_CTL_DIR_DELETED;
 	}

@@ -44,7 +44,7 @@
  </thead>
  <tbody class="ui-widget-content">
   <?php
-	$result = $admin->DataBase->Execute("select id, shipment_id, ref_id, method, deliver_date, tracking_id, cost
+	$result = $admin->DataBase->query("select id, shipment_id, ref_id, method, deliver_date, tracking_id, cost
 		from " . TABLE_SHIPPING_LOG . " where carrier = 'yrc' and ship_date = '" . $date . "'");
 	if ($result->RecordCount() > 0) {
 		while(!$result->EOF) {

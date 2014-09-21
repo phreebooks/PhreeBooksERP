@@ -141,7 +141,7 @@ function get_chart_data($operation, $data) {
   		$id = $data[0];
   		if (!$id) return false;
   		$dates = gen_get_dates(gen_specific_date(date(Y-m-d), 0, 0, -1));
-  		$result = $admin->DataBase->Execute("SELECT month(post_date) as month, year(post_date) as year,
+  		$result = $admin->DataBase->query("SELECT month(post_date) as month, year(post_date) as year,
           sum(total_amount) as total from ".TABLE_JOURNAL_MAIN."
   		  where bill_acct_id = $id and journal_id in (12,13) and post_date >= '".$dates['ThisYear'].'-'.$dates['ThisMonth']."-01'
   		  group by year, month limit 12");

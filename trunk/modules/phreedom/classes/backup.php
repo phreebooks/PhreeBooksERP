@@ -43,7 +43,7 @@ class backup {
   	function dump_db_table($db, $table = 'all', $type = 'data', $params = '') {
 		if ($table == 'all') {
 			$tables = array();
-			$table_list = $admin->DataBase->Execute("show tables");
+			$table_list = $admin->DataBase->query("show tables");
 			while (!$table_list->EOF) {
 				$tables[] = array_shift($table_list->fields);
 				$table_list->MoveNext();
@@ -58,11 +58,11 @@ class backup {
 		  	if ($type == 'structure' || $type == 'both') { // build the table create sql
 				$query .= "-- Table structure for table $table" . lnbr;
 				$query .= "DROP TABLE IF EXISTS $table;" . lnbr . lnbr;
-				$result = $admin->DataBase->Execute("show create table `$table`");
+				$result = $admin->DataBase->query("show create table `$table`");
 				$query .= $result->fields['Create Table'] . ";" . lnbr . lnbr;
 		  	}
 		  	if ($type == 'data' || $type == 'both') {
-				$result = $admin->DataBase->Execute('SELECT * FROM ' . $table . $params);
+				$result = $admin->DataBase->query('SELECT * FROM ' . $table . $params);
 				if ($result->RecordCount() > 0) {
 			  		$temp_array = $result->fields;
 			  		while (list($key, $value) = each($temp_array)) $data['keys'][] = $key;
@@ -340,7 +340,7 @@ class backup {
         if ($complete_line) {
           if ($debug==true) echo ((!$ignore_line) ? '<br />About to execute.': 'Ignoring statement. This command WILL NOT be executed.').'<br />Debug info:<br />$ line='.$line.'<br />$ complete_line='.$complete_line.'<br />$ keep_together='.$keep_together.'<br />SQL='.$newline.'<br /><br />';
           if (get_magic_quotes_runtime() > 0) $newline=stripslashes($newline);
-          if (trim(str_replace(';','',$newline)) != '' && !$ignore_line) $output=$admin->DataBase->Execute($newline);
+          if (trim(str_replace(';','',$newline)) != '' && !$ignore_line) $output=$admin->DataBase->query($newline);
           $results++;
           $string .= $newline.'<br />';
           $return_output[]=$output;

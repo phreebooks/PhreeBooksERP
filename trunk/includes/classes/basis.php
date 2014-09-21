@@ -109,6 +109,11 @@ class basis implements \SplSubject {
 		}
 	}
 
+	public function __sleep() {
+		\core\classes\messageStack::debug_log("executing __sleep in class basis" );
+		$this->DataBase = null;
+	}
+
 	public function __wakeup() {
 		\core\classes\messageStack::debug_log("executing __wakeup in class basis" );
 		$this->cInfo = (json_decode($request) != NULL) ? (object) json_decode($request) : (object)array_merge ( $_GET, $_POST );

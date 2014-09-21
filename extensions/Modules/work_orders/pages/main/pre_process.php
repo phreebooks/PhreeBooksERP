@@ -55,8 +55,8 @@ switch ($_REQUEST['action']) {
 		if (!$closed) $close_date = '';
 		// update/insert the data to the db
 		if ($id) { // if id is present only allow update of select fields
-			$result   = $admin->DataBase->Execute("select qty, wo_id from " . TABLE_WO_JOURNAL_MAIN . " where id = " . $id);
-			$temp     = $admin->DataBase->Execute("select allocate from " . TABLE_WO_MAIN . " where id = '" . $result->fields['wo_id'] . "'");
+			$result   = $admin->DataBase->query("select qty, wo_id from " . TABLE_WO_JOURNAL_MAIN . " where id = " . $id);
+			$temp     = $admin->DataBase->query("select allocate from " . TABLE_WO_MAIN . " where id = '" . $result->fields['wo_id'] . "'");
 			$allocate = $temp->fields['allocate'];
 			// only if qty changed, update allocation
 			if ($allocate && $result->fields['qty'] <> $qty) allocation_adjustment($sku_id, $qty, $result->fields['qty']);
@@ -71,7 +71,7 @@ switch ($_REQUEST['action']) {
 			);
 		    if (!db_perform(TABLE_WO_JOURNAL_MAIN, $sql_data_array, 'update', 'id = ' . $id)) throw new \core\classes\userException("wasn't able to update table id $id");
 		} else {
-			$result = $admin->DataBase->Execute("select next_wo_num from " . TABLE_CURRENT_STATUS);
+			$result = $admin->DataBase->query("select next_wo_num from " . TABLE_CURRENT_STATUS);
 			$wo_num = $result->fields['next_wo_num'];
 		    $sql_data_array = array(
 		      'wo_num'     => $wo_num,
@@ -87,18 +87,18 @@ switch ($_REQUEST['action']) {
 		    );
 		    if (!db_perform(TABLE_WO_JOURNAL_MAIN, $sql_data_array, 'insert')) throw new \core\classes\userException("wasn't able to insert");
 			$id = db_insert_id();
-			$result   = $admin->DataBase->Execute("update " . TABLE_CURRENT_STATUS . " set next_wo_num = '" . string_increment($wo_num) . "'");
-			$temp     = $admin->DataBase->Execute("select allocate from " . TABLE_WO_MAIN . " where id = '" . $wo_id . "'");
+			$result   = $admin->DataBase->query("update " . TABLE_CURRENT_STATUS . " set next_wo_num = '" . string_increment($wo_num) . "'");
+			$temp     = $admin->DataBase->query("select allocate from " . TABLE_WO_MAIN . " where id = '" . $wo_id . "'");
 			$allocate = $temp->fields['allocate'];
 			if ($allocate) allocation_adjustment($sku_id, $qty); // add allocation
 		}
 		// load and create the intial task list (only if new)
 		if (!$_POST['id']) {
-		  	$result = $admin->DataBase->Execute("select step, task_id
+		  	$result = $admin->DataBase->query("select step, task_id
 		  	  from " . TABLE_WO_STEPS . " where ref_id = " . $wo_id . " order by step");
 		  	$step_list = array();
 		  	while (!$result->EOF) {
-		    	$task = $admin->DataBase->Execute("select task_name, mfg, qa, data_entry from " . TABLE_WO_TASK . " where id = " . $result->fields['task_id'] . " limit 1");
+		    	$task = $admin->DataBase->query("select task_name, mfg, qa, data_entry from " . TABLE_WO_TASK . " where id = " . $result->fields['task_id'] . " limit 1");
 		    	$sql_data_array = array(
 		    	  'ref_id'     => $id,
 		    	  'step'       => $result->fields['step'],
@@ -113,7 +113,7 @@ switch ($_REQUEST['action']) {
 		    	$result->MoveNext();
 		  	}
 		  	// update the last usage for the template
-		  	$admin->DataBase->Execute("update " . TABLE_WO_MAIN . " set last_usage = '" . date('Y-m-d') . "' where id = " . $wo_id);
+		  	$admin->DataBase->query("update " . TABLE_WO_MAIN . " set last_usage = '" . date('Y-m-d') . "' where id = " . $wo_id);
 		}
 		// finish
 		gen_add_audit_log($id  ? sprintf(WO_AUDIT_LOG_MAIN, TEXT_UPDATE) . $wo_id : sprintf(WO_AUDIT_LOG_MAIN, TEXT_ADD) . $wo_id);
@@ -141,14 +141,14 @@ switch ($_REQUEST['action']) {
 		if (!$id || !$step) throw new \core\classes\userException("variable 'id' or 'rowSeq' isn't defined");
 		if (isset($_POST['user_mfg']) && $user_mfg > 0) { // the mfg signoff is required and present
 			$sql = "select admin_pass from " . TABLE_USERS . " where admin_id = '" . $user_mfg . "'";
-	      	$result = $admin->DataBase->Execute($sql);
+	      	$result = $admin->DataBase->query($sql);
 	      	\core\classes\encryption::validate_password($pw_mfg, $result->fields['admin_pass']);
 		    $sql_data_array['mfg_id']   = $user_mfg;
 		    $sql_data_array['mfg_date'] = date('Y-m-d H:i:s');
 		}
 		if (isset($_POST['user_qa']) && $user_qa> 0) { // the qa signoff is required and present
 		  	$sql = "select admin_pass from " . TABLE_USERS . " where admin_id = '" . $user_qa . "'";
-	      	$result = $admin->DataBase->Execute($sql);
+	      	$result = $admin->DataBase->query($sql);
 	      	\core\classes\encryption::validate_password($pw_qa, $result->fields['admin_pass']);
 		    $sql_data_array['qa_id']   = $user_qa;
 		    $sql_data_array['qa_date'] = date('Y-m-d H:i:s');
@@ -161,7 +161,7 @@ switch ($_REQUEST['action']) {
 		if (sizeof($sql_data_array) > 0) if (!db_perform(TABLE_WO_JOURNAL_ITEM, $sql_data_array, 'update', "ref_id = $id and step = $step")) throw new \core\classes\userException(WO_DB_UPDATE_ERROR);
 		if ($notes) if (!db_perform(TABLE_WO_JOURNAL_MAIN, array('notes'=>$notes), 'update', "id = $id")) throw new \core\classes\userException(WO_DB_UPDATE_ERROR);
 		// check to see if the step is complete
-		$result    = $admin->DataBase->Execute("select * from " . TABLE_WO_JOURNAL_ITEM . " where ref_id = $id and step = $step");
+		$result    = $admin->DataBase->query("select * from " . TABLE_WO_JOURNAL_ITEM . " where ref_id = $id and step = $step");
 		$task_id   = $result->fields['task_id'];
 		$set_close = true;
 		if ($result->fields['mfg']        && $result->fields['mfg_id']     == '0') $set_close = false;
@@ -169,13 +169,13 @@ switch ($_REQUEST['action']) {
 		if ($result->fields['data_entry'] && $result->fields['data_value'] ==  '') $set_close = false;
 		if ($set_close) {
 			// check to see if an erp entry is needed
-			$result = $admin->DataBase->Execute("select erp_entry from " . TABLE_WO_TASK . " where id = '$task_id'");
+			$result = $admin->DataBase->query("select erp_entry from " . TABLE_WO_TASK . " where id = '$task_id'");
 			if ($result->fields['erp_entry']) { // process the request, build main record
-				$result = $admin->DataBase->Execute("select wo_num, sku_id, qty from " . TABLE_WO_JOURNAL_MAIN . " where id = " . $id);
+				$result = $admin->DataBase->query("select wo_num, sku_id, qty from " . TABLE_WO_JOURNAL_MAIN . " where id = " . $id);
 				$wo_num = $result->fields['wo_num'];
 				$qty    = $result->fields['qty'];
 				$sku_id = $result->fields['sku_id'];
-				$result = $admin->DataBase->Execute("select sku, description_short, account_inventory_wage from " . TABLE_INVENTORY . " where id = '" . $sku_id . "'");
+				$result = $admin->DataBase->query("select sku, description_short, account_inventory_wage from " . TABLE_INVENTORY . " where id = '" . $sku_id . "'");
 				$sku    = $result->fields['sku'];
 				$desc   = $result->fields['description_short'];
 				$acct   = $result->fields['account_inventory_wage'];
@@ -209,16 +209,16 @@ switch ($_REQUEST['action']) {
 				gen_add_audit_log(TEXT_INVENTORY_ASSEMBLY . ' - ' . TEXT_SAVE, $sku, $qty);
 				$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_ASSEMBLED, TEXT_SKU , $sku), 'success');
 			}
-			$admin->DataBase->Execute("update " . TABLE_WO_JOURNAL_ITEM . " set complete = '1', admin_id = " . $_SESSION['admin_id'] . "
+			$admin->DataBase->query("update " . TABLE_WO_JOURNAL_ITEM . " set complete = '1', admin_id = " . $_SESSION['admin_id'] . "
 			  where ref_id = $id and step = $step");
 			// check to see if the work order is complete
-			$result = $admin->DataBase->Execute("select max(step) as max_step from " . TABLE_WO_JOURNAL_ITEM . " where ref_id = $id");
+			$result = $admin->DataBase->query("select max(step) as max_step from " . TABLE_WO_JOURNAL_ITEM . " where ref_id = $id");
 			if ($step == $result->fields['max_step']) {
-				$admin->DataBase->Execute("update " . TABLE_WO_JOURNAL_MAIN . "
+				$admin->DataBase->query("update " . TABLE_WO_JOURNAL_MAIN . "
 				  set closed = '1', close_date = '" . date('Y-m-d H:i:s') . "' where id = " . $id);
 			   	// check to un-allocate inventory
-				$result   = $admin->DataBase->Execute("select qty, sku_id, wo_id, wo_title from " . TABLE_WO_JOURNAL_MAIN . " where id = $id");
-				$temp     = $admin->DataBase->Execute("select allocate from ".TABLE_WO_MAIN." where id = '{$result->fields['wo_id']}'");
+				$result   = $admin->DataBase->query("select qty, sku_id, wo_id, wo_title from " . TABLE_WO_JOURNAL_MAIN . " where id = $id");
+				$temp     = $admin->DataBase->query("select allocate from ".TABLE_WO_MAIN." where id = '{$result->fields['wo_id']}'");
 				$allocate = $temp->fields['allocate'];
 				if ($allocate) allocation_adjustment($result->fields['sku_id'], 0, $result->fields['qty']);
 				gen_add_audit_log(sprintf(WO_AUDIT_LOG_WO_COMPLETE, $id));
@@ -242,17 +242,17 @@ switch ($_REQUEST['action']) {
   case 'build':
     $id = isset($_POST['rowSeq']) ? $_POST['rowSeq'] : $_GET['id'];
 	if (!$id) throw new \core\classes\userException("varible rowSeq or id isn't set");
-	$result = $admin->DataBase->Execute("select * from " . TABLE_WO_JOURNAL_MAIN . " where id = " . $id);
+	$result = $admin->DataBase->query("select * from " . TABLE_WO_JOURNAL_MAIN . " where id = " . $id);
 	foreach ($result->fields as $key => $value) $$key = $value;
 	// load the sku
-	$result = $admin->DataBase->Execute("select sku, image_with_path from " . TABLE_INVENTORY . " where id = " . $sku_id);
+	$result = $admin->DataBase->query("select sku, image_with_path from " . TABLE_INVENTORY . " where id = " . $sku_id);
 	$sku    = $result->fields['sku'];
 	$image  = $result->fields['image_with_path'];
 	// load the steps with status
-	$result = $admin->DataBase->Execute("select step, task_id, task_name, mfg, mfg_id, qa, qa_id, data_entry, data_value, complete
+	$result = $admin->DataBase->query("select step, task_id, task_name, mfg, mfg_id, qa, qa_id, data_entry, data_value, complete
 	  from " . TABLE_WO_JOURNAL_ITEM . " where ref_id = " . $id . " order by step");
 	while (!$result->EOF) {
-	  $task = $admin->DataBase->Execute("select description from " . TABLE_WO_TASK . " where id = " . $result->fields['task_id'] . " limit 1");
+	  $task = $admin->DataBase->query("select description from " . TABLE_WO_TASK . " where id = " . $result->fields['task_id'] . " limit 1");
 	  $step_list[] = array(
 	    'step'        => $result->fields['step'],
 	    'task_name'   => $result->fields['task_name'],
@@ -273,12 +273,12 @@ switch ($_REQUEST['action']) {
     $id = db_prepare_input($_GET['id']);
 	if (!$id) throw new \core\classes\userException("the requird varible 'id' isn't set");
 	// check to un-allocate inventory
-	$result   = $admin->DataBase->Execute("select qty, sku_id, wo_id, wo_title from " . TABLE_WO_JOURNAL_MAIN . " where id = " . $id);
-	$temp     = $admin->DataBase->Execute("select allocate from " . TABLE_WO_MAIN . " where id = '" . $result->fields['wo_id'] . "'");
+	$result   = $admin->DataBase->query("select qty, sku_id, wo_id, wo_title from " . TABLE_WO_JOURNAL_MAIN . " where id = " . $id);
+	$temp     = $admin->DataBase->query("select allocate from " . TABLE_WO_MAIN . " where id = '" . $result->fields['wo_id'] . "'");
 	$allocate = $temp->fields['allocate'];
 	if ($allocate) allocation_adjustment($result->fields['sku_id'], 0, $result->fields['qty']);
-	$admin->DataBase->Execute("delete from " . TABLE_WO_JOURNAL_MAIN  . " where id = " . $id);
-	$admin->DataBase->Execute("delete from " . TABLE_WO_JOURNAL_ITEM  . " where ref_id = " . $id);
+	$admin->DataBase->query("delete from " . TABLE_WO_JOURNAL_MAIN  . " where id = " . $id);
+	$admin->DataBase->query("delete from " . TABLE_WO_JOURNAL_ITEM  . " where ref_id = " . $id);
 	gen_add_audit_log(sprintf(WO_AUDIT_LOG_MAIN, TEXT_DELETE) . $result->fields['wo_title']);
 	$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_WORK_ORDER_RECORD , $result->fields['wo_title']),'success');
     $_REQUEST['action'] = '';
@@ -347,7 +347,7 @@ switch ($_REQUEST['action']) {
 	if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
     $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . "
 	  from " . TABLE_WO_JOURNAL_MAIN . " m inner join " . TABLE_INVENTORY . " i on m.sku_id = i.id" . $search . " order by $disp_order, m.closed, m.id DESC";
-    $query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+    $query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     history_save('wo_main');
 

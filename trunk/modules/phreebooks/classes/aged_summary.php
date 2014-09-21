@@ -42,7 +42,7 @@ class aged_summary {
 	}
 	$temp_sql = str_replace(' FROM ', ', ' . TABLE_JOURNAL_MAIN . '.id, journal_id, post_date, total_amount, bill_acct_id FROM ', $sql);
 	$temp_sql = $this->replace_special_fields($temp_sql);
-	$result = $admin->DataBase->Execute($temp_sql);
+	$result = $admin->DataBase->query($temp_sql);
 	if ($result->RecordCount() == 0) throw new \core\classes\userException("no data");; // No data so bail now
 	while (!$result->EOF) {
 	  for ($i = 0; $i < sizeof($this->sql_field_karray); $i++) {
@@ -177,7 +177,7 @@ class aged_summary {
   function fetch_paid_amounts($id) {
 	global $admin;
 	if (!$id) return 0;
-	$result = $admin->DataBase->Execute("select sum(i.debit_amount) as debits, sum(i.credit_amount) as credits
+	$result = $admin->DataBase->query("select sum(i.debit_amount) as debits, sum(i.credit_amount) as credits
 	  from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 	  where i.so_po_item_ref_id = " . $id . " and m.journal_id in (18, 20) and i.gl_type in ('pmt', 'chk')");
 	return $result->fields['credits'] - $result->fields['debits'];

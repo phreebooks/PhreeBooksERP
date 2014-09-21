@@ -58,9 +58,9 @@ class admin extends \core\classes\admin {
     	parent::install($path_my_files, $demo);
 		if (!db_field_exists(TABLE_CONTACTS, 'bank_account_1')) {
 			$sql = "select id from " . TABLE_EXTRA_FIELDS . " where module_id = 'contacts' and field_name = 'bank_account'";
-			$result = $admin->DataBase->Execute($sql);
+			$result = $admin->DataBase->query($sql);
 			if ( $result->RecordCount() == 0 ){
-				$result = $admin->DataBase->Execute("select id from " . TABLE_EXTRA_TABS . " where module_id='contacts' and tab_name = 'import_banking'");
+				$result = $admin->DataBase->query("select id from " . TABLE_EXTRA_TABS . " where module_id='contacts' and tab_name = 'import_banking'");
 				if ( $result->RecordCount() == 0 ){
 					$entry = array(	'module_id'	=> 'contacts',
 					 				'tab_name'	=> 'import_banking',
@@ -77,8 +77,8 @@ class admin extends \core\classes\admin {
 								'description' => 'Bank Account',
 								'params'	  => 'a:4:{s:4:"type";s:4:"text";s:12:"contact_type";s:16:"customer:vendor:";s:6:"length";i:32;s:7:"default";s:0:"";}');
 				db_perform(TABLE_EXTRA_FIELDS, $entry, 'insert');
-				//$admin->DataBase->Execute("INSERT INTO " . TABLE_EXTRA_FIELDS . " VALUES ('', 'contacts', ". $tab_id .",'text', 'bank_account', 'Bank Account','c:v:', );");
-				$admin->DataBase->Execute("ALTER TABLE ".TABLE_CONTACTS." ADD bank_account_1 varchar(32) default NULL");
+				//$admin->DataBase->query("INSERT INTO " . TABLE_EXTRA_FIELDS . " VALUES ('', 'contacts', ". $tab_id .",'text', 'bank_account', 'Bank Account','c:v:', );");
+				$admin->DataBase->query("ALTER TABLE ".TABLE_CONTACTS." ADD bank_account_1 varchar(32) default NULL");
 			}
 		}
   	}
@@ -87,16 +87,16 @@ class admin extends \core\classes\admin {
 	  	global $admin;
 	  	parent::upgrade();
 	  	$sql = "select id from " . TABLE_EXTRA_FIELDS . " where module_id = 'contacts' and field_name = 'bank_account'";
-		$result = $admin->DataBase->Execute($sql);
+		$result = $admin->DataBase->query($sql);
 		if ( $result->RecordCount() == 0 ){
-			$result = $admin->DataBase->Execute("select id from " . TABLE_EXTRA_TABS . " where module_id='contacts' and tab_name = 'import_banking'");
+			$result = $admin->DataBase->query("select id from " . TABLE_EXTRA_TABS . " where module_id='contacts' and tab_name = 'import_banking'");
 			if ( $result->RecordCount() == 0 ){
-				$admin->DataBase->Execute("INSERT INTO " . TABLE_EXTRA_TABS . " VALUES('', 'contacts','import_banking','100')");
+				$admin->DataBase->query("INSERT INTO " . TABLE_EXTRA_TABS . " VALUES('', 'contacts','import_banking','100')");
 				$tab_id = $admin->DataBase->insert_ID();
 			}else {
 				$tab_id = $result->fields['id'];
 			}
-			$admin->DataBase->Execute("INSERT INTO " . TABLE_EXTRA_FIELDS . " VALUES ('', 'contacts', ". $tab_id .",'text', 'bank_account', 'Bank Account','c:v:', 'a:4:{s:4:'type';s:4:'text';s:12:'contact_type';s:16:'customer:vendor:';s:6:'length';i:32;s:7:'default';s:0:'';}' );");
+			$admin->DataBase->query("INSERT INTO " . TABLE_EXTRA_FIELDS . " VALUES ('', 'contacts', ". $tab_id .",'text', 'bank_account', 'Bank Account','c:v:', 'a:4:{s:4:'type';s:4:'text';s:12:'contact_type';s:16:'customer:vendor:';s:6:'length';i:32;s:7:'default';s:0:'';}' );");
 		}
 	}
 

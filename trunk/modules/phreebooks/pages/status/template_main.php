@@ -110,7 +110,7 @@ echo $toolbar->build_toolbar($add_search = true, $add_periods = true);
 <?php if (defined('MODULE_SHIPPING_STATUS') && JOURNAL_ID == 12) {
       $sID            = 0;
       $shipped        = false;
-	  $result = $admin->DataBase->Execute("select id, shipment_id, ship_date from " . TABLE_SHIPPING_LOG . " where ref_id like '" . $query_result->fields['purchase_invoice_id'] . "%'");
+	  $result = $admin->DataBase->query("select id, shipment_id, ship_date from " . TABLE_SHIPPING_LOG . " where ref_id like '" . $query_result->fields['purchase_invoice_id'] . "%'");
 	  if ($result->RecordCount() > 0) {
 	    $sID          = $result->fields['id'];
 	    $shipped      = $result->fields['shipment_id'];

@@ -39,7 +39,7 @@ class pos_this_week extends \core\classes\ctl_panel {
 		$sql = "select SUM(total_amount) as day_total, currencies_code, currencies_value, post_date
 		  from " . TABLE_JOURNAL_MAIN . "
 		  where journal_id = 19 and post_date >= '" . date('Y-m-d', time()-($a * 24 * 60 * 60)) . "' GROUP BY post_date ORDER BY post_date";
-		$result = $admin->DataBase->Execute($sql);
+		$result = $admin->DataBase->query($sql);
 		if ($result->RecordCount() < 1) {
 			$contents = TEXT_NO_RESULTS_FOUND;
 		} else {

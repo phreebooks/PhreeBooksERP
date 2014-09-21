@@ -36,7 +36,7 @@ switch ($_REQUEST['action']) {
 	$sInfo->tracking_id = db_prepare_input($_POST['tracking_id']);
 	$sInfo->cost = $currencies->clean_value($_POST['cost']);
 
-	$temp = $admin->DataBase->Execute("select next_shipment_num from " . TABLE_CURRENT_STATUS);
+	$temp = $admin->DataBase->query("select next_shipment_num from " . TABLE_CURRENT_STATUS);
 	$sql_array = array(
 		'ref_id' => $sInfo->purchase_invoice_id,
 		'shipment_id' => $temp->fields['next_shipment_num'],
@@ -47,13 +47,13 @@ switch ($_REQUEST['action']) {
 		'tracking_id' => $sInfo->tracking_id,
 		'cost' => $sInfo->cost);
 	db_perform(TABLE_SHIPPING_LOG, $sql_array, 'insert');
-	$admin->DataBase->Execute("update " . TABLE_CURRENT_STATUS . " set next_shipment_num = next_shipment_num + 1");
+	$admin->DataBase->query("update " . TABLE_CURRENT_STATUS . " set next_shipment_num = next_shipment_num + 1");
 	gen_add_audit_log(TEXT_LABEL_GENERATED, $sInfo->purchase_invoice_id);
 	break;
 
   case 'delete':
 	$shipment_id = db_prepare_input($_GET['sID']);
-	$result = $admin->DataBase->Execute("select method, ship_date from " . TABLE_SHIPPING_LOG . " where shipment_id = " . (int)$shipment_id);
+	$result = $admin->DataBase->query("select method, ship_date from " . TABLE_SHIPPING_LOG . " where shipment_id = " . (int)$shipment_id);
 	$ship_method = $result->fields['method'];
 	if ($result->RecordCount() == 0 || !$shipment_id) {
 		throw new \core\classes\userException(SHIPPING_DELETE_ERROR);
@@ -63,7 +63,7 @@ switch ($_REQUEST['action']) {
 		throw new \core\classes\userException(SHIPPING_CANNOT_DELETE);
 	}
 
-	$admin->DataBase->Execute("delete from " . TABLE_SHIPPING_LOG . " where shipment_id = " . $shipment_id);
+	$admin->DataBase->query("delete from " . TABLE_SHIPPING_LOG . " where shipment_id = " . $shipment_id);
 	gen_add_audit_log(TEXT_LABEL_DELETED, $tracking_id);
 	break;
 
@@ -71,7 +71,7 @@ switch ($_REQUEST['action']) {
 	$oID = db_prepare_input($_GET['oID']);
 	$sql = "select shipper_code, purchase_invoice_id
 		from " . TABLE_JOURNAL_MAIN . " where id = " . (int)$oID;
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	$sInfo->purchase_invoice_id = $result->fields['purchase_invoice_id'];
 	$temp = explode(':', $result->fields['shipper_code']);
 	$sInfo->ship_method = $temp[1];

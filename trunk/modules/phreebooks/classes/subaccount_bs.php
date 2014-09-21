@@ -31,7 +31,7 @@ class subaccount_bs {
 	$this->max_num_levels = sizeof($report['FieldListings']) - 1; // maximum number of indents
 	$sql = "select account_id, beginning_balance + debit_amount - credit_amount as balance
 		from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where period = " . $period . " order by account_id";
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	$balance = array();
 	while (!$result->EOF) {
 	  if (in_array($this->coa_info[$result->fields['account_id']]['account_type'], array(20, 22, 24, 40, 42, 44))) {

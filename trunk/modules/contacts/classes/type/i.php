@@ -54,7 +54,7 @@ class i extends \contacts\classes\contacts{
 	public function data_complete(){
     	global $admin;
     	if ($this->auto_field && $this->short_name == '') {
-    		$result = $admin->DataBase->Execute("select ".$this->auto_field." from ".TABLE_CURRENT_STATUS);
+    		$result = $admin->DataBase->query("select ".$this->auto_field." from ".TABLE_CURRENT_STATUS);
     		$this->short_name  = $result->fields[$this->auto_field];
     		$this->inc_auto_id = true;
     	}
@@ -104,7 +104,7 @@ class i extends \contacts\classes\contacts{
         //if auto-increment see if the next id is there and increment if so.
         if ($this->inc_auto_id) { // increment the ID value
             $next_id = string_increment($this->short_name);
-            $admin->DataBase->Execute("update ".TABLE_CURRENT_STATUS." set $this->auto_field = '$next_id'");
+            $admin->DataBase->query("update ".TABLE_CURRENT_STATUS." set $this->auto_field = '$next_id'");
         }
         gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_ADD . '-' . TEXT_CONTACT, $this->short_name);
     } else { // update record

@@ -214,7 +214,7 @@ class admin extends \core\classes\admin {
 		$this->notes[] = MODULE_INVENTORY_NOTES_1;
 		require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
 		xtra_field_sync_list('inventory', TABLE_INVENTORY);
-		$result = $admin->DataBase->Execute("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory' and tab_id = '0'");
+		$result = $admin->DataBase->query("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory' and tab_id = '0'");
 		while (!$result->EOF) {
 			$temp = unserialize($result->fields['params']);
 			switch($result->fields['field_name']){
@@ -265,17 +265,17 @@ class admin extends \core\classes\admin {
 				default:
 					$temp['inventory_type'] = 'ai:ci:ds:ia:lb:ma:mb:mi:ms:ns:sa:sf:si:sr:sv';
 			}
-			$updateDB = $admin->DataBase->Execute("update " . TABLE_EXTRA_FIELDS . " set params = '" . serialize($temp) . "' where id = '".$result->fields['id']."'");
+			$updateDB = $admin->DataBase->query("update " . TABLE_EXTRA_FIELDS . " set params = '" . serialize($temp) . "' where id = '".$result->fields['id']."'");
 			$result->MoveNext();
 		}
 		// set the fields to view in the inventory field filters
 		$haystack = array('attachments', 'account_sales_income', 'item_taxable', 'purch_taxable', 'image_with_path', 'account_inventory_wage', 'account_cost_of_sales', 'cost_method', 'lead_time');
-		$result = $admin->DataBase->Execute("update " . TABLE_EXTRA_FIELDS . " set entry_type='check_box' where field_name='inactive'");
-		$result = $admin->DataBase->Execute("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory'");
+		$result = $admin->DataBase->query("update " . TABLE_EXTRA_FIELDS . " set entry_type='check_box' where field_name='inactive'");
+		$result = $admin->DataBase->query("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory'");
 		while (!$result->EOF) {
 			$use_in_inventory_filter = '1';
 			if(in_array($result->fields['field_name'], $haystack)) $use_in_inventory_filter = '0';
-			$updateDB = $admin->DataBase->Execute("update " . TABLE_EXTRA_FIELDS . " set use_in_inventory_filter = '".$use_in_inventory_filter."' where id = '".$result->fields['id']."'");
+			$updateDB = $admin->DataBase->query("update " . TABLE_EXTRA_FIELDS . " set use_in_inventory_filter = '".$use_in_inventory_filter."' where id = '".$result->fields['id']."'");
 			$result->MoveNext();
 		}
 	}
@@ -286,9 +286,9 @@ class admin extends \core\classes\admin {
     	if (version_compare($this->status, '3.1', '<') ) {
 	  		$tab_map = array('0' => '0');
 	  		if(db_table_exists(DB_PREFIX . 'inventory_categories')){
-		  		$result = $admin->DataBase->Execute("select * from " . DB_PREFIX . 'inventory_categories');
+		  		$result = $admin->DataBase->query("select * from " . DB_PREFIX . 'inventory_categories');
 		  		while (!$result->EOF) {
-		    		$updateDB = $admin->DataBase->Execute("insert into " . TABLE_EXTRA_TABS . " set
+		    		$updateDB = $admin->DataBase->query("insert into " . TABLE_EXTRA_TABS . " set
 			  		  module_id = 'inventory',
 			  		  tab_name = '"    . $result->fields['category_name']        . "',
 			  		  description = '" . $result->fields['category_description'] . "',
@@ -296,12 +296,12 @@ class admin extends \core\classes\admin {
 		    		$tab_map[$result->fields['category_id']] = db_insert_id();
 		    		$result->MoveNext();
 		  		}
-		  		$admin->DataBase->Execute("DROP TABLE " . DB_PREFIX . "inventory_categories");
+		  		$admin->DataBase->query("DROP TABLE " . DB_PREFIX . "inventory_categories");
 	  		}
 	  		if(db_table_exists(DB_PREFIX . 'inventory_categories')){
-		  		$result = $admin->DataBase->Execute("select * from " . DB_PREFIX . 'inventory_fields');
+		  		$result = $admin->DataBase->query("select * from " . DB_PREFIX . 'inventory_fields');
 		  		while (!$result->EOF) {
-		    		$updateDB = $admin->DataBase->Execute("insert into " . TABLE_EXTRA_FIELDS . " set
+		    		$updateDB = $admin->DataBase->query("insert into " . TABLE_EXTRA_FIELDS . " set
 			  		  module_id = 'inventory',
 			  		  tab_id = '"      . $tab_map[$result->fields['category_id']] . "',
 			  		  entry_type = '"  . $result->fields['entry_type']  . "',
@@ -310,25 +310,25 @@ class admin extends \core\classes\admin {
 			  		  params = '"      . $result->fields['params']      . "'");
 		    		$result->MoveNext();
 		  		}
-		  		$admin->DataBase->Execute("DROP TABLE " . DB_PREFIX . "inventory_fields");
+		  		$admin->DataBase->query("DROP TABLE " . DB_PREFIX . "inventory_fields");
 	  		}
 	  		xtra_field_sync_list('inventory', TABLE_INVENTORY);
 		}
 		if (version_compare($this->status, '3.2', '<') ) {
-	  		if (!db_field_exists(TABLE_PRICE_SHEETS, 'type')) $admin->DataBase->Execute("ALTER TABLE " . TABLE_PRICE_SHEETS . " ADD type char(1) NOT NULL default 'c' AFTER sheet_name");
-	  		if (!db_field_exists(TABLE_INVENTORY, 'price_sheet_v')) $admin->DataBase->Execute("ALTER TABLE " . TABLE_INVENTORY . " ADD price_sheet_v varchar(32) default NULL AFTER price_sheet");
+	  		if (!db_field_exists(TABLE_PRICE_SHEETS, 'type')) $admin->DataBase->query("ALTER TABLE " . TABLE_PRICE_SHEETS . " ADD type char(1) NOT NULL default 'c' AFTER sheet_name");
+	  		if (!db_field_exists(TABLE_INVENTORY, 'price_sheet_v')) $admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD price_sheet_v varchar(32) default NULL AFTER price_sheet");
 	  		xtra_field_sync_list('inventory', TABLE_INVENTORY);
 		}
 		if (version_compare($this->status, '3.6', '<') ) {
-			$admin->DataBase->Execute("ALTER TABLE " . TABLE_INVENTORY . " ADD INDEX ( `sku` )");
-			if (!db_field_exists(TABLE_INVENTORY, 'attachments')) $admin->DataBase->Execute("ALTER TABLE " . TABLE_INVENTORY . " ADD attachments text AFTER last_journal_date");
-			if (!db_field_exists(TABLE_INVENTORY, 'full_price_with_tax')) $admin->DataBase->Execute("ALTER TABLE " . TABLE_INVENTORY . " ADD full_price_with_tax FLOAT NOT NULL DEFAULT '0' AFTER full_price");
-			if (!db_field_exists(TABLE_INVENTORY, 'product_margin')) $admin->DataBase->Execute("ALTER TABLE " . TABLE_INVENTORY . " ADD product_margin FLOAT NOT NULL DEFAULT '0' AFTER full_price_with_tax");
-			if (!db_field_exists(TABLE_EXTRA_FIELDS , 'use_in_inventory_filter')) $admin->DataBase->Execute("ALTER TABLE " . TABLE_EXTRA_FIELDS . " ADD use_in_inventory_filter ENUM( '0', '1' ) NOT NULL DEFAULT '0'");
-			$admin->DataBase->Execute("alter table " . TABLE_INVENTORY . " CHANGE `inactive` `inactive` ENUM( '0', '1' ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'");
+			$admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD INDEX ( `sku` )");
+			if (!db_field_exists(TABLE_INVENTORY, 'attachments')) $admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD attachments text AFTER last_journal_date");
+			if (!db_field_exists(TABLE_INVENTORY, 'full_price_with_tax')) $admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD full_price_with_tax FLOAT NOT NULL DEFAULT '0' AFTER full_price");
+			if (!db_field_exists(TABLE_INVENTORY, 'product_margin')) $admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD product_margin FLOAT NOT NULL DEFAULT '0' AFTER full_price_with_tax");
+			if (!db_field_exists(TABLE_EXTRA_FIELDS , 'use_in_inventory_filter')) $admin->DataBase->query("ALTER TABLE " . TABLE_EXTRA_FIELDS . " ADD use_in_inventory_filter ENUM( '0', '1' ) NOT NULL DEFAULT '0'");
+			$admin->DataBase->query("alter table " . TABLE_INVENTORY . " CHANGE `inactive` `inactive` ENUM( '0', '1' ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'");
 			xtra_field_sync_list('inventory', TABLE_INVENTORY);
-			$admin->DataBase->Execute("update " . TABLE_INVENTORY . " set inventory_type = 'ma' where inventory_type = 'as'");
-			$result = $admin->DataBase->Execute("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory'");
+			$admin->DataBase->query("update " . TABLE_INVENTORY . " set inventory_type = 'ma' where inventory_type = 'as'");
+			$result = $admin->DataBase->query("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory'");
 			while (!$result->EOF) {
 				$temp = unserialize($result->fields['params']);
 				switch($result->fields['field_name']){
@@ -380,27 +380,27 @@ class admin extends \core\classes\admin {
 			  		default:
 			  			$temp['inventory_type'] = 'ai:ci:ds:ia:lb:ma:mb:mi:ms:ns:sa:sf:si:sr:sv';
 				}
-		    	$updateDB = $admin->DataBase->Execute("update " . TABLE_EXTRA_FIELDS . " set params = '" . serialize($temp) . "' where id = '".$result->fields['id']."'");
+		    	$updateDB = $admin->DataBase->query("update " . TABLE_EXTRA_FIELDS . " set params = '" . serialize($temp) . "' where id = '".$result->fields['id']."'");
 		    	$result->MoveNext();
 		  	}
 		  	$haystack = array('attachments', 'account_sales_income', 'item_taxable', 'purch_taxable', 'image_with_path', 'account_inventory_wage', 'account_cost_of_sales', 'cost_method', 'lead_time');
-		  	$result = $admin->DataBase->Execute("update " . TABLE_EXTRA_FIELDS . " set entry_type = 'check_box' where field_name = 'inactive'");
-		  	$result = $admin->DataBase->Execute("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory'");
+		  	$result = $admin->DataBase->query("update " . TABLE_EXTRA_FIELDS . " set entry_type = 'check_box' where field_name = 'inactive'");
+		  	$result = $admin->DataBase->query("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory'");
 		  	while (!$result->EOF) {
 		  		$use_in_inventory_filter = '1';
 				if(in_array($result->fields['field_name'], $haystack)) $use_in_inventory_filter = '0';
-				$updateDB = $admin->DataBase->Execute("update " . TABLE_EXTRA_FIELDS . " set use_in_inventory_filter = '".$use_in_inventory_filter."' where id = '".$result->fields['id']."'");
+				$updateDB = $admin->DataBase->query("update " . TABLE_EXTRA_FIELDS . " set use_in_inventory_filter = '".$use_in_inventory_filter."' where id = '".$result->fields['id']."'");
 				$result->MoveNext();
 		  	}
 			if (db_field_exists(TABLE_INVENTORY, 'purch_package_quantity')){
-		  		$result = $admin->DataBase->Execute("insert into ".TABLE_INVENTORY_PURCHASE." ( sku, vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v ) select sku, vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v  from " . TABLE_INVENTORY);
-		  		$admin->DataBase->Execute("ALTER TABLE " . TABLE_INVENTORY . " DROP `purch_package_quantity`");
+		  		$result = $admin->DataBase->query("insert into ".TABLE_INVENTORY_PURCHASE." ( sku, vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v ) select sku, vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v  from " . TABLE_INVENTORY);
+		  		$admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " DROP `purch_package_quantity`");
 		  	}else{
-		  		$result = $admin->DataBase->Execute("insert into ".TABLE_INVENTORY_PURCHASE." ( sku, vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v ) select sku, vendor_id, description_purchase, 1, purch_taxable, item_cost, price_sheet_v  from " . TABLE_INVENTORY);
+		  		$result = $admin->DataBase->query("insert into ".TABLE_INVENTORY_PURCHASE." ( sku, vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v ) select sku, vendor_id, description_purchase, 1, purch_taxable, item_cost, price_sheet_v  from " . TABLE_INVENTORY);
 			}
 			require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 			$tax_rates = ord_calculate_tax_drop_down('c');
-			$result = $admin->DataBase->Execute("SELECT id, item_taxable, full_price, item_cost FROM ".TABLE_INVENTORY);
+			$result = $admin->DataBase->query("SELECT id, item_taxable, full_price, item_cost FROM ".TABLE_INVENTORY);
 			while(!$result->EOF){
 				$sql_data_array = array();
 				$sql_data_array['full_price_with_tax'] = round((1 +($tax_rates[$result->fields['item_taxable']]['rate']/100))  * $result->fields['full_price'], $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
@@ -412,13 +412,13 @@ class admin extends \core\classes\admin {
 		}
 		if (version_compare($this->status, '3.7.1', '<') ) {
 			if (!db_field_exists(TABLE_INVENTORY_HISTORY, 'avg_cost')) {
-				$admin->DataBase->Execute("ALTER TABLE ".TABLE_INVENTORY_HISTORY." ADD avg_cost FLOAT NOT NULL DEFAULT '0' AFTER unit_cost");
-				$admin->DataBase->Execute("UPDATE ".TABLE_INVENTORY_HISTORY." SET avg_cost = unit_cost");
+				$admin->DataBase->query("ALTER TABLE ".TABLE_INVENTORY_HISTORY." ADD avg_cost FLOAT NOT NULL DEFAULT '0' AFTER unit_cost");
+				$admin->DataBase->query("UPDATE ".TABLE_INVENTORY_HISTORY." SET avg_cost = unit_cost");
 			}
-			$result = $admin->DataBase->Execute("select id, params from ".TABLE_EXTRA_FIELDS." where module_id = 'inventory' AND field_name = 'account_cost_of_sales'");
+			$result = $admin->DataBase->query("select id, params from ".TABLE_EXTRA_FIELDS." where module_id = 'inventory' AND field_name = 'account_cost_of_sales'");
 			$temp = unserialize($result->fields['params']);
 			$temp['inventory_type'] = 'ai:ci:ds:ia:lb:ma:mb:mi:ms:ns:sa:sf:si:sr:sv';
-			$updateDB = $admin->DataBase->Execute("update ".TABLE_EXTRA_FIELDS." set params='".serialize($temp)."' where id='".$result->fields['id']."'");
+			$updateDB = $admin->DataBase->query("update ".TABLE_EXTRA_FIELDS." set params='".serialize($temp)."' where id='".$result->fields['id']."'");
 		}
 
 	}
@@ -426,8 +426,8 @@ class admin extends \core\classes\admin {
   	function delete($path_my_files) {
     	global $admin;
     	parent::delete($path_my_files);
-		$admin->DataBase->Execute("delete from " . TABLE_EXTRA_FIELDS . " where module_id = 'inventory'");
-		$admin->DataBase->Execute("delete from " . TABLE_EXTRA_TABS   . " where module_id = 'inventory'");
+		$admin->DataBase->query("delete from " . TABLE_EXTRA_FIELDS . " where module_id = 'inventory'");
+		$admin->DataBase->query("delete from " . TABLE_EXTRA_TABS   . " where module_id = 'inventory'");
   	}
 
 	function load_reports() {
@@ -439,45 +439,45 @@ class admin extends \core\classes\admin {
 	function load_demo() {
 	    global $admin;
 		// Data for table `inventory`
-		$admin->DataBase->Execute("TRUNCATE TABLE " . TABLE_INVENTORY);
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (1, 'AMD-3600-CPU', '0', 'si', 'AMD 3600+ Athlon CPU', 'AMD 3600+ Athlon CPU', 'AMD 3600+ Athlon CPU', 'demo/athlon.jpg', '4000', '1200', '5000', '1', '0', 100, 'f', '', '', 150, 150, 1.5, 1, 0, 0, 0, 0, 0, 0, 3, 1, '', '0', now(), '', '', '');");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (2, 'ASSY-BB', '0', 'lb', 'Labor - BB Computer Assy', 'Labor Cost - Assemble Bare Bones Computer', 'Labor - BB Computer Assy', '', '4000', '6000', '5000', '1', '0', 25, 'f', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, '', '0', now(), '', '', '');");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (3, 'BOX-TW-322', '0', 'ns', 'TW-322 Shipping Box', 'TW-322 Shipping Box - 12 x 12 x 12', 'TW-322 Shipping Box', '', '4000', '6800', '5000', '1', '0', 1.35, 'f', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 15, 25, 0, 1, '', '0', now(), '', '', '');");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (4, 'BOX-TW-553', '0', 'ns', 'TW-533 Shipping Box', 'TW-533 Shipping Box - 24 x 12 x 12', 'TW-533 Shipping Box', '', '4000', '6800', '5000', '1', '0', 1.75, 'f', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, '', '0', now(), '', '', '');");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (5, 'CASE-ALIEN', '0', 'si', 'Alien Case - Red', 'Closed Cases - Red Full Tower ATX case w/o power supply', 'Alien Case - Red', 'demo/red_alien.jpg', '4000', '1200', '5000', '1', '0', 47, 'f', '', '', 98.26, 98.26, 1.5, 11, 0, 0, 0, 0, 2, 1, 13, 5, '', '0', now(), '', '', '');");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (6, 'DESC-WARR', '0', 'ds', 'Warranty Template', 'Warranty Template', 'Warranty Template', '', '1000', '1000', '1000', '1', '0', 0, 'f', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, '', '0', now(), '', '', '');");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (7, 'DVD-RW', '0', 'si', 'DVD RW with Lightscribe', 'DVD RW with Lightscribe - 8x', 'DVD RW with Lightscribe', 'demo/lightscribe.jpg', '4000', '1200', '5000', '1', '0', 23.6, 'f', '', '', 45, 45, 1.5, 2, 0, 0, 0, 0, 3, 1, 15, 14, '', '0', now(), '', '', '');");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (8, 'HD-150GB', '0', 'si', '150GB SATA Hard Drive', '150GB SATA Hard Drive - 7200 RPM', '150GB SATA Hard Drive', 'demo/150gb_sata.jpg', '4000', '1200', '5000', '1', '0', 27, 'f', '', '', 56, 56, 1.5, 2, 0, 0, 0, 0, 10, 15, 15, 30, '', '0', now(), '', '', '');");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (9, 'KB-128-ERGO', '0', 'si', 'KeysRus ergonomic keyboard', 'KeysRus ergonomic keyboard - Lighted for Gaming', 'KeysRus ergonomic keyboard', 'demo/ergo_key.jpg', '4000', '1200', '5000', '0', '1', 23.51, 'f', '', '', 56.88, 56.88, 1.5, 0, 0, 0, 0, 0, 5, 10, 11, 1, '', '0', now(), '', '', '');");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (10, 'LCD-21-WS', '0', 'si', 'LCDisplays 21\" LCD Monitor', 'LCDisplays 21\" LCD Monitor - wide screen w/anti-glare finish, Black', 'LCDisplays 21\" LCD Monitor', 'demo/monitor.jpg', '4000', '1200', '5000', '1', '0', 145.01, 'f', '', '', 189.99, 189.99, 1.50, 0, 0, 0, 0, 0, 2, 1, 5, 3, '', '0', now(), '', '', '');");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (11, 'MB-ATI-K8', '0', 'si', 'ATI K8 Motherboard', 'ATI-K8-TW AMD socket 939 Motherboard for Athlon Processors', 'ATI K8 Motherboard', 'demo/mobo.jpg', '4000', '1200', '5000', '1', '0', 125, 'f', '', '', 155.25, 155.25, 1.5, 1, 0, 0, 0, 0, 5, 10, 3, 3, '', '0', now(), '', '', '');");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (12, 'MB-ATI-K8N', '0', 'si', 'ATI K8 Motherboard w/network', 'ATI-K8-TW AMD socket 939 Motherboard for Athlon Processors with network ports', 'ATI K8 Motherboard w/network', 'demo/mobo.jpg', '4000', '1200', '5000', '1', '0', 135, 'f', '', '', 176.94, 176.94, 1.50, 1.2, 0, 0, 0, 0, 3, 10, 3, 3, '', '0', now(), '', '', '');");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (13, 'Mouse-S', '0', 'si', 'Serial Mouse - 300 DPI', 'Serial Mouse - 300 DPI', 'Serial Mouse - 300 DPI', 'demo/serial_mouse.jpg', '4000', '1200', '5000', '1', '0', 4.85, 'f', '', '', 13.99, 13.99, 1.5, 0.6, 0, 0, 0, 0, 15, 25, 11, 1, '', '0', now(), '', '', '');");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (14, 'PC-2GB-120GB-21', '0', 'ma', 'Computer 2GB-120GB-21', 'Fully assembled computer AMD/ATI 2048GB Ram/1282 GB HD/Red Case/ Monitor/ Keyboard/ Mouse', 'Computer 2GB-120GB-21', 'demo/complete_computer.jpg', '4000', '1200', '5000', '1', '0', 0, 'f', '', '', 750, 750, 1.50, 21.3, 0, 0, 0, 0, 0, 0, 0, 1, '', '0', now(), '', '', '');");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (15, 'PS-450W', '0', 'si', '450 Watt Silent Power Supply', '850 Watt Silent Power Supply - for use with Intel or AMD processors', '450 Watt Silent Power Supply', 'demo/power_supply.jpg', '4000', '1200', '5000', '1', '0', 86.26, 'f', '', '', 124.5, 124.5, 1.5, 4.7, 0, 0, 0, 0, 10, 6, 14, 5, '', '0', now(), '', '', '');");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (16, 'RAM-2GB-0.2', '0', 'si', '2GB SDRAM', '2 GB PC3200 Memory Modules - for Athlon processors', '2GB SDRAM', 'demo/2gbram.jpg', '4000', '1200', '5000', '1', '0', 56.25, 'f', '', '', 89.65, 89.65, 1.5, 0, 0, 0, 0, 0, 8, 10, 3, 2, '', '0', now(), '', '', '');");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (17, 'VID-NV-512MB', '0', 'si', 'nVidia 512 MB Video Card', 'nVidea 512 MB Video Card - with SLI support', 'nVidia 512 MB Video Card', 'demo/nvidia_512.jpg', '4000', '1200', '5000', '1', '0', 0, 'f', '', '', 300, 300, 1.50, 0.7, 0, 0, 0, 0, 4, 5, 1, 4, '', '0', now(), '', '', '');");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (18, 'PC-BB-512', '0', 'ma', 'Bare Bones Computer 2600+/2GB', 'Fully assembled bare bones computer AMD/ATI 512MB/2GB/Red Case', 'Bare Bones Computer 2600+/2GB', 'demo/barebones.jpg', '4000', '1200', '5000', '1', '0', 0, 'f', '', '', 750, 750, 1.5, 21.3, 0, 0, 0, 0, 0, 0, 0, 1, '', '0', now(), '', '', '');");
+		$admin->DataBase->query("TRUNCATE TABLE " . TABLE_INVENTORY);
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY . " VALUES (1, 'AMD-3600-CPU', '0', 'si', 'AMD 3600+ Athlon CPU', 'AMD 3600+ Athlon CPU', 'AMD 3600+ Athlon CPU', 'demo/athlon.jpg', '4000', '1200', '5000', '1', '0', 100, 'f', '', '', 150, 150, 1.5, 1, 0, 0, 0, 0, 0, 0, 3, 1, '', '0', now(), '', '', '');");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY . " VALUES (2, 'ASSY-BB', '0', 'lb', 'Labor - BB Computer Assy', 'Labor Cost - Assemble Bare Bones Computer', 'Labor - BB Computer Assy', '', '4000', '6000', '5000', '1', '0', 25, 'f', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, '', '0', now(), '', '', '');");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY . " VALUES (3, 'BOX-TW-322', '0', 'ns', 'TW-322 Shipping Box', 'TW-322 Shipping Box - 12 x 12 x 12', 'TW-322 Shipping Box', '', '4000', '6800', '5000', '1', '0', 1.35, 'f', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 15, 25, 0, 1, '', '0', now(), '', '', '');");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY . " VALUES (4, 'BOX-TW-553', '0', 'ns', 'TW-533 Shipping Box', 'TW-533 Shipping Box - 24 x 12 x 12', 'TW-533 Shipping Box', '', '4000', '6800', '5000', '1', '0', 1.75, 'f', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, '', '0', now(), '', '', '');");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY . " VALUES (5, 'CASE-ALIEN', '0', 'si', 'Alien Case - Red', 'Closed Cases - Red Full Tower ATX case w/o power supply', 'Alien Case - Red', 'demo/red_alien.jpg', '4000', '1200', '5000', '1', '0', 47, 'f', '', '', 98.26, 98.26, 1.5, 11, 0, 0, 0, 0, 2, 1, 13, 5, '', '0', now(), '', '', '');");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY . " VALUES (6, 'DESC-WARR', '0', 'ds', 'Warranty Template', 'Warranty Template', 'Warranty Template', '', '1000', '1000', '1000', '1', '0', 0, 'f', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, '', '0', now(), '', '', '');");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY . " VALUES (7, 'DVD-RW', '0', 'si', 'DVD RW with Lightscribe', 'DVD RW with Lightscribe - 8x', 'DVD RW with Lightscribe', 'demo/lightscribe.jpg', '4000', '1200', '5000', '1', '0', 23.6, 'f', '', '', 45, 45, 1.5, 2, 0, 0, 0, 0, 3, 1, 15, 14, '', '0', now(), '', '', '');");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY . " VALUES (8, 'HD-150GB', '0', 'si', '150GB SATA Hard Drive', '150GB SATA Hard Drive - 7200 RPM', '150GB SATA Hard Drive', 'demo/150gb_sata.jpg', '4000', '1200', '5000', '1', '0', 27, 'f', '', '', 56, 56, 1.5, 2, 0, 0, 0, 0, 10, 15, 15, 30, '', '0', now(), '', '', '');");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY . " VALUES (9, 'KB-128-ERGO', '0', 'si', 'KeysRus ergonomic keyboard', 'KeysRus ergonomic keyboard - Lighted for Gaming', 'KeysRus ergonomic keyboard', 'demo/ergo_key.jpg', '4000', '1200', '5000', '0', '1', 23.51, 'f', '', '', 56.88, 56.88, 1.5, 0, 0, 0, 0, 0, 5, 10, 11, 1, '', '0', now(), '', '', '');");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY . " VALUES (10, 'LCD-21-WS', '0', 'si', 'LCDisplays 21\" LCD Monitor', 'LCDisplays 21\" LCD Monitor - wide screen w/anti-glare finish, Black', 'LCDisplays 21\" LCD Monitor', 'demo/monitor.jpg', '4000', '1200', '5000', '1', '0', 145.01, 'f', '', '', 189.99, 189.99, 1.50, 0, 0, 0, 0, 0, 2, 1, 5, 3, '', '0', now(), '', '', '');");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY . " VALUES (11, 'MB-ATI-K8', '0', 'si', 'ATI K8 Motherboard', 'ATI-K8-TW AMD socket 939 Motherboard for Athlon Processors', 'ATI K8 Motherboard', 'demo/mobo.jpg', '4000', '1200', '5000', '1', '0', 125, 'f', '', '', 155.25, 155.25, 1.5, 1, 0, 0, 0, 0, 5, 10, 3, 3, '', '0', now(), '', '', '');");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY . " VALUES (12, 'MB-ATI-K8N', '0', 'si', 'ATI K8 Motherboard w/network', 'ATI-K8-TW AMD socket 939 Motherboard for Athlon Processors with network ports', 'ATI K8 Motherboard w/network', 'demo/mobo.jpg', '4000', '1200', '5000', '1', '0', 135, 'f', '', '', 176.94, 176.94, 1.50, 1.2, 0, 0, 0, 0, 3, 10, 3, 3, '', '0', now(), '', '', '');");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY . " VALUES (13, 'Mouse-S', '0', 'si', 'Serial Mouse - 300 DPI', 'Serial Mouse - 300 DPI', 'Serial Mouse - 300 DPI', 'demo/serial_mouse.jpg', '4000', '1200', '5000', '1', '0', 4.85, 'f', '', '', 13.99, 13.99, 1.5, 0.6, 0, 0, 0, 0, 15, 25, 11, 1, '', '0', now(), '', '', '');");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY . " VALUES (14, 'PC-2GB-120GB-21', '0', 'ma', 'Computer 2GB-120GB-21', 'Fully assembled computer AMD/ATI 2048GB Ram/1282 GB HD/Red Case/ Monitor/ Keyboard/ Mouse', 'Computer 2GB-120GB-21', 'demo/complete_computer.jpg', '4000', '1200', '5000', '1', '0', 0, 'f', '', '', 750, 750, 1.50, 21.3, 0, 0, 0, 0, 0, 0, 0, 1, '', '0', now(), '', '', '');");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY . " VALUES (15, 'PS-450W', '0', 'si', '450 Watt Silent Power Supply', '850 Watt Silent Power Supply - for use with Intel or AMD processors', '450 Watt Silent Power Supply', 'demo/power_supply.jpg', '4000', '1200', '5000', '1', '0', 86.26, 'f', '', '', 124.5, 124.5, 1.5, 4.7, 0, 0, 0, 0, 10, 6, 14, 5, '', '0', now(), '', '', '');");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY . " VALUES (16, 'RAM-2GB-0.2', '0', 'si', '2GB SDRAM', '2 GB PC3200 Memory Modules - for Athlon processors', '2GB SDRAM', 'demo/2gbram.jpg', '4000', '1200', '5000', '1', '0', 56.25, 'f', '', '', 89.65, 89.65, 1.5, 0, 0, 0, 0, 0, 8, 10, 3, 2, '', '0', now(), '', '', '');");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY . " VALUES (17, 'VID-NV-512MB', '0', 'si', 'nVidia 512 MB Video Card', 'nVidea 512 MB Video Card - with SLI support', 'nVidia 512 MB Video Card', 'demo/nvidia_512.jpg', '4000', '1200', '5000', '1', '0', 0, 'f', '', '', 300, 300, 1.50, 0.7, 0, 0, 0, 0, 4, 5, 1, 4, '', '0', now(), '', '', '');");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY . " VALUES (18, 'PC-BB-512', '0', 'ma', 'Bare Bones Computer 2600+/2GB', 'Fully assembled bare bones computer AMD/ATI 512MB/2GB/Red Case', 'Bare Bones Computer 2600+/2GB', 'demo/barebones.jpg', '4000', '1200', '5000', '1', '0', 0, 'f', '', '', 750, 750, 1.5, 21.3, 0, 0, 0, 0, 0, 0, 0, 1, '', '0', now(), '', '', '');");
 		// Data for table `inventory_assy_list`
-		$admin->DataBase->Execute("TRUNCATE TABLE " . TABLE_INVENTORY_ASSY_LIST);
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (1, 14, 'LCD-21-WS', 'LCDisplays 21', 1);");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (2, 14, 'HD-150GB', '150GB SATA Hard Drive', 1);");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (3, 14, 'DVD-RW', 'DVD RW with Lightscribe', 1);");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (4, 14, 'VID-NV-512MB', 'nVidea 512 MB Video Card', 1);");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (5, 14, 'RAM-2GB-0.2', '2GB SDRAM', 2);");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (6, 14, 'AMD-3600-CPU', 'AMD 3600+ Athlon CPU', 1);");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (7, 14, 'MB-ATI-K8N', 'ATI K8 Motherboard w/network', 1);");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (8, 14, 'CASE-ALIEN', 'Alien Case - Red', 1);");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (9, 14, 'Mouse-S', 'Serial Mouse - 300 DPI', 1);");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (10, 14, 'KB-128-ERGO', 'KeysRus ergonomic keyboard', 1);");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (11, 18, 'RAM-2GB-0.2', '2GB SDRAM', 2);");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (12, 18, 'AMD-3600-CPU', 'AMD 3600+ Athlon CPU', 1);");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (13, 18, 'MB-ATI-K8N', 'ATI K8 Motherboard w/network', 1);");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (14, 18, 'CASE-ALIEN', 'Alien Case - Red', 1);");
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (15, 18, 'VID-NV-512MB', 'nVidea 512 MB Video Card', 1);");
+		$admin->DataBase->query("TRUNCATE TABLE " . TABLE_INVENTORY_ASSY_LIST);
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (1, 14, 'LCD-21-WS', 'LCDisplays 21', 1);");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (2, 14, 'HD-150GB', '150GB SATA Hard Drive', 1);");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (3, 14, 'DVD-RW', 'DVD RW with Lightscribe', 1);");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (4, 14, 'VID-NV-512MB', 'nVidea 512 MB Video Card', 1);");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (5, 14, 'RAM-2GB-0.2', '2GB SDRAM', 2);");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (6, 14, 'AMD-3600-CPU', 'AMD 3600+ Athlon CPU', 1);");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (7, 14, 'MB-ATI-K8N', 'ATI K8 Motherboard w/network', 1);");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (8, 14, 'CASE-ALIEN', 'Alien Case - Red', 1);");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (9, 14, 'Mouse-S', 'Serial Mouse - 300 DPI', 1);");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (10, 14, 'KB-128-ERGO', 'KeysRus ergonomic keyboard', 1);");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (11, 18, 'RAM-2GB-0.2', '2GB SDRAM', 2);");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (12, 18, 'AMD-3600-CPU', 'AMD 3600+ Athlon CPU', 1);");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (13, 18, 'MB-ATI-K8N', 'ATI K8 Motherboard w/network', 1);");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (14, 18, 'CASE-ALIEN', 'Alien Case - Red', 1);");
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (15, 18, 'VID-NV-512MB', 'nVidea 512 MB Video Card', 1);");
 		// data for table inventory_purchase_details
-		$admin->DataBase->Execute("TRUNCATE TABLE " . TABLE_INVENTORY_PURCHASE);
-		$admin->DataBase->Execute("INSERT INTO " . TABLE_INVENTORY_PURCHASE . " (`id`, `sku`, `vendor_id`, `description_purchase`, `purch_taxable`, `item_cost`, `price_sheet_v`) VALUES
+		$admin->DataBase->query("TRUNCATE TABLE " . TABLE_INVENTORY_PURCHASE);
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY_PURCHASE . " (`id`, `sku`, `vendor_id`, `description_purchase`, `purch_taxable`, `item_cost`, `price_sheet_v`) VALUES
 	(1, 'AMD-3600-CPU', 3, 'AMD 3600+ Athlon CPU', 0, 100, ''),
 	(2, 'ASSY-BB', 0, 'Labor Cost - Assemble Bare Bones Computer', 0, 25, ''),
 	(3, 'BOX-TW-322', 0, 'TW-322 Shipping Box - 12 x 12 x 12', 0, 1.35, ''),
@@ -515,7 +515,7 @@ class admin extends \core\classes\admin {
 	function validate_name($sku){
 		global $admin;
 		if (!$sku) throw new \core\classes\userException(TEXT_THE_ID_FIELD_WAS_EMPTY);
-		$result = $admin->DataBase->Execute("select id from " . TABLE_INVENTORY . " where sku = '$sku'");
+		$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY . " where sku = '$sku'");
 		if ($result->RecordCount() <> 0) throw new \core\classes\userException(sprintf(TEXT_THE_ID_IS_NOT_UNIQUE_ARGS, $name));
 	}
 
@@ -650,7 +650,7 @@ class admin extends \core\classes\admin {
   		$query_raw    = "SELECT SQL_CALC_FOUND_ROWS DISTINCT " . implode(', ', $field_list)  . " from " . TABLE_INVENTORY ." a LEFT JOIN " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku ". $search . " order by $disp_order ";
   		//check if sql is executed before otherwise retrieve from memorie.
   		if (isset($basis->sqls[$query_raw])) $query_result = $basis->sqls[$query_raw];
-  		else $query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($basis->cInfo['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+  		else $query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($basis->cInfo['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
   		$query_split  = new \core\classes\splitPageResults($basis->cInfo['list'], '');
   		$basis->sqls[$query_raw] = $query_result; // storing data into cache memory
   		history_save('inventory');
@@ -668,7 +668,7 @@ class admin extends \core\classes\admin {
   		global $admin;
   		//building array's for filter dropdown selection
   		$i=0;
-  		$result = $admin->DataBase->Execute("SELECT * FROM " . TABLE_EXTRA_FIELDS ." WHERE module_id = 'inventory' AND use_in_inventory_filter = '1' ORDER BY description ASC");
+  		$result = $admin->DataBase->query("SELECT * FROM " . TABLE_EXTRA_FIELDS ." WHERE module_id = 'inventory' AND use_in_inventory_filter = '1' ORDER BY description ASC");
   		$this->FirstValue 		= 'var FirstValue = new Array();' 		. chr(10);
   		$this->FirstId 			= 'var FirstId = new Array();' 			. chr(10);
   		$this->SecondField 		= 'var SecondField = new Array();' 		. chr(10);
@@ -884,7 +884,7 @@ class admin extends \core\classes\admin {
   		$glEntry->period              = gen_calculate_period($glEntry->post_date);
   		if (!$glEntry->period) throw new \core\classes\userException("period isn't set");
   		// if unbuild, test for stock to go negative
-  		$result = $admin->DataBase->Execute("select account_inventory_wage, quantity_on_hand
+  		$result = $admin->DataBase->query("select account_inventory_wage, quantity_on_hand
 	  		  from " . TABLE_INVENTORY . " where sku = '$sku'");
   		$sku_inv_acct = $result->fields['account_inventory_wage'];
   		if (!$result->RecordCount()) throw new \core\classes\userException(INV_ERROR_SKU_INVALID);

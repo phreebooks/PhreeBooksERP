@@ -44,7 +44,7 @@ $_GET['gl_disc_acct_id'] = $gl_disc_acct_id;
 $purch_order_id          = db_prepare_input($_POST['purch_order_id']); // reference text
 $purchase_invoice_id     = db_prepare_input($_POST['purchase_invoice_id']);	// PhreeBooks starting check number
 if (!$purchase_invoice_id) {
-  $result = $admin->DataBase->Execute("select next_check_num from " . TABLE_CURRENT_STATUS);
+  $result = $admin->DataBase->query("select next_check_num from " . TABLE_CURRENT_STATUS);
   $purchase_invoice_id = $result->fields['next_check_num'];
 }
 /***************   hook for custom actions  ***************************/
@@ -93,7 +93,7 @@ switch ($_REQUEST['action']) {
 				$order->gl_disc_acct_id     = $gl_disc_acct_id;
 
 				// retrieve billing information
-				$result = $admin->DataBase->Execute("select * from " . TABLE_ADDRESS_BOOK . " where type = 'vm' and ref_id = " . $account);
+				$result = $admin->DataBase->query("select * from " . TABLE_ADDRESS_BOOK . " where type = 'vm' and ref_id = " . $account);
 				$order->bill_acct_id        = $account;
 				$order->bill_address_id     = $result->fields['address_id'];
 				$order->bill_primary_name   = $result->fields['primary_name'];
@@ -176,7 +176,7 @@ $query_raw = "select " . implode(', ', $field_list) . "
 	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_CONTACTS . " a on m.bill_acct_id = a.id
 	where a.type = 'v' and m.journal_id in (6, 7) and m.closed = '0'
 	order by $disp_order, post_date";
-$query_result = $admin->DataBase->Execute($query_raw);
+$query_result = $admin->DataBase->query($query_raw);
 $cal_bills0   = array(
   'name'      => 'datePosted',
   'form'      => 'bulk_bills',

@@ -60,7 +60,7 @@ class journal_21 extends \core\classes\journal {
 
     public function __construct($id = '') {
     	global $admin;
-        $result = $admin->DataBase->Execute("select next_check_num from " . TABLE_CURRENT_STATUS);
+        $result = $admin->DataBase->query("select next_check_num from " . TABLE_CURRENT_STATUS);
         $this->purchase_invoice_id = $result->fields['next_check_num'];
         $this->gl_acct_id          = $_SESSION['admin_prefs']['def_cash_acct'] ? $_SESSION['admin_prefs']['def_cash_acct'] : AP_PURCHASE_INVOICE_ACCOUNT;
 		parent::__construct($id);

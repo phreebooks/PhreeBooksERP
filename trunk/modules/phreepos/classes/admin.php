@@ -121,7 +121,7 @@ class admin extends \core\classes\admin {
 			  if(defined('PHREEPOS_RECEIPT_PRINTER_STARTING_LINE')) remove_configure('PHREEPOS_RECEIPT_PRINTER_STARTING_LINE');
 			  if(defined('PHREEPOS_RECEIPT_PRINTER_CLOSING_LINE'))  remove_configure('PHREEPOS_RECEIPT_PRINTER_CLOSING_LINE');
 		}
-		if (!db_field_exists(TABLE_PHREEPOS_TILLS, 'tax_id')) $admin->DataBase->Execute("ALTER TABLE " . TABLE_PHREEPOS_TILLS . " ADD tax_id INT(11) default '-1' AFTER max_discount");
+		if (!db_field_exists(TABLE_PHREEPOS_TILLS, 'tax_id')) $admin->DataBase->query("ALTER TABLE " . TABLE_PHREEPOS_TILLS . " ADD tax_id INT(11) default '-1' AFTER max_discount");
   	}
 
 	function delete($path_my_files) {
@@ -129,7 +129,7 @@ class admin extends \core\classes\admin {
 	    parent::delete($path_my_files);
 	    // Don't allow delete if there is activity
 		$sql = "select id from " . TABLE_JOURNAL_MAIN . " where journal_id = '19'";
-		$result = $admin->DataBase->Execute($sql);
+		$result = $admin->DataBase->query($sql);
 		if ($result->RecordCount() <> 0 ) throw new \core\classes\userException(ERROR_CANT_DELETE);
 	}
 

@@ -71,7 +71,7 @@ class audit_log extends \core\classes\ctl_panel {
           and a.action_date <= '" . date('Y-m-d', strtotime('-' . $params['today_minus'] + 1 . ' day')) . "' order by a.action_date desc";
 
        	if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
-       	$result = $admin->DataBase->Execute($sql);
+       	$result = $admin->DataBase->query($sql);
         if ($result->RecordCount() < 1) {
         	$contents = TEXT_NO_RESULTS_FOUND;
         } else {

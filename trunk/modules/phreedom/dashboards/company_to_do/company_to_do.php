@@ -30,7 +30,7 @@ class company_to_do extends \core\classes\ctl_panel {
   	function install($column_id = 1, $row_id = 0) {
 		global $admin;
 		// fetch the pages params to copy to new install
-		$result = $admin->DataBase->Execute("select params from " . TABLE_USERS_PROFILES . "
+		$result = $admin->DataBase->query("select params from " . TABLE_USERS_PROFILES . "
 	  	  where menu_id = '".$this->menu_id."' and dashboard_id = '".$this->id."'"); // just need one
 		$this->default_params = unserialize($result->fields['params']);
 		parent::install($column_id, $row_id);
@@ -75,7 +75,7 @@ class company_to_do extends \core\classes\ctl_panel {
 		// do nothing if no title or url entered
 		if (!$remove_id && $add_to_do == '') return;
 		// fetch the current params
-		$result = $admin->DataBase->Execute("select params from " . TABLE_USERS_PROFILES . "
+		$result = $admin->DataBase->query("select params from " . TABLE_USERS_PROFILES . "
 	  	  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "'
 		  and dashboard_id = '" . $this->id . "'");
 		if ($remove_id) { // remove element

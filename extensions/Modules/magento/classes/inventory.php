@@ -32,7 +32,7 @@ class inventory {
 
 	function get_item_by_id(integer $id) {
 		global $admin;
-		$result = $admin->DataBase->Execute("SELECT * FROM ".TABLE_INVENTORY." WHERE id = $id");
+		$result = $admin->DataBase->query("SELECT * FROM ".TABLE_INVENTORY." WHERE id = $id");
 		if ($result->RecordCount() == 0) throw new \core\classes\userException("couldn't find inventory with id $id");
 		$this->name 					= $result->fields['name'];
 		$this->description 				= $result->fields['sales_description'];
@@ -70,7 +70,7 @@ class inventory {
 
 	function get_item_by_sku(char $sku){
 		global $admin;
-		$result = $admin->DataBase->Execute("select * from " . TABLE_INVENTORY . " where sku = '$sku'");
+		$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY . " where sku = '$sku'");
 		if ($result->RecordCount() != 0) throw new \core\classes\userException("couldn't find inventory with sku $sku");
 		$this->name 					= $result->fields['name'];
 		$this->description 				= $result->fields['sales_description'];

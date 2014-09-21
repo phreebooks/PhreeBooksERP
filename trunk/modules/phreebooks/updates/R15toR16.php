@@ -39,37 +39,37 @@ $columns = mysql_num_fields($fields);
 $field_array = array();
 for ($i = 0; $i < $columns; $i++) $field_array[] = mysql_field_name($fields, $i);
 if (!in_array('admin_id', $field_array)) {
-  $admin->DataBase->Execute("ALTER TABLE " . TABLE_JOURNAL_MAIN . " CHANGE dept_rep_id admin_id INT( 11 ) NOT NULL DEFAULT '0'");
-  $admin->DataBase->Execute("ALTER TABLE " . TABLE_JOURNAL_MAIN . " ADD rep_id INT( 11 ) NOT NULL DEFAULT '0' AFTER admin_id");
-  $admin->DataBase->Execute("ALTER TABLE " . TABLE_JOURNAL_ITEM . " ADD full_price DOUBLE NOT NULL DEFAULT '0' AFTER taxable");
-  $admin->DataBase->Execute("ALTER TABLE " . TABLE_CONTACTS . " ADD price_sheet VARCHAR( 32 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL AFTER special_terms");
+  $admin->DataBase->query("ALTER TABLE " . TABLE_JOURNAL_MAIN . " CHANGE dept_rep_id admin_id INT( 11 ) NOT NULL DEFAULT '0'");
+  $admin->DataBase->query("ALTER TABLE " . TABLE_JOURNAL_MAIN . " ADD rep_id INT( 11 ) NOT NULL DEFAULT '0' AFTER admin_id");
+  $admin->DataBase->query("ALTER TABLE " . TABLE_JOURNAL_ITEM . " ADD full_price DOUBLE NOT NULL DEFAULT '0' AFTER taxable");
+  $admin->DataBase->query("ALTER TABLE " . TABLE_CONTACTS . " ADD price_sheet VARCHAR( 32 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL AFTER special_terms");
 
   // fix the reports (forms must be re-imported or changed manually because the field name is serialized)
-  $result = $admin->DataBase->Execute("select id, fieldname from " . TABLE_REPORT_FIELDS . " where fieldname like '%.dept_rep_id'");
+  $result = $admin->DataBase->query("select id, fieldname from " . TABLE_REPORT_FIELDS . " where fieldname like '%.dept_rep_id'");
   while (!$result->EOF) {
     $newfield = str_replace('dept_rep_id', 'rep_id', $result->fields['fieldname']);
-	$admin->DataBase->Execute("update " . TABLE_REPORT_FIELDS . " set fieldname = '" . $newfield . "' where id = " . $result->fields['id']);
+	$admin->DataBase->query("update " . TABLE_REPORT_FIELDS . " set fieldname = '" . $newfield . "' where id = " . $result->fields['id']);
 	$result->MoveNext();
   }
 }
 
 if (!defined('AR_SHOW_CONTACT_STATUS')) {
   // convert employee type set to 'b' (Both) to type 'es' (Employee, Sales) in table contacts
-  $admin->DataBase->Execute("update " . TABLE_CONTACTS . " set gl_type_account = 'es' where type = 'e' and gl_type_account = 'b'");
-  $admin->DataBase->Execute("INSERT INTO " .  TABLE_CONFIGURATION . "
+  $admin->DataBase->query("update " . TABLE_CONTACTS . " set gl_type_account = 'es' where type = 'e' and gl_type_account = 'b'");
+  $admin->DataBase->query("INSERT INTO " .  TABLE_CONFIGURATION . "
            ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` , `set_function` )
     VALUES ( 'Show popup with customer account status on order screens', 'AR_SHOW_CONTACT_STATUS', '0', 'This feature displays a customer status popup on the order screens when a customer is selected from the contact search popup. It displays balances, account aging as well as the active status of the account.', '2', '40', NULL , now(), NULL , 'cfg_keyed_select_option(array(0 =>\'No\', 1=>\'Yes\'),' ),
            ( 'Show popup with vendor account status on order screens', 'AP_SHOW_CONTACT_STATUS', '0', 'This feature displays a vendor status popup on the order screens when a vendor is selected from the contact search popup. It displays balances, account aging as well as the active status of the account.', '3', '40', NULL , now(), NULL , 'cfg_keyed_select_option(array(0 =>\'No\', 1=>\'Yes\'),' );");
   // convert the contacts sales account links from admin id's to employee contact id's
-  $result = $admin->DataBase->Execute("select admin_id, account_id from " . TABLE_USERS);
+  $result = $admin->DataBase->query("select admin_id, account_id from " . TABLE_USERS);
   while (!$result->EOF) {
     if ($result->fields['account_id'] > 0) {
-	  $admin->DataBase->Execute("update " . TABLE_CONTACTS . " set dept_rep_id = " . $result->fields['account_id'] . "
+	  $admin->DataBase->query("update " . TABLE_CONTACTS . " set dept_rep_id = " . $result->fields['account_id'] . "
 	    where dept_rep_id = " . $result->fields['admin_id']);
 	}
     $result->MoveNext();
   }
-  $admin->DataBase->Execute("ALTER TABLE " . TABLE_JOURNAL_MAIN . " CHANGE shipper_code shipper_code VARCHAR( 20 ) NOT NULL DEFAULT ':'");
+  $admin->DataBase->query("ALTER TABLE " . TABLE_JOURNAL_MAIN . " CHANGE shipper_code shipper_code VARCHAR( 20 ) NOT NULL DEFAULT ':'");
 }
 
 $fields = mysql_list_fields(DB_DATABASE, TABLE_TAX_RATES);
@@ -77,8 +77,8 @@ $columns = mysql_num_fields($fields);
 $field_array = array();
 for ($i = 0; $i < $columns; $i++) $field_array[] = mysql_field_name($fields, $i);
 if (!in_array('type', $field_array)) {
-  $admin->DataBase->Execute("ALTER TABLE " . TABLE_TAX_RATES . " ADD type VARCHAR(1) NOT NULL DEFAULT 'c' AFTER tax_rate_id");
-  $admin->DataBase->Execute("ALTER TABLE " . TABLE_TAX_AUTH  . " ADD type VARCHAR(1) NOT NULL DEFAULT 'c' AFTER tax_auth_id");
+  $admin->DataBase->query("ALTER TABLE " . TABLE_TAX_RATES . " ADD type VARCHAR(1) NOT NULL DEFAULT 'c' AFTER tax_rate_id");
+  $admin->DataBase->query("ALTER TABLE " . TABLE_TAX_AUTH  . " ADD type VARCHAR(1) NOT NULL DEFAULT 'c' AFTER tax_auth_id");
 }
 
 $dest_dir = DIR_FS_MY_FILES . 'backups';

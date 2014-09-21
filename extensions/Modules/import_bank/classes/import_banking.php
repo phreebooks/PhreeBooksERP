@@ -37,7 +37,7 @@ class import_banking extends \phreebooks\classes\journal {
 	 public function __construct(){
 	 	global $admin, $messageStack;
 	 	$messageStack->debug("\n\n*************** Start Import Payment Class *******************");
-	 	$temp = $admin->DataBase->Execute("describe " . TABLE_CONTACTS);
+	 	$temp = $admin->DataBase->query("describe " . TABLE_CONTACTS);
 	 	while (!$temp->EOF) {
 	 		if(strripos($temp->fields['Field'],'bank_account')!==false) $this->bank_account_fields[] = $temp->fields['Field'];
 	 		if(strripos($temp->fields['Field'],'iban')!==false)         $this->iban_fields[] = $temp->fields['Field'];
@@ -55,7 +55,7 @@ class import_banking extends \phreebooks\classes\journal {
 			$ouwer_bank = ltrim($ouwer_bank_account_number,0);
 		 	if ($ouwer_bank == '') throw new \core\classes\userException(TEXT_OUWER_BANK_ACCOUNT_IS_EMPTY);
 		 	$sql ="select id, description from " . TABLE_CHART_OF_ACCOUNTS. " where description like '%{$ouwer_bank}%'";
-			$result = $admin->DataBase->Execute($sql);
+			$result = $admin->DataBase->query($sql);
 			if ($result->RecordCount()== 0) throw new \core\classes\userException(TEXT_THERE_IS_NO_GL_ACCOUNTS_WITH_THE_DESCRIPTION .': '. $ouwer_bank);
 			if (!$result->RecordCount()> 1) throw new \core\classes\userException(TEXT_THERE_ARE_TWO_OR_MORE_GL_ACCOUNTS_WITH_THE_DESCRIPTION .': '. $ouwer_bank);
 			$this->gl_acct_id 			= $result->fields['id'];
@@ -108,7 +108,7 @@ class import_banking extends \phreebooks\classes\journal {
 		}
 		if($criteria == false) return false;
 		$sql ="SELECT * FROM ". TABLE_CONTACTS ." WHERE (type ='v' or type='c') and $criteria";
-		$result1 = $admin->DataBase->Execute($sql);
+		$result1 = $admin->DataBase->query($sql);
 		$contact = false;
 		if($result1->RecordCount() !== 0){
 			$messageStack->debug("\n found a costumer or vender with the bankaccountnumber ". ltrim($other_bank_account_number,0));
@@ -126,7 +126,7 @@ class import_banking extends \phreebooks\classes\journal {
 			$messageStack->debug("\n was unable to find a 1 matching contact. ");
 			return false;
 		}
-		$result2 = $admin->DataBase->Execute("SELECT * FROM ". TABLE_ADDRESS_BOOK ." WHERE (type ='vm' or type='vb' or type ='cm' or type ='cb' ) and ref_id = '{$contact['id']}'");
+		$result2 = $admin->DataBase->query("SELECT * FROM ". TABLE_ADDRESS_BOOK ." WHERE (type ='vm' or type='vb' or type ='cm' or type ='cb' ) and ref_id = '{$contact['id']}'");
 		$this->bill_short_name     	= $contact['id'];
 		$this->bill_acct_id        	= $contact['id'];
 		$this->bill_addres_id		= $contact['id'];
@@ -175,7 +175,7 @@ class import_banking extends \phreebooks\classes\journal {
 			$this->_firstjid 			= 20;
 			$gl_acct_id         		= AP_DEFAULT_PURCHASE_ACCOUNT ;
 			$gl_disc_acct_id			= AP_DISCOUNT_PURCHASE_ACCOUNT;
-			$result 					= $admin->DataBase->Execute("select next_check_num from " . TABLE_CURRENT_STATUS);
+			$result 					= $admin->DataBase->query("select next_check_num from " . TABLE_CURRENT_STATUS);
 			$this->description			= sprintf(TEXT_ARGS_ENTRY, TEXT_VENDOR_PAYMENTS);
 			define('GL_TYPE','chk');
 		}
@@ -365,7 +365,7 @@ class import_banking extends \phreebooks\classes\journal {
 		global $admin, $messageStack;
 		$messageStack->debug("\n this wil be posted as a journal ");
 		$sql ="select gl_account from " . TABLE_JOURNAL_ITEM. " where description = '".$this->_description."' and not gl_account='".$this->gl_acct_id."' and not gl_account='".$this->_questionposts."'";
-		$result = $admin->DataBase->Execute($sql);
+		$result = $admin->DataBase->query($sql);
 		$gl_account = $this->_questionposts;
 		If(!$result->RecordCount() == 0){
 			$result->EOF;
@@ -455,7 +455,7 @@ class import_banking extends \phreebooks\classes\journal {
 
 	private function get_known_trans(){
 		global $admin, $messageStack;
-		$result = $admin->DataBase->Execute("select * from " . TABLE_IMPORT_BANK);
+		$result = $admin->DataBase->query("select * from " . TABLE_IMPORT_BANK);
 	 	while(!$result->EOF){
     		$this->known_trans[$result->fields['bank_account']] = array(
     			'gl_acct_id'  => $result->fields['gl_acct_id'],
@@ -474,7 +474,7 @@ class import_banking extends \phreebooks\classes\journal {
 		  from " . TABLE_JOURNAL_MAIN . " m join ".TABLE_CONTACTS." c on m.bill_acct_id = c.id join " .TABLE_JOURNAL_ITEM. " i on m.id = i.ref_id
 		  where journal_id in (6, 7, 12, 13) and closed = '0' and gl_type = 'ttl'";
 		$sql .= " order by m.post_date";
-		$result = $admin->DataBase->Execute($sql);
+		$result = $admin->DataBase->query($sql);
 		$open_invoices = array();
 		while (!$result->EOF) {
 			$result->fields['total_amount'] = ($result->fields['debit_amount']) ? $result->fields['debit_amount'] : $result->fields['credit_amount'];

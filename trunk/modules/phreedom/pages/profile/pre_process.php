@@ -22,7 +22,7 @@ $security_level = \core\classes\user::validate(SECURITY_ID_MY_PROFILE);
 gen_pull_language($module, 'admin');
 require_once(DIR_FS_WORKING . 'functions/phreedom.php');
 /**************   page specific initialization  *************************/
-$result = $admin->DataBase->Execute("select admin_prefs from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
+$result = $admin->DataBase->query("select admin_prefs from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
 $prefs  = unserialize($result->fields['admin_prefs']);
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/profile/extra_actions.php';

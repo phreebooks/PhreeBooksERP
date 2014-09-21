@@ -285,7 +285,7 @@ class orders extends \core\classes\journal {
 	switch ($this->journal_id) {
 	  case  4: // Purchase Order Journal
 	  case 10: // Sales Order Journal
-		$result = $admin->DataBase->Execute("select id from " . TABLE_JOURNAL_MAIN . " where so_po_ref_id = " . $this->id);
+		$result = $admin->DataBase->query("select id from " . TABLE_JOURNAL_MAIN . " where so_po_ref_id = " . $this->id);
 		if ($result->RecordCount() > 0) throw new \core\classes\userException($this->error_6);
 		break;
 	  case  6: // Purchase Journal
@@ -293,10 +293,10 @@ class orders extends \core\classes\journal {
 	  case 12: // Sales/Invoice Journal
 	  case 13: // Customer Credit Memo Journal
 		// first check for main entries that refer to delete id (credit memos)
-		$result = $admin->DataBase->Execute("select id from " . TABLE_JOURNAL_MAIN . " where so_po_ref_id = " . $this->id);
+		$result = $admin->DataBase->query("select id from " . TABLE_JOURNAL_MAIN . " where so_po_ref_id = " . $this->id);
 		if ($result->RecordCount() > 0) throw new \core\classes\userException($this->error_6);
 		// next check for payments that link to deleted id (payments)
-		$result = $admin->DataBase->Execute("select id from " . TABLE_JOURNAL_ITEM . "
+		$result = $admin->DataBase->query("select id from " . TABLE_JOURNAL_ITEM . "
 			where gl_type = 'pmt' and so_po_item_ref_id = " . $this->id);
 		if ($result->RecordCount() > 0) throw new \core\classes\userException($this->error_6);
 		break;

@@ -25,10 +25,10 @@ $sku_id = $_GET['skuID'];
 $qty    = $_GET['qty'];
 if (!$sku_id || !$qty) die;
 
-$result = $admin->DataBase->Execute("select sku, description, qty from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = '" . $sku_id . "'");
+$result = $admin->DataBase->query("select sku, description, qty from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = '" . $sku_id . "'");
 $short = array();
 while (!$result->EOF) {
-  $stock = $admin->DataBase->Execute("select quantity_on_hand, quantity_on_sales_order, quantity_on_allocation
+  $stock = $admin->DataBase->query("select quantity_on_hand, quantity_on_sales_order, quantity_on_allocation
     from " . TABLE_INVENTORY . " where sku = '" . $result->fields['sku'] . "' limit 1");
   $qty_available = $stock->fields['quantity_on_hand'] - $stock->fields['quantity_on_sales_order'] - $stock->fields['quantity_on_allocation'];
   if ($qty_available < ($qty * $result->fields['qty'])) {

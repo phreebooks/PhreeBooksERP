@@ -76,7 +76,7 @@ class admin extends \core\classes\admin {
 		    'params'      => serialize(array('type' => 'check_box', 'select' => '0')),
 		  );
 		  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array);
-		  $admin->DataBase->Execute("alter table " . TABLE_INVENTORY . " add column `catalog` enum('0','1') default '0'");
+		  $admin->DataBase->query("alter table " . TABLE_INVENTORY . " add column `catalog` enum('0','1') default '0'");
 		  $sql_data_array = array(
 		    'module_id'   => 'inventory',
 		    'tab_id'      => $tab_id,
@@ -86,7 +86,7 @@ class admin extends \core\classes\admin {
 		    'params'      => serialize(array('type' => 'text', 'default' => '')),
 		  );
 		  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array);
-		  $admin->DataBase->Execute("alter table " . TABLE_INVENTORY . " add column `category_id` 'text' default ''");
+		  $admin->DataBase->query("alter table " . TABLE_INVENTORY . " add column `category_id` 'text' default ''");
 
 		  $sql_data_array = array(
 		    'module_id'   => 'inventory',
@@ -97,7 +97,7 @@ class admin extends \core\classes\admin {
 		    'params'      => serialize(array('type' => 'text', 'length' => '64', 'default' => '')),
 		  );
 		  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array);
-		  $admin->DataBase->Execute("alter table " . TABLE_INVENTORY . " add column `manufacturer` varchar(64) default ''");
+		  $admin->DataBase->query("alter table " . TABLE_INVENTORY . " add column `manufacturer` varchar(64) default ''");
 
 		  $sql_data_array = array(
 		    'module_id'   => 'inventory',
@@ -108,7 +108,7 @@ class admin extends \core\classes\admin {
 		    'params'      => serialize(array('type' => 'text', 'length' => '64', 'default' => '')),
 		  );
 		  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array);
-		  $admin->DataBase->Execute("alter table " . TABLE_INVENTORY . " add column `ProductURL` varchar(64) default ''");
+		  $admin->DataBase->query("alter table " . TABLE_INVENTORY . " add column `ProductURL` varchar(64) default ''");
 
 		  $sql_data_array = array(
 		    'module_id'   => 'inventory',
@@ -119,7 +119,7 @@ class admin extends \core\classes\admin {
 		    'params'      => serialize(array('type' => 'text', 'length' => '64', 'default' => '')),
 		  );
 		  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array);
-		  $admin->DataBase->Execute("alter table " . TABLE_INVENTORY . " add column `ProductModel` varchar(64) default ''");
+		  $admin->DataBase->query("alter table " . TABLE_INVENTORY . " add column `ProductModel` varchar(64) default ''");
 		  gen_add_audit_log(MAGENTO_LOG_FIELDS . TEXT_NEW, 'magento - catalog');
 		}
 	}
@@ -134,7 +134,7 @@ class admin extends \core\classes\admin {
   	require_once(DIR_FS_MODULES . 'inventory/functions/inventory.php');
 
 	if(defined('MODULE_MAGENTO_LAST_UPDATE') && MODULE_MAGENTO_LAST_UPDATE <> '') $where = " and ( last_update >'" . MODULE_MAGENTO_LAST_UPDATE . "' or last_journal_date >'" . MODULE_MAGENTO_LAST_UPDATE . "')";
-	$result = $admin->DataBase->Execute("select id from " . TABLE_INVENTORY . " where catalog = '1' " . $where);
+	$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY . " where catalog = '1' " . $where);
 	$cnt    = 0;
 	if($result->RecordCount() == 0)	return true;
 	while(!$result->EOF) {
@@ -154,7 +154,7 @@ class admin extends \core\classes\admin {
     if (version_compare($this->status, '3.4', '<') ) {
 		write_configure('MODULE_MAGENTO_LAST_UPDATE', date('0000-00-00 00:00:00'));
 	}
-	$result = $admin->DataBase->Execute("select tab_id from " . TABLE_EXTRA_FIELDS . " where field_name = 'category_id'");
+	$result = $admin->DataBase->query("select tab_id from " . TABLE_EXTRA_FIELDS . " where field_name = 'category_id'");
 	if ($result->RecordCount() == 0) throw new \core\classes\userException('can not find tab_name Magento');
 	else $tab_id = $result->fields['tab_id'];
 	if (!db_field_exists(TABLE_INVENTORY, 'ProductURL')){
@@ -167,7 +167,7 @@ class admin extends \core\classes\admin {
 		    'params'      => serialize(array('type' => 'text', 'length' => '64', 'default' => '')),
 		  );
 		  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array);
-		  $admin->DataBase->Execute("alter table " . TABLE_INVENTORY . " add column `ProductURL` varchar(64) default ''");
+		  $admin->DataBase->query("alter table " . TABLE_INVENTORY . " add column `ProductURL` varchar(64) default ''");
 	}
 	if (!db_field_exists(TABLE_INVENTORY, 'ProductModel')){
 		$sql_data_array = array(
@@ -179,7 +179,7 @@ class admin extends \core\classes\admin {
 		    'params'      => serialize(array('type' => 'text', 'length' => '64', 'default' => '')),
 		  );
 		  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array);
-		  $admin->DataBase->Execute("alter table " . TABLE_INVENTORY . " add column `ProductModel` varchar(64) default ''");
+		  $admin->DataBase->query("alter table " . TABLE_INVENTORY . " add column `ProductModel` varchar(64) default ''");
 	}
   }
 }

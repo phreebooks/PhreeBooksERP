@@ -25,14 +25,14 @@ class wo_builder {
 	global $admin, $report;
 	if (!$tableValue) throw new \core\classes\userException("tableValue is empty");
 	$sql = "select * from " . TABLE_WO_JOURNAL_MAIN . " where id = " . $tableValue;
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	while (list($key, $value) = each($result->fields)) $this->$key = db_prepare_input($value);
 	$this->load_item_details($this->id);
 	$this->build_bom_list($this->sku_id);
 	$this->build_ref_lists();
 
 	// convert particular values indexed by id to common name
-	$result = $admin->DataBase->Execute("select sku, image_with_path from " . TABLE_INVENTORY . " where id = " . $this->sku_id);
+	$result = $admin->DataBase->query("select sku, image_with_path from " . TABLE_INVENTORY . " where id = " . $this->sku_id);
 	$this->sku             = $result->fields['sku'];
 	$this->bar_code        = $result->fields['sku'];
 	$this->image_with_path = $result->fields['image_with_path'];
@@ -91,7 +91,7 @@ class wo_builder {
 	  t.ref_doc, t.ref_spec
 	  from " . TABLE_WO_JOURNAL_ITEM . " i inner join " . TABLE_WO_TASK . " t on i.task_id = t.id
 	  where i.ref_id = " . $id . " order by i.step";
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	while (!$result->EOF) {
 	  $index = $result->fields['id'];
 	  $this->line_items[$index]['id']          = $result->fields['id'];
@@ -111,7 +111,7 @@ class wo_builder {
   function build_bom_list($sku_id) {
     global $admin;
 	$this->bom_list = NULL;
-	$result = $admin->DataBase->Execute("select sku, description, qty from " . TABLE_INVENTORY_ASSY_LIST . "
+	$result = $admin->DataBase->query("select sku, description, qty from " . TABLE_INVENTORY_ASSY_LIST . "
 	  where ref_id = '" . $sku_id . "' order by sku");
 	$bom_list = array('Qty - SKU - Description');
 	while (!$result->EOF) {
@@ -123,7 +123,7 @@ class wo_builder {
 
   function build_ref_lists() {
     global $admin;
-	$result = $admin->DataBase->Execute("select ref_doc, ref_spec from " . TABLE_WO_MAIN . " where id = " . $this->id);
+	$result = $admin->DataBase->query("select ref_doc, ref_spec from " . TABLE_WO_MAIN . " where id = " . $this->id);
 	$ref_docs  = ($result->fields['ref_doc']  ) ? explode(',', $result->fields['ref_doc'])   : array();
 	$ref_specs = ($result->fields['ref_specs']) ? explode(',', $result->fields['ref_specs']) : array();
 	if (is_array($this->line_items)) {

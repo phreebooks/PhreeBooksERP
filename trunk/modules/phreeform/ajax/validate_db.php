@@ -39,7 +39,7 @@ foreach ($tables as $table) { // prefix the criteria
   $strTable = str_replace($table . '.', DB_PREFIX . $table . '.', $strTable);
 }
 $sql = "select * from " . $strTable . " limit 1";
-$result = $admin->DataBase->Execute_return_error($sql);
+$result = $admin->DataBase->query_return_error($sql);
 // if we have a row, sql was valid
 if ($admin->DataBase->error_number) {
   $message = sprintf(PHREEFORM_AJAX_BAD_DB_REFERENCE, $admin->DataBase->error_number . ' - ' . $admin->DataBase->error_text, $sql);

@@ -59,7 +59,7 @@ switch ($_REQUEST['action']) {
 		}
 		// If the sku and description were entered manually, the sku_id will be blank, find it
 		if (!$sku_id) {
-		  	$result = $admin->DataBase->Execute("select id from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
+		  	$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
 		  	if ($result->RecordCount() == 0) throw new \core\classes\userException(WO_SKU_NOT_FOUND);
 		  	$sku_id = $result->fields['id'];
 		}
@@ -67,7 +67,7 @@ switch ($_REQUEST['action']) {
 		if ((!$sku_id || !$sku || !$wo_title)) throw new \core\classes\userException(WO_SKU_ID_REQUIRED);
 		// check the revision, roll if necessary
 		if ($id) {
-		  	$result = $admin->DataBase->Execute("select revision, last_usage from " . TABLE_WO_MAIN . " where id = " . $id);
+		  	$result = $admin->DataBase->query("select revision, last_usage from " . TABLE_WO_MAIN . " where id = " . $id);
 		  	if ($result->fields['last_usage'] <> '0000-00-00') { // roll the revision
 		    	$revision = $result->fields['revision'] + 1;
 				$id = '';
@@ -92,12 +92,12 @@ switch ($_REQUEST['action']) {
 		    if (!db_perform(TABLE_WO_MAIN, $sql_data_array, 'insert')) throw new \core\classes\userException("wasn't able to insert in to table");
 			$id = db_insert_id();
 			if ($bump_rev) {
-		  	  	$result = $admin->DataBase->Execute("update " . TABLE_WO_MAIN . " set inactive = '1' where id = " . $_POST['id']);
+		  	  	$result = $admin->DataBase->query("update " . TABLE_WO_MAIN . " set inactive = '1' where id = " . $_POST['id']);
 			}
 		}
 		// update the task list
 		if (isset($_POST['id'])) { // delete the previous
-		    $admin->DataBase->Execute("delete from " . TABLE_WO_STEPS . " where ref_id = " . $id);
+		    $admin->DataBase->query("delete from " . TABLE_WO_STEPS . " where ref_id = " . $id);
 		}
 	    while (list($key, $val) = each($step_list)) {
 		    $sql_data_array = array(
@@ -123,12 +123,12 @@ switch ($_REQUEST['action']) {
   	$id    = db_prepare_input($_GET['cID']);
 	$title = db_prepare_input($_GET['title']);
 	// check for duplicate skus
-	$result = $admin->DataBase->Execute("select id from " . TABLE_WO_MAIN . " where wo_title = '" . $title . "'");
+	$result = $admin->DataBase->query("select id from " . TABLE_WO_MAIN . " where wo_title = '" . $title . "'");
 	if ($result->Recordcount() > 0) {	// error and reload
 		$messageStack->add(WO_BUILDER_ERROR_DUP_TITLE, 'error');
 		break;
 	}
-	$result = $admin->DataBase->Execute("select * from " . TABLE_WO_MAIN . " where id = " . $id);
+	$result = $admin->DataBase->query("select * from " . TABLE_WO_MAIN . " where id = " . $id);
 	$output_array = array();
 	foreach ($result->fields as $key => $value) {
 		switch ($key) {
@@ -147,7 +147,7 @@ switch ($_REQUEST['action']) {
 	db_perform(TABLE_WO_MAIN, $output_array, 'insert');
 	$new_id = db_insert_id();
 	// now copy the steps
-	$result = $admin->DataBase->Execute("select step, task_id from " . TABLE_WO_STEPS . " where ref_id = " . $id);
+	$result = $admin->DataBase->query("select step, task_id from " . TABLE_WO_STEPS . " where ref_id = " . $id);
 	while (!$result->EOF) {
 		$output_array = array(
 			'ref_id'  => $new_id,
@@ -164,10 +164,10 @@ switch ($_REQUEST['action']) {
   case 'edit':
     $id = db_prepare_input($_POST['rowSeq']);
 	if (!$id) throw new \core\classes\userException(sprintf(TEXT_FIELD_IS_REQUIRED_BUT_HAS_BEEN_LEFT_BLANK_ARGS, 'rowSeq'));
-	$result = $admin->DataBase->Execute("select id, wo_title, sku_id, description, allocate, ref_doc, ref_spec, revision, last_usage
+	$result = $admin->DataBase->query("select id, wo_title, sku_id, description, allocate, ref_doc, ref_spec, revision, last_usage
 		from " . TABLE_WO_MAIN . " where id = " . $id);
 	foreach ($result->fields as $key => $value) $$key = $value;
-	$result = $admin->DataBase->Execute("select id, max(revision) as revision from " . TABLE_WO_MAIN . " where wo_title = '" . $wo_title . "' group by wo_title");
+	$result = $admin->DataBase->query("select id, max(revision) as revision from " . TABLE_WO_MAIN . " where wo_title = '" . $wo_title . "' group by wo_title");
 	$highest_rev = $result->fields['revision'];
 	// set some filters
 	if ($revision < $highest_rev) {
@@ -180,15 +180,15 @@ switch ($_REQUEST['action']) {
 	  	$messageStack->add(WO_ROLL_REVISION, 'caution');
 	}
 	// pull the sku
-	$result = $admin->DataBase->Execute("select sku, image_with_path from " . TABLE_INVENTORY . " where id = " . $sku_id);
+	$result = $admin->DataBase->query("select sku, image_with_path from " . TABLE_INVENTORY . " where id = " . $sku_id);
 	$sku             = $result->fields['sku'];
 	$image_with_path = $result->fields['image_with_path'];
 	// load the steps
-	$result = $admin->DataBase->Execute("select id, ref_id, step, task_id
+	$result = $admin->DataBase->query("select id, ref_id, step, task_id
 	  from " . TABLE_WO_STEPS . " where ref_id = " . $id . " order by step");
 	$step_list = array();
 	while (!$result->EOF) {
-	  	$task = $admin->DataBase->Execute("select task_name, description from " . TABLE_WO_TASK . " where id = " . $result->fields['task_id'] . " limit 1");
+	  	$task = $admin->DataBase->query("select task_name, description from " . TABLE_WO_TASK . " where id = " . $result->fields['task_id'] . " limit 1");
 	  	$step_list[] = array(
 	  	  'step'      => $result->fields['step'],
 	  	  'task_id'   => $result->fields['task_id'],
@@ -203,11 +203,11 @@ switch ($_REQUEST['action']) {
     	$id = db_prepare_input($_GET['id']);
 		if (!$id) throw new \core\classes\userException(sprintf(TEXT_FIELD_IS_REQUIRED_BUT_HAS_BEEN_LEFT_BLANK_ARGS, 'id'));
 		// error check
-		$result = $admin->DataBase->Execute("select wo_title, last_usage from " . TABLE_WO_MAIN . " where id = " . $id);
+		$result = $admin->DataBase->query("select wo_title, last_usage from " . TABLE_WO_MAIN . " where id = " . $id);
 		if ($result->fields['last_usage'] <> '0000-00-00') throw new \core\classes\userException(WO_ERROR_CANNOT_DELETE_BUILDER);
 		// finish
-		$admin->DataBase->Execute("delete from " . TABLE_WO_MAIN  . " where id = " . $id);
-		$admin->DataBase->Execute("delete from " . TABLE_WO_STEPS . " where ref_id = " . $id);
+		$admin->DataBase->query("delete from " . TABLE_WO_MAIN  . " where id = " . $id);
+		$admin->DataBase->query("delete from " . TABLE_WO_STEPS . " where ref_id = " . $id);
 		gen_add_audit_log(sprintf(WO_AUDIT_LOG_BUILDER, TEXT_DELETE) . $result->fields['wo_title']);
 		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_WORK_ORDER_RECORD , $result->fields['wo_title']),'success');
     	$_REQUEST['action'] = '';
@@ -264,7 +264,7 @@ switch ($_REQUEST['action']) {
 	if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
     $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . "
 	  from " . TABLE_WO_MAIN . " m inner join " . TABLE_INVENTORY . " i on m.sku_id = i.id" . $search . " order by $disp_order, m.revision DESC";
-    $query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+    $query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     history_save('wo_build');
 

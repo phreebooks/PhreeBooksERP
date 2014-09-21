@@ -81,6 +81,7 @@ if ($admin === false) $admin = new \core\classes\basis;
 // determine what company to connect to
 if ($_REQUEST['action']=="ValidateUser") $_SESSION['company'] = $_POST['company'];
 if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php')) {
+	if (APC_EXTENSION_LOADED) apc_add("admin", $admin, 600);
 	define('DB_DATABASE', $_SESSION['company']);
 	require_once(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php');
 	define('DB_SERVER_HOST',DB_SERVER); // for old PhreeBooks installs
@@ -93,10 +94,8 @@ if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR
 	}
 	if(APC_EXTENSION_LOADED == false || apc_load_constants('configuration') === false) {
 		try{
-		 	$temp = $admin->DataBase->prepare("select configuration_key, configuration_value from " . DB_PREFIX . "configuration");
-		 	$temp->execute();
 		 	$array = array ();
-	    	foreach($temp->fetch(PDO::FETCH_ASSOC) as $row){
+	    	foreach($admin->DataBase->query("select configuration_key, configuration_value from " . DB_PREFIX . "configuration") as $row){
 	    		if (APC_EXTENSION_LOADED) {
 	    			$array[$row['configuration_key']] = $row['configuration_value'];
 	    		}else{
@@ -116,7 +115,7 @@ if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR
   	$admin->DataBase->connect(DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, DB_DATABASE);
   	// set application wide parameters for phreebooks module
   	if(APC_EXTENSION_LOADED == false || apc_load_constants('configuration') === false) {
-  		$result = $admin->DataBase->Execute_return_error("select configuration_key, configuration_value from " . DB_PREFIX . "configuration");
+  		$result = $admin->DataBase->query_return_error("select configuration_key, configuration_value from " . DB_PREFIX . "configuration");
   		if ($admin->DataBase->error_number != '' || $result->RecordCount() == 0) trigger_error(LOAD_CONFIG_ERROR, E_USER_ERROR);
   		$array = array ();
   		while (!$result->EOF) {
@@ -133,7 +132,6 @@ if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR
   	gen_pull_language('phreedom', 'menu');
   	gen_pull_language('phreebooks', 'menu');
   	require(DIR_FS_MODULES . 'phreedom/config.php');
-	if (APC_EXTENSION_LOADED) apc_add("admin", $admin, 600);
 	if (APC_EXTENSION_LOADED) apc_add("currencies", $currencies, 600);
 	if (APC_EXTENSION_LOADED) apc_add("mainmenu", $mainmenu, 600);
   	$currencies->load_currencies();

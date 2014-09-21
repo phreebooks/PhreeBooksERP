@@ -36,7 +36,7 @@
     echo "      </thead>\n";
     echo "      <tbody class=\"ui-widget-content\">\n";
     foreach ($admin->classes['phreebooks']->tables as $tablename => $tablesql) {
-	  $result = $admin->DataBase->Execute("SHOW TABLE STATUS LIKE '" . $tablename ."'");
+	  $result = $admin->DataBase->query("SHOW TABLE STATUS LIKE '" . $tablename ."'");
 	  echo "         <tr>\n";
 	  echo "          <td>" . $result->fields['Name'] . "</td>\n";
 	  echo "          <td align=\"center\">" . $result->fields['Engine'] . "</td>\n";

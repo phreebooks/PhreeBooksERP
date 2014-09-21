@@ -48,7 +48,7 @@ function build_audit_xml($date_from, $date_to, $select){
 	$output .= '<generalLedger>' .chr(10);//all general ledger account
 	    $income_types = array(30,32,34);
 		//$output .= xmlEntry('taxonomy','',true); //Zie toelichting *)
-		$result = $admin->DataBase->Execute("select * from " . TABLE_CHART_OF_ACCOUNTS. " where heading_only = '0'");
+		$result = $admin->DataBase->query("select * from " . TABLE_CHART_OF_ACCOUNTS. " where heading_only = '0'");
 		while (!$result->EOF) {
 			$temp = $coa_types_list[$result->fields['account_type']]['text'];
 			$output .= "\t" . '<ledgerAccount>'  .chr(10);
@@ -63,7 +63,7 @@ function build_audit_xml($date_from, $date_to, $select){
 	$output .= '</generalLedger>'.chr(10);
 	$output .= '<customersSuppliers>'.chr(10);// all contacts
 	$contacts = array();
-		$result = $admin->DataBase->Execute("select * from " . TABLE_CONTACTS . " where inactive = '0' and type in('v','c') ");
+		$result = $admin->DataBase->query("select * from " . TABLE_CONTACTS . " where inactive = '0' and type in('v','c') ");
 		while (!$result->EOF) {
 			$contacts[$result->fields['id']] = $result->fields['short_name'];
 			$output .= "\t" . '<customerSupplier>'  .chr(10);
@@ -71,7 +71,7 @@ function build_audit_xml($date_from, $date_to, $select){
 			$output .= "\t" . xmlEntry('type',					($result->fields['type']=='v') ? TEXT_VENDORS : TEXT_CUSTOMERS,	true); // type Vendor or customer
 			$output .= "\t" . xmlEntry('taxRegistrationNr',		htmlspecialchars($result->fields['gov_id_number']),true); //tax id
 			$output .= "\t" . xmlEntry('taxVerificationDate',	$result->fields['gov_id_number_date'],true); //tax verification date (not present in phreedom) maybe in custom fields
-			$address = $admin->DataBase->Execute("select * from " . TABLE_ADDRESS_BOOK . " where ref_id = '".$result->fields['id']."'");
+			$address = $admin->DataBase->query("select * from " . TABLE_ADDRESS_BOOK . " where ref_id = '".$result->fields['id']."'");
 			while (!$address->EOF) {
 				if(substr($address->fields['type'],1,2) == 'm') {
 					$output .= "\t" . xmlEntry('companyName',			htmlspecialchars($address->fields['primary_name']),true); //company name
@@ -105,8 +105,8 @@ function build_audit_xml($date_from, $date_to, $select){
 	$output .= '</customersSuppliers>'.chr(10);
 	$output .= '<transactions>'.chr(10);// all journal lines.
 	    if($select == '1') $where = " and journal_id not in ('3','4','9','10') and waiting = '0' ";
-		$totals = $admin->DataBase->Execute("select sum(i.debit_amount) as totalDebit, sum(i.credit_amount) as totalCredit from " . TABLE_JOURNAL_MAIN . " m join " .TABLE_JOURNAL_ITEM . " i on m.id=i.ref_id where m.post_date >= '" . $date_from . "' and m.post_date<='" . $date_to . "'" .$where);
-		$result = $admin->DataBase->Execute("select * from " . TABLE_JOURNAL_MAIN . " where post_date >= '" . $date_from . "' and post_date<='" . $date_to . "' " . $where . " order by journal_id ASC");
+		$totals = $admin->DataBase->query("select sum(i.debit_amount) as totalDebit, sum(i.credit_amount) as totalCredit from " . TABLE_JOURNAL_MAIN . " m join " .TABLE_JOURNAL_ITEM . " i on m.id=i.ref_id where m.post_date >= '" . $date_from . "' and m.post_date<='" . $date_to . "'" .$where);
+		$result = $admin->DataBase->query("select * from " . TABLE_JOURNAL_MAIN . " where post_date >= '" . $date_from . "' and post_date<='" . $date_to . "' " . $where . " order by journal_id ASC");
 		$output .= xmlEntry('numberEntries',		$result->RecordCount()			,true);
 		$total_credit = 0;
 		$total_credit = 0;
@@ -133,7 +133,7 @@ function build_audit_xml($date_from, $date_to, $select){
 			$output .= "\t\t" . xmlEntry('period',			$result->fields['period']		,true);
 			$output .= "\t\t" . xmlEntry('transactionDate',	$result->fields['post_date']	,true);
 			$output .= "\t\t" . xmlEntry('sourceID',		$result->fields['admin_id']		,true);
-			$line = $admin->DataBase->Execute("select id, gl_account, post_date, description, ROUND(debit_amount,".$currencies->currencies[DEFAULT_CURRENCY]['decimal_places'].") as debit_amount, ROUND(credit_amount,".$currencies->currencies[DEFAULT_CURRENCY]['decimal_places'].") as credit_amount, taxable  from " . TABLE_JOURNAL_ITEM . " where ref_id= '" . $result->fields['id']. "'");
+			$line = $admin->DataBase->query("select id, gl_account, post_date, description, ROUND(debit_amount,".$currencies->currencies[DEFAULT_CURRENCY]['decimal_places'].") as debit_amount, ROUND(credit_amount,".$currencies->currencies[DEFAULT_CURRENCY]['decimal_places'].") as credit_amount, taxable  from " . TABLE_JOURNAL_ITEM . " where ref_id= '" . $result->fields['id']. "'");
 			while (!$line->EOF) {
 				$output .= "\t\t\t" . '<line>' .chr(10);
 				$output .= "\t\t\t" . xmlEntry('recordID',					$line->fields['id']						,true);// Uniek regelnummer

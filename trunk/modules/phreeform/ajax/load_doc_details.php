@@ -28,14 +28,14 @@ if(!isset($_REQUEST['list'])) $_REQUEST['list'] = 1;
 $fieldset_content = 'NULL';
 $id = (int)$_GET['id'];
 if (!isset($_GET['id'])) throw new \core\classes\userException("variable ID isn't set");
-$doc_details = $admin->DataBase->Execute("select * from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
+$doc_details = $admin->DataBase->query("select * from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
 if ($id == 0 || $doc_details->fields['doc_type'] == '0') { // folder
   $dir_path     = TEXT_PATH . ': /' . build_dir_path($id);
   $result       = html_heading_bar(array(), array(' ', $dir_path, TEXT_ACTION));
   $list_header  = $result['html_code'];
   $field_list   = array('id', 'doc_type', 'doc_title', 'security');
   $query_raw    = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . " from " . TABLE_PHREEFORM . " where parent_id = '" . $id . "'";
-  $query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+  $query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
   $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
   include (DIR_FS_MODULES . 'phreeform/pages/main/tab_folder.php');
 } else { // load document details

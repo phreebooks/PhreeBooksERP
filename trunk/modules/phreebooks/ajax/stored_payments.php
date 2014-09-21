@@ -26,7 +26,7 @@ $xml = NULL;
 
 $enc_data = new \core\classes\encryption();
 $sql = "select id, hint, enc_value from ".TABLE_DATA_SECURITY." where module='contacts' and ref_1 = $contact_id";
-$result = $admin->DataBase->Execute($sql);
+$result = $admin->DataBase->query($sql);
 while (!$result->EOF) {
 	$data = $enc_data->decrypt($_SESSION['admin_encrypt'], $result->fields['enc_value']);
 	$fields = explode(':', $data);

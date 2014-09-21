@@ -52,7 +52,7 @@ class todays_audit_log extends \core\classes\ctl_panel {
 	// Build content box
 	    $sql = "select a.action_date, a.action, a.reference_id, a.amount, u.display_name from ".TABLE_AUDIT_LOG." as a, ".TABLE_USERS." as u where a.user_id = u.admin_id and a.action_date >= '" . date('Y-m-d',  time()) . "' order by a.action_date desc";
 	    if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
-	    $result = $admin->DataBase->Execute($sql);
+	    $result = $admin->DataBase->query($sql);
 	    if ($result->RecordCount() < 1) {
 	    	$contents = TEXT_NO_RESULTS_FOUND;
 	    } else {

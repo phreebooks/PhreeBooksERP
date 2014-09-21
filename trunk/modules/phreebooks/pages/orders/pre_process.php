@@ -330,7 +330,7 @@ switch ($_REQUEST['action']) {
 		$order->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
   	}
 	if ($_REQUEST['action'] == 'post_previous') {
-		$result = $admin->DataBase->Execute("select id from " . TABLE_JOURNAL_MAIN . "
+		$result = $admin->DataBase->query("select id from " . TABLE_JOURNAL_MAIN . "
 		  where journal_id = '12' and purchase_invoice_id < '" . $order->purchase_invoice_id . "'
 		  order by purchase_invoice_id DESC limit 1");
 		if ($result->RecordCount() > 0) {
@@ -342,7 +342,7 @@ switch ($_REQUEST['action']) {
 		}
 	}
 	if ($_REQUEST['action'] == 'post_next') {
-		$result = $admin->DataBase->Execute("select id from " . TABLE_JOURNAL_MAIN . "
+		$result = $admin->DataBase->query("select id from " . TABLE_JOURNAL_MAIN . "
 		  where journal_id = '12' and purchase_invoice_id > '" . $order->purchase_invoice_id . "'
 		  order by purchase_invoice_id limit 1");
 		if ($result->RecordCount() > 0) {
@@ -423,7 +423,7 @@ for ($i = 0; $i < count($proj_list); $i++) {
   $js_proj_list .= 'proj_list[' . $i . '] = new dropDownData("' . $proj_list[$i]['id'] . '", "' . $proj_list[$i]['text'] . '");' . chr(10);
 }
 // see if current user points to a employee for sales rep default
-$result = $admin->DataBase->Execute("select account_id from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
+$result = $admin->DataBase->query("select account_id from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
 $default_sales_rep = $result->fields['account_id'] ? $result->fields['account_id'] : '0';
 
 // Load shipping methods

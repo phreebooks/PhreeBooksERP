@@ -79,13 +79,13 @@ switch ($_REQUEST['action']) {
 		  	$capa_num = $_POST['capa_num'];
 	  } else {
 	    	// fetch the CAPA number
-			$result   = $admin->DataBase->Execute("select next_capa_num from " . TABLE_CURRENT_STATUS);
+			$result   = $admin->DataBase->query("select next_capa_num from " . TABLE_CURRENT_STATUS);
 			$capa_num = $result->fields['next_capa_num'];
 			$sql_data_array['capa_num'] = $capa_num;
 	    	if (!db_perform(TABLE_CAPA, $sql_data_array, 'insert')) throw new \core\classes\userException(CAPA_MESSAGE_ERROR);
 		  	$id = db_insert_id();
 		  	$next_num = string_increment($capa_num);
-		  	$admin->DataBase->Execute("update " . TABLE_CURRENT_STATUS . " set next_capa_num = '" . $next_num . "'");
+		  	$admin->DataBase->query("update " . TABLE_CURRENT_STATUS . " set next_capa_num = '" . $next_num . "'");
 		  	gen_add_audit_log(TEXT_CAPA_CREATED_CAPA . ' # ' . $capa_num);
 	  }
 	  $messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, ($_POST['rowSeq'] ? TEXT_UPDATED : TEXT_ADDED ), TEXT_CORRECTIVE_ACTION_PREVENTATIVE_ACTION , $capa_num), 'success');
@@ -93,16 +93,16 @@ switch ($_REQUEST['action']) {
 
   case 'edit':
     $id = db_prepare_input($_POST['rowSeq']);
-	$result = $admin->DataBase->Execute("select * from " . TABLE_CAPA . " where id = " . $id);
+	$result = $admin->DataBase->query("select * from " . TABLE_CAPA . " where id = " . $id);
 	$cInfo = new \core\classes\objectInfo($result->fields);
 	break;
 
   case 'delete':
 	\core\classes\user::validate_security($security_level, 4);
   	$id     = db_prepare_input($_GET['cID']);
-	$result = $admin->DataBase->Execute("select capa_num from " . TABLE_CAPA . " where id = " . $id);
+	$result = $admin->DataBase->query("select capa_num from " . TABLE_CAPA . " where id = " . $id);
 	if ($result->RecordCount() == 0) throw new \core\classes\userException(CAPA_ERROR_CANNOT_DELETE);
-	$admin->DataBase->Execute("delete from " . TABLE_CAPA . " where id = " . $id);
+	$admin->DataBase->query("delete from " . TABLE_CAPA . " where id = " . $id);
 	gen_add_audit_log(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_CORRECTIVE_ACTION_PREVENTATIVE_ACTION, $result->fields['capa_num']));
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('cID', 'action')), 'SSL'));
 	break;
@@ -241,7 +241,7 @@ switch ($_REQUEST['action']) {
 	if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
 
     $query_raw    = "select SQL_CALC_FOUND_ROWS ".implode(', ', $field_list)." from ".TABLE_CAPA." $search order by $disp_order, capa_num";
-    $query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+    $query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 	history_save();
     define('PAGE_TITLE', TEXT_CORRECTIVE_OR_PREVENTATIVE_ACTION);

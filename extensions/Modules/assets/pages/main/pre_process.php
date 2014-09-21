@@ -57,11 +57,11 @@ switch ($_REQUEST['action']) {
   case 'delete':
   	\core\classes\user::validate_security($security_level, 4); // security check
 	$id         = db_prepare_input($_GET['cID']);
-	$result     = $admin->DataBase->Execute("select asset_id, asset_type, image_with_path from " . TABLE_ASSETS . " where id = " . $id);
+	$result     = $admin->DataBase->query("select asset_id, asset_type, image_with_path from " . TABLE_ASSETS . " where id = " . $id);
 	$asset_id   = $result->fields['asset_id'];
 	$asset_type = $result->fields['asset_type'];
 
-	$admin->DataBase->Execute("delete from " . TABLE_ASSETS . " where id = " . $id);
+	$admin->DataBase->query("delete from " . TABLE_ASSETS . " where id = " . $id);
 	if ($image_with_path) { // delete image
 	  $file_path = DIR_FS_MY_FILES . $_SESSION['company'] . '/assets/images/';
 	  if (file_exists($file_path . $result->fields['image_with_path'])) unlink ($file_path . $result->fields['image_with_path']);
@@ -81,7 +81,7 @@ switch ($_REQUEST['action']) {
 		if (substr($asset_path, -1, 1) == '/') $asset_path = substr($asset_path, 0, strlen($asset_path)-1); // remove trailing '/' if there
 		$asset_type = db_prepare_input($_POST['asset_type']);
 		$sql_data_array = array();
-		$asset_fields = $admin->DataBase->Execute("select field_name, entry_type from " . TABLE_EXTRA_FIELDS . " where module_id = 'assets'");
+		$asset_fields = $admin->DataBase->query("select field_name, entry_type from " . TABLE_EXTRA_FIELDS . " where module_id = 'assets'");
 		while (!$asset_fields->EOF) {
 			$field_name = $asset_fields->fields['field_name'];
 			if (!isset($_POST[$field_name]) && $asset_fields->fields['entry_type'] == 'check_box') {
@@ -106,7 +106,7 @@ switch ($_REQUEST['action']) {
 		$sql_data_array['full_price']       = $currencies->clean_value($sql_data_array['full_price']);
 		$sql_data_array['asset_cost']       = $currencies->clean_value($sql_data_array['asset_cost']);
 		// Check attachments
-		$result = $admin->DataBase->Execute("select attachments from " . TABLE_ASSETS . " where id = " . $id);
+		$result = $admin->DataBase->query("select attachments from " . TABLE_ASSETS . " where id = " . $id);
 		$attachments = $result->fields['attachments'] ? unserialize($result->fields['attachments']) : array();
 		$image_id = 0;
 		while ($image_id < 100) { // up to 100 images
@@ -164,7 +164,7 @@ switch ($_REQUEST['action']) {
 	$new_asset_id = db_prepare_input($_GET['asset_id']);
 	// check for duplicate skus
 	$basis->classes['assets']->validate_name($new_asset_id);
-	$result = $admin->DataBase->Execute("select * from " . TABLE_ASSETS . " where id = " . $id);
+	$result = $admin->DataBase->query("select * from " . TABLE_ASSETS . " where id = " . $id);
 	$old_asset_key = $result->fields['asset_id'];
 	// clean up the fields (especially the system fields, retain the custom fields)
 	$output_array = array();
@@ -195,7 +195,7 @@ switch ($_REQUEST['action']) {
     $id = db_prepare_input(isset($_POST['rowSeq']) ? $_POST['rowSeq'] : $_GET['cID']);
 	$sql = "select * from " . TABLE_ASSETS . "
 		where id = " . (int)$id . " order by asset_id";
-	$asset = $admin->DataBase->Execute($sql);
+	$asset = $admin->DataBase->query($sql);
 	// load attachments
 	$attachments = $asset->fields['attachments'] ? unserialize($asset->fields['attachments']) : array();
 	$cInfo = new \core\classes\objectInfo($asset->fields);
@@ -206,12 +206,12 @@ switch ($_REQUEST['action']) {
 	$asset_id = db_prepare_input($_GET['asset_id']);
 	// check for duplicate skus
 	$basis->classes['assets']->validate_name($asset_id);
-	$result = $admin->DataBase->Execute("select asset_id, asset_type from " . TABLE_ASSETS . " where id = " . $id);
+	$result = $admin->DataBase->query("select asset_id, asset_type from " . TABLE_ASSETS . " where id = " . $id);
 	$orig_sku = $result->fields['asset_id'];
 	$asset_type = $result->fields['asset_type'];
 	$sku_list = array($orig_sku);
 	if ($asset_type == 'ms') { // build list of asset_id's to rename (without changing contents)
-		$result = $admin->DataBase->Execute("select asset_id from " . TABLE_ASSETS ." where asset_id like '". $orig_sku . "-%'");
+		$result = $admin->DataBase->query("select asset_id from " . TABLE_ASSETS ." where asset_id like '". $orig_sku . "-%'");
 		while(!$result->EOF) {
 			$sku_list[] = $result->fields['asset_id'];
 			$result->MoveNext();
@@ -222,7 +222,7 @@ switch ($_REQUEST['action']) {
 	// rename the afffected tables
 	for($i = 0; $i < count($sku_list); $i++) {
 		$new_sku = str_replace($orig_sku, $asset_id, $sku_list[$i], $count = 1);
-		$result = $admin->DataBase->Execute("update " . TABLE_ASSETS . " set asset_id = '" . $new_sku . "' where asset_id = '" . $sku_list[$i] . "'");
+		$result = $admin->DataBase->query("update " . TABLE_ASSETS . " set asset_id = '" . $new_sku . "' where asset_id = '" . $sku_list[$i] . "'");
 	}
 	$admin->DataBase->transCommit();	// finished successfully
 	break;
@@ -237,7 +237,7 @@ switch ($_REQUEST['action']) {
 	die;
   case 'dn_attach': // download from list, assume the first document only
 	$cID   = db_prepare_input($_POST['rowSeq']);
-	$result = $admin->DataBase->Execute("select attachments from " . TABLE_ASSETS . " where id = " . $cID);
+	$result = $admin->DataBase->query("select attachments from " . TABLE_ASSETS . " where id = " . $cID);
 	$attachments = unserialize($result->fields['attachments']);
 	foreach ($attachments as $key => $value) {
 	  $filename = 'assets_'.$cID.'_'.$key.'.zip';
@@ -333,7 +333,7 @@ switch ($_REQUEST['action']) {
 	if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
 
     $query_raw    = "select SQL_CALC_FOUND_ROWS ".implode(', ', $field_list)." from ".TABLE_ASSETS." $search order by $disp_order, asset_id";
-    $query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+    $query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     history_save('assets');
 	define('PAGE_TITLE', TEXT_ASSET);

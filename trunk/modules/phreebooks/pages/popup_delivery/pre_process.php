@@ -34,7 +34,7 @@ switch ($_REQUEST['action']) {
 	  if ($_POST['eta_date_' . $i] <> '') {
 		$new_date = gen_db_date($_POST['eta_date_' . $i]);
 		$rID = $_POST['id_' . $i];
-		$admin->DataBase->Execute("update " . TABLE_JOURNAL_ITEM . " set date_1 = '" . $new_date . "' where id = " . $rID);
+		$admin->DataBase->query("update " . TABLE_JOURNAL_ITEM . " set date_1 = '" . $new_date . "' where id = " . $rID);
 	  }
 	  $i++;
 	}
@@ -47,7 +47,7 @@ $gl_type = (JOURNAL_ID == 4 || JOURNAL_ID == 6) ? 'poo' : 'soo';
 $sql = " select m.purchase_invoice_id, i.id, i.sku, i.qty, i.description, i.date_1
 	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 	where i.ref_id = " . $oID . " and i.gl_type = '" . $gl_type . "'";
-$ordr_items = $admin->DataBase->Execute($sql);
+$ordr_items = $admin->DataBase->query($sql);
 $num_items  = $ordr_items->RecordCount();
 
 $include_header   = false;

@@ -32,7 +32,7 @@ function pf_process_contacts($strData, $Process) {
 function contacts_get_short_name($id) {
   global $admin;
   if (!$id) return COMPANY_ID;
-  $result = $admin->DataBase->Execute("select short_name from " . TABLE_CONTACTS . " where id = " . (int)$id);
+  $result = $admin->DataBase->query("select short_name from " . TABLE_CONTACTS . " where id = " . (int)$id);
   return $result->RecordCount()==0 ? COMPANY_ID : $result->fields['short_name'];
 }
 

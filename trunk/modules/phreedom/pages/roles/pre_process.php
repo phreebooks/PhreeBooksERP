@@ -60,7 +60,7 @@ switch ($_REQUEST['action']) {
 		  'admin_security' => $admin_security,
 		);
 		if (!$admin_id) { // check for duplicate user name
-		  	$result = $admin->DataBase->Execute("select admin_id from " . TABLE_USERS . " where admin_name = '" . db_prepare_input($_POST['admin_name']) . "'");
+		  	$result = $admin->DataBase->query("select admin_id from " . TABLE_USERS . " where admin_name = '" . db_prepare_input($_POST['admin_name']) . "'");
 		  	if ($result->RecordCount() != 0) throw new \core\classes\userException(ENTRY_DUP_USER_NEW_ERROR);
 		}
 
@@ -86,10 +86,10 @@ switch ($_REQUEST['action']) {
 	  	$admin_id = db_prepare_input($_GET['cID']);
 		$new_name = db_prepare_input($_GET['name']);
 		// check for duplicate user names
-		$result = $admin->DataBase->Execute("select admin_name from " . TABLE_USERS . " where admin_name = '" . $new_name . "'");
+		$result = $admin->DataBase->query("select admin_name from " . TABLE_USERS . " where admin_name = '" . $new_name . "'");
 		// error and reload
 		if ($result->Recordcount() > 0) throw new \core\classes\userException(TEXT_THE_USERNAME_IS_ALREADY_IN_USE_PLEASE_SELECT_A_DIFFERENT_NAME);
-		$result   = $admin->DataBase->Execute("select * from " . TABLE_USERS . " where admin_id = " . $admin_id);
+		$result   = $admin->DataBase->query("select * from " . TABLE_USERS . " where admin_id = " . $admin_id);
 		$old_name = $result->fields['admin_name'];
 		// clean up the fields (especially the system fields, retain the custom fields)
 		$output_array = array();
@@ -120,7 +120,7 @@ switch ($_REQUEST['action']) {
   	}
   case 'edit':
 	if (isset($_POST['rowSeq'])) $admin_id = db_prepare_input($_POST['rowSeq']);
-	$result = $admin->DataBase->Execute("select * from " . TABLE_USERS . " where admin_id = " . (int)$admin_id);
+	$result = $admin->DataBase->query("select * from " . TABLE_USERS . " where admin_id = " . (int)$admin_id);
 	$temp = unserialize($result->fields['admin_prefs']);
 	unset($result->fields['admin_prefs']);
 	$uInfo = new \core\classes\objectInfo($result->fields);
@@ -131,8 +131,8 @@ switch ($_REQUEST['action']) {
 	\core\classes\user::validate_security($security_level, 4);
   	$admin_id = (int)db_prepare_input($_POST['rowSeq']);
 	// fetch the name for the audit log
-	$result = $admin->DataBase->Execute("select admin_name from " . TABLE_USERS . " where admin_id = " . $admin_id);
-	$admin->DataBase->Execute("delete from " . TABLE_USERS . " where admin_id = " . $admin_id);
+	$result = $admin->DataBase->query("select admin_name from " . TABLE_USERS . " where admin_id = " . $admin_id);
+	$admin->DataBase->query("delete from " . TABLE_USERS . " where admin_id = " . $admin_id);
 	gen_add_audit_log(sprintf(GEN_LOG_USER, TEXT_DELETE), $result->fields['admin_name']);
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	break;
@@ -191,7 +191,7 @@ switch ($_REQUEST['action']) {
 	if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
 	$query_raw    = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " from " . TABLE_USERS . " where
 	  is_role = '1'" . $search . " order by $disp_order";
-	$query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+	$query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
     history_save('roles');
 

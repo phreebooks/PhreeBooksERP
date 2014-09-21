@@ -333,7 +333,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
 				echo '  <td nowrap="nowrap" align="center">';
 				echo html_input_field('pstd_' . $i, $order->item_rows[$j]['pstd'], ($item_col_2_enable ? '' : ' readonly="readonly"') . ' size="7" maxlength="6" onchange="updateRowTotal(' . $i . ', true)" style="text-align:right"');
 				// for serialized items, show the icon IF the item type is serial
-				$invType = $admin->DataBase->Execute("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE sku='{$order->item_rows[$j]['sku']}'");
+				$invType = $admin->DataBase->query("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE sku='{$order->item_rows[$j]['sku']}'");
 				$imgSerialView = in_array($invType->fields['inventory_type'], array('sr','sa')) ? "" : "display:none;";
 				if (in_array(JOURNAL_ID, array(6,7,12,13))) echo html_icon('actions/tab-new.png', TEXT_SERIAL_NUMBER, 'small', 'id="imgSerial_'.$i.'" align="top" style="cursor:pointer;'.$imgSerialView.'" onclick="serialList(\'serial_' . $i . '\')"');
 				echo '</td>' . chr(10);

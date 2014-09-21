@@ -111,7 +111,7 @@ switch ($_REQUEST['action']) {
 		$sql  = "select language, version, defined_constant, translation from " . TABLE_TRANSLATOR . "
 		  where language in " . $lang_list;
 		if ($mod <> 'all') $sql .= " and module = '" . $mod . "'";
-		$result = $admin->DataBase->Execute($sql);
+		$result = $admin->DataBase->query($sql);
 		while (!$result->EOF) {
 		  	$subs[$result->fields['language']][$result->fields['defined_constant']][$result->fields['version']] = $result->fields['translation'];
 		  	$result->MoveNext();
@@ -146,7 +146,7 @@ switch ($_REQUEST['action']) {
 			$id     = $temp[1];
 			$const  = $temp[2];
 			$status = isset($_POST['d:' . $id . ':' . $const]) ? '1' : '0';
-			$admin->DataBase->Execute("update " . TABLE_TRANSLATOR . "
+			$admin->DataBase->query("update " . TABLE_TRANSLATOR . "
 			  set translation = '" . db_input($trans) . "', translated = '" . $status . "' where id = '" . $id . "'");
 		}
 		$messageStack->add(TEXT_TRANSLATION_RECORDS_SAVED,'success');
@@ -154,7 +154,7 @@ switch ($_REQUEST['action']) {
 		break;
   	case 'delete':
 		$pieces = explode(':', $_POST['rowSeq']);
-		$admin->DataBase->Execute("delete from " . TABLE_TRANSLATOR . "
+		$admin->DataBase->query("delete from " . TABLE_TRANSLATOR . "
 	  	  where module = '" . $pieces[0] . "' and language = '" . $pieces[1] . "' and version = '" . $pieces[2] . "'");
 		$_REQUEST['action'] = '';
 		break;
@@ -184,7 +184,7 @@ switch ($_REQUEST['action']) {
 		array_shift($sel_modules); // remove 'all' option
 		$have_data = false;
 		foreach ($sel_modules as $value) {
-	  		$result = $admin->DataBase->Execute("select max(version) as version from " . TABLE_TRANSLATOR . "
+	  		$result = $admin->DataBase->query("select max(version) as version from " . TABLE_TRANSLATOR . "
 	    	  where module = '" . $value['id'] . "' and language = '" . $lang . "'");
 	  		$ver = $result->fields['version'];
 	  		if ($ver) {
@@ -252,7 +252,7 @@ switch ($_REQUEST['action']) {
 	if ($f3)   $criteria[] = $f3=='y' ? "translated = '1'" : "translated = '0'";
 	$query_raw = "select id, module, language, version, pathtofile, defined_constant, translation, translated
 	  from " . TABLE_TRANSLATOR . ' where ' . implode(' and ', $criteria);
-    $query_result = $admin->DataBase->Execute($query_raw);
+    $query_result = $admin->DataBase->query($query_raw);
 	$include_template = 'template_edit.php';
 	define('PAGE_TITLE', TEXT_TRANSLATE_MODULE);
 	break;
@@ -293,7 +293,7 @@ switch ($_REQUEST['action']) {
 	} else {
 	  $query_raw  = "select SQL_CALC_FOUND_ROWS distinct module, version, language from " . TABLE_TRANSLATOR . $search . " order by $disp_order";
 	}
-    $query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+    $query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
     $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 	history_save();
     define('PAGE_TITLE', TEXT_TRANSLATOR_ASSISTANT);

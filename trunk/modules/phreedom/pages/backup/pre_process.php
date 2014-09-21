@@ -95,7 +95,7 @@ switch ($_REQUEST['action']) {
   case 'clean_log':
     $temp = gen_get_dates(date('Y-m-d'));
 	$current_date = date('Y-m-d', mktime(0, 0, 0, $temp['ThisMonth'], 1, $temp['ThisYear']));
-    $result = $admin->DataBase->Execute("delete from " . TABLE_AUDIT_LOG . " where action_date < '" . $current_date . "'");
+    $result = $admin->DataBase->query("delete from " . TABLE_AUDIT_LOG . " where action_date < '" . $current_date . "'");
     $messageStack->add('The number of records deleted was:' . ' ' . $result->AffectedRows(),'success');
 	gen_add_audit_log(TEXT_AUDIT_DB_DATA_CLEAN);
 	break;

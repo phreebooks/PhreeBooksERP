@@ -57,7 +57,7 @@ class project_phases {
 		\core\classes\user::validate_security($this->security_id, 4); // security check
 	/*
 		// Check for this project phase being used in a journal entry, if so do not allow deletion
-		$result = $admin->DataBase->Execute("select projects from " . TABLE_JOURNAL_ITEM . "
+		$result = $admin->DataBase->query("select projects from " . TABLE_JOURNAL_ITEM . "
 			where projects like '%" . $id . "%'");
 		while (!$result->EOF) {
 		  $phase_ids = explode(':', $result->fields['projects']);
@@ -70,8 +70,8 @@ class project_phases {
 		}
 	*/
 		// OK to delete
-		$result = $admin->DataBase->Execute("select description_short from " . $this->db_table . " where phase_id = '" . $this->id . "'");
-		$admin->DataBase->Execute("delete from " . $this->db_table . " where phase_id = '" . $this->id . "'");
+		$result = $admin->DataBase->query("select description_short from " . $this->db_table . " where phase_id = '" . $this->id . "'");
+		$admin->DataBase->query("delete from " . $this->db_table . " where phase_id = '" . $this->id . "'");
 		gen_add_audit_log(TEXT_PROJECT_PHASE . ' - ' . TEXT_DELETE, $result->fields['description_short']);
 		return true;
 	}
@@ -83,7 +83,7 @@ class project_phases {
 		  'value' => array(TEXT_SHORT_NAME, TEXT_DESCRIPTION, TEXT_COST_TYPE, TEXT_COST_BREAKDOWN, TEXT_INACTIVE, TEXT_ACTION),
 		  'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 		);
-	    $result = $admin->DataBase->Execute("select phase_id, description_short, description_long, cost_type, cost_breakdown, inactive from " . $this->db_table);
+	    $result = $admin->DataBase->query("select phase_id, description_short, description_long, cost_type, cost_breakdown, inactive from " . $this->db_table);
 	    $rowCnt = 0;
 		while (!$result->EOF) {
 			$params  = unserialize($result->fields['params']);
@@ -115,7 +115,7 @@ class project_phases {
     if ($action <> 'new') {
         $sql = "select description_short, description_long, cost_type, cost_breakdown, inactive
 	       from " . $this->db_table . " where phase_id = '" . $this->id . "'";
-        $result = $admin->DataBase->Execute($sql);
+        $result = $admin->DataBase->query($sql);
         foreach ($result->fields as $key => $value) $this->$key = $value;
     }
 	$output  = '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);

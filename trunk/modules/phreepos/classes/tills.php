@@ -72,13 +72,13 @@ class tills {
 	// Don't allow delete if there is account activity for this account
 	$sql = "select max(debit_amount) as debit, max(credit_amount) as credit, max(beginning_balance) as beg_bal
 		from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '{$this->gl_acct_id}'";
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	if ($result->fields['debit'] <> 0 || $result->fields['credit'] <> 0 || $result->fields['beg_bal'] <> 0) {
 	  throw new \core\classes\userException(GL_ERROR_CANT_DELETE);
 	}
 	// OK to delete
-	$result = $admin->DataBase->Execute("select description from " . $this->db_table . " where till_id = '$id'");
-	$admin->DataBase->Execute("delete from " . $this->db_table . " where till_id = '$id'");
+	$result = $admin->DataBase->query("select description from " . $this->db_table . " where till_id = '$id'");
+	$admin->DataBase->query("delete from " . $this->db_table . " where till_id = '$id'");
 	gen_add_audit_log(TEXT_TILL ." - " . TEXT_DELETE, $result->fields['description']);
 	return true;
   }
@@ -90,7 +90,7 @@ class tills {
 	  'value' => array(TEXT_DESCRIPTION, TEXT_STORE_ID, TEXT_GL_ACCOUNT, TEXT_ACTION, TEXT_BALANCE),
 	  'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 	);
-    $result = $admin->DataBase->Execute("select * from " . $this->db_table );
+    $result = $admin->DataBase->query("select * from " . $this->db_table );
     $rowCnt = 0;
 	while (!$result->EOF) {
 	  $actions = '';
@@ -118,7 +118,7 @@ class tills {
     global $admin, $currencies;
     if ($action <> 'new') {
         $sql = "select * from " . $this->db_table . " where till_id = " . $id;
-        $result = $admin->DataBase->Execute($sql);
+        $result = $admin->DataBase->query($sql);
         foreach ($result->fields as $key => $value) $this->$key = $value;
 	}
 	$tax_rates = ord_calculate_tax_drop_down('c', true);
@@ -209,7 +209,7 @@ class tills {
 	  		$temp[]= $store['id'];
 	  	}
 	  	$sql = "select till_id, description from " . $this->db_table . " where store_id in (" . implode(',', $temp) . ")";
-	    $result = $admin->DataBase->Execute($sql);
+	    $result = $admin->DataBase->query($sql);
 	    if (defined('ENABLE_ENCRYPTION') && ENABLE_ENCRYPTION == true && (!isset($_SESSION['admin_encrypt']) || $_SESSION['admin_encrypt'] == '')) throw new \core\classes\userException("Error - Encryption key not set! The encryption key must be set to use the POS module.");
 	    if ($result->RecordCount()== 0) throw new \core\classes\userException("Before continuing set a till for this store. This will contain default values to allow this page to work", E_USER_ERROR);// there should always be a till because of defaults values.
 	    if ($result->RecordCount()== 1) return false;
@@ -219,7 +219,7 @@ class tills {
   function default_till(){
   	global $admin;
   	$sql = "select till_id from " . $this->db_table . " where store_id = '" . $_SESSION['admin_prefs']['def_store_id']."'";
-    $result = $admin->DataBase->Execute($sql);
+    $result = $admin->DataBase->query($sql);
     return $result->fields['till_id'];
   }
 
@@ -229,7 +229,7 @@ class tills {
   		$temp[]= $store['id'];
   	}
   	$sql = "select till_id, description from " . $this->db_table . " where store_id in (" . implode(',', $temp) . ")";
-    $result = $admin->DataBase->Execute($sql);
+    $result = $admin->DataBase->query($sql);
     if ($inc_select) $result_array[] = array('id' => '0', 'text' => TEXT_PLEASE_SELECT);
     while(!$result->EOF){
     	$result_array[] = array('id' => $result->fields['till_id'], 'text' => $result->fields['description']);
@@ -241,14 +241,14 @@ class tills {
   function get_till_info($till_id){
   	global $admin;
   	$sql = "select * from " . $this->db_table . " where till_id = " . $till_id;
-    $result = $admin->DataBase->Execute($sql);
+    $result = $admin->DataBase->query($sql);
     foreach ($result->fields as $key => $value) $this->$key = $value;
   }
 
   function get_default_till_info(){
   	global $admin;
   	$sql = "select * from " . $this->db_table . " where store_id = '" . $_SESSION['admin_prefs']['def_store_id']."'";
-    $result = $admin->DataBase->Execute($sql);
+    $result = $admin->DataBase->query($sql);
     foreach ($result->fields as $key => $value) $this->$key = $value;
   }
   /*
@@ -261,7 +261,7 @@ class tills {
   		$temp[]= $store['id'];
   	}
   	$sql = "select * from " . $this->db_table . " where store_id in (" . implode(',', $temp) . ")";
-    $result = $admin->DataBase->Execute($sql);
+    $result = $admin->DataBase->query($sql);
   	$js_tills  = 'var tills  = new Array();' . chr(10);
 	while (!$result->EOF){
 		$startingline = '';

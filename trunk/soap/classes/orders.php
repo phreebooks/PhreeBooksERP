@@ -133,12 +133,12 @@ class xml_orders extends parser {
 		$item = array();
 		$sku                 = $entry->ItemID;
 		// try to match sku and get the sales gl account
-		$result = $admin->DataBase->Execute("select account_sales_income from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
+		$result = $admin->DataBase->query("select account_sales_income from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
 		if ($result->RecordCount() > 0) {
 		  $item['sku']       = $sku;
 		  $item['gl_acct']   = $result->fields['account_sales_income'];
 		} else {
-		  $result = $admin->DataBase->Execute("select sku, account_sales_income from " . TABLE_INVENTORY . " where description_short = '" . $sku . "'");
+		  $result = $admin->DataBase->query("select sku, account_sales_income from " . TABLE_INVENTORY . " where description_short = '" . $sku . "'");
 		  $item['sku']       = $result->fields['sku'];
 		  $item['gl_acct']   = $result->fields['account_sales_income'];
 		}
@@ -194,10 +194,10 @@ class xml_orders extends parser {
 	// see if the customer record exists
 	$psOrd->short_name          = db_prepare_input($this->order['customer']['customer_id']);
   	if (!$psOrd->short_name && AUTO_INC_CUST_ID) {
-	  $result = $admin->DataBase->Execute("select next_cust_id_num from ".TABLE_CURRENT_STATUS);
+	  $result = $admin->DataBase->query("select next_cust_id_num from ".TABLE_CURRENT_STATUS);
 	  $short_name = $result->fields['next_cust_id_num'];
 	  $next_id = $short_name++;;
-	  $admin->DataBase->Execute("update ".TABLE_CURRENT_STATUS." set next_cust_id_num = '$next_id'");
+	  $admin->DataBase->query("update ".TABLE_CURRENT_STATUS." set next_cust_id_num = '$next_id'");
   	}
 	$psOrd->ship_short_name     = $psOrd->short_name;
 	if (!$result = $this->checkForCustomerExists($psOrd)) return;
@@ -314,7 +314,7 @@ class xml_orders extends parser {
   function checkForCustomerExists($psOrd) {
 	global $admin;
 	$output = array();
-	$result = $admin->DataBase->Execute("select id, special_terms from ".TABLE_CONTACTS."
+	$result = $admin->DataBase->query("select id, special_terms from ".TABLE_CONTACTS."
 		where type = 'c' and short_name = '" . $psOrd->short_name . "'");
 	if ($result->RecordCount() == 0) { // create new record
 	  $output['bill_acct_id']    = '';
@@ -325,7 +325,7 @@ class xml_orders extends parser {
 	  $output['ship_acct_id'] = $output['bill_acct_id']; // no drop ships allowed
 	  $output['terms']        = $result->fields['special_terms'];
 	  // find main address to update as billing address
-	  $result = $admin->DataBase->Execute("select address_id from ".TABLE_ADDRESS_BOOK."
+	  $result = $admin->DataBase->query("select address_id from ".TABLE_ADDRESS_BOOK."
 		where type = 'cm' and ref_id = " . $output['bill_acct_id']);
 	  if ($result->RecordCount() == 0) {
 	    $this->failed[] = $this->order['reference'];
@@ -337,7 +337,7 @@ class xml_orders extends parser {
 	// check to see if billing and shipping are different, if so set ship update flag
 	// for now look at the primary name or address1 to be different, can be expanded to differentiate further if necessary
 	if (($psOrd->bill_primary_name <> $psOrd->ship_primary_name) || ($psOrd->bill_address1 <> $psOrd->ship_address1)) {
-	  $result = $admin->DataBase->Execute("select address_id from " . TABLE_ADDRESS_BOOK . "
+	  $result = $admin->DataBase->query("select address_id from " . TABLE_ADDRESS_BOOK . "
 		where primary_name = '" . $psOrd->ship_primary_name . "' and
 			address1 = '" . $psOrd->ship_address1 . "' and
 			type = 'cs' and ref_id = " . $output['bill_acct_id']);

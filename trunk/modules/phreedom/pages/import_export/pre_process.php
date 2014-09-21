@@ -50,7 +50,7 @@ $glEntry->journal_id = JOURNAL_ID;
 $sql = "select c.id, beginning_balance, c.description, c.account_type
 	from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id
 	where h.period = 1 order by c.id";
-$result = $admin->DataBase->Execute($sql);
+$result = $admin->DataBase->query($sql);
 $glEntry->beg_bal = array();
 while (!$result->EOF) {
   $glEntry->beg_bal[$result->fields['id']] = array(
@@ -161,7 +161,7 @@ switch ($_REQUEST['action']) {
 	$admin->DataBase->transStart();
 	foreach ($glEntry->beg_bal as $account => $values) {
 	  $sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " set beginning_balance = {$values['beg_bal']} where period = 1 and account_id = '$account'";
-	  $result = $admin->DataBase->Execute($sql);
+	  $result = $admin->DataBase->query($sql);
 	}
 	$glEntry->update_chart_history_periods($period = 1); // roll the beginning balances into chart history table
 	$admin->DataBase->transCommit();	// post the chart of account values
@@ -214,13 +214,13 @@ switch ($_REQUEST['action']) {
 		}
 		$admin->DataBase->transStart();
 		// preload the chart of accounts
-		$result = $admin->DataBase->Execute("select id from " . TABLE_CHART_OF_ACCOUNTS);
+		$result = $admin->DataBase->query("select id from " . TABLE_CHART_OF_ACCOUNTS);
 		$coa = array();
 		while (!$result->EOF) {
 		  $coa[] = $result->fields['id'];
 		  $result->MoveNext();
 		}
-		$result     = $admin->DataBase->Execute("select start_date from " . TABLE_ACCOUNTING_PERIODS . " where period = 1");
+		$result     = $admin->DataBase->query("select start_date from " . TABLE_ACCOUNTING_PERIODS . " where period = 1");
 		$first_date = $result->fields['start_date'];
 		// first verify the file was uploaded ok
 		validate_upload($upload_name, 'text', 'csv');

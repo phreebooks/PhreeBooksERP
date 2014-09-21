@@ -181,7 +181,7 @@ switch ($_REQUEST['action']) {
 		  if (!$admin->DataBase->connect($db_host, $db_username, $db_password, $db_name)) {
 		  	$error = $messageStack->add(MSG_ERROR_CANNOT_CONNECT_DB . $admin->DataBase->show_error(), 'error');
 		  } else { // test for InnoDB support
-		  	$result = $admin->DataBase->Execute("show engines");
+		  	$result = $admin->DataBase->query("show engines");
 		  	$innoDB_enabled = false;
 		  	while (!$result->EOF) {
 		  		if ($result->fields['Engine'] == 'InnoDB') $innoDB_enabled = true;
@@ -225,10 +225,10 @@ switch ($_REQUEST['action']) {
 	  	}
 		if (!$error) { // input admin username record, clear the tables first
 			if (DEBUG) $messageStack->debug("\n  installing users");
-		  	$admin->DataBase->Execute("TRUNCATE TABLE " . TABLE_USERS);
-		  	$admin->DataBase->Execute("TRUNCATE TABLE " . TABLE_USERS_PROFILES);
+		  	$admin->DataBase->query("TRUNCATE TABLE " . TABLE_USERS);
+		  	$admin->DataBase->query("TRUNCATE TABLE " . TABLE_USERS_PROFILES);
 		  	$security = load_full_access_security();
-		  	$admin->DataBase->Execute($sql = "insert into " . TABLE_USERS . " set
+		  	$admin->DataBase->query($sql = "insert into " . TABLE_USERS . " set
 		      admin_name  = '" . $user_username . "',
 			  admin_email = '" . $user_email . "',
 		  	  admin_pass  = '" . \core\classes\encryption::password($user_password) . "',
@@ -236,7 +236,7 @@ switch ($_REQUEST['action']) {
 		  	$user_id = $admin->DataBase->insert_ID();
 		  	if (sizeof($params) > 0) {
 		  		// create My Notes dashboard entries
-		  		$admin->DataBase->Execute("insert into " . TABLE_USERS_PROFILES . " set user_id = " . $user_id . ",
+		  		$admin->DataBase->query("insert into " . TABLE_USERS_PROFILES . " set user_id = " . $user_id . ",
 				  menu_id = 'index', module_id = 'phreedom', dashboard_id = 'to_do', column_id = 1, row_id = 1,
 			  	  params = '" . serialize($params) . "'");
 		  	}
@@ -244,7 +244,7 @@ switch ($_REQUEST['action']) {
 		if (!$error) { // install fiscal year, default chart of accounts
 			if (DEBUG) $messageStack->debug("\n  installing fiscal year.");
 		  	require_once('../modules/phreebooks/functions/phreebooks.php');
-		  	$admin->DataBase->Execute("TRUNCATE TABLE " . TABLE_ACCOUNTING_PERIODS);
+		  	$admin->DataBase->query("TRUNCATE TABLE " . TABLE_ACCOUNTING_PERIODS);
 		  	$current_year = date('Y');
 		  	$start_year   = $fy_year;
 		  	$start_period = 1;
@@ -258,9 +258,9 @@ switch ($_REQUEST['action']) {
 		  	}
 		  	if (DEBUG) $messageStack->debug("\n  loading chart of accounts");
 			// load the retail chart as default if the chart of accounts table is empty
-		  	$result = $admin->DataBase->Execute("select id from " . TABLE_JOURNAL_MAIN . " limit 1");
+		  	$result = $admin->DataBase->query("select id from " . TABLE_JOURNAL_MAIN . " limit 1");
 		  	$entries_exist = $result->RecordCount() > 0 ? true : false;
-		  	$result = $admin->DataBase->Execute("select id from " . TABLE_CHART_OF_ACCOUNTS . " limit 1");
+		  	$result = $admin->DataBase->query("select id from " . TABLE_CHART_OF_ACCOUNTS . " limit 1");
 		  	$chart_exists = $result->RecordCount() > 0 ? true : false;
 		  	if (!$entries_exist && !$chart_exists) {
 		  		if (($temp = @file_get_contents($default_chart)) === false) throw new \core\classes\userException(sprintf(ERROR_READ_FILE, $default_chart));

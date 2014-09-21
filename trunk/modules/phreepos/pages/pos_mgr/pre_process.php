@@ -39,7 +39,7 @@ switch ($_REQUEST['action']) {
 			if (!$id) throw new \core\classes\userException(TEXT_CANNOT_DELETE_THIS_ENTRY_BECAUSE_IT_WAS_NEVER_POSTED);
 		  	$delOrd = new \phreepos\classes\journal\journal_19($id);
 		  	// verify no item rows have been acted upon (accounts reconciliation)
-		  	$result = $admin->DataBase->Execute("select closed from " . TABLE_JOURNAL_MAIN . " where id = " . $id);
+		  	$result = $admin->DataBase->query("select closed from " . TABLE_JOURNAL_MAIN . " where id = " . $id);
 		  	if ($result->fields['closed'] == '1') throw new \core\classes\userException(TEXT_A_POS_SALE_CANNOT_BE_DELETED_IF_IT_IS_CLOSED);
 		  	// *************** START TRANSACTION *************************
 		  	$admin->DataBase->transStart();
@@ -125,7 +125,7 @@ $field_list = array('id', 'post_date', 'shipper_code', 'purchase_invoice_id', 't
 if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
 $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " from " . TABLE_JOURNAL_MAIN . "
 		where journal_id in (19,21) $period_filter $search order by $disp_order, purchase_invoice_id DESC";
-$query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+$query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 history_save('pos_mgr');
 

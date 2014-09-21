@@ -49,7 +49,7 @@ switch ($_REQUEST['action']) {
 			$glEntry->period              = gen_calculate_period($glEntry->post_date);
 			if (!$glEntry->period) throw new \core\classes\userException("period isn't set");
 			// if unbuild, test for stock to go negative
-			$result = $admin->DataBase->Execute("select account_inventory_wage, quantity_on_hand
+			$result = $admin->DataBase->query("select account_inventory_wage, quantity_on_hand
 	  		  from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
 			$sku_inv_acct = $result->fields['account_inventory_wage'];
 			if (!$result->RecordCount()) throw new \core\classes\userException(INV_ERROR_SKU_INVALID);

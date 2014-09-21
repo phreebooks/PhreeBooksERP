@@ -89,7 +89,7 @@ function deleteTiddler($tiddler) {
   if ( sizeof($tiddler)== 0 )											return PHREEWIKI_WARNING_TIDDLER_NOT_FOUND;
   if ( in_array($tiddler['title'], $lock_title) )	return PHREEWIKI_WARNING_IN_LOCKED_ARRAY;
 
-  $result = $admin->DataBase->Execute("DELETE FROM ". TABLE_PHREEWIKI ." WHERE `id` = '". $tiddler['id'] ."'");
+  $result = $admin->DataBase->query("DELETE FROM ". TABLE_PHREEWIKI ." WHERE `id` = '". $tiddler['id'] ."'");
   if( $result === FALSE ) {
     return TEXT_THERE_WERE_ERRORS_DURING_PROCESSING . ' ' . TEXT_THE_RECORD_WAS_NOT_DELETED;
   }
@@ -104,7 +104,7 @@ function select_all_tiddlers() {
 	global $admin;
   	$security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
   	$output_array = array();
-  	$result = $admin->DataBase->Execute("SELECT * FROM ".TABLE_PHREEWIKI);
+  	$result = $admin->DataBase->query("SELECT * FROM ".TABLE_PHREEWIKI);
   	$i=0;
   	while(!$result->EOF){
 		foreach ($result->fields as $key => $value) {
@@ -119,7 +119,7 @@ function select_all_tiddlers() {
 function select_tiddler_by_title($title) {
   global $admin;
   $security_id = \core\classes\user::validate(SECURITY_PHREEWIKI_MGT);
-  $tiddlers = $admin->DataBase->Execute("SELECT * FROM ".TABLE_PHREEWIKI."  where title ='" . $title . "'");
+  $tiddlers = $admin->DataBase->query("SELECT * FROM ".TABLE_PHREEWIKI."  where title ='" . $title . "'");
   foreach($tiddlers as $t) {
 		if( strcmp($t['title'],$title)==0 ) {
 	  	return $t;
@@ -134,7 +134,7 @@ function select_all_tiddler_versions($title) {
 	//get current tiddler id
 	$tiddler_id = select_tiddler_by_title($title);
 	if( sizeof($tiddler_id)<>0 ) {
-		$tiddlers = $admin->DataBase->Execute("select * from " . TABLE_PHREEWIKI_VERSION . " where oid = '" . $tiddler_id['id'] . "'");
+		$tiddlers = $admin->DataBase->query("select * from " . TABLE_PHREEWIKI_VERSION . " where oid = '" . $tiddler_id['id'] . "'");
 		if(!$tiddlers->RecordCount()== 0){
 			$return_tiddlers = array();
 			$i = 0;
@@ -239,7 +239,7 @@ function tiddler_bodyDecode($body) {
 
 function user_getUsername()	{
 	global $admin;
-	$result = $admin->DataBase->Execute('Select display_name From '.TABLE_USERS.' Where admin_id ="'.$_SESSION['admin_id'].'"');
+	$result = $admin->DataBase->query('Select display_name From '.TABLE_USERS.' Where admin_id ="'.$_SESSION['admin_id'].'"');
 	$names = explode(' ',$result->fields['display_name']);
 	While ($name =array_shift($names)){
 		$u .=ucfirst(strtolower($name));

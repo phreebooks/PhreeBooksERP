@@ -72,7 +72,7 @@ $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . "
 	from " . TABLE_JOURNAL_MAIN . " m left join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 	where i.gl_type = 'asy' and m.journal_id = 14" . $period_filter . $search . " order by $disp_order, m.id";
 
-$query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+$query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 history_save('inv_pop_assy');
 

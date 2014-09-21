@@ -43,7 +43,7 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 	function get_bom_list(){
 		global $admin;
 		$this->assy_cost = 0;
-		$result = $admin->DataBase->Execute("select i.id as inventory_id, l.id, l.sku, l.description, l.qty as qty from " . TABLE_INVENTORY_ASSY_LIST . " l join " . TABLE_INVENTORY . " i on l.sku = i.sku where l.ref_id = " . $this->id . " order by l.id");
+		$result = $admin->DataBase->query("select i.id as inventory_id, l.id, l.sku, l.description, l.qty as qty from " . TABLE_INVENTORY_ASSY_LIST . " l join " . TABLE_INVENTORY . " i on l.sku = i.sku where l.ref_id = " . $this->id . " order by l.id");
 		$x =0;
 		while (!$result->EOF) {
 	  		$this->bom[$x] = $result->fields;
@@ -69,7 +69,7 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 		global $admin;
 		$master = explode('-',$this->sku);
 		$this->master = $master[0];
-		$result = $admin->DataBase->Execute("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->master . "'");
+		$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->master . "'");
 	  	$this->ms_attr_0   = ($result->RecordCount() > 0) ? $result->fields['attr_0'] : '';
 	  	$this->attr_name_0 = ($result->RecordCount() > 0) ? $result->fields['attr_name_0'] : '';
 	  	$this->ms_attr_1   = ($result->RecordCount() > 0) ? $result->fields['attr_1'] : '';
@@ -92,7 +92,7 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 			  $temp_ms1[$code] = $desc;
 			}
 		}
-		$result = $admin->DataBase->Execute("select * from " . TABLE_INVENTORY . " where sku like '" . $this->master . "-%' and inventory_type = 'ia' and sku<>'".$this->sku."'");
+		$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY . " where sku like '" . $this->master . "-%' and inventory_type = 'ia' and sku<>'".$this->sku."'");
 		$i = 0;
 		while(!$result->EOF){
 			$temp = explode('-',$result->fields['sku']);
@@ -128,7 +128,7 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 				'description' => db_prepare_input($_POST['assy_desc'][$x]),
 				'qty'         => $currencies->clean_value(db_prepare_input($_POST['assy_qty'][$x])),
 			);
-		  	$result = $admin->DataBase->Execute("select id from " . TABLE_INVENTORY . " where sku = '". $_POST['assy_sku'][$x]."'" );
+		  	$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY . " where sku = '". $_POST['assy_sku'][$x]."'" );
 		  	if (($result->RecordCount() == 0 || $currencies->clean_value($_POST['assy_qty'][$x]) == 0) && $_POST['assy_sku'][$x] =! '') {
 		  		// show error, bad sku, negative quantity. error check sku is valid and qty > 0
 				throw new \core\classes\userException(INV_ERROR_BAD_SKU . db_prepare_input($_POST['assy_sku'][$x]));
@@ -140,10 +140,10 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 		}
 		$this->bom = $bom_list;
 		parent::save();
-		$result = $admin->DataBase->Execute("select last_journal_date, quantity_on_hand  from " . TABLE_INVENTORY . " where id = " . $this->id);
+		$result = $admin->DataBase->query("select last_journal_date, quantity_on_hand  from " . TABLE_INVENTORY . " where id = " . $this->id);
 		$this->allow_edit_bom = (($result->fields['last_journal_date'] == '0000-00-00 00:00:00' || $result->fields['last_journal_date'] == '') && ($result->fields['quantity_on_hand'] == 0|| $result->fields['quantity_on_hand'] == '')) ? true : false;
 	  	if ($this->allow_edit_bom == true) { // only update if no posting has been performed
-	  		$result = $admin->DataBase->Execute("delete from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = " . $this->id);
+	  		$result = $admin->DataBase->query("delete from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = " . $this->id);
 			while ($list_array = array_shift($bom_list)) {
 				unset($list_array['item_cost']);
 				unset($list_array['full_price']);

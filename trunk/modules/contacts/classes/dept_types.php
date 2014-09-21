@@ -48,14 +48,14 @@ class dept_types {
   	global $admin;
 	\core\classes\user::validate_security($this->security_id, 4); // security check
 	// Check for this department type being used in a department, if so do not delete
-	$result = $admin->DataBase->Execute("select department_type from " . TABLE_DEPARTMENTS);
+	$result = $admin->DataBase->query("select department_type from " . TABLE_DEPARTMENTS);
 	while (!$result->EOF) {
 	  if ($this->id == $result->fields['department_type']) throw new \core\classes\userException(SETUP_DEPT_TYPES_DELETE_ERROR);
 	  $result->MoveNext();
 	}
 	// OK to delete
-	$result = $admin->DataBase->Execute("select description from " . $this->db_table . " where id = '" . $this->id . "'");
-	$admin->DataBase->Execute("delete from " . $this->db_table . " where id = '" . $this->id . "'");
+	$result = $admin->DataBase->query("select description from " . $this->db_table . " where id = '" . $this->id . "'");
+	$admin->DataBase->query("delete from " . $this->db_table . " where id = '" . $this->id . "'");
 	gen_add_audit_log(TEXT_DEPARTMENT_TYPE . ' - ' . TEXT_DELETE, $result->fields['description']);
 	return true;
   }
@@ -67,7 +67,7 @@ class dept_types {
 	  'value' => array(TEXT_DESCRIPTION, TEXT_ACTION),
 	  'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 	);
-    $result = $admin->DataBase->Execute("select id, description from " . $this->db_table);
+    $result = $admin->DataBase->query("select id, description from " . $this->db_table);
     $rowCnt = 0;
 	while (!$result->EOF) {
 	  $actions = '';
@@ -89,7 +89,7 @@ class dept_types {
     global $admin;
     if ($action <> 'new') {
         $sql = "select description from " . $this->db_table . " where id = '" . $this->id . "'";
-        $result = $admin->DataBase->Execute($sql);
+        $result = $admin->DataBase->query($sql);
         foreach ($result->fields as $key => $value) $this->$key = $value;
     }
 	$output  = '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);

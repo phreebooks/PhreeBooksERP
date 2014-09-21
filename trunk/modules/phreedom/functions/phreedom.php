@@ -360,7 +360,7 @@ function table_export_xml($structure, $db_table) {
   foreach ($structure->Module->Table as $table) if ($table->Name == $db_table) {
     $tag_map = array();
 	foreach ($table->Field as $field) $tag_map[$field->Name] = $field->TagName;
-	$result = $admin->DataBase->Execute("select * from " . DB_PREFIX . $db_table);
+	$result = $admin->DataBase->query("select * from " . DB_PREFIX . $db_table);
     if ($result->RecordCount() > 0) while (!$result->EOF) {
 	  $output   .= '<' . $table->TagName . '>' . chr(10);
 	  foreach ($result->fields as $key => $value) {
@@ -381,7 +381,7 @@ function table_export_csv($structure, $db_table) {
   foreach ($structure->Module->Table as $table) if ($table->Name == $db_table) {
     $tag_map = array();
 	foreach ($table->Field as $field) $tag_map[$field->Name] = $field->TagName;
-	$result = $admin->DataBase->Execute("select * from " . DB_PREFIX . $db_table);
+	$result = $admin->DataBase->query("select * from " . DB_PREFIX . $db_table);
     if ($result->RecordCount() > 0) while (!$result->EOF) {
 	  if (!$header) { // output the header
 	    $temp    = array();
@@ -412,13 +412,13 @@ function csv_explode($str, $delim = ',', $enclose = '"', $preserve = false){
 	global $admin;
 	if (!$module || !$db_table) throw new \core\classes\userException('Sync fields called without all necessary parameters!');
 	// First check to see if inventory field table is synced with actual inventory table
-	$temp = $admin->DataBase->Execute("describe " . $db_table);
+	$temp = $admin->DataBase->query("describe " . $db_table);
 	while (!$temp->EOF) {
 		$table_fields[]=$temp->fields['Field'];
 		$temp->MoveNext();
 	}
 	sort($table_fields);
-	$temp = $admin->DataBase->Execute("select field_name from " . TABLE_EXTRA_FIELDS . " where module_id = '$module' order by field_name");
+	$temp = $admin->DataBase->query("select field_name from " . TABLE_EXTRA_FIELDS . " where module_id = '$module' order by field_name");
 	while (!$temp->EOF) {
 		$field_list[]=$temp->fields['field_name'];
 		$temp->MoveNext();
@@ -440,7 +440,7 @@ function csv_explode($str, $delim = ',', $enclose = '"', $preserve = false){
 		if (is_array($field_list)) $delete_list = array_diff($field_list, $table_fields);
 		if (isset($add_list)) {
 			foreach ($add_list as $value) { // find the field attributes and copy to field list table
-				$myrow = $admin->DataBase->Execute("show fields from $db_table like '$value'");
+				$myrow = $admin->DataBase->query("show fields from $db_table like '$value'");
 				$Params = array('default' => $myrow->fields['Default']);
 				$type = $myrow->fields['Type'];
 				if (strpos($type,'(') === false) {
@@ -511,7 +511,7 @@ function csv_explode($str, $delim = ',', $enclose = '"', $preserve = false){
 						break;
 					default:
 				}
-				$temp = $admin->DataBase->Execute("insert into " . TABLE_EXTRA_FIELDS . " set
+				$temp = $admin->DataBase->query("insert into " . TABLE_EXTRA_FIELDS . " set
 				  module_id = '$module',
 				  tab_id = 0,
 				  entry_type = '{$Params['type']}',
@@ -522,7 +522,7 @@ function csv_explode($str, $delim = ',', $enclose = '"', $preserve = false){
 		}
 		if ($delete_list) {
 			foreach ($delete_list as $value) {
-				$temp = $admin->DataBase->Execute("delete from " . TABLE_EXTRA_FIELDS . " where module_id='$module' and field_name='$value'");
+				$temp = $admin->DataBase->query("delete from " . TABLE_EXTRA_FIELDS . " where module_id='$module' and field_name='$value'");
 			}
 		}
 	}

@@ -21,11 +21,11 @@
 	global $admin;
 	$sql = "select sum(remaining) as remaining from " . TABLE_INVENTORY_HISTORY . "
 		where store_id = '$store_id' and sku = '$sku'";
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	$store_bal = $result->fields['remaining'];
 	$sql = "select sum(qty) as qty from " . TABLE_INVENTORY_COGS_OWED . "
 		where store_id = '$store_id' and sku = '$sku'";
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	$qty_owed = $result->fields['qty'];
 	return ($store_bal - $qty_owed);
   }
@@ -129,7 +129,7 @@
 	  from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 	  where m.journal_id in (4, 10) and i.sku = '" . $sku ."' and m.closed = '0'
 	  order by i.date_1";
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	while(!$result->EOF) {
 	  switch ($result->fields['journal_id']) {
 	    case  4:
@@ -143,7 +143,7 @@
 	  }
 	  $sql = "select sum(qty) as qty from " . TABLE_JOURNAL_ITEM . "
 		where gl_type = '" . $gl_type . "' and so_po_item_ref_id = " . $result->fields['item_id'];
-	  $adj = $admin->DataBase->Execute($sql); // this looks for partial received to make sure this item is still on order
+	  $adj = $admin->DataBase->query($sql); // this looks for partial received to make sure this item is still on order
 	  if ($result->fields['qty'] > $adj->fields['qty']) {
 		$history[$hist_type][] = array(
 		  'id'                  => $result->fields['id'],
@@ -162,7 +162,7 @@
 	  from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 	  where m.journal_id in (6, 12, 14, 16, 19, 21) and i.sku = '" . $sku ."' and m.post_date >= '" . $last_year . "'
 	  order by m.post_date DESC";
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	while(!$result->EOF) {
 	  $month = substr($result->fields['post_date'], 0, 7);
 	  switch ($result->fields['journal_id']) {
@@ -214,18 +214,18 @@
 		$price_sheet = '';
 		$contact_tax = 1;
 		if ($contact_id) {
-		  	$contact = $admin->DataBase->Execute("select type, price_sheet, tax_id from " . TABLE_CONTACTS . " where id = '$contact_id'");
+		  	$contact = $admin->DataBase->query("select type, price_sheet, tax_id from " . TABLE_CONTACTS . " where id = '$contact_id'");
 		  	$type        = $contact->fields['type'];
 		  	$price_sheet = $contact->fields['price_sheet'];
 		  	$contact_tax = $contact->fields['tax_id'];
 		}
 		// get the inventory prices
 		if($type == 'v'){
-			if ($contact_id) $inventory = $admin->DataBase->Execute("select p.item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable from " . TABLE_INVENTORY . " a join " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku  where a.id = '$sku_id' and p.vendor_id = '$contact_id'");
-			else $inventory = $admin->DataBase->Execute("select MAX(p.item_cost) as item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable from " . TABLE_INVENTORY . " a join " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku  where a.id = '$sku_id'");
+			if ($contact_id) $inventory = $admin->DataBase->query("select p.item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable from " . TABLE_INVENTORY . " a join " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku  where a.id = '$sku_id' and p.vendor_id = '$contact_id'");
+			else $inventory = $admin->DataBase->query("select MAX(p.item_cost) as item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable from " . TABLE_INVENTORY . " a join " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku  where a.id = '$sku_id'");
 			$inv_price_sheet = $inventory->fields['price_sheet_v'];
 		}else{
-			$inventory = $admin->DataBase->Execute("select MAX(p.item_cost) as item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable from " . TABLE_INVENTORY . " a join " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku  where a.id = '$sku_id'");
+			$inventory = $admin->DataBase->query("select MAX(p.item_cost) as item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable from " . TABLE_INVENTORY . " a join " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku  where a.id = '$sku_id'");
 			$inv_price_sheet = $inventory->fields['price_sheet'];
 		}
 		// set the default tax rates
@@ -237,7 +237,7 @@
 		} elseif ($inv_price_sheet <> '') {
 		  	$sheet_name = $inv_price_sheet;
 		} else {
-		  	$default_sheet = $admin->DataBase->Execute("select sheet_name from " . TABLE_PRICE_SHEETS . " where type = '$type' and default_sheet = '1'");
+		  	$default_sheet = $admin->DataBase->query("select sheet_name from " . TABLE_PRICE_SHEETS . " where type = '$type' and default_sheet = '1'");
 		  	$sheet_name = ($default_sheet->RecordCount() == 0) ? '' : $default_sheet->fields['sheet_name'];
 		}
 		// determine the sku price ranges from the price sheet in effect
@@ -247,10 +247,10 @@
 			$sql = "select id, default_levels from " . TABLE_PRICE_SHEETS . "
 			  where inactive = '0' and type = '$type' and sheet_name = '$sheet_name' and
 			  (expiration_date is null or expiration_date = '0000-00-00' or expiration_date >= '" . date('Y-m-d') . "')";
-			$price_sheets = $admin->DataBase->Execute($sql);
+			$price_sheets = $admin->DataBase->query($sql);
 			// retrieve special pricing for this inventory item
 			$sql = "select price_sheet_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where price_sheet_id = '{$price_sheets->fields['id']}' and inventory_id = $sku_id";
-			$result = $admin->DataBase->Execute($sql);
+			$result = $admin->DataBase->query($sql);
 			$special_prices = array();
 			while (!$result->EOF) {
 				$special_prices[$result->fields['price_sheet_id']] = $result->fields['price_levels'];
@@ -271,14 +271,14 @@
 function inv_status_open_orders($journal_id, $gl_type) { // checks order status for order balances, items received/shipped
   global $admin;
   $item_list = array();
-  $orders = $admin->DataBase->Execute("select id from " . TABLE_JOURNAL_MAIN . "
+  $orders = $admin->DataBase->query("select id from " . TABLE_JOURNAL_MAIN . "
   	where journal_id = $journal_id and closed = '0'");
   while (!$orders->EOF) {
     $total_ordered = array(); // track this SO/PO sku for totals, to keep >= 0
     $id = $orders->fields['id'];
 	// retrieve information for requested id
 	$sql = " select sku, qty from " . TABLE_JOURNAL_ITEM . " where ref_id = $id and gl_type = '$gl_type'";
-	$ordr_items = $admin->DataBase->Execute($sql);
+	$ordr_items = $admin->DataBase->query($sql);
 	while (!$ordr_items->EOF) {
 	  $item_list[$ordr_items->fields['sku']] += $ordr_items->fields['qty'];
 	  $total_ordered[$ordr_items->fields['sku']] += $ordr_items->fields['qty'];
@@ -288,7 +288,7 @@ function inv_status_open_orders($journal_id, $gl_type) { // checks order status 
 	$sql = "select i.qty, i.sku, i.ref_id
 		from " . TABLE_JOURNAL_MAIN . " m left join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 		where m.so_po_ref_id = " . $id;
-	$posted_items = $admin->DataBase->Execute($sql);
+	$posted_items = $admin->DataBase->query($sql);
 	while (!$posted_items->EOF) {
 	  foreach ($item_list as $sku => $balance) {
 		if ($sku == $posted_items->fields['sku']) {

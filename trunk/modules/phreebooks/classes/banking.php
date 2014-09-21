@@ -43,7 +43,7 @@ class banking extends \core\classes\journal {
 			case 20:
 				$this->gl_acct_id          = $_SESSION['admin_prefs']['def_cash_acct'] ? $_SESSION['admin_prefs']['def_cash_acct'] : AP_PURCHASE_INVOICE_ACCOUNT;
 				$this->gl_disc_acct_id     = AP_DISCOUNT_PURCHASE_ACCOUNT;
-				$result = $admin->DataBase->Execute("select next_check_num from " . TABLE_CURRENT_STATUS);
+				$result = $admin->DataBase->query("select next_check_num from " . TABLE_CURRENT_STATUS);
 				$this->purchase_invoice_id = $result->fields['next_check_num'];
 				$this->error_6				= GENERAL_JOURNAL_20_ERROR_6;
 				break;
@@ -145,7 +145,7 @@ class banking extends \core\classes\journal {
 	function delete_payment() {
 		global $admin;
 		// verify no item rows have been acted upon (accounts reconciliation)
-		$result = $admin->DataBase->Execute("select closed from " . TABLE_JOURNAL_MAIN . " where id = " . $this->id);
+		$result = $admin->DataBase->query("select closed from " . TABLE_JOURNAL_MAIN . " where id = " . $this->id);
 		if ($result->fields['closed'] == '1') throw new \core\classes\userException($this->error_6);
 		// *************** START TRANSACTION *************************
 		$admin->DataBase->transStart();

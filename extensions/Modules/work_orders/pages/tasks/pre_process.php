@@ -46,7 +46,7 @@ switch ($_REQUEST['action']) {
 		// error check
 		if (!$task_name || !$description) throw new \core\classes\userException(WO_TASK_ID_MISSING);
 
-		$result = $admin->DataBase->Execute("select id from " . TABLE_WO_TASK . " where task_name = '" . $task_name . "'");
+		$result = $admin->DataBase->query("select id from " . TABLE_WO_TASK . " where task_name = '" . $task_name . "'");
 		if ($result->Recordcount() > 0) {
 		  	if ($result->fields['id'] <> $id) throw new \core\classes\userException(WO_DUPLICATE_TASK_ID);
 		}
@@ -81,9 +81,9 @@ switch ($_REQUEST['action']) {
   case 'delete':
 	$id = db_prepare_input($_GET['cID']);
 	// check to see if the task is used in any defined work orders. If so don't let it be deleted.
-	$result = $admin->DataBase->Execute("select ref_id from " . TABLE_WO_JOURNAL_ITEM . " where task_id = " . $id);
+	$result = $admin->DataBase->query("select ref_id from " . TABLE_WO_JOURNAL_ITEM . " where task_id = " . $id);
 	if ($result->RecordCount() == 0) {
-	  	$admin->DataBase->Execute("delete from " . TABLE_WO_TASK . " where id = " . $id);
+	  	$admin->DataBase->query("delete from " . TABLE_WO_TASK . " where id = " . $id);
 	  	gen_add_audit_log(sprintf(WO_AUDIT_LOG_TASK, TEXT_DELETE), $id);
 	  	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	} else {
@@ -107,7 +107,7 @@ $yes_no_array = array(
 );
 
 // build departments
-$result = $admin->DataBase->Execute("select id, description from " . TABLE_DEPARTMENTS . " order by description");
+$result = $admin->DataBase->query("select id, description from " . TABLE_DEPARTMENTS . " order by description");
 $departments = array(array('id' => '', 'text' => TEXT_PLEASE_SELECT));
 while (!$result->EOF) {
   $departments[$result->fields['id']] = array('id' => $result->fields['id'], 'text' => $result->fields['description']);
@@ -139,7 +139,7 @@ $field_list = array('id', 'task_name', 'description', 'ref_doc', 'ref_spec','dep
 if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
 
 $query_raw    = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . " from " . TABLE_WO_TASK . $search . " order by $disp_order";
-$query_result = $admin->DataBase->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+$query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 history_save('wo_tasks');
 

@@ -27,7 +27,7 @@ $user  = $_GET['u'];
 $pass  = $_GET['p'];
 $level = $_GET['level'];
 
-$result = $admin->DataBase->Execute("select inactive, admin_pass from " . TABLE_USERS . " where admin_name = '" . $user . "'");
+$result = $admin->DataBase->query("select inactive, admin_pass from " . TABLE_USERS . " where admin_name = '" . $user . "'");
 if ($result->RecordCount() <> 1 || $result->fields['inactive']) {
   	$xml = xmlEntry('result', 'failed');
 }

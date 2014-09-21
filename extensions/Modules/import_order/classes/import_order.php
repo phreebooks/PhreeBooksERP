@@ -101,12 +101,12 @@ class import_order {
   				$item = array();
   				$sku  = $entry->ItemID;
   				// try to match sku and get the sales gl account
-  				$result = $admin->DataBase->Execute("SELECT account_sales_income FROM ".TABLE_INVENTORY." WHERE sku='$sku'");
+  				$result = $admin->DataBase->query("SELECT account_sales_income FROM ".TABLE_INVENTORY." WHERE sku='$sku'");
   				if ($result->RecordCount() > 0) {
   					$item['sku']     = $sku;
   					$item['gl_acct'] = $result->fields['account_sales_income'];
   				} else {
-  					$result = $admin->DataBase->Execute("SELECT sku, account_sales_income FROM ".TABLE_INVENTORY." WHERE description_short='$sku'");
+  					$result = $admin->DataBase->query("SELECT sku, account_sales_income FROM ".TABLE_INVENTORY." WHERE description_short='$sku'");
   					$item['sku']     = $result->fields['sku'];
   					$item['gl_acct'] = $result->fields['account_sales_income'];
   				}

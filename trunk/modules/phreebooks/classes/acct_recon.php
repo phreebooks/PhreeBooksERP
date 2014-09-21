@@ -38,7 +38,7 @@ class acct_recon {
 			FROM ".TABLE_JOURNAL_MAIN." m INNER JOIN ".TABLE_JOURNAL_ITEM." i ON m.id = i.ref_id
 			WHERE i.gl_account='$gl_account' AND (i.reconciled=0 OR i.reconciled>$period) AND m.post_date<='{$fiscal_dates['end_date']}'
 			ORDER BY post_date";
-		$result = $admin->DataBase->Execute($sql);
+		$result = $admin->DataBase->query($sql);
 		while (!$result->EOF) {
 		  $new_total      = $result->fields['debit_amount'] - $result->fields['credit_amount'];
 		  if ($new_total < 0) {
@@ -65,7 +65,7 @@ class acct_recon {
 		// load the gl account end of period balance
 		$sql = "select beginning_balance, debit_amount, credit_amount from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
 			where account_id = '" . $gl_account . "' and period = " . $period;
-		$result        = $admin->DataBase->Execute($sql);
+		$result        = $admin->DataBase->query($sql);
 		$gl_init_bal   = $result->fields['beginning_balance'];
 		$cash_receipts = $result->fields['debit_amount'];
 		$cash_payments = $result->fields['credit_amount'];
@@ -112,7 +112,7 @@ class acct_recon {
 		"AND m.post_date <= '" . $fiscal_dates['end_date'] . "' " .
 		"ORDER BY post_date";
 
-		$result = $admin->DataBase->Execute($sql);
+		$result = $admin->DataBase->query($sql);
 		unset($new_total, $bank_list);
 		while (!$result->EOF) {
 		  $new_total      = $result->fields['debit_amount'] - $result->fields['credit_amount'];

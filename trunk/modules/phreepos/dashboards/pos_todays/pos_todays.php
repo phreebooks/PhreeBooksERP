@@ -49,7 +49,7 @@ class pos_todays extends \core\classes\ctl_panel {
 		  from " . TABLE_JOURNAL_MAIN . "
 		  where journal_id = 19 and post_date = '" . date('Y-m-d', time()) . "' order by purchase_invoice_id";
 		if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
-		$result = $admin->DataBase->Execute($sql);
+		$result = $admin->DataBase->query($sql);
 		if ($result->RecordCount() < 1) {
 		  	$contents = TEXT_NO_RESULTS_FOUND;
 		} else {

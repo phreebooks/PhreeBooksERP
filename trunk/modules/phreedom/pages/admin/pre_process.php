@@ -37,12 +37,12 @@ if (substr($_REQUEST['action'], 0, 8) == 'install_') {
 }
 // load the current statuses
 $status_fields = array();
-$result = $admin->DataBase->Execute("show fields from " . TABLE_CURRENT_STATUS);
+$result = $admin->DataBase->query("show fields from " . TABLE_CURRENT_STATUS);
 while (!$result->EOF) {
   if ($result->fields['Field'] <> 'id') $status_fields[] = $result->fields['Field'];
   $result->MoveNext();
 }
-$status_values = $admin->DataBase->Execute("select * from " . TABLE_CURRENT_STATUS);
+$status_values = $admin->DataBase->query("select * from " . TABLE_CURRENT_STATUS);
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   	case 'install':
@@ -187,7 +187,7 @@ switch ($_REQUEST['action']) {
 			    foreach ($admin->classes as $key => $class) admin_add_reports($key, DIR_FS_MY_FILES . $db_name . '/phreeform/');
 			}
 			if ($_POST['phreebooks_action'] <> 'data') { // install fiscal year if the phreebooks data is not copied
-			  	$admin->DataBase->Execute("TRUNCATE TABLE " . TABLE_ACCOUNTING_PERIODS);
+			  	$admin->DataBase->query("TRUNCATE TABLE " . TABLE_ACCOUNTING_PERIODS);
 			  	require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 			  	$dates = gen_get_dates();
 			  	validate_fiscal_year($dates['ThisYear'], '1', $dates['ThisYear'] . '-' . $dates['ThisMonth'] . '-01');
@@ -195,7 +195,7 @@ switch ($_REQUEST['action']) {
 			  	gen_auto_update_period(false);
 			}
 			// reset SESSION['company'] to new company and redirect to install->store_setup
-			$admin->DataBase->Execute("update " . TABLE_CONFIGURATION . " set configuration_value = '" . $co_name . "'
+			$admin->DataBase->query("update " . TABLE_CONFIGURATION . " set configuration_value = '" . $co_name . "'
 			  where configuration_key = 'COMPANY_NAME'");
 			$messageStack->add(TEXT_SUCCESSFULY_CREATED_NEW_COMPANY,'success');
 			gen_add_audit_log(sprintf(TEXT_MANAGER_ARGS, TEXT_COMPANY). ' - ' . TEXT_COPY, $db_name);
@@ -233,12 +233,12 @@ switch ($_REQUEST['action']) {
 	  	$del_db = new queryFactory;//@todo pdo
 	  	if (!$del_db->connect($db_server, $db_user, $db_pw, $db_name)) throw new \core\classes\userException(SETUP_CO_MGR_CANNOT_CONNECT);
 	  	$tables = array();
-	  	$table_list = $del_db->Execute("show tables");
+	  	$table_list = $del_db->query("show tables");
 	  	while (!$table_list->EOF) {
 	  		$tables[] = array_shift($table_list->fields);
 			$table_list->MoveNext();
 	    }
-	    if (is_array($tables)) foreach ($tables as $table) $del_db->Execute("drop table " . $table);
+	    if (is_array($tables)) foreach ($tables as $table) $del_db->query("drop table " . $table);
 	    $backup->delete_dir(DIR_FS_MY_FILES . $db_name);
 	    unset($_SESSION['companies'][$_POST['del_company']]);
 	    gen_add_audit_log(sprintf(TEXT_MANAGER_ARGS, TEXT_COMPANY). ' - ' . TEXT_DELETE, $db_name);
@@ -267,7 +267,7 @@ switch ($_REQUEST['action']) {
   case 'clean_security':
 	$clean_date = gen_db_date($_POST['clean_date']);
 	if (!$clean_date) break;
-	$result = $admin->DataBase->Execute("delete from ".TABLE_DATA_SECURITY." where exp_date < '".$clean_date."'");
+	$result = $admin->DataBase->query("delete from ".TABLE_DATA_SECURITY." where exp_date < '".$clean_date."'");
 	$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, $result->AffectedRows(), TEXT_DATA_SECURITY_RECORDS), 'success');
 	break;
   default:

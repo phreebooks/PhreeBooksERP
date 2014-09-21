@@ -33,16 +33,16 @@ $jID   = db_prepare_input($_GET['jID']); // journal ID
 define('JOURNAL_ID', $jID);
 
 if ($bID) {
-  $bill = $admin->DataBase->Execute("select * from " . TABLE_JOURNAL_MAIN . " where id = '$bID'");
+  $bill = $admin->DataBase->query("select * from " . TABLE_JOURNAL_MAIN . " where id = '$bID'");
   if ($bill->fields['bill_acct_id']) $cID = $bill->fields['bill_acct_id']; // replace bID with ID from payment
 } else {
   $bill = new \core\classes\objectInfo();
 }
 // select the customer and build the contact record
-$contact = $admin->DataBase->Execute("select * from " . TABLE_CONTACTS . " where id = '$cID'");
+$contact = $admin->DataBase->query("select * from " . TABLE_CONTACTS . " where id = '$cID'");
 $type = $contact->fields['type'];
 define('ACCOUNT_TYPE', $type);
-$bill_add  = $admin->DataBase->Execute("select * from " . TABLE_ADDRESS_BOOK . " 
+$bill_add  = $admin->DataBase->query("select * from " . TABLE_ADDRESS_BOOK . " 
   where ref_id = '" . $cID . "' and type in ('" . $type . "m', '" . $type . "b')");
 
 //$debug .= 'Processing main_id = ' . $bID . ' and contact ID = ' . $cID . ' and type = ' . $type . chr(10);

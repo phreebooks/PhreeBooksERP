@@ -48,7 +48,7 @@ if ($rID) {
   }
   $title = $report->title;
 } elseif ($gID) {
-  $result = $admin->DataBase->Execute("select id, doc_title from " . TABLE_PHREEFORM . "
+  $result = $admin->DataBase->query("select id, doc_title from " . TABLE_PHREEFORM . "
     where doc_group = '" . $gID . "' and (doc_ext = 'rpt' || doc_ext = 'frm') order by doc_title");
   if ($result->RecordCount() == 1) {
     $rID    = $result->fields['id']; // only one form available, use it
@@ -68,7 +68,7 @@ if ($rID) {
       if (isset($_GET['xmax'])) $report->xfilterlist[0]->max_val   = $_GET['xmax'];
     }
   } else {
-    $frm_grp = $admin->DataBase->Execute("select doc_title from " . TABLE_PHREEFORM . "
+    $frm_grp = $admin->DataBase->query("select doc_title from " . TABLE_PHREEFORM . "
     where doc_group = '" . $gID . "' and (doc_ext = 'ff' || doc_ext = 'ff') limit 1");
   	$title  = $frm_grp->fields['doc_title'];
     $r_list = array();
@@ -83,7 +83,7 @@ if ($rID) {
 //echo 'post override report->filterlist = '; print_r($report->filterlist); echo '<br>';
 
 if (isset($_GET['xfld']) && strpos($_GET['xfld'], 'journal_main') !== false) { // try to extract email info from the journal
-  $result         = $admin->DataBase->Execute("select bill_primary_name, bill_email from " . TABLE_JOURNAL_MAIN . " where id = '" . $_GET['xmin'] . "'");
+  $result         = $admin->DataBase->query("select bill_primary_name, bill_email from " . TABLE_JOURNAL_MAIN . " where id = '" . $_GET['xmin'] . "'");
   $_GET['rName']  = $result->fields['bill_primary_name'];
   $_GET['rEmail'] = $result->fields['bill_email'];
 }
@@ -198,7 +198,7 @@ switch ($_REQUEST['action']) {
 	  $output = object_to_xml($report);
 	  $filename = PF_DIR_MY_REPORTS . 'pf_' . $rID;
 	  if (!$handle = @fopen($filename, 'w')) {
-	    	$admin->DataBase->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
+	    	$admin->DataBase->query("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
 	    	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
 	  }
 	  if (!@fwrite($handle, $output)) 	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));
@@ -209,7 +209,7 @@ switch ($_REQUEST['action']) {
 	  $messageStack->add(PHREEFORM_CANNOT_EDIT,'caution');
 	  break; // we're done
 	} elseif ($_REQUEST['action'] == 'save_as') {
-	  $result = $admin->DataBase->Execute("select * from " . TABLE_PHREEFORM . " where id = " . $rID);
+	  $result = $admin->DataBase->query("select * from " . TABLE_PHREEFORM . " where id = " . $rID);
 	  $sql_array = array(
 		'parent_id'   => $result->fields['parent_id'],
 		'doc_type'    => 'c', // custom document
@@ -224,7 +224,7 @@ switch ($_REQUEST['action']) {
 	  $output = object_to_xml($report);
 	  $filename = PF_DIR_MY_REPORTS . 'pf_' . $rID;
 	  if (!$handle = @fopen($filename, 'w')) {
-	    	$admin->DataBase->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
+	    	$admin->DataBase->query("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
 	    	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
 	  }
 	  if (@fwrite($handle, $output)) 	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));

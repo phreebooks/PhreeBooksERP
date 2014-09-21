@@ -40,10 +40,10 @@ function pf_process_phreebooks($strData, $Process) {
 function pb_pull_order_qty($ref_id = 0) {
   global $admin, $ReportID;
   $sql = "select qty from " . TABLE_JOURNAL_ITEM  . " where id = " . (int)$ref_id;
-  $result = $admin->DataBase->Execute($sql);
+  $result = $admin->DataBase->query($sql);
   if ($result->RecordCount() == 0) { // no sales/purchase order, was a direct invoice/POS
 	$sql = "select qty from " . TABLE_JOURNAL_ITEM  . " where so_po_item_ref_id = " . (int)$ref_id . " and ref_id = " . $ReportID;
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
   }
   return $result->fields['qty'];
 }
@@ -55,16 +55,16 @@ function pb_get_coa_type($id) {
 
 function pb_get_avg_cost($sku) {
 	global $admin;
-	$result = $admin->DataBase->Execute("SELECT avg_cost FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='$sku' ORDER BY post_date DESC LIMIT 1");
+	$result = $admin->DataBase->query("SELECT avg_cost FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='$sku' ORDER BY post_date DESC LIMIT 1");
 	return number_format($result->fields['avg_cost'], 2);
 }
 
 function pb_get_avg_total($history_id) {
 	global $admin;
-	$result    = $admin->DataBase->Execute("SELECT remaining, sku FROM ".TABLE_INVENTORY_HISTORY." WHERE id='$history_id'");
+	$result    = $admin->DataBase->query("SELECT remaining, sku FROM ".TABLE_INVENTORY_HISTORY." WHERE id='$history_id'");
 	$remaining = $result->fields['remaining'];
 	$sku       = $result->fields['sku'];
-	$result    = $admin->DataBase->Execute("SELECT avg_cost FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='$sku' ORDER BY post_date DESC LIMIT 1");
+	$result    = $admin->DataBase->query("SELECT avg_cost FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='$sku' ORDER BY post_date DESC LIMIT 1");
 	return number_format($remaining * $result->fields['avg_cost'], 2);
 }
 

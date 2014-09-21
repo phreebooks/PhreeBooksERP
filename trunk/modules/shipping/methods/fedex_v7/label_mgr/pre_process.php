@@ -74,7 +74,7 @@ switch ($_REQUEST['action']) {
 		}
 		if (count($sInfo->package) > 0) $result = $admin->classes['shipping']->methods[$method]->retrieveLabel($sInfo);
 
-		$temp = $admin->DataBase->Execute("select next_shipment_num from " . TABLE_CURRENT_STATUS);
+		$temp = $admin->DataBase->query("select next_shipment_num from " . TABLE_CURRENT_STATUS);
 	  	$shipment_num = $temp->fields['next_shipment_num'];
 	  	$labels_array = array();
 	  	foreach ($result as $shipment) {
@@ -91,7 +91,7 @@ switch ($_REQUEST['action']) {
 			db_perform(TABLE_SHIPPING_LOG, $sql_array, 'insert');
 			$labels_array[] = $shipment['tracking'];
 		}
-		$admin->DataBase->Execute("update " . TABLE_CURRENT_STATUS . " set next_shipment_num = next_shipment_num + 1");
+		$admin->DataBase->query("update " . TABLE_CURRENT_STATUS . " set next_shipment_num = next_shipment_num + 1");
 	  	gen_add_audit_log(TEXT_LABEL_GENERATED, $shipment_num . '-' . $sInfo->purchase_invoice_id);
 	  	$file_path = SHIPPING_DEFAULT_LABEL_DIR . $admin->classes['shipping']->methods[$method]->id . '/' . str_replace('-', '/', $date) . '/';
 		// fetch the tracking labels
@@ -150,7 +150,7 @@ switch ($_REQUEST['action']) {
 
   case 'delete':
 	$shipment_id = db_prepare_input($_GET['sID']);
-	$shipments   = $admin->DataBase->Execute("select method, ship_date, tracking_id from " . TABLE_SHIPPING_LOG . " where shipment_id = " . (int)$shipment_id);
+	$shipments   = $admin->DataBase->query("select method, ship_date, tracking_id from " . TABLE_SHIPPING_LOG . " where shipment_id = " . (int)$shipment_id);
 	$ship_method = $shipments->fields['method'];
 	if ($shipments->RecordCount() == 0 || !$ship_method) throw new \core\classes\userException(SHIPPING_DELETE_ERROR);
 	// only allow delete if shipped today or in future
@@ -181,7 +181,7 @@ switch ($_REQUEST['action']) {
 	}
 	$shipments->MoveNext();
 	// delete log since deleting label from FedEx is just a courtesy
-	$admin->DataBase->Execute("delete from " . TABLE_SHIPPING_LOG . " where shipment_id = " . $shipment_id);
+	$admin->DataBase->query("delete from " . TABLE_SHIPPING_LOG . " where shipment_id = " . $shipment_id);
 	gen_add_audit_log(TEXT_LABEL_DELETED, $shipment_id);
 	break;
 
@@ -202,7 +202,7 @@ switch ($_REQUEST['action']) {
 		ship_city_town, ship_state_province, ship_postal_code, ship_country_code, ship_telephone1,
 		ship_email, purchase_invoice_id, purch_order_id, total_amount
 		from " . TABLE_JOURNAL_MAIN . " where id = " . (int)$oID;
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	if (is_array($result->fields)) {
 	  while (list($key, $value) = each($result->fields)) $sInfo->$key = $value;
 	  $temp = explode(':', $result->fields['shipper_code']);

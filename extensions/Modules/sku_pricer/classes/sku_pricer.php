@@ -79,11 +79,11 @@ class sku_pricer {
 			$query .= "last_update='".date('Y-m-d')."'";
 			$sql = "UPDATE ".TABLE_INVENTORY." SET $query WHERE $where";
 			$messageStack->debug("\nExecuting sql = $sql");
-			$result = $admin->DataBase->Execute($sql);
+			$result = $admin->DataBase->query($sql);
 			if ($result->AffectedRows() > 0) $count++;
 			// now update the purchase table (need the sku, upc_code will not work)
 			if (!isset($row['sku'])) {
-				$result = $admin->DataBase->Execute("SELECT sku from ".TABLE_INVENTORY." WHERE upc_code='{$row['upc_code']}'");
+				$result = $admin->DataBase->query("SELECT sku from ".TABLE_INVENTORY." WHERE upc_code='{$row['upc_code']}'");
 				$row['sku'] = $result->fields['sku'];
 				$where = "sku='{$row['sku']}'";
 			}
@@ -93,7 +93,7 @@ class sku_pricer {
 			$query = substr($query, 0, strlen($query)-1); // remove last comma
 			$sql = "UPDATE ".TABLE_INVENTORY_PURCHASE." SET $query WHERE $where";
 			$messageStack->debug("\nExecuting sql = $sql");
-			$result = $admin->DataBase->Execute($sql);
+			$result = $admin->DataBase->query($sql);
 		}
 		if (DEBUG) $messageStack->write_debug();
 		$messageStack->add("Total lines processed: ".sizeof($rows).". Total affected rows = $count.", "success");

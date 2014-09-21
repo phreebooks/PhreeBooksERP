@@ -23,7 +23,7 @@ class bulk_upload {
 
   function bulkUpload($inc_image = false) {
 	global $admin, $messageStack;
-	$result = $admin->DataBase->Execute("select id from " . TABLE_INVENTORY . " where catalog = '1' " . $where);
+	$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY . " where catalog = '1' " . $where);
 	$cnt    = 0;
 	while(!$result->EOF) {
 	  	$prodXML = new magento\classes\magento();

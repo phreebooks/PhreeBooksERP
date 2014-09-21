@@ -32,7 +32,7 @@ class subaccount_is {
 	$balance = array();
 	$sql = "select account_id, beginning_balance + debit_amount - credit_amount as balance
 		from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where period = " . $period . " order by account_id";
-	$result = $admin->DataBase->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	while (!$result->EOF) {
 	  $balance[$result->fields['account_id']] = -$result->fields['balance'];
 	  $result->MoveNext();
