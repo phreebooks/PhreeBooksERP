@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PhreeformReport>
+	<title><![CDATA[Work Order Task Usage]]></title>
+	<description><![CDATA[This report list the work order grouped by task.]]></description>
+	<datelist><![CDATA[a]]></datelist>
+	<truncate><![CDATA[0]]></truncate>
+	<totalonly><![CDATA[0]]></totalonly>
+	<security><![CDATA[u:0;g:0]]></security>
+	<reporttype><![CDATA[rpt]]></reporttype>
+	<groupname><![CDATA[inv]]></groupname>
+	<standard_report><![CDATA[1]]></standard_report>
+	<custom><![CDATA[s]]></custom>
+	<tables>
+		<tablename><![CDATA[wo_main]]></tablename>
+	</tables>
+	<tables>
+		<tablename><![CDATA[wo_steps]]></tablename>
+		<relationship><![CDATA[wo_main.id = wo_steps.ref_id]]></relationship>
+	</tables>
+	<tables>
+		<tablename><![CDATA[wo_task]]></tablename>
+		<relationship><![CDATA[wo_task.id = wo_steps.task_id]]></relationship>
+	</tables>
+	<fieldlist>
+		<fieldname><![CDATA[wo_task.task_name]]></fieldname>
+		<description><![CDATA[Task Name]]></description>
+		<visible><![CDATA[1]]></visible>
+		<columnbreak><![CDATA[1]]></columnbreak>
+		<columnwidth><![CDATA[50]]></columnwidth>
+		<align><![CDATA[L]]></align>
+		<total><![CDATA[0]]></total>
+	</fieldlist>
+	<fieldlist>
+		<fieldname><![CDATA[wo_main.wo_title]]></fieldname>
+		<description><![CDATA[WO Title]]></description>
+		<visible><![CDATA[1]]></visible>
+		<columnbreak><![CDATA[1]]></columnbreak>
+		<columnwidth><![CDATA[64]]></columnwidth>
+		<align><![CDATA[L]]></align>
+		<total><![CDATA[0]]></total>
+	</fieldlist>
+	<fieldlist>
+		<fieldname><![CDATA[wo_task.ref_doc]]></fieldname>
+		<description><![CDATA[Task Ref Doc]]></description>
+		<visible><![CDATA[0]]></visible>
+		<columnbreak><![CDATA[1]]></columnbreak>
+		<columnwidth><![CDATA[25]]></columnwidth>
+		<align><![CDATA[L]]></align>
+		<total><![CDATA[0]]></total>
+	</fieldlist>
+	<fieldlist>
+		<fieldname><![CDATA[wo_task.ref_spec]]></fieldname>
+		<description><![CDATA[Task Ref Spec]]></description>
+		<visible><![CDATA[0]]></visible>
+		<columnbreak><![CDATA[1]]></columnbreak>
+		<columnwidth><![CDATA[25]]></columnwidth>
+		<align><![CDATA[L]]></align>
+		<total><![CDATA[0]]></total>
+	</fieldlist>
+	<fieldlist>
+		<fieldname><![CDATA[wo_steps.step]]></fieldname>
+		<description><![CDATA[WO Step]]></description>
+		<visible><![CDATA[1]]></visible>
+		<columnbreak><![CDATA[1]]></columnbreak>
+		<columnwidth><![CDATA[25]]></columnwidth>
+		<align><![CDATA[L]]></align>
+		<total><![CDATA[0]]></total>
+	</fieldlist>
+	<fieldlist>
+		<fieldname><![CDATA[wo_main.revision]]></fieldname>
+		<description><![CDATA[WO Revision]]></description>
+		<visible><![CDATA[1]]></visible>
+		<columnbreak><![CDATA[1]]></columnbreak>
+		<columnwidth><![CDATA[10]]></columnwidth>
+		<align><![CDATA[C]]></align>
+		<total><![CDATA[0]]></total>
+	</fieldlist>
+	<fieldlist>
+		<fieldname><![CDATA[wo_main.last_usage]]></fieldname>
+		<description><![CDATA[WO Last Usage]]></description>
+		<visible><![CDATA[0]]></visible>
+		<columnbreak><![CDATA[0]]></columnbreak>
+		<columnwidth><![CDATA[25]]></columnwidth>
+		<align><![CDATA[L]]></align>
+		<total><![CDATA[0]]></total>
+	</fieldlist>
+	<grouplist>
+		<fieldname><![CDATA[wo_task.id]]></fieldname>
+		<description><![CDATA[Task ID]]></description>
+		<default><![CDATA[1]]></default>
+		<page_break><![CDATA[0]]></page_break>
+	</grouplist>
+	<grouplist>
+		<fieldname><![CDATA[wo_task.ref_doc]]></fieldname>
+		<description><![CDATA[Task Ref Doc]]></description>
+		<default><![CDATA[0]]></default>
+		<page_break><![CDATA[0]]></page_break>
+		<processing><![CDATA[0]]></processing>
+	</grouplist>
+	<grouplist>
+		<fieldname><![CDATA[wo_task.ref_spec]]></fieldname>
+		<description><![CDATA[Task Ref Spec]]></description>
+		<default><![CDATA[0]]></default>
+		<page_break><![CDATA[0]]></page_break>
+		<processing><![CDATA[0]]></processing>
+	</grouplist>
+	<page>
+		<size><![CDATA[Letter:216:282]]></size>
+		<orientation><![CDATA[P]]></orientation>
+		<margin>
+			<top><![CDATA[8]]></top>
+			<bottom><![CDATA[8]]></bottom>
+			<left><![CDATA[8]]></left>
+			<right><![CDATA[8]]></right>
+		</margin>
+		<heading>
+			<show><![CDATA[1]]></show>
+			<font><![CDATA[helvetica]]></font>
+			<size><![CDATA[12]]></size>
+			<color><![CDATA[0:0:0]]></color>
+			<align><![CDATA[C]]></align>
+		</heading>
+		<title1>
+			<show><![CDATA[1]]></show>
+			<text><![CDATA[%reportname%]]></text>
+			<font><![CDATA[helvetica]]></font>
+			<size><![CDATA[10]]></size>
+			<color><![CDATA[0:0:0]]></color>
+			<align><![CDATA[C]]></align>
+		</title1>
+		<title2>
+			<show><![CDATA[1]]></show>
+			<text><![CDATA[Report Generated %date%]]></text>
+			<size><![CDATA[10]]></size>
+			<color><![CDATA[0:0:0]]></color>
+			<align><![CDATA[C]]></align>
+		</title2>
+		<filter>
+			<font><![CDATA[helvetica]]></font>
+			<size><![CDATA[8]]></size>
+			<color><![CDATA[0:0:0]]></color>
+			<align><![CDATA[L]]></align>
+		</filter>
+		<data>
+			<font><![CDATA[helvetica]]></font>
+			<size><![CDATA[10]]></size>
+			<color><![CDATA[0:0:0]]></color>
+			<align><![CDATA[L]]></align>
+		</data>
+		<totals>
+			<font><![CDATA[helvetica]]></font>
+			<size><![CDATA[10]]></size>
+			<color><![CDATA[0:0:0]]></color>
+			<align><![CDATA[L]]></align>
+		</totals>
+	</page>
+	<sortlist>
+		<fieldname><![CDATA[wo_main.wo_title]]></fieldname>
+		<description><![CDATA[WO Title]]></description>
+		<default><![CDATA[0]]></default>
+	</sortlist>
+	<sortlist>
+		<fieldname><![CDATA[wo_task.ref_doc]]></fieldname>
+		<description><![CDATA[Task Ref Doc]]></description>
+		<default><![CDATA[0]]></default>
+	</sortlist>
+	<sortlist>
+		<fieldname><![CDATA[wo_task.ref_spec]]></fieldname>
+		<description><![CDATA[Task Ref Spec]]></description>
+		<default><![CDATA[0]]></default>
+	</sortlist>
+</PhreeformReport>

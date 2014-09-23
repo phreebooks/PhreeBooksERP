@@ -1,0 +1,713 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PhreeformReport>
+	<reporttype><![CDATA[frm]]></reporttype>
+	<title><![CDATA[Work Order]]></title>
+	<groupname><![CDATA[inv:wo]]></groupname>
+	<description><![CDATA[Work Order Form. Format: Landscape, Size: letter]]></description>
+<page>
+	<size><![CDATA[Letter:216:282]]></size>
+	<orientation><![CDATA[L]]></orientation>
+	<margin>
+		<top><![CDATA[8]]></top>
+		<bottom><![CDATA[8]]></bottom>
+		<left><![CDATA[8]]></left>
+		<right><![CDATA[8]]></right>
+	</margin>
+</page>
+<tables>
+	<tablename><![CDATA[wo_journal_main]]></tablename>
+</tables>
+	<special_class><![CDATA[wo_builder]]></special_class>
+	<formbreakfield><![CDATA[wo_journal_main.id]]></formbreakfield>
+	<serialform><![CDATA[0]]></serialform>
+<fieldlist>
+	<description><![CDATA[Data - Title]]></description>
+	<abscissa><![CDATA[28]]></abscissa>
+	<ordinate><![CDATA[8]]></ordinate>
+	<width><![CDATA[80]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Data]]></type>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[12]]></size>
+	<align><![CDATA[L]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+	<boxfield>
+		<fieldname><![CDATA[wo_title]]></fieldname>
+		<font><![CDATA[h]]></font>
+		<size><![CDATA[1]]></size>
+		<align><![CDATA[L]]></align>
+		<color><![CDATA[0]]></color>
+	</boxfield>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Data - SKU]]></description>
+	<abscissa><![CDATA[28]]></abscissa>
+	<ordinate><![CDATA[13]]></ordinate>
+	<width><![CDATA[45]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Data]]></type>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[12]]></size>
+	<align><![CDATA[L]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+	<boxfield>
+		<fieldname><![CDATA[sku]]></fieldname>
+		<font><![CDATA[h]]></font>
+		<size><![CDATA[1]]></size>
+		<align><![CDATA[L]]></align>
+		<color><![CDATA[0]]></color>
+	</boxfield>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Data - Qty]]></description>
+	<abscissa><![CDATA[28]]></abscissa>
+	<ordinate><![CDATA[18]]></ordinate>
+	<width><![CDATA[30]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Data]]></type>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[12]]></size>
+	<align><![CDATA[L]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+	<boxfield>
+		<fieldname><![CDATA[qty]]></fieldname>
+		<font><![CDATA[h]]></font>
+		<size><![CDATA[1]]></size>
+		<align><![CDATA[L]]></align>
+		<color><![CDATA[0]]></color>
+	</boxfield>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[SKU Bar Code]]></description>
+	<abscissa><![CDATA[118]]></abscissa>
+	<ordinate><![CDATA[8]]></ordinate>
+	<height><![CDATA[10]]></height>
+	<type><![CDATA[BarCode]]></type>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+	<boxfield>
+		<fieldname><![CDATA[bar_code]]></fieldname>
+		<processing><![CDATA[C39]]></processing>
+	</boxfield>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Linked Image]]></description>
+	<abscissa><![CDATA[210]]></abscissa>
+	<ordinate><![CDATA[8]]></ordinate>
+	<height><![CDATA[18]]></height>
+	<type><![CDATA[ImgLink]]></type>
+	<text><![CDATA[inventory/images/]]></text>
+	<boxfield>
+		<fieldname><![CDATA[image_with_path]]></fieldname>
+	</boxfield>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Data - Notes]]></description>
+	<abscissa><![CDATA[8]]></abscissa>
+	<ordinate><![CDATA[28]]></ordinate>
+	<width><![CDATA[200]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Data]]></type>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<align><![CDATA[L]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+	<boxfield>
+		<fieldname><![CDATA[notes]]></fieldname>
+		<font><![CDATA[h]]></font>
+		<size><![CDATA[1]]></size>
+		<align><![CDATA[L]]></align>
+		<color><![CDATA[0]]></color>
+	</boxfield>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Data - WO Num]]></description>
+	<abscissa><![CDATA[240]]></abscissa>
+	<ordinate><![CDATA[13]]></ordinate>
+	<width><![CDATA[30]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Data]]></type>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[12]]></size>
+	<align><![CDATA[R]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+	<boxfield>
+		<fieldname><![CDATA[id]]></fieldname>
+		<font><![CDATA[h]]></font>
+		<size><![CDATA[1]]></size>
+		<align><![CDATA[R]]></align>
+		<color><![CDATA[0]]></color>
+	</boxfield>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Data - Date Issued]]></description>
+	<abscissa><![CDATA[240]]></abscissa>
+	<ordinate><![CDATA[23]]></ordinate>
+	<width><![CDATA[30]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Data]]></type>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[12]]></size>
+	<align><![CDATA[R]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+	<boxfield>
+		<fieldname><![CDATA[post_date]]></fieldname>
+		<processing><![CDATA[date]]></processing>
+		<font><![CDATA[h]]></font>
+		<size><![CDATA[1]]></size>
+		<align><![CDATA[R]]></align>
+		<color><![CDATA[0]]></color>
+	</boxfield>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Data - Page Num]]></description>
+	<abscissa><![CDATA[240]]></abscissa>
+	<ordinate><![CDATA[33]]></ordinate>
+	<width><![CDATA[30]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[PgNum]]></type>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[12]]></size>
+	<align><![CDATA[R]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Table - Steps]]></description>
+	<abscissa><![CDATA[8]]></abscissa>
+	<ordinate><![CDATA[50]]></ordinate>
+	<width><![CDATA[160]]></width>
+	<height><![CDATA[145]]></height>
+	<type><![CDATA[Tbl]]></type>
+	<font><![CDATA[helvetica]]></font>
+	<font><![CDATA[helvetica]]></font>
+	<font><![CDATA[helvetica]]></font>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<size><![CDATA[10]]></size>
+	<size><![CDATA[10]]></size>
+	<size><![CDATA[10]]></size>
+	<align><![CDATA[C]]></align>
+	<align><![CDATA[L]]></align>
+	<align><![CDATA[C]]></align>
+	<align><![CDATA[C]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<color><![CDATA[0:0:0]]></color>
+	<color><![CDATA[0:0:0]]></color>
+	<color><![CDATA[0:0:0]]></color>
+	<bordershow><![CDATA[1]]></bordershow>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillshow><![CDATA[1]]></fillshow>
+	<fillcolor><![CDATA[225:235:255]]></fillcolor>
+	<hfont><![CDATA[helvetica]]></hfont>
+	<hsize><![CDATA[8]]></hsize>
+	<halign><![CDATA[L]]></halign>
+	<hcolor><![CDATA[0:0:0]]></hcolor>
+	<hbordersize><![CDATA[1]]></hbordersize>
+	<hbordercolor><![CDATA[0:0:0]]></hbordercolor>
+	<hfillcolor><![CDATA[0:0:0]]></hfillcolor>
+	<boxfield>
+		<fieldname><![CDATA[step]]></fieldname>
+		<description><![CDATA[Step]]></description>
+		<font><![CDATA[helvetica]]></font>
+		<size><![CDATA[10]]></size>
+		<align><![CDATA[C]]></align>
+		<color><![CDATA[0:0:0]]></color>
+		<width><![CDATA[10]]></width>
+	</boxfield>
+	<boxfield>
+		<fieldname><![CDATA[description]]></fieldname>
+		<description><![CDATA[Task Name]]></description>
+		<font><![CDATA[helvetica]]></font>
+		<size><![CDATA[10]]></size>
+		<align><![CDATA[L]]></align>
+		<color><![CDATA[0:0:0]]></color>
+		<width><![CDATA[124]]></width>
+	</boxfield>
+	<boxfield>
+		<fieldname><![CDATA[mfg]]></fieldname>
+		<description><![CDATA[Mfg Signoff]]></description>
+		<processing><![CDATA[yesBno]]></processing>
+		<font><![CDATA[helvetica]]></font>
+		<size><![CDATA[10]]></size>
+		<align><![CDATA[C]]></align>
+		<color><![CDATA[0:0:0]]></color>
+		<width><![CDATA[13]]></width>
+	</boxfield>
+	<boxfield>
+		<fieldname><![CDATA[qa]]></fieldname>
+		<description><![CDATA[QA Signoff]]></description>
+		<processing><![CDATA[yesBno]]></processing>
+		<font><![CDATA[helvetica]]></font>
+		<size><![CDATA[10]]></size>
+		<align><![CDATA[C]]></align>
+		<color><![CDATA[0:0:0]]></color>
+		<width><![CDATA[13]]></width>
+	</boxfield>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Data - BOM List]]></description>
+	<abscissa><![CDATA[170]]></abscissa>
+	<ordinate><![CDATA[55]]></ordinate>
+	<width><![CDATA[100]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Data]]></type>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<align><![CDATA[L]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+	<boxfield>
+		<fieldname><![CDATA[bom_list]]></fieldname>
+		<font><![CDATA[h]]></font>
+		<size><![CDATA[1]]></size>
+		<align><![CDATA[L]]></align>
+		<color><![CDATA[0]]></color>
+	</boxfield>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Data - Ref Specs]]></description>
+	<abscissa><![CDATA[33]]></abscissa>
+	<ordinate><![CDATA[23]]></ordinate>
+	<width><![CDATA[85]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Data]]></type>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<align><![CDATA[L]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+	<boxfield>
+		<fieldname><![CDATA[ref_specs]]></fieldname>
+		<font><![CDATA[h]]></font>
+		<size><![CDATA[1]]></size>
+		<align><![CDATA[L]]></align>
+		<color><![CDATA[0]]></color>
+	</boxfield>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Data - Ref Docs]]></description>
+	<abscissa><![CDATA[143]]></abscissa>
+	<ordinate><![CDATA[23]]></ordinate>
+	<width><![CDATA[85]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Data]]></type>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<align><![CDATA[L]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+	<boxfield>
+		<fieldname><![CDATA[ref_docs]]></fieldname>
+		<font><![CDATA[h]]></font>
+		<size><![CDATA[1]]></size>
+		<align><![CDATA[L]]></align>
+		<color><![CDATA[0]]></color>
+	</boxfield>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Text - Title]]></description>
+	<abscissa><![CDATA[8]]></abscissa>
+	<ordinate><![CDATA[8]]></ordinate>
+	<width><![CDATA[20]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Text]]></type>
+	<text><![CDATA[Title]]></text>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<align><![CDATA[L]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordershow><![CDATA[1]]></bordershow>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Text - SKU]]></description>
+	<abscissa><![CDATA[8]]></abscissa>
+	<ordinate><![CDATA[13]]></ordinate>
+	<width><![CDATA[20]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Text]]></type>
+	<text><![CDATA[SKU]]></text>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<align><![CDATA[L]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordershow><![CDATA[1]]></bordershow>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Text - Qty]]></description>
+	<abscissa><![CDATA[8]]></abscissa>
+	<ordinate><![CDATA[18]]></ordinate>
+	<width><![CDATA[20]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Text]]></type>
+	<text><![CDATA[Quantity]]></text>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<align><![CDATA[L]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordershow><![CDATA[1]]></bordershow>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Text- Ref Drawings]]></description>
+	<abscissa><![CDATA[8]]></abscissa>
+	<ordinate><![CDATA[23]]></ordinate>
+	<width><![CDATA[25]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Text]]></type>
+	<text><![CDATA[Ref Drawings]]></text>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<align><![CDATA[C]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordershow><![CDATA[1]]></bordershow>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Text - Ref Docs]]></description>
+	<abscissa><![CDATA[118]]></abscissa>
+	<ordinate><![CDATA[23]]></ordinate>
+	<width><![CDATA[25]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Text]]></type>
+	<text><![CDATA[Ref Docs]]></text>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<align><![CDATA[C]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordershow><![CDATA[1]]></bordershow>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Text - Notes]]></description>
+	<abscissa><![CDATA[8]]></abscissa>
+	<ordinate><![CDATA[28]]></ordinate>
+	<width><![CDATA[220]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Text]]></type>
+	<text><![CDATA[Work Order Notes and Special Instructions]]></text>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<align><![CDATA[C]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordershow><![CDATA[1]]></bordershow>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Text - WO]]></description>
+	<abscissa><![CDATA[240]]></abscissa>
+	<ordinate><![CDATA[8]]></ordinate>
+	<width><![CDATA[30]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Text]]></type>
+	<text><![CDATA[Work Order]]></text>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[14]]></size>
+	<align><![CDATA[R]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Text - Page Num]]></description>
+	<abscissa><![CDATA[240]]></abscissa>
+	<ordinate><![CDATA[28]]></ordinate>
+	<width><![CDATA[30]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Text]]></type>
+	<text><![CDATA[Page]]></text>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<align><![CDATA[R]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Text - Date Issued]]></description>
+	<abscissa><![CDATA[240]]></abscissa>
+	<ordinate><![CDATA[18]]></ordinate>
+	<width><![CDATA[30]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Text]]></type>
+	<text><![CDATA[Date Issued]]></text>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<align><![CDATA[R]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Text- Bom List]]></description>
+	<abscissa><![CDATA[170]]></abscissa>
+	<ordinate><![CDATA[50]]></ordinate>
+	<width><![CDATA[100]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Text]]></type>
+	<text><![CDATA[Bill of Materials]]></text>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<align><![CDATA[C]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordershow><![CDATA[1]]></bordershow>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Text - Assembler]]></description>
+	<abscissa><![CDATA[8]]></abscissa>
+	<ordinate><![CDATA[195]]></ordinate>
+	<width><![CDATA[25]]></width>
+	<height><![CDATA[10]]></height>
+	<type><![CDATA[Text]]></type>
+	<text><![CDATA[Assembler]]></text>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<align><![CDATA[L]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordershow><![CDATA[1]]></bordershow>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Text - ERP Entry]]></description>
+	<abscissa><![CDATA[96]]></abscissa>
+	<ordinate><![CDATA[195]]></ordinate>
+	<width><![CDATA[25]]></width>
+	<height><![CDATA[10]]></height>
+	<type><![CDATA[Text]]></type>
+	<text><![CDATA[ERP Entry]]></text>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<align><![CDATA[L]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordershow><![CDATA[1]]></bordershow>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Text - QA]]></description>
+	<abscissa><![CDATA[184]]></abscissa>
+	<ordinate><![CDATA[195]]></ordinate>
+	<width><![CDATA[25]]></width>
+	<height><![CDATA[10]]></height>
+	<type><![CDATA[Text]]></type>
+	<text><![CDATA[Quality]]></text>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<align><![CDATA[L]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordershow><![CDATA[1]]></bordershow>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Text - Mfg Date]]></description>
+	<abscissa><![CDATA[68]]></abscissa>
+	<ordinate><![CDATA[195]]></ordinate>
+	<width><![CDATA[10]]></width>
+	<height><![CDATA[10]]></height>
+	<type><![CDATA[Text]]></type>
+	<text><![CDATA[Date]]></text>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<align><![CDATA[C]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordershow><![CDATA[1]]></bordershow>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Text - ERP Date]]></description>
+	<abscissa><![CDATA[156]]></abscissa>
+	<ordinate><![CDATA[195]]></ordinate>
+	<width><![CDATA[10]]></width>
+	<height><![CDATA[10]]></height>
+	<type><![CDATA[Text]]></type>
+	<text><![CDATA[Date]]></text>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<align><![CDATA[L]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordershow><![CDATA[1]]></bordershow>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Text - QA Date]]></description>
+	<abscissa><![CDATA[244]]></abscissa>
+	<ordinate><![CDATA[195]]></ordinate>
+	<width><![CDATA[10]]></width>
+	<height><![CDATA[10]]></height>
+	<type><![CDATA[Text]]></type>
+	<text><![CDATA[Date]]></text>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<align><![CDATA[C]]></align>
+	<color><![CDATA[0:0:0]]></color>
+	<bordershow><![CDATA[1]]></bordershow>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Rect - Mfg]]></description>
+	<abscissa><![CDATA[33]]></abscissa>
+	<ordinate><![CDATA[195]]></ordinate>
+	<width><![CDATA[35]]></width>
+	<height><![CDATA[10]]></height>
+	<type><![CDATA[Rect]]></type>
+	<bordershow><![CDATA[1]]></bordershow>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Rect - ERP Entry]]></description>
+	<abscissa><![CDATA[121]]></abscissa>
+	<ordinate><![CDATA[195]]></ordinate>
+	<width><![CDATA[35]]></width>
+	<height><![CDATA[10]]></height>
+	<type><![CDATA[Rect]]></type>
+	<bordershow><![CDATA[1]]></bordershow>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Rect - QA]]></description>
+	<abscissa><![CDATA[209]]></abscissa>
+	<ordinate><![CDATA[195]]></ordinate>
+	<width><![CDATA[35]]></width>
+	<height><![CDATA[10]]></height>
+	<type><![CDATA[Rect]]></type>
+	<bordershow><![CDATA[1]]></bordershow>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Rect - Mfg Date]]></description>
+	<abscissa><![CDATA[78]]></abscissa>
+	<ordinate><![CDATA[195]]></ordinate>
+	<width><![CDATA[18]]></width>
+	<height><![CDATA[10]]></height>
+	<type><![CDATA[Rect]]></type>
+	<bordershow><![CDATA[1]]></bordershow>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Rect - ERP Date]]></description>
+	<abscissa><![CDATA[166]]></abscissa>
+	<ordinate><![CDATA[195]]></ordinate>
+	<width><![CDATA[18]]></width>
+	<height><![CDATA[10]]></height>
+	<type><![CDATA[Rect]]></type>
+	<bordershow><![CDATA[1]]></bordershow>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+<fieldlist>
+	<description><![CDATA[Rect - QA Date]]></description>
+	<abscissa><![CDATA[254]]></abscissa>
+	<ordinate><![CDATA[195]]></ordinate>
+	<width><![CDATA[18]]></width>
+	<height><![CDATA[10]]></height>
+	<type><![CDATA[Rect]]></type>
+	<bordershow><![CDATA[1]]></bordershow>
+	<bordersize><![CDATA[1]]></bordersize>
+	<bordercolor><![CDATA[0:0:0]]></bordercolor>
+	<fillcolor><![CDATA[0:0:0]]></fillcolor>
+</fieldlist>
+	<security><![CDATA[u:0;g:0]]></security>
+	<datelist><![CDATA[abcdfhj]]></datelist>
+	<datefield><![CDATA[wo_journal_main.post_date]]></datefield>
+	<datedefault><![CDATA[c]]></datedefault>
+	<filenameprefix><![CDATA[wo_]]></filenameprefix>
+	<filenamefield><![CDATA[wo_journal_main.id]]></filenamefield>
+<sortlist>
+	<default><![CDATA[0]]></default>
+</sortlist>
+<sortlist>
+	<default><![CDATA[0]]></default>
+</sortlist>
+<filterlist>
+	<fieldname><![CDATA[wo_journal_main.id]]></fieldname>
+	<description><![CDATA[Work Order ID]]></description>
+	<visible><![CDATA[1]]></visible>
+	<type><![CDATA[0]]></type>
+</filterlist>
+<filterlist>
+	<fieldname><![CDATA[wo_journal_main.priority]]></fieldname>
+	<description><![CDATA[Priority]]></description>
+	<visible><![CDATA[1]]></visible>
+	<type><![CDATA[0]]></type>
+</filterlist>
+<filterlist>
+	<fieldname><![CDATA[wo_journal_main.sku]]></fieldname>
+	<description><![CDATA[SKU]]></description>
+	<visible><![CDATA[1]]></visible>
+	<type><![CDATA[0]]></type>
+</filterlist>
+<filterlist>
+	<fieldname><![CDATA[wo_journal_main.closed]]></fieldname>
+	<description><![CDATA[Closed]]></description>
+	<visible><![CDATA[1]]></visible>
+	<type><![CDATA[2]]></type>
+</filterlist>
+</PhreeformReport>

@@ -1,0 +1,660 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Module>
+  <Name>work_orders</Name>
+  <Description>This file contains structural information for the work orders module</Description>
+  <Path>modules/work_orders/</Path>
+  <Files>
+    <File>
+	  <Name>config.php</Name>
+	  <Description>Contains the configuration information about the module.</Description>
+	</File>
+    <File>
+	  <Name>defaults.php</Name>
+	  <Description>Contains the default configuration settings.</Description>
+	</File>
+    <File>
+	  <Name>readme.txt</Name>
+	  <Description>Contains the module installation/removal/usage instrucitons.</Description>
+	</File>
+    <File>
+	  <Name>work_orders.xml</Name>
+	  <Description>Contains the module structural information (This file).</Description>
+	</File>
+    <File>
+	  <Name>ajax/load_bom_list.php</Name>
+	</File>
+    <File>
+	  <Name>ajax/load_task.php</Name>
+	</File>
+    <File>
+	  <Name>ajax/load_task_list.php</Name>
+	</File>
+    <File>
+	  <Name>ajax/load_wo_detail.php</Name>
+	</File>
+    <File>
+	  <Name>classes/install.php</Name>
+	</File>
+    <File>
+	  <Name>fuctions/work_orders.php</Name>
+	</File>
+    <File>
+	  <Name>language/en_us/admin.php</Name>
+	</File>
+    <File>
+	  <Name>language/en_us/language.php</Name>
+	</File>
+    <File>
+	  <Name>language/en_us/menu.php</Name>
+	</File>
+    <File>
+	  <Name>language/en_us/manual/builder.php</Name>
+	</File>
+    <File>
+	  <Name>language/en_us/manual/install.php</Name>
+	</File>
+    <File>
+	  <Name>language/en_us/manual/main.php</Name>
+	</File>
+    <File>
+	  <Name>language/en_us/manual/manager.php</Name>
+	</File>
+    <File>
+	  <Name>language/en_us/manual/tasks.php</Name>
+	</File>
+    <File>
+	  <Name>language/en_us/reports/WorkOrder.xml</Name>
+	</File>
+    <File>
+	  <Name>language/en_us/reports/WorkOrderList.xml</Name>
+	</File>
+    <File>
+	  <Name>language/en_us/reports/WorkOrderTaskUsage.xml</Name>
+	</File>
+    <File>
+	  <Name>pages/builder/js_include.php</Name>
+	</File>
+    <File>
+	  <Name>pages/builder/pre_process.php</Name>
+	</File>
+    <File>
+	  <Name>pages/builder/template_detail.php</Name>
+	</File>
+    <File>
+	  <Name>pages/builder/template_main.php</Name>
+	</File>
+    <File>
+	  <Name>pages/builder/template_tab_gen.php</Name>
+	</File>
+    <File>
+	  <Name>pages/builder/template_tab_hist.php</Name>
+	</File>
+    <File>
+	  <Name>pages/main/js_include.php</Name>
+	</File>
+    <File>
+	  <Name>pages/main/pre_process.php</Name>
+	</File>
+    <File>
+	  <Name>pages/main/template_build.php</Name>
+	</File>
+    <File>
+	  <Name>pages/main/template_main.php</Name>
+	</File>
+    <File>
+	  <Name>pages/main/template_new.php</Name>
+	</File>
+    <File>
+	  <Name>pages/popup_tasks/js_include.php</Name>
+	</File>
+    <File>
+	  <Name>pages/popup_tasks/pre_process.php</Name>
+	</File>
+    <File>
+	  <Name>pages/popup_tasks/template_main.php</Name>
+	</File>
+    <File>
+	  <Name>pages/tasks/js_include.php</Name>
+	</File>
+    <File>
+	  <Name>pages/tasks/pre_process.php</Name>
+	</File>
+    <File>
+	  <Name>pages/tasks/template_main.php</Name>
+	</File>
+  </Files>
+  <Table>
+	<Name>wo_main</Name>
+	<TagName>Work Order Main</TagName>
+	<Description>Contains a record of a single work order template.</Description>
+	<CanImport>1</CanImport>
+	<LinkTable>
+	  <Name>wo_steps</Name>
+	  <PrimaryField>id</PrimaryField>
+	  <DependentField>ref_id</DependentField>
+	</LinkTable>
+	<Engine>MyISAM</Engine>
+	<DefaultCharset>utf8</DefaultCharset>
+	<Collate>utf8_unicode_ci</Collate>
+	<PrimaryKey>id</PrimaryKey>
+	<Field>
+	  <Name>id</Name>
+	  <TagName>RecordID</TagName>
+	  <Type>int (11)</Type>
+	  <Description>Unique database id field</Description>
+	  <Properties>NOT NULL auto_increment</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>inactive</Name>
+	  <TagName>Inactive Flag</TagName>
+	  <Type>enum('0','1')</Type>
+	  <Description>Indicates the active status of the work order.</Description>
+	  <Properties>NOT NULL DEFAULT '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>wo_title</Name>
+	  <TagName>Work Order Title</TagName>
+	  <Type>varchar(32)</Type>
+	  <Description>Title used for the work order template.</Description>
+	  <Properties>NOT NULL DEFAULT ''</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>1</Required>
+	</Field>
+	<Field>
+	  <Name>sku_id</Name>
+	  <TagName>SKU Record ID</TagName>
+	  <Type>int(11)</Type>
+	  <Description>ID number from inventory database table to which this work order template applies.</Description>
+	  <Properties>NOT NULL DEFAULT '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>1</Required>
+	</Field>
+	<Field>
+	  <Name>description</Name>
+	  <TagName>Work Order Description (64 characters max)</TagName>
+	  <Type>varchar(64)</Type>
+	  <Description>Description used for the work order template.</Description>
+	  <Properties>NOT NULL DEFAULT ''</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>1</Required>
+	</Field>
+	<Field>
+	  <Name>allocate</Name>
+	  <TagName>Allocate Inventory Flag</TagName>
+	  <Type>ENUM('0', '1')</Type>
+	  <Description>Whether or not to allocate inventory when work order is generated.</Description>
+	  <Properties>NOT NULL DEFAULT '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>ref_doc</Name>
+	  <TagName>Reference Documents</TagName>
+	  <Type>varchar(64)</Type>
+	  <Description>Lists reference documents use to build this SKU.</Description>
+	  <Properties>DEFAULT NULL</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>ref_spec</Name>
+	  <TagName>Reference Specifications</TagName>
+	  <Type>varchar(64)</Type>
+	  <Description>Lists reference specifications use to build this SKU.</Description>
+	  <Properties>DEFAULT NULL</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>revision</Name>
+	  <TagName>Revision Number</TagName>
+	  <Type>int(3)</Type>
+	  <Description>Work order template revision number.</Description>
+	  <Properties>NOT NULL</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>revision_date</Name>
+	  <TagName>Reference Documents</TagName>
+	  <Type>timestamp</Type>
+	  <Description>Last date work order template was created/updated.</Description>
+	  <Properties>NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>last_usage</Name>
+	  <TagName>Last Usage Date</TagName>
+	  <Type>date</Type>
+	  <Description>Contains the date the last time the work order was used.</Description>
+	  <Properties>NOT NULL DEFAULT '0000-00-00'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+  </Table>
+  <Table>
+	<Name>wo_steps</Name>
+	<TagName>Work Order Template Steps</TagName>
+	<Description>Contains a list of steps to complete a single work order.</Description>
+	<CanImport>1</CanImport>
+	<Engine>MyISAM</Engine>
+	<DefaultCharset>utf8</DefaultCharset>
+	<Collate>utf8_unicode_ci</Collate>
+	<PrimaryKey>id</PrimaryKey>
+	<Field>
+	  <Name>id</Name>
+	  <TagName>RecordID</TagName>
+	  <Type>int (11)</Type>
+	  <Description>Unique database id field</Description>
+	  <Properties>NOT NULL auto_increment</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>ref_id</Name>
+	  <TagName>Reference Record ID</TagName>
+	  <Type>int(11)</Type>
+	  <Description>Indicates the record number of the work order template this step applies to.</Description>
+	  <Properties>NOT NULL DEFAULT '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>1</Required>
+	</Field>
+	<Field>
+	  <Name>step</Name>
+	  <TagName>Step Number</TagName>
+	  <Type>int (3)</Type>
+	  <Description>Contains the step number of the work order template.</Description>
+	  <Properties>NOT NULL</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>1</Required>
+	</Field>
+	<Field>
+	  <Name>task_id</Name>
+	  <TagName>Task Record Number</TagName>
+	  <Type>int(11)</Type>
+	  <Description>Indicates the record number of the work order task.</Description>
+	  <Properties>NOT NULL</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>1</Required>
+	</Field>
+  </Table>
+  <Table>
+	<Name>wo_journal_main</Name>
+	<TagName>Work Order Main Journal</TagName>
+	<Description>Contains a record for each work order completed.</Description>
+	<CanImport>1</CanImport>
+	<Engine>MyISAM</Engine>
+	<DefaultCharset>utf8</DefaultCharset>
+	<Collate>utf8_unicode_ci</Collate>
+	<PrimaryKey>id</PrimaryKey>
+	<Field>
+	  <Name>id</Name>
+	  <TagName>RecordID</TagName>
+	  <Type>int (11)</Type>
+	  <Description>Unique database id field</Description>
+	  <Properties>NOT NULL auto_increment</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>wo_num</Name>
+	  <TagName>Work Order Number</TagName>
+	  <Type>varchar(16)</Type>
+	  <Description>Contains the Work Order number.</Description>
+	  <Properties>NOT NULL default 'WO-00001'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>1</Required>
+	</Field>
+	<Field>
+	  <Name>wo_id</Name>
+	  <TagName>Work Order Template ID</TagName>
+	  <Type>int(11)</Type>
+	  <Description>Contains the record ID of the Work Order Template.</Description>
+	  <Properties>NOT NULL default '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>1</Required>
+	</Field>
+	<Field>
+	  <Name>priority</Name>
+	  <TagName>Work Order Priority</TagName>
+	  <Type>int(1)</Type>
+	  <Description>Contains the Work Order priority.</Description>
+	  <Properties>NOT NULL default '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>sku_id</Name>
+	  <TagName>SKU Record ID</TagName>
+	  <Type>int(11)</Type>
+	  <Description>Contains the record number in table inventory for the SKU being assembled.</Description>
+	  <Properties>NOT NULL default '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>1</Required>
+	</Field>
+	<Field>
+	  <Name>qty</Name>
+	  <TagName>Quantity to Assemble</TagName>
+	  <Type>float</Type>
+	  <Description>Contains the quantity of inventory items to be assembled.</Description>
+	  <Properties>NOT NULL default '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>1</Required>
+	</Field>
+	<Field>
+	  <Name>wo_title</Name>
+	  <TagName>Work Order Title</TagName>
+	  <Type>varchar(32)</Type>
+	  <Description>Contains the Work Order title.</Description>
+	  <Properties>default NULL</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>post_date</Name>
+	  <TagName>Work Order Date</TagName>
+	  <Type>date</Type>
+	  <Description>Contains the date the work order was worked on.</Description>
+	  <Properties>default NULL</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>1</Required>
+	</Field>
+	<Field>
+	  <Name>closed</Name>
+	  <TagName>Closed Flag</TagName>
+	  <Type>enum('0','1')</Type>
+	  <Description>Whether the work order is closed (completed).</Description>
+	  <Properties>NOT NULL default '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>close_date</Name>
+	  <TagName>Closed Date</TagName>
+	  <Type>date</Type>
+	  <Description>Contains date the work order ws closed.</Description>
+	  <Properties>default NULL</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>notes</Name>
+	  <TagName>Work Order Notes</TagName>
+	  <Type>text</Type>
+	  <Description>Contains any freeform text entries while assembling the item.</Description>
+	  <Properties>default NULL</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>1</Required>
+	</Field>
+  </Table>
+  <Table>
+	<Name>wo_journal_item</Name>
+	<TagName>Work Order Item Journal</TagName>
+	<Description>Contains the completed steps of a given work order.</Description>
+	<CanImport>1</CanImport>
+	<Engine>MyISAM</Engine>
+	<DefaultCharset>utf8</DefaultCharset>
+	<Collate>utf8_unicode_ci</Collate>
+	<PrimaryKey>id</PrimaryKey>
+	<Key>ref_id (ref_id)</Key>
+	<Key>step (step)</Key>
+	<Field>
+	  <Name>id</Name>
+	  <TagName>Record ID</TagName>
+	  <Type>int (11)</Type>
+	  <Description>Unique database id field</Description>
+	  <Properties>NOT NULL auto_increment</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>ref_id</Name>
+	  <TagName>Reference Record ID</TagName>
+	  <Type>int(11)</Type>
+	  <Description>Indicates the record number that the work order journal entry applies to.</Description>
+	  <Properties>NOT NULL DEFAULT '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>1</Required>
+	</Field>
+	<Field>
+	  <Name>step</Name>
+	  <TagName>Step Record Number</TagName>
+	  <Type>int(11)</Type>
+	  <Description>Work Order Template Step Number.</Description>
+	  <Properties>NOT NULL default '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>1</Required>
+	</Field>
+	<Field>
+	  <Name>task_id</Name>
+	  <TagName>Task Record Number</TagName>
+	  <Type>int(11)</Type>
+	  <Description>Work Order Task Record Number.</Description>
+	  <Properties>NOT NULL default '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>1</Required>
+	</Field>
+	<Field>
+	  <Name>task_name</Name>
+	  <TagName>Task Title</TagName>
+	  <Type>varchar(32)</Type>
+	  <Description>Work Order Task Title.</Description>
+	  <Properties>default NULL</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>mfg</Name>
+	  <TagName>Manufacturing Sign-off Flag</TagName>
+	  <Type>enum('0','1')</Type>
+	  <Description>Whether manufacturing is required to sign off on the step to complete.</Description>
+	  <Properties>NOT NULL default '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>mfg_id</Name>
+	  <TagName>Manufacturing Sign-off user ID</TagName>
+	  <Type>int(11)</Type>
+	  <Description>Contains the record id of the user that signed off for manufacturing.</Description>
+	  <Properties>NOT NULL default '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>mfg_date</Name>
+	  <TagName>Manufacturing Sign-off Date</TagName>
+	  <Type>datetime</Type>
+	  <Description>Contains the date that manufacturing signed off of the given step.</Description>
+	  <Properties>default NULL</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>qa</Name>
+	  <TagName>QA Sign-off Flag</TagName>
+	  <Type>enum('0','1')</Type>
+	  <Description>Whether QA is required to sign off on the step to complete.</Description>
+	  <Properties>NOT NULL default '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>qa_id</Name>
+	  <TagName>QA Sign-off user ID</TagName>
+	  <Type>int(11)</Type>
+	  <Description>Contains the record id of the user that signed off for QA.</Description>
+	  <Properties>NOT NULL default '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>qa_date</Name>
+	  <TagName>QA Sign-off Date</TagName>
+	  <Type>datetime</Type>
+	  <Description>Contains the date that QA signed off of the given step.</Description>
+	  <Properties>default NULL</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>data_entry</Name>
+	  <TagName>Data Entry Flag</TagName>
+	  <Type>enum('0','1')</Type>
+	  <Description>Whether data entry is required to complete the step.</Description>
+	  <Properties>NOT NULL default '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>data_value</Name>
+	  <TagName>Data Value</TagName>
+	  <Type>varchar(64)</Type>
+	  <Description>Contains the data value entered in the form to complete the step.</Description>
+	  <Properties>default NULL</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>admin_id</Name>
+	  <TagName>User ID</TagName>
+	  <Type>int(11)</Type>
+	  <Description>ID of logged in user completing the step.</Description>
+	  <Properties>NOT NULL default '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>complete</Name>
+	  <TagName>Complete Flag</TagName>
+	  <Type>enum('0','1')</Type>
+	  <Description>Flag to indicate if the task step is complete.</Description>
+	  <Properties>NOT NULL default '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+  </Table>
+  <Table>
+	<Name>wo_task</Name>
+	<TagName>Work Order Tasks</TagName>
+	<Description>Contains a list of tasks used to build a work order template.</Description>
+	<CanImport>1</CanImport>
+	<Engine>MyISAM</Engine>
+	<DefaultCharset>utf8</DefaultCharset>
+	<Collate>utf8_unicode_ci</Collate>
+	<PrimaryKey>id</PrimaryKey>
+	<Field>
+	  <Name>id</Name>
+	  <TagName>Record ID</TagName>
+	  <Type>int (11)</Type>
+	  <Description>Unique database id field</Description>
+	  <Properties>NOT NULL auto_increment</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>task_name</Name>
+	  <TagName>Task Title</TagName>
+	  <Type>varchar(32)</Type>
+	  <Description>Short title for the task.</Description>
+	  <Properties>NOT NULL</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>1</Required>
+	</Field>
+	<Field>
+	  <Name>description</Name>
+	  <TagName>Task Description</TagName>
+	  <Type>varchar(255)</Type>
+	  <Description>Task description (255 characters max)</Description>
+	  <Properties>default NULL</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>ref_doc</Name>
+	  <TagName>Reference Documents</TagName>
+	  <Type>varchar(64)</Type>
+	  <Description>List Reference Documents to complete the task.</Description>
+	  <Properties>default NULL</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>ref_spec</Name>
+	  <TagName>Reference Specifications</TagName>
+	  <Type>varchar(64)</Type>
+	  <Description>List Reference Specifications to complete the task.</Description>
+	  <Properties>default NULL</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>dept_id</Name>
+	  <TagName>Department ID</TagName>
+	  <Type>varchar(16)</Type>
+	  <Description>Lists the responsible department to complete the task.</Description>
+	  <Properties>NOT NULL default ''</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>job_time</Name>
+	  <TagName>Task Time</TagName>
+	  <Type>float</Type>
+	  <Description>List the time allocated to completet the task.</Description>
+	  <Properties>NOT NULL default '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>job_unit</Name>
+	  <TagName>Task Unit of Measure</TagName>
+	  <Type>int(11)</Type>
+	  <Description>List the unit of measure to complete the task.</Description>
+	  <Properties>NOT NULL default '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>mfg</Name>
+	  <TagName>MFG Sign-off Required Flag</TagName>
+	  <Type>enum('0','1')</Type>
+	  <Description>Flag to indicate manufacturing is required to sign-off the task.</Description>
+	  <Properties>NOT NULL default '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>qa</Name>
+	  <TagName>QA Sign-off Required Flag</TagName>
+	  <Type>enum('0','1')</Type>
+	  <Description>Flag to indicate QA is required to sign-off the task.</Description>
+	  <Properties>NOT NULL default '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>data_entry</Name>
+	  <TagName>Data Entry Required Flag</TagName>
+	  <Type>enum('0','1')</Type>
+	  <Description>Flag to indicate if data entry is required to complete the task.</Description>
+	  <Properties>NOT NULL default '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+	<Field>
+	  <Name>erp_entry</Name>
+	  <TagName>ERP Entry Required Flag</TagName>
+	  <Type>enum('0','1')</Type>
+	  <Description>Flag to indicate if ERP entry is required after completion of the task.</Description>
+	  <Properties>NOT NULL default '0'</Properties>
+	  <CanImport>1</CanImport>
+	  <Required>0</Required>
+	</Field>
+  </Table>
+</Module>

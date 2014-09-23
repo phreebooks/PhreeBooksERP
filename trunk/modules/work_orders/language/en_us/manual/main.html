@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head>
+  <title>Work Order Module</title>
+
+  
+  
+  <meta name="doc_index_1" content="Inventory.Work Orders">
+
+  
+  <meta name="doc_pos" content="07.04.WO">
+
+</head><body>
+<h1>Work Order Module</h1>
+
+<p>The work order module is intended to help control the manufacturing
+process when assembling inventory. Features include:</p>
+
+<ul>
+
+  <li>Task driven work flow process</li>
+  <li>Sign-off ability for production workers and quality control</li>
+  <li>Task time tracking for job estimation</li>
+  <li>Revision control for process management</li>
+  <li>Ability to assemble into inventory (create a journal entry
+similar to Inventory -&gt; Assemblies)</li>
+  <li>Uses Quantity of Allocation in inventory to identify lack of
+availability of assembly parts</li>
+  <li>Work Order form lists tasks, sign off requirements, required
+parts and sign off blocks.</li>
+</ul>
+
+<p>How
+does it work? Work Orders are broken into a series of tasks. The
+tasks are combined to create a work order template for a given sku.
+The work order template is then executed with statistics, data and
+sign-offs recorded in a work order journal (not associated with the
+main journal of PhreeBooks)</p>
+
+<h2>Work Order Tasks - Overview</h2>
+
+<p>When building a product, the assembly process can be broken into a
+series
+of tasks. These tasks make up the building blocks of the work order.
+Click here for more detailed information regarding work order tasks.</p>
+
+<h2>Work Order Builder - Overview</h2>
+
+<p>Once the tasks for building an inventory item, the work order
+builder
+sequences the tasks required for assembling a specific product. The
+Work Order Builder only allows one sku for each template. Click here
+for more details on building a work order template. Once a work order
+template has been executed, it must be revised if the process is
+changed. This is for quality control.</p>
+
+<h2>Work Order Manager - Overview</h2>
+
+<p>The work order manager is the execution of a work order template.
+The
+work order manager tracks the assembly of an inventory item,
+allocates material and assembles item in the inventory database.
+Click here for more information on Work Order Manager.</p>
+
+<h2>An Example</h2>
+
+<p>We
+want to assemble a bicycle (must be in inventory as an assembly
+already). The steps required (very simply example) are:</p>
+
+<ol>
+
+  <li>Pull parts from stock room.</li>
+  <li>Assemble bicycle per assembly procedure.</li>
+  <li>Inspect finished product.</li>
+  <li>Record number of bicycles into inventory database. </li>
+</ol>
+
+<h4>Step 1: We need to create the tasks using the Work Order Task
+builder</h4>
+
+<ol>
+
+  <li>Click on Inventory -&gt; Work Order Tasks.</li>
+  <li>Enter information
+on the form Task Name : Pull Parts
+Description : Pull parts as listed on the work
+order form Department : Manufacturing
+(Set up in Company -&gt; Module Administration -&gt; Contacts -&gt;
+Properties -&gt; Maintain Departments tab<br>
+Ref Documents &amp; Ref Drawings : leave blank<br>
+Task Time : 0.5 Hours<br>
+Mfg Sign-off, QA Sign-off, Data Entry &amp;
+ERP Entry : No </li>
+  <li>Press the Save icon to save the task</li>
+</ol>
+
+<p>Repeat the above procedure for the remaining 3 steps with the
+following
+differences:</p>
+
+<p>Step 2. Change the task name and description, MFG Sign-off to Yes,
+Data Entry to Yes (for serial numbers)</p>
+
+<p>Step 3: Change the task name and description. QA Sign-off to Yes.</p>
+
+<p>Step 4: Change the task name and description. ERP Entry to Yes.</p>
+
+<h4>Step 2: We need to build a template.</h4>
+
+<ol>
+
+  <li>Click on Inventory -&gt; Work Order Builder</li>
+  <li>Click the New icon</li>
+  <li>Enter the information on the form as follows: Title : Build
+Bicycle SKU : Select
+a SKU from the search pop-up icon. (the bicycle
+assembly needs to be in the Inventory database already), description is
+automatically filled in Use Allocation : Yes Ref Documents &amp; Ref
+Drawings : blank </li>
+  <li>On the first task line, click on the search icon and select Pull
+Parts from the pop-up.</li>
+  <li>Click on the Add a line icon and repeat step 4 for the remaining
+three tasks.</li>
+  <li>Click on the Save icon to save the work order template.</li>
+</ol>
+
+<h4>Step 3: We need to generate a work order to let manufacturing know
+to build a bicycle.</h4>
+
+<ol>
+
+  <li>Click on Inventory -&gt; Work Order Manager</li>
+  <li>Click the New icon</li>
+  <li>Click the search icon next to the SKU field and select the Build
+Bicycle work order. The
+title and SKU are filled into the form along with the task list.</li>
+  <li>Enter the number of bicycles to build, we’ll build 2 for now.</li>
+  <li>Enter any comments, special instructions, etc. onto the Notes
+field.</li>
+  <li>Click on the Print icon to save the work order and print the Work
+Order form.
+The screen will return to the Work Order Manager and should display our
+work order with open status. This will allocate the parts required to
+assemble the bicycle and verify stock is available.</li>
+</ol>
+
+<h4>Step 4: Let’s build a bicycle</h4>
+
+<ol>
+
+  <li>Select the work order from the Work Order Manager screen. this
+will open the build page highlighting the step in process.</li>
+  <li>When step 1 has been completed, click on the Update button on the
+right of the screen. Step 1 will be posted and step two will be
+highlighted.</li>
+  <li>When step 2 has been completed, enter the assemblers user name
+and password and press the update button. remember in task Assemble
+bicycle, we required
+manufacturing sign-off to track who assembled the bicycle.</li>
+  <li>When step 3 has been completed, enter QA’s user name and password
+and press the Update button. This will post step 3 and highlight step 4.</li>
+  <li>Press update on step 4 to complete the work order, close it out,
+assemble 2 bicycles in inventory (assuming parts are available) and
+un-allocate the parts (as they have
+been used to build the bicycle).</li>
+</ol>
+
+<h2>Related Topics</h2>
+
+<p>
+<a href="install.html">Installing/Removing the Work Order Module</a><br>
+<a href="tasks.html">Work Order Tasks</a><br>
+<a href="builder.html">Work Order Builder</a><br>
+<a href="manager.html">Work Order Manager</a><br>
+</p>
+
+</body></html>
