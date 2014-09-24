@@ -28,9 +28,10 @@
 //					added function to find invoicenumber in description for transactions that are not connected to a bank or iban account
 // 2.1 27-09-2013 fixed bug that it would try to find a contact for known_transactions.
 // 2.2 28-08-2014 fixed bug that it would try to find a contact for known_transactions.
+// 2.3 24-09-2014 fixed bug.
 gen_pull_language('phreedom', 'menu');
 // Module software version information
-define('MODULE_IMPORT_BANK_VERSION',  2.2);
+define('MODULE_IMPORT_BANK_VERSION',  2.3);
 // Menu Sort Positions
 
 // Menu Security id's

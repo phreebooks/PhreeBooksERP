@@ -87,24 +87,24 @@ class import_bank_admin {
   }
 
   function update($module) {
-  	global $db;
+  	global $db, $messageStack;
   	foreach ($this->keys as $key => $value) if (!defined($key)) write_configure($key, $value);
-  	$sql = "select id from " . TABLE_EXTRA_FIELDS . " where module_id = 'contacts' and field_name = 'bank_account'";
+  	$sql = "select id from " . TABLE_EXTRA_FIELDS . " where module_id = 'contacts' and (field_name like '%bank_account%' or field_name like '%iban%')";
 	$result = $db->Execute($sql);
 	if ( $result->RecordCount() == 0 ){
 		$result = $db->Execute("select id from " . TABLE_EXTRA_TABS . " where module_id='contacts' and tab_name = 'import_banking'");
 		if ( $result->RecordCount() == 0 ){
-			$db->Execute("INSERT INTO " . TABLE_EXTRA_TABS . " VALUES('', 'contacts','import_banking','100')");
+			$db->Execute("INSERT INTO " . TABLE_EXTRA_TABS . " (module_id, tab_name, sort_order) VALUES( 'contacts','import_banking','100')");
 			$tab_id = $db->insert_ID();
 		}else {	
 			$tab_id = $result->fields['id'];
 		}
-		$db->Execute("INSERT INTO " . TABLE_EXTRA_FIELDS . " VALUES ('', 'contacts', ". $tab_id .",'text', 'bank_account', 'Bank Account','c:v:', 'a:4:{s:4:'type';s:4:'text';s:12:'contact_type';s:16:'customer:vendor:';s:6:'length';i:32;s:7:'default';s:0:'';}' );");
+		$db->Execute("INSERT INTO " . TABLE_EXTRA_FIELDS . " (module_id, tab_id, entry_type, field_name, description, params) VALUES ('contacts', $tab_id, 'text', 'iban', 'IBAN', 'a:4:{s:4:\"type\";s:4:\"text\";s:12:\"contact_type\";s:4:\"c:v:\";s:6:\"length\";i:32;s:7:\"default\";s:0:\"\";}')");
 	}
   	foreach ($this->tables as $table => $sql) {
 		if ($table == TABLE_IMPORT_BANK) admin_install_tables(array($table => $sql));
 	}
-	
+	$messageStack->add(sprintf(GEN_MODULE_UPDATE_SUCCESS, $module, constant('MODULE_' . strtoupper($module) . '_VERSION')), 'success');
 	write_configure('MODULE_' . strtoupper($module) . '_STATUS', constant('MODULE_' . strtoupper($module) . '_VERSION'));
   }
 
