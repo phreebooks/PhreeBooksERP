@@ -49,7 +49,7 @@ define('TEXT_INC_AMT','Increase by Amount');
 define('TEXT_INC_PCNT','Increase by Percent');
 define('TEXT_MARK_UP_BY_PERCENT', 'Mark up by Percent');
 define('TEXT_MARGIN', 'Margin by Percent');
-define('TEXT_TIERED_PRICING', 'tiered pricing');
+define('TEXT_TIERED_PRICING', 'Tiered Pricing');
 
 
 define('TEXT_NEXT_WHOLE','Next Dollar');
