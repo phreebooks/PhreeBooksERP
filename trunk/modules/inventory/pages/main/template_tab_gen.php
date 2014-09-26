@@ -111,8 +111,12 @@
 	</tr>
 	<tr>
 	  <td align="right"><?php if(isset($cInfo->product_margin)) echo INV_MARGIN; ?></td>
-	  <td><?php if(isset($cInfo->product_margin)) echo html_input_field('product_margin', $currencies->precise($cInfo->product_margin), 'onchange="product_margin_change();" size="15" maxlength="5" style="text-align:right" ', false); 
-	  if (isset($cInfo->product_margin)) echo '   <i>'.$currencies->precise($cInfo->product_margin).'</i>'; ?>
+	  <td><?php if(isset($cInfo->product_margin)) echo html_input_field('product_margin', $currencies->precise($cInfo->product_margin), 'onchange="product_margin_change();" size="15" maxlength="5" style="text-align:right" ', false). '%'; 
+	  if (isset($cInfo->product_margin)) echo '   <i>'.$currencies->precise($cInfo->product_margin).'%</i>'; ?>
+	  </td>
+	  <td align="right"><?php if(isset($cInfo->product_markup)) echo TEXT_RETAIL_MARKUP; ?></td>
+	  <td><?php if(isset($cInfo->product_markup)) echo html_input_field('product_markup', $currencies->precise($cInfo->product_markup), 'onchange="product_markup_change();" size="15" maxlength="5" style="text-align:right" ', false). ''; 
+	  if (isset($cInfo->product_markup)) echo '   <i>'.$currencies->precise($cInfo->product_markup).'</i>'; ?>
 	  </td>
 	  <td align="right"><?php if(isset($cInfo->price_sheet)) echo TEXT_DEFAULT_PRICE_SHEET; ?></td>
 	  <td><?php if(isset($cInfo->price_sheet)) echo html_pull_down_menu('price_sheet', get_price_sheet_data('c'), $cInfo->price_sheet); ?></td>

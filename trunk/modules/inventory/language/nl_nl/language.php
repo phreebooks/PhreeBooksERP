@@ -129,6 +129,7 @@ define('INV_ENTRY_INV_ITEM_COST','Item Kosten');
 define('INV_ENTRY_FULL_PRICE','Volledige Prijs');
 define('INV_ENTRY_FULL_PRICE_WT','Volledige Prijs met btw');
 define('INV_MARGIN','Marge');
+define('TEXT_RETAIL_MARKUP', 'Retail Opslag');
 define('INV_ENTRY_ITEM_WEIGHT','Item Gewicht');
 define('INV_ENTRY_ITEM_MINIMUM_STOCK','Minimaal Voorraad Niveau');
 define('INV_ENTRY_ITEM_REORDER_QUANTITY','Order Aantal');

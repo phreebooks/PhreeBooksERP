@@ -151,6 +151,7 @@ define('INV_ENTRY_INV_ITEM_COST','Item Cost');
 define('INV_ENTRY_FULL_PRICE', 'Full Price');
 define('INV_ENTRY_FULL_PRICE_WT', 'Full Price with tax');
 define('INV_MARGIN','Margin');
+define('TEXT_RETAIL_MARKUP', 'Retail Markup');
 define('INV_ENTRY_ITEM_WEIGHT', 'Item Weight');
 define('INV_ENTRY_ITEM_MINIMUM_STOCK', 'Reorder Level');
 define('INV_ENTRY_ITEM_REORDER_QUANTITY', 'Reorder Quantity');

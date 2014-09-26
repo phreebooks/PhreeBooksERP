@@ -54,6 +54,7 @@ function init() {
   	?>
   	$('#search_text').focus();
   	$('#search_text').select();
+  	update_full_price_incl_tax(true, false, false);
 }
 
 function check_form() {
@@ -135,6 +136,21 @@ function printOrder(id) {
 	printWin.focus();
 }
 
+function product_markup_change(){
+	var highest = 0;
+	var x=document.getElementsByName("item_cost_array[]");
+	for (var i = 0; i < x.length; i++) { 
+       	var current = cleanCurrency(x.item(i).value);
+       	if(current > highest){
+       		 highest = current;
+       	}
+    }
+	markup = cleanCurrency(document.getElementById('product_markup').value);
+	document.getElementById('full_price_with_tax').value = formatCurrency(highest * markup );
+	update_full_price_incl_tax(false, false, true);
+	update_full_price_incl_tax(true, false, false);// should be in two rows
+}
+
 function product_margin_change(){
 	var highest = 0;
 	var x=document.getElementsByName("item_cost_array[]");
@@ -144,9 +160,10 @@ function product_margin_change(){
        		 highest = current;
        	}
     }
-	margin = cleanCurrency(document.getElementById('product_margin' ).value);
-	document.getElementById('full_price_with_tax' ).value = formatCurrency(highest * margin );
-	update_full_price_incl_tax(false, false, true);
+	margin = cleanCurrency(document.getElementById('product_margin').value);
+	document.getElementById('full_price' ).value = formatCurrency( (highest / (100 - margin))* 100 );
+	update_full_price_incl_tax(false, true, false);
+	update_full_price_incl_tax(true, false, false);// should be in two rows
 }
 
 
@@ -173,9 +190,9 @@ function what_to_update(){
 }
 
 function update_full_price_incl_tax(margin, inclTax, fullprice) {
-//calculate margin
 	var highest = 0;
 	if(margin){
+		//calculate margin
 		var x=document.getElementsByName("item_cost_array[]");
 		for (var i = 0; i < x.length; i++) { 
         	var temp = x.item(i).value;
@@ -184,7 +201,10 @@ function update_full_price_incl_tax(margin, inclTax, fullprice) {
         		 highest = calculate;
         	}
         }
-        document.getElementById('product_margin' ).value = formatCurrency(cleanCurrency(document.getElementById('full_price_with_tax' ).value) / highest);
+		sell = cleanCurrency(document.getElementById('full_price' ).value);
+		document.getElementById('product_margin' ).value = formatCurrency(((sell - highest) / sell)*100);
+		//calculate markup
+	    document.getElementById('product_markup' ).value = formatCurrency(cleanCurrency(document.getElementById('full_price_with_tax' ).value) / highest);
 	}
 //calculate full_price_with_tax	
 	if(inclTax){

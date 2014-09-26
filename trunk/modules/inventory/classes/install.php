@@ -99,6 +99,7 @@ class inventory_admin {
 		  full_price double NOT NULL default '0',
 		  full_price_with_tax double NOT NULL default '0',
 		  product_margin DOUBLE NOT NULL DEFAULT '0',
+	  	  product_markup DOUBLE NOT NULL DEFAULT '0',
 		  item_weight DOUBLE NOT NULL DEFAULT '0',
 		  quantity_on_hand DOUBLE NOT NULL DEFAULT '0',
 		  quantity_on_order DOUBLE NOT NULL DEFAULT '0',
@@ -228,6 +229,7 @@ class inventory_admin {
 			case 'full_price':
 			case 'full_price_with_tax':
 			case 'product_margin':
+			case 'product_markup':
 				$temp['inventory_type'] = 'ci:ia:lb:ma:mb:mi:ms:ns:sa:sf:si:sr:sv';
 				break;
 			case 'image_with_path':
@@ -445,6 +447,28 @@ class inventory_admin {
 		$db->Execute("ALTER TABLE ".TABLE_INVENTORY_PURCHASE." 
 			CHANGE `purch_package_quantity` `purch_package_quantity` DOUBLE NOT NULL DEFAULT '0',
 			CHANGE `item_cost` `item_cost` DOUBLE NOT NULL DEFAULT '0'");
+	}
+	if (version_compare(MODULE_INVENTORY_STATUS, '3.7.4', '<') ) {
+		if (!db_field_exists(TABLE_INVENTORY, 'product_markup')) {
+			$db->Execute("ALTER TABLE ".TABLE_INVENTORY." CHANGE `product_margin` `product_markup` DOUBLE NOT NULL DEFAULT '0'");
+			$db->Execute("ALTER TABLE ".TABLE_INVENTORY." ADD product_margin DOUBLE NOT NULL DEFAULT '0' AFTER product_markup");
+			$db->Execute("insert into " . TABLE_EXTRA_FIELDS . " set module_id = 'inventory', tab_id = '0', entry_type = 'decimal', field_name = 'product_markup',
+				description = 'product_markup', params = 'a:2:{s:4:\"type\";N;s:14:\"inventory_type\";s:39:\"lb:ma:ia:mb:ms:ci:ns:sa:sr:sv:mi:sf:si:\";}'");
+		}
+		$result = $db->Execute("SELECT i.id, i.full_price, i.item_cost, max(p.item_cost) as purchase_cost FROM ".TABLE_INVENTORY. " i left join ".TABLE_INVENTORY_PURCHASE." p on (p.sku = i.sku) ");
+		while (!$result->EOF) {
+			$sql_data_array = array();
+			if($result->fields['purchase_cost'] > $result->fields['item_cost']){
+				$sql_data_array['sieraad_afwerking'] = 'purchase_cost';
+				$sql_data_array['product_margin'] = round((($result->fields['full_price'] - $result->fields['purchase_cost']) / $result->fields['full_price']) * 100, $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
+				db_perform(TABLE_INVENTORY, $sql_data_array, 'update', "id = " . $result->fields['id']);
+			}else if( $result->fields['item_cost'] > 0){
+				$sql_data_array['sieraad_afwerking'] = 'item_cost';
+				$sql_data_array['product_margin'] = round((($result->fields['full_price'] - $result->fields['item_cost']) / $result->fields['full_price']) * 100, $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
+				db_perform(TABLE_INVENTORY, $sql_data_array, 'update', "id = " . $result->fields['id']);
+			}
+			$result->MoveNext();
+		}
 	}
 	if (!$error) {
 		xtra_field_sync_list('inventory', TABLE_INVENTORY);

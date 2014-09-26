@@ -25,9 +25,10 @@
 // 3.5 => 2012-10-01 - bug fixes
 // 3.6 => 2013-06-30 - bug fixes, rewrite to class, added multiple vendors
 // 3.7 => 2014-07-21 - bug fixes
+// 3.7.4 => 2014-09-26 - added markup
 // Module software version information
 gen_pull_language('contacts', 'menu');
-define('MODULE_INVENTORY_VERSION', '3.7.3');
+define('MODULE_INVENTORY_VERSION', '3.7.4');
 // Menu Sort Positions
 // Menu Security id's (refer to master doc to avoid security setting overlap)
 define('SECURITY_ID_PRICE_SHEET_MANAGER', 88);
