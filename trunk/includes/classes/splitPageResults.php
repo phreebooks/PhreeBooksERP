@@ -26,6 +26,7 @@ class splitPageResults {
 	public  $total_num_pages		= 1;
 
 	function __construct($current_page_number, $query_num_rows) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
     	global $admin;
     	if($query_num_rows == '') {
     		$temp = $admin->DataBase->query('SELECT FOUND_ROWS() AS found_rows;');
@@ -39,6 +40,7 @@ class splitPageResults {
     }
 
     function display_links($page_name = 'list') {
+    	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	    $pages_array = array();
 	    for ($i = 1; $i <= $this->total_num_pages; $i++) $pages_array[] = array('id' => $i, 'text' => $i);
 	    if ($this->total_num_pages > 1) {
@@ -70,6 +72,7 @@ class splitPageResults {
     }
 
     function display_ajax($page_name = 'list', $id = '') {
+    	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
       	$display_links   = '';
       	$pages_array     = array();
       	for ($i = 1; $i <= $this->total_num_pages; $i++) $pages_array[] = array('id' => $i, 'text' => $i);
@@ -102,6 +105,7 @@ class splitPageResults {
     }
 
     function display_count($text_output){
+    	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
     	if ($text_output == '' || !is_string($text_output)) $text_output = TEXT_DISPLAY_NUMBER . TEXT_ITEMS;
       	$to_num = ($this->max_rows_per_page * $_REQUEST['list']);
       	if ($to_num > $this->total_num_rows) $to_num = $this->total_num_rows;

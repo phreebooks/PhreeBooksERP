@@ -75,65 +75,32 @@ else { define('DIR_WS_ICONS', 'themes/default/icons/'); } // use default
 $messageStack 	= new \core\classes\messageStack;
 $toolbar      	= new \core\classes\toolbar;
 $currencies		= APC_EXTENSION_LOADED ? apc_fetch("currencies") : false;
-if ($currencies === false) $currencies = new \core\classes\currencies;
+if ($currencies == false){
+	$currencies = new \core\classes\currencies;
+	if (APC_EXTENSION_LOADED) apc_add("currencies", $currencies, 600);
+}
 $admin 	= APC_EXTENSION_LOADED ? apc_fetch("admin")	: false;
-if ($admin === false) $admin = new \core\classes\basis;
+if ($admin == false){
+	$admin = new \core\classes\basis;
+	if (APC_EXTENSION_LOADED) apc_add("admin", $admin, 600);
+}
 // determine what company to connect to
 if ($_REQUEST['action']=="ValidateUser") $_SESSION['company'] = $_POST['company'];
 if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php')) {
-	if (APC_EXTENSION_LOADED) apc_add("admin", $admin, 600);
 	define('DB_DATABASE', $_SESSION['company']);
 	require_once(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php');
-	define('DB_SERVER_HOST',DB_SERVER); // for old PhreeBooks installs
-// dit is de nieuwe pdo
 	$dsn = DB_TYPE.":dbname={$_SESSION['company']};host=".DB_SERVER_HOST;
-	try {
-		$admin->DataBase = new \PDO($dsn, DB_SERVER_USERNAME, DB_SERVER_PASSWORD,array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
-	} catch (\PDOException $e) {
-		trigger_error('database connection failed: ' . $e->getMessage() , E_USER_ERROR);
+	$admin->DataBase = new \PDO($dsn, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+//	if(APC_EXTENSION_LOADED == false || apc_load_constants('configuration') == false) {
+	$result = $admin->DataBase->prepare("SELECT configuration_key, configuration_value FROM " . DB_PREFIX . "configuration");
+	$result->execute();
+	while ($row = $result->fetch(\PDO::FETCH_LAZY)){
+	   	$admin->configuration[$_SESSION['company']][$row['configuration_key']] = $row['configuration_value'];
+	   	define($row['configuration_key'],$row['configuration_value']);//@todo remove
 	}
-	if(APC_EXTENSION_LOADED == false || apc_load_constants('configuration') === false) {
-		try{
-		 	$array = array ();
-	    	foreach($admin->DataBase->query("select configuration_key, configuration_value from " . DB_PREFIX . "configuration") as $row){
-	    		if (APC_EXTENSION_LOADED) {
-	    			$array[$row['configuration_key']] = $row['configuration_value'];
-	    		}else{
-		  			define($row['configuration_key'],$row['configuration_value']);
-	    		}
-		  	}
-		  	if (APC_EXTENSION_LOADED) apc_define_constants("configuration", $array, true);
-	    }catch (\PDOException $e) {
-	    	trigger_error(LOAD_CONFIG_ERROR . $e->getMessage(), E_USER_ERROR);
-	    }
-	}
-
-/*
-  	// Load queryFactory db classes
-  	require_once(DIR_FS_INCLUDES . 'db/' . DB_TYPE . '/query_factory.php');
-  	$db = new queryFactory();
-  	$admin->DataBase->connect(DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, DB_DATABASE);
-  	// set application wide parameters for phreebooks module
-  	if(APC_EXTENSION_LOADED == false || apc_load_constants('configuration') === false) {
-  		$result = $admin->DataBase->query_return_error("select configuration_key, configuration_value from " . DB_PREFIX . "configuration");
-  		if ($admin->DataBase->error_number != '' || $result->RecordCount() == 0) trigger_error(LOAD_CONFIG_ERROR, E_USER_ERROR);
-  		$array = array ();
-  		while (!$result->EOF) {
-  			if (APC_EXTENSION_LOADED) {
-  				$array[$result->fields['configuration_key']] = $result->fields['configuration_value'];
-  			}else{
-  				define($result->fields['configuration_key'], $result->fields['configuration_value']);
-  			}
-			$result->MoveNext();
-  		}
-  		if (APC_EXTENSION_LOADED) apc_define_constants("configuration", $array, true);
-  	}*/
-  	// search the list modules and load configuration files and language files
   	gen_pull_language('phreedom', 'menu');
   	gen_pull_language('phreebooks', 'menu');
   	require(DIR_FS_MODULES . 'phreedom/config.php');
-	if (APC_EXTENSION_LOADED) apc_add("currencies", $currencies, 600);
-	if (APC_EXTENSION_LOADED) apc_add("mainmenu", $mainmenu, 600);
   	$currencies->load_currencies();
 	// pull in the custom language over-rides for this module (to pre-define the standard language)
   	$path = DIR_FS_MODULES . "{$_REQUEST['module']}/custom/pages/{$_REQUEST['page']}/extra_menus.php";

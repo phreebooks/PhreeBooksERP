@@ -32,6 +32,7 @@ class favorite_reports extends \core\classes\ctl_panel {
 
 	function output($params) {
 		global $admin;
+		if (!$params) $params = $this->params;
 		$contents = '';
 		$control  = '';
 		// load the report list

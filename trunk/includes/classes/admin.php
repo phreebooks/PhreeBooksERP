@@ -39,6 +39,7 @@ class admin {
 	 * this is the general construct function called when the class is created.
 	 */
 	function __construct(){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		if (defined('MODULE_' . strtoupper($this->id) . '_STATUS')){
 			$this->installed = true;
 			$this->status  = constant('MODULE_' . strtoupper($this->id) . '_STATUS');
@@ -54,6 +55,7 @@ class admin {
 	 */
 
 	function install($path_my_files, $demo = false) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->check_prerequisites_versions();
 		$this->install_dirs($path_my_files);
 		$this->install_update_tables();
@@ -80,6 +82,7 @@ class admin {
 	 */
 
   	function after_ValidateUser(\core\classes\basis &$basis) {
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
   	}
 
   	/**
@@ -88,6 +91,7 @@ class admin {
   	 */
 
 	function upgrade() {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->check_prerequisites_versions();
 		$this->install_dirs($path_my_files);
 		$this->install_update_tables();
@@ -105,6 +109,7 @@ class admin {
 	}
 
 	function delete($path_my_files) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		if ($this->core) throw new \core\classes\userException("can not delete core module " .$this->text);
 		foreach ($this->methods as $method) {
 			if ($method->installed){
@@ -122,18 +127,22 @@ class admin {
 
   	function release_update($version, $path = '') {
     	global $admin;
+    	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		if (file_exists($path)) { include_once ($path); }
 		write_configure('MODULE_' . strtoupper($this->id) . '_STATUS', $version);
 		return $version;
   	}
 
 	function load_reports() {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	}
 
 	function load_demo() {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	}
 
 	function should_update(){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		if (!$this->installed) return false;
 		if (version_compare($this->version, constant('MODULE_' . strtoupper($this->id) . '_STATUS')) < 0 ) return true;
 		else return false;
@@ -145,6 +154,7 @@ class admin {
 	 */
 
 	function check_prerequisites_versions() {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		global $admin;
 		if (is_array($this->prerequisites) && sizeof($this->prerequisites) > 0) {
 			foreach ($this->prerequisites as $module_class => $RequiredVersion) {
@@ -161,12 +171,14 @@ class admin {
 	 */
 
 	function install_dirs($path_my_files) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		foreach ($this->dirlist as $dir) {
 			validate_path($path_my_files . $dir, 0755);
 	  	}
 	}
 
 	function remove_dirs($path_my_files) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		foreach(array_reverse($this->dirlist) as $dir) {
 			if (!@rmdir($path_my_files . $dir)) throw new \core\classes\userException (sprintf(ERROR_CANNOT_REMOVE_MODULE_DIR, $path_my_files . $dir));
 	  	}
@@ -179,6 +191,7 @@ class admin {
 	 */
 	function install_update_tables() {
 	  	global $admin;
+	  	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	  	foreach ($this->tables as $table => $create_table_sql) {
 	    	if (!db_table_exists($table)) {
 		  		if (!$admin->DataBase->query($create_table_sql)) throw new \core\classes\userException (sprintf("Error installing table: %s", $table));
@@ -188,6 +201,7 @@ class admin {
 
 	function remove_tables() {
 	  	global $admin;
+	  	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	  	foreach ($this->tables as $table) {
 			if (db_table_exists($table)){
 				if ($admin->DataBase->query('DROP TABLE ' . $table)) throw new \core\classes\userException (sprintf("Error deleting table: %s", $table));
@@ -197,6 +211,7 @@ class admin {
 
 	function add_report_heading($doc_title, $doc_group) {
 	  	global $admin;
+	  	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	  	$result = $admin->DataBase->query("select id from ".TABLE_PHREEFORM." where doc_group = '$doc_group'");
 	  	if ($result->RecordCount() < 1) {
 	    	$admin->DataBase->query("INSERT INTO ".TABLE_PHREEFORM." (parent_id, doc_type, doc_title, doc_group, doc_ext, security, create_date) VALUES
@@ -209,6 +224,7 @@ class admin {
 
 	function add_report_folder($parent_id, $doc_title, $doc_group, $doc_ext) {
 	  	global $admin;
+	  	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	  	if ($parent_id == '') throw new \core\classes\userException("parent_id isn't set for document $doc_title");
 	  	$result = $admin->DataBase->query("select id from ".TABLE_PHREEFORM." where doc_group = '$doc_group' and doc_ext = '$doc_ext'");
 	  	if ($result->RecordCount() < 1) {
@@ -223,6 +239,7 @@ class admin {
 	 * @return multitype:|multitype:unknown
 	 */
 	function return_all_methods($type ='methods') {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	    $choices     = array();
 	    $method_dir  = DIR_FS_MODULES . "$this->id/$type/";
 	    if (!is_dir($method_dir)) return $choices;
@@ -240,6 +257,7 @@ class admin {
 
 	final function phreedom_main_validateLogin(){
 		global $admin;
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
   		// Errors will happen here if there was a problem logging in, logout and restart
  	 	if (!is_object($admin->DataBase)) throw new \core\classes\userException("Database isn't created", "phreedom", "main", "template_login");
 	    $admin_name     = db_prepare_input($_POST['admin_name']);

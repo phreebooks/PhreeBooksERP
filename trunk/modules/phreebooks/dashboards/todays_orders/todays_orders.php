@@ -31,6 +31,7 @@ class todays_orders extends \core\classes\ctl_panel {
 
 	function output($params) {
 		global $admin, $currencies;
+		if (!$params) $params = $this->params;
 		if(count($params) != $this->size_params){ //upgrading
 			$params = $this->upgrade($params);
 		}

@@ -29,6 +29,7 @@ class outputMobile implements \SplObserver {
      * Constructor...
      */
     function __construct() {
+    	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
        	$this->include_template = DIR_FS_ADMIN .'modules/phreedom/pages/main/template_main.php';
        	$this->js_files[] = "includes/jquery-1.6.2.min.js";
   		$this->js_files[] = "includes/jquery-ui-1.8.16.custom.min.js";
@@ -45,6 +46,7 @@ class outputMobile implements \SplObserver {
     }
 
     public function print_js_includes(){
+    	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
        	//first normal js files
        	foreach($this->js_files as $file){
        		echo "<script type='text/javascript' src='$file'></script>";
@@ -61,12 +63,14 @@ class outputMobile implements \SplObserver {
     }
 
     public function print_css_includes(){
+    	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
       	foreach($this->css_files as $file){
        		echo "<link rel='stylesheet' type='text/css' href='$file' />";
        	}
     }
 
     public function print_menu(){
+    	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
        	if($this->include_header){
        		require_once(DIR_FS_ADMIN . DIR_WS_THEMES . '/menu.php');
        	} else{
@@ -81,6 +85,7 @@ class outputMobile implements \SplObserver {
 
     public function update(\SplSubject $admin) {//@todo
     	global $messageStack;
+    	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
     	if ($basis->page == 'mobile') {
     		$this->include_template = DIR_FS_ADMIN . "modules/{$basis->module}/pages/{$basis->page}/{$basis->template}.php";
 	    	if ( file_exists(DIR_FS_ADMIN . "modules/{$basis->module}/custom/pages/{$basis->page}/{$basis->template}.php")) {
@@ -105,6 +110,7 @@ class outputMobile implements \SplObserver {
      */
 
     function __destruct(){
+    	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
     	$_SESSION[$this->ModuleAndPage]['sf']    = $_REQUEST['sf'];
     	$_SESSION[$this->ModuleAndPage]['so']    = $_REQUEST['so'];
     	$_SESSION[$this->ModuleAndPage]['list']  = $_REQUEST['list'];

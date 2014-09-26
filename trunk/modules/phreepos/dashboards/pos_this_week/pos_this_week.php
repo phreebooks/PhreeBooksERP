@@ -27,6 +27,7 @@ class pos_this_week extends \core\classes\ctl_panel {
 
 	function output($params) {
 		global $admin, $currencies;
+		if (!$params) $params = $this->params;
 		$contents = '';
 		$control  = '';
 		for($i=0; $i<=7; $i++){

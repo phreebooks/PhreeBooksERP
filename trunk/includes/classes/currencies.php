@@ -32,32 +32,30 @@ class currencies {
 	public  $def_currency  		= DEFAULT_CURRENCY;
 
   	function __construct() {
-  		$this->security_id   = \core\classes\user::security_level(SECURITY_ID_CONFIGURATION);
+  		$this->security_id   = \core\classes\user::security_level(SECURITY_ID_CONFIGURATION); //@todo remove this
   	}
 
   	function load_currencies(){
   		global $admin;
   		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-  		$currencies = $admin->DataBase->query("select * from " .$this->db_table);
-  		die(print_r($currencies));
-    	while (!$currencies->EOF) {
-	  		$this->currencies[$currencies->fields['code']] = array(
-	    	  'title'           => $currencies->fields['title'],
-	    	  'symbol_left'     => $currencies->fields['symbol_left'],
-	    	  'symbol_right'    => $currencies->fields['symbol_right'],
-	    	  'decimal_point'   => $currencies->fields['decimal_point'],
-	    	  'thousands_point' => $currencies->fields['thousands_point'],
-	    	  'decimal_places'  => $currencies->fields['decimal_places'],
-	    	  'decimal_precise' => $currencies->fields['decimal_precise'],
-	    	  'value'           => $currencies->fields['value'],
+    	foreach($admin->DataBase->query("select * from " .$this->db_table) as $row) {
+	  		$this->currencies[$row['code']] = array(
+	    	  'title'           => $row['title'],
+	    	  'symbol_left'     => $row['symbol_left'],
+	    	  'symbol_right'    => $row['symbol_right'],
+	    	  'decimal_point'   => $row['decimal_point'],
+	    	  'thousands_point' => $row['thousands_point'],
+	    	  'decimal_places'  => $row['decimal_places'],
+	    	  'decimal_precise' => $row['decimal_precise'],
+	    	  'value'           => $row['value'],
 	  		);
-      		$currencies->MoveNext();
     	}
     	$this->default_currency_code(); // set default currecy code.
   	}
 
 	// omits the symbol_left and symbol_right (just the formattted number))
 	function format($number, $calculate_currency_value = true, $currency_type = DEFAULT_CURRENCY, $currency_value = '') {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	    if ($calculate_currency_value) {
 	      	$rate = ($currency_value) ? $currency_value : $this->currencies[$currency_type]['value'];
 	      	$format_string = number_format($number * $rate, $this->currencies[$currency_type]['decimal_places'], $this->currencies[$currency_type]['decimal_point'], $this->currencies[$currency_type]['thousands_point']);
@@ -69,6 +67,7 @@ class currencies {
 
 	// omits the symbol_left and symbol_right (just the formattted number to the precision number of decimals))
 	function precise($number, $calculate_currency_value = true, $currency_type = DEFAULT_CURRENCY, $currency_value = '') {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	    if ($calculate_currency_value) {
 		  $rate = ($currency_value) ? $currency_value : $this->currencies[$currency_type]['value'];
 		  $format_string = number_format($number * $rate, $this->currencies[$currency_type]['decimal_precise'], $this->currencies[$currency_type]['decimal_point'], $this->currencies[$currency_type]['thousands_point']);
@@ -79,6 +78,7 @@ class currencies {
 	}
 
 	function format_full($number, $calculate_currency_value = true, $currency_type = DEFAULT_CURRENCY, $currency_value = '', $output_format = PDF_APP) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	    if ($calculate_currency_value) {
 		  	$rate = ($currency_value) ? $currency_value : $this->currencies[$currency_type]['value'];
 		  	$format_number = number_format($number * $rate, $this->currencies[$currency_type]['decimal_places'], $this->currencies[$currency_type]['decimal_point'], $this->currencies[$currency_type]['thousands_point']);
@@ -98,10 +98,12 @@ class currencies {
 	}
 
 	function get_value($currency_type = DEFAULT_CURRENCY) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	    return $this->currencies[$code]['value'];
 	}
 
 	function clean_value($number, $currency_type = DEFAULT_CURRENCY) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	    // converts the number to standard float format (period as decimal, no thousands separator)
 	    $temp  = str_replace($this->currencies[$currency_type]['thousands_point'], '', trim($number));
 	    $value = str_replace($this->currencies[$currency_type]['decimal_point'], '.', $temp);
@@ -109,6 +111,7 @@ class currencies {
 	}
 
 	function build_js_currency_arrays() {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$js_codes  = 'var js_currency_codes = new Array(';
 		$js_values = 'var js_currency_values = new Array(';
 		foreach ($this->currencies as $code => $values) {
@@ -121,6 +124,7 @@ class currencies {
 	}
 
   	function default_currency_code(){
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
   		if(!defined('DEFAULT_CURRENCY')) throw new \core\classes\userException(ERROR_NO_DEFAULT_CURRENCY_DEFINED); // check for default currency defined
   		return $this->default_currency = DEFAULT_CURRENCY;
   	}
@@ -128,6 +132,7 @@ class currencies {
 
   	function btn_save($id = '') {
 	  	global $admin, $messageStack;
+	  	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	  	\core\classes\user::validate_security($this->security_id, 3); // security check
 		$title = db_prepare_input($_POST['title']);
 		$code = strtoupper(db_prepare_input($_POST['code']));
@@ -171,6 +176,7 @@ class currencies {
      */
   	function btn_update() { // updates the currency rates
 	  	global $admin, $messageStack;
+	  	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$message = array();
 	/* commented out so everyone can update currency exchange rates
 	  	\core\classes\user::validate_security($security_level, 1);
@@ -207,6 +213,7 @@ class currencies {
 	}
 
 	function quote_oanda($code, $base = DEFAULT_CURRENCY) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	  	$page = file('http://www.oanda.com/convert/fxdaily?value=1&redirected=1&exch='.$code.'&format=CSV&dest=Get+Table&sel_list=' . $base);
 	  	$match = array();
 	  	preg_match('/(.+),(\w{3}),([0-9.]+),([0-9.]+)/i', implode('', $page), $match);
@@ -214,6 +221,7 @@ class currencies {
 	}
 
 	function quote_yahoo($to, $from = DEFAULT_CURRENCY) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	  	if (($page = @file_get_contents('http://finance.yahoo.com/d/quotes.csv?e=.csv&f=sl1d1t1&s='.$from.$to.'=X')) === false) throw new \core\classes\userException("can not open 'http://finance.yahoo.com/d/quotes.csv?e=.csv&f=sl1d1t1&s=$from$to=X'");
 	  	if ($page) $parts = explode(',', trim($page));
 	  	return ($parts[1] > 0) ? $parts[1] : false;
@@ -221,6 +229,7 @@ class currencies {
 
 	function btn_delete($id = 0) {
 	  	global $admin;
+	  	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	  	\core\classes\user::validate_security($this->security_id, 4); // security check
 		// Can't delete default currency or last currency
 		$result = $admin->DataBase->query("select currencies_id from " . $this->db_table . " where code = '" . DEFAULT_CURRENCY . "'");
@@ -235,6 +244,7 @@ class currencies {
 
 	function build_main_html() {
 	  	global $admin;
+	  	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	    $content = array();
 		$content['thead'] = array(
 		  'value'  => array(TEXT_CURRENCY, TEXT_CURRENCY_CODE, TEXT_VALUE, TEXT_ACTION),
@@ -262,6 +272,7 @@ class currencies {
 
 	function build_form_html($action, $code) {
 	    global $admin;
+	    \core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	    $this->load_currencies();
 	    $value = $this->currencies[$code];
 		$output  = '<table class="ui-widget" style="border-style:none;width:100%">' . chr(10);

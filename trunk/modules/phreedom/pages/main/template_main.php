@@ -18,7 +18,7 @@
 //
 // display alerts/error messages, if any since the toolbar is not shown
 if(is_object($messageStack)) echo $messageStack->output();
-$column = 1;
+$current_column = 1;
 $row_started = true;
 // include hidden fields
 echo html_hidden_field('action', '') . chr(10);
@@ -30,39 +30,29 @@ echo html_hidden_field('dashboard_id', '') . chr(10);
   </tr>
   <tr>
     <td width="33%" valign="top">
-      <div id="col_<?php echo $column; ?>" style="position:relative;">
+      <div id="col_<?php echo $current_column; ?>" style="position:relative;">
 <?php
-while(!$basis->cInfo->cp_boxes->EOF) {
-	if ($basis->cInfo->cp_boxes->fields['column_id'] <> $column) {
-  		$row_started = true;
-		while ($basis->cInfo->cp_boxes->fields['column_id'] <> $column) {
-	  		$column++;
-	  		echo '      </div>' . chr(10);
-	  		echo '    </td>' . chr(10);
-	  		echo '    <td width="33%" valign="top">' . chr(10);
-	  		echo '      <div id="col_' . $column . '" style="position:relative;">' . chr(10);
+foreach ($basis->cInfo->cp_boxes as $key => $box) {
+	$box->row_started = false;
+	if($box->column_id <> $current_column) {
+		$box->row_started = true;
+		while ($box->column_id <> $current_column) {
+			$current_column++;
+			echo '      </div>' . chr(10);
+			echo '    </td>' . chr(10);
+			echo '    <td width="33%" valign="top">' . chr(10);
+			echo "      <div id='col_{$current_column}' style='position:relative;'>" . chr(10);
 		}
-  	}
-  	$dashboard 	  = $basis->cInfo->cp_boxes->fields['dashboard_id'];
-  	$module_id    = $basis->cInfo->cp_boxes->fields['module_id'];
-  	load_method_language(DIR_FS_MODULES . "$module_id/dashboards/$dashboard");
-    if($basis->classes[$module_id]->dashboards[$dashboard]->valid_user){
-    		$basis->classes[$module_id]->dashboards[$dashboard]->menu_id      = $menu_id;
-    		$basis->classes[$module_id]->dashboards[$dashboard]->column_id    = $basis->cInfo->cp_boxes->fields['column_id'];
-    		$basis->classes[$module_id]->dashboards[$dashboard]->row_started  = $row_started;
-    		$basis->classes[$module_id]->dashboards[$dashboard]->row_id       = $basis->cInfo->cp_boxes->fields['row_id'];
-    		echo $basis->classes[$module_id]->dashboards[$dashboard]->output(unserialize($basis->cInfo->cp_boxes->fields['params']));
-    }
-  	$basis->cInfo->cp_boxes->MoveNext();
-  	$row_started = false;
+	}
+ 	echo $box->output();
 }
 
-while (MAX_CP_COLUMNS <> $column) { // fill remaining columns with blank space
-  	$column++;
+while (MAX_CP_COLUMNS <> $current_column) { // fill remaining columns with blank space
+  	$current_column++;
   	echo '      </div>' . chr(10);
   	echo '    </td>' . chr(10);
   	echo '    <td width="33%" valign="top">' . chr(10);
-  	echo '      <div id="col_' . $column . '" style="position:relative;">' . chr(10);
+  	echo "      <div id='col_{$current_column}' style='position:relative;'>" . chr(10);
 }
 ?>
       </div>

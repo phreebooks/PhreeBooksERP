@@ -19,6 +19,7 @@
 namespace core\classes;
 class objectInfo {
   function __construct($object_array = array()) {
+  	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
     if (is_array($object_array)) {
       reset($object_array);
       while (list($key, $value) = each($object_array)) $this->$key = db_prepare_input($value);

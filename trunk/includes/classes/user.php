@@ -23,7 +23,7 @@ class user {
 	function __construct(){
 	}
 
-	final static public function __get($variable){
+	final static public function get($variable){
 		if (isset($_SESSION[$variable])) return $_SESSION[$variable];
 		if (isset(self::$variable)) 	return self::$variable;
 		return "unknown";
@@ -38,6 +38,7 @@ class user {
 		if (!isset($_SESSION['admin_id']) || $_SESSION['admin_id'] == ''){
 			//allow the user to continu to with the login action.
 			if (!isset($_REQUEST['action']) || !in_array($_REQUEST['action'], array('ValidateUser','pw_lost_sub','pw_lost_req'))){
+				if ($_REQUEST['action']=="ValidateUser") $_SESSION['company'] = $_REQUEST['company'];
 				self::load_companies();
 				self::load_languages();
 				self::get_company();
@@ -69,6 +70,7 @@ class user {
 		$path = DIR_FS_MODULES . "phreedom/language/{$_SESSION['language']}/language.php";
 		if (file_exists($path)) { require_once($path); }
 		else { require_once(DIR_FS_MODULES . "phreedom/language/en_us/language.php"); }
+		return true;
 	}
 
 	/**

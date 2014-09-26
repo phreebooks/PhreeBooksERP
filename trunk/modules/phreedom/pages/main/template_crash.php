@@ -22,14 +22,16 @@ if(is_object($messageStack)) echo $messageStack->output();
 // include hidden fields
 echo html_hidden_field('action', '') . chr(10);
 // customize the toolbar actions
-$toolbar->icon_list['cancel']['params'] = 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, '', 'SSL') . '\'"';
-$toolbar->icon_list['open']['show']     = false;
-$toolbar->icon_list['delete']['show']   = false;
-$toolbar->icon_list['save']['show']     = false;
-$toolbar->icon_list['print']['show']    = false;
-if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
-$toolbar->add_help('');
-echo $toolbar->build_toolbar();
+if (is_object($toolbar)){
+	$toolbar->icon_list['cancel']['params'] = 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, '', 'SSL') . '\'"';
+	$toolbar->icon_list['open']['show']     = false;
+	$toolbar->icon_list['delete']['show']   = false;
+	$toolbar->icon_list['save']['show']     = false;
+	$toolbar->icon_list['print']['show']    = false;
+	if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
+	$toolbar->add_help('');
+	echo $toolbar->build_toolbar();
+}
 // Build the page
 ?>
 <h1><?php echo TEXT_PHREEBOOKS_SQL_ERROR_TRACE_INFORMATION; ?></h1>

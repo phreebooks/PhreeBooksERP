@@ -17,6 +17,7 @@
 //  Path: /modules/phreepos/dashboards/pos_todays/pos_todays.php
 //
 namespace phreepos\dashboards\pos_todays;
+require_once(DIR_FS_MODULES  . 'phreebooks/config.php');
 class pos_todays extends \core\classes\ctl_panel {
 	public $id 					= 'pos_today';
 	public $description	 		= CP_POS_TODAYS_DESCRIPTION;
@@ -27,11 +28,8 @@ class pos_todays extends \core\classes\ctl_panel {
 	public $default_params 		= array('num_rows'=> 0);
 	public $module_id 			= 'phreepos';
 
-	function output($params) {
+	function output() {
 		global $admin, $currencies;
-		if(count($params) != $this->size_params){ //upgrading
-			$params = $this->upgrade($params);
-		}
 		$list_length = array();
 		$contents = '';
 		$control  = '';
@@ -39,34 +37,33 @@ class pos_todays extends \core\classes\ctl_panel {
 		// Build control box form data
 		$control  = '<div class="row">';
 		$control .= '<div style="white-space:nowrap">' . TEXT_SHOW . TEXT_SHOW_NO_LIMIT;
-		$control .= html_pull_down_menu('pos_todays_field_0', $list_length, $params['num_rows']);
+		$control .= html_pull_down_menu('pos_todays_field_0', $list_length, $this->params['num_rows']);
 		$control .= html_submit_field('sub_pos_todays', TEXT_SAVE);
 		$control .= '</div></div>';
 
 		// Build content box
 		$total = 0;
-		$sql = "select id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value
+		$temp = "select id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value
 		  from " . TABLE_JOURNAL_MAIN . "
 		  where journal_id = 19 and post_date = '" . date('Y-m-d', time()) . "' order by purchase_invoice_id";
-		if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
-		$result = $admin->DataBase->query($sql);
-		if ($result->RecordCount() < 1) {
-		  	$contents = TEXT_NO_RESULTS_FOUND;
-		} else {
-			while (!$result->EOF) {
-			 	$total += $result->fields['total_amount'];
-				$contents .= '<div style="float:right">' . $currencies->format_full($result->fields['total_amount'], true, $result->fields['currencies_code'], $result->fields['currencies_value']) . '</div>';
-				$contents .= '<div>';
-				$contents .= $result->fields['purchase_invoice_id'];
-				if($result->fields['bill_primary_name']<>''){
-					$contents .= ' - ' . htmlspecialchars(gen_trim_string($result->fields['bill_primary_name'], 20, true));
-				}
-				$contents .= '</a></div>' . chr(10);
-				$result->MoveNext();
+		if ($this->params['num_rows']) $temp .= " limit " . $this->params['num_rows'];
+		$sql = $admin->DataBase->prepare($temp);
+		$sql->execute();
+		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+			 $total += $result['total_amount'];
+			$contents .= '<div style="float:right">' . $currencies->format_full($result['total_amount'], true, $result['currencies_code'], $result['currencies_value']) . '</div>';
+			$contents .= '<div>';
+			$contents .= $result['purchase_invoice_id'];
+			if($result['bill_primary_name']<>''){
+				$contents .= ' - ' . htmlspecialchars(gen_trim_string($result['bill_primary_name'], 20, true));
 			}
+			$contents .= '</a></div>' . chr(10);
 		}
-		if (!$params['num_rows'] && $result->RecordCount() > 0) {
-		  	$contents .= '<div style="float:right"><b>' . $currencies->format_full($total, true, $result->fields['currencies_code'], $result->fields['currencies_value']) . '</b></div>';
+		if($total == 0){
+			$contents = TEXT_NO_RESULTS_FOUND;
+		}
+		if (!$this->params['num_rows'] && $total != 0) {
+		  	$contents .= '<div style="float:right"><b>' . $currencies->format_full($total, true, $result['currencies_code'], $result['currencies_value']) . '</b></div>';
 		  	$contents .= '<div><b>' . TEXT_TOTAL . '</b></div>' . chr(10);
 		}
 		return $this->build_div('', $contents, $control);

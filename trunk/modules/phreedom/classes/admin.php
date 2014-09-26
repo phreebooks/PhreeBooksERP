@@ -23,7 +23,7 @@ class admin extends \core\classes\admin {
 	public $id 			= 'phreedom';
 	public $text;
 	public $description;
-	public $version		= '3.6';
+	public $version		= '4.0';
 	public $installed	= true;
 
   function __construct() {
@@ -167,7 +167,6 @@ class admin extends \core\classes\admin {
 		  id int(11) NOT NULL auto_increment,
 		  user_id int(11) NOT NULL default '0',
 		  menu_id varchar(32) NOT NULL default '',
-		  module_id varchar(32) NOT NULL default '',
 		  dashboard_id varchar(32) NOT NULL default '',
 		  column_id int(3) NOT NULL default '0',
 		  row_id int(3) NOT NULL default '0',
@@ -323,6 +322,19 @@ class admin extends \core\classes\admin {
 		  	if (!db_field_exists(TABLE_AUDIT_LOG, 'stats'))        $admin->DataBase->query("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
 	  	}
 	  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'required'))  $admin->DataBase->query("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD required enum('0','1') NOT NULL DEFAULT '0'");
+	  	if (version_compare($this->status, '4.0', '<') ) {
+	  		$admin->DataBase->exec ("ALTER TABLE ".TABLE_USERS_PROFILES." CHANGE dashboard_id dashboard_id VARCHAR( 255 ) NOT NULL DEFAULT ''");
+	  		$sql = $admin->DataBase->prepare("SELECT * FROM ".TABLE_USERS_PROFILES);
+			$sql->execute();
+			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+				$admin->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->menu_id			= $result['menu_id'];
+				$admin->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->user_id			= $result['user_id'];
+				$admin->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->default_params	= unserialize( $result['params'] );
+				$admin->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->install( $result['column_id'], $result['row_id'] );
+			}
+			$admin->DataBase->exec("DELETE from ".TABLE_USERS_PROFILES . " WHERE module_id != ''");
+			$admin->DataBase->exec("ALTER TABLE ".TABLE_USERS_PROFILES . " DROP module_id");
+	  	}
 	}
 
 	// EVENTS PART OF THE CLASS
@@ -333,19 +345,21 @@ class admin extends \core\classes\admin {
 	 */
 	function ValidateUser (\core\classes\basis &$basis) {
 		global $admin;
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		// Errors will happen here if there was a problem logging in, logout and restart
 		if (!is_object($admin->DataBase)) throw new \core\classes\userException("Database isn't created");
-		$sql = "select admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security
-		  from " . TABLE_USERS . " where admin_name = '{$basis->cInfo->admin_name}'"; //@todo don't know if this works.
-		$result = $admin->DataBase->query($sql);
-		if (!$result || $basis->cInfo->admin_name <> $result->fields['admin_name'] || $result->fields['inactive']) throw new \core\classes\userException(sprintf(GEN_LOG_LOGIN_FAILED, TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD), 'LoadLogIn');
-		\core\classes\encryption::validate_password($basis->cInfo->admin_pass, $result->fields['admin_pass']);
-		$_SESSION['admin_id']       = $result->fields['admin_id'];
-		$_SESSION['display_name']   = $result->fields['display_name'];
-		$_SESSION['admin_email']    = $result->fields['admin_email'];
-		$_SESSION['admin_prefs']    = unserialize($result->fields['admin_prefs']);
-		$_SESSION['account_id']     = $result->fields['account_id'];
-		$_SESSION['admin_security'] = \core\classes\user::parse_permissions($result->fields['admin_security']);
+		$sql = $admin->DataBase->prepare("SELECT admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security
+		  FROM " . TABLE_USERS . " WHERE admin_name = '{$basis->cInfo->admin_name}'");
+		$sql->execute();
+		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		if (!$result || $basis->cInfo->admin_name <> $result['admin_name'] || $result['inactive']) \core\classes\userException(TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD, 'LoadLogIn');
+		\core\classes\encryption::validate_password($basis->cInfo->admin_pass, $result['admin_pass']);
+		$_SESSION['admin_id']       = $result['admin_id'];
+		$_SESSION['display_name']   = $result['display_name'];
+		$_SESSION['admin_email']    = $result['admin_email'];
+		$_SESSION['admin_prefs']    = unserialize($result['admin_prefs']);
+		$_SESSION['account_id']     = $result['account_id'];
+		$_SESSION['admin_security'] = \core\classes\user::parse_permissions($result['admin_security']);
 		// set some cookies for the next visit to remember the company, language, and theme
 		$cookie_exp = 2592000 + time(); // one month
 		setcookie('pb_company' , \core\classes\user::get_company(),  $cookie_exp);
@@ -355,8 +369,8 @@ class admin extends \core\classes\admin {
 			if ($module_class->installed && $module_class->should_update()) $module_class->upgrade();
 		}
 		if (defined('TABLE_CONTACTS')) {
-			$dept = $admin->DataBase->query("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result->fields['account_id']);
-			$_SESSION['department'] = $dept->fields['dept_rep_id'];
+			$dept = $admin->DataBase->query("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result['account_id']);
+			$_SESSION['department'] = $dept['dept_rep_id'];
 		}
 		gen_add_audit_log(TEXT_USER_LOGIN .' -->' . $basis->cInfo->admin_name);
 		// check for session timeout to reload to requested page
@@ -386,8 +400,13 @@ class admin extends \core\classes\admin {
 	 */
 	function LoadMainPage (\core\classes\basis &$basis){
 		global $admin;
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$menu_id      		= isset($basis->cInfo->mID) ? $basis->cInfo->mID : 'index'; // default to index unless heading is passed
-		$basis->cInfo->cp_boxes 	= $admin->DataBase->query("select * from ".TABLE_USERS_PROFILES." where user_id = '{$_SESSION['admin_id']}' and menu_id = '$menu_id' order by column_id, row_id");
+		$sql = $admin->DataBase->prepare("select dashboard_id, column_id, row_id, params  from ".TABLE_USERS_PROFILES." where user_id = '{$_SESSION['admin_id']}' and menu_id = '$menu_id' order by column_id, row_id");
+		$sql->execute();
+		while ($result = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)){
+			$basis->cInfo->cp_boxes[] = $result;
+		}
 		$basis->page_title 	= COMPANY_NAME.' - '.TEXT_PHREEBOOKS_ERP;
 		$basis->module		= 'phreedom';
 		$basis->page		= 'main';
@@ -400,6 +419,7 @@ class admin extends \core\classes\admin {
 	 */
 	function logout (\core\classes\basis &$basis){
 		global $admin;
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$result = $admin->DataBase->query("select admin_name from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
 		gen_add_audit_log(TEXT_USER_LOGOFF . ' -> ' . $result->fields['admin_name']);
 		session_destroy();
@@ -411,6 +431,7 @@ class admin extends \core\classes\admin {
 	 * @param \core\classes\basis $basis
 	 */
 	function LoadLogIn (\core\classes\basis &$basis){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$basis->include_header  = false;
 		$basis->include_footer  = false;
 		$basis->page_title		= TEXT_PHREEBOOKS_ERP;
@@ -420,6 +441,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function LoadLostPassword (\core\classes\basis $basis){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$basis->companies       = load_company_dropdown();
 		$basis->single_company  = sizeof($companies) == 1 ? true : false;
 		$basis->languages       = load_language_dropdown();
@@ -433,14 +455,18 @@ class admin extends \core\classes\admin {
 	}
 
 	function LoadCrash (\core\classes\basis $basis){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		$basis->include_header  = false;
+		$basis->include_footer  = false;
 		$basis->module			= 'phreedom';
 		$basis->page			= 'main';
-		$basis->template 		= 'template_crash.php';
+		$basis->template 		= 'template_crash';
 		$basis->page_title		=  TEXT_PHREEBOOKS_ERP;
 	}
 
 	function SendLostPassWord (\core\classes\basis $basis){
 		global $admin;
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$result = $admin->DataBase->query("select admin_id, admin_name, admin_email from " . TABLE_USERS . " where admin_email = '{$basis->admin_email}'");
 		if ($basis->admin_email == '' || $basis->admin_email <> $result->fields['admin_email']) throw new \core\classes\userException(TEXT_YOU_ENTERED_THE_WRONG_EMAIL_ADDRESS);
 		$new_password = \core\classes\encryption::random_password(ENTRY_PASSWORD_MIN_LENGTH);
@@ -455,6 +481,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function DownloadDebug (\core\classes\basis $basis){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$filename = 'trace.txt';
 		if (!$handle = @fopen(DIR_FS_MY_FILES . $filename, "r")) 					throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, DIR_FS_MY_FILES . $filename));
 		if (!$contents = @fread($handle, filesize(DIR_FS_MY_FILES . $filename)))	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, 		DIR_FS_MY_FILES . $filename));

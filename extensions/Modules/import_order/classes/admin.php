@@ -16,38 +16,20 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/import_order/classes/install.php
 //@todo
+namespace import_order\classes;
+require_once ('/config.php');
+class admin extends \core\classes\admin {
+	public $id 			= 'import_order';
+	public $text		= MODULE_IMPORT_ORDER_TITLE;
+	public $description = MODULE_IMPORT_ORDER_DESCRIPTION;
+	public $version		= '1.0';
 
-class import_order_admin {
-	public $notes 		 = array();// placeholder for any operational notes
-	public $prerequisites= array();// modules required and rev level for this module to work properly
-	public $keys		 = array();// Load configuration constants for this module, must match entries in admin tabs
-	public $dirlist		 = array();// add new directories to store images and data
-	public $tables		 = array();// Load tables
-
-  function __construct() {
-	$this->prerequisites = array( // modules required and rev level for this module to work properly
-	  'phreedom'   => 3.7,
-	  'phreebooks' => 3.7,
-	);
-  }
-
-  function install($module) {
-  }
-
-  function initialize($module) {
-  }
-
-  function update($module) {
-  }
-
-  function remove($module) {
-  }
-
-  function load_reports($module) {
-  }
-
-  function load_demo() {
-  }
+  	function __construct() {
+		$this->prerequisites = array( // modules required and rev level for this module to work properly
+		  'phreedom'   => 3.7,
+	  	  'phreebooks' => 3.7,
+		);
+  	}
 
 }
 ?>

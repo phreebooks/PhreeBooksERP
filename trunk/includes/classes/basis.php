@@ -30,11 +30,18 @@ class basis implements \SplSubject {
     public  $include_header		= true;
     public  $include_footer		= true;
 	public  $DataBase = null;
+	public  $configuration		= array ();
 	public  $mainmenu 			= array ();
 	private $events 			= array ('LoadMainPage');
+	//for output
+	public  $js_files				= array ();
+	public  $include_php_js_files	= array ();
+	public  $js_override_files		= array ();
+
 
 	public function __construct() {
-		\core\classes\messageStack::debug_log("executing __construct in class basis" );
+		global $currencies;
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->journal = new \core\classes\journal ();
 		$this->cInfo = (json_decode($request) != NULL) ? (object) json_decode($request) : (object)array_merge ( $_GET, $_POST );
 //		$this->events = $this->cInfo->action;
@@ -110,22 +117,24 @@ class basis implements \SplSubject {
 	}
 
 	public function __sleep() {
-		\core\classes\messageStack::debug_log("executing __sleep in class basis" );
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->DataBase = null;
 	}
 
 	public function __wakeup() {
-		\core\classes\messageStack::debug_log("executing __wakeup in class basis" );
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->cInfo = (json_decode($request) != NULL) ? (object) json_decode($request) : (object)array_merge ( $_GET, $_POST );
 //		$this->events = $this->cInfo->action;
 	}
 
 	public function attach(\SplObserver $observer) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		\core\classes\messageStack::debug_log("attaching observer".get_class($observer));
 		$this->_observers[get_class($observer)] = $observer;
 	}
 
 	public function detach(\SplObserver $observer) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		unset($this->_observers[ get_class($observer) ]);
 	}
 
@@ -134,23 +143,22 @@ class basis implements \SplSubject {
 	 */
 	public function notify() {
 		global $messageStack;
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		foreach ( $this->_observers as $key => $observer ) {
 			\core\classes\messageStack::debug_log( "calling ". get_class($observer)." for output" );
 			$this->observer = get_class($observer);
 			$observer->update ( $this );
 		}
-		ob_end_flush();
-		$messageStack->write_debug();
-		session_write_close();
-		die('dying in notify');
 	}
 
 	public function returnCurrentObserver(){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		\core\classes\messageStack::debug_log("returning object of {$this->observer}");
 		return $this->_observers[$this->observer];
 	}
 
 	public function ReturnAdminClasses() {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		return $this->classes;
 	}
 
@@ -160,6 +168,7 @@ class basis implements \SplSubject {
 	 * @return integer
 	 */
 	public function getNumberOfAdminClasses() {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		return sizeof ( $this->classes );
 	}
 
@@ -170,6 +179,7 @@ class basis implements \SplSubject {
 	 * @param \core\classes\admin $admin_class
 	 */
 	public function attachAdminClasses($moduleName, \core\classes\admin $admin_class) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		if (array_search ( $admin_class, $this->classes ) === false) {
 			$this->classes [$moduleName] = $admin_class;
 		}
@@ -194,6 +204,7 @@ class basis implements \SplSubject {
 	 * @param string $event
 	 */
 	public function fireEvent($event) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->removeEventsAndAddNewEvent($event);
 	}
 
@@ -205,6 +216,7 @@ class basis implements \SplSubject {
 	 * @throws exception if the event stack is empty
 	 */
 	public function startProcessingEvents() {//die(print_r($this));
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		if ( count($this->events ) == 0) throw new \Exception ( "trying to start processing events but the events array is empty" );
 		while ( $event = array_shift($this->events) ) {
 			\core\classes\messageStack::debug_log("starting with event: $event" );
@@ -242,6 +254,7 @@ class basis implements \SplSubject {
 	 * @throws exception if event is emtpy
 	 */
 	public function addEventToStack($event) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		if (! $event) throw new \exception ( "in the basis class method addEventToStack we received a empty event." );
 		\core\classes\messageStack::debug_log("adding event $event to stack" );
 		if (! in_array ( $event, (array) $this->events)) array_push ($this->events, $event );
@@ -254,6 +267,7 @@ class basis implements \SplSubject {
 	 * @throws exception if event is empty
 	 */
 	public function removeEventsAndAddNewEvent($event) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		if (! $event) throw new \exception ( "in the basis class method  we received a empty event." );
 		$this->clearEventsStack ();
 		$this->addEventToStack ( $event );
@@ -263,10 +277,12 @@ class basis implements \SplSubject {
 	 * this method empties the event stack
 	 */
 	public function clearEventsStack() {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		\core\classes\messageStack::debug_log("clearing events stack" );
 		$this->events = array();
 	}
 	function __destruct() {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->DataBase = null;
 	}
 }

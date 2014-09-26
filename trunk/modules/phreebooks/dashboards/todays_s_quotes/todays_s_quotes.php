@@ -21,6 +21,7 @@
 //  Path: /modules/phreebooks/dashboards/todays_s_quotes/todays_s_quotes.php
 //
 namespace phreebooks\dashboards\todays_s_quotes;
+require_once(DIR_FS_MODULES  . 'phreebooks/config.php');
 class todays_s_quotes extends \core\classes\ctl_panel {
 	public $id			 		= 'todays_s_quotes';
 	public $description	 		= CP_TODAYS_S_QUOTES_DESCRIPTION;
@@ -31,11 +32,8 @@ class todays_s_quotes extends \core\classes\ctl_panel {
 	public $default_params 		= array('num_rows'=> 0);
 	public $module_id 			= 'phreebooks';
 
-	function output($params) {
+	function output() {
 		global $admin, $currencies;
-		if(count($params) != $this->size_params){ //upgrading
-			$params = $this->upgrade($params);
-		}
 		$list_length = array();
 		$contents = '';
 		$control  = '';
@@ -43,45 +41,33 @@ class todays_s_quotes extends \core\classes\ctl_panel {
 		// Build control box form data
 		$control  = '<div class="row">';
 		$control .= '<div style="white-space:nowrap">' . TEXT_SHOW . TEXT_SHOW_NO_LIMIT;
-		$control .= html_pull_down_menu('todays_s_quotes_field_0', $list_length, $params['num_rows']);
+		$control .= html_pull_down_menu('todays_s_quotes_field_0', $list_length, $this->params['num_rows']);
 		$control .= html_submit_field('sub_todays_s_quotes', TEXT_SAVE);
 		$control .= '</div></div>';
-
 		// Build content box
 		$total = 0;
-		$sql = "select id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value
-		  from " . TABLE_JOURNAL_MAIN . "
-		  where journal_id = 9 and post_date = '" . date('Y-m-d') . "' order by purchase_invoice_id";
-		if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
-		$result = $admin->DataBase->query($sql);
-		if ($result->RecordCount() < 1) {
-		  	$contents = TEXT_NO_RESULTS_FOUND;
-		} else {
-		  	while (!$result->EOF) {
-			 	$total += $result->fields['total_amount'];
-				$contents .= '<div style="float:right">' . $currencies->format_full($result->fields['total_amount'], true, $result->fields['currencies_code'], $result->fields['currencies_value']) . '</div>';
-				$contents .= '<div>';
-	//			$contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;oID=' . $result->fields['id'] . '&amp;jID=10&amp;action=edit', 'SSL') . '">';
-	            $contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;oID=' . $result->fields['id'] . '&amp;jID=9&amp;action=edit', 'SSL') . '">';
-	//          $contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, 'cat=orders&amp;module=orders&amp;oID=' . $result->fields['id'] . '&amp;jID=9&amp;action=edit', 'SSL') . '">';
-				$contents .= $result->fields['purchase_invoice_id'] . ' - ';
-				$contents .= htmlspecialchars(gen_trim_string($result->fields['bill_primary_name'], 20, true));
-				$contents .= '</a></div>' . chr(10);
-				$result->MoveNext();
-		  	}
+		$temp = "SELECT id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value
+		  FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id = 9 and post_date = '" . date('Y-m-d') . "' order by purchase_invoice_id";
+		if ($this->params['num_rows']) $temp .= " limit " . $this->params['num_rows'];
+		$sql = $admin->DataBase->prepare($temp);
+		$sql->execute();
+		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+		 	$total += $result['total_amount'];
+			$contents .= '<div style="float:right">' . $currencies->format_full($result['total_amount'], true, $result['currencies_code'], $result['currencies_value']) . '</div>';
+			$contents .= '<div>';
+            $contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;oID={$result['id']}&amp;jID=9&amp;action=edit", 'SSL') . '">';
+			$contents .= $result['purchase_invoice_id'] . ' - ';
+			$contents .= htmlspecialchars(gen_trim_string($result['bill_primary_name'], 20, true));
+			$contents .= '</a></div>' . chr(10);
+	  	}
+		if($total == 0){
+			$contents = TEXT_NO_RESULTS_FOUND;
 		}
-		if (!$params['num_rows'] && $result->RecordCount() > 0) {
-		  	$contents .= '<div style="float:right">' . $currencies->format_full($total, true, $result->fields['currencies_code'], $result->fields['currencies_value']) . '</div>';
+		if (!$this->params['num_rows'] && $total != 0) {
+		  	$contents .= '<div style="float:right">' . $currencies->format_full($total, true, $result['currencies_code'], $result['currencies_value']) . '</div>';
 		  	$contents .= '<div><b>' . TEXT_TOTAL . '</b></div>' . chr(10);
 		}
 		return $this->build_div('', $contents, $control);
 	}
-
-  	function update() {
-  		if(count($this->params) == 0){
-			$this->params['num_rows'] = db_prepare_input($_POST['todays_s_quotes_field_0']);
-  		}
-		parent::update();
-  	}
 }
 ?>

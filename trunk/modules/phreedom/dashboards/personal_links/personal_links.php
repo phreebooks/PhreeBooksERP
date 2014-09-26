@@ -29,6 +29,7 @@ class personal_links extends \core\classes\ctl_panel {
 
 	function output($params) {
 		global $admin;
+		if (!$params) $params = $this->params;
 		$contents = '';
 		$control  = '';
 		// Build control box form data

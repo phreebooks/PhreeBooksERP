@@ -35,16 +35,24 @@ try{
    	$admin->attach(new \core\classes\outputPage);
    	$messageStack->debug("\n checking if user is validated");
    	\core\classes\user::is_validated($admin);
-   	if ($admin->cInfo->action){
-   		$admin->fireEvent($admin->cInfo->action);
-   	}
+   	if ($admin->cInfo->action) $admin->removeEventsAndAddNewEvent($admin->cInfo->action);
    	$admin->startProcessingEvents();
+	ob_end_flush();
+   	$messageStack->write_debug();
+   	session_write_close();
+   	die('dying in INDEX');
 }catch (\core\classes\userException $e) {
 	$messageStack->add($e->getMessage());
 	if (is_object($admin->DataBase)) gen_add_audit_log($e->getMessage());
-	$messageStack->debug("\n\n".$e->getTraceAsString());
-	$admin->fireEvent($e->action);
-	$admin->startProcessingEvents();
+	$messageStack->debug(" ".$e->getMessage());
+	$messageStack->debug(" fire event : $e->action");
+	$messageStack->debug("\n\n\n".$e->getTraceAsString());
+	if (is_object($admin)) {
+		$admin->removeEventsAndAddNewEvent($e->action); //@todo werkt nog niet altijd
+		$admin->startProcessingEvents();
+	} else {
+		echo "sorry but there was a unforseen error <br/> <b>".$e->getMessage()."</b><br/><br/>".$e->getTraceAsString();
+	}
 }
 $admin->DataBase = null;
 ?>

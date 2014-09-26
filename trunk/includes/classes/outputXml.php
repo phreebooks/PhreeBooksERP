@@ -3,6 +3,7 @@ namespace core\classes;
 class outputXml implements \SplObserver{
 
 	public function update(\SplSubject $basis) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		global $messageStack;
 		if($basis->page == 'ajax'){
 			echo createXmlHeader();

@@ -31,13 +31,16 @@ class company_notes extends \core\classes\ctl_panel {
 	function install($column_id = 1, $row_id = 0) {
 		global $admin;
 		// fetch the pages params to copy to new install
-		$result = $admin->DataBase->query("select params from " . TABLE_USERS_PROFILES . "
-		  where menu_id = '".$this->menu_id."' and dashboard_id = '".$this->id."'"); // just need one
-		$this->default_params = unserialize($result->fields['params']);
+		$sql = $admin->DataBase->prepare("SELECT params FROM " . TABLE_USERS_PROFILES . "
+		  WHERE menu_id = '{$this->menu_id}' and dashboard_id = '" . addcslashes('\\'.get_class($this), '\\') . "'"); // just need one
+		$sql->execute();
+		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		$this->default_params = unserialize($result['params']);
 		parent::install($column_id, $row_id);
+
 	}
 
-	function output($params) {
+	function output() {
 		global $admin;
 		$contents = '';
 		$control  = '';
@@ -52,14 +55,14 @@ class company_notes extends \core\classes\ctl_panel {
 		$control .= '  </div>' . chr(10);
 		// Build content box
 		$contents = '';
-		if (is_array($params)) {
+		if (is_array($this->params)) {
 			$index = 1;
-		  	foreach ($params as $my_note) {
+		  	foreach ($this->params as $my_note) {
 		    	$contents .= '  <div>';
 				$contents .= '    <div style="float:right; height:16px;">';
 				$contents .= html_icon('phreebooks/dashboard-remove.png', TEXT_REMOVE, 'small', 'onclick="return del_index(\'' . $this->id . '\', ' . $index . ')"');
 				$contents .= '    </div>' . chr(10);
-				$contents .= '    <div style="min-height:16px;">&#9679; '. $my_note . '</div>' . chr(10);
+				$contents .= "    <div style='min-height:16px;'>&#9679; $my_note </div>" . chr(10);
 		   		$contents .= '  </div>' . chr(10);
 				$index++;
 		  	}
@@ -76,22 +79,24 @@ class company_notes extends \core\classes\ctl_panel {
 		// do nothing if no title or url entered
 		if (!$remove_id && $my_note == '') return;
 		// fetch the current params
-		$result = $admin->DataBase->query("select params from " . TABLE_USERS_PROFILES . "
-		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "'
-		  and dashboard_id = '" . $this->id . "'");
+		$sql = $admin->DataBase->prepare("SELECT params FROM " . TABLE_USERS_PROFILES . "
+		  WHERE user_id = {$_SESSION['admin_id']} and menu_id = '{$this->menu_id}'
+		  and dashboard_id = '" . addcslashes('\\'.get_class($this), '\\') . "'");
+		$sql->execute();
+		$result = $sql->fetch(\PDO::FETCH_LAZY);
 		if ($remove_id) { // remove element
-		  	$this->params		= unserialize($result->fields['params']);
+		  	$this->params		= unserialize($result['params']);
 		  	$first_part 		= array_slice($this->params, 0, $remove_id - 1);
 		  	$last_part  		= array_slice($this->params, $remove_id);
 		  	$this->params     	= array_merge($first_part, $last_part);
-		} elseif ($result->fields['params']) { // append new note and sort
-		  	$this->params     	= unserialize($result->fields['params']);
+		} elseif ($result['params']) { // append new note and sort
+		  	$this->params     	= unserialize($result['params']);
 		  	$this->params[]   	= $my_note;
 		} else { // first entry
 			$this->params[]  	= $my_note;
 		}
 		ksort($this->params);
-		db_perform(TABLE_USERS_PROFILES, array('params' => serialize($this->params)), "update", "menu_id = '".$this->menu_id."' and dashboard_id = '".$this->id."'");
+		db_perform(TABLE_USERS_PROFILES, array('params' => serialize($this->params)), "update", "menu_id = '{$this->menu_id}' and dashboard_id = '" . addcslashes('\\'.get_class($this), '\\') . "'");
 	}
 
 }

@@ -939,21 +939,23 @@ function gen_db_date($raw_date = '', $separator = '/') {
     	}
   	}
 
-  function db_table_exists($table_name) {
-    global $admin;
-    $tables = $admin->DataBase->query("SHOW TABLES like '" . $table_name . "'");
-    return ($tables->RecordCount() > 0) ? true : false;
-  }
+  	function db_table_exists($table_name) {
+    	global $admin;
+    	$tables = $admin->DataBase->query("SHOW TABLES like '$table_name'");
+    	$result = $tables->fetch(\PDO::FETCH_LAZY);
+    	if ($result != false) return true;
+    	return false;
+  	}
 
-  function db_field_exists($table_name, $field_name) {
-    global $admin;
-    $result = $admin->DataBase->query("show fields from " . $table_name);
-    while (!$result->EOF) {
-      if  ($result->fields['Field'] == $field_name) return true;
-      $result->MoveNext();
-    }
-    return false;
-  }
+	function db_field_exists($table_name, $field_name) {
+    	global $admin;
+    	$result = $admin->DataBase->prepare("show fields from " . $table_name);
+    	$result->execute();
+    	while ($row = $result->fetch(\PDO::FETCH_LAZY)){
+      		if  ($row['Field'] == $field_name) return true;
+    	}
+    	return false;
+  	}
 
 /**************************************************************************************************************/
 // Section 3. HTML Functions
