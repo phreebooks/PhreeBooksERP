@@ -459,11 +459,9 @@ class inventory_admin {
 		while (!$result->EOF) {
 			$sql_data_array = array();
 			if($result->fields['purchase_cost'] > $result->fields['item_cost']){
-				$sql_data_array['sieraad_afwerking'] = 'purchase_cost';
 				$sql_data_array['product_margin'] = round((($result->fields['full_price'] - $result->fields['purchase_cost']) / $result->fields['full_price']) * 100, $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
 				db_perform(TABLE_INVENTORY, $sql_data_array, 'update', "id = " . $result->fields['id']);
-			}else if( $result->fields['item_cost'] > 0){
-				$sql_data_array['sieraad_afwerking'] = 'item_cost';
+			}else {
 				$sql_data_array['product_margin'] = round((($result->fields['full_price'] - $result->fields['item_cost']) / $result->fields['full_price']) * 100, $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
 				db_perform(TABLE_INVENTORY, $sql_data_array, 'update', "id = " . $result->fields['id']);
 			}
@@ -497,63 +495,66 @@ class inventory_admin {
     global $db;
 	$error = false;
 	// Data for table `inventory`
+
 	$db->Execute("TRUNCATE TABLE " . TABLE_INVENTORY);
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (1, 'AMD-3600-CPU', '0', 'si', 'AMD 3600+ Athlon CPU', 'AMD 3600+ Athlon CPU', 'AMD 3600+ Athlon CPU', 'demo/athlon.jpg', '4000', '1200', '5000', '1', '0', 100, 'f', '', '', 150, 150, 1.5, 1, 0, 0, 0, 0, 0, 0, 3, 1, '', '0', now(), '', '', '');");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (2, 'ASSY-BB', '0', 'lb', 'Labor - BB Computer Assy', 'Labor Cost - Assemble Bare Bones Computer', 'Labor - BB Computer Assy', '', '4000', '6000', '5000', '1', '0', 25, 'f', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, '', '0', now(), '', '', '');");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (3, 'BOX-TW-322', '0', 'ns', 'TW-322 Shipping Box', 'TW-322 Shipping Box - 12 x 12 x 12', 'TW-322 Shipping Box', '', '4000', '6800', '5000', '1', '0', 1.35, 'f', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 15, 25, 0, 1, '', '0', now(), '', '', '');");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (4, 'BOX-TW-553', '0', 'ns', 'TW-533 Shipping Box', 'TW-533 Shipping Box - 24 x 12 x 12', 'TW-533 Shipping Box', '', '4000', '6800', '5000', '1', '0', 1.75, 'f', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, '', '0', now(), '', '', '');");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (5, 'CASE-ALIEN', '0', 'si', 'Alien Case - Red', 'Closed Cases - Red Full Tower ATX case w/o power supply', 'Alien Case - Red', 'demo/red_alien.jpg', '4000', '1200', '5000', '1', '0', 47, 'f', '', '', 98.26, 98.26, 1.5, 11, 0, 0, 0, 0, 2, 1, 13, 5, '', '0', now(), '', '', '');");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (6, 'DESC-WARR', '0', 'ds', 'Warranty Template', 'Warranty Template', 'Warranty Template', '', '1000', '1000', '1000', '1', '0', 0, 'f', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, '', '0', now(), '', '', '');");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (7, 'DVD-RW', '0', 'si', 'DVD RW with Lightscribe', 'DVD RW with Lightscribe - 8x', 'DVD RW with Lightscribe', 'demo/lightscribe.jpg', '4000', '1200', '5000', '1', '0', 23.6, 'f', '', '', 45, 45, 1.5, 2, 0, 0, 0, 0, 3, 1, 15, 14, '', '0', now(), '', '', '');");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (8, 'HD-150GB', '0', 'si', '150GB SATA Hard Drive', '150GB SATA Hard Drive - 7200 RPM', '150GB SATA Hard Drive', 'demo/150gb_sata.jpg', '4000', '1200', '5000', '1', '0', 27, 'f', '', '', 56, 56, 1.5, 2, 0, 0, 0, 0, 10, 15, 15, 30, '', '0', now(), '', '', '');");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (9, 'KB-128-ERGO', '0', 'si', 'KeysRus ergonomic keyboard', 'KeysRus ergonomic keyboard - Lighted for Gaming', 'KeysRus ergonomic keyboard', 'demo/ergo_key.jpg', '4000', '1200', '5000', '0', '1', 23.51, 'f', '', '', 56.88, 56.88, 1.5, 0, 0, 0, 0, 0, 5, 10, 11, 1, '', '0', now(), '', '', '');");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (10, 'LCD-21-WS', '0', 'si', 'LCDisplays 21\" LCD Monitor', 'LCDisplays 21\" LCD Monitor - wide screen w/anti-glare finish, Black', 'LCDisplays 21\" LCD Monitor', 'demo/monitor.jpg', '4000', '1200', '5000', '1', '0', 145.01, 'f', '', '', 189.99, 189.99, 1.50, 0, 0, 0, 0, 0, 2, 1, 5, 3, '', '0', now(), '', '', '');");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (11, 'MB-ATI-K8', '0', 'si', 'ATI K8 Motherboard', 'ATI-K8-TW AMD socket 939 Motherboard for Athlon Processors', 'ATI K8 Motherboard', 'demo/mobo.jpg', '4000', '1200', '5000', '1', '0', 125, 'f', '', '', 155.25, 155.25, 1.5, 1, 0, 0, 0, 0, 5, 10, 3, 3, '', '0', now(), '', '', '');");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (12, 'MB-ATI-K8N', '0', 'si', 'ATI K8 Motherboard w/network', 'ATI-K8-TW AMD socket 939 Motherboard for Athlon Processors with network ports', 'ATI K8 Motherboard w/network', 'demo/mobo.jpg', '4000', '1200', '5000', '1', '0', 135, 'f', '', '', 176.94, 176.94, 1.50, 1.2, 0, 0, 0, 0, 3, 10, 3, 3, '', '0', now(), '', '', '');");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (13, 'Mouse-S', '0', 'si', 'Serial Mouse - 300 DPI', 'Serial Mouse - 300 DPI', 'Serial Mouse - 300 DPI', 'demo/serial_mouse.jpg', '4000', '1200', '5000', '1', '0', 4.85, 'f', '', '', 13.99, 13.99, 1.5, 0.6, 0, 0, 0, 0, 15, 25, 11, 1, '', '0', now(), '', '', '');");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (14, 'PC-2GB-120GB-21', '0', 'ma', 'Computer 2GB-120GB-21', 'Fully assembled computer AMD/ATI 2048GB Ram/1282 GB HD/Red Case/ Monitor/ Keyboard/ Mouse', 'Computer 2GB-120GB-21', 'demo/complete_computer.jpg', '4000', '1200', '5000', '1', '0', 0, 'f', '', '', 750, 750, 1.50, 21.3, 0, 0, 0, 0, 0, 0, 0, 1, '', '0', now(), '', '', '');");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (15, 'PS-450W', '0', 'si', '450 Watt Silent Power Supply', '850 Watt Silent Power Supply - for use with Intel or AMD processors', '450 Watt Silent Power Supply', 'demo/power_supply.jpg', '4000', '1200', '5000', '1', '0', 86.26, 'f', '', '', 124.5, 124.5, 1.5, 4.7, 0, 0, 0, 0, 10, 6, 14, 5, '', '0', now(), '', '', '');");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (16, 'RAM-2GB-0.2', '0', 'si', '2GB SDRAM', '2 GB PC3200 Memory Modules - for Athlon processors', '2GB SDRAM', 'demo/2gbram.jpg', '4000', '1200', '5000', '1', '0', 56.25, 'f', '', '', 89.65, 89.65, 1.5, 0, 0, 0, 0, 0, 8, 10, 3, 2, '', '0', now(), '', '', '');");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (17, 'VID-NV-512MB', '0', 'si', 'nVidia 512 MB Video Card', 'nVidea 512 MB Video Card - with SLI support', 'nVidia 512 MB Video Card', 'demo/nvidia_512.jpg', '4000', '1200', '5000', '1', '0', 0, 'f', '', '', 300, 300, 1.50, 0.7, 0, 0, 0, 0, 4, 5, 1, 4, '', '0', now(), '', '', '');");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY . " VALUES (18, 'PC-BB-512', '0', 'ma', 'Bare Bones Computer 2600+/2GB', 'Fully assembled bare bones computer AMD/ATI 512MB/2GB/Red Case', 'Bare Bones Computer 2600+/2GB', 'demo/barebones.jpg', '4000', '1200', '5000', '1', '0', 0, 'f', '', '', 750, 750, 1.5, 21.3, 0, 0, 0, 0, 0, 0, 0, 1, '', '0', now(), '', '', '');");
+	$db->Execute("INSERT INTO " . TABLE_INVENTORY . " (sku, inactive, inventory_type, description_short, description_sales, image_with_path, account_sales_income, account_inventory_wage, account_cost_of_sales, item_taxable, cost_method, full_price, full_price_with_tax, item_weight, quantity_on_hand, minimum_stock_level, reorder_quantity, lead_time, creation_date ) VALUES 
+('AMD-3600-CPU',		'0', 'si', 'AMD 3600+ Athlon CPU', 			'AMD 3600+ Athlon CPU',			'demo/athlon.jpg', 		'4000', '1200', '5000', '1', 'f', 150,	150, 		1.5, 	1,   0,  0,  3, now()),
+('ASSY-BB', 		'0', 'lb', 'Labor - BB Computer Assy', 		'Labor - BB Computer Assy',		'', 					'4000', '6000', '5000', '1', 'f',   0,   	0, 		0,    0,   0,  0,  0, now()),
+('BOX-TW-322', 		'0', 'ns', 'TW-322 Shipping Box', 			'TW-322 Shipping Box', 			'', 					'4000', '6800', '5000', '1', 'f',   0,   	0, 		0,    0,  15, 25,  0, now()),
+('BOX-TW-553', 		'0', 'ns', 'TW-533 Shipping Box', 			'TW-533 Shipping Box', 			'', 					'4000', '6800', '5000', '1', 'f',   0,   	0, 		0,    0,   0,  0,  0, now()),
+('CASE-ALIEN', 		'0', 'si', 'Alien Case - Red', 			'Alien Case - Red', 			'demo/red_alien.jpg', 		'4000', '1200', '5000', '1', 'f', 98.26,	98.26, 	1.5, 11,   2,  1, 13, now()),
+('DESC-WARR', 		'0', 'ds', 'Warranty Template', 			'Warranty Template', 			'', 					'1000', '1000', '1000', '1', 'f',   0, 	0, 		0,   	0,   0,  0,  0, now()),
+('DVD-RW', 			'0', 'si', 'DVD RW with Lightscribe', 		'DVD RW with Lightscribe', 		'demo/lightscribe.jpg',		'4000', '1200', '5000', '1', 'f',   45, 	45, 		1.5, 	2,   3,  1, 15, now()),
+('HD-150GB', 		'0', 'si', '150GB SATA Hard Drive', 		'150GB SATA Hard Drive', 		'demo/150gb_sata.jpg', 		'4000', '1200', '5000', '1', 'f', 	56, 	56, 		1.5, 	2,  10, 15, 15, now()),
+('KB-128-ERGO', 		'0', 'si', 'KeysRus ergonomic keyboard', 		'KeysRus ergonomic keyboard', 	'demo/ergo_key.jpg', 		'4000', '1200', '5000', '0', 'f', 56.88, 	56.88, 	1.5, 	0,   5, 10, 11, now()),
+('LCD-21-WS', 		'0', 'si', 'LCDisplays 21\" LCD Monitor',	 	'LCDisplays 21\" LCD Monitor',	'demo/monitor.jpg', 		'4000', '1200', '5000', '1', 'f', 189.99, 189.99, 	1.5, 	0,   2,  1,  5, now()),
+('MB-ATI-K8', 		'0', 'si', 'ATI K8 Motherboard', 			'ATI K8 Motherboard', 			'demo/mobo.jpg', 			'4000', '1200', '5000', '1', 'f', 155.25, 155.25, 	1.5, 	1,   5, 10,  3, now()),
+('MB-ATI-K8N', 		'0', 'si', 'ATI K8 Motherboard w/network', 	'ATI K8 Motherboard w/network', 	'demo/mobo.jpg', 			'4000', '1200', '5000', '1', 'f', 176.94, 176.94,	1.5, 1.2,  3, 10,  3, now()),
+('Mouse-S', 		'0', 'si', 'Serial Mouse - 300 DPI', 		'Serial Mouse - 300 DPI', 		'demo/serial_mouse.jpg',	'4000', '1200', '5000', '1', 'f', 13.99, 	13.99, 	1.5, 0.6, 15, 25, 11, now()),
+('PC-2GB-120GB-21', 	'0', 'ma', 'Computer 2GB-120GB-21', 		'Computer 2GB-120GB-21', 		'demo/complete_computer.jpg', '4000', '1200', '5000', '1', 'f', 750, 	750, 		1.5, 21.3, 0,  0,  0, now()),
+('PS-450W', 		'0', 'si', '450 Watt Silent Power Supply', 	'450 Watt Silent Power Supply', 	'demo/power_supply.jpg', 	'4000', '1200', '5000', '1', 'f', 124.5, 	124.5, 	1.5, 4.7, 10,  6, 14, now()),
+('RAM-2GB-0.2', 		'0', 'si', '2GB SDRAM', 				'2GB SDRAM', 				'demo/2gbram.jpg', 		'4000', '1200', '5000', '1', 'f', 89.65, 	89.65, 	1.5, 	0,   8, 10,  3, now()),
+('VID-NV-512MB', 		'0', 'si', 'nVidia 512 MB Video Card', 		'nVidia 512 MB Video Card', 		'demo/nvidia_512.jpg', 		'4000', '1200', '5000', '1', 'f', 300, 	300, 		1.5, 0.7,  4,  5,  1, now()),
+('PC-BB-512', 		'0', 'ma', 'Bare Bones Computer 2600+/2GB', 	'Bare Bones Computer 2600+/2GB', 	'demo/barebones.jpg', 		'4000', '1200', '5000', '1', 'f', 750, 	750, 		1.5, 21.3, 0,  0,  0, now());");
 	// Data for table `inventory_assy_list`
 	$db->Execute("TRUNCATE TABLE " . TABLE_INVENTORY_ASSY_LIST);
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (1, 14, 'LCD-21-WS', 'LCDisplays 21', 1);");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (2, 14, 'HD-150GB', '150GB SATA Hard Drive', 1);");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (3, 14, 'DVD-RW', 'DVD RW with Lightscribe', 1);");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (4, 14, 'VID-NV-512MB', 'nVidea 512 MB Video Card', 1);");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (5, 14, 'RAM-2GB-0.2', '2GB SDRAM', 2);");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (6, 14, 'AMD-3600-CPU', 'AMD 3600+ Athlon CPU', 1);");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (7, 14, 'MB-ATI-K8N', 'ATI K8 Motherboard w/network', 1);");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (8, 14, 'CASE-ALIEN', 'Alien Case - Red', 1);");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (9, 14, 'Mouse-S', 'Serial Mouse - 300 DPI', 1);");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (10, 14, 'KB-128-ERGO', 'KeysRus ergonomic keyboard', 1);");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (11, 18, 'RAM-2GB-0.2', '2GB SDRAM', 2);");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (12, 18, 'AMD-3600-CPU', 'AMD 3600+ Athlon CPU', 1);");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (13, 18, 'MB-ATI-K8N', 'ATI K8 Motherboard w/network', 1);");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (14, 18, 'CASE-ALIEN', 'Alien Case - Red', 1);");
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " VALUES (15, 18, 'VID-NV-512MB', 'nVidea 512 MB Video Card', 1);");
+	$db->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " (ref_id, sku, description, qty) VALUES
+(14, 'LCD-21-WS', 'LCDisplays 21', 1),
+(14, 'HD-150GB', '150GB SATA Hard Drive', 1),
+(14, 'DVD-RW', 'DVD RW with Lightscribe', 1),
+(14, 'VID-NV-512MB', 'nVidea 512 MB Video Card', 1),
+(14, 'RAM-2GB-0.2', '2GB SDRAM', 2),
+(14, 'AMD-3600-CPU', 'AMD 3600+ Athlon CPU', 1),
+(14, 'MB-ATI-K8N', 'ATI K8 Motherboard w/network', 1),
+(14, 'CASE-ALIEN', 'Alien Case - Red', 1),
+(14, 'Mouse-S', 'Serial Mouse - 300 DPI', 1),
+(14, 'KB-128-ERGO', 'KeysRus ergonomic keyboard', 1),
+(18, 'RAM-2GB-0.2', '2GB SDRAM', 2),
+(18, 'AMD-3600-CPU', 'AMD 3600+ Athlon CPU', 1),
+(18, 'MB-ATI-K8N', 'ATI K8 Motherboard w/network', 1),
+(18, 'CASE-ALIEN', 'Alien Case - Red', 1),
+(18, 'VID-NV-512MB', 'nVidea 512 MB Video Card', 1);");
 	// data for table inventory_purchase_details
 	$db->Execute("TRUNCATE TABLE " . TABLE_INVENTORY_PURCHASE);
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY_PURCHASE . " (`id`, `sku`, `vendor_id`, `description_purchase`, `purch_taxable`, `item_cost`, `price_sheet_v`) VALUES
-(1, 'AMD-3600-CPU', 3, 'AMD 3600+ Athlon CPU', 0, 100, ''),
-(2, 'ASSY-BB', 0, 'Labor Cost - Assemble Bare Bones Computer', 0, 25, ''),
-(3, 'BOX-TW-322', 0, 'TW-322 Shipping Box - 12 x 12 x 12', 0, 1.35, ''),
-(4, 'BOX-TW-553', 0, 'TW-533 Shipping Box - 24 x 12 x 12', 0, 1.75, ''),
-(5, 'CASE-ALIEN', 13, 'Closed Cases - Red Full Tower ATX case w/o power supply', 0, 47, ''),
-(6, 'DESC-WARR', 0, 'Warranty Template', 0, 0, ''),
-(7, 'DVD-RW', 15, 'DVD RW with Lightscribe - 8x', 0, 23.6, ''),
-(8, 'HD-150GB', 15, '150GB SATA Hard Drive - 7200 RPM', 0, 27, ''),
-(9, 'KB-128-ERGO', 11, 'KeysRus ergonomic keyboard - Lighted for Gaming', 1, 23.51, ''),
-(10, 'LCD-21-WS', 5, 'LCDisplays 21\" LCD Monitor - wide screen w/anti-glare finish, Black', 0, 145.01, ''),
-(11, 'MB-ATI-K8', 3, 'ATI-K8-TW AMD socket 939 Motherboard for Athlon Processors', 0, 125, ''),
-(12, 'MB-ATI-K8N', 3, 'ATI-K8-TW AMD socket 939 Motherboard for Athlon Processors with network ports', 0, 135, ''),
-(13, 'Mouse-S', 11, 'Serial Mouse - 300 DPI', 0, 4.85, ''),
-(14, 'PC-2GB-120GB-21', 0, 'Fully assembled computer AMD/ATI 2048GB Ram/1282 GB HD/Red Case/ Monitor/ Keyboard/ Mouse', 0, 0, ''),
-(15, 'PS-450W', 14, '850 Watt Silent Power Supply - for use with Intel or AMD processors', 0, 86.26, ''),
-(16, 'RAM-2GB-0.2', 3, '2 GB PC3200 Memory Modules - for Athlon processors', 0, 56.25, ''),
-(17, 'VID-NV-512MB', 1, 'nVidea 512 MB Video Card - with SLI support', 0, 0, ''),
-(18, 'PC-BB-512', 0, 'Fully assembled bare bones computer AMD/ATI 512MB/2GB/Red Case', 0, 0, '');
+	$db->Execute("INSERT INTO " . TABLE_INVENTORY_PURCHASE . " (`sku`, `vendor_id`, `description_purchase`, `purch_taxable`, `item_cost`) VALUES
+('AMD-3600-CPU', 3, 'AMD 3600+ Athlon CPU', 0, 100),
+('ASSY-BB', 0, 'Labor Cost - Assemble Bare Bones Computer', 0, 25),
+('BOX-TW-322', 0, 'TW-322 Shipping Box - 12 x 12 x 12', 0, 1.35),
+('BOX-TW-553', 0, 'TW-533 Shipping Box - 24 x 12 x 12', 0, 1.75),
+('CASE-ALIEN', 13, 'Closed Cases - Red Full Tower ATX case w/o power supply', 0, 47),
+('DESC-WARR', 0, 'Warranty Template', 0, 0),
+('DVD-RW', 15, 'DVD RW with Lightscribe - 8x', 0, 23.6),
+('HD-150GB', 15, '150GB SATA Hard Drive - 7200 RPM', 0, 27),
+('KB-128-ERGO', 11, 'KeysRus ergonomic keyboard - Lighted for Gaming', 1, 23.51),
+('LCD-21-WS', 5, 'LCDisplays 21\" LCD Monitor - wide screen w/anti-glare finish, Black', 0, 145.01),
+('MB-ATI-K8', 3, 'ATI-K8-TW AMD socket 939 Motherboard for Athlon Processors', 0, 125),
+('MB-ATI-K8N', 3, 'ATI-K8-TW AMD socket 939 Motherboard for Athlon Processors with network ports', 0, 135),
+('Mouse-S', 11, 'Serial Mouse - 300 DPI', 0, 4.85),
+('PC-2GB-120GB-21', 0, 'Fully assembled computer AMD/ATI 2048GB Ram/1282 GB HD/Red Case/ Monitor/ Keyboard/ Mouse', 0, 0),
+('PS-450W', 14, '850 Watt Silent Power Supply - for use with Intel or AMD processors', 0, 86.26),
+('RAM-2GB-0.2', 3, '2 GB PC3200 Memory Modules - for Athlon processors', 0, 56.25),
+('VID-NV-512MB', 1, 'nVidea 512 MB Video Card - with SLI support', 0, 0),
+('PC-BB-512', 0, 'Fully assembled bare bones computer AMD/ATI 512MB/2GB/Red Case', 0, 0);
 	");
 	
 	// copy the demo images

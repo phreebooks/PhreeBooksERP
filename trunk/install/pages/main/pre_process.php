@@ -16,7 +16,6 @@
 // +-----------------------------------------------------------------+
 //  Path: /install/pages/main/pre_process.php
 //
-define('DEBUG',true);
 session_start();
 /**************  include page specific files    *********************/
 // calculate server path info
