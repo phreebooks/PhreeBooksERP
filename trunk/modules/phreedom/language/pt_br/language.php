@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:46
 // Module/Method: phreedom
 // ISO Language: pt_br
@@ -158,7 +158,7 @@ define('TEXT_SEQ','Sequência');
 define('TEXT_SHOW_NO_LIMIT',' (0 para ilimitado) ');
 define('TEXT_SGL_PREC','Precisão Simples');
 define('TEXT_SHOW','Mostrar');
-define('TEXT_SHIP_ALL','`Preencher SO');
+define('TEXT_SHIP_ALL','Preencher SO');
 define('TEXT_SHIP','Envio');
 define('TEXT_SHIPPING','Envio');
 define('TEXT_SERVICE_NAME','Nome Serviço');

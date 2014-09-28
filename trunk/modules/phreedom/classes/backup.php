@@ -67,15 +67,15 @@ class backup {
 	  if ($type == 'structure' || $type == 'both') { // build the table create sql
 		$query .= "-- Table structure for table $table" . lnbr;
 		$query .= "DROP TABLE IF EXISTS $table;" . lnbr . lnbr;
-		$result = $db->Execute("show create table `$table`");
+		$result = $db->Execute("show create table $table");
 		$query .= $result->fields['Create Table'] . ";" . lnbr . lnbr;
 	  }
 	  if ($type == 'data' || $type == 'both') {
 		$result = $db->Execute('SELECT * FROM ' . $table . $params);
 		if ($result->RecordCount() > 0) {
 		  $temp_array = $result->fields;
-		  while (list($key, $value) = each($temp_array)) $data['keys'][] = $key; 
-		  $sql_head  = 'INSERT INTO `' . $table .'` (`' . join($data['keys'], '`, `') . '`) VALUES ' . lnbr;
+		  while (list($key, $value) = each($temp_array)) $data['keys'][] = $key;
+		  $sql_head  = "INSERT INTO $table (" . join($data['keys'], ', ') . ') VALUES ' . lnbr;
 		  $count     = 0; // set to max_count to force the sql_head at the start
 		  $query .= $sql_head;
 		  while (!$result->EOF) {
@@ -83,7 +83,7 @@ class backup {
 			$temp_array = $result->fields;
 			while (list($key, $value) = each($temp_array)) {
 			  $data[] = addslashes($value);
-			} 
+			}
 			$query .= "('" . implode("', '", $data) . "')";
 			$result->MoveNext();
 			$count++;
@@ -182,7 +182,7 @@ class backup {
 	header('Expires: ' . date('r', time() + 60 * 60));
 	header('Last-Modified: ' . date('r', time()));
 	print $contents;
-	exit();  
+	exit();
   }
 
   function delete_dir($dir) {
@@ -195,10 +195,10 @@ class backup {
 	  } else { // it's a directory
 	    $subdir = scandir($dir . '/' . $file);
 		if (sizeof($subdir) > 2) $this->delete_dir($dir . '/' . $file); // directory is not empty, recurse
-		@rmdir($dir . '/' . $file); 
+		@rmdir($dir . '/' . $file);
 	  }
 	}
-	rmdir($dir); 
+	rmdir($dir);
   }
 
   function copy_dir($dir_source, $dir_dest) {
@@ -207,7 +207,7 @@ class backup {
 	foreach ($files as $file) {
 	  if ($file == "." || $file == "..") continue;
 	  if (is_file($dir_source . $file)) {
-		copy($dir_source . $file, $dir_dest . $file); 
+		copy($dir_source . $file, $dir_dest . $file);
 	  } else {
 		@mkdir($dir_dest . $file);
 		$this->copy_dir($dir_source . $file . "/", $dir_dest . $file . "/");
@@ -219,7 +219,7 @@ class backup {
 //echo 'start SQL execute';
     global $db;
     $ignored_count = 0;
-    // prepare for upgrader processing 
+    // prepare for upgrader processing
     if (!get_cfg_var('safe_mode')) {
       @set_time_limit(1200);
     }
@@ -266,7 +266,7 @@ class backup {
             break;
           case (substr($line_upper, 0, 12) == 'INSERT INTO '):
             //check to see if table prefix is going to match
-			$param[2] = str_replace('`', '', $param[2]);
+			$param[2] = str_replace("`", '', $param[2]);
             if (!$tbl_exists = db_table_exists($param[2])) $result=sprintf(REASON_TABLE_NOT_FOUND,$param[2]).' CHECK PREFIXES!';
             $line = 'INSERT INTO ' . $table_prefix . substr($line, 12);
             break;
@@ -329,7 +329,7 @@ class backup {
               } //end foreach
               if (substr($line,-1)==',') $line = substr($line,0,(strlen($line)-1)); // remove trailing ','
             } else { //didn't have a comma, but starts with "FROM ", so insert table prefix
-              $line = str_replace('FROM ', 'FROM '.$table_prefix, $line); 
+              $line = str_replace('FROM ', 'FROM '.$table_prefix, $line);
             }//endif substr_count(,)
             break;
           default:
@@ -339,8 +339,8 @@ class backup {
 
         if ( substr($line,-1) ==  ';') {
           //found a semicolon, so treat it as a full command, incrementing counter of rows to process at once
-          if (substr($newline,-1)==' ') $newline = substr($newline,0,(strlen($newline)-1)); 
-          $lines_to_keep_together_counter++; 
+          if (substr($newline,-1)==' ') $newline = substr($newline,0,(strlen($newline)-1));
+          $lines_to_keep_together_counter++;
           if ($lines_to_keep_together_counter == $keep_together) { // if all grouped rows have been loaded, go to execute.
             $complete_line = true;
             $lines_to_keep_together_counter=0;

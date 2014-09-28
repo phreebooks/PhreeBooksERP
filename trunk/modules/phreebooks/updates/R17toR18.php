@@ -30,8 +30,8 @@
 if (!defined('INVENTORY_AUTO_FILL')) {
   $db->execute("DROP TABLE IF EXISTS " . DB_PREFIX . "configuration_group");
   $db->execute("update " . TABLE_CONFIGURATION . " set set_function = 'cfg_keyed_select_option(array(0 =>\'" . TEXT_NO . "\', 1=>\'" . TEXT_YES . "\'),' where configuration_key = 'ENABLE_ENCRYPTION'");
-  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . " 
-           ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` , `set_function` ) 
+  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . "
+           ( configuration_title , configuration_key , configuration_value , configuration_description , configuration_group_id , sort_order , last_modified , date_added , use_function , set_function )
     VALUES ( 'CD_08_15_TITLE', 'PDF_APP', 'TCPDF', 'CD_08_15_DESC', '8', '15', NULL , now(), NULL , 'cfg_keyed_select_option(array(\'FPDF\' => \'FPDF\', \'TCPDF\' => \'TCPDF\'),' ),
            ( 'CD_05_60_TITLE', 'INVENTORY_AUTO_FILL', '0', 'CD_05_60_TITLE', '5', '60', NULL , now(), NULL , 'cfg_keyed_select_option(array(0 =>\'" . TEXT_NO . "\', 1=>\'" . TEXT_YES . "\'),' );");
   // update the configuration file to handle translations
@@ -250,8 +250,8 @@ if (!defined('INVENTORY_AUTO_FILL')) {
 }
 
 if (!defined('INVENTORY_DEFAULT_PURCH_TAX')) {
-  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . " 
-           ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` , `set_function` ) 
+  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . "
+           ( configuration_title , configuration_key , configuration_value , configuration_description , configuration_group_id , sort_order , last_modified , date_added , use_function , set_function )
     VALUES ( 'CD_05_52_TITLE', 'INVENTORY_DEFAULT_PURCH_TAX', '0', 'CD_05_52_DESC', '5', '52', NULL , now(), NULL , 'cfg_pull_down_tax_rate_list(' );");
   $db->execute("ALTER TABLE " . TABLE_INVENTORY . " ADD purch_taxable INT(11) NOT NULL DEFAULT '0' AFTER item_taxable");
 }

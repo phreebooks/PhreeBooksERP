@@ -24,7 +24,7 @@
 
 // This release resets the item_taxable flag in table inventory to the first tax_rate_id from table
 // tax_rates. If the item_taxable flag is set to '0', it will change to null (the same net effect), but
-// if the flag was set to '1', it will take the first tax_rate_id by id from the db. To override this 
+// if the flag was set to '1', it will take the first tax_rate_id by id from the db. To override this
 // setting, uncomment the define below and set the value to the tax_rate_id prefered from table tax_rates.
 // i.e. remove the '//' and change the number 1 to the tax_rate_id value from your db.
 
@@ -44,17 +44,17 @@ if (!in_array('inactive', $field_array)) {
 }
 
 if (!defined('INVENTORY_AUTO_ADD')) {
-  $db->Execute("ALTER TABLE " . TABLE_INVENTORY . " CHANGE `item_taxable` `item_taxable` INT( 11 ) NOT NULL DEFAULT '0'");
-  $db->Execute("ALTER TABLE " . TABLE_JOURNAL_ITEM . " CHANGE `taxable` `taxable` INT( 11 ) NOT NULL DEFAULT '0'");
-  $db->Execute("UPDATE " . TABLE_CONFIGURATION . " SET `set_function` = 'cfg_pull_down_tax_rate_list(' WHERE `configuration_key` = 'AP_ADD_SALES_TAX_TO_SHIPPING' LIMIT 1");
-  $db->Execute("UPDATE " . TABLE_CONFIGURATION . " SET `set_function` = 'cfg_pull_down_tax_rate_list(' WHERE `configuration_key` = 'AR_ADD_SALES_TAX_TO_SHIPPING' LIMIT 1");
+  $db->Execute("ALTER TABLE " . TABLE_INVENTORY . " CHANGE item_taxable item_taxable INT( 11 ) NOT NULL DEFAULT '0'");
+  $db->Execute("ALTER TABLE " . TABLE_JOURNAL_ITEM . " CHANGE taxable taxable INT( 11 ) NOT NULL DEFAULT '0'");
+  $db->Execute("UPDATE " . TABLE_CONFIGURATION . " SET set_function = 'cfg_pull_down_tax_rate_list(' WHERE configuration_key = 'AP_ADD_SALES_TAX_TO_SHIPPING' LIMIT 1");
+  $db->Execute("UPDATE " . TABLE_CONFIGURATION . " SET set_function = 'cfg_pull_down_tax_rate_list(' WHERE configuration_key = 'AR_ADD_SALES_TAX_TO_SHIPPING' LIMIT 1");
   if (!defined('INVENTORY_DEFAULT_TAX_ID')) {
     $result = $db->Execute("select tax_rate_id from " . TABLE_TAX_RATES . " order by tax_rate_id limit 1");
     define ('INVENTORY_DEFAULT_TAX_ID', $result->fields['tax_rate_id']);
   }
   $db->Execute("update " . TABLE_INVENTORY . " set item_taxable = '" . INVENTORY_DEFAULT_TAX_ID . "' where item_taxable = '2'");
-  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . " 
-           ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` , `set_function` ) 
+  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . "
+           ( configuration_title , configuration_key , configuration_value , configuration_description , configuration_group_id , sort_order , last_modified , date_added , use_function , set_function )
     VALUES ( 'Enable Automatic Creation of Inventory Items', 'INVENTORY_AUTO_ADD', '0', 'Allows the automatic creation of inventory items in the order screens.<br /><br /> SKUs are not required in PhreeBooks for non-trackable inventory types. This feature allows for the automatic creation of SKUs in the inventory database table. The inventory type used will be stock for inventory type GL accounts and non-stock for all other type accounts. The GL account used to determine the type is the account selected with the line item in the order screen.', '5', '55', NULL , now(), NULL , 'cfg_keyed_select_option(array(0 =>\'No\', 1=>\'Yes\'),' ),
            ( 'Default Tax Rate For New Inventory Items', 'INVENTORY_DEFAULT_TAX', '" . INVENTORY_DEFAULT_TAX_ID . "', 'Determines the default tax rate to use when adding inventory items.<br /><br />NOTE: This value is applied to inventory Auto-Add but can be changed in the Inventory => Maintain screen. The tax rates are selected from the table tax_rates and must be setup through Setup => Sales tax Rates.', '5', '50', NULL , now(), NULL , 'cfg_pull_down_tax_rate_list(' );");
 
@@ -71,7 +71,7 @@ if (!defined('INVENTORY_AUTO_ADD')) {
 	$result->MoveNext();
   }
   $db->Execute("update " . TABLE_JOURNAL_ITEM . " set taxable = 0 where ref_id in (" . implode(',', $clean_array) . ")");
-  
+
   $result = $db->Execute("select distinct tax_auths from " . TABLE_JOURNAL_MAIN);
   while (!$result->EOF) {
     $rate_id = 0;
@@ -90,22 +90,22 @@ if (!defined('INVENTORY_AUTO_ADD')) {
 	$result->MoveNext();
   }
   // add field to reconcile journal accounts
-  $db->Execute("ALTER TABLE " . TABLE_JOURNAL_ITEM . " ADD `reconciled` BOOL NOT NULL DEFAULT '0' AFTER `gl_type`");
-  $db->Execute("ALTER TABLE " . TABLE_JOURNAL_ITEM . " ADD INDEX ( `reconciled` )");
+  $db->Execute("ALTER TABLE " . TABLE_JOURNAL_ITEM . " ADD reconciled BOOL NOT NULL DEFAULT '0' AFTER gl_type");
+  $db->Execute("ALTER TABLE " . TABLE_JOURNAL_ITEM . " ADD INDEX ( reconciled )");
 
 }
 
 if (!defined('ENABLE_ORDER_DISCOUNT')) {
-  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . " 
-           ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` , `set_function` ) 
+  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . "
+           ( configuration_title , configuration_key , configuration_value , configuration_description , configuration_group_id , sort_order , last_modified , date_added , use_function , set_function )
     VALUES ( 'Enable percent/value discounts on order totals', 'ENABLE_ORDER_DISCOUNT', '0', 'This feature adds two additional fields to the order screens to enter an order level discount value or percent. If disabled, the fields will not be displayed on the order screens.', '1', '55', NULL , now(), NULL , 'cfg_keyed_select_option(array(0 =>\'No\', 1=>\'Yes\'),' ),
            ( 'Calculate Customer Sales Tax Before Discount Applied', 'AR_TAX_BEFORE_DISCOUNT', '1', 'If order level discounts are enabled, this switch determines whether the sales tax is calculated before or after the discount is applied to Sales Orders, Sales/Invoices, and Customer Quotes.', '2', '50', NULL , now(), NULL , 'cfg_keyed_select_option(array(0 =>\'After Discount\', 1=>\'Before Discount\'),' ),
            ( 'Calculate Vendor Sales Tax Before Discount Applied', 'AP_TAX_BEFORE_DISCOUNT', '1', 'If order level discounts are enabled, this switch determines whether the sales tax is calculated before or after the discount is applied to Purchase Orders, Purchases, and Vendor Quotes.', '3', '50', NULL , now(), NULL , 'cfg_keyed_select_option(array(0 =>\'After Discount\', 1=>\'Before Discount\'),' );");
 }
 
 if (!defined('SINGLE_LINE_ORDER_SCREEN')) {
-  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . " 
-           ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` , `set_function` ) 
+  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . "
+           ( configuration_title , configuration_key , configuration_value , configuration_description , configuration_group_id , sort_order , last_modified , date_added , use_function , set_function )
     VALUES ( 'Use Single Line Item Order Screen', 'SINGLE_LINE_ORDER_SCREEN', '1', 'If set to true, this option uses a single line order screen without displayed fields for full price and discount. The single line screen uses GL account numbers versus allowing full GL account numbers/descriptions in two line mode.', '1', '75', NULL , now(), NULL , 'cfg_keyed_select_option(array(1=>\'Single Line Item Mode\', 0=>\'Two Line Item Mode\'),' );");
 }
 

@@ -23,7 +23,7 @@ class amazon_admin {
 	public $keys			= array();// Load configuration constants for this module, must match entries in admin tabs
 	public $dirlist			= array();// add new directories to store images and data
 	public $tables			= array();// Load tables
-	
+
   function __construct() {
 	$this->notes = array(); // placeholder for any operational notes
 	$this->prerequisites = array( // modules required and rev level for this module to work properly
@@ -60,7 +60,7 @@ class amazon_admin {
               'params'      => serialize(array('type'=>'check_box', 'select'=>'0', 'inventory_type'=>'ai:ci:ds:sf:ma:ia:lb:mb:ms:mi:ns:sa:sr:sv:si:')),
           );
           db_perform(TABLE_EXTRA_FIELDS, $sql_data_array);
-          $db->Execute("ALTER TABLE ".TABLE_INVENTORY." ADD COLUMN `amazon` enum('0','1') DEFAULT '0'");
+          $db->Execute("ALTER TABLE ".TABLE_INVENTORY." ADD COLUMN amazon enum('0','1') DEFAULT '0'");
       }
   }
 

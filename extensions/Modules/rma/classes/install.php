@@ -47,7 +47,7 @@ class rma_admin {
 		  contact_id varchar(32) default NULL,
 		  contact_name varchar(48) default NULL,
 		  caller_notes varchar(255) default NULL,
-		  `status` varchar(3) NOT NULL default '',
+		  status varchar(3) NOT NULL default '',
 		  received_by int(11) default NULL,
 		  receive_carrier varchar(24) default NULL,
 		  receive_tracking varchar(32) default NULL,
@@ -61,7 +61,7 @@ class rma_admin {
 		  closed_date date NOT NULL default '0000-00-00',
           attachments text,
 		  PRIMARY KEY  (id)
-	    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",	
+	    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
 	);
   }
 

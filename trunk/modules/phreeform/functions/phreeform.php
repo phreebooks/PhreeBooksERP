@@ -52,8 +52,8 @@ function get_mime_image($ext, $folder = false) {
 
 function convertPfColor($color = '0:0:0') {
   $colors   = explode(':', $color);
-  $hexcolor = str_pad(dechex($colors[0]), 2, STR_PAD_LEFT) . 
-              str_pad(dechex($colors[1]), 2, STR_PAD_LEFT) . 
+  $hexcolor = str_pad(dechex($colors[0]), 2, STR_PAD_LEFT) .
+              str_pad(dechex($colors[1]), 2, STR_PAD_LEFT) .
 			  str_pad(dechex($colors[2]), 2, STR_PAD_LEFT);
   return $hexcolor;
 }
@@ -137,7 +137,7 @@ function load_recently_added() {
 function load_my_reports() {
 	global $db;
 	$contents = NULL;
-	$sql = "select id, doc_title, security from " . TABLE_PHREEFORM . " 
+	$sql = "select id, doc_title, security from " . TABLE_PHREEFORM . "
 	  where doc_type <> '0' order by doc_title";
 	$result = $db->Execute($sql);
 	if ($result->RecordCount() == 0) {
@@ -290,9 +290,9 @@ function ImportReport($RptName = '', $RptFileName = '', $import_path = PF_DIR_DE
 	}
 	if ($RptName <> '') $report->title = $RptName; // replace the title if provided
 	// error check
-	$result = $db->Execute("select id from " . TABLE_PHREEFORM . " 
+	$result = $db->Execute("select id from " . TABLE_PHREEFORM . "
 	  where doc_title = '" . addslashes($report->title) . "' and doc_type <> '0'");
-	if ($result->RecordCount() > 0) { // the report name already exists, if file exists error, else write 
+	if ($result->RecordCount() > 0) { // the report name already exists, if file exists error, else write
 	  $rID = $result->fields['id'];
 	  if (file_exists($save_path . 'pf_' . $rID)) { // file exists - error and return
 	    $messageStack->add(sprintf(PHREEFORM_REPDUP, $report->title), 'error');
@@ -312,19 +312,19 @@ function save_report($report, $rID = '', $save_path = PF_DIR_MY_REPORTS) {
 	$output .= '</PhreeformReport>' . chr(10);
 //echo 'xml output = ' . str_replace(chr(10) , "<br>", htmlspecialchars($output)) . '<br>'; exit();
 	// see if a folder exists with the group to put it in
-	$result = $db->Execute("select id from " . TABLE_PHREEFORM . " 
+	$result = $db->Execute("select id from " . TABLE_PHREEFORM . "
 	  where doc_group = '" . $report->groupname . "' and doc_type = '0' and doc_ext in ('ff', 'fr')");
 	if ($result->RecordCount() == 0) {
 	  if ($report->reporttype == 'frm') {
-	    $result = $db->Execute("select id from " . TABLE_PHREEFORM . " 
+	    $result = $db->Execute("select id from " . TABLE_PHREEFORM . "
 	      where doc_group = 'misc:misc' and doc_type = '0'");
 	  } else {
-	    $result = $db->Execute("select id from " . TABLE_PHREEFORM . " 
+	    $result = $db->Execute("select id from " . TABLE_PHREEFORM . "
 	      where doc_group = 'misc' and doc_type = '0'");
 	  }
 	}
 	$parent_id = $result->fields['id'];
-	if ($report->standard_report == '1') $report->standard_report = 's'; 
+	if ($report->standard_report == '1') $report->standard_report = 's';
 	$sql_array = array(
 	  'parent_id' => $parent_id,
 	  'doc_type'  => isset($report->standard_report) ? $report->standard_report : 's',
@@ -400,7 +400,7 @@ function BuildForm($report, $delivery_method = 'D') { // for forms only
 	$report->sqlField  = implode(', ', $strField);
 	// fetch the sort order and add to group by string to finish ORDER BY string
 	$strSort = array();
-	if (is_array($report->sortlist)) foreach ($report->sortlist as $sortline) { 
+	if (is_array($report->sortlist)) foreach ($report->sortlist as $sortline) {
 	  if ($sortline->default == '1') $strSort[] = prefixTables($sortline->fieldname);
 	}
 	$sqlSort   = implode(', ', $strSort);
@@ -469,7 +469,7 @@ function BuildForm($report, $delivery_method = 'D') { // for forms only
       load_special_language($path, $report->special_class);
       require_once($path . '/classes/' . $report->special_class . '.php');
 	}
-    if ($report->serialform) { 
+    if ($report->serialform) {
 	  $output = BuildSeq($report, $delivery_method); // build sequential form (receipt style)
     } else {
 	  $output = BuildPDF($report, $delivery_method); // build standard PDF form, doesn't return if download
@@ -519,8 +519,8 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 		    $TextField = $special_form->load_text_block_data($field->boxfield);
 		  } else {
 		    $arrTxtBlk = array(); // Build the fieldlist
-		    foreach ($field->boxfield as $idx => $entry) $arrTxtBlk[] = prefixTables($entry->fieldname) . ' as r' . $idx; 
-		    $strTxtBlk = implode(', ', $arrTxtBlk); 
+		    foreach ($field->boxfield as $idx => $entry) $arrTxtBlk[] = prefixTables($entry->fieldname) . ' as r' . $idx;
+		    $strTxtBlk = implode(', ', $arrTxtBlk);
 		    $result    = $db->Execute("select " . $strTxtBlk . $TrailingSQL);
 		    $TextField = '';
 		    for ($i = 0; $i < sizeof($field->boxfield); $i++) {
@@ -540,9 +540,9 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 		    $report->LetterData = $special_form->load_letter_data($field->boxfield);
 		  } else {
 		    $tblField = array();
-			foreach ($field->boxfield as $key => $TableField) $tblField[] = prefixTables($TableField->fieldname) . ' as `' . $TableField->description . '`';
+			foreach ($field->boxfield as $key => $TableField) $tblField[] = prefixTables($TableField->fieldname) . " as {$TableField->description} ";
 			$tblField = implode(', ', $tblField);
-			$result = $db->Execute("select " . $tblField . $TrailingSQL . " LIMIT 1");
+			$result = $db->Execute("select $tblField $TrailingSQL LIMIT 1");
 		  	foreach ($field->boxfield as $key => $TableField) {
 		      if ($TableField->processing) $result->fields[$TableField->description] = ProcessData($result->fields[$TableField->description], $TableField->processing);
 		    }
@@ -679,8 +679,8 @@ function BuildSeq($report, $delivery_method = 'D') { // for forms only - Sequent
 			$TextField = $special_form->load_text_block_data($field->boxfield);
 		  } else {
 			$arrTxtBlk = array(); // Build the fieldlist
-			foreach ($field->boxfield as $idx => $entry) $arrTxtBlk[] = prefixTables($entry->fieldname) . ' as r' . $idx; 
-			$strTxtBlk    = implode(', ', $arrTxtBlk); 
+			foreach ($field->boxfield as $idx => $entry) $arrTxtBlk[] = prefixTables($entry->fieldname) . ' as r' . $idx;
+			$strTxtBlk    = implode(', ', $arrTxtBlk);
 			$result       = $db->Execute("select " . $strTxtBlk . $TrailingSQL);
 			$TextField    = '';
 			for ($i = 0; $i < sizeof($field->boxfield); $i++) {
@@ -778,7 +778,7 @@ function BuildSeq($report, $delivery_method = 'D') { // for forms only - Sequent
   header('Expires: ' . date('r', time()+60*60));
   header('Last-Modified: ' . date('r', time()));
   print $output;
-  exit();  
+  exit();
 }
 
 function formatReceipt($value, $width = '15', $align = 'z', $base_string = '', $keep_nl = false) {
@@ -787,7 +787,7 @@ function formatReceipt($value, $width = '15', $align = 'z', $base_string = '', $
   foreach ($temp as $key => $value) {
 	if ($key > 0) $output .= "\n"; // keep the new line chars
     switch ($align) {
-      case 'L': 
+      case 'L':
 	    if (strlen($base_string)) $output .= $value . substr($base_string, $width - strlen($value));
 		  else $output .= str_pad($value, $width, ' ', STR_PAD_RIGHT);
 		break;
@@ -795,14 +795,14 @@ function formatReceipt($value, $width = '15', $align = 'z', $base_string = '', $
 	    if (strlen($base_string)) $output .= substr($base_string, 0, $width - strlen($value)) . $value;
 	      else $output .= str_pad($value, $width, ' ', STR_PAD_LEFT);
 		break;
-      case 'C': 
+      case 'C':
 	    if (strlen($base_string)) {
 		  $pad = (($width - strlen($value)) / 2);
 	      $output .= substr($base_string, 0, floor($pad)) . $value . substr($base_string, -ceil($pad));
 		} else {
 		  $num_blanks = (($width - strlen($value)) / 2) + strlen($value);
 	      $value   = str_pad($value, intval($num_blanks), ' ', STR_PAD_LEFT);
-	      $output .= str_pad($value, $width,              ' ', STR_PAD_RIGHT);  
+	      $output .= str_pad($value, $width,              ' ', STR_PAD_RIGHT);
 	    }
 		break;
     }
@@ -834,7 +834,7 @@ function build_criteria($report) {
   $crit_prefs = $report->filterlist;
   if (!is_array($crit_prefs))         $crit_prefs   = array();
   if (is_array($report->xfilterlist)) $crit_prefs[] = $report->xfilterlist[0];
-  while ($FieldValues = array_shift($crit_prefs)) { 
+  while ($FieldValues = array_shift($crit_prefs)) {
 	if (!$FieldValues->default) { // if no selection was passed, assume it's the first on the list for that selection menu
 	  $temp = explode(':', $CritChoices[$FieldValues->type]);
 	  $FieldValues->default = $temp[1];
@@ -884,11 +884,11 @@ function build_criteria($report) {
 	  case 'IN_LIST':
 		if (isset($FieldValues->min_val)) { // a from value entered, check
 		  $csv_values = explode(',', $FieldValues->min_val);
-		  for ($i = 0; $i < sizeof($csv_values); $i++) $csv_values[$i] = trim($csv_values[$i]); 
+		  for ($i = 0; $i < sizeof($csv_values); $i++) $csv_values[$i] = trim($csv_values[$i]);
 		  $sc .= prefixTables($FieldValues->fieldname) . " in ('" . implode("','", $csv_values) . "')";
 		  $fc .= $FieldValues->description . " in (" . $FieldValues->min_val . ")";
 		}
-		break;				
+		break;
 	  case 'ALL': // sql default anyway
 	default:
 	}
@@ -910,7 +910,7 @@ function BuildSQL($report) { // for reports only
 	$index = 0;
 	for ($i = 0; $i < sizeof($report->fieldlist); $i++) {
 	  if ($report->fieldlist[$i]->visible) {
-		$strField[] = prefixTables($report->fieldlist[$i]->fieldname) . " AS c" . $index; 
+		$strField[] = prefixTables($report->fieldlist[$i]->fieldname) . " AS c" . $index;
 		$index++;
 	  }
 	}
@@ -922,7 +922,7 @@ function BuildSQL($report) { // for reports only
 	$strGroup = NULL;
 	for ($i = 0; $i < sizeof($report->grouplist); $i++) {
 	  if ($report->grouplist[$i]->default) {
-		$strGroup   .= prefixTables($report->grouplist[$i]->fieldname); 
+		$strGroup   .= prefixTables($report->grouplist[$i]->fieldname);
 		$filterdesc .= PHREEFORM_GROUPBY . ' ' . $report->grouplist[$i]->description . '; ';
 		break;
 	  }
@@ -1028,7 +1028,7 @@ function BuildDataArray($sql, $report) { // for reports only
 		$GrpWorking = $myrow[$GrpField]; // set to new grouping value
 	  }
 
-	  foreach($Seq as $key => $TableCtl) { // 
+	  foreach($Seq as $key => $TableCtl) { //
 	    if ($report->totalonly <> '1') { // insert data into output array and set to next column
 		  $OutputArray[$RowCnt][0] = 'd'; // let the display class know its a data element
 	      $OutputArray[$RowCnt][$ColCnt] = ProcessData($myrow[$TableCtl['fieldname']], $TableCtl['processing']);
@@ -1054,7 +1054,7 @@ function BuildDataArray($sql, $report) { // for reports only
 	}
 	// see if we have a total to send
 	$ShowTotals = false;
-	foreach ($Seq as $TotalCtl) if ($TotalCtl['total']=='1') $ShowTotals = true; 
+	foreach ($Seq as $TotalCtl) if ($TotalCtl['total']=='1') $ShowTotals = true;
 	if ($ShowTotals) {
 		$OutputArray[$RowCnt][0] = 'r:' . $report->title;
 		foreach ($Seq as $TotalCtl) {
@@ -1136,7 +1136,7 @@ function GenerateCSVFile($Data, $report, $delivery_method = 'D') { // for csv re
 	header('Expires: ' . date('r', time()+60*60));
 	header('Last-Modified: ' . date('r'));
 	print $CSVOutput;
-	exit();  
+	exit();
 }
 
 function GenerateXMLFile($Data, $report, $delivery_method = 'D') { // for csv reports only
@@ -1160,10 +1160,10 @@ function GenerateXMLFile($Data, $report, $delivery_method = 'D') { // for csv re
 		  		//foreach ($myrow as $mycolumn) { // check for embedded commas and enclose in quotes
 		  			$xml .= '<'.$title.'>'.$myrow[$i].'</'.$title.'>'.chr(10);
 					$i++;
-		  		}	  
+		  		}
 		  }
 	  $xml .= '</Row>'.chr(10);
-	  
+
 	}
 	$ReportName = ReplaceNonAllowedCharacters($report->title) . '.csv';
 	if ($delivery_method == 'S') return array('filename' => $ReportName, 'pdf' => $CSVOutput);
@@ -1173,9 +1173,9 @@ function GenerateXMLFile($Data, $report, $delivery_method = 'D') { // for csv re
 	$output .= '<PhreeformReport>' . chr(10);
 	$output .= $xml;
 	$output .= '</PhreeformReport>' . chr(10);
-	
+
 	print $output;
-	exit();  
+	exit();
 	echo createXmlHeader() . $xml . createXmlFooter();
 	die;
 }

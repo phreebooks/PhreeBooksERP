@@ -22,7 +22,7 @@ class inventory_admin {
 	public $keys			= array();// Load configuration constants for this module, must match entries in admin tabs
 	public $dirlist			= array();// add new directories to store images and data
 	public $tables			= array();// Load tables
-	
+
   function __construct() {
 	$this->prerequisites = array( // modules required and rev level for this module to work properly
 	  'contacts'   => 3.71,
@@ -144,7 +144,7 @@ class inventory_admin {
 		  qty double NOT NULL default '0',
 		  inventory_history_id int(11) NOT NULL default '0',
 		  PRIMARY KEY (id),
-		  INDEX (journal_main_id, inventory_history_id) 
+		  INDEX (journal_main_id, inventory_history_id)
 		) ENGINE=innodb DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci",
 	  TABLE_INVENTORY_HISTORY => "CREATE TABLE " . TABLE_INVENTORY_HISTORY . " (
 		  id int(11) NOT NULL auto_increment,
@@ -171,7 +171,7 @@ class inventory_admin {
 		  attr_name_0 varchar(16) NULL,
 		  attr_name_1 varchar(16) NULL,
 		  attr_0 varchar(255) NULL,
-		  attr_1 varchar(255) NULL, 
+		  attr_1 varchar(255) NULL,
 		  PRIMARY KEY (id)
 		) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;",
 	  TABLE_INVENTORY_PURCHASE => "CREATE TABLE " . TABLE_INVENTORY_PURCHASE . " (
@@ -181,7 +181,7 @@ class inventory_admin {
 		  description_purchase varchar(255) default NULL,
 		  purch_package_quantity double NOT NULL default '1',
 		  purch_taxable int(11) NOT NULL default '0',
-		  item_cost double NOT NULL default '0', 
+		  item_cost double NOT NULL default '0',
 		  price_sheet_v varchar(32) default NULL,
 		  PRIMARY KEY (id),
 		  INDEX (sku)
@@ -265,7 +265,7 @@ class inventory_admin {
 		$updateDB = $db->Execute("update " . TABLE_EXTRA_FIELDS . " set params = '" . serialize($temp) . "' where id = '".$result->fields['id']."'");
 		$result->MoveNext();
 	}
-	// set the fields to view in the inventory field filters 
+	// set the fields to view in the inventory field filters
 	$haystack = array('attachments', 'account_sales_income', 'item_taxable', 'purch_taxable', 'image_with_path', 'account_inventory_wage', 'account_cost_of_sales', 'cost_method', 'lead_time');
 	$result = $db->Execute("update " . TABLE_EXTRA_FIELDS . " set entry_type='check_box' where field_name='inactive'");
 	$result = $db->Execute("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory'");
@@ -275,7 +275,7 @@ class inventory_admin {
 		$updateDB = $db->Execute("update " . TABLE_EXTRA_FIELDS . " set use_in_inventory_filter = '".$use_in_inventory_filter."' where id = '".$result->fields['id']."'");
 		$result->MoveNext();
 	}
-	
+
     return $error;
   }
 
@@ -290,7 +290,7 @@ class inventory_admin {
 	  if(db_table_exists(DB_PREFIX . 'inventory_categories')){
 		  $result = $db->Execute("select * from " . DB_PREFIX . 'inventory_categories');
 		  while (!$result->EOF) {
-		    $updateDB = $db->Execute("insert into " . TABLE_EXTRA_TABS . " set 
+		    $updateDB = $db->Execute("insert into " . TABLE_EXTRA_TABS . " set
 			  module_id = 'inventory',
 			  tab_name = '"    . $result->fields['category_name']        . "',
 			  description = '" . $result->fields['category_description'] . "',
@@ -303,7 +303,7 @@ class inventory_admin {
 	  if(db_table_exists(DB_PREFIX . 'inventory_categories')){
 		  $result = $db->Execute("select * from " . DB_PREFIX . 'inventory_fields');
 		  while (!$result->EOF) {
-		    $updateDB = $db->Execute("insert into " . TABLE_EXTRA_FIELDS . " set 
+		    $updateDB = $db->Execute("insert into " . TABLE_EXTRA_FIELDS . " set
 			  module_id = 'inventory',
 			  tab_id = '"      . $tab_map[$result->fields['category_id']] . "',
 			  entry_type = '"  . $result->fields['entry_type']  . "',
@@ -322,20 +322,20 @@ class inventory_admin {
 	  xtra_field_sync_list('inventory', TABLE_INVENTORY);
 	}
 	if (MODULE_INVENTORY_STATUS < 3.6) {
-		$db->Execute("ALTER TABLE " . TABLE_INVENTORY . " ADD INDEX ( `sku` )"); 
+		$db->Execute("ALTER TABLE " . TABLE_INVENTORY . " ADD INDEX ( sku )");
 		if (!db_field_exists(TABLE_INVENTORY, 'attachments')) $db->Execute("ALTER TABLE " . TABLE_INVENTORY . " ADD attachments text AFTER last_journal_date");
 		if (!db_field_exists(TABLE_INVENTORY, 'full_price_with_tax')) $db->Execute("ALTER TABLE " . TABLE_INVENTORY . " ADD full_price_with_tax FLOAT NOT NULL DEFAULT '0' AFTER full_price");
 		if (!db_field_exists(TABLE_INVENTORY, 'product_margin')) $db->Execute("ALTER TABLE " . TABLE_INVENTORY . " ADD product_margin FLOAT NOT NULL DEFAULT '0' AFTER full_price_with_tax");
 		if (!db_field_exists(TABLE_EXTRA_FIELDS , 'use_in_inventory_filter')) $db->Execute("ALTER TABLE " . TABLE_EXTRA_FIELDS . " ADD use_in_inventory_filter ENUM( '0', '1' ) NOT NULL DEFAULT '0'");
-		$db->Execute("alter table " . TABLE_INVENTORY . " CHANGE `inactive` `inactive` ENUM( '0', '1' ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'");
+		$db->Execute("alter table " . TABLE_INVENTORY . " CHANGE inactive inactive ENUM( '0', '1' ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'");
 		xtra_field_sync_list('inventory', TABLE_INVENTORY);
 		$db->Execute("update " . TABLE_INVENTORY . " set inventory_type = 'ma' where inventory_type = 'as'");
-		$result = $db->Execute("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory'"); 
+		$result = $db->Execute("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory'");
 		while (!$result->EOF) {
 			$temp = unserialize($result->fields['params']);
 			switch($result->fields['field_name']){
 				case 'serialize':
-					$temp['inventory_type'] = 'sa:sr'; 	
+					$temp['inventory_type'] = 'sa:sr';
 					break;
 				case 'item_taxable':
 		  		case 'purch_taxable':
@@ -376,7 +376,7 @@ class inventory_admin {
 		  			break;
 		  		case 'upc_code':
 		  			$temp['inventory_type'] = 'ia:ma:mi:ns:sa:si:sr';
-		  			break; 
+		  			break;
 		  		default:
 		  			$temp['inventory_type'] = 'ai:ci:ds:ia:lb:ma:mb:mi:ms:ns:sa:sf:si:sr:sv';
 			}
@@ -392,13 +392,13 @@ class inventory_admin {
 			$updateDB = $db->Execute("update " . TABLE_EXTRA_FIELDS . " set use_in_inventory_filter = '".$use_in_inventory_filter."' where id = '".$result->fields['id']."'");
 			$result->MoveNext();
 	  	}
-		if(!db_table_exists(TABLE_INVENTORY_PURCHASE)){ 
+		if(!db_table_exists(TABLE_INVENTORY_PURCHASE)){
 			foreach ($this->tables as $table => $sql) {
 				if ($table == TABLE_INVENTORY_PURCHASE) admin_install_tables(array($table => $sql));
 	  		}
 		  	if (db_field_exists(TABLE_INVENTORY, 'purch_package_quantity')){
 	  			$result = $db->Execute("insert into ".TABLE_INVENTORY_PURCHASE." ( sku, vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v ) select sku, vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v  from " . TABLE_INVENTORY);
-	  			$db->Execute("ALTER TABLE " . TABLE_INVENTORY . " DROP `purch_package_quantity`");
+	  			$db->Execute("ALTER TABLE " . TABLE_INVENTORY . " DROP purch_package_quantity");
 	  		}else{
 	  			$result = $db->Execute("insert into ".TABLE_INVENTORY_PURCHASE." ( sku, vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v ) select sku, vendor_id, description_purchase, 1, purch_taxable, item_cost, price_sheet_v  from " . TABLE_INVENTORY);
 	  		}
@@ -424,33 +424,33 @@ class inventory_admin {
 		$temp = unserialize($result->fields['params']);
 		$temp['inventory_type'] = 'ai:ci:ds:ia:lb:ma:mb:mi:ms:ns:sa:sf:si:sr:sv';
 		$updateDB = $db->Execute("update ".TABLE_EXTRA_FIELDS." set params='".serialize($temp)."' where id='".$result->fields['id']."'");
-		$db->Execute("ALTER TABLE ".TABLE_INVENTORY." 
-			CHANGE `item_cost` `item_cost` DOUBLE NOT NULL DEFAULT '0',
-			CHANGE `full_price` `full_price` DOUBLE NOT NULL DEFAULT '0',
-			CHANGE `full_price_with_tax` `full_price_with_tax` DOUBLE NOT NULL DEFAULT '0',
-			CHANGE `product_margin` `product_margin` DOUBLE NOT NULL DEFAULT '0',
-			CHANGE `item_weight` `item_weight` DOUBLE NOT NULL DEFAULT '0',
-			CHANGE `quantity_on_hand` `quantity_on_hand` DOUBLE NOT NULL DEFAULT '0',
-			CHANGE `quantity_on_order` `quantity_on_order` DOUBLE NOT NULL DEFAULT '0',
-			CHANGE `quantity_on_sales_order` `quantity_on_sales_order` DOUBLE NOT NULL DEFAULT '0',
-			CHANGE `quantity_on_allocation` `quantity_on_allocation` DOUBLE NOT NULL DEFAULT '0',
-			CHANGE `minimum_stock_level` `minimum_stock_level` DOUBLE NOT NULL DEFAULT '0',
-			CHANGE `reorder_quantity` `reorder_quantity` DOUBLE NOT NULL DEFAULT '0'");
-		$db->Execute("ALTER TABLE ".TABLE_INVENTORY_ASSY_LIST ." CHANGE `qty` `qty` double NOT NULL default '0'");
-		$db->Execute("ALTER TABLE ".TABLE_INVENTORY_COGS_OWED ." CHANGE `qty` `qty` double NOT NULL default '0'");
-		$db->Execute("ALTER TABLE ".TABLE_INVENTORY_COGS_USAGE." CHANGE `qty` `qty` double NOT NULL default '0'");
+		$db->Execute("ALTER TABLE ".TABLE_INVENTORY."
+			CHANGE item_cost item_cost DOUBLE NOT NULL DEFAULT '0',
+			CHANGE full_price full_price DOUBLE NOT NULL DEFAULT '0',
+			CHANGE full_price_with_tax full_price_with_tax DOUBLE NOT NULL DEFAULT '0',
+			CHANGE product_margin product_margin DOUBLE NOT NULL DEFAULT '0',
+			CHANGE item_weight item_weight DOUBLE NOT NULL DEFAULT '0',
+			CHANGE quantity_on_hand quantity_on_hand DOUBLE NOT NULL DEFAULT '0',
+			CHANGE quantity_on_order quantity_on_order DOUBLE NOT NULL DEFAULT '0',
+			CHANGE quantity_on_sales_order quantity_on_sales_order DOUBLE NOT NULL DEFAULT '0',
+			CHANGE quantity_on_allocation quantity_on_allocation DOUBLE NOT NULL DEFAULT '0',
+			CHANGE minimum_stock_level minimum_stock_level DOUBLE NOT NULL DEFAULT '0',
+			CHANGE reorder_quantity reorder_quantity DOUBLE NOT NULL DEFAULT '0'");
+		$db->Execute("ALTER TABLE ".TABLE_INVENTORY_ASSY_LIST ." CHANGE qty qty double NOT NULL default '0'");
+		$db->Execute("ALTER TABLE ".TABLE_INVENTORY_COGS_OWED ." CHANGE qty qty double NOT NULL default '0'");
+		$db->Execute("ALTER TABLE ".TABLE_INVENTORY_COGS_USAGE." CHANGE qty qty double NOT NULL default '0'");
 		$db->Execute("ALTER TABLE ".TABLE_INVENTORY_HISTORY."
-			CHANGE `qty` `qty` DOUBLE NOT NULL DEFAULT '0',
-			CHANGE `remaining` `remaining` DOUBLE NOT NULL DEFAULT '0',
-			CHANGE `unit_cost` `unit_cost` DOUBLE NOT NULL DEFAULT '0',
-			CHANGE `avg_cost` `avg_cost` DOUBLE NOT NULL DEFAULT '0'");
-		$db->Execute("ALTER TABLE ".TABLE_INVENTORY_PURCHASE." 
-			CHANGE `purch_package_quantity` `purch_package_quantity` DOUBLE NOT NULL DEFAULT '0',
-			CHANGE `item_cost` `item_cost` DOUBLE NOT NULL DEFAULT '0'");
+			CHANGE qty qty DOUBLE NOT NULL DEFAULT '0',
+			CHANGE remaining remaining DOUBLE NOT NULL DEFAULT '0',
+			CHANGE unit_cost unit_cost DOUBLE NOT NULL DEFAULT '0',
+			CHANGE avg_cost avg_cost DOUBLE NOT NULL DEFAULT '0'");
+		$db->Execute("ALTER TABLE ".TABLE_INVENTORY_PURCHASE."
+			CHANGE purch_package_quantity purch_package_quantity DOUBLE NOT NULL DEFAULT '0',
+			CHANGE item_cost item_cost DOUBLE NOT NULL DEFAULT '0'");
 	}
 	if (version_compare(MODULE_INVENTORY_STATUS, '3.7.4', '<') ) {
 		if (!db_field_exists(TABLE_INVENTORY, 'product_markup')) {
-			$db->Execute("ALTER TABLE ".TABLE_INVENTORY." CHANGE `product_margin` `product_markup` DOUBLE NOT NULL DEFAULT '0'");
+			$db->Execute("ALTER TABLE ".TABLE_INVENTORY." CHANGE product_margin product_markup DOUBLE NOT NULL DEFAULT '0'");
 			$db->Execute("ALTER TABLE ".TABLE_INVENTORY." ADD product_margin DOUBLE NOT NULL DEFAULT '0' AFTER product_markup");
 			$db->Execute("insert into " . TABLE_EXTRA_FIELDS . " set module_id = 'inventory', tab_id = '0', entry_type = 'decimal', field_name = 'product_markup',
 				description = 'product_markup', params = 'a:2:{s:4:\"type\";N;s:14:\"inventory_type\";s:39:\"lb:ma:ia:mb:ms:ci:ns:sa:sr:sv:mi:sf:si:\";}'");
@@ -494,10 +494,10 @@ class inventory_admin {
   function load_demo() {
     global $db;
 	$error = false;
-	// Data for table `inventory`
+	// Data for table inventory
 
 	$db->Execute("TRUNCATE TABLE " . TABLE_INVENTORY);
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY . " (sku, inactive, inventory_type, description_short, description_sales, image_with_path, account_sales_income, account_inventory_wage, account_cost_of_sales, item_taxable, cost_method, full_price, full_price_with_tax, item_weight, quantity_on_hand, minimum_stock_level, reorder_quantity, lead_time, creation_date ) VALUES 
+	$db->Execute("INSERT INTO " . TABLE_INVENTORY . " (sku, inactive, inventory_type, description_short, description_sales, image_with_path, account_sales_income, account_inventory_wage, account_cost_of_sales, item_taxable, cost_method, full_price, full_price_with_tax, item_weight, quantity_on_hand, minimum_stock_level, reorder_quantity, lead_time, creation_date ) VALUES
 ('AMD-3600-CPU',		'0', 'si', 'AMD 3600+ Athlon CPU', 			'AMD 3600+ Athlon CPU',			'demo/athlon.jpg', 		'4000', '1200', '5000', '1', 'f', 150,	150, 		1.5, 	1,   0,  0,  3, now()),
 ('ASSY-BB', 		'0', 'lb', 'Labor - BB Computer Assy', 		'Labor - BB Computer Assy',		'', 					'4000', '6000', '5000', '1', 'f',   0,   	0, 		0,    0,   0,  0,  0, now()),
 ('BOX-TW-322', 		'0', 'ns', 'TW-322 Shipping Box', 			'TW-322 Shipping Box', 			'', 					'4000', '6800', '5000', '1', 'f',   0,   	0, 		0,    0,  15, 25,  0, now()),
@@ -516,7 +516,7 @@ class inventory_admin {
 ('RAM-2GB-0.2', 		'0', 'si', '2GB SDRAM', 				'2GB SDRAM', 				'demo/2gbram.jpg', 		'4000', '1200', '5000', '1', 'f', 89.65, 	89.65, 	1.5, 	0,   8, 10,  3, now()),
 ('VID-NV-512MB', 		'0', 'si', 'nVidia 512 MB Video Card', 		'nVidia 512 MB Video Card', 		'demo/nvidia_512.jpg', 		'4000', '1200', '5000', '1', 'f', 300, 	300, 		1.5, 0.7,  4,  5,  1, now()),
 ('PC-BB-512', 		'0', 'ma', 'Bare Bones Computer 2600+/2GB', 	'Bare Bones Computer 2600+/2GB', 	'demo/barebones.jpg', 		'4000', '1200', '5000', '1', 'f', 750, 	750, 		1.5, 21.3, 0,  0,  0, now());");
-	// Data for table `inventory_assy_list`
+	// Data for table inventory_assy_list
 	$db->Execute("TRUNCATE TABLE " . TABLE_INVENTORY_ASSY_LIST);
 	$db->Execute("INSERT INTO " . TABLE_INVENTORY_ASSY_LIST . " (ref_id, sku, description, qty) VALUES
 (14, 'LCD-21-WS', 'LCDisplays 21', 1),
@@ -536,7 +536,7 @@ class inventory_admin {
 (18, 'VID-NV-512MB', 'nVidea 512 MB Video Card', 1);");
 	// data for table inventory_purchase_details
 	$db->Execute("TRUNCATE TABLE " . TABLE_INVENTORY_PURCHASE);
-	$db->Execute("INSERT INTO " . TABLE_INVENTORY_PURCHASE . " (`sku`, `vendor_id`, `description_purchase`, `purch_taxable`, `item_cost`) VALUES
+	$db->Execute("INSERT INTO " . TABLE_INVENTORY_PURCHASE . " (sku, vendor_id, description_purchase, purch_taxable, item_cost) VALUES
 ('AMD-3600-CPU', 3, 'AMD 3600+ Athlon CPU', 0, 100),
 ('ASSY-BB', 0, 'Labor Cost - Assemble Bare Bones Computer', 0, 25),
 ('BOX-TW-322', 0, 'TW-322 Shipping Box - 12 x 12 x 12', 0, 1.35),
@@ -556,7 +556,7 @@ class inventory_admin {
 ('VID-NV-512MB', 1, 'nVidea 512 MB Video Card - with SLI support', 0, 0),
 ('PC-BB-512', 0, 'Fully assembled bare bones computer AMD/ATI 512MB/2GB/Red Case', 0, 0);
 	");
-	
+
 	// copy the demo images
 	require(DIR_FS_MODULES . 'phreedom/classes/backup.php');
 	$backups = new backup;

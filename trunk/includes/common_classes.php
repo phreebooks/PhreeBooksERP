@@ -37,7 +37,7 @@ class toolbar {
 	public $search_prefix = '';
     public $icon_size     = 'large';	// default icon size (choice are small, medium, large)
   	public $icon_list     = array();
-  	
+
   function __construct($id = '0') {
     // set up the default toolbar
 	$this->id            = $id;
@@ -68,17 +68,17 @@ class toolbar {
 	  case 'ship_all':   $image = 'mimetypes/package-x-generic.png';    $text = TEXT_SHIP_ALL;   break;
 	  case 'search':     $image = 'actions/system-search.png';          $text = TEXT_SEARCH;     break;
 	  case 'update':     $image = 'apps/system-software-update.png';    $text = TEXT_UPDATE;     break;
-	  default:           $image = 'emblems/emblem-important.png';       $text = $name . ' ICON NOT FOUND'; 
+	  default:           $image = 'emblems/emblem-important.png';       $text = $name . ' ICON NOT FOUND';
 	}
 	if ($image) $this->icon_list[$name] = array('show' => true, 'icon' => $image, 'params' => $params, 'text' => $text, 'order' => $order);
   }
 
   function add_help($index = '', $order = 99) { // adds some common icons, per request
 	$this->icon_list['help'] = array(
-	  'show'   => true, 
+	  'show'   => true,
 	  'icon'   => 'apps/help-browser.png',
-	  'params' => 'onclick="window.open(\'' . FILENAME_DEFAULT . '.php?module=phreehelp&amp;page=main&amp;idx=' . $index . '\',\'help\',\'width=800,height=600,resizable=1,scrollbars=1,top=100,left=100\')"', 
-	  'text'   => TEXT_HELP, 
+	  'params' => 'onclick="window.open(\'' . FILENAME_DEFAULT . '.php?module=phreehelp&amp;page=main&amp;idx=' . $index . '\',\'help\',\'width=800,height=600,resizable=1,scrollbars=1,top=100,left=100\')"',
+	  'text'   => TEXT_HELP,
 	  'order'  => $order,
 	);
   }
@@ -143,7 +143,7 @@ class splitPageResults {
 	public	$page_start				= 0;
 	public	$total_num_rows			= 0;
 	public  $total_num_pages		= 1;
-  	
+
 	function __construct($current_page_number, $query_num_rows) {
     	global $db, $messageStack;
     	if($query_num_rows == '') {
@@ -156,7 +156,7 @@ class splitPageResults {
 		if ($this->total_num_pages == 0) $this->total_num_pages = 1;
       	if ($this->total_num_pages < $this->current_page_number) $this->current_page_number = max(1, $this->total_num_pages);
     }
-    
+
     function display_links($page_name = 'list') {
 	    $pages_array = array();
 	    for ($i = 1; $i <= $this->total_num_pages; $i++) $pages_array[] = array('id' => $i, 'text' => $i);
@@ -187,7 +187,7 @@ class splitPageResults {
 	    }
 	    return $display_links;
     }
-    
+
     function display_ajax($page_name = 'list', $id = '') {
       	$display_links   = '';
       	$pages_array     = array();
@@ -252,7 +252,7 @@ class objectInfo {
 /**************************************************************************************************************/
   class messageStack {
     public $debug_info 	= NULL;
-    
+
     function add($message, $type = 'error') {
       	if ($type == 'error') {
         	$_SESSION['messageToStack'][] = array('type' => $type, 'params' => 'class="ui-state-error"', 'text' => html_icon('emblems/emblem-unreadable.png', TEXT_ERROR) . '&nbsp;' . $message);
@@ -270,12 +270,12 @@ class objectInfo {
     function reset() {
       unset($_SESSION['messageToStack']);
     }
-    
+
     /**
      * this function will be replaced by the add function.
-     * @todo = Remove 
+     * @todo = Remove
      */
-    
+
     function add_session($message, $type = 'error') {
     	trigger_error('messageStack->add_session will be removed', E_USER_DEPRECATED);
       	if ($type == 'error') {
@@ -351,12 +351,12 @@ class ctl_panel {
 	public $valid_user			= false;
 	public $size_params			= 0;
 	public $default_params 		= array();
-	
+
   	function __construct() {
   		if ($this->security_id <> '' ) $this->valid_user = ($_SESSION['admin_security'][$this->security_id] > 0)? true : false;
-  		else $this->valid_user = true;	
+  		else $this->valid_user = true;
   	}
-  
+
   	function pre_install($odd, $my_profile){
   		if(!$this->valid_user) return false;
 		$output  = '<tr class="'.($odd?'odd':'even').'"><td align="center">';
@@ -365,34 +365,34 @@ class ctl_panel {
 		$output .=' </td><td>' . $this->title . '</td><td>' . $this->description . '</td></tr>';
 		return $output;
 	}
-  
+
   	function Install($column_id = 1, $row_id = 0) {
 		global $db;
 		if (!$row_id) $row_id 		= $this->get_next_row();
 		//$this->params['num_rows']   = $this->default_num_rows;	// defaults to unlimited rows
-		$result = $db->Execute("insert into " . TABLE_USERS_PROFILES . " set 
-			user_id = "       . $_SESSION['admin_id'] . ", 
-			menu_id = '"      . $this->menu_id . "', 
-		  	module_id = '"    . $this->module_id . "', 
-		  	dashboard_id = '" . $this->dashboard_id . "', 
-		  	column_id = "     . $column_id . ", 
-		  	row_id = "        . $row_id . ", 
+		$result = $db->Execute("insert into " . TABLE_USERS_PROFILES . " set
+			user_id = "       . $_SESSION['admin_id'] . ",
+			menu_id = '"      . $this->menu_id . "',
+		  	module_id = '"    . $this->module_id . "',
+		  	dashboard_id = '" . $this->dashboard_id . "',
+		  	column_id = "     . $column_id . ",
+		  	row_id = "        . $row_id . ",
 		  	params = '"       . serialize($this->default_params) . "'");
   	}
 
   	function Remove() {
 		global $db;
-		$result = $db->Execute("delete from " . TABLE_USERS_PROFILES . " 
+		$result = $db->Execute("delete from " . TABLE_USERS_PROFILES . "
 	  	where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "' and dashboard_id = '" . $this->dashboard_id . "'");
   	}
 
   	function Update() {
   		global $db;
-  		$db->Execute("update " . TABLE_USERS_PROFILES . " set params = '" . serialize($this->params) . "' 
-	  		where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "' 
+  		$db->Execute("update " . TABLE_USERS_PROFILES . " set params = '" . serialize($this->params) . "'
+	  		where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "'
 	    	and dashboard_id = '" . $this->dashboard_id . "'");
   	}
-  
+
   	function build_div($title, $contents, $controls) {
 	  	if(!$this->valid_user) return false;
 	  	$output = '';
@@ -489,11 +489,11 @@ class ctl_panel {
 
 	function get_next_row($column_id = 1) {
 		global $db;
-		$result = $db->Execute("select max(row_id) as max_row from " . TABLE_USERS_PROFILES . " 
+		$result = $db->Execute("select max(row_id) as max_row from " . TABLE_USERS_PROFILES . "
 		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "' and column_id = " . $column_id);
 		return ($result->fields['max_row'] + 1);
 	}
-	
+
 	function Upgrade($params){
 		foreach ($this->default_params as $key => $value){
 			if(in_array($key, $params, false)){
@@ -512,7 +512,7 @@ class ctl_panel {
 /**************************************************************************************************************/
 class currencies {
   public $currencies = array();
-  
+
   function __construct() {
     global $db, $messageStack;
     $currencies = $db->Execute("select * from " . TABLE_CURRENCIES);
@@ -612,8 +612,8 @@ class encryption {
   private $mod			= 3;
 
   function __construct() {
-	$this->scramble1 = '! #$%&()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~';
-	$this->scramble2 = 'f^jAE]okIOzU[2&q1{3`h5w_794p@6s8?BgP>dFV=m D<TcS%Ze|r:lGK/uCy.Jx)HiQ!#$~(;Lt-R}Ma,NvW+Ynb*0X';
+	$this->scramble1 = "! #$%&()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+	$this->scramble2 = "f^jAE]okIOzU[2&q1{3`h5w_794p@6s8?BgP>dFV=m D<TcS%Ze|r:lGK/uCy.Jx)HiQ!#$~(;Lt-R}Ma,NvW+Ynb*0X";
 	if (strlen($this->scramble1) <> strlen($this->scramble2)) {
 		trigger_error('** SCRAMBLE1 is not same length as SCRAMBLE2 **', E_USER_ERROR);
 	}
@@ -628,7 +628,7 @@ class encryption {
 	if ($params['number']) {
 	  $params['number'] = preg_replace("/[^0-9]/", "", $params['number']);
 	  $hint  = substr($params['number'], 0, 4);
-	  for ($a = 0; $a < (strlen($params['number']) - 8); $a++) $hint .= '*'; 
+	  for ($a = 0; $a < (strlen($params['number']) - 8); $a++) $hint .= '*';
 	  $hint .= substr($params['number'], -4);
 	  $payment = array(); // the sequence is important!
 		$payment[] = $params['name'];

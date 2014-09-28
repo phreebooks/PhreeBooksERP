@@ -23,7 +23,7 @@ class zencart_admin {
 	public $keys		  = array(); // Load configuration constants for this module, must match entries in admin tabs
 	public $dirlist		  = array(); // add new directories to store images and data
 	public $tables		  = array(); // Load tables
-	
+
   function __construct() {
 	$this->prerequisites = array( // modules required and rev level for this module to work properly
 	  'phreedom'   => '3.6',
@@ -74,7 +74,7 @@ class zencart_admin {
 	    'params'      => serialize(array('type'=>'check_box', 'select'=>'0', 'inventory_type'=>'ai:ci:ds:sf:ma:ia:lb:mb:ms:mi:ns:sa:sr:sv:si:')),
 	  );
 	  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array);
-	  $db->Execute("alter table " . TABLE_INVENTORY . " add column `catalog` enum('0','1') default '0'");
+	  $db->Execute("alter table " . TABLE_INVENTORY . " add column catalog enum('0','1') default '0'");
 	  $sql_data_array = array(
 	    'module_id'   => 'inventory',
 	    'tab_id'      => $tab_id,
@@ -86,8 +86,8 @@ class zencart_admin {
 	  	'params'      => serialize(array('type'=>'text', 'length'=>'64', 'default'=>'', 'inventory_type'=>'ai:ci:ds:sf:ma:ia:lb:mb:ms:mi:ns:sa:sr:sv:si:')),
 	  );
 	  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array);
-	  $db->Execute("alter table " . TABLE_INVENTORY . " add column `category_id` varchar(64) default ''");
-	  
+	  $db->Execute("alter table " . TABLE_INVENTORY . " add column category_id varchar(64) default ''");
+
 	  $sql_data_array = array(
 	    'module_id'   => 'inventory',
 	    'tab_id'      => $tab_id,
@@ -99,7 +99,7 @@ class zencart_admin {
 	  	'params'      => serialize(array('type'=>'text', 'length'=>'64', 'default'=>'', 'inventory_type'=>'ai:ci:ds:sf:ma:ia:lb:mb:ms:mi:ns:sa:sr:sv:si:')),
 	  );
 	  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array);
-	  $db->Execute("alter table " . TABLE_INVENTORY . " add column `manufacturer` varchar(64) default ''");
+	  $db->Execute("alter table " . TABLE_INVENTORY . " add column manufacturer varchar(64) default ''");
 
 	  $sql_data_array = array(
 	    'module_id'   => 'inventory',
@@ -112,7 +112,7 @@ class zencart_admin {
 	  	'params'      => serialize(array('type'=>'text', 'length'=>'64', 'default'=>'', 'inventory_type'=>'ai:ci:ds:sf:ma:ia:lb:mb:ms:mi:ns:sa:sr:sv:si:')),
 	  );
 	  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array);
-	  $db->Execute("alter table " . TABLE_INVENTORY . " add column `ProductModel` varchar(64) default ''");
+	  $db->Execute("alter table " . TABLE_INVENTORY . " add column ProductModel varchar(64) default ''");
 
 	  $sql_data_array = array(
 	  	'module_id'   => 'inventory',
@@ -125,7 +125,7 @@ class zencart_admin {
 	  	'params'      => serialize(array('type'=>'text', 'length'=>'64', 'default'=>'', 'inventory_type'=>'ai:ci:ds:sf:ma:ia:lb:mb:ms:mi:ns:sa:sr:sv:si:')),
 	  );
 	  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array);
-	  $db->Execute("alter table " . TABLE_INVENTORY . " add column `ProductURL` varchar(64) default ''");
+	  $db->Execute("alter table " . TABLE_INVENTORY . " add column ProductURL varchar(64) default ''");
 
 	  gen_add_audit_log(ZENCART_LOG_FIELDS . TEXT_NEW, 'zencart - catalog');
 	}
@@ -169,7 +169,7 @@ class zencart_admin {
 	}
 	$result = $db->Execute("select tab_id from " . TABLE_EXTRA_FIELDS . " where field_name = 'category_id'");
 	if ($result->RecordCount() == 0) $error = $messageStack->add('can not find tab_name ZenCart','error');
-	else $tab_id = $result->fields['tab_id'];	
+	else $tab_id = $result->fields['tab_id'];
 	if ($error == false  && !db_field_exists(TABLE_INVENTORY, 'ProductURL')){
 		 $sql_data_array = array(
 		    'module_id'   => 'inventory',
@@ -180,7 +180,7 @@ class zencart_admin {
 		    'params'      => serialize(array('type'=>'text', 'length'=>'64', 'default'=>'', 'inventory_type'=>'ai:ci:ds:sf:ma:ia:lb:mb:ms:mi:ns:sa:sr:sv:si:')),
 		  );
 		  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array);
-		  $db->Execute("alter table " . TABLE_INVENTORY . " add column `ProductURL` varchar(64) default ''");
+		  $db->Execute("alter table " . TABLE_INVENTORY . " add column ProductURL varchar(64) default ''");
 	}
 	if ($error == false  && !db_field_exists(TABLE_INVENTORY, 'ProductModel')){
 		$sql_data_array = array(
@@ -192,9 +192,9 @@ class zencart_admin {
 		    'params'      => serialize(array('type'=>'text', 'length'=>'64', 'default'=>'', 'inventory_type'=>'ai:ci:ds:sf:ma:ia:lb:mb:ms:mi:ns:sa:sr:sv:si:')),
 		  );
 		  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array);
-		  $db->Execute("alter table " . TABLE_INVENTORY . " add column `ProductModel` varchar(64) default ''");
+		  $db->Execute("alter table " . TABLE_INVENTORY . " add column ProductModel varchar(64) default ''");
 	}
-	
+
 	if (!$error) {
 	  write_configure('MODULE_' . strtoupper($module) . '_STATUS', constant('MODULE_' . strtoupper($module) . '_VERSION'));
    	  $messageStack->add(sprintf(GEN_MODULE_UPDATE_SUCCESS, $module, constant('MODULE_' . strtoupper($module) . '_VERSION')), 'success');

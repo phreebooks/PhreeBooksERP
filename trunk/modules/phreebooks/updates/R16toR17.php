@@ -58,38 +58,38 @@ if (!in_array('journal_id', $field_array)) {
 
 if (!defined('ENABLE_BAR_CODE_READERS')) {
   $db->Execute("ALTER TABLE " . TABLE_INVENTORY . " ADD upc_code varchar(13) NOT NULL DEFAULT '' AFTER lead_time");
-  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . " 
-           ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` , `set_function` ) 
+  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . "
+           ( configuration_title , configuration_key , configuration_value , configuration_description , configuration_group_id , sort_order , last_modified , date_added , use_function , set_function )
     VALUES ( 'Enable bar code readers', 'ENABLE_BAR_CODE_READERS', '0', 'If set to true, this option will enable data entry on order forms for USB and supported bar code readers.', '1', '55', NULL , now(), NULL , 'cfg_keyed_select_option(array(1=>\'Yes\', 0=>\'No\'),' );");
 }
 
 if (!defined('AUTO_INC_CUST_ID')) {
-  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . " 
-           ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` , `set_function` ) 
+  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . "
+           ( configuration_title , configuration_key , configuration_value , configuration_description , configuration_group_id , sort_order , last_modified , date_added , use_function , set_function )
     VALUES ( 'Auto Increment Customer ID', 'AUTO_INC_CUST_ID', '0', 'If set to true, this option will automatically assign an ID to new customers when they are created.', '2', '35', NULL , now(), NULL , 'cfg_keyed_select_option(array(1=>\'Yes\', 0=>\'No\'),' );");
   $db->Execute("alter table " . TABLE_CURRENT_STATUS . " add next_cust_id_num VARCHAR(16) NOT NULL");
   $db->Execute("update " . TABLE_CURRENT_STATUS . " set next_cust_id_num = 'C10000'");
-  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . " 
-           ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` , `set_function` ) 
+  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . "
+           ( configuration_title , configuration_key , configuration_value , configuration_description , configuration_group_id , sort_order , last_modified , date_added , use_function , set_function )
     VALUES ( 'Auto Increment Vendor ID', 'AUTO_INC_VEND_ID', '0', 'If set to true, this option will automatically assign an ID to new vendors when they are created.', '3', '35', NULL , now(), NULL , 'cfg_keyed_select_option(array(1=>\'Yes\', 0=>\'No\'),' );");
   $db->Execute("alter table " . TABLE_CURRENT_STATUS . " add next_vend_id_num VARCHAR(16) NOT NULL");
   $db->Execute("update " . TABLE_CURRENT_STATUS . " set next_vend_id_num = 'V10000'");
   // increase SKU length to 24 characters
-  $db->Execute("ALTER TABLE " . TABLE_INVENTORY .           " CHANGE `sku` `sku` VARCHAR(24) NOT NULL DEFAULT ''");
-  $db->Execute("ALTER TABLE " . TABLE_INVENTORY_COGS_OWED . " CHANGE `sku` `sku` VARCHAR(24) NOT NULL DEFAULT ''");
-  $db->Execute("ALTER TABLE " . TABLE_INVENTORY_HISTORY .   " CHANGE `sku` `sku` VARCHAR(24) NOT NULL DEFAULT ''");
-  $db->Execute("ALTER TABLE " . TABLE_INVENTORY_MS_LIST .   " CHANGE `sku` `sku` VARCHAR(24) NOT NULL DEFAULT ''");
-  $db->Execute("ALTER TABLE " . TABLE_JOURNAL_ITEM .        " CHANGE `sku` `sku` VARCHAR(24) DEFAULT NULL");
+  $db->Execute("ALTER TABLE " . TABLE_INVENTORY .           " CHANGE sku sku VARCHAR(24) NOT NULL DEFAULT ''");
+  $db->Execute("ALTER TABLE " . TABLE_INVENTORY_COGS_OWED . " CHANGE sku sku VARCHAR(24) NOT NULL DEFAULT ''");
+  $db->Execute("ALTER TABLE " . TABLE_INVENTORY_HISTORY .   " CHANGE sku sku VARCHAR(24) NOT NULL DEFAULT ''");
+  $db->Execute("ALTER TABLE " . TABLE_INVENTORY_MS_LIST .   " CHANGE sku sku VARCHAR(24) NOT NULL DEFAULT ''");
+  $db->Execute("ALTER TABLE " . TABLE_JOURNAL_ITEM .        " CHANGE sku sku VARCHAR(24) DEFAULT NULL");
   // add inventory field for sales description
-  $db->Execute("ALTER TABLE " . TABLE_INVENTORY . " ADD `description_sales` VARCHAR(255) NULL AFTER `description_purchase`");
+  $db->Execute("ALTER TABLE " . TABLE_INVENTORY . " ADD description_sales VARCHAR(255) NULL AFTER description_purchase");
   $db->Execute("UPDATE " . TABLE_INVENTORY . " SET description_sales = description_short");
   // add index for faster queries on order popups
-  $db->Execute("ALTER TABLE " . TABLE_JOURNAL_ITEM . " ADD INDEX (`so_po_item_ref_id`)");
+  $db->Execute("ALTER TABLE " . TABLE_JOURNAL_ITEM . " ADD INDEX (so_po_item_ref_id)");
 }
 
 if (!defined('LIMIT_HISTORY_RESULTS')) {
-  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . " 
-           ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` , `set_function` ) 
+  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . "
+          ( configuration_title , configuration_key , configuration_value , configuration_description , configuration_group_id , sort_order , last_modified , date_added , use_function , set_function )
     VALUES ( 'Limit Customer/Vendor History Results', 'LIMIT_HISTORY_RESULTS', '20', 'Limits the length of history values shown in customer/vendor accounts for sales/purchases.', '8', '10', NULL , now(), NULL , '' );");
 }
 

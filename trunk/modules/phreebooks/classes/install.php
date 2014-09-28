@@ -22,7 +22,7 @@ class phreebooks_admin {
 	public $keys			= array();// Load configuration constants for this module, must match entries in admin tabs
 	public $dirlist			= array();// add new directories to store images and data
 	public $tables			= array();// Load tables
-	
+
   function __construct() {
 	$this->prerequisites = array( // modules required and rev level for this module to work properly
 	  'phreedom'  => 3.6,
@@ -324,7 +324,7 @@ class phreebooks_admin {
 	}
   	if ($db_version == 3.2 || $db_version == '3.2') {
 	  write_configure('APPLY_CUSTOMER_CREDIT_LIMIT', '0'); // flag for using credit limit to authorize orders
-	  $db->Execute("ALTER TABLE ".TABLE_JOURNAL_MAIN." CHANGE `shipper_code` `shipper_code` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT ''");
+	  $db->Execute("ALTER TABLE ".TABLE_JOURNAL_MAIN." CHANGE shipper_code shipper_code VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT ''");
 	  require_once(DIR_FS_MODULES . 'phreebooks/defaults.php');
 	  if (is_array(glob(DIR_FS_ADMIN.'PHREEBOOKS_DIR_MY_ORDERS*.zip'))) {
 	  	foreach (glob(DIR_FS_ADMIN.'PHREEBOOKS_DIR_MY_ORDERS*.zip') as $file) {
@@ -350,9 +350,9 @@ class phreebooks_admin {
 		if (!db_field_exists(TABLE_JOURNAL_ITEM, 'purch_package_quantity')) $db->Execute("ALTER TABLE ".TABLE_JOURNAL_ITEM." ADD purch_package_quantity float default NULL AFTER project_id");
 	}
 	if (MODULE_PHREEBOOKS_STATUS < 3.7) {
-		$db->Execute("ALTER TABLE ".TABLE_JOURNAL_ITEM." 
-			CHANGE `qty` `qty` DOUBLE NOT NULL DEFAULT '0',
-			CHANGE `purch_package_quantity` `purch_package_quantity` DOUBLE NOT NULL DEFAULT '0'");
+		$db->Execute("ALTER TABLE ".TABLE_JOURNAL_ITEM."
+			CHANGE qty qty DOUBLE NOT NULL DEFAULT '0',
+			CHANGE purch_package_quantity purch_package_quantity DOUBLE NOT NULL DEFAULT '0'");
 	}
 	if (!$error) {
 	  write_configure('MODULE_'.strtoupper($module).'_STATUS', constant('MODULE_'.strtoupper($module).'_VERSION'));
@@ -415,12 +415,12 @@ class phreebooks_admin {
   function load_demo() {
     global $db;
 	$error = false;
-	// Data for table `tax_authorities`
+	// Data for table tax_authorities
 	$db->Execute("TRUNCATE TABLE " . TABLE_TAX_AUTH);
 	$db->Execute("INSERT INTO " . TABLE_TAX_AUTH . " VALUES (1, 'c', 'City Tax', 'City Tax on Taxable Items', '2312', 0, 2.5);");
 	$db->Execute("INSERT INTO " . TABLE_TAX_AUTH . " VALUES (2, 'c', 'State Tax', 'State Sales Tax Payable', '2316', 0, 5.1);");
 	$db->Execute("INSERT INTO " . TABLE_TAX_AUTH . " VALUES (3, 'c', 'Special Dist', 'Special District Tax (RTD, etc)', '2316', 0, 1.1);");
-	// Data for table `tax_rates`
+	// Data for table tax_rates
 	$db->Execute("TRUNCATE TABLE " . TABLE_TAX_RATES);
 	$db->Execute("INSERT INTO " . TABLE_TAX_RATES . " VALUES (1, 'c', 'Local Tax', 'Local POS Tax', '1:2:3', '0');");
 	$db->Execute("INSERT INTO " . TABLE_TAX_RATES . " VALUES (2, 'c', 'State Only', 'State Only Tax - Shipments', '2', '0');");

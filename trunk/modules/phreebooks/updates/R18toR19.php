@@ -59,14 +59,14 @@ if (!db_table_exists(TABLE_PROJECTS_COSTS))  {
 	) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci");
 }
 if (!defined('ROUND_TAX_BY_AUTH')) {
-  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . " 
-           ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` , `set_function` ) 
+  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . "
+           ( configuration_title , configuration_key , configuration_value , configuration_description , configuration_group_id , sort_order , last_modified , date_added , use_function , set_function )
     VALUES ( 'CD_01_52_TITLE', 'ROUND_TAX_BY_AUTH', '0', 'CD_01_52_DESC', '1', '52', NULL , now(), NULL , 'cfg_keyed_select_option(array(0 =>\'" . TEXT_NO . "\', 1=>\'" . TEXT_YES . "\'),' );");
 }
 // add gl_type to adjustments for ajax page loading
-$result = $db->Execute("update " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id 
+$result = $db->Execute("update " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 	set i.gl_type = 'adj' where m.journal_id = 16 and i.gl_type = '' and i.sku <> ''");
-$result = $db->Execute("update " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id 
+$result = $db->Execute("update " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 	set i.gl_type = 'ttl' where m.journal_id = 16 and i.gl_type = '' and i.sku = ''");
 // change printed type to integer for incrmenting print counts of a record
 $result = $db->Execute("ALTER TABLE " . TABLE_JOURNAL_MAIN . " CHANGE printed printed INT( 11 ) NOT NULL DEFAULT '0'");

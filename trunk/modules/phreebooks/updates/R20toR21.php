@@ -30,7 +30,7 @@ if (!db_field_exists(TABLE_DEPARTMENTS, 'description_short')) {
   $db->Execute("ALTER TABLE " . TABLE_DEPARTMENTS . " CHANGE id id INT(11) NOT NULL AUTO_INCREMENT");
   $result = $db->Execute("select id, description_short from " . TABLE_DEPARTMENTS);
   while(!$result->EOF) {
-	$db->Execute("UPDATE " . TABLE_DEPARTMENTS . " set primary_dept_id = " . $result->fields['id'] . " 
+	$db->Execute("UPDATE " . TABLE_DEPARTMENTS . " set primary_dept_id = " . $result->fields['id'] . "
 	    where primary_dept_id = '" . $result->fields['description_short'] . "'");
 	$result->MoveNext();
   }
@@ -65,7 +65,7 @@ if (!db_field_exists(TABLE_DEPARTMENTS, 'description_short')) {
 		    $rebuild[] = $value;
 		  }
 		}
-		$db->Execute("update " . TABLE_REPORT_FIELDS . " set params = '" . implode(';', $rebuild) . "' 
+		$db->Execute("update " . TABLE_REPORT_FIELDS . " set params = '" . implode(';', $rebuild) . "'
 		  where id = " . $result->fields['id']);
 	  }
 	}
@@ -81,11 +81,11 @@ $db->Execute("ALTER TABLE " . TABLE_SHIPPING_LOG . " CHANGE ref_id       ref_id 
 $db->Execute("ALTER TABLE " . TABLE_JOURNAL_ITEM . " CHANGE reconciled   reconciled   SMALLINT(4) NOT NULL DEFAULT '0'");
 
 if (!defined('AR_DEF_DEP_LIAB_ACCT')) {
-  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . " 
-    ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` , `set_function` ) 
+  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . "
+    ( configuration_title , configuration_key , configuration_value , configuration_description , configuration_group_id , sort_order , last_modified , date_added , use_function , set_function )
     VALUES ( 'CD_02_07_TITLE', 'AR_DEF_DEP_LIAB_ACCT', '', 'CD_02_07_DESC', '2', '7', NULL , now(), NULL , 'cfg_pull_down_gl_acct_list(' );");
-  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . " 
-    ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` , `set_function` ) 
+  $db->Execute("INSERT INTO " .  TABLE_CONFIGURATION . "
+    ( configuration_title , configuration_key , configuration_value , configuration_description , configuration_group_id , sort_order , last_modified , date_added , use_function , set_function )
     VALUES ( 'CD_03_07_TITLE', 'AP_DEF_DEP_LIAB_ACCT', '', 'CD_03_07_DESC', '3', '7', NULL , now(), NULL , 'cfg_pull_down_gl_acct_list(' );");
 }
 
@@ -103,14 +103,14 @@ while (!$result->EOF) {
   $gl_account    = $result->fields['gl_account'];
   $cleared_items = unserialize($result->fields['cleared_items']);
   if (sizeof($cleared_items) > 0) {
-    $one_period = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " 
+    $one_period = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . "
       where closed = '1' and journal_id in (2, 18, 20) and id in (" . implode(',', $cleared_items) . ")");
 	$update_ids = array();
 	while (!$one_period->EOF) {
 	  $update_ids[] = $one_period->fields['id'];
 	  $one_period->MoveNext();
 	}
-	$db->Execute("update " . TABLE_JOURNAL_ITEM . " set reconciled = '" . $period . "' 
+	$db->Execute("update " . TABLE_JOURNAL_ITEM . " set reconciled = '" . $period . "'
 	  where gl_account = '" . $gl_account . "' and ref_id in (" . implode(',', $update_ids) . ")");
   }
   $result->MoveNext();

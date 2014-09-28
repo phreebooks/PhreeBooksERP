@@ -76,7 +76,7 @@
 	  load_method_language($method_dir, $method);
 	  include_once($method_dir . $method . '/' . $method . '.php');
 	  $choices[constant('MODULE_' . strtoupper($module) . '_' . strtoupper($method) . '_SORT_ORDER')] = array(
-	    'id'   => $method, 
+	    'id'   => $method,
 		'text' => constant('MODULE_' . strtoupper($module) . '_' . strtoupper($method) . '_TEXT_TITLE'),
 	  );
     }
@@ -145,7 +145,7 @@
 	}
     return $arr1;
   }
- 
+
   function gen_null_pull_down() {
     $null_array = array('id' => '0', 'text' => TEXT_ENTER_NEW);
     return $null_array;
@@ -197,7 +197,7 @@
 	if (($post_time_stamp >= $period_start_time_stamp) && ($post_time_stamp <= $period_end_time_stamp)) {
 		return CURRENT_ACCOUNTING_PERIOD;
 	} else {
-		$result = $db->Execute("select period from " . TABLE_ACCOUNTING_PERIODS . " 
+		$result = $db->Execute("select period from " . TABLE_ACCOUNTING_PERIODS . "
 			where start_date <= '" . $post_date . "' and end_date >= '" . $post_date . "'");
 		if ($result->RecordCount() <> 1) { // post_date is out of range of defined accounting periods
 			if (!$hide_error) $messageStack->add(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');
@@ -229,7 +229,7 @@
 	if ($hide_inactive)  $params[] = "account_inactive = '0'";
 	if (!$show_all)      $params[] = "heading_only = '0'";
 	if ($restrict_types) $params[] = "account_type in (" . implode(',', $restrict_types) . ")";
-	$sql .= (sizeof($params) == 0) ? '' : ' where ' . implode(' and ', $params); 
+	$sql .= (sizeof($params) == 0) ? '' : ' where ' . implode(' and ', $params);
 	$sql .= " order by id";
     $result = $db->Execute($sql);
     if ($first_none) $output[] = array('id' => '', 'text' => GEN_HEADING_PLEASE_SELECT);
@@ -278,7 +278,7 @@
 
   function gen_get_contact_array_by_type($type = 'v') {
     global $db;
-    $accounts = $db->Execute("select c.id, a.primary_name from " . TABLE_CONTACTS . " c left join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id 
+    $accounts = $db->Execute("select c.id, a.primary_name from " . TABLE_CONTACTS . " c left join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id
 	  where c.inactive <> '1' and a.type='" . $type . "m' order by a.primary_name");
     $accounts_array = array();
     $accounts_array[] = array('id' => '', 'text' => TEXT_NONE);
@@ -332,7 +332,7 @@
 
   function inv_calculate_tax_drop_down($type = 'c',$contactForm = true) {
     global $db;
-    $tax_rates = $db->Execute("select tax_rate_id, description_short 
+    $tax_rates = $db->Execute("select tax_rate_id, description_short
 		from " . TABLE_TAX_RATES . " where type = '" . $type . "'");
     $tax_rate_drop_down = array();
     if ($contactForm)$tax_rate_drop_down[] = array('id' => '-1', 'text' => TEXT_PRODUCT_DEFAULT);
@@ -395,13 +395,13 @@
 		$result['long']  .= ACT_END_OF_MONTH;
 		$result['short'] .=  ACT_END_OF_MONTH;
 	}
-	if ($short) return $result['short']; 
+	if ($short) return $result['short'];
 	return $result['long'];
   }
 
   function get_price_sheet_data($type = 'c') {
     global $db;
-    $sql = "select distinct sheet_name, default_sheet from " . TABLE_PRICE_SHEETS . " 
+    $sql = "select distinct sheet_name, default_sheet from " . TABLE_PRICE_SHEETS . "
 		where inactive = '0' and type = '" . $type . "' order by sheet_name";
     $result = $db->Execute($sql);
     $sheets = array();
@@ -425,9 +425,9 @@
 	  gen_js_encode(COMPANY_ADDRESS2),
 	  gen_js_encode(COMPANY_CITY_TOWN),
 	  gen_js_encode(COMPANY_ZONE),
-	  gen_js_encode(COMPANY_POSTAL_CODE), 
-	  gen_js_encode(COMPANY_COUNTRY), 
-	  gen_js_encode(COMPANY_TELEPHONE1), 
+	  gen_js_encode(COMPANY_POSTAL_CODE),
+	  gen_js_encode(COMPANY_COUNTRY),
+	  gen_js_encode(COMPANY_TELEPHONE1),
 	  gen_js_encode(COMPANY_EMAIL),
 	);
 	$acct_array['text'] = array();
@@ -511,54 +511,54 @@ function saveUploadZip($file_field, $dest_dir, $dest_name) {
 	}
 }
 
-  function dircopy($src_dir, $dst_dir, $verbose = false, $use_cached_dir_trees = false) {    
+  function dircopy($src_dir, $dst_dir, $verbose = false, $use_cached_dir_trees = false) {
 	static $cached_src_dir;
-	static $src_tree; 
+	static $src_tree;
 	static $dst_tree;
 	$num = 0;
 
-	if (($slash = substr($src_dir, -1)) == "\\" || $slash == "/") $src_dir = substr($src_dir, 0, strlen($src_dir) - 1); 
-	if (($slash = substr($dst_dir, -1)) == "\\" || $slash == "/") $dst_dir = substr($dst_dir, 0, strlen($dst_dir) - 1);  
+	if (($slash = substr($src_dir, -1)) == "\\" || $slash == "/") $src_dir = substr($src_dir, 0, strlen($src_dir) - 1);
+	if (($slash = substr($dst_dir, -1)) == "\\" || $slash == "/") $dst_dir = substr($dst_dir, 0, strlen($dst_dir) - 1);
 
 	if (!$use_cached_dir_trees || !isset($src_tree) || $cached_src_dir != $src_dir) {
 		$src_tree = get_dir_tree($src_dir);
 		$cached_src_dir = $src_dir;
-		$src_changed = true;  
+		$src_changed = true;
 	}
 	if (!$use_cached_dir_trees || !isset($dst_tree) || $src_changed) $dst_tree = get_dir_tree($dst_dir);
-	if (!is_dir($dst_dir)) mkdir($dst_dir, 0777, true);  
+	if (!is_dir($dst_dir)) mkdir($dst_dir, 0777, true);
 
 	foreach ($src_tree as $file => $src_mtime) {
-		if (!isset($dst_tree[$file]) && $src_mtime === false) mkdir("$dst_dir/$file"); 
+		if (!isset($dst_tree[$file]) && $src_mtime === false) mkdir("$dst_dir/$file");
 		elseif (!isset($dst_tree[$file]) && $src_mtime || isset($dst_tree[$file]) && $src_mtime > $dst_tree[$file]) {
 			if (copy("$src_dir/$file", "$dst_dir/$file")) {
 				if($verbose) echo "Copied '$src_dir/$file' to '$dst_dir/$file'<br />\r\n";
-				touch("$dst_dir/$file", $src_mtime); 
-				$num++; 
+				touch("$dst_dir/$file", $src_mtime);
+				$num++;
 			} else echo "<font color='red'>File '$src_dir/$file' could not be copied!</font><br />\r\n";
-		}        
+		}
 	}
 
-	return $num; 
+	return $num;
   }
 
   function get_dir_tree($dir, $root = true)  {
 	static $tree;
-	static $base_dir_length; 
-	if ($root) { 
-	  $tree = array();  
-	  $base_dir_length = strlen($dir) + 1;  
+	static $base_dir_length;
+	if ($root) {
+	  $tree = array();
+	  $base_dir_length = strlen($dir) + 1;
 	}
 	if (is_file($dir)) {
-	  $tree[substr($dir, $base_dir_length)] = filemtime($dir); 
-	} elseif (is_dir($dir) && $di = dir($dir)) { 
-	  if (!$root) $tree[substr($dir, $base_dir_length)] = false;  
-	  while (($file = $di->read()) !== false) 
+	  $tree[substr($dir, $base_dir_length)] = filemtime($dir);
+	} elseif (is_dir($dir) && $di = dir($dir)) {
+	  if (!$root) $tree[substr($dir, $base_dir_length)] = false;
+	  while (($file = $di->read()) !== false)
 		if ($file != "." && $file != "..")
-		  get_dir_tree("$dir/$file", false);  
-	  $di->close(); 
+		  get_dir_tree("$dir/$file", false);
+	  $di->close();
 	}
-	if ($root) return $tree;     
+	if ($root) return $tree;
   }
 
 /*************** Date Functions *******************************/
@@ -596,7 +596,7 @@ function saveUploadZip($file_field, $dest_dir, $dest_name) {
 		  $d .= $df . " < '" . $de . "'";
 		  $fildesc .= ' ' . TEXT_TO . ' ' . $DateArray[2];
 		}
-		$fildesc .= '; ';			
+		$fildesc .= '; ';
 		break;
 	  case "c": // Today (specify range for datetime type fields to match for time parts)
 		$ds = $dates['Today'];
@@ -677,7 +677,7 @@ function saveUploadZip($file_field, $dest_dir, $dest_name) {
 		break;
 	}
 	$dates = array(
-	  'sql'         => $d, 
+	  'sql'         => $d,
 	  'description' => $fildesc,
 	  'start_date'  => $ds,
 	  'end_date'    => $de,
@@ -685,7 +685,7 @@ function saveUploadZip($file_field, $dest_dir, $dest_name) {
 	return $dates;
   }
 
-function gen_db_date($raw_date = '', $separator = '/') { 
+function gen_db_date($raw_date = '', $separator = '/') {
   global $messageStack;
   if (!$raw_date) return '';
   // handles periods (.), dashes (-), and slashes (/) as date separators
@@ -778,7 +778,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
 
   function gen_calculate_fiscal_dates($period) {
 	global $db, $messageStack;
-	$result = $db->Execute("select fiscal_year, start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . " 
+	$result = $db->Execute("select fiscal_year, start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . "
 	  where period = " . $period);
 	if ($result->RecordCount() <> 1) { // post_date is out of range of defined accounting periods
 	  $messageStack->add(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');
@@ -996,7 +996,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
     global $db;
     $result = $db->Execute("show fields from " . $table_name);
     while (!$result->EOF) {
-      if  ($result->fields['Field'] == $field_name) return true; 
+      if  ($result->fields['Field'] == $field_name) return true;
       $result->MoveNext();
     }
     return false;
@@ -1249,15 +1249,15 @@ function gen_db_date($raw_date = '', $separator = '/') {
   }
 
 /**
- * this function creates a heading for a table that will be able to sort 
+ * this function creates a heading for a table that will be able to sort
  * @param array $heading_array the fields of the table
  * @param array $extra_headings extra columns that do not have the abillety to sort
  * @return 'html_code' this is the table heading
  * @return 'disp_order' this is the field + display order for the sql statement_builder
  */
-	
+
   function html_heading_bar($heading_array, $extra_headings = array(TEXT_ACTION)) {
-	global $PHP_SELF; 
+	global $PHP_SELF;
 	$result = array();
 	$output .= html_hidden_field('sf', $_REQUEST['sf']) . chr(10);
     $output .= html_hidden_field('so', ($_REQUEST['so'] == 'desc' ? 'desc' : 'asc') ) . chr(10);
@@ -1283,7 +1283,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
 	if (sizeof($extra_headings) > 0) foreach ($extra_headings as $value) {
 	  $output .= '<th nowrap="nowrap">' . $value . '</th>' . chr(10);
 	}
-	$result['html_code'] = $output; 
+	$result['html_code'] = $output;
 	return $result;
   }
 
@@ -1345,7 +1345,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
 		}
 	  }
 	  // change title to language if constant is defined
-	  if (defined($full_array[$index][$j]['doc_title'])) $full_array[$index][$j]['doc_title'] = constant($full_array[$index][$j]['doc_title']); 
+	  if (defined($full_array[$index][$j]['doc_title'])) $full_array[$index][$j]['doc_title'] = constant($full_array[$index][$j]['doc_title']);
 	  if ($full_array[$index][$j]['doc_type'] == '0') {  // folder
 		$entry_string .= '<a id="imgdc_' . $new_ref . '" href="javascript:Toggle(\'dc_' . $new_ref . '\');">' . html_icon('places/folder.png', TEXT_OPEN, 'small', '', '', '', 'icndc_' . $new_ref) . '</a>';
 	  } else {
@@ -1443,7 +1443,7 @@ function charConv($string, $in, $out) {
 				$output .= '<td>' . html_textarea_field($param_array['field_name'], DEFAULT_INPUT_FIELD_LENGTH, 4, $cInfo->$param_array['field_name']) . '</td></tr>';
 			}
 			break;
-		case 'data_list':	
+		case 'data_list':
 			$length = ($params['length'] > 120) ? 'size="120"' : ('size="' . $params['length'] . '"');
 			$output .= '<td>' . html_input_field($param_array['field_name'], $cInfo->$param_array['field_name'], $length . " list='{$param_array['field_name']}'") . '</td>';
 			$output .= "<datalist id='{$param_array['field_name']}'>";
@@ -1490,7 +1490,7 @@ function charConv($string, $in, $out) {
 			}
 			$output .= '</td></tr>';
 			break;
-		case 'multi_check_box':	
+		case 'multi_check_box':
 			$output  .= '<td>';
 			$output  .= '<table frame="border"><tr>';
 			$choices  = explode(',',$params['default']);
@@ -1510,7 +1510,7 @@ function charConv($string, $in, $out) {
 			}
 			$output .= '</tr></table>';
 			$output .= '</td></tr>';
-			break;	
+			break;
 		case 'check_box':
 			$output .= '<td>' . html_checkbox_field($param_array['field_name'], '1', ($cInfo->$param_array['field_name']==1) ? true : false) . '</td></tr>';
 			break;
@@ -1574,7 +1574,7 @@ function validate_ajax_user($token = 0) {
          $isValid = false;
       } else if (preg_match('/\\.\\./', $domain)) { // domain part has two consecutive dots
          $isValid = false;
-      } else if (!preg_match('/^(\\\\.|[A-Za-z0-9!#%&`_=\\/$\'*+?^{}|~.-])+$/', str_replace("\\\\","",$local))) {
+      } else if (!preg_match("/^(\\\\.|[A-Za-z0-9!#%&`_=\\/$\'*+?^{}|~.-])+$/", str_replace("\\\\","",$local))) {
          // character not valid in local part unless local part is quoted
          if (!preg_match('/^"(\\\\"|[^"])+"$/', str_replace("\\\\","",$local))) $isValid = false;
       }
@@ -1616,11 +1616,11 @@ function validate_ajax_user($token = 0) {
   }
 
   function validate_db_date($date) {
-    $y = (int)substr($date, 0, 4); 
+    $y = (int)substr($date, 0, 4);
 	if ($y < 1900 || $y > 2099) return false;
-    $m = (int)substr($date, 5, 2); 
+    $m = (int)substr($date, 5, 2);
 	if ($m < 1 || $m > 12) return false;
-    $d = (int)substr($date, 8, 2); 
+    $d = (int)substr($date, 8, 2);
 	if ($d < 1 || $d > 31) return false;
 	return true;
   }
@@ -1741,7 +1741,7 @@ function validate_ajax_user($token = 0) {
 		$sql_data_array['DateDb'] 		= date("Y-m-d H:i:s");
 		$sql_data_array['Subject']		= $email_subject;
 		//$sql_data_array['MsgSize'] 		= $email["SIZE"];?? Rene Unknown
-// 		if(db_table_exists(TABLE_PHREEMAIL)) db_perform(TABLE_PHREEMAIL, $sql_data_array, 'insert');  		
+// 		if(db_table_exists(TABLE_PHREEMAIL)) db_perform(TABLE_PHREEMAIL, $sql_data_array, 'insert');
   		// save in crm_notes
 		$temp = $db->Execute("select account_id from " . TABLE_USERS . " where admin_email = '" . $from_email_address . "'");
 		$sql_array['contact_id'] = $ref_id;
@@ -1757,15 +1757,15 @@ function validate_ajax_user($token = 0) {
 
   function web_connected($silent = true) {
     global $messageStack;
-    $web_enabled = false; 
+    $web_enabled = false;
     $connected = @fsockopen('www.google.com', 80, $errno, $errstr, 20);
-    if ($connected) { 
-      $web_enabled = true; 
-      fclose($connected); 
+    if ($connected) {
+      $web_enabled = true;
+      fclose($connected);
     } else {
 	  if (!$silent) $messageStack->add('You are not connected to the internet. Error:' . $errno . ' - ' . $errstr, 'error');
 	}
-    return $web_enabled;   
+    return $web_enabled;
   }
 
 /**************************************************************************************************************/
@@ -1880,7 +1880,7 @@ function xml_to_object($xml = '') {
 		  foreach ($temp as $prop) {
 		    if ($prop) {
 		      $oneval = explode('=', $prop);
-		      $attr[$oneval[0]] = $onveal[1]; 
+		      $attr[$oneval[0]] = $onveal[1];
 		    }
 		  }
 		}
@@ -1892,7 +1892,7 @@ function xml_to_object($xml = '') {
 	  }
 	  while(true) {
 		$runaway++;
-		if ($runaway > 10000) return $messageStack->add('Runaway counter 1 reached. There is an error in the xml entry!','error');	
+		if ($runaway > 10000) return $messageStack->add('Runaway counter 1 reached. There is an error in the xml entry!','error');
 		$data = $selfclose ? '' : trim(substr($xml, $taglen, strpos($xml, $end_tag) - $taglen));
 		if (isset($output->$tag)) {
 		  if (!is_array($output->$tag)) $output->$tag = array($output->$tag);
@@ -1908,7 +1908,7 @@ function xml_to_object($xml = '') {
 	  return $xml;
 	}
 	$runaway++;
-	if ($runaway > 10000) $messageStack->add('Runaway counter 2 reached. There is an error in the xml entry!','error');	
+	if ($runaway > 10000) $messageStack->add('Runaway counter 2 reached. There is an error in the xml entry!','error');
   }
   return $output;
 }
@@ -1976,9 +1976,9 @@ function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext
     		if ($_POST['page'] == 'ajax' || $_GET['page'] == 'ajax'){
                 echo createXmlHeader() . xmlEntry('error', "Sorry! FATAL RUN-TIME ERROR. We encounterd the following error: $errstr.  and had to cancel the script") . createXmlFooter();
                 die();
-                break;  
+                break;
             }
-    		header('HTTP/1.1 500 Internal Server Error'); 
+    		header('HTTP/1.1 500 Internal Server Error');
     		die("<h1>Sorry! 1 FATAL RUN-TIME ERROR</h1> <p>We encounterd the following error:<br/> $errstr. <br/><br/> and had to cancel the script.</p>");
 	        break;
     	case E_WARNING: //2
@@ -2017,7 +2017,7 @@ function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext
     		if ($_POST['page'] == 'ajax' || $_GET['page'] == 'ajax'){
                 echo createXmlHeader() . xmlEntry('error', "Sorry! FATAL COMPILE-TIME ERROR. We encounterd the following error: $errstr.  and had to cancel the script") . createXmlFooter();
                 die();
-                break;  
+                break;
             }
     		header('HTTP/1.1 500 Internal Server Error');
     		die("<h1>Sorry! 64 FATAL COMPILE-TIME ERROR</h1> <p>We encounterd the following error:<br/> $errstr. <br/><br/> and had to cancel the script.</p>");
@@ -2035,7 +2035,7 @@ function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext
     		if ($_POST['page'] == 'ajax' || $_GET['page'] == 'ajax'){
                 echo createXmlHeader() . xmlEntry('error', "Sorry! User Error. We encounterd the following error: $errstr.  and had to cancel the script") . createXmlFooter();
                 die();
-                break;  
+                break;
             }
     		$messageStack->add($errstr, 'error');
     		//header('HTTP/1.1 500 Internal Server Error');
@@ -2061,11 +2061,11 @@ function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext
     		$text .= " DEPRECATED FUNCTION:  '$errstr' line $errline in file $errfile";
     		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
         	break;
-        case E_USER_DEPRECATED : //16384 	
+        case E_USER_DEPRECATED : //16384
     		$text  = "PLEASE REPORT THIS TO THE DEV TEAM ".date('Y-m-d H:i:s') . $temp;
     		$text .= " USER DEPRECATED FUNCTION:  '$errstr' line $errline in file $errfile";
     		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
-        	break; 	
+        	break;
         default:
 	    	$text  = date('Y-m-d H:i:s') . $temp;
 	    	$text .=  " Unknown error type: [$errno] '$errstr' error on line $errline in file $errfile";
@@ -2095,7 +2095,7 @@ function Phreebooks_autoloader($class){
 	if($path[0] == 'core'){
 		print(DIR_FS_ADMIN."includes/classes/$path[1].php<br/>");
 		if (file_exists(DIR_FS_ADMIN."includes/classes/$path[1].php"))
-		require_once DIR_FS_ADMIN."includes/classes/$path[1].php";	
+		require_once DIR_FS_ADMIN."includes/classes/$path[1].php";
 	}else{
 		if (file_exists(DIR_FS_ADMIN."modules/$path[0]/custom/classes/$path[1].php")){
 			print((DIR_FS_ADMIN."modules/$path[0]/custom/classes/$path[1].php<br/>"));
@@ -2106,6 +2106,6 @@ function Phreebooks_autoloader($class){
 			require_once DIR_FS_ADMIN."modules/$path[0]/classes/$path[1].php";
 		}
 	}
-	
+
 }
 ?>
