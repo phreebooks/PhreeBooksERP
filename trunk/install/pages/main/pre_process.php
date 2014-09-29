@@ -27,7 +27,6 @@ $dir_root       = substr($server_path, 0, strrpos($server_path, '/install/')+1);
 define('DIR_WS_ADMIN', $virtual_path);
 define('DIR_WS_ICONS',  DIR_WS_ADMIN . 'themes/default/icons/');
 define('DIR_FS_ADMIN', $dir_root);
-//echo 'server = '; print_r($_SERVER); echo '<br>';
 define('DB_TYPE','mysql');
 define('DEFAULT_LANGUAGE','en_us');
 define('PATH_TO_MY_FILES','my_files/'); // for now since it is in the release
@@ -213,7 +212,7 @@ switch ($_REQUEST['action']) {
 	  		}
 	  	}
 		// install core modules first
-	  	$core_modules = array('phreedom', 'phreebooks', 'phreeform', 'contacts', 'inventory', 'shipping', 'phreehelp');
+	  	$core_modules = array('phreedom', 'phreeform', 'phreebooks', 'contacts', 'inventory', 'shipping', 'phreehelp');
 	  	foreach ($core_modules as $entry) {
 	  		if (DEBUG) $messageStack->debug("\n  installing core module = " . $entry);
 	  		if ($entry <> '.' && $entry <> '..' && is_dir(DIR_FS_MODULES . $entry)) {
