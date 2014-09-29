@@ -454,8 +454,11 @@
   }
 
   function gen_add_audit_log($action, $ref_id = '', $amount = '') {
-	global $db;
-  	if ($action == '' || !isset($action)) die ('Error, call to audit log with no description');
+	global $db, $messageStack;
+  	if ($action == '' || !isset($action)) {
+  		$messageStack->add("Error, call to audit log with no description", 'caution');
+  		$action = 'Error, unknown action';
+  	}
   	$stats = (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME))."ms, ".$db->count_queries."q ".(int)($db->total_query_time * 1000)."ms";
 	$fields = array(
 	  'user_id'   => $_SESSION['admin_id'] ? $_SESSION['admin_id'] : '1',

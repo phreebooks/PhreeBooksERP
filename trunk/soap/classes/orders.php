@@ -153,6 +153,7 @@ class xml_orders extends parser {
 	  }
 	  if (function_exists('xtra_order_data')) xtra_order_data($this->order, $order);
 	  $this->buildJournalEntry();
+	  $this->buildJournalResponse();
 	}
 	return true;
   }
@@ -285,7 +286,7 @@ class xml_orders extends parser {
 	}
 	if (sizeof($missing_fields) > 0) {
 	  $this->failed[]   = $this->order['reference'];
-	  $this->response[] = sprintf(SOAP_MISSING_FIELDS, $this->order['reference'], implode(', ', $missing_fields));
+	  $messageStack->add(sprintf(SOAP_MISSING_FIELDS, $this->order['reference'], implode(', ', $missing_fields)), 'error');
 	  return;
 	}
 
@@ -293,23 +294,26 @@ class xml_orders extends parser {
 	
 	// post the sales order
 //echo 'ready to post =><br />'; echo 'psOrd object = '; print_r($psOrd); echo '<br />';
-	$post_success = $psOrd->post_ordr($action);
-	if (DEBUG) $messageStack->write_debug();
+	$post_success = $psOrd->post_ordr('insert');
 	if (!$post_success) { // extract the error message from the messageStack and return with error
-// echo 'failed a post need to rollback here.<br>';
 	  $db->transRollback();
 	  $this->failed[] = $this->order['reference'];
-	  $text = strip_tags($messageStack->output());
-	  $this->response[] = preg_replace('/&nbsp;/', '', $text); // the &nbsp; messes up the response XML
 	  return;
 	}
 
 	if (function_exists('xtra_order_after_post')) xtra_order_after_post($psOrd, $this->order);
 
-	gen_add_audit_log(constant('AUDIT_LOG_SOAP_' . JOURNAL_ID . '_ADDED'), $psOrd->purchase_invoice_id, $psOrd->total_amount);
+	gen_add_audit_log(constant('AUDIT_LOG_SOAP_'.JOURNAL_ID.'_ADDED'), $psOrd->purchase_invoice_id, $psOrd->total_amount);
 	$this->successful[] = $this->order['reference'];
-	return;
-}
+	return true;
+  }
+
+  function buildJournalResponse() {
+  	global $messageStack;
+  	$text = strip_tags($messageStack->output());
+  	$this->response[] = preg_replace('/&nbsp;/', '', $text); // the &nbsp; messes up the response XML
+	if (DEBUG) $messageStack->write_debug();
+  }
 
   function checkForCustomerExists($psOrd) {
 	global $db;
