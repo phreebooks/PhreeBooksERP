@@ -36,9 +36,9 @@ class doc_ctl_admin {
 		  id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 		  parent_id bigint(20) unsigned NOT NULL,
 		  position bigint(20) unsigned NOT NULL,
-		  left bigint(20) unsigned NOT NULL,
-		  right bigint(20) unsigned NOT NULL,
-		  level bigint(20) unsigned NOT NULL,
+		  `left` bigint(20) unsigned NOT NULL,
+		  `right` bigint(20) unsigned NOT NULL,
+		  `level` bigint(20) unsigned NOT NULL,
 		  title varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci,
 		  type varchar(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci default NULL,
 		  file_name varchar(255) collate utf8_unicode_ci default NULL,
@@ -65,14 +65,14 @@ class doc_ctl_admin {
 	require_once(DIR_FS_MODULES . 'doc_ctl/defaults.php');
 	$right = (INSTALL_NUMBER_OF_DRIVES+1)*2;
 	$db->Execute("TRUNCATE TABLE " . TABLE_DC_DOCUMENT);
-	$db->Execute("INSERT INTO " . TABLE_DC_DOCUMENT . " (id, parent_id, position, left, right, level, title, type)
+	$db->Execute("INSERT INTO " . TABLE_DC_DOCUMENT . " (id, parent_id, position, `left`, `right`, `level`, title, type)
 		VALUES (1, 0, 0, 1, $right, 0, 'ROOT', '')");
 	for ($i = 0; $i < INSTALL_NUMBER_OF_DRIVES; $i++) {
 	  $id    = $i+2;
 	  $left  = ($i+1)*2;
 	  $right = $left+1;
 	  $title = $i==0 ? TEXT_HOME : (TEXT_DRIVE.$i);
-	  $db->Execute("INSERT INTO " . TABLE_DC_DOCUMENT . " (id, parent_id, position, left, right, level, title, type)
+	  $db->Execute("INSERT INTO " . TABLE_DC_DOCUMENT . " (id, parent_id, position, `left`, `right`, level, title, type)
 	  	VALUES ($id, 1, 0, $left, $right, 1, '$title', 'drive')");
 	}
   }

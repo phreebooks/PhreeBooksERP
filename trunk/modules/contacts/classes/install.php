@@ -242,24 +242,24 @@ class contacts_admin {
 	$db->Execute("TRUNCATE TABLE " . TABLE_ADDRESS_BOOK);
 
 
-	$db->Execute("INSERT INTO " . TABLE_ADDRESS_BOOK . " (address_id, ref_id, type, primary_name, contact, address1, address2, city_town, state_province, postal_code, country_code, telephone1, telephone2, email, website, notes text) VALUES
-			( 1,  1, 'vm', 'Obscure Video', 						'', '1354 Triple A Ave', 			'', 'Chatsworth', 		'CA', '93245', 'USA', '800.345.5678', '', 'obsvid@obscurevideo.com', '', ''),
-			( 2,  2, 'cm', 'CompuHouse Computer Systems', 			'', '8086 Intel Ave', 				'', 'San jose', 		'CA', '94354', 'USA', '800-555-1234', '', 'sales@compuhouse.com', '', ''),
-			( 3,  3, 'vm', 'Speedy Electronics, Inc.', 				'', '777 Lucky Street', 	'Unit #2B', 'San Jose', 		'CA', '92666', 'USA', '802-555-9876', '', 'custserv@speedyelec.com', '', ''),
-			( 4,  4, 'cm', 'Computer Repair Services', 				'', '12932 136th Ave.', 	 'Suite A', 'Denver', 			'CO', '80021', 'USA', '303-555-5469', '', 'servive@comprepair.net', '', ''),
-			( 5,  5, 'vm', 'LCDisplays Corp.', 						'', '28973 Pixel Place', 			'', 'Los Angeles', 		'CA', '90001', 'USA', '800-555-5548', '', 'cs@lcdisplays.com', '', ''),
-			( 6,  6, 'vm', 'Big Box Corp', 							'', '11 Square St', 				'', 'Longmont', 		'CO', '80501', 'USA', '303-555-9652', '', 'big.box@yahoo.com', '', ''),
-			( 7,  7, 'cm', 'John Smith Jr.', 						'', '13546 Euclid Ave', 			'', 'Ontario', 			'CA', '92775', 'USA', '818-555-1000', '', 'jsmith@aol.com', '', ''),
-			( 8,  8, 'cm', 'Jim Baker', 							'', '995 Maple Street', 	'Unit #56', 'Northglenn', 		'CO', '80234', 'USA', 'unlisted', 	  '', 'jb@hotmail.com', '', ''),
-			( 9,  9, 'cm', 'Lisa Culver',		 					'', '1005 Gillespie Dr', 			'', 'Boulder', 			'CO', '80303', 'USA', '303-555-6677', '', 'lisa@myveryownemailaddress.net', '', ''),
-			(10, 10, 'cm', 'Parts Locator LLC', 					'', '55 Sydney Hwy', 				'', 'Deerfield Beach', 	'FL', '33445', 'USA', '215-555-0987', '', 'parts@partslocator.com', '', ''),
-			(11, 11, 'vm', 'Accurate Input, LLC', 					'', '1111 Stuck Key Ave', 			'', 'Burbank', 			'CA', '91505', 'USA', '800-555-1267', '818-555-5555', 'sales@accurate.com', 'www.AccurateInput.com', ''),
-			(12, 12, 'vm', 'BackMeUp Systems, Inc', 				'', '1324 44th Ave.', 				'', 'New York', 		'NY', '10019', 'USA', '212-555-9854', '', 'sales@backmeup.com', '', ''),
-			(13, 13, 'vm', 'Closed Cases', 					'Fernando', '23 Frontage Rd', 				'', 'New York', 		'NY', '10019', 'USA', '888-555-6322', '800-555-5716', 'custserv@closedcases.net', '', ''),
-			(14, 14, 'vm', 'MegaWatts Power Supplies', 				'', '11 Joules St.', 				'', 'Denver', 			'CO', '80234', 'USA', '303-222-5617', '', 'help@hotmail.com', '', ''),
-			(15, 15, 'vm', 'Slipped Disk Corp.',   'Accts. Receivable', '1234 Main St', 		'Suite #1', 'La Verne', 		'CA', '91750', 'USA', '714-555-0001', '', 'sales@slippedisks.com', '', ''),
-			(16, 16, 'em', 'John Smith', 							'', '123 Birch Ave', 		  'Apt 12', 'Anytown', 			'CO', '80234', 'USA', '303-555-3451', '', 'john@mycompany.com', '', ''),
-			(17, 17, 'em', 'Mary Johnson', 							'', '6541 First St', 				'', 'Anytown', 			'CO', '80234', 'USA', '303-555-7426', '', 'nary@mycomapny.com', '', '');");
+	$db->Execute("INSERT INTO " . TABLE_ADDRESS_BOOK . " (address_id, ref_id, type, primary_name, contact, address1, address2, city_town, state_province, postal_code, country_code, telephone1, telephone2, email, website, notes) VALUES
+			( 1,  1, 'vm', 'Obscure Video', 			 '',				 '1354 Triple A Ave', '',		 'Chatsworth', 		'CA', '93245', 'USA', '800.345.5678', '',			 'obsvid@obscurevideo.com',		  '', ''),
+			( 2,  2, 'cm', 'CompuHouse Computer Systems','',				 '8086 Intel Ave',	  '',		 'San jose', 		'CA', '94354', 'USA', '800-555-1234', '',			 'sales@compuhouse.com',		  '', ''),
+			( 3,  3, 'vm', 'Speedy Electronics, Inc.', 	 '',				 '777 Lucky Street',  'Unit #2B','San Jose', 		'CA', '92666', 'USA', '802-555-9876', '',			 'custserv@speedyelec.com',		  '', ''),
+			( 4,  4, 'cm', 'Computer Repair Services', 	 '',				 '12932 136th Ave.',  'Suite A', 'Denver', 			'CO', '80021', 'USA', '303-555-5469', '',			 'servive@comprepair.net',		  '', ''),
+			( 5,  5, 'vm', 'LCDisplays Corp.', 			 '',				 '28973 Pixel Place', '',		 'Los Angeles', 	'CA', '90001', 'USA', '800-555-5548', '',			 'cs@lcdisplays.com',			  '', ''),
+			( 6,  6, 'vm', 'Big Box Corp', 				 '',				 '11 Square St', 	  '',		 'Longmont', 		'CO', '80501', 'USA', '303-555-9652', '',			 'big.box@yahoo.com',			  '', ''),
+			( 7,  7, 'cm', 'John Smith Jr.', 			 '',				 '13546 Euclid Ave',  '',		 'Ontario', 		'CA', '92775', 'USA', '818-555-1000', '',			 'jsmith@aol.com',				  '', ''),
+			( 8,  8, 'cm', 'Jim Baker', 				 '',				 '995 Maple Street',  'Unit #56','Northglenn', 		'CO', '80234', 'USA', 'unlisted',	  '',			 'jb@hotmail.com',				  '', ''),
+			( 9,  9, 'cm', 'Lisa Culver',		 		 '',				 '1005 Gillespie Dr', '',		 'Boulder', 		'CO', '80303', 'USA', '303-555-6677', '',			 'lisa@myveryownemailaddress.net','', ''),
+			(10, 10, 'cm', 'Parts Locator LLC', 		 '',				 '55 Sydney Hwy', 	  '',		 'Deerfield Beach', 'FL', '33445', 'USA', '215-555-0987', '',			 'parts@partslocator.com',		  '', ''),
+			(11, 11, 'vm', 'Accurate Input, LLC', 		 '',				 '1111 Stuck Key Ave','',		 'Burbank', 		'CA', '91505', 'USA', '800-555-1267', '818-555-5555','sales@accurate.com',			  'www.AccurateInput.com', ''),
+			(12, 12, 'vm', 'BackMeUp Systems, Inc', 	 '',				 '1324 44th Ave.',	  '',		 'New York', 		'NY', '10019', 'USA', '212-555-9854', '',			 'sales@backmeup.com',			  '', ''),
+			(13, 13, 'vm', 'Closed Cases', 				 'Fernando',		 '23 Frontage Rd',	  '',		 'New York', 		'NY', '10019', 'USA', '888-555-6322', '800-555-5716','custserv@closedcases.net',	  '', ''),
+			(14, 14, 'vm', 'MegaWatts Power Supplies',	 '',				 '11 Joules St.', 	  '',		 'Denver', 			'CO', '80234', 'USA', '303-222-5617', '',			 'help@hotmail.com',			  '', ''),
+			(15, 15, 'vm', 'Slipped Disk Corp.',		 'Accts. Receivable','1234 Main St', 	  'Suite #1','La Verne', 		'CA', '91750', 'USA', '714-555-0001', '',			 'sales@slippedisks.com',		  '', ''),
+			(16, 16, 'em', 'John Smith', 				 '',				 '123 Birch Ave',	  'Apt 12',	 'Anytown', 		'CO', '80234', 'USA', '303-555-3451', '',			 'john@mycompany.com',			  '', ''),
+			(17, 17, 'em', 'Mary Johnson', 				 '',				 '6541 First St', 	  '',		 'Anytown', 		'CO', '80234', 'USA', '303-555-7426', '',			 'nary@mycomapny.com',			  '', '');");
 	// Data for table contacts
 	$db->Execute("TRUNCATE TABLE " . TABLE_CONTACTS);
 	$db->Execute("INSERT INTO " . TABLE_CONTACTS . " (id, type, short_name, inactive, contact_first, contact_middle, contact_last, store_id, gl_type_account, gov_id_number, dept_rep_id, account_number, special_terms, price_sheet, tax_id, attachments, first_date, last_update, last_date_1, last_date_2) VALUES
