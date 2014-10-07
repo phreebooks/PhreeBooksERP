@@ -145,7 +145,7 @@ function updateBalance() {
 	  document.getElementById('price_'+i).readOnly = true;
     } else {
 	  if (document.getElementById('price_'+i).value == '') document.getElementById('price_'+i).value = document.getElementById('def_cost_'+i).value;
-	  document.getElementById('price_'+i).readOnly = false;	
+	  document.getElementById('price_'+i).readOnly = false;
     }
     document.getElementById('bal_'+i).value = stock + adj;
   }
@@ -196,7 +196,7 @@ function removeInvRow(delRowCnt) {
 	document.getElementById('price_'+i).value    = document.getElementById('price_'+(i+1)).value;
 	document.getElementById('bal_'+i).value      = document.getElementById('bal_'+(i+1)).value;
 	document.getElementById('desc_'+i).value     = document.getElementById('desc_'+(i+1)).value;
-	document.getElementById('sku_'+i).style.color = (document.getElementById('sku_'+i).value == text_search) ? inactive_text_color : '';
+	document.getElementById('sku_'+i).style.color = (document.getElementById('sku_'+i).value == text_search) ? inactive_text_color : document.getElementById('sku_'+(i+1)).style.color;
 	glIndex++; // increment the row counter (two rows per entry)
   }
   document.getElementById("item_table").deleteRow(-1);

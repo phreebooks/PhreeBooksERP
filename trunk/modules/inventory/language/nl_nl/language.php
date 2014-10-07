@@ -214,4 +214,5 @@ define('INV_CALCULATING_ERROR', 'Wanneer Phreebooks de prijs inclusief btw uitre
 define('INV_WHAT_TO_CALCULATE','toets een 1 om marge te herberekenen \ntoets een 2 om verkoop prijzen te herberekenen op basis van marge \ntoets een 3 om verkoop prijzen te herberekenen op basis van opslag');
 define('INV_CHEAPER_ELSEWHERE','artikel %s is goedkoper ergens anders.');
 define('INV_IMAGE_DUPLICATE_NAME','De naam van de afbeelding staat al in de database, verander de bestands naam om verder te kunnen gaan. ');
+define('ITEM_IS_OUT_OF_STOCK', 'voorraad is op');
 ?>

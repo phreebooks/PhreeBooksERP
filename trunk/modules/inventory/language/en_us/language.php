@@ -242,4 +242,5 @@ define('INV_CALCULATING_ERROR', 'When Phreebooks has to calculate the full price
 define('INV_WHAT_TO_CALCULATE','enter 1 to recalculate the margin \nenter 2 to recalculate the sales prices based on margin \nenter 3 to recalculate the sales prices based on markup');
 define('INV_CHEAPER_ELSEWHERE','sku %s is cheaper elsewhere.');
 define('INV_IMAGE_DUPLICATE_NAME','The name of the image is already used in the database, Change the file name to continu. ');
+define('ITEM_IS_OUT_OF_STOCK', 'item is out of stock');
 ?>

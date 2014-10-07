@@ -778,7 +778,7 @@ function removeInvRow(index) {
 		document.getElementById('purch_package_quantity_'+i).value=document.getElementById('purch_package_quantity_'+(i+1)).value;
 // End hidden fields
 	document.getElementById('total_'+i).value             		= document.getElementById('total_'+(i+1)).value;
-	document.getElementById('sku_'+i).style.color         		= (document.getElementById('sku_'+i).value == text_search) ? inactive_text_color : '';
+	document.getElementById('sku_'+i).style.color = (document.getElementById('sku_'+i).value == text_search) ? inactive_text_color : document.getElementById('sku_'+(i+1)).style.color;
   }
   document.getElementById('item_table').deleteRow(-1);
   if (single_line_list != '1') document.getElementById('item_table').deleteRow(-1);
