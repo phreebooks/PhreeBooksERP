@@ -299,7 +299,7 @@ function phreedomChartResp(sXml) {
 // ******************** functions used for combo box scripting ***********************************
 var fActiveMenu = false;
 var oOverMenu   = false;
-
+/* @todo even uit geschakeld
 if (document.images) { //pre-load images
  img_on      = new Image();
  img_on.src  = combo_image_on; 
@@ -308,7 +308,7 @@ if (document.images) { //pre-load images
 }
 
 if (pbBrowser != 'IE') document.onmouseup = mouseSelect(0); // turns off the combo box if not hovering over
-
+*/
 function mouseSelect(e) {
 	if (fActiveMenu) {
 		if (oOverMenu == false) {

@@ -90,7 +90,7 @@ if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR
 	define('DB_DATABASE', $_SESSION['company']);
 	require_once(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php');
 	$dsn = DB_TYPE.":dbname={$_SESSION['company']};host=".DB_SERVER_HOST;
-	$admin->DataBase = new \PDO($dsn, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+	$admin->DataBase = new \core\classes\PDO($dsn, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
 //	if(APC_EXTENSION_LOADED == false || apc_load_constants('configuration') == false) {
 	$result = $admin->DataBase->prepare("SELECT configuration_key, configuration_value FROM " . DB_PREFIX . "configuration");
 	$result->execute();

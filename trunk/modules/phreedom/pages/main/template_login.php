@@ -35,7 +35,7 @@ echo html_form('login', FILENAME_DEFAULT, 'action=ValidateUser', 'post', 'onsubm
 			  </tr>
               <tr>
                 <td width="35%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_USERNAME; ?>:</td>
-                <td width="65%"><?php echo html_input_field('admin_name', (isset($cInfo->admin_name) ? $cInfo->admin_name : ''), '', true); ?></td>
+                <td width="65%"><?php echo html_input_field('admin_name', (isset($basis->cInfo->admin_name) ? $basis->cInfo->admin_name : ''), '', true); ?></td>
               </tr>
               <tr>
                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_PASSWORD; ?>:</td>

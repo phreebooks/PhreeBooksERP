@@ -435,20 +435,21 @@
 	return $acct_array;
   }
 
-  function gen_add_audit_log($action, $ref_id = '', $amount = '') {
-	global $admin;
-  	if ($action == '' || !isset($action)) throw new \core\classes\userException('Error, call to audit log with no description');
-  	$stats = (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME))."ms, ".$admin->DataBase->count_queries."q ".(int)($admin->DataBase->total_query_time * 1000)."ms";
-	$fields = array(
-	  'user_id'   => $_SESSION['admin_id'] ? $_SESSION['admin_id'] : '1',
-	  'action'    => substr($action, 0, 64), // limit to field length
-	  'ip_address'=> $_SERVER['REMOTE_ADDR'],
-	  'stats'     => $stats,
-	);
-	if ($ref_id) $fields['reference_id'] = substr($ref_id, 0, 32); // limit to field length
-	if ($amount) $fields['amount']       = (real)$amount;
-	db_perform(TABLE_AUDIT_LOG, $fields, 'insert');
-  }
+  	function gen_add_audit_log($action, $ref_id = '', $amount = '') {
+		global $admin;
+  		if ($action == '' || !isset($action)) throw new \core\classes\userException('Error, call to audit log with no description');
+  		$sql = $admin->DataBase->prepare("INSERT INTO " . TABLE_AUDIT_LOG . " (user_id, action, ip_address, stats, reference_id, amount) VALUES (:user_id, :action, :ip_address, :stats, :reference_id, :amount)");
+  		$stats = (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME))."ms, ".$admin->DataBase->count_queries."q ".(int)($admin->DataBase->total_query_time * 1000)."ms";
+		$fields = array(
+	  		':user_id'   	=> $_SESSION['admin_id'] ? $_SESSION['admin_id'] : '1',
+	  		':action'    	=> substr($action, 0, 64), // limit to field length
+	  		':ip_address'	=> $_SERVER['REMOTE_ADDR'],
+	  		':stats'     	=> $stats,
+			':reference_id' => substr($ref_id, 0, 32),
+			':amount'       => (real)$amount,
+		);
+    	$sql->execute($fields);
+  	}
 
   function gen_get_all_get_params($exclude_array = '') {
     global $_GET;
@@ -910,7 +911,9 @@ function gen_db_date($raw_date = '', $separator = '/') {
       }
       $query = substr($query, 0, -2) . ' where ' . $parameters;
     }
-    return $admin->DataBase->query($query);
+    $sql = $admin->DataBase->prepare($query);
+    $sql->execute();
+    return $sql->fetchall();
   }
 
   function db_insert_id() {

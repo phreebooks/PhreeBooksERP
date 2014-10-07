@@ -372,7 +372,7 @@ class admin extends \core\classes\admin {
 			$dept = $admin->DataBase->query("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result['account_id']);
 			$_SESSION['department'] = $dept['dept_rep_id'];
 		}
-		gen_add_audit_log(TEXT_USER_LOGIN .' -->' . $basis->cInfo->admin_name);
+		gen_add_audit_log(TEXT_USER_LOGIN . " -> id: {$_SESSION['admin_id']} name: {$_SESSION['display_name']}");
 		// check for session timeout to reload to requested page
 		/*$get_params = '';
 		if (isset($_SESSION['pb_module']) && $_SESSION['pb_module']) {
@@ -399,12 +399,11 @@ class admin extends \core\classes\admin {
 	 * @throws \core\classes\userException
 	 */
 	function LoadMainPage (\core\classes\basis &$basis){
-		global $admin;
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		$menu_id      		= isset($basis->cInfo->mID) ? $basis->cInfo->mID : 'index'; // default to index unless heading is passed
-		$sql = $admin->DataBase->prepare("select dashboard_id, column_id, row_id, params  from ".TABLE_USERS_PROFILES." where user_id = '{$_SESSION['admin_id']}' and menu_id = '$menu_id' order by column_id, row_id");
+		$basis->cInfo->menu_id  =  isset($basis->cInfo->mID) ? $basis->cInfo->mID : 'index'; // default to index unless heading is passed
+		$sql = $basis->DataBase->prepare("select dashboard_id, column_id, row_id, params  from ".TABLE_USERS_PROFILES." where user_id = '{$_SESSION['admin_id']}' and menu_id = '{$basis->cInfo->menu_id}' order by column_id, row_id");
 		$sql->execute();
-		while ($result = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)){
+		while ($result = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)) {
 			$basis->cInfo->cp_boxes[] = $result;
 		}
 		$basis->page_title 	= COMPANY_NAME.' - '.TEXT_PHREEBOOKS_ERP;
@@ -418,12 +417,10 @@ class admin extends \core\classes\admin {
 	 * @param \core\classes\basis $basis
 	 */
 	function logout (\core\classes\basis &$basis){
-		global $admin;
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		$result = $admin->DataBase->query("select admin_name from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
-		gen_add_audit_log(TEXT_USER_LOGOFF . ' -> ' . $result->fields['admin_name']);
+		gen_add_audit_log(TEXT_USER_LOGOFF . " -> id: {$_SESSION['admin_id']} name: {$_SESSION['display_name']}");
 		session_destroy();
-		$basis->fireEvent("LoadLogIn");
+		\core\classes\userException("you are loged out.", 'LoadLogIn');
 	}
 
 	/**
@@ -438,6 +435,11 @@ class admin extends \core\classes\admin {
 		$basis->module			= 'phreedom';
 		$basis->page			= 'main';
 		$basis->template 		= 'template_login';
+		//@todo js not working jet
+		$basis->js .= "
+				$(window).load(function() {
+					$( \"#admin_name\" ).select();
+				});";
 	}
 
 	function LoadLostPassword (\core\classes\basis $basis){
@@ -477,7 +479,7 @@ class admin extends \core\classes\admin {
 		validate_send_mail($result->fields['admin_name'], $result->fields['admin_email'], TEXT_EMAIL_SUBJECT, $html_msg['EMAIL_MESSAGE_HTML'], COMPANY_NAME, EMAIL_FROM, $html_msg);
 		$messageStack->add(SUCCESS_PASSWORD_SENT, 'success');
 		gen_add_audit_log(TEXT_RE-SENT_PASSWORD_TO_EMAIL . ' -> ' . $basis->admin_email);
-		$basis->fireEvent("LoadLogIn");
+		$basis->addEventToStack("LoadLogIn");
 	}
 
 	function DownloadDebug (\core\classes\basis $basis){

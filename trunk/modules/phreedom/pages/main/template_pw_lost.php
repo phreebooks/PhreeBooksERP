@@ -29,11 +29,11 @@ if(is_object($messageStack)) echo $messageStack->output();
   <tr><td colspan="2"><h2><?php echo TEXT_RESEND_PASSWORD; ?></h2></td></tr>
   <tr>
    <td nowrap="nowrap">&nbsp;&nbsp;<?php echo TEXT_EMAIL_ADDRESS . ': '; ?></td>
-   <td><?php echo html_input_field('admin_email', $cInfo->admin_email, 'size="60"'); ?></td>
+   <td><?php echo html_input_field('admin_email', $basis->cInfo->admin_email, 'size="60"'); ?></td>
   </tr>
   <tr>
    <td nowrap="nowrap">&nbsp;&nbsp;<?php echo sprintf(TEXT_SELECT_ARGS, TEXT_COMPANY); ?></td>
-   <td><?php echo html_pull_down_menu('company', $_SESSION['companies'], $cInfo->company_index, '', true); ?></td>
+   <td><?php echo html_pull_down_menu('company', $_SESSION['companies'], $basis->cInfo->company_index, '', true); ?></td>
   </tr>
   <tr><td colspan="2" align="right"><?php echo html_submit_field('submit', TEXT_RESEND_PASSWORD) . '&nbsp;&nbsp;'; ?></td></tr>
  </tbody>

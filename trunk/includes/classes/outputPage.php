@@ -64,8 +64,12 @@ class outputPage implements \SplObserver {
        	foreach($basis->js_override_files as $file){
        		if($file) echo "<script type='text/javascript' src='$file'></script>". chr(13);
        	}
-       	if (SESSION_AUTO_REFRESH == '1') echo '  <script type="text/javascript">addLoadEvent(refreshSessionClock);</script>' . chr(10);
-       	echo '<script type="text/javascript">addLoadEvent(init);addUnloadEvent(clearSessionClock);</script>'. chr(13);
+       	if (SESSION_AUTO_REFRESH == '1'){
+       		echo '  <script type="text/javascript">addLoadEvent(refreshSessionClock);</script>' . chr(10);
+       		echo '<script type="text/javascript">addLoadEvent(init);addUnloadEvent(clearSessionClock);</script>'. chr(13);
+       	}
+       	if($this->js)  echo "  <script type='text/javascrip'>$this->js</script>" . chr(10);
+       	if($basis->js) echo "  <script type='text/javascrip'>$basis->js</script>" . chr(10);
     }
 
     public function print_css_includes($basis){
