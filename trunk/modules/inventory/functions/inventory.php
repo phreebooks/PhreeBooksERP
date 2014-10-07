@@ -19,11 +19,11 @@
 
   function load_store_stock($sku, $store_id) {
 	global $db;
-	$sql = "select sum(remaining) as remaining from " . TABLE_INVENTORY_HISTORY . " 
+	$sql = "select sum(remaining) as remaining from " . TABLE_INVENTORY_HISTORY . "
 		where store_id = '$store_id' and sku = '$sku'";
 	$result = $db->Execute($sql);
 	$store_bal = $result->fields['remaining'];
-	$sql = "select sum(qty) as qty from " . TABLE_INVENTORY_COGS_OWED . " 
+	$sql = "select sum(qty) as qty from " . TABLE_INVENTORY_COGS_OWED . "
 		where store_id = '$store_id' and sku = '$sku'";
 	$result = $db->Execute($sql);
 	$qty_owed = $result->fields['qty'];
@@ -65,13 +65,14 @@
 			case 2: $price -= $price * ($adj_val / 100); 	break; // Decrease by Percent
 			case 3: $price += $adj_val;                  	break; // Increase by Amount
 			case 4: $price += $price * ($adj_val / 100); 	break; // Increase by Percent
-			case 5: $price =  $price * (1+($adj_val / 100));break; // Mark up by Percent
-			case 6: $price =  $price / ($adj_val / 100); 	break; // Margin by Percent
+			case 5: $price =  $price * $adj_val;			break; // Mark up by Percent
+			case 6: $price =  ($price / (100 - $adj_val))* 100; 	break; // Margin by Percent
+								;
 			case 7:// tiered pricing
 				$price =  (($previous_price * $previous_qty) + ($price * ($qty - $previous_qty))/ $qty);
 				$previous_price = $price;
 				$previous_qty = $qty;
-				break; 
+				break;
 		}
 
 		switch ($rnd) {
@@ -103,7 +104,7 @@
 	return $prices;
   }
 
- 
+
   function gather_history($sku) {
     global $db, $messageStack;
 	$inv_history = array();
@@ -127,8 +128,8 @@
 	$last_year = ($dates['ThisYear'] - 1) . '-' . substr('0' . $dates['ThisMonth'], -2) . '-01';
 
 	// load the SO's and PO's and get order, expected del date
-	$sql = "SELECT m.id, m.journal_id, m.store_id, m.purchase_invoice_id, i.qty, i.post_date, i.date_1, 
-	i.id AS item_id FROM ".TABLE_JOURNAL_MAIN." m JOIN ".TABLE_JOURNAL_ITEM." i ON m.id=i.ref_id 
+	$sql = "SELECT m.id, m.journal_id, m.store_id, m.purchase_invoice_id, i.qty, i.post_date, i.date_1,
+	i.id AS item_id FROM ".TABLE_JOURNAL_MAIN." m JOIN ".TABLE_JOURNAL_ITEM." i ON m.id=i.ref_id
 	  WHERE m.journal_id IN (4, 10) AND i.sku='$sku' AND m.closed = '0' ORDER BY i.date_1";
 	$result = $db->Execute($sql);
 	while(!$result->EOF) {
@@ -142,7 +143,7 @@
 		  $hist_type = 'open_so';
 		  break;
 	  }
-	  $sql = "SELECT SUM(qty) AS qty from ".TABLE_JOURNAL_ITEM." 
+	  $sql = "SELECT SUM(qty) AS qty from ".TABLE_JOURNAL_ITEM."
 		WHERE gl_type='$gl_type' AND so_po_item_ref_id=".$result->fields['item_id'];
 	  $adj = $db->Execute($sql); // this looks for partial received to make sure this item is still on order
 	  if ($result->fields['qty'] > $adj->fields['qty']) {
@@ -159,9 +160,9 @@
 	}
 
 	// load the units received and sold, assembled and adjusted
-	$sql = "SELECT m.journal_id, m.post_date, i.qty, i.gl_type, i.credit_amount, i.debit_amount 
-	  FROM ".TABLE_JOURNAL_MAIN." m JOIN ".TABLE_JOURNAL_ITEM." i ON m.id=i.ref_id 
-	  WHERE m.journal_id IN (6, 12, 14, 16, 19, 21) AND i.sku='$sku' AND m.post_date >= '$last_year' 
+	$sql = "SELECT m.journal_id, m.post_date, i.qty, i.gl_type, i.credit_amount, i.debit_amount
+	  FROM ".TABLE_JOURNAL_MAIN." m JOIN ".TABLE_JOURNAL_ITEM." i ON m.id=i.ref_id
+	  WHERE m.journal_id IN (6, 12, 14, 16, 19, 21) AND i.sku='$sku' AND m.post_date >= '$last_year'
 	  ORDER BY m.post_date DESC";
 	$result = $db->Execute($sql);
 	while(!$result->EOF) {
@@ -209,7 +210,7 @@
 	$history['averages']['12month'] = round($history['averages']['12month'] / 12, 2);
 	$history['averages']['6month']  = round($history['averages']['6month']  /  6, 2);
 	$history['averages']['3month']  = round($history['averages']['3month']  /  3, 2);
-	
+
 	sort($sales);
 	$sql = "SELECT minimum_stock_level, lead_time FROM ".TABLE_INVENTORY." WHERE sku='$sku'";
 	$inv = $db->Execute($sql);
@@ -265,8 +266,8 @@
 		$price = '0.0';
 		$levels = false;
 		if ($sheet_name <> '') {
-			$sql = "select id, default_levels from " . TABLE_PRICE_SHEETS . " 
-			  where inactive = '0' and type = '$type' and sheet_name = '$sheet_name' and 
+			$sql = "select id, default_levels from " . TABLE_PRICE_SHEETS . "
+			  where inactive = '0' and type = '$type' and sheet_name = '$sheet_name' and
 			  (expiration_date is null or expiration_date = '0000-00-00' or expiration_date >= '" . date('Y-m-d') . "')";
 			$price_sheets = $db->Execute($sql);
 			// retrieve special pricing for this inventory item
@@ -292,7 +293,7 @@
 function inv_status_open_orders($journal_id, $gl_type) { // checks order status for order balances, items received/shipped
   global $db;
   $item_list = array();
-  $orders = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . " 
+  $orders = $db->Execute("select id from " . TABLE_JOURNAL_MAIN . "
   	where journal_id = $journal_id and closed = '0'");
   while (!$orders->EOF) {
     $total_ordered = array(); // track this SO/PO sku for totals, to keep >= 0
@@ -306,7 +307,7 @@ function inv_status_open_orders($journal_id, $gl_type) { // checks order status 
 	  $ordr_items->MoveNext();
 	}
 	// calculate received/sales levels (SO and PO)
-	$sql = "select i.qty, i.sku, i.ref_id 
+	$sql = "select i.qty, i.sku, i.ref_id
 		from " . TABLE_JOURNAL_MAIN . " m left join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 		where m.so_po_ref_id = " . $id;
 	$posted_items = $db->Execute($sql);
@@ -330,7 +331,7 @@ function validate_UPCABarcode($barcode){
   	if(!preg_match("/^[0-9]{12}$/",$barcode)) return false;
   	$digits = $barcode;
 	// 1. sum each of the odd numbered digits
-  	$odd_sum = $digits[0] + $digits[2] + $digits[4] + $digits[6] + $digits[8] + $digits[10];  
+  	$odd_sum = $digits[0] + $digits[2] + $digits[4] + $digits[6] + $digits[8] + $digits[10];
   	// 2. multiply result by three
   	$odd_sum_three = $odd_sum * 3;
   	// 3. add the result to the sum of each of the even numbered digits
@@ -348,7 +349,7 @@ function validate_EAN13Barcode($barcode) {
 	// check to see if barcode is 13 digits long
 	if(!preg_match("/^[0-9]{13}$/",$barcode)) return false;
 
-	$digits = $barcode;	
+	$digits = $barcode;
 	// 1. Add the values of the digits in the even-numbered positions: 2, 4, 6, etc.
 	$even_sum = $digits[1] + $digits[3] + $digits[5] + $digits[7] + $digits[9] + $digits[11];
 	// 2. Multiply this result by 3.

@@ -17,7 +17,7 @@
 //  Path: /modules/inventory/language/en_us/language.php
 //
 
-define('INV_HEADING_NEW_ITEM', 'New Inventory Item'); 
+define('INV_HEADING_NEW_ITEM', 'New Inventory Item');
 
 define('INV_TYPES_SI','Stock Item');
 define('INV_TYPES_SR','Serialized Item');
@@ -42,7 +42,7 @@ define('INV_TEXT_GREATER_THAN','Larger than');
 define('TEXT_DIR_ENTRY','Direct Entry');
 define('TEXT_ITEM_COST','Item Cost');
 define('TEXT_RETAIL_PRICE','Retail Price');
-define('TEXT_PRICE_LVL_1','Price Level 1');	
+define('TEXT_PRICE_LVL_1','Price Level 1');
 define('TEXT_DEC_AMT','Decrease by Amount');
 define('TEXT_DEC_PCNT','Decrease by Percent');
 define('TEXT_INC_AMT','Increase by Amount');
@@ -239,7 +239,7 @@ define('TEXT_MS_HELP','When saving the %s written in one of the descriptions wil
 define('JS_MS_COMMA_NOT_ALLOWED','Comma is not allowed in the description.');
 define('JS_MS_COLON_NOT_ALLOWED','Colon is not allowed in the description.');
 define('INV_CALCULATING_ERROR', 'When Phreebooks has to calculate the full price with tax it will come to = ');
-define('INV_WHAT_TO_CALCULATE','enter 1 to recalculate the margin \nenter 2 to recalculate the sales prices');
+define('INV_WHAT_TO_CALCULATE','enter 1 to recalculate the margin \nenter 2 to recalculate the sales prices based on margin \nenter 3 to recalculate the sales prices based on markup');
 define('INV_CHEAPER_ELSEWHERE','sku %s is cheaper elsewhere.');
 define('INV_IMAGE_DUPLICATE_NAME','The name of the image is already used in the database, Change the file name to continu. ');
 ?>

@@ -1,6 +1,6 @@
 <?php
 // +-----------------------------------------------------------------+
-// Arquivo Tradução Idioma  Phreedom 
+// Arquivo Tradução Idioma  Phreedom
 // Generated: 2013-10-22 05:28:45
 // Module/Method: inventory
 // ISO Language: pt_br
@@ -211,7 +211,7 @@ define('INV_TYPES_MS','Item Mestre');
 define('INV_TYPES_SR','Item de Série');
 define('INV_HEADING_NEW_ITEM','Novo Item Estoque');
 define('INV_TYPES_SI','Item Estoque');
-define('INV_WHAT_TO_CALCULATE','Digite 1 para recalcular a margem \\n Digite 2 para recalcular o preço de venda');
+define('INV_WHAT_TO_CALCULATE','Digite 1 para recalcular a margem \n Digite 2 para recalcular o preço de venda \n Digite 3 ?');
 define('INV_CHEAPER_ELSEWHERE','SKU %s é mais barato em outro lugar.');
 define('INV_IMAGE_DUPLICATE_NAME','O nome da imagem já foi utilizado na base de dados. Altere o nome para continuar. ');
 
