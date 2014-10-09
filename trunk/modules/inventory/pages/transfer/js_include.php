@@ -24,6 +24,9 @@
 var securityLevel    = <?php echo $security_level; ?>;
 var text_search      = '<?php echo TEXT_SEARCH; ?>';
 var serial_num_prompt= '<?php echo ORD_JS_SERIAL_NUM_PROMPT; ?>';
+var SalesOrderForItem	 = '<?php echo THERE_IS_SALES_ORDER_FOR_THIS_ITEM; ?>';
+var ItemIsInactive		 = '<?php echo ITEM_IS_INACTIVE; ?>';
+var ItemOutOfStock		 = '<?php echo ITEM_IS_OUT_OF_STOCK; ?>';
 
 <?php echo js_calendar_init($cal_xfr); ?>
 
@@ -112,6 +115,16 @@ function processSkuStock(sXml) {
   } else {
 	document.getElementById('imgSerial_'+rCnt).style.display = 'none';
   }
+  if($(xml).find("inactive").text() == 1) {
+	  backgroundColor = 'pink';
+	  title = ItemIsInactive;
+  }else if($(xml).find("quantity_on_sales_order").text() != 0){
+	  backgroundColor = 'Aquamarine';
+	  title = SalesOrderForItem;
+  }else if($(xml).find("branch_qty_in_stock").text() == 0) {
+	  backgroundColor = 'FF6633';
+	  title = ItemOutOfStock;
+  }
   updateBalance();
   rowCnt  = document.getElementById('item_table').rows.length;
   var qty = document.getElementById('qty_'+rowCnt).value;
@@ -160,17 +173,17 @@ function addInvRow() {
 function removeInvRow(delRowCnt) {
   var glIndex = delRowCnt;
   for (var i=delRowCnt; i<document.getElementById("item_table").rows.length; i++) {
-	document.getElementById('qty_'+i).value   = document.getElementById('qty_'+(i+1)).value;
-	document.getElementById('stock_'+i).value = document.getElementById('stock_'+(i+1)).value;
-	document.getElementById('bal_'+i).value   = document.getElementById('bal_'+(i+1)).value;
-	document.getElementById('sku_'+i).value   = document.getElementById('sku_'+(i+1)).value;
-	document.getElementById('desc_'+i).value  = document.getElementById('desc_'+(i+1)).value;
+	document.getElementById('qty_'+i).value       = document.getElementById('qty_'+(i+1)).value;
+	document.getElementById('stock_'+i).value     = document.getElementById('stock_'+(i+1)).value;
+	document.getElementById('bal_'+i).value       = document.getElementById('bal_'+(i+1)).value;
+	document.getElementById('sku_'+i).value       = document.getElementById('sku_'+(i+1)).value;
+	document.getElementById('desc_'+i).value      = document.getElementById('desc_'+(i+1)).value;
 	document.getElementById('imgSerial_'+i).style.display = $('#imgSerial_'+(i+1)).css('display') == 'none' ? 'none' : '';
 // Hidden fields
-	document.getElementById('serial_'+i).value= document.getElementById('serial_'+(i+1)).value;
-	document.getElementById('acct_'+i).value  = document.getElementById('acct_'+(i+1)).value;
+	document.getElementById('serial_'+i).value    = document.getElementById('serial_'+(i+1)).value;
+	document.getElementById('acct_'+i).value      = document.getElementById('acct_'+(i+1)).value;
 // End hidden fields
-	document.getElementById('sku_'+i).style.color = (document.getElementById('sku_'+i).value == text_search) ? inactive_text_color : '';
+	document.getElementById('sku_'+i).style.color = (document.getElementById('sku_'+i).value == text_search) ? inactive_text_color : document.getElementById('sku_'+(i+1)).style.color;
 	glIndex++; // increment the row counter (two rows per entry)
   }
   document.getElementById("item_table").deleteRow(-1);

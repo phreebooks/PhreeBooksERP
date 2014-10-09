@@ -211,7 +211,8 @@ define('TEXT_MS_HELP','wanneer u %s in een van de omschijvingen te plaatst word 
 define('JS_MS_COMMA_NOT_ALLOWED','Komma is niet toegestaan in de omschrijving.');
 define('JS_MS_COLON_NOT_ALLOWED','dubble punt is niet toegestaan in de omschrijving.');
 define('INV_CALCULATING_ERROR', 'Wanneer Phreebooks de prijs inclusief btw uitrekend zal het uitkomen op = ');
-define('INV_WHAT_TO_CALCULATE','toets een 1 om marge te herberekenen \ntoets een 2 om verkoop prijs te herberekenen');
+define('INV_WHAT_TO_CALCULATE','toets een 1 om marge te herberekenen \ntoets een 2 om verkoop prijzen te herberekenen op basis van marge \ntoets een 3 om verkoop prijzen te herberekenen op basis van opslag');
 define('INV_CHEAPER_ELSEWHERE','artikel %s is goedkoper ergens anders.');
 define('INV_IMAGE_DUPLICATE_NAME','De naam van de afbeelding staat al in de database, verander de bestands naam om verder te kunnen gaan. ');
+define('ITEM_IS_OUT_OF_STOCK', 'voorraad is op');
 ?>

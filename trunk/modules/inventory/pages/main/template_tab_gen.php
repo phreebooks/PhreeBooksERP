@@ -91,31 +91,29 @@
 	  <td colspan="5"><?php if(isset($cInfo->description_sales)) echo html_textarea_field('description_sales', 75, 2, $cInfo->description_sales, '', $reinsert_value = true); ?></td>
 	</tr>
 	<tr>
+	  <td align="right"><?php if(isset($cInfo->full_price)) echo INV_ENTRY_FULL_PRICE; ?></td>
+	  <td>
+	  	<?php if(isset($cInfo->full_price)) echo html_input_field('full_price', $currencies->precise($cInfo->full_price), 'onchange="update_full_price_incl_tax(true, true, false);" size="15" maxlength="20" style="text-align:right"', false);
+			if (isset($cInfo->full_price) && ENABLE_MULTI_CURRENCY) echo ' (' . DEFAULT_CURRENCY . ')';
+			if (isset($cInfo->full_price)) echo '   <i>'.$currencies->precise($cInfo->full_price).'</i>';
+		    if(isset($cInfo->price_sheet)) echo '&nbsp;' . html_icon('mimetypes/x-office-spreadsheet.png', BOX_SALES_PRICE_SHEETS, 'small', $params = 'onclick="priceMgr(' . $cInfo->id . ', 0, 0, \'c\')"') . chr(10); ?>
+	  </td>
 	  <td align="right"><?php if(isset($cInfo->full_price_with_tax)) echo INV_ENTRY_FULL_PRICE_WT; ?> </td>
 	  <td><?php if(isset($cInfo->full_price_with_tax)) echo html_input_field('full_price_with_tax', $currencies->precise($cInfo->full_price_with_tax), 'onchange="update_full_price_incl_tax(true, false, true);" size="15" maxlength="20" style="text-align:right" ', false);
 	  if (isset($cInfo->full_price_with_tax) && ENABLE_MULTI_CURRENCY) echo ' (' . DEFAULT_CURRENCY . ')';
-	  if(isset($cInfo->full_price_with_tax)) echo '   <i>'.$cInfo->full_price_with_tax.'</i>';	  
-	  ?> 
-	  </td>
-	</tr>
-	<tr>
-	  <td align="right"><?php if(isset($cInfo->full_price)) echo INV_ENTRY_FULL_PRICE; ?></td>
-	  <td>
-	  	<?php if(isset($cInfo->full_price)) echo html_input_field('full_price', $currencies->precise($cInfo->full_price), 'onchange="update_full_price_incl_tax(true, true, false);" size="15" maxlength="20" style="text-align:right"', false); 
-			if (isset($cInfo->full_price) && ENABLE_MULTI_CURRENCY) echo ' (' . DEFAULT_CURRENCY . ')'; 
-			if (isset($cInfo->full_price)) echo '   <i>'.$currencies->precise($cInfo->full_price).'</i>';
-		    if(isset($cInfo->price_sheet)) echo '&nbsp;' . html_icon('mimetypes/x-office-spreadsheet.png', BOX_SALES_PRICE_SHEETS, 'small', $params = 'onclick="priceMgr(' . $cInfo->id . ', 0, 0, \'c\')"') . chr(10); ?>
+	  if(isset($cInfo->full_price_with_tax)) echo '   <i>'.$cInfo->full_price_with_tax.'</i>';
+	  ?>
 	  </td>
 	  <td align="right"><?php if(isset($cInfo->item_taxable)) echo INV_ENTRY_ITEM_TAXABLE; ?></td>
 	  <td colspan="2"><?php if(isset($cInfo->item_taxable)) echo html_pull_down_menu('item_taxable', $tax_rates, $cInfo->item_taxable,'onchange="update_full_price_incl_tax(true, true, false);"'); ?></td>
 	</tr>
 	<tr>
 	  <td align="right"><?php if(isset($cInfo->product_margin)) echo INV_MARGIN; ?></td>
-	  <td><?php if(isset($cInfo->product_margin)) echo html_input_field('product_margin', $currencies->precise($cInfo->product_margin), 'onchange="product_margin_change();" size="15" maxlength="5" style="text-align:right" ', false). '%'; 
+	  <td><?php if(isset($cInfo->product_margin)) echo html_input_field('product_margin', $currencies->precise($cInfo->product_margin), 'onchange="product_margin_change();" size="15" maxlength="5" style="text-align:right" ', false). '%';
 	  if (isset($cInfo->product_margin)) echo '   <i>'.$currencies->precise($cInfo->product_margin).'%</i>'; ?>
 	  </td>
 	  <td align="right"><?php if(isset($cInfo->product_markup)) echo TEXT_RETAIL_MARKUP; ?></td>
-	  <td><?php if(isset($cInfo->product_markup)) echo html_input_field('product_markup', $currencies->precise($cInfo->product_markup), 'onchange="product_markup_change();" size="15" maxlength="5" style="text-align:right" ', false). ''; 
+	  <td><?php if(isset($cInfo->product_markup)) echo html_input_field('product_markup', $currencies->precise($cInfo->product_markup), 'onchange="product_markup_change();" size="15" maxlength="5" style="text-align:right" ', false). '';
 	  if (isset($cInfo->product_markup)) echo '   <i>'.$currencies->precise($cInfo->product_markup).'</i>'; ?>
 	  </td>
 	  <td align="right"><?php if(isset($cInfo->price_sheet)) echo TEXT_DEFAULT_PRICE_SHEET; ?></td>
@@ -123,7 +121,7 @@
 	</tr>
 	</tbody>
 	</table>
-	<?php } 
+	<?php }
 	if ($_SESSION['admin_security'][SECURITY_ID_PURCHASE_INVENTORY] > 0 && in_array('purchase',$cInfo->posible_transactions)) { ?>
 	<table class="ui-widget" style="border-collapse:collapse;width:100%;">
 	 	<thead class="ui-widget-header">
@@ -197,7 +195,7 @@
 	    <?php if(isset($cInfo->serialize)) echo ' ' . INV_ENTRY_INVENTORY_SERIALIZE ; ?>
 	  </td>
 	  <td align="right"><?php if(isset($cInfo->image_with_path)) echo INV_ENTRY_IMAGE_PATH; ?></td>
-	  <td colspan="2"><?php if(isset($cInfo->image_with_path)) echo html_hidden_field('image_with_path', $cInfo->image_with_path); 
+	  <td colspan="2"><?php if(isset($cInfo->image_with_path)) echo html_hidden_field('image_with_path', $cInfo->image_with_path);
 		if(isset($cInfo->image_with_path)) echo html_input_field('inventory_path', substr($cInfo->image_with_path, 0, strrpos($cInfo->image_with_path, '/'))); ?>
 	  </td>
 	</tr>
@@ -219,7 +217,7 @@
 		      <th><?php echo TEXT_FILENAME; ?></th>
 		      <th><?php echo TEXT_ACTION; ?></th>
 		     </tr>
-			<?php 
+			<?php
 				if (sizeof($cInfo->attachments) > 0) {
 				  foreach ($cInfo->attachments as $key => $value) {
 				    echo '<tr>';
@@ -229,11 +227,11 @@
 				    echo '</tr>' . chr(10);
 				  }
 				} else {
-				  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS . '</td></tr>'; 
+				  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS . '</td></tr>';
 				} ?>
-		     </tbody> 
+		     </tbody>
 		   </table>
-		  </fieldset>	 
+		  </fieldset>
 	</tr>
 	<tr>
 	  <td align="right"><?php if(isset($cInfo->account_inventory_wage)) echo INV_ENTRY_ACCT_INV; ?></td>
@@ -248,7 +246,7 @@
 	<tr></tr>
    </tbody>
    </table>
-   
+
 <?php if ( $cInfo->qty_table) { ?>
   </td>
   <td valign="top">

@@ -248,7 +248,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
           <th><?php echo in_array(JOURNAL_ID, array(6,9,10,12)) ? ORD_HEADING_NUMBER_4 : TEXT_REFERENCE_NUMBER; ?></th>
           <?php if (JOURNAL_ID==12) echo '<th>' . ORD_HEADING_NUMBER_10 . '</th>' . chr(10); ?>
           <?php if (ENABLE_MULTI_BRANCH) echo '<th>' . GEN_STORE_ID . '</th>' . chr(10); ?>
-          <th><?php echo (in_array(JOURNAL_ID, array(3,4,6,7,9)) ? TEXT_BUYER : TEXT_SALES_REP); ?></th>
+          <th><?php echo (in_array(JOURNAL_ID, array(3,4,6,7)) ? TEXT_BUYER : TEXT_SALES_REP); ?></th>
 <?php if ($template_options['terms']) echo '<th>' . ACT_TERMS_DUE . '</th>'; ?>
 <?php if ($template_options['terminal_date']) echo '<th>' . (in_array(JOURNAL_ID, array(3,4,9)) ? TEXT_EXPIRATION_DATE : TEXT_SHIP_BY_DATE) . '</th>'; ?>
           <th><?php echo DEF_GL_ACCT_TITLE; ?></th>
