@@ -224,6 +224,7 @@ class contacts {
     $sql_data_array['type']            = $this->type;
     $sql_data_array['short_name']      = $this->short_name;
     $sql_data_array['inactive']        = isset($this->inactive) ? '1' : '0';
+    $sql_data_array['contacts_level']  = $this->contacts_level;
     $sql_data_array['contact_first']   = $this->contact_first;
     $sql_data_array['contact_middle']  = $this->contact_middle;
     $sql_data_array['contact_last']    = $this->contact_last;

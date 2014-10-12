@@ -71,7 +71,8 @@ class contacts_admin {
 	  TABLE_CONTACTS => "CREATE TABLE " . TABLE_CONTACTS . " (
 		  id int(11) NOT NULL auto_increment,
 		  type char(1) NOT NULL default 'c',
-		  short_name varchar(32) NOT NULL default '',
+		  contacts_level char(1) NOT NULL default 'r',
+	      short_name varchar(32) NOT NULL default '',
 		  inactive enum('0','1') NOT NULL default '0',
 		  contact_first varchar(32) default NULL,
 		  contact_middle varchar(32) default NULL,
@@ -201,7 +202,11 @@ class contacts_admin {
     if (MODULE_CONTACTS_STATUS < 3.72) {
       $db->Execute("ALTER TABLE ".TABLE_CONTACTS." CHANGE tax_id tax_id INT(11) NOT NULL DEFAULT '-1';");
     }
-	if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_crm_id_num')) {
+    if (MODULE_CONTACTS_STATUS < 3.73) {
+      if (!db_field_exists(TABLE_CONTACTS, 'contacts_level')) $db->Execute("ALTER TABLE ".TABLE_CONTACTS." ADD contacts_level CHAR(1) NOT NULL DEFAULT 'r' AFTER type;");
+      xtra_field_sync_list('contacts', TABLE_CONTACTS);
+    }
+    if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_crm_id_num')) {
     	$result = $db->Execute("Select MAX(short_name + 1) AS new  FROM " . TABLE_CONTACTS . " WHERE TYPE = 'i'");
     	$db->Execute("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_crm_id_num VARCHAR( 16 ) NOT NULL DEFAULT '".$result->fields['new']."';");
     }

@@ -44,4 +44,10 @@ $crm_actions = array(
   'mail_out' => TEXT_EMAIL_SEND,
 );
 
+$contacts_levels = array(
+    'r' => TEXT_RETAIL,
+    'd' => TEXT_DEALER,
+    'w' => TEXT_WHOLESALE,    
+);
+
 ?>
