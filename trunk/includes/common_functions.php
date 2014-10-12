@@ -1693,6 +1693,7 @@ function validate_ajax_user($token = 0) {
         if (EMAIL_SMTPAUTH_MAIL_SERVER_PORT != '25' && EMAIL_SMTPAUTH_MAIL_SERVER_PORT != '') $mail->Port = EMAIL_SMTPAUTH_MAIL_SERVER_PORT;
         if (EMAIL_TRANSPORT=='smtpauth') {
           $mail->SMTPAuth = true;     // turn on SMTP authentication
+          if (defined('EMAIL_SMTPAUTH_TLS') && EMAIL_SMTPAUTH_TLS == '1') $mail->SMTPSecure = "tls"; //turn on SSL comment out for off
           $mail->Username = (gen_not_null(EMAIL_SMTPAUTH_MAILBOX)) ? EMAIL_SMTPAUTH_MAILBOX : EMAIL_FROM;  // SMTP username
           $mail->Password = EMAIL_SMTPAUTH_PASSWORD; // SMTP password
         }

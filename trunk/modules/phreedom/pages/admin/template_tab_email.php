@@ -66,6 +66,10 @@
     <td><?php echo html_input_field('email_smtpauth_mail_server_port', $_POST['email_smtpauth_mail_server_port'] ? $_POST['email_smtpauth_mail_server_port'] : EMAIL_SMTPAUTH_MAIL_SERVER_PORT, ''); ?></td>
   </tr>
   <tr>
+    <td><?php echo CD_12_75_DESC; ?></td>
+    <td><?php echo html_pull_down_menu('email_smtpauth_tls', $sel_yes_no, $_POST['email_smtpauth_tls'] ? $_POST['email_smtpauth_tls'] : EMAIL_SMTPAUTH_TLS, ''); ?></td>
+  </tr>
+  <tr>
     <td><?php echo CD_12_74_DESC; ?></td>
     <td><?php echo html_input_field('currencies_translations', $_POST['currencies_translations'] ? $_POST['currencies_translations'] : CURRENCIES_TRANSLATIONS, ''); ?></td>
   </tr>

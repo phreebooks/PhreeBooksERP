@@ -66,6 +66,7 @@ class phreedom_admin {
 	  'EMAIL_SMTPAUTH_PASSWORD'    => '',
 	  'EMAIL_SMTPAUTH_MAIL_SERVER' => '',
 	  'EMAIL_SMTPAUTH_MAIL_SERVER_PORT' => '25',
+      'EMAIL_SMTPAUTH_TLS'         => '0',
 	  'CURRENCIES_TRANSLATIONS'    => '&pound;,?:&euro;,?',
       'DATE_FORMAT'                => 'm/d/Y', // this is used for date(), use only values: Y, m and d (case sensitive)
       'DATE_DELIMITER'             => '/', // must match delimiter used in DATE_FORMAT
