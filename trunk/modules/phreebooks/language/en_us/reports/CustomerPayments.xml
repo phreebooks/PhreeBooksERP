@@ -1,154 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <PhreeformReport>
-	<title><![CDATA[Customer Payments]]></title>
 	<reporttype><![CDATA[rpt]]></reporttype>
+	<title><![CDATA[Customer Payments]]></title>
 	<groupname><![CDATA[bnk]]></groupname>
-	<standard_report><![CDATA[1]]></standard_report>
-	<tables>
-		<tablename><![CDATA[journal_main]]></tablename>
-	</tables>
-	<filterlist>
-		<fieldname><![CDATA[journal_main.period]]></fieldname>
-		<description><![CDATA[Accounting Period]]></description>
-		<visible><![CDATA[1]]></visible>
-		<type><![CDATA[0]]></type>
-	</filterlist>
-	<filterlist>
-		<fieldname><![CDATA[journal_main.store_id]]></fieldname>
-		<description><![CDATA[Store ID]]></description>
-		<visible><![CDATA[1]]></visible>
-		<type><![CDATA[0]]></type>
-	</filterlist>
-	<filterlist>
-		<fieldname><![CDATA[journal_main.shipper_code]]></fieldname>
-		<description><![CDATA[Payment Type]]></description>
-		<visible><![CDATA[1]]></visible>
-		<type><![CDATA[0]]></type>
-	</filterlist>
-	<filterlist>
-		<fieldname><![CDATA[journal_main.dept_rep_id]]></fieldname>
-		<description><![CDATA[Sales Rep]]></description>
-		<visible><![CDATA[1]]></visible>
-		<type><![CDATA[0]]></type>
-	</filterlist>
-	<filterlist>
-		<fieldname><![CDATA[journal_main.purchase_invoice_id]]></fieldname>
-		<description><![CDATA[Deposit ID]]></description>
-		<visible><![CDATA[1]]></visible>
-		<type><![CDATA[0]]></type>
-	</filterlist>
-	<filterlist>
-		<fieldname><![CDATA[journal_main.journal_id]]></fieldname>
-		<description><![CDATA[Journal ID]]></description>
-		<visible><![CDATA[0]]></visible>
-		<min_val><![CDATA[18]]></min_val>
-		<type><![CDATA[6]]></type>
-	</filterlist>
-	<fieldlist>
-		<fieldname><![CDATA[journal_main.period]]></fieldname>
-		<description><![CDATA[Period]]></description>
-		<visible><![CDATA[0]]></visible>
-		<columnbreak><![CDATA[0]]></columnbreak>
-		<align><![CDATA[L]]></align>
-		<total><![CDATA[0]]></total>
-	</fieldlist>
-	<fieldlist>
-		<fieldname><![CDATA[journal_main.post_date]]></fieldname>
-		<description><![CDATA[Post Date]]></description>
-		<visible><![CDATA[1]]></visible>
-		<columnbreak><![CDATA[1]]></columnbreak>
-		<processing><![CDATA[date]]></processing>
-		<align><![CDATA[L]]></align>
-		<total><![CDATA[0]]></total>
-	</fieldlist>
-	<fieldlist>
-		<fieldname><![CDATA[journal_main.store_id]]></fieldname>
-		<description><![CDATA[Store ID]]></description>
-		<visible><![CDATA[0]]></visible>
-		<columnbreak><![CDATA[0]]></columnbreak>
-		<align><![CDATA[L]]></align>
-		<total><![CDATA[0]]></total>
-	</fieldlist>
-	<fieldlist>
-		<fieldname><![CDATA[journal_main.bill_primary_name]]></fieldname>
-		<description><![CDATA[Customer Name]]></description>
-		<visible><![CDATA[1]]></visible>
-		<columnbreak><![CDATA[1]]></columnbreak>
-		<columnwidth><![CDATA[80]]></columnwidth>
-		<align><![CDATA[L]]></align>
-		<total><![CDATA[0]]></total>
-	</fieldlist>
-	<fieldlist>
-		<fieldname><![CDATA[journal_main.closed]]></fieldname>
-		<description><![CDATA[Reconciled]]></description>
-		<visible><![CDATA[0]]></visible>
-		<columnbreak><![CDATA[0]]></columnbreak>
-		<align><![CDATA[L]]></align>
-		<total><![CDATA[0]]></total>
-	</fieldlist>
-	<fieldlist>
-		<fieldname><![CDATA[journal_main.shipper_code]]></fieldname>
-		<description><![CDATA[Payment Method]]></description>
-		<visible><![CDATA[1]]></visible>
-		<columnbreak><![CDATA[1]]></columnbreak>
-		<align><![CDATA[L]]></align>
-		<total><![CDATA[0]]></total>
-	</fieldlist>
-	<fieldlist>
-		<fieldname><![CDATA[journal_main.purchase_invoice_id]]></fieldname>
-		<description><![CDATA[Deposit Number]]></description>
-		<visible><![CDATA[1]]></visible>
-		<columnbreak><![CDATA[1]]></columnbreak>
-		<columnwidth><![CDATA[40]]></columnwidth>
-		<align><![CDATA[L]]></align>
-		<total><![CDATA[0]]></total>
-	</fieldlist>
-	<fieldlist>
-		<fieldname><![CDATA[journal_main.total_amount]]></fieldname>
-		<description><![CDATA[Amount Paid]]></description>
-		<visible><![CDATA[1]]></visible>
-		<columnbreak><![CDATA[1]]></columnbreak>
-		<processing><![CDATA[posted_cur]]></processing>
-		<align><![CDATA[R]]></align>
-		<total><![CDATA[1]]></total>
-	</fieldlist>
-	<grouplist>
-		<fieldname><![CDATA[journal_main.store_id]]></fieldname>
-		<description><![CDATA[Store ID]]></description>
-		<default><![CDATA[0]]></default>
-		<page_break><![CDATA[0]]></page_break>
-		<processing><![CDATA[0]]></processing>
-	</grouplist>
-	<grouplist>
-		<fieldname><![CDATA[journal_main.dept_rep_id]]></fieldname>
-		<description><![CDATA[Sales Rep]]></description>
-		<default><![CDATA[0]]></default>
-		<page_break><![CDATA[0]]></page_break>
-		<processing><![CDATA[0]]></processing>
-	</grouplist>
-	<grouplist>
-		<fieldname><![CDATA[journal_main.freight]]></fieldname>
-		<description><![CDATA[Payment Method]]></description>
-		<default><![CDATA[0]]></default>
-		<page_break><![CDATA[0]]></page_break>
-		<processing><![CDATA[0]]></processing>
-	</grouplist>
-	<grouplist>
-		<fieldname><![CDATA[journal_main.period]]></fieldname>
-		<description><![CDATA[Accounting Period]]></description>
-		<default><![CDATA[0]]></default>
-		<page_break><![CDATA[0]]></page_break>
-		<processing><![CDATA[0]]></processing>
-	</grouplist>
-		<description><![CDATA[Lists the customer payments. Format: Letter, Portrait]]></description>
-		<datefield><![CDATA[journal_main.post_date]]></datefield>
-		<datelist><![CDATA[abcdefghijkl]]></datelist>
-		<datedefault><![CDATA[c]]></datedefault>
-		<truncate><![CDATA[0]]></truncate>
-		<security><![CDATA[u:0;g:0]]></security>
-	<page>
-		<size><![CDATA[Letter:216:282]]></size>
-		<orientation><![CDATA[P]]></orientation>
+	<description><![CDATA[Lists the customer payments. Format: Letter, Portrait]]></description>
+<page>
+	<size><![CDATA[Letter:216:282]]></size>
+	<orientation><![CDATA[P]]></orientation>
 	<margin>
 		<top><![CDATA[8]]></top>
 		<bottom><![CDATA[8]]></bottom>
@@ -173,6 +31,7 @@
 	<title2>
 		<show><![CDATA[1]]></show>
 		<text><![CDATA[Report Generated %date%]]></text>
+		<font><![CDATA[helvetica]]></font>
 		<size><![CDATA[10]]></size>
 		<color><![CDATA[0:0:0]]></color>
 		<align><![CDATA[C]]></align>
@@ -195,16 +54,162 @@
 		<color><![CDATA[0:0:0]]></color>
 		<align><![CDATA[L]]></align>
 	</totals>
-	</page>
-	<sortlist>
-		<fieldname><![CDATA[journal_main.post_date]]></fieldname>
-		<description><![CDATA[Post Date]]></description>
-		<default><![CDATA[1]]></default>
-	</sortlist>
-	<sortlist>
-		<fieldname><![CDATA[journal_main.purchase_invoice_id]]></fieldname>
-		<description><![CDATA[Deposit ID]]></description>
-		<default><![CDATA[0]]></default>
-	</sortlist>
-	<custom><![CDATA[s]]></custom>
+</page>
+<tables>
+	<tablename><![CDATA[journal_main]]></tablename>
+</tables>
+	<truncate><![CDATA[0]]></truncate>
+	<totalonly><![CDATA[0]]></totalonly>
+<fieldlist>
+	<fieldname><![CDATA[journal_main.period]]></fieldname>
+	<description><![CDATA[Period]]></description>
+	<visible><![CDATA[0]]></visible>
+	<columnwidth><![CDATA[25]]></columnwidth>
+	<columnbreak><![CDATA[0]]></columnbreak>
+	<align><![CDATA[L]]></align>
+	<total><![CDATA[0]]></total>
+</fieldlist>
+<fieldlist>
+	<fieldname><![CDATA[journal_main.post_date]]></fieldname>
+	<description><![CDATA[Post Date]]></description>
+	<visible><![CDATA[1]]></visible>
+	<columnwidth><![CDATA[25]]></columnwidth>
+	<columnbreak><![CDATA[1]]></columnbreak>
+	<processing><![CDATA[date]]></processing>
+	<align><![CDATA[L]]></align>
+	<total><![CDATA[0]]></total>
+</fieldlist>
+<fieldlist>
+	<fieldname><![CDATA[journal_main.store_id]]></fieldname>
+	<description><![CDATA[Store ID]]></description>
+	<visible><![CDATA[0]]></visible>
+	<columnwidth><![CDATA[25]]></columnwidth>
+	<columnbreak><![CDATA[0]]></columnbreak>
+	<align><![CDATA[L]]></align>
+	<total><![CDATA[0]]></total>
+</fieldlist>
+<fieldlist>
+	<fieldname><![CDATA[journal_main.bill_primary_name]]></fieldname>
+	<description><![CDATA[Customer Name]]></description>
+	<visible><![CDATA[1]]></visible>
+	<columnwidth><![CDATA[80]]></columnwidth>
+	<columnbreak><![CDATA[1]]></columnbreak>
+	<align><![CDATA[L]]></align>
+	<total><![CDATA[0]]></total>
+</fieldlist>
+<fieldlist>
+	<fieldname><![CDATA[journal_main.closed]]></fieldname>
+	<description><![CDATA[Reconciled]]></description>
+	<visible><![CDATA[0]]></visible>
+	<columnwidth><![CDATA[25]]></columnwidth>
+	<columnbreak><![CDATA[0]]></columnbreak>
+	<align><![CDATA[L]]></align>
+	<total><![CDATA[0]]></total>
+</fieldlist>
+<fieldlist>
+	<fieldname><![CDATA[journal_main.shipper_code]]></fieldname>
+	<description><![CDATA[Payment Method]]></description>
+	<visible><![CDATA[1]]></visible>
+	<columnwidth><![CDATA[25]]></columnwidth>
+	<columnbreak><![CDATA[1]]></columnbreak>
+	<align><![CDATA[L]]></align>
+	<total><![CDATA[0]]></total>
+</fieldlist>
+<fieldlist>
+	<fieldname><![CDATA[journal_main.purchase_invoice_id]]></fieldname>
+	<description><![CDATA[Deposit Number]]></description>
+	<visible><![CDATA[1]]></visible>
+	<columnwidth><![CDATA[40]]></columnwidth>
+	<columnbreak><![CDATA[1]]></columnbreak>
+	<align><![CDATA[L]]></align>
+	<total><![CDATA[0]]></total>
+</fieldlist>
+<fieldlist>
+	<fieldname><![CDATA[journal_main.total_amount]]></fieldname>
+	<description><![CDATA[Amount Paid]]></description>
+	<visible><![CDATA[1]]></visible>
+	<columnwidth><![CDATA[25]]></columnwidth>
+	<columnbreak><![CDATA[1]]></columnbreak>
+	<processing><![CDATA[posted_cur]]></processing>
+	<align><![CDATA[R]]></align>
+	<total><![CDATA[1]]></total>
+</fieldlist>
+	<security><![CDATA[u:0;g:0]]></security>
+	<datelist><![CDATA[abcdelfghijk]]></datelist>
+	<datefield><![CDATA[journal_main.post_date]]></datefield>
+	<datedefault><![CDATA[c]]></datedefault>
+	<filenameprefix><![CDATA[DP-]]></filenameprefix>
+	<filenamefield><![CDATA[journal_main.post_date]]></filenamefield>
+<grouplist>
+	<fieldname><![CDATA[journal_main.store_id]]></fieldname>
+	<description><![CDATA[Store ID]]></description>
+	<default><![CDATA[0]]></default>
+	<page_break><![CDATA[0]]></page_break>
+</grouplist>
+<grouplist>
+	<fieldname><![CDATA[journal_main.rep_id]]></fieldname>
+	<description><![CDATA[Sales Rep]]></description>
+	<default><![CDATA[0]]></default>
+	<page_break><![CDATA[0]]></page_break>
+	<processing><![CDATA[branch]]></processing>
+</grouplist>
+<grouplist>
+	<fieldname><![CDATA[journal_main.shipper_code]]></fieldname>
+	<description><![CDATA[Payment Method]]></description>
+	<default><![CDATA[0]]></default>
+	<page_break><![CDATA[0]]></page_break>
+</grouplist>
+<grouplist>
+	<fieldname><![CDATA[journal_main.period]]></fieldname>
+	<description><![CDATA[Accounting Period]]></description>
+	<default><![CDATA[0]]></default>
+	<page_break><![CDATA[0]]></page_break>
+</grouplist>
+<sortlist>
+	<fieldname><![CDATA[journal_main.post_date]]></fieldname>
+	<description><![CDATA[Post Date]]></description>
+	<default><![CDATA[1]]></default>
+</sortlist>
+<sortlist>
+	<fieldname><![CDATA[journal_main.purchase_invoice_id]]></fieldname>
+	<description><![CDATA[Deposit ID]]></description>
+	<default><![CDATA[0]]></default>
+</sortlist>
+<filterlist>
+	<fieldname><![CDATA[journal_main.period]]></fieldname>
+	<description><![CDATA[Accounting Period]]></description>
+	<visible><![CDATA[1]]></visible>
+	<type><![CDATA[0]]></type>
+</filterlist>
+<filterlist>
+	<fieldname><![CDATA[journal_main.store_id]]></fieldname>
+	<description><![CDATA[Store ID]]></description>
+	<visible><![CDATA[1]]></visible>
+	<type><![CDATA[0]]></type>
+</filterlist>
+<filterlist>
+	<fieldname><![CDATA[journal_main.shipper_code]]></fieldname>
+	<description><![CDATA[Payment Type]]></description>
+	<visible><![CDATA[1]]></visible>
+	<type><![CDATA[0]]></type>
+</filterlist>
+<filterlist>
+	<fieldname><![CDATA[journal_main.rep_id]]></fieldname>
+	<description><![CDATA[Sales Rep]]></description>
+	<visible><![CDATA[1]]></visible>
+	<type><![CDATA[0]]></type>
+</filterlist>
+<filterlist>
+	<fieldname><![CDATA[journal_main.purchase_invoice_id]]></fieldname>
+	<description><![CDATA[Deposit ID]]></description>
+	<visible><![CDATA[1]]></visible>
+	<type><![CDATA[0]]></type>
+</filterlist>
+<filterlist>
+	<fieldname><![CDATA[journal_main.journal_id]]></fieldname>
+	<description><![CDATA[Journal ID]]></description>
+	<visible><![CDATA[0]]></visible>
+	<type><![CDATA[9]]></type>
+	<min_val><![CDATA[18,21]]></min_val>
+</filterlist>
 </PhreeformReport>
