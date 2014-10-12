@@ -26,8 +26,8 @@
         <td><?php echo html_input_field('short_name', $cInfo->short_name, 'size="21" maxlength="20"', $cInfo->auto_type == false ? true : false); ?></td>
         <td align="right"><?php echo TEXT_INACTIVE; ?></td>
         <td><?php echo html_checkbox_field('inactive', '1', $cInfo->inactive); ?>
-            <?php echo CONTACT_LEVEL; ?>
-            <?php echo html_pull_down_menu('contacts_level', gen_build_pull_down($contacts_levels), $cInfo->contacts_level ? $cInfo->contacts_level : '0'); ?>
+            <?php echo $type=='c' ? CONTACT_LEVEL : ''; ?>
+            <?php echo $type=='c' ? html_pull_down_menu('contacts_level', gen_build_pull_down($contacts_levels), $cInfo->contacts_level ? $cInfo->contacts_level : '0') : ''; ?>
         </td>
         <td align="right"><?php echo constant('ACT_' . strtoupper($type) . '_REP_ID'); ?></td>
         <td><?php echo html_pull_down_menu('dept_rep_id', $sales_rep_array, $cInfo->dept_rep_id ? $cInfo->dept_rep_id : 'r'); ?></td>
