@@ -166,10 +166,12 @@ echo $toolbar->build_toolbar();
 				  <?php echo html_input_field('currencies_value', $order->currencies_value, 'readonly="readonly"'); ?>
 			    </td>
 			  </tr>
-<?php } ?>
+<?php } 
+$tip = (in_array(JOURNAL_ID, array(6,7))) ? ORD_JS_WAITING_FOR_PAYMENT : ORD_TT_PURCH_INV_NUM;
+?>
 			  <tr>
 				<td align="right"><?php echo constant('ORD_HEADING_NUMBER_' . JOURNAL_ID); ?></td>
-				<td><?php echo html_input_field('purchase_invoice_id', $order->purchase_invoice_id, 'onmouseover="Tip(\'' . ORD_TT_PURCH_INV_NUM . '\')"'); ?></td>
+				<td><?php echo html_input_field('purchase_invoice_id', $order->purchase_invoice_id, 'onmouseover="Tip(\'' . $tip . '\')"'); ?></td>
 			  </tr>
 <?php if (isset($template_options['waiting'])) {	// show waiting for invoice (purchase_receive, vendor cm) checkbox ?>
 			  <tr>
