@@ -164,7 +164,7 @@ switch ($_REQUEST['action']) {
 	  $const  = $temp[2];
 	  $status = isset($_POST['d:' . $id . ':' . $const]) ? '1' : '0';
 	  $db->Execute("update " . TABLE_TRANSLATOR . " 
-		set translation = '" . db_input($trans) . "', translated = '" . $status . "' where id = '" . $id . "'");
+		set translation = '" . db_input($trans) . "', translated = '" . str_replace("\n", "<br />", $status) . "' where id = '" . $id . "'");
 	}
 	$messageStack->add(TEXT_TRANSLATIONS_SAVED,'success');
 	$_REQUEST['action'] = 'edit';

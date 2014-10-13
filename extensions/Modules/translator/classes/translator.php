@@ -178,11 +178,10 @@ if ($const == 'GEN_COUNTRY_CODE')echo 'writing const = '.$const.' with value = '
 	while (!$result->EOF) {
 	  if (!isset($output[$result->fields['pathtofile']])) {
 	    $output[$result->fields['pathtofile']]  = $header;
-		$output[$result->fields['pathtofile']] .= '// Path: /' . $result->fields['pathtofile'] . chr(10) . chr(10);
+		$output[$result->fields['pathtofile']] .= "// Path: /" . $result->fields['pathtofile']."\n\n";
 	  }
-	  $temp  = 'define(\'' . $result->fields['defined_constant'] . '\',\'';
-	  $temp .= addslashes($result->fields['translation']) . '\');';
-	  $output[$result->fields['pathtofile']] .= $temp . chr(10);
+	  $temp  = "define('".$result->fields['defined_constant']."','".str_replace("'", "\\'", $result->fields['translation'])."');\n";
+	  $output[$result->fields['pathtofile']] .= $temp;
 	  $result->MoveNext();
 	}
 	foreach ($output as $path => $content) {
