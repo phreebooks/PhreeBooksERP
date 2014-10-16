@@ -1374,6 +1374,7 @@ function changeOfType(){
 			}
 		}
 	}
+	document.getElementById('sku').focus();
 }
 
 function set_ot_options() {
