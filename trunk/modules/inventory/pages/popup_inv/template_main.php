@@ -74,7 +74,7 @@ echo $toolbar->build_toolbar($add_search = true);
 			$price = inv_calculate_sales_price(1, $query_result->fields['id'], 0, 'v');
 			break;
 	  }
-	  $bkgnd = ($query_result->fields['inactive']) ? ' style="background-color:pink"' : '';
+	  $bkgnd = ($query_result->fields['inactive'] == 1) ? ' style="background-color:pink"' : '';
 ?>
   <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer" onclick="setReturnItem(<?php echo $query_result->fields['id']; ?>)">
 	<td<?php echo $bkgnd; ?>><?php echo $query_result->fields['sku']; ?></td>

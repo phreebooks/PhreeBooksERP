@@ -85,7 +85,7 @@ echo $toolbar->build_toolbar($add_search = true);
 ?>
    <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer">
 	<td <?php echo $bkgnd; ?> onclick="submitSeq(<?php echo $query_result->fields['id'].', \'edit\''; ?>)"><?php echo $query_result->fields['sku']; ?></td>
-	<td align="center"        onclick="submitSeq(<?php echo $query_result->fields['id'].', \'edit\''; ?>)"><?php echo ($query_result->fields['inactive']=='0' ? '' : TEXT_YES); ?></td>
+	<td align="center"        onclick="submitSeq(<?php echo $query_result->fields['id'].', \'edit\''; ?>)"><?php echo ($query_result->fields['inactive'] == '1' ? TEXT_YES : ''); ?></td>
 	<td                       onclick="submitSeq(<?php echo $query_result->fields['id'].', \'edit\''; ?>)"><?php echo $query_result->fields['description_short']; ?></td>
 	<td align="center"        onclick="submitSeq(<?php echo $query_result->fields['id'].', \'edit\''; ?>)"><?php echo $qty_in_stock; ?></td>
 	<td align="center"        onclick="submitSeq(<?php echo $query_result->fields['id'].', \'edit\''; ?>)"><?php echo $query_result->fields['quantity_on_sales_order']; ?></td>

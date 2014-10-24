@@ -34,8 +34,8 @@ switch ($_REQUEST['action']) {
 	$sheet_name     = db_prepare_input($_POST['sheet_name']);
 	$revision       = db_prepare_input($_POST['revision']);
 	$effective_date = gen_db_date($_POST['effective_date']);
-	$default_sheet  = isset($_POST['default_sheet']) ? 1 : 0;
-	$inactive       = isset($_POST['inactive']) ? 1 : 0;
+	$default_sheet  = isset($_POST['default_sheet']) ? '1' : '0';
+	$inactive       = isset($_POST['inactive']) ? '1' : '0';
 	$encoded_prices = array();
 	for ($i=0, $j=1; $i < MAX_NUM_PRICE_LEVELS; $i++, $j++) {
 	  $price   = $currencies->clean_value(db_prepare_input($_POST['price_'   . $j]));
