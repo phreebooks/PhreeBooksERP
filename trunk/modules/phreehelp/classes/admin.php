@@ -53,8 +53,8 @@ class admin extends \core\classes\admin {
 	    parent::__construct();
 	}
 
-	function upgrade() {
-	    parent::upgrade();
+	function upgrade(\core\classes\basis &$basis) {
+	    parent::upgrade( $basis);
 		write_configure(PHREEHELP_FORCE_RELOAD, '1');
 	}
 }

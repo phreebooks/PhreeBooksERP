@@ -99,9 +99,9 @@ class admin extends \core\classes\admin {
 	  	}
 	}
 
-	function upgrade() {
+	function upgrade(\core\classes\basis &$basis) {
 	    global $admin;
-		parent::upgrade();
+		parent::upgrade($basis);
 		if (version_compare($this->status, '3.4', '<') ) {
 			  foreach (gen_get_store_ids() as $store){
 			  	$sql_data_array = array(

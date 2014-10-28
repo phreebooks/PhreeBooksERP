@@ -83,9 +83,9 @@ class admin extends \core\classes\admin {
 		}
   	}
 
-	function upgrade() {
+	function upgrade(\core\classes\basis &$basis) {
 	  	global $admin;
-	  	parent::upgrade();
+	  	parent::upgrade($basis);
 	  	$sql = "select id from " . TABLE_EXTRA_FIELDS . " where module_id = 'contacts' and field_name = 'bank_account'";
 		$result = $admin->DataBase->query($sql);
 		if ( $result->RecordCount() == 0 ){

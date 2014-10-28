@@ -26,223 +26,223 @@ class admin extends \core\classes\admin {
 	public $version		= '4.0';
 	public $installed	= true;
 
-  function __construct() {
-	// Load configuration constants for this module, must match entries in admin tabs
-    $this->keys = array(
-	  'COMPANY_ID'                 => 'HQ',
-	  'COMPANY_NAME'               => 'My Company',
-	  'AR_CONTACT_NAME'            => 'AR Contact',
-	  'AP_CONTACT_NAME'            => 'AP Contact',
-	  'COMPANY_ADDRESS1'           => '100 Main St.',
-	  'COMPANY_ADDRESS2'           => '',
-	  'COMPANY_CITY_TOWN'          => 'Anytown',
-	  'COMPANY_ZONE'               => 'CA',
-	  'COMPANY_POSTAL_CODE'        => '90001',
-	  'COMPANY_COUNTRY'            => 'USA',
-	  'COMPANY_TELEPHONE1'         => '',
-	  'COMPANY_TELEPHONE2'         => '',
-	  'COMPANY_FAX'                => '',
-	  'COMPANY_EMAIL'              => 'webmaster@mycompany.com',
-	  'COMPANY_WEBSITE'            => '',
-	  'TAX_ID'                     => '',
-	  'ENABLE_MULTI_BRANCH'        => '0',
-	  'ENABLE_MULTI_CURRENCY'      => '0',
-	  'ENABLE_ENCRYPTION'          => '0',
-	  'ENTRY_PASSWORD_MIN_LENGTH'  => '5',
-	  'MAX_DISPLAY_SEARCH_RESULTS' => '20',
-	  'CFG_AUTO_UPDATE_CHECK'      => '0',
-	  'HIDE_SUCCESS_MESSAGES'      => '0',
-	  'AUTO_UPDATE_CURRENCY'       => '1',
-	  'LIMIT_HISTORY_RESULTS'      => '20',
-	  'SESSION_TIMEOUT_ADMIN'      => '3600',
-	  'SESSION_AUTO_REFRESH'       => '0',
-	  'DEBUG'                      => '0',
-	  'IE_RW_EXPORT_PREFERENCE'    => 'Download',
-	  'EMAIL_TRANSPORT'            => 'smtp',
-	  'EMAIL_LINEFEED'             => 'LF',
-	  'EMAIL_USE_HTML'             => '0',
-	  'STORE_OWNER_EMAIL_ADDRESS'  => '',
-	  'EMAIL_FROM'                 => '',
-	  'ADMIN_EXTRA_EMAIL_FORMAT'   => 'TEXT',
-	  'EMAIL_SMTPAUTH_MAILBOX'     => '',
-	  'EMAIL_SMTPAUTH_PASSWORD'    => '',
-	  'EMAIL_SMTPAUTH_MAIL_SERVER' => '',
-	  'EMAIL_SMTPAUTH_MAIL_SERVER_PORT' => '25',
-	  'CURRENCIES_TRANSLATIONS'    => '&pound;,?:&euro;,?',
-      'DATE_FORMAT'                => 'm/d/Y', // this is used for date(), use only values: Y, m and d (case sensitive)
-      'DATE_DELIMITER'             => '/', // must match delimiter used in DATE_FORMAT
-      'DATE_TIME_FORMAT'           => 'm/d/Y h:i:s a',
-	);
-	// add new directories to store images and data
-	$this->dirlist = array(
-	  '../backups', // goes in root my_files directory
-	  'images',
-	  'temp',
-	);
-	// Load tables
-	$this->tables = array(
-	  TABLE_AUDIT_LOG => "CREATE TABLE " . TABLE_AUDIT_LOG . " (
-		  id int(15) NOT NULL auto_increment,
-		  action_date timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-		  user_id int(11) NOT NULL default '0',
-		  ip_address varchar(15) NOT NULL default '0.0.0.0',
-		  stats varchar(32) NOT NULL,
-		  reference_id varchar(32) NOT NULL default '',
-		  action varchar(64) default NULL,
-		  amount float(10,2) NOT NULL default '0.00',
-		  PRIMARY KEY (id),
-		  KEY idx_page_accessed_zen (reference_id)
-		) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;",
-	  TABLE_CONFIGURATION => "CREATE TABLE " . TABLE_CONFIGURATION . " (
-		  configuration_key varchar(64) NOT NULL default '',
-		  configuration_value text,
-		  PRIMARY KEY (configuration_key)
-		) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
-	  TABLE_CURRENCIES => "CREATE TABLE " . TABLE_CURRENCIES . " (
-		  currencies_id int(11) NOT NULL auto_increment,
-		  title varchar(32) NOT NULL default '',
-		  code char(3) NOT NULL default '',
-		  symbol_left varchar(24) default NULL,
-		  symbol_right varchar(24) default NULL,
-		  decimal_point char(1) default NULL,
-		  thousands_point char(1) default NULL,
-		  decimal_places char(1) default NULL,
-		  decimal_precise char(1) NOT NULL default '2',
-		  value float(13,8) default NULL,
-		  last_updated datetime default NULL,
-		  PRIMARY KEY  (currencies_id)
-		) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
-	  TABLE_CURRENT_STATUS => "CREATE TABLE " . TABLE_CURRENT_STATUS . " (
-		  id int(11) NOT NULL auto_increment,
-		  PRIMARY KEY (id)
-		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
-	  TABLE_DATA_SECURITY => "CREATE TABLE " . TABLE_DATA_SECURITY . " (
-		  id int(11) NOT NULL auto_increment,
-		  module varchar(32) NOT NULL DEFAULT '',
-		  ref_1 int(11) NOT NULL DEFAULT '0',
-		  ref_2 int(11) NOT NULL DEFAULT '0',
-		  hint varchar(255) NOT NULL DEFAULT '',
-		  enc_value varchar(255) NOT NULL DEFAULT '',
-		  exp_date date NOT NULL DEFAULT '2049-12-31',
-		  PRIMARY KEY (id)
-		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
-	  TABLE_EXTRA_FIELDS => "CREATE TABLE " . TABLE_EXTRA_FIELDS . " (
-		  id int(10) NOT NULL auto_increment,
-		  module_id varchar(32) NOT NULL default '',
-		  tab_id int(11) NOT NULL default '0',
-		  entry_type varchar(20) NOT NULL default '',
-		  field_name varchar(32) NOT NULL default '',
-		  description varchar(64) NOT NULL default '',
-		  sort_order varchar(64) NOT NULL default '',
-		  group_by varchar(64) NOT NULL default '',
-		  use_in_inventory_filter enum('0','1') NOT NULL DEFAULT '0',
-	  	  required enum('0','1') NOT NULL DEFAULT '0',
-		  params text,
-		  PRIMARY KEY (id)
-		) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
-	  TABLE_EXTRA_TABS => "CREATE TABLE " . TABLE_EXTRA_TABS . " (
-		  id int(3) NOT NULL auto_increment,
-		  module_id varchar(32) NOT NULL default '',
-		  tab_name varchar(32) NOT NULL default '',
-		  description varchar(80) NOT NULL default '',
-		  sort_order int(2) NOT NULL default '0',
-		  PRIMARY KEY (id)
-		) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
-	  TABLE_USERS => "CREATE TABLE " . TABLE_USERS . " (
-		  admin_id int(11) NOT NULL auto_increment,
-		  is_role enum('0','1') NOT NULL default '0',
-		  admin_name varchar(32) NOT NULL default '',
-		  inactive enum('0','1') NOT NULL default '0',
-		  display_name varchar(32) NOT NULL default '',
-		  admin_email varchar(96) NOT NULL default '',
-		  admin_pass varchar(40) NOT NULL default '',
-		  account_id int(11) NOT NULL default '0',
-		  admin_store_id int(11) NOT NULL default '0',
-		  admin_prefs text,
-		  admin_security text,
-		  PRIMARY KEY (admin_id),
-		  KEY idx_admin_name_zen (admin_name)
-		) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;",
-	  TABLE_USERS_PROFILES => "CREATE TABLE " . TABLE_USERS_PROFILES . " (
-		  id int(11) NOT NULL auto_increment,
-		  user_id int(11) NOT NULL default '0',
-		  menu_id varchar(32) NOT NULL default '',
-		  dashboard_id varchar(32) NOT NULL default '',
-		  column_id int(3) NOT NULL default '0',
-		  row_id int(3) NOT NULL default '0',
-		  params text,
-		  PRIMARY KEY (id)
-		) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
-    );
-	$this->mainmenu["company"]['submenu']["profile"] = array(
-			'order' 		=> 5,
-			'text'        => TEXT_MY_PROFILE,
-			'security_id' => SECURITY_ID_MY_PROFILE,
-			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=profile', 'SSL'),
-			'show_in_users_settings' => true,
-			'params'      => '',
-	);
+	function __construct() {
+		// Load configuration constants for this module, must match entries in admin tabs
+	    $this->keys = array(
+		  'COMPANY_ID'                 => 'HQ',
+		  'COMPANY_NAME'               => 'My Company',
+		  'AR_CONTACT_NAME'            => 'AR Contact',
+		  'AP_CONTACT_NAME'            => 'AP Contact',
+		  'COMPANY_ADDRESS1'           => '100 Main St.',
+		  'COMPANY_ADDRESS2'           => '',
+		  'COMPANY_CITY_TOWN'          => 'Anytown',
+		  'COMPANY_ZONE'               => 'CA',
+		  'COMPANY_POSTAL_CODE'        => '90001',
+		  'COMPANY_COUNTRY'            => 'USA',
+		  'COMPANY_TELEPHONE1'         => '',
+		  'COMPANY_TELEPHONE2'         => '',
+		  'COMPANY_FAX'                => '',
+		  'COMPANY_EMAIL'              => 'webmaster@mycompany.com',
+		  'COMPANY_WEBSITE'            => '',
+		  'TAX_ID'                     => '',
+		  'ENABLE_MULTI_BRANCH'        => '0',
+		  'ENABLE_MULTI_CURRENCY'      => '0',
+		  'ENABLE_ENCRYPTION'          => '0',
+		  'ENTRY_PASSWORD_MIN_LENGTH'  => '5',
+		  'MAX_DISPLAY_SEARCH_RESULTS' => '20',
+		  'CFG_AUTO_UPDATE_CHECK'      => '0',
+		  'HIDE_SUCCESS_MESSAGES'      => '0',
+		  'AUTO_UPDATE_CURRENCY'       => '1',
+		  'LIMIT_HISTORY_RESULTS'      => '20',
+		  'SESSION_TIMEOUT_ADMIN'      => '3600',
+		  'SESSION_AUTO_REFRESH'       => '0',
+		  'DEBUG'                      => '0',
+		  'IE_RW_EXPORT_PREFERENCE'    => 'Download',
+		  'EMAIL_TRANSPORT'            => 'smtp',
+		  'EMAIL_LINEFEED'             => 'LF',
+		  'EMAIL_USE_HTML'             => '0',
+		  'STORE_OWNER_EMAIL_ADDRESS'  => '',
+		  'EMAIL_FROM'                 => '',
+		  'ADMIN_EXTRA_EMAIL_FORMAT'   => 'TEXT',
+		  'EMAIL_SMTPAUTH_MAILBOX'     => '',
+		  'EMAIL_SMTPAUTH_PASSWORD'    => '',
+		  'EMAIL_SMTPAUTH_MAIL_SERVER' => '',
+		  'EMAIL_SMTPAUTH_MAIL_SERVER_PORT' => '25',
+		  'CURRENCIES_TRANSLATIONS'    => '&pound;,?:&euro;,?',
+	      'DATE_FORMAT'                => 'm/d/Y', // this is used for date(), use only values: Y, m and d (case sensitive)
+	      'DATE_DELIMITER'             => '/', // must match delimiter used in DATE_FORMAT
+	      'DATE_TIME_FORMAT'           => 'm/d/Y h:i:s a',
+		);
+		// add new directories to store images and data
+		$this->dirlist = array(
+		  '../backups', // goes in root my_files directory
+		  'images',
+		  'temp',
+		);
+		// Load tables
+		$this->tables = array(
+		  TABLE_AUDIT_LOG => "CREATE TABLE " . TABLE_AUDIT_LOG . " (
+			  id int(15) NOT NULL auto_increment,
+			  action_date timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+			  user_id int(11) NOT NULL default '0',
+			  ip_address varchar(15) NOT NULL default '0.0.0.0',
+			  stats varchar(32) NOT NULL,
+			  reference_id varchar(32) NOT NULL default '',
+			  action varchar(64) default NULL,
+			  amount float(10,2) NOT NULL default '0.00',
+			  PRIMARY KEY (id),
+			  KEY idx_page_accessed_zen (reference_id)
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;",
+		  TABLE_CONFIGURATION => "CREATE TABLE " . TABLE_CONFIGURATION . " (
+			  configuration_key varchar(64) NOT NULL default '',
+			  configuration_value text,
+			  PRIMARY KEY (configuration_key)
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
+		  TABLE_CURRENCIES => "CREATE TABLE " . TABLE_CURRENCIES . " (
+			  currencies_id int(11) NOT NULL auto_increment,
+			  title varchar(32) NOT NULL default '',
+			  code char(3) NOT NULL default '',
+			  symbol_left varchar(24) default NULL,
+			  symbol_right varchar(24) default NULL,
+			  decimal_point char(1) default NULL,
+			  thousands_point char(1) default NULL,
+			  decimal_places char(1) default NULL,
+			  decimal_precise char(1) NOT NULL default '2',
+			  value float(13,8) default NULL,
+			  last_updated datetime default NULL,
+			  PRIMARY KEY  (currencies_id)
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
+		  TABLE_CURRENT_STATUS => "CREATE TABLE " . TABLE_CURRENT_STATUS . " (
+			  id int(11) NOT NULL auto_increment,
+			  PRIMARY KEY (id)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
+		  TABLE_DATA_SECURITY => "CREATE TABLE " . TABLE_DATA_SECURITY . " (
+			  id int(11) NOT NULL auto_increment,
+			  module varchar(32) NOT NULL DEFAULT '',
+			  ref_1 int(11) NOT NULL DEFAULT '0',
+			  ref_2 int(11) NOT NULL DEFAULT '0',
+			  hint varchar(255) NOT NULL DEFAULT '',
+			  enc_value varchar(255) NOT NULL DEFAULT '',
+			  exp_date date NOT NULL DEFAULT '2049-12-31',
+			  PRIMARY KEY (id)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
+		  TABLE_EXTRA_FIELDS => "CREATE TABLE " . TABLE_EXTRA_FIELDS . " (
+			  id int(10) NOT NULL auto_increment,
+			  module_id varchar(32) NOT NULL default '',
+			  tab_id int(11) NOT NULL default '0',
+			  entry_type varchar(20) NOT NULL default '',
+			  field_name varchar(32) NOT NULL default '',
+			  description varchar(64) NOT NULL default '',
+			  sort_order varchar(64) NOT NULL default '',
+			  group_by varchar(64) NOT NULL default '',
+			  use_in_inventory_filter enum('0','1') NOT NULL DEFAULT '0',
+		  	  required enum('0','1') NOT NULL DEFAULT '0',
+			  params text,
+			  PRIMARY KEY (id)
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
+		  TABLE_EXTRA_TABS => "CREATE TABLE " . TABLE_EXTRA_TABS . " (
+			  id int(3) NOT NULL auto_increment,
+			  module_id varchar(32) NOT NULL default '',
+			  tab_name varchar(32) NOT NULL default '',
+			  description varchar(80) NOT NULL default '',
+			  sort_order int(2) NOT NULL default '0',
+			  PRIMARY KEY (id)
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
+		  TABLE_USERS => "CREATE TABLE " . TABLE_USERS . " (
+			  admin_id int(11) NOT NULL auto_increment,
+			  is_role enum('0','1') NOT NULL default '0',
+			  admin_name varchar(32) NOT NULL default '',
+			  inactive enum('0','1') NOT NULL default '0',
+			  display_name varchar(32) NOT NULL default '',
+			  admin_email varchar(96) NOT NULL default '',
+			  admin_pass varchar(40) NOT NULL default '',
+			  account_id int(11) NOT NULL default '0',
+			  admin_store_id int(11) NOT NULL default '0',
+			  admin_prefs text,
+			  admin_security text,
+			  PRIMARY KEY (admin_id),
+			  KEY idx_admin_name_zen (admin_name)
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;",
+		  TABLE_USERS_PROFILES => "CREATE TABLE " . TABLE_USERS_PROFILES . " (
+			  id int(11) NOT NULL auto_increment,
+			  user_id int(11) NOT NULL default '0',
+			  menu_id varchar(32) NOT NULL default '',
+			  dashboard_id varchar(32) NOT NULL default '',
+			  column_id int(3) NOT NULL default '0',
+			  row_id int(3) NOT NULL default '0',
+			  params text,
+			  PRIMARY KEY (id)
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
+	    );
+		$this->mainmenu["company"]['submenu']["profile"] = array(
+				'order' 		=> 5,
+				'text'        => TEXT_MY_PROFILE,
+				'security_id' => SECURITY_ID_MY_PROFILE,
+				'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=profile', 'SSL'),
+				'show_in_users_settings' => true,
+				'params'      => '',
+		);
 
-	$this->mainmenu["company"]['submenu']["configuration"] = array(
-			'order' 		=> 10,
-			'text'        => TEXT_MODULE_ADMINISTRATION,
-			'security_id' => SECURITY_ID_CONFIGURATION,
-			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=admin', 'SSL'),
-			'show_in_users_settings' => true,
-			'params'      => '',
-	);
+		$this->mainmenu["company"]['submenu']["configuration"] = array(
+				'order' 		=> 10,
+				'text'        => TEXT_MODULE_ADMINISTRATION,
+				'security_id' => SECURITY_ID_CONFIGURATION,
+				'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=admin', 'SSL'),
+				'show_in_users_settings' => true,
+				'params'      => '',
+		);
 
-	if (defined('DEBUG') && DEBUG == true) $this->mainmenu["tools"]['submenu']["debug"] = array(
-			'order' 		=> 0,
-			'text'        => TEXT_DOWNLOAD_DEBUG_FILE,
-			'security_id' => SECURITY_ID_CONFIGURATION,
-			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;action=debug', 'SSL'),
-			'show_in_users_settings' => false,
-			'params'      => '',
-	);
-	if (defined('ENABLE_ENCRYPTION') && ENABLE_ENCRYPTION == true) $this->mainmenu["tools"]['submenu']["encryption"] = array(
-			'order' 		=> 1,
-			'text'        => TEXT_DATA_ENCRYPTION,
-			'security_id' => SECURITY_ID_ENCRYPTION,
-			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=encryption', 'SSL'),
-			'show_in_users_settings' => true,
-			'params'      => '',
-	);
-	$this->mainmenu["tools"]['submenu']["import_export"] = array(
-			'order' 		=> 50,
-			'text'        => TEXT_IMPORT_OR_EXPORT,
-			'security_id' => SECURITY_ID_IMPORT_EXPORT,
-			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=import_export', 'SSL'),
-			'show_in_users_settings' => true,
-			'params'      => '',
-	);
-	$this->mainmenu["tools"]['submenu']["backup"] = array(
-			'order' 		=> 95,
-			'text'        => TEXT_COMPANY_BACKUP,
-			'security_id' => SECURITY_ID_BACKUP,
-			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=backup', 'SSL'),
-			'show_in_users_settings' => true,
-			'params'      => '',
-	);
-	$this->mainmenu["company"]['submenu']["users"] = array(
-			'order' 		=> 90,
-			'text'        => TEXT_USERS,
-			'security_id' => SECURITY_ID_USERS,
-			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=users&amp;list=1', 'SSL'),
-			'show_in_users_settings' => true,
-			'params'      => '',
-	);
-	$this->mainmenu["company"]['submenu']["roles"] = array(
-			'order' 		=> 85,
-			'text'        => TEXT_ROLES,
-			'security_id' => SECURITY_ID_ROLES,
-			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=roles&amp;list=1', 'SSL'),
-			'show_in_users_settings' => true,
-			'params'      => '',
-	);
+		if (defined('DEBUG') && DEBUG == true) $this->mainmenu["tools"]['submenu']["debug"] = array(
+				'order' 		=> 0,
+				'text'        => TEXT_DOWNLOAD_DEBUG_FILE,
+				'security_id' => SECURITY_ID_CONFIGURATION,
+				'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;action=debug', 'SSL'),
+				'show_in_users_settings' => false,
+				'params'      => '',
+		);
+		if (defined('ENABLE_ENCRYPTION') && ENABLE_ENCRYPTION == true) $this->mainmenu["tools"]['submenu']["encryption"] = array(
+				'order' 		=> 1,
+				'text'        => TEXT_DATA_ENCRYPTION,
+				'security_id' => SECURITY_ID_ENCRYPTION,
+				'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=encryption', 'SSL'),
+				'show_in_users_settings' => true,
+				'params'      => '',
+		);
+		$this->mainmenu["tools"]['submenu']["import_export"] = array(
+				'order' 		=> 50,
+				'text'        => TEXT_IMPORT_OR_EXPORT,
+				'security_id' => SECURITY_ID_IMPORT_EXPORT,
+				'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=import_export', 'SSL'),
+				'show_in_users_settings' => true,
+				'params'      => '',
+		);
+		$this->mainmenu["tools"]['submenu']["backup"] = array(
+				'order' 		=> 95,
+				'text'        => TEXT_COMPANY_BACKUP,
+				'security_id' => SECURITY_ID_BACKUP,
+				'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=backup', 'SSL'),
+				'show_in_users_settings' => true,
+				'params'      => '',
+		);
+		$this->mainmenu["company"]['submenu']["users"] = array(
+				'order' 		=> 90,
+				'text'        => TEXT_USERS,
+				'security_id' => SECURITY_ID_USERS,
+				'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=users&amp;list=1', 'SSL'),
+				'show_in_users_settings' => true,
+				'params'      => '',
+		);
+		$this->mainmenu["company"]['submenu']["roles"] = array(
+				'order' 		=> 85,
+				'text'        => TEXT_ROLES,
+				'security_id' => SECURITY_ID_ROLES,
+				'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=roles&amp;list=1', 'SSL'),
+				'show_in_users_settings' => true,
+				'params'      => '',
+		);
 
-    parent::__construct();
-  }
+	    parent::__construct();
+	}
 
 	function install($path_my_files, $demo = false) {
 	    global $admin;
@@ -268,15 +268,13 @@ class admin extends \core\classes\admin {
 		}
 		// Fix for change to audit log for upgrade to R3.6 causes perpertual crashing when writing audit log
 		if (!db_field_exists(TABLE_AUDIT_LOG, 'stats')) $admin->DataBase->query("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
-		if ($this->web_connected(false) && CFG_AUTO_UPDATE_CHECK && (SECURITY_ID_CONFIGURATION > 3)) { // check for software updates
-			if (!$this->$revisions) {
-				if (($this->$revisions = @file_get_contents(VERSION_CHECK_URL)) === false) throw new \core\classes\userException("can not open ". VERSION_CHECK_URL);
-			}
-		  	if ($this->$revisions) {
-		   		$versions = xml_to_object($this->$revisions);
-				$latest  = $versions->Revisions->Phreedom->Current;
-				if (version_compare($basis->classes['phreedom']->version, $latest, '<'))  $messageStack->add(sprintf(TEXT_VERSION_CHECK_NEW_VER, $basis->classes['phreedom']->version, $latest), 'caution');
-			}
+		if ($this->web_connected(false) && $this->$revisions == '' && CFG_AUTO_UPDATE_CHECK && (SECURITY_ID_CONFIGURATION > 3)) { // check for software updates
+			if (($this->$revisions = @file_get_contents(VERSION_CHECK_URL)) === false) throw new \core\classes\userException("can not open ". VERSION_CHECK_URL);
+		}
+		if ($this->$revisions && CFG_AUTO_UPDATE_CHECK && (SECURITY_ID_CONFIGURATION > 3)) { // compaire software versions
+			$versions = xml_to_object($this->$revisions);
+			$latest  = $versions->Revisions->Phreedom->Current;
+			if (version_compare($basis->classes['phreedom']->version, $latest, '<'))  $messageStack->add(sprintf(TEXT_VERSION_CHECK_NEW_VER, $basis->classes['phreedom']->version, $latest), 'caution');
 			// load installed modules and initialize them
 			foreach ($basis->classes as $key => $module_class) {
 				if ($key == 'phreedom') continue; // skip this module
@@ -284,7 +282,6 @@ class admin extends \core\classes\admin {
 				if (version_compare($module_class->version, $latest , '<'))  $messageStack->add(sprintf(TEXT_VERSION_CHECK_NEW_MOD_VER, $module_class->text, $module_class->version, $latest), 'caution');
 			}
 		}
-
 		// Make sure the install directory has been moved/removed
 		if (is_dir(DIR_FS_ADMIN . 'install')) $messageStack->add(TEXT_INSTALL_DIR_PRESENT, 'caution');
 		parent::after_ValidateUser($basis);
@@ -301,28 +298,27 @@ class admin extends \core\classes\admin {
 		}
   	}
 
-	function upgrade() {
-	    global $admin, $messageStack;
-		parent::upgrade();
+	function upgrade(\core\classes\basis &$basis) {
+		parent::upgrade($basis);
 		$db_version = defined('MODULE_PHREEDOM_STATUS') ? MODULE_PHREEDOM_STATUS : 0;
 		if (version_compare($db_version, MODULE_PHREEDOM_STATUS, '<') ) {
 	 	  	$db_version = $this->release_update($this->id, 3.0, DIR_FS_MODULES . 'phreedom/updates/PBtoR30.php');
 		  	if (!$db_version) return true;
 		}
 		if (version_compare($this->status, '3.2', '<') ) {
-		  	if (!db_field_exists(TABLE_USERS, 'is_role')) $admin->DataBase->query("ALTER TABLE ".TABLE_USERS." ADD is_role ENUM('0','1') NOT NULL DEFAULT '0' AFTER admin_id");
+		  	if (!db_field_exists(TABLE_USERS, 'is_role')) $admin->DataBase->exec("ALTER TABLE ".TABLE_USERS." ADD is_role ENUM('0','1') NOT NULL DEFAULT '0' AFTER admin_id");
 		}
 		if (version_compare($this->status, '3.4', '<') ) {
-		  	if (!db_field_exists(TABLE_DATA_SECURITY, 'exp_date')) $admin->DataBase->query("ALTER TABLE ".TABLE_DATA_SECURITY." ADD exp_date DATE NOT NULL DEFAULT '2049-12-31' AFTER enc_value");
-		  	if (!db_field_exists(TABLE_AUDIT_LOG, 'ip_address'))   $admin->DataBase->query("ALTER TABLE ".TABLE_AUDIT_LOG    ." ADD ip_address VARCHAR(15) NOT NULL AFTER user_id");
+		  	if (!db_field_exists(TABLE_DATA_SECURITY, 'exp_date')) $admin->DataBase->exec("ALTER TABLE ".TABLE_DATA_SECURITY." ADD exp_date DATE NOT NULL DEFAULT '2049-12-31' AFTER enc_value");
+		  	if (!db_field_exists(TABLE_AUDIT_LOG, 'ip_address'))   $admin->DataBase->exec("ALTER TABLE ".TABLE_AUDIT_LOG    ." ADD ip_address VARCHAR(15) NOT NULL AFTER user_id");
 	    }
 	    if (version_compare($this->status, '3.5', '<') ) {
-		  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'group_by'))  $admin->DataBase->query("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD group_by varchar(64) NOT NULL default ''");
-		  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'sort_order'))$admin->DataBase->query("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD sort_order varchar(64) NOT NULL default ''");
-		  	if (!db_field_exists(TABLE_AUDIT_LOG, 'stats'))        $admin->DataBase->query("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
+		  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'group_by'))  $admin->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD group_by varchar(64) NOT NULL default ''");
+		  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'sort_order'))$admin->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD sort_order varchar(64) NOT NULL default ''");
+		  	if (!db_field_exists(TABLE_AUDIT_LOG, 'stats'))        $admin->DataBase->exec("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
 	  	}
-	  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'required'))  $admin->DataBase->query("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD required enum('0','1') NOT NULL DEFAULT '0'");
-	  	if (version_compare($this->status, '4.0', '<') ) {
+	  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'required'))  $admin->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD required enum('0','1') NOT NULL DEFAULT '0'");
+	  	if (version_compare($this->status, '4.0', '<') ) { //updating dashboards to store the namespaces.
 	  		$admin->DataBase->exec ("ALTER TABLE ".TABLE_USERS_PROFILES." CHANGE dashboard_id dashboard_id VARCHAR( 255 ) NOT NULL DEFAULT ''");
 	  		$sql = $admin->DataBase->prepare("SELECT * FROM ".TABLE_USERS_PROFILES);
 			$sql->execute();
@@ -366,7 +362,7 @@ class admin extends \core\classes\admin {
 		setcookie('pb_language', \core\classes\user::get_language(), $cookie_exp);
 		// load init functions for each module and execute
 		foreach ($basis->classes as $key => $module_class) {
-			if ($module_class->installed && $module_class->should_update()) $module_class->upgrade();
+			if ($module_class->installed && $module_class->should_update()) $module_class->upgrade(&$basis);
 		}
 		if (defined('TABLE_CONTACTS')) {
 			$dept = $admin->DataBase->query("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result['account_id']);
@@ -467,16 +463,17 @@ class admin extends \core\classes\admin {
 	}
 
 	function SendLostPassWord (\core\classes\basis $basis){
-		global $admin;
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		$result = $admin->DataBase->query("select admin_id, admin_name, admin_email from " . TABLE_USERS . " where admin_email = '{$basis->admin_email}'");
-		if ($basis->admin_email == '' || $basis->admin_email <> $result->fields['admin_email']) throw new \core\classes\userException(TEXT_YOU_ENTERED_THE_WRONG_EMAIL_ADDRESS);
+		$sql = $basis->DataBase->prepare("select admin_id, admin_name, admin_email from " . TABLE_USERS . " where admin_email = '{$basis->admin_email}'");
+		$sql->execute();
+		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		if ($basis->admin_email == '' || $basis->admin_email <> $result['admin_email']) throw new \core\classes\userException(TEXT_YOU_ENTERED_THE_WRONG_EMAIL_ADDRESS);
 		$new_password = \core\classes\encryption::random_password(ENTRY_PASSWORD_MIN_LENGTH);
 		$admin_pass   = \core\classes\encryption::password($new_password);
-		$admin->DataBase->query("update " . TABLE_USERS . " set admin_pass = '$admin_pass' where admin_id = " . $result->fields['admin_id']);
-		$html_msg['EMAIL_CUSTOMERS_NAME'] = $result->fields['admin_name'];
+		$basis->DataBase->exec("update " . TABLE_USERS . " set admin_pass = '$admin_pass' where admin_id = " . $result['admin_id']);
+		$html_msg['EMAIL_CUSTOMERS_NAME'] = $result['admin_name'];
 		$html_msg['EMAIL_MESSAGE_HTML']   = sprintf(TEXT_EMAIL_MESSAGE, COMPANY_NAME, $new_password);
-		validate_send_mail($result->fields['admin_name'], $result->fields['admin_email'], TEXT_EMAIL_SUBJECT, $html_msg['EMAIL_MESSAGE_HTML'], COMPANY_NAME, EMAIL_FROM, $html_msg);
+		validate_send_mail($result['admin_name'], $result['admin_email'], TEXT_EMAIL_SUBJECT, $html_msg['EMAIL_MESSAGE_HTML'], COMPANY_NAME, EMAIL_FROM, $html_msg);
 		$messageStack->add(SUCCESS_PASSWORD_SENT, 'success');
 		gen_add_audit_log(TEXT_RE-SENT_PASSWORD_TO_EMAIL . ' -> ' . $basis->admin_email);
 		$basis->addEventToStack("LoadLogIn");

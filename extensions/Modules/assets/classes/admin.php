@@ -69,9 +69,9 @@ class admin extends \core\classes\admin {
 		xtra_field_sync_list('assets', TABLE_ASSETS);
   	}
 
-  	function upgrade() {
+  	function upgrade(\core\classes\basis &$basis) {
     	global $admin;
-		parent::upgrade();
+		parent::upgrade($basis);
 	    if (version_compare($this->status, '3.1', '<') ) {
 		  	$tab_map = array('0' => '0');
 		  	if(db_table_exists(DB_PREFIX . 'assets_tabs')){

@@ -280,9 +280,9 @@ class admin extends \core\classes\admin {
 		}
 	}
 
-  	function upgrade() {
+  	function upgrade(\core\classes\basis &$basis) {
     	global $admin, $currencies;
-    	parent::upgrade();
+    	parent::upgrade($basis);
     	if (version_compare($this->status, '3.1', '<') ) {
 	  		$tab_map = array('0' => '0');
 	  		if(db_table_exists(DB_PREFIX . 'inventory_categories')){

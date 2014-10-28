@@ -89,7 +89,7 @@ class admin {
   	 * it will update tables directories and keys
   	 */
 
-	function upgrade() {
+	function upgrade(\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->check_prerequisites_versions();
 		$this->install_dirs($path_my_files);

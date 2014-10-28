@@ -73,9 +73,9 @@ class admin extends \core\classes\admin {
 		}
   	}
 
-  	function upgrade() {
+  	function upgrade(\core\classes\basis &$basis) {
     	global $admin, $messageStack;
-    	parent::upgrade();
+    	parent::upgrade($basis);
     	if (version_compare($this->status, '3.3', '==') ) write_configure('PDF_APP', 'TCPDF');
     	if (version_compare($this->status, '3.5', '<') ) {
 //			$id = $this->add_report_heading(TEXT_MISCELLANEOUS, 'cust');

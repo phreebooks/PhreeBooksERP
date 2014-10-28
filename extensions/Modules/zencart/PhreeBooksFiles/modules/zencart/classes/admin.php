@@ -155,9 +155,9 @@ class admin extends \core\classes\admin {
 		parent::after_ValidateUser($basis);
 	}
 
-	function upgrade() {
+	function upgrade(\core\classes\basis &$basis) {
 	    global $admin;
-		parent::upgrade();
+		parent::upgrade($basis);
 		if (version_compare($this->status, '3.4', '<') ) {
 			write_configure('MODULE_ZENCART_LAST_UPDATE', date('0000-00-00 00:00:00'));
 		}

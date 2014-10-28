@@ -148,8 +148,9 @@ class admin extends \core\classes\admin {
 	write_configure('MODULE_MAGENTO_LAST_UPDATE', date('Y-m-d H:i:s'));
   }
 
-  function upgrade() {
+  function upgrade(\core\classes\basis &$basis) {
     global $admin, $messageStack;
+    parent::upgrade($basis);
     RETURN TRUE; //@TODO EVT BEWERKEN ANDERS VERWIJDEREN.
     if (version_compare($this->status, '3.4', '<') ) {
 		write_configure('MODULE_MAGENTO_LAST_UPDATE', date('0000-00-00 00:00:00'));

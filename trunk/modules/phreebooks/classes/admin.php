@@ -307,9 +307,9 @@ class admin extends \core\classes\admin {
 		parent::after_ValidateUser($basis);
 	}
 
-	function upgrade() {
+	function upgrade(\core\classes\basis &$basis) {
 		global $admin;
-		parent::upgrade ();
+		parent::upgrade (\core\classes\basis &$basis);
 		$db_version = defined ( 'MODULE_PHREEBOOKS_STATUS' ) ? MODULE_PHREEBOOKS_STATUS : 0;
 		if (version_compare ( $db_version, '2.1', '<' )) { // For PhreeBooks release 2.1 or lower to update to Phreedom structure
 			require (DIR_FS_MODULES . 'phreebooks/functions/updater.php');

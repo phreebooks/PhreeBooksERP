@@ -83,9 +83,9 @@ class admin extends \core\classes\admin {
 	    }
   	}
 
-  	function upgrade() {
+  	function upgrade(\core\classes\basis &$basis) {
     	global $admin;
-    	parent::upgrade();
+    	parent::upgrade($basis);
     	if (db_field_exists(TABLE_CURRENT_STATUS, 'next_capa_desc')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_capa_desc");
   	}
 

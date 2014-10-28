@@ -117,9 +117,9 @@ class admin extends \core\classes\admin {
 		write_configure('PHREEHELP_FORCE_RELOAD', '1');
   	}
 
-	function upgrade() {
+	function upgrade(\core\classes\basis &$basis) {
 	    global $admin;
-	    parent::upgrade();
+	    parent::upgrade($basis);
 	    if (version_compare($this->status, '3.1', '<') ) {
 			if (!db_field_exists(TABLE_WO_TASK, 'erp_entry')) {
 			    $admin->DataBase->query("ALTER TABLE " . TABLE_WO_TASK . " ADD erp_entry ENUM('0', '1') NOT NULL DEFAULT '0'");

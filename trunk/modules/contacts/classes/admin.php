@@ -154,9 +154,9 @@ class admin extends \core\classes\admin {
 		xtra_field_sync_list('contacts', TABLE_CONTACTS);
 	}
 
-  	function upgrade() {
+  	function upgrade(\core\classes\basis &$basis) {
     	global $admin, $messageStack;
-    	parent::upgrade();
+    	parent::upgrade($basis);
     	if (version_compare($this->status, '3.3', '<') ) {
 	  		$admin->DataBase->query("ALTER TABLE " . TABLE_CONTACTS . " CHANGE short_name short_name VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT ''");
 		  	if (db_table_exists(DB_PREFIX . 'contacts_extra_fields')) {
