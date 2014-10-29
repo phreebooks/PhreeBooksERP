@@ -56,24 +56,27 @@ session_set_cookie_params(0, '/', (gen_not_null($current_domain) ? $current_doma
 
 // determine what company to connect to
 $db_name = $_GET['db'];
+if (!$db_name || $db_name == 'auto') { // get the first company and use that db, for single company installs only!
+	$folders = scandir(DIR_FS_MY_FILES);
+	foreach ($folders as $folder) if ($folder <> '.' && $folder <> '..' && is_dir(DIR_FS_MY_FILES . $folder)) {
+		if (file_exists(DIR_FS_MY_FILES."$folder/config.php")) $db_name = $folder; break;
+	}
+}
 if ($db_name && file_exists(DIR_FS_MY_FILES . $db_name . '/config.php')) {
   define('DB_DATABASE', $db_name);
   require(DIR_FS_MY_FILES . $db_name . '/config.php');
   define('DB_SERVER_HOST',DB_SERVER); // for old PhreeBooks installs
-} else {
-  echo 'No database name passed. Cannot determine which company to connect to!';
-  exit();
-}
+} else die("No database name passed! Cannot determine which company to connect to!");
 
 // set the language
 $_SESSION['language'] = $_GET['lang'] ? $_GET['lang'] : 'en_us';
 define('LANGUAGE',$_SESSION['language']);
 gen_pull_language('phreedom');
-require_once(DIR_FS_ADMIN . 'soap/language/' . LANGUAGE . '/language.php');
+require_once(DIR_FS_ADMIN . 'soap/language/'.LANGUAGE.'/language.php');
 
 // include the database functions
 // Load queryFactory db classes
-require_once(DIR_FS_ADMIN . 'includes/db/' . DB_TYPE . '/query_factory.php');
+require_once(DIR_FS_ADMIN . 'includes/db/'.DB_TYPE.'/query_factory.php');
 $db = new queryFactory();
 if (!$db->connect(DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, DB_DATABASE)) die ('cannot connec to db!');
 

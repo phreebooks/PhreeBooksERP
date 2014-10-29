@@ -26,7 +26,7 @@ class parser {
 	}
 	// This portion is specific to the application database name, fields and password validation methods
 	// validate user with db (call validation function)
-	$result = $db->Execute("select admin_pass from " . TABLE_USERS . " where admin_name = '" . $username . "'");
+	$result = $db->Execute("SELECT admin_pass FROM ".TABLE_USERS." WHERE admin_name='$username'");
 	if ($result->RecordCount() == 0) {
 	  return $this->responseXML('11', SOAP_USER_NOT_FOUND, 'error');
 	}
@@ -64,14 +64,13 @@ class parser {
 
   function get_account_id($short_name, $type = '') {
 	global $db;
-	$result = $db->Execute("select id from " . TABLE_CONTACTS . " 
-		where short_name = '" . $short_name . "' and type = '" . $type . "'");
+	$result = $db->Execute("SELECT id FROM ".TABLE_CONTACTS." WHERE short_name='$short_name' AND type='$type'");
 	return ($result->RecordCount() == 0) ? 0 : $result->fields['id'];
   }
 
   function get_user_id($admin_name) {
 	global $db;
-	$result = $db->Execute("select admin_id from " . TABLE_USERS . " where admin_name = '" . $admin_name . "'");
+	$result = $db->Execute("SELECT admin_id FROM ".TABLE_USERS." WHERE admin_name='$admin_name'");
 	return ($result->RecordCount() == 0) ? false : $result->fields['admin_id'];
   }
 
