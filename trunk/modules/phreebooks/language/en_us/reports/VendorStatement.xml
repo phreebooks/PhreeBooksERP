@@ -406,7 +406,7 @@
 	<fillcolor><![CDATA[0:0:0]]></fillcolor>
 <boxfield>
 	<fieldname><![CDATA[prior_balance]]></fieldname>
-	<processing><![CDATA[dlr]]></processing>
+	<processing><![CDATA[def_cur]]></processing>
 	<font><![CDATA[h]]></font>
 	<size><![CDATA[1]]></size>
 	<align><![CDATA[R]]></align>
@@ -496,7 +496,7 @@
 <boxfield>
 	<fieldname><![CDATA[credit_amount]]></fieldname>
 	<description><![CDATA[Invoice Amount]]></description>
-	<processing><![CDATA[null-dlr]]></processing>
+	<processing><![CDATA[null_dcur]]></processing>
 	<font><![CDATA[helvetica]]></font>
 	<size><![CDATA[10]]></size>
 	<align><![CDATA[R]]></align>
@@ -506,7 +506,7 @@
 <boxfield>
 	<fieldname><![CDATA[debit_amount]]></fieldname>
 	<description><![CDATA[Payment Rcvd]]></description>
-	<processing><![CDATA[null-dlr]]></processing>
+	<processing><![CDATA[null_dcur]]></processing>
 	<font><![CDATA[helvetica]]></font>
 	<size><![CDATA[10]]></size>
 	<align><![CDATA[R]]></align>
@@ -532,7 +532,7 @@
 	<fillcolor><![CDATA[0:0:0]]></fillcolor>
 <boxfield>
 	<fieldname><![CDATA[balance_due]]></fieldname>
-	<processing><![CDATA[dlr]]></processing>
+	<processing><![CDATA[def_cur]]></processing>
 	<font><![CDATA[h]]></font>
 	<size><![CDATA[1]]></size>
 	<align><![CDATA[R]]></align>
@@ -557,7 +557,7 @@
 	<fillcolor><![CDATA[0:0:0]]></fillcolor>
 <boxfield>
 	<fieldname><![CDATA[balance_0]]></fieldname>
-	<processing><![CDATA[def_cur]]></processing>
+	<processing><![CDATA[null_dcur]]></processing>
 	<font><![CDATA[h]]></font>
 	<size><![CDATA[1]]></size>
 	<align><![CDATA[R]]></align>
@@ -582,7 +582,7 @@
 	<fillcolor><![CDATA[0:0:0]]></fillcolor>
 <boxfield>
 	<fieldname><![CDATA[balance_30]]></fieldname>
-	<processing><![CDATA[def_cur]]></processing>
+	<processing><![CDATA[null_dcur]]></processing>
 	<font><![CDATA[h]]></font>
 	<size><![CDATA[1]]></size>
 	<align><![CDATA[R]]></align>
@@ -607,7 +607,7 @@
 	<fillcolor><![CDATA[0:0:0]]></fillcolor>
 <boxfield>
 	<fieldname><![CDATA[balance_60]]></fieldname>
-	<processing><![CDATA[def_cur]]></processing>
+	<processing><![CDATA[null_dcur]]></processing>
 	<font><![CDATA[h]]></font>
 	<size><![CDATA[1]]></size>
 	<align><![CDATA[R]]></align>
@@ -632,7 +632,7 @@
 	<fillcolor><![CDATA[0:0:0]]></fillcolor>
 <boxfield>
 	<fieldname><![CDATA[balance_90]]></fieldname>
-	<processing><![CDATA[def_cur]]></processing>
+	<processing><![CDATA[null_dcur]]></processing>
 	<font><![CDATA[h]]></font>
 	<size><![CDATA[1]]></size>
 	<align><![CDATA[R]]></align>
