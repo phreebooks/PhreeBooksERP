@@ -75,7 +75,7 @@ class backup {
 		if ($result->RecordCount() > 0) {
 		  $temp_array = $result->fields;
 		  while (list($key, $value) = each($temp_array)) $data['keys'][] = $key;
-		  $sql_head  = "INSERT INTO $table (" . join($data['keys'], ', ') . ') VALUES ' . lnbr;
+		  $sql_head  = "INSERT INTO $table (`" . join($data['keys'], '`,`') . '`) VALUES ' . lnbr;
 		  $count     = 0; // set to max_count to force the sql_head at the start
 		  $query .= $sql_head;
 		  while (!$result->EOF) {
