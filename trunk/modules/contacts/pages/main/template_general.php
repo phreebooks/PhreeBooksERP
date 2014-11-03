@@ -28,19 +28,19 @@
         <td align="right"><?php echo CONTACT_LEVEL; ?></td>
         <td><?php echo html_pull_down_menu('contacts_level', gen_build_pull_down($contacts_levels), $cInfo->contacts_level ? $cInfo->contacts_level : '0'); ?></td>
         <td align="right"><?php echo constant('ACT_' . strtoupper($type) . '_REP_ID'); ?></td>
-        <td><?php echo html_pull_down_menu('dept_rep_id', $sales_rep_array, $cInfo->dept_rep_id ? $cInfo->dept_rep_id : 'r'); ?>
-            <?php echo " ".TEXT_INACTIVE; ?>
-            <?php echo html_checkbox_field('inactive', '1', $cInfo->inactive); ?>
-        </td>
+        <td><?php echo html_pull_down_menu('dept_rep_id', $sales_rep_array, $cInfo->dept_rep_id ? $cInfo->dept_rep_id : 'r'); ?></td>
 <?php } else { ?>
         <td align="right"><?php echo constant('ACT_' . strtoupper($type) . '_REP_ID'); ?></td>
         <td><?php echo html_pull_down_menu('dept_rep_id', $sales_rep_array, $cInfo->dept_rep_id ? $cInfo->dept_rep_id : 'r'); ?></td>
-        <td align="right"><?php echo TEXT_INACTIVE; ?></td>
-        <td><?php echo html_checkbox_field('inactive', '1', $cInfo->inactive); ?></td>
+        
 <?php } ?>
       </tr>
       <tr>
-        <td align="right"><?php echo GEN_FIRST_NAME; ?></td>
+        <td align="right"><?php echo TEXT_INACTIVE; ?></td>
+        <td><?php echo html_checkbox_field('inactive', '1', $cInfo->inactive); ?></td>
+      </tr>
+      <tr>
+      <td align="right"><?php echo GEN_FIRST_NAME; ?></td>
         <td><?php echo html_input_field('contact_first', $cInfo->contact_first, 'size="33" maxlength="32"', false); ?></td>
         <td align="right"><?php echo GEN_MIDDLE_NAME; ?></td>
         <td><?php echo html_input_field('contact_middle', $cInfo->contact_middle, 'size="33" maxlength="32"', false); ?></td>

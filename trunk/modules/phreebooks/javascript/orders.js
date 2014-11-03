@@ -19,6 +19,7 @@
 var bill_add = new Array(0);
 var ship_add = new Array(0);
 var force_clear = false;
+var custCreditLimit = '0';
 //var default_sales_tax = -1; // set in js_include.php
 
 function ClearForm() {
@@ -1006,11 +1007,15 @@ function calculateDiscount() {
 }
 
 function showOverride() {
-  if (document.getElementById('tb_icon_save'))          document.getElementById('tb_icon_save').style.visibility          = "hidden";
-  if (document.getElementById('tb_icon_print'))         document.getElementById('tb_icon_print').style.visibility         = "hidden";
-  if (document.getElementById('tb_icon_post_previous')) document.getElementById('tb_icon_post_previous').style.visibility = "hidden";
-  if (document.getElementById('tb_icon_post_next'))     document.getElementById('tb_icon_post_next').style.visibility     = "hidden";
-  $('#override_order').dialog('open');
+	var total = parseFloat(cleanCurrency($('#total').val()));
+	var limit = parseFloat(custCreditLimit); // both strings
+	if (total > limit) {
+		if (document.getElementById('tb_icon_save'))          document.getElementById('tb_icon_save').style.visibility          = "hidden";
+		if (document.getElementById('tb_icon_print'))         document.getElementById('tb_icon_print').style.visibility         = "hidden";
+		if (document.getElementById('tb_icon_post_previous')) document.getElementById('tb_icon_post_previous').style.visibility = "hidden";
+		if (document.getElementById('tb_icon_post_next'))     document.getElementById('tb_icon_post_next').style.visibility     = "hidden";
+		$('#override_order').dialog('open');
+	}
 }
 
 function checkOverride () {
