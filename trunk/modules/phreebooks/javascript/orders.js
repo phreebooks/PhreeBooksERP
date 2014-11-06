@@ -342,6 +342,8 @@ function fillOrder(xml) {
 	        rowOffset = (single_line_list == '1') ? jIndex-1 : (jIndex*2)-2;
 	        document.getElementById("item_table").rows[rowOffset].cells[0].innerHTML = '&nbsp;';
 	      }
+	      document.getElementById('qty_'  +jIndex).addEventListener("change", function(){ updateRowTotal(rowCnt, true);});
+	      document.getElementById('pstd_' +jIndex).addEventListener("change", function(){ updateRowTotal(rowCnt, true);});
 		  updateRowTotal(jIndex, false);
 		  addInvRow();
 		  jIndex++;
@@ -612,12 +614,12 @@ function addInvRow() {
     newCell.innerHTML = cell;
     newCell.align     = 'center';
   }
-  cell    = '<input type="text" name="qty_'+rowCnt+'" id="qty_'+rowCnt+'"'+(item_col_1_enable == '1' ? " " : " readonly=\"readonly\"")+' size="7" maxlength="6" onchange="updateRowTotal('+rowCnt+', true)" style="text-align:right" />';
+  cell    = '<input type="text" name="qty_'+rowCnt+'" id="qty_'+rowCnt+'"'+(item_col_1_enable == '1' ? " " : " readonly=\"readonly\"")+' size="7" maxlength="6" style="text-align:right" />';
   newCell = newRow.insertCell(-1);
   newCell.innerHTML = cell;
   newCell.align  = 'center';
   newCell.style.whiteSpace = 'nowrap'; 
-  cell    = '<input type="text" name="pstd_'+rowCnt+'" id="pstd_'+rowCnt+'"'+(item_col_2_enable == '1' ? " " : " readonly=\"readonly\"")+' size="7" maxlength="6" onchange="updateRowTotal('+rowCnt+', true)" style="text-align:right" />';
+  cell    = '<input type="text" name="pstd_'+rowCnt+'" id="pstd_'+rowCnt+'"'+(item_col_2_enable == '1' ? " " : " readonly=\"readonly\"")+' size="7" maxlength="6" style="text-align:right" />';
   switch (journalID) {
     case  '6':
 	case  '7':
@@ -1343,6 +1345,8 @@ function fillInventory(sXml) {
 	text += $(this).find("text_line").text() + "\n";
   });
   if (text) alert(text);
+  document.getElementById('qty_'  +rowCnt).addEventListener("change", function(){ updateRowTotal(rowCnt, true);});
+  document.getElementById('pstd_' +rowCnt).addEventListener("change", function(){ updateRowTotal(rowCnt, true);});
 }
 
 function InventoryProp(elementID) {

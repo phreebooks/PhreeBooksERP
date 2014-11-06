@@ -240,7 +240,8 @@ function check_form() {
 
 function checkEnterEvent(event, row){
 	if(event.keyCode == 13){//enter event
-		loadSkuDetails(0, row);
+		var value = addInvRow();
+		document.getElementById('sku_'+value).focus();
 	}
 }
 
