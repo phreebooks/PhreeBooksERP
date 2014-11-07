@@ -1020,7 +1020,7 @@ function BuildDataArray($sql, $report) { // for reports only
 		if (($myrow[$GrpField] <> $GrpWorking) && $GrpWorking !== false) { // it's a new group so print totals
 		  $OutputArray[$RowCnt][0] = 'g:' . ProcessData($GrpWorking, $GrpFieldProcessing);
 		  foreach($Seq as $offset => $TotalCtl) {
-			$OutputArray[$RowCnt][$offset+1] = ($TotalCtl['total'] == '1') ? ProcessData($TotalCtl['grptotal'], $TotalCtl['processing']) : ' ';
+			$OutputArray[$RowCnt][$offset+1] = ($TotalCtl['total'] == '1') ? $TotalCtl['grptotal'] : ' ';
 			$Seq[$offset]['grptotal'] = ''; // reset the total
 		  }
 		  $RowCnt++; // go to next row

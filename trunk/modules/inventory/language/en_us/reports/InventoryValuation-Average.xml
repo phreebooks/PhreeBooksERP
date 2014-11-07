@@ -118,7 +118,7 @@
 	<visible><![CDATA[1]]></visible>
 	<columnwidth><![CDATA[25]]></columnwidth>
 	<columnbreak><![CDATA[1]]></columnbreak>
-	<align><![CDATA[L]]></align>
+	<align><![CDATA[C]]></align>
 	<total><![CDATA[0]]></total>
 </fieldlist>
 	<security><![CDATA[u:0;g:0]]></security>
