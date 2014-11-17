@@ -90,7 +90,7 @@ class admin {
   	 */
 
 	function upgrade(\core\classes\basis &$basis) {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::debug_log("executing upgrade of class ". get_class($this));
 		$this->check_prerequisites_versions();
 		$this->install_dirs($path_my_files);
 		$this->install_update_tables();
@@ -140,10 +140,16 @@ class admin {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	}
 
-	function should_update(){
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		if (!$this->installed) return false;
-		if (version_compare($this->version, constant('MODULE_' . strtoupper($this->id) . '_STATUS')) < 0 ) return true;
+	function should_update(\core\classes\basis &$basis){
+		if (defined('MODULE_' . strtoupper($this->id) . '_STATUS')){
+			$this->installed = true;
+			$this->status  = constant('MODULE_' . strtoupper($this->id) . '_STATUS');
+			\core\classes\messageStack::debug_log("checking if class ".get_class($this)." needs updating installed = {$this->installed} and this version = {$this->version} current status = {$this->status} needs updating = ".version_compare($this->status, $this->version, '<') );
+			if (version_compare($this->status, $this->version, '<') != 0 ) {
+				$this->upgrade($basis);
+				return true;
+			}
+		}
 		else return false;
 	}
 
@@ -212,7 +218,7 @@ class admin {
 	  	global $admin;
 	  	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	  	$result = $admin->DataBase->query("select id from ".TABLE_PHREEFORM." where doc_group = '$doc_group'");
-	  	if ($result->RecordCount() < 1) {
+	  	if ($result->rowCount() < 1) {
 	    	$admin->DataBase->query("INSERT INTO ".TABLE_PHREEFORM." (parent_id, doc_type, doc_title, doc_group, doc_ext, security, create_date) VALUES
 	      	  (0, '0', '" . $doc_title . "', '".$doc_group."', '0', 'u:0;g:0', now())");
 	    	return db_insert_id();
@@ -226,7 +232,7 @@ class admin {
 	  	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	  	if ($parent_id == '') throw new \core\classes\userException("parent_id isn't set for document $doc_title");
 	  	$result = $admin->DataBase->query("select id from ".TABLE_PHREEFORM." where doc_group = '$doc_group' and doc_ext = '$doc_ext'");
-	  	if ($result->RecordCount() < 1) {
+	  	if ($result->rowCount() < 1) {
 	    	$admin->DataBase->query("INSERT INTO ".TABLE_PHREEFORM." (parent_id, doc_type, doc_title, doc_group, doc_ext, security, create_date) VALUES
 	      	  (".$parent_id.", '0', '" . $doc_title . "', '".$doc_group."', '".$doc_ext."', 'u:0;g:0', now())");
 	  	}

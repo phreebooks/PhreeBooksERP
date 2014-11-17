@@ -134,7 +134,7 @@ class xml_orders extends parser {
 		$sku                 = $entry->ItemID;
 		// try to match sku and get the sales gl account
 		$result = $admin->DataBase->query("select account_sales_income from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
-		if ($result->RecordCount() > 0) {
+		if ($result->rowCount() > 0) {
 		  $item['sku']       = $sku;
 		  $item['gl_acct']   = $result->fields['account_sales_income'];
 		} else {
@@ -316,7 +316,7 @@ class xml_orders extends parser {
 	$output = array();
 	$result = $admin->DataBase->query("select id, special_terms from ".TABLE_CONTACTS."
 		where type = 'c' and short_name = '" . $psOrd->short_name . "'");
-	if ($result->RecordCount() == 0) { // create new record
+	if ($result->rowCount() == 0) { // create new record
 	  $output['bill_acct_id']    = '';
 	  $output['ship_acct_id']    = '';
 	  $output['bill_address_id'] = '';
@@ -327,7 +327,7 @@ class xml_orders extends parser {
 	  // find main address to update as billing address
 	  $result = $admin->DataBase->query("select address_id from ".TABLE_ADDRESS_BOOK."
 		where type = 'cm' and ref_id = " . $output['bill_acct_id']);
-	  if ($result->RecordCount() == 0) {
+	  if ($result->rowCount() == 0) {
 	    $this->failed[] = $this->order['reference'];
 	    $this->response[] = SOAP_ACCOUNT_PROBLEM;
 	    return false;
@@ -342,7 +342,7 @@ class xml_orders extends parser {
 			address1 = '" . $psOrd->ship_address1 . "' and
 			type = 'cs' and ref_id = " . $output['bill_acct_id']);
 	  $output['ship_add_update'] = 1;
-	  $output['ship_address_id'] =  ($result->RecordCount() == 0) ? '' : $result->fields['address_id'];
+	  $output['ship_address_id'] =  ($result->rowCount() == 0) ? '' : $result->fields['address_id'];
 	} else {
 	  $output['ship_add_update'] = 0;
 	  $output['ship_address_id'] = $output['bill_address_id'];

@@ -45,10 +45,10 @@ class mi extends \inventory\classes\inventory { //Master Stock Sub Item. child o
 		$master = explode('-',$this->sku);
 		$this->master = $master[0];
 		$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->master . "'");
-	  	$this->ms_attr_0   = ($result->RecordCount() > 0) ? $result->fields['attr_0'] : '';
-	  	$this->attr_name_0 = ($result->RecordCount() > 0) ? $result->fields['attr_name_0'] : '';
-	  	$this->ms_attr_1   = ($result->RecordCount() > 0) ? $result->fields['attr_1'] : '';
-	  	$this->attr_name_1 = ($result->RecordCount() > 0) ? $result->fields['attr_name_1'] : '';
+	  	$this->ms_attr_0   = ($result->rowCount() > 0) ? $result->fields['attr_0'] : '';
+	  	$this->attr_name_0 = ($result->rowCount() > 0) ? $result->fields['attr_name_0'] : '';
+	  	$this->ms_attr_1   = ($result->rowCount() > 0) ? $result->fields['attr_1'] : '';
+	  	$this->attr_name_1 = ($result->rowCount() > 0) ? $result->fields['attr_name_1'] : '';
 		if ($this->ms_attr_0) {
 			$temp = explode(',', $this->ms_attr_0);
 			for ($i = 0; $i < count($temp); $i++) {

@@ -69,12 +69,11 @@ class currencies {
 	function precise($number, $calculate_currency_value = true, $currency_type = DEFAULT_CURRENCY, $currency_value = '') {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	    if ($calculate_currency_value) {
-		  $rate = ($currency_value) ? $currency_value : $this->currencies[$currency_type]['value'];
-		  $format_string = number_format($number * $rate, $this->currencies[$currency_type]['decimal_precise'], $this->currencies[$currency_type]['decimal_point'], $this->currencies[$currency_type]['thousands_point']);
+		  	$rate = ($currency_value) ? $currency_value : $this->currencies[$currency_type]['value'];
+		  	return number_format($number * $rate, $this->currencies[$currency_type]['decimal_precise'], $this->currencies[$currency_type]['decimal_point'], $this->currencies[$currency_type]['thousands_point']);
 	    } else {
-		  $format_string = number_format($number, $this->currencies[$currency_type]['decimal_precise'], $this->currencies[$currency_type]['decimal_point'], $this->currencies[$currency_type]['thousands_point']);
+		  	return number_format($number, $this->currencies[$currency_type]['decimal_precise'], $this->currencies[$currency_type]['decimal_point'], $this->currencies[$currency_type]['thousands_point']);
 	    }
-	    return $format_string;
 	}
 
 	function format_full($number, $calculate_currency_value = true, $currency_type = DEFAULT_CURRENCY, $currency_value = '', $output_format = PDF_APP) {
@@ -115,7 +114,7 @@ class currencies {
 		$js_codes  = 'var js_currency_codes = new Array(';
 		$js_values = 'var js_currency_values = new Array(';
 		foreach ($this->currencies as $code => $values) {
-			$js_codes  .= "'" . $code . "',";
+			$js_codes  .= "'$code',";
 			$js_values .= $this->currencies[$code]['value'] . ",";
 		}
 		$js_codes  = substr($js_codes, 0, -1) . ");";
@@ -149,17 +148,17 @@ class currencies {
 			'value'           => db_prepare_input($_POST['value']),
 		);
 	    if ($id) {
-		  db_perform($this->db_table, $sql_data_array, 'update', "currencies_id = " . (int)$id);
-	      gen_add_audit_log(TEXT_CURRENCIES . ' - ' . TEXT_UPDATE, $title);
+		  	db_perform($this->db_table, $sql_data_array, 'update', "currencies_id = " . (int)$id);
+	      	gen_add_audit_log(TEXT_CURRENCIES . ' - ' . TEXT_UPDATE, $title);
 		} else  {
-	      db_perform($this->db_table, $sql_data_array);
-	      gen_add_audit_log(TEXT_CURRENCIES . ' - ' . TEXT_ADD, $title);
+	      	db_perform($this->db_table, $sql_data_array);
+	      	gen_add_audit_log(TEXT_CURRENCIES . ' - ' . TEXT_ADD, $title);
 		}
 
 		if (isset($_POST['default']) && ($_POST['default'] == 'on')) {
 			// first check to see if there are any general ledger entries
 		  	$result = $admin->DataBase->query("SELECT id FROM " . TABLE_JOURNAL_MAIN . " LIMIT 1");
-		  	if ($result->RecordCount() > 0) throw new \core\classes\userException(SETUP_ERROR_CANNOT_CHANGE_DEFAULT);
+		  	if ($result->rowCount() > 0) throw new \core\classes\userException(SETUP_ERROR_CANNOT_CHANGE_DEFAULT);
 		  	write_configure('DEFAULT_CURRENCY', db_input($code));
 			db_perform($this->db_table, array('value' => 1), 'update', "code='$code'"); // change default exc rate to 1
 		    $admin->DataBase->query("alter table " . TABLE_JOURNAL_MAIN . "
@@ -184,29 +183,29 @@ class currencies {
 		$server_used = CURRENCY_SERVER_PRIMARY;
 		$currency = $admin->DataBase->query("select currencies_id, code, title from " . $this->db_table);
 		while (!$currency->EOF) {
-		  if ($currency->fields['code'] == $this->def_currency) { // skip default currency
-		    $currency->MoveNext();
-			continue;
-		  }
-		  $quote_function = 'quote_'.CURRENCY_SERVER_PRIMARY;
-		  $rate = $this->$quote_function($currency->fields['code'], $this->def_currency);
-		  if (empty($rate) && (gen_not_null(CURRENCY_SERVER_BACKUP))) {
-			$message[] = sprintf(SETUP_WARN_PRIMARY_SERVER_FAILED, CURRENCY_SERVER_PRIMARY, $currency->fields['title'], $currency->fields['code']);
-			$messageStack->add(sprintf(SETUP_WARN_PRIMARY_SERVER_FAILED, CURRENCY_SERVER_PRIMARY, $currency->fields['title'], $currency->fields['code']), 'caution');
-			$quote_function = 'quote_'.CURRENCY_SERVER_BACKUP;
-			$rate = $this->$quote_function($currency->fields['code'], $this->def_currency);
-			$server_used = CURRENCY_SERVER_BACKUP;
-		  }
-		  if ($rate <> 0) {
-			$admin->DataBase->query("update " . $this->db_table . " set value = '" . $rate . "', last_updated = now()
-			  where currencies_id = '" . (int)$currency->fields['currencies_id'] . "'");
-			$message[] = sprintf(SETUP_INFO_CURRENCY_UPDATED, $currency->fields['title'], $currency->fields['code'], $server_used);
-			$messageStack->add(sprintf(SETUP_INFO_CURRENCY_UPDATED, $currency->fields['title'], $currency->fields['code'], $server_used), 'success');
-		  } else {
-			$message[] = sprintf(SETUP_ERROR_CURRENCY_INVALID, $currency->fields['title'], $currency->fields['code'], $server_used);
-			throw new \core\classes\userException(sprintf(SETUP_ERROR_CURRENCY_INVALID, $currency->fields['title'], $currency->fields['code'], $server_used));
-		  }
-		  $currency->MoveNext();
+		  	if ($currency->fields['code'] == $this->def_currency) { // skip default currency
+		    	$currency->MoveNext();
+				continue;
+		  	}
+		  	$quote_function = 'quote_'.CURRENCY_SERVER_PRIMARY;
+		  	$rate = $this->$quote_function($currency->fields['code'], $this->def_currency);
+		  	if (empty($rate) && (gen_not_null(CURRENCY_SERVER_BACKUP))) {
+				$message[] = sprintf(SETUP_WARN_PRIMARY_SERVER_FAILED, CURRENCY_SERVER_PRIMARY, $currency->fields['title'], $currency->fields['code']);
+				$messageStack->add(sprintf(SETUP_WARN_PRIMARY_SERVER_FAILED, CURRENCY_SERVER_PRIMARY, $currency->fields['title'], $currency->fields['code']), 'caution');
+				$quote_function = 'quote_'.CURRENCY_SERVER_BACKUP;
+				$rate = $this->$quote_function($currency->fields['code'], $this->def_currency);
+				$server_used = CURRENCY_SERVER_BACKUP;
+		  	}
+		  	if ($rate <> 0) {
+				$admin->DataBase->query("update " . $this->db_table . " set value = '" . $rate . "', last_updated = now()
+			  	  where currencies_id = '" . (int)$currency->fields['currencies_id'] . "'");
+				$message[] = sprintf(SETUP_INFO_CURRENCY_UPDATED, $currency->fields['title'], $currency->fields['code'], $server_used);
+				$messageStack->add(sprintf(SETUP_INFO_CURRENCY_UPDATED, $currency->fields['title'], $currency->fields['code'], $server_used), 'success');
+		  	} else {
+				$message[] = sprintf(SETUP_ERROR_CURRENCY_INVALID, $currency->fields['title'], $currency->fields['code'], $server_used);
+				throw new \core\classes\userException(sprintf(SETUP_ERROR_CURRENCY_INVALID, $currency->fields['title'], $currency->fields['code'], $server_used));
+		  	}
+		  	$currency->MoveNext();
 		}
 		if (sizeof($message) > 0) $this->message = implode("\n", $message);
 		return true;
@@ -232,12 +231,12 @@ class currencies {
 	  	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	  	\core\classes\user::validate_security($this->security_id, 4); // security check
 		// Can't delete default currency or last currency
-		$result = $admin->DataBase->query("select currencies_id from " . $this->db_table . " where code = '" . DEFAULT_CURRENCY . "'");
+		$result = $admin->DataBase->query("select currencies_id from {$this->db_table} where code = '" . DEFAULT_CURRENCY . "'");
 		if ($result->fields['currencies_id'] == $id) throw new \core\classes\userException(ERROR_CANNOT_DELETE_DEFAULT_CURRENCY);
-		$result = $admin->DataBase->query("select code, title from " . $this->db_table . " where currencies_id = '" . $id . "'");
-		$test_1 = $admin->DataBase->query("select id from " . TABLE_JOURNAL_MAIN . " where currencies_code = '" . $result->fields['code'] . "' limit 1");
-		if ($test_1->RecordCount() > 0) throw new \core\classes\userException(ERROR_CURRENCY_DELETE_IN_USE);
-		$admin->DataBase->query("delete from " . $this->db_table . " where currencies_id = '" . $id . "'");
+		$result = $admin->DataBase->query("select code, title from {$this->db_table} where currencies_id = '$id'");
+		$test_1 = $admin->DataBase->query("select id from " . TABLE_JOURNAL_MAIN . " where currencies_code = '{$result->fields['code']}' limit 1");
+		if ($test_1->rowCount() > 0) throw new \core\classes\userException(ERROR_CURRENCY_DELETE_IN_USE);
+		$admin->DataBase->query("delete from {$this->db_table} where currencies_id = '$id'");
 		gen_add_audit_log(TEXT_CURRENCIES . ' - ' . TEXT_DELETE, $result->fields['title']);
 		return true;
 	}
@@ -322,9 +321,9 @@ class currencies {
 		$output .= '    <td>' . html_input_field('value', $value['value']) . '</td>' . chr(10);
 	    $output .= '  </tr>' . chr(10);
 		if (DEFAULT_CURRENCY != $code) {
-		  $output .= '  <tr>' . chr(10);
-		  $output .= '    <td colspan="2">' . html_checkbox_field('default', 'on', false) . ' ' . SETUP_INFO_SET_AS_DEFAULT . '</td>' . chr(10);
-	      $output .= '  </tr>' . chr(10);
+		  	$output .= '  <tr>' . chr(10);
+		  	$output .= '    <td colspan="2">' . html_checkbox_field('default', 'on', false) . ' ' . SETUP_INFO_SET_AS_DEFAULT . '</td>' . chr(10);
+	      	$output .= '  </tr>' . chr(10);
 		}
 		$output .= '  </tbody>' . "\n";
 	    $output .= '</table>' . chr(10);

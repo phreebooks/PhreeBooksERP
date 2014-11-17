@@ -107,7 +107,7 @@ class entry_builder {
 	// fetch the sales order and build the item list
 	$sql = "select post_date, purchase_invoice_id from " . TABLE_JOURNAL_MAIN . " where id = " . $id;
 	$result = $admin->DataBase->query($sql);
-	if ($result->RecordCount() > 0) {
+	if ($result->rowCount() > 0) {
 	  $this->so_post_date = $result->fields['post_date'];
 	  $this->so_po_ref_id = $result->fields['purchase_invoice_id'];
 	} else {
@@ -257,7 +257,7 @@ class entry_builder {
 		  	$this->ship_service = defined($method . '_' . $shipping_info[1]) ? constant($method . '_' . $shipping_info[1]) : '';
 		  	$result = $admin->DataBase->query("SELECT tracking_id FROM ".TABLE_SHIPPING_LOG."
 		      WHERE ref_id='$this->purchase_invoice_id' OR ref_id LIKE '".$this->purchase_invoice_id."-%'");
-		  	if ($result->RecordCount() > 0) {
+		  	if ($result->rowCount() > 0) {
 		    	$tracking = array();
 				while(!$result->EOF) {
 			  		$tracking[] = $result->fields['tracking_id'];

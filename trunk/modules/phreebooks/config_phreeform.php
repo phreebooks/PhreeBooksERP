@@ -41,7 +41,7 @@ function pb_pull_order_qty($ref_id = 0) {
   global $admin, $ReportID;
   $sql = "select qty from " . TABLE_JOURNAL_ITEM  . " where id = " . (int)$ref_id;
   $result = $admin->DataBase->query($sql);
-  if ($result->RecordCount() == 0) { // no sales/purchase order, was a direct invoice/POS
+  if ($result->rowCount() == 0) { // no sales/purchase order, was a direct invoice/POS
 	$sql = "select qty from " . TABLE_JOURNAL_ITEM  . " where so_po_item_ref_id = " . (int)$ref_id . " and ref_id = " . $ReportID;
 	$result = $admin->DataBase->query($sql);
   }

@@ -42,15 +42,6 @@ class user {
 				self::load_companies();
 				self::load_languages();
 				self::get_company();
-				if ( $_SESSION['company'] == ''){
-					reset($_SESSION['companies']);
-					$_SESSION['company'] = key($_SESSION['companies']);
-				}
-				self::get_language();
-				if ( $_SESSION['language'] == ''){
-					reset($_SESSION['languages']);
-					$_SESSION['language'] = key($_SESSION['languages']);
-				}
 				// load general language translation, Check for global define overrides first
 				$path = DIR_FS_MODULES . "phreedom/custom/language/{$_SESSION['language']}/language.php";
 				if (file_exists($path)) { require_once($path);}
@@ -181,6 +172,7 @@ class user {
 		foreach ($contents as $file) {
 			if ($file <> '.' && $file <> '..' && is_dir(DIR_FS_MY_FILES . $file)) {
 			  	if (file_exists(DIR_FS_MY_FILES   . $file . '/config.php')) {
+			  		if (!isset($_SESSION['company'])) $_SESSION['company'] = $file;
 					require_once (DIR_FS_MY_FILES . $file . '/config.php');
 					$_SESSION['companies'][$file] = array(
 				  	  'id'   => $file,
@@ -195,6 +187,7 @@ class user {
 		$contents = @scandir('modules/phreedom/language/');
 		if($contents === false) throw new \core\classes\userException("couldn't read or find directory modules/phreedom/language/");
 		foreach ($contents as $lang) {
+			if (!isset($_SESSION['language'])) $_SESSION['language'] = $lang;
 			if ($lang <> '.' && $lang <> '..' && is_dir('modules/phreedom/language/'. $lang) && file_exists("modules/phreedom/language/$lang/language.php")) {
 		  		if ($config_file = file("modules/phreedom/language/$lang/language.php")) {
 		  			foreach ($config_file as $line) {

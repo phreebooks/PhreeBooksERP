@@ -135,7 +135,7 @@ function select_all_tiddler_versions($title) {
 	$tiddler_id = select_tiddler_by_title($title);
 	if( sizeof($tiddler_id)<>0 ) {
 		$tiddlers = $admin->DataBase->query("select * from " . TABLE_PHREEWIKI_VERSION . " where oid = '" . $tiddler_id['id'] . "'");
-		if(!$tiddlers->RecordCount()== 0){
+		if(!$tiddlers->rowCount()== 0){
 			$return_tiddlers = array();
 			$i = 0;
 			while (!$tiddlers->EOF) {

@@ -29,7 +29,7 @@ class basis implements \SplSubject {
 	public  $custom_html		= false;
     public  $include_header		= true;
     public  $include_footer		= true;
-	public  $DataBase = null;
+	public  $DataBase 			= null;
 	public  $configuration		= array ();
 	public  $mainmenu 			= array ();
 	private $events 			= array ('LoadMainPage');
@@ -128,7 +128,7 @@ class basis implements \SplSubject {
 	}
 
 	public function attach(\SplObserver $observer) {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::debug_log("executing ".__METHOD__);
 		\core\classes\messageStack::debug_log("attaching observer".get_class($observer));
 		$this->_observers[get_class($observer)] = $observer;
 	}
@@ -180,6 +180,7 @@ class basis implements \SplSubject {
 	 */
 	public function attachAdminClasses($moduleName, \core\classes\admin $admin_class) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::debug_log("attaching admin class ".get_class($admin_class));
 		if (array_search ( $admin_class, $this->classes ) === false) {
 			$this->classes [$moduleName] = $admin_class;
 		}

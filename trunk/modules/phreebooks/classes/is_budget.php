@@ -41,7 +41,7 @@ class is_budget {
 	$this->first_period = $result->fields['period'];
 	// check for prior year data present
 	$result = $admin->DataBase->query("select period from " . TABLE_ACCOUNTING_PERIODS . " where fiscal_year = " . ($fiscal_year - 1) . " order by period limit 1");
-	if ($result->RecordCount() == 0) { // no data for prior fiscal year
+	if ($result->rowCount() == 0) { // no data for prior fiscal year
 	  $this->ly_first_period = 0;
 	  $this->ly_period       = 0;
 	} else {

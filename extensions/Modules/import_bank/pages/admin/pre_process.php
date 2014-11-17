@@ -40,7 +40,7 @@ switch ($_REQUEST['action']) {
   	}else if($_POST['number_of_bank_accounts'] > NUMBER_OF_BANK_ACCOUNTS){
   		for($x=NUMBER_OF_BANK_ACCOUNTS; $x<=$_POST['number_of_bank_accounts']; $x++){
   			$result = $admin->DataBase->query("select id from " . TABLE_EXTRA_TABS . " where module_id='contacts' and tab_name = 'import_banking'");
-			if ( $result->RecordCount() == 0 ){
+			if ( $result->rowCount() == 0 ){
 				$entry = array(	'module_id'	=> 'contacts',
 				 				'tab_name'	=> 'import_banking',
 								'sort_order'=> '100' );

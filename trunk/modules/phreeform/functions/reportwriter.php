@@ -295,7 +295,7 @@ function convert_security($params) {
 		$temp = array('g');
 		foreach ($member as $name) {
 		  $result = $admin->DataBase->query("select id from " . TABLE_DEPARTMENTS . " where description_short = '" . $name . "'");
-		  if ($result->RecordCount() == 0) {
+		  if ($result->rowCount() == 0) {
 		    $temp[] = $name;
 		  } else {
 		    $temp[] = $result->fields['id'];

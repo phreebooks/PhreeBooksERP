@@ -32,7 +32,7 @@ switch ($_REQUEST['action']) {
     break;
   case 'delete':
   	$result = $admin->DataBase->query("select id from " . TABLE_PHREEFORM . " where parent_id = '" . $id . "' limit 1");
-	if ($result->RecordCount() > 0) {
+	if ($result->rowCount() > 0) {
 	  $ajax_text = DOC_CTL_DIR_NOT_EMPTY;
 	} else {
 	  $admin->DataBase->query("delete from " . TABLE_PHREEFORM . " where id = '" . $id . "'");

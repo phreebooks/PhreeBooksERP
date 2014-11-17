@@ -27,7 +27,7 @@ class parser {
 	// This portion is specific to the application database name, fields and password validation methods
 	// validate user with db (call validation function)
 	$result = $admin->DataBase->query("select admin_pass from " . TABLE_USERS . " where admin_name = '" . $username . "'");
-	if ($result->RecordCount() == 0) {
+	if ($result->rowCount() == 0) {
 	  return $this->responseXML('11', TEXT_THE_USERNAME_SUBMITTED_IS_NOT_VALID, 'error');
 	}
 	try{
@@ -70,13 +70,13 @@ class parser {
 	global $admin;
 	$result = $admin->DataBase->query("select id from " . TABLE_CONTACTS . "
 		where short_name = '" . $short_name . "' and type = '" . $type . "'");
-	return ($result->RecordCount() == 0) ? 0 : $result->fields['id'];
+	return ($result->rowCount() == 0) ? 0 : $result->fields['id'];
   }
 
   function get_user_id($admin_name) {
 	global $admin;
 	$result = $admin->DataBase->query("select admin_id from " . TABLE_USERS . " where admin_name = '" . $admin_name . "'");
-	return ($result->RecordCount() == 0) ? false : $result->fields['admin_id'];
+	return ($result->rowCount() == 0) ? false : $result->fields['admin_id'];
   }
 
   function float($str) {

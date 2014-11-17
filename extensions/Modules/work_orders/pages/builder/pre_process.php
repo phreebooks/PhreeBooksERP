@@ -60,7 +60,7 @@ switch ($_REQUEST['action']) {
 		// If the sku and description were entered manually, the sku_id will be blank, find it
 		if (!$sku_id) {
 		  	$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
-		  	if ($result->RecordCount() == 0) throw new \core\classes\userException(WO_SKU_NOT_FOUND);
+		  	if ($result->rowCount() == 0) throw new \core\classes\userException(WO_SKU_NOT_FOUND);
 		  	$sku_id = $result->fields['id'];
 		}
 		// error check

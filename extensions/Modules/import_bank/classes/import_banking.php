@@ -56,8 +56,8 @@ class import_banking extends \phreebooks\classes\journal {
 		 	if ($ouwer_bank == '') throw new \core\classes\userException(TEXT_OUWER_BANK_ACCOUNT_IS_EMPTY);
 		 	$sql ="select id, description from " . TABLE_CHART_OF_ACCOUNTS. " where description like '%{$ouwer_bank}%'";
 			$result = $admin->DataBase->query($sql);
-			if ($result->RecordCount()== 0) throw new \core\classes\userException(TEXT_THERE_IS_NO_GL_ACCOUNTS_WITH_THE_DESCRIPTION .': '. $ouwer_bank);
-			if (!$result->RecordCount()> 1) throw new \core\classes\userException(TEXT_THERE_ARE_TWO_OR_MORE_GL_ACCOUNTS_WITH_THE_DESCRIPTION .': '. $ouwer_bank);
+			if ($result->rowCount()== 0) throw new \core\classes\userException(TEXT_THERE_IS_NO_GL_ACCOUNTS_WITH_THE_DESCRIPTION .': '. $ouwer_bank);
+			if (!$result->rowCount()> 1) throw new \core\classes\userException(TEXT_THERE_ARE_TWO_OR_MORE_GL_ACCOUNTS_WITH_THE_DESCRIPTION .': '. $ouwer_bank);
 			$this->gl_acct_id 			= $result->fields['id'];
 		}else{
 			if($bank_gl_acct == '') throw new \core\classes\userException(TEXT_OUWER_BANK_ACCOUNT_IS_EMPTY);
@@ -110,9 +110,9 @@ class import_banking extends \phreebooks\classes\journal {
 		$sql ="SELECT * FROM ". TABLE_CONTACTS ." WHERE (type ='v' or type='c') and $criteria";
 		$result1 = $admin->DataBase->query($sql);
 		$contact = false;
-		if($result1->RecordCount() !== 0){
+		if($result1->rowCount() !== 0){
 			$messageStack->debug("\n found a costumer or vender with the bankaccountnumber ". ltrim($other_bank_account_number,0));
-			if (!$result1->RecordCount()> 1){
+			if (!$result1->rowCount()> 1){
 				//TEXT_IMP_ERMSG17 = two or more accounts with the same account
 				$messageStack->add(TEXT_THERE_ARE_TWO_OR_MORE_ACCOUNTS_WITH_THE_SAME_BANK_ACCOUNT . ': ' . $other_bank_account_number, 'error');
 				return false;
@@ -367,7 +367,7 @@ class import_banking extends \phreebooks\classes\journal {
 		$sql ="select gl_account from " . TABLE_JOURNAL_ITEM. " where description = '".$this->_description."' and not gl_account='".$this->gl_acct_id."' and not gl_account='".$this->_questionposts."'";
 		$result = $admin->DataBase->query($sql);
 		$gl_account = $this->_questionposts;
-		If(!$result->RecordCount() == 0){
+		If(!$result->rowCount() == 0){
 			$result->EOF;
 			if(!$result->fields['gl_acount'] == ''){
 				$gl_account = $result->fields['gl_acount'];

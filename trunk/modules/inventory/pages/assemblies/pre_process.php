@@ -52,7 +52,7 @@ switch ($_REQUEST['action']) {
 			$result = $admin->DataBase->query("select account_inventory_wage, quantity_on_hand
 	  		  from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
 			$sku_inv_acct = $result->fields['account_inventory_wage'];
-			if (!$result->RecordCount()) throw new \core\classes\userException(INV_ERROR_SKU_INVALID);
+			if (!$result->rowCount()) throw new \core\classes\userException(INV_ERROR_SKU_INVALID);
 			if ($qty < 0 && ($result->fields['quantity_on_hand'] + $qty) < 0 ) throw new \core\classes\userException(INV_ERROR_NEGATIVE_BALANCE);
 			if (!$qty) throw new \core\classes\userException(JS_ASSY_VALUE_ZERO);
 			// finished checking errors, reload if any errors found

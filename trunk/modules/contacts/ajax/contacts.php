@@ -31,7 +31,7 @@ switch ($_REQUEST['action']) {
 		$type = $_GET['type'];
 		$xml .= xmlEntry('type', $type);
 		$result = $admin->DataBase->query("select * from ".TABLE_ADDRESS_BOOK." where address_id = $id");
-		if ($result->RecordCount() < 1) {
+		if ($result->rowCount() < 1) {
 			$message[] = sprintf('The record could not be found! Looking for id = %s', $id);
 		} else {
 			$xml .= '<Address>'.chr(10);
@@ -72,7 +72,7 @@ switch ($_REQUEST['action']) {
 	case 'get_payment':
 		$id = $_GET['pID'];
 		$result = $admin->DataBase->query("select id, hint, enc_value from ".TABLE_DATA_SECURITY." where id = $id limit 1");
-		if ($result->RecordCount() < 1) {
+		if ($result->rowCount() < 1) {
 			$message[] = sprintf('The record could not be found! Looking for id = %s', $id);
 		} else {
 			$data = \core\classes\encryption::decrypt($_SESSION['admin_encrypt'], $result->fields['enc_value']);

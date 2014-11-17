@@ -17,7 +17,7 @@
 // Path: /index.php
 //
 ob_start();
-//ini_set('log_errors','1');
+ini_set('log_errors','1');
 ini_set('display_errors', '1');
 ini_set('max_input_vars', '3000');
 error_reporting(E_ALL^E_NOTICE);
@@ -51,7 +51,7 @@ try{
 		$admin->removeEventsAndAddNewEvent($e->action); //@todo werkt nog niet altijd
 		$admin->startProcessingEvents();
 	} else {
-		echo "sorry but there was a unforseen error <br/> <b>".$e->getMessage()."</b><br/><br/>".$e->getTraceAsString();
+		echo "sorry but there was a unforseen error <br/> <b>{$e->getMessage()}</b><br/><br/>".$e->getTraceAsString();
 	}
 }
 $admin->DataBase = null;

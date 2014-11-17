@@ -42,7 +42,7 @@ class pricelist_report {
 	$sql = $this->replace_special_fields($sql);
 
 	$result = $admin->DataBase->query($sql);
-	if ($result->RecordCount() == 0) throw new \core\classes\userException("No data");
+	if ($result->rowCount() == 0) throw new \core\classes\userException("No data");
 	// Generate the output data array
 	$RowCnt = 0; // Row counter for output data
 	$ColCnt = 1;
@@ -167,7 +167,7 @@ class pricelist_report {
 	} else {
 		$default_sheet = $admin->DataBase->query("select sheet_name from " . TABLE_PRICE_SHEETS . "
 			where type = 'c' and default_sheet = '1'");
-		$sheet_name = ($default_sheet->RecordCount() == 0) ? '' : $default_sheet->fields['sheet_name'];
+		$sheet_name = ($default_sheet->rowCount() == 0) ? '' : $default_sheet->fields['sheet_name'];
 	}
 	// determine the sku price ranges from the price sheet in effect
 	$levels = false;

@@ -48,7 +48,7 @@ $sql = " select m.purchase_invoice_id, i.id, i.sku, i.qty, i.description, i.date
 	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 	where i.ref_id = " . $oID . " and i.gl_type = '" . $gl_type . "'";
 $ordr_items = $admin->DataBase->query($sql);
-$num_items  = $ordr_items->RecordCount();
+$num_items  = $ordr_items->rowCount();
 
 $include_header   = false;
 $include_footer   = true;

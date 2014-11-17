@@ -52,10 +52,10 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 	function get_ms_list(){
 		global $admin;
 		$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->sku . "'");
-	  	$this->ms_attr_0   = ($result->RecordCount() > 0) ? $result->fields['attr_0'] 		: '';
-	  	$this->attr_name_0 = ($result->RecordCount() > 0) ? $result->fields['attr_name_0'] 	: '';
-	  	$this->ms_attr_1   = ($result->RecordCount() > 0) ? $result->fields['attr_1'] 		: '';
-	  	$this->attr_name_1 = ($result->RecordCount() > 0) ? $result->fields['attr_name_1'] 	: '';
+	  	$this->ms_attr_0   = ($result->rowCount() > 0) ? $result->fields['attr_0'] 		: '';
+	  	$this->attr_name_0 = ($result->rowCount() > 0) ? $result->fields['attr_name_0'] 	: '';
+	  	$this->ms_attr_1   = ($result->rowCount() > 0) ? $result->fields['attr_1'] 		: '';
+	  	$this->attr_name_1 = ($result->rowCount() > 0) ? $result->fields['attr_name_1'] 	: '';
 		if ($this->ms_attr_0) {
 			$temp = explode(',', $this->ms_attr_0);
 			foreach ($temp as $key => $value) {
@@ -112,10 +112,10 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 		$this->get_item_by_id($id);
 		// check to see if there is inventory history remaining, if so don't allow delete
 		$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY_HISTORY . " where ( sku like '" . $this->sku  . "-%' or sku = '" . $this->sku  . "') and remaining > 0");
-		if ($result->RecordCount() > 0) throw new \core\classes\userException(INV_ERROR_DELETE_HISTORY_EXISTS);
+		if ($result->rowCount() > 0) throw new \core\classes\userException(INV_ERROR_DELETE_HISTORY_EXISTS);
 		// check to see if this item is part of an assembly
 		$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY_ASSY_LIST . " where sku like '" . $this->sku  . "-%' or sku = '" . $this->sku  . "'");
-		if ($result->RecordCount() > 0)  throw new \core\classes\userException(INV_ERROR_DELETE_ASSEMBLY_PART);
+		if ($result->rowCount() > 0)  throw new \core\classes\userException(INV_ERROR_DELETE_ASSEMBLY_PART);
 		$result = $admin->DataBase->query( "select id from " . TABLE_JOURNAL_ITEM . " where sku like '" . $this->sku  . "-%' or sku = '" . $this->sku  . "' limit 1");
 		if ($result->Recordcount() > 0) throw new \core\classes\userException(INV_ERROR_CANNOT_DELETE);
 		$this->remove();
@@ -133,7 +133,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 		while(!$ms_array->EOF){
 			if($ms_array->fields['image_with_path'] != ''){
 				$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY . " where image_with_path = '" . $ms_array->fields['image_with_path'] ."'");
-	  			if ( $result->RecordCount() == 0){ // delete image
+	  			if ( $result->rowCount() == 0){ // delete image
 					$file_path = DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/images/';
 					if (file_exists($file_path . $ms_array->fields['image_with_path'])) unlink ($file_path . $ms_array->fields['image_with_path']);
 	  			}
@@ -265,7 +265,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 		}
 		// update/insert into inventory_ms_list table
 		$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY_MS_LIST . " where sku = '{$this->sku}'");
-		$exists = $result->RecordCount();
+		$exists = $result->rowCount();
 		$data_array = array(
 			'sku'         => $this->sku,
 			'attr_0'      => $this->ms_attr_0,
@@ -285,13 +285,13 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 		global $messageStack, $admin;
 		// check to see if there is inventory history remaining, if so don't allow delete
 		$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY_HISTORY . " where sku = '" . $sku . "' and remaining > 0");
-		if ($result->RecordCount() > 0) {
+		if ($result->rowCount() > 0) {
 			$messageStack->add(sprintf(INV_MS_ERROR_DELETE_HISTORY_EXISTS, $sku), 'caution');
 		 	return 'remaining';
 		}
 		// check to see if this item is part of an assembly
 		$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY_ASSY_LIST . " where sku = '" . $sku . "'");
-		if ($result->RecordCount() > 0) {
+		if ($result->rowCount() > 0) {
 			$messageStack->add(sprintf(INV_MS_ERROR_DELETE_ASSEMBLY_PART, $sku), 'caution');
 	  		return false;
 		}

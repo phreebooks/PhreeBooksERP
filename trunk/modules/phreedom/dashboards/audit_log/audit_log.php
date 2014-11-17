@@ -73,7 +73,7 @@ class audit_log extends \core\classes\ctl_panel {
 
        	if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
        	$result = $admin->DataBase->query($sql);
-        if ($result->RecordCount() < 1) {
+        if ($result->rowCount() < 1) {
         	$contents = TEXT_NO_RESULTS_FOUND;
         } else {
         	while (!$result->EOF) {

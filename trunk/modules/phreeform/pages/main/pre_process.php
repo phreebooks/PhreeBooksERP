@@ -125,7 +125,7 @@ while (!$result->EOF) {
 $toggle_list = false;
 if ($group) {
   $result = $admin->DataBase->query("select id from " . TABLE_PHREEFORM . " where doc_group = '" . $group . "'");
-  if ($result->RecordCount() > 0) $toggle_list = buildToggleList($result->fields['id']);
+  if ($result->rowCount() > 0) $toggle_list = buildToggleList($result->fields['id']);
 }
 
 switch ($_REQUEST['action']) { // figure which detail page to load

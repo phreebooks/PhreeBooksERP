@@ -109,7 +109,7 @@ if ($const == 'TEXT_COUNTRY_ISO_CODE')echo 'writing const = '.$const.' with valu
 	// retrieve highest version
 	$result = $admin->DataBase->query("select max(version) as version from " . TABLE_TRANSLATOR . "
 	  where module = '" . $mod . "' and language = '" . $source . "'");
-	if ($result->RecordCount() == 0) throw new \core\classes\userException(TRANS_ERROR_NO_SOURCE);
+	if ($result->rowCount() == 0) throw new \core\classes\userException(TRANS_ERROR_NO_SOURCE);
 	$ver = $result->fields['version'];
 	// delete all from the version being written, prevents dups
 	$admin->DataBase->query("delete from " . TABLE_TRANSLATOR . "
@@ -151,7 +151,7 @@ if ($const == 'TEXT_COUNTRY_ISO_CODE')echo 'writing const = '.$const.' with valu
 	global $admin, $backup, $messageStack;
 	$result = $admin->DataBase->query("select pathtofile, defined_constant, translation from " . TABLE_TRANSLATOR . "
 	  where module = '" . $mod . "' and language = '" . $lang . "' and version = '" . $ver . "'");
-	if ($result->RecordCount() == 0) throw new \core\classes\userException(TEXT_THE_DOWNLOAD_FILE_DOES_NOT_CONTAIN_ANY_DATA);
+	if ($result->rowCount() == 0) throw new \core\classes\userException(TEXT_THE_DOWNLOAD_FILE_DOES_NOT_CONTAIN_ANY_DATA);
 	$output  = array();
 	$header  = '<' . '?' . 'php'  . chr(10);
 	$header .= '// +-----------------------------------------------------------------+' . chr(10);

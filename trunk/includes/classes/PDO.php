@@ -31,7 +31,7 @@ class PDO extends \PDO {
 		return $temp;
 	}
 
-	public function prepare($statement){
+	public function prepare ($statement, $options = NULL){
 		$time_start = explode(' ', microtime());
 		$temp =  parent::prepare($statement);
 		$time_end = explode (' ', microtime());
@@ -41,7 +41,7 @@ class PDO extends \PDO {
 		return $temp;
 	}
 
-	public function exec($statement){
+	public function exec ($statement){
 		$time_start = explode(' ', microtime());
 		$temp =  parent::exec($statement);
 		$time_end = explode (' ', microtime());

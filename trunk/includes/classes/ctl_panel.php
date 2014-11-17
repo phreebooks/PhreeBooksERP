@@ -35,14 +35,14 @@ class ctl_panel {
 	public $row_started			= false;
 
   	function __construct() {
-  		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
   		$this->security_level = \core\classes\user::security_level($this->security_id); // security check
   		$this->user_id = $_SESSION['admin_id'];
   		if (!is_array($this->params)) $this->params = unserialize($this->params);
   	}
 
   	function pre_install($odd, $my_profile){
-  		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
   		$this->valid_user = in_array($this->id, $my_profile);
 		$output  = '<tr class="'.($odd?'odd':'even').'"><td align="center">';
 		$checked = (in_array($this->id, $my_profile)) ? ' selected' : '';
@@ -53,7 +53,7 @@ class ctl_panel {
 
   	function install($column_id = 1, $row_id = 0) {
 		global $admin;
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
 		if (!$row_id) $row_id 		= $this->get_next_row();
 		//$this->params['num_rows']   = $this->default_num_rows;	// defaults to unlimited rows
 		$admin->DataBase->exec("insert into " . TABLE_USERS_PROFILES . " set
@@ -67,7 +67,7 @@ class ctl_panel {
   	 */
   	function remove() {
 		global $admin;
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
 		$result = $admin->DataBase->exec("delete from " . TABLE_USERS_PROFILES . " where user_id = {$this->user_id} and menu_id = '{$this->menu_id}' and dashboard_id = '" . get_class($this) . "'");
   	}
 
@@ -77,7 +77,7 @@ class ctl_panel {
 
   	function delete(){
 		global $admin;
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
 		$result = $admin->DataBase->exec("delete from " . TABLE_USERS_PROFILES . " where dashboard_id = '" . addcslashes(get_class($this), '\\') . "' and module_id = '{$this->module_id}'");
 		foreach ($this->keys as $key) remove_configure($key['key']); // remove all of the keys from the configuration table
 		return true;
@@ -85,14 +85,14 @@ class ctl_panel {
 
   	function update() {
   		global $admin;
-  		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
   		$admin->DataBase->exec("update " . TABLE_USERS_PROFILES . " set params = '" . serialize($this->params) . "'
 	  		where user_id = {$this->user_id} and menu_id = '{$this->menu_id}'
 	    	and dashboard_id = '" . addcslashes(get_class($this), '\\') . "'");
   	}
 
   	function build_div($title, $contents, $controls) {
-  		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
 	  	$output = '';
 		$output .= "<!--// start: {$this->id} //-->" . chr(10);
 		$output .= '<div id="'.$this->id.'" style="position:relative;" class="easyui-panel" title="'.$this->text.'" data-options="collapsible:true,tools:\'#'.$this->id.'_tt\'">' . chr(10);
@@ -133,14 +133,14 @@ class ctl_panel {
 
 	function get_next_row($column_id = 1) {
 		global $admin;
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
 		$result = $admin->DataBase->query("select max(row_id) as max_row from " . TABLE_USERS_PROFILES . "
 		  where user_id = {$this->user_id} and menu_id = '{$this->menu_id}' and column_id = $column_id");
 		return ($result->fields['max_row'] + 1);
 	}
 
 	function upgrade($params){
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
 		foreach ($this->default_params as $key => $value){
 			if(in_array($key, $params, false)){
 				$this->params[$key] =  $params[$key];

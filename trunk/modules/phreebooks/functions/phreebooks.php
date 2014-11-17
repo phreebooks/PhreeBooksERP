@@ -68,7 +68,7 @@ function build_and_check_account_history_records() {
 	  $account_id = $result->fields['id'];
 	  for ($i = 0, $j = 1; $i < $max_period; $i++, $j++) {
 	    $record_found = $admin->DataBase->query("select id from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '" . $account_id . "' and period = " . $j);
-	    if (!$record_found->RecordCount()) {
+	    if (!$record_found->rowCount()) {
 		  $admin->DataBase->query("insert into " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " (account_id, period) values('" . $account_id . "', '" . $j . "')");
 		 }
 	  }
@@ -238,7 +238,7 @@ function fetch_partially_paid($id) {
 	where i.so_po_item_ref_id = $id and m.journal_id in (18, 20) and i.gl_type in ('chk', 'pmt')
 	group by m.journal_id";
   $result = $admin->DataBase->query($sql);
-  if($result->RecordCount() == 0) return 0;
+  if($result->rowCount() == 0) return 0;
   if ($result->fields['debit'] || $result->fields['credit']) {
     return $result->fields['debit'] + $result->fields['credit'];
   } else {
@@ -313,7 +313,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
     	global $admin;
     	$tax_auth_values = $admin->DataBase->query("select tax_auth_id, description_short, account_id , tax_rate
       	  from " . TABLE_TAX_AUTH . " order by description_short");
-    	if ($tax_auth_values->RecordCount() < 1) throw new \core\classes\userException("there are not tax records to select");
+    	if ($tax_auth_values->rowCount() < 1) throw new \core\classes\userException("there are not tax records to select");
 		while (!$tax_auth_values->EOF) {
 			$tax_auth_array[$tax_auth_values->fields['tax_auth_id']] = array(
 			  'description_short' => $tax_auth_values->fields['description_short'],
@@ -363,7 +363,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
   function ord_get_so_po_num($id = '') {
 	global $admin;
 	$result = $admin->DataBase->query("select purchase_invoice_id from " . TABLE_JOURNAL_MAIN . " where id = " . $id);
-	return ($result->RecordCount()) ? $result->fields['purchase_invoice_id'] : '';
+	return ($result->rowCount()) ? $result->fields['purchase_invoice_id'] : '';
   }
 
   function ord_get_projects() {

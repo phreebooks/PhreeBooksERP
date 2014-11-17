@@ -248,7 +248,7 @@ class admin extends \core\classes\admin {
 	    global $admin;
 	    parent::install($path_my_files, $demo);
 		// load some default currency values
-		$admin->DataBase->query("TRUNCATE TABLE " . TABLE_CURRENCIES);
+		$admin->DataBase->exec("TRUNCATE TABLE " . TABLE_CURRENCIES);
 		$currencies_list = array(
 		  array('title' => 'US Dollar', 'code' => 'USD', 'symbol_left' => '$', 'symbol_right' => '', 'decimal_point' => '.', 'thousands_point' => ',', 'decimal_places' => '2', 'decimal_precise' => '2', 'value' => 1.00000000, 'last_updated' => date('Y-m-d H:i:s')),
 		  array('title' => 'Euro',      'code' => 'EUR', 'symbol_left' => '€', 'symbol_right' => '', 'decimal_point' => ',', 'thousands_point' => '.', 'decimal_places' => '2', 'decimal_precise' => '2', 'value' => 0.75000000, 'last_updated' => date('Y-m-d H:i:s')),
@@ -256,23 +256,23 @@ class admin extends \core\classes\admin {
 		foreach($currencies_list as $entry) db_perform(TABLE_CURRENCIES, $entry, 'insert');
 		write_configure('DEFAULT_CURRENCY', 'USD');
 		// Enter some data into table current status
-		$admin->DataBase->query("TRUNCATE TABLE " . TABLE_CURRENT_STATUS);
-		$admin->DataBase->query("insert into " . TABLE_CURRENT_STATUS . " set id = 1");
+		$admin->DataBase->exec("TRUNCATE TABLE " . TABLE_CURRENT_STATUS);
+		$admin->DataBase->exec("insert into " . TABLE_CURRENT_STATUS . " set id = 1");
 	}
 
 	function after_ValidateUser(\core\classes\basis &$basis) {
-		global $admin, $messageStack, $currencies;
+		global $messageStack, $currencies;
 	    //load the latest currency exchange rates
 		if ($this->web_connected(false) && AUTO_UPDATE_CURRENCY && ENABLE_MULTI_CURRENCY) {
 				$currencies->btn_update();
 		}
 		// Fix for change to audit log for upgrade to R3.6 causes perpertual crashing when writing audit log
-		if (!db_field_exists(TABLE_AUDIT_LOG, 'stats')) $admin->DataBase->query("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
-		if ($this->web_connected(false) && $this->$revisions == '' && CFG_AUTO_UPDATE_CHECK && (SECURITY_ID_CONFIGURATION > 3)) { // check for software updates
-			if (($this->$revisions = @file_get_contents(VERSION_CHECK_URL)) === false) throw new \core\classes\userException("can not open ". VERSION_CHECK_URL);
+		if (!db_field_exists(TABLE_AUDIT_LOG, 'stats')) $basis->DataBase->exec("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
+		if ($this->web_connected(false) && CFG_AUTO_UPDATE_CHECK && (SECURITY_ID_CONFIGURATION > 3)) { // check for software updates
+			if (($this->revisions = @file_get_contents(VERSION_CHECK_URL)) === false) throw new \core\classes\userException("can not open ". VERSION_CHECK_URL);
 		}
-		if ($this->$revisions && CFG_AUTO_UPDATE_CHECK && (SECURITY_ID_CONFIGURATION > 3)) { // compaire software versions
-			$versions = xml_to_object($this->$revisions);
+		if ($this->revisions && CFG_AUTO_UPDATE_CHECK && (SECURITY_ID_CONFIGURATION > 3)) { // compaire software versions
+			$versions = xml_to_object($this->revisions);
 			$latest  = $versions->Revisions->Phreedom->Current;
 			if (version_compare($basis->classes['phreedom']->version, $latest, '<'))  $messageStack->add(sprintf(TEXT_VERSION_CHECK_NEW_VER, $basis->classes['phreedom']->version, $latest), 'caution');
 			// load installed modules and initialize them
@@ -288,6 +288,7 @@ class admin extends \core\classes\admin {
   	}
 
 	function web_connected($silent = true) {
+		if ($this->revisions != '') return;
     	$connected = @fsockopen('www.google.com', 80, $errno, $errstr, 20);
     	if ($connected) {
     		if (!@fclose($connected)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 'www.google.com'));
@@ -306,30 +307,30 @@ class admin extends \core\classes\admin {
 		  	if (!$db_version) return true;
 		}
 		if (version_compare($this->status, '3.2', '<') ) {
-		  	if (!db_field_exists(TABLE_USERS, 'is_role')) $admin->DataBase->exec("ALTER TABLE ".TABLE_USERS." ADD is_role ENUM('0','1') NOT NULL DEFAULT '0' AFTER admin_id");
+		  	if (!db_field_exists(TABLE_USERS, 'is_role')) $basis->DataBase->exec("ALTER TABLE ".TABLE_USERS." ADD is_role ENUM('0','1') NOT NULL DEFAULT '0' AFTER admin_id");
 		}
 		if (version_compare($this->status, '3.4', '<') ) {
-		  	if (!db_field_exists(TABLE_DATA_SECURITY, 'exp_date')) $admin->DataBase->exec("ALTER TABLE ".TABLE_DATA_SECURITY." ADD exp_date DATE NOT NULL DEFAULT '2049-12-31' AFTER enc_value");
-		  	if (!db_field_exists(TABLE_AUDIT_LOG, 'ip_address'))   $admin->DataBase->exec("ALTER TABLE ".TABLE_AUDIT_LOG    ." ADD ip_address VARCHAR(15) NOT NULL AFTER user_id");
+		  	if (!db_field_exists(TABLE_DATA_SECURITY, 'exp_date')) $basis->DataBase->exec("ALTER TABLE ".TABLE_DATA_SECURITY." ADD exp_date DATE NOT NULL DEFAULT '2049-12-31' AFTER enc_value");
+		  	if (!db_field_exists(TABLE_AUDIT_LOG, 'ip_address'))   $basis->DataBase->exec("ALTER TABLE ".TABLE_AUDIT_LOG    ." ADD ip_address VARCHAR(15) NOT NULL AFTER user_id");
 	    }
 	    if (version_compare($this->status, '3.5', '<') ) {
-		  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'group_by'))  $admin->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD group_by varchar(64) NOT NULL default ''");
-		  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'sort_order'))$admin->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD sort_order varchar(64) NOT NULL default ''");
-		  	if (!db_field_exists(TABLE_AUDIT_LOG, 'stats'))        $admin->DataBase->exec("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
+		  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'group_by'))  $basis->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD group_by varchar(64) NOT NULL default ''");
+		  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'sort_order'))$basis->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD sort_order varchar(64) NOT NULL default ''");
+		  	if (!db_field_exists(TABLE_AUDIT_LOG, 'stats'))        $basis->DataBase->exec("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
 	  	}
-	  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'required'))  $admin->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD required enum('0','1') NOT NULL DEFAULT '0'");
+	  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'required'))  $basis->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD required enum('0','1') NOT NULL DEFAULT '0'");
 	  	if (version_compare($this->status, '4.0', '<') ) { //updating dashboards to store the namespaces.
-	  		$admin->DataBase->exec ("ALTER TABLE ".TABLE_USERS_PROFILES." CHANGE dashboard_id dashboard_id VARCHAR( 255 ) NOT NULL DEFAULT ''");
-	  		$sql = $admin->DataBase->prepare("SELECT * FROM ".TABLE_USERS_PROFILES);
+	  		$basis->DataBase->exec ("ALTER TABLE ".TABLE_USERS_PROFILES." CHANGE dashboard_id dashboard_id VARCHAR( 255 ) NOT NULL DEFAULT ''");
+	  		$sql = $basis->DataBase->prepare("SELECT * FROM ".TABLE_USERS_PROFILES);
 			$sql->execute();
 			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
-				$admin->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->menu_id			= $result['menu_id'];
-				$admin->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->user_id			= $result['user_id'];
-				$admin->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->default_params	= unserialize( $result['params'] );
-				$admin->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->install( $result['column_id'], $result['row_id'] );
+				$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->menu_id			= $result['menu_id'];
+				$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->user_id			= $result['user_id'];
+				$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->default_params	= unserialize( $result['params'] );
+				$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->install( $result['column_id'], $result['row_id'] );
 			}
-			$admin->DataBase->exec("DELETE from ".TABLE_USERS_PROFILES . " WHERE module_id != ''");
-			$admin->DataBase->exec("ALTER TABLE ".TABLE_USERS_PROFILES . " DROP module_id");
+			$basis->DataBase->exec("DELETE from ".TABLE_USERS_PROFILES . " WHERE module_id != ''");
+			$basis->DataBase->exec("ALTER TABLE ".TABLE_USERS_PROFILES . " DROP module_id");
 	  	}
 	}
 
@@ -340,11 +341,10 @@ class admin extends \core\classes\admin {
 	 * @throws \core\classes\userException
 	 */
 	function ValidateUser (\core\classes\basis &$basis) {
-		global $admin;
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		// Errors will happen here if there was a problem logging in, logout and restart
-		if (!is_object($admin->DataBase)) throw new \core\classes\userException("Database isn't created");
-		$sql = $admin->DataBase->prepare("SELECT admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security
+		if ($basis->DataBase == null) throw new \core\classes\userException("Database isn't created");
+		$sql = $basis->DataBase->prepare("SELECT admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security
 		  FROM " . TABLE_USERS . " WHERE admin_name = '{$basis->cInfo->admin_name}'");
 		$sql->execute();
 		$result = $sql->fetch(\PDO::FETCH_LAZY);
@@ -361,11 +361,9 @@ class admin extends \core\classes\admin {
 		setcookie('pb_company' , \core\classes\user::get_company(),  $cookie_exp);
 		setcookie('pb_language', \core\classes\user::get_language(), $cookie_exp);
 		// load init functions for each module and execute
-		foreach ($basis->classes as $key => $module_class) {
-			if ($module_class->installed && $module_class->should_update()) $module_class->upgrade(&$basis);
-		}
+		foreach ($basis->classes as $key => $module_class) $module_class->should_update($basis);
 		if (defined('TABLE_CONTACTS')) {
-			$dept = $admin->DataBase->query("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result['account_id']);
+			$dept = $basis->DataBase->query("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result['account_id']);
 			$_SESSION['department'] = $dept['dept_rep_id'];
 		}
 		gen_add_audit_log(TEXT_USER_LOGIN . " -> id: {$_SESSION['admin_id']} name: {$_SESSION['display_name']}");
@@ -416,7 +414,7 @@ class admin extends \core\classes\admin {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		gen_add_audit_log(TEXT_USER_LOGOFF . " -> id: {$_SESSION['admin_id']} name: {$_SESSION['display_name']}");
 		session_destroy();
-		\core\classes\userException("you are loged out.", 'LoadLogIn');
+		$basis->addEventToStack("LoadLogIn");
 	}
 
 	/**
@@ -453,7 +451,9 @@ class admin extends \core\classes\admin {
 	}
 
 	function LoadCrash (\core\classes\basis $basis){
+		global $messageStack;
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		$messageStack->write_debug();
 		$basis->include_header  = false;
 		$basis->include_footer  = false;
 		$basis->module			= 'phreedom';

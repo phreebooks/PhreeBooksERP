@@ -46,7 +46,7 @@
   <?php
 	$result = $admin->DataBase->query("select id, shipment_id, ref_id, method, deliver_date, tracking_id, cost
 		from " . TABLE_SHIPPING_LOG . " where carrier = 'yrc' and ship_date = '" . $date . "'");
-	if ($result->RecordCount() > 0) {
+	if ($result->rowCount() > 0) {
 		while(!$result->EOF) {
 			echo '  <tr>' . chr(10);
 			echo '    <td align="right">' . $result->fields['shipment_id'] . '</td>' . chr(10);

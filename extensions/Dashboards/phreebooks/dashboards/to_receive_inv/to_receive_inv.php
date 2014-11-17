@@ -53,7 +53,7 @@ class to_receive_inv extends \core\classes\ctl_panel {
 		  where journal_id in (6,7) and waiting = '1' order by post_date DESC, purchase_invoice_id DESC";
 		if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
 		$result = $admin->DataBase->query($sql);
-		if ($result->RecordCount() < 1) {
+		if ($result->rowCount() < 1) {
 		  	$contents = TEXT_NO_RESULTS_FOUND;
 		} else {
 			while (!$result->EOF) {
@@ -70,7 +70,7 @@ class to_receive_inv extends \core\classes\ctl_panel {
 				$result->MoveNext();
 			}
 		}
-		if (!$params['num_rows'] && $result->RecordCount() > 0) {
+		if (!$params['num_rows'] && $result->rowCount() > 0) {
 		  	$contents .= '<div style="float:right">' . $currencies->format_full($total, true, DEFAULT_CURRENCY, 1) . '</div>';
 			$contents .= '<div><b>' . TEXT_TOTAL . '</b></div>' . chr(10);
 		}

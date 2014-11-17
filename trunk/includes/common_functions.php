@@ -88,8 +88,8 @@
   	function write_configure($constant, $value = '') {
     	global $admin;
 		if (!$constant) throw new \core\classes\userException("contant isn't defined for value: $value");
-		$result = $admin->DataBase->query("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = '" . $constant . "'");
-		if ($result->RecordCount() == 0) {
+		$result = $admin->DataBase->query("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = '$constant'");
+		if ($result->rowCount() == 0) {
 	  		$sql_array = array('configuration_key'  => $constant, 'configuration_value'=> $value);
 		  	db_perform(TABLE_CONFIGURATION,  $sql_array);
 		} elseif ($result->fields['configuration_value'] <> $value) {
@@ -217,8 +217,8 @@
 		return CURRENT_ACCOUNTING_PERIOD;
 	} else {
 		$result = $admin->DataBase->query("select period from " . TABLE_ACCOUNTING_PERIODS . "
-			where start_date <= '" . $post_date . "' and end_date >= '" . $post_date . "'");
-		if ($result->RecordCount() <> 1) { // post_date is out of range of defined accounting periods
+			where start_date <= '$post_date' and end_date >= '$post_date'");
+		if ($result->rowCount() <> 1) { // post_date is out of range of defined accounting periods
 			if (!$hide_error) throw new \core\classes\userException(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR);
 		}
 		if (!$hide_error) throw new \core\classes\userException(ERROR_MSG_BAD_POST_DATE);
@@ -267,7 +267,7 @@
   function gen_get_type_description($db_name, $id, $full = true) {
     global $admin;
     $type_name = $admin->DataBase->query("select description from $db_name where id = '$id'");
-    if ($type_name->RecordCount() < 1) {
+    if ($type_name->rowCount() < 1) {
       return $id;
     } else {
 	  if ($full) {
@@ -281,7 +281,7 @@
   function gen_get_contact_type($id) {
     global $admin;
     $vendor_type = $admin->DataBase->query("select type from " . TABLE_CONTACTS . " where id = '" . $id . "'");
-    return ($vendor_type->RecordCount() == 1) ? $vendor_type->fields['type'] : false;
+    return ($vendor_type->rowCount() == 1) ? $vendor_type->fields['type'] : false;
   }
 
   	/**
@@ -291,7 +291,7 @@
   	function gen_get_contact_name($id) {
     	global $admin;
     	$vendor_name = $admin->DataBase->query("select short_name from " . TABLE_CONTACTS . " where id = '$id'");
-    	if ($vendor_name->RecordCount() == 1) return $vendor_name->fields['short_name'];
+    	if ($vendor_name->rowCount() == 1) return $vendor_name->fields['short_name'];
     	throw new \core\classes\userException("couldn't find contact with $id");
   	}
 
@@ -438,6 +438,7 @@
   	function gen_add_audit_log($action, $ref_id = '', $amount = '') {
 		global $admin;
   		if ($action == '' || !isset($action)) throw new \core\classes\userException('Error, call to audit log with no description');
+  		if ($admin->DataBase == null) return;
   		$sql = $admin->DataBase->prepare("INSERT INTO " . TABLE_AUDIT_LOG . " (user_id, action, ip_address, stats, reference_id, amount) VALUES (:user_id, :action, :ip_address, :stats, :reference_id, :amount)");
   		$stats = (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME))."ms, ".$admin->DataBase->count_queries."q ".(int)($admin->DataBase->total_query_time * 1000)."ms";
 		$fields = array(
@@ -762,7 +763,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
 	$result = $admin->DataBase->query("select fiscal_year, start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . "
 	  where period = " . $period);
 	// post_date is out of range of defined accounting periods
-	if ($result->RecordCount() <> 1) throw new \core\classes\userException(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');
+	if ($result->rowCount() <> 1) throw new \core\classes\userException(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');
 	return $result->fields;
   }
 
@@ -881,7 +882,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
 /**************************************************************************************************************/
 // Section 2. Database Functions
 /**************************************************************************************************************/
-  function db_perform($table, $data, $action = 'insert', $parameters = '') {
+  function db_perform($table, $data, $action = 'insert', $parameters = '') { @todo deze verwijderen
     global $admin;
     if (!is_array($data)) throw new \core\classes\userException("data isn't a array for table: $table");
     reset($data);
@@ -911,7 +912,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
       }
       $query = substr($query, 0, -2) . ' where ' . $parameters;
     }
-    $sql = $admin->DataBase->prepare($query);
+    $sql = $admin->DataBase->exec($query);
     $sql->execute();
     return $sql->fetchall();
   }

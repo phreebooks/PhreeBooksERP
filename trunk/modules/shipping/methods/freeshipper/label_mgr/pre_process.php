@@ -55,7 +55,7 @@ switch ($_REQUEST['action']) {
 	$shipment_id = db_prepare_input($_GET['sID']);
 	$result = $admin->DataBase->query("select method, ship_date from " . TABLE_SHIPPING_LOG . " where shipment_id = " . (int)$shipment_id);
 	$ship_method = $result->fields['method'];
-	if ($result->RecordCount() == 0 || !$shipment_id) throw new \core\classes\userException(SHIPPING_DELETE_ERROR);
+	if ($result->rowCount() == 0 || !$shipment_id) throw new \core\classes\userException(SHIPPING_DELETE_ERROR);
 
 	if ($result->fields['ship_date'] < date('Y-m-d', time())) { // only allow delete if shipped today or in future
 		throw new \core\classes\userException(SHIPPING_CANNOT_DELETE);

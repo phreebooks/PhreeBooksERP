@@ -37,7 +37,7 @@ class backorders_report {
 	$sql = $this->replace_special_fields($sql);
 
 	$result = $admin->DataBase->query($sql);
-	if ($result->RecordCount() == 0) throw new \core\classes\userException("no data"); // No data so bail now
+	if ($result->rowCount() == 0) throw new \core\classes\userException("no data"); // No data so bail now
 	// Generate the output data array
 	$RowCnt = 0; // Row counter for output data
 	$ColCnt = 1;

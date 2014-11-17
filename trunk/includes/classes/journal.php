@@ -28,7 +28,7 @@ class journal {
 		if ($id != 0) {
 			$result = $admin->DataBase->query("select * from " . TABLE_JOURNAL_MAIN . " where id = $id");
 			// make sure we have a record or die (there's a problem that needs to be fixed)
-		  	if ($result->RecordCount() == 0) throw new \core\classes\userException(TEXT_DIED_TRYING_TO_BUILD_A_JOURNAL_ENTRY_WITH_ID . ' = ' . $id);
+		  	if ($result->rowCount() == 0) throw new \core\classes\userException(TEXT_DIED_TRYING_TO_BUILD_A_JOURNAL_ENTRY_WITH_ID . ' = ' . $id);
 		  	foreach ($result->fields as $key => $value) $this->$key = $value;
 		  	$this->journal_main_array = $this->build_journal_main_array();	// build ledger main record
 		  	$result = $admin->DataBase->query("select * from " . TABLE_JOURNAL_ITEM . " where ref_id = " . (int)$id);
@@ -203,7 +203,7 @@ class journal {
 			// check to see if any future postings relied on this record, queue to re-post if so.
 			$sql = "SELECT id FROM ".TABLE_INVENTORY_HISTORY." WHERE ref_id=$this->id AND sku='".$this->journal_rows[$i]['sku']."'";
 			$result = $admin->DataBase->query($sql);
-			if ($result->RecordCount() > 0) {
+			if ($result->rowCount() > 0) {
 				$sql = "SELECT journal_main_id FROM ".TABLE_INVENTORY_COGS_USAGE." WHERE inventory_history_id=".$result->fields['id'];
 				$result = $admin->DataBase->query($sql);
 				while (!$result->EOF) {
@@ -396,11 +396,11 @@ class journal {
 		// see if there is another fiscal year to roll into
 		$sql = "select fiscal_year from " . TABLE_ACCOUNTING_PERIODS . " where period = " . ($max_period + 1);
 		$result = $admin->DataBase->query($sql);
-		if ($result->RecordCount() > 0) { // close balances for end of this fiscal year and roll post into next fiscal year
+		if ($result->rowCount() > 0) { // close balances for end of this fiscal year and roll post into next fiscal year
 			// select retained earnings account
 			$sql = "select id from " . TABLE_CHART_OF_ACCOUNTS . " where account_type = 44";
 			$result = $admin->DataBase->query($sql);
-			if ($result->RecordCount() <> 1) throw new \core\classes\userException(GL_ERROR_NO_RETAINED_EARNINGS_ACCOUNT);
+			if ($result->rowCount() <> 1) throw new \core\classes\userException(GL_ERROR_NO_RETAINED_EARNINGS_ACCOUNT);
 			$retained_earnings_acct = $result->fields['id'];
 			$this->affected_accounts[$retained_earnings_acct] = 1;
 			// select list of accounts that need to be closed, adjusted
@@ -452,7 +452,7 @@ class journal {
 		  	// find the adjustment account
 		  	if (!defined('ROUNDING_GL_ACCOUNT') || ROUNDING_GL_ACCOUNT == '') {
 				$result = $admin->DataBase->query("select id from " . TABLE_CHART_OF_ACCOUNTS . " where account_type = 44 limit 1");
-				if ($result->RecordCount() == 0) throw new \core\classes\userException('Failed trying to locate retained earnings account to make rounding adjustment. There must be one and only one Retained Earnings account in the chart of accounts!');
+				if ($result->rowCount() == 0) throw new \core\classes\userException('Failed trying to locate retained earnings account to make rounding adjustment. There must be one and only one Retained Earnings account in the chart of accounts!');
 				$adj_gl_account = $result->fields['id'];
 		  	} else {
 				$adj_gl_account = ROUNDING_GL_ACCOUNT;
@@ -787,7 +787,7 @@ class journal {
 		$messageStack->debug("\n    update_inventory_status, SKU = " . $sku . ", field = " . $field . ", adjustment = " . $adjustment . ", and item_cost = " . $item_cost);
 		// catch sku's that are not in the inventory database but have been requested to post
 		$result = $admin->DataBase->query("select id, inventory_type from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
-		if ($result->RecordCount() == 0) {
+		if ($result->rowCount() == 0) {
 		  	if (!INVENTORY_AUTO_ADD) throw new \core\classes\userException(GL_ERROR_UPDATING_INVENTORY_STATUS . $sku);
 		  	$id = $this->inventory_auto_add($sku, $desc, $item_cost, $full_price);
 			$result->fields['inventory_type'] = 'si';
@@ -824,7 +824,7 @@ class journal {
 		  from " . TABLE_INVENTORY . " where sku = '" . $item['sku'] . "'";
 		$result = $admin->DataBase->query($sql);
 		// catch sku's that are not in the inventory database but have been requested to post, error
-		if ($result->RecordCount() == 0) {
+		if ($result->rowCount() == 0) {
 		  	if (!INVENTORY_AUTO_ADD) throw new \core\classes\userException(GL_ERROR_CALCULATING_COGS);
 		  	$item_cost  = 0;
 		  	$full_price = 0;
@@ -885,7 +885,7 @@ class journal {
 		    	$sql = "select id, remaining, unit_cost from " . TABLE_INVENTORY_HISTORY . "
 			  	  where sku = '" . $item['sku'] . "' and remaining > 0 and serialize_number = '" . $item['serialize_number'] . "'";
 				$result = $admin->DataBase->query($sql);
-				if ($result->RecordCount() <> 0) throw new \core\classes\userException(GL_ERROR_SERIALIZE_COGS);
+				if ($result->rowCount() <> 0) throw new \core\classes\userException(GL_ERROR_SERIALIZE_COGS);
 		  		$history_array['serialize_number'] = $item['serialize_number'];
 		  	}
 		  	$messageStack->debug("\n      Inserting into inventory history = " . arr2string($history_array));
@@ -908,7 +908,7 @@ class journal {
 		    	$sql = "SELECT id, remaining, unit_cost FROM ".TABLE_INVENTORY_HISTORY."
 			  	  WHERE sku='".$item['sku']."' AND remaining > 0 AND serialize_number='".$item['serialize_number']."'";
 				$result = $admin->DataBase->query($sql);
-				if ($result->RecordCount() <> 1) throw new \core\classes\userException(GL_ERROR_SERIALIZE_COGS);
+				if ($result->rowCount() <> 1) throw new \core\classes\userException(GL_ERROR_SERIALIZE_COGS);
 		  	} else {
 				$sql = "SELECT id, remaining, unit_cost FROM ".TABLE_INVENTORY_HISTORY."
 			  	  WHERE sku='".$item['sku']."' AND remaining > 0"; // AND post_date <= '$this->post_date 23:59:59'"; // causes re-queue to owed table for negative inventory posts and rcv after sale date
@@ -1018,7 +1018,7 @@ class journal {
   	$messageStack->debug("\n    Calculating SKU cost, SKU = $sku and QTY = $qty");
   	$cogs = 0;
   	$defaults = $admin->DataBase->query("SELECT inventory_type, item_cost, cost_method, serialize FROM ".TABLE_INVENTORY." WHERE sku='$sku'");
-	if ($defaults->RecordCount() == 0) return $cogs; // not in inventory, return no cost
+	if ($defaults->rowCount() == 0) return $cogs; // not in inventory, return no cost
 	if (strpos(COG_ITEM_TYPES, $defaults->fields['inventory_type']) === false) return $cogs; // this type not tracked in cog, return no cost
 	if ($defaults->fields['cost_method'] == 'a') return $qty * $this->fetch_avg_cost($sku, $qty);
 	if ($defaults->fields['serialize']) { // there should only be one record
@@ -1169,14 +1169,14 @@ class journal {
 		$sku = $inv_list['sku'];
 		$qty = $inv_list['qty'];
 		$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY . " where sku = '$sku'");
-		if ($result->RecordCount() == 0) throw new \core\classes\userException(TEXT_THE_SKU_ENTERED_COULD_NOT_BE_FOUND);
+		if ($result->rowCount() == 0) throw new \core\classes\userException(TEXT_THE_SKU_ENTERED_COULD_NOT_BE_FOUND);
 
 		$sku_id = $result->fields['id'];
 		$sql = "select a.sku, a.description, a.qty, i.inventory_type, i.quantity_on_hand, i.account_inventory_wage, i.item_cost as price
 		  from " . TABLE_INVENTORY_ASSY_LIST . " a inner join " . TABLE_INVENTORY . " i on a.sku = i.sku
 		  where a.ref_id = " . $sku_id;
 		$result = $admin->DataBase->query($sql);
-		if ($result->RecordCount() == 0) throw new \core\classes\userException(GL_ERROR_SKU_NOT_ASSY . $sku);
+		if ($result->rowCount() == 0) throw new \core\classes\userException(GL_ERROR_SKU_NOT_ASSY . $sku);
 
 		$assy_cost = 0;
 		while (!$result->EOF) {
@@ -1466,7 +1466,7 @@ class journal {
 		where purchase_invoice_id = '{$this->purchase_invoice_id}' and journal_id = '{$this->journal_id}'";
 	  if ($this->id) $sql .= " and id <> " . $this->id;
 	  $result = $admin->DataBase->query($sql);
-	  if ($result->RecordCount() > 0) throw new \core\classes\userException(sprintf(TEXT_THE_YOU_ENTERED_IS_A_DUPLICATE,_PLEASE_ENTER_A_NEW_UNIQUE_VALUE_ARGS, $journal_types_list[ $this->journal_id]['id_field_name']));
+	  if ($result->rowCount() > 0) throw new \core\classes\userException(sprintf(TEXT_THE_YOU_ENTERED_IS_A_DUPLICATE,_PLEASE_ENTER_A_NEW_UNIQUE_VALUE_ARGS, $journal_types_list[ $this->journal_id]['id_field_name']));
 	  $this->journal_main_array['purchase_invoice_id'] = $this->purchase_invoice_id;
 	  $messageStack->debug(" specified ID but no dups, returning OK. ");
 	} else {	// generate a new order/invoice value
@@ -1559,7 +1559,7 @@ class journal {
 	  $sql = "select id, store_id, dept_rep_id from " . TABLE_CONTACTS . " where ";
 	  $sql .= ($acct_id) ? ("id = " . (int)$acct_id) : ("short_name = '" . $short_name . "' and type = '" . $acct_type . "'");
 	  $result = $admin->DataBase->query($sql);
-	  if (!$acct_id && $result->RecordCount() > 0 && !$allow_overwrite) {  // duplicate ID w/o allow_overwrite
+	  if (!$acct_id && $result->rowCount() > 0 && !$allow_overwrite) {  // duplicate ID w/o allow_overwrite
 		 throw new \core\classes\userException(ACT_ERROR_DUPLICATE_ACCOUNT);
 	  }
 	  $acct_id = $result->fields['id']; // will only change if no id was passed and allow_overwrite is true
@@ -1568,7 +1568,7 @@ class journal {
 	  $sql_data_array['store_id']    = isset($this->store_id) ? $this->store_id : $result->fields['store_id'];
 	  $sql_data_array['dept_rep_id'] = isset($this->dept_rep_id) ? $this->dept_rep_id : $result->fields['dept_rep_id'];
 
-	  if ($result->RecordCount() == 0) { // new account
+	  if ($result->rowCount() == 0) { // new account
 		$sql_data_array['type']            = $acct_type;
 		$sql_data_array['short_name']      = $short_name;
 		$sql_data_array['gl_type_account'] = DEF_INV_GL_ACCT;
@@ -1602,7 +1602,7 @@ class journal {
 		}
 		$sql .= "ref_id = " . $acct_id;
 		$result = $admin->DataBase->query($sql);
-		$address_id = ($result->RecordCount() > 0) ? $result->fields['address_id'] : '';
+		$address_id = ($result->rowCount() > 0) ? $result->fields['address_id'] : '';
 	}
 
 	$add_fields = array('primary_name', 'contact', 'address1', 'address2', 'city_town',

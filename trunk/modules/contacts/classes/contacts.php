@@ -121,7 +121,7 @@ class contacts {
   	global $admin;
   	if ( $this->id == '' ) $this->id = $id;	// error check, no delete if a journal entry exists
 	$result = $admin->DataBase->query("SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE bill_acct_id=$this->id OR ship_acct_id=$this->id OR store_id=$this->id LIMIT 1");
-	if ($result->RecordCount() != 0) throw new \core\classes\userException(ACT_ERROR_CANNOT_DELETE);
+	if ($result->rowCount() != 0) throw new \core\classes\userException(ACT_ERROR_CANNOT_DELETE);
 	return $this->do_delete();
   }
 
@@ -146,7 +146,7 @@ class contacts {
   	$sql .= " journal_id in (" . $journal_id . ") and bill_acct_id = " . $acct_id . ' order by post_date DESC';
   	$sql .= ($limit) ? " limit " . $limit : "";
   	$result = $admin->DataBase->query($sql);
-  	if ($result->RecordCount() == 0) return array();	// no open orders
+  	if ($result->rowCount() == 0) return array();	// no open orders
   	$output = array(array('id' => '', 'text' => TEXT_NEW));
   	while (!$result->EOF) {
   	     $output[] = array(
@@ -203,7 +203,7 @@ class contacts {
     } else {
       $result = $admin->DataBase->query("select id from ".TABLE_CONTACTS." where short_name = '$this->short_name' and type = '$this->type' and id <> $this->id");
     }
-    if ($result->RecordCount() > 0) throw new \core\classes\userException($this->duplicate_id_error);
+    if ($result->rowCount() > 0) throw new \core\classes\userException($this->duplicate_id_error);
   }
 
   /*

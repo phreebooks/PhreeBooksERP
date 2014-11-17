@@ -63,7 +63,7 @@ class backup {
 		  	}
 		  	if ($type == 'data' || $type == 'both') {
 				$result = $admin->DataBase->query('SELECT * FROM ' . $table . $params);
-				if ($result->RecordCount() > 0) {
+				if ($result->rowCount() > 0) {
 			  		$temp_array = $result->fields;
 			  		while (list($key, $value) = each($temp_array)) $data['keys'][] = $key;
 			  		$sql_head  = 'INSERT INTO `' . $table .'` (`' . join($data['keys'], '`, `') . '`) VALUES ' . lnbr;

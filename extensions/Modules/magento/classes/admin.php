@@ -136,7 +136,7 @@ class admin extends \core\classes\admin {
 	if(defined('MODULE_MAGENTO_LAST_UPDATE') && MODULE_MAGENTO_LAST_UPDATE <> '') $where = " and ( last_update >'" . MODULE_MAGENTO_LAST_UPDATE . "' or last_journal_date >'" . MODULE_MAGENTO_LAST_UPDATE . "')";
 	$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY . " where catalog = '1' " . $where);
 	$cnt    = 0;
-	if($result->RecordCount() == 0)	return true;
+	if($result->rowCount() == 0)	return true;
 	while(!$result->EOF) {
 	  	$prodXML = new \magento\classes\magento();
 	  	$prodXML->submitXML($result->fields['id'], 'product_ul', true, true);
@@ -156,7 +156,7 @@ class admin extends \core\classes\admin {
 		write_configure('MODULE_MAGENTO_LAST_UPDATE', date('0000-00-00 00:00:00'));
 	}
 	$result = $admin->DataBase->query("select tab_id from " . TABLE_EXTRA_FIELDS . " where field_name = 'category_id'");
-	if ($result->RecordCount() == 0) throw new \core\classes\userException('can not find tab_name Magento');
+	if ($result->rowCount() == 0) throw new \core\classes\userException('can not find tab_name Magento');
 	else $tab_id = $result->fields['tab_id'];
 	if (!db_field_exists(TABLE_INVENTORY, 'ProductURL')){
 		 $sql_data_array = array(

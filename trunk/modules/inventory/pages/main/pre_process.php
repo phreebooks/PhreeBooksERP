@@ -38,7 +38,7 @@ if (!isset($_REQUEST['inventory_type'])){
 	if(isset($_REQUEST['cID'])) $result = $admin->DataBase->query("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE id='{$_REQUEST['cID']}'");
 	else if (isset($_REQUEST['rowSeq'])) $result = $admin->DataBase->query("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE id='{$_REQUEST['rowSeq']}'");
 	else $result = $admin->DataBase->query("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE sku='{$_REQUEST['sku']}'");
-	if ($result->RecordCount()>0) $type = $result->fields['inventory_type'];
+	if ($result->rowCount()>0) $type = $result->fields['inventory_type'];
 	else $type ='si';
 }
 $temp = '\inventory\classes\type\\'. $type;

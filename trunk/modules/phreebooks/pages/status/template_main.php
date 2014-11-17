@@ -111,7 +111,7 @@ echo $toolbar->build_toolbar($add_search = true, $add_periods = true);
       $sID            = 0;
       $shipped        = false;
 	  $result = $admin->DataBase->query("select id, shipment_id, ship_date from " . TABLE_SHIPPING_LOG . " where ref_id like '" . $query_result->fields['purchase_invoice_id'] . "%'");
-	  if ($result->RecordCount() > 0) {
+	  if ($result->rowCount() > 0) {
 	    $sID          = $result->fields['id'];
 	    $shipped      = $result->fields['shipment_id'];
 	    $date_shipped = substr($result->fields['ship_date'], 0, 10);

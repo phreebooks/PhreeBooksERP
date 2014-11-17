@@ -47,7 +47,7 @@ echo $toolbar->build_toolbar($add_search = true);
  while (!$query_result->EOF) {
 	$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY_SPECIAL_PRICES . "
 		where price_sheet_id = " . $query_result->fields['id']);
-	$special_price = ($result->RecordCount() > 0) ? TEXT_YES : '';
+	$special_price = ($result->rowCount() > 0) ? TEXT_YES : '';
 ?>
   <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer">
 	<td onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo $query_result->fields['sheet_name']; ?></td>

@@ -94,7 +94,7 @@ switch ($_REQUEST['action']) {
 		}
 		if (!$admin_id) { // check for duplicate user name
 		  	$result = $admin->DataBase->query("select admin_id from " . TABLE_USERS . " where admin_name = '" . db_prepare_input($_POST['admin_name']) . "'");
-		  	if ($result->RecordCount() > 0) throw new \core\classes\userException(ENTRY_DUP_USER_NEW_ERROR);
+		  	if ($result->rowCount() > 0) throw new \core\classes\userException(ENTRY_DUP_USER_NEW_ERROR);
 		}
 		if ($admin_id) {
 			db_perform(TABLE_USERS, $sql_data_array, 'update', 'admin_id = ' . (int)$admin_id);

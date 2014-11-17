@@ -21,7 +21,7 @@ function get_user_name($id = 0) {
   global $admin;
   if ($id == 0) return '';
   $result = $admin->DataBase->query("select display_name from " . TABLE_USERS . " where admin_id = " . $id);
-  return ($result->RecordCount() < 1) ? '' : $result->fields['display_name'];
+  return ($result->rowCount() < 1) ? '' : $result->fields['display_name'];
 }
 
 function wo_build_users() {

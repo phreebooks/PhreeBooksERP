@@ -32,7 +32,7 @@ $result = false;
 $start_page = DOC_ROOT_URL;
 if ($context_ref) {
   $result = $admin->DataBase->query("select doc_url from " . TABLE_PHREEHELP . " where doc_pos = '$context_ref'");
-  if ($result->RecordCount() > 0) $start_page = $result->fields['doc_url'];
+  if ($result->rowCount() > 0) $start_page = $result->fields['doc_url'];
 }
 $frame_url = 'index.php?module=phreehelp&amp;page=main';
 /***************   hook for custom actions  ***************************/

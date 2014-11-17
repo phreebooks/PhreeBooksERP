@@ -85,7 +85,7 @@ if($cID != ''){
 		}
 		$result->MoveNext();
 	}
-	if($result->RecordCount() != 0){
+	if($result->rowCount() != 0){
   		$recpt_email 	= $result->fields['email'];
   		$recpt_name   	= $result->fields['primary_name'];
 	}

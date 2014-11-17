@@ -37,7 +37,7 @@ $fieldset_content .= '<table width="100%" cellspacing="0" cellpadding="1">' . ch
 $fieldset_content .= '  <tr>' . $list_header . '</tr>' . chr(10);
 $odd = true;
 $found_one = false;
-if ($query_result->RecordCount() > 0) {
+if ($query_result->rowCount() > 0) {
   while (!$query_result->EOF) {
   	if (!$query_result->fields['security']) $query_result->fields['security'] = 'u:0;g:0'; // allow all
   	if (security_check($query_result->fields['security'])) {

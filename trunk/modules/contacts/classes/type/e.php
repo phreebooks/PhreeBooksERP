@@ -35,7 +35,7 @@ class e extends \contacts\classes\contacts{
 	  	global $admin;
 	  	if ( $this->id == '' ) $this->id = $id;
   		$result = $admin->DataBase->query("select admin_id from ".TABLE_USERS." where account_id =". $this->id);
-		if ($result->RecordCount() == 0) {
+		if ($result->rowCount() == 0) {
 	  		return $this->do_delete();
 		}
 		return ACT_ERROR_CANNOT_DELETE_EMPLOYEE;

@@ -43,7 +43,7 @@ class customer_websites extends \core\classes\ctl_panel {
 		$result = $admin->DataBase->query($sql);
 		// Build control box form data
 		// Build content box
-		if ($result->RecordCount() < 1) {
+		if ($result->rowCount() < 1) {
 			$contents = TEXT_NO_RESULTS_FOUND;
 		} else {
 		  	while (!$result->EOF) {

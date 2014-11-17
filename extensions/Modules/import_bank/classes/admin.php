@@ -59,9 +59,9 @@ class admin extends \core\classes\admin {
 		if (!db_field_exists(TABLE_CONTACTS, 'bank_account_1')) {
 			$sql = "select id from " . TABLE_EXTRA_FIELDS . " where module_id = 'contacts' and field_name = 'bank_account'";
 			$result = $admin->DataBase->query($sql);
-			if ( $result->RecordCount() == 0 ){
+			if ( $result->rowCount() == 0 ){
 				$result = $admin->DataBase->query("select id from " . TABLE_EXTRA_TABS . " where module_id='contacts' and tab_name = 'import_banking'");
-				if ( $result->RecordCount() == 0 ){
+				if ( $result->rowCount() == 0 ){
 					$entry = array(	'module_id'	=> 'contacts',
 					 				'tab_name'	=> 'import_banking',
 									'sort_order'=> '100' );
@@ -88,9 +88,9 @@ class admin extends \core\classes\admin {
 	  	parent::upgrade($basis);
 	  	$sql = "select id from " . TABLE_EXTRA_FIELDS . " where module_id = 'contacts' and field_name = 'bank_account'";
 		$result = $admin->DataBase->query($sql);
-		if ( $result->RecordCount() == 0 ){
+		if ( $result->rowCount() == 0 ){
 			$result = $admin->DataBase->query("select id from " . TABLE_EXTRA_TABS . " where module_id='contacts' and tab_name = 'import_banking'");
-			if ( $result->RecordCount() == 0 ){
+			if ( $result->rowCount() == 0 ){
 				$admin->DataBase->query("INSERT INTO " . TABLE_EXTRA_TABS . " VALUES('', 'contacts','import_banking','100')");
 				$tab_id = $admin->DataBase->insert_ID();
 			}else {

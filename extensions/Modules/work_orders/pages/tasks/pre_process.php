@@ -82,7 +82,7 @@ switch ($_REQUEST['action']) {
 	$id = db_prepare_input($_GET['cID']);
 	// check to see if the task is used in any defined work orders. If so don't let it be deleted.
 	$result = $admin->DataBase->query("select ref_id from " . TABLE_WO_JOURNAL_ITEM . " where task_id = " . $id);
-	if ($result->RecordCount() == 0) {
+	if ($result->rowCount() == 0) {
 	  	$admin->DataBase->query("delete from " . TABLE_WO_TASK . " where id = " . $id);
 	  	gen_add_audit_log(sprintf(WO_AUDIT_LOG_TASK, TEXT_DELETE), $id);
 	  	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));

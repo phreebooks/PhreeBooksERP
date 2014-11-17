@@ -16,6 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /includes/application_top.php
 //
+namespace core\application_top;
 define('PAGE_EXECUTION_START_TIME', microtime(true));
 if (!get_cfg_var('safe_mode')) {
 	if (ini_get('max_execution_time') < 60) set_time_limit(60);
@@ -89,9 +90,9 @@ if ($_REQUEST['action']=="ValidateUser") $_SESSION['company'] = $_POST['company'
 if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php')) {
 	define('DB_DATABASE', $_SESSION['company']);
 	require_once(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php');
-	$dsn = DB_TYPE.":dbname={$_SESSION['company']};host=".DB_SERVER_HOST;
-	$admin->DataBase = new \core\classes\PDO($dsn, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
-//	if(APC_EXTENSION_LOADED == false || apc_load_constants('configuration') == false) {
+	if(!defined('DB_SERVER_HOST')) define('DB_SERVER_HOST',DB_SERVER);
+	$admin->DataBase = new \core\classes\PDO(DB_TYPE.":dbname={$_SESSION['company']};host=".DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION));
+	//	if(APC_EXTENSION_LOADED == false || apc_load_constants('configuration') == false) {
 	$result = $admin->DataBase->prepare("SELECT configuration_key, configuration_value FROM " . DB_PREFIX . "configuration");
 	$result->execute();
 	while ($row = $result->fetch(\PDO::FETCH_LAZY)){

@@ -98,7 +98,7 @@ echo $toolbar->build_toolbar($add_search = true);
 </form>
 
 <?php
-if (($query_result->RecordCount() == 1) && ($_POST['page'] == 1) && (!$cancel_single_result_exit)) { // then only one entry return with it
+if (($query_result->rowCount() == 1) && ($_POST['page'] == 1) && (!$cancel_single_result_exit)) { // then only one entry return with it
   echo '<script type="text/javascript">' . chr(10);
   echo 'setReturnAccount(' . $acct_id . ');' . chr(10);
   echo '</script>' . chr(10);

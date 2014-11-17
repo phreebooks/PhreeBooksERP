@@ -75,7 +75,7 @@ switch ($_REQUEST['action']) {
   case 'delete_dir':
 	// check for directory not empty
 	$result = $admin->DataBase->query("select id from " . TABLE_DC_DOCUMENT . " where parent_id = " . $id);
-	if ($result->RecordCount() > 0) {
+	if ($result->rowCount() > 0) {
 	  $ajax_text = TEXT_THE_DIRECTORY_IS_NOT_EMPTY_IT_CANNOT_BE_DELETED;
 	  break;
 	}

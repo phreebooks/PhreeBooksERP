@@ -54,7 +54,7 @@ echo $toolbar->build_toolbar();
 </table>
 <?php
 if (is_object($price_sheets)) {
-  if ($price_sheets->RecordCount() > 0) {
+  if ($price_sheets->rowCount() > 0) {
     $cnt = 0;
 	while (!$price_sheets->EOF) {
 	  echo '<table class="ui-widget" style="border-collapse:collapse;width:300px">';
@@ -82,6 +82,6 @@ if (is_object($price_sheets)) {
   }
 } else {
   echo '<div align="center"><p>' . INV_NO_PRICE_SHEETS . '</p></div>';
-} // end if ($price_sheets->RecordCount() > 0)
+} // end if ($price_sheets->rowCount() > 0)
 ?>
 </form>

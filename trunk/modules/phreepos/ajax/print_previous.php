@@ -37,9 +37,9 @@ if(isset($_GET['oID'])){
 }
 //print
 $result = $admin->DataBase->query("select id from " . TABLE_PHREEFORM . " where doc_group = '" . POPUP_FORM_TYPE . "' and doc_ext = 'frm'");
-if ($result->RecordCount() == 0) throw new \core\classes\userException("No form was found for this type (".POPUP_FORM_TYPE.")");
+if ($result->rowCount() == 0) throw new \core\classes\userException("No form was found for this type (".POPUP_FORM_TYPE.")");
 
-if ($result->RecordCount() > 1) if(DEBUG) $massage .= 'More than one form was found for this type ('.POPUP_FORM_TYPE.'). Using the first form found.';
+if ($result->rowCount() > 1) if(DEBUG) $massage .= 'More than one form was found for this type ('.POPUP_FORM_TYPE.'). Using the first form found.';
 $rID    = $result->fields['id']; // only one form available, use it
 $report = get_report_details($rID);
 $title  = $report->title;
