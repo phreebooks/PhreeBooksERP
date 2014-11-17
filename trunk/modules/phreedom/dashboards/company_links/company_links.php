@@ -25,15 +25,13 @@ class company_links extends \core\classes\ctl_panel {
 	private $security_id  		= SECURITY_ID_PHREEFORM;
 	private $security_level		= 0;
 	public  $text		 		= CP_COMPANY_LINKS_TITLE;
-	public $module_id 			= 'phreedom';
-	public  $version      		= '3.5';
+	public  $version      		= '4.0';
 
   	function install($column_id = 1, $row_id = 0) {
   		global $admin;
 		// fetch the pages params to copy to new install
-		$result = $admin->DataBase->query("select params from ".TABLE_USERS_PROFILES."
-	  	  where menu_id = '".$this->menu_id."' and dashboard_id = '".$this->id."'"); // just need one
-		$this->default_params = unserialize($result->fields['params']);
+		$result = $admin->DataBase->query("SELECT params FROM ".TABLE_USERS_PROFILES." WHERE menu_id = '{$this->menu_id}' and dashboard_id = '" . get_class($this) . "'"); // just need one
+		$this->default_params = unserialize($result['params']);
 		parent::install($column_id, $row_id);
   	}
 
@@ -82,21 +80,20 @@ class company_links extends \core\classes\ctl_panel {
 		// do nothing if no title or url entered
 		if (!$remove_id && ($my_title == '' || $my_url == '')) return;
 		// fetch the current params
-		$result = $admin->DataBase->query("select params from " . TABLE_USERS_PROFILES . "
-		  where menu_id = '" . $this->menu_id . "' and dashboard_id = '" . $this->id . "'"); // just need one
+		$result = $admin->DataBase->query("SELECT params FROM " . TABLE_USERS_PROFILES . " WHERE menu_id = '{$this->menu_id}' and dashboard_id = '" . get_class($this) . "'"); // just need one
 		if ($remove_id) { // remove element
-			$this->params	= unserialize($result->fields['params']);
+			$this->params	= unserialize($result['params']);
 			$first_part 	= array_slice($this->params, 0, $remove_id - 1);
 			$last_part  	= array_slice($this->params, $remove_id);
 			$this->params   = array_merge($first_part, $last_part);
-		} elseif ($result->fields['params']) { // append new url and sort
-		  	$this->params     			= unserialize($result->fields['params']);
+		} elseif ($result['params']) { // append new url and sort
+		  	$this->params     			= unserialize($result['params']);
 		  	$this->params[$my_title] 	= $my_url;
 		} else { // first entry
 		  	$this->params[$my_title] 	= $my_url;
 		}
 		ksort($this->params);
-		db_perform(TABLE_USERS_PROFILES, array('params' => serialize($this->params)), "update", "menu_id = '".$this->menu_id."' and dashboard_id = '".$this->id."'");
+		db_perform(TABLE_USERS_PROFILES, array('params' => serialize($this->params)), "update", "menu_id = '{$this->menu_id}' and dashboard_id = '" . get_class($this). "'");
 	}
 }
 ?>

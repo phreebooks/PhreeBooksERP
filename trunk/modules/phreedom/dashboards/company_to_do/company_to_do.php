@@ -30,9 +30,8 @@ class company_to_do extends \core\classes\ctl_panel {
   	function install($column_id = 1, $row_id = 0) {
 		global $admin;
 		// fetch the pages params to copy to new install
-		$result = $admin->DataBase->query("select params from " . TABLE_USERS_PROFILES . "
-	  	  where menu_id = '".$this->menu_id."' and dashboard_id = '".$this->id."'"); // just need one
-		$this->default_params = unserialize($result->fields['params']);
+		$result = $admin->DataBase->query("SELECT params FROM ".TABLE_USERS_PROFILES." WHERE menu_id = '{$this->menu_id}' and dashboard_id = '" . get_class($this) . "'"); // just need one
+		$this->default_params = unserialize($result['params']);
 		parent::install($column_id, $row_id);
   	}
 
@@ -76,22 +75,21 @@ class company_to_do extends \core\classes\ctl_panel {
 		// do nothing if no title or url entered
 		if (!$remove_id && $add_to_do == '') return;
 		// fetch the current params
-		$result = $admin->DataBase->query("select params from " . TABLE_USERS_PROFILES . "
-	  	  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "'
-		  and dashboard_id = '" . $this->id . "'");
+		$result = $admin->DataBase->query("SELECT params FROM " . TABLE_USERS_PROFILES . "
+	  	  WHERE user_id = {$_SESSION['admin_id']} and menu_id = '{$this->menu_id}' and dashboard_id = '" . get_class($this) . "'");
 		if ($remove_id) { // remove element
-			$this->params	= unserialize($result->fields['params']);
+			$this->params	= unserialize($result['params']);
 			$first_part 	= array_slice($this->params, 0, $remove_id - 1);
 			$last_part  	= array_slice($this->params, $remove_id);
 			$this->params   = array_merge($first_part, $last_part);
-		} elseif ($result->fields['params']) { // append new note and sort
-		  	$this->params     = unserialize($result->fields['params']);
+		} elseif ($result['params']) { // append new note and sort
+		  	$this->params     = unserialize($result['params']);
 		  	$this->params[]   = $add_to_do;
 		} else { // first entry
 		  	$this->params[]   = $add_to_do;
 		}
 		ksort($this->params);
-		db_perform(TABLE_USERS_PROFILES, array('params' => serialize($this->params)), "update", "menu_id = '".$this->menu_id."' and dashboard_id = '".$this->id."'");
+		db_perform(TABLE_USERS_PROFILES, array('params' => serialize($this->params)), "update", "menu_id = '{$this->menu_id}' and dashboard_id = '" . get_class($this). "'");
 	}
 
 }

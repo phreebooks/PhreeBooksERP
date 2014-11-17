@@ -167,7 +167,6 @@ class admin extends \core\classes\admin {
 			$messageStack->add($exception->getMessage(), 'error');
 		}
 		if ( DEBUG )   $messageStack->write_debug();
-		parent::after_ValidateUser($basis);
   }
 
 }

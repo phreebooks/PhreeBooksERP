@@ -24,8 +24,7 @@ class my_notes extends \core\classes\ctl_panel {
 	public $description	 		= CP_MY_NOTES_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_MY_PROFILE;
 	public $text		 		= CP_MY_NOTES_TITLE;
-	public $version      		= '3.5';
-	public $module_id 			= 'phreedom';
+	public $version      		= '4.0';
 
 	function output($params) {
 		global $admin;
@@ -67,22 +66,21 @@ class my_notes extends \core\classes\ctl_panel {
 		// do nothing if no title or url entered
 		if (!$remove_id && $my_note == '') return;
 		// fetch the current params
-		$result = $admin->DataBase->query("select params from " . TABLE_USERS_PROFILES . "
-		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "'
-		  and dashboard_id = '" . $this->id . "'");
+		$result = $admin->DataBase->query("SELECT params FROM " . TABLE_USERS_PROFILES . "
+			WHERE user_id = {$_SESSION['admin_id']} and menu_id = '{$this->menu_id}' and dashboard_id = '" . get_class($this) . "'");
 		if ($remove_id) { // remove element
-		  	$this->params	= unserialize($result->fields['params']);
+		  	$this->params	= unserialize($result['params']);
 		  	$first_part 	= array_slice($this->params, 0, $remove_id - 1);
 		  	$last_part  	= array_slice($this->params, $remove_id);
 		  	$this->params	= array_merge($first_part, $last_part);
-		} elseif ($result->fields['params']) { // append new note and sort
-		  	$this->params   = unserialize($result->fields['params']);
+		} elseif ($result['params']) { // append new note and sort
+		  	$this->params   = unserialize($result['params']);
 		  	$this->params[] = $my_note;
 		} else { // first entry
 		  	$this->params[] = $my_note;
 		}
 		ksort($this->params);
-		db_perform(TABLE_USERS_PROFILES, array('params' => serialize($this->params)), "update", "user_id = ".$_SESSION['admin_id']." and menu_id = '".$this->menu_id."' and dashboard_id = '".$this->id."'");
+		db_perform(TABLE_USERS_PROFILES, array('params' => serialize($this->params)), "update", "user_id = {$_SESSION['admin_id']} and menu_id = '{$this->menu_id}' and dashboard_id = '" . get_class($this). "'");
 	}
 
 }

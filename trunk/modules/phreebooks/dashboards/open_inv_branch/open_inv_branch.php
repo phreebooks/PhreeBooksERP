@@ -24,10 +24,9 @@ class open_inv_branch extends \core\classes\ctl_panel {
 	public $description	 		= CP_OPEN_INV_BRANCH_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_SALES_INVOICE;
 	public $text		 		= CP_OPEN_INV_BRANCH_TITLE;
-	public $version      		= '3.5';
+	public $version      		= '4.0';
 	public $size_params			= 1;
 	public $default_params 		= array('num_rows'=> 0);
-	public $module_id 			= 'phreebooks';
 
 	function output($params) {
 		global $admin, $currencies;
@@ -47,28 +46,28 @@ class open_inv_branch extends \core\classes\ctl_panel {
 		$control .= '</div></div>';
 		// Build content box
 		$total = 0;
-		$sql = "select id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value
-		  from " . TABLE_JOURNAL_MAIN . " where journal_id = 12 and closed = '0'";
+		$temp = "SELECT id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value
+		  FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id = 12 and closed = '0'";
 		$sql .= " and store_id = " . ($_SESSION['admin_prefs']['def_store_id'] ? $_SESSION['admin_prefs']['def_store_id'] : 0);
-		$sql .= " order by post_date DESC, purchase_invoice_id DESC";
-		if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
-		$result = $admin->DataBase->query($sql);
-		if ($result->rowCount() < 1) {
-		  	$contents = TEXT_NO_RESULTS_FOUND;
+		$sql .= " ORDER BY post_date DESC, purchase_invoice_id DESC";
+		if ($params['num_rows']) $temp .= " LIMIT " . $params['num_rows'];
+		$sql = $admin->DataBase->prepare($temp);
+		$sql->execute();
+		if ($sql->rowCount() < 1) {
+			$contents = TEXT_NO_RESULTS_FOUND;
 		} else {
-			while (!$result->EOF) {
-			  	$inv_balance = $result->fields['total_amount'] - fetch_partially_paid($result->fields['id']);
+			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+			  	$inv_balance = $result['total_amount'] - fetch_partially_paid($result['id']);
 			 	$total += $inv_balance;
-				$contents .= '<div style="float:right">' . $currencies->format_full($result->fields['total_amount'], true, $result->fields['currencies_code'], $result->fields['currencies_value']) . '</div>';
+				$contents .= '<div style="float:right">' . $currencies->format_full($result['total_amount'], true, $result['currencies_code'], $result['currencies_value']) . '</div>';
 				$contents .= '<div>';
-				$contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;oID=' . $result->fields['id'] . '&amp;jID=12&amp;action=edit', 'SSL') . '">';
-				$contents .= $result->fields['purchase_invoice_id'] . ' - ';
-				$contents .= htmlspecialchars(gen_trim_string($result->fields['bill_primary_name'], 20, true));
+				$contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;oID={$result['id']}&amp;jID=12&amp;action=edit", 'SSL') . '">';
+				$contents .= $result['purchase_invoice_id'] . ' - ';
+				$contents .= htmlspecialchars(gen_trim_string($result['bill_primary_name'], 20, true));
 				$contents .= '</a></div>' . chr(10);
-				$result->MoveNext();
 			}
 		}
-		if (!$params['num_rows'] && $result->rowCount() > 0) {
+		if (!$params['num_rows'] && $sql->rowCount() > 0) {
 		  	$contents .= '<div style="float:right">' . $currencies->format_full($total, true, DEFAULT_CURRENCY, 1) . '</div>';
 		  	$contents .= '<div><b>' . TEXT_TOTAL . '</b></div>' . chr(10);
 		}

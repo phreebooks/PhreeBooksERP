@@ -23,10 +23,9 @@ class pos_todays extends \core\classes\ctl_panel {
 	public $description	 		= CP_POS_TODAYS_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_POS_MGR;
 	public $text		 		= CP_POS_TODAYS_TITLE;
-	public $version      		= '3.5';
+	public $version      		= '4.0';
 	public $size_params			= 1;
 	public $default_params 		= array('num_rows'=> 0);
-	public $module_id 			= 'phreepos';
 
 	function output() {
 		global $admin, $currencies;
@@ -43,26 +42,27 @@ class pos_todays extends \core\classes\ctl_panel {
 
 		// Build content box
 		$total = 0;
-		$temp = "select id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value
-		  from " . TABLE_JOURNAL_MAIN . "
-		  where journal_id = 19 and post_date = '" . date('Y-m-d', time()) . "' order by purchase_invoice_id";
-		if ($this->params['num_rows']) $temp .= " limit " . $this->params['num_rows'];
+		$temp = "SELECT id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value
+		  FROM " . TABLE_JOURNAL_MAIN . "
+		  WHERE journal_id = 19 and post_date = '" . date('Y-m-d', time()) . "' ORDER BY purchase_invoice_id";
+		if ($this->params['num_rows']) $temp .= " LIMIT " . $this->params['num_rows'];
 		$sql = $admin->DataBase->prepare($temp);
 		$sql->execute();
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
-			 $total += $result['total_amount'];
-			$contents .= '<div style="float:right">' . $currencies->format_full($result['total_amount'], true, $result['currencies_code'], $result['currencies_value']) . '</div>';
-			$contents .= '<div>';
-			$contents .= $result['purchase_invoice_id'];
-			if($result['bill_primary_name']<>''){
-				$contents .= ' - ' . htmlspecialchars(gen_trim_string($result['bill_primary_name'], 20, true));
-			}
-			$contents .= '</a></div>' . chr(10);
-		}
-		if($total == 0){
+		if ($sql->rowCount() < 1) {
 			$contents = TEXT_NO_RESULTS_FOUND;
+		} else {
+			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+				$total += $result['total_amount'];
+				$contents .= '<div style="float:right">' . $currencies->format_full($result['total_amount'], true, $result['currencies_code'], $result['currencies_value']) . '</div>';
+				$contents .= '<div>';
+				$contents .= $result['purchase_invoice_id'];
+				if($result['bill_primary_name']<>''){
+					$contents .= ' - ' . htmlspecialchars(gen_trim_string($result['bill_primary_name'], 20, true));
+				}
+				$contents .= '</a></div>' . chr(10);
+			}
 		}
-		if (!$this->params['num_rows'] && $total != 0) {
+		if (!$this->params['num_rows'] && $sql->rowCount() != 0) {
 		  	$contents .= '<div style="float:right"><b>' . $currencies->format_full($total, true, $result['currencies_code'], $result['currencies_value']) . '</b></div>';
 		  	$contents .= '<div><b>' . TEXT_TOTAL . '</b></div>' . chr(10);
 		}

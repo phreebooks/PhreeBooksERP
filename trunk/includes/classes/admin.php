@@ -78,12 +78,12 @@ class admin {
 
 	/**
 	 * this function will be called after you log in.
-	 */
+	 *
 
   	function after_ValidateUser(\core\classes\basis &$basis) {
   		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
   	}
-
+*/
   	/**
   	 * this function will be called when a module is upgraded.
   	 * it will update tables directories and keys
@@ -104,7 +104,6 @@ class admin {
 	   			$messageStack->add(sprintf(GEN_MODULE_UPDATE_SUCCESS, $method->id, $method->version), 'success');
 			}
 		}
-		$this->status = $this->version;
 	}
 
 	function delete($path_my_files) {
@@ -141,12 +140,16 @@ class admin {
 	}
 
 	function should_update(\core\classes\basis &$basis){
+		global $messageStack;
 		if (defined('MODULE_' . strtoupper($this->id) . '_STATUS')){
 			$this->installed = true;
 			$this->status  = constant('MODULE_' . strtoupper($this->id) . '_STATUS');
 			\core\classes\messageStack::debug_log("checking if class ".get_class($this)." needs updating installed = {$this->installed} and this version = {$this->version} current status = {$this->status} needs updating = ".version_compare($this->status, $this->version, '<') );
 			if (version_compare($this->status, $this->version, '<') != 0 ) {
 				$this->upgrade($basis);
+				$this->status = $this->version;
+				write_configure('MODULE_' . strtoupper($this->id) . '_STATUS', $this->version);
+				$messageStack->add(sprintf(GEN_MODULE_UPDATE_SUCCESS, $this->text, $this->version), 'success');
 				return true;
 			}
 		}

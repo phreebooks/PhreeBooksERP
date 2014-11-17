@@ -24,10 +24,9 @@ class mini_financial extends \core\classes\ctl_panel {
 	public $description	 		= CP_MINI_FINANCIAL_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_JOURNAL_ENTRY;
 	public $text		 		= CP_MINI_FINANCIAL_TITLE;
-	public $version      		= '3.5';
+	public $version      		= '4.0';
 	public $size_params			= 0;
 	public $default_params 		= array();
-	public $module_id 			= 'phreebooks';
 
 	function output($params) {
 		global $admin;
@@ -110,18 +109,17 @@ class mini_financial extends \core\classes\ctl_panel {
 		global $admin;
 		$contents = '';
 		foreach($the_list as $key => $account_type) {
-			$sql = "select h.beginning_balance + h.debit_amount - h.credit_amount as balance, c.description
-			  from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id
-			  where h.period = " . $period . " and c.account_type = " . $account_type;
-		  	$result = $admin->DataBase->query($sql);
-		  	$total_1 = 0;
-		  	while (!$result->EOF) {
+			$total_1 = 0;
+			$sql = $admin->DataBase->prepare("SELECT h.beginning_balance + h.debit_amount - h.credit_amount as balance, c.description
+			  FROM " . TABLE_CHART_OF_ACCOUNTS . " c INNER JOIN " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h ON c.id = h.account_id
+			  WHERE h.period = $period and c.account_type = " . $account_type);
+			$sql->execute();
+			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
 				if ($negate_array[$key]) {
-			  		$total_1 -= $result->fields['balance'];
+			  		$total_1 -= $result['balance'];
 				} else {
-			  		$total_1 += $result->fields['balance'];
+			  		$total_1 += $result['balance'];
 				}
-				$result->MoveNext();
 		  	}
 		  	$this->bal_tot_2 += $total_1;
 			$contents .= '<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;' . constant('RW_FIN_HEAD_' . $account_type) . '</td>' . chr(10);
@@ -140,10 +138,10 @@ class mini_financial extends \core\classes\ctl_panel {
 		global $admin;
 		$contents = '';
 		// find the period range within the fiscal year from the first period to current requested period
-		$result = $admin->DataBase->query("select fiscal_year from " . TABLE_ACCOUNTING_PERIODS . " where period = " . $period);
-		$fiscal_year = $result->fields['fiscal_year'];
-		$result = $admin->DataBase->query("select period from " . TABLE_ACCOUNTING_PERIODS . " where fiscal_year = " . $fiscal_year . " order by period limit 1");
-		$first_period = $result->fields['period'];
+		$result = $admin->DataBase->query("SELECT fiscal_year FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE period = " . $period);
+		$fiscal_year = $result['fiscal_year'];
+		$result = $admin->DataBase->query("SELECT period FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE fiscal_year = $fiscal_year ORDER BY period LIMIT 1");
+		$first_period = $result['period'];
 		// build revenues
 		$cur_year  = $this->add_income_stmt_data(30, $first_period, $period, $negate = true); // Income account_type
 		$ytd_temp  = $this->ProcessData($this->total_3);
@@ -169,35 +167,25 @@ class mini_financial extends \core\classes\ctl_panel {
 
 	function add_income_stmt_data($type, $first_period, $period, $negate = false) {
 		global $admin;
-		$cur_temp = '';
 		$account_array = array();
-		$sql = "select c.id, c.description, h.debit_amount - h.credit_amount as balance
-		  from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id
-		  where h.period = " . $period . " and c.account_type = " . $type . "
-		  order by c.id";
-		$cur_period = $admin->DataBase->query($sql);
-		$sql = "select (sum(h.debit_amount) - sum(h.credit_amount)) as balance
-		  from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id
-		  where h.period >= " . $first_period . " and h.period <= " . $period . " and c.account_type = " . $type . "
-		  group by h.account_id order by c.id";
-		$ytd_period = $admin->DataBase->query($sql);
-		$sql = "select beginning_balance
-		  from " . TABLE_CHART_OF_ACCOUNTS . " c inner join " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h on c.id = h.account_id
-		  where h.period = " . $first_period . " and c.account_type = " . $type . "
-		  group by h.account_id order by c.id";
-		$beg_balance = $admin->DataBase->query($sql);
+		$ytd_period = $admin->DataBase->prepare("SELECT c.id, c.description, (sum(h.debit_amount) - sum(h.credit_amount)) as balance
+		  FROM " . TABLE_CHART_OF_ACCOUNTS . " c INNER JOIN " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h ON c.id = h.account_id
+		  WHERE h.period >= $first_period and h.period <= $period and c.account_type = $type GROUP BY h.account_id order by c.id");
+		$ytd_period->execute();
+		$beg_balance = $admin->DataBase->prepare("SELECT beginning_balance
+		  FROM " . TABLE_CHART_OF_ACCOUNTS . " c INNER JOIN " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h ON c.id = h.account_id
+		  WHERE h.period = $first_period and c.account_type = $type GROUP BY h.account_id order by c.id");
+		$beg_balance->execute();
 		$ytd_total_1 = 0;
-		while (!$ytd_period->EOF) {
+		while ($year_to_period = $ytd_period->fetch(\PDO::FETCH_LAZY)){
 			if ($negate) {
-				$ytd_total_1 += -$beg_balance->fields['beginning_balance'] - $ytd_period->fields['balance'];
-				$ytd_temp     = $this->ProcessData(-$beg_balance->fields['beginning_balance'] - $ytd_period->fields['balance']);
+				$ytd_total_1 += -$beg_balance['beginning_balance'] - $year_to_period['balance'];
+				$ytd_temp     = $this->ProcessData(-$beg_balance['beginning_balance'] - $year_to_period['balance']);
 			} else {
-				$ytd_total_1 += $beg_balance->fields['beginning_balance'] + $ytd_period->fields['balance'];
-				$ytd_temp     = $this->ProcessData($beg_balance->fields['beginning_balance'] + $ytd_period->fields['balance']);
+				$ytd_total_1 += $beg_balance['beginning_balance'] + $year_to_period['balance'];
+				$ytd_temp     = $this->ProcessData($beg_balance['beginning_balance'] + $year_to_period['balance']);
 			}
-			$account_array[$cur_period->fields['id']] = array($cur_period->fields['description'], $cur_temp, $ytd_temp);
-			$ytd_period->MoveNext();
-			$beg_balance->MoveNext();
+			$account_array[ $ytd_period['id'] ] = array($ytd_period['description'], '', $ytd_temp);
 		}
 		$this->total_3 = $ytd_total_1;
 		return $account_array;

@@ -32,7 +32,7 @@ class company_notes extends \core\classes\ctl_panel {
 		global $admin;
 		// fetch the pages params to copy to new install
 		$sql = $admin->DataBase->prepare("SELECT params FROM " . TABLE_USERS_PROFILES . "
-		  WHERE menu_id = '{$this->menu_id}' and dashboard_id = '" . addcslashes('\\'.get_class($this), '\\') . "'"); // just need one
+		  WHERE menu_id = '{$this->menu_id}' and dashboard_id = '" . get_class($this) . "'"); // just need one
 		$sql->execute();
 		$result = $sql->fetch(\PDO::FETCH_LAZY);
 		$this->default_params = unserialize($result['params']);
@@ -81,7 +81,7 @@ class company_notes extends \core\classes\ctl_panel {
 		// fetch the current params
 		$sql = $admin->DataBase->prepare("SELECT params FROM " . TABLE_USERS_PROFILES . "
 		  WHERE user_id = {$_SESSION['admin_id']} and menu_id = '{$this->menu_id}'
-		  and dashboard_id = '" . addcslashes('\\'.get_class($this), '\\') . "'");
+		  and dashboard_id = '" . get_class($this). "'");
 		$sql->execute();
 		$result = $sql->fetch(\PDO::FETCH_LAZY);
 		if ($remove_id) { // remove element
@@ -96,7 +96,7 @@ class company_notes extends \core\classes\ctl_panel {
 			$this->params[]  	= $my_note;
 		}
 		ksort($this->params);
-		db_perform(TABLE_USERS_PROFILES, array('params' => serialize($this->params)), "update", "menu_id = '{$this->menu_id}' and dashboard_id = '" . addcslashes('\\'.get_class($this), '\\') . "'");
+		db_perform(TABLE_USERS_PROFILES, array('params' => serialize($this->params)), "update", "menu_id = '{$this->menu_id}' and dashboard_id = '" . get_class($this). "'");
 	}
 
 }

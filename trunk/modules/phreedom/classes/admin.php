@@ -284,7 +284,6 @@ class admin extends \core\classes\admin {
 		}
 		// Make sure the install directory has been moved/removed
 		if (is_dir(DIR_FS_ADMIN . 'install')) $messageStack->add(TEXT_INSTALL_DIR_PRESENT, 'caution');
-		parent::after_ValidateUser($basis);
   	}
 
 	function web_connected($silent = true) {
@@ -321,13 +320,17 @@ class admin extends \core\classes\admin {
 	  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'required'))  $basis->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD required enum('0','1') NOT NULL DEFAULT '0'");
 	  	if (version_compare($this->status, '4.0', '<') ) { //updating dashboards to store the namespaces.
 	  		$basis->DataBase->exec ("ALTER TABLE ".TABLE_USERS_PROFILES." CHANGE dashboard_id dashboard_id VARCHAR( 255 ) NOT NULL DEFAULT ''");
-	  		$sql = $basis->DataBase->prepare("SELECT * FROM ".TABLE_USERS_PROFILES);
+	  		$sql = $basis->DataBase->prepare("SELECT * FROM ".TABLE_USERS_PROFILES." WHERE module_id <> '' ");
 			$sql->execute();
 			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
-				$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->menu_id			= $result['menu_id'];
-				$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->user_id			= $result['user_id'];
-				$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->default_params	= unserialize( $result['params'] );
-				$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->install( $result['column_id'], $result['row_id'] );
+				if ( !in_array( $result['dashboard_id'] , $basis->classes[ $result['module_id'] ]->dashboards) ) {
+					$basis->DataBase->exec("DELETE from " . TABLE_USERS_PROFILES . " WHERE user_id = {$result['user_id']} and menu_id = '{$result['menu_id']}' and dashboard_id = '{$result['dashboard_id']}'");
+				} else {
+					$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->menu_id			= $result['menu_id'];
+					$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->user_id			= $result['user_id'];
+					$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->default_params	= unserialize( $result['params'] );
+					$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->install( $result['column_id'], $result['row_id'] );
+				}
 			}
 			$basis->DataBase->exec("DELETE from ".TABLE_USERS_PROFILES . " WHERE module_id != ''");
 			$basis->DataBase->exec("ALTER TABLE ".TABLE_USERS_PROFILES . " DROP module_id");
@@ -470,7 +473,7 @@ class admin extends \core\classes\admin {
 		if ($basis->admin_email == '' || $basis->admin_email <> $result['admin_email']) throw new \core\classes\userException(TEXT_YOU_ENTERED_THE_WRONG_EMAIL_ADDRESS);
 		$new_password = \core\classes\encryption::random_password(ENTRY_PASSWORD_MIN_LENGTH);
 		$admin_pass   = \core\classes\encryption::password($new_password);
-		$basis->DataBase->exec("update " . TABLE_USERS . " set admin_pass = '$admin_pass' where admin_id = " . $result['admin_id']);
+		$basis->DataBase->exec("UPDATE " . TABLE_USERS . " SET admin_pass = '$admin_pass' WHERE admin_id = " . $result['admin_id']);
 		$html_msg['EMAIL_CUSTOMERS_NAME'] = $result['admin_name'];
 		$html_msg['EMAIL_MESSAGE_HTML']   = sprintf(TEXT_EMAIL_MESSAGE, COMPANY_NAME, $new_password);
 		validate_send_mail($result['admin_name'], $result['admin_email'], TEXT_EMAIL_SUBJECT, $html_msg['EMAIL_MESSAGE_HTML'], COMPANY_NAME, EMAIL_FROM, $html_msg);

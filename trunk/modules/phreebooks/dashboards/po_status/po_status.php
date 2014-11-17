@@ -24,10 +24,9 @@ class po_status extends \core\classes\ctl_panel {
 	public $description	 		= CP_PO_STATUS_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_PURCHASE_ORDER;
 	public $text		 		= CP_PO_STATUS_TITLE;
-	public $version      		= '3.5';
+	public $version      		= '4.0';
 	public $size_params			= 3;
 	public $default_params 		= array('num_rows'=> 0, 'order' => 'asc', 'limit' => 1);
-	public $module_id 			= 'phreebooks';
 
 	function output($params) {
 		global $admin, $currencies;
@@ -40,12 +39,12 @@ class po_status extends \core\classes\ctl_panel {
 		$control  = '';
 		for ($i = 0; $i <= $this->max_length; $i++) $list_length[] = array('id' => $i, 'text' => $i);
 		$list_order = array(
-		  array('id'=>'asc', 'text'=>TEXT_ASC),
-		  array('id'=>'desc','text'=>TEXT_DESCENDING_SHORT),
+		  	array('id'=>'asc', 'text'=>TEXT_ASC),
+		  	array('id'=>'desc','text'=>TEXT_DESCENDING_SHORT),
 		);
 		$list_limit = array(
-		  array('id'=>'0', 'text'=>TEXT_NO),
-		  array('id'=>'1', 'text'=>TEXT_YES),
+		  	array('id'=>'0', 'text'=>TEXT_NO),
+		  	array('id'=>'1', 'text'=>TEXT_YES),
 		);
 		// Build control box form data
 		$control  = '<div class="row">';
@@ -56,32 +55,28 @@ class po_status extends \core\classes\ctl_panel {
 		$control .= html_submit_field('sub_po_status', TEXT_SAVE);
 		$control .= '  </div>';
 		$control .= '</div>';
-		if(count($params) != $this->size_params){
-			$this->update();
-		}
 		// Build content box
-		$sql = "select id, post_date, purchase_invoice_id, bill_primary_name, total_amount, currencies_code, currencies_value
-		  from " . TABLE_JOURNAL_MAIN . " where journal_id = 4 and closed = '0'";
-		if ($params['limit'] == '1')    $sql .= " and post_date <= '".date('Y-m-d')."'";
-		if ($params['order'] == 'desc') $sql .= " order by post_date desc";
-		if ($params['num_rows'])      $sql .= " limit " . $params['num_rows'];
-		$result = $admin->DataBase->query($sql);
-		if ($result->rowCount() < 1) {
+		$temp = "SELECT id, post_date, purchase_invoice_id, bill_primary_name, total_amount, currencies_code, currencies_value
+		  FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id = 4 and closed = '0'";
+		if ($params['limit'] == '1')    $temp .= " and post_date <= '".date('Y-m-d')."'";
+		if ($params['order'] == 'desc') $temp .= " ORDER BY post_date desc";
+		if ($params['num_rows'])      $temp .= " LIMIT " . $params['num_rows'];
+		$sql = $admin->DataBase->prepare($temp);
+		$sql->execute();
+		if ($sql->rowCount() < 1) {
 			$contents = TEXT_NO_RESULTS_FOUND;
 		} else {
-			while (!$result->EOF) {
+			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
 			  	$contents .= '<div style="float:right">' ;
-			  	$contents .= html_button_field('invoice_' . $result->fields['id'], TEXT_RECEIVE, 'onclick="window.open(\'' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;oID=' . $result->fields['id'] . '&amp;jID=6&amp;action=prc_so', 'SSL') . '\',\'_blank\')"') . "  ";
-				$contents .= $currencies->format_full($result->fields['total_amount'], true, $result->fields['currencies_code'], $result->fields['currencies_value']);
+			  	$contents .= html_button_field('invoice_' . $result['id'], TEXT_RECEIVE, 'onclick="window.open(\'' . html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;oID={$result['id']}&amp;jID=6&amp;action=prc_so", 'SSL') . '\',\'_blank\')"') . "  ";
+				$contents .= $currencies->format_full($result['total_amount'], true, $result['currencies_code'], $result['currencies_value']);
 				$contents .= '</div>';
 				$contents .= '<div>';
-				$contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;oID=' . $result->fields['id'] . '&amp;jID=4&amp;action=edit', 'SSL') . '">';
-				$contents .= $result->fields['purchase_invoice_id'] . ' - ';
-				$contents .= gen_locale_date($result->fields['post_date']);
-				$contents .= ' ' . htmlspecialchars(gen_trim_string($result->fields['bill_primary_name'], 20, true));
+				$contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;oID={$result['id']}&amp;jID=4&amp;action=edit", 'SSL') . '">';
+				$contents .= $result['purchase_invoice_id'] . ' - ' . gen_locale_date($result['post_date']);
+				$contents .= ' ' . htmlspecialchars(gen_trim_string($result['bill_primary_name'], 20, true));
 				$contents .= '</a>';
 				$contents .= '</div>' . chr(10);
-				$result->MoveNext();
 			}
 	  	}
 	  	return $this->build_div('', $contents, $control);

@@ -27,10 +27,9 @@ class todays_s_quotes extends \core\classes\ctl_panel {
 	public $description	 		= CP_TODAYS_S_QUOTES_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_SALES_QUOTE;
 	public $text		 		= CP_TODAYS_S_QUOTES_TITLE;
-	public $version      		= '3.5';
+	public $version      		= '4.0';
 	public $size_params			= 1;
 	public $default_params 		= array('num_rows'=> 0);
-	public $module_id 			= 'phreebooks';
 
 	function output() {
 		global $admin, $currencies;
@@ -47,23 +46,24 @@ class todays_s_quotes extends \core\classes\ctl_panel {
 		// Build content box
 		$total = 0;
 		$temp = "SELECT id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value
-		  FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id = 9 and post_date = '" . date('Y-m-d') . "' order by purchase_invoice_id";
-		if ($this->params['num_rows']) $temp .= " limit " . $this->params['num_rows'];
+		  FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id = 9 and post_date = '" . date('Y-m-d') . "' ORDER BY purchase_invoice_id";
+		if ($this->params['num_rows']) $temp .= " LIMIT " . $this->params['num_rows'];
 		$sql = $admin->DataBase->prepare($temp);
 		$sql->execute();
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
-		 	$total += $result['total_amount'];
-			$contents .= '<div style="float:right">' . $currencies->format_full($result['total_amount'], true, $result['currencies_code'], $result['currencies_value']) . '</div>';
-			$contents .= '<div>';
-            $contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;oID={$result['id']}&amp;jID=9&amp;action=edit", 'SSL') . '">';
-			$contents .= $result['purchase_invoice_id'] . ' - ';
-			$contents .= htmlspecialchars(gen_trim_string($result['bill_primary_name'], 20, true));
-			$contents .= '</a></div>' . chr(10);
-	  	}
-		if($total == 0){
+		if ($sql->rowCount() < 1) {
 			$contents = TEXT_NO_RESULTS_FOUND;
-		}
-		if (!$this->params['num_rows'] && $total != 0) {
+		} else {
+			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+			 	$total += $result['total_amount'];
+				$contents .= '<div style="float:right">' . $currencies->format_full($result['total_amount'], true, $result['currencies_code'], $result['currencies_value']) . '</div>';
+				$contents .= '<div>';
+	            $contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;oID={$result['id']}&amp;jID=9&amp;action=edit", 'SSL') . '">';
+				$contents .= $result['purchase_invoice_id'] . ' - ';
+				$contents .= htmlspecialchars(gen_trim_string($result['bill_primary_name'], 20, true));
+				$contents .= '</a></div>' . chr(10);
+			}
+	  	}
+		if (!$this->params['num_rows'] && $sql->rowCount() != 0) {
 		  	$contents .= '<div style="float:right">' . $currencies->format_full($total, true, $result['currencies_code'], $result['currencies_value']) . '</div>';
 		  	$contents .= '<div><b>' . TEXT_TOTAL . '</b></div>' . chr(10);
 		}

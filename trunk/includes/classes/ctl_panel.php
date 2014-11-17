@@ -23,7 +23,6 @@ class ctl_panel {
 	public $description	 		= '';
 	public $max_length   		= 20;
 	public $menu_id				= 'index';
-	public $module_id 			= '';
 	public $params				= '';
 	private $security_id  		= '';
 	private $security_level		= 0;
@@ -58,7 +57,7 @@ class ctl_panel {
 		//$this->params['num_rows']   = $this->default_num_rows;	// defaults to unlimited rows
 		$admin->DataBase->exec("insert into " . TABLE_USERS_PROFILES . " set
 		  user_id = {$this->user_id}, menu_id = '{$this->menu_id}',
-		  dashboard_id = '" . addcslashes(get_class($this), '\\') . "', column_id = $column_id, row_id = $row_id,
+		  dashboard_id = '" . get_class($this) . "', column_id = $column_id, row_id = $row_id,
 		  params = '"       . serialize($this->default_params) . "'");
   	}
 
@@ -68,7 +67,7 @@ class ctl_panel {
   	function remove() {
 		global $admin;
 		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
-		$result = $admin->DataBase->exec("delete from " . TABLE_USERS_PROFILES . " where user_id = {$this->user_id} and menu_id = '{$this->menu_id}' and dashboard_id = '" . get_class($this) . "'");
+		$admin->DataBase->exec("DELETE from " . TABLE_USERS_PROFILES . " WHERE user_id = {$this->user_id} and menu_id = '{$this->menu_id}' and dashboard_id = '" . get_class($this) . "'");
   	}
 
   	/**
@@ -78,7 +77,7 @@ class ctl_panel {
   	function delete(){
 		global $admin;
 		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
-		$result = $admin->DataBase->exec("delete from " . TABLE_USERS_PROFILES . " where dashboard_id = '" . addcslashes(get_class($this), '\\') . "' and module_id = '{$this->module_id}'");
+		$result = $admin->DataBase->exec("delete from " . TABLE_USERS_PROFILES . " where dashboard_id = '" . addcslashes(get_class($this), '\\') );
 		foreach ($this->keys as $key) remove_configure($key['key']); // remove all of the keys from the configuration table
 		return true;
   	}

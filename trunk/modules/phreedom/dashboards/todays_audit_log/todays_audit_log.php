@@ -27,10 +27,9 @@ class todays_audit_log extends \core\classes\ctl_panel {
 	public $max_length   		= 50;
 	public $security_id  		= SECURITY_ID_CONFIGURATION;
 	public $text		 		= CP_TODAYS_AUDIT_LOG_TITLE;
-	public $version      		= '3.5';
+	public $version      		= '4.0';
 	public $size_params			= 1;
 	public $default_params 		= array('num_rows'=> 0);
-	public $module_id 			= 'phreedom';
 
 	function output($params) {
 		global $admin, $currencies;
@@ -51,20 +50,16 @@ class todays_audit_log extends \core\classes\ctl_panel {
 	    $control .= '</div></div>';
 
 	// Build content box
-	    $sql = "select a.action_date, a.action, a.reference_id, a.amount, u.display_name from ".TABLE_AUDIT_LOG." as a, ".TABLE_USERS." as u where a.user_id = u.admin_id and a.action_date >= '" . date('Y-m-d',  time()) . "' order by a.action_date desc";
-	    if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
-	    $result = $admin->DataBase->query($sql);
-	    if ($result->rowCount() < 1) {
-	    	$contents = TEXT_NO_RESULTS_FOUND;
-	    } else {
-	    	while (!$result->EOF) {
-	        	$contents .= '<div style="float:right">' . $currencies->format_full($result->fields['amount'], true, DEFAULT_CURRENCY, 1, 'fpdf') . '</div>';
-	            $contents .= '<div>';
-	            $contents .= $result->fields['display_name'] . '-->';
-	            $contents .= $result->fields['action'] . '-->';
-	            $contents .= $result->fields['reference_id'];
-	            $contents .= '</div>' . chr(10);
-	            $result->MoveNext();
+	    $temp = "SELECT a.action_date, a.action, a.reference_id, a.amount, u.display_name FROM ".TABLE_AUDIT_LOG." AS a, ".TABLE_USERS." AS u WHERE a.user_id = u.admin_id and a.action_date >= '" . date('Y-m-d',  time()) . "' ORDER BY a.action_date desc";
+	    if ($params['num_rows']) $temp .= " LIMIT " . $params['num_rows'];
+	    $sql = $admin->DataBase->prepare($temp);
+		$sql->execute();
+		if ($sql->rowCount() < 1) {
+			$contents = TEXT_NO_RESULTS_FOUND;
+		} else {
+			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+	        	$contents .= '<div style="float:right">' . $currencies->format_full($result['amount'], true, DEFAULT_CURRENCY, 1, 'fpdf') . '</div>';
+	            $contents .= "<div>{$result['display_name']} --> {$result['action']} --> {$result['reference_id']} </div>" . chr(10);
 	        }
 	    }
 		return $this->build_div('', $contents, $control);

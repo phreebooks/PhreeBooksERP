@@ -91,16 +91,17 @@
 		$result = $admin->DataBase->query("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = '$constant'");
 		if ($result->rowCount() == 0) {
 	  		$sql_array = array('configuration_key'  => $constant, 'configuration_value'=> $value);
-		  	db_perform(TABLE_CONFIGURATION,  $sql_array);
+	  		$sql = $admin->DataBase->prepare("INSERT INTO " . TABLE_CONFIGURATION . " (configuration_key, configuration_value) VALUES (:configuration_key, :configuration_value)");
+	  		$sql->execute(array(':configuration_key'=>$constant, ':configuration_value'=>$value));
 		} elseif ($result->fields['configuration_value'] <> $value) {
-		  	db_perform(TABLE_CONFIGURATION, array('configuration_value'=>$value), 'update', "configuration_key = '$constant'");
+			$admin->DataBase->exec("UPDATE " . TABLE_CONFIGURATION . " set configuration_value = '$value' where configuration_key = '$constant'");
 		}
 		if (function_exists('apc_load_constants')) {// rebuild cache
-			$result = $admin->DataBase->query("select configuration_key, configuration_value from " . TABLE_CONFIGURATION );
+			$sql = $admin->DataBase->prepare("select configuration_key, configuration_value from " . TABLE_CONFIGURATION );
 			$array = array ();
-			while (!$result->EOF) {
-				$array[$result->fields['configuration_key']] = $result->fields['configuration_value'];
-				$result->MoveNext();
+			$sql->execute();
+			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+				$array[ $result['configuration_key'] ] = $result['configuration_value'];
 			}
 			apc_define_constants("configuration", $array, true);
 		} else{ // cache not installed just define constant
@@ -882,7 +883,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
 /**************************************************************************************************************/
 // Section 2. Database Functions
 /**************************************************************************************************************/
-  function db_perform($table, $data, $action = 'insert', $parameters = '') { @todo deze verwijderen
+  function db_perform($table, $data, $action = 'insert', $parameters = '') { //@todo needs to be deleted
     global $admin;
     if (!is_array($data)) throw new \core\classes\userException("data isn't a array for table: $table");
     reset($data);
@@ -914,7 +915,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
     }
     $sql = $admin->DataBase->exec($query);
     $sql->execute();
-    return $sql->fetchall();
+    return $sql->fetchall();// @todo this method doens' work after exec
   }
 
   function db_insert_id() {

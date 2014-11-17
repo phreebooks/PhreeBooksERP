@@ -152,7 +152,6 @@ class admin extends \core\classes\admin {
 		$messageStack->add(sprintf(ZENCART_BULK_UPLOAD_SUCCESS, $cnt), 'success');
 		gen_add_audit_log(TEXT_BULK_UPLOAD);
 		write_configure('MODULE_ZENCART_LAST_UPDATE', date('Y-m-d H:i:s'));
-		parent::after_ValidateUser($basis);
 	}
 
 	function upgrade(\core\classes\basis &$basis) {

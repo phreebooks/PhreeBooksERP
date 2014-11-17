@@ -22,8 +22,7 @@ class pos_this_week extends \core\classes\ctl_panel {
 	public $description	 		= CP_POS_THIS_WEEK_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_POS_MGR;
 	public $text		 		= CP_POS_THIS_WEEK_TITLE;
-	public $version      		= '3.5';
-	public $module_id 			= 'phreepos';
+	public $version      		= '4.0';
 
 	function output($params) {
 		global $admin, $currencies;
@@ -37,25 +36,24 @@ class pos_this_week extends \core\classes\ctl_panel {
 		}
 		// Build content box
 		$total = 0;
-		$sql = "select SUM(total_amount) as day_total, currencies_code, currencies_value, post_date
-		  from " . TABLE_JOURNAL_MAIN . "
-		  where journal_id = 19 and post_date >= '" . date('Y-m-d', time()-($a * 24 * 60 * 60)) . "' GROUP BY post_date ORDER BY post_date";
-		$result = $admin->DataBase->query($sql);
-		if ($result->rowCount() < 1) {
+		$sql = $admin->DataBase->prepare("SELECT SUM(total_amount) as day_total, currencies_code, currencies_value, post_date
+		  FROM " . TABLE_JOURNAL_MAIN . "
+		  WHERE journal_id = 19 and post_date >= '" . date('Y-m-d', time()-($a * 24 * 60 * 60)) . "' GROUP BY post_date ORDER BY post_date");
+		$sql->execute();
+		if ($sql->rowCount() < 1) {
 			$contents = TEXT_NO_RESULTS_FOUND;
 		} else {
 			$week = array();
-		  	while (!$result->EOF) {
-			  	$total += $result->fields['day_total'];
-				$contents .= '<div style="float:right">' . $currencies->format_full($result->fields['day_total'], true, $result->fields['currencies_code'], $result->fields['currencies_value']) . '</div>';
+			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+			  	$total += $result['day_total'];
+				$contents .= '<div style="float:right">' . $currencies->format_full($result['day_total'], true, $result['currencies_code'], $result['currencies_value']) . '</div>';
 				$contents .= '<div>';
-				$contents .= gen_locale_date($result->fields['post_date']) ;
+				$contents .= gen_locale_date($result['post_date']) ;
 				$contents .= '</a></div>' . chr(10);
-				$result->MoveNext();
 		  	}
 		}
-		if (!$params['num_rows'] && $result->rowCount() > 0) {
-		  	$contents .= '<div style="float:right"><b>' . $currencies->format_full($total, true, $result->fields['currencies_code'], $result->fields['currencies_value']) . '</b></div>';
+		if (!$params['num_rows'] && $sql->rowCount() > 0) {
+		  	$contents .= '<div style="float:right"><b>' . $currencies->format_full($total, true, $result['currencies_code'], $result['currencies_value']) . '</b></div>';
 		  	$contents .= '<div><b>' . TEXT_TOTAL . '</b></div>' . chr(10);
 		}
 		return $this->build_div('', $contents, $control);

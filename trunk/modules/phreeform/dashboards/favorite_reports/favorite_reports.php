@@ -27,8 +27,7 @@ class favorite_reports extends \core\classes\ctl_panel {
 	public $description	 		= CP_FAVORITE_REPORTS_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_PHREEFORM;
 	public $text		 		= CP_FAVORITE_REPORTS_TITLE;
-	public $version      		= '3.5';
-	public $module_id 			= 'phreeform';
+	public $version      		= '4.0';
 
 	function output($params) {
 		global $admin;
@@ -36,15 +35,13 @@ class favorite_reports extends \core\classes\ctl_panel {
 		$contents = '';
 		$control  = '';
 		// load the report list
-		$result = $admin->DataBase->query("select id, security, doc_title from " . TABLE_PHREEFORM . "
-		  where doc_ext in ('rpt','frm') order by doc_title");
 		$data_array = array(array('id' => '', 'text' => TEXT_PLEASE_SELECT));
-		$type_array = array();
-		while(!$result->EOF) {
-		  	if (security_check($result->fields['security'])) {
-				$data_array[] = array('id' => $result->fields['id'], 'text' => $result->fields['doc_title']);
+		$sql = $admin->DataBase->prepare("SELECT id, security, doc_title FROM " . TABLE_PHREEFORM . " WHERE doc_ext IN ('rpt','frm') ORDER BY doc_title");
+		$sql->execute();
+		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+		  	if (security_check($result['security'])) {
+				$data_array[] = array('id' => $result['id'], 'text' => $result['doc_title']);
 		  	}
-		  	$result->MoveNext();
 		}
 		// Build control box form data
 		$control  = '<div class="row">';
@@ -61,10 +58,10 @@ class favorite_reports extends \core\classes\ctl_panel {
 		  	$index = 1;
 		  	foreach ($params as $id => $description) {
 				$contents .= '<div style="float:right; height:16px;">';
-				$contents .= html_icon('phreebooks/dashboard-remove.png', TEXT_REMOVE, 'small', 'onclick="return del_index(\'' . $this->id . '\', ' . $index . ')"');
+				$contents .= html_icon('phreebooks/dashboard-remove.png', TEXT_REMOVE, 'small', "onclick='return del_index(\"{$this->id}\", $index)'");
 				$contents .= '</div>';
 				$contents .= '<div style="height:16px;">';
-				$contents .= '  <a href="index.php?module=phreeform&amp;page=popup_gen&amp;rID=' . $id . '" target="_blank">' . $description . '</a>' . chr(10);
+				$contents .= "  <a href='index.php?module=phreeform&amp;page=popup_gen&amp;rID={$id}' target='_blank'>{$description}</a>" . chr(10);
 				$contents .= '</div>';
 				$index++;
 		  	}
@@ -77,15 +74,14 @@ class favorite_reports extends \core\classes\ctl_panel {
 	function update() {
 		global $admin;
 		$report_id   = db_prepare_input($_POST['report_id']);
-		$result      = $admin->DataBase->query("select doc_title from " . TABLE_PHREEFORM . " where id = '" . $report_id . "'");
-		$description = $result->fields['doc_title'];
+		$result      = $admin->DataBase->query("SELECT doc_title FROM " . TABLE_PHREEFORM . " WHERE id = '$report_id'");
+		$description = $result['doc_title'];
 		$remove_id   = db_prepare_input($_POST['favorite_reports_rId']);
 		// do nothing if no title or url entered
 		if (!$remove_id && $report_id == '') return;
 		// fetch the current params
-		$result = $admin->DataBase->query("select params from " . TABLE_USERS_PROFILES . "
-		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "'
-		  and dashboard_id = '" . $this->id . "'");
+		$result = $admin->DataBase->query("SELECT params FROM " . TABLE_USERS_PROFILES . "
+		  WHERE user_id = {$_SESSION['admin_id']} and menu_id = '{$this->menu_id}' and dashboard_id = '{$this->id}'");
 		if ($remove_id) { // remove element
 		  	$this->params = unserialize($result->fields['params']);
 		  	$temp   = array();
@@ -102,9 +98,8 @@ class favorite_reports extends \core\classes\ctl_panel {
 			$this->params = array($report_id => $description);
 		}
 		asort($this->params);
-		$admin->DataBase->query("update " . TABLE_USERS_PROFILES . " set params = '" . serialize($this->params) . "'
-		  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "'
-		  and dashboard_id = '" . $this->id . "'");
+		$admin->DataBase->exec("UPDATE " . TABLE_USERS_PROFILES . " SET params = '" . serialize($this->params) . "'
+		  WHERE user_id = {$_SESSION['admin_id']} and menu_id = '{$this->menu_id}' and dashboard_id = '{$this->id}'");
 	}
 }
 ?>
