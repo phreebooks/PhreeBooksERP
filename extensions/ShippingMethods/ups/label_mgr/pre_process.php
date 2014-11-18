@@ -165,11 +165,7 @@ switch ($action) {
 	  break;
 	}
 	$shipment = new $shipping_module;
-	if ($shipment->deleteLabel($ship_method, $shipment_id)) {
-	  $messageStack->convert_add_to_session(); // save any messages for reload
-	} else {
-	  $error = true;
-	}
+	if (!$shipment->deleteLabel($ship_method, $shipment_id)) $error = true;
 	$db->Execute("delete from " . TABLE_SHIPPING_LOG . " where shipment_id = " . $shipment_id);
 	gen_add_audit_log(SHIPPING_LABEL_DELETED, $shipment_id);
 	break;

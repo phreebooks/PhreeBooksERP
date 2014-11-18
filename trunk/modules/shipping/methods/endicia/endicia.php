@@ -633,7 +633,6 @@ var $PackageMap = array( // for rate estimates, assume this set of options
 //echo 'Fault Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
 	  $messageStack->add("SOAP error ({$exception->faultcode}) {$exception->faultstring}", 'error');
   	}
-  	$messageStack->convert_add_to_session(); // save any messages for reload
 	return true;
   }
 

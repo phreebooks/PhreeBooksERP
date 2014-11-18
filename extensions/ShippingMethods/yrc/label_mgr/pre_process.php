@@ -168,7 +168,6 @@ switch ($action) {
 	  $tracking_number = $shipments->fields['tracking_id'];
 	  if ($ship_method <> 'GndFrt' && $ship_method <> 'EcoFrt') { // no need to delte freight shipments,
 	    if ($shipment->deleteLabel($ship_method, $tracking_number)) {
-	      $messageStack->convert_add_to_session(); // save any messages for reload
 	    } else {
 	      $error = true;
 	    }
