@@ -3,7 +3,6 @@
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
 // | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
-
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -84,7 +83,7 @@ switch ($_REQUEST['action']) {
 	    foreach (glob($file_path . $tracking_num . '*.*') as $filename) {
 	      if (substr($filename, -3) == 'lpt') { // it's a thermal label
 		    if (!$handle = fopen($filename, 'r')) $error = $messageStack->add('Cannot open file (' . $filename . ')','error');
-		    $label_data .= fread($handle, filesize($filename));
+		    $label_data .= base64_encode(fread($handle, filesize($filename)));
 		    fclose($handle);
 		    if (!$error) $auto_print = true;
 	      } elseif (substr($filename, -3) == 'pdf') { // it's a pdf image label
@@ -95,8 +94,8 @@ switch ($_REQUEST['action']) {
 	      gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=shipping&page=popup_label_viewer&method=' . $shipping_module . '&date=' . $sInfo->ship_date . '&labels=' . implode(':', $labels_array), 'SSL'));	
 	    }
 	  }
-	  $label_data = str_replace("\r", "", addslashes($label_data)); // for javascript multi-line
-	  $label_data = str_replace("\n", "\\n", $label_data);
+//	  $label_data = str_replace("\r", "", addslashes($label_data)); // for javascript multi-line
+//	  $label_data = str_replace("\n", "\\n", $label_data);
 	} else {
 	  $messageStack->add(SHIPPING_NO_PACKAGES,'error');
 	  $sInfo->ship_country_code = gen_get_country_iso_3_from_2($sInfo->ship_country_code);
@@ -114,7 +113,7 @@ switch ($_REQUEST['action']) {
 	  foreach (glob($file_path . $tracking_num . '*.*') as $filename) {
 	    if (substr($filename, -3) == 'lpt') { // it's a thermal label
 		  if (!$handle = fopen($filename, 'r')) $error = $messageStack->add('Cannot open file (' . $filename . ')','error');
-		  $label_data .= fread($handle, filesize($filename));
+		  $label_data .= base64_encode(fread($handle, filesize($filename)));
 		  fclose($handle);
 		  $auto_print = true;
 	    } elseif (substr($filename, -3) == 'pdf') { // it's a pdf image label
@@ -122,8 +121,8 @@ switch ($_REQUEST['action']) {
 	    }
 	  }
 	}
-	$label_data = str_replace("\r", "", addslashes($label_data)); // for javascript multi-line
-	$label_data = str_replace("\n", "\\n", $label_data);
+//	$label_data = str_replace("\r", "", addslashes($label_data)); // for javascript multi-line
+//	$label_data = str_replace("\n", "\\n", $label_data);
 	if (!$auto_print) { // just pdf, go there now
 	  gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=shipping&page=popup_label_viewer&method=' . $shipping_module . '&date=' . $date . '&labels=' . $labels, 'SSL'));	
 	}

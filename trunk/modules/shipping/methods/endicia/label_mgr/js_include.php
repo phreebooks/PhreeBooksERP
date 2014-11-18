@@ -3,7 +3,6 @@
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
 // | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
-
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -94,37 +93,34 @@ function paperPrint() {
 }
 
 // java label printing
+var therm_label = '<?php echo $label_data; ?>';
 function labelPrint() {
-  var applet = document.qz;
-  if (applet != null) {
-	applet.append("<?php echo $label_data; ?>");
-	applet.print();
-  }
-  monitorPrinting();
+	var tmp = '';
+	alert('looking for printer');
+	qz.findPrinter('<?php echo MODULE_SHIPPING_FEDEX_V7_PRINTER_NAME; ?>');
+	alert('found printer');
+	qz.append64(therm_label);
+	alert('finished appending');
+	qz.print();
+	alert('finished printing');
+	tmp += qz.getQueueInfo();
+	jzebraDonePrinting(qz);
+<?php
+	if (sizeof($pdf_list) > 0) {
+		echo "	paperPrint();\n";
+	} else {
+		echo "	window.opener.location.reload();\n";
+		echo "	window.close();\n";
+	} 
+?>
 }
 
-function monitorPrinting() {
-  var applet = document.qz;
-  if (applet != null) {
-    if (!applet.isDonePrinting()) {
-      window.setTimeout('monitorPrinting()', 1000);
-    } else {
-      var e = applet.getException();
-      if (e != null) {
-	    alert("Exception occured: " + e.getLocalizedMessage());
-	  } else {
-<?php
-if (sizeof($pdf_list) > 0) {
-  echo "	    paperPrint();\n";
-} else {
-	echo "      window.opener.location.reload();\n";
-	echo "	    self.close();\n";
-} ?>
-	  }
-    }
-  } else {
-	alert("Error: Java label printing applet not loaded!");
-  }
+function jzebraDonePrinting(qz) {
+	if (!qz.getException()) {
+		if (!qz.getPrinter()) alert('Please detect a printer first!');
+	} else {
+		alert('Applet returned error: '+qz.getException().getLocalizedMessage());
+	}
 }
 
 // -->
