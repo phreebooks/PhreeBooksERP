@@ -22,39 +22,24 @@
 //
 //  V1.0 CREATED BY MAINFRAME COMPUTERS (C) 2011  http://www.mainframecomps.com
 //@todo needs to match to 4.0
-class google_calendar extends ctl_panel {
+namespace contacts\dashboards\google_calendar;
+class google_calendar extends \core\classes\ctl_panel {
+	public $id					= 'google_calendar';
+	public $description	 		= '';
+	public $security_id  		= '';
+	public $text		 		= CP_GOOGLE_CALENDAR_TITLE;
+	public $version      		= '4.0';
+	public $default_params 		= array();
 
-  function google_calendar() {
-  }
 
-  function Install($column_id = 1, $row_id = 0) {
-	global $admin;
-	if (!$row_id) $row_id = $this->get_next_row();
-	$admin->DataBase->query("insert into " . TABLE_USERS_PROFILES . " set
-	  user_id = "       . $_SESSION['admin_id'] . ",
-	  menu_id = '"      . $this->menu_id . "',
-	  module_id = '"    . $this->module_id . "',
-	  dashboard_id = '" . $this->dashboard_id . "',
-	  column_id = "     . $column_id . ",
-	  row_id = "        . $row_id . ",
-	  params = ''");
-  }
+	function Output() {
+		global $admin;
+		// Build content box
+		$contents = '';
+		$contents .= 'PASTE GOOGLE IFRAME CODE HERE, I MADE MY CALENDAR 450 X 400';
 
-  function Remove() {
-	global $admin;
-	$result = $admin->DataBase->query("delete from " . TABLE_USERS_PROFILES . "
-	  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $this->menu_id . "'
-	    and dashboard_id = '" . $this->dashboard_id . "'");
-  }
-
-  function Output($params) {
-	global $admin;
-	// Build content box
-	$contents = '';
-	$contents .= 'PASTE GOOGLE IFRAME CODE HERE, I MADE MY CALENDAR 450 X 400';
-
-	return $this->build_div(CP_GOOGLE_CALENDAR_TITLE, $contents, $control);
-  }
+		return $this->build_div( $contents, $control);
+	}
 
 }
 ?>

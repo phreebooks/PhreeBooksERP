@@ -36,11 +36,10 @@ class audit_log extends \core\classes\ctl_panel {
 		parent::install($column_id, $row_id);
 	}
 
-	function output($params) {
+	function output() {
 		global $admin, $currencies;
-		if (!$params) $params = $this->params;
-		if(count($params) != count($this->default_params)) { //upgrading
-			$params = $this->upgrade($params);
+		if(count($this->params) != count($this->default_params)) { //upgrading
+			$this->params = $this->upgrade($this->params);
 		}
 		$list_length = array();
 		$contents = '';
@@ -52,7 +51,7 @@ class audit_log extends \core\classes\ctl_panel {
         $control .= '<div style="white-space:nowrap">' . CP_AUDIT_LOG_DISPLAY;
         $control .= '<select name="today_minus" onchange="">';
         for ($i = 0; $i <= 365; $i++) {
-        	$control .= "<option value='$i'" . ($params['today_minus'] == $i ? ' selected="selected"' : '') . ">$i</option>";
+        	$control .= "<option value='$i'" . ($this->params['today_minus'] == $i ? ' selected="selected"' : '') . ">$i</option>";
         }
         $control .= '</select>' . CP_AUDIT_LOG_DISPLAY2 . '&nbsp;&nbsp;&nbsp;&nbsp;';
         $control .= '</div></div>';
@@ -60,16 +59,16 @@ class audit_log extends \core\classes\ctl_panel {
 // Build control box form data2
         $control .= '<div class="row">';
         $control .= '<div style="white-space:nowrap">' . TEXT_SHOW . TEXT_SHOW_NO_LIMIT;
-        $control .= html_pull_down_menu('audit_log_num_rows', $list_length, $params['num_rows']);
+        $control .= html_pull_down_menu('audit_log_num_rows', $list_length, $this->params['num_rows']);
         $control .= html_submit_field('sub_audit_log', TEXT_SAVE);
         $control .= '</div></div>';
 
 // Build content box
         $temp = "SELECT a.action_date, a.action, a.reference_id, a.amount, u.display_name FROM ".TABLE_AUDIT_LOG." as a, ".TABLE_USERS." as u
-          WHERE a.user_id = u.admin_id and a.action_date >= '" . date('Y-m-d', strtotime('-' . $params['today_minus'] . ' day')) . "'
-          and a.action_date <= '" . date('Y-m-d', strtotime('-' . $params['today_minus'] + 1 . ' day')) . "' ORDER BY a.action_date desc";
+          WHERE a.user_id = u.admin_id and a.action_date >= '" . date('Y-m-d', strtotime('-' . $this->params['today_minus'] . ' day')) . "'
+          and a.action_date <= '" . date('Y-m-d', strtotime('-' . $this->params['today_minus'] + 1 . ' day')) . "' ORDER BY a.action_date desc";
 
-       	if ($params['num_rows']) $temp .= " LIMIT " . $params['num_rows'];
+       	if ($this->params['num_rows']) $temp .= " LIMIT " . $this->params['num_rows'];
        	$sql = $admin->DataBase->prepare($temp);
 		$sql->execute();
 		if ($sql->rowCount() < 1) {
@@ -82,8 +81,8 @@ class audit_log extends \core\classes\ctl_panel {
                 $contents .= '</div>' . chr(10);
           	}
         }
-        $this->text = CP_AUDIT_LOG_TITLE . " " . date('Y-m-d', strtotime('-' . $params['today_minus'] . ' day'));
-       	return $this->build_div('', $contents, $control);
+        $this->text = CP_AUDIT_LOG_TITLE . " " . date('Y-m-d', strtotime('-' . $this->params['today_minus'] . ' day'));
+       	return $this->build_div( $contents, $control);
  	}
 
  	function update() {

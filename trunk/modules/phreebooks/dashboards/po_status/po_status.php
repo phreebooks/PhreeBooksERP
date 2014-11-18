@@ -27,11 +27,10 @@ class po_status extends \core\classes\ctl_panel {
 	public $version      		= '4.0';
 	public $default_params 		= array('num_rows'=> 0, 'order' => 'asc', 'limit' => 1);
 
-	function output($params) {
+	function output() {
 		global $admin, $currencies;
-		if (!$params) $params = $this->params;
-		if(count($params) != count($this->default_params)) { //upgrading
-			$params = $this->upgrade($params);
+		if(count($this->params) != count($this->default_params)) { //upgrading
+			$this->params = $this->upgrade($this->params);
 		}
 		$list_length = array();
 		$contents = '';
@@ -48,18 +47,18 @@ class po_status extends \core\classes\ctl_panel {
 		// Build control box form data
 		$control  = '<div class="row">';
 		$control .= '  <div style="white-space:nowrap">';
-		$control .= TEXT_SHOW.TEXT_SHOW_NO_LIMIT.'&nbsp'.html_pull_down_menu('po_status_field_0', $list_length,$params['num_rows']).'<br />';
-		$control .= CP_PO_STATUS_SORT_ORDER     .'&nbsp'.html_pull_down_menu('po_status_field_1', $list_order, $params['order']).'<br />';
-		$control .= CP_PO_STATUS_HIDE_FUTURE    .'&nbsp'.html_pull_down_menu('po_status_field_2', $list_limit, $params['limit']);
+		$control .= TEXT_SHOW.TEXT_SHOW_NO_LIMIT.'&nbsp'.html_pull_down_menu('po_status_field_0', $list_length,$this->params['num_rows']).'<br />';
+		$control .= CP_PO_STATUS_SORT_ORDER     .'&nbsp'.html_pull_down_menu('po_status_field_1', $list_order, $this->params['order']).'<br />';
+		$control .= CP_PO_STATUS_HIDE_FUTURE    .'&nbsp'.html_pull_down_menu('po_status_field_2', $list_limit, $this->params['limit']);
 		$control .= html_submit_field('sub_po_status', TEXT_SAVE);
 		$control .= '  </div>';
 		$control .= '</div>';
 		// Build content box
 		$temp = "SELECT id, post_date, purchase_invoice_id, bill_primary_name, total_amount, currencies_code, currencies_value
 		  FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id = 4 and closed = '0'";
-		if ($params['limit'] == '1')    $temp .= " and post_date <= '".date('Y-m-d')."'";
-		if ($params['order'] == 'desc') $temp .= " ORDER BY post_date desc";
-		if ($params['num_rows'])      $temp .= " LIMIT " . $params['num_rows'];
+		if ($this->params['limit'] == '1')    $temp .= " and post_date <= '".date('Y-m-d')."'";
+		if ($this->params['order'] == 'desc') $temp .= " ORDER BY post_date desc";
+		if ($this->params['num_rows'])      $temp .= " LIMIT " . $this->params['num_rows'];
 		$sql = $admin->DataBase->prepare($temp);
 		$sql->execute();
 		if ($sql->rowCount() < 1) {
@@ -78,7 +77,7 @@ class po_status extends \core\classes\ctl_panel {
 				$contents .= '</div>' . chr(10);
 			}
 	  	}
-	  	return $this->build_div('', $contents, $control);
+	  	return $this->build_div($contents, $control);
 	}
 
 	function update() {

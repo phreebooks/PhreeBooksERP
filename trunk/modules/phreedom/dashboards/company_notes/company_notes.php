@@ -69,7 +69,7 @@ class company_notes extends \core\classes\ctl_panel {
 		} else {
 			$contents = TEXT_NO_RESULTS_FOUND;
 		}
-		return $this->build_div('', $contents, $control);
+		return $this->build_div($contents, $control);
 	}
 
 	function update() {

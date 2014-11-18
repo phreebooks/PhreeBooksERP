@@ -35,9 +35,8 @@ class company_links extends \core\classes\ctl_panel {
 		parent::install($column_id, $row_id);
   	}
 
-  	function output($params) {
+  	function output() {
 		global $admin;
-		if (!$params) $params = $this->params;
 		$contents = '';
 		$control  = '';
 		// Build control box form data
@@ -53,9 +52,9 @@ class company_links extends \core\classes\ctl_panel {
 		$control .= '</div></div>';
 		// Build content box
 		$contents = '';
-		if (is_array($params)) {
+		if (is_array($this->params)) {
 		  	$index = 1;
-		  	foreach ($params as $title => $hyperlink) {
+		  	foreach ($this->params as $title => $hyperlink) {
 				if ($this->security_level > 3) { // only let delete if user permission is full
 			  		$contents .= '<div style="float:right; height:16px;">';
 			  		$contents .= html_icon('phreebooks/dashboard-remove.png', TEXT_REMOVE, 'small', 'onclick="return del_index(\'' . $this->id . '\', ' . $index . ')"');
@@ -69,7 +68,7 @@ class company_links extends \core\classes\ctl_panel {
 		} else {
 			$contents = TEXT_NO_RESULTS_FOUND;
 		}
-		return $this->build_div('', $contents, $control);
+		return $this->build_div($contents, $control);
   	}
 
 	function update() {

@@ -29,9 +29,8 @@ class favorite_reports extends \core\classes\ctl_panel {
 	public $text		 		= CP_FAVORITE_REPORTS_TITLE;
 	public $version      		= '4.0';
 
-	function output($params) {
+	function output() {
 		global $admin;
-		if (!$params) $params = $this->params;
 		$contents = '';
 		$control  = '';
 		// load the report list
@@ -54,9 +53,9 @@ class favorite_reports extends \core\classes\ctl_panel {
 
 		// Build content box
 		$contents = '';
-		if (is_array($params)) {
+		if (is_array($this->params)) {
 		  	$index = 1;
-		  	foreach ($params as $id => $description) {
+		  	foreach ($this->params as $id => $description) {
 				$contents .= '<div style="float:right; height:16px;">';
 				$contents .= html_icon('phreebooks/dashboard-remove.png', TEXT_REMOVE, 'small', "onclick='return del_index(\"{$this->id}\", $index)'");
 				$contents .= '</div>';
@@ -68,7 +67,7 @@ class favorite_reports extends \core\classes\ctl_panel {
 		} else {
 		  	$contents = TEXT_NO_RESULTS_FOUND;
 		}
-		return $this->build_div('', $contents, $control);
+		return $this->build_div($contents, $control);
 	}
 
 	function update() {

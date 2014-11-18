@@ -35,9 +35,8 @@ class company_to_do extends \core\classes\ctl_panel {
 		parent::install($column_id, $row_id);
   	}
 
-  	function output($params) {
+  	function output() {
 		global $admin;
-		if (!$params) $params = $this->params;
 		$contents = '';
 		$control  = '';
 		// Build control box form data
@@ -51,9 +50,9 @@ class company_to_do extends \core\classes\ctl_panel {
 		$control .= '  </div>' . chr(10);
 		// Build content box
 		$contents = '';
-		if (is_array($params)) {
+		if (is_array($this->params)) {
 		  	$index = 1;
-		  	foreach ($params as $to_do) {
+		  	foreach ($this->params as $to_do) {
 		    	$contents .= '  <div>';
 				$contents .= '    <div style="float:right; height:16px;">';
 				$contents .= html_icon('phreebooks/dashboard-remove.png', TEXT_REMOVE, 'small', 'onclick="return del_index(\'' . $this->id . '\', ' . $index . ')"');
@@ -65,7 +64,7 @@ class company_to_do extends \core\classes\ctl_panel {
 		} else {
 		  	$contents = TEXT_NO_RESULTS_FOUND;
 		}
-		return $this->build_div('', $contents, $control);
+		return $this->build_div($contents, $control);
 	}
 
   	function update() {

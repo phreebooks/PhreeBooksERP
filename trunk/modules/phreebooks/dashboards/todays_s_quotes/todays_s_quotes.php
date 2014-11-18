@@ -30,12 +30,11 @@ class todays_s_quotes extends \core\classes\ctl_panel {
 	public $version      		= '4.0';
 	public $default_params 		= array('num_rows'=> 0);
 
-	function output($params) {
+	function output() {
 		global $admin, $currencies;
 		$list_length = array();
-		if (!$params) $params = $this->params;
-		if(count($params) != count($this->default_params)) { //upgrading
-			$params = $this->upgrade($params);
+		if(count($this->params) != count($this->default_params)) { //upgrading
+			$this->params = $this->upgrade($this->params);
 		}
 		$contents = '';
 		$control  = '';
@@ -70,7 +69,7 @@ class todays_s_quotes extends \core\classes\ctl_panel {
 		  	$contents .= '<div style="float:right">' . $currencies->format_full($total, true, $result['currencies_code'], $result['currencies_value']) . '</div>';
 		  	$contents .= '<div><b>' . TEXT_TOTAL . '</b></div>' . chr(10);
 		}
-		return $this->build_div('', $contents, $control);
+		return $this->build_div($contents, $control);
 	}
 }
 ?>

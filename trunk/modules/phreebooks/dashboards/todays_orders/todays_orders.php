@@ -27,11 +27,10 @@ class todays_orders extends \core\classes\ctl_panel {
 	public $version      		= '4.0';
 	public $default_params 		= array('num_rows'=> 0);
 
-	function output($params) {
+	function output() {
 		global $admin, $currencies;
-		if (!$params) $params = $this->params;
-		if(count($params) != count($this->default_params)) { //upgrading
-			$params = $this->upgrade($params);
+		if(count($this->params) != count($this->default_params)) { //upgrading
+			$this->params = $this->upgrade($this->params);
 		}
 		$list_length = array();
 		$contents = '';
@@ -40,7 +39,7 @@ class todays_orders extends \core\classes\ctl_panel {
 		// Build control box form data
 		$control  = '<div class="row">';
 		$control .= '<div style="white-space:nowrap">' . TEXT_SHOW . TEXT_SHOW_NO_LIMIT;
-		$control .= html_pull_down_menu('todays_orders_field_0', $list_length, $params['num_rows']);
+		$control .= html_pull_down_menu('todays_orders_field_0', $list_length, $this->params['num_rows']);
 		$control .= html_submit_field('sub_todays_orders', TEXT_SAVE);
 		$control .= '</div></div>';
 
@@ -49,7 +48,7 @@ class todays_orders extends \core\classes\ctl_panel {
 		$temp = "SELECT id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value
 		  FROM " . TABLE_JOURNAL_MAIN . "
 		  WHERE journal_id = 10 and post_date = '" . date('Y-m-d') . "' ORDER BY purchase_invoice_id";
-		if ($params['num_rows']) $temp .= " LIMIT " . $params['num_rows'];
+		if ($this->params['num_rows']) $temp .= " LIMIT " . $this->params['num_rows'];
 		$sql = $admin->DataBase->prepare($temp);
 		$sql->execute();
 		if ($sql->rowCount() < 1) {
@@ -64,11 +63,11 @@ class todays_orders extends \core\classes\ctl_panel {
 				$contents .= '</a></div>' . chr(10);
 		  	}
 		}
-		if (!$params['num_rows'] && $sql->rowCount() > 0) {
+		if (!$this->params['num_rows'] && $sql->rowCount() > 0) {
 		  	$contents .= '<div style="float:right">' . $currencies->format_full($total, true, DEFAULT_CURRENCY, 1) . '</div>';
 			$contents .= '<div><b>' . TEXT_TOTAL . '</b></div>' . chr(10);
 		}
-		return $this->build_div('', $contents, $control);
+		return $this->build_div($contents, $control);
 	}
 
 	function update() {

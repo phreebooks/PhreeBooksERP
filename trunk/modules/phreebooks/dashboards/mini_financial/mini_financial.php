@@ -27,11 +27,10 @@ class mini_financial extends \core\classes\ctl_panel {
 	public $version      		= '4.0';
 	public $default_params 		= array();
 
-	function output($params) {
+	function output() {
 		global $admin;
-		if (!$params) $params = $this->params;
-		if(count($params) != count($this->default_params)) { //upgrading
-			$params = $this->upgrade($params);
+		if(count($this->params) != count($this->default_params)) { //upgrading
+			$this->params = $this->upgrade($this->params);
 		}
 		$contents = '';
 		$control  = '';
@@ -101,7 +100,7 @@ class mini_financial extends \core\classes\ctl_panel {
 		$contents .= '<tr><td>' . htmlspecialchars(RW_FIN_TOTAL_LIABILITIES_CAPITAL) . '</td>' . chr(10);
 		$contents .= '<td align="right">' . $this->ProcessData($this->bal_tot_3) . '</td></tr>' . chr(10);
 		$contents .= '</table>' . chr(10);
-		return $this->build_div('', $contents, $control);
+		return $this->build_div($contents, $control);
 	}
 
 	function add_bal_sheet_data($the_list, $negate_array, $period) {

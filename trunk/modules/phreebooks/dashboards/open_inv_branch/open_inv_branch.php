@@ -27,11 +27,10 @@ class open_inv_branch extends \core\classes\ctl_panel {
 	public $version      		= '4.0';
 	public $default_params 		= array('num_rows'=> 0);
 
-	function output($params) {
+	function output() {
 		global $admin, $currencies;
-		if (!$params) $params = $this->params;
-		if(count($params) != count($this->default_params)) { //upgrading
-			$params = $this->upgrade($params);
+		if(count($this->params) != count($this->default_params)) { //upgrading
+			$this->params = $this->upgrade($this->params);
 		}
 		$list_length = array();
 		$contents = '';
@@ -40,7 +39,7 @@ class open_inv_branch extends \core\classes\ctl_panel {
 		// Build control box form data
 		$control  = '<div class="row">';
 		$control .= '<div style="white-space:nowrap">' . TEXT_SHOW . TEXT_SHOW_NO_LIMIT;
-		$control .= html_pull_down_menu('open_inv_branch_field_0', $list_length, $params['num_rows']);
+		$control .= html_pull_down_menu('open_inv_branch_field_0', $list_length, $this->params['num_rows']);
 		$control .= html_submit_field('sub_open_inv_branch', TEXT_SAVE);
 		$control .= '</div></div>';
 		// Build content box
@@ -49,7 +48,7 @@ class open_inv_branch extends \core\classes\ctl_panel {
 		  FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id = 12 and closed = '0'";
 		$sql .= " and store_id = " . ($_SESSION['admin_prefs']['def_store_id'] ? $_SESSION['admin_prefs']['def_store_id'] : 0);
 		$sql .= " ORDER BY post_date DESC, purchase_invoice_id DESC";
-		if ($params['num_rows']) $temp .= " LIMIT " . $params['num_rows'];
+		if ($this->params['num_rows']) $temp .= " LIMIT " . $this->params['num_rows'];
 		$sql = $admin->DataBase->prepare($temp);
 		$sql->execute();
 		if ($sql->rowCount() < 1) {
@@ -66,11 +65,11 @@ class open_inv_branch extends \core\classes\ctl_panel {
 				$contents .= '</a></div>' . chr(10);
 			}
 		}
-		if (!$params['num_rows'] && $sql->rowCount() > 0) {
+		if (!$this->params['num_rows'] && $sql->rowCount() > 0) {
 		  	$contents .= '<div style="float:right">' . $currencies->format_full($total, true, DEFAULT_CURRENCY, 1) . '</div>';
 		  	$contents .= '<div><b>' . TEXT_TOTAL . '</b></div>' . chr(10);
 		}
-		return $this->build_div('', $contents, $control);
+		return $this->build_div($contents, $control);
 	}
 
 	function update() {

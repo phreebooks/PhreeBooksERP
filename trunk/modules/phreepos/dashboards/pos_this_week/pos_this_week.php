@@ -24,9 +24,8 @@ class pos_this_week extends \core\classes\ctl_panel {
 	public $text		 		= CP_POS_THIS_WEEK_TITLE;
 	public $version      		= '4.0';
 
-	function output($params) {
+	function output() {
 		global $admin, $currencies;
-		if (!$params) $params = $this->params;
 		$contents = '';
 		$control  = '';
 		for($i=0; $i<=7; $i++){
@@ -52,11 +51,11 @@ class pos_this_week extends \core\classes\ctl_panel {
 				$contents .= '</a></div>' . chr(10);
 		  	}
 		}
-		if (!$params['num_rows'] && $sql->rowCount() > 0) {
+		if ($sql->rowCount() > 0) {
 		  	$contents .= '<div style="float:right"><b>' . $currencies->format_full($total, true, $result['currencies_code'], $result['currencies_value']) . '</b></div>';
 		  	$contents .= '<div><b>' . TEXT_TOTAL . '</b></div>' . chr(10);
 		}
-		return $this->build_div('', $contents, $control);
+		return $this->build_div($contents, $control);
 	}
 
 }

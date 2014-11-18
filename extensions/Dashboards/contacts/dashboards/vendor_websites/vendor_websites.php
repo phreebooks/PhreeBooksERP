@@ -27,11 +27,10 @@ class vendor_websites extends \core\classes\ctl_panel {
 	public $version      		= '4.0';
 	public $default_params 		= array();
 
-	function output($params) {
+	function output() {
 		global $admin;
-		if (!$params) $params = $this->params;
-		if(count($params) != count($this->default_params)) { //upgrading
-			$params = $this->upgrade($params);
+		if(count($this->params) != count($this->default_params)) { //upgrading
+			$this->params = $this->upgrade($this->params);
 		}
 		$contents = '';
 		$control  = '';
@@ -49,7 +48,7 @@ class vendor_websites extends \core\classes\ctl_panel {
 				$contents .= '</div>';
 			}
 		}
-		return $this->build_div('', $contents, $control);
+		return $this->build_div($contents, $control);
 	}
 }
 ?>

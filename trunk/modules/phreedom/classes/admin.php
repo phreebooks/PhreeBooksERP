@@ -398,7 +398,7 @@ class admin extends \core\classes\admin {
 	function LoadMainPage (\core\classes\basis &$basis){
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$basis->cInfo->menu_id  =  isset($basis->cInfo->mID) ? $basis->cInfo->mID : 'index'; // default to index unless heading is passed
-		$sql = $basis->DataBase->prepare("select dashboard_id, column_id, row_id, params  from ".TABLE_USERS_PROFILES." where user_id = '{$_SESSION['admin_id']}' and menu_id = '{$basis->cInfo->menu_id}' order by column_id, row_id");
+		$sql = $basis->DataBase->prepare("SELECT dashboard_id, column_id, row_id, params  FROM ".TABLE_USERS_PROFILES." WHERE user_id = '{$_SESSION['admin_id']}' and menu_id = '{$basis->cInfo->menu_id}' ORDER BY column_id, row_id");
 		$sql->execute();
 		while ($result = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)) {
 			$basis->cInfo->cp_boxes[] = $result;

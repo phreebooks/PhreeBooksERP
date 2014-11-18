@@ -89,7 +89,7 @@ class ctl_panel {
 	    	and dashboard_id = '" . addcslashes(get_class($this), '\\') . "'");
   	}
 
-  	function build_div($title, $contents, $controls) {
+  	function build_div($contents, $controls) {
   		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
 	  	$output = '';
 		$output .= "<!--// start: {$this->id} //-->" . chr(10);
