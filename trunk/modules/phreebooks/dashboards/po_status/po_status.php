@@ -25,13 +25,12 @@ class po_status extends \core\classes\ctl_panel {
 	public $security_id  		= SECURITY_ID_PURCHASE_ORDER;
 	public $text		 		= CP_PO_STATUS_TITLE;
 	public $version      		= '4.0';
-	public $size_params			= 3;
 	public $default_params 		= array('num_rows'=> 0, 'order' => 'asc', 'limit' => 1);
 
 	function output($params) {
 		global $admin, $currencies;
 		if (!$params) $params = $this->params;
-		if(count($params) != $this->size_params){ //upgrading
+		if(count($params) != count($this->default_params)) { //upgrading
 			$params = $this->upgrade($params);
 		}
 		$list_length = array();

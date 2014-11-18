@@ -29,7 +29,6 @@ class ctl_panel {
 	public $text		 		= '';
 	public $version      		= 1;
 	public $valid_user			= false;
-	public $size_params			= 0;
 	public $default_params 		= array();
 	public $row_started			= false;
 

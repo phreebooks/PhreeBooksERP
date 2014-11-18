@@ -25,13 +25,12 @@ class mini_financial extends \core\classes\ctl_panel {
 	public $security_id  		= SECURITY_ID_JOURNAL_ENTRY;
 	public $text		 		= CP_MINI_FINANCIAL_TITLE;
 	public $version      		= '4.0';
-	public $size_params			= 0;
 	public $default_params 		= array();
 
 	function output($params) {
 		global $admin;
 		if (!$params) $params = $this->params;
-		if(count($params) != $this->size_params){ //upgrading
+		if(count($params) != count($this->default_params)) { //upgrading
 			$params = $this->upgrade($params);
 		}
 		$contents = '';
@@ -138,9 +137,13 @@ class mini_financial extends \core\classes\ctl_panel {
 		global $admin;
 		$contents = '';
 		// find the period range within the fiscal year from the first period to current requested period
-		$result = $admin->DataBase->query("SELECT fiscal_year FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE period = " . $period);
+		$sql = $admin->DataBase->prepare("SELECT fiscal_year FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE period = " . $period);
+		$sql->execute();
+		$result = $sql->fetch(\PDO::FETCH_LAZY);
 		$fiscal_year = $result['fiscal_year'];
-		$result = $admin->DataBase->query("SELECT period FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE fiscal_year = $fiscal_year ORDER BY period LIMIT 1");
+		$sql = $admin->DataBase->prepare("SELECT period FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE fiscal_year = $fiscal_year ORDER BY period LIMIT 1");
+		$sql->execute();
+		$result = $sql->fetch(\PDO::FETCH_LAZY);
 		$first_period = $result['period'];
 		// build revenues
 		$cur_year  = $this->add_income_stmt_data(30, $first_period, $period, $negate = true); // Income account_type
@@ -172,10 +175,11 @@ class mini_financial extends \core\classes\ctl_panel {
 		  FROM " . TABLE_CHART_OF_ACCOUNTS . " c INNER JOIN " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h ON c.id = h.account_id
 		  WHERE h.period >= $first_period and h.period <= $period and c.account_type = $type GROUP BY h.account_id order by c.id");
 		$ytd_period->execute();
-		$beg_balance = $admin->DataBase->prepare("SELECT beginning_balance
+		$sql = $admin->DataBase->prepare("SELECT beginning_balance
 		  FROM " . TABLE_CHART_OF_ACCOUNTS . " c INNER JOIN " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h ON c.id = h.account_id
 		  WHERE h.period = $first_period and c.account_type = $type GROUP BY h.account_id order by c.id");
-		$beg_balance->execute();
+		$sql->execute();
+		$beg_balance = $sql->fetch(\PDO::FETCH_LAZY);
 		$ytd_total_1 = 0;
 		while ($year_to_period = $ytd_period->fetch(\PDO::FETCH_LAZY)){
 			if ($negate) {
@@ -185,7 +189,7 @@ class mini_financial extends \core\classes\ctl_panel {
 				$ytd_total_1 += $beg_balance['beginning_balance'] + $year_to_period['balance'];
 				$ytd_temp     = $this->ProcessData($beg_balance['beginning_balance'] + $year_to_period['balance']);
 			}
-			$account_array[ $ytd_period['id'] ] = array($ytd_period['description'], '', $ytd_temp);
+			$account_array[ $year_to_period['id'] ] = array($year_to_period['description'], '', $ytd_temp);
 		}
 		$this->total_3 = $ytd_total_1;
 		return $account_array;

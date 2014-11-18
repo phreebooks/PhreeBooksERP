@@ -24,12 +24,15 @@ class pos_todays extends \core\classes\ctl_panel {
 	public $security_id  		= SECURITY_ID_POS_MGR;
 	public $text		 		= CP_POS_TODAYS_TITLE;
 	public $version      		= '4.0';
-	public $size_params			= 1;
 	public $default_params 		= array('num_rows'=> 0);
 
-	function output() {
+	function output($params) {
 		global $admin, $currencies;
 		$list_length = array();
+		if (!$params) $params = $this->params;
+		if(count($params) != count($this->default_params)) { //upgrading
+			$params = $this->upgrade($params);
+		}
 		$contents = '';
 		$control  = '';
 		for ($i = 0; $i <= $this->max_length; $i++) $list_length[] = array('id' => $i, 'text' => $i);

@@ -21,7 +21,7 @@
 //  Path: /modules/phreedom/dashboards/google_calendar/google_calendar.php
 //
 //  V1.0 CREATED BY MAINFRAME COMPUTERS (C) 2011  http://www.mainframecomps.com
-
+//@todo needs to match to 4.0
 class google_calendar extends ctl_panel {
 
   function google_calendar() {

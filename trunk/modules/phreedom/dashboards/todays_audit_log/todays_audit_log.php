@@ -28,13 +28,12 @@ class todays_audit_log extends \core\classes\ctl_panel {
 	public $security_id  		= SECURITY_ID_CONFIGURATION;
 	public $text		 		= CP_TODAYS_AUDIT_LOG_TITLE;
 	public $version      		= '4.0';
-	public $size_params			= 1;
 	public $default_params 		= array('num_rows'=> 0);
 
 	function output($params) {
 		global $admin, $currencies;
 		if (!$params) $params = $this->params;
-		if(count($params) != $this->size_params){ //upgrading
+		if(count($params) != count($this->default_params)) { //upgrading
 			$params = $this->upgrade($params);
 		}
 		$list_length = array();

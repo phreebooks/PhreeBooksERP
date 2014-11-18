@@ -25,15 +25,13 @@ class to_receive_inv extends \core\classes\ctl_panel {
 	public $description	 		= CP_TO_RECEIVE_INV_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_PURCHASE_INVENTORY;
 	public $text		 		= CP_TO_RECEIVE_INV_TITLE;
-	public $version      		= '3.6';
-	public $size_params			= 1;
+	public $version      		= '4.0';
 	public $default_params 		= array('num_rows'=> 0);
-	public $module_id 			= 'phreebooks';
 
 	function output($params) {
 		global $admin, $currencies;
 		if (!$params) $params = $this->params;
-		if(count($params) != $this->size_params){ //upgrading
+		if(count($params) != count($this->default_params)) { //upgrading
 			$params = $this->upgrade($params);
 		}
 		$list_length = array();
@@ -48,29 +46,29 @@ class to_receive_inv extends \core\classes\ctl_panel {
 		$control .= '</div></div>';
 		// Build content box
 		$total = 0;
-		$sql = "select id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value, post_date, journal_id
-		  from " . TABLE_JOURNAL_MAIN . "
-		  where journal_id in (6,7) and waiting = '1' order by post_date DESC, purchase_invoice_id DESC";
-		if ($params['num_rows']) $sql .= " limit " . $params['num_rows'];
-		$result = $admin->DataBase->query($sql);
-		if ($result->rowCount() < 1) {
-		  	$contents = TEXT_NO_RESULTS_FOUND;
+		$temp = "SELECT id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value, post_date, journal_id
+		  FROM " . TABLE_JOURNAL_MAIN . "
+		  WHERE journal_id in (6,7) and waiting = '1' ORDER BY post_date DESC, purchase_invoice_id DESC";
+		if ($params['num_rows']) $temp .= " LIMIT " . $params['num_rows'];
+		$sql = $admin->DataBase->prepare($temp);
+		$sql->execute();
+		if ($sql->rowCount() < 1) {
+			$contents = TEXT_NO_RESULTS_FOUND;
 		} else {
-			while (!$result->EOF) {
-			  	$inv_balance = $result->fields['total_amount'] - fetch_partially_paid($result->fields['id']);
-			  	if ($result->fields['journal_id'] == 7) $inv_balance = -$inv_balance;
+			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+			  	$inv_balance = $result['total_amount'] - fetch_partially_paid($result['id']);
+			  	if ($result['journal_id'] == 7) $inv_balance = -$inv_balance;
 			 	$total += $inv_balance;
-				$contents .= '<div style="float:right">' . $currencies->format_full($inv_balance, true, $result->fields['currencies_code'], $result->fields['currencies_value']) . '</div>';
+				$contents .= '<div style="float:right">' . $currencies->format_full($inv_balance, true, $result['currencies_code'], $result['currencies_value']) . '</div>';
 				$contents .= '<div>';
-				$contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;oID={$result->fields['id']}&amp;jID={$result->fields['journal_id']}&amp;action=edit", 'SSL') . '">';
-				$contents .= gen_locale_date($result->fields['post_date']) . ' - ';
-				if ($result->fields['purchase_invoice_id'] != '')$contents .= $result->fields['purchase_invoice_id'] . ' - ';
-				$contents .= htmlspecialchars($result->fields['bill_primary_name']);
+				$contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;oID={$result['id']}&amp;jID={$result['journal_id']}&amp;action=edit", 'SSL') . '">';
+				$contents .= gen_locale_date($result['post_date']) . ' - ';
+				if ($result['purchase_invoice_id'] != '') $contents .= $result['purchase_invoice_id'] . ' - ';
+				$contents .= htmlspecialchars($result['bill_primary_name']);
 				$contents .= '</a></div>' . chr(10);
-				$result->MoveNext();
 			}
 		}
-		if (!$params['num_rows'] && $result->rowCount() > 0) {
+		if (!$params['num_rows'] && $sql->rowCount() > 0) {
 		  	$contents .= '<div style="float:right">' . $currencies->format_full($total, true, DEFAULT_CURRENCY, 1) . '</div>';
 			$contents .= '<div><b>' . TEXT_TOTAL . '</b></div>' . chr(10);
 		}
