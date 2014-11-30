@@ -26,6 +26,7 @@ define('MODULE_PHREEBOOKS_NOTES_1','PRIORITY MEDIUM: Enter company information (
 define('MODULE_PHREEBOOKS_NOTES_2','PRIORITY LOW: Set up mail server settings (Company -> Module Administration -> Email tab)');
 define('MODULE_PHREEBOOKS_NOTES_3','PRIORITY HIGH: Change or import chart of accounts from default settings (Company -> Module Administration -> PhreeBooks Module Properties -> Chart of Accounts tab)');
 define('MODULE_PHREEBOOKS_NOTES_4','PRIORITY MEDIUM: Update default general ledger accounts for customer and vendors, after loading GL accounts (Company -> Module Administration -> PhreeBooks Module Properties -> Customers/Vendors tab)');
+define('MODULE_PHREEBOOKS_NOTES_5','PRIORITY HIGH: Set up sales and puchase taxes, after loading GL accounts (Company -> Module Administration -> PhreeBooks Module Properties -> Taxes tabs)');
 // General Defines
 define('TEXT_DEFAULT_GL_ACCOUNTS','Default GL Accounts');
 define('TEXT_PAYMENT_TERMS','Payment Terms');

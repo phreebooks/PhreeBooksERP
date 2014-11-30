@@ -283,6 +283,7 @@ class phreebooks_admin {
 	$this->notes[] = MODULE_PHREEBOOKS_NOTES_1;
 	$this->notes[] = MODULE_PHREEBOOKS_NOTES_2;
 	$this->notes[] = MODULE_PHREEBOOKS_NOTES_3;
+	$this->notes[] = MODULE_PHREEBOOKS_NOTES_5;
 	$this->notes[] = MODULE_PHREEBOOKS_NOTES_4;
     return $error;
   }

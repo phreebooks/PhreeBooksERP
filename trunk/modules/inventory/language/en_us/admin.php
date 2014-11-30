@@ -41,7 +41,7 @@ define('TEXT_ACT_ITEMS','Activity');
 define('TEXT_CHARGE_ITEMS','Charge');
 define('TEXT_DESC_ITEMS','Description');
 // install messages
-define('MODULE_INVENTORY_NOTES_1','PRIORITY MEDIUM: Set default general ledger accounts for inventory types, after loading GL accounts (Company -> Inventory Module Properties -> Inventory tab)');
+define('MODULE_INVENTORY_NOTES_1','PRIORITY MEDIUM: Set default general ledger accounts for inventory types, set the Inventory Cost Method, after loading GL accounts (Company -> Inventory Module Properties -> Inventory tab)');
 /************************** (Inventory Defaults) ***********************************************/
 define('CD_05_50_DESC', 'Determines the default sales tax rate to use when adding inventory items. NOTE: This value is applied to inventory Auto-Add but can be changed in the Inventory => Maintain screen. The tax rates are selected from the table tax_rates and must be setup through Setup => Sales tax Rates.');
 define('CD_05_52_DESC', 'Determines the default purchase tax rate to use when adding inventory items. NOTE: This value is applied to inventory Auto-Add but can be changed in the Inventory => Maintain screen. The tax rates are selected from the table tax_rates and must be setup through Setup => Purchase tax Rates.');
