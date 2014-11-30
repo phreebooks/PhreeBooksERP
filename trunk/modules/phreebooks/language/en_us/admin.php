@@ -194,7 +194,7 @@ define('CD_03_03_DESC', 'Default account to use for payments to when vendor invo
 define('CD_03_04_DESC', 'Default account to use for freight charges for shipments from vendors. Typically an Expense type account.');
 define('CD_03_05_DESC', 'Default account to use for purchase discounts paid with early discount payment terms.  Typically an Accounts Payable type account.');
 define('CD_03_06_DESC', 'Default account to use for cash paid to vendors for deposits. Typically a Cash type account.');
-define('CD_03_07_DESC', 'Default account to use for vendor deposits. Typically an Other Current Liabilities type account.');
+define('CD_03_07_DESC', 'Default account to use for vendor deposits. Typically an Other Current Assets type account.');
 define('CD_03_11_DESC', 'Default terms for payment');
 define('CD_03_12_DESC', 'Default amount to use for vendor credit limit. (%s)');
 define('CD_03_30_DESC', 'If enabled, shipping charges will be added to the calculation of sales tax. If not enabled, shipping will not be taxed.');
