@@ -20,7 +20,6 @@
 // 2011-12-01 - Initial release
 namespace phreedom\dashboards\company_to_do;
 class company_to_do extends \core\classes\ctl_panel {
-	public $id			 		= 'company_to_do';
 	public $description	 		= CP_COMPANY_TO_DO_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_PHREEFORM;
 	public $text		 		= CP_COMPANY_TO_DO_TITLE;

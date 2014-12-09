@@ -35,33 +35,37 @@ class user {
 	 */
 
 	final static public function is_validated (\core\classes\basis &$admin) {
-		if (!isset($_SESSION['admin_id']) || $_SESSION['admin_id'] == ''){
-			//allow the user to continu to with the login action.
-			if (!isset($_REQUEST['action']) || !in_array($_REQUEST['action'], array('ValidateUser','pw_lost_sub','pw_lost_req'))){
-				if ($_REQUEST['action']=="ValidateUser") $_SESSION['company'] = $_REQUEST['company'];
-				self::load_companies();
-				self::load_languages();
-				self::get_company();
-				// load general language translation, Check for global define overrides first
-				$path = DIR_FS_MODULES . "phreedom/custom/language/{$_SESSION['language']}/language.php";
-				if (file_exists($path)) { require_once($path);}
-				$path = DIR_FS_MODULES . "phreedom/language/{$_SESSION['language']}/language.php";
-				if (file_exists($path)) { require_once($path);}
-				else { require_once(DIR_FS_MODULES . "phreedom/language/en_us/language.php");}
-				if($_REQUEST['action'] == 'pw_lost_req') {
-					$admin->fireEvent('LoadLostPassword');
-				}else{
-					$admin->fireEvent('LoadLogIn');
-				}
-				//throw new \core\classes\userException(TEXT_SORRY_YOU_ARE_LOGGED_OUT, "");//@todo
-			}
-		}
+		// load general language translation, Check for global define overrides first
 		$path = DIR_FS_MODULES . "phreedom/custom/language/{$_SESSION['language']}/language.php";
 		if (file_exists($path)) { require_once($path); }
 		$path = DIR_FS_MODULES . "phreedom/language/{$_SESSION['language']}/language.php";
-		if (file_exists($path)) { require_once($path); }
-		else { require_once(DIR_FS_MODULES . "phreedom/language/en_us/language.php"); }
-		return true;
+		if (file_exists($path)) {
+			require_once($path);
+		} else {
+			require_once(DIR_FS_MODULES . "phreedom/language/en_us/language.php");
+		}
+		if (isset($_SESSION['admin_id']) && $_SESSION['admin_id'] <> '') return true;
+		if ($_REQUEST['action'] == "ValidateUser") {
+			$_SESSION['company'] = $_REQUEST['company'];
+			return true;
+		}
+		//allow the user to continu to with the login action.
+		if (!in_array($_REQUEST['action'], array('ValidateUser', 'pw_lost_sub', 'pw_lost_req'))){
+			\core\classes\messageStack::debug_log("we zijn hier ".__METHOD__ );
+			self::load_companies();
+			self::load_languages();
+			self::get_company();
+			if($_REQUEST['action'] == 'pw_lost_req') {
+				$admin->fireEvent('LoadLostPassword');
+			}else{
+				$admin->fireEvent('LoadLogIn');
+			}
+			return false;
+		}
+		self::load_companies();
+		self::load_languages();
+		self::get_company();
+		throw new \core\classes\userException(TEXT_SORRY_YOU_ARE_LOGGED_OUT, "LoadLogIn");
 	}
 
 	/**

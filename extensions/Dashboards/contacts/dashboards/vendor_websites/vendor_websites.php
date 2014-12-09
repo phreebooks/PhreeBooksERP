@@ -20,7 +20,6 @@
 // 2011-07-01 - Added version number for revision control
 namespace contacts\dashboards\vendor_websites;
 class vendor_websites extends \core\classes\ctl_panel {
-	public $id					= 'vendor_websites';
 	public $description	 		= CP_VENDOR_WEBSITES_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_MAINTAIN_VENDORS;
 	public $text		 		= CP_VENDOR_WEBSITES_TITLE;

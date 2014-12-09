@@ -22,7 +22,6 @@
 namespace phreebooks\dashboards\open_inv;
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 class open_inv extends \core\classes\ctl_panel {
-	public $id			 		= 'open_inv';
 	public $description	 		= CP_OPEN_INV_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_SALES_INVOICE;
 	public $text		 		= CP_OPEN_INV_TITLE;

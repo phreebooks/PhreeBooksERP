@@ -20,8 +20,8 @@ namespace zencart\classes;
 require_once ('/config.php');
 require_once(DIR_FS_MODULES . 'inventory/config.php');
 class admin extends \core\classes\admin {
-	public $id 			= 'zencart';
 	public $description = MODULE_ZENCART_DESCRIPTION;
+	public $id 			= 'zencart';
 	public $version		= '3.5';
 
 	function __construct() {
@@ -132,7 +132,7 @@ class admin extends \core\classes\admin {
 		}
 	}
 
-	function after_ValidateUser(\core\classes\basis &$basis) {
+	function after_ValidateUser(\core\classes\basis &$basis) { //@done
 	  	global $admin, $messageStack;
 	  	gen_pull_language('inventory');
 		require_once(DIR_FS_MODULES . 'zencart/functions/zencart.php');
@@ -140,14 +140,14 @@ class admin extends \core\classes\admin {
 		require_once(DIR_FS_MODULES . 'inventory/defaults.php');
 		require_once(DIR_FS_MODULES . 'inventory/functions/inventory.php');
 		if(defined('MODULE_ZENCART_LAST_UPDATE') && MODULE_ZENCART_LAST_UPDATE <> '') $where = " and ( last_update >'" . MODULE_ZENCART_LAST_UPDATE . "' or last_journal_date >'" . MODULE_ZENCART_LAST_UPDATE . "')";
-		$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY . " where catalog = '1' " . $where);
+		$sql = $admin->DataBase->prepare("select id from " . TABLE_INVENTORY . " where catalog = '1' " . $where);
+		$sql->execute();
 		$cnt    = 0;
-		if($result->rowCount() == 0)	return true;
+		if ($sql->rowCount() == 0)	return true;
 		$prodXML = new \zencart\classes\zencart();
-		while(!$result->EOF) {
-		  	$prodXML->submitXML($result->fields['id'], 'product_ul', true, true);
+		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+		  	$prodXML->submitXML($result['id'], 'product_ul', true, true);
 		  	$cnt++;
-		  	$result->MoveNext();
 		}
 		$messageStack->add(sprintf(ZENCART_BULK_UPLOAD_SUCCESS, $cnt), 'success');
 		gen_add_audit_log(TEXT_BULK_UPLOAD);
@@ -160,9 +160,11 @@ class admin extends \core\classes\admin {
 		if (version_compare($this->status, '3.4', '<') ) {
 			write_configure('MODULE_ZENCART_LAST_UPDATE', date('0000-00-00 00:00:00'));
 		}
-		$result = $admin->DataBase->query("select tab_id from " . TABLE_EXTRA_FIELDS . " where field_name = 'category_id'");
-		if ($result->rowCount() == 0) throw new \core\classes\userException('can not find tab_name ZenCart');
-		else $tab_id = $result->fields['tab_id'];
+		$sql = $admin->DataBase->prepare("select tab_id from " . TABLE_EXTRA_FIELDS . " where field_name = 'category_id'");
+		$sql->execute();
+		if ($sql->rowCount() == 0) throw new \core\classes\userException('can not find tab_name ZenCart');
+		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		$tab_id = $result['tab_id'];
 		if (!db_field_exists(TABLE_INVENTORY, 'ProductURL')){
 			 $sql_data_array = array(
 			    'module_id'   => 'inventory',

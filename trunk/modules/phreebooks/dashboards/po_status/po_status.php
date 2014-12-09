@@ -20,7 +20,6 @@
 // 2011-07-01 - Added version number for revision control
 namespace phreebooks\dashboards\po_status;
 class po_status extends \core\classes\ctl_panel {
-	public $id			 		= 'po_status';
 	public $description	 		= CP_PO_STATUS_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_PURCHASE_ORDER;
 	public $text		 		= CP_PO_STATUS_TITLE;

@@ -24,7 +24,6 @@
 //@todo needs to match to 4.0
 namespace contacts\dashboards\google_calendar;
 class google_calendar extends \core\classes\ctl_panel {
-	public $id					= 'google_calendar';
 	public $description	 		= '';
 	public $security_id  		= '';
 	public $text		 		= CP_GOOGLE_CALENDAR_TITLE;

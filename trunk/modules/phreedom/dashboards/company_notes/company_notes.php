@@ -21,7 +21,6 @@
 // 2011-12-01 - Initial release
 namespace phreedom\dashboards\company_notes;
 class company_notes extends \core\classes\ctl_panel {
-	public $id			 		= 'company_notes';
 	public $description	 		= CP_COMPANY_NOTES_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_PHREEFORM;
 	public $text		 		= CP_COMPANY_NOTES_TITLE;

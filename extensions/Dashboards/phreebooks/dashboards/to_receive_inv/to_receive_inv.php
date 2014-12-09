@@ -21,7 +21,6 @@
 namespace phreebooks\dashboards\to_receive_inv;
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 class to_receive_inv extends \core\classes\ctl_panel {
-	public $id					= 'to_receive_inv';
 	public $description	 		= CP_TO_RECEIVE_INV_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_PURCHASE_INVENTORY;
 	public $text		 		= CP_TO_RECEIVE_INV_TITLE;

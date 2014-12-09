@@ -18,22 +18,22 @@
 //
 namespace core\classes;
 class admin {
-	public $id;
-	public $text;
+	public $core			= false;
+	public $dashboards		= array();// holds all classes in a array
 	public $description;
-	public $sort_order  	= 99;
+	public $dirlist			= array();// add new directories to store images and data
+	public $id;
+	public $installed		= false;
+	public $keys			= array();// Load configuration constants for this module, must match entries in admin tabs
+	public $mainmenu		= array();// holds all menu elements
+	public $methods			= array();// holds all classes in a array
 	public $notes 			= array();// placeholder for any operational notes
 	public $prerequisites 	= array();// modules required and rev level for this module to work properly
-	public $keys			= array();// Load configuration constants for this module, must match entries in admin tabs
-	public $dirlist			= array();// add new directories to store images and data
-	public $tables			= array();// Load tables
-	public $dashboards		= array();// holds all classes in a array
-	public $methods			= array();// holds all classes in a array
-	public $mainmenu		= array();// holds all menu elements
+	public $sort_order  	= 99;
 	public $status			= 1.0; // stores the moduel status
+	public $tables			= array();// Load tables
+	public $text;
 	public $version			= 1.0; // stores availible version of the module
-	public $installed		= false;
-	public $core			= false;
 
 	/**
 	 * this is the general construct function called when the class is created.
@@ -45,6 +45,18 @@ class admin {
 		}
 		$this->methods 		= $this->return_all_methods('methods');
 		$this->dashboards 	= $this->return_all_methods('dashboards');
+	}
+
+	/**
+	 * this is the general wakeup function called when the class is called from cache.
+	 */
+	public function __wakeup() {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		echo constant('MODULE_' . strtoupper($this->id) . '_STATUS');
+		if (defined('MODULE_' . strtoupper($this->id) . '_STATUS')){
+			$this->installed = true;
+			$this->status  = constant('MODULE_' . strtoupper($this->id) . '_STATUS');
+		}
 	}
 
 	/**
@@ -124,7 +136,6 @@ class admin {
 	}
 
   	function release_update($version, $path = '') {
-    	global $admin;
     	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		if (file_exists($path)) { include_once ($path); }
 		write_configure('MODULE_' . strtoupper($this->id) . '_STATUS', $version);

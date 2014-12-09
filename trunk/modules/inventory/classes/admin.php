@@ -205,6 +205,78 @@ class admin extends \core\classes\admin {
 			  PRIMARY KEY (id)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci",
 	    );
+
+		$this->mainmenu["inventory"]["submenu"]["new_inventory"] = array(
+				'order' 		=> 1,
+				'text' 		=> sprintf(TEXT_NEW_ARGS, TEXT_INVENTORY_ITEM),
+				'security_id' => SECURITY_ID_MAINTAIN_INVENTORY,
+				'link'        => html_href_link(FILENAME_DEFAULT, 'action=LoadNewInventoryItem', 'SSL'),
+				'show_in_users_settings' => false,
+				'params'      => '',
+		);
+		$this->mainmenu["inventory"]["submenu"]["inventory_mgr"] = array(
+				'order' 		=> 5,
+				'text' 		=> sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY),
+				'security_id' => SECURITY_ID_MAINTAIN_INVENTORY,
+				'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=main&amp;list=1', 'SSL'),
+				'show_in_users_settings' => true,
+				'params'      => '',
+		);
+		$this->mainmenu["inventory"]["submenu"]["adjustment"] = array(
+				'text'        => TEXT_ADJUSTMENTS,
+				'order'        => 15,
+				'security_id' => SECURITY_ID_ADJUST_INVENTORY,
+				'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=adjustments', 'SSL'),
+				'show_in_users_settings' => true,
+				'params'      => '',
+		);
+		$this->mainmenu["inventory"]["submenu"]["assemble"] = array(
+				'text'        => TEXT_ASSEMBLIES,
+				'order'        => 20,
+				'security_id' => SECURITY_ID_ASSEMBLE_INVENTORY,
+				'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=assemblies', 'SSL'),
+				'show_in_users_settings' => true,
+				'params'      => '',
+		);
+		if (defined('ENABLE_MULTI_BRANCH') && ENABLE_MULTI_BRANCH){
+			$this->mainmenu["inventory"]["submenu"]["transfer"] = array(
+			  'text'        => TEXT_TRANSFER_INVENTORY,
+			  'order'       => 80,
+			  'security_id' => SECURITY_ID_TRANSFER_INVENTORY,
+			  'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=transfer', 'SSL'),
+			  'show_in_users_settings' => true,
+			  'params'      => '',
+			);
+		}
+		$this->mainmenu["customers"]["submenu"]["pricesheet"] = array(
+				'text'        => TEXT_CUSTOMER_PRICE_SHEETS,
+				'order'       => 65,
+				'security_id' => SECURITY_ID_PRICE_SHEET_MANAGER,
+				'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=price_sheets&amp;type=c&amp;list=1', 'SSL'),
+				'show_in_users_settings' => true,
+				'params'      => '',
+		);
+		$this->mainmenu["vendors"]["submenu"]["pricesheet"] = array(
+				'text'        => TEXT_VENDOR_PRICE_SHEETS,
+				'order'       => 65,
+				'security_id' => SECURITY_ID_VEND_PRICE_SHEET_MGR,
+				'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=price_sheets&amp;type=v&amp;list=1', 'SSL'),
+				'show_in_users_settings' => true,
+				'params'      => '',
+		);
+
+		if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
+			gen_pull_language('inventory', 'admin');
+			$this->mainmenu["company"]['submenu']["configuration"]['submenu']["inventory"] = array(
+					'order'	      => sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY),
+					'text'        => sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY),
+					'security_id' => SECURITY_ID_CONFIGURATION,
+					'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=admin', 'SSL'),
+					'show_in_users_settings' => false,
+					'params'      => '',
+			);
+		}
+
 	    parent::__construct();
 	}
 

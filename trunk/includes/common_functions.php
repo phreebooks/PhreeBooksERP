@@ -1025,15 +1025,15 @@ function gen_db_date($raw_date = '', $separator = '/') {
   }
 
   function html_form($name, $action, $parameters = '', $method = 'post', $params = '', $usessl = true) {
-    $form = '<form name="' . $name . '" id="' . $name . '" action="';
+    $form = "<form name='{$name}' id='{$name}' action='";
     if (gen_not_null($parameters)) {
         $form .= html_href_link($action, $parameters, (($usessl) ? 'SSL' : 'NONSSL'));
     } else {
         $form .= html_href_link($action, '', (($usessl) ? 'SSL' : 'NONSSL'));
     }
-    $form .= '" method="' . $method . '"';
-    if (gen_not_null($params)) $form .= ' ' . $params;
-    $form .= '>';
+    $form .= "' method='{$method}'";
+	if (gen_not_null($params)) $form .= ' ' . $params;
+    $form .= ">";
     return $form;
   }
 

@@ -23,7 +23,6 @@
 namespace phreebooks\dashboards\todays_s_quotes;
 require_once(DIR_FS_MODULES  . 'phreebooks/config.php');
 class todays_s_quotes extends \core\classes\ctl_panel {
-	public $id			 		= 'todays_s_quotes';
 	public $description	 		= CP_TODAYS_S_QUOTES_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_SALES_QUOTE;
 	public $text		 		= CP_TODAYS_S_QUOTES_TITLE;

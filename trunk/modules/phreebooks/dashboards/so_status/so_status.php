@@ -20,7 +20,6 @@
 // 2011-07-01 - Added version number for revision control
 namespace phreebooks\dashboards\so_status;
 class so_status extends \core\classes\ctl_panel {
-	public $id			 		= 'so_status';
 	public $description	 		= CP_SO_STATUS_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_SALES_ORDER;
 	public $text		 		= CP_SO_STATUS_TITLE;

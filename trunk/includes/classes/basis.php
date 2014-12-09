@@ -65,10 +65,10 @@ class basis implements \SplSubject {
 		);
 		$this->mainmenu["inventory"] = array(
 				'order' 		=> MENU_HEADING_INVENTORY_ORDER,
-				'text' 		=> TEXT_INVENTORY,
-				'security_id' => '',
-				'link' 		=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_inv', 'SSL'),
-				'params'      => '',
+				'text' 			=> TEXT_INVENTORY,
+				'security_id'	=> '',
+				'link' 			=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_inv', 'SSL'),
+				'params'      	=> '',
 		);
 		$this->mainmenu["banking"] = array(
 				'order'			=> MENU_HEADING_BANKING_ORDER,
@@ -93,27 +93,24 @@ class basis implements \SplSubject {
 		);
 		$this->mainmenu["company"] = array(
 				'order' 		=> MENU_HEADING_COMPANY_ORDER,
-				'text' 		=> TEXT_COMPANY,
-				'security_id' => '',
-				'link' 		=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_company', 'SSL'),
-				'params'      => '',
+				'text' 			=> TEXT_COMPANY,
+				'security_id' 	=> '',
+				'link' 			=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_company', 'SSL'),
+				'params'      	=> '',
 		);
 		if (defined('MODULE_CP_ACTION_STATUS') || defined('MODULE_DOC_CTL_STATUS')) $this->mainmenu["quality"] = array(
 				'order' 		=> MENU_HEADING_QUALITY_ORDER,
 				'text'  		=> TEXT_QUALITY,
-				'security_id' => '',
-				'link' 		=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_qa', 'SSL'),
-				'params'      => '',
+				'security_id' 	=> '',
+				'link' 			=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_qa', 'SSL'),
+				'params'      	=> '',
 		);
 		$this->mainmenu["logout"] = array(
-				'order' => 999,
-				'text'  => TEXT_LOG_OUT,
-				'link'  => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;action=logout', 'SSL'),
-				'icon'  => html_icon('actions/system-log-out.png', TEXT_LOG_OUT, 'small'),
+				'order' 		=> 999,
+				'text'  		=> TEXT_LOG_OUT,
+				'link'  		=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;action=logout', 'SSL'),
+				'icon'  		=> html_icon('actions/system-log-out.png', TEXT_LOG_OUT, 'small'),
 		);
-		foreach ( $this->classes as $module_class ) {
-			$this->mainmenu = array_merge_recursive($this->mainmenu, $module_class->mainmenu);
-		}
 	}
 
 	public function __sleep() {
@@ -179,10 +176,10 @@ class basis implements \SplSubject {
 	 * @param \core\classes\admin $admin_class
 	 */
 	public function attachAdminClasses($moduleName, \core\classes\admin $admin_class) {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		\core\classes\messageStack::debug_log("attaching admin class ".get_class($admin_class));
 		if (array_search ( $admin_class, $this->classes ) === false) {
 			$this->classes [$moduleName] = $admin_class;
+			if ($admin_class->installed) $this->mainmenu = array_merge_recursive($this->mainmenu, $admin_class->mainmenu);
 		}
 		uasort ( $this->classes, array (
 				$this,
@@ -216,7 +213,7 @@ class basis implements \SplSubject {
 	 *
 	 * @throws exception if the event stack is empty
 	 */
-	public function startProcessingEvents() {//die(print_r($this));
+	public function startProcessingEvents() {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		if ( count($this->events ) == 0) throw new \Exception ( "trying to start processing events but the events array is empty" );
 		while ( $event = array_shift($this->events) ) {
@@ -282,6 +279,16 @@ class basis implements \SplSubject {
 		\core\classes\messageStack::debug_log("clearing events stack" );
 		$this->events = array();
 	}
+
+	/**
+	 * returns the companies configuration value
+	 * @param unknown $configuration_key
+	 */
+
+	function returnConfigurationValue($configuration_key) {
+		return $this->configuration[ $_SESSION['company'] ][$configuration_key];
+	}
+
 	function __destruct() {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->DataBase = null;

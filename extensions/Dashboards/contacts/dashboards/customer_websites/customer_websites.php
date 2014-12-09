@@ -20,7 +20,6 @@
 // 2011-07-01 - Added version number for revision control
 namespace contacts\dashboards\customer_websites;
 class customer_websites extends \core\classes\ctl_panel {
-	public $id					= 'customer_websites';
 	public $description	 		= CP_CUSTOMER_WEBSITES_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_MAINTAIN_CUSTOMERS;
 	public $text		 		= CP_CUSTOMER_WEBSITES_TITLE;

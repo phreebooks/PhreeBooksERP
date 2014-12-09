@@ -22,7 +22,6 @@
 //
 namespace phreedom\dashboards\todays_audit_log;
 class todays_audit_log extends \core\classes\ctl_panel {
-	public $id			 		= 'todays_audit_log';
 	public $description	 		= CP_TODAYS_AUDIT_LOG_DESCRIPTION;
 	public $max_length   		= 50;
 	public $security_id  		= SECURITY_ID_CONFIGURATION;

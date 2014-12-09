@@ -20,7 +20,6 @@
 // 2011-07-01 - Added version number for revision control
 namespace phreedom\dashboards\my_notes;
 class my_notes extends \core\classes\ctl_panel {
-	public $id			 		= 'my_notes';
 	public $description	 		= CP_MY_NOTES_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_MY_PROFILE;
 	public $text		 		= CP_MY_NOTES_TITLE;

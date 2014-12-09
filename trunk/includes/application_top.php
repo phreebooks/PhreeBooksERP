@@ -50,9 +50,10 @@ $request_type = (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) == '
 // define the inventory types that are tracked in cost of goods sold
 define('COG_ITEM_TYPES','si,sr,ms,mi,ma,sa');
 //start session functions
+session_start();
 @ini_set('session.gc_maxlifetime', (SESSION_TIMEOUT_ADMIN < 360 ? 360 : SESSION_TIMEOUT_ADMIN));
 session_set_cookie_params((SESSION_TIMEOUT_ADMIN < 360 ? 360 : SESSION_TIMEOUT_ADMIN),'/',$path);
-session_start();
+
 //end session
 $_REQUEST = array_merge($_GET, $_POST);
 if(!isset($_REQUEST['module']))	$_REQUEST['module']	= 'phreedom';

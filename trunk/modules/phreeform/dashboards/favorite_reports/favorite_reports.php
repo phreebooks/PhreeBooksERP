@@ -23,7 +23,6 @@ namespace phreeform\dashboards\favorite_reports;
 require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
 
 class favorite_reports extends \core\classes\ctl_panel {
-	public $id			 		= 'favorite_reports';
 	public $description	 		= CP_FAVORITE_REPORTS_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_PHREEFORM;
 	public $text		 		= CP_FAVORITE_REPORTS_TITLE;

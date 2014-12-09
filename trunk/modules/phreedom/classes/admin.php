@@ -19,12 +19,12 @@
 namespace phreedom\classes;
 require_once ('/config.php');
 class admin extends \core\classes\admin {
-	public $sort_order  = 1;
-	public $id 			= 'phreedom';
-	public $text;
 	public $description;
-	public $version		= '4.0';
+	public $id 			= 'phreedom';
 	public $installed	= true;
+	public $text;
+	public $sort_order  = 1;
+	public $version		= '4.0';
 
 	function __construct() {
 		// Load configuration constants for this module, must match entries in admin tabs
@@ -398,7 +398,7 @@ class admin extends \core\classes\admin {
 	function LoadMainPage (\core\classes\basis &$basis){
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$basis->cInfo->menu_id  =  isset($basis->cInfo->mID) ? $basis->cInfo->mID : 'index'; // default to index unless heading is passed
-		$sql = $basis->DataBase->prepare("SELECT dashboard_id, column_id, row_id, params  FROM ".TABLE_USERS_PROFILES." WHERE user_id = '{$_SESSION['admin_id']}' and menu_id = '{$basis->cInfo->menu_id}' ORDER BY column_id, row_id");
+		$sql = $basis->DataBase->prepare("SELECT * FROM ".TABLE_USERS_PROFILES." WHERE user_id = '{$_SESSION['admin_id']}' and menu_id = '{$basis->cInfo->menu_id}' ORDER BY column_id, row_id");
 		$sql->execute();
 		while ($result = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)) {
 			$basis->cInfo->cp_boxes[] = $result;
@@ -502,5 +502,59 @@ class admin extends \core\classes\admin {
 	    die;
 	}
 
+	function removeDashboard (\core\classes\basis $basis){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		$sql = $basis->DataBase->prepare("SELECT * FROM ".TABLE_USERS_PROFILES." WHERE id = '{$basis->cInfo->id}'");
+		$sql->execute();
+		while ($result = $sql->fetch (\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)) $result->remove();
+		$basis->addEventToStack("LoadMainPage");
+	}
+
+	function moveDashboardLeft (\core\classes\basis $basis){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		$sql = $basis->DataBase->prepare("SELECT * FROM ".TABLE_USERS_PROFILES." WHERE id = '{$basis->cInfo->dashboard_id}'");
+		$sql->execute();
+		while ($result = $sql->fetch (\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)) $result->move_left();
+		$basis->addEventToStack("LoadMainPage");
+	}
+
+	function moveDashboardRight (\core\classes\basis $basis){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		$sql = $basis->DataBase->prepare("SELECT * FROM ".TABLE_USERS_PROFILES." WHERE id = '{$basis->cInfo->dashboard_id}'");
+		$sql->execute();
+		while ($result = $sql->fetch (\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)) $result->move_right();
+		$basis->addEventToStack("LoadMainPage");
+	}
+
+	function moveDashboardUp (\core\classes\basis $basis){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		$sql = $basis->DataBase->prepare ("SELECT * FROM ".TABLE_USERS_PROFILES." WHERE id = '{$basis->cInfo->dashboard_id}'");
+		$sql->execute();
+		while ($result = $sql->fetch (\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)) $result->move_up();
+		$basis->addEventToStack("LoadMainPage");
+	}
+
+	function moveDashboardDown (\core\classes\basis $basis){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		$sql = $basis->DataBase->prepare ("SELECT * FROM ".TABLE_USERS_PROFILES." WHERE id = '{$basis->cInfo->dashboard_id}'");
+		$sql->execute();
+		while ($result = $sql->fetch (\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)) $result->move_down();
+		$basis->addEventToStack("LoadMainPage");
+	}
+
+	function saveDashboard (\core\classes\basis $basis){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		$sql = $basis->DataBase->prepare ("SELECT * FROM ".TABLE_USERS_PROFILES." WHERE id = '{$basis->cInfo->dashboard_id}'");
+		$sql->execute();
+		while ($result = $sql->fetch (\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)) {
+			$dashboard->menu_id	= isset($_GET['mID']) ? $_GET['mID'] : 'index';
+			$result->update();
+		}
+		$basis->addEventToStack("LoadMainPage");
+	}
+
+	function showPHPinfo (\core\classes\basis $basis){
+		die(phpinfo());
+	}
 }
 ?>

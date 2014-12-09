@@ -20,7 +20,6 @@
 // 2011-07-01 - Added version number for revision control
 namespace phreebooks\dashboards\mini_financial;
 class mini_financial extends \core\classes\ctl_panel {
-	public $id			 		= 'mini_financial';
 	public $description	 		= CP_MINI_FINANCIAL_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_JOURNAL_ENTRY;
 	public $text		 		= CP_MINI_FINANCIAL_TITLE;

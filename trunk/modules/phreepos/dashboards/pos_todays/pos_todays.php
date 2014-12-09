@@ -19,7 +19,6 @@
 namespace phreepos\dashboards\pos_todays;
 require_once(DIR_FS_MODULES  . 'phreebooks/config.php');
 class pos_todays extends \core\classes\ctl_panel {
-	public $id 					= 'pos_today';
 	public $description	 		= CP_POS_TODAYS_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_POS_MGR;
 	public $text		 		= CP_POS_TODAYS_TITLE;

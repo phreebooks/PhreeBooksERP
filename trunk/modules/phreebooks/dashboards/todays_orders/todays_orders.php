@@ -20,7 +20,6 @@
 // 2011-07-01 - Added version number for revision control
 namespace phreebooks\dashboards\todays_orders;
 class todays_orders extends \core\classes\ctl_panel {
-	public $id			 		= 'todays_orders';
 	public $description	 		= CP_TODAYS_ORDERS_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_SALES_ORDER;
 	public $text		 		= CP_TODAYS_ORDERS_TITLE;

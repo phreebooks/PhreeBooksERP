@@ -20,7 +20,6 @@
 // 2011-07-01 - Added version number for revision control
 namespace phreedom\dashboards\company_links;
 class company_links extends \core\classes\ctl_panel {
-	public  $id			 		= 'company_links';
 	public  $description 		= CP_COMPANY_LINKS_DESCRIPTION;
 	private $security_id  		= SECURITY_ID_PHREEFORM;
 	private $security_level		= 0;

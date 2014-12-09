@@ -20,7 +20,6 @@
 // 2011-07-01 - Added version number for revision control
 namespace phreedom\dashboards\personal_links;
 class personal_links extends \core\classes\ctl_panel {
-	public $id			 		= 'personal_links';
 	public $description	 		= CP_PERSONAL_LINKS_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_MY_PROFILE;
 	public $text		 		= CP_PERSONAL_LINKS_TITLE;
