@@ -20,14 +20,14 @@ define('AMAZON_SHIP_CONFIRM_FILE_NAME','confirm_'.date('Y-m-d').'.txt');
 $security_level = validate_user(SECURITY_ID_AMAZON_INTERFACE);
 /**************  include page specific files    *********************/
 gen_pull_language('phreebooks');
-require(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
+//require(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 require(DIR_FS_MODULES . 'phreebooks/classes/gen_ledger.php');
-require(DIR_FS_MODULES . 'phreebooks/classes/orders.php');
-require(DIR_FS_ADMIN   . 'soap/classes/parser.php');
+//require(DIR_FS_MODULES . 'phreebooks/classes/orders.php');
+//require(DIR_FS_ADMIN   . 'soap/classes/parser.php');
 require(DIR_FS_WORKING . 'classes/amazon.php');
 /**************   page specific initialization  *************************/
 $upload_name = 'file_name'; // Template field name for the uploaded file
-define('JOURNAL_ID', 10); // used for importing orders, 12 is hard coded for amazon invoice manager
+define('JOURNAL_ID', 12); // used for importing orders, 12 is hard coded for amazon invoice manager
 define('SO_POPUP_FORM_TYPE','cust:so');
 define('POPUP_FORM_TYPE','cust:inv');
 $error = false;
@@ -52,9 +52,8 @@ switch ($action) {
 		$messageStack->add('There was an error uploading the file.','error');
 		break;
 	} else {
-		$lines_array = file($_FILES[$upload_name]['tmp_name']);
 		$salesOrder = new amazon();
-		if ($salesOrder->processCSV($lines_array)) {
+		if ($salesOrder->processOrders($upload_name)) {
 			gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		}
 	}

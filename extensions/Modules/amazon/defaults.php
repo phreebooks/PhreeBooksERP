@@ -18,13 +18,15 @@
 //
 
 /* 
- The defines below need to be corrected to your gl acocunts and settings.
+ The defines below need to be corrected to your gl accounts and settings.
  */
 
-define('MODULE_AMAZON_CUSTOMER_ID', 'amazon.com'); // table contacts, field short_name
-define('MODULE_AMAZON_DEFAULT_RECEIVABLES_GL_ACCT','1100');
-define('MODULE_AMAZON_DEFAULT_SALES_GL_ACCT','4000');
-define('MODULE_AMAZON_DEFAULT_SHIPPING_CARRIER','freeshipper');
-define('MODULE_AMAZON_DEFAULT_PRICE_SHEET', 'retail');
+define('MODULE_AMAZON_CUSTOMER_ID',					'amazon.com'); // table contacts, field short_name
+define('MODULE_AMAZON_DEFAULT_RECEIVABLES_GL_ACCT',	'1100');
+define('MODULE_AMAZON_DEFAULT_SALES_GL_ACCT',		'4000');
+define('MODULE_AMAZON_DEFAULT_FREIGHT_GL_ACCT',		'4000');
+define('MODULE_AMAZON_DEFAULT_TAX_RATE_ID',			0); // from the tax_rates db table fetch the id for the tax rate to charge
+define('MODULE_AMAZON_DEFAULT_SHIPPING_CARRIER',	'freeshipper');
+define('MODULE_AMAZON_DEFAULT_PRICE_SHEET',			'retail');
 
 ?>

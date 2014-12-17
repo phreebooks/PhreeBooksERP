@@ -26,36 +26,191 @@ information.
 */
 
 require_once (DIR_FS_WORKING.'defaults.php');
-require_once (DIR_FS_ADMIN  .'soap/language/en_us/language.php');
+//require_once (DIR_FS_ADMIN  .'soap/language/en_us/language.php');
 
-class amazon extends parser {
+class amazon {
 	// class constructor
 	function __construct() {
-		global $db;
-		// Specific information about the Amazon account
-		$this->customer_id = MODULE_AMAZON_CUSTOMER_ID;
-		// pull the info from the Database to set up sales order
-		$result = $db->Execute("SELECT id FROM ".TABLE_CONTACTS." WHERE type='c' AND short_name='$this->customer_id'");
-		if ($result->RecordCount() == 0) { // record not found, error since it needs to be there for this import to work.
-			return $this->responseXML('19', SOAP_ACCOUNT_PROBLEM, 'error');
-		}
-		$acct_id                      = $result->fields['id'];
-		$result = $db->Execute("SELECT * FROM ".TABLE_ADDRESS_BOOK." WHERE type='cm' AND ref_id=$acct_id");
-		$this->billing_primary_name   = $result->fields['primary_name'];
-		$this->billing_contact        = $result->fields['contact'];
-		$this->billing_address1       = $result->fields['address1'];
-		$this->billing_address2       = $result->fields['address2'];
-		$this->billing_city_town      = $result->fields['city_town'];
-		$this->billing_state_province = $result->fields['state_province'];
-		$this->billing_postal_code    = $result->fields['postal_code'];
-		$this->billing_country_code   = gen_get_country_iso_2_from_3($result->fields['country_code']);
-		$this->order_total            = 0;
-		$this->shipping_total         = 0;
-		// fetch the default sales_rep
-		$result = $db->Execute("SELECT account_id FROM ".TABLE_USERS." WHERE admin_id={$_SESSION['admin_id']}");
-		$this->default_sales_rep = $result->fields['account_id'] ? $result->fields['account_id'] : '0';
 	}
 
+	function processOrders($upload_name='file_name') {
+		global $db, $messageStack;
+		$period = gen_calculate_period(date('Y-m-d'));
+		if (!defined('JOURNAL_ID')) define('JOURNAL_ID',12);
+		// load the amazon contact record info
+		$result = $db->Execute("SELECT id FROM ".TABLE_CONTACTS." WHERE short_name='".MODULE_AMAZON_CUSTOMER_ID."'");
+		$cID = $result->fields['id'];
+		if (!$cID) { 
+			$messageStack->add("Contact could not be found in the Customer database. Please make sure the setting in the defaults.php file match your Customers value.", 'error');
+			return;
+		}
+		$result = $db->Execute("SELECT * FROM ".TABLE_ADDRESS_BOOK." WHERE ref_id=$cID AND type='cm'");
+		$commonMain = array(
+			'post_date'          => date('Y-m-d'), // substr($data['purchase-date'], 0, 10); // forces orders posted today
+			'period'             => $period,
+			'journal_id'         => JOURNAL_ID,
+			'currencies_code'    => DEFAULT_CURRENCY,
+			'terminal_date'      => date('Y-m-d'),
+			'store_id'           => 0,
+			'admin_id'           => $_SESSION['admin_id'],
+			'rep_id'             => 0,
+			'gl_acct_id'         => MODULE_AMAZON_DEFAULT_RECEIVABLES_GL_ACCT,
+			'bill_acct_id'       => $result->fields['ref_id'],
+			'bill_address_id'    => $result->fields['address_id'],
+			'bill_primary_name'  => $result->fields['primary_name'],
+			'bill_contact'       => $result->fields['contact'],
+			'bill_address1'      => $result->fields['address1'],
+			'bill_address2'      => $result->fields['address2'],
+			'bill_city_town'     => $result->fields['city_town'],
+			'bill_state_province'=> $result->fields['state_province'],
+			'bill_postal_code'   => $result->fields['postal_code'],
+			'bill_country_code'  => $result->fields['country_code'],
+			'bill_telephone1'    => $result->fields['telephone1'],
+			'bill_email'         => $result->fields['email'],
+			'drop_ship'          => '1',
+		);
+		$bill_acct_id = $result->fields['ref_id'];
+		// iterate through the map to set journal post variables, orders may be on more than 1 line
+		// ***************************** START TRANSACTION *******************************
+		$db->transStart();
+		$itemCnt = 1;
+		$items   = array();
+		$totals  = array();
+		$inStock = true;
+		$orderCnt= 0;
+		$skip    = false;
+		$runaway = 0;
+		$rows    = file($_FILES[$upload_name]['tmp_name']);
+		$row     = array_shift($rows); // heading
+		$this->headings = explode("\t", $row);
+		$row     = array_shift($rows); // first order
+		if (!$row) { $messageStack->add("There were no orders to process!", 'caution'); return; }
+		$data= $this->processRow($row);
+		while (true) {
+			if (!$row) break;
+			$main = $commonMain;
+			$main['purch_order_id'] = $data['order-id'];
+			$main['description']    = "Amazon Order # ".$data['order-id'];
+			$main['shipper_code']   = MODULE_AMAZON_DEFAULT_SHIPPING_CARRIER;
+			if (strlen($data['recipient-name']) > 32 || strlen($data['ship-address-1']) > 32 || strlen($data['ship-address-2']) > 32) {
+				$messageStack->add(sprintf("Order # %s has a name or address that is too long for the PhreeBooks db and has been truncated: %s", $data['order-id'], $data['recipient-name']), 'caution');
+			}
+			$main['ship_primary_name']  = $data['recipient-name'];
+			$main['ship_address1']      = $data['ship-address-1'];
+			$main['ship_address2']      = $data['ship-address-2'];
+			$main['ship_contact']       = $data['ship-address-3'];
+			$main['ship_city_town']     = $data['ship-city'];
+			$main['ship_state_province']= $data['ship-state'];
+			$main['ship_postal_code']   = $data['ship-postal-code'];
+			$main['ship_country_code']  = gen_get_country_iso_3_from_2($data['ship-country']);
+			$main['ship_telephone1']    = $data['buyer-phone-number'];
+			$main['ship_email']         = $data['buyer-email'];
+			// build the item, check stock if auto_journal
+			$inv = $db->Execute("SELECT * FROM ".TABLE_INVENTORY." WHERE sku='{$data['sku']}'");
+			$messageStack->debug("\n Executing sql = "."SELECT * FROM ".TABLE_INVENTORY." WHERE sku='{$data['sku']}' resulting in:".print_r($inv->fields, true));
+			if (!$inv->fields || sizeof($inv->fields) == 0) {
+				$messageStack->add(sprintf("SKU: %s not found in the database, this import was skipped!", $data['sku']));
+				$skip = true;
+			} else {
+				if ($inv->fields['qty_stock'] < $data['quantity-purchased']) $inStock = false;
+			}
+			$items[] = array(
+				'item_cnt'      => $itemCnt,
+				'gl_type'       => 'sos',
+				'sku'           => $data['sku'],
+				'qty'           => $data['quantity-purchased'],
+				'description'   => $data['product-name'],
+				'credit_amount' => $data['item-price'],
+				'gl_account'    => $inv->fields['account_sales_income'] ? $inv->fields['account_sales_income'] : MODULE_AMAZON_DEFAULT_SALES_GL_ACCT,
+				'taxable'       => 0,
+				'full_price'    => $inv->fields['full_price'],
+				'post_date'     => substr($data['purchase-date'], 0, 10),
+			);
+			// preset some totals to keep running balance
+			if (!isset($totals['discount']))    $totals['discount']    = 0;
+			if (!isset($totals['sales_tax']))   $totals['sales_tax']   = 0;
+			if (!isset($totals['total_amount']))$totals['total_amount']= 0;
+			if (!isset($totals['freight']))     $totals['freight']     = 0;
+			// fill in order info
+			$totals['discount']    += $data['item-promotion-discount'] + $data['ship-promotion-discount'];
+			$totals['sales_tax']   += $data['item-tax'];
+			$totals['total_amount']+= $data['item-price'] + $data['item-tax'] + $data['shipping-price'] + $data['shipping-tax']; // missing from file: $data['gift-wrap-price'] and $data['gift-wrap-tax']
+			$totals['freight']     += $data['shipping-price'];
+			// check for continuation order
+			$row = array_shift($rows);
+			if ($runaway++ > 1000) { $messageStack->add("runaway reached, exiting!", 'error'); break; }
+			if ($row) { // check for continuation order
+				$nextData = $this->processRow($row);
+//				$messageStack->debug("\nContinuing order check, Next order = {$nextData['order-id']} and this order = {$main['purch_order_id']}");
+				if ($nextData['order-id'] == $main['purch_order_id']) {
+					$data = $nextData;
+					$itemCnt++;
+					continue; // more items for the same order
+				}
+			}
+			// finish main and item to post
+			$main['total_amount'] = $totals['total_amount'];
+			// @todo add tax, shipping, gift wrap, and notes records (add to item array)
+			$items[] = array( // shipping
+				'qty'          => 1,
+				'gl_type'      => 'frt',
+				'description'  => "Shipping Amazon # ".$data['order-id'],
+				'credit_amount'=> $totals['freight'],
+				'gl_account'   => MODULE_AMAZON_DEFAULT_FREIGHT_GL_ACCT,
+				'taxable'      => 0,
+				'post_date'    => substr($data['purchase-date'], 0, 10),
+			);
+			$items[] = array( // Total
+				'qty'          => 1,
+				'gl_type'      => 'ttl',
+				'description'  => "Total Amazon # ".$data['order-id'],
+				'debit_amount' => $totals['total_amount'],
+				'gl_account'   => MODULE_AMAZON_DEFAULT_RECEIVABLES_GL_ACCT,
+				'post_date'    => substr($data['purchase-date'], 0, 10),
+			);
+			$dup = $db->Execute("SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE purch_order_id='{$main['purch_order_id']}'");
+			if ($dup->fields['id']) {
+//				$messageStack->debug("duplicate order id = ".$dup->fields['id']." and main = ".print_r($main, true));
+				$messageStack->add(sprintf("Order # %s has already been imported! It will be skipped.", $data['order-id']), 'caution');
+				continue;
+			}
+			$ledger = new journal();
+			$ledger->post_date          = substr($data['purchase-date'], 0, 10);
+			$ledger->period             = $period;
+			$ledger->closed             = '0';
+			$ledger->journal_id         = JOURNAL_ID;
+			$ledger->bill_acct_id       = $bill_acct_id;
+			$ledger->journal_main_array = $main;
+			$ledger->journal_rows       = $items;
+			if (!$skip) {
+				if (!$ledger->validate_purchase_invoice_id()) return false;
+				if (!$ledger->Post('insert')) return;
+				$orderCnt++;
+			}
+			// prepare for next order.
+			$data   = $nextData;
+			$itemCnt= 1;
+			$items  = array();
+			$totals = array();
+			$inStock= true;
+			$skip   = false;
+		}
+		if ($orderCnt) if (!$ledger->update_chart_history_periods($period)) return;
+		$db->transCommit();	// finished successfully
+		// ***************************** END TRANSACTION *******************************
+		$messageStack->add(sprintf("Successfully posted %s Amazon transactions.", $orderCnt), 'success');
+		if (DEBUG) $messageStack->write_debug();
+		return true;
+	}
+
+	private function processRow($row, $delimiter="\t") {
+		$data = explode($delimiter, $row);
+		$output = array();
+		foreach ($this->headings as $key => $value) $output[$value] = isset($data[$key]) ? $data[$key] : '';
+		return $output;
+	}
+
+/*
 	function processCSV($lines_array = '') {
 		global $currencies;
 		if (!$this->cyberParse($lines_array)) return false;  // parse the submitted string, check for errors
@@ -142,7 +297,7 @@ class amazon extends parser {
 		$this->order['billing']['postal_code']    = $this->billing_postal_code;
 		$this->order['billing']['country_code']   = $this->billing_country_code;
 
-		$this->order['shipping']['primary_name']  = $order['recepient-name'];
+		$this->order['shipping']['primary_name']  = $order['recipient-name'];
 		if ($order['ship-address-2']) { // then only one address line exists
 			$this->order['shipping']['contact']   = $order['ship-address-1'];
 			$this->order['shipping']['address1']  = $order['ship-address-2'];
@@ -272,18 +427,18 @@ class amazon extends parser {
 		}
 		
 		// error check input
-		if (!$psOrd->short_name) return $this->responseXML('18', SOAP_NO_CUSTOMER_ID, 'error');
-		if (!$psOrd->post_date)  return $this->responseXML('20', SOAP_NO_POST_DATE, 'error');
-		if (!$psOrd->period)     return $this->responseXML('21', SOAP_BAD_POST_DATE, 'error');
+		if (!$psOrd->short_name) return $messageStack->add(SOAP_NO_CUSTOMER_ID, 'error');
+		if (!$psOrd->post_date)  return $messageStack->add(SOAP_NO_POST_DATE, 'error');
+		if (!$psOrd->period)     return $messageStack->add(SOAP_BAD_POST_DATE, 'error');
 
-		if (!$psOrd->ship_primary_name)                                           return $this->responseXML('40', SOAP_NO_SHIPPING_PRIMARY_NAME, 'error');
-		if (ADDRESS_BOOK_CONTACT_REQUIRED        && !$psOrd->ship_contact)        return $this->responseXML('41', SOAP_NO_SHIPPING_CONTACT, 'error');
-		if (ADDRESS_BOOK_ADDRESS1_REQUIRED       && !$psOrd->ship_address1)       return $this->responseXML('42', SOAP_NO_SHIPPING_ADDRESS1, 'error');
-		if (ADDRESS_BOOK_ADDRESS2_REQUIRED       && !$psOrd->ship_address2)       return $this->responseXML('43', SOAP_NO_SHIPPING_ADDRESS2, 'error');
-		if (ADDRESS_BOOK_CITY_TOWN_REQUIRED      && !$psOrd->ship_city_town)      return $this->responseXML('44', SOAP_NO_SHIPPING_CITY_TOWN, 'error');
-		if (ADDRESS_BOOK_STATE_PROVINCE_REQUIRED && !$psOrd->ship_state_province) return $this->responseXML('45', SOAP_NO_SHIPPING_STATE_PROVINCE, 'error');
-		if (ADDRESS_BOOK_POSTAL_CODE_REQUIRED    && !$psOrd->ship_postal_code)    return $this->responseXML('46', SOAP_NO_SHIPPING_POSTAL_CODE, 'error');
-		if (!$psOrd->ship_country_code)                                           return $this->responseXML('47', SOAP_NO_SHIPPING_COUNTRY_CODE, 'error');
+		if (!$psOrd->ship_primary_name)                                           return $messageStack->add(SOAP_NO_SHIPPING_PRIMARY_NAME, 'error');
+		if (ADDRESS_BOOK_CONTACT_REQUIRED        && !$psOrd->ship_contact)        return $messageStack->add(SOAP_NO_SHIPPING_CONTACT, 'error');
+		if (ADDRESS_BOOK_ADDRESS1_REQUIRED       && !$psOrd->ship_address1)       return $messageStack->add(SOAP_NO_SHIPPING_ADDRESS1, 'error');
+		if (ADDRESS_BOOK_ADDRESS2_REQUIRED       && !$psOrd->ship_address2)       return $messageStack->add(SOAP_NO_SHIPPING_ADDRESS2, 'error');
+		if (ADDRESS_BOOK_CITY_TOWN_REQUIRED      && !$psOrd->ship_city_town)      return $messageStack->add(SOAP_NO_SHIPPING_CITY_TOWN, 'error');
+		if (ADDRESS_BOOK_STATE_PROVINCE_REQUIRED && !$psOrd->ship_state_province) return $messageStack->add(SOAP_NO_SHIPPING_STATE_PROVINCE, 'error');
+		if (ADDRESS_BOOK_POSTAL_CODE_REQUIRED    && !$psOrd->ship_postal_code)    return $messageStack->add(SOAP_NO_SHIPPING_POSTAL_CODE, 'error');
+		if (!$psOrd->ship_country_code)                                           return $messageStack->add(SOAP_NO_SHIPPING_COUNTRY_CODE, 'error');
 
 		// post the sales order
 //echo 'ready to post =><br />'; echo  'psOrd object = '; print_r($psOrd); echo '<br />';
@@ -296,18 +451,18 @@ class amazon extends parser {
 	}
 
 	function checkForCustomerExists($psOrd) {
-		global $db;
+		global $db, $messageStack;
 		$output = array();
 		$result = $db->Execute("SELECT id FROM ".TABLE_CONTACTS." WHERE type='c' AND short_name='$psOrd->short_name'");
 		if ($result->RecordCount() == 0) { // record not fond, error since it needs to be there for this import to work.
-			return $this->responseXML('19', SOAP_ACCOUNT_PROBLEM, 'error');
+			return $messageStack->add(SOAP_ACCOUNT_PROBLEM, 'error');
 		} else {
 			$output['ship_add_update'] = 0;
 			$output['bill_acct_id']    = $result->fields['id'];
 			$output['ship_acct_id']    = '0';
 			// find main address to update as billing address
-			$result = $db->Execute("SELECT address_id FROM ".TBLE_ADDRESS_BOOK." WHERE type='cm' AND ref_id={$output['bill_acct_id']}");
-			if ($result->RecordCount() == 0) return $this->responseXML('19', SOAP_ACCOUNT_PROBLEM, 'error');
+			$result = $db->Execute("SELECT address_id FROM ".TABLE_ADDRESS_BOOK." WHERE type='cm' AND ref_id={$output['bill_acct_id']}");
+			if ($result->RecordCount() == 0) return $messageStack->add(SOAP_ACCOUNT_PROBLEM, 'error');
 			$output['bill_address_id'] = $result->fields['address_id'];
 			$output['ship_address_id'] = '0'; // don't add ship to address
 		}
@@ -319,7 +474,7 @@ class amazon extends parser {
 		$result = $db->Execute("SELECT item_weight FROM ".TABLE_INVENTORY." WHERE sku='$sku'");
 		return $result->RecordCount() ? $result->fields['item_weight'] : 0;
 	}
-
+*/
 	function dumpAmazon() {
 	    global $db, $messageStack;
 	    $separator = "\t";
