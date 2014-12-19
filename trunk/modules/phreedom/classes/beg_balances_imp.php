@@ -282,6 +282,7 @@ class beg_bal_import {
 		  'qty'       => $details['qty'],
 		  'remaining' => $details['qty'],
 		  'unit_cost' => ($details['total'] / $details['qty']),
+		  'avg_cost'  => ($details['total'] / $details['qty']),
 		  'post_date' => $post_date,
 		);
 		$result = db_perform(TABLE_INVENTORY_HISTORY, $history_array, 'insert');
