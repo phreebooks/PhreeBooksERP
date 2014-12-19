@@ -823,7 +823,7 @@ class journal {
 	$result = $db->Execute($sql);
 	// catch sku's that are not in the inventory database but have been requested to post, error
 	if ($result->RecordCount() == 0) {
-	  if (!INVENTORY_AUTO_ADD) return $this->fail_message(GL_ERROR_CALCULATING_COGS);
+	  if (!INVENTORY_AUTO_ADD) return $this->fail_message(sprintf(GL_ERROR_CALCULATING_COGS, $item['sku']));
 	  $item_cost  = 0;
 	  $full_price = 0;
 	  switch ($this->journal_id) {
@@ -834,7 +834,7 @@ class journal {
 		case 13:
 		  $full_price = $item['price']; break;
 		default:
-		  return $this->fail_message(GL_ERROR_CALCULATING_COGS);
+		  return $this->fail_message(sprintf(GL_ERROR_CALCULATING_COGS, $item['sku']));
 	  }
 	  $id = $this->inventory_auto_add($item['sku'], $item['description'], $item_cost, $full_price);
 	  $result = $db->Execute($sql); // re-load now that item was created

@@ -225,7 +225,7 @@ define('GL_ERROR_NO_GL_ACCT_NUMBER','No account number provided in /gen_ledger.p
 define('GL_ERROR_UPDATING_ACCOUNT_HISTORY','Error updating customer/vendor account history.');
 define('GL_ERROR_DELETING_ACCOUNT_HISTORY','Error deleting customer/vendor account history record');
 define('GL_ERROR_UPDATING_INVENTORY_STATUS','Updating inventory status requires the sku to be in the database. The failing SKU was: ');
-define('GL_ERROR_CALCULATING_COGS','Calculating the cost of goods sold requires the sku to be in the database, the operation failed.');
+define('GL_ERROR_CALCULATING_COGS','Calculating the cost of goods sold requires the sku to be in the database, the operation failed. The failing SKU was: ');
 define('GL_ERROR_POSTING_INV_HISTORY','Error posting inventory history.');
 define('GL_ERROR_POSTING_NEGATIVE_INV','This entry cannot be posted because it would make your inventory go negative. Your settings do not allow inventory to go negative!');
 define('GL_ERROR_UNPOSTING_COGS','Error rolling back the cost of goods sold. SKU: ');
