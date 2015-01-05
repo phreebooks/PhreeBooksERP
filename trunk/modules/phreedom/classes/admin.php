@@ -228,7 +228,7 @@ class admin extends \core\classes\admin {
 				'order' 		=> 90,
 				'text'        => TEXT_USERS,
 				'security_id' => SECURITY_ID_USERS,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=users&amp;list=1', 'SSL'),
+				'link'        => html_href_link(FILENAME_DEFAULT, 'action=LoadUsersPage&amp;list=1', 'SSL'),
 				'show_in_users_settings' => true,
 				'params'      => '',
 		);
@@ -465,9 +465,54 @@ class admin extends \core\classes\admin {
 		$basis->page_title		=  TEXT_PHREEBOOKS_ERP;
 	}
 
+	/**
+	 * is for loading users page.
+	 * @param \core\classes\basis $basis
+	 * @throws \core\classes\userException
+	 */
+	function LoadUsersPage (\core\classes\basis &$basis){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		$basis->cInfo->menu_id  =  isset($basis->cInfo->mID) ? $basis->cInfo->mID : 'index'; // default to index unless heading is passed
+		$basis->page_title 	= TEXT_USERS;
+		$basis->module		= 'phreedom';
+		$basis->page		= 'users';
+		$basis->template 	= 'template_main';
+
+		// build the list header
+		$heading_array = array(
+				'admin_name'   => TEXT_USERNAME,
+				'inactive'     => TEXT_INACTIVE,
+				'display_name' => TEXT_DISPLAY_NAME,
+				'admin_email'  => TEXT_EMAIL,
+		);
+		$result      = html_heading_bar($heading_array);
+		$list_header = $result['html_code'];
+		$disp_order  = $result['disp_order'];
+		// build the list for the page selected
+		if (isset($_REQUEST['search_text']) && $_REQUEST['search_text'] <> '') {
+			$search_fields = array('admin_name', 'admin_email', 'display_name');
+			// hook for inserting new search fields to the query criteria.
+			if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
+			$search = ' and (' . implode(' like \'%' . $_REQUEST['search_text'] . '%\' or ', $search_fields) . ' like \'%' . $_REQUEST['search_text'] . '%\')';
+		} else {
+			$search = '';
+		}
+		$field_list = array('admin_id', 'inactive', 'display_name', 'admin_name', 'admin_email');
+		// hook to add new fields to the query return results
+		if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
+		$query_raw    = "SELECT SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " FROM " . TABLE_USERS . " WHERE is_role = '0'{$search} ORDER BY {$disp_order}";
+		$sql = $basis->DataBase->prepare($query_raw);
+		$sql->execute();
+		$sql->rowCount();
+		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		$query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+		$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
+		history_save('users');
+	}
+
 	function SendLostPassWord (\core\classes\basis $basis){
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		$sql = $basis->DataBase->prepare("select admin_id, admin_name, admin_email from " . TABLE_USERS . " where admin_email = '{$basis->admin_email}'");
+		$sql = $basis->DataBase->prepare("SELECT admin_id, admin_name, admin_email FROM " . TABLE_USERS . " WHERE admin_email = '{$basis->admin_email}'");
 		$sql->execute();
 		$result = $sql->fetch(\PDO::FETCH_LAZY);
 		if ($basis->admin_email == '' || $basis->admin_email <> $result['admin_email']) throw new \core\classes\userException(TEXT_YOU_ENTERED_THE_WRONG_EMAIL_ADDRESS);
