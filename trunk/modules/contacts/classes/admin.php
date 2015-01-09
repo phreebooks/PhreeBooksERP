@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -51,6 +51,7 @@ class admin extends \core\classes\admin {
 		$this->tables = array(
 		  TABLE_ADDRESS_BOOK => "CREATE TABLE " . TABLE_ADDRESS_BOOK . " (
 			  address_id int(11) NOT NULL auto_increment,
+			  class VARCHAR( 255 ) NOT NULL DEFAULT '',
 			  ref_id int(11) NOT NULL default '0',
 			  type char(2) NOT NULL default '',
 			  primary_name varchar(32) NOT NULL default '',
@@ -141,6 +142,163 @@ class admin extends \core\classes\admin {
 			  KEY description_short (description_short)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci",
 	    );
+		$this->mainmenu["customers"] = array(
+				'order' 		=> MENU_HEADING_CUSTOMERS_ORDER,
+				'text' 			=> TEXT_CUSTOMERS,
+				'security_id'	=> '',
+				'link' 			=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_ar', 'SSL'),
+				'params'      	=> '',
+		);
+		$this->mainmenu["vendors"] = array(
+				'order' 		=> MENU_HEADING_VENDORS_ORDER,
+				'text' 			=> TEXT_VENDORS,
+				'security_id' 	=> '',
+				'link' 			=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_ap', 'SSL'),
+				'params'      	=> '',
+		);
+		$this->mainmenu["employees"] = array(
+				'order' 		=> MENU_HEADING_EMPLOYEES_ORDER,
+				'text' 			=> TEXT_EMPLOYEES,
+				'security_id'	=> '',
+				'link' 			=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_hr', 'SSL'),
+				'params'      	=> '',
+		);
+		// Set the menus
+		$this->mainmenu["customers"]['submenu']["contact"] = array(
+				'order'		  => 10,
+				'text'        => TEXT_CUSTOMERS,
+				'link'        => '',//html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=c&amp;list=1', 'SSL'),
+				'show_in_users_settings' => false,
+				'params'      => '',
+		);
+		$this->mainmenu["customers"]['submenu']["contact"]['submenu']["new_customer"] = array(
+				'text'        => sprintf(TEXT_NEW_ARGS, TEXT_CUSTOMER),
+				'order'       => 5,
+				'security_id' => SECURITY_ID_MAINTAIN_CUSTOMERS,
+				'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;action=new&amp;type=c', 'SSL'),
+				'show_in_users_settings' => false,
+				'params'	    => '',
+		);
+		$this->mainmenu["customers"]['submenu']["contact"]['submenu']["customer_mgr"] = array(
+				'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_CUSTOMER),
+				'order'       => 10,
+				'security_id' => SECURITY_ID_MAINTAIN_CUSTOMERS,
+				'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=c&amp;list=1', 'SSL'),
+				'show_in_users_settings' => true,
+				'params'	    => '',
+		);
+		$this->mainmenu["customers"]['submenu']["crm"] = array(
+				'text'        => TEXT_PHREECRM,
+				'order'       => 15,
+				'link'        => '',//html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=i&amp;list=1', 'SSL'),
+				'show_in_users_settings' => true,
+				'params'	  => '',
+		);
+		$this->mainmenu["vendors"]['submenu']["contact"] = array(
+				'order'		  => 10,
+				'text'        => TEXT_VENDORS,
+				'link'        => '',//html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=v&amp;list=1', 'SSL'),
+				'show_in_users_settings' => false,
+				'params'      => '',
+		);
+		$this->mainmenu["vendors"]['submenu']["contact"]['submenu']["new_vendor"] = array(
+				'text'        => sprintf(TEXT_NEW_ARGS, TEXT_VENDOR),
+				'order'       => 5,
+				'security_id' => SECURITY_ID_MAINTAIN_VENDORS,
+				'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;action=new&amp;type=v', 'SSL'),
+				'show_in_users_settings' => false,
+				'params'      => '',
+		);
+		$this->mainmenu["vendors"]['submenu']["contact"]['submenu']["vendor_mgr"] = array(
+				'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR),
+				'order'       => 10,
+				'security_id' => SECURITY_ID_MAINTAIN_VENDORS,
+				'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=v&amp;list=1', 'SSL'),
+				'show_in_users_settings' => true,
+				'params'      => '',
+		);
+		$this->mainmenu["employees"]['submenu']["contact"] = array(
+				'order'		  => 10,
+				'text'        => TEXT_EMPLOYEES,
+				'link'        => '',//html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=e&amp;list=1', 'SSL'),
+				'show_in_users_settings' => false,
+				'params'      => '',
+		);
+		$this->mainmenu["employees"]['submenu']["contact"]['submenu']["new_employee"] = array(
+				'text'        => sprintf(TEXT_NEW_ARGS, TEXT_EMPLOYEE),
+				'order'       => 5,
+				'security_id' => SECURITY_ID_MAINTAIN_EMPLOYEES,
+				'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;action=new&amp;type=e', 'SSL'),
+				'show_in_users_settings' => false,
+				'params'      => '',
+		);
+		$this->mainmenu["employees"]['submenu']["contact"]['submenu']["employee_mgr"] = array(
+				'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_EMPLOYEE),
+				'order'       => 10,
+				'security_id' => SECURITY_ID_MAINTAIN_EMPLOYEES,
+				'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=e&amp;list=1', 'SSL'),
+				'show_in_users_settings' => true,
+				'params'      => '',
+		);
+		if (defined('ENABLE_MULTI_BRANCH') && ENABLE_MULTI_BRANCH == true) { // don't show menu if multi-branch is disabled
+			$this->mainmenu["company"]['submenu']["branches"] = array(
+					'order'		  => 55,
+					'text'        => TEXT_BRANCHES,
+					'link'        => '',//html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=b&amp;list=1', 'SSL'),
+					'show_in_users_settings' => false,
+					'params'      => '',
+			);
+			$this->mainmenu["company"]['submenu']["branches"]['submenu']["new_branch"] = array(
+					'text'        => sprintf(TEXT_NEW_ARGS, TEXT_BRANCH),
+					'order'        => 55,
+					'security_id' => SECURITY_ID_MAINTAIN_BRANCH,
+					'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;action=new&amp;type=b', 'SSL'),
+					'show_in_users_settings' => false,
+					'params'      => '',
+			);
+			$this->mainmenu["company"]['submenu']["branches"]['submenu']["branch_mgr"] = array(
+					'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_BRANCH),
+					'order'       => 56,
+					'security_id' => SECURITY_ID_MAINTAIN_BRANCH,
+					'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=b&amp;list=1', 'SSL'),
+					'show_in_users_settings' => true,
+					'params'      => '',
+			);
+		} // end disable if not looking at branches
+		$this->mainmenu["customers"]['submenu']['projects'] = array(
+				'order'		  => 60,
+				'text'        => TEXT_PROJECTS,
+				'link'        => '',//html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=j&amp;list=1', 'SSL'),
+				'show_in_users_settings' => false,
+				'params'      => '',
+		);
+		$this->mainmenu["customers"]['submenu']['projects']['submenu']["new_project"] = array(
+				'text'        => sprintf(TEXT_NEW_ARGS, TEXT_PROJECT),
+				'order'       => 5,
+				'security_id' => SECURITY_ID_MAINTAIN_PROJECTS,
+				'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;action=new&amp;type=j', 'SSL'),
+				'show_in_users_settings' => false,
+				'params'      => '',
+		);
+		$this->mainmenu["customers"]['submenu']['projects']['submenu']["project_mgr"] = array(
+				'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_PROJECT),
+				'order'       => 10,
+				'security_id' => SECURITY_ID_MAINTAIN_PROJECTS,
+				'show_in_users_settings' => true,
+				'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=j&amp;list=1', 'SSL'),
+				'params'      => '',
+		);
+		
+		if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
+			$this->mainmenu["company"]['submenu']["configuration"]['submenu']["contacts"] = array(
+					'order'	      => sprintf(TEXT_MODULE_ARGS, TEXT_CONTACTS),
+					'text'        => sprintf(TEXT_MODULE_ARGS, TEXT_CONTACTS),
+					'security_id' => SECURITY_ID_CONFIGURATION,
+					'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=admin', 'SSL'),
+					'show_in_users_settings' => false,
+					'params'      => '',
+			);
+		}
 	    parent::__construct();
 	}
 
@@ -183,7 +341,6 @@ class admin extends \core\classes\admin {
 		    	}
 		    	$admin->DataBase->query("DROP TABLE " . DB_PREFIX . "contacts_extra_fields");
 		  	}
-		  	xtra_field_sync_list('contacts', TABLE_CONTACTS);
 		}
 		if (version_compare($this->status, '3.5', '<') ) {
 	  		if ( db_field_exists(TABLE_CURRENT_STATUS, 'next_cust_id_desc')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cust_id_desc");
@@ -196,6 +353,16 @@ class admin extends \core\classes\admin {
 		if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_crm_id_num')){
     		$result = $admin->DataBase->query("Select MAX(short_name + 1) AS new  FROM " . TABLE_CONTACTS . " WHERE TYPE = 'i'");
 			$admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_crm_id_num VARCHAR( 16 ) NOT NULL DEFAULT '{$result->fields['new']}';");
+		}
+		if (version_compare($this->status, '4.0', '<') ) { //updating dashboards to store the namespaces.
+			$basis->DataBase->exec ("ALTER TABLE ".TABLE_CONTACTS." ADD class VARCHAR( 255 ) NOT NULL DEFAULT '' AFTER id");
+			$sql = $basis->DataBase->prepare("SELECT * FROM ".TABLE_CONTACTS." WHERE class <> '' ");
+			$sql->execute();
+			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+				$temp = '\contacts\classes\type\\'.$result['class'];
+				$cInfo = new $temp($result);
+				$cInfo->save_contact();
+			}
 		}
 		xtra_field_sync_list('contacts', TABLE_CONTACTS);
   	}
@@ -221,9 +388,52 @@ class admin extends \core\classes\admin {
 		$this->add_report_folder($id, TEXT_REPORTS,           'vend', 'fr');
 		parent::load_reports();
 	}
-
+	
+	/**
+	 * this function will load the contact manager page
+	 */
+	function LoadContactMgrPage(\core\classes\basis &$basis) {
+		$criteria[] = "a.type = '{$type}m'";
+		if (isset($basis->cInfo->search_text) && $basis->cInfo->search_text <> '') {
+			$search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.address1',
+					'a.address2', 'a.city_town', 'a.postal_code', 'c.short_name');
+			// hook for inserting new search fields to the query criteria.
+			if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
+			$criteria[] = '(' . implode(" like '%{$basis->cInfo->search_text}%' or ", $search_fields) . " like '%{$basis->cInfo->search_text}%')";
+		}
+		if (!$_SESSION['f0']) $criteria[] = "(c.inactive = '0' or c.inactive = '')"; // inactive flag
+		$search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
+		$field_list = array('c.class','c.id', 'c.inactive', 'c.short_name', 'c.contact_first', 'c.contact_last',
+				'a.telephone1', 'c.attachments', 'c.first_date', 'c.last_update', 'c.last_date_1', 'c.last_date_2',
+				'a.primary_name', 'a.address1', 'a.city_town', 'a.state_province', 'a.postal_code');
+		// hook to add new fields to the query return results
+		if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
+		$query_raw = "SELECT SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . "
+			FROM " . TABLE_CONTACTS . " c LEFT JOIN " . TABLE_ADDRESS_BOOK . " a ON c.id = a.ref_id {$search} ORDER BY $disp_order";
+		//$query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+		$sql = $basis->DataBase->prepare($query_raw);
+		$sql->execute();
+		while ($result = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)) {
+			$basis->cInfo->contacts_list[] = $result;
+		}
+		$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
+		history_save('contacts'.$type);
+		$basis->module		= 'contacts';
+		$basis->page		= 'main';
+		$basis->template 	= 'template_main';
+		switch ($type) {
+			case 'b': $basis->page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_BRANCH);		break;
+			case 'c': $basis->page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_CUSTOMER);	break;
+			case 'e': $basis->page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_EMPLOYEE);	break;
+			case 'i': $basis->page_title = TEXT_PHREECRM; 								break;
+			case 'j': $basis->page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_PROJECT);	break;
+			case 'v': $basis->page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR);		break;
+		}
+		
+	}
+	
 	function load_demo() {
-	    global $admin;
+		global $admin;
 		// Data for table `address_book`
 		$admin->DataBase->query("TRUNCATE TABLE " . TABLE_ADDRESS_BOOK);
 		$admin->DataBase->query("INSERT INTO " . TABLE_ADDRESS_BOOK . " VALUES (1, 1, 'vm', 'Obscure Video', '', '1354 Triple A Ave', '', 'Chatsworth', 'CA', '93245', 'USA', '800.345.5678', '', '', '', 'obsvid@obscurevideo.com', '', '');");
@@ -277,6 +487,5 @@ class admin extends \core\classes\admin {
 		$admin->DataBase->query("INSERT INTO " . TABLE_DEPT_TYPES . " VALUES (4, 'Shipping & Receiving');");
 		parent::load_demo();
 	}
-
 }
 ?>

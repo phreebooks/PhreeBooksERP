@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -214,6 +214,8 @@ class admin {
 	  	foreach ($this->tables as $table => $create_table_sql) {
 	    	if (!db_table_exists($table)) {
 		  		if (!$admin->DataBase->query($create_table_sql)) throw new \core\classes\userException (sprintf("Error installing table: %s", $table));
+			}else{
+				//@todo add table field check 
 			}
 	  	}
 	}

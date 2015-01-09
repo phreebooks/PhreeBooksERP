@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -45,7 +45,7 @@ class contacts {
 
     public function __construct(){
     	global $admin;
-    	$this->page_title_new = sprintf(TEXT_NEW_ARGS, $this->title);
+    	$this->page_title_new  = sprintf(TEXT_NEW_ARGS, $this->title);
     	$this->page_title_edit = sprintf(TEXT_EDIT_ARGS, $this->title);
     	//set defaults
         $this->crm_date        = date('Y-m-d');
@@ -59,11 +59,11 @@ class contacts {
 	public function getContact() {
 	  	global $admin;
 	  	if ($this->id == '' && !$this->aid == ''){
-	  		$result = $admin->DataBase->query("select * from ".TABLE_ADDRESS_BOOK." where address_id = $this->aid ");
+	  		$result = $admin->DataBase->query("select * from ".TABLE_ADDRESS_BOOK." where address_id = {$this->aid}");
 	  		$this->id = $result->fields['ref_id'];
 	  	}
 		// Load contact info, including custom fields
-		$result = $admin->DataBase->query("select * from ".TABLE_CONTACTS." where id = $this->id");
+		$result = $admin->DataBase->query("select * from ".TABLE_CONTACTS." where id = {$this->id}");
 		foreach ($result->fields as $key => $value) $this->$key = $value;
 		// expand attachments
 		$this->attachments = $result->fields['attachments'] ? unserialize($result->fields['attachments']) : array();
@@ -71,99 +71,100 @@ class contacts {
 		$result = $admin->DataBase->query("select * from ".TABLE_ADDRESS_BOOK." where ref_id = $this->id order by primary_name");
 		$this->address = array();
 		while (!$result->EOF) {
-		  $type = substr($result->fields['type'], 1);
-		  $this->address_book[$type][] = new \core\classes\objectInfo($result->fields);
-		  if ($type == 'm') { // prefill main address
-		  	foreach ($result->fields as $key => $value) $this->address[$result->fields['type']][$key] = $value;
-		  }
-		  $result->MoveNext();
+		  	$type = substr($result->fields['type'], 1);
+		  	$this->address_book[$type][] = new \core\classes\objectInfo($result->fields);
+		  	if ($type == 'm') { // prefill main address
+		  		foreach ($result->fields as $key => $value) $this->address[$result->fields['type']][$key] = $value;
+		  	}
+		  	$result->MoveNext();
 		}
 		// load payment info
 		if ($_SESSION['admin_encrypt'] && ENABLE_ENCRYPTION) {
-		  $result = $admin->DataBase->query("select id, hint, enc_value from ".TABLE_DATA_SECURITY." where module='contacts' and ref_1=$this->id");
-		  while (!$result->EOF) {
-		    $val = explode(':', \core\classes\encryption::decrypt($_SESSION['admin_encrypt'], $result->fields['enc_value']));
-		    $this->payment_data[] = array(
-			  'id'   => $result->fields['id'],
-			  'name' => $val[0],
-			  'hint' => $result->fields['hint'],
-			  'exp'  => $val[2] . '/' . $val[3],
-		    );
-		    $result->MoveNext();
-		  }
+		  	$result = $admin->DataBase->query("select id, hint, enc_value from ".TABLE_DATA_SECURITY." where module='contacts' and ref_1={$this->id}");
+		  	while (!$result->EOF) {
+		    	$val = explode(':', \core\classes\encryption::decrypt($_SESSION['admin_encrypt'], $result->fields['enc_value']));
+		    	$this->payment_data[] = array(
+			  	  'id'   => $result->fields['id'],
+			  	  'name' => $val[0],
+			  	  'hint' => $result->fields['hint'],
+			  	  'exp'  => $val[2] . '/' . $val[3],
+		    	);
+		    	$result->MoveNext();
+		  	}
 		}
 		// load contacts info
-		$result = $admin->DataBase->query("select * from ".TABLE_CONTACTS." where dept_rep_id=$this->id");
+		$result = $admin->DataBase->query("select * from ".TABLE_CONTACTS." where dept_rep_id={$this->id}");
 		$this->contacts = array();
 		while (!$result->EOF) {
-		  $cObj = new \core\classes\objectInfo();
-		  foreach ($result->fields as $key => $value) $cObj->$key = $value;
-		  $addRec = $admin->DataBase->query("select * from ".TABLE_ADDRESS_BOOK." where type='im' and ref_id=".$result->fields['id']);
-		  $cObj->address['m'][] = new \core\classes\objectInfo($addRec->fields);
-		  $this->contacts[] = $cObj; //unserialize(serialize($cObj));
-    	  // load crm notes
-		  $logs = $admin->DataBase->query("select * from ".TABLE_CONTACTS_LOG." where contact_id = ". $result->fields['id']. " order by log_date desc");
-		  while (!$logs->EOF) {
-		    $this->crm_log[] = new \core\classes\objectInfo($logs->fields);
-		    $logs->MoveNext();
-		  }
-		  $result->MoveNext();
+		  	$cObj = new \core\classes\objectInfo();
+		  	foreach ($result->fields as $key => $value) $cObj->$key = $value;
+		  	$addRec = $admin->DataBase->query("select * from ".TABLE_ADDRESS_BOOK." where type='im' and ref_id={$result->fields['id']}");
+		  	$cObj->address['m'][] = new \core\classes\objectInfo($addRec->fields);
+		  	$this->contacts[] = $cObj; //unserialize(serialize($cObj));
+			// 	load crm notes
+		  	$logs = $admin->DataBase->query("select * from ".TABLE_CONTACTS_LOG." where contact_id = {$result->fields['id']} order by log_date desc");
+		  	while (!$logs->EOF) {
+		    	$this->crm_log[] = new \core\classes\objectInfo($logs->fields);
+		    	$logs->MoveNext();
+		  	}
+		  	$result->MoveNext();
 		}
 		// load crm notes
-		$result = $admin->DataBase->query("select * from ".TABLE_CONTACTS_LOG." where contact_id = $this->id order by log_date desc");
+		$result = $admin->DataBase->query("select * from ".TABLE_CONTACTS_LOG." where contact_id = {$this->id} order by log_date desc");
 		while (!$result->EOF) {
-		  $this->crm_log[] = new \core\classes\objectInfo($result->fields);
-		  $result->MoveNext();
+		  	$this->crm_log[] = new \core\classes\objectInfo($result->fields);
+		  	$result->MoveNext();
 		}
-  }
-
-  function delete($id) {
-  	global $admin;
-  	if ( $this->id == '' ) $this->id = $id;	// error check, no delete if a journal entry exists
-	$result = $admin->DataBase->query("SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE bill_acct_id=$this->id OR ship_acct_id=$this->id OR store_id=$this->id LIMIT 1");
-	if ($result->rowCount() != 0) throw new \core\classes\userException(ACT_ERROR_CANNOT_DELETE);
-	return $this->do_delete();
-  }
-
-  public function do_delete(){
-	  global $admin;
-	  $admin->DataBase->query("DELETE FROM ".TABLE_ADDRESS_BOOK ." WHERE ref_id=$this->id");
-	  $admin->DataBase->query("DELETE FROM ".TABLE_DATA_SECURITY." WHERE ref_1=$this->id");
-	  $admin->DataBase->query("DELETE FROM ".TABLE_CONTACTS     ." WHERE id=$this->id");
-	  $admin->DataBase->query("DELETE FROM ".TABLE_CONTACTS_LOG ." WHERE contact_id=$this->id");
-	  foreach (glob(CONTACTS_DIR_ATTACHMENTS.'contacts_'.$this->id.'_*.zip') as $filename) unlink($filename); // remove attachments
-	  return true;
-  }
-   /*
-   * this function loads alle open order
-   */
-
-  function load_open_orders($acct_id, $journal_id, $only_open = true, $limit = 0) {
-  	global $admin;
-  	if (!$acct_id) return array();
-  	$sql  = "select id, journal_id, closed, closed_date, post_date, total_amount, purchase_invoice_id, purch_order_id from ".TABLE_JOURNAL_MAIN." where";
-  	$sql .= ($only_open) ? " closed = '0' and " : "";
-  	$sql .= " journal_id in (" . $journal_id . ") and bill_acct_id = " . $acct_id . ' order by post_date DESC';
-  	$sql .= ($limit) ? " limit " . $limit : "";
-  	$result = $admin->DataBase->query($sql);
-  	if ($result->rowCount() == 0) return array();	// no open orders
-  	$output = array(array('id' => '', 'text' => TEXT_NEW));
-  	while (!$result->EOF) {
-  	     $output[] = array(
-  	         'id'                 => $result->fields['id'],
-  	         'journal_id'         => $result->fields['journal_id'],
-  	         'text'               => $result->fields['purchase_invoice_id'],
-	  		 'post_date'          => $result->fields['post_date'],
-	  		 'closed'             => $result->fields['closed'],
-	  		 'closed_date'        => $result->fields['closed_date'],
-	  		 'total_amount'       => in_array($result->fields['journal_id'], array(7,13)) ? -$result->fields['total_amount'] : $result->fields['total_amount'],
-	  		 'purchase_invoice_id'=> $result->fields['purchase_invoice_id'],
-	  		 'purch_order_id'     => $result->fields['purch_order_id'],
-  	     );
-  	     $result->MoveNext();
   	}
-  	return $output;
-  }
+
+  	function delete($id) {
+  		global $admin;
+  		if ( $this->id == '' ) $this->id = $id;	// error check, no delete if a journal entry exists
+		$result = $admin->DataBase->query("SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE bill_acct_id={$this->id} OR ship_acct_id={$this->id} OR store_id={$this->id} LIMIT 1");
+		if ($result->rowCount() != 0) throw new \core\classes\userException(ACT_ERROR_CANNOT_DELETE);
+		return $this->do_delete();
+	}
+
+  	public function do_delete(){
+		global $admin;
+	  	$admin->DataBase->query("DELETE FROM ".TABLE_ADDRESS_BOOK ." WHERE ref_id={$this->id}");
+	  	$admin->DataBase->query("DELETE FROM ".TABLE_DATA_SECURITY." WHERE ref_1={$this->id}");
+	  	$admin->DataBase->query("DELETE FROM ".TABLE_CONTACTS     ." WHERE id={$this->id}");
+	  	$admin->DataBase->query("DELETE FROM ".TABLE_CONTACTS_LOG ." WHERE contact_id={$this->id}");
+	  	foreach (glob(CONTACTS_DIR_ATTACHMENTS."contacts_{$this->id}_*.zip") as $filename) unlink($filename); // remove attachments
+	  	return true;
+  	}
+  	
+   	/**
+   	* this function loads alle open order
+   	*/
+
+  	function load_open_orders($acct_id, $journal_id, $only_open = true, $limit = 0) {
+  		global $admin;
+  		if (!$acct_id) return array();
+  		$sql  = "select id, journal_id, closed, closed_date, post_date, total_amount, purchase_invoice_id, purch_order_id from ".TABLE_JOURNAL_MAIN." where";
+  		$sql .= ($only_open) ? " closed = '0' and " : "";
+  		$sql .= " journal_id in (" . $journal_id . ") and bill_acct_id = " . $acct_id . ' order by post_date DESC';
+  		$sql .= ($limit) ? " limit " . $limit : "";
+  		$result = $admin->DataBase->query($sql);
+  		if ($result->rowCount() == 0) return array();	// no open orders
+  		$output = array(array('id' => '', 'text' => TEXT_NEW));
+  		while (!$result->EOF) {
+  	    	$output[] = array(
+  	          'id'                 => $result->fields['id'],
+  	          'journal_id'         => $result->fields['journal_id'],
+  	          'text'               => $result->fields['purchase_invoice_id'],
+	  		  'post_date'          => $result->fields['post_date'],
+	  		  'closed'             => $result->fields['closed'],
+	  		  'closed_date'        => $result->fields['closed_date'],
+	  		  'total_amount'       => in_array($result->fields['journal_id'], array(7,13)) ? -$result->fields['total_amount'] : $result->fields['total_amount'],
+	  		  'purchase_invoice_id'=> $result->fields['purchase_invoice_id'],
+	  		  'purch_order_id'     => $result->fields['purch_order_id'],
+  	     	);
+  	     	$result->MoveNext();
+  		}
+  		return $output;
+  	}
 
   	public function data_complete(){
   		global $admin, $messageStack;
@@ -189,69 +190,70 @@ class contacts {
     	}
     	$this->duplicate_id();
     	return true;
-  }
+  	}
 
-  /**
-   * this function looks if there are duplicate id's if so it throws a exception.
-   */
+  	/**
+   	* this function looks if there are duplicate id's if so it throws a exception.
+   	*/
 
-  public function duplicate_id(){
-  	global $admin;
-  	// check for duplicate short_name IDs
-    if ($this->id == '') {
-      $result = $admin->DataBase->query("select id from ".TABLE_CONTACTS." where short_name = '$this->short_name' and type = '$this->type'");
-    } else {
-      $result = $admin->DataBase->query("select id from ".TABLE_CONTACTS." where short_name = '$this->short_name' and type = '$this->type' and id <> $this->id");
-    }
-    if ($result->rowCount() > 0) throw new \core\classes\userException($this->duplicate_id_error);
-  }
+  	public function duplicate_id(){
+  		global $admin;
+	  	// check for duplicate short_name IDs
+    	if ($this->id == '') {
+      		$result = $admin->DataBase->query("select id from ".TABLE_CONTACTS." where short_name = '$this->short_name' and type = '$this->type'");
+    	} else {
+      		$result = $admin->DataBase->query("select id from ".TABLE_CONTACTS." where short_name = '$this->short_name' and type = '$this->type' and id <> $this->id");
+    	}
+    	if ($result->rowCount() > 0) throw new \core\classes\userException($this->duplicate_id_error);
+  	}
 
-  /*
-   * this function saves all input in the contacts main page.
-   */
+  	/**
+   	* this function saves all input in the contacts main page.
+   	*/
 
-  public function save_contact(){
-  	global $admin;
-  	$fields = new \contacts\classes\fields(false);
-  	$sql_data_array = $fields->what_to_save();
-    $sql_data_array['type']            = $this->type;
-    $sql_data_array['short_name']      = $this->short_name;
-    $sql_data_array['inactive']        = isset($this->inactive) ? '1' : '0';
-    $sql_data_array['contact_first']   = $this->contact_first;
-    $sql_data_array['contact_middle']  = $this->contact_middle;
-    $sql_data_array['contact_last']    = $this->contact_last;
-    $sql_data_array['store_id']        = $this->store_id;
-    $sql_data_array['gl_type_account'] = (is_array($this->gl_type_account)) ? implode('', array_keys($this->gl_type_account)) : $this->gl_type_account;
-    $sql_data_array['gov_id_number']   = $this->gov_id_number;
-    $sql_data_array['dept_rep_id']     = $this->dept_rep_id;
-    $sql_data_array['account_number']  = $this->account_number;
-    $sql_data_array['special_terms']   = $this->special_terms;
-    $sql_data_array['price_sheet']     = $this->price_sheet;
-    $sql_data_array['tax_id']          = $this->tax_id;
-    $sql_data_array['last_update']     = 'now()';
-    if ($this->id == '') { //create record
-        $sql_data_array['first_date'] = 'now()';
-        db_perform(TABLE_CONTACTS, $sql_data_array, 'insert');
-        $this->id = db_insert_id();
-		//if auto-increment see if the next id is there and increment if so.
-        if ($this->inc_auto_id) { // increment the ID value
-            $next_id = string_increment($this->short_name);
-            $admin->DataBase->query("update ".TABLE_CURRENT_STATUS." set $this->auto_field = '$next_id'");
-        }
-        gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_ADD . '-' . $this->title, $this->short_name);
-    } else { // update record
-        db_perform(TABLE_CONTACTS, $sql_data_array, 'update', "id = '$this->id'");
-        gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_UPDATE . '-' . $this->title, $this->short_name);
-    }
-  }
+	public function save_contact(){
+  		global $admin;
+  		$fields = new \contacts\classes\fields(false);
+  		$sql_data_array = $fields->what_to_save();
+  		$sql_data_array['class']			= addcslashes(get_class($this), '\\');
+    	$sql_data_array['type']            	= $this->type;
+    	$sql_data_array['short_name']      	= $this->short_name;
+    	$sql_data_array['inactive']        	= isset($this->inactive) ? '1' : '0';
+    	$sql_data_array['contact_first']   	= $this->contact_first;
+    	$sql_data_array['contact_middle']  	= $this->contact_middle;
+    	$sql_data_array['contact_last']    	= $this->contact_last;
+    	$sql_data_array['store_id']        	= $this->store_id;
+    	$sql_data_array['gl_type_account'] 	= (is_array($this->gl_type_account)) ? implode('', array_keys($this->gl_type_account)) : $this->gl_type_account;
+    	$sql_data_array['gov_id_number']   	= $this->gov_id_number;
+    	$sql_data_array['dept_rep_id']     	= $this->dept_rep_id;
+    	$sql_data_array['account_number']  	= $this->account_number;
+    	$sql_data_array['special_terms']   	= $this->special_terms;
+    	$sql_data_array['price_sheet']     	= $this->price_sheet;
+    	$sql_data_array['tax_id']          	= $this->tax_id;
+    	$sql_data_array['last_update']     	= 'now()';
+    	if ($this->id == '') { //create record
+        	$sql_data_array['first_date'] = 'now()';
+        	db_perform(TABLE_CONTACTS, $sql_data_array, 'insert');
+        	$this->id = db_insert_id();
+			//	if auto-increment see if the next id is there and increment if so.
+    	    if ($this->inc_auto_id) { // increment the ID value
+        	    $next_id = string_increment($this->short_name);
+            	$admin->DataBase->query("update ".TABLE_CURRENT_STATUS." set $this->auto_field = '$next_id'");
+	        }
+    	    gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_ADD . '-' . $this->title, $this->short_name);
+    	} else { // update record
+        	db_perform(TABLE_CONTACTS, $sql_data_array, 'update', "id = '$this->id'");
+        	gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_UPDATE . '-' . $this->title, $this->short_name);
+    	}
+  	}
 
-  public function save_addres(){
-  	global $admin;
-    // address book fields
-    foreach ($this->address_types as $value) {
-      if (($value <> 'im' && substr($value, 1, 1) == 'm') || // all main addresses except contacts which is optional
-        ($this->address[$value]['primary_name'] <> '')) { // billing, shipping, and contact if primary_name present
-              $sql_data_array = array(
+  	public function save_addres(){
+  		global $admin;
+	    // address book fields
+    	foreach ($this->address_types as $value) {
+      		if (($value <> 'im' && substr($value, 1, 1) == 'm') || // all main addresses except contacts which is optional
+        	  ($this->address[$value]['primary_name'] <> '')) { // billing, shipping, and contact if primary_name present
+              	$sql_data_array = array(
                     'ref_id'         => $this->id,
                     'type'           => $value,
                     'primary_name'   => $this->address[$value]['primary_name'],
@@ -270,15 +272,15 @@ class contacts {
                     'website'        => $this->address[$value]['website'],
                     'notes'          => $this->address[$value]['notes'],
                 );
-              if ($value == 'im') $sql_data_array['ref_id'] = $this->i_id; // re-point contact
-              if ($this->address[$value]['address_id'] == '') { // then it's a new address
-                db_perform(TABLE_ADDRESS_BOOK, $sql_data_array, 'insert');
-                $this->address[$value]['address_id'] = db_insert_id();
-              } else { // then update address
-                db_perform(TABLE_ADDRESS_BOOK, $sql_data_array, 'update', "address_id = '".$this->address[$value]['address_id']."'");
-              }
-      }
-    }
-  }
+              	if ($value == 'im') $sql_data_array['ref_id'] = $this->i_id; // re-point contact
+              	if ($this->address[$value]['address_id'] == '') { // then it's a new address
+                	db_perform(TABLE_ADDRESS_BOOK, $sql_data_array, 'insert');
+                	$this->address[$value]['address_id'] = db_insert_id();
+              	} else { // then update address
+                	db_perform(TABLE_ADDRESS_BOOK, $sql_data_array, 'update', "address_id = '".$this->address[$value]['address_id']."'");
+              	}
+      		}
+    	}
+  	}
 }
 ?>
