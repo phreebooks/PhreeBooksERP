@@ -1205,6 +1205,7 @@ function ajaxPrintAndClean(sXml) { // call back function
     if (!xml) return;
   	var massage 	= $(xml).find("massage").text();
   	if ( massage ) 	  alert( massage );
+  	resetForm();
   	var action 		= $(xml).find("action").text();
   	var print 		= action.substring(0,5) == 'print';
   	var tillId 		= document.getElementById('till_id').value;
@@ -1234,7 +1235,6 @@ function ajaxPrintAndClean(sXml) { // call back function
 		var printWin = window.open("index.php?module=phreeform&page=popup_gen&gID=<?php echo POPUP_FORM_TYPE;?>&date=a&xfld=journal_main.id&xcr=EQUAL&xmin=" + order_id ,"popup_gen","width=700px,height=550px,resizable=1,scrollbars=1,top=150px,left=200px");
 		printWin.focus();	
 	}
-	resetForm();
 }
 
 function jzebraReady(){

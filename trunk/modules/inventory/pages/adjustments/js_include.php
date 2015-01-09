@@ -249,7 +249,7 @@ function processEditAdjustment(sXml) {
 		document.getElementById('price_'+rowCnt).value    = formatCurrency($(this).find("debit_amount").text() / qty);
 		document.getElementById('desc_'+rowCnt).value     = $(this).find("description").text();
 		loadSkuDetails(0, rowCnt,1);
-		rowCnt = addInvRow();
+		rowCnt = addInvRow() - 1;
 	  default:
 	}
   });

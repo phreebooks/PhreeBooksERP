@@ -207,7 +207,7 @@ class queryFactory {
       $query_time = $time_end[1] + $time_end[0] - $time_start[1] - $time_start[0];
       $this->total_query_time += $query_time;
       $this->count_queries++;
-//$messageStack->add('query execution time = ' . $query_time . ' and sql = ' . $zf_sql, 'caution');
+//$messageStack->add("query execution time = $query_time and sql = $zf_sql<br>".chr(13));
       return($obj);
     }
   }
@@ -242,6 +242,7 @@ class queryFactory {
 	$query_time = $time_end[1] + $time_end[0] - $time_start[1] - $time_start[0];
 	$this->total_query_time += $query_time;
 	$this->count_queries++;
+//$messageStack->add("query execution time = $query_time and sql = $zf_sql<br>".chr(13));
 	return($obj);
   }
 

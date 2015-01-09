@@ -118,7 +118,7 @@ function processSkuStock(sXml) {
   if($(xml).find("inactive").text() == 1) {
 	  backgroundColor = 'pink';
 	  title = ItemIsInactive;
-  }else if($(xml).find("quantity_on_sales_order").text() != 0){
+  }else if($(xml).find("quantity_on_sales_order").text() >= 0){
 	  backgroundColor = 'Aquamarine';
 	  title = SalesOrderForItem;
   }else if($(xml).find("branch_qty_in_stock").text() == 0) {
