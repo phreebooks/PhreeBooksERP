@@ -248,18 +248,23 @@ class beg_bal_import {
 		if (is_array($sku_list)) {
 		  	$glEntry->affected_accounts = $affected_accounts;
 		  	// *************** START TRANSACTION *************************
+		  	$db->transStart();
 		  	// update inventory balances on hand
 			foreach ($sku_list as $sku => $details) {
 				$sql = "update " . TABLE_INVENTORY . "
 				  set quantity_on_hand = quantity_on_hand + " . $details['qty'] . " where sku = '" . $sku . "'";
 				$result = $admin->DataBase->query($sql);
-				if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(TEXT_FAILED_UPDATING_SKU_THE_PROCESS_WAS_TERMINATED_ARGS, $sku));
+				if ($result->AffectedRows() <> 1){
+					$db->transRollback();
+					throw new \core\classes\userException(sprintf(TEXT_FAILED_UPDATING_SKU_THE_PROCESS_WAS_TERMINATED_ARGS, $sku));
+				}
 				$history_array = array(
 				  'ref_id'    => 0,
 				  'sku'       => $sku,
 				  'qty'       => $details['qty'],
 				  'remaining' => $details['qty'],
 				  'unit_cost' => ($details['total'] / $details['qty']),
+				  'avg_cost'  => ($details['total'] / $details['qty']),
 				  'post_date' => $post_date,
 				);
 				$result = db_perform(TABLE_INVENTORY_HISTORY, $history_array, 'insert');
@@ -267,12 +272,17 @@ class beg_bal_import {
 		  	// update chart of account beginning balances for period 1
 		  foreach ($coa_list as $account => $amount) {
 				$sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " set beginning_balance = beginning_balance + " . $amount . "
-				  where account_id = '" . $account . "' and period = 1";
+				  where account_id = '$account' and period = 1";
 				$result = $admin->DataBase->query($sql);
-				if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(TEXT_FAILED_UPDATING_ACCOUNT_THE_PROCESS_WAS_TERMINATED_ARGS, $account));
+				if ($result->AffectedRows() <> 1) {
+					$db->transRollback();
+					throw new \core\classes\userException(sprintf(TEXT_FAILED_UPDATING_ACCOUNT_THE_PROCESS_WAS_TERMINATED_ARGS, $account));
+				}	
 		  }
 		  // update the chart of accounts history through the existing periods
 		  $glEntry->update_chart_history_periods($period = 1);
+		  if (DEBUG) $messageStack->write_debug();
+		  $db->transCommit();	// post the chart of account values
 		  // *************** END TRANSACTION *************************
 		}
 		$this->line_count = $row_id;
