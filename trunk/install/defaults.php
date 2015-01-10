@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -21,7 +21,7 @@ $config_contents = "<" . "?php\n" .
 "// +-----------------------------------------------------------------+\n" .
 "// |                    Phreedom Open Source ERP                     |\n" .
 "// +-----------------------------------------------------------------+\n" .
-"// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |\n" .
+"// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |\n" .
 "// +-----------------------------------------------------------------+\n" .
 "// | This program is free software: you can redistribute it and/or   |\n" . 
 "// | modify it under the terms of the GNU General Public License as  |\n" .
