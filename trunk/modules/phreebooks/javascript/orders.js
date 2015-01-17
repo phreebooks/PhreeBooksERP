@@ -1255,7 +1255,7 @@ function fillInventory(sXml) {
 		  if ($(xml).find("quantity_on_order").text() >= 0) {
 			  document.getElementById('sku_'+rowCnt).style.backgroundColor = 'Yellow';
 			  document.getElementById('sku_'+rowCnt).title = ItemIsAlreadyOnOrder;
-		  }else if($(xml).find("branch_qty_in_stock").text() =< 0){
+		  }else if($(xml).find("branch_qty_in_stock").text() <= 0){
 			  document.getElementById('sku_'+rowCnt).style.backgroundColor = 'Green';
 			  document.getElementById('sku_'+rowCnt).title = ItemIsOnHand;
 		  }else if($(xml).find("inactive").text() == 1) {
