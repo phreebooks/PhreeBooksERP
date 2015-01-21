@@ -1059,7 +1059,8 @@ function gen_db_date($raw_date = '', $separator = '/') {
 		case 'large':  $subdir = '32x32/'; $height='32'; break;
 		case 'svg' :   $subdir = 'scalable/';            break;
 	}
-    $image_html = '<img src="' . DIR_WS_ICONS . $subdir . $image . '" alt="' . $alt . '" class="imgIcon"';
+    $image_html = '<img src="' . DIR_WS_ICONS . $subdir . $image . '" alt="' . $alt . '"';
+    if (strpos($params, 'class=') === false) $image_html .= ' class="imgIcon"'; // class is specified, skip default
     if (gen_not_null($alt))    $image_html .= ' title="'  . $alt    . '"';
     if (gen_not_null($id))     $image_html .= ' id="'     . $id     . '"';
     if ($width > 0)            $image_html .= ' width="'  . $width  . '"';
