@@ -375,17 +375,15 @@ function table_import_xml($structure, $db_table, $filename) {
 }
 
 function table_import_csv($structure, $db_table, $filename) {
-//echo 'structure = '; print_r($structure); echo '<br>';
   global $db, $messageStack;
-  $data = file($_FILES[$filename]['tmp_name']);
+  $data = array_map('str_getcsv', file($_FILES[$filename]['tmp_name']));
   // read the header and build array
   if (sizeof($data) < 2) {
     $messageStack->add('The number of lines in the file is to small, a csv file must contain a header line and at least on input line!','error');
 	return false;
   }
-  $header = csv_explode(trim(array_shift($data)));
+  $header = array_shift($data);
   foreach ($header as $key => $value) $header[$key] = trim($value);
-//echo 'header = '; print_r($header); echo '<br>';
   // build the map structure
   $temp = $structure->Module->Table;
   $map_array = array();
@@ -418,25 +416,24 @@ function table_import_csv($structure, $db_table, $filename) {
 	}
   }
   foreach ($data as $line) {
-    if (!$line  = trim($line)) continue; // blank line
 	$line_array = $map_array;
 	$sql_array  = array();
-	$working    = csv_explode($line);
-    for ($i = 0; $i < sizeof($working); $i++) $line_array[$i]['value'] = $working[$i];
+    for ($i = 0; $i < sizeof($line); $i++) $line_array[$i]['value'] = $line[$i];
 	foreach ($line_array as $value) {
-	  $sql_array[$value['table']][$value['cnt']][$value['field']] = $value['value'];
+		if (!$value['table']) continue;
+		$sql_array[$value['table']][$value['cnt']][$value['field']] = $value['value'];
 	}
 	foreach ($sql_array as $table => $count) {
 	  foreach ($count as $cnt => $table_array) {
-//echo 'inserting data: '; print_r($table_array); echo '<br>';
+//echo "inserting to table $table data: ".print_r($table_array, true).'<br>';
 	    if ($cnt == 0) { // main record, fetch id afterwards
-	      db_perform(DB_PREFIX . $table, $table_array, 'insert');
+	      if (sizeof($table_array) > 0) db_perform(DB_PREFIX . $table, $table_array, 'insert');
 		  $id = db_insert_id();
 		} else { // dependent table 
 		  $data_present = false;
 		  foreach ($table_array as $value) if (gen_not_null($value)) $data_present = true;
 		  if ($data_present) {
-		    $table_array[$ref_mapping[$table]['ref_field']] = $id;
+		    $table_array[$ref_mapping[$table]['ref_field']] = $value;
 	        db_perform(DB_PREFIX . $table, $table_array, 'insert');
 		  }
 		}
