@@ -40,5 +40,26 @@ class e extends \contacts\classes\contacts{
 		}
 		return ACT_ERROR_CANNOT_DELETE_EMPLOYEE;
   	}
+
+  	function contant_list_row () {
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__ ." of class ". get_class($admin_class));
+  		$security_level = \core\classes\user::validate($this->security_token); // in this case it must be done after the class is defined for
+  		$bkgnd          = ($this->inactive) ? ' style="background-color:pink"' : '';
+  		$attach_exists  = $this->attachments ? true : false;
+  		echo "<td $bkgnd onclick='submitSeq( $this->id, \"edit\")'>". htmlspecialchars($this->short_name) ."</td>";
+  		echo "<td $bkgnd onclick='submitSeq( $this->id, \"edit\")'>". htmlspecialchars($this->contact_first . ' ' . $this->contact_last). "</td>";
+  		echo "<td        onclick='submitSeq( $this->id, \"edit\")'>". htmlspecialchars($this->address1) ."</td>";
+  		echo "<td        onclick='submitSeq( $this->id, \"edit\")'>". htmlspecialchars($this->city_town)."</td>";
+  		echo "<td        onclick='submitSeq( $this->id, \"edit\")'>". htmlspecialchars($this->state_province)."</td>";
+  		echo "<td        onclick='submitSeq( $this->id, \"edit\")'>". htmlspecialchars($this->postal_code)."</td>";
+  		echo "<td 	     onclick='submitSeq( $this->id, \"edit\")'>". htmlspecialchars($this->telephone1)."</td>";
+  		echo "<td align='right'>";
+  		// build the action toolbar
+  		if ($security_level > 1) echo html_icon('mimetypes/x-office-presentation.png', TEXT_SALES, 'small', 	"onclick='contactChart(\"annual_sales\", $this->id)'") . chr(10);
+  		if ($security_level > 1) echo html_icon('actions/edit-find-replace.png', TEXT_EDIT, 'small', 			"onclick='submitSeq($this->id, \"edit\")'") . chr(10);
+  		if ($attach_exists) 	 echo html_icon('status/mail-attachment.png', TEXT_DOWNLOAD_ATTACHMENT,'small', "onclick='submitSeq($this->id, \"dn_attach\", true)'") . chr(10);
+  		if ($security_level > 3) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 			"onclick='if (confirm(\"" . ACT_WARN_DELETE_ACCOUNT . "\")) submitSeq($this->id, \"delete\")'") . chr(10);
+  		echo "</td>";
+  	 }
 }
 ?>

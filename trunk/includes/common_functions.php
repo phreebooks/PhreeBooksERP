@@ -954,9 +954,10 @@ function gen_db_date($raw_date = '', $separator = '/') {
 
 	function db_field_exists($table_name, $field_name) {
     	global $admin;
-    	$result = $admin->DataBase->prepare("show fields from " . $table_name);
+    	$result = $admin->DataBase->prepare("DESCRIBE $table_name");
     	$result->execute();
-    	while ($row = $result->fetch(\PDO::FETCH_LAZY)){
+    	while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
+    		\core\classes\messageStack::debug_log("looking for match {$row['Field']} == $field_name");
       		if  ($row['Field'] == $field_name) return true;
     	}
     	return false;

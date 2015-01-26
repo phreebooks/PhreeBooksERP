@@ -17,13 +17,13 @@
 //  Path: /modules/contacts/classes/admin.php
 //
 namespace contacts\classes;
-require_once ('/config.php');
+require_once (DIR_FS_ADMIN . 'modules/contacts/config.php');
 class admin extends \core\classes\admin {
 	public $sort_order  = 3;
 	public $id 			= 'contacts';
 	public $description = MODULE_CONTACTS_DESCRIPTION;
 	public $core		= true;
-	public $version		= '3.71';
+	public $version		= '4.0';
 
 	function __construct() {
 		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_CONTACTS);
@@ -146,28 +146,28 @@ class admin extends \core\classes\admin {
 				'order' 		=> MENU_HEADING_CUSTOMERS_ORDER,
 				'text' 			=> TEXT_CUSTOMERS,
 				'security_id'	=> '',
-				'link' 			=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_ar', 'SSL'),
+				'link' 			=> html_href_link(FILENAME_DEFAULT, 'action=LoadMainPage&amp;mID=cat_ar', 'SSL'),
 				'params'      	=> '',
 		);
 		$this->mainmenu["vendors"] = array(
 				'order' 		=> MENU_HEADING_VENDORS_ORDER,
 				'text' 			=> TEXT_VENDORS,
 				'security_id' 	=> '',
-				'link' 			=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_ap', 'SSL'),
+				'link' 			=> html_href_link(FILENAME_DEFAULT, 'action=LoadMainPage&amp;mID=cat_ap', 'SSL'),
 				'params'      	=> '',
 		);
 		$this->mainmenu["employees"] = array(
 				'order' 		=> MENU_HEADING_EMPLOYEES_ORDER,
 				'text' 			=> TEXT_EMPLOYEES,
 				'security_id'	=> '',
-				'link' 			=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_hr', 'SSL'),
+				'link' 			=> html_href_link(FILENAME_DEFAULT, 'action=LoadMainPage&amp;mID=cat_hr', 'SSL'),
 				'params'      	=> '',
 		);
 		// Set the menus
 		$this->mainmenu["customers"]['submenu']["contact"] = array(
 				'order'		  => 10,
 				'text'        => TEXT_CUSTOMERS,
-				'link'        => '',//html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=c&amp;list=1', 'SSL'),
+				'link'        => html_href_link(FILENAME_DEFAULT, 'action=LoadContactMgrPage&amp;type=c&amp;list=1', 'SSL'),
 				'show_in_users_settings' => false,
 				'params'      => '',
 		);
@@ -183,7 +183,7 @@ class admin extends \core\classes\admin {
 				'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_CUSTOMER),
 				'order'       => 10,
 				'security_id' => SECURITY_ID_MAINTAIN_CUSTOMERS,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=c&amp;list=1', 'SSL'),
+				'link'        => html_href_link(FILENAME_DEFAULT, 'action=LoadContactMgrPage&amp;type=c&amp;list=1', 'SSL'),
 				'show_in_users_settings' => true,
 				'params'	    => '',
 		);
@@ -213,7 +213,7 @@ class admin extends \core\classes\admin {
 				'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR),
 				'order'       => 10,
 				'security_id' => SECURITY_ID_MAINTAIN_VENDORS,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=v&amp;list=1', 'SSL'),
+				'link'        => html_href_link(FILENAME_DEFAULT, 'action=LoadContactMgrPage&amp;type=v&amp;list=1', 'SSL'),
 				'show_in_users_settings' => true,
 				'params'      => '',
 		);
@@ -236,7 +236,7 @@ class admin extends \core\classes\admin {
 				'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_EMPLOYEE),
 				'order'       => 10,
 				'security_id' => SECURITY_ID_MAINTAIN_EMPLOYEES,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=e&amp;list=1', 'SSL'),
+				'link'        => html_href_link(FILENAME_DEFAULT, 'action=LoadContactMgrPage&amp;type=e&amp;list=1', 'SSL'),
 				'show_in_users_settings' => true,
 				'params'      => '',
 		);
@@ -244,7 +244,7 @@ class admin extends \core\classes\admin {
 			$this->mainmenu["company"]['submenu']["branches"] = array(
 					'order'		  => 55,
 					'text'        => TEXT_BRANCHES,
-					'link'        => '',//html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=b&amp;list=1', 'SSL'),
+					'link'        => '',//html_href_link(FILENAME_DEFAULT, 'action=LoadContactMgrPage&amp;type=b&amp;list=1', 'SSL'),
 					'show_in_users_settings' => false,
 					'params'      => '',
 			);
@@ -260,7 +260,7 @@ class admin extends \core\classes\admin {
 					'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_BRANCH),
 					'order'       => 56,
 					'security_id' => SECURITY_ID_MAINTAIN_BRANCH,
-					'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=b&amp;list=1', 'SSL'),
+					'link'        => html_href_link(FILENAME_DEFAULT, 'action=LoadContactMgrPage&amp;type=b&amp;list=1', 'SSL'),
 					'show_in_users_settings' => true,
 					'params'      => '',
 			);
@@ -285,10 +285,10 @@ class admin extends \core\classes\admin {
 				'order'       => 10,
 				'security_id' => SECURITY_ID_MAINTAIN_PROJECTS,
 				'show_in_users_settings' => true,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=j&amp;list=1', 'SSL'),
+				'link'        => html_href_link(FILENAME_DEFAULT, 'action=LoadContactMgrPage&amp;type=j&amp;list=1', 'SSL'),
 				'params'      => '',
 		);
-		
+
 		if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
 			$this->mainmenu["company"]['submenu']["configuration"]['submenu']["contacts"] = array(
 					'order'	      => sprintf(TEXT_MODULE_ARGS, TEXT_CONTACTS),
@@ -309,91 +309,69 @@ class admin extends \core\classes\admin {
 		if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_vend_id_num')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_vend_id_num VARCHAR( 16 ) NOT NULL DEFAULT 'V10000';");
 		if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_crm_id_num'))  $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_crm_id_num VARCHAR( 16 ) NOT NULL DEFAULT '10000';");
 		require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
-		xtra_field_sync_list('contacts', TABLE_CONTACTS);
+		\core\classes\fields::sync_fields('contacts', TABLE_CONTACTS);
 	}
 
   	function upgrade(\core\classes\basis &$basis) {
-    	global $admin, $messageStack;
     	parent::upgrade($basis);
     	if (version_compare($this->status, '3.3', '<') ) {
-	  		$admin->DataBase->query("ALTER TABLE " . TABLE_CONTACTS . " CHANGE short_name short_name VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT ''");
-		  	if (db_table_exists(DB_PREFIX . 'contacts_extra_fields')) {
-		    	// first create a new tab
-				if (!defined('SETUP_TITLE_EXTRA_FIELDS')) define('SETUP_TITLE_EXTRA_FIELDS','New Tab');
-		    	$updateDB = $admin->DataBase->query("insert into " . TABLE_EXTRA_TABS . " set
-			  	  module_id = 'contacts',
-			  	  tab_name = '"    . SETUP_TITLE_EXTRA_FIELDS . "',
-			  	  description = '" . SETUP_TITLE_EXTRA_FIELDS . "',
-			  	  sort_order = '20'");
-				$tab_id = db_insert_id();
-		    	$result = $admin->DataBase->query("select * from " . DB_PREFIX . 'contacts_extra_fields');
-		    	while (!$result->EOF) {
-			  		$params = unserialize($result->fields['params']); // need to insert contact_type
-			  		$params['contact_type'] = $result->fields['contact_type'];
-		      		$updateDB = $admin->DataBase->query("insert into " . TABLE_EXTRA_FIELDS . " set
-			    	  module_id = 'contacts',
-			    	  tab_id = '"      . $tab_id . "',
-			    	  entry_type = '"  . $result->fields['entry_type']  . "',
-			    	  field_name = '"  . $result->fields['field_name']  . "',
-			    	  description = '" . $result->fields['description'] . "',
-			    	  params = '"      . serialize($params) . "'");
-		      		$result->MoveNext();
-		    	}
-		    	$admin->DataBase->query("DROP TABLE " . DB_PREFIX . "contacts_extra_fields");
-		  	}
+	  		$basis->DataBase->query("ALTER TABLE " . TABLE_CONTACTS . " CHANGE short_name short_name VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT ''");
+		  	if (db_table_exists(DB_PREFIX . 'contacts_extra_fields')) $basis->DataBase->exec("DROP TABLE " . DB_PREFIX . "contacts_extra_fields");
 		}
 		if (version_compare($this->status, '3.5', '<') ) {
-	  		if ( db_field_exists(TABLE_CURRENT_STATUS, 'next_cust_id_desc')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cust_id_desc");
-	  		if ( db_field_exists(TABLE_CURRENT_STATUS, 'next_vend_id_desc')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_vend_id_desc");
-	  		if (!db_field_exists(TABLE_CONTACTS, 'attachments')) $admin->DataBase->query("ALTER TABLE " . TABLE_CONTACTS . " ADD attachments TEXT NOT NULL AFTER tax_id");
+	  		if ( db_field_exists(TABLE_CURRENT_STATUS, 'next_cust_id_desc')) $basis->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cust_id_desc");
+	  		if ( db_field_exists(TABLE_CURRENT_STATUS, 'next_vend_id_desc')) $basis->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_vend_id_desc");
+	  		if (!db_field_exists(TABLE_CONTACTS, 'attachments')) $basis->DataBase->exec("ALTER TABLE " . TABLE_CONTACTS . " ADD attachments TEXT NOT NULL AFTER tax_id");
     	}
     	if (version_compare($this->status, '3.7', '<') ) {
-      		if (!db_field_exists(TABLE_CONTACTS_LOG, 'entered_by')) $admin->DataBase->query("ALTER TABLE " . TABLE_CONTACTS_LOG . " ADD entered_by INT(11) NOT NULL DEFAULT '0' AFTER contact_id");
+      		if (!db_field_exists(TABLE_CONTACTS_LOG, 'entered_by')) $basis->DataBase->exec("ALTER TABLE ".TABLE_CONTACTS_LOG." ADD entered_by INT(11) NOT NULL DEFAULT '0' AFTER contact_id");
     	}
 		if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_crm_id_num')){
-    		$result = $admin->DataBase->query("Select MAX(short_name + 1) AS new  FROM " . TABLE_CONTACTS . " WHERE TYPE = 'i'");
-			$admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_crm_id_num VARCHAR( 16 ) NOT NULL DEFAULT '{$result->fields['new']}';");
+    		$result = $basis->DataBase->exec("Select MAX(short_name + 1) AS new  FROM ".TABLE_CONTACTS." WHERE TYPE = 'i'");
+			$basis->DataBase->exec("ALTER TABLE ".TABLE_CURRENT_STATUS." ADD next_crm_id_num VARCHAR( 16 ) NOT NULL DEFAULT '{$result->fields['new']}';");
 		}
-		if (version_compare($this->status, '4.0', '<') ) { //updating dashboards to store the namespaces.
-			$basis->DataBase->exec ("ALTER TABLE ".TABLE_CONTACTS." ADD class VARCHAR( 255 ) NOT NULL DEFAULT '' AFTER id");
-			$sql = $basis->DataBase->prepare("SELECT * FROM ".TABLE_CONTACTS." WHERE class <> '' ");
-			$sql->execute();
-			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
-				$temp = '\contacts\classes\type\\'.$result['class'];
-				$cInfo = new $temp($result);
-				$cInfo->save_contact();
-			}
+		if (version_compare($this->status, '4.0', '<') ) {
+			if (!db_field_exists(TABLE_CONTACTS, 'class')) $basis->DataBase->exec("ALTER TABLE ".TABLE_CONTACTS." ADD class VARCHAR( 255 ) NOT NULL DEFAULT '' AFTER id");
+			$sql = $basis->DataBase->exec("UPDATE ".TABLE_CONTACTS." SET class = CONCAT('contacts\\\\classes\\\\type\\\\', type) WHERE class = '' ");
 		}
-		xtra_field_sync_list('contacts', TABLE_CONTACTS);
+		\core\classes\fields::sync_fields('contacts', TABLE_CONTACTS);
   	}
 
 	function delete($path_my_files) {
 	    global $admin;
 	    parent::delete($path_my_files);
-	    if (db_field_exists(TABLE_CURRENT_STATUS, 'next_cust_id_num'))  $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cust_id_num");
-		if (db_field_exists(TABLE_CURRENT_STATUS, 'next_cust_id_desc')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cust_id_desc");
-	    if (db_field_exists(TABLE_CURRENT_STATUS, 'next_vend_id_num'))  $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_vend_id_num");
-		if (db_field_exists(TABLE_CURRENT_STATUS, 'next_vend_id_desc')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_vend_id_desc");
-		if (db_field_exists(TABLE_CURRENT_STATUS, 'next_crm_id_desc')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_crm_id_desc");
-		$admin->DataBase->query("delete from " . TABLE_EXTRA_FIELDS . " where module_id = 'contacts'");
-		$admin->DataBase->query("delete from " . TABLE_EXTRA_TABS   . " where module_id = 'contacts'");
+	    if (db_field_exists(TABLE_CURRENT_STATUS, 'next_cust_id_num'))  $admin->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cust_id_num");
+		if (db_field_exists(TABLE_CURRENT_STATUS, 'next_cust_id_desc')) $admin->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cust_id_desc");
+	    if (db_field_exists(TABLE_CURRENT_STATUS, 'next_vend_id_num'))  $admin->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_vend_id_num");
+		if (db_field_exists(TABLE_CURRENT_STATUS, 'next_vend_id_desc')) $admin->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_vend_id_desc");
+		if (db_field_exists(TABLE_CURRENT_STATUS, 'next_crm_id_desc')) $admin->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_crm_id_desc");
+		$admin->DataBase->exec("DELETE FROM " . TABLE_EXTRA_FIELDS . " WHERE module_id = 'contacts'");
+		$admin->DataBase->exec("DELETE FROM " . TABLE_EXTRA_TABS   . " WHERE module_id = 'contacts'");
 	}
 
 	function load_reports() {
 		$id = $this->add_report_heading(TEXT_CUSTOMERS,   'cust');
-		$this->add_report_folder($id, TEXT_REPORTS,           'cust', 'fr');
+		$this->add_report_folder($id, TEXT_REPORTS,       'cust', 'fr');
 		$id = $this->add_report_heading(TEXT_EMPLOYEES,   'hr');
-		$this->add_report_folder($id, TEXT_REPORTS,           'hr',   'fr');
+		$this->add_report_folder($id, TEXT_REPORTS,       'hr',   'fr');
 		$id = $this->add_report_heading(TEXT_VENDORS,     'vend');
-		$this->add_report_folder($id, TEXT_REPORTS,           'vend', 'fr');
+		$this->add_report_folder($id, TEXT_REPORTS,       'vend', 'fr');
 		parent::load_reports();
 	}
-	
+
 	/**
 	 * this function will load the contact manager page
 	 */
 	function LoadContactMgrPage(\core\classes\basis &$basis) {
-		$criteria[] = "a.type = '{$type}m'";
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		if (! isset($basis->cInfo->type)) $basis->cInfo->type = 'c'; // default to customer
+		history_filter('contacts'.$basis->cInfo->type, $defaults = array('sf'=>'', 'so'=>'asc')); // load the filters
+		if (! isset( $basis->cInfo->contact_show_inactive)) {
+			$basis->cInfo->contact_show_inactive = defined('CONTACTS_F0_'.strtoupper($basis->cInfo->type)) ? constant('CONTACTS_F0_'.strtoupper($basis->cInfo->type)) : DEFAULT_F0_SETTING;
+			if($_SERVER['REQUEST_METHOD'] == 'POST') $basis->cInfo->contact_show_inactive = false; // show inactive checkbox
+		}
+
+		$criteria[] = "a.type = '{$basis->cInfo->type}m'";
 		if (isset($basis->cInfo->search_text) && $basis->cInfo->search_text <> '') {
 			$search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.address1',
 					'a.address2', 'a.city_town', 'a.postal_code', 'c.short_name');
@@ -406,22 +384,18 @@ class admin extends \core\classes\admin {
 		$field_list = array('c.class','c.id', 'c.inactive', 'c.short_name', 'c.contact_first', 'c.contact_last',
 				'a.telephone1', 'c.attachments', 'c.first_date', 'c.last_update', 'c.last_date_1', 'c.last_date_2',
 				'a.primary_name', 'a.address1', 'a.city_town', 'a.state_province', 'a.postal_code');
-		// hook to add new fields to the query return results
-		if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
-		$query_raw = "SELECT SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . "
-			FROM " . TABLE_CONTACTS . " c LEFT JOIN " . TABLE_ADDRESS_BOOK . " a ON c.id = a.ref_id {$search} ORDER BY $disp_order";
-		//$query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+		$query_raw = "SELECT " . implode(', ', $field_list)  . " FROM " . TABLE_CONTACTS . " c LEFT JOIN " . TABLE_ADDRESS_BOOK . " a ON c.id = a.ref_id {$search} ORDER BY c.short_name"; //@todo needs modifying
 		$sql = $basis->DataBase->prepare($query_raw);
 		$sql->execute();
 		while ($result = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)) {
 			$basis->cInfo->contacts_list[] = $result;
 		}
-		$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
-		history_save('contacts'.$type);
+		$basis->cInfo->query_split  = new \core\classes\splitPageResults($_REQUEST['list'], $sql->rowCount());
+		history_save('contacts'.$basis->cInfo->type);
 		$basis->module		= 'contacts';
 		$basis->page		= 'main';
 		$basis->template 	= 'template_main';
-		switch ($type) {
+		switch ($basis->cInfo->type) {
 			case 'b': $basis->page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_BRANCH);		break;
 			case 'c': $basis->page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_CUSTOMER);	break;
 			case 'e': $basis->page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_EMPLOYEE);	break;
@@ -429,9 +403,9 @@ class admin extends \core\classes\admin {
 			case 'j': $basis->page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_PROJECT);	break;
 			case 'v': $basis->page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR);		break;
 		}
-		
+
 	}
-	
+
 	function load_demo() {
 		global $admin;
 		// Data for table `address_book`

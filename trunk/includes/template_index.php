@@ -20,6 +20,7 @@ if ($custom_html) { // load the template only as the rest of the html will be ge
   if (is_file($template_path)) { require($template_path); } else trigger_error('No template file. Looking for: ' . $template_path, E_USER_ERROR);
 } else {
 ?>
+
 <!DOCTYPE html>
 <html <?php echo HTML_PARAMS; ?>>
  <head>
@@ -31,7 +32,7 @@ if ($custom_html) { // load the template only as the rest of the html will be ge
   </script>
   <!-- module: <?php echo "{$basis->module} - page: {$basis->page}"; ?> -->
   <meta http-equiv="Content-Type" content="text/html; charset=<?php echo CHARSET; ?>" />
-<?php if ($force_reset_cache) { header("Cache-Control: no-cache, must-revalidate"); header("Expires: ".date('D, j M \2\0\0\0 G:i:s T')); } ?>
+<?php if ($force_reset_cache) { header("Cache-Control: no-cache, must-revalidate"); header("Expires: ".date('D, j M \2\0\0\0 G:i:s T')); }?>
   <title><?php echo $basis->page_title; ?></title>
   <!-- start loading includes -->
   <?php $basis->returnCurrentObserver()->print_css_includes($basis);

@@ -44,6 +44,10 @@ class user {
 		} else {
 			require_once(DIR_FS_MODULES . "phreedom/language/en_us/language.php");
 		}
+		if (is_null($admin->DataBase)){
+			\core\classes\messageStack::debug_log("database isn't connected.");
+			$admin->fireEvent('LoadLogIn');
+		}
 		if (isset($_SESSION['admin_id']) && $_SESSION['admin_id'] <> '') return true;
 		if ($_REQUEST['action'] == "ValidateUser") {
 			$_SESSION['company'] = $_REQUEST['company'];
@@ -51,7 +55,6 @@ class user {
 		}
 		//allow the user to continu to with the login action.
 		if (!in_array($_REQUEST['action'], array('ValidateUser', 'pw_lost_sub', 'pw_lost_req'))){
-			\core\classes\messageStack::debug_log("we zijn hier ".__METHOD__ );
 			self::load_companies();
 			self::load_languages();
 			self::get_company();

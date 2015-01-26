@@ -22,6 +22,7 @@ class PDO extends \PDO {
 	public $total_query_time = 0;
 
 	public function query($query) {
+		\core\classes\messageStack::debug_log("excecuting query: $query");
 		$time_start = explode(' ', microtime());
 		$temp =  parent::query($query);
 		$time_end = explode (' ', microtime());
@@ -31,9 +32,10 @@ class PDO extends \PDO {
 		return $temp;
 	}
 
-	public function prepare ($statement, $options = NULL){
+	public function prepare ($query, $options = NULL){
+		\core\classes\messageStack::debug_log("excecuting query: $query");
 		$time_start = explode(' ', microtime());
-		$temp =  parent::prepare($statement);
+		$temp =  parent::prepare($query);
 		$time_end = explode (' ', microtime());
 		$query_time = $time_end[1]+$time_end[0]-$time_start[1]-$time_start[0];
 		$this->total_query_time += $query_time;
@@ -41,9 +43,10 @@ class PDO extends \PDO {
 		return $temp;
 	}
 
-	public function exec ($statement){
+	public function exec ($query){
+		\core\classes\messageStack::debug_log("excecuting query: $query");
 		$time_start = explode(' ', microtime());
-		$temp =  parent::exec($statement);
+		$temp =  parent::exec($query);
 		$time_end = explode (' ', microtime());
 		$query_time = $time_end[1]+$time_end[0]-$time_start[1]-$time_start[0];
 		$this->total_query_time += $query_time;

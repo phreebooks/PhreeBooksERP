@@ -39,10 +39,6 @@ class admin {
 	 * this is the general construct function called when the class is created.
 	 */
 	function __construct(){
-		if (defined('MODULE_' . strtoupper($this->id) . '_STATUS')){
-			$this->installed = true;
-			$this->status  = constant('MODULE_' . strtoupper($this->id) . '_STATUS');
-		}
 		$this->methods 		= $this->return_all_methods('methods');
 		$this->dashboards 	= $this->return_all_methods('dashboards');
 	}
@@ -52,11 +48,6 @@ class admin {
 	 */
 	public function __wakeup() {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		echo constant('MODULE_' . strtoupper($this->id) . '_STATUS');
-		if (defined('MODULE_' . strtoupper($this->id) . '_STATUS')){
-			$this->installed = true;
-			$this->status  = constant('MODULE_' . strtoupper($this->id) . '_STATUS');
-		}
 	}
 
 	/**
@@ -150,11 +141,19 @@ class admin {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	}
 
+	function checkInstalled(\core\classes\basis &$basis){
+		$this->installed = false;
+		$this->status 	 = '';
+		if ($basis->returnConfigurationValue('MODULE_'.strtoupper($this->id).'_STATUS') !== null){
+			$this->installed = true;
+			$this->status  = $basis->returnConfigurationValue('MODULE_'.strtoupper($this->id).'_STATUS');
+		}
+	}
+
 	function should_update(\core\classes\basis &$basis){
 		global $messageStack;
-		if (defined('MODULE_' . strtoupper($this->id) . '_STATUS')){
-			$this->installed = true;
-			$this->status  = constant('MODULE_' . strtoupper($this->id) . '_STATUS');
+		$this->checkInstalled($basis);
+		if ($basis->returnConfigurationValue('MODULE_'.strtoupper($this->id).'_STATUS') !== null){
 			\core\classes\messageStack::debug_log("checking if class ".get_class($this)." needs updating installed = {$this->installed} and this version = {$this->version} current status = {$this->status} needs updating = ".version_compare($this->status, $this->version, '<') );
 			if (version_compare($this->status, $this->version, '<') != 0 ) {
 				$this->upgrade($basis);
@@ -215,7 +214,7 @@ class admin {
 	    	if (!db_table_exists($table)) {
 		  		if (!$admin->DataBase->query($create_table_sql)) throw new \core\classes\userException (sprintf("Error installing table: %s", $table));
 			}else{
-				//@todo add table field check 
+				//@todo add table field check
 			}
 	  	}
 	}
@@ -236,7 +235,7 @@ class admin {
 	  	$result = $admin->DataBase->query("select id from ".TABLE_PHREEFORM." where doc_group = '$doc_group'");
 	  	if ($result->rowCount() < 1) {
 	    	$admin->DataBase->query("INSERT INTO ".TABLE_PHREEFORM." (parent_id, doc_type, doc_title, doc_group, doc_ext, security, create_date) VALUES
-	      	  (0, '0', '" . $doc_title . "', '".$doc_group."', '0', 'u:0;g:0', now())");
+	      	  (0, '0', '{$doc_title}', '{$doc_group}', '0', 'u:0;g:0', now())");
 	    	return db_insert_id();
 	  	} else {
 	    	return $result->fields['id'];
@@ -250,7 +249,7 @@ class admin {
 	  	$result = $admin->DataBase->query("select id from ".TABLE_PHREEFORM." where doc_group = '$doc_group' and doc_ext = '$doc_ext'");
 	  	if ($result->rowCount() < 1) {
 	    	$admin->DataBase->query("INSERT INTO ".TABLE_PHREEFORM." (parent_id, doc_type, doc_title, doc_group, doc_ext, security, create_date) VALUES
-	      	  (".$parent_id.", '0', '" . $doc_title . "', '".$doc_group."', '".$doc_ext."', 'u:0;g:0', now())");
+	      	  ({$parent_id}, '0', '{$doc_title}', '{$doc_group}', '{$doc_ext}', 'u:0;g:0', now())");
 	  	}
 	}
 
@@ -275,5 +274,9 @@ class admin {
 	    return $choices;
 	}
 
+	function __destruct(){
+		\core\classes\messageStack::debug_log(get_class($this)." installed = {$this->installed}");
+
+	}
 }
 ?>

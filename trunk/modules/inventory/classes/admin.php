@@ -285,7 +285,7 @@ class admin extends \core\classes\admin {
 		parent::install($path_my_files, $demo);
 		$this->notes[] = MODULE_INVENTORY_NOTES_1;
 		require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
-		xtra_field_sync_list('inventory', TABLE_INVENTORY);
+		\core\classes\fields::sync_fields('inventory', TABLE_INVENTORY);
 		$result = $admin->DataBase->query("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory' and tab_id = '0'");
 		while (!$result->EOF) {
 			$temp = unserialize($result->fields['params']);
@@ -350,6 +350,7 @@ class admin extends \core\classes\admin {
 			$updateDB = $admin->DataBase->query("update " . TABLE_EXTRA_FIELDS . " set use_in_inventory_filter = '".$use_in_inventory_filter."' where id = '".$result->fields['id']."'");
 			$result->MoveNext();
 		}
+		\core\classes\fields::sync_fields('inventory', TABLE_INVENTORY);
 	}
 
   	function upgrade(\core\classes\basis &$basis) {
@@ -384,12 +385,10 @@ class admin extends \core\classes\admin {
 		  		}
 		  		$admin->DataBase->query("DROP TABLE " . DB_PREFIX . "inventory_fields");
 	  		}
-	  		xtra_field_sync_list('inventory', TABLE_INVENTORY);
 		}
 		if (version_compare($this->status, '3.2', '<') ) {
 	  		if (!db_field_exists(TABLE_PRICE_SHEETS, 'type')) $admin->DataBase->query("ALTER TABLE " . TABLE_PRICE_SHEETS . " ADD type char(1) NOT NULL default 'c' AFTER sheet_name");
 	  		if (!db_field_exists(TABLE_INVENTORY, 'price_sheet_v')) $admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD price_sheet_v varchar(32) default NULL AFTER price_sheet");
-	  		xtra_field_sync_list('inventory', TABLE_INVENTORY);
 		}
 		if (version_compare($this->status, '3.6', '<') ) {
 			$admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD INDEX ( `sku` )");
@@ -398,7 +397,7 @@ class admin extends \core\classes\admin {
 			if (!db_field_exists(TABLE_INVENTORY, 'product_margin')) $admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD product_margin FLOAT NOT NULL DEFAULT '0' AFTER full_price_with_tax");
 			if (!db_field_exists(TABLE_EXTRA_FIELDS , 'use_in_inventory_filter')) $admin->DataBase->query("ALTER TABLE " . TABLE_EXTRA_FIELDS . " ADD use_in_inventory_filter ENUM( '0', '1' ) NOT NULL DEFAULT '0'");
 			$admin->DataBase->query("alter table " . TABLE_INVENTORY . " CHANGE `inactive` `inactive` ENUM( '0', '1' ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'");
-			xtra_field_sync_list('inventory', TABLE_INVENTORY);
+			\core\classes\fields::sync_fields('inventory', TABLE_INVENTORY);
 			$admin->DataBase->query("update " . TABLE_INVENTORY . " set inventory_type = 'ma' where inventory_type = 'as'");
 			$result = $admin->DataBase->query("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory'");
 			while (!$result->EOF) {
@@ -492,7 +491,7 @@ class admin extends \core\classes\admin {
 			$temp['inventory_type'] = 'ai:ci:ds:ia:lb:ma:mb:mi:ms:ns:sa:sf:si:sr:sv';
 			$updateDB = $admin->DataBase->query("update ".TABLE_EXTRA_FIELDS." set params='".serialize($temp)."' where id='".$result->fields['id']."'");
 		}
-
+		\core\classes\fields::sync_fields('inventory', TABLE_INVENTORY);
 	}
 
   	function delete($path_my_files) {
