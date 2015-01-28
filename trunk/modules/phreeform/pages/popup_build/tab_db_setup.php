@@ -3,7 +3,6 @@
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
 // | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
-
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -55,7 +54,7 @@
 			<td align="right">
 			  <?php 
 		  	    echo html_icon('actions/view-fullscreen.png',   TEXT_MOVE,   'small', 'style="cursor:move"', '', '', 'move_table_' . $i) . chr(10);
-				echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'class="delete"'); 
+				echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'class="imgIcon delete"'); 
 			  ?>
 			</td>
 		  </tr>

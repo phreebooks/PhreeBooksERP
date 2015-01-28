@@ -59,7 +59,10 @@ $db_name = $_GET['db'];
 if (!$db_name || $db_name == 'auto') { // get the first company and use that db, for single company installs only!
 	$folders = scandir(DIR_FS_MY_FILES);
 	foreach ($folders as $folder) if ($folder <> '.' && $folder <> '..' && is_dir(DIR_FS_MY_FILES . $folder)) {
-		if (file_exists(DIR_FS_MY_FILES."$folder/config.php")) $db_name = $folder; break;
+		if (file_exists(DIR_FS_MY_FILES."$folder/config.php")) { 
+			$db_name = $folder; 
+			break;
+		}
 	}
 }
 if ($db_name && file_exists(DIR_FS_MY_FILES . $db_name . '/config.php')) {

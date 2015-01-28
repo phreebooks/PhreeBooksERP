@@ -3,7 +3,6 @@
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
 // | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
-
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -93,7 +92,7 @@ $extra_stuff = NULL;
 			<td align="right">
 			  <?php 
 		  	    echo html_icon('actions/view-fullscreen.png',   TEXT_MOVE,   'small', 'style="cursor:move"', '', '', 'move_grp_' . $i) . chr(10);
-				echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'class="delete"'); 
+				echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'class="imgIcon delete"'); 
 			  ?>
 			</td>
 		  </tr>
@@ -125,7 +124,7 @@ $extra_stuff = NULL;
 			<td align="right">
 			  <?php 
 		  	    echo html_icon('actions/view-fullscreen.png',   TEXT_MOVE,   'small', 'style="cursor:move"', '', '', 'move_sort_' . $i) . chr(10);
-				echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'class="delete"'); 
+				echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'class="imgIcon delete"'); 
 			  ?>
 			</td>
 		  </tr>
@@ -162,7 +161,7 @@ $extra_stuff = NULL;
 			<td align="right">
 			  <?php 
 		  	    echo html_icon('actions/view-fullscreen.png',   TEXT_MOVE,   'small', 'style="cursor:move"', '', '', 'move_crit_' . $i) . chr(10);
-				echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'class="delete"'); 
+				echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'class="imgIcon delete"'); 
 			  ?>
 			</td>
 		  </tr>

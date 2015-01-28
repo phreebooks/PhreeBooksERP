@@ -56,7 +56,7 @@ if ($report->serialform) {
 		  echo html_pull_down_menu('fld_type_'.$i, gen_build_pull_down($FormEntries), $report->fieldlist[$i]->type, 'onchange="boxLoad(this.value, ' . $i . ')"');
 		  echo html_hidden_field('row_id[]', $i) . chr(10);
 		  echo html_icon('actions/view-fullscreen.png',     TEXT_MOVE,       'small', 'style="cursor:move"', '', '', 'move_fld_'.$i) . chr(10);
-		  echo html_icon('emblems/emblem-unreadable.png',   TEXT_DELETE,     'small', 'class="delete"') . chr(10);
+		  echo html_icon('emblems/emblem-unreadable.png',   TEXT_DELETE,     'small', 'class="imgIcon delete"') . chr(10);
 		  echo html_icon('actions/document-properties.png', TEXT_PROPERTIES, 'small', 'onmouseup="boxProperties('.$i.')"') . chr(10);
 		?>
 		  <div id="fld_box_<?php echo $i; ?>" style="display:none;background-color:#bbd8d8; border:solid 1px #000">
