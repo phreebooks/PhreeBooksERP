@@ -34,7 +34,7 @@ class impbanking extends journal {
 	public    $known_trans = array();
 	public    $open_inv    = array();
 	
-	 public function __construct(){
+	public function __construct(){
 	 	global $db, $messageStack;
 	 	$messageStack->debug("\n\n*************** Start Import Payment Class *******************");
 	 	$temp = $db->Execute("describe " . TABLE_CONTACTS);
@@ -49,6 +49,11 @@ class impbanking extends journal {
 	 
 	 public function start_import($ouwer_bank_account_number, $post_date, $other_bank_account_number, $credit_amount, $debit_amount, $description, $bank_gl_acct, $other_bank_account_iban){
 	 	global $db, $messageStack,$currencies;
+	 	if ($post_date == '') {
+				$messageStack->add(" date is required" , 'error');
+				return false;
+				exit;
+			}
 	 	$this->reset();
 	 	$messageStack->debug("\n\n*************** Start Processing Import Payment *******************");
 	 	if ($ouwer_bank_account_number <> '') {

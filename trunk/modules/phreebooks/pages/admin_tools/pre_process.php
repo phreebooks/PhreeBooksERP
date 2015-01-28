@@ -249,10 +249,10 @@ switch ($_REQUEST['action']) {
 		  $history[$acct][$period+1]['beg_bal'] = $next_beg_bal;
 		  $first_error_period = min($first_error_period, $period);
 		}
-		$totals[$period]['beg_bal'] += $history[$acct][$period]['beg_bal'];
+/*		$totals[$period]['beg_bal'] += $history[$acct][$period]['beg_bal'];
 		$totals[$period]['debit']   += $history[$acct][$period]['debit'];
 		$totals[$period]['credit']  += $history[$acct][$period]['credit'];
-		// read and check history db values
+		// read and check history db values*/
 	  }
 	}
 	if ($_REQUEST['action'] == 'coa_hist_fix' && sizeof($bad_accounts) > 0) {
