@@ -28,7 +28,7 @@ if ($security_level > 1) $toolbar->icon_list['save']['params'] = 'onclick="submi
 else                     $toolbar->icon_list['save']['show']   = false;
 $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['print']['show']    = false;
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
 <div class="easyui-tabs" id="admintabs">

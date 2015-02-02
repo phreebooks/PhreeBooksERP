@@ -19,7 +19,7 @@
 ?>
 <div title="<?php echo TEXT_CONTACTS;?>" id="tab_contacts">
 <?php
-  if (is_array($cInfo->contacts)) {
+  if (is_array($basis->cInfo->contact->contacts)) {
 	$heading_array  = array(); // don't sort
 	$non_sort_array = array(TEXT_LAST_NAME, TEXT_FIRST_NAME, TEXT_TITLE, TEXT_TELEPHONE, TEXT_MOBILE_PHONE, TEXT_EMAIL, TEXT_ACTION);
 	$crm_headings   = html_heading_bar($heading_array, $non_sort_array);
@@ -31,7 +31,7 @@
 	  <tbody class="ui-widget-content">
 <?php
   $odd = true;
-  foreach ($cInfo->contacts as $entry) {
+  foreach ($basis->cInfo->contact->contacts as $entry) {
     $bkgnd = ($entry->inactive) ? 'class="ui-state-highlight"' : '';
 ?>
 	  <tr id="tr_add_<?php echo $entry->id; ?>" class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer">
@@ -72,35 +72,35 @@
 	$ctoolbar->add_icon('new', 'onclick="clearAddress(\'im\')"', $order = 10);
 	$ctoolbar->icon_list['new']['icon']    = 'actions/contact-new.png';
 	$ctoolbar->icon_list['new']['text']    = sprintf(TEXT_NEW_ARGS, TEXT_CONTACT);
-	$ctoolbar->add_icon('copy', 'onclick="copyContactAddress(\'' . $type . '\')"', 20);
+	$ctoolbar->add_icon('copy', 'onclick="copyContactAddress(\'' . $basis->cInfo->contact->type . '\')"', 20);
 	$ctoolbar->icon_list['copy']['text']   = TEXT_TRANSFER_ADDRESS;
 	echo $output;
-	echo $ctoolbar->build_toolbar();
+	echo $ctoolbar->build();
 ?>
     </td></tr>
     </table>
     <table class="ui-widget" style="border-collapse:collapse;width:100%;">
       <tr>
        <td align="right"><?php echo TEXT_CONTACT_ID . html_hidden_field('i_id', ''); ?></td>
-       <td><?php echo html_input_field('i_short_name', $cInfo->i_short_name, 'size="21" maxlength="20"', true); ?></td>
+       <td><?php echo html_input_field('i_short_name', $basis->cInfo->contact->i_short_name, 'size="21" maxlength="20"', true); ?></td>
        <td align="right"><?php echo TEXT_TITLE; ?></td>
-       <td><?php echo html_input_field('i_contact_middle', $cInfo->i_contact_middle, 'size="33" maxlength="32"', false); ?></td>
+       <td><?php echo html_input_field('i_contact_middle', $basis->cInfo->contact->i_contact_middle, 'size="33" maxlength="32"', false); ?></td>
       </tr>
       <tr>
         <td align="right"><?php echo TEXT_FIRST_NAME; ?></td>
-        <td><?php echo html_input_field('i_contact_first', $cInfo->i_contact_first, 'size="33" maxlength="32"', false); ?></td>
+        <td><?php echo html_input_field('i_contact_first', $basis->cInfo->contact->i_contact_first, 'size="33" maxlength="32"', false); ?></td>
         <td align="right"><?php echo TEXT_LAST_NAME; ?></td>
-        <td><?php echo html_input_field('i_contact_last', $cInfo->i_contact_last, 'size="33" maxlength="32"', false); ?></td>
+        <td><?php echo html_input_field('i_contact_last', $basis->cInfo->contact->i_contact_last, 'size="33" maxlength="32"', false); ?></td>
       </tr>
       <tr>
         <td align="right"><?php echo TEXT_FACEBOOK_ID; ?></td>
-        <td><?php echo html_input_field('i_account_number', $cInfo->i_account_number, 'size="17" maxlength="16"'); ?></td>
+        <td><?php echo html_input_field('i_account_number', $basis->cInfo->contact->i_account_number, 'size="17" maxlength="16"'); ?></td>
         <td align="right"><?php echo TEXT_TWITTER_ID; ?></td>
-        <td><?php echo html_input_field('i_gov_id_number', $cInfo->i_gov_id_number, 'size="17" maxlength="16"'); ?></td>
+        <td><?php echo html_input_field('i_gov_id_number', $basis->cInfo->contact->i_gov_id_number, 'size="17" maxlength="16"'); ?></td>
       </tr>
     </table>
     <table id="im_address_form" class="ui-widget" style="border-collapse:collapse;width:100%;">
-      <?php echo draw_address_fields($cInfo->contact, 'im', false, false, false); ?>
+      <?php echo $basis->cInfo->contact->draw_address_fields('im', false, false, false); ?>
     </table>
   </fieldset>
 </div>

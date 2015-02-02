@@ -27,7 +27,7 @@ $toolbar->icon_list['save']['show']     = false;
 $toolbar->icon_list['print']['show']    = false;
 $toolbar->add_icon('continue', 'onclick="submitToDo(\'CreateInventoryItem\')"', $order = 10);
 $toolbar->add_help('07.04.01.01');
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 ?>
   <h1><?php echo sprintf(TEXT_NEW_ARGS, TEXT_INVENTORY_ITEM); ?></h1>
   <table class="ui-widget" style="border-collapse:collapse;width:600px;margin-left:auto;margin-right:auto">

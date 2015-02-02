@@ -51,7 +51,6 @@ class admin extends \core\classes\admin {
 		$this->tables = array(
 		  TABLE_ADDRESS_BOOK => "CREATE TABLE " . TABLE_ADDRESS_BOOK . " (
 			  address_id int(11) NOT NULL auto_increment,
-			  class VARCHAR( 255 ) NOT NULL DEFAULT '',
 			  ref_id int(11) NOT NULL default '0',
 			  type char(2) NOT NULL default '',
 			  primary_name varchar(32) NOT NULL default '',
@@ -73,6 +72,7 @@ class admin extends \core\classes\admin {
 			  KEY customer_id (ref_id,type)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci",
 		  TABLE_CONTACTS => "CREATE TABLE " . TABLE_CONTACTS . " (
+		  	  class VARCHAR( 255 ) NOT NULL DEFAULT '',
 			  id int(11) NOT NULL auto_increment,
 			  type char(1) NOT NULL default 'c',
 			  short_name varchar(32) NOT NULL default '',
@@ -331,7 +331,7 @@ class admin extends \core\classes\admin {
 			$basis->DataBase->exec("ALTER TABLE ".TABLE_CURRENT_STATUS." ADD next_crm_id_num VARCHAR( 16 ) NOT NULL DEFAULT '{$result->fields['new']}';");
 		}
 		if (version_compare($this->status, '4.0', '<') ) {
-			if (!db_field_exists(TABLE_CONTACTS, 'class')) $basis->DataBase->exec("ALTER TABLE ".TABLE_CONTACTS." ADD class VARCHAR( 255 ) NOT NULL DEFAULT '' AFTER id");
+			if (!db_field_exists(TABLE_CONTACTS, 'class')) $basis->DataBase->exec("ALTER TABLE ".TABLE_CONTACTS." ADD class VARCHAR( 255 ) NOT NULL DEFAULT '' FIRST");
 			$sql = $basis->DataBase->exec("UPDATE ".TABLE_CONTACTS." SET class = CONCAT('contacts\\\\classes\\\\type\\\\', type) WHERE class = '' ");
 		}
 		\core\classes\fields::sync_fields('contacts', TABLE_CONTACTS);
@@ -379,17 +379,12 @@ class admin extends \core\classes\admin {
 			if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
 			$criteria[] = '(' . implode(" like '%{$basis->cInfo->search_text}%' or ", $search_fields) . " like '%{$basis->cInfo->search_text}%')";
 		}
-		if (!$_SESSION['f0']) $criteria[] = "(c.inactive = '0' or c.inactive = '')"; // inactive flag
+		if (!$basis->cInfo->contact_show_inactive) $criteria[] = "(c.inactive = '0' or c.inactive = '')"; // inactive flag
 		$search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
-		$field_list = array('c.class','c.id', 'c.inactive', 'c.short_name', 'c.contact_first', 'c.contact_last',
-				'a.telephone1', 'c.attachments', 'c.first_date', 'c.last_update', 'c.last_date_1', 'c.last_date_2',
-				'a.primary_name', 'a.address1', 'a.city_town', 'a.state_province', 'a.postal_code');
-		$query_raw = "SELECT " . implode(', ', $field_list)  . " FROM " . TABLE_CONTACTS . " c LEFT JOIN " . TABLE_ADDRESS_BOOK . " a ON c.id = a.ref_id {$search} ORDER BY c.short_name"; //@todo needs modifying
+		$query_raw = "SELECT * FROM " . TABLE_CONTACTS . " c LEFT JOIN " . TABLE_ADDRESS_BOOK . " a ON c.id = a.ref_id {$search} ORDER BY c.short_name"; //@todo needs modifying
 		$sql = $basis->DataBase->prepare($query_raw);
 		$sql->execute();
-		while ($result = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)) {
-			$basis->cInfo->contacts_list[] = $result;
-		}
+		$basis->cInfo->contacts_list = $sql->fetchAll(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE) ;
 		$basis->cInfo->query_split  = new \core\classes\splitPageResults($_REQUEST['list'], $sql->rowCount());
 		history_save('contacts'.$basis->cInfo->type);
 		$basis->module		= 'contacts';
@@ -404,6 +399,41 @@ class admin extends \core\classes\admin {
 			case 'v': $basis->page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR);		break;
 		}
 
+	}
+
+	/**
+	 * this function will load the contact page
+	 */
+	function LoadContactPage(\core\classes\basis &$basis) {
+		if ( isset($basis->cInfo->rowSeq)) $basis->cInfo->cID = $basis->cInfo->rowSeq;
+		if ($basis->cInfo->cID == '') throw new \core\classes\userException("cID variable isn't set can't excecute method LoadContactPage ");
+		$inactive = '';
+		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " c LEFT JOIN " . TABLE_ADDRESS_BOOK . " a ON c.id = a.ref_id where id = {$basis->cInfo->cID}");
+		$sql->execute();
+		$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
+
+		for ($i = 1; $i < 13; $i++) {
+			$j = ($i < 10) ? '0' . $i : $i;
+			$basis->cInfo->expires_month[] = array('id' => sprintf('%02d', $i), 'text' => $j . '-' . strftime('%B',mktime(0,0,0,$i,1,2000)));
+		}
+		$today = getdate();
+		for ($i = $today['year']; $i < $today['year'] + 10; $i++) {
+			$year = strftime('%Y',mktime(0,0,0,1,1,$i));
+			$basis->cInfo->expires_year[] = array('id' => $year, 'text' => $year);
+		}
+		// load the tax rates
+		$basis->cInfo->tax_rates       = ord_calculate_tax_drop_down($basis->cInfo->contact->type, true);
+		$basis->cInfo->sales_rep_array = gen_get_rep_ids($basis->cInfo->contact->type);
+		$result = $basis->DataBase->prepare("select id, contact_first, contact_last, gl_type_account from ".TABLE_CONTACTS." where type='e'");
+		$sql->execute();
+		$basis->cInfo->reps       = array();
+		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+			$basis->cInfo->reps[$result['id']] = $result['contact_first'] . ' ' . $result['contact_last'];
+		}
+		$basis->module		= 'contacts';
+		$basis->page		= 'main';
+		$basis->template 	= 'template_detail';
+		$basis->page_title  = "{$basis->cInfo->contact->page_title_edit} - ({$basis->cInfo->contact->short_name}) {$basis->cInfo->contact->address[m][0]->primary_name}";
 	}
 
 	function load_demo() {

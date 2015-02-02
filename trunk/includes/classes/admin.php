@@ -275,8 +275,6 @@ class admin {
 	}
 
 	function __destruct(){
-		\core\classes\messageStack::debug_log(get_class($this)." installed = {$this->installed}");
-
 	}
 }
 ?>

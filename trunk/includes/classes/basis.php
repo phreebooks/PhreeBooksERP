@@ -125,9 +125,16 @@ class basis implements \SplSubject {
 		$this->DataBase = null;
 	}
 
+	public function setCinfo(){
+		if (json_decode($request) != NULL) {
+			$this->cInfo = (object) json_decode($request) ;
+		} else {
+			$this->cInfo = (object)array_merge ( $_GET, $_POST );
+		}
+	}
+
 	public function __wakeup() {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		$this->cInfo = (json_decode($request) != NULL) ? (object) json_decode($request) : (object)array_merge ( $_GET, $_POST );
 		$this->checkIfModulesInstalled();
 	}
 

@@ -47,7 +47,7 @@ if ($report->reporttype == 'rpt') {
   $toolbar->icon_list['save']['show'] = false;
 }
 $toolbar->add_help('11.02');
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 ?>
 <!-- start the tabsets -->
 <?php if (sizeof($r_list) > 1) { ?>

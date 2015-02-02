@@ -36,7 +36,7 @@ if (!$hide_save && $security_level > 1) {
 $toolbar->icon_list['print']['params'] = 'onclick="submitToDo(\'print\')"';
 if ($security_level > 1) $toolbar->add_icon('new', 'onclick="submitToDo(\'new\')"', $order = 2);
 $toolbar->add_help('07.04.WO.04');
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
 <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto">

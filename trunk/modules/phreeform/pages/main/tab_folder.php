@@ -37,7 +37,7 @@ if ($id) $docbar->icon_list['go_up'] = array(
   'text'   => 'Up', 
   'order'  => 2,
 );
-if ($_REQUEST['action'] <> 'search') $fieldset_content .= $docbar->build_toolbar() . chr(10);
+if ($_REQUEST['action'] <> 'search') $fieldset_content .= $docbar->build() . chr(10);
 // build the table contents
 $doc_cnt = 0;
 $fieldset_content .= '<table class="ui-widget" style="border-collapse:collapse;width:100%"><tbody class="ui-widget-content">' . chr(10);

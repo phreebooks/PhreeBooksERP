@@ -30,7 +30,7 @@ $toolbar->icon_list['open']['show']     = false;
 $toolbar->icon_list['save']['params']   = 'onclick="submitToDo(\'go\')"';
 $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['print']['show']    = false;
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 
 // Build the page
 ?>

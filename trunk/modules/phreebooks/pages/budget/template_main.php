@@ -33,7 +33,7 @@ $toolbar->add_icon('copy', 'onclick="if (confirm(\'' . GL_COPY_ACTUAL_CONFIRM  .
 $toolbar->icon_list['copy']['text']     = TEXT_COPY_ACTUALS_FROM_PRIOR_FINANCIAL_YEAR;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help();
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 // Build the page
 ?>
 <h1><?php echo sprintf(TEXT_MANAGER_ARGS, TEXT_BUDGET); ?></h1>

@@ -31,7 +31,7 @@ if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key =
 // add the help file index and build the toolbar
 $toolbar->add_help('');
 $toolbar->search_period = $acct_period;
-echo $toolbar->build_toolbar($add_search = true, $add_periods = true, $cal_date);
+echo $toolbar->build($add_search = true, $add_periods = true, $cal_date);
 $date_today = date('Y-m-d');
 // Build the page
 ?>

@@ -23,14 +23,14 @@ $cal_j_gen1 = array(
   'form'      => 'contacts',
   'fieldname' => 'contact_first',
   'imagename' => 'btn_j_gen1',
-  'default'   => isset($cInfo->contact_first) ? $cInfo->contact_first : '',
+  'default'   => isset($basis->cInfo->contact->contact_first) ? $basis->cInfo->contact->contact_first : '',
 );
 $cal_j_gen2 = array(
   'name'      => 'dateTo',
   'form'      => 'contacts',
   'fieldname' => 'contact_last',
   'imagename' => 'btn_j_gen2',
-  'default'   => isset($cInfo->contact_last) ? $cInfo->contact_last : '',
+  'default'   => isset($basis->cInfo->contact->contact_last) ? $basis->cInfo->contact->contact_last : '',
 );
 ?>
 <script type="text/javascript">
@@ -44,13 +44,13 @@ $cal_j_gen2 = array(
     <table>
       <tr>
         <td align="right"><?php echo ACT_J_SHORT_NAME; ?></td>
-        <td><?php echo html_input_field('short_name', $cInfo->short_name, 'size="21" maxlength="20"', true); ?></td>
+        <td><?php echo html_input_field('short_name', $basis->cInfo->contact->short_name, 'size="21" maxlength="20"', true); ?></td>
         <td align="right"><?php echo TEXT_INACTIVE; ?></td>
         <td>
-	      <?php echo html_checkbox_field('inactive', '1', $cInfo->inactive) . ' ';
+	      <?php echo html_checkbox_field('inactive', '1', $basis->cInfo->contact->inactive) . ' ';
             echo TEXT_BREAK_INTO_PHASES . ': ';
-            echo html_radio_field('account_number', 1, ($cInfo->account_number == '1' ? true : false)) . TEXT_YES . chr(10);
-            echo html_radio_field('account_number', 2, (($cInfo->account_number == '' || $cInfo->account_number == '2') ? true : false)) . TEXT_NO  . chr(10);
+            echo html_radio_field('account_number', 1, ($basis->cInfo->contact->account_number == '1' ? true : false)) . TEXT_YES . chr(10);
+            echo html_radio_field('account_number', 2, (($basis->cInfo->contact->account_number == '' || $basis->cInfo->contact->account_number == '2') ? true : false)) . TEXT_NO  . chr(10);
           ?>
 	   </td>
       </tr>
@@ -58,7 +58,7 @@ $cal_j_gen2 = array(
         <td align="right"><?php echo ACT_J_REP_ID; ?></td>
         <td>
 		  <?php
-			$default_selection = ($_REQUEST['action'] == 'new' ? AR_DEF_GL_SALES_ACCT : $cInfo->dept_rep_id);
+			$default_selection = ($_REQUEST['action'] == 'new' ? AR_DEF_GL_SALES_ACCT : $basis->cInfo->contact->dept_rep_id);
 			$selection_array = gen_get_rep_ids('c');
 			echo html_pull_down_menu('dept_rep_id', $selection_array, $default_selection);
 		  ?>
@@ -68,7 +68,7 @@ $cal_j_gen2 = array(
       </tr>
       <tr>
         <td align="right"><?php echo ACT_J_ID_NUMBER; ?></td>
-        <td><?php echo html_input_field('gov_id_number', $cInfo->gov_id_number, 'size="17" maxlength="16"'); ?></td>
+        <td><?php echo html_input_field('gov_id_number', $basis->cInfo->contact->gov_id_number, 'size="17" maxlength="16"'); ?></td>
         <td align="right"><?php echo TEXT_END_DATE; ?></td>
         <td><?php echo html_calendar_field($cal_j_gen2); ?></td>
       </tr>
@@ -78,8 +78,8 @@ $cal_j_gen2 = array(
 <?php // *********************** Mailing/Main Address (only one allowed) ****************************** ?>
   <fieldset>
     <legend><?php echo TEXT_MAIN_MAILING_ADDRESS; ?></legend>
-    <table id="<?php echo $type; ?>m_address_form" class="ui-widget" style="border-collapse:collapse;width:100%;">
-      <?php echo draw_address_fields($cInfo, $type.'m', false, true, false); ?>
+    <table id="<?php echo $basis->cInfo->contact->type; ?>m_address_form" class="ui-widget" style="border-collapse:collapse;width:100%;">
+      <?php echo $basis->cInfo->contact->draw_address_fields($basis->cInfo->contact->type.'m', false, true, false); ?>
     </table>
   </fieldset>
 <?php // *********************** Attachments  ************************************* ?>
@@ -98,8 +98,8 @@ $cal_j_gen2 = array(
       <th><?php echo TEXT_ACTION; ?></th>
      </tr>
 <?php
-if (sizeof($cInfo->attachments) > 0) {
-  foreach ($cInfo->attachments as $key => $value) {
+if (sizeof($basis->cInfo->contact->attachments) > 0) {
+  foreach ($basis->cInfo->contact->attachments as $key => $value) {
     echo '<tr>';
     echo ' <td>' . html_checkbox_field('rm_attach_'.$key, '1', false) . '</td>' . chr(10);
     echo ' <td>' . $value . '</td>' . chr(10);

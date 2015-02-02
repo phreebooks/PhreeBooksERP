@@ -34,7 +34,7 @@ $toolbar->icon_list['home'] = array(
 	'order'  => '35',
 );
 $toolbar->add_help();
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 ?>
 <h1><?php echo TEXT_DOCUMENT_CONTROL; ?></h1>
 <table class="ui-widget" style="border-style:none;width:100%">

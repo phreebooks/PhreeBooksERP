@@ -30,7 +30,7 @@ if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key =
 $toolbar->add_help('07.05.04');
 $toolbar->search_period = $period;
 $toolbar->period_strict = false; // hide the All option in period selection
-echo $toolbar->build_toolbar($add_search = false, $add_period = true);
+echo $toolbar->build($add_search = false, $add_period = true);
 // Build the page
 ?>
 <h1><?php echo TEXT_CASH_ACCOUNT_REGISTER; ?></h1>

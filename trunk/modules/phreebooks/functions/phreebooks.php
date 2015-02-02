@@ -308,54 +308,64 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
   }
   return $acct_balance;
 }
-
+	/**
+	 * returns array of tax autorities.
+	 * @throws \core\classes\userException when there are no tax records
+	 * @return array
+	 */
   	function gen_build_tax_auth_array() {
     	global $admin;
-    	$tax_auth_values = $admin->DataBase->query("select tax_auth_id, description_short, account_id , tax_rate
-      	  from " . TABLE_TAX_AUTH . " order by description_short");
-    	if ($tax_auth_values->rowCount() < 1) throw new \core\classes\userException("there are not tax records to select");
-		while (!$tax_auth_values->EOF) {
-			$tax_auth_array[$tax_auth_values->fields['tax_auth_id']] = array(
-			  'description_short' => $tax_auth_values->fields['description_short'],
-			  'account_id'        => $tax_auth_values->fields['account_id'],
-			  'tax_rate'          => $tax_auth_values->fields['tax_rate'],
+    	$sql = $admin->DataBase->prepare("SELECT tax_auth_id, description_short, account_id , tax_rate FROM " . TABLE_TAX_AUTH . " ORDER BY description_short");
+    	$sql->execute();
+    	if ($sql->rowCount() < 1) throw new \core\classes\userException("there are no tax records");
+    	while ($tax_auth_values = $sql->fetch(\PDO::FETCH_LAZY)){
+			$tax_auth_array[$tax_auth_values['tax_auth_id']] = array(
+			  'description_short' => $tax_auth_values['description_short'],
+			  'account_id'        => $tax_auth_values['account_id'],
+			  'tax_rate'          => $tax_auth_values['tax_rate'],
 			);
-			$tax_auth_values->MoveNext();
 		}
     	return $tax_auth_array;
   	}
 
-  function gen_calculate_tax_rate($tax_authorities_chosen, $tax_auth_array) {
-	$chosen_auth_array = explode(':', $tax_authorities_chosen);
-	$total_tax_rate = 0;
-	while ($chosen_auth = array_shift($chosen_auth_array)) {
-	  $total_tax_rate += $tax_auth_array[$chosen_auth]['tax_rate'];
-	}
-	return $total_tax_rate;
-  }
+  	function gen_calculate_tax_rate($tax_authorities_chosen, $tax_auth_array) {
+		$chosen_auth_array = explode(':', $tax_authorities_chosen);
+		$total_tax_rate = 0;
+		while ($chosen_auth = array_shift($chosen_auth_array)) {
+	  		$total_tax_rate += $tax_auth_array[$chosen_auth]['tax_rate'];
+		}
+		return $total_tax_rate;
+  	}
 
+  	/**
+  	 * will return tax rates.
+  	 * @param string $type witch contact_type should be looked for.
+  	 * c= customers, v = vendors, b = both
+  	 * @param bool $contactForm is contact form is true a additional option will be presented (product default).
+  	 * @return array (id, rate, text, auths)
+  	 */
   	function ord_calculate_tax_drop_down($type = 'c', $contactForm = false) {
 	    global $admin;
 		$tax_auth_array = gen_build_tax_auth_array();
-	    $sql = "select tax_rate_id, description_short, rate_accounts from " . TABLE_TAX_RATES;
+	    $raw_sql = "SELECT tax_rate_id, description_short, rate_accounts FROM " . TABLE_TAX_RATES;
 		switch ($type) {
 			  default:
 			  case 'c':
-			  case 'v': $sql .= " where type = '$type'"; break;
+			  case 'v': $raw_sql .= " where type = '$type'"; break;
 			  case 'b': // both
 		}
-		$tax_rates = $admin->DataBase->query($sql);
+		$sql = $admin->DataBase->query($raw_sql);
+		$sql->execute();
 	    $tax_rate_drop_down = array();
-	    if ($contactForm == true) $tax_rate_drop_down[] = array('id' => '-1', 'text' => TEXT_PRODUCT_DEFAULT);
+	    if ($contactForm == true) $tax_rate_drop_down[] = array('id' => '-1', 'text' => TEXT_PRODUCT_DEFAULT, 'auths' => '');
 	    $tax_rate_drop_down[] = array('id' => '0', 'rate' => '0', 'text' => TEXT_NONE, 'auths' => '');
-		while (!$tax_rates->EOF) {
+	    while ($tax_rates = $sql->fetch(\PDO::FETCH_LAZY)){
 			$tax_rate_drop_down[] = array(
-			  'id'    => $tax_rates->fields['tax_rate_id'],
-			  'rate'  => gen_calculate_tax_rate($tax_rates->fields['rate_accounts'], $tax_auth_array),
-			  'text'  => $tax_rates->fields['description_short'],
-			  'auths' => $tax_rates->fields['rate_accounts'],
+			  'id'    => $tax_rates['tax_rate_id'],
+			  'rate'  => gen_calculate_tax_rate($tax_rates['rate_accounts'], $tax_auth_array),
+			  'text'  => $tax_rates['description_short'],
+			  'auths' => $tax_rates['rate_accounts'],
 			);
-			$tax_rates->MoveNext();
 		}
 		return $tax_rate_drop_down;
   	}

@@ -28,7 +28,7 @@ $toolbar->icon_list['print']['show']    = false;
 if ($security_level > 1) $toolbar->add_icon('new', 'onclick="submitToDo(\'LoadNewInventoryItem\')"', $order = 10);
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('07.04.01');
-echo $toolbar->build_toolbar($add_search = true);
+echo $toolbar->build($add_search = true);
 ?>
 <h1><?php echo sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY); ?></h1>
 <table id="filter_table" class="ui-widget" style="border-collapse:collapse;">

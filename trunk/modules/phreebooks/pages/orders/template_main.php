@@ -116,7 +116,7 @@ switch(JOURNAL_ID) {
   case 20: $toolbar->add_help('07.02.06'); break;
   case 21: $toolbar->add_help('07.02.06'); break;
 }
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 // Build the page
 ?>
 <div class="easyui-window" id="override_order" title="<?php echo TEXT_CREDIT_LIMIT_TITLE; ?>" data-options="modal:true,closed:true,iconCls:'icon-save'">

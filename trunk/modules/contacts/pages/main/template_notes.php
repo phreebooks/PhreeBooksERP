@@ -21,7 +21,7 @@ $cal_c_gen = array(
   'form'      => 'contacts',
   'fieldname' => 'crm_date',
   'imagename' => 'btn_c_gen',
-  'default'   => gen_locale_date($cInfo->crm_date),
+  'default'   => gen_locale_date($basis->cInfo->contact->crm_date),
   'params'    => array('align' => 'left'),
 );
 ?>
@@ -44,12 +44,12 @@ $cal_c_gen = array(
 	  </thead>
 	  <tbody class="ui-widget-content">
 	   <tr>
-	    <td align="center"><?php echo html_pull_down_menu('crm_rep_id', $sales_rep_array, $cInfo->crm_rep_id ? $cInfo->crm_rep_id : $_SESSION['account_id']); ?></td>
+	    <td align="center"><?php echo html_pull_down_menu('crm_rep_id', $sales_rep_array, $basis->cInfo->contact->crm_rep_id ? $basis->cInfo->contact->crm_rep_id : $_SESSION['account_id']); ?></td>
 	    <td align="center"><?php echo html_calendar_field($cal_c_gen); ?></td>
-	    <td align="center"><?php echo html_pull_down_menu('crm_action', gen_build_pull_down($crm_actions), $cInfo->crm_action); ?></td>
+	    <td align="center"><?php echo html_pull_down_menu('crm_action', gen_build_pull_down($crm_actions), $basis->cInfo->contact->crm_action); ?></td>
 	   </tr>
 	   <tr>
-	    <td colspan="3" align="center"><?php echo '<br />' . html_textarea_field('crm_note', 60, 1, $cInfo->crm_note, ''); ?></td>
+	    <td colspan="3" align="center"><?php echo '<br />' . html_textarea_field('crm_note', 60, 1, $basis->cInfo->contact->crm_note, ''); ?></td>
 	   </tr>
 	  </tbody>
 	 </table>
@@ -58,7 +58,7 @@ $cal_c_gen = array(
 	   <tr><th colspan="4"><?php echo TEXT_HISTORY; ?></th></tr>
 	  </thead>
 	  <tbody class="ui-widget-content">
-<?php if (sizeof($cInfo->crm_log) > 0) foreach ($cInfo->crm_log as $value) { ?>
+<?php if (sizeof($basis->cInfo->contact->crm_log) > 0) foreach ($basis->cInfo->contact->crm_log as $value) { ?>
 	   <tr id="tr_crm_a_<?php echo $value->log_id; ?>" class="odd">
 	    <td><?php echo $security_level < 4 ? '&nbsp;' : html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\''.CRM_ROW_DELETE_ALERT.'\')) deleteCRM('.$value->log_id.');"'); ?></td>
 	    <td><?php echo $reps[$value->entered_by]; ?></td>
@@ -72,6 +72,6 @@ $cal_c_gen = array(
 	  </tbody>
 	 </table>
 	</div>
-    <div style="width:50%"><?php echo html_textarea_field('address['.$type.'m][notes]', 60, 30, $cInfo->address[$type.'m']['notes']); ?></div>
+    <div style="width:50%"><?php echo html_textarea_field("address[{$basis->cInfo->contact->type}m][notes]", 60, 30, $basis->cInfo->contact->address[$basis->cInfo->contact->type.'m']['notes']); ?></div>
   </fieldset>
 </div>

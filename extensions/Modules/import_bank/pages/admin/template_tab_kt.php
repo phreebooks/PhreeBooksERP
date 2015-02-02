@@ -25,7 +25,7 @@ $kt_toolbar->icon_list['print']['show']  = false;
 if ($security_level > 1) $kt_toolbar->add_icon('new', 'onclick="loadPopUp(\'known_transactions_new\', 0)"', $order = 10);
 ?>
 <div title="<?php echo TEXT_TRANSACTION_TEMPLATE;?>" id="tab_kt">
-  <?php echo $kt_toolbar->build_toolbar(); ?>
+  <?php echo $kt_toolbar->build(); ?>
   <h1><?php echo $kt->title; ?></h1>
   <div id="kt_content"><?php echo $kt->build_main_html(); ?></div>
 </div>

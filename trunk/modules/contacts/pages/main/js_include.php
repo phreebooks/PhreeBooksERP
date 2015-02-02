@@ -23,10 +23,10 @@
 // Include translations here as well.
 var attachment_path = '<?php echo urlencode(CONTACTS_DIR_ATTACHMENTS); ?>';
 var default_country = '<?php echo COMPANY_COUNTRY; ?>';
-var account_type    = '<?php echo $type; ?>';
+var account_type    = '<?php echo $basis->cInfo->contact->type; ?>';
 
 function init() {
-<?php if ($include_template == 'template_main.php') {
+<?php if ($basis->include_template == 'template_main') {
  	echo '  document.getElementById("search_text").focus();'  . chr(10);
   	echo '  document.getElementById("search_text").select();' . chr(10);
   }
@@ -37,7 +37,7 @@ function init() {
 function check_form() {
   var error = 0;
   var error_message = "<?php echo JS_ERROR; ?>";
-  <?php if ($cInfo->auto_type == false && ($_REQUEST['action'] == 'edit' || $_REQUEST['action'] == 'update' || $_REQUEST['action'] == 'new')) { ?> // if showing the edit/update detail form
+  <?php if ($basis->cInfo->auto_type == false && ($basis->cInfo->action == 'LoadContactPage' || $_REQUEST['action'] == 'update' || $_REQUEST['action'] == 'new')) { ?> // if showing the edit/update detail form
   var acctId = document.getElementById('short_name').value;
   if (acctId == '') {
       error_message += "* <?php echo TEXT_THE_ID_ENTRY_CANNOT_BE_EMPTY; ?>";

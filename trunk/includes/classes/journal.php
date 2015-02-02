@@ -60,7 +60,7 @@ class journal {
 		// start unposting all affected records
 		if (sizeof($this->unpost_ids) > 0) {
 	  		krsort($this->unpost_ids); // unpost in reverse order
-	  		$messageStack->debug("\nStarting to unPost reverse sorted id array = " . arr2string($this->unpost_ids));
+	  		$messageStack->debug("\nStarting to unPost reverse sorted id array = " . print_r($this->unpost_ids, true));
 		  	while (true) {
 				if (!$id = array_shift($this->unpost_ids)) break; // no more to unPost, exit loop
 				$messageStack->debug("\n/********* unPosting journal_main id = $id");
@@ -75,25 +75,25 @@ class journal {
 				$this->affected_accounts = gen_array_key_merge($this->affected_accounts, $unPost->affected_accounts);
 				// add the new post_ids to the arrays, one for now, one for re-post loop later
 				$this->unpost_ids += $unPost->unpost_ids;
-				$messageStack->debug("\n  unPosting array now looks like = " . arr2string($this->unpost_ids));
-				$messageStack->debug("\n  re-Posting array keys now looks like = " . arr2string(array_keys($this->post_ids)));
+				$messageStack->debug("\n  unPosting array now looks like = " . print_r($this->unpost_ids, true));
+				$messageStack->debug("\n  re-Posting array keys now looks like = " . print_r(array_keys($this->post_ids), true));
 //				$unPost->post_ids = array(); // clear nested unPost to zero, so it doesn't re-post
 	  		}
 		}
 		// Post entry and rePost any journal entries unPosted
 		ksort($this->post_ids); // re-post in post_date/record_id ascending order
-		$messageStack->debug("\nStarting to Post indexes to be Posted = " . arr2string(array_keys($this->post_ids)));
+		$messageStack->debug("\nStarting to Post indexes to be Posted = " . print_r(array_keys($this->post_ids), true));
 		while ($glEntry = array_shift($this->post_ids)) {
 			$messageStack->debug("\n/********* Posting Journal main ... id = $glEntry->id and journal_id = $glEntry->journal_id");
 			$this->repost_ids = $glEntry->check_for_re_post();
 			$glEntry->remove_cogs_rows(); // they will be regenerated during the post
-			$messageStack->debug("\n  journal_main array = " . arr2string($glEntry->journal_main_array));
+			$messageStack->debug("\n  journal_main array = " . print_r($glEntry->journal_main_array, true));
 			db_perform(TABLE_JOURNAL_MAIN, $glEntry->journal_main_array, 'insert');
 			if (!$glEntry->id) $glEntry->id = db_insert_id();
 		// post journal rows
 		$messageStack->debug("\n  Posting Journal rows ...");
 			for ($i = 0; $i < count($glEntry->journal_rows); $i++) {
-		  		$messageStack->debug("\n  journal_rows = " . arr2string($glEntry->journal_rows[$i]));
+		  		$messageStack->debug("\n  journal_rows = " . print_r($glEntry->journal_rows[$i], true));
 		  		$glEntry->journal_rows[$i]['ref_id'] = $glEntry->id;	// link the rows to the journal main id
 		  		db_perform(TABLE_JOURNAL_ITEM, $glEntry->journal_rows[$i], 'insert');
 		  		if (!$glEntry->journal_rows[$i]['id']) $glEntry->journal_rows[$i]['id'] = db_insert_id();
@@ -107,7 +107,7 @@ class journal {
 			$this->first_period = min($this->first_period, $glEntry->period);
 			if (sizeof($this->repost_ids) > 0) {
 				ksort($this->repost_ids); // repost by post date
-				$messageStack->debug("\nStarting to rePost entries queued from first pass, sorted id array = ".arr2string($this->repost_ids));
+				$messageStack->debug("\nStarting to rePost entries queued from first pass, sorted id array = ".print_r($this->repost_ids, true));
 				while (true) {
 					if (!$id = array_shift($this->repost_ids)) break; // no more to unPost, exit loop
 					$messageStack->debug("\n/********* rePosting journal_main id = $id");
@@ -116,7 +116,7 @@ class journal {
 					$rePost->Post('edit', true);
 					// add the new post_ids to the arrays, one for now, one for re-post loop later
 					$this->repost_ids += $rePost->repost_ids;
-					$messageStack->debug("\n  rePosting array now looks like = " . arr2string($this->repost_ids));
+					$messageStack->debug("\n  rePosting array now looks like = " . print_r($this->repost_ids, true));
 			}
 		}
 		}
@@ -181,7 +181,7 @@ class journal {
 	  					$result->MoveNext();
 	  	  			}
 	  	  			if (sizeof($askus) > 0) {
-		    			$messageStack->debug("\n    Finding re-post ids for average sku list = ".arr2string($askus)." and post_date after $this->post_date");
+		    			$messageStack->debug("\n    Finding re-post ids for average sku list = ".print_r($askus, true)." \n and post_date after $this->post_date");
 	  	  				$result = $admin->DataBase->query("SELECT ref_id, post_date FROM ".TABLE_JOURNAL_ITEM." WHERE sku IN ('".implode("', '", $askus)."') AND post_date > '$this->post_date'");
 	  	  				while (!$result->EOF) {
 		  	  				$messageStack->debug("\n    check_for_re_post is queing for average cost record id = ".$result->fields['ref_id']);
@@ -888,7 +888,7 @@ class journal {
 				if ($result->rowCount() <> 0) throw new \core\classes\userException(GL_ERROR_SERIALIZE_COGS);
 		  		$history_array['serialize_number'] = $item['serialize_number'];
 		  	}
-		  	$messageStack->debug("\n      Inserting into inventory history = " . arr2string($history_array));
+		  	$messageStack->debug("\n      Inserting into inventory history = " . print_r($history_array, true));
 		  	$result = db_perform(TABLE_INVENTORY_HISTORY, $history_array, 'insert');
 		  	if ($result->AffectedRows() <> 1) throw new \core\classes\userException(TEXT_ERROR_POSTING_INVENTORY_HISTORY);
 		} else { // for negative quantities, i.e. sales, negative inv adjustments, assemblies, vendor credit memos
@@ -1149,7 +1149,7 @@ class journal {
 	  }
 	}
 	$this->so_po_balance_array = $item_array;
-	$messageStack->debug(" Finished loading SO/PO balances = " . arr2string($item_array));
+	$messageStack->debug(" Finished loading SO/PO balances = " . print_r($item_array, true));
 	return $item_array;
   }
 

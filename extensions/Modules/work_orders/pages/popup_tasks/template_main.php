@@ -28,7 +28,7 @@ $toolbar->icon_list['delete']['show'] = false;
 $toolbar->icon_list['print']['show'] = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('07.04.WO.02');
-echo $toolbar->build_toolbar($add_search = true);
+echo $toolbar->build($add_search = true);
 // Build the page
 ?>
 <h1><?php echo TEXT_WORK_ORDER_TASKS; ?></h1>

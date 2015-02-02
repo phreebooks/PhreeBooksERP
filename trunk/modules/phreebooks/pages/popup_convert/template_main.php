@@ -32,7 +32,7 @@ switch ($account_type) {
   case 'c': $toolbar->add_help('07.03.02.04'); break;
   case 'v': $toolbar->add_help('07.02.02.04'); break;
 }
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 // Build the page
 ?>
 <h1><?php echo $jID == 3 ? TEXT_CONVERT_TO_PURCHASE_ORDER : TEXT_CONVERT_TO_SALES_ORDER; ?></h1>

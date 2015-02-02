@@ -31,7 +31,7 @@ $toolbar->icon_list['save']['show']     = false;
 $toolbar->icon_list['print']['show']    = false;
 $toolbar->icon_list['delete']['show']   = false;
 $toolbar->add_help('11.01.01');
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>

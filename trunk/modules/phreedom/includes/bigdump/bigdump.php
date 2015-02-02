@@ -283,7 +283,7 @@ if (count($extra_toolbar_buttons) > 0) {
 
 // add the help file index and build the toolbar
 $toolbar->add_help('01');
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 
 echo '<h1>' . TEXT_COMPANY_RESTORE . '</h1>';
 // ****************************** EOF - Mods by PhreeSoft **************************************** ?>

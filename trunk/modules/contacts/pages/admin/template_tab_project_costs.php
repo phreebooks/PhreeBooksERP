@@ -27,7 +27,7 @@ if ($project_costs->extra_buttons) $project_costs->customize_buttons($project_co
 
 ?>
 <div title="<?php echo TEXT_PROJECT_COSTS;?>" id="tab_project_costs">
-  <?php echo $project_costs_toolbar->build_toolbar(); ?>
+  <?php echo $project_costs_toolbar->build(); ?>
   <h1><?php echo $project_costs->title; ?></h1>
   <div id="project_costs_content"><?php echo $project_costs->build_main_html(); ?></div>
 </div>

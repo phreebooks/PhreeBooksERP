@@ -29,7 +29,7 @@ $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('09');
-echo $toolbar->build_toolbar($add_search = false, false, $cal_ship);
+echo $toolbar->build($add_search = false, false, $cal_ship);
 // Build the page
 ?>
 <h1><?php echo sprintf(TEXT_MANAGER_ARGS, TEXT_SHIPPING); ?></h1>

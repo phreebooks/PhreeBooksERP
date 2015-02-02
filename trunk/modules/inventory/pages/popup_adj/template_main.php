@@ -31,7 +31,7 @@ if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key =
 // add the help file index and build the toolbar
 $toolbar->add_help('07.04.02');
 $toolbar->search_period = $acct_period;
-echo $toolbar->build_toolbar($add_search = true, $add_period = true);
+echo $toolbar->build($add_search = true, $add_period = true);
 // Build the page
 $list_types = ($adj_type == 'xfr') ? TEXT_TRANSFERS : TEXT_ADJUSTMENTS;
 ?>

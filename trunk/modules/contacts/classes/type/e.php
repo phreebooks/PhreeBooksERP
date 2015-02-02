@@ -41,7 +41,7 @@ class e extends \contacts\classes\contacts{
 		return ACT_ERROR_CANNOT_DELETE_EMPLOYEE;
   	}
 
-  	function contant_list_row () {
+  	function list_row () {
   		\core\classes\messageStack::debug_log("executing ".__METHOD__ ." of class ". get_class($admin_class));
   		$security_level = \core\classes\user::validate($this->security_token); // in this case it must be done after the class is defined for
   		$bkgnd          = ($this->inactive) ? ' style="background-color:pink"' : '';

@@ -26,7 +26,7 @@ $toolbar->icon_list['open']['show']     = false;
 $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['save']['params']   = 'onclick="submitToDo(\'save\')"';
 $toolbar->icon_list['print']['show']    = false;
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 ?>
 <h1><?php echo TEXT_TRANSLATOR_ASSISTANT; ?></h1>
 <div id="filter_bar">

@@ -35,7 +35,7 @@ if ($security_level > 3) {
 }
 // build sub toolbar
 $fieldset_content  = NULL;
-$fieldset_content .= $docbar->build_toolbar() . chr(10);
+$fieldset_content .= $docbar->build() . chr(10);
 $fieldset_content .= '<h1>' . TEXT_REPORT . ': ' . $doc_details->fields['doc_title'] . '</h1>';
 // build the table contents
 $fieldset_content .= '<table class="ui-widget" style="border-collapse:collapse;width:100%"><tbody class="ui-widget-content">' . chr(10);

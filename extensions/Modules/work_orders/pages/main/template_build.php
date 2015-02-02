@@ -34,7 +34,7 @@ if (!$hide_save && ((!$id && $security_level > 1) || ($id && $security_level > 2
 }
 $toolbar->icon_list['print']['show']    = false;
 $toolbar->add_help('07.04.WO.04');
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 ?>
 <h1><?php echo TEXT_BUILD_AND_TRACK_WORK_ORDER . (!$id ? '' : ' - ' . $id); ?></h1>
   <div id="inv_image" title="<?php echo $sku; ?>">

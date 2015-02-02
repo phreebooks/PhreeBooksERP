@@ -36,7 +36,7 @@ if (($cInfo->id && $security_level > 2) || (!$cInfo->id && $security_level > 1))
 }
 $toolbar->icon_list['print']['show']    = false;
 //$toolbar->add_help('');
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 ?>
 <h1><?php echo ($_REQUEST['action'] == 'new') ? TEXT_CREATE_NEW_CORRECTIVE_ACTION : (TEXT_CORRECTIVE_OR_PREVENTATIVE_ACTION . ' - ' . TEXT_CAPA_NUM . '# ' . $cInfo->capa_num); ?></h1>
 
