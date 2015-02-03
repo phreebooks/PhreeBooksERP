@@ -186,9 +186,9 @@ switch ($_REQUEST['action']) {
 		  }
 	      $glEntry->journal_main_array['total_amount'] = $tot_amount;
 	      if (!$glEntry->Post($glEntry->id ? 'edit' : 'insert')) $error = true;
-		  // link first record to second record
-//		  $db->Execute("UPDATE ".TABLE_JOURNAL_MAIN." SET so_po_ref_id=$glEntry->id WHERE id=$first_id");
-	      $db->transCommit();	// post the chart of account values
+		  // Now, link first record to second record so edits can be made else will crash when entry is edited.
+		  $db->Execute("UPDATE ".TABLE_JOURNAL_MAIN." SET so_po_ref_id=$glEntry->id WHERE id=$first_id");
+	      if (!$error) $db->transCommit();	// post the chart of account values
 	      // *************** END TRANSACTION *************************
 		  gen_add_audit_log(sprintf(INV_LOG_TRANSFER, $source_store_id, $dest_store_id), $sku, $qty);
 	      $messageStack->add(INV_POST_SUCCESS . $glEntry->purchase_invoice_id, 'success');

@@ -70,7 +70,7 @@ $field_list = array('m.id', 'm.purchase_invoice_id', 'm.post_date', 'm.store_id'
 if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
 $filters[] = "i.gl_type = 'adj'";
 $filters[] = 'm.journal_id = 16';
-$filters[] = ($adj_type == 'xfr') ? 'm.so_po_ref_id = -1' : 'm.so_po_ref_id = 0';
+$filters[] = ($adj_type == 'xfr') ? 'm.so_po_ref_id <> 0 AND i.qty < 0' : 'm.so_po_ref_id = 0';
 //if ($adj_type == 'xfr') $filters[] = 'm.bill_acct_id > 0'; // only pull the first record
 $query_raw    = "SELECT SQL_CALC_FOUND_ROWS DISTINCT " . implode(', ', $field_list) . " 
 	FROM " . TABLE_JOURNAL_MAIN . " m JOIN " . TABLE_JOURNAL_ITEM . " i ON m.id = i.ref_id 

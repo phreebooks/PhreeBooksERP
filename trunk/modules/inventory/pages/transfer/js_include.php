@@ -21,12 +21,12 @@
 <!--
 // pass any php variables generated during pre-process that are used in the javascript functions.
 // Include translations here as well.
-var securityLevel    = <?php echo $security_level; ?>;
-var text_search      = '<?php echo TEXT_SEARCH; ?>';
-var serial_num_prompt= '<?php echo ORD_JS_SERIAL_NUM_PROMPT; ?>';
-var SalesOrderForItem	 = '<?php echo THERE_IS_SALES_ORDER_FOR_THIS_ITEM; ?>';
-var ItemIsInactive		 = '<?php echo ITEM_IS_INACTIVE; ?>';
-var ItemOutOfStock		 = '<?php echo ITEM_IS_OUT_OF_STOCK; ?>';
+var securityLevel     = <?php echo $security_level; ?>;
+var text_search       = '<?php echo TEXT_SEARCH; ?>';
+var serial_num_prompt = '<?php echo ORD_JS_SERIAL_NUM_PROMPT; ?>';
+var SalesOrderForItem = '<?php echo THERE_IS_SALES_ORDER_FOR_THIS_ITEM; ?>';
+var ItemIsInactive	  = '<?php echo ITEM_IS_INACTIVE; ?>';
+var ItemOutOfStock	  = '<?php echo ITEM_IS_OUT_OF_STOCK; ?>';
 
 <?php echo js_calendar_init($cal_xfr); ?>
 
@@ -35,7 +35,15 @@ function init() {
 }
 
 function check_form() {
-  return true;
+	var numRows = document.getElementById('item_table').rows.length;
+	for (var i=1; i<numRows; i++) {
+		qty = parseFloat(document.getElementById('qty_'+i).value);
+		if (qty <= 0) {
+		  alert('All quantities for a transfer entry must be greater than zero!');
+		  return false;
+		}
+	}
+	return true;
 }
 
 function clearForm() {
