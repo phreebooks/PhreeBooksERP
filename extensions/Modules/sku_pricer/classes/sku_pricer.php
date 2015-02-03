@@ -90,9 +90,11 @@ class sku_pricer {
 			$query = "";
 			foreach ($purch_fields as $key => $value) if (isset($row[$key])) $query .= " $value='".db_input($row[$key])."',";
 			$query = substr($query, 0, strlen($query)-1); // remove last comma
-			$sql = "UPDATE ".TABLE_INVENTORY_PURCHASE." SET $query WHERE $where";
-			$messageStack->debug("\nExecuting sql = $sql");
-			$result = $db->Execute($sql);
+			if ($query) {
+				$sql = "UPDATE ".TABLE_INVENTORY_PURCHASE." SET $query WHERE $where";
+				$messageStack->debug("\nExecuting sql = $sql");
+				$result = $db->Execute($sql);
+			}
 		}
 		if (DEBUG) $messageStack->write_debug();
 		$messageStack->add("Total lines processed: ".sizeof($rows).". Total affected rows = $count.", "success");
