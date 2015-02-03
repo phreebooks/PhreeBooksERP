@@ -23,7 +23,7 @@ $toolbar->icon_list['open']['show']     = false;
 $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['save']['show']     = false;
 $toolbar->icon_list['print']['show']    = false;
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 ?>
 <h1><?php echo sprintf(TEXT_NEW_ARGS, TEXT_TRANSLATION); ?></h1>
 <table class="ui-widget" style="border-collapse:collapse;width:100%">

@@ -32,7 +32,7 @@ if ($security_level > 2) {
 }
 $toolbar->icon_list['print']['show'] = false;
 $toolbar->add_help('');
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 
 print_R($mail);
 

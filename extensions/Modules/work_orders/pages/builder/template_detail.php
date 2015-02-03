@@ -32,7 +32,7 @@ if (!$hide_save && ((!$id && $security_level > 1) || ($id && $security_level > 2
 }
 $toolbar->icon_list['print']['show']    = false;
 $toolbar->add_help('07.04.WO.03');
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 ?>
 <h1><?php echo TEXT_WORK_ORDER_BUILDER . ' - ' . $wo_title; ?></h1>
 <div class="easyui-tabs" id="buildertabs">

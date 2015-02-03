@@ -38,7 +38,7 @@ if (count($extra_toolbar_buttons) > 0) {
 
 // add the help file index and build the toolbar	
 $toolbar->search_period = $acct_period;
-echo $toolbar->build_toolbar($add_search = true, $add_periods = true); 
+echo $toolbar->build($add_search = true, $add_periods = true); 
 
 // Build the page
 ?>

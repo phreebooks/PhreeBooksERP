@@ -27,7 +27,7 @@ if ($security_level > 1) $tax_rates_toolbar->add_icon('new', 'onclick="loadPopUp
 
 ?>
 <div title="<?php echo SETUP_TITLE_TAX_RATES;?>" id="tab_tax_rates">
-  <?php echo $tax_rates_toolbar->build_toolbar(); ?>
+  <?php echo $tax_rates_toolbar->build(); ?>
   <h1><?php echo $tax_rates->title; ?></h1>
   <div id="tax_rates_content"><?php echo $tax_rates->build_main_html(); ?></div>
 </div>

@@ -23,7 +23,7 @@
 	  <table class="ui-widget" style="border-collapse:collapse;width:100%;">
 		<tbody class="ui-widget-content">
 	  <tr>
-	    <td width="50%"><?php echo TEXT_HIRE_DATE . ': ' . gen_locale_date($cInfo->first_date); ?></td>
+	    <td width="50%"><?php echo TEXT_HIRE_DATE . ': ' . gen_locale_date($basis->cInfo->contact->first_date); ?></td>
 	  </tr>
 	   </tbody>
 	</table>

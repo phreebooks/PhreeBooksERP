@@ -29,7 +29,7 @@ $toolbar->icon_list['delete']['show'] = false;
 $toolbar->icon_list['print']['show'] = false;
 $toolbar->add_icon('back', 'onclick="submitToDo(\'back\')"', $order = 9);
 $toolbar->add_help('09');
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 ?>
 <h1><?php echo TEXT_SHIPPING_RATE_ESTIMATOR; ?></h1>
 <table>

@@ -30,7 +30,7 @@ if ($security_level > 1) {
 $toolbar->icon_list['delete']['show']     = false;
 $toolbar->icon_list['print']['show']      = false;
 // add the help file index and build the toolbar
-echo $toolbar->build_toolbar($add_search = true);
+echo $toolbar->build($add_search = true);
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>

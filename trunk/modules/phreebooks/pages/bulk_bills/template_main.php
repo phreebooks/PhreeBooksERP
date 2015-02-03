@@ -30,7 +30,7 @@ $toolbar->add_icon('ship_all', 'onclick="checkShipAll()"', 20);
 $toolbar->icon_list['ship_all']['text'] = TEXT_CHECK_ALL_CHECKBOXES;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('07.05.01');
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 // Build the page
 ?>
 <h1><?php echo TEXT_PAY_BY_DUE_DATE; ?></h1>

@@ -29,7 +29,7 @@ $toolbar->icon_list['print']['params']  = 'onclick="submitToDo(\'label\')"';
 $toolbar->icon_list['print']['text']    = TEXT_PRINT_LABEL;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('09.01');
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 // Build the page
 ?>
 <h1><?php echo MODULE_SHIPPING_FEDEX_V7_TEXT_TITLE; ?></h1>

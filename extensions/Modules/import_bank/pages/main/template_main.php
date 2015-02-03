@@ -38,7 +38,7 @@ if (count($extra_toolbar_buttons) > 0) {
 }
 // add the help file index and build the toolbar
 $toolbar->add_help('10');
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>

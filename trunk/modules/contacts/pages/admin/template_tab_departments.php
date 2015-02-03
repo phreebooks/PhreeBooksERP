@@ -27,7 +27,7 @@ if ($departments->extra_buttons) $departments->customize_buttons($departments_to
 
 ?>
 <div title="<?php echo TEXT_DEPARTMENTS;?>" id="tab_departments">
-  <?php echo $departments_toolbar->build_toolbar(); ?>
+  <?php echo $departments_toolbar->build(); ?>
   <h1><?php echo $departments->title; ?></h1>
   <div id="departments_content"><?php echo $departments->build_main_html(); ?></div>
 </div>

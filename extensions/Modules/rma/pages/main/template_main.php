@@ -28,7 +28,7 @@ $toolbar->icon_list['print']['show'] = false;
 if ($security_level > 1) $toolbar->add_icon('new', 'onclick="submitToDo(\'new\')"', $order = 10);
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('');
-echo $toolbar->build_toolbar($add_search = true);
+echo $toolbar->build($add_search = true);
 ?>
 <h1><?php echo TEXT_RETURN_MATERIAL_AUTHORIZATIONS; ?></h1>
 <div style="height:19px"><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . TEXT_RMAS); ?>

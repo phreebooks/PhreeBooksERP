@@ -33,7 +33,7 @@ class fields {
 		require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
 	  	foreach ($_REQUEST as $key => $value) $this->$key = $value;
 	  	$this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
-		if ($sync) xtra_field_sync_list($this->module, $this->db_table);
+		if ($sync) $this->sync_fields($this->module, $this->db_table);
 	}
 
   function btn_save($id = '') {
@@ -592,6 +592,132 @@ class fields {
 				$output = '';
 		}
 		return $output;
+  	}
+
+  	/**
+  	 * Syncronizes the fields in the module db with the field parameters
+  	 * (usually only needed for first entry to inventory field builder)
+  	 */
+  	static function sync_fields ($module = '', $db_table = '') {
+  		global $admin;
+  		if (!$module || !$db_table) throw new \core\classes\userException('Sync fields called without all necessary parameters!');
+  		// First check to see if inventory field table is synced with actual inventory table
+  		$sql = $admin->DataBase->prepare("DESCRIBE " . $db_table);
+  		$sql->execute();
+  		while ($column = $sql->fetch(\PDO::FETCH_LAZY)){
+  			$table_fields[] = $column['Field'];
+  		}
+  		sort($table_fields);
+  		$sql = $admin->DataBase->prepare("SELECT field_name FROM " . TABLE_EXTRA_FIELDS . " WHERE module_id = '$module' ORDER BY field_name");
+  		$sql->execute();
+  		while ($column = $sql->fetch(\PDO::FETCH_LAZY)){
+  			$field_list[] = $column['field_name'];
+  		}
+  		$needs_sync = false;
+  		foreach ($table_fields as $key => $value) {
+  			if ($value <> $field_list[$key]) {
+  				$needs_sync = true;
+  				break;
+  			}
+  		}
+  		if ($needs_sync) {
+  			if (is_array($field_list)) {
+  				$add_list = array_diff($table_fields, $field_list);
+  			} else {
+  				$add_list = $table_fields;
+  			}
+  			$delete_list = '';
+  			if (is_array($field_list)) $delete_list = array_diff($field_list, $table_fields);
+  			if (isset($add_list)) {
+  				foreach ($add_list as $value) { // find the field attributes and copy to field list table
+  					$sql = $admin->DataBase->prepare("SHOW fields FROM $db_table like '$value'");
+  					$sql->execute();
+  					$myrow = $sql->fetch(\PDO::FETCH_LAZY);
+  					$Params = array('default' => $myrow['Default']);
+  					$type = $myrow['Type'];
+  					if (strpos($type,'(') === false) {
+  						$data_type = strtolower($type);
+  					} else {
+  						$data_type = strtolower(substr($type,0,strpos($type,'(')));
+  					}
+  					switch ($data_type) {
+  						case 'date':      $Params['type'] = 'date'; 		break;
+  						case 'time':      $Params['type'] = 'time'; 		break;
+  						case 'datetime':  $Params['type'] = 'date_time'; 	break;
+  						case 'timestamp': $Params['type'] = 'time_stamp';	break;
+  						case 'year':      $Params['type'] = 'date'; 		break;
+
+  						case 'bigint':
+  						case 'int':
+  						case 'mediumint':
+  						case 'smallint':
+  						case 'tinyint':
+  							$Params['type'] = 'integer';
+  							if ($data_type=='tinyint')   $Params['default'] = '0';
+  							if ($data_type=='smallint')  $Params['default'] = '1';
+  							if ($data_type=='mediumint') $Params['default'] = '2';
+  							if ($data_type=='int')       $Params['default'] = '3';
+  							if ($data_type=='bigint')    $Params['default'] = '4';
+  							break;
+  						case 'decimal':
+  						case 'double':
+  						case 'float':
+  							$Params['type'] = 'decimal';
+  							if ($data_type=='float')  	$Params['default'] = '0';
+  							if ($data_type=='double') 	$Params['default'] = '1';
+  							break;
+  						case 'tinyblob':
+  						case 'tinytext':
+  						case 'char':
+  						case 'varchar':
+  						case 'longblob':
+  						case 'longtext':
+  						case 'mediumblob':
+  						case 'mediumtext':
+  						case 'blob':
+  						case 'text':
+  							$Params['type'] = 'text';
+  							if ($data_type=='varchar' OR $data_type=='char') { // find the actual db length
+  								$Length = trim(substr($type, strpos($type,'(')+1, strpos($type,')')-strpos($type,'(')-1));
+  								$Params['length'] = $Length;
+  							}
+  							if ($data_type=='tinytext'   OR $data_type=='tinyblob')   $Params['length'] = '255';
+  							if ($data_type=='text'       OR $data_type=='blob')       $Params['length'] = '65,535';
+  							if ($data_type=='mediumtext' OR $data_type=='mediumblob') $Params['length'] = '16,777,215';
+  							if ($data_type=='longtext'   OR $data_type=='longblob')   $Params['length'] = '4,294,967,295';
+  							break;
+  						case 'enum':
+  						case 'set':
+  							$Params['type'] = 'drop_down';
+  							$temp = trim(substr($type, strpos($type,'(')+1, strpos($type,')')-strpos($type,'(')-1));
+  							$selections = explode(',', $temp);
+  							$defaults = '';
+  							foreach($selections as $selection) {
+  								$selection = preg_replace("/'/", '', $selection);
+  								if ($myrow['Default'] == $selection) $set = 1; else $set = 0;
+  								$defaults .= $selection . ':' . $selection .':' . $set . ',';
+  							}
+  							$defaults = substr($defaults, 0, -1);
+  							$Params['default'] = $defaults;
+  							break;
+  						default:
+  					}
+  					$temp = $admin->DataBase->exec("INSERT INTO " . TABLE_EXTRA_FIELDS . " SET
+  					  module_id = '$module',
+  					  tab_id = 0,
+  					  entry_type = '{$Params['type']}',
+  					  field_name = '$value',
+  					  description = '$value',
+  					  params = '" . serialize($Params) . "'");  // tab_id = 0 for System category
+  				}
+  			}
+  			if ($delete_list) {
+  				foreach ($delete_list as $value) {
+  					$temp = $admin->DataBase->exec("DELETE FROM " . TABLE_EXTRA_FIELDS . " WHERE module_id='$module' AND field_name='$value'");
+  				}
+  			}
+  		}
+  		return;
   	}
 
 }

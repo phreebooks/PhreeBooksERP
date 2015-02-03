@@ -29,7 +29,7 @@ $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('07.04.03');
 $toolbar->search_period = $acct_period;
-echo $toolbar->build_toolbar($add_search = true, $add_period = true);
+echo $toolbar->build($add_search = true, $add_period = true);
 // Build the page
 ?>
 <h1><?php echo TEXT_PLEASE_SELECT; ?></h1>

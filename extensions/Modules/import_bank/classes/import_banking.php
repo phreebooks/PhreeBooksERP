@@ -154,11 +154,11 @@ class import_banking extends \phreebooks\classes\journal {
 		if(isset($this->open_inv[$this->bill_acct_id])) foreach ($this->open_inv[$this->bill_acct_id] as $key => $invoice) {
 			//when we find a invoice we book a payment to it
 			if( strripos($this->_description, $invoice['purchase_invoice_id']) !== false){ // if invoice is part of the description use it
-				$messageStack->debug("\n Found matching invoice number in description purchase_invoice_id ".$invoice['purchase_invoice_id'].' id '.$invoice['id']."\n variables ".arr2string($invoice));
+				$messageStack->debug("\n Found matching invoice number in description purchase_invoice_id {$invoice['purchase_invoice_id']} id {$invoice['id']} \n variables ".print_r($invoice,  true));
 				$invoice['found_by_number'] = true;
 				$found_invoices[] = $invoice;
 			}else if ( abs($invoice['total_amount'] - $invoice['amount_paid'] - $this->total_amount) < $epsilon)	{
-				$messageStack->debug("\n Found by value matching invoice purchase_invoice_id ".$invoice['purchase_invoice_id'].' id '.$invoice['id']."\n variables ".arr2string($invoice));
+				$messageStack->debug("\n Found by value matching invoice purchase_invoice_id {$invoice['purchase_invoice_id']} id {$invoice['id']}\n variables ".print_r($invoice, true));
 				$invoice['found_by_number'] = false;
 				$found_invoices[] = $invoice;
 			}
@@ -231,7 +231,7 @@ class import_banking extends \phreebooks\classes\journal {
 							$found_invoices[$i]['percent']		= 0;
 							$found_invoices[$i]['discount']     = false;
 						}
-						$messageStack->debug("\n now only use invoices " .arr2string($invoice));
+						$messageStack->debug("\n now only use invoices " .print_r($invoice, true));
 						break;
 					case 9;//do a partial payment
 						if($difference_perc > 0){
@@ -309,11 +309,11 @@ class import_banking extends \phreebooks\classes\journal {
 			for($i=0; $i < sizeof($found_invoices); $i++){
 				$this->open_inv[$this->bill_acct_id][$found_invoices[$i]['purchase_invoice_id']]['amount_paid'] += $found_invoices[$i]['amount'];
 				if($found_invoices[$i]['payed_if_full']){
-					$messageStack->debug("\n unsetting invoice ".arr2string($this->open_inv[$this->bill_acct_id][$found_invoices[$i]['purchase_invoice_id']]));
+					$messageStack->debug("\n unsetting invoice ".print_r($this->open_inv[$this->bill_acct_id][$found_invoices[$i]['purchase_invoice_id']], true));
 					unset($this->open_inv[$this->bill_acct_id][$found_invoices[$i]['purchase_invoice_id']]);
 				}
 			}
-			$messageStack->debug("\n posting payment to invoices ".arr2string($found_invoices));
+			$messageStack->debug("\n posting payment to invoices ".print_r($found_invoices, true));
 		}
 		$this->journal_rows[] = array(
 			'gl_type'               => 'ttl',

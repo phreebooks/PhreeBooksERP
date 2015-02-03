@@ -48,14 +48,14 @@ function create_menu(array $array){
 	if(isset($array['submenu'])){
 		usort($array['submenu'], 'sortByOrder');
 		if(check_permission($array['submenu'])){
-			echo '  <li><a href="'.$array['link'].'" '.$array['params'].'>'.(isset($array['icon']) ? $array['icon'].' '.$array['text'] : $array['text']).'</a>'.chr(10);
-			echo '    <ul>' . chr(10);
+			echo "  <li><a href='{$array['link']}' {$array['params']}>".(isset($array['icon']) ? $array['icon'].' '.$array['text'] : $array['text']).'</a>';
+			echo '    <ul>';
 			foreach($array['submenu'] as $menu_item) create_menu($menu_item);
-			echo '    </ul>'.chr(10);
-			echo '  </li>'.chr(10);
+			echo '    </ul>';
+			echo '  </li>';
 		}
 	}else{
-		echo '  <li><a href="'.$array['link'].'" '.$array['params'].'>';
+		echo "  <li><a href='{$array['link']}' {$array['params']}>";
 		if ($array['text'] == TEXT_HOME && ENABLE_ENCRYPTION && strlen($_SESSION['admin_encrypt']) > 0) echo html_icon('emblems/emblem-readonly.png', TEXT_ENCRYPTION_KEY_IS_SET, 'small');
   		echo (isset($array['icon']) ? $array['icon'].' '.$array['text'] : $array['text']).'</a>  </li>'.chr(10);
 	}

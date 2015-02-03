@@ -82,7 +82,7 @@ if ($security_level > 3 && $checked_out && $checkout_id == $_SESSION['admin_id']
 		'order'  => 65,
 	);
 }
-$fieldset_content .= $docbar->build_toolbar() . chr(10);
+$fieldset_content .= $docbar->build() . chr(10);
 
 $fieldset_content .= html_hidden_field('id', $doc_details->fields['id']) . chr(10);
 $fieldset_content .= TEXT_DOCUMENT . html_input_field('title', $doc_details->fields['title'], 'size="64"') . chr(10);

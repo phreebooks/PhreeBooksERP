@@ -27,7 +27,7 @@ if ($security_level > 1) $tax_rates_vend_toolbar->add_icon('new', 'onclick="load
 
 ?>
 <div title="<?php echo TEXT_PURCHASE_TAX_RATES;?>" id="tab_tax_rates_vend">
-  <?php echo $tax_rates_vend_toolbar->build_toolbar(); ?>
+  <?php echo $tax_rates_vend_toolbar->build(); ?>
   <h1><?php echo $tax_rates_vend->title; ?></h1>
   <div id="tax_rates_vend_content"><?php echo $tax_rates_vend->build_main_html(); ?></div>
 </div>

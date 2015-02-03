@@ -24,7 +24,7 @@ $toolbar->icon_list['save']['show']     = false;
 $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build(); 
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
 <table class="ui-widget" style="border-style:none;width:300px">

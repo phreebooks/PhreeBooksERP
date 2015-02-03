@@ -27,7 +27,7 @@ $toolbar->icon_list['save']['show'] = false;
 $toolbar->icon_list['print']['show'] = false;
 $toolbar->add_icon('continue', 'onclick="submitToDo(\'create\')"', $order = 10);
 $toolbar->add_help('');
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 ?>
   <h1><?php echo sprintf(TEXT_NEW_ARGS, TEXT_ASSET); ?></h1>
   <table>

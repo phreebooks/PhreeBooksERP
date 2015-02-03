@@ -100,6 +100,7 @@ if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR
 	   	$admin->configuration[$_SESSION['company']][$row['configuration_key']] = $row['configuration_value'];
 	   	define($row['configuration_key'],$row['configuration_value']);//@todo remove
 	}
+	$admin->checkIfModulesInstalled();
   	gen_pull_language('phreedom', 'menu');
   	gen_pull_language('phreebooks', 'menu');
   	require(DIR_FS_MODULES . 'phreedom/config.php');

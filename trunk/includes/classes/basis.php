@@ -33,6 +33,7 @@ class basis implements \SplSubject {
 	public  $configuration		= array ();
 	public  $mainmenu 			= array ();
 	private $events 			= array ('LoadMainPage');
+	public 	$toolbar;
 	//for output
 	public  $js_files				= array ();
 	public  $include_php_js_files	= array ();
@@ -43,6 +44,7 @@ class basis implements \SplSubject {
 		global $currencies;
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->journal = new \core\classes\journal ();
+		$this->toolbar = new \core\classes\toolbar ();
 		$this->cInfo = (json_decode($request) != NULL) ? (object) json_decode($request) : (object)array_merge ( $_GET, $_POST );
 //		$this->events = $this->cInfo->action;
 		if ($this->getNumberOfAdminClasses () == 0 || empty ( $this->mainmenu )) {
@@ -108,9 +110,14 @@ class basis implements \SplSubject {
 		$this->mainmenu["logout"] = array(
 				'order' 		=> 999,
 				'text'  		=> TEXT_LOG_OUT,
-				'link'  		=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;action=logout', 'SSL'),
+				'link'  		=> html_href_link(FILENAME_DEFAULT, 'action=logout', 'SSL'),
 				'icon'  		=> html_icon('actions/system-log-out.png', TEXT_LOG_OUT, 'small'),
 		);
+	}
+
+	public function checkIfModulesInstalled(){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		foreach ( $this->classes as $module_class ) $module_class->checkInstalled ( $this );
 	}
 
 	public function __sleep() {
@@ -118,10 +125,17 @@ class basis implements \SplSubject {
 		$this->DataBase = null;
 	}
 
+	public function setCinfo(){
+		if (json_decode($request) != NULL) {
+			$this->cInfo = (object) json_decode($request) ;
+		} else {
+			$this->cInfo = (object)array_merge ( $_GET, $_POST );
+		}
+	}
+
 	public function __wakeup() {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		$this->cInfo = (json_decode($request) != NULL) ? (object) json_decode($request) : (object)array_merge ( $_GET, $_POST );
-//		$this->events = $this->cInfo->action;
+		$this->checkIfModulesInstalled();
 	}
 
 	public function attach(\SplObserver $observer) {
@@ -179,12 +193,9 @@ class basis implements \SplSubject {
 		\core\classes\messageStack::debug_log("attaching admin class ".get_class($admin_class));
 		if (array_search ( $admin_class, $this->classes ) === false) {
 			$this->classes [$moduleName] = $admin_class;
-			if ($admin_class->installed) $this->mainmenu = array_merge_recursive($this->mainmenu, $admin_class->mainmenu);
+				$this->mainmenu = array_merge_recursive($this->mainmenu, $admin_class->mainmenu);
 		}
-		uasort ( $this->classes, array (
-				$this,
-				'arangeObjectBySortOrder'
-		) );
+		uasort ( $this->classes, array ( $this, 'arangeObjectBySortOrder') );
 	}
 
 	/**
@@ -286,7 +297,10 @@ class basis implements \SplSubject {
 	 */
 
 	function returnConfigurationValue($configuration_key) {
-		return $this->configuration[ $_SESSION['company'] ][$configuration_key];
+		if (array_key_exists ($configuration_key, $this->configuration[ $_SESSION['company'] ])) {
+			return $this->configuration[ $_SESSION['company'] ][$configuration_key];
+		}
+		return null;
 	}
 
 	function __destruct() {

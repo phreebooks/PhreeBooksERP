@@ -60,7 +60,7 @@ if (defined('PHREEPOS_ENABLE_DIRECT_PRINTING') && PHREEPOS_ENABLE_DIRECT_PRINTIN
 if (count($extra_toolbar_buttons) > 0) {
   foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 }
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 
 // Build the page
 ?>
@@ -254,7 +254,7 @@ if (count($extra_SeccondToolbar_buttons) > 0) {
 	foreach ($extra_SeccondToolbar_buttons as $key => $value) $SeccondToolbar->icon_list[$key] = $value;
 }
 // add the help file index and build the toolbar
-echo $SeccondToolbar->build_toolbar();
+echo $SeccondToolbar->build();
  // Build the page
 	echo '    <fieldset>';
     echo '    <legend>'. TEXT_PAYMENT_METHOD . '</legend>';
@@ -298,7 +298,7 @@ if (count($extra_ThirdToolbar_buttons) > 0) {
 	foreach ($extra_ThirdToolbar_buttons as $key => $value) $thirdToolbar->icon_list[$key] = $value;
 }
 // add the help file index and build the toolbar
-echo $thirdToolbar->build_toolbar();
+echo $thirdToolbar->build();
  // Build the page
 ?>
 	<h2 align="center"><?php echo TEXT_OTHER_TRANSACTION; ?></h2>

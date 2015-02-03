@@ -17,7 +17,7 @@
 //  Path: /modules/phreedom/classes/admin.php
 //
 namespace phreedom\classes;
-require_once ('/config.php');
+require_once (DIR_FS_ADMIN . 'modules/phreedom/config.php');
 class admin extends \core\classes\admin {
 	public $description;
 	public $id 			= 'phreedom';
@@ -366,7 +366,9 @@ class admin extends \core\classes\admin {
 		// load init functions for each module and execute
 		foreach ($basis->classes as $key => $module_class) $module_class->should_update($basis);
 		if (defined('TABLE_CONTACTS')) {
-			$dept = $basis->DataBase->query("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result['account_id']);
+			$sql = $basis->DataBase->prepare("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result['account_id']);
+			$sql->execute();
+			$dept = $sql->fetch(\PDO::FETCH_LAZY);
 			$_SESSION['department'] = $dept['dept_rep_id'];
 		}
 		gen_add_audit_log(TEXT_USER_LOGIN . " -> id: {$_SESSION['admin_id']} name: {$_SESSION['display_name']}");
@@ -398,7 +400,7 @@ class admin extends \core\classes\admin {
 	function LoadMainPage (\core\classes\basis &$basis){
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$basis->cInfo->menu_id  =  isset($basis->cInfo->mID) ? $basis->cInfo->mID : 'index'; // default to index unless heading is passed
-		$sql = $basis->DataBase->prepare("SELECT * FROM ".TABLE_USERS_PROFILES." WHERE user_id = '{$_SESSION['admin_id']}' and menu_id = '{$basis->cInfo->menu_id}' ORDER BY column_id, row_id");
+		$sql = $basis->DataBase->prepare("SELECT dashboard_id, id, user_id, menu_id, column_id, row_id, params FROM ".TABLE_USERS_PROFILES." WHERE user_id = '{$_SESSION['admin_id']}' and menu_id = '{$basis->cInfo->menu_id}' ORDER BY column_id, row_id");
 		$sql->execute();
 		while ($result = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)) {
 			$basis->cInfo->cp_boxes[] = $result;
@@ -470,7 +472,7 @@ class admin extends \core\classes\admin {
 	 * @param \core\classes\basis $basis
 	 * @throws \core\classes\userException
 	 */
-	function LoadUsersPage (\core\classes\basis &$basis){
+	function LoadUsersPage (\core\classes\basis &$basis){ //@todo
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$basis->cInfo->menu_id  =  isset($basis->cInfo->mID) ? $basis->cInfo->mID : 'index'; // default to index unless heading is passed
 		$basis->page_title 	= TEXT_USERS;

@@ -30,7 +30,7 @@ $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 // add the help file index and build the toolbar
 if( !$cInfo->help == '' ) $toolbar->add_help($cInfo->help);
-echo $toolbar->build_toolbar($add_search = true);
+echo $toolbar->build($add_search = true);
 // Build the page
 ?>
 <h1><?php echo TEXT_PLEASE_SELECT; ?></h1>
@@ -51,12 +51,12 @@ echo $toolbar->build_toolbar($add_search = true);
 	$bkgnd   = ($query_result->fields['inactive']) ? ' style="background-color:pink"' : '';
 ?>
   <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer">
-	<td<?php echo $bkgnd; ?> onclick="<?php echo 'setReturnAccount(' . $acct_id . ')'; ?>"><?php echo htmlspecialchars($query_result->fields['primary_name']); ?></td>
-	<td onclick="<?php echo 'setReturnAccount(' . $acct_id . ')'; ?>"><?php echo htmlspecialchars($query_result->fields['address1']); ?></td>
-	<td onclick="<?php echo 'setReturnAccount(' . $acct_id . ')'; ?>"><?php echo htmlspecialchars($query_result->fields['city_town']); ?></td>
-	<td onclick="<?php echo 'setReturnAccount(' . $acct_id . ')'; ?>"><?php echo htmlspecialchars($query_result->fields['state_province']); ?></td>
-	<td onclick="<?php echo 'setReturnAccount(' . $acct_id . ')'; ?>"><?php echo htmlspecialchars($query_result->fields['postal_code']); ?></td>
-	<td onclick="<?php echo 'setReturnAccount(' . $acct_id . ')'; ?>"><?php echo htmlspecialchars($query_result->fields['telephone1']); ?></td>
+	<td<?php echo $bkgnd; ?> onclick="<?php echo "setReturnAccount({$acct_id})"; ?>"><?php echo htmlspecialchars($query_result->fields['primary_name']); ?></td>
+	<td onclick="<?php echo "setReturnAccount({$acct_id})"; ?>"><?php echo htmlspecialchars($query_result->fields['address1']); ?></td>
+	<td onclick="<?php echo "setReturnAccount({$acct_id})"; ?>"><?php echo htmlspecialchars($query_result->fields['city_town']); ?></td>
+	<td onclick="<?php echo "setReturnAccount({$acct_id})"; ?>"><?php echo htmlspecialchars($query_result->fields['state_province']); ?></td>
+	<td onclick="<?php echo "setReturnAccount({$acct_id})"; ?>"><?php echo htmlspecialchars($query_result->fields['postal_code']); ?></td>
+	<td onclick="<?php echo "setReturnAccount({$acct_id})"; ?>"><?php echo htmlspecialchars($query_result->fields['telephone1']); ?></td>
 	<?php switch (JOURNAL_ID) {
 		case  6:
 		case  7:
@@ -68,7 +68,7 @@ echo $toolbar->build_toolbar($add_search = true);
 				case 12: $search_journal = 10; break;
 				case 13: $search_journal = 12; break;
 			}
-			$open_order_array = $cInfo->load_open_orders($acct_id, $search_journal);
+			$open_order_array = $cInfo->load_orders($search_journal);
 			if ($open_order_array) {
 				$selection = html_pull_down_menu('open_order_' . $pointer, $open_order_array, '', 'onchange="setReturnOrder(' . $pointer . ')"');
 				$cancel_single_result_exit = true;

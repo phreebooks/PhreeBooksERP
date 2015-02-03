@@ -29,7 +29,7 @@ if ($doc_details->fields['type'] <> 'drive') {
   } else {
     $dirbar->icon_list['delete']['show'] = false;
   }
-  $fieldset_content .= $dirbar->build_toolbar() . chr(10);
+  $fieldset_content .= $dirbar->build() . chr(10);
 }
 // build the table contents
 $fieldset_content .= html_hidden_field('id', $id) . chr(10);

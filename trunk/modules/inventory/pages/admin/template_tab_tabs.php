@@ -27,7 +27,7 @@ if ($tabs->extra_buttons) $tabs->customize_buttons($tabs_toolbar);
 
 ?>
 <div title="<?php echo TEXT_TABS;?>" id="tab_tabs">
-  <?php echo $tabs_toolbar->build_toolbar(); ?>
+  <?php echo $tabs_toolbar->build(); ?>
   <h1><?php echo $tabs->title; ?></h1>
   <div id="tabs_content"><?php echo $tabs->build_main_html(); ?></div>
 </div>

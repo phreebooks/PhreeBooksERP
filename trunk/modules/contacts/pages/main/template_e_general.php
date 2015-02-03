@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/contacts/pages/main/template_e_general.php
 //
-echo html_hidden_field('account_number', $cInfo->account_number); // not used for employees
+echo html_hidden_field('account_number', $basis->cInfo->contact->account_number); // not used for employees
 ?>
 <div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
   <fieldset>
@@ -24,25 +24,25 @@ echo html_hidden_field('account_number', $cInfo->account_number); // not used fo
     <table>
       <tr>
         <td align="right"><?php echo ACT_E_SHORT_NAME; ?></td>
-        <td><?php echo html_input_field('short_name', $cInfo->short_name, 'size="21" maxlength="20"', true); ?></td>
+        <td><?php echo html_input_field('short_name', $basis->cInfo->contact->short_name, 'size="21" maxlength="20"', true); ?></td>
         <td align="right"><?php echo ACT_E_ID_NUMBER; ?></td>
-        <td><?php echo html_input_field('gov_id_number', $cInfo->gov_id_number, 'size="17" maxlength="16"'); ?></td>
+        <td><?php echo html_input_field('gov_id_number', $basis->cInfo->contact->gov_id_number, 'size="17" maxlength="16"'); ?></td>
         <td align="right"><?php echo TEXT_INACTIVE; ?></td>
-        <td><?php echo html_checkbox_field('inactive', '1', $cInfo->inactive); ?></td>
+        <td><?php echo html_checkbox_field('inactive', '1', $basis->cInfo->contact->inactive); ?></td>
       </tr>
       <tr>
         <td align="right"><?php echo TEXT_FIRST_NAME; ?></td>
-        <td><?php echo html_input_field('contact_first', $cInfo->contact_first, 'size="33" maxlength="32"', false); ?></td>
+        <td><?php echo html_input_field('contact_first', $basis->cInfo->contact->contact_first, 'size="33" maxlength="32"', false); ?></td>
         <td align="right"><?php echo TEXT_MIDDLE_NAME; ?></td>
-        <td><?php echo html_input_field('contact_middle', $cInfo->contact_middle, 'size="33" maxlength="32"', false); ?></td>
+        <td><?php echo html_input_field('contact_middle', $basis->cInfo->contact->contact_middle, 'size="33" maxlength="32"', false); ?></td>
         <td align="right"><?php echo TEXT_LAST_NAME; ?></td>
-        <td><?php echo html_input_field('contact_last', $cInfo->contact_last, 'size="33" maxlength="32"', false); ?></td>
+        <td><?php echo html_input_field('contact_last', $basis->cInfo->contact->contact_last, 'size="33" maxlength="32"', false); ?></td>
       </tr>
       <tr>
 	    <td align="right"><?php echo ACT_E_REP_ID; ?></td>
 	    <td>
           <?php
-    		$default_selection = ($_REQUEST['action'] == 'new' ? EMP_DEFAULT_DEPARTMENT : $cInfo->dept_rep_id);
+    		$default_selection = ($_REQUEST['action'] == 'new' ? EMP_DEFAULT_DEPARTMENT : $basis->cInfo->contact->dept_rep_id);
 	    	$selection_array = gen_get_pull_down(TABLE_DEPARTMENTS, true, 1);
 		    echo html_pull_down_menu('dept_rep_id', $selection_array, $default_selection);
 	      ?>
@@ -57,8 +57,8 @@ echo html_hidden_field('account_number', $cInfo->account_number); // not used fo
 	      <?php
 	        $col_count = 1;
 		    foreach ($employee_types as $key => $value) {
-		      $preset = (($_REQUEST['action'] == 'new' && $key == 'e') || (strpos($cInfo->gl_type_account, $key) !== false)) ? '1' : '0';
-		      echo '<td>' . html_checkbox_field('gl_type_account[' . $key . ']', '1', $preset) . '&nbsp;' . $value . '</td>';
+		      $preset = (($_REQUEST['action'] == 'new' && $key == 'e') || (strpos($basis->cInfo->contact->gl_type_account, $key) !== false)) ? '1' : '0';
+		      echo '<td>' . html_checkbox_field("gl_type_account[{$key}]", '1', $preset) . "&nbsp;{$value}</td>";
 		      $col_count++;
 		      if ($col_count == 6) {
 		        echo '</tr><tr>' . chr(10);
@@ -74,8 +74,8 @@ echo html_hidden_field('account_number', $cInfo->account_number); // not used fo
 <?php // *********************** Mailing/Main Address (only one allowed) ****************************** ?>
   <fieldset>
     <legend><?php echo TEXT_MAIN_MAILING_ADDRESS; ?></legend>
-    <table id="<?php echo $type; ?>m_address_form" class="ui-widget" style="border-collapse:collapse;width:100%;">
-      <?php echo draw_address_fields($cInfo, $type.'m', false, true, false); ?>
+    <table id="<?php echo $basis->cInfo->contact->type; ?>m_address_form" class="ui-widget" style="border-collapse:collapse;width:100%;">
+      <?php echo $basis->cInfo->contact->draw_address_fields($basis->cInfo->contact->type.'m', false, true, false); ?>
     </table>
   </fieldset>
 <?php // *********************** Attachments  ************************************* ?>
@@ -94,16 +94,16 @@ echo html_hidden_field('account_number', $cInfo->account_number); // not used fo
       <th><?php echo TEXT_ACTION; ?></th>
      </tr>
 <?php
-if (sizeof($cInfo->attachments) > 0) {
-  foreach ($cInfo->attachments as $key => $value) {
-    echo '<tr>';
-    echo ' <td>' . html_checkbox_field('rm_attach_'.$key, '1', false) . '</td>' . chr(10);
-    echo ' <td>' . $value . '</td>' . chr(10);
-    echo ' <td>' . html_button_field('dn_attach_'.$key, TEXT_DOWNLOAD, 'onclick="submitSeq(' . $key . ', \'download\', true)"') . '</td>';
-    echo '</tr>' . chr(10);
-  }
+if (sizeof($basis->cInfo->contact->attachments) > 0) {
+  	foreach ($basis->cInfo->contact->attachments as $key => $value) {
+	    echo '<tr>';
+	    echo ' <td>' . html_checkbox_field('rm_attach_'.$key, '1', false) . '</td>' . chr(10);
+	    echo " <td>{$value}</td>" . chr(10);
+	    echo ' <td>' . html_button_field('dn_attach_'.$key, TEXT_DOWNLOAD, "onclick='submitSeq({$key}, \"download\", true)'" ) . '</td>';
+	    echo '</tr>' . chr(10);
+  	}
 } else {
-  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS_HAVE_BEEN_FOUND . '</td></tr>';
+  	echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS_HAVE_BEEN_FOUND . '</td></tr>';
 } ?>
     </tbody>
    </table>

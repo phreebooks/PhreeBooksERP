@@ -258,7 +258,7 @@ class phreemail extends PHPMailer{
     	$email 	= array();
     	$header = imap_headerinfo($this->imap_stream, $msgid);
     	foreach($header as $key => $value) $email[strtolower_utf8($key)] = db_prepare_input($value);
-    	$messageStack->debug("\n email header ".arr2string($email));
+    	$messageStack->debug("\n email header ".print_r($email, true));
     	/*Recent - R if recent and seen, N if recent and not seen, ' ' if not recent.
  		* Unseen - U if not seen AND not recent, ' ' if seen OR not seen and recent
  		*/
@@ -500,7 +500,7 @@ class phreemail extends PHPMailer{
     	$sql_data_array['FSize']		= $email["SIZE"];
     	$sql_data_array['Date_start']	= date("Y-m-d H:i:s");
     	$sql_data_array['Status'] 		= 2;
-    	$messageStack->debug('\n Phreemail action = '. arr2string($sql_data_array));
+    	$messageStack->debug('\n Phreemail action = '. print_r($sql_data_array, true));
 	}
 
  /**
@@ -521,7 +521,7 @@ class phreemail extends PHPMailer{
 		$sql_data_array['Status'] 		= 1;
     	$sql_data_array['Info'] 		= addslashes($info);
     	$sql_data_array['Date_finish'] 	= date("Y-m-d H:i:s");
-		$messageStack->debug('\n Phreemail action = '. arr2string($sql_data_array));
+		$messageStack->debug('\n Phreemail action = '. print_r($sql_data_array, true));
   	}
 
 
@@ -627,7 +627,7 @@ class phreemail extends PHPMailer{
 
   function __destruct(){
   	global $messageStack;
-  	//$messageStack->debug(arr2string($this));
+  	//$messageStack->debug(print_r($this, true));
   	//$messageStack->write_debug();
   	if($this->imap_stream) $this->close();
   }

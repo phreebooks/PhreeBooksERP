@@ -28,7 +28,7 @@ $toolbar->icon_list['print']['show']  = false;
 //$toolbar->icon_list['new']['show']  = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('');
-echo $toolbar->build_toolbar($add_search = true);
+echo $toolbar->build($add_search = true);
 ?>
 <h1><?php echo TEXT_ASSET; ?></h1>
 <div style="height:19px"><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . TEXT_ASSETS); ?>

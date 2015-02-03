@@ -312,25 +312,29 @@
     return $accounts_array;
   }
 
-  function gen_get_rep_ids($type = 'c') {
-	global $admin;
-	// map the type to the employee types
-	switch ($type) {
-	  default:
-	  case 'c': $emp_type = 's'; break;
-	  case 'v': $emp_type = 'b'; break;
-	}
-    $result_array = array();
-    $result_array[] = array('id' => '0', 'text' => TEXT_NONE);
-	$result = $admin->DataBase->query("select id, contact_first, contact_last, gl_type_account from " . TABLE_CONTACTS . " where type = 'e' and inactive <> '1'");
-	while(!$result->EOF) {
-	  if (strpos($result->fields['gl_type_account'], $emp_type) !== false) {
- 	    $result_array[] = array('id' => $result->fields['id'], 'text' => $result->fields['contact_first'] . ' ' . $result->fields['contact_last']);
-	  }
-	  $result->MoveNext();
-	}
-    return $result_array;
-  }
+
+	/** @todo maybe change this so it returns contact objects the text variable needs to be created.
+	 * returns sales or buyers personel in array for dropdown.
+	 * @param string $type contact_type
+	 * @return array(id, text)
+	 */
+	function gen_get_rep_ids($type = 'c') {
+		global $admin;
+		// map the type to the employee types
+		switch ($type) {
+	  		default:
+	  		case 'c': $emp_type = 's'; break;
+	  		case 'v': $emp_type = 'b'; break;
+		}
+    	$result_array = array();
+    	$result_array[] = array('id' => '0', 'text' => TEXT_NONE);
+		$sql = $admin->DataBase->prepare("SELECT id, contact_first, contact_last, gl_type_account FROM " . TABLE_CONTACTS . " where type = 'e' and inactive <> '1' and gl_type_account like '%{$emp_type}%'");
+		$sql->execute();
+		while($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+ 	    	$result_array[] = array('id' => $result['id'], 'text' => $result['contact_first'] . ' ' . $result['contact_last']);
+		}
+    	return $result_array;
+  	}
 
   function gen_get_store_ids() {
 	global $admin;
@@ -844,22 +848,6 @@ function gen_db_date($raw_date = '', $separator = '/') {
     }
   }
 
-  function arr2string($arr) {
-    if (!is_array($arr)) return $arr;
-    $output = "Array (";
-	if (sizeof($arr) > 0) {
-	  foreach ($arr as $key => $val) {
-	    if (is_array($val)) {
-	  	  $output .= ' [' . $key . '] => ' . arr2string($val);
-		} else {
-	  	  $output .= ' [' . $key . '] => ' . $val;
-		}
-	  }
-	}
-	$output .= ' )';
-	return $output;
-  }
-
   function string_increment($string, $increment = 1) {
 	$string++; // just use the built in PHP operation
 	return $string;
@@ -954,9 +942,10 @@ function gen_db_date($raw_date = '', $separator = '/') {
 
 	function db_field_exists($table_name, $field_name) {
     	global $admin;
-    	$result = $admin->DataBase->prepare("show fields from " . $table_name);
+    	$result = $admin->DataBase->prepare("DESCRIBE $table_name");
     	$result->execute();
-    	while ($row = $result->fetch(\PDO::FETCH_LAZY)){
+    	while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
+    		\core\classes\messageStack::debug_log("looking for match {$row['Field']} == $field_name");
       		if  ($row['Field'] == $field_name) return true;
     	}
     	return false;

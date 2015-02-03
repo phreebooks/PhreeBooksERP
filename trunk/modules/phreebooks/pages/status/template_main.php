@@ -53,7 +53,7 @@ switch (JOURNAL_ID) {
   	break;
 }
 $toolbar->search_period = $_REQUEST['search_period'];
-echo $toolbar->build_toolbar($add_search = true, $add_periods = true);
+echo $toolbar->build($add_search = true, $add_periods = true);
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>

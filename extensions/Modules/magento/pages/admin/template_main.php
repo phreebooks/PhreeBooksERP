@@ -31,7 +31,7 @@ if (count($extra_toolbar_buttons) > 0) {
   foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 }
 $toolbar->add_help($assets->help_path);
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
 <div class="easyui-tabs" id="admintabs">

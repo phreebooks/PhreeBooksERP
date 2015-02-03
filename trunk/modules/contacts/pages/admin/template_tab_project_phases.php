@@ -27,7 +27,7 @@ if ($project_phases->extra_buttons) $project_phases->customize_buttons($project_
 
 ?>
 <div title="<?php echo TEXT_PROJECT_PHASES;?>" id="tab_project_phases">
-  <?php echo $project_phases_toolbar->build_toolbar(); ?>
+  <?php echo $project_phases_toolbar->build(); ?>
   <h1><?php echo $project_phases->title; ?></h1>
   <div id="project_phases_content"><?php echo $project_phases->build_main_html(); ?></div>
 </div>

@@ -46,7 +46,7 @@ switch (JOURNAL_ID) {
   case 18: $toolbar->add_help('07.05.02'); break;
   case 20: $toolbar->add_help('07.05.01'); break;
 }
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 // Build the page
 ?>
 <h1><?php echo $journal_types_list[JOURNAL_ID]['text']; ?></h1>

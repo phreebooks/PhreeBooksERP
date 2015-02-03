@@ -34,7 +34,7 @@ switch (JOURNAL_ID) {
   case 4: $toolbar->add_help('07.02.03.04'); break;
   case 6: $toolbar->add_help('07.03.03.04'); break;
 }
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 // Build the page
 ?>
 <h1><?php echo TEXT_EXPECTED_DELIVERY_DATES . ' - ' . $journal_types_list[JOURNAL_ID]['id_field_name'] . ' ' . $ordr_items->fields['purchase_invoice_id']; ?></h1>

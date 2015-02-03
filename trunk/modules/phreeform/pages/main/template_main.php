@@ -52,7 +52,7 @@ if ($security_level > 1) {
   );
 }
 $toolbar->add_help();
-echo $toolbar->build_toolbar($add_search = true);
+echo $toolbar->build($add_search = true);
 
 ?>
 <h1><?php echo TEXT_REPORTS; ?></h1>

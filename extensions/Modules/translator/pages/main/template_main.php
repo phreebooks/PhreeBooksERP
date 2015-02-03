@@ -39,7 +39,7 @@ if ($security_level > 1) {
     'order'  => '20',
   );
 }
-echo $toolbar->build_toolbar(true);
+echo $toolbar->build(true);
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
 <div id="filter_bar">

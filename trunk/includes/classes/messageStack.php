@@ -104,10 +104,10 @@ class messageStack {
 	  	global $admin;
 	  	$this->debug_header_info .= "\n\n\n ****starting new debug line****";
 	  	$this->debug_header_info .= "\nTrace information for debug purposes. Phreedom release {$admin->classes['phreedom']->version}, generated " . date('Y-m-d H:i:s') . ".\n\n";
-	  	$this->debug_header_info .= "\nGET     Vars = " . arr2string($_GET);
-	  	$this->debug_header_info .= "\nPOST    Vars = " . arr2string($_POST);
-	  	$this->debug_header_info .= "\nREQUEST Vars = " . arr2string($_REQUEST);
-	  	$this->debug_header_info .= "\nSESSION Vars = " . arr2string($_SESSION);
+	  	$this->debug_header_info .= "\nGET     Vars = " . print_r($_GET, 	 true);
+	  	$this->debug_header_info .= "\nPOST    Vars = " . print_r($_POST, 	 true);
+	  	$this->debug_header_info .= "\nREQUEST Vars = " . print_r($_REQUEST, true);
+	  	$this->debug_header_info .= "\nSESSION Vars = " . print_r($_SESSION, true);
 	  	if (strlen($this->debug_info) < 1) return;
 	  	$this->debug_info .= "\n\nPage trace stats: Execution Time: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, {$admin->DataBase->count_queries} queries taking " . (int)($admin->DataBase->total_query_time * 1000)." ms";
       	$filename = DIR_FS_MY_FILES . 'trace.txt';

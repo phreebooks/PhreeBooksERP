@@ -134,34 +134,27 @@ class contacts {
 	  	foreach (glob(CONTACTS_DIR_ATTACHMENTS."contacts_{$this->id}_*.zip") as $filename) unlink($filename); // remove attachments
 	  	return true;
   	}
-  	
-   	/**
-   	* this function loads alle open order
-   	*/
 
-  	function load_open_orders($acct_id, $journal_id, $only_open = true, $limit = 0) {
+   	/**
+   	* this function returns alle order
+   	*/
+  	function load_orders($journal_id, $only_open = true, $limit = 0) {
   		global $admin;
-  		if (!$acct_id) return array();
-  		$sql  = "select id, journal_id, closed, closed_date, post_date, total_amount, purchase_invoice_id, purch_order_id from ".TABLE_JOURNAL_MAIN." where";
-  		$sql .= ($only_open) ? " closed = '0' and " : "";
-  		$sql .= " journal_id in (" . $journal_id . ") and bill_acct_id = " . $acct_id . ' order by post_date DESC';
-  		$sql .= ($limit) ? " limit " . $limit : "";
-  		$result = $admin->DataBase->query($sql);
-  		if ($result->rowCount() == 0) return array();	// no open orders
-  		$output = array(array('id' => '', 'text' => TEXT_NEW));
-  		while (!$result->EOF) {
-  	    	$output[] = array(
-  	          'id'                 => $result->fields['id'],
-  	          'journal_id'         => $result->fields['journal_id'],
-  	          'text'               => $result->fields['purchase_invoice_id'],
-	  		  'post_date'          => $result->fields['post_date'],
-	  		  'closed'             => $result->fields['closed'],
-	  		  'closed_date'        => $result->fields['closed_date'],
-	  		  'total_amount'       => in_array($result->fields['journal_id'], array(7,13)) ? -$result->fields['total_amount'] : $result->fields['total_amount'],
-	  		  'purchase_invoice_id'=> $result->fields['purchase_invoice_id'],
-	  		  'purch_order_id'     => $result->fields['purch_order_id'],
-  	     	);
-  	     	$result->MoveNext();
+  		$raw_sql  = "SELECT id, journal_id, closed, closed_date, post_date, total_amount, purchase_invoice_id, purch_order_id FROM ".TABLE_JOURNAL_MAIN." WHERE";
+  		$raw_sql .= ($only_open) ? " closed = '0' and " : "";
+  		$raw_sql .= " journal_id in ({$journal_id}) and bill_acct_id = {$this->id} ORDER BY post_date DESC";
+  		$raw_sql .= ($limit) ? " LIMIT {$limit}" : "";
+  		$sql = $admin->DataBase->prepare($raw_sql);
+  		$sql->execute();
+  		if ($sql->rowCount() == 0) return array();	// no open orders
+  		$output = array();
+  		$i = 1;
+  		$output[0] = array('id' => '', 'text' => TEXT_NEW);
+  		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+  	    	$output[$i] = $result;
+  	    	$output[$i]['text'] = $result['purchase_invoice_id'];
+  	    	$output[$i]['total_amount'] = in_array($result['journal_id'], array(7,13)) ? -$result['total_amount'] : $result['total_amount'];
+  			$i++;
   		}
   		return $output;
   	}
@@ -281,6 +274,138 @@ class contacts {
               	}
       		}
     	}
+  	}
+  	function draw_address_fields($add_type, $reset_button = false, $hide_list = false, $short = false) {
+  		$field = '';
+  		$method = substr($add_type, 1, 1);
+  		//echo 'entries = '; print_r($entries); echo '<br>';
+  		if (!$hide_list && sizeof($this->address_book[$method]) > 0) {
+  			$field .= '<tr><td><table class="ui-widget" style="border-collapse:collapse;width:100%;">';
+  			$field .= '<thead class="ui-widget-header">' . chr(10);
+  			$field .= '<tr>' . chr(10);
+  			$field .= '  <th>' . TEXT_NAME_OR_COMPANY .   '</th>' . chr(10);
+  			$field .= '  <th>' . TEXT_ATTENTION .        '</th>' . chr(10);
+  			$field .= '  <th>' . TEXT_ADDRESS1 .       '</th>' . chr(10);
+  			$field .= '  <th>' . TEXT_CITY_TOWN .      '</th>' . chr(10);
+  			$field .= '  <th>' . TEXT_STATE_PROVINCE . '</th>' . chr(10);
+  			$field .= '  <th>' . TEXT_POSTAL_CODE .    '</th>' . chr(10);
+  			$field .= '  <th>' . TEXT_COUNTRY .        '</th>' . chr(10);
+  			// add some special fields
+  			if ($method == 'p') $field .= '  <th>' . TEXT_PAYMENT_REF . '</th>' . chr(10);
+  			$field .= '  <th align="center">' . TEXT_ACTION . '</th>' . chr(10);
+  			$field .= '</tr>' . chr(10) . chr(10);
+  			$field .= '</thead>' . chr(10) . chr(10);
+  			$field .= '<tbody class="ui-widget-content">' . chr(10);
+
+  			$odd = true;
+  			foreach ($this->address_book[$method] as $address) {
+  				$field .= '<tr id="tr_add_'.$address->address_id.'" class="'.($odd?'odd':'even').'" style="cursor:pointer">';
+  				$field .= '  <td onclick="getAddress('.$address->address_id.', \''.$add_type.'\')">' . $address->primary_name . '</td>' . chr(10);
+  				$field .= '  <td onclick="getAddress('.$address->address_id.', \''.$add_type.'\')">' . $address->contact . '</td>' . chr(10);
+  				$field .= '  <td onclick="getAddress('.$address->address_id.', \''.$add_type.'\')">' . $address->address1 . '</td>' . chr(10);
+  				$field .= '  <td onclick="getAddress('.$address->address_id.', \''.$add_type.'\')">' . $address->city_town . '</td>' . chr(10);
+  				$field .= '  <td onclick="getAddress('.$address->address_id.', \''.$add_type.'\')">' . $address->state_province . '</td>' . chr(10);
+  				$field .= '  <td onclick="getAddress('.$address->address_id.', \''.$add_type.'\')">' . $address->postal_code . '</td>' . chr(10);
+  				// add special fields
+  				$field .= '  <td onclick="getAddress('.$address->address_id.', \''.$add_type.'\')">' . $address->country_code . '</td>' . chr(10);
+  				if ($method == 'p') $field .= '  <td onclick="getAddress('.$address->address_id.', \''.$add_type.'\')">' . ($address['hint'] ? $address['hint'] : '&nbsp;') . '</td>' . chr(10);
+  				$field .= '  <td align="center">';
+  				$field .= html_icon('actions/edit-find-replace.png', TEXT_EDIT, 'small', 'onclick="getAddress('.$address->address_id.', \''.$add_type.'\')"') . chr(10);
+  				$field .= '&nbsp;' . html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . ACT_WARN_DELETE_ADDRESS . '\')) deleteAddress(' .$address->address_id . ');"') . chr(10);
+  				$field .= '  </td>' . chr(10);
+  				$field .= '</tr>' . chr(10);
+  				$odd = !$odd;
+  			}
+  			$field .= '</tbody>' . chr(10) . chr(10);
+  			$field .= '</table></td></tr>';
+  		}
+
+  		$field .= '<tr><td><table class="ui-widget" style="border-collapse:collapse;width:100%;">' . chr(10);
+  		if (!$short) {
+  			$field .= '<tr>';
+  			$field .= '  <td align="right">' . TEXT_NAME_OR_COMPANY . '</td>' . chr(10);
+  			$field .= '  <td>' . html_input_field("address[$add_type][primary_name]", $this->address[$add_type]['primary_name'], 'size="49" maxlength="48"', true) . '</td>' . chr(10);
+  			$field .= '  <td align="right">' . TEXT_TELEPHONE . '</td>' . chr(10);
+  			$field .= '  <td>' . html_input_field("address[$add_type][telephone1]", $this->address[$add_type]['telephone1'], 'size="21" maxlength="20"', ADDRESS_BOOK_TELEPHONE1_REQUIRED) . '</td>' . chr(10);
+  			$field .= '</tr>';
+  		}
+  		$field .= '<tr>';
+  		$field .= '  <td align="right">' . TEXT_ATTENTION . html_hidden_field("address[$add_type][address_id]", $this->address[$add_type]['address_id']) . '</td>' . chr(10);
+  		$field .= '  <td>' . html_input_field("address[$add_type][contact]", $this->address[$add_type]['contact'], 'size="33" maxlength="32"', ADDRESS_BOOK_CONTACT_REQUIRED) . '</td>' . chr(10);
+  		$field .= '  <td align="right">' . TEXT_ALTERNATIVE_TELEPHONE_SHORT . '</td>' . chr(10);
+  		$field .= '  <td>' . html_input_field("address[$add_type][telephone2]", $this->address[$add_type]['telephone2'], 'size="21" maxlength="20"') . '</td>' . chr(10);
+  		$field .= '</tr>';
+
+  		$field .= '<tr>';
+  		$field .= '  <td align="right">' . TEXT_ADDRESS1 . '</td>' . chr(10);
+  		$field .= '  <td>' . html_input_field("address[$add_type][address1]" , $this->address[$add_type]['address1'], 'size="33" maxlength="32"', ADDRESS_BOOK_ADDRESS1_REQUIRED) . '</td>' . chr(10);
+  		$field .= '  <td align="right">' . TEXT_FAX . '</td>' . chr(10);
+  		$field .= '  <td>' . html_input_field("address[$add_type][telephone3]", $this->address[$add_type]['telephone3'], 'size="21" maxlength="20"') . '</td>' . chr(10);
+  		$field .= '</tr>';
+
+  		$field .= '<tr>';
+  		$field .= '  <td align="right">' . TEXT_ADDRESS2 . '</td>' . chr(10);
+  		$field .= '  <td>' . html_input_field("address[$add_type][address2]", $this->address[$add_type]['address2'], 'size="33" maxlength="32"', ADDRESS_BOOK_ADDRESS2_REQUIRED) . '</td>' . chr(10);
+  		$field .= '  <td align="right">' . TEXT_MOBILE_PHONE . '</td>' . chr(10);
+  		$field .= '  <td>' . html_input_field("address[$add_type][telephone4]", $this->address[$add_type]['telephone4'], 'size="21" maxlength="20"') . '</td>' . chr(10);
+  		$field .= '</tr>';
+
+  		$field .= '<tr>';
+  		$field .= '  <td align="right">' . TEXT_CITY_TOWN . '</td>' . chr(10);
+  		$field .= '  <td>' . html_input_field("address[$add_type][city_town]", $this->address[$add_type]['city_town'], 'size="25" maxlength="24"', ADDRESS_BOOK_CITY_TOWN_REQUIRED) . '</td>' . chr(10);
+  		$field .= '  <td align="right">' . TEXT_EMAIL . '</td>' . chr(10);
+  		$field .= '  <td>' . html_input_field("address[$add_type][email]", $this->address[$add_type]['email'], 'size="51" maxlength="50"') . '</td>' . chr(10);
+  		$field .= '</tr>';
+
+  		$field .= '<tr>';
+  		$field .= '  <td align="right">' . TEXT_STATE_PROVINCE . '</td>' . chr(10);
+  		$field .= '  <td>' . html_input_field("address[$add_type][state_province]", $this->address[$add_type]['state_province'], 'size="25" maxlength="24"', ADDRESS_BOOK_STATE_PROVINCE_REQUIRED) . '</td>' . chr(10);
+  		$field .= '  <td align="right">' . TEXT_WEBSITE . '</td>' . chr(10);
+  		$field .= '  <td>' . html_input_field("address[$add_type][website]", $this->address[$add_type]['website'], 'size="51" maxlength="50"') . '</td>' . chr(10);
+  		$field .= '</tr>';
+
+  		$field .= '<tr>';
+  		$field .= '  <td align="right">' . TEXT_POSTAL_CODE . '</td>' . chr(10);
+  		$field .= '  <td>' . html_input_field("address[$add_type][postal_code]", $this->address[$add_type]['postal_code'], 'size="11" maxlength="10"', ADDRESS_BOOK_POSTAL_CODE_REQUIRED) . '</td>' . chr(10);
+  		$field .= '  <td align="right">' . TEXT_COUNTRY . '</td>' . chr(10);
+  		$field .= '  <td>' . html_pull_down_menu("address[$add_type][country_code]", gen_get_countries(), $this->address[$add_type]['country_code'] ? $this->address[$add_type]['country_code'] : COMPANY_COUNTRY) . '</td>' . chr(10);
+  		$field .= '</tr>';
+
+  		if ($method <> 'm' || ($add_type == 'im' && substr($add_type, 0, 1) <> 'i')) {
+  			$field .= '<tr>' . chr(10);
+  			$field .= '  <td align="right">' . TEXT_NOTES . '</td>' . chr(10);
+  			$field .= '  <td colspan="3">' . html_textarea_field("address[$add_type][notes]", 80, 3, $this->address[$add_type]['notes']) . chr(10);
+  			if ($reset_button) $field .= html_icon('actions/view-refresh.png', TEXT_RESET, 'small', 'onclick="clearAddress(\''.$add_type.'\')"') . chr(10);
+  			$field .= '  </td>' . chr(10);
+  			$field .= '</tr>' . chr(10);
+  		}
+  		$field .= '</table></td></tr>' . chr(10) . chr(10);
+  		return $field;
+  	}
+
+
+  	/**
+  	 * this method outputs a line on the template page.
+  	 */
+  	function list_row () {
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__ ." of class ". get_class($admin_class));
+  		$security_level = \core\classes\user::validate($this->security_token); // in this case it must be done after the class is defined for
+  		$bkgnd          = ($this->inactive) ? ' style="background-color:pink"' : '';
+  		$attach_exists  = $this->attachments ? true : false;
+  		echo "<td $bkgnd onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->short_name) 	."</td>";
+  		echo "<td $bkgnd onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->primary_name)	. "</td>";
+  		echo "<td    {$this->inactive}    onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->address1) 	."</td>";
+  		echo "<td        onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->city_town)	."</td>";
+  		echo "<td        onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->state_province)."</td>";
+  		echo "<td        onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->postal_code)	."</td>";
+  		echo "<td 	     onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->telephone1)	."</td>";
+  		echo "<td align='right'>";
+  		// build the action toolbar
+		if ($security_level > 1) echo html_icon('mimetypes/x-office-presentation.png', TEXT_SALES, 'small', 	"onclick='contactChart(\"annual_sales\", $this->id)'") . chr(10);
+  		if ($security_level > 1) echo html_icon('actions/edit-find-replace.png', TEXT_EDIT, 'small', 			"onclick='window.open(\"" . html_href_link(FILENAME_DEFAULT, "cID={$this->id}&amp;action=LoadContactPage", 'SSL')."\",\"_blank\")'"). chr(10);
+  		if ($attach_exists) 	 echo html_icon('status/mail-attachment.png', TEXT_DOWNLOAD_ATTACHMENT,'small', "onclick='submitSeq($this->id, \"dn_attach\", true)'") . chr(10);
+  		if ($security_level > 3) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 			"onclick='if (confirm(\"" . ACT_WARN_DELETE_ACCOUNT . "\")) submitSeq($this->id, \"delete\")'") . chr(10);
+  		echo "</td>";
   	}
 }
 ?>

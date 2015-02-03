@@ -29,7 +29,7 @@ $toolbar->icon_list['delete']['show'] = false;
 $toolbar->icon_list['print']['show'] = false;
 $toolbar->add_icon('continue', 'onclick="submitToDo(\'rates\')"', $order = 10);
 $toolbar->add_help('09');
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 ?>
 <h1><?php echo SHIPPING_ESTIMATOR_OPTIONS; ?></h1>
 <table>

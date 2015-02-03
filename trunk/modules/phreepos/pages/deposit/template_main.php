@@ -50,7 +50,7 @@ switch (JOURNAL_ID) {
   case 18: $toolbar->add_help('07.05'); break;
   case 20: $toolbar->add_help('07.05'); break;
 }
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 
 // Build the page
 ?>

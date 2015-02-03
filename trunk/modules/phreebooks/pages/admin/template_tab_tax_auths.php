@@ -27,7 +27,7 @@ if ($security_level > 1) $tax_auths_toolbar->add_icon('new', 'onclick="loadPopUp
 
 ?>
 <div title="<?php echo TEXT_SALES_TAX_AUTHORITIES;?>" id="tab_tax_auths">
-  <?php echo $tax_auths_toolbar->build_toolbar(); ?>
+  <?php echo $tax_auths_toolbar->build(); ?>
   <h1><?php echo $tax_auths->title; ?></h1>
   <div id="tax_auths_content"><?php echo $tax_auths->build_main_html(); ?></div>
 </div>

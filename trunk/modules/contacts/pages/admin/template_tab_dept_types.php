@@ -27,7 +27,7 @@ if ($dept_types->extra_buttons) $dept_types->customize_buttons($dept_types_toolb
 
 ?>
 <div title="<?php echo TEXT_DEPARTMENT_TYPES;?>" id="tab_dept_types">
-  <?php echo $dept_types_toolbar->build_toolbar(); ?>
+  <?php echo $dept_types_toolbar->build(); ?>
   <h1><?php echo $dept_types->title; ?></h1>
   <div id="dept_types_content"><?php echo $dept_types->build_main_html(); ?></div>
 </div>

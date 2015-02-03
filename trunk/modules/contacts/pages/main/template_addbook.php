@@ -22,18 +22,18 @@
   if (defined('MODULE_SHIPPING_STATUS')) { // show shipping address for customers and vendors
     echo '  <fieldset>';
     echo '    <legend>' . TEXT_SHIPPING_ADDRESSES . '</legend>';
-    echo '    <table id="'.$type.'s_address_form" class="ui-widget" style="border-style:none;width:100%;">';
+    echo "    <table id='{$basis->cInfo->contact->type}s_address_form' class='ui-widget' style='border-style:none;width:100%;'>";
     echo '      <tr><td>' . ACT_SHIPPING_MESSAGE . '</td></tr>';
-    echo draw_address_fields($cInfo, $type.'s', true);
+    echo $basis->cInfo->contact->draw_address_fields($basis->cInfo->contact->type.'s', true);
     echo '    </table>';
     echo '  </fieldset>';
   }
   // *********************** BILLING/BRANCH ADDRESSES  *********************************
     echo '<fieldset>';
     echo '  <legend>' . TEXT_BILLING_ADDRESSES . '</legend>';
-    echo '  <table id="'.$type.'b_address_form" class="ui-widget" style="border-collapse:collapse;width:100%;">';
+    echo "  <table id='{$basis->cInfo->contact->type}b_address_form' class='ui-widget' style='border-collapse:collapse;width:100%;'>";
     echo '    <tr><td>' . ACT_BILLING_MESSAGE . '</td></tr>';
-    echo draw_address_fields($cInfo, $type.'b', true);
+    echo $basis->cInfo->contact->draw_address_fields($basis->cInfo->contact->type.'b', true);
     echo '  </table>';
     echo '</fieldset>';
 ?>

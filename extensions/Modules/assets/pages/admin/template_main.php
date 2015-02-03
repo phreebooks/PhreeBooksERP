@@ -29,7 +29,7 @@ else                     $toolbar->icon_list['save']['show']   = false;
 $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['print']['show']    = false;
 $toolbar->add_help($assets->help_path);
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
 <div class="easyui-tabs" id="admintabs">
