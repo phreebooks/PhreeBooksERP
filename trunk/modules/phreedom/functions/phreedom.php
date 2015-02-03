@@ -171,7 +171,7 @@ function admin_remove_dirs($dirlist, $path = DIR_FS_MY_FILES) {
 function admin_install_tables($tables) {
   global $db, $messageStack;
   $error = false;
-  foreach ($tables as $table => $create_table_sql) {
+  if (is_array($tables) && sizeof($tables) > 0) foreach ($tables as $table => $create_table_sql) {
     if (!db_table_exists($table)) {
 	  if (!$db->Execute($create_table_sql)) $error = $messageStack->add(sprintf("Error installing table: %s", $table), 'error');
 	}
