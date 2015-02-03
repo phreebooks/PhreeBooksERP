@@ -112,8 +112,8 @@ class admin extends \core\classes\admin {
 	function delete($path_my_files) {
 	    global $admin;
 	    parent::delete($path_my_files);
-		$admin->DataBase->query("delete from " . TABLE_EXTRA_FIELDS . " where module_id = 'assets'");
-		$admin->DataBase->query("delete from " . TABLE_EXTRA_TABS   . " where module_id = 'assets'");
+		$admin->DataBase->exec("delete from " . TABLE_EXTRA_FIELDS . " where module_id = 'assets'");
+		$admin->DataBase->exec("delete from " . TABLE_EXTRA_TABS   . " where module_id = 'assets'");
 	}
 
 	/**

@@ -43,7 +43,7 @@ class tabs {
 	      gen_add_audit_log($this->module .' '. TEXT_TABS . ' - '.  TEXT_UPDATE, $this->tab_name);
 		} else {
 		  // Test for duplicates.
-		  $result = $admin->DataBase->query("select id from " . TABLE_EXTRA_TABS . " where module_id='" . $this->module . "' and tab_name='" . $this->tab_name . "'");
+		  $result = $admin->DataBase->query("select id from " . TABLE_EXTRA_TABS . " where module_id='{$this->module}' and tab_name='{$this->tab_name}'");
 		  if ($result->rowCount() > 0) throw new \core\classes\userException(TEXT_THIS_TAB_NAME_ALREADY_EXISTS_PLEASE_USE_ANOTHER_NAME);
 		  db_perform(TABLE_EXTRA_TABS, $sql_data_array);
 		  gen_add_audit_log($this->module .' '. TEXT_TABS . ' - '. TEXT_ADD, $this->tab_name);
@@ -57,7 +57,7 @@ class tabs {
 		$result = $admin->DataBase->query("SELECT field_name FROM ".TABLE_EXTRA_FIELDS." WHERE tab_id='$id'");
 		if ($result->rowCount() > 0) throw new \core\classes\userException(INV_CATEGORY_CANNOT_DELETE . $result->fields['field_name']);
 		$result = $admin->DataBase->query("SELECT tab_name FROM ".TABLE_EXTRA_TABS." WHERE id='$id'");
-		$admin->DataBase->query("DELETE FROM ".TABLE_EXTRA_TABS." WHERE id=$id");
+		$admin->DataBase->exec("DELETE FROM ".TABLE_EXTRA_TABS." WHERE id=$id");
 		gen_add_audit_log($this->module .' '. TEXT_TABS . ' - '. TEXT_DELETE, $result->fields['tab_name']);
 		return true;
 	}

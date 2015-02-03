@@ -60,7 +60,7 @@ class departments {
 	// error check
 	// Departments have no pre-requisites to check prior to delete
 	// OK to delete
-	$admin->DataBase->query("delete from " . $this->db_table . " where id = '" . $this->id . "'");
+	$admin->DataBase->exec("delete from " . $this->db_table . " where id = '" . $this->id . "'");
 	modify_account_history_records($this->id, $add_acct = false);
 	gen_add_audit_log(TEXT_DEPARTMENTS . ' - ' . TEXT_DELETE, $this->id);
 	return true;

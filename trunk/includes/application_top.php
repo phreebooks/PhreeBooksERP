@@ -75,7 +75,6 @@ define('DIR_WS_IMAGES', DIR_WS_THEMES . 'images/');
 if (file_exists(DIR_WS_THEMES . 'icons/')) { define('DIR_WS_ICONS',  DIR_WS_THEMES . 'icons/'); }
 else { define('DIR_WS_ICONS', 'themes/default/icons/'); } // use default
 $messageStack 	= new \core\classes\messageStack;
-$toolbar      	= new \core\classes\toolbar;
 $currencies		= APC_EXTENSION_LOADED ? apc_fetch("currencies") : false;
 if ($currencies == false){
 	$currencies = new \core\classes\currencies;

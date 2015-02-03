@@ -40,7 +40,7 @@ switch ($_REQUEST['action']) {
 	  $sheet_id = (int)$_POST['id_' . $tab_id];
 	  $default_checked = isset($_POST['def_' . $tab_id]) ? true : false;
 	  if ($default_checked) {
-		$admin->DataBase->query("delete from " . TABLE_INVENTORY_SPECIAL_PRICES . "
+		$admin->DataBase->exec("delete from " . TABLE_INVENTORY_SPECIAL_PRICES . "
 			where inventory_id = " . $id . " and price_sheet_id = " . $sheet_id);
 	  } else {
 		$encoded_prices = array();

@@ -40,7 +40,7 @@ switch ($_REQUEST['action']) {
 	$ajax_text  = DOC_CTL_JS_BOOKMARK_SET;
     break;
   case 'del_bookmark':
-	$result = $admin->DataBase->query("delete from " . TABLE_DC_PROPERTIES . "
+	$result = $admin->DataBase->exec("delete from " . TABLE_DC_PROPERTIES . "
 		where doc_id = '$id' and type = 'b' and admin_id = '{$_SESSION['admin_id']}'");
 	$ajax_text = DOC_CTL_JS_BOOKMARK_REMOVE;
     break;
@@ -55,12 +55,12 @@ switch ($_REQUEST['action']) {
 	$ajax_text = DOC_CTL_JS_DOC_LOCKED;
     break;
   case 'del_lock':
-	$admin->DataBase->query("delete from " . TABLE_DC_PROPERTIES . " where doc_id = '$id' and type = 'l'");
+	$admin->DataBase->exec("delete from " . TABLE_DC_PROPERTIES . " where doc_id = '$id' and type = 'l'");
 	$ajax_text  = DOC_CTL_JS_DOC_UNLOCKED;
     break;
   case 'delete':
 	$file_path = PF_DIR_MY_REPORTS . 'pf_' . $id;
-	$admin->DataBase->query("delete from " . TABLE_PHREEFORM . " where id = '$id'");
+	$admin->DataBase->exec("delete from " . TABLE_PHREEFORM . " where id = '$id'");
 	if (file_exists($file_path)) unlink($file_path);
 	$id = $doc_details->fields['parent_id']; // set the id to the parent to display refreshed page
 	$ajax_text = sprintf( TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_REPORT, $doc_details->fields['doc_title']);

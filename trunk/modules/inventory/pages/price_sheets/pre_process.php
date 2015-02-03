@@ -95,8 +95,8 @@ switch ($_REQUEST['action']) {
 	$sheet_name = $result->fields['sheet_name'];
 	$type       = $result->fields['type'];
 	if ($result->fields['default_sheet'] == '1') $messageStack->add(PRICE_SHEET_DEFAULT_DELETED, 'caution');
-	$admin->DataBase->query("delete from " . TABLE_PRICE_SHEETS . " where id = '" . $id . "'");
-	$admin->DataBase->query("delete from " . TABLE_INVENTORY_SPECIAL_PRICES . " where price_sheet_id = '" . $id . "'");
+	$admin->DataBase->exec("delete from " . TABLE_PRICE_SHEETS . " where id = '" . $id . "'");
+	$admin->DataBase->exec("delete from " . TABLE_INVENTORY_SPECIAL_PRICES . " where price_sheet_id = '" . $id . "'");
 	gen_add_audit_log(TEXT_PRICE_SHEET. " - "  . TEXT_DELETE, $sheet_name);
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('psID', 'action')).'&type='.$type, 'SSL'));
 	break;

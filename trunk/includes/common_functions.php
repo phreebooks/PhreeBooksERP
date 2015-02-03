@@ -117,7 +117,7 @@
   	function remove_configure($constant){
 	    global $admin;
 		if (!$constant) throw new \core\classes\userException("There is no constant to remove");
-		$admin->DataBase->query("delete from " . TABLE_CONFIGURATION . " where configuration_key = '$constant'");
+		$admin->DataBase->exec("delete from " . TABLE_CONFIGURATION . " where configuration_key = '$constant'");
 		if (function_exists('apc_load_constants')) {// rebuild cache
 			$result = $admin->DataBase->query("select configuration_key, configuration_value from " . TABLE_CONFIGURATION );
 			$array = array ();

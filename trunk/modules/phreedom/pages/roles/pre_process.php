@@ -132,7 +132,7 @@ switch ($_REQUEST['action']) {
   	$admin_id = (int)db_prepare_input($_POST['rowSeq']);
 	// fetch the name for the audit log
 	$result = $admin->DataBase->query("select admin_name from " . TABLE_USERS . " where admin_id = " . $admin_id);
-	$admin->DataBase->query("delete from " . TABLE_USERS . " where admin_id = " . $admin_id);
+	$admin->DataBase->exec("delete from " . TABLE_USERS . " where admin_id = " . $admin_id);
 	gen_add_audit_log(sprintf(GEN_LOG_USER, TEXT_DELETE), $result->fields['admin_name']);
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	break;

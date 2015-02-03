@@ -45,78 +45,89 @@ class contacts {
 
     public function __construct(){
     	global $admin;
-    	$this->page_title_new  = sprintf(TEXT_NEW_ARGS, $this->title);
-    	$this->page_title_edit = sprintf(TEXT_EDIT_ARGS, $this->title);
+    	$this->page_title_new	= sprintf(TEXT_NEW_ARGS, $this->title);
+    	$this->page_title_edit	= sprintf(TEXT_EDIT_ARGS, $this->title);
     	//set defaults
-        $this->crm_date        = date('Y-m-d');
-        $this->crm_rep_id      = $_SESSION['account_id'] <> 0 ? $_SESSION['account_id'] : $_SESSION['admin_id'];
+        $this->crm_date			= date('Y-m-d');
+        $this->crm_rep_id		= $_SESSION['account_id'] <> 0 ? $_SESSION['account_id'] : $_SESSION['admin_id'];
+        $this->fields 			= new \contacts\classes\fields(false);
         foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
         $this->special_terms  =  db_prepare_input($_POST['terms']); // TBD will fix when popup terms is redesigned
         if ($this->id  == '') $this->id  = db_prepare_input($_POST['rowSeq'], true) ? db_prepare_input($_POST['rowSeq']) : db_prepare_input($_GET['cID']);
         if ($this->aid == '') $this->aid = db_prepare_input($_GET['aID'],     true) ? db_prepare_input($_GET['aID'])     : db_prepare_input($_POST['aID']);
+        if ($this->id  != '') $this->getContact();
     }
 
 	public function getContact() {
 	  	global $admin;
 	  	if ($this->id == '' && !$this->aid == ''){
-	  		$result = $admin->DataBase->query("select * from ".TABLE_ADDRESS_BOOK." where address_id = {$this->aid}");
-	  		$this->id = $result->fields['ref_id'];
+	  		$sql = $admin->DataBase->prepare("SELECT * FROM ".TABLE_ADDRESS_BOOK." WHERE address_id = {$this->aid}");
+	  		$sql->excecute();
+	  		$result = $sql->fetch(\PDO::FETCH_LAZY);
+	  		// Load contact info, including custom fields
+	  		$sql = $admin->DataBase->prepare("SELECT * FROM ".TABLE_CONTACTS." WHERE id = {$result['ref_id']}");
+	  		$sql->excecute();
+	  		$this = $sql->fetch(\PDO::FETCH_LAZY);
 	  	}
-		// Load contact info, including custom fields
-		$result = $admin->DataBase->query("select * from ".TABLE_CONTACTS." where id = {$this->id}");
-		foreach ($result->fields as $key => $value) $this->$key = $value;
 		// expand attachments
-		$this->attachments = $result->fields['attachments'] ? unserialize($result->fields['attachments']) : array();
+		$this->attachments = $result['attachments'] ? unserialize($result['attachments']) : array();
 		// Load the address book
-		$result = $admin->DataBase->query("select * from ".TABLE_ADDRESS_BOOK." where ref_id = $this->id order by primary_name");
+		$sql = $admin->DataBase->prepare("SELECT * FROM ".TABLE_ADDRESS_BOOK." WHERE ref_id = $this->id ORDER BY primary_name");
+		$sql->excecute();
 		$this->address = array();
-		while (!$result->EOF) {
-		  	$type = substr($result->fields['type'], 1);
-		  	$this->address_book[$type][] = new \core\classes\objectInfo($result->fields);
+		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+		  	$type = substr($result['type'], 1);
+		  	$this->address_book[$type][] = $result;
 		  	if ($type == 'm') { // prefill main address
-		  		foreach ($result->fields as $key => $value) $this->address[$result->fields['type']][$key] = $value;
+		  		foreach ($result as $key => $value) $this->address[$result['type']][$key] = $value;
 		  	}
-		  	$result->MoveNext();
 		}
 		// load payment info
 		if ($_SESSION['admin_encrypt'] && ENABLE_ENCRYPTION) {
-		  	$result = $admin->DataBase->query("select id, hint, enc_value from ".TABLE_DATA_SECURITY." where module='contacts' and ref_1={$this->id}");
-		  	while (!$result->EOF) {
-		    	$val = explode(':', \core\classes\encryption::decrypt($_SESSION['admin_encrypt'], $result->fields['enc_value']));
+		  	$sql = $admin->DataBase->prepare("SELECT id, hint, enc_value FROM ".TABLE_DATA_SECURITY." WHERE module='contacts' and ref_1={$this->id}");
+		  	$sql->excecute();
+		  	while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+		    	$val = explode(':', \core\classes\encryption::decrypt($_SESSION['admin_encrypt'], $result['enc_value']));
 		    	$this->payment_data[] = array(
-			  	  'id'   => $result->fields['id'],
+			  	  'id'   => $result['id'],
 			  	  'name' => $val[0],
-			  	  'hint' => $result->fields['hint'],
+			  	  'hint' => $result['hint'],
 			  	  'exp'  => $val[2] . '/' . $val[3],
 		    	);
-		    	$result->MoveNext();
 		  	}
 		}
 		// load contacts info
-		$result = $admin->DataBase->query("select * from ".TABLE_CONTACTS." where dept_rep_id={$this->id}");
+		$sql = $admin->DataBase->prepare("SELECT * FROM ".TABLE_CONTACTS." WHERE dept_rep_id={$this->id}");
+		$sql->excecute();
+		$i = 0;
 		$this->contacts = array();
-		while (!$result->EOF) {
-		  	$cObj = new \core\classes\objectInfo();
-		  	foreach ($result->fields as $key => $value) $cObj->$key = $value;
-		  	$addRec = $admin->DataBase->query("select * from ".TABLE_ADDRESS_BOOK." where type='im' and ref_id={$result->fields['id']}");
-		  	$cObj->address['m'][] = new \core\classes\objectInfo($addRec->fields);
-		  	$this->contacts[] = $cObj; //unserialize(serialize($cObj));
+		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+		  	$this->contacts[$i] = $result;
+		  	$sql2 = $admin->DataBase->prepare("SELECT * FROM ".TABLE_ADDRESS_BOOK." WHERE type='im' and ref_id={$result['id']}");
+		  	$sql2->excecute();
+		  	$this->contacts[$i]->address['m'][] = $sql->fetch(\PDO::FETCH_LAZY);
 			// 	load crm notes
-		  	$logs = $admin->DataBase->query("select * from ".TABLE_CONTACTS_LOG." where contact_id = {$result->fields['id']} order by log_date desc");
-		  	while (!$logs->EOF) {
-		    	$this->crm_log[] = new \core\classes\objectInfo($logs->fields);
-		    	$logs->MoveNext();
+		  	$sql3 = $admin->DataBase->prepare("SELECT * FROM ".TABLE_CONTACTS_LOG." WHERE contact_id = {$result['id']} ORDER BY log_date DESC");
+		  	$sql3->excecute();
+		  	while ($logs = $sql3->fetch(\PDO::FETCH_LAZY)) {
+		    	$this->crm_log[] = $logs;
 		  	}
-		  	$result->MoveNext();
+		  	$i++;
 		}
 		// load crm notes
-		$result = $admin->DataBase->query("select * from ".TABLE_CONTACTS_LOG." where contact_id = {$this->id} order by log_date desc");
-		while (!$result->EOF) {
-		  	$this->crm_log[] = new \core\classes\objectInfo($result->fields);
-		  	$result->MoveNext();
+		$sql = $admin->DataBase->query("SELECT * FROM ".TABLE_CONTACTS_LOG." WHERE contact_id = {$this->id} ORDER BY log_date DESC");
+		$sql->excecute();
+		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+		  	$this->crm_log[] = $result;
 		}
   	}
 
+  	/**
+  	 * Checks if it is save to delete.
+  	 * Then it returns do_delete()
+  	 * @param int $id
+  	 * @throws \core\classes\userException when it can't delete
+  	 */
   	function delete($id) {
   		global $admin;
   		if ( $this->id == '' ) $this->id = $id;	// error check, no delete if a journal entry exists
@@ -125,12 +136,16 @@ class contacts {
 		return $this->do_delete();
 	}
 
+	/**
+	 * this function deletes a contact
+	 * @return boolean
+	 */
   	public function do_delete(){
 		global $admin;
-	  	$admin->DataBase->query("DELETE FROM ".TABLE_ADDRESS_BOOK ." WHERE ref_id={$this->id}");
-	  	$admin->DataBase->query("DELETE FROM ".TABLE_DATA_SECURITY." WHERE ref_1={$this->id}");
-	  	$admin->DataBase->query("DELETE FROM ".TABLE_CONTACTS     ." WHERE id={$this->id}");
-	  	$admin->DataBase->query("DELETE FROM ".TABLE_CONTACTS_LOG ." WHERE contact_id={$this->id}");
+	  	$admin->DataBase->exec("DELETE FROM ".TABLE_ADDRESS_BOOK ." WHERE ref_id={$this->id}");
+	  	$admin->DataBase->exec("DELETE FROM ".TABLE_DATA_SECURITY." WHERE ref_1={$this->id}");
+	  	$admin->DataBase->exec("DELETE FROM ".TABLE_CONTACTS     ." WHERE id={$this->id}");
+	  	$admin->DataBase->exec("DELETE FROM ".TABLE_CONTACTS_LOG ." WHERE contact_id={$this->id}");
 	  	foreach (glob(CONTACTS_DIR_ATTACHMENTS."contacts_{$this->id}_*.zip") as $filename) unlink($filename); // remove attachments
 	  	return true;
   	}
@@ -206,8 +221,7 @@ class contacts {
 
 	public function save_contact(){
   		global $admin;
-  		$fields = new \contacts\classes\fields(false);
-  		$sql_data_array = $fields->what_to_save();
+  		$sql_data_array = $this->fields->what_to_save();
   		$sql_data_array['class']			= addcslashes(get_class($this), '\\');
     	$sql_data_array['type']            	= $this->type;
     	$sql_data_array['short_name']      	= $this->short_name;
@@ -407,5 +421,7 @@ class contacts {
   		if ($security_level > 3) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 			"onclick='if (confirm(\"" . ACT_WARN_DELETE_ACCOUNT . "\")) submitSeq($this->id, \"delete\")'") . chr(10);
   		echo "</td>";
   	}
+
+  	function __destruct(){print_r($this)}
 }
 ?>

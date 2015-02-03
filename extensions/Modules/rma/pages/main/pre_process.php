@@ -162,7 +162,7 @@ switch ($_REQUEST['action']) {
 	$id     = db_prepare_input($_GET['cID']);
 	$result = $admin->DataBase->query("select rma_num from " . TABLE_RMA . " where id = " . $id);
 	if ($result->rowCount() > 0) {
-	  $admin->DataBase->query("delete from " . TABLE_RMA . " where id = " . $id);
+	  $admin->DataBase->exec("delete from " . TABLE_RMA . " where id = " . $id);
 	  foreach (glob(RMA_DIR_ATTACHMENTS."ram_$id_*.zip") as $filename) unlink($filename); // remove attachments
 	  gen_add_audit_log(sprintf( TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_RMA, $result->fields['rma_num']));
 	  gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('cID', 'action')), 'SSL'));

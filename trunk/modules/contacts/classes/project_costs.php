@@ -70,7 +70,7 @@ class project_costs {
 */
 	// OK to delete
 		$result = $admin->DataBase->query("select description_short from " . $this->db_table . " where cost_id = '" . $this->id . "'");
-		$admin->DataBase->query("delete from " . $this->db_table . " where cost_id = '" . $this->id . "'");
+		$admin->DataBase->exec("delete from " . $this->db_table . " where cost_id = '" . $this->id . "'");
 		gen_add_audit_log(TEXT_PROJECT_COST . ' - ' . TEXT_DELETE, $result->fields['description_short']);
 		return true;
   	}

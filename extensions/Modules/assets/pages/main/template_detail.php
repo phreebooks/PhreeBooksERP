@@ -33,7 +33,7 @@ if ($security_level > 2) {
 $toolbar->icon_list['print']['show'] = false;
 $toolbar->add_help('');
 echo $toolbar->build();
-$fields->set_fields_to_display($asset_type);
+$fields->display();
 ?>
 <h1><?php echo TEXT_ASSETS . ' - ' . TEXT_ASSET_ID . '# ' . $cInfo->asset_id; ?></h1>
 

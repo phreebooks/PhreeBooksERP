@@ -319,7 +319,7 @@ class inventory {
 	// the function check_remove calls this function.
 	function remove(){
 		global $admin;
-		$admin->DataBase->query("delete from " . TABLE_INVENTORY . " where id = " . $this->id);
+		$admin->DataBase->exec("delete from " . TABLE_INVENTORY . " where id = " . $this->id);
 		if($this->image_with_path != '') {
 			$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY . " where image_with_path = '" . $this->image_with_path ."'");
 	  		if ( $result->rowCount() == 0) { // delete image
@@ -327,8 +327,8 @@ class inventory {
 				if (file_exists($file_path . $this->image_with_path)) unlink ($file_path . $this->image_with_path);
 	  		}
 		}
-	  	$admin->DataBase->query("delete from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = '" . $this->id . "'");
-	  	$admin->DataBase->query("delete from " . TABLE_INVENTORY_PURCHASE . " where sku = '" . $this->sku . "'");
+	  	$admin->DataBase->exec("delete from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = '" . $this->id . "'");
+	  	$admin->DataBase->exec("delete from " . TABLE_INVENTORY_PURCHASE . " where sku = '" . $this->sku . "'");
 		gen_add_audit_log(TEXT_INVENTORY_ITEM . ' - ' . TEXT_DELETE, $this->sku);
 	}
 
@@ -506,7 +506,7 @@ class inventory {
 			$i++;
 		}
 		foreach($this->backup_purchase_array as $key => $value){
-			if($value['action'] == 'delete') $result = $admin->DataBase->query("delete from " . TABLE_INVENTORY_PURCHASE . " where id = '" . $value['id'] . "'");
+			if($value['action'] == 'delete') $result = $admin->DataBase->exec("delete from " . TABLE_INVENTORY_PURCHASE . " where id = '" . $value['id'] . "'");
 		}
 		return $lowest_cost == 99999999999 ? 0 : $lowest_cost; //added in case no purchase data entered when creating new product
 	}

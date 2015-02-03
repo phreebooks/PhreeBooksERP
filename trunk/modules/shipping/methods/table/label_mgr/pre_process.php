@@ -61,7 +61,7 @@ switch ($_REQUEST['action']) {
 		throw new \core\classes\userException(SHIPPING_CANNOT_DELETE);
 	}
 
-	$admin->DataBase->query("delete from " . TABLE_SHIPPING_LOG . " where shipment_id = " . $shipment_id);
+	$admin->DataBase->exec("delete from " . TABLE_SHIPPING_LOG . " where shipment_id = " . $shipment_id);
 	gen_add_audit_log(TEXT_LABEL_DELETED, $tracking_id);
 	break;
 

@@ -67,7 +67,7 @@ class tax_auths {
 
 	// OK to delete
 	$result = $admin->DataBase->query("select description_short from " . $this->db_table . " where tax_auth_id = '" . $id . "'");
-	$admin->DataBase->query("delete from " . $this->db_table . " where tax_auth_id = '" . $id . "'");
+	$admin->DataBase->exec("delete from " . $this->db_table . " where tax_auth_id = '" . $id . "'");
 	gen_add_audit_log(TEXT_TAX_AUTHORITY ." - " . TEXT_DELETE, $result->fields['description_short']);
 	return true;
   }

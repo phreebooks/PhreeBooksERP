@@ -97,7 +97,7 @@ switch ($_REQUEST['action']) {
 		}
 		// update the task list
 		if (isset($_POST['id'])) { // delete the previous
-		    $admin->DataBase->query("delete from " . TABLE_WO_STEPS . " where ref_id = " . $id);
+		    $admin->DataBase->exec("delete from " . TABLE_WO_STEPS . " where ref_id = " . $id);
 		}
 	    while (list($key, $val) = each($step_list)) {
 		    $sql_data_array = array(
@@ -206,8 +206,8 @@ switch ($_REQUEST['action']) {
 		$result = $admin->DataBase->query("select wo_title, last_usage from " . TABLE_WO_MAIN . " where id = " . $id);
 		if ($result->fields['last_usage'] <> '0000-00-00') throw new \core\classes\userException(WO_ERROR_CANNOT_DELETE_BUILDER);
 		// finish
-		$admin->DataBase->query("delete from " . TABLE_WO_MAIN  . " where id = " . $id);
-		$admin->DataBase->query("delete from " . TABLE_WO_STEPS . " where ref_id = " . $id);
+		$admin->DataBase->exec("delete from " . TABLE_WO_MAIN  . " where id = " . $id);
+		$admin->DataBase->exec("delete from " . TABLE_WO_STEPS . " where ref_id = " . $id);
 		gen_add_audit_log(sprintf(WO_AUDIT_LOG_BUILDER, TEXT_DELETE) . $result->fields['wo_title']);
 		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_WORK_ORDER_RECORD , $result->fields['wo_title']),'success');
     	$_REQUEST['action'] = '';

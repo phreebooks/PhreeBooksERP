@@ -232,7 +232,7 @@ if (!defined('HIDE_SUCCESS_MESSAGES')) {
 }
 
 if (!defined('AUTO_UPDATE_PERIOD')) {
-  $admin->DataBase->query('delete from ' . TABLE_CONFIGURATION . " where configuration_key = 'DEFAULT_LANGUAGE'");
+  $admin->DataBase->exec('delete from ' . TABLE_CONFIGURATION . " where configuration_key = 'DEFAULT_LANGUAGE'");
   $admin->DataBase->query("INSERT INTO " .  TABLE_CONFIGURATION . "
            ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` , `set_function` )
     VALUES ( 'Auto-change Accounting Period', 'AUTO_UPDATE_PERIOD', '1', 'Automatically changes the current accounting period based on the server date and current fiscal calendar. If not enabled, the current accounting period must be manually changed in the General Ledger => Utilities menu.', '13', '1', NULL , '2008-01-21 00:00:00', NULL , 'cfg_keyed_select_option(array(0 => \'No\', 1=> \'Yes\'),' ),

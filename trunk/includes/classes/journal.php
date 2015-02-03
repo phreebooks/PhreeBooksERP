@@ -135,9 +135,9 @@ class journal {
 		$this->unPost_chart_balances();	// unPost the chart of account values
 		$this->unPost_inventory();
 		$messageStack->debug("\n  Deleting Journal main and rows as part of unPost ...");
-		$result = $admin->DataBase->query("delete from " . TABLE_JOURNAL_MAIN . " where id = " . $this->id);
+		$result = $admin->DataBase->exec("delete from " . TABLE_JOURNAL_MAIN . " where id = " . $this->id);
 		if ($result->AffectedRows() <> 1) throw new \core\classes\userException(GL_ERROR_CANNOT_DELETE_MAIN);
-		$result = $admin->DataBase->query("delete from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $this->id);
+		$result = $admin->DataBase->exec("delete from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $this->id);
 		if ($result->AffectedRows() == 0 ) throw new \core\classes\userException(printf(GL_ERROR_CANNOT_DELETE_ITEM, $this->id));
 		if ($action == 'delete') { // re-post affected entries unless edited (which is after the entry is reposted)
 	  	if (is_array($this->unpost_ids)) { // rePost any journal entries unPosted to rollback COGS calculation
@@ -233,7 +233,7 @@ class journal {
 			  				$idx = substr($result->fields['post_date'], 0, 10).':'.str_pad($result->fields['journal_main_id'], 8, '0', STR_PAD_LEFT);
 			  				$repost_ids[$idx] = $result->fields['journal_main_id'];
 			  			}
-			  			$admin->DataBase->query("DELETE FROM " . TABLE_INVENTORY_COGS_OWED . " WHERE id = " . $result->fields['id']);
+			  			$admin->DataBase->exec("DELETE FROM " . TABLE_INVENTORY_COGS_OWED . " WHERE id = " . $result->fields['id']);
 			  		}
 			  		$working_qty -= $result->fields['qty'];
 			  		if ($working_qty <= 0) break;
@@ -531,7 +531,7 @@ class journal {
 		  	case 18:
 		  	case 20:
 				if (!$this->bill_acct_id) throw new \core\classes\userException(TEXT_NO_ACCOUNT_NUMBER_PROVIDED_IN_CORE_JOURNAL_FUNCTION . ': ' . 'unPost_account_sales_purchases.');
-				$result = $admin->DataBase->query("delete from " . TABLE_ACCOUNTS_HISTORY . " where ref_id = " . $this->id);
+				$result = $admin->DataBase->exec("delete from " . TABLE_ACCOUNTS_HISTORY . " where ref_id = " . $this->id);
 				if ($result->AffectedRows() != 1) throw new \core\classes\userException(TEXT_ERROR_DELETING_CUSTOMER_OR_VENDOR_ACCOUNT_HISTORY_RECORD);
 				$messageStack->debug(" end unPosting account sales and purchases.");
 				break;
@@ -716,7 +716,7 @@ class journal {
 	  case 19:
 	  case 21:
 		// Delete all owed cogs entries (will be re-added during post)
-		$admin->DataBase->query("delete from " . TABLE_INVENTORY_COGS_OWED . " where journal_main_id = " . $this->id);
+		$admin->DataBase->exec("delete from " . TABLE_INVENTORY_COGS_OWED . " where journal_main_id = " . $this->id);
 		$this->rollback_COGS();
 		break;
 	  default:  // continue to unPost inventory
@@ -771,8 +771,8 @@ class journal {
 	  }
 	}
 	// remove the inventory history records
-	$admin->DataBase->query("delete from " . TABLE_INVENTORY_HISTORY . " where ref_id = " . $this->id);
-	$admin->DataBase->query("delete from " . TABLE_INVENTORY_COGS_USAGE . " where journal_main_id = " . $this->id);
+	$admin->DataBase->exec("delete from " . TABLE_INVENTORY_HISTORY . " where ref_id = " . $this->id);
+	$admin->DataBase->exec("delete from " . TABLE_INVENTORY_COGS_USAGE . " where journal_main_id = " . $this->id);
 	// remove cost of goods sold records (will be re-calculated if re-posting)
 	$this->remove_journal_COGS_entries();
 	$messageStack->debug("\n  end unPosting Inventory.");

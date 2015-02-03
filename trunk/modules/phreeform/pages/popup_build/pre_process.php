@@ -282,7 +282,7 @@ switch ($_REQUEST['action']) {
 	// check for directory empty
 	$result = $admin->DataBase->query("select id from " . TABLE_PHREEFORM . " where parent_id = " . $id);
 	if ($result->rowCount() > 0) throw new \core\classes\userException(TEXT_THE_DIRECTORY_CANNOT_BE_DELETED_BECAUSE_IT_IS_NOT_EMPTY);
-	$admin->DataBase->query("delete from " . TABLE_PHREEFORM . " where id = " . $id);
+	$admin->DataBase->exec("delete from " . TABLE_PHREEFORM . " where id = " . $id);
 	$messageStack->add(TEXT_THE_DIRECTORY_WAS_SUCESSFULLY_DELETED,'success');
     break;
   case 'import_one':

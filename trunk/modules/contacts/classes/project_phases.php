@@ -71,7 +71,7 @@ class project_phases {
 	*/
 		// OK to delete
 		$result = $admin->DataBase->query("select description_short from " . $this->db_table . " where phase_id = '" . $this->id . "'");
-		$admin->DataBase->query("delete from " . $this->db_table . " where phase_id = '" . $this->id . "'");
+		$admin->DataBase->exec("delete from " . $this->db_table . " where phase_id = '" . $this->id . "'");
 		gen_add_audit_log(TEXT_PROJECT_PHASE . ' - ' . TEXT_DELETE, $result->fields['description_short']);
 		return true;
 	}

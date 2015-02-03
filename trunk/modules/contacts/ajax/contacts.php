@@ -63,7 +63,7 @@ switch ($_REQUEST['action']) {
 				$message[] = ACT_ERROR_CANNOT_DELETE;
 			}
 		} else { // just delete the address
-			$admin->DataBase->query('delete from '.TABLE_ADDRESS_BOOK." where address_id = $id");
+			$admin->DataBase->exec('delete from '.TABLE_ADDRESS_BOOK." where address_id = $id");
 		}
 		$message[] = 'The record was successfully deleted!';
 		$xml .= xmlEntry('address_id', $id);
@@ -88,14 +88,14 @@ switch ($_REQUEST['action']) {
 
 	case 'rm_payment':
 		$id = $_GET['pID'];
-		$admin->DataBase->query("delete from ".TABLE_DATA_SECURITY." where id = $id");
+		$admin->DataBase->exec("delete from ".TABLE_DATA_SECURITY." where id = $id");
 		$xml .= xmlEntry('payment_id', $id);
 		$message[] = 'The record was successfully deleted!';
 		break;
 
 	case 'rm_crm':
 		$id = $_GET['nID'];
-		$admin->DataBase->query("delete from ".TABLE_CONTACTS_LOG." where log_id = $id");
+		$admin->DataBase->exec("delete from ".TABLE_CONTACTS_LOG." where log_id = $id");
 		$xml .= xmlEntry('crm_id', $id);
 		$message[] = 'The record was successfully deleted!';
 		break;

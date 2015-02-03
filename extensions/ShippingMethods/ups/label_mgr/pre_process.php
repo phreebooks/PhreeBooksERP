@@ -117,7 +117,7 @@ switch ($_REQUEST['action']) {
 	}
 	$shipment = new $shipping_method();
 	$shipment->deleteLabel($shipment_id);
-	$admin->DataBase->query("delete from " . TABLE_SHIPPING_LOG . " where shipment_id = " . $shipment_id);
+	$admin->DataBase->exec("delete from " . TABLE_SHIPPING_LOG . " where shipment_id = " . $shipment_id);
 	gen_add_audit_log(SHIPPING_UPS_LABEL_DELETED, $tracking_id);
 	break;
 

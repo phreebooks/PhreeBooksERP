@@ -54,7 +54,7 @@ if (count($extra_toolbar_buttons_detail) > 0) {
   foreach ($extra_toolbar_buttons_detail as $key => $value) $toolbar->icon_list[$key] = $value;
 }
 echo $toolbar->build();
-$fields->set_fields_to_display($cInfo->inventory_type);
+$fields->display($cInfo->inventory_type);
 ?>
 <h1 id='heading_title'><?php echo TEXT_INVENTORY . ' - ' . TEXT_SKU . '# ' . $cInfo->sku . ' (' . $cInfo->description_short . ')'; ?></h1>
 <div class="easyui-tabs" id="detailtabs">

@@ -267,7 +267,7 @@ switch ($_REQUEST['action']) {
   case 'clean_security':
 	$clean_date = gen_db_date($_POST['clean_date']);
 	if (!$clean_date) break;
-	$result = $admin->DataBase->query("delete from ".TABLE_DATA_SECURITY." where exp_date < '".$clean_date."'");
+	$result = $admin->DataBase->exec("delete from ".TABLE_DATA_SECURITY." where exp_date < '".$clean_date."'");
 	$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, $result->AffectedRows(), TEXT_DATA_SECURITY_RECORDS), 'success');
 	break;
   default:

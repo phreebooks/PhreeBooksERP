@@ -277,8 +277,8 @@ switch ($_REQUEST['action']) {
 	$temp     = $admin->DataBase->query("select allocate from " . TABLE_WO_MAIN . " where id = '" . $result->fields['wo_id'] . "'");
 	$allocate = $temp->fields['allocate'];
 	if ($allocate) allocation_adjustment($result->fields['sku_id'], 0, $result->fields['qty']);
-	$admin->DataBase->query("delete from " . TABLE_WO_JOURNAL_MAIN  . " where id = " . $id);
-	$admin->DataBase->query("delete from " . TABLE_WO_JOURNAL_ITEM  . " where ref_id = " . $id);
+	$admin->DataBase->exec("delete from " . TABLE_WO_JOURNAL_MAIN  . " where id = " . $id);
+	$admin->DataBase->exec("delete from " . TABLE_WO_JOURNAL_ITEM  . " where ref_id = " . $id);
 	gen_add_audit_log(sprintf(WO_AUDIT_LOG_MAIN, TEXT_DELETE) . $result->fields['wo_title']);
 	$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_WORK_ORDER_RECORD , $result->fields['wo_title']),'success');
     $_REQUEST['action'] = '';

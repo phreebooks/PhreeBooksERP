@@ -78,7 +78,7 @@ class tills {
 	}
 	// OK to delete
 	$result = $admin->DataBase->query("select description from " . $this->db_table . " where till_id = '$id'");
-	$admin->DataBase->query("delete from " . $this->db_table . " where till_id = '$id'");
+	$admin->DataBase->exec("delete from " . $this->db_table . " where till_id = '$id'");
 	gen_add_audit_log(TEXT_TILL ." - " . TEXT_DELETE, $result->fields['description']);
 	return true;
   }

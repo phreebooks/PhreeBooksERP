@@ -81,7 +81,7 @@ class chart_of_accounts {
 	  throw new \core\classes\userException(GL_ERROR_CANT_DELETE);
 	}
 	// OK to delete
-	$admin->DataBase->query("delete from " . $this->db_table . " where id = '" . $id . "'");
+	$admin->DataBase->exec("delete from " . $this->db_table . " where id = '" . $id . "'");
 	modify_account_history_records($id, $add_acct = false);
 	gen_add_audit_log(TEXT_CHART_OF_ACCOUNTS. " - " . TEXT_DELETE, $id);
 	return true;

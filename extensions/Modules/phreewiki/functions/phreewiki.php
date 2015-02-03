@@ -89,7 +89,7 @@ function deleteTiddler($tiddler) {
   if ( sizeof($tiddler)== 0 )											return PHREEWIKI_WARNING_TIDDLER_NOT_FOUND;
   if ( in_array($tiddler['title'], $lock_title) )	return PHREEWIKI_WARNING_IN_LOCKED_ARRAY;
 
-  $result = $admin->DataBase->query("DELETE FROM ". TABLE_PHREEWIKI ." WHERE `id` = '". $tiddler['id'] ."'");
+  $result = $admin->DataBase->exec("DELETE FROM ". TABLE_PHREEWIKI ." WHERE `id` = '". $tiddler['id'] ."'");
   if( $result === FALSE ) {
     return TEXT_THERE_WERE_ERRORS_DURING_PROCESSING . ' ' . TEXT_THE_RECORD_WAS_NOT_DELETED;
   }

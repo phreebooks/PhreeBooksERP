@@ -68,7 +68,7 @@ class translator {
 		$pathtofile = str_replace(DIR_FS_ADMIN, '', $dir_source . $file);
 		$langtemp = $this->extractUTF8($langfile);
 //		preg_match_all("|define\('(.*)',[\s]*'(.*)'\);|imU", $langfile, $langtemp); // broken for UTF-8
-		$admin->DataBase->query("DELETE FROM ".TABLE_TRANSLATOR." WHERE module='$mod' AND language='$lang' AND version='$ver' AND pathtofile='$pathtofile'");
+		$admin->DataBase->exec("DELETE FROM ".TABLE_TRANSLATOR." WHERE module='$mod' AND language='$lang' AND version='$ver' AND pathtofile='$pathtofile'");
 		foreach ($langtemp as $const => $value) {
 if ($const == 'TEXT_COUNTRY_ISO_CODE')echo 'writing const = '.$const.' with value = '.$value.'<br>';
 			$sql = "INSERT INTO ".TABLE_TRANSLATOR." SET
@@ -112,7 +112,7 @@ if ($const == 'TEXT_COUNTRY_ISO_CODE')echo 'writing const = '.$const.' with valu
 	if ($result->rowCount() == 0) throw new \core\classes\userException(TRANS_ERROR_NO_SOURCE);
 	$ver = $result->fields['version'];
 	// delete all from the version being written, prevents dups
-	$admin->DataBase->query("delete from " . TABLE_TRANSLATOR . "
+	$admin->DataBase->exec("delete from " . TABLE_TRANSLATOR . "
 	  where module = '" . $mod . "' and language = '" . $lang . "' and version = '" . $ver . "'");
 	// load the source language
 	$result = $admin->DataBase->query("select pathtofile, defined_constant, translation from " . TABLE_TRANSLATOR . "

@@ -408,7 +408,7 @@ class admin extends \core\classes\admin {
 		if ( isset($basis->cInfo->rowSeq)) $basis->cInfo->cID = $basis->cInfo->rowSeq;
 		if ($basis->cInfo->cID == '') throw new \core\classes\userException("cID variable isn't set can't excecute method LoadContactPage ");
 		$inactive = '';
-		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " c LEFT JOIN " . TABLE_ADDRESS_BOOK . " a ON c.id = a.ref_id where id = {$basis->cInfo->cID}");
+		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->cID}");
 		$sql->execute();
 		$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
 
@@ -424,7 +424,7 @@ class admin extends \core\classes\admin {
 		// load the tax rates
 		$basis->cInfo->tax_rates       = ord_calculate_tax_drop_down($basis->cInfo->contact->type, true);
 		$basis->cInfo->sales_rep_array = gen_get_rep_ids($basis->cInfo->contact->type);
-		$result = $basis->DataBase->prepare("select id, contact_first, contact_last, gl_type_account from ".TABLE_CONTACTS." where type='e'");
+		$result = $basis->DataBase->prepare("SELECT id, contact_first, contact_last, gl_type_account FROM ".TABLE_CONTACTS." WHERE type='e'");
 		$sql->execute();
 		$basis->cInfo->reps       = array();
 		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){

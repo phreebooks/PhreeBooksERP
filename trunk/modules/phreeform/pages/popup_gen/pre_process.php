@@ -198,7 +198,7 @@ switch ($_REQUEST['action']) {
 	  $output = object_to_xml($report);
 	  $filename = PF_DIR_MY_REPORTS . 'pf_' . $rID;
 	  if (!$handle = @fopen($filename, 'w')) {
-	    	$admin->DataBase->query("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
+	    	$admin->DataBase->exec("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
 	    	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
 	  }
 	  if (!@fwrite($handle, $output)) 	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));
@@ -224,7 +224,7 @@ switch ($_REQUEST['action']) {
 	  $output = object_to_xml($report);
 	  $filename = PF_DIR_MY_REPORTS . 'pf_' . $rID;
 	  if (!$handle = @fopen($filename, 'w')) {
-	    	$admin->DataBase->query("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
+	    	$admin->DataBase->exec("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
 	    	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
 	  }
 	  if (@fwrite($handle, $output)) 	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));

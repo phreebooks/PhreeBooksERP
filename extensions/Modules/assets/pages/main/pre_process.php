@@ -61,7 +61,7 @@ switch ($_REQUEST['action']) {
 	$asset_id   = $result->fields['asset_id'];
 	$asset_type = $result->fields['asset_type'];
 
-	$admin->DataBase->query("delete from " . TABLE_ASSETS . " where id = " . $id);
+	$admin->DataBase->exec("delete from " . TABLE_ASSETS . " where id = " . $id);
 	if ($image_with_path) { // delete image
 	  $file_path = DIR_FS_MY_FILES . $_SESSION['company'] . '/assets/images/';
 	  if (file_exists($file_path . $result->fields['image_with_path'])) unlink ($file_path . $result->fields['image_with_path']);

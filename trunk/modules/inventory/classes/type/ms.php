@@ -127,9 +127,9 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 		global $admin;
 		$ms_array = $admin->DataBase->query("select * from " . TABLE_INVENTORY . " where sku like '" . $this->sku . "-%'");
 		parent::remove();
-		$admin->DataBase->query("delete from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->sku . "'");
-		$admin->DataBase->query("delete from " . TABLE_INVENTORY . " where sku like '" . $this->sku . "-%'");
-		$admin->DataBase->query("delete from " . TABLE_INVENTORY_PURCHASE . " where sku like '" . $this->sku . "-%'");
+		$admin->DataBase->exec("delete from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->sku . "'");
+		$admin->DataBase->exec("delete from " . TABLE_INVENTORY . " where sku like '" . $this->sku . "-%'");
+		$admin->DataBase->exec("delete from " . TABLE_INVENTORY_PURCHASE . " where sku like '" . $this->sku . "-%'");
 		while(!$ms_array->EOF){
 			if($ms_array->fields['image_with_path'] != ''){
 				$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY . " where image_with_path = '" . $ms_array->fields['image_with_path'] ."'");
@@ -228,7 +228,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 				$backUpRow['description_purchase'] = sprintf($backUpRow['description_purchase'], 	$variables[$sku]['idx0'], $variables[$sku]['idx1'] );
 				$purchase_data_array = null;
 				if($backUpRow['action'] == 'delete'){
-					$result = $admin->DataBase->query("delete from " . TABLE_INVENTORY_PURCHASE . " where sku = '$sku' and vendor_id = '{$backUpRow['vendor_id']}'");
+					$result = $admin->DataBase->exec("delete from " . TABLE_INVENTORY_PURCHASE . " where sku = '$sku' and vendor_id = '{$backUpRow['vendor_id']}'");
 				} else if($backUpRow['action'] == 'insert'){
 					$purchase_data_array = $backUpRow;
 					unset($purchase_data_array['id']);
@@ -257,8 +257,8 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 		foreach($delete_list as $sku) {
 			$temp = $this->mi_check_remove($sku);
 			if($temp === true){
-				$result = $admin->DataBase->query("delete from " . TABLE_INVENTORY . " where sku = '$sku'");
-				$result = $admin->DataBase->query("delete from " . TABLE_INVENTORY_PURCHASE . " where sku = '$sku'");
+				$result = $admin->DataBase->exec("delete from " . TABLE_INVENTORY . " where sku = '$sku'");
+				$result = $admin->DataBase->exec("delete from " . TABLE_INVENTORY_PURCHASE . " where sku = '$sku'");
 			}elseif ($temp === false){
 				$result = $admin->DataBase->query("update " . TABLE_INVENTORY . " set inactive = '1' where sku = '$sku'");
 			}

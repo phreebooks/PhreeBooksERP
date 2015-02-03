@@ -451,7 +451,7 @@ class paymentech {
    */
   function remove() {
     global $admin;
-    $admin->DataBase->query("delete from " . TABLE_CONFIGURATION . " where configuration_key in ('" . implode("', '", $this->keys()) . "')");
+    $admin->DataBase->exec("delete from " . TABLE_CONFIGURATION . " where configuration_key in ('" . implode("', '", $this->keys()) . "')");
   }
   /**
    * Internal list of configuration keys used for configuration of the module

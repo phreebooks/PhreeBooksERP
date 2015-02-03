@@ -102,7 +102,7 @@ switch ($_REQUEST['action']) {
   	$id     = db_prepare_input($_GET['cID']);
 	$result = $admin->DataBase->query("select capa_num from " . TABLE_CAPA . " where id = " . $id);
 	if ($result->rowCount() == 0) throw new \core\classes\userException(CAPA_ERROR_CANNOT_DELETE);
-	$admin->DataBase->query("delete from " . TABLE_CAPA . " where id = " . $id);
+	$admin->DataBase->exec("delete from " . TABLE_CAPA . " where id = " . $id);
 	gen_add_audit_log(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_CORRECTIVE_ACTION_PREVENTATIVE_ACTION, $result->fields['capa_num']));
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('cID', 'action')), 'SSL'));
 	break;

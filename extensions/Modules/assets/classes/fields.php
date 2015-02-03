@@ -15,7 +15,7 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/assets/classes/fields.php
-// 
+//
 namespace assets\classes;
 class fields extends \core\classes\fields{
 	public  $help_path   = '07.04.05';
@@ -25,7 +25,7 @@ class fields extends \core\classes\fields{
 	public  $type_params = 'asset_type';
 	public  $extra_buttons = '';
 
-	public function __construct($sync = true){
+	public function __construct($sync = true, $asset_type = 'vh'){
   		gen_pull_language('assets');
   		$this->type_array[] = array('id' =>'vh', 'text' => TEXT_VEHICLE);
   		$this->type_array[] = array('id' =>'bd', 'text' => TEXT_BUILDING);
@@ -35,7 +35,7 @@ class fields extends \core\classes\fields{
   		$this->type_array[] = array('id' =>'ld', 'text' => TEXT_LAND);
   		$this->type_array[] = array('id' =>'sw', 'text' => TEXT_SOFTWARE);
 	 	$this->type_desc    = TEXT_ASSET_TYPE;
-    	parent::__construct($sync);
+    	parent::__construct($sync, $asset_type);
 	}
 }
 ?>

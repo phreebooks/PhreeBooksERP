@@ -54,7 +54,7 @@ if (!db_field_exists(TABLE_JOURNAL_MAIN, 'closed_date')) {
 	'USE_DEFAULT_LANGUAGE_CURRENCY',
   );
   foreach ($toBeRemoved as $value) {
-    $admin->DataBase->query("delete from " . TABLE_CONFIGURATION . " where configuration_key = '" . $value . "'");
+    $admin->DataBase->exec("delete from " . TABLE_CONFIGURATION . " where configuration_key = '" . $value . "'");
   }
   // change True's and False's to 1's and 0s
   $admin->DataBase->query("update " . TABLE_CONFIGURATION . " set configuration_value = '0'

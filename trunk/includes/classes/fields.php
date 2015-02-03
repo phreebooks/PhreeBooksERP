@@ -28,11 +28,12 @@ class fields {
     public  $extra_buttons  = '';
 	public  $extra_tab_html = '';
 
-	public function __construct($sync = true){
+	public function __construct($sync = true, $type = null){
 	  	$this->security_id = \core\classes\user::security_level(SECURITY_ID_CONFIGURATION);
 		require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
 	  	foreach ($_REQUEST as $key => $value) $this->$key = $value;
 	  	$this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
+	  	$this->type = $type;
 		if ($sync) $this->sync_fields($this->module, $this->db_table);
 	}
 
@@ -191,7 +192,7 @@ class fields {
 		$result = $admin->DataBase->query("SELECT * FROM ".TABLE_EXTRA_FIELDS." WHERE id=$id");
 		foreach ($result->fields as $key => $value) $this->$key = $value;
 		if ($this->tab_id == '0') throw new \core\classes\userException (INV_CANNOT_DELETE_SYSTEM); // don't allow deletion of system fields
-		$admin->DataBase->query("DELETE FROM ".TABLE_EXTRA_FIELDS." WHERE id=$this->id");
+		$admin->DataBase->exec("DELETE FROM ".TABLE_EXTRA_FIELDS." WHERE id=$this->id");
 		$admin->DataBase->query("ALTER TABLE $this->db_table DROP COLUMN $this->field_name");
 		gen_add_audit_log ($this->module.' '. TEXT_CUSTOM_FIELDS . ' - ' . TEXT_DELETE, "$id - $this->field_name");
 		return true;
@@ -441,40 +442,42 @@ class fields {
     return $sql_data_array;
   }
 
-  public function set_fields_to_display($type = null){
-  	global $admin, $cInfo;
-  	$tab_array = array();
-	$result = $admin->DataBase->query("select fields.tab_id, tabs.tab_name as tab_name, fields.description as description, fields.params as params, fields.group_by, fields.field_name, fields.entry_type from ".TABLE_EXTRA_FIELDS." as fields join ".TABLE_EXTRA_TABS." as tabs on (fields.tab_id = tabs.id) where fields.module_id='{$this->module}' order by tabs.sort_order asc, fields.group_by asc, fields.sort_order asc");
-  	while (!$result->EOF) {
-  		$tab_id = $result->fields['tab_id'];
-  		if (!in_array($tab_id, $tab_array)){
-  			if (!empty($tab_array)){
-  				$this->extra_tab_html .= '  </table>';
-	  			$this->extra_tab_html .= '</div>' . chr(10);
-  			}
-  			$tab_array[] = $tab_id;
-  			$this->extra_tab_html .= "<div title='{$result->fields['tab_name']}' id='tab_$tab_id'>" . chr(10);
-	  		$this->extra_tab_html .= '  <table>' . chr(10);
-  		}else if($previous_group <> $result->fields['group_by']){
-  			$this->extra_tab_html .= '<tr class="ui-widget-header" height="5px"><td colspan="2"></td></tr>' . chr(10);
-  		}
-	    $xtra_params = unserialize($result->fields['params']);
-	    if($this->type_params && !$type == null ){
-	    	$temp = explode(':',$xtra_params[$this->type_params]);
-	    	while ($value = array_shift($temp)){
-	    		if ($value == $type) {
-					$this->extra_tab_html .= $this->build_field($result->fields, $cInfo) . chr(10);
+  	/**
+  	 * displays form fields.
+  	 */
+  	public function display(){
+  		global $admin, $cInfo;
+  		$tab_array = array();
+		$sql = $admin->DataBase->prepare("SELECT fields.tab_id, tabs.tab_name as tab_name, fields.description as description, fields.params as params, fields.group_by, fields.field_name, fields.entry_type FROM ".TABLE_EXTRA_FIELDS." AS fields JOIN ".TABLE_EXTRA_TABS." AS tabs ON (fields.tab_id = tabs.id) WHERE fields.module_id='{$this->module}' ORDER BY tabs.sort_order ASC, fields.group_by ASC, fields.sort_order ASC");
+		$sql->excecute();
+		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+  			if (!in_array($result['tab_id'], $tab_array)){
+  				if (!empty($tab_array)){
+  					$this->extra_tab_html .= '  </table>';
+	  				$this->extra_tab_html .= '</div>' . chr(10);
+  				}
+	  			$tab_array[] = $result['tab_id'];
+	  			$this->extra_tab_html .= "<div title='{$result['tab_name']}' id='tab_{$result['tab_id']}'>" . chr(10);
+		  		$this->extra_tab_html .= '  <table>' . chr(10);
+	  		}else if($previous_group <> $result['group_by']){
+	  			$this->extra_tab_html .= '<tr class="ui-widget-header" height="5px"><td colspan="2"></td></tr>' . chr(10);
+	  		}
+		    $xtra_params = unserialize($result['params']);
+		    if($this->type_params && !$this->type == null ){
+		    	$temp = explode(':',$xtra_params[$this->type_params]);
+		    	while ($value = array_shift($temp)){
+		    		if ($value == $this->type) {
+						$this->extra_tab_html .= $this->build_field($result, $cInfo) . chr(10);
+					}
 				}
-			}
-	    }else{
-	    	$this->extra_tab_html .= $this->build_field($result->fields, $cInfo) . chr(10);
-	    }
-	    $previous_group = $result->fields['group_by'];
-		$result->MoveNext();
-	}
-	$this->extra_tab_html .= '  </table>';
-	$this->extra_tab_html .= '</div>' . chr(10);
-  }
+		    }else{
+		    	$this->extra_tab_html .= $this->build_field($result, $cInfo) . chr(10);
+		    }
+		    $previous_group = $result['group_by'];
+		}
+		$this->extra_tab_html .= '  </table>';
+		$this->extra_tab_html .= '</div>' . chr(10);
+	  }
 
   	/**
    	 * this function returns the fields that shouldn't be displayed for that type.

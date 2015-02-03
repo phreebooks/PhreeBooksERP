@@ -53,7 +53,7 @@ function modify_account_history_records($id, $add_acct = true) {
 	  }
 	}
   } else {
-	$result = $admin->DataBase->query("delete from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '" . $id . "'");
+	$result = $admin->DataBase->exec("delete from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '" . $id . "'");
   }
 }
 

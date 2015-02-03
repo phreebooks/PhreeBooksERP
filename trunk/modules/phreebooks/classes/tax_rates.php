@@ -57,7 +57,7 @@ class tax_rates {
 	// Check for this rate as part of a journal entry, if so do not delete
 	// Since tax rates are not used explicitly, they can be deleted at any time.
 	$result = $admin->DataBase->query("select description_short from " . $this->db_table . " where tax_rate_id = '" . $id . "'");
-    $admin->DataBase->query("delete from " . $this->db_table . " where tax_rate_id = '" . $id . "'");
+    $admin->DataBase->exec("delete from " . $this->db_table . " where tax_rate_id = '" . $id . "'");
 	gen_add_audit_log(TEXT_TAX_RATE . " - " . TEXT_DELETE, $result->fields['description_short']);
 	return true;
   }

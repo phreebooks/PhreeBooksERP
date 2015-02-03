@@ -35,7 +35,7 @@ switch ($_REQUEST['action']) {
 	if ($result->rowCount() > 0) {
 	  $ajax_text = DOC_CTL_DIR_NOT_EMPTY;
 	} else {
-	  $admin->DataBase->query("delete from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
+	  $admin->DataBase->exec("delete from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
 	  $id = $dir_details->fields['parent_id']; // set the id to the parent to display refreshed page
 	  $ajax_text = DOC_CTL_DIR_DELETED;
 	}

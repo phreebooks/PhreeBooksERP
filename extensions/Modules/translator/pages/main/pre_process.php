@@ -154,7 +154,7 @@ switch ($_REQUEST['action']) {
 		break;
   	case 'delete':
 		$pieces = explode(':', $_POST['rowSeq']);
-		$admin->DataBase->query("delete from " . TABLE_TRANSLATOR . "
+		$admin->DataBase->exec("delete from " . TABLE_TRANSLATOR . "
 	  	  where module = '" . $pieces[0] . "' and language = '" . $pieces[1] . "' and version = '" . $pieces[2] . "'");
 		$_REQUEST['action'] = '';
 		break;

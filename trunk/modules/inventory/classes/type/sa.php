@@ -86,7 +86,7 @@ class sa extends \inventory\classes\inventory {//Serialized Assembly
 	function remove(){
 		global $admin;
 		parent::remove();
-		$admin->DataBase->query("delete from " . TABLE_INVENTORY_ASSY_LIST . " where sku = '" . $this->sku . "'");
+		$admin->DataBase->exec("delete from " . TABLE_INVENTORY_ASSY_LIST . " where sku = '" . $this->sku . "'");
 	}
 
 	function save(){
@@ -115,7 +115,7 @@ class sa extends \inventory\classes\inventory {//Serialized Assembly
 		$result = $admin->DataBase->query("select last_journal_date, quantity_on_hand  from " . TABLE_INVENTORY . " where id = " . $this->id);
 		$this->allow_edit_bom = (($result->fields['last_journal_date'] == '0000-00-00 00:00:00' || $result->fields['last_journal_date'] == '') && ($result->fields['quantity_on_hand'] == 0|| $result->fields['quantity_on_hand'] == '')) ? true : false;
 	  	if ($this->allow_edit_bom == true) { // only update if no posting has been performed
-	  		$result = $admin->DataBase->query("delete from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = " . $this->id);
+	  		$result = $admin->DataBase->exec("delete from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = " . $this->id);
 			while ($list_array = array_shift($bom_list)) {
 				unset($list_array['item_cost']);
 				unset($list_array['full_price']);

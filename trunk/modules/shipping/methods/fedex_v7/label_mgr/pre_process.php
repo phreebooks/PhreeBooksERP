@@ -181,7 +181,7 @@ switch ($_REQUEST['action']) {
 	}
 	$shipments->MoveNext();
 	// delete log since deleting label from FedEx is just a courtesy
-	$admin->DataBase->query("delete from " . TABLE_SHIPPING_LOG . " where shipment_id = " . $shipment_id);
+	$admin->DataBase->exec("delete from " . TABLE_SHIPPING_LOG . " where shipment_id = " . $shipment_id);
 	gen_add_audit_log(TEXT_LABEL_DELETED, $shipment_id);
 	break;
 

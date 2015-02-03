@@ -236,7 +236,7 @@ class currencies {
 		$result = $admin->DataBase->query("select code, title from {$this->db_table} where currencies_id = '$id'");
 		$test_1 = $admin->DataBase->query("select id from " . TABLE_JOURNAL_MAIN . " where currencies_code = '{$result->fields['code']}' limit 1");
 		if ($test_1->rowCount() > 0) throw new \core\classes\userException(ERROR_CURRENCY_DELETE_IN_USE);
-		$admin->DataBase->query("delete from {$this->db_table} where currencies_id = '$id'");
+		$admin->DataBase->exec("delete from {$this->db_table} where currencies_id = '$id'");
 		gen_add_audit_log(TEXT_CURRENCIES . ' - ' . TEXT_DELETE, $result->fields['title']);
 		return true;
 	}

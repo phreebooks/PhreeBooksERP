@@ -56,7 +56,7 @@ class other_transactions {
   		\core\classes\user::validate_security($this->security_id, 4);
 		// 	OK to delete
 		$result = $admin->DataBase->query("select description from " . $this->db_table . " where ot_id = '$id'");
-		$admin->DataBase->query("delete from " . $this->db_table . " where ot_id = '$id'");
+		$admin->DataBase->exec("delete from " . $this->db_table . " where ot_id = '$id'");
 		gen_add_audit_log(TEXT_OTHER_TRANSACTION ." - " . TEXT_DELETE, $result->fields['description']);
 		return true;
   	}

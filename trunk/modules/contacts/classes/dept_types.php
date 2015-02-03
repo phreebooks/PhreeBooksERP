@@ -55,7 +55,7 @@ class dept_types {
 	}
 	// OK to delete
 	$result = $admin->DataBase->query("select description from " . $this->db_table . " where id = '" . $this->id . "'");
-	$admin->DataBase->query("delete from " . $this->db_table . " where id = '" . $this->id . "'");
+	$admin->DataBase->exec("delete from " . $this->db_table . " where id = '" . $this->id . "'");
 	gen_add_audit_log(TEXT_DEPARTMENT_TYPE . ' - ' . TEXT_DELETE, $result->fields['description']);
 	return true;
   }

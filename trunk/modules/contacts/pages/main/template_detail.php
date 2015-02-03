@@ -46,7 +46,7 @@ if (count($extra_toolbar_buttons) > 0) {
 // add the help file index and build the toolbar
 if( !$basis->cInfo->contact->help == '' ) $basis->toolbar->add_help($basis->cInfo->contact->help);
 echo $basis->toolbar->build();
-$fields->set_fields_to_display($basis->cInfo->contact->type); //@todo
+$basis->cInfo->contact->fields->display();
 // Build the page
 
 $custom_path = DIR_FS_MODULES . 'contacts/custom/pages/main/extra_tabs.php';
@@ -69,7 +69,7 @@ if (isset($extra_contact_tabs) && is_array($extra_contact_tabs)) {
     if (file_exists($file_path)) { require($file_path);	}
   }
 }
-echo $fields->extra_tab_html;// user added extra tabs
+echo $basis->cInfo->contact->fields->extra_tab_html;// user added extra tabs
 ?>
 </div>
 </form>
