@@ -55,7 +55,7 @@
 			<td align="right">
 			  <?php
 		  	    echo html_icon('actions/view-fullscreen.png',   TEXT_MOVE,   'small', 'style="cursor:move"', '', '', 'move_table_' . $i) . chr(10);
-				echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'class="delete"');
+				echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\''.TEXT_DELETE_ENTRY.'\')) $(this).parent().parent().remove();"');
 			  ?>
 			</td>
 		  </tr>

@@ -358,7 +358,7 @@ function buildRow(idTable, rIndex, boxID) {
 	  cell[7]  = '<?php echo str_replace("'", "\'", html_pull_down_menu('fld_tot[]',  $nyChoice)); ?>';
 	  cell[8]  = '<?php echo str_replace("'", "\'", html_pull_down_menu('fld_algn[]', $kFontAlign)); ?>';
 	  temp     = '<?php echo str_replace("'", "\'", html_icon('actions/view-fullscreen.png',   TEXT_MOVE,   'small', 'style="cursor:move"', '', '', 'move_fld_row_TBD')); ?>';
-	  temp    += '<?php echo str_replace("'", "\'", html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\''.TEXT_DELETE_ENTRY.'\')) $(this).parent().parent().remove();" onclick="calculateWidth();"')); ?>';
+	  temp    += '<?php echo str_replace("'", "\'", html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\''.TEXT_DELETE_ENTRY.'\')) $(this).parent().parent().remove(); calculateWidth();"')); ?>';
 	  cell[9]  = temp.replace(/row_TBD/g, rowCnt);
 	  attr[4]  = 'center';
 	  attr[9]  = 'right';
