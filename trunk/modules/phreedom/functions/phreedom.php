@@ -309,7 +309,7 @@ function build_sample_csv($structure, $db_table) {
 	foreach ($table->Field as $field) {
 	  if ($field->CanImport) {
 	    $req = ($field->Required) ? ('[' . TEXT_REQUIRED . '] '): '';
-	    $output .= $field->TagName . ', '; 
+	    $output .= $field->TagName . ','; 
 	    $legend .= '"' . $field->TagName . ': (' . $field->Type . ') - ' . $req . $field->Description . '"' . chr(10);
 	  }
 	}
@@ -321,7 +321,7 @@ function build_sample_csv($structure, $db_table) {
 		  foreach ($working->Field as $field) {
 	        if ($field->CanImport) {
 			  $req = ($field->Required) ? ('[' . TEXT_REQUIRED . '] '): '';
-	          $output .= $field->TagName . '_' . $i .', '; 
+	          $output .= $field->TagName . '_' . $i .','; 
 	          if ($i == 1) $legend .= '"' . $field->TagName . '_X: (' . $field->Type . ') - ' . $req . $field->Description . '"' . chr(10);
 	        }
 		  }
@@ -425,16 +425,19 @@ function table_import_csv($structure, $db_table, $filename) {
 	}
 	foreach ($sql_array as $table => $count) {
 	  foreach ($count as $cnt => $table_array) {
-//echo "inserting to table $table data: ".print_r($table_array, true).'<br>';
 	    if ($cnt == 0) { // main record, fetch id afterwards
-	      if (sizeof($table_array) > 0) db_perform(DB_PREFIX . $table, $table_array, 'insert');
+	      if (sizeof($table_array) > 0) {
+//echo "inserting main record to table $table data: ".print_r($table_array, true).'<br>';
+	      	db_perform(DB_PREFIX . $table, $table_array, 'insert');
+	      }
 		  $id = db_insert_id();
 		} else { // dependent table 
 		  $data_present = false;
 		  foreach ($table_array as $value) if (gen_not_null($value)) $data_present = true;
 		  if ($data_present) {
-		    $table_array[$ref_mapping[$table]['ref_field']] = $value;
-	        db_perform(DB_PREFIX . $table, $table_array, 'insert');
+		  	$table_array[$ref_mapping[$table]['ref_field']] = $id;
+//echo "inserting main record to table $table data: ".print_r($table_array, true).'<br>';
+		  	db_perform(DB_PREFIX . $table, $table_array, 'insert');
 		  }
 		}
 	  }

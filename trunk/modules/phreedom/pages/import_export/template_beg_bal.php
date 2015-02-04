@@ -48,7 +48,7 @@ echo $toolbar->build_toolbar();
 		<?php $i = 0;
 		foreach ($glEntry->beg_bal as $coa_id => $values) { ?>
 		  <tr>
-			<td align="center"><?php echo $coa_id . ' ' . $values['beg_bal']; ?></td>
+			<td align="center"><?php echo $coa_id; ?></td>
 			<td><?php echo htmlspecialchars($values['desc']); ?></td>
 			<td><?php echo $values['type_desc']; ?></td>
 		  <?php if ($coa_types[$values['type']]['asset']) { ?>

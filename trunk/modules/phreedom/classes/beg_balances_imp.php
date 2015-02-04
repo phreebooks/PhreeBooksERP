@@ -119,6 +119,7 @@ class beg_bal_import {
 	  $glEntry->ship_short_name     = $order['account_id'];
 	  $glEntry->gl_acct_id          = $order['gl_acct'];
 	  $glEntry->total_amount        = $order['total_amount'];
+	  $glEntry->currencies_code     = DEFAULT_CURRENCY;
 	  $glEntry->purchase_invoice_id = $order['order_id'];
 	  $glEntry->admin_id            = $_SESSION['admin_id'];	// set imported dept rep id to current logged in user
 	  if ($order['waiting']) $glEntry->waiting = '1';
@@ -194,7 +195,7 @@ class beg_bal_import {
 				'description'  => constant('ORD_TEXT_' . JOURNAL_ID . '_WINDOW_TITLE') . '-' . TEXT_IMPORT,
 				'gl_account'   => $order['inv_gl_acct'],
 				'taxable'      => $order['taxable'] ? $order['taxable'] : 0,
-				$credit_debit  => $currencies->clean_value($order['total_amount']),
+				$credit_debit  => $order['total_amount'],
 				'post_date'    => $order['post_date'],
 			);
 			break;
@@ -220,7 +221,7 @@ class beg_bal_import {
 		  'description' => constant('ORD_TEXT_' . $glEntry->journal_id . '_WINDOW_TITLE') . '-' . TEXT_TOTAL,
 		  'gl_account'  => $order['gl_acct'],
 		  $debit_credit => $total_amount,
-		  'post_date'   => $post_date,
+		  'post_date'   => $order['post_date'],
 		);
 		$glEntry->journal_main_array['total_amount'] = $total_amount;
 		if (!$glEntry->Post('insert')) return false;
