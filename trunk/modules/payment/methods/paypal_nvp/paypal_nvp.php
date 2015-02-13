@@ -229,8 +229,8 @@ class paypal_nvp extends payment {
     }
 
 // FOR TEST PURPOSES
-$messageStack->add('Test transaction complete!', 'success');
-return false;
+//$messageStack->add('Test transaction complete!', 'success');
+//return false;
 // END FOR TEST
 
 	// Execute the API operation; see the PPHttpPost function above.
