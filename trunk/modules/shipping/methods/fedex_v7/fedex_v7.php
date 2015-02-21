@@ -241,7 +241,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 //								FEDEX RATE AND SERVICE REQUEST
 // ***************************************************************************************************************
   function quote($pkg) {
-	global $messageStack, $currencies;
+	global $messageStack;
 	if ($pkg->pkg_weight == 0) throw new \core\classes\userException(TEXT_SHIPMENT_WEIGHT_CANNOT_BE_ZERO);
 	if ($pkg->ship_to_postal_code == '') throw new \core\classes\userException(SHIPPING_FEDEX_V7_ERROR_POSTAL_CODE);
 
@@ -285,7 +285,7 @@ class fedex_v7 extends \shipping\classes\shipping {
   }
 
   function queryFedEx($client, $pkg, $user_choices, $num_packages, $ltl = false) {
-	global $messageStack, $currencies;
+	global $messageStack;
 	$arrRates = array();
 	$request = $this->FormatFedExRateRequest($pkg, $num_packages, $ltl);
 //if ($ltl) { echo 'FedEx Express XML Submit String:<br />'; print_r($request); echo '<br />'; }
@@ -608,7 +608,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 	}
 
 	function FormatFedExShipRequest($pkg, $key) {
-		global $ZONE001_DEFINES, $debug, $currencies;
+		global $ZONE001_DEFINES, $debug, $admin;
 		// process different for freight than express
 		$is_freight = (in_array($pkg->ship_method, array('GndFrt','EcoFrt')) && MODULE_SHIPPING_FEDEX_V7_LTL_ACCOUNT_NUMBER) ? true : false;
 		$request['WebAuthenticationDetail'] = array(
@@ -715,7 +715,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 				'PaymentType'          => 'PREPAID', // $pkg->bill_charges // valid values are COLLECT and PREPAID
 				'CollectTermsType'     => 'STANDARD',
 				'DeclaredValuePerUnit' => array(
-					'Amount'   => $currencies->clean_value($pkg->package[$key]['value']),
+					'Amount'   => $admin->currencies->clean_value($pkg->package[$key]['value']),
 					'Currency' => 'USD',
 				),
 //				'LiabilityCoverageDetail' => array(
@@ -783,7 +783,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 			$request['RequestedShipment']['RequestedPackageLineItems'] = array(
 			  'SequenceNumber' => $key + 1,
 			  'InsuredValue' => array(
-				'Amount'   => $currencies->clean_value($pkg->package[$key]['value']),
+				'Amount'   => $admin->currencies->clean_value($pkg->package[$key]['value']),
 				'Currency' => 'USD',
 			  ),
 			  'Weight' => array(
@@ -1040,7 +1040,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 	}
 
 	function FormatFedExTrackRequest($tracking_id = '') {
-		global $debug, $currencies;
+		global $debug;
 		if (!$tracking_id) throw new \core\classes\userException("the tracking id is empty");
 		$request = array();
 		$request['WebAuthenticationDetail'] = array(
@@ -1169,7 +1169,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 // This function takes a csv file downloaded for FedEx and processes reconciles the invoice to the shippping log
 // The format must be from the Invoice Summary format found on the Download Invoice link from FedEx My Account.
   function reconcileInvoice() {
-	global $admin, $messageStack, $currencies;
+	global $admin, $messageStack;
 	$reconciled = array();
 	$count      = 0;
 	// first verify the file was uploaded ok

@@ -29,7 +29,7 @@ class phreebooks extends parser {
   function submitXML($action, $data = '') {
 	global $db, $messageStack;
 	switch ($action) {
-	  case 'download': 
+	  case 'download':
 		$strXML = $this->buildOrderDownloadXML($data);
 		$strXML = utf8_encode($strXML);
 //echo 'Zencart order array = '; print_r($data); echo '<br>';
@@ -50,17 +50,17 @@ class phreebooks extends parser {
 			// insert a new status in the order status table
 			$pb_orders = explode(',', $this->close);
 			if (is_array($pb_orders)) foreach ($pb_orders as $value) {
-			  $db->Execute("insert into " . TABLE_ORDERS_STATUS_HISTORY . " set 
-			    orders_id = '" . trim($value) . "', 
-			    orders_status_id = " . MODULE_PHREEBOOKS_ORDER_DOWNLOAD_ORDER_STATUS . ", 
-			    date_added = now(), 
-			    customer_notified = '0', 
+			  $db->Execute("insert into " . TABLE_ORDERS_STATUS_HISTORY . " set
+			    orders_id = '" . trim($value) . "',
+			    orders_status_id = " . MODULE_PHREEBOOKS_ORDER_DOWNLOAD_ORDER_STATUS . ",
+			    date_added = now(),
+			    customer_notified = '0',
 			    comments = '" . 'Order is in process.' . "'");
 			}
 			// update the status in the orders table
-			$db->Execute("update " . TABLE_ORDERS . " set 
+			$db->Execute("update " . TABLE_ORDERS . " set
 			  orders_status = " . MODULE_PHREEBOOKS_ORDER_DOWNLOAD_ORDER_STATUS . ",
-			  last_modified = now() 
+			  last_modified = now()
 			  where orders_id in (" . $this->close . ")");
 		  }
 		  $messageStack->add(sprintf('Orders successfully downloaded to PhreeBooks: %s', $this->close), 'success');
@@ -207,10 +207,10 @@ class phreebooks extends parser {
   }
 
   function clean_value($number, $currency_type = DEFAULT_CURRENCY) {
-	global $currencies;
+	global $admin;
 	// converts the number to standard float format (period as decimal, no thousands separator)
-	$temp  = str_replace($currencies->currencies[$currency_type]['thousands_point'], '', trim($number));
-	$value = str_replace($currencies->currencies[$currency_type]['decimal_point'], '.', $temp);
+	$temp  = str_replace($admin->currencies->currencies[$currency_type]['thousands_point'], '', trim($number));
+	$value = str_replace($admin->currencies->currencies[$currency_type]['decimal_point'], '.', $temp);
 	$value = ereg_replace("[^-0-9.]", "", $value);
 	return $value;
   }

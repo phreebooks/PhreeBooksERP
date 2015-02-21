@@ -66,7 +66,7 @@ echo $toolbar->build($add_search = true, $add_period = true,  $cal_date);
 	  	case  7: $closed = $query_result->fields['waiting']; break;
 	  }
 	  $purch_order_id = ($query_result->fields['so_po_ref_id']) ? ord_get_so_po_num($query_result->fields['so_po_ref_id']): '';
-	  $total_amount   = $currencies->format_full($query_result->fields['total_amount'], true, $query_result->fields['currencies_code'], $query_result->fields['currencies_value']);
+	  $total_amount   = $admin->currencies->format_full($query_result->fields['total_amount'], true, $query_result->fields['currencies_code'], $query_result->fields['currencies_value']);
 	  if (ENABLE_MULTI_CURRENCY) $total_amount .= ' (' . $query_result->fields['currencies_code'] . ')';
 ?>
   <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer" onclick="setReturnOrdr(<?php echo $query_result->fields['id']; ?>, false)">

@@ -24,7 +24,7 @@
     echo '    <legend>' . TEXT_SHIPPING_ADDRESSES . '</legend>';
     echo "    <table id='{$basis->cInfo->contact->type}s_address_form' class='ui-widget' style='border-style:none;width:100%;'>";
     echo '      <tr><td>' . ACT_SHIPPING_MESSAGE . '</td></tr>';
-    echo $basis->cInfo->contact->draw_address_fields($basis->cInfo->contact->type.'s', true);
+    $basis->cInfo->contact->draw_address_fields($basis->cInfo->contact->type.'s', true, false, false, false);
     echo '    </table>';
     echo '  </fieldset>';
   }
@@ -33,7 +33,7 @@
     echo '  <legend>' . TEXT_BILLING_ADDRESSES . '</legend>';
     echo "  <table id='{$basis->cInfo->contact->type}b_address_form' class='ui-widget' style='border-collapse:collapse;width:100%;'>";
     echo '    <tr><td>' . ACT_BILLING_MESSAGE . '</td></tr>';
-    echo $basis->cInfo->contact->draw_address_fields($basis->cInfo->contact->type.'b', true);
+    $basis->cInfo->contact->draw_address_fields($basis->cInfo->contact->type.'b', true, false, false, false);
     echo '  </table>';
     echo '</fieldset>';
 ?>

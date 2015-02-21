@@ -48,7 +48,7 @@ echo $toolbar->build($add_search = true, $add_periods = true);
 	  <td><?php echo $query_result->fields['store_id'] ? gen_get_contact_name($query_result->fields['store_id']) : COMPANY_ID; ?></td>
 	<?php } ?>
 	<td><?php echo $query_result->fields['purchase_invoice_id']; ?></td>
-	<td><?php echo $currencies->format($query_result->fields['total_amount']); ?></td>
+	<td><?php echo $admin->currencies->format($query_result->fields['total_amount']); ?></td>
 	<td><?php echo substr(fetch_item_description($query_result->fields['id']), 0, 32); ?></td>
   </tr>
 <?php

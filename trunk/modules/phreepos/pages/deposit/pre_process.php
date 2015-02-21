@@ -88,7 +88,7 @@ switch ($_REQUEST['action']) {
 	$order->shipper_code        = db_prepare_input($_POST['shipper_code']);  // store payment method in shipper_code field
 	$order->purch_order_id      = db_prepare_input($_POST['purch_order_id']);  // customer PO/Ref number
 	$order->description         = sprintf(TEXT_ARGS_ENTRY, JOURNAL_ID==18 ? TEXT_CUSTOMER_DEPOSITS: TEXT_VENDOR_DEPOSITS);
-	$order->total_amount        = $currencies->clean_value(db_prepare_input($_POST['total']), DEFAULT_CURRENCY);
+	$order->total_amount        = $admin->currencies->clean_value(db_prepare_input($_POST['total']), DEFAULT_CURRENCY);
 	$order->gl_acct_id          = $gl_acct_id;
 	$order->payment_id          = db_prepare_input($_POST['payment_id']);
 	$order->save_payment        = isset($_POST['save_payment']) ? true : false;
@@ -100,17 +100,17 @@ switch ($_REQUEST['action']) {
 	  'pstd'      => '1',
 	  'sku'       => '',
 	  'desc'      => db_prepare_input($_POST['desc_1']),
-	  'price'     => $currencies->clean_value(db_prepare_input($_POST['total_1'])),
+	  'price'     => $admin->currencies->clean_value(db_prepare_input($_POST['total_1'])),
 	  'full'      => $full_price,
 	  'acct'      => db_prepare_input($_POST['acct_1']),
-	  'total'     => $currencies->clean_value(db_prepare_input($_POST['total_1'])),
+	  'total'     => $admin->currencies->clean_value(db_prepare_input($_POST['total_1'])),
 	);
 	// load the payments
 	switch (JOURNAL_ID) {
 	  case 18:
 	  	$pmt_meth = db_prepare_input($_POST['shipper_code']);
 	    $admin->classes['payment']->methods[$pmt_meth]->pre_confirmation_check();
-		$pmt_amt  = $currencies->clean_value(db_prepare_input($_POST['pmt_' . $x]), $order->currencies_code) / $order->currencies_value;
+		$pmt_amt  = $admin->currencies->clean_value(db_prepare_input($_POST['pmt_' . $x]), $order->currencies_code) / $order->currencies_value;
 		$tot_paid += $pmt_amt;
 		$order->pmt_rows[] = array(
 		  'meth' => $pmt_meth,
@@ -160,13 +160,13 @@ switch ($_REQUEST['action']) {
 	  $order->admin_id            = $_SESSION['admin_id'];
 	  $order->purch_order_id      = db_prepare_input($_POST['purch_order_id']);  // customer PO/Ref number
 	  $order->description         = sprintf(TEXT_ARGS_ENTRY, $journal_types_list[$order->journal_id]['text']);
-	  $order->total_amount        = $currencies->clean_value(db_prepare_input($_POST['total']), DEFAULT_CURRENCY);
+	  $order->total_amount        = $admin->currencies->clean_value(db_prepare_input($_POST['total']), DEFAULT_CURRENCY);
 	  $order->gl_acct_id          = (JOURNAL_ID == 18) ? AR_DEFAULT_GL_ACCT : AP_DEFAULT_PURCHASE_ACCOUNT;
 	  $order->item_rows[0] = array(
 		'pstd'  => '1',
 		'id'    => '',
 		'desc'  => db_prepare_input($_POST['desc_1']),
-		'total' => $currencies->clean_value(db_prepare_input($_POST['total_1'])),
+		'total' => $admin->currencies->clean_value(db_prepare_input($_POST['total_1'])),
 		'acct'  => db_prepare_input($_POST['acct_1']),
 	  );
 	  $post_credit = $order->post_ordr($_REQUEST['action']);

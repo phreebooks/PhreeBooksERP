@@ -14,5 +14,16 @@ class outputJson implements \SplObserver{
 		}
 
 	}
+
+	/**
+	 * returns the current template
+	 * @return string
+	 */
+	function get_template(){
+		if (empty($this->include_template) || $this->include_template == '' ){
+			return DIR_FS_ADMIN .'modules/phreedom/pages/main/template_main.php';
+		}
+		return $this->include_template;
+	}
 }
 ?>

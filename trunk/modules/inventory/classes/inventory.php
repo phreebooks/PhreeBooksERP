@@ -334,7 +334,7 @@ class inventory {
 
 	// this is the general save function.
 	function save() {
-		global $admin, $currencies, $fields;
+		global $admin, $fields;
 	    $sql_data_array = $fields->what_to_save();
 	    // handle the checkboxes
 	    $sql_data_array['inactive'] = isset($_POST['inactive']) ? $_POST['inactive'] : '0'; // else unchecked
@@ -436,7 +436,7 @@ class inventory {
 	}
 
 	function store_purchase_array(){
-		global $admin, $currencies;
+		global $admin;
 		$lowest_cost = isset($this->item_cost) ? $this->item_cost : 99999999999;
 		$this->backup_purchase_array = array();
 		$result = $admin->DataBase->query("SELECT * FROM ".TABLE_INVENTORY_PURCHASE." WHERE sku='$this->sku'");
@@ -456,7 +456,7 @@ class inventory {
 		$i = 0;
 		if($_POST['vendor_id_array']) foreach ($_POST['vendor_id_array'] as $key => $value) {
 			$sql_data_array = array ();
-			if($_POST['vendor_id_array'][$key] == '' && $_POST['description_purchase_array'][$key] == '' && $currencies->clean_value($_POST['item_cost_array'][$key]) == 0) break;
+			if($_POST['vendor_id_array'][$key] == '' && $_POST['description_purchase_array'][$key] == '' && $admin->currencies->clean_value($_POST['item_cost_array'][$key]) == 0) break;
 			$sql_data_array['sku'] = $this->sku;
 			$this->purchase_array[$i]['id']	= isset($_POST['row_id_array'][$key]) ? $_POST['row_id_array'][$key] : '';
 			if(isset($_POST['vendor_id_array'][$key])) {
@@ -468,8 +468,8 @@ class inventory {
 				$this->purchase_array[$i]['description_purchase']	= $_POST['description_purchase_array'][$key];
 			}
 			if(isset($_POST['item_cost_array'][$key])) {
-				$sql_data_array['item_cost']	 				= $currencies->clean_value($_POST['item_cost_array'][$key]);
-				$this->purchase_array[$i]['item_cost']	 			= $currencies->clean_value($_POST['item_cost_array'][$key]);
+				$sql_data_array['item_cost']	 				= $admin->currencies->clean_value($_POST['item_cost_array'][$key]);
+				$this->purchase_array[$i]['item_cost']	 			= $admin->currencies->clean_value($_POST['item_cost_array'][$key]);
 			}
 			if(isset($_POST['purch_package_quantity_array'][$key])){
 				$sql_data_array['purch_package_quantity']		= $_POST['purch_package_quantity_array'][$key];

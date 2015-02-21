@@ -448,7 +448,7 @@ class orders extends \core\classes\journal {
   }
 
   function add_tax_journal_rows($debit_credit) {
-    global $currencies;
+    global $admin;
 	if ($debit_credit == 'debit' || $debit_credit == 'credit') {
 	  $total          = 0;
 	  $auth_array     = array();
@@ -468,7 +468,7 @@ class orders extends \core\classes\journal {
 				}
 //				this is wrong this is rounding per orderline not per tax auth. moved this to the next foreach.
 //				if (ROUND_TAX_BY_AUTH) {
-//				  $auth_array[$auth] += number_format(($tax_auths[$auth]['tax_rate'] / 100) * $line_total, $currencies->currencies[DEFAULT_CURRENCY]['decimal_places'], '.', '');
+//				  $auth_array[$auth] += number_format(($tax_auths[$auth]['tax_rate'] / 100) * $line_total, $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places'], '.', '');
 //				} else {
 				  $auth_array[$auth] += ($tax_auths[$auth]['tax_rate'] / 100) * $line_total;
 //				}
@@ -481,7 +481,7 @@ class orders extends \core\classes\journal {
 	  foreach ($auth_array as $auth => $auth_tax_collected) {
 		if ($auth_tax_collected == '' && $tax_auths[$auth]['account_id'] == '') continue;
 		if( ROUND_TAX_BY_AUTH == true ){
-			$amount = number_format($auth_tax_collected, $currencies->currencies[DEFAULT_CURRENCY]['decimal_places'], '.', '');
+			$amount = number_format($auth_tax_collected, $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places'], '.', '');
 		}else {
 			$amount = $auth_tax_collected;
 		}

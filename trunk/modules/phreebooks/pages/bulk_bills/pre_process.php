@@ -62,11 +62,11 @@ switch ($_REQUEST['action']) {
 			  if (isset($_POST['pay_' . $i])) {
 			    $payment_list[$_POST['bill_acct_id_' . $i]][] = array(
 				  'id'    => $_POST['id_' . $i],
-				  'amt'   => $currencies->clean_value($_POST['amt_' . $i]),
+				  'amt'   => $admin->currencies->clean_value($_POST['amt_' . $i]),
 				  'desc'  => $_POST['desc_' . $i],
-				  'dscnt' => $currencies->clean_value($_POST['dscnt_' . $i]),
-				  'total' => $currencies->clean_value($_POST['total_' . $i]),
-				  'acct'  => $currencies->clean_value($_POST['acct_' . $i]),
+				  'dscnt' => $admin->currencies->clean_value($_POST['dscnt_' . $i]),
+				  'total' => $admin->currencies->clean_value($_POST['total_' . $i]),
+				  'acct'  => $admin->currencies->clean_value($_POST['acct_' . $i]),
 				  'inv'   => $_POST['inv_' . $i],
 				);
 			  }

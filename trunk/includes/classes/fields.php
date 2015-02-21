@@ -38,7 +38,7 @@ class fields {
 	}
 
   function btn_save($id = '') {
-  	global $admin, $currencies;
+  	global $admin;
   	\core\classes\user::validate_security($this->security_id, 2); // security check
     // clean out all non-allowed values and then check if we have a empty string
 	$this->field_name   = preg_replace("[^A-Za-z0-9_]", "", $this->field_name);
@@ -100,7 +100,7 @@ class fields {
 	  case 'decimal':
 		$params['select']  = db_prepare_input($_POST['decimal_range']);
 		$params['display'] = db_prepare_input($_POST['decimal_display']);
-		$params['default'] = $currencies->clean_value(db_prepare_input($_POST['decimal_default']));
+		$params['default'] = $admin->currencies->clean_value(db_prepare_input($_POST['decimal_default']));
 		switch ($params['select']) {
 			case "0":
 				$values['entry_type'] = 'float(' . $params['display'] . ')';
@@ -239,7 +239,7 @@ class fields {
   }
 
   function build_form_html($action, $id = '') {
-    global $admin, $currencies, $integer_lengths, $decimal_lengths, $check_box_choices;
+    global $admin, $integer_lengths, $decimal_lengths, $check_box_choices;
 	if ($action <> 'new') {
 	   $result = $admin->DataBase->query("select * from ".TABLE_EXTRA_FIELDS." where id='$this->id'");
 	   $params = unserialize($result->fields['params']);
@@ -262,7 +262,7 @@ class fields {
 	  	        break;
 	       case 'decimal':
 	       	    $this->decimal_range   = $this->select;
-	  	        $this->decimal_default = number_format($this->default, $this->display, $currencies->currencies[DEFAULT_CURRENCY]['decimal_point'], $currencies->currencies[DEFAULT_CURRENCY]['thousands_point']);
+	  	        $this->decimal_default = number_format($this->default, $this->display, $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_point'], $admin->currencies->currencies[DEFAULT_CURRENCY]['thousands_point']);
 	  	        $this->decimal_display = $this->display;
 	  	        break;
 	       case 'integer':
@@ -407,7 +407,7 @@ class fields {
    */
 
   public function what_to_save(){
-  	global $admin, $currencies;
+  	global $admin;
   	$sql_data_array = array();
     $xtra_db_fields = $admin->DataBase->query("select field_name, entry_type, params, required, field_name
       from " . TABLE_EXTRA_FIELDS . " where module_id='{$this->module}'");
@@ -435,7 +435,7 @@ class fields {
             $sql_data_array[$field_name] = ($sql_data_array[$field_name]) ? gen_db_date($sql_data_array[$field_name]) : '';
         }
     	if ($xtra_db_fields->fields['entry_type'] == 'decimal') {
-            $sql_data_array[$field_name] = ($sql_data_array[$field_name]) ? $currencies->clean_value($sql_data_array[$field_name]) : '';
+            $sql_data_array[$field_name] = ($sql_data_array[$field_name]) ? $admin->currencies->clean_value($sql_data_array[$field_name]) : '';
         }
         $xtra_db_fields->MoveNext();
     }
@@ -449,7 +449,7 @@ class fields {
   		global $admin, $cInfo;
   		$tab_array = array();
 		$sql = $admin->DataBase->prepare("SELECT fields.tab_id, tabs.tab_name as tab_name, fields.description as description, fields.params as params, fields.group_by, fields.field_name, fields.entry_type FROM ".TABLE_EXTRA_FIELDS." AS fields JOIN ".TABLE_EXTRA_TABS." AS tabs ON (fields.tab_id = tabs.id) WHERE fields.module_id='{$this->module}' ORDER BY tabs.sort_order ASC, fields.group_by ASC, fields.sort_order ASC");
-		$sql->excecute();
+		$sql->execute();
 		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
   			if (!in_array($result['tab_id'], $tab_array)){
   				if (!empty($tab_array)){

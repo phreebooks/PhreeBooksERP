@@ -81,7 +81,7 @@ if($number_of_methods < 1 )	throw new \core\classes\userException(ERROR_NO_PAYME
 if(AR_TAX_BEFORE_DISCOUNT == false && PHREEPOS_DISCOUNT_OF == true ) throw new \core\classes\userException("your setting tax before discount and discount over total don't work together, <br/>This has circulair logic one can't preceed the other");
 
 $js_currency  = 'var currency  = new Array();' . chr(10);
-foreach ($currencies->currencies as $key => $currency) {
+foreach ($admin->currencies->currencies as $key => $currency) {
 	$js_currency .= "currency['$key'] = new currencyType('$key','{$currency['title']}', '{$currency['value']}', '{$currency['decimal_point']}', '{$currency['thousands_point']}', '{$currency['decimal_places']}', '{$currency['decimal_precise']}');" . chr(10);
 }
 // see if current user points to a employee for sales rep default

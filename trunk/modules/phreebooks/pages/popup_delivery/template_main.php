@@ -52,7 +52,7 @@ echo $toolbar->build();
 <?php
 	$j = 1;
 	while (!$ordr_items->EOF) {
-		$price = $currencies->format($level_info[0] ? $level_info[0] : (($i == 0) ? $full_price : 0));
+		$price = $admin->currencies->format($level_info[0] ? $level_info[0] : (($i == 0) ? $full_price : 0));
 		echo '<tr>' . chr(10);
 		echo '  <td align="center">' . $ordr_items->fields['qty'] . '</td>' . chr(10);
 		echo '  <td align="center">' . $ordr_items->fields['sku'] . '</td>' . chr(10);

@@ -62,7 +62,7 @@ class other_transactions {
   	}
 
   	function build_main_html() {
-  		global $admin, $currencies;
+  		global $admin;
   		require_once(DIR_FS_MODULES . 'phreepos/defaults.php');
     	$content = array();
 		$content['thead'] = array(
@@ -94,7 +94,7 @@ class other_transactions {
   	}
 
 	function build_form_html($action, $id = '') {
-    	global $admin, $currencies;
+    	global $admin;
     	require_once(DIR_FS_MODULES . 'phreepos/defaults.php');
     	if ($action <> 'new') {
         	$sql = "select * from " . $this->db_table . " where ot_id = " . $id;

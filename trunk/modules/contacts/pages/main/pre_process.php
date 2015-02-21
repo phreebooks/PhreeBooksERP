@@ -96,7 +96,7 @@ switch ($_REQUEST['action']) {
 		  	$image_id = 0;
 		  	while ($image_id < 100) { // up to 100 images
 		    	if (isset($_POST['rm_attach_'.$image_id])) {
-				  	@unlink(CONTACTS_DIR_ATTACHMENTS . 'contacts_'.$cInfo->id.'_'.$image_id.'.zip');
+				  	@unlink(CONTACTS_DIR_ATTACHMENTS . 'contacts_'.$cInfo->id.'_'.$image_id.'.zip');//@todo replace with $this->dir_attachments
 				  	unset($attachments[$image_id]);
 		    	}
 		    	$image_id++;
@@ -104,10 +104,10 @@ switch ($_REQUEST['action']) {
 		  	if (is_uploaded_file($_FILES['file_name']['tmp_name'])) { // find an image slot to use
 		    	$image_id = 0;
 		    	while (true) {
-				    if (!file_exists(CONTACTS_DIR_ATTACHMENTS.'contacts_'.$cInfo->id.'_'.$image_id.'.zip')) break;
+				    if (!file_exists(CONTACTS_DIR_ATTACHMENTS.'contacts_'.$cInfo->id.'_'.$image_id.'.zip')) break;//@todo replace with $this->dir_attachments
 				    $image_id++;
 			    }
-		    	saveUploadZip('file_name', CONTACTS_DIR_ATTACHMENTS, 'contacts_'.$cInfo->id.'_'.$image_id.'.zip');
+		    	saveUploadZip('file_name', CONTACTS_DIR_ATTACHMENTS, 'contacts_'.$cInfo->id.'_'.$image_id.'.zip');//@todo replace with $this->dir_attachments
 			    $attachments[$image_id] = $_FILES['file_name']['name'];
 			}
 		  	$sql_data_array = array('attachments' => sizeof($attachments)>0 ? serialize($attachments) : '');
@@ -131,11 +131,6 @@ switch ($_REQUEST['action']) {
 
 		break;
 
-    case 'edit':
-    case 'properties':
-   	    $cInfo->getContact();
-        break;
-
     case 'delete':
     case 'crm_delete':
 	    \core\classes\user::validate_security($security_level, 4);
@@ -148,9 +143,9 @@ switch ($_REQUEST['action']) {
    	    $cID   = db_prepare_input($_POST['id']);
   	    $imgID = db_prepare_input($_POST['rowSeq']);
 	    $filename = 'contacts_'.$cID.'_'.$imgID.'.zip';
-	    if (file_exists(CONTACTS_DIR_ATTACHMENTS . $filename)) {
+	    if (file_exists(CONTACTS_DIR_ATTACHMENTS . $filename)) {//@todo replace with $this->dir_attachments
 	       $backup = new \phreedom\classes\backup();
-	       $backup->download(CONTACTS_DIR_ATTACHMENTS, $filename, true);
+	       $backup->download(CONTACTS_DIR_ATTACHMENTS, $filename, true);//@todo replace with $this->dir_attachments
 	    }
 	    ob_end_flush();
   		session_write_close();
@@ -162,9 +157,9 @@ switch ($_REQUEST['action']) {
   	    $attachments = unserialize($result->fields['attachments']);
   	    foreach ($attachments as $key => $value) {
 		   	$filename = 'contacts_'.$cID.'_'.$key.'.zip';
-		   	if (file_exists(CONTACTS_DIR_ATTACHMENTS . $filename)) {
+		   	if (file_exists(CONTACTS_DIR_ATTACHMENTS . $filename)) {//@todo replace with $this->dir_attachments
 		      	$backup = new \phreedom\classes\backup();
-		      	$backup->download(CONTACTS_DIR_ATTACHMENTS, $filename, true);
+		      	$backup->download(CONTACTS_DIR_ATTACHMENTS, $filename, true);//@todo replace with $this->dir_attachments
 		      	ob_end_flush();
   				session_write_close();
 		      	die;
@@ -188,10 +183,6 @@ $include_header = true;
 $include_footer = true;
 
 switch ($_REQUEST['action']) {
-  case 'properties':
-		$include_header   = false;
-		$include_footer   = false;
-		// now fall through just like edit
   case 'edit':
   case 'update':
   case 'new':

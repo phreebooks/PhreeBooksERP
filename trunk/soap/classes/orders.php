@@ -160,7 +160,7 @@ class xml_orders extends parser {
 // The remaining functions are specific to PhreeBooks. They need to be modified for the specific application.
 // It also needs to check for errors, i.e. missing information, bad data, etc.
   function buildJournalEntry() {
-	global $admin, $messageStack, $currencies;
+	global $admin, $messageStack;
 	// set some preliminary information
 	$account_type = 'c';
 	$psOrd = new orders();
@@ -175,8 +175,8 @@ class xml_orders extends parser {
 	$psOrd->admin_id            = $this->get_user_id($this->username);
 	$psOrd->description         = SOAP_XML_SUBMITTED_SO;
 	$psOrd->gl_acct_id          = DEF_GL_ACCT;
-	$psOrd->freight             = $currencies->clean_value(db_prepare_input($this->order['freight_total']), DEFAULT_CURRENCY);
-	$psOrd->discount            = $currencies->clean_value(db_prepare_input($this->order['discount_total']), DEFAULT_CURRENCY);
+	$psOrd->freight             = $admin->currencies->clean_value(db_prepare_input($this->order['freight_total']), DEFAULT_CURRENCY);
+	$psOrd->discount            = $admin->currencies->clean_value(db_prepare_input($this->order['discount_total']), DEFAULT_CURRENCY);
 	$psOrd->sales_tax           = db_prepare_input($this->order['tax_total']);
 	$psOrd->total_amount        = db_prepare_input($this->order['order_total']);
 	// The order ID should be set by the submitter

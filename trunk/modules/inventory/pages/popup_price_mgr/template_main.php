@@ -46,14 +46,14 @@ echo $toolbar->build();
 	<td nowrap="nowrap"><?php echo $inventory_details->fields['quantity_on_hand']; ?></td>
 	<td nowrap="nowrap">&nbsp;</td>
 	<td nowrap="nowrap"><?php echo TEXT_ITEM_COST . ': '; ?></td>
-	<td nowrap="nowrap"><?php echo $currencies->precise($item_cost); ?></td>
+	<td nowrap="nowrap"><?php echo $admin->currencies->precise($item_cost); ?></td>
   </tr>
   <tr>
 	<td nowrap="nowrap"><?php echo TEXT_QUANTITY_ON_SALES_ORDER . ': '; ?></td>
 	<td nowrap="nowrap"><?php echo $inventory_details->fields['quantity_on_sales_order']; ?></td>
 	<td nowrap="nowrap">&nbsp;</td>
 	<td nowrap="nowrap"><?php echo TEXT_FULL_PRICE . ': '; ?></td>
-	<td nowrap="nowrap"><?php echo $currencies->precise($full_price); ?></td>
+	<td nowrap="nowrap"><?php echo $admin->currencies->precise($full_price); ?></td>
   </tr>
   <tr>
 	<td nowrap="nowrap"><?php echo TEXT_QUANTITY_ON_ALLOCATION . ': '; ?></td>
@@ -74,7 +74,7 @@ echo $toolbar->build();
 
 <?php
   if ($price_sheets->rowCount() > 0) {
-	if (ENABLE_MULTI_CURRENCY) echo '<p class="fieldRequired"> ' . sprintf(GEN_PRICE_SHEET_CURRENCY_NOTE, $currencies->currencies[DEFAULT_CURRENCY]['title']) . '</p>';
+	if (ENABLE_MULTI_CURRENCY) echo '<p class="fieldRequired"> ' . sprintf(GEN_PRICE_SHEET_CURRENCY_NOTE, $admin->currencies->currencies[DEFAULT_CURRENCY]['title']) . '</p>';
 	echo '<div class="easyui-tabs" id="pricetabs">' . chr(10);
 	$m = 1;
 	while (!$price_sheets->EOF) { ?>
@@ -124,11 +124,11 @@ echo $toolbar->build();
 			echo '  <td>' . html_input_field('qty_'     . $objID, $qty, 'size="5" style="text-align:right" onchange="updatePrice(' . $m . ')"') . '</td>' . chr(10);
 			echo '  <td>' . html_pull_down_menu('src_'  . $objID, gen_build_pull_down(($i==0) ? $first_source_list : $price_mgr_sources), $src, 'onchange="updatePrice(' . $m . ')"') . '</td>' . chr(10);
 			echo '  <td>' . html_pull_down_menu('adj_'  . $objID, gen_build_pull_down($price_mgr_adjustments), $adj, 'onchange="updatePrice(' . $m . ')"') . '</td>' . chr(10);
-			echo '  <td>' . html_input_field('adj_val_' . $objID, $currencies->format($adj_val), 'size="10" style="text-align:right" onchange="updatePrice(' . $m . ')"') . '</td>' . chr(10);
+			echo '  <td>' . html_input_field('adj_val_' . $objID, $admin->currencies->format($adj_val), 'size="10" style="text-align:right" onchange="updatePrice(' . $m . ')"') . '</td>' . chr(10);
 			echo '  <td>' . html_pull_down_menu('rnd_'  . $objID, gen_build_pull_down($price_mgr_rounding), $rnd, 'onchange="updatePrice(' . $m . ')"') . '</td>' . chr(10);
-			echo '  <td>' . html_input_field('rnd_val_' . $objID, $currencies->precise($rnd_val), 'size="10" style="text-align:right" onchange="updatePrice(' . $m . ')"') . '</td>' . chr(10);
-			echo '  <td>' . html_input_field('price_'   . $objID, $currencies->precise($price), 'size="11" style="text-align:right" onchange="updatePrice(' . $m . ')"') . '</td>' . chr(10);
-			echo '  <td>' . html_input_field('margin_'  . $objID, $currencies->precise('0'), 'readonly="readonly" size="6" style="text-align:right"') . '</td>' . chr(10);
+			echo '  <td>' . html_input_field('rnd_val_' . $objID, $admin->currencies->precise($rnd_val), 'size="10" style="text-align:right" onchange="updatePrice(' . $m . ')"') . '</td>' . chr(10);
+			echo '  <td>' . html_input_field('price_'   . $objID, $admin->currencies->precise($price), 'size="11" style="text-align:right" onchange="updatePrice(' . $m . ')"') . '</td>' . chr(10);
+			echo '  <td>' . html_input_field('margin_'  . $objID, $admin->currencies->precise('0'), 'readonly="readonly" size="6" style="text-align:right"') . '</td>' . chr(10);
 			echo '</tr>' . chr(10);
 		}
 ?>

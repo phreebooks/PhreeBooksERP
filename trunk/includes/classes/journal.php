@@ -270,7 +270,7 @@ class journal {
 // START Chart of Accout Functions
 /*******************************************************************************************************************/
   function Post_chart_balances() {
-	global $admin, $messageStack, $currencies;
+	global $admin, $messageStack;
 	$messageStack->debug("\n  Posting Chart Balances...");
 	switch ($this->journal_id) {
 	  case  2: // General Journal
@@ -436,17 +436,17 @@ class journal {
   	}
 
   	function validate_balance($period = CURRENT_ACCOUNTING_PERIOD) {
-		global $admin, $currencies, $messageStack;
+		global $admin, $messageStack;
 		$messageStack->debug("\n    Validating trial balance for period: $period ... ");
 		$sql = "select sum(debit_amount) as debit, sum(credit_amount) as credit
 		  from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where period = " . $period;
 		$result = $admin->DataBase->query($sql);
 		// check to see if we are still in balance, round debits and credits and compare
 		$messageStack->debug(" debits = {$result->fields['debit']} and credits = {$result->fields['credit']}");
-		$debit_total  = round($result->fields['debit'],  $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
-		$credit_total = round($result->fields['credit'], $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
+		$debit_total  = round($result->fields['debit'],  $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
+		$credit_total = round($result->fields['credit'], $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
 		if ($debit_total <> $credit_total) { // Trouble in paradise, fraction of cents adjustment next
-		  	$tolerance = 2 * (1 / pow(10, $currencies->currencies[DEFAULT_CURRENCY]['decimal_places'])); // i.e. 2 cents in USD
+		  	$tolerance = 2 * (1 / pow(10, $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places'])); // i.e. 2 cents in USD
 		  	$adjustment = $result->fields['credit'] - $result->fields['debit'];
 		  	if (abs($adjustment) > $tolerance) throw new \core\classes\userException(sprintf(GL_ERROR_TRIAL_BALANCE, $result->fields['debit'], $result->fields['credit'], $period));
 		  	// find the adjustment account
@@ -1342,7 +1342,7 @@ class journal {
   }
 
   function check_for_closed_po_so($action = 'Post') {
-	global $admin, $currencies, $messageStack;
+	global $admin, $messageStack;
 	// closed can occur many ways including:
 	//   forced closure through so/po form (from so/po journal - adjust qty on so/po)
 	//   all quantities are reduced to zero (from so/po journal - should be deleted instead but it's possible)
@@ -1388,7 +1388,7 @@ class journal {
 		  }
 		}
 		// close if the invoice/inv receipt total is zero
-		if (round($this->total_amount, $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']) == 0) {
+		if (round($this->total_amount, $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']) == 0) {
 		  $this->close_so_po($this->id, true);
 		}
 		break;
@@ -1407,11 +1407,11 @@ class journal {
 			$result = $admin->DataBase->query("select sum(i.debit_amount) as debits, sum(i.credit_amount) as credits
 			  from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 			  where m.id = " . $invoices[$i] . " and i.gl_type <> 'ttl'");
-			$total_billed = $currencies->format($result->fields['credits'] - $result->fields['debits']);
+			$total_billed = $admin->currencies->format($result->fields['credits'] - $result->fields['debits']);
 			$result = $admin->DataBase->query("select sum(i.debit_amount) as debits, sum(i.credit_amount) as credits
 			  from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 			  where i.so_po_item_ref_id = " . $invoices[$i] . " and i.gl_type in ('pmt', 'chk')");
-			$total_paid = $currencies->format($result->fields['credits'] - $result->fields['debits']);
+			$total_paid = $admin->currencies->format($result->fields['credits'] - $result->fields['debits']);
 			$messageStack->debug("\n    total_billed = " . $total_billed . ' and total_paid = ' . $total_paid);
 			if ($total_billed == $total_paid) {
 			  $this->close_so_po($invoices[$i], true);

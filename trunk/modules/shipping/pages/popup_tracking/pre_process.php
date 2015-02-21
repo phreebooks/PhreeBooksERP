@@ -43,7 +43,7 @@ switch ($_REQUEST['action']) {
 		'ship_date'    => gen_db_date($_POST['ship_date']),
 		'deliver_date' => gen_db_date($_POST['deliver_date']),
 		'tracking_id'  => db_prepare_input($_POST['tracking_id']),
-		'cost'         => $currencies->clean_value($_POST['cost']),
+		'cost'         => $admin->currencies->clean_value($_POST['cost']),
 	);
 	if (!$sID) { // it's a new entry
 	  $result = $admin->DataBase->query("select next_shipment_num from " . TABLE_CURRENT_STATUS);

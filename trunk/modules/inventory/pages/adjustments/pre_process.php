@@ -60,7 +60,7 @@ switch ($_REQUEST['action']) {
 	  $serialize_number = db_prepare_input($_POST['serial_'.$rowCnt]);
 	  $desc             = db_prepare_input($_POST['desc_'.$rowCnt]);
 	  $acct             = db_prepare_input($_POST['acct_'.$rowCnt]);
-	  $price            = $currencies->clean_value($_POST['price_'.$rowCnt]);
+	  $price            = $admin->currencies->clean_value($_POST['price_'.$rowCnt]);
 	  if ($qty > 0) $adj_total += $qty * $price;
 	  if ($qty && $sku <> '' && $sku <> TEXT_SEARCH) { // ignore blank rows
 	    $glEntry->journal_rows[] = array(

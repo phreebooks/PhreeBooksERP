@@ -27,20 +27,20 @@ $FormProcessing['null_pcur']  = TEXT_NULL_POSTED_CURRENCY;
 $FormProcessing['rep_id']     = TEXT_USERNAME;
 // Extra form processing operations
 function pf_process_phreedom($strData, $Process) {
-  global $currencies, $posted_currencies;
+  global $admin, $posted_currencies;
   switch ($Process) {
 	case "rnd_dec":   if (!is_numeric($strData)) return $strData;
-	                  return $currencies->format($strData);
+	                  return $admin->currencies->format($strData);
 	case "rnd_pre":   if (!is_numeric($strData)) return $strData;
-	                  return $currencies->precise($strData);
+	                  return $admin->currencies->precise($strData);
 	case "def_cur":   if (!is_numeric($strData)) return $strData;
-	                  return $currencies->format_full($strData, true, DEFAULT_CURRENCY, 1);
+	                  return $admin->currencies->format_full($strData, true, DEFAULT_CURRENCY, 1);
 	case "null_dcur": if (!is_numeric($strData)) return $strData;
-	                  return (real)$strData == 0 ? '' : $currencies->format_full($strData, true, DEFAULT_CURRENCY, 1);
+	                  return (real)$strData == 0 ? '' : $admin->currencies->format_full($strData, true, DEFAULT_CURRENCY, 1);
 	case "posted_cur":if (!is_numeric($strData)) return $strData;
-	                  return $currencies->format_full($strData, true, $posted_currencies['currencies_code'], $posted_currencies['currencies_value']);
+	                  return $admin->currencies->format_full($strData, true, $posted_currencies['currencies_code'], $posted_currencies['currencies_value']);
 	case "null_pcur": if (!is_numeric($strData)) return $strData;
-	                  return (real)$strData == 0 ? '' : $currencies->format_full($strData, true, $posted_currencies['currencies_code'], $posted_currencies['currencies_value']);
+	                  return (real)$strData == 0 ? '' : $admin->currencies->format_full($strData, true, $posted_currencies['currencies_code'], $posted_currencies['currencies_value']);
 	case "rep_id":    return pb_get_user_name($strData);
 	default: // Do nothing
   }

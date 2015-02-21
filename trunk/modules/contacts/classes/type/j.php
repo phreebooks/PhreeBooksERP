@@ -22,6 +22,7 @@ class j extends \contacts\classes\contacts{
 	public $address_types	= array('jm', 'js', 'jb', 'im');
 	public $type            = 'j';
 	public $title			= TEXT_PROJECT;
+	public $dept_rep_id 	= AR_DEF_GL_SALES_ACCT; //will overwrite if exists in database.
 
 	public function __construct(){
 		$this->tab_list[] = array('file'=>'template_notes',		'tag'=>'notes',    'order'=>40, 'text'=>TEXT_NOTES);

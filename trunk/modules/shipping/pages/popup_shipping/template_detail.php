@@ -56,11 +56,11 @@ echo $toolbar->build();
 		echo '</tr></thead><tbody class="ui-widget-content">' . chr(10);
 		$odd = true;
 		if (is_array($value)) foreach ($value as $key => $prices) {
-			echo '<tr class="' . ($odd?'odd':'even') . '" style="cursor:pointer" onclick="setReturnRate(\'' . $currencies->format($prices['quote']) . '\', \'' . $carrier . '\', \'' . $key . '\')">' . chr(10);
+			echo '<tr class="' . ($odd?'odd':'even') . '" style="cursor:pointer" onclick="setReturnRate(\'' . $admin->currencies->format($prices['quote']) . '\', \'' . $carrier . '\', \'' . $key . '\')">' . chr(10);
 			echo '<td>' . constant($carrier . '_' . $key) . '</td>' . chr(10);
-			echo '<td align="right">' . (($prices['quote'] !== '') ? $currencies->format($prices['quote']) : '&nbsp;') . '</td>' . chr(10);
-			echo '<td align="right">' . (($prices['book']  !== '') ? $currencies->format($prices['book']) : '&nbsp;') . '</td>' . chr(10);
-			echo '<td align="right">' . (($prices['cost']  !== '') ? $currencies->format($prices['cost']) : '&nbsp;') . '</td>' . chr(10);
+			echo '<td align="right">' . (($prices['quote'] !== '') ? $admin->currencies->format($prices['quote']) : '&nbsp;') . '</td>' . chr(10);
+			echo '<td align="right">' . (($prices['book']  !== '') ? $admin->currencies->format($prices['book']) : '&nbsp;') . '</td>' . chr(10);
+			echo '<td align="right">' . (($prices['cost']  !== '') ? $admin->currencies->format($prices['cost']) : '&nbsp;') . '</td>' . chr(10);
 			echo '<td align="center">' . $prices['note'] . '</td>' . chr(10);
 			echo '</tr>';
 			$odd = !$odd;

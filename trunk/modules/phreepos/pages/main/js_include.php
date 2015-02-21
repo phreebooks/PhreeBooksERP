@@ -60,7 +60,7 @@ var newdecimal_precise   = '';
 var newdecimal_point     = '';
 var newthousands_point   = '';
 // List the currency codes and exchange rates
-<?php if (ENABLE_MULTI_CURRENCY) echo $currencies->build_js_currency_arrays(); ?>
+<?php if (ENABLE_MULTI_CURRENCY) echo $admin->currencies->build_js_arrays(); ?>
 // List the tax rates
 <?php echo $js_tax_rates; ?>
 <?php echo $js_ot_tax_rates ?>

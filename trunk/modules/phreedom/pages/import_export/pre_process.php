@@ -146,16 +146,16 @@ switch ($_REQUEST['action']) {
 	$index = 0;
 	foreach ($glEntry->beg_bal as $coa_id => $values) {
 	  if ($coa_types[$values['type']]['asset']) { // it is a debit
-		$entry = $currencies->clean_value($coa_values[$index]);
+		$entry = $admin->currencies->clean_value($coa_values[$index]);
 	  } else { // it is a credit
-		$entry = -$currencies->clean_value($coa_values[$index]);
+		$entry = -$admin->currencies->clean_value($coa_values[$index]);
 	  }
 	  $glEntry->beg_bal[$coa_id]['beg_bal'] = $entry;
 	  $total_amount += $entry;
 	  $index++;
 	}
 	// check to see if journal is still in balance
-	$total_amount = $currencies->format($total_amount);
+	$total_amount = $admin->currencies->format($total_amount);
 	if ($total_amount <> 0) throw new \core\classes\userException(GL_ERROR_NO_BALANCE);
 	// *************** START TRANSACTION *************************
 	$admin->DataBase->transStart();

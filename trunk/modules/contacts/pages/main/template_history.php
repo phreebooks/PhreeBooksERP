@@ -58,7 +58,7 @@
 		    if($basis->cInfo->contact->type == 'c') echo '<td>' . ($value['purch_order_id'] ? $value['purch_order_id'] : '&nbsp;') . '</td>';
 		    echo '<td align="center">' . gen_locale_date($value['post_date']) . '</td>';
 		    echo '<td align="center">' . ($value['closed'] ? '&nbsp;' : TEXT_YES) . '</td>';
-		    echo '<td align="right">'  . $currencies->format($value['total_amount']) . '</td></tr>' . chr(10);
+		    echo '<td align="right">'  . $basis->currencies->format($value['total_amount']) . '</td></tr>' . chr(10);
 		    $odd = !$odd;
 		  }
 		} else {
@@ -87,12 +87,12 @@
 		    $closed = $value['closed_date'] <> '0000-00-00' ? gen_locale_date($value['closed_date']) : ($value['closed'] ? TEXT_YES : '&nbsp;');
 		    echo '<tr class="'.($odd?"odd":"even").'">';
 		    echo '<td>';
-			echo html_icon('actions/edit-find-replace.png', TEXT_EDIT,   'small', 'onclick="window.open(\'' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;action=edit&amp;jID=' . $value['journal_id'] . '&amp;oID=' . $value['id'], 'SSL') . '\',\'_blank\')"');
-		    echo '<a href="' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;action=edit&amp;jID=' . $value['journal_id'] . '&amp;oID=' . $value['id'], 'SSL') . '">' . $value['purchase_invoice_id'] . '</a></td>';
+			echo html_icon('actions/edit-find-replace.png', TEXT_EDIT,   'small', 'onclick="window.open(\'' . html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;action=edit&amp;jID={$value['journal_id']}&amp;oID={$value['id']}", 'SSL') . '\',\'_blank\')"');
+		    echo '<a href="' . html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;action=edit&amp;jID={$value['journal_id']}&amp;oID={$value['id']}", 'SSL') . '">' . $value['purchase_invoice_id'] . '</a></td>';
 		    echo '<td>' . ($value['purch_order_id'] ? $value['purch_order_id'] : '&nbsp;') . '</td>';
 		    echo '<td align="center">' . gen_locale_date($value['post_date']) . '</td>';
 		    echo '<td align="center">' . $closed . '</td>';
-		    echo '<td align="right">'  . $currencies->format($value['total_amount']) . '</td></tr>' . chr(10);
+		    echo '<td align="right">'  . $basis->currencies->format($value['total_amount']) . '</td></tr>' . chr(10);
 		    $odd = !$odd;
 		  }
 		} else {

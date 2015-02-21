@@ -63,11 +63,11 @@ echo $toolbar->build();
 	foreach ($fy_array as $value) {
 	  echo '<tr>' . chr(10);
 	  echo '  <td align="center">' . $value['period'] . html_hidden_field('id_' . $i, $value['id']) . '</td>' . chr(10);
-	  echo '  <td align="center">' . html_input_field('prior_'  . $i, $currencies->format($value['prior']), 'readonly="readonly" style="text-align:right"') . '</td>' . chr(10);
+	  echo '  <td align="center">' . html_input_field('prior_'  . $i, $admin->currencies->format($value['prior']), 'readonly="readonly" style="text-align:right"') . '</td>' . chr(10);
 	  echo '  <td>&nbsp;</td>' . chr(10);
-	  echo '  <td align="center">' . html_input_field('budget_' . $i, $currencies->format($value['budget']), 'style="text-align:right"') . '</td>' . chr(10);
+	  echo '  <td align="center">' . html_input_field('budget_' . $i, $admin->currencies->format($value['budget']), 'style="text-align:right"') . '</td>' . chr(10);
 	  echo '  <td>&nbsp;</td>' . chr(10);
-	  echo '  <td align="center">' . html_input_field('next_'   . $i, $currencies->format($value['next']), 'readonly="readonly" style="text-align:right"') . '</td>' . chr(10);
+	  echo '  <td align="center">' . html_input_field('next_'   . $i, $admin->currencies->format($value['next']), 'readonly="readonly" style="text-align:right"') . '</td>' . chr(10);
 	  echo '</tr>' . chr(10);
 	  $i++;
 	} ?>

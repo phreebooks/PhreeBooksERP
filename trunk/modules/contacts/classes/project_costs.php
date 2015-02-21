@@ -29,6 +29,13 @@ class project_costs {
     	foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
     	$this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
   	    $this->security_id = \core\classes\user::security_level(SECURITY_ID_CONFIGURATION);
+  	    $this->cost_types = array(
+  	    		'LBR' => TEXT_LABOR,
+  	    		'MAT' => TEXT_MATERIALS,
+  	    		'CNT' => TEXT_CONTRACTORS,
+  	    		'EQT' => TEXT_EQUIPMENT,
+  	    		'OTH' => TEXT_OTHER,
+  	    );
     }
 
   	function btn_save($id = '') {
@@ -76,7 +83,7 @@ class project_costs {
   	}
 
   	function build_main_html() {
-  		global $admin, $project_cost_types;
+  		global $admin;
     	$content = array();
 		$content['thead'] = array(
 	  	  'value' => array(TEXT_SHORT_NAME, TEXT_COST_TYPE, TEXT_INACTIVE, TEXT_ACTION),
@@ -92,7 +99,7 @@ class project_costs {
 	  		$content['tbody'][$rowCnt] = array(
 	    	  array('value' => htmlspecialchars($result->fields['description_short']),
 			  	    'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'project_costs_edit\',\''.$result->fields['cost_id'].'\')"'),
-			  array('value' => $project_cost_types[$result->fields['cost_type']],
+			  array('value' => $this->cost_types[$result->fields['cost_type']],
 			  		'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'project_costs_edit\',\''.$result->fields['cost_id'].'\')"'),
 			  array('value' => $result->fields['inactive'] ? TEXT_YES : '',
 			  		'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'project_costs_edit\',\''.$result->fields['cost_id'].'\')"'),
@@ -106,7 +113,7 @@ class project_costs {
   	}
 
   function build_form_html($action, $id = '') {
-    global $admin, $project_cost_types;
+    global $admin;
     if ($action <> 'new') {
         $sql = "select description_short, description_long, cost_type, inactive
 	       from " . $this->db_table . " where cost_id = '" . $this->id . "'";
@@ -134,7 +141,7 @@ class project_costs {
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
 	$output .= '    <td>' . TEXT_COST_TYPE . '</td>' . chr(10);
-	$output .= '    <td>' . html_pull_down_menu('cost_type', gen_build_pull_down($project_cost_types), $this->cost_type) . '</td>' . chr(10);
+	$output .= '    <td>' . html_pull_down_menu('cost_type', gen_build_pull_down($this->cost_types), $this->cost_type) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
 	$output .= '    <td>' . TEXT_INACTIVE . '</td>' . chr(10);

@@ -105,6 +105,17 @@ class outputMobile implements \SplObserver {
     }
 
     /**
+     * returns the current template
+     * @return string
+     */
+    function get_template(){
+    	if (empty($this->include_template) || $this->include_template == '' ){
+    		return DIR_FS_ADMIN .'modules/phreedom/pages/main/template_main.php';
+    	}
+    	return $this->include_template;
+    }
+
+    /**
      * this is called when class loses focus
      * it will store common variales in session data
      */

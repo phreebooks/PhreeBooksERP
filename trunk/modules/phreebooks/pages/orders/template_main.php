@@ -357,7 +357,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
 				  echo '  <td>' . html_input_field('disc_' . $i, '', 'readonly="readonly" size="11" maxlength="10" style="text-align:right"') . '</td>' . chr(10);
 				}
 				echo '  <td nowrap="nowrap" align="center">';
-				echo html_input_field('price_' . $i, $currencies->precise($order->item_rows[$j]['price'], true, $order->currencies_code, $order->currencies_value), 'size="8" maxlength="20" onchange="updateRowTotal(' . $i . ', false)" style="text-align:right"') . chr(10);
+				echo html_input_field('price_' . $i, $admin->currencies->precise($order->item_rows[$j]['price'], true, $order->currencies_code, $order->currencies_value), 'size="8" maxlength="20" onchange="updateRowTotal(' . $i . ', false)" style="text-align:right"') . chr(10);
 				echo html_icon('mimetypes/x-office-spreadsheet.png', TEXT_PRICE_SHEETS, 'small', 'align="top" style="cursor:pointer" onclick="PriceManagerList(' . $i . ')"');
 				echo '</td>' . chr(10);
 				echo '  <td>' . html_pull_down_menu('tax_' . $i, $tax_rates, $order->item_rows[$j]['tax'], 'onchange="updateRowTotal(' . $i . ', false)"') . '</td>' . chr(10);
@@ -377,7 +377,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
 				  echo html_hidden_field('disc_' . $i, '') . chr(10);
 				}
 				// End hidden fields
-				echo html_input_field('total_' . $i, $currencies->format($order->item_rows[$j]['total'], true, $order->currencies_code, $order->currencies_value), 'size="11" maxlength="20" onchange="updateUnitPrice(' . $i . ')" style="text-align:right"') . chr(10);
+				echo html_input_field('total_' . $i, $admin->currencies->format($order->item_rows[$j]['total'], true, $order->currencies_code, $order->currencies_value), 'size="11" maxlength="20" onchange="updateUnitPrice(' . $i . ')" style="text-align:right"') . chr(10);
 				echo '  </td>' . chr(10);
 				echo '</tr>' . chr(10);
 				$odd = !$odd;
@@ -400,7 +400,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
           <td>&nbsp;</td>
           <td align="right">
 <?php echo TEXT_SUBTOTAL . ' '; ?>
-<?php echo html_input_field('subtotal', $currencies->format($order->subtotal, true, $order->currencies_code, $order->currencies_value), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?>
+<?php echo html_input_field('subtotal', $admin->currencies->format($order->subtotal, true, $order->currencies_code, $order->currencies_value), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?>
 		  </td>
         </tr>
 
@@ -412,7 +412,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
 		  </td>
           <td align="right">
 <?php echo TEXT_DISCOUNT_PERCENT . '(%) ' . html_input_field('disc_percent', ($order->disc_percent ? number_format(100*$order->disc_percent,3) : '0'), 'size="7" maxlength="6" onchange="calculateDiscountPercent()" style="text-align:right"') . ' ' . TEXT_DISCOUNT; ?>
-<?php echo html_input_field('discount', $currencies->format(($order->discount ? $order->discount : '0'), true, $order->currencies_code, $order->currencies_value), 'size="15" maxlength="20" onchange="calculateDiscount()" style="text-align:right"'); ?>
+<?php echo html_input_field('discount', $admin->currencies->format(($order->discount ? $order->discount : '0'), true, $order->currencies_code, $order->currencies_value), 'size="15" maxlength="20" onchange="calculateDiscount()" style="text-align:right"'); ?>
 		  </td>
         </tr>
 <?php } else {
@@ -431,7 +431,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
   echo TEXT_CARRIER . ' ' . html_pull_down_menu('ship_carrier', gen_build_pull_down($admin->classes['shipping']->methods, true, true), $default = '', "onchange='buildFreightDropdown()'");
   echo ' ' . TEXT_SERVICE . ' ' . html_pull_down_menu('ship_service', gen_null_pull_down(), '');
   echo ' ' . TEXT_FREIGHT . ' ';
-  echo html_input_field('freight', $currencies->format(($order->freight ? $order->freight : '0.00'), true, $order->currencies_code, $order->currencies_value), 'size="15" maxlength="20" onchange="updateTotalPrices()" style="text-align:right"'); ?>
+  echo html_input_field('freight', $admin->currencies->format(($order->freight ? $order->freight : '0.00'), true, $order->currencies_code, $order->currencies_value), 'size="15" maxlength="20" onchange="updateTotalPrices()" style="text-align:right"'); ?>
 		  </td>
         </tr>
 <?php } else {
@@ -446,7 +446,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
           <td><?php echo TEXT_SELECT_FILE_TO_ATTACH . ' ' . html_file_field('file_name'); ?></td>
           <td align="right">
 <?php echo ($account_type == 'v') ? TEXT_PURCHASE_TAX . ' ' : TEXT_SALES_TAX . ' '; ?>
-<?php echo ' ' . html_input_field('sales_tax', $currencies->format(($order->sales_tax ? $order->sales_tax : '0.00'), true, $order->currencies_code, $order->currencies_value), 'readonly="readonly" size="15" maxlength="20" onchange="updateTotalPrices()" style="text-align:right"'); ?>
+<?php echo ' ' . html_input_field('sales_tax', $admin->currencies->format(($order->sales_tax ? $order->sales_tax : '0.00'), true, $order->currencies_code, $order->currencies_value), 'readonly="readonly" size="15" maxlength="20" onchange="updateTotalPrices()" style="text-align:right"'); ?>
 		  </td>
         </tr>
         <tr>
@@ -457,7 +457,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
 		  </td>
           <td align="right">
 <?php echo TEXT_INVOICE_TOTAL . ' '; ?>
-<?php echo html_input_field('total', $currencies->format($order->total_amount, true, $order->currencies_code, $order->currencies_value), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?>
+<?php echo html_input_field('total', $admin->currencies->format($order->total_amount, true, $order->currencies_code, $order->currencies_value), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?>
 		  </td>
         </tr>
         </tbody>

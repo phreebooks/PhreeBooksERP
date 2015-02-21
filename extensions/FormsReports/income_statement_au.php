@@ -24,8 +24,8 @@ gen_pull_language('phreebooks', 'admin'); // need coa types defines
 // with the current reportbuilder structure.
 class income_statement_au {
 	function __construct() {
-		global $currencies;
-		$this->zero = $currencies->format(0);
+		global $admin;
+		$this->zero = $admin->currencies->format(0);
 		$this->coa_types = load_coa_types();
 		$this->inc_stmt_data = array();
 	}

@@ -60,7 +60,7 @@ if ($oID) {
 if ($sID) {
   $sContact = $admin->DataBase->query("select * from " . TABLE_CONTACTS . " where id = '" . $cID . "'");
   $type     = $sContact->fields['type'];
-  $ship_add = $admin->DataBase->query("select * from " . TABLE_ADDRESS_BOOK . " 
+  $ship_add = $admin->DataBase->query("select * from " . TABLE_ADDRESS_BOOK . "
     where ref_id = '" . $cID . "' and type in ('" . $type . "m', '" . $type . "s')");
 }
 if ($cID && !$just_ship) { // build the contact data
@@ -73,7 +73,7 @@ if ($cID && !$just_ship) { // build the contact data
   $terms    = explode(':', $contact->fields['special_terms']);
   $contact->fields['credit_limit'] = $terms[4] ? $terms[4] : ($type == 'v' ? AP_CREDIT_LIMIT_AMOUNT : AR_CREDIT_LIMIT_AMOUNT);
   $contact->fields['credit_remaining'] = $contact->fields['credit_limit'] - $invoices['balance'] + $order->fields['total_amount'];
-  $bill_add   = $admin->DataBase->query("select * from " . TABLE_ADDRESS_BOOK . " 
+  $bill_add   = $admin->DataBase->query("select * from " . TABLE_ADDRESS_BOOK . "
     where ref_id = '" . $cID . "' and type in ('" . $type . "m', '" . $type . "b')");
   //fix some special fields
   if (!$contact->fields['dept_rep_id']) unset($contact->fields['dept_rep_id']); // clear the rep field if not set to a contact
@@ -135,7 +135,7 @@ if (sizeof($order->fields) > 0) {
 		$total = $ordr_items->fields['credit_amount'] + $ordr_items->fields['debit_amount'];
 	  	if (in_array($ordr_items->fields['gl_type'], array('poo', 'soo', 'por', 'sos'))) {
 		  $subtotal   += $total;
-		  $inv_details = $admin->DataBase->query("select inventory_type, inactive, item_weight, quantity_on_hand, lead_time 
+		  $inv_details = $admin->DataBase->query("select inventory_type, inactive, item_weight, quantity_on_hand, lead_time
 		    from " . TABLE_INVENTORY . " where sku = '" . $ordr_items->fields['sku'] . "'");
 		  if (!in_array($inv_details->fields['inventory_type'], $cog_types)) $inv_details->fields['quantity_on_hand'] = 'NA';
 		  $item_list[] = array(
@@ -150,9 +150,9 @@ if (sizeof($order->fields) > 0) {
 			'serialize'         		=> $ordr_items->fields['serialize_number'],
 			'proj_id'           		=> $ordr_items->fields['project_id'],
 		  	'purch_package_quantity'	=> $ordr_items->fields['purch_package_quantity'],
-			'unit_price'        		=> $currencies->precise($ordr_items->fields['qty'] ? ($total / $ordr_items->fields['qty']) : '0', true, $currencies_code, $currencies_value),
-			'total'             		=> $currencies->format($total, true, $currencies_code, $currencies_value),
-			'full_price'       			=> $currencies->format($ordr_items->fields['full_price'], true, $currencies_code, $currencies_value),
+			'unit_price'        		=> $admin->currencies->precise($ordr_items->fields['qty'] ? ($total / $ordr_items->fields['qty']) : '0', true, $currencies_code, $currencies_value),
+			'total'             		=> $admin->currencies->format($total, true, $currencies_code, $currencies_value),
+			'full_price'       			=> $admin->currencies->format($ordr_items->fields['full_price'], true, $currencies_code, $currencies_value),
 			'inventory_type'           	=> $inv_details->fields['inventory_type'],
 		  	'inactive'          		=> $inv_details->fields['inactive'],
 			'weight'            		=> $inv_details->fields['item_weight'],
@@ -168,7 +168,7 @@ if (sizeof($order->fields) > 0) {
 	  }
 	  // calculate remaining qty levels not including this order
 	  $sql = "select i.qty, i.sku, i.so_po_item_ref_id
-			from " . TABLE_JOURNAL_MAIN . " m left join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id 
+			from " . TABLE_JOURNAL_MAIN . " m left join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 			where m.so_po_ref_id = " . $so_po_ref_id . " and m.id <> " . $id;
 	  $posted_items = $admin->DataBase->query($sql);
 	  while (!$posted_items->EOF) {
@@ -203,7 +203,7 @@ if (sizeof($order->fields) > 0) {
 	    $total = $ordr_items->fields['credit_amount'] + $ordr_items->fields['debit_amount'];
 	  	if (in_array($ordr_items->fields['gl_type'], array('poo', 'soo', 'por', 'sos'))) {
 		  $subtotal += $total;
-		  $inv_details = $admin->DataBase->query("select inactive, inventory_type, item_weight, quantity_on_hand, lead_time 
+		  $inv_details = $admin->DataBase->query("select inactive, inventory_type, item_weight, quantity_on_hand, lead_time
 		    from " . TABLE_INVENTORY . " where sku = '" . $ordr_items->fields['sku'] . "'");
 		  $inv_details->fields['quantity_on_hand'] = $ordr_items->fields['qty'] + $inv_details->fields['quantity_on_hand'];
 		  if (!in_array($inv_details->fields['inventory_type'], $cog_types)) $inv_details->fields['quantity_on_hand'] = 'NA';
@@ -226,9 +226,9 @@ if (sizeof($order->fields) > 0) {
 			  $item_list[$i]['serialize']   			= $ordr_items->fields['serialize_number'];
 			  $item_list[$i]['proj_id']     			= $ordr_items->fields['project_id'];
 			  $item_list[$i]['purch_package_quantity']	= $ordr_items->fields['purch_package_quantity'];
-			  $item_list[$i]['unit_price']  			= $currencies->precise($ordr_items->fields['qty'] ? ($total / $ordr_items->fields['qty']) : '0', true, $currencies_code, $currencies_value);
-			  $item_list[$i]['total']       			= $currencies->format($total, true, $currencies_code, $currencies_value);
-			  $item_list[$i]['full_price']  			= $currencies->format($ordr_items->fields['full_price'], true, $currencies_code, $currencies_value);
+			  $item_list[$i]['unit_price']  			= $admin->currencies->precise($ordr_items->fields['qty'] ? ($total / $ordr_items->fields['qty']) : '0', true, $currencies_code, $currencies_value);
+			  $item_list[$i]['total']       			= $admin->currencies->format($total, true, $currencies_code, $currencies_value);
+			  $item_list[$i]['full_price']  			= $admin->currencies->format($ordr_items->fields['full_price'], true, $currencies_code, $currencies_value);
 			  $item_list[$i]['inventory_type']     		= $inv_details->fields['inventory_type'];
 			  $item_list[$i]['inactive']    			= $inv_details->fields['inactive'];
 			  $item_list[$i]['weight']      			= $inv_details->fields['item_weight'];
@@ -253,9 +253,9 @@ if (sizeof($order->fields) > 0) {
 			'proj_id'     				=> $ordr_items->fields['project_id'],
 			'purch_package_quantity'	=> $ordr_items->fields['purch_package_quantity'],
 			'date_1'      				=> substr($ordr_items->fields['date_1'], 0, 10),
-			'unit_price'  				=> $currencies->precise($ordr_items->fields['qty'] ? ($total / $ordr_items->fields['qty']) : '0', true, $currencies_code, $currencies_value),
-			'total'       				=> $currencies->format($total, true, $currencies_code, $currencies_value),
-			'full_price'  				=> $currencies->format($ordr_items->fields['full_price'], true, $currencies_code, $currencies_value),
+			'unit_price'  				=> $admin->currencies->precise($ordr_items->fields['qty'] ? ($total / $ordr_items->fields['qty']) : '0', true, $currencies_code, $currencies_value),
+			'total'       				=> $admin->currencies->format($total, true, $currencies_code, $currencies_value),
+			'full_price'  				=> $admin->currencies->format($ordr_items->fields['full_price'], true, $currencies_code, $currencies_value),
 		    'inventory_type'     		=> $inv_details->fields['inventory_type'],
 			'inactive'    				=> $inv_details->fields['inactive'],
 			'weight'      				=> $inv_details->fields['item_weight'],
@@ -269,7 +269,7 @@ if (sizeof($order->fields) > 0) {
 	}
 	// calculate received/sales levels (SO and PO)
 	if (JOURNAL_ID == 4 || JOURNAL_ID == 10) {
-	  $sql = "select i.qty, i.sku, i.so_po_item_ref_id 
+	  $sql = "select i.qty, i.sku, i.so_po_item_ref_id
 		  from " . TABLE_JOURNAL_MAIN . " m left join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 		  where m.so_po_ref_id = " . $id;
 	  $posted_items = $admin->DataBase->query($sql);

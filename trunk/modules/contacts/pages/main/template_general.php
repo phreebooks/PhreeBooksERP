@@ -27,7 +27,7 @@
         <td align="right"><?php echo TEXT_INACTIVE; ?></td>
         <td><?php echo html_checkbox_field('inactive', '1', $basis->cInfo->contact->inactive); ?></td>
         <td align="right"><?php echo constant('ACT_' . strtoupper($basis->cInfo->contact->type) . '_REP_ID'); ?></td>
-        <td><?php echo html_pull_down_menu('dept_rep_id', $sales_rep_array, $basis->cInfo->contact->dept_rep_id ? $basis->cInfo->contact->dept_rep_id : '0'); ?></td>
+        <td><?php echo html_pull_down_menu('dept_rep_id', $basis->cInfo->sales_rep_array, $basis->cInfo->contact->dept_rep_id ? $basis->cInfo->contact->dept_rep_id : '0'); ?></td>
       </tr>
       <tr>
         <td align="right"><?php echo TEXT_FIRST_NAME; ?></td>
@@ -43,7 +43,7 @@
        <td align="right"><?php echo constant('ACT_' . strtoupper($basis->cInfo->contact->type) . '_ACCOUNT_NUMBER'); ?></td>
        <td><?php echo html_input_field('account_number', $basis->cInfo->contact->account_number, 'size="17" maxlength="16"'); ?></td>
        <td align="right"><?php echo TEXT_DEFAULT_PRICE_SHEET; ?></td>
-       <td><?php echo html_pull_down_menu('price_sheet', get_price_sheet_data(), $basis->cInfo->contact->price_sheet); ?></td>
+       <td><?php echo html_pull_down_menu('price_sheet', get_price_sheet_data($basis->cInfo->contact->type), $basis->cInfo->contact->price_sheet); ?></td>
       </tr>
       <tr>
        <td align="right"><?php echo constant('ACT_' . strtoupper($basis->cInfo->contact->type) . '_ID_NUMBER'); ?></td>
@@ -64,7 +64,7 @@
   <fieldset>
     <legend><?php echo TEXT_MAIN_MAILING_ADDRESS; ?></legend>
     <table id="<?php echo $basis->cInfo->contact->type; ?>m_address_form" class="ui-widget" style="border-collapse:collapse;width:100%;">
-      <?php echo $basis->cInfo->contact->draw_address_fields($basis->cInfo->contact->type.'m', false, true, false); ?>
+      <?php $basis->cInfo->contact->draw_address_fields($basis->cInfo->contact->type.'m', false, true, false, true); ?>
     </table>
   </fieldset>
 <?php // *********************** Attachments  ************************************* ?>

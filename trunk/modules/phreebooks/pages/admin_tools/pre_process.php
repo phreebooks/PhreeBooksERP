@@ -171,7 +171,7 @@ switch ($_REQUEST['action']) {
   case 'coa_hist_test':
   case 'coa_hist_fix':
 	\core\classes\user::validate_security($security_level, 4);
-  	$tolerance    = 1 / pow(10, $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']); // i.e. 1 cent in USD
+  	$tolerance    = 1 / pow(10, $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']); // i.e. 1 cent in USD
 	// pull fiscal years
 	$fiscal_years = array();
 	$result = $admin->DataBase->query("select distinct fiscal_year, max(period) as last_period
@@ -216,14 +216,14 @@ switch ($_REQUEST['action']) {
 		  and journal_id in (2, 6, 7, 12, 13, 14, 16, 18, 19, 20, 21)");
 		$posted->fields['debit']  = $posted->fields['debit']  ? $posted->fields['debit']  : 0;
 		$posted->fields['credit'] = $posted->fields['credit'] ? $posted->fields['credit'] : 0;
-		$diff_debit   = $currencies->format($history[$acct][$period]['debit']  - $posted->fields['debit']);
-		$diff_credit  = $currencies->format($history[$acct][$period]['credit'] - $posted->fields['credit']);
-		$posted_bal   = $currencies->format($history[$acct][$period]['beg_bal'] + $history[$acct][$period]['debit'] - $history[$acct][$period]['credit']);
+		$diff_debit   = $admin->currencies->format($history[$acct][$period]['debit']  - $posted->fields['debit']);
+		$diff_credit  = $admin->currencies->format($history[$acct][$period]['credit'] - $posted->fields['credit']);
+		$posted_bal   = $admin->currencies->format($history[$acct][$period]['beg_bal'] + $history[$acct][$period]['debit'] - $history[$acct][$period]['credit']);
 		$next_beg_bal = $history[$acct][$period]['beg_bal'] + $posted->fields['debit'] - $posted->fields['credit'];
 		if (in_array($acct, $acct_list) && in_array($period, $max_periods)) $next_beg_bal = 0;
 		if (abs($diff_debit) > $tolerance || abs($diff_credit) > $tolerance) {
 		  if ($_REQUEST['action'] == 'coa_hist_test') {
-		    $messageStack->add(sprintf(GEN_ADM_TOOLS_REPAIR_ERROR_MSG, $period, 'gl '.$acct, $posted_bal, $currencies->format($next_beg_bal)), 'caution');
+		    $messageStack->add(sprintf(GEN_ADM_TOOLS_REPAIR_ERROR_MSG, $period, 'gl '.$acct, $posted_bal, $admin->currencies->format($next_beg_bal)), 'caution');
 		  }
 		  $bad_accounts[$acct][$period]['debit_amount']  = $posted->fields['debit'];
 		  $bad_accounts[$acct][$period]['credit_amount'] = $posted->fields['credit'];
@@ -231,9 +231,9 @@ switch ($_REQUEST['action']) {
 		  $history[$acct][$period]['credit']    = $posted->fields['credit'];
 		  $first_error_period = min($first_error_period, $period);
 		}
-		if ($currencies->format(abs($next_beg_bal - $history[$acct][$period+1]['beg_bal'])) > $tolerance) {
+		if ($admin->currencies->format(abs($next_beg_bal - $history[$acct][$period+1]['beg_bal'])) > $tolerance) {
 		  if ($_REQUEST['action'] == 'coa_hist_test' && $period <= CURRENT_ACCOUNTING_PERIOD) {
-		    $messageStack->add(sprintf(GEN_ADM_TOOLS_REPAIR_BALANCE_ERROR_MSG, $period, $acct, $currencies->format($history[$acct][$period+1]['beg_bal']), $currencies->format($next_beg_bal)), 'caution');
+		    $messageStack->add(sprintf(GEN_ADM_TOOLS_REPAIR_BALANCE_ERROR_MSG, $period, $acct, $admin->currencies->format($history[$acct][$period+1]['beg_bal']), $admin->currencies->format($next_beg_bal)), 'caution');
 		  }
 		  $bad_accounts[$acct][$period+1]['beginning_balance'] = $next_beg_bal;
 		  $history[$acct][$period+1]['beg_bal'] = $next_beg_bal;

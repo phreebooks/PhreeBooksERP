@@ -938,7 +938,7 @@ function BuildSQL($report) { // for reports only
 }
 
 function BuildDataArray($sql, $report) { // for reports only
-	global $admin, $Heading, $Seq, $posted_currencies, $messageStack, $currencies;
+	global $admin, $Heading, $Seq, $posted_currencies, $messageStack;
 	$posted_currencies = array('currencies_code' => DEFAULT_CURRENCY, 'currencies_value' => 1); // use default currency
 	// See if we need to group, fetch the group fieldname
 	$GrpFieldName = '';
@@ -1003,8 +1003,8 @@ function BuildDataArray($sql, $report) { // for reports only
 	    }
 	    $ColCnt++;
 	    if ($TableCtl['total']) { // add to the running total if need be
-		  $Seq[$key]['grptotal'] += $currencies->clean_value(ProcessData($myrow[$TableCtl['fieldname']], $TableCtl['processing']));
-		  $Seq[$key]['rpttotal'] += $currencies->clean_value(ProcessData($myrow[$TableCtl['fieldname']], $TableCtl['processing']));
+		  $Seq[$key]['grptotal'] += $admin->currencies->clean_value(ProcessData($myrow[$TableCtl['fieldname']], $TableCtl['processing']));
+		  $Seq[$key]['rpttotal'] += $admin->currencies->clean_value(ProcessData($myrow[$TableCtl['fieldname']], $TableCtl['processing']));
 	    }
 	  }
 	  $RowCnt++;

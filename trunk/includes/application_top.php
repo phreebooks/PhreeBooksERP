@@ -75,11 +75,6 @@ define('DIR_WS_IMAGES', DIR_WS_THEMES . 'images/');
 if (file_exists(DIR_WS_THEMES . 'icons/')) { define('DIR_WS_ICONS',  DIR_WS_THEMES . 'icons/'); }
 else { define('DIR_WS_ICONS', 'themes/default/icons/'); } // use default
 $messageStack 	= new \core\classes\messageStack;
-$currencies		= APC_EXTENSION_LOADED ? apc_fetch("currencies") : false;
-if ($currencies == false){
-	$currencies = new \core\classes\currencies;
-	if (APC_EXTENSION_LOADED) apc_add("currencies", $currencies, 600);
-}
 $admin 	= APC_EXTENSION_LOADED ? apc_fetch("admin")	: false;
 if ($admin == false){
 	$admin = new \core\classes\basis;
@@ -103,7 +98,7 @@ if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR
   	gen_pull_language('phreedom', 'menu');
   	gen_pull_language('phreebooks', 'menu');
   	require(DIR_FS_MODULES . 'phreedom/config.php');
-  	$currencies->load_currencies();
+  	$admin->currencies->load();
 	// pull in the custom language over-rides for this module (to pre-define the standard language)
   	$path = DIR_FS_MODULES . "{$_REQUEST['module']}/custom/pages/{$_REQUEST['page']}/extra_menus.php";
   	if (file_exists($path)) { include($path); }

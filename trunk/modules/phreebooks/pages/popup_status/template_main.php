@@ -36,9 +36,9 @@ echo $toolbar->build();
   <tr><th colspan="5"><?php echo TEXT_PAYMENT_TERMS; ?></th></tr>
  </thead>
  <tbody class="ui-widget-content">
-  <tr><td colspan="5"><?php echo TEXT_TERMS_DUE . ': ' . $new_data['terms_lang'] . TEXT_CREDIT_LIMIT . ': ' . $currencies->format($new_data['credit_limit']); ?></td></tr>
+  <tr><td colspan="5"><?php echo TEXT_TERMS_DUE . ': ' . $new_data['terms_lang'] . TEXT_CREDIT_LIMIT . ': ' . $admin->currencies->format($new_data['credit_limit']); ?></td></tr>
 <?php if ($new_data['past_due'] <> 0) { ?>
-  <tr><td colspan="5"><?php echo TEXT_AMOUNT_PAST_DUE .': ' . $currencies->format($new_data['past_due']); ?></td></tr>
+  <tr><td colspan="5"><?php echo TEXT_AMOUNT_PAST_DUE .': ' . $admin->currencies->format($new_data['past_due']); ?></td></tr>
 <?php } ?>
  </tbody>
 </table>
@@ -55,11 +55,11 @@ echo $toolbar->build();
  </thead>
  <tbody class="ui-widget-content">
   <tr>
-	<td align="center"><?php echo $currencies->format($new_data['balance_0']); ?></td>
-	<td align="center"><?php echo $currencies->format($new_data['balance_30']); ?></td>
-	<td align="center"><?php echo $currencies->format($new_data['balance_60']); ?></td>
-	<td align="center"><?php echo $currencies->format($new_data['balance_90']); ?></td>
-	<td align="center"><?php echo $currencies->format($new_data['total']); ?></td>
+	<td align="center"><?php echo $admin->currencies->format($new_data['balance_0']); ?></td>
+	<td align="center"><?php echo $admin->currencies->format($new_data['balance_30']); ?></td>
+	<td align="center"><?php echo $admin->currencies->format($new_data['balance_60']); ?></td>
+	<td align="center"><?php echo $admin->currencies->format($new_data['balance_90']); ?></td>
+	<td align="center"><?php echo $admin->currencies->format($new_data['total']); ?></td>
   </tr>
  </tbody>
 </table>

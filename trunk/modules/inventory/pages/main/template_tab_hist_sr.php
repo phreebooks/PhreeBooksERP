@@ -41,7 +41,7 @@
 	$reference_id = htmlspecialchars($cInfo->orderHistory->fields['purchase_invoice_id']);
 	$primary_name = htmlspecialchars($cInfo->orderHistory->fields['bill_primary_name']);
 	$closed       = $cInfo->orderHistory->fields['closed'] ? TEXT_YES : '';
-	$total_amount = $currencies->format_full($cInfo->orderHistory->fields['total_amount']);
+	$total_amount = $admin->currencies->format_full($cInfo->orderHistory->fields['total_amount']);
     $link_page    = html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;oID=$oID&amp;action=edit&amp;jID=12", 'SSL');
 ?>
   <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer">

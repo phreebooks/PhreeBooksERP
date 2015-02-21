@@ -25,7 +25,7 @@
 var textShow = '<?php echo TEXT_DETAILS; ?>';
 var textHide = '<?php echo TEXT_HIDE; ?>';
 var totalCnt = <?php echo sizeof($bank_list); ?>;
-var currencyCnt = <?php echo sizeof($currencies->currencies); ?>;
+var currencyCnt = <?php echo sizeof($admin->currencies->currencies); ?>;
 <?php echo js_calendar_init($cal_gl); ?>
 
 function init() {
@@ -125,7 +125,7 @@ function updateDetail(ref) {
 
 function updateBalance() {
 	  var value;
-	  var new_balance = 0;	  
+	  var new_balance = 0;
 	  var open_checks   = 0;
 	  var open_deposits = 0;
 	  for (var i=0; i<currencyCnt; i++) {

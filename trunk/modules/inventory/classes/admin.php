@@ -354,7 +354,7 @@ class admin extends \core\classes\admin {
 	}
 
   	function upgrade(\core\classes\basis &$basis) {
-    	global $admin, $currencies;
+    	global $admin;
     	parent::upgrade($basis);
     	if (version_compare($this->status, '3.1', '<') ) {
 	  		$tab_map = array('0' => '0');
@@ -474,8 +474,8 @@ class admin extends \core\classes\admin {
 			$result = $admin->DataBase->query("SELECT id, item_taxable, full_price, item_cost FROM ".TABLE_INVENTORY);
 			while(!$result->EOF){
 				$sql_data_array = array();
-				$sql_data_array['full_price_with_tax'] = round((1 +($tax_rates[$result->fields['item_taxable']]['rate']/100))  * $result->fields['full_price'], $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
-				if($result->fields['item_cost'] <> '' && $result->fields['item_cost'] > 0) $sql_data_array['product_margin'] = round($sql_data_array['full_price_with_tax'] / $result->fields['item_cost'], $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
+				$sql_data_array['full_price_with_tax'] = round((1 +($tax_rates[$result->fields['item_taxable']]['rate']/100))  * $result->fields['full_price'], $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
+				if($result->fields['item_cost'] <> '' && $result->fields['item_cost'] > 0) $sql_data_array['product_margin'] = round($sql_data_array['full_price_with_tax'] / $result->fields['item_cost'], $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
 				db_perform(TABLE_INVENTORY, $sql_data_array, 'update', "id = " . $result->fields['id']);
 				$result->MoveNext();
 			}
@@ -851,7 +851,7 @@ class admin extends \core\classes\admin {
   			$serialize_number = db_prepare_input($_POST['serial_'.$rowCnt]);
   			$desc             = db_prepare_input($_POST['desc_'.$rowCnt]);
   			$acct             = db_prepare_input($_POST['acct_'.$rowCnt]);
-  			$price            = $currencies->clean_value($_POST['price_'.$rowCnt]);
+  			$price            = $admin->currencies->clean_value($_POST['price_'.$rowCnt]);
   			if ($qty > 0) $adj_total += $qty * $price;
   			if ($qty && $sku <> '' && $sku <> TEXT_SEARCH) { // ignore blank rows
   				$glEntry->journal_rows[] = array(

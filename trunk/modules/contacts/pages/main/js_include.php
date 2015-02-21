@@ -21,7 +21,7 @@
 <!--
 // pass any php variables generated during pre-process that are used in the javascript functions.
 // Include translations here as well.
-var attachment_path = '<?php echo urlencode(CONTACTS_DIR_ATTACHMENTS); ?>';
+var attachment_path = '<?php echo urlencode($basis->cInfo->contact->dir_attachments); ?>';
 var default_country = '<?php echo COMPANY_COUNTRY; ?>';
 var account_type    = '<?php echo $basis->cInfo->contact->type; ?>';
 
@@ -37,7 +37,7 @@ function init() {
 function check_form() {
   var error = 0;
   var error_message = "<?php echo JS_ERROR; ?>";
-  <?php if ($basis->cInfo->auto_type == false && ($basis->cInfo->action == 'LoadContactPage' || $_REQUEST['action'] == 'update' || $_REQUEST['action'] == 'new')) { ?> // if showing the edit/update detail form
+  <?php if ($basis->cInfo->auto_type == false && ($basis->cInfo->action == 'LoadContactPage' || $_REQUEST['action'] == 'update' || $_REQUEST['action'] == 'new')) { ?> // if showing the edit/update detail form  @todo
   var acctId = document.getElementById('short_name').value;
   if (acctId == '') {
       error_message += "* <?php echo TEXT_THE_ID_ENTRY_CANNOT_BE_EMPTY; ?>";

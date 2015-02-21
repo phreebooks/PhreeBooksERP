@@ -24,7 +24,7 @@ class pos_this_week extends \core\classes\ctl_panel {
 	public $version      		= '4.0';
 
 	function output() {
-		global $admin, $currencies;
+		global $admin;
 		$contents = '';
 		$control  = '';
 		for($i=0; $i<=7; $i++){
@@ -44,14 +44,14 @@ class pos_this_week extends \core\classes\ctl_panel {
 			$week = array();
 			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
 			  	$total += $result['day_total'];
-				$contents .= '<div style="float:right">' . $currencies->format_full($result['day_total'], true, $result['currencies_code'], $result['currencies_value']) . '</div>';
+				$contents .= '<div style="float:right">' . $admin->currencies->format_full($result['day_total'], true, $result['currencies_code'], $result['currencies_value']) . '</div>';
 				$contents .= '<div>';
 				$contents .= gen_locale_date($result['post_date']) ;
 				$contents .= '</a></div>' . chr(10);
 		  	}
 		}
 		if ($sql->rowCount() > 0) {
-		  	$contents .= '<div style="float:right"><b>' . $currencies->format_full($total, true, $result['currencies_code'], $result['currencies_value']) . '</b></div>';
+		  	$contents .= '<div style="float:right"><b>' . $admin->currencies->format_full($total, true, $result['currencies_code'], $result['currencies_value']) . '</b></div>';
 		  	$contents .= '<div><b>' . TEXT_TOTAL . '</b></div>' . chr(10);
 		}
 		return $this->build_div($contents, $control);

@@ -55,7 +55,7 @@
 			echo '    <td align="right">' . gen_locale_date($result->fields['deliver_date']) . '</td>' . chr(10);
 			echo '    <td align="right">' . ($result->fields['actual_date'] ? gen_locale_date($result->fields['actual_date']) : '&nbsp;') . '</td>' . chr(10);
 			echo '    <td align="right"><a target="_blank" href="' . MODULE_SHIPPING_YRC_TRACKING_URL . '">' . $result->fields['tracking_id'] . '</a></td>' . chr(10);
-			echo '    <td align="right">' . $currencies->format_full($result->fields['cost']) . '</td>' . chr(10);
+			echo '    <td align="right">' . $admin->currencies->format_full($result->fields['cost']) . '</td>' . chr(10);
 			echo '    <td align="right">';
 	  		echo html_icon('phreebooks/stock_id.png', TEXT_VIEW_SHIP_LOG, 'small', 'onclick="loadPopUp(\'yrc\', \'edit\', ' . $result->fields['id'] . ')"') . chr(10);
 	  		echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . SHIPPING_DELETE_CONFIRM . '\')) window.open(\'index.php?module=shipping&amp;page=popup_label_mgr&amp;method=yrc&amp;sID=' . $result->fields['shipment_id'] . '&amp;action=delete\',\'popup_label_mgr\',\'width=800,height=700,resizable=1,scrollbars=1,top=50,left=50\')"') . chr(10);

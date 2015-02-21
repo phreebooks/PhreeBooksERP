@@ -42,12 +42,12 @@ echo $toolbar->build();
 <?php if ($type == 'v') { ?>
   <tr onclick="setReturnPrice('<?php echo $rowId; ?>', 'cost');">
     <td style="cursor:pointer"><?php echo TEXT_ITEM_COST . ': '; ?></td>
-    <td style="cursor:pointer"><?php echo html_input_field('cost', $currencies->precise($inventory_details->fields['item_cost']), 'style="cursor:pointer" readonly="readonly" size="10" style="text-align:right"'); ?></td>
+    <td style="cursor:pointer"><?php echo html_input_field('cost', $admin->currencies->precise($inventory_details->fields['item_cost']), 'style="cursor:pointer" readonly="readonly" size="10" style="text-align:right"'); ?></td>
   </tr>
 <?php } else { ?>
   <tr onclick="setReturnPrice('<?php echo $rowId; ?>', 'full');">
     <td style="cursor:pointer"><?php echo TEXT_FULL_PRICE . ': '; ?></td>
-    <td style="cursor:pointer"><?php echo html_input_field('full', $currencies->precise($inventory_details->fields['full_price']), 'style="cursor:pointer" readonly="readonly" size="10" style="text-align:right"'); ?></td>
+    <td style="cursor:pointer"><?php echo html_input_field('full', $admin->currencies->precise($inventory_details->fields['full_price']), 'style="cursor:pointer" readonly="readonly" size="10" style="text-align:right"'); ?></td>
   </tr>
 <?php } ?>
  </tbody>

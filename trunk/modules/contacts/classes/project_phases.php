@@ -77,7 +77,7 @@ class project_phases {
 	}
 
 	function build_main_html() {
-	  	global $admin, $project_cost_types;
+	  	global $admin;
 	    $content = array();
 		$content['thead'] = array(
 		  'value' => array(TEXT_SHORT_NAME, TEXT_DESCRIPTION, TEXT_COST_TYPE, TEXT_COST_BREAKDOWN, TEXT_INACTIVE, TEXT_ACTION),
@@ -85,6 +85,7 @@ class project_phases {
 		);
 	    $result = $admin->DataBase->query("select phase_id, description_short, description_long, cost_type, cost_breakdown, inactive from " . $this->db_table);
 	    $rowCnt = 0;
+	    $project_costs = new \contacts\classes\project_costs();
 		while (!$result->EOF) {
 			$params  = unserialize($result->fields['params']);
 			$actions = '';
@@ -95,7 +96,7 @@ class project_phases {
 					'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'project_costs_edit\',\''.$result->fields['cost_id'].'\')"'),
 			  array('value' => htmlspecialchars($result->fields['description_long']),
 					'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'project_costs_edit\',\''.$result->fields['cost_id'].'\')"'),
-			  array('value' => $project_cost_types[$result->fields['cost_type']],
+			  array('value' => $project_costs->cost_types[$result->fields['cost_type']],
 					'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'project_costs_edit\',\''.$result->fields['cost_id'].'\')"'),
 			  array('value' => $result->fields['cost_breakdown'] ? TEXT_YES : '',
 					'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'project_costs_edit\',\''.$result->fields['cost_id'].'\')"'),
@@ -111,13 +112,14 @@ class project_phases {
 	}
 
   function build_form_html($action, $id = '') {
-    global $admin, $project_cost_types;
+    global $admin;
     if ($action <> 'new') {
         $sql = "select description_short, description_long, cost_type, cost_breakdown, inactive
 	       from " . $this->db_table . " where phase_id = '" . $this->id . "'";
         $result = $admin->DataBase->query($sql);
         foreach ($result->fields as $key => $value) $this->$key = $value;
     }
+    $project_costs = new \contacts\classes\project_costs();
 	$output  = '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);
 	$output .= '  <thead class="ui-widget-header">' . "\n";
 	$output .= '  <tr>' . chr(10);
@@ -138,7 +140,7 @@ class project_phases {
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
 	$output .= '    <td>' . TEXT_COST_TYPE . '</td>' . chr(10);
-	$output .= '    <td>' . html_pull_down_menu('cost_type', gen_build_pull_down($project_cost_types), $this->cost_type) . '</td>' . chr(10);
+	$output .= '    <td>' . html_pull_down_menu('cost_type', gen_build_pull_down($project_costs->cost_types), $this->cost_type) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
 	$output .= '    <td>' . TEXT_USE_COST_BREAKDOWNS_FOR_THIS_PHASE . '</td>' . chr(10);

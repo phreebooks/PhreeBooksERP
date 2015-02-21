@@ -52,8 +52,8 @@ $date_today = date('Y-m-d');
   <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer">
 	<td><?php echo gen_locale_date($query_result->fields['post_date']); ?></td>
 	<td align="center"><?php echo $query_result->fields['purchase_invoice_id']; ?></td>
-	<td align="center"><?php echo $currencies->format_full($query_result->fields['total_amount']); ?></td>
-	<?php if (ENABLE_MULTI_CURRENCY) echo '<td align="center">' . $currencies->format_full($query_result->fields['total_amount'], true, $query_result->fields['currencies_code'], $query_result->fields['currencies_value']) . '</td>';?>
+	<td align="center"><?php echo $admin->currencies->format_full($query_result->fields['total_amount']); ?></td>
+	<?php if (ENABLE_MULTI_CURRENCY) echo '<td align="center">' . $admin->currencies->format_full($query_result->fields['total_amount'], true, $query_result->fields['currencies_code'], $query_result->fields['currencies_value']) . '</td>';?>
 	<td><?php echo htmlspecialchars($query_result->fields['bill_primary_name']); ?></td>
 	<td align="right">
 <?php // first pull in any extra buttons, this is dynamic since each row can have different buttons

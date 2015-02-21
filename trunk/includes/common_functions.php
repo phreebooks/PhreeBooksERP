@@ -154,166 +154,166 @@
     	return mb_strimwidth($string, 0, $length, $add_dots ? '...' : '');
   	}
 
-  function gen_null_pull_down() {
-    $null_array = array('id' => '0', 'text' => TEXT_ENTER_NEW);
-    return $null_array;
-  }
+  	function gen_null_pull_down() {
+    	return array('id' => '0', 'text' => TEXT_ENTER_NEW);
+  	}
 
-  /**
-   * this function creates a array for dropdown doxes.
-   * arrays with objects may also be passed
-   * @param array $keyed_array
-   * @param bool  $installed_only. this wil be used for objects only
-   */
-  function gen_build_pull_down($keyed_array, $installed_only = false, $inc_select = false) {
-	$values = array();
-	if ($inc_select) $values[] = array('id' => '0', 'text' => TEXT_PLEASE_SELECT);
-	if (is_array($keyed_array)) {
-	  	foreach($keyed_array as $key => $value) {
-	  		if(is_array($key)){
-				$values[] = array('id' => $key, 'text' => $value);
-	  		}else{
-	  			if($installed_only == true && $value->installed == false) continue;
-	  			else $values[] = array('id' => $value->id, 'text' => $value->text);
+  	/**
+  	 * this function creates a array for dropdown doxes.
+  	 * arrays with objects may also be passed
+  	 * @param array $keyed_array
+  	 * @param bool  $installed_only. this wil be used for objects only
+  	 */
+  	function gen_build_pull_down($keyed_array, $installed_only = false, $inc_select = false) {
+		$values = array();
+		if ($inc_select) $values[] = array('id' => '0', 'text' => TEXT_PLEASE_SELECT);
+		if (is_array($keyed_array)) {
+	  		foreach($keyed_array as $key => $value) {
+	  			if(is_array($key)){
+					$values[] = array('id' => $key, 'text' => $value);
+	  			}else{
+	  				if($installed_only == true && $value->installed == false) continue;
+	  				else $values[] = array('id' => $value->id, 'text' => $value->text);
+	  			}
 	  		}
-	  	}
-	}
-	return $values;
-  }
+		}
+		return $values;
+  	}
 
-  function gen_get_pull_down($db_name, $first_none = false, $show_id = '0', $id = 'id', $description = 'description') {
-    global $admin;
-    $type_format_values = $admin->DataBase->query("select $id as id, $description as description
-      from " . $db_name . " order by '$id'");
-    $type_format_array = array();
-    if ($first_none) $type_format_array[] = array('id' => '', 'text' => TEXT_NONE);
-    while (!$type_format_values->EOF) {
-	  switch ($show_id) {
-	    case '1': // description only
-		  $text_value = $type_format_values->fields['description'];
-		  break;
-		case '2': // Both id and description
-		  $text_value = $type_format_values->fields['id'] . ' : ' . $type_format_values->fields['description'];
-		  break;
-		case '0': // id only
-		default:
-	  	  $text_value = $type_format_values->fields['id'];
-	  }
-      $type_format_array[] = array(
-	    'id'   => $type_format_values->fields['id'],
-        'text' => $text_value,
-	  );
-      $type_format_values->MoveNext();
-    }
-    return $type_format_array;
-  }
+  	function gen_get_pull_down($db_name, $first_none = false, $show_id = '0', $id = 'id', $description = 'description') {
+    	global $admin;
+	    $sql = $admin->DataBase->prepare("SELECT $id as id, $description as description FROM $db_name ORDER BY '$id'");
+	    $sql->execute();
+    	$type_format_array = array();
+    	if ($first_none) $type_format_array[] = array('id' => '', 'text' => TEXT_NONE);
+    	while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+		  	switch ($show_id) {
+			    case '1': // description only
+					$text_value = $result['description'];
+		  			break;
+				case '2': // Both id and description
+		  			$text_value = $result['id'] . ' : ' . $result['description'];
+		  			break;
+				case '0': // id only
+				default:
+	  	  			$text_value = $result['id'];
+	  		}
+      		$type_format_array[] = array(
+	    		'id'   => $result['id'],
+        		'text' => $text_value,
+	  		);
+    	}
+    	return $type_format_array;
+  	}
 
-  function gen_calculate_period($post_date, $hide_error = false) {
-	global $admin;
-	$post_time_stamp = strtotime($post_date);
-	$period_start_time_stamp = strtotime(CURRENT_ACCOUNTING_PERIOD_START);
-	$period_end_time_stamp = strtotime(CURRENT_ACCOUNTING_PERIOD_END);
+	function gen_calculate_period($post_date, $hide_error = false) {
+		global $admin;
+		$post_time_stamp = strtotime($post_date);
+		$period_start_time_stamp = strtotime(CURRENT_ACCOUNTING_PERIOD_START);
+		$period_end_time_stamp = strtotime(CURRENT_ACCOUNTING_PERIOD_END);
 
-	if (($post_time_stamp >= $period_start_time_stamp) && ($post_time_stamp <= $period_end_time_stamp)) {
-		return CURRENT_ACCOUNTING_PERIOD;
-	} else {
-		$result = $admin->DataBase->query("select period from " . TABLE_ACCOUNTING_PERIODS . "
-			where start_date <= '$post_date' and end_date >= '$post_date'");
-		if ($result->rowCount() <> 1) { // post_date is out of range of defined accounting periods
+		if (($post_time_stamp >= $period_start_time_stamp) && ($post_time_stamp <= $period_end_time_stamp)) return CURRENT_ACCOUNTING_PERIOD;
+		$sql = $admin->DataBase->prepare("SELECT period FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE start_date <= '$post_date' and end_date >= '$post_date'");
+		$sql->execute();
+		if ($sql->rowCount() <> 1) { // post_date is out of range of defined accounting periods
 			if (!$hide_error) throw new \core\classes\userException(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR);
 		}
+		$result = $sql->fetch(\PDO::FETCH_LAZY);
 		if (!$hide_error) throw new \core\classes\userException(ERROR_MSG_BAD_POST_DATE);
-		return $result->fields['period'];
-	}
-  }
+		return $result['period'];
+  	}
 
-  function gen_get_period_pull_down($include_all = true) {
-    global $admin;
-    $period_values = $admin->DataBase->query("select period, start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . " order by period");
-    $period_array = array();
-    if ($include_all) $period_array[] = array('id' => 'all', 'text' => TEXT_ALL);
-    while (!$period_values->EOF) {
-	  $text_value = TEXT_PERIOD . ' ' . $period_values->fields['period'] . ' : ' . gen_locale_date($period_values->fields['start_date']) . ' - ' . gen_locale_date($period_values->fields['end_date']);
-      $period_array[] = array('id' => $period_values->fields['period'], 'text' => $text_value);
-      $period_values->MoveNext();
-    }
-    return $period_array;
-  }
+  	function gen_get_period_pull_down($include_all = true) {
+    	global $admin;
+    	$sql = $admin->DataBase->prepare("SELECT period, start_date, end_date FROM " . TABLE_ACCOUNTING_PERIODS . " ORDER BY period");
+    	$sql->execute();
+    	$period_array = array();
+    	if ($include_all) $period_array[] = array('id' => 'all', 'text' => TEXT_ALL);
+    	while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+	  		$text_value = TEXT_PERIOD . " {$result['period']} : " . gen_locale_date($result['start_date']) . ' - ' . gen_locale_date($result['end_date']);
+      		$period_array[] = array('id' => $result['period'], 'text' => $text_value);
+    	}
+    	return $period_array;
+  	}
 
-  function gen_coa_pull_down($show_id = SHOW_FULL_GL_NAMES, $first_none = true, $hide_inactive = true, $show_all = false, $restrict_types = false) {
-    global $admin;
-	$params = array();
-    $output = array();
-	$sql    = "select id, description, account_type from " . TABLE_CHART_OF_ACCOUNTS;
-	if ($hide_inactive)  $params[] = "account_inactive = '0'";
-	if (!$show_all)      $params[] = "heading_only = '0'";
-	if ($restrict_types) $params[] = "account_type in (" . implode(',', $restrict_types) . ")";
-	$sql .= (sizeof($params) == 0) ? '' : ' where ' . implode(' and ', $params);
-	$sql .= " order by id";
-    $result = $admin->DataBase->query($sql);
-    if ($first_none) $output[] = array('id' => '', 'text' => TEXT_PLEASE_SELECT);
-    while (!$result->EOF) {
-	  switch ($show_id) {
-		default:
-		case '0': $text_value = $result->fields['id']; break;
-	    case '1': $text_value = $result->fields['description']; break;
-		case '2': $text_value = $result->fields['id'].' : '.$result->fields['description']; break;
-	  }
-      $output[] = array('id' => $result->fields['id'], 'text' => $text_value, 'type' => $result->fields['account_type']);
-      $result->MoveNext();
-    }
-    return $output;
-  }
+  	/**
+  	 * returns a array with gl account for dropdown boxes.
+  	 * @param string $show_id
+  	 * @param bool $first_none
+  	 * @param bool $hide_inactive
+  	 * @param bool $show_all
+  	 * @param bool $restrict_types
+  	 * @return array
+  	 */
+  	function gen_coa_pull_down($show_id = SHOW_FULL_GL_NAMES, $first_none = true, $hide_inactive = true, $show_all = false, $restrict_types = false) {
+    	global $admin;
+		$params = array();
+	    $output = array();
+		$raw_sql    = "SELECT id, description, account_type FROM " . TABLE_CHART_OF_ACCOUNTS;
+		if ($hide_inactive)  $params[] = "account_inactive = '0'";
+		if (!$show_all)      $params[] = "heading_only = '0'";
+		if ($restrict_types) $params[] = "account_type in (" . implode(',', $restrict_types) . ")";
+		$raw_sql .= (sizeof($params) == 0) ? '' : ' WHERE ' . implode(' and ', $params);
+		$raw_sql .= " ORDER BY id";
+	    $sql = $admin->DataBase->prepare($raw_sql);
+	    $sql->execute();
+	    if ($first_none) $output[] = array('id' => '', 'text' => TEXT_PLEASE_SELECT);
+	    while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+	  		switch ($show_id) {
+				default:
+				case '0': $text_value = $result['id']; break;
+			    case '1': $text_value = $result['description']; break;
+				case '2': $text_value = $result['id'].' : '.$result['description']; break;
+	  		}
+      		$output[] = array('id' => $result['id'], 'text' => $text_value, 'type' => $result['account_type']);
+  		}
+    	return $output;
+  	}
 
-  function gen_get_type_description($db_name, $id, $full = true) {
-    global $admin;
-    $type_name = $admin->DataBase->query("select description from $db_name where id = '$id'");
-    if ($type_name->rowCount() < 1) {
-      return $id;
-    } else {
-	  if ($full) {
-		return $id . ':' . $type_name->fields['description'];
-	  } else {
-		return $type_name->fields['description'];
-	  }
-    }
-  }
-
-  function gen_get_contact_type($id) {
-    global $admin;
-    $vendor_type = $admin->DataBase->query("select type from " . TABLE_CONTACTS . " where id = '" . $id . "'");
-    return ($vendor_type->rowCount() == 1) ? $vendor_type->fields['type'] : false;
-  }
+  	function gen_get_type_description($db_name, $id, $full = true) {
+    	global $admin;
+    	$type_name = $admin->DataBase->query("SELECT description FROM $db_name WHERE id = '$id'");
+    	if ($type_name->rowCount() < 1) {
+      		return $id;
+    	}
+	  	if ($full) {
+			return $id . ':' . $type_name['description'];
+	  	} else {
+			return $type_name['description'];
+	  	}
+  	}
+	/**
+	 *
+	 * @param integer $id
+	 * @return string, or false if there is no match
+	 */
+  	function gen_get_contact_type($id) {
+    	global $admin;
+    	$vendor_type = $admin->DataBase->query("SELECT type FROM " . TABLE_CONTACTS . " WHERE id = '$id'");
+    	return ($vendor_type->rowCount() == 1) ? $vendor_type['type'] : false;
+  	}
 
   	/**
    	 * this function will return the short_name for a contact
-   	 * @param unknown_type $id
+   	 * @param integer $id
    	 */
   	function gen_get_contact_name($id) {
     	global $admin;
-    	$vendor_name = $admin->DataBase->query("select short_name from " . TABLE_CONTACTS . " where id = '$id'");
-    	if ($vendor_name->rowCount() == 1) return $vendor_name->fields['short_name'];
+    	$vendor_name = $admin->DataBase->query("SELECT short_name FROM " . TABLE_CONTACTS . " WHERE id = '$id'");
+    	if ($vendor_name->rowCount() == 1) return $vendor_name['short_name'];
     	throw new \core\classes\userException("couldn't find contact with $id");
   	}
 
-  function gen_get_contact_array_by_type($type = 'v') {
-    global $admin;
-    $accounts = $admin->DataBase->query("select c.id, a.primary_name from " . TABLE_CONTACTS . " c left join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id
-	  where c.inactive <> '1' and a.type='" . $type . "m' order by a.primary_name");
-    $accounts_array = array();
-    $accounts_array[] = array('id' => '', 'text' => TEXT_NONE);
-    while (!$accounts->EOF) {
-      $accounts_array[] = array(
-	    'id'   => $accounts->fields['id'],
-		'text' => $accounts->fields['primary_name'],
-	  );
-      $accounts->MoveNext();
-    }
-    return $accounts_array;
-  }
+  	function gen_get_contact_array_by_type($type = 'v') {
+    	global $admin;
+    	$sql = $admin->DataBase->prepare("SELECT c.id as id, a.primary_name as text FROM " . TABLE_CONTACTS . " c LEFT JOIN " . TABLE_ADDRESS_BOOK . " a ON c.id = a.ref_id
+	  		WHERE c.inactive <> '1' and a.type='{$type}m' order by a.primary_name");
+    	$sql->execute();
+    	return array_merge(array(-1 => array('id' => '0', 'text' => TEXT_NONE)), $sql->fetchAll());
+  	}
 
 
-	/** @todo maybe change this so it returns contact objects the text variable needs to be created.
+	/**
 	 * returns sales or buyers personel in array for dropdown.
 	 * @param string $type contact_type
 	 * @return array(id, text)
@@ -326,33 +326,30 @@
 	  		case 'c': $emp_type = 's'; break;
 	  		case 'v': $emp_type = 'b'; break;
 		}
-    	$result_array = array();
-    	$result_array[] = array('id' => '0', 'text' => TEXT_NONE);
-		$sql = $admin->DataBase->prepare("SELECT id, contact_first, contact_last, gl_type_account FROM " . TABLE_CONTACTS . " where type = 'e' and inactive <> '1' and gl_type_account like '%{$emp_type}%'");
+		$sql = $admin->DataBase->prepare("SELECT id, CONCAT(contact_first,' ' , contact_last) as text FROM " . TABLE_CONTACTS . " where type = 'e' and inactive <> '1' and gl_type_account like '%{$emp_type}%'");
 		$sql->execute();
-		while($result = $sql->fetch(\PDO::FETCH_LAZY)) {
- 	    	$result_array[] = array('id' => $result['id'], 'text' => $result['contact_first'] . ' ' . $result['contact_last']);
+		return array_merge(array(-1 => array('id' => '0', 'text' => TEXT_NONE)), $sql->fetchAll());
+  	}
+
+  	/**
+  	 * returns array for dropdown boxes but the id field is also the key for the first array
+  	 * @return array( id, text)
+  	 */
+  	function gen_get_store_ids() {
+		global $admin;
+		$result_array = array();
+		$sql = $admin->DataBase->prepare("SELECT id, short_name as text FROM " . TABLE_CONTACTS . " WHERE type = 'b'");
+		$sql->execute();
+		if (($_SESSION['admin_prefs']['restrict_store'] && $_SESSION['admin_prefs']['def_store_id'] == 0) || !$_SESSION['admin_prefs']['restrict_store']) {
+        	$result_array[0] = array('id' => '0', 'text' => COMPANY_ID);
+		}
+		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+	  		if (($_SESSION['admin_prefs']['restrict_store'] && $_SESSION['admin_prefs']['def_store_id'] == $result['id']) || !$_SESSION['admin_prefs']['restrict_store']) {
+ 	     	 	$result_array[$result['id']] = $result;
+	  		}
 		}
     	return $result_array;
   	}
-
-  function gen_get_store_ids() {
-	global $admin;
-    $result_array = array();
-	$result = $admin->DataBase->query("select id, short_name from " . TABLE_CONTACTS . " where type = 'b'");
-	if (($_SESSION['admin_prefs']['restrict_store'] && $_SESSION['admin_prefs']['def_store_id'] == 0)
-	  || !$_SESSION['admin_prefs']['restrict_store']) {
-        $result_array[0] = array('id' => '0', 'text' => COMPANY_ID); // main branch id
-	}
-	while(!$result->EOF) {
-	  if (($_SESSION['admin_prefs']['restrict_store'] && $_SESSION['admin_prefs']['def_store_id'] == $result->fields['id'])
-	    || !$_SESSION['admin_prefs']['restrict_store']) {
- 	      $result_array[$result->fields['id']] = array('id' => $result->fields['id'], 'text' => $result->fields['short_name']);
-	  }
-	  $result->MoveNext();
-	}
-    return $result_array;
-  }
 
   function gen_terms_to_language($terms_encoded, $short = true, $type = 'AR') {
 	gen_pull_language('contacts'); // required for calculating terms
@@ -406,19 +403,17 @@
 	return $result['long'];
   }
 
-  function get_price_sheet_data($type = 'c') {
-    global $admin;
-    $sql = "select distinct sheet_name, default_sheet from " . TABLE_PRICE_SHEETS . "
-		where inactive = '0' and type = '" . $type . "' order by sheet_name";
-    $result = $admin->DataBase->query($sql);
-    $sheets = array();
-    $sheets[] = array('id' => '', 'text' => TEXT_NONE);
-    while (!$result->EOF) {
-      $sheets[] = array('id' => $result->fields['sheet_name'], 'text' => $result->fields['sheet_name']);
-      $result->MoveNext();
-    }
-    return $sheets;
-  }
+  	/**
+  	 * gets pricesheet data for dropdown box.
+  	 * @param string $type
+  	 * @return array
+  	 */
+  	function get_price_sheet_data($type = 'c') {
+    	global $admin;
+    	$sql = $admin->DataBase->prepare("SELECT DISTINCT sheet_name as text, sheet_name as id FROM " . TABLE_PRICE_SHEETS . " WHERE inactive = '0' and type = '{$type}' ORDER BY sheet_name");
+    	$sql->execute();
+    	return array_merge(array(-1 => array('id' => ' ', 'text' => TEXT_NONE)), $sql->fetchAll());
+  	}
 
   function gen_build_company_arrays() {
   	$acct_array = array();
@@ -440,12 +435,19 @@
 	return $acct_array;
   }
 
+	/**
+	 * stores information into the audit log
+	 * @param unknown $action
+	 * @param string $ref_id
+	 * @param string $amount
+	 * @throws \core\classes\userException
+	 */
   	function gen_add_audit_log($action, $ref_id = '', $amount = '') {
 		global $admin;
   		if ($action == '' || !isset($action)) throw new \core\classes\userException('Error, call to audit log with no description');
   		if ($admin->DataBase == null) return;
   		$sql = $admin->DataBase->prepare("INSERT INTO " . TABLE_AUDIT_LOG . " (user_id, action, ip_address, stats, reference_id, amount) VALUES (:user_id, :action, :ip_address, :stats, :reference_id, :amount)");
-  		$stats = (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME))."ms, ".$admin->DataBase->count_queries."q ".(int)($admin->DataBase->total_query_time * 1000)."ms";
+  		$stats = (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME))."ms, {$admin->DataBase->count_queries}q ".(int)($admin->DataBase->total_query_time * 1000)."ms";
 		$fields = array(
 	  		':user_id'   	=> $_SESSION['admin_id'] ? $_SESSION['admin_id'] : '1',
 	  		':action'    	=> substr($action, 0, 64), // limit to field length
@@ -1047,7 +1049,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
   	}
 
   	function html_currency_field($name, $value, $parameters, $currency_code = DEFAULT_CURRENCY){//@todo test and implement
-  		global $currencies;
+  		global $admin;
   		if (strpos($name, '[]')) { // don't show id attribute if generic array
 	  		$id = false;
 		} else {
@@ -1059,12 +1061,12 @@ function gen_db_date($raw_date = '', $separator = '/') {
     	if (gen_not_null($value))		$field .= ' value="' . str_replace('"', '&quot;', $value) . '"';
     	if (gen_not_null($parameters))	$field .= " $parameters ";
     	if ($required)					$field .= " required='required' ";
-    	$field .= " class='easyui-numberbox' data-options=\"precision:$currencies[$currency_code]->decimal_places,groupSeparator:'$currencies[$currency_code]->thousands_point',decimalSeparator:'$currencies[$currency_code]->decimal_point',prefix:'$currencies[$currency_code]->symbol_left'\" $temp />";
+    	$field .= " class='easyui-numberbox' data-options=\"precision:{$admin->currencies[$currency_code]->decimal_places},groupSeparator:'{$admin->currencies[$currency_code]->thousands_point}',decimalSeparator:'{$admin->currencies[$currency_code]->decimal_point}',prefix:'{$admin->currencies[$currency_code]->symbol_left}'\" $temp />";
   		return $field;
   }
 
   	function html_number_field($name, $value, $parameters, $required = false){//@todo test and implement
-	  	global $currencies;
+	  	global $admin;
   		if (strpos($name, '[]')) { // don't show id attribute if generic array
 	  		$id = false;
 		} else {
@@ -1076,7 +1078,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
     	if (gen_not_null($value))		$field .= ' value="' . str_replace('"', '&quot;', $value) . '"';
     	if (gen_not_null($parameters))	$field .= " $parameters ";
     	if ($required)					$field .= " required='required' ";
-    	$field .=  "class='easyui-numberbox' data-options=\"precision:$currencies[DEFAULT_CURRENCY]->decimal_places,groupSeparator:'$currencies[DEFAULT_CURRENCY]->thousands_point',decimalSeparator:'$currencies[DEFAULT_CURRENCY]->decimal_point'\" />";
+    	$field .=  "class='easyui-numberbox' data-options=\"precision:{$admin->currencies[DEFAULT_CURRENCY]->decimal_places},groupSeparator:'{$admin->currencies[DEFAULT_CURRENCY]->thousands_point}',decimalSeparator:'{$admin->currencies[DEFAULT_CURRENCY]->decimal_point}'\" />";
   		return $field;
   	}
 

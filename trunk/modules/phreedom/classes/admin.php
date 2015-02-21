@@ -261,10 +261,10 @@ class admin extends \core\classes\admin {
 	}
 
 	function after_ValidateUser(\core\classes\basis &$basis) {
-		global $messageStack, $currencies;
+		global $messageStack;
 	    //load the latest currency exchange rates
 		if ($this->web_connected(false) && AUTO_UPDATE_CURRENCY && ENABLE_MULTI_CURRENCY) {
-				$currencies->btn_update();
+				$basis->currencies->btn_update();
 		}
 		// Fix for change to audit log for upgrade to R3.6 causes perpertual crashing when writing audit log
 		if (!db_field_exists(TABLE_AUDIT_LOG, 'stats')) $basis->DataBase->exec("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");

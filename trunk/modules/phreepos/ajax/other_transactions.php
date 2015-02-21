@@ -58,17 +58,17 @@ if (file_exists($custom_path)) { include($custom_path); }
 		'purchase_invoice_id' => '',
 		'admin_id'            => $_SESSION['admin_id'],
 		'store_id'            => $tills->store_id,
-		'total_amount'		  => ($currencies->clean_value(db_prepare_input($_POST['ot_amount']), $order->currencies_code) / $order->currencies_value),
+		'total_amount'		  => ($admin->currencies->clean_value(db_prepare_input($_POST['ot_amount']), $order->currencies_code) / $order->currencies_value),
 	);
 	switch($transaction->type){
 		case 'cash_in':
 			$credit_amount = '';
-			$debit_amount  = $currencies->clean_value(db_prepare_input($_POST['ot_amount']), $order->currencies_code) / $order->currencies_value;
+			$debit_amount  = $admin->currencies->clean_value(db_prepare_input($_POST['ot_amount']), $order->currencies_code) / $order->currencies_value;
 			$tills->adjust_balance($debit_amount);
 			break;
 		default:
 			$debit_amount  = '';
-			$credit_amount = $currencies->clean_value(db_prepare_input($_POST['ot_amount']), $order->currencies_code) / $order->currencies_value;
+			$credit_amount = $admin->currencies->clean_value(db_prepare_input($_POST['ot_amount']), $order->currencies_code) / $order->currencies_value;
 			$tills->adjust_balance(-$credit_amount);
 	}
 	$order->journal_rows[] = array(
@@ -82,7 +82,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 			'post_date'     => date('Y-m-d'));
 
 	if($transaction->type == 'expenses'){
-		$tax = $currencies->clean_value(db_prepare_input($_POST['ot_tax']), $order->currencies_code) / $order->currencies_value;
+		$tax = $admin->currencies->clean_value(db_prepare_input($_POST['ot_tax']), $order->currencies_code) / $order->currencies_value;
 		$tax_auths      = gen_build_tax_auth_array();
 		$order->journal_rows[] = array(
 			'id'            => '',

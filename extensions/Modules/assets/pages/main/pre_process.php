@@ -103,8 +103,8 @@ switch ($_REQUEST['action']) {
 		$sql_data_array['maintenance_date'] = $maintenance_date;
 		$sql_data_array['terminal_date']    = $terminal_date;
 		// special cases for monetary values in system fields
-		$sql_data_array['full_price']       = $currencies->clean_value($sql_data_array['full_price']);
-		$sql_data_array['asset_cost']       = $currencies->clean_value($sql_data_array['asset_cost']);
+		$sql_data_array['full_price']       = $admin->currencies->clean_value($sql_data_array['full_price']);
+		$sql_data_array['asset_cost']       = $admin->currencies->clean_value($sql_data_array['asset_cost']);
 		// Check attachments
 		$result = $admin->DataBase->query("select attachments from " . TABLE_ASSETS . " where id = " . $id);
 		$attachments = $result->fields['attachments'] ? unserialize($result->fields['attachments']) : array();

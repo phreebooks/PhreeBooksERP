@@ -45,13 +45,13 @@ switch ($_REQUEST['action']) {
 	  } else {
 		$encoded_prices = array();
 		for ($i=0, $j=1; $i < MAX_NUM_PRICE_LEVELS; $i++, $j++) {
-		  $level_data  =       $currencies->clean_value($_POST['price_'   . $tab_id . '_' . $j]);
+		  $level_data  =       $admin->currencies->clean_value($_POST['price_'   . $tab_id . '_' . $j]);
 		  $level_data .= ':' . db_prepare_input        ($_POST['qty_'     . $tab_id . '_' . $j]);
 		  $level_data .= ':' . db_prepare_input        ($_POST['src_'     . $tab_id . '_' . $j]);
 		  $level_data .= ':' . db_prepare_input        ($_POST['adj_'     . $tab_id . '_' . $j]);
-		  $level_data .= ':' . $currencies->clean_value($_POST['adj_val_' . $tab_id . '_' . $j]);
+		  $level_data .= ':' . $admin->currencies->clean_value($_POST['adj_val_' . $tab_id . '_' . $j]);
 		  $level_data .= ':' . db_prepare_input        ($_POST['rnd_'     . $tab_id . '_' . $j]);
-		  $level_data .= ':' . $currencies->clean_value($_POST['rnd_val_' . $tab_id . '_' . $j]);
+		  $level_data .= ':' . $admin->currencies->clean_value($_POST['rnd_val_' . $tab_id . '_' . $j]);
 		  $encoded_prices[] = $level_data;
 		}
 		$price_levels = implode(';', $encoded_prices);

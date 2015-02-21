@@ -191,17 +191,17 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 	}
 
 	function save(){
-		global $admin, $security_level, $currencies;
+		global $admin, $security_level;
 		$bom_list = array();
 		for($x=0; $x < count($_POST['assy_sku']); $x++) {
 			$bom_list[$x] = array(
 			  	'ref_id'      => $this->id,
 			  	'sku'         => db_prepare_input($_POST['assy_sku'][$x]),
 				'description' => db_prepare_input($_POST['assy_desc'][$x]),
-				'qty'         => $currencies->clean_value(db_prepare_input($_POST['assy_qty'][$x])),
+				'qty'         => $admin->currencies->clean_value(db_prepare_input($_POST['assy_qty'][$x])),
 			);
 		  	$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY . " where sku = '". $_POST['assy_sku'][$x]."'" );
-		  	if (($result->rowCount() == 0 || $currencies->clean_value($_POST['assy_qty'][$x]) == 0) && $_POST['assy_sku'][$x] =! '') {
+		  	if (($result->rowCount() == 0 || $admin->currencies->clean_value($_POST['assy_qty'][$x]) == 0) && $_POST['assy_sku'][$x] =! '') {
 		  		// show error, bad sku, negative quantity. error check sku is valid and qty > 0
 				throw new \core\classes\userException(INV_ERROR_BAD_SKU . db_prepare_input($_POST['assy_sku'][$x]));
 		  	}else{

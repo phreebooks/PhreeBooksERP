@@ -23,7 +23,7 @@ gen_pull_language('phreebooks','admin');
 gen_pull_language('phreebooks');
 gen_pull_language('contacts');
 function build_audit_xml($date_from, $date_to, $select){
-	global $admin, $messageStack, $coa_types_list, $currencies;
+	global $admin, $messageStack, $coa_types_list;
 	$tax_auths      = gen_build_tax_auth_array();
 	$dates = gen_get_dates($date_from);
   	$output  = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .chr(10);
@@ -133,7 +133,7 @@ function build_audit_xml($date_from, $date_to, $select){
 			$output .= "\t\t" . xmlEntry('period',			$result->fields['period']		,true);
 			$output .= "\t\t" . xmlEntry('transactionDate',	$result->fields['post_date']	,true);
 			$output .= "\t\t" . xmlEntry('sourceID',		$result->fields['admin_id']		,true);
-			$line = $admin->DataBase->query("select id, gl_account, post_date, description, ROUND(debit_amount,".$currencies->currencies[DEFAULT_CURRENCY]['decimal_places'].") as debit_amount, ROUND(credit_amount,".$currencies->currencies[DEFAULT_CURRENCY]['decimal_places'].") as credit_amount, taxable  from " . TABLE_JOURNAL_ITEM . " where ref_id= '" . $result->fields['id']. "'");
+			$line = $admin->DataBase->query("select id, gl_account, post_date, description, ROUND(debit_amount,".$admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places'].") as debit_amount, ROUND(credit_amount,".$admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places'].") as credit_amount, taxable  from " . TABLE_JOURNAL_ITEM . " where ref_id= '" . $result->fields['id']. "'");
 			while (!$line->EOF) {
 				$output .= "\t\t\t" . '<line>' .chr(10);
 				$output .= "\t\t\t" . xmlEntry('recordID',					$line->fields['id']						,true);// Uniek regelnummer

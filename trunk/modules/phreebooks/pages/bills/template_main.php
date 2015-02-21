@@ -160,11 +160,11 @@ echo '<br />' . html_input_field('bill_email', $order->bill_email, 'size="40" ma
 		 <tbody class="ui-widget-content">
 		  <tr>
 			<td align="right"><?php echo TEXT_BALANCE_BEFORE_PAYMENTS . '&nbsp;'; ?></td>
-			<td align="right"><?php echo html_input_field('acct_balance', $currencies->format($acct_balance), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?></td>
+			<td align="right"><?php echo html_input_field('acct_balance', $admin->currencies->format($acct_balance), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?></td>
 		  </tr>
 		  <tr>
 			<td align="right"><?php echo TEXT_BALANCE_AFTER_PAYMENTS . '&nbsp;'; ?></td>
-			<td align="right"><?php echo html_input_field('end_balance', $currencies->format($acct_balance), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?></td>
+			<td align="right"><?php echo html_input_field('end_balance', $admin->currencies->format($acct_balance), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?></td>
 		  </tr>
 		 </tbody>
 		</table>
@@ -216,10 +216,10 @@ echo '<br />' . html_input_field('bill_email', $order->bill_email, 'size="40" ma
 		// End hidden fields
 		echo '</td>' . chr(10);
 		echo '<td align="center">' . html_input_field($due_num,   gen_locale_date($order->$due_num), 'readonly="readonly" size="15"') . '</td>' . chr(10);
-		echo '<td align="center">' . html_input_field($amt_num,   $currencies->format($currencies->clean_value($order->$amt_num)), 'readonly="readonly" size="12" style="text-align:right"') . '</td>' . chr(10);
+		echo '<td align="center">' . html_input_field($amt_num,   $admin->currencies->format($admin->currencies->clean_value($order->$amt_num)), 'readonly="readonly" size="12" style="text-align:right"') . '</td>' . chr(10);
 		echo '<td align="center">' . html_input_field($desc_num,  $order->$desc_num, $extra_params . 'size="64" maxlength="64"') . '</td>' . chr(10);
-		echo '<td align="center">' . html_input_field($dscnt_num, $currencies->format($currencies->clean_value($order->$dscnt_num)), $extra_params . 'size="15" maxlength="20" onchange="updateRowTotal(' . $i . ')" style="text-align:right"') . '</td>' . chr(10);
-		echo '<td align="center">' . html_input_field($total_num, $currencies->format($currencies->clean_value($order->$total_num)), $extra_params . 'size="15" maxlength="20" onchange="updateUnitPrice(' . $i . ')" style="text-align:right"') . '</td>' . chr(10);
+		echo '<td align="center">' . html_input_field($dscnt_num, $admin->currencies->format($admin->currencies->clean_value($order->$dscnt_num)), $extra_params . 'size="15" maxlength="20" onchange="updateRowTotal(' . $i . ')" style="text-align:right"') . '</td>' . chr(10);
+		echo '<td align="center">' . html_input_field($total_num, $admin->currencies->format($admin->currencies->clean_value($order->$total_num)), $extra_params . 'size="15" maxlength="20" onchange="updateUnitPrice(' . $i . ')" style="text-align:right"') . '</td>' . chr(10);
 		echo '<td align="center">' . (($extra_params) ? '&nbsp;' : html_checkbox_field($pay_num, '1', ($order->$pay_num ? true : false), '', 'onclick="updatePayValues(' . $i . ')"')) . '</td>' . chr(10);
 		echo '</tr>' . chr(10);
 		$i++;

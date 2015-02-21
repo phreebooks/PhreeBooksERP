@@ -79,7 +79,7 @@ echo $toolbar->build($add_search = true);
   <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer" onclick="setReturnItem(<?php echo $query_result->fields['id']; ?>)">
 	<td<?php echo $bkgnd; ?>><?php echo $query_result->fields['sku']; ?></td>
 	<td><?php echo $query_result->fields['description_short']; ?></td>
-	<td align="right"><?php echo $currencies->precise($price['price']); ?></td>
+	<td align="right"><?php echo $admin->currencies->precise($price['price']); ?></td>
 	<td align="center"><?php echo ($display_stock) ? $query_result->fields['quantity_on_hand'] : '&nbsp;'; ?></td>
 	<td align="center"><?php echo ($display_stock) ? $query_result->fields['quantity_on_order'] : '&nbsp;'; ?></td>
 	<?php if (ENABLE_MULTI_BRANCH) echo '<td align="center">' . ($display_stock ? $store_stock : '&nbsp;') . '</td>' . chr(10); ?>

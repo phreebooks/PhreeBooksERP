@@ -21,10 +21,8 @@ class i extends \contacts\classes\contacts{
 	public  $security_token         = SECURITY_ID_PHREECRM;
 	public  $address_types          = array('im', 'is', 'ib');
 	public  $type                   = 'i';
-	private $duplicate_id_error     = ACT_ERROR_DUPLICATE_CONTACT;
 	public 	$auto_field    			= 'next_crm_id_num';
-	public 	$auto_field    			= 'next_crm_id_num';
-	public $title					= TEXT_CONTACT;
+	public  $title					= TEXT_CONTACT;
 
   	public function __construct(){
 		$this->tab_list[] = array('file'=>'template_notes',		'tag'=>'notes',    'order'=>40, 'text'=>TEXT_NOTES);
@@ -45,11 +43,6 @@ class i extends \contacts\classes\contacts{
 	    	$this->dept_rep_id    = db_prepare_input($_POST['id']); // this id is from the parent.
 		}
   	}
-
-  	function delete($id) {
-  		if ( $this->id == '' ) $this->id = $id;
-		return parent::do_delete();
-	}
 
 	public function data_complete(){
     	global $admin;
@@ -78,75 +71,71 @@ class i extends \contacts\classes\contacts{
   	}
 
 
-  public function save_contact(){
-    global $admin;
+  	public function save(){
+	    global $admin;
+	    $sql_data_array['type']            = $this->type;
+	    $sql_data_array['short_name']      = $this->short_name;
+	    $sql_data_array['inactive']        = isset($this->inactive) ? '1' : '0';
+	    $sql_data_array['contact_first']   = $this->contact_first;
+	    $sql_data_array['contact_middle']  = $this->contact_middle;
+	    $sql_data_array['contact_last']    = $this->contact_last;
+	    $sql_data_array['store_id']        = $this->store_id;
+	    $sql_data_array['gl_type_account'] = (is_array($this->gl_type_account)) ? implode('', array_keys($this->gl_type_account)) : $this->gl_type_account;
+	    $sql_data_array['gov_id_number']   = $this->gov_id_number;
+	    $sql_data_array['dept_rep_id']     = $this->dept_rep_id;
+	    $sql_data_array['account_number']  = $this->account_number;
+	    $sql_data_array['special_terms']   = $this->special_terms;
+	    $sql_data_array['price_sheet']     = $this->price_sheet;
+	    $sql_data_array['tax_id']          = $this->tax_id;
+	    $sql_data_array['last_update']     = 'now()';
 
-    $sql_data_array['type']            = $this->type;
-    $sql_data_array['short_name']      = $this->short_name;
-    $sql_data_array['inactive']        = isset($this->inactive) ? '1' : '0';
-    $sql_data_array['contact_first']   = $this->contact_first;
-    $sql_data_array['contact_middle']  = $this->contact_middle;
-    $sql_data_array['contact_last']    = $this->contact_last;
-    $sql_data_array['store_id']        = $this->store_id;
-    $sql_data_array['gl_type_account'] = (is_array($this->gl_type_account)) ? implode('', array_keys($this->gl_type_account)) : $this->gl_type_account;
-    $sql_data_array['gov_id_number']   = $this->gov_id_number;
-    $sql_data_array['dept_rep_id']     = $this->dept_rep_id;
-    $sql_data_array['account_number']  = $this->account_number;
-    $sql_data_array['special_terms']   = $this->special_terms;
-    $sql_data_array['price_sheet']     = $this->price_sheet;
-    $sql_data_array['tax_id']          = $this->tax_id;
-    $sql_data_array['last_update']     = 'now()';
+	    if ($this->id == '') { //create record
+	        $sql_data_array['first_date'] = 'now()';
+	        db_perform(TABLE_CONTACTS, $sql_data_array, 'insert');
+	        $this->id = db_insert_id();
+	        //if auto-increment see if the next id is there and increment if so.
+	        if ($this->inc_auto_id) { // increment the ID value
+	            $next_id = string_increment($this->short_name);
+	            $admin->DataBase->query("update ".TABLE_CURRENT_STATUS." set $this->auto_field = '$next_id'");
+	        }
+	        gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_ADD . '-' . TEXT_CONTACT, $this->short_name);
+	    } else { // update record
+	        db_perform(TABLE_CONTACTS, $sql_data_array, 'update', "id = '$this->id'");
+	        gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_UPDATE . '-' . TEXT_CONTACT, $this->short_name);
+	    }
 
-    if ($this->id == '') { //create record
-        $sql_data_array['first_date'] = 'now()';
-        db_perform(TABLE_CONTACTS, $sql_data_array, 'insert');
-        $this->id = db_insert_id();
-        //if auto-increment see if the next id is there and increment if so.
-        if ($this->inc_auto_id) { // increment the ID value
-            $next_id = string_increment($this->short_name);
-            $admin->DataBase->query("update ".TABLE_CURRENT_STATUS." set $this->auto_field = '$next_id'");
-        }
-        gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_ADD . '-' . TEXT_CONTACT, $this->short_name);
-    } else { // update record
-        db_perform(TABLE_CONTACTS, $sql_data_array, 'update', "id = '$this->id'");
-        gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_UPDATE . '-' . TEXT_CONTACT, $this->short_name);
-    }
-  }
-
-  public function save_addres(){
-    global $admin;
-    // address book fields
-    foreach ($this->address_types as $value) {
-      if (($value == 'im') || // contact main address when editing the contact directly
-          ($this->address[$value]['primary_name'] <> '')) { // optional billing, shipping, and contact
-              $sql_data_array = array(
-                    'ref_id'         => $this->id,
-                    'type'           => $value,
-                    'primary_name'   => $this->address[$value]['primary_name'],
-                    'contact'        => $this->address[$value]['contact'],
-                    'address1'       => $this->address[$value]['address1'],
-                    'address2'       => $this->address[$value]['address2'],
-                    'city_town'      => $this->address[$value]['city_town'],
-                    'state_province' => $this->address[$value]['state_province'],
-                    'postal_code'    => $this->address[$value]['postal_code'],
-                    'country_code'   => $this->address[$value]['country_code'],
-                    'telephone1'     => $this->address[$value]['telephone1'],
-                    'telephone2'     => $this->address[$value]['telephone2'],
-                    'telephone3'     => $this->address[$value]['telephone3'],
-                    'telephone4'     => $this->address[$value]['telephone4'],
-                    'email'          => $this->address[$value]['email'],
-                    'website'        => $this->address[$value]['website'],
-                    'notes'          => $this->address[$value]['notes'],
-                );
-              if ($this->address[$value]['address_id'] == '') { // then it's a new address
-                db_perform(TABLE_ADDRESS_BOOK, $sql_data_array, 'insert');
-                $this->address[$value]['address_id'] = db_insert_id();
-              } else { // then update address
-                db_perform(TABLE_ADDRESS_BOOK, $sql_data_array, 'update', "address_id = '".$this->address[$value]['address_id']."'");
-              }
-      }
-    }
-  }
+	    // address book fields
+	    foreach ($this->address_types as $value) {
+		    if (($value == 'im') || // contact main address when editing the contact directly
+		          ($this->address[$value]['primary_name'] <> '')) { // optional billing, shipping, and contact
+		              $sql_data_array = array(
+		                    'ref_id'         => $this->id,
+		                    'type'           => $value,
+		                    'primary_name'   => $this->address[$value]['primary_name'],
+		                    'contact'        => $this->address[$value]['contact'],
+		                    'address1'       => $this->address[$value]['address1'],
+		                    'address2'       => $this->address[$value]['address2'],
+		                    'city_town'      => $this->address[$value]['city_town'],
+		                    'state_province' => $this->address[$value]['state_province'],
+		                    'postal_code'    => $this->address[$value]['postal_code'],
+		                    'country_code'   => $this->address[$value]['country_code'],
+		                    'telephone1'     => $this->address[$value]['telephone1'],
+		                    'telephone2'     => $this->address[$value]['telephone2'],
+		                    'telephone3'     => $this->address[$value]['telephone3'],
+		                    'telephone4'     => $this->address[$value]['telephone4'],
+		                    'email'          => $this->address[$value]['email'],
+		                    'website'        => $this->address[$value]['website'],
+		                    'notes'          => $this->address[$value]['notes'],
+		                );
+		        if ($this->address[$value]['address_id'] == '') { // then it's a new address
+		            db_perform(TABLE_ADDRESS_BOOK, $sql_data_array, 'insert');
+		        	$this->address[$value]['address_id'] = db_insert_id();
+		        } else { // then update address
+		        	db_perform(TABLE_ADDRESS_BOOK, $sql_data_array, 'update', "address_id = '{$this->address[$value]['address_id']}'");
+		    	}
+		    }
+	    }
+  	}
 
 }
 ?>

@@ -65,7 +65,7 @@ switch ($_REQUEST['action']) {
 	$repair = array();
 	while (!$result->EOF) {
 	  // check for quantity on hand not rounded properly
-	  $on_hand = round($result->fields['quantity_on_hand'], $currencies->currencies[DEFAULT_CURRENCY]['decimal_precise']);
+	  $on_hand = round($result->fields['quantity_on_hand'], $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_precise']);
 	  if ($on_hand <> $result->fields['quantity_on_hand']) {
 	    $repair[$result->fields['sku']] = $on_hand;
 		if ($_REQUEST['action'] <> 'inv_hist_fix') {
@@ -77,7 +77,7 @@ switch ($_REQUEST['action']) {
 	  $sql = "select sum(remaining) as remaining from " . TABLE_INVENTORY_HISTORY . "
 		where sku = '" . $result->fields['sku'] . "'";
 	    $inv_hist = $admin->DataBase->query($sql);
-		$cog_qty  = round($inv_hist->fields['remaining'], $currencies->currencies[DEFAULT_CURRENCY]['decimal_precise']);
+		$cog_qty  = round($inv_hist->fields['remaining'], $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_precise']);
 		$cog_owed = $owed[$result->fields['sku']] ? $owed[$result->fields['sku']] : 0;
 		if ($on_hand <> ($cog_qty - $cog_owed)) {
 		  $repair[$result->fields['sku']] = $cog_qty - $cog_owed;
@@ -90,7 +90,7 @@ switch ($_REQUEST['action']) {
 	}
 	// flag the differences
 	if ($_REQUEST['action'] == 'inv_hist_fix') { // start repair
-	  $precision = 1 / pow(10, $currencies->currencies[DEFAULT_CURRENCY]['decimal_precise'] + 1);
+	  $precision = 1 / pow(10, $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_precise'] + 1);
 	  $result = $admin->DataBase->query("update " . TABLE_INVENTORY_HISTORY . " set remaining = 0 where remaining < " . $precision); // remove rounding errors
 	  if (sizeof($repair) > 0) {
 	    foreach ($repair as $key => $value) {

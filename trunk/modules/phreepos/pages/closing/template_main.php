@@ -76,15 +76,15 @@ echo html_hidden_field('post_date', gen_locale_date($post_date))      . chr(10);
 			<td width="16%"><?php echo $values['reference']; ?></td>
 			<td width="10%"><?php echo gen_locale_date($values['post_date']); ?></td>
 			<td width="30%"><?php echo htmlspecialchars($values['name']); ?></td>
-			<td width="15%" align="right"><?php if($security_level > 2) echo $currencies->format($values['dep_amount']-$values['pmt_amount']); ?></td>
+			<td width="15%" align="right"><?php if($security_level > 2) echo $admin->currencies->format($values['dep_amount']-$values['pmt_amount']); ?></td>
 			<td width="7%" align="center">
 				<?php if (sizeof($values['detail']) == 1) {
-				  echo html_input_field('amt_' . $i, $currencies->format(0),$values['edit'].  'style="text-align:right" size="13" onchange="updateBalance()"') . chr(10);
+				  echo html_input_field('amt_' . $i, $admin->currencies->format(0),$values['edit'].  'style="text-align:right" size="13" onchange="updateBalance()"') . chr(10);
 				  echo html_hidden_field('id[' . $i . ']', $values['detail'][0]['id']) . chr(10);
-				  echo html_hidden_field('pmt_' . $i, $currencies->format($values['detail'][0]['payment'])) . chr(10);
+				  echo html_hidden_field('pmt_' . $i, $admin->currencies->format($values['detail'][0]['payment'])) . chr(10);
 				  echo html_hidden_field('gl_account_' . $i, $values['detail'][0]['gl_account']) . chr(10);
 				} else {
-				  echo html_input_field('samt_' . $i, $currencies->format(0),$values['edit']. 'style="text-align:right" size="13" onchange="updateSummary('.$i.')"') . chr(10);
+				  echo html_input_field('samt_' . $i, $admin->currencies->format(0),$values['edit']. 'style="text-align:right" size="13" onchange="updateSummary('.$i.')"') . chr(10);
 				} ?>
 			</td>
 <?php if (sizeof($values['detail']) > 1 && $security_level > 2) { ?>
@@ -103,12 +103,12 @@ echo html_hidden_field('post_date', gen_locale_date($post_date))      . chr(10);
 			  <td width="16%"><?php echo '&nbsp;'; ?></td>
 			  <td width="10%"><?php echo gen_locale_date($detail['post_date']); ?></td>
 			  <td width="30%"><?php echo htmlspecialchars($detail['name']); ?></td>
-			  <td width="15%" align="right"><?php if($security_level > 2) echo $currencies->format($detail['payment']); ?></td>
+			  <td width="15%" align="right"><?php if($security_level > 2) echo $admin->currencies->format($detail['payment']); ?></td>
 			  <td width="7%" align="center">
 			  <?php
-			  	echo html_input_field('amt_' . $i, $currencies->format(0),$detail['edit']. 'style="text-align:right" size="13" onchange="updateDetail('.$ref.')"') . chr(10);
+			  	echo html_input_field('amt_' . $i, $admin->currencies->format(0),$detail['edit']. 'style="text-align:right" size="13" onchange="updateDetail('.$ref.')"') . chr(10);
 			    echo html_hidden_field('id[' . $i . ']', $detail['id']) . chr(10);
-			    echo html_hidden_field('pmt_' . $i, $currencies->format($detail['payment'])) . chr(10);
+			    echo html_hidden_field('pmt_' . $i, $admin->currencies->format($detail['payment'])) . chr(10);
 			    echo html_hidden_field('gl_account_' . $i, $detail['gl_account']) . chr(10);
 			    ?>
 			  </td>
@@ -133,7 +133,7 @@ echo html_hidden_field('post_date', gen_locale_date($post_date))      . chr(10);
  <tfoot class="ui-widget-header">
  <?php
  	$i=0;
- 	foreach($currencies->currencies as $key => $currency){
+ 	foreach($admin->currencies->currencies as $key => $currency){
  		echo '<tr onclick="show('.$i.')">';
  		echo   '<td colspan="1" align="left">'. TEXT_SHOW_COUNT_HELP .'</td>';
 		echo   '<td colspan="4" align="right">'. sprintf(TEXT_NEW_ARGS, TEXT_BALANCE) .' ' .$currency['text'].'&nbsp;</td>';

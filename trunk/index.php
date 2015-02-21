@@ -20,7 +20,7 @@ ob_start();
 ini_set('log_errors','1');
 ini_set('display_errors', '1');
 ini_set('max_input_vars', '3000');
-error_reporting(E_ALL^E_NOTICE);
+error_reporting(E_ALL);//@todo set to excelude e_notice
 if (isset($_POST['module']))    $module = $_POST['module'];
 elseif (isset($_GET['module'])) $module = $_GET['module'];
 else                            $module = 'phreedom';

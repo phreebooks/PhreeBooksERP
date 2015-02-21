@@ -38,11 +38,11 @@ switch ($_REQUEST['action']) {
 	$inactive       = isset($_POST['inactive']) ? 1 : 0;
 	$encoded_prices = array();
 	for ($i=0, $j=1; $i < MAX_NUM_PRICE_LEVELS; $i++, $j++) {
-	  $price   = $currencies->clean_value(db_prepare_input($_POST['price_'   . $j]));
+	  $price   = $admin->currencies->clean_value(db_prepare_input($_POST['price_'   . $j]));
 	  $adj     = db_prepare_input($_POST['adj_' . $j]);
-	  $adj_val = $currencies->clean_value(db_prepare_input($_POST['adj_val_' . $j]));
+	  $adj_val = $admin->currencies->clean_value(db_prepare_input($_POST['adj_val_' . $j]));
 	  $rnd     = db_prepare_input($_POST['rnd_' . $j]);
-	  $rnd_val = $currencies->clean_value(db_prepare_input($_POST['rnd_val_' . $j]));
+	  $rnd_val = $admin->currencies->clean_value(db_prepare_input($_POST['rnd_val_' . $j]));
 	  $level_data = ($_POST['price_' . $j]) ? $price : '0';
 	  $level_data .= ':' . db_prepare_input($_POST['qty_' . $j]);
 	  $level_data .= ':' . db_prepare_input($_POST['src_' . $j]);

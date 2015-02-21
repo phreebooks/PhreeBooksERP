@@ -112,7 +112,7 @@ class pos_builder {
   }
 
   function load_item_details($id) {
-	global $admin, $currencies;
+	global $admin;
 	// fetch the sales order and build the item list
 	$this->invoice_subtotal = 0;
 	$tax_list = array();
@@ -144,7 +144,7 @@ class pos_builder {
 			$this->inv_subtotal_w_tax += (1 + $line_tax) * $price;
 			break;
 	  	case 'tax':
-			$tax_list[]           = $result->fields['description'] . ' - ' . $currencies->format_full($price);
+			$tax_list[]           = $result->fields['description'] . ' - ' . $admin->currencies->format_full($price);
 			break;
 	  	case 'dsc':
 	  		$this->discount       = $price;

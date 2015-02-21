@@ -36,7 +36,7 @@ class tills {
     }
 
   function btn_save($id = '') {
-  	global $admin, $currencies;
+  	global $admin;
 	\core\classes\user::validate_security($this->security_id, 2);
 	if ($this->gl_acct_id == '') throw new \core\classes\userException(TEXT_SELECT_A_STANDARD_CHART);
 	$sql_data_array = array(
@@ -51,7 +51,7 @@ class tills {
 		'printer_starting_line' => $this->printer_starting_line,
 		'printer_closing_line' 	=> $this->printer_closing_line,
 		'printer_open_drawer' 	=> $this->printer_open_drawer,
-		'balance' 				=> $currencies->clean_value($this->balance, $this->currencies_code),
+		'balance' 				=> $admin->currencies->clean_value($this->balance, $this->currencies_code),
 		'max_discount'		    => $this->max_discount,
 		'tax_id'				=> $this->tax_id,
 	);
@@ -84,7 +84,7 @@ class tills {
   }
 
   function build_main_html() {
-  	global $admin, $currencies;
+  	global $admin;
     $content = array();
 	$content['thead'] = array(
 	  'value' => array(TEXT_DESCRIPTION, TEXT_STORE_ID, TEXT_GL_ACCOUNT, TEXT_ACTION, TEXT_BALANCE),
@@ -103,7 +103,7 @@ class tills {
 			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\''.$this->code.'_edit\',\''.$result->fields['till_id'].'\')"'),
 		array('value' => gen_get_type_description(TABLE_CHART_OF_ACCOUNTS, $result->fields['gl_acct_id']),
 			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\''.$this->code.'_edit\',\''.$result->fields['till_id'].'\')"'),
-		array('value' => $currencies->format($result->fields['balance'], true, $result->fields['currencies_code'] ),
+		array('value' => $admin->currencies->format($result->fields['balance'], true, $result->fields['currencies_code'] ),
 			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\''.$this->code.'_edit\',\''.$result->fields['till_id'].'\')"'),
 		array('value' => $actions,
 			  'params'=> 'align="right"'),
@@ -115,7 +115,7 @@ class tills {
   }
 
   function build_form_html($action, $id = '') {
-    global $admin, $currencies;
+    global $admin, $admin;
     if ($action <> 'new') {
         $sql = "select * from " . $this->db_table . " where till_id = " . $id;
         $result = $admin->DataBase->query($sql);
@@ -155,7 +155,7 @@ class tills {
     $output .= '  </tr>' . chr(10);
     $output .= '  <tr>' . chr(10);
 	$output .= '    <td>' . TEXT_BALANCE . '</td>' . chr(10);
-	$output .= '    <td>' . html_input_field('balance', $currencies->format($this->balance, true, $this->currencies_code )) . '</td>' . chr(10);
+	$output .= '    <td>' . html_input_field('balance', $admin->currencies->format($this->balance, true, $this->currencies_code )) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
     $output .= '  <tr>' . chr(10);
 	$output .= '    <td>' . TEXT_MAX_DISCOUNT . '</td>' . chr(10);

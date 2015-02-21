@@ -81,14 +81,14 @@ if (file_exists($custom_path)) { include($custom_path); }
 	// currency values (convert to DEFAULT_CURRENCY to store in db)
 	$order->currencies_code     = db_prepare_input($_POST['currencies_code']);
 	$order->currencies_value    = db_prepare_input($_POST['currencies_value']);
-	$order->subtotal            = $currencies->clean_value(db_prepare_input($_POST['subtotal']),  $order->currencies_code) / $order->currencies_value; // don't need unless for verification
+	$order->subtotal            = $admin->currencies->clean_value(db_prepare_input($_POST['subtotal']),  $order->currencies_code) / $order->currencies_value; // don't need unless for verification
 	$order->disc_gl_acct_id     = db_prepare_input($_POST['disc_gl_acct_id']);
-	$order->discount            = $currencies->clean_value(db_prepare_input($_POST['discount']),  $order->currencies_code) / $order->currencies_value;
+	$order->discount            = $admin->currencies->clean_value(db_prepare_input($_POST['discount']),  $order->currencies_code) / $order->currencies_value;
 	//$order->disc_percent        = ($order->subtotal) ? (1-(($order->subtotal-$order->discount)/$order->subtotal)) : 0;
-	$order->sales_tax           = $currencies->clean_value(db_prepare_input($_POST['sales_tax']), $order->currencies_code) / $order->currencies_value;
-	$order->total_amount        = $currencies->clean_value(db_prepare_input($_POST['total']),     $order->currencies_code) / $order->currencies_value;
-	$order->pmt_recvd           = $currencies->clean_value(db_prepare_input($_POST['pmt_recvd']), $order->currencies_code) / $order->currencies_value;
-	$order->bal_due             = $currencies->clean_value(db_prepare_input($_POST['bal_due']),   $order->currencies_code) / $order->currencies_value;
+	$order->sales_tax           = $admin->currencies->clean_value(db_prepare_input($_POST['sales_tax']), $order->currencies_code) / $order->currencies_value;
+	$order->total_amount        = $admin->currencies->clean_value(db_prepare_input($_POST['total']),     $order->currencies_code) / $order->currencies_value;
+	$order->pmt_recvd           = $admin->currencies->clean_value(db_prepare_input($_POST['pmt_recvd']), $order->currencies_code) / $order->currencies_value;
+	$order->bal_due             = $admin->currencies->clean_value(db_prepare_input($_POST['bal_due']),   $order->currencies_code) / $order->currencies_value;
 	// load item row data
 	$x = 1;
 	while (isset($_POST['pstd_' . $x])) { // while there are item rows to read in
@@ -96,11 +96,11 @@ if (file_exists($custom_path)) { include($custom_path); }
 	    	$x++;
 	    	continue;
 	  	}
-	  	$full_price  = $currencies->clean_value(db_prepare_input($_POST['full_' . $x]), $order->currencies_code) / $order->currencies_value;
-	  	$fixed_price = $currencies->clean_value(db_prepare_input($_POST['fixed_price_' . $x]), $order->currencies_code) / $order->currencies_value;
-	  	$price       = $currencies->clean_value(db_prepare_input($_POST['price_' . $x]), $order->currencies_code) / $order->currencies_value;
-		$wtprice     = $currencies->clean_value(db_prepare_input($_POST['wtprice_' . $x]), $order->currencies_code) / $order->currencies_value;
-		$qty		   = $currencies->clean_value(db_prepare_input($_POST['pstd_' . $x]), $order->currencies_code);
+	  	$full_price  = $admin->currencies->clean_value(db_prepare_input($_POST['full_' . $x]), $order->currencies_code) / $order->currencies_value;
+	  	$fixed_price = $admin->currencies->clean_value(db_prepare_input($_POST['fixed_price_' . $x]), $order->currencies_code) / $order->currencies_value;
+	  	$price       = $admin->currencies->clean_value(db_prepare_input($_POST['price_' . $x]), $order->currencies_code) / $order->currencies_value;
+		$wtprice     = $admin->currencies->clean_value(db_prepare_input($_POST['wtprice_' . $x]), $order->currencies_code) / $order->currencies_value;
+		$qty		   = $admin->currencies->clean_value(db_prepare_input($_POST['pstd_' . $x]), $order->currencies_code);
 	  	$disc        = db_prepare_input($_POST['disc_' . $x]);
 	  	$sku         = db_prepare_input($_POST['sku_' . $x]);
 	  	if ($fixed_price == 0 ) $fixed_price = $price;
@@ -121,7 +121,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 	      'sku'       => ($_POST['sku_' . $x] == TEXT_SEARCH) ? '' : $sku,
 		  'pstd'      => $qty,
 		  'desc'      => db_prepare_input($_POST['desc_' . $x]),
-	      'total'     => $currencies->clean_value(db_prepare_input($_POST['total_' . $x]), $order->currencies_code) / $order->currencies_value,
+	      'total'     => $admin->currencies->clean_value(db_prepare_input($_POST['total_' . $x]), $order->currencies_code) / $order->currencies_value,
 		  'full'      => $full_price,
 		  'acct'      => db_prepare_input($_POST['acct_' . $x]),
 		  'tax'       => db_prepare_input($_POST['tax_' . $x]),
@@ -158,7 +158,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 			continue;
 	  	}
 	  	$pmt_meth = $_POST['meth_' . $x];
-	  	$pmt_amt  = $currencies->clean_value(db_prepare_input($_POST['pmt_' . $x]), $order->currencies_code) / $order->currencies_value;
+	  	$pmt_amt  = $admin->currencies->clean_value(db_prepare_input($_POST['pmt_' . $x]), $order->currencies_code) / $order->currencies_value;
 	  	$tot_paid += $pmt_amt;
 	  	$order->pmt_rows[] = array(
 		  'meth' => db_prepare_input($_POST['meth_' . $x]),
@@ -185,7 +185,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 	}
 	$order->shipper_code = $pmt_meth;  // store last payment method in shipper_code field
     // adding the rounding of line
-    $order->rounding_amt 		= $currencies->clean_value(db_prepare_input($_POST['rounded_of']), $order->currencies_code);
+    $order->rounding_amt 		= $admin->currencies->clean_value(db_prepare_input($_POST['rounded_of']), $order->currencies_code);
     $order->rounding_gl_acct_id = $tills->rounding_gl_acct_id;
 	// check for errors (address fields)
 	if (PHREEPOS_REQUIRE_ADDRESS) {
@@ -202,7 +202,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 	  	}
 	}
 	// Payment errors
-	if ($currencies->clean_value(db_prepare_input($_POST['bal_due']),  $order->currencies_code) / $order->currencies_value <> $currencies->clean_value(0)) {
+	if ($admin->currencies->clean_value(db_prepare_input($_POST['bal_due']),  $order->currencies_code) / $order->currencies_value <> $admin->currencies->clean_value(0)) {
 	  	throw new \core\classes\userException("The total payment was not equal to the order total!<br/> $tot_paid  +  $order->rounding_amt + $order->total_amount");
 	}
 	if(substr($_REQUEST['action'],0,5) == 'print') {

@@ -31,7 +31,7 @@
   }
 
   function inv_calculate_prices($item_cost, $full_price, $encoded_price_levels, $qty = 1) {
-    global $currencies;
+    global $admin;
 	if (!defined('MAX_NUM_PRICE_LEVELS')) throw new \core\classes\userException('Constant MAX_NUM_PRICE_LEVELS is not defined! returning from inv_calculate_prices');
 	$price_levels = explode(';', $encoded_price_levels);
 	$prices = array();
@@ -94,7 +94,7 @@
 		}
 
 		if ($j == 1) $first_level_price = $price; // save level 1 pricing
-		$price = $currencies->precise($price);
+		$price = $admin->currencies->precise($price);
 		if ($src) $prices[$i] = array('qty' => $qty, 'price' => $price);
 	}
 	return $prices;
@@ -210,7 +210,7 @@
   }
 
   	function inv_calculate_sales_price($qty, $sku_id, $contact_id = 0, $type = 'c') {
-    	global $admin, $currencies;
+    	global $admin;
 		$price_sheet = '';
 		$contact_tax = 1;
 		if ($contact_id) {
@@ -260,7 +260,7 @@
 		}
 		if ($levels) {
 	  		$prices = inv_calculate_prices($inventory->fields['item_cost'], $inventory->fields['full_price'], $levels, $qty);
-	  		if(is_array($prices)) foreach ($prices as $value) if ($qty >= $value['qty']) $price = $currencies->clean_value($value['price']);
+	  		if(is_array($prices)) foreach ($prices as $value) if ($qty >= $value['qty']) $price = $admin->currencies->clean_value($value['price']);
 		} else {
 	  		$price = ($type=='v') ? $inventory->fields['item_cost'] : $inventory->fields['full_price'];
 		}

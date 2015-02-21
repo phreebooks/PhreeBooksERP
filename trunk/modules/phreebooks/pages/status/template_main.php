@@ -74,7 +74,7 @@ echo $toolbar->build($add_search = true, $add_periods = true);
 	$primary_name   = htmlspecialchars($query_result->fields['bill_primary_name']);
 	$purch_order_id = htmlspecialchars($query_result->fields['purch_order_id']);
 	$closed         = $query_result->fields['closed'] ? TEXT_YES : '';
-	$total_amount   = $currencies->format_full($query_result->fields['total_amount'], true, $query_result->fields['currencies_code'], $query_result->fields['currencies_value']);
+	$total_amount   = $admin->currencies->format_full($query_result->fields['total_amount'], true, $query_result->fields['currencies_code'], $query_result->fields['currencies_value']);
 	if (ENABLE_MULTI_CURRENCY) $total_amount .= ' (' . $query_result->fields['currencies_code'] . ')';
 	$bkgnd          = $query_result->fields['waiting'] ? ' style="background-color:lightblue"' : '';
 	$attach_exists  = file_exists(PHREEBOOKS_DIR_MY_ORDERS . 'order_' . $oID . '.zip') ? true : false;

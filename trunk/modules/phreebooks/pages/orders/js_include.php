@@ -98,7 +98,7 @@ echo js_calendar_init($cal_order);
 if ($template_options['terminal_date']) echo js_calendar_init($cal_terminal);
 ?>
 // List the currency codes and exchange rates
-<?php if (ENABLE_MULTI_CURRENCY) echo $currencies->build_js_currency_arrays(); ?>
+<?php if (ENABLE_MULTI_CURRENCY) echo $admin->currencies->build_js_arrays(); ?>
 // List the gl accounts for line item pull downs
 <?php echo $js_gl_array; ?>
 // List the tax rates

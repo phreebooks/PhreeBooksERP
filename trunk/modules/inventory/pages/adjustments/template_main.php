@@ -98,7 +98,7 @@ if (!$error) {//@todo how to do this
 	echo '    </td>'. chr(10);
 	echo '    <td>' . html_input_field('stock_' . $rowCnt, $_POST['stock_'.$rowCnt], 'readonly="readonly" size="6" maxlength="5" style="text-align:right"') . '</td>' . chr(10);
 	echo '    <td>' . html_input_field('qty_' . $rowCnt, $_POST['qty_'.$rowCnt], 'size="6" maxlength="5" style="text-align:right" onchange="updateBalance()"') . '</td>' . chr(10);
-	echo '    <td>' . html_input_field('price_' . $rowCnt, $currencies->format($_POST['price_'.$rowCnt]), 'size="10" maxlength="9" style="text-align:right"') . '</td>' . chr(10);
+	echo '    <td>' . html_input_field('price_' . $rowCnt, $admin->currencies->format($_POST['price_'.$rowCnt]), 'size="10" maxlength="9" style="text-align:right"') . '</td>' . chr(10);
 	echo '    <td>' . html_input_field('balance_' . $rowCnt, $_POST['balance_'.$rowCnt], 'readonly="readonly" size="6" maxlength="5" style="text-align:right"') . '</td>' . chr(10);
 	echo '    <td>' . html_input_field('desc_' . $rowCnt, $_POST['desc_'.$rowCnt], 'size="90"') . '</td>' . chr(10);
 	echo '  </tr>'  . chr(10);

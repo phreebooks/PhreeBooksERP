@@ -28,7 +28,7 @@ class to_receive_inv extends \core\classes\ctl_panel {
 	public $default_params 		= array('num_rows'=> 0);
 
 	function output() {
-		global $admin, $currencies;
+		global $admin;
 		if(count($this->params) != count($this->default_params)) { //upgrading
 			$this->params = $this->upgrade($this->params);
 		}
@@ -57,7 +57,7 @@ class to_receive_inv extends \core\classes\ctl_panel {
 			  	$inv_balance = $result['total_amount'] - fetch_partially_paid($result['id']);
 			  	if ($result['journal_id'] == 7) $inv_balance = -$inv_balance;
 			 	$total += $inv_balance;
-				$contents .= '<div style="float:right">' . $currencies->format_full($inv_balance, true, $result['currencies_code'], $result['currencies_value']) . '</div>';
+				$contents .= '<div style="float:right">' . $admin->currencies->format_full($inv_balance, true, $result['currencies_code'], $result['currencies_value']) . '</div>';
 				$contents .= '<div>';
 				$contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;oID={$result['id']}&amp;jID={$result['journal_id']}&amp;action=edit", 'SSL') . '">';
 				$contents .= gen_locale_date($result['post_date']) . ' - ';
@@ -67,7 +67,7 @@ class to_receive_inv extends \core\classes\ctl_panel {
 			}
 		}
 		if (!$this->params['num_rows'] && $sql->rowCount() > 0) {
-		  	$contents .= '<div style="float:right">' . $currencies->format_full($total, true, DEFAULT_CURRENCY, 1) . '</div>';
+		  	$contents .= '<div style="float:right">' . $admin->currencies->format_full($total, true, DEFAULT_CURRENCY, 1) . '</div>';
 			$contents .= '<div><b>' . TEXT_TOTAL . '</b></div>' . chr(10);
 		}
 		return $this->build_div($contents, $control);

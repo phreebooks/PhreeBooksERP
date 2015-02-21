@@ -36,7 +36,7 @@ class audit_log extends \core\classes\ctl_panel {
 	}
 
 	function output() {
-		global $admin, $currencies;
+		global $admin;
 		if(count($this->params) != count($this->default_params)) { //upgrading
 			$this->params = $this->upgrade($this->params);
 		}
@@ -74,7 +74,7 @@ class audit_log extends \core\classes\ctl_panel {
 			$contents = TEXT_NO_RESULTS_FOUND;
 		} else {
 			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
-            	$contents .= '<div style="float:right">' . $currencies->format_full($result['amount'], true, DEFAULT_CURRENCY, 1, 'fpdf') . '</div>';
+            	$contents .= '<div style="float:right">' . $admin->currencies->format_full($result['amount'], true, DEFAULT_CURRENCY, 1, 'fpdf') . '</div>';
                 $contents .= '<div>';
                 $contents .= $result['display_name'] . '-->' . $result['action'] . '-->' . $result['reference_id'];
                 $contents .= '</div>' . chr(10);

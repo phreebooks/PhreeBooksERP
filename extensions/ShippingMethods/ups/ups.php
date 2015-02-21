@@ -335,7 +335,7 @@ class ups extends \shipping\classes\shipping {
 	//								Parse function to retrieve UPS rates
 	// ***************************************************************************************************************
 	function getUPSrates($pkg) {
-		global $messageStack, $currencies, $UPSRateCodes, $shipping_defaults;
+		global $messageStack, $UPSRateCodes, $shipping_defaults;
 
 		// Retrieve the user choices for services to rate shop
 // TBD - defaults per user db choice for now
@@ -439,8 +439,8 @@ class ups extends \shipping\classes\shipping {
 		$UPSRates = GetNodeArray($ResponseXML, $XMLStart, $XMLIndexName, $TagsToFind);
 		foreach ($this->UPSRateCodes as $key => $value) {
 			if (isset($UPSRates[$key]) && in_array($value, $user_choices)) {
-				if ($UPSRates[$key]['BookCharges'] <> "")  $arrRates[$this->id][$value]['book'] = $currencies->clean_value($UPSRates[$key]['BookCharges']);
-				if ($UPSRates[$key]['ShipmentCost'] <> "") $arrRates[$this->id][$value]['cost'] = $currencies->clean_value($UPSRates[$key]['ShipmentCost']);
+				if ($UPSRates[$key]['BookCharges'] <> "")  $arrRates[$this->id][$value]['book'] = $admin->currencies->clean_value($UPSRates[$key]['BookCharges']);
+				if ($UPSRates[$key]['ShipmentCost'] <> "") $arrRates[$this->id][$value]['cost'] = $admin->currencies->clean_value($UPSRates[$key]['ShipmentCost']);
 				$arrRates[$this->id][$value]['note'] = '';
 				if ($UPSRates[$key]['TransitDays'] <> "") $arrRates[$this->id][$value]['note'] .= $UPSRates[$key]['TransitDays'] . ' Day(s) Transit. ';
 				$arrRates[$this->id][$value]['note'] .= ($UPSRates[$key]['TransitTime'] <> "") ? 'by ' . $UPSRates[$key]['TransitTime'] : 'by End of Day';

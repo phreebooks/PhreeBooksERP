@@ -54,7 +54,7 @@ echo $toolbar->build($add_search = true);
 	<td><?php echo $query_result->fields['bill_city_town']; ?></td>
 	<td><?php echo $query_result->fields['bill_state_province']; ?></td>
 	<td><?php echo $query_result->fields['bill_postal_code']; ?></td>
-	<td align="right"><?php echo $currencies->format($invoice_summary['balance']); ?></td>
+	<td align="right"><?php echo $admin->currencies->format($invoice_summary['balance']); ?></td>
   </tr>
 <?php
 	$query_result->MoveNext();

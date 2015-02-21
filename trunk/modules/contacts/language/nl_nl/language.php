@@ -139,7 +139,7 @@ define('ACT_TERMS_STANDARD_DAYS',' dag(en). ');
 define('TEXT_CREDIT_LIMIT','Credit Limit: ');
 define('TEXT_AMOUNT_PAST_DUE','Totaal Vervallen: ');
 define('RECORD_NUM_REF_ONLY','record ID (alleen voor Referentie) = ');
-define('TEXT_LEAVE_BLANK_FOR_SYSTEM_GENERATED_ID','(Leeg laten voor een systeem gegenereerd ID)');
+define('TEXT_LEAVE_BLANK_FOR_SYSTEM_GENERATED_ID','Leeg laten voor een systeem gegenereerd ID');
 define('ACT_WARN_DELETE_ADDRESS','Weet u zeker dat u dit adres wilt verwijderen?');
 define('ACT_WARN_DELETE_ACCOUNT','Weet u zeker dat u dit account wilt verwijderen?');
 define('ACT_WARN_DELETE_PAYMENT','Weet u zeker dat u dit betalingsboeking wilt verwijderen?');

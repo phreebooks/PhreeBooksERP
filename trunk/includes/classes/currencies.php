@@ -35,10 +35,15 @@ class currencies {
   		$this->security_id   = \core\classes\user::security_level(SECURITY_ID_CONFIGURATION); //@todo remove this
   	}
 
-  	function load_currencies(){
+	/**
+	 * loads currencies from db.
+	 */
+  	function load(){
   		global $admin;
   		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-    	foreach($admin->DataBase->query("select * from " .$this->db_table) as $row) {
+  		$sql = $admin->DataBase->prepare("SELECT * FROM " .$this->db_table);
+  		$sql->execute();
+  		while ($row = $sql->fetch(\PDO::FETCH_LAZY)) {
 	  		$this->currencies[$row['code']] = array(
 	    	  'title'           => $row['title'],
 	    	  'symbol_left'     => $row['symbol_left'],
@@ -53,7 +58,9 @@ class currencies {
     	$this->default_currency_code(); // set default currecy code.
   	}
 
-	// omits the symbol_left and symbol_right (just the formattted number))
+	/**
+	 *  omits the symbol_left and symbol_right (just the formattted number))
+	 */
 	function format($number, $calculate_currency_value = true, $currency_type = DEFAULT_CURRENCY, $currency_value = '') {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	    if ($calculate_currency_value) {
@@ -65,7 +72,9 @@ class currencies {
 	    return $format_string;
 	}
 
-	// omits the symbol_left and symbol_right (just the formattted number to the precision number of decimals))
+	/**
+	 *  omits the symbol_left and symbol_right (just the formattted number to the precision number of decimals))
+	 */
 	function precise($number, $calculate_currency_value = true, $currency_type = DEFAULT_CURRENCY, $currency_value = '') {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	    if ($calculate_currency_value) {
@@ -109,7 +118,7 @@ class currencies {
 	    return preg_replace("/[^-0-9.]+/","",$value);
 	}
 
-	function build_js_currency_arrays() {
+	function build_js_arrays() {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$js_codes  = 'var js_currency_codes = new Array(';
 		$js_values = 'var js_currency_values = new Array(';
@@ -157,12 +166,12 @@ class currencies {
 
 		if (isset($_POST['default']) && ($_POST['default'] == 'on')) {
 			// first check to see if there are any general ledger entries
-		  	$result = $admin->DataBase->query("SELECT id FROM " . TABLE_JOURNAL_MAIN . " LIMIT 1");
-		  	if ($result->rowCount() > 0) throw new \core\classes\userException(SETUP_ERROR_CANNOT_CHANGE_DEFAULT);
+		  	$sql = $admin->DataBase->prepare("SELECT id FROM " . TABLE_JOURNAL_MAIN . " LIMIT 1");
+		  	$sql->execute();
+			if ($sql->rowCount() > 0) throw new \core\classes\userException(SETUP_ERROR_CANNOT_CHANGE_DEFAULT);
 		  	write_configure('DEFAULT_CURRENCY', db_input($code));
 			db_perform($this->db_table, array('value' => 1), 'update', "code='$code'"); // change default exc rate to 1
-		    $admin->DataBase->query("alter table " . TABLE_JOURNAL_MAIN . "
-				change currencies_code currencies_code CHAR(3) NOT NULL DEFAULT '" . db_input($code) . "'");
+		    $admin->DataBase->exec("ALETER TABLE " . TABLE_JOURNAL_MAIN . " CHANGE currencies_code currencies_code CHAR(3) NOT NULL DEFAULT '" . db_input($code) . "'");
 			$this->def_currency = db_input($code);
 			$this->btn_update();
 		}
@@ -181,31 +190,28 @@ class currencies {
 	  	\core\classes\user::validate_security($security_level, 1);
 	*/
 		$server_used = CURRENCY_SERVER_PRIMARY;
-		$currency = $admin->DataBase->query("select currencies_id, code, title from " . $this->db_table);
-		while (!$currency->EOF) {
-		  	if ($currency->fields['code'] == $this->def_currency) { // skip default currency
-		    	$currency->MoveNext();
-				continue;
-		  	}
+		$sql = $admin->DataBase->prepare("SELECT currencies_id, code, title FROM " . $this->db_table);
+		$sql->execute();
+		while ($currency = $sql->fetch(\PDO::FETCH_LAZY)) {
+			// skip default currency
+		  	if ($currency['code'] == $this->def_currency) continue;
 		  	$quote_function = 'quote_'.CURRENCY_SERVER_PRIMARY;
-		  	$rate = $this->$quote_function($currency->fields['code'], $this->def_currency);
+		  	$rate = $this->$quote_function($currency['code'], $this->def_currency);
 		  	if (empty($rate) && (gen_not_null(CURRENCY_SERVER_BACKUP))) {
-				$message[] = sprintf(SETUP_WARN_PRIMARY_SERVER_FAILED, CURRENCY_SERVER_PRIMARY, $currency->fields['title'], $currency->fields['code']);
-				$messageStack->add(sprintf(SETUP_WARN_PRIMARY_SERVER_FAILED, CURRENCY_SERVER_PRIMARY, $currency->fields['title'], $currency->fields['code']), 'caution');
+				$message[] = sprintf(SETUP_WARN_PRIMARY_SERVER_FAILED, CURRENCY_SERVER_PRIMARY, $currency['title'], $currency['code']);
+				$messageStack->add(sprintf(SETUP_WARN_PRIMARY_SERVER_FAILED, CURRENCY_SERVER_PRIMARY, $currency['title'], $currency['code']), 'caution');
 				$quote_function = 'quote_'.CURRENCY_SERVER_BACKUP;
-				$rate = $this->$quote_function($currency->fields['code'], $this->def_currency);
+				$rate = $this->$quote_function($currency['code'], $this->def_currency);
 				$server_used = CURRENCY_SERVER_BACKUP;
 		  	}
 		  	if ($rate <> 0) {
-				$admin->DataBase->query("update " . $this->db_table . " set value = '" . $rate . "', last_updated = now()
-			  	  where currencies_id = '" . (int)$currency->fields['currencies_id'] . "'");
-				$message[] = sprintf(SETUP_INFO_CURRENCY_UPDATED, $currency->fields['title'], $currency->fields['code'], $server_used);
-				$messageStack->add(sprintf(SETUP_INFO_CURRENCY_UPDATED, $currency->fields['title'], $currency->fields['code'], $server_used), 'success');
+				$admin->DataBase->exec("UPDATE {$this->db_table} set value = '$rate', last_updated = now() WHERE currencies_id = '" . (int)$currency['currencies_id'] . "'");
+				$message[] = sprintf(SETUP_INFO_CURRENCY_UPDATED, $currency['title'], $currency['code'], $server_used);
+				$messageStack->add(sprintf(SETUP_INFO_CURRENCY_UPDATED, $currency['title'], $currency['code'], $server_used), 'success');
 		  	} else {
-				$message[] = sprintf(SETUP_ERROR_CURRENCY_INVALID, $currency->fields['title'], $currency->fields['code'], $server_used);
-				throw new \core\classes\userException(sprintf(SETUP_ERROR_CURRENCY_INVALID, $currency->fields['title'], $currency->fields['code'], $server_used));
+				$message[] = sprintf(SETUP_ERROR_CURRENCY_INVALID, $currency['title'], $currency['code'], $server_used);
+				throw new \core\classes\userException(sprintf(SETUP_ERROR_CURRENCY_INVALID, $currency['title'], $currency['code'], $server_used));
 		  	}
-		  	$currency->MoveNext();
 		}
 		if (sizeof($message) > 0) $this->message = implode("\n", $message);
 		return true;
@@ -213,7 +219,7 @@ class currencies {
 
 	function quote_oanda($code, $base = DEFAULT_CURRENCY) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-	  	$page = file('http://www.oanda.com/convert/fxdaily?value=1&redirected=1&exch='.$code.'&format=CSV&dest=Get+Table&sel_list=' . $base);
+	  	$page = file("http://www.oanda.com/convert/fxdaily?value=1&redirected=1&exch={$code}&format=CSV&dest=Get+Table&sel_list={$base}");
 	  	$match = array();
 	  	preg_match('/(.+),(\w{3}),([0-9.]+),([0-9.]+)/i', implode('', $page), $match);
 	  	return (sizeof($match) > 0) ? $match[3] : false;
@@ -221,7 +227,7 @@ class currencies {
 
 	function quote_yahoo($to, $from = DEFAULT_CURRENCY) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-	  	if (($page = @file_get_contents('http://finance.yahoo.com/d/quotes.csv?e=.csv&f=sl1d1t1&s='.$from.$to.'=X')) === false) throw new \core\classes\userException("can not open 'http://finance.yahoo.com/d/quotes.csv?e=.csv&f=sl1d1t1&s=$from$to=X'");
+	  	if (($page = @file_get_contents("http://finance.yahoo.com/d/quotes.csv?e=.csv&f=sl1d1t1&s={$from}{$to}=X")) === false) throw new \core\classes\userException("can not open 'http://finance.yahoo.com/d/quotes.csv?e=.csv&f=sl1d1t1&s=$from$to=X'");
 	  	if ($page) $parts = explode(',', trim($page));
 	  	return ($parts[1] > 0) ? $parts[1] : false;
 	}
@@ -231,13 +237,16 @@ class currencies {
 	  	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	  	\core\classes\user::validate_security($this->security_id, 4); // security check
 		// Can't delete default currency or last currency
-		$result = $admin->DataBase->query("select currencies_id from {$this->db_table} where code = '" . DEFAULT_CURRENCY . "'");
-		if ($result->fields['currencies_id'] == $id) throw new \core\classes\userException(ERROR_CANNOT_DELETE_DEFAULT_CURRENCY);
-		$result = $admin->DataBase->query("select code, title from {$this->db_table} where currencies_id = '$id'");
-		$test_1 = $admin->DataBase->query("select id from " . TABLE_JOURNAL_MAIN . " where currencies_code = '{$result->fields['code']}' limit 1");
-		if ($test_1->rowCount() > 0) throw new \core\classes\userException(ERROR_CURRENCY_DELETE_IN_USE);
-		$admin->DataBase->exec("delete from {$this->db_table} where currencies_id = '$id'");
-		gen_add_audit_log(TEXT_CURRENCIES . ' - ' . TEXT_DELETE, $result->fields['title']);
+		$sql = $admin->DataBase->prepare("SELECT currencies_id FROM {$this->db_table} WHERE code = '" . DEFAULT_CURRENCY . "'");
+		$sql->execute();
+		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		if ($result['currencies_id'] == $id) throw new \core\classes\userException(ERROR_CANNOT_DELETE_DEFAULT_CURRENCY);
+		$sql = $admin->DataBase->prepare("SELECT m.id, c.title FROM " . TABLE_JOURNAL_MAIN . " m LEFT JOIN {$this->db_table} c ON m.currencies_code = c.code WHERE c.currencies_id = '$id' LIMIT 1");
+		$sql->execute();
+		if ($sql->rowCount() > 0) throw new \core\classes\userException(ERROR_CURRENCY_DELETE_IN_USE);
+		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		$admin->DataBase->exec("DELETE FROM {$this->db_table} WHERE currencies_id = '$id'");
+		gen_add_audit_log(TEXT_CURRENCIES . ' - ' . TEXT_DELETE, $result['title']);
 		return true;
 	}
 
@@ -272,7 +281,7 @@ class currencies {
 	function build_form_html($action, $code) {
 	    global $admin;
 	    \core\classes\messageStack::debug_log("executing ".__METHOD__ );
-	    $this->load_currencies();
+	    $this->load();
 	    $value = $this->currencies[$code];
 		$output  = '<table class="ui-widget" style="border-style:none;width:100%">' . chr(10);
 		$output .= '  <thead class="ui-widget-header">' . "\n";

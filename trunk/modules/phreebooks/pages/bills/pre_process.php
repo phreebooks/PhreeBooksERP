@@ -109,7 +109,7 @@ switch ($_REQUEST['action']) {
 		$order->purch_order_id      = db_prepare_input($_POST['purch_order_id']);  // customer PO/Ref number
 		$order->description         = sprintf(TEXT_ARGS_ENTRY, $journal_types_list[JOURNAL_ID]['text']);
 
-		$order->total_amount        = $currencies->clean_value(db_prepare_input($_POST['total']), DEFAULT_CURRENCY);
+		$order->total_amount        = $admin->currencies->clean_value(db_prepare_input($_POST['total']), DEFAULT_CURRENCY);
 		$order->gl_acct_id          = $gl_acct_id;
 		$order->gl_disc_acct_id     = db_prepare_input($_POST['gl_disc_acct_id']);
 		$order->payment_id          = db_prepare_input($_POST['payment_id']);
@@ -122,10 +122,10 @@ switch ($_REQUEST['action']) {
 			$order->item_rows[] = array(
 			  'id'      => db_prepare_input($_POST['id_' . $x]),
 			  'gl_type' => GL_TYPE,
-			  'amt'     => $currencies->clean_value(db_prepare_input($_POST['amt_' . $x])),
+			  'amt'     => $admin->currencies->clean_value(db_prepare_input($_POST['amt_' . $x])),
 			  'desc'    => db_prepare_input($_POST['desc_' . $x]),
-			  'dscnt'   => $currencies->clean_value(db_prepare_input($_POST['dscnt_' . $x])),
-			  'total'   => $currencies->clean_value(db_prepare_input($_POST['total_' . $x])),
+			  'dscnt'   => $admin->currencies->clean_value(db_prepare_input($_POST['dscnt_' . $x])),
+			  'total'   => $admin->currencies->clean_value(db_prepare_input($_POST['total_' . $x])),
 			  'inv'     => db_prepare_input($_POST['inv_' . $x]),
 			  'prcnt'   => db_prepare_input($_POST['prcnt_' . $x]),
 			  'early'   => db_prepare_input($_POST['early_' . $x]),
@@ -216,8 +216,8 @@ switch ($_REQUEST['action']) {
     $order->due_1               = $due_dates['net_date'];
     $order->prcnt_1             = $due_dates['discount'];
     $order->pay_1               = true;
-    $order->amt_1               = $currencies->format($result->fields['total_amount'] - $pre_paid);
-    $order->total_1             = $currencies->format($result->fields['total_amount'] - $pre_paid);
+    $order->amt_1               = $admin->currencies->format($result->fields['total_amount'] - $pre_paid);
+    $order->total_1             = $admin->currencies->format($result->fields['total_amount'] - $pre_paid);
     $order->desc_1              = '';
 	// reset some particular values
 	$order->search = $account_id->fields['short_name']; // set the customer id in the search box

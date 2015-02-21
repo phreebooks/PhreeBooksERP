@@ -142,7 +142,7 @@
 		    echo '  <td align="center">' . $value['ThisYear']. '</td>' . chr(10);
 			echo '  <td align="center">' . $value['MonthName']. '</td>' . chr(10);
 		    echo '  <td align="center">' . ($value['qty'] ? $value['qty'] : '&nbsp;') . '</td>' . chr(10);
-		    echo '  <td align="right">' . ($value['total_amount'] ? $currencies->format($value['total_amount']) : '&nbsp;') . '</td>' . chr(10);
+		    echo '  <td align="right">' . ($value['total_amount'] ? $admin->currencies->format($value['total_amount']) : '&nbsp;') . '</td>' . chr(10);
 			echo '</tr>' . chr(10);
 			$odd = !$odd;
 		  }
@@ -176,7 +176,7 @@
 			echo '  <td align="center">' . $value['ThisYear']. '</td>' . chr(10);
 			echo '  <td align="center">' . $value['MonthName']. '</td>' . chr(10);
 		    echo '  <td align="center">' . ($value['qty'] ? $value['qty'] : '&nbsp;') . '</td>' . chr(10);
-		    echo '  <td align="right">' . ($value['total_amount'] ? $currencies->format($value['total_amount']) : '&nbsp;') . '</td>' . chr(10);
+		    echo '  <td align="right">' . ($value['total_amount'] ? $admin->currencies->format($value['total_amount']) : '&nbsp;') . '</td>' . chr(10);
 			echo '</tr>' . chr(10);
 			$odd = !$odd;
 		  }

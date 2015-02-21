@@ -78,7 +78,7 @@ $fields->display();
 	<tr>
 	  <td><?php echo TEXT_ORIGINAL_COST; ?></td>
 	  <td>
-	  	<?php echo html_input_field('full_price', $currencies->format($cInfo->full_price), 'size="11" maxlength="10" style="text-align:right"', false) . (ENABLE_MULTI_CURRENCY ? (' (' . DEFAULT_CURRENCY . ')') : '');
+	  	<?php echo html_input_field('full_price', $admin->currencies->format($cInfo->full_price), 'size="11" maxlength="10" style="text-align:right"', false) . (ENABLE_MULTI_CURRENCY ? (' (' . DEFAULT_CURRENCY . ')') : '');
 		?>
 	  </td>
 	  <td>

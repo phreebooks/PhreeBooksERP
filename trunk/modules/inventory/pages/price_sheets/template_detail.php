@@ -51,7 +51,7 @@ echo $toolbar->build();
     <td align="right"><?php echo TEXT_USE_AS_DEFAULT; ?></td>
     <td><?php echo html_checkbox_field('default_sheet', '1', ($default_sheet) ? ' checked' : ''); ?></td>
   </tr>
-<?php if (ENABLE_MULTI_CURRENCY) echo '<tr><td colspan="4" class="fieldRequired" align="center"> ' . sprintf(GEN_PRICE_SHEET_CURRENCY_NOTE, $currencies->currencies[DEFAULT_CURRENCY]['title']) . '</td></tr>'; ?>
+<?php if (ENABLE_MULTI_CURRENCY) echo '<tr><td colspan="4" class="fieldRequired" align="center"> ' . sprintf(GEN_PRICE_SHEET_CURRENCY_NOTE, $admin->currencies->currencies[DEFAULT_CURRENCY]['title']) . '</td></tr>'; ?>
   <tr>
     <td colspan="4">
 	 <table class="ui-widget" style="border-collapse:collapse;width:100%">
@@ -76,7 +76,7 @@ echo $toolbar->build();
 	array_pop($first_source_list);
 	for ($i = 0, $j = 1; $i < MAX_NUM_PRICE_LEVELS; $i++, $j++) {
 		$level_info = explode(':', $price_levels[$i]);
-		$price = $currencies->precise($level_info[0] ? $level_info[0] : (($i == 0) ? $full_price : 0));
+		$price = $admin->currencies->precise($level_info[0] ? $level_info[0] : (($i == 0) ? $full_price : 0));
 		$qty     = $level_info[1] ? $level_info[1] : $j;
 		$src     = $level_info[2] ? $level_info[2] : 0;
 		$adj     = $level_info[3] ? $level_info[3] : 0;
@@ -88,10 +88,10 @@ echo $toolbar->build();
 		echo '<td>' . html_input_field('qty_' .     $j, $qty, 'size="10" onchange="updatePrice()" style="text-align:right"') . '</td>' . chr(10);
 		echo '<td>' . html_pull_down_menu('src_' .  $j, gen_build_pull_down(($i==0) ? $first_source_list : $price_mgr_sources), $src, 'onchange="updatePrice()"') . '</td>' . chr(10);
 		echo '<td>' . html_pull_down_menu('adj_' .  $j, gen_build_pull_down($price_mgr_adjustments), $adj, 'disabled="disabled" onchange="updatePrice()"') . '</td>' . chr(10);
-		echo '<td>' . html_input_field('adj_val_' . $j, $currencies->format($adj_val), 'disabled="disabled" size="10" onchange="updatePrice()" style="text-align:right"') . '</td>' . chr(10);
+		echo '<td>' . html_input_field('adj_val_' . $j, $admin->currencies->format($adj_val), 'disabled="disabled" size="10" onchange="updatePrice()" style="text-align:right"') . '</td>' . chr(10);
 		echo '<td>' . html_pull_down_menu('rnd_' .  $j, gen_build_pull_down($price_mgr_rounding), $rnd, 'disabled="disabled" onchange="updatePrice()"') . '</td>' . chr(10);
-		echo '<td>' . html_input_field('rnd_val_' . $j, $currencies->precise($rnd_val), 'disabled="disabled" size="10" onchange="updatePrice()" style="text-align:right"') . '</td>' . chr(10);
-		echo '<td>' . html_input_field('price_' .   $j, $currencies->format($price), 'onchange="updatePrice()" style="text-align:right"') . '</td>' . chr(10);
+		echo '<td>' . html_input_field('rnd_val_' . $j, $admin->currencies->precise($rnd_val), 'disabled="disabled" size="10" onchange="updatePrice()" style="text-align:right"') . '</td>' . chr(10);
+		echo '<td>' . html_input_field('price_' .   $j, $admin->currencies->format($price), 'onchange="updatePrice()" style="text-align:right"') . '</td>' . chr(10);
 		echo '</tr>' . chr(10);
 	}
 	$hidden_fields = '<script type="text/javascript">initEditForm()</script>' . chr(10);

@@ -55,7 +55,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 switch ($_REQUEST['action']) {
   case 'save':
 	\core\classes\user::validate_security($security_level, 3);
-  	$statement_balance = $currencies->clean_value($_POST['start_balance']);
+  	$statement_balance = $admin->currencies->clean_value($_POST['start_balance']);
 	if (is_array($_POST['id'])) for ($i = 0; $i < count($_POST['id']); $i++) {
 	  $all_items[] = $_POST['id'][$i];
 	  if (isset($_POST['chk'][$i])) {
@@ -119,7 +119,7 @@ switch ($_REQUEST['action']) {
 
 /*****************   prepare to display templates  *************************/
 $bank_list = array();
-$statement_balance = $currencies->format(0);
+$statement_balance = $admin->currencies->format(0);
 
 // load the payments and deposits that are open
 $fiscal_dates = gen_calculate_fiscal_dates($period);
@@ -148,7 +148,7 @@ while (!$result->EOF) {
 $sql = "select statement_balance, cleared_items from ".TABLE_RECONCILIATION." where period = $period and gl_account = '$gl_account'";
 $result = $admin->DataBase->query($sql);
 if ($result->rowCount() <> 0) { // there are current cleared items in the present accounting period (edit)
-  $statement_balance = $currencies->format($result->fields['statement_balance']);
+  $statement_balance = $admin->currencies->format($result->fields['statement_balance']);
   $cleared_items     = unserialize($result->fields['cleared_items']);
   // load information from general ledger
   if (count($cleared_items) > 0) {
@@ -241,7 +241,7 @@ usort($combined_list, "my_sort");
 $sql = "select beginning_balance + debit_amount - credit_amount as gl_balance
 	from ".TABLE_CHART_OF_ACCOUNTS_HISTORY." where account_id = '$gl_account' and period = $period";
 $result = $admin->DataBase->query($sql);
-$gl_balance = $currencies->format($result->fields['gl_balance']);
+$gl_balance = $admin->currencies->format($result->fields['gl_balance']);
 
 $include_header   = true;
 $include_footer   = true;

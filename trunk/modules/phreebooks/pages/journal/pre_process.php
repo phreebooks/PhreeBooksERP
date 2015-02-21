@@ -60,8 +60,8 @@ switch ($_REQUEST['action']) {
 				$x++;
 				continue;
 			}
-			$debit_amount  = ($_POST['debit_' . $x]) ? $currencies->clean_value($_POST['debit_' . $x]) : 0;
-			$credit_amount = ($_POST['credit_'. $x]) ? $currencies->clean_value($_POST['credit_'. $x]) : 0;
+			$debit_amount  = ($_POST['debit_' . $x]) ? $admin->currencies->clean_value($_POST['debit_' . $x]) : 0;
+			$credit_amount = ($_POST['credit_'. $x]) ? $admin->currencies->clean_value($_POST['credit_'. $x]) : 0;
 			$glEntry->journal_rows[] = array(
 				'id'            => ($_REQUEST['action'] == 'copy') ? '' : db_prepare_input($_POST['id_' . $x]),
 				'qty'           => '1',

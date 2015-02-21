@@ -23,22 +23,26 @@ class e extends \contacts\classes\contacts{
 	public $address_types	= array('em', 'es', 'eb', 'im');
     public $type			= 'e';
     public $title			= TEXT_EMPLOYEE;
+    public $dept_rep_id 	= EMP_DEFAULT_DEPARTMENT; //will overwrite if exists in database.
 
 	public function __construct(){
 		$this->tab_list[] = array('file'=>'template_e_history',	'tag'=>'history',  'order'=>10, 'text'=>TEXT_HISTORY);
 		$this->tab_list[] = array('file'=>'template_notes',		'tag'=>'notes',    'order'=>40, 'text'=>TEXT_NOTES);
 		$this->tab_list[] = array('file'=>'template_e_general',	'tag'=>'general',  'order'=> 1, 'text'=>TEXT_GENERAL);
+		$this->employee_types = array(
+			'e' => TEXT_EMPLOYEE,
+			's' => TEXT_SALES_REP,
+			'b' => TEXT_BUYER,
+		);
 		parent::__construct();
 	}
 
-  	function delete($id) {
+  	function delete() {
 	  	global $admin;
 	  	if ( $this->id == '' ) $this->id = $id;
-  		$result = $admin->DataBase->query("select admin_id from ".TABLE_USERS." where account_id =". $this->id);
-		if ($result->rowCount() == 0) {
-	  		return $this->do_delete();
-		}
-		return ACT_ERROR_CANNOT_DELETE_EMPLOYEE;
+  		$result = $admin->DataBase->query("SELECT admin_id FROM ".TABLE_USERS." WHERE account_id =". $this->id);
+		if ($result->rowCount() != 0) throw new \core\classes\userException(ACT_ERROR_CANNOT_DELETE_EMPLOYEE);
+	  	parent::delete();
   	}
 
   	function list_row () {

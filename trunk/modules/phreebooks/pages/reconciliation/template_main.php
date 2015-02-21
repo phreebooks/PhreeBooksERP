@@ -37,7 +37,7 @@ echo $toolbar->build($add_search = false, $add_period = false);
 <h1><?php echo TEXT_ACCOUNT_RECONCILIATION; ?></h1>
 <div align="center"><?php  echo TEXT_CASH_ACCOUNT 			 . '&nbsp;' . html_pull_down_menu('gl_account', $account_array, $gl_account, 'onchange="submit();"'); ?> &nbsp;
 <?php echo TEXT_ACCOUNTING_PERIOD . ': &nbsp;' . html_pull_down_menu('search_period', gen_get_period_pull_down(false), $period, 'onchange="submit();"'); ?></div>
-<?php if (ENABLE_MULTI_CURRENCY) echo '<p>'.sprintf(GEN_PRICE_SHEET_CURRENCY_NOTE, $currencies->currencies[DEFAULT_CURRENCY]['title']) .'</p>'. chr(10); ?>
+<?php if (ENABLE_MULTI_CURRENCY) echo '<p>'.sprintf(GEN_PRICE_SHEET_CURRENCY_NOTE, $admin->currencies->currencies[DEFAULT_CURRENCY]['title']) .'</p>'. chr(10); ?>
 <table class="ui-widget" style="border-collapse:collapse;width:900px;margin-left:auto;margin-right:auto;">
  <thead class="ui-widget-header">
   <tr>
@@ -65,8 +65,8 @@ echo $toolbar->build($add_search = false, $add_period = false);
 		<tr class="<?php echo $odd?'odd':'even'; ?>">
 			<td width="16%"><?php echo $values['reference']; ?></td>
 			<td width="10%"><?php echo gen_locale_date($values['post_date']); ?></td>
-			<td width="15%" align="right"><?php echo $values['dep_amount'] ? $currencies->format($values['dep_amount']) : '&nbsp;'; ?></td>
-			<td width="15%" align="right"><?php echo $values['pmt_amount'] ? $currencies->format($values['pmt_amount']) : '&nbsp;'; ?></td>
+			<td width="15%" align="right"><?php echo $values['dep_amount'] ? $admin->currencies->format($values['dep_amount']) : '&nbsp;'; ?></td>
+			<td width="15%" align="right"><?php echo $values['pmt_amount'] ? $admin->currencies->format($values['pmt_amount']) : '&nbsp;'; ?></td>
 			<td width="30%"><?php echo htmlspecialchars($values['name']); ?></td>
 			<td width="7%" align="center">
 				<?php if (sizeof($values['detail']) == 1) {
@@ -96,8 +96,8 @@ echo $toolbar->build($add_search = false, $add_period = false);
 		    <tr class="<?php echo $even?'even':'odd'; ?>">
 			  <td width="16%"><?php echo '&nbsp;'; ?></td>
 			  <td width="10%"><?php echo gen_locale_date($detail['post_date']); ?></td>
-			  <td width="15%" align="right"><?php echo $detail['dep_amount'] ? $currencies->format($detail['dep_amount']) : '&nbsp;'; ?></td>
-			  <td width="15%" align="right"><?php echo $detail['pmt_amount'] ? $currencies->format($detail['pmt_amount']) : '&nbsp;'; ?></td>
+			  <td width="15%" align="right"><?php echo $detail['dep_amount'] ? $admin->currencies->format($detail['dep_amount']) : '&nbsp;'; ?></td>
+			  <td width="15%" align="right"><?php echo $detail['pmt_amount'] ? $admin->currencies->format($detail['pmt_amount']) : '&nbsp;'; ?></td>
 			  <td width="30%"><?php echo htmlspecialchars($detail['name']); ?></td>
 			  <td width="7%" align="center">
 			    <?php echo $cleared . html_checkbox_field('chk[' . $i . ']', '1', ($detail['cleared'] == $period ? true : false), '', $disabled.'onclick="updateDetail(' . $ref . ')"') . chr(10); ?>

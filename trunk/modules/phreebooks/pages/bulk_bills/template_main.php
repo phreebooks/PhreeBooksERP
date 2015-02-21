@@ -84,21 +84,21 @@ echo $toolbar->build();
 		  <tr>
 			<td align="right"><?php echo TEXT_BALANCE_BEFORE_PAYMENTS . '&nbsp;'; ?></td>
 			<td align="right">
-			  <?php echo html_input_field('acct_balance', $currencies->format($acct_balance), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?>
+			  <?php echo html_input_field('acct_balance', $admin->currencies->format($acct_balance), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?>
 			  <?php echo (ENABLE_MULTI_CURRENCY) ? ' (' . DEFAULT_CURRENCY . ')' : '' ; ?>
 			  </td>
 		  </tr>
 		  <tr>
 			<td align="right"><?php echo TEXT_TOTAL_OF_ALL_PAYMENTS . '&nbsp;'; ?></td>
 			<td align="right">
-			  <?php echo html_input_field('total', $currencies->format(0), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?>
+			  <?php echo html_input_field('total', $admin->currencies->format(0), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?>
 			  <?php echo (ENABLE_MULTI_CURRENCY) ? ' (' . DEFAULT_CURRENCY . ')' : '' ; ?>
 			</td>
 		  </tr>
 		  <tr>
 			<td align="right"><?php echo TEXT_BALANCE_AFTER_PAYMENTS . '&nbsp;'; ?></td>
 			<td align="right">
-			  <?php echo html_input_field('end_balance', $currencies->format($acct_balance), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?>
+			  <?php echo html_input_field('end_balance', $admin->currencies->format($acct_balance), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?>
 			  <?php echo (ENABLE_MULTI_CURRENCY) ? ' (' . DEFAULT_CURRENCY . ')' : '' ; ?>
 			</td>
 		  </tr>
@@ -112,7 +112,7 @@ echo $toolbar->build();
 <div>
   <table class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto">
 	<thead class="ui-widget-header">
-<?php if (ENABLE_MULTI_CURRENCY) echo '<tr><td colspan="9" class="fieldRequired"> ' . sprintf(GEN_PRICE_SHEET_CURRENCY_NOTE, $currencies->currencies[DEFAULT_CURRENCY]['title']) . '</td></tr>'; ?>
+<?php if (ENABLE_MULTI_CURRENCY) echo '<tr><td colspan="9" class="fieldRequired"> ' . sprintf(GEN_PRICE_SHEET_CURRENCY_NOTE, $admin->currencies->currencies[DEFAULT_CURRENCY]['title']) . '</td></tr>'; ?>
       <tr valign="top"><?php echo $list_header; ?></tr>
 	</thead>
 	<tbody id="item_table" class="ui-widget-content">
@@ -134,7 +134,7 @@ echo $toolbar->build();
 	  $already_paid = fetch_partially_paid($query_result->fields['id']);
 	  $amount_due = $query_result->fields['total_amount'] - $already_paid;
 	  if ($query_result->fields['journal_id'] == 7) $amount_due = -$amount_due; // vendor credit memos
-	  $discount = $currencies->format(($query_result->fields['total_amount'] - $already_paid) * $due_dates['discount']);
+	  $discount = $admin->currencies->format(($query_result->fields['total_amount'] - $already_paid) * $due_dates['discount']);
 	  if ($post_date > $due_dates['early_date']) $discount = 0; // past the early date
 	  $extra_params = $query_result->fields['waiting'] == '1' ? 'readonly="readonly" ' : '';
 	  echo '<tr' . (($extra_params) ? ' class="ui-state-error"' : '') . '>' . chr(10);
@@ -145,14 +145,14 @@ echo $toolbar->build();
 	  echo html_hidden_field('bill_acct_id_' . $idx, $query_result->fields['bill_acct_id']) . chr(10);
 	  echo html_hidden_field('amt_' . $idx,          $amount_due) . chr(10);
 	  echo html_hidden_field('inv_' . $idx,          $query_result->fields['purchase_invoice_id']) . chr(10);
-	  echo html_hidden_field('origdisc_' . $idx,     $currencies->clean_value($discount)) . chr(10);
+	  echo html_hidden_field('origdisc_' . $idx,     $admin->currencies->clean_value($discount)) . chr(10);
 	  echo html_hidden_field('discdate_' . $idx,     $due_dates['early_date']) . chr(10);
 	  echo html_hidden_field('acct_' . $idx,         $query_result->fields['gl_acct_id']) . chr(10);
 	  // End hidden fields
 	  echo '</td>' . chr(10);
 	  echo '<td>' . htmlspecialchars($query_result->fields['bill_primary_name']) . '</td>' . chr(10);
 	  echo '<td align="center">' . $query_result->fields['purchase_invoice_id'] . '</td>' . chr(10);
-	  echo '<td align="center" style="text-align:right">' . $currencies->format($amount_due) . '</td>' . chr(10);
+	  echo '<td align="center" style="text-align:right">' . $admin->currencies->format($amount_due) . '</td>' . chr(10);
 	  echo '<td align="center">' . html_input_field('desc_' . $idx, $query_result->fields['purch_order_id'], $extra_params . 'size="32"') . '</td>' . chr(10);
 	  echo '<td align="center">' . gen_locale_date($due_dates['net_date']) . '</td>' . chr(10);
 	  echo '<td align="center">' . html_input_field('dscnt_' . $idx, $discount, $extra_params . 'size="11" maxlength="20" onchange="updateDiscTotal(' . $idx . ')" style="text-align:right"') . '</td>' . chr(10);

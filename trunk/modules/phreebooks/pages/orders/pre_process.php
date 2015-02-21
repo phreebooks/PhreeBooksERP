@@ -211,7 +211,7 @@ switch ($_REQUEST['action']) {
 		  	$order->ship_email          = db_prepare_input(($_POST['ship_email']          <> TEXT_EMAIL)          ? $_POST['ship_email']          : '', ADDRESS_BOOK_EMAIL_REQUIRED);
 		  	$order->shipper_code        = implode(':', array(db_prepare_input($_POST['ship_carrier']), db_prepare_input($_POST['ship_service'])));
 		  	$order->drop_ship           = isset($_POST['drop_ship']) ? $_POST['drop_ship'] : 0;
-		  	$order->freight             = $currencies->clean_value(db_prepare_input($_POST['freight']), $order->currencies_code) / $order->currencies_value;
+		  	$order->freight             = $admin->currencies->clean_value(db_prepare_input($_POST['freight']), $order->currencies_code) / $order->currencies_value;
 		}
 		// load journal main data
 		$order->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
@@ -239,14 +239,14 @@ switch ($_REQUEST['action']) {
 		$order->item_count          = db_prepare_input($_POST['item_count']);
 		$order->weight              = db_prepare_input($_POST['weight']);
 		$order->printed             = db_prepare_input($_POST['printed']);
-		$order->subtotal            = $currencies->clean_value(db_prepare_input($_POST['subtotal']), $order->currencies_code) / $order->currencies_value; // don't need unless for verification
+		$order->subtotal            = $admin->currencies->clean_value(db_prepare_input($_POST['subtotal']), $order->currencies_code) / $order->currencies_value; // don't need unless for verification
 		$order->disc_gl_acct_id     = db_prepare_input($_POST['disc_gl_acct_id']);
-		$order->discount            = $currencies->clean_value(db_prepare_input($_POST['discount']), $order->currencies_code) / $order->currencies_value;
+		$order->discount            = $admin->currencies->clean_value(db_prepare_input($_POST['discount']), $order->currencies_code) / $order->currencies_value;
 		$order->disc_percent        = ($order->subtotal) ? (1 - (($order->subtotal - $order->discount) / $order->subtotal)) : 0;
 		$order->ship_gl_acct_id     = db_prepare_input($_POST['ship_gl_acct_id']);
 		$order->rm_attach           = isset($_POST['rm_attach']) ? true : false;
-		$order->sales_tax           = $currencies->clean_value(db_prepare_input($_POST['sales_tax']), $order->currencies_code) / $order->currencies_value;
-		$order->total_amount        = $currencies->clean_value(db_prepare_input($_POST['total']), $order->currencies_code) / $order->currencies_value;
+		$order->sales_tax           = $admin->currencies->clean_value(db_prepare_input($_POST['sales_tax']), $order->currencies_code) / $order->currencies_value;
+		$order->total_amount        = $admin->currencies->clean_value(db_prepare_input($_POST['total']), $order->currencies_code) / $order->currencies_value;
 		// load item row data
 		$x = 1;
 		while (isset($_POST['qty_' . $x])) { // while there are item rows to read in
@@ -263,18 +263,18 @@ switch ($_REQUEST['action']) {
 			'so_po_item_ref_id' 		=> db_prepare_input($_POST['so_po_item_ref_id_' . $x]),
 			'item_cnt'					=> db_prepare_input($_POST['item_cnt_' . $x]),
 			'gl_type'           		=> GL_TYPE,
-			'qty'               		=> $currencies->clean_value(db_prepare_input($_POST['qty_' . $x]), $order->currencies_code),
-			'pstd'             			=> $currencies->clean_value(db_prepare_input($_POST['pstd_' . $x]), $order->currencies_code),
+			'qty'               		=> $admin->currencies->clean_value(db_prepare_input($_POST['qty_' . $x]), $order->currencies_code),
+			'pstd'             			=> $admin->currencies->clean_value(db_prepare_input($_POST['pstd_' . $x]), $order->currencies_code),
 			'sku'               		=> ($_POST['sku_' . $x] == TEXT_SEARCH) ? '' : db_prepare_input($_POST['sku_' . $x]),
 			'desc'              		=> db_prepare_input($_POST['desc_' . $x]),
 			'proj'              		=> db_prepare_input($_POST['proj_' . $x]),
 		  	'purch_package_quantity'	=> db_prepare_input($_POST['purch_package_quantity_' . $x]),
 			'date_1'            		=> db_prepare_input($_POST['date_1_' . $x]),
-			'price'             		=> $currencies->clean_value(db_prepare_input($_POST['price_' . $x]), $order->currencies_code) / $order->currencies_value,
-			'full'              		=> $currencies->clean_value(db_prepare_input($_POST['full_' . $x]),  $order->currencies_code) / $order->currencies_value,
+			'price'             		=> $admin->currencies->clean_value(db_prepare_input($_POST['price_' . $x]), $order->currencies_code) / $order->currencies_value,
+			'full'              		=> $admin->currencies->clean_value(db_prepare_input($_POST['full_' . $x]),  $order->currencies_code) / $order->currencies_value,
 			'acct'              		=> db_prepare_input($_POST['acct_' . $x]),
 			'tax'               		=> db_prepare_input($_POST['tax_' . $x]),
-			'total'             		=> $currencies->clean_value(db_prepare_input($_POST['total_' . $x]), $order->currencies_code) / $order->currencies_value,
+			'total'             		=> $admin->currencies->clean_value(db_prepare_input($_POST['total_' . $x]), $order->currencies_code) / $order->currencies_value,
 			'weight'            		=> db_prepare_input($_POST['weight_' . $x]),
 			'serial'            		=> db_prepare_input($_POST['serial_' . $x]),
 			'stock'             		=> db_prepare_input($_POST['stock_' . $x]),

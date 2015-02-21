@@ -25,8 +25,8 @@ require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 // with the current phreeform structure.
 class is_budget {
   function __construct() {
-	global $currencies;
-	$this->zero = $currencies->format(0);
+	global $admin;
+	$this->zero = $admin->currencies->format(0);
 	$this->coa_types = load_coa_types();
 	$this->inc_stmt_data = array();
   }

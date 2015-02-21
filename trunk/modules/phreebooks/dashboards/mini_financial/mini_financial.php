@@ -127,8 +127,8 @@ class mini_financial extends \core\classes\ctl_panel {
 	}
 
 	function ProcessData($strData) {
-	    global $currencies;
-	  	return $currencies->format_full($strData, true, DEFAULT_CURRENCY, 1, 'fpdf');
+	    global $admin;
+	  	return $admin->currencies->format_full($strData, true, DEFAULT_CURRENCY, 1, 'fpdf');
 	}
 
 	function load_report_data($period) {

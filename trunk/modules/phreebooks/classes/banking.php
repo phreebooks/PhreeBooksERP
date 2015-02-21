@@ -52,7 +52,7 @@ class banking extends \core\classes\journal {
 	}
 
 	function post_ordr($action) {
-		global $admin, $currencies, $messageStack, $admin;
+		global $admin, $messageStack, $admin;
 		$this->journal_main_array = $this->build_journal_main_array();	// build ledger main record
 		$this->journal_rows = array();	// initialize ledger row(s) array
 

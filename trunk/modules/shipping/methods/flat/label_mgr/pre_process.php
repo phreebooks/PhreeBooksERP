@@ -33,7 +33,7 @@ switch ($_REQUEST['action']) {
 	$sInfo->ship_date = gen_db_date($_POST['ship_date']);
 	$sInfo->deliver_date = gen_db_date($_POST['deliver_date']);
 	$sInfo->tracking_id = db_prepare_input($_POST['tracking_id']);
-	$sInfo->cost = $currencies->clean_value($_POST['cost']);
+	$sInfo->cost = $admin->currencies->clean_value($_POST['cost']);
 
 	$temp = $admin->DataBase->query("select next_shipment_num from " . TABLE_CURRENT_STATUS);
 	$sql_array = array(

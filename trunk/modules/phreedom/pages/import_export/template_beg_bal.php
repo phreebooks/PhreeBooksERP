@@ -52,11 +52,11 @@ echo $toolbar->build();
 			<td><?php echo htmlspecialchars($values['desc']); ?></td>
 			<td><?php echo $values['type_desc']; ?></td>
 		  <?php if ($coa_types[$values['type']]['asset']) { ?>
-			<td align="center"><?php echo html_input_field('coa_value['.$i.']', (($values['beg_bal'] <> 0) ? $currencies->precise($values['beg_bal']) : '0'), 'style="text-align:right" size="13" maxlength="12" onchange="updateBalance()"'); ?></td>
+			<td align="center"><?php echo html_input_field('coa_value['.$i.']', (($values['beg_bal'] <> 0) ? $admin->currencies->precise($values['beg_bal']) : '0'), 'style="text-align:right" size="13" maxlength="12" onchange="updateBalance()"'); ?></td>
 			<td align="center" class="ui-state-highlight">&nbsp;</td>
 		  <?php } else { ?>
 			<td align="center" class="ui-state-highlight">&nbsp;</td>
-			<td align="center"><?php echo html_input_field('coa_value['.$i.']', (($values['beg_bal'] <> 0) ? $currencies->precise(-$values['beg_bal']) : '0'), 'style="text-align:right" size="13" maxlength="12" onchange="updateBalance()"'); ?></td>
+			<td align="center"><?php echo html_input_field('coa_value['.$i.']', (($values['beg_bal'] <> 0) ? $admin->currencies->precise(-$values['beg_bal']) : '0'), 'style="text-align:right" size="13" maxlength="12" onchange="updateBalance()"'); ?></td>
 		  <?php } ?>
 		  </tr>
 		  <?php $i++;

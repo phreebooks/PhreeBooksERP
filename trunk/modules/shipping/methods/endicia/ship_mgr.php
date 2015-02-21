@@ -80,7 +80,7 @@ if ($security_level > 2) {
 			echo '    <td align="right">' . ($result->fields['deliver_date'] <> '0000-00-00 00:00:00' ? gen_locale_date($result->fields['deliver_date'], true) : '&nbsp;') . '</td>' . chr(10);
 			echo '    <td align="right">' . ($result->fields['actual_date']  <> '0000-00-00 00:00:00' ? gen_locale_date($result->fields['actual_date'], true)  : '&nbsp;') . '</td>' . chr(10);
 			echo '    <td align="right"><a href="#" onclick="trackPackage(\''.$method->id.'\', \''.$result->fields['id'].'\')">' . $result->fields['tracking_id'] . '</a></td>' . chr(10);
-			echo '    <td align="right">' . $currencies->format_full($result->fields['cost']) . '</td>' . chr(10);
+			echo '    <td align="right">' . $admin->currencies->format_full($result->fields['cost']) . '</td>' . chr(10);
 			echo '    <td align="right" nowrap="nowrap">';
 			if ($result->fields['actual_date'] == '0000-00-00 00:00:00') // not tracked yet, show the tracking icon
 		  		echo html_icon('phreebooks/truck-icon.png',	TEXT_CONFIRM_DELIVERY,'small', 'onclick="submitShipSequence(\'' . $method->id . '\', ' . $result->fields['id'] . ', \'track\')"') . chr(10);

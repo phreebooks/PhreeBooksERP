@@ -30,11 +30,11 @@ switch ($_REQUEST['action']) {
 	while (true) {
 		if (isset($_POST['id_' . $j])) {
 			$id = db_prepare_input($_POST['id_' . $j]);
-			$re_order   = $currencies->clean_value($_POST['reOrd_' . $j]);
-			$min_stock  = $currencies->clean_value($_POST['min_'   . $j]);
-			$lead_time  = $currencies->clean_value($_POST['lead_'  . $j]);
-			$item_cost  = $currencies->clean_value($_POST['cost_'  . $j]);
-			$full_price = $currencies->clean_value($_POST['sell_'  . $j]);
+			$re_order   = $admin->currencies->clean_value($_POST['reOrd_' . $j]);
+			$min_stock  = $admin->currencies->clean_value($_POST['min_'   . $j]);
+			$lead_time  = $admin->currencies->clean_value($_POST['lead_'  . $j]);
+			$item_cost  = $admin->currencies->clean_value($_POST['cost_'  . $j]);
+			$full_price = $admin->currencies->clean_value($_POST['sell_'  . $j]);
 			$admin->DataBase->query("update " . TABLE_INVENTORY . " set
 				lead_time  = '$lead_time',
 				item_cost  = '$item_cost',

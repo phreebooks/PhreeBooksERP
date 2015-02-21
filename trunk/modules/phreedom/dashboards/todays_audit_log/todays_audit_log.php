@@ -30,7 +30,7 @@ class todays_audit_log extends \core\classes\ctl_panel {
 	public $default_params 		= array('num_rows'=> 0);
 
 	function output() {
-		global $admin, $currencies;
+		global $admin;
 		if(count($this->params) != count($this->default_params)) { //upgrading
 			$this->params = $this->upgrade($this->params);
 		}
@@ -55,7 +55,7 @@ class todays_audit_log extends \core\classes\ctl_panel {
 			$contents = TEXT_NO_RESULTS_FOUND;
 		} else {
 			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
-	        	$contents .= '<div style="float:right">' . $currencies->format_full($result['amount'], true, DEFAULT_CURRENCY, 1, 'fpdf') . '</div>';
+	        	$contents .= '<div style="float:right">' . $admin->currencies->format_full($result['amount'], true, DEFAULT_CURRENCY, 1, 'fpdf') . '</div>';
 	            $contents .= "<div>{$result['display_name']} --> {$result['action']} --> {$result['reference_id']} </div>" . chr(10);
 	        }
 	    }

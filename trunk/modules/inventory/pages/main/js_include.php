@@ -606,7 +606,7 @@ function addVendorRow(){
 	newCell.innerHTML = cell;
 	<?php
 	if(isset($cInfo->item_cost)){
-		echo "cell  ='". str_replace("'", "\'", html_input_field('item_cost_array[]', $currencies->precise(0), 'onchange="what_to_update();" size="15" maxlength="20" style="text-align:right"', false))."';".chr(13);
+		echo "cell  ='". str_replace("'", "\'", html_input_field('item_cost_array[]', $admin->currencies->precise(0), 'onchange="what_to_update();" size="15" maxlength="20" style="text-align:right"', false))."';".chr(13);
 	}else{
 		echo "cell  ='';".chr(13);
 	} ?>

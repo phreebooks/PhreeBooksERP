@@ -74,8 +74,8 @@ echo $toolbar->build();
   <tr>
     <td><?php echo TEXT_TRANSACTION_AMOUNT; ?></td>
     <td><?php echo html_pull_down_menu('search_amount_id', gen_build_pull_down($choices), $_SESSION['search_amount_id'], $params = ''); ?></td>
-    <td><?php echo html_input_field('search_amount_from',($_SESSION['search_amount_from'])? $currencies->precise($_SESSION['search_amount_from']):'', $params = ''); ?></td>
-    <td><?php echo html_input_field('search_amount_to', ($_SESSION['search_amount_to']) ? $currencies->precise($_SESSION['search_amount_to']):'', $params = ''); ?></td>
+    <td><?php echo html_input_field('search_amount_from',($_SESSION['search_amount_from'])? $admin->currencies->precise($_SESSION['search_amount_from']):'', $params = ''); ?></td>
+    <td><?php echo html_input_field('search_amount_to', ($_SESSION['search_amount_to']) ? $admin->currencies->precise($_SESSION['search_amount_to']):'', $params = ''); ?></td>
   </tr>
   <tr>
     <td><?php echo TEXT_GENERAL_LEDGER_ACCOUNT; ?></td>
@@ -195,7 +195,7 @@ echo $toolbar->build();
 	<td onclick="window.open('<?php echo html_href_link(FILENAME_DEFAULT, $params, 'SSL'); ?>','_blank')"><?php echo $query_result->fields['bill_primary_name']; ?></td>
 	<td onclick="window.open('<?php echo html_href_link(FILENAME_DEFAULT, $params, 'SSL'); ?>','_blank')"><?php echo gen_locale_date($query_result->fields['post_date']); ?></td>
 	<td onclick="window.open('<?php echo html_href_link(FILENAME_DEFAULT, $params, 'SSL'); ?>','_blank')"><?php echo $query_result->fields['purchase_invoice_id']; ?></td>
-	<td align="right" onclick="window.open('<?php echo html_href_link(FILENAME_DEFAULT, $params, 'SSL'); ?>','_blank')"><?php echo $currencies->format($query_result->fields['total_amount']); ?></td>
+	<td align="right" onclick="window.open('<?php echo html_href_link(FILENAME_DEFAULT, $params, 'SSL'); ?>','_blank')"><?php echo $admin->currencies->format($query_result->fields['total_amount']); ?></td>
 	<td align="right">
 <?php // build the action toolbar
 	  if (function_exists('add_extra_action_bar_buttons')) echo add_extra_action_bar_buttons($query_result->fields);

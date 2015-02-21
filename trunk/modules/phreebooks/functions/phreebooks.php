@@ -126,7 +126,7 @@ function load_coa_info($types = array()) { // includes inactive accounts
 function fill_paid_invoice_array($id, $account_id, $type = 'c') {
 	// to build this data array, all current open invoices need to be gathered and then the paid part needs
 	// to be applied along with discounts taken by row.
-	global $admin, $currencies;
+	global $admin;
 	$negate = ((JOURNAL_ID == 20 && $type == 'c') || (JOURNAL_ID == 18 && $type == 'v')) ? true : false;
 	// first read all currently open invoices and the payments of interest and put into an array
 	$paid_indeces = array();
@@ -211,11 +211,11 @@ function fill_paid_invoice_array($id, $account_id, $type = 'c') {
 		'post_date'           => $result->fields['post_date'],
 		'early_date'          => gen_locale_date($due_dates['early_date']),
 		'net_date'            => gen_locale_date($due_dates['net_date']),
-		'total_amount'        => $currencies->format($line_item['total_amount']),
+		'total_amount'        => $admin->currencies->format($line_item['total_amount']),
 		'gl_acct_id'          => $result->fields['gl_acct_id'],
 		'description'         => $line_item['description'],
-		'discount'            => $line_item['discount']    ? $currencies->format($line_item['discount']) : '',
-		'amount_paid'         => $line_item['amount_paid'] ? $currencies->format($line_item['amount_paid']) : '',
+		'discount'            => $line_item['discount']    ? $admin->currencies->format($line_item['discount']) : '',
+		'amount_paid'         => $line_item['amount_paid'] ? $admin->currencies->format($line_item['amount_paid']) : '',
 	  );
 	  $index++;
 	}

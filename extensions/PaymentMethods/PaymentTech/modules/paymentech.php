@@ -247,7 +247,7 @@ class paymentech {
    * @throws \core\classes\userException
    */
   function before_process() {
-    global $order, $admin, $currencies, $messageStack;
+    global $order, $admin, $messageStack;
 
 	// if the card number has the blanked out middle number fields, it has been processed, the message that
 	// the charges were not processed were set in pre_confirmation_check, just return to continue without processing.
@@ -305,7 +305,7 @@ class paymentech {
 				<AVSDestname>" . $order->ship_primary_name . "</AVSDestname>
 				<AVSDestcountryCode>" . gen_get_country_iso_2_from_3($order->ship_country_code) . "</AVSDestcountryCode>
 				<OrderID>" . $order->purchase_invoice_id . "</OrderID>
-				<Amount>" . ($order->total_amount * pow(10, $currencies->currencies[DEFAULT_CURRENCY]['decimal_places'])) . "</Amount>
+				<Amount>" . ($order->total_amount * pow(10, $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places'])) . "</Amount>
 			</NewOrder>
 		</Request>
 	";

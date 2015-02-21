@@ -27,7 +27,7 @@ class po_status extends \core\classes\ctl_panel {
 	public $default_params 		= array('num_rows'=> 0, 'order' => 'asc', 'limit' => 1);
 
 	function output() {
-		global $admin, $currencies;
+		global $admin;
 		if(count($this->params) != count($this->default_params)) { //upgrading
 			$this->params = $this->upgrade($this->params);
 		}
@@ -66,7 +66,7 @@ class po_status extends \core\classes\ctl_panel {
 			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
 			  	$contents .= '<div style="float:right">' ;
 			  	$contents .= html_button_field('invoice_' . $result['id'], TEXT_RECEIVE, 'onclick="window.open(\'' . html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;oID={$result['id']}&amp;jID=6&amp;action=prc_so", 'SSL') . '\',\'_blank\')"') . "  ";
-				$contents .= $currencies->format_full($result['total_amount'], true, $result['currencies_code'], $result['currencies_value']);
+				$contents .= $admin->currencies->format_full($result['total_amount'], true, $result['currencies_code'], $result['currencies_value']);
 				$contents .= '</div>';
 				$contents .= '<div>';
 				$contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;oID={$result['id']}&amp;jID=4&amp;action=edit", 'SSL') . '">';

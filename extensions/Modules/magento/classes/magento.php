@@ -61,7 +61,7 @@ class magento {
 //                           Product Upload XML string generation
 /*************************************************************************************/
   function buildProductUploadXML($id, $inc_image = true) {
-	global $admin, $currencies;
+	global $admin;
 	$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY . " where id = " . $id);
 	if ($result->rowCount() <> 1) throw new \core\classes\userException(MAGENTO_INVALID_SKU);
 	$this->sku = $result->fields['sku'];
@@ -158,7 +158,7 @@ $this->strXML .= xmlEntry('ProductModel', $result->fields['sku']);
 		$this->strXML .= '      <PriceLevel>' . chr(10);
 	    $this->strXML .= xmlEntry('DiscountLevel', ($level + 1));
 	    $this->strXML .= xmlEntry('Quantity', $amount['qty']);
-	    $this->strXML .= xmlEntry('Amount', $currencies->clean_value($amount['price']));
+	    $this->strXML .= xmlEntry('Amount', $admin->currencies->clean_value($amount['price']));
 		$this->strXML .= '      </PriceLevel>' . chr(10);
 	  }
 	  $this->strXML .= '    </PriceDiscounts>' . chr(10);

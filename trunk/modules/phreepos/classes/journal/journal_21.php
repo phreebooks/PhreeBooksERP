@@ -183,7 +183,7 @@ class journal_21 extends \core\classes\journal {
   }
 
   function add_tax_journal_rows() {
-	global $currencies;
+	global $admin;
 	  $total        = 0;
 	  $auth_array   = array();
 	  $tax_rates    = ord_calculate_tax_drop_down('b');
@@ -210,7 +210,7 @@ class journal_21 extends \core\classes\journal {
 	  foreach ($auth_array as $auth => $auth_tax_collected) {
 		if ($auth_tax_collected == '' && $tax_auths[$auth]['account_id'] == '') continue;
 	  	if( ROUND_TAX_BY_AUTH == true ){
-			$amount = number_format($auth_tax_collected, $currencies->currencies[DEFAULT_CURRENCY]['decimal_places'], '.', '');
+			$amount = number_format($auth_tax_collected, $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places'], '.', '');
 		}else {
 			$amount = $auth_tax_collected;
 		}
@@ -233,9 +233,9 @@ class journal_21 extends \core\classes\journal {
   }
 
   function add_rounding_journal_rows($amount) { // put rounding into journal row array
-	global $messageStack, $currencies;
+	global $messageStack, $admin;
 	if((float)(string)$this->total_amount == (float)(string) $amount) return ;
-	$this->rounding_amt = round(($this->total_amount - $amount), $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
+	$this->rounding_amt = round(($this->total_amount - $amount), $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
 	$messageStack->debug("\n calculated total = ".$amount." Posted total = ". $this->total_amount." rounding = ".$this->rounding_amt);
 	if ($this->rounding_amt <> 0 ) {
 		$this->journal_rows[] = array(

@@ -46,7 +46,7 @@ switch ($_REQUEST['action']) {
   	$i = 0;
 	while (true) {
 	  if (!isset($_POST['budget_' . $i])) break;
-	  $budget = $currencies->clean_value($_POST['budget_' . $i]);
+	  $budget = $admin->currencies->clean_value($_POST['budget_' . $i]);
 	  $id     = $_POST['id_' . $i];
 	  $sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " set budget = " . $budget . " where id = '" . $id . "'";
 	  $admin->DataBase->query($sql);
@@ -76,7 +76,7 @@ switch ($_REQUEST['action']) {
 	    from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
 		where period = '" . $last_fy->fields['period'] . "'");
 	  while(!$accounts->EOF) {
-	    $budget = $accounts->fields['balance'] ? round($accounts->fields['balance'], $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']) : 0;
+	    $budget = $accounts->fields['balance'] ? round($accounts->fields['balance'], $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']) : 0;
 	    $sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
 	      set budget = " . $budget . "
 		  where period = '" . $result->fields['period'] . "' and account_id = '" . $accounts->fields['account_id'] . "'";

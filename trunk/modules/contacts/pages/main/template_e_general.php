@@ -41,11 +41,7 @@ echo html_hidden_field('account_number', $basis->cInfo->contact->account_number)
       <tr>
 	    <td align="right"><?php echo ACT_E_REP_ID; ?></td>
 	    <td>
-          <?php
-    		$default_selection = ($_REQUEST['action'] == 'new' ? EMP_DEFAULT_DEPARTMENT : $basis->cInfo->contact->dept_rep_id);
-	    	$selection_array = gen_get_pull_down(TABLE_DEPARTMENTS, true, 1);
-		    echo html_pull_down_menu('dept_rep_id', $selection_array, $default_selection);
-	      ?>
+          <?php echo html_pull_down_menu('dept_rep_id', gen_get_pull_down(TABLE_DEPARTMENTS, true, 1), $basis->cInfo->contact->dept_rep_id); ?>
         </td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
@@ -56,7 +52,7 @@ echo html_hidden_field('account_number', $basis->cInfo->contact->account_number)
 	    <td align="right"><?php echo TEXT_EMPLOYEE_ROLES; ?></td>
 	      <?php
 	        $col_count = 1;
-		    foreach ($employee_types as $key => $value) {
+		    foreach ($basis->cInfo->contact->employee_types as $key => $value) {
 		      $preset = (($_REQUEST['action'] == 'new' && $key == 'e') || (strpos($basis->cInfo->contact->gl_type_account, $key) !== false)) ? '1' : '0';
 		      echo '<td>' . html_checkbox_field("gl_type_account[{$key}]", '1', $preset) . "&nbsp;{$value}</td>";
 		      $col_count++;
@@ -75,7 +71,7 @@ echo html_hidden_field('account_number', $basis->cInfo->contact->account_number)
   <fieldset>
     <legend><?php echo TEXT_MAIN_MAILING_ADDRESS; ?></legend>
     <table id="<?php echo $basis->cInfo->contact->type; ?>m_address_form" class="ui-widget" style="border-collapse:collapse;width:100%;">
-      <?php echo $basis->cInfo->contact->draw_address_fields($basis->cInfo->contact->type.'m', false, true, false); ?>
+      <?php $basis->cInfo->contact->draw_address_fields($basis->cInfo->contact->type.'m', false, true, false, true); ?>
     </table>
   </fieldset>
 <?php // *********************** Attachments  ************************************* ?>

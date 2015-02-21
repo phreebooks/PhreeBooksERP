@@ -1,4 +1,4 @@
-<?php 
+<?php
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
@@ -15,13 +15,13 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreepos/config_phreeform.php
-// 
+//
 
 /*
 $FormProcessing['idx'] = CONSTANT_TEXT;
 // Extra form processing operations
 function pf_process_phreepos($strData, $Process) {
-  global $currencies, $posted_currencies;
+  global $posted_currencies;
   switch ($Process) {
 	case "idx":  return do_something($strData);
 	default: // Do nothing

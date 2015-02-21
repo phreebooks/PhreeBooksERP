@@ -144,7 +144,7 @@ class entry_builder {
   }
 
   function load_item_details($id) {
-	global $admin, $currencies;
+	global $admin;
 	// fetch the sales order and build the item list
 	$this->invoice_subtotal = 0;
 	$tax_list = array();
@@ -172,7 +172,7 @@ class entry_builder {
 		$this->inv_subtotal_w_tax += (1 + $line_tax) * $price;
 	  }
 	  if ($result->fields['gl_type'] == 'tax') {
-		$tax_list[] = $result->fields['description'] . ' - ' . $currencies->format_full($price);
+		$tax_list[] = $result->fields['description'] . ' - ' . $admin->currencies->format_full($price);
 	  }
 	  if ($result->fields['gl_type'] == 'dsc') $this->discount = $price;
 	  $result->MoveNext();

@@ -110,25 +110,25 @@ echo $toolbar->build();
 <fieldset id="totals_div">
 	<ol>
 		<li><label>
-	<?php   echo TEXT_SUBTOTAL . ' ' . html_input_field('subtotal', $currencies->format($order->subtotal, true, $order->currencies_code, $order->currencies_value), 'readonly="readonly" size="10" maxlength="20"'); ?>
+	<?php   echo TEXT_SUBTOTAL . ' ' . html_input_field('subtotal', $admin->currencies->format($order->subtotal, true, $order->currencies_code, $order->currencies_value), 'readonly="readonly" size="10" maxlength="20"'); ?>
 		</label></li>
 	<?php if (ENABLE_ORDER_DISCOUNT) {
 			$hidden_fields .= html_hidden_field('disc_gl_acct_id', '') . chr(10);
-        	echo '<li><label>' . TEXT_DISCOUNT_PERCENT . ' ' . html_input_field('disc_percent', ($order->disc_percent ? number_format(100*$order->disc_percent,3) : $currencies->format(0)), 'size="10" maxlength="6" onchange="calculateDiscountPercent()" ') . '</label></li> ';
-			echo '<li><label>' . TEXT_DISCOUNT_AMOUNT_SHORT . ' ' . html_input_field('discount', $currencies->format(($order->discount ? $order->discount : '0'), true, $order->currencies_code, $order->currencies_value), 'size="10" maxlength="20" onchange="calculateDiscount()"'). '</label></li> ';
+        	echo '<li><label>' . TEXT_DISCOUNT_PERCENT . ' ' . html_input_field('disc_percent', ($order->disc_percent ? number_format(100*$order->disc_percent,3) : $admin->currencies->format(0)), 'size="10" maxlength="6" onchange="calculateDiscountPercent()" ') . '</label></li> ';
+			echo '<li><label>' . TEXT_DISCOUNT_AMOUNT_SHORT . ' ' . html_input_field('discount', $admin->currencies->format(($order->discount ? $order->discount : '0'), true, $order->currencies_code, $order->currencies_value), 'size="10" maxlength="20" onchange="calculateDiscount()"'). '</label></li> ';
 		  } else {
   			$hidden_fields .= html_hidden_field('disc_gl_acct_id', '') . chr(10);
   			$hidden_fields .= html_hidden_field('discount',     '0')   . chr(10);
   			$hidden_fields .= html_hidden_field('disc_percent', '0')   . chr(10);
 		  } ?>
 		<li><label>
-	<?php   echo TEXT_SALES_TAX . ' ' . html_input_field('sales_tax', $currencies->format(($order->sales_tax ? $order->sales_tax : '0.00'), true, $order->currencies_code, $order->currencies_value), 'readonly="readonly" size="10" maxlength="20" onchange="updateTotalPrices()"'); ?>
+	<?php   echo TEXT_SALES_TAX . ' ' . html_input_field('sales_tax', $admin->currencies->format(($order->sales_tax ? $order->sales_tax : '0.00'), true, $order->currencies_code, $order->currencies_value), 'readonly="readonly" size="10" maxlength="20" onchange="updateTotalPrices()"'); ?>
 		</label></li>
 	<?php if(!PHREEPOS_ROUNDING == 0) {
-			echo '<li><label>' . TEXT_ROUNDED_OF . ' ' . html_input_field('rounded_of', $currencies->format($order->rounded_of, true, $order->currencies_code, $order->currencies_value), 'readonly="readonly" size="10" maxlength="20"') . '</label></li> ';
+			echo '<li><label>' . TEXT_ROUNDED_OF . ' ' . html_input_field('rounded_of', $admin->currencies->format($order->rounded_of, true, $order->currencies_code, $order->currencies_value), 'readonly="readonly" size="10" maxlength="20"') . '</label></li> ';
 		 }?>
 		<li><label>
-	<?php   echo TEXT_TOTAL . ' ' . html_input_field('total', $currencies->format($order->total_amount, true, $order->currencies_code, $order->currencies_value), 'readonly="readonly" size="10" maxlength="20"'); ?>
+	<?php   echo TEXT_TOTAL . ' ' . html_input_field('total', $admin->currencies->format($order->total_amount, true, $order->currencies_code, $order->currencies_value), 'readonly="readonly" size="10" maxlength="20"'); ?>
 		</label></li>
 	</ol>
 </fieldset>
@@ -149,13 +149,13 @@ echo $toolbar->build();
 		<tr>
 			<th class="dataTableHeadingContent"></th>
 			<th class="dataTableHeadingContent"><?php echo TEXT_AMOUNT_PAID; ?></th>
-			<th class="dataTableHeadingContent"><?php echo html_input_field('pmt_recvd', $currencies->format($order->pmt_recvd), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?></th>
+			<th class="dataTableHeadingContent"><?php echo html_input_field('pmt_recvd', $admin->currencies->format($order->pmt_recvd), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?></th>
 			<th class="dataTableHeadingContent"></th>
 		</tr>
 		<tr>
 			<th class="dataTableHeadingContent"></th>
 			<th class="dataTableHeadingContent"><?php echo TEXT_BALANCE_DUE; ?></th>
-			<th class="dataTableHeadingContent"><?php echo html_input_field('bal_due', $currencies->format($order->bal_due), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?></th>
+			<th class="dataTableHeadingContent"><?php echo html_input_field('bal_due', $admin->currencies->format($order->bal_due), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?></th>
 			<th class="dataTableHeadingContent"></th>
 		</tr>
 	</tfoot>
@@ -265,7 +265,7 @@ echo $SeccondToolbar->build();
 	<tr><td> <?php echo html_icon('devices/media-floppy.png',		 TEXT_SAVE,  'large', 'onclick="SavePayment(\'save_return\')"' , 0, 0, 'btn_save').'</td><td>' . TEXT_SAVE  ; ?></td></tr>
 	<tr><td> <?php echo html_icon('phreebooks/pdficon_large.gif', TEXT_PRINT, 'large', 'onclick="SavePayment(\'print_return\')"', 0, 0, 'btn_save')   .'</td><td>' . TEXT_PRINT ; ?></td></tr>
 	</table>
-	<?php echo TEXT_AMOUNT . ' ' . html_input_field('amount', $currencies->format($amount), 'size="15" maxlength="20" style="text-align:right; font-size: 1.5em"'); ?>
+	<?php echo TEXT_AMOUNT . ' ' . html_input_field('amount', $admin->currencies->format($amount), 'size="15" maxlength="20" style="text-align:right; font-size: 1.5em"'); ?>
 	<footer><?php echo PHREEPOS_PAYMENT_NOTES; ?> </footer>
 	</form>
 </div>

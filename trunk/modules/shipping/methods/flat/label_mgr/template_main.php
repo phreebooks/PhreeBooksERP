@@ -69,7 +69,7 @@ echo $toolbar->build();
 	</tr>
 	<tr>
 		<td><?php echo TEXT_COST; ?></td>
-		<td><?php echo html_input_field('cost', $currencies->format($sInfo->cost), 'size="15" maxlength="14" style="text-align:right"'); ?></td>
+		<td><?php echo html_input_field('cost', $admin->currencies->format($sInfo->cost), 'size="15" maxlength="14" style="text-align:right"'); ?></td>
 	</tr>
 </table>
 </fieldset>

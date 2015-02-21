@@ -135,8 +135,8 @@ echo '<br />' . html_pull_down_menu('bill_country_code', gen_get_countries(), $o
 		echo '          </div>' . chr(10);
 		$count++;
 	}
-	echo html_hidden_field('acct_balance', $currencies->format($acct_balance)) . chr(10);
-	echo html_hidden_field('end_balance',  $currencies->format($acct_balance)) . chr(10);
+	echo html_hidden_field('acct_balance', $admin->currencies->format($acct_balance)) . chr(10);
+	echo html_hidden_field('end_balance',  $admin->currencies->format($acct_balance)) . chr(10);
 ?>
 		  </div>
 		</fieldset>
@@ -146,11 +146,11 @@ echo '<br />' . html_pull_down_menu('bill_country_code', gen_get_countries(), $o
 		<table border="0">
 		  <tr>
 			<td class="main" align="right"><?php echo TEXT_BALANCE_BEFORE_PAYMENTS . '&nbsp;'; ?></td>
-			<td class="main" align="right"><?php echo html_input_field('acct_balance', $currencies->format($acct_balance), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?></td>
+			<td class="main" align="right"><?php echo html_input_field('acct_balance', $admin->currencies->format($acct_balance), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?></td>
 		  </tr>
 		  <tr>
 			<td class="main" align="right"><?php echo TEXT_BALANCE_AFTER_PAYMENTS . '&nbsp;'; ?></td>
-			<td class="main" align="right"><?php echo html_input_field('end_balance', $currencies->format($acct_balance), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?></td>
+			<td class="main" align="right"><?php echo html_input_field('end_balance', $admin->currencies->format($acct_balance), 'readonly="readonly" size="15" maxlength="20" style="text-align:right"'); ?></td>
 		  </tr>
 		</table>
 	  </td>
@@ -176,7 +176,7 @@ echo '<br />' . html_pull_down_menu('bill_country_code', gen_get_countries(), $o
 		echo html_input_field('desc_1', $order->desc_1, 'size="64" maxlength="64"');
 		echo '  </td>' . chr(10);
 		echo '  <td class="main" align="center">' . html_pull_down_menu('acct_1', $gl_array_list, $order->acct_1, '') . '</td>' . chr(10);
-		echo '  <td class="main" align="center">' . html_input_field('total_1', $currencies->format($order->total_1), 'size="11" maxlength="20" onchange="updateDepositPrice()" style="text-align:right"') . '</td>' . chr(10);
+		echo '  <td class="main" align="center">' . html_input_field('total_1', $admin->currencies->format($order->total_1), 'size="11" maxlength="20" onchange="updateDepositPrice()" style="text-align:right"') . '</td>' . chr(10);
 		echo '</tr>' . chr(10);
 	?>
   </table>

@@ -29,7 +29,7 @@ class known_transactions {
     }
 
   function btn_save($id = '') {
-  	global $admin, $currencies;
+  	global $admin;
 	\core\classes\user::validate_security($this->security_id, 2);
 	if ($this->gl_acct_id == '') throw new \core\classes\userException(TEXT_SELECT_A_STANDARD_CHART);
 	$sql_data_array = array(
@@ -59,7 +59,7 @@ class known_transactions {
   }
 
   function build_main_html() {
-  	global $admin, $currencies;
+  	global $admin;
     $content = array();
 	$content['thead'] = array(
 	  'value' => array(TEXT_DESCRIPTION, TEXT_GL_ACCOUNT,  TEXT_BANK_ACCOUNT,TEXT_ACTION),

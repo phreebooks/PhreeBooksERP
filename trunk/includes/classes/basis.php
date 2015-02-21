@@ -34,6 +34,7 @@ class basis implements \SplSubject {
 	public  $mainmenu 			= array ();
 	private $events 			= array ('LoadMainPage');
 	public 	$toolbar;
+	public  $currencies;
 	//for output
 	public  $js_files				= array ();
 	public  $include_php_js_files	= array ();
@@ -41,10 +42,10 @@ class basis implements \SplSubject {
 
 
 	public function __construct() {
-		global $currencies;
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->journal = new \core\classes\journal ();
 		$this->toolbar = new \core\classes\toolbar ();
+		$this->currencies = new \core\classes\currencies ();
 		$this->cInfo = (json_decode($request) != NULL) ? (object) json_decode($request) : (object)array_merge ( $_GET, $_POST );
 //		$this->events = $this->cInfo->action;
 		if ($this->getNumberOfAdminClasses () == 0 || empty ( $this->mainmenu )) {

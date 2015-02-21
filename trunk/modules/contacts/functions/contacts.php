@@ -18,7 +18,7 @@
 //
 
 function get_chart_data($operation, $data) {
-  global $admin, $currencies;
+  global $admin;
   $output = array(
     'type'  => 'pie',
     'width' => '600',

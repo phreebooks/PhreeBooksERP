@@ -38,7 +38,7 @@ $result = $admin->DataBase->query("select debit_amount - credit_amount as balanc
 	where account_id = '" . $gl_acct . "' and period in (" . implode(',', $periods) . ")");
 while (!$result->EOF) {
   $xml .= "\t<items>\n";
-  $xml .= "\t\t" . xmlEntry('balance', $currencies->format($result->fields['balance']));
+  $xml .= "\t\t" . xmlEntry('balance', $admin->currencies->format($result->fields['balance']));
   $xml .= "\t</items>\n";
   $result->MoveNext();
 }

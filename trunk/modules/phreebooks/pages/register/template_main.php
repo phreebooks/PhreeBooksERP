@@ -35,7 +35,7 @@ echo $toolbar->build($add_search = false, $add_period = true);
 ?>
 <h1><?php echo TEXT_CASH_ACCOUNT_REGISTER; ?></h1>
 <div align="center"><?php echo TEXT_CASH_ACCOUNT . '&nbsp;' . html_pull_down_menu('gl_account', $account_array, $gl_account, 'onchange="submit();"'); ?></div>
-<?php if (ENABLE_MULTI_CURRENCY) echo '<p> ' . sprintf(GEN_PRICE_SHEET_CURRENCY_NOTE, $currencies->currencies[DEFAULT_CURRENCY]['title']) . '</p>'; ?>
+<?php if (ENABLE_MULTI_CURRENCY) echo '<p> ' . sprintf(GEN_PRICE_SHEET_CURRENCY_NOTE, $admin->currencies->currencies[DEFAULT_CURRENCY]['title']) . '</p>'; ?>
 <table class="ui-widget" style="border-collapse:collapse;width:900px;margin-left:auto;margin-right:auto;">
  <thead class="ui-widget-header">
   <tr>
@@ -56,7 +56,7 @@ echo $toolbar->build($add_search = false, $add_period = true);
 	<td><?php echo TEXT_BEGINNING_BALANCE; ?></td>
 	<td><?php echo '&nbsp;'; ?></td>
 	<td><?php echo '&nbsp;'; ?></td>
-	<td align="right"><?php echo $currencies->format($beginning_balance); ?></td>
+	<td align="right"><?php echo $admin->currencies->format($beginning_balance); ?></td>
   </tr>
   <?php
   $i = 0;
@@ -69,9 +69,9 @@ echo $toolbar->build($add_search = false, $add_period = true);
 		<td id="td_<?php echo $i; ?>_1"><?php echo $values['reference']; ?></td>
 		<td id="td_<?php echo $i; ?>_2"><?php echo $values['pmt_amount'] ? TEXT_WITHDRAWAL : TEXT_DEPOSIT; ?></td>
 		<td id="td_<?php echo $i; ?>_5"><?php echo htmlspecialchars($values['name']); ?></td>
-		<td id="td_<?php echo $i; ?>_6" align="right"><?php echo $values['dep_amount'] ? $currencies->format($values['dep_amount']) : '&nbsp;'; ?></td>
-		<td id="td_<?php echo $i; ?>_3" align="right"><?php echo $values['pmt_amount'] ? $currencies->format($values['pmt_amount']) : '&nbsp;'; ?></td>
-		<td id="td_<?php echo $i; ?>_0" align="right"><?php echo $currencies->format($beginning_balance); ?></td>
+		<td id="td_<?php echo $i; ?>_6" align="right"><?php echo $values['dep_amount'] ? $admin->currencies->format($values['dep_amount']) : '&nbsp;'; ?></td>
+		<td id="td_<?php echo $i; ?>_3" align="right"><?php echo $values['pmt_amount'] ? $admin->currencies->format($values['pmt_amount']) : '&nbsp;'; ?></td>
+		<td id="td_<?php echo $i; ?>_0" align="right"><?php echo $admin->currencies->format($beginning_balance); ?></td>
 	</tr>
 	<?php
 	$i++;
@@ -86,7 +86,7 @@ echo $toolbar->build($add_search = false, $add_period = true);
 	<td><?php echo TEXT_ENDING_BALANCE; ?></td>
 	<td><?php echo '&nbsp;'; ?></td>
 	<td><?php echo '&nbsp;'; ?></td>
-	<td align="right"><?php echo $currencies->format($beginning_balance); ?></td>
+	<td align="right"><?php echo $admin->currencies->format($beginning_balance); ?></td>
   </tr>
  </tfoot>
 </table>

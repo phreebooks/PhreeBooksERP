@@ -51,12 +51,12 @@ if ($custom_html) { // load the template only as the rest of the html will be ge
   var icon_path           = '<?php echo DIR_WS_ICONS; ?>';
   var combo_image_on      = '<?php echo DIR_WS_ICONS . '16x16/phreebooks/pull_down_active.gif'; ?>';
   var combo_image_off     = '<?php echo DIR_WS_ICONS . '16x16/phreebooks/pull_down_inactive.gif'; ?>';
-<?php if (is_object($currencies)) { // will not be defined unless logged in and db defined ?>
-  var decimal_places      = <?php  echo $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']; ?>;
-  var decimal_precise     = <?php  echo $currencies->currencies[DEFAULT_CURRENCY]['decimal_precise']; ?>;
-  var decimal_point       = "<?php echo $currencies->currencies[DEFAULT_CURRENCY]['decimal_point']; ?>"; // leave " for ' separator
-  var thousands_point     = "<?php echo $currencies->currencies[DEFAULT_CURRENCY]['thousands_point']; ?>";
-  var formatted_zero      = "<?php echo $currencies->format(0); ?>";
+<?php if (is_object($admin->currencies)) { // will not be defined unless logged in and db defined ?>
+  var decimal_places      = <?php  echo $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']; ?>;
+  var decimal_precise     = <?php  echo $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_precise']; ?>;
+  var decimal_point       = "<?php echo $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_point']; ?>"; // leave " for ' separator
+  var thousands_point     = "<?php echo $admin->currencies->currencies[DEFAULT_CURRENCY]['thousands_point']; ?>";
+  var formatted_zero      = "<?php echo $admin->currencies->format(0); ?>";
 <?php } ?>
   </script>
 <?php
@@ -70,23 +70,11 @@ if ($custom_html) { // load the template only as the rest of the html will be ge
   <?php $basis->returnCurrentObserver()->print_menu($basis);?>
   <!-- end Menu -->
   <!-- Template -->
-  <?php require($basis->returnCurrentObserver()->include_template);?>
+  <?php require($basis->returnCurrentObserver()->get_template());?>
   </div>
-  <!-- Footer -->
-  <?php if ($basis->include_footer) { // Hook for custom logo
-  $image_path = defined('FOOTER_LOGO') ? FOOTER_LOGO : (DIR_WS_ADMIN . 'modules/phreedom/images/phreesoft_logo.png');
-  ?>
-  <div style="clear:both;text-align:center;font-size:9px">
-    <a href="http://www.PhreeSoft.com" target="_blank"><?php echo html_image($image_path, TEXT_PHREEDOM_INFO, NULL, '64'); ?></a><br />
-  <?php
-  $footer_info  = COMPANY_NAME.' | '.TEXT_ACCOUNTING_PERIOD.': '.CURRENT_ACCOUNTING_PERIOD.' | '.TEXT_PHREEDOM_INFO." ({$basis->classes['phreedom']->version}) ";
-  if ($module <> 'phreedom') $footer_info .= "({$module} {$basis->classes[$module]->version}) ";
-  $footer_info .= '<br />' . TEXT_COPYRIGHT .  ' &copy;' . date('Y') . ' <a href="http://www.PhreeSoft.com" target="_blank">PhreeSoft&trade;</a>';
-  $footer_info .= '(' . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . ' ms) ' . $basis->DataBase->count_queries . ' SQLs (' . (int)($basis->DataBase->total_query_time * 1000).' ms)';
-  echo $footer_info;
-  ?>
-  </div>
-  <?php } // end if include_footer ?>
+  <!-- start Footer -->
+  <?php $basis->returnCurrentObserver()->print_footer($basis); ?>
+  <!-- end Footer -->
 </body>
 </html>
 <?php } // end else if (custom_html) ?>

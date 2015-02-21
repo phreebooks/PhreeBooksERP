@@ -44,9 +44,9 @@ $cal_c_gen = array(
 	  </thead>
 	  <tbody class="ui-widget-content">
 	   <tr>
-	    <td align="center"><?php echo html_pull_down_menu('crm_rep_id', $sales_rep_array, $basis->cInfo->contact->crm_rep_id ? $basis->cInfo->contact->crm_rep_id : $_SESSION['account_id']); ?></td>
+	    <td align="center"><?php echo html_pull_down_menu('crm_rep_id', $basis->cInfo->sales_rep_array, $basis->cInfo->contact->crm_rep_id ? $basis->cInfo->contact->crm_rep_id : $_SESSION['account_id']); ?></td>
 	    <td align="center"><?php echo html_calendar_field($cal_c_gen); ?></td>
-	    <td align="center"><?php echo html_pull_down_menu('crm_action', gen_build_pull_down($crm_actions), $basis->cInfo->contact->crm_action); ?></td>
+	    <td align="center"><?php echo html_pull_down_menu('crm_action', gen_build_pull_down($basis->cInfo->contact->crm_actions), $basis->cInfo->contact->crm_action); ?></td>
 	   </tr>
 	   <tr>
 	    <td colspan="3" align="center"><?php echo '<br />' . html_textarea_field('crm_note', 60, 1, $basis->cInfo->contact->crm_note, ''); ?></td>
@@ -59,14 +59,15 @@ $cal_c_gen = array(
 	  </thead>
 	  <tbody class="ui-widget-content">
 <?php if (sizeof($basis->cInfo->contact->crm_log) > 0) foreach ($basis->cInfo->contact->crm_log as $value) { ?>
-	   <tr id="tr_crm_a_<?php echo $value->log_id; ?>" class="odd">
-	    <td><?php echo $security_level < 4 ? '&nbsp;' : html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\''.CRM_ROW_DELETE_ALERT.'\')) deleteCRM('.$value->log_id.');"'); ?></td>
-	    <td><?php echo $reps[$value->entered_by]; ?></td>
-	    <td><?php echo gen_locale_date($value->log_date); ?></td>
-	    <td><?php echo htmlspecialchars($crm_actions[$value->action]); ?></td>
+	   <tr id="tr_crm_a_<?php echo $value['log_id']; ?>" class="odd">
+	    <td><?php echo $security_level < 4 ? '&nbsp;' : html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', "onclick='if (confirm(\"".CRM_ROW_DELETE_ALERT."\")) deleteCRM({$value['log_id']});'"); ?></td>
+	     <td><?php echo $value['with']; ?></td>
+	    <td><?php echo $basis->cInfo->sales_rep_array[$value['entered_by']]; ?></td>
+	    <td><?php echo gen_locale_date($value['log_date']); ?></td>
+	    <td><?php echo htmlspecialchars($basis->cInfo->contact->crm_actions[$value['action']]); ?></td>
 	   </tr>
 	   <tr id="tr_crm_b_<?php echo $value->log_id; ?>">
-	    <td colspan="4"><?php echo htmlspecialchars($value->notes); ?></td>
+	    <td colspan="4"><?php echo htmlspecialchars($value['notes']); ?></td>
 	   </tr>
 <?php } else { echo '<tr><td colspan="4">'.TEXT_NO_RESULTS_FOUND.'</td></tr>'; } ?>
 	  </tbody>

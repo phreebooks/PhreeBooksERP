@@ -48,7 +48,7 @@ class import_banking extends \phreebooks\classes\journal {
 	 }
 
 	 public function start_import($ouwer_bank_account_number, $post_date, $other_bank_account_number, $credit_amount, $debit_amount, $description, $bank_gl_acct, $other_bank_account_iban){
-	 	global $admin, $messageStack,$currencies;
+	 	global $admin, $messageStack;
 	 	$this->reset();
 	 	$messageStack->debug("\n\n*************** Start Processing Import Payment *******************");
 	 	if ($ouwer_bank_account_number <> '') {
@@ -64,8 +64,8 @@ class import_banking extends \phreebooks\classes\journal {
 			$this->gl_acct_id 			= $bank_gl_acct;
 		}
 		$this->_description			= $description;
-		$this->_creditamount		= $currencies->clean_value($credit_amount);
-		$this->_debitamount			= $currencies->clean_value($debit_amount);
+		$this->_creditamount		= $admin->currencies->clean_value($credit_amount);
+		$this->_debitamount			= $admin->currencies->clean_value($debit_amount);
 		$this->total_amount			= $this->_debitamount + $this->_creditamount ;
 		$this->post_date           	= gen_db_date($post_date);
 		$this->period              	= gen_calculate_period($this->post_date, true);
@@ -145,7 +145,7 @@ class import_banking extends \phreebooks\classes\journal {
 	}
 
 	private function find_right_invoice(){
-		global $admin, $messageStack, $currencies;
+		global $admin, $messageStack;
 		$messageStack->debug("\n trying to find the right invoice");
 		$found_invoices = array();
 		$invoice_number = array();
@@ -199,7 +199,7 @@ class import_banking extends \phreebooks\classes\journal {
 					case 2: // make use of discount full
 						$messageStack->debug("\n step $step trying if we get totals balanced when the full discount is used. ");
 						if($found_invoices[$i]['early_date'] >= $this->post_date){// if post_date is smaller than early_date allow discount
-							$found_invoices[$i]['discount'] = round($found_invoices[$i]['total_amount'] * $found_invoices[$i]['percent'],  $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
+							$found_invoices[$i]['discount'] = round($found_invoices[$i]['total_amount'] * $found_invoices[$i]['percent'],  $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
 							$messageStack->debug("\n discount could be used for invoice ".$found_invoices[$i]['purchase_invoice_id']." Payed = ". $found_invoices[$i]['amount']." Discount = ". $found_invoices[$i]['discount']);
 						}
 						break;
@@ -217,7 +217,7 @@ class import_banking extends \phreebooks\classes\journal {
 								$found_invoices[$i]['discount'] = false;
 								$messageStack->debug("\n for invoice ".$found_invoices[$i]['purchase_invoice_id']." discount is set to null and difference is decreased by the discount.");
 							}
-							$found_invoices[$i]['discount'] = round($found_invoices[$i]['discount'],  $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
+							$found_invoices[$i]['discount'] = round($found_invoices[$i]['discount'],  $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
 						}
 						break;
 					case 5:// unset items that where not found by invoice_number
@@ -235,7 +235,7 @@ class import_banking extends \phreebooks\classes\journal {
 						break;
 					case 9;//do a partial payment
 						if($difference_perc > 0){
-					    	$found_invoices[$i]['amount'] = round($found_invoices[$i]['amount'] / $difference_perc,  $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
+					    	$found_invoices[$i]['amount'] = round($found_invoices[$i]['amount'] / $difference_perc,  $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
 					    	$messageStack->debug("\n step ".$step." doing a partial payment. ");
 							$found_invoices[$i]['payed_if_full']  = false;
 					    	$found_invoices[$i]['discount']       = false;
@@ -468,7 +468,7 @@ class import_banking extends \phreebooks\classes\journal {
 	private function get_all_open_invoices(){
 		// to build this data array, all current open invoices need to be gathered and then the paid part needs
 		// to be applied along with discounts taken by row.
-		global $admin, $currencies;
+		global $admin;
 		$sql = "select m.id as id, m.journal_id as journal_id, m.post_date as post_date, m.terms as terms, m.purch_order_id as purch_order_id, i.debit_amount as debit_amount, i.credit_amount as credit_amount,
 		 m.purchase_invoice_id as purchase_invoice_id, m.total_amount as total_amount, m.gl_acct_id as gl_acct_id, m.bill_acct_id as bill_acct_id, c.type as type, c.short_name as short_name, m.waiting as waiting
 		  from " . TABLE_JOURNAL_MAIN . " m join ".TABLE_CONTACTS." c on m.bill_acct_id = c.id join " .TABLE_JOURNAL_ITEM. " i on m.id = i.ref_id
@@ -511,13 +511,13 @@ class import_banking extends \phreebooks\classes\journal {
 				'post_date'           => $line_item['post_date'],
 				'early_date'          => $due_dates['early_date'],
 				'net_date'            => $due_dates['net_date'],
-				'total_amount'        => round($line_item['total_amount'],  $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']),
+				'total_amount'        => round($line_item['total_amount'],  $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']),
 				'gl_acct_id'          => $line_item['gl_acct_id'],
 				'description'         => $line_item['description'],
 		  		'type'		          => $line_item['type'],
 		  		'short_name'		  => $line_item['short_name'],
-		  		'discount'            => round($line_item['discount'],  $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']),
-				'amount_paid'         => round($line_item['amount_paid'],  $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']),
+		  		'discount'            => round($line_item['discount'],  $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']),
+				'amount_paid'         => round($line_item['amount_paid'],  $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']),
 		  	);
 		  	$index++;
 		}

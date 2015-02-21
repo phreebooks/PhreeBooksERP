@@ -27,7 +27,7 @@ class todays_sales extends \core\classes\ctl_panel {
 	public $default_params 		= array('num_rows'=> 0);
 
 	function output() {
-		global $admin, $currencies;
+		global $admin;
 		if(count($this->params) != count($this->default_params)) { //upgrading
 			$this->params = $this->upgrade($this->params);
 		}
@@ -55,7 +55,7 @@ class todays_sales extends \core\classes\ctl_panel {
 		} else {
 			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
 			 	$total += $result['total_amount'];
-				$contents .= '<div style="float:right">' . $currencies->format_full($result['total_amount'], true, $result['currencies_code'], $result['currencies_value']) . '</div>';
+				$contents .= '<div style="float:right">' . $admin->currencies->format_full($result['total_amount'], true, $result['currencies_code'], $result['currencies_value']) . '</div>';
 				$contents .= '<div>';
 				$contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;oID={$result['id']}&amp;jID=12&amp;action=edit", 'SSL') . '">';
 				$contents .= $result['purchase_invoice_id'] . ' - ' . htmlspecialchars(gen_trim_string($result['bill_primary_name'], 20, true));
@@ -63,7 +63,7 @@ class todays_sales extends \core\classes\ctl_panel {
 			}
 		}
 		if (!$this->params['num_rows'] && $sql->rowCount() > 0) {
-		  	$contents .= '<div style="float:right">' . $currencies->format_full($total, true, DEFAULT_CURRENCY, 1) . '</div>';
+		  	$contents .= '<div style="float:right">' . $admin->currencies->format_full($total, true, DEFAULT_CURRENCY, 1) . '</div>';
 		  	$contents .= '<div><b>' . TEXT_TOTAL . '</b></div>' . chr(10);
 		}
 		return $this->build_div($contents, $control);

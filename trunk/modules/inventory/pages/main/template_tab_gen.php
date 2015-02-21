@@ -44,7 +44,7 @@
 		<?php echo html_checkbox_field('inactive', '1', $cInfo->inactive); ?>
 	  </td>
 	  <td align="right"><?php if(isset($cInfo->quantity_on_hand)) echo TEXT_QUANTITY_ON_HAND; ?></td>
-	  <td><?php if(isset($cInfo->quantity_on_hand)) echo html_input_field('quantity_on_hand', $currencies->precise($cInfo->quantity_on_hand), 'disabled="disabled" size="6" maxlength="5" style="text-align:right"', false); ?></td>
+	  <td><?php if(isset($cInfo->quantity_on_hand)) echo html_input_field('quantity_on_hand', $admin->currencies->precise($cInfo->quantity_on_hand), 'disabled="disabled" size="6" maxlength="5" style="text-align:right"', false); ?></td>
 	  <td rowspan="5" align="center">
 		<?php if (isset($cInfo->image_with_path) && $cInfo->image_with_path) { // show image if it is defined
 			echo html_image(DIR_WS_MY_FILES . $_SESSION['company'] . '/inventory/images/' . $cInfo->image_with_path, $cInfo->image_with_path, '', '100', 'onclick="showImage()"');
@@ -58,25 +58,25 @@
 		<?php if ($cInfo->id) echo '&nbsp;' . html_icon('categories/preferences-system.png', TEXT_WHERE_USED, 'small', 'onclick="ajaxWhereUsed()"') . chr(10); ?>
 	  </td>
 	  <td align="right"><?php if(isset($cInfo->quantity_on_order)) echo TEXT_QUANTITY_ON_PURCHASE_ORDER; ?></td>
-	  <td><?php if(isset($cInfo->quantity_on_order)) echo html_input_field('quantity_on_order', $currencies->precise($cInfo->quantity_on_order), 'disabled="disabled" size="6" maxlength="5" style="text-align:right"', false); ?></td>
+	  <td><?php if(isset($cInfo->quantity_on_order)) echo html_input_field('quantity_on_order', $admin->currencies->precise($cInfo->quantity_on_order), 'disabled="disabled" size="6" maxlength="5" style="text-align:right"', false); ?></td>
 	</tr>
 	<tr>
 	  <td align="right"><?php if(isset($cInfo->minimum_stock_level)) echo TEXT_MINIMUM_STOCK_LEVEL; ?></td>
-	  <td><?php if(isset($cInfo->minimum_stock_level)) echo html_input_field('minimum_stock_level', $currencies->precise($cInfo->minimum_stock_level), 'size="6" maxlength="5" style="text-align:right"', false); ?></td>
+	  <td><?php if(isset($cInfo->minimum_stock_level)) echo html_input_field('minimum_stock_level', $admin->currencies->precise($cInfo->minimum_stock_level), 'size="6" maxlength="5" style="text-align:right"', false); ?></td>
 	  <td align="right"><?php if(isset($cInfo->quantity_on_allocation)) echo TEXT_QUANTITY_ON_ALLOCATION; ?></td>
-	  <td><?php if(isset($cInfo->quantity_on_allocation)) echo html_input_field('quantity_on_allocation', $currencies->precise($cInfo->quantity_on_allocation), 'disabled="disabled" size="6" maxlength="5" style="text-align:right"', false); ?></td>
+	  <td><?php if(isset($cInfo->quantity_on_allocation)) echo html_input_field('quantity_on_allocation', $admin->currencies->precise($cInfo->quantity_on_allocation), 'disabled="disabled" size="6" maxlength="5" style="text-align:right"', false); ?></td>
 	</tr>
 	<tr>
 	  <td align="right"><?php if(isset($cInfo->reorder_quantity)) echo TEXT_REORDER_QUANTITY; ?></td>
-	  <td><?php if(isset($cInfo->reorder_quantity)) echo html_input_field('reorder_quantity', $currencies->precise($cInfo->reorder_quantity), 'size="6" maxlength="5" style="text-align:right"', false); ?></td>
+	  <td><?php if(isset($cInfo->reorder_quantity)) echo html_input_field('reorder_quantity', $admin->currencies->precise($cInfo->reorder_quantity), 'size="6" maxlength="5" style="text-align:right"', false); ?></td>
 	  <td align="right"><?php if(isset($cInfo->quantity_on_sales_order)) echo TEXT_QUANTITY_ON_SALES_ORDER; ?></td>
-	  <td><?php if(isset($cInfo->quantity_on_sales_order)) echo html_input_field('quantity_on_sales_order', $currencies->precise($cInfo->quantity_on_sales_order), 'disabled="disabled" size="6" maxlength="5" style="text-align:right"', false); ?></td>
+	  <td><?php if(isset($cInfo->quantity_on_sales_order)) echo html_input_field('quantity_on_sales_order', $admin->currencies->precise($cInfo->quantity_on_sales_order), 'disabled="disabled" size="6" maxlength="5" style="text-align:right"', false); ?></td>
 	</tr>
 	<tr>
 	  <td align="right"><?php if(isset($cInfo->lead_time)) echo TEXT_LEAD_TIME_DAYS; ?></td>
 	  <td><?php if(isset($cInfo->lead_time)) echo html_input_field('lead_time', $cInfo->lead_time, 'size="6" maxlength="5" style="text-align:right"', false); ?></td>
 	  <td align="right"><?php if(isset($cInfo->item_weight)) echo TEXT_ITEM_WEIGHT; ?></td>
-	  <td><?php if(isset($cInfo->item_weight)) echo html_input_field('item_weight', $currencies->precise($cInfo->item_weight), 'size="11" maxlength="9" style="text-align:right"', false); ?></td>
+	  <td><?php if(isset($cInfo->item_weight)) echo html_input_field('item_weight', $admin->currencies->precise($cInfo->item_weight), 'size="11" maxlength="9" style="text-align:right"', false); ?></td>
 	</tr>
 	</tbody>
 	</table>
@@ -92,7 +92,7 @@
 	</tr>
 	<tr>
 	  <td align="right"><?php if(isset($cInfo->full_price_with_tax)) echo TEXT_FULL_PRICE_WITH_TAX; ?> </td>
-	  <td><?php if(isset($cInfo->full_price_with_tax)) echo html_input_field('full_price_with_tax', $currencies->precise($cInfo->full_price_with_tax), 'onchange="update_full_price_incl_tax(true, false, true);" size="15" maxlength="20" style="text-align:right" ', false);
+	  <td><?php if(isset($cInfo->full_price_with_tax)) echo html_input_field('full_price_with_tax', $admin->currencies->precise($cInfo->full_price_with_tax), 'onchange="update_full_price_incl_tax(true, false, true);" size="15" maxlength="20" style="text-align:right" ', false);
 	  if (isset($cInfo->full_price_with_tax) && ENABLE_MULTI_CURRENCY) echo ' (' . DEFAULT_CURRENCY . ')';
 	  if(isset($cInfo->full_price_with_tax)) echo '   <i>'.$cInfo->full_price_with_tax.'</i>';
 	  ?>
@@ -101,9 +101,9 @@
 	<tr>
 	  <td align="right"><?php if(isset($cInfo->full_price)) echo TEXT_FULL_PRICE; ?></td>
 	  <td>
-	  	<?php if(isset($cInfo->full_price)) echo html_input_field('full_price', $currencies->precise($cInfo->full_price), 'onchange="update_full_price_incl_tax(true, true, false);" size="15" maxlength="20" style="text-align:right"', false);
+	  	<?php if(isset($cInfo->full_price)) echo html_input_field('full_price', $admin->currencies->precise($cInfo->full_price), 'onchange="update_full_price_incl_tax(true, true, false);" size="15" maxlength="20" style="text-align:right"', false);
 			if (isset($cInfo->full_price) && ENABLE_MULTI_CURRENCY) echo ' (' . DEFAULT_CURRENCY . ')';
-			if (isset($cInfo->full_price)) echo '   <i>'.$currencies->precise($cInfo->full_price).'</i>';
+			if (isset($cInfo->full_price)) echo '   <i>'.$admin->currencies->precise($cInfo->full_price).'</i>';
 		    if(isset($cInfo->price_sheet)) echo '&nbsp;' . html_icon('mimetypes/x-office-spreadsheet.png', TEXT_CUSTOMER_PRICE_SHEETS, 'small', $params = 'onclick="priceMgr(' . $cInfo->id . ', 0, 0, \'c\')"') . chr(10); ?>
 	  </td>
 	  <td align="right"><?php if(isset($cInfo->item_taxable)) echo TEXT_DEFAULT_SALES_TAX; ?></td>
@@ -111,8 +111,8 @@
 	</tr>
 	<tr>
 	  <td align="right"><?php if(isset($cInfo->product_margin)) echo TEXT_MARGIN; ?></td>
-	  <td><?php if(isset($cInfo->product_margin)) echo html_input_field('product_margin', $currencies->precise($cInfo->product_margin), 'onchange="product_margin_change();" size="15" maxlength="5" style="text-align:right" ', false);
-	  if (isset($cInfo->product_margin)) echo '   <i>'.$currencies->precise($cInfo->product_margin).'</i>'; ?>
+	  <td><?php if(isset($cInfo->product_margin)) echo html_input_field('product_margin', $admin->currencies->precise($cInfo->product_margin), 'onchange="product_margin_change();" size="15" maxlength="5" style="text-align:right" ', false);
+	  if (isset($cInfo->product_margin)) echo '   <i>'.$admin->currencies->precise($cInfo->product_margin).'</i>'; ?>
 	  </td>
 	  <td align="right"><?php if(isset($cInfo->price_sheet)) echo TEXT_DEFAULT_PRICE_SHEET; ?></td>
 	  <td><?php if(isset($cInfo->price_sheet)) echo html_pull_down_menu('price_sheet', get_price_sheet_data('c'), $cInfo->price_sheet); ?></td>
@@ -146,7 +146,7 @@
 			}else{ echo '<td></td>';}
 			if (isset($cInfo->description_purchase)) { echo '<td>'.html_textarea_field('description_purchase_array[]', 75, 2, $purchaseRow['description_purchase'], '', $reinsert_value = true).'</td>';
 			}else{ echo '<td></td>';}
-			if (isset($cInfo->item_cost)){ 			echo '<td>'.html_input_field('item_cost_array[]', $currencies->precise($purchaseRow['item_cost']), 'onchange="what_to_update();" size="15" maxlength="20" style="text-align:right"', false).'</td>';
+			if (isset($cInfo->item_cost)){ 			echo '<td>'.html_input_field('item_cost_array[]', $admin->currencies->precise($purchaseRow['item_cost']), 'onchange="what_to_update();" size="15" maxlength="20" style="text-align:right"', false).'</td>';
 			}else{ echo '<td></td>';}
 			if (isset($cInfo->item_cost)) {			echo '<td>'.html_input_field('purch_package_quantity_array[]', $purchaseRow['purch_package_quantity'], 'size="6" maxlength="5" style="text-align:right"').'</td>';
 			}else{ echo '<td></td>';}

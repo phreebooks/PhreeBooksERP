@@ -23,7 +23,7 @@ class beg_bal_import {
   }
 
   	function processCSV($upload_name = '') {
-		global $coa, $admin, $currencies, $messageStack;
+		global $coa, $admin, $messageStack;
 		$this->cyberParse($upload_name);  // parse the submitted string, check for csv errors
 		//echo 'parsed string = '; print_r($this->records); echo '<br />';
 		$row_id = 0;
@@ -48,7 +48,7 @@ class beg_bal_import {
 	  		switch (JOURNAL_ID) { // total amount is calculated for PO/SOs
 				case  6:
 				case 12:
-				  	$this->records[$row_id]['total_amount'] = $currencies->clean_value($current_order['total_amount']);
+				  	$this->records[$row_id]['total_amount'] = $admin->currencies->clean_value($current_order['total_amount']);
 				  	if ($current_order['total_amount'] == 0) {
 						$messageStack->add(TEXT_SKIPPING_LINE._ZERO_TOTAL_AMOUNT_FOUND_ON_LINE . ' ' . ($row_id + 1),'caution');
 						$this->records[$row_id]['skip_this_record'] = 1;
@@ -91,7 +91,7 @@ class beg_bal_import {
 	}
 
 	function submitJournalEntry() {
-		global $admin, $currencies;
+		global $admin;
 		$entry_count = 0;
 		$row_cnt = 0;
 		while($row_cnt < count($this->records)) {
@@ -166,12 +166,12 @@ class beg_bal_import {
 					case 10: if (!$credit_debit) $credit_debit = 'credit_amount'; // for journal_id = 10
 						$glEntry->journal_rows[] = array(
 							'gl_type'     => BB_GL_TYPE,
-							'qty'         => $currencies->clean_value($order['quantity']),
+							'qty'         => $admin->currencies->clean_value($order['quantity']),
 							'sku'         => $order['sku'],
 							'description' => $order['description'],
 							'gl_account'  => $order['inv_gl_acct'],
 							'taxable'     => $order['taxable'] ? $order['taxable'] : 0,
-							$credit_debit => $currencies->clean_value($order['total_cost']),
+							$credit_debit => $admin->currencies->clean_value($order['total_cost']),
 							'post_date'   => $order['post_date'],
 						);
 						break;
@@ -183,12 +183,12 @@ class beg_bal_import {
 							'description'  => $journal_types_list[JOURNAL_ID]['text'] . '-' . TEXT_IMPORT,
 							'gl_account'   => $order['inv_gl_acct'],
 							'taxable'      => $order['taxable'] ? $order['taxable'] : 0,
-							$credit_debit  => $currencies->clean_value($order['total_amount']),
+							$credit_debit  => $admin->currencies->clean_value($order['total_amount']),
 							'post_date'    => $order['post_date'],
 						);
 						break;
 				}
-				$total_amount += $currencies->clean_value($order['total_cost']);
+				$total_amount += $admin->currencies->clean_value($order['total_cost']);
 				$next_order    = $this->records[$row_cnt + 1]['order_id'];
 				if ((JOURNAL_ID == 4 || JOURNAL_ID == 10) && $order['order_id'] == $next_order) { // more line items
 					$row_cnt++;
@@ -220,7 +220,7 @@ class beg_bal_import {
 	}
 
 	function processInventory($upload_name) {
-		global $admin, $coa, $currencies, $messageStack;
+		global $admin, $coa, $messageStack;
 		$this->cyberParse($upload_name);
 		$post_date = gen_specific_date(date('Y-m-d'), $day_offset = -1);
 		$glEntry   = new \core\classes\journal();
@@ -229,8 +229,8 @@ class beg_bal_import {
 		$affected_accounts = array();
 		for ($row_id = 0, $j = 2; $row_id < count($this->records); $row_id++, $j++) {
 			$row = $this->records[$row_id];
-			$total_amount = $currencies->clean_value($row['total_amount']);
-			$qty = $currencies->clean_value($row['quantity']);
+			$total_amount = $admin->currencies->clean_value($row['total_amount']);
+			$qty = $admin->currencies->clean_value($row['quantity']);
 			// check for errors and report/exit if error found
 			$admin->classes['inventory']->validate_name($row['sku']);
 			if (!in_array($row['inv_gl_acct'], $coa) || !in_array($row['gl_acct'], $coa)) throw new \core\classes\userException(sprintf(TEXT_ERROR_INVALID_GL_ACCT, $j));
@@ -277,7 +277,7 @@ class beg_bal_import {
 				if ($result->AffectedRows() <> 1) {
 					$db->transRollback();
 					throw new \core\classes\userException(sprintf(TEXT_FAILED_UPDATING_ACCOUNT_THE_PROCESS_WAS_TERMINATED_ARGS, $account));
-				}	
+				}
 		  }
 		  // update the chart of accounts history through the existing periods
 		  $glEntry->update_chart_history_periods($period = 1);

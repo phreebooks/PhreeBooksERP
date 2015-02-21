@@ -19,10 +19,8 @@
 ?>
 <div title="<?php echo TEXT_CONTACTS;?>" id="tab_contacts">
 <?php
-  if (is_array($basis->cInfo->contact->contacts)) {
-	$heading_array  = array(); // don't sort
-	$non_sort_array = array(TEXT_LAST_NAME, TEXT_FIRST_NAME, TEXT_TITLE, TEXT_TELEPHONE, TEXT_MOBILE_PHONE, TEXT_EMAIL, TEXT_ACTION);
-	$crm_headings   = html_heading_bar($heading_array, $non_sort_array);
+  	if (is_array($basis->cInfo->contact->contacts)) {
+		$crm_headings   = html_heading_bar(array(), array(TEXT_LAST_NAME, TEXT_FIRST_NAME, TEXT_TITLE, TEXT_TELEPHONE, TEXT_MOBILE_PHONE, TEXT_EMAIL, TEXT_ACTION));// don't sort
 ?>
   <fieldset>
     <legend><?php echo TEXT_CONTACTS; ?></legend>
@@ -30,33 +28,19 @@
 	  <thead class="ui-widget-header"><?php echo $crm_headings['html_code']; ?></thead>
 	  <tbody class="ui-widget-content">
 <?php
-  $odd = true;
-  foreach ($basis->cInfo->contact->contacts as $entry) {
-    $bkgnd = ($entry->inactive) ? 'class="ui-state-highlight"' : '';
-?>
-	  <tr id="tr_add_<?php echo $entry->id; ?>" class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer">
-		<td onclick="getAddress(<?php echo $entry->address['m'][0]->address_id; ?>, 'im')"<?php echo $bkgnd; ?>><?php echo $entry->contact_last; ?></td>
-		<td onclick="getAddress(<?php echo $entry->address['m'][0]->address_id; ?>, 'im')"<?php echo $bkgnd; ?>><?php echo $entry->contact_first; ?></td>
-		<td onclick="getAddress(<?php echo $entry->address['m'][0]->address_id; ?>, 'im')"><?php echo $entry->contact_middle; ?></td>
-		<td onclick="getAddress(<?php echo $entry->address['m'][0]->address_id; ?>, 'im')"><?php echo $entry->address['m'][0]->telephone1; ?></td>
-		<td onclick="getAddress(<?php echo $entry->address['m'][0]->address_id; ?>, 'im')"><?php echo $entry->address['m'][0]->telephone4; ?></td>
-		<td onclick="getAddress(<?php echo $entry->address['m'][0]->address_id; ?>, 'im')"><?php echo $entry->address['m'][0]->email; ?></td>
-		<td align="right">
-<?php // build the action toolbar
-  if ($security_level > 1) echo html_icon('actions/edit-find-replace.png', TEXT_EDIT,   'small', 'onclick="getAddress(' . $entry->address['m'][0]->address_id . ', \'im\')"') . chr(10);
-  if ($security_level > 3) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . ACT_WARN_DELETE_ACCOUNT . '\')) deleteAddress(' .$entry->address['m'][0]->address_id . ')"') . chr(10);
-?>
-		</td>
-	  </tr>
-<?php
-    $odd = !$odd;
-  }
+  		$odd = true;
+  		foreach ($basis->cInfo->contact->contacts as $entry) {
+			echo "<tr id='tr_add_{$entry->id}' class='". ($odd?'odd':'even')."' style='cursor:pointer'>";
+    		$entry->print_contact_list();
+    		echo "</tr>";
+    		$odd = !$odd;
+    	}
 ?>
 	  </tbody>
 	</table>
   </fieldset>
-  <?php } ?>
-  <?php // *********************** Mailing/Main Address (only one allowed) ****************************** ?>
+<?php
+	} // *********************** Mailing/Main Address (only one allowed) ****************************** ?>
   <fieldset>
     <legend><?php echo TEXT_ADD_UPDATE .' ' . TEXT_CONTACT; ?></legend>
       <table class="ui-widget" style="border-collapse:collapse;width:100%;">
@@ -74,7 +58,6 @@
 	$ctoolbar->icon_list['new']['text']    = sprintf(TEXT_NEW_ARGS, TEXT_CONTACT);
 	$ctoolbar->add_icon('copy', 'onclick="copyContactAddress(\'' . $basis->cInfo->contact->type . '\')"', 20);
 	$ctoolbar->icon_list['copy']['text']   = TEXT_TRANSFER_ADDRESS;
-	echo $output;
 	echo $ctoolbar->build();
 ?>
     </td></tr>
@@ -100,7 +83,7 @@
       </tr>
     </table>
     <table id="im_address_form" class="ui-widget" style="border-collapse:collapse;width:100%;">
-      <?php echo $basis->cInfo->contact->draw_address_fields('im', false, false, false); ?>
+      <?php $basis->cInfo->contact->draw_address_fields('im', false, true, false, false); ?>
     </table>
   </fieldset>
 </div>

@@ -143,7 +143,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 	}
 
 	function save(){
-		global $admin, $messageStack, $security_level, $currencies;
+		global $admin, $messageStack, $security_level;
 		$current_situation = $admin->DataBase->query("select * from " . TABLE_INVENTORY . " where id = '{$this->id}'");
 		$sql_data_array = parent::save();
 		$sql_data_array['inventory_type'] = 'mi';
@@ -212,8 +212,8 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 					case 'description_short': 		if($this->description_short == $value) 		unset($sql_data_array[$key]); Break;
 					case 'description_purchase': 	if($this->description_purchase == $value) 	unset($sql_data_array[$key]); Break;
 					case 'description_sales': 		if($this->description_sales == $value) 		unset($sql_data_array[$key]); Break;
-					case 'minimum_stock_level': 	if($currencies->clean_value($this->minimum_stock_level) == $currencies->clean_value($value)) 	unset($sql_data_array[$key]); Break;
-					case 'reorder_quantity': 		if($currencies->clean_value($this->reorder_quantity) == $currencies->clean_value($value))		unset($sql_data_array[$key]); Break;
+					case 'minimum_stock_level': 	if($admin->currencies->clean_value($this->minimum_stock_level) == $admin->currencies->clean_value($value)) 	unset($sql_data_array[$key]); Break;
+					case 'reorder_quantity': 		if($admin->currencies->clean_value($this->reorder_quantity) == $admin->currencies->clean_value($value))		unset($sql_data_array[$key]); Break;
 					default:						if($sql_data_array[$key] == $value) 		unset($sql_data_array[$key]);
 				}
 			}

@@ -406,7 +406,7 @@ class admin extends \core\classes\admin {
 	 */
 	function LoadContactPage(\core\classes\basis &$basis) {
 		if ( isset($basis->cInfo->rowSeq)) $basis->cInfo->cID = $basis->cInfo->rowSeq;
-		if ($basis->cInfo->cID == '') throw new \core\classes\userException("cID variable isn't set can't excecute method LoadContactPage ");
+		if ($basis->cInfo->cID == '') throw new \core\classes\userException("cID variable isn't set can't execute method LoadContactPage ");
 		$inactive = '';
 		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->cID}");
 		$sql->execute();
@@ -434,6 +434,44 @@ class admin extends \core\classes\admin {
 		$basis->page		= 'main';
 		$basis->template 	= 'template_detail';
 		$basis->page_title  = "{$basis->cInfo->contact->page_title_edit} - ({$basis->cInfo->contact->short_name}) {$basis->cInfo->contact->address[m][0]->primary_name}";
+	}
+
+	/**
+	 * this function will call LoadContactPage but deactivate menu and footer.
+	 * @param \core\classes\basis $basis
+	 */
+	function LoadContactsPopUp(\core\classes\basis &$basis) {
+		$this->LoadContactPage($basis);
+		$basis->include_header = false;
+		$basis->include_footer = false;
+	}
+
+	function SaveContact (\core\classes\basis &$basis) {
+		if ($basis->cInfo->cID == '') throw new \core\classes\userException("cID variable isn't set can't execute method SaveContact ");
+		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->cID}");
+		$sql->execute();
+		$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
+		// error check
+		$basis->cInfo->contact->data_complete();
+		// start saving data
+		$basis->cInfo->contact->save();
+		if ($basis->cInfo->contact->type <> 'i' && ($_POST['i_short_name'] || $_POST['address']['im']['primary_name'])) { // is null
+			$crmInfo = new \contacts\classes\type\i;
+			$crmInfo->auto_field  = $basis->cInfo->contact->type=='v' ? 'next_vend_id_num' : 'next_cust_id_num';
+			$crmInfo->dept_rep_id = $basis->cInfo->contact->id;
+			// error check contact
+			$crmInfo->data_complete();
+			$crmInfo->save();
+		}
+	}
+
+	function DeleteContact (\core\classes\basis &$basis) {
+		if ($basis->cInfo->cID == '') throw new \core\classes\userException("cID variable isn't set can't execute method DeleteContact ");
+		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->cID}");
+		$sql->execute();
+		$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
+		// error check
+		$basis->cInfo->contact->delete();
 	}
 
 	function load_demo() {

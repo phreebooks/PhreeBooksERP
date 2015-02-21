@@ -134,8 +134,8 @@
 				echo '<td width="20px" align="center">' . $value['on_sales'] . '</td>'. chr(10);
 				echo '<td width="20px" align="center">' . $value['min_stock'] . '</td>'. chr(10);
 				echo '<td width="20px" align="center">' . $value['reorder_qty'] . '</td>'. chr(10);
-				echo '<td width="20px" align="right">' . $currencies->precise($value['cost']) . '</td>'. chr(10);
-				echo '<td width="20px" align="right">' . $currencies->precise($value['price']) . '</td>'. chr(10);
+				echo '<td width="20px" align="right">' . $admin->currencies->precise($value['cost']) . '</td>'. chr(10);
+				echo '<td width="20px" align="right">' . $admin->currencies->precise($value['price']) . '</td>'. chr(10);
 		      	echo '</tr>' . chr(10);
 		      	$odd = !$odd;
     		}

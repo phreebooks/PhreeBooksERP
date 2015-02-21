@@ -252,7 +252,7 @@ class endicia extends \shipping\classes\shipping {
 //								Endicia Rate and Service Request
 // ***************************************************************************************************************
   function quote($pkg) { // assumes only one package at a time
-  	global $messageStack, $currencies;
+  	global $messageStack;
 	if ($pkg->pkg_weight == 0) throw new \core\classes\userException(TEXT_SHIPMENT_WEIGHT_CANNOT_BE_ZERO);
 	if ($pkg->ship_to_postal_code == '') throw new \core\classes\userException(SHIPPING_ENDICIA_ERROR_POSTAL_CODE);
 	if ($pkg->pkg_weight > ENDICIA_MAX_SINGLE_BOX_WEIGHT) throw new \core\classes\userException(SHIPPING_ENDICIA_ERROR_TOO_HEAVY);
@@ -341,7 +341,7 @@ class endicia extends \shipping\classes\shipping {
 //								Endicia Buy Postage Request
 // ***************************************************************************************************************
   function buyPostage() {
-  	global $messageStack, $currencies;
+  	global $messageStack, $admin;
   	$amount = db_prepare_input($_POST['endicia_postage']);
   	if (!in_array($amount, array('10', '25', '100', '250', '500', '1000'))) {
   		throw new \core\classes\userException('The postage purchase amount submitted is an invalid amount!');
@@ -362,7 +362,7 @@ class endicia extends \shipping\classes\shipping {
   	try {
 	  $response = $client->BuyPostage($data);
   	  if ($response->RecreditRequestResponse->Status == 0) {
-  		$messageStack->add(sprintf(SHIPPING_ENDICIA_PURCHASE_SUCCESS_MSG, $currencies->format($response->RecreditRequestResponse->CertifiedIntermediary->PostageBalance), $response->RecreditRequestResponse->CertifiedIntermediary->SerialNumber),'success');
+  		$messageStack->add(sprintf(SHIPPING_ENDICIA_PURCHASE_SUCCESS_MSG, $admin->currencies->format($response->RecreditRequestResponse->CertifiedIntermediary->PostageBalance), $response->RecreditRequestResponse->CertifiedIntermediary->SerialNumber),'success');
   	  } else {
   		throw new \core\classes\userException(TEXT_ERROR.' ('.$response->RecreditRequestResponse->Status.') '.$response->RecreditRequestResponse->ErrorMessage);
 	  }

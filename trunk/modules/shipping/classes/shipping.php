@@ -99,11 +99,11 @@ class shipping {
   	 * @param unknown_type $key
   	 */
   	function configure($key) {
-  		global $currencies;
+  		global $admin;
     	switch ($key) {
     		case 'MODULE_SHIPPING_'.strtoupper($this->id).'_COST':
     		case 'MODULE_SHIPPING_'.strtoupper($this->id).'_HANDLING':
-    			return html_input_field(strtolower($key), $currencies->format( constant($key)));
+    			return html_input_field(strtolower($key), $admin->currencies->format( constant($key)));
         	default:
                 return html_input_field(strtolower($key), constant($key));
     	}

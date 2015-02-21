@@ -158,7 +158,7 @@ class pricelist_report {
   }
 
   function calulate_special_fields($id) {
-	global $admin, $currencies;
+	global $admin;
 	// get the inventory prices
 	$inventory = $admin->DataBase->query("select item_cost, full_price, price_sheet from ".TABLE_INVENTORY." where id = '$id'");
 	// determine what price sheet to use, priority: inventory, default
@@ -201,7 +201,7 @@ class pricelist_report {
 	if ($levels) {
 		$prices = inv_calculate_prices($inventory->fields['item_cost'], $inventory->fields['full_price'], $levels);
 		if (is_array($prices)) foreach ($prices as $key => $value) {
-			$new_data['price_level_'.($key+1)] = $currencies->clean_value($value['price']);
+			$new_data['price_level_'.($key+1)] = $admin->currencies->clean_value($value['price']);
 			$new_data['price_qty_'  .($key+1)] = $value['qty'];
 		}
 	}

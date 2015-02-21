@@ -65,16 +65,16 @@ switch ($_REQUEST['action']) {
 		$glEntry->store_id            = db_prepare_input($_POST['store_id']);
 		if ($glEntry->store_id == '') $glEntry->store_id = 0;
 		//save new till balance
-		$tills->new_balance($currencies->clean_value($_POST['new_balance']));
+		$tills->new_balance($admin->currencies->clean_value($_POST['new_balance']));
 		if (is_array($_POST['id'])) for ($i = 0; $i < count($_POST['id']); $i++) {
 		  	$all_items[] = $_POST['id'][$i];
 		  	$cleared_items[]   = $_POST['id'][$i];
-		  	$glrows[db_prepare_input($_POST['gl_account_' . $i])] += $currencies->clean_value($_POST['amt_'.$i]) - $currencies->clean_value($_POST['pmt_'.$i]);
+		  	$glrows[db_prepare_input($_POST['gl_account_' . $i])] += $admin->currencies->clean_value($_POST['amt_'.$i]) - $admin->currencies->clean_value($_POST['pmt_'.$i]);
 		}
 		foreach($glrows as $key => $value){
 			$value = $value;
-			if($value == $currencies->clean_value(0)) continue;
-			$value = round($value,  $currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
+			if($value == $admin->currencies->clean_value(0)) continue;
+			$value = round($value,  $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
 			$balance_payments += $value;
 			$glEntry->journal_rows[] = array(
 			  'id'            => '',
@@ -87,7 +87,7 @@ switch ($_REQUEST['action']) {
 			  'post_date'     => $glEntry->post_date
 			);
 		}
-		$value = $currencies->clean_value($_POST['balance']) - $balance_payments;
+		$value = $admin->currencies->clean_value($_POST['balance']) - $balance_payments;
 		$glEntry->journal_rows[] = array(
 		  'id'            => '',
 		  'qty'           => '1',
@@ -98,14 +98,14 @@ switch ($_REQUEST['action']) {
 		  'reconciled'    => ($security_level > 2) ? $period : 0,
 		  'post_date'     => $glEntry->post_date
 		);
-		if ($currencies->clean_value($_POST['balance'])<> 0){
+		if ($admin->currencies->clean_value($_POST['balance'])<> 0){
 			$glEntry->journal_rows[] = array(
 			  'id'            => '',
 			  'qty'           => '1',
 			  'gl_account'    => $tills->dif_gl_acct_id,
 			  'description'   => TEXT_POSTED_CASH_DIFFERENCE_IN_TILL,
-			  'debit_amount'  => ($currencies->clean_value($_POST['balance']) > 0) ? '' : -$currencies->clean_value($_POST['balance']) ,
-			  'credit_amount' => ($currencies->clean_value($_POST['balance']) > 0) ? $currencies->clean_value($_POST['balance']) : '' ,
+			  'debit_amount'  => ($admin->currencies->clean_value($_POST['balance']) > 0) ? '' : -$admin->currencies->clean_value($_POST['balance']) ,
+			  'credit_amount' => ($admin->currencies->clean_value($_POST['balance']) > 0) ? $admin->currencies->clean_value($_POST['balance']) : '' ,
 			  'reconciled'    => ($security_level > 2) ? $period : 0,
 			  'post_date'     => $glEntry->post_date
 			);
@@ -115,7 +115,7 @@ switch ($_REQUEST['action']) {
 		  'period'              => $glEntry->period,
 		  'journal_id'          => JOURNAL_ID,
 		  'post_date'           => $glEntry->post_date,
-		  'total_amount'        => $currencies->clean_value($_POST['balance']),
+		  'total_amount'        => $admin->currencies->clean_value($_POST['balance']),
 		  'description'         => TEXT_GENERAL_JOURNAL_ENTRY,
 		  'purchase_invoice_id' => $glEntry->purchase_invoice_id,
 		  'admin_id'            => $glEntry->admin_id,
@@ -127,7 +127,7 @@ switch ($_REQUEST['action']) {
 		$admin->DataBase->transCommit();
 		$newrow = $admin->DataBase->query("select i.id from " . TABLE_JOURNAL_MAIN . " m join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id where i.gl_account = '" . $tills->gl_acct_id . "' and m.id ='".$glEntry->id."'");
 		$cleared_items[] = $newrow->fields['id'];
-		$statement_balance = $currencies->clean_value($_POST['statement_balance']);
+		$statement_balance = $admin->currencies->clean_value($_POST['statement_balance']);
 		// see if this is an update or new entry
 		$sql_data_array = array(
 		  'statement_balance' => $statement_balance,
@@ -208,7 +208,7 @@ if ($post_date){
 		where period = " . $period . " and gl_account = '" . $tills->gl_acct_id . "'";
 	$result = $admin->DataBase->query($sql);
 	if ($result->rowCount() <> 0) { // there are current cleared items in the present accounting period (edit)
-	  $statement_balance = $currencies->format($result->fields['statement_balance']);
+	  $statement_balance = $admin->currencies->format($result->fields['statement_balance']);
 	  $cleared_items     = unserialize($result->fields['cleared_items']);
 	  // load information from general ledger
 	  if (count($cleared_items) > 0) {
@@ -302,7 +302,7 @@ if ($post_date){
 	usort($combined_list, "my_sort");
 
 	// load the end balance
-	$till_balance = $currencies->format($tills->balance);
+	$till_balance = $admin->currencies->format($tills->balance);
 	if (empty($combined_list) && $tills->till_id <> '' ) $messageStack->add('No Items were found for till and period.!','warning');
 }
 

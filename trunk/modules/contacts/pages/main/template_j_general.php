@@ -57,11 +57,7 @@ $cal_j_gen2 = array(
       <tr>
         <td align="right"><?php echo ACT_J_REP_ID; ?></td>
         <td>
-		  <?php
-			$default_selection = ($_REQUEST['action'] == 'new' ? AR_DEF_GL_SALES_ACCT : $basis->cInfo->contact->dept_rep_id);
-			$selection_array = gen_get_rep_ids('c');
-			echo html_pull_down_menu('dept_rep_id', $selection_array, $default_selection);
-		  ?>
+		  <?php echo html_pull_down_menu('dept_rep_id', gen_get_rep_ids('c'), $basis->cInfo->contact->dept_rep_id); ?>
 	    </td>
         <td align="right"><?php echo TEXT_START_DATE; ?></td>
         <td><?php echo html_calendar_field($cal_j_gen1); ?></td>
@@ -79,7 +75,7 @@ $cal_j_gen2 = array(
   <fieldset>
     <legend><?php echo TEXT_MAIN_MAILING_ADDRESS; ?></legend>
     <table id="<?php echo $basis->cInfo->contact->type; ?>m_address_form" class="ui-widget" style="border-collapse:collapse;width:100%;">
-      <?php echo $basis->cInfo->contact->draw_address_fields($basis->cInfo->contact->type.'m', false, true, false); ?>
+      <?php $basis->cInfo->contact->draw_address_fields($basis->cInfo->contact->type.'m', false, true, false, true); ?>
     </table>
   </fieldset>
 <?php // *********************** Attachments  ************************************* ?>
@@ -99,15 +95,15 @@ $cal_j_gen2 = array(
      </tr>
 <?php
 if (sizeof($basis->cInfo->contact->attachments) > 0) {
-  foreach ($basis->cInfo->contact->attachments as $key => $value) {
-    echo '<tr>';
-    echo ' <td>' . html_checkbox_field('rm_attach_'.$key, '1', false) . '</td>' . chr(10);
-    echo ' <td>' . $value . '</td>' . chr(10);
-    echo ' <td>' . html_button_field('dn_attach_'.$key, TEXT_DOWNLOAD, 'onclick="submitSeq(' . $key . ', \'download\', true)"') . '</td>';
-    echo '</tr>' . chr(10);
-  }
+  	foreach ($basis->cInfo->contact->attachments as $key => $value) {
+    	echo '<tr>';
+	    echo ' <td>' . html_checkbox_field('rm_attach_'.$key, '1', false) . '</td>' . chr(10);
+    	echo ' <td>' . $value . '</td>' . chr(10);
+	    echo ' <td>' . html_button_field('dn_attach_'.$key, TEXT_DOWNLOAD, 'onclick="submitSeq(' . $key . ', \'download\', true)"') . '</td>';
+    	echo '</tr>' . chr(10);
+	}
 } else {
-  echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS_HAVE_BEEN_FOUND . '</td></tr>';
+  	echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS_HAVE_BEEN_FOUND . '</td></tr>';
 } ?>
     </tbody>
    </table>
