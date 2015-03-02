@@ -74,7 +74,7 @@ class admin extends \core\classes\admin {
 		parent::upgrade($basis);
 	    if (version_compare($this->status, '3.1', '<') ) {
 		  	$tab_map = array('0' => '0');
-		  	if(db_table_exists(DB_PREFIX . 'assets_tabs')){
+		  	if($admin->DataBase->table_exists(DB_PREFIX . 'assets_tabs')){
 			  	$result = $admin->DataBase->query("select * from " . DB_PREFIX . 'assets_tabs');
 			  	while (!$result->EOF) {
 			    	$updateDB = $admin->DataBase->query("insert into " . TABLE_EXTRA_TABS . " set
@@ -82,12 +82,12 @@ class admin extends \core\classes\admin {
 				  	  tab_name = '"    . $result->fields['category_name']        . "',
 				  	  description = '" . $result->fields['category_description'] . "',
 				  	  sort_order = '"  . $result->fields['sort_order']           . "'");
-			    	$tab_map[$result->fields['category_id']] = db_insert_id();
+			    	$tab_map[$result->fields['category_id']] = \core\classes\PDO::lastInsertId('id');
 			    	$result->MoveNext();
 			  	}
 			  	$admin->DataBase->query("DROP TABLE " . DB_PREFIX . "assets_tabs");
 		  	}
-		  	if(db_table_exists(DB_PREFIX . 'assets_fields')){
+		  	if($admin->DataBase->table_exists(DB_PREFIX . 'assets_fields')){
 				$result = $admin->DataBase->query("select * from " . DB_PREFIX . 'assets_fields');
 			  	while (!$result->EOF) {
 			    	$updateDB = $admin->DataBase->query("insert into " . TABLE_EXTRA_FIELDS . " set
@@ -103,7 +103,7 @@ class admin extends \core\classes\admin {
 		  	}
 		}
 		if (version_compare($this->status, '3.3', '<') ) {
-	  		if (!db_field_exists(TABLE_ASSETS, 'attachments')) $admin->DataBase->query("ALTER TABLE " . TABLE_ASSETS . " ADD attachments TEXT NOT NULL AFTER terminal_date");
+	  		if (!$admin->DataBase->field_exists(TABLE_ASSETS, 'attachments')) $admin->DataBase->query("ALTER TABLE " . TABLE_ASSETS . " ADD attachments TEXT NOT NULL AFTER terminal_date");
 	  		require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
     	}
     	\core\classes\fields::sync_fields('assets', TABLE_ASSETS);// Best to always sync fields after install

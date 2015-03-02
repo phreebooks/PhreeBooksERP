@@ -56,7 +56,7 @@ class admin extends \core\classes\admin {
 	    global $admin, $messageStack;
 		RETURN TRUE; //@TODO NOG VERDER BEWERKEN.
 		parent::install($path_my_files, $demo);
-		if (!db_field_exists(TABLE_INVENTORY, 'catalog')) { // setup new tab in table inventory
+		if (!$admin->DataBase->field_exists(TABLE_INVENTORY, 'catalog')) { // setup new tab in table inventory
 		  $sql_data_array = array(
 		    'module_id'   => 'inventory',
 		    'tab_name'    => 'Magento',
@@ -64,7 +64,7 @@ class admin extends \core\classes\admin {
 		    'sort_order'  => '49',
 		  );
 		  db_perform(TABLE_EXTRA_TABS, $sql_data_array);
-		  $tab_id = db_insert_id();
+		  $tab_id = \core\classes\PDO::lastInsertId('id');
 		  gen_add_audit_log(MAGENTO_LOG_TABS . TEXT_ADD, 'magento');
 		  // setup extra fields for inventory
 		  $sql_data_array = array(
@@ -158,7 +158,7 @@ class admin extends \core\classes\admin {
 	$result = $admin->DataBase->query("select tab_id from " . TABLE_EXTRA_FIELDS . " where field_name = 'category_id'");
 	if ($result->rowCount() == 0) throw new \core\classes\userException('can not find tab_name Magento');
 	else $tab_id = $result->fields['tab_id'];
-	if (!db_field_exists(TABLE_INVENTORY, 'ProductURL')){
+	if (!$admin->DataBase->field_exists(TABLE_INVENTORY, 'ProductURL')){
 		 $sql_data_array = array(
 		    'module_id'   => 'inventory',
 		    'tab_id'      => $tab_id,
@@ -170,7 +170,7 @@ class admin extends \core\classes\admin {
 		  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array);
 		  $admin->DataBase->query("alter table " . TABLE_INVENTORY . " add column `ProductURL` varchar(64) default ''");
 	}
-	if (!db_field_exists(TABLE_INVENTORY, 'ProductModel')){
+	if (!$admin->DataBase->field_exists(TABLE_INVENTORY, 'ProductModel')){
 		$sql_data_array = array(
 		    'module_id'   => 'inventory',
 		    'tab_id'      => $tab_id,

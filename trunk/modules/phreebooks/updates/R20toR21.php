@@ -24,13 +24,13 @@
 
 //********************************* END OF IMPORTANT ****************************************//
 
-if (!db_field_exists(TABLE_DEPARTMENTS, 'description_short')) {
+if (!$admin->DataBase->field_exists(TABLE_DEPARTMENTS, 'description_short')) {
   $admin->DataBase->query("ALTER TABLE " . TABLE_DEPARTMENTS . " ADD description_short VARCHAR(30) NULL AFTER id");
   $admin->DataBase->query("UPDATE " . TABLE_DEPARTMENTS . " set description_short = id");
   $admin->DataBase->query("ALTER TABLE " . TABLE_DEPARTMENTS . " CHANGE id id INT(11) NOT NULL AUTO_INCREMENT");
   $result = $admin->DataBase->query("select id, description_short from " . TABLE_DEPARTMENTS);
   while(!$result->EOF) {
-	$admin->DataBase->query("UPDATE " . TABLE_DEPARTMENTS . " set primary_dept_id = " . $result->fields['id'] . " 
+	$admin->DataBase->query("UPDATE " . TABLE_DEPARTMENTS . " set primary_dept_id = " . $result->fields['id'] . "
 	    where primary_dept_id = '" . $result->fields['description_short'] . "'");
 	$result->MoveNext();
   }
@@ -65,7 +65,7 @@ if (!db_field_exists(TABLE_DEPARTMENTS, 'description_short')) {
 		    $rebuild[] = $value;
 		  }
 		}
-		$admin->DataBase->query("update " . TABLE_REPORT_FIELDS . " set params = '" . implode(';', $rebuild) . "' 
+		$admin->DataBase->query("update " . TABLE_REPORT_FIELDS . " set params = '" . implode(';', $rebuild) . "'
 		  where id = " . $result->fields['id']);
 	  }
 	}
@@ -81,15 +81,15 @@ $admin->DataBase->query("ALTER TABLE " . TABLE_SHIPPING_LOG . " CHANGE ref_id   
 $admin->DataBase->query("ALTER TABLE " . TABLE_JOURNAL_ITEM . " CHANGE reconciled   reconciled   SMALLINT(4) NOT NULL DEFAULT '0'");
 
 if (!defined('AR_DEF_DEP_LIAB_ACCT')) {
-  $admin->DataBase->query("INSERT INTO " .  TABLE_CONFIGURATION . " 
-    ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` , `set_function` ) 
+  $admin->DataBase->query("INSERT INTO " .  TABLE_CONFIGURATION . "
+    ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` , `set_function` )
     VALUES ( 'CD_02_07_TITLE', 'AR_DEF_DEP_LIAB_ACCT', '', 'CD_02_07_DESC', '2', '7', NULL , now(), NULL , 'cfg_pull_down_gl_acct_list(' );");
-  $admin->DataBase->query("INSERT INTO " .  TABLE_CONFIGURATION . " 
-    ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` , `set_function` ) 
+  $admin->DataBase->query("INSERT INTO " .  TABLE_CONFIGURATION . "
+    ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` , `set_function` )
     VALUES ( 'CD_03_07_TITLE', 'AP_DEF_DEP_LIAB_ACCT', '', 'CD_03_07_DESC', '3', '7', NULL , now(), NULL , 'cfg_pull_down_gl_acct_list(' );");
 }
 
-if (!db_field_exists(TABLE_JOURNAL_MAIN, 'discount')) $admin->DataBase->query("ALTER TABLE " . TABLE_JOURNAL_MAIN . " ADD discount DOUBLE NOT NULL DEFAULT '0' AFTER freight");
+if (!$admin->DataBase->field_exists(TABLE_JOURNAL_MAIN, 'discount')) $admin->DataBase->query("ALTER TABLE " . TABLE_JOURNAL_MAIN . " ADD discount DOUBLE NOT NULL DEFAULT '0' AFTER freight");
 $result = $admin->DataBase->query("select ref_id, debit_amount from " . TABLE_JOURNAL_ITEM . " where gl_type = 'dsc'");
 while(!$result->EOF) {
   $admin->DataBase->query("update " . TABLE_JOURNAL_MAIN . " set discount = " . $result->fields['debit_amount'] . " where id = " . $result->fields['ref_id']);
@@ -103,14 +103,14 @@ while (!$result->EOF) {
   $gl_account    = $result->fields['gl_account'];
   $cleared_items = unserialize($result->fields['cleared_items']);
   if (sizeof($cleared_items) > 0) {
-    $one_period = $admin->DataBase->query("select id from " . TABLE_JOURNAL_MAIN . " 
+    $one_period = $admin->DataBase->query("select id from " . TABLE_JOURNAL_MAIN . "
       where closed = '1' and journal_id in (2, 18, 20) and id in (" . implode(',', $cleared_items) . ")");
 	$update_ids = array();
 	while (!$one_period->EOF) {
 	  $update_ids[] = $one_period->fields['id'];
 	  $one_period->MoveNext();
 	}
-	$admin->DataBase->query("update " . TABLE_JOURNAL_ITEM . " set reconciled = '" . $period . "' 
+	$admin->DataBase->query("update " . TABLE_JOURNAL_ITEM . " set reconciled = '" . $period . "'
 	  where gl_account = '" . $gl_account . "' and ref_id in (" . implode(',', $update_ids) . ")");
   }
   $result->MoveNext();

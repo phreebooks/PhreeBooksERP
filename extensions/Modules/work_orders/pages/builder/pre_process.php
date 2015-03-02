@@ -90,7 +90,7 @@ switch ($_REQUEST['action']) {
 			if (!db_perform(TABLE_WO_MAIN, $sql_data_array, 'update', 'id = ' . $id)) throw new \core\classes\userException("wasn't able to update $id in to table");
 		} else {
 		    if (!db_perform(TABLE_WO_MAIN, $sql_data_array, 'insert')) throw new \core\classes\userException("wasn't able to insert in to table");
-			$id = db_insert_id();
+			$id = \core\classes\PDO::lastInsertId('id');
 			if ($bump_rev) {
 		  	  	$result = $admin->DataBase->query("update " . TABLE_WO_MAIN . " set inactive = '1' where id = " . $_POST['id']);
 			}
@@ -145,7 +145,7 @@ switch ($_REQUEST['action']) {
 		}
 	}
 	db_perform(TABLE_WO_MAIN, $output_array, 'insert');
-	$new_id = db_insert_id();
+	$new_id = \core\classes\PDO::lastInsertId('id');
 	// now copy the steps
 	$result = $admin->DataBase->query("select step, task_id from " . TABLE_WO_STEPS . " where ref_id = " . $id);
 	while (!$result->EOF) {

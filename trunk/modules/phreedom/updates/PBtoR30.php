@@ -24,7 +24,7 @@
 
 //********************************* END OF IMPORTANT ****************************************//
 // change some dashboard field names
-if (!db_field_exists(TABLE_USERS_PROFILES, 'dashboard_id')) {
+if (!$admin->DataBase->field_exists(TABLE_USERS_PROFILES, 'dashboard_id')) {
   $admin->DataBase->query("ALTER TABLE " . TABLE_USERS_PROFILES . " CHANGE page_id menu_id VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL");
   $admin->DataBase->query("ALTER TABLE " . TABLE_USERS_PROFILES . " CHANGE module_id dashboard_id VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT ''");
   $admin->DataBase->query("ALTER TABLE " . TABLE_USERS_PROFILES . " ADD module_id VARCHAR(24) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL AFTER menu_id");
@@ -49,14 +49,14 @@ if (!db_field_exists(TABLE_USERS_PROFILES, 'dashboard_id')) {
                                                        		write_configure('MODULE_PHREECRM_STATUS',   '0.1');
                                                        		write_configure('MODULE_PHREEHELP_STATUS',  '0.1');
                                                        		write_configure('MODULE_SHIPPING_STATUS',   '0.1');
-if (db_table_exists(DB_PREFIX . 'assets'))             		write_configure('MODULE_ASSETS_STATUS',     '0.1');
-if (db_table_exists(DB_PREFIX . 'capa_module'))        		write_configure('MODULE_CP_ACTION_STATUS',  '0.1');
-if (db_table_exists(DB_PREFIX . 'doc_ctl_document'))   		write_configure('MODULE_DOC_CTL_STATUS',    '0.1');
-if (db_table_exists(DB_PREFIX . 'receiving_module'))   		write_configure('MODULE_RECEIVING_STATUS',  '0.1');
-if (db_table_exists(DB_PREFIX . 'rma_module'))         		write_configure('MODULE_RMA_STATUS',        '0.1');
-if (db_table_exists(DB_PREFIX . 'translate_files'))    		write_configure('MODULE_TRANSLATOR_STATUS', '0.1');
-if (db_table_exists(DB_PREFIX . 'wo_main'))            		write_configure('MODULE_WORK_ORDERS_STATUS','0.1');
-if (db_field_exists(DB_PREFIX . 'inventory', 'catalog'))	write_configure('MODULE_ZENCART_STATUS',    '0.1');
+if ($admin->DataBase->table_exists(DB_PREFIX . 'assets'))             		write_configure('MODULE_ASSETS_STATUS',     '0.1');
+if ($admin->DataBase->table_exists(DB_PREFIX . 'capa_module'))        		write_configure('MODULE_CP_ACTION_STATUS',  '0.1');
+if ($admin->DataBase->table_exists(DB_PREFIX . 'doc_ctl_document'))   		write_configure('MODULE_DOC_CTL_STATUS',    '0.1');
+if ($admin->DataBase->table_exists(DB_PREFIX . 'receiving_module'))   		write_configure('MODULE_RECEIVING_STATUS',  '0.1');
+if ($admin->DataBase->table_exists(DB_PREFIX . 'rma_module'))         		write_configure('MODULE_RMA_STATUS',        '0.1');
+if ($admin->DataBase->table_exists(DB_PREFIX . 'translate_files'))    		write_configure('MODULE_TRANSLATOR_STATUS', '0.1');
+if ($admin->DataBase->table_exists(DB_PREFIX . 'wo_main'))            		write_configure('MODULE_WORK_ORDERS_STATUS','0.1');
+if ($admin->DataBase->field_exists(DB_PREFIX . 'inventory', 'catalog'))	write_configure('MODULE_ZENCART_STATUS',    '0.1');
 
 // check installed payment and shipping methods and update
 if (defined('MODULE_PAYMENT_AUTHORIZENET_ORDER'))      write_configure('MODULE_PAYMENT_AUTHORIZENET_STATUS', '0.1');

@@ -52,7 +52,7 @@ class admin extends \core\classes\admin {
 	function install($path_my_files, $demo = false) {
 		global $admin;
 		parent::install($path_my_files, $demo);
-		if (!db_field_exists(TABLE_INVENTORY, 'catalog')) { // setup new tab in table inventory
+		if (!$admin->DataBase->field_exists(TABLE_INVENTORY, 'catalog')) { // setup new tab in table inventory
 		  $result = $admin->DataBase->query("select id FROM ".TABLE_EXTRA_TABS." WHERE tab_name='ZenCart'");
 		  if ($result->rowCount() == 0) {
 		  	$sql_data_array = array(
@@ -62,7 +62,7 @@ class admin extends \core\classes\admin {
 		      'sort_order'  => '49',
 		    );
 		    db_perform(TABLE_EXTRA_TABS, $sql_data_array);
-		    $tab_id = db_insert_id();
+		    $tab_id = \core\classes\PDO::lastInsertId('id');
 		  } else $tab_id = $result->fields['id'];
 		  gen_add_audit_log(ZENCART_LOG_TABS . TEXT_ADD, 'zencart');
 		  // setup extra fields for inventory
@@ -165,7 +165,7 @@ class admin extends \core\classes\admin {
 		if ($sql->rowCount() == 0) throw new \core\classes\userException('can not find tab_name ZenCart');
 		$result = $sql->fetch(\PDO::FETCH_LAZY);
 		$tab_id = $result['tab_id'];
-		if (!db_field_exists(TABLE_INVENTORY, 'ProductURL')){
+		if (!$admin->DataBase->field_exists(TABLE_INVENTORY, 'ProductURL')){
 			 $sql_data_array = array(
 			    'module_id'   => 'inventory',
 			    'tab_id'      => $tab_id,
@@ -177,7 +177,7 @@ class admin extends \core\classes\admin {
 			  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array);
 			  $admin->DataBase->query("alter table " . TABLE_INVENTORY . " add column `ProductURL` varchar(64) default ''");
 		}
-		if (!db_field_exists(TABLE_INVENTORY, 'ProductModel')){
+		if (!$admin->DataBase->field_exists(TABLE_INVENTORY, 'ProductModel')){
 			$sql_data_array = array(
 			    'module_id'   => 'inventory',
 			    'tab_id'      => $tab_id,

@@ -305,9 +305,9 @@ class admin extends \core\classes\admin {
 	function install($path_my_files, $demo = false) {
 	    global $admin;
 	    parent::install($path_my_files, $demo);
-		if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_cust_id_num')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_cust_id_num VARCHAR( 16 ) NOT NULL DEFAULT 'C10000';");
-		if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_vend_id_num')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_vend_id_num VARCHAR( 16 ) NOT NULL DEFAULT 'V10000';");
-		if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_crm_id_num'))  $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_crm_id_num VARCHAR( 16 ) NOT NULL DEFAULT '10000';");
+		if (!$admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_cust_id_num')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_cust_id_num VARCHAR( 16 ) NOT NULL DEFAULT 'C10000';");
+		if (!$admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_vend_id_num')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_vend_id_num VARCHAR( 16 ) NOT NULL DEFAULT 'V10000';");
+		if (!$admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_crm_id_num'))  $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_crm_id_num VARCHAR( 16 ) NOT NULL DEFAULT '10000';");
 		require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
 		\core\classes\fields::sync_fields('contacts', TABLE_CONTACTS);
 	}
@@ -316,22 +316,22 @@ class admin extends \core\classes\admin {
     	parent::upgrade($basis);
     	if (version_compare($this->status, '3.3', '<') ) {
 	  		$basis->DataBase->query("ALTER TABLE " . TABLE_CONTACTS . " CHANGE short_name short_name VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT ''");
-		  	if (db_table_exists(DB_PREFIX . 'contacts_extra_fields')) $basis->DataBase->exec("DROP TABLE " . DB_PREFIX . "contacts_extra_fields");
+		  	if ($admin->DataBase->table_exists(DB_PREFIX . 'contacts_extra_fields')) $basis->DataBase->exec("DROP TABLE " . DB_PREFIX . "contacts_extra_fields");
 		}
 		if (version_compare($this->status, '3.5', '<') ) {
-	  		if ( db_field_exists(TABLE_CURRENT_STATUS, 'next_cust_id_desc')) $basis->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cust_id_desc");
-	  		if ( db_field_exists(TABLE_CURRENT_STATUS, 'next_vend_id_desc')) $basis->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_vend_id_desc");
-	  		if (!db_field_exists(TABLE_CONTACTS, 'attachments')) $basis->DataBase->exec("ALTER TABLE " . TABLE_CONTACTS . " ADD attachments TEXT NOT NULL AFTER tax_id");
+	  		if ( $admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_cust_id_desc')) $basis->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cust_id_desc");
+	  		if ( $admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_vend_id_desc')) $basis->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_vend_id_desc");
+	  		if (!$admin->DataBase->field_exists(TABLE_CONTACTS, 'attachments')) $basis->DataBase->exec("ALTER TABLE " . TABLE_CONTACTS . " ADD attachments TEXT NOT NULL AFTER tax_id");
     	}
     	if (version_compare($this->status, '3.7', '<') ) {
-      		if (!db_field_exists(TABLE_CONTACTS_LOG, 'entered_by')) $basis->DataBase->exec("ALTER TABLE ".TABLE_CONTACTS_LOG." ADD entered_by INT(11) NOT NULL DEFAULT '0' AFTER contact_id");
+      		if (!$admin->DataBase->field_exists(TABLE_CONTACTS_LOG, 'entered_by')) $basis->DataBase->exec("ALTER TABLE ".TABLE_CONTACTS_LOG." ADD entered_by INT(11) NOT NULL DEFAULT '0' AFTER contact_id");
     	}
-		if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_crm_id_num')){
+		if (!$admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_crm_id_num')){
     		$result = $basis->DataBase->exec("Select MAX(short_name + 1) AS new  FROM ".TABLE_CONTACTS." WHERE TYPE = 'i'");
 			$basis->DataBase->exec("ALTER TABLE ".TABLE_CURRENT_STATUS." ADD next_crm_id_num VARCHAR( 16 ) NOT NULL DEFAULT '{$result->fields['new']}';");
 		}
 		if (version_compare($this->status, '4.0', '<') ) {
-			if (!db_field_exists(TABLE_CONTACTS, 'class')) $basis->DataBase->exec("ALTER TABLE ".TABLE_CONTACTS." ADD class VARCHAR( 255 ) NOT NULL DEFAULT '' FIRST");
+			if (!$admin->DataBase->field_exists(TABLE_CONTACTS, 'class')) $basis->DataBase->exec("ALTER TABLE ".TABLE_CONTACTS." ADD class VARCHAR( 255 ) NOT NULL DEFAULT '' FIRST");
 			$sql = $basis->DataBase->exec("UPDATE ".TABLE_CONTACTS." SET class = CONCAT('contacts\\\\classes\\\\type\\\\', type) WHERE class = '' ");
 		}
 		\core\classes\fields::sync_fields('contacts', TABLE_CONTACTS);
@@ -340,11 +340,11 @@ class admin extends \core\classes\admin {
 	function delete($path_my_files) {
 	    global $admin;
 	    parent::delete($path_my_files);
-	    if (db_field_exists(TABLE_CURRENT_STATUS, 'next_cust_id_num'))  $admin->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cust_id_num");
-		if (db_field_exists(TABLE_CURRENT_STATUS, 'next_cust_id_desc')) $admin->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cust_id_desc");
-	    if (db_field_exists(TABLE_CURRENT_STATUS, 'next_vend_id_num'))  $admin->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_vend_id_num");
-		if (db_field_exists(TABLE_CURRENT_STATUS, 'next_vend_id_desc')) $admin->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_vend_id_desc");
-		if (db_field_exists(TABLE_CURRENT_STATUS, 'next_crm_id_desc')) $admin->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_crm_id_desc");
+	    if ($admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_cust_id_num'))  $admin->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cust_id_num");
+		if ($admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_cust_id_desc')) $admin->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cust_id_desc");
+	    if ($admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_vend_id_num'))  $admin->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_vend_id_num");
+		if ($admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_vend_id_desc')) $admin->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_vend_id_desc");
+		if ($admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_crm_id_desc')) $admin->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_crm_id_desc");
 		$admin->DataBase->exec("DELETE FROM " . TABLE_EXTRA_FIELDS . " WHERE module_id = 'contacts'");
 		$admin->DataBase->exec("DELETE FROM " . TABLE_EXTRA_TABS   . " WHERE module_id = 'contacts'");
 	}
@@ -408,8 +408,7 @@ class admin extends \core\classes\admin {
 		if ( isset($basis->cInfo->rowSeq)) $basis->cInfo->cID = $basis->cInfo->rowSeq;
 		if ($basis->cInfo->cID == '') throw new \core\classes\userException("cID variable isn't set can't execute method LoadContactPage ");
 		$inactive = '';
-		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->cID}");
-		$sql->execute();
+		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->cID}")->execute();
 		$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
 
 		for ($i = 1; $i < 13; $i++) {
@@ -447,8 +446,8 @@ class admin extends \core\classes\admin {
 	}
 
 	function SaveContact (\core\classes\basis &$basis) {
-		if ($basis->cInfo->cID == '') throw new \core\classes\userException("cID variable isn't set can't execute method SaveContact ");
-		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->cID}");
+		if ($basis->cInfo->id == '') throw new \core\classes\userException("id variable isn't set can't execute method SaveContact ");
+		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->id}");
 		$sql->execute();
 		$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
 		// error check

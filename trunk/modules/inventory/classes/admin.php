@@ -358,7 +358,7 @@ class admin extends \core\classes\admin {
     	parent::upgrade($basis);
     	if (version_compare($this->status, '3.1', '<') ) {
 	  		$tab_map = array('0' => '0');
-	  		if(db_table_exists(DB_PREFIX . 'inventory_categories')){
+	  		if($admin->DataBase->table_exists(DB_PREFIX . 'inventory_categories')){
 		  		$result = $admin->DataBase->query("select * from " . DB_PREFIX . 'inventory_categories');
 		  		while (!$result->EOF) {
 		    		$updateDB = $admin->DataBase->query("insert into " . TABLE_EXTRA_TABS . " set
@@ -366,12 +366,12 @@ class admin extends \core\classes\admin {
 			  		  tab_name = '"    . $result->fields['category_name']        . "',
 			  		  description = '" . $result->fields['category_description'] . "',
 			  		  sort_order = '"  . $result->fields['sort_order']           . "'");
-		    		$tab_map[$result->fields['category_id']] = db_insert_id();
+		    		$tab_map[$result->fields['category_id']] = \core\classes\PDO::lastInsertId('id');
 		    		$result->MoveNext();
 		  		}
 		  		$admin->DataBase->query("DROP TABLE " . DB_PREFIX . "inventory_categories");
 	  		}
-	  		if(db_table_exists(DB_PREFIX . 'inventory_categories')){
+	  		if($admin->DataBase->table_exists(DB_PREFIX . 'inventory_categories')){
 		  		$result = $admin->DataBase->query("select * from " . DB_PREFIX . 'inventory_fields');
 		  		while (!$result->EOF) {
 		    		$updateDB = $admin->DataBase->query("insert into " . TABLE_EXTRA_FIELDS . " set
@@ -387,15 +387,15 @@ class admin extends \core\classes\admin {
 	  		}
 		}
 		if (version_compare($this->status, '3.2', '<') ) {
-	  		if (!db_field_exists(TABLE_PRICE_SHEETS, 'type')) $admin->DataBase->query("ALTER TABLE " . TABLE_PRICE_SHEETS . " ADD type char(1) NOT NULL default 'c' AFTER sheet_name");
-	  		if (!db_field_exists(TABLE_INVENTORY, 'price_sheet_v')) $admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD price_sheet_v varchar(32) default NULL AFTER price_sheet");
+	  		if (!$admin->DataBase->field_exists(TABLE_PRICE_SHEETS, 'type')) $admin->DataBase->query("ALTER TABLE " . TABLE_PRICE_SHEETS . " ADD type char(1) NOT NULL default 'c' AFTER sheet_name");
+	  		if (!$admin->DataBase->field_exists(TABLE_INVENTORY, 'price_sheet_v')) $admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD price_sheet_v varchar(32) default NULL AFTER price_sheet");
 		}
 		if (version_compare($this->status, '3.6', '<') ) {
 			$admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD INDEX ( `sku` )");
-			if (!db_field_exists(TABLE_INVENTORY, 'attachments')) $admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD attachments text AFTER last_journal_date");
-			if (!db_field_exists(TABLE_INVENTORY, 'full_price_with_tax')) $admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD full_price_with_tax FLOAT NOT NULL DEFAULT '0' AFTER full_price");
-			if (!db_field_exists(TABLE_INVENTORY, 'product_margin')) $admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD product_margin FLOAT NOT NULL DEFAULT '0' AFTER full_price_with_tax");
-			if (!db_field_exists(TABLE_EXTRA_FIELDS , 'use_in_inventory_filter')) $admin->DataBase->query("ALTER TABLE " . TABLE_EXTRA_FIELDS . " ADD use_in_inventory_filter ENUM( '0', '1' ) NOT NULL DEFAULT '0'");
+			if (!$admin->DataBase->field_exists(TABLE_INVENTORY, 'attachments')) $admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD attachments text AFTER last_journal_date");
+			if (!$admin->DataBase->field_exists(TABLE_INVENTORY, 'full_price_with_tax')) $admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD full_price_with_tax FLOAT NOT NULL DEFAULT '0' AFTER full_price");
+			if (!$admin->DataBase->field_exists(TABLE_INVENTORY, 'product_margin')) $admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD product_margin FLOAT NOT NULL DEFAULT '0' AFTER full_price_with_tax");
+			if (!$admin->DataBase->field_exists(TABLE_EXTRA_FIELDS , 'use_in_inventory_filter')) $admin->DataBase->query("ALTER TABLE " . TABLE_EXTRA_FIELDS . " ADD use_in_inventory_filter ENUM( '0', '1' ) NOT NULL DEFAULT '0'");
 			$admin->DataBase->query("alter table " . TABLE_INVENTORY . " CHANGE `inactive` `inactive` ENUM( '0', '1' ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'");
 			\core\classes\fields::sync_fields('inventory', TABLE_INVENTORY);
 			$admin->DataBase->query("update " . TABLE_INVENTORY . " set inventory_type = 'ma' where inventory_type = 'as'");
@@ -463,7 +463,7 @@ class admin extends \core\classes\admin {
 				$updateDB = $admin->DataBase->query("update " . TABLE_EXTRA_FIELDS . " set use_in_inventory_filter = '".$use_in_inventory_filter."' where id = '".$result->fields['id']."'");
 				$result->MoveNext();
 		  	}
-			if (db_field_exists(TABLE_INVENTORY, 'purch_package_quantity')){
+			if ($admin->DataBase->field_exists(TABLE_INVENTORY, 'purch_package_quantity')){
 		  		$result = $admin->DataBase->query("insert into ".TABLE_INVENTORY_PURCHASE." ( sku, vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v ) select sku, vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v  from " . TABLE_INVENTORY);
 		  		$admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " DROP `purch_package_quantity`");
 		  	}else{
@@ -482,7 +482,7 @@ class admin extends \core\classes\admin {
 		  	validate_path(DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/attachments/', 0755);
 		}
 		if (version_compare($this->status, '3.7.1', '<') ) {
-			if (!db_field_exists(TABLE_INVENTORY_HISTORY, 'avg_cost')) {
+			if (!$admin->DataBase->field_exists(TABLE_INVENTORY_HISTORY, 'avg_cost')) {
 				$admin->DataBase->query("ALTER TABLE ".TABLE_INVENTORY_HISTORY." ADD avg_cost FLOAT NOT NULL DEFAULT '0' AFTER unit_cost");
 				$admin->DataBase->query("UPDATE ".TABLE_INVENTORY_HISTORY." SET avg_cost = unit_cost");
 			}

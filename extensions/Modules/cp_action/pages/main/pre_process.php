@@ -83,7 +83,7 @@ switch ($_REQUEST['action']) {
 			$capa_num = $result->fields['next_capa_num'];
 			$sql_data_array['capa_num'] = $capa_num;
 	    	if (!db_perform(TABLE_CAPA, $sql_data_array, 'insert')) throw new \core\classes\userException(CAPA_MESSAGE_ERROR);
-		  	$id = db_insert_id();
+		  	$id = \core\classes\PDO::lastInsertId('id');
 		  	$next_num = string_increment($capa_num);
 		  	$admin->DataBase->query("update " . TABLE_CURRENT_STATUS . " set next_capa_num = '" . $next_num . "'");
 		  	gen_add_audit_log(TEXT_CAPA_CREATED_CAPA . ' # ' . $capa_num);

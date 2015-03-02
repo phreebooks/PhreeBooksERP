@@ -211,7 +211,7 @@ class admin {
 	  	global $admin;
 	  	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	  	foreach ($this->tables as $table => $create_table_sql) {
-	    	if (!db_table_exists($table)) {
+	    	if (!$admin->DataBase->table_exists($table)) {
 		  		if (!$admin->DataBase->query($create_table_sql)) throw new \core\classes\userException (sprintf("Error installing table: %s", $table));
 			}else{
 				//@todo add table field check
@@ -223,7 +223,7 @@ class admin {
 	  	global $admin;
 	  	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	  	foreach ($this->tables as $table) {
-			if (db_table_exists($table)){
+			if ($admin->DataBase->table_exists($table)){
 				if ($admin->DataBase->query('DROP TABLE ' . $table)) throw new \core\classes\userException (sprintf("Error deleting table: %s", $table));
 			}
 	  	}
@@ -236,7 +236,7 @@ class admin {
 	  	if ($result->rowCount() < 1) {
 	    	$admin->DataBase->query("INSERT INTO ".TABLE_PHREEFORM." (parent_id, doc_type, doc_title, doc_group, doc_ext, security, create_date) VALUES
 	      	  (0, '0', '{$doc_title}', '{$doc_group}', '0', 'u:0;g:0', now())");
-	    	return db_insert_id();
+	    	return \core\classes\PDO::lastInsertId('id');
 	  	} else {
 	    	return $result->fields['id'];
 	  	}

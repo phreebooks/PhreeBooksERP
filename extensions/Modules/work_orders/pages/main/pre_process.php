@@ -86,7 +86,7 @@ switch ($_REQUEST['action']) {
 			  'close_date' => $close_date,
 		    );
 		    if (!db_perform(TABLE_WO_JOURNAL_MAIN, $sql_data_array, 'insert')) throw new \core\classes\userException("wasn't able to insert");
-			$id = db_insert_id();
+			$id = \core\classes\PDO::lastInsertId('id');
 			$result   = $admin->DataBase->query("update " . TABLE_CURRENT_STATUS . " set next_wo_num = '" . string_increment($wo_num) . "'");
 			$temp     = $admin->DataBase->query("select allocate from " . TABLE_WO_MAIN . " where id = '" . $wo_id . "'");
 			$allocate = $temp->fields['allocate'];

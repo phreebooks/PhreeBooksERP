@@ -220,7 +220,7 @@ switch ($_REQUEST['action']) {
 		'create_date' => date('Y-m-d'),
 	  );
 	  db_perform(TABLE_PHREEFORM, $sql_array);
-	  $rID = db_insert_id();
+	  $rID = \core\classes\PDO::lastInsertId('id');
 	  $output = object_to_xml($report);
 	  $filename = PF_DIR_MY_REPORTS . 'pf_' . $rID;
 	  if (!$handle = @fopen($filename, 'w')) {

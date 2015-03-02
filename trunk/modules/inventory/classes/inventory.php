@@ -191,7 +191,7 @@ class inventory {
 			'last_update'				=> date('Y-m-d H:i:s'),
 			);
 		db_perform(TABLE_INVENTORY, $sql_data_array, 'insert');
-		$this->get_item_by_id(db_insert_id());
+		$this->get_item_by_id(\core\classes\PDO::lastInsertId('id'));
 		$sql_data_array = array (
 				'sku'					=> $this->sku,
 				'description_purchase'	=> '',
@@ -228,7 +228,7 @@ class inventory {
 		$sql_data_array['creation_date'] 	= date('Y-m-d H:i:s');
 		$sql_data_array['last_update'] 		= date('Y-m-d H:i:s');
 		db_perform(TABLE_INVENTORY, $sql_data_array, 'insert');
-		$this->id							= db_insert_id();
+		$this->id							= \core\classes\PDO::lastInsertId('id');
 		$this->store_stock 					= array();
 		$this->purchase_array				= array();
 		$this->history 						= array();
@@ -401,7 +401,7 @@ class inventory {
 			gen_add_audit_log(TEXT_INVENTORY_ITEM . ' - ' . TEXT_UPDATE, $this->sku . ' - ' . $sql_data_array['description_short']);
 		}else{
 			db_perform(TABLE_INVENTORY, $sql_data_array, 'insert');
-			$this->id = db_insert_id();
+			$this->id = \core\classes\PDO::lastInsertId('id');
 			$result = $admin->DataBase->query("select price_sheet_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = " . $this->id);
 			while(!$result->EOF) {
 	  			$output_array = array(
@@ -489,8 +489,9 @@ class inventory {
 					db_perform(TABLE_INVENTORY_PURCHASE, $sql_data_array, 'update', "id = " . $_POST['row_id_array'][$key]);
 				}else{//insert
 					db_perform(TABLE_INVENTORY_PURCHASE, $sql_data_array, 'insert');
-					$this->backup_purchase_array[db_insert_id()]= array (
-						'id'						=> db_insert_id(),
+					$id = \core\classes\PDO::lastInsertId('id');
+					$this->backup_purchase_array[$id)]= array (
+						'id'						=> $id,
 						'vendor_id' 				=> $_POST['vendor_id_array'][$key],
 						'description_purchase'		=> $_POST['description_purchase_array'][$key],
 						'item_cost'	 				=> $_POST['item_cost_array'][$key],
@@ -650,7 +651,7 @@ class inventory {
 			'last_update'				=> date('Y-m-d H:i:s'),
 		);
 		db_perform(TABLE_INVENTORY, $sql_data_array, 'insert');
-		$this->get_item_by_id(db_insert_id());
+		$this->get_item_by_id(\core\classes\PDO::lastInsertId('id'));
 		$sql_data_array = array (
 			'sku'						=> $sku,
 			'vendor_id' 				=> $vendor_id,

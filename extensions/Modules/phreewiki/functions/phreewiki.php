@@ -49,7 +49,7 @@ function insert_tiddler($tiddler , $install = false) {
 	if ( sizeof($tiddler)== 0 )																						return PHREEWIKI_WARNING_TIDDLER_NOT_FOUND;
   	if ( !$install == true && in_array($tiddler['title'], $lock_title) )	return PHREEWIKI_WARNING_IN_LOCKED_ARRAY;
   	db_perform( TABLE_PHREEWIKI , $tiddler, 'insert');
-	$new_id = db_insert_id();
+	$new_id = \core\classes\PDO::lastInsertId('id');
 	//insert backup if required
 	if( PHREEWIKI_VERSIONING ==1)  {
 		//set inserted record id as oid

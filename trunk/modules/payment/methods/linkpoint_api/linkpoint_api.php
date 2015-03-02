@@ -576,7 +576,7 @@ class linkpoint_api extends \payment\classes\payment {
   function install() {
 	global $admin;
 	parent::install();
-	if (!db_table_exists(TABLE_LINKPOINT_API)) {
+	if (!$admin->DataBase->table_exists(TABLE_LINKPOINT_API)) {
 		$sql = "CREATE TABLE " . TABLE_LINKPOINT_API . " (
 		  id int(11) unsigned NOT NULL auto_increment,
 		  customer_id varchar(11) NOT NULL default '',
@@ -605,7 +605,7 @@ class linkpoint_api extends \payment\classes\payment {
 
   	function delete() {
 		global $admin;
-		if (db_table_exists(TABLE_LINKPOINT_API)) { // cleanup database if contains no data
+		if ($admin->DataBase->table_exists(TABLE_LINKPOINT_API)) { // cleanup database if contains no data
 		  	$result = $admin->DataBase->query("select count(id) as count from " . TABLE_LINKPOINT_API);
 		  	if ($result->rowCount() != 0) throw new \core\classes\userException("Can't delete table ". TABLE_LINKPOINT_API. " because it contains data", $code, $previous);
 		  	$admin->DataBase->query("DROP TABLE " . TABLE_LINKPOINT_API);

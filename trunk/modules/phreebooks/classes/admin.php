@@ -270,23 +270,23 @@ class admin extends \core\classes\admin {
 		global $admin;
 		parent::install ( $path_my_files, $demo );
 		// load some current status values
-		if (! db_field_exists ( TABLE_CURRENT_STATUS, 'next_po_num' ))
+		if (! $admin->DataBase->field_exists ( TABLE_CURRENT_STATUS, 'next_po_num' ))
 			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_po_num VARCHAR( 16 ) NOT NULL DEFAULT '5000';" );
-		if (! db_field_exists ( TABLE_CURRENT_STATUS, 'next_so_num' ))
+		if (! $admin->DataBase->field_exists ( TABLE_CURRENT_STATUS, 'next_so_num' ))
 			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_so_num VARCHAR( 16 ) NOT NULL DEFAULT '10000';" );
-		if (! db_field_exists ( TABLE_CURRENT_STATUS, 'next_inv_num' ))
+		if (! $admin->DataBase->field_exists ( TABLE_CURRENT_STATUS, 'next_inv_num' ))
 			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_inv_num VARCHAR( 16 ) NOT NULL DEFAULT '20000';" );
-		if (! db_field_exists ( TABLE_CURRENT_STATUS, 'next_check_num' ))
+		if (! $admin->DataBase->field_exists ( TABLE_CURRENT_STATUS, 'next_check_num' ))
 			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_check_num VARCHAR( 16 ) NOT NULL DEFAULT '100';" );
-		if (! db_field_exists ( TABLE_CURRENT_STATUS, 'next_deposit_num' ))
+		if (! $admin->DataBase->field_exists ( TABLE_CURRENT_STATUS, 'next_deposit_num' ))
 			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_deposit_num VARCHAR( 16 ) NOT NULL DEFAULT '';" );
-		if (! db_field_exists ( TABLE_CURRENT_STATUS, 'next_cm_num' ))
+		if (! $admin->DataBase->field_exists ( TABLE_CURRENT_STATUS, 'next_cm_num' ))
 			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_cm_num VARCHAR( 16 ) NOT NULL DEFAULT 'CM1000';" );
-		if (! db_field_exists ( TABLE_CURRENT_STATUS, 'next_vcm_num' ))
+		if (! $admin->DataBase->field_exists ( TABLE_CURRENT_STATUS, 'next_vcm_num' ))
 			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_vcm_num VARCHAR( 16 ) NOT NULL DEFAULT 'VCM1000';" );
-		if (! db_field_exists ( TABLE_CURRENT_STATUS, 'next_ap_quote_num' ))
+		if (! $admin->DataBase->field_exists ( TABLE_CURRENT_STATUS, 'next_ap_quote_num' ))
 			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_ap_quote_num VARCHAR( 16 ) NOT NULL DEFAULT 'RFQ1000';" );
-		if (! db_field_exists ( TABLE_CURRENT_STATUS, 'next_ar_quote_num' ))
+		if (! $admin->DataBase->field_exists ( TABLE_CURRENT_STATUS, 'next_ar_quote_num' ))
 			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_ar_quote_num VARCHAR( 16 ) NOT NULL DEFAULT 'QU1000';" );
 			// copy standard images to phreeform images directory
 		$dir_source = DIR_FS_MODULES . 'phreebooks/images/';
@@ -312,7 +312,7 @@ class admin extends \core\classes\admin {
 		$db_version = defined ( 'MODULE_PHREEBOOKS_STATUS' ) ? MODULE_PHREEBOOKS_STATUS : 0;
 		if (version_compare ( $db_version, '2.1', '<' )) { // For PhreeBooks release 2.1 or lower to update to Phreedom structure
 			require (DIR_FS_MODULES . 'phreebooks/functions/updater.php');
-			if (db_table_exists ( TABLE_PROJECT_VERSION )) {
+			if ($admin->DataBase->table_exists ( TABLE_PROJECT_VERSION )) {
 				$result = $admin->DataBase->query ( "select * from " . TABLE_PROJECT_VERSION . " WHERE project_version_key = 'PhreeBooks Database'" );
 				$db_version = $result->fields ['project_version_major'] . '.' . $result->fields ['project_version_minor'];
 				if (version_compare ( $db_version, '2.1', '<' ))
@@ -347,7 +347,7 @@ class admin extends \core\classes\admin {
 			$db_version = 3.3;
 		}
 		if (version_compare ( $db_version, '3.4', '<' )) {
-			if (! db_field_exists ( TABLE_JOURNAL_ITEM, 'item_cnt' ))
+			if (! $admin->DataBase->field_exists ( TABLE_JOURNAL_ITEM, 'item_cnt' ))
 				$admin->DataBase->query ( "ALTER TABLE " . TABLE_JOURNAL_ITEM . " ADD item_cnt INT(11) NOT NULL DEFAULT '0' AFTER ref_id" );
 			$db_version = 3.4;
 		}
@@ -359,7 +359,7 @@ class admin extends \core\classes\admin {
 				}
 				$result->MoveNext ();
 			}
-			if (! db_field_exists ( TABLE_JOURNAL_ITEM, 'purch_package_quantity' ))
+			if (! $admin->DataBase->field_exists ( TABLE_JOURNAL_ITEM, 'purch_package_quantity' ))
 				$admin->DataBase->query ( "ALTER TABLE " . TABLE_JOURNAL_ITEM . " ADD purch_package_quantity float default NULL AFTER project_id" );
 		}
 	}
@@ -367,23 +367,23 @@ class admin extends \core\classes\admin {
 	function delete($path_my_files) {
 		global $admin;
 		parent::delete ( $path_my_files );
-		if (db_field_exists ( TABLE_CURRENT_STATUS, 'next_po_num' ))
+		if ($admin->DataBase->field_exists ( TABLE_CURRENT_STATUS, 'next_po_num' ))
 			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_po_num" );
-		if (db_field_exists ( TABLE_CURRENT_STATUS, 'next_so_num' ))
+		if ($admin->DataBase->field_exists ( TABLE_CURRENT_STATUS, 'next_so_num' ))
 			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_so_num" );
-		if (db_field_exists ( TABLE_CURRENT_STATUS, 'next_inv_num' ))
+		if ($admin->DataBase->field_exists ( TABLE_CURRENT_STATUS, 'next_inv_num' ))
 			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_inv_num" );
-		if (db_field_exists ( TABLE_CURRENT_STATUS, 'next_check_num' ))
+		if ($admin->DataBase->field_exists ( TABLE_CURRENT_STATUS, 'next_check_num' ))
 			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_check_num" );
-		if (db_field_exists ( TABLE_CURRENT_STATUS, 'next_deposit_num' ))
+		if ($admin->DataBase->field_exists ( TABLE_CURRENT_STATUS, 'next_deposit_num' ))
 			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_deposit_num" );
-		if (db_field_exists ( TABLE_CURRENT_STATUS, 'next_cm_num' ))
+		if ($admin->DataBase->field_exists ( TABLE_CURRENT_STATUS, 'next_cm_num' ))
 			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cm_num" );
-		if (db_field_exists ( TABLE_CURRENT_STATUS, 'next_vcm_num' ))
+		if ($admin->DataBase->field_exists ( TABLE_CURRENT_STATUS, 'next_vcm_num' ))
 			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_vcm_num" );
-		if (db_field_exists ( TABLE_CURRENT_STATUS, 'next_ap_quote_num' ))
+		if ($admin->DataBase->field_exists ( TABLE_CURRENT_STATUS, 'next_ap_quote_num' ))
 			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_ap_quote_num" );
-		if (db_field_exists ( TABLE_CURRENT_STATUS, 'next_ar_quote_num' ))
+		if ($admin->DataBase->field_exists ( TABLE_CURRENT_STATUS, 'next_ar_quote_num' ))
 			$admin->DataBase->query ( "ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_ar_quote_num" );
 	}
 

@@ -92,7 +92,7 @@ class i extends \contacts\classes\contacts{
 	    if ($this->id == '') { //create record
 	        $sql_data_array['first_date'] = 'now()';
 	        db_perform(TABLE_CONTACTS, $sql_data_array, 'insert');
-	        $this->id = db_insert_id();
+	        $this->id = \core\classes\PDO::lastInsertId('id');
 	        //if auto-increment see if the next id is there and increment if so.
 	        if ($this->inc_auto_id) { // increment the ID value
 	            $next_id = string_increment($this->short_name);
@@ -129,7 +129,7 @@ class i extends \contacts\classes\contacts{
 		                );
 		        if ($this->address[$value]['address_id'] == '') { // then it's a new address
 		            db_perform(TABLE_ADDRESS_BOOK, $sql_data_array, 'insert');
-		        	$this->address[$value]['address_id'] = db_insert_id();
+		        	$this->address[$value]['address_id'] = \core\classes\PDO::lastInsertId('id');
 		        } else { // then update address
 		        	db_perform(TABLE_ADDRESS_BOOK, $sql_data_array, 'update', "address_id = '{$this->address[$value]['address_id']}'");
 		    	}

@@ -376,7 +376,7 @@ class authorizenet extends \payment\classes\payment {
     	$new_order_status = (int)MODULE_PAYMENT_AUTHORIZENET_REFUNDED_ORDER_STATUS_ID;
     	if ($new_order_status == 0) $new_order_status = 1;
     	$proceedToRefund = true;
-    	$refundNote = strip_tags(gen_db_input($_POST['refnote']));
+    	$refundNote = strip_tags(db_input($_POST['refnote']));
     	if (isset($_POST['refconfirm']) && $_POST['refconfirm'] != 'on') throw new \core\classes\userException(MODULE_PAYMENT_AUTHORIZENET_TEXT_REFUND_CONFIRM_ERROR);
     	if (isset($_POST['buttonrefund']) && $_POST['buttonrefund'] == MODULE_PAYMENT_AUTHORIZENET_ENTRY_REFUND_BUTTON_TEXT) {
       		$refundAmt = (float)$_POST['refamt'];
@@ -419,8 +419,8 @@ class authorizenet extends \payment\classes\payment {
 
     	$new_order_status = (int)MODULE_PAYMENT_AUTHORIZENET_REFUNDED_ORDER_STATUS_ID;
     	if ($new_order_status == 0) $new_order_status = 1;
-    	$voidNote = strip_tags(zen_db_input($_POST['voidnote'] . $note));
-    	$voidAuthID = trim(strip_tags(zen_db_input($_POST['voidauthid'])));
+    	$voidNote = strip_tags(db_input($_POST['voidnote'] . $note));
+    	$voidAuthID = trim(strip_tags(db_input($_POST['voidauthid'])));
     	$proceedToVoid = true;
     	if (isset($_POST['ordervoid']) && $_POST['ordervoid'] == MODULE_PAYMENT_AUTHORIZENET_ENTRY_VOID_BUTTON_TEXT) {
       		if (isset($_POST['voidconfirm']) && $_POST['voidconfirm'] != 'on') throw new \core\classes\userException(MODULE_PAYMENT_AUTHORIZENET_TEXT_VOID_CONFIRM_ERROR);

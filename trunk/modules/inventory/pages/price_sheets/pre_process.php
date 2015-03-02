@@ -115,7 +115,7 @@ switch ($_REQUEST['action']) {
 	  'default_levels' => $result->fields['default_levels'],
 	);
 	db_perform(TABLE_PRICE_SHEETS, $output_array, 'insert');
-	$id = db_insert_id(); // this is used by the edit function later on.
+	$id = \core\classes\PDO::lastInsertId('id'); // this is used by the edit function later on.
 	// expire the old sheet
 	$admin->DataBase->query("UPDATE ".TABLE_PRICE_SHEETS." SET expiration_date='".gen_specific_date($result->fields['effective_date'], 1)."' WHERE id=$old_id");
 	// Copy special pricing information to new sheet

@@ -265,7 +265,7 @@ function table_import_xml($structure, $db_table, $filename) {
 //echo 'sql_array to write to table ' . DB_PREFIX . $db_table . ': '; print_r($sql_array); echo '<br>';
 	db_perform(DB_PREFIX . $db_table, $sql_array, 'insert');
 	// fetch the id for use with dependent tables
-	$id = db_insert_id();
+	$id = \core\classes\PDO::lastInsertId('id');
 	// now look into dependent tables
     if (is_object($tbl_active->LinkTable)) $tbl_active->LinkTable = array($tbl_active->LinkTable);
 	if (isset($tbl_active->LinkTable)) foreach ($tbl_active->LinkTable as $subtable) {
@@ -339,7 +339,7 @@ function table_import_csv($structure, $db_table, $filename) {
 //echo 'inserting data: '; print_r($table_array); echo '<br>';
 	    if ($cnt == 0) { // main record, fetch id afterwards
 	      db_perform(DB_PREFIX . $table, $table_array, 'insert');
-		  $id = db_insert_id();
+		  $id = \core\classes\PDO::lastInsertId('id');
 		} else { // dependent table
 		  $data_present = false;
 		  foreach ($table_array as $value) if (gen_not_null($value)) $data_present = true;

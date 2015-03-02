@@ -437,7 +437,7 @@
 
 	/**
 	 * stores information into the audit log
-	 * @param unknown $action
+	 * @param string $action
 	 * @param string $ref_id
 	 * @param string $amount
 	 * @throws \core\classes\userException
@@ -576,13 +576,13 @@ function get_dir_tree($dir, $root = true)  {
 		$fildesc = TEXT_DATE_RANGE. ': ';
 		if ($DateArray[1] <> '') {
 		  $ds = gen_db_date($DateArray[1]);
-		  $d .= $df . " >= '" . $ds . "'";
+		  $d .= $df . " >= '$ds'";
 		  $fildesc .= ' ' . TEXT_FROM . ' ' . $DateArray[1];
 		}
 		if ($DateArray[2] <> '') { // a value entered, check
 		  if (strlen($d) > 0) $d .= ' and ';
 		  $de = gen_specific_date(gen_db_date($DateArray[2]), 1);
-		  $d .= $df . " < '" . $de . "'";
+		  $d .= $df . " < '$de'";
 		  $fildesc .= ' ' . TEXT_TO . ' ' . $DateArray[2];
 		}
 		$fildesc .= '; ';
@@ -590,31 +590,31 @@ function get_dir_tree($dir, $root = true)  {
 	  case "c": // Today (specify range for datetime type fields to match for time parts)
 		$ds = $dates['Today'];
 		$de = gen_specific_date($dates['Today'], 1);
-		$d  = $df . " >= '" . $ds . "' and " . $df . " < '" . $de . "'";
+		$d  = $df . " >= '$ds' and $df < '$de'";
 		$fildesc = TEXT_DATE_RANGE . ' = ' . gen_locale_date($dates['Today']) . '; ';
 		break;
 	  case "d": // This Week
 		$ds = date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], date('j', $t) - date('w', $t), $dates['ThisYear']));
 		$de = gen_specific_date(date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], date('j', $t) - date('w', $t)+6, $dates['ThisYear'])), 1);
-		$d  = $df . " >= '" . $ds . "' and " . $df . " < '" . $de . "'";
+		$d  = $df . " >= '$ds' and $df < '$de'";
 		$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date(gen_specific_date($de, -1)) . '; ';
 		break;
 	  case "e": // This Week to Date
 		$ds = date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], date('j', $t)-date('w', $t), $dates['ThisYear']));
 		$de = gen_specific_date($dates['Today'], 1);
-		$d  = $df . " >= '" . $ds . "' and " . $df . " < '" . $de . "'";
+		$d  = $df . " >= '$ds' and $df < '$de'";
 		$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date($dates['Today']) . '; ';
 		break;
 	  case "f": // This Month
 		$ds = date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], 1, $dates['ThisYear']));
 		$de = gen_specific_date(date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], $dates['TotalDays'], $dates['ThisYear'])), 1);
-		$d  = $df . " >= '" . $ds . "' and " . $df . " < '" . $de . "'";
+		$d  = $df . " >= '$ds' and $df < '$de'";
 		$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date(gen_specific_date($de, -1)) . '; ';
 		break;
 	  case "g": // This Month to Date
 		$ds = date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], 1, $dates['ThisYear']));
 		$de = gen_specific_date($dates['Today'], 1);
-		$d  = $df . " >= '" . $ds . "' and " . $df . " < '" . $de . "'";
+		$d  = $df . " >= '$ds' and $df < '$de'";
 		$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date($dates['Today']) . '; ';
 		break;
 	  case "h": // This Quarter
@@ -623,7 +623,7 @@ function get_dir_tree($dir, $root = true)  {
 		$ds = $temp['start_date'];
 		$temp = gen_calculate_fiscal_dates($QtrStrt + 2);
 		$de = gen_specific_date($temp['end_date'], 1);
-		$d  = $df . " >= '" . $ds . "' and " . $df . " < '" . $de . "'";
+		$d  = $df . " >= '$ds' and $df < '$de'";
 		$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date($temp['end_date']) . '; ';
 		break;
 	  case "i": // Quarter to Date
@@ -631,7 +631,7 @@ function get_dir_tree($dir, $root = true)  {
 		$temp = gen_calculate_fiscal_dates($QtrStrt);
 		$ds = $temp['start_date'];
 		$de = gen_specific_date($dates['Today'], 1);
-		$d  = $df . " >= '" . $ds . "' and " . $df . " < '" . $de . "'";
+		$d  = $df . " >= '$ds' and $df < '$de'";
 		$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date($dates['Today']) . '; ';
 		break;
 	  case "j": // This Year
@@ -640,7 +640,7 @@ function get_dir_tree($dir, $root = true)  {
 		$ds = $temp['start_date'];
 		$temp = gen_calculate_fiscal_dates($YrStrt + 11);
 		$de = gen_specific_date($temp['end_date'], 1);
-		$d  = $df . " >= '" . $ds . "' and " . $df . " < '" . $de . "'";
+		$d  = $df . " >= '$ds' and $df < '$de'";
 		$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date($temp['end_date']) . '; ';
 		break;
 	  case "k": // Year to Date
@@ -648,13 +648,13 @@ function get_dir_tree($dir, $root = true)  {
 		$temp = gen_calculate_fiscal_dates($YrStrt);
 		$ds = $temp['start_date'];
 		$de = gen_specific_date($dates['Today'], 1);
-		$d  = $df . " >= '" . $ds . "' and " . $df . " < '" . $de . "'";
+		$d  = $df . " >= '$ds' and $df < '$de'";
 		$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . gen_locale_date($ds) . ' ' . TEXT_TO . ' ' . gen_locale_date($dates['Today']) . '; ';
 		break;
 	  case "l": // This Period
 		$ds = CURRENT_ACCOUNTING_PERIOD_START;
 		$de = gen_specific_date(CURRENT_ACCOUNTING_PERIOD_END, 1);
-		$d  = $df . " >= '" . $ds . "' and " . $df . " < '" . $de . "'";
+		$d  = $df . " >= '$ds' and $df < '$de'";
 		$fildesc = TEXT_PERIOD . ' ' . CURRENT_ACCOUNTING_PERIOD . ' (' . gen_locale_date(CURRENT_ACCOUNTING_PERIOD_START) . ' ' . TEXT_TO . ' ' . gen_locale_date(CURRENT_ACCOUNTING_PERIOD_END) . '); ';
 		break;
 	  case "z": // date by period
@@ -850,7 +850,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
     }
   }
 
-  function string_increment($string, $increment = 1) {
+  function string_increment($string) {
 	$string++; // just use the built in PHP operation
 	return $string;
   }
@@ -908,11 +908,6 @@ function gen_db_date($raw_date = '', $separator = '/') {
     return $sql->fetchall();// @todo this method doens' work after exec
   }
 
-  function db_insert_id() {
-    global $admin;
-    return $admin->DataBase->insert_ID();
-  }
-
   function db_input($string) {
     return addslashes($string);
   }
@@ -932,25 +927,6 @@ function gen_db_date($raw_date = '', $separator = '/') {
     	} else {
       		return $string;
     	}
-  	}
-
-  	function db_table_exists($table_name) {
-    	global $admin;
-    	$tables = $admin->DataBase->query("SHOW TABLES like '$table_name'");
-    	$result = $tables->fetch(\PDO::FETCH_LAZY);
-    	if ($result != false) return true;
-    	return false;
-  	}
-
-	function db_field_exists($table_name, $field_name) {
-    	global $admin;
-    	$result = $admin->DataBase->prepare("DESCRIBE $table_name");
-    	$result->execute();
-    	while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
-    		\core\classes\messageStack::debug_log("looking for match {$row['Field']} == $field_name");
-      		if  ($row['Field'] == $field_name) return true;
-    	}
-    	return false;
   	}
 
 /**************************************************************************************************************/
@@ -1603,7 +1579,7 @@ function charConv($string, $in, $out) {
 				$sql_data_array['DateDb'] 		= date("Y-m-d H:i:s");
 				$sql_data_array['Subject']		= $email_subject;
 				//$sql_data_array['MsgSize'] 		= $email["SIZE"];?? Rene Unknown
-				if(db_table_exists(TABLE_PHREEMAIL)) db_perform(TABLE_PHREEMAIL, $sql_data_array, 'insert');
+				if($admin->DataBase->table_exists(TABLE_PHREEMAIL)) db_perform(TABLE_PHREEMAIL, $sql_data_array, 'insert');
 				// save in crm_notes
 				$temp = $admin->DataBase->query("select account_id from " . TABLE_USERS . " where admin_email = '" . $from_email_address . "'");
 				$sql_array['contact_id'] = $ref_id;

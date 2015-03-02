@@ -50,7 +50,7 @@ switch ($_REQUEST['action']) {
 	$sql_data_array['account_depreciation'] = ''; // best_acct_guess(10,$_REQUEST['search_text'],'');
 	$sql_data_array['account_maintenance']  = ''; // best_acct_guess(34,$_REQUEST['search_text'],'');
 	db_perform(TABLE_ASSETS, $sql_data_array, 'insert');
-	$id = db_insert_id();
+	$id = \core\classes\PDO::lastInsertId('id');
 	gen_add_audit_log(AESSETS_LOG_ASSETS . TEXT_ADD, 'Type: ' . $asset_type . ' - ' . $asset_id);
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('cID', 'action')) . '&cID=' . $id . '&action=edit', 'SSL'));
 	break;
@@ -185,7 +185,7 @@ switch ($_REQUEST['action']) {
 		}
 	}
 	db_perform(TABLE_ASSETS, $output_array, 'insert');
-	$new_id = db_insert_id();
+	$new_id = \core\classes\PDO::lastInsertId('id');
 	// Pictures are not copied over...
 	// now continue with newly copied item by editing it
 	gen_add_audit_log(AESSETS_LOG_ASSETS . TEXT_COPY, $old_asset_key . ' => ' . $new_asset_id);

@@ -111,7 +111,7 @@ class admin extends \core\classes\admin {
   	function install($path_my_files, $demo = false) {
     	global $admin;
     	parent::install($path_my_files, $demo);
-    	if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_wo_num')) {
+    	if (!$admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_wo_num')) {
 	  		$admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_wo_num VARCHAR(16) NOT NULL DEFAULT 'WO-0001';");
     	}
 		write_configure('PHREEHELP_FORCE_RELOAD', '1');
@@ -121,7 +121,7 @@ class admin extends \core\classes\admin {
 	    global $admin;
 	    parent::upgrade($basis);
 	    if (version_compare($this->status, '3.1', '<') ) {
-			if (!db_field_exists(TABLE_WO_TASK, 'erp_entry')) {
+			if (!$admin->DataBase->field_exists(TABLE_WO_TASK, 'erp_entry')) {
 			    $admin->DataBase->query("ALTER TABLE " . TABLE_WO_TASK . " ADD erp_entry ENUM('0', '1') NOT NULL DEFAULT '0'");
 			    $admin->DataBase->query("ALTER TABLE " . TABLE_WO_MAIN . " ADD allocate ENUM('0', '1') NOT NULL DEFAULT '0' AFTER description");
 			    $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_wo_num VARCHAR(16)  NOT NULL DEFAULT 'WO0001';");
@@ -140,7 +140,7 @@ class admin extends \core\classes\admin {
 	function delete($path_my_files) {
 	    global $admin;
 	    parent::delete($path_my_files);
-	    if (db_field_exists(TABLE_CURRENT_STATUS, 'next_wo_num')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_wo_num");
+	    if ($admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_wo_num')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_wo_num");
 		write_configure('PHREEHELP_FORCE_RELOAD', '1');
 	}
 

@@ -54,7 +54,7 @@ switch ($_REQUEST['action']) {
 	    'create_date' => date('Y-m-d'),
 	  );
 	  db_perform(TABLE_PHREEFORM, $sql_array, 'insert');
-	  $rID     = db_insert_id();
+	  $rID     = \core\classes\PDO::lastInsertId('id');
 	  $message = sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_COPIED, TEXT_REPORT , $doc_title);
 	}
 	$filename = PF_DIR_MY_REPORTS . 'pf_' . $rID;

@@ -232,7 +232,7 @@ class backup {
             break;
           case (substr($line_upper, 0, 11) == 'DROP TABLE ' && $param[2] != 'IF'):
             if (!$checkprivs = db_check_database_privs('DROP')) $result=sprintf(REASON_NO_PRIVILEGES,'DROP');
-            if (!db_table_exists($param[2]) || gen_not_null($result)) {
+            if (!$admin->DataBase->table_exists($param[2]) || gen_not_null($result)) {
               $ignore_line=true;
               $result=(gen_not_null($result) ? $result : sprintf(REASON_TABLE_DOESNT_EXIST,$param[2])); //duplicated here for on-screen error-reporting
               break;
@@ -243,7 +243,7 @@ class backup {
           case (substr($line_upper, 0, 13) == 'CREATE TABLE '):
             // check to see if table exists
             $table  = (strtoupper($param[2].' '.$param[3].' '.$param[4]) == 'IF NOT EXISTS') ? $param[5] : $param[2];
-            $result = db_table_exists($table);
+            $result = $admin->DataBase->table_exists($table);
             if ($result==true) {
               $ignore_line=true;
               $result=sprintf(REASON_TABLE_ALREADY_EXISTS,$table); //duplicated here for on-screen error-reporting
@@ -255,7 +255,7 @@ class backup {
           case (substr($line_upper, 0, 12) == 'INSERT INTO '):
             //check to see if table prefix is going to match
 			$param[2] = str_replace('`', '', $param[2]);
-            if (!$tbl_exists = db_table_exists($param[2])) $result=sprintf(REASON_TABLE_NOT_FOUND,$param[2]).' CHECK PREFIXES!';
+            if (!$tbl_exists = $admin->DataBase->table_exists($param[2])) $result=sprintf(REASON_TABLE_NOT_FOUND,$param[2]).' CHECK PREFIXES!';
             $line = 'INSERT INTO ' . $table_prefix . substr($line, 12);
             break;
           case (substr($line_upper, 0, 12) == 'ALTER TABLE '):
@@ -269,7 +269,7 @@ class backup {
             break;
           case (substr($line_upper, 0, 7) == 'UPDATE '):
             //check to see if table prefix is going to match
-            if (!$tbl_exists = db_table_exists($param[1])) {
+            if (!$tbl_exists = $admin->DataBase->table_exists($param[1])) {
               $result=sprintf(REASON_TABLE_NOT_FOUND,$param[1]).' CHECK PREFIXES!';
               $ignore_line=true;
               break;

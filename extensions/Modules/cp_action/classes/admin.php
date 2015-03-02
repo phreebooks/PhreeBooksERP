@@ -78,7 +78,7 @@ class admin extends \core\classes\admin {
 	    global $admin;
 	    parent::install($path_my_files, $demo);
 	    // add a current status field for the next ca/pa number
-	    if (!db_field_exists(TABLE_CURRENT_STATUS, 'next_capa_num')) {
+	    if (!$admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_capa_num')) {
 		  	$admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_capa_num  VARCHAR(16) NOT NULL DEFAULT 'CAPA0001'");
 	    }
   	}
@@ -86,14 +86,14 @@ class admin extends \core\classes\admin {
   	function upgrade(\core\classes\basis &$basis) {
     	global $admin;
     	parent::upgrade($basis);
-    	if (db_field_exists(TABLE_CURRENT_STATUS, 'next_capa_desc')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_capa_desc");
+    	if ($admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_capa_desc')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_capa_desc");
   	}
 
   	function delete($path_my_files) {
     	global $admin;
     	parent::delete($path_my_files);
-    	if (db_field_exists(TABLE_CURRENT_STATUS, 'next_capa_num')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_capa_num");
-    	if (db_field_exists(TABLE_CURRENT_STATUS, 'next_capa_desc')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_capa_desc");
+    	if ($admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_capa_num')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_capa_num");
+    	if ($admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_capa_desc')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_capa_desc");
   	}
 }
 ?>

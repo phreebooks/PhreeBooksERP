@@ -22,7 +22,7 @@
 // *************************** IMPORTANT UPDATE INFORMATION *********************************//
 //********************************* END OF IMPORTANT ****************************************//
 // Release 1.9 to 2.0
-if (!db_field_exists(TABLE_CHART_OF_ACCOUNTS, 'heading_only'))  {
+if (!$admin->DataBase->field_exists(TABLE_CHART_OF_ACCOUNTS, 'heading_only'))  {
   $admin->DataBase->query("ALTER TABLE " . TABLE_CHART_OF_ACCOUNTS . " ADD heading_only ENUM('0', '1') NOT NULL DEFAULT '0' AFTER description");
   $admin->DataBase->query("ALTER TABLE " . TABLE_CHART_OF_ACCOUNTS . " ADD INDEX (heading_only)");
   $admin->DataBase->query("ALTER TABLE " . TABLE_CHART_OF_ACCOUNTS . " DROP subaccount");
@@ -53,11 +53,11 @@ while(!$result->EOF) {
   if ($cur_user <> $result->fields['user_id'] || $cur_page <> $result->fields['menu_id'] || $cur_col <> $result->fields['column_id']) $row = 1;
 }
 
-if (!db_field_exists(TABLE_CURRENCIES, 'decimal_precise'))  {
+if (!$admin->DataBase->field_exists(TABLE_CURRENCIES, 'decimal_precise'))  {
   $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENCIES . " ADD decimal_precise CHAR(1) NOT NULL DEFAULT '2' AFTER decimal_places");
   $admin->DataBase->query("UPDATE " . TABLE_CURRENCIES . " set decimal_precise = decimal_places");
 }
-if (!db_field_exists(TABLE_INVENTORY, 'price_sheet'))  {
+if (!$admin->DataBase->field_exists(TABLE_INVENTORY, 'price_sheet'))  {
   // add price_sheet field to inventory table
   $admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD price_sheet VARCHAR(32) NULL AFTER cost_method");
 }

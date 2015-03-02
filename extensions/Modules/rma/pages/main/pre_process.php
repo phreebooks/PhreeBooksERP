@@ -136,7 +136,7 @@ switch ($_REQUEST['action']) {
 			$sql_data_array['rma_num'] = $rma_num;
 		    $success = db_perform(TABLE_RMA, $sql_data_array, 'insert');
 			if (!db_perform(TABLE_RMA, $sql_data_array, 'insert')) throw new \core\classes\userException( "unable to add to database");
-			$id = db_insert_id();
+			$id = \core\classes\PDO::lastInsertId('id');
 			$next_num = string_increment($sql_data_array['rma_num']);
 			$admin->DataBase->query("update " . TABLE_CURRENT_STATUS . " set next_rma_num = '" . $next_num . "'");
 		}

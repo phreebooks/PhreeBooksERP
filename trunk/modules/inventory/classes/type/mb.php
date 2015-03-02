@@ -272,7 +272,7 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 			$sql_data_array['description_purchase'] = sprintf($this->description_purchase, 	$variables[$sku]['idx0'], $variables[$sku]['idx1'] );
 			$sql_data_array['description_sales'] 	= sprintf($this->description_sales, 	$variables[$sku]['idx0'], $variables[$sku]['idx1'] );
 			db_perform(TABLE_INVENTORY, $sql_data_array, 'insert');
-			$new_id = db_insert_id();
+			$new_id = \core\classes\PDO::lastInsertId('id');
 			foreach ($this->purchase_array as $purchase_row){
 				$purchase_data_array = array (
 					'sku'						=> $sku,

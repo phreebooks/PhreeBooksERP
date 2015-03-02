@@ -449,7 +449,7 @@ class phreemail extends PHPMailer{
 		$email['account']			= $this->Username;
 		$email['database_date'] 	= date("Y-m-d H:i:s");
   		db_perform(TABLE_PHREEMAIL, $email, 'insert');
-  		$this->newid = db_insert_id();
+  		$this->newid = \core\classes\PDO::lastInsertId('id');
 
   		// save in crm_notes
 		$temp = $admin->DataBase->query("select account_id from " . TABLE_USERS . " where admin_email = '" . $this->Username . "'");

@@ -76,7 +76,7 @@ switch ($_REQUEST['action']) {
 	    'create_date' => date('Y-m-d'),
 	  );
 	  db_perform(TABLE_PHREEFORM, $sql_array);
-	  $name_map[$rpt_id] = db_insert_id();
+	  $name_map[$rpt_id] = \core\classes\PDO::lastInsertId('id');
 	  rename(PF_DIR_MY_REPORTS.$report, PF_DIR_MY_REPORTS.'tmp_'.$rpt_id);
 	  $rpt_cnt++;
 	}

@@ -47,7 +47,7 @@ function synchronize() {
 	$sql      = "insert into " . TABLE_PHREEHELP . " (doc_url, doc_pos, doc_index, doc_title, doc_text)
 	  values ('$filename', '{$tags['doc_pos']}', '{$tags['doc_index_1']}', '$doc_title', '" . addslashes($doc_text) . "')";
 	$row      = $admin->DataBase->query($sql);
-	$id       = db_insert_id();
+	$id       = \core\classes\PDO::lastInsertId('id');
 	$toc[$id] = $tags['doc_pos'];
   }
   foreach ($toc as $id => $value) {

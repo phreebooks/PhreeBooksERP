@@ -267,7 +267,7 @@ class admin extends \core\classes\admin {
 				$basis->currencies->btn_update();
 		}
 		// Fix for change to audit log for upgrade to R3.6 causes perpertual crashing when writing audit log
-		if (!db_field_exists(TABLE_AUDIT_LOG, 'stats')) $basis->DataBase->exec("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
+		if (!$admin->DataBase->field_exists(TABLE_AUDIT_LOG, 'stats')) $basis->DataBase->exec("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
 		if ($this->web_connected(false) && CFG_AUTO_UPDATE_CHECK && (SECURITY_ID_CONFIGURATION > 3)) { // check for software updates
 			if (($this->revisions = @file_get_contents(VERSION_CHECK_URL)) === false) throw new \core\classes\userException("can not open ". VERSION_CHECK_URL);
 		}
@@ -306,18 +306,18 @@ class admin extends \core\classes\admin {
 		  	if (!$db_version) return true;
 		}
 		if (version_compare($this->status, '3.2', '<') ) {
-		  	if (!db_field_exists(TABLE_USERS, 'is_role')) $basis->DataBase->exec("ALTER TABLE ".TABLE_USERS." ADD is_role ENUM('0','1') NOT NULL DEFAULT '0' AFTER admin_id");
+		  	if (!$admin->DataBase->field_exists(TABLE_USERS, 'is_role')) $basis->DataBase->exec("ALTER TABLE ".TABLE_USERS." ADD is_role ENUM('0','1') NOT NULL DEFAULT '0' AFTER admin_id");
 		}
 		if (version_compare($this->status, '3.4', '<') ) {
-		  	if (!db_field_exists(TABLE_DATA_SECURITY, 'exp_date')) $basis->DataBase->exec("ALTER TABLE ".TABLE_DATA_SECURITY." ADD exp_date DATE NOT NULL DEFAULT '2049-12-31' AFTER enc_value");
-		  	if (!db_field_exists(TABLE_AUDIT_LOG, 'ip_address'))   $basis->DataBase->exec("ALTER TABLE ".TABLE_AUDIT_LOG    ." ADD ip_address VARCHAR(15) NOT NULL AFTER user_id");
+		  	if (!$admin->DataBase->field_exists(TABLE_DATA_SECURITY, 'exp_date')) $basis->DataBase->exec("ALTER TABLE ".TABLE_DATA_SECURITY." ADD exp_date DATE NOT NULL DEFAULT '2049-12-31' AFTER enc_value");
+		  	if (!$admin->DataBase->field_exists(TABLE_AUDIT_LOG, 'ip_address'))   $basis->DataBase->exec("ALTER TABLE ".TABLE_AUDIT_LOG    ." ADD ip_address VARCHAR(15) NOT NULL AFTER user_id");
 	    }
 	    if (version_compare($this->status, '3.5', '<') ) {
-		  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'group_by'))  $basis->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD group_by varchar(64) NOT NULL default ''");
-		  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'sort_order'))$basis->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD sort_order varchar(64) NOT NULL default ''");
-		  	if (!db_field_exists(TABLE_AUDIT_LOG, 'stats'))        $basis->DataBase->exec("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
+		  	if (!$admin->DataBase->field_exists(TABLE_EXTRA_FIELDS, 'group_by'))  $basis->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD group_by varchar(64) NOT NULL default ''");
+		  	if (!$admin->DataBase->field_exists(TABLE_EXTRA_FIELDS, 'sort_order'))$basis->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD sort_order varchar(64) NOT NULL default ''");
+		  	if (!$admin->DataBase->field_exists(TABLE_AUDIT_LOG, 'stats'))        $basis->DataBase->exec("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
 	  	}
-	  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'required'))  $basis->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD required enum('0','1') NOT NULL DEFAULT '0'");
+	  	if (!$admin->DataBase->field_exists(TABLE_EXTRA_FIELDS, 'required'))  $basis->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD required enum('0','1') NOT NULL DEFAULT '0'");
 	  	if (version_compare($this->status, '4.0', '<') ) { //updating dashboards to store the namespaces.
 	  		$basis->DataBase->exec ("ALTER TABLE ".TABLE_USERS_PROFILES." CHANGE dashboard_id dashboard_id VARCHAR( 255 ) NOT NULL DEFAULT ''");
 	  		$sql = $basis->DataBase->prepare("SELECT * FROM ".TABLE_USERS_PROFILES." WHERE module_id <> '' ");

@@ -324,7 +324,7 @@ function save_report($report, $rID = '', $save_path = PF_DIR_MY_REPORTS) {
 	} else { // add
 	  $sql_array['create_date'] = date('Y-m-d');
 	  db_perform(TABLE_PHREEFORM, $sql_array);
-	  $rID = db_insert_id();
+	  $rID = \core\classes\PDO::lastInsertId('id');
 	}
 	$filename = $save_path . 'pf_' . $rID;
 	if (!$handle = @fopen($filename, 'w'))	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, 	$filename));

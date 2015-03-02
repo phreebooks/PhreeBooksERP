@@ -14,12 +14,17 @@
 // | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the   |
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
-//  Path: /includes/classes/admin.php
+//  Path: /includes/classes/PDO.php
 //
 namespace core\classes;
 class PDO extends \PDO {
 	public $count_queries = 0;
 	public $total_query_time = 0;
+
+	public function __construct($dsn, $username="", $password="", $driver_options = array()) {
+        parent::__construct($dsn,$username,$password, $driver_options);
+        //$this->setAttribute(\PDO::ATTR_STATEMENT_CLASS, array('\core\classes\PDOStatement', array($this)));
+    }
 
 	public function query($query) {
 		\core\classes\messageStack::debug_log("excecuting query: $query");
@@ -52,6 +57,33 @@ class PDO extends \PDO {
 		$this->total_query_time += $query_time;
 		$this->count_queries++;
 		return $temp;
+	}
+
+	/**
+	 * check is table exists in database
+	 * @param string $table_name
+	 * @return boolean
+	 */
+	public function table_exists($table_name) {
+		\core\classes\messageStack::debug_log("looking for match {$row['Field']} == $field_name");
+		if ($this->query("SHOW TABLES like '$table_name'") != false) return true;
+		return false;
+	}
+
+	/**
+	 * check is field exists in table
+	 * @param unknown $table_name
+	 * @param unknown $field_name
+	 * @return boolean
+	 */
+	public function field_exists($table_name, $field_name) {
+		$result = $this->prepare("DESCRIBE $table_name");
+		$result->execute();
+		while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
+			\core\classes\messageStack::debug_log("looking for match {$row['Field']} == $field_name");
+			if  ($row['Field'] == $field_name) return true;
+		}
+		return false;
 	}
 
 }

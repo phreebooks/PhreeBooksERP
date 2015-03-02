@@ -23,7 +23,7 @@
 // *************************** IMPORTANT UPDATE INFORMATION *********************************//
 
 //********************************* END OF IMPORTANT ****************************************//
-if (!db_field_exists(TABLE_JOURNAL_MAIN, 'closed_date')) {
+if (!$admin->DataBase->field_exists(TABLE_JOURNAL_MAIN, 'closed_date')) {
   // reconfigure table configuration to new format, remove this constant list whic is no longer needed
   $toBeRemoved = array(
 	'AR_PAYMENT_TERMS',
@@ -116,21 +116,21 @@ while (!$result->EOF) {
 }
 
 // delete some extra fields in the configuration tables no longer needed
-if (db_field_exists(TABLE_CONFIGURATION, 'set_function')) {
+if ($admin->DataBase->field_exists(TABLE_CONFIGURATION, 'set_function')) {
   $admin->DataBase->query("ALTER TABLE " . TABLE_CONFIGURATION . " DROP configuration_title, DROP configuration_description,
     DROP configuration_group_id, DROP sort_order, DROP last_modified, DROP date_added, DROP use_function,
     DROP set_function");
 }
 
-if (!db_field_exists(TABLE_CONTACTS, 'tax_id')) {
+if (!$admin->DataBase->field_exists(TABLE_CONTACTS, 'tax_id')) {
   $admin->DataBase->query("ALTER TABLE " . TABLE_CONTACTS . " ADD tax_id INT(11) NOT NULL DEFAULT '0' AFTER price_sheet");
 }
 
-if (!db_field_exists(TABLE_SHIPPING_LOG, 'deliver_late')) {
+if (!$admin->DataBase->field_exists(TABLE_SHIPPING_LOG, 'deliver_late')) {
   $admin->DataBase->query("ALTER TABLE " . TABLE_SHIPPING_LOG . " ADD deliver_late ENUM('0','T','L') NOT NULL DEFAULT '0' AFTER actual_date");
 }
 
-if (!db_field_exists(TABLE_INVENTORY, 'quantity_on_allocation')) {
+if (!$admin->DataBase->field_exists(TABLE_INVENTORY, 'quantity_on_allocation')) {
   $admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD quantity_on_allocation FLOAT NOT NULL DEFAULT '0' AFTER quantity_on_sales_order");
 }
 

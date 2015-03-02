@@ -30,12 +30,12 @@ $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) {
   foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 }
-if ($security_level > 3 && db_table_exists(DB_PREFIX.'reports')) {
+if ($security_level > 3 && $admin->DataBase->table_exists(DB_PREFIX.'reports')) {
   $toolbar->icon_list['new_rpt'] = array(
-	'show'   => true, 
+	'show'   => true,
 	'icon'   => 'phreebooks/phreebooks_logo.png',
-	'params' => 'onclick="submitToDo(\'convert\')"', 
-	'text'   => PB_CONVERT_REPORTS, 
+	'params' => 'onclick="submitToDo(\'convert\')"',
+	'text'   => PB_CONVERT_REPORTS,
 	'order'  => '30',
   );
 }

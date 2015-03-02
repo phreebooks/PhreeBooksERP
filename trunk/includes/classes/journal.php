@@ -89,14 +89,14 @@ class journal {
 			$glEntry->remove_cogs_rows(); // they will be regenerated during the post
 			$messageStack->debug("\n  journal_main array = " . print_r($glEntry->journal_main_array, true));
 			db_perform(TABLE_JOURNAL_MAIN, $glEntry->journal_main_array, 'insert');
-			if (!$glEntry->id) $glEntry->id = db_insert_id();
+			if (!$glEntry->id) $glEntry->id = \core\classes\PDO::lastInsertId('id');
 		// post journal rows
 		$messageStack->debug("\n  Posting Journal rows ...");
 			for ($i = 0; $i < count($glEntry->journal_rows); $i++) {
 		  		$messageStack->debug("\n  journal_rows = " . print_r($glEntry->journal_rows[$i], true));
 		  		$glEntry->journal_rows[$i]['ref_id'] = $glEntry->id;	// link the rows to the journal main id
 		  		db_perform(TABLE_JOURNAL_ITEM, $glEntry->journal_rows[$i], 'insert');
-		  		if (!$glEntry->journal_rows[$i]['id']) $glEntry->journal_rows[$i]['id'] = db_insert_id();
+		  		if (!$glEntry->journal_rows[$i]['id']) $glEntry->journal_rows[$i]['id'] = \core\classes\PDO::lastInsertId('id');
 		}
 		$messageStack->debug("\nStarting auxilliary post functions ...");
 	  	// Inventory needs to be posted first because function may add additional journal rows for COGS
@@ -657,7 +657,7 @@ class journal {
 		'post_date'     => $this->post_date,
 	  );
 	  db_perform(TABLE_JOURNAL_ITEM, $temp_array, 'insert');
-	  $temp_array['id']     = db_insert_id();
+	  $temp_array['id']     = \core\classes\PDO::lastInsertId('id');
 	  $this->journal_rows[] = $temp_array;
 	}
 	// update inventory status
@@ -1209,7 +1209,7 @@ class journal {
 				$temp_array['credit_amount'] = $item_cost;
 		  	}
 		  	db_perform(TABLE_JOURNAL_ITEM, $temp_array, 'insert');
-		  	$temp_array['id'] = db_insert_id();
+		  	$temp_array['id'] = \core\classes\PDO::lastInsertId('id');
 		  	$this->journal_rows[] = $temp_array;
 		  	if ($qty < 0) { // unbuild assy, update ref_id pointer in inventory history record of newly added item (just like a receive)
 				$admin->DataBase->query("update " . TABLE_INVENTORY_HISTORY . " set ref_id = " . $temp_array['id'] . "
@@ -1265,7 +1265,7 @@ class journal {
 	  'creation_date'          => date('Y-m-d h:i:s'),
 	);
 	$result = db_perform(TABLE_INVENTORY, $sql_array, 'insert');
-	return db_insert_id();
+	return \core\classes\PDO::lastInsertId('id');
   }
 
 /*******************************************************************************************************************/
@@ -1574,7 +1574,7 @@ class journal {
 		$sql_data_array['gl_type_account'] = DEF_INV_GL_ACCT;
 		$sql_data_array['first_date']      = 'now()';
 		db_perform(TABLE_CONTACTS, $sql_data_array, 'insert');
-		$acct_id = db_insert_id();
+		$acct_id = \core\classes\PDO::lastInsertId('id');
 		$force_mail_address = true;
 		if ($auto_type) {
 		  $contact_id = $admin->DataBase->query("select " . $auto_field . " from " . TABLE_CURRENT_STATUS);
@@ -1617,7 +1617,7 @@ class journal {
 	if (!$address_id) { // create new address
 	  $sql_data_array['type'] = ($force_mail_address) ? ($acct_type . 'm') : $type;
 	  db_perform(TABLE_ADDRESS_BOOK, $sql_data_array, 'insert');
-	  $address_id = db_insert_id();
+	  $address_id = \core\classes\PDO::lastInsertId('id');
 	} else { // then update address
 	  db_perform(TABLE_ADDRESS_BOOK, $sql_data_array, 'update', 'address_id = ' . (int)$address_id);
 	}

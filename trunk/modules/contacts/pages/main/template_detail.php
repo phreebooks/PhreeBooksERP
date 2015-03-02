@@ -23,12 +23,12 @@ echo html_hidden_field('id',  $basis->cInfo->contact->id) . chr(10);
 echo html_hidden_field('del_crm_note','') . chr(10);
 echo html_hidden_field('payment_id',  '') . chr(10);
 // customize the toolbar actions
-if ($_REQUEST['action'] == 'properties') {
+if ($basis->cInfo->action == 'LoadContactsPopUp') {
   $basis->toolbar->icon_list['cancel']['params'] = 'onclick="self.close()"';
   $basis->toolbar->icon_list['save']['show']     = false;
 } else {
   $basis->toolbar->icon_list['cancel']['params'] = 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, "action=LoadContactMgrPage&amp;type={$basis->cInfo->contact->type}&amp;list={$basis->cInfo->list}", 'SSL') . '\'"';
-  if ((!$basis->cInfo->contact->id && $security_level < 2) || ($basis->cInfo->contact->id && $security_level < 3)) {
+  if ((!isset($basis->cInfo->contact->id) && $basis->cInfo->contact->security_level < 2) || ($basis->cInfo->contact->id && $basis->cInfo->contact->security_level < 3)) {
     $basis->toolbar->icon_list['save']['show']   = false;
   } else {
     $basis->toolbar->icon_list['save']['params'] = 'onclick="submitToDo(\'SaveContact\')"';

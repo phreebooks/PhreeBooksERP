@@ -101,7 +101,7 @@ switch ($_REQUEST['action']) {
 			gen_add_audit_log(sprintf(GEN_LOG_USER, TEXT_UPDATE), db_prepare_input($_POST['admin_name']));
 	  	} else {
 			db_perform(TABLE_USERS, $sql_data_array);
-			$admin_id = db_insert_id();
+			$admin_id = \core\classes\PDO::lastInsertId('id');
 			gen_add_audit_log(sprintf(GEN_LOG_USER, TEXT_ADD), db_prepare_input($_POST['admin_name']));
 	  	}
 	  	if ($admin_id == $_SESSION['admin_id']) $_SESSION['admin_security'] = \core\classes\user::parse_permissions($admin_security); // update if user is current user
@@ -142,7 +142,7 @@ switch ($_REQUEST['action']) {
 		  	}
 		}
 		db_perform(TABLE_USERS, $output_array, 'insert');
-		$new_id = db_insert_id();
+		$new_id = \core\classes\PDO::lastInsertId('id');
 		$messageStack->add(GEN_MSG_COPY_SUCCESS, 'success');
 		// now continue with newly copied item by editing it
 		gen_add_audit_log(sprintf(GEN_LOG_USER, TEXT_COPY), $old_name . ' => ' . $new_name);

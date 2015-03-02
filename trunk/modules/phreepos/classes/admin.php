@@ -121,7 +121,7 @@ class admin extends \core\classes\admin {
 			  if(defined('PHREEPOS_RECEIPT_PRINTER_STARTING_LINE')) remove_configure('PHREEPOS_RECEIPT_PRINTER_STARTING_LINE');
 			  if(defined('PHREEPOS_RECEIPT_PRINTER_CLOSING_LINE'))  remove_configure('PHREEPOS_RECEIPT_PRINTER_CLOSING_LINE');
 		}
-		if (!db_field_exists(TABLE_PHREEPOS_TILLS, 'tax_id')) $admin->DataBase->query("ALTER TABLE " . TABLE_PHREEPOS_TILLS . " ADD tax_id INT(11) default '-1' AFTER max_discount");
+		if (!$admin->DataBase->field_exists(TABLE_PHREEPOS_TILLS, 'tax_id')) $admin->DataBase->query("ALTER TABLE " . TABLE_PHREEPOS_TILLS . " ADD tax_id INT(11) default '-1' AFTER max_discount");
   	}
 
 	function delete($path_my_files) {

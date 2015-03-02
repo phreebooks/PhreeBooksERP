@@ -18,6 +18,7 @@
 //
 namespace contacts\classes;
 class contacts {
+	public  $security_token		= "";
 	public  $terms_type         = 'AP';
 	public  $title;
 	public  $page_title_new;
@@ -43,9 +44,11 @@ class contacts {
     private $duplicate_id_error = ACT_ERROR_DUPLICATE_ACCOUNT;
     private $sql_data_array     = array();
     public  $dir_attachments;
+    public  $security_level		= 0;
 
     public function __construct(){
     	global $admin;
+    	if ($this->security_token != '') $this->security_level = \core\classes\user::validate($this->security_token); // in this case it must be done after the class is defined for
     	$this->page_title_new	= sprintf(TEXT_NEW_ARGS, $this->title);
     	$this->page_title_edit	= sprintf(TEXT_EDIT_ARGS, $this->title);
     	$this->dir_attachments  = DIR_FS_MY_FILES . "{$_SESSION['company']}/contacts/main/";
@@ -202,9 +205,9 @@ class contacts {
   		global $admin;
 	  	// check for duplicate short_name IDs
     	if ($this->id == '') {
-      		$result = $admin->DataBase->query("select id from ".TABLE_CONTACTS." where short_name = '$this->short_name' and type = '$this->type'");
+      		$result = $admin->DataBase->query("SELECT id FROM ".TABLE_CONTACTS." WHERE short_name = '$this->short_name' AND type = '$this->type'");
     	} else {
-      		$result = $admin->DataBase->query("select id from ".TABLE_CONTACTS." where short_name = '$this->short_name' and type = '$this->type' and id <> $this->id");
+      		$result = $admin->DataBase->query("SELECT id FROM ".TABLE_CONTACTS." WHERE short_name = '$this->short_name' AND type = '$this->type' AND id <> $this->id");
     	}
     	if ($result->rowCount() > 0) throw new \core\classes\userException($this->duplicate_id_error);
   	}
@@ -234,17 +237,26 @@ class contacts {
     	$sql_data_array['tax_id']          	= $this->tax_id;
     	$sql_data_array['last_update']     	= 'now()';
     	if ($this->id == '') { //create record
-        	$sql_data_array['first_date'] = 'now()';
-        	db_perform(TABLE_CONTACTS, $sql_data_array, 'insert');
-        	$this->id = db_insert_id();
+    		$sql_data_array['first_date'] = 'now()';
+    		$keys = array_keys($sql_data_array);
+    		$fields = '`'.implode('`, `',$keys).'`';
+    		$placeholder = substr(str_repeat('?,',count($keys),0,-1));
+    		$admin->DataBase->prepare("INSERT INTO ".TABLE_CONTACTS." ($fields) VALUES ($placeholder)")->execute(get_object_vars($this));
+//        	db_perform(TABLE_CONTACTS, $sql_data_array, 'insert');
+        	$this->id = \core\classes\PDO::lastInsertId('id');
 			//	if auto-increment see if the next id is there and increment if so.
     	    if ($this->inc_auto_id) { // increment the ID value
         	    $next_id = string_increment($this->short_name);
-            	$admin->DataBase->query("update ".TABLE_CURRENT_STATUS." set $this->auto_field = '$next_id'");
+            	$admin->DataBase->query("UPDATE ".TABLE_CURRENT_STATUS." SET {$this->auto_field} = '$next_id'");
 	        }
     	    gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_ADD . '-' . $this->title, $this->short_name);
     	} else { // update record
-        	db_perform(TABLE_CONTACTS, $sql_data_array, 'update', "id = '$this->id'");
+    		$keys = array_keys($sql_data_array);
+    		$fields = '`'.implode('`, `',$keys).'`';
+    		$placeholder = '`:'.implode('`:, `',$keys).'`';
+    		$sql = $admin->DataBase->prepare("UPDATE ".TABLE_CONTACTS." SET ($fields) VALUES ($placeholder)");
+    		$sql->execute(get_object_vars($this));
+        	//db_perform(TABLE_CONTACTS, $sql_data_array, 'update', "id = '$this->id'");
         	gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_UPDATE . '-' . $this->title, $this->short_name);
     	}
 	    // address book fields
@@ -273,7 +285,7 @@ class contacts {
               	if ($value == 'im') $sql_data_array['ref_id'] = $this->i_id; // re-point contact
               	if ($this->address[$value]['address_id'] == '') { // then it's a new address
                 	db_perform(TABLE_ADDRESS_BOOK, $sql_data_array, 'insert');
-                	$this->address[$value]['address_id'] = db_insert_id();
+                	$this->address[$value]['address_id'] = \core\classes\PDO::lastInsertId('id');
               	} else { // then update address
                 	db_perform(TABLE_ADDRESS_BOOK, $sql_data_array, 'update', "address_id = '{$this->address[$value]['address_id']}'");
               	}
