@@ -70,14 +70,13 @@ class admin extends \core\classes\admin {
   	}
 
   	function upgrade(\core\classes\basis &$basis) {
-    	global $admin;
 		parent::upgrade($basis);
 	    if (version_compare($this->status, '3.1', '<') ) {
 		  	$tab_map = array('0' => '0');
-		  	if($admin->DataBase->table_exists(DB_PREFIX . 'assets_tabs')){
-			  	$result = $admin->DataBase->query("select * from " . DB_PREFIX . 'assets_tabs');
+		  	if($basis->DataBase->table_exists(DB_PREFIX . 'assets_tabs')){
+			  	$result = $basis->DataBase->query("select * from " . DB_PREFIX . 'assets_tabs');
 			  	while (!$result->EOF) {
-			    	$updateDB = $admin->DataBase->query("insert into " . TABLE_EXTRA_TABS . " set
+			    	$updateDB = $basis->DataBase->query("insert into " . TABLE_EXTRA_TABS . " set
 				  	  module_id = 'assets',
 				  	  tab_name = '"    . $result->fields['category_name']        . "',
 				  	  description = '" . $result->fields['category_description'] . "',
@@ -85,12 +84,12 @@ class admin extends \core\classes\admin {
 			    	$tab_map[$result->fields['category_id']] = \core\classes\PDO::lastInsertId('id');
 			    	$result->MoveNext();
 			  	}
-			  	$admin->DataBase->query("DROP TABLE " . DB_PREFIX . "assets_tabs");
+			  	$basis->DataBase->query("DROP TABLE " . DB_PREFIX . "assets_tabs");
 		  	}
-		  	if($admin->DataBase->table_exists(DB_PREFIX . 'assets_fields')){
-				$result = $admin->DataBase->query("select * from " . DB_PREFIX . 'assets_fields');
+		  	if($basis->DataBase->table_exists(DB_PREFIX . 'assets_fields')){
+				$result = $basis->DataBase->query("select * from " . DB_PREFIX . 'assets_fields');
 			  	while (!$result->EOF) {
-			    	$updateDB = $admin->DataBase->query("insert into " . TABLE_EXTRA_FIELDS . " set
+			    	$updateDB = $basis->DataBase->query("insert into " . TABLE_EXTRA_FIELDS . " set
 				  	  module_id = 'assets',
 				  	  tab_id = '"      . $tab_map[$result->fields['category_id']] . "',
 				  	  entry_type = '"  . $result->fields['entry_type']  . "',
@@ -99,11 +98,11 @@ class admin extends \core\classes\admin {
 				  	  params = '"      . $result->fields['params']      . "'");
 			    	$result->MoveNext();
 			  	}
-			  	$admin->DataBase->query("DROP TABLE " . DB_PREFIX . "assets_fields");
+			  	$basis->DataBase->query("DROP TABLE " . DB_PREFIX . "assets_fields");
 		  	}
 		}
 		if (version_compare($this->status, '3.3', '<') ) {
-	  		if (!$admin->DataBase->field_exists(TABLE_ASSETS, 'attachments')) $admin->DataBase->query("ALTER TABLE " . TABLE_ASSETS . " ADD attachments TEXT NOT NULL AFTER terminal_date");
+	  		if (!$basis->DataBase->field_exists(TABLE_ASSETS, 'attachments')) $basis->DataBase->query("ALTER TABLE " . TABLE_ASSETS . " ADD attachments TEXT NOT NULL AFTER terminal_date");
 	  		require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
     	}
     	\core\classes\fields::sync_fields('assets', TABLE_ASSETS);// Best to always sync fields after install

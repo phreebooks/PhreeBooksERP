@@ -205,7 +205,8 @@ class fields {
 	  		'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 		);
 		$field_list = array('id', 'field_name', 'entry_type', 'description', 'tab_id', 'params', 'sort_order', 'group_by');
-    	$sql = $admin->DataBase->prepare("SELECT ".implode(', ', $field_list)." FROM ".TABLE_EXTRA_FIELDS." WHERE module_id='{$this->module}' ORDER BY group_by, sort_order")->execute();
+    	$sql = $admin->DataBase->prepare("SELECT ".implode(', ', $field_list)." FROM ".TABLE_EXTRA_FIELDS." WHERE module_id='{$this->module}' ORDER BY group_by, sort_order");
+    	$sql->execute();
     	$rowCnt = 0;
     	while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
 	  		$params  = unserialize($result['params']);
@@ -443,7 +444,8 @@ class fields {
   	public function display(){
   		global $admin, $cInfo;
   		$tab_array = array();
-		$sql = $admin->DataBase->prepare("SELECT fields.tab_id, tabs.tab_name as tab_name, fields.description as description, fields.params as params, fields.group_by, fields.field_name, fields.entry_type FROM ".TABLE_EXTRA_FIELDS." AS fields JOIN ".TABLE_EXTRA_TABS." AS tabs ON (fields.tab_id = tabs.id) WHERE fields.module_id='{$this->module}' ORDER BY tabs.sort_order ASC, fields.group_by ASC, fields.sort_order ASC")->execute();
+		$sql = $admin->DataBase->prepare("SELECT fields.tab_id, tabs.tab_name as tab_name, fields.description as description, fields.params as params, fields.group_by, fields.field_name, fields.entry_type FROM ".TABLE_EXTRA_FIELDS." AS fields JOIN ".TABLE_EXTRA_TABS." AS tabs ON (fields.tab_id = tabs.id) WHERE fields.module_id='{$this->module}' ORDER BY tabs.sort_order ASC, fields.group_by ASC, fields.sort_order ASC");
+		$sql->execute();
 		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
   			if (!in_array($result['tab_id'], $tab_array)){
   				if (!empty($tab_array)){
@@ -483,7 +485,8 @@ class fields {
 	  	global $admin;
 	  	$values = array();
 	  	if($this->type_params == '' && $type == null ) return $values;
-		$sql = $admin->DataBase->prepare("SELECT params, field_name FROM ".TABLE_EXTRA_FIELDS." WHERE module_id='{$this->module}'")->execute();
+		$sql = $admin->DataBase->prepare("SELECT params, field_name FROM ".TABLE_EXTRA_FIELDS." WHERE module_id='{$this->module}'");
+		$sql->execute();
 		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
 			$xtra_params = unserialize($result['params']);
 	  		$temp = explode(':',$xtra_params[$this->type_params]);
@@ -496,7 +499,8 @@ class fields {
     	global $admin;
     	$tab_array = array(0 => TEXT_SYSTEM);
 		if (!$module) return $tab_array;
-    	$sql = $admin->DataBase->query("select id, tab_name from " . TABLE_EXTRA_TABS . " where module_id = '{$module}' order by tab_name")->execute();
+    	$sql = $admin->DataBase->query("select id, tab_name from " . TABLE_EXTRA_TABS . " where module_id = '{$module}' order by tab_name");
+    	$sql->execute();
     	while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
       		$tab_array[$result['id']] = $result['tab_name'];
     	}

@@ -307,6 +307,7 @@ class basis implements \SplSubject {
 	function __destruct() {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->DataBase = null;
+		print_R($this);
 	}
 }
 ?>

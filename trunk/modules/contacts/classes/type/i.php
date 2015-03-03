@@ -42,6 +42,8 @@ class i extends \contacts\classes\contacts{
 	    	$this->account_number = db_prepare_input($_POST['i_account_number']);
 	    	$this->dept_rep_id    = db_prepare_input($_POST['id']); // this id is from the parent.
 		}
+		$this->crm_date = gen_db_date($this->crm_date);
+		$this->due_date = gen_db_date($this->due_date);
   	}
 
 	public function data_complete(){

@@ -678,6 +678,9 @@ function gen_db_date($raw_date = '', $separator = '/') {
   global $messageStack;
   if (!$raw_date) return '';
   // handles periods (.), dashes (-), and slashes (/) as date separators
+  $date = new \DateTime();
+  $date->createFromFormat(DATE_FORMAT, $raw_date);
+  return $date->format('Y-m-d');//@todo
   $error = false;
   $second_separator = $separator;
   if (strpos(DATE_FORMAT, '.') !== false) $separator = '.';

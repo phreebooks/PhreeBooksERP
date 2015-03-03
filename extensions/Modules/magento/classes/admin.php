@@ -149,16 +149,15 @@ class admin extends \core\classes\admin {
   }
 
   function upgrade(\core\classes\basis &$basis) {
-    global $admin, $messageStack;
     parent::upgrade($basis);
     RETURN TRUE; //@TODO EVT BEWERKEN ANDERS VERWIJDEREN.
     if (version_compare($this->status, '3.4', '<') ) {
 		write_configure('MODULE_MAGENTO_LAST_UPDATE', date('0000-00-00 00:00:00'));
 	}
-	$result = $admin->DataBase->query("select tab_id from " . TABLE_EXTRA_FIELDS . " where field_name = 'category_id'");
+	$result = $basis->DataBase->query("select tab_id from " . TABLE_EXTRA_FIELDS . " where field_name = 'category_id'");
 	if ($result->rowCount() == 0) throw new \core\classes\userException('can not find tab_name Magento');
 	else $tab_id = $result->fields['tab_id'];
-	if (!$admin->DataBase->field_exists(TABLE_INVENTORY, 'ProductURL')){
+	if (!$basis->DataBase->field_exists(TABLE_INVENTORY, 'ProductURL')){
 		 $sql_data_array = array(
 		    'module_id'   => 'inventory',
 		    'tab_id'      => $tab_id,
@@ -168,9 +167,9 @@ class admin extends \core\classes\admin {
 		    'params'      => serialize(array('type' => 'text', 'length' => '64', 'default' => '')),
 		  );
 		  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array);
-		  $admin->DataBase->query("alter table " . TABLE_INVENTORY . " add column `ProductURL` varchar(64) default ''");
+		  $basis->DataBase->query("alter table " . TABLE_INVENTORY . " add column `ProductURL` varchar(64) default ''");
 	}
-	if (!$admin->DataBase->field_exists(TABLE_INVENTORY, 'ProductModel')){
+	if (!$basis->DataBase->field_exists(TABLE_INVENTORY, 'ProductModel')){
 		$sql_data_array = array(
 		    'module_id'   => 'inventory',
 		    'tab_id'      => $tab_id,
@@ -180,7 +179,7 @@ class admin extends \core\classes\admin {
 		    'params'      => serialize(array('type' => 'text', 'length' => '64', 'default' => '')),
 		  );
 		  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array);
-		  $admin->DataBase->query("alter table " . TABLE_INVENTORY . " add column `ProductModel` varchar(64) default ''");
+		  $basis->DataBase->query("alter table " . TABLE_INVENTORY . " add column `ProductModel` varchar(64) default ''");
 	}
   }
 }

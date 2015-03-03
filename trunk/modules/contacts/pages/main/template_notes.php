@@ -46,7 +46,7 @@ $cal_c_gen = array(
 	   <tr>
 	    <td align="center"><?php echo html_pull_down_menu('crm_rep_id', $basis->cInfo->sales_rep_array, $basis->cInfo->contact->crm_rep_id ? $basis->cInfo->contact->crm_rep_id : $_SESSION['account_id']); ?></td>
 	    <td align="center"><?php echo html_calendar_field($cal_c_gen); ?></td>
-	    <td align="center"><?php echo html_pull_down_menu('crm_action', gen_build_pull_down($basis->cInfo->contact->crm_actions), $basis->cInfo->contact->crm_action); ?></td>
+	    <td align="center"><?php echo html_pull_down_menu('crm_action', $basis->cInfo->contact->crm_actions, $basis->cInfo->contact->crm_action); ?></td>
 	   </tr>
 	   <tr>
 	    <td colspan="3" align="center"><?php echo '<br />' . html_textarea_field('crm_note', 60, 1, $basis->cInfo->contact->crm_note, ''); ?></td>
@@ -55,16 +55,16 @@ $cal_c_gen = array(
 	 </table>
 	 <table class="ui-widget" style="border-collapse:collapse;width:100%">
 	  <thead  class="ui-widget-header">
-	   <tr><th colspan="4"><?php echo TEXT_HISTORY; ?></th></tr>
+	   <tr><th colspan="5"><?php echo TEXT_HISTORY; ?></th></tr>
 	  </thead>
 	  <tbody class="ui-widget-content">
 <?php if (sizeof($basis->cInfo->contact->crm_log) > 0) foreach ($basis->cInfo->contact->crm_log as $value) { ?>
 	   <tr id="tr_crm_a_<?php echo $value['log_id']; ?>" class="odd">
 	    <td><?php echo $security_level < 4 ? '&nbsp;' : html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', "onclick='if (confirm(\"".CRM_ROW_DELETE_ALERT."\")) deleteCRM({$value['log_id']});'"); ?></td>
-	     <td><?php echo $value['with']; ?></td>
-	    <td><?php echo $basis->cInfo->sales_rep_array[$value['entered_by']]; ?></td>
+	    <td><?php echo $value['with']; ?></td>
+	    <td><?php echo $basis->cInfo->sales_rep_array[$value['entered_by']]['text']; ?></td>
 	    <td><?php echo gen_locale_date($value['log_date']); ?></td>
-	    <td><?php echo htmlspecialchars($basis->cInfo->contact->crm_actions[$value['action']]); ?></td>
+	    <td><?php echo $basis->cInfo->contact->crm_actions[$value['action']]['text']; ?></td>
 	   </tr>
 	   <tr id="tr_crm_b_<?php echo $value->log_id; ?>">
 	    <td colspan="4"><?php echo htmlspecialchars($value['notes']); ?></td>

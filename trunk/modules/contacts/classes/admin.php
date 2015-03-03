@@ -408,7 +408,8 @@ class admin extends \core\classes\admin {
 		if ( isset($basis->cInfo->rowSeq)) $basis->cInfo->cID = $basis->cInfo->rowSeq;
 		if ($basis->cInfo->cID == '') throw new \core\classes\userException("cID variable isn't set can't execute method LoadContactPage ");
 		$inactive = '';
-		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->cID}")->execute();
+		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->cID}");
+		$sql->execute();
 		$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
 
 		for ($i = 1; $i < 13; $i++) {
@@ -462,6 +463,7 @@ class admin extends \core\classes\admin {
 			$crmInfo->data_complete();
 			$crmInfo->save();
 		}
+		$basis->addEventToStack('LoadContactMgrPage');
 	}
 
 	function DeleteContact (\core\classes\basis &$basis) {
@@ -471,6 +473,7 @@ class admin extends \core\classes\admin {
 		$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
 		// error check
 		$basis->cInfo->contact->delete();
+		$basis->addEventToStack('LoadContactMgrPage');
 	}
 
 	function load_demo() {

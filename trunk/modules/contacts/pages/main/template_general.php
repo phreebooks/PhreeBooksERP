@@ -49,7 +49,7 @@
        <td align="right"><?php echo constant('ACT_' . strtoupper($basis->cInfo->contact->type) . '_ID_NUMBER'); ?></td>
        <td><?php echo html_input_field('gov_id_number', $basis->cInfo->contact->gov_id_number, 'size="17" maxlength="16"'); ?></td>
 	   <td align="right"><?php echo TEXT_DEFAULT_SALES_TAX; ?></td>
-       <td><?php echo html_pull_down_menu('tax_id', $tax_rates, $basis->cInfo->contact->tax_id); ?></td>
+       <td><?php echo html_pull_down_menu('tax_id', $basis->cInfo->tax_rates, $basis->cInfo->contact->tax_id); ?></td>
        <td><?php echo TEXT_PAYMENT_TERMS; ?></td>
 	   <td><?php
     	  echo html_hidden_field('terms', $basis->cInfo->contact->special_terms) . chr(10);

@@ -61,14 +61,14 @@ class contacts {
         if ($this->id  == '') $this->id  = db_prepare_input($_POST['rowSeq'], true) ? db_prepare_input($_POST['rowSeq']) : db_prepare_input($_GET['cID']);
         if ($this->aid == '') $this->aid = db_prepare_input($_GET['aID'],     true) ? db_prepare_input($_GET['aID'])     : db_prepare_input($_POST['aID']);
         $this->crm_actions = array(
-        	''     => TEXT_NONE,
-        	'new'  => sprintf(TEXT_NEW_ARGS, TEXT_CALL),
-        	'ret'  => TEXT_RETURNED_CALL,
-        	'flw'  => TEXT_FOLLOW_UP_CALL,
-        	'inac' => TEXT_INACTIVE,
-        	'lead' => sprintf(TEXT_NEW_ARGS, TEXT_LEAD),
-        	'mail_in'  => TEXT_EMAIL_RECEIVED,
-        	'mail_out' => TEXT_EMAIL_SEND,
+        	'0' 		=> array('id' => '0',			'text'  => TEXT_NONE),
+        	'new' 		=> array('id' => 'new', 		'text'  => sprintf(TEXT_NEW_ARGS, TEXT_CALL)),
+        	'ret'  		=> array('id' => 'ret', 		'text'  => TEXT_RETURNED_CALL),
+        	'flw'  		=> array('id' => 'flw', 		'text'  => TEXT_FOLLOW_UP_CALL),
+        	'inac'  	=> array('id' => 'inac', 		'text'  => TEXT_INACTIVE),
+        	'lead'  	=> array('id' => 'lead', 		'text'  => sprintf(TEXT_NEW_ARGS, TEXT_LEAD)),
+        	'mail_in'  	=> array('id' => 'mail_in', 	'text'  => TEXT_EMAIL_RECEIVED),
+        	'mail_out'  => array('id' => 'mail_out', 	'text'  => TEXT_EMAIL_SEND),
         );
         if ($this->id  != '') $this->getContact();
     }
@@ -113,10 +113,10 @@ class contacts {
 		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
 			$i = sizeof($this->crm_log);
 			foreach ($result as $key => $value) $this->crm_log[$i] = get_object_vars ($result);
-			if ( $this->first_name != '' || $this->last_name != '') {
-				$this->crm_log[$i]['with'] = $this->first_name . ' ' . $this->last_name;
+			if ( $this->contact_first != '' || $this->contact_last != '') {
+				$this->crm_log[$i]['with'] = $this->contact_first . ' ' . $this->contact_last;
 			} else {
-				$this->crm_log[$i]['with'] = $this->short_name . ' ' . $this->primary_name;
+				$this->crm_log[$i]['with'] = $this->short_name . ' ' . $this->address["{$this->type}m"][0]['primary_name'];
 			}
 		}
 		// load contacts info
@@ -124,9 +124,7 @@ class contacts {
 		$sql->execute();
 		$this->contacts = $sql->fetchAll(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE) ;
 		foreach($this->contacts as $contact){
-			print("contact id = '$contact->id'");print_r($contact->crm_log);
 			$this->crm_log = array_merge($this->crm_log, $contact->crm_log);
-//			$this->crm_log[] = $contact->crm_log;
 		}
   	}
 
@@ -441,6 +439,6 @@ class contacts {
   		echo "</td>";
   	}
 
-  	function __destruct(){print_r($this);}
+  //	function __destruct(){print_r($this);}
 }
 ?>
