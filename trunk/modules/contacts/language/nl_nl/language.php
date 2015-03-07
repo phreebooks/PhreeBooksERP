@@ -76,7 +76,7 @@ define('ACT_E_PAGE_TITLE_EDIT','Bewerk Medewerker');
 define('ACT_I_TYPE_NAME','Contacten');
 define('ACT_I_HEADING_TITLE','PhreeCRM');
 define('ACT_I_SHORT_NAME','Contact');
-define('ACT_I_PAGE_TITLE_EDIT','Bewerk Konctact');
+define('ACT_I_PAGE_TITLE_EDIT','Bewerk Kontact');
 define('ACT_J_TYPE_NAME','Projecten');
 define('ACT_J_HEADING_TITLE','Project');
 define('ACT_J_SHORT_NAME','Project ID');
