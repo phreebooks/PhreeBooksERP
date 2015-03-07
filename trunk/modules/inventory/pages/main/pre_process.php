@@ -43,7 +43,7 @@ if (!isset($_REQUEST['inventory_type'])){
 	if ($result->RecordCount()>0) $type = $result->fields['inventory_type'];
 } 
 if ($type == 'as') $type = 'ma'; 
-if ( in_array($_REQUEST['action'], array('create', 'save', 'delete', 'copy', 'edit', 'properties', 'rename', 'saveAndColse'))) {
+if ( in_array($_REQUEST['action'], array('create', 'save', 'delete', 'copy', 'edit', 'properties', 'rename', 'saveAndColse', 'post_next'))) {
 	if (file_exists(DIR_FS_WORKING . 'custom/classes/type/'.$type.'.php')) { 
 		require_once(DIR_FS_WORKING . 'custom/classes/type/'.$type.'.php'); 
 	} elseif (file_exists(DIR_FS_WORKING . 'classes/type/'.$type.'.php')) {
@@ -60,11 +60,17 @@ switch ($_REQUEST['action']) {
 	validate_security($security_level, 2); // security check
 	$_REQUEST['action'] = ($cInfo->check_create_new()) ? 'edit' : 'new'; 
 	break;
-	
+
+  case 'post_next':
   case 'save':
 	validate_security($security_level, 2); // security check
 	if (!$error) $error = $cInfo->save() == false;
 	if ($error) $_REQUEST['action'] = 'edit';
+	if ($_REQUEST['action'] == 'post_next'){
+		$result = $db->Execute("SELECT MAX(sku + 0) AS 'new' FROM " . TABLE_INVENTORY );
+		$sku = $result->fields['new'] + 1 ;
+		if($cInfo->copy($cInfo->id, $sku)) $_REQUEST['action'] = 'edit';
+	}
 	break;
 
   case 'delete':

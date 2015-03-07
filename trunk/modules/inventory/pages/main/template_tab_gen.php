@@ -150,7 +150,7 @@
 			}else{ echo '<td></td>';}
 			if(isset($cInfo->item_cost) || $error ){ 			echo '<td>'.html_input_field('item_cost_array[]', $currencies->precise($purchaseRow['item_cost']), 'onchange="what_to_update();" size="15" maxlength="20" style="text-align:right"', false).'</td>';
 			}else{ echo '<td></td>';}
-			if(isset($cInfo->item_cost) || $error ) {			echo '<td>'.html_input_field('purch_package_quantity_array[]', $purchaseRow['purch_package_quantity'], 'size="6" maxlength="5" style="text-align:right"').'</td>';
+			if(isset($cInfo->item_cost) || $error ) {			echo '<td>'.html_input_field('purch_package_quantity_array[]', $currencies->precise($purchaseRow['purch_package_quantity']), 'size="6" maxlength="5" style="text-align:right"').'</td>';
 			}else{ echo '<td></td>';}
 			if(isset($cInfo->purch_taxable) || $error ){ 		echo '<td>'.html_pull_down_menu('purch_taxable_array[]', $purch_tax_rates, $purchaseRow['purch_taxable']).'</td>';
 			}else{ echo '<td></td>';}
