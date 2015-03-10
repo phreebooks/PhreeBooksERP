@@ -33,31 +33,31 @@ $extra_stuff = NULL;
 		  <td width="33%" valign="top"><?php
 			echo PHREEFORM_DATELIST . '<br /><br />';
 			echo PHREEFORM_DATEINST . '<br /><br />';
-			echo html_checkbox_field('periods_only', 'z', (strpos($report->datelist, 'z') === false) ? false : true) . PB_USE_ACCOUNTING_PERIODS; ?><br />
+			echo html_checkbox_field('periods_only', 'z', (strpos($report->datelist, 'z') === false) ? false : true) . \core\classes\DateTime::DateChoices['z']; ?><br />
 		  </td>
 		  <td width="33%"><?php
-			echo html_checkbox_field('date_range[]', 'a', (strpos($report->datelist, 'a') === false) ? false : true) . $DateChoices['a'] . '<br />';
-			echo html_checkbox_field('date_range[]', 'b', (strpos($report->datelist, 'b') === false) ? false : true) . $DateChoices['b'] . '<br />';
-			echo html_checkbox_field('date_range[]', 'c', (strpos($report->datelist, 'c') === false) ? false : true) . $DateChoices['c'] . '<br />';
-			echo html_checkbox_field('date_range[]', 'd', (strpos($report->datelist, 'd') === false) ? false : true) . $DateChoices['d'] . '<br />';
-			echo html_checkbox_field('date_range[]', 'e', (strpos($report->datelist, 'e') === false) ? false : true) . $DateChoices['e'] . '<br />';
-			echo html_checkbox_field('date_range[]', 'l', (strpos($report->datelist, 'l') === false) ? false : true) . $DateChoices['l'];
+			echo html_checkbox_field('date_range[]', 'a', (strpos($report->datelist, 'a') === false) ? false : true) . \core\classes\DateTime::DateChoices['a'] . '<br />';
+			echo html_checkbox_field('date_range[]', 'b', (strpos($report->datelist, 'b') === false) ? false : true) . \core\classes\DateTime::DateChoices['b'] . '<br />';
+			echo html_checkbox_field('date_range[]', 'c', (strpos($report->datelist, 'c') === false) ? false : true) . \core\classes\DateTime::DateChoices['c'] . '<br />';
+			echo html_checkbox_field('date_range[]', 'd', (strpos($report->datelist, 'd') === false) ? false : true) . \core\classes\DateTime::DateChoices['d'] . '<br />';
+			echo html_checkbox_field('date_range[]', 'e', (strpos($report->datelist, 'e') === false) ? false : true) . \core\classes\DateTime::DateChoices['e'] . '<br />';
+			echo html_checkbox_field('date_range[]', 'l', (strpos($report->datelist, 'l') === false) ? false : true) . \core\classes\DateTime::DateChoices['l'];
 			?>
 		  </td>
 		  <td width="33%">
 			<?php
-			echo html_checkbox_field('date_range[]', 'f', (strpos($report->datelist, 'f') === false) ? false : true) . $DateChoices['f'] .'<br />';
-			echo html_checkbox_field('date_range[]', 'g', (strpos($report->datelist, 'g') === false) ? false : true) . $DateChoices['g'] .'<br />';
-			echo html_checkbox_field('date_range[]', 'h', (strpos($report->datelist, 'h') === false) ? false : true) . $DateChoices['h'] .'<br />';
-			echo html_checkbox_field('date_range[]', 'i', (strpos($report->datelist, 'i') === false) ? false : true) . $DateChoices['i'] .'<br />';
-			echo html_checkbox_field('date_range[]', 'j', (strpos($report->datelist, 'j') === false) ? false : true) . $DateChoices['j'] .'<br />';
-			echo html_checkbox_field('date_range[]', 'k', (strpos($report->datelist, 'k') === false) ? false : true) . $DateChoices['k'];
+			echo html_checkbox_field('date_range[]', 'f', (strpos($report->datelist, 'f') === false) ? false : true) . \core\classes\DateTime::DateChoices['f'] .'<br />';
+			echo html_checkbox_field('date_range[]', 'g', (strpos($report->datelist, 'g') === false) ? false : true) . \core\classes\DateTime::DateChoices['g'] .'<br />';
+			echo html_checkbox_field('date_range[]', 'h', (strpos($report->datelist, 'h') === false) ? false : true) . \core\classes\DateTime::DateChoices['h'] .'<br />';
+			echo html_checkbox_field('date_range[]', 'i', (strpos($report->datelist, 'i') === false) ? false : true) . \core\classes\DateTime::DateChoices['i'] .'<br />';
+			echo html_checkbox_field('date_range[]', 'j', (strpos($report->datelist, 'j') === false) ? false : true) . \core\classes\DateTime::DateChoices['j'] .'<br />';
+			echo html_checkbox_field('date_range[]', 'k', (strpos($report->datelist, 'k') === false) ? false : true) . \core\classes\DateTime::DateChoices['k'];
 			?>
 		  </td>
 		</tr>
 		<tr>
 		  <td><?php echo TEXT_DEFAULT_DATE_SELECTED; ?></td>
-		  <td colspan="2"><?php echo html_pull_down_menu('date_default', gen_build_pull_down($DateChoices), $report->datedefault); ?></td>
+		  <td colspan="2"><?php echo html_pull_down_menu('date_default', gen_build_pull_down(\core\classes\DateTime::DateChoices), $report->datedefault); ?></td>
 		</tr>
 		<tr>
 		  <td><?php echo TEXT_DATE_FIELDNAME; ?></td>

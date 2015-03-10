@@ -62,7 +62,7 @@ $cal_c_gen = array(
 	   <tr id="tr_crm_a_<?php echo $value['log_id']; ?>" class="odd">
 	    <td><?php echo $security_level < 4 ? '&nbsp;' : html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', "onclick='if (confirm(\"".CRM_ROW_DELETE_ALERT."\")) deleteCRM({$value['log_id']});'"); ?></td>
 	    <td><?php echo $value['with']; ?></td>
-	    <td><?php echo $basis->cInfo->sales_rep_array[$value['entered_by']]['text']; ?></td>
+	    <td><?php echo $basis->cInfo->all_employees[$value['entered_by']]['text']; ?></td>
 	    <td><?php echo gen_locale_date($value['log_date']); ?></td>
 	    <td><?php echo $basis->cInfo->contact->crm_actions[$value['action']]['text']; ?></td>
 	   </tr>

@@ -97,8 +97,8 @@ class toolbar {
 		$output = "<div id='tb_search_{$this->id}' class='ui-state-hover' style='float:right; border:0px;'> \n";
 		$output .= HEADING_TITLE_SEARCH_DETAIL . '<br />';
 		$output .= html_input_field('search_text', $this->search_text, $params = 'onkeypress="checkEnter(event);"');
-		if ($this->search_text) $output .= '&nbsp;' . html_icon('actions/view-refresh.png', TEXT_RESET, 'small', 'onclick="location.href = \'index.php?' . gen_get_all_get_params(array('search_text', 'search_period', 'search_date', 'so', 'sf', 'list', 'action')) . '&reset=1\';" style="cursor:pointer;"');
-	    $output .= '&nbsp;' . html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'onclick="searchPage(\'' . gen_get_all_get_params(array('search_text', 'list', 'action')) . '\')" style="cursor:pointer;"');
+		if ($this->search_text) $output .= '&nbsp;' . html_icon('actions/view-refresh.png', TEXT_RESET, 'small', 'onclick="location.href = \'index.php?' . gen_get_all_get_params(array('search_text', 'search_period', 'search_date', 'so', 'sf', 'list')) . '&reset=1\';" style="cursor:pointer;"');
+	    $output .= '&nbsp;' . html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'onclick="searchPage(\'' . gen_get_all_get_params(array('search_text', 'list')) . '\')" style="cursor:pointer;"');
 		$output .= '</div>' . "\n";
 		return $output;
 	}

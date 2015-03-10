@@ -49,9 +49,6 @@ if (file_exists($custom_path)) { include($custom_path); }
 /***************   Act on the action request   *************************/
 
 switch ($_REQUEST['action']) {
-    case 'new':
-        \core\classes\user::validate_security($security_level, 2);
-	    break;
     case 'save':
     	try{
 			$id = (int)db_prepare_input($_POST['id']);  // if present, then its an edit
@@ -131,14 +128,6 @@ switch ($_REQUEST['action']) {
 
 		break;
 
-    case 'delete':
-    case 'crm_delete':
-	    \core\classes\user::validate_security($security_level, 4);
-	    $short_name = gen_get_contact_name($cInfo->id);
-	   	$cInfo->delete();
-	    gen_add_audit_log(TEXT_CONTACTS.'-'.TEXT_DELETE.'-'.$cInfo->title, $short_name);
-	    break;
-
     case 'download':
    	    $cID   = db_prepare_input($_POST['id']);
   	    $imgID = db_prepare_input($_POST['rowSeq']);
@@ -177,83 +166,4 @@ switch ($_REQUEST['action']) {
     case 'go_page':
     default:
 }
-
-/*****************   prepare to display templates  *************************/
-$include_header = true;
-$include_footer = true;
-
-switch ($_REQUEST['action']) {
-  case 'edit':
-  case 'update':
-  case 'new':
-		for ($i = 1; $i < 13; $i++) {
-		  $j = ($i < 10) ? '0' . $i : $i;
-		  $expires_month[] = array('id' => sprintf('%02d', $i), 'text' => $j . '-' . strftime('%B',mktime(0,0,0,$i,1,2000)));
-		}
-		$today = getdate();
-		for ($i = $today['year']; $i < $today['year'] + 10; $i++) {
-		  	$year = strftime('%Y',mktime(0,0,0,1,1,$i));
-			$expires_year[] = array('id' => $year, 'text' => $year);
-		}
-		// load the tax rates
-		$tax_rates       = ord_calculate_tax_drop_down($type, true);
-		$sales_rep_array = gen_get_rep_ids($type);
-		$result = $admin->DataBase->query("select id, contact_first, contact_last, gl_type_account from ".TABLE_CONTACTS." where type='e'");
-		$reps       = array();
-		while(!$result->EOF) {
-			$reps[$result->fields['id']] = $result->fields['contact_first'] . ' ' . $result->fields['contact_last'];
-	  		$result->MoveNext();
-		}
-	    $include_template = 'template_detail.php';
-		define('PAGE_TITLE', ($_REQUEST['action'] == 'new') ? $cInfo->page_title_new : $cInfo->page_title_edit ." - ({$cInfo->short_name}) {$cInfo->address[m][0]->primary_name}");
-		break;
-  default:
-		$heading_array = array('c.short_name' => constant('ACT_' . strtoupper($type) . '_SHORT_NAME'));
-	    if ($type == 'e') {
-			$heading_array['c.contact_last,c.contact_first'] = TEXT_EMPLOYEE_NAME;
-		} else {
-			$heading_array['a.primary_name'] = TEXT_NAME_OR_COMPANY;
-		}
-		$heading_array['address1']       = TEXT_ADDRESS1;
-		$heading_array['city_town']      = TEXT_CITY_TOWN;
-		$heading_array['state_province'] = TEXT_STATE_PROVINCE;
-		$heading_array['postal_code']    = TEXT_POSTAL_CODE;
-		$heading_array['telephone1']     = TEXT_TELEPHONE;
-		$result      = html_heading_bar($heading_array);
-		$list_header = $result['html_code'];
-		$disp_order  = $result['disp_order'];
-		// build the list for the page selected
-	    $criteria[] = "a.type = '" . $type . "m'";
-	    if (isset($_REQUEST['search_text']) && $_REQUEST['search_text'] <> '') {
-	      $search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.address1',
-		  	'a.address2', 'a.city_town', 'a.postal_code', 'c.short_name');
-		  // hook for inserting new search fields to the query criteria.
-		  if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
-		  $criteria[] = '(' . implode(' like \'%' . $_REQUEST['search_text'] . '%\' or ', $search_fields) . ' like \'%' . $_REQUEST['search_text'] . '%\')';
-		}
-		if (!$_SESSION['f0']) $criteria[] = "(c.inactive = '0' or c.inactive = '')"; // inactive flag
-
-		$search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
-		$field_list = array('c.id', 'c.inactive', 'c.short_name', 'c.contact_first', 'c.contact_last',
-			'a.telephone1', 'c.attachments', 'c.first_date', 'c.last_update', 'c.last_date_1', 'c.last_date_2',
-			'a.primary_name', 'a.address1', 'a.city_town', 'a.state_province', 'a.postal_code');
-		// hook to add new fields to the query return results
-		if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
-	    $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list)  . "
-			from " . TABLE_CONTACTS . " c left join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id " . $search . " order by $disp_order";
-	    $query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-    	$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
-    	history_save('contacts'.$type);
-	    $include_template = 'template_main.php'; // include display template (required)
-	    switch ($type) {
-	    	case 'b':define('PAGE_TITLE', sprintf(TEXT_MANAGER_ARGS, TEXT_BRANCH));	break;
-	    	case 'c':define('PAGE_TITLE', sprintf(TEXT_MANAGER_ARGS, TEXT_CUSTOMER));	break;
-	    	case 'e':define('PAGE_TITLE', sprintf(TEXT_MANAGER_ARGS, TEXT_EMPLOYEE));	break;
-	    	case 'i':define('PAGE_TITLE', TEXT_PHREECRM); break;
-	    	case 'j':define('PAGE_TITLE', sprintf(TEXT_MANAGER_ARGS, TEXT_PROJECT));	break;
-	    	case 'v':define('PAGE_TITLE', sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR));	break;
-	    }
-
-}
-
 ?>

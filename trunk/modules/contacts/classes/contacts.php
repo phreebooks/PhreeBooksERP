@@ -47,7 +47,6 @@ class contacts {
     public  $security_level		= 0;
 
     public function __construct(){
-    	global $admin;
     	if ($this->security_token != '') $this->security_level = \core\classes\user::validate($this->security_token); // in this case it must be done after the class is defined for
     	$this->page_title_new	= sprintf(TEXT_NEW_ARGS, $this->title);
     	$this->page_title_edit	= sprintf(TEXT_EDIT_ARGS, $this->title);
@@ -55,7 +54,7 @@ class contacts {
     	//set defaults
         $this->crm_date			= date('Y-m-d');
         $this->crm_rep_id		= $_SESSION['account_id'] <> 0 ? $_SESSION['account_id'] : $_SESSION['admin_id'];
-        $this->fields 			= new \contacts\classes\fields(false);
+        $this->fields 			= new \contacts\classes\fields(false, $this->type);
         foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
         $this->special_terms  =  db_prepare_input($_POST['terms']); // TBD will fix when popup terms is redesigned
         if ($this->id  == '') $this->id  = db_prepare_input($_POST['rowSeq'], true) ? db_prepare_input($_POST['rowSeq']) : db_prepare_input($_GET['cID']);
@@ -126,6 +125,8 @@ class contacts {
 		foreach($this->contacts as $contact){
 			$this->crm_log = array_merge($this->crm_log, $contact->crm_log);
 		}
+		// load sales reps
+		$this->sales_rep_array = gen_get_rep_ids($basis->cInfo->contact->type);
   	}
 
 	/**
@@ -222,6 +223,7 @@ class contacts {
     	$sql_data_array['type']            	= $this->type;
     	$sql_data_array['short_name']      	= $this->short_name;
     	$sql_data_array['inactive']        	= isset($this->inactive) ? '1' : '0';
+    	$sql_data_array['contacts_level'] 	= $this->contacts_level;
     	$sql_data_array['contact_first']   	= $this->contact_first;
     	$sql_data_array['contact_middle']  	= $this->contact_middle;
     	$sql_data_array['contact_last']    	= $this->contact_last;
@@ -241,7 +243,7 @@ class contacts {
     		$placeholder = substr(str_repeat('?,',count($keys),0,-1));
     		$admin->DataBase->prepare("INSERT INTO ".TABLE_CONTACTS." ($fields) VALUES ($placeholder)")->execute(get_object_vars($this));
 //        	db_perform(TABLE_CONTACTS, $sql_data_array, 'insert');
-        	$this->id = \core\classes\PDO::lastInsertId('id');
+        	$this->id = $basis->DataBase->lastInsertId('id');
 			//	if auto-increment see if the next id is there and increment if so.
     	    if ($this->inc_auto_id) { // increment the ID value
         	    $next_id = string_increment($this->short_name);
@@ -409,6 +411,7 @@ class contacts {
   		$attach_exists  = $this->attachments ? true : false;
   		echo "<td $bkgnd onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->short_name) 	."</td>";
   		echo "<td $bkgnd onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->primary_name)	. "</td>";
+  		echo "<td 		 onclick='submitSeq( $this->id, \"LoadContactPage\")'></td>";
   		echo "<td    {$this->inactive}    onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->address1) 	."</td>";
   		echo "<td        onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->city_town)	."</td>";
   		echo "<td        onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->state_province)."</td>";

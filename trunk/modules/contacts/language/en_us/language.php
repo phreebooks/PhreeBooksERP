@@ -36,6 +36,10 @@ define('TEXT_NEW_CALL','New Call');
 define('TEXT_RETURNED_CALL','Returned Call');
 define('TEXT_FOLLOW_UP_CALL','Follow Up');
 define('TEXT_NEW_LEAD','New Lead');
+define('TEXT_RETAIL','Retail');
+define('TEXT_DEALER','Dealer');
+define('TEXT_WHOLESALE','Wholesale');
+define('CONTACT_LEVEL', 'Customer Level');
 
 // Address/contact identifiers
 define('TEXT_NAME_OR_COMPANY', 'Name or Company');

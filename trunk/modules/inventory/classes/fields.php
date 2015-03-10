@@ -21,7 +21,7 @@ namespace inventory\classes;
 class fields extends \core\classes\fields{
 	public  $help_path   = '07.04.05';
 	public  $title       = TEXT_CUSTOM_FIELDS;
-	public  $module      = 'inventory';
+	public  $current_module = 'inventory';
 	public  $db_table    = TABLE_INVENTORY;
 	public  $type_params = 'inventory_type';
 	public  $extra_buttons = '';

@@ -37,6 +37,60 @@ class e extends \contacts\classes\contacts{
 		parent::__construct();
 	}
 
+	public function getContact() {
+		global $admin;
+		if ($this->id == '' && !$this->aid == ''){
+			$sql = $admin->DataBase->prepare("SELECT * FROM ".TABLE_ADDRESS_BOOK." WHERE address_id = {$this->aid}");
+			$sql->execute();
+			$result = $sql->fetch(\PDO::FETCH_LAZY);
+			// Load contact info, including custom fields
+			$sql = $admin->DataBase->prepare("SELECT * FROM ".TABLE_CONTACTS." WHERE id = {$result['ref_id']}");
+			$sql->execute();
+			$this[] = $sql->fetch(\PDO::FETCH_LAZY);
+		}
+		// expand attachments
+		$this->attachments = $result['attachments'] ? unserialize($result['attachments']) : array();
+		// Load the address book
+		$sql = $admin->DataBase->query("SELECT * FROM ".TABLE_ADDRESS_BOOK." WHERE ref_id = {$this->id} ORDER BY primary_name");
+		$sql->execute();
+		$this->address = array();
+		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+			$i = sizeof($this->address[$result['type']]);
+			$this->address[$result['type']][$i] = get_object_vars ($result);
+		}
+		// load payment info
+		if ($_SESSION['admin_encrypt'] && ENABLE_ENCRYPTION) {
+			$sql = $admin->DataBase->prepare("SELECT id, hint, enc_value FROM ".TABLE_DATA_SECURITY." WHERE module='contacts' and ref_1={$this->id}");
+			$sql->execute();
+			while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+				$val = explode(':', \core\classes\encryption::decrypt($_SESSION['admin_encrypt'], $result['enc_value']));
+				$this->payment_data[] = array(
+						'id'   => $result['id'],
+						'name' => $val[0],
+						'hint' => $result['hint'],
+						'exp'  => $val[2] . '/' . $val[3],
+				);
+			}
+		}
+		$sql = $admin->DataBase->prepare("SELECT * FROM ".TABLE_CONTACTS_LOG." WHERE contact_id = {$this->id} ORDER BY log_date DESC");
+		$sql->execute();
+		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+			$i = sizeof($this->crm_log);
+			foreach ($result as $key => $value) $this->crm_log[$i] = get_object_vars ($result);
+			if ( $this->contact_first != '' || $this->contact_last != '') {
+				$this->crm_log[$i]['with'] = $this->contact_first . ' ' . $this->contact_last;
+			} else {
+				$this->crm_log[$i]['with'] = $this->short_name . ' ' . $this->address["{$this->type}m"][0]['primary_name'];
+			}
+		}
+		// load contacts info
+		$sql = $admin->DataBase->prepare("SELECT * FROM ".TABLE_DEPARTMENTS." WHERE id={$this->id}");
+		$sql->execute();
+		$this->department = $sql->fetchAll() ;
+		// load sales reps
+		$this->sales_rep_array = gen_get_rep_ids($basis->cInfo->contact->type);
+	}
+
   	function delete() {
 	  	global $admin;
 	  	if ( $this->id == '' ) $this->id = $id;

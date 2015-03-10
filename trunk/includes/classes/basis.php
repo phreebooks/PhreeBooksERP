@@ -239,7 +239,6 @@ class basis implements \SplSubject {
 					$module_class->$ActionBefore ( $this );
 				}
 			}
-
 			foreach ( $this->classes as $module_class ) {
 				if ($module_class->installed && method_exists ( $module_class, $event )) {
 					\core\classes\messageStack::debug_log("class {$module_class->id} has action method $event" );
@@ -307,7 +306,7 @@ class basis implements \SplSubject {
 	function __destruct() {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->DataBase = null;
-		print_R($this);
+		//print_R($this);
 	}
 }
 ?>

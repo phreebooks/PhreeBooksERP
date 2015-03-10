@@ -27,6 +27,7 @@
 // 3.7 => 2012-10-01 - bug fixes, redesign of the classes/methods
 // 3.7.1 => 2013-06-30 - Bug fixes
 // 3.7.2 => 2014-07-21 - bug fixes
+// 3.7.3 => added contacts_level field
 // Module software version information
 gen_pull_language('phreedom', 'menu');
 // Menu Sort Positions

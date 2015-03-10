@@ -49,7 +49,7 @@ echo $toolbar->build();
   </tr>
   <tr>
     <td><?php echo TEXT_TRANSACTION_DATE; ?></td>
-    <td><?php echo html_pull_down_menu('search_date_id', gen_build_pull_down($DateChoices), $_SESSION['search_date_id'], $params = ''); ?></td>
+    <td><?php echo html_pull_down_menu('search_date_id', gen_build_pull_down(\core\classes\DateTime::DateChoices), $_SESSION['search_date_id'], $params = ''); ?></td>
     <td><?php echo html_calendar_field($cal_from); ?></td>
     <td><?php echo html_calendar_field($cal_to); ?></td>
   </tr>
