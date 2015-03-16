@@ -15,7 +15,7 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/contacts/pages/popup_terms/pre_process.php
-//
+//@todo remove
 
 $security_level = \core\classes\user::validate(0, true);
 /**************  include page specific files    *********************/

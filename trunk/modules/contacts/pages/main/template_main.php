@@ -48,15 +48,15 @@ echo $basis->toolbar->build($add_search = true);
 </div>
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
  <thead class="ui-widget-header">
-  <tr><?php  echo $list_header; ?></tr>
+  <tr><?php  echo $list_header;//@todo ?></tr>
  </thead>
  <tbody class="ui-widget-content">
   <?php
-  $odd = true;
+  	$odd = true;
     foreach ($basis->cInfo->contacts_list as $contact) {
 		$temp = $odd ? 'odd':'even';
 		echo "<tr class='$temp' style='cursor:pointer'>";
-			$contact->list_row();
+			$contact->list_row("submitSeq");
 		echo "<tr>";
       	$odd = !$odd;
     }

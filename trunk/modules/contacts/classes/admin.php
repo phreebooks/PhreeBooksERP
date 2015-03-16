@@ -460,6 +460,8 @@ class admin extends \core\classes\admin {
 
 	function SaveContact (\core\classes\basis &$basis) {
 		if ($basis->cInfo->id == '') throw new \core\classes\userException("id variable isn't set can't execute method SaveContact ");
+		if ($_POST['crm_date']) $_POST['crm_date'] = gen_db_date($_POST['crm_date']);
+		if ($_POST['due_date']) $_POST['due_date'] = gen_db_date($_POST['due_date']);
 		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->id}");
 		$sql->execute();
 		$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
@@ -469,11 +471,42 @@ class admin extends \core\classes\admin {
 		$basis->cInfo->contact->save();
 		if ($basis->cInfo->contact->type <> 'i' && ($_POST['i_short_name'] || $_POST['address']['im']['primary_name'])) { // is null
 			$crmInfo = new \contacts\classes\type\i;
-			$crmInfo->auto_field  = $basis->cInfo->contact->type=='v' ? 'next_vend_id_num' : 'next_cust_id_num';
 			$crmInfo->dept_rep_id = $basis->cInfo->contact->id;
 			// error check contact
 			$crmInfo->data_complete();
 			$crmInfo->save();
+		}
+		// Check attachments
+		$result = $admin->DataBase->query("SELECT attachments FROM ".TABLE_CONTACTS." WHERE id = {$basis->cInfo->contact->id}");
+		$attachments = $result['attachments'] ? unserialize($result['attachments']) : array();
+		for ($image_id = 0; $image_id <= sizeof($attachments); $image_id++) {
+			if (isset($_POST['rm_attach_'.$image_id])) {
+				@unlink("{$this->dir_attachments}contacts_{$basis->cInfo->contact->id}_{$image_id}.zip");
+				unset($attachments[$image_id]);
+			}
+		}
+		if (is_uploaded_file($_FILES['file_name']['tmp_name'])) { // find an image slot to use
+			$image_id = 0;
+			while (true) {
+				if (!file_exists("{$this->dir_attachments}contacts_{$basis->cInfo->contact->id}_{$image_id}.zip")) break;
+				$image_id++;
+			}
+			saveUploadZip('file_name', "{$this->dir_attachments}contacts_{$basis->cInfo->contact->id}_{$image_id}.zip");
+			$attachments[$image_id] = $_FILES['file_name']['name'];
+		}
+		$sql = $admin->DataBase->prepare("UPDATE ".TABLE_CONTACTS." SET attachments = '".serialize($attachments). "' WHERE id = {$basis->cInfo->contact->id}");
+		$sql->execute();
+		// check for crm notes
+		if ($_POST['crm_action'] <> '' || $_POST['crm_note'] <> '') {
+			$sql_data_array = array(
+					'contact_id' => $basis->cInfo->contact->id,
+					'log_date'   => $_POST['crm_date'],
+					'entered_by' => $_POST['crm_rep_id'],
+					'action'     => $_POST['crm_action'],
+					'notes'      => db_prepare_input($_POST['crm_note']),
+			);
+			$sql = $basis->Database->prepare("INSERT INTO " . TABLE_CONTACTS_LOG . " SET (contact_id, log_date, entered_by, action, notes) VALUES (:contact_id, :log_date, :entered_by, :action, :notes)");
+			$sql->execute($sql_data_array);
 		}
 		$basis->addEventToStack('LoadContactMgrPage');
 	}
@@ -486,6 +519,55 @@ class admin extends \core\classes\admin {
 		// error check
 		$basis->cInfo->contact->delete();
 		$basis->addEventToStack('LoadContactMgrPage');
+	}
+
+	function ContactAttachmentDownload (\core\classes\basis &$basis) {
+		$cID   = db_prepare_input($_POST['id']);
+		$imgID = db_prepare_input($_POST['rowSeq']);
+		$filename = "contacts_{$cID}_{$imgID}.zip";
+		if (file_exists($this->dir_attachments . $filename)) {
+			$backup = new \phreedom\classes\backup();
+			$backup->download($this->dir_attachments, $filename, true);
+		}
+	}
+
+	function ContactAttachmentDownloadFirst (\core\classes\basis &$basis) {
+	//	case 'dn_attach': // download from list, assume the first document only
+		$cID   = db_prepare_input($_POST['rowSeq']);
+		$result = $admin->DataBase->query("SELECT attachments FROM ".TABLE_CONTACTS." WHERE id = $cID");
+		$attachments = unserialize($result['attachments']);
+		foreach ($attachments as $key => $value) {
+			$filename = "contacts_{$cID}_{$key}.zip";
+			if (file_exists($this->dir_attachments . $filename)) {
+				$backup = new \phreedom\classes\backup();
+				$backup->download($this->dir_attachments, $filename, true);
+			}
+		}
+	}
+
+	function LoadContactsAccountsPopUp(\core\classes\basis &$basis) {
+		$this->LoadContactMgrPage($basis);
+		$basis->page			= 'popup_accts';
+		$basis->include_header 	= false;
+		$basis->include_footer 	= false;
+	}
+
+	function LoadTermsPopUp (\core\classes\basis &$basis) {
+		$temp = "\\contacts\\classes\\type\\{$basis->cInfo->type}";
+		$basis->cInfo->contact = new $temp;
+		$basis->cInfo->cal_terms = array(
+				'name'      => 'dateReference',
+				'form'      => 'popup_terms',
+				'fieldname' => 'due_date',
+				'imagename' => 'btn_terms',
+				'default'   => '',
+				'params'    => array('align' => 'left'),
+		);
+
+		$basis->page			= 'popup_terms';
+		$basis->page_title 		= TEXT_PAYMENT_TERMS;
+		$basis->include_header 	= false;
+		$basis->include_footer 	= false;
 	}
 
 	function load_demo() {

@@ -241,7 +241,8 @@ class contacts {
     		$keys = array_keys($sql_data_array);
     		$fields = '`'.implode('`, `',$keys).'`';
     		$placeholder = substr(str_repeat('?,',count($keys),0,-1));
-    		$admin->DataBase->prepare("INSERT INTO ".TABLE_CONTACTS." ($fields) VALUES ($placeholder)")->execute(get_object_vars($this));
+    		$sql = $admin->DataBase->prepare("INSERT INTO ".TABLE_CONTACTS." ($fields) VALUES ($placeholder)");
+    		$sql->execute(get_object_vars($this));
 //        	db_perform(TABLE_CONTACTS, $sql_data_array, 'insert');
         	$this->id = $basis->DataBase->lastInsertId('id');
 			//	if auto-increment see if the next id is there and increment if so.
@@ -404,25 +405,44 @@ class contacts {
   	/**
   	 * this method outputs a line on the template page.
   	 */
-  	function list_row () {
+  	function list_row ($js_function = "submitSeq") {
   		\core\classes\messageStack::debug_log("executing ".__METHOD__ ." of class ". get_class($admin_class));
   		$security_level = \core\classes\user::validate($this->security_token); // in this case it must be done after the class is defined for
   		$bkgnd          = ($this->inactive) ? ' style="background-color:pink"' : '';
   		$attach_exists  = $this->attachments ? true : false;
-  		echo "<td $bkgnd onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->short_name) 	."</td>";
-  		echo "<td $bkgnd onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->primary_name)	. "</td>";
-  		echo "<td 		 onclick='submitSeq( $this->id, \"LoadContactPage\")'></td>";
-  		echo "<td    {$this->inactive}    onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->address1) 	."</td>";
-  		echo "<td        onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->city_town)	."</td>";
-  		echo "<td        onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->state_province)."</td>";
-  		echo "<td        onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->postal_code)	."</td>";
-  		echo "<td 	     onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->telephone1)	."</td>";
+  		echo "<td $bkgnd onclick='$js_function( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->short_name) 	."</td>";
+  		echo "<td $bkgnd onclick='$js_function( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->primary_name)	. "</td>";
+  		echo "<td 		 onclick='$js_function( $this->id, \"LoadContactPage\")'></td>";
+  		echo "<td    {$this->inactive}    onclick='$js_function( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->address1) 	."</td>";
+  		echo "<td        onclick='$js_function( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->city_town)	."</td>";
+  		echo "<td        onclick='$js_function( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->state_province)."</td>";
+  		echo "<td        onclick='$js_function( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->postal_code)	."</td>";
+  		echo "<td 	     onclick='$js_function( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->telephone1)	."</td>";
   		echo "<td align='right'>";
   		// build the action toolbar
-		if ($security_level > 1) echo html_icon('mimetypes/x-office-presentation.png', TEXT_SALES, 'small', 	"onclick='contactChart(\"annual_sales\", $this->id)'") . chr(10);
-  		if ($security_level > 1) echo html_icon('actions/edit-find-replace.png', TEXT_EDIT, 'small', 			"onclick='window.open(\"" . html_href_link(FILENAME_DEFAULT, "cID={$this->id}&amp;action=LoadContactsPopUp", 'SSL')."\",\"_blank\")'"). chr(10);
-  		if ($attach_exists) 	 echo html_icon('status/mail-attachment.png', TEXT_DOWNLOAD_ATTACHMENT,'small', "onclick='submitSeq($this->id, \"dn_attach\", true)'") . chr(10);
-  		if ($security_level > 3) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 			"onclick='if (confirm(\"" . ACT_WARN_DELETE_ACCOUNT . "\")) submitSeq($this->id, \"DeleteContact\")'") . chr(10);
+  		if ($js_function == "submitSeq") {
+			if ($security_level > 1) echo html_icon('mimetypes/x-office-presentation.png', TEXT_SALES, 'small', 	"onclick='contactChart(\"annual_sales\", $this->id)'") . chr(10);
+	  		if ($security_level > 1) echo html_icon('actions/edit-find-replace.png', TEXT_EDIT, 'small', 			"onclick='window.open(\"" . html_href_link(FILENAME_DEFAULT, "cID={$this->id}&amp;action=LoadContactsPopUp", 'SSL')."\",\"_blank\")'"). chr(10);
+	  		if ($attach_exists) 	 echo html_icon('status/mail-attachment.png', TEXT_DOWNLOAD_ATTACHMENT,'small', "onclick='submitSeq($this->id, \"ContactAttachmentDownloadFirst\", true)'") . chr(10);
+	  		if ($security_level > 3) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 			"onclick='if (confirm(\"" . ACT_WARN_DELETE_ACCOUNT . "\")) submitSeq($this->id, \"DeleteContact\")'") . chr(10);
+  		} else if ($js_function == "setReturnAccount"){
+  			switch ($this->journal_id) {
+  				case  6:
+  				case  7:
+  				case 12:
+  				case 13:
+  					switch ($this->journal_id) {
+  						case  6: $search_journal = 4;  break;
+  						case  7: $search_journal = 6;  break;
+  						case 12: $search_journal = 10; break;
+  						case 13: $search_journal = 12; break;
+  					}
+  					$open_order_array = $this->load_orders($search_journal);
+  					if ($open_order_array) {
+  						echo html_pull_down_menu('open_order_' . $this->id, $open_order_array, '', "onchange='setReturnOrder(\"{$this->id}\")'");
+  					}
+  			}
+  		}
   		echo "</td>";
   	}
 

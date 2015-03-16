@@ -34,5 +34,33 @@ class admin extends \core\classes\admin {
 		);
 		parent::__construct();
   	}
+
+  	function after_SaveContact (\core\classes\basis &$basis) {
+  		// payment fields
+		if (ENABLE_ENCRYPTION && $_POST['payment_cc_name'] && $_POST['payment_cc_number']) { // save payment info
+			$cc_info = array(
+					'name'    => db_prepare_input($_POST['payment_cc_name']),
+					'number'  => db_prepare_input($_POST['payment_cc_number']),
+					'exp_mon' => db_prepare_input($_POST['payment_exp_month']),
+					'exp_year'=> db_prepare_input($_POST['payment_exp_year']),
+					'cvv2'    => db_prepare_input($_POST['payment_cc_cvv2']),
+			);
+			$enc_value = \core\classes\encryption::encrypt_cc($cc_info);
+			$payment_array = array(
+					'hint'      => $enc_value['hint'],
+					'module'    => 'contacts',
+					'enc_value' => $enc_value['encoded'],
+					'ref_1'     => $basis->cInfo->contact->id,
+					'ref_2'     => $basis->cInfo->contact->address[$type.'m']['address_id'],
+					'exp_date'  => $enc_value['exp_date'],
+			);
+			if($_POST['payment_id']) {
+				$sql = $basis->Database->prepare("INSERT INTO " . TABLE_DATA_SECURITY . " SET (hint, module, enc_value, ref_1, ref_2, exp_date) VALUES (:hint, :module, :enc_value, :ref_1, :ref_2, :exp_date)");
+			}else{
+				$sql = $basis->Database->prepare("UPDATE " . TABLE_DATA_SECURITY . " SET hint = :hint, module = :module, enc_value = :enc_value, ref_1 = :ref_1, ref_2 = :ref_1, exp_date = :exp_date");
+			}
+			$sql->execute($payment_array);
+		}
+	}
 }
 ?>

@@ -44,7 +44,8 @@ function setReturnOrder(pointer) {
   self.close();
 }
 
-function setReturnAccount(cID) {
+function setReturnAccount(cID, event) {
+	//event isn't used in this function but makes for easy programing.
   var oID = 0; // contact only
   if (fill == 'ship') {
     var ship_only = true;

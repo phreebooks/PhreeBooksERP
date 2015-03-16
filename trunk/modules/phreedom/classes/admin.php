@@ -366,7 +366,7 @@ class admin extends \core\classes\admin {
 		// load init functions for each module and execute
 		foreach ($basis->classes as $key => $module_class) $module_class->should_update($basis);
 		if (defined('TABLE_CONTACTS')) {
-			$sql = $basis->DataBase->prepare("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result['account_id']);
+			$sql = $basis->DataBase->prepare("SELECT dept_rep_id FROM " . TABLE_CONTACTS . " WHERE id = " . $result['account_id']);
 			$sql->execute();
 			$dept = $sql->fetch(\PDO::FETCH_LAZY);
 			$_SESSION['department'] = $dept['dept_rep_id'];
