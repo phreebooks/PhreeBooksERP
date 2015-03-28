@@ -20,20 +20,20 @@ namespace contacts\classes;
 class fields extends \core\classes\fields{
 	public  $help_path   = '';
 	public  $title       = '';
-	public  $module      = 'contacts';
+	public  $current_module      = 'contacts';
 	public  $db_table    = TABLE_CONTACTS;
     public  $type_desc   = TEXT_CONTACT_TYPE;
 	public  $type_params = 'contact_type';
 	public  $extra_buttons = '';
 
-  public function __construct($sync = true , $contact_type = 'c'){
-  	$this->type = $contact_type;
-	$this->type_array[] = array('id' => 'c', 'text' => TEXT_CUSTOMER);
-    $this->type_array[] = array('id' => 'v', 'text' => TEXT_VENDOR);
-    $this->type_array[] = array('id' => 'e', 'text' => TEXT_EMPLOYEE);
-    $this->type_array[] = array('id' => 'b', 'text' => TEXT_BRANCH);
-    parent::__construct($sync, $contact_type);
-  }
+  	public function __construct($sync = true , $contact_type = 'c'){
+  		$this->type = $contact_type;
+		$this->type_array[] = array('id' => 'c', 'text' => TEXT_CUSTOMER);
+    	$this->type_array[] = array('id' => 'v', 'text' => TEXT_VENDOR);
+    	$this->type_array[] = array('id' => 'e', 'text' => TEXT_EMPLOYEE);
+    	$this->type_array[] = array('id' => 'b', 'text' => TEXT_BRANCH);
+    	parent::__construct($sync, $contact_type);
+  	}
 
 }
 ?>

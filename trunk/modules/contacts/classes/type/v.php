@@ -18,11 +18,17 @@
 //
 namespace contacts\classes\type;
 class v extends \contacts\classes\contacts{
+	public $terms_type       = 'AP';
+	public $credit_limit     = AP_CREDIT_LIMIT_AMOUNT;
+	public $discount_percent = AP_PREPAYMENT_DISCOUNT_PERCENT;
+	public $discount_days    = AP_PREPAYMENT_DISCOUNT_DAYS;
+	public $num_days_due     = AP_NUM_DAYS_DUE;
 	public $security_token	= SECURITY_ID_MAINTAIN_VENDORS;
 	public $auto_type		= AUTO_INC_VEND_ID;
 	public $auto_field		= 'next_vend_id_num';
 	public $journals		= '6,7,21';
 	public $help			= '07.02.02.02';
+	public $help_terms		= '07.02.02.04';
 	public $address_types	= array('vm', 'vs', 'vb');
 	public $type			= 'v';
 	public $title			= TEXT_VENDOR;

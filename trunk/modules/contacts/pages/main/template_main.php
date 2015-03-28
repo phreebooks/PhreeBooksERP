@@ -27,8 +27,7 @@ $basis->toolbar->icon_list['open']['show']     = false;
 $basis->toolbar->icon_list['save']['show']     = false;
 $basis->toolbar->icon_list['delete']['show']   = false;
 $basis->toolbar->icon_list['print']['show']    = false;
-if ($security_level > 1) $basis->toolbar->add_icon('new', 'onclick="submitToDo(\'new\')"', $order = 10);
-if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $basis->toolbar->icon_list[$key] = $value;
+if ($basis->cInfo->contacts_list[0]->security_level > 1) $basis->toolbar->add_icon('new', 'onclick="submitToDo(\'new\')"', $order = 10);
 if (!$basis->cInfo->contacts_list[0]->help == '') $basis->toolbar->add_help($basis->cInfo->contacts_list[0]->help);
 echo $basis->toolbar->build($add_search = true);
 // Build the page
@@ -49,15 +48,15 @@ echo $basis->toolbar->build($add_search = true);
 </div>
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
  <thead class="ui-widget-header">
-  <tr><?php  echo $list_header; ?></tr>
+  <tr><?php  echo $list_header;//@todo ?></tr>
  </thead>
  <tbody class="ui-widget-content">
   <?php
-  $odd = true;
+  	$odd = true;
     foreach ($basis->cInfo->contacts_list as $contact) {
 		$temp = $odd ? 'odd':'even';
 		echo "<tr class='$temp' style='cursor:pointer'>";
-			$contact->list_row();
+			$contact->list_row("submitSeq");
 		echo "<tr>";
       	$odd = !$odd;
     }

@@ -21,24 +21,21 @@ echo html_form('popup_terms', FILENAME_DEFAULT, gen_get_all_get_params(array('ac
 echo html_hidden_field('action', '')   . chr(10);
 echo html_hidden_field('rowSeq', '') . chr(10);
 // customize the toolbar actions
-$toolbar->icon_list['cancel']['params'] = 'onclick="self.close()"';
-$toolbar->icon_list['open']['show']     = false;
-$toolbar->icon_list['save']['params']   = 'onclick="setReturnTerms()"';
-$toolbar->icon_list['delete']['show']   = false;
-$toolbar->icon_list['print']['show']    = false;
-if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
-switch ($account_type) {
-  case 'c': $toolbar->add_help('07.03.02.04'); break;
-  case 'v': $toolbar->add_help('07.02.02.04'); break;
-}
-echo $toolbar->build();
+$basis->toolbar->icon_list['cancel']['params'] = 'onclick="self.close()"';
+$basis->toolbar->icon_list['open']['show']     = false;
+$basis->toolbar->icon_list['save']['params']   = 'onclick="setReturnTerms()"';
+$basis->toolbar->icon_list['delete']['show']   = false;
+$basis->toolbar->icon_list['print']['show']    = false;
+if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $basis->toolbar->icon_list[$key] = $value;
+$basis->toolbar->add_help($basis->cInfo->contact->help_terms);
+echo $basis->toolbar->build();
 // Build the page
 ?>
-<h1><?php echo TEXT_PAYMENT_TERMS; ?></h1>
+<h1><?php echo $basis->page_title; ?></h1>
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
  <tbody class="ui-widget-content">
   <tr>
-	<td colspan="2"><?php echo TEXT_DEFAULT . ': ' . gen_terms_to_language('0', false, $terms_type) . '<br />' . chr(10); ?></td>
+	<td colspan="2"><?php echo TEXT_DEFAULT . ': ' . gen_terms_to_language('0', false, $basis->cInfo->contact->terms_type) . '<br />' . chr(10); ?></td>
   </tr>
   <tr>
 	<td>
@@ -59,24 +56,24 @@ echo html_radio_field('special_terms', 5, ($terms[0] == '5' ? true : false), '',
 	</td>
 	<td valign="top">
 <?php
-echo TEXT_DISCOUNT . html_input_field('early_percent', (isset($terms[1]) ? $terms[1] : $discount_percent), 'size="4"') . TEXT_PERCENT . '<br />' . chr(10);
-echo TEXT_DUE_IN . ' ' . html_input_field('early_days', (isset($terms[2]) ? $terms[2] : $discount_days), 'size="3"') . TEXT_DAY_S . '<br />' . chr(10);
+echo TEXT_DISCOUNT . html_input_field('early_percent', (isset($terms[1]) ? $terms[1] : $basis->cInfo->contact->discount_percent), 'size="4"') . TEXT_PERCENT . '<br />' . chr(10);
+echo TEXT_DUE_IN . ' ' . html_input_field('early_days', (isset($terms[2]) ? $terms[2] : $basis->cInfo->contact->discount_days), 'size="3"') . TEXT_DAY_S . '<br />' . chr(10);
 if ($terms[0] == '0' || $terms[0] == '1' || $terms[0] == '2' || $terms[0] == '3') {
-	$field_value = isset($terms[3]) ? $terms[3] : $num_days_due;
+	$field_value = isset($terms[3]) ? $terms[3] : $basis->cInfo->contact->num_days_due;
 } else {
 	$field_value = '';
 }
 echo ACT_TERMS_NET . html_input_field('standard_days', $field_value, 'size="3"') . TEXT_DAY_S . '<br />' . chr(10);
-echo '<br /><br />'.html_calendar_field($cal_terms);
+echo '<br /><br />'.html_calendar_field($basis->cInfo->cal_terms);
 if ($terms[0] == '4' || $terms[0] == '5') {
 	echo '<script type="text/javascript">';
-	echo "document.popup_terms.elements['due_date'].value = '" . $terms[3] . "';";
+	echo "document.popup_terms.elements['due_date'].value = '{$terms[3]}';";
 	echo '</script>';
 }
 ?>
 	</td>
   </tr>
-  <tr><td colspan="2"><?php echo TEXT_CREDIT_LIMIT.': '.html_input_field('credit_limit', (isset($terms[4]) ? $terms[4] : $credit_limit)) . chr(10); ?></td></tr>
+  <tr><td colspan="2"><?php echo TEXT_CREDIT_LIMIT.': '.html_input_field('credit_limit', (isset($terms[4]) ? $terms[4] : $basis->cInfo->contact->credit_limit)) . chr(10); ?></td></tr>
  </tbody>
 </table>
 </form>

@@ -178,21 +178,17 @@ class currencies {
 		return true;
 	}
 
-	//below used to be located in phreedom\classes\currency
     /**
      * this functions updates currency values
      */
   	function btn_update() { // updates the currency rates
 	  	global $admin, $messageStack;
 	  	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+	  	if (sizeof($this->currencies) <= 1) return;// if one currency no need to update
 		$message = array();
-	/* commented out so everyone can update currency exchange rates
-	  	\core\classes\user::validate_security($security_level, 1);
-	*/
+		// everyone can update currency exchange rates
 		$server_used = CURRENCY_SERVER_PRIMARY;
-		$sql = $admin->DataBase->prepare("SELECT currencies_id, code, title FROM " . $this->db_table);
-		$sql->execute();
-		while ($currency = $sql->fetch(\PDO::FETCH_LAZY)) {
+		foreach ($this->currencies as $key => $currency){
 			// skip default currency
 		  	if ($currency['code'] == $this->def_currency) continue;
 		  	$quote_function = 'quote_'.CURRENCY_SERVER_PRIMARY;
@@ -205,7 +201,8 @@ class currencies {
 				$server_used = CURRENCY_SERVER_BACKUP;
 		  	}
 		  	if ($rate <> 0) {
-				$admin->DataBase->exec("UPDATE {$this->db_table} set value = '$rate', last_updated = now() WHERE currencies_id = '" . (int)$currency['currencies_id'] . "'");
+				$admin->DataBase->exec("UPDATE {$this->db_table} set value = '$rate', last_updated = now() WHERE currencies_id = '{$currency['currencies_id']}'");
+				$this->currencies[$key]['value'] = $rate;
 				$message[] = sprintf(SETUP_INFO_CURRENCY_UPDATED, $currency['title'], $currency['code'], $server_used);
 				$messageStack->add(sprintf(SETUP_INFO_CURRENCY_UPDATED, $currency['title'], $currency['code'], $server_used), 'success');
 		  	} else {

@@ -47,7 +47,6 @@ class contacts {
     public  $security_level		= 0;
 
     public function __construct(){
-    	global $admin;
     	if ($this->security_token != '') $this->security_level = \core\classes\user::validate($this->security_token); // in this case it must be done after the class is defined for
     	$this->page_title_new	= sprintf(TEXT_NEW_ARGS, $this->title);
     	$this->page_title_edit	= sprintf(TEXT_EDIT_ARGS, $this->title);
@@ -55,20 +54,20 @@ class contacts {
     	//set defaults
         $this->crm_date			= date('Y-m-d');
         $this->crm_rep_id		= $_SESSION['account_id'] <> 0 ? $_SESSION['account_id'] : $_SESSION['admin_id'];
-        $this->fields 			= new \contacts\classes\fields(false);
+        $this->fields 			= new \contacts\classes\fields(false, $this->type);
         foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
         $this->special_terms  =  db_prepare_input($_POST['terms']); // TBD will fix when popup terms is redesigned
         if ($this->id  == '') $this->id  = db_prepare_input($_POST['rowSeq'], true) ? db_prepare_input($_POST['rowSeq']) : db_prepare_input($_GET['cID']);
         if ($this->aid == '') $this->aid = db_prepare_input($_GET['aID'],     true) ? db_prepare_input($_GET['aID'])     : db_prepare_input($_POST['aID']);
         $this->crm_actions = array(
-        	''     => TEXT_NONE,
-        	'new'  => sprintf(TEXT_NEW_ARGS, TEXT_CALL),
-        	'ret'  => TEXT_RETURNED_CALL,
-        	'flw'  => TEXT_FOLLOW_UP_CALL,
-        	'inac' => TEXT_INACTIVE,
-        	'lead' => sprintf(TEXT_NEW_ARGS, TEXT_LEAD),
-        	'mail_in'  => TEXT_EMAIL_RECEIVED,
-        	'mail_out' => TEXT_EMAIL_SEND,
+        	'0' 		=> array('id' => '0',			'text'  => TEXT_NONE),
+        	'new' 		=> array('id' => 'new', 		'text'  => sprintf(TEXT_NEW_ARGS, TEXT_CALL)),
+        	'ret'  		=> array('id' => 'ret', 		'text'  => TEXT_RETURNED_CALL),
+        	'flw'  		=> array('id' => 'flw', 		'text'  => TEXT_FOLLOW_UP_CALL),
+        	'inac'  	=> array('id' => 'inac', 		'text'  => TEXT_INACTIVE),
+        	'lead'  	=> array('id' => 'lead', 		'text'  => sprintf(TEXT_NEW_ARGS, TEXT_LEAD)),
+        	'mail_in'  	=> array('id' => 'mail_in', 	'text'  => TEXT_EMAIL_RECEIVED),
+        	'mail_out'  => array('id' => 'mail_out', 	'text'  => TEXT_EMAIL_SEND),
         );
         if ($this->id  != '') $this->getContact();
     }
@@ -113,10 +112,10 @@ class contacts {
 		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
 			$i = sizeof($this->crm_log);
 			foreach ($result as $key => $value) $this->crm_log[$i] = get_object_vars ($result);
-			if ( $this->first_name != '' || $this->last_name != '') {
-				$this->crm_log[$i]['with'] = $this->first_name . ' ' . $this->last_name;
+			if ( $this->contact_first != '' || $this->contact_last != '') {
+				$this->crm_log[$i]['with'] = $this->contact_first . ' ' . $this->contact_last;
 			} else {
-				$this->crm_log[$i]['with'] = $this->short_name . ' ' . $this->primary_name;
+				$this->crm_log[$i]['with'] = $this->short_name . ' ' . $this->address["{$this->type}m"][0]['primary_name'];
 			}
 		}
 		// load contacts info
@@ -124,10 +123,10 @@ class contacts {
 		$sql->execute();
 		$this->contacts = $sql->fetchAll(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE) ;
 		foreach($this->contacts as $contact){
-			print("contact id = '$contact->id'");print_r($contact->crm_log);
 			$this->crm_log = array_merge($this->crm_log, $contact->crm_log);
-//			$this->crm_log[] = $contact->crm_log;
 		}
+		// load sales reps
+		$this->sales_rep_array = gen_get_rep_ids($basis->cInfo->contact->type);
   	}
 
 	/**
@@ -224,6 +223,7 @@ class contacts {
     	$sql_data_array['type']            	= $this->type;
     	$sql_data_array['short_name']      	= $this->short_name;
     	$sql_data_array['inactive']        	= isset($this->inactive) ? '1' : '0';
+    	$sql_data_array['contacts_level'] 	= $this->contacts_level;
     	$sql_data_array['contact_first']   	= $this->contact_first;
     	$sql_data_array['contact_middle']  	= $this->contact_middle;
     	$sql_data_array['contact_last']    	= $this->contact_last;
@@ -241,9 +241,10 @@ class contacts {
     		$keys = array_keys($sql_data_array);
     		$fields = '`'.implode('`, `',$keys).'`';
     		$placeholder = substr(str_repeat('?,',count($keys),0,-1));
-    		$admin->DataBase->prepare("INSERT INTO ".TABLE_CONTACTS." ($fields) VALUES ($placeholder)")->execute(get_object_vars($this));
+    		$sql = $admin->DataBase->prepare("INSERT INTO ".TABLE_CONTACTS." ($fields) VALUES ($placeholder)");
+    		$sql->execute(get_object_vars($this));
 //        	db_perform(TABLE_CONTACTS, $sql_data_array, 'insert');
-        	$this->id = \core\classes\PDO::lastInsertId('id');
+        	$this->id = $basis->DataBase->lastInsertId('id');
 			//	if auto-increment see if the next id is there and increment if so.
     	    if ($this->inc_auto_id) { // increment the ID value
         	    $next_id = string_increment($this->short_name);
@@ -404,24 +405,44 @@ class contacts {
   	/**
   	 * this method outputs a line on the template page.
   	 */
-  	function list_row () {
+  	function list_row ($js_function = "submitSeq") {
   		\core\classes\messageStack::debug_log("executing ".__METHOD__ ." of class ". get_class($admin_class));
   		$security_level = \core\classes\user::validate($this->security_token); // in this case it must be done after the class is defined for
   		$bkgnd          = ($this->inactive) ? ' style="background-color:pink"' : '';
   		$attach_exists  = $this->attachments ? true : false;
-  		echo "<td $bkgnd onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->short_name) 	."</td>";
-  		echo "<td $bkgnd onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->primary_name)	. "</td>";
-  		echo "<td    {$this->inactive}    onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->address1) 	."</td>";
-  		echo "<td        onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->city_town)	."</td>";
-  		echo "<td        onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->state_province)."</td>";
-  		echo "<td        onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->postal_code)	."</td>";
-  		echo "<td 	     onclick='submitSeq( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->telephone1)	."</td>";
+  		echo "<td $bkgnd onclick='$js_function( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->short_name) 	."</td>";
+  		echo "<td $bkgnd onclick='$js_function( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->primary_name)	. "</td>";
+  		echo "<td 		 onclick='$js_function( $this->id, \"LoadContactPage\")'></td>";
+  		echo "<td    {$this->inactive}    onclick='$js_function( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->address1) 	."</td>";
+  		echo "<td        onclick='$js_function( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->city_town)	."</td>";
+  		echo "<td        onclick='$js_function( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->state_province)."</td>";
+  		echo "<td        onclick='$js_function( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->postal_code)	."</td>";
+  		echo "<td 	     onclick='$js_function( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->telephone1)	."</td>";
   		echo "<td align='right'>";
   		// build the action toolbar
-		if ($security_level > 1) echo html_icon('mimetypes/x-office-presentation.png', TEXT_SALES, 'small', 	"onclick='contactChart(\"annual_sales\", $this->id)'") . chr(10);
-  		if ($security_level > 1) echo html_icon('actions/edit-find-replace.png', TEXT_EDIT, 'small', 			"onclick='window.open(\"" . html_href_link(FILENAME_DEFAULT, "cID={$this->id}&amp;action=LoadContactsPopUp", 'SSL')."\",\"_blank\")'"). chr(10);
-  		if ($attach_exists) 	 echo html_icon('status/mail-attachment.png', TEXT_DOWNLOAD_ATTACHMENT,'small', "onclick='submitSeq($this->id, \"dn_attach\", true)'") . chr(10);
-  		if ($security_level > 3) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 			"onclick='if (confirm(\"" . ACT_WARN_DELETE_ACCOUNT . "\")) submitSeq($this->id, \"DeleteContact\")'") . chr(10);
+  		if ($js_function == "submitSeq") {
+			if ($security_level > 1) echo html_icon('mimetypes/x-office-presentation.png', TEXT_SALES, 'small', 	"onclick='contactChart(\"annual_sales\", $this->id)'") . chr(10);
+	  		if ($security_level > 1) echo html_icon('actions/edit-find-replace.png', TEXT_EDIT, 'small', 			"onclick='window.open(\"" . html_href_link(FILENAME_DEFAULT, "cID={$this->id}&amp;action=LoadContactsPopUp", 'SSL')."\",\"_blank\")'"). chr(10);
+	  		if ($attach_exists) 	 echo html_icon('status/mail-attachment.png', TEXT_DOWNLOAD_ATTACHMENT,'small', "onclick='submitSeq($this->id, \"ContactAttachmentDownloadFirst\", true)'") . chr(10);
+	  		if ($security_level > 3) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 			"onclick='if (confirm(\"" . ACT_WARN_DELETE_ACCOUNT . "\")) submitSeq($this->id, \"DeleteContact\")'") . chr(10);
+  		} else if ($js_function == "setReturnAccount"){
+  			switch ($this->journal_id) {
+  				case  6:
+  				case  7:
+  				case 12:
+  				case 13:
+  					switch ($this->journal_id) {
+  						case  6: $search_journal = 4;  break;
+  						case  7: $search_journal = 6;  break;
+  						case 12: $search_journal = 10; break;
+  						case 13: $search_journal = 12; break;
+  					}
+  					$open_order_array = $this->load_orders($search_journal);
+  					if ($open_order_array) {
+  						echo html_pull_down_menu('open_order_' . $this->id, $open_order_array, '', "onchange='setReturnOrder(\"{$this->id}\")'");
+  					}
+  			}
+  		}
   		echo "</td>";
   	}
 
@@ -441,6 +462,6 @@ class contacts {
   		echo "</td>";
   	}
 
-  	function __destruct(){print_r($this);}
+  //	function __destruct(){print_r($this);}
 }
 ?>

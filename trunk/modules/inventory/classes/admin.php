@@ -354,14 +354,13 @@ class admin extends \core\classes\admin {
 	}
 
   	function upgrade(\core\classes\basis &$basis) {
-    	global $admin;
     	parent::upgrade($basis);
     	if (version_compare($this->status, '3.1', '<') ) {
 	  		$tab_map = array('0' => '0');
-	  		if($admin->DataBase->table_exists(DB_PREFIX . 'inventory_categories')){
-		  		$result = $admin->DataBase->query("select * from " . DB_PREFIX . 'inventory_categories');
+	  		if($basis->DataBase->table_exists(DB_PREFIX . 'inventory_categories')){
+		  		$result = $basis->DataBase->query("select * from " . DB_PREFIX . 'inventory_categories');
 		  		while (!$result->EOF) {
-		    		$updateDB = $admin->DataBase->query("insert into " . TABLE_EXTRA_TABS . " set
+		    		$updateDB = $basis->DataBase->query("insert into " . TABLE_EXTRA_TABS . " set
 			  		  module_id = 'inventory',
 			  		  tab_name = '"    . $result->fields['category_name']        . "',
 			  		  description = '" . $result->fields['category_description'] . "',
@@ -369,12 +368,12 @@ class admin extends \core\classes\admin {
 		    		$tab_map[$result->fields['category_id']] = \core\classes\PDO::lastInsertId('id');
 		    		$result->MoveNext();
 		  		}
-		  		$admin->DataBase->query("DROP TABLE " . DB_PREFIX . "inventory_categories");
+		  		$basis->DataBase->query("DROP TABLE " . DB_PREFIX . "inventory_categories");
 	  		}
-	  		if($admin->DataBase->table_exists(DB_PREFIX . 'inventory_categories')){
-		  		$result = $admin->DataBase->query("select * from " . DB_PREFIX . 'inventory_fields');
+	  		if($basis->DataBase->table_exists(DB_PREFIX . 'inventory_categories')){
+		  		$result = $basis->DataBase->query("select * from " . DB_PREFIX . 'inventory_fields');
 		  		while (!$result->EOF) {
-		    		$updateDB = $admin->DataBase->query("insert into " . TABLE_EXTRA_FIELDS . " set
+		    		$updateDB = $basis->DataBase->query("insert into " . TABLE_EXTRA_FIELDS . " set
 			  		  module_id = 'inventory',
 			  		  tab_id = '"      . $tab_map[$result->fields['category_id']] . "',
 			  		  entry_type = '"  . $result->fields['entry_type']  . "',
@@ -383,23 +382,23 @@ class admin extends \core\classes\admin {
 			  		  params = '"      . $result->fields['params']      . "'");
 		    		$result->MoveNext();
 		  		}
-		  		$admin->DataBase->query("DROP TABLE " . DB_PREFIX . "inventory_fields");
+		  		$basis->DataBase->query("DROP TABLE " . DB_PREFIX . "inventory_fields");
 	  		}
 		}
 		if (version_compare($this->status, '3.2', '<') ) {
-	  		if (!$admin->DataBase->field_exists(TABLE_PRICE_SHEETS, 'type')) $admin->DataBase->query("ALTER TABLE " . TABLE_PRICE_SHEETS . " ADD type char(1) NOT NULL default 'c' AFTER sheet_name");
-	  		if (!$admin->DataBase->field_exists(TABLE_INVENTORY, 'price_sheet_v')) $admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD price_sheet_v varchar(32) default NULL AFTER price_sheet");
+	  		if (!$basis->DataBase->field_exists(TABLE_PRICE_SHEETS, 'type')) $basis->DataBase->query("ALTER TABLE " . TABLE_PRICE_SHEETS . " ADD type char(1) NOT NULL default 'c' AFTER sheet_name");
+	  		if (!$basis->DataBase->field_exists(TABLE_INVENTORY, 'price_sheet_v')) $basis->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD price_sheet_v varchar(32) default NULL AFTER price_sheet");
 		}
 		if (version_compare($this->status, '3.6', '<') ) {
-			$admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD INDEX ( `sku` )");
-			if (!$admin->DataBase->field_exists(TABLE_INVENTORY, 'attachments')) $admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD attachments text AFTER last_journal_date");
-			if (!$admin->DataBase->field_exists(TABLE_INVENTORY, 'full_price_with_tax')) $admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD full_price_with_tax FLOAT NOT NULL DEFAULT '0' AFTER full_price");
-			if (!$admin->DataBase->field_exists(TABLE_INVENTORY, 'product_margin')) $admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD product_margin FLOAT NOT NULL DEFAULT '0' AFTER full_price_with_tax");
-			if (!$admin->DataBase->field_exists(TABLE_EXTRA_FIELDS , 'use_in_inventory_filter')) $admin->DataBase->query("ALTER TABLE " . TABLE_EXTRA_FIELDS . " ADD use_in_inventory_filter ENUM( '0', '1' ) NOT NULL DEFAULT '0'");
-			$admin->DataBase->query("alter table " . TABLE_INVENTORY . " CHANGE `inactive` `inactive` ENUM( '0', '1' ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'");
+			$basis->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD INDEX ( `sku` )");
+			if (!$basis->DataBase->field_exists(TABLE_INVENTORY, 'attachments')) $basis->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD attachments text AFTER last_journal_date");
+			if (!$basis->DataBase->field_exists(TABLE_INVENTORY, 'full_price_with_tax')) $basis->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD full_price_with_tax FLOAT NOT NULL DEFAULT '0' AFTER full_price");
+			if (!$basis->DataBase->field_exists(TABLE_INVENTORY, 'product_margin')) $basis->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD product_margin FLOAT NOT NULL DEFAULT '0' AFTER full_price_with_tax");
+			if (!$basis->DataBase->field_exists(TABLE_EXTRA_FIELDS , 'use_in_inventory_filter')) $basis->DataBase->query("ALTER TABLE " . TABLE_EXTRA_FIELDS . " ADD use_in_inventory_filter ENUM( '0', '1' ) NOT NULL DEFAULT '0'");
+			$basis->DataBase->query("alter table " . TABLE_INVENTORY . " CHANGE `inactive` `inactive` ENUM( '0', '1' ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'");
 			\core\classes\fields::sync_fields('inventory', TABLE_INVENTORY);
-			$admin->DataBase->query("update " . TABLE_INVENTORY . " set inventory_type = 'ma' where inventory_type = 'as'");
-			$result = $admin->DataBase->query("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory'");
+			$basis->DataBase->query("update " . TABLE_INVENTORY . " set inventory_type = 'ma' where inventory_type = 'as'");
+			$result = $basis->DataBase->query("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory'");
 			while (!$result->EOF) {
 				$temp = unserialize($result->fields['params']);
 				switch($result->fields['field_name']){
@@ -451,45 +450,45 @@ class admin extends \core\classes\admin {
 			  		default:
 			  			$temp['inventory_type'] = 'ai:ci:ds:ia:lb:ma:mb:mi:ms:ns:sa:sf:si:sr:sv';
 				}
-		    	$updateDB = $admin->DataBase->query("update " . TABLE_EXTRA_FIELDS . " set params = '" . serialize($temp) . "' where id = '".$result->fields['id']."'");
+		    	$updateDB = $basis->DataBase->query("update " . TABLE_EXTRA_FIELDS . " set params = '" . serialize($temp) . "' where id = '".$result->fields['id']."'");
 		    	$result->MoveNext();
 		  	}
 		  	$haystack = array('attachments', 'account_sales_income', 'item_taxable', 'purch_taxable', 'image_with_path', 'account_inventory_wage', 'account_cost_of_sales', 'cost_method', 'lead_time');
-		  	$result = $admin->DataBase->query("update " . TABLE_EXTRA_FIELDS . " set entry_type = 'check_box' where field_name = 'inactive'");
-		  	$result = $admin->DataBase->query("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory'");
+		  	$result = $basis->DataBase->query("update " . TABLE_EXTRA_FIELDS . " set entry_type = 'check_box' where field_name = 'inactive'");
+		  	$result = $basis->DataBase->query("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory'");
 		  	while (!$result->EOF) {
 		  		$use_in_inventory_filter = '1';
 				if(in_array($result->fields['field_name'], $haystack)) $use_in_inventory_filter = '0';
-				$updateDB = $admin->DataBase->query("update " . TABLE_EXTRA_FIELDS . " set use_in_inventory_filter = '".$use_in_inventory_filter."' where id = '".$result->fields['id']."'");
+				$updateDB = $basis->DataBase->query("update " . TABLE_EXTRA_FIELDS . " set use_in_inventory_filter = '".$use_in_inventory_filter."' where id = '".$result->fields['id']."'");
 				$result->MoveNext();
 		  	}
-			if ($admin->DataBase->field_exists(TABLE_INVENTORY, 'purch_package_quantity')){
-		  		$result = $admin->DataBase->query("insert into ".TABLE_INVENTORY_PURCHASE." ( sku, vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v ) select sku, vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v  from " . TABLE_INVENTORY);
-		  		$admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " DROP `purch_package_quantity`");
+			if ($basis->DataBase->field_exists(TABLE_INVENTORY, 'purch_package_quantity')){
+		  		$result = $basis->DataBase->query("insert into ".TABLE_INVENTORY_PURCHASE." ( sku, vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v ) select sku, vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v  from " . TABLE_INVENTORY);
+		  		$basis->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " DROP `purch_package_quantity`");
 		  	}else{
-		  		$result = $admin->DataBase->query("insert into ".TABLE_INVENTORY_PURCHASE." ( sku, vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v ) select sku, vendor_id, description_purchase, 1, purch_taxable, item_cost, price_sheet_v  from " . TABLE_INVENTORY);
+		  		$result = $basis->DataBase->query("insert into ".TABLE_INVENTORY_PURCHASE." ( sku, vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v ) select sku, vendor_id, description_purchase, 1, purch_taxable, item_cost, price_sheet_v  from " . TABLE_INVENTORY);
 			}
 			require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 			$tax_rates = ord_calculate_tax_drop_down('c');
-			$result = $admin->DataBase->query("SELECT id, item_taxable, full_price, item_cost FROM ".TABLE_INVENTORY);
+			$result = $basis->DataBase->query("SELECT id, item_taxable, full_price, item_cost FROM ".TABLE_INVENTORY);
 			while(!$result->EOF){
 				$sql_data_array = array();
-				$sql_data_array['full_price_with_tax'] = round((1 +($tax_rates[$result->fields['item_taxable']]['rate']/100))  * $result->fields['full_price'], $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
-				if($result->fields['item_cost'] <> '' && $result->fields['item_cost'] > 0) $sql_data_array['product_margin'] = round($sql_data_array['full_price_with_tax'] / $result->fields['item_cost'], $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
+				$sql_data_array['full_price_with_tax'] = round((1 +($tax_rates[$result->fields['item_taxable']]['rate']/100))  * $result->fields['full_price'], $basis->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
+				if($result->fields['item_cost'] <> '' && $result->fields['item_cost'] > 0) $sql_data_array['product_margin'] = round($sql_data_array['full_price_with_tax'] / $result->fields['item_cost'], $basis->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
 				db_perform(TABLE_INVENTORY, $sql_data_array, 'update', "id = " . $result->fields['id']);
 				$result->MoveNext();
 			}
 		  	validate_path(DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/attachments/', 0755);
 		}
 		if (version_compare($this->status, '3.7.1', '<') ) {
-			if (!$admin->DataBase->field_exists(TABLE_INVENTORY_HISTORY, 'avg_cost')) {
-				$admin->DataBase->query("ALTER TABLE ".TABLE_INVENTORY_HISTORY." ADD avg_cost FLOAT NOT NULL DEFAULT '0' AFTER unit_cost");
-				$admin->DataBase->query("UPDATE ".TABLE_INVENTORY_HISTORY." SET avg_cost = unit_cost");
+			if (!$basis->DataBase->field_exists(TABLE_INVENTORY_HISTORY, 'avg_cost')) {
+				$basis->DataBase->query("ALTER TABLE ".TABLE_INVENTORY_HISTORY." ADD avg_cost FLOAT NOT NULL DEFAULT '0' AFTER unit_cost");
+				$basis->DataBase->query("UPDATE ".TABLE_INVENTORY_HISTORY." SET avg_cost = unit_cost");
 			}
-			$result = $admin->DataBase->query("select id, params from ".TABLE_EXTRA_FIELDS." where module_id = 'inventory' AND field_name = 'account_cost_of_sales'");
+			$result = $basis->DataBase->query("select id, params from ".TABLE_EXTRA_FIELDS." where module_id = 'inventory' AND field_name = 'account_cost_of_sales'");
 			$temp = unserialize($result->fields['params']);
 			$temp['inventory_type'] = 'ai:ci:ds:ia:lb:ma:mb:mi:ms:ns:sa:sf:si:sr:sv';
-			$updateDB = $admin->DataBase->query("update ".TABLE_EXTRA_FIELDS." set params='".serialize($temp)."' where id='".$result->fields['id']."'");
+			$updateDB = $basis->DataBase->query("update ".TABLE_EXTRA_FIELDS." set params='".serialize($temp)."' where id='".$result->fields['id']."'");
 		}
 		\core\classes\fields::sync_fields('inventory', TABLE_INVENTORY);
 	}

@@ -175,7 +175,7 @@ class admin extends \core\classes\admin {
 				'text'        => sprintf(TEXT_NEW_ARGS, TEXT_CUSTOMER),
 				'order'       => 5,
 				'security_id' => SECURITY_ID_MAINTAIN_CUSTOMERS,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;action=new&amp;type=c', 'SSL'),
+				'link'        => html_href_link(FILENAME_DEFAULT, 'action=NewContact&amp;type=c', 'SSL'),
 				'show_in_users_settings' => false,
 				'params'	    => '',
 		);
@@ -190,14 +190,14 @@ class admin extends \core\classes\admin {
 		$this->mainmenu["customers"]['submenu']["crm"] = array(
 				'text'        => TEXT_PHREECRM,
 				'order'       => 15,
-				'link'        => '',//html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=i&amp;list=1', 'SSL'),
+				'link'        => html_href_link(FILENAME_DEFAULT, 'action=LoadContactMgrPage&amp;type=i&amp;list=1', 'SSL'),
 				'show_in_users_settings' => true,
 				'params'	  => '',
 		);
 		$this->mainmenu["vendors"]['submenu']["contact"] = array(
 				'order'		  => 10,
 				'text'        => TEXT_VENDORS,
-				'link'        => '',//html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=v&amp;list=1', 'SSL'),
+				'link'        => html_href_link(FILENAME_DEFAULT, 'action=LoadContactMgrPage&amp;type=v&amp;list=1', 'SSL'),
 				'show_in_users_settings' => false,
 				'params'      => '',
 		);
@@ -205,7 +205,7 @@ class admin extends \core\classes\admin {
 				'text'        => sprintf(TEXT_NEW_ARGS, TEXT_VENDOR),
 				'order'       => 5,
 				'security_id' => SECURITY_ID_MAINTAIN_VENDORS,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;action=new&amp;type=v', 'SSL'),
+				'link'        => html_href_link(FILENAME_DEFAULT, 'action=NewContact&amp;type=v', 'SSL'),
 				'show_in_users_settings' => false,
 				'params'      => '',
 		);
@@ -220,7 +220,7 @@ class admin extends \core\classes\admin {
 		$this->mainmenu["employees"]['submenu']["contact"] = array(
 				'order'		  => 10,
 				'text'        => TEXT_EMPLOYEES,
-				'link'        => '',//html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=e&amp;list=1', 'SSL'),
+				'link'        => html_href_link(FILENAME_DEFAULT, 'action=LoadContactMgrPage&amp;type=e&amp;list=1', 'SSL'),
 				'show_in_users_settings' => false,
 				'params'      => '',
 		);
@@ -228,7 +228,7 @@ class admin extends \core\classes\admin {
 				'text'        => sprintf(TEXT_NEW_ARGS, TEXT_EMPLOYEE),
 				'order'       => 5,
 				'security_id' => SECURITY_ID_MAINTAIN_EMPLOYEES,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;action=new&amp;type=e', 'SSL'),
+				'link'        => html_href_link(FILENAME_DEFAULT, 'action=NewContact&amp;type=e', 'SSL'),
 				'show_in_users_settings' => false,
 				'params'      => '',
 		);
@@ -244,7 +244,7 @@ class admin extends \core\classes\admin {
 			$this->mainmenu["company"]['submenu']["branches"] = array(
 					'order'		  => 55,
 					'text'        => TEXT_BRANCHES,
-					'link'        => '',//html_href_link(FILENAME_DEFAULT, 'action=LoadContactMgrPage&amp;type=b&amp;list=1', 'SSL'),
+					'link'        => html_href_link(FILENAME_DEFAULT, 'action=LoadContactMgrPage&amp;type=b&amp;list=1', 'SSL'),
 					'show_in_users_settings' => false,
 					'params'      => '',
 			);
@@ -252,7 +252,7 @@ class admin extends \core\classes\admin {
 					'text'        => sprintf(TEXT_NEW_ARGS, TEXT_BRANCH),
 					'order'        => 55,
 					'security_id' => SECURITY_ID_MAINTAIN_BRANCH,
-					'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;action=new&amp;type=b', 'SSL'),
+					'link'        => html_href_link(FILENAME_DEFAULT, 'action=NewContact&amp;type=b', 'SSL'),
 					'show_in_users_settings' => false,
 					'params'      => '',
 			);
@@ -268,7 +268,7 @@ class admin extends \core\classes\admin {
 		$this->mainmenu["customers"]['submenu']['projects'] = array(
 				'order'		  => 60,
 				'text'        => TEXT_PROJECTS,
-				'link'        => '',//html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;type=j&amp;list=1', 'SSL'),
+				'link'        => html_href_link(FILENAME_DEFAULT, 'action=LoadContactMgrPage&amp;type=j&amp;list=1', 'SSL'),
 				'show_in_users_settings' => false,
 				'params'      => '',
 		);
@@ -276,7 +276,7 @@ class admin extends \core\classes\admin {
 				'text'        => sprintf(TEXT_NEW_ARGS, TEXT_PROJECT),
 				'order'       => 5,
 				'security_id' => SECURITY_ID_MAINTAIN_PROJECTS,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'module=contacts&amp;page=main&amp;action=new&amp;type=j', 'SSL'),
+				'link'        => html_href_link(FILENAME_DEFAULT, 'action=NewContact&amp;type=j', 'SSL'),
 				'show_in_users_settings' => false,
 				'params'      => '',
 		);
@@ -371,7 +371,7 @@ class admin extends \core\classes\admin {
 			if($_SERVER['REQUEST_METHOD'] == 'POST') $basis->cInfo->contact_show_inactive = false; // show inactive checkbox
 		}
 
-		$criteria[] = "a.type = '{$basis->cInfo->type}m'";
+		$criteria[] = "c.type = '{$basis->cInfo->type}'";
 		if (isset($basis->cInfo->search_text) && $basis->cInfo->search_text <> '') {
 			$search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.address1',
 					'a.address2', 'a.city_town', 'a.postal_code', 'c.short_name');
@@ -400,6 +400,20 @@ class admin extends \core\classes\admin {
 		}
 
 	}
+	/**
+	 * will create new contact depending on type
+	 * @param unknown $basis
+	 */
+	function NewContact (\core\classes\basis &$basis) {
+		$temp = "\\contacts\\classes\\type\\{$basis->cInfo->type}";
+		$contact = new $temp();
+		\core\classes\user::validate_security($contact->security_level, 2);
+		if (! isset($basis->cInfo->type)) $basis->cInfo->type = 'c'; // default to customer
+		$sql = $basis->DataBase->prepare("INSERT INTO ".TABLE_CONTACTS." (class, type ) VALUES ('" . addcslashes(get_class($contact), '\\') . "', '{$contact->type}')");
+		$sql->execute();
+		$basis->cInfo->cID =  $basis->DataBase->lastInsertId('id');
+		$this->LoadContactPage($basis);
+	}
 
 	/**
 	 * this function will load the contact page
@@ -407,8 +421,8 @@ class admin extends \core\classes\admin {
 	function LoadContactPage(\core\classes\basis &$basis) {
 		if ( isset($basis->cInfo->rowSeq)) $basis->cInfo->cID = $basis->cInfo->rowSeq;
 		if ($basis->cInfo->cID == '') throw new \core\classes\userException("cID variable isn't set can't execute method LoadContactPage ");
-		$inactive = '';
-		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->cID}")->execute();
+		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->cID}");
+		$sql->execute();
 		$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
 
 		for ($i = 1; $i < 13; $i++) {
@@ -422,12 +436,11 @@ class admin extends \core\classes\admin {
 		}
 		// load the tax rates
 		$basis->cInfo->tax_rates       = ord_calculate_tax_drop_down($basis->cInfo->contact->type, true);
-		$basis->cInfo->sales_rep_array = gen_get_rep_ids($basis->cInfo->contact->type);
-		$result = $basis->DataBase->prepare("SELECT id, contact_first, contact_last, gl_type_account FROM ".TABLE_CONTACTS." WHERE type='e'");
+		$result = $basis->DataBase->prepare("SELECT id, contact_first, contact_last FROM ".TABLE_CONTACTS." WHERE type='e'");
 		$sql->execute();
-		$basis->cInfo->reps       = array();
+		$basis->cInfo->all_employees       = array();
 		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
-			$basis->cInfo->reps[$result['id']] = $result['contact_first'] . ' ' . $result['contact_last'];
+			$basis->cInfo->all_employees[$result['id']] = $result['contact_first'] . ' ' . $result['contact_last'];
 		}
 		$basis->module		= 'contacts';
 		$basis->page		= 'main';
@@ -447,6 +460,8 @@ class admin extends \core\classes\admin {
 
 	function SaveContact (\core\classes\basis &$basis) {
 		if ($basis->cInfo->id == '') throw new \core\classes\userException("id variable isn't set can't execute method SaveContact ");
+		if ($_POST['crm_date']) $_POST['crm_date'] = gen_db_date($_POST['crm_date']);
+		if ($_POST['due_date']) $_POST['due_date'] = gen_db_date($_POST['due_date']);
 		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->id}");
 		$sql->execute();
 		$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
@@ -456,12 +471,44 @@ class admin extends \core\classes\admin {
 		$basis->cInfo->contact->save();
 		if ($basis->cInfo->contact->type <> 'i' && ($_POST['i_short_name'] || $_POST['address']['im']['primary_name'])) { // is null
 			$crmInfo = new \contacts\classes\type\i;
-			$crmInfo->auto_field  = $basis->cInfo->contact->type=='v' ? 'next_vend_id_num' : 'next_cust_id_num';
 			$crmInfo->dept_rep_id = $basis->cInfo->contact->id;
 			// error check contact
 			$crmInfo->data_complete();
 			$crmInfo->save();
 		}
+		// Check attachments
+		$result = $admin->DataBase->query("SELECT attachments FROM ".TABLE_CONTACTS." WHERE id = {$basis->cInfo->contact->id}");
+		$attachments = $result['attachments'] ? unserialize($result['attachments']) : array();
+		for ($image_id = 0; $image_id <= sizeof($attachments); $image_id++) {
+			if (isset($_POST['rm_attach_'.$image_id])) {
+				@unlink("{$this->dir_attachments}contacts_{$basis->cInfo->contact->id}_{$image_id}.zip");
+				unset($attachments[$image_id]);
+			}
+		}
+		if (is_uploaded_file($_FILES['file_name']['tmp_name'])) { // find an image slot to use
+			$image_id = 0;
+			while (true) {
+				if (!file_exists("{$this->dir_attachments}contacts_{$basis->cInfo->contact->id}_{$image_id}.zip")) break;
+				$image_id++;
+			}
+			saveUploadZip('file_name', "{$this->dir_attachments}contacts_{$basis->cInfo->contact->id}_{$image_id}.zip");
+			$attachments[$image_id] = $_FILES['file_name']['name'];
+		}
+		$sql = $admin->DataBase->prepare("UPDATE ".TABLE_CONTACTS." SET attachments = '".serialize($attachments). "' WHERE id = {$basis->cInfo->contact->id}");
+		$sql->execute();
+		// check for crm notes
+		if ($_POST['crm_action'] <> '' || $_POST['crm_note'] <> '') {
+			$sql_data_array = array(
+					'contact_id' => $basis->cInfo->contact->id,
+					'log_date'   => $_POST['crm_date'],
+					'entered_by' => $_POST['crm_rep_id'],
+					'action'     => $_POST['crm_action'],
+					'notes'      => db_prepare_input($_POST['crm_note']),
+			);
+			$sql = $basis->Database->prepare("INSERT INTO " . TABLE_CONTACTS_LOG . " SET (contact_id, log_date, entered_by, action, notes) VALUES (:contact_id, :log_date, :entered_by, :action, :notes)");
+			$sql->execute($sql_data_array);
+		}
+		$basis->addEventToStack('LoadContactMgrPage');
 	}
 
 	function DeleteContact (\core\classes\basis &$basis) {
@@ -471,6 +518,56 @@ class admin extends \core\classes\admin {
 		$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
 		// error check
 		$basis->cInfo->contact->delete();
+		$basis->addEventToStack('LoadContactMgrPage');
+	}
+
+	function ContactAttachmentDownload (\core\classes\basis &$basis) {
+		$cID   = db_prepare_input($_POST['id']);
+		$imgID = db_prepare_input($_POST['rowSeq']);
+		$filename = "contacts_{$cID}_{$imgID}.zip";
+		if (file_exists($this->dir_attachments . $filename)) {
+			$backup = new \phreedom\classes\backup();
+			$backup->download($this->dir_attachments, $filename, true);
+		}
+	}
+
+	function ContactAttachmentDownloadFirst (\core\classes\basis &$basis) {
+	//	case 'dn_attach': // download from list, assume the first document only
+		$cID   = db_prepare_input($_POST['rowSeq']);
+		$result = $admin->DataBase->query("SELECT attachments FROM ".TABLE_CONTACTS." WHERE id = $cID");
+		$attachments = unserialize($result['attachments']);
+		foreach ($attachments as $key => $value) {
+			$filename = "contacts_{$cID}_{$key}.zip";
+			if (file_exists($this->dir_attachments . $filename)) {
+				$backup = new \phreedom\classes\backup();
+				$backup->download($this->dir_attachments, $filename, true);
+			}
+		}
+	}
+
+	function LoadContactsAccountsPopUp(\core\classes\basis &$basis) {
+		$this->LoadContactMgrPage($basis);
+		$basis->page			= 'popup_accts';
+		$basis->include_header 	= false;
+		$basis->include_footer 	= false;
+	}
+
+	function LoadTermsPopUp (\core\classes\basis &$basis) {
+		$temp = "\\contacts\\classes\\type\\{$basis->cInfo->type}";
+		$basis->cInfo->contact = new $temp;
+		$basis->cInfo->cal_terms = array(
+				'name'      => 'dateReference',
+				'form'      => 'popup_terms',
+				'fieldname' => 'due_date',
+				'imagename' => 'btn_terms',
+				'default'   => '',
+				'params'    => array('align' => 'left'),
+		);
+
+		$basis->page			= 'popup_terms';
+		$basis->page_title 		= TEXT_PAYMENT_TERMS;
+		$basis->include_header 	= false;
+		$basis->include_footer 	= false;
 	}
 
 	function load_demo() {

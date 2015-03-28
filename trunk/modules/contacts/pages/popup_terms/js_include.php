@@ -22,7 +22,7 @@
 <!--
 // pass any php variables generated during pre-process that are used in the javascript functions.
 // Include translations here as well.
-<?php echo js_calendar_init($cal_terms); ?>
+<?php echo js_calendar_init($basis->cInfo->cal_terms); ?>
 
 function init() {
 	SetDisabled();
@@ -40,9 +40,9 @@ function changeOptions() {
 
 function LoadDefaults() {
 	if (document.popup_terms.special_terms[0].checked) {
-		document.getElementById('early_percent').value = '<?php echo constant($terms_type . "_PREPAYMENT_DISCOUNT_PERCENT"); ?>';
-		document.getElementById('early_days').value = '<?php echo constant($terms_type . "_PREPAYMENT_DISCOUNT_DAYS"); ?>';
-		document.getElementById('standard_days').value = '<?php echo constant($terms_type . "_NUM_DAYS_DUE"); ?>';
+		document.getElementById('early_percent').value = '<?php echo $basis->cInfo->contact->discount_percent; ?>';
+		document.getElementById('early_days').value = '<?php echo $basis->cInfo->contact->discount_days; ?>';
+		document.getElementById('standard_days').value = '<?php echo $basis->cInfo->contact->num_days_due; ?>';
 		document.popup_terms.due_date.value = '';
 	} else if (document.popup_terms.special_terms[1].checked) {
 		document.getElementById('early_percent').value = '';
@@ -55,20 +55,20 @@ function LoadDefaults() {
 		document.getElementById('standard_days').value = '';
 		document.popup_terms.due_date.value = '';
 	} else if (document.popup_terms.special_terms[3].checked) {
-		document.getElementById('early_percent').value = '<?php echo constant($terms_type . "_PREPAYMENT_DISCOUNT_PERCENT"); ?>';
-		document.getElementById('early_days').value = '<?php echo constant($terms_type . "_PREPAYMENT_DISCOUNT_DAYS"); ?>';
-		document.getElementById('standard_days').value = '<?php echo constant($terms_type . "_NUM_DAYS_DUE"); ?>';
+		document.getElementById('early_percent').value = '<?php echo $basis->cInfo->contact->discount_percent; ?>';
+		document.getElementById('early_days').value = '<?php echo $basis->cInfo->contact->discount_days; ?>';
+		document.getElementById('standard_days').value = '<?php echo $basis->cInfo->contact->num_days_due; ?>';
 		document.popup_terms.due_date.value = '';
 	} else if (document.popup_terms.special_terms[4].checked) {
-		document.getElementById('early_percent').value = '<?php echo constant($terms_type . "_PREPAYMENT_DISCOUNT_PERCENT"); ?>';
-		document.getElementById('early_days').value = '<?php echo constant($terms_type . "_PREPAYMENT_DISCOUNT_DAYS"); ?>';
+		document.getElementById('early_percent').value = '<?php echo $basis->cInfo->contact->discount_percent; ?>';
+		document.getElementById('early_days').value = '<?php echo $basis->cInfo->contact->discount_days; ?>';
 		document.getElementById('standard_days').value = '';
 		document.popup_terms.due_date.value = '<?php echo $default_date; ?>';
 	} else if (document.popup_terms.special_terms[5].checked) {
-		document.getElementById('early_percent').value = '<?php echo constant($terms_type . "_PREPAYMENT_DISCOUNT_PERCENT"); ?>';
-		document.getElementById('early_days').value = '<?php echo constant($terms_type . "_PREPAYMENT_DISCOUNT_DAYS"); ?>';
+		document.getElementById('early_percent').value = '<?php echo $basis->cInfo->contact->discount_percent; ?>';
+		document.getElementById('early_days').value = '<?php echo $basis->cInfo->contact->discount_days; ?>';
 		document.getElementById('standard_days').value = '';
-		document.popup_terms.due_date.value = '<?php echo $month_end; ?>';
+		document.popup_terms.due_date.value = '<?php echo $month_end; //@todo ?>';
 	}
 }
 
@@ -149,9 +149,9 @@ function setReturnTerms() {
 }
 
 function js_terms_to_language(terms_encoded) { // modified from /includes/general/functions/gen_functions.php function: gen_terms_to_language
-	var prepayment_discount_percent = '<?php echo constant($terms_type . '_PREPAYMENT_DISCOUNT_PERCENT'); ?>';
-	var prepayment_discount_days = '<?php echo constant($terms_type . '_PREPAYMENT_DISCOUNT_DAYS'); ?>';
-	var num_days_due = '<?php echo constant($terms_type . '_NUM_DAYS_DUE'); ?>';
+	var prepayment_discount_percent = '<?php echo $basis->cInfo->contact->discount_percent; ?>';
+	var prepayment_discount_days = '<?php echo $basis->cInfo->contact->discount_days; ?>';
+	var num_days_due = '<?php echo $basis->cInfo->contact->num_days_due; ?>';
 	var terms = terms_encoded.split(':');
 	var result = '';
 	switch (terms[0]) {

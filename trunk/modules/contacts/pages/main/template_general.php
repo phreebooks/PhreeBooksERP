@@ -24,10 +24,20 @@
       <tr>
         <td align="right"><?php echo constant('ACT_' . strtoupper($basis->cInfo->contact->type) . '_SHORT_NAME') . ($basis->cInfo->contact->auto_type == false ? '' : ' (' . TEXT_LEAVE_BLANK_FOR_SYSTEM_GENERATED_ID. ') ' ); ?></td>
         <td><?php echo html_input_field('short_name', $basis->cInfo->contact->short_name, 'size="21" maxlength="20"', $basis->cInfo->contact->auto_type == false ? true : false); ?></td>
+        <?php if (sizeof($basis->cInfo->contact->contacts_levels) > 0) { ?>
+        <td align="right"><?php echo CONTACT_LEVEL; ?></td>
+        <td><?php echo html_pull_down_menu('contacts_level', $basis->cInfo->contact->contacts_levels, $basis->cInfo->contact->contacts_level ? $basis->cInfo->contact->contacts_level : '0'); ?></td>
+        <td align="right"><?php echo constant('ACT_' . strtoupper($basis->cInfo->contact->type) . '_REP_ID'); ?></td>
+        <td><?php echo html_pull_down_menu('dept_rep_id', $basis->cInfo->contact->sales_rep_array, $basis->cInfo->contact->dept_rep_id ? $basis->cInfo->contact->dept_rep_id : 'r'); ?></td>
+<?php } else { ?>
+        <td align="right"><?php echo constant('ACT_' . strtoupper($basis->cInfo->contact->type) . '_REP_ID'); ?></td>
+        <td><?php echo html_pull_down_menu('dept_rep_id', $basis->cInfo->contact->sales_rep_array, $basis->cInfo->contact->dept_rep_id ? $basis->cInfo->contact->dept_rep_id : 'r'); ?></td>
+
+<?php } ?>
+      </tr>
+      <tr>
         <td align="right"><?php echo TEXT_INACTIVE; ?></td>
         <td><?php echo html_checkbox_field('inactive', '1', $basis->cInfo->contact->inactive); ?></td>
-        <td align="right"><?php echo constant('ACT_' . strtoupper($basis->cInfo->contact->type) . '_REP_ID'); ?></td>
-        <td><?php echo html_pull_down_menu('dept_rep_id', $basis->cInfo->sales_rep_array, $basis->cInfo->contact->dept_rep_id ? $basis->cInfo->contact->dept_rep_id : '0'); ?></td>
       </tr>
       <tr>
         <td align="right"><?php echo TEXT_FIRST_NAME; ?></td>
@@ -49,7 +59,7 @@
        <td align="right"><?php echo constant('ACT_' . strtoupper($basis->cInfo->contact->type) . '_ID_NUMBER'); ?></td>
        <td><?php echo html_input_field('gov_id_number', $basis->cInfo->contact->gov_id_number, 'size="17" maxlength="16"'); ?></td>
 	   <td align="right"><?php echo TEXT_DEFAULT_SALES_TAX; ?></td>
-       <td><?php echo html_pull_down_menu('tax_id', $tax_rates, $basis->cInfo->contact->tax_id); ?></td>
+       <td><?php echo html_pull_down_menu('tax_id', $basis->cInfo->tax_rates, $basis->cInfo->contact->tax_id); ?></td>
        <td><?php echo TEXT_PAYMENT_TERMS; ?></td>
 	   <td><?php
     	  echo html_hidden_field('terms', $basis->cInfo->contact->special_terms) . chr(10);
@@ -88,7 +98,7 @@ if (sizeof($basis->cInfo->contact->attachments) > 0) {
     	echo '<tr>';
 	    echo ' <td>' . html_checkbox_field('rm_attach_'.$key, '1', false) . '</td>' . chr(10);
 	    echo " <td>$value</td>" . chr(10);
-	    echo ' <td>' . html_button_field('dn_attach_'.$key, TEXT_DOWNLOAD, "onclick='submitSeq({$key}, \"download\", true)'") . '</td>';
+	    echo ' <td>' . html_button_field('dn_attach_'.$key, TEXT_DOWNLOAD, "onclick='submitSeq({$key}, \"ContactAttachmentDownload\", true)'") . '</td>';
 	    echo '</tr>' . chr(10);
   	}
 } else {

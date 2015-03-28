@@ -20,7 +20,7 @@ namespace assets\classes;
 class fields extends \core\classes\fields{
 	public  $help_path   = '07.04.05';
 	public  $title       = '';
-	public  $module      = 'assets';
+	public  $current_module      = 'assets';
 	public  $db_table    = TABLE_ASSETS;
 	public  $type_params = 'asset_type';
 	public  $extra_buttons = '';

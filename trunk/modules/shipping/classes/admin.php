@@ -110,11 +110,10 @@ class admin extends \core\classes\admin {
 	}
 
 	function upgrade(\core\classes\basis &$basis) {
-	    global $admin;
 	    parent::upgrade($basis);
 	    if (version_compare($this->status, '3.2', '<') ) {
-		  	if (!$admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_shipment_num')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_shipment_num VARCHAR(16) NOT NULL DEFAULT '1'");
-		  	if ($admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_shipment_desc')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_shipment_desc");
+		  	if (!$basis->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_shipment_num')) $basis->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_shipment_num VARCHAR(16) NOT NULL DEFAULT '1'");
+		  	if ($basis->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_shipment_desc')) $basis->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_shipment_desc");
 		}
 	}
 

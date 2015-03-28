@@ -18,15 +18,15 @@
 //
 namespace core\classes;
 class fields {
-	public  $help_path      = '';
-	public  $title          = '';
-	public  $module         = '';
-	public  $db_table       = '';
-	public  $type_desc      = '';
+	public  $help_path;
+	public  $title;
+	public  $current_module;
+	public  $db_table;
+	public  $type_desc;
 	public  $type_array     = array();
-    public  $type_params    = '';
-    public  $extra_buttons  = '';
-	public  $extra_tab_html = '';
+    public  $type_params;
+    public  $extra_buttons;
+	public  $extra_tab_html;
 
 	public function __construct($sync = true, $type = null){
 	  	$this->security_id = \core\classes\user::security_level(SECURITY_ID_CONFIGURATION);
@@ -34,7 +34,7 @@ class fields {
 	  	foreach ($_REQUEST as $key => $value) $this->$key = $value;
 	  	$this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
 	  	$this->type = $type;
-		if ($sync) $this->sync_fields($this->module, $this->db_table);
+		if ($sync) $this->sync_fields($this->current_module, $this->db_table);
 	}
 
 	function btn_save($id = '') {
@@ -49,7 +49,7 @@ class fields {
 		if (in_array($this->field_name, $reserved_names)) throw new \core\classes\userException(EXTRA_FIELD_RESERVED_WORD);
 		// if the id is empty then check for duplicate field names
 		if($this->id == ''){
-		   $result = $admin->DataBase->query("SELECT id FROM ".TABLE_EXTRA_FIELDS." WHERE module_id='{$this->module}' AND field_name='{$this->field_name}'");
+		   $result = $admin->DataBase->query("SELECT id FROM ".TABLE_EXTRA_FIELDS." WHERE module_id='{$this->current_module}' AND field_name='{$this->field_name}'");
 		   if ($result->rowCount() > 0 && $this->id =='') throw new \core\classes\userException(EXTRA_FIELD_ERROR_DUPLICATE);
 		}
 		// condense the type array to a single string.
@@ -83,7 +83,7 @@ class fields {
 		  case 'inventory_link':
 			$params['default']      = db_prepare_input($_POST['link_default']);
 			$values['entry_type']   = 'varchar(255)';
-			$values['entry_params'] = " default '".$params['default']."'";
+			$values['entry_params'] = " default '{$params['default']}'";
 			break;
 		  case 'integer':
 			$params['select']  = db_prepare_input($_POST['integer_range']);
@@ -95,7 +95,7 @@ class fields {
 				case "3": $values['entry_type'] = 'int';       break;
 				case "4": $values['entry_type'] = 'bigint';
 			}
-			$values['entry_params'] = " default '" . $params['default'] . "'";
+			$values['entry_params'] = " default '{$params['default']}'";
 			break;
 		  case 'decimal':
 			$params['select']  = db_prepare_input($_POST['decimal_range']);
@@ -151,7 +151,7 @@ class fields {
 		  default:
 		}
 		$sql_data_array = array(
-		  'module_id'   => $this->module,
+		  'module_id'   => $this->current_module,
 		  'description' => $this->description,
 		  'params'      => serialize($params),
 		);
@@ -173,13 +173,13 @@ class fields {
 			  }
 		  }
 		  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array, 'update', "id = " . $this->id );
-		  gen_add_audit_log($this->module .' '. TEXT_CUSTOM_FIELDS . ' - ' . TEXT_UPDATE, $this->id  . ' - ' . $this->field_name);
+		  gen_add_audit_log($this->current_module .' '. TEXT_CUSTOM_FIELDS . ' - ' . TEXT_UPDATE, $this->id  . ' - ' . $this->field_name);
 		} else {
 		  $sql = "ALTER TABLE {$this->db_table} ADD COLUMN {$this->field_name} {$values['entry_type']} " . (isset($values['entry_params']) ? $values['entry_params'] : '');
 		  $admin->DataBase->query($sql);
 		  db_perform(TABLE_EXTRA_FIELDS, $sql_data_array, 'insert');
 		  $this->id  = \core\classes\PDO::lastInsertId('id');
-		  gen_add_audit_log($this->module .' '. TEXT_CUSTOM_FIELDS . ' - ' . TEXT_NEW, $this->id  . ' - ' . $this->field_name);
+		  gen_add_audit_log($this->current_module .' '. TEXT_CUSTOM_FIELDS . ' - ' . TEXT_NEW, $this->id  . ' - ' . $this->field_name);
 		}
 		return true;
 	}
@@ -192,20 +192,21 @@ class fields {
 		if ($this->tab_id == '0') throw new \core\classes\userException (INV_CANNOT_DELETE_SYSTEM); // don't allow deletion of system fields
 		$admin->DataBase->exec("DELETE FROM ".TABLE_EXTRA_FIELDS." WHERE id=$this->id");
 		$admin->DataBase->query("ALTER TABLE $this->db_table DROP COLUMN $this->field_name");
-		gen_add_audit_log ($this->module.' '. TEXT_CUSTOM_FIELDS . ' - ' . TEXT_DELETE, "$id - $this->field_name");
+		gen_add_audit_log ($this->current_module.' '. TEXT_CUSTOM_FIELDS . ' - ' . TEXT_DELETE, "$id - $this->field_name");
 		return true;
 	}
 
   	function build_main_html() {
   		global $admin;
-		$tab_array = $this->get_tabs($this->module);
+		$tab_array = $this->get_tabs($this->current_module);
     	$content = array();
 		$content['thead'] = array(
 	  		'value' => array(TEXT_DESCRIPTION, TEXT_FIELD_NAME, TEXT_TAB_TITLE, TEXT_TYPE, $this->type_desc, TEXT_SORT_ORDER, TEXT_GROUP, TEXT_ACTION),
 	  		'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 		);
 		$field_list = array('id', 'field_name', 'entry_type', 'description', 'tab_id', 'params', 'sort_order', 'group_by');
-    	$sql = $admin->DataBase->prepare("SELECT ".implode(', ', $field_list)." FROM ".TABLE_EXTRA_FIELDS." WHERE module_id='{$this->module}' ORDER BY group_by, sort_order")->execute();
+    	$sql = $admin->DataBase->prepare("SELECT ".implode(', ', $field_list)." FROM ".TABLE_EXTRA_FIELDS." WHERE module_id='{$this->current_module}' ORDER BY group_by, sort_order");
+    	$sql->execute();
     	$rowCnt = 0;
     	while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
 	  		$params  = unserialize($result['params']);
@@ -272,7 +273,7 @@ class fields {
 		   	}
 		}
 		// build the tab list
-		$tab_list = gen_build_pull_down($this->get_tabs($this->module));
+		$tab_list = gen_build_pull_down($this->get_tabs($this->current_module));
 		array_shift($tab_list);
 		if ($action == 'new' && sizeof($tab_list) < 1) throw new \core\classes\userException(EXTRA_FIELDS_ERROR_NO_TABS);
 	    $choices  =  explode(':',$params[$this->type_params]);
@@ -405,7 +406,7 @@ class fields {
   	public function what_to_save(){
   		global $admin;
   		$sql_data_array = array();
-    	$sql = $admin->DataBase->prepare("SELECT field_name, entry_type, params, required, field_name FROM " . TABLE_EXTRA_FIELDS . " WHERE module_id='{$this->module}'");
+    	$sql = $admin->DataBase->prepare("SELECT field_name, entry_type, params, required, field_name FROM " . TABLE_EXTRA_FIELDS . " WHERE module_id='{$this->current_module}'");
     	$sql->execute();
     	while ($xtra_db_fields = $sql->fetch(\PDO::FETCH_LAZY)) {
     		if ($xtra_db_fields['field_name'] == 'id' )  break;
@@ -440,10 +441,11 @@ class fields {
   	/**
   	 * displays form fields.
   	 */
-  	public function display(){
-  		global $admin, $cInfo;
+  	public function display($fields){
+  		global $admin;
   		$tab_array = array();
-		$sql = $admin->DataBase->prepare("SELECT fields.tab_id, tabs.tab_name as tab_name, fields.description as description, fields.params as params, fields.group_by, fields.field_name, fields.entry_type FROM ".TABLE_EXTRA_FIELDS." AS fields JOIN ".TABLE_EXTRA_TABS." AS tabs ON (fields.tab_id = tabs.id) WHERE fields.module_id='{$this->module}' ORDER BY tabs.sort_order ASC, fields.group_by ASC, fields.sort_order ASC")->execute();
+		$sql = $admin->DataBase->prepare("SELECT fields.tab_id, tabs.tab_name as tab_name, fields.description as description, fields.params as params, fields.group_by, fields.field_name, fields.entry_type FROM ".TABLE_EXTRA_FIELDS." AS fields JOIN ".TABLE_EXTRA_TABS." AS tabs ON (fields.tab_id = tabs.id) WHERE fields.module_id='{$this->current_module}' ORDER BY tabs.sort_order ASC, fields.group_by ASC, fields.sort_order ASC");
+		$sql->execute();
 		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
   			if (!in_array($result['tab_id'], $tab_array)){
   				if (!empty($tab_array)){
@@ -461,17 +463,17 @@ class fields {
 		    	$temp = explode(':',$xtra_params[$this->type_params]);
 		    	while ($value = array_shift($temp)){
 		    		if ($value == $this->type) {
-						$this->extra_tab_html .= $this->build_field($result, $cInfo) . chr(10);
+						$this->extra_tab_html .= $this->build_field($result, $fields) . chr(10);
 					}
 				}
 		    }else{
-		    	$this->extra_tab_html .= $this->build_field($result, $cInfo) . chr(10);
+		    	$this->extra_tab_html .= $this->build_field($result, $fields) . chr(10);
 		    }
 		    $previous_group = $result['group_by'];
 		}
 		$this->extra_tab_html .= '  </table>';
 		$this->extra_tab_html .= '</div>' . chr(10);
-	  }
+	}
 
   	/**
    	 * this function returns the fields that shouldn't be displayed for that type.
@@ -483,7 +485,8 @@ class fields {
 	  	global $admin;
 	  	$values = array();
 	  	if($this->type_params == '' && $type == null ) return $values;
-		$sql = $admin->DataBase->prepare("SELECT params, field_name FROM ".TABLE_EXTRA_FIELDS." WHERE module_id='{$this->module}'")->execute();
+		$sql = $admin->DataBase->prepare("SELECT params, field_name FROM ".TABLE_EXTRA_FIELDS." WHERE module_id='{$this->current_module}'");
+		$sql->execute();
 		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
 			$xtra_params = unserialize($result['params']);
 	  		$temp = explode(':',$xtra_params[$this->type_params]);
@@ -496,7 +499,8 @@ class fields {
     	global $admin;
     	$tab_array = array(0 => TEXT_SYSTEM);
 		if (!$module) return $tab_array;
-    	$sql = $admin->DataBase->query("select id, tab_name from " . TABLE_EXTRA_TABS . " where module_id = '{$module}' order by tab_name")->execute();
+    	$sql = $admin->DataBase->query("select id, tab_name from " . TABLE_EXTRA_TABS . " where module_id = '{$module}' order by tab_name");
+    	$sql->execute();
     	while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
       		$tab_array[$result['id']] = $result['tab_name'];
     	}

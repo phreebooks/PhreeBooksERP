@@ -15,18 +15,13 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/contacts/pages/popup_accts/pre_process.php
-//
+// @todo remove
 $security_level = \core\classes\user::validate(0, true);
 /**************  include page specific files    *********************/
 require(DIR_FS_WORKING . 'functions/contacts.php');
 /**************   page specific initialization  *************************/
 define('JOURNAL_ID',(int)$_GET['jID']);
 $account_type = (isset($_GET['type']) ? $_GET['type'] : 'c');	// current types are c (customer) and v (vendor)
-switch ($account_type) {
-  default:
-  case 'c': $terms_type = 'AR'; break;
-  case 'v': $terms_type = 'AP'; break;
-}
 $fill = isset($_GET['fill']) ? $_GET['fill'] : 'bill';
 history_filter('contacts_popup');
 $temp = '\contacts\classes\type\\'.$account_type;

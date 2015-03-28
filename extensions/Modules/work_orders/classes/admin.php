@@ -118,21 +118,20 @@ class admin extends \core\classes\admin {
   	}
 
 	function upgrade(\core\classes\basis &$basis) {
-	    global $admin;
 	    parent::upgrade($basis);
 	    if (version_compare($this->status, '3.1', '<') ) {
-			if (!$admin->DataBase->field_exists(TABLE_WO_TASK, 'erp_entry')) {
-			    $admin->DataBase->query("ALTER TABLE " . TABLE_WO_TASK . " ADD erp_entry ENUM('0', '1') NOT NULL DEFAULT '0'");
-			    $admin->DataBase->query("ALTER TABLE " . TABLE_WO_MAIN . " ADD allocate ENUM('0', '1') NOT NULL DEFAULT '0' AFTER description");
-			    $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_wo_num VARCHAR(16)  NOT NULL DEFAULT 'WO0001';");
-			    $admin->DataBase->query("ALTER TABLE " . TABLE_WO_JOURNAL_MAIN . " ADD wo_num VARCHAR(16) NOT NULL DEFAULT 'WO-00001' AFTER id");
-				$result = $admin->DataBase->query("select id from " . TABLE_WO_JOURNAL_MAIN);
+			if (!$basis->DataBase->field_exists(TABLE_WO_TASK, 'erp_entry')) {
+			    $basis->DataBase->query("ALTER TABLE " . TABLE_WO_TASK . " ADD erp_entry ENUM('0', '1') NOT NULL DEFAULT '0'");
+			    $basis->DataBase->query("ALTER TABLE " . TABLE_WO_MAIN . " ADD allocate ENUM('0', '1') NOT NULL DEFAULT '0' AFTER description");
+			    $basis->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_wo_num VARCHAR(16)  NOT NULL DEFAULT 'WO0001';");
+			    $basis->DataBase->query("ALTER TABLE " . TABLE_WO_JOURNAL_MAIN . " ADD wo_num VARCHAR(16) NOT NULL DEFAULT 'WO-00001' AFTER id");
+				$result = $basis->DataBase->query("select id from " . TABLE_WO_JOURNAL_MAIN);
 				while(!$result->EOF) {
 					$id = $result->fields['id'];
-				  	$admin->DataBase->query("update " . TABLE_WO_JOURNAL_MAIN . " set wo_num = 'WO-" . str_pad($id, 5, '0', STR_PAD_LEFT) . "' where id = " . $id);
+				  	$basis->DataBase->query("update " . TABLE_WO_JOURNAL_MAIN . " set wo_num = 'WO-" . str_pad($id, 5, '0', STR_PAD_LEFT) . "' where id = " . $id);
 				  	$result->MoveNext();
 				}
-				$admin->DataBase->query("update " . TABLE_CURRENT_STATUS . " set next_wo_num = 'WO-" . str_pad($id+1, 5, '0', STR_PAD_LEFT) . "'");
+				$basis->DataBase->query("update " . TABLE_CURRENT_STATUS . " set next_wo_num = 'WO-" . str_pad($id+1, 5, '0', STR_PAD_LEFT) . "'");
 			}
 		}
 	}

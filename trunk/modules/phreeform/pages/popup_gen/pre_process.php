@@ -280,8 +280,8 @@ $DateArray = explode(':', $report->datedefault);
 if (!isset($DateArray[1])) $DateArray[1] = '';
 if (!isset($DateArray[2])) $DateArray[2] = '';
 $ValidDateChoices = array();
-foreach ($DateChoices as $key => $value) {
- if (strpos($report->datelist, $key) !== false) $ValidDateChoices[$key] = $value;
+foreach (\core\classes\DateTime::DateChoices as $key => $value) {
+ 	if (strpos($report->datelist, $key) !== false) $ValidDateChoices[$key] = $value;
 }
 $custom_path = DIR_FS_WORKING . 'custom/pages/popup_gen/extra_tabs.php';
 if (file_exists($custom_path)) { include($custom_path); }

@@ -307,13 +307,12 @@ class admin extends \core\classes\admin {
 	}
 
 	function upgrade(\core\classes\basis &$basis) {
-		global $admin;
-		parent::upgrade (\core\classes\basis &$basis);
+		parent::upgrade($basis);
 		$db_version = defined ( 'MODULE_PHREEBOOKS_STATUS' ) ? MODULE_PHREEBOOKS_STATUS : 0;
 		if (version_compare ( $db_version, '2.1', '<' )) { // For PhreeBooks release 2.1 or lower to update to Phreedom structure
 			require (DIR_FS_MODULES . 'phreebooks/functions/updater.php');
-			if ($admin->DataBase->table_exists ( TABLE_PROJECT_VERSION )) {
-				$result = $admin->DataBase->query ( "select * from " . TABLE_PROJECT_VERSION . " WHERE project_version_key = 'PhreeBooks Database'" );
+			if ($basis->DataBase->table_exists ( TABLE_PROJECT_VERSION )) {
+				$result = $basis->DataBase->query ( "select * from " . TABLE_PROJECT_VERSION . " WHERE project_version_key = 'PhreeBooks Database'" );
 				$db_version = $result->fields ['project_version_major'] . '.' . $result->fields ['project_version_minor'];
 				if (version_compare ( $db_version, '2.1', '<' ))
 					execute_upgrade ( $db_version );
@@ -323,7 +322,7 @@ class admin extends \core\classes\admin {
 		if (version_compare ( $db_version, '2.1', '==' )) {
 			$db_version = $this->release_update ( $this->id, 3.0, DIR_FS_MODULES . 'phreebooks/updates/R21toR30.php' );
 			// remove table project_version, no longer needed
-			$admin->DataBase->query ( "DROP TABLE " . TABLE_PROJECT_VERSION );
+			$basis->DataBase->query ( "DROP TABLE " . TABLE_PROJECT_VERSION );
 		}
 		if (version_compare ( $db_version, '3.0', '==' )) {
 			$db_version = $this->release_update ( $this->id, 3.1, DIR_FS_MODULES . 'phreebooks/updates/R30toR31.php' );
@@ -335,7 +334,7 @@ class admin extends \core\classes\admin {
 		}
 		if (version_compare ( $db_version, '3.2', '==' )) {
 			write_configure ( 'APPLY_CUSTOMER_CREDIT_LIMIT', '0' ); // flag for using credit limit to authorize orders
-			$admin->DataBase->query ( "ALTER TABLE " . TABLE_JOURNAL_MAIN . " CHANGE `shipper_code` `shipper_code` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT ''" );
+			$basis->DataBase->query ( "ALTER TABLE " . TABLE_JOURNAL_MAIN . " CHANGE `shipper_code` `shipper_code` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT ''" );
 			require_once (DIR_FS_MODULES . 'phreebooks/defaults.php');
 			if (is_array ( glob ( DIR_FS_ADMIN . 'PHREEBOOKS_DIR_MY_ORDERS*.zip' ) )) {
 				foreach ( glob ( DIR_FS_ADMIN . 'PHREEBOOKS_DIR_MY_ORDERS*.zip' ) as $file ) {
@@ -347,20 +346,20 @@ class admin extends \core\classes\admin {
 			$db_version = 3.3;
 		}
 		if (version_compare ( $db_version, '3.4', '<' )) {
-			if (! $admin->DataBase->field_exists ( TABLE_JOURNAL_ITEM, 'item_cnt' ))
-				$admin->DataBase->query ( "ALTER TABLE " . TABLE_JOURNAL_ITEM . " ADD item_cnt INT(11) NOT NULL DEFAULT '0' AFTER ref_id" );
+			if (! $basis->DataBase->field_exists ( TABLE_JOURNAL_ITEM, 'item_cnt' ))
+				$basis->DataBase->query ( "ALTER TABLE " . TABLE_JOURNAL_ITEM . " ADD item_cnt INT(11) NOT NULL DEFAULT '0' AFTER ref_id" );
 			$db_version = 3.4;
 		}
 		if (version_compare ( $db_version, '3.51', '<' )) {
-			$result = $admin->DataBase->query ( "SELECT id, so_po_ref_id FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id = 16 AND so_po_ref_id > 0" );
+			$result = $basis->DataBase->query ( "SELECT id, so_po_ref_id FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id = 16 AND so_po_ref_id > 0" );
 			while ( ! $result->EOF ) { // to fix transfers to store 0 from any other store
 				if ($result->fields ['so_po_ref_id'] > $result->fields ['id']) {
-					$admin->DataBase->query ( "UPDATE " . TABLE_JORNAL_MAIN . " SET so_po_ref_id = -1 WHERE id=" . $result->fields ['id'] );
+					$basis->DataBase->query ( "UPDATE " . TABLE_JORNAL_MAIN . " SET so_po_ref_id = -1 WHERE id=" . $result->fields ['id'] );
 				}
 				$result->MoveNext ();
 			}
-			if (! $admin->DataBase->field_exists ( TABLE_JOURNAL_ITEM, 'purch_package_quantity' ))
-				$admin->DataBase->query ( "ALTER TABLE " . TABLE_JOURNAL_ITEM . " ADD purch_package_quantity float default NULL AFTER project_id" );
+			if (! $basis->DataBase->field_exists ( TABLE_JOURNAL_ITEM, 'purch_package_quantity' ))
+				$basis->DataBase->query ( "ALTER TABLE " . TABLE_JOURNAL_ITEM . " ADD purch_package_quantity float default NULL AFTER project_id" );
 		}
 	}
 

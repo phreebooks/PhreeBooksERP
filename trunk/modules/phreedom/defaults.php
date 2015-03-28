@@ -33,22 +33,6 @@ define('DEFAULT_TEXT_LENGTH', '32');
 define('DEFAULT_REAL_DISPLAY_FORMAT', '10,2');
 define('DEFAULT_INPUT_FIELD_LENGTH', 120);
 
-// used to build pull downs for filtering
-$DateChoices = array(
-  'a' => TEXT_ALL,
-  'b' => TEXT_RANGE,
-  'c' => TEXT_TODAY,
-  'd' => TEXT_THIS_WEEK,
-  'e' => TEXT_WEEK_TO_DATE,
-  'l' => TEXT_CURRENT_PERIOD,
-  'f' => TEXT_THIS_MONTH,
-  'g' => TEXT_MONTH_TO_DATE,
-  'h' => TEXT_THIS_QUARTER,
-  'i' => TEXT_QUARTER_TO_DATE,
-  'j' => TEXT_THIS_YEAR,
-  'k' => TEXT_YEAR_TO_DATE,
-);
-
 // extra tabs/fields selections
 $integer_lengths = array(
   '0' => '-127 '           . TEXT_TO . ' 127',
