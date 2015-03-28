@@ -1241,7 +1241,7 @@ function fillInventory(sXml) {
 	case  '4':
 	  document.getElementById('purch_package_quantity_'+rowCnt).value= $(xml).find("purch_package_quantity").text();
 	  qty_pstd = 'qty_';
-	  document.getElementById('qty_'   +rowCnt).value     = $(xml).find("qty").first().text();
+	  document.getElementById('qty_'   +rowCnt).value     = formatPrecise($(xml).find("qty").first().text());
 	  document.getElementById('acct_'  +rowCnt).value     = $(xml).find("account_inventory_wage").text();
 	  document.getElementById('price_' +rowCnt).value     = formatPrecise($(xml).find("sales_price").text() * exchange_rate);
 	  document.getElementById('full_'  +rowCnt).value     = formatCurrency($(xml).find("item_cost").text() * exchange_rate);
@@ -1268,7 +1268,7 @@ function fillInventory(sXml) {
 	case  '7':
     case '21':
 	  qty_pstd = 'pstd_';
-	  document.getElementById('pstd_'  +rowCnt).value     = $(xml).find("qty").first().text();
+	  document.getElementById('pstd_'  +rowCnt).value     = formatPrecise($(xml).find("qty").first().text());
 	  document.getElementById('acct_'  +rowCnt).value     = $(xml).find("account_inventory_wage").text();
 	  document.getElementById('price_' +rowCnt).value     = formatPrecise($(xml).find("sales_price").text() * exchange_rate);
 	  document.getElementById('full_'    +rowCnt).value   = formatCurrency($(xml).find("item_cost").text() * exchange_rate);
@@ -1291,7 +1291,7 @@ function fillInventory(sXml) {
 	case  '9':
 	case '10':
 	  qty_pstd = 'qty_';
-	  document.getElementById('qty_'  +rowCnt).value = $(xml).find("qty").first().text();
+	  document.getElementById('qty_'  +rowCnt).value = formatPrecise($(xml).find("qty").first().text());
 	  document.getElementById('acct_' +rowCnt).value = $(xml).find("account_sales_income").text();
 	  document.getElementById('price_'+rowCnt).value = formatPrecise($(xml).find("sales_price").text() * exchange_rate);
 	  document.getElementById('full_' +rowCnt).value = formatCurrency($(xml).find("full_price").text() * exchange_rate);
@@ -1323,7 +1323,7 @@ function fillInventory(sXml) {
 	case '13':
 	case '19':
 	  qty_pstd = 'pstd_';
-	  document.getElementById('pstd_' +rowCnt).value = $(xml).find("qty").first().text();
+	  document.getElementById('pstd_' +rowCnt).value = formatPrecise($(xml).find("qty").first().text());
 	  document.getElementById('acct_' +rowCnt).value = $(xml).find("account_sales_income").text();
 	  document.getElementById('price_'+rowCnt).value = formatPrecise($(xml).find("sales_price").text() * exchange_rate);
 	  document.getElementById('full_' +rowCnt).value = formatCurrency($(xml).find("full_price").text() * exchange_rate);
