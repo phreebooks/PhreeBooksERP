@@ -49,83 +49,105 @@ class DateTime extends \DateTime {
 				}
 				if ($DateArray[2] <> '') { // a value entered, check
 			  		if (strlen($raw_sql) > 0) $raw_sql .= ' and ';
-			  		$end_date = gen_specific_date($this->db_date_format($DateArray[2]), 1);
-			  		$raw_sql.= "$fieldname < '$end_date'";
+			  		$end_date = $this->db_date_format($DateArray[2]);
+			  		$raw_sql.= "$fieldname <= '$end_date'";
 			  		$fildesc .= ' ' . TEXT_TO . ' ' . $DateArray[2];
 				}
 				$fildesc .= '; ';
 				break;
 			case "c": // Today (specify range for datetime type fields to match for time parts)
 				$end_date = clone $this;
-				$end_date->modify('+1 day');
-				$raw_sql = "$fieldname >= '{$this->format('Y-m-d')}' and $fieldname < '{$end_date->format('Y-m-d')}'";
+				$raw_sql = "$fieldname >= '{$this->format('Y-m-d')}' and $fieldname <= '{$end_date->format('Y-m-d')}'";
 				$fildesc = TEXT_DATE_RANGE . ' = ' . $this->format(DATE_FORMAT) . '; ';
 				break;
 			case "d": // This Week
 				$this->modify("-{$this->format('w')} day");
 				$end_date = clone $this;
 				$end_date->modify('+6 day');
-				$raw_sql = "$fieldname >= '{$this->format('Y-m-d')}' and $fieldname =< '{$end_date->format('Y-m-d')}'";
+				$raw_sql = "$fieldname >= '{$this->format('Y-m-d')}' and $fieldname <= '{$end_date->format('Y-m-d')}'";
 				$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . $this->format(DATE_FORMAT) . ' ' . TEXT_TO . ' ' . $end_date->format(DATE_FORMAT) . '; ';
 				break;
 			case "e": // This Week to Date
 				$end_date = clone $this;
 				$this->modify("-{$this->format('w')} day");
-				$raw_sql = "$fieldname >= '{$this->format('Y-m-d')}' and $fieldname =< '{$end_date->format('Y-m-d')}'";
+				$raw_sql = "$fieldname >= '{$this->format('Y-m-d')}' and $fieldname <= '{$end_date->format('Y-m-d')}'";
 				$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . $this->format(DATE_FORMAT) . ' ' . TEXT_TO . ' ' . $end_date->format(DATE_FORMAT) . '; ';
 				break;
 			case "f": // This Month
 				$this->modify("-{$this->format('j')} day");
 				$end_date = clone $this;
-				$end_date->modify("+-{$this->format('t')} day");
-				$raw_sql = "$fieldname >= '{$this->format('Y-m-d')}' and $fieldname =< '{$end_date->format('Y-m-d')}'";
+				$end_date->modify("+{$this->format('t')} day");
+				$raw_sql = "$fieldname >= '{$this->format('Y-m-d')}' and $fieldname <= '{$end_date->format('Y-m-d')}'";
 				$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . $this->format(DATE_FORMAT) . ' ' . TEXT_TO . ' ' . $end_date->format(DATE_FORMAT). '; ';
 				break;
 			case "g": // This Month to Date
 				$end_date = clone $this;
 				$this->modify("-{$this->format('j')} day");
-				$raw_sql = "$fieldname >= '{$this->format('Y-m-d')}' and $fieldname =< '{$end_date->format('Y-m-d')}'";
+				$raw_sql = "$fieldname >= '{$this->format('Y-m-d')}' and $fieldname <= '{$end_date->format('Y-m-d')}'";
 				$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . $this->format(DATE_FORMAT) . ' ' . TEXT_TO . ' ' . $end_date->format(DATE_FORMAT). '; ';
 				break;
-			case "h": // This Quarter
-				$QtrStrt = CURRENT_ACCOUNTING_PERIOD - ((CURRENT_ACCOUNTING_PERIOD - 1) % 3); @toto hier
-				$temp = $this->get_fiscal_dates($QtrStrt);
-				$start_date = $temp['start_date'];
-				$temp = $this->get_fiscal_dates($QtrStrt + 2);
-				$end_date = gen_specific_date($temp['end_date'], 1);
-				$raw_sql = "$fieldname >= '$start_date' and $fieldname < '$end_date'";
-				$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . $this->locale_date($start_date) . ' ' . TEXT_TO . ' ' . $this->locale_date($temp['end_date']) . '; ';
+			case "h": // This Quarter in accountingperiods 
+				$QtrStrt = CURRENT_ACCOUNTING_PERIOD - ((CURRENT_ACCOUNTING_PERIOD - 1) % 3); 
+				$start_date = $this->get_fiscal_dates($QtrStrt);
+				$end_date   = $this->get_fiscal_dates($QtrStrt + 2);
+				$raw_sql = "$fieldname >= '{$start_date['start_date']}' and $fieldname <= '{$end_date['end_date']}'";
+				$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . $this->locale_date($start_date['start_date']) . ' ' . TEXT_TO . ' ' . $this->locale_date($end_date['end_date']) . '; ';
 				break;
-			case "i": // Quarter to Date
+			case "i": // Quarter to Date in accountingperiods 
 				$QtrStrt = CURRENT_ACCOUNTING_PERIOD - ((CURRENT_ACCOUNTING_PERIOD - 1) % 3);
-				$temp = $this->get_fiscal_dates($QtrStrt);
-				$start_date = $temp['start_date'];
-				$end_date = gen_specific_date($dates['Today'], 1);
-				$raw_sql = "$fieldname >= '$start_date' and $fieldname < '$end_date'";
-				$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . $this->locale_date($start_date) . ' ' . TEXT_TO . ' ' . $this->locale_date($dates['Today']) . '; ';
+				$start_date = $this->get_fiscal_dates($QtrStrt);
+				$end_date = clone $this;
+				$raw_sql = "$fieldname >= '{$start_date['start_date']}' and $fieldname <= '{$end_date->format('Y-m-d')}'";
+				$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . $this->locale_date($start_date['start_date']) . ' ' . TEXT_TO . ' ' . $end_date->format(DATE_FORMAT) . '; ';
 				break;
-			case "j": // This Year
-				$YrStrt = CURRENT_ACCOUNTING_PERIOD - ((CURRENT_ACCOUNTING_PERIOD - 1) % 12);
-				$temp = $this->get_fiscal_dates($YrStrt);
-				$start_date = $temp['start_date'];
-				$temp = $this->get_fiscal_dates($YrStrt + 11);
-				$end_date = gen_specific_date($temp['end_date'], 1);
-				$raw_sql = "$fieldname >= '$start_date' and $fieldname < '$end_date'";
-				$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . $this->locale_date($start_date) . ' ' . TEXT_TO . ' ' . $this->locale_date($temp['end_date']) . '; ';
+			case "m": // This Quarter as Calander new in 4.0
+				$QtrStrt = $this->format('m') - ($this->format('m') % 3);
+				$this->modify("-{$this->format('j')} day -{$QtrStrt} month");
+				$end_date = clone $this;
+				$end_date->modify("+3 month");
+				$raw_sql = "$fieldname >= '{$this->format('Y-m-d')}' and $fieldname <= '{$end_date->format('Y-m-d')}'";
+				$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . $this->format(DATE_FORMAT) . ' ' . TEXT_TO . ' ' . $end_date->format(DATE_FORMAT) . '; ';
 				break;
-			case "k": // Year to Date
+			case "n": // Quarter to Date as Calander new in 4.0
+				$end_date = clone $this;
+				$QtrStrt = $this->format('m') - (floor($this->format('m') / 3) * 3);
+				$this->modify("-{$this->format('j')} day -{$QtrStrt} month");
+				$raw_sql = "$fieldname >= '{$this->format('Y-m-d')}' and $fieldname <= '{$end_date->format('Y-m-d')}'";
+				$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . $this->format(DATE_FORMAT) . ' ' . TEXT_TO . ' ' . $end_date->format(DATE_FORMAT) . '; ';
+				break;
+			case "j": // This Year in accounting periods 
 				$YrStrt = CURRENT_ACCOUNTING_PERIOD - ((CURRENT_ACCOUNTING_PERIOD - 1) % 12);
-				$temp = $this->get_fiscal_dates($YrStrt);
-				$start_date = $temp['start_date'];
-				$end_date = gen_specific_date($dates['Today'], 1);
-				$raw_sql = "$fieldname >= '$start_date' and $fieldname < '$end_date'";
-				$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . $this->locale_date($start_date) . ' ' . TEXT_TO . ' ' . $this->locale_date($dates['Today']) . '; ';
+				$start_date = $this->get_fiscal_dates($YrStrt);
+				$end_date = $this->get_fiscal_dates($YrStrt + 11);
+				$raw_sql = "$fieldname >= '{$start_date['start_date']}' and $fieldname <= '{$end_date['end_date']}'";
+				$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . $this->locale_date($start_date['start_date']) . ' ' . TEXT_TO . ' ' . $this->locale_date($end_date['end_date']) . '; ';
+				break;
+			case "k": // Year to Date in accounting periods 
+				$YrStrt = CURRENT_ACCOUNTING_PERIOD - ((CURRENT_ACCOUNTING_PERIOD - 1) % 12);
+				$start_date = $this->get_fiscal_dates($YrStrt);
+				$end_date = clone $this;
+				$raw_sql = "$fieldname >= '{$start_date['start_date']}' and $fieldname <= '{$end_date->format('Y-m-d')}'";
+				$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . $this->locale_date($start_date['start_date']) . ' ' . TEXT_TO . ' ' . $end_date->format(DATE_FORMAT) . '; ';
+				break;
+			case "o": // This Year as Calander new in 4.0
+				$this->modify("-{$this->format('j')} -{$this->format('m')} month");
+				$end_date = clone $this;
+				$end_date->modify("+1 year");
+				$raw_sql = "$fieldname >= '{$this->format('Y-m-d')}' and $fieldname < '{$end_date->format('Y-m-d')}'";
+				$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . $this->format(DATE_FORMAT) . ' ' . TEXT_TO . ' ' . $end_date->format(DATE_FORMAT) . '; ';
+				break;
+			case "p": // Year to Date as Calander new in 4.0
+				$end_date = clone $this;
+				$this->modify("-{$this->format('j')} -{$this->format('m')} month");
+				$raw_sql = "$fieldname >= '{$this->format('Y-m-d')}' and $fieldname < '{$end_date->format('Y-m-d')}'";
+				$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . $this->format(DATE_FORMAT) . ' ' . TEXT_TO . ' ' . $end_date->format(DATE_FORMAT) . '; ';
 				break;
 			case "l": // This Period
-				$start_date = CURRENT_ACCOUNTING_PERIOD_START;
-				$end_date = gen_specific_date(CURRENT_ACCOUNTING_PERIOD_END, 1);
-				$raw_sql = "$fieldname >= '$start_date' and $fieldname < '$end_date'";
-				$fildesc = TEXT_PERIOD . ' ' . CURRENT_ACCOUNTING_PERIOD . ' (' . $this->locale_date(CURRENT_ACCOUNTING_PERIOD_START) . ' ' . TEXT_TO . ' ' . $this->locale_date(CURRENT_ACCOUNTING_PERIOD_END) . '); ';
+				$temp = $this->get_fiscal_dates(CURRENT_ACCOUNTING_PERIOD);
+				$start_date = $temp['start_date'];
+				$end_date = $temp['end_date'];
+				$raw_sql = 'period = ' . CURRENT_ACCOUNTING_PERIOD;
+				$fildesc = TEXT_PERIOD . ' ' . CURRENT_ACCOUNTING_PERIOD . ' (' . $this->locale_date($start_date) . ' ' . TEXT_TO . ' ' . $this->locale_date($end_date) . '); ';
 				break;
 			case "z": // date by period
 				$temp = $this->get_fiscal_dates($DateArray[1]);
