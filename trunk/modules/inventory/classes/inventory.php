@@ -41,6 +41,8 @@ class inventory {
 	public $remove_image			= false;
 	public $purchases_history		= array();
 	public $sales_history			= array();
+	public $creation_date 			= 0;
+	public $last_update   			= 0;
 
 	/**
 	 *
@@ -49,14 +51,30 @@ class inventory {
 	public function __construct(){
 		global $admin;
 		foreach ($_POST as $key => $value) $this->$key = $value;
-		$this->creation_date = date('Y-m-d H:i:s');
-	  	$this->last_update   = date('Y-m-d H:i:s');
+	  	$this->fields 		 = new \inventory\classes\fields(false, $this->type);
 		$this->tab_list['general'] = array('file'=>'template_tab_gen',	'tag'=>'general', 'order'=>10, 'text'=>TEXT_SYSTEM);
 		$this->tab_list['history'] = array('file'=>'template_tab_hist',	'tag'=>'history', 'order'=>20, 'text'=>TEXT_HISTORY);
 		if($this->auto_field){
-			$result = $admin->DataBase->query("select ".$this->auto_field." from ".TABLE_CURRENT_STATUS);
-        	$this->new_sku = $result->fields[$this->auto_field];
+			$result = $admin->DataBase->query("SELECT ".$this->auto_field." FROM ".TABLE_CURRENT_STATUS);
+        	$this->new_sku = $result[$this->auto_field];
 		}
+		if ($this->id  != '') $this->getInventory();
+	}
+
+	/**
+	 * this function gets inventory details from the database
+	 */
+	function getInventory(){
+		global $admin;
+		$this->purchases_history = null;
+		$this->sales_history	 = null;
+		$this->purchase_array	 = null;
+		$this->attachments = $this['attachments'] ? unserialize($this['attachments']) : array();
+		$this->remove_unwanted_keys();
+		$this->get_qty();
+		$this->assy_cost = $this->item_cost;
+		$this->create_purchase_array();
+		$this->gather_history();
 	}
 
 	/**
@@ -70,11 +88,11 @@ class inventory {
 		$this->purchase_array	 = null;
 		$this->id = $id;
 		$result = $admin->DataBase->query("SELECT * FROM ".TABLE_INVENTORY." WHERE id = $id");
-		if ($result->rowCount() != 0) foreach ($result->fields as $key => $value) {
+		if ($result->rowCount() != 0) foreach ($result as $key => $value) {
 			if (is_null($value)) $this->$key = '';
 			else $this->$key = $value;
 		}
-		$this->attachments = $result->fields['attachments'] ? unserialize($result->fields['attachments']) : array();
+		$this->attachments = $result['attachments'] ? unserialize($result['attachments']) : array();
 		$this->remove_unwanted_keys();
 		$this->get_qty();
 		$this->assy_cost = $this->item_cost;
@@ -93,13 +111,13 @@ class inventory {
 		$this->sales_history	 = null;
 		$this->purchase_array	 = null;
 		$this->sku = $sku;
-		$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY . " where sku = '" . $sku  . "'");
-		if($result->rowCount()!=0) foreach ($result->fields as $key => $value) {
+		$result = $admin->DataBase->query("SELECT * FROM " . TABLE_INVENTORY . " WHERE sku = '{$sku}'");
+		if($result->rowCount()!=0) foreach ($result as $key => $value) {
 			if(is_null($value)) $this->$key = '';
 			else $this->$key = $value;
 		}
 		// expand attachments
-		$this->attachments = $result->fields['attachments'] ? unserialize($result->fields['attachments']) : array();
+		$this->attachments = $result['attachments'] ? unserialize($result['attachments']) : array();
 		$this->remove_unwanted_keys();
 		$this->get_qty();
 		$this->assy_cost = $this->item_cost;
@@ -112,8 +130,7 @@ class inventory {
 	 */
 
 	function remove_unwanted_keys(){
-		global $fields;
-		$this->not_used_fields = $fields->unwanted_fields($this->inventory_type);
+		$this->not_used_fields = $this->fields->unwanted_fields($this->inventory_type);
 		foreach ($this->not_used_fields as $key => $value) {
 			if(isset($this->$value)) unset($this->$value);
 		}
@@ -122,8 +139,9 @@ class inventory {
 	function get_qty(){
 		global $admin;
 		if(in_array('quantity_on_hand', $this->not_used_fields)) return;
-		$sql = " select id, short_name, primary_name from " . TABLE_CONTACTS . " c join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id where c.type = 'b' order by short_name ";
-	  	$result = $admin->DataBase->query($sql);
+		$raw_sql = " SELECT id, short_name, primary_name FROM " . TABLE_CONTACTS . " c JOIN " . TABLE_ADDRESS_BOOK . " a ON c.id = a.ref_id WHERE c.type = 'b' ORDER BY short_name ";
+	  	$sql = $admin->DataBase->query($raw_sql);
+	  	$sql->execute();
 	  	$qty = load_store_stock($this->sku, 0);
 	  	$this->qty_per_store[0] = $qty;
 	  	$this->quantity_on_hand = $qty;
@@ -138,17 +156,16 @@ class inventory {
 		 	$this->qty_table .='  <tbody class="ui-widget-content">'. chr(10);
 		  	$this->qty_table .='    <tr>';
 			$this->qty_table .='      <td>' . COMPANY_ID . '</td>';
-			$this->qty_table .='      <td align="center">' . $qty . '</td>';
+			$this->qty_table .="      <td align='center'>{$qty}</td>";
 		    $this->qty_table .='    </tr>' . chr(10);
-		    while (!$result->EOF) {
-		    	$qty = load_store_stock($this->sku, $result->fields['id']);
-		  		$this->qty_per_store[$result->fields['id']] = $qty;
+		    while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+		    	$qty = load_store_stock($this->sku, $result['id']);
+		  		$this->qty_per_store[$result['id']] = $qty;
 		  		$this->quantity_on_hand += $qty;
 		  		$this->qty_table .= '<tr>';
-			  	$this->qty_table .= '  <td>' .$result->fields['primary_name'] . '</td>';
+			  	$this->qty_table .= '  <td>' .$result['primary_name'] . '</td>';
 			  	$this->qty_table .= '  <td align="center">' . $qty. '</td>';
 		      	$this->qty_table .= '</tr>' . chr(10);
-		      	$result->MoveNext();
 			}
 	     	$this->qty_table .='  </tbody>'. chr(10);
 	    	$this->qty_table .='</table>'. chr(10);

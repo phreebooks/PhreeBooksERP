@@ -21,8 +21,8 @@
 <script type="text/javascript">
 <!--
 // pass any php variables generated during pre-process that are used in the javascript functions.
-var journalID = '<?php echo JOURNAL_ID; ?>';
-var fill = '<?php echo $fill; ?>';
+var journalID = '<?php echo $basis->cInfo->journal_id; ?>';
+var fill = '<?php echo $basis->cInfo->fill; ?>';
 
 function init() {
   document.getElementById('search_text').focus();

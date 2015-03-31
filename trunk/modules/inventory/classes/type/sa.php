@@ -18,6 +18,13 @@ class sa extends \inventory\classes\inventory {//Serialized Assembly
 		$this->tab_list['orderhist'] = array('file'=>'template_tab_hist_sr', 'tag'=>'orderhist', 'order'=>40, 'text'=>'Unit History');
 	}
 
+	function getInventory(){
+		parent::getInventory();
+		$this->get_bom_list();
+		$this->get_sr_list();
+		$this->allow_edit_bom = (($this->last_journal_date == '0000-00-00 00:00:00' || $this->last_journal_date == '') && ($this->quantity_on_hand == 0|| $this->quantity_on_hand == '')) ? true : false;
+	}
+
 	function get_item_by_id($id){
 		parent::get_item_by_id($id);
 		$this->get_bom_list();

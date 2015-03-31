@@ -456,7 +456,7 @@ function AccountList(currObj) {
 	if( firstguess != secondguess && firstguess != text_search && firstguess != ''){
 		  guess = firstguess;
 	}
-	window.open("index.php?module=contacts&page=popup_accts&type=c&fill=bill&jID=19&search_text="+guess,"accounts","width=850px,height=550px,resizable=1,scrollbars=1,top=150,left=100");
+	window.open("index.php?module=contacts&action=LoadContactsAccountsPopUp&type=c&fill=bill&jID=19&search_text="+guess,"accounts","width=850px,height=550px,resizable=1,scrollbars=1,top=150,left=100");
 }
 
 function InventoryList(rowCnt) {

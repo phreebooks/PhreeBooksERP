@@ -15,6 +15,11 @@ class sr extends \inventory\classes\inventory {//Serialized Item
 		$this->tab_list['orderhist'] = array('file'=>'template_tab_hist_sr', 'tag'=>'orderhist', 'order'=>40, 'text'=>'Unit History');
 	}
 
+	function getInventory(){
+		parent::getInventory();
+		$this->get_sr_list();
+	}
+
 	function get_item_by_id($id){
 		parent::get_item_by_id($id);
 		$this->get_sr_list();

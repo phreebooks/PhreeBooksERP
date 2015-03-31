@@ -23,7 +23,7 @@ class admin extends \core\classes\admin {
 	public $id 			= 'contacts';
 	public $description = MODULE_CONTACTS_DESCRIPTION;
 	public $core		= true;
-	public $version		= '4.0';
+	public $version		= '4.0-dev';
 
 	function __construct() {
 		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_CONTACTS);
@@ -546,10 +546,14 @@ class admin extends \core\classes\admin {
 	}
 
 	function LoadContactsAccountsPopUp(\core\classes\basis &$basis) {
+		history_filter('contacts_popup');
 		$this->LoadContactMgrPage($basis);
+		if (!isset($basis->cInfo->fill)) $basis->cInfo->fill = 'bill';
 		$basis->page			= 'popup_accts';
+		$basis->page_title		= TEXT_CONTACT_SEARCH;
 		$basis->include_header 	= false;
 		$basis->include_footer 	= false;
+		history_save('contacts_popup');
 	}
 
 	function LoadTermsPopUp (\core\classes\basis &$basis) {
@@ -572,7 +576,7 @@ class admin extends \core\classes\admin {
 
 	function load_demo() {
 		global $admin;
-		// Data for table `address_book`
+		// Data for table `address_book` @todo add class to sql and keys
 		$admin->DataBase->query("TRUNCATE TABLE " . TABLE_ADDRESS_BOOK);
 		$admin->DataBase->query("INSERT INTO " . TABLE_ADDRESS_BOOK . " VALUES (1, 1, 'vm', 'Obscure Video', '', '1354 Triple A Ave', '', 'Chatsworth', 'CA', '93245', 'USA', '800.345.5678', '', '', '', 'obsvid@obscurevideo.com', '', '');");
 		$admin->DataBase->query("INSERT INTO " . TABLE_ADDRESS_BOOK . " VALUES (2, 2, 'cm', 'CompuHouse Computer Systems', '', '8086 Intel Ave', '', 'San jose', 'CA', '94354', 'USA', '800-555-1234', '', '', '', 'sales@compuhouse.com', '', '');");

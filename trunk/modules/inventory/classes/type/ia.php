@@ -26,6 +26,13 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 		$this->tab_list['bom'] = array('file'=>'template_tab_bom',	'tag'=>'bom',    'order'=>30, 'text'=>TEXT_BILL_OF_MATERIALS);
 	}
 
+	function getInventory(){
+		parent::getInventory();
+		$this->get_ms_list();
+		$this->get_bom_list();
+		$this->allow_edit_bom = (($this->last_journal_date == '0000-00-00 00:00:00' || $this->last_journal_date == '') && ($this->quantity_on_hand == 0|| $this->quantity_on_hand == '')) ? true : false;
+	}
+
 	function get_item_by_id($id){
 		parent::get_item_by_id($id);
 		$this->get_ms_list();

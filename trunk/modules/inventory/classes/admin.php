@@ -23,7 +23,7 @@ class admin extends \core\classes\admin {
 	public $id 			= 'inventory';
 	public $description = MODULE_INVENTORY_DESCRIPTION;
 	public $core		= true;
-	public $version		= '3.7.1';
+	public $version		= '4.0-dev';
 
 	function __construct() {
 		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY);
@@ -79,23 +79,20 @@ class admin extends \core\classes\admin {
 		// Load tables
 		$this->tables = array(
 		  TABLE_INVENTORY => "CREATE TABLE " . TABLE_INVENTORY . " (
+			  class VARCHAR( 255 ) NOT NULL DEFAULT '',
 			  id int(11) NOT NULL auto_increment,
 			  sku varchar(24) NOT NULL default '',
 			  inactive enum('0','1') NOT NULL default '0',
 			  inventory_type char(2) NOT NULL default 'si',
 			  description_short varchar(32) NOT NULL default '',
-			  description_purchase varchar(255) default NULL,
 			  description_sales varchar(255) default NULL,
 			  image_with_path varchar(255) default NULL,
 			  account_sales_income varchar(15) default NULL,
 			  account_inventory_wage varchar(15) default '',
 			  account_cost_of_sales varchar(15) default NULL,
 			  item_taxable int(11) NOT NULL default '0',
-			  purch_taxable int(11) NOT NULL default '0',
-			  item_cost float NOT NULL default '0',
 			  cost_method enum('a','f','l') NOT NULL default 'f',
 			  price_sheet varchar(32) default NULL,
-			  price_sheet_v varchar(32) default NULL,
 			  full_price float NOT NULL default '0',
 			  full_price_with_tax float NOT NULL default '0',
 			  margin float NOT NULL default '0',
@@ -105,8 +102,6 @@ class admin extends \core\classes\admin {
 			  quantity_on_sales_order float NOT NULL default '0',
 			  quantity_on_allocation float NOT NULL default '0',
 			  minimum_stock_level float NOT NULL default '0',
-			  reorder_quantity float NOT NULL default '0',
-			  vendor_id int(11) NOT NULL default '0',
 			  lead_time int(3) NOT NULL default '1',
 			  upc_code varchar(13) NOT NULL DEFAULT '',
 			  serialize enum('0','1') NOT NULL default '0',
@@ -286,10 +281,11 @@ class admin extends \core\classes\admin {
 		$this->notes[] = MODULE_INVENTORY_NOTES_1;
 		require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
 		\core\classes\fields::sync_fields('inventory', TABLE_INVENTORY);
-		$result = $admin->DataBase->query("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory' and tab_id = '0'");
-		while (!$result->EOF) {
-			$temp = unserialize($result->fields['params']);
-			switch($result->fields['field_name']){
+		$sql = $admin->DataBase->prepare("SELECT * FROM " . TABLE_EXTRA_FIELDS ." WHERE module_id = 'inventory' and tab_id = '0'");
+		$sql->execute();
+		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+			$temp = unserialize($result['params']);
+			switch($result['field_name']){
 				case 'serialize':
 					$temp['inventory_type'] = 'sa:sr';
 					break;
@@ -337,18 +333,17 @@ class admin extends \core\classes\admin {
 				default:
 					$temp['inventory_type'] = 'ai:ci:ds:ia:lb:ma:mb:mi:ms:ns:sa:sf:si:sr:sv';
 			}
-			$updateDB = $admin->DataBase->query("update " . TABLE_EXTRA_FIELDS . " set params = '" . serialize($temp) . "' where id = '".$result->fields['id']."'");
-			$result->MoveNext();
+			$updateDB = $admin->DataBase->query("UPDATE " . TABLE_EXTRA_FIELDS . " SET params = '" . serialize($temp) . "' WHERE id = '{$result['id']}'");
 		}
 		// set the fields to view in the inventory field filters
 		$haystack = array('attachments', 'account_sales_income', 'item_taxable', 'purch_taxable', 'image_with_path', 'account_inventory_wage', 'account_cost_of_sales', 'cost_method', 'lead_time');
-		$result = $admin->DataBase->query("update " . TABLE_EXTRA_FIELDS . " set entry_type='check_box' where field_name='inactive'");
-		$result = $admin->DataBase->query("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory'");
-		while (!$result->EOF) {
+		$result = $admin->DataBase->query("UPDATE " . TABLE_EXTRA_FIELDS . " SET entry_type='check_box' WHERE field_name='inactive'");
+		$sql = $admin->DataBase->prepare("SELECT * FROM " . TABLE_EXTRA_FIELDS ." WHERE module_id = 'inventory'");
+		$sql->execute();
+		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
 			$use_in_inventory_filter = '1';
-			if(in_array($result->fields['field_name'], $haystack)) $use_in_inventory_filter = '0';
-			$updateDB = $admin->DataBase->query("update " . TABLE_EXTRA_FIELDS . " set use_in_inventory_filter = '".$use_in_inventory_filter."' where id = '".$result->fields['id']."'");
-			$result->MoveNext();
+			if(in_array($result['field_name'], $haystack)) $use_in_inventory_filter = '0';
+			$updateDB = $admin->DataBase->query("update " . TABLE_EXTRA_FIELDS . " set use_in_inventory_filter = '".$use_in_inventory_filter."' where id = '".$result['id']."'");
 		}
 		\core\classes\fields::sync_fields('inventory', TABLE_INVENTORY);
 	}
@@ -358,29 +353,22 @@ class admin extends \core\classes\admin {
     	if (version_compare($this->status, '3.1', '<') ) {
 	  		$tab_map = array('0' => '0');
 	  		if($basis->DataBase->table_exists(DB_PREFIX . 'inventory_categories')){
-		  		$result = $basis->DataBase->query("select * from " . DB_PREFIX . 'inventory_categories');
-		  		while (!$result->EOF) {
-		    		$updateDB = $basis->DataBase->query("insert into " . TABLE_EXTRA_TABS . " set
-			  		  module_id = 'inventory',
-			  		  tab_name = '"    . $result->fields['category_name']        . "',
-			  		  description = '" . $result->fields['category_description'] . "',
-			  		  sort_order = '"  . $result->fields['sort_order']           . "'");
-		    		$tab_map[$result->fields['category_id']] = \core\classes\PDO::lastInsertId('id');
-		    		$result->MoveNext();
+		  		$sql = $basis->DataBase->prepare("SELECT * FROM " . DB_PREFIX . 'inventory_categories');
+		  		$sql->execute();
+		  		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+		    		$updateDB = $basis->DataBase->query("INSERT INTO " . TABLE_EXTRA_TABS . " SET module_id = 'inventory',
+			  		  tab_name = '{$result['category_name']}', description = '{$result['category_description']}', sort_order = '{$result['sort_order']}'");
+		    		$tab_map[$result['category_id']] = \core\classes\PDO::lastInsertId('id');
 		  		}
 		  		$basis->DataBase->query("DROP TABLE " . DB_PREFIX . "inventory_categories");
 	  		}
 	  		if($basis->DataBase->table_exists(DB_PREFIX . 'inventory_categories')){
-		  		$result = $basis->DataBase->query("select * from " . DB_PREFIX . 'inventory_fields');
-		  		while (!$result->EOF) {
-		    		$updateDB = $basis->DataBase->query("insert into " . TABLE_EXTRA_FIELDS . " set
-			  		  module_id = 'inventory',
-			  		  tab_id = '"      . $tab_map[$result->fields['category_id']] . "',
-			  		  entry_type = '"  . $result->fields['entry_type']  . "',
-			  		  field_name = '"  . $result->fields['field_name']  . "',
-			  		  description = '" . $result->fields['description'] . "',
-			  		  params = '"      . $result->fields['params']      . "'");
-		    		$result->MoveNext();
+		  		$sql = $basis->DataBase->prepare("SELECT * FROM " . DB_PREFIX . 'inventory_fields');
+		  		$sql->execute();
+		  		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+		    		$updateDB = $basis->DataBase->query("INSERT INTO " . TABLE_EXTRA_FIELDS . " SET module_id = 'inventory',
+			  		  tab_id = '{$tab_map[$result['category_id']]}', entry_type = '{$result['entry_type']}', field_name = '{$result['field_name']}',
+			  		  description = '{$result['description']}', params = '{$result['params']}'");
 		  		}
 		  		$basis->DataBase->query("DROP TABLE " . DB_PREFIX . "inventory_fields");
 	  		}
@@ -395,13 +383,14 @@ class admin extends \core\classes\admin {
 			if (!$basis->DataBase->field_exists(TABLE_INVENTORY, 'full_price_with_tax')) $basis->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD full_price_with_tax FLOAT NOT NULL DEFAULT '0' AFTER full_price");
 			if (!$basis->DataBase->field_exists(TABLE_INVENTORY, 'product_margin')) $basis->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD product_margin FLOAT NOT NULL DEFAULT '0' AFTER full_price_with_tax");
 			if (!$basis->DataBase->field_exists(TABLE_EXTRA_FIELDS , 'use_in_inventory_filter')) $basis->DataBase->query("ALTER TABLE " . TABLE_EXTRA_FIELDS . " ADD use_in_inventory_filter ENUM( '0', '1' ) NOT NULL DEFAULT '0'");
-			$basis->DataBase->query("alter table " . TABLE_INVENTORY . " CHANGE `inactive` `inactive` ENUM( '0', '1' ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'");
+			$basis->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " CHANGE `inactive` `inactive` ENUM( '0', '1' ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '0'");
 			\core\classes\fields::sync_fields('inventory', TABLE_INVENTORY);
-			$basis->DataBase->query("update " . TABLE_INVENTORY . " set inventory_type = 'ma' where inventory_type = 'as'");
-			$result = $basis->DataBase->query("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory'");
-			while (!$result->EOF) {
-				$temp = unserialize($result->fields['params']);
-				switch($result->fields['field_name']){
+			$basis->DataBase->query("UPDATE " . TABLE_INVENTORY . " SET inventory_type = 'ma' WHERE inventory_type = 'as'");
+			$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_EXTRA_FIELDS ." WHERE module_id = 'inventory'");
+			$sql->execute();
+		  	while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+				$temp = unserialize($result['params']);
+				switch($result['field_name']){
 					case 'serialize':
 						$temp['inventory_type'] = 'sa:sr';
 						break;
@@ -450,33 +439,32 @@ class admin extends \core\classes\admin {
 			  		default:
 			  			$temp['inventory_type'] = 'ai:ci:ds:ia:lb:ma:mb:mi:ms:ns:sa:sf:si:sr:sv';
 				}
-		    	$updateDB = $basis->DataBase->query("update " . TABLE_EXTRA_FIELDS . " set params = '" . serialize($temp) . "' where id = '".$result->fields['id']."'");
-		    	$result->MoveNext();
+		    	$updateDB = $basis->DataBase->query("UPDATE " . TABLE_EXTRA_FIELDS . " SET params = '" . serialize($temp) . "' where id = '{$result['id']}'");
 		  	}
 		  	$haystack = array('attachments', 'account_sales_income', 'item_taxable', 'purch_taxable', 'image_with_path', 'account_inventory_wage', 'account_cost_of_sales', 'cost_method', 'lead_time');
-		  	$result = $basis->DataBase->query("update " . TABLE_EXTRA_FIELDS . " set entry_type = 'check_box' where field_name = 'inactive'");
-		  	$result = $basis->DataBase->query("select * from " . TABLE_EXTRA_FIELDS ." where module_id = 'inventory'");
-		  	while (!$result->EOF) {
+		  	$result = $basis->DataBase->query("UPDATE " . TABLE_EXTRA_FIELDS . " SET entry_type = 'check_box' WHERE field_name = 'inactive'");
+		  	$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_EXTRA_FIELDS ." WHERE module_id = 'inventory'");
+		  	$sql->execute();
+		  	while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
 		  		$use_in_inventory_filter = '1';
-				if(in_array($result->fields['field_name'], $haystack)) $use_in_inventory_filter = '0';
-				$updateDB = $basis->DataBase->query("update " . TABLE_EXTRA_FIELDS . " set use_in_inventory_filter = '".$use_in_inventory_filter."' where id = '".$result->fields['id']."'");
-				$result->MoveNext();
+				if(in_array($result['field_name'], $haystack)) $use_in_inventory_filter = '0';
+				$updateDB = $basis->DataBase->query("UPDATE " . TABLE_EXTRA_FIELDS . " SET use_in_inventory_filter = '{$use_in_inventory_filter}' where id = '{$result['id']}'");
 		  	}
 			if ($basis->DataBase->field_exists(TABLE_INVENTORY, 'purch_package_quantity')){
-		  		$result = $basis->DataBase->query("insert into ".TABLE_INVENTORY_PURCHASE." ( sku, vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v ) select sku, vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v  from " . TABLE_INVENTORY);
+		  		$result = $basis->DataBase->query("INSERT INTO ".TABLE_INVENTORY_PURCHASE." ( sku, vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v ) select sku, vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v  from " . TABLE_INVENTORY);
 		  		$basis->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " DROP `purch_package_quantity`");
 		  	}else{
-		  		$result = $basis->DataBase->query("insert into ".TABLE_INVENTORY_PURCHASE." ( sku, vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v ) select sku, vendor_id, description_purchase, 1, purch_taxable, item_cost, price_sheet_v  from " . TABLE_INVENTORY);
+		  		$result = $basis->DataBase->query("INSERT INTO ".TABLE_INVENTORY_PURCHASE." ( sku, vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v ) select sku, vendor_id, description_purchase, 1, purch_taxable, item_cost, price_sheet_v  from " . TABLE_INVENTORY);
 			}
 			require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 			$tax_rates = ord_calculate_tax_drop_down('c');
-			$result = $basis->DataBase->query("SELECT id, item_taxable, full_price, item_cost FROM ".TABLE_INVENTORY);
-			while(!$result->EOF){
+			$sql = $basis->DataBase->prepare("SELECT id, item_taxable, full_price, item_cost FROM ".TABLE_INVENTORY);
+			$sql->execute();
+		  	while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
 				$sql_data_array = array();
-				$sql_data_array['full_price_with_tax'] = round((1 +($tax_rates[$result->fields['item_taxable']]['rate']/100))  * $result->fields['full_price'], $basis->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
-				if($result->fields['item_cost'] <> '' && $result->fields['item_cost'] > 0) $sql_data_array['product_margin'] = round($sql_data_array['full_price_with_tax'] / $result->fields['item_cost'], $basis->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
-				db_perform(TABLE_INVENTORY, $sql_data_array, 'update', "id = " . $result->fields['id']);
-				$result->MoveNext();
+				$sql_data_array['full_price_with_tax'] = round((1 +($tax_rates[$result['item_taxable']]['rate']/100))  * $result['full_price'], $basis->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
+				if($result['item_cost'] <> '' && $result['item_cost'] > 0) $sql_data_array['product_margin'] = round($sql_data_array['full_price_with_tax'] / $result['item_cost'], $basis->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
+				db_perform(TABLE_INVENTORY, $sql_data_array, 'update', "id = " . $result['id']);
 			}
 		  	validate_path(DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/attachments/', 0755);
 		}
@@ -485,10 +473,14 @@ class admin extends \core\classes\admin {
 				$basis->DataBase->query("ALTER TABLE ".TABLE_INVENTORY_HISTORY." ADD avg_cost FLOAT NOT NULL DEFAULT '0' AFTER unit_cost");
 				$basis->DataBase->query("UPDATE ".TABLE_INVENTORY_HISTORY." SET avg_cost = unit_cost");
 			}
-			$result = $basis->DataBase->query("select id, params from ".TABLE_EXTRA_FIELDS." where module_id = 'inventory' AND field_name = 'account_cost_of_sales'");
-			$temp = unserialize($result->fields['params']);
+			$result = $basis->DataBase->query("SELECT id, params FROM ".TABLE_EXTRA_FIELDS." WHERE module_id = 'inventory' AND field_name = 'account_cost_of_sales'");
+			$temp = unserialize($result['params']);
 			$temp['inventory_type'] = 'ai:ci:ds:ia:lb:ma:mb:mi:ms:ns:sa:sf:si:sr:sv';
-			$updateDB = $basis->DataBase->query("update ".TABLE_EXTRA_FIELDS." set params='".serialize($temp)."' where id='".$result->fields['id']."'");
+			$updateDB = $basis->DataBase->query("update ".TABLE_EXTRA_FIELDS." set params='".serialize($temp)."' where id='{$result['id']}'");
+		}
+		if (version_compare($this->status, '4.0', '<') ) {
+			if (!$admin->DataBase->field_exists(TABLE_INVENTORY, 'class')) $basis->DataBase->exec("ALTER TABLE ".TABLE_INVENTORY." ADD class VARCHAR( 255 ) NOT NULL DEFAULT '' FIRST");
+			$basis->DataBase->exec("UPDATE ".TABLE_INVENTORY." SET class = CONCAT('inventory\\\\classes\\\\type\\\\', inventory_type) WHERE class = '' ");
 		}
 		\core\classes\fields::sync_fields('inventory', TABLE_INVENTORY);
 	}
@@ -496,8 +488,8 @@ class admin extends \core\classes\admin {
   	function delete($path_my_files) {
     	global $admin;
     	parent::delete($path_my_files);
-		$admin->DataBase->exec("delete from " . TABLE_EXTRA_FIELDS . " where module_id = 'inventory'");
-		$admin->DataBase->exec("delete from " . TABLE_EXTRA_TABS   . " where module_id = 'inventory'");
+		$admin->DataBase->exec("DELETE FROM " . TABLE_EXTRA_FIELDS . " WHERE module_id = 'inventory'");
+		$admin->DataBase->exec("DELETE FROM " . TABLE_EXTRA_TABS   . " WHERE module_id = 'inventory'");
   	}
 
 	function load_reports() {
@@ -508,7 +500,7 @@ class admin extends \core\classes\admin {
 
 	function load_demo() {
 	    global $admin;
-		// Data for table `inventory`
+		// Data for table `inventory` @todo add fields
 		$admin->DataBase->query("TRUNCATE TABLE " . TABLE_INVENTORY);
 		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY . " VALUES (1, 'AMD-3600-CPU', '0', 'si', 'AMD 3600+ Athlon CPU', 'AMD 3600+ Athlon CPU', 'AMD 3600+ Athlon CPU', 'demo/athlon.jpg', '4000', '1200', '5000', '1', '0', 100, 'f', '', '', 150, 150, 1.5, 1, 0, 0, 0, 0, 0, 0, 3, 1, '', '0', now(), '', '', '');");
 		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY . " VALUES (2, 'ASSY-BB', '0', 'lb', 'Labor - BB Computer Assy', 'Labor Cost - Assemble Bare Bones Computer', 'Labor - BB Computer Assy', '', '4000', '6000', '5000', '1', '0', 25, 'f', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, '', '0', now(), '', '', '');");
@@ -585,7 +577,7 @@ class admin extends \core\classes\admin {
 	function validate_name($sku){
 		global $admin;
 		if (!$sku) throw new \core\classes\userException(TEXT_THE_ID_FIELD_WAS_EMPTY);
-		$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY . " where sku = '$sku'");
+		$result = $admin->DataBase->query("SELECT id FROM " . TABLE_INVENTORY . " WHERE sku = '$sku'");
 		if ($result->rowCount() <> 0) throw new \core\classes\userException(sprintf(TEXT_THE_ID_IS_NOT_UNIQUE_ARGS, $name));
 	}
 
@@ -622,37 +614,48 @@ class admin extends \core\classes\admin {
 		$cInfo = new $temp;
 		$cInfo->copy($basis->cInfo['id'], $basis->cInfo['sku']);
 		$basis->cInfo = null;
-		$basis->fireEvent("LoadEditInventoryItem");
+		$basis->fireEvent("LoadInventoryPage");
 	}
 
-	function CreateInventoryItem (\core\classes\basis $basis){
-		\core\classes\user::validate_security_by_token(SECURITY_ID_MAINTAIN_INVENTORY, 2); // security check
-		if (!isset($basis->cInfo['inventory_type'])) throw new \core\classes\userException();//@todo
-		$temp = '\inventory\classes\type\\'. $basis->cInfo['inventory_type'];
+	/**
+	 * will create new inventory depending on type
+	 * @param unknown $basis
+	 */
+	function CreateInventoryItem (\core\classes\basis &$basis) {
+		if (!isset($basis->cInfo->inventory_type)) throw new \core\classes\userException("inventory type isn't submitted.");
+		$temp = "\\inventory\\classes\\type\\{$basis->cInfo->inventory_type}";
+		$inventory = new $temp();
+		\core\classes\user::validate_security($inventory->security_level, 2);
 		$cInfo->check_create_new();
-		$basis->cInfo = null;
-		$basis->fireEvent("LoadEditInventoryItem");
+		$sql = $basis->DataBase->prepare("INSERT INTO ".TABLE_INVENTORY." (class, inventory_type ) VALUES ('" . addcslashes(get_class($inventory), '\\') . "', '{$inventory->type}')");
+		$sql->execute();
+		$basis->cInfo->iID =  $basis->DataBase->lastInsertId('id');
+		$basis->fireEvent("LoadInventoryPage");
 	}
 
-	function LoadEditInventoryItem (\core\classes\basis $basis){
-		$basis->security_level	= \core\classes\user::validate(SECURITY_ID_MAINTAIN_INVENTORY);
-		if (!isset($basis->cInfo['inventory_type'])) throw new \core\classes\userException();//@todo
-		$temp = '\inventory\classes\type\\'. $basis->cInfo['inventory_type'];
-		if(isset($basis->cInfo['id'])) 		$cInfo->get_item_by_id($basis->cInfo['id']);
-		if(isset($basis->cInfo['rowSeq'])) 	$cInfo->get_item_by_id($basis->cInfo['rowSeq']);
-		if(isset($basis->cInfo['sku'])) 	$cInfo->get_item_by_sku($basis->cInfo['sku']);
+	/**
+	 * this function will load the inventory page
+	 */
+	function LoadInventoryPage (\core\classes\basis $basis){
+		if ( isset($basis->cInfo->rowSeq)) $basis->cInfo->iID = $basis->cInfo->rowSeq;
+		if ($basis->cInfo->iID == '') throw new \core\classes\userException("iID variable isn't set can't execute method LoadInventoryPage ");
+		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_INVENTORY . " WHERE id = {$basis->cInfo->iID}");
+		$sql->execute();
+		$basis->cInfo->inventory = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
 		$basis->page_title		= sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY);
 		$basis->module			= 'inventory';
 		$basis->page			= 'main';
 		$basis->template 		= 'template_detail';
-		$basis->notify();//final line
 	}
 
-  	function LoadPropertiesInventoryItem (\core\classes\basis $basis){
-  		$basis->security_level	= \core\classes\user::validate(SECURITY_ID_MAINTAIN_INVENTORY);
+	/**
+	 * this function will call LoadInventoryPage but deactivate menu and footer.
+	 * @param \core\classes\basis $basis
+	 */
+  	function LoadInventoryPopUp (\core\classes\basis $basis){
+  		$this->LoadInventoryPage ($basis);
 		$basis->include_header	= false;
 		$basis->include_footer	= false;
-		$this->LoadEditInventoryItem ($basis);
   	}
 
   	function LoadNewInventoryItem (\core\classes\basis $basis){
@@ -661,7 +664,6 @@ class admin extends \core\classes\admin {
   		$basis->module			= 'inventory';
   		$basis->page			= 'main';
   		$basis->template 		= 'template_id';
-  		$basis->notify();//final line
   	}
 
   	function LoadInventoryManager (\core\classes\basis $basis){
@@ -709,7 +711,7 @@ class admin extends \core\classes\admin {
   			$search_fields = array('a.sku', 'a.description_short', 'a.description_sales', 'p.description_purchase');
   			// hook for inserting new search fields to the query criteria.
   			if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
-  			$criteria[] = '(' . implode(' like \'%' . $basis->cInfo['search_text'] . '%\' or ', $search_fields) . ' like \'%' . $_REQUEST['search_text'] . '%\')';
+  			$criteria[] = '(' . implode(" like '%{$basis->cInfo['search_text']}%' or ", $search_fields) . " like '%{$_REQUEST['search_text']}%')";
   		}
   		// build search filter string
   		$search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
@@ -717,42 +719,46 @@ class admin extends \core\classes\admin {
   				'quantity_on_hand', 'quantity_on_order', 'quantity_on_sales_order', 'quantity_on_allocation', 'last_journal_date');
   		// hook to add new fields to the query return results
   		if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
-  		$query_raw    = "SELECT SQL_CALC_FOUND_ROWS DISTINCT " . implode(', ', $field_list)  . " from " . TABLE_INVENTORY ." a LEFT JOIN " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku ". $search . " order by $disp_order ";
+  		$query_raw    = "SELECT SQL_CALC_FOUND_ROWS DISTINCT " . implode(', ', $field_list)  . " FROM " . TABLE_INVENTORY ." a LEFT JOIN " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku ". $search . " order by $disp_order ";
   		//check if sql is executed before otherwise retrieve from memorie.
-  		if (isset($basis->sqls[$query_raw])) $query_result = $basis->sqls[$query_raw];
+  		$sql = $basis->DataBase->prepare($query_raw);
+  		$sql->execute();
+  		$basis->cInfo->inventory_list = $sql->fetchAll(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE) ;
+/* @todo look at this
+ *   		if (isset($basis->sqls[$query_raw])) $query_result = $basis->sqls[$query_raw];
   		else $query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($basis->cInfo['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
   		$query_split  = new \core\classes\splitPageResults($basis->cInfo['list'], '');
-  		$basis->sqls[$query_raw] = $query_result; // storing data into cache memory
+  		$basis->sqls[$query_raw] = $query_result; // storing data into cache memory*/
   		history_save('inventory');
   		// the following should save loading time.
-  		if ($this->FirstValue == '' || $this->FirstId  == '' || $this->SecondField  == '' || $this->SecondFieldValue  == '' || $this->SecondFieldId	 == '' ) $this->LoadInventoryFilter();
+  		if ($basis->cInfo->FirstValue == '' || $basis->cInfo->FirstId  == '' || $basis->cInfo->SecondField  == '' || $basis->cInfo->SecondFieldValue  == '' || $basis->cInfo->SecondFieldId	 == '' ) $this->LoadInventoryFilter();
   		//end building array's for filter dropdown selection
   		$basis->page_title		= sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY);
   		$basis->module			= 'inventory';
   		$basis->page			= 'main';
   		$basis->template 		= 'template_main';
-  		$basis->notify();//final line
   	}
 
   	function LoadInventoryFilter(){
   		global $admin;
   		//building array's for filter dropdown selection
   		$i=0;
-  		$result = $admin->DataBase->query("SELECT * FROM " . TABLE_EXTRA_FIELDS ." WHERE module_id = 'inventory' AND use_in_inventory_filter = '1' ORDER BY description ASC");
-  		$this->FirstValue 		= 'var FirstValue = new Array();' 		. chr(10);
-  		$this->FirstId 			= 'var FirstId = new Array();' 			. chr(10);
-  		$this->SecondField 		= 'var SecondField = new Array();' 		. chr(10);
-  		$this->SecondFieldValue	= 'var SecondFieldValue = new Array();'	. chr(10);
-  		$this->SecondFieldId		= 'var SecondFieldId = new Array();' 	. chr(10);
-  		while (!$result->EOF) {
-  			if(in_array($result->fields['field_name'], array('vendor_id','description_purchase','item_cost','purch_package_quantity','purch_taxable','price_sheet_v')) ){
+  		$result = $admin->DataBase->prepare("SELECT * FROM " . TABLE_EXTRA_FIELDS ." WHERE module_id = 'inventory' AND use_in_inventory_filter = '1' ORDER BY description ASC");
+  		$basis->cInfo->FirstValue 		= 'var FirstValue = new Array();' 		. chr(10);
+  		$basis->cInfo->FirstId 			= 'var FirstId = new Array();' 			. chr(10);
+  		$basis->cInfo->SecondField 		= 'var SecondField = new Array();' 		. chr(10);
+  		$basis->cInfo->SecondFieldValue	= 'var SecondFieldValue = new Array();'	. chr(10);
+  		$basis->cInfo->SecondFieldId	= 'var SecondFieldId = new Array();' 	. chr(10);
+  		$sql->execute();
+  		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+  			if(in_array($result['field_name'], array('vendor_id','description_purchase','item_cost','purch_package_quantity','purch_taxable','price_sheet_v')) ){
   				$append 	= 'p.';
   			}else{
   				$append 	= 'a.';
   			}
-  			$this->FirstValue 	.= "FirstValue[$i] = '{$result->fields['description']}';" . chr(10);
-  			$this->FirstId 		.= "FirstId[$i] = '$append{$result->fields['field_name']}';" . chr(10);
-  			Switch($result->fields['field_name']){
+  			$basis->cInfo->FirstValue 	.= "FirstValue[$i] = '{$result['description']}';" . chr(10);
+  			$basis->cInfo->FirstId 		.= "FirstId[$i] = '{$append}{$result['field_name']}';" . chr(10);
+  			Switch($result['field_name']){
   				case 'vendor_id':
   					$contacts = gen_get_contact_array_by_type('v');
   					$tempValue  ='Array("'  ;
@@ -763,9 +769,9 @@ class admin extends \core\classes\admin {
   					}
   					$tempValue  .='")' ;
   					$tempId 	.='")' ;
-  					$this->SecondField		.= "SecondField['$append{$result->fields['field_name']}'] = 'drop_down';" . chr(10);
-  					$this->SecondFieldValue	.= "SecondFieldValue['$append{$result->fields['field_name']}] = $tempValue;" . chr(10);
-  					$this->SecondFieldId	.= "SecondFieldId['$append . $result->fields['field_name']	. '] = $tempId;" . chr(10);
+  					$basis->cInfo->SecondField		.= "SecondField['{$append}{$result['field_name']}'] = 'drop_down';" . chr(10);
+  					$basis->cInfo->SecondFieldValue	.= "SecondFieldValue['{$append}{$result['field_name']}] = $tempValue;" . chr(10);
+  					$basis->cInfo->SecondFieldId	.= "SecondFieldId['{$append}{$result['field_name']}'] = $tempId;" . chr(10);
   					break;
 
   				case'inventory_type':
@@ -777,9 +783,9 @@ class admin extends \core\classes\admin {
   					}
   					$tempValue 	.='")' ;
   					$tempId 	.='")' ;
-  					$this->SecondField		.= "SecondField['$append{$result->fields['field_name']}'] = 'drop_down';" . chr(10);
-  					$this->SecondFieldValue	.= "SecondFieldValue['$append{$result->fields['field_name']}'] = $tempValue;" . chr(10);
-  					$this->SecondFieldId	.= "SecondFieldId['$append{$result->fields['field_name']}'] = $tempId;" . chr(10);
+  					$basis->cInfo->SecondField		.= "SecondField['{$append}{$result['field_name']}'] = 'drop_down';" . chr(10);
+  					$basis->cInfo->SecondFieldValue	.= "SecondFieldValue['{$append}{$result['field_name']}'] = $tempValue;" . chr(10);
+  					$basis->cInfo->SecondFieldId	.= "SecondFieldId['{$append}{$result['field_name']}'] = $tempId;" . chr(10);
   					break;
   				case'cost_method':
   					$tempValue 	='Array("'  ;
@@ -790,17 +796,17 @@ class admin extends \core\classes\admin {
   					}
   					$tempValue .='")' ;
   					$tempId .='")' ;
-  					$this->SecondField		.= "SecondField['$append{$result->fields['field_name']}'] = 'drop_down';" . chr(10);
-  					$this->SecondFieldValue	.= "SecondFieldValue['$append{$result->fields['field_name']}'] = $tempValue;" . chr(10);
-  					$this->SecondFieldId	.= "SecondFieldId['$append{$result->fields['field_name']}'] = $tempId;" . chr(10);
+  					$basis->cInfo->SecondField		.= "SecondField['{$append}{$result['field_name']}'] = 'drop_down';" . chr(10);
+  					$basis->cInfo->SecondFieldValue	.= "SecondFieldValue['{$append}{$result['field_name']}'] = $tempValue;" . chr(10);
+  					$basis->cInfo->SecondFieldId	.= "SecondFieldId['{$append}{$result['field_name']}'] = $tempId;" . chr(10);
   					break;
   				default:
-  					$this->SecondField.= "SecondField['$append{$result->fields['field_name']}'] ='{$result->fields['entry_type']}';" . chr(10);
-  					if(in_array($result->fields['entry_type'], array('drop_down','radio','multi_check_box','data_list'))){
+  					$basis->cInfo->SecondField.= "SecondField['{$append}{$result['field_name']}'] ='{$result['entry_type']}';" . chr(10);
+  					if(in_array($result['entry_type'], array('drop_down','radio','multi_check_box','data_list'))){
   						$tempValue 	='Array("';
   						$tempId 	='Array("' ;
   						//explode params and splits value form id
-  						$params  = unserialize($result->fields['params']);
+  						$params  = unserialize($result['params']);
   						$choices = explode(',',$params['default']);
   						while ($choice = array_shift($choices)) {
   							$values 	 = explode(':',$choice);
@@ -809,12 +815,11 @@ class admin extends \core\classes\admin {
   						}
   						$tempValue 	.='")' ;
   						$tempId 	.='")' ;
-  						$this->SecondFieldValue	.= "SecondFieldValue['$append{$result->fields['field_name']}'] = $tempValue;" . chr(10);
-  						$this->SecondFieldId	.= "SecondFieldId['$append{$result->fields['field_name']}'] = $tempId;" . chr(10);
+  						$basis->cInfo->SecondFieldValue	.= "SecondFieldValue['{$append}{$result['field_name']}'] = $tempValue;" . chr(10);
+  						$basis->cInfo->SecondFieldId	.= "SecondFieldId['{$append}{$result['field_name']}'] = $tempId;" . chr(10);
   					}
   			}
   			$i++;
-  			$result->MoveNext();
   		}
   	}
 
@@ -931,7 +936,6 @@ class admin extends \core\classes\admin {
   		$basis->module			= 'inventory';
   		$basis->page			= 'adjustments';
   		$basis->template 		= 'template_main';
-  		$basis->notify();//final line
   	}
 
   	function SaveInventoryAssemblies (\core\classes\basis $basis){
@@ -1025,7 +1029,6 @@ class admin extends \core\classes\admin {
   		$basis->module			= 'inventory';
   		$basis->page			= 'assemblies';
   		$basis->template 		= 'template_main';
-  		$basis->notify();//final line
   	}
 }
 ?>

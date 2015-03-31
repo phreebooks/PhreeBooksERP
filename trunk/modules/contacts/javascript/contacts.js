@@ -118,7 +118,7 @@ function deleteAddressResp(sXml) {
 
 function TermsList() {
   var terms = document.getElementById('terms').value;
-  window.open("index.php?module=contacts&page=popup_terms&type="+account_type+"&val="+terms,"terms","width=500px,height=300px,resizable=1,scrollbars=1,top=150,left=200");
+  window.open("index.php?module=contacts&action=LoadTermsPopUp&type="+account_type+"&val="+terms,"terms","width=500px,height=300px,resizable=1,scrollbars=1,top=150,left=200");
 }
 
 function getPayment(id) {

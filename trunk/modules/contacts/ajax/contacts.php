@@ -57,7 +57,7 @@ switch ($_REQUEST['action']) {
 			$short_name = gen_get_contact_name($id);
 			$contact = new \contacts\classes\contacts();
 			if ($contact->delete($result->fields['ref_id'])) {
-	  			gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_DELETE . '-' . $contact->title), $short_name);
+	  			gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_DELETE . '-' . $contact->title, $short_name);
 				$message[] = 'The record was successfully deleted!';
 			} else {
 				$message[] = ACT_ERROR_CANNOT_DELETE;

@@ -21,6 +21,11 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 		$this->tab_list['master'] = array('file'=>'template_tab_ms',	'tag'=>'master',    'order'=>30, 'text'=>TEXT_MASTER_STOCK_ATTRIBUTES);
 	}
 
+	function getInventory(){
+		parent::getInventory();
+		$this->get_ms_list();
+	}
+
 	function get_item_by_id($id){
 		$this->child_array = null;
 		parent::get_item_by_id($id);

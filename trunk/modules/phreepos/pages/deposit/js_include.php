@@ -128,7 +128,7 @@ function ClearForm() {
 }
 
 function billsAcctList() {
-	window.open("index.php?module=contacts&page=popup_accts&type="+account_type+"&form=bills_deposit&fill=bill&jID="+journalID+"&search_text="+document.getElementById('search').value,"accounts","width=850px,height=550px,resizable=1,scrollbars=1,top=150,left=100");
+	window.open("index.php?module=contacts&action=LoadContactsAccountsPopUp&type="+account_type+"&form=bills_deposit&fill=bill&jID="+journalID+"&search_text="+document.getElementById('search').value,"accounts","width=850px,height=550px,resizable=1,scrollbars=1,top=150,left=100");
 }
 
 // ******* AJAX balance request function pair *********/
