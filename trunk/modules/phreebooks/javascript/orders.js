@@ -342,8 +342,9 @@ function fillOrder(xml) {
 	        rowOffset = (single_line_list == '1') ? jIndex-1 : (jIndex*2)-2;
 	        document.getElementById("item_table").rows[rowOffset].cells[0].innerHTML = '&nbsp;';
 	      }
-	      document.getElementById('qty_'  +jIndex).addEventListener("change", function(){ updateRowTotal(rowCnt, true);});
-	      document.getElementById('pstd_' +jIndex).addEventListener("change", function(){ updateRowTotal(rowCnt, true);});
+	      
+	      $('#qty_'+jIndex).change("change", function(){ var rIdx=$(this).closest('tr').prevAll().length+1; updateRowTotal(rIdx, true);});
+	      $('#pstd_'+jIndex).change("change",function(){ var rIdx=$(this).closest('tr').prevAll().length+1; updateRowTotal(rIdx, true);});
 		  updateRowTotal(jIndex, false);
 		  addInvRow();
 		  jIndex++;
