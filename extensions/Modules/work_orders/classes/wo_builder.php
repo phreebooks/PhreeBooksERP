@@ -32,21 +32,23 @@ class wo_builder {
 	$this->build_ref_lists();
 
 	// convert particular values indexed by id to common name
-	$result = $db->Execute("select sku, image_with_path from " . TABLE_INVENTORY . " where id = " . $this->sku_id);
+	$result = $db->Execute("select sku, image_with_path, description_sales, upc_code from " . TABLE_INVENTORY . " where id = " . $this->sku_id);
 	$this->sku             = $result->fields['sku'];
 	$this->bar_code        = $result->fields['sku'];
 	$this->image_with_path = $result->fields['image_with_path'];
+	$this->description     = $result->fields['description_sales'];
+	$this->upc_code        = $result->fields['upc_code'];
 	// sequence the results per Prefs[Seq]
 	$output = array();
 	foreach ($report->fieldlist as $OneField) { // check for a data field and build sql field list
 	  if (in_array($OneField->type, array('Data','ImgLink','BarCode'))) { // then it's data field, include it
 		$field = $OneField->boxfield[0]->fieldname;
 	  	switch($field) {
-		  case 'bar_code':  $output[] = $this->bar_code; break;
-		  case 'sku_image': $output[] = $this->image_with_path; break;
-		  default:
-			$output[] = $this->$field; 
-			break;
+		  case 'bar_code':   $output[] = $this->bar_code;        break;
+		  case 'sku_image':  $output[] = $this->image_with_path; break;
+		  case 'description':$output[] = $this->description;     break;
+		  case 'upc_code':   $output[] = $this->upc_code;        break;
+		  default:			 $output[] = $this->$field;          break;
 		}
 	  }
 	}
@@ -165,6 +167,8 @@ class wo_builder {
 	$output[] = array('id' => 'wo_journal_main.ref_docs',    'text' => 'Reference Docs');
 	$output[] = array('id' => 'bar_code',                    'text' => 'SKU Bar Code');
 	$output[] = array('id' => 'image_with_path',             'text' => 'SKU Image');
+	$output[] = array('id' => 'description',                 'text' => 'Description');
+	$output[] = array('id' => 'upc_code',                    'text' => 'UPC Bar Code');
 	return $output;
   }
 
@@ -180,7 +184,7 @@ class wo_builder {
 	$output[] = array('id' => 'complete',    'text' => 'Complete');
 	$output[] = array('id' => 'data_entry',  'text' => 'Data Entry Req');
 	return $output;
-  }  
+  }
  
 }
 ?>
