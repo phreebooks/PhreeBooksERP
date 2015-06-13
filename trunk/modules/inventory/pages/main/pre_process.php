@@ -202,7 +202,7 @@ switch ($_REQUEST['action']) {
   	$_SESSION['filter_criteria'] = isset( $_REQUEST['filter_criteria']) ?  $_REQUEST['filter_criteria'] : $_SESSION['filter_criteria'];
   	$_SESSION['filter_value'] 	 = isset( $_REQUEST['filter_value']) 	?  $_REQUEST['filter_value'] : $_SESSION['filter_value'];
   	$filter_criteria = Array(" = "," != "," LIKE "," NOT LIKE "," > "," < ");
-	$x = 0;
+	$x = 0;//@toto add date formater for date fields.
 	while (isset($_SESSION['filter_field'][$x])) {
 		if(      $filter_criteria[$_SESSION['filter_criteria'][$x]] == " LIKE " || $_SESSION['filter_criteria'][$x] == FILTER_CONTAINS){
 			if ( $_SESSION['filter_value'][$x] <> '' ) $criteria[] = $_SESSION['filter_field'][$x] . ' Like "%'    . $_SESSION['filter_value'][$x] . '%" ';
