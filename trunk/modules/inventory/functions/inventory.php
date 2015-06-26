@@ -263,8 +263,8 @@
 		  	$sheet_name = ($default_sheet->RecordCount() == 0) ? '' : $default_sheet->fields['sheet_name'];
 		}
 		// determine the sku price ranges from the price sheet in effect
-		$price = '0.0';
-		$levels = false;
+		$price = ($type=='v') ? $inventory->fields['item_cost'] : $inventory->fields['full_price'];
+		if ($price == '' || $price == null) $price = 0.0;
 		if ($sheet_name <> '') {
 			$sql = "select id, default_levels from " . TABLE_PRICE_SHEETS . "
 			  where inactive = '0' and type = '$type' and sheet_name = '$sheet_name' and
@@ -279,14 +279,14 @@
 				$result->MoveNext();
 			}
 			$levels = isset($special_prices[$price_sheets->fields['id']]) ? $special_prices[$price_sheets->fields['id']] : $price_sheets->fields['default_levels'];
-		}
-		if ($levels) {
 	  		$prices = inv_calculate_prices($inventory->fields['item_cost'], $inventory->fields['full_price'], $levels);
-	  		if(is_array($prices)) foreach ($prices as $value) if ($qty >= $value['qty']) $price = $currencies->clean_value($value['price']);
-		} else {
-	  		$price = ($type=='v') ? $inventory->fields['item_cost'] : $inventory->fields['full_price'];
-		}
-		if ($price == '' || $price == null) $price = 0.0;
+	  		if(is_array($prices)) {
+	  			foreach ($prices as $value){
+	  			 if ($qty >= $value['qty']){
+	  			 	$price = $currencies->clean_value($value['price']);
+	  			 }
+	  		}}
+		} 		
 		return array('price'=>$price, 'sales_tax'=>$sales_tax, 'purch_tax'=>$purch_tax);
   }
 

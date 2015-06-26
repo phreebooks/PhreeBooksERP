@@ -24,6 +24,7 @@ require_once(DIR_FS_MODULES . 'inventory/defaults.php');
 $id         = (int)$_GET['iID'];
 $full_price = $_GET['price'];
 $type       = isset($_GET['type']) ? $_GET['type'] : 'c';
+$vendor_id  = isset($_GET['vendor_id']) ? $_GET['vendor_id'] : '';
 // retrieve some item details
 $inventory_details = $db->Execute("select sku, description_short, quantity_on_hand, quantity_on_order, item_cost, 
 	quantity_on_allocation, quantity_on_sales_order from " . TABLE_INVENTORY . " where id = " . $id);
@@ -38,10 +39,16 @@ switch ($_REQUEST['action']) {
 	while (true) {
 	  if (!isset($_POST['id_' . $tab_id])) break;
 	  $sheet_id = (int)$_POST['id_' . $tab_id];
+	  $sheet_name = $_POST['sheet_name_'. $tab_id];
 	  $default_checked = isset($_POST['def_' . $tab_id]) ? true : false;
 	  if ($default_checked) {
 		$db->Execute("delete from " . TABLE_INVENTORY_SPECIAL_PRICES . " 
 			where inventory_id = " . $id . " and price_sheet_id = " . $sheet_id);
+		if ($type == 'c') {
+			$db->Execute("UPDATE ".TABLE_INVENTORY." SET price_sheet = '', last_update= '".date('Y-m-d')."'  WHERE id = $id and price_sheet = '$sheet_name' " );
+		} else{
+			$db->Execute("UPDATE ".TABLE_INVENTORY." a JOIN ".TABLE_INVENTORY_PURCHASE." b ON a.sku = b.sku SET b.price_sheet_v = '', a.last_update= '".date('Y-m-d')."' WHERE a.id = $id and b.price_sheet_v = '$sheet_name' and b.id = '$vendor_id' " );
+		}
 	  } else {
 		$encoded_prices = array();
 		for ($i=0, $j=1; $i < MAX_NUM_PRICE_LEVELS; $i++, $j++) {
@@ -64,11 +71,11 @@ switch ($_REQUEST['action']) {
 		  $db->Execute("update " . TABLE_INVENTORY_SPECIAL_PRICES . " set price_levels = '" . $price_levels . "' 
 			where inventory_id = " . $id . " and price_sheet_id = " . $sheet_id);
 		}
-		$sql_data_array = array();
-		if($type == 'v')  $sql_data_array ['price_sheet_v'] = $_POST['sheet_name_'.$tab_id ];
-		else 			  $sql_data_array ['price_sheet']   = $_POST['sheet_name_'.$tab_id ];
-		$sql_data_array['last_update'] = date('Y-m-d');
-		db_perform(TABLE_INVENTORY, $sql_data_array, 'update', "id = " . $id);
+		if ($type == 'c') {
+			$db->Execute("UPDATE ".TABLE_INVENTORY." SET price_sheet = '$sheet_name', last_update= '".date('Y-m-d')."'  WHERE id = $id" );
+		} else{
+			$db->Execute("UPDATE ".TABLE_INVENTORY." a JOIN ".TABLE_INVENTORY_PURCHASE." b ON a.sku = b.sku SET b.price_sheet_v = '$sheet_name', a.last_update= '".date('Y-m-d')."' WHERE a.id = $id and b.id = '$vendor_id' " );
+		}
 	  }
 	  $tab_id++;
 	}

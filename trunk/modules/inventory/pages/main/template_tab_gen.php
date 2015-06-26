@@ -96,7 +96,7 @@
 	  	<?php if(isset($cInfo->full_price)) echo html_input_field('full_price', $currencies->precise($cInfo->full_price), 'onchange="update_full_price_incl_tax(true, true, false);" size="15" maxlength="20" style="text-align:right"', false);
 			if (isset($cInfo->full_price) && ENABLE_MULTI_CURRENCY) echo ' (' . DEFAULT_CURRENCY . ')';
 			if (isset($cInfo->full_price)) echo '   <i>'.$currencies->precise($cInfo->full_price).'</i>';
-		    if(isset($cInfo->price_sheet)) echo '&nbsp;' . html_icon('mimetypes/x-office-spreadsheet.png', BOX_SALES_PRICE_SHEETS, 'small', $params = 'onclick="priceMgr(' . $cInfo->id . ', 0, 0, \'c\')"') . chr(10); ?>
+		    if(isset($cInfo->price_sheet)) echo '&nbsp;' . html_icon('mimetypes/x-office-spreadsheet.png', BOX_SALES_PRICE_SHEETS, 'small', $params = 'onclick="priceMgr(' . $cInfo->id . ', 0, 0, \'c\', \'\')"') . chr(10); ?>
 	  </td>
 	  <td align="right"><?php if(isset($cInfo->full_price_with_tax)) echo INV_ENTRY_FULL_PRICE_WT; ?> </td>
 	  <td><?php if(isset($cInfo->full_price_with_tax)) echo html_input_field('full_price_with_tax', $currencies->precise($cInfo->full_price_with_tax), 'onchange="update_full_price_incl_tax(true, false, true);" size="15" maxlength="20" style="text-align:right" ', false);
@@ -154,7 +154,8 @@
 			}else{ echo '<td></td>';}
 			if(isset($cInfo->purch_taxable) || $error ){ 		echo '<td>'.html_pull_down_menu('purch_taxable_array[]', $purch_tax_rates, $purchaseRow['purch_taxable']).'</td>';
 			}else{ echo '<td></td>';}
-			if(isset($cInfo->price_sheet_v) || $error ) {		echo '<td>'.html_pull_down_menu('price_sheet_v_array[]', get_price_sheet_data('v'), $purchaseRow['price_sheet_v']).'</td>';
+			if(isset($cInfo->price_sheet_v) || $error ) {		echo '<td>'.html_pull_down_menu('price_sheet_v_array[]', get_price_sheet_data('v'), $purchaseRow['price_sheet_v']);
+																echo '&nbsp;' . html_icon('mimetypes/x-office-spreadsheet.png', BOX_SALES_PRICE_SHEETS, 'small', $params = 'onclick="priceMgr(' . $cInfo->id . ', 0, 0, \'v\', '.$purchaseRow['id'].')"') .'</td>';
 			}else{ echo '<td></td>';}
 			echo '</tr>';
 			$odd = !$odd;
