@@ -24,14 +24,13 @@ class xml_sync extends parser {
   }
 
   function processXML($rawXML) {
+	  	try{
 //	$rawXML = str_replace('&', '&amp;', $rawXML); // this character causes parser to break
 //echo '<pre>' . $rawXML . '</pre><br>';
 //	if (!$this->parse($rawXML)) {
-	if (!$objXML = $this->xml_to_object($rawXML)) {
+			$objXML = $this->xml_to_object($rawXML);
 //echo '<pre>' . $rawXML . '</pre><br>';
 //echo 'parsed string at shopping cart = '; print_r($this->arrOutput); echo '<br>';
-	  return false;  // parse the submitted string, check for errors
-	}
 	// try to determine the language used, default to en_us
 	$this->language = $objXML->Request->Language;
 	if (file_exists('language/' . $this->product['language'] . '/language.php')) {
@@ -39,10 +38,12 @@ class xml_sync extends parser {
 	} else {
 	  require ('language/en_us/language.php');
 	}
-	if (!$this->validateUser($objXML)) return false;
-	if (!$product = $this->formatArray($objXML)) return false;
-	if (!$this->syncProducts($product)) return false;
+			$this->validateUser($objXML);
+			$this->syncProducts($this->formatArray($objXML));
 	return true;
+	  	}catch(Exception $e){
+	  		$this->responseXML($e->getCode(), $e->getMessage(), 'error');
+	  	}
   }
 
   function formatArray($objXML) { // specific to XML spec for a product sync
@@ -63,8 +64,8 @@ class xml_sync extends parser {
   function syncProducts($products) {
 	global $db, $messageStack;
 	// error check input
-	if (sizeof($products['product']) == 0) return $this->responseXML('20', SOAP_NO_SKUS_UPLOADED, 'error');
-	if ($products['action'] <> 'Validate') return $this->responseXML('16', SOAP_BAD_ACTION,       'error');
+		if (sizeof($products['product']) == 0) throw new Exception(SOAP_NO_SKUS_UPLOADED, 20);
+		if ($products['action'] <> 'Validate') throw new Exception(SOAP_BAD_ACTION, 16);
 	
 	$result = $db->Execute("select phreebooks_sku from " . TABLE_PRODUCTS);
 	$missing_skus = array();
