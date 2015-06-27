@@ -206,6 +206,8 @@ $CritChoices = array(
    9 => '1:IN_LIST',
   10 => '1:LESS_THAN',
   11 => '1:GREATER_THAN',
+  12 => '0:NOT_NULL',
+  13 => '0:NULL',
 );
 
 $PaperOrientation = array (

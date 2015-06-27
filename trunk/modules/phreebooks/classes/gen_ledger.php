@@ -300,7 +300,7 @@ class journal {
 		  if  (round($values['credit'], $precision) <> 0 || round($values['debit'], $precision) <> 0) {
 		    $sql = "UPDATE " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " SET 
 			  credit_amount = credit_amount + ".$values['credit'].", debit_amount = debit_amount + ".$values['debit'].", 
-			  last_update = '$this->post_date' WHERE account_id = '$gl_acct' AND period = $this->period";
+			  last_update = '{$this->post_date}' WHERE account_id = '$gl_acct' AND period = $this->period";
 		    $messageStack->debug("\n    Post chart balances: credit_amount = ".$values['credit'].", debit_amount = ".$values['debit'].", acct = $gl_acct, period = $this->period");
 		    $result = $db->Execute($sql);
 		    if ($result->AffectedRows() <> 1) return $this->fail_message(GL_ERROR_POSTING_CHART_BALANCES . ($gl_acct ? $gl_acct : TEXT_NOT_SPECIFIED));

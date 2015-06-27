@@ -867,6 +867,14 @@ function build_criteria($report) {
 		$sc .= prefixTables($FieldValues->fieldname) . ' = \'0\'';
 		$fc .= $FieldValues->description . ' = ' . $FieldValues->default;
 		break;
+	  case 'NULL':
+	  	$sc .= prefixTables($FieldValues->fieldname) . ' IS NULL';
+	  	$fc .= $FieldValues->description . ' = ' . $FieldValues->default;
+	  	break;
+	  case 'NOT_NULL':
+	  	$sc .= prefixTables($FieldValues->fieldname) . ' IS NOT NULL';
+	  	$fc .= $FieldValues->description . ' = ' . $FieldValues->default;
+	  	break;
 	  case 'EQUAL':
 	  case 'NOT_EQUAL':
 	  case 'GREATER_THAN':

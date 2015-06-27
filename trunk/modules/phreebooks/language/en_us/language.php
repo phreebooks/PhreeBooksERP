@@ -318,5 +318,6 @@ define('TEXT_CREDIT_LIMIT_DESC','This order will exceed the customers credit lim
 define('TEXT_ADMIN_USER','Enter Admim Username');
 define('TEXT_ADMIN_PASS','Enter Admim Password');
 define('TEXT_ADMIN_NOT_VALIDATED','The override username and password was not valid. Please try again.');
-
+define('TEXT_NULL','is Null');
+define('TEXT_NOT_NULL','is not Null');
 ?>
