@@ -30,7 +30,7 @@ define('SOAP_BAD_CATEGORY','The category name could not be found or is not uniqu
 define('SOAP_BAD_CATEGORY_A','The category name submitted is not at the lowest level in the category tree. This is a Zencart requirement! Category name %s for sku %s.');
 define('SOAP_NO_SKU','No SKU was found. A SKU must be present in the submitted XML string!');
 define('SOAP_BAD_ACTION','A bad action was submitted.');
-define('SOAP_OPEN_FAILED','Error opening the image file to write. Trying to write to: ');
+define('SOAP_OPEN_FAILED','Error opening the image file to write. Trying to write to: %s for sku %s');
 define('SOAP_ERROR_WRITING_IMAGE','Error writing the image file to the Zencart image directory.');
 define('SOAP_PU_POST_ERROR','There was an error updating the product in Zencart. Description - ');
 define('SOAP_PRODUCT_UPLOAD_SUCCESS','Product SKU %s was uploaded successfully.');

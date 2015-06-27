@@ -153,7 +153,7 @@ if (file_exists(DIR_FS_ADMIN . 'soap/extra_actions/extra_product_reads.php')) in
 		} else {
 			$full_path = $image_filename;
 		}
-		if (!$handle = @fopen(DIR_FS_CATALOG_IMAGES . $full_path, 'wb')) throw new Exception(SOAP_OPEN_FAILED . $full_path, 21);
+		if (($handle = @fopen(DIR_FS_CATALOG_IMAGES . $full_path, 'wb')) == false) throw new Exception(sprintf(SOAP_OPEN_FAILED, DIR_FS_CATALOG_IMAGES . $full_path, $product['sku']), 21);
 		if (@fwrite($handle, $contents) === false) throw new Exception(SOAP_ERROR_WRITING_IMAGE, 22);
 		fclose($handle);
 	}
