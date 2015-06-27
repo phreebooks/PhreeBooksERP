@@ -79,20 +79,20 @@ class _tree_struct {
 		$dif = $rgt - $lft + 1;
 
 		// deleting node and its children
-		$this->db->exec("" .
-			"DELETE FROM `".$this->table."` " .
+		$this->db->query("" . 
+			"DELETE FROM `".$this->table."` " . 
 			"WHERE `".$this->fields["left"]."` >= ".$lft." AND `".$this->fields["right"]."` <= ".$rgt
 		);
 		// shift left indexes of nodes right of the node
 		$this->db->query("".
-			"UPDATE `".$this->table."` " .
-				"SET `".$this->fields["left"]."` = `".$this->fields["left"]."` - ".$dif." " .
+			"UPDATE `".$this->table."` " . 
+				"SET `".$this->fields["left"]."` = `".$this->fields["left"]."` - ".$dif." " . 
 			"WHERE `".$this->fields["left"]."` > ".$rgt
 		);
 		// shift right indexes of nodes right of the node and the node's parents
-		$this->db->query("" .
-			"UPDATE `".$this->table."` " .
-				"SET `".$this->fields["right"]."` = `".$this->fields["right"]."` - ".$dif." " .
+		$this->db->query("" . 
+			"UPDATE `".$this->table."` " . 
+				"SET `".$this->fields["right"]."` = `".$this->fields["right"]."` - ".$dif." " . 
 			"WHERE `".$this->fields["right"]."` > ".$lft
 		);
 
@@ -100,9 +100,9 @@ class _tree_struct {
 		$pos = (int)$data[$this->fields["position"]];
 
 		// Update position of siblings below the deleted node
-		$this->db->query("" .
-			"UPDATE `".$this->table."` " .
-				"SET `".$this->fields["position"]."` = `".$this->fields["position"]."` - 1 " .
+		$this->db->query("" . 
+			"UPDATE `".$this->table."` " . 
+				"SET `".$this->fields["position"]."` = `".$this->fields["position"]."` - 1 " . 
 			"WHERE `".$this->fields["parent_id"]."` = ".$pid." AND `".$this->fields["position"]."` > ".$pos
 		);
 		return true;
@@ -129,30 +129,30 @@ class _tree_struct {
 
 		// Not creating or copying - old parent is cleaned
 		if($node !== false && $is_copy == false) {
-			$sql[] = "" .
-				"UPDATE `".$this->table."` " .
-					"SET `".$this->fields["position"]."` = `".$this->fields["position"]."` - 1 " .
-				"WHERE " .
-					"`".$this->fields["parent_id"]."` = ".$node[$this->fields["parent_id"]]." AND " .
+			$sql[] = "" . 
+				"UPDATE `".$this->table."` " . 
+					"SET `".$this->fields["position"]."` = `".$this->fields["position"]."` - 1 " . 
+				"WHERE " . 
+					"`".$this->fields["parent_id"]."` = ".$node[$this->fields["parent_id"]]." AND " . 
 					"`".$this->fields["position"]."` > ".$node[$this->fields["position"]];
-			$sql[] = "" .
-				"UPDATE `".$this->table."` " .
-					"SET `".$this->fields["left"]."` = `".$this->fields["left"]."` - ".$ndif." " .
+			$sql[] = "" . 
+				"UPDATE `".$this->table."` " . 
+					"SET `".$this->fields["left"]."` = `".$this->fields["left"]."` - ".$ndif." " . 
 				"WHERE `".$this->fields["left"]."` > ".$node[$this->fields["right"]];
-			$sql[] = "" .
-				"UPDATE `".$this->table."` " .
-					"SET `".$this->fields["right"]."` = `".$this->fields["right"]."` - ".$ndif." " .
-				"WHERE " .
-					"`".$this->fields["right"]."` > ".$node[$this->fields["left"]]." AND " .
+			$sql[] = "" . 
+				"UPDATE `".$this->table."` " . 
+					"SET `".$this->fields["right"]."` = `".$this->fields["right"]."` - ".$ndif." " . 
+				"WHERE " . 
+					"`".$this->fields["right"]."` > ".$node[$this->fields["left"]]." AND " . 
 					"`".$this->fields["id"]."` NOT IN (".implode(",", $node_ids).") ";
 		}
 		// Preparing new parent
-		$sql[] = "" .
-			"UPDATE `".$this->table."` " .
-				"SET `".$this->fields["position"]."` = `".$this->fields["position"]."` + 1 " .
-			"WHERE " .
-				"`".$this->fields["parent_id"]."` = ".$ref_id." AND " .
-				"`".$this->fields["position"]."` >= ".$position." " .
+		$sql[] = "" . 
+			"UPDATE `".$this->table."` " . 
+				"SET `".$this->fields["position"]."` = `".$this->fields["position"]."` + 1 " . 
+			"WHERE " . 
+				"`".$this->fields["parent_id"]."` = ".$ref_id." AND " . 
+				"`".$this->fields["position"]."` >= ".$position." " . 
 				( $is_copy ? "" : " AND `".$this->fields["id"]."` NOT IN (".implode(",", $node_ids).") ");
 
 		$ref_ind = $ref_id === 0 ? (int)$rchildren[count($rchildren) - 1][$this->fields["right"]] + 1 : (int)$ref_node[$this->fields["right"]];
@@ -169,17 +169,17 @@ class _tree_struct {
 			$ref_ind -= $ndif;
 		}
 
-		$sql[] = "" .
-			"UPDATE `".$this->table."` " .
-				"SET `".$this->fields["left"]."` = `".$this->fields["left"]."` + ".$ndif." " .
-			"WHERE " .
-				"`".$this->fields["left"]."` >= ".$ref_ind." " .
+		$sql[] = "" . 
+			"UPDATE `".$this->table."` " . 
+				"SET `".$this->fields["left"]."` = `".$this->fields["left"]."` + ".$ndif." " . 
+			"WHERE " . 
+				"`".$this->fields["left"]."` >= ".$ref_ind." " . 
 				( $is_copy ? "" : " AND `".$this->fields["id"]."` NOT IN (".implode(",", $node_ids).") ");
-		$sql[] = "" .
-			"UPDATE `".$this->table."` " .
-				"SET `".$this->fields["right"]."` = `".$this->fields["right"]."` + ".$ndif." " .
-			"WHERE " .
-				"`".$this->fields["right"]."` >= ".$ref_ind." " .
+		$sql[] = "" . 
+			"UPDATE `".$this->table."` " . 
+				"SET `".$this->fields["right"]."` = `".$this->fields["right"]."` + ".$ndif." " . 
+			"WHERE " . 
+				"`".$this->fields["right"]."` >= ".$ref_ind." " . 
 				( $is_copy ? "" : " AND `".$this->fields["id"]."` NOT IN (".implode(",", $node_ids).") ");
 
 		$ldif = $ref_id == 0 ? 0 : $ref_node[$this->fields["level"]] + 1;
@@ -188,56 +188,56 @@ class _tree_struct {
 			$ldif = $node[$this->fields["level"]] - ($ref_node[$this->fields["level"]] + 1);
 			$idif = $node[$this->fields["left"]] - $ref_ind;
 			if($is_copy) {
-				$sql[] = "" .
-					"INSERT INTO `".$this->table."` (" .
-						"`".$this->fields["parent_id"]."`, " .
-						"`".$this->fields["position"]."`, " .
-						"`".$this->fields["left"]."`, " .
-						"`".$this->fields["right"]."`, " .
-						"`".$this->fields["level"]."`" .
-					") " .
-						"SELECT " .
-							"".$ref_id.", " .
-							"`".$this->fields["position"]."`, " .
-							"`".$this->fields["left"]."` - (".($idif + ($node[$this->fields["left"]] >= $ref_ind ? $ndif : 0))."), " .
-							"`".$this->fields["right"]."` - (".($idif + ($node[$this->fields["left"]] >= $ref_ind ? $ndif : 0))."), " .
-							"`".$this->fields["level"]."` - (".$ldif.") " .
-						"FROM `".$this->table."` " .
-						"WHERE " .
-							"`".$this->fields["id"]."` IN (".implode(",", $node_ids).") " .
+				$sql[] = "" . 
+					"INSERT INTO `".$this->table."` (" . 
+						"`".$this->fields["parent_id"]."`, " . 
+						"`".$this->fields["position"]."`, " . 
+						"`".$this->fields["left"]."`, " . 
+						"`".$this->fields["right"]."`, " . 
+						"`".$this->fields["level"]."`" . 
+					") " . 
+						"SELECT " . 
+							"".$ref_id.", " . 
+							"`".$this->fields["position"]."`, " . 
+							"`".$this->fields["left"]."` - (".($idif + ($node[$this->fields["left"]] >= $ref_ind ? $ndif : 0))."), " . 
+							"`".$this->fields["right"]."` - (".($idif + ($node[$this->fields["left"]] >= $ref_ind ? $ndif : 0))."), " . 
+							"`".$this->fields["level"]."` - (".$ldif.") " . 
+						"FROM `".$this->table."` " . 
+						"WHERE " . 
+							"`".$this->fields["id"]."` IN (".implode(",", $node_ids).") " . 
 						"ORDER BY `".$this->fields["level"]."` ASC";
 			}
 			else {
-				$sql[] = "" .
-					"UPDATE `".$this->table."` SET " .
-						"`".$this->fields["parent_id"]."` = ".$ref_id.", " .
-						"`".$this->fields["position"]."` = ".$position." " .
-					"WHERE " .
+				$sql[] = "" . 
+					"UPDATE `".$this->table."` SET " . 
+						"`".$this->fields["parent_id"]."` = ".$ref_id.", " . 
+						"`".$this->fields["position"]."` = ".$position." " . 
+					"WHERE " . 
 						"`".$this->fields["id"]."` = ".$id;
-				$sql[] = "" .
-					"UPDATE `".$this->table."` SET " .
-						"`".$this->fields["left"]."` = `".$this->fields["left"]."` - (".$idif."), " .
-						"`".$this->fields["right"]."` = `".$this->fields["right"]."` - (".$idif."), " .
-						"`".$this->fields["level"]."` = `".$this->fields["level"]."` - (".$ldif.") " .
-					"WHERE " .
+				$sql[] = "" . 
+					"UPDATE `".$this->table."` SET " . 
+						"`".$this->fields["left"]."` = `".$this->fields["left"]."` - (".$idif."), " . 
+						"`".$this->fields["right"]."` = `".$this->fields["right"]."` - (".$idif."), " . 
+						"`".$this->fields["level"]."` = `".$this->fields["level"]."` - (".$ldif.") " . 
+					"WHERE " . 
 						"`".$this->fields["id"]."` IN (".implode(",", $node_ids).") ";
 			}
 		}
 		else {
-			$sql[] = "" .
-				"INSERT INTO `".$this->table."` (" .
-					"`".$this->fields["parent_id"]."`, " .
-					"`".$this->fields["position"]."`, " .
-					"`".$this->fields["left"]."`, " .
-					"`".$this->fields["right"]."`, " .
-					"`".$this->fields["level"]."` " .
-					") " .
-				"VALUES (" .
-					$ref_id.", " .
-					$position.", " .
-					$idif.", " .
-					($idif + 1).", " .
-					$ldif.
+			$sql[] = "" . 
+				"INSERT INTO `".$this->table."` (" . 
+					"`".$this->fields["parent_id"]."`, " . 
+					"`".$this->fields["position"]."`, " . 
+					"`".$this->fields["left"]."`, " . 
+					"`".$this->fields["right"]."`, " . 
+					"`".$this->fields["level"]."` " . 
+					") " . 
+				"VALUES (" . 
+					$ref_id.", " . 
+					$position.", " . 
+					$idif.", " . 
+					($idif + 1).", " . 
+					$ldif. 
 				")";
 		}
 		foreach($sql as $q) { $this->db->query($q); }
@@ -266,31 +266,31 @@ class _tree_struct {
 	}
 
 	function _reconstruct() {
-		$this->db->query("" .
-			"CREATE TEMPORARY TABLE `temp_tree` (" .
-				"`".$this->fields["id"]."` INTEGER NOT NULL, " .
-				"`".$this->fields["parent_id"]."` INTEGER NOT NULL, " .
-				"`". $this->fields["position"]."` INTEGER NOT NULL" .
+		$this->db->query("" . 
+			"CREATE TEMPORARY TABLE `temp_tree` (" . 
+				"`".$this->fields["id"]."` INTEGER NOT NULL, " . 
+				"`".$this->fields["parent_id"]."` INTEGER NOT NULL, " . 
+				"`". $this->fields["position"]."` INTEGER NOT NULL" . 
 			") type=HEAP"
 		);
-		$this->db->query("" .
-			"INSERT INTO `temp_tree` " .
-				"SELECT " .
-					"`".$this->fields["id"]."`, " .
-					"`".$this->fields["parent_id"]."`, " .
-					"`".$this->fields["position"]."` " .
+		$this->db->query("" . 
+			"INSERT INTO `temp_tree` " . 
+				"SELECT " . 
+					"`".$this->fields["id"]."`, " . 
+					"`".$this->fields["parent_id"]."`, " . 
+					"`".$this->fields["position"]."` " . 
 				"FROM `".$this->table."`"
 		);
 
-		$this->db->query("" .
-			"CREATE TEMPORARY TABLE `temp_stack` (" .
-				"`".$this->fields["id"]."` INTEGER NOT NULL, " .
-				"`".$this->fields["left"]."` INTEGER, " .
-				"`".$this->fields["right"]."` INTEGER, " .
-				"`".$this->fields["level"]."` INTEGER, " .
-				"`stack_top` INTEGER NOT NULL, " .
-				"`".$this->fields["parent_id"]."` INTEGER, " .
-				"`".$this->fields["position"]."` INTEGER " .
+		$this->db->query("" . 
+			"CREATE TEMPORARY TABLE `temp_stack` (" . 
+				"`".$this->fields["id"]."` INTEGER NOT NULL, " . 
+				"`".$this->fields["left"]."` INTEGER, " . 
+				"`".$this->fields["right"]."` INTEGER, " . 
+				"`".$this->fields["level"]."` INTEGER, " . 
+				"`stack_top` INTEGER NOT NULL, " . 
+				"`".$this->fields["parent_id"]."` INTEGER, " . 
+				"`".$this->fields["position"]."` INTEGER " . 
 			") type=HEAP"
 		);
 		$counter = 2;
@@ -298,31 +298,31 @@ class _tree_struct {
 		$this->db->nextr();
 		$maxcounter = (int) $this->db->f(0) * 2;
 		$currenttop = 1;
-		$this->db->query("" .
-			"INSERT INTO `temp_stack` " .
-				"SELECT " .
-					"`".$this->fields["id"]."`, " .
-					"1, " .
-					"NULL, " .
-					"0, " .
-					"1, " .
-					"`".$this->fields["parent_id"]."`, " .
-					"`".$this->fields["position"]."` " .
-				"FROM `temp_tree` " .
+		$this->db->query("" . 
+			"INSERT INTO `temp_stack` " . 
+				"SELECT " . 
+					"`".$this->fields["id"]."`, " . 
+					"1, " . 
+					"NULL, " . 
+					"0, " . 
+					"1, " . 
+					"`".$this->fields["parent_id"]."`, " . 
+					"`".$this->fields["position"]."` " . 
+				"FROM `temp_tree` " . 
 				"WHERE `".$this->fields["parent_id"]."` = 0"
 		);
-		$this->db->exec("DELETE FROM `temp_tree` WHERE `".$this->fields["parent_id"]."` = 0");
+		$this->db->query("DELETE FROM `temp_tree` WHERE `".$this->fields["parent_id"]."` = 0");
 
 		while ($counter <= $maxcounter) {
-			$this->db->query("" .
-				"SELECT " .
-					"`temp_tree`.`".$this->fields["id"]."` AS tempmin, " .
-					"`temp_tree`.`".$this->fields["parent_id"]."` AS pid, " .
-					"`temp_tree`.`".$this->fields["position"]."` AS lid " .
-				"FROM `temp_stack`, `temp_tree` " .
-				"WHERE " .
-					"`temp_stack`.`".$this->fields["id"]."` = `temp_tree`.`".$this->fields["parent_id"]."` AND " .
-					"`temp_stack`.`stack_top` = ".$currenttop." " .
+			$this->db->query("" . 
+				"SELECT " . 
+					"`temp_tree`.`".$this->fields["id"]."` AS tempmin, " . 
+					"`temp_tree`.`".$this->fields["parent_id"]."` AS pid, " . 
+					"`temp_tree`.`".$this->fields["position"]."` AS lid " . 
+				"FROM `temp_stack`, `temp_tree` " . 
+				"WHERE " . 
+					"`temp_stack`.`".$this->fields["id"]."` = `temp_tree`.`".$this->fields["parent_id"]."` AND " . 
+					"`temp_stack`.`stack_top` = ".$currenttop." " . 
 				"ORDER BY `temp_tree`.`".$this->fields["position"]."` ASC LIMIT 1"
 			);
 
@@ -331,15 +331,15 @@ class _tree_struct {
 
 				$q = "INSERT INTO temp_stack (stack_top, `".$this->fields["id"]."`, `".$this->fields["left"]."`, `".$this->fields["right"]."`, `".$this->fields["level"]."`, `".$this->fields["parent_id"]."`, `".$this->fields["position"]."`) VALUES(".($currenttop + 1).", ".$tmp.", ".$counter.", NULL, ".$currenttop.", ".$this->db->f("pid").", ".$this->db->f("lid").")";
 				$this->db->query($q);
-				$this->db->exec("DELETE FROM `temp_tree` WHERE `".$this->fields["id"]."` = ".$tmp);
+				$this->db->query("DELETE FROM `temp_tree` WHERE `".$this->fields["id"]."` = ".$tmp);
 				$counter++;
 				$currenttop++;
 			}
 			else {
-				$this->db->query("" .
-					"UPDATE temp_stack SET " .
-						"`".$this->fields["right"]."` = ".$counter.", " .
-						"`stack_top` = -`stack_top` " .
+				$this->db->query("" . 
+					"UPDATE temp_stack SET " . 
+						"`".$this->fields["right"]."` = ".$counter.", " . 
+						"`stack_top` = -`stack_top` " . 
 					"WHERE `stack_top` = ".$currenttop
 				);
 				$counter++;
@@ -354,33 +354,33 @@ class _tree_struct {
 		unset($temp_fields["right"]);
 		unset($temp_fields["level"]);
 		if(count($temp_fields) > 1) {
-			$this->db->query("" .
-				"CREATE TEMPORARY TABLE `temp_tree2` " .
+			$this->db->query("" . 
+				"CREATE TEMPORARY TABLE `temp_tree2` " . 
 					"SELECT `".implode("`, `", $temp_fields)."` FROM `".$this->table."` "
 			);
 		}
 		$this->db->query("TRUNCATE TABLE `".$this->table."`");
-		$this->db->query("" .
-			"INSERT INTO ".$this->table." (" .
-					"`".$this->fields["id"]."`, " .
-					"`".$this->fields["parent_id"]."`, " .
-					"`".$this->fields["position"]."`, " .
-					"`".$this->fields["left"]."`, " .
-					"`".$this->fields["right"]."`, " .
-					"`".$this->fields["level"]."` " .
-				") " .
-				"SELECT " .
-					"`".$this->fields["id"]."`, " .
-					"`".$this->fields["parent_id"]."`, " .
-					"`".$this->fields["position"]."`, " .
-					"`".$this->fields["left"]."`, " .
-					"`".$this->fields["right"]."`, " .
-					"`".$this->fields["level"]."` " .
-				"FROM temp_stack " .
+		$this->db->query("" . 
+			"INSERT INTO ".$this->table." (" . 
+					"`".$this->fields["id"]."`, " . 
+					"`".$this->fields["parent_id"]."`, " . 
+					"`".$this->fields["position"]."`, " . 
+					"`".$this->fields["left"]."`, " . 
+					"`".$this->fields["right"]."`, " . 
+					"`".$this->fields["level"]."` " . 
+				") " . 
+				"SELECT " . 
+					"`".$this->fields["id"]."`, " . 
+					"`".$this->fields["parent_id"]."`, " . 
+					"`".$this->fields["position"]."`, " . 
+					"`".$this->fields["left"]."`, " . 
+					"`".$this->fields["right"]."`, " . 
+					"`".$this->fields["level"]."` " . 
+				"FROM temp_stack " . 
 				"ORDER BY `".$this->fields["id"]."`"
 		);
 		if(count($temp_fields) > 1) {
-			$sql = "" .
+			$sql = "" . 
 				"UPDATE `".$this->table."` v, `temp_tree2` SET v.`".$this->fields["id"]."` = v.`".$this->fields["id"]."` ";
 			foreach($temp_fields as $k => $v) {
 				if($k == "id") continue;
@@ -394,10 +394,10 @@ class _tree_struct {
 	function _analyze() {
 		$report = array();
 
-		$this->db->query("" .
-			"SELECT " .
-				"`".$this->fields["left"]."` FROM `".$this->table."` s " .
-			"WHERE " .
+		$this->db->query("" . 
+			"SELECT " . 
+				"`".$this->fields["left"]."` FROM `".$this->table."` s " . 
+			"WHERE " . 
 				"`".$this->fields["parent_id"]."` = 0 "
 		);
 		$this->db->nextr();
@@ -409,11 +409,11 @@ class _tree_struct {
 		}
 		$report[] = ($this->db->f(0) != 1) ? "[FAIL]\tRoot node's left index is not 1." : "[OK]\tRoot node's left index is 1.";
 
-		$this->db->query("" .
-			"SELECT " .
-				"COUNT(*) FROM `".$this->table."` s " .
-			"WHERE " .
-				"`".$this->fields["parent_id"]."` != 0 AND " .
+		$this->db->query("" . 
+			"SELECT " . 
+				"COUNT(*) FROM `".$this->table."` s " . 
+			"WHERE " . 
+				"`".$this->fields["parent_id"]."` != 0 AND " . 
 				"(SELECT COUNT(*) FROM `".$this->table."` WHERE `".$this->fields["id"]."` = s.`".$this->fields["parent_id"]."`) = 0 ");
 		$this->db->nextr();
 		$report[] = ($this->db->f(0) > 0) ? "[FAIL]\tMissing parents." : "[OK]\tNo missing parents.";
@@ -426,16 +426,16 @@ class _tree_struct {
 		$c = $this->db->f(0);
 		$report[] = ($n/2 != $c) ? "[FAIL]\tRight index does not match node count." : "[OK]\tRight index matches count.";
 
-		$this->db->query("" .
-			"SELECT COUNT(`".$this->fields["id"]."`) FROM `".$this->table."` s " .
-			"WHERE " .
-				"(SELECT COUNT(*) FROM `".$this->table."` WHERE " .
-					"`".$this->fields["right"]."` < s.`".$this->fields["right"]."` AND " .
-					"`".$this->fields["left"]."` > s.`".$this->fields["left"]."` AND " .
-					"`".$this->fields["level"]."` = s.`".$this->fields["level"]."` + 1" .
+		$this->db->query("" . 
+			"SELECT COUNT(`".$this->fields["id"]."`) FROM `".$this->table."` s " . 
+			"WHERE " . 
+				"(SELECT COUNT(*) FROM `".$this->table."` WHERE " . 
+					"`".$this->fields["right"]."` < s.`".$this->fields["right"]."` AND " . 
+					"`".$this->fields["left"]."` > s.`".$this->fields["left"]."` AND " . 
+					"`".$this->fields["level"]."` = s.`".$this->fields["level"]."` + 1" . 
 				") != " .
-				"(SELECT COUNT(*) FROM `".$this->table."` WHERE " .
-					"`".$this->fields["parent_id"]."` = s.`".$this->fields["id"]."`" .
+				"(SELECT COUNT(*) FROM `".$this->table."` WHERE " . 
+					"`".$this->fields["parent_id"]."` = s.`".$this->fields["id"]."`" . 
 				") "
 			);
 		$this->db->nextr();
@@ -461,27 +461,27 @@ class _tree_struct {
 	}
 	function _drop() {
 		$this->db->query("TRUNCATE TABLE `".$this->table."`");
-		$this->db->query("" .
-				"INSERT INTO `".$this->table."` (" .
-					"`".$this->fields["id"]."`, " .
-					"`".$this->fields["parent_id"]."`, " .
-					"`".$this->fields["position"]."`, " .
-					"`".$this->fields["left"]."`, " .
-					"`".$this->fields["right"]."`, " .
-					"`".$this->fields["level"]."` " .
-					") " .
-				"VALUES (" .
-					"1, " .
-					"0, " .
-					"0, " .
-					"1, " .
-					"2, " .
-					"0 ".
+		$this->db->query("" . 
+				"INSERT INTO `".$this->table."` (" . 
+					"`".$this->fields["id"]."`, " . 
+					"`".$this->fields["parent_id"]."`, " . 
+					"`".$this->fields["position"]."`, " . 
+					"`".$this->fields["left"]."`, " . 
+					"`".$this->fields["right"]."`, " . 
+					"`".$this->fields["level"]."` " . 
+					") " . 
+				"VALUES (" . 
+					"1, " . 
+					"0, " . 
+					"0, " . 
+					"1, " . 
+					"2, " . 
+					"0 ". 
 				")");
 	}
 }
 
-class json_tree extends _tree_struct {
+class json_tree extends _tree_struct { 
 	function __construct($table = TABLE_DC_DOCUMENT, $fields = array(), $add_fields = array("title" => "title", "type" => "type")) {
 		parent::__construct($table, $fields);
 		$this->fields = array_merge($this->fields, $add_fields);
@@ -499,7 +499,7 @@ class json_tree extends _tree_struct {
 	}
 	function set_data($data) {
 		if(count($this->add_fields) == 0) { return "{ \"status\" : 1 }"; }
-		$s = "UPDATE `".$this->table."` SET `".$this->fields["id"]."` = `".$this->fields["id"]."` ";
+		$s = "UPDATE `".$this->table."` SET `".$this->fields["id"]."` = `".$this->fields["id"]."` "; 
 		foreach($this->add_fields as $k => $v) {
 			if(isset($data[$k]))	$s .= ", `".$this->fields[$v]."` = \"".$this->db->escape($data[$k])."\" ";
 			else					$s .= ", `".$this->fields[$v]."` = `".$this->fields[$v]."` ";
@@ -510,7 +510,7 @@ class json_tree extends _tree_struct {
 	}
 	function rename_node($data) { return $this->set_data($data); }
 
-	function move_node($data) {
+	function move_node($data) { 
 		$id = parent::_move((int)$data["id"], (int)$data["ref"], (int)$data["position"], (int)$data["copy"]);
 		if(!$id) return "{ \"status\" : 0 }";
 		if((int)$data["copy"] && count($this->add_fields)) {
@@ -519,7 +519,7 @@ class json_tree extends _tree_struct {
 
 			$i = 0;
 			foreach($data as $dk => $dv) {
-				$s = "UPDATE `".$this->table."` SET `".$this->fields["id"]."` = `".$this->fields["id"]."` ";
+				$s = "UPDATE `".$this->table."` SET `".$this->fields["id"]."` = `".$this->fields["id"]."` "; 
 				foreach($this->add_fields as $k => $v) {
 					if(isset($dv[$k]))	$s .= ", `".$this->fields[$v]."` = \"".$this->db->escape($dv[$k])."\" ";
 					else				$s .= ", `".$this->fields[$v]."` = `".$this->fields[$v]."` ";

@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreeform/pages/popup_gen/pre_process.php
 //
-$security_level = \core\classes\user::validate(SECURITY_ID_PHREEFORM);
+$security_level = validate_user(SECURITY_ID_PHREEFORM);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/phreeform.php');
@@ -24,6 +24,7 @@ require_once(DIR_FS_WORKING . 'functions/phreeform.php');
 $custom_path = DIR_FS_WORKING . 'custom/pages/popup_gen/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
 /**************   page specific initialization  *************************/
+$error  = false;
 $r_list = false;
 $rID    = $_REQUEST['rID'];
 $gID    = isset($_GET ['gID'])  ? $_GET ['gID']  : false;
@@ -48,9 +49,9 @@ if ($rID) {
   }
   $title = $report->title;
 } elseif ($gID) {
-  $result = $admin->DataBase->query("select id, doc_title from " . TABLE_PHREEFORM . "
+  $result = $db->Execute("select id, doc_title from " . TABLE_PHREEFORM . " 
     where doc_group = '" . $gID . "' and (doc_ext = 'rpt' || doc_ext = 'frm') order by doc_title");
-  if ($result->rowCount() == 1) {
+  if ($result->RecordCount() == 1) {
     $rID    = $result->fields['id']; // only one form available, use it
     $report = get_report_details($rID);
     $title  = $report->title;
@@ -68,7 +69,7 @@ if ($rID) {
       if (isset($_GET['xmax'])) $report->xfilterlist[0]->max_val   = $_GET['xmax'];
     }
   } else {
-    $frm_grp = $admin->DataBase->query("select doc_title from " . TABLE_PHREEFORM . "
+    $frm_grp = $db->Execute("select doc_title from " . TABLE_PHREEFORM . " 
     where doc_group = '" . $gID . "' and (doc_ext = 'ff' || doc_ext = 'ff') limit 1");
   	$title  = $frm_grp->fields['doc_title'];
     $r_list = array();
@@ -78,12 +79,13 @@ if ($rID) {
     }
   }
 } else {
-	throw new \core\classes\userException(PHREEFORM_NORPT);
+  $error = true;
+  $messageStack->add(PHREEFORM_NORPT, 'error');
 }
 //echo 'post override report->filterlist = '; print_r($report->filterlist); echo '<br>';
 
 if (isset($_GET['xfld']) && strpos($_GET['xfld'], 'journal_main') !== false) { // try to extract email info from the journal
-  $result         = $admin->DataBase->query("select bill_primary_name, bill_email from " . TABLE_JOURNAL_MAIN . " where id = '" . $_GET['xmin'] . "'");
+  $result         = $db->Execute("select bill_primary_name, bill_email from " . TABLE_JOURNAL_MAIN . " where id = '" . $_GET['xmin'] . "'");
   $_GET['rName']  = $result->fields['bill_primary_name'];
   $_GET['rEmail'] = $result->fields['bill_email'];
 }
@@ -99,7 +101,8 @@ $message_subject = $title . ' ' . TEXT_FROM . ' ' . COMPANY_NAME;
 $message_subject = $_POST['message_subject'] ? $_POST['message_subject'] : $message_subject;
 $message_body    = $report->emailmessage     ? TextReplace($report->emailmessage) : sprintf(PHREEFORM_EMAIL_BODY, $title, COMPANY_NAME);
 $email_text      = $_POST['message_body']    ? $_POST['message_body']    : $message_body;
-switch ($_REQUEST['action']) {
+
+if (!$error) switch ($_REQUEST['action']) {
   case 'save':
   case 'save_as':
   case 'exp_csv':
@@ -148,7 +151,7 @@ switch ($_REQUEST['action']) {
 	  // read the field listings
 	  $report->fieldlist = array();
 	  if ($_POST['fld_fld']) foreach ($_POST['fld_fld'] as $key => $value) {
-	    $report->fieldlist[] = new \core\classes\objectInfo(array(
+	    $report->fieldlist[] = new objectInfo(array(
 	      'fieldname'   => db_prepare_input($_POST['fld_fld'][$key]),
 	      'description' => db_prepare_input($_POST['fld_desc'][$key]),
 	      'visible'     => db_prepare_input($_POST['fld_vis'][$key]),
@@ -162,7 +165,7 @@ switch ($_REQUEST['action']) {
 	  $i = 0;
 	  while(true) {
 	    if (!isset($_POST['field_' . $i])) break;
-	    $report->fieldlist[$_POST['seq_' . $i]] = new \core\classes\objectInfo(
+	    $report->fieldlist[$_POST['seq_' . $i]] = new objectInfo(
 		  array(
 		    'fieldname'   => $_POST['field_' . $i],
 		    'description' => $_POST['desc_' . $i],
@@ -198,18 +201,19 @@ switch ($_REQUEST['action']) {
 	  $output = object_to_xml($report);
 	  $filename = PF_DIR_MY_REPORTS . 'pf_' . $rID;
 	  if (!$handle = @fopen($filename, 'w')) {
-	    	$admin->DataBase->exec("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
-	    	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
+	    $db->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
+	    $messageStack->add(sprintf(PHREEFORM_WRITE_ERROR, $filename), 'error');
+	    break;
 	  }
-	  if (!@fwrite($handle, $output)) 	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));
-	  if (!@fclose($handle)) 			throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
-	  $messageStack->add(TEXT_REPORT . $report->description . TEXT_WAS_SAVED_AND_COPIED_TO_REPORT . ': ' . $report->title, 'success');
+	  fwrite($handle, $output);
+	  fclose($handle);
+	  $messageStack->add(TEXT_REPORT . $report->description . PHREEFORM_WASSAVED . $report->title, 'success');
 	  break; // we're done
 	} elseif ($_REQUEST['action'] == 'save') {
 	  $messageStack->add(PHREEFORM_CANNOT_EDIT,'caution');
 	  break; // we're done
 	} elseif ($_REQUEST['action'] == 'save_as') {
-	  $result = $admin->DataBase->query("select * from " . TABLE_PHREEFORM . " where id = " . $rID);
+	  $result = $db->Execute("select * from " . TABLE_PHREEFORM . " where id = " . $rID);
 	  $sql_array = array(
 		'parent_id'   => $result->fields['parent_id'],
 		'doc_type'    => 'c', // custom document
@@ -220,59 +224,71 @@ switch ($_REQUEST['action']) {
 		'create_date' => date('Y-m-d'),
 	  );
 	  db_perform(TABLE_PHREEFORM, $sql_array);
-	  $rID = \core\classes\PDO::lastInsertId('id');
+	  $rID = db_insert_id();
 	  $output = object_to_xml($report);
 	  $filename = PF_DIR_MY_REPORTS . 'pf_' . $rID;
 	  if (!$handle = @fopen($filename, 'w')) {
-	    	$admin->DataBase->exec("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
-	    	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
+	    $db->Execute("delete from " . TABLE_PHREEFORM . " where id = " . $rID);
+	    $messageStack->add(sprintf(PHREEFORM_WRITE_ERROR, $filename), 'error');
+	    break;
 	  }
-	  if (@fwrite($handle, $output)) 	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));
-	  if (!@fclose($handle))			throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
-	  $messageStack->add(TEXT_REPORT . $report->description . TEXT_WAS_SAVED_AND_COPIED_TO_REPORT . ': ' . $report->title, 'success');
+	  fwrite($handle, $output);
+	  fclose($handle);
+	  $messageStack->add(TEXT_REPORT . $report->description . PHREEFORM_WASSAVED . $report->title, 'success');
 	  break; // we're done
 	}
+	if ($error) break;
 
 	// if we are here, the user wants to generate output
 	switch ($report->reporttype) {
-	  	case 'frm':
-	    	BuildForm($report, $delivery_method);
-	    	break;
-		case 'rpt':
-		    $ReportData = '';
-		    $success = BuildSQL($report);
-		    if ($success['level'] == 'success') { // Generate the output data array
-			  	$sql = $success['data'];
-			  	$report->page->filter->text = $success['description']; // fetch the filter message
-			  	if (!$ReportData = BuildDataArray($sql, $report)) throw new \core\classes\userException(PHREEFORM_NODATA . ' The sql was: ' . $sql);
-			  	// Check for the report returning with data
-			  	if (!$ReportData) throw new \core\classes\userException(PHREEFORM_NODATA . ' The failing sql= ' . $sql);
-			    if ($_REQUEST['action'] == 'exp_csv')  $output = GenerateCSVFile ($ReportData, $report, $delivery_method);
-			    if ($_REQUEST['action'] == 'exp_xml')  $output = GenerateXMLFile ($ReportData, $report, $delivery_method);
-			    if ($_REQUEST['action'] == 'exp_html') $output = GenerateHTMLFile($ReportData, $report, $delivery_method);
-			    if ($_REQUEST['action'] == 'exp_pdf')  $output = GeneratePDFFile ($ReportData, $report, $delivery_method);
-		    } else { // Houston, we have a problem
-			  	throw new \core\classes\userException($success['message']);
-		    }
+	  case 'frm':
+	    $output = BuildForm($report, $delivery_method);
+		if ($output === true) $error = true;
+	    break;
+	  case 'rpt':
+	    $ReportData = '';
+	    $success = BuildSQL($report);
+	    if ($success['level'] == 'success') { // Generate the output data array
+		  $sql = $success['data'];
+		  $report->page->filter->text = $success['description']; // fetch the filter message
+		  if (!$ReportData = BuildDataArray($sql, $report)) {
+		    $messageStack->add(PHREEFORM_NODATA . ' The sql was: ' . $sql, 'caution');
+		    $error = true;
 		    break;
+		  }
+		  // Check for the report returning with data
+		  if (!$ReportData) {
+		    $messageStack->add(PHREEFORM_NODATA . ' The failing sql= ' . $sql, 'caution');
+		    $error = true;
+		  } else {
+		    if ($_REQUEST['action'] == 'exp_csv')  $output = GenerateCSVFile ($ReportData, $report, $delivery_method);
+		    if ($_REQUEST['action'] == 'exp_xml')  $output = GenerateXMLFile ($ReportData, $report, $delivery_method);
+		    if ($_REQUEST['action'] == 'exp_html') $output = GenerateHTMLFile($ReportData, $report, $delivery_method);
+		    if ($_REQUEST['action'] == 'exp_pdf')  $output = GeneratePDFFile ($ReportData, $report, $delivery_method);
+		  }
+	    } else { // Houston, we have a problem
+		  $messageStack->add($success['message'], $success['level']);
+		  $error = true;
+	    }
+	    break;
 	}
 	// if we are here, delivery method was email
-	if ($output) {
-		$filename = DIR_FS_MY_FILES . $_SESSION['company'] . '/temp/' . $output['filename'];
-		if (!$handle = @fopen($filename, 'w'))	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, 	$filename));
-		if (@fwrite($handle, $output['pdf']))	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));
-		if (!@fclose($handle)) 					throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
+	if (!$error && $output) {
+		$temp_file = DIR_FS_MY_FILES . $_SESSION['company'] . '/temp/' . $output['filename'];
+		$handle = fopen($temp_file, 'w');
+		fwrite($handle, $output['pdf']);
+		fclose($handle);
 		$block = array();
 		if ($cc_email) {
-			$block['EMAIL_CC_NAME']    = $cc_name;
-			$block['EMAIL_CC_ADDRESS'] = $cc_email;
+		  $block['EMAIL_CC_NAME']    = $cc_name;
+		  $block['EMAIL_CC_ADDRESS'] = $cc_email;
 		}
-		$attachments_list['file'] = $filename;
-		validate_send_mail($to_name, $to_email, $message_subject, $email_text, $from_name, $from_email, $block, $attachments_list);
-		$messageStack->add(EMAIL_SEND_SUCCESS, 'success');
-		unlink($filename);
+		$attachments_list['file'] = $temp_file;
+		$success = validate_send_mail($to_name, $to_email, $message_subject, $email_text, $from_name, $from_email, $block, $attachments_list);
+		if ($success) $messageStack->add(EMAIL_SEND_SUCCESS, 'success');
+		unlink($temp_file);
 	}
-	default:
+  default:
 }
 
 /*****************   prepare to display templates  *************************/
@@ -280,8 +296,17 @@ $DateArray = explode(':', $report->datedefault);
 if (!isset($DateArray[1])) $DateArray[1] = '';
 if (!isset($DateArray[2])) $DateArray[2] = '';
 $ValidDateChoices = array();
-foreach (\core\classes\DateTime::DateChoices as $key => $value) {
- 	if (strpos($report->datelist, $key) !== false) $ValidDateChoices[$key] = $value;
+foreach ($DateChoices as $key => $value) {
+ if (strpos($report->datelist, $key) !== false) $ValidDateChoices[$key] = $value;
+}
+
+$tab_list = array();
+if ($report->reporttype == 'frm' && sizeof($r_list) > 0) {
+  $tab_list['crit']  = TEXT_CRITERIA;
+} elseif ($report->reporttype == 'rpt') {
+  $tab_list['crit']  = TEXT_CRITERIA;
+  $tab_list['field'] = TEXT_FIELDS;
+  $tab_list['page']  = TEXT_PAGE_SETUP;
 }
 $custom_path = DIR_FS_WORKING . 'custom/pages/popup_gen/extra_tabs.php';
 if (file_exists($custom_path)) { include($custom_path); }
@@ -334,6 +359,6 @@ $cal_to = array(
 $include_header   = false;
 $include_footer   = false;
 $include_template = $IncludePage;
-define('PAGE_TITLE', TEXT_PHREEFORM_GENERATOR);
+define('PAGE_TITLE', PHREEFORM_REPORT_GEN);
 
 ?>

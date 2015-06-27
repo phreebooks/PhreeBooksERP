@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
@@ -18,6 +18,7 @@
 //  Path: /modules/bulk_inv/language/en_us/admin.php
 //
 // Module information
-define('TEXT_BULK_INVENTORY_TOOL','Bulk Inventory Tool');
+define('MODULE_BULK_INV_TITLE','Bulk Inventory Tool');
 define('MODULE_BULK_INV_DESCRIPTION','This tool helps enter database information quicker than the normal Inventory Manager.');
+
 ?>

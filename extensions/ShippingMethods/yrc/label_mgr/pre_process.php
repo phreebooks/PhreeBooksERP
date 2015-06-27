@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
@@ -57,7 +57,7 @@ switch ($action) {
 	$i    = 0;
 	$sInfo->package = array();
 	while(true) {
-	  $i++;
+	  $i++;		
 	  if (!isset($_POST['qty_' . $i])) break;
 	  // error check
 	  if (!$_POST['qty_' . $i]) continue; // skip if quantity is 0 or blank
@@ -81,7 +81,7 @@ switch ($action) {
 	}
 
 	if (!$error) {
-	  $temp = $admin->DataBase->query("select next_shipment_num from " . TABLE_CURRENT_STATUS);
+	  $temp = $db->Execute("select next_shipment_num from " . TABLE_CURRENT_STATUS);
 	  $shipment_num = $temp->fields['next_shipment_num'];
 	  $labels_array = array();
 	  foreach ($result as $shipment) {
@@ -98,23 +98,23 @@ switch ($action) {
 		db_perform(TABLE_SHIPPING_LOG, $sql_array, 'insert');
 		$labels_array[] = $shipment['tracking'];
 	  }
-	  $admin->DataBase->query("update " . TABLE_CURRENT_STATUS . " set next_shipment_num = next_shipment_num + 1");
-	  gen_add_audit_log(TEXT_LABEL_GENERATED, $shipment_num . '-' . $sInfo->purchase_invoice_id);
+	  $db->Execute("update " . TABLE_CURRENT_STATUS . " set next_shipment_num = next_shipment_num + 1");
+	  gen_add_audit_log(SHIPPING_LOG_LABEL_PRINTED, $shipment_num . '-' . $sInfo->purchase_invoice_id);
 	  $file_path = SHIPPING_DEFAULT_LABEL_DIR . $shipping_module . '/' . str_replace('-', '/', $date) . '/';
 	  // fetch the tracking labels
 	  foreach ($labels_array as $tracking_num) {
 	    foreach (glob($file_path . $tracking_num . '*.*') as $filename) {
 	      if (substr($filename, -3) == 'lpt') { // it's a thermal label
-		    if (!$handle = @fopen($filename, 'r')) 						throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
-		    if (!$label_data .= @fread($handle, filesize($filename))) 	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, 		$filename));
-		    if (!@fclose($handle)) 										throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
+		    if (!$handle = fopen($filename, 'r')) $error = $messageStack->add('Cannot open file (' . $filename . ')','error');
+		    $label_data .= fread($handle, filesize($filename));
+		    fclose($handle);
 		    if (!$error) $auto_print = true;
 	      } elseif (substr($filename, -3) == 'pdf') { // it's a pdf image label
 		    $pdf_list[] = $tracking_num; // it's a pdf image label
 	      }
 	    }
 	    if (!$auto_print) { // just pdf, go there now
-	      gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=shipping&page=popup_label_viewer&method=' . $shipping_module . '&date=' . $sInfo->ship_date . '&labels=' . implode(':', $labels_array), 'SSL'));
+	      gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=shipping&page=popup_label_viewer&method=' . $shipping_module . '&date=' . $sInfo->ship_date . '&labels=' . implode(':', $labels_array), 'SSL'));	
 	    }
 	  }
 	  $label_data = str_replace("\r", "", addslashes($label_data)); // for javascript multi-line
@@ -135,9 +135,9 @@ switch ($action) {
 	foreach ($labels_array as $tracking_num) {
 	  foreach (glob($file_path . $tracking_num . '*.*') as $filename) {
 	    if (substr($filename, -3) == 'lpt') { // it's a thermal label
-		  if (!$handle = @fopen($filename, 'r')) 					throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
-		  if (!$label_data .= @fread($handle, filesize($filename)))	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, 		$filename));
-		  if (!@fclose($handle)) 									throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 	$filename));
+		  if (!$handle = fopen($filename, 'r')) $error = $messageStack->add('Cannot open file (' . $filename . ')','error');
+		  $label_data .= fread($handle, filesize($filename));
+		  fclose($handle);
 		  $auto_print = true;
 	    } elseif (substr($filename, -3) == 'pdf') { // it's a pdf image label
 		  $pdf_list[] = $tracking_num;
@@ -147,16 +147,16 @@ switch ($action) {
 	$label_data = str_replace("\r", "", addslashes($label_data)); // for javascript multi-line
 	$label_data = str_replace("\n", "\\n", $label_data);
 	if (!$auto_print) { // just pdf, go there now
-		gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=shipping&page=popup_label_viewer&method=' . $shipping_module . '&date=' . $date . '&labels=' . $labels, 'SSL'));
+		gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=shipping&page=popup_label_viewer&method=' . $shipping_module . '&date=' . $date . '&labels=' . $labels, 'SSL'));	
 	}
     break;
 
   case 'delete':
 	$shipment_id = db_prepare_input($_GET['sID']);
-	$shipments   = $admin->DataBase->query("select method, ship_date, tracking_id from " . TABLE_SHIPPING_LOG . " where shipment_id = " . (int)$shipment_id);
+	$shipments   = $db->Execute("select method, ship_date, tracking_id from " . TABLE_SHIPPING_LOG . " where shipment_id = " . (int)$shipment_id);
 	$ship_method = $shipments->fields['method'];
 	$shipment    = new $shipping_module;
-	if ($shipments->rowCount() == 0 || !$ship_method) {
+	if ($shipments->RecordCount() == 0 || !$ship_method) {
 	  $error = $messageStack->add(SHIPPING_DELETE_ERROR,'error');
 	  break;
 	}
@@ -168,7 +168,6 @@ switch ($action) {
 	  $tracking_number = $shipments->fields['tracking_id'];
 	  if ($ship_method <> 'GndFrt' && $ship_method <> 'EcoFrt') { // no need to delte freight shipments,
 	    if ($shipment->deleteLabel($ship_method, $tracking_number)) {
-	      $messageStack->convert_add_to_session(); // save any messages for reload
 	    } else {
 	      $error = true;
 	    }
@@ -178,24 +177,24 @@ switch ($action) {
 	  $file_path = SHIPPING_DEFAULT_LABEL_DIR.$shipping_module.'/'.$date[0].'/'.$date[1].'/'.$date[2].'/';
 	  $cnt = 0;
 	  while(true) {
-			$filename = $file_path . $tracking_number . ($cnt > 0 ? '-'.$cnt : '') . '.lpt';
-			if   (is_file($filename)) {
-		  		if (!unlink($filename)) $messageStack->add("Trouble removing label file ($filename)",'caution');
-			} else {
-			  	$filename = $file_path . $tracking_number . ($cnt > 0 ? '-'.$cnt : '') . '.pdf';
-			  	if (is_file($filename)) {
-			    	if (!unlink($filename)) $messageStack->add("Trouble removing label file ($filename)",'caution');
-			  	} else {
-			    	break; // file does not exist, exit loop
-			  	}
-			}
-			$cnt++;
+		$filename = $file_path . $tracking_number . ($cnt > 0 ? '-'.$cnt : '') . '.lpt';
+		if   (is_file($filename)) {
+		  if (!unlink($filename)) $messageStack->add_session('Trouble removing label file (' . $filename . ')','caution');
+		} else {
+		  $filename = $file_path . $tracking_number . ($cnt > 0 ? '-'.$cnt : '') . '.pdf';
+		  if (is_file($filename)) {
+		    if (!unlink($filename)) $messageStack->add_session('Trouble removing label file (' . $filename . ')','caution');
+		  } else {
+		    break; // file does not exist, exit loop
+		  }
+		}
+		$cnt++;
 	  }
 	  $shipments->MoveNext();
 	}
 	// delete log since deleting label from FedEx is just a courtesy
-	$admin->DataBase->exec("delete from " . TABLE_SHIPPING_LOG . " where shipment_id = " . $shipment_id);
-	gen_add_audit_log(TEXT_LABEL_DELETED, $shipment_id);
+	$db->Execute("delete from " . TABLE_SHIPPING_LOG . " where shipment_id = " . $shipment_id);
+	gen_add_audit_log(SHIPPING_LABEL_DELETED, $shipment_id);
 	break;
 
   case 'close':
@@ -212,11 +211,11 @@ switch ($action) {
 
   default:
 	$oID = db_prepare_input($_GET['oID']);
-	$sql = "select shipper_code, ship_primary_name, ship_contact, ship_address1, ship_address2,
-		ship_city_town, ship_state_province, ship_postal_code, ship_country_code, ship_telephone1,
-		ship_email, purchase_invoice_id, purch_order_id, total_amount
+	$sql = "select shipper_code, ship_primary_name, ship_contact, ship_address1, ship_address2, 
+		ship_city_town, ship_state_province, ship_postal_code, ship_country_code, ship_telephone1, 
+		ship_email, purchase_invoice_id, purch_order_id, total_amount  
 		from " . TABLE_JOURNAL_MAIN . " where id = " . (int)$oID;
-	$result = $admin->DataBase->query($sql);
+	$result = $db->Execute($sql);
 	if (is_array($result->fields)) {
 	  while (list($key, $value) = each($result->fields)) $sInfo->$key = $value;
 	  $temp = explode(':', $result->fields['shipper_code']);
@@ -239,6 +238,6 @@ $include_footer   = false;
 $include_tabs     = false;
 $include_calendar = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', TEXT_SHIPPING_RATE_ESTIMATOR);
+define('PAGE_TITLE', SHIPPING_POPUP_WINDOW_TITLE);
 
 ?>

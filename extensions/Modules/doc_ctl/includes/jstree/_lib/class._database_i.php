@@ -24,16 +24,16 @@ class _database {
 
 	function connect() {
 		$this->data = new mysqli(
-			$this->settings["servername"],
-			$this->settings["username"],
-			$this->settings["password"],
+			$this->settings["servername"], 
+			$this->settings["username"], 
+			$this->settings["password"], 
 			$this->settings["database"],
 			$this->settings["serverport"]
 		);
 
-		if(mysqli_connect_errno()) {
-			$this->error("Connection error: ".mysqli_connect_error() );
-			return false;
+		if(mysqli_connect_errno()) { 
+			$this->error("Connection error: ".mysqli_connect_error() ); 
+			return false; 
 		}
 		if(!$this->data->set_charset("utf8")) {
 			$this->error("Error loading character set utf8");
@@ -51,7 +51,7 @@ class _database {
 		if(!($this->result = $this->data->query($sql))) $this->error($sql);
 		return ($this->result) ? true : false;
 	}
-
+	
 	function nextr(){
 		if(!$this->result) {
 			$this->error("No query pending");
@@ -123,17 +123,15 @@ class _database {
 		$error = $this->data->error;
 		if($this->settings["show_error"]) echo $error;
 		if($this->settings["error_file"] !== false) {
-			if (!$handle = @fopen($this->settings["error_file"], "a+"))  throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $this->settings['error_file']));
+			$handle = @fopen($this->settings["error_file"], "a+");
 			if($handle) {
-				if (!@fwrite($handle, "[".date("Y-m-d H:i:s")."] ".$string." <".$error.">\n"))  throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $this->settings['error_file']));
-				if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $this->settings['error_file']));
+				@fwrite($handle, "[".date("Y-m-d H:i:s")."] ".$string." <".$error.">\n");
+				@fclose($handle);
 			}
 		}
 		if($this->settings["dieonerror"]) {
 			if(isset($this->result)) $this->result->free();
 			@$this->data->close();
-			ob_end_flush();
-  			session_write_close();
 			die();
 		}
 	}

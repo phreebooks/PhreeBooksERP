@@ -8,14 +8,14 @@
 // +-----------------------------------------------------------------+
 // Path: /modules/inventory/language/nl_nl/menu.php
 
-define('TEXT_INVENTORY','Voorraad');
+define('MENU_HEADING_INVENTORY','Voorraad');
 define('BOX_INV_MAINTAIN','Voorraad Manager');
 define('BOX_INV_NEW','Voorraad Toevoegen');
-define('TEXT_TRANSFER_INVENTORY','Transporteer Voorraad');
+define('BOX_INV_TRANSFER','Transporteer Voorraad');
 define('ORD_TEXT_14_WINDOW_TITLE','Assemblage');
 define('ORD_TEXT_16_WINDOW_TITLE','Wijzigingen');
 define('BOX_PRICE_SHEET_MANAGER','Prijslijst Manager');
-define('TEXT_CUSTOMER_PRICE_SHEETS','Klant Prijslijsten');
-define('TEXT_VENDOR_PRICE_SHEETS','Leverancier Prijslijsten');
+define('BOX_SALES_PRICE_SHEETS','Klant Prijslijsten');
+define('BOX_PURCHASE_PRICE_SHEETS','Leverancier Prijslijsten');
 
 ?>

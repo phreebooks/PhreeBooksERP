@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -15,7 +15,7 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/inventory/pages/main/template_tab_history_sr.php
-// @todo update to release4.0
+//
 
 ?>
 <div id="tab_orderhist">
@@ -41,7 +41,7 @@
 	$reference_id = htmlspecialchars($cInfo->orderHistory->fields['purchase_invoice_id']);
 	$primary_name = htmlspecialchars($cInfo->orderHistory->fields['bill_primary_name']);
 	$closed       = $cInfo->orderHistory->fields['closed'] ? TEXT_YES : '';
-	$total_amount = $admin->currencies->format_full($cInfo->orderHistory->fields['total_amount']);
+	$total_amount = $currencies->format_full($cInfo->orderHistory->fields['total_amount']);
     $link_page    = html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;oID=$oID&amp;action=edit&amp;jID=12", 'SSL');
 ?>
   <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer">

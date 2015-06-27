@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -22,7 +22,7 @@
 <!--
 // pass any php variables generated during pre-process that are used in the javascript functions.
 // Include translations here as well.
-<?php echo js_calendar_init($basis->cInfo->cal_terms); ?>
+<?php echo js_calendar_init($cal_terms); ?>
 
 function init() {
 	SetDisabled();
@@ -40,9 +40,9 @@ function changeOptions() {
 
 function LoadDefaults() {
 	if (document.popup_terms.special_terms[0].checked) {
-		document.getElementById('early_percent').value = '<?php echo $basis->cInfo->contact->discount_percent; ?>';
-		document.getElementById('early_days').value = '<?php echo $basis->cInfo->contact->discount_days; ?>';
-		document.getElementById('standard_days').value = '<?php echo $basis->cInfo->contact->num_days_due; ?>';
+		document.getElementById('early_percent').value = '<?php echo constant($terms_type . "_PREPAYMENT_DISCOUNT_PERCENT"); ?>';
+		document.getElementById('early_days').value = '<?php echo constant($terms_type . "_PREPAYMENT_DISCOUNT_DAYS"); ?>';
+		document.getElementById('standard_days').value = '<?php echo constant($terms_type . "_NUM_DAYS_DUE"); ?>';
 		document.popup_terms.due_date.value = '';
 	} else if (document.popup_terms.special_terms[1].checked) {
 		document.getElementById('early_percent').value = '';
@@ -55,20 +55,20 @@ function LoadDefaults() {
 		document.getElementById('standard_days').value = '';
 		document.popup_terms.due_date.value = '';
 	} else if (document.popup_terms.special_terms[3].checked) {
-		document.getElementById('early_percent').value = '<?php echo $basis->cInfo->contact->discount_percent; ?>';
-		document.getElementById('early_days').value = '<?php echo $basis->cInfo->contact->discount_days; ?>';
-		document.getElementById('standard_days').value = '<?php echo $basis->cInfo->contact->num_days_due; ?>';
+		document.getElementById('early_percent').value = '<?php echo constant($terms_type . "_PREPAYMENT_DISCOUNT_PERCENT"); ?>';
+		document.getElementById('early_days').value = '<?php echo constant($terms_type . "_PREPAYMENT_DISCOUNT_DAYS"); ?>';
+		document.getElementById('standard_days').value = '<?php echo constant($terms_type . "_NUM_DAYS_DUE"); ?>';
 		document.popup_terms.due_date.value = '';
 	} else if (document.popup_terms.special_terms[4].checked) {
-		document.getElementById('early_percent').value = '<?php echo $basis->cInfo->contact->discount_percent; ?>';
-		document.getElementById('early_days').value = '<?php echo $basis->cInfo->contact->discount_days; ?>';
+		document.getElementById('early_percent').value = '<?php echo constant($terms_type . "_PREPAYMENT_DISCOUNT_PERCENT"); ?>';
+		document.getElementById('early_days').value = '<?php echo constant($terms_type . "_PREPAYMENT_DISCOUNT_DAYS"); ?>';
 		document.getElementById('standard_days').value = '';
 		document.popup_terms.due_date.value = '<?php echo $default_date; ?>';
 	} else if (document.popup_terms.special_terms[5].checked) {
-		document.getElementById('early_percent').value = '<?php echo $basis->cInfo->contact->discount_percent; ?>';
-		document.getElementById('early_days').value = '<?php echo $basis->cInfo->contact->discount_days; ?>';
+		document.getElementById('early_percent').value = '<?php echo constant($terms_type . "_PREPAYMENT_DISCOUNT_PERCENT"); ?>';
+		document.getElementById('early_days').value = '<?php echo constant($terms_type . "_PREPAYMENT_DISCOUNT_DAYS"); ?>';
 		document.getElementById('standard_days').value = '';
-		document.popup_terms.due_date.value = '<?php echo $month_end; //@todo ?>';
+		document.popup_terms.due_date.value = '<?php echo $month_end; ?>';
 	}
 }
 
@@ -149,42 +149,42 @@ function setReturnTerms() {
 }
 
 function js_terms_to_language(terms_encoded) { // modified from /includes/general/functions/gen_functions.php function: gen_terms_to_language
-	var prepayment_discount_percent = '<?php echo $basis->cInfo->contact->discount_percent; ?>';
-	var prepayment_discount_days = '<?php echo $basis->cInfo->contact->discount_days; ?>';
-	var num_days_due = '<?php echo $basis->cInfo->contact->num_days_due; ?>';
+	var prepayment_discount_percent = '<?php echo constant($terms_type . '_PREPAYMENT_DISCOUNT_PERCENT'); ?>';
+	var prepayment_discount_days = '<?php echo constant($terms_type . '_PREPAYMENT_DISCOUNT_DAYS'); ?>';
+	var num_days_due = '<?php echo constant($terms_type . '_NUM_DAYS_DUE'); ?>';
 	var terms = terms_encoded.split(':');
 	var result = '';
 	switch (terms[0]) {
 		default:
 		case '0': // Default terms
 			if (prepayment_discount_percent != '0') {
-				result =  prepayment_discount_percent + '<?php echo TEXT_PERCENT_SHORT; ?>' + prepayment_discount_days + ', ';
+				result =  prepayment_discount_percent + '<?php echo ACT_EARLY_DISCOUNT_SHORT; ?>' + prepayment_discount_days + ', ';
 			}
 			result += '<?php echo ACT_TERMS_NET; ?>' + num_days_due;
 			break;
 		case '1': // Cash on Delivery (COD)
-			result = '<?php echo TEXT_CASH_ON_DELIVERY_SHORT; ?>';
+			result = '<?php echo ACT_COD_SHORT; ?>';
 			break;
 		case '2': // Prepaid
-			result = '<?php echo TEXT_PREPAID; ?>';
+			result = '<?php echo ACT_PREPAID; ?>';
 			break;
 		case '3': // Special terms
 			if (terms[1] != 0) {
-				result = terms[1] + '<?php echo TEXT_PERCENT_SHORT; ?>' + terms[2] + ', ';
+				result = terms[1] + '<?php echo ACT_EARLY_DISCOUNT_SHORT; ?>' + terms[2] + ', ';
 			}
 			result += '<?php echo ACT_TERMS_NET; ?>' + terms[3];
 			break;
 		case '4': // Due on day of next month
 			if (terms[1] != 0) {
-				result = terms[1] + '<?php echo TEXT_PERCENT_SHORT; ?>' + terms[2] + ', ';
+				result = terms[1] + '<?php echo ACT_EARLY_DISCOUNT_SHORT; ?>' + terms[2] + ', ';
 			}
-			result += '<?php echo TEXT_DUE_ON . ': '; ?>' + terms[3];
+			result += '<?php echo ACT_DUE_ON; ?>' + terms[3];
 			break;
 		case '5': // Due at end of month
 			if (terms[1] != 0) {
-				result = terms[1] + '<?php echo TEXT_PERCENT_SHORT; ?>' + terms[2] + ', ';
+				result = terms[1] + '<?php echo ACT_EARLY_DISCOUNT_SHORT; ?>' + terms[2] + ', ';
 			}
-			result += '<?php echo TEXT_DUE_END_OF_MONTH; ?>';
+			result += '<?php echo ACT_END_OF_MONTH; ?>';
 	}
 	return result;
 }

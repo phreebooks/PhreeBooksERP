@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -23,6 +23,7 @@
 // Include translations here as well.
 function init() {
   $(function() { // initialize tables
+	$('#admintabs').tabs();
     $('#tab_table').dataTable();
     $('#field_table').dataTable();
   });
@@ -35,12 +36,12 @@ function check_form() {
 // Insert other page specific functions here.
 function loadPopUp(action, id) {
   switch(action) {
-    case 'fields_new':    action = 'new';    subject = 'fields'; break;
-    case 'tabs_new':      action = 'new';    subject = 'tabs';   break;
-    case 'fields_edit':   action = 'edit';   subject = 'fields'; break;
-    case 'tabs_edit':     action = 'edit';   subject = 'tabs';   break;
-    case 'fields_delete': action = 'delete'; subject = 'fields'; break;
-    case 'tabs_delete':   action = 'delete'; subject = 'tabs';   break;
+    case 'fields_new':    action = 'new';    subject = 'assets_fields'; break;
+    case 'tabs_new':      action = 'new';    subject = 'assets_tabs';   break;
+    case 'fields_edit':   action = 'edit';   subject = 'assets_fields'; break;
+    case 'tabs_edit':     action = 'edit';   subject = 'assets_tabs';   break;
+    case 'fields_delete': action = 'delete'; subject = 'assets_fields'; break;
+    case 'tabs_delete':   action = 'delete'; subject = 'assets_tabs';   break;
   }
   window.open("index.php?module=phreedom&page=popup_setup&topic="+module+"&subject="+subject+"&action="+action+"&sID="+id,"popup_setup","width=500,height=550,resizable=1,scrollbars=1,top=150,left=200");
 }

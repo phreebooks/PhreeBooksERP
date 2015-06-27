@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -28,12 +28,12 @@ $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 $toolbar->add_help('07.06.02');
 $toolbar->search_period = $acct_period;
-echo $toolbar->build($add_search = true, $add_periods = true);
+echo $toolbar->build_toolbar($add_search = true, $add_periods = true); 
 // Build the page
 ?>
-<h1><?php echo TEXT_PLEASE_SELECT; ?></h1>
+<h1><?php echo GEN_HEADING_PLEASE_SELECT; ?></h1>
 <div style="float:right"><?php echo $query_split->display_links(); ?></div>
-<div><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . TEXT_GENERAL_JOURNAL); ?></div>
+<div><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . ORD_TEXT_2_WINDOW_TITLE); ?></div>
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
  <thead class="ui-widget-header">
   <tr><?php echo $list_header; ?></tr>
@@ -48,7 +48,7 @@ echo $toolbar->build($add_search = true, $add_periods = true);
 	  <td><?php echo $query_result->fields['store_id'] ? gen_get_contact_name($query_result->fields['store_id']) : COMPANY_ID; ?></td>
 	<?php } ?>
 	<td><?php echo $query_result->fields['purchase_invoice_id']; ?></td>
-	<td><?php echo $admin->currencies->format($query_result->fields['total_amount']); ?></td>
+	<td><?php echo $currencies->format($query_result->fields['total_amount']); ?></td>
 	<td><?php echo substr(fetch_item_description($query_result->fields['id']), 0, 32); ?></td>
   </tr>
 <?php
@@ -59,5 +59,5 @@ echo $toolbar->build($add_search = true, $add_periods = true);
  </tbody>
 </table>
 <div style="float:right"><?php echo $query_split->display_links(); ?></div>
-<div><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . TEXT_GENERAL_JOURNAL); ?></div>
+<div><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . ORD_TEXT_2_WINDOW_TITLE); ?></div>
 </form>

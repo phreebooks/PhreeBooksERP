@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
@@ -17,7 +17,6 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreeform/classes/letter_generator.php
 //
-namespace phreeform\classes;
 if (PDF_APP == 'TCPDF') { 
   define ('K_PATH_MAIN', DIR_FS_MODULES . 'phreeform/includes/tcpdf/');
   define ('K_PATH_URL',  DIR_WS_MODULES . 'phreeform/includes/tcpdf/');

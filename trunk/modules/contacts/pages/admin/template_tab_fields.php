@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/contacts/pages/admin/template_tab_fields.php
 //
-$field_toolbar = new \core\classes\toolbar('fields');
+$field_toolbar = new toolbar('fields');
 $field_toolbar->icon_list['cancel']['show'] = false;
 $field_toolbar->icon_list['open']['show']   = false;
 $field_toolbar->icon_list['delete']['show'] = false;
@@ -24,8 +24,8 @@ $field_toolbar->icon_list['save']['show']   = false;
 $field_toolbar->icon_list['print']['show']  = false;
 if ($security_level > 1) $field_toolbar->add_icon('new', 'onclick="loadPopUp(\'fields_new\', 0)"', $order = 10);
 ?>
-<div title="<?php echo TEXT_CUSTOM_FIELDS;?>" id="tab_fields">
-  <?php echo $field_toolbar->build(); ?>
+<div id="tab_fields">
+  <?php echo $field_toolbar->build_toolbar(); ?>
   <h1><?php echo $fields->title; ?></h1>
   <div id="fields_content"><?php echo $fields->build_main_html(); ?></div>
 </div>

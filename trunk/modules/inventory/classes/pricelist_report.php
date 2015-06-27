@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/classes/pricelist_report.php
 //
-namespace inventory\classes;
+
 require_once (DIR_FS_MODULES."/inventory/defaults.php");
 require_once (DIR_FS_MODULES."/inventory/functions/inventory.php");
 
@@ -32,7 +32,7 @@ class pricelist_report {
   }
 
   function load_report_data($report, $Seq, $sql = '', $GrpField = '') {
-	global $admin;
+	global $db;
 	// prepare the sql by temporarily replacing calculated fields with real fields
 	$sql_fields = substr($sql, strpos($sql,'select ') + 7, strpos($sql, ' from ') - 7);
 	$this->sql_field_array = explode(', ', $sql_fields);
@@ -40,9 +40,9 @@ class pricelist_report {
 	  $this->sql_field_karray['c' . $i] = substr($this->sql_field_array[$i], 0, strpos($this->sql_field_array[$i], ' '));
 	}
 	$sql = $this->replace_special_fields($sql);
-
-	$result = $admin->DataBase->query($sql);
-	if ($result->rowCount() == 0) throw new \core\classes\userException("No data");
+	
+	$result = $db->Execute($sql);
+	if ($result->RecordCount() == 0) return false; // No data so bail now
 	// Generate the output data array
 	$RowCnt = 0; // Row counter for output data
 	$ColCnt = 1;
@@ -69,7 +69,7 @@ class pricelist_report {
 			continue; // skip the row, order has been filled
 		}
 		$OutputArray[$RowCnt][0] = 'd'; // let the display class know its a data element
-		foreach($Seq as $key => $TableCtl) { //
+		foreach($Seq as $key => $TableCtl) { // 
 			// insert data into output array and set to next column
 			$OutputArray[$RowCnt][$ColCnt] = ProcessData($myrow[$TableCtl['fieldname']], $TableCtl['processing']);
 			$ColCnt++;
@@ -93,7 +93,7 @@ class pricelist_report {
 	}
 	// see if we have a total to send
 	$ShowTotals = false;
-	foreach ($Seq as $TotalCtl) if ($TotalCtl['total']=='1') $ShowTotals = true;
+	foreach ($Seq as $TotalCtl) if ($TotalCtl['total']=='1') $ShowTotals = true; 
 	if ($ShowTotals) {
 		$OutputArray[$RowCnt][0] = 'r:' . $report->title;
 		foreach ($Seq as $TotalCtl) {
@@ -149,7 +149,8 @@ class pricelist_report {
 	  }
 	}
     $new_data = $this->calulate_special_fields($id);
-	foreach ($myrow as $key => $value) {
+	if (!$new_data) return false;
+	foreach ($myrow as $key => $value) { 
 	  for ($i = 0; $i < count($this->special_field_array); $i++) {
 	    if ($this->sql_field_karray[$key] == $this->special_field_array[$i]) $myrow[$key] = $new_data[$this->special_field_array[$i]];
 	  }
@@ -158,26 +159,27 @@ class pricelist_report {
   }
 
   function calulate_special_fields($id) {
-	global $admin;
+	global $db, $currencies;
+	$new_data = array();
 	// get the inventory prices
-	$inventory = $admin->DataBase->query("select item_cost, full_price, price_sheet from ".TABLE_INVENTORY." where id = '$id'");
+	$inventory = $db->Execute("select item_cost, full_price, price_sheet from ".TABLE_INVENTORY." where id = '$id'");
 	// determine what price sheet to use, priority: inventory, default
 	if ($inventory->fields['price_sheet'] <> '') {
 		$sheet_name = $inventory->fields['price_sheet'];
 	} else {
-		$default_sheet = $admin->DataBase->query("select sheet_name from " . TABLE_PRICE_SHEETS . "
+		$default_sheet = $db->Execute("select sheet_name from " . TABLE_PRICE_SHEETS . "
 			where type = 'c' and default_sheet = '1'");
-		$sheet_name = ($default_sheet->rowCount() == 0) ? '' : $default_sheet->fields['sheet_name'];
+		$sheet_name = ($default_sheet->RecordCount() == 0) ? '' : $default_sheet->fields['sheet_name'];
 	}
 	// determine the sku price ranges from the price sheet in effect
 	$levels = false;
 	if ($sheet_name <> '') {
 		$sql = "select id, default_levels from " . TABLE_PRICE_SHEETS . "
-		    where inactive = '0' and type = 'c' and sheet_name = '" . $sheet_name . "' and
+		    where inactive = '0' and type = 'c' and sheet_name = '" . $sheet_name . "' and 
 		    (expiration_date is null or expiration_date = '0000-00-00' or expiration_date >= '" . date('Y-m-d') . "')";
-		$price_sheets = $admin->DataBase->query($sql);
+		$price_sheets = $db->Execute($sql);
 		// retrieve special pricing for this inventory item
-		$result = $admin->DataBase->query("select price_sheet_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . "
+		$result = $db->Execute("select price_sheet_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . "
 			where price_sheet_id = '" . $price_sheets->fields['id'] . "' and inventory_id = " . $id);
 		$special_prices = array();
 		while (!$result->EOF) {
@@ -201,7 +203,7 @@ class pricelist_report {
 	if ($levels) {
 		$prices = inv_calculate_prices($inventory->fields['item_cost'], $inventory->fields['full_price'], $levels);
 		if (is_array($prices)) foreach ($prices as $key => $value) {
-			$new_data['price_level_'.($key+1)] = $admin->currencies->clean_value($value['price']);
+			$new_data['price_level_'.($key+1)] = $currencies->clean_value($value['price']);
 			$new_data['price_qty_'  .($key+1)] = $value['qty'];
 		}
 	}

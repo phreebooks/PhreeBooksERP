@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -16,37 +16,39 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/work_orders/classes/wo_builder.php
 //
-namespace work_orders\classes;
+
 class wo_builder {
   function __construct() {
   }
 
   function load_query_results($tableKey = 'id', $tableValue = 0) {
-	global $admin, $report;
-	if (!$tableValue) throw new \core\classes\userException("tableValue is empty");
+	global $db, $report;
+	if (!$tableValue) return false;
 	$sql = "select * from " . TABLE_WO_JOURNAL_MAIN . " where id = " . $tableValue;
-	$result = $admin->DataBase->query($sql);
+	$result = $db->Execute($sql);
 	while (list($key, $value) = each($result->fields)) $this->$key = db_prepare_input($value);
 	$this->load_item_details($this->id);
 	$this->build_bom_list($this->sku_id);
 	$this->build_ref_lists();
 
 	// convert particular values indexed by id to common name
-	$result = $admin->DataBase->query("select sku, image_with_path from " . TABLE_INVENTORY . " where id = " . $this->sku_id);
+	$result = $db->Execute("select sku, image_with_path, description_sales, upc_code from " . TABLE_INVENTORY . " where id = " . $this->sku_id);
 	$this->sku             = $result->fields['sku'];
 	$this->bar_code        = $result->fields['sku'];
 	$this->image_with_path = $result->fields['image_with_path'];
+	$this->description     = $result->fields['description_sales'];
+	$this->upc_code        = $result->fields['upc_code'];
 	// sequence the results per Prefs[Seq]
 	$output = array();
 	foreach ($report->fieldlist as $OneField) { // check for a data field and build sql field list
 	  if (in_array($OneField->type, array('Data','ImgLink','BarCode'))) { // then it's data field, include it
 		$field = $OneField->boxfield[0]->fieldname;
 	  	switch($field) {
-		  case 'bar_code':  $output[] = $this->bar_code; break;
-		  case 'sku_image': $output[] = $this->image_with_path; break;
-		  default:
-			$output[] = $this->$field;
-			break;
+		  case 'bar_code':   $output[] = $this->bar_code;        break;
+		  case 'sku_image':  $output[] = $this->image_with_path; break;
+		  case 'description':$output[] = $this->description;     break;
+		  case 'upc_code':   $output[] = $this->upc_code;        break;
+		  default:			 $output[] = $this->$field;          break;
 		}
 	  }
 	}
@@ -70,7 +72,7 @@ class wo_builder {
   }
 
   function load_total_results($Params) {
-
+	
   }
 
   function load_text_block_data($Params) {
@@ -84,14 +86,14 @@ class wo_builder {
   }
 
   function load_item_details($id) {
-	global $admin;
+	global $db;
 	// fetch the sales order and build the item list
 	$this->invoice_subtotal = 0;
 	$sql = "select i.id, i.step, i.task_name, t.description, i.mfg, i.qa, i.complete, i.data_entry,
-	  t.ref_doc, t.ref_spec
+	  t.ref_doc, t.ref_spec 
 	  from " . TABLE_WO_JOURNAL_ITEM . " i inner join " . TABLE_WO_TASK . " t on i.task_id = t.id
 	  where i.ref_id = " . $id . " order by i.step";
-	$result = $admin->DataBase->query($sql);
+	$result = $db->Execute($sql);
 	while (!$result->EOF) {
 	  $index = $result->fields['id'];
 	  $this->line_items[$index]['id']          = $result->fields['id'];
@@ -109,9 +111,9 @@ class wo_builder {
   }
 
   function build_bom_list($sku_id) {
-    global $admin;
+    global $db;
 	$this->bom_list = NULL;
-	$result = $admin->DataBase->query("select sku, description, qty from " . TABLE_INVENTORY_ASSY_LIST . "
+	$result = $db->Execute("select sku, description, qty from " . TABLE_INVENTORY_ASSY_LIST . " 
 	  where ref_id = '" . $sku_id . "' order by sku");
 	$bom_list = array('Qty - SKU - Description');
 	while (!$result->EOF) {
@@ -122,8 +124,8 @@ class wo_builder {
   }
 
   function build_ref_lists() {
-    global $admin;
-	$result = $admin->DataBase->query("select ref_doc, ref_spec from " . TABLE_WO_MAIN . " where id = " . $this->id);
+    global $db;
+	$result = $db->Execute("select ref_doc, ref_spec from " . TABLE_WO_MAIN . " where id = " . $this->id);
 	$ref_docs  = ($result->fields['ref_doc']  ) ? explode(',', $result->fields['ref_doc'])   : array();
 	$ref_specs = ($result->fields['ref_specs']) ? explode(',', $result->fields['ref_specs']) : array();
 	if (is_array($this->line_items)) {
@@ -165,6 +167,8 @@ class wo_builder {
 	$output[] = array('id' => 'wo_journal_main.ref_docs',    'text' => 'Reference Docs');
 	$output[] = array('id' => 'bar_code',                    'text' => 'SKU Bar Code');
 	$output[] = array('id' => 'image_with_path',             'text' => 'SKU Image');
+	$output[] = array('id' => 'description',                 'text' => 'Description');
+	$output[] = array('id' => 'upc_code',                    'text' => 'UPC Bar Code');
 	return $output;
   }
 
@@ -181,6 +185,6 @@ class wo_builder {
 	$output[] = array('id' => 'data_entry',  'text' => 'Data Entry Req');
 	return $output;
   }
-
+ 
 }
 ?>

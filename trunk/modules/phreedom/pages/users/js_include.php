@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
@@ -26,6 +26,9 @@
 var delete_pushed = false;
 
 function init() {
+	$(function() {
+		$('#accesstabs').tabs();
+	});
 }
 
 function check_form() {
@@ -34,12 +37,12 @@ function check_form() {
 
 // Insert other page specific functions here.
 function copyItem(id) {
-	$.messager.prompt('<?php echo TEXT_COPY;?>', '<?php echo TEXT_COPY_TO; ?>', function(adminName){
-		if (adminName){
-			location.href = 'index.php?module=phreedom&page=users&action=copy&cID='+id+'&name='+adminName;
-		}
-		return false;
-	});
+  var adminName = prompt('<?php echo GEN_MSG_COPY_INTRO; ?>', '');
+  if (adminName) {
+	location.href = 'index.php?module=phreedom&page=users&action=copy&cID='+id+'&name='+adminName;
+  } else {
+	return false;
+  }
 }
 
 // -->

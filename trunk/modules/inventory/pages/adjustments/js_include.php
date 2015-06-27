@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -23,13 +23,13 @@
 // Include translations here as well.
 var securityLevel    = <?php echo $security_level; ?>;
 var text_search      = '<?php echo TEXT_SEARCH; ?>';
-var ItemIsInactive	 = '<?php echo TEXT_ITEM_IS_INACTIVE; ?>';
+var ItemIsInactive	 = '<?php echo ITEM_IS_INACTIVE; ?>';
 var serial_num_prompt= '<?php echo ORD_JS_SERIAL_NUM_PROMPT; ?>';
 
 <?php echo js_calendar_init($cal_adj); ?>
 
 function init() {
-<?php if ($_REQUEST['action'] == 'edit') echo " EditAdjustment('$oID')"; ?>
+<?php if ($_REQUEST['action'] == 'edit') echo '  EditAdjustment(' . $oID . ')'; ?>
 }
 
 function check_form() {
@@ -55,15 +55,9 @@ function InventoryList(rowCnt) {
 function serialList(id) {
 	var rowID= id.replace("serial_", "");
 	var qty  = $("#qty_"+rowID).val();
-	var choice    = $('#'+id).val();
 	if (qty == 1) {
-		$.messager.prompt('<?php echo TEXT_SERIAL_NUMBER?>', serial_num_prompt, function(newChoice){
-			if (newChoice){
-				$('#'+id).val(newChoice);
-			}
-			return false;
-		});
-		$('.messager-input').val(choice).focus();
+		var newChoice = prompt(serial_num_prompt, $('#'+id).val());
+		$('#'+id).val(newChoice);
 	} else if (qty == -1) {
 		var curDef  = $("#"+id).val();
 		var rowID   = id.replace("serial_", "");
@@ -79,13 +73,18 @@ function serialList(id) {
 function loadSkuDetails(iID, rowCnt, strict) {
   var bID = document.getElementById('store_id').value;
   var sku = iID == 0 ? document.getElementById('sku_'+rowCnt).value : '';
+  tempRowCnt = document.getElementById('item_table').rows.length;
+  if ((iID && rowCnt == tempRowCnt )||(document.getElementById('sku_'+tempRowCnt).value != text_search  && document.getElementById('sku_'+tempRowCnt).value != '')){
+		var value = addInvRow();
+		document.getElementById('sku_'+value).focus();
+  }
   if (sku == text_search) return;
   $.ajax({
 	type: "GET",
 	url: 'index.php?module=inventory&page=ajax&op=inv_details&iID='+iID+'&sku='+sku+'&bID='+bID+'&rID='+rowCnt+'&strict='+strict,
 	dataType: ($.browser.msie) ? "text" : "xml",
 	error: function(XMLHttpRequest, textStatus, errorThrown) {
-		$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
+	  alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
 	},
 	success: processSkuStock
   });
@@ -127,12 +126,12 @@ function processSkuStock(sXml) {
   }
   document.getElementById('acct_'+rCnt).value       = $(xml).find("account_inventory_wage").text();
   document.getElementById('def_cost_'+rCnt).value   = formatCurrency($(xml).find("item_cost").text());
-  if ($(xml).find("inventory_type").text() == 'sr' || $(xml).find("inventory_type").text() == 'sa') document.getElementById('imgSerial_'+rCnt).style.display = '';
+  if ($(xml).find("inventory_type").text() == 'sr' || $(xml).find("inventory_type").text() == 'sa') {
+    document.getElementById('imgSerial_'+rCnt).style.display = '';
+  } else {
+	document.getElementById('imgSerial_'+rCnt).style.display = 'none';
+  }
   updateBalance();
-  rowCnt  = document.getElementById('item_table').rows.length;
-  var qty = document.getElementById('qty_'+rowCnt).value;
-  var sku = document.getElementById('sku_'+rowCnt).value;
-  if (qty != '' && sku != '' && sku != text_search) rowCnt = addInvRow();
 }
 
 function updateBalance() {
@@ -187,7 +186,6 @@ function removeInvRow(delRowCnt) {
   for (var i=delRowCnt; i<document.getElementById("item_table").rows.length; i++) {
 	document.getElementById('sku_'+i).value      = document.getElementById('sku_'+(i+1)).value;
 	document.getElementById('imgSerial_'+i).style.display = $('#imgSerial_'+(i+1)).css('display') == 'none' ? 'none' : '';
-	document.getElementById('imgSerial_'+i).style.display = $('#imgSerial_'+(i+1)).css('display') == 'none' ? 'none' : '';
 // Hidden fields
 	document.getElementById('serial_'+i).value   = document.getElementById('serial_'+(i+1)).value;
 	document.getElementById('acct_'+i).value     = document.getElementById('acct_'+(i+1)).value;
@@ -198,7 +196,7 @@ function removeInvRow(delRowCnt) {
 	document.getElementById('price_'+i).value    = document.getElementById('price_'+(i+1)).value;
 	document.getElementById('bal_'+i).value      = document.getElementById('bal_'+(i+1)).value;
 	document.getElementById('desc_'+i).value     = document.getElementById('desc_'+(i+1)).value;
-	document.getElementById('sku_'+i).style.color = (document.getElementById('sku_'+i).value == text_search) ? inactive_text_color : '';
+	document.getElementById('sku_'+i).style.color = (document.getElementById('sku_'+i).value == text_search) ? inactive_text_color : document.getElementById('sku_'+(i+1)).style.color;
 	glIndex++; // increment the row counter (two rows per entry)
   }
   document.getElementById("item_table").deleteRow(-1);
@@ -215,7 +213,7 @@ function EditAdjustment(rID) {
     url: 'index.php?module=phreebooks&page=ajax&op=load_record&rID='+rID,
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
+      alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
     },
 	success: processEditAdjustment
   });
@@ -251,10 +249,16 @@ function processEditAdjustment(sXml) {
 		document.getElementById('price_'+rowCnt).value    = formatCurrency($(this).find("debit_amount").text() / qty);
 		document.getElementById('desc_'+rowCnt).value     = $(this).find("description").text();
 		loadSkuDetails(0, rowCnt,1);
-		rowCnt = addInvRow();
+		rowCnt = addInvRow() - 1;
 	  default:
 	}
   });
+}
+
+function checkEnterEvent(event, row){
+	if(event.keyCode == 13){//enter event
+		loadSkuDetails(0, row, false);
+	}
 }
 
 // -->
