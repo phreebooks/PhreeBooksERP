@@ -244,11 +244,11 @@ class inventory {
 		$this->history 						= array();
 		$this->qty_per_store				= array();
 		$this->attachments					= array();
-		$result = $db->Execute("select price_sheet_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = $id");
+		$result = $db->Execute("select sheet_name, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = $id");
 		while(!$result->EOF) {
 	  		$output_array = array(
 				'inventory_id'   => $this->id,
-				'price_sheet_id' => $result->fields['price_sheet_id'],
+				'sheet_name' => $result->fields['sheet_name'],
 				'price_levels'   => $result->fields['price_levels'],
 	  		);
 	  		db_perform(TABLE_INVENTORY_SPECIAL_PRICES, $output_array, 'insert');
@@ -441,11 +441,11 @@ class inventory {
 		}else{
 			db_perform(TABLE_INVENTORY, $sql_data_array, 'insert');
 			$this->id = db_insert_id();
-			$result = $db->Execute("select price_sheet_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = " . $this->id);
+			$result = $db->Execute("select sheet_name, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = " . $this->id);
 			while(!$result->EOF) {
 	  			$output_array = array(
 					'inventory_id'   => $this->id,
-					'price_sheet_id' => $result->fields['price_sheet_id'],
+					'sheet_name' 	 => $result->fields['sheet_name'],
 					'price_levels'   => $result->fields['price_levels'],
 	  			);
 	  			db_perform(TABLE_INVENTORY_SPECIAL_PRICES, $output_array, 'insert');

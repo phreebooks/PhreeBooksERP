@@ -28,7 +28,7 @@
 // 3.7.4 => 2014-09-26 - added markup
 // Module software version information
 gen_pull_language('contacts', 'menu');
-define('MODULE_INVENTORY_VERSION', '3.7.4');
+define('MODULE_INVENTORY_VERSION', '3.7.5');
 // Menu Sort Positions
 // Menu Security id's (refer to master doc to avoid security setting overlap)
 define('SECURITY_ID_PRICE_SHEET_MANAGER', 88);

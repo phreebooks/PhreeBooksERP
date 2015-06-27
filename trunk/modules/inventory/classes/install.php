@@ -189,7 +189,7 @@ class inventory_admin {
 	  TABLE_INVENTORY_SPECIAL_PRICES => "CREATE TABLE " . TABLE_INVENTORY_SPECIAL_PRICES . " (
 		  id int(11) NOT NULL auto_increment,
 		  inventory_id int(11) NOT NULL default '0',
-		  price_sheet_id int(11) NOT NULL default '0',
+	  	  sheet_name varchar(32) NOT NULL default '',
 		  price_levels varchar(255) NOT NULL default '',
 		  PRIMARY KEY (id)
 		) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci",
@@ -467,6 +467,11 @@ class inventory_admin {
 			}
 			$result->MoveNext();
 		}
+	}
+	if (version_compare(MODULE_INVENTORY_STATUS, '3.7.5', '<') ) {
+		$db->Execute("ALTER TABLE ".TABLE_INVENTORY_SPECIAL_PRICES." ADD sheet_name varchar(32) NOT NULL default '' AFTER price_sheet_id");
+		$db->Execute("UPDATE ".TABLE_INVENTORY_SPECIAL_PRICES." SET sheet_name = (SELECT sheet_name FROM ". TABLE_PRICE_SHEETS ." s JOIN ".TABLE_INVENTORY_SPECIAL_PRICES." i ON i.sheet_id = s.id )");
+		$db->Execute("ALTER TABLE ".TABLE_INVENTORY_SPECIAL_PRICES." DROP price_sheet_id");
 	}
 	if (!$error) {
 		xtra_field_sync_list('inventory', TABLE_INVENTORY);

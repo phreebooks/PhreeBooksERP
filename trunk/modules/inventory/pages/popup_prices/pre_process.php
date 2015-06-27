@@ -36,11 +36,11 @@ if ($id) { // then the sku was valid, get item information, cost and full price
 	order by sheet_name";
   $price_sheets = $db->Execute($sql);
   // retrieve special pricing for this inventory item
-  $result = $db->Execute("select price_sheet_id, price_levels 
+  $result = $db->Execute("select sheet_name, price_levels 
 	from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = " . $id);
   $special_prices = array();
   while (!$result->EOF) {
-	$special_prices[$result->fields['price_sheet_id']] = $result->fields['price_levels'];
+	$special_prices[$result->fields['sheet_name']] = $result->fields['price_levels'];
 	$result->MoveNext();
   }
 }
