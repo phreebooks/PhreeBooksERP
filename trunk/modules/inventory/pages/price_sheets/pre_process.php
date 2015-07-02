@@ -97,7 +97,7 @@ switch ($_REQUEST['action']) {
 	$type       = $result->fields['type'];
 	if ($result->fields['default_sheet'] == '1') $messageStack->add(PRICE_SHEET_DEFAULT_DELETED, 'caution');
 	$db->Execute("delete from " . TABLE_PRICE_SHEETS . " where id = '$id'");
-	$db->Execute("delete from " . TABLE_INVENTORY_SPECIAL_PRICES . " where sheet_name = '$sheet_name'");
+	$db->Execute("delete from " . TABLE_INVENTORY_SPECIAL_PRICES . " where price_sheet_id = '$id'");
 	gen_add_audit_log(PRICE_SHEETS_LOG . TEXT_DELETE, $sheet_name);
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('psID', 'action')).'&type='.$type, 'SSL'));
 	break;
@@ -119,6 +119,13 @@ switch ($_REQUEST['action']) {
 	$id = db_insert_id(); // this is used by the edit function later on.
 	// expire the old sheet
 	$db->Execute("UPDATE ".TABLE_PRICE_SHEETS." SET expiration_date='".gen_specific_date($result->fields['effective_date'], 1)."' WHERE id=$old_id");
+	// Copy special pricing information to new sheet
+	$levels = $db->Execute("select inventory_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where price_sheet_id = $old_id");
+	while (!$levels->EOF){
+		$db->Execute("insert into " . TABLE_INVENTORY_SPECIAL_PRICES . " set inventory_id = $levels->fields['inventory_id'],
+		  price_sheet_id = $id, price_levels = '$levels->fields['price_levels']'");
+		$levels->MoveNext();
+	}
 	gen_add_audit_log(PRICE_SHEETS_LOG . TEXT_REVISE, $result->fields['sheet_name'] . ' Rev. ' . $old_rev . ' => ' . ($old_rev + 1));
 	$_REQUEST['action'] = 'edit'; // continue with edit.
   case 'edit':
@@ -186,7 +193,7 @@ switch ($_REQUEST['action']) {
 	  $search_fields = array('sheet_name', 'revision');
 	  // hook for inserting new search fields to the query criteria.
 	  if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
-	  $search = ' AND (' . implode(' LIKE \'%' . $_REQUEST['search_text'] . '%\' or ', $search_fields) . ' like \'%' . $_REQUEST['search_text'] . '%\')';
+	  $search = ' AND (' . implode(" LIKE %'{$_REQUEST['search_text']}%' or ", $search_fields) . " like '%{$_REQUEST['search_text']}%')";
 	}
 	$field_list = array('id', 'inactive', 'sheet_name', 'revision', 'effective_date', 'expiration_date', 'default_sheet');
 	// hook to add new fields to the query return results

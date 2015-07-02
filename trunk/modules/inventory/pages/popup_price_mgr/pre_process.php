@@ -42,7 +42,7 @@ switch ($_REQUEST['action']) {
 	  $sheet_name = $_POST['sheet_name_'. $tab_id];
 	  $default_checked = isset($_POST['def_' . $tab_id]) ? true : false;
 	  if ($default_checked) {
-		$db->Execute("delete from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = $id and sheet_name = " . $sheet_name);
+		$db->Execute("delete from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = $id and price_sheet_id = '$sheet_id'");
 		if ($type == 'c') {
 			$db->Execute("UPDATE ".TABLE_INVENTORY." SET price_sheet = '', last_update= '".date('Y-m-d')."' WHERE id = $id and price_sheet = '$sheet_name' " );
 		} else{
@@ -61,11 +61,13 @@ switch ($_REQUEST['action']) {
 		  $encoded_prices[] = $level_data;
 		}
 		$price_levels = implode(';', $encoded_prices);
-		$result = $db->Execute("select id from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = $id and sheet_name = " . $sheet_name);
+		$result = $db->Execute("select id from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = $id and price_sheet_id = '$sheet_id'");
 		if ($result->RecordCount() == 0) {
-		  $db->Execute("insert into " . TABLE_INVENTORY_SPECIAL_PRICES . " set inventory_id = $id, sheet_name = $sheet_name, price_levels = '$price_levels'");
+		  $db->Execute("insert into " . TABLE_INVENTORY_SPECIAL_PRICES . " 
+			set inventory_id = " . $id . ", price_sheet_id = " . $sheet_id . ", price_levels = '" . $price_levels . "'");
 		} else {
-		  $db->Execute("update " . TABLE_INVENTORY_SPECIAL_PRICES . " set price_levels = '$price_levels' where inventory_id = $id and sheet_name = " . $sheet_name);
+		  $db->Execute("update " . TABLE_INVENTORY_SPECIAL_PRICES . " set price_levels = '" . $price_levels . "' 
+			where inventory_id = " . $id . " and price_sheet_id = " . $sheet_id);
 		}
 		if ($type == 'c') {
 			$db->Execute("UPDATE ".TABLE_INVENTORY." SET price_sheet = '$sheet_name', last_update= '".date('Y-m-d')."'  WHERE id = $id" );
@@ -91,11 +93,11 @@ $sql = "select id, sheet_name, revision, default_sheet, default_levels from " . 
 	order by sheet_name";
 $price_sheets = $db->Execute($sql);
 // retrieve special pricing for this inventory item
-$result = $db->Execute("select sheet_name, price_levels 
+$result = $db->Execute("select price_sheet_id, price_levels 
 	from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = " . $id);
 $special_prices = array();
 while (!$result->EOF) {
-	$special_prices[$result->fields['sheet_name']] = $result->fields['price_levels'];
+	$special_prices[$result->fields['price_sheet_id']] = $result->fields['price_levels'];
 	$result->MoveNext();
 }
 $include_header   = false;

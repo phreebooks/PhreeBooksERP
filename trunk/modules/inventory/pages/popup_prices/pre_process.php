@@ -26,21 +26,21 @@ $type  = isset($_GET['type']) ? $_GET['type'] : 'c';
 $rowId = $_GET['rowId'];
 // retrieve some inventory item details
 $inventory_details = $db->Execute("select id, sku, description_short, item_cost, full_price, item_weight 
-	 from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
+	 from " . TABLE_INVENTORY . " where sku = '$sku'");
 $id = $inventory_details->fields['id'];
 
 if ($id) { // then the sku was valid, get item information, cost and full price
   $sql = "select id, sheet_name, revision, default_sheet, default_levels from " . TABLE_PRICE_SHEETS . " 
-	where inactive = '0' and type = '" . $type . "' and
+	where inactive = '0' and type = '$type' and
 	(expiration_date is null or expiration_date = '0000-00-00' or expiration_date >= '" . date('Y-m-d') . "') 
 	order by sheet_name";
   $price_sheets = $db->Execute($sql);
   // retrieve special pricing for this inventory item
-  $result = $db->Execute("select sheet_name, price_levels 
+  $result = $db->Execute("select price_sheet_id, price_levels 
 	from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = " . $id);
   $special_prices = array();
   while (!$result->EOF) {
-	$special_prices[$result->fields['sheet_name']] = $result->fields['price_levels'];
+	$special_prices[$result->fields['price_sheet_id']] = $result->fields['price_levels'];
 	$result->MoveNext();
   }
 }

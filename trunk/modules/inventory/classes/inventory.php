@@ -244,11 +244,11 @@ class inventory {
 		$this->history 						= array();
 		$this->qty_per_store				= array();
 		$this->attachments					= array();
-		$result = $db->Execute("select sheet_name, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = $id");
+		$result = $db->Execute("select price_sheet_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = $id");
 		while(!$result->EOF) {
 	  		$output_array = array(
 				'inventory_id'   => $this->id,
-				'sheet_name' => $result->fields['sheet_name'],
+				'price_sheet_id' => $result->fields['price_sheet_id'],
 				'price_levels'   => $result->fields['price_levels'],
 	  		);
 	  		db_perform(TABLE_INVENTORY_SPECIAL_PRICES, $output_array, 'insert');
@@ -435,17 +435,20 @@ class inventory {
 		}
 		unset($sql_data_array['last_journal_date]']);
 		if ($this->id != ''){
+			if ($this->price_sheet == ''){
+				$db->Execute("DELETE FROM " . TABLE_INVENTORY_SPECIAL_PRICES . " WHERE inventory_id = $this->id and price_sheet_id IN ( SELECT id FROM " . TABLE_PRICE_SHEETS . " WHERE type = 'c' )");
+			}
 			unset($sql_data_array['creation_date]']);
 			db_perform(TABLE_INVENTORY, $sql_data_array, 'update', "id = " . $this->id);
 			gen_add_audit_log(INV_LOG_INVENTORY . TEXT_UPDATE, $this->sku . ' - ' . $sql_data_array['description_short']);
 		}else{
 			db_perform(TABLE_INVENTORY, $sql_data_array, 'insert');
 			$this->id = db_insert_id();
-			$result = $db->Execute("select sheet_name, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = " . $this->id);
+			$result = $db->Execute("select price_sheet_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = " . $this->id);
 			while(!$result->EOF) {
 	  			$output_array = array(
 					'inventory_id'   => $this->id,
-					'sheet_name' 	 => $result->fields['sheet_name'],
+					'price_sheet_id' => $result->fields['price_sheet_id'],
 					'price_levels'   => $result->fields['price_levels'],
 	  			);
 	  			db_perform(TABLE_INVENTORY_SPECIAL_PRICES, $output_array, 'insert');
@@ -526,6 +529,9 @@ class inventory {
 				if(isset($_POST['row_id_array'][$key]) && $_POST['row_id_array'][$key] != ''){//update
 					$this->backup_purchase_array[$_POST['row_id_array'][$key]]['action'] = 'update';
 					db_perform(TABLE_INVENTORY_PURCHASE, $sql_data_array, 'update', "id = " . $_POST['row_id_array'][$key]);
+					if($this->backup_purchase_array[$_POST['row_id_array'][$key]]['price_sheet_v'] != "" && $_POST['price_sheet_v_array'][$key] == ""){
+						$db->Execute("DELETE FROM " . TABLE_INVENTORY_SPECIAL_PRICES . " WHERE inventory_id = $this->id and price_sheet_id IN ( SELECT id FROM " . TABLE_PRICE_SHEETS . " WHERE type = 'v' and sheet_name = '{$this->backup_purchase_array[$_POST['row_id_array'][$key]]['price_sheet_v']}')");
+					}
 				}else{//insert
 					db_perform(TABLE_INVENTORY_PURCHASE, $sql_data_array, 'insert');
 					$this->backup_purchase_array[db_insert_id()]= array (
@@ -545,7 +551,10 @@ class inventory {
 			$i++;
 		}
 		foreach($this->backup_purchase_array as $key => $value){
-			if($value['action'] == 'delete') $result = $db->Execute("delete from " . TABLE_INVENTORY_PURCHASE . " where id = '" . $value['id'] . "'");
+			if($value['action'] == 'delete'){
+				$db->Execute("DELETE FROM " . TABLE_INVENTORY_PURCHASE . " WHERE id = '{$value['id']}'");
+				$db->Execute("DELETE FROM " . TABLE_INVENTORY_SPECIAL_PRICES . " WHERE inventory_id = $this->id and price_sheet_id IN ( SELECT id FROM " . TABLE_PRICE_SHEETS . " WHERE type = 'v' and sheet_name = '{$value['price_sheet_v']}')");
+			}
 		}
 		return $lowest_cost == 99999999999 ? 0 : $lowest_cost; //added in case no purchase data entered when creating new product
 	}

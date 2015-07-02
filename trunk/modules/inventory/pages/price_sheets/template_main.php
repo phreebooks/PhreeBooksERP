@@ -46,7 +46,7 @@ echo $toolbar->build_toolbar($add_search = true);
  $odd = true;
  while (!$query_result->EOF) {
 	$result = $db->Execute("select id from " . TABLE_INVENTORY_SPECIAL_PRICES . " 
-		where sheet_name = " . $query_result->fields['sheet_name']);
+		where price_sheet_id = " . $query_result->fields['id']);
 	$special_price = ($result->RecordCount() > 0) ? TEXT_YES : '';
 ?>
   <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer">

@@ -90,7 +90,7 @@ echo $toolbar->build_toolbar();
 	  <!-- start the tabsets -->
 	  <div id="tab_<?php echo $price_sheets->fields['id']; ?>">
 <?php
-		$checked = isset($special_prices[$price_sheets->fields['sheet_name']]) ? false : true;
+		$checked = isset($special_prices[$price_sheets->fields['id']]) ? false : true;
 		echo html_checkbox_field('def_' . $m, '1', $checked, '', $parameters = '') . '&nbsp;' . TEXT_USE_DEFAULT_PRICE_SHEET . '<br />';
 		echo html_hidden_field('id_' . $m, $price_sheets->fields['id']) . chr(10);
 		echo html_hidden_field('sheet_name_'.$m, $price_sheets->fields['sheet_name']) . chr(10);
@@ -111,7 +111,7 @@ echo $toolbar->build_toolbar();
 		 </thead>
 		 <tbody class="ui-widget-content">
 		  <?php
-		$levels = isset($special_prices[$price_sheets->fields['sheet_name']]) ? $special_prices[$price_sheets->fields['sheet_name']] : $price_sheets->fields['default_levels'];
+		$levels = isset($special_prices[$price_sheets->fields['id']]) ? $special_prices[$price_sheets->fields['id']] : $price_sheets->fields['default_levels'];
 		$price_levels = explode(';', $levels);
 		// remove the first and last element from the price level source array (not used and Level 1 price source)
 		$first_source_list = $price_mgr_sources;

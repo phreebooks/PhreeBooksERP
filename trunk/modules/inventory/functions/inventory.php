@@ -271,11 +271,11 @@
 			  (expiration_date is null or expiration_date = '0000-00-00' or expiration_date >= '" . date('Y-m-d') . "')";
 			$price_sheets = $db->Execute($sql);
 			// retrieve special pricing for this inventory item
-			$sql = "select sheet_name, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where sheet_name = '$sheet_name' and inventory_id = $sku_id";
+			$sql = "select price_sheet_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where price_sheet_id = '{$price_sheets->fields['id']}' and inventory_id = $sku_id";
 			$result = $db->Execute($sql);
 			$special_prices = array();
 			while (!$result->EOF) {
-				$special_prices[$result->fields['sheet_name']] = $result->fields['price_levels'];
+				$special_prices[$result->fields['price_sheet_id']] = $result->fields['price_levels'];
 				$result->MoveNext();
 			}
 			$levels = isset($special_prices[$price_sheets->fields['id']]) ? $special_prices[$price_sheets->fields['id']] : $price_sheets->fields['default_levels'];

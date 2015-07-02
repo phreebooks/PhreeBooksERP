@@ -67,7 +67,7 @@ if (is_object($price_sheets)) {
 	  array_shift($first_source_list);
 	  array_pop($first_source_list);
 	  // extract the pricing information
-	  $levels = isset($special_prices[$price_sheets->fields['sheet_name']]) ? $special_prices[$price_sheets->fields['sheet_name']] : $price_sheets->fields['default_levels'];
+	  $levels = isset($special_prices[$price_sheets->fields['id']]) ? $special_prices[$price_sheets->fields['id']] : $price_sheets->fields['default_levels'];
 	  $prices = inv_calculate_prices($inventory_details->fields['item_cost'], $inventory_details->fields['full_price'], $levels);
 	  foreach ($prices as $price_level) {
 		echo '<tr onclick="setReturnPrice(\'' . $rowId . '\', \'price_' . $cnt . '\')">';

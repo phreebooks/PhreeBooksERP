@@ -28,7 +28,10 @@ var num_price_levels = <?php echo MAX_NUM_PRICE_LEVELS; ?>;
 
 function init() {
   $(function() { $('#pricetabs').tabs(); });
-  <?php if ($_REQUEST['action'] == 'save') echo 'self.close();' ?>
+  <?php if ($_REQUEST['action'] == 'save'){
+  	echo 'window.opener.location.reload();' . chr(10);
+	echo 'self.close();' . chr(10);
+}?>
   for (var sheetID=1; sheetID<=num_price_sheets; sheetID++) {
 	updatePrice(sheetID);
   }
