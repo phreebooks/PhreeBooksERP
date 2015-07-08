@@ -21,6 +21,7 @@ class language {
 	public $language_code = "en_us";
 	public $phrases;
 	public $languages;
+	public $translate;
 	 
 	/**
 	 * sets the current language and sets it in the Session variable.
@@ -92,6 +93,25 @@ class language {
 			if ($phrase->getAttribute('id') == 'Language') {
 				foreach ($phrase->childNodes as $language) {
 					if ($language->tagName != '') $this->languages[$language->tagName] = $language->nodeValue;
+				}
+			}
+		}
+	}
+	
+	/**
+	 * function will read language files and add contants to xml language file.
+	 */
+	function find_language_constants(){
+		$dirs = @scandir ( DIR_FS_MODULES );
+		foreach ( $dirs as $dir ) { 
+			if ($dir == '.' || $dir == '..') continue;
+			$lang_dir = DIR_FS_MODULES . $dir . "/language";
+			print("dir gevonden $lang_dir ".chr(13));
+			if (is_dir ( $lang_dir )) {
+				$languages = @scandir ( $lang_dir );
+				foreach ( $languages as $language ) {
+					
+					$this->translate[$language] = 
 				}
 			}
 		}
