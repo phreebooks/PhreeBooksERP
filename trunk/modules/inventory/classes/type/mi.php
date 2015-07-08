@@ -1,12 +1,12 @@
 <?php
-require_once(DIR_FS_MODULES . 'inventory/classes/inventory.php');
-class mi extends inventory { //Master Stock Sub Item. child of ma (master assembly)
+namespace inventory\classes\type;
+class mi extends \inventory\classes\inventory { //Master Stock Sub Item. child of ma (master assembly)
 	public $inventory_type			= 'mi';
-	public $title 					= INV_TYPES_MI;
+	public $title 					= TEXT_MASTER_STOCK_SUB_ITEM;
 	public $master					= '';
 	public $account_sales_income	= INV_MASTER_STOCK_DEFAULT_SALES;
 	public $account_inventory_wage	= INV_MASTER_STOCK_DEFAULT_INVENTORY;
-	public $account_cost_of_sales	= INV_MASTER_STOCK_DEFAULT_COS;	
+	public $account_cost_of_sales	= INV_MASTER_STOCK_DEFAULT_COS;
 	public $attr_array0 			= array();
 	public $attr_array1 			= array();
 	public $ms_attr_0				= '';
@@ -16,43 +16,44 @@ class mi extends inventory { //Master Stock Sub Item. child of ma (master assemb
 	public $cost_method				= INV_MASTER_STOCK_DEFAULT_COSTING;
 	public $child_array 			= array();
 	public $edit_ms_list			= false;
-	
+
 	function __construct(){
 		parent::__construct();
-		$this->tab_list['master'] = array('file'=>'template_tab_ms',	'tag'=>'master',    'order'=>30, 'text'=>INV_MS_ATTRIBUTES);
+		$this->tab_list['master'] = array('file'=>'template_tab_ms',	'tag'=>'master',    'order'=>30, 'text'=>TEXT_MASTER_STOCK_ATTRIBUTES);
 	}
-	
+
+	function getInventory(){
+		parent::getInventory();
+		$this->get_ms_list();
+	}
+
 	function get_item_by_id($id){
 		parent::get_item_by_id($id);
 		$this->get_ms_list();
 	}
-	
+
 	function get_item_by_sku($sku){
 		parent::get_item_by_sku($sku);
 		$this->get_ms_list();
 	}
-	
+
 	function copy($id, $newSku) {
-		global $messageStack;
-		$messageStack->add(INV_ERROR_CANNOT_COPY, 'error');
-		return false;
+		throw new \core\classes\userException(INV_ERROR_CANNOT_COPY);
 	}
-	
+
 	function check_remove($id){ // this is disabled in the form but just in case, error here as well
-		global $messageStack;
-		$messageStack->add('Master Stock Sub Items are not allowed to be deleted separately!','error');
-		return false;
+		throw new \core\classes\userException('Master Stock Sub Items are not allowed to be deleted separately!');
 	}
-	
+
 	function get_ms_list(){
-		global $db;
-		$master = explode('-',$this->sku); 
+		global $admin;
+		$master = explode('-',$this->sku);
 		$this->master = $master[0];
-		$result = $db->Execute("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->master . "'");
-	  	$this->ms_attr_0   = ($result->RecordCount() > 0) ? $result->fields['attr_0'] : '';
-	  	$this->attr_name_0 = ($result->RecordCount() > 0) ? $result->fields['attr_name_0'] : '';
-	  	$this->ms_attr_1   = ($result->RecordCount() > 0) ? $result->fields['attr_1'] : '';
-	  	$this->attr_name_1 = ($result->RecordCount() > 0) ? $result->fields['attr_name_1'] : '';
+		$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->master . "'");
+	  	$this->ms_attr_0   = ($result->rowCount() > 0) ? $result->fields['attr_0'] : '';
+	  	$this->attr_name_0 = ($result->rowCount() > 0) ? $result->fields['attr_name_0'] : '';
+	  	$this->ms_attr_1   = ($result->rowCount() > 0) ? $result->fields['attr_1'] : '';
+	  	$this->attr_name_1 = ($result->rowCount() > 0) ? $result->fields['attr_name_1'] : '';
 		if ($this->ms_attr_0) {
 			$temp = explode(',', $this->ms_attr_0);
 			for ($i = 0; $i < count($temp); $i++) {
@@ -71,10 +72,10 @@ class mi extends inventory { //Master Stock Sub Item. child of ma (master assemb
 			  $temp_ms1[$code] = $desc;
 			}
 		}
-		$result = $db->Execute("select * from " . TABLE_INVENTORY . " where sku like '" . $this->master . "-%' and inventory_type = 'mi' and sku<>'".$this->sku."'");
+		$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY . " where sku like '" . $this->master . "-%' and inventory_type = 'mi' and sku<>'".$this->sku."'");
 		$i = 0;
 		while(!$result->EOF){
-			$temp = explode('-',$result->fields['sku']); 
+			$temp = explode('-',$result->fields['sku']);
 			$this->child_array[$i] = array(	'id'       		=> $result->fields['id'],
 											'sku'      		=> $result->fields['sku'],
 											'inactive' 		=> $result->fields['inactive'],

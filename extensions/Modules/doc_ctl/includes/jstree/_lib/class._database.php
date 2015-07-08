@@ -24,15 +24,15 @@ class _database {
 
 	function connect() {
 		if (!$this->link) {
-			$this->link = ($this->settings["persist"]) ? 
+			$this->link = ($this->settings["persist"]) ?
 				mysql_pconnect(
-					$this->settings["servername"].":".$this->settings["serverport"], 
-					$this->settings["username"], 
+					$this->settings["servername"].":".$this->settings["serverport"],
+					$this->settings["username"],
 					$this->settings["password"]
-				) : 
+				) :
 				mysql_connect(
-					$this->settings["servername"].":".$this->settings["serverport"], 
-					$this->settings["username"], 
+					$this->settings["servername"].":".$this->settings["serverport"],
+					$this->settings["username"],
 					$this->settings["password"]
 				) or $this->error();
 		}
@@ -46,7 +46,7 @@ class _database {
 		if (!($this->result = mysql_query($sql, $this->link))) $this->error($sql);
 		return ($this->result) ? true : false;
 	}
-	
+
 	function nextr() {
 		if(!$this->result) {
 			$this->error("No query pending");
@@ -115,15 +115,17 @@ class _database {
 		$error = mysql_error();
 		if($this->settings["show_error"]) echo $error;
 		if($this->settings["error_file"] !== false) {
-			$handle = @fopen($this->settings["error_file"], "a+");
+			if (!$handle = @fopen($this->settings["error_file"], "a+"))  throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $this->settings['error_file']));
 			if($handle) {
-				@fwrite($handle, "[".date("Y-m-d H:i:s")."] ".$string." <".$error.">\n");
-				@fclose($handle);
+				if (!@fwrite($handle, "[".date("Y-m-d H:i:s")."] ".$string." <".$error.">\n")) throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $this->settings['error_file']));
+				if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $this->settings['error_file']));
 			}
 		}
 		if($this->settings["dieonerror"]) {
 			if(isset($this->result)) mysql_free_result($this->result);
 			mysql_close($this->link);
+			ob_end_flush();
+  			session_write_close();
 			die();
 		}
 	}

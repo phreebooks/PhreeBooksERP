@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -26,7 +26,7 @@ $toolbar->icon_list['open']['show']     = false;
 $toolbar->icon_list['save']['params']   = 'onclick="submitToDo(\'save\')"';
 $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['print']['show']    = false;
-echo $toolbar->build_toolbar();
+echo $toolbar->build();
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>

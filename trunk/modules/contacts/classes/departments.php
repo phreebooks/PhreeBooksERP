@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -16,33 +16,25 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/contacts/classes/departments.php
 //
-
+namespace contacts\classes;
 class departments {
 	public $extra_buttons = '';
     public $db_table      = TABLE_DEPARTMENTS;
     public $help_path     = '07.07.04';
     public $title         = '';
-    public $error         = false;
 
     public function __construct(){
     	foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
     	$this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
-        $this->security_id = $_SESSION['admin_security'][SECURITY_ID_CONFIGURATION];
+        $this->security_id = \core\classes\user::security_level(SECURITY_ID_CONFIGURATION);
     }
 
   function btn_save($id = '') {
-  	global $db, $messageStack;
-	if ($this->security_id < 2) {
-	  $messageStack->add(ERROR_NO_PERMISSION,'error');
-	  return false;
-	}
+  	global $admin;
+	\core\classes\user::validate_security($this->security_id, 2); // security check
     if ( $_POST['subdepartment'] && !$_POST['primary_dept_id']) $_POST['subdepartment'] = '0';
     if (!$_POST['subdepartment']) $_POST['primary_dept_id'] = '';
-    if ($_POST['primary_dept_id'] == $id) {
-	  $messageStack->add(HR_DEPARTMENT_REF_ERROR,'error');
-	  $this->error = true;
-	  return false;
-	}
+    if ($_POST['primary_dept_id'] == $id) throw new \core\classes\userException(HR_DEPARTMENT_REF_ERROR);
 	// OK to save
 	$sql_data_array = array(
 		'description_short'   => db_prepare_input($_POST['description_short']),
@@ -53,38 +45,35 @@ class departments {
 		'department_inactive' => db_prepare_input($_POST['department_inactive'] ? '1' : '0'));
     if ($id) {
 	  db_perform($this->db_table, $sql_data_array, 'update', "id = '" . $id . "'");
-      gen_add_audit_log(HR_LOG_DEPARTMENTS . TEXT_UPDATE, $id);
+      gen_add_audit_log(TEXT_DEPARTMENTS . ' - ' . TEXT_UPDATE, $id);
 	} else  {
 	  $sql_data_array['id'] = db_prepare_input($_POST['id']);
       db_perform($this->db_table, $sql_data_array);
-	  gen_add_audit_log(HR_LOG_DEPARTMENTS . TEXT_ADD, $id);
+	  gen_add_audit_log(TEXT_DEPARTMENTS . ' - ' . TEXT_ADD, $id);
 	}
 	return true;
   }
 
   function btn_delete($id = 0) {
-  	global $db, $messageStack;
-	if ($this->security_id < 4) {
-		$messageStack->add(ERROR_NO_PERMISSION,'error');
-		return false;
-	}
+  	global $admin;
+	\core\classes\user::validate_security($this->security_id, 4); // security check
 	// error check
 	// Departments have no pre-requisites to check prior to delete
 	// OK to delete
-	$db->Execute("delete from " . $this->db_table . " where id = '" . $this->id . "'");
+	$admin->DataBase->exec("delete from " . $this->db_table . " where id = '" . $this->id . "'");
 	modify_account_history_records($this->id, $add_acct = false);
-	gen_add_audit_log(HR_LOG_DEPARTMENTS . TEXT_DELETE, $this->id);
+	gen_add_audit_log(TEXT_DEPARTMENTS . ' - ' . TEXT_DELETE, $this->id);
 	return true;
   }
 
   function build_main_html() {
-  	global $db, $messageStack;
+  	global $admin;
     $content = array();
 	$content['thead'] = array(
-	  'value' => array(HR_ACCOUNT_ID, TEXT_DESCRIPTION, HR_HEADING_SUBACCOUNT, TEXT_INACTIVE, TEXT_ACTION),
+	  'value' => array(TEXT_DEPARTMENT_ID, TEXT_DESCRIPTION, TEXT_SUB_DEPARTMENT, TEXT_INACTIVE, TEXT_ACTION),
 	  'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 	);
-    $result = $db->Execute("select id, description_short, description, subdepartment, primary_dept_id, department_inactive from ".$this->db_table);
+    $result = $admin->DataBase->query("select id, description_short, description, subdepartment, primary_dept_id, department_inactive from ".$this->db_table);
     $rowCnt = 0;
 	while (!$result->EOF) {
 	  $actions = '';
@@ -93,7 +82,7 @@ class departments {
 	  $content['tbody'][$rowCnt] = array(
 	    array('value' => htmlspecialchars($result->fields['description_short']),
 			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'departments_edit\',\''.$result->fields['id'].'\')"'),
-		array('value' => htmlspecialchars($result->fields['description']), 
+		array('value' => htmlspecialchars($result->fields['description']),
 			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'departments_edit\',\''.$result->fields['id'].'\')"'),
 		array('value' => $result->fields['subdepartment'] ? TEXT_YES : TEXT_NO,
 			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'departments_edit\',\''.$result->fields['id'].'\')"'),
@@ -109,24 +98,24 @@ class departments {
   }
 
   function build_form_html($action, $id = '') {
-    global $db;
-    if ($action <> 'new' && $this->error == false) {
+    global $admin;
+    if ($action <> 'new') {
         $sql = "select * from " . $this->db_table . " where id = '" . $this->id . "'";
-        $result = $db->Execute($sql);
+        $result = $admin->DataBase->query($sql);
         foreach ($result->fields as $key => $value) $this->$key = $value;
     }
 	$output  = '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);
 	$output .= '  <thead class="ui-widget-header">' . "\n";
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <th colspan="2">' . ($action=='new' ? HR_INFO_NEW_ACCOUNT : HR_INFO_EDIT_ACCOUNT) . '</th>' . chr(10);
+	$output .= '    <th colspan="2">' . ($action=='new' ? sprintf(TEXT_NEW_ARGS, TEXT_DEPARTMENT) : sprintf(TEXT_EDIT_ARGS, TEXT_DEPARTMENT)) . '</th>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  </thead>' . "\n";
 	$output .= '  <tbody class="ui-widget-content">' . "\n";
     $output .= '  <tr>' . chr(10);
-	$output .= '    <td colspan="2">' . ($action=='new' ? HR_INFO_INSERT_INTRO : HR_EDIT_INTRO) . '</td>' . chr(10);
+	$output .= '    <td colspan="2">' . ($action=='new' ? HR_INFO_INSERT_INTRO : TEXT_PLEASE_MAKE_ANY_NECESSARY_CHANGES) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . HR_ACCOUNT_ID . html_hidden_field('id', $this->id) . '</td>' . chr(10);
+	$output .= '    <td>' . TEXT_DEPARTMENT_ID . html_hidden_field('id', $this->id) . '</td>' . chr(10);
 	$output .= '    <td>' . html_input_field('description_short', $this->description_short) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
@@ -134,19 +123,19 @@ class departments {
 	$output .= '    <td>' . html_input_field('description', $this->description) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . HR_INFO_SUBACCOUNT . '</td>' . chr(10);
-	$output .= '    <td>' . html_radio_field('subdepartment', '0', !$this->subdepartment) . TEXT_NO . '<br />' . html_radio_field('subdepartment', '1', $this->subdepartment) . HR_INFO_PRIMARY_ACCT_ID . '</td>' . chr(10);
+	$output .= '    <td>' . TEXT_IS_THIS_A_SUBDEPARTMENT . '</td>' . chr(10);
+	$output .= '    <td>' . html_radio_field('subdepartment', '0', !$this->subdepartment) . TEXT_NO . '<br />' . html_radio_field('subdepartment', '1', $this->subdepartment) . TEXT_YES_ALSO_SELECT_PRIMARY_DEPARTMENT . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . HR_INFO_PRIMARY_ACCT_ID . '</td>' . chr(10);
+	$output .= '    <td>' . TEXT_YES_ALSO_SELECT_PRIMARY_DEPARTMENT . '</td>' . chr(10);
 	$output .= '    <td>' . html_pull_down_menu('primary_dept_id', gen_get_pull_down($this->db_table, false, '1', 'id', 'description_short'), $this->primary_dept_id) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . HR_INFO_ACCOUNT_TYPE . '</td>' . chr(10);
+	$output .= '    <td>' . TEXT_DEPARTMENT_TYPE . '</td>' . chr(10);
 	$output .= '    <td>' . html_pull_down_menu('department_type', gen_get_pull_down(TABLE_DEPT_TYPES, false, '1'), $this->department_type) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . HR_INFO_ACCOUNT_INACTIVE . '</td>' . chr(10);
+	$output .= '    <td>' . TEXT_INACTIVE . '</td>' . chr(10);
 	$output .= '    <td>' . html_checkbox_field('department_inactive', '1', $this->department_inactive ? true : false) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  </tbody>' . "\n";

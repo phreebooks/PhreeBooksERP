@@ -35,7 +35,7 @@ try{
    	$admin->attach(new \core\classes\outputPage);
    	$admin->setCinfo();
    	$messageStack->debug("\n checking if user is validated");
-   	\core\classes\user::is_validated($admin);
+   	$admin->user->is_validated($admin);
    	if ($admin->cInfo->action) $admin->removeEventsAndAddNewEvent($admin->cInfo->action);
    	$admin->startProcessingEvents();
 	ob_end_flush();

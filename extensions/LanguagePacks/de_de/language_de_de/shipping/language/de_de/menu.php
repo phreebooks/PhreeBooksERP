@@ -2,8 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright (c) 2008, 2009, 2010 PhreeSoft, LLC                   |
-// | http://www.PhreeSoft.com                                        |
+// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -22,5 +21,5 @@
 //  Path: /modules/shipping/language/en_us/menu.php
 //
 
-define ('BOX_SHIPPING_MANAGER', 'Versand Manager');
+define ('TEXT_SHIPPING_MANAGER', 'Versand Manager');
 ?>

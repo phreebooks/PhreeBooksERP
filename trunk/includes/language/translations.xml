@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<translations>
+	<translation id="My Company">
+		<en_us>My Company</en_us>
+		<nl_nl>Mijn Bedrijf</nl_nl>
+	</translation>
+    <translation id='Language'>
+        <en_us>Language</en_us>
+        <nl_nl>Taal</nl_nl>
+    </translation>
+    
+</translations>

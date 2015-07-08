@@ -1,0 +1,26 @@
+<?
+/**
+ * Author:   Ernest Wojciuk
+ * Web Site: www.imap.pl
+ * Email:    ernest@moldo.pl
+ * Comments: EMAIL TO DB:: EXAMPLE 1
+ */
+
+include_once("class.emailtodb.php");
+
+$cfg["db_host"] = 'localhost';
+$cfg["db_user"] = 'db_user';
+$cfg["db_pass"] = 'db_pass';
+$cfg["db_name"] = 'emailtodb';
+
+$mysql_pconnect = mysql_pconnect($cfg["db_host"], $cfg["db_user"], $cfg["db_pass"]);
+if(!$mysql_pconnect){echo "Connection Failed"; exit; }
+$db = mysql_select_db($cfg["db_name"], $mysql_pconnect);
+if(!$db){echo"DB Select Failed"; exit;}
+
+
+$edb = new EMAIL_TO_DB();
+$edb->connect('my_server', '/pop3:110/notls', 'my_login', 'my_pass');
+$edb->do_action();
+
+?>

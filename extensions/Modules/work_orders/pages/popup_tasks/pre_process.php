@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/work_orders/pages/popup_tasks/pre_process.php
 //
-$security_level = validate_user(0, true);
+$security_level = \core\classes\user::validate(0, true);
 /**************  include page specific files    *********************/
 /**************   page specific initialization  *************************/
 $rowID = (isset($_GET['rowID']) ? $_GET['rowID'] : 0);
@@ -52,7 +52,7 @@ if (isset($_REQUEST['search_text']) && $_REQUEST['search_text'] <> '') {
   $search_fields = array('task_name', 'description');
   // hook for inserting new search fields to the query criteria.
   if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
-  $search = ' where ' . implode(' like \'%' . $_REQUEST['search_text'] . '%\' or ', $search_fields) . ' like \'%' . $_REQUEST['search_text'] . '%\'';
+  $search = " where " . implode(" like %{$_REQUEST['search_text']}%' or ", $search_fields) . " like '%{$_REQUEST['search_text']}%";
 } else {
   $search = '';
 }
@@ -63,18 +63,13 @@ $field_list = array('id', 'task_name', 'description');
 if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
 
 $query_raw = "select " . implode(', ', $field_list)  . " from " . TABLE_WO_TASK . $search . " order by $disp_order";
-$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-$query_split  = new splitPageResults($_REQUEST['list'], '');
-if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results
-	$_REQUEST['list'] = $query_split->current_page_number;
-	$query_result = $db->Execute($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-	$query_split      = new splitPageResults($_REQUEST['list'], '');
-}
+$query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 history_save('wo_poptask');
 
 $include_header   = false;
 $include_footer   = false;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', WO_POPUP_TASK_WINDOW_TITLE);
+define('PAGE_TITLE', TEXT_WORK_ORDER_TASKS);
 
 ?>
