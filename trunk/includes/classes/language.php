@@ -41,6 +41,7 @@ class language {
 				$this->language_code = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
 			}
 		}
+		if (true) $this->find_language_constants();//@todo remove after development
 		if (sizeof($this->languages) == 0) $this->get_languages();
 		if (sizeof($this->phrases)   == 0) $this->get_translations();
 	}
@@ -106,15 +107,62 @@ class language {
 		foreach ( $dirs as $dir ) { 
 			if ($dir == '.' || $dir == '..') continue;
 			$lang_dir = DIR_FS_MODULES . $dir . "/language";
-			print("dir gevonden $lang_dir ".chr(13));
 			if (is_dir ( $lang_dir )) {
-				$languages = @scandir ( $lang_dir );
-				foreach ( $languages as $language ) {
-					
-					$this->translate[$language] = 
+				$language_folders = @scandir ( $lang_dir );
+				foreach ( $language_folders as $language_folder ) {
+					if ($language_folder == '.' || $language_folder == '..') continue;
+					$language_files = @scandir ( $lang_dir .'/'. $language_folder );
+					foreach ( $language_files as $language_file ) {
+						if ($language_file == '.' || $language_file == '..') continue;
+						$handle = fopen("{$lang_dir}/{$language_folder}/{$language_file}", "r");
+						//print(" language_file gevonden {$lang_dir}/{$language_folder}/{$language_file} handle is $handle ".chr(13));
+						if ($handle) {
+							while (($line = fgets($handle)) !== false) {
+								// process the line read.
+								if (false !== strpos ($line, "define(")) {
+									$string = ltrim($line,"define(");
+									$string = rtrim($string);
+									$string = rtrim($string,");");
+									$string = explode(",", $string);
+									$this->translate[$string[0]][$language_folder] = $string[1];
+								}
+							}
+							fclose($handle);
+						}
+					}
 				}
 			}
 		}
+		ksort($this->translate);
+		//store in xml.
+		$doc = new \DOMDocument();
+		$doc->formatOutput = true;
+		$root_element = $doc->createElement('translations');
+		$root = $doc->appendChild($root_element);
+		foreach($this->translate as $key => $value) {
+			print("eerste regel is $key = $value".chr(13));
+			$first_element = $doc->createElement('translation');
+			$string = ltrim($key);
+			$string = ltrim($string,"'");
+			$string = ltrim($string,'"');
+			$string = rtrim($string);
+			$string = rtrim($string, "'");
+			$string = rtrim($string, '"');
+			$first_element->setAttribute('id', $string);
+			$second = $root->appendChild($first_element);
+			foreach($value as $language => $translation) {
+				$string = ltrim($translation);
+				$string = ltrim($string,"'");
+				$string = ltrim($string,'"');
+				$string = rtrim($string);
+				$string = rtrim($string, "'");
+				$string = rtrim($string, '"');
+				$temp = $doc->createElement($language, $string);
+				$second->appendChild($temp);
+			}
+		}
+		$custom_path = DIR_FS_INCLUDES."language/custom/translations.xml";
+		$doc->save($custom_path);
 	}
 	
 	function __destruct(){

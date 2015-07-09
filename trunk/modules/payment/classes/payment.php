@@ -93,7 +93,7 @@ class payment {
 	                );
 	                return html_pull_down_menu(strtolower($key), $temp, constant($key));
 	        case 'MODULE_PAYMENT_'.strtoupper($this->id).'_POS_GL_ACCT':
-	                return html_pull_down_menu(strtolower($key), gen_coa_pull_down(), constant($key));
+	                return html_pull_down_menu(strtolower($key), gen_coa_pull_down(SHOW_FULL_GL_NAMES, true, true, false, $restrict_types = array(0,14)), constant($key));
 	        default:
 	                return html_input_field(strtolower($key), constant($key));
 	    }

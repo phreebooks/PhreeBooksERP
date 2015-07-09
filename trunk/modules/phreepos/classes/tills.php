@@ -139,7 +139,7 @@ class tills {
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
 	$output .= '    <td>' . TEXT_GL_ACCOUNT . '</td>' . chr(10);
-	$output .= '    <td>' . html_pull_down_menu('gl_acct_id', gen_coa_pull_down(SHOW_FULL_GL_NAMES, true, true, false, $restrict_types = array(0)), $this->gl_acct_id) . '</td>' . chr(10);
+	$output .= '    <td>' . html_pull_down_menu('gl_acct_id', gen_coa_pull_down(SHOW_FULL_GL_NAMES, true, true, false, $restrict_types = array(14)), $this->gl_acct_id) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
     $output .= '  <tr>' . chr(10);
 	$output .= '    <td>' . TEXT_GL_ACCOUNT_ROUNDING . '</td>' . chr(10);
