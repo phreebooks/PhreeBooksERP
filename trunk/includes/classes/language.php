@@ -41,7 +41,7 @@ class language {
 				$this->language_code = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
 			}
 		}
-		if (true) $this->find_language_constants();//@todo remove after development
+//		$this->find_language_constants();
 		if (sizeof($this->languages) == 0) $this->get_languages();
 		if (sizeof($this->phrases)   == 0) $this->get_translations();
 	}
@@ -77,6 +77,7 @@ class language {
 				}
 			}
 		}
+		foreach ($this->phrases as $key => $value ) define($key, $value);
 	}
 	
 	/**
@@ -101,6 +102,7 @@ class language {
 	
 	/**
 	 * function will read language files and add contants to xml language file.
+	 * @todo should be deleted before release 4.0
 	 */
 	function find_language_constants(){
 		$dirs = @scandir ( DIR_FS_MODULES );
@@ -120,7 +122,8 @@ class language {
 							while (($line = fgets($handle)) !== false) {
 								// process the line read.
 								if (false !== strpos ($line, "define(")) {
-									$string = ltrim($line,"define(");
+									$string = ltrim($line);
+									$string = ltrim($string,"define(");
 									$string = rtrim($string);
 									$string = rtrim($string,");");
 									$string = explode(",", $string);
@@ -140,7 +143,6 @@ class language {
 		$root_element = $doc->createElement('translations');
 		$root = $doc->appendChild($root_element);
 		foreach($this->translate as $key => $value) {
-			print("eerste regel is $key = $value".chr(13));
 			$first_element = $doc->createElement('translation');
 			$string = ltrim($key);
 			$string = ltrim($string,"'");
