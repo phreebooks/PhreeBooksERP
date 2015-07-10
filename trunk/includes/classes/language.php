@@ -116,21 +116,76 @@ class language {
 					$language_files = @scandir ( $lang_dir .'/'. $language_folder );
 					foreach ( $language_files as $language_file ) {
 						if ($language_file == '.' || $language_file == '..') continue;
-						$handle = fopen("{$lang_dir}/{$language_folder}/{$language_file}", "r");
-						//print(" language_file gevonden {$lang_dir}/{$language_folder}/{$language_file} handle is $handle ".chr(13));
-						if ($handle) {
-							while (($line = fgets($handle)) !== false) {
-								// process the line read.
-								if (false !== strpos ($line, "define(")) {
-									$string = ltrim($line);
-									$string = ltrim($string,"define(");
-									$string = rtrim($string);
-									$string = rtrim($string,");");
-									$string = explode(",", $string);
-									$this->translate[$string[0]][$language_folder] = $string[1];
+						if (is_dir ( $language_file )) {
+							$language_sub_folders = @scandir ( "{$lang_dir}/{$language_folder}/{$language_file}");
+							foreach ( $language_sub_folders as $language_sub_folder ) {
+								if ($language_sub_folder == '.' || $language_sub_folder == '..') continue;
+								$handle = fopen("{$lang_dir}/{$language_folder}/{$language_file}/{$language_sub_folder}", "r");
+								//print(" language_file gevonden {$lang_dir}/{$language_folder}/{$language_file} handle is $handle ".chr(13));
+								if ($handle) {
+									while (($line = fgets($handle)) !== false) {
+										// process the line read.
+										if (false !== strpos ($line, "define(")) {
+											$string = ltrim($line);
+											$string = ltrim($string,"define(");
+											$string = rtrim($string);
+											$string = rtrim($string,");");
+											$string = explode(",", $string);
+											$this->translate[$string[0]][$language_folder] = $string[1];
+										}
+									}
+									fclose($handle);
 								}
 							}
-							fclose($handle);
+						}else{
+							$handle = fopen("{$lang_dir}/{$language_folder}/{$language_file}", "r");
+							//print(" language_file gevonden {$lang_dir}/{$language_folder}/{$language_file} handle is $handle ".chr(13));
+							if ($handle) {
+								while (($line = fgets($handle)) !== false) {
+									// process the line read.
+									if (false !== strpos ($line, "define(")) {
+										$string = ltrim($line);
+										$string = ltrim($string,"define(");
+										$string = rtrim($string);
+										$string = rtrim($string,");");
+										$string = explode(",", $string);
+										$this->translate[$string[0]][$language_folder] = $string[1];
+									}
+								}
+								fclose($handle);
+							}
+						}
+					}
+				}
+			}
+			foreach(array('dashboards','methods') as $type) {
+				$method_dir = DIR_FS_MODULES ."{$dir}/{$type}";
+				if (is_dir ( $method_dir )) {
+					$methods = @scandir ( $method_dir );
+					foreach ( $methods as $method ) {
+						if ($method == '.' || $method == '..') continue;
+						$language_folders = @scandir ( "{$method_dir}/{$method}/language" );
+						foreach ( $language_folders as $language_folder ) {
+							if ($language_folder == '.' || $language_folder == '..') continue;
+							$language_files = @scandir ( "{$method_dir}/{$method}/language/{$language_folder}" );
+							foreach ( $language_files as $language_file ) {
+								if ($language_file == '.' || $language_file == '..') continue;
+								$handle = fopen("{$method_dir}/{$method}/language/{$language_folder}/{$language_file}", "r");
+								if ($handle) {
+									while (($line = fgets($handle)) !== false) {
+										// process the line read.
+										if (false !== strpos ($line, "define(")) {
+											$string = ltrim($line);
+											$string = ltrim($string,"define(");
+											$string = rtrim($string);
+											$string = rtrim($string,");");
+											$string = explode(",", $string);
+											$this->translate[$string[0]][$language_folder] = $string[1];
+										}
+									}
+									fclose($handle);
+								}
+							}
 						}
 					}
 				}
