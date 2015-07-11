@@ -191,9 +191,21 @@ class language {
 				}
 			}
 		}
+		//controleren 
+		foreach ($this->translate as $key => $string){
+			if(!isset($string['en_us'])){
+				unset($this->translate[$key]);
+			}else{
+				foreach($string as $language => $translation){
+					if ($language == 'en_us') continue;
+					if ($string['en_us'] == $translation) unset($this->translate[$key][$language]);
+				}
+			}
+		}
+		
 		ksort($this->translate);
 		//store in xml.
-		$doc = new \DOMDocument();
+		$doc = new \DOMDocument('1.0', 'utf-8');
 		$doc->formatOutput = true;
 		$root_element = $doc->createElement('translations');
 		$root = $doc->appendChild($root_element);
