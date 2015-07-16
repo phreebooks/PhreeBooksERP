@@ -17,35 +17,33 @@
 //  Path: /includes/classes/journal.php
 //
 namespace core\classes;
-class journal {
+abstract class journal {
 	public 	$affected_accounts	= array();
 	public 	$repost_ids			= array();
 	public 	$cogs_entry			= array();
+	public  $journal_rows 		= array();
 	private $first_period		= 0;
 
-	public function __construct( $id = 0, $verbose=true) {
+	final public function __construct( $id = 0, $verbose=true) {
 		global $admin;
 		if ($id != 0) {
-			$result = $admin->DataBase->query("SELECT * FROM " . TABLE_JOURNAL_MAIN . " WHERE id = $id");
+			$sql = $admin->DataBase->prepare("SELECT * FROM " . TABLE_JOURNAL_MAIN . " WHERE id = $id");
+			$sql->execute();
+			$this = $sql->fetch(\PDO::FETCH_LAZY);
 			// make sure we have a record or die (there's a problem that needs to be fixed)
-		  	if ($result->rowCount() == 0) throw new \core\classes\userException(TEXT_DIED_TRYING_TO_BUILD_A_JOURNAL_ENTRY_WITH_ID . ' = ' . $id);
-		  	foreach ($result->fields as $key => $value) $this->$key = $value;
+		  	if ($sql->rowCount() == 0) throw new \core\classes\userException(TEXT_DIED_TRYING_TO_BUILD_A_JOURNAL_ENTRY_WITH_ID . ' = ' . $id);
+		  	foreach ($result as $key => $value) $this->$key = $value;
 		  	$this->journal_main_array = $this->build_journal_main_array();	// build ledger main record
-		  	$result = $admin->DataBase->query("select * from " . TABLE_JOURNAL_ITEM . " where ref_id = " . (int)$id);
-		  	$this->journal_rows = array();
-		  	$i = 0;
-		  	while (!$result->EOF) {
-				foreach ($result->fields as $key => $value) $this->journal_rows[$i][$key] = $value;
-				$i++;
-				$result->MoveNext();
-		  	}
+		  	$sql = $admin->DataBase->prepare("SELECT * FROM " . TABLE_JOURNAL_ITEM . " WHERE ref_id = " . (int)$id);
+		  	$sql->execute();
+		  	$this->journal_rows = $sql->fetchAll();
 		}
 	}
 
 /*******************************************************************************************************************/
 // START Post Journal Function
 /*******************************************************************************************************************/
-  	function Post($action = 'insert', $skip_balance = false) {
+  	final public function Post($action = 'insert', $skip_balance = false) {
 		global $admin;
 		if (!isset($this->id) || $this->id == '') $this->id = 0;
 		$this->unpost_ids = $this->check_for_re_post();
@@ -126,7 +124,7 @@ class journal {
 		return true;
   	}
 
-  	function unPost($action = 'delete', $skip_balance = false) {
+  	final public function unPost($action = 'delete', $skip_balance = false) {
 		global $admin;
 		$admin->messageStack->debug("\nunPosting Journal... id = $this->id and action = $action and journal_id = $this->journal_id");
 		$this->unpost_ids = $this->check_for_re_post();
@@ -164,7 +162,7 @@ class journal {
 /*******************************************************************************************************************/
 // START re-post Functions
 /*******************************************************************************************************************/
-  	function check_for_re_post() {
+  	abstract function check_for_re_post() {
 		global $admin;
 		$admin->messageStack->debug("\n  Checking for re-post records ... ");
 		$repost_ids = array();
@@ -269,7 +267,7 @@ class journal {
 /*******************************************************************************************************************/
 // START Chart of Accout Functions
 /*******************************************************************************************************************/
-  function Post_chart_balances() {
+  abstract function Post_chart_balances() {
 	global $admin;
 	$admin->messageStack->debug("\n  Posting Chart Balances...");
 	switch ($this->journal_id) {
@@ -319,7 +317,7 @@ class journal {
 	/**
 	 * this function will un do the changes to the chart_of_account_history table
 	 */
-  	function unPost_chart_balances() {
+  	abstract function unPost_chart_balances() {
 		global $admin;
 		$admin->messageStack->debug("\n  unPosting Chart Balances...");
 		switch ($this->journal_id) {
@@ -356,7 +354,7 @@ class journal {
   	}
 
 	// *********  chart of account support functions  **********
-  	function update_chart_history_periods($period = CURRENT_ACCOUNTING_PERIOD) {
+  	abstract function update_chart_history_periods($period = CURRENT_ACCOUNTING_PERIOD) {
 		global $admin;
 		switch ($this->journal_id) {
 		  	case  3: // Purchase Quote
@@ -435,32 +433,33 @@ class journal {
 		return true;
   	}
 
-  	function validate_balance($period = CURRENT_ACCOUNTING_PERIOD) {
+  	final function validate_balance($period = CURRENT_ACCOUNTING_PERIOD) {
 		global $admin;
 		$admin->messageStack->debug("\n    Validating trial balance for period: $period ... ");
-		$sql = "select sum(debit_amount) as debit, sum(credit_amount) as credit
-		  from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where period = " . $period;
-		$result = $admin->DataBase->query($sql);
+		$sql = $admin->DataBase->prepare("SELECT sum(debit_amount) as debit, sum(credit_amount) as credit FROM " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " WHERE period = " . $period);
+		$sql->execute();
+		$result = $sql->fetch(\PDO::FETCH_LAZY);
 		// check to see if we are still in balance, round debits and credits and compare
-		$admin->messageStack->debug(" debits = {$result->fields['debit']} and credits = {$result->fields['credit']}");
-		$debit_total  = round($result->fields['debit'],  $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
-		$credit_total = round($result->fields['credit'], $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
+		$admin->messageStack->debug(" debits = {$result['debit']} and credits = {$result['credit']}");
+		$debit_total  = round($result['debit'],  $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
+		$credit_total = round($result['credit'], $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
 		if ($debit_total <> $credit_total) { // Trouble in paradise, fraction of cents adjustment next
 		  	$tolerance = 2 * (1 / pow(10, $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places'])); // i.e. 2 cents in USD
-		  	$adjustment = $result->fields['credit'] - $result->fields['debit'];
-		  	if (abs($adjustment) > $tolerance) throw new \core\classes\userException(sprintf(GL_ERROR_TRIAL_BALANCE, $result->fields['debit'], $result->fields['credit'], $period));
+		  	$adjustment = $result['credit'] - $result['debit'];
+		  	if (abs($adjustment) > $tolerance) throw new \core\classes\userException(sprintf(GL_ERROR_TRIAL_BALANCE, $result['debit'], $result['credit'], $period));
 		  	// find the adjustment account
 		  	if (!defined('ROUNDING_GL_ACCOUNT') || ROUNDING_GL_ACCOUNT == '') {
-				$result = $admin->DataBase->query("select id from " . TABLE_CHART_OF_ACCOUNTS . " where account_type = 44 limit 1");
-				if ($result->rowCount() == 0) throw new \core\classes\userException('Failed trying to locate retained earnings account to make rounding adjustment. There must be one and only one Retained Earnings account in the chart of accounts!');
-				$adj_gl_account = $result->fields['id'];
+				$sql = $admin->DataBase->prepare("SELECT id FROM " . TABLE_CHART_OF_ACCOUNTS . " WHERE account_type = 44 limit 1");
+				$sql->execute();
+				if ($sql->rowCount() == 0) throw new \core\classes\userException('Failed trying to locate retained earnings account to make rounding adjustment. There must be one and only one Retained Earnings account in the chart of accounts!');
+				$result = $sql->fetch(\PDO::FETCH_LAZY);
+				$adj_gl_account = $result['id'];
 		  	} else {
 				$adj_gl_account = ROUNDING_GL_ACCOUNT;
 		  	}
 		  	$admin->messageStack->debug("\n      Adjusting balance, adjustment = $adjustment and gl account = $adj_gl_account");
-		  	$sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
-			  set debit_amount = debit_amount + $adjustment
-			  where period = $period and account_id = '$adj_gl_account'";
+		  	$sql = "UPDATE " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " SET debit_amount = debit_amount + $adjustment
+			  WHERE period = $period and account_id = '$adj_gl_account'";
 		  	$result = $admin->DataBase->query($sql);
 		}
 		$admin->messageStack->debug(" ... End Validating trial balance.");
@@ -473,7 +472,7 @@ class journal {
 // START Customer/Vendor Account Functions
 /*******************************************************************************************************************/
 // Post the customers/vendors sales/purchases values for the given period
-  	function Post_account_sales_purchases() {
+  	abstract function Post_account_sales_purchases() {
 		global $admin;
 		$admin->messageStack->debug("\n  Posting account sales and purchases ...");
 		switch ($this->journal_id) {
@@ -518,7 +517,7 @@ class journal {
   	 * @throws Exception
   	 */
 
-	function unPost_account_sales_purchases() {
+	abstract function unPost_account_sales_purchases() {
 		global $admin;
 		$admin->messageStack->debug("\n  unPosting account sales and purchases ...");
 		switch ($this->journal_id) {
@@ -553,7 +552,7 @@ class journal {
 /*******************************************************************************************************************/
 // START Inventory Functions
 /*******************************************************************************************************************/
-  function Post_inventory() {
+  abstract function Post_inventory() {
 	global $admin;
 	$admin->messageStack->debug("\n  Posting Inventory ...");
 	switch ($this->journal_id) { // Pre-posting particulars that are journal dependent
@@ -692,7 +691,7 @@ class journal {
 	return true;
   }
 
-  function unPost_inventory() {
+  abstract function unPost_inventory() {
 	global $admin;
 	$admin->messageStack->debug("\n  unPosting Inventory ...");
 	// if remaining <> qty then some items have been sold; reduce qty and remaining by original qty (qty will be 0)
@@ -781,31 +780,31 @@ class journal {
 
 
 // *********  inventory support functions  **********
-  	function update_inventory_status($sku, $field, $adjustment, $item_cost = 0, $desc = '', $full_price = 0) {
+	final function update_inventory_status($sku, $field, $adjustment, $item_cost = 0, $desc = '', $full_price = 0) {
 		global $admin;
 		if (!$sku || $adjustment == 0) return true;
-		$admin->messageStack->debug("\n    update_inventory_status, SKU = " . $sku . ", field = " . $field . ", adjustment = " . $adjustment . ", and item_cost = " . $item_cost);
+		$admin->messageStack->debug("\n    update_inventory_status, SKU = $sku, field = $field, adjustment = $adjustment, and item_cost = " . $item_cost);
 		// catch sku's that are not in the inventory database but have been requested to post
-		$result = $admin->DataBase->query("select id, inventory_type from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
-		if ($result->rowCount() == 0) {
+		$sql = $admin->DataBase->prepare("SELECT id, inventory_type FROM " . TABLE_INVENTORY . " WHERE sku = '$sku'");
+		$sql->execute();
+		if ($sql->rowCount() == 0) {
 		  	if (!INVENTORY_AUTO_ADD) throw new \core\classes\userException(GL_ERROR_UPDATING_INVENTORY_STATUS . $sku);
 		  	$id = $this->inventory_auto_add($sku, $desc, $item_cost, $full_price);
-			$result->fields['inventory_type'] = 'si';
+			$result['inventory_type'] = 'si';
 		}
-		$type = $result->fields['inventory_type'];
+		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		$type = $result['inventory_type'];
 		// only update items that are to be tracked in inventory (non-stock are tracked for PO/SO only)
 		if (strpos(COG_ITEM_TYPES, $type) !== false || ($type == 'ns' && $field <> 'quantity_on_hand')) {
-		  	$sql = "update " . TABLE_INVENTORY . " set " . $field . " = " . $field . " + " . $adjustment . ", ";
-		  	if ($item_cost) $sql .= "item_cost = " . $item_cost . ", ";
-		  	$sql .= "last_journal_date = now() where sku = '" . $sku . "'";
-		  	$result = $admin->DataBase->query($sql);
+		  	$raw_sql = "UPDATE " . TABLE_INVENTORY . " SET {$field} = {$field} + {$adjustment}, ";
+//		  	if ($item_cost) $sql .= "item_cost = {$item_cost}, ";
+		  	$raw_sql .= "last_journal_date = now() WHERE sku = '{$sku}'";
+		  	$result = $admin->DataBase->query($raw_sql);
 		  	if ($item_cost){
-		  		$sql = "update " . TABLE_INVENTORY_PURCHASE . " set item_cost = " . $item_cost;
-		  		$sql .= " where sku = '" . $sku . "' and vendor_id = '".$this->bill_acct_id."'";
-		  		$result = $admin->DataBase->query($sql);
+		  		$raw_sql = "UPDATE " . TABLE_INVENTORY_PURCHASE . " SET item_cost = {$item_cost} WHERE sku = '{$sku}' and vendor_id = '{$this->bill_acct_id}'";
+		  		$result = $admin->DataBase->query($raw_sql);
 		  	}
 		}
-		return true;
   	}
 
   	/**
@@ -815,16 +814,16 @@ class journal {
   	 * @param bool $return_cogs should cogs be returned
   	 * @throws Exception
   	 */
-  	function calculate_COGS($item, $return_cogs = false) {
+  	abstract function calculate_COGS($item, $return_cogs = false) {
 		global $admin;
-		$admin->messageStack->debug("\n    Calculating COGS, SKU = " . $item['sku'] . ' and QTY = ' . $item['qty']);
+		$admin->messageStack->debug("\n    Calculating COGS, SKU = {$item['sku']} and QTY = {$item['qty']}");
 		$cogs = 0;
 		// fetch the additional inventory item fields we need
-		$sql = "select inactive, inventory_type, account_inventory_wage, account_cost_of_sales, item_cost, cost_method, quantity_on_hand, serialize
-		  from " . TABLE_INVENTORY . " where sku = '" . $item['sku'] . "'";
-		$result = $admin->DataBase->query($sql);
+		$raw_sql = "SELECT inactive, inventory_type, account_inventory_wage, account_cost_of_sales, item_cost, cost_method, quantity_on_hand, serialize FROM " . TABLE_INVENTORY . " WHERE sku = '{$item['sku']}'";
+		$sql = $admin->DataBase->prepare($raw_sql);
+		$sql->execute();
 		// catch sku's that are not in the inventory database but have been requested to post, error
-		if ($result->rowCount() == 0) {
+		if ($sql->rowCount() == 0) {
 		  	if (!INVENTORY_AUTO_ADD) throw new \core\classes\userException(GL_ERROR_CALCULATING_COGS);
 		  	$item_cost  = 0;
 		  	$full_price = 0;
@@ -841,12 +840,12 @@ class journal {
 	  		$id = $this->inventory_auto_add($item['sku'], $item['description'], $item_cost, $full_price);
 		  	$result = $admin->DataBase->query($sql); // re-load now that item was created
 		}
+		$defaults = $sql->fetch(\PDO::FETCH_LAZY);
 		// only calculate cogs for certain inventory_types
-		if (strpos(COG_ITEM_TYPES, $result->fields['inventory_type']) === false) {
+		if (strpos(COG_ITEM_TYPES, $defaults['inventory_type']) === false) {
 		  	$admin->messageStack->debug(". Exiting COGS, no work to be done with this SKU.");
 		  	return true;
 		}
-		$defaults = $result->fields;
 		if (ENABLE_MULTI_BRANCH) $defaults['quantity_on_hand'] = $this->branch_qty_on_hand($item['sku'], $defaults['quantity_on_hand']);
 		// catch sku's that are serialized and the quantity is not one, error
 		if ($defaults['serialize'] && abs($item['qty']) <> 1) throw new \core\classes\userException(GL_ERROR_SERIALIZE_QUANTITY);
