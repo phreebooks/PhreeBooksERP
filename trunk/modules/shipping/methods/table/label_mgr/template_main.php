@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
 
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
@@ -38,38 +38,38 @@ if (count($extra_toolbar_buttons) > 0) {
 
 // add the help file index and build the toolbar
 $toolbar->add_help('09.01');
-echo $toolbar->build_toolbar(); 
+echo $toolbar->build();
 
 // Build the page
 ?>
 <h1><?php echo MODULE_SHIPPING_TABLE_TEXT_TITLE; ?></h1>
 <div>
 <fieldset id="recp">
-<legend><?php echo SHIPPING_SHIPMENT_DETAILS; ?></legend>
+<legend><?php echo TEXT_SHIPMENT_DETAILS; ?></legend>
 <table>
 	<tr>
-		<td><?php echo SHIPPING_TEXT_REFERENCE_ID; ?></td>
+		<td><?php echo TEXT_REFERENCE_ID; ?></td>
 		<td><?php echo html_input_field('purchase_invoice_id', $sInfo->purchase_invoice_id); ?></td>
 	</tr>
 	<tr>
-		<td><?php echo SHIPPING_SERVICE_TYPE; ?></td>
+		<td><?php echo TEXT_SERVICE_TYPE; ?></td>
 		<td><?php echo html_pull_down_menu('ship_method', gen_build_pull_down($shipping_methods), $sInfo->ship_method); ?></td>
 	</tr>
 	<tr>
-		<td><?php echo SHIPPING_TEXT_SHIPMENT_DATE; ?></td>
+		<td><?php echo TEXT_SHIPMENT_DATE; ?></td>
 		<td><?php echo html_calendar_field($cal_ship); ?></td>
 	</tr>
 	<tr>
-		<td><?php echo SHIPPING_TEXT_EXPECTED_DATE; ?></td>
+		<td><?php echo TEXT_EXPECTED_DELIVERY_DATE; ?></td>
 		<td><?php echo html_calendar_field($cal_exp); ?></td>
 	</tr>
 	<tr>
-		<td><?php echo SHIPPING_TEXT_TRACKING_NUM; ?></td>
+		<td><?php echo TEXT_TRACKING_NUMBER; ?></td>
 		<td><?php echo html_input_field('tracking_id', $sInfo->tracking_id, 'size="25" maxlength="24"'); ?></td>
 	</tr>
 	<tr>
-		<td><?php echo SHIPPING_TEXT_COST; ?></td>
-		<td><?php echo html_input_field('cost', $currencies->format($sInfo->cost), 'size="15" maxlength="14" style="text-align:right"'); ?></td>
+		<td><?php echo TEXT_COST; ?></td>
+		<td><?php echo html_input_field('cost', $admin->currencies->format($sInfo->cost), 'size="15" maxlength="14" style="text-align:right"'); ?></td>
 	</tr>
 </table>
 </fieldset>

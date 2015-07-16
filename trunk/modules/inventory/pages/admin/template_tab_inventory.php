@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -18,7 +18,7 @@
 //
 
 ?>
-<div id="tab_inventory">
+<div title="<?php echo TEXT_INVENTORY;?>" id="tab_inventory">
   <fieldset>
     <table>
 	  <tr><th colspan="5"><?php echo TEXT_DEFAULT_GL_ACCOUNTS; ?></th></tr>
@@ -26,7 +26,7 @@
 	    <th><?php echo TEXT_INVENTORY_TYPES;   ?></th>
 	    <th><?php echo TEXT_SALES_ACCOUNT;     ?></th>
 	    <th><?php echo TEXT_INVENTORY_ACCOUNT; ?></th>
-	    <th><?php echo TEXT_COGS_ACCOUNT;      ?></th>
+	    <th><?php echo TEXT_COST_OF_SALES_ACCOUNT;      ?></th>
 	    <th><?php echo TEXT_COST_METHOD;       ?></th>
 	  </tr>
 	  <tr>
@@ -37,49 +37,49 @@
 	    <td align="center"><?php echo html_pull_down_menu('inv_stock_default_costing',  $cost_methods, $_POST['inv_stock_default_costing'] ? $_POST['inv_stock_default_costing'] : INV_STOCK_DEFAULT_COSTING, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo TEXT_MS_ITEMS; ?></td>
+	    <td><?php echo TEXT_MASTER_STOCK; ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_master_stock_default_sales', $inc_chart,  $_POST['inv_master_stock_default_sales'] ? $_POST['inv_master_stock_default_sales'] : INV_MASTER_STOCK_DEFAULT_SALES, ''); ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_master_stock_default_inventory', $inv_chart,  $_POST['inv_master_stock_default_inventory'] ? $_POST['inv_master_stock_default_inventory'] : INV_MASTER_STOCK_DEFAULT_INVENTORY, ''); ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_master_stock_default_cos', $cog_chart,  $_POST['inv_master_stock_default_cos'] ? $_POST['inv_master_stock_default_cos'] : INV_MASTER_STOCK_DEFAULT_COS, ''); ?></td>
 	    <td align="center"><?php echo html_pull_down_menu('inv_master_stock_default_costing',  $cost_methods, $_POST['inv_master_stock_default_costing'] ? $_POST['inv_master_stock_default_costing'] : INV_MASTER_STOCK_DEFAULT_COSTING, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo TEXT_ASSY_ITEMS; ?></td>
+	    <td><?php echo TEXT_ASSEMBLIES; ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_assy_default_sales', $inc_chart,  $_POST['inv_assy_default_sales'] ? $_POST['inv_assy_default_sales'] : INV_ASSY_DEFAULT_SALES, ''); ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_assy_default_inventory', $inv_chart,  $_POST['inv_assy_default_inventory'] ? $_POST['inv_assy_default_inventory'] : INV_ASSY_DEFAULT_INVENTORY, ''); ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_assy_default_cos', $cog_chart,  $_POST['inv_assy_default_cos'] ? $_POST['inv_assy_default_cos'] : INV_ASSY_DEFAULT_COS, ''); ?></td>
 	    <td align="center"><?php echo html_pull_down_menu('inv_assy_default_costing',  $cost_methods, $_POST['inv_assy_default_costing'] ? $_POST['inv_assy_default_costing'] : INV_ASSY_DEFAULT_COSTING, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo TEXT_SERIAL_ITEMS; ?></td>
+	    <td><?php echo TEXT_SERIALIZED; ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_serialize_default_sales', $inc_chart,  $_POST['inv_serialize_default_sales'] ? $_POST['inv_serialize_default_sales'] : INV_SERIALIZE_DEFAULT_SALES, ''); ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_serialize_default_inventory', $inv_chart,  $_POST['inv_serialize_default_inventory'] ? $_POST['inv_serialize_default_inventory'] : INV_SERIALIZE_DEFAULT_INVENTORY, ''); ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_serialize_default_cos', $cog_chart,  $_POST['inv_serialize_default_cos'] ? $_POST['inv_serialize_default_cos'] : INV_SERIALIZE_DEFAULT_COS, ''); ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo TEXT_NS_ITEMS; ?></td>
+	    <td><?php echo TEXT_NON-STOCK_ITEM; ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_non_stock_default_sales', $inc_chart,  $_POST['inv_non_stock_default_sales'] ? $_POST['inv_non_stock_default_sales'] : INV_NON_STOCK_DEFAULT_SALES, ''); ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_non_stock_default_inventory', $inv_chart,  $_POST['inv_non_stock_default_inventory'] ? $_POST['inv_non_stock_default_inventory'] : INV_NON_STOCK_DEFAULT_INVENTORY, ''); ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_non_stock_default_cos', $cog_chart,  $_POST['inv_non_stock_default_cos'] ? $_POST['inv_non_stock_default_cos'] : INV_SERIALIZE_DEFAULT_COS, ''); ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo TEXT_SRV_ITEMS; ?></td>
+	    <td><?php echo TEXT_SERVICE; ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_service_default_sales', $inc_chart,  $_POST['inv_service_default_sales'] ? $_POST['inv_service_default_sales'] : INV_SERVICE_DEFAULT_SALES, ''); ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_service_default_inventory', $inv_chart,  $_POST['inv_service_default_inventory'] ? $_POST['inv_service_default_inventory'] : INV_SERVICE_DEFAULT_INVENTORY, ''); ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_service_default_cos', $cog_chart,  $_POST['inv_service_default_cos'] ? $_POST['inv_service_default_cos'] : INV_SERVICE_DEFAULT_COS, ''); ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo TEXT_LABOR_ITEMS; ?></td>
+	    <td><?php echo TEXT_LABOR; ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_labor_default_sales', $inc_chart,  $_POST['inv_labor_default_sales'] ? $_POST['inv_labor_default_sales'] : INV_LABOR_DEFAULT_SALES, ''); ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_labor_default_inventory', $inv_chart,  $_POST['inv_labor_default_inventory'] ? $_POST['inv_labor_default_inventory'] : INV_LABOR_DEFAULT_INVENTORY, ''); ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_labor_default_cos', $cog_chart,  $_POST['inv_labor_default_cos'] ? $_POST['inv_labor_default_cos'] : INV_LABOR_DEFAULT_COS, ''); ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo TEXT_ACT_ITEMS; ?></td>
+	    <td><?php echo TEXT_ACTIVITY; ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_activity_default_sales', $inc_chart,  $_POST['inv_activity_default_sales'] ? $_POST['inv_activity_default_sales'] : INV_ACTIVITY_DEFAULT_SALES, ''); ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_activity_default_inventory', $inv_chart,  $_POST['inv_activity_default_inventory'] ? $_POST['inv_activity_default_inventory'] : INV_ACTIVITY_DEFAULT_INVENTORY, ''); ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
@@ -93,7 +93,7 @@
 	    <td><?php echo '&nbsp;'; ?></td>
 	  </tr>
 	  <tr>
-	    <td><?php echo TEXT_DESC_ITEMS; ?></td>
+	    <td><?php echo TEXT_DESCRIPTION; ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_desc_default_sales', $inc_chart,  $_POST['inv_desc_default_sales'] ? $_POST['inv_desc_default_sales'] : INV_DESC_DEFAULT_SALES, ''); ?></td>
 	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_desc_default_inventory', $inv_chart,  $_POST['inv_desc_default_inventory'] ? $_POST['inv_desc_default_inventory'] : INV_DESC_DEFAULT_INVENTORY, ''); ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>

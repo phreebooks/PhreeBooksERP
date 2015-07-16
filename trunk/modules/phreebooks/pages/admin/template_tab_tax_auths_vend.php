@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
 
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
@@ -17,7 +17,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/pages/admin/template_tab_tax_auths_vend.php
 //
-$tax_auths_vend_toolbar = new toolbar;
+$tax_auths_vend_toolbar = new \core\classes\toolbar;
 $tax_auths_vend_toolbar->icon_list['cancel']['show'] = false;
 $tax_auths_vend_toolbar->icon_list['open']['show']   = false;
 $tax_auths_vend_toolbar->icon_list['save']['show']   = false;
@@ -26,8 +26,8 @@ $tax_auths_vend_toolbar->icon_list['print']['show']  = false;
 if ($security_level > 1) $tax_auths_vend_toolbar->add_icon('new', 'onclick="loadPopUp(\'tax_auths_vend_new\', 0)"', $order = 10);
 
 ?>
-<div id="tab_tax_auths_vend">
-  <?php echo $tax_auths_vend_toolbar->build_toolbar(); ?>
+<div title="<?php echo TEXT_PURCHASE_TAX_AUTHORITIES;?>" id="tab_tax_auths_vend">
+  <?php echo $tax_auths_vend_toolbar->build(); ?>
   <h1><?php echo $tax_auths_vend->title; ?></h1>
   <div id="tax_auths_vend_content"><?php echo $tax_auths_vend->build_main_html(); ?></div>
 </div>

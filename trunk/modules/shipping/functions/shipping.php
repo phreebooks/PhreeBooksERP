@@ -1,8 +1,8 @@
-<?php 
+<?php
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
 
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
@@ -18,19 +18,19 @@
 //  Path: /modules/shipping/functions/shipping.php
 //
 
-function build_js_methods($methods) {
-  global $shipping_defaults;
+function build_js_methods() {
+  global $admin, $shipping_defaults;
   $choices         = array_keys($shipping_defaults['service_levels']);
   $service_levels  = 'var freightLevels   = new Array();' . chr(10);
   $carriers        = 'var freightCarriers = new Array();' . chr(10);
   $carrier_details = 'var freightDetails  = new Array();' . chr(10);
   for ($i = 0; $i < sizeof($choices); $i++) $service_levels .= "freightLevels[".$i."]='".$choices[$i]."'; " . chr(10);
   $i = 0;
-  if (sizeof($methods) > 0) foreach ($methods as $method) {
-    $carriers          .= "freightCarriers[".$i."]='" . $method['id'] . "';" . chr(10);
+  if (sizeof($admin->classes['shipping']->methods) > 0) foreach ($admin->classes['shipping']->methods as $method) {
+    $carriers          .= "freightCarriers[".$i."]='" . $method->id . "';" . chr(10);
     $carrier_details   .= 'freightDetails['.$i.'] = new Array();' . chr(10);
     for ($j = 0; $j < sizeof($choices); $j++) {
-	  $carrier_details .= "freightDetails[".$i."][".$j."]='" . (defined($method['id'] . '_' . $choices[$j]) ? constant($method['id'] . '_' . $choices[$j]) : "") . "'; " . chr(10);
+	  $carrier_details .= "freightDetails[".$i."][".$j."]='" . (defined($method->id . '_' . $choices[$j]) ? constant($method->id . '_' . $choices[$j]) : "") . "'; " . chr(10);
     }
     $i++;
   }
@@ -40,18 +40,18 @@ function build_js_methods($methods) {
 function GetXMLString($y, $SubmitURL, $GetPost) {
   global $cURLpath;
   $output = array();
-  $ch = curl_init(); /// initialize a cURL session 
-  curl_setopt($ch, CURLOPT_URL, $SubmitURL); 
+  $ch = curl_init(); /// initialize a cURL session
+  curl_setopt($ch, CURLOPT_URL, $SubmitURL);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  curl_setopt($ch, CURLOPT_TIMEOUT, 10); // times out after 10 seconds 
-  curl_setopt($ch, CURLOPT_HEADER, 0); 
-  if ($GetPost=="POST") { curl_setopt($ch, CURLOPT_POST, 1); }	
-  curl_setopt($ch, CURLOPT_POSTFIELDS, "$y"); 
-  $xyz = curl_exec($ch); 
+  curl_setopt($ch, CURLOPT_TIMEOUT, 10); // times out after 10 seconds
+  curl_setopt($ch, CURLOPT_HEADER, 0);
+  if ($GetPost=="POST") { curl_setopt($ch, CURLOPT_POST, 1); }
+  curl_setopt($ch, CURLOPT_POSTFIELDS, "$y");
+  $xyz = curl_exec($ch);
   // Check for errors
   $curlerrornum = curl_errno($ch);
   $curlerror    = curl_error($ch);
-  if ($curlerrornum) { 
+  if ($curlerrornum) {
 	$output['result'] = 'error';
 	$output['message'] = 'XML Read Error (cURL) #'.$curlerrornum.'. Description='.$curlerror.'.<br />';
   } else {

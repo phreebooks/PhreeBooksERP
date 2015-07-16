@@ -261,13 +261,13 @@ class admin extends \core\classes\admin {
 	}
 
 	function after_ValidateUser(\core\classes\basis &$basis) {
-		global $messageStack, $currencies;
+		global $messageStack;
 	    //load the latest currency exchange rates
 		if ($this->web_connected(false) && AUTO_UPDATE_CURRENCY && ENABLE_MULTI_CURRENCY) {
-				$currencies->btn_update();
+				$basis->currencies->btn_update();
 		}
 		// Fix for change to audit log for upgrade to R3.6 causes perpertual crashing when writing audit log
-		if (!db_field_exists(TABLE_AUDIT_LOG, 'stats')) $basis->DataBase->exec("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
+		if (!$basis->DataBase->field_exists(TABLE_AUDIT_LOG, 'stats')) $basis->DataBase->exec("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
 		if ($this->web_connected(false) && CFG_AUTO_UPDATE_CHECK && (SECURITY_ID_CONFIGURATION > 3)) { // check for software updates
 			if (($this->revisions = @file_get_contents(VERSION_CHECK_URL)) === false) throw new \core\classes\userException("can not open ". VERSION_CHECK_URL);
 		}
@@ -306,18 +306,18 @@ class admin extends \core\classes\admin {
 		  	if (!$db_version) return true;
 		}
 		if (version_compare($this->status, '3.2', '<') ) {
-		  	if (!db_field_exists(TABLE_USERS, 'is_role')) $basis->DataBase->exec("ALTER TABLE ".TABLE_USERS." ADD is_role ENUM('0','1') NOT NULL DEFAULT '0' AFTER admin_id");
+		  	if (!$basis->DataBase->field_exists(TABLE_USERS, 'is_role')) $basis->DataBase->exec("ALTER TABLE ".TABLE_USERS." ADD is_role ENUM('0','1') NOT NULL DEFAULT '0' AFTER admin_id");
 		}
 		if (version_compare($this->status, '3.4', '<') ) {
-		  	if (!db_field_exists(TABLE_DATA_SECURITY, 'exp_date')) $basis->DataBase->exec("ALTER TABLE ".TABLE_DATA_SECURITY." ADD exp_date DATE NOT NULL DEFAULT '2049-12-31' AFTER enc_value");
-		  	if (!db_field_exists(TABLE_AUDIT_LOG, 'ip_address'))   $basis->DataBase->exec("ALTER TABLE ".TABLE_AUDIT_LOG    ." ADD ip_address VARCHAR(15) NOT NULL AFTER user_id");
+		  	if (!$basis->DataBase->field_exists(TABLE_DATA_SECURITY, 'exp_date')) $basis->DataBase->exec("ALTER TABLE ".TABLE_DATA_SECURITY." ADD exp_date DATE NOT NULL DEFAULT '2049-12-31' AFTER enc_value");
+		  	if (!$basis->DataBase->field_exists(TABLE_AUDIT_LOG, 'ip_address'))   $basis->DataBase->exec("ALTER TABLE ".TABLE_AUDIT_LOG    ." ADD ip_address VARCHAR(15) NOT NULL AFTER user_id");
 	    }
 	    if (version_compare($this->status, '3.5', '<') ) {
-		  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'group_by'))  $basis->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD group_by varchar(64) NOT NULL default ''");
-		  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'sort_order'))$basis->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD sort_order varchar(64) NOT NULL default ''");
-		  	if (!db_field_exists(TABLE_AUDIT_LOG, 'stats'))        $basis->DataBase->exec("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
+		  	if (!$basis->DataBase->field_exists(TABLE_EXTRA_FIELDS, 'group_by'))  $basis->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD group_by varchar(64) NOT NULL default ''");
+		  	if (!$basis->DataBase->field_exists(TABLE_EXTRA_FIELDS, 'sort_order'))$basis->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD sort_order varchar(64) NOT NULL default ''");
+		  	if (!$basis->DataBase->field_exists(TABLE_AUDIT_LOG, 'stats'))        $basis->DataBase->exec("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
 	  	}
-	  	if (!db_field_exists(TABLE_EXTRA_FIELDS, 'required'))  $basis->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD required enum('0','1') NOT NULL DEFAULT '0'");
+	  	if (!$basis->DataBase->field_exists(TABLE_EXTRA_FIELDS, 'required'))  $basis->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD required enum('0','1') NOT NULL DEFAULT '0'");
 	  	if (version_compare($this->status, '4.0', '<') ) { //updating dashboards to store the namespaces.
 	  		$basis->DataBase->exec ("ALTER TABLE ".TABLE_USERS_PROFILES." CHANGE dashboard_id dashboard_id VARCHAR( 255 ) NOT NULL DEFAULT ''");
 	  		$sql = $basis->DataBase->prepare("SELECT * FROM ".TABLE_USERS_PROFILES." WHERE module_id <> '' ");
@@ -366,7 +366,9 @@ class admin extends \core\classes\admin {
 		// load init functions for each module and execute
 		foreach ($basis->classes as $key => $module_class) $module_class->should_update($basis);
 		if (defined('TABLE_CONTACTS')) {
-			$dept = $basis->DataBase->query("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result['account_id']);
+			$sql = $basis->DataBase->prepare("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result['account_id']);
+			$sql->execute();
+			$dept = $sql->fetch(\PDO::FETCH_LAZY);
 			$_SESSION['department'] = $dept['dept_rep_id'];
 		}
 		gen_add_audit_log(TEXT_USER_LOGIN . " -> id: {$_SESSION['admin_id']} name: {$_SESSION['display_name']}");
@@ -398,7 +400,7 @@ class admin extends \core\classes\admin {
 	function LoadMainPage (\core\classes\basis &$basis){
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$basis->cInfo->menu_id  =  isset($basis->cInfo->mID) ? $basis->cInfo->mID : 'index'; // default to index unless heading is passed
-		$sql = $basis->DataBase->prepare("SELECT * FROM ".TABLE_USERS_PROFILES." WHERE user_id = '{$_SESSION['admin_id']}' and menu_id = '{$basis->cInfo->menu_id}' ORDER BY column_id, row_id");
+		$sql = $basis->DataBase->prepare("SELECT dashboard_id, id, user_id, menu_id, column_id, row_id, params FROM ".TABLE_USERS_PROFILES." WHERE user_id = '{$_SESSION['admin_id']}' and menu_id = '{$basis->cInfo->menu_id}' ORDER BY column_id, row_id");
 		$sql->execute();
 		while ($result = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)) {
 			$basis->cInfo->cp_boxes[] = $result;
@@ -470,7 +472,7 @@ class admin extends \core\classes\admin {
 	 * @param \core\classes\basis $basis
 	 * @throws \core\classes\userException
 	 */
-	function LoadUsersPage (\core\classes\basis &$basis){
+	function LoadUsersPage (\core\classes\basis &$basis){ //@todo
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$basis->cInfo->menu_id  =  isset($basis->cInfo->mID) ? $basis->cInfo->mID : 'index'; // default to index unless heading is passed
 		$basis->page_title 	= TEXT_USERS;
@@ -505,7 +507,7 @@ class admin extends \core\classes\admin {
 		$sql->execute();
 		$sql->rowCount();
 		$result = $sql->fetch(\PDO::FETCH_LAZY);
-		$query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
+		$query_result = $basis->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 		$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 		history_save('users');
 	}

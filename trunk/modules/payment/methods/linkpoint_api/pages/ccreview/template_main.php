@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -17,12 +17,12 @@
 //  Initially Written By: Harry Lu @ 2009/08/01
 //  Path: /modules/payment/methods/linkpoint/pages/ccreview/template_main.php
 //
-	
+
 // start the form
 echo html_form('cc_view', FILENAME_DEFAULT, gen_get_all_get_params(array('action'))) . chr(10);
 
 // include hidden fields
-echo html_hidden_field('action', '') . chr(10);	
+echo html_hidden_field('action', '') . chr(10);
 
 // customize the toolbar actions
 $toolbar->icon_list['cancel']['params'] = 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, '', 'SSL') . '\'"';
@@ -36,9 +36,9 @@ if (count($extra_toolbar_buttons) > 0) {
 	foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 }
 
-// add the help file index and build the toolbar	
+// add the help file index and build the toolbar
 $toolbar->search_period = $acct_period;
-echo $toolbar->build_toolbar($add_search = true, $add_periods = true); 
+echo $toolbar->build($add_search = true, $add_periods = true);
 
 // Build the page
 ?>
@@ -48,7 +48,7 @@ echo $toolbar->build_toolbar($add_search = true, $add_periods = true);
 </div>
 <table>
   <tr valign="top"><th><?php echo $list_header; ?></th></tr>
-<?php 
+<?php
   $odd = true;
   while (!$customers->EOF) { ?>
          <tr class="<?php echo $odd?'odd':'even'; ?>">
@@ -65,7 +65,7 @@ echo $toolbar->build_toolbar($add_search = true, $add_periods = true);
                   <?php echo 'This Server Time: <strong>' . $customers->fields['date_added'] . '</strong>'; ?>
                 </td>
                 <td align="right" style="color:red;">
-                  <?php echo $currencies->format($customers->fields['chargetotal']); ?>
+                  <?php echo $admin->currencies->format($customers->fields['chargetotal']); ?>
                 </td>
                 <td align="center">
                   <?php echo $customers->fields['first_date']; ?>

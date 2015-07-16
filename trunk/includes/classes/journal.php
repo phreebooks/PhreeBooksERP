@@ -26,7 +26,7 @@ class journal {
 	public function __construct( $id = 0, $verbose=true) {
 		global $admin;
 		if ($id != 0) {
-			$result = $admin->DataBase->query("select * from " . TABLE_JOURNAL_MAIN . " where id = $id");
+			$result = $admin->DataBase->query("SELECT * FROM " . TABLE_JOURNAL_MAIN . " WHERE id = $id");
 			// make sure we have a record or die (there's a problem that needs to be fixed)
 		  	if ($result->rowCount() == 0) throw new \core\classes\userException(TEXT_DIED_TRYING_TO_BUILD_A_JOURNAL_ENTRY_WITH_ID . ' = ' . $id);
 		  	foreach ($result->fields as $key => $value) $this->$key = $value;

@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreepos/custom/classes/pos_builder.php
 //
-
+namespace phreepos\classes;
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 
 class pos_builder {
@@ -24,17 +24,17 @@ class pos_builder {
 	public $taxes    		= array();
 	public $payment_rows	= array();
 	public $line_items		= array();
-	
+
   function __construct() {
 	$taxes = ord_calculate_tax_drop_down('c');
 	foreach ($taxes as $rate) $this->taxes[$rate['id']] = $rate['rate']/100;
   }
 
   function load_query_results($tableKey = 'id', $tableValue = 0) {
-	global $db, $report, $FieldListings;
-	if (!$tableValue) return false;
+	global $admin, $report, $FieldListings;
+	if (!$tableValue) throw new \core\classes\userException("tableValue is empty");
 	$sql = "select * from " . TABLE_JOURNAL_MAIN . " where id = " . $tableValue;
-	$result = $db->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	while (list($key, $value) = each($result->fields)) $this->$key = db_prepare_input($value);
 	$this->load_item_details($this->id);
 	$this->load_payment_details($this->id);
@@ -42,7 +42,7 @@ class pos_builder {
 	// convert particular values indexed by id to common name
 	if ($this->rep_id) {
 	  $sql = "select short_name, contact_first, contact_last from " . TABLE_CONTACTS . " where id = " . $this->rep_id;
-	  $result = $db->Execute($sql);
+	  $result = $admin->DataBase->query($sql);
 	  $this->rep_id   = $result->fields['short_name'] ;
 	  $this->rep_name = $result->fields['contact_first'] . ' ' . $result->fields['contact_last'];
 	} else {
@@ -112,12 +112,12 @@ class pos_builder {
   }
 
   function load_item_details($id) {
-	global $db, $currencies;
+	global $admin;
 	// fetch the sales order and build the item list
 	$this->invoice_subtotal = 0;
 	$tax_list = array();
 	$sql = "select * from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $id;
-	$result = $db->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	while (!$result->EOF) {
 	  $index    = ($result->fields['so_po_item_ref_id']) ? $result->fields['so_po_item_ref_id'] : $result->fields['id'];
 	  $price    = $result->fields['credit_amount'] + $result->fields['debit_amount'];
@@ -127,7 +127,7 @@ class pos_builder {
 	  	case 'por':
 			$this->line_items[$index]['invoice_full_price']  = $result->fields['full_price'];
 			$this->line_items[$index]['invoice_unit_price']  = $result->fields['qty'] ? ($price / $result->fields['qty']) : 0;
-			if ($result->fields['full_price'] != 0 && $this->line_items[$index]['invoice_unit_price'] < $result->fields['full_price']){ 
+			if ($result->fields['full_price'] != 0 && $this->line_items[$index]['invoice_unit_price'] < $result->fields['full_price']){
 				$discount    = round(-(1-($price / $result->fields['qty']) / $result->fields['full_price']) * 100,1) .'%';
 			}else{
 				$discount    = '' ;
@@ -144,7 +144,7 @@ class pos_builder {
 			$this->inv_subtotal_w_tax += (1 + $line_tax) * $price;
 			break;
 	  	case 'tax':
-			$tax_list[]           = $result->fields['description'] . ' - ' . $currencies->format_full($price);
+			$tax_list[]           = $result->fields['description'] . ' - ' . $admin->currencies->format_full($price);
 			break;
 	  	case 'dsc':
 	  		$this->discount       = $price;
@@ -160,15 +160,15 @@ class pos_builder {
   }
 
   function load_account_details($id) {
-	global $db;
+	global $admin;
 	$sql = "select * from " . TABLE_CONTACTS . " where id = " . $id;
-	$result = $db->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	$this->short_name     = $result->fields['short_name'];
 	$this->account_number = $result->fields['account_number'];
 	$this->gov_id_number  = $result->fields['gov_id_number'];
 	// pull the billing and shipping addresses
 	$sql = "select * from " . TABLE_ADDRESS_BOOK . " where ref_id = " . $id;
-	$result = $db->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	while (!$result->EOF) {
 	  $type = substr($result->fields['type'], 1, 1);
 	  switch ($type) {
@@ -188,9 +188,9 @@ class pos_builder {
   }
 
   function load_payment_details($id) {
-	global $db;
+	global $admin;
 	$sql = "select * from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $id . " and gl_type in ('pmt', 'chk')";
-	$result = $db->Execute($sql);
+	$result = $admin->DataBase->query($sql);
 	$this->payment_rows = array();
 	while (!$result->EOF) {
 	  // keep all payments in an array

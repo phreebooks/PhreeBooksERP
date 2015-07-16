@@ -1,7 +1,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -21,6 +21,7 @@ var ship_add = new Array(0);
 var force_clear = false;
 var custCreditLimit = '0';
 //var default_sales_tax = -1; // set in js_include.php
+var products = new Array();
 
 function ClearForm() {
   var numRows = 0;
@@ -136,7 +137,7 @@ function ajaxOrderData(cID, oID, jID, open_order, ship_only) {
     url: 'index.php?module=phreebooks&page=ajax&op=load_order&cID='+cID+'&oID='+oID+'&jID='+jID+'&so_po='+open_so_po+'&ship_only='+only_ship,
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-      alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     },
 	success: fillOrderData
   });
@@ -364,7 +365,7 @@ function AccountList(override) {
 	  url: 'index.php?module=phreebooks&page=ajax&op=load_searches&jID='+journalID+'&type='+account_type+'&guess='+guess,
 	  dataType: ($.browser.msie) ? "text" : "xml",
 	  error: function(XMLHttpRequest, textStatus, errorThrown) {
-	    alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+		  $.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 	  },
 	  success: AccountListResp
     });
@@ -403,11 +404,11 @@ function DropShipList(currObj) {
 }
 
 function OpenOrdrList(currObj) {
-  window.open("index.php?module=phreebooks&page=popup_orders&jID="+journalID,"search_po","width=700px,height=550px,resizable=1,scrollbars=1,top=150,left=200");
+	window.open("index.php?module=phreebooks&page=popup_orders&jID="+journalID,"search_po","width=700px,height=550px,resizable=1,scrollbars=1,top=150,left=200");
 }
 
 function OpenRecurList(currObj) {
-  window.open("index.php?module=phreebooks&page=popup_recur&jID="+journalID,"recur","width=400px,height=300px,resizable=1,scrollbars=1,top=150,left=200");
+	window.open("index.php?module=phreebooks&page=popup_recur&jID="+journalID,"recur","width=400px,height=300px,resizable=1,scrollbars=1,top=150,left=200");
 }
 
 function InventoryList(rowCnt) {
@@ -445,7 +446,7 @@ function convertQuote() {
   if (id != '') {
 	window.open("index.php?module=phreebooks&page=popup_convert&oID="+id,"popup_convert","width=500px,height=300px,resizable=1,scrollbars=1,top=150,left=200");
   } else {
-    alert(cannot_convert_quote);
+	  $.messager.alert('error',cannot_convert_quote,'error');
   }
 }
 
@@ -454,7 +455,7 @@ function convertSO() {
   if (id != '') {
 	window.open("index.php?module=phreebooks&page=popup_convert_po&oID="+id,"popup_convert_po","width=500px,height=300px,resizable=1,scrollbars=1,top=150,left=200");
   } else {
-    alert(cannot_convert_so);
+	  $.messager.alert('error',cannot_convert_so,'error');
   }
 }
 
@@ -463,17 +464,26 @@ function serialList(id) {
 		default: // for purchases
 			var newChoice = prompt(serial_num_prompt, $('#'+id).val());
 			$('#'+id).val(newChoice);
-			break;
-		case  '7':
+			break; //@todo replace promt
 		case  '9':
 		case '10':
 		case '12':
+		case '13':
 			var curDef  = $("#"+id).val();
 			var rowID   = id.replace("serial_", "");
 			var sku     = $("#sku_"+rowID).val();
 			var storeID = $("#store_id").val();
 			window.open("index.php?module=inventory&page=popup_serial&def="+curDef+"&sku="+sku+"&rowID="+rowID+"&storeID="+storeID,"serialize","width=700px,height=550px,resizable=1,scrollbars=1,top=150,left=200");
 			break;
+		default: // for purchases
+			var choice    = document.getElementById(rowID).value;
+		  	$.messager.prompt(text_serial_number, serial_num_prompt, function(newChoice){
+				if (newChoice){
+					$(id).val(newChoice);
+				}
+				return false;
+			});
+			$('.messager-input').val(choice).focus();
 	}
 }
 
@@ -584,6 +594,30 @@ function copyAddress() {
 		}
 	}
 	document.getElementById('ship_country_code').selectedIndex = document.getElementById('bill_country_code').selectedIndex;
+}
+
+function Product(id, sku, desc, qty, pstd, proj, price, acct, tax, so_po_item_ref_id, weight, stock, inactive, lead, serial, full, desc, purch_package_quantity, total){
+	this.id               		= id;
+	this.sku               		= sku
+	this.desc              		= desc;
+	this.qty               		= qty;
+	this.pstd              		= pstd;
+	this.proj              		= proj;
+	this.price             		= price;
+	this.acct              		= acct;
+	this.tax		       		= tax;
+// Hidden fields
+	this.so_po_item_ref_id 		= so_po_item_ref_id;
+	this.weight           		= weight;
+	this.stock             		= stock;
+	this.inactive          		= inactive;
+	this.lead              		= lead;
+	this.serial            		= serial;
+	this.full              		= full;
+	this.disc   	    		= disc;
+	this.purch_package_quantity	= purch_package_quantity;
+// End hidden fields
+	this.total            		= total;
 }
 
 function addInvRow() {
@@ -782,7 +816,7 @@ function removeInvRow(index) {
 		document.getElementById('purch_package_quantity_'+i).value=document.getElementById('purch_package_quantity_'+(i+1)).value;
 // End hidden fields
 	document.getElementById('total_'+i).value             		= document.getElementById('total_'+(i+1)).value;
-	document.getElementById('sku_'+i).style.color = (document.getElementById('sku_'+i).value == text_search) ? inactive_text_color : document.getElementById('sku_'+(i+1)).style.color;
+	document.getElementById('sku_'+i).style.color         		= (document.getElementById('sku_'+i).value == text_search) ? inactive_text_color : '';
   }
   document.getElementById('item_table').deleteRow(-1);
   if (single_line_list != '1') document.getElementById('item_table').deleteRow(-1);
@@ -840,7 +874,7 @@ function updateRowTotal(rowCnt, useAjax) {
 			  url: 'index.php?module=inventory&page=ajax&op=inv_details&fID=skuPrice&cID='+bill_acct_id+'&sku='+sku+'&qty='+qty+'&rID='+rowCnt,
 			  dataType: ($.browser.msie) ? "text" : "xml",
 			  error: function(XMLHttpRequest, textStatus, errorThrown) {
-			    alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+				  $.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 			  },
 			  success: processSkuPrice
 		    });
@@ -1029,7 +1063,7 @@ function checkOverride () {
 	url: 'index.php?module=phreedom&page=ajax&op=validate&u='+user+'&p='+pass+'&level=4',
 	dataType: ($.browser.msie) ? "text" : "xml",
 	error: function(XMLHttpRequest, textStatus, errorThrown) {
-	  alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+		$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 	},
 	success: clearOverride
   });
@@ -1040,7 +1074,7 @@ function clearOverride(sXml) {
   if (!xml) return;
   var result = $(xml).find("result").text();
   if (result == 'validated') {
-	$('#override_order').dialog('close');
+	$('#override_order').window('close');
     if (document.getElementById('tb_icon_save'))          document.getElementById('tb_icon_save').style.visibility          = "";
     if (document.getElementById('tb_icon_print'))         document.getElementById('tb_icon_print').style.visibility         = "";
     if (document.getElementById('tb_icon_post_previous')) document.getElementById('tb_icon_post_previous').style.visibility = "";
@@ -1071,7 +1105,7 @@ function updateDesc(rowID) {
  // this function not used - it sets the chart of accounts description if required by the form
 }
 
-function buildFreightDropdown() {
+function buildFreightDropdown() {//@todo
   // fetch the selection
   if (!freightCarriers) return;
   var selectedCarrier = document.getElementById('ship_carrier').value;
@@ -1207,7 +1241,7 @@ function loadSkuDetails(iID, rowCnt) {
 		url: 'index.php?module=inventory&page=ajax&op=inv_details&fID=skuDetails&bID='+bID+'&cID='+cID+'&qty='+qty+'&iID='+iID+'&sku='+sku+'&rID='+rowCnt+'&jID='+journalID,
 		dataType: ($.browser.msie) ? "text" : "xml",
 		error: function(XMLHttpRequest, textStatus, errorThrown) {
-			alert ("Ajax ErrorThrown: " + errorThrown + "\nTextStatus: " + textStatus + "\nError: " + XMLHttpRequest.responseText);
+			$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     	},
     	success: fillInventory
 	});
@@ -1253,11 +1287,11 @@ function fillInventory(sXml) {
 	    document.getElementById('desc_'  +rowCnt).value   = $(xml).find("description_short").text();
 	  }
 	  if(journalID == 4){
-		  if ($(xml).find("quantity_on_order").text() >= 0) {
-			  document.getElementById('sku_'+rowCnt).style.backgroundColor = 'Yellow';
+		  if ($(xml).find("quantity_on_order").text() != 0) {
+			  document.getElementById('sku_'+rowCnt).style.backgroundColor = 'MediumOrchid';
 			  document.getElementById('sku_'+rowCnt).title = ItemIsAlreadyOnOrder;
-		  }else if($(xml).find("branch_qty_in_stock").text() <= 0){
-			  document.getElementById('sku_'+rowCnt).style.backgroundColor = 'Green';
+		  }else if($(xml).find("branch_qty_in_stock").text() != 0){
+			  document.getElementById('sku_'+rowCnt).style.backgroundColor = 'Orange';
 			  document.getElementById('sku_'+rowCnt).title = ItemIsOnHand;
 		  }else if($(xml).find("inactive").text() == 1) {
 			  document.getElementById('sku_'+rowCnt).style.backgroundColor = 'pink';
@@ -1280,7 +1314,7 @@ function fillInventory(sXml) {
 	    document.getElementById('desc_'  +rowCnt).value   = $(xml).find("description_short").text();
 	  }
 	  if(journalID == 6){
-		  if($(xml).find("quantity_on_sales_order").text() >= 0){
+		  if($(xml).find("quantity_on_sales_order").text() != 0){
 			  document.getElementById('sku_'+rowCnt).style.backgroundColor = 'Aquamarine';
 			  document.getElementById('sku_'+rowCnt).title = SalesOrderForItem;
 		  }else if($(xml).find("inactive").text() == 1) {
@@ -1306,7 +1340,7 @@ function fillInventory(sXml) {
 		  if($(xml).find("inactive").text() == 1 && $(xml).find("branch_qty_in_stock").text() == 0) {
 			  document.getElementById('sku_'+rowCnt).style.backgroundColor = 'pink';
 			  document.getElementById('sku_'+rowCnt).title = ItemIsOutOfStockAndInactive;
-		  }else if($(xml).find("branch_qty_in_stock").text() == 0 && $(xml).find("quantity_on_order").text() >= 0) {
+		  }else if($(xml).find("branch_qty_in_stock").text() == 0 && $(xml).find("quantity_on_order").text() != 0) {
 			  document.getElementById('sku_'+rowCnt).style.backgroundColor = 'Yellow';
 			  document.getElementById('sku_'+rowCnt).title = ItemIsOnOrder;
 		  }else if($(xml).find("branch_qty_in_stock").text() == 0) {
@@ -1345,7 +1379,7 @@ function fillInventory(sXml) {
   $(xml).find("stock_note").each(function() {
 	text += $(this).find("text_line").text() + "\n";
   });
-  if (text) alert(text);
+  if (text) $.messager.alert('Info',text,'info');
   document.getElementById('qty_'  +rowCnt).addEventListener("change", function(){ updateRowTotal(rowCnt, true);});
   document.getElementById('pstd_' +rowCnt).addEventListener("change", function(){ updateRowTotal(rowCnt, true);});
 }
@@ -1394,7 +1428,7 @@ function PreProcessLowStock() {
   }
   var acct   = document.getElementById('bill_acct_id').value;
   if (!acct){
-    alert(lowStockNoVendor);
+	$.messager.alert('error',lowStockNoVendor,'error');
     return;
   }
   var store  = document.getElementById('store_id').value;
@@ -1410,7 +1444,7 @@ function PreProcessLowStock() {
 	url: 'index.php?module=phreebooks&page=ajax&op=low_stock&cID='+acct+'&sID='+store+'&rID='+rowCnt,
 	dataType: ($.browser.msie) ? "text" : "xml",
 	error: function(XMLHttpRequest, textStatus, errorThrown) {
-	  alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+		$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 	},
 	success: PostProcessLowStock
   });

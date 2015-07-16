@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -23,13 +23,13 @@
 // Include translations here as well.
 var securityLevel    = <?php echo $security_level; ?>;
 var text_search      = '<?php echo TEXT_SEARCH; ?>';
-var ItemIsInactive	 = '<?php echo ITEM_IS_INACTIVE; ?>';
+var ItemIsInactive	 = '<?php echo TEXT_ITEM_IS_INACTIVE; ?>';
 var serial_num_prompt= '<?php echo ORD_JS_SERIAL_NUM_PROMPT; ?>';
 
 <?php echo js_calendar_init($cal_adj); ?>
 
 function init() {
-<?php if ($_REQUEST['action'] == 'edit') echo '  EditAdjustment(' . $oID . ')'; ?>
+<?php if ($_REQUEST['action'] == 'edit') echo " EditAdjustment({$oID})"; ?>
 }
 
 function check_form() {
@@ -55,9 +55,15 @@ function InventoryList(rowCnt) {
 function serialList(id) {
 	var rowID= id.replace("serial_", "");
 	var qty  = $("#qty_"+rowID).val();
+	var choice    = $('#'+id).val();
 	if (qty == 1) {
-		var newChoice = prompt(serial_num_prompt, $('#'+id).val());
-		$('#'+id).val(newChoice);
+		$.messager.prompt('<?php echo TEXT_SERIAL_NUMBER?>', serial_num_prompt, function(newChoice){
+			if (newChoice){
+				$('#'+id).val(newChoice);
+			}
+			return false;
+		});
+		$('.messager-input').val(choice).focus();
 	} else if (qty == -1) {
 		var curDef  = $("#"+id).val();
 		var rowID   = id.replace("serial_", "");
@@ -84,7 +90,7 @@ function loadSkuDetails(iID, rowCnt, strict) {
 	url: 'index.php?module=inventory&page=ajax&op=inv_details&iID='+iID+'&sku='+sku+'&bID='+bID+'&rID='+rowCnt+'&strict='+strict,
 	dataType: ($.browser.msie) ? "text" : "xml",
 	error: function(XMLHttpRequest, textStatus, errorThrown) {
-	  alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+		$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
 	},
 	success: processSkuStock
   });
@@ -186,6 +192,7 @@ function removeInvRow(delRowCnt) {
   for (var i=delRowCnt; i<document.getElementById("item_table").rows.length; i++) {
 	document.getElementById('sku_'+i).value      = document.getElementById('sku_'+(i+1)).value;
 	document.getElementById('imgSerial_'+i).style.display = $('#imgSerial_'+(i+1)).css('display') == 'none' ? 'none' : '';
+	document.getElementById('imgSerial_'+i).style.display = $('#imgSerial_'+(i+1)).css('display') == 'none' ? 'none' : '';
 // Hidden fields
 	document.getElementById('serial_'+i).value   = document.getElementById('serial_'+(i+1)).value;
 	document.getElementById('acct_'+i).value     = document.getElementById('acct_'+(i+1)).value;
@@ -213,7 +220,7 @@ function EditAdjustment(rID) {
     url: 'index.php?module=phreebooks&page=ajax&op=load_record&rID='+rID,
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
-      alert ("Ajax Error: " + XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown);
+    	$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
     },
 	success: processEditAdjustment
   });
@@ -249,7 +256,7 @@ function processEditAdjustment(sXml) {
 		document.getElementById('price_'+rowCnt).value    = formatCurrency($(this).find("debit_amount").text() / qty);
 		document.getElementById('desc_'+rowCnt).value     = $(this).find("description").text();
 		loadSkuDetails(0, rowCnt,1);
-		rowCnt = addInvRow() - 1;
+		rowCnt = addInvRow();
 	  default:
 	}
   });

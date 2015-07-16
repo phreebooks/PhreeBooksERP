@@ -31,7 +31,7 @@ $coa_types_list = array(
   '6'  => array('id' =>  6, 'text' => TEXT_OTHER_CURRENT_ASSETS,	 				'asset' => true),  // Other Current Assets
   '8'  => array('id' =>  8, 'text' => TEXT_FIXED_ASSETS,							'asset' => true),  // Fixed Assets
   '10' => array('id' => 10, 'text' => TEXT_ACCUMULATED_DEPRECIATION,				'asset' => false), // Accumulated Depreciation
-  '12' => array('id' => 12, 'text' => TEXT_OTHER_ASSETS,							'asset' => true),  // Other Assets 
+  '12' => array('id' => 12, 'text' => TEXT_OTHER_ASSETS,							'asset' => true),  // Other Assets
   '14' => array('id' => 14, 'text' => TEXT_SUSPENSE,								'asset' => true),  // suspense
   '20' => array('id' => 20, 'text' => TEXT_ACCOUNTS_PAYABLE,						'asset' => false), // Accounts Payable
   '22' => array('id' => 22, 'text' => TEXT_OTHER_CURRENT_LIABILITIES,				'asset' => false), // Other Current Liabilities

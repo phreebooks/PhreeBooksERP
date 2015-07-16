@@ -84,10 +84,9 @@ class user {
 
 	/**
 	 * returns the current language and sets it in the Session variable.
-	 * 
 	 */
 
-	final static public function get_language(){		
+	final static public function get_language(){
 		if (isset($_SESSION['language'])) return $_SESSION['language'];
 		if( isset($_REQUEST['language'])) {
 			$_SESSION['language'] = $_REQUEST['language'];

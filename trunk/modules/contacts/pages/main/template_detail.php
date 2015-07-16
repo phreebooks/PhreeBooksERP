@@ -28,11 +28,20 @@ if ($basis->cInfo->action == 'LoadContactsPopUp') {
   $basis->toolbar->icon_list['save']['show']     = false;
 } else {
   $basis->toolbar->icon_list['cancel']['params'] = 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, "action=LoadContactMgrPage&amp;type={$basis->cInfo->contact->type}&amp;list={$basis->cInfo->list}", 'SSL') . '\'"';
-  $basis->toolbar->icon_list['save']['params'] = 'onclick="submitToDo(\'SaveContact\')"';
+  if ((!isset($basis->cInfo->contact->id) && $basis->cInfo->contact->security_level < 2) || ($basis->cInfo->contact->id && $basis->cInfo->contact->security_level < 3)) {
+    $basis->toolbar->icon_list['save']['show']   = false;
+  } else {
+    $basis->toolbar->icon_list['save']['params'] = 'onclick="submitToDo(\'SaveContact\')"';
+  }
 }
 $basis->toolbar->icon_list['open']['show']       = false;
 $basis->toolbar->icon_list['delete']['show']     = false;
 $basis->toolbar->icon_list['print']['show']      = false;
+
+// pull in extra toolbar overrides and additions
+if (count($extra_toolbar_buttons) > 0) {
+  foreach ($extra_toolbar_buttons as $key => $value) $basis->toolbar->icon_list[$key] = $value;
+}
 
 // add the help file index and build the toolbar
 if( !$basis->cInfo->contact->help == '' ) $basis->toolbar->add_help($basis->cInfo->contact->help);
