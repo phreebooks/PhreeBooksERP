@@ -97,22 +97,22 @@ switch ($_REQUEST['action']) {
 		$result->MoveNext();
 	  }
 	}
-	if (count($mains)) { 
+	if (count($mains)) {
 	  // closes if any cash records within the journal main that are reconciled
 	  $db->Execute("update " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
-	    set m.closed = '1' 
-		  where i.reconciled > 0 
-		  and i.gl_account in ('" . implode("','", $gl_accounts) . "') 
+	    set m.closed = '1'
+		  where i.reconciled > 0
+		  and i.gl_account in ('" . implode("','", $gl_accounts) . "')
 		  and m.id in (" . implode(",", $mains) . ")");
 	  // re-opens if any cash records within the journal main that are not reconciled
 	  $db->Execute("update " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
-	    set m.closed = '0' 
-		  where i.reconciled = 0 
-		  and i.gl_account in ('" . implode("','", $gl_accounts) . "') 
+	    set m.closed = '0'
+		  where i.reconciled = 0
+		  and i.gl_account in ('" . implode("','", $gl_accounts) . "')
 		  and m.id in (" . implode(",", $mains) . ")");
 	}
 	$messageStack->add(BNK_RECON_POST_SUCCESS,'success');
-	gen_add_audit_log(BNK_LOG_ACCT_RECON . $period, $gl_account);
+	gen_add_audit_log(TEXT_ACCOUNT_RECONCILIATION . $period, $gl_account);
 	break;
   default:
 }
@@ -124,7 +124,7 @@ $statement_balance = $currencies->format(0);
 // load the payments and deposits that are open
 $fiscal_dates = gen_calculate_fiscal_dates($period);
 $end_date = $fiscal_dates['end_date'];
-$sql = "select i.id, m.post_date, i.debit_amount, i.credit_amount, m.purchase_invoice_id, m.bill_primary_name, i.description, i.reconciled, m.journal_id 
+$sql = "select i.id, m.post_date, i.debit_amount, i.credit_amount, m.purchase_invoice_id, m.bill_primary_name, i.description, i.reconciled, m.journal_id
 	from ".TABLE_JOURNAL_MAIN." m inner join ".TABLE_JOURNAL_ITEM." i on m.id = i.ref_id
 	where i.gl_account = '$gl_account' and (i.reconciled = 0 or i.reconciled > $period) and m.post_date <= '".$fiscal_dates['end_date']."'";
 $result = $db->Execute($sql);
@@ -152,10 +152,10 @@ if ($result->RecordCount() <> 0) { // there are current cleared items in the pre
   $cleared_items     = unserialize($result->fields['cleared_items']);
   // load information from general ledger
   if (count($cleared_items) > 0) {
-//	$sql = "select i.id, m.post_date, i.debit_amount, i.credit_amount, m.purchase_invoice_id, m.bill_primary_name, i.description, m.journal_id 
+//	$sql = "select i.id, m.post_date, i.debit_amount, i.credit_amount, m.purchase_invoice_id, m.bill_primary_name, i.description, m.journal_id
 //		from ".TABLE_JOURNAL_MAIN." m inner join ".TABLE_JOURNAL_ITEM." i on m.id = i.ref_id
 //		where i.gl_account = '$gl_account' and i.id in (".implode(',', $cleared_items).")";
-  	$sql = "select i.id, m.post_date, i.debit_amount, i.credit_amount, m.purchase_invoice_id, m.bill_primary_name, i.description, m.journal_id 
+  	$sql = "select i.id, m.post_date, i.debit_amount, i.credit_amount, m.purchase_invoice_id, m.bill_primary_name, i.description, m.journal_id
 		from ".TABLE_JOURNAL_MAIN." m inner join ".TABLE_JOURNAL_ITEM." i on m.id = i.ref_id
 		where i.gl_account = '$gl_account' and i.reconciled =$period";
 	$result = $db->Execute($sql);
@@ -177,14 +177,14 @@ if ($result->RecordCount() <> 0) { // there are current cleared items in the pre
 		);
 	  }
 	  $result->MoveNext();
-	} 
+	}
   }
 }
 
 // combine by reference number
 $combined_list = array();
 if (is_array($bank_list)) foreach ($bank_list as $id => $value) {
-//	$index = ($value['payment'] ? 'p_' : 'd_') . $value['reference']; // this will separate deposits from payments with the same referenece 
+//	$index = ($value['payment'] ? 'p_' : 'd_') . $value['reference']; // this will separate deposits from payments with the same referenece
 	$index = $value['reference'];
 	if (isset($combined_list[$index])) { // the reference already exists
 		$combined_list[$index]['dep_amount'] += $value['dep_amount'];
@@ -203,7 +203,7 @@ if (is_array($bank_list)) foreach ($bank_list as $id => $value) {
 	}
 	// How about the name=description rather than source for sub-items?
 	$combined_list[$index]['detail'][]  = array(
-		'id'         => $id, 
+		'id'         => $id,
 		'post_date'  => $value['post_date'],
 		//'name'       => $value['name'],
 		//'description'=> $value['description'],
@@ -237,7 +237,7 @@ function my_sort($a, $b) {
 }
 usort($combined_list, "my_sort");
 // load the gl account end of period balance
-$sql = "select beginning_balance + debit_amount - credit_amount as gl_balance 
+$sql = "select beginning_balance + debit_amount - credit_amount as gl_balance
 	from ".TABLE_CHART_OF_ACCOUNTS_HISTORY." where account_id = '$gl_account' and period = $period";
 $result = $db->Execute($sql);
 $gl_balance = $currencies->format($result->fields['gl_balance']);
@@ -245,6 +245,6 @@ $gl_balance = $currencies->format($result->fields['gl_balance']);
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', BOX_BANKING_ACCOUNT_RECONCILIATION);
+define('PAGE_TITLE', TEXT_ACCOUNT_RECONCILIATION);
 
 ?>

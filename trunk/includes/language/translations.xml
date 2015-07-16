@@ -4,7 +4,7 @@
     <en_us>Drive</en_us>
     <es_cr>Unidad de almacenamiento</es_cr>
   </translation>
-  <translation id="ACT_ACT_HISTORY">
+  <translation id="TEXT_ACCOUNT_HISTORY">
     <fr_fr>Historique du compte</fr_fr>
     <bg_bg>История на сметка</bg_bg>
     <en_us>Account History</en_us>
@@ -89,7 +89,7 @@
     <nl_nl>Toevoegen/Bewerk Contact</nl_nl>
     <pt_br>Incluir/Editar Contato</pt_br>
   </translation>
-  <translation id="ACT_CATEGORY_M_ADDRESS">
+  <translation id="TEXT_MAIN_MAILING_ADDRESS">
     <fr_fr>Adresse postale principale</fr_fr>
     <bg_bg>Главен пощенски адрес</bg_bg>
     <en_us>Main Mailing Address</en_us>
@@ -118,7 +118,7 @@
     <nl_nl>Credit Card Betaal Information</nl_nl>
     <pt_br>Informação Pagamento Cartão Crédito</pt_br>
   </translation>
-  <translation id="ACT_CATEGORY_S_ADDRESS">
+  <translation id="TEXT_SHIPPING_ADDRESSES">
     <fr_fr>Adresse de livraison</fr_fr>
     <ru_ru>Адреса доставки</ru_ru>
     <bg_bg>Адрес за доставки</bg_bg>
@@ -814,15 +814,15 @@
     <en_us>Asset Tabs - </en_us>
     <fr_fr>Onglets d'Actif - </fr_fr>
   </translation>
-  <translation id="BANKING_HEADING_RECONCILIATION">
+  <translation id="TEXT_ACCOUNT_RECONCILIATION">
     <fr_fr>Rapprochement de Compte</fr_fr>
     <hu_hu>Számlaegyeztetés</hu_hu>
     <ru_ru>Сверка счетов</ru_ru>
     <bg_bg>Приравняване на сметка</bg_bg>
     <en_us>Account Reconciliation</en_us>
     <es_cr>Reconciliación de cuenta</es_cr>
-    <nl_nl>Rekening Balanseren</nl_nl>
-    <pt_br>Reconciliação Conta</pt_br>
+    <nl_nl>Rekening Verzoening</nl_nl>
+    <pt_br>Conciliação Conta</pt_br>
   </translation>
   <translation id="BANK_IMPORT_DEBIT_CREDIT">
     <en_us>The description when amounts are credited to your account &lt;br&gt; &lt;B&gt; this is for the xml field debit_credit&lt;/B&gt;</en_us>
@@ -869,9 +869,8 @@
   </translation>
   <translation id="BNK_BAD_CASH_ACCOUNT">
     <bg_bg>Имате запис в парична сметка</bg_bg>
-    <en_us>You have an entry in a cash account that shouldn\'t be there.</en_us>
+    <en_us>You have an entry in a cash account that shouldn't be there.</en_us>
     <es_cr>Tiene una transacción en una cuenta de efectivo que no debe estar allí.</es_cr>
-    <id_id>You have an entry in a cash account that shouldn\\\'t be there.</id_id>
     <nl_nl>U heeft een boeking op geen liquide middelen rekening die daar niet thuis hoort.</nl_nl>
     <pt_br>Você tem um lançamento na Conta Caixa que não deveria estar lá.</pt_br>
   </translation>
@@ -925,15 +924,6 @@
     <nl_nl>Factuur #</nl_nl>
     <pt_br>Fatura #</pt_br>
   </translation>
-  <translation id="BNK_LOG_ACCT_RECON">
-    <fr_fr>Rapprochement de Compte</fr_fr>
-    <hu_hu>Számlaegyeztetés</hu_hu>
-    <bg_bg>Приравняване на сметки</bg_bg>
-    <en_us>Account Reconciliation</en_us>
-    <es_cr>Reconciliación de cuentas</es_cr>
-    <nl_nl>Rekening Verzoening</nl_nl>
-    <pt_br>Conciliação Conta</pt_br>
-  </translation>
   <translation id="BNK_NO_GL_ENTRIES">
     <bg_bg>Няма намерени висящи артикули в тази ГСК сметка!</bg_bg>
     <en_us>No outstanding items found in this GL account!</en_us>
@@ -983,16 +973,6 @@
     <es_cr>Administración de módulo de activos</es_cr>
     <id_id>Pengaturan Modul Aset</id_id>
     <nl_nl>Activa Module Admin</nl_nl>
-  </translation>
-  <translation id="BOX_BANKING_ACCOUNT_RECONCILIATION">
-    <hu_hu>Számlaegyeztetés</hu_hu>
-    <ru_ru>Сверка счетов</ru_ru>
-    <bg_bg>Приравняване на сметка</bg_bg>
-    <en_us>Account Reconciliation</en_us>
-    <es_cr>Reconciliación de cuentas</es_cr>
-    <id_id>Account Reconciliation</id_id>
-    <nl_nl>Grootboek Verrekening</nl_nl>
-    <pt_br>Reconciliação Conta</pt_br>
   </translation>
   <translation id="BOX_BANK_IMPORT_ADMIN">
     <en_us>Bank Import Settings</en_us>
@@ -1184,7 +1164,6 @@
   </translation>
   <translation id="CD_00_01_DESC">
     <fr_fr>Cette valeur définit l'exercice comptable courant. FIXÉ PAR LE SYSTÈME.</fr_fr>
-    <ru_ru>This value defines the current accounting period. IT IS SET BY THE SYSTEM.</ru_ru>
     <bg_bg>Указва екранния формат за показване и въвеждане на дати (по подразбиране m/d/Y)</bg_bg>
     <en_us>Sets the display format for displayed and entered dates (default m/d/Y)</en_us>
     <es_cr>Fija el formato para mostrar y digitar fechas (predeterminado m/d/Y)</es_cr>
@@ -1194,7 +1173,6 @@
   </translation>
   <translation id="CD_00_02_DESC">
     <fr_fr>Cette valeur définit la date de début de l'exercice comptable. FIXÉ PAR LE SYSTÈME.</fr_fr>
-    <ru_ru>This value defines the current accounting period start date. IT IS SET BY THE SYSTEM.</ru_ru>
     <bg_bg>Идентифицира разделителния символ</bg_bg>
     <en_us>Identifies the delimiter used to seperate dates (default /). This must match the delimiter use in the Date format above.</en_us>
     <es_cr>Identifica el delimitador a usar para separar fechas (predeterminado /).  Este debe coincidir con el delimitador usado en el formato de fecha arriba.</es_cr>
@@ -1204,7 +1182,6 @@
   </translation>
   <translation id="CD_00_03_DESC">
     <fr_fr>Cette valeur définit la date de fin de l'exercice comptable. FIXÉ PAR LE SYSTÈME.</fr_fr>
-    <ru_ru>This value defines the current accounting period end date. IT IS SET BY THE SYSTEM.</ru_ru>
     <bg_bg>Указва екранния формат за време (по подразбиране m/d/Y h:i:s a). Отнесете се към php.net date функция за опции на формата.</bg_bg>
     <en_us>Sets the display format for formal with time (default m/d/Y h:i:s a). Refer to the php.net date function for format options.</en_us>
     <es_cr>Fija el formato a mostrar para la fecha y hora (predeterminado m/d/Y h:i:s a). Refiérase a la función date en php.net para las posibles opciones de formato.</es_cr>
@@ -1244,11 +1221,9 @@
   </translation>
   <translation id="CD_01_20_DESC">
     <fr_fr>Changer automatiquement de devise lorsque la langue est changée</fr_fr>
-    <ru_ru>Automatically switch to the language\'s currency when it is changed</ru_ru>
     <bg_bg>Автоматично превключване на валутата на избрания език</bg_bg>
-    <en_us>Automatically switch to the language\'s currency when it is changed</en_us>
+    <en_us>Automatically switch to the language's currency when it is changed</en_us>
     <es_cr>Cambie automáticamente a la moneda del idioma predeterminado cuando ésta se modifica</es_cr>
-    <id_id>Automatically switch to the language\\\'s currency when it is changed</id_id>
     <nl_nl>Schakel Automatisch over naar de Taal valuta wanneer de taal veranderd(de valuta behorend bij de taal)</nl_nl>
     <pt_br>Alterar automaticamente para o idioma da moeda quando ela é alterada</pt_br>
   </translation>
@@ -1273,7 +1248,7 @@
     <pt_br>Esta função insere dois campos adicionais nas telas de ordens para entrar um nível de desconto por ordem ou percentual. Se desabilitado</pt_br>
   </translation>
   <translation id="CD_01_52_DESC">
-    <fr_fr>L'activation cette fonctionnalité fera arrondir par PhreeBooks&trade; les taxes calculées par autorité avant l'additon de toutes les autorités applicables. Pour les taux de taxe à une seule autorité</fr_fr>
+    <fr_fr>L'activation cette fonctionnalité fera arrondir par PhreeBooks les taxes calculées par autorité avant l'additon de toutes les autorités applicables. Pour les taux de taxe à une seule autorité</fr_fr>
     <ru_ru>Enabling this feature will cause PhreeBooks to round calculated taxes by authority prior to adding up all applicable authorities. For tax rates with a single authority</ru_ru>
     <bg_bg>Включването на тази опция ще накара PhreeBooks да закръгля изчислените данъци преди да ги добавя един към друг. За данъчни ставки само с един вид данък</bg_bg>
     <en_us>Enabling this feature will cause PhreeBooks to round calculated taxes by authority prior to adding up all applicable authorities. For tax rates with a single authority</en_us>
@@ -1285,7 +1260,7 @@
   <translation id="CD_01_55_DESC">
     <fr_fr>Si positionné sur VRAI</fr_fr>
     <ru_ru>If set to true</ru_ru>
-    <bg_bg>Ако е \"Да\</bg_bg>
+    <bg_bg>Ако е 'Да'</bg_bg>
     <en_us>If set to Yes</en_us>
     <es_cr>Permita la digitación de datos en las pantallas de órdenes por medio de escaneadores de códigos de barras USB y otros.</es_cr>
     <id_id>If set to Yes</id_id>
@@ -1295,7 +1270,7 @@
   <translation id="CD_01_75_DESC">
     <fr_fr>Si positionné sur VRAI</fr_fr>
     <ru_ru>If set to true</ru_ru>
-    <bg_bg>Ако е \"Да\</bg_bg>
+    <bg_bg>Ако е 'Да'</bg_bg>
     <en_us>If set to Yes</en_us>
     <es_cr>Habilite la opción del modo una línea en las pantallas de digitación de órdenes sin mostrar los campos para el precio total y con descuento de volunen.  La pantalla en modo una línea muestra solo números de cuenta y no la descripción como sucede en el modo de doble línea.</es_cr>
     <id_id>If set to Yes</id_id>
@@ -1305,7 +1280,7 @@
   <translation id="CD_02_01_DESC">
     <fr_fr>Compte par défaut des effets à recevoir</fr_fr>
     <ru_ru>Default Accounts Receivable Account</ru_ru>
-    <bg_bg>Сметка Клиенти по подразбиране. Това обикновено е сметка \"Клиенти\".</bg_bg>
+    <bg_bg>Сметка Клиенти по подразбиране. Това обикновено е сметка 'Клиенти'.</bg_bg>
     <en_us>Default Accounts Receivables account. Typically an Accounts Receivable type account.</en_us>
     <es_cr>Cuenta predeterminada de cuentas por cobrar</es_cr>
     <id_id>Default Accounts Receivables account. Typically an Accounts Receivable type account.</id_id>
@@ -1505,7 +1480,7 @@
   <translation id="CD_02_35_DESC">
     <fr_fr>Si défini à true</fr_fr>
     <ru_ru>If set to true</ru_ru>
-    <bg_bg>Ако е \"Да\</bg_bg>
+    <bg_bg>Ако е 'Да'</bg_bg>
     <en_us>If set to Yes</en_us>
     <es_cr>Asigne automáticamente un número de identificación al cliente/proveedor nuevo en el momento de su creación.</es_cr>
     <id_id>If set to Yes</id_id>
@@ -1535,7 +1510,7 @@
   <translation id="CD_03_01_DESC">
     <fr_fr>Compte par défaut pour tous les articles sauf si spécifié dans l'enregistrement individuel de l'article.</fr_fr>
     <ru_ru>The default account for all items unless specified in the individual item record.</ru_ru>
-    <bg_bg>Сметка по подразбиране за получени артикули. Тази сметка може да бъде презаписана при въвеждане на определен артикул. Обикновено това е сметка от тип \"Инвентар\" или \"Разходи\</bg_bg>
+    <bg_bg>Сметка по подразбиране за получени артикули. Тази сметка може да бъде презаписана при въвеждане на определен артикул. Обикновено това е сметка от тип 'Инвентар' или 'Разходи'</bg_bg>
     <en_us>Default account to use for received items. This account can be over written through the individual item record. Typically an Inventory or Expense type account.</en_us>
     <es_cr>Cuenta predeterminada para todos los códigos a no ser que se especifique otra cuenta en la pantalla del código.</es_cr>
     <id_id>Default account to use for received items. This account can be over written through the individual item record. Typically an Inventory or Expense type account.</id_id>
@@ -1545,7 +1520,7 @@
   <translation id="CD_03_02_DESC">
     <fr_fr>Compte par défaut du Grand Livre pour tous les achats sauf si spécifié dans l'enregistrement individuel du fournisseur.</fr_fr>
     <ru_ru>The default account for all purchases unless specified in the individual vendor record.</ru_ru>
-    <bg_bg>Сметка по подразбиране за всички покупки освен ако не е оказано друго при въвеждането на определен доставчик. Обикновено това е сметка от тип \"Доставчици\</bg_bg>
+    <bg_bg>Сметка по подразбиране за всички покупки освен ако не е оказано друго при въвеждането на определен доставчик. Обикновено това е сметка от тип 'Доставчици'</bg_bg>
     <en_us>Default account to use for all purchases unless specified in the individual vendor record. Typically a Accounts Payable type account.</en_us>
     <es_cr>Cuenta Predeterminada para todas las compras a no ser que se especifique otra cuenta en la pantalla del proveedor.</es_cr>
     <id_id>Default account to use for all purchases unless specified in the individual vendor record. Typically a Accounts Payable type account.</id_id>
@@ -1555,7 +1530,7 @@
   <translation id="CD_03_03_DESC">
     <fr_fr>Compte par défaut du Grand Livre recevant les paiements lorsque les factures fournisseurs sont payées.</fr_fr>
     <ru_ru>General ledger account to apply payments to when vendor invoices are paid.</ru_ru>
-    <bg_bg>Сметка по подразбиране за разплащане когато се плащат фактури към доставчици. Обикновено това е сметка от тип \"Пари\</bg_bg>
+    <bg_bg>Сметка по подразбиране за разплащане когато се плащат фактури към доставчици. Обикновено това е сметка от тип 'Пари'</bg_bg>
     <en_us>Default account to use for payments to when vendor invoices are paid. Typically a Cash type account.</en_us>
     <es_cr>Cuenta para aplicar los pagos cuando se pagan las facturas al proveedor.</es_cr>
     <id_id>Default account to use for payments to when vendor invoices are paid. Typically a Cash type account.</id_id>
@@ -1565,10 +1540,9 @@
   <translation id="CD_03_04_DESC">
     <fr_fr>Compte par défaut pour enregistrer les frais de transport des envois fournisseurs</fr_fr>
     <ru_ru>Default account to record freight charges for shipments from vendors</ru_ru>
-    <bg_bg>Сметка по подразбиране за такси за превоз за пратки от доставчици. Обикновено това е сметка от тип \"Разходи\</bg_bg>
+    <bg_bg>Сметка по подразбиране за такси за превоз за пратки от доставчици. Обикновено това е сметка от тип 'Разходи'</bg_bg>
     <en_us>Default account to use for freight charges for shipments from vendors. Typically an Expense type account.</en_us>
     <es_cr>Cuenta predeterminada para los fletes sobre la mercadería comprada a los proveedores</es_cr>
-    <id_id>Default account to use for freight charges for shipments from vendors. Typically an Expense type account.</id_id>
     <nl_nl>De standaard rekening die gebruikt wordt voor porti van ontvangen goederen</nl_nl>
     <pt_br>Conta padrão para utilizar para freight charges for shipments from vendors. Tipicamente uma conta do tipo Despesas.</pt_br>
   </translation>
@@ -1595,7 +1569,7 @@
   <translation id="CD_03_07_DESC">
     <fr_fr>Compte par défaut des autres dettes courantes à utiliser pour les dépôts fournisseurs.</fr_fr>
     <ru_ru>Default Other Current Liabilities account to use for vendor deposits.</ru_ru>
-    <bg_bg>Сметка по подразбиране за депозити на доставчици. Обикновено това е сметка от тип \"Други текущи задължения\".</bg_bg>
+    <bg_bg>Сметка по подразбиране за депозити на доставчици. Обикновено това е сметка от тип 'Други текущи задължения'.</bg_bg>
     <en_us>Default account to use for vendor deposits. Typically an Other Current Liabilities type account.</en_us>
     <es_cr>Cuenta predeterminada de pasivo para usar para los depósitos de proveedores.</es_cr>
     <id_id>Default account to use for vendor deposits. Typically an Other Current Liabilities type account.</id_id>
@@ -1625,10 +1599,9 @@
   <translation id="CD_03_35_DESC">
     <fr_fr>Si défini à true</fr_fr>
     <ru_ru>If set to true</ru_ru>
-    <bg_bg>Ако е \"вярно\</bg_bg>
+    <bg_bg>Ако е 'вярно'</bg_bg>
     <en_us>If set to true</en_us>
     <es_cr>Asigne automáticamente un número de identificación a un nuevo proveedor en el momento de su creación.</es_cr>
-    <id_id>If set to true</id_id>
     <nl_nl>Als ingesteld op waar</nl_nl>
     <pt_br>Se verdadeiro</pt_br>
   </translation>
@@ -1673,7 +1646,7 @@
     <pt_br>Determina a taxa padrão de compras para utilizar quando inserir itens de inventário. ATENÇÃO: Este valor é aplicado ao inventário Auto-Add mas pode ser modificado na tela Inventário =&gt; Manutenção. Os valores de taxas são selecionados da tabela taxas_valores e devem ser especificadas na tela Setup =&gt; Taxas de Compras.</pt_br>
   </translation>
   <translation id="CD_05_55_DESC">
-    <fr_fr>Permet la création automatique des articles en stock dans les écrans de commande.&lt;br /&gt;&lt;br /&gt;UGS sont pas requises dans PhreeBooks&trade; pour les stocks de type non-traçable. Cette fonction permet la création automatique des numéros de référence dans la table inventaire de la base de données. Le type de stockage utilisé sera des articles en stock. Les comptes GL utilisés seront les comptes par défaut et la méthode de coût pour des articles en stock.</fr_fr>
+    <fr_fr>Permet la création automatique des articles en stock dans les écrans de commande.&lt;br /&gt;&lt;br /&gt;UGS sont pas requises dans PhreeBooks pour les stocks de type non-traçable. Cette fonction permet la création automatique des numéros de référence dans la table inventaire de la base de données. Le type de stockage utilisé sera des articles en stock. Les comptes GL utilisés seront les comptes par défaut et la méthode de coût pour des articles en stock.</fr_fr>
     <ru_ru>Allows the automatic creation of inventory items in the order screens.&lt;br /&gt;&lt;br /&gt;SKUs are not required in PhreeBooks for non-trackable inventory types. This feature allows for the automatic creation of SKUs in the inventory database table. The inventory type used will be stock items. The GL accounts used will be the default accounts and costing method for stock items.</ru_ru>
     <bg_bg>Разрешава автоматичното създаване на артикули в инвентара на екраните за поръчки. SKUs не се изискват във PhreeBooks за непроследяем тип инвентар. Това позволява автоматично създаване на SKUs в таблицата за инвентар в БД. Използваният тип инвентар ще бъде стока. ГСК сметките ще бъдат сметките по подразбиране и ценообразуващия метод за стоки.</bg_bg>
     <en_us>Allows the automatic creation of inventory items in the order screens. SKUs are not required in PhreeBooks for non-trackable inventory types. This feature allows for the automatic creation of SKUs in the inventory database table. The inventory type used will be stock items. The GL accounts used will be the default accounts and costing method for stock items.</en_us>
@@ -1723,7 +1696,7 @@
     <pt_br>Quando habilitado</pt_br>
   </translation>
   <translation id="CD_08_03_DESC">
-    <fr_fr>Vérifier automatiquement les mises à jour du logiciel lors de la connexion à PhreeBooks&trade;.</fr_fr>
+    <fr_fr>Vérifier automatiquement les mises à jour du logiciel lors de la connexion à PhreeBooks.</fr_fr>
     <ru_ru>Automatically check for program updates at login to PhreeBooks.</ru_ru>
     <bg_bg>Автоматична проверка за ъпдейти на програмата при логване във PhreeBooks.</bg_bg>
     <en_us>Automatically check for program updates at login to PhreeBooks.</en_us>
@@ -1834,22 +1807,18 @@
   </translation>
   <translation id="CD_12_10_DESC">
     <fr_fr>Adresse e-mail du propriétaire du magasin. Utilisée en "affichage uniquement" pour informer les clients sur la façon de vous contacter.</fr_fr>
-    <ru_ru>Email address of Store Owner.  Used as "display only" when informing customers of how to contact you.</ru_ru>
-    <bg_bg>Email адрес на собственика на склада. Използва се \"само за показване\" когато трябва да се информират клиентите как да се свържат.</bg_bg>
+    <bg_bg>Email адрес на собственика на склада. Използва се 'само за показване' когато трябва да се информират клиентите как да се свържат.</bg_bg>
     <en_us>Email address of Store Owner.  Used as "display only" when informing customers of how to contact you.</en_us>
-    <es_cr>Dirección de correo electrónico de la compañía.  Use \"Solo muestre\" para informarle a los clientes como contactarlo a Usted.</es_cr>
-    <id_id>Email address of Store Owner.  Used as \"display only\" when informing customers of how to contact you.</id_id>
-    <nl_nl>E-mail adres van de eigenaar van de winkel. Gebruikt als \"alleen tonen\" bij het informeren van klanten over hoe contact met u op te nemen.</nl_nl>
-    <pt_br>Endereço email do Proprietário.  Utilizado como \"somente visualização\" quando informando clientes como contactá-lo.</pt_br>
+    <es_cr>Dirección de correo electrónico de la compañía.  Use 'Solo muestre' para informarle a los clientes como contactarlo a Usted.</es_cr>
+    <nl_nl>E-mail adres van de eigenaar van de winkel. Gebruikt als 'alleen tonen' bij het informeren van klanten over hoe contact met u op te nemen.</nl_nl>
+    <pt_br>Endereço email do Proprietário.  Utilizado como 'somente visualização' quando informando clientes como contactá-lo.</pt_br>
   </translation>
   <translation id="CD_12_11_DESC">
     <fr_fr>Adresse depuis laquelle les messages e-mails seront "envoyés" par défaut. Peut être supplantée lors de la composition dans les modules admin.</fr_fr>
-    <ru_ru>Address from which email messages will be "sent" by default. Can be over-ridden at compose-time in admin modules.</ru_ru>
-    <bg_bg>Адрес от който email съобщения ще бъдат  \"изпратени\" по подразбиране. Може да бъде овъррайднат по време на съставянето на съобщението в модула за администрация.</bg_bg>
+    <bg_bg>Адрес от който email съобщения ще бъдат  'изпратени' по подразбиране. Може да бъде овъррайднат по време на съставянето на съобщението в модула за администрация.</bg_bg>
     <en_us>Address from which email messages will be "sent" by default. Can be over-ridden at compose-time in admin modules.</en_us>
-    <es_cr>Dirección predeterminada de dónde los mensajes serán \"enviados\".  Puede ser cambiado a la hora de componer el correo en los módulos admin.</es_cr>
-    <id_id>Address from which email messages will be \"sent\" by default. Can be over-ridden at compose-time in admin modules.</id_id>
-    <nl_nl>Adres waar e-mailberichten standaard \"Vandaan\" verzonden worden. Kan gewijzigd worden in de admin modules tijdens verzending.</nl_nl>
+    <es_cr>Dirección predeterminada de dónde los mensajes serán 'enviados'.  Puede ser cambiado a la hora de componer el correo en los módulos admin.</es_cr>
+    <nl_nl>Adres waar e-mailberichten standaard 'Vandaan' verzonden worden. Kan gewijzigd worden in de admin modules tijdens verzending.</nl_nl>
     <pt_br>Endereço a partir do qual mensagens de email serão enviadas por padrão. Pode ser sobreposto no momento de escrever o email nos módulos de admin.</pt_br>
   </translation>
   <translation id="CD_12_70_DESC">
@@ -1919,7 +1888,7 @@
     <en_us>Determines how to display the general ledger accounts in pull-down menus.&lt;br /&gt;Number - GL Account Number Only.&lt;br /&gt;Description - GL Account Description Only.&lt;br /&gt;Both - Both gl number and name will be displayed.</en_us>
     <es_cr>Preferencia para mostrar las cuentas en las listas plegables:&lt;br /&gt;  Número - solo el número de cuenta.&lt;br /&gt;Descripción - Solo la descripción de cuenta.&lt;br /&gt;Ambos - Muestre ambos</es_cr>
     <id_id>Determines how to display the general ledger accounts in pull-down menus.&lt;br /&gt;Number - GL Account Number Only.&lt;br /&gt;Description - GL Account Description Only.&lt;br /&gt;Both - Both gl number and name will be displayed.</id_id>
-    <nl_nl>Bepaalt hoe het grootboek rekeningen in pull-down menu\'s weer te geven. &lt;br /&gt; Nummer - Alleen het grootboek rekeningnummer. &lt;br /&gt; Omschrijving - Alleen de grootboek omschrijving. &lt;br /&gt; Beide - Zowel het grootboek nummer als de omschrijving zullen worden getoont.</nl_nl>
+    <nl_nl>Bepaalt hoe het grootboek rekeningen in pull-down menu's weer te geven. &lt;br /&gt; Nummer - Alleen het grootboek rekeningnummer. &lt;br /&gt; Omschrijving - Alleen de grootboek omschrijving. &lt;br /&gt; Beide - Zowel het grootboek nummer als de omschrijving zullen worden getoont.</nl_nl>
     <pt_br>Determina como mostrar as contas  em menus pull-down .&lt;br /&gt;Número - somente número da conta.&lt;br /&gt;Descrição - somente descrição conta.&lt;br /&gt;Ambos - número e descrição serão mostrados.</pt_br>
   </translation>
   <translation id="CD_15_01_DESC">
@@ -2170,20 +2139,18 @@
     <nl_nl>Kassa verkopen deze week</nl_nl>
   </translation>
   <translation id="CP_POS_TODAYS_DESCRIPTION">
-    <bg_bg>Lists today\\\'s sales/invoices. Links to reveiw the invoice are also provided.</bg_bg>
-    <en_us>Lists today\'s pos sales.</en_us>
+    <en_us>Lists today's pos sales.</en_us>
     <nl_nl>Lijst met verkopen van vandaag.</nl_nl>
   </translation>
   <translation id="CP_POS_TODAYS_TITLE">
-    <bg_bg>Today\\\'s Pos Sales</bg_bg>
-    <en_us>Today\'s Pos Sales</en_us>
+    <en_us>Today's Pos Sales</en_us>
     <nl_nl>Kassa verkopen vandaag</nl_nl>
   </translation>
   <translation id="CP_PO_STATUS_DESCRIPTION">
     <en_us>Lists purchase orders with current open status. Links to reveiw the purchase order are also provided.</en_us>
     <es_cr>Lista de órdenes de compra pendientes con vínculos para abrirlas.</es_cr>
     <id_id>Daftar pesanan pembelian yang belum selesai.</id_id>
-    <nl_nl>Lijsten met inkooporders met \"open\" status. Links om de kooporder te links zijn aanwezig.</nl_nl>
+    <nl_nl>Lijsten met inkooporders met 'open' status. Links om de kooporder te links zijn aanwezig.</nl_nl>
     <pt_br> Lista ordens de compra com situação atual em aberto. Conexão para rever as ordens de compra.</pt_br>
   </translation>
   <translation id="CP_PO_STATUS_HIDE_FUTURE">
@@ -2232,7 +2199,7 @@
     <pt_br>Vendas Ordens em Aberto</pt_br>
   </translation>
   <translation id="CP_TODAYS_AUDIT_LOG_DESCRIPTION">
-    <en_us>Lists today\'s audit log</en_us>
+    <en_us>Lists today's audit log</en_us>
     <es_cr>Lista de registros de la bitácora de auditoraje de hoy.</es_cr>
     <nl_nl>Auditlog van Vandaag </nl_nl>
     <pt_br>Lista os registros de auditoria de hoje</pt_br>
@@ -2245,51 +2212,47 @@
     <en_us>4</en_us>
   </translation>
   <translation id="CP_TODAYS_AUDIT_LOG_TITLE">
-    <en_us>Today\'s Audit Log</en_us>
+    <en_us>Today's Audit Log</en_us>
     <es_cr>Bitácora de auditoraje de hoy</es_cr>
     <nl_nl>Auditlog Vandaag </nl_nl>
     <pt_br>Registro Auditoria de Hoje</pt_br>
   </translation>
   <translation id="CP_TODAYS_ORDERS_DESCRIPTION">
-    <bg_bg>Lists today\\\'s sales orders. Links to reveiw the sales orders are also provided.</bg_bg>
-    <en_us>Lists today\'s sales orders. Links to reveiw the sales orders are also provided.</en_us>
+    <en_us>Lists today's sales orders. Links to reveiw the sales orders are also provided.</en_us>
     <es_cr>Lista de órdenes de venta de hoy con vínculos para abrirlas.</es_cr>
     <id_id>Perincian pesanan penjualan hari ini.</id_id>
     <nl_nl>Lijst met verkooporders van vandaag. met links om orders te wijzigen.</nl_nl>
     <pt_br>Lista as ordens de venda de hoje. Conexões para rever as ordens de venda.</pt_br>
   </translation>
   <translation id="CP_TODAYS_ORDERS_TITLE">
-    <bg_bg>Today\\\'s Sales Orders</bg_bg>
-    <en_us>Today\'s Sales Orders</en_us>
+    <en_us>Today's Sales Orders</en_us>
     <es_cr>Órdenes de venta de hoy</es_cr>
     <id_id>Pesanan Penjualan hari ini</id_id>
     <nl_nl>Verkooporders van vandaag</nl_nl>
     <pt_br>Ordens de Venda de Hoje</pt_br>
   </translation>
   <translation id="CP_TODAYS_SALES_DESCRIPTION">
-    <bg_bg>Lists today\\\'s sales/invoices. Links to reveiw the invoice are also provided.</bg_bg>
-    <en_us>Lists today\'s sales/invoices. Links to reveiw the invoice are also provided.</en_us>
+    <en_us>Lists today's sales/invoices. Links to reveiw the invoice are also provided.</en_us>
     <es_cr>Lista de ventas del día con vínculos para abrirlas.</es_cr>
     <id_id>Perincian penjualan hari ini.</id_id>
     <nl_nl>Lijst met verkopen / facturen van vandaag. Met links om de facturen te bewerken.</nl_nl>
     <pt_br>Lista as faturas de venda de hoje. Conexão para rever a fatura.</pt_br>
   </translation>
   <translation id="CP_TODAYS_SALES_TITLE">
-    <bg_bg>Today\\\'s Sales</bg_bg>
-    <en_us>Today\'s Sales</en_us>
+    <en_us>Today's Sales</en_us>
     <es_cr>Ventas de hoy</es_cr>
     <id_id>Penjualan hari ini</id_id>
     <nl_nl>Verkopen vandaag</nl_nl>
     <pt_br>Vendas de Hoje</pt_br>
   </translation>
   <translation id="CP_TODAYS_S_QUOTES_DESCRIPTION">
-    <en_us>Lists today\'s sales quotes. Links to review the quotes are also provided.</en_us>
+    <en_us>Lists today's sales quotes. Links to review the quotes are also provided.</en_us>
     <es_cr>Lista de las cotizaciones a clientes de hoy. Las cotizaciones tienen los vínculos para abrilas.</es_cr>
     <id_id>Daftar Penawaran penjualan hari ini.</id_id>
     <pt_br>Lista as cotações de vendas de hoje. Conexão para rever as cotações.</pt_br>
   </translation>
   <translation id="CP_TODAYS_S_QUOTES_TITLE">
-    <en_us>Today\'s Sales Quotes</en_us>
+    <en_us>Today's Sales Quotes</en_us>
     <es_cr>Cotizaciones a clientes de hoy</es_cr>
     <id_id>Penawaran Penjualan hari ini</id_id>
     <pt_br>Cotações de Venda de Hoje</pt_br>
@@ -2321,16 +2284,13 @@
     <bg_bg>Грешка в базата данни: Не мога да се свържа с базата данни!</bg_bg>
     <en_us>Database Error: Could not connect to the Database!</en_us>
     <es_cr>Error de instalación: No se pudo conectar a la base de datos</es_cr>
-    <id_id>Database Error: Could not connect to the Database!</id_id>
     <nl_nl>Installatie Fout: Kon geen verbinding maken met de database</nl_nl>
     <pt_br>Base Dados Erro: Não foi possível conectar com a base de dados!</pt_br>
   </translation>
   <translation id="DEBUG_TRACE_MISSING">
-    <ru_ru>Couldn\\\'t find the trace file. Make sure you capture a trace before trying to download the file!</ru_ru>
     <bg_bg>Не мога да намеря трейс файла. Уверете се че прихващате trace преди да се опитвате да изтеглите файла!</bg_bg>
-    <en_us>Couldn\'t find the trace file. Make sure you capture a trace before trying to download the file!</en_us>
+    <en_us>Couldn't find the trace file. Make sure you capture a trace before trying to download the file!</en_us>
     <es_cr>No se encontró el archivo de comandos ejecutados.  Asegúrese que capture los comandos ejecutados antes de intentar descargar el archivo!</es_cr>
-    <id_id>Couldn\\\'t find the trace file. Make sure you capture a trace before trying to download the file!</id_id>
     <nl_nl>Kon het trace bestand niet vinden. Zorg dat u een trace vastlegt voordat u het bestand download!</nl_nl>
     <pt_br>Não foi possível localizar o arquivo de rastreio. Certifique-se de capturar um rastreio antes de tentar baixar o arquivo!</pt_br>
   </translation>
@@ -2504,7 +2464,7 @@
     <pt_br>Erro: Não há moeda padrão definida. Por favor seleciona em : Empresa -&gt; Adimistração Módulos -&gt; Moedas</pt_br>
   </translation>
   <translation id="ERROR_NO_GL_ACCT_INFO">
-    <fr_fr>Il n\'y a aucune donnée pour l\'exercice fiscal précédent sélectionné !</fr_fr>
+    <fr_fr>Il n'y a aucune donnée pour l'exercice fiscal précédent sélectionné !</fr_fr>
     <bg_bg>Няма данни за избраната предишна фискална година!</bg_bg>
     <en_us>There is no data for the prior fiscal year selected!</en_us>
     <es_cr>¡No hay datos para el año fiscal anterior escogido!</es_cr>
@@ -2575,7 +2535,7 @@
     <bg_bg>Сигурни ли сте</bg_bg>
     <en_us>Are you sure you want to delete this tab?\nTabs cannot be deleted if there is a field within the tab.</en_us>
     <es_cr>¿Está seguro que quiere eliminar esta pestaña?\n Las pestañas no se pueden eliminar si tienen asignado un campo de datos.</es_cr>
-    <id_id>Are you sure you want to delete this tab?\\nTabs cannot be deleted if there is a field within the tab.</id_id>
+    <id_id>Are you sure you want to delete this tab?\nTabs cannot be deleted if there is a field within the tab.</id_id>
     <nl_nl>Weet u zeker dat u deze tabblad te verwijderen? \n Tabbladen kunnen niet worden verwijderd als er een veld gebruik maakt van het tabblad.</nl_nl>
     <pt_br>Tem certeza de que quer remover esta aba?\nAbas não podem ser removidas se há um campo dentro dela.</pt_br>
   </translation>
@@ -2711,7 +2671,7 @@
     <nl_nl>LCB - Een creditnota kan niet worden verwijderd als er sprake is van een betaling toegepast!</nl_nl>
     <pt_br>VMC - Um memo de crédito não pode ser removido se já foi aplicado a um pagamento!</pt_br>
   </translation>
-  <translation id="GEN_ACCOUNT_ID">
+  <translation id="TEXT_ACCOUNT_ID">
     <bg_bg>Сметка ID</bg_bg>
     <en_us>Account ID</en_us>
     <es_cr>Cuenta</es_cr>
@@ -2768,7 +2728,7 @@
   </translation>
   <translation id="GEN_ADM_TOOLS_INVENTORY_DESC">
     <en_us>Your inventory_cogs_owed table currently has %s entries in it. This tool will attempt to re-post all entries in the inventory_cogs_owed table. The inventory_cogs_owed table should not have any entries in it unless the stock levels are negative. If the table has items listed and the stock levels are zero or greater</en_us>
-    <nl_nl>Uw inventory_cogs_owed tabel heeft op dit moment %s regels.&lt;br&gt; Deze tool zal alle regels controleren en opnieuw op slaan. &lt;br&gt;De inventory_cogs_owed tabel zou geen regels moeten bevatten tenzij de voorraad niveau\'s negatief zijn. &lt;br&gt;Als de tabel items bevat en de voorraad niveaus zijn nul of groter dan zal deze tool proberen om de tabel te repareren door het her-opslaan van de journaal posten. &lt;br&gt;Er waren problemen met release R3.6 en ouder. U kunt in een rapport be kijken welke items in uw cogs_owed tabel staan.</nl_nl>
+    <nl_nl>Uw inventory_cogs_owed tabel heeft op dit moment %s regels.&lt;br&gt; Deze tool zal alle regels controleren en opnieuw op slaan. &lt;br&gt;De inventory_cogs_owed tabel zou geen regels moeten bevatten tenzij de voorraad niveau's negatief zijn. &lt;br&gt;Als de tabel items bevat en de voorraad niveaus zijn nul of groter dan zal deze tool proberen om de tabel te repareren door het her-opslaan van de journaal posten. &lt;br&gt;Er waren problemen met release R3.6 en ouder. U kunt in een rapport be kijken welke items in uw cogs_owed tabel staan.</nl_nl>
   </translation>
   <translation id="GEN_ADM_TOOLS_J02">
     <bg_bg>Главен журнал (2)</bg_bg>
@@ -2907,12 +2867,11 @@
     <pt_br>Esta operação valida e corrige os saldos do plano de contas. Se os saldos de balancete e plano de contas não batem</pt_br>
   </translation>
   <translation id="GEN_ADM_TOOLS_REPAIR_CONFIRM">
-    <bg_bg>Сигурни ли сте че желаете да възстановите салдата в ГСК?\\n\\nТРЯБВА ДА ОТПЕЧАТАТЕ ФИНАНСОВИ ОТЧЕТИ И ДА НАПРАВИТЕ АРХИВ НА ФИРМАТА ПРЕДИ ТОВА!</bg_bg>
+    <bg_bg>Сигурни ли сте че желаете да възстановите салдата в ГСК?\n\nТРЯБВА ДА ОТПЕЧАТАТЕ ФИНАНСОВИ ОТЧЕТИ И ДА НАПРАВИТЕ АРХИВ НА ФИРМАТА ПРЕДИ ТОВА!</bg_bg>
     <en_us>Are you sure you want to repair the general ledger balances?\n\nYOU SHOULD PRINT FINANCIAL SATEMENTS AND BACKUP YOUR COMPANY BEFORE DOING THIS!</en_us>
-    <es_cr>¿Está seguro que quiere reparar saldos de cuentas?\\n\\n¡DEBE IMPRIMIR LOS ESTADOS FINANCIEROS Y RESPALDAR EL ARCHIVO DE COMPAÑÍA ANTES DE HACER ESTA OPERACIÓN!</es_cr>
-    <id_id>Are you sure you want to repair the general ledger balances?\\n\\nYOU SHOULD PRINT FINANCIAL SATEMENTS AND BACKUP YOUR COMPANY BEFORE DOING THIS!</id_id>
-    <nl_nl>Weet u zeker dat u de balans van de grootboekrekeningen wilt repareren?\\n\\nHET IS VERSTANDIG OM VERSCHILLENDE RAPPORTEN TE PRINTEN EN UW DATA TE BACK-UPPEN VOORDAT U VERDER GAAT!</nl_nl>
-    <pt_br>Tem certeza de que quer corrigir os saldos da CG?\\n\\nVOCÊ DEVE IMPRIMIR OS RELATÓRIOS FINANCEIROS E FAZER CÓPIA DE SEGURANÇA ANTES!</pt_br>
+    <es_cr>¿Está seguro que quiere reparar saldos de cuentas?\n\n¡DEBE IMPRIMIR LOS ESTADOS FINANCIEROS Y RESPALDAR EL ARCHIVO DE COMPAÑÍA ANTES DE HACER ESTA OPERACIÓN!</es_cr>
+    <nl_nl>Weet u zeker dat u de balans van de grootboekrekeningen wilt repareren?\n\nHET IS VERSTANDIG OM VERSCHILLENDE RAPPORTEN TE PRINTEN EN UW DATA TE BACK-UPPEN VOORDAT U VERDER GAAT!</nl_nl>
+    <pt_br>Tem certeza de que quer corrigir os saldos da CG?\n\nVOCÊ DEVE IMPRIMIR OS RELATÓRIOS FINANCEIROS E FAZER CÓPIA DE SEGURANÇA ANTES!</pt_br>
   </translation>
   <translation id="GEN_ADM_TOOLS_REPAIR_ERROR">
     <bg_bg>Трябва да възстановите салдата . ВНИМАНИЕ: НАПРАВЕТЕ АРХИВ ПРЕДИ ДА ВЪЗСТАНОВИТЕ САЛДАТА В СМЕТКОПЛАНА!</bg_bg>
@@ -2931,12 +2890,12 @@
     <pt_br>Há um erro de saldo no período  %s conta %s valores comparados: %s com: %s</pt_br>
   </translation>
   <translation id="GEN_ADM_TOOLS_REPOST_CONFIRM">
-    <bg_bg>Сигурни ли сте че желаете да презапишете Избраните журнали?\\n\\nТРЯБВА ДА НАПРАВИТЕ АРХИВ НА ФИРМАТА ПРЕДИ ТАЗИ ОПЕРАЦИЯ!</bg_bg>
+    <bg_bg>Сигурни ли сте че желаете да презапишете Избраните журнали?\n\nТРЯБВА ДА НАПРАВИТЕ АРХИВ НА ФИРМАТА ПРЕДИ ТАЗИ ОПЕРАЦИЯ!</bg_bg>
     <en_us>Are you sure you want to re-post the selected journals?\n\nYOU SHOULD BACKUP YOUR COMPANY BEFORE DOING THIS!</en_us>
-    <es_cr>¿Está seguro que quiere modificar los registros seleccionados?\\n\\n¡DEBE RESPALDAR EL ARCHIVO DE LA COMPAÑÍA ANTES DE HACER ESTA OPERACIÓN!</es_cr>
-    <id_id>Are you sure you want to re-post the selected journals?\\n\\nYOU SHOULD BACKUP YOUR COMPANY BEFORE DOING THIS!</id_id>
-    <nl_nl>Weet u zeker dat u de geselecteerde journaalposten opnieuw wilt opslaan?\\n\\nU MOET EEN BACK-UP MAKEN VAN U DATA VOORDAT U VERDER GAAT!</nl_nl>
-    <pt_br>Você tem certeza de que quer reenviar os lançamentos selecionados?\\n\\nVOCÊ DEVE FAZER CÓPIA DE SEGURANÇA DE SEUS DADOS ANTES DE REENVIAR LANÇAMENTOS!</pt_br>
+    <es_cr>¿Está seguro que quiere modificar los registros seleccionados?\n\n¡DEBE RESPALDAR EL ARCHIVO DE LA COMPAÑÍA ANTES DE HACER ESTA OPERACIÓN!</es_cr>
+    <id_id>Are you sure you want to re-post the selected journals?\n\nYOU SHOULD BACKUP YOUR COMPANY BEFORE DOING THIS!</id_id>
+    <nl_nl>Weet u zeker dat u de geselecteerde journaalposten opnieuw wilt opslaan?\n\nU MOET EEN BACK-UP MAKEN VAN U DATA VOORDAT U VERDER GAAT!</nl_nl>
+    <pt_br>Você tem certeza de que quer reenviar os lançamentos selecionados?\n\nVOCÊ DEVE FAZER CÓPIA DE SEGURANÇA DE SEUS DADOS ANTES DE REENVIAR LANÇAMENTOS!</pt_br>
   </translation>
   <translation id="GEN_ADM_TOOLS_REPOST_DESC">
     <bg_bg>&lt;b&gt;НАПРАВЕТЕ АРХИВ НА ДАННИТЕ ПРЕДИ ПРЕЗАПИСВАНЕ НА ЖУРНАЛ!&lt;/b&gt;&lt;br /&gt;Забележа 1: Презаписването на журналите може да отнеме известно време</bg_bg>
@@ -2972,12 +2931,11 @@
     <pt_br>Alterações na sequência podem ser feitas aqui.&lt;br /&gt;ATENÇÃO 1: PhreeBooks não permite sequências duplicadas</pt_br>
   </translation>
   <translation id="GEN_ADM_TOOLS_SET_ENCRYPTION_PW_DESC">
-    <bg_bg>Установяване на шифриращия ключ да се използва ако опцията \\\'Ширфирането включено\\\' е включена. Ако се сетва за пръв път</bg_bg>
-    <en_us>Set the encryption key to use if \'Encryption Enabled\' is turned on. If setting for the first time</en_us>
-    <es_cr>Defina una clave de encriptar a usar si \\\'Habilite Encriptar\\\' ha sido seleccionada.  Si está definiendo por primera vez</es_cr>
-    <id_id>Set the encryption key to use if \\\'Encryption Enabled\\\' is turned on. If setting for the first time</id_id>
-    <nl_nl>zet de versleuteling op \'Versleuteling toegepast\' om hem te gebruiken. Bij de eerste keer zal de oude versleutelings sleutel leeg zijn.</nl_nl>
-    <pt_br>Utilizar a chave de criptografia se \'Criptografia Habilitada\' estiver ligado. Se for a primeira vez</pt_br>
+    <bg_bg>Установяване на шифриращия ключ да се използва ако опцията 'Ширфирането включено' е включена. Ако се сетва за пръв път</bg_bg>
+    <en_us>Set the encryption key to use if 'Encryption Enabled' is turned on. If setting for the first time</en_us>
+    <es_cr>Defina una clave de encriptar a usar si 'Habilite Encriptar' ha sido seleccionada.  Si está definiendo por primera vez</es_cr>
+    <nl_nl>zet de versleuteling op 'Versleuteling toegepast' om hem te gebruiken. Bij de eerste keer zal de oude versleutelings sleutel leeg zijn.</nl_nl>
+    <pt_br>Utilizar a chave de criptografia se 'Criptografia Habilitada' estiver ligado. Se for a primeira vez</pt_br>
   </translation>
   <translation id="GEN_ADM_TOOLS_START_DATE">
     <bg_bg>Начална дата</bg_bg>
@@ -2991,7 +2949,7 @@
     <bg_bg>Административни инструменти</bg_bg>
     <en_us>Administrative Tools and Utilities</en_us>
     <es_cr>Utilitarios y herramientas administrativas</es_cr>
-    <nl_nl>Administratieve Gereedschappen en Programma\'s</nl_nl>
+    <nl_nl>Administratieve Gereedschappen en Programma's</nl_nl>
     <pt_br>Ferramentas Administrativas e Utilitários</pt_br>
   </translation>
   <translation id="GEN_BACKUP_GEN_INFO">
@@ -3119,12 +3077,12 @@
     <pt_br>Usuário administrador (%s)</pt_br>
   </translation>
   <translation id="GEN_LOG_USER_ADD">
-    <hu_hu>Felhasználó karbantartás - Felvett felhasználónév -&gt; </hu_hu>
-    <ru_ru>Управление пользователями - Добавленный пользователь -&gt; </ru_ru>
-    <de_de>User Maintenance - Added Username -&gt; </de_de>
+    <hu_hu>Felhasználó karbantartás - Felvett felhasználónév -%s </hu_hu>
+    <ru_ru>Управление пользователями - Добавленный пользователь -%s </ru_ru>
+    <de_de>User Maintenance - Added Username -%s </de_de>
     <en_us>User Maint - %s</en_us>
     <es_cr>Mantenimiento de usuario - %s</es_cr>
-    <nl_nl>Gebruiker onderhoud - Gebruiker toegevoegd -&gt; </nl_nl>
+    <nl_nl>Gebruiker onderhoud - Gebruiker toegevoegd %s </nl_nl>
     <pt_br>Usuário manutenção - %s</pt_br>
   </translation>
   <translation id="GEN_MODULE_UPDATE_SUCCESS">
@@ -3605,9 +3563,9 @@
     <bg_bg>Сигурни ли сте</bg_bg>
     <en_us>Are you sure you want to delete this account?\nAccounts cannot be deleted if there is a journal entry against the account.</en_us>
     <es_cr>¿Está seguro que quiere borrar esta cuenta?\nLas cuentas no se pueden borrar si están ligadas a transacciones.</es_cr>
-    <id_id>Are you sure you want to delete this account?\\nAccounts cannot be deleted if there is a journal entry against the account.</id_id>
-    <nl_nl>Weet u zeker dat u dit rekeningnummer wil verwijderen?\\nHet kan niet verwijderd worden als er boekingen op dit grootboek nummer gedaan zijn.</nl_nl>
-    <pt_br>Tem certeza de que quer remover esta conta?\\nContas não podem ser removidas se houver lançamentos.</pt_br>
+    <id_id>Are you sure you want to delete this account?\nAccounts cannot be deleted if there is a journal entry against the account.</id_id>
+    <nl_nl>Weet u zeker dat u dit rekeningnummer wil verwijderen?\nHet kan niet verwijderd worden als er boekingen op dit grootboek nummer gedaan zijn.</nl_nl>
+    <pt_br>Tem certeza de que quer remover esta conta?\nContas não podem ser removidas se houver lançamentos.</pt_br>
     <fr_fr>Êtes-vous sûr(e) de vouloir supprimer ce compte ?\nUn compte ne peut être supprimé s'il y a une écriture de journal s'y rapportant.</fr_fr>
     <hu_hu>Biztosan törölni akarod ezt a számlát?\nNem lehet törölni a számlát</hu_hu>
     <ru_ru>Точно хотите удалить этот счет?\nСчет не может быть удален если по нем есть какие либо проводки.</ru_ru>
@@ -3756,13 +3714,12 @@
   </translation>
   <translation id="GL_UTIL_PURGE_DB">
     <fr_fr>Supprimer toutes les écritures de journal (tapez 'purge' dans la boîte texte et appuyez sur le bouton de purge)&lt;br /&gt;</fr_fr>
-    <hu_hu>Összes naplóbejegyzés törlése (írd be \'purge\' a szövegdobozba és nyomd meg a töröl gombot)&lt;br&gt;</hu_hu>
-    <bg_bg>Изтриване на всички записи от журнала (напишете \\\'purge\\\' в полето и натиснете бутона Изтриване)&lt;br /&gt;</bg_bg>
-    <en_us>Delete all Journal Entries (type \'purge\' in the text box and press purge button)&lt;br /&gt;</en_us>
-    <es_cr>Borre todos los registros contables (escriba \'purge\' en la casilla de texto y oprima el botón Purgue registros contables)&lt;br /&gt;</es_cr>
-    <id_id>Delete all Journal Entries (type \\\'purge\\\' in the text box and press purge button)&lt;br /&gt;</id_id>
-    <nl_nl>Verwijder alle journaalposten (type \'purge\' in het tekstvak en druk op purge knop) &lt;br /&gt;</nl_nl>
-    <pt_br>Remover Todos os Lançamentos do Diário (digite \'purge\' na caixa de texto e pressione o botão Remover)&lt;br /&gt;</pt_br>
+    <hu_hu>Összes naplóbejegyzés törlése (írd be 'purge' a szövegdobozba és nyomd meg a töröl gombot)&lt;br&gt;</hu_hu>
+    <bg_bg>Изтриване на всички записи от журнала (напишете 'purge' в полето и натиснете бутона Изтриване)&lt;br /&gt;</bg_bg>
+    <en_us>Delete all Journal Entries (type 'purge' in the text box and press purge button)&lt;br /&gt;</en_us>
+    <es_cr>Borre todos los registros contables (escriba 'purge' en la casilla de texto y oprima el botón Purgue registros contables)&lt;br /&gt;</es_cr>
+    <nl_nl>Verwijder alle journaalposten (type 'purge' in het tekstvak en druk op purge knop) &lt;br /&gt;</nl_nl>
+    <pt_br>Remover Todos os Lançamentos do Diário (digite 'purge' na caixa de texto e pressione o botão Remover)&lt;br /&gt;</pt_br>
   </translation>
   <translation id="GL_UTIL_PURGE_DB_CONFIRM">
     <fr_fr>Êtes-vous sûr(e) de vouloir effacer toutes les écritures de journal ?</fr_fr>
@@ -3955,16 +3912,14 @@
     <ru_ru>Департаменты</ru_ru>
   </translation>
   <translation id="HTML_PARAMS">
-    <hu_hu>dir="ltr" lang="hu</hu_hu>
-    <ru_ru>lang=</ru_ru>
-    <fr_fr>lang="fr-FR" xml:lang="fr-FR</fr_fr>
-    <bg_bg>lang=\"bg-BG\" xml:lang=\"bg-BG\</bg_bg>
-    <de_de>lang="de-DE" xml:lang="de-DE</de_de>
-    <en_us>lang="en-US" xml:lang="en-US</en_us>
-    <es_cr>lang=\"es-CR\" xml:lang=\"es-CR\</es_cr>
-    <id_id>lang=\"id-id\" xml:lang=\"id-id\</id_id>
-    <nl_nl>lang="nl-NL" xml:lang="nl-NL</nl_nl>
-    <pt_br>lang=\"pt-BR\" xml:lang=\"pt-BR\</pt_br>
+    <fr_fr>lang="fr-FR" xml:lang="fr-FR"</fr_fr>
+    <bg_bg>lang="bg-BG" xml:lang="bg-BG"</bg_bg>
+    <de_de>lang="de-DE" xml:lang="de-DE"</de_de>
+    <en_us>lang="en-US" xml:lang="en-US"</en_us>
+    <es_cr>lang="es-CR" xml:lang="es-CR"</es_cr>
+    <id_id>lang="id-id" xml:lang="id-id"</id_id>
+    <nl_nl>lang="nl-NL" xml:lang="nl-NL"</nl_nl>
+    <pt_br>lang="pt-BR" xml:lang="pt-BR"</pt_br>
   </translation>
   <translation id="IMPORT_ORDER_DIRECTIONS">
     <en_us>After a file has been selected</en_us>
@@ -4699,9 +4654,9 @@
     <ru_ru>Сервис</ru_ru>
   </translation>
   <translation id="INV_WHAT_TO_CALCULATE">
-    <en_us>enter 1 to recalculate the margin \nenter 2 to recalculate the sales prices</en_us>
+    <en_us>enter 1 to recalculate the margin \n enter 2 to recalculate the sales prices</en_us>
     <nl_nl>toets een 1 om marge te herberekenen \ntoets een 2 om verkoop prijs te herberekenen</nl_nl>
-    <pt_br>Digite 1 para recalcular a margem \\n Digite 2 para recalcular o preço de venda</pt_br>
+    <pt_br>Digite 1 para recalcular a margem \n Digite 2 para recalcular o preço de venda</pt_br>
   </translation>
   <translation id="INV_XFER_ERROR_NOT_ENOUGH_SKU">
     <bg_bg>Трансфера на инвентарен артикул %s не беше направен</bg_bg>
@@ -4714,13 +4669,11 @@
   </translation>
   <translation id="INV_XFER_ERROR_SAME_STORE_ID">
     <bg_bg>ID-тата на началния склад и дестинацията са едни и същи</bg_bg>
-    <en_us>The source and destination store ID\'s are the same</en_us>
+    <en_us>The source and destination store ID's are the same</en_us>
     <es_cr>La tienda fuente y destino son idénticos. ¡No se realizó el traslado!</es_cr>
     <fr_fr>Les IDs des magasins source et destination sont les mêmes</fr_fr>
-    <id_id>The source and destination store ID\\\'s are the same</id_id>
-    <nl_nl>De winkel ID\'s van de bron en de bestemming zijn gelijk. Daarom is deze wijziging niet opgeslagen!</nl_nl>
+    <nl_nl>De winkel ID's van de bron en de bestemming zijn gelijk. Daarom is deze wijziging niet opgeslagen!</nl_nl>
     <pt_br>As IDs dos locais de origem e destino são iguais</pt_br>
-    <ru_ru>The source and destination store ID\\\'s are the same</ru_ru>
   </translation>
   <translation id="INV_XFER_SUCCESS">
     <bg_bg>Успешно са пренесени %s парчета sku %s</bg_bg>
@@ -4731,15 +4684,15 @@
     <pt_br>Transferência bem sucedida de %s peças do sku %s</pt_br>
   </translation>
   <translation id="JS_ASSY_VALUE_ZERO">
-    <bg_bg>Изисква се не-нулево количество на асембли.\\n</bg_bg>
+    <bg_bg>Изисква се не-нулево количество на асембли.\n</bg_bg>
     <en_us>A non-zero assembly quantity is required.\n</en_us>
-    <es_cr>La cantidad del ensamblaje debe ser diferente de cero.\\n</es_cr>
+    <es_cr>La cantidad del ensamblaje debe ser diferente de cero.\n</es_cr>
     <fr_fr>Une quantité non nulle d'assemblage est nécessaire.\n</fr_fr>
     <hu_hu>Nem 0 összeszerelési mennyiség szükséges.\n</hu_hu>
-    <id_id>A non-zero assembly quantity is required.\\n</id_id>
+    <id_id>A non-zero assembly quantity is required.\n</id_id>
     <nl_nl>Een niet-nul assemblage hoeveelheid vereist is. </nl_nl>
-    <pt_br>Uma quantidade maior que zero de montagem é necessária.\\n</pt_br>
-    <ru_ru>A non-zero assembly quantity is required.\\n</ru_ru>
+    <pt_br>Uma quantidade maior que zero de montagem é necessária.\n</pt_br>
+    <ru_ru>A non-zero assembly quantity is required.\n</ru_ru>
   </translation>
   <translation id="JS_COGS_AUTO_CALC">
     <bg_bg>Забележка: За отрицателни количества</bg_bg>
@@ -4770,13 +4723,13 @@
   </translation>
   <translation id="JS_ERROR">
     <hu_hu>Hiba történt az űrlapod feldolgozása közben!\nKérlek javítsd a következőket:\n\n</hu_hu>
-    <ru_ru>Errors have occurred during the processing of your form!\\nPlease make the following corrections:\\n\\n</ru_ru>
-    <bg_bg>Възникнаха грешки при обработката на вашата форма!\\nМоля направете следните корекции:\\n\\n</bg_bg>
+    <ru_ru>Errors have occurred during the processing of your form!\nPlease make the following corrections:\n\n</ru_ru>
+    <bg_bg>Възникнаха грешки при обработката на вашата форма!\nМоля направете следните корекции:\n\n</bg_bg>
     <en_us>Errors have occurred during the processing of your form!\nPlease make the following corrections:\n\n</en_us>
-    <es_cr>Ocurrieron errores procesando su formulario!\\nHaga las siguientes correcciones:\\n\\n</es_cr>
-    <id_id>Errors have occurred during the processing of your form!\\nPlease make the following corrections:\\n\\n</id_id>
-    <nl_nl>Er heeft zich een fout voor gedaan tijdens het verwerken van het formulier!\\n Voer de volgende wijzigingen uit:\\n\\n</nl_nl>
-    <pt_br>Ocorreram erros durante o processamento de seu formulário!\\nPor favor faça as seguintes correções:\\n\\n</pt_br>
+    <es_cr>Ocurrieron errores procesando su formulario!\nHaga las siguientes correcciones:\n\n</es_cr>
+    <id_id>Errors have occurred during the processing of your form!\nPlease make the following corrections:\n\n</id_id>
+    <nl_nl>Er heeft zich een fout voor gedaan tijdens het verwerken van het formulier!\n Voer de volgende wijzigingen uit:\n\n</nl_nl>
+    <pt_br>Ocorreram erros durante o processamento de seu formulário!\nPor favor faça as seguintes correções:\n\n</pt_br>
   </translation>
   <translation id="JS_INV_TEXT_ASSY_COST">
     <bg_bg>Текущата цена</bg_bg>
@@ -4821,15 +4774,15 @@
     <pt_br>Não há estoque suficiente para montar as quantidades necessárias</pt_br>
   </translation>
   <translation id="JS_SKU_BLANK">
-    <bg_bg>* Новият артикул се нуждае от SKU или UPC код\\n</bg_bg>
+    <bg_bg>* Новият артикул се нуждае от SKU или UPC код\n</bg_bg>
     <en_us>* The new item needs a SKU or UPC Code\n</en_us>
-    <es_cr>* El ítem necesita un código o UPC\\n</es_cr>
+    <es_cr>* El ítem necesita un código o UPC\n</es_cr>
     <fr_fr>* Le nouvel article a besoin d'un code SKU ou UPC\n</fr_fr>
     <hu_hu>* Adj meg cikkszámot vagy univerzális termékkódot az új tételnek\n</hu_hu>
-    <id_id>* The new item needs a SKU or UPC Code\\n</id_id>
+    <id_id>* The new item needs a SKU or UPC Code\n</id_id>
     <nl_nl>* Het nieuw item heeft een Art.nr. of UPC code nodig</nl_nl>
-    <pt_br>* O novo item precisa de um SKU ou código UPC\\n</pt_br>
-    <ru_ru>* The new item needs a SKU or UPC Code\\n</ru_ru>
+    <pt_br>* O novo item precisa de um SKU ou código UPC\n</pt_br>
+    <ru_ru>* The new item needs a SKU or UPC Code\n</ru_ru>
   </translation>
   <translation id="LANGUAGE">
     <hu_hu>Magyar (HU)</hu_hu>
@@ -4935,7 +4888,7 @@
     <nl_nl>Geen voorraad was geselecteerd om up te loaden naar de Magento catalogus. Gezocht naar checkbox veld genaamd  catalog om voorraad te identificeren voor het uploaden.</nl_nl>
   </translation>
   <translation id="MAGENTO_ERROR_NO_PRICE_SHEET">
-    <en_us>Couldn\'t find a default price level for price sheet: </en_us>
+    <en_us>Couldn't find a default price level for price sheet: </en_us>
     <nl_nl>Kon geen standaard prijs niveau op de prijslijst vinden: </nl_nl>
   </translation>
   <translation id="MAGENTO_INCLUDE_IMAGES">
@@ -5274,8 +5227,7 @@
     <pt_br>ATENÇÃO: Problema de segurança hash. Por favor contate o proprietário da loja imediatamente. Sua ordem não foi completamente autorizada.</pt_br>
   </translation>
   <translation id="MODULE_PAYMENT_AUTHORIZENET_TEXT_CC_NUM_REQUIRED_ERROR">
-    <bg_bg>Error: You requested a refund but didn\\\'t enter the last 4 digits of the Credit Card number.</bg_bg>
-    <en_us>Error: You requested a refund but didn\'t enter the last 4 digits of the Credit Card number.</en_us>
+    <en_us>Error: You requested a refund but didn't enter the last 4 digits of the Credit Card number.</en_us>
     <es_cr>Error: Solicitó un reintegro pero no digitó los últimos cuatro dígitos de la tarjeta de crédito.</es_cr>
     <nl_nl>Fout: U verzocht om een teruggaaf</nl_nl>
     <pt_br>Erro: Você solicitou um Estorno mas não digitou os quatro últimos números do cartão de crédito.</pt_br>
@@ -5343,10 +5295,9 @@
     <pt_br>Chave de Transação utilizada para encriptar dados TP&lt;br /&gt;(Veja seu Authorizenet Account-&gt;Security Settings-&gt;API Login ID e Transaction Key para detalhes.)</pt_br>
   </translation>
   <translation id="MODULE_PAYMENT_AUTHORIZENET_USE_CVV_DESC">
-    <bg_bg>Do you want to ask the customer for the card\\\'s CVV number</bg_bg>
-    <en_us>Do you want to ask the customer for the card\'s CVV number</en_us>
+    <en_us>Do you want to ask the customer for the card's CVV number</en_us>
     <es_cr>¿Quiere pedirle el número CVV de la tarjeta al cliente?</es_cr>
-    <nl_nl>Wil u de klant vragen om zijn card\'s CVV nummer</nl_nl>
+    <nl_nl>Wil u de klant vragen om zijn card's CVV nummer</nl_nl>
     <pt_br>Você quer perguntar ao cliente sobre o número CVV do cartão</pt_br>
   </translation>
   <translation id="MODULE_PAYMENT_CC_NO_DUPS">
@@ -5384,8 +5335,7 @@
     <pt_br>* O número do cartão de crédito deve ter pelo menos %s caracteres.</pt_br>
   </translation>
   <translation id="MODULE_PAYMENT_CC_TEXT_JS_CC_OWNER">
-    <bg_bg>* The owner\\\'s name of the credit card must be at least %s characters.</bg_bg>
-    <en_us>* The owner\'s name of the credit card must be at least %s characters.</en_us>
+    <en_us>* The owner's name of the credit card must be at least %s characters.</en_us>
     <es_cr>* El nombre del dueño de la tarjeta de crédito debe ser de al menos %s caracteres.</es_cr>
     <nl_nl>* De eigenaars naam moet minstens %s tekens lang zijn.</nl_nl>
     <pt_br>* O nome do propprietário do cartão de crédito deve ter pelo menos %s caracteres.</pt_br>
@@ -5665,11 +5615,9 @@
     <pt_br>Enter the original Order Number &lt;em&gt;(ie: &lt;strong&gt;5138-i4wcYM&lt;/strong&gt;)&lt;/em&gt; : </pt_br>
   </translation>
   <translation id="MODULE_PAYMENT_LINKPOINT_API_ENTRY_REFUND">
-    <bg_bg>You may refund money to the customer\\\'s original credit card here.</bg_bg>
-    <en_us>You may refund money to the customer\'s original credit card here.</en_us>
+    <en_us>You may refund money to the customer's original credit card here.</en_us>
     <es_cr>Aquí puede reintegrar fondos a la tarjeta de crédito de cliente original.</es_cr>
     <nl_nl>U kunt hier geld terugbetalen aan de oorspronkelijke gebruikte credit card.</nl_nl>
-    <pt_br>You may refund money to the customer\\\'s original credit card here.</pt_br>
   </translation>
   <translation id="MODULE_PAYMENT_LINKPOINT_API_ENTRY_REFUND_AMOUNT_TEXT">
     <bg_bg>Enter the amount you wish to refund</bg_bg>
@@ -5841,11 +5789,9 @@
     <pt_br>Funds Capture initiated. Amount: %s.  Transaction ID: %s - AuthCode: %s</pt_br>
   </translation>
   <translation id="MODULE_PAYMENT_LINKPOINT_API_TEXT_CC_NUM_REQUIRED_ERROR">
-    <bg_bg>Error: You requested a refund but didn\\\'t enter the last 4 digits of the Credit Card number.</bg_bg>
-    <en_us>Error: You requested a refund but didn\'t enter the last 4 digits of the Credit Card number.</en_us>
+    <en_us>Error: You requested a refund but didn't enter the last 4 digits of the Credit Card number.</en_us>
     <es_cr>Error: Solicitó hacer un reintegro pero no digitó los cuatro últimos dígitos del número de la tarjeta de crédito.</es_cr>
     <nl_nl>Fout: U verzocht om een restitutie</nl_nl>
-    <pt_br>Error: You requested a refund but didn\\\'t enter the last 4 digits of the Credit Card number.</pt_br>
   </translation>
   <translation id="MODULE_PAYMENT_LINKPOINT_API_TEXT_DECLINED_AVS_MESSAGE">
     <bg_bg>Invalid Billing Address.  Please re-enter your card information</bg_bg>
@@ -5862,24 +5808,18 @@
     <pt_br>Your card has been declined.  Please re-enter your card information</pt_br>
   </translation>
   <translation id="MODULE_PAYMENT_LINKPOINT_API_TEXT_DESCRIPTION">
-    <bg_bg>&lt;a target=\"_blank\" href=\"https://secure.linkpt.net/lpcentral/servlet/LPCLogin\"&gt;Linkpoint/YourPay Merchant Login&lt;/a&gt;\' . (MODULE_PAYMENT_LINKPOINT_API_TRANSACTION_MODE_RESPONSE != \'LIVE: Production\' ? \'&lt;br /&gt;&lt;br /&gt;&lt;strong&gt;Linkpoint/YourPay API Test Card Numbers:&lt;/strong&gt;&lt;br /&gt;&lt;strong&gt;Visa:&lt;/strong&gt; 4111111111111111&lt;br /&gt;&lt;strong&gt;MasterCard:&lt;/strong&gt; 5419840000000003&lt;br /&gt;&lt;strong&gt;Amex:&lt;/strong&gt; 371111111111111&lt;br /&gt;&lt;strong&gt;Discover:&lt;/strong&gt; 6011111111111111\' : \'\') . \'&lt;br /&gt;</bg_bg>
     <en_us>Accept credit card payments through the LinkPoint/YourPay API payment gateway</en_us>
     <es_cr>Acepte pagos con tarjeta de crédito a través de LinkPoint/YourPay API payment gateway</es_cr>
     <nl_nl>Accepteer credit card betalingen via de LinkPoint / YourPay API betaling gateway</nl_nl>
-    <pt_br>&lt;a target=\"_blank\" href=\"https://secure.linkpt.net/lpcentral/servlet/LPCLogin\"&gt;Linkpoint/YourPay Merchant Login&lt;/a&gt;\' . (MODULE_PAYMENT_LINKPOINT_API_TRANSACTION_MODE_RESPONSE != \'LIVE: Production\' ? \'&lt;br /&gt;&lt;br /&gt;&lt;strong&gt;Linkpoint/YourPay API Test Card Numbers:&lt;/strong&gt;&lt;br /&gt;&lt;strong&gt;Visa:&lt;/strong&gt; 4111111111111111&lt;br /&gt;&lt;strong&gt;MasterCard:&lt;/strong&gt; 5419840000000003&lt;br /&gt;&lt;strong&gt;Amex:&lt;/strong&gt; 371111111111111&lt;br /&gt;&lt;strong&gt;Discover:&lt;/strong&gt; 6011111111111111\' : \'\') . \'&lt;br /&gt;</pt_br>
   </translation>
   <translation id="MODULE_PAYMENT_LINKPOINT_API_TEXT_DUPLICATE_MESSAGE">
-    <bg_bg>You have posted duplicate transaction</bg_bg>
     <en_us>You have posted duplicate transaction</en_us>
     <es_cr>Usted ha tramitado una transacción duplicada.</es_cr>
     <nl_nl>Je hebt dubbele transactie gepost </nl_nl>
-    <pt_br>You have posted duplicate transaction</pt_br>
   </translation>
   <translation id="MODULE_PAYMENT_LINKPOINT_API_TEXT_ERROR_CURL_NOT_FOUND">
-    <bg_bg>CURL functions not found - required for Linkpoint API payment module</bg_bg>
     <en_us>CURL functions not found - required for Linkpoint API payment module</en_us>
     <nl_nl>CURL-functies niet gevonden - die nodig zijn voor LinkPoint API betaling module</nl_nl>
-    <pt_br>CURL functions not found - required for Linkpoint API payment module</pt_br>
   </translation>
   <translation id="MODULE_PAYMENT_LINKPOINT_API_TEXT_FAILURE_MESSAGE">
     <bg_bg>We apologize for the inconvenience</bg_bg>
@@ -5896,11 +5836,11 @@
     <pt_br>We are sorry. There was a system error while processing your card. Your information is safe. Please notify the Store Owner to arrange alternate payment options.</pt_br>
   </translation>
   <translation id="MODULE_PAYMENT_LINKPOINT_API_TEXT_INTRODUCTION">
-    <bg_bg>&lt;a target=\"_blank\" href=\"http://www.zen-cart.com/index.php?main_page=infopages</bg_bg>
+    <bg_bg>&lt;a target="_blank" href="http://www.zen-cart.com/index.php?main_page=infopages</bg_bg>
     <en_us>&lt;a target="_blank" href="http://www.zen-cart.com/index.php?main_page=infopages</en_us>
     <es_cr>&lt;a target="_blank" href="http://www.zen-cart.com/index.php?main_page=infopages</es_cr>
     <nl_nl>&lt;a target="_blank" href="http://www.zen-cart.com/index.php?main_page=infopages</nl_nl>
-    <pt_br>&lt;a target=\"_blank\" href=\"http://www.zen-cart.com/index.php?main_page=infopages</pt_br>
+    <pt_br>&lt;a target="_blank" href="http://www.zen-cart.com/index.php?main_page=infopages</pt_br>
   </translation>
   <translation id="MODULE_PAYMENT_LINKPOINT_API_TEXT_INVALID_CAPTURE_AMOUNT">
     <bg_bg>Error: You requested a capture but need to enter an amount.</bg_bg>
@@ -5917,11 +5857,11 @@
     <pt_br>Error: You requested a refund but entered an invalid amount.</pt_br>
   </translation>
   <translation id="MODULE_PAYMENT_LINKPOINT_API_TEXT_NOT_CONFIGURED">
-    <bg_bg>&lt;b&gt;&nbsp;(NOTE: Module is not configured yet)&lt;/b&gt;</bg_bg>
-    <en_us>&lt;b&gt;&nbsp;(NOTE: Module is not configured yet)&lt;/b&gt;</en_us>
-    <es_cr>&lt;b&gt;&nbsp;(NOTA: El módulo aún no ha sido configurado)&lt;/b&gt;</es_cr>
-    <nl_nl>&lt;b&gt;&nbsp;(OPMERKING: Module is nog niet geconfigureerd)&lt;/b&gt;</nl_nl>
-    <pt_br>&lt;b&gt;&nbsp;(NOTE: Module is not configured yet)&lt;/b&gt;</pt_br>
+    <bg_bg>&lt;b&gt;(NOTE: Module is not configured yet)&lt;/b&gt;</bg_bg>
+    <en_us>&lt;b&gt;(NOTE: Module is not configured yet)&lt;/b&gt;</en_us>
+    <es_cr>&lt;b&gt;(NOTA: El módulo aún no ha sido configurado)&lt;/b&gt;</es_cr>
+    <nl_nl>&lt;b&gt;(OPMERKING: Module is nog niet geconfigureerd)&lt;/b&gt;</nl_nl>
+    <pt_br>&lt;b&gt;(NOTE: Module is not configured yet)&lt;/b&gt;</pt_br>
   </translation>
   <translation id="MODULE_PAYMENT_LINKPOINT_API_TEXT_NO_MATCHING_ORDER_FOUND">
     <bg_bg>Error: Could not find transaction details for the record specified.</bg_bg>
@@ -5938,11 +5878,11 @@
     <pt_br>Order Type:</pt_br>
   </translation>
   <translation id="MODULE_PAYMENT_LINKPOINT_API_TEXT_PEMFILE_MISSING">
-    <bg_bg>&lt;b&gt;&nbsp;The xyzxyz.pem certificate file cannot be found.&lt;/b&gt;</bg_bg>
-    <en_us>&lt;b&gt;&nbsp;The xyzxyz.pem certificate file cannot be found.&lt;/b&gt;</en_us>
-    <es_cr>&lt;b&gt;&nbsp;No se encontró el archivo del certificado xyzxyz.pem.&lt;/b&gt;</es_cr>
-    <nl_nl>&lt;b&gt;&nbsp;De xyzxyz.pem certificaat bestand niet gevonden.&lt;/b&gt;</nl_nl>
-    <pt_br>&lt;b&gt;&nbsp;The xyzxyz.pem certificate file cannot be found.&lt;/b&gt;</pt_br>
+    <bg_bg>&lt;b&gt;The xyzxyz.pem certificate file cannot be found.&lt;/b&gt;</bg_bg>
+    <en_us>&lt;b&gt;The xyzxyz.pem certificate file cannot be found.&lt;/b&gt;</en_us>
+    <es_cr>&lt;b&gt;No se encontró el archivo del certificado xyzxyz.pem.&lt;/b&gt;</es_cr>
+    <nl_nl>&lt;b&gt;De xyzxyz.pem certificaat bestand niet gevonden.&lt;/b&gt;</nl_nl>
+    <pt_br>&lt;b&gt;The xyzxyz.pem certificate file cannot be found.&lt;/b&gt;</pt_br>
   </translation>
   <translation id="MODULE_PAYMENT_LINKPOINT_API_TEXT_REFUND_CONFIRM_CHECK">
     <bg_bg>Check this box to confirm your intent: </bg_bg>
@@ -5966,11 +5906,11 @@
     <pt_br>Refund Initiated. Transaction ID: %s - Order ID: %s</pt_br>
   </translation>
   <translation id="MODULE_PAYMENT_LINKPOINT_API_TEXT_TEST_MODE">
-    <bg_bg>&lt;b&gt;&nbsp;(NOTE: Module is in testing mode)&lt;/b&gt;</bg_bg>
-    <en_us>&lt;b&gt;&nbsp;(NOTE: Module is in testing mode)&lt;/b&gt;</en_us>
-    <es_cr>&lt;b&gt;&nbsp;(NOTA: El módulo está en modo de prueba)&lt;/b&gt;</es_cr>
-    <nl_nl>&lt;b&gt;&nbsp;(OPMERKING: Module is in de testmodus)&lt;/b&gt;</nl_nl>
-    <pt_br>&lt;b&gt;&nbsp;(NOTE: Module is in testing mode)&lt;/b&gt;</pt_br>
+    <bg_bg>&lt;b&gt;(NOTE: Module is in testing mode)&lt;/b&gt;</bg_bg>
+    <en_us>&lt;b&gt;(NOTE: Module is in testing mode)&lt;/b&gt;</en_us>
+    <es_cr>&lt;b&gt;(NOTA: El módulo está en modo de prueba)&lt;/b&gt;</es_cr>
+    <nl_nl>&lt;b&gt;(OPMERKING: Module is in de testmodus)&lt;/b&gt;</nl_nl>
+    <pt_br>&lt;b&gt;(NOTE: Module is in testing mode)&lt;/b&gt;</pt_br>
   </translation>
   <translation id="MODULE_PAYMENT_LINKPOINT_API_TEXT_TITLE">
     <bg_bg>LinkPoint Gateway</bg_bg>
@@ -7178,17 +7118,6 @@
     <nl_nl>Referentie #</nl_nl>
     <pt_br>Referência #</pt_br>
   </translation>
-  <translation id="ORD_HEADING_NUMBER_3">
-    <fr_fr>N° de Devis</fr_fr>
-    <hu_hu>Ajánlat száma</hu_hu>
-    <ru_ru>Quote Number</ru_ru>
-    <bg_bg>RFQ Номер</bg_bg>
-    <en_us>RFQ Number</en_us>
-    <es_cr># Cotización</es_cr>
-    <id_id>RFQ Number</id_id>
-    <nl_nl>Offerte Nummer</nl_nl>
-    <pt_br>Número RFQ </pt_br>
-  </translation>
   <translation id="ORD_HEADING_NUMBER_4">
     <fr_fr>N° de Commande Fournisseur</fr_fr>
     <hu_hu>Kimenő rendelés száma</hu_hu>
@@ -7282,11 +7211,11 @@
   </translation>
   <translation id="ORD_JS_INACTIVE_B">
     <fr_fr> est un article inactif.\n\nCliquez sur OK pour continuer ou sur Annuler pour revenir au formulaire de commande</fr_fr>
-    <bg_bg> е неактивен артикул.\\n\\nНатиснете OK за да продължите или Отмяна за да се върнете на формата за поръчки</bg_bg>
+    <bg_bg> е неактивен артикул.\n\nНатиснете OK за да продължите или Отмяна за да се върнете на формата за поръчки</bg_bg>
     <en_us> is an inactive item.\n\nPress OK to continue or Cancel to return to the order form</en_us>
     <es_cr> está inactivo.\n\nPresione OK para continuar o cancele para regresar al formulario de la orden</es_cr>
-    <id_id> is an inactive item.\\n\\nPress OK to continue or Cancel to return to the order form</id_id>
-    <nl_nl> is een inactief item.\\n\\nPress OK om door te gaan Annuleren om terug te gaan naar het order formulier</nl_nl>
+    <id_id> is an inactive item.\n\nPress OK to continue or Cancel to return to the order form</id_id>
+    <nl_nl> is een inactief item.\n\nPress OK om door te gaan Annuleren om terug te gaan naar het order formulier</nl_nl>
     <pt_br> é um item inativo.\n\nPressione OK para continuar ou Cancelar para retornar ao formnulário de ordem</pt_br>
   </translation>
   <translation id="ORD_JS_NO_CID">
@@ -7307,22 +7236,22 @@
   </translation>
   <translation id="ORD_JS_NO_STOCK_B">
     <fr_fr> en stock pour remplir la commande.\nLe nombre d'articles en stock est de: </fr_fr>
-    <bg_bg> в наличност за да се запълни поръчката.\\nБроя на артикулите в наличност е: </bg_bg>
+    <bg_bg> в наличност за да се запълни поръчката.\nБроя на артикулите в наличност е: </bg_bg>
     <en_us> in stock to fill the order.\nThe number of items in stock is: </en_us>
     <es_cr> en inventario para esta orden.\nLa cantidad actual de inventario es: </es_cr>
-    <id_id> in stock to fill the order.\\nThe number of items in stock is: </id_id>
-    <nl_nl> In voorraad om de order te vullen.\\nHet aantal op voorraad is: </nl_nl>
-    <pt_br> em estoque para atender a ordem.\\nA quantidade de itens em estoque é de: </pt_br>
+    <id_id> in stock to fill the order.\nThe number of items in stock is: </id_id>
+    <nl_nl> In voorraad om de order te vullen.\nHet aantal op voorraad is: </nl_nl>
+    <pt_br> em estoque para atender a ordem.\nA quantidade de itens em estoque é de: </pt_br>
   </translation>
   <translation id="ORD_JS_NO_STOCK_C">
     <fr_fr>\n\nCliquez sur OK pour continuer ou sur Annuler pour revenir au formulaire de commande.</fr_fr>
     <ru_ru>\n\nНажмите OK чтобы продолжить</ru_ru>
-    <bg_bg>\\n\\nНатиснете OK за да продължите или Отмяна за да се върнете на формата за поръчки.</bg_bg>
+    <bg_bg>\n\nНатиснете OK за да продължите или Отмяна за да се върнете на формата за поръчки.</bg_bg>
     <en_us>\n\nPress OK to continue or Cancel to return to the order form.</en_us>
     <es_cr>\n\nPresione OK para continuar o Cancele para regresar al formulario de la orden.</es_cr>
-    <id_id>\\n\\nPress OK to continue or Cancel to return to the order form.</id_id>
-    <nl_nl>\\n\\nKlik OK om door te gaan of Annuleren om terug te gaan naar het order formulier.</nl_nl>
-    <pt_br>\\n\\nPressione OK para continuar ou Cancelar para retornar ao formnulário de ordem.</pt_br>
+    <id_id>\n\nPress OK to continue or Cancel to return to the order form.</id_id>
+    <nl_nl>\n\nKlik OK om door te gaan of Annuleren om terug te gaan naar het order formulier.</nl_nl>
+    <pt_br>\n\nPressione OK para continuar ou Cancelar para retornar ao formnulário de ordem.</pt_br>
   </translation>
   <translation id="ORD_JS_RECUR_DEL_ROLL_REQD">
     <fr_fr>Il s'agit d'une écriture récurrente. Voulez-vous aussi supprimer les écritures futures ? (Appuyez sur Annuler pour supprimer cette écriture seulement)</fr_fr>
@@ -7538,7 +7467,7 @@
     <nl_nl>Assemblage</nl_nl>
     <pt_br>Montagens</pt_br>
   </translation>
-  <translation id="ORD_TEXT_16_WINDOW_TITLE">
+  <translation id="TEXT_ADJUSTMENTS">
     <bg_bg>Корекции</bg_bg>
     <en_us>Adjustments</en_us>
     <es_cr>Adjuste de inventario</es_cr>
@@ -8221,9 +8150,9 @@
     <pt_br>Especifica o nome da impressora para imprimir cupons conforme especificada nas preferências de impressora de sua estação local.</pt_br>
   </translation>
   <translation id="PHREEPOS_RECEIPT_PRINTER_OPEN_DRAWER_DESC">
-    <en_us>Here you can add code to open you drawer payment dependent (set the open drawer option in the payment module).&lt;br&gt; If one of the selected payment has the option \'open cash drawer \' set too true the cashdrawer will be openend.&lt;br&gt;Seperate the codes by a : and lines by a</en_us>
+    <en_us>Here you can add code to open you drawer payment dependent (set the open drawer option in the payment module).&lt;br&gt; If one of the selected payment has the option 'open cash drawer ' set too true the cashdrawer will be openend.&lt;br&gt;Seperate the codes by a : and lines by a</en_us>
     <nl_nl>Hier kunt u code invoeren om lade te openen betaalvorm afhankelijk (stel de open lade optie in onder de betaal methodes).&lt;br&gt; als een van de geselecteerde betaal methodes de optie open lade op waar in heeft gesteld dan wordt de lade geopend.&lt;br&gt; Scheid de codes door een: en regels en door een</nl_nl>
-    <pt_br>Aqui você pode inserir código para abrir a gaveta dependente de pagamento (especifique a opção abrir gaveta no módulo de pagamento).&lt;br&gt; Se um dos pagamentos selecionados tiver a opção \\\'abrir gaveta\' especificada</pt_br>
+    <pt_br>Aqui você pode inserir código para abrir a gaveta dependente de pagamento (especifique a opção abrir gaveta no módulo de pagamento).&lt;br&gt; Se um dos pagamentos selecionados tiver a opção 'abrir gaveta' especificada</pt_br>
   </translation>
   <translation id="PHREEPOS_RECEIPT_PRINTER_STARTING_LINE_DESC">
     <en_us>Here you can add code to that should be in the header paper of the receipt.&lt;br&gt;Seperate the codes by a : and lines by a</en_us>
@@ -8263,15 +8192,15 @@
     <en_us>Default character set for saving changes (Firefox/Mozilla only)</en_us>
   </translation>
   <translation id="PHREEWIKI_CONFIG_DONT_UPDATE">
-    <en_us>Don\'t update modifier username and date when editing tiddlers</en_us>
-    <nl_nl>Don\'t update modifier username and date when editing tiddlers</nl_nl>
+    <en_us>Don't update modifier username and date when editing tiddlers</en_us>
+    <nl_nl>Don't update modifier username and date when editing tiddlers</nl_nl>
   </translation>
   <translation id="PHREEWIKI_CONFIG_EMPTY_TEMPLATE">
     <en_us>Generate an empty template when saving changes</en_us>
     <nl_nl>Generate an empty template when saving changes</nl_nl>
   </translation>
   <translation id="PHREEWIKI_CONFIG_ERROR">
-    <en_us></en_us>
+    <en_us>@todo</en_us>
   </translation>
   <translation id="PHREEWIKI_CONFIG_GENERATE_RSS">
     <en_us>Generate an RSS feed when saving changes</en_us>
@@ -8301,10 +8230,10 @@
     <en_us>Nothing is selected. You must select one or more items first</en_us>
   </translation>
   <translation id="PHREEWIKI_CONFIG_PLUGIN_DISABLED">
-    <en_us>Not executed because disabled via \'systemConfigDisable\' tag</en_us>
+    <en_us>Not executed because disabled via 'systemConfigDisable' tag</en_us>
   </translation>
   <translation id="PHREEWIKI_CONFIG_PLUGIN_FORCED">
-    <en_us>Executed because forced via \'systemConfigForce\' tag</en_us>
+    <en_us>Executed because forced via 'systemConfigForce' tag</en_us>
   </translation>
   <translation id="PHREEWIKI_CONFIG_PLUGIN_VERSION_ERROR">
     <en_us>Not executed because this plugin needs a newer version of TiddlyWiki</en_us>
@@ -8317,7 +8246,7 @@
     <en_us>It appears that this TiddlyWiki has been incorrectly saved.</en_us>
   </translation>
   <translation id="PHREEWIKI_CONFIG_SHADOWED_TIDDLER_TOOL_TIP">
-    <en_us>Tiddler \'%0\' doesn\'t yet exist</en_us>
+    <en_us>Tiddler '%0' doesn't yet exist</en_us>
   </translation>
   <translation id="PHREEWIKI_CONFIG_SUBTITLE">
     <en_us>(unknown)</en_us>
@@ -8331,7 +8260,7 @@
     <nl_nl>Clicking on links to open tiddlers causes them to close</nl_nl>
   </translation>
   <translation id="PHREEWIKI_CONFIG_UNDEFINED_TIDDLER_TOOL_TIP">
-    <en_us>Tiddler \'%0\' doesn\'t yet exist</en_us>
+    <en_us>Tiddler '%0' doesn't yet exist</en_us>
   </translation>
   <translation id="PHREEWIKI_ERROR_REVISION_NOT_FOUND">
     <en_us>revision not found</en_us>
@@ -8405,8 +8334,8 @@
     <nl_nl>Tweak the appearance and behaviour of TiddlyWiki</nl_nl>
   </translation>
   <translation id="PHREEWIKI_WARNING_IN_LOCKED_ARRAY">
-    <en_us>Tiddler is in locked array your can\'t delete or modify this tiddler</en_us>
-    <nl_nl>Tiddler is in locked array your can\'t delete or modify this tiddler</nl_nl>
+    <en_us>Tiddler is in locked array your can't delete or modify this tiddler</en_us>
+    <nl_nl>Tiddler is in locked array your can't delete or modify this tiddler</nl_nl>
   </translation>
   <translation id="PHREEWIKI_WARNING_NO_REVISION">
     <en_us>no revision available</en_us>
@@ -9123,7 +9052,7 @@
     <en_us>Set as default (requires a manual update of currency values)</en_us>
     <es_cr>SETUP_SET_DEFAULT . ' (requiere actualización manual del tipo de cambio)</es_cr>
     <id_id>Set as default (requires a manual update of currency values)</id_id>
-    <nl_nl>In gesteld als standaard (vereist een handmatige update van de valuta\'s)</nl_nl>
+    <nl_nl>In gesteld als standaard (vereist een handmatige update van de valuta's)</nl_nl>
     <pt_br>Estabelecer como padrão (requer a atualização manual de valores)</pt_br>
     <fr_fr>SETUP_SET_DEFAULT . ' (nécessite une mise à jour manuelle des valeurs des devises)</fr_fr>
     <hu_hu>SETUP_SET_DEFAULT . ' (manuális átváltási arány frissítést igényel)</hu_hu>
@@ -9156,7 +9085,7 @@
     <en_us>Currencies - </en_us>
     <es_cr>Monedas - </es_cr>
     <id_id>Mata Uang - </id_id>
-    <nl_nl>Valuta\'s - </nl_nl>
+    <nl_nl>Valuta's - </nl_nl>
     <pt_br>Moedas - </pt_br>
     <fr_fr>Devises - </fr_fr>
     <hu_hu>Pénznemek - </hu_hu>
@@ -9654,10 +9583,8 @@
     <nl_nl>Multigewicht Rapport</nl_nl>
   </translation>
   <translation id="SHIPPING_FEDEX_V7_RATE_CITY_MATCH">
-    <bg_bg>City doesn\\\'t match zip code.</bg_bg>
-    <en_us>City doesn\'t match zip code.</en_us>
+    <en_us>City doesn't match zip code.</en_us>
     <es_cr>El nombre de la ciudad no concuerda con la zonaa postal.</es_cr>
-    <id_id>City doesn\\\'t match zip code.</id_id>
     <nl_nl>Stad komt niet overeen met de postcode.</nl_nl>
   </translation>
   <translation id="SHIPPING_FEDEX_V7_RATE_ERROR">
@@ -9668,12 +9595,12 @@
   <translation id="SHIPPING_FEDEX_V7_RATE_TRANSIT">
     <en_us> Day(s) Transit</en_us>
     <es_cr> Día(s) de tránsito</es_cr>
-    <nl_nl>Dag (en) onderweg</nl_nl>
+    <nl_nl> Dag(en) onderweg</nl_nl>
   </translation>
   <translation id="SHIPPING_FEDEX_V7_TNT_ERROR">
     <en_us> FedEx Time in Transit Error # </en_us>
     <es_cr> FedEx Tiempo en tránsito error # </es_cr>
-    <nl_nl>FedEx Tijd onderweg Error # </nl_nl>
+    <nl_nl> FedEx Tijd onderweg Error # </nl_nl>
   </translation>
   <translation id="SHIPPING_FEDEX_V7_TRACK_ERROR">
     <en_us>FedEx Package Tracking Error: </en_us>
@@ -9870,10 +9797,8 @@
     <ru_ru>Название прайса уже существует. Введите другое название.</ru_ru>
   </translation>
   <translation id="SRV_TRACK_FEDEX_V7">
-    <bg_bg>Track Today\\\'s FedEx Shipments</bg_bg>
-    <en_us>Track Today\'s FedEx Shipments</en_us>
+    <en_us>Track Today's FedEx Shipments</en_us>
     <es_cr>Sigale la pista a los envíos FedEx de hoy</es_cr>
-    <id_id>Track Today\\\'s FedEx Shipments</id_id>
     <nl_nl>Traceer FedEx verzendingen van vandaag</nl_nl>
   </translation>
   <translation id="SUCCESS_IMPORT_COUNT">
@@ -10039,10 +9964,12 @@
   <translation id="TEXT_ACTION_TAKEN">
     <en_us>Action Taken</en_us>
     <pt_br>Ação Tomada</pt_br>
+    <nl_nl>Uitgevoerde Actie</nl_nl>
   </translation>
   <translation id="TEXT_ACTION_TYPE">
     <en_us>Action Type</en_us>
     <pt_br>Tipo Ação</pt_br>
+    <nl_nl>Actie Type</nl_nl>
   </translation>
   <translation id="TEXT_ACTIVE">
     <hu_hu>Aktív</hu_hu>
@@ -10124,12 +10051,12 @@
     <en_us>Adjustment</en_us>
     <es_cr>Ajuste</es_cr>
     <id_id>Penyesuaian</id_id>
-    <nl_nl>Wijzigingen</nl_nl>
+    <nl_nl>Wijziging</nl_nl>
     <pt_br>Ajuste</pt_br>
   </translation>
   <translation id="TEXT_ADJUSTMENT_ACCOUNT">
     <en_us>Adjustment Account</en_us>
-    <nl_nl>Wijzigingen grootboek rekening</nl_nl>
+    <nl_nl>Wijzigingen grootboek</nl_nl>
     <pt_br>Conta Ajustes</pt_br>
   </translation>
   <translation id="TEXT_ADJUSTMENT_QUANTITY_SHORT">
@@ -10242,7 +10169,7 @@
     <bg_bg>Всички страници</bg_bg>
     <en_us>All Pages</en_us>
     <es_cr>Todas las páginas</es_cr>
-    <nl_nl>Alle Pagina\'s</nl_nl>
+    <nl_nl>Alle Pagina's</nl_nl>
     <pt_br>Todas Páginas</pt_br>
   </translation>
   <translation id="TEXT_ALTERNATIVE_TELEPHONE_SHORT">
@@ -10458,6 +10385,7 @@
   <translation id="TEXT_AUDITED">
     <en_us>Audited</en_us>
     <pt_br>Auditado</pt_br>
+    <nl_nl>Audited</nl_nl>
   </translation>
   <translation id="TEXT_AUDIT_CONFIGURATION">
     <en_us>Audit configuration.</en_us>
@@ -10984,7 +10912,7 @@
     <pt_br>Caixa</pt_br>
   </translation>
   <translation id="TEXT_CASHIERS_CHECK">
-    <en_us>Cashier\'s Check</en_us>
+    <en_us>Cashier's Check</en_us>
     <nl_nl>kassiers check</nl_nl>
     <pt_br>Cheque Administrativo</pt_br>
   </translation>
@@ -11278,10 +11206,12 @@
   <translation id="TEXT_CLOSED_SUCCESSFUL">
     <en_us>Closed Successful</en_us>
     <pt_br>Fechamento Com Sucesso</pt_br>
+    <nl_nl>Gesloten Succesvol</nl_nl>
   </translation>
   <translation id="TEXT_CLOSED_UNSUCCESSFUL">
     <en_us>Closed Unsuccessful</en_us>
     <pt_br>Fechamento Sem Sucesso</pt_br>
+    <nl_nl>Gesloten Niet Succesvol</nl_nl>
   </translation>
   <translation id="TEXT_CLOSE_DATE">
     <en_us>Close Date</en_us>
@@ -11707,9 +11637,15 @@
     <nl_nl>PhreeBooks heeft een onverwachte fout ontmoet. Klik hieronder op de knop om de trace informatie te downloaden en stuur dit op naar het Ontwikkelingsteam van PhreeBooks voor het oplossen van het probleem.</nl_nl>
     <pt_br>PhreeBooks encontrou um erro inesperado. Clique no botão abaixo para baixar o arquivo de informação de rastreio para enviar para o administrador do sistema.</pt_br>
   </translation>
+  <translation id="TEXT_CREATED">
+    <en_us>Created</en_us>
+    <pt_br>Criado</pt_br>
+    <nl_nl>Gemaakt</nl_nl>
+  </translation>
   <translation id="TEXT_CREATED_AND_ASSIGNED">
-    <en_us>Created </en_us>
-    <pt_br>Criado </pt_br>
+    <en_us>Created + Assigned</en_us>
+    <pt_br>Criado + AtribuÃ­do</pt_br>
+    <nl_nl>Gemaakt + Toegewezen</nl_nl>
   </translation>
   <translation id="TEXT_CREATE_A_SHIPMENT_ENTRY">
     <en_us>Create a Shipment Entry</en_us>
@@ -11740,9 +11676,7 @@
     <pt_br>Criar/Alterar chave de criptografia</pt_br>
   </translation>
   <translation id="TEXT_CREATION_DATE">
-    <en_us>Created</en_us>
-    <pt_br>Criado</pt_br>
-    <es_cr>Fecha de reclamo</es_cr>
+    <en_us>Created Date</en_us>
   </translation>
   <translation id="TEXT_CREDIT">
     <en_us>Credit</en_us>
@@ -11830,7 +11764,7 @@
   </translation>
   <translation id="TEXT_CURRENCIES">
     <en_us>Currencies</en_us>
-    <nl_nl>Valuta\'s</nl_nl>
+    <nl_nl>Valuta's</nl_nl>
     <pt_br>Moedas</pt_br>
   </translation>
   <translation id="TEXT_CURRENCY">
@@ -12663,7 +12597,7 @@
     <pt_br>Controle Documento</pt_br>
   </translation>
   <translation id="TEXT_DOESNT_CLOSE">
-    <en_us>Doesn\'t Close</en_us>
+    <en_us>Doesn't Close</en_us>
     <nl_nl>gaat niet dicht</nl_nl>
   </translation>
   <translation id="TEXT_DOLLARS">
@@ -12782,7 +12716,7 @@
   </translation>
   <translation id="TEXT_DUE_ON_SPECIFIED_DATE">
     <en_us>Due on specified date</en_us>
-    <nl_nl>Vervalt op een speciale datum</nl_nl>
+    <nl_nl>Vervalt op een specifieke datum</nl_nl>
     <pt_br>Vencimento em data específica</pt_br>
   </translation>
   <translation id="TEXT_DUPLICATE">
@@ -12902,11 +12836,9 @@
     <pt_br>Email Endereço</pt_br>
   </translation>
   <translation id="TEXT_EMAIL_MESSAGE">
-    <hu_hu>Az új jelszó iránti kérelem a(z) ' . $_SESSION['REMOTE_ADDR'] . 'címről érkezett.' . "\n\n" . 'Az új jelszavad a(z) \'' . STORE_NAME . '\' nevű cég adatbázisába való belépéshez:' . "\n\n" . '   %s' . "\n\n</hu_hu>
-    <ru_ru>A new password was requested from your email address.' . "\n\n" . 'Your new password to \'' . COMPANY_NAME . '\' is:' . "\n\n" . '   %s' . "\n\n</ru_ru>
-    <de_de>A new password was requested from your email address.' . "\n\n" . 'Your new password to \'' . COMPANY_NAME . '\' is:' . "\n\n" . '   %s' . "\n\n</de_de>
-    <en_us>A new password was requested from your email address.' . "\n\n" . 'Your new password to \'%s\' is:' . "\n\n" . '   %s' . "\n\n</en_us>
-    <es_cr>Una nueva contraseña fue solicitada a su dirección de correo.' . "\n\n" . 'Su contraseña nueva a \'%s\' es:' . "\n\n" . '   %s' . "\n\n</es_cr>
+    <hu_hu>Az új jelszó iránti kérelem a(z) ' . $_SESSION['REMOTE_ADDR'] . 'címről érkezett.' . "\n\n" . 'Az új jelszavad a(z) ' . STORE_NAME . ' nevű cég adatbázisába való belépéshez:' . "\n\n" . '   %s' . "\n\n</hu_hu>
+    <en_us>A new password was requested from your email address.' . "\n\n" . 'Your new password to %s is:' . "\n\n" . '   %s' . "\n\n</en_us>
+    <es_cr>Una nueva contraseña fue solicitada a su dirección de correo.' . "\n\n" . 'Su contraseña nueva a %s es:' . "\n\n" . '   %s' . "\n\n</es_cr>
   </translation>
   <translation id="TEXT_EMAIL_MSG_DETAIL">
     <bg_bg>Текст на имейл съобщението</bg_bg>
@@ -13097,17 +13029,17 @@
     <nl_nl>Selecteer Activa Type</nl_nl>
   </translation>
   <translation id="TEXT_ENTER_THE_COMPANYS_FAX_NUMBER">
-    <en_us>Enter the company\'s fax number</en_us>
+    <en_us>Enter the company's fax number</en_us>
     <nl_nl>Het bedrijfs fax nummer</nl_nl>
     <pt_br>Entre o número Fax</pt_br>
   </translation>
   <translation id="TEXT_ENTER_THE_COMPANYS_FEDERAL_TAX_ID_NUMBER">
-    <en_us>Enter the company\'s (Federal) tax ID number</en_us>
+    <en_us>Enter the company's (Federal) tax ID number</en_us>
     <nl_nl>Het bedrijfs btw-nummer</nl_nl>
     <pt_br>Entre o CNPJ da empresa</pt_br>
   </translation>
   <translation id="TEXT_ENTER_THE_COMPANYS_PRIMARY_TELEPHONE_NUMBER">
-    <en_us>Enter the company\'s primary telephone number</en_us>
+    <en_us>Enter the company's primary telephone number</en_us>
     <nl_nl>Het primaire bedrijfs telefoonnummer</nl_nl>
     <pt_br>Entre o número de telefone principal da empresa</pt_br>
   </translation>
@@ -13185,9 +13117,9 @@
     <pt_br>As chaves de criptografia não são iguais!</pt_br>
   </translation>
   <translation id="TEXT_ERROR_PERIOD_CAN_NOT_BE_ALL">
-    <en_us>Accounting period selected cannot be \'all\' for account reconciliation operation.</en_us>
-    <nl_nl>Boekhoud periode geselecteerd kan niet \'alles\' voor rekening balanceren.</nl_nl>
-    <pt_br>Período contábil selecionado não pode ser \'all\' para operação de conciliação de conta.</pt_br>
+    <en_us>Accounting period selected cannot be 'all' for account reconciliation operation.</en_us>
+    <nl_nl>Boekhoud periode geselecteerd kan niet 'alles' voor rekening balanceren.</nl_nl>
+    <pt_br>Período contábil selecionado não pode ser 'all' para operação de conciliação de conta.</pt_br>
   </translation>
   <translation id="TEXT_ERROR_POSTING_CHART_OF_ACCOUNT_BALANCES_TO_ACCOUNT_ID">
     <en_us>Error posting chart of account balances to account id: </en_us>
@@ -14147,6 +14079,7 @@
   <translation id="TEXT_IMPLEMENTED">
     <en_us>Implemented</en_us>
     <pt_br>Implementado</pt_br>
+    <nl_nl>Geïmpleteerd</nl_nl>
   </translation>
   <translation id="TEXT_IMPORT">
     <hu_hu>Importál</hu_hu>
@@ -14301,13 +14234,11 @@
     <pt_br>Erro no arquivo de entrada. Encontrados mais de 2 qualificadores de texto. A string que falhou é: </pt_br>
   </translation>
   <translation id="TEXT_IMP_ERMSG15">
-    <ru_ru>The import file needs an index reference value to process the data! Include data and check the \\\'Show\\\' box for field name: </ru_ru>
     <bg_bg>Импортнатия файл се нуждае от индексна референтна стойност</bg_bg>
-    <en_us>The import file needs an index reference value to process the data! Include data and check the \'Show\' box for field name: </en_us>
-    <es_cr>¡El archivo de importación debe tener un índice de referencia para procesarlo!  Incluya datos y revise que la casilla \\\'Muestre\\\' para ese campo esté marcado: </es_cr>
-    <id_id>The import file needs an index reference value to process the data! Include data and check the \\\'Show\\\' box for field name: </id_id>
-    <nl_nl>Het import bestand moet een index bevatten om de gegevens te verwerken! Omvatten gegevens en vink de \'Toon\' box voor het veld : </nl_nl>
-    <pt_br>O arquivo de importação precisa de um valor índice de referência para processar a informação! Inclua dados e verifique a caixa \\\'Show\\\' para o campo: </pt_br>
+    <en_us>The import file needs an index reference value to process the data! Include data and check the 'Show' box for field name: </en_us>
+    <es_cr>¡El archivo de importación debe tener un índice de referencia para procesarlo!  Incluya datos y revise que la casilla 'Muestre' para ese campo esté marcado: </es_cr>
+    <nl_nl>Het import bestand moet een index bevatten om de gegevens te verwerken! Omvatten gegevens en vink de 'Toon' box voor het veld : </nl_nl>
+    <pt_br>O arquivo de importação precisa de um valor índice de referência para processar a informação! Inclua dados e verifique a caixa 'Show' para o campo: </pt_br>
   </translation>
   <translation id="TEXT_IMP_ERMSG2">
     <hu_hu>A file mérete nagyobb</hu_hu>
@@ -14543,14 +14474,12 @@
   <translation id="TEXT_INVESTIGATED">
     <en_us>Investigated</en_us>
     <pt_br>Investigado</pt_br>
+    <nl_nl>Onderzocht</nl_nl>
   </translation>
   <translation id="TEXT_INVESTIGATION">
     <en_us>Investigation</en_us>
     <pt_br>Investigação</pt_br>
-  </translation>
-  <translation id="TEXT_INVESTIGATION_TITLE">
-    <en_us>Investigation</en_us>
-    <pt_br>Investigação</pt_br>
+    <nl_nl>Onderzoek</nl_nl>
   </translation>
   <translation id="TEXT_INVOICE">
     <hu_hu>Számla</hu_hu>
@@ -14633,6 +14562,7 @@
   <translation id="TEXT_IN_PROCESS">
     <en_us>In Process</en_us>
     <pt_br>Em processo</pt_br>
+    <nl_nl>In Behandeling</nl_nl>
   </translation>
   <translation id="TEXT_IN_TEST_OR_EVALUATION">
     <en_us>In Test/Evaluation</en_us>
@@ -14906,9 +14836,9 @@
     <pt_br>Giro(dias)</pt_br>
   </translation>
   <translation id="TEXT_LEAVE_BLANK_FOR_SYSTEM_GENERATED_ID">
-    <en_us>(Leave blank for system generated ID)</en_us>
+    <en_us>Leave blank for system generated ID</en_us>
     <nl_nl>Leeg laten voor een systeem gegenereerd ID</nl_nl>
-    <pt_br>(Deixe em branco para geração de ID pelo sistema)</pt_br>
+    <pt_br>Deixe em branco para geração de ID pelo sistema</pt_br>
   </translation>
   <translation id="TEXT_LEFT">
     <hu_hu>Bal</hu_hu>
@@ -15192,20 +15122,18 @@
     <pt_br>Mai</pt_br>
   </translation>
   <translation id="TEXT_MESSAGE_BODY">
-    <ru_ru>Message Body: </ru_ru>
-    <bg_bg>Съобщение: </bg_bg>
+    <bg_bg>Съобщение </bg_bg>
     <en_us>Message Body</en_us>
-    <es_cr>Contenido: </es_cr>
-    <id_id>Isi Pesan:</id_id>
+    <es_cr>Contenido</es_cr>
+    <id_id>Isi Pesan</id_id>
     <nl_nl>Bericht Tekst</nl_nl>
     <pt_br>Mensagem</pt_br>
   </translation>
   <translation id="TEXT_MESSAGE_SUBJECT">
-    <ru_ru>Message Subject: </ru_ru>
-    <bg_bg>Тема на съобщението: </bg_bg>
+    <bg_bg>Тема на съобщението</bg_bg>
     <en_us>Message Subject</en_us>
-    <es_cr>Asunto: </es_cr>
-    <id_id>Hal:</id_id>
+    <es_cr>Asunto</es_cr>
+    <id_id>Hal</id_id>
     <nl_nl>Bericht Onderwerp</nl_nl>
     <pt_br>Assunto</pt_br>
   </translation>
@@ -15216,6 +15144,7 @@
     <id_id>Metode</id_id>
     <pt_br>Metódos</pt_br>
     <ru_ru>Методы</ru_ru>
+    <nl_nl>Modules</nl_nl>
   </translation>
   <translation id="TEXT_METHODS_AVAILABLE">
     <en_us>Methods Available</en_us>
@@ -15256,6 +15185,7 @@
     <en_us>Minutes</en_us>
     <es_cr>Minutos</es_cr>
     <pt_br>Minutos</pt_br>
+    <nl_nl>Minuten</nl_nl>
   </translation>
   <translation id="TEXT_MIN_VALUE">
     <bg_bg>Мин. стойност</bg_bg>
@@ -15273,6 +15203,12 @@
     <bg_bg>мм</bg_bg>
     <en_us>mm</en_us>
     <ru_ru>мм</ru_ru>
+    <fr_fr>mm</fr_fr>
+    <de_de>mm</de_de>
+    <es_cr>mm</es_cr>
+    <hu_hu>mm</hu_hu>
+    <nl_nl>mm</nl_nl>
+    <pt_br>mm</pt_br>
   </translation>
   <translation id="TEXT_MOBILE_PHONE">
     <en_us>Mobile Phone</en_us>
@@ -15286,18 +15222,22 @@
     <id_id>Modul</id_id>
     <pt_br>Módulo</pt_br>
     <ru_ru>Модуль</ru_ru>
+    <nl_nl>Module</nl_nl>
   </translation>
   <translation id="TEXT_MODULES">
     <en_us>Modules</en_us>
     <pt_br>Módulos</pt_br>
+    <nl_nl>Modules</nl_nl>
   </translation>
   <translation id="TEXT_MODULE_ADMINISTRATION">
     <en_us>Module Administration</en_us>
     <pt_br>Administração Módulos</pt_br>
+    <nl_nl>Module Administratie</nl_nl>
   </translation>
   <translation id="TEXT_MODULE_ARGS">
     <en_us>Module %s: </en_us>
     <pt_br>Módulo %s: </pt_br>
+    <nl_nl>Module %s: </nl_nl>
   </translation>
   <translation id="TEXT_MODULE_DATA_IMPORT_OR_EXPORT">
     <en_us>Module Data Import Or Export</en_us>
@@ -15335,6 +15275,7 @@
   <translation id="TEXT_MONTHLY_SALES">
     <en_us>Monthly Sales</en_us>
     <pt_br>Vendas Mensais</pt_br>
+    <nl_nl>Maandelijkes Verkopen</nl_nl>
   </translation>
   <translation id="TEXT_MONTH_TO_DATE">
     <en_us>Month To Date</en_us>
@@ -15405,6 +15346,7 @@
   <translation id="TEXT_MULTIPLE_ADJUSTMENTS">
     <en_us>Multiple Adjustments</en_us>
     <pt_br>Ajustes Múltiplos</pt_br>
+    <nl_nl>Meerdere Wijzigingen</nl_nl>
   </translation>
   <translation id="TEXT_MULTIPLE_DEPOSITS">
     <fr_fr>Dépôts Clients</fr_fr>
@@ -15426,6 +15368,7 @@
     <en_us>My Bookmarks</en_us>
     <es_cr>Mis marcas</es_cr>
     <pt_br>Minhas Marcações</pt_br>
+    <nl_nl>Mijn Bookmarks</nl_nl>
   </translation>
   <translation id="TEXT_MY_COMPANY">
     <en_us>My Company</en_us>
@@ -15435,6 +15378,7 @@
   <translation id="TEXT_MY_PROFILE">
     <en_us>My Profile</en_us>
     <pt_br>Meu Perfil</pt_br>
+    <nl_nl>Mijn Profiel</nl_nl>
   </translation>
   <translation id="TEXT_MY_REPORTS">
     <bg_bg>Моите справки</bg_bg>
@@ -16411,7 +16355,6 @@
   <translation id="TEXT_PLEASE_SELECT_THE_ADMIN_EXTRA_EMAIL_FORMAT">
     <en_us>Please select the Admin extra email format</en_us>
     <nl_nl>Selecteer het Admin extra email formaat</nl_nl>
-    <pt_br>Por favor</pt_br>
   </translation>
   <translation id="TEXT_PLEASE_WAIT">
     <bg_bg>Моля изчакайте</bg_bg>
@@ -16885,6 +16828,10 @@
     <en_us>Quote Number</en_us>
     <nl_nl>Offerte Nummer</nl_nl>
     <pt_br>Número Cotação</pt_br>
+    <fr_fr>N° de Devis</fr_fr>
+    <hu_hu>Ajánlat száma</hu_hu>
+    <bg_bg>RFQ Номер</bg_bg>
+    <es_cr># Cotización</es_cr>
   </translation>
   <translation id="TEXT_RADIO_BUTTON">
     <en_us>Radio Button</en_us>
@@ -16958,8 +16905,8 @@
     <pt_br>Destinatário</pt_br>
   </translation>
   <translation id="TEXT_RECEIPT">
-    <en_us>Receipt #</en_us>
-    <nl_nl>Bonnummer #</nl_nl>
+    <en_us>Receipt</en_us>
+    <nl_nl>Bon</nl_nl>
   </translation>
   <translation id="TEXT_RECEIPTS">
     <hu_hu>Elismervények</hu_hu>
@@ -17306,10 +17253,12 @@
   <translation id="TEXT_REQUIRED">
     <en_us>Required</en_us>
     <es_cr>REQUISITO</es_cr>
-    <nl_nl>Benodigd</nl_nl>
+    <nl_nl>Vereist</nl_nl>
     <pt_br>Necessário</pt_br>
     <bg_bg>ИЗИСКВАН</bg_bg>
     <id_id>DIPERLUKAN</id_id>
+    <fr_fr>obligatoire</fr_fr>
+    <ru_ru>обязательно</ru_ru>
   </translation>
   <translation id="TEXT_REQUIRED_DATE">
     <bg_bg>Изисквана дата</bg_bg>
@@ -17995,7 +17944,7 @@
   </translation>
   <translation id="TEXT_SETS_THE_START_DATE_FOR_ACCOUNT_AGING">
     <en_us>Sets the start date for account aging.</en_us>
-    <nl_nl>Stelt de starttijd in voor berekening van de leeftijd. </nl_nl>
+    <nl_nl>Stelt de starttijd in voor berekening van de leeftijd.</nl_nl>
     <pt_br>Estabelece a data inicial para atraso contas.</pt_br>
   </translation>
   <translation id="TEXT_SETTINGS">
@@ -18881,7 +18830,7 @@
     <bg_bg>Теми и цветови схеми</bg_bg>
     <en_us>Themes and Color Schemes</en_us>
     <es_cr>Temas y esquemas de colores</es_cr>
-    <nl_nl>Thema en Kleur Schema\'s</nl_nl>
+    <nl_nl>Thema en Kleur Schema's</nl_nl>
     <pt_br>Temas e Esquemas de Cor</pt_br>
   </translation>
   <translation id="TEXT_THERE_ARE_NO_SHIPMENTS_FROM_THIS_CARRIER_TODAY">
@@ -19025,9 +18974,9 @@
     <pt_br>O Tipo de Conta CG é obrigatório!</pt_br>
   </translation>
   <translation id="TEXT_THE_ID_ENTRY_CANNOT_BE_EMPTY">
-    <en_us>The \'ID\' entry cannot be blank.</en_us>
-    <nl_nl>Het \'ID\' veld mag niet leeg zijn.</nl_nl>
-    <pt_br>A entrada de \'ID\' não pode estar em branco.</pt_br>
+    <en_us>The 'ID' entry cannot be blank.</en_us>
+    <nl_nl>Het 'ID' veld mag niet leeg zijn.</nl_nl>
+    <pt_br>A entrada de 'ID' não pode estar em branco.</pt_br>
   </translation>
   <translation id="TEXT_THE_ID_FIELD_WAS_EMPTY">
     <en_us>The id field was empty</en_us>
@@ -20366,7 +20315,7 @@
     <pt_br>A tarefa da Ordem de Serviço foi atualizada com sucesso!</pt_br>
   </translation>
   <translation id="WO_MFG_PASSWORD_BAD">
-    <en_us>The manufacturing password doesn\'t match the user name.</en_us>
+    <en_us>The manufacturing password doesn't match the user name.</en_us>
     <es_cr>La contraseña de fabricación no concuerda con el nombre del usuario.</es_cr>
     <pt_br>A senha de produção não confere com o nome do usuário.</pt_br>
   </translation>
@@ -20376,7 +20325,7 @@
     <pt_br>Tarefas Ordem Serviço</pt_br>
   </translation>
   <translation id="WO_QA_PASSWORD_BAD">
-    <en_us>The quality assurance password doesn\'t match the user name.</en_us>
+    <en_us>The quality assurance password doesn't match the user name.</en_us>
     <es_cr>La contraseña del control de calidad no concuerda con el nombre del usuario.</es_cr>
     <pt_br>A senha de garantia de qualidade não confere com o nome do usuário.</pt_br>
   </translation>
