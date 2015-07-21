@@ -101,22 +101,16 @@ class messageStack {
 	}
 
 	function write_debug() {
-	  	global $admin;
-	  	$this->debug_header_info .= "\n\n\n ****starting new debug line****";
-	  	$this->debug_header_info .= "\nTrace information for debug purposes. Phreedom release {$admin->classes['phreedom']->version}, generated " . date('Y-m-d H:i:s') . ".\n\n";
-	  	$this->debug_header_info .= "\nGET     Vars = " . print_r($_GET, 	 true);
-	  	$this->debug_header_info .= "\nPOST    Vars = " . print_r($_POST, 	 true);
-	  	$this->debug_header_info .= "\nREQUEST Vars = " . print_r($_REQUEST, true);
-	  	$this->debug_header_info .= "\nSESSION Vars = " . print_r($_SESSION, true);
-	  	if (strlen($this->debug_info) < 1) return;
-	  	$this->debug_info .= "\n\nPage trace stats: Execution Time: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, {$admin->DataBase->count_queries} queries taking " . (int)($admin->DataBase->total_query_time * 1000)." ms";
-      	$filename = DIR_FS_MY_FILES . 'trace.txt';
-      	if (!$handle = @fopen($filename, 'w')) 				throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
-      	if (!@fwrite($handle, $this->debug_header_info)) 	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $filename));
-      	if (!@fwrite($handle, $this->debug_info)) 			throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $filename));
-      	if (!@fclose($handle)) 								throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
-	  	$this->debug_info = NULL;
-	  	$this->add("Successfully created trace.txt file.","success");
+		$filename = DIR_FS_MY_FILES . "/development.log";
+        if (!$handle = @fopen($filename, 'rb'))             throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
+        // send the right headers
+        header("Content-Type: application/force-download");
+        header("Content-Type: application/octet-stream");
+        header("Content-Type: application/download");
+        header("Content-Disposition: attachment; filename='" . basename($filename) . "'");
+        header("Content-Length: " . filesize($filename));
+        readfile($file);
+        $this->add("Successfully created $filename file.","success");
 	}
 
 	function __destruct(){
