@@ -54,23 +54,19 @@ class journal_03 extends \core\classes\journal {//@todo should extend orders
 	public $shipper_code        = '';
 	public $drop_ship           = 0;
 	public $freight             = 0;
+	public $disc_gl_acct_id     = AP_DISCOUNT_PURCHASE_ACCOUNT;
+	public $ship_gl_acct_id     = AP_DEF_FREIGHT_ACCT;
+	public $ship_primary_name   = COMPANY_NAME;
+	public $ship_contact        = AP_CONTACT_NAME;
+	public $ship_address1       = COMPANY_ADDRESS1;
+	public $ship_address2       = COMPANY_ADDRESS2;
+	public $ship_city_town      = COMPANY_CITY_TOWN;
+	public $ship_state_province = COMPANY_ZONE;
+	public $ship_postal_code    = COMPANY_POSTAL_CODE;
+	public $ship_telephone1     = COMPANY_TELEPHONE1;
+	public $ship_email          = COMPANY_EMAIL;
+	public $error_6 			= GENERAL_JOURNAL_3_ERROR_6;
 
-	function __construct($id) {
-		// default to company data for purchases/PO's
-		$this->disc_gl_acct_id     = AP_DISCOUNT_PURCHASE_ACCOUNT;
-		$this->ship_gl_acct_id     = AP_DEF_FREIGHT_ACCT;
-		$this->ship_primary_name   = COMPANY_NAME;
-		$this->ship_contact        = AP_CONTACT_NAME;
-		$this->ship_address1       = COMPANY_ADDRESS1;
-		$this->ship_address2       = COMPANY_ADDRESS2;
-		$this->ship_city_town      = COMPANY_CITY_TOWN;
-		$this->ship_state_province = COMPANY_ZONE;
-		$this->ship_postal_code    = COMPANY_POSTAL_CODE;
-		$this->ship_telephone1     = COMPANY_TELEPHONE1;
-		$this->ship_email          = COMPANY_EMAIL;
-		$this->error_6 				= GENERAL_JOURNAL_3_ERROR_6;
-		parent::__construct($id);
-	}
 	/*******************************************************************************************************************/
 	// START re-post Functions
 	/*******************************************************************************************************************/
@@ -439,7 +435,7 @@ class journal_03 extends \core\classes\journal {//@todo should extend orders
 		global $admin;
 		$admin->messageStack->debug("\n    Starting to load SO/PO balances ...");
 		$item_array = array();
-		if ($ref_id) throw new \core\classes\userException("Error in classes/gen_ledger, function load_so_po_balance. Bad journal_id (3) for this function.");
+		if ($ref_id) throw new \core\classes\userException("Error in classes/journal_03, function load_so_po_balance. Bad journal for this function.");
 		$this->so_po_balance_array = $item_array;
 		$admin->messageStack->debug(" Finished loading SO/PO balances = " . print_r($item_array, true));
 		return $item_array;

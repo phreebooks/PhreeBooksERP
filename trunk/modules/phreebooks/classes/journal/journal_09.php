@@ -54,62 +54,19 @@ class journal_09 extends \core\classes\journal {//@todo should extend orders
 	public $shipper_code        = '';
 	public $drop_ship           = 0;
 	public $freight             = 0;
+	public $disc_gl_acct_id     = AR_DISCOUNT_SALES_ACCOUNT;
+	public $ship_gl_acct_id     = AR_DEF_FREIGHT_ACCT;
+	public $ship_primary_name   = TEXT_NAME_OR_COMPANY;
+	public $ship_contact        = TEXT_ATTENTION;
+	public $ship_address1       = TEXT_ADDRESS1;
+	public $ship_address2       = TEXT_ADDRESS2;
+	public $ship_city_town      = TEXT_CITY_TOWN;
+	public $ship_state_province = TEXT_STATE_PROVINCE;
+	public $ship_postal_code    = TEXT_POSTAL_CODE;
+	public $ship_telephone1     = TEXT_TELEPHONE;
+	public $ship_email          = TEXT_EMAIL;
+	public $error_6 			= GENERAL_JOURNAL_9_ERROR_6;
 
-	function __construct($id) {
-		switch ($this->journal_id) { // default to company data for purchases/PO's
-			case  3:
-			case  4:
-			case  6:
-			case  7:
-				$this->disc_gl_acct_id     = AP_DISCOUNT_PURCHASE_ACCOUNT;
-				$this->ship_gl_acct_id     = AP_DEF_FREIGHT_ACCT;
-				$this->ship_primary_name   = COMPANY_NAME;
-				$this->ship_contact        = AP_CONTACT_NAME;
-				$this->ship_address1       = COMPANY_ADDRESS1;
-				$this->ship_address2       = COMPANY_ADDRESS2;
-				$this->ship_city_town      = COMPANY_CITY_TOWN;
-				$this->ship_state_province = COMPANY_ZONE;
-				$this->ship_postal_code    = COMPANY_POSTAL_CODE;
-				$this->ship_telephone1     = COMPANY_TELEPHONE1;
-				$this->ship_email          = COMPANY_EMAIL;
-				break;
-			case  9:
-			case 10:
-			case 12:
-			case 13:
-				$this->disc_gl_acct_id     = AR_DISCOUNT_SALES_ACCOUNT;
-				$this->ship_gl_acct_id     = AR_DEF_FREIGHT_ACCT;
-				$this->ship_primary_name   = TEXT_NAME_OR_COMPANY;
-				$this->ship_contact        = TEXT_ATTENTION;
-				$this->ship_address1       = TEXT_ADDRESS1;
-				$this->ship_address2       = TEXT_ADDRESS2;
-				$this->ship_city_town      = TEXT_CITY_TOWN;
-				$this->ship_state_province = TEXT_STATE_PROVINCE;
-				$this->ship_postal_code    = TEXT_POSTAL_CODE;
-				$this->ship_telephone1     = TEXT_TELEPHONE;
-				$this->ship_email          = TEXT_EMAIL;
-				break;
-			default:
-		}
-		if($this->journal_id == 3){
-			$this->error_6 = GENERAL_JOURNAL_3_ERROR_6;
-		}else if($this->journal_id == 4){
-			$this->error_6 = GENERAL_JOURNAL_4_ERROR_6;
-		}else if($this->journal_id == 6){
-			$this->error_6 = GENERAL_JOURNAL_6_ERROR_6;
-		}else if($this->journal_id == 7){
-			$this->error_6 = GENERAL_JOURNAL_7_ERROR_6;
-		}else if($this->journal_id == 9){
-			$this->error_6 = GENERAL_JOURNAL_9_ERROR_6;
-		}else if($this->journal_id == 10){
-			$this->error_6 = GENERAL_JOURNAL_10_ERROR_6;
-		}else if($this->journal_id == 12){
-			$this->error_6 = GENERAL_JOURNAL_12_ERROR_6;
-		}else if($this->journal_id == 13){
-			$this->error_6 = GENERAL_JOURNAL_13_ERROR_6;
-		}
-		parent::__construct($id);
-	}
 
 	/*******************************************************************************************************************/
 	// START re-post Functions

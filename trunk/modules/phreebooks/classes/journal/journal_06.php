@@ -54,62 +54,18 @@ class journal_06 extends \core\classes\journal {//@todo should extend orders
 	public $shipper_code        = '';
 	public $drop_ship           = 0;
 	public $freight             = 0;
-
-	function __construct($id) {
-		switch ($this->journal_id) { // default to company data for purchases/PO's
-			case  3:
-			case  4:
-			case  6:
-			case  7:
-				$this->disc_gl_acct_id     = AP_DISCOUNT_PURCHASE_ACCOUNT;
-				$this->ship_gl_acct_id     = AP_DEF_FREIGHT_ACCT;
-				$this->ship_primary_name   = COMPANY_NAME;
-				$this->ship_contact        = AP_CONTACT_NAME;
-				$this->ship_address1       = COMPANY_ADDRESS1;
-				$this->ship_address2       = COMPANY_ADDRESS2;
-				$this->ship_city_town      = COMPANY_CITY_TOWN;
-				$this->ship_state_province = COMPANY_ZONE;
-				$this->ship_postal_code    = COMPANY_POSTAL_CODE;
-				$this->ship_telephone1     = COMPANY_TELEPHONE1;
-				$this->ship_email          = COMPANY_EMAIL;
-				break;
-			case  9:
-			case 10:
-			case 12:
-			case 13:
-				$this->disc_gl_acct_id     = AR_DISCOUNT_SALES_ACCOUNT;
-				$this->ship_gl_acct_id     = AR_DEF_FREIGHT_ACCT;
-				$this->ship_primary_name   = TEXT_NAME_OR_COMPANY;
-				$this->ship_contact        = TEXT_ATTENTION;
-				$this->ship_address1       = TEXT_ADDRESS1;
-				$this->ship_address2       = TEXT_ADDRESS2;
-				$this->ship_city_town      = TEXT_CITY_TOWN;
-				$this->ship_state_province = TEXT_STATE_PROVINCE;
-				$this->ship_postal_code    = TEXT_POSTAL_CODE;
-				$this->ship_telephone1     = TEXT_TELEPHONE;
-				$this->ship_email          = TEXT_EMAIL;
-				break;
-			default:
-		}
-		if($this->journal_id == 3){
-			$this->error_6 = GENERAL_JOURNAL_3_ERROR_6;
-		}else if($this->journal_id == 4){
-			$this->error_6 = GENERAL_JOURNAL_4_ERROR_6;
-		}else if($this->journal_id == 6){
-			$this->error_6 = GENERAL_JOURNAL_6_ERROR_6;
-		}else if($this->journal_id == 7){
-			$this->error_6 = GENERAL_JOURNAL_7_ERROR_6;
-		}else if($this->journal_id == 9){
-			$this->error_6 = GENERAL_JOURNAL_9_ERROR_6;
-		}else if($this->journal_id == 10){
-			$this->error_6 = GENERAL_JOURNAL_10_ERROR_6;
-		}else if($this->journal_id == 12){
-			$this->error_6 = GENERAL_JOURNAL_12_ERROR_6;
-		}else if($this->journal_id == 13){
-			$this->error_6 = GENERAL_JOURNAL_13_ERROR_6;
-		}
-		parent::__construct($id);
-	}
+	public $disc_gl_acct_id     = AP_DISCOUNT_PURCHASE_ACCOUNT;
+	public $ship_gl_acct_id     = AP_DEF_FREIGHT_ACCT;
+	public $ship_primary_name   = COMPANY_NAME;
+	public $ship_contact        = AP_CONTACT_NAME;
+	public $ship_address1       = COMPANY_ADDRESS1;
+	public $ship_address2       = COMPANY_ADDRESS2;
+	public $ship_city_town      = COMPANY_CITY_TOWN;
+	public $ship_state_province = COMPANY_ZONE;
+	public $ship_postal_code    = COMPANY_POSTAL_CODE;
+	public $ship_telephone1     = COMPANY_TELEPHONE1;
+	public $ship_email          = COMPANY_EMAIL;
+	public $error_6 			= GENERAL_JOURNAL_6_ERROR_6;
 
 	/*******************************************************************************************************************/
 	// START re-post Functions
@@ -119,96 +75,76 @@ class journal_06 extends \core\classes\journal {//@todo should extend orders
 		$admin->messageStack->debug("\n  Checking for re-post records ... ");
 		$repost_ids = array();
 		$gl_type 	= NULL;
-		switch ($this->journal_id) {
-			case  6: // Purchase/Receive Journal
-				$skus = array();
-				foreach ($this->journal_rows as $row) if ($row['sku'] <> '') $skus[] = $row['sku'];
-				if (sizeof($skus) > 0) {
-					$sql = $admin->DataBase->prepare("SELECT sku FROM ".TABLE_INVENTORY." WHERE sku IN ('".implode("', '", $skus)."') AND cost_method='a'");
-					$sql->execute();
-					$askus = $sql->fetchAll();
-					if (sizeof($askus) > 0) {
-						$admin->messageStack->debug("\n    Finding re-post ids for average sku list = ".print_r($askus, true)." \n and post_date after $this->post_date");
-						$sql = $admin->DataBase->prepare("SELECT ref_id, post_date FROM ".TABLE_JOURNAL_ITEM." WHERE sku IN ('".implode("', '", $askus)."') AND post_date > '$this->post_date'");
-						$sql->execute();
-						while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
-							$admin->messageStack->debug("\n    check_for_re_post is queing for average cost record id = ".$result['ref_id']);
-							$idx = substr($result['post_date'], 0, 10).':'.str_pad($result['ref_id'], 8, '0', STR_PAD_LEFT);
-							$repost_ids[$idx] = $result['ref_id'];
-						}
-					}
+		$skus = array();
+		foreach ($this->journal_rows as $row) if ($row['sku'] <> '') $skus[] = $row['sku'];
+		if (sizeof($skus) > 0) {
+			$sql = $admin->DataBase->prepare("SELECT sku FROM ".TABLE_INVENTORY." WHERE sku IN ('".implode("', '", $skus)."') AND cost_method='a'");
+			$sql->execute();
+			$askus = $sql->fetchAll();
+			if (sizeof($askus) > 0) {
+				$admin->messageStack->debug("\n    Finding re-post ids for average sku list = ".print_r($askus, true)." \n and post_date after $this->post_date");
+				$sql = $admin->DataBase->prepare("SELECT ref_id, post_date FROM ".TABLE_JOURNAL_ITEM." WHERE sku IN ('".implode("', '", $askus)."') AND post_date > '$this->post_date'");
+				$sql->execute();
+				while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+					$admin->messageStack->debug("\n    check_for_re_post is queing for average cost record id = ".$result['ref_id']);
+					$idx = substr($result['post_date'], 0, 10).':'.str_pad($result['ref_id'], 8, '0', STR_PAD_LEFT);
+					$repost_ids[$idx] = $result['ref_id'];
 				}
-				// continue with more tests
-			case  7: // Purchase Credit Memo Journal
-			case 12: // Sales/Invoice Journal
-			case 13: // Sales Credit Memo Journal
-			case 14: // Inventory Assembly Journal
-			case 16: // Inventory Adjustment Journal
-			case 19: // POS Journal
-			case 21: // Inventory Direct Purchase Journal
-				if ($this->id) for ($i = 0; $i < count($this->journal_rows); $i++) if ($this->journal_rows[$i]['sku']) {
-					// check to see if any future postings relied on this record, queue to re-post if so.
-					$sql = $admin->DataBase->prepare("SELECT id FROM ".TABLE_INVENTORY_HISTORY." WHERE ref_id={$this->id} AND sku='{$this->journal_rows[$i]['sku']}'");
-					$sql->execute();
-					if ($sql->rowCount() > 0) {
-						$result = $sql->fetch(\PDO::FETCH_LAZY);
-						$sql = $admin->DataBase->prepare("SELECT journal_main_id FROM ".TABLE_INVENTORY_COGS_USAGE." WHERE inventory_history_id=".$result['id']);
-						$sql->execute();
-						while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
-							if ($result['journal_main_id'] <> $this->id) {
-								$admin->messageStack->debug("\n    check_for_re_post is queing for cogs usage id = " . $result['journal_main_id']);
-								$p_date = $admin->DataBase->query("SELECT post_date FROM ".TABLE_JOURNAL_MAIN." WHERE id=".$result['journal_main_id']);
-								$idx = substr($p_date['post_date'], 0, 10).':'.str_pad($result['journal_main_id'], 8, '0', STR_PAD_LEFT);
-								$repost_ids[$idx] = $result['journal_main_id'];
-							}
-						}
-					}
-				}
-				// 	find if any COGS owed for items
-				foreach ($this->journal_rows as $row) if ($row['sku']) {
-					if (($row['qty']>0 && in_array($this->journal_id, array(6, 13, 14, 16))) || ($row['qty'] < 0 && in_array($this->journal_id, array(7, 12)))) {
-						$inv_qoh = $admin->DataBase->query("SELECT SUM(remaining) as remaining FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='{$row['sku']}' AND remaining>0");
-						$working_qty = $row['qty'] + $inv_qoh['remaining'];
-						$raw_sql = "SELECT id, journal_main_id, qty, post_date FROM ".TABLE_INVENTORY_COGS_OWED." WHERE sku='{$row['sku']}'";
-						if (ENABLE_MULTI_BRANCH) $raw_sql .= " AND store_id = " . $this->store_id;
-						$raw_sql .= " ORDER BY post_date, id";
-						$sql = $admin->DataBase->prepare($raw_sql);
-						$sql->execute();
-						while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
-							if ($working_qty >= $result['qty']) { // repost this journal entry and remove the owed record since we will repost all the negative quantities necessary
-								if ($result['journal_main_id'] <> $this->id) { // prevent infinite loop
-									$admin->messageStack->debug("\n    check_for_re_post is queing for cogs owed, id = {$result['journal_main_id']} to re-post.");
-									$idx = substr($result['post_date'], 0, 10).':'.str_pad($result['journal_main_id'], 8, '0', STR_PAD_LEFT);
-									$repost_ids[$idx] = $result['journal_main_id'];
-								}
-								$admin->DataBase->exec("DELETE FROM " . TABLE_INVENTORY_COGS_OWED . " WHERE id = " . $result['id']);
-							}
-							$working_qty -= $result['qty'];
-							if ($working_qty <= 0) break;
-						}
-					}
-				}
-				// Check for payments or receipts made to this record that will need to be re-posted.
-				if ($this->id) {
-					$sql = $admin->DataBase->query("SELECT ref_id, post_date FROM ".TABLE_JOURNAL_ITEM." WHERE so_po_item_ref_id = $this->id AND gl_type in ('chk', 'pmt')");
-					$sql->execute();
-					while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
-						$admin->messageStack->debug("\n    check_for_re_post is queing for payment id = " . $result['ref_id']);
-						$idx = substr($result['post_date'], 0, 10).':'.str_pad($result['ref_id'], 8, '0', STR_PAD_LEFT);
-						$repost_ids[$idx] = $result['ref_id'];
-					}
-				}
-				$admin->messageStack->debug(" end Checking for Re-post.");
-				break;
-			case  2: // General Journal
-			case  3: // Purchase Quote Journal
-			case  4: // Purchase Order Journal
-			case  9: // Sales Quote Journal
-			case 10: // Sales Order Journal
-			case 18: // Cash Receipts Journal
-			case 20: // Cash Distribution Journal
-			default: $admin->messageStack->debug(" end check for Re-post with no action.");
+			}
 		}
+		if ($this->id) for ($i = 0; $i < count($this->journal_rows); $i++) if ($this->journal_rows[$i]['sku']) {
+			// check to see if any future postings relied on this record, queue to re-post if so.
+			$sql = $admin->DataBase->prepare("SELECT id FROM ".TABLE_INVENTORY_HISTORY." WHERE ref_id={$this->id} AND sku='{$this->journal_rows[$i]['sku']}'");
+			$sql->execute();
+			if ($sql->rowCount() > 0) {
+				$result = $sql->fetch(\PDO::FETCH_LAZY);
+				$sql = $admin->DataBase->prepare("SELECT journal_main_id FROM ".TABLE_INVENTORY_COGS_USAGE." WHERE inventory_history_id=".$result['id']);
+				$sql->execute();
+				while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+					if ($result['journal_main_id'] <> $this->id) {
+						$admin->messageStack->debug("\n    check_for_re_post is queing for cogs usage id = " . $result['journal_main_id']);
+						$p_date = $admin->DataBase->query("SELECT post_date FROM ".TABLE_JOURNAL_MAIN." WHERE id=".$result['journal_main_id']);
+						$idx = substr($p_date['post_date'], 0, 10).':'.str_pad($result['journal_main_id'], 8, '0', STR_PAD_LEFT);
+						$repost_ids[$idx] = $result['journal_main_id'];
+					}
+				}
+			}
+		}
+		// 	find if any COGS owed for items
+		foreach ($this->journal_rows as $row) if ($row['sku']) {
+			if (($row['qty']>0 && in_array($this->journal_id, array(6, 13, 14, 16))) || ($row['qty'] < 0 && in_array($this->journal_id, array(7, 12)))) {
+				$inv_qoh = $admin->DataBase->query("SELECT SUM(remaining) as remaining FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='{$row['sku']}' AND remaining>0");
+				$working_qty = $row['qty'] + $inv_qoh['remaining'];
+				$raw_sql = "SELECT id, journal_main_id, qty, post_date FROM ".TABLE_INVENTORY_COGS_OWED." WHERE sku='{$row['sku']}'";
+				if (ENABLE_MULTI_BRANCH) $raw_sql .= " AND store_id = " . $this->store_id;
+				$raw_sql .= " ORDER BY post_date, id";
+				$sql = $admin->DataBase->prepare($raw_sql);
+				$sql->execute();
+				while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+					if ($working_qty >= $result['qty']) { // repost this journal entry and remove the owed record since we will repost all the negative quantities necessary
+						if ($result['journal_main_id'] <> $this->id) { // prevent infinite loop
+							$admin->messageStack->debug("\n    check_for_re_post is queing for cogs owed, id = {$result['journal_main_id']} to re-post.");
+							$idx = substr($result['post_date'], 0, 10).':'.str_pad($result['journal_main_id'], 8, '0', STR_PAD_LEFT);
+							$repost_ids[$idx] = $result['journal_main_id'];
+						}
+						$admin->DataBase->exec("DELETE FROM " . TABLE_INVENTORY_COGS_OWED . " WHERE id = " . $result['id']);
+					}
+					$working_qty -= $result['qty'];
+					if ($working_qty <= 0) break;
+				}
+			}
+		}
+		// Check for payments or receipts made to this record that will need to be re-posted.
+		if ($this->id) {
+			$sql = $admin->DataBase->query("SELECT ref_id, post_date FROM ".TABLE_JOURNAL_ITEM." WHERE so_po_item_ref_id = $this->id AND gl_type in ('chk', 'pmt')");
+			$sql->execute();
+			while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+				$admin->messageStack->debug("\n    check_for_re_post is queing for payment id = " . $result['ref_id']);
+				$idx = substr($result['post_date'], 0, 10).':'.str_pad($result['ref_id'], 8, '0', STR_PAD_LEFT);
+				$repost_ids[$idx] = $result['ref_id'];
+			}
+		}
+		$admin->messageStack->debug(" end Checking for Re-post.");
 		return $repost_ids;
 	}
 

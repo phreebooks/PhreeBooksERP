@@ -465,7 +465,7 @@ class journal_02 extends \core\classes\journal {
 		global $admin;
 		$admin->messageStack->debug("\n    Starting to load SO/PO balances ...");
 		$item_array = array();
-		if ($ref_id) throw new \core\classes\userException("Error in classes/journal, function load_so_po_balance. Bad journal_id (2) for this function.");
+		if ($ref_id) throw new \core\classes\userException("Error in classes/journal_02, function load_so_po_balance. Bad journal for this function.");
 		$this->so_po_balance_array = $item_array;
 		$admin->messageStack->debug(" Finished loading SO/PO balances = " . print_r($item_array, true));
 		return $item_array;
