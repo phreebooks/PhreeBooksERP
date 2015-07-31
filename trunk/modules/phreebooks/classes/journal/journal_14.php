@@ -168,7 +168,6 @@ class journal_14 extends \core\classes\journal {
 			case 10: // Sales Order Journal
 			default: $admin->messageStack->debug(" end Posting Chart Balances with no action.");
 		}
-		return true;
 	}
 
 	/**
@@ -239,7 +238,7 @@ class journal_14 extends \core\classes\journal {
 			$sql->execute();
 			while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
 				$sql = "UPDATE " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " SET beginning_balance = {$result['beginning_balance']}
-				WHERE period = " . ($i + 1) . " and account_id = '{$result->fields['account_id']}'";
+				WHERE period = " . ($i + 1) . " and account_id = '{$result['account_id']}'";
 				$admin->DataBase->exec($sql);
 			}
 		}
@@ -584,7 +583,6 @@ class journal_14 extends \core\classes\journal {
 		// remove cost of goods sold records (will be re-calculated if re-posting)
 		$this->remove_journal_COGS_entries();
 		$admin->messageStack->debug("\n  end unPosting Inventory.");
-		return true;
 	}
 
 
@@ -737,7 +735,7 @@ class journal_14 extends \core\classes\journal {
 				// save the history record id used along with the quantity for roll-back purposes
 				$history_ids[] = array('id' => $result['id'], 'qty' => $cost_qty); // how many from what id
 				$cogs += $cost * $cost_qty;
-				$sql = "UPDATE ".TABLE_INVENTORY_HISTORY." SET remaining = remaining - $cost_qty WHERE id=".$result->fields['id'];
+				$sql = "UPDATE ".TABLE_INVENTORY_HISTORY." SET remaining = remaining - $cost_qty WHERE id=".$result['id'];
 				$admin->DataBase->exec($sql);
 				if ($exit_loop) break;
 			}
@@ -820,12 +818,12 @@ class journal_14 extends \core\classes\journal {
 		}
 		$raw_sql = "SELECT remaining, unit_cost FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='$sku' AND remaining>0";
 		if (ENABLE_MULTI_BRANCH) $raw_sql .= " AND store_id='$this->store_id'";
-		$raw_sql .= " ORDER BY id" . ($defaults->fields['cost_method'] == 'l' ? ' DESC' : '');
+		$raw_sql .= " ORDER BY id" . ($defaults['cost_method'] == 'l' ? ' DESC' : '');
 		$sql = $admin->DataBase->prepare($raw_sql);
 		$sql->execute();
 		$working_qty = abs($qty);
 		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) { // loops until either qty is zero and/or inventory history is exhausted
-			if ($working_qty <= $result->fields['remaining']) { // this history record has enough to fill request
+			if ($working_qty <= $result['remaining']) { // this history record has enough to fill request
 				$cogs += $result['unit_cost'] * $working_qty;
 				$working_qty = 0;
 				break; // exit loop

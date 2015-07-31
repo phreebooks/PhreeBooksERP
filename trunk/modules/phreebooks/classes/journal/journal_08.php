@@ -38,7 +38,6 @@ class journal_08 extends \core\classes\journal {
 		global $admin;
 		$admin->messageStack->debug("\n  Posting Chart Balances...");
 		$admin->messageStack->debug(" end Posting Chart Balances with no action.");
-		return true;
 	}
 
 	/**
@@ -71,7 +70,7 @@ class journal_08 extends \core\classes\journal {
 			$sql->execute();
 			while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
 				$sql = "UPDATE " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " SET beginning_balance = {$result['beginning_balance']}
-				WHERE period = " . ($i + 1) . " and account_id = '{$result->fields['account_id']}'";
+				WHERE period = " . ($i + 1) . " and account_id = '{$result['account_id']}'";
 				$admin->DataBase->exec($sql);
 			}
 		}
@@ -142,14 +141,12 @@ class journal_08 extends \core\classes\journal {
 		global $admin;
 		$admin->messageStack->debug("\n  Posting Inventory ...");
 		$admin->messageStack->debug(" end Posting Inventory not requiring any action.");
-		return true;
 	}
 
 	function unPost_inventory() {
 		global $admin;
 		$admin->messageStack->debug("\n  unPosting Inventory ...");
 		$admin->messageStack->debug(" end unPosting Inventory with no action.");
-		return true;
 	}
 
 
