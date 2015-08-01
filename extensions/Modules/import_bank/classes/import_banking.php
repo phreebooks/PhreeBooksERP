@@ -261,7 +261,7 @@ class import_banking extends \phreebooks\classes\journal {
 						'gl_account'            => $gl_acct_id,
 						'serialize_number'      => $found_invoices[$i]['purchase_invoice_id'],
 						'post_date'             => $this->post_date,
-						'debit_amount'     		=> ($this->_firstjid == 20 && $this->_debitamount != 0) ? $found_invoices[$i]['amount'] : 0,
+						'debit_amount'     		=> ($this->_firstjid == 20 && $this->_debitamount != 0) ? $found_invoices[$i]['amount'] : 0,// @todo should maybe negatate
 						'credit_amount'			=> ($this->_firstjid == 20 && $this->_debitamount != 0) ? 0       : $found_invoices[$i]['amount'],
 				  		'description'    		=> $this->_description,
 					);
@@ -477,15 +477,15 @@ class import_banking extends \phreebooks\classes\journal {
 		$result = $admin->DataBase->query($sql);
 		$open_invoices = array();
 		while (!$result->EOF) {
-			$result->fields['total_amount'] = ($result->fields['debit_amount']) ? $result->fields['debit_amount'] : $result->fields['credit_amount'];
-			$result->fields['total_amount'] -= fetch_partially_paid($result->fields['id']);
-			if ($result->fields['journal_id'] == 7 || $result->fields['journal_id'] == 13) {
-				 $result->fields['total_amount'] = -$result->fields['total_amount'];
-			}
-			$result->fields['description']   = $result->fields['purch_order_id'];
-			$result->fields['discount']      = '';
-			$result->fields['amount_paid']   = '';
 			$open_invoices[$result->fields['id']] = $result->fields;
+			$open_invoices['total_amount'] = ($result->fields['debit_amount']) ? $result->fields['debit_amount'] : $result->fields['credit_amount'];
+			$open_invoices['total_amount'] -= fetch_partially_paid($result->fields['id']);
+			if ($result->fields['journal_id'] == 7 || $result->fields['journal_id'] == 13) {
+				 $open_invoices['total_amount'] = -$result->fields['total_amount'];
+			}
+			$open_invoices['description']   = $result->fields['purch_order_id'];
+			$open_invoices['discount']      = '';
+			$open_invoices['amount_paid']   = '';
 			$result->MoveNext();
 		}
 		ksort($open_invoices);
