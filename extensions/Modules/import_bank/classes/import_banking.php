@@ -505,15 +505,15 @@ class impbanking extends journal {
 		$result = $db->Execute($sql);
 		$open_invoices = array();
 		while (!$result->EOF) {
-			$result->fields['total_amount'] = ($result->fields['debit_amount']) ? $result->fields['debit_amount'] : $result->fields['credit_amount'];
-			$result->fields['total_amount'] -= fetch_partially_paid($result->fields['id']);
-			if ($result->fields['journal_id'] == 7 || $result->fields['journal_id'] == 13) {
-				 $result->fields['total_amount'] = -$result->fields['total_amount'];
-			}
-			$result->fields['description']   = $result->fields['purch_order_id'];
-			$result->fields['discount']      = '';
-			$result->fields['amount_paid']   = '';
 			$open_invoices[$result->fields['id']] = $result->fields;
+			$open_invoices['total_amount'] = ($result->fields['debit_amount']) ? $result->fields['debit_amount'] : $result->fields['credit_amount'];
+			$open_invoices['total_amount'] -= fetch_partially_paid($result->fields['id']);
+			if ($result->fields['journal_id'] == 7 || $result->fields['journal_id'] == 13) {
+				 $open_invoices['total_amount'] = -$result->fields['total_amount'];
+			}
+			$open_invoices['description']   = $result->fields['purch_order_id'];
+			$open_invoices['discount']      = '';
+			$open_invoices['amount_paid']   = '';
 			$result->MoveNext();
 		}
 		ksort($open_invoices);
