@@ -67,7 +67,7 @@ class journal_07 extends \core\classes\journal {//@todo should extend orders
 	public $ship_email          = COMPANY_EMAIL;
 	public $error_6 			= GENERAL_JOURNAL_7_ERROR_6;
 
-	
+
 
 	/*******************************************************************************************************************/
 	// START re-post Functions
@@ -658,8 +658,8 @@ class journal_07 extends \core\classes\journal {//@todo should extend orders
 		$admin->messageStack->debug("\n    Starting to load SO/PO balances ...");
 		$item_array = array();
 		if ($ref_id) {
-			$gl_type = 'poo'; 
-			$proc_type = 'por'; 
+			$gl_type = 'poo';
+			$proc_type = 'por';
 			// start by retrieving the po/so item list
 			$raw_sql = "SELECT id, sku, qty FROM " . TABLE_JOURNAL_ITEM . " WHERE ref_id = {$ref_id} and gl_type = '{$gl_type}'";
 			$sql = $admin->DataBase->prepare($raw_sql);
@@ -753,7 +753,7 @@ class journal_07 extends \core\classes\journal {//@todo should extend orders
 		$this->journal_main_array = $this->build_journal_main_array();	// build ledger main record
 
 		// ***************************** START TRANSACTION *******************************
-		$messageStack->debug("\n  started order post purchase_invoice_id = " . $this->purchase_invoice_id . " and id = " . $this->id);
+		$messageStack->debug("\n  started order post purchase_invoice_id = {$this->purchase_invoice_id} and id = " . $this->id);
 		$admin->DataBase->transStart();
 		// *************  Pre-POST processing *************
 		// add/update address book

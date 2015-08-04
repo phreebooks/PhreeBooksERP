@@ -1197,7 +1197,7 @@ class journal_06 extends \core\classes\journal {//@todo should extend orders
 		$this->journal_main_array = $this->build_journal_main_array();	// build ledger main record
 
 		// ***************************** START TRANSACTION *******************************
-		$messageStack->debug("\n  started order post purchase_invoice_id = " . $this->purchase_invoice_id . " and id = " . $this->id);
+		$messageStack->debug("\n  started order post purchase_invoice_id = {$this->purchase_invoice_id} and id = " . $this->id);
 		$admin->DataBase->transStart();
 		// *************  Pre-POST processing *************
 		// add/update address book

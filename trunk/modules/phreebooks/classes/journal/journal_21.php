@@ -34,7 +34,7 @@ class journal_21 extends \core\classes\journal {//@todo should extend orders
 	public $purchase_invoice_id;
 	public $bill_add_update		= false;
 	public $save_payment        = false;
-    
+
     public $journal_id          = 21;
 	public $closed 				= '0';
 	public $gl_type             = GL_TYPE;
@@ -1214,7 +1214,7 @@ class journal_21 extends \core\classes\journal {//@todo should extend orders
 		$this->journal_main_array = $this->build_journal_main_array();	// build ledger main record
 
 		// ***************************** START TRANSACTION *******************************
-		$messageStack->debug("\n  started order post purchase_invoice_id = " . $this->purchase_invoice_id . " and id = " . $this->id);
+		$messageStack->debug("\n  started order post purchase_invoice_id = {$this->purchase_invoice_id} and id = " . $this->id);
 		$admin->DataBase->transStart();
 		// *************  Pre-POST processing *************
 		// add/update address book
@@ -1227,10 +1227,10 @@ class journal_21 extends \core\classes\journal {//@todo should extend orders
 		$this->Post($this->id ? 'edit' : 'insert',true);
 		// ************* post-POST processing *************
 					$this->increment_purchase_invoice_id();
-		$messageStack->debug("\n  committed order post purchase_invoice_id = " . $this->purchase_invoice_id . " and id = " . $this->id . "\n\n");
+		$messageStack->debug("\n  committed order post purchase_invoice_id = {$this->purchase_invoice_id} and id = " . $this->id . "\n\n");
 		$admin->DataBase->transCommit();
 		// ***************************** END TRANSACTION *******************************
-		$messageStack->add('Successfully posted ' . TEXT_POINT_OF_SALE . ' Ref # ' . $this->purchase_invoice_id, 'success');
+		$messageStack->add('Successfully posted ' . TEXT_POINT_OF_SALE . " Ref # $this->purchase_invoice_id", 'success');
 		return true;
 	}
 

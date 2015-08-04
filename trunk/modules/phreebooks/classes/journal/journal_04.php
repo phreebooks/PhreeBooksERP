@@ -138,7 +138,7 @@ class journal_04 extends \core\classes\journal {//@todo should extend orders
 		$admin->messageStack->debug("\n  Posting Inventory ...");
 		$str_field       = 'quantity_on_order';
 		$item_array      = $this->load_so_po_balance($this->id);
-		
+
 		// adjust inventory stock status levels (also fills inv_list array)
 		$item_rows_to_process = count($this->journal_rows); // NOTE: variable needs to be here because journal_rows may grow within for loop (COGS)
 		for ($i = 0; $i < $item_rows_to_process; $i++) {
@@ -200,7 +200,7 @@ class journal_04 extends \core\classes\journal {//@todo should extend orders
 		// value will be calculated when the updated purchase/receive is posted.
 		// prepare some variables
 		$db_field = 'quantity_on_order';
-		
+
 		for ($i = 0; $i < count($this->journal_rows); $i++) if ($this->journal_rows[$i]['sku']) {
 			$item_array = $this->load_so_po_balance($this->id, '', false);
 			$bal_before_post = $item_array[$this->journal_rows[$i]['id']]['ordered'] - $item_array[$this->journal_rows[$i]['id']]['processed'];
@@ -604,7 +604,7 @@ class journal_04 extends \core\classes\journal {//@todo should extend orders
 		$this->journal_main_array = $this->build_journal_main_array();	// build ledger main record
 
 		// ***************************** START TRANSACTION *******************************
-		$messageStack->debug("\n  started order post purchase_invoice_id = " . $this->purchase_invoice_id . " and id = " . $this->id);
+		$messageStack->debug("\n  started order post purchase_invoice_id = {$this->purchase_invoice_id} and id = " . $this->id);
 		$admin->DataBase->transStart();
 		// *************  Pre-POST processing *************
 		// add/update address book

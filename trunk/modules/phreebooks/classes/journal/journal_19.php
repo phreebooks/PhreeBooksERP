@@ -39,7 +39,7 @@ class journal_19 extends \core\classes\journal {//@todo should extend orders
 	public $currencies_value    = '1.0';
     public $bill_acct_id		= '';
     public $bill_address_id		= '';
-    
+
 	public $bill_primary_name   = TEXT_NAME_OR_COMPANY;
 	public $bill_contact        = TEXT_ATTENTION;
 	public $bill_address1       = TEXT_ADDRESS1;
@@ -77,7 +77,7 @@ class journal_19 extends \core\classes\journal {//@todo should extend orders
 	public $shipper_code        = '';
 	public $so_po_ref_id		= '';
 	public $save_payment        = false;
-	
+
 
 	function __construct( $id = 0, $verbose = true) {
         $this->purchase_invoice_id = 'DP' . date('Ymd');
@@ -1211,7 +1211,7 @@ class journal_19 extends \core\classes\journal {//@todo should extend orders
 		$this->journal_main_array = $this->build_journal_main_array();	// build ledger main record
 
 		// ***************************** START TRANSACTION *******************************
-		$messageStack->debug("\n  started order post purchase_invoice_id = " . $this->purchase_invoice_id . " and id = " . $this->id);
+		$messageStack->debug("\n  started order post purchase_invoice_id = {$this->purchase_invoice_id} and id = " . $this->id);
 		$admin->DataBase->transStart();
 		// *************  Pre-POST processing *************
 		// add/update address book
