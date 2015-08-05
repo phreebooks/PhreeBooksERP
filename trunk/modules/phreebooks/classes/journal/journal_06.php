@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/classes/journal/journal_6.php
 //
-// Puchases Journal (6)
+// Purchase / Receive  Journal (6)
 namespace phreebooks\classes\journal;
 class journal_06 extends \core\classes\journal {//@todo should extend orders
 	public $id;

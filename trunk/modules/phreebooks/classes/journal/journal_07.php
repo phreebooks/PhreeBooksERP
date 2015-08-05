@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/classes/journal/journal_7.php
 //
-// Vendor CM Journal (7)
+// Vendor / Purchase Credit Memo Journal (7)
 namespace phreebooks\classes\journal;
 class journal_07 extends \core\classes\journal {//@todo should extend orders
 	public $id;

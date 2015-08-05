@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/classes/journal/journal_16.php
 //
-// Inv Adjustment Journal (16)
+// Inventory Adjustment Journal (16)
 namespace phreebooks\classes\journal;
 class journal_16 extends \core\classes\journal {
 
