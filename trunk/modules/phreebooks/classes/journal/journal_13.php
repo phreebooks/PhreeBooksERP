@@ -283,7 +283,6 @@ class journal_13 extends \core\classes\journal {//@todo should extend orders
 	function Post_inventory() {
 		global $admin;
 		$admin->messageStack->debug("\n  Posting Inventory ...");
-		$str_field       = 'quantity_on_hand';
 		// adjust inventory stock status levels (also fills inv_list array)
 		$item_rows_to_process = count($this->journal_rows); // NOTE: variable needs to be here because journal_rows may grow within for loop (COGS)
 		for ($i = 0; $i < $item_rows_to_process; $i++) {
@@ -325,7 +324,7 @@ class journal_13 extends \core\classes\journal {//@todo should extend orders
 			$post_qty   = $this->journal_rows[$i]['qty'];
 			$item_cost  = 0;
 			$full_price = 0;
-			$this->update_inventory_status($this->journal_rows[$i]['sku'], $str_field, $post_qty, $item_cost, $this->journal_rows[$i]['description'], $full_price);
+			$this->update_inventory_status($this->journal_rows[$i]['sku'], 'quantity_on_hand', $post_qty, $item_cost, $this->journal_rows[$i]['description'], $full_price);
 		}
 		$admin->messageStack->debug("\n  end Posting Inventory.");
 		return true;
@@ -945,16 +944,14 @@ class journal_13 extends \core\classes\journal {//@todo should extend orders
 		if ($debit_credit != 'debit' && $debit_credit != 'credit') throw new \core\classes\userException(sprintf("bad parameter passed to ",__METHOD__ ) );
 			$total = 0;
 			for ($i=0; $i<count($this->item_rows); $i++) {
-				$qty_pstd = 'pstd';
-				$terminal_date = $this->terminal_date;
-				if ($this->item_rows[$i][$qty_pstd]) { // make sure the quantity line is set and not zero
+				if ($this->item_rows[$i]['pstd']) { // make sure the quantity line is set and not zero
 					$this->journal_rows[] = array(
 							'id'                      => $this->item_rows[$i]['id'],	// retain the db id (used for updates)
 							'item_cnt'                => $this->item_rows[$i]['item_cnt'],
 							'so_po_item_ref_id'       => $this->item_rows[$i]['so_po_item_ref_id'],	// item reference id for so/po line items
 							'gl_type'                 => $this->gl_type,
 							'sku'                     => $this->item_rows[$i]['sku'],
-							'qty'                     => $this->item_rows[$i][$qty_pstd],
+							'qty'                     => $this->item_rows[$i]['pstd'],
 							'description'             => $this->item_rows[$i]['desc'],
 							$debit_credit . '_amount' => $this->item_rows[$i]['total'],
 							'full_price'              => $this->item_rows[$i]['full'],
@@ -964,7 +961,7 @@ class journal_13 extends \core\classes\journal {//@todo should extend orders
 							'project_id'              => $this->item_rows[$i]['proj'],
 							'purch_package_quantity'  => $this->item_rows[$i]['purch_package_quantity'],
 							'post_date'               => $this->post_date,
-							'date_1'                  => $this->item_rows[$i]['date_1'] ? $this->item_rows[$i]['date_1'] : $terminal_date,
+							'date_1'                  => $this->item_rows[$i]['date_1'] ? $this->item_rows[$i]['date_1'] : $this->terminal_date,
 					);
 					$total += $this->item_rows[$i]['total'];
 				}

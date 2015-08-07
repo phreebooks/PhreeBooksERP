@@ -132,7 +132,6 @@ class journal_10 extends \core\classes\journal { //@todo should extend orders
 	function Post_inventory() {
 		global $admin;
 		$admin->messageStack->debug("\n  Posting Inventory ...");
-		$str_field       = 'quantity_on_sales_order';//@todo
 		$item_array      = $this->load_so_po_balance($this->id); //@todo
 		// adjust inventory stock status levels (also fills inv_list array)
 		$item_rows_to_process = count($this->journal_rows); // NOTE: variable needs to be here because journal_rows may grow within for loop (COGS)
@@ -154,7 +153,7 @@ class journal_10 extends \core\classes\journal { //@todo should extend orders
 				);
 				$adjustment = ($item_array[$inv_list['id']]['processed'] > 0) ? $item_array[$inv_list['id']]['processed'] : 0;
 				if ($this->closed) $adjustment = $this->journal_rows[$i]['qty'];
-				$this->update_inventory_status($inv_list['sku'], $str_field, -$adjustment, 0, $inv_list['description'], $inv_list['price']);
+				$this->update_inventory_status($inv_list['sku'], 'quantity_on_sales_order', -$adjustment, 0, $inv_list['description'], $inv_list['price']);
 			}
 		}
 		// build the cogs rows
@@ -177,7 +176,7 @@ class journal_10 extends \core\classes\journal { //@todo should extend orders
 			$post_qty   = $this->journal_rows[$i]['qty'];
 			$item_cost  = 0;
 			$full_price = 0;
-			$this->update_inventory_status($this->journal_rows[$i]['sku'], $str_field, $post_qty, $item_cost, $this->journal_rows[$i]['description'], $full_price);
+			$this->update_inventory_status($this->journal_rows[$i]['sku'], 'quantity_on_sales_order', $post_qty, $item_cost, $this->journal_rows[$i]['description'], $full_price);
 		}
 		$admin->messageStack->debug("\n  end Posting Inventory.");
 		return true;
@@ -559,10 +558,9 @@ class journal_10 extends \core\classes\journal { //@todo should extend orders
 			$this->journal_main_array['purchase_invoice_id'] = $this->purchase_invoice_id;
 			$admin->messageStack->debug(" specified ID but no dups, returning OK. ");
 		} else {	// generate a new order/invoice value
-			$str_field = 'next_so_num';  //@todo
-			$result = $admin->DataBase->query("SELECT {$str_field} FROM " . TABLE_CURRENT_STATUS . " LIMIT 1");
+			$result = $admin->DataBase->query("SELECT next_so_num FROM " . TABLE_CURRENT_STATUS . " LIMIT 1");
 			if (!$result) throw new \core\classes\userException(sprintf(GL_ERROR_CANNOT_FIND_NEXT_ID, TABLE_CURRENT_STATUS));
-			$this->journal_main_array['purchase_invoice_id'] = $result[$str_field];
+			$this->journal_main_array['purchase_invoice_id'] = $result['next_so_num'];
 			$admin->messageStack->debug(" generated ID, returning ID# " . $this->journal_main_array['purchase_invoice_id']);
 		}
 		return true;
@@ -571,10 +569,9 @@ class journal_10 extends \core\classes\journal { //@todo should extend orders
 	function increment_purchase_invoice_id($force = false) {
 		global $admin;
 		if ($this->purchase_invoice_id == '' || $force) { // increment the po/so/invoice number
-			$str_field = 'next_so_num';
 			$next_id = string_increment($this->journal_main_array['purchase_invoice_id']);
-			$sql = "UPDATE " . TABLE_CURRENT_STATUS . " SET $str_field = '$next_id'";
-			if (!$force) $sql .= " WHERE $str_field = '{$this->journal_main_array['purchase_invoice_id']}'";
+			$sql = "UPDATE " . TABLE_CURRENT_STATUS . " SET next_so_num = '$next_id'";
+			if (!$force) $sql .= " WHERE next_so_num = '{$this->journal_main_array['purchase_invoice_id']}'";
 			$result = $admin->DataBase->exec($sql);
 			if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(TEXT_THERE_WAS_AN_ERROR_INCREMENTING_THE_ARGS, $journal_types_list[10]['id_field_name']));
 		}
@@ -790,16 +787,14 @@ class journal_10 extends \core\classes\journal { //@todo should extend orders
 		if ($debit_credit != 'debit' && $debit_credit != 'credit') throw new \core\classes\userException(sprintf("bad parameter passed to ",__METHOD__ ) );
 		$total = 0;
 		for ($i=0; $i<count($this->item_rows); $i++) {
-			$qty_pstd = 'qty'; //@todo
-			$terminal_date = $this->terminal_date;//@todo
-			if ($this->item_rows[$i][$qty_pstd]) { // make sure the quantity line is set and not zero
+			if ($this->item_rows[$i]['qty']) { // make sure the quantity line is set and not zero
 				$this->journal_rows[] = array(
 						'id'                      => $this->item_rows[$i]['id'],	// retain the db id (used for updates)
 						'item_cnt'                => $this->item_rows[$i]['item_cnt'],
 						'so_po_item_ref_id'       => $this->item_rows[$i]['so_po_item_ref_id'],	// item reference id for so/po line items
 						'gl_type'                 => $this->gl_type,
 						'sku'                     => $this->item_rows[$i]['sku'],
-						'qty'                     => $this->item_rows[$i][$qty_pstd],
+						'qty'                     => $this->item_rows[$i]['qty'],
 						'description'             => $this->item_rows[$i]['desc'],
 						$debit_credit . '_amount' => $this->item_rows[$i]['total'],
 						'full_price'              => $this->item_rows[$i]['full'],
@@ -809,7 +804,7 @@ class journal_10 extends \core\classes\journal { //@todo should extend orders
 						'project_id'              => $this->item_rows[$i]['proj'],
 						'purch_package_quantity'  => $this->item_rows[$i]['purch_package_quantity'],
 						'post_date'               => $this->post_date,
-						'date_1'                  => $this->item_rows[$i]['date_1'] ? $this->item_rows[$i]['date_1'] : $terminal_date,
+						'date_1'                  => $this->item_rows[$i]['date_1'] ? $this->item_rows[$i]['date_1'] : $this->terminal_date,
 				);
 				$total += $this->item_rows[$i]['total'];
 			}

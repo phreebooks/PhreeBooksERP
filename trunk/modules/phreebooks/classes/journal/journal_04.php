@@ -136,7 +136,6 @@ class journal_04 extends \core\classes\journal {//@todo should extend orders
 	function Post_inventory() {
 		global $admin;
 		$admin->messageStack->debug("\n  Posting Inventory ...");
-		$str_field       = 'quantity_on_order';
 		$item_array      = $this->load_so_po_balance($this->id);
 
 		// adjust inventory stock status levels (also fills inv_list array)
@@ -161,7 +160,7 @@ class journal_04 extends \core\classes\journal {//@todo should extend orders
 				if ($this->closed) $adjustment = $this->journal_rows[$i]['qty'];
 				$item_cost  = $inv_list['price'];
 				$full_price = 0;
-				$this->update_inventory_status($inv_list['sku'], $str_field, -$adjustment, $item_cost, $inv_list['description'], $full_price);
+				$this->update_inventory_status($inv_list['sku'], 'quantity_on_order', -$adjustment, $item_cost, $inv_list['description'], $full_price);
 			}
 		}
 		// build the cogs rows
@@ -185,7 +184,7 @@ class journal_04 extends \core\classes\journal {//@todo should extend orders
 			$item_cost  = 0;
 			$full_price = 0;
 			if (ENABLE_AUTO_ITEM_COST == 'PO' && $this->journal_rows[$i]['qty']) $item_cost = $this->journal_rows[$i]['debit_amount'] / $this->journal_rows[$i]['qty'];
-			$this->update_inventory_status($this->journal_rows[$i]['sku'], $str_field, $post_qty, $item_cost, $this->journal_rows[$i]['description'], $full_price);
+			$this->update_inventory_status($this->journal_rows[$i]['sku'], 'quantity_on_order', $post_qty, $item_cost, $this->journal_rows[$i]['description'], $full_price);
 		}
 		$admin->messageStack->debug("\n  end Posting Inventory.");
 		return true;

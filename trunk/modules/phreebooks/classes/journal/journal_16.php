@@ -363,42 +363,6 @@ class journal_16 extends \core\classes\journal {
 	function Post_inventory() {
 		global $admin;
 		$admin->messageStack->debug("\n  Posting Inventory ...");
-		switch ($this->journal_id) { // Pre-posting particulars that are journal dependent
-			case  4:
-				$str_field       = 'quantity_on_order';
-				$item_array      = $this->load_so_po_balance($this->id);
-				break;
-			case  6:
-				$str_field       = 'quantity_on_hand';
-				$so_po_str_field = 'quantity_on_order';
-				$item_array      = $this->load_so_po_balance($this->so_po_ref_id, $this->id);
-				break;
-			case 10:
-				$str_field       = 'quantity_on_sales_order';
-				$item_array      = $this->load_so_po_balance($this->id);
-				break;
-			case 12:
-			case 19:
-				$str_field       = 'quantity_on_hand';
-				$so_po_str_field = 'quantity_on_sales_order';
-				$item_array      = $this->load_so_po_balance($this->so_po_ref_id, $this->id);
-				break;
-			case  7:
-			case 13:
-			case 14:
-			case 16:
-			case 21:
-				$str_field       = 'quantity_on_hand';
-				break;
-			case  2:
-			case  3:
-			case  9:
-			case 18:
-			case 20:
-			default:
-				$admin->messageStack->debug(" end Posting Inventory not requiring any action.");
-				return true;
-		}
 		// adjust inventory stock status levels (also fills inv_list array)
 		$item_rows_to_process = count($this->journal_rows); // NOTE: variable needs to be here because journal_rows may grow within for loop (COGS)
 		for ($i = 0; $i < $item_rows_to_process; $i++) {
@@ -417,39 +381,7 @@ class journal_16 extends \core\classes\journal {
 						'store_id'          => $this->store_id,
 						'post_date'         => $this->post_date,
 				);
-				switch ($this->journal_id) {
-					case 4:
-					case 10:
-						$adjustment = ($item_array[$inv_list['id']]['processed'] > 0) ? $item_array[$inv_list['id']]['processed'] : 0;
-						if ($this->closed) $adjustment = $this->journal_rows[$i]['qty'];
-						$item_cost  = ($this->journal_id ==  4) ? $inv_list['price'] : 0;
-						$full_price = ($this->journal_id == 10) ? $inv_list['price'] : 0;
-						$this->update_inventory_status($inv_list['sku'], $str_field, -$adjustment, $item_cost, $inv_list['description'], $full_price);
-						break;
-					case 12: // a sale so make quantity negative (pulling from inventory) and continue
-					case 19:
-						$inv_list['qty'] = -$inv_list['qty'];
-					case  6:
-					case 21:
-						$this->calculate_COGS($inv_list);
-						if ($inv_list['so_po_item_ref_id']) { // check for reference to po/so to adjust qty on order/sales order
-							// do not allow qty on order to go below zero.
-							$bal_before_post = $item_array[$inv_list['so_po_item_ref_id']]['ordered'] - $item_array[$inv_list['so_po_item_ref_id']]['processed'] + $this->journal_rows[$i]['qty'];
-							$adjustment = -(min($this->journal_rows[$i]['qty'], $bal_before_post));
-							$this->update_inventory_status($inv_list['sku'], $so_po_str_field, $adjustment);
-						}
-						break;
-					case 14:
-						$assy_cost = $this->calculate_assembly_list($inv_list); // for assembly parts list
-						break;
-					case  7: // a vendor credit memo, negate the quantity and process same as customer credit memo
-						$inv_list['qty'] = -$inv_list['qty'];
-					case 13: // a customer credit memo, qty stays positive
-					case 16:
-						$this->calculate_COGS($inv_list);
-						break;
-					default: // nothing
-				}
+				$this->calculate_COGS($inv_list);
 			}
 		}
 		// build the cogs rows
@@ -472,28 +404,7 @@ class journal_16 extends \core\classes\journal {
 			$post_qty   = $this->journal_rows[$i]['qty'];
 			$item_cost  = 0;
 			$full_price = 0;
-			switch ($this->journal_id) {
-				case  4:
-					if (ENABLE_AUTO_ITEM_COST == 'PO' && $this->journal_rows[$i]['qty']) $item_cost = $this->journal_rows[$i]['debit_amount'] / $this->journal_rows[$i]['qty'];
-					break;
-				case  6:
-				case 21:
-					if (ENABLE_AUTO_ITEM_COST == 'PR' && $this->journal_rows[$i]['qty']) $item_cost = $this->journal_rows[$i]['debit_amount'] / $this->journal_rows[$i]['qty'];
-					break;
-				case 12:
-					if ($this->journal_rows[$i]['qty']) $full_price = $this->journal_rows[$i]['credit_amount'] / $this->journal_rows[$i]['qty'];
-				case  7:
-				case 19:
-					$post_qty = -$post_qty;
-					break;
-				case 14:
-					if ($i == 0 && $this->journal_rows[$i]['qty'] > 0) { // only for the item being assembled
-						$item_cost = $this->journal_rows[$i]['debit_amount'] / $this->journal_rows[$i]['qty'];
-					}
-					break;
-				default:
-			}
-			$this->update_inventory_status($this->journal_rows[$i]['sku'], $str_field, $post_qty, $item_cost, $this->journal_rows[$i]['description'], $full_price);
+			$this->update_inventory_status($this->journal_rows[$i]['sku'], 'quantity_on_hand', $post_qty, $item_cost, $this->journal_rows[$i]['description'], $full_price);
 		}
 		$admin->messageStack->debug("\n  end Posting Inventory.");
 		return true;
@@ -506,76 +417,22 @@ class journal_16 extends \core\classes\journal {
 		// and keep record. Quantity may go negative because it was used in a COGS calculation but will be corrected when
 		// new inventory has been received and the associated cost applied. If the quantity is changed, the new remaining
 		// value will be calculated when the updated purchase/receive is posted.
-		switch ($this->journal_id) {  // journals that don't affect inventory, return now
-			case  2:
-			case  3:
-			case  9:
-			case 18:
-			case 20:
-				$admin->messageStack->debug(" end unPosting Inventory with no action.");
-				return true;
-			case  6:
-			case  7:
-			case 12:
-			case 13:
-			case 14:
-			case 16:
-			case 19:
-			case 21:
-				// Delete all owed cogs entries (will be re-added during post)
-				$admin->DataBase->exec("DELETE FROM " . TABLE_INVENTORY_COGS_OWED . " WHERE journal_main_id = " . $this->id);
-				$this->rollback_COGS();
-				break;
-			default:  // continue to unPost inventory
-		}
+		// Delete all owed cogs entries (will be re-added during post)
+		$admin->DataBase->exec("DELETE FROM " . TABLE_INVENTORY_COGS_OWED . " WHERE journal_main_id = " . $this->id);
+		$this->rollback_COGS();
 		// prepare some variables
-		switch ($this->journal_id) {
-			case  4:
-			case  6:
-			case 21:
-			case  7:
-				$db_field = 'quantity_on_order';
-				break;
-			default:
-				$db_field = 'quantity_on_sales_order';
-		}
+		$db_field = 'quantity_on_sales_order'; //@todo
 		for ($i = 0; $i < count($this->journal_rows); $i++) if ($this->journal_rows[$i]['sku']) {
-			switch ($this->journal_id) {
-				case  4:
-				case 10:
-					$item_array = $this->load_so_po_balance($this->id, '', false);
-					$bal_before_post = $item_array[$this->journal_rows[$i]['id']]['ordered'] - $item_array[$this->journal_rows[$i]['id']]['processed'];
-					if (!$this->closed && $bal_before_post > 0) $this->update_inventory_status($this->journal_rows[$i]['sku'], $db_field, -$bal_before_post);
-					break;
-				case  6:
-				case  7:
-				case 12:
-				case 13:
-				case 14:
-				case 16:
-				case 19:
-				case 21:
-					switch ($this->journal_id) {
-						case  7: // vendor credit memo - negate qty
-						case 12: // customer sales - negate quantity
-						case 19: // customer POS - negate quantity
-							$qty = -$this->journal_rows[$i]['qty'];
-							break;
-						default:
-							$qty = $this->journal_rows[$i]['qty'];
-					}
-					$this->update_inventory_status($this->journal_rows[$i]['sku'], 'quantity_on_hand', -$qty);
-					// adjust po/so inventory, if necessary, based on min of qty on ordered and qty shipped/received
-					if ($this->journal_rows[$i]['so_po_item_ref_id']) {
-						$item_array = $this->load_so_po_balance($this->so_po_ref_id, $this->id, false);
-						$bal_before_post = $item_array[$this->journal_rows[$i]['so_po_item_ref_id']]['ordered'] - $item_array[$this->journal_rows[$i]['so_po_item_ref_id']]['processed'];
-						// do not allow qty on order to go below zero.
-						$adjustment = min($this->journal_rows[$i]['qty'], $bal_before_post);
-						$this->update_inventory_status($this->journal_rows[$i]['sku'], $db_field, $adjustment);
-					}
-					break;
-				default:
-			}
+			$qty = $this->journal_rows[$i]['qty'];
+			$this->update_inventory_status($this->journal_rows[$i]['sku'], 'quantity_on_hand', -$qty);
+			// adjust po/so inventory, if necessary, based on min of qty on ordered and qty shipped/received
+			if ($this->journal_rows[$i]['so_po_item_ref_id']) {
+				$item_array = $this->load_so_po_balance($this->so_po_ref_id, $this->id, false);
+				$bal_before_post = $item_array[$this->journal_rows[$i]['so_po_item_ref_id']]['ordered'] - $item_array[$this->journal_rows[$i]['so_po_item_ref_id']]['processed'];
+				// do not allow qty on order to go below zero.
+				$adjustment = min($this->journal_rows[$i]['qty'], $bal_before_post);
+				$this->update_inventory_status($this->journal_rows[$i]['sku'], $db_field, $adjustment);
+			}			
 		}
 		// remove the inventory history records
 		$admin->DataBase->exec("DELETE FROM " . TABLE_INVENTORY_HISTORY . " WHERE ref_id = " . $this->id);
@@ -604,23 +461,7 @@ class journal_16 extends \core\classes\journal {
 		$sql = $admin->DataBase->prepare($raw_sql);
 		$sql->execute();
 		// catch sku's that are not in the inventory database but have been requested to post, error
-		if ($sql->rowCount() == 0) {
-			if (!INVENTORY_AUTO_ADD) throw new \core\classes\userException(GL_ERROR_CALCULATING_COGS);
-			$item_cost  = 0;
-			$full_price = 0;
-			switch ($this->journal_id) {
-				case  6:
-				case  7:
-					$item_cost  = $item['price']; break;
-				case 12:
-				case 13:
-					$full_price = $item['price']; break;
-				default:
-					throw new \core\classes\userException(GL_ERROR_CALCULATING_COGS);
-			}
-			$id = $this->inventory_auto_add($item['sku'], $item['description'], $item_cost, $full_price);
-			$result = $admin->DataBase->query($sql); // re-load now that item was created
-		}
+		if ($sql->rowCount() == 0) throw new \core\classes\userException(GL_ERROR_CALCULATING_COGS);
 		$defaults = $sql->fetch(\PDO::FETCH_LAZY);
 		// only calculate cogs for certain inventory_types
 		if (strpos(COG_ITEM_TYPES, $defaults['inventory_type']) === false) {
@@ -634,20 +475,7 @@ class journal_16 extends \core\classes\journal {
 		if ($item['qty'] > 0) { // for positive quantities, inventory received, customer credit memos, unbuild assembly
 			// if insert, enter SYSTEM ENTRY COGS cost only if inv on hand is negative
 			// update will never happen because the entries are removed during the unpost operation.
-			switch ($this->journal_id) {
-				case  6:
-					if ($defaults['cost_method'] == 'a') $item['avg_cost'] = $this->calculate_avg_cost($item['sku'], $item['price'], $item['qty']);
-					break;
-				case 12: // for negative sales/invoices and customer credit memos the price needs to be the last unit_cost,
-				case 13: // not the invoice price (customers price)
-					$item['price'] = $this->calculateCost($item['sku'], 1, $item['serialize_number']);
-					$cogs = -($item['qty'] * $item['price']);
-					break;
-				case 14: // for un-build assemblies cogs will not be zero
-					$cogs = -($item['qty'] * $this->calculateCost($item['sku'], 1, $item['serialize_number'])); // use negative last cost (unbuild assy)
-					break;
-				default: // for all other journals, use the cost as entered to calculate added inventory
-			}
+			// for all other journals, use the cost as entered to calculate added inventory
 			// 	adjust remaining quantities for inventory history since stock was negative
 			$history_array = array(
 					'ref_id'     => $this->id,
