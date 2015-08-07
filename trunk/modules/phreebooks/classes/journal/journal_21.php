@@ -116,30 +116,7 @@ class journal_21 extends \core\classes\journal {//@todo should extend orders
 				}
 			}
 		}
-		// 	find if any COGS owed for items
-		foreach ($this->journal_rows as $row) if ($row['sku']) {
-			if (($row['qty']>0 && in_array($this->journal_id, array(6, 13, 14, 16))) || ($row['qty'] < 0 && in_array($this->journal_id, array(7, 12)))) {
-				$inv_qoh = $admin->DataBase->query("SELECT SUM(remaining) as remaining FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='{$row['sku']}' AND remaining>0");
-				$working_qty = $row['qty'] + $inv_qoh['remaining'];
-				$raw_sql = "SELECT id, journal_main_id, qty, post_date FROM ".TABLE_INVENTORY_COGS_OWED." WHERE sku='{$row['sku']}'";
-				if (ENABLE_MULTI_BRANCH) $raw_sql .= " AND store_id = " . $this->store_id;
-				$raw_sql .= " ORDER BY post_date, id";
-				$sql = $admin->DataBase->prepare($raw_sql);
-				$sql->execute();
-				while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
-					if ($working_qty >= $result['qty']) { // repost this journal entry and remove the owed record since we will repost all the negative quantities necessary
-						if ($result['journal_main_id'] <> $this->id) { // prevent infinite loop
-							$admin->messageStack->debug("\n    check_for_re_post is queing for cogs owed, id = {$result['journal_main_id']} to re-post.");
-							$idx = substr($result['post_date'], 0, 10).':'.str_pad($result['journal_main_id'], 8, '0', STR_PAD_LEFT);
-							$repost_ids[$idx] = $result['journal_main_id'];
-						}
-						$admin->DataBase->exec("DELETE FROM " . TABLE_INVENTORY_COGS_OWED . " WHERE id = " . $result['id']);
-					}
-					$working_qty -= $result['qty'];
-					if ($working_qty <= 0) break;
-				}
-			}
-		}
+		// 	not trying to find if any COGS owed for items @todo is this correct
 		// Check for payments or receipts made to this record that will need to be re-posted.
 		if ($this->id) {
 			$sql = $admin->DataBase->query("SELECT ref_id, post_date FROM ".TABLE_JOURNAL_ITEM." WHERE so_po_item_ref_id = $this->id AND gl_type in ('chk', 'pmt')");
@@ -276,7 +253,7 @@ class journal_21 extends \core\classes\journal {//@todo should extend orders
 				'ref_id'              => $this->id,
 				'so_po_ref_id'        => $this->so_po_ref_id,
 				'acct_id'             => $this->bill_acct_id,
-				'journal_id'          => $this->journal_id,
+				'journal_id'          => 21,
 				'purchase_invoice_id' => $purchase_invoice_id,
 				'amount'              => $this->total_amount,
 				'post_date'           => $this->post_date,
@@ -436,7 +413,7 @@ class journal_21 extends \core\classes\journal {//@todo should extend orders
 			$history_array = array(
 					'ref_id'     => $this->id,
 					'store_id'   => $this->store_id,
-					'journal_id' => $this->journal_id,
+					'journal_id' => 21,
 					'sku'        => $item['sku'],
 					'qty'        => $item['qty'],
 					'remaining'  => $item['qty'],
@@ -749,10 +726,10 @@ class journal_21 extends \core\classes\journal {//@todo should extend orders
 		global $admin;
 		$admin->messageStack->debug("\n  Start validating purchase_invoice_id ... ");
 		if ($this->purchase_invoice_id <> '') {	// entered a so/po/invoice value, check for dups
-			$sql = "SELECT purchase_invoice_id FROM " . TABLE_JOURNAL_MAIN . " WHERE purchase_invoice_id = '{$this->purchase_invoice_id}' and journal_id = '{$this->journal_id}'";
+			$sql = "SELECT purchase_invoice_id FROM " . TABLE_JOURNAL_MAIN . " WHERE purchase_invoice_id = '{$this->purchase_invoice_id}' and journal_id = '21'";
 			if ($this->id) $sql .= " and id <> " . $this->id;
 			$result = $admin->DataBase->query($sql);
-			if ($result->rowCount() > 0) throw new \core\classes\userException(sprintf(TEXT_THE_YOU_ENTERED_IS_A_DUPLICATE,_PLEASE_ENTER_A_NEW_UNIQUE_VALUE_ARGS, $journal_types_list[ $this->journal_id]['id_field_name']));
+			if ($result->rowCount() > 0) throw new \core\classes\userException(sprintf(TEXT_THE_YOU_ENTERED_IS_A_DUPLICATE,_PLEASE_ENTER_A_NEW_UNIQUE_VALUE_ARGS, $journal_types_list[21]['id_field_name']));
 			$this->journal_main_array['purchase_invoice_id'] = $this->purchase_invoice_id;
 			$admin->messageStack->debug(" specified ID but no dups, returning OK. ");
 		} else {	// generate a new order/invoice value
@@ -771,7 +748,7 @@ class journal_21 extends \core\classes\journal {//@todo should extend orders
 			$sql = "UPDATE " . TABLE_CURRENT_STATUS . " SET next_check_num = '$next_id'";
 			if (!$force) $sql .= " WHERE next_check_num = '{$this->journal_main_array['purchase_invoice_id']}'";
 			$result = $admin->DataBase->exec($sql);
-			if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(TEXT_THERE_WAS_AN_ERROR_INCREMENTING_THE_ARGS, $journal_types_list[ $this->journal_id]['id_field_name']));
+			if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(TEXT_THERE_WAS_AN_ERROR_INCREMENTING_THE_ARGS, $journal_types_list[21]['id_field_name']));
 		}
 		$this->purchase_invoice_id = $this->journal_main_array['purchase_invoice_id'];
 		return true;
@@ -834,7 +811,7 @@ class journal_21 extends \core\classes\journal {//@todo should extend orders
 		    		$pay_meth = "\payment\methods\\$method\\$method";
 		    		$$method    = new $pay_meth;
 		    		$deposit_id = $$method->def_deposit_id ? $$method->def_deposit_id : ('DP' . date('Ymd'));
-					$desc = $this->journal_id . ':' . $method . ':' . $$method->payment_fields;
+					$desc = "21:{$method}:{$$method->payment_fields}";
 		  		}
 		  		$total     += $this->pmt_rows[$i]['pmt'];
 		  		if ($total > $this->total_amount) { // change was returned, adjust amount received for post
