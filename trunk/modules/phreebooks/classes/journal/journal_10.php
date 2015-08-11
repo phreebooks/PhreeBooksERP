@@ -18,7 +18,7 @@
 //
 // Sales Order Journal (10)
 namespace phreebooks\classes\journal;
-class journal_10 extends \core\classes\journal { //@todo should extend orders
+class journal_10 extends \core\classes\journal {
 	public $id;
 	public $recur_id;
 	public $recur_frequency;
@@ -33,8 +33,17 @@ class journal_10 extends \core\classes\journal { //@todo should extend orders
 	public $purchase_invoice_id;
 	public $bill_add_update		= false;
 	public $closed 				= false;
-	public $gl_type             = GL_TYPE;
-	public $gl_acct_id          = DEF_GL_ACCT;
+	public $gl_type             = 'soo';
+	public $popup_form_type		= 'cust:so';
+	public $account_type		= 'c';
+	public $gl_acct_id          = AR_DEFAULT_GL_ACCT;
+	public $text_contact_id		= TEXT_CUSTOMER_ID;
+	public $text_account		= TEXT_AR_ACCOUNT;
+	public $text_column_1_title	= TEXT_QUANTITY;
+	public $text_column_2_title	= TEXT_INVOICED;
+	public $text_order_closed	= TEXT_CLOSE;
+	public $item_col_1_enable 	= true;				// allow/disallow entry of item columns
+	public $item_col_2_enable 	= false;
 	public $currencies_code     = DEFAULT_CURRENCY;
 	public $currencies_value    = '1.0';
 	public $bill_primary_name   = TEXT_NAME_OR_COMPANY;
@@ -66,6 +75,11 @@ class journal_10 extends \core\classes\journal { //@todo should extend orders
 	public $ship_telephone1     = TEXT_TELEPHONE;
 	public $ship_email          = TEXT_EMAIL;
 	public $error_6 			= GENERAL_JOURNAL_10_ERROR_6;
+
+	function __construct( $id = 0, $verbose = true){
+		if (isset($_SESSION['admin_prefs']['def_ar_acct'])) $this->gl_acct_id =  $_SESSION['admin_prefs']['def_ar_acct'];
+		parent::__construct( $id, $verbose);
+	}
 
 	/*******************************************************************************************************************/
 	// START re-post Functions
@@ -132,7 +146,7 @@ class journal_10 extends \core\classes\journal { //@todo should extend orders
 	function Post_inventory() {
 		global $admin;
 		$admin->messageStack->debug("\n  Posting Inventory ...");
-		$item_array      = $this->load_so_po_balance($this->id); //@todo
+		$item_array      = $this->load_so_po_balance($this->id);
 		// adjust inventory stock status levels (also fills inv_list array)
 		$item_rows_to_process = count($this->journal_rows); // NOTE: variable needs to be here because journal_rows may grow within for loop (COGS)
 		for ($i = 0; $i < $item_rows_to_process; $i++) {
@@ -189,12 +203,10 @@ class journal_10 extends \core\classes\journal { //@todo should extend orders
 		// and keep record. Quantity may go negative because it was used in a COGS calculation but will be corrected when
 		// new inventory has been received and the associated cost applied. If the quantity is changed, the new remaining
 		// value will be calculated when the updated purchase/receive is posted.
-		// prepare some variables
-		$db_field = 'quantity_on_sales_order';//@todo
 		for ($i = 0; $i < count($this->journal_rows); $i++) if ($this->journal_rows[$i]['sku']) {
 			$item_array = $this->load_so_po_balance($this->id, '', false);
 			$bal_before_post = $item_array[$this->journal_rows[$i]['id']]['ordered'] - $item_array[$this->journal_rows[$i]['id']]['processed'];
-			if (!$this->closed && $bal_before_post > 0) $this->update_inventory_status($this->journal_rows[$i]['sku'], $db_field, -$bal_before_post);
+			if (!$this->closed && $bal_before_post > 0) $this->update_inventory_status($this->journal_rows[$i]['sku'], 'quantity_on_sales_order', -$bal_before_post);
 		}
 		// remove the inventory history records
 		$admin->DataBase->exec("DELETE FROM " . TABLE_INVENTORY_HISTORY . " WHERE ref_id = " . $this->id);
@@ -487,10 +499,8 @@ class journal_10 extends \core\classes\journal { //@todo should extend orders
 		$admin->messageStack->debug("\n    Starting to load SO/PO balances ...");
 		$item_array = array();
 		if ($ref_id) {
-			$gl_type = 'soo'; //@todo
-			$proc_type = 'sos';
 			// start by retrieving the po/so item list
-			$raw_sql = "SELECT id, sku, qty FROM " . TABLE_JOURNAL_ITEM . " WHERE ref_id = {$ref_id} and gl_type = '{$gl_type}'";
+			$raw_sql = "SELECT id, sku, qty FROM " . TABLE_JOURNAL_ITEM . " WHERE ref_id = {$ref_id} and gl_type = 'soo'";
 			$sql = $admin->DataBase->prepare($raw_sql);
 			$sql->execute();
 			while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
@@ -498,7 +508,7 @@ class journal_10 extends \core\classes\journal { //@todo should extend orders
 			}
 			// retrieve the total number of units processed (received/shipped) less this order (may be multiple sales/purchases)
 			$raw_sql = "SELECT i.so_po_item_ref_id as id, i.sku, i.qty FROM " . TABLE_JOURNAL_MAIN . " m left join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
-			WHERE m.so_po_ref_id = {$ref_id} and i.gl_type = '{$proc_type}'";
+			WHERE m.so_po_ref_id = {$ref_id} and i.gl_type = 'sos'";
 			if (!$post && $id) $raw_sql .= " and m.id <> " . $id; // unposting so don't include current id (journal_id = 6 or 12)
 			$sql = $admin->DataBase->prepare($raw_sql);
 			while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
@@ -525,7 +535,6 @@ class journal_10 extends \core\classes\journal { //@todo should extend orders
 		//   editing quantities on po/so to match the number received (from po/so journal)
 		//   receiving all (or more) po/so items through one or more purchases/sales (from purchase/sales journal)
 		$admin->messageStack->debug("\n  Checking for closed entry. action = " . $action);
-		$gl_type = 'soo';
 		// determine if shipped/received items are still outstanding
 		$ordr_diff = false;
 		if (is_array($this->so_po_balance_array)) {
@@ -536,7 +545,7 @@ class journal_10 extends \core\classes\journal { //@todo should extend orders
 		// determine if all items quantities have been entered as zero
 		$item_rows_all_zero = true;
 		for ($i = 0; $i < count($this->journal_rows); $i++) {
-			if ($this->journal_rows[$i]['qty'] && $this->journal_rows[$i]['gl_type'] == $gl_type) $item_rows_all_zero = false; // at least one qty is non-zero
+			if ($this->journal_rows[$i]['qty'] && $this->journal_rows[$i]['gl_type'] == 'soo') $item_rows_all_zero = false; // at least one qty is non-zero
 		}
 		// also close if the 'Close' box was checked
 		if (!$ordr_diff || $item_rows_all_zero || $this->closed) $this->close_so_po($this->id, true);

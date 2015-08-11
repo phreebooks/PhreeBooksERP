@@ -18,7 +18,7 @@
 //
 // Purchase Quote Journal (3)
 namespace phreebooks\classes\journal;
-class journal_03 extends \core\classes\journal {//@todo should extend orders
+class journal_03 extends \core\classes\journal {
 	public $id;
 	public $recur_id;
 	public $recur_frequency;
@@ -33,8 +33,17 @@ class journal_03 extends \core\classes\journal {//@todo should extend orders
 	public $purchase_invoice_id;
 	public $bill_add_update		= false;
 	public $closed 				= false;
-	public $gl_type             = GL_TYPE;
-	public $gl_acct_id          = DEF_GL_ACCT;
+	public $gl_type             = 'poo';
+	public $popup_form_type		= 'vend:quot';
+	public $account_type		= 'v';
+	public $gl_acct_id          = AP_DEFAULT_PURCHASE_ACCOUNT;
+	public $text_contact_id		= TEXT_VENDOR_ID;
+	public $text_account		= TEXT_AP_ACCOUNT;
+	public $text_column_1_title	= TEXT_QUANTITY;
+	public $text_column_2_title	= TEXT_RECEIVED;
+	public $text_order_closed	= TEXT_CLOSE;
+	public $item_col_1_enable 	= true;				// allow/disallow entry of item columns
+	public $item_col_2_enable 	= false;
 	public $currencies_code     = DEFAULT_CURRENCY;
 	public $currencies_value    = '1.0';
 	public $bill_primary_name   = TEXT_NAME_OR_COMPANY;
@@ -66,6 +75,11 @@ class journal_03 extends \core\classes\journal {//@todo should extend orders
 	public $ship_telephone1     = COMPANY_TELEPHONE1;
 	public $ship_email          = COMPANY_EMAIL;
 	public $error_6 			= GENERAL_JOURNAL_3_ERROR_6;
+
+	function __construct( $id = 0, $verbose = true){
+		if (isset($_SESSION['admin_prefs']['def_ap_acct'])) $this->gl_acct_id =  $_SESSION['admin_prefs']['def_ap_acct'];
+		parent::__construct( $id, $verbose);
+	}
 
 	/*******************************************************************************************************************/
 	// START re-post Functions

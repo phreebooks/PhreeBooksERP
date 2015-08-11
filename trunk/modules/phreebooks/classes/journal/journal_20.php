@@ -16,10 +16,13 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/classes/journal/journal_20.php
 //
-// Cash Dist Journal (20)
+// Cash Dist Journal (20) for customer payments see 23
 namespace phreebooks\classes\journal;
-class journal_20 extends \core\classes\journal { //@todo should extend banking
+class journal_20 extends \core\classes\journal {
 	public $save_payment        = false;
+	public $gl_type             = 'chk';
+	public $popup_form_type		= 'bnk:chk';
+	public $account_type		= 'v';
 	public $search              = TEXT_SEARCH;
 	public $bill_primary_name   = TEXT_NAME_OR_COMPANY;
 	public $bill_contact        = TEXT_ATTENTION;
@@ -105,7 +108,7 @@ class journal_20 extends \core\classes\journal { //@todo should extend banking
 		global $admin;
 		// first find out the last period with data in the system from the current_status table
 		$sql = $admin->DataBase->query("SELECT fiscal_year FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE period = " . $period);
-		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(GL_ERROR_BAD_ACCT_PERIOD); //@todo gebruiken ipv rowCount
+		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(GL_ERROR_BAD_ACCT_PERIOD);
 		$fiscal_year = $sql->fetch(\PDO::FETCH_LAZY);
 		$sql = "SELECT max(period) as period FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE fiscal_year = " . $fiscal_year;
 		$result = $admin->DataBase->query($sql);
@@ -522,7 +525,6 @@ class journal_20 extends \core\classes\journal { //@todo should extend banking
 		//   editing quantities on po/so to match the number received (from po/so journal)
 		//   receiving all (or more) po/so items through one or more purchases/sales (from purchase/sales journal)
 		$admin->messageStack->debug("\n  Checking for closed entry. action = " . $action);
-		//if (!$gl_type) $gl_type = 'chk';
 		if ($action == 'Post') {
 			$temp = array();
 			for ($i = 0; $i < count($this->journal_rows); $i++) { // fetch the list of paid invoices

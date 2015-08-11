@@ -24,7 +24,6 @@ require_once(DIR_FS_WORKING . 'functions/inventory.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 /**************   page specific initialization  *************************/
 define('JOURNAL_ID',16);	// Adjustment Journal
-define('GL_TYPE', '');
 $post_date = ($_POST['post_date']) ? gen_db_date($_POST['post_date']) : date('Y-m-d');
 $period    = gen_calculate_period($post_date);
 /***************   hook for custom actions  ***************************/

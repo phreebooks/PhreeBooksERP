@@ -22,17 +22,11 @@ $type           = $_GET['type'];
 switch ($type) {
   case 'c': // customers
 	define('JOURNAL_ID', 18);
-	define('GL_TYPE','pmt');
-	define('POPUP_FORM_TYPE','cust:cm');
-	define('AUDIT_LOG_DESC',TEXT_CUSTOMER_DEPOSITS);
 	define('DEF_DEP_GL_ACCT',AR_DEF_DEP_LIAB_ACCT);
 	define('PAGE_TITLE', TEXT_CUSTOMER_DEPOSITS);
     break;
   case 'v': // vendors
 	define('JOURNAL_ID', 20);
-	define('GL_TYPE','chk');
-	define('POPUP_FORM_TYPE','bnk:chk');
-	define('AUDIT_LOG_DESC',TEXT_VENDOR_DEPOSITS);
 	define('DEF_DEP_GL_ACCT',AP_DEF_DEP_LIAB_ACCT);
 	define('PAGE_TITLE', TEXT_VENDOR_DEPOSITS);
     break;
@@ -96,7 +90,7 @@ switch ($_REQUEST['action']) {
 	// load item row data
 	$order->item_rows[] = array(
 	  'id'        => db_prepare_input($_POST['id_1']),
-	  'gl_type'   => GL_TYPE,
+	  'gl_type'   => $order->gl_type,
 	  'pstd'      => '1',
 	  'sku'       => '',
 	  'desc'      => db_prepare_input($_POST['desc_1']),
@@ -177,7 +171,7 @@ switch ($_REQUEST['action']) {
 		$order->post_date = gen_db_date($_POST['post_date']); // fix the date to original format
 		$order->id        = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
 	  }
-	  gen_add_audit_log(AUDIT_LOG_DESC, $order->purchase_invoice_id, $order->total_amount);
+	  gen_add_audit_log(PAGE_TITLE, $order->purchase_invoice_id, $order->total_amount);
 	  if (DEBUG) $messageStack->write_debug();
 	  if ($_REQUEST['action'] == 'save') {
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));

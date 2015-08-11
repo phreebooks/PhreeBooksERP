@@ -32,14 +32,14 @@ function check_form() {
 }
 
 function printOrder(id) {
-  var printWin = window.open("index.php?module=phreeform&page=popup_gen&gID=<?php echo POPUP_FORM_TYPE; ?>&date=a&xfld=journal_main.id&xcr=EQUAL&xmin="+id,"reportFilter","width=700px,height=550px,resizable=1,scrollbars=1,top=150px,left=200px");
+  var printWin = window.open("index.php?module=phreeform&page=popup_gen&gID=<?php echo $order->popup_form_type; ?>&date=a&xfld=journal_main.id&xcr=EQUAL&xmin="+id,"reportFilter","width=700px,height=550px,resizable=1,scrollbars=1,top=150px,left=200px");
   printWin.focus();
 }
 
 $(document).ready(function(){
 	$("#search_date").change(function(){
 		submitToDo('search',false);
-	});  
+	});
 
 });
 // -->

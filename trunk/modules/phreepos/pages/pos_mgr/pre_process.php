@@ -20,7 +20,6 @@ $security_level = \core\classes\user::validate(SECURITY_ID_POS_MGR);
 define('JOURNAL_ID','19');
 /**************  include page specific files    *********************/
 /**************   page specific initialization  *************************/
-define('POPUP_FORM_TYPE','pos:rcpt');
 history_filter('pos_mgr');
 /***************   hook for custom actions  ***************************/
 $date        = gen_db_date($_REQUEST['search_date']);

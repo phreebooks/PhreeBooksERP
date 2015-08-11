@@ -187,29 +187,21 @@ switch ($_REQUEST['action']) {
 			$upload_name = 'file_name_po';
 			define('JOURNAL_ID',4);
 			define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);
-			define('BB_ACCOUNT_TYPE','v');
-			define('BB_GL_TYPE','poo');
 			break;
 		  case 'import_ap':
 			$upload_name = 'file_name_ap';
 			define('JOURNAL_ID',6);
 			define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);
-			define('BB_ACCOUNT_TYPE','v');
-			define('BB_GL_TYPE','por');
 			break;
 		  case 'import_so':
 			$upload_name = 'file_name_so';
 			define('JOURNAL_ID',10);
 			define('DEF_INV_GL_ACCT',AR_DEFAULT_INVENTORY_ACCOUNT);
-			define('BB_ACCOUNT_TYPE','c');
-			define('BB_GL_TYPE','soo');
 			break;
 		  case 'import_ar':
 			$upload_name = 'file_name_ar';
 			define('JOURNAL_ID',12);
 			define('DEF_INV_GL_ACCT',AR_DEFAULT_INVENTORY_ACCOUNT);
-			define('BB_ACCOUNT_TYPE','c');
-			define('BB_GL_TYPE','sos');
 			break;
 		}
 		$admin->DataBase->transStart();

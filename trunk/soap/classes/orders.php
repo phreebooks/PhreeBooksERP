@@ -62,12 +62,10 @@ class xml_orders extends parser {
 	switch ($this->function) {
 	  case 'SalesInvoice':
 		define('JOURNAL_ID',12);
-		define('GL_TYPE','sos');
 		break;
 	  case 'SalesOrder':
 	  default:
 		define('JOURNAL_ID',10);
-		define('GL_TYPE','soo');
 	}
 	$messageStack->debug("\njournal_id = ".JOURNAL_ID." and function = ".$this->function);
 	$tax_rates = ord_calculate_tax_drop_down('c');
@@ -162,10 +160,8 @@ class xml_orders extends parser {
   function buildJournalEntry() {
 	global $admin, $messageStack;
 	// set some preliminary information
-	$account_type = 'c';
 	$psOrd = new orders();
 	// make the received string look like a form submission then post as usual
-	$psOrd->account_type        = $account_type;
 	$psOrd->id                  = ''; // should be null unless opening an existing purchase/receive
 	$psOrd->journal_id          = JOURNAL_ID;
 	$psOrd->post_date           = $this->order['post_date']; // date format should already be YYYY-MM-DD
@@ -250,7 +246,7 @@ class xml_orders extends parser {
 	}
 	for ($i = 0; $i < count($this->order['items']); $i++) {
 	  $psOrd->item_rows[] = array(
-		'gl_type' => GL_TYPE,
+		'gl_type' => $psOrd->gl_type,
 		$index    => db_prepare_input($this->order['items'][$i]['quantity']),
 		'sku'     => db_prepare_input($this->order['items'][$i]['sku']),
 		'desc'    => db_prepare_input($this->order['items'][$i]['description']),

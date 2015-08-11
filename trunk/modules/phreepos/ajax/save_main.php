@@ -29,16 +29,10 @@ require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
 /**************   page specific initialization  *************************/
 $order           = new \phreepos\classes\journal\journal_19();
-define('ORD_ACCT_ID', TEXT_CUSTOMER_ID.': ');
-define('GL_TYPE','sos');
-define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);
-$order->gl_acct_id = AR_DEFAULT_GL_ACCT;
-define('DEF_GL_ACCT_TITLE',TEXT_AR_ACCOUNT);
-define('POPUP_FORM_TYPE','pos:rcpt');
+define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);//@todo
 $auto_print      = false;
 $total_discount  = 0;
 $total_fixed     = 0;
-$account_type    = 'c';
 $post_success    = false;
 $tills           = new \phreepos\classes\tills();
 /***************   hook for custom actions  ***************************/
@@ -51,7 +45,6 @@ if (file_exists($custom_path)) { include($custom_path); }
 	// load bill to and ship to information
 	$order->short_name          = db_prepare_input(($_POST['search'] <> TEXT_SEARCH) ? $_POST['search'] : '');
 	$order->bill_add_update     = isset($_POST['bill_add_update']) ? $_POST['bill_add_update'] : 0;
-	$order->account_type        = $account_type;
 	$order->bill_acct_id        = db_prepare_input($_POST['bill_acct_id']);
 	$order->bill_address_id     = db_prepare_input($_POST['bill_address_id']);
 	$order->bill_primary_name   = db_prepare_input(($_POST['bill_primary_name']   <> TEXT_NAME_OR_COMPANY)   ? $_POST['bill_primary_name'] : '', true);
@@ -218,10 +211,10 @@ if (file_exists($custom_path)) { include($custom_path); }
 
 	if($order->printed){
 		//print
-		$result = $admin->DataBase->query("select id from " . TABLE_PHREEFORM . " where doc_group = '" . POPUP_FORM_TYPE . "' and doc_ext = 'frm'");
-	    if ($result->rowCount() == 0) throw new \core\classes\userException('No form was found for this type ('.POPUP_FORM_TYPE.'). ');
+		$result = $admin->DataBase->query("select id from " . TABLE_PHREEFORM . " where doc_group = '{$order->popup_form_type}' and doc_ext = 'frm'");
+	    if ($result->rowCount() == 0) throw new \core\classes\userException("No form was found for this type ({$order->popup_form_type}). ");
 		if ($result->rowCount() > 1) {
-		   	if(DEBUG) $massage .= 'More than one form was found for this type ('.POPUP_FORM_TYPE.'). Using the first form found.';
+		   	if(DEBUG) $massage .= "More than one form was found for this type ({$order->popup_form_type}). Using the first form found.";
 		}
 		$rID    = $result->fields['id']; // only one form available, use it
 	  	$report = get_report_details($rID);

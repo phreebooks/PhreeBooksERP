@@ -37,11 +37,9 @@ class import_order {
   			default:
   			case 'Sales':
   				define('JOURNAL_ID',12);
-  				define('GL_TYPE','sos');
   				break;
   			case 'SalesOrder':
   				define('JOURNAL_ID',10);
-  				define('GL_TYPE','soo');
   		}
   		$tax_rates = ord_calculate_tax_drop_down('c');
   		$count = 0;

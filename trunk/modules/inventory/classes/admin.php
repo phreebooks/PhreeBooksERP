@@ -825,7 +825,6 @@ class admin extends \core\classes\admin {
 
   	function SaveInventoryAdjustment (\core\classes\basis $basis){
   		\core\classes\user::validate_security_by_token(SECURITY_ID_ADJUST_INVENTORY, 2);
-  		define('GL_TYPE', '');//@todo remove
   		$post_date           = isset($_POST['post_date'])? gen_db_date($_POST['post_date']) : date('Y-m-d');
   		$glEntry             = new \core\classes\journal();
   		$glEntry->id         = isset($_POST['id'])       ? $_POST['id']       : '';
@@ -941,7 +940,6 @@ class admin extends \core\classes\admin {
   	function SaveInventoryAssemblies (\core\classes\basis $basis){
   		\core\classes\user::validate_security_by_token(SECURITY_ID_ASSEMBLE_INVENTORY, 2); // security check
   		// 	retrieve and clean input values
-  		define('GL_TYPE', '');//@todo remove
   		$glEntry             = new \core\classes\journal();
   		$glEntry->id         = ($_POST['id'] <> '')      ? $_POST['id'] : ''; // will be null unless opening an existing gl entry
   		$glEntry->journal_id = 14;
@@ -991,7 +989,6 @@ class admin extends \core\classes\admin {
 
   	function DeleteInventoryAssemblies (\core\classes\basis $basis){
   		\core\classes\user::validate_security_by_token(SECURITY_ID_ASSEMBLE_INVENTORY, 4); // security check
-  		define('GL_TYPE', '');//@todo remove
   		$glEntry             = new \core\classes\journal();
   		$glEntry->id         = ($_POST['id'] <> '')      ? $_POST['id'] : ''; // will be null unless opening an existing gl entry
   		$glEntry->journal_id = 14;

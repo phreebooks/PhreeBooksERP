@@ -37,7 +37,6 @@ switch ($_REQUEST['action']) {
 		switch ($order->journal_id) {
 		  	case  3:
 		    	define('JOURNAL_ID', 4);
-				define('GL_TYPE', 'poo');
 				$search_gl_type      = 'poo';
 				$purchase_invoice_id = $so_num;
 				break;
@@ -45,12 +44,10 @@ switch ($_REQUEST['action']) {
 		  	case  9:
 				if ($selection == 'inv') { // invoice
 			  		define('JOURNAL_ID',12);
-			  		define('GL_TYPE', 'sos');
 			  		$search_gl_type      = 'soo';
 			  		$purchase_invoice_id = $inv_num;
 				} else { // sales order
 			  		define('JOURNAL_ID',10);
-			  		define('GL_TYPE', 'soo');
 			  		$search_gl_type      = 'soo';
 			  		$purchase_invoice_id = $so_num;
 				}
@@ -71,7 +68,7 @@ switch ($_REQUEST['action']) {
 		  	$order->journal_rows[$i]['id']                = '';
 		  	$order->journal_rows[$i]['so_po_item_ref_id'] = '';
 		  	$order->journal_rows[$i]['post_date']         = $order->post_date;
-		  	if ($order->journal_rows[$i]['gl_type'] == $search_gl_type) $order->journal_rows[$i]['gl_type'] = GL_TYPE;
+		  	if ($order->journal_rows[$i]['gl_type'] == $search_gl_type) $order->journal_rows[$i]['gl_type'] = $order->gl_type;
 		}
 		// ***************************** START TRANSACTION *******************************
 		$admin->DataBase->transStart();

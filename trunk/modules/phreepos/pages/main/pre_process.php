@@ -30,14 +30,7 @@ require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
 /**************   page specific initialization  *************************/
 $order        = new \phreepos\classes\journal\journal_19();
-define('ORD_ACCT_ID',		TEXT_CUSTOMER_ID.': ');
-define('GL_TYPE',			'sos');
 define('DEF_INV_GL_ACCT',	AR_DEF_GL_SALES_ACCT);
-$order->gl_acct_id 		= AR_DEFAULT_GL_ACCT;
-define('DEF_GL_ACCT_TITLE',	TEXT_AR_ACCOUNT);
-define('POPUP_FORM_TYPE',	'pos:rcpt');
-$account_type = 'c';
-
 $tills        = new \phreepos\classes\tills();
 $trans	 	  = new \phreepos\classes\other_transactions();
 $extra_ThirdToolbar_buttons = null;
@@ -51,7 +44,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 // generate address arrays for javascript
 $js_arrays = gen_build_company_arrays();
 // load the tax rates
-$tax_rates = ord_calculate_tax_drop_down($account_type);
+$tax_rates = ord_calculate_tax_drop_down($order->account_type);
 // generate a rate array parallel to the drop down for the javascript total calculator
 $js_tax_rates = 'var tax_rates = new Array();' . chr(10);
 for ($i = 0; $i < count($tax_rates); $i++) {

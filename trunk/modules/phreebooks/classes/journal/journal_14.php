@@ -28,7 +28,6 @@ class journal_14 extends \core\classes\journal {
 		global $admin;
 		$admin->messageStack->debug("\n  Checking for re-post records ... ");
 		$repost_ids = array();
-		$gl_type 	= NULL;
 		if ($this->id) for ($i = 0; $i < count($this->journal_rows); $i++) if ($this->journal_rows[$i]['sku']) {
 			// check to see if any future postings relied on this record, queue to re-post if so.
 			$sql = $admin->DataBase->prepare("SELECT id FROM ".TABLE_INVENTORY_HISTORY." WHERE ref_id={$this->id} AND sku='{$this->journal_rows[$i]['sku']}'");
@@ -137,7 +136,7 @@ class journal_14 extends \core\classes\journal {
 		global $admin;
 		// first find out the last period with data in the system from the current_status table
 		$sql = $admin->DataBase->query("SELECT fiscal_year FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE period = " . $period);
-		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(GL_ERROR_BAD_ACCT_PERIOD); //@todo gebruiken ipv rowCount
+		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(GL_ERROR_BAD_ACCT_PERIOD);
 		$fiscal_year = $sql->fetch(\PDO::FETCH_LAZY);
 		$sql = "SELECT max(period) as period FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE fiscal_year = " . $fiscal_year;
 		$result = $admin->DataBase->query($sql);
@@ -221,7 +220,6 @@ class journal_14 extends \core\classes\journal {
 	function Post_inventory() {
 		global $admin;
 		$admin->messageStack->debug("\n  Posting Inventory ...");
-		$str_field       = 'quantity_on_hand';
 		// adjust inventory stock status levels (also fills inv_list array)
 		$item_rows_to_process = count($this->journal_rows); // NOTE: variable needs to be here because journal_rows may grow within for loop (COGS)
 		for ($i = 0; $i < $item_rows_to_process; $i++) {
@@ -266,7 +264,7 @@ class journal_14 extends \core\classes\journal {
 			if ($i == 0 && $this->journal_rows[$i]['qty'] > 0) { // only for the item being assembled
 				$item_cost = $this->journal_rows[$i]['debit_amount'] / $this->journal_rows[$i]['qty'];
 			}
-			$this->update_inventory_status($this->journal_rows[$i]['sku'], $str_field, $post_qty, $item_cost, $this->journal_rows[$i]['description'], $full_price);
+			$this->update_inventory_status($this->journal_rows[$i]['sku'], 'quantity_on_hand', $post_qty, $item_cost, $this->journal_rows[$i]['description'], $full_price);
 		}
 		$admin->messageStack->debug("\n  end Posting Inventory.");
 		return true;
@@ -282,8 +280,6 @@ class journal_14 extends \core\classes\journal {
 		// Delete all owed cogs entries (will be re-added during post)
 		$admin->DataBase->exec("DELETE FROM " . TABLE_INVENTORY_COGS_OWED . " WHERE journal_main_id = " . $this->id);
 		$this->rollback_COGS();
-		// prepare some variables
-		$db_field = 'quantity_on_sales_order';
 		for ($i = 0; $i < count($this->journal_rows); $i++) if ($this->journal_rows[$i]['sku']) {
 			$qty = $this->journal_rows[$i]['qty'];
 			$this->update_inventory_status($this->journal_rows[$i]['sku'], 'quantity_on_hand', -$qty);
@@ -293,7 +289,7 @@ class journal_14 extends \core\classes\journal {
 				$bal_before_post = $item_array[$this->journal_rows[$i]['so_po_item_ref_id']]['ordered'] - $item_array[$this->journal_rows[$i]['so_po_item_ref_id']]['processed'];
 				// do not allow qty on order to go below zero.
 				$adjustment = min($this->journal_rows[$i]['qty'], $bal_before_post);
-				$this->update_inventory_status($this->journal_rows[$i]['sku'], $db_field, $adjustment);
+				$this->update_inventory_status($this->journal_rows[$i]['sku'], 'quantity_on_sales_order', $adjustment);
 			}
 		}
 		// remove the inventory history records

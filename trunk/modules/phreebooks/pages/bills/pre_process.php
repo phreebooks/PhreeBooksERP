@@ -52,14 +52,10 @@ $post_success      = false;
 
 switch (JOURNAL_ID) {
   case 18:	// Cash Receipts Journal
-	define('GL_TYPE','pmt');
-	define('POPUP_FORM_TYPE','bnk:rcpt');
 	define('AUDIT_LOG_DESC',TEXT_CASH_RECEIPTS);
 	define('AUDIT_LOG_DEL_DESC',TEXT_CASH_RECEIPTS . '-' . TEXT_DELETE);
 	break;
   case 20:	// Cash Disbursements Journal
-	define('GL_TYPE','chk');
-	define('POPUP_FORM_TYPE','bnk:chk');
 	define('AUDIT_LOG_DESC',TEXT_CASH_DISTRIBUTIONS);
 	define('AUDIT_LOG_DEL_DESC',TEXT_CASH_DISTRIBUTIONS . '-' . TEXT_DELETE);
 	break;
@@ -121,7 +117,7 @@ switch ($_REQUEST['action']) {
 		  if (isset($_POST['pay_' . $x])) {
 			$order->item_rows[] = array(
 			  'id'      => db_prepare_input($_POST['id_' . $x]),
-			  'gl_type' => GL_TYPE,
+			  'gl_type' => $order->gl_type,
 			  'amt'     => $admin->currencies->clean_value(db_prepare_input($_POST['amt_' . $x])),
 			  'desc'    => db_prepare_input($_POST['desc_' . $x]),
 			  'dscnt'   => $admin->currencies->clean_value(db_prepare_input($_POST['dscnt_' . $x])),
@@ -223,7 +219,7 @@ switch ($_REQUEST['action']) {
 	$order->search = $account_id->fields['short_name']; // set the customer id in the search box
 	// show the form
 	$payment = $admin->DataBase->query("select description from " . TABLE_JOURNAL_ITEM . "
-		where ref_id = " . $oID . " and gl_type = 'ttl'");
+		where ref_id = $oID and gl_type = 'ttl'");
 	$temp = $payment->fields['description'];
 	$temp = strpos($temp, ':') ? substr($temp, strpos($temp, ':') + 1) : '';
 	$payment_fields = explode(':', $temp);

@@ -18,7 +18,7 @@
 //
 // Customer Credit Memo Journal (13)
 namespace phreebooks\classes\journal;
-class journal_13 extends \core\classes\journal {//@todo should extend orders
+class journal_13 extends \core\classes\journal {
 	public $id;
 	public $recur_id;
 	public $recur_frequency;
@@ -33,8 +33,17 @@ class journal_13 extends \core\classes\journal {//@todo should extend orders
 	public $purchase_invoice_id;
 	public $bill_add_update		= false;
 	public $closed 				= false;
-	public $gl_type             = GL_TYPE;
-	public $gl_acct_id          = DEF_GL_ACCT;
+	public $gl_type             = 'sos';
+	public $popup_form_type		= 'cust:cm';
+	public $account_type		= 'c';
+	public $gl_acct_id          = AR_DEFAULT_GL_ACCT;
+	public $text_contact_id		= TEXT_CUSTOMER_ID;
+	public $text_account		= TEXT_AR_ACCOUNT;
+	public $text_column_1_title	= TEXT_SHIPPED;
+	public $text_column_2_title	= TEXT_RETURNED;
+	public $text_order_closed	= TEXT_CREDIT_PAID;
+	public $item_col_1_enable 	= false;				// allow/disallow entry of item columns
+	public $item_col_2_enable 	= true;
 	public $currencies_code     = DEFAULT_CURRENCY;
 	public $currencies_value    = '1.0';
 	public $bill_primary_name   = TEXT_NAME_OR_COMPANY;
@@ -67,6 +76,11 @@ class journal_13 extends \core\classes\journal {//@todo should extend orders
 	public $ship_email          = TEXT_EMAIL;
 	public $error_6 			= GENERAL_JOURNAL_13_ERROR_6;
 
+	function __construct( $id = 0, $verbose = true){
+		if (isset($_SESSION['admin_prefs']['def_ar_acct'])) $this->gl_acct_id =  $_SESSION['admin_prefs']['def_ar_acct'];
+		parent::__construct( $id, $verbose);
+	}
+
 	/*******************************************************************************************************************/
 	// START re-post Functions
 	/*******************************************************************************************************************/
@@ -74,7 +88,6 @@ class journal_13 extends \core\classes\journal {//@todo should extend orders
 		global $admin;
 		$admin->messageStack->debug("\n  Checking for re-post records ... ");
 		$repost_ids = array();
-		$gl_type 	= NULL;
 		if ($this->id) for ($i = 0; $i < count($this->journal_rows); $i++) if ($this->journal_rows[$i]['sku']) {
 			// check to see if any future postings relied on this record, queue to re-post if so.
 			$sql = $admin->DataBase->prepare("SELECT id FROM ".TABLE_INVENTORY_HISTORY." WHERE ref_id={$this->id} AND sku='{$this->journal_rows[$i]['sku']}'");
@@ -183,7 +196,7 @@ class journal_13 extends \core\classes\journal {//@todo should extend orders
 		global $admin;
 		// first find out the last period with data in the system from the current_status table
 		$sql = $admin->DataBase->query("SELECT fiscal_year FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE period = " . $period);
-		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(GL_ERROR_BAD_ACCT_PERIOD); //@todo gebruiken ipv rowCount
+		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(GL_ERROR_BAD_ACCT_PERIOD);
 		$fiscal_year = $sql->fetch(\PDO::FETCH_LAZY);
 		$sql = "SELECT max(period) as period FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE fiscal_year = " . $fiscal_year;
 		$result = $admin->DataBase->query($sql);
@@ -340,8 +353,6 @@ class journal_13 extends \core\classes\journal {//@todo should extend orders
 		// Delete all owed cogs entries (will be re-added during post)
 		$admin->DataBase->exec("DELETE FROM " . TABLE_INVENTORY_COGS_OWED . " WHERE journal_main_id = " . $this->id);
 		$this->rollback_COGS();
-		// prepare some variables
-		$db_field = 'quantity_on_sales_order';
 		for ($i = 0; $i < count($this->journal_rows); $i++) if ($this->journal_rows[$i]['sku']) {
 			$qty = $this->journal_rows[$i]['qty'];
 			$this->update_inventory_status($this->journal_rows[$i]['sku'], 'quantity_on_hand', -$qty);
@@ -351,7 +362,7 @@ class journal_13 extends \core\classes\journal {//@todo should extend orders
 				$bal_before_post = $item_array[$this->journal_rows[$i]['so_po_item_ref_id']]['ordered'] - $item_array[$this->journal_rows[$i]['so_po_item_ref_id']]['processed'];
 				// do not allow qty on order to go below zero.
 				$adjustment = min($this->journal_rows[$i]['qty'], $bal_before_post);
-				$this->update_inventory_status($this->journal_rows[$i]['sku'], $db_field, $adjustment);
+				$this->update_inventory_status($this->journal_rows[$i]['sku'], 'quantity_on_sales_order', $adjustment);
 			}
 		}
 		// remove the inventory history records
@@ -653,10 +664,8 @@ class journal_13 extends \core\classes\journal {//@todo should extend orders
 		$admin->messageStack->debug("\n    Starting to load SO/PO balances ...");
 		$item_array = array();
 		if ($ref_id) {
-			$gl_type = 'soo';
-			$proc_type = 'sos';
 			// start by retrieving the po/so item list
-			$raw_sql = "SELECT id, sku, qty FROM " . TABLE_JOURNAL_ITEM . " WHERE ref_id = {$ref_id} and gl_type = '{$gl_type}'";
+			$raw_sql = "SELECT id, sku, qty FROM " . TABLE_JOURNAL_ITEM . " WHERE ref_id = {$ref_id} and gl_type = 'soo'";
 			$sql = $admin->DataBase->prepare($raw_sql);
 			$sql->execute();
 			while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
@@ -664,7 +673,7 @@ class journal_13 extends \core\classes\journal {//@todo should extend orders
 			}
 			// retrieve the total number of units processed (received/shipped) less this order (may be multiple sales/purchases)
 			$raw_sql = "SELECT i.so_po_item_ref_id as id, i.sku, i.qty FROM " . TABLE_JOURNAL_MAIN . " m left join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
-			WHERE m.so_po_ref_id = {$ref_id} and i.gl_type = '{$proc_type}'";
+			WHERE m.so_po_ref_id = {$ref_id} and i.gl_type = '{$this->gl_type}'";
 			if (!$post && $id) $raw_sql .= " and m.id <> " . $id; // unposting so don't include current id (journal_id = 6 or 12)
 			$sql = $admin->DataBase->prepare($raw_sql);
 			while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
@@ -709,10 +718,9 @@ class journal_13 extends \core\classes\journal {//@todo should extend orders
 			$this->journal_main_array['purchase_invoice_id'] = $this->purchase_invoice_id;
 			$admin->messageStack->debug(" specified ID but no dups, returning OK. ");
 		} else {	// generate a new order/invoice value
-			$str_field = 'next_cm_num';
-			$result = $admin->DataBase->query("SELECT {$str_field} FROM " . TABLE_CURRENT_STATUS . " LIMIT 1");
+			$result = $admin->DataBase->query("SELECT next_cm_num FROM " . TABLE_CURRENT_STATUS . " LIMIT 1");
 			if (!$result) throw new \core\classes\userException(sprintf(GL_ERROR_CANNOT_FIND_NEXT_ID, TABLE_CURRENT_STATUS));
-			$this->journal_main_array['purchase_invoice_id'] = $result[$str_field];
+			$this->journal_main_array['purchase_invoice_id'] = $result['next_cm_num'];
 			$admin->messageStack->debug(" generated ID, returning ID# " . $this->journal_main_array['purchase_invoice_id']);
 		}
 		return true;
@@ -721,10 +729,9 @@ class journal_13 extends \core\classes\journal {//@todo should extend orders
 	function increment_purchase_invoice_id($force = false) {
 		global $admin;
 		if ($this->purchase_invoice_id == '' || $force) { // increment the po/so/invoice number
-			$str_field = 'next_cm_num';
 			$next_id = string_increment($this->journal_main_array['purchase_invoice_id']);
-			$sql = "UPDATE " . TABLE_CURRENT_STATUS . " SET $str_field = '$next_id'";
-			if (!$force) $sql .= " WHERE $str_field = '{$this->journal_main_array['purchase_invoice_id']}'";
+			$sql = "UPDATE " . TABLE_CURRENT_STATUS . " SET next_cm_num = '$next_id'";
+			if (!$force) $sql .= " WHERE next_cm_num = '{$this->journal_main_array['purchase_invoice_id']}'";
 			$result = $admin->DataBase->exec($sql);
 			if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(TEXT_THERE_WAS_AN_ERROR_INCREMENTING_THE_ARGS, $journal_types_list[13]['id_field_name']));
 		}

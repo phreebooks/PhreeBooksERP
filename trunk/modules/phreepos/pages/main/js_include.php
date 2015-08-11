@@ -33,7 +33,7 @@ var default_array        = new Array("<?php echo implode('", "', $js_arrays['tex
 var bill_add             = new Array();
 var journalID            = '<?php echo JOURNAL_ID; ?>';
 var securityLevel        = <?php echo $security_level; ?>;
-var account_type         = '<?php echo $account_type; ?>';
+var account_type         = '<?php echo $order->account_type; ?>';
 var text_search          = '<?php echo TEXT_SEARCH;?>';
 var text_enter_new       = '<?php echo TEXT_ENTER_NEW; ?>';
 var text_properties      = '<?php echo TEXT_PROPERTIES; ?>';
@@ -46,11 +46,11 @@ var delete_icon_HTML     = '<?php echo substr(html_icon("emblems/emblem-unreadab
 var delete_icon_HTML_PMT = '<?php echo substr(html_icon("emblems/emblem-unreadable.png", TEXT_DELETE, "small", "onclick=\"if (confirm(\'" . TEXT_DELETE_ENTRY . "\')) removePmtRow("), 0, -2); ?>';
 var serial_num_prompt    = '<?php echo ORD_JS_SERIAL_NUM_PROMPT; ?>';
 var text_serial_number	 = '<?php echo TEXT_SERIAL_NUMBER; ?>';
-var show_status          = '<?php echo ($account_type == "v") ? AP_SHOW_CONTACT_STATUS : AR_SHOW_CONTACT_STATUS; ?>';
+var show_status          = '<?php echo ($order->account_type == "v") ? AP_SHOW_CONTACT_STATUS : AR_SHOW_CONTACT_STATUS; ?>';
 var warn_form_modified   = '<?php echo ORD_WARN_FORM_MODIFIED; ?>';
 var default_inv_acct     = '<?php echo DEF_INV_GL_ACCT; ?>';
 var defaultCurrency      = '<?php echo DEFAULT_CURRENCY; ?>';
-var tax_before_discount  = '<?php echo ($account_type == "c") ? AR_TAX_BEFORE_DISCOUNT : AP_TAX_BEFORE_DISCOUNT; ?>';
+var tax_before_discount  = '<?php echo ($order->account_type == "c") ? AR_TAX_BEFORE_DISCOUNT : AP_TAX_BEFORE_DISCOUNT; ?>';
 var save_allowed		 = true;
 var display_with_tax     = <?php echo PHREEPOS_DISPLAY_WITH_TAX; ?>;
 var discount_from_total  = <?php echo PHREEPOS_DISCOUNT_OF; ?>;
@@ -1268,7 +1268,7 @@ function ajaxPrintAndClean(sXml) { // call back function
   		OpenDrawer();
     }else if( print ){
 		var order_id = $(xml).find("order_id").text();
-		var printWin = window.open("index.php?module=phreeform&page=popup_gen&gID=<?php echo POPUP_FORM_TYPE;?>&date=a&xfld=journal_main.id&xcr=EQUAL&xmin=" + order_id ,"popup_gen","width=700px,height=550px,resizable=1,scrollbars=1,top=150px,left=200px");
+		var printWin = window.open("index.php?module=phreeform&page=popup_gen&gID=<?php echo $order->popup_form_type;?>&date=a&xfld=journal_main.id&xcr=EQUAL&xmin=" + order_id ,"popup_gen","width=700px,height=550px,resizable=1,scrollbars=1,top=150px,left=200px");
 		printWin.focus();
 	}
 	resetForm();
@@ -1355,7 +1355,7 @@ function PrintPreviousReceipt(sXml) { // call back function
 	        jzebraDoneAppending();
 	  } else {
 	        var order_id = $(xml).find("order_id").text();
-	        var printWin = window.open("index.php?module=phreeform&page=popup_gen&gID=<?php echo POPUP_FORM_TYPE;?>&date=a&xfld=journal_main.id&xcr=EQUAL&xmin=" + order_id ,"reportFilter","width=700px,height=550px,resizable=1,scrollbars=1,top=150px,left=200px");
+	        var printWin = window.open("index.php?module=phreeform&page=popup_gen&gID=<?php echo $order->popup_form_type;?>&date=a&xfld=journal_main.id&xcr=EQUAL&xmin=" + order_id ,"reportFilter","width=700px,height=550px,resizable=1,scrollbars=1,top=150px,left=200px");
 	        printWin.focus();
 	  }
 	  document.getElementById('sku').focus();

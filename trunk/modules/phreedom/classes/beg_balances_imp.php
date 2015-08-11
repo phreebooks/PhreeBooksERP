@@ -148,10 +148,10 @@ class beg_bal_import {
 		  	$glEntry->journal_main_array      = $glEntry->build_journal_main_array();
 		  	$glEntry->journal_main_array['purchase_invoice_id'] = $order['order_id'];  // skip validating the invoice ID, just set it
 		  	// Create the account (or update it)
-		  	$glEntry->bill_acct_id = $glEntry->add_account(BB_ACCOUNT_TYPE . 'b', 0, 0, true);
+		  	$glEntry->bill_acct_id = $glEntry->add_account($glEntry->account_type . 'b', 0, 0, true);
 			switch (JOURNAL_ID) {
 				default: // update the shipping address
-				  	$glEntry->ship_acct_id = $glEntry->add_account(BB_ACCOUNT_TYPE . 's', 0, 0, true);
+				  	$glEntry->ship_acct_id = $glEntry->add_account($glEntry->account_type . 's', 0, 0, true);
 				  	break;
 				case 4: // skip for purchases (assume default company address)
 				case 6:
@@ -165,7 +165,7 @@ class beg_bal_import {
 					case  4:                     $credit_debit = 'debit_amount';  // for journal_id = 4
 					case 10: if (!$credit_debit) $credit_debit = 'credit_amount'; // for journal_id = 10
 						$glEntry->journal_rows[] = array(
-							'gl_type'     => BB_GL_TYPE,
+							'gl_type'     => $order->gl_type,
 							'qty'         => $admin->currencies->clean_value($order['quantity']),
 							'sku'         => $order['sku'],
 							'description' => $order['description'],
@@ -178,7 +178,7 @@ class beg_bal_import {
 					case  6:                     $credit_debit = 'debit_amount';  // for journal_id = 6
 					case 12: if (!$credit_debit) $credit_debit = 'credit_amount'; // for journal_id = 12
 						$glEntry->journal_rows[] = array(
-							'gl_type'      => BB_GL_TYPE,
+							'gl_type'      => $order->gl_type,
 							'qty'          => '1',
 							'description'  => $journal_types_list[JOURNAL_ID]['text'] . '-' . TEXT_IMPORT,
 							'gl_account'   => $order['inv_gl_acct'],

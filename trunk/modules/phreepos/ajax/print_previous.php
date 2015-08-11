@@ -23,7 +23,6 @@ gen_pull_language('phreeform');
 require_once(DIR_FS_MODULES . 'phreeform/defaults.php');
 require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
 /**************   page specific initialization  *************************/
-define('POPUP_FORM_TYPE','pos:rcpt');
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_MODULES . 'phreepos/custom/pages/main/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
@@ -36,10 +35,10 @@ if(isset($_GET['oID'])){
 	$journal_id = $order->fields['id'];
 }
 //print
-$result = $admin->DataBase->query("select id from " . TABLE_PHREEFORM . " where doc_group = '" . POPUP_FORM_TYPE . "' and doc_ext = 'frm'");
-if ($result->rowCount() == 0) throw new \core\classes\userException("No form was found for this type (".POPUP_FORM_TYPE.")");
+$result = $admin->DataBase->query("select id from " . TABLE_PHREEFORM . " where doc_group = '{$order->popup_form_type}' and doc_ext = 'frm'");
+if ($result->rowCount() == 0) throw new \core\classes\userException("No form was found for this type ({$order->popup_form_type})");
 
-if ($result->rowCount() > 1) if(DEBUG) $massage .= 'More than one form was found for this type ('.POPUP_FORM_TYPE.'). Using the first form found.';
+if ($result->rowCount() > 1) if(DEBUG) $massage .= "More than one form was found for this type ({$order->popup_form_type}). Using the first form found.";
 $rID    = $result->fields['id']; // only one form available, use it
 $report = get_report_details($rID);
 $title  = $report->title;

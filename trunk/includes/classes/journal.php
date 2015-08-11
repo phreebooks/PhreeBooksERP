@@ -23,6 +23,7 @@ abstract class journal {
 	public 	$cogs_entry			= array();
 	public  $journal_rows 		= array();
 	public  $first_period		= 0;
+	public 	$popup_form_type;
 
 	public function __construct( $id = 0, $verbose = true) {
 		global $admin;
@@ -433,7 +434,7 @@ abstract class journal {
 		$main_record = array();
 		if (isset($this->id)) if ($this->id)   $main_record['id']                  = $this->id; // retain id if known for re-post references
 		if (isset($this->period))              $main_record['period']              = $this->period;
-		if (isset($this->journal_id))          $main_record['journal_id']          = $this->journal_id;//@todo replace for class 
+		if (isset($this->journal_id))          $main_record['journal_id']          = $this->journal_id;//@todo replace for class
 		if (isset($this->post_date))           $main_record['post_date']           = $this->post_date;
 		if (isset($this->store_id))            $main_record['store_id']            = $this->store_id;
 		$main_record['description'] = (isset($this->description)) ? $this->description : sprintf(TEXT_ARGS_ENTRY, $journal_types_list[$this->journal_id]['text']); //@todo set in subclass
@@ -564,7 +565,7 @@ abstract class journal {
 	  		if ($result->rowCount() == 0) { // new account
 				$sql_data_array['type']            = $acct_type;
 				$sql_data_array['short_name']      = $short_name;
-				$sql_data_array['gl_type_account'] = DEF_INV_GL_ACCT;
+				$sql_data_array['gl_type_account'] = DEF_INV_GL_ACCT;//@todo
 				$sql_data_array['first_date']      = 'now()';
 				db_perform(TABLE_CONTACTS, $sql_data_array, 'insert');
 				$acct_id = \core\classes\PDO::lastInsertId('id');

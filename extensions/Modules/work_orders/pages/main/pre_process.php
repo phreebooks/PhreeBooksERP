@@ -184,7 +184,6 @@ switch ($_REQUEST['action']) {
 				require_once(DIR_FS_MODULES . 'inventory/functions/inventory.php');
 				require_once(DIR_FS_MODULES . 'phreebooks/classes/gen_ledger.php');
 				define('JOURNAL_ID', 14); // Inventory Assemblies Journal
-				define('GL_TYPE', '');
 				$glEntry = new \core\classes\journal();
 				$glEntry->id                  = '';
 				$glEntry->admin_id            = $_SESSION['admin_id'];

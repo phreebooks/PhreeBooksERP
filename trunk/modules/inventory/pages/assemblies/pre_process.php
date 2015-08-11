@@ -23,7 +23,6 @@ require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/inventory.php');
 /**************   page specific initialization  *************************/
 define('JOURNAL_ID', 14); // Inventory Assemblies Journal
-define('GL_TYPE', '');
 $glEntry             = new \core\classes\journal();
 $glEntry->id         = ($_POST['id'] <> '')      ? $_POST['id'] : ''; // will be null unless opening an existing gl entry
 $glEntry->journal_id = JOURNAL_ID;

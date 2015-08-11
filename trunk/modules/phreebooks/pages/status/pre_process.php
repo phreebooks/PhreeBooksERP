@@ -114,57 +114,46 @@ $search_fields = array (
 	'total_amount'
 );
 
-switch (JOURNAL_ID) {
+switch (JOURNAL_ID) { //@todo move to journals class
 	case 2 : // Purchase Quote Journal
-		define ( 'POPUP_FORM_TYPE', '' );
 		$heading_array ['bill_primary_name'] = TEXT_DESCRIPTION;
 		$page_title = TEXT_GENERAL_JOURNAL;
 		break;
 	case 3 : // Purchase Quote Journal
-		define ( 'POPUP_FORM_TYPE', 'vend:quot' );
 		$page_title = TEXT_PURCHASE_QUOTES;
 		break;
 	case 4 : // Purchase Order Journal
-		define ( 'POPUP_FORM_TYPE', 'vend:po' );
 		$page_title = TEXT_PURCHASE_ORDERS;
 		break;
 	case 6 : // Purchase Journal
-		define ( 'POPUP_FORM_TYPE', '' );
 		$heading_array ['closed'] = TEXT_PAID;
 		$page_title = TEXT_PURCHASE_OR_RECEIVE_INVENTORY;
 		break;
 	case 7 : // Vendor Credit Memo Journal
-		define ( 'POPUP_FORM_TYPE', 'vend:cm' );
 		$heading_array ['closed'] = TEXT_PAID;
 		$page_title = TEXT_VENDOR_CREDIT_MEMOS;
 		break;
 	case 9 : // Sales Quote Journal
-		define ( 'POPUP_FORM_TYPE', 'cust:quot' );
 		$page_title = TEXT_SALES_QUOTES;
 		break;
 	case 10 : // Sales Order Journal
-		define ( 'POPUP_FORM_TYPE', 'cust:so' );
 		$page_title = TEXT_SALES_ORDER;
 		break;
 	case 12 : // Invoice Journal
 		if (defined ( 'MODULE_SHIPPING_STATUS' )) {
 			$heading_array ['shipper_code'] = TEXT_CARRIER;
 		}
-		define ( 'POPUP_FORM_TYPE', 'cust:inv' );
 		$heading_array ['closed'] = TEXT_PAID;
 		$page_title = TEXT_SALES_INVOICES;
 		break;
 	case 13 : // Customer Credit Memo Journal
-		define ( 'POPUP_FORM_TYPE', 'cust:cm' );
 		$heading_array ['closed'] = TEXT_PAID;
 		$page_title = TEXT_CUSTOMER_CREDIT_MEMOS;
 		break;
 	case 18 : // Cash Receipts Journal
-		define ( 'POPUP_FORM_TYPE', 'bnk:rcpt' );
 		$page_title = TEXT_CUSTOMER_PAYMENTS;
 		break;
 	case 20 : // Cash Distribution Journal
-		define ( 'POPUP_FORM_TYPE', 'bnk:chk' );
 		$page_title = TEXT_VENDOR_PAYMENTS;
 		break;
 	default :

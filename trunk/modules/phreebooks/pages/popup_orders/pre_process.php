@@ -24,35 +24,6 @@ require(DIR_FS_WORKING . 'functions/phreebooks.php');
 
 /**************   page specific initialization  *************************/
 define('JOURNAL_ID',(int)$_GET['jID']);
-
-switch (JOURNAL_ID) {
-	case  3:	// Purchase Quote Journal
-	case  4:	// Purchase Order Journal
-		define('GL_TYPE','poo');
-		break;
-	case  6:	// Purchase Journal
-	case  7:	// Vendor Credit Memo Journal
-	case 21:	// Point of Purchase Journal
-		define('GL_TYPE','por');
-		break;
-	case  9:	// Sales Quote Journal
-	case 10:	// Sales Order Journal
-		define('GL_TYPE','soo');
-		break;
-	case 12:	// Sales/Invoice Journal
-	case 13:	// Custoemr Credit Memo Journal
-	case 19:	// Point of Sale (receipts)
-		define('GL_TYPE','sos');
-		break;
-	case 18:	// Cash Receipts Journal
-		define('GL_TYPE','swr');	// sale with receipt
-		break;
-	case 20:	// Purchases (direct pay)
-		define('GL_TYPE','pwp');	// purchase with payment
-		break;
-	default:
-		die('No valid journal id found (filename: modules/phreebooks/popup.php), Journal ID needs to be passed to this script to identify the correct procedure.');
-}
 history_filter('pb_pop_orders');
 $date        = gen_db_date($_REQUEST['search_date']);
 $acct_period = $_REQUEST['search_period'];

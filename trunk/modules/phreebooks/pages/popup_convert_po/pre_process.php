@@ -31,7 +31,6 @@ switch ($_REQUEST['action']) {
 		$purchase_invoice_id = $_POST['po_num'];
 		$drop_ship = isset($_POST['drop_ship']) ? '1' : '0';
 		define('JOURNAL_ID',4);
-		define('GL_TYPE','poo');
 		// Load the existing sales order
 		$order = new \core\classes\journal($id);
 		// replace some settings with the new values and re-post
@@ -59,7 +58,7 @@ switch ($_REQUEST['action']) {
 		    	  from " . TABLE_INVENTORY . " where sku = '" . $temp_rows[$i]['sku'] . "'");
 				if ($result->fields['vendor_id'] > 0) $vendor_id = $result->fields['vendor_id']; // save preferred vendor (takes last one)
 				$order->journal_rows[] = array(
-				  'gl_type'      => GL_TYPE,
+				  'gl_type'      => $order->gl_type,
 				  'sku'          => $temp_rows[$i]['sku'],
 				  'qty'          => $temp_rows[$i]['qty'],
 				  'description'  => $result->fields['description_purchase'],

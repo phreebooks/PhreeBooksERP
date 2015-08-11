@@ -16,10 +16,13 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreebooks/classes/journal/journal_18.php
 //
-// Cash Receipts Journal (18)
+// Cash Receipts Journal (18) for customer payments see 22
 namespace phreebooks\classes\journal;
-class journal_18 extends \core\classes\journal { //@todo should extend banking
+class journal_18 extends \core\classes\journal {
 	public $save_payment        = false;
+	public $gl_type             = 'pmt';
+	public $popup_form_type		= 'bnk:rcpt';
+	public $account_type		= 'v';
 	public $search              = TEXT_SEARCH;
 	public $bill_primary_name   = TEXT_NAME_OR_COMPANY;
 	public $bill_contact        = TEXT_ATTENTION;
@@ -102,7 +105,7 @@ class journal_18 extends \core\classes\journal { //@todo should extend banking
 		global $admin;
 		// first find out the last period with data in the system from the current_status table
 		$sql = $admin->DataBase->query("SELECT fiscal_year FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE period = " . $period);
-		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(GL_ERROR_BAD_ACCT_PERIOD); //@todo gebruiken ipv rowCount
+		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(GL_ERROR_BAD_ACCT_PERIOD);
 		$fiscal_year = $sql->fetch(\PDO::FETCH_LAZY);
 		$sql = "SELECT max(period) as period FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE fiscal_year = " . $fiscal_year;
 		$result = $admin->DataBase->query($sql);
@@ -519,7 +522,6 @@ class journal_18 extends \core\classes\journal { //@todo should extend banking
 		//   editing quantities on po/so to match the number received (from po/so journal)
 		//   receiving all (or more) po/so items through one or more purchases/sales (from purchase/sales journal)
 		$admin->messageStack->debug("\n  Checking for closed entry. action = " . $action);
-		//$gl_type = 'pmt';
 		// continue like payment
 		if ($action == 'Post') {
 			$temp = array();

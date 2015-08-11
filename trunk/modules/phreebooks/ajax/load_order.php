@@ -33,22 +33,9 @@ $just_ship = db_prepare_input($_GET['ship_only']);
 define('JOURNAL_ID',$jID);
 $cog_types = explode(',', COG_ITEM_TYPES);
 $sID   = $cID; // set ship contact ID equal to bill contact ID
-switch (JOURNAL_ID) {
-  case  3:
-  case  4: define('GL_TYPE','poo'); break;
-  case  6:
-  case  7: define('GL_TYPE','por'); break;
-  case  9:
-  case 10: define('GL_TYPE','soo'); break;
-  case 12:
-  case 13: define('GL_TYPE','sos'); break;
-  case 18: define('GL_TYPE','swr'); break;
-  case 20: define('GL_TYPE','pwp'); break;
-  default:
-}
 
 if ($oID) {
-  $order = $admin->DataBase->query("select * from " . TABLE_JOURNAL_MAIN . " where id = '" . $oID . "'");
+  $order = $admin->DataBase->query("select * from " . TABLE_JOURNAL_MAIN . " where id = '$oID'");
   if ($order->fields['bill_acct_id']) $cID = $order->fields['bill_acct_id']; // replace cID with bill contact ID from order
   if ($order->fields['ship_acct_id']) $sID = $order->fields['ship_acct_id']; // replace sID with ship contact ID from order
   $currencies_code  = $order->fields['currencies_code'];

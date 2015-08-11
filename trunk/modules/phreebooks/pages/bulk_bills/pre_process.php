@@ -21,8 +21,6 @@ $security_level = \core\classes\user::validate(SECURITY_ID_SELECT_PAYMENT);
 require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
 /**************   page specific initialization  *************************/
 define('JOURNAL_ID',20);
-define('GL_TYPE','chk');
-define('POPUP_FORM_TYPE','bnk:chk');
 define('AUDIT_LOG_DESC',TEXT_CASH_DISTRIBUTIONS);
 $post_success      = false;
 $post_date         = isset($_REQUEST['post_date']) ? gen_db_date($_REQUEST['post_date']) : date('Y-m-d', time());
@@ -110,7 +108,7 @@ switch ($_REQUEST['action']) {
 					$order->item_rows[] = array(
 					  'id'      => $values[$x]['id'],
 					  'amt'     => $values[$x]['amt'],
-					  'gl_type' => GL_TYPE,
+					  'gl_type' => $order->gl_type,
 					  'desc'    => $values[$x]['desc'],
 					  'acct'    => $values[$x]['acct'],
 					  'inv'     => $values[$x]['inv'],

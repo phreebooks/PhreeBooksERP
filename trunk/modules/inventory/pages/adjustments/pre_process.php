@@ -23,7 +23,6 @@ require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 /**************   page specific initialization  *************************/
 define('JOURNAL_ID',16);	// Adjustment Journal
-define('GL_TYPE', '');
 $post_date           = isset($_POST['post_date'])? gen_db_date($_POST['post_date']) : date('Y-m-d');
 $glEntry             = new \core\classes\journal();
 $glEntry->id         = isset($_POST['id'])       ? $_POST['id']       : '';

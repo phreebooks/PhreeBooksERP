@@ -47,116 +47,28 @@ $post_success = false;
 $order        = new \phreebooks\classes\orders();
 switch (JOURNAL_ID) {
   case 3:		// Vendor Quote Journal
-	define('ORD_ACCT_ID',TEXT_VENDOR_ID.': ');
-	$order->gl_type = 'poo';				// code to use for journal rows
-	define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);	// default account to use for item rows
-	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ap_acct'] ? $_SESSION['admin_prefs']['def_ap_acct'] : AP_DEFAULT_PURCHASE_ACCOUNT;
-	define('DEF_GL_ACCT_TITLE',TEXT_AP_ACCOUNT);
-	define('TEXT_COLUMN_1_TITLE',TEXT_QUANTITY);
-	define('TEXT_COLUMN_2_TITLE',TEXT_RECEIVED);
-	define('TEXT_ORDER_CLOSED_FIELD',TEXT_CLOSE);
-	$item_col_1_enable = true;				// allow/disallow entry of item columns
-	$item_col_2_enable = false;
-	define('POPUP_FORM_TYPE','vend:quot');	// form type to use for printing
-	$account_type = 'v';					// choices are v - vendor or c - customer
+	define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);	//@todo default account to use for item rows
 	break;
   case 4:		// Purchase Order Journal
-	define('ORD_ACCT_ID',TEXT_VENDOR_ID.': ');
-	$order->gl_type = 'poo';				// code to use for journal rows
 	define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);	// default account to use for item rows
-	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ap_acct'] ? $_SESSION['admin_prefs']['def_ap_acct'] : AP_DEFAULT_PURCHASE_ACCOUNT;
-	define('DEF_GL_ACCT_TITLE',TEXT_AP_ACCOUNT);
-	define('TEXT_COLUMN_1_TITLE',TEXT_QUANTITY);
-	define('TEXT_COLUMN_2_TITLE',TEXT_RECEIVED);
-	define('TEXT_ORDER_CLOSED_FIELD',TEXT_CLOSE);
-	$item_col_1_enable = true;				// allow/disallow entry of item columns
-	$item_col_2_enable = false;
-	define('POPUP_FORM_TYPE','vend:po');		// form type to use for printing
-	$account_type = 'v';					// choices are v - vendor or c - customer
 	break;
   case 6:		// Purchase Journal (accounts payable - pay later)
-	define('ORD_ACCT_ID',TEXT_VENDOR_ID.': ');
-	$order->gl_type = 'por';
 	define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);
-	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ap_acct'] ? $_SESSION['admin_prefs']['def_ap_acct'] : AP_DEFAULT_PURCHASE_ACCOUNT;
-	define('DEF_GL_ACCT_TITLE',TEXT_AP_ACCOUNT);
-	define('TEXT_COLUMN_1_TITLE',TEXT_PO_BAL);
-	define('TEXT_COLUMN_2_TITLE',TEXT_RECEIVED);
-	define('TEXT_ORDER_CLOSED_FIELD',TEXT_INVOICE_PAID);
-	$item_col_1_enable = false;
-	$item_col_2_enable = true;
-	define('POPUP_FORM_TYPE','');
-	$account_type = 'v';
 	break;
   case 7:		// Vendor Credit Memo Journal (unpaid invoice returned product to vendor)
-	define('ORD_ACCT_ID', TEXT_VENDOR_ID.': ');
-	$order->gl_type = 'por';
 	define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);
-	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ap_acct'] ? $_SESSION['admin_prefs']['def_ap_acct'] : AP_DEFAULT_PURCHASE_ACCOUNT;
-	define('DEF_GL_ACCT_TITLE',TEXT_AP_ACCOUNT);
-	define('TEXT_COLUMN_1_TITLE',TEXT_RECEIVED);
-	define('TEXT_COLUMN_2_TITLE',TEXT_RETURNED);
-	define('TEXT_ORDER_CLOSED_FIELD',TEXT_CREDIT_TAKEN);
-	$item_col_1_enable = false;
-	$item_col_2_enable = true;
-	define('POPUP_FORM_TYPE','vend:cm');
-	$account_type = 'v';
 	break;
   case 9:		// Customer Quote Journal
-	define('ORD_ACCT_ID', TEXT_CUSTOMER_ID.': ');
-	$order->gl_type = 'soo';				// code to use for journal rows
 	define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);	// default account to use for item rows
-	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ar_acct'] ? $_SESSION['admin_prefs']['def_ar_acct'] : AR_DEFAULT_GL_ACCT;
-	define('DEF_GL_ACCT_TITLE',TEXT_AR_ACCOUNT);
-	define('TEXT_COLUMN_1_TITLE',TEXT_QUANTITY);
-	define('TEXT_COLUMN_2_TITLE',TEXT_INVOICED);
-	define('TEXT_ORDER_CLOSED_FIELD',TEXT_CLOSE);
-	$item_col_1_enable = true;				// allow/disallow entry of item columns
-	$item_col_2_enable = false;
-	define('POPUP_FORM_TYPE','cust:quot');	// form type to use for printing
-	$account_type = 'c';					// choices are v - vendor or c - customer
 	break;
   case 10:	// Sales Order Journal
-	define('ORD_ACCT_ID', TEXT_CUSTOMER_ID.': ');
-	$order->gl_type = 'soo';
 	define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);
-	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ar_acct'] ? $_SESSION['admin_prefs']['def_ar_acct'] : AR_DEFAULT_GL_ACCT;
-	define('DEF_GL_ACCT_TITLE',TEXT_AR_ACCOUNT);
-	define('TEXT_COLUMN_1_TITLE',TEXT_QUANTITY);
-	define('TEXT_COLUMN_2_TITLE',TEXT_INVOICED);
-	define('TEXT_ORDER_CLOSED_FIELD',TEXT_CLOSE);
-	$item_col_1_enable = true;
-	$item_col_2_enable = false;
-	define('POPUP_FORM_TYPE','cust:so');
-	$account_type = 'c';
 	break;
   case 12:	// Sales/Invoice Journal (invoice for payment later)
-	define('ORD_ACCT_ID', TEXT_CUSTOMER_ID.': ');
-	$order->gl_type = 'sos';
 	define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);
-	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ar_acct'] ? $_SESSION['admin_prefs']['def_ar_acct'] : AR_DEFAULT_GL_ACCT;
-	define('DEF_GL_ACCT_TITLE',TEXT_AR_ACCOUNT);
-	define('TEXT_COLUMN_1_TITLE',TEXT_SO_BAL);
-	define('TEXT_COLUMN_2_TITLE',TEXT_QUANTITY);
-	define('TEXT_ORDER_CLOSED_FIELD',TEXT_PAID_IN_FULL);
-	$item_col_1_enable = false;
-	$item_col_2_enable = true;
-	define('POPUP_FORM_TYPE','cust:inv');
-	$account_type = 'c';
 	break;
   case 13:	// Customer Credit Memo Journal (unpaid invoice returned product from customer)
-	define('ORD_ACCT_ID', TEXT_CUSTOMER_ID.': ');
-	$order->gl_type = 'sos';
 	define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);
-	$order->gl_acct_id = $_SESSION['admin_prefs']['def_ar_acct'] ? $_SESSION['admin_prefs']['def_ar_acct'] : AR_DEFAULT_GL_ACCT;
-	define('DEF_GL_ACCT_TITLE',TEXT_AR_ACCOUNT);
-	define('TEXT_COLUMN_1_TITLE',TEXT_SHIPPED);
-	define('TEXT_COLUMN_2_TITLE',TEXT_RETURNED);
-	define('TEXT_ORDER_CLOSED_FIELD',TEXT_CREDIT_PAID);
-	$item_col_1_enable = false;
-	$item_col_2_enable = true;
-	define('POPUP_FORM_TYPE','cust:cm');
-	$account_type = 'c';
 	break;
   default:
 }
@@ -181,7 +93,6 @@ switch ($_REQUEST['action']) {
 		// load bill to and ship to information
 		$order->short_name          = db_prepare_input(($_POST['search'] <> TEXT_SEARCH) ? $_POST['search'] : '');
 		$order->bill_add_update     = isset($_POST['bill_add_update']) ? $_POST['bill_add_update'] : 0;
-		$order->account_type        = $account_type;
 		$order->bill_acct_id        = db_prepare_input($_POST['bill_acct_id']);
 		$order->bill_address_id     = db_prepare_input($_POST['bill_address_id']);
 		$order->bill_primary_name   = db_prepare_input(($_POST['bill_primary_name']   <> TEXT_NAME_OR_COMPANY)   ? $_POST['bill_primary_name']   : '', true);
@@ -262,7 +173,7 @@ switch ($_REQUEST['action']) {
 			'id'                		=> db_prepare_input($_POST['id_' . $x]),
 			'so_po_item_ref_id' 		=> db_prepare_input($_POST['so_po_item_ref_id_' . $x]),
 			'item_cnt'					=> db_prepare_input($_POST['item_cnt_' . $x]),
-			'gl_type'           		=> GL_TYPE,
+			'gl_type'           		=> $order->gl_type,
 			'qty'               		=> $admin->currencies->clean_value(db_prepare_input($_POST['qty_' . $x]), $order->currencies_code),
 			'pstd'             			=> $admin->currencies->clean_value(db_prepare_input($_POST['pstd_' . $x]), $order->currencies_code),
 			'sku'               		=> ($_POST['sku_' . $x] == TEXT_SEARCH) ? '' : db_prepare_input($_POST['sku_' . $x]),
@@ -285,7 +196,7 @@ switch ($_REQUEST['action']) {
 		}
 		// check for errors (address fields)
 		if (!$order->bill_acct_id && !$order->bill_add_update) {
-		  $contact_type = $account_type=='c' ? strtolower (TEXT_CUSTOMER) : strtolower (TEXT_VENDOR);
+		  $contact_type = $order->account_type == 'c' ? strtolower (TEXT_CUSTOMER) : strtolower (TEXT_VENDOR);
 		  throw new \core\classes\userException(sprintf(ERROR_NO_CONTACT_SELECTED, $contact_type, $contact_type, TEXT_ADD_UPDATE));
 		}
 		$base_msg = in_array(JOURNAL_ID, array(3,4,6,7)) ? TEXT_REMIT_TO . ':' : TEXT_BILL_TO . ':' ;
@@ -322,7 +233,7 @@ switch ($_REQUEST['action']) {
 				case 12: $jID = 18; break; // cash receipts
 				default: $jID = 0; // error
 			}
-			gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=bills&amp;jID=' . $jID . '&amp;type=' . $account_type . '&amp;oID=' . $order->id . '&amp;action=pmt', 'SSL'));
+			gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=bills&amp;jID=' . $jID . '&amp;type=' . $order->account_type . '&amp;oID=' . $order->id . '&amp;action=pmt', 'SSL'));
 		}
   	}catch(Exception $e){
   		$messageStack->add($e->getMessage());
@@ -409,7 +320,7 @@ for ($i = 0; $i < count($gl_array_list); $i++) {
   $js_gl_array .= 'js_gl_array[' . $i . '] = new dropDownData("' . $gl_array_list[$i]['id'] . '", "' . $gl_array_list[$i]['text'] . '");' . chr(10);
 }
 // load the tax rates
-$tax_rates = ord_calculate_tax_drop_down($account_type);
+$tax_rates = ord_calculate_tax_drop_down($order->account_type);
 // generate a rate array parallel to the drop down for the javascript total calculator
 $js_tax_rates = 'var tax_rates = new Array(' . count($tax_rates) . ');' . chr(10);
 for ($i = 0; $i < count($tax_rates); $i++) {

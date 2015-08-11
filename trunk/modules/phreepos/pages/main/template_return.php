@@ -68,7 +68,7 @@ echo $toolbar->build();
       }else{
 		echo html_hidden_field('till_id', $tills->default_till());
 	  }?>
-		<li><label> <?php echo TEXT_SALES_REP . ' ' . html_pull_down_menu('rep_id', gen_get_rep_ids($account_type), $order->rep_id ? $order->rep_id : $default_sales_rep); ?> </label></li>
+		<li><label> <?php echo TEXT_SALES_REP . ' ' . html_pull_down_menu('rep_id', gen_get_rep_ids($order->account_type), $order->rep_id ? $order->rep_id : $default_sales_rep); ?> </label></li>
 <?php if (ENABLE_MULTI_CURRENCY) {	// show currency selection pulldown
 		echo '<li><label>' . TEXT_CURRENCY . ' ' . html_pull_down_menu('display_currency', gen_get_pull_down(TABLE_CURRENCIES, false, false, 'code', 'title'), $order->currencies_code, 'onchange="recalculateCurrencies();"'). '</label></li>';
 		echo '<li><label>' . TEXT_EXCHANGE_RATE . ' ' . html_input_field('currencies_value', $order->currencies_value, 'readonly="readonly"'). '</label></li>';
@@ -83,7 +83,7 @@ echo $toolbar->build();
 		<ol style="list-style:none;">
 			<li><label>
 	<?php
-	  echo ORD_ACCT_ID . ' ' . html_input_field('search', isset($order->short_name) ? $order->short_name : TEXT_SEARCH, 'size="21" maxlength="20" title="' . TEXT_SEARCH . '" onchange="accountGuess(true)"');
+	  echo $order->text_contact_id . ': ' . html_input_field('search', isset($order->short_name) ? $order->short_name : TEXT_SEARCH, 'size="21" maxlength="20" title="' . TEXT_SEARCH . '" onchange="accountGuess(true)"');
 	  echo '&nbsp;' . html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'align="top" style="cursor:pointer" onclick="accountGuess(true)"');
 	?>
 		  	</label></li>
@@ -167,7 +167,7 @@ echo $toolbar->build();
 
 <div id="search_customer" >
 <?php
-  echo ORD_ACCT_ID . ' ' . html_input_field('copy_search', isset($order->short_name) ? $order->short_name : TEXT_SEARCH, 'size="21" maxlength="20" title="' . TEXT_SEARCH . '" onchange="accountGuess(true)"');
+  echo $order->text_contact_id . ': ' . html_input_field('copy_search', isset($order->short_name) ? $order->short_name : TEXT_SEARCH, 'size="21" maxlength="20" title="' . TEXT_SEARCH . '" onchange="accountGuess(true)"');
   echo '&nbsp;' . html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'align="top" style="cursor:pointer" onclick="accountGuess(true)"').'<br>'. chr(10);
   echo html_input_field('copy_bill_primary_name',$order->bill_primary_name, 'size="33" maxlength="32" onfocus="clearField(\'bill_primary_name\', \'' . TEXT_NAME_OR_COMPANY . '\')" onblur="setField(\'bill_primary_name\', \'' . TEXT_NAME_OR_COMPANY . '\')"', true).'<br>'. chr(10);
   echo html_button_field('customer_popup_buttom', TEXT_SELECT_CUSTOMER, 'onclick="popupContact()"').'<br>'. chr(10);?>

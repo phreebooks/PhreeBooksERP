@@ -136,7 +136,7 @@ echo $toolbar->build();
 	  <tbody>
 	    <tr>
 		  <td width="33%">
-			<?php echo ORD_ACCT_ID . ' ' . html_input_field('search', isset($order->short_name) ? $order->short_name : TEXT_SEARCH, 'size="21" maxlength="20" onfocus="clearField(\'search\', \'' . TEXT_SEARCH . '\')" onblur="setField(\'search\', \'' . TEXT_SEARCH . '\');"');
+			<?php echo $order->text_contact_id . ': ' . html_input_field('search', isset($order->short_name) ? $order->short_name : TEXT_SEARCH, 'size="21" maxlength="20" onfocus="clearField(\'search\', \'' . TEXT_SEARCH . '\')" onblur="setField(\'search\', \'' . TEXT_SEARCH . '\');"');
 			      echo '&nbsp;' . html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'align="top" style="cursor:pointer" onclick="AccountList(true)"');
 			      echo '&nbsp;' . html_icon('actions/document-properties.png', TEXT_PROPERTIES, 'small', 'align="top" style="cursor:pointer" onclick="ContactProp()"');
 			?>
@@ -166,7 +166,7 @@ echo $toolbar->build();
 				  <?php echo html_input_field('currencies_value', $order->currencies_value, 'readonly="readonly"'); ?>
 			    </td>
 			  </tr>
-<?php } 
+<?php }
 $tip = (in_array(JOURNAL_ID, array(6,7))) ? ORD_JS_WAITING_FOR_PAYMENT : ORD_TT_PURCH_INV_NUM;
 ?>
 			  <tr>
@@ -186,7 +186,7 @@ $tip = (in_array(JOURNAL_ID, array(6,7))) ? ORD_JS_WAITING_FOR_PAYMENT : ORD_TT_
 			  </tr>
 <?php } ?>
 			  <tr>
-				<td align="center" colspan="2"><div id="closed_text" class="ui-state-error" style="display:none"><?php echo TEXT_ORDER_CLOSED_FIELD; ?></div></td>
+				<td align="center" colspan="2"><div id="closed_text" class="ui-state-error" style="display:none"><?php echo $order->text_order_closed; ?></div></td>
 			  </tr>
 			</table>
 		  </td>
@@ -253,7 +253,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
           <th><?php echo (in_array(JOURNAL_ID, array(3,4,6,7,9)) ? TEXT_BUYER : TEXT_SALES_REP); ?></th>
 <?php if ($template_options['terms']) echo '<th>' . TEXT_TERMS_DUE . '</th>'; ?>
 <?php if ($template_options['terminal_date']) echo '<th>' . (in_array(JOURNAL_ID, array(3,4,9)) ? TEXT_EXPIRATION_DATE : TEXT_SHIP_BY_DATE) . '</th>'; ?>
-          <th><?php echo DEF_GL_ACCT_TITLE; ?></th>
+          <th><?php echo $order->text_account; ?></th>
         </tr>
         </thead>
         <tbody class="ui-widget-content">
@@ -265,7 +265,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
           <?php if (ENABLE_MULTI_BRANCH) { ?>
             <td align="center"><?php echo html_pull_down_menu('store_id', gen_get_store_ids(), $order->store_id ? $order->store_id : $_SESSION['admin_prefs']['def_store_id']); ?></td>
 		  <?php } ?>
-          <td align="center"><?php echo html_pull_down_menu('rep_id', gen_get_rep_ids($account_type), $order->rep_id ? $order->rep_id : $default_sales_rep); ?></td>
+          <td align="center"><?php echo html_pull_down_menu('rep_id', gen_get_rep_ids($order->account_type), $order->rep_id ? $order->rep_id : $default_sales_rep); ?></td>
 <?php if ($template_options['terms']) echo '<td align="center">' . html_input_field('terms_text', gen_terms_to_language('0', true, 'ap'), 'readonly="readonly" size="25"') . '&nbsp;' . html_icon('apps/accessories-text-editor.png', TEXT_TERMS_DUE, 'small', 'align="top" style="cursor:pointer" onclick="TermsList()"') . '</td>'; ?>
 <?php if ($template_options['terminal_date']) echo '<td align="center">' . html_calendar_field($cal_terminal) . '</td>'; ?>
           <td align="center">
@@ -284,8 +284,8 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
         <tr>
           <th><?php echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small'); ?></th>
           <th><?php echo TEXT_ITEM; ?></th>
-          <th><?php echo TEXT_COLUMN_1_TITLE; ?></th>
-          <th><?php echo TEXT_COLUMN_2_TITLE; ?></th>
+          <th><?php echo $order->text_column_1_title; ?></th>
+          <th><?php echo $order->text_column_2_title; ?></th>
           <th><?php echo TEXT_SKU; ?></th>
           <th><?php echo TEXT_DESCRIPTION; ?></th>
           <th><?php echo TEXT_GL_ACCOUNT; ?></th>
@@ -296,8 +296,8 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
 <?php } else { // two line order screen ?>
         <tr>
           <th><?php echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small'); ?></th>
-          <th><?php echo TEXT_COLUMN_1_TITLE; ?></th>
-          <th><?php echo TEXT_COLUMN_2_TITLE; ?></th>
+          <th><?php echo $order->text_column_1_title; ?></th>
+          <th><?php echo $order->text_column_2_title; ?></th>
           <th><?php echo TEXT_SKU; ?></th>
           <th colspan="3"><?php echo TEXT_DESCRIPTION; ?></th>
           <th colspan="2"><?php echo TEXT_PROJECT; ?></th>
@@ -330,10 +330,10 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
 				  echo '  <td>' . html_input_field('item_cnt_' . $i, $order->item_rows[$j]['item_cnt'], 'size="3" maxlength="3" readonly="readonly"') . '</td>' . chr(10);
 				}
 				echo '  <td nowrap="nowrap" align="center">';
-				echo html_input_field('qty_' . $i, $order->item_rows[$j]['qty'], ($item_col_1_enable ? '' : ' readonly="readonly"') . ' size="7" maxlength="6" onchange="updateRowTotal(' . $i . ', true)" style="text-align:right"');
+				echo html_input_field('qty_' . $i, $order->item_rows[$j]['qty'], ($order->item_col_1_enable ? '' : ' readonly="readonly"') . ' size="7" maxlength="6" onchange="updateRowTotal(' . $i . ', true)" style="text-align:right"');
 				echo '</td>' . chr(10);
 				echo '  <td nowrap="nowrap" align="center">';
-				echo html_input_field('pstd_' . $i, $order->item_rows[$j]['pstd'], ($item_col_2_enable ? '' : ' readonly="readonly"') . ' size="7" maxlength="6" onchange="updateRowTotal(' . $i . ', true)" style="text-align:right"');
+				echo html_input_field('pstd_' . $i, $order->item_rows[$j]['pstd'], ($order->item_col_2_enable ? '' : ' readonly="readonly"') . ' size="7" maxlength="6" onchange="updateRowTotal(' . $i . ', true)" style="text-align:right"');
 				// for serialized items, show the icon IF the item type is serial
 				$invType = $admin->DataBase->query("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE sku='{$order->item_rows[$j]['sku']}'");
 				$imgSerialView = in_array($invType->fields['inventory_type'], array('sr','sa')) ? "" : "display:none;";
@@ -447,7 +447,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
         <tr>
           <td><?php echo TEXT_SELECT_FILE_TO_ATTACH . ' ' . html_file_field('file_name'); ?></td>
           <td align="right">
-<?php echo ($account_type == 'v') ? TEXT_PURCHASE_TAX . ' ' : TEXT_SALES_TAX . ' '; ?>
+<?php echo ($order->account_type == 'v') ? TEXT_PURCHASE_TAX . ' ' : TEXT_SALES_TAX . ' '; ?>
 <?php echo ' ' . html_input_field('sales_tax', $admin->currencies->format(($order->sales_tax ? $order->sales_tax : '0.00'), true, $order->currencies_code, $order->currencies_value), 'readonly="readonly" size="15" maxlength="20" onchange="updateTotalPrices()" style="text-align:right"'); ?>
 		  </td>
         </tr>
