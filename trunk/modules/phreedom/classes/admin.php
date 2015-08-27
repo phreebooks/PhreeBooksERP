@@ -505,7 +505,7 @@ class admin extends \core\classes\admin {
 		$query_raw    = "SELECT SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " FROM " . TABLE_USERS . " WHERE is_role = '0'{$search} ORDER BY {$disp_order}";
 		$sql = $basis->DataBase->prepare($query_raw);
 		$sql->execute();
-		$sql->rowCount();
+		$sql->fetch(\PDO::FETCH_NUM);
 		$result = $sql->fetch(\PDO::FETCH_LAZY);
 		$query_result = $basis->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 		$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');

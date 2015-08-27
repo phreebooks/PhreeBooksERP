@@ -156,7 +156,7 @@ switch ($action) {
 	$shipments   = $admin->DataBase->query("select method, ship_date, tracking_id from " . TABLE_SHIPPING_LOG . " where shipment_id = " . (int)$shipment_id);
 	$ship_method = $shipments->fields['method'];
 	$shipment    = new $shipping_module;
-	if ($shipments->rowCount() == 0 || !$ship_method) {
+	if ($shipments->fetch(\PDO::FETCH_NUM) == 0 || !$ship_method) {
 	  $error = $messageStack->add(SHIPPING_DELETE_ERROR,'error');
 	  break;
 	}

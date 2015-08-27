@@ -49,7 +49,7 @@ class pos_todays extends \core\classes\ctl_panel {
 		if ($this->params['num_rows']) $temp .= " LIMIT " . $this->params['num_rows'];
 		$sql = $admin->DataBase->prepare($temp);
 		$sql->execute();
-		if ($sql->rowCount() < 1) {
+		if ($sql->fetch(\PDO::FETCH_NUM) < 1) {
 			$contents = TEXT_NO_RESULTS_FOUND;
 		} else {
 			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
@@ -63,7 +63,7 @@ class pos_todays extends \core\classes\ctl_panel {
 				$contents .= '</a></div>' . chr(10);
 			}
 		}
-		if (!$this->params['num_rows'] && $sql->rowCount() != 0) {
+		if (!$this->params['num_rows'] && $sql->fetch(\PDO::FETCH_NUM) != 0) {
 		  	$contents .= '<div style="float:right"><b>' . $admin->currencies->format_full($total, true, $result['currencies_code'], $result['currencies_value']) . '</b></div>';
 		  	$contents .= '<div><b>' . TEXT_TOTAL . '</b></div>' . chr(10);
 		}

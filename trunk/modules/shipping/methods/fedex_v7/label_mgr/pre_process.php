@@ -152,7 +152,7 @@ switch ($_REQUEST['action']) {
 	$shipment_id = db_prepare_input($_GET['sID']);
 	$shipments   = $admin->DataBase->query("select method, ship_date, tracking_id from " . TABLE_SHIPPING_LOG . " where shipment_id = " . (int)$shipment_id);
 	$ship_method = $shipments->fields['method'];
-	if ($shipments->rowCount() == 0 || !$ship_method) throw new \core\classes\userException(SHIPPING_DELETE_ERROR);
+	if ($shipments->fetch(\PDO::FETCH_NUM) == 0 || !$ship_method) throw new \core\classes\userException(SHIPPING_DELETE_ERROR);
 	// only allow delete if shipped today or in future
 	if ($shipments->fields['ship_date'] < date('Y-m-d')) throw new \core\classes\userException(SHIPPING_CANNOT_DELETE);
 	while (!$shipments->EOF) {

@@ -73,7 +73,7 @@ echo $toolbar->build();
 </table>
 
 <?php
-  if ($price_sheets->rowCount() > 0) {
+  if ($price_sheets->fetch(\PDO::FETCH_NUM) > 0) {
 	if (ENABLE_MULTI_CURRENCY) echo '<p class="fieldRequired"> ' . sprintf(GEN_PRICE_SHEET_CURRENCY_NOTE, $admin->currencies->currencies[DEFAULT_CURRENCY]['title']) . '</p>';
 	echo '<div class="easyui-tabs" id="pricetabs">' . chr(10);
 	$m = 1;
@@ -143,6 +143,6 @@ echo $toolbar->build();
     echo '</div>' . chr(10);
   } else {
     echo '<p><div align="center"><h3>' . INV_NO_PRICE_SHEETS . '</h3></div></p>';
-  } // end ($price_sheets->rowCount() > 0)
+  } // end ($price_sheets->fetch(\PDO::FETCH_NUM) > 0)
 ?>
 </form>

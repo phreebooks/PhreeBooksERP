@@ -578,7 +578,7 @@ class admin extends \core\classes\admin {
 		global $admin;
 		if (!$sku) throw new \core\classes\userException(TEXT_THE_ID_FIELD_WAS_EMPTY);
 		$result = $admin->DataBase->query("SELECT id FROM " . TABLE_INVENTORY . " WHERE sku = '$sku'");
-		if ($result->rowCount() <> 0) throw new \core\classes\userException(sprintf(TEXT_THE_ID_IS_NOT_UNIQUE_ARGS, $name));
+		if ($result->fetch(\PDO::FETCH_NUM) <> 0) throw new \core\classes\userException(sprintf(TEXT_THE_ID_IS_NOT_UNIQUE_ARGS, $name));
 	}
 
 	// functions part
@@ -959,7 +959,7 @@ class admin extends \core\classes\admin {
   		$result = $admin->DataBase->query("select account_inventory_wage, quantity_on_hand
 	  		  from " . TABLE_INVENTORY . " where sku = '$sku'");
   		$sku_inv_acct = $result->fields['account_inventory_wage'];
-  		if (!$result->rowCount()) throw new \core\classes\userException(INV_ERROR_SKU_INVALID);
+  		if (!$result->fetch(\PDO::FETCH_NUM)) throw new \core\classes\userException(INV_ERROR_SKU_INVALID);
   		if ($qty < 0 && ($result->fields['quantity_on_hand'] + $qty) < 0 ) throw new \core\classes\userException(INV_ERROR_NEGATIVE_BALANCE);
   		if (!$qty) throw new \core\classes\userException(JS_ASSY_VALUE_ZERO);
   		// finished checking errors, reload if any errors found

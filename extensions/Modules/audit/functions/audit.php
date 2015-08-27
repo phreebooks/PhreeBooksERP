@@ -107,7 +107,7 @@ function build_audit_xml($date_from, $date_to, $select){
 	    if($select == '1') $where = " and journal_id not in ('3','4','9','10') and waiting = '0' ";
 		$totals = $admin->DataBase->query("select sum(i.debit_amount) as totalDebit, sum(i.credit_amount) as totalCredit from " . TABLE_JOURNAL_MAIN . " m join " .TABLE_JOURNAL_ITEM . " i on m.id=i.ref_id where m.post_date >= '" . $date_from . "' and m.post_date<='" . $date_to . "'" .$where);
 		$result = $admin->DataBase->query("select * from " . TABLE_JOURNAL_MAIN . " where post_date >= '" . $date_from . "' and post_date<='" . $date_to . "' " . $where . " order by journal_id ASC");
-		$output .= xmlEntry('numberEntries',		$result->rowCount()			,true);
+		$output .= xmlEntry('numberEntries',		$result->fetch(\PDO::FETCH_NUM)			,true);
 		$total_credit = 0;
 		$total_credit = 0;
 		//$output .= xmlEntry('totalDedit',			$totals->fields['totalDebit']	,true);

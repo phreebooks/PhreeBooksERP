@@ -110,7 +110,7 @@ $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 history_save('inv_popup');
 
 // check for auto close (if auto fill is turned on and only one result is found, the data will already be there)
-$auto_close = (INVENTORY_AUTO_FILL && $query_result->rowCount() == 1 && $_REQUEST['list'] == 1) ? true : false;
+$auto_close = (INVENTORY_AUTO_FILL && $query_result->fetch(\PDO::FETCH_NUM) == 1 && $_REQUEST['list'] == 1) ? true : false;
 $auto_close = false; // disable until all modules that use this function are ajax compliant
 
 $include_header   = false;

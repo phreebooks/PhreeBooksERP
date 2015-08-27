@@ -25,7 +25,7 @@ require_once(DIR_FS_ADMIN . 'modules/phreebooks/defaults.php');
 /**************   page specific initialization  *********************/
 $rID   = db_prepare_input($_GET['rID']);
 $main  = $admin->DataBase->query("select * from ".TABLE_JOURNAL_MAIN." where id = '$rID'");
-if ($main->rowCount() <> 1) throw new \core\classes\userException('Bad record submitted. No results found!');
+if ($main->fetch(\PDO::FETCH_NUM) <> 1) throw new \core\classes\userException('Bad record submitted. No results found!');
 $items = $admin->DataBase->query("select * from ".TABLE_JOURNAL_ITEM." where ref_id = '$rID'");
 // build the journal record data
 $main->fields['attach_exist'] = file_exists(PHREEBOOKS_DIR_MY_ORDERS.'order_'.$rID.'.zip') ? '1' : '0';

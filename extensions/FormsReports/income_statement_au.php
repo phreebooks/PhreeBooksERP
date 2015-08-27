@@ -42,7 +42,7 @@ class income_statement_au {
 		$first_period = $result->fields['period'];
 		// check for prior year data present
 		$result = $admin->DataBase->query("select period from " . TABLE_ACCOUNTING_PERIODS . " where fiscal_year = " . ($fiscal_year - 1) . " order by period limit 1");
-		if ($result->rowCount() == 0) { // no data for prior fiscal year
+		if ($result->fetch(\PDO::FETCH_NUM) == 0) { // no data for prior fiscal year
 			$ly_first_period = 0;
 			$ly_fiscal_year  = 0;
 			$ly_period       = 0;

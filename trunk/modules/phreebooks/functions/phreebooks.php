@@ -68,7 +68,7 @@ function build_and_check_account_history_records() {
 	  $account_id = $result->fields['id'];
 	  for ($i = 0, $j = 1; $i < $max_period; $i++, $j++) {
 	    $record_found = $admin->DataBase->query("select id from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '" . $account_id . "' and period = " . $j);
-	    if (!$record_found->rowCount()) {
+	    if (!$record_found->fetch(\PDO::FETCH_NUM)) {
 		  $admin->DataBase->query("insert into " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " (account_id, period) values('" . $account_id . "', '" . $j . "')");
 		 }
 	  }
@@ -238,7 +238,7 @@ function fetch_partially_paid($id) {
 	where i.so_po_item_ref_id = $id and m.journal_id in (18, 20) and i.gl_type in ('chk', 'pmt')
 	group by m.journal_id";
   $result = $admin->DataBase->query($sql);
-  if($result->rowCount() == 0) return 0;
+  if($result->fetch(\PDO::FETCH_NUM) == 0) return 0;
   if ($result->fields['debit'] || $result->fields['credit']) {
     return $result->fields['debit'] + $result->fields['credit'];
   } else {
@@ -317,7 +317,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
     	global $admin;
     	$sql = $admin->DataBase->prepare("SELECT tax_auth_id, description_short, account_id , tax_rate FROM " . TABLE_TAX_AUTH . " ORDER BY description_short");
     	$sql->execute();
-    	if ($sql->rowCount() < 1) throw new \core\classes\userException("there are no tax records");
+    	if ($sql->fetch(\PDO::FETCH_NUM) < 1) throw new \core\classes\userException("there are no tax records");
     	while ($tax_auth_values = $sql->fetch(\PDO::FETCH_LAZY)){
 			$tax_auth_array[$tax_auth_values['tax_auth_id']] = array(
 			  'description_short' => $tax_auth_values['description_short'],
@@ -373,7 +373,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
   function ord_get_so_po_num($id = '') {
 	global $admin;
 	$result = $admin->DataBase->query("select purchase_invoice_id from " . TABLE_JOURNAL_MAIN . " where id = " . $id);
-	return ($result->rowCount()) ? $result->fields['purchase_invoice_id'] : '';
+	return ($result->fetch(\PDO::FETCH_NUM)) ? $result->fields['purchase_invoice_id'] : '';
   }
 
   function ord_get_projects() {

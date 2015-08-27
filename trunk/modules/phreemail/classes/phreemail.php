@@ -392,7 +392,7 @@ class phreemail extends PHPMailer{
   		global $admin;
    		$result = $admin->DataBase->query("SELECT Email FROM ".TABLE_PHREEMAIL_LIST." WHERE Email='".addslashes($email)."' AND Type='B'");
    		$e_mail = $result->fields['Email'];
-   		if($result->rowCount() > 0){
+   		if($result->fetch(\PDO::FETCH_NUM) > 0){
     		return 1;
    		} else {
     		return 0;
@@ -431,7 +431,7 @@ class phreemail extends PHPMailer{
 	    unset($email['x_date']);
 	    $remove_non_flags = array(`id`,`message_id`,`toaddress_id`,`fromaddress_id`,`toaddress`,`fromaddress`,`reply_toaddress`,`senderaddress`,`account`,`date`,`maildate`,`udate`,`database_date`,`subject`,`message`,`message_html`,`size`);
 		$temp = $admin->DataBase->query("select * from ".TABLE_PHREEMAIL." where message_id ='".$email['message_id']."'");
-		if($temp->rowCount()> 0 ){
+		if($temp->fetch(\PDO::FETCH_NUM)> 0 ){
 			$message_id = $email['message_id'];
 			foreach ($remove_non_flags as $key) unset($email[$key]);
 			db_perform(TABLE_PHREEMAIL, $email, 'update'," message_id='$message_id'");
@@ -441,7 +441,7 @@ class phreemail extends PHPMailer{
 		$messageStack->debug("\n email ".$email['message_id']." is not in database");
 		//TABLE_ADDRESS_BOOK
 		$temp = $admin->DataBase->query("select address_id, ref_id from " . TABLE_ADDRESS_BOOK . " where email ='".$email['fromaddress']."' and ref_id <> 0");
-		if($temp->rowCount() == 0) $email['spam'] = 'maybe'; // mark that it could be spam if contact is is unknowm
+		if($temp->fetch(\PDO::FETCH_NUM) == 0) $email['spam'] = 'maybe'; // mark that it could be spam if contact is is unknowm
 		$email['fromaddress_id'] 	= $temp->fields['address_id'];
 		$ref_id 					= $temp->fields['ref_id'];
 		$temp = $admin->DataBase->query("select address_id, ref_id from " . TABLE_ADDRESS_BOOK . " where email ='".$email['toaddress']."'");

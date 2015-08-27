@@ -259,9 +259,9 @@ switch ($_REQUEST['action']) {
 		  	if (DEBUG) $messageStack->debug("\n  loading chart of accounts");
 			// load the retail chart as default if the chart of accounts table is empty
 		  	$result = $admin->DataBase->query("select id from " . TABLE_JOURNAL_MAIN . " limit 1");
-		  	$entries_exist = $result->rowCount() > 0 ? true : false;
+		  	$entries_exist = $result->fetch(\PDO::FETCH_NUM) > 0 ? true : false;
 		  	$result = $admin->DataBase->query("select id from " . TABLE_CHART_OF_ACCOUNTS . " limit 1");
-		  	$chart_exists = $result->rowCount() > 0 ? true : false;
+		  	$chart_exists = $result->fetch(\PDO::FETCH_NUM) > 0 ? true : false;
 		  	if (!$entries_exist && !$chart_exists) {
 		  		if (($temp = @file_get_contents($default_chart)) === false) throw new \core\classes\userException(sprintf(ERROR_READ_FILE, $default_chart));
 		  		$accounts = xml_to_object($temp);

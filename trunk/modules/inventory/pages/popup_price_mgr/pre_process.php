@@ -57,7 +57,7 @@ switch ($_REQUEST['action']) {
 		$price_levels = implode(';', $encoded_prices);
 		$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY_SPECIAL_PRICES . "
 			where inventory_id = " . $id . " and price_sheet_id = " . $sheet_id);
-		if ($result->rowCount() == 0) {
+		if ($result->fetch(\PDO::FETCH_NUM) == 0) {
 		  $admin->DataBase->query("insert into " . TABLE_INVENTORY_SPECIAL_PRICES . "
 			set inventory_id = " . $id . ", price_sheet_id = " . $sheet_id . ", price_levels = '" . $price_levels . "'");
 		} else {

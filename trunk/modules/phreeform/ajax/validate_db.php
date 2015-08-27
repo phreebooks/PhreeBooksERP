@@ -43,7 +43,7 @@ $result = $admin->DataBase->query_return_error($sql);
 // if we have a row, sql was valid
 if ($admin->DataBase->error_number) {
   $message = sprintf(PHREEFORM_AJAX_BAD_DB_REFERENCE, $admin->DataBase->error_number . ' - ' . $admin->DataBase->error_text, $sql);
-} elseif ($result->rowCount() == 0) { // no rows were returned, could be no data yet so just warn and continue
+} elseif ($result->fetch(\PDO::FETCH_NUM) == 0) { // no rows were returned, could be no data yet so just warn and continue
   $message = PHREEFORM_AJAX_NO_TABLE_DATA;
 } else {
   $message = PHREEFORM_AJAX_DB_SUCCESS;

@@ -117,7 +117,7 @@ function load_recently_added() {
 	$contents = NULL;
 	$sql = "select id, security, doc_title from " . TABLE_PHREEFORM . " where doc_type <> '0' order by create_date desc, id desc limit 20";
 	$result = $admin->DataBase->query($sql);
-	if ($result->rowCount() == 0) {
+	if ($result->fetch(\PDO::FETCH_NUM) == 0) {
 	  $contents .= TEXT_NO_DOCUMENTS_HAVE_BEEN_FOUND . '<br />';
 	} else {
 	  while (!$result->EOF) {
@@ -140,7 +140,7 @@ function load_my_reports() {
 	$sql = "select id, doc_title, security from " . TABLE_PHREEFORM . "
 	  where doc_type <> '0' order by doc_title";
 	$result = $admin->DataBase->query($sql);
-	if ($result->rowCount() == 0) {
+	if ($result->fetch(\PDO::FETCH_NUM) == 0) {
 	  $contents .= TEXT_NO_DOCUMENTS_HAVE_BEEN_FOUND . '<br />';
 	} else {
 	  while (!$result->EOF) {
@@ -281,7 +281,7 @@ function ImportReport($RptName = '', $RptFileName = '', $import_path = PF_DIR_DE
 	// error check
 	$result = $admin->DataBase->query("select id from " . TABLE_PHREEFORM . "
 	  where doc_title = '" . addslashes($report->title) . "' and doc_type <> '0'");
-	if ($result->rowCount() > 0) { // the report name already exists, if file exists error, else write
+	if ($result->fetch(\PDO::FETCH_NUM) > 0) { // the report name already exists, if file exists error, else write
 	  	$rID = $result->fields['id'];
 	  	// file exists - error and return
 	  	if (file_exists($save_path . 'pf_' . $rID)) throw new \core\classes\userException (sprintf(PHREEFORM_REPDUP, $report->title));
@@ -299,7 +299,7 @@ function save_report($report, $rID = '', $save_path = PF_DIR_MY_REPORTS) {
 	// see if a folder exists with the group to put it in
 	$result = $admin->DataBase->query("select id from " . TABLE_PHREEFORM . "
 	  where doc_group = '" . $report->groupname . "' and doc_type = '0' and doc_ext in ('ff', 'fr')");
-	if ($result->rowCount() == 0) {
+	if ($result->fetch(\PDO::FETCH_NUM) == 0) {
 	  if ($report->reporttype == 'frm') {
 	    $result = $admin->DataBase->query("select id from " . TABLE_PHREEFORM . "
 	      where doc_group = 'misc:misc' and doc_type = '0'");
@@ -409,7 +409,7 @@ function BuildForm($report, $delivery_method = 'D') { // for forms only
 	// execute sql to see if we have data
 //echo 'sql = ' . $sql . '<br />'; exit();
 	$result = $admin->DataBase->query($sql);
-	if (!$result->rowCount()) throw new \core\classes\userException(PHREEFORM_NOROWS);
+	if (!$result->fetch(\PDO::FETCH_NUM)) throw new \core\classes\userException(PHREEFORM_NOROWS);
 
 	// set the filename for download or email
 	if ($report->filenameprefix || $report->filenamefield) {
@@ -976,7 +976,7 @@ function BuildDataArray($sql, $report) { // for reports only
 	}
 
 	$result = $admin->DataBase->query($sql);
-	if ($result->rowCount() == 0) throw new \core\classes\userException("no data"); // No data so bail now
+	if ($result->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException("no data"); // No data so bail now
 	// Generate the output data array
 	$RowCnt     = 0;
 	$ColCnt     = 1;

@@ -129,7 +129,7 @@ class admin extends \core\classes\admin {
 	    // Don't allow delete if there is activity
 		$sql = "select id from " . TABLE_JOURNAL_MAIN . " where journal_id = '19'";
 		$result = $admin->DataBase->query($sql);
-		if ($result->rowCount() <> 0 ) throw new \core\classes\userException(ERROR_CANT_DELETE);
+		if ($result->fetch(\PDO::FETCH_NUM) <> 0 ) throw new \core\classes\userException(ERROR_CANT_DELETE);
 	}
 
 	function load_reports() {

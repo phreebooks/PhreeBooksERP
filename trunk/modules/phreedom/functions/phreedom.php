@@ -361,7 +361,7 @@ function table_export_xml($structure, $db_table) {
     $tag_map = array();
 	foreach ($table->Field as $field) $tag_map[$field->Name] = $field->TagName;
 	$result = $admin->DataBase->query("select * from " . DB_PREFIX . $db_table);
-    if ($result->rowCount() > 0) while (!$result->EOF) {
+    if ($result->fetch(\PDO::FETCH_NUM) > 0) while (!$result->EOF) {
 	  $output   .= '<' . $table->TagName . '>' . chr(10);
 	  foreach ($result->fields as $key => $value) {
 	    $output .= '  <' . $tag_map[$key] . '>' . $value . '</' . $tag_map[$key] . '>' . chr(10);
@@ -382,7 +382,7 @@ function table_export_csv($structure, $db_table) {
     $tag_map = array();
 	foreach ($table->Field as $field) $tag_map[$field->Name] = $field->TagName;
 	$result = $admin->DataBase->query("select * from " . DB_PREFIX . $db_table);
-    if ($result->rowCount() > 0) while (!$result->EOF) {
+    if ($result->fetch(\PDO::FETCH_NUM) > 0) while (!$result->EOF) {
 	  if (!$header) { // output the header
 	    $temp    = array();
 		foreach ($result->fields as $key => $value) $temp[] = $tag_map[$key];

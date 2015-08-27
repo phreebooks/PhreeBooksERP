@@ -95,7 +95,7 @@ class e extends \contacts\classes\contacts{
 	  	global $admin;
 	  	if ( $this->id == '' ) $this->id = $id;
   		$result = $admin->DataBase->query("SELECT admin_id FROM ".TABLE_USERS." WHERE account_id =". $this->id);
-		if ($result->rowCount() != 0) throw new \core\classes\userException(ACT_ERROR_CANNOT_DELETE_EMPLOYEE);
+		if ($result->fetch(\PDO::FETCH_NUM) != 0) throw new \core\classes\userException(ACT_ERROR_CANNOT_DELETE_EMPLOYEE);
 	  	parent::delete();
   	}
 

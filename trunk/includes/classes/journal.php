@@ -32,7 +32,7 @@ abstract class journal {
 			$sql->execute();
 			$this = $sql->fetch(\PDO::FETCH_LAZY);
 			// make sure we have a record or die (there's a problem that needs to be fixed)
-		  	if ($sql->rowCount() == 0) throw new \core\classes\userException(TEXT_DIED_TRYING_TO_BUILD_A_JOURNAL_ENTRY_WITH_ID . ' = ' . $id);
+		  	if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(TEXT_DIED_TRYING_TO_BUILD_A_JOURNAL_ENTRY_WITH_ID . ' = ' . $id);
 		  	foreach ($result as $key => $value) $this->$key = $value;
 		  	$this->journal_main_array = $this->build_journal_main_array();	// build ledger main record
 		  	$sql = $admin->DataBase->prepare("SELECT * FROM " . TABLE_JOURNAL_ITEM . " WHERE ref_id = " . (int)$id);
@@ -195,7 +195,7 @@ abstract class journal {
 		  	if (!defined('ROUNDING_GL_ACCOUNT') || ROUNDING_GL_ACCOUNT == '') {
 				$sql = $admin->DataBase->prepare("SELECT id FROM " . TABLE_CHART_OF_ACCOUNTS . " WHERE account_type = 44 limit 1");
 				$sql->execute();
-				if ($sql->rowCount() == 0) throw new \core\classes\userException('Failed trying to locate retained earnings account to make rounding adjustment. There must be one and only one Retained Earnings account in the chart of accounts!');
+				if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException('Failed trying to locate retained earnings account to make rounding adjustment. There must be one and only one Retained Earnings account in the chart of accounts!');
 				$result = $sql->fetch(\PDO::FETCH_LAZY);
 				$adj_gl_account = $result['id'];
 		  	} else {
@@ -243,7 +243,7 @@ abstract class journal {
 		// catch sku's that are not in the inventory database but have been requested to post
 		$sql = $admin->DataBase->prepare("SELECT id, inventory_type FROM " . TABLE_INVENTORY . " WHERE sku = '$sku'");
 		$sql->execute();
-		if ($sql->rowCount() == 0) {
+		if ($sql->fetch(\PDO::FETCH_NUM) == 0) {
 		  	if (!INVENTORY_AUTO_ADD) throw new \core\classes\userException(GL_ERROR_UPDATING_INVENTORY_STATUS . $sku);
 		  	$id = $this->inventory_auto_add($sku, $desc, $item_cost, $full_price);
 			$result['inventory_type'] = 'si';
@@ -305,7 +305,7 @@ abstract class journal {
 		// only calculate cogs for certain inventory_types
 		$sql = $admin->DataBase->prepare("Select id, qty, inventory_history_id FROM " . TABLE_INVENTORY_COGS_USAGE . " WHERE journal_main_id = " . $this->id);
 		$sql->execute();
-		if ($sql->rowCount() == 0) {
+		if ($sql->fetch(\PDO::FETCH_NUM) == 0) {
 	  		$admin->messageStack->debug(" ...Exiting COGS, no work to be done.");
 	  		return true;
 		}
@@ -335,7 +335,7 @@ abstract class journal {
 		$qty = $inv_list['qty'];
 		$sql = $admin->DataBase->prepare("SELECT id FROM " . TABLE_INVENTORY . " WHERE sku = '$sku'");
 		$sql->execute();
-		if ($sql->rowCount() == 0) throw new \core\classes\userException(TEXT_THE_SKU_ENTERED_COULD_NOT_BE_FOUND);
+		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(TEXT_THE_SKU_ENTERED_COULD_NOT_BE_FOUND);
 		$result = $sql->fetch(\PDO::FETCH_LAZY);
 		$sku_id = $result['id'];
 		$raw_sql = "SELECT a.sku, a.description, a.qty, i.inventory_type, i.quantity_on_hand, i.account_inventory_wage, i.item_cost as price
@@ -343,7 +343,7 @@ abstract class journal {
 		  WHERE a.ref_id = " . $sku_id;
 		$sql = $admin->DataBase->prepare($raw_sql);
 		$sql->execute();
-		if ($sql->rowCount() == 0) throw new \core\classes\userException(GL_ERROR_SKU_NOT_ASSY . $sku);
+		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(GL_ERROR_SKU_NOT_ASSY . $sku);
 		$assy_cost = 0;
 		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
 		  	if ($result['quantity_on_hand'] < ($qty * $result['qty']) && strpos(COG_ITEM_TYPES, $result['inventory_type']) !== false) {
@@ -553,7 +553,7 @@ abstract class journal {
 	  		$sql = "SELECT id, store_id, dept_rep_id FROM " . TABLE_CONTACTS . " WHERE ";
 	  		$sql .= ($acct_id) ? ("id = " . (int)$acct_id) : ("short_name = '{$short_name}' and type = '{$acct_type}'");
 	  		$result = $admin->DataBase->query($sql);
-	  		if (!$acct_id && $result->rowCount() > 0 && !$allow_overwrite) {  // duplicate ID w/o allow_overwrite
+	  		if (!$acct_id && $result->fetch(\PDO::FETCH_NUM) > 0 && !$allow_overwrite) {  // duplicate ID w/o allow_overwrite
 		 		throw new \core\classes\userException(ACT_ERROR_DUPLICATE_ACCOUNT);
 	  		}
 	  		$acct_id = $result['id']; // will only change if no id was passed and allow_overwrite is true
@@ -562,7 +562,7 @@ abstract class journal {
 	  		$sql_data_array['store_id']    = isset($this->store_id) ? $this->store_id : $result['store_id'];
 	  		$sql_data_array['dept_rep_id'] = isset($this->dept_rep_id) ? $this->dept_rep_id : $result['dept_rep_id'];
 
-	  		if ($result->rowCount() == 0) { // new account
+	  		if ($result->fetch(\PDO::FETCH_NUM) == 0) { // new account
 				$sql_data_array['type']            = $acct_type;
 				$sql_data_array['short_name']      = $short_name;
 				$sql_data_array['gl_type_account'] = DEF_INV_GL_ACCT;//@todo
@@ -596,7 +596,7 @@ abstract class journal {
 			}
 			$sql .= "ref_id = " . $acct_id;
 			$result = $admin->DataBase->query($sql);
-			$address_id = ($result->rowCount() > 0) ? $result['address_id'] : '';
+			$address_id = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result['address_id'] : '';
 		}
 
 		$add_fields = array('primary_name', 'contact', 'address1', 'address2', 'city_town',

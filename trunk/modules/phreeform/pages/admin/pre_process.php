@@ -61,7 +61,7 @@ switch ($_REQUEST['action']) {
 	  if ($rpt->PhreeformReport) $rpt = $rpt->PhreeformReport; // lose the container
 	  if ($rpt->security == 'u:-1;g:-1') $rpt->security = 'u:'.$_SESSION['admin_id'].'g:-1'; // orphaned, set so current user can access
 	  $result = $admin->DataBase->query("select id from ".TABLE_PHREEFORM." where doc_group = '".$rpt->groupname."' and doc_type = '0'");
-	  if ($result->rowCount() == 0) { // orphaned put into misc category
+	  if ($result->fetch(\PDO::FETCH_NUM) == 0) { // orphaned put into misc category
 	  	$orph_cnt++;
 	  	$search_type = $rpt->reporttype=='frm'?'misc:misc':'misc'; // put in misc
 	    $result = $admin->DataBase->query("select id from ".TABLE_PHREEFORM." where doc_group = '".$search_type."' and doc_type = '0'");
@@ -103,7 +103,7 @@ switch ($_REQUEST['action']) {
 		  // error check
 		  $duplicate = $admin->DataBase->query("select id from " . TABLE_PHREEFORM . "
 		    where doc_title = '" . addslashes($params->title) . "' and doc_type <> '0'");
-		  if ($duplicate->rowCount() > 0) { // the report name already exists, error
+		  if ($duplicate->fetch(\PDO::FETCH_NUM) > 0) { // the report name already exists, error
 		    throw new \core\classes\userException(sprintf(PHREEFORM_REPDUP, $params->title));
 		  }
 

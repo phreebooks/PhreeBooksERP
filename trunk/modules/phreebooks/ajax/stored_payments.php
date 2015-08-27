@@ -40,7 +40,7 @@ while (!$result->EOF) {
 	$result->MoveNext();
 }
 // error check
-if (!$_SESSION['admin_encrypt'] && $result->rowCount() > 0)  // no permission to enter page, return error
+if (!$_SESSION['admin_encrypt'] && $result->fetch(\PDO::FETCH_NUM) > 0)  // no permission to enter page, return error
   	throw new \core\classes\userException(BNK_ERROR_NO_ENCRYPT_KEY);
 
 echo createXmlHeader() . $xml . createXmlFooter();

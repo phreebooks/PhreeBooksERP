@@ -41,7 +41,7 @@ echo $toolbar->build($add_search = true);
  </thead>
  <tbody class="ui-widget-content">
 <?php
-	$java_string = 'var task_list = new Array(' . $query_result->rowCount() . ');' . chr(10);
+	$java_string = 'var task_list = new Array(' . $query_result->fetch(\PDO::FETCH_NUM) . ');' . chr(10);
 	$pointer = 0;
 	$odd = true;
 	while (!$query_result->EOF) {

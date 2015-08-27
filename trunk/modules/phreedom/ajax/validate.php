@@ -28,7 +28,7 @@ $pass  = $_GET['p'];
 $level = $_GET['level'];
 
 $result = $admin->DataBase->query("select inactive, admin_pass from " . TABLE_USERS . " where admin_name = '" . $user . "'");
-if ($result->rowCount() <> 1 || $result->fields['inactive']) {
+if ($result->fetch(\PDO::FETCH_NUM) <> 1 || $result->fields['inactive']) {
   	$xml = xmlEntry('result', 'failed');
 }
 \core\classes\encryption::validate_password($pass, $result->fields['admin_pass']);

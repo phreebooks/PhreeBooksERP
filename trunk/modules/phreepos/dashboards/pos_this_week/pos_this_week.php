@@ -38,7 +38,7 @@ class pos_this_week extends \core\classes\ctl_panel {
 		  FROM " . TABLE_JOURNAL_MAIN . "
 		  WHERE journal_id = 19 and post_date >= '" . date('Y-m-d', time()-($a * 24 * 60 * 60)) . "' GROUP BY post_date ORDER BY post_date");
 		$sql->execute();
-		if ($sql->rowCount() < 1) {
+		if ($sql->fetch(\PDO::FETCH_NUM) < 1) {
 			$contents = TEXT_NO_RESULTS_FOUND;
 		} else {
 			$week = array();
@@ -50,7 +50,7 @@ class pos_this_week extends \core\classes\ctl_panel {
 				$contents .= '</a></div>' . chr(10);
 		  	}
 		}
-		if ($sql->rowCount() > 0) {
+		if ($sql->fetch(\PDO::FETCH_NUM) > 0) {
 		  	$contents .= '<div style="float:right"><b>' . $admin->currencies->format_full($total, true, $result['currencies_code'], $result['currencies_value']) . '</b></div>';
 		  	$contents .= '<div><b>' . TEXT_TOTAL . '</b></div>' . chr(10);
 		}

@@ -60,7 +60,7 @@ class so_status extends \core\classes\ctl_panel {
 		if ($this->params['num_rows'])      $temp .= " LIMIT " . $this->params['num_rows'];
 		$sql = $admin->DataBase->prepare($temp);
 		$sql->execute();
-		if ($sql->rowCount() < 1) {
+		if ($sql->fetch(\PDO::FETCH_NUM) < 1) {
 			$contents = TEXT_NO_RESULTS_FOUND;
 		} else {
 			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){

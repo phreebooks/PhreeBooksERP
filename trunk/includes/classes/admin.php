@@ -233,7 +233,7 @@ class admin {
 	  	global $admin;
 	  	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	  	$result = $admin->DataBase->query("select id from ".TABLE_PHREEFORM." where doc_group = '$doc_group'");
-	  	if ($result->rowCount() < 1) {
+	  	if ($result->fetch(\PDO::FETCH_NUM) < 1) {
 	    	$admin->DataBase->query("INSERT INTO ".TABLE_PHREEFORM." (parent_id, doc_type, doc_title, doc_group, doc_ext, security, create_date) VALUES
 	      	  (0, '0', '{$doc_title}', '{$doc_group}', '0', 'u:0;g:0', now())");
 	    	return \core\classes\PDO::lastInsertId('id');
@@ -247,7 +247,7 @@ class admin {
 	  	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	  	if ($parent_id == '') throw new \core\classes\userException("parent_id isn't set for document $doc_title");
 	  	$result = $admin->DataBase->query("select id from ".TABLE_PHREEFORM." where doc_group = '$doc_group' and doc_ext = '$doc_ext'");
-	  	if ($result->rowCount() < 1) {
+	  	if ($result->fetch(\PDO::FETCH_NUM) < 1) {
 	    	$admin->DataBase->query("INSERT INTO ".TABLE_PHREEFORM." (parent_id, doc_type, doc_title, doc_group, doc_ext, security, create_date) VALUES
 	      	  ({$parent_id}, '0', '{$doc_title}', '{$doc_group}', '{$doc_ext}', 'u:0;g:0', now())");
 	  	}

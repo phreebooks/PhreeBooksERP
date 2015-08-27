@@ -28,7 +28,7 @@ $fy      = db_prepare_input($_GET['fy']);
 $result  = $admin->DataBase->query("select period, start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . "
 	where fiscal_year = '" . ($fy - 1) . "' order by period");
 // no ealier data found
-if ($result->rowCount() == 0) throw new \core\classes\userException(ERROR_NO_GL_ACCT_INFO);
+if ($result->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(ERROR_NO_GL_ACCT_INFO);
 $periods = array();
 while (!$result->EOF) {
   $periods[] = $result->fields['period'];

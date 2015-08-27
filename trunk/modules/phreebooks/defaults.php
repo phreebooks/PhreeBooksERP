@@ -45,8 +45,8 @@ $coa_types_list = array(
 );
 
 $journal_types_list = array(
-		'0'  => array('id' => 00, 'text' => TEXT_BEGINNING_BALANCES,			'id_field_name' => TEXT_REFERENCE),			//@todo
-		'2'  => array('id' => 02, 'text' => TEXT_GENERAL_JOURNAL,				'id_field_name' => TEXT_REFERENCE),			//@todo
+		'0'  => array('id' => 00, 'text' => TEXT_BEGINNING_BALANCES,			'id_field_name' => TEXT_REFERENCE),			//@done
+		'2'  => array('id' => 02, 'text' => TEXT_GENERAL_JOURNAL,				'id_field_name' => TEXT_REFERENCE),			//@done
 		'3'  => array('id' => 03, 'text' => TEXT_PURCHASE_QUOTES,				'id_field_name' => TEXT_QUOTE_NUMBER),
 		'4'  => array('id' => 04, 'text' => TEXT_PURCHASE_ORDERS,				'id_field_name' => TEXT_PO_NUMBER),
 		'6'  => array('id' => 06, 'text' => TEXT_PURCHASE_OR_RECEIVE_INVENTORY,	'id_field_name' => TEXT_INVOICE),

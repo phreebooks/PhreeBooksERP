@@ -23,7 +23,7 @@
 // Include translations here as well.
 var full_price       = <?php echo $full_price; ?>;
 var item_cost        = <?php echo $item_cost; ?>;
-var num_price_sheets = <?php echo $price_sheets->rowCount(); ?>;
+var num_price_sheets = <?php echo $price_sheets->fetch(\PDO::FETCH_NUM); ?>;
 var num_price_levels = <?php echo MAX_NUM_PRICE_LEVELS; ?>;
 
 function init() {

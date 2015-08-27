@@ -19,6 +19,8 @@
 // General Journal (2)
 namespace phreebooks\classes\journal;
 class journal_02 extends \core\classes\journal {
+	public $description 	= TEXT_GENERAL_JOURNAL;
+	public $id_field_name 	= TEXT_REFERENCE;
 
 	/*******************************************************************************************************************/
 	// START re-post Functions
@@ -82,7 +84,7 @@ class journal_02 extends \core\classes\journal {
 		global $admin;
 		// first find out the last period with data in the system from the current_status table
 		$sql = $admin->DataBase->query("SELECT fiscal_year FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE period = " . $period);
-		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(GL_ERROR_BAD_ACCT_PERIOD); //@todo gebruiken ipv rowCount
+		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(GL_ERROR_BAD_ACCT_PERIOD);
 		$fiscal_year = $sql->fetch(\PDO::FETCH_LAZY);
 		$sql = "SELECT max(period) as period FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE fiscal_year = " . $fiscal_year;
 		$result = $admin->DataBase->query($sql);
@@ -201,7 +203,7 @@ class journal_02 extends \core\classes\journal {
 		$sql = $admin->DataBase->prepare($raw_sql);
 		$sql->execute();
 		// catch sku's that are not in the inventory database but have been requested to post, error
-		if ($sql->rowCount() == 0) throw new \core\classes\userException(GL_ERROR_CALCULATING_COGS);
+		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(GL_ERROR_CALCULATING_COGS);
 		$defaults = $sql->fetch(\PDO::FETCH_LAZY);
 		// only calculate cogs for certain inventory_types
 		if (strpos(COG_ITEM_TYPES, $defaults['inventory_type']) === false) {
@@ -232,7 +234,7 @@ class journal_02 extends \core\classes\journal {
 				WHERE sku = '{$item['sku']}' and remaining > 0 and serialize_number = '{$item['serialize_number']}'";
 				$sql = $admin->DataBase->prepare($raw_sql);
 				$sql->execute();
-				if ($sql->rowCount() <> 0) throw new \core\classes\userException(GL_ERROR_SERIALIZE_COGS);
+				if ($sql->fetch(\PDO::FETCH_NUM) <> 0) throw new \core\classes\userException(GL_ERROR_SERIALIZE_COGS);
 				$history_array['serialize_number'] = $item['serialize_number'];
 			}
 			$admin->messageStack->debug("\n      Inserting into inventory history = " . print_r($history_array, true));
@@ -244,21 +246,21 @@ class journal_02 extends \core\classes\journal {
 			$working_qty = -$item['qty']; // quantity needs to be positive
 			$history_ids = array(); // the id's used to calculated cogs from the inventory history table
 			$queue_sku = false;
-			if ($defaults['cost_method'] == 'a') {
-				$raw_sql = "SELECT SUM(remaining) as remaining FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='{$item['sku']}' AND remaining > 0";
-				if (ENABLE_MULTI_BRANCH) $raw_sql .= " AND store_id='{$this->store_id}'";
-				$sql = $admin->DataBase->prepare($raw_sql);
-				$sql->execute();
-				$result = $sql->fetch(\PDO::FETCH_LAZY);//@todo work around
-				if ($result['remaining'] < $working_qty) $queue_sku = true; // not enough of this SKU so just queue it up until stock arrives
-				$avg_cost = $this->fetch_avg_cost($item['sku'], $working_qty);
-			}
 			if ($defaults['serialize']) { // there should only be one record with one remaining quantity
 				$raw_sql = "SELECT id, remaining, unit_cost FROM ".TABLE_INVENTORY_HISTORY."
 				WHERE sku='{$item['sku']}' AND remaining > 0 AND serialize_number='{$item['serialize_number']}'";
 				$sql = $admin->DataBase->prepare($raw_sql);
 				$sql->execute();
-				if ($sql->rowCount() <> 1) throw new \core\classes\userException(GL_ERROR_SERIALIZE_COGS);
+				if ($sql->fetch(\PDO::FETCH_NUM) <> 1) throw new \core\classes\userException(GL_ERROR_SERIALIZE_COGS);
+				$result_array = $sql->fetchAll();
+			} elseif ($defaults['cost_method'] == 'a') {
+				$raw_sql = "SELECT SUM(remaining) as remaining FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='{$item['sku']}' AND remaining > 0";
+				if (ENABLE_MULTI_BRANCH) $raw_sql .= " AND store_id='{$this->store_id}'";
+				$sql = $admin->DataBase->prepare($raw_sql);
+				$sql->execute();
+				$result_array = $sql->fetchAll();
+				if ($result_array[0]['remaining'] < $working_qty) $queue_sku = true; // not enough of this SKU so just queue it up until stock arrives
+				$avg_cost = $this->fetch_avg_cost($item['sku'], $working_qty);
 			} else {
 				$raw_sql = "SELECT id, remaining, unit_cost FROM ".TABLE_INVENTORY_HISTORY."
 				WHERE sku='{$item['sku']}' AND remaining > 0"; // AND post_date <= '$this->post_date 23:59:59'"; // causes re-queue to owed table for negative inventory posts and rcv after sale date
@@ -266,8 +268,9 @@ class journal_02 extends \core\classes\journal {
 				$raw_sql .= " ORDER BY ".($defaults['cost_method']=='l' ? 'post_date DESC, id DESC' : 'post_date, id');
 				$sql = $admin->DataBase->prepare($raw_sql);
 				$sql->execute();
+				$result_array = $sql->fetchAll();
 			}
-			if (!$queue_sku) while ($result = $sql->fetch(\PDO::FETCH_LAZY)) { // loops until either qty is zero and/or inventory history is exhausted
+			if ($queue_sku == false) foreach ($result_array as $key => $result) { // loops until either qty is zero and/or inventory history is exhausted
 				if ($defaults['cost_method'] == 'a') { // Average cost
 					$cost = $avg_cost;
 				} else {  // FIFO, LIFO
@@ -355,7 +358,7 @@ class journal_02 extends \core\classes\journal {
 		$sql = $admin->DataBase->prepare("SELECT inventory_type, item_cost, cost_method, serialize FROM ".TABLE_INVENTORY." WHERE sku='$sku'");
 		$sql->execute();
 		$defaults = $sql->fetch(\PDO::FETCH_LAZY);
-		if ($sql->rowCount() == 0) return $cogs; // not in inventory, return no cost
+		if ($sql->fetch(\PDO::FETCH_NUM) == 0) return $cogs; // not in inventory, return no cost
 		if (strpos(COG_ITEM_TYPES, $defaults['inventory_type']) === false) return $cogs; // this type not tracked in cog, return no cost
 		if ($defaults['cost_method'] == 'a') return $qty * $this->fetch_avg_cost($sku, $qty);
 		if ($defaults['serialize']) { // there should only be one record
@@ -448,7 +451,7 @@ class journal_02 extends \core\classes\journal {
 		// only calculate cogs for certain inventory_types
 		$sql = $admin->DataBase->prepare("Select id, qty, inventory_history_id FROM " . TABLE_INVENTORY_COGS_USAGE . " WHERE journal_main_id = " . $this->id);
 		$sql->execute();
-		if ($sql->rowCount() == 0) {
+		if ($sql->fetch(\PDO::FETCH_NUM) == 0) {
 			$admin->messageStack->debug(" ...Exiting COGS, no work to be done.");
 			return true;
 		}
@@ -500,7 +503,7 @@ class journal_02 extends \core\classes\journal {
 			$sql = "SELECT purchase_invoice_id FROM " . TABLE_JOURNAL_MAIN . " WHERE purchase_invoice_id = '{$this->purchase_invoice_id}' and journal_id = '2'";
 			if ($this->id) $sql .= " and id <> " . $this->id;
 			$result = $admin->DataBase->query($sql);
-			if ($result->rowCount() > 0) throw new \core\classes\userException(sprintf(TEXT_THE_YOU_ENTERED_IS_A_DUPLICATE,_PLEASE_ENTER_A_NEW_UNIQUE_VALUE_ARGS, $journal_types_list[2]['id_field_name']));
+			if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(sprintf(TEXT_THE_YOU_ENTERED_IS_A_DUPLICATE,_PLEASE_ENTER_A_NEW_UNIQUE_VALUE_ARGS, $journal_types_list[2]['id_field_name']));
 			$this->journal_main_array['purchase_invoice_id'] = $this->purchase_invoice_id;
 			$admin->messageStack->debug(" specified ID but no dups, returning OK. ");
 		} else {	// generate a new order/invoice value

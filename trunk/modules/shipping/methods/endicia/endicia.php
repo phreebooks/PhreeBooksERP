@@ -619,7 +619,7 @@ class endicia extends \shipping\classes\shipping {
 	  $shipments  = $admin->DataBase->query("select id, ref_id, deliver_date, actual_date, tracking_id, notes
 		from ".TABLE_SHIPPING_LOG." where carrier = '$this->id' and ship_date >= '$start_date' and ship_date < '$end_date'");
 	}
-	if ($shipments->rowCount() == 0) return 'No records were found!';
+	if ($shipments->fetch(\PDO::FETCH_NUM) == 0) return 'No records were found!';
 	$xml  = "<StatusRequest>\n";
 	$xml .= xmlEntry('AccountID',  MODULE_SHIPPING_ENDICIA_ACCOUNT_NUMBER);
 	$xml .= xmlEntry('PassPhrase', MODULE_SHIPPING_ENDICIA_PASS_PHRASE);

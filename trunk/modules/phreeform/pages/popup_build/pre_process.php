@@ -257,7 +257,7 @@ switch ($_REQUEST['action']) {
 	// check to see if the directory is being moved below itself
 	if (!validate_dir_move($dir_tree, $id, $parent_id)) throw new \core\classes\userException(TEXT_THE_DIRECTORY_CANNOT_BE_MOVED_UNDER_ITSELF);
 	$result = $admin->DataBase->query("select id from " . TABLE_PHREEFORM . " where doc_group = '$doc_group'");
-	if ($result->rowCount() > 0) {
+	if ($result->fetch(\PDO::FETCH_NUM) > 0) {
 	  	if ($result->fields['id'] <> $id) throw new \core\classes\userException(PHREEFORM_DIR_GROUP_DUP_ERROR);
 	}
 	// insert/update db
@@ -281,7 +281,7 @@ switch ($_REQUEST['action']) {
 	if (!$id) throw new \core\classes\userException(TEXT_NO_DIRECTORY_WAS_SELECTED_TO_DELETE);
 	// check for directory empty
 	$result = $admin->DataBase->query("select id from " . TABLE_PHREEFORM . " where parent_id = " . $id);
-	if ($result->rowCount() > 0) throw new \core\classes\userException(TEXT_THE_DIRECTORY_CANNOT_BE_DELETED_BECAUSE_IT_IS_NOT_EMPTY);
+	if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(TEXT_THE_DIRECTORY_CANNOT_BE_DELETED_BECAUSE_IT_IS_NOT_EMPTY);
 	$admin->DataBase->exec("delete from " . TABLE_PHREEFORM . " where id = " . $id);
 	$messageStack->add(TEXT_THE_DIRECTORY_WAS_SUCESSFULLY_DELETED,'success');
     break;

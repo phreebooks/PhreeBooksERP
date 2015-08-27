@@ -19,7 +19,8 @@
 // Payroll Journal (8)
 namespace phreebooks\classes\journal;
 class journal_08 extends \core\classes\journal {
-
+	public $description 		= TEXT_PAYROLL;
+	public $id_field_name 		= TEXT_PAYROL_NUMBER;
 
 	/*******************************************************************************************************************/
 	// START re-post Functions
@@ -54,7 +55,7 @@ class journal_08 extends \core\classes\journal {
 		global $admin;
 		// first find out the last period with data in the system from the current_status table
 		$sql = $admin->DataBase->query("SELECT fiscal_year FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE period = " . $period);
-		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(GL_ERROR_BAD_ACCT_PERIOD); //@todo gebruiken ipv rowCount
+		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(GL_ERROR_BAD_ACCT_PERIOD);
 		$fiscal_year = $sql->fetch(\PDO::FETCH_LAZY);
 		$sql = "SELECT max(period) as period FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE fiscal_year = " . $fiscal_year;
 		$result = $admin->DataBase->query($sql);
@@ -210,7 +211,7 @@ class journal_08 extends \core\classes\journal {
 		// only calculate cogs for certain inventory_types
 		$sql = $admin->DataBase->prepare("Select id, qty, inventory_history_id FROM " . TABLE_INVENTORY_COGS_USAGE . " WHERE journal_main_id = " . $this->id);
 		$sql->execute();
-		if ($sql->rowCount() == 0) {
+		if ($sql->fetch(\PDO::FETCH_NUM) == 0) {
 			$admin->messageStack->debug(" ...Exiting COGS, no work to be done.");
 			return true;
 		}
@@ -259,7 +260,7 @@ class journal_08 extends \core\classes\journal {
 			$sql = "SELECT purchase_invoice_id FROM " . TABLE_JOURNAL_MAIN . " WHERE purchase_invoice_id = '{$this->purchase_invoice_id}' and journal_id = '8'";
 			if ($this->id) $sql .= " and id <> " . $this->id;
 			$result = $admin->DataBase->query($sql);
-			if ($result->rowCount() > 0) throw new \core\classes\userException(sprintf(TEXT_THE_YOU_ENTERED_IS_A_DUPLICATE,_PLEASE_ENTER_A_NEW_UNIQUE_VALUE_ARGS, $journal_types_list[8]['id_field_name']));
+			if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(sprintf(TEXT_THE_YOU_ENTERED_IS_A_DUPLICATE,_PLEASE_ENTER_A_NEW_UNIQUE_VALUE_ARGS, $journal_types_list[8]['id_field_name']));
 			$this->journal_main_array['purchase_invoice_id'] = $this->purchase_invoice_id;
 			$admin->messageStack->debug(" specified ID but no dups, returning OK. ");
 		} else {	// generate a new order/invoice value

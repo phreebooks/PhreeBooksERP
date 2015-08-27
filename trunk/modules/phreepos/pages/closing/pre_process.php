@@ -135,7 +135,7 @@ switch ($_REQUEST['action']) {
 		);
 		$sql = "select id from " . TABLE_RECONCILIATION . " where period = $period and gl_account = '{$tills->gl_acct_id}'";
 		$result = $admin->DataBase->query($sql);
-		if ($result->rowCount() == 0) {
+		if ($result->fetch(\PDO::FETCH_NUM) == 0) {
 			$sql_data_array['period']     = $period;
 			$sql_data_array['gl_account'] = $tills->gl_acct_id;
 			db_perform(TABLE_RECONCILIATION, $sql_data_array, 'insert');
@@ -207,7 +207,7 @@ if ($post_date){
 	$sql = "select statement_balance, cleared_items from " . TABLE_RECONCILIATION . "
 		where period = " . $period . " and gl_account = '" . $tills->gl_acct_id . "'";
 	$result = $admin->DataBase->query($sql);
-	if ($result->rowCount() <> 0) { // there are current cleared items in the present accounting period (edit)
+	if ($result->fetch(\PDO::FETCH_NUM) <> 0) { // there are current cleared items in the present accounting period (edit)
 	  $statement_balance = $admin->currencies->format($result->fields['statement_balance']);
 	  $cleared_items     = unserialize($result->fields['cleared_items']);
 	  // load information from general ledger

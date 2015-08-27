@@ -238,7 +238,7 @@
 		  	$sheet_name = $inv_price_sheet;
 		} else {
 		  	$default_sheet = $admin->DataBase->query("select sheet_name from " . TABLE_PRICE_SHEETS . " where type = '$type' and default_sheet = '1'");
-		  	$sheet_name = ($default_sheet->rowCount() == 0) ? '' : $default_sheet->fields['sheet_name'];
+		  	$sheet_name = ($default_sheet->fetch(\PDO::FETCH_NUM) == 0) ? '' : $default_sheet->fields['sheet_name'];
 		}
 		// determine the sku price ranges from the price sheet in effect
 		$price = '0.0';

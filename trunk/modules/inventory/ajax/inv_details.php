@@ -87,9 +87,9 @@ try{
 			default:
 				break 2; 
 		}
-		if(isset($inventory) && $inventory->rowCount() == 1) break;
+		if(isset($inventory) && $inventory->fetch(\PDO::FETCH_NUM) == 1) break;
 	}
-	if ($inventory->rowCount() != 1) { // need to return something to avoid error in FireFox
+	if ($inventory->fetch(\PDO::FETCH_NUM) != 1) { // need to return something to avoid error in FireFox
 		if($UPC) 	$xml .= xmlEntry('error', ORD_JS_SKU_NOT_UNIQUE); // for UPC codes submitted only, send an error
 		else 		$xml .= xmlEntry('result', 'Not enough or too many hits, exiting!');
 		$xml .= xmlEntry("qty", 1);
@@ -99,13 +99,13 @@ try{
 	foreach ($inventory->fields as $key => $value) $inventory_array[$key] = $value;
 	if($vendor) {
 		$purchase  = $admin->DataBase->query("select vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v from " . TABLE_INVENTORY_PURCHASE . " where sku = '" .$inventory_array['sku']."' and vendor_id = '$cID'" );
-		if($purchase->rowCount() == 1 ) foreach ($purchase->fields as $key => $value) $inventory_array[$key] = $value;
+		if($purchase->fetch(\PDO::FETCH_NUM) == 1 ) foreach ($purchase->fields as $key => $value) $inventory_array[$key] = $value;
 		$purchase  = $admin->DataBase->query("select MIN(item_cost) as cheapest from " . TABLE_INVENTORY_PURCHASE . " where sku = '" .$inventory_array['sku']."'" );
 		if( $jID == 4 && $inventory_array['price_sheet_v'] == '' && $inventory_array['item_cost'] >= $purchase->fields['cheapest'] &&
 		  abs($inventory_array['item_cost'] - $purchase->fields['cheapest']) > 0.00001 ) $stock_note[] = sprintf(INV_CHEAPER_ELSEWHERE, $inventory_array['sku']);
 	}else{
 		$purchase  = $admin->DataBase->query("select vendor_id, description_purchase, purch_package_quantity, purch_taxable, MAX(item_cost) as item_cost, price_sheet_v from " . TABLE_INVENTORY_PURCHASE . " where sku = '" .$inventory_array['sku']."'" );
-		if($purchase->rowCount() == 1 )foreach ($purchase->fields as $key => $value) $inventory_array[$key] = $value;
+		if($purchase->fetch(\PDO::FETCH_NUM) == 1 )foreach ($purchase->fields as $key => $value) $inventory_array[$key] = $value;
 	}
 	if($inventory_array['purch_package_quantity'] == 0) $inventory_array['purch_package_quantity'] = 1;
 	if (!$qty){
@@ -155,10 +155,10 @@ try{
 	// load where used
 	$sku_usage = array();
 	$result = $admin->DataBase->query("select ref_id, qty from " . TABLE_INVENTORY_ASSY_LIST . " where sku = '$sku'");
-	if ($result->rowCount() > 0) {
+	if ($result->fetch(\PDO::FETCH_NUM) > 0) {
 	  while (!$result->EOF) {
 	    $stock = $admin->DataBase->query("select sku, description_short from ".TABLE_INVENTORY." where id='" . $result->fields['ref_id'] . "' and inactive = '0'");
-	    if ($stock->rowCount() > 0) {
+	    if ($stock->fetch(\PDO::FETCH_NUM) > 0) {
 	    	$sku_usage[] =  TEXT_QUANTITY . ' ' . $result->fields['qty'] . ' ' . TEXT_SKU . ': ' . $stock->fields['sku'] . ' - ' . $stock->fields['description_short'];
 	    }
 	    $result->MoveNext();

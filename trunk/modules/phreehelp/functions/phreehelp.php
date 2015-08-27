@@ -206,7 +206,7 @@ function search_results($search_text) {
   $sql = "select id, doc_url, doc_title, MATCH (doc_title, doc_text) AGAINST ('" . $search_text . "') as score
     from " . TABLE_PHREEHELP . " where MATCH (doc_title, doc_text) AGAINST ('" . $search_text . "')";
   $results = $admin->DataBase->query($sql);
-  if ($results->rowCount() == 0) return TEXT_NO_RESULTS_FOUND;
+  if ($results->fetch(\PDO::FETCH_NUM) == 0) return TEXT_NO_RESULTS_FOUND;
   $search_array = array();
   $index = 0;
   while (!$results->EOF) {

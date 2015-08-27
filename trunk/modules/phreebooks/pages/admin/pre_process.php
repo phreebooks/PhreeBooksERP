@@ -38,7 +38,7 @@ switch ($_REQUEST['action']) {
 	if (!$std_chart) validate_upload('file_name', 'text', 'txt');
 	if ($delete_chart) {
 	  $result = $admin->DataBase->query("select id from " . TABLE_JOURNAL_MAIN . " limit 1");
-	  if ($result->rowCount() > 0) throw new \core\classes\userException(GL_JOURNAL_NOT_EMTPY);
+	  if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(GL_JOURNAL_NOT_EMTPY);
 	  $admin->DataBase->query("TRUNCATE TABLE " . TABLE_CHART_OF_ACCOUNTS);
 	  $admin->DataBase->query("TRUNCATE TABLE " . TABLE_CHART_OF_ACCOUNTS_HISTORY);
 	}
@@ -49,7 +49,7 @@ switch ($_REQUEST['action']) {
 	if (is_object($accounts->account)) $accounts->account = array($accounts->account); // in case of only one chart entry
 	if (is_array($accounts->account)) foreach ($accounts->account as $account) {
 	  	$result = $admin->DataBase->query("select id from " . TABLE_CHART_OF_ACCOUNTS . " where id = '" . $account->id . "'");
-	  	if ($result->rowCount() > 0) {
+	  	if ($result->fetch(\PDO::FETCH_NUM) > 0) {
 	    	$messageStack->add(sprintf(TEXT_THE_GL_ACCOUNT_ALREADY_EXISTS_THE_ACCOUNT_WILL_NOT_BE_ADDED_ARGS, $account->id),'error');
 			continue;
 	  	}

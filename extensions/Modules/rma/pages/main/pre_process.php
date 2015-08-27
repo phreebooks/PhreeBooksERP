@@ -161,7 +161,7 @@ switch ($_REQUEST['action']) {
   	\core\classes\user::validate_security($security_level, 4); // security check
 	$id     = db_prepare_input($_GET['cID']);
 	$result = $admin->DataBase->query("select rma_num from " . TABLE_RMA . " where id = " . $id);
-	if ($result->rowCount() > 0) {
+	if ($result->fetch(\PDO::FETCH_NUM) > 0) {
 	  $admin->DataBase->exec("delete from " . TABLE_RMA . " where id = " . $id);
 	  foreach (glob(RMA_DIR_ATTACHMENTS."ram_$id_*.zip") as $filename) unlink($filename); // remove attachments
 	  gen_add_audit_log(sprintf( TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_RMA, $result->fields['rma_num']));

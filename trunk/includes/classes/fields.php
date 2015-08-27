@@ -50,7 +50,7 @@ class fields {
 		// if the id is empty then check for duplicate field names
 		if($this->id == ''){
 		   $result = $admin->DataBase->query("SELECT id FROM ".TABLE_EXTRA_FIELDS." WHERE module_id='{$this->current_module}' AND field_name='{$this->field_name}'");
-		   if ($result->rowCount() > 0 && $this->id =='') throw new \core\classes\userException(EXTRA_FIELD_ERROR_DUPLICATE);
+		   if ($result->fetch(\PDO::FETCH_NUM) > 0 && $this->id =='') throw new \core\classes\userException(EXTRA_FIELD_ERROR_DUPLICATE);
 		}
 		// condense the type array to a single string.
 	    while ($type = array_shift($this->type_array)){

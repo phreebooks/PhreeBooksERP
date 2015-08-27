@@ -244,7 +244,7 @@ switch ($_REQUEST['action']) {
 		$result = $admin->DataBase->query("select id from " . TABLE_JOURNAL_MAIN . "
 		  where journal_id = '12' and purchase_invoice_id < '" . $order->purchase_invoice_id . "'
 		  order by purchase_invoice_id DESC limit 1");
-		if ($result->rowCount() > 0) {
+		if ($result->fetch(\PDO::FETCH_NUM) > 0) {
 			$oID    = $result->fields['id'];
 		    $_REQUEST['action'] = 'edit'; // force page to reload with the new order to edit
 			$order  = new \phreebooks\classes\orders();
@@ -256,7 +256,7 @@ switch ($_REQUEST['action']) {
 		$result = $admin->DataBase->query("select id from " . TABLE_JOURNAL_MAIN . "
 		  where journal_id = '12' and purchase_invoice_id > '" . $order->purchase_invoice_id . "'
 		  order by purchase_invoice_id limit 1");
-		if ($result->rowCount() > 0) {
+		if ($result->fetch(\PDO::FETCH_NUM) > 0) {
 		    $oID    = $result->fields['id'];
 		    $_REQUEST['action'] = 'edit'; // force page to reload with the new order to edit
 			$order  = new \phreebooks\classes\orders();

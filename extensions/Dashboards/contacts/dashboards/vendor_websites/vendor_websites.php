@@ -38,7 +38,7 @@ class vendor_websites extends \core\classes\ctl_panel {
 		  WHERE  c.type = 'v' and c.inactive = '0' and a.website !='' ORDER BY a.primary_name";
 		$sql = $admin->DataBase->prepare($temp);
 		$sql->execute();
-		if ($sql->rowCount() < 1) {
+		if ($sql->fetch(\PDO::FETCH_NUM) < 1) {
 			$contents = TEXT_NO_RESULTS_FOUND;
 		} else {
 			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){

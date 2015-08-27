@@ -88,7 +88,7 @@ class inventory {
 		$this->purchase_array	 = null;
 		$this->id = $id;
 		$result = $admin->DataBase->query("SELECT * FROM ".TABLE_INVENTORY." WHERE id = $id");
-		if ($result->rowCount() != 0) foreach ($result as $key => $value) {
+		if ($result->fetch(\PDO::FETCH_NUM) != 0) foreach ($result as $key => $value) {
 			if (is_null($value)) $this->$key = '';
 			else $this->$key = $value;
 		}
@@ -112,7 +112,7 @@ class inventory {
 		$this->purchase_array	 = null;
 		$this->sku = $sku;
 		$result = $admin->DataBase->query("SELECT * FROM " . TABLE_INVENTORY . " WHERE sku = '{$sku}'");
-		if($result->rowCount()!=0) foreach ($result as $key => $value) {
+		if($result->fetch(\PDO::FETCH_NUM)!=0) foreach ($result as $key => $value) {
 			if(is_null($value)) $this->$key = '';
 			else $this->$key = $value;
 		}
@@ -321,10 +321,10 @@ class inventory {
 		else throw new \core\classes\userException("id should be submitted in order to delete");
 		// check to see if there is inventory history remaining, if so don't allow delete
 		$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY_HISTORY . " where sku = '" . $this->sku . "' and remaining > 0");
-		if ($result->rowCount() > 0) throw new \core\classes\userException(INV_ERROR_DELETE_HISTORY_EXISTS);
+		if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(INV_ERROR_DELETE_HISTORY_EXISTS);
 		// check to see if this item is part of an assembly
 		$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY_ASSY_LIST . " where sku = '" . $this->sku . "'");
-		if ($result->rowCount() > 0) throw new \core\classes\userException(INV_ERROR_DELETE_ASSEMBLY_PART);
+		if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(INV_ERROR_DELETE_ASSEMBLY_PART);
 		$result = $admin->DataBase->query( "select id from " . TABLE_JOURNAL_ITEM . " where sku = '" . $this->sku . "' limit 1");
 		if ($result->Recordcount() > 0) throw new \core\classes\userException(INV_ERROR_CANNOT_DELETE);
 		$this->remove();
@@ -339,7 +339,7 @@ class inventory {
 		$admin->DataBase->exec("delete from " . TABLE_INVENTORY . " where id = " . $this->id);
 		if($this->image_with_path != '') {
 			$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY . " where image_with_path = '" . $this->image_with_path ."'");
-	  		if ( $result->rowCount() == 0) { // delete image
+	  		if ( $result->fetch(\PDO::FETCH_NUM) == 0) { // delete image
 				$file_path = DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/images/';
 				if (file_exists($file_path . $this->image_with_path)) unlink ($file_path . $this->image_with_path);
 	  		}
@@ -384,7 +384,7 @@ class inventory {
 	  		validate_path($file_path);
 	  		validate_upload('inventory_image', 'image', 'jpg');
 	  		$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY . " where image_with_path = '" . ($this->inventory_path ? ($this->inventory_path . '/') : '') . $file_name ."'");
-	  		if ( $result->rowCount() != 0) throw new \core\classes\userException(INV_IMAGE_DUPLICATE_NAME);
+	  		if ( $result->fetch(\PDO::FETCH_NUM) != 0) throw new \core\classes\userException(INV_IMAGE_DUPLICATE_NAME);
 	  		if (!copy($temp_file_name, $file_path . '/' . $file_name)) throw new \core\classes\userException(INV_IMAGE_FILE_WRITE_ERROR);
 			$this->image_with_path = ($this->inventory_path ? ($this->inventory_path . '/') : '') . $file_name;
 		  	$sql_data_array['image_with_path'] = $this->image_with_path; // update the image with relative path
@@ -685,7 +685,7 @@ class inventory {
 		$sql = "update " . TABLE_INVENTORY_PURCHASE . " set item_cost = '$item_cost'";
 	  	$sql .= " where sku = '$sku' and vendor_id = '$vendor_id'";
 	  	$result = $admin->DataBase->query($sql);
-		if($result->rowCount() == 0) {
+		if($result->fetch(\PDO::FETCH_NUM) == 0) {
 			$sql_data_array = array (
 			  'sku'						=> $sku,
 			  'vendor_id' 				=> $vendor_id,

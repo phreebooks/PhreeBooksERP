@@ -281,7 +281,7 @@ if (in_array('telephone1', $field_array)) {
 		from " . TABLE_ACCOUNTS . " c left join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id
 		where a.type like '%m'";
   $result = $admin->DataBase->query($sql);
-  if ($result->rowCount() > 0) {
+  if ($result->fetch(\PDO::FETCH_NUM) > 0) {
 	while(!$result->EOF) {
 	  $admin->DataBase->query("update " . TABLE_ADDRESS_BOOK . " set
 		  telephone1 = '" . $result->fields['telephone1'] . "',

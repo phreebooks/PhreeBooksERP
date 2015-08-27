@@ -37,7 +37,7 @@ $xml = '';
 $result = $admin->DataBase->query("select * from " . TABLE_PHREEFORM . " where id = '" . $id . "'");
 
 // if we have a row, id was valid
-if ($result->rowCount() > 0) {
+if ($result->fetch(\PDO::FETCH_NUM) > 0) {
   foreach ($result->fields as $key => $value) $xml .= xmlEntry($key, $value) . chr(10);
 } else {
   $message = PHREEFORM_AJAX_INVALID_ID;

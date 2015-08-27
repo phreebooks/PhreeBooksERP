@@ -36,6 +36,8 @@ class journal_18 extends \core\classes\journal {
 	public $gl_acct_id			= AR_SALES_RECEIPTS_ACCOUNT;
 	public $gl_disc_acct_id     = AR_DISCOUNT_SALES_ACCOUNT;
 	public $error_6				= GENERAL_JOURNAL_18_ERROR_6;
+	public $description 		= TEXT_VENDOR_REFUNDS;
+	public $id_field_name 		= TEXT_RECEIPT_NUMBER;
 
 	function __construct( $id = 0, $verbose = true) {
 		if (isset($_SESSION['admin_prefs']['def_cash_acct'])) $this->gl_acct_id = $_SESSION['admin_prefs']['def_cash_acct'];
@@ -239,7 +241,7 @@ class journal_18 extends \core\classes\journal {
 		$sql = $admin->DataBase->prepare($raw_sql);
 		$sql->execute();
 		// catch sku's that are not in the inventory database but have been requested to post, error
-		if ($sql->rowCount() == 0) throw new \core\classes\userException(GL_ERROR_CALCULATING_COGS);
+		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(GL_ERROR_CALCULATING_COGS);
 		$defaults = $sql->fetch(\PDO::FETCH_LAZY);
 		// only calculate cogs for certain inventory_types
 		if (strpos(COG_ITEM_TYPES, $defaults['inventory_type']) === false) {
@@ -270,7 +272,7 @@ class journal_18 extends \core\classes\journal {
 				WHERE sku = '{$item['sku']}' and remaining > 0 and serialize_number = '{$item['serialize_number']}'";
 				$sql = $admin->DataBase->prepare($raw_sql);
 				$sql->execute();
-				if ($sql->rowCount() <> 0) throw new \core\classes\userException(GL_ERROR_SERIALIZE_COGS);
+				if ($sql->fetch(\PDO::FETCH_NUM) <> 0) throw new \core\classes\userException(GL_ERROR_SERIALIZE_COGS);
 				$history_array['serialize_number'] = $item['serialize_number'];
 			}
 			$admin->messageStack->debug("\n      Inserting into inventory history = " . print_r($history_array, true));
@@ -282,21 +284,21 @@ class journal_18 extends \core\classes\journal {
 			$working_qty = -$item['qty']; // quantity needs to be positive
 			$history_ids = array(); // the id's used to calculated cogs from the inventory history table
 			$queue_sku = false;
-			if ($defaults['cost_method'] == 'a') {
-				$raw_sql = "SELECT SUM(remaining) as remaining FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='{$item['sku']}' AND remaining > 0";
-				if (ENABLE_MULTI_BRANCH) $raw_sql .= " AND store_id='{$this->store_id}'";
-				$sql = $admin->DataBase->prepare($raw_sql);
-				$sql->execute();
-				$result = $sql->fetch(\PDO::FETCH_LAZY);//@todo work around
-				if ($result['remaining'] < $working_qty) $queue_sku = true; // not enough of this SKU so just queue it up until stock arrives
-				$avg_cost = $this->fetch_avg_cost($item['sku'], $working_qty);
-			}
 			if ($defaults['serialize']) { // there should only be one record with one remaining quantity
 				$raw_sql = "SELECT id, remaining, unit_cost FROM ".TABLE_INVENTORY_HISTORY."
 				WHERE sku='{$item['sku']}' AND remaining > 0 AND serialize_number='{$item['serialize_number']}'";
 				$sql = $admin->DataBase->prepare($raw_sql);
 				$sql->execute();
-				if ($sql->rowCount() <> 1) throw new \core\classes\userException(GL_ERROR_SERIALIZE_COGS);
+				if ($sql->fetch(\PDO::FETCH_NUM) <> 1) throw new \core\classes\userException(GL_ERROR_SERIALIZE_COGS);
+				$result_array = $sql->fetchAll();
+			} elseif ($defaults['cost_method'] == 'a') {
+				$raw_sql = "SELECT SUM(remaining) as remaining FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='{$item['sku']}' AND remaining > 0";
+				if (ENABLE_MULTI_BRANCH) $raw_sql .= " AND store_id='{$this->store_id}'";
+				$sql = $admin->DataBase->prepare($raw_sql);
+				$sql->execute();
+				$result_array = $sql->fetchAll();
+				if ($result_array[0]['remaining'] < $working_qty) $queue_sku = true; // not enough of this SKU so just queue it up until stock arrives
+				$avg_cost = $this->fetch_avg_cost($item['sku'], $working_qty);
 			} else {
 				$raw_sql = "SELECT id, remaining, unit_cost FROM ".TABLE_INVENTORY_HISTORY."
 				WHERE sku='{$item['sku']}' AND remaining > 0"; // AND post_date <= '$this->post_date 23:59:59'"; // causes re-queue to owed table for negative inventory posts and rcv after sale date
@@ -304,8 +306,9 @@ class journal_18 extends \core\classes\journal {
 				$raw_sql .= " ORDER BY ".($defaults['cost_method']=='l' ? 'post_date DESC, id DESC' : 'post_date, id');
 				$sql = $admin->DataBase->prepare($raw_sql);
 				$sql->execute();
+				$result_array = $sql->fetchAll();
 			}
-			if (!$queue_sku) while ($result = $sql->fetch(\PDO::FETCH_LAZY)) { // loops until either qty is zero and/or inventory history is exhausted
+			if ($queue_sku == false) foreach ($result_array as $key => $result) { // loops until either qty is zero and/or inventory history is exhausted
 				if ($defaults['cost_method'] == 'a') { // Average cost
 					$cost = $avg_cost;
 				} else {  // FIFO, LIFO
@@ -393,7 +396,7 @@ class journal_18 extends \core\classes\journal {
 		$sql = $admin->DataBase->prepare("SELECT inventory_type, item_cost, cost_method, serialize FROM ".TABLE_INVENTORY." WHERE sku='$sku'");
 		$sql->execute();
 		$defaults = $sql->fetch(\PDO::FETCH_LAZY);
-		if ($sql->rowCount() == 0) return $cogs; // not in inventory, return no cost
+		if ($sql->fetch(\PDO::FETCH_NUM) == 0) return $cogs; // not in inventory, return no cost
 		if (strpos(COG_ITEM_TYPES, $defaults['inventory_type']) === false) return $cogs; // this type not tracked in cog, return no cost
 		if ($defaults['cost_method'] == 'a') return $qty * $this->fetch_avg_cost($sku, $qty);
 		if ($defaults['serialize']) { // there should only be one record
@@ -486,7 +489,7 @@ class journal_18 extends \core\classes\journal {
 		// only calculate cogs for certain inventory_types
 		$sql = $admin->DataBase->prepare("Select id, qty, inventory_history_id FROM " . TABLE_INVENTORY_COGS_USAGE . " WHERE journal_main_id = " . $this->id);
 		$sql->execute();
-		if ($sql->rowCount() == 0) {
+		if ($sql->fetch(\PDO::FETCH_NUM) == 0) {
 			$admin->messageStack->debug(" ...Exiting COGS, no work to be done.");
 			return true;
 		}
@@ -596,10 +599,9 @@ class journal_18 extends \core\classes\journal {
 		// Cash Receipts Journal
 		$method = (isset($this->shipper_code)) ? $this->shipper_code : 'freecharger';
 		if (!$admin->classes['payment']->methods[$method]->installed) throw new \core\clases\userException("payment methode $method is not installed");
-		$result        = $this->add_item_journal_rows('credit');	// read in line items and add to journal row array
-		$credit_total  = $result['total'];
-		$debit_total   = $this->add_discount_journal_row('debit');
-		$debit_total  += $this->add_total_journal_row('debit', $result['total'] - $result['discount']);
+		$this->add_item_journal_rows();	// read in line items and add to journal row array
+		$this->add_discount_journal_row();
+		$this->add_total_journal_row();
 		// ***************************** START TRANSACTION *******************************
 		$admin->DataBase->transStart();
 		// *************  Pre-POST processing *************
@@ -636,10 +638,9 @@ class journal_18 extends \core\classes\journal {
 		$this->journal_main_array = $this->build_journal_main_array();	// build ledger main record
 		$this->journal_rows       = array();	// initialize ledger row(s) array
 
-		$result        = $this->add_item_journal_rows('debit');	// read in line items and add to journal row array
-		$debit_total   = $result['total'];
-		$credit_total  = $this->add_discount_journal_row('credit');
-		$credit_total += $this->add_total_journal_row('credit', $result['total'] - $result['discount']);
+		$this->add_item_journal_rows();	// read in line items and add to journal row array
+		$this->add_discount_journal_row();
+		$this->add_total_journal_row();
 
 		// *************  Pre-POST processing *************
 		$this->validate_purchase_invoice_id();
@@ -671,65 +672,54 @@ class journal_18 extends \core\classes\journal {
 		return true;
 	}
 
-	function add_total_journal_row($debit_credit, $amount) {	// put total value into ledger row array
+	function add_total_journal_row() {	// put total value into ledger row array
 		global $admin, $journal_types_list;
-		if ($debit_credit == 'debit' || $debit_credit == 'credit') {
-			$desc = $journal_types_list[18]['text'] . '-' . TEXT_TOTAL . ':' . $admin->classes['payment']->methods[$method]->payment_fields;
-			$this->journal_rows[] = array( // record for accounts receivable
-					'gl_type'              => 'ttl',
-					$debit_credit.'_amount'=> $amount,
-					'description'          => $desc,
-					'gl_account'           => $this->gl_acct_id,
-					'post_date'            => $this->post_date,
-			);
-			return $amount;
-		} else {
-			throw new \core\classes\userException('bad parameter passed to add_total_journal_row in class orders');
-		}
+		$this->journal_rows[] = array( // record for accounts receivable
+				'gl_type'      => 'ttl',
+				'debit_amount' => $this->total_amount,
+				'description'  =>  $journal_types_list[18]['text'] . '-' . TEXT_TOTAL . ':' . $admin->classes['payment']->methods[$method]->payment_fields, //@todo $method defined outside of this method
+				'gl_account'   => $this->gl_acct_id,
+				'post_date'    => $this->post_date,
+		);
+		return $amount;
+
 	}
 
-	function add_discount_journal_row($debit_credit) {	// put total value into ledger row array
-		if ($debit_credit == 'debit' || $debit_credit == 'credit') {
-			$discount = 0;
-			for ($i=0; $i<count($this->item_rows); $i++) {
-				if ($this->item_rows[$i]['dscnt'] <> 0) {
-					$this->journal_rows[] = array(
-							'so_po_item_ref_id'       => $this->item_rows[$i]['id'],
-							'gl_type'                 => 'dsc',
-							'description'             => TEXT_DISCOUNT,
-							'gl_account'              => $this->gl_disc_acct_id,
-							'serialize_number'        => $this->item_rows[$i]['inv'],
-							$debit_credit . '_amount' => $this->item_rows[$i]['dscnt']);
-					$discount += $this->item_rows[$i]['dscnt'];
-				}
-			}
-			return $discount;
-		} else {
-			throw new \core\classes\userException('bad parameter passed to add_discount_journal_row in class banking');
-		}
-	}
-
-	function add_item_journal_rows($debit_credit) {	// read in line items and add to journal row array
-		if ($debit_credit == 'debit' || $debit_credit == 'credit') {
-			$result = array('discount' => 0, 'total' => 0);
-			for ($i=0; $i<count($this->item_rows); $i++) {
-				$total_paid = $this->item_rows[$i]['dscnt'] + $this->item_rows[$i]['total'];
+	function add_discount_journal_row() {	// put total value into ledger row array
+		$discount = 0;
+		for ($i=0; $i<count($this->item_rows); $i++) {
+			if ($this->item_rows[$i]['dscnt'] <> 0) {
 				$this->journal_rows[] = array(
-						'so_po_item_ref_id'       => $this->item_rows[$i]['id'], // link purch/rec id here for multi-id payments
-						'gl_type'                 => $this->item_rows[$i]['gl_type'],
-						'description'             => $this->item_rows[$i]['desc'],
-						$debit_credit . '_amount' => $total_paid,
-						'gl_account'              => $this->item_rows[$i]['acct'],
-						'serialize_number'        => $this->item_rows[$i]['inv'],
-						'post_date'               => $this->post_date,
-				);
-				$result['total'] += $total_paid;
-				$result['discount'] += $this->item_rows[$i]['dscnt'];
+						'so_po_item_ref_id' => $this->item_rows[$i]['id'],
+						'gl_type'           => 'dsc',
+						'description'       => TEXT_DISCOUNT,
+						'gl_account'        => $this->gl_disc_acct_id,
+						'serialize_number'  => $this->item_rows[$i]['inv'],
+						'debit_amount' 		=> $this->item_rows[$i]['dscnt']);
+				$discount += $this->item_rows[$i]['dscnt'];
 			}
-			return $result;
-		} else {
-			throw new \core\classes\userException('bad parameter passed to add_item_journal_rows in class banking');
 		}
+		return $discount;
+	}
+
+	function add_item_journal_rows() {	// read in line items and add to journal row array
+		$result = array('discount' => 0, 'total' => 0);
+		for ($i=0; $i<count($this->item_rows); $i++) {
+			$total_paid = $this->item_rows[$i]['dscnt'] + $this->item_rows[$i]['total'];
+			$this->journal_rows[] = array(
+					'so_po_item_ref_id' => $this->item_rows[$i]['id'], // link purch/rec id here for multi-id payments
+					'gl_type'           => $this->item_rows[$i]['gl_type'],
+					'description'       => $this->item_rows[$i]['desc'],
+					'credit_amount'     => $total_paid,
+					'gl_account'        => $this->item_rows[$i]['acct'],
+					'serialize_number'  => $this->item_rows[$i]['inv'],
+					'post_date'         => $this->post_date,
+			);
+			$result['total'] += $total_paid;
+			$result['discount'] += $this->item_rows[$i]['dscnt'];
+		}
+		$this->total_amount = $result['total'] - $result['discount'];
+		return;
 	}
 
 	function encrypt_payment($method, $card_key_pos = false) {

@@ -62,7 +62,7 @@ switch ($_REQUEST['action']) {
 	$next_period = $update_period + 1;
 	$next_start_date = date('Y-m-d', strtotime($fy_array['end_date']) + (60 * 60 * 24));
 	$result = $admin->DataBase->query("select start_date from " . TABLE_ACCOUNTING_PERIODS . " where period = " . $next_period);
-	if ($result->rowCount() > 0) { // next FY exists, check it
+	if ($result->fetch(\PDO::FETCH_NUM) > 0) { // next FY exists, check it
 		if ($next_start_date <> $result->fields['start_date']) {
 			$fy_array = array('start_date' =>$next_start_date);
 			db_perform(TABLE_ACCOUNTING_PERIODS, $fy_array, 'update', 'period = ' . (int)$next_period);
@@ -318,7 +318,7 @@ $cal_repost_end = array(
 );
 
 $result = $admin->DataBase->query("SELECT journal_main_id FROM ".TABLE_INVENTORY_COGS_OWED);
-$cogs_owed = $result->rowCount();
+$cogs_owed = $result->fetch(\PDO::FETCH_NUM);
 
 $include_header   = true;
 $include_footer   = true;

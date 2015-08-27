@@ -75,6 +75,8 @@ class journal_04 extends \core\classes\journal {
 	public $ship_telephone1     = COMPANY_TELEPHONE1;
 	public $ship_email          = COMPANY_EMAIL;
 	public $error_6 			= GENERAL_JOURNAL_4_ERROR_6;
+	public $description 		= TEXT_PURCHASE_ORDERS;
+	public $id_field_name 		= TEXT_PO_NUMBER;
 
 	function __construct( $id = 0, $verbose = true){
 		if (isset($_SESSION['admin_prefs']['def_ap_acct'])) $this->gl_acct_id =  $_SESSION['admin_prefs']['def_ap_acct'];
@@ -243,7 +245,7 @@ class journal_04 extends \core\classes\journal {
 		$sql = $admin->DataBase->prepare($raw_sql);
 		$sql->execute();
 		// catch sku's that are not in the inventory database but have been requested to post, error
-		if ($sql->rowCount() == 0) throw new \core\classes\userException(GL_ERROR_CALCULATING_COGS);
+		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(GL_ERROR_CALCULATING_COGS);
 		$defaults = $sql->fetch(\PDO::FETCH_LAZY);
 		// only calculate cogs for certain inventory_types
 		if (strpos(COG_ITEM_TYPES, $defaults['inventory_type']) === false) {
@@ -274,7 +276,7 @@ class journal_04 extends \core\classes\journal {
 				WHERE sku = '{$item['sku']}' and remaining > 0 and serialize_number = '{$item['serialize_number']}'";
 				$sql = $admin->DataBase->prepare($raw_sql);
 				$sql->execute();
-				if ($sql->rowCount() <> 0) throw new \core\classes\userException(GL_ERROR_SERIALIZE_COGS);
+				if ($sql->fetch(\PDO::FETCH_NUM) <> 0) throw new \core\classes\userException(GL_ERROR_SERIALIZE_COGS);
 				$history_array['serialize_number'] = $item['serialize_number'];
 			}
 			$admin->messageStack->debug("\n      Inserting into inventory history = " . print_r($history_array, true));
@@ -286,21 +288,21 @@ class journal_04 extends \core\classes\journal {
 			$working_qty = -$item['qty']; // quantity needs to be positive
 			$history_ids = array(); // the id's used to calculated cogs from the inventory history table
 			$queue_sku = false;
-			if ($defaults['cost_method'] == 'a') {
-				$raw_sql = "SELECT SUM(remaining) as remaining FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='{$item['sku']}' AND remaining > 0";
-				if (ENABLE_MULTI_BRANCH) $raw_sql .= " AND store_id='{$this->store_id}'";
-				$sql = $admin->DataBase->prepare($raw_sql);
-				$sql->execute();
-				$result = $sql->fetch(\PDO::FETCH_LAZY);//@todo work around
-				if ($result['remaining'] < $working_qty) $queue_sku = true; // not enough of this SKU so just queue it up until stock arrives
-				$avg_cost = $this->fetch_avg_cost($item['sku'], $working_qty);
-			}
 			if ($defaults['serialize']) { // there should only be one record with one remaining quantity
 				$raw_sql = "SELECT id, remaining, unit_cost FROM ".TABLE_INVENTORY_HISTORY."
 				WHERE sku='{$item['sku']}' AND remaining > 0 AND serialize_number='{$item['serialize_number']}'";
 				$sql = $admin->DataBase->prepare($raw_sql);
 				$sql->execute();
-				if ($sql->rowCount() <> 1) throw new \core\classes\userException(GL_ERROR_SERIALIZE_COGS);
+				if ($sql->fetch(\PDO::FETCH_NUM) <> 1) throw new \core\classes\userException(GL_ERROR_SERIALIZE_COGS);
+				$result_array = $sql->fetchAll();
+			} elseif ($defaults['cost_method'] == 'a') {
+				$raw_sql = "SELECT SUM(remaining) as remaining FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='{$item['sku']}' AND remaining > 0";
+				if (ENABLE_MULTI_BRANCH) $raw_sql .= " AND store_id='{$this->store_id}'";
+				$sql = $admin->DataBase->prepare($raw_sql);
+				$sql->execute();
+				$result_array = $sql->fetchAll();
+				if ($result_array[0]['remaining'] < $working_qty) $queue_sku = true; // not enough of this SKU so just queue it up until stock arrives
+				$avg_cost = $this->fetch_avg_cost($item['sku'], $working_qty);
 			} else {
 				$raw_sql = "SELECT id, remaining, unit_cost FROM ".TABLE_INVENTORY_HISTORY."
 				WHERE sku='{$item['sku']}' AND remaining > 0"; // AND post_date <= '$this->post_date 23:59:59'"; // causes re-queue to owed table for negative inventory posts and rcv after sale date
@@ -308,8 +310,9 @@ class journal_04 extends \core\classes\journal {
 				$raw_sql .= " ORDER BY ".($defaults['cost_method']=='l' ? 'post_date DESC, id DESC' : 'post_date, id');
 				$sql = $admin->DataBase->prepare($raw_sql);
 				$sql->execute();
+				$result_array = $sql->fetchAll();
 			}
-			if (!$queue_sku) while ($result = $sql->fetch(\PDO::FETCH_LAZY)) { // loops until either qty is zero and/or inventory history is exhausted
+			if ($queue_sku == false) foreach ($result_array as $key => $result) {// loops until either qty is zero and/or inventory history is exhausted
 				if ($defaults['cost_method'] == 'a') { // Average cost
 					$cost = $avg_cost;
 				} else {  // FIFO, LIFO
@@ -397,7 +400,7 @@ class journal_04 extends \core\classes\journal {
 		$sql = $admin->DataBase->prepare("SELECT inventory_type, item_cost, cost_method, serialize FROM ".TABLE_INVENTORY." WHERE sku='$sku'");
 		$sql->execute();
 		$defaults = $sql->fetch(\PDO::FETCH_LAZY);
-		if ($sql->rowCount() == 0) return $cogs; // not in inventory, return no cost
+		if ($sql->fetch(\PDO::FETCH_NUM) == 0) return $cogs; // not in inventory, return no cost
 		if (strpos(COG_ITEM_TYPES, $defaults['inventory_type']) === false) return $cogs; // this type not tracked in cog, return no cost
 		if ($defaults['cost_method'] == 'a') return $qty * $this->fetch_avg_cost($sku, $qty);
 		if ($defaults['serialize']) { // there should only be one record
@@ -490,7 +493,7 @@ class journal_04 extends \core\classes\journal {
 		// only calculate cogs for certain inventory_types
 		$sql = $admin->DataBase->prepare("Select id, qty, inventory_history_id FROM " . TABLE_INVENTORY_COGS_USAGE . " WHERE journal_main_id = " . $this->id);
 		$sql->execute();
-		if ($sql->rowCount() == 0) {
+		if ($sql->fetch(\PDO::FETCH_NUM) == 0) {
 			$admin->messageStack->debug(" ...Exiting COGS, no work to be done.");
 			return true;
 		}
@@ -570,7 +573,7 @@ class journal_04 extends \core\classes\journal {
 			$sql = "SELECT purchase_invoice_id FROM " . TABLE_JOURNAL_MAIN . " WHERE purchase_invoice_id = '{$this->purchase_invoice_id}' and journal_id = '4'";
 			if ($this->id) $sql .= " and id <> " . $this->id;
 			$result = $admin->DataBase->query($sql);
-			if ($result->rowCount() > 0) throw new \core\classes\userException(sprintf(TEXT_THE_YOU_ENTERED_IS_A_DUPLICATE,_PLEASE_ENTER_A_NEW_UNIQUE_VALUE_ARGS, $journal_types_list[4]['id_field_name']));
+			if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(sprintf(TEXT_THE_YOU_ENTERED_IS_A_DUPLICATE,_PLEASE_ENTER_A_NEW_UNIQUE_VALUE_ARGS, $journal_types_list[4]['id_field_name']));
 			$this->journal_main_array['purchase_invoice_id'] = $this->purchase_invoice_id;
 			$admin->messageStack->debug(" specified ID but no dups, returning OK. ");
 		} else {	// generate a new order/invoice value
@@ -603,12 +606,12 @@ class journal_04 extends \core\classes\journal {
 		$this->journal_rows = array();	// initialize ledger row(s) array
 		$debit_total  = 0;
 		$credit_total = 0;
-		$debit_total  += $this->add_item_journal_rows('debit');	// read in line items and add to journal row array
-		$debit_total  += $this->add_freight_journal_row('debit');	// put freight into journal row array
-		$debit_total  += $this->add_tax_journal_rows('debit');	// fetch tax rates for tax calculation
-		$credit_total += $this->add_discount_journal_row('credit'); // put discount into journal row array
+		$debit_total  += $this->add_item_journal_rows();	// read in line items and add to journal row array
+		$debit_total  += $this->add_freight_journal_row();	// put freight into journal row array
+		$debit_total  += $this->add_tax_journal_rows();	// fetch tax rates for tax calculation
+		$credit_total += $this->add_discount_journal_row(); // put discount into journal row array
 		$this->total_amount = $debit_total - $credit_total;
-		$credit_total += $this->add_total_journal_row('credit');	// put total value into ledger row array
+		$credit_total += $this->add_total_journal_row();	// put total value into ledger row array
 
 		$this->journal_main_array = $this->build_journal_main_array();	// build ledger main record
 
@@ -731,7 +734,7 @@ class journal_04 extends \core\classes\journal {
 		global $admin;
 		// verify no item rows have been acted upon (received, shipped, paid, etc.)
 		$result = $admin->DataBase->query("select id from " . TABLE_JOURNAL_MAIN . " where so_po_ref_id = " . $this->id);
-		if ($result->rowCount() > 0) throw new \core\classes\userException($this->error_6);
+		if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException($this->error_6);
 		// *************** START TRANSACTION *************************
 		$recur_id        = $this->recur_id;
 		$recur_frequency = $this->recur_frequency;
@@ -751,25 +754,23 @@ class journal_04 extends \core\classes\journal {
 		return true;
 	}
 
-	function add_total_journal_row($debit_credit) {	// put total value into ledger row array
-		if ($debit_credit != 'debit' && $debit_credit != 'credit') throw new \core\classes\userException(sprintf("bad parameter passed to ",__METHOD__ ) );
+	function add_total_journal_row() {	// put total value into ledger row array
 		$this->journal_rows[] = array( // record for accounts receivable
-				'gl_type'                 => 'ttl',
-				$debit_credit . '_amount' => $this->total_amount,
-				'description'             => $journal_types_list[4]['text'] . ' - ' . TEXT_TOTAL,
-				'gl_account'              => $this->gl_acct_id,
-				'post_date'               => $this->post_date,
+				'gl_type'       => 'ttl',
+				'credit_amount' => $this->total_amount,
+				'description'   => $journal_types_list[4]['text'] . ' - ' . TEXT_TOTAL,
+				'gl_account'    => $this->gl_acct_id,
+				'post_date'     => $this->post_date,
 		);
 		return $this->total_amount;
 	}
 
-	function add_discount_journal_row($debit_credit) { // put discount into journal row array
-		if ($debit_credit != 'debit' && $debit_credit != 'credit') throw new \core\classes\userException(sprintf("bad parameter passed to ",__METHOD__ ) );
+	function add_discount_journal_row() { // put discount into journal row array
 		if ($this->discount <> 0) {
 			$this->journal_rows[] = array(
 					'qty'                     => '1',
 					'gl_type'                 => 'dsc',		// code for discount charges
-					$debit_credit . '_amount' => $this->discount,
+					'credit_amount' => $this->discount,
 					'description'             => $journal_types_list[4]['text'] . ' - ' . TEXT_DISCOUNT,
 					'gl_account'              => $this->disc_gl_acct_id,
 					'taxable'                 => '0',
@@ -779,8 +780,7 @@ class journal_04 extends \core\classes\journal {
 		return $this->discount;
 	}
 
-	function add_freight_journal_row($debit_credit) {	// put freight into journal row array
-		if ($debit_credit != 'debit' && $debit_credit != 'credit') throw new \core\classes\userException(sprintf("bad parameter passed to ",__METHOD__ ) );
+	function add_freight_journal_row() {	// put freight into journal row array
 		// if no line items are charged tax, do not charge tax on shipping. ADDED 2014-04-28 by Dave
 		$tax_freight = false;
 		foreach ($this->journal_rows as $line_item) {
@@ -789,20 +789,19 @@ class journal_04 extends \core\classes\journal {
 		$freight_tax_id = $tax_freight ? AP_ADD_SALES_TAX_TO_SHIPPING : 0;
 		if ($this->freight) { // calculate freight charges
 			$this->journal_rows[] = array(
-					'qty'                     => '1',
-					'gl_type'                 => 'frt',		// code for shipping/freight charges
-					$debit_credit . '_amount' => $this->freight,
-					'description'             => $journal_types_list[4]['text'] . ' - ' . TEXT_SHIPPING,
-					'gl_account'              => $this->ship_gl_acct_id,
-					'taxable'                 => $freight_tax_id,
-					'post_date'               => $this->post_date,
+					'qty'          => '1',
+					'gl_type'      => 'frt',		// code for shipping/freight charges
+					'debit_amount' => $this->freight,
+					'description'  => $journal_types_list[4]['text'] . ' - ' . TEXT_SHIPPING,
+					'gl_account'   => $this->ship_gl_acct_id,
+					'taxable'      => $freight_tax_id,
+					'post_date'    => $this->post_date,
 			);
 		}
 		return $this->freight;
 	}
 
-	function add_item_journal_rows($debit_credit) {	// read in line items and add to journal row array
-		if ($debit_credit != 'debit' && $debit_credit != 'credit') throw new \core\classes\userException(sprintf("bad parameter passed to ",__METHOD__ ) );
+	function add_item_journal_rows() {	// read in line items and add to journal row array
 		$total = 0;
 		for ($i=0; $i<count($this->item_rows); $i++) {
 			if ($this->item_rows[$i]['qty']) { // make sure the quantity line is set and not zero
@@ -814,7 +813,7 @@ class journal_04 extends \core\classes\journal {
 						'sku'                     => $this->item_rows[$i]['sku'],
 						'qty'                     => $this->item_rows[$i]['qty'],
 						'description'             => $this->item_rows[$i]['desc'],
-						$debit_credit . '_amount' => $this->item_rows[$i]['total'],
+						'debit_amount' 			  => $this->item_rows[$i]['total'],
 						'full_price'              => $this->item_rows[$i]['full'],
 						'gl_account'              => $this->item_rows[$i]['acct'],
 						'taxable'                 => $this->item_rows[$i]['tax'],
@@ -830,56 +829,50 @@ class journal_04 extends \core\classes\journal {
 		return $total;
 	}
 
-	function add_tax_journal_rows($debit_credit) {
+	function add_tax_journal_rows() {
 		global $admin;
-		if ($debit_credit != 'debit' && $debit_credit != 'credit') throw new \core\classes\userException(sprintf("bad parameter passed to ",__METHOD__ ) );
-			$total          = 0;
-			$auth_array     = array();
-			$tax_rates      = ord_calculate_tax_drop_down('b');
-			$tax_auths      = gen_build_tax_auth_array();
-			$tax_discount   = $this->account_type == 'v' ? AP_TAX_BEFORE_DISCOUNT : AR_TAX_BEFORE_DISCOUNT;
-			// calculate each tax value by authority per line item
-			foreach ($this->journal_rows as $idx => $line_item) {
-				if ($line_item['taxable'] > 0 && ($line_item['gl_type'] == $this->gl_type || $line_item['gl_type'] == 'frt')) {
-					foreach ($tax_rates as $rate) {
-						if ($rate['id'] == $line_item['taxable']) {
-							$auths = explode(':', $rate['auths']);
-							foreach ($auths as $auth) {
-								$line_total = $line_item['debit_amount'] + $line_item['credit_amount']; // one will always be zero
-								if (ENABLE_ORDER_DISCOUNT && $tax_discount == '0' && $line_item['gl_type'] <> 'frt') {
-									$line_total = $line_total * (1 - $this->disc_percent);
-								}
-								//				this is wrong this is rounding per orderline not per tax auth. moved this to the next foreach.
-								//				if (ROUND_TAX_BY_AUTH) {
-								//				  $auth_array[$auth] += number_format(($tax_auths[$auth]['tax_rate'] / 100) * $line_total, $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places'], '.', '');
-								//				} else {
-								$auth_array[$auth] += ($tax_auths[$auth]['tax_rate'] / 100) * $line_total;
-								//				}
+		$total          = 0;
+		$auth_array     = array();
+		$tax_rates      = ord_calculate_tax_drop_down('b');
+		$tax_auths      = gen_build_tax_auth_array();
+		$tax_discount   = $this->account_type == 'v' ? AP_TAX_BEFORE_DISCOUNT : AR_TAX_BEFORE_DISCOUNT;
+		// calculate each tax value by authority per line item
+		foreach ($this->journal_rows as $idx => $line_item) {
+			if ($line_item['taxable'] > 0 && ($line_item['gl_type'] == $this->gl_type || $line_item['gl_type'] == 'frt')) {
+				foreach ($tax_rates as $rate) {
+					if ($rate['id'] == $line_item['taxable']) {
+						$auths = explode(':', $rate['auths']);
+						foreach ($auths as $auth) {
+							$line_total = $line_item['debit_amount'] + $line_item['credit_amount']; // one will always be zero
+							if (ENABLE_ORDER_DISCOUNT && $tax_discount == '0' && $line_item['gl_type'] <> 'frt') {
+								$line_total = $line_total * (1 - $this->disc_percent);
 							}
+							$auth_array[$auth] += ($tax_auths[$auth]['tax_rate'] / 100) * $line_total;
 						}
 					}
 				}
 			}
-			// calculate each tax total by authority and put into journal row array
-			foreach ($auth_array as $auth => $auth_tax_collected) {
-				if ($auth_tax_collected == '' && $tax_auths[$auth]['account_id'] == '') continue;
-				if( ROUND_TAX_BY_AUTH == true ){
-					$amount = number_format($auth_tax_collected, $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places'], '.', '');
-				}else {
-					$amount = $auth_tax_collected;
-				}
-				$this->journal_rows[] = array( // record for specific tax authority
-						'qty'                     => '1',
-						'gl_type'                 => 'tax',		// code for tax entry
-						$debit_credit . '_amount' => $amount,
-						'description'             => $tax_auths[$auth]['description_short'],
-						'gl_account'              => $tax_auths[$auth]['account_id'],
-						'post_date'               => $this->post_date,
-				);
-				$total += $amount;
+		}
+		// calculate each tax total by authority and put into journal row array
+		foreach ($auth_array as $auth => $auth_tax_collected) {
+			if ($auth_tax_collected == '' && $tax_auths[$auth]['account_id'] == '') continue;
+			if( ROUND_TAX_BY_AUTH == true ){
+				$amount = number_format($auth_tax_collected, $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places'], '.', '');
+			}else {
+				$amount = $auth_tax_collected;
 			}
-			$this->sales_tax = $total;
-			return $total;
+			$this->journal_rows[] = array( // record for specific tax authority
+					'qty'          => '1',
+					'gl_type'      => 'tax',		// code for tax entry
+					'debit_amount' => $amount,
+					'description'  => $tax_auths[$auth]['description_short'],
+					'gl_account'   => $tax_auths[$auth]['account_id'],
+					'post_date'    => $this->post_date,
+			);
+			$total += $amount;
+		}
+		$this->sales_tax = $total;
+		return $total;
 	}
 } // end class journal
 ?>

@@ -89,7 +89,7 @@
     	global $admin;
 		if (!$constant) throw new \core\classes\userException("contant isn't defined for value: $value");
 		$result = $admin->DataBase->query("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = '$constant'");
-		if ($result->rowCount() == 0) {
+		if ($result->fetch(\PDO::FETCH_NUM) == 0) {
 	  		$sql_array = array('configuration_key'  => $constant, 'configuration_value'=> $value);
 	  		$sql = $admin->DataBase->prepare("INSERT INTO " . TABLE_CONFIGURATION . " (configuration_key, configuration_value) VALUES (:configuration_key, :configuration_value)");
 	  		$sql->execute(array(':configuration_key'=>$constant, ':configuration_value'=>$value));
@@ -215,7 +215,7 @@
 		if (($post_time_stamp >= $period_start_time_stamp) && ($post_time_stamp <= $period_end_time_stamp)) return CURRENT_ACCOUNTING_PERIOD;
 		$sql = $admin->DataBase->prepare("SELECT period FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE start_date <= '$post_date' and end_date >= '$post_date'");
 		$sql->execute();
-		if ($sql->rowCount() <> 1) { // post_date is out of range of defined accounting periods
+		if ($sql->fetch(\PDO::FETCH_NUM) <> 1) { // post_date is out of range of defined accounting periods
 			if (!$hide_error) throw new \core\classes\userException(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR);
 		}
 		$result = $sql->fetch(\PDO::FETCH_LAZY);
@@ -273,7 +273,7 @@
   	function gen_get_type_description($db_name, $id, $full = true) {
     	global $admin;
     	$type_name = $admin->DataBase->query("SELECT description FROM $db_name WHERE id = '$id'");
-    	if ($type_name->rowCount() < 1) {
+    	if ($type_name->fetch(\PDO::FETCH_NUM) < 1) {
       		return $id;
     	}
 	  	if ($full) {
@@ -290,7 +290,7 @@
   	function gen_get_contact_type($id) {
     	global $admin;
     	$vendor_type = $admin->DataBase->query("SELECT type FROM " . TABLE_CONTACTS . " WHERE id = '$id'");
-    	return ($vendor_type->rowCount() == 1) ? $vendor_type['type'] : false;
+    	return ($vendor_type->fetch(\PDO::FETCH_NUM) == 1) ? $vendor_type['type'] : false;
   	}
 
   	/**
@@ -300,7 +300,7 @@
   	function gen_get_contact_name($id) {
     	global $admin;
     	$vendor_name = $admin->DataBase->query("SELECT short_name FROM " . TABLE_CONTACTS . " WHERE id = '$id'");
-    	if ($vendor_name->rowCount() == 1) return $vendor_name['short_name'];
+    	if ($vendor_name->fetch(\PDO::FETCH_NUM) == 1) return $vendor_name['short_name'];
     	throw new \core\classes\userException("couldn't find contact with $id");
   	}
 
@@ -773,7 +773,7 @@ function gen_db_date($raw_date = '', $separator = '/') {
 	$result = $admin->DataBase->query("select fiscal_year, start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . "
 	  where period = " . $period);
 	// post_date is out of range of defined accounting periods
-	if ($result->rowCount() <> 1) throw new \core\classes\userException(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');
+	if ($result->fetch(\PDO::FETCH_NUM) <> 1) throw new \core\classes\userException(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');
 	return $result->fields;
   }
 

@@ -67,20 +67,20 @@ class zencart {
   function buildProductUploadXML($id, $inc_image = true) {
 	global $admin;
 	$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY . " where id = " . $id);
-	if ($result->rowCount() <> 1) throw new \core\classes\userException(ZENCART_INVALID_SKU);
+	if ($result->fetch(\PDO::FETCH_NUM) <> 1) throw new \core\classes\userException(ZENCART_INVALID_SKU);
 	$this->sku = $result->fields['sku'];
 	if (ZENCART_USE_PRICE_SHEETS == '1') {
 	  $sql = "select id, default_levels from " . TABLE_PRICE_SHEETS . "
 		where '" . date('Y-m-d',time()) . "' >= effective_date
 		and sheet_name = '" . ZENCART_PRICE_SHEET . "' and inactive = '0'";
 	  $default_levels = $admin->DataBase->query($sql);
-	  if ($default_levels->rowCount() == 0) {
+	  if ($default_levels->fetch(\PDO::FETCH_NUM) == 0) {
 		throw new \core\classes\userException(ZENCART_ERROR_NO_PRICE_SHEET . ZENCART_PRICE_SHEET);
 	  }
 	  $sql = "select price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . "
 		where inventory_id = " . $id . " and price_sheet_id = " . $default_levels->fields['id'];
 	  $special_levels = $admin->DataBase->query($sql);
-	  if ($special_levels->rowCount() > 0) {
+	  if ($special_levels->fetch(\PDO::FETCH_NUM) > 0) {
 		$price_levels = $special_levels->fields['price_levels'];
 	  } else {
 		$price_levels = $default_levels->fields['default_levels'];
@@ -193,7 +193,7 @@ if (file_exists(DIR_FS_MODULES . 'zencart/custom/extra_product_attrs.php')) {
   function buildProductSyncXML() {
 	global $admin;
 	$result = $admin->DataBase->query("select sku from " . TABLE_INVENTORY . " where catalog = '1'");
-	if ($result->rowCount() == 0) {
+	if ($result->fetch(\PDO::FETCH_NUM) == 0) {
 	  throw new \core\classes\userException(ZENCART_ERROR_NO_ITEMS);
 	}
 	$this->strXML  = '<?xml version="1.0" encoding="UTF-8" ?>' . chr(10);
@@ -234,7 +234,7 @@ if (file_exists(DIR_FS_MODULES . 'zencart/custom/extra_product_attrs.php')) {
 	// fetch every shipment for the given post_date
 	$result = $admin->DataBase->query("select ref_id, carrier, method, tracking_id from " . TABLE_SHIPPING_LOG . "
 	  where ship_date like '" . $this->post_date . " %'");
-	if ($result->rowCount() == 0) {
+	if ($result->fetch(\PDO::FETCH_NUM) == 0) {
 	  throw new \Exception(ZENCART_ERROR_CONFRIM_NO_DATA);
 	}
 	// foreach shipment, fetch the PO Number (it is the ZenCart order number)
@@ -251,7 +251,7 @@ if (file_exists(DIR_FS_MODULES . 'zencart/custom/extra_product_attrs.php')) {
 		if ($details->fields['so_po_ref_id']) {
 		  $details = $admin->DataBase->query("select closed, purchase_invoice_id from " . TABLE_JOURNAL_MAIN . "
 	        where id = '" . $details->fields['so_po_ref_id'] . "'");
-		  if ($details->rowCount() == 1) {
+		  if ($details->fetch(\PDO::FETCH_NUM) == 1) {
 		    $message = sprintf(ZENCART_CONFIRM_MESSAGE, $this->post_date, $methods[$result->fields['carrier']]['title'], $methods[$result->fields['carrier']][$result->fields['method']], $result->fields['tracking_id']);
 		    $this->strXML .= '<Order>' . chr(10);
 			$this->strXML .= xmlEntry('ID', $details->fields['purchase_invoice_id']);

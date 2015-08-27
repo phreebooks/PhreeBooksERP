@@ -201,7 +201,7 @@ switch ($_REQUEST['action']) {
 	  		$delOrd = new \core\classes\journal($_POST['id']);
 	  		$result = $admin->DataBase->query("SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE so_po_ref_id = $delOrd->id");
 	  		$xfer_to_id = $result->fields['id']; // save the matching adjust ID
-	  		if ($result->rowCount() == 0) throw new \core\classes\userException('cannot delete there is no offsetting record to delete!');
+	  		if ($result->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException('cannot delete there is no offsetting record to delete!');
 	  		// *************** START TRANSACTION *************************
 	    	$admin->DataBase->transStart();
 	    	if (!$delOrd->unPost('delete')) throw new \core\classes\userException('cannot unpost record!');

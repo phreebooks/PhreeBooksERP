@@ -56,7 +56,7 @@ switch ($_REQUEST['action']) {
 	// Check for duplicate price sheet names
 	if ($_REQUEST['action'] == 'save') {
 	  $result = $admin->DataBase->query("SELECT id FROM " . TABLE_PRICE_SHEETS . " WHERE sheet_name='".addslashes($sheet_name)."'");
-	  if ($result->rowCount() > 0) {
+	  if ($result->fetch(\PDO::FETCH_NUM) > 0) {
 		$effective_date = gen_locale_date($effective_date);
 		$_REQUEST['action'] = 'new';
 		throw new \core\classes\userException(SRVCS_DUPLICATE_SHEET_NAME);

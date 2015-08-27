@@ -168,7 +168,7 @@ class currencies {
 			// first check to see if there are any general ledger entries
 		  	$sql = $admin->DataBase->prepare("SELECT id FROM " . TABLE_JOURNAL_MAIN . " LIMIT 1");
 		  	$sql->execute();
-			if ($sql->rowCount() > 0) throw new \core\classes\userException(SETUP_ERROR_CANNOT_CHANGE_DEFAULT);
+			if ($sql->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(SETUP_ERROR_CANNOT_CHANGE_DEFAULT);
 		  	write_configure('DEFAULT_CURRENCY', db_input($code));
 			db_perform($this->db_table, array('value' => 1), 'update', "code='$code'"); // change default exc rate to 1
 		    $admin->DataBase->exec("ALETER TABLE " . TABLE_JOURNAL_MAIN . " CHANGE currencies_code currencies_code CHAR(3) NOT NULL DEFAULT '" . db_input($code) . "'");
@@ -240,7 +240,7 @@ class currencies {
 		if ($result['currencies_id'] == $id) throw new \core\classes\userException(ERROR_CANNOT_DELETE_DEFAULT_CURRENCY);
 		$sql = $admin->DataBase->prepare("SELECT m.id, c.title FROM " . TABLE_JOURNAL_MAIN . " m LEFT JOIN {$this->db_table} c ON m.currencies_code = c.code WHERE c.currencies_id = '$id' LIMIT 1");
 		$sql->execute();
-		if ($sql->rowCount() > 0) throw new \core\classes\userException(ERROR_CURRENCY_DELETE_IN_USE);
+		if ($sql->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(ERROR_CURRENCY_DELETE_IN_USE);
 		$result = $sql->fetch(\PDO::FETCH_LAZY);
 		$admin->DataBase->exec("DELETE FROM {$this->db_table} WHERE currencies_id = '$id'");
 		gen_add_audit_log(TEXT_CURRENCIES . ' - ' . TEXT_DELETE, $result['title']);

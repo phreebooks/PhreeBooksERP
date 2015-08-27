@@ -258,7 +258,7 @@ class DateTime extends \DateTime {
 		global $admin;
 		$result = $admin->DataBase->query("SELECT fiscal_year, start_date, end_date FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE period = $period");
 		// post_date is out of range of defined accounting periods
-		if ($result->rowCount() <> 1) throw new \core\classes\userException(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');
+		if ($result->fetch(\PDO::FETCH_NUM) <> 1) throw new \core\classes\userException(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');
 		return $result;
 	}
 }

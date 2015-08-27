@@ -33,7 +33,7 @@ class inventory {
 	function get_item_by_id(integer $id) {
 		global $admin;
 		$result = $admin->DataBase->query("SELECT * FROM ".TABLE_INVENTORY." WHERE id = $id");
-		if ($result->rowCount() == 0) throw new \core\classes\userException("couldn't find inventory with id $id");
+		if ($result->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException("couldn't find inventory with id $id");
 		$this->name 					= $result->fields['name'];
 		$this->description 				= $result->fields['sales_description'];
 		$this->short_description 		= $result->fields['short_description'];
@@ -71,7 +71,7 @@ class inventory {
 	function get_item_by_sku(char $sku){
 		global $admin;
 		$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY . " where sku = '$sku'");
-		if ($result->rowCount() != 0) throw new \core\classes\userException("couldn't find inventory with sku $sku");
+		if ($result->fetch(\PDO::FETCH_NUM) != 0) throw new \core\classes\userException("couldn't find inventory with sku $sku");
 		$this->name 					= $result->fields['name'];
 		$this->description 				= $result->fields['sales_description'];
 		$this->short_description 		= $result->fields['short_description'];

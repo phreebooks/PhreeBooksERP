@@ -54,7 +54,7 @@ class admin extends \core\classes\admin {
 		parent::install($path_my_files, $demo);
 		if (!$admin->DataBase->field_exists(TABLE_INVENTORY, 'catalog')) { // setup new tab in table inventory
 		  $result = $admin->DataBase->query("select id FROM ".TABLE_EXTRA_TABS." WHERE tab_name='ZenCart'");
-		  if ($result->rowCount() == 0) {
+		  if ($result->fetch(\PDO::FETCH_NUM) == 0) {
 		  	$sql_data_array = array(
 		      'module_id'   => 'inventory',
 		      'tab_name'    => 'ZenCart',
@@ -143,7 +143,7 @@ class admin extends \core\classes\admin {
 		$sql = $admin->DataBase->prepare("select id from " . TABLE_INVENTORY . " where catalog = '1' " . $where);
 		$sql->execute();
 		$cnt    = 0;
-		if ($sql->rowCount() == 0)	return true;
+		if ($sql->fetch(\PDO::FETCH_NUM) == 0)	return true;
 		$prodXML = new \zencart\classes\zencart();
 		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
 		  	$prodXML->submitXML($result['id'], 'product_ul', true, true);
@@ -161,7 +161,7 @@ class admin extends \core\classes\admin {
 		}
 		$sql = $basis->DataBase->prepare("select tab_id from " . TABLE_EXTRA_FIELDS . " where field_name = 'category_id'");
 		$sql->execute();
-		if ($sql->rowCount() == 0) throw new \core\classes\userException('can not find tab_name ZenCart');
+		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException('can not find tab_name ZenCart');
 		$result = $sql->fetch(\PDO::FETCH_LAZY);
 		$tab_id = $result['tab_id'];
 		if (!$basis->DataBase->field_exists(TABLE_INVENTORY, 'ProductURL')){

@@ -423,7 +423,7 @@ class paymentech {
     global $admin;
     if (!isset($this->_check)) {
       $check_query = $admin->DataBase->query("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = 'MODULE_PAYMENT_PAYMENTECH_STATUS'");
-      $this->_check = $check_query->rowCount();
+      $this->_check = $check_query->fetch(\PDO::FETCH_NUM);
     }
     return $this->_check;
   }

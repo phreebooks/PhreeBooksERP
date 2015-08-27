@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------+
 // |                   PhreeBooks Open Source ERP                    |
 // +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2013 PhreeSoft, LLC (www.PhreeSoft.com)       |
+// | Copyright(c) 2008-2015 PhreeSoft      (www.PhreeSoft.com)       |
 // +-----------------------------------------------------------------+
 // | This program is free software: you can redistribute it and/or   |
 // | modify it under the terms of the GNU General Public License as  |
@@ -14,13 +14,13 @@
 // | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the   |
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
-//  Path: /modules/phreebooks/classes/journal/journal_14.php
+//  Path: /modules/phreebooks/classes/journal_02.php
 //
-// Inventory Assembly Journal (14)
+// General Journal (2)
 namespace phreebooks\classes\journal;
-class journal_14 extends \core\classes\journal {
-	public $description 		= TEXT_INVENTORY_ASSEMBLY;
-	public $id_field_name 		= TEXT_ASSEMBLY_NUMBER;
+class journal_02 extends \core\classes\journal {
+	public $description 	= TEXT_BEGINNING_BALANCES;
+	public $id_field_name 	= TEXT_REFERENCE;
 
 	/*******************************************************************************************************************/
 	// START re-post Functions
@@ -28,61 +28,8 @@ class journal_14 extends \core\classes\journal {
 	function check_for_re_post() {
 		global $admin;
 		$admin->messageStack->debug("\n  Checking for re-post records ... ");
-		$repost_ids = array();
-		if ($this->id) for ($i = 0; $i < count($this->journal_rows); $i++) if ($this->journal_rows[$i]['sku']) {
-			// check to see if any future postings relied on this record, queue to re-post if so.
-			$sql = $admin->DataBase->prepare("SELECT id FROM ".TABLE_INVENTORY_HISTORY." WHERE ref_id={$this->id} AND sku='{$this->journal_rows[$i]['sku']}'");
-			$sql->execute();
-			if ($sql->fetch(\PDO::FETCH_NUM) > 0) {
-				$result = $sql->fetch(\PDO::FETCH_LAZY);
-				$sql = $admin->DataBase->prepare("SELECT journal_main_id FROM ".TABLE_INVENTORY_COGS_USAGE." WHERE inventory_history_id=".$result['id']);
-				$sql->execute();
-				while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
-					if ($result['journal_main_id'] <> $this->id) {
-						$admin->messageStack->debug("\n    check_for_re_post is queing for cogs usage id = " . $result['journal_main_id']);
-						$p_date = $admin->DataBase->query("SELECT post_date FROM ".TABLE_JOURNAL_MAIN." WHERE id=".$result['journal_main_id']);
-						$idx = substr($p_date['post_date'], 0, 10).':'.str_pad($result['journal_main_id'], 8, '0', STR_PAD_LEFT);
-						$repost_ids[$idx] = $result['journal_main_id'];
-					}
-				}
-			}
-		}
-		// 	find if any COGS owed for items
-		foreach ($this->journal_rows as $row) if ($row['sku']) {
-			if ($row['qty'] > 0 ) {
-				$inv_qoh = $admin->DataBase->query("SELECT SUM(remaining) as remaining FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='{$row['sku']}' AND remaining>0");
-				$working_qty = $row['qty'] + $inv_qoh['remaining'];
-				$raw_sql = "SELECT id, journal_main_id, qty, post_date FROM ".TABLE_INVENTORY_COGS_OWED." WHERE sku='{$row['sku']}'";
-				if (ENABLE_MULTI_BRANCH) $raw_sql .= " AND store_id = " . $this->store_id;
-				$raw_sql .= " ORDER BY post_date, id";
-				$sql = $admin->DataBase->prepare($raw_sql);
-				$sql->execute();
-				while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
-					if ($working_qty >= $result['qty']) { // repost this journal entry and remove the owed record since we will repost all the negative quantities necessary
-						if ($result['journal_main_id'] <> $this->id) { // prevent infinite loop
-							$admin->messageStack->debug("\n    check_for_re_post is queing for cogs owed, id = {$result['journal_main_id']} to re-post.");
-							$idx = substr($result['post_date'], 0, 10).':'.str_pad($result['journal_main_id'], 8, '0', STR_PAD_LEFT);
-							$repost_ids[$idx] = $result['journal_main_id'];
-						}
-						$admin->DataBase->exec("DELETE FROM " . TABLE_INVENTORY_COGS_OWED . " WHERE id = " . $result['id']);
-					}
-					$working_qty -= $result['qty'];
-					if ($working_qty <= 0) break;
-				}
-			}
-		}
-		// Check for payments or receipts made to this record that will need to be re-posted.
-		if ($this->id) {
-			$sql = $admin->DataBase->query("SELECT ref_id, post_date FROM ".TABLE_JOURNAL_ITEM." WHERE so_po_item_ref_id = $this->id AND gl_type in ('chk', 'pmt')");
-			$sql->execute();
-			while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
-				$admin->messageStack->debug("\n    check_for_re_post is queing for payment id = " . $result['ref_id']);
-				$idx = substr($result['post_date'], 0, 10).':'.str_pad($result['ref_id'], 8, '0', STR_PAD_LEFT);
-				$repost_ids[$idx] = $result['ref_id'];
-			}
-		}
-		$admin->messageStack->debug(" end Checking for Re-post.");
-		return $repost_ids;
+		$admin->messageStack->debug(" end check for Re-post with no action.");
+		return array();
 	}
 
 	/*******************************************************************************************************************/
@@ -198,6 +145,7 @@ class journal_14 extends \core\classes\journal {
 	function Post_account_sales_purchases() {
 		global $admin;
 		$admin->messageStack->debug("\n  Posting account sales and purchases ...");
+		// nothing required to do
 		$admin->messageStack->debug(" end Posting account sales and purchases with no action.");
 		return true;
 	}
@@ -210,6 +158,7 @@ class journal_14 extends \core\classes\journal {
 	function unPost_account_sales_purchases() {
 		global $admin;
 		$admin->messageStack->debug("\n  unPosting account sales and purchases ...");
+		// nothing required to do
 		$admin->messageStack->debug(" end unPosting account sales and purchases with no action.");
 	}
 
@@ -221,53 +170,7 @@ class journal_14 extends \core\classes\journal {
 	function Post_inventory() {
 		global $admin;
 		$admin->messageStack->debug("\n  Posting Inventory ...");
-		// adjust inventory stock status levels (also fills inv_list array)
-		$item_rows_to_process = count($this->journal_rows); // NOTE: variable needs to be here because journal_rows may grow within for loop (COGS)
-		for ($i = 0; $i < $item_rows_to_process; $i++) {
-			if ($this->journal_rows[$i]['sku']) {
-				if ($this->journal_rows[$i]['debit_amount'])  $price = $this->journal_rows[$i]['debit_amount']  / $this->journal_rows[$i]['qty'];
-				if ($this->journal_rows[$i]['credit_amount']) $price = $this->journal_rows[$i]['credit_amount'] / $this->journal_rows[$i]['qty'];
-				$inv_list = array(
-						'id'                => $this->journal_rows[$i]['id'],
-						'gl_type'           => $this->journal_rows[$i]['gl_type'],
-						'so_po_item_ref_id' => $this->journal_rows[$i]['so_po_item_ref_id'],
-						'sku'               => $this->journal_rows[$i]['sku'],
-						'description'       => $this->journal_rows[$i]['description'],
-						'serialize_number'  => $this->journal_rows[$i]['serialize_number'],
-						'qty'               => $this->journal_rows[$i]['qty'],
-						'price'             => $price,
-						'store_id'          => $this->store_id,
-						'post_date'         => $this->post_date,
-				);
-				$assy_cost = $this->calculate_assembly_list($inv_list); // for assembly parts list
-			}
-		}
-		// build the cogs rows
-		if (sizeof($this->cogs_entry) > 0) foreach ($this->cogs_entry as $gl_acct => $values) {
-			$temp_array = array(
-					'ref_id'        => $this->id,
-					'gl_type'       => 'cog',		// code for cost of goods charges
-					'description'   => TEXT_COST_OF_GOODS_SOLD,
-					'gl_account'    => $gl_acct,
-					'credit_amount' => $values['credit'] ? $values['credit'] : 0,
-					'debit_amount'  => $values['debit']  ? $values['debit']  : 0,
-					'post_date'     => $this->post_date,
-			);
-			db_perform(TABLE_JOURNAL_ITEM, $temp_array, 'insert');
-			$temp_array['id']     = \core\classes\PDO::lastInsertId('id');
-			$this->journal_rows[] = $temp_array;
-		}
-		// update inventory status
-		for ($i = 0; $i < count($this->journal_rows); $i++) {
-			$post_qty   = $this->journal_rows[$i]['qty'];
-			$item_cost  = 0;
-			$full_price = 0;
-			if ($i == 0 && $this->journal_rows[$i]['qty'] > 0) { // only for the item being assembled
-				$item_cost = $this->journal_rows[$i]['debit_amount'] / $this->journal_rows[$i]['qty'];
-			}
-			$this->update_inventory_status($this->journal_rows[$i]['sku'], 'quantity_on_hand', $post_qty, $item_cost, $this->journal_rows[$i]['description'], $full_price);
-		}
-		$admin->messageStack->debug("\n  end Posting Inventory.");
+		$admin->messageStack->debug(" end Posting Inventory not requiring any action.");
 		return true;
 	}
 
@@ -278,27 +181,7 @@ class journal_14 extends \core\classes\journal {
 		// and keep record. Quantity may go negative because it was used in a COGS calculation but will be corrected when
 		// new inventory has been received and the associated cost applied. If the quantity is changed, the new remaining
 		// value will be calculated when the updated purchase/receive is posted.
-		// Delete all owed cogs entries (will be re-added during post)
-		$admin->DataBase->exec("DELETE FROM " . TABLE_INVENTORY_COGS_OWED . " WHERE journal_main_id = " . $this->id);
-		$this->rollback_COGS();
-		for ($i = 0; $i < count($this->journal_rows); $i++) if ($this->journal_rows[$i]['sku']) {
-			$qty = $this->journal_rows[$i]['qty'];
-			$this->update_inventory_status($this->journal_rows[$i]['sku'], 'quantity_on_hand', -$qty);
-			// adjust po/so inventory, if necessary, based on min of qty on ordered and qty shipped/received
-			if ($this->journal_rows[$i]['so_po_item_ref_id']) {
-				$item_array = $this->load_so_po_balance($this->so_po_ref_id, $this->id, false);
-				$bal_before_post = $item_array[$this->journal_rows[$i]['so_po_item_ref_id']]['ordered'] - $item_array[$this->journal_rows[$i]['so_po_item_ref_id']]['processed'];
-				// do not allow qty on order to go below zero.
-				$adjustment = min($this->journal_rows[$i]['qty'], $bal_before_post);
-				$this->update_inventory_status($this->journal_rows[$i]['sku'], 'quantity_on_sales_order', $adjustment);
-			}
-		}
-		// remove the inventory history records
-		$admin->DataBase->exec("DELETE FROM " . TABLE_INVENTORY_HISTORY . " WHERE ref_id = " . $this->id);
-		$admin->DataBase->exec("DELETE FROM " . TABLE_INVENTORY_COGS_USAGE . " WHERE journal_main_id = " . $this->id);
-		// remove cost of goods sold records (will be re-calculated if re-posting)
-		$this->remove_journal_COGS_entries();
-		$admin->messageStack->debug("\n  end unPosting Inventory.");
+		$admin->messageStack->debug(" end unPosting Inventory with no action.");
 	}
 
 
@@ -329,18 +212,16 @@ class journal_14 extends \core\classes\journal {
 		}
 		if (ENABLE_MULTI_BRANCH) $defaults['quantity_on_hand'] = $this->branch_qty_on_hand($item['sku'], $defaults['quantity_on_hand']);
 		// catch sku's that are serialized and the quantity is not one, error
-		if ($defaults['serialize'] && abs($item['qty']) <> 1) throw new \core\classes\userException(GL_ERROR_SERIALIZE_QUANTITY);
+		if ($defaults['serialize'] && abs($item['qty']) <> 1)     throw new \core\classes\userException(GL_ERROR_SERIALIZE_QUANTITY);
 		if ($defaults['serialize'] && !$item['serialize_number']) throw new \core\classes\userException(GL_ERROR_SERIALIZE_EMPTY);
 		if ($item['qty'] > 0) { // for positive quantities, inventory received, customer credit memos, unbuild assembly
 			// if insert, enter SYSTEM ENTRY COGS cost only if inv on hand is negative
 			// update will never happen because the entries are removed during the unpost operation.
-			// for un-build assemblies cogs will not be zero
-			$cogs = -($item['qty'] * $this->calculateCost($item['sku'], 1, $item['serialize_number'])); // use negative last cost (unbuild assy)
 			// 	adjust remaining quantities for inventory history since stock was negative
 			$history_array = array(
 					'ref_id'     => $this->id,
 					'store_id'   => $this->store_id,
-					'journal_id' => 14,
+					'journal_id' => '2',
 					'sku'        => $item['sku'],
 					'qty'        => $item['qty'],
 					'remaining'  => $item['qty'],
@@ -391,11 +272,9 @@ class journal_14 extends \core\classes\journal {
 			}
 			if ($queue_sku == false) foreach ($result_array as $key => $result) { // loops until either qty is zero and/or inventory history is exhausted
 				if ($defaults['cost_method'] == 'a') { // Average cost
-					// assembly, just need the difference in assemble price from piece price
-					$cost = $avg_cost - $item['price'];
+					$cost = $avg_cost;
 				} else {  // FIFO, LIFO
-					// assembly, just need the difference in assemble price from piece price
-					$cost = $result['unit_cost'] - $item['price'];
+					$cost = $result['unit_cost']; // for the specific history record
 				}
 				// 	Calculate COGS and adjust remaining levels based on costing method and history
 				// 	  there are two possibilities, inventory is in stock (deduct from inventory history)
@@ -428,8 +307,7 @@ class journal_14 extends \core\classes\journal {
 			if ($working_qty > 0) {
 				if (!ALLOW_NEGATIVE_INVENTORY) throw new \core\classes\userException(GL_ERROR_POSTING_NEGATIVE_INV);
 				// for now, estimate the cost based on the unit_price of the item, will be re-posted (corrected) when product arrives
-				// assembly, just need the difference in assemble price from piece price
-				$cost = $defaults['cost_method']=='a' ? ($avg_cost - $item['price']) : ($defaults['item_cost'] - $item['price']);
+				$cost = $defaults['cost_method']=='a' ? $avg_cost : $defaults['item_cost']; // for the specific history record
 				$cogs += $cost * $working_qty;
 				// queue the journal_main_id to be re-posted later after inventory is received
 				$sql_data_array = array(
@@ -588,7 +466,7 @@ class journal_14 extends \core\classes\journal {
 		global $admin;
 		$admin->messageStack->debug("\n    Starting to load SO/PO balances ...");
 		$item_array = array();
-		if ($ref_id) throw new \core\classes\userException('Error in classes/gen_ledger, function load_so_po_balance. Bad 14 for this function.');
+		if ($ref_id) throw new \core\classes\userException("Error in classes/journal_02, function load_so_po_balance. Bad journal for this function.");
 		$this->so_po_balance_array = $item_array;
 		$admin->messageStack->debug(" Finished loading SO/PO balances = " . print_r($item_array, true));
 		return $item_array;
@@ -601,15 +479,17 @@ class journal_14 extends \core\classes\journal {
 	// START General Functions
 	/*******************************************************************************************************************/
 
+	/**
+	 * closed can occur many ways including:
+	 * forced closure through so/po form (from so/po journal - adjust qty on so/po)
+	 * all quantities are reduced to zero (from so/po journal - should be deleted instead but it's possible)
+	 * editing quantities on po/so to match the number received (from po/so journal)
+	 * receiving all (or more) po/so items through one or more purchases/sales (from purchase/sales journal)
+	 * @param string $action
+	 */
 	function check_for_closed_po_so($action = 'Post') {
 		global $admin;
-		// closed can occur many ways including:
-		//   forced closure through so/po form (from so/po journal - adjust qty on so/po)
-		//   all quantities are reduced to zero (from so/po journal - should be deleted instead but it's possible)
-		//   editing quantities on po/so to match the number received (from po/so journal)
-		//   receiving all (or more) po/so items through one or more purchases/sales (from purchase/sales journal)
-		$admin->messageStack->debug("\n  Checking for closed entry. action = " . $action);
-		return true;
+		$admin->messageStack->debug("\n  no Checking for closed entry. action = " . $action);
 	}
 
 	/**
@@ -620,10 +500,10 @@ class journal_14 extends \core\classes\journal {
 		global $admin;
 		$admin->messageStack->debug("\n  Start validating purchase_invoice_id ... ");
 		if ($this->purchase_invoice_id <> '') {	// entered a so/po/invoice value, check for dups
-			$sql = "SELECT purchase_invoice_id FROM " . TABLE_JOURNAL_MAIN . " WHERE purchase_invoice_id = '{$this->purchase_invoice_id}' and journal_id = '14'";
+			$sql = "SELECT purchase_invoice_id FROM " . TABLE_JOURNAL_MAIN . " WHERE purchase_invoice_id = '{$this->purchase_invoice_id}' and journal_id = '2'";
 			if ($this->id) $sql .= " and id <> " . $this->id;
 			$result = $admin->DataBase->query($sql);
-			if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(sprintf(TEXT_THE_YOU_ENTERED_IS_A_DUPLICATE,_PLEASE_ENTER_A_NEW_UNIQUE_VALUE_ARGS, $journal_types_list[14]['id_field_name']));
+			if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(sprintf(TEXT_THE_YOU_ENTERED_IS_A_DUPLICATE,_PLEASE_ENTER_A_NEW_UNIQUE_VALUE_ARGS, $journal_types_list[2]['id_field_name']));
 			$this->journal_main_array['purchase_invoice_id'] = $this->purchase_invoice_id;
 			$admin->messageStack->debug(" specified ID but no dups, returning OK. ");
 		} else {	// generate a new order/invoice value
@@ -634,6 +514,7 @@ class journal_14 extends \core\classes\journal {
 	}
 
 	function increment_purchase_invoice_id($force = false) {
+		global $admin;
 		$this->purchase_invoice_id = $this->journal_main_array['purchase_invoice_id'];
 		return true;
 	}

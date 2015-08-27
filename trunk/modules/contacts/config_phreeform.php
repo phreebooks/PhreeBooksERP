@@ -33,7 +33,7 @@ function contacts_get_short_name($id) {
   global $admin;
   if (!$id) return COMPANY_ID;
   $result = $admin->DataBase->query("select short_name from " . TABLE_CONTACTS . " where id = " . (int)$id);
-  return $result->rowCount()==0 ? COMPANY_ID : $result->fields['short_name'];
+  return $result->fetch(\PDO::FETCH_NUM)==0 ? COMPANY_ID : $result->fields['short_name'];
 }
 
 ?>

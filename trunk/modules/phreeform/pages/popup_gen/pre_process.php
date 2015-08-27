@@ -50,7 +50,7 @@ if ($rID) {
 } elseif ($gID) {
   $result = $admin->DataBase->query("select id, doc_title from " . TABLE_PHREEFORM . "
     where doc_group = '" . $gID . "' and (doc_ext = 'rpt' || doc_ext = 'frm') order by doc_title");
-  if ($result->rowCount() == 1) {
+  if ($result->fetch(\PDO::FETCH_NUM) == 1) {
     $rID    = $result->fields['id']; // only one form available, use it
     $report = get_report_details($rID);
     $title  = $report->title;

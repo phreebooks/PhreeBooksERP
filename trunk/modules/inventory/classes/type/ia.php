@@ -77,10 +77,10 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 		$master = explode('-',$this->sku);
 		$this->master = $master[0];
 		$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->master . "'");
-	  	$this->ms_attr_0   = ($result->rowCount() > 0) ? $result->fields['attr_0'] : '';
-	  	$this->attr_name_0 = ($result->rowCount() > 0) ? $result->fields['attr_name_0'] : '';
-	  	$this->ms_attr_1   = ($result->rowCount() > 0) ? $result->fields['attr_1'] : '';
-	  	$this->attr_name_1 = ($result->rowCount() > 0) ? $result->fields['attr_name_1'] : '';
+	  	$this->ms_attr_0   = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result->fields['attr_0'] : '';
+	  	$this->attr_name_0 = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result->fields['attr_name_0'] : '';
+	  	$this->ms_attr_1   = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result->fields['attr_1'] : '';
+	  	$this->attr_name_1 = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result->fields['attr_name_1'] : '';
 		if ($this->ms_attr_0) {
 			$temp = explode(',', $this->ms_attr_0);
 			for ($i = 0; $i < count($temp); $i++) {
@@ -136,7 +136,7 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 				'qty'         => $admin->currencies->clean_value(db_prepare_input($_POST['assy_qty'][$x])),
 			);
 		  	$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY . " where sku = '". $_POST['assy_sku'][$x]."'" );
-		  	if (($result->rowCount() == 0 || $admin->currencies->clean_value($_POST['assy_qty'][$x]) == 0) && $_POST['assy_sku'][$x] =! '') {
+		  	if (($result->fetch(\PDO::FETCH_NUM) == 0 || $admin->currencies->clean_value($_POST['assy_qty'][$x]) == 0) && $_POST['assy_sku'][$x] =! '') {
 		  		// show error, bad sku, negative quantity. error check sku is valid and qty > 0
 				throw new \core\classes\userException(INV_ERROR_BAD_SKU . db_prepare_input($_POST['assy_sku'][$x]));
 		  	}

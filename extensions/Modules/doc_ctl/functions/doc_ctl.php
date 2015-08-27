@@ -72,7 +72,7 @@ function load_bookmarks() {
 	global $admin;
 	$contents = NULL;
 	$result = $admin->DataBase->query("select id, title from " . TABLE_DC_DOCUMENT . " where bookmarks like '%:" . $_SESSION['admin_id'] . ":%'");
-	if ($result->rowCount() == 0) {
+	if ($result->fetch(\PDO::FETCH_NUM) == 0) {
 	  $contents .= TEXT_NO_BOOKMARKS . '<br />';
 	} else {
 	  while (!$result->EOF) {
@@ -90,7 +90,7 @@ function load_checked_out() {
 	global $admin;
 	$contents = NULL;
 	$result = $admin->DataBase->query("select id, title from " . TABLE_DC_DOCUMENT . " where checkout_id = " . $_SESSION['admin_id']);
-	if ($result->rowCount() == 0) {
+	if ($result->fetch(\PDO::FETCH_NUM) == 0) {
 	  $contents .= TEXT_NO_CHECKED_OUT . '<br />';
 	} else {
 	  while (!$result->EOF) {
@@ -107,7 +107,7 @@ function load_recently_added() {
   global $admin;
   $contents = NULL;
   $result = $admin->DataBase->query("select id, title, type, doc_ext from " . TABLE_DC_DOCUMENT . " where type = 'default' order by create_date desc, id desc limit 20");
-  if ($result->rowCount() == 0) {
+  if ($result->fetch(\PDO::FETCH_NUM) == 0) {
     $contents .= TEXT_NO_DOCUMENTS_HAVE_BEEN_FOUND . '<br />';
   } else {
     while (!$result->EOF) {
@@ -124,13 +124,13 @@ function load_recently_added() {
 function get_owner_name($id) {
   global $admin;
   $result = $admin->DataBase->query("select display_name from " . TABLE_USERS . " where admin_id = '" . $id . "'");
-  return $result->rowCount() ? $result->fields['display_name'] : '';
+  return $result->fetch(\PDO::FETCH_NUM) ? $result->fields['display_name'] : '';
 }
 
 function test_bookmark() {
   global $admin;
   $result = $admin->DataBase->query("select id from " . TABLE_DC_DOCUMENT . " where bookmarks like '%:" . $_SESSION['admin_id'] . ":%'");
-  return ($result->rowCount() > 0) ? true : false;
+  return ($result->fetch(\PDO::FETCH_NUM) > 0) ? true : false;
 }
 
 function get_doc_history($id, $revision_level = 0) {

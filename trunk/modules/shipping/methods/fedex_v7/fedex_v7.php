@@ -1193,7 +1193,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 	  if (!$payor_id) continue; // weekly service charge and other non-shipment related.
 	  if ($ref_num) {
 	    $result = $admin->DataBase->query("select cost from " . TABLE_SHIPPING_LOG . " where ref_id = '" . $ref_num . "'");
-	    if ($result->rowCount() == 0) {
+	    if ($result->fetch(\PDO::FETCH_NUM) == 0) {
 	      $output .= sprintf(SHIPPING_FEDEX_RECON_NO_RECORDS, $ship_date, $ref_num, $track_num, $ship_name, $rcv_name, $cost) . "\n";
 	      continue;
 	    } elseif ($result->recordCount() > 1) {
@@ -1210,7 +1210,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 	  }
 	  $inv_num = strpos($ref_num, '-') ? substr($ref_num, 0, strpos($ref_num, '-')) : $ref_num;
 	  $result = $admin->DataBase->query("select freight from ".TABLE_JOURNAL_MAIN." where purchase_invoice_id = '$inv_num'");
-	  $invoiced = ($result->rowCount() == 0) ? 0 : $result->fields['freight'];
+	  $invoiced = ($result->fetch(\PDO::FETCH_NUM) == 0) ? 0 : $result->fields['freight'];
 	  $estimate = ($invoiced + FEDEX_V7_COST_OFFSET) * (1 + FEDEX_V7_COST_FACTOR);
 	  if ($cost > $estimate) {
 	    $output .= sprintf(SHIPPING_FEDEX_RECON_COST_OVER_INV, $ship_date, $ref_num, $track_num, $cost, $invoiced) . "\n";

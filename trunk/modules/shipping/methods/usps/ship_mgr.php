@@ -48,7 +48,7 @@
 	$result = $admin->DataBase->query("select id, shipment_id, ref_id, method, deliver_date, deliver_late, actual_date, tracking_id, cost
 		from " . TABLE_SHIPPING_LOG . " where carrier = '" . $method->id . "'
 		  and ship_date like '" . $date . "%'");
-	if ($result->rowCount() > 0) {
+	if ($result->fetch(\PDO::FETCH_NUM) > 0) {
 		$odd = true;
 		while(!$result->EOF) {
 			switch ($result->fields['deliver_late']) {

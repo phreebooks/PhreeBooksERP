@@ -138,7 +138,7 @@ class contacts {
 		\core\classes\user::validate_security($this->security_level, 4);
 		if ( $this->id == '' ) throw new \core\classes\userException("the id field isn't set");	// error check, no delete if a journal entry exists
 		$result = $admin->DataBase->query("SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE bill_acct_id={$this->id} OR ship_acct_id={$this->id} OR store_id={$this->id} LIMIT 1");
-		if ($result->rowCount() != 0) throw new \core\classes\userException(ACT_ERROR_CANNOT_DELETE);
+		if ($result->fetch(\PDO::FETCH_NUM) != 0) throw new \core\classes\userException(ACT_ERROR_CANNOT_DELETE);
 	  	$admin->DataBase->exec("DELETE FROM ".TABLE_ADDRESS_BOOK ." WHERE ref_id={$this->id}");
 	  	$admin->DataBase->exec("DELETE FROM ".TABLE_DATA_SECURITY." WHERE ref_1={$this->id}");
 	  	$admin->DataBase->exec("DELETE FROM ".TABLE_CONTACTS     ." WHERE id={$this->id}");
@@ -157,7 +157,7 @@ class contacts {
   		$raw_sql .= ($limit) ? " LIMIT {$limit}" : "";
   		$sql = $admin->DataBase->prepare($raw_sql);
   		$sql->execute();
-  		if ($sql->rowCount() == 0) return array();	// no open orders
+  		if ($sql->fetch(\PDO::FETCH_NUM) == 0) return array();	// no open orders
   		$output = array();
   		$i = 1;
   		$output[0] = array('id' => '', 'text' => TEXT_NEW);
@@ -208,7 +208,7 @@ class contacts {
     	} else {
       		$result = $admin->DataBase->query("SELECT id FROM ".TABLE_CONTACTS." WHERE short_name = '$this->short_name' AND type = '$this->type' AND id <> $this->id");
     	}
-    	if ($result->rowCount() > 0) throw new \core\classes\userException($this->duplicate_id_error);
+    	if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException($this->duplicate_id_error);
   	}
 
   	/**
