@@ -260,7 +260,7 @@ class journal_08 extends \core\classes\journal {
 			$sql = "SELECT purchase_invoice_id FROM " . TABLE_JOURNAL_MAIN . " WHERE purchase_invoice_id = '{$this->purchase_invoice_id}' and journal_id = '8'";
 			if ($this->id) $sql .= " and id <> " . $this->id;
 			$result = $admin->DataBase->query($sql);
-			if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(sprintf(TEXT_THE_YOU_ENTERED_IS_A_DUPLICATE,_PLEASE_ENTER_A_NEW_UNIQUE_VALUE_ARGS, $journal_types_list[8]['id_field_name']));
+			if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(sprintf(TEXT_THE_YOU_ENTERED_IS_A_DUPLICATE,_PLEASE_ENTER_A_NEW_UNIQUE_VALUE_ARGS, $this->id_field_name));
 			$this->journal_main_array['purchase_invoice_id'] = $this->purchase_invoice_id;
 			$admin->messageStack->debug(" specified ID but no dups, returning OK. ");
 		} else {	// generate a new order/invoice value

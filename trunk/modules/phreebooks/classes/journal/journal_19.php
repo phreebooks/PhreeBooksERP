@@ -745,7 +745,7 @@ class journal_19 extends \core\classes\journal {
 			$sql = "UPDATE " . TABLE_CURRENT_STATUS . " SET next_inv_num = '$next_id'";
 			if (!$force) $sql .= " WHERE next_inv_num = '{$this->journal_main_array['purchase_invoice_id']}'";
 			$result = $admin->DataBase->exec($sql);
-			if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(TEXT_THERE_WAS_AN_ERROR_INCREMENTING_THE_ARGS, $journal_types_list[19]['id_field_name']));
+			if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(TEXT_THERE_WAS_AN_ERROR_INCREMENTING_THE_ARGS, $this->id_field_name));
 		}
 		$this->purchase_invoice_id = $this->journal_main_array['purchase_invoice_id'];
 		return true;

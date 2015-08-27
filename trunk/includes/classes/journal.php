@@ -437,7 +437,7 @@ abstract class journal {
 		if (isset($this->journal_id))          $main_record['journal_id']          = $this->journal_id;//@todo replace for class
 		if (isset($this->post_date))           $main_record['post_date']           = $this->post_date;
 		if (isset($this->store_id))            $main_record['store_id']            = $this->store_id;
-		$main_record['description'] = (isset($this->description)) ? $this->description : sprintf(TEXT_ARGS_ENTRY, $journal_types_list[$this->journal_id]['text']); //@todo set in subclass
+		$main_record['description'] = $this->description;
 		if (isset($this->closed))              $main_record['closed']              = $this->closed;
 		if (isset($this->closed_date))         $main_record['closed_date']         = $this->closed_date;
 		if (isset($this->freight))             $main_record['freight']             = $this->freight;

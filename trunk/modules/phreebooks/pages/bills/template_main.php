@@ -49,7 +49,7 @@ switch (JOURNAL_ID) {
 echo $toolbar->build();
 // Build the page
 ?>
-<h1><?php echo $journal_types_list[JOURNAL_ID]['text']; ?></h1>
+<h1><?php echo $order->description; ?></h1>
 <div>
  <table class="ui-widget" style="border-style:none;width:100%">
   <tbody class="ui-widget-content">

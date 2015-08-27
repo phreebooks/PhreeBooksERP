@@ -103,7 +103,6 @@ class beg_bal_import {
 			// build journal main entry
 			$glEntry->journal_id          = JOURNAL_ID;
 			$glEntry->post_date           = $order['post_date'];
-			$glEntry->description         = sprintf(TEXT_ARGS_ENTRY, $journal_types_list[JOURNAL_ID]['text']);
 			$glEntry->short_name          = $order['account_id'];
 			$glEntry->ship_short_name     = $order['account_id'];
 			$glEntry->gl_acct_id          = $order['gl_acct'];

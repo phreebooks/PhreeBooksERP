@@ -127,7 +127,7 @@ echo $toolbar->build();
 	</p>
 	<p align="right"><?php echo html_icon('actions/go-next.png', TEXT_CONTINUE, 'small', 'onclick="checkOverride();"'); ?></p>
 </div>
-<h1><?php echo $journal_types_list[JOURNAL_ID]['text']; ?></h1>
+<h1><?php echo $order->description; ?></h1>
 <table class="ui-widget" style="width:97%;">
  <tbody class="ui-widget-content">
   <tr>
@@ -170,7 +170,7 @@ echo $toolbar->build();
 $tip = (in_array(JOURNAL_ID, array(6,7))) ? ORD_JS_WAITING_FOR_PAYMENT : ORD_TT_PURCH_INV_NUM;
 ?>
 			  <tr>
-				<td align="right"><?php echo $journal_types_list[JOURNAL_ID]['id_field_name']; ?></td>
+				<td align="right"><?php echo $order->id_field_name; ?></td>
 				<td><?php echo html_input_field('purchase_invoice_id', $order->purchase_invoice_id, 'onmouseover="Tip(\'' . $tip . '\')"'); ?></td>
 			  </tr>
 <?php if (isset($template_options['waiting'])) {	// show waiting for invoice (purchase_receive, vendor cm) checkbox ?>

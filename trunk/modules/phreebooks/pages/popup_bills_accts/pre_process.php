@@ -89,6 +89,6 @@ history_save('pb_pop_contacts');
 $include_header   = false;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', $journal_types_list[JOURNAL_ID]['text']);
+define('PAGE_TITLE', $order->description);
 
 ?>

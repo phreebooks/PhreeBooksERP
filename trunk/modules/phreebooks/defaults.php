@@ -44,7 +44,7 @@ $coa_types_list = array(
   '44' => array('id' => 44, 'text' => TEXT_EQUITY . ' - ' . TEXT_RETAINED_EARNINGS,	'asset' => false), // Equity - Retained Earnings
 );
 
-$journal_types_list = array(
+$journal_types_list = array(//@todo should be removed
 		'0'  => array('id' => 00, 'text' => TEXT_BEGINNING_BALANCES,			'id_field_name' => TEXT_REFERENCE),			//@done
 		'2'  => array('id' => 02, 'text' => TEXT_GENERAL_JOURNAL,				'id_field_name' => TEXT_REFERENCE),			//@done
 		'3'  => array('id' => 03, 'text' => TEXT_PURCHASE_QUOTES,				'id_field_name' => TEXT_QUOTE_NUMBER),

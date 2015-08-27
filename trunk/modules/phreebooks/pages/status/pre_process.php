@@ -82,7 +82,7 @@ switch ($_REQUEST['action']) {
 // Set up some default lists
 $heading_array = array (
 		'post_date' => TEXT_DATE,
-		'purchase_invoice_id' => $journal_types_list [JOURNAL_ID] ['id_field_name'],
+		'purchase_invoice_id' => $order->id_field_name,
 		'bill_primary_name' => in_array ( JOURNAL_ID, array (9,	10,	12,	13,	19) ) ? TEXT_CUSTOMER_NAME : TEXT_VENDOR_NAME,
 		'purch_order_id' => TEXT_REFERENCE,
 		'closed' => TEXT_CLOSED,

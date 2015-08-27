@@ -583,7 +583,7 @@ class journal_18 extends \core\classes\journal {
 			$sql = "UPDATE " . TABLE_CURRENT_STATUS . " SET next_deposit_num = '$next_id'";
 			if (!$force) $sql .= " WHERE next_deposit_num = '{$this->journal_main_array['purchase_invoice_id']}'";
 			$result = $admin->DataBase->exec($sql);
-			if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(TEXT_THERE_WAS_AN_ERROR_INCREMENTING_THE_ARGS, $journal_types_list[18]['id_field_name']));
+			if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(TEXT_THERE_WAS_AN_ERROR_INCREMENTING_THE_ARGS, $this->id_field_name));
 		}
 		$this->purchase_invoice_id = $this->journal_main_array['purchase_invoice_id'];
 		return true;
@@ -630,7 +630,7 @@ class journal_18 extends \core\classes\journal {
 		$admin->classes['payment']->methods[$method]->before_process();
 		$admin->DataBase->transCommit();	// finished successfully
 		// ***************************** END TRANSACTION *******************************
-		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, $journal_types_list[18]['id_field_name'], $this->purchase_invoice_id), 'success');
+		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, $this->id_field_name, $this->purchase_invoice_id), 'success');
 		return true;
 	}
 
@@ -668,16 +668,16 @@ class journal_18 extends \core\classes\journal {
 		$this->unPost('delete');
 		$admin->DataBase->transCommit();
 		// *************** END TRANSACTION *************************
-		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, $journal_types_list[18]['id_field_name'], $this->purchase_invoice_id), 'success');
+		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, $this->id_field_name, $this->purchase_invoice_id), 'success');
 		return true;
 	}
 
 	function add_total_journal_row() {	// put total value into ledger row array
-		global $admin, $journal_types_list;
+		global $admin;
 		$this->journal_rows[] = array( // record for accounts receivable
 				'gl_type'      => 'ttl',
 				'debit_amount' => $this->total_amount,
-				'description'  =>  $journal_types_list[18]['text'] . '-' . TEXT_TOTAL . ':' . $admin->classes['payment']->methods[$method]->payment_fields, //@todo $method defined outside of this method
+				'description'  =>  $this->description . '-' . TEXT_TOTAL . ':' . $admin->classes['payment']->methods[$method]->payment_fields, //@todo $method defined outside of this method
 				'gl_account'   => $this->gl_acct_id,
 				'post_date'    => $this->post_date,
 		);

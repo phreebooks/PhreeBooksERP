@@ -136,7 +136,6 @@ switch ($_REQUEST['action']) {
 		$order->purch_order_id      = db_prepare_input($_POST['purch_order_id']);  // customer PO/Ref number
 		$order->store_id            = db_prepare_input($_POST['store_id']);
 		if ($order->store_id == '') $order->store_id = 0;
-		$order->description         = sprintf(TEXT_ARGS_ENTRY, $journal_types_list[JOURNAL_ID]['text']);
 		$order->recur_id            = db_prepare_input($_POST['recur_id']);
 		$order->recur_frequency     = db_prepare_input($_POST['recur_frequency']);
 	//	$order->sales_tax_auths     = db_prepare_input($_POST['sales_tax_auths']);
@@ -224,7 +223,7 @@ switch ($_REQUEST['action']) {
 		$order->post_ordr($_REQUEST['action']);	// Post the order class to the db
 		if ($order->rm_attach) unlink(PHREEBOOKS_DIR_MY_ORDERS . 'order_'.$order->id.'.zip');
 		if (is_uploaded_file($_FILES['file_name']['tmp_name'])) saveUploadZip('file_name', PHREEBOOKS_DIR_MY_ORDERS, 'order_'.$order->id.'.zip');
-		gen_add_audit_log($journal_types_list[JOURNAL_ID]['text'] . ' - ' . ($_POST['id'] ? TEXT_EDIT : TEXT_ADD), $order->purchase_invoice_id, $order->total_amount);
+		gen_add_audit_log($order->description . ' - ' . ($_POST['id'] ? TEXT_EDIT : TEXT_ADD), $order->purchase_invoice_id, $order->total_amount);
 		if ($_REQUEST['action'] == 'save') {
 			gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		} elseif ($_REQUEST['action'] == 'payment') {
@@ -279,7 +278,7 @@ switch ($_REQUEST['action']) {
 		$delOrd->unPost('delete');
 		if (DEBUG) $messageStack->write_debug();
 		$admin->DataBase->transCommit();
-		gen_add_audit_log($journal_types_list[JOURNAL_ID]['text'] . ' - Delete', $delOrd->purchase_invoice_id, $delOrd->total_amount);
+		gen_add_audit_log($order->description . ' - Delete', $delOrd->purchase_invoice_id, $delOrd->total_amount);
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
   	}catch(Exception $e){
   		$messageStack->add($e->getMessage());
@@ -402,6 +401,6 @@ default:
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php'; // include display template (required)
-define('PAGE_TITLE', $journal_types_list[JOURNAL_ID]['text']);
+define('PAGE_TITLE', $order->description);
 
 ?>

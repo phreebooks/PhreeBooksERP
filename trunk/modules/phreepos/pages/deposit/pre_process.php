@@ -109,7 +109,7 @@ switch ($_REQUEST['action']) {
 		$order->pmt_rows[] = array(
 		  'meth' => $pmt_meth,
 		  'pmt'  => $order->total_amount,
-		  'desc' => $journal_types_list[18]['text'] . '-' . TEXT_TOTAL . ':' . $admin->classes['payment']->methods[$pmt_meth]->payment_fields,
+		  'desc' => $order->description. '-' . TEXT_TOTAL . ':' . $admin->classes['payment']->methods[$pmt_meth]->payment_fields,
 		  'f0'   => db_prepare_input($_POST[$pmt_meth . '_field_0']),
 		  'f1'   => db_prepare_input($_POST[$pmt_meth . '_field_1']),
 		  'f2'   => db_prepare_input($_POST[$pmt_meth . '_field_2']),
@@ -121,7 +121,7 @@ switch ($_REQUEST['action']) {
 	  case 20:
 		$order->pmt_rows[] = array(
 		  'meth' => '',
-		  'desc' => $journal_types_list[20]['text'] . '-' . TEXT_TOTAL,
+		  'desc' => $order->description . '-' . TEXT_TOTAL,
 		  'pmt'  => $order->total_amount,
 		);
 	    break;
@@ -153,7 +153,6 @@ switch ($_REQUEST['action']) {
 	  $order->period              = $period;
 	  $order->admin_id            = $_SESSION['admin_id'];
 	  $order->purch_order_id      = db_prepare_input($_POST['purch_order_id']);  // customer PO/Ref number
-	  $order->description         = sprintf(TEXT_ARGS_ENTRY, $journal_types_list[$order->journal_id]['text']);
 	  $order->total_amount        = $admin->currencies->clean_value(db_prepare_input($_POST['total']), DEFAULT_CURRENCY);
 	  $order->gl_acct_id          = (JOURNAL_ID == 18) ? AR_DEFAULT_GL_ACCT : AP_DEFAULT_PURCHASE_ACCOUNT;
 	  $order->item_rows[0] = array(

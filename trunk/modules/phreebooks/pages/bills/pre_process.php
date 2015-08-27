@@ -103,7 +103,6 @@ switch ($_REQUEST['action']) {
 		$order->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);	// PhreeBooks order/invoice ID
 		$order->shipper_code        = db_prepare_input($_POST['shipper_code']);  // store payment method in shipper_code field
 		$order->purch_order_id      = db_prepare_input($_POST['purch_order_id']);  // customer PO/Ref number
-		$order->description         = sprintf(TEXT_ARGS_ENTRY, $journal_types_list[JOURNAL_ID]['text']);
 
 		$order->total_amount        = $admin->currencies->clean_value(db_prepare_input($_POST['total']), DEFAULT_CURRENCY);
 		$order->gl_acct_id          = $gl_acct_id;
@@ -257,6 +256,6 @@ $default_sales_rep = $result->fields['account_id'] ? $result->fields['account_id
 $include_header   = true;
 $include_footer   = true;
 $include_template = 'template_main.php';
-define('PAGE_TITLE', $journal_types_list[JOURNAL_ID]['text']);
+define('PAGE_TITLE', $order->description);
 
 ?>

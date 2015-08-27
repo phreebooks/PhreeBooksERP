@@ -717,7 +717,7 @@ class journal_13 extends \core\classes\journal {
 			$sql = "SELECT purchase_invoice_id FROM " . TABLE_JOURNAL_MAIN . " WHERE purchase_invoice_id = '{$this->purchase_invoice_id}' and journal_id = '13'";
 			if ($this->id) $sql .= " and id <> " . $this->id;
 			$result = $admin->DataBase->query($sql);
-			if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(sprintf(TEXT_THE_YOU_ENTERED_IS_A_DUPLICATE,_PLEASE_ENTER_A_NEW_UNIQUE_VALUE_ARGS, $journal_types_list[13]['id_field_name']));
+			if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(sprintf(TEXT_THE_YOU_ENTERED_IS_A_DUPLICATE,_PLEASE_ENTER_A_NEW_UNIQUE_VALUE_ARGS, $this->id_field_name));
 			$this->journal_main_array['purchase_invoice_id'] = $this->purchase_invoice_id;
 			$admin->messageStack->debug(" specified ID but no dups, returning OK. ");
 		} else {	// generate a new order/invoice value
@@ -736,7 +736,7 @@ class journal_13 extends \core\classes\journal {
 			$sql = "UPDATE " . TABLE_CURRENT_STATUS . " SET next_cm_num = '$next_id'";
 			if (!$force) $sql .= " WHERE next_cm_num = '{$this->journal_main_array['purchase_invoice_id']}'";
 			$result = $admin->DataBase->exec($sql);
-			if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(TEXT_THERE_WAS_AN_ERROR_INCREMENTING_THE_ARGS, $journal_types_list[13]['id_field_name']));
+			if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(TEXT_THERE_WAS_AN_ERROR_INCREMENTING_THE_ARGS, $this->id_field_name));
 		}
 		$this->purchase_invoice_id = $this->journal_main_array['purchase_invoice_id'];
 		return true;
@@ -866,7 +866,7 @@ class journal_13 extends \core\classes\journal {
 		$admin->DataBase->transCommit();	// finished successfully
 		//echo 'committed transaction - bailing!'; exit();
 		// ***************************** END TRANSACTION *******************************
-		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, $journal_types_list[13]['id_field_name'], $this->purchase_invoice_id), 'success');
+		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, $this->id_field_name, $this->purchase_invoice_id), 'success');
 		return true;
 	}
 
@@ -903,7 +903,7 @@ class journal_13 extends \core\classes\journal {
 		$this->journal_rows[] = array( // record for accounts receivable
 				'gl_type'       => 'ttl',
 				'credit_amount' => $this->total_amount,
-				'description'   => $journal_types_list[13]['text'] . ' - ' . TEXT_TOTAL,
+				'description'   => $this->description . ' - ' . TEXT_TOTAL,
 				'gl_account'    => $this->gl_acct_id,
 				'post_date'     => $this->post_date,
 		);
@@ -916,7 +916,7 @@ class journal_13 extends \core\classes\journal {
 					'qty'           => '1',
 					'gl_type'       => 'dsc',		// code for discount charges
 					'credit_amount' => $this->discount,
-					'description'   => $journal_types_list[13]['text'] . ' - ' . TEXT_DISCOUNT,
+					'description'   => $this->description . ' - ' . TEXT_DISCOUNT,
 					'gl_account'    => $this->disc_gl_acct_id,
 					'taxable'       => '0',
 					'post_date'     => $this->post_date,
@@ -937,7 +937,7 @@ class journal_13 extends \core\classes\journal {
 					'qty'          => '1',
 					'gl_type'      => 'frt',		// code for shipping/freight charges
 					'debit_amount' => $this->freight,
-					'description'  => $journal_types_list[13]['text'] . ' - ' . TEXT_SHIPPING,
+					'description'  => $this->description . ' - ' . TEXT_SHIPPING,
 					'gl_account'   => $this->ship_gl_acct_id,
 					'taxable'      => $freight_tax_id,
 					'post_date'    => $this->post_date,

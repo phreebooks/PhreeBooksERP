@@ -568,7 +568,7 @@ class journal_23 extends \core\classes\journal {
 			$sql = "SELECT purchase_invoice_id FROM " . TABLE_JOURNAL_MAIN . " WHERE purchase_invoice_id = '{$this->purchase_invoice_id}' and journal_id = '23'";
 			if ($this->id) $sql .= " and id <> " . $this->id;
 			$result = $admin->DataBase->query($sql);
-			if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(sprintf(TEXT_THE_YOU_ENTERED_IS_A_DUPLICATE,_PLEASE_ENTER_A_NEW_UNIQUE_VALUE_ARGS, $journal_types_list[23]['id_field_name']));
+			if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(sprintf(TEXT_THE_YOU_ENTERED_IS_A_DUPLICATE,_PLEASE_ENTER_A_NEW_UNIQUE_VALUE_ARGS, $this->id_field_name));
 			$this->journal_main_array['purchase_invoice_id'] = $this->purchase_invoice_id;
 			$admin->messageStack->debug(" specified ID but no dups, returning OK. ");
 		} else {	// generate a new order/invoice value
@@ -587,7 +587,7 @@ class journal_23 extends \core\classes\journal {
 			$sql = "UPDATE " . TABLE_CURRENT_STATUS . " SET next_check_num = '$next_id'";
 			if (!$force) $sql .= " WHERE next_check_num = '{$this->journal_main_array['purchase_invoice_id']}'";
 			$result = $admin->DataBase->exec($sql);
-			if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(TEXT_THERE_WAS_AN_ERROR_INCREMENTING_THE_ARGS, $journal_types_list[23]['id_field_name']));
+			if ($result->AffectedRows() <> 1) throw new \core\classes\userException(sprintf(TEXT_THERE_WAS_AN_ERROR_INCREMENTING_THE_ARGS, $this->id_field_name));
 		}
 		$this->purchase_invoice_id = $this->journal_main_array['purchase_invoice_id'];
 		return true;
@@ -622,7 +622,7 @@ class journal_23 extends \core\classes\journal {
 
 		$admin->DataBase->transCommit();	// finished successfully
 		// ***************************** END TRANSACTION *******************************
-		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, $journal_types_list[23]['id_field_name'], $this->purchase_invoice_id), 'success');
+		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, $this->id_field_name, $this->purchase_invoice_id), 'success');
 		return true;
 	}
 
@@ -659,16 +659,16 @@ class journal_23 extends \core\classes\journal {
 		$this->unPost('delete');
 		$admin->DataBase->transCommit();
 		// *************** END TRANSACTION *************************
-		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, $journal_types_list[23]['id_field_name'], $this->purchase_invoice_id), 'success');
+		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, $this->id_field_name, $this->purchase_invoice_id), 'success');
 		return true;
 	}
 
 	function add_total_journal_row() {	// put total value into ledger row array
-		global $admin, $journal_types_list;//@todo replace $journal_types_list
+		global $admin;
 		$this->journal_rows[] = array( // record for accounts receivable
 				'gl_type'       => 'ttl',
 				'credit_amount' => $this->total_amount,
-				'description'   => $journal_types_list[23]['text'] . '-' . TEXT_TOTAL,
+				'description'   => $this->description . '-' . TEXT_TOTAL,
 				'gl_account'    => $this->gl_acct_id,
 				'post_date'     => $this->post_date,
 		);
