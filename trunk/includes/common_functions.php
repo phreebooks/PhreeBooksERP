@@ -1167,6 +1167,21 @@ function gen_db_date($raw_date = '', $separator = '/') {
     return $field;
   }
 
+  function html_htmlarea_field($name, $width, $height, $text = '', $parameters = '') {
+  	if (strpos($name, '[]')) { // don't show id attribute if generic array
+	  $id = false;
+	} else {
+	  $id = str_replace('[','_', $name); // clean up for array inputs causing html errors
+	  $id = str_replace(']','',  $id);
+    }
+  	$field = '<textarea class="ckeditor" name="' . $name . '" id="' . $id . '" cols="' . $width . '" rows="' . $height . '"';
+    if ($parameters) $field .= ' ' . $parameters;
+    $field .= '>';
+    if ($text) $field .= $text;
+    $field .= '</textarea>';
+    return $field;
+  }
+
   function html_pull_down_menu($name, $values, $default = '', $parameters = '', $required = false) {
 	if (strpos($name, '[]')) { // don't show id attribute if generic array
 	  $id = false;
@@ -1439,13 +1454,15 @@ function charConv($string, $in, $out) {
 	$params = unserialize($param_array['params']);
 	switch ($params['type']) {
 		case 'text':
-		case 'html':
 			if ($params['length'] < 256) {
 				$length = ($params['length'] > 120) ? 'size="120"' : ('size="' . $params['length'] . '"');
 				$output .= '<td>' . html_input_field($param_array['field_name'], $cInfo->$param_array['field_name'], $length) . '</td></tr>';
 			} else {
 				$output .= '<td>' . html_textarea_field($param_array['field_name'], DEFAULT_INPUT_FIELD_LENGTH, 4, $cInfo->$param_array['field_name']) . '</td></tr>';
 			}
+			break;
+		case 'html':
+			$output .= '<td>' . html_htmlarea_field($param_array['field_name'], DEFAULT_INPUT_FIELD_LENGTH, 4, $cInfo->$param_array['field_name']) . '</td></tr>';
 			break;
 		case 'data_list':
 			$length = ($params['length'] > 120) ? 'size="120"' : ('size="' . $params['length'] . '"');
