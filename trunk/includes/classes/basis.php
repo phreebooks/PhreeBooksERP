@@ -40,12 +40,12 @@ class basis implements \SplSubject {
 	public  $js_files				= array ();
 	public  $include_php_js_files	= array ();
 	public  $js_override_files		= array ();
+	public  $journal;
 
 
 	public function __construct() {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->user = new \core\classes\user();
-		$this->journal = new \core\classes\journal ();
 		$this->toolbar = new \core\classes\toolbar ();
 		$this->currencies = new \core\classes\currencies ();
 		$this->cInfo = (json_decode($request) != NULL) ? (object) json_decode($request) : (object)array_merge ( $_GET, $_POST );

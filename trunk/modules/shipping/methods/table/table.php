@@ -27,7 +27,6 @@ class table  extends \shipping\classes\shipping {
   	public $handling_cost	= 1.00;
 // Revision history
 // 2011-07-01 - Added version number for revision control
-define('MODULE_SHIPPING_TABLE_VERSION','3.2');
 
   	function __construct() {
   		$this->keys[] = array('key' => 'MODULE_SHIPPING_TABLE_MODE',		'default' => 'weight',  'text' => MODULE_SHIPPING_TABLE_MODE_DESC);

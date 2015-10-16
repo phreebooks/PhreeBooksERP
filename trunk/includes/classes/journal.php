@@ -30,7 +30,8 @@ abstract class journal {
 		if ($id != 0) {
 			$sql = $admin->DataBase->prepare("SELECT * FROM " . TABLE_JOURNAL_MAIN . " WHERE id = $id");
 			$sql->execute();
-			$this = $sql->fetch(\PDO::FETCH_LAZY);
+			$temp = $sql->fetch(\PDO::FETCH_LAZY);
+			foreach ($temp as $key => $value) $this->$key = $value;
 			// make sure we have a record or die (there's a problem that needs to be fixed)
 		  	if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(TEXT_DIED_TRYING_TO_BUILD_A_JOURNAL_ENTRY_WITH_ID . ' = ' . $id);
 		  	foreach ($result as $key => $value) $this->$key = $value;
