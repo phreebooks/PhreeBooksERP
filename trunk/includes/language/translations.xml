@@ -5834,14 +5834,7 @@
     <es_cr>Lo sentimos. Hubo un error del sistema mientras se procesaba su tarjeta. Su informació está segura. Por favor</es_cr>
     <nl_nl>Het spijt ons. Er was een systeem fout tijdens het verwerken van uw kaart. Uw informatie is veilig. Neem contact op met eigenaar van de winkel voor een alternatieve betaling.</nl_nl>
     <pt_br>We are sorry. There was a system error while processing your card. Your information is safe. Please notify the Store Owner to arrange alternate payment options.</pt_br>
-  </translation>
-  <translation id="MODULE_PAYMENT_LINKPOINT_API_TEXT_INTRODUCTION">
-    <bg_bg>&lt;a target="_blank" href="http://www.zen-cart.com/index.php?main_page=infopages</bg_bg>
-    <en_us>&lt;a target="_blank" href="http://www.zen-cart.com/index.php?main_page=infopages</en_us>
-    <es_cr>&lt;a target="_blank" href="http://www.zen-cart.com/index.php?main_page=infopages</es_cr>
-    <nl_nl>&lt;a target="_blank" href="http://www.zen-cart.com/index.php?main_page=infopages</nl_nl>
-    <pt_br>&lt;a target="_blank" href="http://www.zen-cart.com/index.php?main_page=infopages</pt_br>
-  </translation>
+  </translation> 
   <translation id="MODULE_PAYMENT_LINKPOINT_API_TEXT_INVALID_CAPTURE_AMOUNT">
     <bg_bg>Error: You requested a capture but need to enter an amount.</bg_bg>
     <en_us>Error: You requested a capture but need to enter an amount.</en_us>

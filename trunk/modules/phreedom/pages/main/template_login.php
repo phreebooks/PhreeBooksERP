@@ -40,22 +40,22 @@ echo html_form('login', FILENAME_DEFAULT, 'action=ValidateUser', 'post', 'onsubm
               <tr>
                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_PASSWORD; ?>:</td>
                 <td><?php echo html_password_field('admin_pass', '', true); ?></td>
-              </tr>
-<?php if (sizeof($_SESSION['companies']) != 1) { ?>
+              </tr>             
+<?php if (sizeof($basis->user->companies) != 1) { ?>
               <tr>
                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo sprintf(TEXT_SELECT_ARGS, TEXT_COMPANY); ?></td>
-                <td><?php echo html_pull_down_menu('company', $_SESSION['companies'], \core\classes\user::get_company(), '', true); ?></td>
+                <td><?php echo html_pull_down_menu('company', $basis->user->companies, $basis->user->get_company(), '', true); ?></td>
               </tr>
 <?php } else{
-		echo html_hidden_field('company',  $_SESSION['company']) . chr(10);
+		echo html_hidden_field('company',  $basis->user->get_company()) . chr(10);
 }?>
-<?php if (sizeof($_SESSION['languages']) != 1) { ?>
+<?php if (sizeof($basis->user->language->languages) != 1) { ?>
               <tr>
                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_SELECT_LANGUAGE; ?>: </td>
-                <td><?php echo html_pull_down_menu('language', $_SESSION['languages'], \core\classes\user::get_language(), '', true); ?></td>
+                <td><?php echo html_pull_down_menu('language', $basis->user->language->languages, $basis->user->language->language_code, '', true); ?></td>
               </tr>
 <?php } else{
-			echo html_hidden_field('language', $_SESSION['language']) . chr(10);
+			echo html_hidden_field('language', $basis->user->language->language_code) . chr(10);
 }?>
               <tr>
                 <td colspan="2" align="right">&nbsp;

@@ -93,7 +93,9 @@ class language {
 		$phrases = $xml->getElementsByTagName('translation');
 		foreach ($phrases as $phrase) {
 			if ($phrase->getAttribute('id') == 'Language') {
+				print("phrase = {$phrase->getAttribute}");
 				foreach ($phrase->childNodes as $language) {
+					print("taal = {$language->tagName}");
 					if ($language->tagName != '') $this->languages[$language->tagName] = $language->nodeValue;
 				}
 			}
