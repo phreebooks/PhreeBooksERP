@@ -20472,28 +20472,4 @@
     <nl_nl>Tabel Tarief</nl_nl>
     <ru_ru>Local Delivery</ru_ru>
   </translation>
-  <translation id="//    define('MODULE_PAYMENT_LINKPOINT_API_TEXT_DESCRIPTION">
-    <en_us>&lt;a target="_blank" href="https://secure.linkpt.net/lpcentral/servlet/LPCLogin"&gt;Linkpoint/YourPay Merchant Login&lt;/a&gt;' . (MODULE_PAYMENT_LINKPOINT_API_TRANSACTION_MODE_RESPONSE != 'LIVE: Production' ? '&lt;br /&gt;&lt;br /&gt;&lt;strong&gt;Linkpoint/YourPay API Test Card Numbers:&lt;/strong&gt;&lt;br /&gt;&lt;strong&gt;Visa:&lt;/strong&gt; 4111111111111111&lt;br /&gt;&lt;strong&gt;MasterCard:&lt;/strong&gt; 5419840000000003&lt;br /&gt;&lt;strong&gt;Amex:&lt;/strong&gt; 371111111111111&lt;br /&gt;&lt;strong&gt;Discover:&lt;/strong&gt; 6011111111111111' : '') . '&lt;br /&gt;</en_us>
-  </translation>
-  <translation id="//define('CP_AUDIT_LOG_SECURITY">
-    <en_us>SECURITY_ID_REPORTS</en_us>
-  </translation>
-  <translation id="//define('MODULE_PAYMENT_PAYPAL_NVP_LIVE_WDSL">
-    <en_us>https://www.paypal.com/wsdl/PayPalSvc.wsdl</en_us>
-  </translation>
-  <translation id="//define('MODULE_PAYMENT_PAYPAL_NVP_SANDBOX_WSDL">
-    <en_us>https://www.sandbox.paypal.com/wsdl/PayPalSvc.wsdl</en_us>
-  </translation>
-  <translation id="//define('MODULE_SHIPPING_ENDICIA_X3D">
-    <en_us>First Class Mail Int</en_us>
-  </translation>
-  <translation id="//define('MODULE_SHIPPING_ENDICIA_XDM">
-    <en_us>Express Mail Int</en_us>
-  </translation>
-  <translation id="//define('MODULE_SHIPPING_ENDICIA_XPR">
-    <en_us>Priority Mail Int</en_us>
-  </translation>
-  <translation id="//define('MODULE_SHIPPING_USPS_TYPES_INTL_DESC">
-    <en_us>Select the international services to be offered:</en_us>
-  </translation>
 </translations>

@@ -28,9 +28,9 @@ class language {
 	 *
 	 */
 	function __construct(){
-		if( isset($_SESSION['language'])) {
+		if( isset($_SESSION['language']) && $_SESSION['language'] != '') {
 			 $this->language_code = $_SESSION['language'];
-		} else if( isset($_REQUEST['language'])) {
+		} else if( isset($_REQUEST['language']) && $_REQUEST['language'] != '') {
 			$this->language_code = $_REQUEST['language'];
 		} else {
 			if(defined('DEFAULT_LANGUAGE')) {
@@ -122,7 +122,6 @@ class language {
 							foreach ( $language_sub_folders as $language_sub_folder ) {
 								if ($language_sub_folder == '.' || $language_sub_folder == '..') continue;
 								$handle = fopen("{$lang_dir}/{$language_folder}/{$language_file}/{$language_sub_folder}", "r");
-								//print(" language_file gevonden {$lang_dir}/{$language_folder}/{$language_file} handle is $handle ".chr(13));
 								if ($handle) {
 									while (($line = fgets($handle)) !== false) {
 										// process the line read.
@@ -140,7 +139,6 @@ class language {
 							}
 						}else{
 							$handle = fopen("{$lang_dir}/{$language_folder}/{$language_file}", "r");
-							//print(" language_file gevonden {$lang_dir}/{$language_folder}/{$language_file} handle is $handle ".chr(13));
 							if ($handle) {
 								while (($line = fgets($handle)) !== false) {
 									// process the line read.
@@ -235,14 +233,21 @@ class language {
 		$doc->save($custom_path);
 	}
 
-	static function add_constant($constant){ //@todo werkt nog niet goed
+	static function add_constant($constant){ //@todo zoeken naar constant in file
 		$lang_path = (DIR_FS_INCLUDES."language/translations.xml");
 		if (!file_exists($lang_path)) throw new \core\classes\userException("can't find your language file {$lang_path} ");
-		$xml = new \DomDocument();
-		$xml->load($lang_path);
-		$first_element = $xml->createElement('translation');
+		$doc = new \DOMDocument('1.0', 'utf-8');
+		$doc->formatOutput = true;
+		$doc->load($lang_path);
+		$root = $doc->documentElement;
+		$first_element = $doc->createElement('translation');
 		$first_element->setAttribute('id', $constant);
-		$xml->save($lang_path);
+		$second = $root->appendChild($first_element);
+		$string = strtolower(str_replace(array('TEXT_', '_'), array('', ' '),$constant));
+		$temp = $doc->createElement('en_us', $string);
+		$second->appendChild($temp);
+		$doc->save($lang_path);
+		define($constant, $string);
 	}
 
 	function __destruct(){
