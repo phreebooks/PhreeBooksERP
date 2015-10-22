@@ -127,7 +127,6 @@ class admin extends \core\classes\admin {
   function initialize() {
   	global $admin, $messageStack;
   	RETURN TRUE; //@TODO EVT NOG BEWERKEN OF VERWIJDEREN.
-  	gen_pull_language('inventory');
   	require_once(DIR_FS_MODULES . 'magento/functions/magento.php');
 	require_once(DIR_FS_MODULES . 'magento/language/'.$_SESSION['language'].'/language.php');
     require_once(DIR_FS_MODULES . 'inventory/defaults.php');

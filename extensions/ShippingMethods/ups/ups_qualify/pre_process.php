@@ -29,7 +29,6 @@ $security_level = '4';
 
 /**************  include page specific files    *********************/
 $shipping_module = 'ups';
-load_method_language(DEFAULT_MOD_DIR, $shipping_module);
 require(DIR_FS_WORKING . 'functions/shipping.php');
 require(DIR_FS_WORKING . 'classes/shipping.php');
 require(DIR_FS_WORKING . 'methods/' . $shipping_module . '/' . $shipping_module . '.php');

@@ -134,7 +134,6 @@ class admin extends \core\classes\admin {
 
 	function after_ValidateUser(\core\classes\basis &$basis) { //@done
 	  	global $admin, $messageStack;
-	  	gen_pull_language('inventory');
 		require_once(DIR_FS_MODULES . 'zencart/functions/zencart.php');
 		require_once(DIR_FS_MODULES . 'zencart/language/'.$_SESSION['language'].'/language.php');
 		require_once(DIR_FS_MODULES . 'inventory/defaults.php');

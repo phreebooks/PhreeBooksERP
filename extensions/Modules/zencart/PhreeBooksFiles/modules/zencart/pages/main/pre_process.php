@@ -18,8 +18,6 @@
 //
 $security_level = \core\classes\user::validate(SECURITY_ID_ZENCART_INTERFACE);
 /**************  include page specific files    *********************/
-gen_pull_language('shipping');
-gen_pull_language('inventory');
 require_once(DIR_FS_MODULES . 'inventory/defaults.php');
 require_once(DIR_FS_MODULES . 'shipping/defaults.php');
 require_once(DIR_FS_WORKING . 'functions/zencart.php');

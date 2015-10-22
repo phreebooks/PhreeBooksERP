@@ -34,8 +34,6 @@ switch ($type) {
     throw new \core\classes\userException('Illegal Access type');
 }
 /************** include page specific files *********************/
-gen_pull_language('phreebooks');
-gen_pull_language('contacts');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 /**************   page specific initialization  *************************/
 $post_success     = false;

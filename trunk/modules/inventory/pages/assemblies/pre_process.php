@@ -18,7 +18,6 @@
 //
 $security_level = \core\classes\user::validate(SECURITY_ID_ASSEMBLE_INVENTORY);
 /**************  include page specific files    *********************/
-gen_pull_language('phreebooks');
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/inventory.php');
 /**************   page specific initialization  *************************/

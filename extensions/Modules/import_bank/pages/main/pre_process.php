@@ -25,10 +25,6 @@
 /**************   Check user security   *****************************/
 $security_level = \core\classes\user::validate(SECURITY_ID_IMPORT_BANK);
 /**************  include page specific files    *********************/
-gen_pull_language($module);
-gen_pull_language('phreebooks');
-gen_pull_language('phreebooks', 'admin');
-gen_pull_language('contacts');
 require_once(DIR_FS_MODULES . 'phreebooks/classes/gen_ledger.php');
 require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
 require_once(DIR_FS_WORKING . 'functions/import_bank.php');

@@ -16,8 +16,6 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreepos/defaults.php
 //
-gen_pull_language('phreepos');
-
 $ot_options = array(
 	'cash_in'  => TEXT_CASH_IN,
 	'cash_out' => TEXT_CASH_OUT,

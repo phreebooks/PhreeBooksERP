@@ -27,8 +27,6 @@ function write_file($filename, $data) {
 /**************   Check user security   *****************************/
 // none
 /**************  include page specific files    *********************/
-gen_pull_language('phreedom','admin');
-load_method_language(DIR_FS_MODULES  . 'shipping/methods/', 'fedex_v7');
 require(DIR_FS_WORKING . 'defaults.php');
 require(DIR_FS_WORKING . 'functions/shipping.php');
 require(DIR_FS_WORKING . 'pages/fedex_v7_qualify/sample_data.php');

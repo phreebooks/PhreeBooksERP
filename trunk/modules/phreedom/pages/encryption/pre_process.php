@@ -19,7 +19,6 @@
 //
 $security_level = \core\classes\user::validate(SECURITY_ID_ENCRYPTION);
 /**************  include page specific files    *********************/
-gen_pull_language($module, 'admin');
 /**************   page specific initialization  *************************/
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/encryption/extra_actions.php';

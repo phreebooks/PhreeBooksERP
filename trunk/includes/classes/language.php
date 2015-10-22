@@ -22,7 +22,7 @@ class language {
 	public $phrases;
 	public $languages;
 	public $translate;
-	 
+
 	/**
 	 * sets the current language and sets it in the Session variable.
 	 *
@@ -45,7 +45,7 @@ class language {
 		if (sizeof($this->languages) == 0) $this->get_languages();
 		if (sizeof($this->phrases)   == 0) $this->get_translations();
 	}
-	
+
 	/**
 	 * function will get all language constants.
 	 * @throws \core\classes\userException
@@ -53,7 +53,7 @@ class language {
 	private function get_translations() {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ ." finding language code " .$this->language_code);
 		//fetch default language phrases
-		$lang_path = DIR_FS_INCLUDES."language/translations.xml"; 
+		$lang_path = DIR_FS_INCLUDES."language/translations.xml";
 		if (!file_exists($lang_path)) throw new \core\classes\userException("can't find your language file {$lang_path} ");
 		$xml = new \DomDocument();
 		$xml->load($lang_path);
@@ -70,7 +70,7 @@ class language {
 			$xml->load($custom_path);
 			//phrases
 			$phrases = $xml->getElementsByTagName($this->language_code);
-			if ($phrases->length != 0) { 
+			if ($phrases->length != 0) {
 				foreach ($phrases as $phrase) {
 					$translation = $phrase->parentNode;
 					$this->phrases[$translation->getAttribute('id')] = $phrase->nodeValue;
@@ -79,7 +79,7 @@ class language {
 		}
 		foreach ($this->phrases as $key => $value ) define($key, $value);
 	}
-	
+
 	/**
 	 * function will get all availeble languages provided that the id "Language" is translatated.
 	 * @throws \core\classes\userException
@@ -92,23 +92,22 @@ class language {
 		$xml->load($lang_path);
 		$phrases = $xml->getElementsByTagName('translation');
 		foreach ($phrases as $phrase) {
-			if ($phrase->getAttribute('id') == 'Language') {
-				print("phrase = {$phrase->getAttribute}");
+			if (strtoupper($phrase->getAttribute('id')) == 'LANGUAGE') {
 				foreach ($phrase->childNodes as $language) {
-					print("taal = {$language->tagName}");
 					if ($language->tagName != '') $this->languages[$language->tagName] = $language->nodeValue;
 				}
+				break;
 			}
 		}
 	}
-	
+
 	/**
 	 * function will read language files and add contants to xml language file.
 	 * @todo should be deleted before release 4.0
 	 */
 	function find_language_constants(){
 		$dirs = @scandir ( DIR_FS_MODULES );
-		foreach ( $dirs as $dir ) { 
+		foreach ( $dirs as $dir ) {
 			if ($dir == '.' || $dir == '..') continue;
 			$lang_dir = DIR_FS_MODULES . $dir . "/language";
 			if (is_dir ( $lang_dir )) {
@@ -193,7 +192,7 @@ class language {
 				}
 			}
 		}
-		//controleren 
+		//controleren
 		foreach ($this->translate as $key => $string){
 			if(!isset($string['en_us'])){
 				unset($this->translate[$key]);
@@ -204,7 +203,7 @@ class language {
 				}
 			}
 		}
-		
+
 		ksort($this->translate);
 		//store in xml.
 		$doc = new \DOMDocument('1.0', 'utf-8');
@@ -235,7 +234,17 @@ class language {
 		$custom_path = DIR_FS_INCLUDES."language/custom/translations.xml";
 		$doc->save($custom_path);
 	}
-	
+
+	static function add_constant($constant){ //@todo werkt nog niet goed
+		$lang_path = (DIR_FS_INCLUDES."language/translations.xml");
+		if (!file_exists($lang_path)) throw new \core\classes\userException("can't find your language file {$lang_path} ");
+		$xml = new \DomDocument();
+		$xml->load($lang_path);
+		$first_element = $xml->createElement('translation');
+		$first_element->setAttribute('id', $constant);
+		$xml->save($lang_path);
+	}
+
 	function __destruct(){
 		$_SESSION['language'] = $this->language_code;
 	}

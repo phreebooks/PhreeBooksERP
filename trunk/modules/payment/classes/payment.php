@@ -19,7 +19,6 @@
 // Revision history
 // 2012-05-11 - Created
 namespace payment\classes;
-gen_pull_language('payment');
 class payment {
 	public $id;
   	public $payment_fields;

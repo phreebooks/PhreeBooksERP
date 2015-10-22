@@ -70,7 +70,6 @@ if ($db_name && file_exists(DIR_FS_MY_FILES . $db_name . '/config.php')) {
 // set the language
 $_SESSION['language'] = $_GET['lang'] ? $_GET['lang'] : 'en_us';
 define('LANGUAGE',$_SESSION['language']);
-gen_pull_language('phreedom');
 require_once(DIR_FS_ADMIN . 'soap/language/' . LANGUAGE . '/language.php');
 
 // include the database functions
@@ -87,20 +86,16 @@ while (!$configuration->EOF) {
 }
 
 // load general language translation
-gen_pull_language('phreedom', 'menu');
-  require_once(DIR_FS_MODULES . 'phreedom/config.php');
-  $dirs = @scandir(DIR_FS_MODULES);
-  if($dirs === false) throw new \core\classes\userException("couldn't read or find directory ". DIR_FS_MODULES);
-  foreach ($dirs as $dir) { // first pull all module language files, loaded or not
-    if ($dir == '.' || $dir == '..') continue;
-	if (is_dir(DIR_FS_MODULES . $dir)) gen_pull_language($dir, 'menu');
-  }
-  foreach ($dirs as $dir) {
+
+require_once(DIR_FS_MODULES . 'phreedom/config.php');
+$dirs = @scandir(DIR_FS_MODULES);
+if($dirs === false) throw new \core\classes\userException("couldn't read or find directory ". DIR_FS_MODULES);
+foreach ($dirs as $dir) {
     if ($dir == '.' || $dir == '..') continue;
     if (defined('MODULE_' . strtoupper($dir) . '_STATUS')) { // module is loaded
       require_once(DIR_FS_MODULES . $dir . '/config.php');
     }
-  }
+}
 
 $currencies   = new \core\classes\currencies;
 $messageStack = new \core\classes\messageStack;

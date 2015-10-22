@@ -18,7 +18,6 @@
 //
 $security_level = \core\classes\user::validate(SECURITY_TRANSLATOR_MGT);
 /**************  include page specific files    *********************/
-gen_pull_language('phreedom', 'admin');
 require_once(DIR_FS_WORKING . 'functions/translator.php');
 require_once(DIR_FS_WORKING . 'classes/translator.php');
 require_once(DIR_FS_MODULES . 'phreedom/classes/backup.php');
@@ -233,10 +232,6 @@ switch ($_REQUEST['action']) {
   case 'filter':
 	if (strpos($mod, '-') !== false) { // it's a module, load that language file
       $parts = explode('-', $mod);
-	  load_method_language(DIR_FS_MODULES . $parts[0] . '/methods/', $parts[1]);
-	} else {
-	  gen_pull_language($mod);
-	  gen_pull_language($mod, 'admin');
 	}
 	$heading_array = array(
 	  TEXT_TRANSLATED,

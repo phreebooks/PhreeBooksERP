@@ -18,7 +18,6 @@
 //
 $security_level = \core\classes\user::validate(0, true);
 /**************  include page specific files    *********************/
-gen_pull_language('contacts');
 require(DIR_FS_WORKING . 'functions/phreebooks.php');
 /**************   page specific initialization  *************************/
 define('JOURNAL_ID',   $_GET['jID']);

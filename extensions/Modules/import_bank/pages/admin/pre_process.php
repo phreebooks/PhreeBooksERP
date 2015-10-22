@@ -25,8 +25,6 @@
 $security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 
 /**************  include page specific files    *********************/
-gen_pull_language($module);
-gen_pull_language($module, 'admin');
 /**************   page specific initialization  *************************/
 $kt      = new \import_bank\classes\known_transactions();
 /***************   Act on the action request   *************************/

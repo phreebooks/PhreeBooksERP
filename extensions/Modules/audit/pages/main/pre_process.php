@@ -25,7 +25,6 @@
 /**************   Check user security   *****************************/
 $security_level = \core\classes\user::validate(SECURITY_ID_AUDIT);
 /**************  include page specific files    *********************/
-//gen_pull_language($module);
 require_once(DIR_FS_WORKING . 'functions/audit.php');
 /**************   page specific initialization  *************************/
 $date_from = gen_db_date($_REQUEST['date_from']);//         ? db_prepare_input($_POST['date_from'])       : $_GET['date_from'];

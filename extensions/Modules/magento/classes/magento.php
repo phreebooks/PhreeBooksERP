@@ -279,7 +279,6 @@ if (file_exists(DIR_FS_MODULES . 'magento/custom/extra_product_attrs.php')) {
 	$output  = array();
 	$choices = array_keys($shipping_defaults['service_levels']);
 	if (sizeof($method_array) > 0) foreach ($method_array as $method) {
-	  load_method_language(DIR_FS_MODULES . 'shipping/methods/', $method);
 	  $output[$method]['title'] = constant('MODULE_SHIPPING_' . strtoupper($method) . '_TEXT_TITLE');
 	  foreach ($choices as $value) {
 		$output[$method][$value] = defined($method . '_' . $value) ? constant($method . '_' . $value) : "";

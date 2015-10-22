@@ -18,7 +18,6 @@
 //  Path: /modules/phreebooks/classes/statement_builder.php
 //
 namespace phreebooks\classes;
-gen_pull_language('phreebooks');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php'); // needed to calculate terms, aging
 
 class statement_builder {

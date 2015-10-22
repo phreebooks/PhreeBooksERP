@@ -418,7 +418,6 @@ if (defined('MODULE_PHREEBOOKS_STATUS')) {
 	   	'params'      => '',
 	);
   	if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
-  		gen_pull_language('phreebooks', 'admin');
 		$mainmenu["company"]['submenu']["configuration"]['submenu']["phreebooks"] = array(
 	  		'order'	      => sprintf(TEXT_MODULE_ARGS, TEXT_PHREEBOOKS),
 	  		'text'        => sprintf(TEXT_MODULE_ARGS, TEXT_PHREEBOOKS),

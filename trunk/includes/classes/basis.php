@@ -55,7 +55,6 @@ class basis implements \SplSubject {
 			if ($dirs === false) throw new \core\classes\userException ( "couldn't read or find directory " . DIR_FS_MODULES );
 			foreach ( $dirs as $dir ) { // first pull all module language files, loaded or not
 				if ($dir == '.' || $dir == '..') continue;
-				gen_pull_language ( $dir, 'menu' );
 				if (is_dir ( DIR_FS_MODULES . $dir )) {
 					$class = "\\$dir\classes\admin";
 					$this->attachAdminClasses ( $dir, new $class () );

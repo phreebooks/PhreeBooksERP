@@ -41,7 +41,6 @@ try{
 	ob_end_flush();
    	$messageStack->write_debug();
    	session_write_close();
-   	die('dying in INDEX');
 }catch (\core\classes\userException $e) {
 	$messageStack->add($e->getMessage());
 	if (is_object($admin->DataBase)) gen_add_audit_log($e->getMessage());

@@ -40,7 +40,7 @@ echo html_form('login', FILENAME_DEFAULT, 'action=ValidateUser', 'post', 'onsubm
               <tr>
                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_PASSWORD; ?>:</td>
                 <td><?php echo html_password_field('admin_pass', '', true); ?></td>
-              </tr>             
+              </tr>
 <?php if (sizeof($basis->user->companies) != 1) { ?>
               <tr>
                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo sprintf(TEXT_SELECT_ARGS, TEXT_COMPANY); ?></td>

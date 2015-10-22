@@ -67,7 +67,6 @@ spl_autoload_register('Phreebooks_autoloader', true, false);
 // pull in the custom language over-rides for this module/page
 $custom_path = DIR_FS_MODULES . "{$_REQUEST['module']}/custom/pages/{$_REQUEST['page']}/extra_defines.php";
 if (file_exists($custom_path)) { include($custom_path); }
-gen_pull_language($module);
 define('DIR_WS_THEMES', 'themes/' . (isset($_SESSION['admin_prefs']['theme']) ? $_SESSION['admin_prefs']['theme'] : DEFAULT_THEME) . '/');
 define('MY_COLORS',isset($_SESSION['admin_prefs']['colors'])?$_SESSION['admin_prefs']['colors']:DEFAULT_COLORS);
 define('MY_MENU',  isset($_SESSION['admin_prefs']['menu'])  ?$_SESSION['admin_prefs']['menu']  :DEFAULT_MENU);
@@ -95,8 +94,6 @@ if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR
 	   	define($row['configuration_key'],$row['configuration_value']);//@todo remove
 	}
 	$admin->checkIfModulesInstalled();
-  	gen_pull_language('phreedom', 'menu');
-  	gen_pull_language('phreebooks', 'menu');
   	require(DIR_FS_MODULES . 'phreedom/config.php');
   	$admin->currencies->load();
 	// pull in the custom language over-rides for this module (to pre-define the standard language)

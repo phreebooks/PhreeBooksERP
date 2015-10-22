@@ -313,7 +313,6 @@ if (file_exists(DIR_FS_MODULES."phreeform/custom/extra_phreeform.php")) { // use
 }
 foreach ($admin->classes as $key => $class) {
   if (file_exists(DIR_FS_MODULES . "$key/config_phreeform.php")) {
-	gen_pull_language($key, 'admin');
     require_once (DIR_FS_MODULES . "$key/config_phreeform.php");
   }
 }

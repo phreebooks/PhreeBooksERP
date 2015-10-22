@@ -19,7 +19,6 @@
 ini_set('memory_limit','256M');  // Set this big for memory exhausted errors
 $security_level = \core\classes\user::validate(SECURITY_ID_BACKUP);
 /**************  include page specific files    *********************/
-gen_pull_language($module, 'admin');
 require_once(DIR_FS_WORKING . 'functions/phreedom.php');
 /**************   page specific initialization  *************************/
 /***************   hook for custom actions  ***************************/

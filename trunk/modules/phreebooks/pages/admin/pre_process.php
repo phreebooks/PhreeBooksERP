@@ -18,8 +18,6 @@
 //
 $security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 /**************  include page specific files    *********************/
-gen_pull_language($module, 'admin');
-gen_pull_language('phreedom', 'admin');
 require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
 /**************   page specific initialization  *************************/
 $chart_of_accounts = new \phreebooks\classes\chart_of_accounts();

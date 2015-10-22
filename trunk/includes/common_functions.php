@@ -44,33 +44,6 @@
 	    exit;
   	}
 
-  	function gen_pull_language($page, $file = 'language') {//@todo add switch for core files.
-  		if(!isset($_SESSION['language'])){
-  			$_SESSION['language'] = defined('DEFAULT_LANGUAGE') ? DEFAULT_LANGUAGE : 'en_us';
-  			if (isset($_COOKIE['pb_language'])) $_SESSION['language'] = $_COOKIE['pb_language'];
-  		}
-	  	if (!is_dir(DIR_FS_MODULES . $page)) return;
-	  	if       (file_exists(DIR_FS_MODULES . "$page/custom/language/{$_SESSION['language']}/$file.php")) {
-	      	include_once     (DIR_FS_MODULES . "$page/custom/language/{$_SESSION['language']}/$file.php");
-		} elseif (file_exists(DIR_FS_MODULES . "$page/custom/language/en_us/$file.php")) {
-	      	include_once     (DIR_FS_MODULES . "$page/custom/language/en_us/$file.php");
-		}
-	    if       (file_exists(DIR_FS_MODULES . "$page/language/{$_SESSION['language']}/$file.php")) {
-	      	include_once     (DIR_FS_MODULES . "$page/language/{$_SESSION['language']}/$file.php");
-		} elseif (file_exists(DIR_FS_MODULES . "$page/language/en_us/$file.php")) {
-	      	include_once     (DIR_FS_MODULES . "$page/language/en_us/$file.php");
-		}
-  	}
-
-	function load_method_language($path, $file = '') {
-	  	if (!is_dir($path . $file)) return;
-	    if 		 (file_exists($path . "$file/language/{$_SESSION['language']}/language.php")) {
-	    	include_once 	 ($path . "$file/language/{$_SESSION['language']}/language.php");
-	    } elseif (file_exists($path . "$file/language/en_us/language.php")) {
-	    	include_once     ($path . "$file/language/en_us/language.php");
-	    }
-	}
-
 	/**
 	 * this function is for sorting a array of objects by the sort_order variable
 	 */
@@ -352,7 +325,6 @@
   	}
 
   function gen_terms_to_language($terms_encoded, $short = true, $type = 'AR') {
-	gen_pull_language('contacts'); // required for calculating terms
 	$type   = strtoupper($type);
 	$terms  = explode(':', $terms_encoded);
 	$result = array();
@@ -1147,33 +1119,41 @@ function gen_db_date($raw_date = '', $separator = '/') {
     return $field;
   }
 
-  function html_pull_down_menu($name, $values, $default = '', $parameters = '', $required = false) {
-	if (strpos($name, '[]')) { // don't show id attribute if generic array
-	  $id = false;
-	} else {
-	  $id = str_replace('[','_', $name); // clean up for array inputs causing html errors
-	  $id = str_replace(']','',  $id);
-    }
-    $field = '<select name="' . $name . '"';
-	if ($id) $field .= ' id="' . $id . '"';
-    if (gen_not_null($parameters)) $field .= ' ' . $parameters;
-    if ($required)				$field .= ' required="required" ';
-    $field .= '>';
-    if (empty($default) && isset($GLOBALS[$name])) $default = stripslashes($GLOBALS[$name]);
-	if (is_array($values) > 0) {
-	  foreach ($values as $choice) if (isset($choice['id'])) {
-	    $field .= '<option value="' . $choice['id'] . '"';
-	    if (is_array($default)) { // handles pull down with size and multiple parameters set
-	      if (in_array($choice['id'], $default)) $field .= ' selected="selected"';
-	    } else {
-		  if ($default == $choice['id']) $field .= ' selected="selected"';
-		}
-	    $field .= '>' . htmlspecialchars($choice['text']) . '</option>';
-	  }
-	}
-    $field .= '</select>';
-    return $field;
-  }
+  	function html_pull_down_menu($name, $values, $default = '', $parameters = '', $required = false) {
+		if (strpos($name, '[]')) { // don't show id attribute if generic array
+	  		$id = false;
+		} else {
+	  		$id = str_replace('[','_', $name); // clean up for array inputs causing html errors
+	  		$id = str_replace(']','',  $id);
+    	}
+    	$field = "<select name='{$name}'";
+		if ($id) $field .= " id='{$id}'";
+    	if (gen_not_null($parameters)) $field .= ' ' . $parameters;
+    	if ($required)				$field .= ' required="required" ';
+    	$field .= '>';
+    	if (empty($default) && isset($GLOBALS[$name])) $default = stripslashes($GLOBALS[$name]);
+		foreach ((array) $values as $key => $choice){
+			if (isset($choice['id'])) {
+		   		$field .= "<option value='{$choice['id']}'";
+		    	if (is_array($default)) { // handles pull down with size and multiple parameters set
+			   		if (in_array($choice['id'], $default)) $field .= ' selected="selected"';
+				} else {
+					if ($default == $choice['id']) $field .= ' selected="selected"';
+				}
+	    		$field .= '>' . htmlspecialchars($choice['text']) . '</option>';
+			}else{
+				$field .= "<option value='{$key}'";
+				if (is_array($default)) { // handles pull down with size and multiple parameters set
+					if (in_array($key, $default)) $field .= ' selected="selected"';
+				} else {
+					if ($default == $key) $field .= ' selected="selected"';
+				}
+				$field .= '>' . htmlspecialchars($choice) . '</option>';
+			}
+	  	}
+    	$field .= '</select>';
+    	return $field;
+  	}
 
   function html_combo_box($name, $values, $default = '', $parameters = '', $width = '220px', $onchange = '', $id = false) {
 	if (!$id) {
@@ -1762,6 +1742,12 @@ function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext
         	$text  = date('Y-m-d H:i:s') . $temp;
     		$text .= " RUN-TIME NOTICE:  '$errstr' line $errline in file $errfile";
     		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    		if ( strpos($errstr, 'Use of undefined constant') !== false && strpos($errstr, 'TEXT') !== false) {
+    			// add to language file
+    			$temp = ltrim($errstr, 'Use of undefined constant ');
+    			$temp = explode(' ', $temp);
+    			\core\classes\language::add_constant($temp[0]);
+    		}
         	break;
         case E_CORE_ERROR: //16
         	$text  = date('Y-m-d H:i:s') . $temp;
@@ -1868,16 +1854,9 @@ function Phreebooks_autoloader($temp){
 		$class = str_replace("\\", "/", $temp);
 		$path  = explode("/", $class, 3);
 		if ($path[0] == 'core'){
-			gen_pull_language('phreedom'); //always load the main language file
-			// if it is a method or dashboard load those language files as well.
-			if ( in_array($path[1], array('methods','dashboards'))) load_method_language(DIR_FS_ADMIN."modules/$path[0]/$path[1]", $path[2]);
 			$file = DIR_FS_ADMIN."includes/$path[1]/$path[2].php";
 			include_once (DIR_FS_ADMIN."includes/$path[1]/$path[2].php");
 		}else{
-			gen_pull_language($path[0], 'admin');
-			gen_pull_language($path[0]); //always load the main language file
-			// if it is a method or dashboard load those language files as well.
-			if ( in_array($path[1], array('methods','dashboards'))) load_method_language(DIR_FS_ADMIN."modules/$path[0]/$path[1]", $path[2]);
 			if (file_exists(DIR_FS_ADMIN."modules/$path[0]/custom/$path[1]/$path[2].php")){
 				$file = DIR_FS_ADMIN."modules/$path[0]/custom/$path[1]/$path[2].php";
 				include_once(DIR_FS_ADMIN."modules/$path[0]/custom/$path[1]/$path[2].php");

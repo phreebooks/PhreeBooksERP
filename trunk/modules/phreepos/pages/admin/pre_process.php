@@ -18,8 +18,6 @@
 //
 $security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 /**************  include page specific files    *********************/
-gen_pull_language($module, 'admin');
-gen_pull_language('phreedom', 'admin');
 /**************   page specific initialization  *************************/
 $tills   = new \phreepos\classes\tills();
 $trans	 = new \phreepos\classes\other_transactions();

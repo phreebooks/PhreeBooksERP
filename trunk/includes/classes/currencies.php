@@ -20,7 +20,6 @@ namespace core\classes;
 define('CURRENCY_SERVER_PRIMARY', 'oanda');
 define('CURRENCY_SERVER_BACKUP',  'yahoo');
 require_once(DIR_FS_MODULES . 'phreedom/config.php');
-gen_pull_language('phreedom', 'admin');
 
 class currencies {
 	private $default_currency 	= false;

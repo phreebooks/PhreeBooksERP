@@ -95,7 +95,6 @@ if (defined('MODULE_PHREEPOS_STATUS')) {
     'params'      => '',
   );
   if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0) {
-	  gen_pull_language('phreepos', 'admin');
 	  $mainmenu["company"]['submenu']["configuration"]['submenu']["phreepos"] = array(
 		'order'	      => sprintf(TEXT_MODULE_ARGS, TEXT_PHREEPOS),
 		'text'        => sprintf(TEXT_MODULE_ARGS, TEXT_PHREEPOS),

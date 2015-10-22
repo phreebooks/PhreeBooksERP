@@ -16,7 +16,6 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/import_bank/config.php
 //
-gen_pull_language('phreedom', 'menu');
 // Release History
 // 1 16-10-2012 created.
 // 1.3 added xsd validation
@@ -38,7 +37,6 @@ if (defined('MODULE_AUDIT_STATUS')) {
 		'params'	  => '',
 	);
 	if(\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
-  		gen_pull_language('audit', 'admin');
   		$mainmenu["company"]['submenu']["configuration"]['submenu']["audit"] = array(
 			'order'	      => TEXT_AUDIT,
 			'text'        => TEXT_AUDIT,

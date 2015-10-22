@@ -27,7 +27,6 @@
 // 2   28-1-2013  	complete rewrite reduced the number of sql calles.
 //					added function to find invoicenumber in description for transactions that are not connected to a bank or iban account
 // 2.1 27-09-2013 fixed bug that it would try to find a contact for known_transactions.
-gen_pull_language('phreedom', 'menu');
 // Module software version information
 // Menu Sort Positions
 
@@ -36,7 +35,6 @@ define('SECURITY_ID_IMPORT_BANK',      980);
 // New Database Tables
 define('TABLE_IMPORT_BANK',    			DB_PREFIX . 'import_bank');
 // Set the menus
-gen_pull_language('phreebooks');
 if (defined('MODULE_IMPORT_BANK_STATUS')) {
 	$mainmenu["banking"]['submenu']['import_banking'] = array(
     	'text'        => TEXT_IMPORT_BANK_STATEMENT,
@@ -48,7 +46,6 @@ if (defined('MODULE_IMPORT_BANK_STATUS')) {
   	);
 
 	if(\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
-  		gen_pull_language('import_bank', 'admin');
   		$mainmenu["company"]['submenu']["configuration"]['submenu']["import_bank"] = array(
 			'order'	      => TEXT_IMPORT_BANK_STATEMENT,
 			'text'        => TEXT_IMPORT_BANK_STATEMENT,

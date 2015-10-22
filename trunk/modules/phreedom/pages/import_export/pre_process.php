@@ -18,10 +18,6 @@
 //
 $security_level = \core\classes\user::validate(SECURITY_ID_IMPORT_EXPORT);
 /**************  include page specific files    *********************/
-gen_pull_language($module, 'admin');
-gen_pull_language('phreebooks');
-gen_pull_language('phreebooks', 'admin');
-gen_pull_language('contacts');
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/phreedom.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
@@ -69,7 +65,6 @@ if($dir === false) throw new \core\classes\userException("couldn't read or find 
 foreach ($dir as $file) {
   if (is_dir(DIR_FS_MODULES . $file) && $file <> '.' && $file <> '..') {
 	if (file_exists(DIR_FS_MODULES . $file . '/' . $file . '.xml')) {
-	  gen_pull_language($file, 'admin');
 	  $page_list[$file] = array(
 	    'title'     => constant('MODULE_' . strtoupper($file) . '_TITLE'),
 		'structure' => load_module_xml($file),

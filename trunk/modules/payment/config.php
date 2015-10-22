@@ -35,7 +35,6 @@ define('SECURITY_ID_PAYMENT',       81);
 
 if(defined('MODULE_PAYMENT_STATUS')){
 	if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
-	  gen_pull_language('payment', 'admin');
 	  $mainmenu["company"]['submenu']["configuration"]['submenu']["payment"] = array(
 		'order'	      => TEXT_PAYMENT_MODULE,
 		'text'        => TEXT_PAYMENT_MODULE,

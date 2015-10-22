@@ -24,8 +24,6 @@
 /**************   Check user security   *****************************/
 $security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 /**************  include page specific files    *********************/
-gen_pull_language($module);
-gen_pull_language($module, 'admin');
 /**************   page specific initialization  *************************/
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {

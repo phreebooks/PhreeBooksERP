@@ -18,7 +18,6 @@
 //
 $security_level = \core\classes\user::validate(SECURITY_ID_GEN_ADMIN_TOOLS);
 /**************  include page specific files    *********************/
-gen_pull_language($module, 'admin');
 require(DIR_FS_WORKING . 'functions/phreebooks.php');
 /**************   page specific initialization  *************************/
 define('JOURNAL_ID',2);	// General Journal

@@ -29,7 +29,6 @@
 // 3.7.2 => 2014-07-21 - bug fixes
 // 3.7.3 => added contacts_level field
 // Module software version information
-gen_pull_language('phreedom', 'menu');
 // Menu Sort Positions
 define('MENU_HEADING_CUSTOMERS_ORDER',   10);
 define('MENU_HEADING_VENDORS_ORDER',     20);

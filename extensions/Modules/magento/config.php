@@ -16,7 +16,6 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/magento/config.php
 //
-gen_pull_language('phreedom', 'menu');
 // Release History
 // Module software version information
 // Set the menu order, if using Magento title menu option (after Customers and before Vendors)
@@ -37,7 +36,6 @@ if (defined('MODULE_MAGENTO_STATUS')) {
   	);
 
 	if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
-	  gen_pull_language('magento', 'admin');
 	  $mainmenu["company"]['submenu']["configuration"]['submenu']["magento"] = array(
 		'order'	      => MODULE_MAGENTO_TITLE,
 		'text'        => MODULE_MAGENTO_TITLE,

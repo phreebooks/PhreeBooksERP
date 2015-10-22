@@ -19,8 +19,6 @@
 if($_SESSION['admin_id'] == 1) $security_level = 4;
 else $security_level = \core\classes\user::validate(SECURITY_ID_USERS);
 /**************  include page specific files    *********************/
-gen_pull_language($module, 'admin');
-gen_pull_language('contacts');
 require_once(DIR_FS_WORKING . 'functions/phreedom.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 /**************   page specific initialization  *************************/

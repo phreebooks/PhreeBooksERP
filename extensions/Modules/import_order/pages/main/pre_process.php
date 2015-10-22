@@ -18,8 +18,6 @@
 //
 $security_level = validate_user(SECURITY_ID_IMPORT_ORDER);
 /**************  include page specific files    *********************/
-gen_pull_language('contacts');
-gen_pull_language('phreebooks');
 require_once (DIR_FS_WORKING.'classes/import_order.php');
 require_once (DIR_FS_ADMIN  .'soap/classes/parser.php');
 require_once (DIR_FS_ADMIN  .'soap/classes/orders.php');

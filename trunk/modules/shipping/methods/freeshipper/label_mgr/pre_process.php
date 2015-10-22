@@ -21,7 +21,6 @@
 $shipping_module = 'freeshipper';
 
 /**************  include page specific files    *********************/
-load_method_language(DEFAULT_MOD_DIR, $shipping_module);
 require(DIR_FS_WORKING . 'functions/shipping.php');
 /**************   page specific initialization  *************************/
 $shipping_method = "\shipping\methods\\$shipping_module\\$shipping_module";

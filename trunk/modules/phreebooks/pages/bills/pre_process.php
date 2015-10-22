@@ -33,8 +33,6 @@ switch ($jID) {
 }
 $security_level = \core\classes\user::validate($security_token);
 /**************  include page specific files    *********************/
-gen_pull_language('contacts');
-gen_pull_language('payment');
 require_once(DIR_FS_MODULES . 'payment/defaults.php');
 require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
 /**************   page specific initialization  *************************/

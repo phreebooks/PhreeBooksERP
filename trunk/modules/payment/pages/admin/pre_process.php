@@ -18,7 +18,6 @@
 //
 $security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 /**************  include page specific files    *********************/
-gen_pull_language($module, 'admin');
 /**************   page specific initialization  *************************/
 // see if installing or removing a method
 if (substr($_REQUEST['action'], 0, 8) == 'install_') {

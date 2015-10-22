@@ -26,7 +26,6 @@
 // 3.6 => 2013-06-30 - bug fixes, rewrite to class, added multiple vendors
 // 3.7 => 2014-07-21 - bug fixes
 // Module software version information
-gen_pull_language('contacts', 'menu');
 // Menu Sort Positions
 // Menu Security id's (refer to master doc to avoid security setting overlap)
 define('SECURITY_ID_PRICE_SHEET_MANAGER', 88);
@@ -108,7 +107,6 @@ $mainmenu["vendors"]["submenu"]["pricesheet"] = array(
 );
 
 if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
-  gen_pull_language('inventory', 'admin');
   $mainmenu["company"]['submenu']["configuration"]['submenu']["inventory"] = array(
 	'order'	      => sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY),
 	'text'        => sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY),

@@ -19,10 +19,6 @@
 $security_level = \core\classes\user::validate(SECURITY_ID_PHREEPOS);
 define('JOURNAL_ID',19);
 /**************  include page specific files    *********************/
-gen_pull_language('contacts');
-gen_pull_language('phreebooks');
-gen_pull_language('inventory');
-gen_pull_language('phreeform');
 require_once(DIR_FS_MODULES . 'payment/defaults.php');
 require_once(DIR_FS_MODULES . 'inventory/defaults.php');
 require_once(DIR_FS_MODULES . 'phreeform/defaults.php');

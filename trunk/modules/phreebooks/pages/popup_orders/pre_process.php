@@ -19,7 +19,6 @@
 $security_level = \core\classes\user::validate(0, true);
 /**************  include page specific files  *********************/
 $date = ($_REQUEST['search_date']!= '') ? gen_db_date($_REQUEST['search_date']) : false;
-gen_pull_language('contacts');
 require(DIR_FS_WORKING . 'functions/phreebooks.php');
 
 /**************   page specific initialization  *************************/

@@ -18,9 +18,6 @@
 //  Path: /modules/shipping/methods/endicia/signup.php
 //
 
-gen_pull_language('contacts');
-gen_pull_language('payment');
-load_method_language($mod_dir.$method);
 $output = array(
   'width'  => '400',
   'action' => 'changePassPhrase',

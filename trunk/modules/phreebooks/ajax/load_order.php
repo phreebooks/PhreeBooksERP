@@ -21,7 +21,6 @@ $xml   = NULL;
 $debug = NULL;
 $security_level = \core\classes\user::validate();
 /**************  include page specific files    *********************/
-gen_pull_language('contacts');
 require_once(DIR_FS_MODULES . 'phreebooks/defaults.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 /**************   page specific initialization  *************************/

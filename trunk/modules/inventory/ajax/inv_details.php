@@ -18,7 +18,6 @@
 //
 $security_level = \core\classes\user::validate();
 /**************  include page specific files    *********************/
-gen_pull_language('phreebooks');
 require(DIR_FS_MODULES . 'inventory/defaults.php');
 require(DIR_FS_MODULES . 'inventory/functions/inventory.php');
 /**************   page specific initialization  *************************/
@@ -61,14 +60,14 @@ try{
 	if ($vendor && !$iID && $strict == false && $UPC == false) { // just search for products from that vendor for purchases
 	 	$v_search_fields = array('a.sku', 'a.upc_code', 'a.description_short', 'a.description_sales', 'p.description_purchase' );
   		$first_search = " where " . implode(" like '%$sku%' or ", $v_search_fields) . " like '%$sku%' and p.vendor_id = '$cID' and a.inactive = '0'";
-	  	$purchase     = $admin->DataBase->query("select DISTINCT a.id as id, p.vendor_id as vendor_id, p.description_purchase as description_purchase, p.purch_package_quantity as purch_package_quantity, 
+	  	$purchase     = $admin->DataBase->query("select DISTINCT a.id as id, p.vendor_id as vendor_id, p.description_purchase as description_purchase, p.purch_package_quantity as purch_package_quantity,
   		  p.purch_taxable as purch_taxable, p.item_cost as item_cost, p.price_sheet_v as price_sheet_v from " . TABLE_INVENTORY . " a LEFT JOIN " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku $first_search GROUP BY a.sku");
 	  	if($purchase->recordCount() == 1){
   			$search = " where id = '{$purchase->fields['id']}'";
 	  	}elseif($purchase->recordCount() != 0){
   			$xml .= xmlEntry('result', 'Too many hits!');
 			$xml .= xmlEntry("qty", 1);
-	  		echo createXmlHeader() . $xml . createXmlFooter();  
+	  		echo createXmlHeader() . $xml . createXmlFooter();
   			die;
   		}
 	}
@@ -77,7 +76,7 @@ try{
 			case 1:
 				if ($vendor == true  || $iID == true || $strict == true || $UPC == true) break;
 				$inventory =  $admin->DataBase->query("select * from " . TABLE_INVENTORY .  " where sku = '$sku' and inactive = '0'");
-				break; 
+				break;
 			case 2:
 				$inventory =  $admin->DataBase->query("select * from " . TABLE_INVENTORY . $search . " and inactive = '0'");
 				break;
@@ -85,7 +84,7 @@ try{
 				$inventory =  $admin->DataBase->query("select * from " . TABLE_INVENTORY . $search);
 				break;
 			default:
-				break 2; 
+				break 2;
 		}
 		if(isset($inventory) && $inventory->fetch(\PDO::FETCH_NUM) == 1) break;
 	}
@@ -93,7 +92,7 @@ try{
 		if($UPC) 	$xml .= xmlEntry('error', ORD_JS_SKU_NOT_UNIQUE); // for UPC codes submitted only, send an error
 		else 		$xml .= xmlEntry('result', 'Not enough or too many hits, exiting!');
 		$xml .= xmlEntry("qty", 1);
-	  	echo createXmlHeader() . $xml . createXmlFooter();  
+	  	echo createXmlHeader() . $xml . createXmlFooter();
   		die;
 	}
 	foreach ($inventory->fields as $key => $value) $inventory_array[$key] = $value;

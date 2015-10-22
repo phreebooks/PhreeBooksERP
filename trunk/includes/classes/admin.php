@@ -266,7 +266,6 @@ class admin {
 	    if($methods === false) throw new \core\classes\userException("couldn't read or find directory $method_dir");
 	    foreach ($methods as $method) {
 			if ($method == '.' || $method == '..' || !is_dir($method_dir . $method)) continue;
-		  	load_method_language($method_dir, $method);
 		  	$class = "\\$this->id\\$type\\$method\\$method";
 		  	$choices[$method] = new $class;
 	    }

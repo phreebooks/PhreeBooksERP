@@ -46,7 +46,6 @@ if (defined('MODULE_ZENCART_STATUS')) {
     'params'      => '',
   );
   if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
-	  gen_pull_language('zencart', 'admin');
 	  $mainmenu["company"]['submenu']["configuration"]['submenu']["zencart"] = array(
 		'order'	      => MODULE_ZENCART_TITLE,
 		'text'        => MODULE_ZENCART_TITLE,

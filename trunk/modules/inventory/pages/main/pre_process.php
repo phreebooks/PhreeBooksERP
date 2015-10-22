@@ -22,7 +22,6 @@ require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 require_once(DIR_FS_WORKING . 'functions/inventory.php');
 /**************   page specific initialization  *************************/
-gen_pull_language('inventory','filter');
 $processed   = false;
 $criteria    = array();
 $fields		 = new \inventory\classes\fields();

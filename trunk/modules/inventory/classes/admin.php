@@ -261,7 +261,6 @@ class admin extends \core\classes\admin {
 		);
 
 		if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
-			gen_pull_language('inventory', 'admin');
 			$this->mainmenu["company"]['submenu']["configuration"]['submenu']["inventory"] = array(
 					'order'	      => sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY),
 					'text'        => sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY),
@@ -479,7 +478,7 @@ class admin extends \core\classes\admin {
 			$updateDB = $basis->DataBase->query("update ".TABLE_EXTRA_FIELDS." set params='".serialize($temp)."' where id='{$result['id']}'");
 		}
 		if (version_compare($this->status, '4.0', '<') ) {
-			if (!$admin->DataBase->field_exists(TABLE_INVENTORY, 'class')) $basis->DataBase->exec("ALTER TABLE ".TABLE_INVENTORY." ADD class VARCHAR( 255 ) NOT NULL DEFAULT '' FIRST");
+			if (!$basis->DataBase->field_exists(TABLE_INVENTORY, 'class')) $basis->DataBase->exec("ALTER TABLE ".TABLE_INVENTORY." ADD class VARCHAR( 255 ) NOT NULL DEFAULT '' FIRST");
 			$basis->DataBase->exec("UPDATE ".TABLE_INVENTORY." SET class = CONCAT('inventory\\\\classes\\\\type\\\\', inventory_type) WHERE class = '' ");
 		}
 		\core\classes\fields::sync_fields('inventory', TABLE_INVENTORY);

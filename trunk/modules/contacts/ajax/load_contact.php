@@ -20,7 +20,6 @@
 $xml = NULL;
 $security_level = \core\classes\user::validate();
 /**************  include page specific files    *********************/
-gen_pull_language('contacts');
 /**************   page specific initialization  *************************/
 $cID   = db_prepare_input($_GET['cID']);
   // select the customer and build the contact record

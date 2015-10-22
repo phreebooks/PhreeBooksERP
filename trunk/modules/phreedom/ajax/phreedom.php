@@ -53,7 +53,6 @@ switch ($_REQUEST['action']) {
 			$x++;
 		}
 		if (!file_exists(DIR_FS_MODULES."$modID/functions/$modID.php"))  throw new \core\classes\userException('Could not find module function file to process!');
-		gen_pull_language($modID);
 		require_once(DIR_FS_MODULES.$modID.'/functions/'.$modID.'.php');
 		if (!$results = get_chart_data($fID, $data)) throw new \core\classes\userException('No data returned from function call!');
 		$xml .= xmlEntry('modID',  $_GET['modID']);

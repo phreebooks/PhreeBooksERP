@@ -27,7 +27,6 @@ function pf_process_phreebooks($strData, $Process) {
   switch ($Process) {
 	case "ordr_qty": return pb_pull_order_qty($strData);
 	case "j_desc":
-	  gen_pull_language('phreebooks');
       return isset($journal_types_list[$strData]) ? $journal_types_list[$strData]['text'] : $strData;
 	case "coa_type":  return pb_get_coa_type($strData);
 	case "avg_cost":  return pb_get_avg_cost($strData);

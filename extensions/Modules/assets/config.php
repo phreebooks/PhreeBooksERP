@@ -23,7 +23,6 @@
 // 3.6 => 2013-09-23 - Updates for PhreeBooks R3.6
 // 3.7 => 2014-07-18 - bug fix
 // Module software version information
-gen_pull_language('phreebooks', 'menu');
 // Menu sort positions
 define('MENU_HEADING_ASSETS_ORDER',      77);
 define('BOX_ASSETS_MODULE_ORDER',        90);
@@ -81,7 +80,6 @@ if (defined('MODULE_ASSETS_STATUS')) {
 	  );
 	}
   	if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
-  		gen_pull_language('assets', 'admin');
 		$mainmenu["company"]['submenu']["configuration"]['submenu']["asset"] = array(
 	  		'order'		  => sprintf(TEXT_MODULE_ARGS, TEXT_ASSETS),
 	  		'text'        => sprintf(TEXT_MODULE_ARGS, TEXT_ASSETS),

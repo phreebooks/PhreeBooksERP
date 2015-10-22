@@ -26,7 +26,6 @@ class fields extends \core\classes\fields{
 	public  $extra_buttons = '';
 
 	public function __construct($sync = true, $asset_type = 'vh'){
-  		gen_pull_language('assets');
   		$this->type_array[] = array('id' =>'vh', 'text' => TEXT_VEHICLE);
   		$this->type_array[] = array('id' =>'bd', 'text' => TEXT_BUILDING);
   		$this->type_array[] = array('id' =>'fn', 'text' => TEXT_FURNITURE);

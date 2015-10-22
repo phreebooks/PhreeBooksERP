@@ -18,8 +18,6 @@
 //
 $security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 /**************  include page specific files    *********************/
-gen_pull_language($module, 'admin');
-gen_pull_language('phreedom', 'admin');
 require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
 /**************   page specific initialization  *************************/
 $tabs   = new \assets\classes\tabs();

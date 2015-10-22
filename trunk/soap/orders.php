@@ -18,8 +18,6 @@
 //
 
 require_once ('application_top.php');
-gen_pull_language('contacts');
-gen_pull_language('phreebooks');
 require_once ('classes/parser.php');
 require_once ('classes/orders.php'); // soap required classes
 require_once (DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');

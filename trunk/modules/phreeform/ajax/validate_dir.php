@@ -26,7 +26,6 @@ $fID = $_GET['fID'] ? $_GET['fID'] : 'validateDir';
 $xml = NULL;
 $security_level = \core\classes\user::validate(SECURITY_ID_PHREEFORM);
 /**************  include page specific files    *********************/
-gen_pull_language($module);
 
 /**************   page specific initialization  *************************/
 $id = $_GET['id'];

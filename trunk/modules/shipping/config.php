@@ -42,7 +42,6 @@ if (defined('MODULE_SHIPPING_STATUS')) {
     	'show_in_users_settings' => true,
   );
   if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
-	  gen_pull_language('shipping', 'admin');
 	  $mainmenu["company"]['submenu']["configuration"]['submenu']["shipping"] = array(
 		'order'	      => sprintf(TEXT_MODULE_ARGS, TEXT_SHIPPING),
 		'text'        => sprintf(TEXT_MODULE_ARGS, TEXT_SHIPPING),

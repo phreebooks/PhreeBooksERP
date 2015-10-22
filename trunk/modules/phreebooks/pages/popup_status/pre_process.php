@@ -19,7 +19,6 @@
 //
 $security_level = \core\classes\user::validate(0, true);
 /**************  include page specific files    *********************/
-gen_pull_language('contacts');
 require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
 /**************   page specific initialization  *************************/
 $id = (int)$_GET['id'];

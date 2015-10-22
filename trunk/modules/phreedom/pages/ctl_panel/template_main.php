@@ -45,7 +45,6 @@ $odd = true;
 foreach ($admin->classes as $module_class) {
 	if ($module_class->installed){
   		foreach ($module_class->dashboards as $dashboard){
-  			load_method_language(DIR_FS_MODULES . "{$module_class->id}dashboards/{$dashboard->id}");
 			echo $dashboard->pre_install($odd, $my_profile);// returns nothing if user isn't valid.
 			if ($dashboard->valid_user) $odd = !$odd; //so only update if user is valid.
   		}

@@ -19,8 +19,6 @@
 /**************   Check user security   *****************************/
 $security_level = \core\classes\user::validate();
 /**************  include page specific files    *********************/
-gen_pull_language('phreedom', 'admin');
-gen_pull_language($_GET['mod'], 'admin');
 require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
 /**************   page specific initialization  *************************/
 $page    = $_GET['mod'];

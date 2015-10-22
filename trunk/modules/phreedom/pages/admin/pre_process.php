@@ -19,8 +19,6 @@
 ini_set('memory_limit','256M');  // Set this big for memory exhausted errors
 $security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 /**************  include page specific files    *********************/
-gen_pull_language($module, 'admin');
-gen_pull_language('phreeform');
 if (defined('MODULE_PHREEFORM_STATUS')) {
   require_once(DIR_FS_MODULES . 'phreeform/defaults.php');
   require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
@@ -75,8 +73,6 @@ switch ($_REQUEST['action']) {
   	case 'remove':
   		try{
 		  	\core\classes\user::validate_security($security_level, 4);
-		  	gen_pull_language($method, 'admin');
-			gen_pull_language($method);
 			// load the module installation class
 			if (!array_key_exists($method, $admin->classes)) throw new \core\classes\userException(sprintf('Looking for the delete script for module %s, but could not locate it. The module cannot be deleted!', $method));
 			$admin->DataBase->transStart();
@@ -154,7 +150,6 @@ switch ($_REQUEST['action']) {
 		    $backup->source_file = 'temp.sql';
 		    foreach ($admin->classes as $key => $class) {
 				if (!$class->core && !isset($_POST[$key])) continue;
-			  	gen_pull_language($key, 'admin');
 			    $task        = $_POST[$key . '_action'];
 				if ($key == 'phreedom') $task = 'data'; // force complete copy of phreedom module
 			    switch ($task) {

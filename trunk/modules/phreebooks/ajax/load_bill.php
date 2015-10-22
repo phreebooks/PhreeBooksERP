@@ -20,7 +20,6 @@
 $xml = NULL;
 $security_level = \core\classes\user::validate();
 /**************  include page specific files    *********************/
-gen_pull_language('contacts');
 require_once(DIR_FS_MODULES . 'phreebooks/defaults.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 
@@ -42,7 +41,7 @@ if ($bID) {
 $contact = $admin->DataBase->query("select * from " . TABLE_CONTACTS . " where id = '$cID'");
 $type = $contact->fields['type'];
 define('ACCOUNT_TYPE', $type);
-$bill_add  = $admin->DataBase->query("select * from " . TABLE_ADDRESS_BOOK . " 
+$bill_add  = $admin->DataBase->query("select * from " . TABLE_ADDRESS_BOOK . "
   where ref_id = '" . $cID . "' and type in ('" . $type . "m', '" . $type . "b')");
 
 //$debug .= 'Processing main_id = ' . $bID . ' and contact ID = ' . $cID . ' and type = ' . $type . chr(10);

@@ -41,7 +41,6 @@ if (defined('MODULE_PHREEWIKI_STATUS')) {
 
 
   if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
-	  gen_pull_language('phreewiki', 'admin');
 	  $mainmenu["company"]['submenu']["configuration"]['submenu']["phreewiki"] = array(
 		'order'	      => MODULE_PHREEWIKI_TITLE,
 		'text'        => MODULE_PHREEWIKI_TITLE,

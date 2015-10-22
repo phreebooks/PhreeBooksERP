@@ -1363,8 +1363,7 @@ class PHPMailer
     public function setLanguage($langcode = 'en', $lang_path = 'language/')
     {
        	//Define full set of translatable strings
-    	load_method_language(DIR_FS_MODULES . 'phreedom/includes/PHPMailer');
-     	$PHPMAILER_LANG = array( 
+     	$PHPMAILER_LANG = array(
 // ****** PhreeBooks changed all of these to constants *****
 	      'authenticate'         => PHPMAILER_AUTH,     // 'SMTP Error: Could not authenticate.'
 	      'connect_host'         => PHPMAILER_CH,       // 'SMTP Error: Could not connect to SMTP host.'
@@ -1383,7 +1382,7 @@ class PHPMailer
 	      'signing'              => PHPMAILER_SIGN,     // 'Signing Error: '
 	      'smtp_connect_failed'  => PHPMAILER_CONN_FAILT,//'SMTP connect() failed.'
 	      'smtp_error'           => PHPMAILER_SMTP_ERR, // 'SMTP server error: '
-	      'variable_set'         => PHPMAILER_VAR_SET,  // 'Cannot set or reset variable: '	
+	      'variable_set'         => PHPMAILER_VAR_SET,  // 'Cannot set or reset variable: '
 	    );
 /*
         //Overwrite language-specific strings.

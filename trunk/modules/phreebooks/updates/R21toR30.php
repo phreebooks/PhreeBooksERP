@@ -66,8 +66,6 @@ if (!$admin->DataBase->field_exists(TABLE_JOURNAL_MAIN, 'closed_date')) {
 }
 
 // convert reports
-gen_pull_language('phreebooks');
-gen_pull_language('phreeform','admin');
 require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
 require_once(DIR_FS_MODULES . 'phreeform/functions/reportwriter.php');
 $result = $admin->DataBase->query("select * from " . TABLE_REPORTS);

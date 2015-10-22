@@ -18,9 +18,6 @@
 //
 $security_level = \core\classes\user::validate(SECURITY_ID_CONFIGURATION);
 /**************  include page specific files    *********************/
-gen_pull_language($module, 'admin');
-gen_pull_language('phreedom', 'admin');
-gen_pull_language('contacts');
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/shipping.php');
 /**************   page specific initialization  *************************/

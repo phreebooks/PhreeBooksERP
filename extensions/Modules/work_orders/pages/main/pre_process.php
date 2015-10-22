@@ -179,8 +179,6 @@ switch ($_REQUEST['action']) {
 				$sku    = $result->fields['sku'];
 				$desc   = $result->fields['description_short'];
 				$acct   = $result->fields['account_inventory_wage'];
-				gen_pull_language('inventory');
-				gen_pull_language('phreebooks');
 				require_once(DIR_FS_MODULES . 'inventory/functions/inventory.php');
 				require_once(DIR_FS_MODULES . 'phreebooks/classes/gen_ledger.php');
 				define('JOURNAL_ID', 14); // Inventory Assemblies Journal
