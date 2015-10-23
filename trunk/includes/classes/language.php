@@ -239,6 +239,7 @@ class language {
 		$doc = new \DOMDocument('1.0', 'utf-8');
 		$doc->formatOutput = true;
 		$doc->load($lang_path);
+		if ($doc->getElementById($constant) != null) break;
 		$root = $doc->documentElement;
 		$first_element = $doc->createElement('translation');
 		$first_element->setAttribute('id', $constant);
@@ -246,6 +247,7 @@ class language {
 		$string = strtolower(str_replace(array('TEXT_', '_'), array('', ' '),$constant));
 		$temp = $doc->createElement('en_us', $string);
 		$second->appendChild($temp);
+		$doc->formatOutput = true;
 		$doc->save($lang_path);
 		define($constant, $string);
 	}
