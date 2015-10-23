@@ -46,6 +46,24 @@ class language {
 		if (sizeof($this->phrases)   == 0) $this->get_translations();
 	}
 
+	public function __wakeup() {
+		if( isset($_SESSION['language']) && $_SESSION['language'] != '') {
+			$this->language_code = $_SESSION['language'];
+		} else if( isset($_REQUEST['language']) && $_REQUEST['language'] != '') {
+			$this->language_code = $_REQUEST['language'];
+		} else {
+			if(defined('DEFAULT_LANGUAGE')) {
+				$this->language_code = DEFAULT_LANGUAGE;
+			}else if( isset($_COOKIE['pb_language'])){
+				$this->language_code = $_COOKIE['pb_language'];
+			}else if( isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) && strlen($_SERVER['HTTP_ACCEPT_LANGUAGE']) == 5){
+				$this->language_code = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+			}
+		}
+		//		$this->find_language_constants();
+		if (sizeof($this->languages) == 0) $this->get_languages();
+		if (sizeof($this->phrases)   == 0) $this->get_translations();
+	}
 	/**
 	 * function will get all language constants.
 	 * @throws \core\classes\userException
