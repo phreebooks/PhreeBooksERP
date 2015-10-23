@@ -98,7 +98,7 @@ class beg_bal_import {
 		  	$order = $this->records[$row_cnt];
 			$glEntry = new \core\classes\journal();
 			// determine if date is within a known period, if date is before period 1 use period = 0 (and enter beginning balances)
-			$glEntry->period = gen_calculate_period($order['post_date'], $hide_error = true); // date format YYYY-MM-DD
+			$glEntry->period = \core\classes\DateTime::period_of_date($order['post_date'], $hide_error = true); // date format YYYY-MM-DD
 			if (!$glEntry->period) $glEntry->period = 1; // if out of range default to first period (required to be valid period or it won't post)
 			// build journal main entry
 			$glEntry->journal_id          = JOURNAL_ID;

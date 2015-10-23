@@ -36,7 +36,7 @@ switch ($_REQUEST['action']) {
 	\core\classes\user::validate_security($security_level, 2);
 	// retrieve and clean input values
 	$glEntry->post_date           = $post_date;
-	$glEntry->period              = gen_calculate_period($post_date);
+	$glEntry->period              = \core\classes\DateTime::period_of_date($post_date);
 	$glEntry->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);
 	$glEntry->admin_id            = $_SESSION['admin_id'];
 	$glEntry->closed              = '1'; // closes by default

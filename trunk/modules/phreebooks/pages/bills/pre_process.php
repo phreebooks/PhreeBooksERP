@@ -39,7 +39,7 @@ require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
 // check to see if we need to make a payment for a specific order
 $oID               = isset($_GET['oID']) ? (int)$_GET['oID'] : false;
 $post_date         = ($_POST['post_date']) ? gen_db_date($_POST['post_date']) : date('Y-m-d', time());
-$period            = gen_calculate_period($post_date);
+$period            = \core\classes\DateTime::period_of_date($post_date);
 if (!$period) { // bad post_date was submitted
   $_REQUEST['action']    = '';
   $post_date = date('Y-m-d');

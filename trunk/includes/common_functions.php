@@ -179,23 +179,6 @@
     	return $type_format_array;
   	}
 
-	function gen_calculate_period($post_date, $hide_error = false) {
-		global $admin;
-		$post_time_stamp = strtotime($post_date);
-		$period_start_time_stamp = strtotime(CURRENT_ACCOUNTING_PERIOD_START);
-		$period_end_time_stamp = strtotime(CURRENT_ACCOUNTING_PERIOD_END);
-
-		if (($post_time_stamp >= $period_start_time_stamp) && ($post_time_stamp <= $period_end_time_stamp)) return CURRENT_ACCOUNTING_PERIOD;
-		$sql = $admin->DataBase->prepare("SELECT period FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE start_date <= '$post_date' and end_date >= '$post_date'");
-		$sql->execute();
-		if ($sql->fetch(\PDO::FETCH_NUM) <> 1) { // post_date is out of range of defined accounting periods
-			if (!$hide_error) throw new \core\classes\userException(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR);
-		}
-		$result = $sql->fetch(\PDO::FETCH_LAZY);
-		if (!$hide_error) throw new \core\classes\userException(ERROR_MSG_BAD_POST_DATE);
-		return $result['period'];
-  	}
-
   	function gen_get_period_pull_down($include_all = true) {
     	global $admin;
     	$sql = $admin->DataBase->prepare("SELECT period, start_date, end_date FROM " . TABLE_ACCOUNTING_PERIODS . " ORDER BY period");

@@ -649,7 +649,7 @@ class journal_10 extends \core\classes\journal {
 						$this->terminal_date       = $first_terminal_date;
 						$this->purchase_invoice_id = $first_purchase_invoice_id;
 					}
-					$this->period        = gen_calculate_period($this->post_date, true);
+					$this->period        = \core\classes\DateTime::period_of_date($this->post_date, true);
 					$this->journal_main_array['post_date']     = $this->post_date;
 					$this->journal_main_array['period']        = $this->period;
 					$this->journal_main_array['terminal_date'] = $this->terminal_date;
@@ -683,7 +683,7 @@ class journal_10 extends \core\classes\journal {
 					}
 					$this->post_date     = gen_specific_date($post_date, $day_offset, $month_offset, $year_offset);
 					if ($this->terminal_date) $this->terminal_date = gen_specific_date($this->terminal_date, $day_offset, $month_offset, $year_offset);
-					$this->period        = gen_calculate_period($this->post_date, true);
+					$this->period        = \core\classes\DateTime::period_of_date($this->post_date, true);
 					if (!$this->period && $i < ($this->recur_id - 1)) { // recur falls outside of available periods, ignore last calculation
 						throw new \core\classes\userException(ORD_PAST_LAST_PERIOD);
 					}

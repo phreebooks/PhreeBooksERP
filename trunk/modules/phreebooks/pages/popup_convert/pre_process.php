@@ -57,7 +57,7 @@ switch ($_REQUEST['action']) {
 		$order->id            = '';
 		$order->journal_id    = JOURNAL_ID;
 		$order->post_date     = date('Y-m-d'); // make post date today
-		$order->period        = gen_calculate_period($order->post_date);
+		$order->period        = \core\classes\DateTime::period_of_date($order->post_date);
 		$order->terminal_date = $order->post_date;
 		$order->journal_main_array['id']          = $order->id;
 		$order->journal_main_array['journal_id']  = $order->journal_id;

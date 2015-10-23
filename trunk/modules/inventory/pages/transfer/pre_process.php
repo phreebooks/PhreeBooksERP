@@ -24,7 +24,7 @@ require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 /**************   page specific initialization  *************************/
 define('JOURNAL_ID',16);	// Adjustment Journal
 $post_date = ($_POST['post_date']) ? gen_db_date($_POST['post_date']) : date('Y-m-d');
-$period    = gen_calculate_period($post_date);
+$period    = \core\classes\DateTime::period_of_date($post_date);
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/transfer/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
@@ -64,7 +64,7 @@ switch ($_REQUEST['action']) {
 	  		$glEntry->so_po_ref_id        = '-1'; // first of 2 adjustments
 	  		$glEntry->journal_id          = JOURNAL_ID;
 	  		$glEntry->post_date           = $post_date;
-	  		$glEntry->period              = gen_calculate_period($post_date);
+	  		$glEntry->period              = \core\classes\DateTime::period_of_date($post_date);
 	  		$glEntry->store_id            = $source_store_id;
 	  		$glEntry->bill_acct_id        = $dest_store_id;
 	  		$glEntry->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);

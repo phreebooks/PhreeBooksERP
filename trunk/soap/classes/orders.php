@@ -166,7 +166,7 @@ class xml_orders extends parser {
 	$psOrd->journal_id          = JOURNAL_ID;
 	$psOrd->post_date           = $this->order['post_date']; // date format should already be YYYY-MM-DD
 	$psOrd->terminal_date       = $this->order['post_date']; // make same as order date for now
-	$psOrd->period              = gen_calculate_period($psOrd->post_date);
+	$psOrd->period              = \core\classes\DateTime::period_of_date($psOrd->post_date);
 	$psOrd->store_id            = $this->get_account_id($this->order['store_id'], 'b');
 	$psOrd->admin_id            = $this->get_user_id($this->username);
 	$psOrd->description         = SOAP_XML_SUBMITTED_SO;

@@ -424,7 +424,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 
   function gen_auto_update_period($show_message = true) {
 	global $admin, $messageStack;
-	$period = gen_calculate_period(date('Y-m-d'), true);
+	$period = \core\classes\DateTime::period_of_date(date('Y-m-d'), true);
 	if ($period == CURRENT_ACCOUNTING_PERIOD && defined('CURRENT_ACCOUNTING_PERIOD')) return; // we're in the current period
 	if (!$period) { // we're outside of the defined fiscal years
 	  if ($show_message) $messageStack->add(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');

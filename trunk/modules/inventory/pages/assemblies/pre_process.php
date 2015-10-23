@@ -44,7 +44,7 @@ switch ($_REQUEST['action']) {
 			$stock                        = db_prepare_input($_POST['stock_1']);
 			$serial                       = db_prepare_input($_POST['serial_1']);
 			// check for errors and prepare extra values
-			$glEntry->period              = gen_calculate_period($glEntry->post_date);
+			$glEntry->period              = \core\classes\DateTime::period_of_date($glEntry->post_date);
 			if (!$glEntry->period) throw new \core\classes\userException("period isn't set");
 			// if unbuild, test for stock to go negative
 			$result = $admin->DataBase->query("select account_inventory_wage, quantity_on_hand

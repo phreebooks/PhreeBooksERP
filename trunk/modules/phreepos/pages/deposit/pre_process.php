@@ -42,7 +42,7 @@ $order            = new \phreebooks\classes\banking;
 $gl_acct_id       = isset($_POST['gl_acct_id'])          ? db_prepare_input($_POST['gl_acct_id'])          : $order->gl_acct_id;
 $next_inv_ref     = isset($_POST['purchase_invoice_id']) ? db_prepare_input($_POST['purchase_invoice_id']) : $order->purchase_invoice_id;
 $post_date        = isset($_POST['post_date'])           ? gen_db_date($_POST['post_date'])                : date('Y-m-d');
-$period           = gen_calculate_period($post_date ,true);
+$period           = \core\classes\DateTime::period_of_date($post_date ,true);
 if (!$period) { // bad post_date was submitted
   	$_REQUEST['action']    = '';
   	$post_date = date('Y-m-d');

@@ -23,7 +23,7 @@ require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
 /**************   page specific initialization  *************************/
 define('JOURNAL_ID',2);	// General Journal
 $post_date = ($_POST['post_date']) ? gen_db_date($_POST['post_date']) : date('Y-m-d', time());
-$period    = gen_calculate_period($post_date);
+$period    = \core\classes\DateTime::period_of_date($post_date);
 $glEntry   = new \core\classes\journal();
 $glEntry->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing gl entry
 // All general journal entries are in the default currency.
@@ -113,7 +113,7 @@ switch ($_REQUEST['action']) {
 					  	}
 					  	$glEntry->post_date = $affected_ids[$i]['post_date'];
 					}
-					$glEntry->period                          = gen_calculate_period($glEntry->post_date, true);
+					$glEntry->period                          = \core\classes\DateTime::period_of_date($glEntry->post_date, true);
 					$glEntry->journal_main_array['post_date'] = $glEntry->post_date;
 					$glEntry->journal_main_array['period']    = $glEntry->period;
 					$glEntry->purchase_invoice_id             = $affected_ids[$i]['purchase_invoice_id'];
@@ -143,7 +143,7 @@ switch ($_REQUEST['action']) {
 						case '5': $year_offset  = ($i+1)*1;  break; // Yearly
 					}
 					$glEntry->post_date = gen_specific_date($post_date, $day_offset, $month_offset, $year_offset);
-					$glEntry->period = gen_calculate_period($glEntry->post_date, true);
+					$glEntry->period = \core\classes\DateTime::period_of_date($glEntry->post_date, true);
 					if (!$glEntry->period && $i < ($glEntry->recur_id - 1)) { // recur falls outside of available periods, ignore last calculation
 					  throw new \core\classes\userException(ORD_PAST_LAST_PERIOD);
 					}

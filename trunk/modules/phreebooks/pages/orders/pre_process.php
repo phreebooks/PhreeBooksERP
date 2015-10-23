@@ -126,7 +126,7 @@ switch ($_REQUEST['action']) {
 		$order->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
 		$order->journal_id          = JOURNAL_ID;
 		$order->post_date           = gen_db_date($_POST['post_date']);
-		$order->period              = gen_calculate_period($order->post_date);
+		$order->period              = \core\classes\DateTime::period_of_date($order->post_date);
 		if (!$order->period) throw new \core\classes\userException("the period isn't set");	// bad post_date was submitted
 		if ($_SESSION['admin_prefs']['restrict_period'] && $order->period <> CURRENT_ACCOUNTING_PERIOD) throw new \core\classes\userException(ORD_ERROR_NOT_CUR_PERIOD);
 		$order->so_po_ref_id        = db_prepare_input($_POST['so_po_ref_id']);	// Internal link to reference po/so record

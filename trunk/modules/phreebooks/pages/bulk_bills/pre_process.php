@@ -25,7 +25,7 @@ define('AUDIT_LOG_DESC',TEXT_CASH_DISTRIBUTIONS);
 $post_success      = false;
 $post_date         = isset($_REQUEST['post_date']) ? gen_db_date($_REQUEST['post_date']) : date('Y-m-d', time());
 $_GET['post_date'] = $post_date;
-$period = gen_calculate_period($post_date);
+$period = \core\classes\DateTime::period_of_date($post_date);
 if (!$period) { // bad post_date was submitted
   $_REQUEST['action'] = '';
   $post_date = date('Y-m-d', time());

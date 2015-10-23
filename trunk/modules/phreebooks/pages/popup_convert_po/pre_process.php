@@ -37,7 +37,7 @@ switch ($_REQUEST['action']) {
 		$order->id = '';
 		$order->journal_id = JOURNAL_ID;
 		$order->post_date = date('Y-m-d',time()); // make post date today
-		$order->period = gen_calculate_period($order->post_date);
+		$order->period = \core\classes\DateTime::period_of_date($order->post_date);
 		$order->closed = '0';
 		$order->gl_acct_id = AP_DEFAULT_PURCHASE_ACCOUNT;
 	    $order->purchase_invoice_id = $purchase_invoice_id;

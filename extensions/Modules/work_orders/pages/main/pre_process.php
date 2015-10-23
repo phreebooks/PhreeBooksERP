@@ -187,7 +187,7 @@ switch ($_REQUEST['action']) {
 				$glEntry->admin_id            = $_SESSION['admin_id'];
 				$glEntry->journal_id          = JOURNAL_ID;
 				$glEntry->post_date           = date('Y-m-d');
-				$glEntry->period              = gen_calculate_period($glEntry->post_date);
+				$glEntry->period              = \core\classes\DateTime::period_of_date($glEntry->post_date);
 				if (!$glEntry->period) break;
 				$glEntry->purchase_invoice_id = $wo_num;
 				$glEntry->store_id            = isset($_POST['store_id']) ? $_POST['store_id'] : 0;

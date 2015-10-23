@@ -41,7 +41,7 @@ if(isset($_GET['till_id'])){
 	$post_date = '';
 	$_REQUEST['action']    = '';
 }
-if($post_date) $period = gen_calculate_period($post_date);
+if($post_date) $period = \core\classes\DateTime::period_of_date($post_date);
 $glEntry->currencies_code  = DEFAULT_CURRENCY;
 $glEntry->currencies_value = 1;
 /***************   hook for custom actions  ***************************/
