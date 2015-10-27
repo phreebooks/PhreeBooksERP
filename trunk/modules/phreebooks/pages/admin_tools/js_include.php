@@ -91,7 +91,7 @@ foreach ($fy_array as $key => $value) {
 	  'form'      => 'admin_tools',
 	  'fieldname' => 'start_' . $i,
 	  'imagename' => 'btn_date_' . $i,
-	  'default'   => gen_locale_date($value['start']),
+	  'default'   => \core\classes\DateTime::createFromFormat(DATE_FORMAT, $value['start']),
 	  'params'    => array('align' => 'left', 'readonly' => 'true'),
 	);
 	echo js_calendar_init($cal_gen[$i]);
@@ -101,7 +101,7 @@ foreach ($fy_array as $key => $value) {
 	  'form'      => 'admin_tools',
 	  'fieldname' => 'end_' . $i,
 	  'imagename' => 'btn_date_' . $i,
-	  'default'   => gen_locale_date($value['end']),
+	  'default'   => \core\classes\DateTime::createFromFormat(DATE_FORMAT, $value['end']),
 	  'params'    => array('align' => 'left', 'onchange' => 'updateEnd('.$i.');', 'readonly' => 'true'),
 	);
 	echo js_calendar_init($cal_gen[$i]);

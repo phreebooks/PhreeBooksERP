@@ -32,7 +32,7 @@
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
  <thead class="ui-widget-header">
   <tr>
-    <th colspan="8"><?php echo TEXT_SHIPMENTS_ON . ': ' . gen_locale_date($date); ?></th>
+    <th colspan="8"><?php echo TEXT_SHIPMENTS_ON . ': ' . \core\classes\DateTime::createFromFormat(DATE_FORMAT, $date); ?></th>
   </tr>
   <tr>
 	<th><?php echo TEXT_SHIPMENT_ID;   ?></th>
@@ -65,8 +65,8 @@
 			echo '    <td' . $bkgnd . ' align="center">' . $result->fields['shipment_id'] . '</td>' . chr(10);
 			echo '    <td' . $bkgnd . ' align="center">' . $result->fields['ref_id'] . '</td>' . chr(10);
 			echo '    <td align="center">' . constant($method->id . '_' . $result->fields['method']) . '</td>' . chr(10);
-			echo '    <td align="right">' . ($result->fields['deliver_date'] <> '0000-00-00 00:00:00' ? gen_locale_date($result->fields['deliver_date'], true) : '&nbsp;') . '</td>' . chr(10);
-			echo '    <td align="right">' . ($result->fields['actual_date']  <> '0000-00-00 00:00:00' ? gen_locale_date($result->fields['actual_date'], true)  : '&nbsp;') . '</td>' . chr(10);
+			echo '    <td align="right">' . ($result->fields['deliver_date'] <> '0000-00-00 00:00:00' ? \core\classes\DateTime::createFromFormat(DATE_TIME_FORMAT, $result->fields['deliver_date']) : '&nbsp;') . '</td>' . chr(10);
+			echo '    <td align="right">' . ($result->fields['actual_date']  <> '0000-00-00 00:00:00' ? \core\classes\DateTime::createFromFormat(DATE_TIME_FORMAT, $result->fields['actual_date'])  : '&nbsp;') . '</td>' . chr(10);
 			echo '    <td align="right"><a target="_blank" href="' . FEDEX_V7_TRACKING_URL . $result->fields['tracking_id'] . '">' . $result->fields['tracking_id'] . '</a></td>' . chr(10);
 			echo '    <td align="right">' . $admin->currencies->format_full($result->fields['cost']) . '</td>' . chr(10);
 			echo '    <td align="right" nowrap="nowrap">';

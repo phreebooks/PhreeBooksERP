@@ -187,7 +187,7 @@ switch ($_REQUEST['action']) {
 
   case 'close':
     $date     = ($_GET['date']) ? $_GET['date'] : date('Y-m-d');
-	$admin->classes['shipping']->methods[$method]->close_date = ($_POST['search_date']) ? gen_db_date($_POST['search_date']) : date('Y-m-d');
+	$admin->classes['shipping']->methods[$method]->close_date = ($_POST['search_date']) ? \core\classes\DateTime::db_date_format($_POST['search_date']) : date('Y-m-d');
 	$admin->classes['shipping']->methods[$method]->closeFedEx($date);
 	gen_add_audit_log(sprintf(SHIPPING_END_OF_DAY, $admin->classes['shipping']->methods[$method]->id), $tracking_id);
 	break;

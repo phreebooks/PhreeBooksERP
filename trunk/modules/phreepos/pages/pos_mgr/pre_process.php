@@ -22,7 +22,7 @@ define('JOURNAL_ID','19');
 /**************   page specific initialization  *************************/
 history_filter('pos_mgr');
 /***************   hook for custom actions  ***************************/
-$date        = gen_db_date($_REQUEST['search_date']);
+$date        = \core\classes\DateTime::db_date_format($_REQUEST['search_date']);
 $acct_period = $_REQUEST['search_period'];
 $oid		 = isset($_GET['oID']) ? $_GET['oID'] : false;
 if ($acct_period == false) $acct_period = CURRENT_ACCOUNTING_PERIOD;
@@ -133,7 +133,7 @@ $cal_date = array(
   'form'      => 'pos_mgr',
   'fieldname' => 'search_date',
   'imagename' => 'btn_date_1',
-  'default'   => ($date != false) ? gen_locale_date($date): '',
+  'default'   => ($date != false) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $date): '',
   'params'    => array('align' => 'left'),
 );
 
@@ -142,7 +142,7 @@ $cal_gl = array(
 		'form'      => 'journal',
 		'fieldname' => 'post_date',
 		'imagename' => 'btn_date_1',
-		'default'   => gen_locale_date($post_date),
+		'default'   => \core\classes\DateTime::createFromFormat(DATE_FORMAT, $post_date),
 );
 
 $include_header   = true;

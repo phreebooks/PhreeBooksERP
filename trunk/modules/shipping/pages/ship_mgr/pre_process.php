@@ -20,7 +20,7 @@ $security_level = \core\classes\user::validate(SECURITY_ID_SHIPPING_MANAGER);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_WORKING . 'defaults.php');
 /**************   page specific initialization  *************************/
-$date        = $_GET['search_date']       ? gen_db_date($_GET['search_date']) : date('Y-m-d');
+$date        = $_GET['search_date']       ? \core\classes\DateTime::db_date_format($_GET['search_date']) : date('Y-m-d');
 if ($_REQUEST['search_text'] == TEXT_SEARCH) $_REQUEST['search_text'] = '';
 $method   = isset($_POST['module_id']) ? $_POST['module_id'] : '';
 $row_seq     = isset($_POST['rowSeq'])    ? $_POST['rowSeq']    : '';
@@ -46,7 +46,7 @@ $cal_ship = array(
   'form'      => 'ship_mgr',
   'fieldname' => 'search_date',
   'imagename' => 'btn_date_1',
-  'default'   => gen_locale_date($date),
+  'default'   => \core\classes\DateTime::createFromFormat(DATE_FORMAT, $date),
   'params'    => array('align'=>'left', 'onchange'=>'calendarPage();'),
 );
 $include_header   = true;

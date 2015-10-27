@@ -60,7 +60,7 @@ class to_receive_inv extends \core\classes\ctl_panel {
 				$contents .= '<div style="float:right">' . $admin->currencies->format_full($inv_balance, true, $result['currencies_code'], $result['currencies_value']) . '</div>';
 				$contents .= '<div>';
 				$contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;oID={$result['id']}&amp;jID={$result['journal_id']}&amp;action=edit", 'SSL') . '">';
-				$contents .= gen_locale_date($result['post_date']) . ' - ';
+				$contents .= \core\classes\DateTime::createFromFormat(DATE_FORMAT, $result['post_date']) . ' - ';
 				if ($result['purchase_invoice_id'] != '') $contents .= $result['purchase_invoice_id'] . ' - ';
 				$contents .= htmlspecialchars($result['bill_primary_name']);
 				$contents .= '</a></div>' . chr(10);

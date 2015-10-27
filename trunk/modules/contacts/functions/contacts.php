@@ -32,27 +32,24 @@ function get_chart_data($operation, $data) {
   		$output['value_text'] = TEXT_TOTAL;
   		$id = $data[0];
   		if (!$id) return false;
-  		$dates = gen_get_dates(gen_specific_date(date(Y-m-d), 0, 0, -1));
+  		$date = new \core\classes\DateTime();
+  		$date->modify("-1 year");
   		$result = $admin->DataBase->query("SELECT month(post_date) as month, year(post_date) as year,
           sum(total_amount) as total from ".TABLE_JOURNAL_MAIN."
-  		  where bill_acct_id = $id and journal_id in (12,13) and post_date >= '".$dates['ThisYear'].'-'.$dates['ThisMonth']."-01'
+  		  where bill_acct_id = $id and journal_id in (12,13) and post_date >= '".$date->format('Y').'-'.$date->format('m')."-01'
   		  group by year, month limit 12");
   		for ($i=0; $i<12; $i++) {
-  			if ($result->fields['year'] == $dates['ThisYear'] && $result->fields['month'] == $dates['ThisMonth']) {
-  			  $value = $result->fields['total'];
-  			  $result->MoveNext();
+  			if ($result->fields['year'] == $date->format('Y') && $result->fields['month'] == $date->format('m')) {
+  			  	$value = $result->fields['total'];
+  			  	$result->MoveNext();
   			} else {
-  			  $value = 0;
+  			  	$value = 0;
   			}
   			$output['data'][] = array(
-  			  'label' => $dates['ThisYear'].'-'.$dates['ThisMonth'],
+  			  'label' => $date->format('Y').'-'.$date->format('m'),
   			  'value' => $value,
   			);
-  			$dates['ThisMonth']++;
-  			if ($dates['ThisMonth'] == '13') {
-  				$dates['ThisYear']++;
-  				$dates['ThisMonth'] = '01';
-  			}
+  			$date->modify("+1 month");
   		}
   		break;
   	default:

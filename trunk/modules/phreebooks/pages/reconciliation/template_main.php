@@ -64,7 +64,7 @@ echo $toolbar->build($add_search = false, $add_period = false);
 	?>
 		<tr class="<?php echo $odd?'odd':'even'; ?>">
 			<td width="16%"><?php echo $values['reference']; ?></td>
-			<td width="10%"><?php echo gen_locale_date($values['post_date']); ?></td>
+			<td width="10%"><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $values['post_date']); ?></td>
 			<td width="15%" align="right"><?php echo $values['dep_amount'] ? $admin->currencies->format($values['dep_amount']) : '&nbsp;'; ?></td>
 			<td width="15%" align="right"><?php echo $values['pmt_amount'] ? $admin->currencies->format($values['pmt_amount']) : '&nbsp;'; ?></td>
 			<td width="30%"><?php echo htmlspecialchars($values['name']); ?></td>
@@ -95,7 +95,7 @@ echo $toolbar->build($add_search = false, $add_period = false);
 		  	?>
 		    <tr class="<?php echo $even?'even':'odd'; ?>">
 			  <td width="16%"><?php echo '&nbsp;'; ?></td>
-			  <td width="10%"><?php echo gen_locale_date($detail['post_date']); ?></td>
+			  <td width="10%"><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $detail['post_date']); ?></td>
 			  <td width="15%" align="right"><?php echo $detail['dep_amount'] ? $admin->currencies->format($detail['dep_amount']) : '&nbsp;'; ?></td>
 			  <td width="15%" align="right"><?php echo $detail['pmt_amount'] ? $admin->currencies->format($detail['pmt_amount']) : '&nbsp;'; ?></td>
 			  <td width="30%"><?php echo htmlspecialchars($detail['name']); ?></td>

@@ -29,7 +29,7 @@
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
  <thead class="ui-widget-header">
   <tr>
-    <th colspan="8"><?php echo SHIPPING_YRC_SHIPMENTS_ON . ' ' . gen_locale_date($date); ?></th>
+    <th colspan="8"><?php echo SHIPPING_YRC_SHIPMENTS_ON . ' ' . \core\classes\DateTime::createFromFormat(DATE_FORMAT, $date); ?></th>
   </tr>
   <tr>
 	<th><?php echo TEXT_SHIPMENT_ID; ?></th>
@@ -52,8 +52,8 @@
 			echo '    <td align="right">' . $result->fields['shipment_id'] . '</td>' . chr(10);
 			echo '    <td align="right">' . $result->fields['ref_id'] . '</td>' . chr(10);
 			echo '    <td align="center">' . constant('yrc_' . $result->fields['method']) . '</td>' . chr(10);
-			echo '    <td align="right">' . gen_locale_date($result->fields['deliver_date']) . '</td>' . chr(10);
-			echo '    <td align="right">' . ($result->fields['actual_date'] ? gen_locale_date($result->fields['actual_date']) : '&nbsp;') . '</td>' . chr(10);
+			echo '    <td align="right">' . \core\classes\DateTime::createFromFormat(DATE_FORMAT, $result->fields['deliver_date']) . '</td>' . chr(10);
+			echo '    <td align="right">' . ($result->fields['actual_date'] ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $result->fields['actual_date']) : '&nbsp;') . '</td>' . chr(10);
 			echo '    <td align="right"><a target="_blank" href="' . MODULE_SHIPPING_YRC_TRACKING_URL . '">' . $result->fields['tracking_id'] . '</a></td>' . chr(10);
 			echo '    <td align="right">' . $admin->currencies->format_full($result->fields['cost']) . '</td>' . chr(10);
 			echo '    <td align="right">';

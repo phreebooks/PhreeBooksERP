@@ -54,8 +54,8 @@ echo $toolbar->build($add_search = true);
 	<td style="text-align:center" onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo ($query_result->fields['inactive'] == '1' ? TEXT_YES : ''); ?></td>
 	<td style="text-align:center" onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo $query_result->fields['revision']; ?></td>
 	<td style="text-align:center" onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo ($query_result->fields['default_sheet'] == '1' ? TEXT_YES : ''); ?></td>
-	<td style="text-align:center" onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo gen_locale_date($query_result->fields['effective_date']); ?></td>
-	<td style="text-align:center" onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo gen_locale_date($query_result->fields['expiration_date']); ?></td>
+	<td style="text-align:center" onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result->fields['effective_date']); ?></td>
+	<td style="text-align:center" onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result->fields['expiration_date']); ?></td>
 	<td style="text-align:center" onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo $special_price; ?></td>
 	<td style="text-align:right" >
 <?php

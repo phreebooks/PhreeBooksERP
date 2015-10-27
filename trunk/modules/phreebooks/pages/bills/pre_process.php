@@ -38,7 +38,7 @@ require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
 /**************   page specific initialization  *************************/
 // check to see if we need to make a payment for a specific order
 $oID               = isset($_GET['oID']) ? (int)$_GET['oID'] : false;
-$post_date         = ($_POST['post_date']) ? gen_db_date($_POST['post_date']) : date('Y-m-d', time());
+$post_date         = ($_POST['post_date']) ? \core\classes\DateTime::db_date_format($_POST['post_date']) : date('Y-m-d', time());
 $period            = \core\classes\DateTime::period_of_date($post_date);
 if (!$period) { // bad post_date was submitted
   $_REQUEST['action']    = '';
@@ -155,7 +155,7 @@ switch ($_REQUEST['action']) {
 		$admin->DataBase->transRollback();
 	 	$messageStack->add($e->getMessage());
 	  	$order = new \core\classes\objectInfo($_POST);
-	  	$order->post_date = gen_db_date($_POST['post_date']); // fix the date to original format
+	  	$order->post_date = \core\classes\DateTime::db_date_format($_POST['post_date']); // fix the date to original format
 	  	$order->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
 	}
 	if (DEBUG) $messageStack->write_debug();
@@ -178,7 +178,7 @@ switch ($_REQUEST['action']) {
 	throw new \core\classes\userException(TEXT_THERE_WERE_ERRORS_DURING_PROCESSING . ' ' . TEXT_THE_RECORD_WAS_NOT_DELETED);
 	// if we are here, there was an error, reload page
 	$order = new \core\classes\objectInfo($_POST);
-	$order->post_date = gen_db_date($_POST['post_date']); // fix the date to original format
+	$order->post_date = \core\classes\DateTime::db_date_format($_POST['post_date']); // fix the date to original format
 	break;
 
   case 'pmt': // for opening a sales/invoice directly from payment (POS like)
@@ -243,7 +243,7 @@ $cal_bills = array(
   'form'      => 'bills_form',
   'fieldname' => 'post_date',
   'imagename' => 'btn_date_1',
-  'default'   => isset($order->post_date) ? gen_locale_date($order->post_date) : date(DATE_FORMAT),
+  'default'   => isset($order->post_date) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $order->post_date) : date(DATE_FORMAT),
   'params'    => array('align' => 'left', 'onchange' => 'loadNewBalance();'),
 );
 

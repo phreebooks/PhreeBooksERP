@@ -32,7 +32,7 @@ switch ($_REQUEST['action']) {
 	while(true) {
 	  if (!isset($_POST['eta_date_' . $i])) break;
 	  if ($_POST['eta_date_' . $i] <> '') {
-		$new_date = gen_db_date($_POST['eta_date_' . $i]);
+		$new_date = \core\classes\DateTime::db_date_format($_POST['eta_date_' . $i]);
 		$rID = $_POST['id_' . $i];
 		$admin->DataBase->query("update " . TABLE_JOURNAL_ITEM . " set date_1 = '" . $new_date . "' where id = " . $rID);
 	  }

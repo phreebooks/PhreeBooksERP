@@ -52,7 +52,7 @@ echo '<li><label>' . TEXT_DATE . ' ' . html_calendar_field($cal_gl) . '</label><
 </fieldset>
 <?php }else{
 echo html_hidden_field('till_id',   $tills->till_id) . chr(10);
-echo html_hidden_field('post_date', gen_locale_date($post_date))      . chr(10);
+echo html_hidden_field('post_date', \core\classes\DateTime::createFromFormat(DATE_FORMAT, $post_date))      . chr(10);
 ?>
 
 <table class="ui-widget" style="border-collapse:collapse;width:900px;margin-left:auto;margin-right:auto;">
@@ -74,7 +74,7 @@ echo html_hidden_field('post_date', gen_locale_date($post_date))      . chr(10);
 	?>
 		<tr class="<?php echo $odd?'odd':'even'; ?>">
 			<td width="16%"><?php echo $values['reference']; ?></td>
-			<td width="10%"><?php echo gen_locale_date($values['post_date']); ?></td>
+			<td width="10%"><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $values['post_date']); ?></td>
 			<td width="30%"><?php echo htmlspecialchars($values['name']); ?></td>
 			<td width="15%" align="right"><?php if($security_level > 2) echo $admin->currencies->format($values['dep_amount']-$values['pmt_amount']); ?></td>
 			<td width="7%" align="center">
@@ -101,7 +101,7 @@ echo html_hidden_field('post_date', gen_locale_date($post_date))      . chr(10);
 		  foreach ($values['detail'] as $detail) { ?>
 		    <tr class="<?php echo $odd?'even':'odd'; ?>">
 			  <td width="16%"><?php echo '&nbsp;'; ?></td>
-			  <td width="10%"><?php echo gen_locale_date($detail['post_date']); ?></td>
+			  <td width="10%"><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $detail['post_date']); ?></td>
 			  <td width="30%"><?php echo htmlspecialchars($detail['name']); ?></td>
 			  <td width="15%" align="right"><?php if($security_level > 2) echo $admin->currencies->format($detail['payment']); ?></td>
 			  <td width="7%" align="center">

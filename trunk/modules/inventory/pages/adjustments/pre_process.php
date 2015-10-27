@@ -22,7 +22,7 @@ require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 /**************   page specific initialization  *************************/
 define('JOURNAL_ID',16);	// Adjustment Journal
-$post_date           = isset($_POST['post_date'])? gen_db_date($_POST['post_date']) : date('Y-m-d');
+$post_date           = isset($_POST['post_date'])? \core\classes\DateTime::db_date_format($_POST['post_date']) : date('Y-m-d');
 $glEntry             = new \core\classes\journal();
 $glEntry->id         = isset($_POST['id'])       ? $_POST['id']       : '';
 $glEntry->journal_id = JOURNAL_ID;
@@ -135,7 +135,7 @@ $cal_adj = array(
   'form'      => 'inv_adj',
   'fieldname' => 'post_date',
   'imagename' => 'btn_date_1',
-  'default'   => gen_locale_date($post_date),
+  'default'   => \core\classes\DateTime::createFromFormat(DATE_FORMAT, $post_date),
 );
 $include_header   = true;
 $include_footer   = true;

@@ -195,25 +195,26 @@ class aged_receivables {
 
   function calulate_special_fields($id) {
 	global $admin;
-	$today = date('Y-m-d');
+	$today = \core\classes\DateTime);
+	date('Y-m-d');
 	$new_data = array();
-	$result = $admin->DataBase->query("select debit_amount, credit_amount from " . TABLE_JOURNAL_ITEM . " where gl_type = 'ttl' and ref_id = " . $id);
-	$result2 = $admin->DataBase->query("select journal_id, post_date from " . TABLE_JOURNAL_MAIN . " where id = " . $id);
+	$result = $admin->DataBase->query("SELECT debit_amount, credit_amount FROM " . TABLE_JOURNAL_ITEM . " WHERE gl_type = 'ttl' and ref_id = $id ");
+	$result2 = $admin->DataBase->query("SELECT journal_id, post_date FROM " . TABLE_JOURNAL_MAIN . " WHERE id = $id");
 	$post_date = $result2->fields['post_date'];
 	$negate = false;
 	if (in_array($result2->fields['journal_id'], array(6,7))) {
-	  $late_30 = gen_specific_date($today, -AP_AGING_DATE_1);
-	  $late_60 = gen_specific_date($today, -AP_AGING_DATE_2);
-	  $late_90 = gen_specific_date($today, -AP_AGING_DATE_3);
+	  $late_30 = $today->modify("-".AP_AGING_DATE_1." day");
+	  $late_60 = $today->modify("-".AP_AGING_DATE_2." day");
+	  $late_90 = $today->modify("-".AP_AGING_DATE_1." day");
 	  if($result2->fields['journal_id'] != 7) $negate = true;
 	} else {
-	  $late_30 = gen_specific_date($today, -AR_AGING_PERIOD_1);
-	  $late_60 = gen_specific_date($today, -AR_AGING_PERIOD_2);
-	  $late_90 = gen_specific_date($today, -AR_AGING_PERIOD_3);
+	  $late_30 = $today->modify("-".AR_AGING_DATE_1." day");
+	  $late_60 = $today->modify("-".AR_AGING_DATE_2." day");
+	  $late_90 = $today->modify("-".AR_AGING_DATE_3." day");
 	  if($result2->fields['journal_id'] != 12) $negate = true;
 	}
 	$result3 = $admin->DataBase->query("select sum(debit_amount) as debits, sum(credit_amount) as credits
-	  from " . TABLE_JOURNAL_ITEM . " where so_po_item_ref_id = '" . $id . "' and gl_type in ('pmt', 'chk')");
+	  from " . TABLE_JOURNAL_ITEM . " where so_po_item_ref_id = '$id' and gl_type in ('pmt', 'chk')");
 	if($negate){
 		$total_billed = $result->fields['credit_amount'] - $result->fields['debit_amount'];
 		$total_paid = $result3->fields['debits'] - $result3->fields['credits'];
@@ -234,7 +235,7 @@ class aged_receivables {
 		$new_data['balance_60'] = $balance;
 	} elseif ($post_date < $late_30) {
 		$new_data['balance_30'] = $balance;
-	} elseif ($post_date > $today) {
+	} elseif ($post_date > $today->format('Y-m-d')) {
 		$new_data['balance_futre'] = $balance;
 	} else {
 		$new_data['balance_0']  = $balance;

@@ -63,8 +63,8 @@ echo $toolbar->build();
 				echo '<td width="33%" nowrap="nowrap">' . html_calendar_field($cal_start[$i]) . '</td>' . chr(10);
 				echo '<td width="33%" nowrap="nowrap">' . html_calendar_field($cal_end[$i]) . '</td>' . chr(10);
 			} else {
-				echo '<td width="33%" align="center" nowrap="nowrap">' . html_input_field('start_' . $i, gen_locale_date($value['start']), 'readonly="readonly"', false, 'text', false) . '</td>' . chr(10);
-				echo '<td width="33%" align="center" nowrap="nowrap">' . html_input_field('end_' . $i, gen_locale_date($value['end']), 'readonly="readonly"', false, 'text', false) . '</td>' . chr(10);
+				echo '<td width="33%" align="center" nowrap="nowrap">' . html_input_field('start_' . $i, \core\classes\DateTime::createFromFormat(DATE_FORMAT, $value['start']), 'readonly="readonly"', false, 'text', false) . '</td>' . chr(10);
+				echo '<td width="33%" align="center" nowrap="nowrap">' . html_input_field('end_' . $i, \core\classes\DateTime::createFromFormat(DATE_FORMAT, $value['end']), 'readonly="readonly"', false, 'text', false) . '</td>' . chr(10);
 			}
 			echo '</tr>' . chr(10);
 			$i++;

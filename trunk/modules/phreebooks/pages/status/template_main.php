@@ -69,7 +69,7 @@ echo $toolbar->build($add_search = true, $add_periods = true);
   $odd = true;
   while (!$query_result->EOF) {
 	$oID            = $query_result->fields['id'];
-	$post_date      = gen_locale_date($query_result->fields['post_date']);
+	$post_date      = \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result->fields['post_date']);
 	$reference_id   = htmlspecialchars($query_result->fields['purchase_invoice_id']);
 	$primary_name   = htmlspecialchars($query_result->fields['bill_primary_name']);
 	$purch_order_id = htmlspecialchars($query_result->fields['purch_order_id']);

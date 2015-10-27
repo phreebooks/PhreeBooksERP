@@ -37,7 +37,7 @@ echo html_hidden_field('override_user',   '');
 echo html_hidden_field('override_pass',   '');
 if (!isset($template_options['closed']))        echo html_hidden_field('closed',  $order->closed);
 if (!isset($template_options['waiting']))       echo html_hidden_field('waiting', $order->waiting);
-if (!isset($template_options['terminal_date'])) echo html_hidden_field('terminal_date', $order->terminal_date ? gen_locale_date($order->terminal_date) : '');
+if (!isset($template_options['terminal_date'])) echo html_hidden_field('terminal_date', $order->terminal_date ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $order->terminal_date) : '');
 if (!isset($template_options['terms']))         echo html_hidden_field('terms_text', $order->terms_text); // placeholder when not used
 if (!ENABLE_MULTI_CURRENCY) {
   echo html_hidden_field('display_currency', DEFAULT_CURRENCY) . chr(10);

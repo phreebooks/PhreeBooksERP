@@ -122,7 +122,7 @@ $bank_list = array();
 $statement_balance = $admin->currencies->format(0);
 
 // load the payments and deposits that are open
-$fiscal_dates = gen_calculate_fiscal_dates($period);
+$fiscal_dates = \core\classes\DateTime::get_fiscal_dates($period);
 $end_date = $fiscal_dates['end_date'];
 $sql = "select i.id, m.post_date, i.debit_amount, i.credit_amount, m.purchase_invoice_id, m.bill_primary_name, i.description, i.reconciled, m.journal_id
 	from ".TABLE_JOURNAL_MAIN." m inner join ".TABLE_JOURNAL_ITEM." i on m.id = i.ref_id

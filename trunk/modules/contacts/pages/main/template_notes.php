@@ -21,7 +21,7 @@ $cal_c_gen = array(
   'form'      => 'contacts',
   'fieldname' => 'crm_date',
   'imagename' => 'btn_c_gen',
-  'default'   => gen_locale_date($basis->cInfo->contact->crm_date),
+  'default'   => \core\classes\DateTime::createFromFormat(DATE_FORMAT, $basis->cInfo->contact->crm_date),
   'params'    => array('align' => 'left'),
 );
 ?>
@@ -63,7 +63,7 @@ $cal_c_gen = array(
 	    <td><?php echo $security_level < 4 ? '&nbsp;' : html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', "onclick='if (confirm(\"".CRM_ROW_DELETE_ALERT."\")) deleteCRM({$value['log_id']});'"); ?></td>
 	    <td><?php echo $value['with']; ?></td>
 	    <td><?php echo $basis->cInfo->all_employees[$value['entered_by']]['text']; ?></td>
-	    <td><?php echo gen_locale_date($value['log_date']); ?></td>
+	    <td><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $value['log_date']); ?></td>
 	    <td><?php echo $basis->cInfo->contact->crm_actions[$value['action']]['text']; ?></td>
 	   </tr>
 	   <tr id="tr_crm_b_<?php echo $value->log_id; ?>">

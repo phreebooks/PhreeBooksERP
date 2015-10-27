@@ -42,8 +42,8 @@ $result = $admin->DataBase->query("select wo_num, qty, post_date, close_date fro
 	  echo '<tr class="'.($odd?"odd":"even").'">' . chr(10);
 	  echo '  <td align="center">' . $result->fields['wo_num'] . '</td>' . chr(10);
 	  echo '  <td align="center">' . $result->fields['qty'] . '</td>' . chr(10);
-	  echo '  <td align="center">' . gen_locale_date($result->fields['post_date']) . '</td>' . chr(10);
-	  echo '  <td align="center">' . gen_locale_date($result->fields['close_date']) . '</td>' . chr(10);
+	  echo '  <td align="center">' . \core\classes\DateTime::createFromFormat(DATE_FORMAT, $result->fields['post_date']) . '</td>' . chr(10);
+	  echo '  <td align="center">' . \core\classes\DateTime::createFromFormat(DATE_FORMAT, $result->fields['close_date']) . '</td>' . chr(10);
 	  echo '</tr>' . chr(10);
 	  $odd = !$odd;
 	  $result->MoveNext();

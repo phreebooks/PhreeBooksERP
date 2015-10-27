@@ -23,7 +23,7 @@ require_once(DIR_FS_WORKING . 'functions/inventory.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 /**************   page specific initialization  *************************/
 define('JOURNAL_ID',16);	// Adjustment Journal
-$post_date = ($_POST['post_date']) ? gen_db_date($_POST['post_date']) : date('Y-m-d');
+$post_date = ($_POST['post_date']) ? \core\classes\DateTime::db_date_format($_POST['post_date']) : date('Y-m-d');
 $period    = \core\classes\DateTime::period_of_date($post_date);
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/transfer/extra_actions.php';
@@ -231,7 +231,7 @@ $cal_xfr = array(
   'form'      => 'inv_xfer',
   'fieldname' => 'post_date',
   'imagename' => 'btn_date_1',
-  'default'   => gen_locale_date($post_date),
+  'default'   => \core\classes\DateTime::createFromFormat(DATE_FORMAT, $post_date),
 );
 $include_header   = true;
 $include_footer   = true;

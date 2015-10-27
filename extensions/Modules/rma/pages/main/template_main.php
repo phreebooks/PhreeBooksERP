@@ -46,11 +46,11 @@ echo $toolbar->build($add_search = true);
 ?>
   <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer">
 	<td onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo $query_result->fields['rma_num']; ?></td>
-	<td onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo gen_locale_date($query_result->fields['creation_date']); ?></td>
+	<td onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result->fields['creation_date']); ?></td>
 	<td onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo $query_result->fields['caller_name']; ?></td>
 	<td onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo $query_result->fields['purchase_invoice_id']; ?></td>
 	<td onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo $status_codes[$query_result->fields['status']]; ?></td>
-	<td onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo $query_result->fields['closed_date'] == '0000-00-00' ? '&nbsp;' : gen_locale_date($query_result->fields['closed_date']); ?></td>
+	<td onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo $query_result->fields['closed_date'] == '0000-00-00' ? '&nbsp;' : \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result->fields['closed_date']); ?></td>
 	<td align="right">
 <?php
 // build the action toolbar

@@ -27,8 +27,8 @@ $security_level = \core\classes\user::validate(SECURITY_ID_AUDIT);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_WORKING . 'functions/audit.php');
 /**************   page specific initialization  *************************/
-$date_from = gen_db_date($_REQUEST['date_from']);//         ? db_prepare_input($_POST['date_from'])       : $_GET['date_from'];
-$date_to   = gen_db_date($_REQUEST['date_to']);//           ? db_prepare_input($_POST['date_to'])         : $_GET['date_to'];
+$date_from = \core\classes\DateTime::db_date_format($_REQUEST['date_from']);//         ? db_prepare_input($_POST['date_from'])       : $_GET['date_from'];
+$date_to   = \core\classes\DateTime::db_date_format($_REQUEST['date_to']);//           ? db_prepare_input($_POST['date_to'])         : $_GET['date_to'];
 $select    = $_REQUEST['select'];//           ? db_prepare_input($_POST['date_to'])         : $_GET['date_to'];
 
 /***************   hook for custom actions  ***************************/
@@ -41,12 +41,12 @@ switch ($_REQUEST['action']) {
 		try{
 		  	build_audit_xml($date_from, $date_to, $select);
 		  	libxml_use_internal_errors(true);
-		  	$dates = gen_get_dates($date_from);
+		  	$date = new \core\classes\DateTime($date_from);
 		  	$dom = new \DOMDocument('1.0', 'UTF-8');
 		  	$dom->loadXML($output);
 		  	$dom->schemaValidate(DIR_FS_MODULES.'audit/AuditfileFinancieelVersie3.1.xsd');
 			header("Content-type: plain/txt;");
-			header("Content-disposition: attachment; filename=aud_". $dates['ThisYear'].".xaf; size=" . strlen($output));
+			header("Content-disposition: attachment; filename=aud_". $date->format('Y').".xaf; size=" . strlen($output));
 			header('Pragma: cache');
 			header('Cache-Control: public, must-revalidate, max-age=0');
 			header('Connection: close');
@@ -56,7 +56,7 @@ switch ($_REQUEST['action']) {
 			exit();
 	/*	  	// hieronder werkt
 			header("Content-type: plain/txt;");
-			header("Content-disposition: attachment; filename=aud_". $dates['ThisYear'].".xaf; size=" . strlen($output));
+			header("Content-disposition: attachment; filename=aud_". $date->format('Y').".xaf; size=" . strlen($output));
 			header('Pragma: cache');
 			header('Cache-Control: public, must-revalidate, max-age=0');
 			header('Connection: close');

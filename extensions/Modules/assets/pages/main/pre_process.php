@@ -24,9 +24,9 @@ require_once(DIR_FS_WORKING . 'defaults.php');
 /**************   page specific initialization  *************************/
 $processed   = false;
 $fields		 = new \assets\classes\fields();
-$acquisition_date = isset($_POST['acquisition_date']) ? gen_db_date($_POST['acquisition_date']) : '';
-$maintenance_date = isset($_POST['maintenance_date']) ? gen_db_date($_POST['maintenance_date']) : '';
-$terminal_date    = isset($_POST['terminal_date'])    ? gen_db_date($_POST['terminal_date'])    : '';
+$acquisition_date = isset($_POST['acquisition_date']) ? \core\classes\DateTime::db_date_format($_POST['acquisition_date']) : '';
+$maintenance_date = isset($_POST['maintenance_date']) ? \core\classes\DateTime::db_date_format($_POST['maintenance_date']) : '';
+$terminal_date    = isset($_POST['terminal_date'])    ? \core\classes\DateTime::db_date_format($_POST['terminal_date'])    : '';
 history_filter('assets');
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/main/extra_actions.php';
@@ -90,7 +90,7 @@ switch ($_REQUEST['action']) {
 				$sql_data_array[$field_name] = db_prepare_input($_POST[$field_name]);
 			}
 			if ($asset_fields->fields['entry_type'] == 'date_time') {
-				$sql_data_array[$field_name] = ($sql_data_array[$field_name]) ? gen_db_date($sql_data_array[$field_name]) : '';
+				$sql_data_array[$field_name] = ($sql_data_array[$field_name]) ? \core\classes\DateTime::db_date_format($sql_data_array[$field_name]) : '';
 			}
 			$asset_fields->MoveNext();
 		}
@@ -282,7 +282,7 @@ switch ($_REQUEST['action']) {
 	  'form'      => 'assets',
 	  'fieldname' => 'acquisition_date',
 	  'imagename' => 'btn_date_1',
-	  'default'   => isset($cInfo->acquisition_date) ? gen_locale_date($cInfo->acquisition_date) : '',
+	  'default'   => isset($cInfo->acquisition_date) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $cInfo->acquisition_date) : '',
 	  'params'    => array('align' => 'left'),
 	);
 	$cal_date2 = array(
@@ -290,7 +290,7 @@ switch ($_REQUEST['action']) {
 	  'form'      => 'assets',
 	  'fieldname' => 'maintenance_date',
 	  'imagename' => 'btn_date_2',
-	  'default'   => isset($cInfo->maintenance_date) ? gen_locale_date($cInfo->maintenance_date) : '',
+	  'default'   => isset($cInfo->maintenance_date) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $cInfo->maintenance_date) : '',
 	  'params'    => array('align' => 'left'),
 	);
 	$cal_date3 = array(
@@ -298,7 +298,7 @@ switch ($_REQUEST['action']) {
 	  'form'      => 'assets',
 	  'fieldname' => 'terminal_date',
 	  'imagename' => 'btn_date_3',
-	  'default'   => isset($cInfo->terminal_date) ? gen_locale_date($cInfo->terminal_date) : '',
+	  'default'   => isset($cInfo->terminal_date) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $cInfo->terminal_date) : '',
 	  'params'    => array('align' => 'left'),
 	);
     define('PAGE_TITLE', TEXT_ASSET);

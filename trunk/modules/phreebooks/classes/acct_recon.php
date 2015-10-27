@@ -29,7 +29,7 @@ class acct_recon {
 		$dep_in_transit    = 0;
 		$chk_in_transit    = 0;
 		$period            = $report->period;
-		$fiscal_dates      = gen_calculate_fiscal_dates($period);
+		$fiscal_dates      = \core\classes\DateTime::get_fiscal_dates($period);
 	    $gl_account        = $report->filterlist[0]->min_val; // assumes that the gl account is the first criteria
 	    if (!$gl_account) throw new \core\classes\userException("no gl account"); // No gl account so bail now
 

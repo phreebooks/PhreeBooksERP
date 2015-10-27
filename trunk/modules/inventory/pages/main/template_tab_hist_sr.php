@@ -37,7 +37,7 @@
   $odd = true;
   while (!$cInfo->orderHistory->EOF) {
 	$oID          = $cInfo->orderHistory->fields['id'];
-	$post_date    = gen_locale_date($cInfo->orderHistory->fields['post_date']);
+	$post_date    = \core\classes\DateTime::createFromFormat(DATE_FORMAT, $cInfo->orderHistory->fields['post_date']);
 	$reference_id = htmlspecialchars($cInfo->orderHistory->fields['purchase_invoice_id']);
 	$primary_name = htmlspecialchars($cInfo->orderHistory->fields['bill_primary_name']);
 	$closed       = $cInfo->orderHistory->fields['closed'] ? TEXT_YES : '';

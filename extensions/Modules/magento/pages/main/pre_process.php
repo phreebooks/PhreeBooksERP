@@ -26,7 +26,7 @@ require_once(DIR_FS_WORKING . 'functions/magento.php');
 $magento = new \magento\classes\magento();
 $magento->update_inventory_catalog_options();
 /**************   page specific initialization  *************************/
-$ship_date = $_POST['ship_date'] ? gen_db_date($_POST['ship_date']) : date('Y-m-d');
+$ship_date = $_POST['ship_date'] ? \core\classes\DateTime::db_date_format($_POST['ship_date']) : date('Y-m-d');
 
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_MODULES . 'custom/magento/pages/main/extra_actions.php';
@@ -65,7 +65,7 @@ $cal_zc = array(
   'form'      => 'magento',
   'fieldname' => 'ship_date',
   'imagename' => 'btn_date_1',
-  'default'   => gen_locale_date($ship_date),
+  'default'   => \core\classes\DateTime::createFromFormat(DATE_FORMAT, $ship_date),
   'params'    => array('align' => 'left'),
 );
 

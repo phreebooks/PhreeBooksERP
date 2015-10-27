@@ -57,7 +57,7 @@ echo $toolbar->build();
 		echo '  <td align="center">' . $ordr_items->fields['qty'] . '</td>' . chr(10);
 		echo '  <td align="center">' . $ordr_items->fields['sku'] . '</td>' . chr(10);
 		echo '  <td>' . $ordr_items->fields['description'] . '</td>' . chr(10);
-		echo '  <td align="center">' . gen_locale_date($ordr_items->fields['date_1']) . '</td>' . chr(10);
+		echo '  <td align="center">' . \core\classes\DateTime::createFromFormat(DATE_FORMAT, $ordr_items->fields['date_1']) . '</td>' . chr(10);
 		echo '  <td align="center" nowrap="nowrap">';
 		echo html_hidden_field('id_' . $j, $ordr_items->fields['id']) . chr(10);
 		echo html_calendar_field($cal_gen[$j]) . chr(10);

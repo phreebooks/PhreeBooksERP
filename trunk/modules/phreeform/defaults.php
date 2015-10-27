@@ -329,7 +329,7 @@ function ProcessData($strData, $Process) {
 		case "n2wrd":   return value_to_words_en_us($strData);
 		case "rnd2d":   if (!is_numeric($strData)) return $strData;
 		                return number_format(round($strData, 2), 2, '.', '');
-		case "date":    return gen_locale_date($strData);
+		case "date":    return \core\classes\DateTime::createFromFormat(DATE_FORMAT, $strData);
 		case "null-dlr":return (real)$strData == 0 ? '' : '$ ' . number_format($strData, 2);
 		case "dlr":     if (!is_numeric($strData)) return $strData;
 		                return '$ ' . number_format(round($strData, 2), 2);
@@ -366,7 +366,7 @@ function AddSep($value, $Process) {
 function TextReplace($text_string) {
   global $report;
   // substitutes a command string with dynamic information
-  $text_string = str_replace('%date%',       gen_locale_date(date('Y-m-d')),$text_string);
+  $text_string = str_replace('%date%',       \core\classes\DateTime::createFromFormat(DATE_FORMAT, date('Y-m-d')),$text_string);
   $text_string = str_replace('%reportname%', $report->title,                $text_string);
   $text_string = str_replace('%company%',    COMPANY_NAME,                  $text_string);
   return $text_string;

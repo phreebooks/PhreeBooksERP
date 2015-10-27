@@ -531,31 +531,29 @@ class inventory {
 
 	function gather_history() {
     	global $admin;
-		$dates = gen_get_dates();
-		$cur_month = $dates['ThisYear'] . '-' . substr('0' . $dates['ThisMonth'], -2) . '-01';
-		$temp_year = $dates['ThisYear'];
-		$temp_month = $dates['ThisMonth'];
+    	$date = new \core\classes\DateTime();
+		$date->modify("-{$date->format('j')} day");
+		$endDate = clone $date;
 		for($i = 0; $i < 13; $i++) {
-	  		$index = substr($cur_month, 0, 7);
-	  		$this->purchases_history[$index] = array(
-	  			'post_date'		=> $cur_month,
-	  			'MonthName'		=> $dates['MonthName'],
-	  			'ThisYear'		=> $dates['ThisYear'],
+	  		$this->purchases_history["{$date->format('Y')}-{$date->format('m')}"] = array(
+	  			'post_date'		=> $date->format('Y-m-d'),
+	  			'MonthName'		=> constant("TEXT_". strtoupper($date->format('F'))."_SHORT"),
+	  			'ThisYear'		=> $date->format('Y');,
 	  			'qty'			=> 0,
 	  			'total_amount'	=> 0,
 	  		);
-	  		$this->sales_history[$index] = array(
-	  			'post_date'		=> $cur_month,
-	  			'MonthName'		=> $dates['MonthName'],
-	  			'ThisYear'		=> $dates['ThisYear'],
+	  		$this->sales_history["{$date->format('Y')}-{$date->format('m')}"] = array(
+	  			'post_date'		=> $date->format('Y-m-d'),
+	  			'MonthName'		=> constant("TEXT_". strtoupper($date->format('F'))."_SHORT"),
+	  			'ThisYear'		=> $date->format('Y');,
 	  			'qty'			=> 0,
 	  			'usage'			=> 0,
 	  			'total_amount'	=> 0,
 	  		);
-	  		$cur_month = gen_specific_date($cur_month, 0, -1, 0);
-	  		$dates = gen_get_dates($cur_month);
+	  		$date->modify("-1 month");
 		}
-		$last_year = ($temp_year - 1) . '-' . substr('0' . $temp_month, -2) . '-01';
+		$endDate->modify("-1 year");
+		$last_year = $endDate->format('Y-m-d');
 
 		// load the SO's and PO's and get order, expected del date
 		$sql = "select m.id, m.journal_id, m.store_id, m.purchase_invoice_id, i.qty, i.post_date, i.date_1,	i.id as item_id

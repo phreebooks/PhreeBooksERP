@@ -139,7 +139,7 @@ echo $toolbar->build();
 	  $extra_params = $query_result->fields['waiting'] == '1' ? 'readonly="readonly" ' : '';
 	  echo '<tr' . (($extra_params) ? ' class="ui-state-error"' : '') . '>' . chr(10);
 	  echo '<td align="center">' . chr(10);
-	  echo gen_locale_date($query_result->fields['post_date']) . chr(10);
+	  echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result->fields['post_date']) . chr(10);
 	  // Hidden fields
 	  echo html_hidden_field('id_' . $idx,           $query_result->fields['id']) . chr(10);
 	  echo html_hidden_field('bill_acct_id_' . $idx, $query_result->fields['bill_acct_id']) . chr(10);
@@ -154,7 +154,7 @@ echo $toolbar->build();
 	  echo '<td align="center">' . $query_result->fields['purchase_invoice_id'] . '</td>' . chr(10);
 	  echo '<td align="center" style="text-align:right">' . $admin->currencies->format($amount_due) . '</td>' . chr(10);
 	  echo '<td align="center">' . html_input_field('desc_' . $idx, $query_result->fields['purch_order_id'], $extra_params . 'size="32"') . '</td>' . chr(10);
-	  echo '<td align="center">' . gen_locale_date($due_dates['net_date']) . '</td>' . chr(10);
+	  echo '<td align="center">' . \core\classes\DateTime::createFromFormat(DATE_FORMAT, $due_dates['net_date']) . '</td>' . chr(10);
 	  echo '<td align="center">' . html_input_field('dscnt_' . $idx, $discount, $extra_params . 'size="11" maxlength="20" onchange="updateDiscTotal(' . $idx . ')" style="text-align:right"') . '</td>' . chr(10);
 	  echo '<td align="center">' . html_input_field('total_' . $idx, '', $extra_params . 'size="11" maxlength="20" onchange="updateLineTotal(' . $idx . ')" style="text-align:right"') . '</td>' . chr(10);
 	  echo '<td align="center">' . html_checkbox_field('pay_' . $idx, '1', false, '', ($extra_params ? 'disabled="disabled" ' : '') . 'onclick="bbUpdatePayValues(' . $idx . ')"') . '</td>' . chr(10);

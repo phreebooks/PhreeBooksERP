@@ -55,7 +55,7 @@ echo $toolbar->build();
 	<td align="right"><?php echo TEXT_QUANTITY; ?></td>
 	<td><?php echo html_input_field('qty', $qty, ($id ? 'readonly="readonly" ' : '') . 'size="5" style="text-align:right"'); ?></td>
     <td align="right"><?php echo TEXT_POST_DATE; ?></td>
-	<td><?php echo html_input_field('post_date', gen_locale_date($post_date), 'readonly="readonly" size="12"'); ?></td>
+	<td><?php echo html_input_field('post_date', \core\classes\DateTime::createFromFormat(DATE_FORMAT, $post_date), 'readonly="readonly" size="12"'); ?></td>
 <?php if ($image) {
 		echo '<td rowspan="4">';
 		echo html_image(DIR_WS_MY_FILES . $_SESSION['company'] . '/inventory/images/' . $image, $image, '', '100', 'rel="#photo1"');
@@ -68,7 +68,7 @@ echo $toolbar->build();
 	<td align="right"><?php echo TEXT_PRIORITY; ?></td>
 	<td><?php echo html_input_field('priority', $priority, 'readonly="readonly" size="5" style="text-align:right"'); ?></td>
 	<td align="right"><?php echo TEXT_CLOSE; ?></td>
-	<td><?php echo html_checkbox_field('closed', '1', $closed ? true : false, '', 'disabled="disabled"') . ($closed ? (' ' . gen_locale_date($close_date)) : ''); ?></td>
+	<td><?php echo html_checkbox_field('closed', '1', $closed ? true : false, '', 'disabled="disabled"') . ($closed ? (' ' . \core\classes\DateTime::createFromFormat(DATE_FORMAT, $close_date)) : ''); ?></td>
   </tr>
   <tr>
     <td colspan="6"><?php echo TEXT_WORK_ORDER_NOTES_AND_COMMENTS; ?></td>

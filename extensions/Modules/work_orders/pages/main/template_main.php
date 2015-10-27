@@ -45,12 +45,12 @@ echo $toolbar->build(true);
   <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer">
 	<td align="center" onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'build\''; ?>)"><?php echo $query_result->fields['wo_num']; ?></td>
 	<td align="center" onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'build\''; ?>)"><?php echo $query_result->fields['priority']; ?></td>
-	<td align="center" onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'build\''; ?>)"><?php echo gen_locale_date($query_result->fields['post_date']); ?></td>
+	<td align="center" onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'build\''; ?>)"><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result->fields['post_date']); ?></td>
 	<td align="center" onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'build\''; ?>)"><?php echo $query_result->fields['qty']; ?></td>
 	<td onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'build\''; ?>)"><?php echo $query_result->fields['sku']; ?></td>
 	<td onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'build\''; ?>)"><?php echo $query_result->fields['wo_title']; ?></td>
 	<td align="center" onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'build\''; ?>)"><?php echo $query_result->fields['closed'] ? TEXT_YES : ''; ?></td>
-	<td align="center" onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'build\''; ?>)"><?php echo gen_locale_date($query_result->fields['close_date']); ?></td>
+	<td align="center" onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'build\''; ?>)"><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result->fields['close_date']); ?></td>
 	<td align="right">
 <?php
 // build the action toolbar

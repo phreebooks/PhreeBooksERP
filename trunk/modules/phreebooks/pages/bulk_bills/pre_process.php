@@ -23,7 +23,7 @@ require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
 define('JOURNAL_ID',20);
 define('AUDIT_LOG_DESC',TEXT_CASH_DISTRIBUTIONS);
 $post_success      = false;
-$post_date         = isset($_REQUEST['post_date']) ? gen_db_date($_REQUEST['post_date']) : date('Y-m-d', time());
+$post_date         = isset($_REQUEST['post_date']) ? \core\classes\DateTime::db_date_format($_REQUEST['post_date']) : date('Y-m-d', time());
 $_GET['post_date'] = $post_date;
 $period = \core\classes\DateTime::period_of_date($post_date);
 if (!$period) { // bad post_date was submitted
@@ -31,9 +31,9 @@ if (!$period) { // bad post_date was submitted
   $post_date = date('Y-m-d', time());
   $period = 0;
 }
-$invoice_date            = isset($_REQUEST['invoice_date'])  ?   gen_db_date($_REQUEST['invoice_date'])   : date('Y-m-d', time());
+$invoice_date            = isset($_REQUEST['invoice_date'])  ?   \core\classes\DateTime::db_date_format($_REQUEST['invoice_date'])   : date('Y-m-d', time());
 $_GET['invoice_date']    = $invoice_date;
-$discount_date           = isset($_REQUEST['discount_date']) ?   gen_db_date($_REQUEST['discount_date'])  : date('Y-m-d', time());
+$discount_date           = isset($_REQUEST['discount_date']) ?   \core\classes\DateTime::db_date_format($_REQUEST['discount_date'])  : date('Y-m-d', time());
 $_GET['discount_date']   = $discount_date;
 $gl_acct_id              = isset($_REQUEST['gl_acct_id']) ?      db_prepare_input($_REQUEST['gl_acct_id'])      : AP_PURCHASE_INVOICE_ACCOUNT;
 $_GET['gl_acct_id']      = $gl_acct_id;
@@ -179,7 +179,7 @@ $cal_bills0   = array(
   'form'      => 'bulk_bills',
   'fieldname' => 'post_date',
   'imagename' => 'btn_date_1',
-  'default'   => gen_locale_date($post_date),
+  'default'   => \core\classes\DateTime::createFromFormat(DATE_FORMAT, $post_date),
   'params'    => array('align' => 'left', 'onchange' => 'loadNewBalance();'),
 );
 $cal_bills1 = array(
@@ -187,7 +187,7 @@ $cal_bills1 = array(
   'form'      => 'bulk_bills',
   'fieldname' => 'invoice_date',
   'imagename' => 'btn_date_2',
-  'default'   => gen_locale_date($invoice_date),
+  'default'   => \core\classes\DateTime::createFromFormat(DATE_FORMAT, $invoice_date),
   'params'    => array('align' => 'left'),
 );
 $cal_bills2 = array(
@@ -195,7 +195,7 @@ $cal_bills2 = array(
   'form'      => 'bulk_bills',
   'fieldname' => 'discount_date',
   'imagename' => 'btn_date_3',
-  'default'   => gen_locale_date($discount_date),
+  'default'   => \core\classes\DateTime::createFromFormat(DATE_FORMAT, $discount_date),
   'params'    => array('align' => 'left'),
 );
 $include_header   = true;

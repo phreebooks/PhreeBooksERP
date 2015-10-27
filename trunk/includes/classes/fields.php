@@ -429,7 +429,7 @@ class fields {
             	$sql_data_array[$field_name] = db_prepare_input($_POST[$field_name]);
         	}
         	if ($xtra_db_fields['entry_type'] == 'date_time') {
-            	$sql_data_array[$field_name] = ($sql_data_array[$field_name]) ? gen_db_date($sql_data_array[$field_name]) : '';
+            	$sql_data_array[$field_name] = ($sql_data_array[$field_name]) ? \core\classes\DateTime::db_date_format($sql_data_array[$field_name]) : '';
         	}
     		if ($xtra_db_fields['entry_type'] == 'decimal') {
             	$sql_data_array[$field_name] = ($sql_data_array[$field_name]) ? $admin->currencies->clean_value($sql_data_array[$field_name]) : '';

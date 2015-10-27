@@ -70,7 +70,7 @@ class po_status extends \core\classes\ctl_panel {
 				$contents .= '</div>';
 				$contents .= '<div>';
 				$contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;oID={$result['id']}&amp;jID=4&amp;action=edit", 'SSL') . '">';
-				$contents .= $result['purchase_invoice_id'] . ' - ' . gen_locale_date($result['post_date']);
+				$contents .= $result['purchase_invoice_id'] . ' - ' . \core\classes\DateTime::createFromFormat(DATE_FORMAT, $result['post_date']);
 				$contents .= ' ' . htmlspecialchars(gen_trim_string($result['bill_primary_name'], 20, true));
 				$contents .= '</a>';
 				$contents .= '</div>' . chr(10);

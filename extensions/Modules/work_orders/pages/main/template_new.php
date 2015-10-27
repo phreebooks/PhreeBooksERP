@@ -57,7 +57,7 @@ echo $toolbar->build();
 	<td align="right"><?php echo TEXT_PRIORITY; ?></td>
 	<td><?php echo html_pull_down_menu('priority', $priority_list, $priority); ?></td>
 	<td align="right"><?php echo TEXT_CLOSE; ?></td>
-	<td><?php echo html_checkbox_field('closed', '1', $closed ? true : false) . ($closed ? (' ' . gen_locale_date($close_date)) : ''); ?></td>
+	<td><?php echo html_checkbox_field('closed', '1', $closed ? true : false) . ($closed ? (' ' . \core\classes\DateTime::createFromFormat(DATE_FORMAT, $close_date)) : ''); ?></td>
   </tr>
   <tr>
     <td colspan="6"><?php echo TEXT_WORK_ORDER_NOTES_AND_COMMENTS; ?></td>

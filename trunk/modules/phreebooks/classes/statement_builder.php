@@ -48,7 +48,8 @@ class statement_builder {
 //  $this->credit_limit  = $result['credit_limit'];
 //  $this->terms_lang    = $result['terms_lang'];
 	// now prior balance
-	$dates  = gen_build_sql_date($report->datedefault, $report->datefield);
+	$tempDate = new \core\classes\DateTime();
+	$dates  = $tempDate->sql_date_array($report->datedefault, $report->datefield);
 	$sql = "select m.id, (i.debit_amount - i.credit_amount) as balance
 		from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 		where m.bill_acct_id = " . $this->bill_acct_id . "

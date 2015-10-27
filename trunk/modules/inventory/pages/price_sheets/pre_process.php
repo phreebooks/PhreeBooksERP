@@ -33,7 +33,7 @@ switch ($_REQUEST['action']) {
   	$id             = db_prepare_input($_POST['id']);
 	$sheet_name     = db_prepare_input($_POST['sheet_name']);
 	$revision       = db_prepare_input($_POST['revision']);
-	$effective_date = gen_db_date($_POST['effective_date']);
+	$effective_date = \core\classes\DateTime::db_date_format($_POST['effective_date']);
 	$default_sheet  = isset($_POST['default_sheet']) ? 1 : 0;
 	$inactive       = isset($_POST['inactive']) ? 1 : 0;
 	$encoded_prices = array();
@@ -57,7 +57,7 @@ switch ($_REQUEST['action']) {
 	if ($_REQUEST['action'] == 'save') {
 	  $result = $admin->DataBase->query("SELECT id FROM " . TABLE_PRICE_SHEETS . " WHERE sheet_name='".addslashes($sheet_name)."'");
 	  if ($result->fetch(\PDO::FETCH_NUM) > 0) {
-		$effective_date = gen_locale_date($effective_date);
+		$effective_date = \core\classes\DateTime::createFromFormat(DATE_FORMAT, $effective_date);
 		$_REQUEST['action'] = 'new';
 		throw new \core\classes\userException(SRVCS_DUPLICATE_SHEET_NAME);
 	  }
@@ -67,7 +67,7 @@ switch ($_REQUEST['action']) {
 	  'type' 			=> $type,
 	  'inactive' 		=> $inactive,
 	  'revision' 		=> $revision,
-	  'effective_date' 	=> $effective_date,
+	  'effective_date' 	=> $effective_date->format("Y-m-d"),
 	  'default_sheet' 	=> $default_sheet,
 	  'default_levels' 	=> $default_levels);
 	if ($_REQUEST['action'] == 'save'){
@@ -82,8 +82,9 @@ switch ($_REQUEST['action']) {
 	  	$admin->DataBase->query("update " . TABLE_PRICE_SHEETS . " set default_sheet = '1' where sheet_name = '".addslashes($sheet_name)."' and type = '$type'");
 	}
 	// set expiration date of previous rev if there is a older rev of this price sheet
-	if ($id != '') $admin->DataBase->query("update " . TABLE_PRICE_SHEETS . " set expiration_date = '" . gen_specific_date($effective_date, -1) . "'
-	  where sheet_name = '".addslashes($sheet_name)."' and type = '$type' and ( expiration_date IS NULL or expiration_date = '0000-00-00' or expiration_date >= '$effective_date' ) and id < $id");
+	$experation_date = clone $effective_date;
+	if ($id != '') $admin->DataBase->query("update " . TABLE_PRICE_SHEETS . " set expiration_date = '" . $experation_date->modify("-1 day")->format("Y-m-d") . "'
+	  where sheet_name = '".addslashes($sheet_name)."' and type = '$type' and ( expiration_date IS NULL or expiration_date = '0000-00-00' or expiration_date >= '{$effective_date->format('Y-m-d')}' ) and id < $id");
 	gen_add_audit_log(TEXT_PRICE_SHEET. " - "  . ($_REQUEST['action'] == 'save') ? TEXT_SAVE : TEXT_UPDATE, $sheet_name);
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('psID', 'action')), 'SSL'));
 	break;
@@ -105,19 +106,20 @@ switch ($_REQUEST['action']) {
 	\core\classes\user::validate_security($security_level, 2);
   	$old_id  = db_prepare_input($_GET['psID']);
 	$result  = $admin->DataBase->query("select * from " . TABLE_PRICE_SHEETS . " where id = $old_id");
-	$old_rev = $result->fields['revision'];
+	$old_rev = $result['revision'];
+	$date = new \core\classes\DateTime($result['effective_date']);
 	$output_array = array(
-	  'sheet_name'     => $result->fields['sheet_name'],
+	  'sheet_name'     => $result['sheet_name'],
 	  'type'           => $type,
-	  'revision'       => $result->fields['revision'] + 1,
-	  'effective_date' => gen_specific_date($result->fields['effective_date'], 1), // default today
-	  'default_sheet'  => $result->fields['default_sheet'],
-	  'default_levels' => $result->fields['default_levels'],
+	  'revision'       => $result['revision'] + 1,
+	  'effective_date' => $date->modify("+1 day")->format("Y-m-d");
+	  'default_sheet'  => $result['default_sheet'],
+	  'default_levels' => $result['default_levels'],
 	);
 	db_perform(TABLE_PRICE_SHEETS, $output_array, 'insert');
 	$id = \core\classes\PDO::lastInsertId('id'); // this is used by the edit function later on.
 	// expire the old sheet
-	$admin->DataBase->query("UPDATE ".TABLE_PRICE_SHEETS." SET expiration_date='".gen_specific_date($result->fields['effective_date'], 1)."' WHERE id=$old_id");
+	$admin->DataBase->exec("UPDATE ".TABLE_PRICE_SHEETS." SET expiration_date='".$date->format('Y-m-d')."' WHERE id=$old_id");
 	// Copy special pricing information to new sheet
 	$levels = $admin->DataBase->query("select inventory_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where price_sheet_id = $old_id");
 	while (!$levels->EOF){
@@ -132,7 +134,7 @@ switch ($_REQUEST['action']) {
 	$result         = $admin->DataBase->query("select * from " . TABLE_PRICE_SHEETS . " where id = $id");
 	$sheet_name     = $result->fields['sheet_name'];
 	$revision       = $result->fields['revision'];
-	$effective_date = gen_locale_date($result->fields['effective_date']);
+	$effective_date = \core\classes\DateTime::createFromFormat(DATE_FORMAT, $result->fields['effective_date']);
 	$default_sheet  = ($result->fields['default_sheet']) ? '1' : '0';
 	$default_levels = $result->fields['default_levels'];
 	break;

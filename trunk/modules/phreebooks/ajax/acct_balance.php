@@ -24,7 +24,7 @@ require(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 
 /**************   page specific initialization  *************************/
 $gl_acct_id = ($_GET['gl_acct_id']) ? db_prepare_input($_GET['gl_acct_id']) : AP_PURCHASE_INVOICE_ACCOUNT;
-$post_date =  ($_GET['post_date'])  ? gen_db_date($_GET['post_date']) : date('Y-m-d');
+$post_date =  ($_GET['post_date'])  ? \core\classes\DateTime::db_date_format($_GET['post_date']) : date('Y-m-d');
 $period = \core\classes\DateTime::period_of_date($post_date);
 if (!$period) { // bad post_date was submitted
   $post_date = date('Y-m-d');

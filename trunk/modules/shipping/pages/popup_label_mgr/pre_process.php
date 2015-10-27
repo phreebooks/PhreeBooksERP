@@ -30,7 +30,7 @@ $cal_ship = array(
   'form'      => 'label_mgr',
   'fieldname' => 'ship_date',
   'imagename' => 'deliver_date',
-  'default'   => isset($sInfo->ship_date) ? gen_locale_date($sInfo->ship_date) : date(DATE_FORMAT),
+  'default'   => isset($sInfo->ship_date) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $sInfo->ship_date) : date(DATE_FORMAT),
   'params'    => array('align' => 'left'),
 );
 $cal_exp = array(
@@ -38,7 +38,7 @@ $cal_exp = array(
   'form'      => 'label_mgr',
   'fieldname' => 'deliver_date',
   'imagename' => 'btn_date_2',
-  'default'   => isset($sInfo->deliver_date) ? gen_locale_date($sInfo->deliver_date) : date(DATE_FORMAT),
+  'default'   => isset($sInfo->deliver_date) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $sInfo->deliver_date) : date(DATE_FORMAT),
   'params'    => array('align' => 'left'),
 );
 

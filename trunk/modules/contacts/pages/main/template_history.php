@@ -21,8 +21,8 @@
 <?php // ***********************  History Section  ****************************** ?>
   <fieldset>
     <legend><?php echo TEXT_ACCOUNT_HISTORY; ?></legend>
-    <p><?php echo constant('ACT_'.strtoupper($basis->cInfo->contact->type).'_FIRST_DATE').' '.gen_locale_date($basis->cInfo->contact->first_date); ?></p>
-    <p width="50%"><?php echo constant('ACT_'.strtoupper($basis->cInfo->contact->type).'_LAST_DATE1').' '.gen_locale_date($basis->cInfo->contact->last_update); ?></p>
+    <p><?php echo constant('ACT_'.strtoupper($basis->cInfo->contact->type).'_FIRST_DATE').' '.\core\classes\DateTime::createFromFormat(DATE_FORMAT, $basis->cInfo->contact->first_date); ?></p>
+    <p width="50%"><?php echo constant('ACT_'.strtoupper($basis->cInfo->contact->type).'_LAST_DATE1').' '.\core\classes\DateTime::createFromFormat(DATE_FORMAT, $basis->cInfo->contact->last_update); ?></p>
   </fieldset>
 
   <fieldset>
@@ -56,7 +56,7 @@
 			echo html_icon('actions/edit-find-replace.png', TEXT_EDIT,   'small', 'onclick="window.open(\'' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;action=edit&amp;jID=' . ($basis->cInfo->contact->type == 'v' ? 4 : 10) . '&amp;oID=' . $value['id'], 'SSL') . '\',\'_blank\')"');
 		    echo '<a href="' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;action=edit&amp;jID=' . ($basis->cInfo->contact->type == 'v' ? 4 : 10) . '&amp;oID=' . $value['id'], 'SSL') . '">' . $value['purchase_invoice_id'] . '</a></td>';
 		    if($basis->cInfo->contact->type == 'c') echo '<td>' . ($value['purch_order_id'] ? $value['purch_order_id'] : '&nbsp;') . '</td>';
-		    echo '<td align="center">' . gen_locale_date($value['post_date']) . '</td>';
+		    echo '<td align="center">' . \core\classes\DateTime::createFromFormat(DATE_FORMAT, $value['post_date']) . '</td>';
 		    echo '<td align="center">' . ($value['closed'] ? '&nbsp;' : TEXT_YES) . '</td>';
 		    echo '<td align="right">'  . $basis->currencies->format($value['total_amount']) . '</td></tr>' . chr(10);
 		    $odd = !$odd;
@@ -84,13 +84,13 @@
 		if ($result) {
 		  array_shift($result); // the first entry is for new stuff, don't display
 		  foreach ($result as $value) {
-		    $closed = $value['closed_date'] <> '0000-00-00' ? gen_locale_date($value['closed_date']) : ($value['closed'] ? TEXT_YES : '&nbsp;');
+		    $closed = $value['closed_date'] <> '0000-00-00' ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $value['closed_date']) : ($value['closed'] ? TEXT_YES : '&nbsp;');
 		    echo '<tr class="'.($odd?"odd":"even").'">';
 		    echo '<td>';
 			echo html_icon('actions/edit-find-replace.png', TEXT_EDIT,   'small', 'onclick="window.open(\'' . html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;action=edit&amp;jID={$value['journal_id']}&amp;oID={$value['id']}", 'SSL') . '\',\'_blank\')"');
 		    echo '<a href="' . html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;action=edit&amp;jID={$value['journal_id']}&amp;oID={$value['id']}", 'SSL') . '">' . $value['purchase_invoice_id'] . '</a></td>';
 		    echo '<td>' . ($value['purch_order_id'] ? $value['purch_order_id'] : '&nbsp;') . '</td>';
-		    echo '<td align="center">' . gen_locale_date($value['post_date']) . '</td>';
+		    echo '<td align="center">' . \core\classes\DateTime::createFromFormat(DATE_FORMAT, $value['post_date']) . '</td>';
 		    echo '<td align="center">' . $closed . '</td>';
 		    echo '<td align="right">'  . $basis->currencies->format($value['total_amount']) . '</td></tr>' . chr(10);
 		    $odd = !$odd;

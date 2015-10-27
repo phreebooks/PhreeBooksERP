@@ -27,12 +27,12 @@ $cleared_items   = array();
 $current_cleard_items = unserialize($_POST['current_cleard_items']);
 $all_items       = array();
 $gl_types 		 = array('pmt','ttl','tpm');
-$post_date 		 = ($_POST['post_date']) ? gen_db_date($_POST['post_date']) : '';
+$post_date 		 = ($_POST['post_date']) ? \core\classes\DateTime::db_date_format($_POST['post_date']) : '';
 $tills           = new \phreepos\classes\tills();
 $glEntry		 = new \core\classes\journal();
 if(isset($_GET['till_id'])){
 	$tills->get_till_info(db_prepare_input($_GET['till_id']));
-	$post_date 		 = gen_db_date(gen_locale_date(date('Y-m-d')));
+	$post_date 		 = \core\classes\DateTime::db_date_format(\core\classes\DateTime::createFromFormat(DATE_FORMAT, date('Y-m-d')));
 }else if(isset($_POST['till_id'])){
 	$tills->get_till_info(db_prepare_input($_POST['till_id']));
 }else if($tills->showDropDown() == false){
@@ -310,7 +310,7 @@ $cal_gl = array(
   'form'      => 'closingpos',
   'fieldname' => 'post_date',
   'imagename' => 'btn_date_1',
-  'default'   => ($post_date == '')? gen_locale_date(date('Y-m-d')) :gen_locale_date($post_date),
+  'default'   => ($post_date == '')? \core\classes\DateTime::createFromFormat(DATE_FORMAT, date('Y-m-d')) :\core\classes\DateTime::createFromFormat(DATE_FORMAT, $post_date),
 );
 
 $include_header   = true;

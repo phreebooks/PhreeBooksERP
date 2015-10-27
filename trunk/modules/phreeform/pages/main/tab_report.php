@@ -48,8 +48,8 @@ $fieldset_content .= '    <tr><th colspan="2">' . TEXT_PROPERTIES . '</th></tr>'
 $fieldset_content .= '  </thead><tbody class="ui-widget-content">' . chr(10);
 $fieldset_content .= '    <tr><td>' . TEXT_TYPE . '</td><td>' . $phreeformTypes[$doc_details->fields['doc_ext']] . '</td></tr>' . chr(10);
 $fieldset_content .= '    <tr><td>' . TEXT_GROUP . '</td><td>' . $groups['reports'][$doc_details->fields['doc_group']] . '</td></tr>' . chr(10);
-$fieldset_content .= '    <tr><td>' . TEXT_CREATION_DATE . '</td><td>' . gen_locale_date($doc_details->fields['create_date']) . '</td></tr>' . chr(10);
-$fieldset_content .= '    <tr><td>' . TEXT_LAST_UPDATE . '</td><td>' . gen_locale_date($doc_details->fields['last_update']) . '</td></tr>' . chr(10);
+$fieldset_content .= '    <tr><td>' . TEXT_CREATION_DATE . '</td><td>' . \core\classes\DateTime::createFromFormat(DATE_FORMAT, $doc_details->fields['create_date']) . '</td></tr>' . chr(10);
+$fieldset_content .= '    <tr><td>' . TEXT_LAST_UPDATE . '</td><td>' . \core\classes\DateTime::createFromFormat(DATE_FORMAT, $doc_details->fields['last_update']) . '</td></tr>' . chr(10);
 $fieldset_content .= '  </tbody></table>' . chr(10);
 $fieldset_content .= '</td>' . chr(10);
 // column 2

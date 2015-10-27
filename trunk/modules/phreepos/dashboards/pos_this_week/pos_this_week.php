@@ -46,7 +46,7 @@ class pos_this_week extends \core\classes\ctl_panel {
 			  	$total += $result['day_total'];
 				$contents .= '<div style="float:right">' . $admin->currencies->format_full($result['day_total'], true, $result['currencies_code'], $result['currencies_value']) . '</div>';
 				$contents .= '<div>';
-				$contents .= gen_locale_date($result['post_date']) ;
+				$contents .= \core\classes\DateTime::createFromFormat(DATE_FORMAT, $result['post_date']) ;
 				$contents .= '</a></div>' . chr(10);
 		  	}
 		}

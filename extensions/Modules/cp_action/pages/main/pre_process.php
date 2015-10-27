@@ -21,7 +21,7 @@ $security_level = \core\classes\user::validate(SECURITY_CAPA_MGT);
 require_once(DIR_FS_WORKING . 'defaults.php');
 /**************   page specific initialization  *************************/
 $cInfo         = new \core\classes\objectInfo();
-$creation_date = $_POST['creation_date'] ? gen_db_date($_POST['creation_date']) : date('Y-m-d');
+$creation_date = $_POST['creation_date'] ? \core\classes\DateTime::db_date_format($_POST['creation_date']) : date('Y-m-d');
 history_filter();
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/main/extra_actions.php';
@@ -41,15 +41,15 @@ switch ($_REQUEST['action']) {
 	    'capa_status'         => db_prepare_input($_POST['capa_status']),
 	    'entered_by'          => db_prepare_input($_POST['entered_by']),
 		'creation_date'       => $creation_date,
-	    'analyze_due'         => $_POST['analyze_due']  ? gen_db_date($_POST['analyze_due'])  : '',
-	    'analyze_date'        => $_POST['analyze_date'] ? gen_db_date($_POST['analyze_date']) : '',
-	    'repair_due'          => $_POST['repair_due']   ? gen_db_date($_POST['repair_due'])   : '',
-	    'repair_date'         => $_POST['repair_date']  ? gen_db_date($_POST['repair_date'])  : '',
-	    'audit_due'           => $_POST['audit_due']    ? gen_db_date($_POST['audit_due'])    : '',
-	    'audit_date'          => $_POST['audit_date']   ? gen_db_date($_POST['audit_date'])   : '',
-	    'closed_due'          => $_POST['closed_due']   ? gen_db_date($_POST['closed_due'])   : '',
-	    'closed_date'         => $_POST['closed_date']  ? gen_db_date($_POST['closed_date'])  : '',
-	    'action_date'         => $_POST['action_date']  ? gen_db_date($_POST['action_date'])  : '',
+	    'analyze_due'         => $_POST['analyze_due']  ? \core\classes\DateTime::db_date_format($_POST['analyze_due'])  : '',
+	    'analyze_date'        => $_POST['analyze_date'] ? \core\classes\DateTime::db_date_format($_POST['analyze_date']) : '',
+	    'repair_due'          => $_POST['repair_due']   ? \core\classes\DateTime::db_date_format($_POST['repair_due'])   : '',
+	    'repair_date'         => $_POST['repair_date']  ? \core\classes\DateTime::db_date_format($_POST['repair_date'])  : '',
+	    'audit_due'           => $_POST['audit_due']    ? \core\classes\DateTime::db_date_format($_POST['audit_due'])    : '',
+	    'audit_date'          => $_POST['audit_date']   ? \core\classes\DateTime::db_date_format($_POST['audit_date'])   : '',
+	    'closed_due'          => $_POST['closed_due']   ? \core\classes\DateTime::db_date_format($_POST['closed_due'])   : '',
+	    'closed_date'         => $_POST['closed_date']  ? \core\classes\DateTime::db_date_format($_POST['closed_date'])  : '',
+	    'action_date'         => $_POST['action_date']  ? \core\classes\DateTime::db_date_format($_POST['action_date'])  : '',
 	    'notes_issue'         => db_prepare_input($_POST['notes_issue']),
 	    'customer_name'       => db_prepare_input($_POST['customer_name']),
 	    'customer_id'         => db_prepare_input($_POST['customer_id']),
@@ -123,7 +123,7 @@ $cal_date0 = array(
   'form'      => 'capa',
   'fieldname' => 'creation_date',
   'imagename' => 'btn_date_0',
-  'default'   => isset($cInfo->creation_date) ? gen_locale_date($cInfo->creation_date) : '',
+  'default'   => isset($cInfo->creation_date) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $cInfo->creation_date) : '',
   'params'    => array('align' => 'left'),
 );
 $cal_date1 = array(
@@ -131,7 +131,7 @@ $cal_date1 = array(
   'form'      => 'capa',
   'fieldname' => 'analyze_due',
   'imagename' => 'btn_date_1',
-  'default'   => isset($cInfo->analyze_due) ? gen_locale_date($cInfo->analyze_due) : '',
+  'default'   => isset($cInfo->analyze_due) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $cInfo->analyze_due) : '',
   'params'    => array('align' => 'left'),
 );
 $cal_date2 = array(
@@ -139,7 +139,7 @@ $cal_date2 = array(
   'form'      => 'capa',
   'fieldname' => 'repair_due',
   'imagename' => 'btn_date_2',
-  'default'   => isset($cInfo->repair_due) ? gen_locale_date($cInfo->repair_due) : '',
+  'default'   => isset($cInfo->repair_due) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $cInfo->repair_due) : '',
   'params'    => array('align' => 'left'),
 );
 $cal_date3 = array(
@@ -147,7 +147,7 @@ $cal_date3 = array(
   'form'      => 'capa',
   'fieldname' => 'audit_due',
   'imagename' => 'btn_date_3',
-  'default'   => isset($cInfo->audit_due) ? gen_locale_date($cInfo->audit_due) : '',
+  'default'   => isset($cInfo->audit_due) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $cInfo->audit_due) : '',
   'params'    => array('align' => 'left'),
 );
 $cal_date4 = array(
@@ -155,7 +155,7 @@ $cal_date4 = array(
   'form'      => 'capa',
   'fieldname' => 'closed_due',
   'imagename' => 'btn_date_4',
-  'default'   => isset($cInfo->closed_due) ? gen_locale_date($cInfo->closed_due) : '',
+  'default'   => isset($cInfo->closed_due) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $cInfo->closed_due) : '',
   'params'    => array('align' => 'left'),
 );
 $cal_date5 = array(
@@ -163,7 +163,7 @@ $cal_date5 = array(
   'form'      => 'capa',
   'fieldname' => 'analyze_date',
   'imagename' => 'btn_date_5',
-  'default'   => isset($cInfo->analyze_date) ? gen_locale_date($cInfo->analyze_date) : '',
+  'default'   => isset($cInfo->analyze_date) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $cInfo->analyze_date) : '',
   'params'    => array('align' => 'left'),
 );
 $cal_date6 = array(
@@ -171,7 +171,7 @@ $cal_date6 = array(
   'form'      => 'capa',
   'fieldname' => 'repair_date',
   'imagename' => 'btn_date_6',
-  'default'   => isset($cInfo->repair_date) ? gen_locale_date($cInfo->repair_date) : '',
+  'default'   => isset($cInfo->repair_date) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $cInfo->repair_date) : '',
   'params'    => array('align' => 'left'),
 );
 $cal_date7 = array(
@@ -179,7 +179,7 @@ $cal_date7 = array(
   'form'      => 'capa',
   'fieldname' => 'audit_date',
   'imagename' => 'btn_date_7',
-  'default'   => isset($cInfo->audit_date) ? gen_locale_date($cInfo->audit_date) : '',
+  'default'   => isset($cInfo->audit_date) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $cInfo->audit_date) : '',
   'params'    => array('align' => 'left'),
 );
 $cal_date8 = array(
@@ -187,7 +187,7 @@ $cal_date8 = array(
   'form'      => 'capa',
   'fieldname' => 'closed_date',
   'imagename' => 'btn_date_8',
-  'default'   => isset($cInfo->closed_date) ? gen_locale_date($cInfo->closed_date) : '',
+  'default'   => isset($cInfo->closed_date) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $cInfo->closed_date) : '',
   'params'    => array('align' => 'left'),
 );
 $cal_date9 = array(
@@ -195,7 +195,7 @@ $cal_date9 = array(
   'form'      => 'capa',
   'fieldname' => 'action_date',
   'imagename' => 'btn_date_9',
-  'default'   => isset($cInfo->action_date) ? gen_locale_date($cInfo->action_date) : '',
+  'default'   => isset($cInfo->action_date) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $cInfo->action_date) : '',
   'params'    => array('align' => 'left'),
 );
 

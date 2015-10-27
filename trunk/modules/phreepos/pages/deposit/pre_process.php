@@ -41,7 +41,7 @@ $default_dep_acct = JOURNAL_ID == 18 ? AR_DEF_DEPOSIT_ACCT : AP_DEF_DEPOSIT_ACCT
 $order            = new \phreebooks\classes\banking;
 $gl_acct_id       = isset($_POST['gl_acct_id'])          ? db_prepare_input($_POST['gl_acct_id'])          : $order->gl_acct_id;
 $next_inv_ref     = isset($_POST['purchase_invoice_id']) ? db_prepare_input($_POST['purchase_invoice_id']) : $order->purchase_invoice_id;
-$post_date        = isset($_POST['post_date'])           ? gen_db_date($_POST['post_date'])                : date('Y-m-d');
+$post_date        = isset($_POST['post_date'])           ? \core\classes\DateTime::db_date_format($_POST['post_date'])                : date('Y-m-d');
 $period           = \core\classes\DateTime::period_of_date($post_date ,true);
 if (!$period) { // bad post_date was submitted
   	$_REQUEST['action']    = '';
@@ -165,7 +165,7 @@ switch ($_REQUEST['action']) {
 	  $oID = $order->id; // need to fetch id for printing
 	  if (!$post_credit) {
 		$order            = new \core\classes\objectInfo($_POST);
-		$order->post_date = gen_db_date($_POST['post_date']); // fix the date to original format
+		$order->post_date = \core\classes\DateTime::db_date_format($_POST['post_date']); // fix the date to original format
 		$order->id        = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
 	  }
 	  gen_add_audit_log(PAGE_TITLE, $order->purchase_invoice_id, $order->total_amount);
@@ -175,7 +175,7 @@ switch ($_REQUEST['action']) {
 	  } // else print or print_update, fall through and load javascript to call form_popup and clear form
 	} else { // else there was a post error, display and re-display form
 	  $order = new \core\classes\objectInfo($_POST);
-	  $order->post_date = gen_db_date($_POST['post_date']); // fix the date to original format
+	  $order->post_date = \core\classes\DateTime::db_date_format($_POST['post_date']); // fix the date to original format
 	  $order->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
 	}
 	break;
@@ -195,7 +195,7 @@ $cal_bills = array(
   'form'      => 'bills_deposit',
   'fieldname' => 'post_date',
   'imagename' => 'btn_date_1',
-  'default'   => isset($order->post_date) ? gen_locale_date($order->post_date) : date(DATE_FORMAT),
+  'default'   => isset($order->post_date) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $order->post_date) : date(DATE_FORMAT),
   'params'    => array('align' => 'left'),
 );
 

@@ -18,13 +18,13 @@
 //
 $security_level = \core\classes\user::validate(0, true);
 /**************  include page specific files  *********************/
-$date = ($_REQUEST['search_date']!= '') ? gen_db_date($_REQUEST['search_date']) : false;
+$date = ($_REQUEST['search_date']!= '') ? \core\classes\DateTime::db_date_format($_REQUEST['search_date']) : false;
 require(DIR_FS_WORKING . 'functions/phreebooks.php');
 
 /**************   page specific initialization  *************************/
 define('JOURNAL_ID',(int)$_GET['jID']);
 history_filter('pb_pop_orders');
-$date        = gen_db_date($_REQUEST['search_date']);
+$date        = \core\classes\DateTime::db_date_format($_REQUEST['search_date']);
 $acct_period = $_REQUEST['search_period'];
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/popup_orders/extra_actions.php';
@@ -92,7 +92,7 @@ $cal_date = array(
   'form'      => 'popup_orders',
   'fieldname' => 'search_date',
   'imagename' => 'btn_date_1',
-  'default'   => ($date != false) ? gen_locale_date($date): '',
+  'default'   => ($date != false) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $date): '',
   'params'    => array('align' => 'left'),
 );
 
@@ -120,7 +120,7 @@ $cal_date = array(
   'form'      => 'pos_mgr',
   'fieldname' => 'search_date',
   'imagename' => 'btn_date_1',
-  'default'   => isset($date) ? gen_locale_date($date): '',
+  'default'   => isset($date) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $date): '',
   'params'    => array('align' => 'left'),
 );
 history_save('pb_pop_orders');

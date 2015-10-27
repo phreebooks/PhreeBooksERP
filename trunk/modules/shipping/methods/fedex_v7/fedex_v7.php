@@ -983,11 +983,12 @@ class fedex_v7 extends \shipping\classes\shipping {
 				where carrier = '" . $this->id . "' and id = '" . $log_id . "'");
 		} else {
 			$start_date = $track_date;
-			$end_date   = gen_specific_date($track_date, $day_offset =  1);
+			$date = new \core\classes\DateTime($date_from);
+			$end_date   = $date->modify("+1 day")->format("Y-m-d");
 			$shipments  = $admin->DataBase->query("select id, ref_id, deliver_date, actual_date, tracking_id, notes
 				from " . TABLE_SHIPPING_LOG . "
-				where carrier = '" . $this->id . "'
-					and ship_date >= '" . $start_date . "' and ship_date < '" . $end_date . "'");
+				where carrier = '{$this->id}'
+					and ship_date >= '$start_date' and ship_date < '$end_date'");
 		}
 		while (!$shipments->EOF) {
 			$tracking_number = $shipments->fields['tracking_id'];

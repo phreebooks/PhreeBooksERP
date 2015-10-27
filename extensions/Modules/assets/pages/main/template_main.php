@@ -52,8 +52,8 @@ echo $toolbar->build($add_search = true);
 	<td onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'edit\''; ?>)"><?php echo $query_result->fields['purch_cond'] == 'u' ? TEXT_USED : TEXT_NEW; ?></td>
 	<td align="center" onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'edit\''; ?>)"><?php echo $query_result->fields['serial_number']; ?></td>
 	<td onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'edit\''; ?>)"><?php echo $query_result->fields['description_short']; ?></td>
-	<td onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'edit\''; ?>)"><?php echo gen_locale_date($query_result->fields['acquisition_date']); ?></td>
-	<td onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'edit\''; ?>)"><?php echo gen_locale_date($query_result->fields['terminal_date']); ?></td>
+	<td onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'edit\''; ?>)"><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result->fields['acquisition_date']); ?></td>
+	<td onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'edit\''; ?>)"><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result->fields['terminal_date']); ?></td>
 	<td align="right">
 <?php
 // build the action toolbar

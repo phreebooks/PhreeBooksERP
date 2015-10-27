@@ -22,7 +22,7 @@ require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 function build_audit_xml($date_from, $date_to, $select){
 	global $admin, $messageStack, $coa_types_list;
 	$tax_auths      = gen_build_tax_auth_array();
-	$dates = gen_get_dates($date_from);
+	$date = new \core\classes\DateTime($date_from);
   	$output  = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .chr(10);
 	$output .= '<auditfile>' .chr(10);
 	$output .= '<header>' .chr(10);
@@ -33,7 +33,7 @@ function build_audit_xml($date_from, $date_to, $select){
 		$output .= xmlEntry('companyAddress',		substr(htmlspecialchars(COMPANY_ADDRESS1),0,50)			,true);
 		$output .= xmlEntry('companyCity',			substr(htmlspecialchars(COMPANY_CITY_TOWN),0,50)		,true);
 		$output .= xmlEntry('companyPostalCode',	substr(htmlspecialchars(COMPANY_POSTAL_CODE),0,10)		,true);
-		$output .= xmlEntry('fiscalYear',			$dates['ThisYear']					,true);
+		$output .= xmlEntry('fiscalYear',			$date->format('Y')					,true);
 		$output .= xmlEntry('startDate',			$date_from							,true);
 		$output .= xmlEntry('endDate',				$date_to							,true);
 		$output .= xmlEntry('currencyCode',			DEFAULT_CURRENCY					,true);

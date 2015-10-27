@@ -103,7 +103,7 @@ $periods = array();
 $lf_per = array();
 $nf_per = array();
 while (!$result->EOF) {
-  $periods[$result->fields['period']] = $result->fields['period'] . ' - ' . gen_locale_date($result->fields['start_date']) . ' - ' . gen_locale_date($result->fields['end_date']);
+  $periods[$result->fields['period']] = $result->fields['period'] . ' - ' . \core\classes\DateTime::createFromFormat(DATE_FORMAT, $result->fields['start_date']) . ' - ' . \core\classes\DateTime::createFromFormat(DATE_FORMAT, $result->fields['end_date']);
   if (!$last_fy->EOF) $lf_per[$last_fy->fields['period']] = 1;
   if (!$next_fy->EOF) $nf_per[$next_fy->fields['period']] = 1;
   $result->MoveNext();

@@ -70,7 +70,7 @@ echo $toolbar->build($add_search = true, $add_period = true,  $cal_date);
 	  if (ENABLE_MULTI_CURRENCY) $total_amount .= ' (' . $query_result->fields['currencies_code'] . ')';
 ?>
   <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer" onclick="setReturnOrdr(<?php echo $query_result->fields['id']; ?>, false)">
-	<td><?php echo gen_locale_date($query_result->fields['post_date']); ?></td>
+	<td><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result->fields['post_date']); ?></td>
 	<td><?php echo $query_result->fields['purchase_invoice_id']; ?></td>
 	<?php switch (JOURNAL_ID) {
 		case  6:

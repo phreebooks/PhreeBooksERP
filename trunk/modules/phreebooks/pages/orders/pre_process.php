@@ -125,7 +125,7 @@ switch ($_REQUEST['action']) {
 		// load journal main data
 		$order->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
 		$order->journal_id          = JOURNAL_ID;
-		$order->post_date           = gen_db_date($_POST['post_date']);
+		$order->post_date           = \core\classes\DateTime::db_date_format($_POST['post_date']);
 		$order->period              = \core\classes\DateTime::period_of_date($order->post_date);
 		if (!$order->period) throw new \core\classes\userException("the period isn't set");	// bad post_date was submitted
 		if ($_SESSION['admin_prefs']['restrict_period'] && $order->period <> CURRENT_ACCOUNTING_PERIOD) throw new \core\classes\userException(ORD_ERROR_NOT_CUR_PERIOD);
@@ -143,7 +143,7 @@ switch ($_REQUEST['action']) {
 		$order->terms               = db_prepare_input($_POST['terms']);
 		$order->waiting             = (JOURNAL_ID == 6 || JOURNAL_ID == 7) ? (isset($_POST['waiting']) ? 1 : 0) : ($_POST['waiting'] ? 1 : 0);
 		$order->closed              = ($_POST['closed'] == '1') ? 1 : 0;
-		$order->terminal_date       = gen_db_date($_POST['terminal_date']);
+		$order->terminal_date       = \core\classes\DateTime::db_date_format($_POST['terminal_date']);
 		$order->item_count          = db_prepare_input($_POST['item_count']);
 		$order->weight              = db_prepare_input($_POST['weight']);
 		$order->printed             = db_prepare_input($_POST['printed']);
@@ -343,7 +343,7 @@ $cal_order = array(
   'form'      => 'orders',
   'fieldname' => 'post_date',
   'imagename' => 'btn_date_1',
-  'default'   => isset($order->post_date) ? gen_locale_date($order->post_date) : date(DATE_FORMAT),
+  'default'   => isset($order->post_date) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $order->post_date) : date(DATE_FORMAT),
   'params'    => array('align' => 'left'),
 );
 $cal_terminal = array(
@@ -351,7 +351,7 @@ $cal_terminal = array(
   'form'      => 'orders',
   'fieldname' => 'terminal_date',
   'imagename' => 'btn_date_2',
-  'default'   => isset($order->terminal_date) ? gen_locale_date($order->terminal_date) : $req_date,
+  'default'   => isset($order->terminal_date) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $order->terminal_date) : $req_date,
   'params'    => array('align' => 'left'),
 );
 // build the display options based on JOURNAL_ID
@@ -359,7 +359,8 @@ $template_options = array();
 switch(JOURNAL_ID) {
   case  3:
   case  4:
-	$req_date = gen_locale_date(gen_specific_date('', 0, 1, 0));
+  	$date = new \core\classes\DateTime();
+	$req_date = $date->modify("+1 month")->format(DATE_FORMAT);
 	$template_options['terminal_date'] = true;
 	$template_options['terms'] = true;
 	$template_options['closed'] = array(
@@ -367,7 +368,8 @@ switch(JOURNAL_ID) {
 	  'field' => html_checkbox_field('closed', '1', ($order->closed) ? true : false, '', ''));
 	break;
   case  6:
-	$req_date = gen_locale_date(gen_specific_date('', 0, 1, 0));
+  	$date = new \core\classes\DateTime();
+	$req_date = $date->modify("+1 month")->format(DATE_FORMAT);
 	$template_options['terms'] = true;
 	$template_options['waiting'] = array(
 	  'title' => TEXT_WAITING_FOR_INVOICE,

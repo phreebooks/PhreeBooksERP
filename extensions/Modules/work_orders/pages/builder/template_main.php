@@ -60,7 +60,7 @@ echo $toolbar->build($add_search = true);
 	<td<?php echo $bkgnd; ?> onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'edit\''; ?>)"><?php echo $query_result->fields['sku']; ?></td>
 	<td onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'edit\''; ?>)"><?php echo $query_result->fields['description']; ?></td>
 	<td onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'edit\''; ?>)"><?php echo $query_result->fields['revision']; ?></td>
-	<td onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'edit\''; ?>)"><?php echo gen_locale_date($query_result->fields['revision_date']); ?></td>
+	<td onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'edit\''; ?>)"><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result->fields['revision_date']); ?></td>
 	<td align="right">
 <?php
 // build the action toolbar

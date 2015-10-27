@@ -26,7 +26,7 @@ $glEntry             = new \core\classes\journal();
 $glEntry->id         = ($_POST['id'] <> '')      ? $_POST['id'] : ''; // will be null unless opening an existing gl entry
 $glEntry->journal_id = JOURNAL_ID;
 $glEntry->store_id   = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
-$glEntry->post_date  = $_POST['post_date']       ? gen_db_date($_POST['post_date']) : date('Y-m-d');
+$glEntry->post_date  = $_POST['post_date']       ? \core\classes\DateTime::db_date_format($_POST['post_date']) : date('Y-m-d');
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/assemblies/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
@@ -124,7 +124,7 @@ $cal_assy = array(
   'form'      => 'inv_assy',
   'fieldname' => 'post_date',
   'imagename' => 'btn_date_1',
-  'default'   => isset($glEntry->post_date) ? gen_locale_date($glEntry->post_date) : date(DATE_FORMAT),
+  'default'   => isset($glEntry->post_date) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $glEntry->post_date) : date(DATE_FORMAT),
 );
 $include_header   = true;
 $include_footer   = true;

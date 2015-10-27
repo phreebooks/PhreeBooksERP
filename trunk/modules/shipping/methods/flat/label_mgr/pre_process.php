@@ -29,8 +29,8 @@ switch ($_REQUEST['action']) {
   case 'save':
 	$sInfo->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);
 	$sInfo->ship_method = db_prepare_input($_POST['ship_method']);
-	$sInfo->ship_date = gen_db_date($_POST['ship_date']);
-	$sInfo->deliver_date = gen_db_date($_POST['deliver_date']);
+	$sInfo->ship_date = \core\classes\DateTime::db_date_format($_POST['ship_date']);
+	$sInfo->deliver_date = \core\classes\DateTime::db_date_format($_POST['deliver_date']);
 	$sInfo->tracking_id = db_prepare_input($_POST['tracking_id']);
 	$sInfo->cost = $admin->currencies->clean_value($_POST['cost']);
 

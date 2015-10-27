@@ -51,7 +51,7 @@ $list_types = ($adj_type == 'xfr') ? TEXT_TRANSFERS : TEXT_ADJUSTMENTS;
 	  $sku_desc = $query_result->fields['sku_cnt'] > 1 ? TEXT_MULTIPLE_ADJUSTMENTS : $query_result->fields['description'];
 	?>
     <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer" onclick='setReturnEntry(<?php echo $query_result->fields['id']; ?>)'>
-	  <td><?php echo gen_locale_date($query_result->fields['post_date']); ?></td>
+	  <td><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result->fields['post_date']); ?></td>
 	  <td><?php echo $query_result->fields['purchase_invoice_id']; ?></td>
 	  <td><?php echo ($adj_type == 'xfr') ? -$query_result->fields['qty'] : $query_result->fields['qty']; ?></td>
 	  <td><?php echo $sku_text; ?></td>

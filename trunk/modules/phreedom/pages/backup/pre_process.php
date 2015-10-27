@@ -91,13 +91,13 @@ switch ($_REQUEST['action']) {
 	}
     break;
 
-  case 'clean_log':
-    $temp = gen_get_dates(date('Y-m-d'));
-	$current_date = date('Y-m-d', mktime(0, 0, 0, $temp['ThisMonth'], 1, $temp['ThisYear']));
-    $result = $admin->DataBase->exec("delete from " . TABLE_AUDIT_LOG . " where action_date < '" . $current_date . "'");
-    $messageStack->add('The number of records deleted was:' . ' ' . $result->AffectedRows(),'success');
-	gen_add_audit_log(TEXT_AUDIT_DB_DATA_CLEAN);
-	break;
+	case 'clean_log':
+  		$date = new \core\classes\DateTime();
+  		$date->modify("-{$date->format('j')} day");
+    	$result = $admin->DataBase->exec("delete from " . TABLE_AUDIT_LOG . " where action_date < '{$date->format('Y-m-d')}'");
+    	$messageStack->add('The number of records deleted was:' . ' ' . $result->AffectedRows(),'success');
+		gen_add_audit_log(TEXT_AUDIT_DB_DATA_CLEAN);
+		break;
 
   default:
 }

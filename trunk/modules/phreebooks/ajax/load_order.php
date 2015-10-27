@@ -75,13 +75,13 @@ if (sizeof($order->fields) > 0) {
 	unset($order->fields['drop_ship']);
 	// some adjustments based on what we are doing
     $order->fields['search']       = $contact->fields['short_name'];
-	$order->fields['post_date']    = gen_locale_date($order->fields['post_date']);
+	$order->fields['post_date']    = \core\classes\DateTime::createFromFormat(DATE_FORMAT, $order->fields['post_date']);
 	$order->fields['terms_text']   = gen_terms_to_language($order->fields['terms'], true, $terms_type);
 	$order->fields['disc_percent'] = '0';
 	if ($order->fields['terminal_date'] == '000-00-00' || $order->fields['terminal_date'] == '') {
 	  unset($order->fields['terminal_date']);
 	} else {
-	  $order->fields['terminal_date'] = gen_locale_date($order->fields['terminal_date']);
+	  $order->fields['terminal_date'] = \core\classes\DateTime::createFromFormat(DATE_FORMAT, $order->fields['terminal_date']);
 	}
 	if (!$order->fields['rep_id']) unset($order->fields['rep_id']);
 	$ship_level = explode(':',$order->fields['shipper_code']);

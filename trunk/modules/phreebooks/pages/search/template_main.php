@@ -193,7 +193,7 @@ echo $toolbar->build();
 	<td onclick="window.open('<?php echo html_href_link(FILENAME_DEFAULT, $params, 'SSL'); ?>','_blank')"><?php echo $query_result->fields['id']; ?></td>
 	<td onclick="window.open('<?php echo html_href_link(FILENAME_DEFAULT, $params, 'SSL'); ?>','_blank')"><?php echo $query_result->fields['description']; ?></td>
 	<td onclick="window.open('<?php echo html_href_link(FILENAME_DEFAULT, $params, 'SSL'); ?>','_blank')"><?php echo $query_result->fields['bill_primary_name']; ?></td>
-	<td onclick="window.open('<?php echo html_href_link(FILENAME_DEFAULT, $params, 'SSL'); ?>','_blank')"><?php echo gen_locale_date($query_result->fields['post_date']); ?></td>
+	<td onclick="window.open('<?php echo html_href_link(FILENAME_DEFAULT, $params, 'SSL'); ?>','_blank')"><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result->fields['post_date']); ?></td>
 	<td onclick="window.open('<?php echo html_href_link(FILENAME_DEFAULT, $params, 'SSL'); ?>','_blank')"><?php echo $query_result->fields['purchase_invoice_id']; ?></td>
 	<td align="right" onclick="window.open('<?php echo html_href_link(FILENAME_DEFAULT, $params, 'SSL'); ?>','_blank')"><?php echo $admin->currencies->format($query_result->fields['total_amount']); ?></td>
 	<td align="right">

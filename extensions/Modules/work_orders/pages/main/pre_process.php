@@ -26,7 +26,7 @@ $hide_save   = false;
 $image       = false;
 $step_list   = array();
 $store_id    = 0;
-$post_date   = ($_POST['post_date'])  ? gen_db_date($_POST['post_date'])  : date('Y-m-d');
+$post_date   = ($_POST['post_date'])  ? \core\classes\DateTime::db_date_format($_POST['post_date'])  : date('Y-m-d');
 $close_date  = ($_POST['close_date']) ? $_POST['close_date'] : '';
 history_filter('wo_main');
 /***************   hook for custom actions  ***************************/
@@ -298,7 +298,7 @@ $cal_date = array(
   'form'      => 'work_orders',
   'fieldname' => 'post_date',
   'imagename' => 'btn_date_1',
-  'default'   => gen_locale_date($post_date),
+  'default'   => \core\classes\DateTime::createFromFormat(DATE_FORMAT, $post_date),
   'params'    => array('align' => 'left'),
 );
 switch ($_REQUEST['action']) {

@@ -24,10 +24,10 @@ require_once(DIR_FS_MODULES . 'inventory/defaults.php');
 if(!isset($_REQUEST['list'])) $_REQUEST['list'] = 1;
 $processed = false;
 $cInfo     = new \core\classes\objectInfo(array());
-$creation_date = isset($_POST['creation_date']) ? gen_db_date($_POST['creation_date']) : date('Y-m-d');
-$receive_date  = isset($_POST['receive_date'])  ? gen_db_date($_POST['receive_date'])  : '';
-$closed_date   = isset($_POST['closed_date'])   ? gen_db_date($_POST['closed_date'])   : '';
-$invoice_date  = isset($_POST['invoice_date'])  ? gen_db_date($_POST['invoice_date'])  : '';
+$creation_date = isset($_POST['creation_date']) ? \core\classes\DateTime::db_date_format($_POST['creation_date']) : date('Y-m-d');
+$receive_date  = isset($_POST['receive_date'])  ? \core\classes\DateTime::db_date_format($_POST['receive_date'])  : '';
+$closed_date   = isset($_POST['closed_date'])   ? \core\classes\DateTime::db_date_format($_POST['closed_date'])   : '';
+$invoice_date  = isset($_POST['invoice_date'])  ? \core\classes\DateTime::db_date_format($_POST['invoice_date'])  : '';
 history_filter();
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/main/extra_actions.php';
@@ -220,7 +220,7 @@ $cal_create = array(
   'form'      => 'rma',
   'fieldname' => 'creation_date',
   'imagename' => 'btn_date_1',
-  'default'   => isset($cInfo->creation_date) ? gen_locale_date($cInfo->creation_date) : gen_locale_date($creation_date),
+  'default'   => isset($cInfo->creation_date) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $cInfo->creation_date) : \core\classes\DateTime::createFromFormat(DATE_FORMAT, $creation_date),
   'params'    => array('align' => 'left'),
 );
 $cal_rcv = array(
@@ -228,7 +228,7 @@ $cal_rcv = array(
   'form'      => 'rma',
   'fieldname' => 'receive_date',
   'imagename' => 'btn_date_1',
-  'default'   => isset($cInfo->receive_date) ? gen_locale_date($cInfo->receive_date) : gen_locale_date($receive_date),
+  'default'   => isset($cInfo->receive_date) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $cInfo->receive_date) : \core\classes\DateTime::createFromFormat(DATE_FORMAT, $receive_date),
   'params'    => array('align' => 'left'),
 );
 $cal_close = array(
@@ -236,7 +236,7 @@ $cal_close = array(
   'form'      => 'rma',
   'fieldname' => 'closed_date',
   'imagename' => 'btn_date_1',
-  'default'   => isset($cInfo->closed_date) ? gen_locale_date($cInfo->closed_date) : gen_locale_date($closed_date),
+  'default'   => isset($cInfo->closed_date) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $cInfo->closed_date) : \core\classes\DateTime::createFromFormat(DATE_FORMAT, $closed_date),
   'params'    => array('align' => 'left'),
 );
 $cal_invoice = array(
@@ -244,7 +244,7 @@ $cal_invoice = array(
   'form'      => 'rma',
   'fieldname' => 'invoice_date',
   'imagename' => 'btn_date_1',
-  'default'   => isset($cInfo->invoice_date) ? gen_locale_date($cInfo->invoice_date) : gen_locale_date($invoice_date),
+  'default'   => isset($cInfo->invoice_date) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $cInfo->invoice_date) : \core\classes\DateTime::createFromFormat(DATE_FORMAT, $invoice_date),
   'params'    => array('align' => 'left'),
 );
 

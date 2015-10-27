@@ -51,7 +51,7 @@ $item_list = $invoices['invoices'];
 
 // some adjustments based on what we are doing
 $bill->fields['payment_fields'] = $invoices['payment_fields'];
-$bill->fields['post_date']      = gen_locale_date($bill->fields['post_date'] ? $bill->fields['post_date'] : date('Y-m-d'));
+$bill->fields['post_date']      = \core\classes\DateTime::createFromFormat(DATE_FORMAT, $bill->fields['post_date'] ? $bill->fields['post_date'] : date('Y-m-d'));
 
 // build the form data
 if (sizeof($contact->fields) > 0) {

@@ -41,8 +41,8 @@ for ($i = 1; $i < 30; $i++) {
   }
 }
 $_SESSION['search_date_id']      = $_REQUEST['search_date_id']     ? $_REQUEST['search_date_id']     : (isset($_SESSION['search_date_id'])     ? $_SESSION['search_date_id']     : 'l'); // default to current period
-$_SESSION['search_date_from']    = $_REQUEST['search_date_from']   ? $_REQUEST['search_date_from']   : (isset($_SESSION['search_date_from'])   ? $_SESSION['search_date_from']   : gen_locale_date(CURRENT_ACCOUNTING_PERIOD_START));
-$_SESSION['search_date_to']      = $_REQUEST['search_date_to']     ? $_REQUEST['search_date_to']     : (isset($_SESSION['search_date_to'])     ? $_SESSION['search_date_to']     : gen_locale_date(CURRENT_ACCOUNTING_PERIOD_END));
+$_SESSION['search_date_from']    = $_REQUEST['search_date_from']   ? $_REQUEST['search_date_from']   : (isset($_SESSION['search_date_from'])   ? $_SESSION['search_date_from']   : \core\classes\DateTime::createFromFormat(DATE_FORMAT, CURRENT_ACCOUNTING_PERIOD_START));
+$_SESSION['search_date_to']      = $_REQUEST['search_date_to']     ? $_REQUEST['search_date_to']     : (isset($_SESSION['search_date_to'])     ? $_SESSION['search_date_to']     : \core\classes\DateTime::createFromFormat(DATE_FORMAT, CURRENT_ACCOUNTING_PERIOD_END));
 $_SESSION['search_journal_id']   = isset($_REQUEST['search_journal_id'])  ? $_REQUEST['search_journal_id']  : (isset($_SESSION['search_journal_id'])  ? $_SESSION['search_journal_id']  : '0');
 $_SESSION['search_ref_id']       = $_REQUEST['search_ref_id']      ? $_REQUEST['search_ref_id']      : (isset($_SESSION['search_ref_id'])      ? $_SESSION['search_ref_id']      : 'all');
 $_SESSION['search_ref_from']     = $_REQUEST['search_ref_from']    ? $_REQUEST['search_ref_from']    : (isset($_SESSION['search_ref_from'])    ? $_SESSION['search_ref_from']    : '');
@@ -74,8 +74,8 @@ switch ($_REQUEST['action']) {
   case 'go_last':     $_REQUEST['list'] = 99999;   break;
   case 'reset':
 	$_SESSION['search_date_id']      = 'l';
-	$_SESSION['search_date_from']    = gen_locale_date(CURRENT_ACCOUNTING_PERIOD_START);
-	$_SESSION['search_date_to']      = gen_locale_date(CURRENT_ACCOUNTING_PERIOD_END);
+	$_SESSION['search_date_from']    = \core\classes\DateTime::createFromFormat(DATE_FORMAT, CURRENT_ACCOUNTING_PERIOD_START);
+	$_SESSION['search_date_to']      = \core\classes\DateTime::createFromFormat(DATE_FORMAT, CURRENT_ACCOUNTING_PERIOD_END);
 	$_SESSION['search_journal_id']   = '0';
 	$_SESSION['search_ref_id']       = 'all';
 	$_SESSION['search_ref_from']     = '';
@@ -168,7 +168,8 @@ if ($result) $criteria[] = $result;
 $date_prefs = array(
 	'fieldname' => 'm.post_date',
 	'params' => $_SESSION['search_date_id'] . ':' . ($_SESSION['search_date_from']) . ':' . ($_SESSION['search_date_to']));
-$temp = gen_build_sql_date($date_prefs['params'], $date_prefs['fieldname']);
+$tempDate = new \core\classes\DateTime();
+$temp = $tempDate->sql_date_array($date_prefs['params'], $date_prefs['fieldname']);
 if ($temp['sql']) $criteria[] = '(' . $temp['sql'] . ')';
 
 $crit = ($criteria) ? (" where " . implode(' and ', $criteria)) : '';

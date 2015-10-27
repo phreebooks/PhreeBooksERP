@@ -31,9 +31,10 @@ class aged_summary {
 	global $admin;
 	// find list of accounts within search filter
 	$today = date('Y-m-d');
-	$late_30 = gen_specific_date($today, -AR_AGING_PERIOD_1);
-	$late_60 = gen_specific_date($today, -AR_AGING_PERIOD_2);
-	$late_90 = gen_specific_date($today, -AR_AGING_PERIOD_3);
+	$today = new \core\classes\DateTime($date_from);
+	$late_30 = $today->modify("-".AR_AGING_PERIOD_1." day")->format("Y-m-d");
+	$late_60 = $today->modify("-".AR_AGING_PERIOD_2." day")->format("Y-m-d");
+	$late_90 = $today->modify("-".AR_AGING_PERIOD_3." day")->format("Y-m-d");
 	$sql_fields = substr($sql, strpos($sql,'select ') + 7, strpos($sql, ' from ') - 7);
 	// prepare the sql by temporarily replacing calculated fields with real fields
 	$this->sql_field_array = explode(', ', $sql_fields);

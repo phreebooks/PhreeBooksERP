@@ -43,7 +43,7 @@ class beg_bal_import {
 						throw new \core\classes\userException(TEXT_EXITING_IMPORT_NO_INVOICE_NUMBER_FOUND_ON_LINE . ' ' . ($row_id + 1));
 				}
 			}
-	  		$this->records[$row_id]['post_date'] = gen_db_date($current_order['post_date']); // from mm/dd/yyyy to YYYY-MM-DD
+	  		$this->records[$row_id]['post_date'] = \core\classes\DateTime::db_date_format($current_order['post_date']); // from mm/dd/yyyy to YYYY-MM-DD
 	  		validate_db_date($this->records[$row_id]['post_date']);
 	  		switch (JOURNAL_ID) { // total amount is calculated for PO/SOs
 				case  6:
@@ -221,7 +221,8 @@ class beg_bal_import {
 	function processInventory($upload_name) {
 		global $admin, $coa, $messageStack;
 		$this->cyberParse($upload_name);
-		$post_date = gen_specific_date(date('Y-m-d'), $day_offset = -1);
+		$date = new \core\classes\DateTime();
+		$post_date = $date->modify("-1 day");
 		$glEntry   = new \core\classes\journal();
 		$sku_list  = array();
 		$coa_list  = array();

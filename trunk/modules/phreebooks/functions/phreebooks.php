@@ -24,20 +24,22 @@ function fetch_item_description($id) {
 }
 
 function validate_fiscal_year($next_fy, $next_period, $next_start_date, $num_periods = 12) {
-  global $admin;
-  for ($i = 0; $i < $num_periods; $i++) {
-	$fy_array = array(
-	  'period'      => $next_period,
-	  'fiscal_year' => $next_fy,
-	  'start_date'  => $next_start_date,
-	  'end_date'    => gen_specific_date($next_start_date, $day_offset = -1, $month_offset = 1),
-	  'date_added'  => date('Y-m-d'),
-	);
-	db_perform(TABLE_ACCOUNTING_PERIODS, $fy_array, 'insert');
-	$next_period++;
-	$next_start_date = gen_specific_date($next_start_date, $day_offset = 0, $month_offset = 1);
-  }
-  return $next_period--;
+  	global $admin;
+  	$date = new \core\classes\DateTime($next_start_date);
+  	$date->modify("-1 day");
+  	for ($i = 0; $i < $num_periods; $i++) {
+  		$date->modify('+1 month')->format("Y-m-d");
+		$fy_array = array(
+	  		'period'      => $next_period,
+	  		'fiscal_year' => $next_fy,
+			'start_date'  => $next_start_date,
+	  		'end_date'    => $date->modify('+1 month')->format("Y-m-d"),
+	  		'date_added'  => date('Y-m-d'),
+		);
+		db_perform(TABLE_ACCOUNTING_PERIODS, $fy_array, 'insert');
+		$next_period++;
+  	}
+  	return $next_period--;
 }
 
 function modify_account_history_records($id, $add_acct = true) {
@@ -209,8 +211,8 @@ function fill_paid_invoice_array($id, $account_id, $type = 'c') {
 		'purch_order_id'      => $result->fields['purch_order_id'],
 		'percent'             => $due_dates['discount'],
 		'post_date'           => $result->fields['post_date'],
-		'early_date'          => gen_locale_date($due_dates['early_date']),
-		'net_date'            => gen_locale_date($due_dates['net_date']),
+		'early_date'          => \core\classes\DateTime::createFromFormat(DATE_FORMAT, $due_dates['early_date']),
+		'net_date'            => \core\classes\DateTime::createFromFormat(DATE_FORMAT, $due_dates['net_date']),
 		'total_amount'        => $admin->currencies->format($line_item['total_amount']),
 		'gl_acct_id'          => $result->fields['gl_acct_id'],
 		'description'         => $line_item['description'],
@@ -247,43 +249,44 @@ function fetch_partially_paid($id) {
 }
 
 function calculate_terms_due_dates($post_date, $terms_encoded, $type = 'AR') {
-  $terms = explode(':', $terms_encoded);
-  $date_details = gen_get_dates($post_date);
-  $result = array();
-  switch ($terms[0]) {
-	default:
-	case '0': // Default terms
-		$result['discount'] = constant($type . '_PREPAYMENT_DISCOUNT_PERCENT') / 100;
-		$result['net_date'] = gen_specific_date($post_date, constant($type . '_NUM_DAYS_DUE'));
-		if ($result['discount'] <> 0) {
-		  $result['early_date'] = gen_specific_date($post_date, constant($type . '_PREPAYMENT_DISCOUNT_DAYS'));
-		} else {
-		  $result['early_date'] = $post_date; // move way out
-		}
-		break;
-	case '1': // Cash on Delivery (COD)
-	case '2': // Prepaid
-		$result['discount']   = 0;
-		$result['early_date'] = $post_date;
-		$result['net_date']   = $post_date;
-		break;
-	case '3': // Special terms
-		$result['discount']   = $terms[1] / 100;
-		$result['early_date'] = gen_specific_date($post_date, $terms[2]);
-		$result['net_date']   = gen_specific_date($post_date, $terms[3]);
-		break;
-	case '4': // Due on day of next month
-		$result['discount']   = $terms[1] / 100;
-		$result['early_date'] = gen_specific_date($post_date, $terms[2]);
-		$result['net_date']   = gen_db_date( $terms[3] );
-		break;
-	case '5': // Due at end of month
-		$result['discount']   = $terms[1] / 100;
-		$result['early_date'] = gen_specific_date($post_date, $terms[2]);
-		$result['net_date']   = date('Y-m-d', mktime(0, 0, 0, $date_details['ThisMonth'], $date_details['TotalDays'], $date_details['ThisYear']));
-		break;
-  }
-  return $result;
+  	$terms = explode(':', $terms_encoded);
+  	$net_date = new \core\classes\DateTime($post_date); 
+  	$early_date = new \core\classes\DateTime($post_date);
+  	$result = array();
+  	switch ($terms[0]) {
+		default:
+		case '0': // Default terms
+			$result['discount'] = constant($type . '_PREPAYMENT_DISCOUNT_PERCENT') / 100;
+			$result['net_date'] = $net_date->modify("+". constant($type . '_NUM_DAYS_DUE'). " day")->format("Y-m-d");
+			if ($result['discount'] <> 0) {
+		  		$result['early_date'] = $early_date->modify("+".constant($type . '_PREPAYMENT_DISCOUNT_DAYS')." day")->format("Y-m-d");
+			} else {
+		  		$result['early_date'] = $post_date; // move way out
+			}
+			break;
+		case '1': // Cash on Delivery (COD)
+		case '2': // Prepaid
+			$result['discount']   = 0;
+			$result['early_date'] = $net_date->format("Y-m-d");
+			$result['net_date']   = $post_date;
+			break;
+		case '3': // Special terms
+			$result['discount']   = $terms[1] / 100;
+			$result['early_date'] = $early_date->modify("+{$terms[2]} day")->format("Y-m-d");
+			$result['net_date']   = $net_date->modify("+{$terms[3]} day")->format("Y-m-d");
+			break;
+		case '4': // Due on day of next month
+			$result['discount']   = $terms[1] / 100;
+			$result['early_date'] = $early_date->modify("+{$terms[2]} day")->format("Y-m-d");
+			$result['net_date']   = \core\classes\DateTime::db_date_format( $terms[3] );
+			break;
+		case '5': // Due at end of month
+			$result['discount']   = $terms[1] / 100;
+			$result['early_date'] = $early_date->modify("+{$terms[2]} day")->format("Y-m-d");
+			$result['net_date']   = $net_date->modify("+{$net_date->format('t')} day")->format("Y-m-d");
+			break;
+  	}
+  	return $result;
 }
 
 function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
@@ -472,9 +475,10 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
   	function repost_journals($journals, $start_date, $end_date) {
 		global $admin;
 		try{
+			$end_date = new \core\classes\DateTime($end_date);
 			if (sizeof($journals) == 0) throw new \core\classes\userException('no journals received to repost');
 			$sql = "SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE journal_id IN (".implode(',', $journals).")
-			  AND post_date>= '$start_date' AND post_date<'".gen_specific_date($end_date, 1)."' ORDER BY post_date, id";
+			  AND post_date>= '$start_date' AND post_date<'".$end_date->modify("+1 day")->format("Y-m-d")."' ORDER BY post_date, id";
 			$result = $admin->DataBase->query($sql);
 			$cnt = 0;
 			$admin->DataBase->transStart();

@@ -22,8 +22,8 @@ require(DIR_FS_WORKING . 'functions/phreebooks.php');
 /**************   page specific initialization  *************************/
 define('JOURNAL_ID',2);	// General Journal
 if (!defined('CURRENT_ACCOUNTING_PERIOD')) gen_auto_update_period(false);
-$start_date = ($_POST['start_date'])  ? gen_db_date($_POST['start_date']) : CURRENT_ACCOUNTING_PERIOD_START;
-$end_date   = ($_POST['end_date'])    ? gen_db_date($_POST['end_date'])   : CURRENT_ACCOUNTING_PERIOD_END;
+$start_date = ($_POST['start_date'])  ? \core\classes\DateTime::db_date_format($_POST['start_date']) : CURRENT_ACCOUNTING_PERIOD_START;
+$end_date   = ($_POST['end_date'])    ? \core\classes\DateTime::db_date_format($_POST['end_date'])   : CURRENT_ACCOUNTING_PERIOD_END;
 // see what fiscal year we are looking at (assume this FY is entered for the first time)
 if ($_POST['fy']) {
   $fy = $_POST['fy'];
@@ -52,8 +52,8 @@ switch ($_REQUEST['action']) {
 	while(isset($_POST['start_' . $x])) {
 		$update_period = db_prepare_input($_POST['per_' . $x]);
 		$fy_array = array(
-			'start_date' => gen_db_date(db_prepare_input($_POST['start_'.$x])),
-			'end_date'   => gen_db_date(db_prepare_input($_POST['end_'  .$x])));
+			'start_date' => \core\classes\DateTime::db_date_format(db_prepare_input($_POST['start_'.$x])),
+			'end_date'   => \core\classes\DateTime::db_date_format(db_prepare_input($_POST['end_'  .$x])));
 		db_perform(TABLE_ACCOUNTING_PERIODS, $fy_array, 'update', 'period = ' . (int)$update_period);
 		$x++;
 	}
@@ -284,7 +284,7 @@ while(!$result->EOF) {
     'form'      => 'admin_tools',
     'fieldname' => 'start_'.$i,
     'imagename' => 'btn_date_2',
-    'default'   => gen_locale_date($result->fields['start_date']),
+    'default'   => \core\classes\DateTime::createFromFormat(DATE_FORMAT, $result->fields['start_date']),
     'params'    => array('align' => 'left'),
   );
   $cal_end[$i] = array(
@@ -292,7 +292,7 @@ while(!$result->EOF) {
     'form'      => 'admin_tools',
     'fieldname' => 'end_'.$i,
     'imagename' => 'btn_date_2',
-    'default'   => gen_locale_date($result->fields['end_date']),
+    'default'   => \core\classes\DateTime::createFromFormat(DATE_FORMAT, $result->fields['end_date']),
     'params'    => array('align' => 'left'),
   );
   $i++;
@@ -304,7 +304,7 @@ $cal_repost_start = array(
     'form'      => 'admin_tools',
     'fieldname' => 'start_date',
     'imagename' => 'btn_date_2',
-    'default'   => gen_locale_date($start_date),
+    'default'   => \core\classes\DateTime::createFromFormat(DATE_FORMAT, $start_date),
     'params'    => array('align' => 'left'),
 );
 $cal_repost_end = array(
@@ -312,7 +312,7 @@ $cal_repost_end = array(
     'form'      => 'admin_tools',
     'fieldname' => 'end_date',
     'imagename' => 'btn_date_2',
-    'default'   => gen_locale_date($end_date),
+    'default'   => \core\classes\DateTime::createFromFormat(DATE_FORMAT, $end_date),
     'params'    => array('align' => 'left'),
 );
 

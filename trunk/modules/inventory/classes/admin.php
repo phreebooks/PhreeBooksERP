@@ -824,7 +824,7 @@ class admin extends \core\classes\admin {
 
   	function SaveInventoryAdjustment (\core\classes\basis $basis){
   		\core\classes\user::validate_security_by_token(SECURITY_ID_ADJUST_INVENTORY, 2);
-  		$post_date           = isset($_POST['post_date'])? gen_db_date($_POST['post_date']) : date('Y-m-d');
+  		$post_date           = isset($_POST['post_date'])? \core\classes\DateTime::db_date_format($_POST['post_date']) : date('Y-m-d');
   		$glEntry             = new \core\classes\journal();
   		$glEntry->id         = isset($_POST['id'])       ? $_POST['id']       : '';
   		$glEntry->journal_id = 16;
@@ -927,7 +927,7 @@ class admin extends \core\classes\admin {
   				'form'      => 'inv_adj',
   				'fieldname' => 'post_date',
   				'imagename' => 'btn_date_1',
-  				'default'   => gen_locale_date($post_date),
+  				'default'   => \core\classes\DateTime::createFromFormat(DATE_FORMAT, $post_date),
   		);
   		$basis->cInfo->gl_acct	= INV_STOCK_DEFAULT_COS;
   		$basis->page_title		= TEXT_INVENTORY_ADJUSTMENTS;
@@ -943,7 +943,7 @@ class admin extends \core\classes\admin {
   		$glEntry->id         = ($_POST['id'] <> '')      ? $_POST['id'] : ''; // will be null unless opening an existing gl entry
   		$glEntry->journal_id = 14;
   		$glEntry->store_id   = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
-  		$glEntry->post_date  = $_POST['post_date']       ? gen_db_date($_POST['post_date']) : date('Y-m-d');
+  		$glEntry->post_date  = $_POST['post_date']       ? \core\classes\DateTime::db_date_format($_POST['post_date']) : date('Y-m-d');
   		$glEntry->admin_id            = $_SESSION['admin_id'];
   		$glEntry->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);
   		$sku                          = db_prepare_input($_POST['sku_1']);
@@ -992,7 +992,7 @@ class admin extends \core\classes\admin {
   		$glEntry->id         = ($_POST['id'] <> '')      ? $_POST['id'] : ''; // will be null unless opening an existing gl entry
   		$glEntry->journal_id = 14;
   		$glEntry->store_id   = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
-  		$glEntry->post_date  = $_POST['post_date']       ? gen_db_date($_POST['post_date']) : date('Y-m-d');
+  		$glEntry->post_date  = $_POST['post_date']       ? \core\classes\DateTime::db_date_format($_POST['post_date']) : date('Y-m-d');
   		if (!$glEntry->id) throw new \core\classes\userException(TEXT_THERE_WERE_ERRORS_DURING_PROCESSING . ' ' . TEXT_THE_RECORD_WAS_NOT_DELETED);
   		$delAssy = new \core\classes\journal($glEntry->id); // load the posted record based on the id submitted
   		// *************** START TRANSACTION *************************
@@ -1018,7 +1018,7 @@ class admin extends \core\classes\admin {
 		  'form'      => 'inv_assy',
 		  'fieldname' => 'post_date',
 		  'imagename' => 'btn_date_1',
-		  'default'   => isset($glEntry->post_date) ? gen_locale_date($glEntry->post_date) : date(DATE_FORMAT),
+		  'default'   => isset($glEntry->post_date) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $glEntry->post_date) : date(DATE_FORMAT),
 		);
   		$basis->cInfo->gl_acct	= INV_STOCK_DEFAULT_COS;
   		$basis->page_title		= TEXT_ASSEMBLE_DISASSEMBLE_INVENTORY;

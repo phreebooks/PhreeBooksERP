@@ -184,8 +184,9 @@ switch ($_REQUEST['action']) {
 			if ($_POST['phreebooks_action'] <> 'data') { // install fiscal year if the phreebooks data is not copied
 			  	$admin->DataBase->query("TRUNCATE TABLE " . TABLE_ACCOUNTING_PERIODS);
 			  	require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
-			  	$dates = gen_get_dates();
-			  	validate_fiscal_year($dates['ThisYear'], '1', $dates['ThisYear'] . '-' . $dates['ThisMonth'] . '-01');
+			  	$date = new \core\classes\DateTime($date_from);
+			  	$date->modify("-{$date->format('j')} day");
+			  	validate_fiscal_year($date->format('Y'), '1', $date->format('Y-m-d'));
 			  	build_and_check_account_history_records();
 			  	gen_auto_update_period(false);
 			}
@@ -260,7 +261,7 @@ switch ($_REQUEST['action']) {
 	$default_tab_id = 'tools';
 	break;
   case 'clean_security':
-	$clean_date = gen_db_date($_POST['clean_date']);
+	$clean_date = \core\classes\DateTime::db_date_format($_POST['clean_date']);
 	if (!$clean_date) break;
 	$result = $admin->DataBase->exec("delete from ".TABLE_DATA_SECURITY." where exp_date < '".$clean_date."'");
 	$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, $result->AffectedRows(), TEXT_DATA_SECURITY_RECORDS), 'success');
@@ -303,7 +304,7 @@ $cal_clean = array(
   'form'      => 'admin',
   'fieldname' => 'clean_date',
   'imagename' => 'btn_date_1',
-  'default'   => gen_locale_date(date('Y-m-d')),
+  'default'   => \core\classes\DateTime::createFromFormat(DATE_FORMAT, date('Y-m-d')),
   'params'    => array('align' => 'left'),
 );
 $include_header   = true;

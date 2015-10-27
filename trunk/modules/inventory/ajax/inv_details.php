@@ -189,12 +189,12 @@ try{
 		  $stock_note[] = ORD_INV_STOCK_LOW;
 		  $stock_note[] = ORD_INV_STOCK_BAL . $inventory_array['branch_qty_in_stock'];
 		  // fetch open orders
-		  $sku_history = gather_history($inventory_array['sku']);
+		  $sku_history = gather_history($inventory_array['sku']);//@todo is moved to inventory class
 		  if (is_array($sku_history['open_po'])) {
 		    $stock_note[] = TEXT_OPEN_PURCHASE_ORDERS . ': ';
 		    foreach ($sku_history['open_po'] as $value) {
 			  $store = $value['store_id'] ? gen_get_contact_name($value['store_id']) : COMPANY_NAME; // get name from id
-			  $stock_note[] = sprintf(ORD_INV_STOCK_STATUS, $store, $value['purchase_invoice_id'], $value['qty'], gen_locale_date($value['date_1']));
+			  $stock_note[] = sprintf(ORD_INV_STOCK_STATUS, $store, $value['purchase_invoice_id'], $value['qty'], \core\classes\DateTime::createFromFormat(DATE_FORMAT, $value['date_1']));
 		    }
 		  }
 		}

@@ -22,7 +22,7 @@ require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
 /**************   page specific initialization  *************************/
 define('JOURNAL_ID',2);	// General Journal
-$post_date = ($_POST['post_date']) ? gen_db_date($_POST['post_date']) : date('Y-m-d', time());
+$post_date = ($_POST['post_date']) ? \core\classes\DateTime::db_date_format($_POST['post_date']) : date('Y-m-d', time());
 $period    = \core\classes\DateTime::period_of_date($post_date);
 $glEntry   = new \core\classes\journal();
 $glEntry->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing gl entry
@@ -176,7 +176,7 @@ switch ($_REQUEST['action']) {
 		$admin->DataBase->transRollback();
 		$messageStack->add($e->getMessage());
 		$cInfo = new \core\classes\objectInfo($_POST); // if we are here, there was an error, reload page
-		$cInfo->post_date = gen_db_date($_POST['post_date']);
+		$cInfo->post_date = \core\classes\DateTime::db_date_format($_POST['post_date']);
   	}
   	if (DEBUG) $messageStack->write_debug();
 	break;
@@ -210,7 +210,7 @@ switch ($_REQUEST['action']) {
 		$admin->DataBase->transRollback();
 		$messageStack->add($e->getMessage());
 		$cInfo = new \core\classes\objectInfo($_POST); // if we are here, there was an error, reload page
-		$cInfo->post_date = gen_db_date($_POST['post_date']);
+		$cInfo->post_date = \core\classes\DateTime::db_date_format($_POST['post_date']);
   	}
 	if (DEBUG) $messageStack->write_debug();
 	break;
@@ -247,7 +247,7 @@ $cal_gl = array(
   'form'      => 'journal',
   'fieldname' => 'post_date',
   'imagename' => 'btn_date_1',
-  'default'   => gen_locale_date($post_date),
+  'default'   => \core\classes\DateTime::createFromFormat(DATE_FORMAT, $post_date),
 );
 
 $include_header   = true;

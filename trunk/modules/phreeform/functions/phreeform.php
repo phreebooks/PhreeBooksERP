@@ -383,8 +383,9 @@ function BuildForm($report, $delivery_method = 'D') { // for forms only
 	// fetch criteria and date filter info
     $strCrit = array();
 	if ($report->datedefault) {
-	  $dates = gen_build_sql_date($report->datedefault, prefixTables($report->datefield));
-	  if ($dates['sql']) $strCrit[] = $dates['sql'];
+		$tempDate = new \core\classes\DateTime();
+	  	$dates = $tempDate->sql_date_array($report->datedefault, prefixTables($report->datefield));
+	  	if ($dates['sql']) $strCrit[] = $dates['sql'];
 	}
 //echo 'report = '; print_r($report); echo '<br />';
 	$criteria  = build_criteria($report);
@@ -905,7 +906,8 @@ function BuildSQL($report) { // for reports only
 	  }
 	}
 	// fetch date filter info
-	$dates   = gen_build_sql_date($report->datedefault, prefixTables($report->datefield));
+	$tempDate = new \core\classes\DateTime();
+	$dates   = $tempDate->sql_date_array($report->datedefault, prefixTables($report->datefield));
 	$strDate = $dates['sql'];
 	if ($dates['description']) $filterdesc .= $dates['description']; // update the filter description string
 	// Fetch the Criteria

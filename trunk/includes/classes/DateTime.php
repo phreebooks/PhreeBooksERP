@@ -45,10 +45,8 @@ class DateTime extends \DateTime {
 	 *    entry 2 => start date value db format
 	 *    entry 3 => end date value db format
 	 * @param df = database fieldname for the sql date search
-	 * @todo replacement of gen_build_sql_date
 	 */
 	function sql_date_array($date_prefs, $fieldname) {
-		$dates = $this->array_dates();
 		$DateArray = explode(':', $date_prefs);
 		$t = time();
 		$start_date = '0000-00-00';
@@ -189,16 +187,14 @@ class DateTime extends \DateTime {
 	 * returns a database date from when formated in DATE_FORMAT
 	 * @param string $raw_date
 	 * @return string
-	 * @todo repalcement of gen_db_date
 	 */
-	function db_date_format($raw_date = '') {
-		$this->createFromFormat ( DATE_FORMAT , $raw_date);
-		$errors = $this->getLastErrors();
-		$year = $this->format('Y');
-		if ($year  < 1900 || $year  > 2099) throw new \core\classes\userException("The year is lower than 1900 or higher than 2099 recieved: $year ", 'error');
-		if ($errors['warning_count'] != 0)  throw new \core\classes\userException($errors['warnings'], 	'error');
+	static function db_date_format($raw_date = '') {
+		$date = self::createFromFormat ( DATE_FORMAT , $raw_date);
+		$errors = self::getLastErrors();
+		if ($date->format('Y')  < 1900 || $date->format('Y')  > 2099) throw new \core\classes\userException("The year is lower than 1900 or higher than 2099 recieved: $date->format('Y') ", 'error');
+		if ($errors['warning_count'] != 0)  throw new \core\classes\userException($errors['warnings'], 	'warning');
 		if ($errors['error_count'] != 0)    throw new \core\classes\userException($errors['errors'],	'error');
-		return $this->format('Y-m-d');
+		return $date->format('Y-m-d');
 	}
 
 	/**
@@ -206,7 +202,6 @@ class DateTime extends \DateTime {
 	 * the date needs to be construced first.
 	 * @param bool $long
 	 * @return string
-	 * @todo replacement of gen_locale_date
 	 */
 	function locale_date($long = false) { // from db to display format
 		$errors = $this->getLastErrors();
@@ -219,40 +214,10 @@ class DateTime extends \DateTime {
 	}
 
 	/**
-	 * generates a dates array( Today, ThisDay, ThisMonth, ThisYear, TotalDays, MonthName)
-	 * @return array
-	 * @todo replacement of gen_get_dates
-	 */
-	function array_dates() {
-		$result = array();
-		$result['Today']     = $this->format('Y-m-d');
-		$result['ThisDay']   = $this->format('d');
-		$result['ThisMonth'] = $this->format('m');
-		$result['ThisYear']  = $this->format('Y');
-		$result['TotalDays'] = $this->format('t');
-		switch($result['ThisMonth']){
-			case 1:		$result['MonthName'] = TEXT_JAN;	break;
-			case 2:		$result['MonthName'] = TEXT_FEB;	break;
-			case 3:		$result['MonthName'] = TEXT_MAR;	break;
-			case 4:		$result['MonthName'] = TEXT_APR;	break;
-			case 5:		$result['MonthName'] = TEXT_MAY;	break;
-			case 6:		$result['MonthName'] = TEXT_JUN;	break;
-			case 7:		$result['MonthName'] = TEXT_JUL;	break;
-			case 8:		$result['MonthName'] = TEXT_AUG;	break;
-			case 9:		$result['MonthName'] = TEXT_SEP;	break;
-			case 10:	$result['MonthName'] = TEXT_OCT;	break;
-			case 11:	$result['MonthName'] = TEXT_NOV;	break;
-			case 12:	$result['MonthName'] = TEXT_DEC;	break;
-		}
-		return $result;
-	}
-
-	/**
 	 * gets fiscal dates from database.
 	 * @param number $period in format YYYY/mm/dd
 	 * @throws \core\classes\userException
 	 * @return array (fiscal_year, start_date, end_date)
-	 * @todo replacements of gen_calculate_fiscal_dates
 	 */
 	static function get_fiscal_dates($period = 1) {
 		global $admin;

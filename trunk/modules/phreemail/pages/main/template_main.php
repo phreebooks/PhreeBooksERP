@@ -49,7 +49,7 @@ echo $toolbar->build($add_search = true);
   <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer">
 	<td onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'edit\''; ?>)"><?php echo $query_result->fields['EmailFromP']; ?></td>
 	<td onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'edit\''; ?>)"><?php echo $query_result->fields['Subject']; ?></td>
-	<td onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'edit\''; ?>)"><?php echo gen_locale_date($query_result->fields['DateE']); ?></td>
+	<td onclick="submitSeq(<?php echo $query_result->fields['id'] . ', \'edit\''; ?>)"><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result->fields['DateE']); ?></td>
 	<td align="right">
 <?php
 // build the action toolbar

@@ -52,7 +52,7 @@ echo $toolbar->build($add_search = true, $add_period = true);
 	  }
 ?>
   <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer" onclick='setReturnEntry(<?php echo $query_result->fields['id']; ?>)'>
-	<td><?php echo gen_locale_date($query_result->fields['post_date']); ?></td>
+	<td><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result->fields['post_date']); ?></td>
 	<td><?php echo $query_result->fields['purchase_invoice_id']; ?></td>
 	<td><?php echo $query_result->fields['qty']; ?></td>
 	<td><?php echo $query_result->fields['description']; ?></td>

@@ -65,7 +65,7 @@ echo $toolbar->build($add_search = false, $add_period = true);
 	$beginning_balance += $values['dep_amount'] - $values['pmt_amount'];
   ?>
 	<tr class="<?php echo $odd?'odd':'even'; ?>">
-		<td id="td_<?php echo $i; ?>_4"><?php echo gen_locale_date($values['post_date']); ?></td>
+		<td id="td_<?php echo $i; ?>_4"><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $values['post_date']); ?></td>
 		<td id="td_<?php echo $i; ?>_1"><?php echo $values['reference']; ?></td>
 		<td id="td_<?php echo $i; ?>_2"><?php echo $values['pmt_amount'] ? TEXT_WITHDRAWAL : TEXT_DEPOSIT; ?></td>
 		<td id="td_<?php echo $i; ?>_5"><?php echo htmlspecialchars($values['name']); ?></td>

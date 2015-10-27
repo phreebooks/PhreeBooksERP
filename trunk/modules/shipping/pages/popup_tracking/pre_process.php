@@ -40,8 +40,8 @@ switch ($_REQUEST['action']) {
 		'carrier'      => db_prepare_input($_POST['carrier']),
 		'ref_id'       => db_prepare_input($_POST['ref_id']),
 		'method'       => db_prepare_input($_POST['method']),
-		'ship_date'    => gen_db_date($_POST['ship_date']),
-		'deliver_date' => gen_db_date($_POST['deliver_date']),
+		'ship_date'    => \core\classes\DateTime::db_date_format($_POST['ship_date']),
+		'deliver_date' => \core\classes\DateTime::db_date_format($_POST['deliver_date']),
 		'tracking_id'  => db_prepare_input($_POST['tracking_id']),
 		'cost'         => $admin->currencies->clean_value($_POST['cost']),
 	);
@@ -92,7 +92,7 @@ $cal_ship = array(
   'form'      => 'popup_tracking',
   'fieldname' => 'ship_date',
   'imagename' => 'btn_date_1',
-  'default'   => gen_locale_date($cInfo->ship_date),
+  'default'   => \core\classes\DateTime::createFromFormat(DATE_FORMAT, $cInfo->ship_date),
   'params'    => array('align' => 'left'),
 );
 $cal_del = array(
@@ -100,7 +100,7 @@ $cal_del = array(
   'form'      => 'popup_tracking',
   'fieldname' => 'deliver_date',
   'imagename' => 'btn_date_2',
-  'default'   => gen_locale_date($cInfo->deliver_date),
+  'default'   => \core\classes\DateTime::createFromFormat(DATE_FORMAT, $cInfo->deliver_date),
   'params'    => array('align' => 'left'),
 );
 

@@ -43,7 +43,7 @@ echo $toolbar->build($add_search = true, $add_periods = true);
   $odd = true;
   while (!$query_result->EOF) { ?>
   <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer" onclick="setReturnEntry(<?php echo $query_result->fields['id']; ?>)">
-	<td><?php echo gen_locale_date($query_result->fields['post_date']); ?></td>
+	<td><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result->fields['post_date']); ?></td>
 	<?php if (ENABLE_MULTI_BRANCH) { ?>
 	  <td><?php echo $query_result->fields['store_id'] ? gen_get_contact_name($query_result->fields['store_id']) : COMPANY_ID; ?></td>
 	<?php } ?>

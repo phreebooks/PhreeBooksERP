@@ -215,7 +215,7 @@ echo '<br />' . html_input_field('bill_email', $order->bill_email, 'size="40" ma
 		echo html_hidden_field($acct_num,  $order->$acct_num)  . chr(10);
 		// End hidden fields
 		echo '</td>' . chr(10);
-		echo '<td align="center">' . html_input_field($due_num,   gen_locale_date($order->$due_num), 'readonly="readonly" size="15"') . '</td>' . chr(10);
+		echo '<td align="center">' . html_input_field($due_num,   \core\classes\DateTime::createFromFormat(DATE_FORMAT, $order->$due_num), 'readonly="readonly" size="15"') . '</td>' . chr(10);
 		echo '<td align="center">' . html_input_field($amt_num,   $admin->currencies->format($admin->currencies->clean_value($order->$amt_num)), 'readonly="readonly" size="12" style="text-align:right"') . '</td>' . chr(10);
 		echo '<td align="center">' . html_input_field($desc_num,  $order->$desc_num, $extra_params . 'size="64" maxlength="64"') . '</td>' . chr(10);
 		echo '<td align="center">' . html_input_field($dscnt_num, $admin->currencies->format($admin->currencies->clean_value($order->$dscnt_num)), $extra_params . 'size="15" maxlength="20" onchange="updateRowTotal(' . $i . ')" style="text-align:right"') . '</td>' . chr(10);
