@@ -16,13 +16,21 @@
 //  Path: /modules/contacts/javascript/contacts.js
 //
 
-function contactChart(func, d0) {
+function contactChart(func, cID) {
 	chartProps.modID = "contacts";
 	chartProps.divID = "contact_chart";
 	chartProps.func  = func;
-	chartProps.d0    = d0;
+	chartProps.d0    = cID;
 	document.getElementById(chartProps.divID).innerHTML = '&nbsp;';
-	phreedomChart();
+	$.ajax({
+		type: "GET",
+		url: 'index.php?module=phreedom&page=ajax&action=ContactGetChartData&fID='+func+'&cID='+cIDd0,
+		dataType: ($.browser.msie) ? "text" : "xml",
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+			$.messager.alert("Ajax Error ", XMLHttpRequest.responseText + "\nTextStatus: " + textStatus + "\nErrorThrown: " + errorThrown, "error");
+		},
+		success: phreedomChartResp
+	});
 }
 
 function getAddress(id, type) {

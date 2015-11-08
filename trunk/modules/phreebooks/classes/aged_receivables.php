@@ -195,8 +195,7 @@ class aged_receivables {
 
   function calulate_special_fields($id) {
 	global $admin;
-	$today = \core\classes\DateTime);
-	date('Y-m-d');
+	$today = \core\classes\DateTime();
 	$new_data = array();
 	$result = $admin->DataBase->query("SELECT debit_amount, credit_amount FROM " . TABLE_JOURNAL_ITEM . " WHERE gl_type = 'ttl' and ref_id = $id ");
 	$result2 = $admin->DataBase->query("SELECT journal_id, post_date FROM " . TABLE_JOURNAL_MAIN . " WHERE id = $id");

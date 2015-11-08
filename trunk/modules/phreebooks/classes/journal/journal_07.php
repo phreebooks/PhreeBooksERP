@@ -816,27 +816,40 @@ class journal_07 extends \core\classes\journal {
 			} else { // it's an insert
 				// fetch the next recur id
 				$this->journal_main_array['recur_id'] = time();
-				$day_offset   = 0;
-				$month_offset = 0;
-				$year_offset  = 0;
-				$post_date    = $this->post_date;
+				$post_date = new \core\classes\DateTime($this->post_date);
+				$terminal_date = new \core\classes\DateTime($this->terminal_date);
 				for ($i = 0; $i < $this->recur_id; $i++) {
-					$this->validate_purchase_invoice_id();
-					$this->Post('insert');
-					$this->id = '';
-					$this->journal_main_array['id'] = $this->id;
-					$this->remove_cogs_rows();
-					for ($j = 0; $j < count($this->journal_rows); $j++) $this->journal_rows[$j]['id'] = '';
-					switch ($this->recur_frequency) {
-						default:
-						case '1': $day_offset   = ($i+1)*7;  break; // Weekly
-						case '2': $day_offset   = ($i+1)*14; break; // Bi-weekly
-						case '3': $month_offset = ($i+1)*1;  break; // Monthly
-						case '4': $month_offset = ($i+1)*3;  break; // Quarterly
-						case '5': $year_offset  = ($i+1)*1;  break; // Yearly
+			  		$this->validate_purchase_invoice_id();
+			  		$this->Post('insert');
+			  		$this->id = ''; 
+			  		$this->journal_main_array['id'] = $this->id;
+			  		$this->remove_cogs_rows();
+			  		for ($j = 0; $j < count($this->journal_rows); $j++) $this->journal_rows[$j]['id'] = '';
+			  		switch ($this->recur_frequency) {
+			  			default:
+						case '1':  // Weekly
+							$post_date->modify("+7 day");
+							$terminal_date->modify("+7 day");
+							break;
+						case '2':  // Bi-weekly
+							$post_date->modify("+14 day");	
+							$terminal_date->modify("+14 day");
+							break;
+						case '3':  // Monthly
+							$post_date->modify("+1 month");
+							$terminal_date->modify("+1 month");
+							break;
+						case '4':  // Quarterly
+							$post_date->modify("+3 month");	
+							$terminal_date->modify("+3 month");
+							break;
+						case '5':  // Yearly
+							$post_date->modify("+1 year");	
+							$terminal_date->modify("+1 year");
+							break;
 					}
-					$this->post_date     = gen_specific_date($post_date, $day_offset, $month_offset, $year_offset);
-					if ($this->terminal_date) $this->terminal_date = gen_specific_date($this->terminal_date, $day_offset, $month_offset, $year_offset);
+					$glEntry->post_date = $post_date->format("Y-m-d");
+			  		if ($this->terminal_date) $terminal_date->format("Y-m-d");
 					$this->period        = \core\classes\DateTime::period_of_date($this->post_date, true);
 					if (!$this->period && $i < ($this->recur_id - 1)) { // recur falls outside of available periods, ignore last calculation
 						throw new \core\classes\userException(ORD_PAST_LAST_PERIOD);

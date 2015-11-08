@@ -37,12 +37,12 @@
     foreach ($admin->classes['contacts']->tables as $tablename => $tablesql) {
 	  $result = $admin->DataBase->query("SHOW TABLE STATUS LIKE '$tablename'");
 	  echo "         <tr>\n";
-	  echo "          <td>" . $result->fields['Name'] . "</td>\n";
-	  echo "          <td align=\"center\">" . $result->fields['Engine'] . "</td>\n";
-	  echo "          <td align=\"center\">" . $result->fields['Rows'] . "</td>\n";
-	  echo "          <td align=\"center\">" . $result->fields['Collation'] . "</td>\n";
-	  echo "          <td align=\"center\">" .($result->fields['Data_length'] + $result->fields['Index_length']) . "</td>\n";
-	  echo "          <td align=\"center\">" . $result->fields['Auto_increment'] . "</td>\n";
+	  echo "          <td>" . $result['Name'] . "</td>\n";
+	  echo "          <td align=\"center\">" . $result\['Engine'] . "</td>\n";
+	  echo "          <td align=\"center\">" . $result['Rows'] . "</td>\n";
+	  echo "          <td align=\"center\">" . $result['Collation'] . "</td>\n";
+	  echo "          <td align=\"center\">" .($result['Data_length'] + $result['Index_length']) . "</td>\n";
+	  echo "          <td align=\"center\">" . $result['Auto_increment'] . "</td>\n";
 	  echo "        </tr>\n";
     }
     echo "      </tbody>\n";

@@ -66,43 +66,41 @@ class departments {
 	return true;
   }
 
-  function build_main_html() {
-  	global $admin;
-    $content = array();
-	$content['thead'] = array(
-	  'value' => array(TEXT_DEPARTMENT_ID, TEXT_DESCRIPTION, TEXT_SUB_DEPARTMENT, TEXT_INACTIVE, TEXT_ACTION),
-	  'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
-	);
-    $result = $admin->DataBase->query("select id, description_short, description, subdepartment, primary_dept_id, department_inactive from ".$this->db_table);
-    $rowCnt = 0;
-	while (!$result->EOF) {
-	  $actions = '';
-	  if ($this->security_id > 1) $actions .= html_icon('actions/edit-find-replace.png', TEXT_EDIT, 'small', 'onclick="loadPopUp(\'departments_edit\', \'' . $result->fields['id'] . '\')"') . chr(10);
-	  if ($this->security_id > 3) $actions .= html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . HR_INFO_DELETE_INTRO . '\')) subjectDelete(\'departments\', ' . $result->fields['id'] . ')"') . chr(10);
-	  $content['tbody'][$rowCnt] = array(
-	    array('value' => htmlspecialchars($result->fields['description_short']),
-			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'departments_edit\',\''.$result->fields['id'].'\')"'),
-		array('value' => htmlspecialchars($result->fields['description']),
-			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'departments_edit\',\''.$result->fields['id'].'\')"'),
-		array('value' => $result->fields['subdepartment'] ? TEXT_YES : TEXT_NO,
-			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'departments_edit\',\''.$result->fields['id'].'\')"'),
-		array('value' => $result->fields['department_inactive'] ? TEXT_YES : TEXT_NO,
-			  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'departments_edit\',\''.$result->fields['id'].'\')"'),
-		array('value' => $actions,
-			  'params'=> 'align="right"'),
-	  );
-      $result->MoveNext();
-	  $rowCnt++;
-    }
-    return html_datatable('dept_table', $content);
-  }
+  	function build_main_html() {
+  		global $admin;
+    	$content = array();
+		$content['thead'] = array(
+	  		'value' => array(TEXT_DEPARTMENT_ID, TEXT_DESCRIPTION, TEXT_SUB_DEPARTMENT, TEXT_INACTIVE, TEXT_ACTION),
+	  		'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
+		);
+    	$sql = $admin->DataBase->prepare("SELECT id, description_short, description, subdepartment, primary_dept_id, department_inactive FROM ".$this->db_table);
+    	$sql->execute();
+    	while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+     		$actions = '';
+	  		if ($this->security_id > 1) $actions .= html_icon('actions/edit-find-replace.png', TEXT_EDIT, 'small', "onclick='loadPopUp(\"departments_edit\", \"{$result['id']}\")'") . chr(10);
+	  		if ($this->security_id > 3) $actions .= html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . HR_INFO_DELETE_INTRO . '\')) subjectDelete(\'departments\', ' . $result['id'] . ')"') . chr(10);
+	  		$content['tbody'][] = array(
+	    		array('value' => htmlspecialchars($result['description_short']),
+			  		  'params'=> "style='cursor:pointer' onclick='loadPopUp(\"departments_edit\",\"{$result['id']}\")'"),
+				array('value' => htmlspecialchars($result['description']),
+					  'params'=> "style='cursor:pointer' onclick='loadPopUp(\"departments_edit\",\"{$result['id']}\")'"),
+				array('value' => $result['subdepartment'] ? TEXT_YES : TEXT_NO,
+					  'params'=> "style='cursor:pointer' onclick='loadPopUp(\"departments_edit\",\"{$result['id']}\")'"),
+				array('value' => $result['department_inactive'] ? TEXT_YES : TEXT_NO,
+					  'params'=> "style='cursor:pointer' onclick='loadPopUp(\"departments_edit\",\"{$result['id']}\")'"),
+				array('value' => $actions,
+					  'params'=> 'align="right"'),
+		  );
+    	}
+    	return html_datatable('dept_table', $content);
+  	}
 
   function build_form_html($action, $id = '') {
     global $admin;
     if ($action <> 'new') {
-        $sql = "select * from " . $this->db_table . " where id = '" . $this->id . "'";
+        $sql = "SELECT * FROM " . $this->db_table . " WHERE id = '{$this->id}'";
         $result = $admin->DataBase->query($sql);
-        foreach ($result->fields as $key => $value) $this->$key = $value;
+        foreach ($result as $key => $value) $this->$key = $value;
     }
 	$output  = '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);
 	$output .= '  <thead class="ui-widget-header">' . "\n";

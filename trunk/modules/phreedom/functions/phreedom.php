@@ -17,54 +17,6 @@
 //  Path: /modules/phreedom/functions/phreedom.php
 //
 
-function load_company_dropdown($include_select = false) {
-  $the_list = array();
-  if ($include_select) $the_list[0] = array('text' => TEXT_NONE, 'file' => 'none');
-  $i = 1;
-  $contents = @scandir(DIR_FS_MY_FILES);
-  if($contents === false) throw new \core\classes\userException("couldn't read or find directory ". DIR_FS_MY_FILES);
-  foreach ($contents as $file) {
-	if ($file <> '.' && $file <> '..' && is_dir(DIR_FS_MY_FILES . $file)) {
-	  if (file_exists(DIR_FS_MY_FILES . $file . '/config.txt')) convert_cfg($file);
-	  if (file_exists(DIR_FS_MY_FILES . $file . '/config.php')) {
-		require_once (DIR_FS_MY_FILES . $file . '/config.php');
-		$_SESSION['companies'][$file] = array(
-		  'id'   => $file,
-		  'text' => constant($file . '_TITLE'),
-		  'file' => $file,
-		);
-		$the_list[$i] = array(
-		  'text' => constant($file . '_TITLE'),
-		  'file' => $file,
-		);
-		$i++;
-	  }
-	}
-  }
-  return $the_list;
-}
-
-function load_language_dropdown($language_directory = 'modules/phreedom/language/') {
-  $output   = array();
-  $contents = @scandir($language_directory);
-  if($contents === false) throw new \core\classes\userException("couldn't read or find directory $language_directory");
-  foreach ($contents as $lang) {
-	if ($lang <> '.' && $lang <> '..' && is_dir($language_directory. $lang) && file_exists($language_directory . $lang . '/language.php')) {
-	  if ($config_file = file($language_directory . $lang . '/language.php')) {
-	    foreach ($config_file as $line) {
-		  if (strstr($line,'\'LANGUAGE\'') !== false) {
-		    $start_pos     = strpos($line, ',') + 2;
-		    $end_pos       = strpos($line, ')') + 1;
-		    $language_name = substr($line, $start_pos, $end_pos - $start_pos);
-		    break;
-		  }
-	    }
-	    $output[$lang] = array('id' => $lang, 'text' => $language_name);
-	  }
-	}
-  }
-  return $output;
-}
 
 function load_theme_dropdown() {
   $include_header  = false;
@@ -104,33 +56,6 @@ function load_colors_dropdown() {
   return $output;
 }
 
-function convert_cfg($company) {
-  // build the new file
-  $lines  = '<?php' . "\n";
-  $lines .= "/* config.php */" . "\n";
-  $lines .= "define('" . $company . "_TITLE','" . gen_pull_db_config_info($company, 'company_name') . "');" . "\n";
-  $lines .= "define('DB_SERVER','"              . gen_pull_db_config_info($company, 'db_server') . "');" . "\n";
-  $lines .= "define('DB_SERVER_USERNAME','"     . gen_pull_db_config_info($company, 'db_user') . "');" . "\n";
-  $lines .= "define('DB_SERVER_PASSWORD','"     . gen_pull_db_config_info($company, 'db_pw') . "');" . "\n";
-
-  $filename = DIR_FS_ADMIN . 'my_files/' . $company . '/config';
-  if (!$handle = @fopen($filename . '.php', 'w'))	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
-  if (!@fwrite($handle, $lines)) 					throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));
-  if (!@fclose($handle))							throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
-  if (!unlink($filename . '.txt')) throw new \core\classes\userException('Cannot delete file (' . $filename . '.txt). This file needs to be deleted for security reasons.');
-}
-
-function gen_pull_db_config_info($database, $key) {
-  $filename = DIR_FS_ADMIN . 'my_files/' . $database . '/config.txt';
-  $lines = file($filename);
-  for ($x = 0; $x < count($lines); $x++) {
-	if (trim(substr($lines[$x], 0, strpos($lines[$x], '='))) == $key) {
-	  return trim(substr($lines[$x], strpos($lines[$x],'=') + 1, strpos($lines[$x],';') - strpos($lines[$x],'=') - 1));
-	}
-  }
-  return false;
-}
-
 /**************************** admin functions ***********************************************/
 
 function admin_add_reports($module, $save_path = PF_DIR_MY_REPORTS) {
@@ -150,30 +75,29 @@ function admin_add_reports($module, $save_path = PF_DIR_MY_REPORTS) {
 
 /************************ install functions ******************************/
 function install_build_co_config_file($company, $key, $value) {
-  global $messageStack;
-  $filename = DIR_FS_ADMIN . 'my_files/' . $company . '/config.php';
-  if (file_exists($filename)) { // update
-    $lines = file($filename);
-    $found_it = false;
-    for ($x = 0; $x < count($lines); $x++) {
-	  if (strpos(substr($lines[$x], 0, strpos($lines[$x], ',')), $key)) {
-	    $lines[$x] = "define('" . $key . "','" . addslashes($value) . "');" . "\n";
-	    $found_it = true;
-	    break;
-	  }
-    }
-    if (!$found_it) $lines[] = "define('" . $key . "','" . addslashes($value) . "');" . "\n";
-  } else { // create the config file, because it doesn't exist
-    $lines = array();
-    $lines[] = '<?php' . "\n";
-    $lines[] = '/* config.php */' . "\n";
-    $lines[] = "define('" . $key . "','" . addslashes($value) . "');" . "\n";
-  }
-  $line = implode('', $lines);
-  if (!$handle = @fopen($filename, 'w')) 	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
-  if (!@fwrite($handle, $line)) 			throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $filename));
-  if (!@fclose($handle)) 					throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
-  return true;
+  	$filename = DIR_FS_ADMIN . 'my_files/' . $company . '/config.php';
+  	if (file_exists($filename)) { // update
+    	$lines = file($filename);
+    	$found_it = false;
+    	for ($x = 0; $x < count($lines); $x++) {
+	  		if (strpos(substr($lines[$x], 0, strpos($lines[$x], ',')), $key)) {
+	    		$lines[$x] = "define('{$key}','" . addslashes($value) . "');" . "\n";
+	    		$found_it = true;
+	    		break;
+	  		}
+    	}
+    	if (!$found_it) $lines[] = "define('{$key}','" . addslashes($value) . "');" . "\n";
+  	} else { // create the config file, because it doesn't exist
+    	$lines = array();
+	    $lines[] = '<?php' . "\n";
+    	$lines[] = '/* config.php */' . "\n";
+	    $lines[] = "define('{$key}','" . addslashes($value) . "');" . "\n";
+  	}
+  	$line = implode('', $lines);
+  	if (!$handle = @fopen($filename, 'w')) 	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
+  	if (!@fwrite($handle, $line)) 			throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $filename));
+  	if (!@fclose($handle)) 					throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
+  	return true;
 }
 
 /***************************** import/export functions ******************************/

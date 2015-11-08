@@ -173,8 +173,8 @@ class contacts {
   	public function data_complete(){
   		global $admin, $messageStack;
   		if ($this->auto_type && $this->short_name == '') {
-    		$result = $admin->DataBase->query("select {$this->auto_field} from ".TABLE_CURRENT_STATUS);
-        	$this->short_name  = $result->fields[$this->auto_field];
+    		$result = $admin->DataBase->query("SELECT {$this->auto_field} as next_id FROM ".TABLE_CURRENT_STATUS);
+        	$this->short_name  = $result['next_id'];
         	$this->inc_auto_id = true;
     	}
   		foreach ($this->address_types as $value) {

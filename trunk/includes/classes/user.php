@@ -204,5 +204,9 @@ class user {
 			}
 		}
 	}
+	
+	function __destruct(){
+//		$_SESSION['companies'] = $this->companies; @todo do we still need this
+	}
 
 }

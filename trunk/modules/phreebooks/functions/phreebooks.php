@@ -24,7 +24,6 @@ function fetch_item_description($id) {
 }
 
 function validate_fiscal_year($next_fy, $next_period, $next_start_date, $num_periods = 12) {
-  	global $admin;
   	$date = new \core\classes\DateTime($next_start_date);
   	$date->modify("-1 day");
   	for ($i = 0; $i < $num_periods; $i++) {
@@ -43,31 +42,31 @@ function validate_fiscal_year($next_fy, $next_period, $next_start_date, $num_per
 }
 
 function modify_account_history_records($id, $add_acct = true) {
-  global $admin;
-  $result = $admin->DataBase->query("select max(period) as period from " . TABLE_ACCOUNTING_PERIODS);
-  $max_period = $result->fields['period'];
-  if (!$max_period) die ('table: '.TABLE_ACCOUNTING_PERIODS.' is not set, run setup.');
-  if ($add_acct) {
-    $result = $admin->DataBase->query("select heading_only from " . TABLE_CHART_OF_ACCOUNTS . " where id = '" . $id . "'");
-	if ($result->fields['heading_only'] <> '1') {
-	  for ($i = 0, $j = 1; $i < $max_period; $i++, $j++) {
-	    $admin->DataBase->query("insert into " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " (account_id, period) values('" . $id . "', '" . $j . "')");
-	  }
-	}
-  } else {
-	$result = $admin->DataBase->exec("delete from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '" . $id . "'");
-  }
+  	global $admin;
+  	$result = $admin->DataBase->query("select max(period) as period from " . TABLE_ACCOUNTING_PERIODS);
+  	$max_period = $result['period'];
+  	if (!$max_period) die ('table: '.TABLE_ACCOUNTING_PERIODS.' is not set, run setup.');
+  	if ($add_acct) {
+    	$result = $admin->DataBase->query("select heading_only from " . TABLE_CHART_OF_ACCOUNTS . " where id = '" . $id . "'");
+		if ($result['heading_only'] <> '1') {
+	  		for ($i = 0, $j = 1; $i < $max_period; $i++, $j++) {
+	    		$admin->DataBase->query("insert into " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " (account_id, period) values('" . $id . "', '" . $j . "')");
+	  		}
+		}
+  	} else {
+		$result = $admin->DataBase->exec("delete from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '" . $id . "'");
+  	}
 }
 
 function build_and_check_account_history_records() {
   global $admin;
   $result = $admin->DataBase->query("select max(period) as period from " . TABLE_ACCOUNTING_PERIODS);
-  $max_period = $result->fields['period'];
+  $max_period = $result['period'];
   if (!$max_period) die ('table: '.TABLE_ACCOUNTING_PERIODS.' is not set, run setup.');
   $result = $admin->DataBase->query("select id, heading_only from " . TABLE_CHART_OF_ACCOUNTS . " order by id");
   while (!$result->EOF) {
-    if ($result->fields['heading_only'] <> '1') {
-	  $account_id = $result->fields['id'];
+    if ($result['heading_only'] <> '1') {
+	  $account_id = $result['id'];
 	  for ($i = 0, $j = 1; $i < $max_period; $i++, $j++) {
 	    $record_found = $admin->DataBase->query("select id from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '" . $account_id . "' and period = " . $j);
 	    if (!$record_found->fetch(\PDO::FETCH_NUM)) {
@@ -81,11 +80,11 @@ function build_and_check_account_history_records() {
 
 function get_fiscal_year_pulldown() {
     global $admin;
-    $fy_values = $admin->DataBase->query("select distinct fiscal_year from " . TABLE_ACCOUNTING_PERIODS . " order by fiscal_year");
+    $fy_values = $admin->DataBase->query("select distinct as id, fiscal_year as text from " . TABLE_ACCOUNTING_PERIODS . " order by fiscal_year");
     $fy_array = array();
     while (!$fy_values->EOF) {
-      $fy_array[] = array('id' => $fy_values->fields['fiscal_year'], 'text' => $fy_values->fields['fiscal_year']);
-      $fy_values->MoveNext();
+      	$fy_array[] = array('id' => $fy_values->fields['fiscal_year'], 'text' => $fy_values->fields['fiscal_year']);
+      	$fy_values->MoveNext();
     }
     return $fy_array;
 }
@@ -506,10 +505,14 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
   	$terms         = explode(':', $special_terms);
   	$credit_limit  = $terms[4] ? $terms[4] : constant(($type=='v'?'AP':'AR').'_CREDIT_LIMIT_AMOUNT');
 	$due_days      = $terms[3] ? $terms[3] : constant(($type=='v'?'AP':'AR').'_NUM_DAYS_DUE');
-	$due_date      = gen_specific_date($today, -$due_days);
-	$late_30 = gen_specific_date($today, ($type == 'v') ? -AP_AGING_DATE_1 : -AR_AGING_PERIOD_1);
-	$late_60 = gen_specific_date($today, ($type == 'v') ? -AP_AGING_DATE_2 : -AR_AGING_PERIOD_2);
-	$late_90 = gen_specific_date($today, ($type == 'v') ? -AP_AGING_DATE_3 : -AR_AGING_PERIOD_3);
+	$due_date      = new \core\classes\DateTime();
+	$due_date->modify("-{$due_days} day")->format('Y-m-d');
+	$late_30 = new \core\classes\DateTime();
+	$late_30->modify("-". ($type == 'v' ? AP_AGING_DATE_1 : AR_AGING_PERIOD_1). " day")->format('Y-m-d');
+	$late_60 = new \core\classes\DateTime();
+	$late_60->modify("-". ($type == 'v' ? AP_AGING_DATE_2 : AR_AGING_PERIOD_2). " day")->format('Y-m-d');
+	$late_90 = new \core\classes\DateTime();
+	$late_90->modify("-". ($type == 'v' ? AP_AGING_DATE_3 : AR_AGING_PERIOD_3). " day")->format('Y-m-d');
 	$output = array(
 	  'balance_0'  => '0',
 	  'balance_30' => '0',

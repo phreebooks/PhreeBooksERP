@@ -395,12 +395,12 @@ function AccountListResp(sXml) {
 	  case '18': fill = 'both'; break;
 	  default:
     }
-    window.open("index.php?module=contacts&page=popup_accts&type="+account_type+"&fill="+fill+"&jID="+journalID+"&search_text="+document.getElementById('search').value,"accounts","width=850px,height=550px,resizable=1,scrollbars=1,top=150,left=100");
+    window.open("index.php?action=LoadContactsAccountsPopUp&type="+account_type+"&fill="+fill+"&jID="+journalID+"&search_text="+document.getElementById('search').value,"accounts","width=850px,height=550px,resizable=1,scrollbars=1,top=150,left=100");
   }
 }
 
 function DropShipList(currObj) {
-	window.open("index.php?module=contacts&page=popup_accts&type=c&fill=ship&jID="+journalID+"&search_text="+document.getElementById('ship_search').value,"accounts","width=850px,height=550px,resizable=1,scrollbars=1,top=150,left=100");
+	window.open("index.php?action=LoadContactsAccountsPopUp&type=c&fill=ship&jID="+journalID+"&search_text="+document.getElementById('ship_search').value,"accounts","width=850px,height=550px,resizable=1,scrollbars=1,top=150,left=100");
 }
 
 function OpenOrdrList(currObj) {
@@ -434,7 +434,7 @@ function PriceManagerList(elementID) {
 
 function TermsList() {
   var terms = document.getElementById('terms').value;
-  window.open("index.php?module=contacts&page=popup_terms&type="+account_type+"&form=orders&val="+terms,"terms","width=500px,height=300px,resizable=1,scrollbars=1,top=150,left=200");
+  window.open("index.php?action=LoadTermsPopUp&type="+account_type+"&form=orders&val="+terms,"terms","width=500px,height=300px,resizable=1,scrollbars=1,top=150,left=200");
 }
 
 function FreightList() {

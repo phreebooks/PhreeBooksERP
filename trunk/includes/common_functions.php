@@ -186,7 +186,7 @@
     	$period_array = array();
     	if ($include_all) $period_array[] = array('id' => 'all', 'text' => TEXT_ALL);
     	while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
-	  		$text_value = TEXT_PERIOD . " {$result['period']} : " . gen_locale_date($result['start_date']) . ' - ' . gen_locale_date($result['end_date']);
+	  		$text_value = TEXT_PERIOD . " {$result['period']} : " . \core\classes\DateTime($result['start_date'])->format(DATE_FORMAT) . ' - ' . \core\classes\DateTime($result['end_date'])->format(DATE_FORMAT);
       		$period_array[] = array('id' => $result['period'], 'text' => $text_value);
     	}
     	return $period_array;
@@ -503,24 +503,6 @@ function get_dir_tree($dir, $root = true)  {
 	}
 	if ($root) return $tree;
 }
-
-/*************** Date Functions *******************************/
-  
-
-  function gen_specific_date($start_date, $day_offset = 0, $month_offset = 0, $year_offset = 0) {
-	global $messageStack;
-	$date = new \core\classes\DateTime($start_date);
-    if ($date->format('Y') > '1900' && $date->format('Y') < '2099') {
-	  // check for current day greater than the month will allow (for recurs)	
-	  if ($day_offset) 		$date->modify("+{$day_offset} day");
-	  if ($month_offset) 	$date->modify("+{$month_offset} month");
-	  if ($year_offset) 	$date->modify("+{$year_offset} year");
-      return $date->format('Y-m-d');
-    } else {
-	  $messageStack->add(sprintf(GEN_CALENDAR_FORMAT_ERROR, $raw_date, DATE_FORMAT, DATE_FORMAT_CALENDAR), 'error');
-      return date('Y-m-d');
-    }
-  }
 
 /*************** Country Functions *******************************/
   	function gen_pull_countries() {

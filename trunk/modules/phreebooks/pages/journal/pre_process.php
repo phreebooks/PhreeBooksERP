@@ -123,11 +123,9 @@ switch ($_REQUEST['action']) {
 					if (!$glEntry->recur_frequency) break;
 				}
 			} else { // it's an insert
+				$post_date = new \core\classes\DateTime($post_date);
 				// fetch the next recur id
 				$glEntry->journal_main_array['recur_id'] = time();
-				$day_offset   = 0;
-				$month_offset = 0;
-				$year_offset  = 0;
 				for ($i = 0; $i < $glEntry->recur_id; $i++) {
 					$glEntry->validate_purchase_invoice_id();
 					$glEntry->Post('insert');
@@ -136,13 +134,13 @@ switch ($_REQUEST['action']) {
 					for ($j = 0; $j < count($glEntry->journal_rows); $j++) $glEntry->journal_rows[$j]['id'] = '';
 					switch ($glEntry->recur_frequency) {
 						default:
-						case '1': $day_offset   = ($i+1)*7;  break; // Weekly
-						case '2': $day_offset   = ($i+1)*14; break; // Bi-weekly
-						case '3': $month_offset = ($i+1)*1;  break; // Monthly
-						case '4': $month_offset = ($i+1)*3;  break; // Quarterly
-						case '5': $year_offset  = ($i+1)*1;  break; // Yearly
+						case '1': $post_date->modify("+7 day"); 	break; // Weekly
+						case '2': $post_date->modify("+14 day");	break; // Bi-weekly
+						case '3': $post_date->modify("+1 month"); 	break; // Monthly
+						case '4': $post_date->modify("+3 month");	break; // Quarterly
+						case '5': $post_date->modify("+1 year");	break; // Yearly
 					}
-					$glEntry->post_date = gen_specific_date($post_date, $day_offset, $month_offset, $year_offset);
+					$glEntry->post_date = $post_date->format("Y-m-d");
 					$glEntry->period = \core\classes\DateTime::period_of_date($glEntry->post_date, true);
 					if (!$glEntry->period && $i < ($glEntry->recur_id - 1)) { // recur falls outside of available periods, ignore last calculation
 					  throw new \core\classes\userException(ORD_PAST_LAST_PERIOD);

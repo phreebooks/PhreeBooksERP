@@ -35,28 +35,28 @@ switch ($_REQUEST['action']) {
 			$message[] = sprintf('The record could not be found! Looking for id = %s', $id);
 		} else {
 			$xml .= '<Address>'.chr(10);
-			foreach ($result->fields as $key => $value) $xml .= xmlEntry($key, $value);
+			foreach ($result as $key => $value) $xml .= xmlEntry($key, $value);
 			$xml .= '</Address>'.chr(10);
 		}
 		// if it's a CRM entry, we need some primary information
 		$result = $admin->DataBase->query("select id, short_name, contact_first, contact_middle, contact_last, account_number, gov_id_number
-			from ".TABLE_CONTACTS." where id = ".$result->fields['ref_id']." limit 1");
-		$xml .= xmlEntry('contact_id',    $result->fields['id']);
-		$xml .= xmlEntry('short_name',    $result->fields['short_name']);
-		$xml .= xmlEntry('contact_middle',$result->fields['contact_middle']);
-		$xml .= xmlEntry('contact_first', $result->fields['contact_first']);
-		$xml .= xmlEntry('contact_last',  $result->fields['contact_last']);
-		$xml .= xmlEntry('account_number',$result->fields['account_number']);
-		$xml .= xmlEntry('gov_id_number', $result->fields['gov_id_number']);
+			from ".TABLE_CONTACTS." where id = ".$result['ref_id']." limit 1");
+		$xml .= xmlEntry('contact_id',    $result['id']);
+		$xml .= xmlEntry('short_name',    $result['short_name']);
+		$xml .= xmlEntry('contact_middle',$result['contact_middle']);
+		$xml .= xmlEntry('contact_first', $result['contact_first']);
+		$xml .= xmlEntry('contact_last',  $result['contact_last']);
+		$xml .= xmlEntry('account_number',$result['account_number']);
+		$xml .= xmlEntry('gov_id_number', $result['gov_id_number']);
 		break;
 
 	case 'rm_address':
 		$id     = $_GET['aID'];
 		$result = $admin->DataBase->query("select ref_id, type from ".TABLE_ADDRESS_BOOK." where address_id = $id");
-		if ($result->fields['type'] == 'im') { // it's a contact record, also delete record
+		if ($result['type'] == 'im') { // it's a contact record, also delete record
 			$short_name = gen_get_contact_name($id);
 			$contact = new \contacts\classes\contacts();
-			if ($contact->delete($result->fields['ref_id'])) {
+			if ($contact->delete($result['ref_id'])) {
 	  			gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_DELETE . '-' . $contact->title, $short_name);
 				$message[] = 'The record was successfully deleted!';
 			} else {
@@ -75,12 +75,12 @@ switch ($_REQUEST['action']) {
 		if ($result->fetch(\PDO::FETCH_NUM) < 1) {
 			$message[] = sprintf('The record could not be found! Looking for id = %s', $id);
 		} else {
-			$data = \core\classes\encryption::decrypt($_SESSION['admin_encrypt'], $result->fields['enc_value']);
+			$data = \core\classes\encryption::decrypt($_SESSION['admin_encrypt'], $result['enc_value']);
 			$fields = explode(':', $data);
 			if (strlen($fields[3]) == 2) $fields[3] = '20'.$fields[3]; // make sure year is 4 digits
 			$xml .= "<PaymentMethod>\n";
-			$xml .= xmlEntry("payment_id",   $result->fields['id']);
-			$xml .= xmlEntry("payment_hint", $result->fields['hint']);
+			$xml .= xmlEntry("payment_id",   $result['id']);
+			$xml .= xmlEntry("payment_hint", $result['hint']);
 			for ($i = 0; $i < sizeof($fields); $i++) $xml .= xmlEntry("field_" . $i, $fields[$i]);
 			$xml .= "</PaymentMethod>\n";
 		}

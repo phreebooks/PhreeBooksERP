@@ -55,24 +55,9 @@ class project_phases {
 	function btn_delete($id = 0) {
 	  	global $admin;
 		\core\classes\user::validate_security($this->security_id, 4); // security check
-	/*
-		// Check for this project phase being used in a journal entry, if so do not allow deletion
-		$result = $admin->DataBase->query("select projects from " . TABLE_JOURNAL_ITEM . "
-			where projects like '%" . $id . "%'");
-		while (!$result->EOF) {
-		  $phase_ids = explode(':', $result->fields['projects']);
-		  for ($i = 0; $i < count($phase_ids); $i++) {
-			if ($id == $phase_ids[$i]) {
-			  throw new \core\classes\userException(SETUP_PROJECT_PHASESS_DELETE_ERROR);
-			}
-		  }
-		  $result->MoveNext();
-		}
-	*/
-		// OK to delete
-		$result = $admin->DataBase->query("select description_short from " . $this->db_table . " where phase_id = '" . $this->id . "'");
-		$admin->DataBase->exec("delete from " . $this->db_table . " where phase_id = '" . $this->id . "'");
-		gen_add_audit_log(TEXT_PROJECT_PHASE . ' - ' . TEXT_DELETE, $result->fields['description_short']);
+		$result = $admin->DataBase->query("SELECT description_short FROM {$this->db_table} WHERE phase_id = '{$this->id}'");
+		$admin->DataBase->exec("DELETE FROM {$this->db_table} WHERE phase_id = '{$this->id}'");
+		gen_add_audit_log(TEXT_PROJECT_PHASE . ' - ' . TEXT_DELETE, $result['description_short']);
 		return true;
 	}
 
@@ -83,30 +68,27 @@ class project_phases {
 		  'value' => array(TEXT_SHORT_NAME, TEXT_DESCRIPTION, TEXT_COST_TYPE, TEXT_COST_BREAKDOWN, TEXT_INACTIVE, TEXT_ACTION),
 		  'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 		);
-	    $result = $admin->DataBase->query("select phase_id, description_short, description_long, cost_type, cost_breakdown, inactive from " . $this->db_table);
-	    $rowCnt = 0;
+	    $result = $admin->DataBase->prepare("SELECT phase_id, description_short, description_long, cost_type, cost_breakdown, inactive FROM {$this->db_table}");
+	    $sql->execute();
 	    $project_costs = new \contacts\classes\project_costs();
-		while (!$result->EOF) {
-			$params  = unserialize($result->fields['params']);
+		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
 			$actions = '';
-			if ($this->security_id > 1) $actions .= html_icon('actions/edit-find-replace.png', TEXT_EDIT,   'small', 'onclick="loadPopUp(\'project_phases_edit\', ' . $result->fields['phase_id'] . ')"') . chr(10);
-			if ($this->security_id > 3) $actions .= html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . SETUP_PROJECT_PHASES_DELETE_INTRO . '\')) subjectDelete(\'project_phases\', ' . $result->fields['phase_id'] . ')"') . chr(10);
-			$content['tbody'][$rowCnt] = array(
-			  array('value' => htmlspecialchars($result->fields['description_short']),
-					'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'project_costs_edit\',\''.$result->fields['cost_id'].'\')"'),
-			  array('value' => htmlspecialchars($result->fields['description_long']),
-					'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'project_costs_edit\',\''.$result->fields['cost_id'].'\')"'),
-			  array('value' => $project_costs->cost_types[$result->fields['cost_type']],
-					'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'project_costs_edit\',\''.$result->fields['cost_id'].'\')"'),
-			  array('value' => $result->fields['cost_breakdown'] ? TEXT_YES : '',
-					'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'project_costs_edit\',\''.$result->fields['cost_id'].'\')"'),
-			  array('value' => $result->fields['inactive'] ? TEXT_YES : '',
-					'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'project_costs_edit\',\''.$result->fields['cost_id'].'\')"'),
+			if ($this->security_id > 1) $actions .= html_icon('actions/edit-find-replace.png', TEXT_EDIT,   'small', 'onclick="loadPopUp(\'project_phases_edit\', ' . $result['phase_id'] . ')"') . chr(10);
+			if ($this->security_id > 3) $actions .= html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . SETUP_PROJECT_PHASES_DELETE_INTRO . '\')) subjectDelete(\'project_phases\', ' . $result['phase_id'] . ')"') . chr(10);
+			$content['tbody'][] = array(
+			  array('value' => htmlspecialchars($result['description_short']),
+					'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'project_costs_edit\',\''.$result['cost_id'].'\')"'),
+			  array('value' => htmlspecialchars($result['description_long']),
+					'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'project_costs_edit\',\''.$result['cost_id'].'\')"'),
+			  array('value' => $project_costs->cost_types[$result['cost_type']],
+					'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'project_costs_edit\',\''.$result['cost_id'].'\')"'),
+			  array('value' => $result['cost_breakdown'] ? TEXT_YES : '',
+					'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'project_costs_edit\',\''.$result['cost_id'].'\')"'),
+			  array('value' => $result['inactive'] ? TEXT_YES : '',
+					'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'project_costs_edit\',\''.$result['cost_id'].'\')"'),
 			  array('value' => $actions,
 					'params'=> 'align="right"'),
 			);
-		    $result->MoveNext();
-			$rowCnt++;
 	    }
 	    return html_datatable('proj_phase_table', $content);
 	}
@@ -114,10 +96,10 @@ class project_phases {
   function build_form_html($action, $id = '') {
     global $admin;
     if ($action <> 'new') {
-        $sql = "select description_short, description_long, cost_type, cost_breakdown, inactive
-	       from " . $this->db_table . " where phase_id = '" . $this->id . "'";
+        $sql = "SELECT description_short, description_long, cost_type, cost_breakdown, inactive
+	       FROM {$this->db_table} where phase_id = '{$this->id}'";
         $result = $admin->DataBase->query($sql);
-        foreach ($result->fields as $key => $value) $this->$key = $value;
+        foreach ($result as $key => $value) $this->$key = $value;
     }
     $project_costs = new \contacts\classes\project_costs();
 	$output  = '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);

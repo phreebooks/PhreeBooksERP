@@ -33,7 +33,7 @@ if(is_object($messageStack)) echo $messageStack->output();
   </tr>
   <tr>
    <td nowrap="nowrap">&nbsp;&nbsp;<?php echo sprintf(TEXT_SELECT_ARGS, TEXT_COMPANY); ?></td>
-   <td><?php echo html_pull_down_menu('company', $_SESSION['companies'], $basis->cInfo->company_index, '', true); ?></td>
+   <td><?php echo html_pull_down_menu('company', $basis->user->companies, $basis->cInfo->company_index, '', true); ?></td>
   </tr>
   <tr><td colspan="2" align="right"><?php echo html_submit_field('submit', TEXT_RESEND_PASSWORD) . '&nbsp;&nbsp;'; ?></td></tr>
  </tbody>

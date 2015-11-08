@@ -235,6 +235,7 @@ class DateTime extends \DateTime {
 	 */
 	static function period_of_date($post_date, $hide_error = false) {
 		global $admin;
+		if (is_object($post_date)) $post_date = $post_date->format('Y-m-d');
 		$post_time_stamp = strtotime($post_date);
 		$period_start_time_stamp = strtotime(CURRENT_ACCOUNTING_PERIOD_START);
 		$period_end_time_stamp = strtotime(CURRENT_ACCOUNTING_PERIOD_END);

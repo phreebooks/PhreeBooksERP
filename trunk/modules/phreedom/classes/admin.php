@@ -443,10 +443,6 @@ class admin extends \core\classes\admin {
 
 	function LoadLostPassword (\core\classes\basis $basis){
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		$basis->companies       = load_company_dropdown();
-		$basis->single_company  = sizeof($companies) == 1 ? true : false;
-		$basis->languages       = load_language_dropdown();
-		$basis->single_language = sizeof($languages) == 1 ? true : false;
 		$basis->include_header  = false;
 		$basis->include_footer  = false;
 		$basis->page_title		= TEXT_PHREEBOOKS_ERP;

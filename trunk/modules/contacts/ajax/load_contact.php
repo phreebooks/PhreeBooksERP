@@ -24,32 +24,32 @@ $security_level = \core\classes\user::validate();
 $cID   = db_prepare_input($_GET['cID']);
   // select the customer and build the contact record
 $contact    = $admin->DataBase->query("select * from " . TABLE_CONTACTS . " where id = '$cID'");
-$type       = $contact->fields['type'];
+$type       = $contact['type'];
 $terms_type = ($type == 'c') ? 'AR' : 'AP';
-$contact->fields['terms_text'] = gen_terms_to_language($contact->fields['special_terms'], true, $terms_type);
-$contact->fields['ship_gl_acct_id'] = ($type == 'v') ? AP_DEF_FREIGHT_ACCT : AR_DEF_FREIGHT_ACCT;
-$bill_add   = $admin->DataBase->query("select * from " . TABLE_ADDRESS_BOOK . " where ref_id = '$cID' and type in ('{$type}m', '{$type}b')");
-//fix some special fields
-if (!$contact->fields['dept_rep_id']) unset($contact->fields['dept_rep_id']); // clear the rep field if not set to a contact
-$ship_add = $admin->DataBase->query("select * from " . TABLE_ADDRESS_BOOK . " where ref_id = '$cID' and type in ('{$type}m', '{$type}s')");
+$contact['terms_text'] = gen_terms_to_language($contact['special_terms'], true, $terms_type);
+$contact['ship_gl_acct_id'] = ($type == 'v') ? AP_DEF_FREIGHT_ACCT : AR_DEF_FREIGHT_ACCT;
+$sql   = $admin->DataBase->prepare("select * from " . TABLE_ADDRESS_BOOK . " where ref_id = '$cID' and type in ('{$type}m', '{$type}b')");
+$sql->execute();
 
+//fix some special fields
+if (!$contact['dept_rep_id']) unset($contact['dept_rep_id']); // clear the rep field if not set to a contact
+$ship_add = $admin->DataBase->prepare("select * from " . TABLE_ADDRESS_BOOK . " where ref_id = '$cID' and type in ('{$type}m', '{$type}s')");
+$ship_add->execute();
 // build the form data
-if ($contact->fields) {
+if ($contact) {
   $xml .= "\t<Contact>\n";
-  foreach ($contact->fields as $key => $value) $xml .= "\t" . xmlEntry($key, $value);
+  foreach ($contact as $key => $value) $xml .= "\t" . xmlEntry($key, $value);
   $xml .= "\t</Contact>\n";
 }
-if ($bill_add->fields) while (!$bill_add->EOF) {
+while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
   $xml .= "\t<BillAddress>\n";
-  foreach ($bill_add->fields as $key => $value) $xml .= "\t" . xmlEntry($key, $value);
+  foreach ($result as $key => $value) $xml .= "\t" . xmlEntry($key, $value);
   $xml .= "\t</BillAddress>\n";
-  $bill_add->MoveNext();
 }
-if (defined('MODULE_SHIPPING_STATUS') && $ship_add->fields) while (!$ship_add->EOF) {
+if (defined('MODULE_SHIPPING_STATUS'))  while ($ship_add = $sql->fetch(\PDO::FETCH_LAZY)){
   $xml .= "\t<ShipAddress>\n";
-  foreach ($ship_add->fields as $key => $value) $xml .= "\t" . xmlEntry($key, $value);
+  foreach ($result as $key => $value) $xml .= "\t" . xmlEntry($key, $value);
   $xml .= "\t</ShipAddress>\n";
-  $ship_add->MoveNext();
 }
 echo createXmlHeader() . $xml . createXmlFooter();
 ob_end_flush();

@@ -31,19 +31,19 @@ $search = " and " . implode(" like %{$_REQUEST['guess']}%' or ", $search_fields)
 
 $field_list = array('c.id', 'c.short_name', 'a.primary_name');
 
-$query_raw = "select " . implode(', ', $field_list)  . "
-	from " . TABLE_CONTACTS . " c left join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id
-	where a.type in ('cm', 'vm') $search";
+$query_raw = "SELECT " . implode(', ', $field_list)  . "
+	FROM " . TABLE_CONTACTS . " c left join " . TABLE_ADDRESS_BOOK . " a on c.id = a.ref_id
+	WHERE a.type in ('cm', 'vm') $search";
 
-$result = $admin->DataBase->query($query_raw);
+$sql = $admin->DataBase->prepare($query_raw);
 
 $xml .= xmlEntry("guess", $_REQUEST['guess']);
-while (!$result->EOF) {
-  $xml .= "\t<guesses>\n";
-  $xml .= "\t" . xmlEntry("id",    $result->fields['id']);
-  $xml .= "\t" . xmlEntry("guess", $result->fields['short_name'] . ' - ' . $result->fields['primary_name']);
-  $xml .= "\t</guesses>\n";
-  $result->MoveNext();
+$sql->execute();
+while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+  	$xml .= "\t<guesses>\n";
+  	$xml .= "\t" . xmlEntry("id",    $result['id']);
+  	$xml .= "\t" . xmlEntry("guess", $result['short_name'] . ' - ' . $result['primary_name']);
+  	$xml .= "\t</guesses>\n";
 }
 
 echo createXmlHeader() . $xml . createXmlFooter();

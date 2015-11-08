@@ -436,7 +436,13 @@ abstract class journal {
 		if (isset($this->id)) if ($this->id)   $main_record['id']                  = $this->id; // retain id if known for re-post references
 		if (isset($this->period))              $main_record['period']              = $this->period;
 		if (isset($this->journal_id))          $main_record['journal_id']          = $this->journal_id;//@todo replace for class
-		if (isset($this->post_date))           $main_record['post_date']           = $this->post_date;
+		if (isset($this->post_date)){
+			if (is_object ($this->post_date )){// is a date time object.
+				$main_record['post_date']           = $this->post_date->format('Y-m-d');
+			}else{
+				$main_record['post_date']           = $this->post_date;
+			}
+		}
 		if (isset($this->store_id))            $main_record['store_id']            = $this->store_id;
 		$main_record['description'] = $this->description;
 		if (isset($this->closed))              $main_record['closed']              = $this->closed;
