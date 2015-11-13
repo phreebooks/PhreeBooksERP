@@ -63,7 +63,7 @@ try{
 	  	$purchase     = $admin->DataBase->query("select DISTINCT a.id as id, p.vendor_id as vendor_id, p.description_purchase as description_purchase, p.purch_package_quantity as purch_package_quantity,
   		  p.purch_taxable as purch_taxable, p.item_cost as item_cost, p.price_sheet_v as price_sheet_v from " . TABLE_INVENTORY . " a LEFT JOIN " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku $first_search GROUP BY a.sku");
 	  	if($purchase->recordCount() == 1){
-  			$search = " where id = '{$purchase->fields['id']}'";
+  			$search = " where id = '{$purchase['id']}'";
 	  	}elseif($purchase->recordCount() != 0){
   			$xml .= xmlEntry('result', 'Too many hits!');
 			$xml .= xmlEntry("qty", 1);
@@ -95,16 +95,16 @@ try{
 	  	echo createXmlHeader() . $xml . createXmlFooter();
   		die;
 	}
-	foreach ($inventory->fields as $key => $value) $inventory_array[$key] = $value;
+	foreach ($inventory as $key => $value) $inventory_array[$key] = $value;
 	if($vendor) {
 		$purchase  = $admin->DataBase->query("select vendor_id, description_purchase, purch_package_quantity, purch_taxable, item_cost, price_sheet_v from " . TABLE_INVENTORY_PURCHASE . " where sku = '" .$inventory_array['sku']."' and vendor_id = '$cID'" );
-		if($purchase->fetch(\PDO::FETCH_NUM) == 1 ) foreach ($purchase->fields as $key => $value) $inventory_array[$key] = $value;
+		if($purchase->fetch(\PDO::FETCH_NUM) == 1 ) foreach ($purchase as $key => $value) $inventory_array[$key] = $value;
 		$purchase  = $admin->DataBase->query("select MIN(item_cost) as cheapest from " . TABLE_INVENTORY_PURCHASE . " where sku = '" .$inventory_array['sku']."'" );
-		if( $jID == 4 && $inventory_array['price_sheet_v'] == '' && $inventory_array['item_cost'] >= $purchase->fields['cheapest'] &&
-		  abs($inventory_array['item_cost'] - $purchase->fields['cheapest']) > 0.00001 ) $stock_note[] = sprintf(INV_CHEAPER_ELSEWHERE, $inventory_array['sku']);
+		if( $jID == 4 && $inventory_array['price_sheet_v'] == '' && $inventory_array['item_cost'] >= $purchase['cheapest'] &&
+		  abs($inventory_array['item_cost'] - $purchase['cheapest']) > 0.00001 ) $stock_note[] = sprintf(INV_CHEAPER_ELSEWHERE, $inventory_array['sku']);
 	}else{
 		$purchase  = $admin->DataBase->query("select vendor_id, description_purchase, purch_package_quantity, purch_taxable, MAX(item_cost) as item_cost, price_sheet_v from " . TABLE_INVENTORY_PURCHASE . " where sku = '" .$inventory_array['sku']."'" );
-		if($purchase->fetch(\PDO::FETCH_NUM) == 1 )foreach ($purchase->fields as $key => $value) $inventory_array[$key] = $value;
+		if($purchase->fetch(\PDO::FETCH_NUM) == 1 )foreach ($purchase as $key => $value) $inventory_array[$key] = $value;
 	}
 	if($inventory_array['purch_package_quantity'] == 0) $inventory_array['purch_package_quantity'] = 1;
 	if (!$qty){
@@ -123,7 +123,7 @@ try{
 	$cog_types = explode(',', COG_ITEM_TYPES);
 	if (!in_array($inventory_array['inventory_type'], $cog_types)) $inventory_array['quantity_on_hand'] = 'NA';
 	// load branch stock ( must be before BOM loading )
-	$inventory_array['branch_qty_in_stock'] = (strpos(COG_ITEM_TYPES,$inventory_array['inventory_type']) === false) ? 'NA' : strval(load_store_stock($sku, $bID));
+	$inventory_array['branch_qty_in_stock'] = (strpos(COG_ITEM_TYPES,$inventory_array['inventory_type']) === false) ? 'NA' : strval($inventory-store_stock($bID));
 	//$debug .= 'qty in stock = ' . $inventory_array['quantity_on_hand'] . ' and branch qty = ' . $inventory_array['branch_qty_in_stock'];
 	// Load the assembly information
 	$assy_cost = 0;
@@ -131,19 +131,19 @@ try{
 	  $result = $admin->DataBase->query("select sku, qty from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = '$iID'");
 	  $bom    = array();
 	  while (!$result->EOF) {
-		$sql = "select description_short, inventory_type, item_cost, quantity_on_hand from " . TABLE_INVENTORY . " where sku = '" . $result->fields['sku'] . "'";
+		$sql = "select description_short, inventory_type, item_cost, quantity_on_hand from " . TABLE_INVENTORY . " where sku = '" . $result['sku'] . "'";
 		$sku_cost = $admin->DataBase->query($sql);
-		$assy_cost += $result->fields['qty'] * $sku_cost->fields['item_cost'];
-		if (in_array($sku_cost->fields['inventory_type'], $cog_types)) {
-		  $qty_in_stock = strval(load_store_stock($result->fields['sku'], $bID));
+		$assy_cost += $result['qty'] * $sku_cost['item_cost'];
+		if (in_array($sku_cost['inventory_type'], $cog_types)) {
+		  $qty_in_stock = strval($inventory->store_stock($bID));
 		} else {
 		  $qty_in_stock = 'NA';
 		}
 		$bom[] = array(
-		  'qty'               => $result->fields['qty'],
-		  'sku'               => $result->fields['sku'],
-		  'description_short' => $sku_cost->fields['description_short'],
-		  'item_cost'         => $sku_cost->fields['item_cost'],
+		  'qty'               => $result['qty'],
+		  'sku'               => $result['sku'],
+		  'description_short' => $sku_cost['description_short'],
+		  'item_cost'         => $sku_cost['item_cost'],
 		  'quantity_on_hand'  => $qty_in_stock,
 		);
 		$result->MoveNext();
@@ -156,9 +156,9 @@ try{
 	$result = $admin->DataBase->query("select ref_id, qty from " . TABLE_INVENTORY_ASSY_LIST . " where sku = '$sku'");
 	if ($result->fetch(\PDO::FETCH_NUM) > 0) {
 	  while (!$result->EOF) {
-	    $stock = $admin->DataBase->query("select sku, description_short from ".TABLE_INVENTORY." where id='" . $result->fields['ref_id'] . "' and inactive = '0'");
+	    $stock = $admin->DataBase->query("select sku, description_short from ".TABLE_INVENTORY." where id='" . $result['ref_id'] . "' and inactive = '0'");
 	    if ($stock->fetch(\PDO::FETCH_NUM) > 0) {
-	    	$sku_usage[] =  TEXT_QUANTITY . ' ' . $result->fields['qty'] . ' ' . TEXT_SKU . ': ' . $stock->fields['sku'] . ' - ' . $stock->fields['description_short'];
+	    	$sku_usage[] =  TEXT_QUANTITY . ' ' . $result['qty'] . ' ' . TEXT_SKU . ': ' . $stock['sku'] . ' - ' . $stock['description_short'];
 	    }
 	    $result->MoveNext();
 	  }
@@ -169,7 +169,7 @@ try{
 		$sku_usage = array(JS_INV_TEXT_USAGE_NONE);
 	}
 	// load prices, tax
-	$prices = inv_calculate_sales_price(abs($qty), $iID, $cID, $vendor ? 'v' : 'c');
+	$prices = $inventory->calculate_sales_price(abs($qty), $cID, $vendor ? 'v' : 'c');
 	$sales_price = strval($prices['price']);
 	$inventory_array['item_taxable']  = strval($prices['sales_tax']);
 	$inventory_array['purch_taxable'] = strval($prices['purch_tax']);

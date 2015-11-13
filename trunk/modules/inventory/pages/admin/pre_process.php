@@ -52,7 +52,7 @@ switch ($_REQUEST['action']) {
 	$result = $admin->DataBase->query("select sku, qty from " . TABLE_INVENTORY_COGS_OWED);
 	$owed = array();
 	while (!$result->EOF) {
-	  $owed[$result->fields['sku']] += $result->fields['qty'];
+	  $owed[$result['sku']] += $result['qty'];
 	  $result->MoveNext();
 	}
 	// fetch the inventory items that we track COGS and get qty on hand
@@ -63,24 +63,24 @@ switch ($_REQUEST['action']) {
 	$repair = array();
 	while (!$result->EOF) {
 	  // check for quantity on hand not rounded properly
-	  $on_hand = round($result->fields['quantity_on_hand'], $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_precise']);
-	  if ($on_hand <> $result->fields['quantity_on_hand']) {
-	    $repair[$result->fields['sku']] = $on_hand;
+	  $on_hand = round($result['quantity_on_hand'], $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_precise']);
+	  if ($on_hand <> $result['quantity_on_hand']) {
+	    $repair[$result['sku']] = $on_hand;
 		if ($_REQUEST['action'] <> 'inv_hist_fix') {
-		  $messageStack->add(sprintf(INV_TOOLS_STOCK_ROUNDING_ERROR, $result->fields['sku'], $result->fields['quantity_on_hand'], $on_hand), 'error');
+		  $messageStack->add(sprintf(INV_TOOLS_STOCK_ROUNDING_ERROR, $result['sku'], $result['quantity_on_hand'], $on_hand), 'error');
 		  $cnt++;
 		}
 	  }
 	  // now check with inventory history
 	  $sql = "select sum(remaining) as remaining from " . TABLE_INVENTORY_HISTORY . "
-		where sku = '" . $result->fields['sku'] . "'";
+		where sku = '" . $result['sku'] . "'";
 	    $inv_hist = $admin->DataBase->query($sql);
-		$cog_qty  = round($inv_hist->fields['remaining'], $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_precise']);
-		$cog_owed = $owed[$result->fields['sku']] ? $owed[$result->fields['sku']] : 0;
+		$cog_qty  = round($inv_hist['remaining'], $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_precise']);
+		$cog_owed = $owed[$result['sku']] ? $owed[$result['sku']] : 0;
 		if ($on_hand <> ($cog_qty - $cog_owed)) {
-		  $repair[$result->fields['sku']] = $cog_qty - $cog_owed;
+		  $repair[$result['sku']] = $cog_qty - $cog_owed;
 		  if ($_REQUEST['action'] <> 'inv_hist_fix') {
-		    $messageStack->add(sprintf(INV_TOOLS_OUT_OF_BALANCE, $result->fields['sku'], $on_hand, ($cog_qty - $cog_owed)), 'error');
+		    $messageStack->add(sprintf(INV_TOOLS_OUT_OF_BALANCE, $result['sku'], $on_hand, ($cog_qty - $cog_owed)), 'error');
 		    $cnt++;
 		  }
 	  }
@@ -113,10 +113,10 @@ switch ($_REQUEST['action']) {
 	$items = $admin->DataBase->query("select id, sku, quantity_on_order, quantity_on_sales_order from " . TABLE_INVENTORY . "
 	  where inventory_type in ('" . implode("', '", $cog_type) . "') order by sku");
 	while(!$items->EOF) {
-	  $inv[$items->fields['sku']] = array(
-	    'id'     => $items->fields['id'],
-	    'qty_so' => $items->fields['quantity_on_sales_order'],
-		'qty_po' => $items->fields['quantity_on_order'],
+	  $inv[$items['sku']] = array(
+	    'id'     => $items['id'],
+	    'qty_so' => $items['quantity_on_sales_order'],
+		'qty_po' => $items['quantity_on_order'],
 	  );
 	  $items->MoveNext();
 	}

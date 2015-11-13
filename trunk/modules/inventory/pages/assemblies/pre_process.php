@@ -21,10 +21,9 @@ $security_level = \core\classes\user::validate(SECURITY_ID_ASSEMBLE_INVENTORY);
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/inventory.php');
 /**************   page specific initialization  *************************/
-define('JOURNAL_ID', 14); // Inventory Assemblies Journal
-$glEntry             = new \core\classes\journal();
+// Inventory Assemblies Journal
+$glEntry             = new \core\classes\journal\journal_14();
 $glEntry->id         = ($_POST['id'] <> '')      ? $_POST['id'] : ''; // will be null unless opening an existing gl entry
-$glEntry->journal_id = JOURNAL_ID;
 $glEntry->store_id   = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
 $glEntry->post_date  = $_POST['post_date']       ? \core\classes\DateTime::db_date_format($_POST['post_date']) : date('Y-m-d');
 /***************   hook for custom actions  ***************************/
@@ -48,10 +47,10 @@ switch ($_REQUEST['action']) {
 			if (!$glEntry->period) throw new \core\classes\userException("period isn't set");
 			// if unbuild, test for stock to go negative
 			$result = $admin->DataBase->query("select account_inventory_wage, quantity_on_hand
-	  		  from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
-			$sku_inv_acct = $result->fields['account_inventory_wage'];
+	  		  from " . TABLE_INVENTORY . " where sku = '$sku'");
+			$sku_inv_acct = $result['account_inventory_wage'];
 			if (!$result->fetch(\PDO::FETCH_NUM)) throw new \core\classes\userException(INV_ERROR_SKU_INVALID);
-			if ($qty < 0 && ($result->fields['quantity_on_hand'] + $qty) < 0 ) throw new \core\classes\userException(INV_ERROR_NEGATIVE_BALANCE);
+			if ($qty < 0 && ($result['quantity_on_hand'] + $qty) < 0 ) throw new \core\classes\userException(INV_ERROR_NEGATIVE_BALANCE);
 			if (!$qty) throw new \core\classes\userException(JS_ASSY_VALUE_ZERO);
 			// finished checking errors, reload if any errors found
 			$cInfo = new \core\classes\objectInfo($_POST);

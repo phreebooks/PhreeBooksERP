@@ -93,9 +93,9 @@ switch ($_REQUEST['action']) {
 	\core\classes\user::validate_security($security_level, 4);
   	$id = (int)db_prepare_input($_GET['psID']);
 	$result = $admin->DataBase->query("select sheet_name, type, default_sheet from " . TABLE_PRICE_SHEETS . " where id = " . $id);
-	$sheet_name = $result->fields['sheet_name'];
-	$type       = $result->fields['type'];
-	if ($result->fields['default_sheet'] == '1') $messageStack->add(PRICE_SHEET_DEFAULT_DELETED, 'caution');
+	$sheet_name = $result['sheet_name'];
+	$type       = $result['type'];
+	if ($result['default_sheet'] == '1') $messageStack->add(PRICE_SHEET_DEFAULT_DELETED, 'caution');
 	$admin->DataBase->exec("delete from " . TABLE_PRICE_SHEETS . " where id = '" . $id . "'");
 	$admin->DataBase->exec("delete from " . TABLE_INVENTORY_SPECIAL_PRICES . " where price_sheet_id = '" . $id . "'");
 	gen_add_audit_log(TEXT_PRICE_SHEET. " - "  . TEXT_DELETE, $sheet_name);
@@ -123,20 +123,20 @@ switch ($_REQUEST['action']) {
 	// Copy special pricing information to new sheet
 	$levels = $admin->DataBase->query("select inventory_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where price_sheet_id = $old_id");
 	while (!$levels->EOF){
-	  $admin->DataBase->query("insert into " . TABLE_INVENTORY_SPECIAL_PRICES . " set inventory_id = $levels->fields['inventory_id'],
-	  price_sheet_id = $id, price_levels = '$levels->fields['price_levels']'");
+	  $admin->DataBase->query("insert into " . TABLE_INVENTORY_SPECIAL_PRICES . " set inventory_id = $levels['inventory_id'],
+	  price_sheet_id = $id, price_levels = '$levels['price_levels']'");
 	  $levels->MoveNext();
 	}
-	gen_add_audit_log(TEXT_PRICE_SHEET. " - "  . TEXT_REVISE, $result->fields['sheet_name'] . ' Rev. ' . $old_rev . ' => ' . ($old_rev + 1));
+	gen_add_audit_log(TEXT_PRICE_SHEET. " - "  . TEXT_REVISE, $result['sheet_name'] . ' Rev. ' . $old_rev . ' => ' . ($old_rev + 1));
 	$_REQUEST['action'] = 'edit'; // continue with edit.
   case 'edit':
 	if(!isset($id)) $id = db_prepare_input($_POST['rowSeq']);
 	$result         = $admin->DataBase->query("select * from " . TABLE_PRICE_SHEETS . " where id = $id");
-	$sheet_name     = $result->fields['sheet_name'];
-	$revision       = $result->fields['revision'];
-	$effective_date = \core\classes\DateTime::createFromFormat(DATE_FORMAT, $result->fields['effective_date']);
-	$default_sheet  = ($result->fields['default_sheet']) ? '1' : '0';
-	$default_levels = $result->fields['default_levels'];
+	$sheet_name     = $result['sheet_name'];
+	$revision       = $result['revision'];
+	$effective_date = \core\classes\DateTime::createFromFormat(DATE_FORMAT, $result['effective_date']);
+	$default_sheet  = ($result['default_sheet']) ? '1' : '0';
+	$default_levels = $result['default_levels'];
 	break;
 
   case 'go_first':    $_REQUEST['list'] = 1;       break;
@@ -185,7 +185,7 @@ switch ($_REQUEST['action']) {
 	  where type = '$type' group by sheet_name");
 	$rev_levels = array();
 	while(!$result->EOF) {
-	  $rev_levels[$result->fields['sheet_name']] = $result->fields['rev'];
+	  $rev_levels[$result['sheet_name']] = $result['rev'];
 	  $result->MoveNext();
 	}
 	// build the list for the page selected

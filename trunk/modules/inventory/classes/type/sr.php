@@ -46,11 +46,11 @@ class sr extends \inventory\classes\inventory {//Serialized Item
 	 	$this->qty_table .='  </thead>'. chr(10);
 	 	$this->qty_table .='  <tbody class="ui-widget-content">'. chr(10);
 	    while (!$result->EOF) {
-	  		$this->quantity_on_hand += $result->fields['qty'];
+	  		$this->quantity_on_hand += $result['qty'];
 	  		$this->qty_table .= '<tr>';
-		  	$this->qty_table .= '  <td>' .$branches[$result->fields['store_id']]['text'] . '</td>';
-		  	$this->qty_table .= '  <td>' .$result->fields['qty'] . '</td>';
-		  	$this->qty_table .= '  <td align="center">' . $result->fields['serialize_number']. '</td>';
+		  	$this->qty_table .= '  <td>' .$branches[$result['store_id']]['text'] . '</td>';
+		  	$this->qty_table .= '  <td>' .$result['qty'] . '</td>';
+		  	$this->qty_table .= '  <td align="center">' . $result['serialize_number']. '</td>';
 	      	$this->qty_table .= '</tr>' . chr(10);
 	      	$result->MoveNext();
 		}

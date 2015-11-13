@@ -76,7 +76,7 @@ switch ($_REQUEST['action']) {
 			$admin->DataBase->transStart();
 			// post each payment by vendor (save journal record id)
 			foreach ($payment_list as $account => $values) {
-				$order = new \phreebooks\classes\banking();
+				$order = new \phreebooks\classes\journal\journal_20();
 				// load journal main data
 				$order->id = '';
 				$order->journal_id          = JOURNAL_ID;

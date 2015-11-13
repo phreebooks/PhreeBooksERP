@@ -48,7 +48,7 @@ class pricelist_report {
 	$ColCnt = 1;
 	$GrpWorking = false;
 	while (!$result->EOF) {
-		$myrow = $result->fields;
+		$myrow = $result;
 		// Check to see if a total row needs to be displayed
 		if (isset($GrpField)) { // we're checking for group totals, see if this group is complete
 			if (($myrow[$GrpField] <> $GrpWorking) && $GrpWorking !== false) { // it's a new group so print totals
@@ -162,12 +162,12 @@ class pricelist_report {
 	// get the inventory prices
 	$inventory = $admin->DataBase->query("select item_cost, full_price, price_sheet from ".TABLE_INVENTORY." where id = '$id'");
 	// determine what price sheet to use, priority: inventory, default
-	if ($inventory->fields['price_sheet'] <> '') {
-		$sheet_name = $inventory->fields['price_sheet'];
+	if ($inventory['price_sheet'] <> '') {
+		$sheet_name = $inventory['price_sheet'];
 	} else {
 		$default_sheet = $admin->DataBase->query("select sheet_name from " . TABLE_PRICE_SHEETS . "
 			where type = 'c' and default_sheet = '1'");
-		$sheet_name = ($default_sheet->fetch(\PDO::FETCH_NUM) == 0) ? '' : $default_sheet->fields['sheet_name'];
+		$sheet_name = ($default_sheet->fetch(\PDO::FETCH_NUM) == 0) ? '' : $default_sheet['sheet_name'];
 	}
 	// determine the sku price ranges from the price sheet in effect
 	$levels = false;
@@ -178,13 +178,13 @@ class pricelist_report {
 		$price_sheets = $admin->DataBase->query($sql);
 		// retrieve special pricing for this inventory item
 		$result = $admin->DataBase->query("select price_sheet_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . "
-			where price_sheet_id = '" . $price_sheets->fields['id'] . "' and inventory_id = " . $id);
+			where price_sheet_id = '" . $price_sheets['id'] . "' and inventory_id = " . $id);
 		$special_prices = array();
 		while (!$result->EOF) {
-			$special_prices[$result->fields['price_sheet_id']] = $result->fields['price_levels'];
+			$special_prices[$result['price_sheet_id']] = $result['price_levels'];
 			$result->MoveNext();
 		}
-		$levels = isset($special_prices[$price_sheets->fields['id']]) ? $special_prices[$price_sheets->fields['id']] : $price_sheets->fields['default_levels'];
+		$levels = isset($special_prices[$price_sheets['id']]) ? $special_prices[$price_sheets['id']] : $price_sheets['default_levels'];
 	}
 	$new_data = array(
 	  'price_level_1' => '',
@@ -199,7 +199,7 @@ class pricelist_report {
 	  'price_qty_5'   => '',
 	);
 	if ($levels) {
-		$prices = inv_calculate_prices($inventory->fields['item_cost'], $inventory->fields['full_price'], $levels);
+		$prices = inv_calculate_prices($inventory['item_cost'], $inventory['full_price'], $levels);
 		if (is_array($prices)) foreach ($prices as $key => $value) {
 			$new_data['price_level_'.($key+1)] = $admin->currencies->clean_value($value['price']);
 			$new_data['price_qty_'  .($key+1)] = $value['qty'];

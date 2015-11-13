@@ -247,12 +247,12 @@ if (!defined('INVENTORY_AUTO_FILL')) {
   /************************** Group ID 20 (Website Maintenence) ***********************************************/
   $admin->DataBase->queryute("update " . TABLE_CONFIGURATION . " set configuration_title = 'CD_20_99_TITLE', configuration_description = 'CD_20_99_DESC' where configuration_key = 'DEBUG'");
   /************************** Group ID 99 (Alternate (non-displayed Settings) *********************************/
-}
+}//@todo vervang queryute vcor exec
 
 if (!defined('INVENTORY_DEFAULT_PURCH_TAX')) {
   $admin->DataBase->query("INSERT INTO " .  TABLE_CONFIGURATION . " 
            ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` , `set_function` ) 
     VALUES ( 'CD_05_52_TITLE', 'INVENTORY_DEFAULT_PURCH_TAX', '0', 'CD_05_52_DESC', '5', '52', NULL , now(), NULL , 'cfg_pull_down_tax_rate_list(' );");
-  $admin->DataBase->queryute("ALTER TABLE " . TABLE_INVENTORY . " ADD purch_taxable INT(11) NOT NULL DEFAULT '0' AFTER item_taxable");
+  $admin->DataBase->query("ALTER TABLE " . TABLE_INVENTORY . " ADD purch_taxable INT(11) NOT NULL DEFAULT '0' AFTER item_taxable");
 }
 ?>

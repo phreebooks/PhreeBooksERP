@@ -44,18 +44,18 @@ echo $toolbar->build($add_search = true, $add_period = true);
   <?php
   $odd = true;
 	while (!$query_result->EOF) {
-	  if ($query_result->fields['store_id'] == '0') {
+	  if ($query_result['store_id'] == '0') {
 	    $store_name = COMPANY_ID;
 	  } else {
-	    $result = $admin->DataBase->query("select short_name from " . TABLE_CONTACTS . " where id = '" . $query_result->fields['store_id'] . "'");
-        $store_name = $result->fields['short_name'];
+	    $result = $admin->DataBase->query("select short_name from " . TABLE_CONTACTS . " where id = '" . $query_result['store_id'] . "'");
+        $store_name = $result['short_name'];
 	  }
 ?>
-  <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer" onclick='setReturnEntry(<?php echo $query_result->fields['id']; ?>)'>
-	<td><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result->fields['post_date']); ?></td>
-	<td><?php echo $query_result->fields['purchase_invoice_id']; ?></td>
-	<td><?php echo $query_result->fields['qty']; ?></td>
-	<td><?php echo $query_result->fields['description']; ?></td>
+  <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer" onclick='setReturnEntry(<?php echo $query_result['id']; ?>)'>
+	<td><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result['post_date']); ?></td>
+	<td><?php echo $query_result['purchase_invoice_id']; ?></td>
+	<td><?php echo $query_result['qty']; ?></td>
+	<td><?php echo $query_result['description']; ?></td>
 	<?php if (ENABLE_MULTI_BRANCH) echo '<td align="center">' . $store_name . '</td>' . chr(10); ?>
   </tr>
 <?php

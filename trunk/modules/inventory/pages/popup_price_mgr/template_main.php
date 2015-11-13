@@ -36,35 +36,35 @@ echo $toolbar->build();
  <tbody class="ui-widget-content">
   <tr>
 	<td nowrap="nowrap"><?php echo TEXT_SKU . ': '; ?></td>
-	<td nowrap="nowrap"><?php echo $inventory_details->fields['sku']; ?></td>
+	<td nowrap="nowrap"><?php echo $inventory_details['sku']; ?></td>
 	<td nowrap="nowrap" width="10%">&nbsp;</td>
 	<td nowrap="nowrap"><?php echo TEXT_SHORT_DESCRIPTION . ': '; ?></td>
-	<td nowrap="nowrap"><?php echo $inventory_details->fields['description_short']; ?></td>
+	<td nowrap="nowrap"><?php echo $inventory_details['description_short']; ?></td>
   </tr>
   <tr>
 	<td nowrap="nowrap"><?php echo TEXT_QUANTITY_ON_HAND . ': '; ?></td>
-	<td nowrap="nowrap"><?php echo $inventory_details->fields['quantity_on_hand']; ?></td>
+	<td nowrap="nowrap"><?php echo $inventory_details['quantity_on_hand']; ?></td>
 	<td nowrap="nowrap">&nbsp;</td>
 	<td nowrap="nowrap"><?php echo TEXT_ITEM_COST . ': '; ?></td>
 	<td nowrap="nowrap"><?php echo $admin->currencies->precise($item_cost); ?></td>
   </tr>
   <tr>
 	<td nowrap="nowrap"><?php echo TEXT_QUANTITY_ON_SALES_ORDER . ': '; ?></td>
-	<td nowrap="nowrap"><?php echo $inventory_details->fields['quantity_on_sales_order']; ?></td>
+	<td nowrap="nowrap"><?php echo $inventory_details['quantity_on_sales_order']; ?></td>
 	<td nowrap="nowrap">&nbsp;</td>
 	<td nowrap="nowrap"><?php echo TEXT_FULL_PRICE . ': '; ?></td>
 	<td nowrap="nowrap"><?php echo $admin->currencies->precise($full_price); ?></td>
   </tr>
   <tr>
 	<td nowrap="nowrap"><?php echo TEXT_QUANTITY_ON_ALLOCATION . ': '; ?></td>
-	<td nowrap="nowrap"><?php echo $inventory_details->fields['quantity_on_allocation']; ?></td>
+	<td nowrap="nowrap"><?php echo $inventory_details['quantity_on_allocation']; ?></td>
 	<td nowrap="nowrap">&nbsp;</td>
 	<td nowrap="nowrap">&nbsp;</td>
 	<td nowrap="nowrap">&nbsp;</td>
   </tr>
   <tr>
 	<td nowrap="nowrap"><?php echo TEXT_QUANTITY_ON_PURCHASE_ORDER . ': '; ?></td>
-	<td nowrap="nowrap"><?php echo $inventory_details->fields['quantity_on_order']; ?></td>
+	<td nowrap="nowrap"><?php echo $inventory_details['quantity_on_order']; ?></td>
 	<td nowrap="nowrap">&nbsp;</td>
 	<td nowrap="nowrap">&nbsp;</td>
 	<td nowrap="nowrap">&nbsp;</td>
@@ -79,12 +79,12 @@ echo $toolbar->build();
 	$m = 1;
 	while (!$price_sheets->EOF) { ?>
 	  <!-- start the tabsets -->
-	  <div title="<?php echo $price_sheets->fields['sheet_name'] . ' (Rev. ' . $price_sheets->fields['revision'] . ')';?>" id="tab_<?php echo $price_sheets->fields['id']; ?>">
+	  <div title="<?php echo $price_sheets['sheet_name'] . ' (Rev. ' . $price_sheets['revision'] . ')';?>" id="tab_<?php echo $price_sheets['id']; ?>">
 <?php
-		$checked = isset($special_prices[$price_sheets->fields['id']]) ? false : true;
+		$checked = isset($special_prices[$price_sheets['id']]) ? false : true;
 		echo html_checkbox_field('def_' . $m, '1', $checked, '', $parameters = '') . '&nbsp;' . TEXT_USE_DEFAULT_PRICE_SHEET_SETTINGS . '<br />';
-		echo html_hidden_field('id_' . $m, $price_sheets->fields['id']) . chr(10);
-		echo html_hidden_field('sheet_name_'.$m, $price_sheets->fields['sheet_name']) . chr(10);
+		echo html_hidden_field('id_' . $m, $price_sheets['id']) . chr(10);
+		echo html_hidden_field('sheet_name_'.$m, $price_sheets['sheet_name']) . chr(10);
 ?>
 		<table class="ui-widget" style="border-collapse:collapse;width:100%">
 		 <thead class="ui-widget-header">
@@ -102,7 +102,7 @@ echo $toolbar->build();
 		 </thead>
 		 <tbody class="ui-widget-content">
 		  <?php
-		$levels = isset($special_prices[$price_sheets->fields['id']]) ? $special_prices[$price_sheets->fields['id']] : $price_sheets->fields['default_levels'];
+		$levels = isset($special_prices[$price_sheets['id']]) ? $special_prices[$price_sheets['id']] : $price_sheets['default_levels'];
 		$price_levels = explode(';', $levels);
 		// remove the first and last element from the price level source array (not used and Level 1 price source)
 		$first_source_list = $price_mgr_sources;

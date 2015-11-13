@@ -72,13 +72,13 @@ switch ($_REQUEST['action']) {
 	  }
 	  $tab_id++;
 	}
-	gen_add_audit_log(($type == 'v' ? TEXT_VENDOR_PRICE_SHEETS : TEXT_CUSTOMER_PRICE_SHEETS) . TEXT_UPDATE, $inventory_details->fields['sku'] . ' - ' . $inventory_details->fields['description_short']);
+	gen_add_audit_log(($type == 'v' ? TEXT_VENDOR_PRICE_SHEETS : TEXT_CUSTOMER_PRICE_SHEETS) . TEXT_UPDATE, $inventory_details['sku'] . ' - ' . $inventory_details['description_short']);
 	break;
   default:
 }
 
 /*****************   prepare to display templates  *************************/
-$temp = inv_calculate_sales_price(1, $id, 0, 'v');
+$temp = $inventory->calculate_sales_price(1, 0, 'v'); //@todo inventory openen.
 $item_cost = $temp['price'];
 
 // some preliminary information
@@ -92,7 +92,7 @@ $result = $admin->DataBase->query("select price_sheet_id, price_levels
 	from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = " . $id);
 $special_prices = array();
 while (!$result->EOF) {
-	$special_prices[$result->fields['price_sheet_id']] = $result->fields['price_levels'];
+	$special_prices[$result['price_sheet_id']] = $result['price_levels'];
 	$result->MoveNext();
 }
 $include_header   = false;

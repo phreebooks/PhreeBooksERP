@@ -122,7 +122,7 @@ if (sizeof($order->fields) > 0) {
 	  	if (in_array($ordr_items->fields['gl_type'], array('poo', 'soo', 'por', 'sos'))) {
 		  $subtotal   += $total;
 		  $inv_details = $admin->DataBase->query("select inventory_type, inactive, item_weight, quantity_on_hand, lead_time
-		    from " . TABLE_INVENTORY . " where sku = '" . $ordr_items->fields['sku'] . "'");
+		    from " . TABLE_INVENTORY . " where sku = '{$ordr_items->fields['sku']}'");
 		  if (!in_array($inv_details->fields['inventory_type'], $cog_types)) $inv_details->fields['quantity_on_hand'] = 'NA';
 		  $item_list[] = array(
 			'item_cnt'          		=> $ordr_items->fields['item_cnt'],
@@ -190,7 +190,7 @@ if (sizeof($order->fields) > 0) {
 	  	if (in_array($ordr_items->fields['gl_type'], array('poo', 'soo', 'por', 'sos'))) {
 		  $subtotal += $total;
 		  $inv_details = $admin->DataBase->query("select inactive, inventory_type, item_weight, quantity_on_hand, lead_time
-		    from " . TABLE_INVENTORY . " where sku = '" . $ordr_items->fields['sku'] . "'");
+		    from " . TABLE_INVENTORY . " where sku = '{$ordr_items->fields['sku']}'");
 		  $inv_details->fields['quantity_on_hand'] = $ordr_items->fields['qty'] + $inv_details->fields['quantity_on_hand'];
 		  if (!in_array($inv_details->fields['inventory_type'], $cog_types)) $inv_details->fields['quantity_on_hand'] = 'NA';
 	  	} else if ($ordr_items->fields['gl_type'] == 'dsc') {

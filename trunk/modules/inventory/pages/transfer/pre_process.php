@@ -22,7 +22,7 @@ require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/inventory.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 /**************   page specific initialization  *************************/
-define('JOURNAL_ID',16);	// Adjustment Journal
+// Adjustment Journal
 $post_date = ($_POST['post_date']) ? \core\classes\DateTime::db_date_format($_POST['post_date']) : date('Y-m-d');
 $period    = \core\classes\DateTime::period_of_date($post_date);
 /***************   hook for custom actions  ***************************/
@@ -59,10 +59,9 @@ switch ($_REQUEST['action']) {
 			// test for errors
 			if ($source_store_id == $dest_store_id) throw new \core\classes\userException(INV_XFER_ERROR_SAME_STORE_ID);
 			// 	process the request, first subtract from the source store
-	  		$glEntry                      = new \core\classes\journal();
+	  		$glEntry                      = new \core\classes\journal\journal_16();
 	  		$glEntry->id                  = isset($_POST['id']) ? $_POST['id'] : '';
 	  		$glEntry->so_po_ref_id        = '-1'; // first of 2 adjustments
-	  		$glEntry->journal_id          = JOURNAL_ID;
 	  		$glEntry->post_date           = $post_date;
 	  		$glEntry->period              = \core\classes\DateTime::period_of_date($post_date);
 	  		$glEntry->store_id            = $source_store_id;
@@ -89,8 +88,8 @@ switch ($_REQUEST['action']) {
 	    		$desc             = db_prepare_input($_POST['desc_'.$rowCnt]);
 //	    		$acct             = db_prepare_input($_POST['acct_'.$rowCnt]);
 	    		$result = $admin->DataBase->query("select account_inventory_wage, account_cost_of_sales FROM ".TABLE_INVENTORY." WHERE sku='$sku'");
-	    		$_POST['acct_'     .$rowCnt] = $result->fields['account_inventory_wage'];
-	    		$_POST['cogs_acct_'.$rowCnt] = $result->fields['account_cost_of_sales'];
+	    		$_POST['acct_'     .$rowCnt] = $result['account_inventory_wage'];
+	    		$_POST['cogs_acct_'.$rowCnt] = $result['account_cost_of_sales'];
 	  			$_POST['total_'    .$rowCnt] = $glEntry->calculateCost($sku, $qty, $serialize_number);
 	  			if ($sku && $sku <> TEXT_SEARCH) {
 	      			$glEntry->journal_rows[] = array(
@@ -98,7 +97,7 @@ switch ($_REQUEST['action']) {
 		    		  'qty'              => -$qty,
 		    		  'gl_type'          => 'adj',
 		    		  'serialize_number' => $serialize_number,
-		    		  'gl_account'       => $result->fields['account_inventory_wage'],
+		    		  'gl_account'       => $result['account_inventory_wage'],
 		    		  'description'      => $desc,
 		    		  'credit_amount'    => 0,
 		    		  'debit_amount'     => 0,
@@ -115,7 +114,7 @@ switch ($_REQUEST['action']) {
 	      	  'sku'           => '',
 	      	  'qty'           => '',
 	      	  'gl_type'       => 'ttl',
-	      	  'gl_account'    => $result->fields['account_inventory_wage'],
+	      	  'gl_account'    => $result['account_inventory_wage'],
 	      	  'description'   => TEXT_TRANSFER_INVENTORY .' - '. $adj_reason,
 	      	  'debit_amount'  => 0,
 	      	  'credit_amount' => 0,
@@ -125,10 +124,9 @@ switch ($_REQUEST['action']) {
 //			$glEntry->override_cogs_acct = $adj_account; // force cogs account to be users specified account versus default inventory account
 	    	$glEntry->Post($glEntry->id ? 'edit' : 'insert');
 		  	$first_id = $glEntry->id;
-	      	$glEntry                      = new \core\classes\journal();
+	      	$glEntry                      = new \core\classes\journal\journal_16();
 	  	  	$glEntry->id                  = isset($_POST['ref_id']) ? $_POST['ref_id'] : '';
 	      	$glEntry->so_po_ref_id        = $first_id; // id of original adjustment
-	      	$glEntry->journal_id          = JOURNAL_ID;
 	      	$glEntry->post_date           = $post_date;
 	      	$glEntry->period              = $period;
 	      	$glEntry->store_id            = $dest_store_id;
@@ -199,7 +197,7 @@ switch ($_REQUEST['action']) {
 			if (!$_POST['id'])  throw new \core\classes\userException(TEXT_THERE_WERE_ERRORS_DURING_PROCESSING . ' ' . TEXT_THE_RECORD_WAS_NOT_DELETED);
 	  		$delOrd = new \core\classes\journal($_POST['id']);
 	  		$result = $admin->DataBase->query("SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE so_po_ref_id = $delOrd->id");
-	  		$xfer_to_id = $result->fields['id']; // save the matching adjust ID
+	  		$xfer_to_id = $result['id']; // save the matching adjust ID
 	  		if ($result->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException('cannot delete there is no offsetting record to delete!');
 	  		// *************** START TRANSACTION *************************
 	    	$admin->DataBase->transStart();

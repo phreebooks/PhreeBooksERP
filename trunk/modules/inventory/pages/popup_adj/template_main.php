@@ -47,22 +47,22 @@ $list_types = ($adj_type == 'xfr') ? TEXT_TRANSFERS : TEXT_ADJUSTMENTS;
     <?php
     $odd = true;
     while (!$query_result->EOF) {
-	  $sku_text = $query_result->fields['sku_cnt'] > 1 ? sprintf(TEXT_ARGS_ITEMS, $query_result->fields['sku_cnt']) : $query_result->fields['sku'];
-	  $sku_desc = $query_result->fields['sku_cnt'] > 1 ? TEXT_MULTIPLE_ADJUSTMENTS : $query_result->fields['description'];
+	  $sku_text = $query_result['sku_cnt'] > 1 ? sprintf(TEXT_ARGS_ITEMS, $query_result['sku_cnt']) : $query_result['sku'];
+	  $sku_desc = $query_result['sku_cnt'] > 1 ? TEXT_MULTIPLE_ADJUSTMENTS : $query_result['description'];
 	?>
-    <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer" onclick='setReturnEntry(<?php echo $query_result->fields['id']; ?>)'>
-	  <td><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result->fields['post_date']); ?></td>
-	  <td><?php echo $query_result->fields['purchase_invoice_id']; ?></td>
-	  <td><?php echo ($adj_type == 'xfr') ? -$query_result->fields['qty'] : $query_result->fields['qty']; ?></td>
+    <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer" onclick='setReturnEntry(<?php echo $query_result['id']; ?>)'>
+	  <td><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result['post_date']); ?></td>
+	  <td><?php echo $query_result['purchase_invoice_id']; ?></td>
+	  <td><?php echo ($adj_type == 'xfr') ? -$query_result['qty'] : $query_result['qty']; ?></td>
 	  <td><?php echo $sku_text; ?></td>
 	  <td><?php echo $sku_desc; ?></td>
 	  <?php
 	    if (ENABLE_MULTI_BRANCH) {
-	  	  $store_name = $query_result->fields['store_id'] == '0' ? COMPANY_ID : gen_get_contact_name($query_result->fields['store_id']);
+	  	  $store_name = $query_result['store_id'] == '0' ? COMPANY_ID : gen_get_contact_name($query_result['store_id']);
 	      echo '	  <td align="center">' . $store_name . '</td>' . chr(10);
 		}
 	    if (ENABLE_MULTI_BRANCH && $adj_type == 'xfr') {
-	  	  $store_name = $query_result->fields['bill_acct_id'] == '0' ? COMPANY_ID : gen_get_contact_name($query_result->fields['bill_acct_id']);
+	  	  $store_name = $query_result['bill_acct_id'] == '0' ? COMPANY_ID : gen_get_contact_name($query_result['bill_acct_id']);
 	      echo '	  <td align="center">' . $store_name . '</td>' . chr(10);
 		}
 	  ?>

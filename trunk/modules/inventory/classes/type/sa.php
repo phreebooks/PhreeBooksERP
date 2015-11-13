@@ -55,11 +55,11 @@ class sa extends \inventory\classes\inventory {//Serialized Assembly
 	 	$this->qty_table .='  </thead>'. chr(10);
 	 	$this->qty_table .='  <tbody class="ui-widget-content">'. chr(10);
 	    while (!$result->EOF) {
-	  		$this->quantity_on_hand += $result->fields['qty'];
+	  		$this->quantity_on_hand += $result['qty'];
 	  		$this->qty_table .= '<tr>';
-		  	$this->qty_table .= '  <td>' .$branches[$result->fields['store_id']]['text'] . '</td>';
-		  	$this->qty_table .= '  <td>' .$result->fields['qty'] . '</td>';
-		  	$this->qty_table .= '  <td align="center">' . $result->fields['serialize_number']. '</td>';
+		  	$this->qty_table .= '  <td>' .$branches[$result['store_id']]['text'] . '</td>';
+		  	$this->qty_table .= '  <td>' .$result['qty'] . '</td>';
+		  	$this->qty_table .= '  <td align="center">' . $result['serialize_number']. '</td>';
 	      	$this->qty_table .= '</tr>' . chr(10);
 	      	$result->MoveNext();
 		}
@@ -79,11 +79,11 @@ class sa extends \inventory\classes\inventory {//Serialized Assembly
 		$result = $admin->DataBase->query("select i.id as inventory_id, l.id, l.sku, l.description, l.qty from " . TABLE_INVENTORY_ASSY_LIST . " l join " . TABLE_INVENTORY . " i on l.sku = i.sku where l.ref_id = " . $this->id . " order by l.id");
 		$x =0;
 		while (!$result->EOF) {
-	  		$this->bom[$x] = $result->fields;
-	  		$prices = inv_calculate_sales_price(abs($result->fields['qty']), $result->fields['inventory_id'], 0, 'v');
+	  		$this->bom[$x] = $result;
+	  		$prices = $inventory->calculate_sales_price(abs($result['qty']), 0, 'v');
 			$this->bom[$x]['item_cost'] = strval($prices['price']);
-			$this->assy_cost += $result->fields['qty'] * strval($prices['price']);
-	  		$prices = inv_calculate_sales_price(abs($result->fields['qty']), $result->fields['inventory_id'], 0, 'c');
+			$this->assy_cost += $result['qty'] * strval($prices['price']);
+	  		$prices = $inventory->calculate_sales_price(abs($result['qty']), 0, 'c');
 			$this->bom[$x]['full_price'] = strval($prices['price']);
 	  		$x++;
 	  		$result->MoveNext();
@@ -106,21 +106,21 @@ class sa extends \inventory\classes\inventory {//Serialized Assembly
 				'description' => db_prepare_input($_POST['assy_desc'][$x]),
 				'qty'         => $admin->currencies->clean_value(db_prepare_input($_POST['assy_qty'][$x])),
 			);
-		  	$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY . " where sku = '". $_POST['assy_sku'][$x]."'" );
+		  	$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY . " where sku = '{$_POST['assy_sku'][$x]}'" );
 		  	if (($result->fetch(\PDO::FETCH_NUM) == 0 || $admin->currencies->clean_value($_POST['assy_qty'][$x]) == 0) && $_POST['assy_sku'][$x] =! '') {
 		  		// show error, bad sku, negative quantity. error check sku is valid and qty > 0
 				throw new \core\classes\userException(INV_ERROR_BAD_SKU . db_prepare_input($_POST['assy_sku'][$x]));
 		  	}else{
-		  		$prices = inv_calculate_sales_price(abs($this->bom[$x]['qty']), $result->fields['id'], 0, 'v');
+		  		$prices = $inventory->calculate_sales_price(abs($this->bom[$x]['qty']), 0, 'v');
 				$bom_list[$x]['item_cost'] = strval($prices['price']);
-		  		$prices = inv_calculate_sales_price(abs($this->bom[$x]['qty']), $result->fields['id'], 0, 'c');
+		  		$prices = $inventory->calculate_sales_price(abs($this->bom[$x]['qty']), 0, 'c');
 				$bom_list[$x]['full_price'] = strval($prices['price']);
 		  	}
 		}
 		$this->bom = $bom_list;
 		parent::save();
 		$result = $admin->DataBase->query("select last_journal_date, quantity_on_hand  from " . TABLE_INVENTORY . " where id = " . $this->id);
-		$this->allow_edit_bom = (($result->fields['last_journal_date'] == '0000-00-00 00:00:00' || $result->fields['last_journal_date'] == '') && ($result->fields['quantity_on_hand'] == 0|| $result->fields['quantity_on_hand'] == '')) ? true : false;
+		$this->allow_edit_bom = (($result['last_journal_date'] == '0000-00-00 00:00:00' || $result['last_journal_date'] == '') && ($result['quantity_on_hand'] == 0|| $result['quantity_on_hand'] == '')) ? true : false;
 	  	if ($this->allow_edit_bom == true) { // only update if no posting has been performed
 	  		$result = $admin->DataBase->exec("delete from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = " . $this->id);
 			while ($list_array = array_shift($bom_list)) {

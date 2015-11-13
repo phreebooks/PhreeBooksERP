@@ -142,7 +142,7 @@ class inventory {
 		$raw_sql = " SELECT id, short_name, primary_name FROM " . TABLE_CONTACTS . " c JOIN " . TABLE_ADDRESS_BOOK . " a ON c.id = a.ref_id WHERE c.type = 'b' ORDER BY short_name ";
 	  	$sql = $admin->DataBase->query($raw_sql);
 	  	$sql->execute();
-	  	$qty = load_store_stock($this->sku, 0);
+	  	$qty = $this->store_stock(0);
 	  	$this->qty_per_store[0] = $qty;
 	  	$this->quantity_on_hand = $qty;
 	  	if(ENABLE_MULTI_BRANCH){
@@ -159,7 +159,7 @@ class inventory {
 			$this->qty_table .="      <td align='center'>{$qty}</td>";
 		    $this->qty_table .='    </tr>' . chr(10);
 		    while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
-		    	$qty = load_store_stock($this->sku, $result['id']);
+		    	$qty = $this->store_stock($result['id']);
 		  		$this->qty_per_store[$result['id']] = $qty;
 		  		$this->quantity_on_hand += $qty;
 		  		$this->qty_table .= '<tr>';
@@ -255,8 +255,8 @@ class inventory {
 		while(!$result->EOF) {
 	  		$output_array = array(
 				'inventory_id'   => $this->id,
-				'price_sheet_id' => $result->fields['price_sheet_id'],
-				'price_levels'   => $result->fields['price_levels'],
+				'price_sheet_id' => $result['price_sheet_id'],
+				'price_levels'   => $result['price_levels'],
 	  		);
 	  		db_perform(TABLE_INVENTORY_SPECIAL_PRICES, $output_array, 'insert');
 	  		$result->MoveNext();
@@ -265,12 +265,12 @@ class inventory {
 		while(!$result->EOF) {
 			$sql_data_array = array (
 				'sku'						=> $this->sku,
-				'vendor_id' 				=> $result->fields['vendor_id'],
-				'description_purchase'		=> $result->fields['description_purchase'],
-				'item_cost'	 				=> $result->fields['item_cost'],
-				'purch_package_quantity'	=> $result->fields['purch_package_quantity'],
-				'purch_taxable'	 			=> $result->fields['purch_taxable'],
-				'price_sheet_v'				=> $result->fields['price_sheet_v'],
+				'vendor_id' 				=> $result['vendor_id'],
+				'description_purchase'		=> $result['description_purchase'],
+				'item_cost'	 				=> $result['item_cost'],
+				'purch_package_quantity'	=> $result['purch_package_quantity'],
+				'purch_taxable'	 			=> $result['purch_taxable'],
+				'price_sheet_v'				=> $result['price_sheet_v'],
 			);
 			db_perform(TABLE_INVENTORY_PURCHASE, $sql_data_array, 'insert');
 	  		$result->MoveNext();
@@ -293,7 +293,7 @@ class inventory {
 		if (isset($this->edit_ms_list) && $this->edit_ms_list == true) { // build list of sku's to rename (without changing contents)
 	  		$result = $admin->DataBase->query("select sku from " . TABLE_INVENTORY . " where sku like '" . $this->sku . "-%'");
 	  		while(!$result->EOF) {
-				$sku_list[] = $result->fields['sku'];
+				$sku_list[] = $result['sku'];
 				$result->MoveNext();
 	  		}
 		}
@@ -354,6 +354,7 @@ class inventory {
 		global $admin, $fields;
 	    $sql_data_array = $fields->what_to_save();
 	    // handle the checkboxes
+	    $sql_data_array['class'] = get_class($this);
 	    $sql_data_array['inactive'] = isset($_POST['inactive']) ? $_POST['inactive'] : '0'; // else unchecked
 	    foreach(array('quantity_on_hand', 'quantity_on_order', 'quantity_on_sales_order', 'quantity_on_allocation', 'creation_date', 'last_update', 'last_journal_date' ) as $key){
 	    	unset($sql_data_array[$key]);
@@ -391,7 +392,7 @@ class inventory {
 		}
 		if ($this->id != ''){
 			$result = $admin->DataBase->query("select attachments from ".TABLE_INVENTORY." where id = $this->id");
-			$this->attachments = $result->fields['attachments'] ? unserialize($result->fields['attachments']) : array();
+			$this->attachments = $result['attachments'] ? unserialize($result['attachments']) : array();
 			$image_id = 0;
 	  		while ($image_id < 100) { // up to 100 images
 	    		if (isset($_POST['rm_attach_'.$image_id])) {
@@ -423,8 +424,8 @@ class inventory {
 			while(!$result->EOF) {
 	  			$output_array = array(
 					'inventory_id'   => $this->id,
-					'price_sheet_id' => $result->fields['price_sheet_id'],
-					'price_levels'   => $result->fields['price_levels'],
+					'price_sheet_id' => $result['price_sheet_id'],
+					'price_levels'   => $result['price_levels'],
 	  			);
 	  			db_perform(TABLE_INVENTORY_SPECIAL_PRICES, $output_array, 'insert');
 	  			$result->MoveNext();
@@ -440,13 +441,13 @@ class inventory {
 		$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY_PURCHASE . " where sku = '" . $this->sku  . "'");
 		while(!$result->EOF){
 			$this->purchase_array[]= array (
-				'id'						=> $result->fields['id'],
-				'vendor_id' 				=> $result->fields['vendor_id'],
-				'description_purchase'		=> $result->fields['description_purchase'],
-				'item_cost'	 				=> $result->fields['item_cost'],
-				'purch_package_quantity'	=> $result->fields['purch_package_quantity'],
-				'purch_taxable'	 			=> $result->fields['purch_taxable'],
-				'price_sheet_v'				=> $result->fields['price_sheet_v'],
+				'id'						=> $result['id'],
+				'vendor_id' 				=> $result['vendor_id'],
+				'description_purchase'		=> $result['description_purchase'],
+				'item_cost'	 				=> $result['item_cost'],
+				'purch_package_quantity'	=> $result['purch_package_quantity'],
+				'purch_taxable'	 			=> $result['purch_taxable'],
+				'price_sheet_v'				=> $result['price_sheet_v'],
 			);
 			$result->MoveNext();
 		}
@@ -458,14 +459,14 @@ class inventory {
 		$this->backup_purchase_array = array();
 		$result = $admin->DataBase->query("SELECT * FROM ".TABLE_INVENTORY_PURCHASE." WHERE sku='$this->sku'");
 		while(!$result->EOF){
-			$this->backup_purchase_array[$result->fields['id']]= array (
-				'id'						=> $result->fields['id'],
-				'vendor_id' 				=> $result->fields['vendor_id'],
-				'description_purchase'		=> $result->fields['description_purchase'],
-				'item_cost'	 				=> $result->fields['item_cost'],
-				'purch_package_quantity'	=> $result->fields['purch_package_quantity'],
-				'purch_taxable'	 			=> $result->fields['purch_taxable'],
-				'price_sheet_v'				=> $result->fields['price_sheet_v'],
+			$this->backup_purchase_array[$result['id']]= array (
+				'id'						=> $result['id'],
+				'vendor_id' 				=> $result['vendor_id'],
+				'description_purchase'		=> $result['description_purchase'],
+				'item_cost'	 				=> $result['item_cost'],
+				'purch_package_quantity'	=> $result['purch_package_quantity'],
+				'purch_taxable'	 			=> $result['purch_taxable'],
+				'price_sheet_v'				=> $result['price_sheet_v'],
 				'action'					=> 'delete',
 			);// mark delete by default overwrite later if
 			$result->MoveNext();
@@ -507,7 +508,7 @@ class inventory {
 				}else{//insert
 					db_perform(TABLE_INVENTORY_PURCHASE, $sql_data_array, 'insert');
 					$id = \core\classes\PDO::lastInsertId('id');
-					$this->backup_purchase_array[$id)]= array (
+					$this->backup_purchase_array[$id]= array (
 						'id'						=> $id,
 						'vendor_id' 				=> $_POST['vendor_id_array'][$key],
 						'description_purchase'		=> $_POST['description_purchase_array'][$key],
@@ -538,14 +539,14 @@ class inventory {
 	  		$this->purchases_history["{$date->format('Y')}-{$date->format('m')}"] = array(
 	  			'post_date'		=> $date->format('Y-m-d'),
 	  			'MonthName'		=> constant("TEXT_". strtoupper($date->format('F'))."_SHORT"),
-	  			'ThisYear'		=> $date->format('Y');,
+	  			'ThisYear'		=> $date->format('Y'),
 	  			'qty'			=> 0,
 	  			'total_amount'	=> 0,
 	  		);
 	  		$this->sales_history["{$date->format('Y')}-{$date->format('m')}"] = array(
 	  			'post_date'		=> $date->format('Y-m-d'),
 	  			'MonthName'		=> constant("TEXT_". strtoupper($date->format('F'))."_SHORT"),
-	  			'ThisYear'		=> $date->format('Y');,
+	  			'ThisYear'		=> $date->format('Y'),
 	  			'qty'			=> 0,
 	  			'usage'			=> 0,
 	  			'total_amount'	=> 0,
@@ -562,7 +563,7 @@ class inventory {
 	  	  order by i.date_1";
 		$result = $admin->DataBase->query($sql);
 		while(!$result->EOF) {
-	  		switch ($result->fields['journal_id']) {
+	  		switch ($result['journal_id']) {
 	    		case  4:
 		  			$gl_type   = 'por';
 		  			$hist_type = 'open_po';
@@ -573,16 +574,16 @@ class inventory {
 		  		break;
 	  		}
 	  		$sql = "select sum(qty) as qty from " . TABLE_JOURNAL_ITEM . "
-			  where gl_type = '" . $gl_type . "' and so_po_item_ref_id = " . $result->fields['item_id'];
+			  where gl_type = '" . $gl_type . "' and so_po_item_ref_id = " . $result['item_id'];
 	  		$adj = $admin->DataBase->query($sql); // this looks for partial received to make sure this item is still on order
-	  		if ($result->fields['qty'] > $adj->fields['qty']) {
+	  		if ($result['qty'] > $adj['qty']) {
 				$this->history[$hist_type][] = array(
-		  			'id'                  => $result->fields['id'],
-		  			'store_id'            => $result->fields['store_id'],
-		  			'purchase_invoice_id' => $result->fields['purchase_invoice_id'],
-		  			'post_date'           => $result->fields['post_date'],
-		  			'qty'                 => $result->fields['qty'],
-		  			'date_1'              => $result->fields['date_1'],
+		  			'id'                  => $result['id'],
+		  			'store_id'            => $result['store_id'],
+		  			'purchase_invoice_id' => $result['purchase_invoice_id'],
+		  			'post_date'           => $result['post_date'],
+		  			'qty'                 => $result['qty'],
+		  			'date_1'              => $result['date_1'],
 				);
 	  		}
 	  		$result->MoveNext();
@@ -595,26 +596,26 @@ class inventory {
 		  order by m.post_date DESC";
 		$result = $admin->DataBase->query($sql);
 		while(!$result->EOF) {
-			$month = substr($result->fields['post_date'], 0, 7);
-	  		switch ($result->fields['journal_id']) {
+			$month = substr($result['post_date'], 0, 7);
+	  		switch ($result['journal_id']) {
 	    		case  6:
 	    		case 21:
-	      			$this->purchases_history[$month]['qty']          += $result->fields['qty'];
-	      			$this->purchases_history[$month]['total_amount'] += $result->fields['debit_amount'];
+	      			$this->purchases_history[$month]['qty']          += $result['qty'];
+	      			$this->purchases_history[$month]['total_amount'] += $result['debit_amount'];
 		  			break;
 	    		case 12:
 	    		case 19:
-	      			$this->sales_history[$month]['qty']              += $result->fields['qty'];
-	      			$this->sales_history[$month]['usage']            += $result->fields['qty'];
-	      			$this->sales_history[$month]['total_amount']     += $result->fields['credit_amount'];
+	      			$this->sales_history[$month]['qty']              += $result['qty'];
+	      			$this->sales_history[$month]['usage']            += $result['qty'];
+	      			$this->sales_history[$month]['total_amount']     += $result['credit_amount'];
 		  			break;
 	    		case 14:
-		  			if ($result->fields['gl_type'] == 'asi') { // only if part of an assembly
-	        			$this->sales_history[$month]['usage'] -= $result->fields['qty']; // need to negate quantity since assy.
+		  			if ($result['gl_type'] == 'asi') { // only if part of an assembly
+	        			$this->sales_history[$month]['usage'] -= $result['qty']; // need to negate quantity since assy.
 		  			}
 		  			break;
 	    		case 16:
-	      			$this->sales_history[$month]['usage'] += $result->fields['qty'];
+	      			$this->sales_history[$month]['usage'] += $result['qty'];
 		  			break;
 	  		}
 	  		$result->MoveNext();
@@ -641,7 +642,6 @@ class inventory {
 /*******************************************************************************************************************/
 // START Journal Functions
 /*******************************************************************************************************************/
-
 
 	function inventory_auto_add($sku, $desc, $item_cost, $full_price, $vendor_id){
 		$sql_data_array = array(
@@ -699,6 +699,79 @@ class inventory {
 	  	$result = $admin->DataBase->query($sql);
 		return true;
 	}
+	
+/*******************************************************************************************************************/
+// END Journal Functions
+/*******************************************************************************************************************/
+	
+	function store_stock($store_id) {
+		global $admin;
+		$sql = "SELECT sum(remaining) as remaining FROM " . TABLE_INVENTORY_HISTORY . " WHERE store_id = '$store_id' and sku = '$this->sku'";
+		$store_bal = $admin->DataBase->query($sql);
+		$sql = "SELECT sum(qty) as qty FROM " . TABLE_INVENTORY_COGS_OWED . " WHERE store_id = '$store_id' and sku = '$this->sku'";
+		$qty_owed = $admin->DataBase->query($sql);
+		return ($store_bal['remaining'] - $qty_owed['qty']);
+	}
+	
+	function calculate_sales_price($qty, $contact_id = 0, $type = 'c') {
+		global $admin;
+		$price_sheet = '';
+		$contact_tax = 1;
+		if ($contact_id) {
+			$contact = $admin->DataBase->query("SELECT type, price_sheet, tax_id FROM " . TABLE_CONTACTS . " WHERE id = '$contact_id'");
+			$type        = $contact['type'];
+			$price_sheet = $contact['price_sheet'];
+			$contact_tax = $contact['tax_id'];
+		}
+		// get the inventory prices
+		if($type == 'v'){
+			if ($contact_id) $inventory = $admin->DataBase->query("SELECT p.item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable FROM " . TABLE_INVENTORY . " a JOIN " . TABLE_INVENTORY_PURCHASE . " p ON a.sku = p.sku WHERE a.sku = '$this->sku' and p.vendor_id = '$contact_id'");
+			else $inventory = $admin->DataBase->query("SELECT MAX(p.item_cost) as item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable FROM " . TABLE_INVENTORY . " a JOIN " . TABLE_INVENTORY_PURCHASE . " p ON a.sku = p.sku WHERE a.sku = '$this->sku'");
+			$inv_price_sheet = $inventory['price_sheet_v'];
+		}else{
+			$inventory = $admin->DataBase->query("SELECT MAX(p.item_cost) as item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable FROM " . TABLE_INVENTORY . " a JOIN " . TABLE_INVENTORY_PURCHASE . " p ON a.sku = p.sku WHERE a.sku = '$this->sku'");
+			$inv_price_sheet = $inventory['price_sheet'];
+		}
+		// set the default tax rates
+		$purch_tax = ($contact_tax == 0 && $type=='v') ? 0 : $inventory['purch_taxable'];
+		$sales_tax = ($contact_tax == 0 && $type=='c') ? 0 : $inventory['item_taxable'];
+		// determine what price sheet to use, priority: customer, inventory, default
+		if ($price_sheet <> '') {
+			$sheet_name = $price_sheet;
+		} elseif ($inv_price_sheet <> '') {
+			$sheet_name = $inv_price_sheet;
+		} else {
+			$default_sheet = $admin->DataBase->query("select sheet_name from " . TABLE_PRICE_SHEETS . " where type = '$type' and default_sheet = '1'");
+			$sheet_name = ($default_sheet->fetch(\PDO::FETCH_NUM) == 0) ? '' : $default_sheet['sheet_name'];
+		}
+		// determine the sku price ranges from the price sheet in effect
+		$price = '0.0';
+		$levels = false;
+		if ($sheet_name <> '') {
+			$sql = "SELECT id, default_levels FROM " . TABLE_PRICE_SHEETS . "
+			WHERE inactive = '0' and type = '$type' and sheet_name = '$sheet_name' and
+			(expiration_date is null or expiration_date = '0000-00-00' or expiration_date >= '" . date('Y-m-d') . "')";
+			$price_sheets = $admin->DataBase->query($sql);
+			// retrieve special pricing for this inventory item
+			$raw_sql = "SELECT price_sheet_id, price_levels FROM " . TABLE_INVENTORY_SPECIAL_PRICES . " WHERE price_sheet_id = '{$price_sheets['id']}' and inventory_id = $this->id";
+			$sql = $admin->DataBase->prepare($raw_sql);
+			$sql->execute();
+			$special_prices = array();
+			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+				$special_prices[$result['price_sheet_id']] = $result['price_levels'];
+			}
+			$levels = isset($special_prices[$price_sheets['id']]) ? $special_prices[$price_sheets['id']] : $price_sheets['default_levels'];
+		}
+		if ($levels) {
+			$prices = inv_calculate_prices($inventory['item_cost'], $inventory['full_price'], $levels, $qty);
+			if(is_array($prices)) foreach ($prices as $value) if ($qty >= $value['qty']) $price = $admin->currencies->clean_value($value['price']);
+		} else {
+			$price = ($type=='v') ? $inventory['item_cost'] : $inventory['full_price'];
+		}
+		if ($price == '' || $price == null) $price = 0.0;
+		return array('price'=>$price, 'sales_tax'=>$sales_tax, 'purch_tax'=>$purch_tax);
+	}
+	
 
 	function __destruct(){
 //		if(DEBUG) print_r($this);

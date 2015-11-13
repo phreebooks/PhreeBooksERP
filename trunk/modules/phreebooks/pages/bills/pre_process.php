@@ -61,8 +61,8 @@ switch (JOURNAL_ID) {
 	throw new \core\classes\userException('No valid journal id found (module bills), Journal ID needs to be passed to this script to identify the action');
 	gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL'));
 }
-
-$order  = new \phreebooks\classes\banking();
+$temp = "\phreebooks\classes\journal\journal_".JOURNAL_ID;
+$order  = new temp();
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/bills/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
@@ -149,7 +149,7 @@ switch ($_REQUEST['action']) {
 			gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		} // else print or print_update, fall through and load javascript to call form_popup and clear form
 		$print_record_id = $order->id; // save id for printing
-		$order  = new \phreebooks\classes\banking(); // reset all values
+		$order  = new temp(); // reset all values
 		$admin->DataBase->transCommit();
 	} catch (Exception $e) { // else there was a post error, display and re-display form
 		$admin->DataBase->transRollback();
@@ -165,7 +165,7 @@ switch ($_REQUEST['action']) {
 	\core\classes\user::validate_security($security_level, 4);
   	$id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
 	if ($id) {
-		$delOrd = new \phreebooks\classes\banking();
+		$delOrd = new temp();
 		$delOrd->journal($id); // load the posted record based on the id submitted
 		if ($delOrd->delete_payment()) {
 			gen_add_audit_log(AUDIT_LOG_DEL_DESC, $order->purchase_invoice_id, $order->total_amount);
