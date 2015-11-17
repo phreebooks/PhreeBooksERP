@@ -181,11 +181,10 @@ switch ($_REQUEST['action']) {
 				$acct   = $result->fields['account_inventory_wage'];
 				require_once(DIR_FS_MODULES . 'inventory/functions/inventory.php');
 				require_once(DIR_FS_MODULES . 'phreebooks/classes/gen_ledger.php');
-				define('JOURNAL_ID', 14); // Inventory Assemblies Journal
-				$glEntry = new \core\classes\journal();
+				// Inventory Assemblies Journal
+				$glEntry = new \core\classes\journal\journal_14();
 				$glEntry->id                  = '';
 				$glEntry->admin_id            = $_SESSION['admin_id'];
-				$glEntry->journal_id          = JOURNAL_ID;
 				$glEntry->post_date           = date('Y-m-d');
 				$glEntry->period              = \core\classes\DateTime::period_of_date($glEntry->post_date);
 				if (!$glEntry->period) break;

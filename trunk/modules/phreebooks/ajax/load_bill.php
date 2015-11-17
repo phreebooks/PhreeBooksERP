@@ -29,8 +29,6 @@ $cID   = db_prepare_input($_GET['cID']); // contact record ID
 $bID   = db_prepare_input($_GET['bID']); // journal record ID
 $jID   = db_prepare_input($_GET['jID']); // journal ID
 
-define('JOURNAL_ID', $jID);
-
 if ($bID) {
   $bill = $admin->DataBase->query("select * from " . TABLE_JOURNAL_MAIN . " where id = '$bID'");
   if ($bill->fields['bill_acct_id']) $cID = $bill->fields['bill_acct_id']; // replace bID with ID from payment

@@ -49,11 +49,11 @@ class mi extends \inventory\classes\inventory { //Master Stock Sub Item. child o
 		global $admin;
 		$master = explode('-',$this->sku);
 		$this->master = $master[0];
-		$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->master . "'");
-	  	$this->ms_attr_0   = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result->fields['attr_0'] : '';
-	  	$this->attr_name_0 = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result->fields['attr_name_0'] : '';
-	  	$this->ms_attr_1   = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result->fields['attr_1'] : '';
-	  	$this->attr_name_1 = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result->fields['attr_name_1'] : '';
+		$result = $admin->DataBase->query("SELECT * FROM " . TABLE_INVENTORY_MS_LIST . " WHERE sku = '{$this->master}'");
+	  	$this->ms_attr_0   = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result['attr_0'] : '';
+	  	$this->attr_name_0 = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result['attr_name_0'] : '';
+	  	$this->ms_attr_1   = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result['attr_1'] : '';
+	  	$this->attr_name_1 = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result['attr_name_1'] : '';
 		if ($this->ms_attr_0) {
 			$temp = explode(',', $this->ms_attr_0);
 			for ($i = 0; $i < count($temp); $i++) {
@@ -72,29 +72,26 @@ class mi extends \inventory\classes\inventory { //Master Stock Sub Item. child o
 			  $temp_ms1[$code] = $desc;
 			}
 		}
-		$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY . " where sku like '" . $this->master . "-%' and inventory_type = 'mi' and sku<>'".$this->sku."'");
+		$sql = $admin->DataBase->query("SELECT * FROM " . TABLE_INVENTORY . " WHERE sku like '{$this->master}-%' and inventory_type = 'mi' and sku <> '{$this->sku}'");
 		$i = 0;
-		while(!$result->EOF){
-			$temp = explode('-',$result->fields['sku']);
-			$this->child_array[$i] = array(	'id'       		=> $result->fields['id'],
-											'sku'      		=> $result->fields['sku'],
-											'inactive' 		=> $result->fields['inactive'],
-											'desc' 			=> $result->fields['description_short'],
+		while ($result = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)) {
+			$temp = explode('-',$result['sku']);
+			$this->child_array[$i] = array(	'id'       		=> $result->id,
+											'sku'      		=> $result->sku,
+											'inactive' 		=> $result->inactive,
+											'desc' 			=> $result->description_short,
 											'0'				=> $temp_ms0[substr($temp[1],0,2)],
 											'1'				=> (strlen($temp[1])>2)? $temp_ms1[substr($temp[1],2,4)] : '',
-											'on_hand'		=> $result->fields['quantity_on_hand'],
-											'on_order'		=> $result->fields['quantity_on_order'],
-											'on_sales'		=> $result->fields['quantity_on_sales_order'],
-											'min_stock'		=> $result->fields['minimum_stock_level'],
-											'reorder_qty'	=> $result->fields['reorder_quantity'],
-											'tax'			=> $result->fields['item_taxable'],
+											'on_hand'		=> $result->quantity_on_hand,
+											'on_order'		=> $result->quantity_on_order,
+											'on_sales'		=> $result->quantity_on_sales_order,
+											'min_stock'		=> $result->minimum_stock_level,
+											'reorder_qty'	=> $result->reorder_quantity,
+											'tax'			=> $result->item_taxable,
+											'cost'			=> $result->calculate_sales_price(1, 0, 'v'), //@todo
+											'price'			=> $result->calculate_sales_price(1, 0, 'c'),//@todo
 			);
-			$temp =  inv_calculate_sales_price(1, $result->fields['id'], 0, 'v');
-			$this->child_array[$i]['cost']	= $temp['price'];
-			$temp =  inv_calculate_sales_price(1, $result->fields['id'], 0, 'c');
-			$this->child_array[$i]['price']	= $temp['price'];
 			$i++;
-			$result->MoveNext();
 		}
 	}
 }

@@ -76,31 +76,31 @@ echo $toolbar->build($add_search = true);
     while (!$query_result->EOF) {
 	  // only show quantity on hand if it is an inventory trackable item
 	  $not_show_types = array('ns','lb','sv','sf','ci','ai','ds');
-	  if (in_array($query_result->fields['inventory_type'], $not_show_types)) {
+	  if (in_array($query_result['inventory_type'], $not_show_types)) {
 		$qty_in_stock = '';
 	  } else {
-		$qty_in_stock = $query_result->fields['quantity_on_hand'];
+		$qty_in_stock = $query_result['quantity_on_hand'];
 	  }
-	  $bkgnd = ($query_result->fields['inactive']) ? ' style="background-color:pink"' : '';
+	  $bkgnd = ($query_result['inactive']) ? ' style="background-color:pink"' : '';
 ?>
    <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer">
-	<td <?php echo $bkgnd; ?> onclick="submitSeq(<?php echo $query_result->fields['id'].', \'edit\''; ?>)"><?php echo $query_result->fields['sku']; ?></td>
-	<td align="center"        onclick="submitSeq(<?php echo $query_result->fields['id'].', \'edit\''; ?>)"><?php echo ($query_result->fields['inactive'] == '1' ? TEXT_YES : ''); ?></td>
-	<td                       onclick="submitSeq(<?php echo $query_result->fields['id'].', \'edit\''; ?>)"><?php echo $query_result->fields['description_short']; ?></td>
-	<td align="center"        onclick="submitSeq(<?php echo $query_result->fields['id'].', \'edit\''; ?>)"><?php echo $qty_in_stock; ?></td>
-	<td align="center"        onclick="submitSeq(<?php echo $query_result->fields['id'].', \'edit\''; ?>)"><?php echo $query_result->fields['quantity_on_sales_order']; ?></td>
-	<td align="center"        onclick="submitSeq(<?php echo $query_result->fields['id'].', \'edit\''; ?>)"><?php echo $query_result->fields['quantity_on_allocation']; ?></td>
-	<td align="center"        onclick="submitSeq(<?php echo $query_result->fields['id'].', \'edit\''; ?>)"><?php echo $query_result->fields['quantity_on_order']; ?></td>
+	<td <?php echo $bkgnd; ?> onclick="submitSeq(<?php echo $query_result['id'].', \'edit\''; ?>)"><?php echo $query_result['sku']; ?></td>
+	<td align="center"        onclick="submitSeq(<?php echo $query_result['id'].', \'edit\''; ?>)"><?php echo ($query_result['inactive'] == '1' ? TEXT_YES : ''); ?></td>
+	<td                       onclick="submitSeq(<?php echo $query_result['id'].', \'edit\''; ?>)"><?php echo $query_result['description_short']; ?></td>
+	<td align="center"        onclick="submitSeq(<?php echo $query_result['id'].', \'edit\''; ?>)"><?php echo $qty_in_stock; ?></td>
+	<td align="center"        onclick="submitSeq(<?php echo $query_result['id'].', \'edit\''; ?>)"><?php echo $query_result['quantity_on_sales_order']; ?></td>
+	<td align="center"        onclick="submitSeq(<?php echo $query_result['id'].', \'edit\''; ?>)"><?php echo $query_result['quantity_on_allocation']; ?></td>
+	<td align="center"        onclick="submitSeq(<?php echo $query_result['id'].', \'edit\''; ?>)"><?php echo $query_result['quantity_on_order']; ?></td>
 	<td align="right">
 <?php // build the action toolbar
-	  if (function_exists('add_extra_action_bar_buttons')) echo add_extra_action_bar_buttons($query_result->fields);
+	  if (function_exists('add_extra_action_bar_buttons')) echo add_extra_action_bar_buttons($query_result);
 	  if ($security_level > 1) echo html_icon('actions/edit-find-replace.png', TEXT_EDIT, 'small',
-		'onclick="window.open(\'' . html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=main&amp;cID=' . $query_result->fields['id'] . '&amp;action=edit&amp;inventory_type='.$query_result->fields['inventory_type'], 'SSL')."','_blank')\""). chr(10);
+		'onclick="window.open(\'' . html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=main&amp;cID=' . $query_result['id'] . '&amp;action=edit&amp;inventory_type='.$query_result['inventory_type'], 'SSL')."','_blank')\""). chr(10);
 
-	  if ($security_level > 3 && $query_result->fields['inventory_type'] <> 'mi' && $query_result->fields['inventory_type'] <> 'ia') echo html_icon('apps/accessories-text-editor.png', TEXT_RENAME, 'small', "onclick='renameItem({$query_result->fields['id']},\"{$query_result->fields['inventory_type']}\")'") . chr(10);
-	  if ($security_level > 3 && $query_result->fields['inventory_type'] <> 'mi' && $query_result->fields['inventory_type'] <> 'ia' && ($query_result->fields['last_journal_date'] != '0000-00-00 00:00:00' || $query_result->fields['last_journal_date'] != '')) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', "onclick='if (confirm(\"" . INV_MSG_DELETE_INV_ITEM . "\")) deleteItem({$query_result->fields['id']},\"{$query_result->fields['inventory_type']}\")'") . chr(10);
-	  if ($security_level > 1 && $query_result->fields['inventory_type'] <> 'mi' && $query_result->fields['inventory_type'] <> 'ia') echo html_icon('actions/edit-copy.png', TEXT_COPY, 'small', "onclick='copyItem({$query_result->fields['id']},\"{$query_result->fields['inventory_type']}\")'") . chr(10);
-	  if ($security_level > 2) echo html_icon('mimetypes/x-office-spreadsheet.png', TEXT_CUSTOMER_PRICE_SHEETS, 'small', "onclick='priceMgr({$query_result->fields['id']}, \"\",{$query_result->fields['full_price']}, \"c\")'") . chr(10);
+	  if ($security_level > 3 && $query_result['inventory_type'] <> 'mi' && $query_result['inventory_type'] <> 'ia') echo html_icon('apps/accessories-text-editor.png', TEXT_RENAME, 'small', "onclick='renameItem({$query_result['id']},\"{$query_result['inventory_type']}\")'") . chr(10);
+	  if ($security_level > 3 && $query_result['inventory_type'] <> 'mi' && $query_result['inventory_type'] <> 'ia' && ($query_result['last_journal_date'] != '0000-00-00 00:00:00' || $query_result['last_journal_date'] != '')) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', "onclick='if (confirm(\"" . INV_MSG_DELETE_INV_ITEM . "\")) deleteItem({$query_result['id']},\"{$query_result['inventory_type']}\")'") . chr(10);
+	  if ($security_level > 1 && $query_result['inventory_type'] <> 'mi' && $query_result['inventory_type'] <> 'ia') echo html_icon('actions/edit-copy.png', TEXT_COPY, 'small', "onclick='copyItem({$query_result['id']},\"{$query_result['inventory_type']}\")'") . chr(10);
+	  if ($security_level > 2) echo html_icon('mimetypes/x-office-spreadsheet.png', TEXT_CUSTOMER_PRICE_SHEETS, 'small', "onclick='priceMgr({$query_result['id']}, \"\",{$query_result['full_price']}, \"c\")'") . chr(10);
 	  ?>
 	</td>
   </tr>

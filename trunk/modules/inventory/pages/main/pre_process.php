@@ -37,7 +37,7 @@ if (!isset($_REQUEST['inventory_type'])){
 	if(isset($_REQUEST['cID'])) $result = $admin->DataBase->query("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE id='{$_REQUEST['cID']}'");
 	else if (isset($_REQUEST['rowSeq'])) $result = $admin->DataBase->query("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE id='{$_REQUEST['rowSeq']}'");
 	else $result = $admin->DataBase->query("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE sku='{$_REQUEST['sku']}'");
-	if ($result->fetch(\PDO::FETCH_NUM)>0) $type = $result->fields['inventory_type'];
+	if ($result->fetch(\PDO::FETCH_NUM)>0) $type = $result['inventory_type'];
 	else $type ='si';
 }
 $temp = '\inventory\classes\type\\'. $type;
@@ -70,7 +70,7 @@ switch ($_REQUEST['action']) {
   case 'dn_attach': // download from list, assume the first document only
         $cID   = db_prepare_input($_POST['rowSeq']);
   	    $result = $admin->DataBase->query("select attachments from ".TABLE_INVENTORY." where id = $cID");
-  	    $attachments = unserialize($result->fields['attachments']);
+  	    $attachments = unserialize($result['attachments']);
   	    foreach ($attachments as $key => $value) {
 		   	$filename = 'inventory_'.$cID.'_'.$key.'.zip';
 		   	if (file_exists(INVENTORY_DIR_ATTACHMENTS . $filename)) {

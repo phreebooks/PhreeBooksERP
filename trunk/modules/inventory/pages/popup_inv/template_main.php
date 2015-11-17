@@ -59,29 +59,29 @@ echo $toolbar->build($add_search = true);
   $odd = true;
 	while (!$query_result->EOF) {
 	  $display_stock = true;
-	  if (strpos(COG_ITEM_TYPES, $query_result->fields['inventory_type']) === false) {
+	  if (strpos(COG_ITEM_TYPES, $query_result['inventory_type']) === false) {
 		$display_stock = false;
 		$return_stock  = TEXT_NA;
 	  } elseif (ENABLE_MULTI_BRANCH) {
-	  	$store_stock  = load_store_stock($query_result->fields['sku'], $store_id);
+	  	$store_stock  = $basis->inventory->store_stock($store_id);
 	  }
 	  switch ($account_type) {
 		default:
 		case 'c':
-			$price = inv_calculate_sales_price(1, $query_result->fields['id'], 0, 'c');
+			$price = $inventory->calculate_sales_price(1, 0, 'c');
 			break;
 		case 'v':
-			$price = inv_calculate_sales_price(1, $query_result->fields['id'], 0, 'v');
+			$price = $inventory->calculate_sales_price(1, 0, 'v');
 			break;
 	  }
-	  $bkgnd = ($query_result->fields['inactive']) ? ' style="background-color:pink"' : '';
+	  $bkgnd = ($query_result['inactive']) ? ' style="background-color:pink"' : '';
 ?>
-  <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer" onclick="setReturnItem(<?php echo $query_result->fields['id']; ?>)">
-	<td<?php echo $bkgnd; ?>><?php echo $query_result->fields['sku']; ?></td>
-	<td><?php echo $query_result->fields['description_short']; ?></td>
+  <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer" onclick="setReturnItem(<?php echo $query_result['id']; ?>)">
+	<td<?php echo $bkgnd; ?>><?php echo $query_result['sku']; ?></td>
+	<td><?php echo $query_result['description_short']; ?></td>
 	<td align="right"><?php echo $admin->currencies->precise($price['price']); ?></td>
-	<td align="center"><?php echo ($display_stock) ? $query_result->fields['quantity_on_hand'] : '&nbsp;'; ?></td>
-	<td align="center"><?php echo ($display_stock) ? $query_result->fields['quantity_on_order'] : '&nbsp;'; ?></td>
+	<td align="center"><?php echo ($display_stock) ? $query_result['quantity_on_hand'] : '&nbsp;'; ?></td>
+	<td align="center"><?php echo ($display_stock) ? $query_result['quantity_on_order'] : '&nbsp;'; ?></td>
 	<?php if (ENABLE_MULTI_BRANCH) echo '<td align="center">' . ($display_stock ? $store_stock : '&nbsp;') . '</td>' . chr(10); ?>
   </tr>
 <?php

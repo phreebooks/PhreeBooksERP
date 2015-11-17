@@ -45,10 +45,10 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 		$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->old_sku . "'");
 		$data_array = array(
 			'sku'			=> $this->sku,
-			'attr_0'   		=> $result->fields['attr_0'],
-			'attr_name_0'	=> $result->fields['attr_name_0'],
-			'attr_1'   		=> $result->fields['attr_1'],
-			'attr_name_1'	=> $result->fields['attr_name_1']);
+			'attr_0'   		=> $result['attr_0'],
+			'attr_name_0'	=> $result['attr_name_0'],
+			'attr_1'   		=> $result['attr_1'],
+			'attr_name_1'	=> $result['attr_name_1']);
 		db_perform(TABLE_INVENTORY_MS_LIST, $data_array, 'insert');
 		$this->get_ms_list();
 		return true;
@@ -57,10 +57,10 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 	function get_ms_list(){
 		global $admin;
 		$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->sku . "'");
-	  	$this->ms_attr_0   = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result->fields['attr_0'] 		: '';
-	  	$this->attr_name_0 = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result->fields['attr_name_0'] 	: '';
-	  	$this->ms_attr_1   = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result->fields['attr_1'] 		: '';
-	  	$this->attr_name_1 = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result->fields['attr_name_1'] 	: '';
+	  	$this->ms_attr_0   = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result['attr_0'] 		: '';
+	  	$this->attr_name_0 = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result['attr_name_0'] 	: '';
+	  	$this->ms_attr_1   = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result['attr_1'] 		: '';
+	  	$this->attr_name_1 = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result['attr_name_1'] 	: '';
 		if ($this->ms_attr_0) {
 			$temp = explode(',', $this->ms_attr_0);
 			foreach ($temp as $key => $value) {
@@ -88,23 +88,23 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 		$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY . " where sku like '" . $this->sku . "-%' and inventory_type = 'mi' order by sku asc");
 		$i = 0;
 		while(!$result->EOF){
-			$temp = explode('-',$result->fields['sku']);
-			$this->child_array[$i] = array(	'id'       		=> $result->fields['id'],
-											'sku'      		=> $result->fields['sku'],
-											'inactive' 		=> $result->fields['inactive'],
-											'desc' 			=> $result->fields['description_short'],
+			$temp = explode('-',$result['sku']);
+			$this->child_array[$i] = array(	'id'       		=> $result['id'],
+											'sku'      		=> $result['sku'],
+											'inactive' 		=> $result['inactive'],
+											'desc' 			=> $result['description_short'],
 											'0'				=> $temp_ms0[substr($temp[1],0,2)],
 											'1'				=> (strlen($temp[1])>2)? $temp_ms1[substr($temp[1],2,4)] : '',
-											'on_hand'		=> $result->fields['quantity_on_hand'],
-											'on_order'		=> $result->fields['quantity_on_order'],
-											'on_sales'		=> $result->fields['quantity_on_sales_order'],
-											'min_stock'		=> $result->fields['minimum_stock_level'],
-											'reorder_qty'	=> $result->fields['reorder_quantity'],
-											'tax'			=> $result->fields['item_taxable'],
+											'on_hand'		=> $result['quantity_on_hand'],
+											'on_order'		=> $result['quantity_on_order'],
+											'on_sales'		=> $result['quantity_on_sales_order'],
+											'min_stock'		=> $result['minimum_stock_level'],
+											'reorder_qty'	=> $result['reorder_quantity'],
+											'tax'			=> $result['item_taxable'],
 			);
-			$temp =  inv_calculate_sales_price(1, $result->fields['id'], 0, 'v');
+			$temp =  $inventory->calculate_sales_price(1, 0, 'v');
 			$this->child_array[$i]['cost']	= $temp['price'];
-			$temp =  inv_calculate_sales_price(1, $result->fields['id'], 0, 'c');
+			$temp =  $inventory->calculate_sales_price(1, 0, 'c');
 			$this->child_array[$i]['price']	= $temp['price'];
 			$i++;
 			$result->MoveNext();
@@ -136,11 +136,11 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 		$admin->DataBase->exec("delete from " . TABLE_INVENTORY . " where sku like '" . $this->sku . "-%'");
 		$admin->DataBase->exec("delete from " . TABLE_INVENTORY_PURCHASE . " where sku like '" . $this->sku . "-%'");
 		while(!$ms_array->EOF){
-			if($ms_array->fields['image_with_path'] != ''){
-				$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY . " where image_with_path = '" . $ms_array->fields['image_with_path'] ."'");
+			if($ms_array['image_with_path'] != ''){
+				$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY . " where image_with_path = '" . $ms_array['image_with_path'] ."'");
 	  			if ( $result->fetch(\PDO::FETCH_NUM) == 0){ // delete image
 					$file_path = DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/images/';
-					if (file_exists($file_path . $ms_array->fields['image_with_path'])) unlink ($file_path . $ms_array->fields['image_with_path']);
+					if (file_exists($file_path . $ms_array['image_with_path'])) unlink ($file_path . $ms_array['image_with_path']);
 	  			}
 			}
 			$ms_array->MoveNext();
@@ -185,7 +185,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 		$result = $admin->DataBase->query("select sku from " . TABLE_INVENTORY . " where inventory_type = 'mi' and sku like '{$this->sku}-%'");
 		$existing_sku_list = array();
 		while (!$result->EOF) {
-			$existing_sku_list[] = $result->fields['sku'];
+			$existing_sku_list[] = $result['sku'];
 			$result->MoveNext();
 		}
 		$delete_list = array_diff($existing_sku_list, $sku_list);
@@ -212,7 +212,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 			}
 		}
 		if ($this->id != ''){ //only update fields that are changed otherwise fields in the child could be overwritten
-			foreach ($current_situation->fields as $key => $value) { // remove fields where the parent is unchanged because the childeren could have different values in these fields.
+			foreach ($current_situation as $key => $value) { // remove fields where the parent is unchanged because the childeren could have different values in these fields.
 				switch($key){
 					case 'description_short': 		if($this->description_short == $value) 		unset($sql_data_array[$key]); Break;
 					case 'description_purchase': 	if($this->description_purchase == $value) 	unset($sql_data_array[$key]); Break;
@@ -278,7 +278,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 			'attr_1'      => $this->ms_attr_1,
 			'attr_name_1' => $this->attr_name_1);
 		if ($exists) {
-			db_perform(TABLE_INVENTORY_MS_LIST, $data_array, 'update', "id = " . $result->fields['id']);
+			db_perform(TABLE_INVENTORY_MS_LIST, $data_array, 'update', "id = " . $result['id']);
 		} else {
 			db_perform(TABLE_INVENTORY_MS_LIST, $data_array, 'insert');
 		}

@@ -53,11 +53,11 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 		$result = $admin->DataBase->query("select i.id as inventory_id, l.id, l.sku, l.description, l.qty as qty from " . TABLE_INVENTORY_ASSY_LIST . " l join " . TABLE_INVENTORY . " i on l.sku = i.sku where l.ref_id = " . $this->id . " order by l.id");
 		$x =0;
 		while (!$result->EOF) {
-	  		$this->bom[$x] = $result->fields;
-	  		$prices = inv_calculate_sales_price(abs($result->fields['qty']), $result->fields['inventory_id'], 0, 'v');
+	  		$this->bom[$x] = $result;
+	  		$prices = $inventory->calculate_sales_price(abs($result['qty']), 0, 'v');
 			$this->bom[$x]['item_cost'] = strval($prices['price']);
-			$this->assy_cost += $result->fields['qty'] * strval($prices['price']);
-	  		$prices = inv_calculate_sales_price(abs($result->fields['qty']), $result->fields['inventory_id'], 0, 'c');
+			$this->assy_cost += $result['qty'] * strval($prices['price']);
+	  		$prices = $inventory->calculate_sales_price(abs($result['qty']), 0, 'c');
 			$this->bom[$x]['full_price'] = strval($prices['price']);
 	  		$x++;
 	  		$result->MoveNext();
@@ -77,10 +77,10 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 		$master = explode('-',$this->sku);
 		$this->master = $master[0];
 		$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY_MS_LIST . " where sku = '" . $this->master . "'");
-	  	$this->ms_attr_0   = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result->fields['attr_0'] : '';
-	  	$this->attr_name_0 = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result->fields['attr_name_0'] : '';
-	  	$this->ms_attr_1   = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result->fields['attr_1'] : '';
-	  	$this->attr_name_1 = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result->fields['attr_name_1'] : '';
+	  	$this->ms_attr_0   = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result['attr_0'] : '';
+	  	$this->attr_name_0 = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result['attr_name_0'] : '';
+	  	$this->ms_attr_1   = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result['attr_1'] : '';
+	  	$this->attr_name_1 = ($result->fetch(\PDO::FETCH_NUM) > 0) ? $result['attr_name_1'] : '';
 		if ($this->ms_attr_0) {
 			$temp = explode(',', $this->ms_attr_0);
 			for ($i = 0; $i < count($temp); $i++) {
@@ -102,23 +102,23 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 		$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY . " where sku like '" . $this->master . "-%' and inventory_type = 'ia' and sku<>'".$this->sku."'");
 		$i = 0;
 		while(!$result->EOF){
-			$temp = explode('-',$result->fields['sku']);
-			$this->child_array[$i] = array(	'id'       		=> $result->fields['id'],
-											'sku'      		=> $result->fields['sku'],
-											'inactive' 		=> $result->fields['inactive'],
-											'desc' 			=> $result->fields['description_short'],
+			$temp = explode('-',$result['sku']);
+			$this->child_array[$i] = array(	'id'       		=> $result['id'],
+											'sku'      		=> $result['sku'],
+											'inactive' 		=> $result['inactive'],
+											'desc' 			=> $result['description_short'],
 											'0'				=> $temp_ms0[substr($temp[1],0,2)],
 											'1'				=> (strlen($temp[1])>2)? $temp_ms1[substr($temp[1],2,4)] : '',
-											'on_hand'		=> $result->fields['quantity_on_hand'],
-											'on_order'		=> $result->fields['quantity_on_order'],
-											'on_sales'		=> $result->fields['quantity_on_sales_order'],
-											'min_stock'		=> $result->fields['minimum_stock_level'],
-											'reorder_qty'	=> $result->fields['reorder_quantity'],
-											'tax'			=> $result->fields['item_taxable'],
+											'on_hand'		=> $result['quantity_on_hand'],
+											'on_order'		=> $result['quantity_on_order'],
+											'on_sales'		=> $result['quantity_on_sales_order'],
+											'min_stock'		=> $result['minimum_stock_level'],
+											'reorder_qty'	=> $result['reorder_quantity'],
+											'tax'			=> $result['item_taxable'],
 			);
-			$temp =  inv_calculate_sales_price(1, $result->fields['id'], 0, 'v');
+			$temp =  $inventory->calculate_sales_price(1, 0, 'v');
 			$this->child_array[$i]['cost']	= $temp['price'];
-			$temp =  inv_calculate_sales_price(1, $result->fields['id'], 0, 'c');
+			$temp =  $inventory->calculate_sales_price(1, 0, 'c');
 			$this->child_array[$i]['price']	= $temp['price'];
 			$i++;
 			$result->MoveNext();
@@ -140,15 +140,15 @@ class ia extends \inventory\classes\inventory { //Master Build Sub Item. child o
 		  		// show error, bad sku, negative quantity. error check sku is valid and qty > 0
 				throw new \core\classes\userException(INV_ERROR_BAD_SKU . db_prepare_input($_POST['assy_sku'][$x]));
 		  	}
-		  	$prices = inv_calculate_sales_price(abs($this->bom[$x]['qty']), $result->fields['id'], 0, 'v');
+		  	$prices = $inventory->calculate_sales_price(abs($this->bom[$x]['qty']), 0, 'v');
 			$bom_list[$x]['item_cost'] = strval($prices['price']);
-		  	$prices = inv_calculate_sales_price(abs($this->bom[$x]['qty']), $result->fields['id'], 0, 'c');
+		  	$prices = $inventory->calculate_sales_price(abs($this->bom[$x]['qty']), 0, 'c');
 			$bom_list[$x]['full_price'] = strval($prices['price']);
 		}
 		$this->bom = $bom_list;
 		parent::save();
 		$result = $admin->DataBase->query("select last_journal_date, quantity_on_hand  from " . TABLE_INVENTORY . " where id = " . $this->id);
-		$this->allow_edit_bom = (($result->fields['last_journal_date'] == '0000-00-00 00:00:00' || $result->fields['last_journal_date'] == '') && ($result->fields['quantity_on_hand'] == 0|| $result->fields['quantity_on_hand'] == '')) ? true : false;
+		$this->allow_edit_bom = (($result['last_journal_date'] == '0000-00-00 00:00:00' || $result['last_journal_date'] == '') && ($result['quantity_on_hand'] == 0|| $result['quantity_on_hand'] == '')) ? true : false;
 	  	if ($this->allow_edit_bom == true) { // only update if no posting has been performed
 	  		$result = $admin->DataBase->exec("delete from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = " . $this->id);
 			while ($list_array = array_shift($bom_list)) {

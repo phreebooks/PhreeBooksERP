@@ -44,9 +44,9 @@ class ma extends \inventory\classes\inventory { //Item Assembly formerly know as
 		while(!$result->EOF) {
 			$bom_list = array(
 			  	'ref_id'      => $this->id,
-			  	'sku'         => $result->fields['sku'],
-				'description' => $result->fields['description'],
-				'qty'         => $result->fields['qty'],
+			  	'sku'         => $result['sku'],
+				'description' => $result['description'],
+				'qty'         => $result['qty'],
 			);
 			db_perform(TABLE_INVENTORY_ASSY_LIST, $bom_list, 'insert');
 			$result->MoveNext();
@@ -61,11 +61,11 @@ class ma extends \inventory\classes\inventory { //Item Assembly formerly know as
 		$result = $admin->DataBase->query("select i.id as inventory_id, l.id, l.sku, l.description, l.qty as qty from " . TABLE_INVENTORY_ASSY_LIST . " l join " . TABLE_INVENTORY . " i on l.sku = i.sku where l.ref_id = " . $this->id . " order by l.id");
 		$x =0;
 		while (!$result->EOF) {
-	  		$this->bom[$x] = $result->fields;
-	  		$prices = inv_calculate_sales_price(abs($result->fields['qty']), $result->fields['inventory_id'], 0, 'v');
+	  		$this->bom[$x] = $result;
+	  		$prices = $inventory->calculate_sales_price(abs($result['qty']), 0, 'v');
 			$this->bom[$x]['item_cost'] = strval($prices['price']);
-			$this->assy_cost += $result->fields['qty'] * strval($prices['price']);
-	  		$prices = inv_calculate_sales_price(abs($result->fields['qty']), $result->fields['inventory_id'], 0, 'c');
+			$this->assy_cost += $result['qty'] * strval($prices['price']);
+	  		$prices = $inventory->calculate_sales_price(abs($result['qty']), 0, 'c');
 			$this->bom[$x]['full_price'] = strval($prices['price']);
 	  		$x++;
 	  		$result->MoveNext();
@@ -93,16 +93,16 @@ class ma extends \inventory\classes\inventory { //Item Assembly formerly know as
 		  		// show error, bad sku, negative quantity. error check sku is valid and qty > 0
 				throw new \core\classes\userException(INV_ERROR_BAD_SKU . db_prepare_input($_POST['assy_sku'][$x]));
 		  	}else{
-		  		$prices = inv_calculate_sales_price(abs($this->bom[$x]['qty']), $result->fields['id'], 0, 'v');
+		  		$prices = $inventory->calculate_sales_price(abs($this->bom[$x]['qty']), 0, 'v');
 				$bom_list[$x]['item_cost'] = strval($prices['price']);
-		  		$prices = inv_calculate_sales_price(abs($this->bom[$x]['qty']), $result->fields['id'], 0, 'c');
+		  		$prices = $inventory->calculate_sales_price(abs($this->bom[$x]['qty']), 0, 'c');
 				$bom_list[$x]['full_price'] = strval($prices['price']);
 		  	}
 		}
 		$this->bom = $bom_list;
 		parent::save();
 		$result = $admin->DataBase->query("select last_journal_date, quantity_on_hand  from " . TABLE_INVENTORY . " where id = " . $this->id);
-		$this->allow_edit_bom = (($result->fields['last_journal_date'] == '0000-00-00 00:00:00' || $result->fields['last_journal_date'] == '') && ($result->fields['quantity_on_hand'] == 0|| $result->fields['quantity_on_hand'] == '')) ? true : false;
+		$this->allow_edit_bom = (($result['last_journal_date'] == '0000-00-00 00:00:00' || $result['last_journal_date'] == '') && ($result['quantity_on_hand'] == 0|| $result['quantity_on_hand'] == '')) ? true : false;
 	  	if ($this->allow_edit_bom == true) { // only update if no posting has been performed
 	  		$result = $admin->DataBase->exec("delete from " . TABLE_INVENTORY_ASSY_LIST . " where ref_id = " . $this->id);
 			while ($list_array = array_shift($bom_list)) {

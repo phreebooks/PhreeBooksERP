@@ -17,19 +17,6 @@
 //  Path: /modules/inventory/functions/inventory.php
 //
 
-  function load_store_stock($sku, $store_id) {
-	global $admin;
-	$sql = "select sum(remaining) as remaining from " . TABLE_INVENTORY_HISTORY . "
-		where store_id = '$store_id' and sku = '$sku'";
-	$result = $admin->DataBase->query($sql);
-	$store_bal = $result->fields['remaining'];
-	$sql = "select sum(qty) as qty from " . TABLE_INVENTORY_COGS_OWED . "
-		where store_id = '$store_id' and sku = '$sku'";
-	$result = $admin->DataBase->query($sql);
-	$qty_owed = $result->fields['qty'];
-	return ($store_bal - $qty_owed);
-  }
-
   function inv_calculate_prices($item_cost, $full_price, $encoded_price_levels, $qty = 1) {
     global $admin;
 	if (!defined('MAX_NUM_PRICE_LEVELS')) throw new \core\classes\userException('Constant MAX_NUM_PRICE_LEVELS is not defined! returning from inv_calculate_prices');
@@ -100,65 +87,6 @@
 	return $prices;
   }
   
-  	function inv_calculate_sales_price($qty, $sku_id, $contact_id = 0, $type = 'c') {
-    	global $admin;
-		$price_sheet = '';
-		$contact_tax = 1;
-		if ($contact_id) {
-		  	$contact = $admin->DataBase->query("select type, price_sheet, tax_id from " . TABLE_CONTACTS . " where id = '$contact_id'");
-		  	$type        = $contact->fields['type'];
-		  	$price_sheet = $contact->fields['price_sheet'];
-		  	$contact_tax = $contact->fields['tax_id'];
-		}
-		// get the inventory prices
-		if($type == 'v'){
-			if ($contact_id) $inventory = $admin->DataBase->query("select p.item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable from " . TABLE_INVENTORY . " a join " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku  where a.id = '$sku_id' and p.vendor_id = '$contact_id'");
-			else $inventory = $admin->DataBase->query("select MAX(p.item_cost) as item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable from " . TABLE_INVENTORY . " a join " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku  where a.id = '$sku_id'");
-			$inv_price_sheet = $inventory->fields['price_sheet_v'];
-		}else{
-			$inventory = $admin->DataBase->query("select MAX(p.item_cost) as item_cost, a.full_price, a.price_sheet, p.price_sheet_v, a.item_taxable, p.purch_taxable from " . TABLE_INVENTORY . " a join " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku  where a.id = '$sku_id'");
-			$inv_price_sheet = $inventory->fields['price_sheet'];
-		}
-		// set the default tax rates
-		$purch_tax = ($contact_tax == 0 && $type=='v') ? 0 : $inventory->fields['purch_taxable'];
-		$sales_tax = ($contact_tax == 0 && $type=='c') ? 0 : $inventory->fields['item_taxable'];
-		// determine what price sheet to use, priority: customer, inventory, default
-		if ($price_sheet <> '') {
-		  	$sheet_name = $price_sheet;
-		} elseif ($inv_price_sheet <> '') {
-		  	$sheet_name = $inv_price_sheet;
-		} else {
-		  	$default_sheet = $admin->DataBase->query("select sheet_name from " . TABLE_PRICE_SHEETS . " where type = '$type' and default_sheet = '1'");
-		  	$sheet_name = ($default_sheet->fetch(\PDO::FETCH_NUM) == 0) ? '' : $default_sheet->fields['sheet_name'];
-		}
-		// determine the sku price ranges from the price sheet in effect
-		$price = '0.0';
-		$levels = false;
-		if ($sheet_name <> '') {
-			$sql = "select id, default_levels from " . TABLE_PRICE_SHEETS . "
-			  where inactive = '0' and type = '$type' and sheet_name = '$sheet_name' and
-			  (expiration_date is null or expiration_date = '0000-00-00' or expiration_date >= '" . date('Y-m-d') . "')";
-			$price_sheets = $admin->DataBase->query($sql);
-			// retrieve special pricing for this inventory item
-			$sql = "select price_sheet_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where price_sheet_id = '{$price_sheets->fields['id']}' and inventory_id = $sku_id";
-			$result = $admin->DataBase->query($sql);
-			$special_prices = array();
-			while (!$result->EOF) {
-				$special_prices[$result->fields['price_sheet_id']] = $result->fields['price_levels'];
-				$result->MoveNext();
-			}
-			$levels = isset($special_prices[$price_sheets->fields['id']]) ? $special_prices[$price_sheets->fields['id']] : $price_sheets->fields['default_levels'];
-		}
-		if ($levels) {
-	  		$prices = inv_calculate_prices($inventory->fields['item_cost'], $inventory->fields['full_price'], $levels, $qty);
-	  		if(is_array($prices)) foreach ($prices as $value) if ($qty >= $value['qty']) $price = $admin->currencies->clean_value($value['price']);
-		} else {
-	  		$price = ($type=='v') ? $inventory->fields['item_cost'] : $inventory->fields['full_price'];
-		}
-		if ($price == '' || $price == null) $price = 0.0;
-		return array('price'=>$price, 'sales_tax'=>$sales_tax, 'purch_tax'=>$purch_tax);
-  }
-
 function inv_status_open_orders($journal_id, $gl_type) { // checks order status for order balances, items received/shipped
   global $admin;
   $item_list = array();
@@ -166,13 +94,13 @@ function inv_status_open_orders($journal_id, $gl_type) { // checks order status 
   	where journal_id = $journal_id and closed = '0'");
   while (!$orders->EOF) {
     $total_ordered = array(); // track this SO/PO sku for totals, to keep >= 0
-    $id = $orders->fields['id'];
+    $id = $orders['id'];
 	// retrieve information for requested id
 	$sql = " select sku, qty from " . TABLE_JOURNAL_ITEM . " where ref_id = $id and gl_type = '$gl_type'";
 	$ordr_items = $admin->DataBase->query($sql);
 	while (!$ordr_items->EOF) {
-	  $item_list[$ordr_items->fields['sku']] += $ordr_items->fields['qty'];
-	  $total_ordered[$ordr_items->fields['sku']] += $ordr_items->fields['qty'];
+	  $item_list[$ordr_items['sku']] += $ordr_items['qty'];
+	  $total_ordered[$ordr_items['sku']] += $ordr_items['qty'];
 	  $ordr_items->MoveNext();
 	}
 	// calculate received/sales levels (SO and PO)
@@ -182,9 +110,9 @@ function inv_status_open_orders($journal_id, $gl_type) { // checks order status 
 	$posted_items = $admin->DataBase->query($sql);
 	while (!$posted_items->EOF) {
 	  foreach ($item_list as $sku => $balance) {
-		if ($sku == $posted_items->fields['sku']) {
-		  $total_ordered[$sku] -= $posted_items->fields['qty'];
-		  $adjustment = $total_ordered[$sku] > 0 ? $posted_items->fields['qty'] : max(0, $total_ordered[$sku] + $posted_items->fields['qty']);
+		if ($sku == $posted_items['sku']) {
+		  $total_ordered[$sku] -= $posted_items['qty'];
+		  $adjustment = $total_ordered[$sku] > 0 ? $posted_items['qty'] : max(0, $total_ordered[$sku] + $posted_items['qty']);
 		  $item_list[$sku] -= $adjustment;
 		}
 	  }

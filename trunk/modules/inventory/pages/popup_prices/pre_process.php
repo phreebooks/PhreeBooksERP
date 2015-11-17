@@ -27,7 +27,7 @@ $rowId = $_GET['rowId'];
 // retrieve some inventory item details
 $inventory_details = $admin->DataBase->query("select id, sku, description_short, item_cost, full_price, item_weight
 	 from " . TABLE_INVENTORY . " where sku = '" . $sku . "'");
-$id = $inventory_details->fields['id'];
+$id = $inventory_details['id'];
 
 if ($id) { // then the sku was valid, get item information, cost and full price
   $sql = "select id, sheet_name, revision, default_sheet, default_levels from " . TABLE_PRICE_SHEETS . "
@@ -40,7 +40,7 @@ if ($id) { // then the sku was valid, get item information, cost and full price
 	from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = " . $id);
   $special_prices = array();
   while (!$result->EOF) {
-	$special_prices[$result->fields['price_sheet_id']] = $result->fields['price_levels'];
+	$special_prices[$result['price_sheet_id']] = $result['price_levels'];
 	$result->MoveNext();
   }
 }

@@ -251,7 +251,7 @@ class language {
 		$doc->save($custom_path);
 	}
 
-	static function add_constant($constant){ //@todo zoeken naar constant in file
+	static function add_constant($constant){
 		$lang_path = (DIR_FS_INCLUDES."language/translations.xml");
 		if (!file_exists($lang_path)) throw new \core\classes\userException("can't find your language file {$lang_path} ");
 		$doc = new \DOMDocument('1.0', 'utf-8');

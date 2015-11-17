@@ -78,28 +78,28 @@ class DateTime extends \DateTime {
 				$fildesc = TEXT_DATE_RANGE . ' = ' . $this->format(DATE_FORMAT) . '; ';
 				break;
 			case "d": // This Week
-				$this->modify("-{$this->format('w')} day");
+				$this->modify("monday this week");
 				$end_date = clone $this;
-				$end_date->modify('+6 day');
+				$end_date->modify('sunday this week');
 				$raw_sql = "$fieldname >= '{$this->format('Y-m-d')}' and $fieldname <= '{$end_date->format('Y-m-d')}'";
 				$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . $this->format(DATE_FORMAT) . ' ' . TEXT_TO . ' ' . $end_date->format(DATE_FORMAT) . '; ';
 				break;
 			case "e": // This Week to Date
 				$end_date = clone $this;
-				$this->modify("-{$this->format('w')} day");
+				$this->modify("monday this week");
 				$raw_sql = "$fieldname >= '{$this->format('Y-m-d')}' and $fieldname <= '{$end_date->format('Y-m-d')}'";
 				$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . $this->format(DATE_FORMAT) . ' ' . TEXT_TO . ' ' . $end_date->format(DATE_FORMAT) . '; ';
 				break;
 			case "g": // This Month
-				$this->modify("-{$this->format('j')} day");
+				$this->modify("first day this month");
 				$end_date = clone $this;
-				$end_date->modify("+{$this->format('t')} day");
+				$end_date->modify("last day this month");
 				$raw_sql = "$fieldname >= '{$this->format('Y-m-d')}' and $fieldname <= '{$end_date->format('Y-m-d')}'";
 				$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . $this->format(DATE_FORMAT) . ' ' . TEXT_TO . ' ' . $end_date->format(DATE_FORMAT). '; ';
 				break;
 			case "h": // This Month to Date
 				$end_date = clone $this;
-				$this->modify("-{$this->format('j')} day");
+				$this->modify("first day this month");
 				$raw_sql = "$fieldname >= '{$this->format('Y-m-d')}' and $fieldname <= '{$end_date->format('Y-m-d')}'";
 				$fildesc = TEXT_DATE_RANGE . ' ' . TEXT_FROM . ' ' . $this->format(DATE_FORMAT) . ' ' . TEXT_TO . ' ' . $end_date->format(DATE_FORMAT). '; ';
 				break;

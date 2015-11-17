@@ -36,19 +36,19 @@
 <?php
   $odd = true;
   while (!$cInfo->orderHistory->EOF) {
-	$oID          = $cInfo->orderHistory->fields['id'];
-	$post_date    = \core\classes\DateTime::createFromFormat(DATE_FORMAT, $cInfo->orderHistory->fields['post_date']);
-	$reference_id = htmlspecialchars($cInfo->orderHistory->fields['purchase_invoice_id']);
-	$primary_name = htmlspecialchars($cInfo->orderHistory->fields['bill_primary_name']);
-	$closed       = $cInfo->orderHistory->fields['closed'] ? TEXT_YES : '';
-	$total_amount = $admin->currencies->format_full($cInfo->orderHistory->fields['total_amount']);
+	$oID          = $cInfo->orderHistory['id'];
+	$post_date    = \core\classes\DateTime::createFromFormat(DATE_FORMAT, $cInfo->orderHistory['post_date']);
+	$reference_id = htmlspecialchars($cInfo->orderHistory['purchase_invoice_id']);
+	$primary_name = htmlspecialchars($cInfo->orderHistory['bill_primary_name']);
+	$closed       = $cInfo->orderHistory['closed'] ? TEXT_YES : '';
+	$total_amount = $admin->currencies->format_full($cInfo->orderHistory['total_amount']);
     $link_page    = html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;oID=$oID&amp;action=edit&amp;jID=12", 'SSL');
 ?>
   <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer">
 	<td onclick="window.open('<?php echo $link_page; ?>','_blank')"><?php echo $post_date; ?></td>
 	<td onclick="window.open('<?php echo $link_page; ?>','_blank')"><?php echo $reference_id; ?></td>
 	<td<?php echo $bkgnd; ?> onclick="window.open('<?php echo $link_page; ?>','_blank')"><?php echo $primary_name; ?></td>
-	<td onclick="window.open('<?php echo $link_page; ?>','_blank')"><?php echo $cInfo->orderHistory->fields['serialize_number']; ?></td>
+	<td onclick="window.open('<?php echo $link_page; ?>','_blank')"><?php echo $cInfo->orderHistory['serialize_number']; ?></td>
 	<td onclick="window.open('<?php echo $link_page; ?>','_blank')"><?php echo $closed; ?></td>
 	<td align="right" onclick="window.open('<?php echo $link_page; ?>','_blank')"><?php echo $total_amount; ?></td>
 	<td align="right">

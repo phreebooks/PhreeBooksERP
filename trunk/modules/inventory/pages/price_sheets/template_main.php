@@ -46,25 +46,25 @@ echo $toolbar->build($add_search = true);
  $odd = true;
  while (!$query_result->EOF) {
 	$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY_SPECIAL_PRICES . "
-		where price_sheet_id = " . $query_result->fields['id']);
+		where price_sheet_id = " . $query_result['id']);
 	$special_price = ($result->fetch(\PDO::FETCH_NUM) > 0) ? TEXT_YES : '';
 ?>
   <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer">
-	<td onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo $query_result->fields['sheet_name']; ?></td>
-	<td style="text-align:center" onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo ($query_result->fields['inactive'] == '1' ? TEXT_YES : ''); ?></td>
-	<td style="text-align:center" onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo $query_result->fields['revision']; ?></td>
-	<td style="text-align:center" onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo ($query_result->fields['default_sheet'] == '1' ? TEXT_YES : ''); ?></td>
-	<td style="text-align:center" onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result->fields['effective_date']); ?></td>
-	<td style="text-align:center" onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result->fields['expiration_date']); ?></td>
-	<td style="text-align:center" onclick="submitSeq(<?php echo $query_result->fields['id']; ?>, 'edit')"><?php echo $special_price; ?></td>
+	<td onclick="submitSeq(<?php echo $query_result['id']; ?>, 'edit')"><?php echo $query_result['sheet_name']; ?></td>
+	<td style="text-align:center" onclick="submitSeq(<?php echo $query_result['id']; ?>, 'edit')"><?php echo ($query_result['inactive'] == '1' ? TEXT_YES : ''); ?></td>
+	<td style="text-align:center" onclick="submitSeq(<?php echo $query_result['id']; ?>, 'edit')"><?php echo $query_result['revision']; ?></td>
+	<td style="text-align:center" onclick="submitSeq(<?php echo $query_result['id']; ?>, 'edit')"><?php echo ($query_result['default_sheet'] == '1' ? TEXT_YES : ''); ?></td>
+	<td style="text-align:center" onclick="submitSeq(<?php echo $query_result['id']; ?>, 'edit')"><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result['effective_date']); ?></td>
+	<td style="text-align:center" onclick="submitSeq(<?php echo $query_result['id']; ?>, 'edit')"><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result['expiration_date']); ?></td>
+	<td style="text-align:center" onclick="submitSeq(<?php echo $query_result['id']; ?>, 'edit')"><?php echo $special_price; ?></td>
 	<td style="text-align:right" >
 <?php
-	if (function_exists('add_extra_action_bar_buttons')) echo add_extra_action_bar_buttons($query_result->fields);
-	if ($query_result->fields['revision'] == $rev_levels[$query_result->fields['sheet_name']]) {
-		if ($security_level > 1) echo html_button_field('revise_' . $query_result->fields['id'], TEXT_REVISE, 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action', 'list', 'psID')) . '&amp;list=' . $_REQUEST['list'] . '&amp;action=revise&amp;psID=' . $query_result->fields['id'], 'SSL') . '\'"');
+	if (function_exists('add_extra_action_bar_buttons')) echo add_extra_action_bar_buttons($query_result);
+	if ($query_result['revision'] == $rev_levels[$query_result['sheet_name']]) {
+		if ($security_level > 1) echo html_button_field('revise_' . $query_result['id'], TEXT_REVISE, 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action', 'list', 'psID')) . '&amp;list=' . $_REQUEST['list'] . '&amp;action=revise&amp;psID=' . $query_result['id'], 'SSL') . '\'"');
 	}
-	if ($security_level > 1) echo html_icon('actions/edit-find-replace.png', TEXT_EDIT, 'small', 'onclick="submitSeq(' . $query_result->fields['id'] . ', \'edit\')"') . chr(10);
-	if ($security_level > 3) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . TEXT_ARE_YOU_SURE_YOU_WANT_TO_DELETE_THIS_PRICE_SHEET . '\')) deleteItem(' . $query_result->fields['id'] . ')"') . chr(10);
+	if ($security_level > 1) echo html_icon('actions/edit-find-replace.png', TEXT_EDIT, 'small', 'onclick="submitSeq(' . $query_result['id'] . ', \'edit\')"') . chr(10);
+	if ($security_level > 3) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . TEXT_ARE_YOU_SURE_YOU_WANT_TO_DELETE_THIS_PRICE_SHEET . '\')) deleteItem(' . $query_result['id'] . ')"') . chr(10);
 ?>
 	</td>
   </tr>
