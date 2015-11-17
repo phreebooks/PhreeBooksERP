@@ -14,11 +14,11 @@
 // | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the   |
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
-//  Path: /modules/phreebooks/classes/journal_02.php
+//  Path: /modules/phreebooks/classes/journal_00.php
 //
-// General Journal (2)
+// Start Balans Journal (0)
 namespace phreebooks\classes\journal;
-class journal_02 extends \core\classes\journal {
+class journal_00 extends \core\classes\journal {
 	public $description 	= TEXT_BEGINNING_BALANCES;
 	public $id_field_name 	= TEXT_REFERENCE;
 

@@ -49,59 +49,87 @@ switch ($_REQUEST['action']) {
   case 'inv_hist_test':
   case 'inv_hist_fix':
 	\core\classes\user::validate_security($security_level, 3); // security check
-	$result = $admin->DataBase->query("select sku, qty from " . TABLE_INVENTORY_COGS_OWED);
-	$owed = array();
-	while (!$result->EOF) {
-	  $owed[$result->fields['sku']] += $result->fields['qty'];
-	  $result->MoveNext();
-	}
-	// fetch the inventory items that we track COGS and get qty on hand
-	$result = $admin->DataBase->query("select sku, quantity_on_hand from " . TABLE_INVENTORY . "
-	  where inventory_type in ('" . implode("', '", $cog_type) . "') order by sku");
-	// for each item, find the history remaining Qty's
 	$cnt = 0;
 	$repair = array();
+	$journal_repost = array();
+	$owed_array = array();
+	validate_security($security_level, 3); // security check
+	$result = $admin->DataBase->query("SELECT sku, qty FROM " . TABLE_INVENTORY_COGS_OWED);
 	while (!$result->EOF) {
-	  // check for quantity on hand not rounded properly
-	  $on_hand = round($result->fields['quantity_on_hand'], $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_precise']);
-	  if ($on_hand <> $result->fields['quantity_on_hand']) {
-	    $repair[$result->fields['sku']] = $on_hand;
-		if ($_REQUEST['action'] <> 'inv_hist_fix') {
-		  $messageStack->add(sprintf(INV_TOOLS_STOCK_ROUNDING_ERROR, $result->fields['sku'], $result->fields['quantity_on_hand'], $on_hand), 'error');
-		  $cnt++;
+		$owed_array[$result->fields['sku']] += $result->fields['qty'];
+		$cnt++;
+		$result->MoveNext();
+	}
+	$journal_repost = $owed_array;
+	$result = $admin->DataBase->query("SELECT b.sku, b.totals, c.remaining FROM (	SELECT sku, SUM(totals) AS totals FROM (
+		SELECT ref_id, sku, CASE WHEN f.gl_type = 'soo' THEN 0 WHEN f.gl_type = 'poo' THEN 0 WHEN g.journal_id = '7' THEN - f.qty WHEN g.journal_id = '12' THEN - f.qty WHEN g.journal_id = '19' THEN - f.qty ElSE f.qty END AS totals FROM journal_item AS f JOIN journal_main as g ON f.ref_id = g.id WHERE f.sku <> '') AS a GROUP BY a.sku ) AS b JOIN (
+		SELECT sku, SUM(totalremaining) AS remaining FROM (
+		SELECT sku, CASE WHEN ref_id = '0' THEN remaining - qty ELSE remaining END AS totalremaining FROM " . TABLE_INVENTORY_HISTORY . ") AS d GROUP BY d.sku) AS c ON b.sku = c.sku HAVING b.totals <> c.remaining");
+	// find inventory items where qty in journals are different from that in inventory history.
+	while (!$result->EOF) {
+		$remaining = $result->fields['remaining'];
+		$totals    = $result->fields['totals'];
+		$repair[$result->fields['sku']] += $totals;
+		$journal_repost[$result->fields['sku']] = $result->fields['sku'];
+		$messageStack->add(sprintf("The qty's for sku %s are not the same as the journal history would indicate. On stock are %s but should be %s", $result->fields['sku'], $remaining, $totals), 'error');
+		$cnt++;
+		$result->MoveNext();
+	}
+	// fetch the inventory items that we track COGS and get qty on hand
+	$result = $admin->DataBase->query("SELECT sku, quantity_on_hand FROM " . TABLE_INVENTORY . " WHERE inventory_type in ('" . implode("', '", $cog_type) . "') AND last_journal_date <> '0000-00-00 00:00:00' ORDER BY sku");
+	// for each item, find the history remaining Qty's
+	while (!$result->EOF) {
+		$on_hand = round($result->fields['quantity_on_hand'], $currencies->currencies[DEFAULT_CURRENCY]['decimal_precise']);
+		$inv_hist 	= $admin->DataBase->query("SELECT SUM(remaining) AS remaining FROM " . TABLE_INVENTORY_HISTORY . " WHERE sku = '{$result->fields['sku']}'");
+		$remaining  = round($inv_hist->fields['remaining'], $currencies->currencies[DEFAULT_CURRENCY]['decimal_precise']);
+		$owed 		= $owed_array[$result->fields['sku']] ? $owed_array[$result->fields['sku']] : 0;
+		// check with inventory history
+		if ($on_hand <> ($remaining - $owed)) {
+			$repair[$result->fields['sku']] = $remaining - $owed;
+			if ($_REQUEST['action'] <> 'inv_hist_fix') {
+				$messageStack->add(sprintf(INV_TOOLS_OUT_OF_BALANCE, $result->fields['sku'], $on_hand, ($remaining - $owed)), 'error');
+				$cnt++;
+			}
+		} else if ($on_hand <> $result->fields['quantity_on_hand']) { // check for quantity on hand not rounded properly
+			$repair[$result->fields['sku']] = $on_hand;
+			if ($_REQUEST['action'] <> 'inv_hist_fix') {
+				$messageStack->add(sprintf(INV_TOOLS_STOCK_ROUNDING_ERROR, $result->fields['sku'], $result->fields['quantity_on_hand'], $on_hand), 'error');
+				$cnt++;
+			}
 		}
-	  }
-	  // now check with inventory history
-	  $sql = "select sum(remaining) as remaining from " . TABLE_INVENTORY_HISTORY . "
-		where sku = '" . $result->fields['sku'] . "'";
-	    $inv_hist = $admin->DataBase->query($sql);
-		$cog_qty  = round($inv_hist->fields['remaining'], $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_precise']);
-		$cog_owed = $owed[$result->fields['sku']] ? $owed[$result->fields['sku']] : 0;
-		if ($on_hand <> ($cog_qty - $cog_owed)) {
-		  $repair[$result->fields['sku']] = $cog_qty - $cog_owed;
-		  if ($_REQUEST['action'] <> 'inv_hist_fix') {
-		    $messageStack->add(sprintf(INV_TOOLS_OUT_OF_BALANCE, $result->fields['sku'], $on_hand, ($cog_qty - $cog_owed)), 'error');
-		    $cnt++;
-		  }
-	  }
-	  $result->MoveNext();
+		$result->MoveNext();
 	}
 	// flag the differences
 	if ($_REQUEST['action'] == 'inv_hist_fix') { // start repair
-	  $precision = 1 / pow(10, $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_precise'] + 1);
-	  $result = $admin->DataBase->query("update " . TABLE_INVENTORY_HISTORY . " set remaining = 0 where remaining < " . $precision); // remove rounding errors
-	  if (sizeof($repair) > 0) {
-	    foreach ($repair as $key => $value) {
-		  $sql = "update " . TABLE_INVENTORY . " set quantity_on_hand = " . $value . "
-		  	where sku = '" . $key . "'";
-		  $admin->DataBase->query($sql);
-		  $messageStack->add(sprintf(INV_TOOLS_BALANCE_CORRECTED, $key, $value), 'success');
+		$precision = 1 / pow(10, $currencies->currencies[DEFAULT_CURRENCY]['decimal_precise'] + 1);
+		$result = $admin->DataBase->query("UPDATE " . TABLE_INVENTORY_HISTORY . " SET remaining = 0 WHERE remaining < " . $precision); // remove rounding errors
+		if (sizeof($repair) > 0) {
+			foreach ($repair as $key => $value) {
+				$admin->DataBase->query("UPDATE " . TABLE_INVENTORY . " SET quantity_on_hand = $value WHERE sku = '$key'");
+				$messageStack->add(sprintf(INV_TOOLS_BALANCE_CORRECTED, $key, $value), 'success');
+			}
 		}
-	  }
+		if (sizeof($journal_repost) > 0) {
+			foreach ($journal_repost as $key => $value) {
+				$result = $admin->DataBase->query("SELECT m.id FROM journal_main m join journal_item i ON m.id = i.ref_id WHERE i.sku = '{$value}' ORDER BY m.post_date, m.id");
+				$result = $admin->DataBase->transStart();
+				while (!$result->EOF) {
+					$gl_entry = new journal($result->fields['id']);
+					$gl_entry->remove_cogs_rows(); // they will be regenerated during the re-post
+					if (!$gl_entry->Post('edit', true)) {
+						$db->transRollback();
+						$messageStack->add('<br /><br />Failed Re-posting the journals, try a smaller range. The record that failed was # '.$gl_entry->id,'error');
+						break;
+					}
+					$result->MoveNext();
+				}
+				$result = $admin->DataBase->transCommit();
+			}
+		}
 	}
-	if ($cnt == 0) $messageStack->add(TEXT_YOUR_INVENTORY_BALANCES_ARE_OK, 'success');
+	if ($cnt == 0) $messageStack->add(INV_TOOLS_IN_BALANCE, 'success');
 	$default_tab_id = 'tools';
-    break;
+	break;
   case 'inv_on_order_fix':
 	\core\classes\user::validate_security($security_level, 3); // security check
     // fetch the inventory items that we track COGS and get qty on SO, PO
