@@ -47,12 +47,13 @@ switch ($_REQUEST['action']) {
     $$subject->btn_delete($id);
 	break;
   case 'inv_hist_test':
-  case 'inv_hist_fix':
+  case 'inv_hist_fix'://@todo check 4.0 names of methods
 	\core\classes\user::validate_security($security_level, 3); // security check
 	$cnt = 0;
 	$repair = array();
 	$journal_repost = array();
 	$owed_array = array();
+	$precision = 1 / pow(10, $currencies->currencies[DEFAULT_CURRENCY]['decimal_precise'] + 1);
 	validate_security($security_level, 3); // security check
 	$result = $admin->DataBase->query("SELECT sku, qty FROM " . TABLE_INVENTORY_COGS_OWED);
 	while (!$result->EOF) {
@@ -61,18 +62,23 @@ switch ($_REQUEST['action']) {
 	  	$result->MoveNext();
 	}
 	$journal_repost = $owed_array;
-	$result = $admin->DataBase->query("SELECT b.sku, b.totals, c.remaining FROM (	SELECT sku, SUM(totals) AS totals FROM ( 
-		SELECT ref_id, sku, CASE WHEN f.gl_type = 'soo' THEN 0 WHEN f.gl_type = 'poo' THEN 0 WHEN g.journal_id = '7' THEN - f.qty WHEN g.journal_id = '12' THEN - f.qty WHEN g.journal_id = '19' THEN - f.qty ElSE f.qty END AS totals FROM journal_item AS f JOIN journal_main as g ON f.ref_id = g.id WHERE f.sku <> '') AS a GROUP BY a.sku ) AS b JOIN ( 
-		SELECT sku, SUM(totalremaining) AS remaining FROM ( 
-		SELECT sku, CASE WHEN ref_id = '0' THEN remaining - qty ELSE remaining END AS totalremaining FROM " . TABLE_INVENTORY_HISTORY . ") AS d GROUP BY d.sku) AS c ON b.sku = c.sku HAVING b.totals <> c.remaining");
+	$result = $admin->DataBase->query("SELECT b.sku, b.totals, c.remaining, (c.Startbalance + b.totals) as balance FROM ( SELECT sku, SUM(totals) AS totals FROM ( 
+		SELECT ref_id, sku, CASE WHEN f.gl_type = 'soo' THEN 0 WHEN f.gl_type = 'poo' THEN 0 WHEN g.journal_id = '7' THEN - f.qty WHEN g.journal_id = '12' THEN - f.qty WHEN g.journal_id = '19' THEN - f.qty ElSE f.qty END AS totals FROM ".TABLE_JOURNAL_ITEM." AS f JOIN ".TABLE_JOURNAL_MAIN." as g ON f.ref_id = g.id WHERE f.sku <> '') AS a GROUP BY a.sku ) AS b JOIN ( 
+		SELECT sku, SUM(d.remaining) AS remaining , sum(d.Startbalance) AS Startbalance FROM ( 
+		SELECT sku, remaining, CASE WHEN ref_id = '0' THEN qty ELSE 0 END AS Startbalance FROM " . TABLE_INVENTORY_HISTORY . ") AS d GROUP BY d.sku ) AS c ON b.sku = c.sku WHERE (c.Startbalance + b.totals) != c.remaining");
 	// find inventory items where qty in journals are different from that in inventory history.
 	while (!$result->EOF) {
 		$remaining = $result->fields['remaining'];
 		$totals    = $result->fields['totals'];
-		$repair[$result->fields['sku']] += $totals;
-		$journal_repost[$result->fields['sku']] = $result->fields['sku'];
-		$messageStack->add(sprintf("The qty's for sku %s are not the same as the journal history would indicate. On stock are %s but should be %s", $result->fields['sku'], $remaining, $totals), 'error');
-		$cnt++;
+		if (($remaining - $totals) < $precision) break;
+		if (!isset($journal_repost[$result->fields['sku']])) {
+			$repair[$result->fields['sku']] += $totals;
+			$journal_repost[$result->fields['sku']] = $result->fields['sku'];
+			$messageStack->add(sprintf("The qty's for sku %s are not the same as the journal history would indicate. On stock are %s but should be %s", $result->fields['sku'], $remaining, $totals), 'error');
+//			print(sprintf("The qty's for sku %s are not the same as the journal history would indicate. On stock are %s but should be %s", $result->fields['sku'], $remaining, $totals));
+//			ob_flush();
+			$cnt++;
+		}
 		$result->MoveNext();
 	}
 	// fetch the inventory items that we track COGS and get qty on hand
@@ -101,7 +107,6 @@ switch ($_REQUEST['action']) {
 	}
 	// flag the differences
 	if ($_REQUEST['action'] == 'inv_hist_fix') { // start repair
-	  	$precision = 1 / pow(10, $currencies->currencies[DEFAULT_CURRENCY]['decimal_precise'] + 1);
 	  	$result = $admin->DataBase->query("UPDATE " . TABLE_INVENTORY_HISTORY . " SET remaining = 0 WHERE remaining < " . $precision); // remove rounding errors
 	  	if (sizeof($repair) > 0) {
 	    	foreach ($repair as $key => $value) {
