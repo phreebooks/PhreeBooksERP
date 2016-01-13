@@ -20472,4 +20472,28 @@
     <nl_nl>Tabel Tarief</nl_nl>
     <ru_ru>Local Delivery</ru_ru>
   </translation>
+  <translation id="TEXT_OPEN">
+    <en_us>open</en_us>
+  </translation>
+  <translation id="TEXT_PRINT">
+    <en_us>print</en_us>
+  </translation>
+  <translation id="TEXT_INVENTORY">
+  	<en_us>inventory</en_us>
+  </translation>
+  <translation id="TEXT_COMPANY">
+  	<en_us>company</en_us>
+  </translation>
+  <translation id="TEXT_LOG_OUT">
+  	<en_us>log out</en_us>
+  </translation>
+  <translation id="TEXT_IMPORT_OR_EXPORT">
+  	<en_us>import or export</en_us>
+  </translation>
+  <translation id="TEXT_COMPANY_BACKUP">
+  	<en_us>company backup</en_us>
+  </translation>
+  <translation id="TEXT_ROLES">
+  	<en_us>roles</en_us>
+  </translation>
 </translations>
