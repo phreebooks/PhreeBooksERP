@@ -34,6 +34,8 @@ try{
    	$admin->attach(new \core\classes\outputMobile);
    	$admin->attach(new \core\classes\outputPage);
    	$admin->setCinfo();
+   	$admin->send_header();
+   	ob_flush();
    	$messageStack->debug("\n checking if user is validated");
    	$admin->user->is_validated($admin);
    	if ($admin->cInfo->action) $admin->removeEventsAndAddNewEvent($admin->cInfo->action);

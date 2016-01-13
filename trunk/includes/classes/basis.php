@@ -143,7 +143,7 @@ class basis implements \SplSubject {
 	public function attach(\SplObserver $observer) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__);
 		\core\classes\messageStack::debug_log("attaching observer".get_class($observer));
-		$this->_observers[get_class($observer)] = $observer;
+		$this->_observers[get_class($observer)] = $observer;//@todo only add the one observer that will respond
 	}
 
 	public function detach(\SplObserver $observer) {
@@ -302,6 +302,11 @@ class basis implements \SplSubject {
 			return $this->configuration[ $_SESSION['company'] ][$configuration_key];
 		}
 		return null;
+	}
+	
+	function send_header(){
+		\core\classes\messageStack::debug_log( "calling ". get_class($this->observer)." for headers" );
+		$this->observer->send_header($this);
 	}
 
 	function __destruct() {
