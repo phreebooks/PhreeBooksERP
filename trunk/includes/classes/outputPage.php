@@ -31,10 +31,10 @@ class outputPage implements \SplObserver {
     function __construct() {
     	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
        	$this->include_template = DIR_FS_ADMIN .'modules/phreedom/pages/main/template_main.php';
-       	$this->js_files[] = "includes/jquery-1.6.2.min.js";
-  		$this->js_files[] = "includes/jquery-ui-1.8.16.custom.min.js";
+       	$this->js_files[] = "includes/jquery-2.2.0.min.js";
+  		$this->js_files[] = "includes/jquery-migrate-1.2.1.min.js";
   		$this->js_files[] = "includes/jquery.dataTables.min.js";
-  		$this->js_files[] = "https://www.google.com/jsapi";
+  		$this->js_files[] = "https://www.google.com/jsapi"; //@todo work around.
   		$this->js_files[] = "includes/jquery.easyui.min.js";
   		$this->js_files[] = "includes/common.js";
   		$this->include_php_js_files[] = DIR_FS_ADMIN . DIR_WS_THEMES . '/config.php';
