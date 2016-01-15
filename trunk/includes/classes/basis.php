@@ -27,7 +27,6 @@ class basis implements \SplSubject {
 	public  $template;
 	public  $observer	= 'core\classes\outputPage';
 	public  $custom_html		= false;
-    public  $include_header		= true;
     public  $include_footer		= true;
 	public  $DataBase 			= null;
 	public  $configuration		= array ();
@@ -307,6 +306,11 @@ class basis implements \SplSubject {
 	function send_header(){
 		\core\classes\messageStack::debug_log( "calling ". get_class($this->observer)." for headers" );
 		$this->observer->send_header($this);
+	}
+	
+	function include_menu(){
+		\core\classes\messageStack::debug_log( "calling ". get_class($this->observer)." for menus" );
+		$this->observer->send_menu($this);
 	}
 
 	function __destruct() {

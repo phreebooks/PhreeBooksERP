@@ -636,6 +636,7 @@ class admin extends \core\classes\admin {
 	 * this function will load the inventory page
 	 */
 	function LoadInventoryPage (\core\classes\basis $basis){
+		$basis->include_menu();
 		if ( isset($basis->cInfo->rowSeq)) $basis->cInfo->iID = $basis->cInfo->rowSeq;
 		if ($basis->cInfo->iID == '') throw new \core\classes\userException("iID variable isn't set can't execute method LoadInventoryPage ");
 		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_INVENTORY . " WHERE id = {$basis->cInfo->iID}");
@@ -653,11 +654,11 @@ class admin extends \core\classes\admin {
 	 */
   	function LoadInventoryPopUp (\core\classes\basis $basis){
   		$this->LoadInventoryPage ($basis);
-		$basis->include_header	= false;
 		$basis->include_footer	= false;
   	}
 
   	function LoadNewInventoryItem (\core\classes\basis $basis){
+  		$basis->include_menu();
   		$basis->security_level	= \core\classes\user::validate(SECURITY_ID_MAINTAIN_INVENTORY);
   		$basis->page_title		= sprintf(TEXT_NEW_ARGS, TEXT_INVENTORY_ITEM);
   		$basis->module			= 'inventory';
@@ -666,6 +667,7 @@ class admin extends \core\classes\admin {
   	}
 
   	function LoadInventoryManager (\core\classes\basis $basis){
+  		$basis->include_menu();
   		$basis->security_level	= \core\classes\user::validate(SECURITY_ID_MAINTAIN_INVENTORY);
   		//building filter criteria
   		$_SESSION['filter_field'] 	 = isset( $basis->cInfo['filter_field']) 	?  $basis->cInfo['filter_field'] : $_SESSION['filter_field'];
@@ -920,6 +922,7 @@ class admin extends \core\classes\admin {
   	}
 
   	function LoadInventoryAdjustments (\core\classes\basis $basis){
+  		$basis->include_menu();
   		$basis->security_level = \core\classes\user::validate(SECURITY_ID_ADJUST_INVENTORY);
   		$gl_array_list = gen_coa_pull_down(); // load gl accounts
   		$cal_adj = array(
@@ -1012,6 +1015,7 @@ class admin extends \core\classes\admin {
   	}
 
   	function LoadInventoryAssemblies (\core\classes\basis $basis){
+  		$basis->include_menu();
   		$basis->security_level = \core\classes\user::validate(SECURITY_ID_ASSEMBLE_INVENTORY);
   		$cal_assy = array(
 		  'name'      => 'datePost',

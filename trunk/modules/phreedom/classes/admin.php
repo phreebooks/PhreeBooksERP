@@ -398,6 +398,7 @@ class admin extends \core\classes\admin {
 	 * @throws \core\classes\userException
 	 */
 	function LoadMainPage (\core\classes\basis &$basis){
+		$basis->include_menu();
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$basis->cInfo->menu_id  =  isset($basis->cInfo->mID) ? $basis->cInfo->mID : 'index'; // default to index unless heading is passed
 		$sql = $basis->DataBase->prepare("SELECT dashboard_id, id, user_id, menu_id, column_id, row_id, params FROM ".TABLE_USERS_PROFILES." WHERE user_id = '{$_SESSION['admin_id']}' and menu_id = '{$basis->cInfo->menu_id}' ORDER BY column_id, row_id");
@@ -428,7 +429,6 @@ class admin extends \core\classes\admin {
 	 */
 	function LoadLogIn (\core\classes\basis &$basis){
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		$basis->include_header  = false;
 		$basis->include_footer  = false;
 		$basis->page_title		= TEXT_PHREEBOOKS_ERP;
 		$basis->module			= 'phreedom';
@@ -443,7 +443,6 @@ class admin extends \core\classes\admin {
 
 	function LoadLostPassword (\core\classes\basis $basis){
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		$basis->include_header  = false;
 		$basis->include_footer  = false;
 		$basis->page_title		= TEXT_PHREEBOOKS_ERP;
 		$basis->module			= 'phreedom';
@@ -452,10 +451,9 @@ class admin extends \core\classes\admin {
 	}
 
 	function LoadCrash (\core\classes\basis $basis){
-		global $messageStack;
+		$basis->include_menu();
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$messageStack->write_debug();
-		$basis->include_header  = false;
 		$basis->include_footer  = false;
 		$basis->module			= 'phreedom';
 		$basis->page			= 'main';
@@ -470,6 +468,7 @@ class admin extends \core\classes\admin {
 	 */
 	function LoadUsersPage (\core\classes\basis &$basis){ //@todo
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		$basis->include_menu();
 		$basis->cInfo->menu_id  =  isset($basis->cInfo->mID) ? $basis->cInfo->mID : 'index'; // default to index unless heading is passed
 		$basis->page_title 	= TEXT_USERS;
 		$basis->module		= 'phreedom';
