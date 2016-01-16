@@ -8906,6 +8906,7 @@ class TCPDF {
 	protected function sendOutputData($data, $length) {
 		if (!isset($_SERVER['HTTP_ACCEPT_ENCODING']) OR empty($_SERVER['HTTP_ACCEPT_ENCODING'])) {
 			// the content length may vary if the server is using compression
+			header_remove();
 			header('Content-Length: '.$length);
 		}
 		echo $data;
@@ -9006,10 +9007,8 @@ class TCPDF {
 				}
 				if (php_sapi_name() != 'cli') {
 					// send output to a browser
+					header_remove();
 					header('Content-Type: application/pdf');
-					if (headers_sent()) {
-						$this->Error('Some data has already been output to browser, can\'t send PDF file');
-					}
 					header('Cache-Control: private, must-revalidate, post-check=0, pre-check=0, max-age=1');
 					//header('Cache-Control: public, must-revalidate, max-age=0'); // HTTP/1.1
 					header('Pragma: public');
@@ -9024,13 +9023,8 @@ class TCPDF {
 			}
 			case 'D': {
 				// download PDF as file
-				if (ob_get_contents()) {
-					$this->Error('Some data has already been output, can\'t send PDF file');
-				}
+				header_remove();
 				header('Content-Description: File Transfer');
-				if (headers_sent()) {
-					$this->Error('Some data has already been output to browser, can\'t send PDF file');
-				}
 				header('Cache-Control: private, must-revalidate, post-check=0, pre-check=0, max-age=1');
 				//header('Cache-Control: public, must-revalidate, max-age=0'); // HTTP/1.1
 				header('Pragma: public');
@@ -9067,6 +9061,7 @@ class TCPDF {
 				}
 				if ($dest == 'FI') {
 					// send headers to browser
+					header_remove();
 					header('Content-Type: application/pdf');
 					header('Cache-Control: private, must-revalidate, post-check=0, pre-check=0, max-age=1');
 					//header('Cache-Control: public, must-revalidate, max-age=0'); // HTTP/1.1
@@ -9077,13 +9072,8 @@ class TCPDF {
 					$this->sendOutputData(file_get_contents($name), filesize($name));
 				} elseif ($dest == 'FD') {
 					// send headers to browser
-					if (ob_get_contents()) {
-						$this->Error('Some data has already been output, can\'t send PDF file');
-					}
+					header_remove();
 					header('Content-Description: File Transfer');
-					if (headers_sent()) {
-						$this->Error('Some data has already been output to browser, can\'t send PDF file');
-					}
 					header('Cache-Control: private, must-revalidate, post-check=0, pre-check=0, max-age=1');
 					header('Pragma: public');
 					header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past

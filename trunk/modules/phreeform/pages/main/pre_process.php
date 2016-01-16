@@ -85,6 +85,7 @@ switch ($_REQUEST['action']) {
 	// download file and exit script
 	if (($contents = @file_get_contents($dest_dir . $backup_filename)) === false)  throw new \core\classes\userException(sprintf(ERROR_READ_FILE, $backup_filename));
 	unlink($dest_dir . $backup_filename); // delete zip file in the temp dir
+	header_remove();
 	header("Content-type: application/zip");
 	header("Content-disposition: attachment; filename=" . $backup_filename . "; size=" . strlen($contents));
 	header('Pragma: cache');

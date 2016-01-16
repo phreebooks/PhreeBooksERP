@@ -5834,7 +5834,7 @@
     <es_cr>Lo sentimos. Hubo un error del sistema mientras se procesaba su tarjeta. Su informació está segura. Por favor</es_cr>
     <nl_nl>Het spijt ons. Er was een systeem fout tijdens het verwerken van uw kaart. Uw informatie is veilig. Neem contact op met eigenaar van de winkel voor een alternatieve betaling.</nl_nl>
     <pt_br>We are sorry. There was a system error while processing your card. Your information is safe. Please notify the Store Owner to arrange alternate payment options.</pt_br>
-  </translation> 
+  </translation>
   <translation id="MODULE_PAYMENT_LINKPOINT_API_TEXT_INVALID_CAPTURE_AMOUNT">
     <bg_bg>Error: You requested a capture but need to enter an amount.</bg_bg>
     <en_us>Error: You requested a capture but need to enter an amount.</en_us>
@@ -20479,21 +20479,756 @@
     <en_us>print</en_us>
   </translation>
   <translation id="TEXT_INVENTORY">
-  	<en_us>inventory</en_us>
+    <en_us>inventory</en_us>
   </translation>
   <translation id="TEXT_COMPANY">
-  	<en_us>company</en_us>
+    <en_us>company</en_us>
   </translation>
   <translation id="TEXT_LOG_OUT">
-  	<en_us>log out</en_us>
+    <en_us>log out</en_us>
   </translation>
   <translation id="TEXT_IMPORT_OR_EXPORT">
-  	<en_us>import or export</en_us>
+    <en_us>import or export</en_us>
   </translation>
   <translation id="TEXT_COMPANY_BACKUP">
-  	<en_us>company backup</en_us>
+    <en_us>company backup</en_us>
   </translation>
   <translation id="TEXT_ROLES">
-  	<en_us>roles</en_us>
+    <en_us>roles</en_us>
   </translation>
-<translation id="TEXT_OPEN"><en_us>open</en_us></translation><translation id="TEXT_PRINT"><en_us>print</en_us></translation><translation id="TEXT_INVENTORY"><en_us>inventory</en_us></translation><translation id="TEXT_COMPANY"><en_us>company</en_us></translation><translation id="TEXT_LOG_OUT"><en_us>log out</en_us></translation><translation id="TEXT_IMPORT_OR_EXPORT"><en_us>import or export</en_us></translation><translation id="TEXT_COMPANY_BACKUP"><en_us>company backup</en_us></translation><translation id="TEXT_ROLES"><en_us>roles</en_us></translation><translation id="TEXT_AUDIT"><en_us>audit</en_us></translation><translation id="TEXT_MANAGER_ARGS"><en_us>manager args</en_us></translation><translation id="TEXT_PHREECRM"><en_us>phreecrm</en_us></translation><translation id="TEXT_PROJECT"><en_us>project</en_us></translation><translation id="TEXT_CAPA_ACTION"><en_us>capa action</en_us></translation><translation id="TEXT_CORRECTIVE_ACTION_PREVENTATIVE_ACTION"><en_us>corrective action preventative action</en_us></translation><translation id="TEXT_DOCUMENT_CONTROL"><en_us>document control</en_us></translation><translation id="TEXT_DOCUMENT_CONTROLE"><en_us>document controle</en_us></translation><translation id="TEXT_IMPORT_BANK_STATEMENT"><en_us>import bank statement</en_us></translation><translation id="TEXT_CUSTOMER_PRICE_SHEETS"><en_us>customer price sheets</en_us></translation><translation id="TEXT_VENDOR_PRICE_SHEETS"><en_us>vendor price sheets</en_us></translation><translation id="TEXT_PAYMENT_MODULE"><en_us>payment module</en_us></translation><translation id="TEXT_PHREEBOOKS"><en_us>phreebooks</en_us></translation><translation id="TEXT_PHREEFORM"><en_us>phreeform</en_us></translation><translation id="TEXT_PHREEHELP"><en_us>phreehelp</en_us></translation><translation id="TEXT_PHREEPOS"><en_us>phreepos</en_us></translation><translation id="TEXT_RMA"><en_us>rma</en_us></translation><translation id="MODULE_SHIPPING_ENDICIA_TEXT_TITLE"><en_us>module shipping endicia title</en_us></translation><translation id="MODULE_SHIPPING_ENDICIA_TEXT_DESCRIPTION"><en_us>module shipping endicia description</en_us></translation><translation id="TEXT_0010_DOLLARS"><en_us>0010 dollars</en_us></translation><translation id="TEXT_0025_DOLLARS"><en_us>0025 dollars</en_us></translation><translation id="TEXT_0100_DOLLARS"><en_us>0100 dollars</en_us></translation><translation id="TEXT_0250_DOLLARS"><en_us>0250 dollars</en_us></translation><translation id="TEXT_0500_DOLLARS"><en_us>0500 dollars</en_us></translation><translation id="TEXT_1000_DOLLARS"><en_us>1000 dollars</en_us></translation><translation id="TEXT_PRODUCTION_OR_TEST_MODE_USED_FOR_TESTING_SHIPPING_LABELS"><en_us>production or test mode used for testing shipping labels</en_us></translation><translation id="TEXT_TRANSLATOR"><en_us>translator</en_us></translation><translation id="TEXT_WORK_ORDER"><en_us>work order</en_us></translation><translation id="TEXT_THIS_MODULE_BUILDS_THE_XML_INFORMATION_FILES"><en_us>this module builds the xml information files</en_us></translation><translation id="TEXT_XML_BUILDER"><en_us>xml builder</en_us></translation><translation id="TEXT_ZENCART"><en_us>zencart</en_us></translation><translation id="TEXT_OPEN"><en_us>open</en_us></translation><translation id="TEXT_PRINT"><en_us>print</en_us></translation><translation id="TEXT_INVENTORY"><en_us>inventory</en_us></translation><translation id="TEXT_COMPANY"><en_us>company</en_us></translation><translation id="TEXT_LOG_OUT"><en_us>log out</en_us></translation><translation id="TEXT_IMPORT_OR_EXPORT"><en_us>import or export</en_us></translation><translation id="TEXT_COMPANY_BACKUP"><en_us>company backup</en_us></translation><translation id="TEXT_ROLES"><en_us>roles</en_us></translation><translation id="TEXT_AUDIT"><en_us>audit</en_us></translation><translation id="TEXT_MANAGER_ARGS"><en_us>manager args</en_us></translation><translation id="TEXT_PHREECRM"><en_us>phreecrm</en_us></translation><translation id="TEXT_PROJECT"><en_us>project</en_us></translation><translation id="TEXT_CAPA_ACTION"><en_us>capa action</en_us></translation><translation id="TEXT_CORRECTIVE_ACTION_PREVENTATIVE_ACTION"><en_us>corrective action preventative action</en_us></translation><translation id="TEXT_DOCUMENT_CONTROL"><en_us>document control</en_us></translation><translation id="TEXT_DOCUMENT_CONTROLE"><en_us>document controle</en_us></translation><translation id="TEXT_IMPORT_BANK_STATEMENT"><en_us>import bank statement</en_us></translation><translation id="TEXT_CUSTOMER_PRICE_SHEETS"><en_us>customer price sheets</en_us></translation><translation id="TEXT_VENDOR_PRICE_SHEETS"><en_us>vendor price sheets</en_us></translation><translation id="TEXT_PAYMENT_MODULE"><en_us>payment module</en_us></translation><translation id="TEXT_PHREEBOOKS"><en_us>phreebooks</en_us></translation><translation id="TEXT_PHREEFORM"><en_us>phreeform</en_us></translation><translation id="TEXT_PHREEHELP"><en_us>phreehelp</en_us></translation><translation id="TEXT_PHREEPOS"><en_us>phreepos</en_us></translation><translation id="TEXT_RMA"><en_us>rma</en_us></translation><translation id="MODULE_SHIPPING_ENDICIA_TEXT_TITLE"><en_us>module shipping endicia title</en_us></translation><translation id="MODULE_SHIPPING_ENDICIA_TEXT_DESCRIPTION"><en_us>module shipping endicia description</en_us></translation><translation id="TEXT_0010_DOLLARS"><en_us>0010 dollars</en_us></translation><translation id="TEXT_0025_DOLLARS"><en_us>0025 dollars</en_us></translation><translation id="TEXT_0100_DOLLARS"><en_us>0100 dollars</en_us></translation><translation id="TEXT_0250_DOLLARS"><en_us>0250 dollars</en_us></translation><translation id="TEXT_0500_DOLLARS"><en_us>0500 dollars</en_us></translation><translation id="TEXT_1000_DOLLARS"><en_us>1000 dollars</en_us></translation><translation id="TEXT_PRODUCTION_OR_TEST_MODE_USED_FOR_TESTING_SHIPPING_LABELS"><en_us>production or test mode used for testing shipping labels</en_us></translation><translation id="TEXT_TRANSLATOR"><en_us>translator</en_us></translation><translation id="TEXT_WORK_ORDER"><en_us>work order</en_us></translation><translation id="TEXT_THIS_MODULE_BUILDS_THE_XML_INFORMATION_FILES"><en_us>this module builds the xml information files</en_us></translation><translation id="TEXT_XML_BUILDER"><en_us>xml builder</en_us></translation><translation id="TEXT_ZENCART"><en_us>zencart</en_us></translation></translations>
+  <translation id="TEXT_OPEN">
+    <en_us>open</en_us>
+  </translation>
+  <translation id="TEXT_PRINT">
+    <en_us>print</en_us>
+  </translation>
+  <translation id="TEXT_INVENTORY">
+    <en_us>inventory</en_us>
+  </translation>
+  <translation id="TEXT_COMPANY">
+    <en_us>company</en_us>
+  </translation>
+  <translation id="TEXT_LOG_OUT">
+    <en_us>log out</en_us>
+  </translation>
+  <translation id="TEXT_IMPORT_OR_EXPORT">
+    <en_us>import or export</en_us>
+  </translation>
+  <translation id="TEXT_COMPANY_BACKUP">
+    <en_us>company backup</en_us>
+  </translation>
+  <translation id="TEXT_ROLES">
+    <en_us>roles</en_us>
+  </translation>
+  <translation id="TEXT_AUDIT">
+    <en_us>audit</en_us>
+  </translation>
+  <translation id="TEXT_MANAGER_ARGS">
+    <en_us>manager args</en_us>
+  </translation>
+  <translation id="TEXT_PHREECRM">
+    <en_us>phreecrm</en_us>
+  </translation>
+  <translation id="TEXT_PROJECT">
+    <en_us>project</en_us>
+  </translation>
+  <translation id="TEXT_CAPA_ACTION">
+    <en_us>capa action</en_us>
+  </translation>
+  <translation id="TEXT_CORRECTIVE_ACTION_PREVENTATIVE_ACTION">
+    <en_us>corrective action preventative action</en_us>
+  </translation>
+  <translation id="TEXT_DOCUMENT_CONTROL">
+    <en_us>document control</en_us>
+  </translation>
+  <translation id="TEXT_DOCUMENT_CONTROLE">
+    <en_us>document controle</en_us>
+  </translation>
+  <translation id="TEXT_IMPORT_BANK_STATEMENT">
+    <en_us>import bank statement</en_us>
+  </translation>
+  <translation id="TEXT_CUSTOMER_PRICE_SHEETS">
+    <en_us>customer price sheets</en_us>
+  </translation>
+  <translation id="TEXT_VENDOR_PRICE_SHEETS">
+    <en_us>vendor price sheets</en_us>
+  </translation>
+  <translation id="TEXT_PAYMENT_MODULE">
+    <en_us>payment module</en_us>
+  </translation>
+  <translation id="TEXT_PHREEBOOKS">
+    <en_us>phreebooks</en_us>
+  </translation>
+  <translation id="TEXT_PHREEFORM">
+    <en_us>phreeform</en_us>
+  </translation>
+  <translation id="TEXT_PHREEHELP">
+    <en_us>phreehelp</en_us>
+  </translation>
+  <translation id="TEXT_PHREEPOS">
+    <en_us>phreepos</en_us>
+  </translation>
+  <translation id="TEXT_RMA">
+    <en_us>rma</en_us>
+  </translation>
+  <translation id="MODULE_SHIPPING_ENDICIA_TEXT_TITLE">
+    <en_us>module shipping endicia title</en_us>
+  </translation>
+  <translation id="MODULE_SHIPPING_ENDICIA_TEXT_DESCRIPTION">
+    <en_us>module shipping endicia description</en_us>
+  </translation>
+  <translation id="TEXT_0010_DOLLARS">
+    <en_us>0010 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0025_DOLLARS">
+    <en_us>0025 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0100_DOLLARS">
+    <en_us>0100 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0250_DOLLARS">
+    <en_us>0250 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0500_DOLLARS">
+    <en_us>0500 dollars</en_us>
+  </translation>
+  <translation id="TEXT_1000_DOLLARS">
+    <en_us>1000 dollars</en_us>
+  </translation>
+  <translation id="TEXT_PRODUCTION_OR_TEST_MODE_USED_FOR_TESTING_SHIPPING_LABELS">
+    <en_us>production or test mode used for testing shipping labels</en_us>
+  </translation>
+  <translation id="TEXT_TRANSLATOR">
+    <en_us>translator</en_us>
+  </translation>
+  <translation id="TEXT_WORK_ORDER">
+    <en_us>work order</en_us>
+  </translation>
+  <translation id="TEXT_THIS_MODULE_BUILDS_THE_XML_INFORMATION_FILES">
+    <en_us>this module builds the xml information files</en_us>
+  </translation>
+  <translation id="TEXT_XML_BUILDER">
+    <en_us>xml builder</en_us>
+  </translation>
+  <translation id="TEXT_ZENCART">
+    <en_us>zencart</en_us>
+  </translation>
+  <translation id="TEXT_OPEN">
+    <en_us>open</en_us>
+  </translation>
+  <translation id="TEXT_PRINT">
+    <en_us>print</en_us>
+  </translation>
+  <translation id="TEXT_INVENTORY">
+    <en_us>inventory</en_us>
+  </translation>
+  <translation id="TEXT_COMPANY">
+    <en_us>company</en_us>
+  </translation>
+  <translation id="TEXT_LOG_OUT">
+    <en_us>log out</en_us>
+  </translation>
+  <translation id="TEXT_IMPORT_OR_EXPORT">
+    <en_us>import or export</en_us>
+  </translation>
+  <translation id="TEXT_COMPANY_BACKUP">
+    <en_us>company backup</en_us>
+  </translation>
+  <translation id="TEXT_ROLES">
+    <en_us>roles</en_us>
+  </translation>
+  <translation id="TEXT_AUDIT">
+    <en_us>audit</en_us>
+  </translation>
+  <translation id="TEXT_MANAGER_ARGS">
+    <en_us>manager args</en_us>
+  </translation>
+  <translation id="TEXT_PHREECRM">
+    <en_us>phreecrm</en_us>
+  </translation>
+  <translation id="TEXT_PROJECT">
+    <en_us>project</en_us>
+  </translation>
+  <translation id="TEXT_CAPA_ACTION">
+    <en_us>capa action</en_us>
+  </translation>
+  <translation id="TEXT_CORRECTIVE_ACTION_PREVENTATIVE_ACTION">
+    <en_us>corrective action preventative action</en_us>
+  </translation>
+  <translation id="TEXT_DOCUMENT_CONTROL">
+    <en_us>document control</en_us>
+  </translation>
+  <translation id="TEXT_DOCUMENT_CONTROLE">
+    <en_us>document controle</en_us>
+  </translation>
+  <translation id="TEXT_IMPORT_BANK_STATEMENT">
+    <en_us>import bank statement</en_us>
+  </translation>
+  <translation id="TEXT_CUSTOMER_PRICE_SHEETS">
+    <en_us>customer price sheets</en_us>
+  </translation>
+  <translation id="TEXT_VENDOR_PRICE_SHEETS">
+    <en_us>vendor price sheets</en_us>
+  </translation>
+  <translation id="TEXT_PAYMENT_MODULE">
+    <en_us>payment module</en_us>
+  </translation>
+  <translation id="TEXT_PHREEBOOKS">
+    <en_us>phreebooks</en_us>
+  </translation>
+  <translation id="TEXT_PHREEFORM">
+    <en_us>phreeform</en_us>
+  </translation>
+  <translation id="TEXT_PHREEHELP">
+    <en_us>phreehelp</en_us>
+  </translation>
+  <translation id="TEXT_PHREEPOS">
+    <en_us>phreepos</en_us>
+  </translation>
+  <translation id="TEXT_RMA">
+    <en_us>rma</en_us>
+  </translation>
+  <translation id="MODULE_SHIPPING_ENDICIA_TEXT_TITLE">
+    <en_us>module shipping endicia title</en_us>
+  </translation>
+  <translation id="MODULE_SHIPPING_ENDICIA_TEXT_DESCRIPTION">
+    <en_us>module shipping endicia description</en_us>
+  </translation>
+  <translation id="TEXT_0010_DOLLARS">
+    <en_us>0010 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0025_DOLLARS">
+    <en_us>0025 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0100_DOLLARS">
+    <en_us>0100 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0250_DOLLARS">
+    <en_us>0250 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0500_DOLLARS">
+    <en_us>0500 dollars</en_us>
+  </translation>
+  <translation id="TEXT_1000_DOLLARS">
+    <en_us>1000 dollars</en_us>
+  </translation>
+  <translation id="TEXT_PRODUCTION_OR_TEST_MODE_USED_FOR_TESTING_SHIPPING_LABELS">
+    <en_us>production or test mode used for testing shipping labels</en_us>
+  </translation>
+  <translation id="TEXT_TRANSLATOR">
+    <en_us>translator</en_us>
+  </translation>
+  <translation id="TEXT_WORK_ORDER">
+    <en_us>work order</en_us>
+  </translation>
+  <translation id="TEXT_THIS_MODULE_BUILDS_THE_XML_INFORMATION_FILES">
+    <en_us>this module builds the xml information files</en_us>
+  </translation>
+  <translation id="TEXT_XML_BUILDER">
+    <en_us>xml builder</en_us>
+  </translation>
+  <translation id="TEXT_ZENCART">
+    <en_us>zencart</en_us>
+  </translation>
+  <translation id="TEXT_LOGIN">
+    <en_us>login</en_us>
+  </translation>
+  <translation id="TEXT_COPYRIGHT">
+    <en_us>copyright</en_us>
+  </translation>
+  <translation id="TEXT_OPEN">
+    <en_us>open</en_us>
+  </translation>
+  <translation id="TEXT_PRINT">
+    <en_us>print</en_us>
+  </translation>
+  <translation id="TEXT_INVENTORY">
+    <en_us>inventory</en_us>
+  </translation>
+  <translation id="TEXT_COMPANY">
+    <en_us>company</en_us>
+  </translation>
+  <translation id="TEXT_LOG_OUT">
+    <en_us>log out</en_us>
+  </translation>
+  <translation id="TEXT_IMPORT_OR_EXPORT">
+    <en_us>import or export</en_us>
+  </translation>
+  <translation id="TEXT_COMPANY_BACKUP">
+    <en_us>company backup</en_us>
+  </translation>
+  <translation id="TEXT_ROLES">
+    <en_us>roles</en_us>
+  </translation>
+  <translation id="TEXT_AUDIT">
+    <en_us>audit</en_us>
+  </translation>
+  <translation id="TEXT_MANAGER_ARGS">
+    <en_us>manager args</en_us>
+  </translation>
+  <translation id="TEXT_PHREECRM">
+    <en_us>phreecrm</en_us>
+  </translation>
+  <translation id="TEXT_PROJECT">
+    <en_us>project</en_us>
+  </translation>
+  <translation id="TEXT_CAPA_ACTION">
+    <en_us>capa action</en_us>
+  </translation>
+  <translation id="TEXT_CORRECTIVE_ACTION_PREVENTATIVE_ACTION">
+    <en_us>corrective action preventative action</en_us>
+  </translation>
+  <translation id="TEXT_DOCUMENT_CONTROL">
+    <en_us>document control</en_us>
+  </translation>
+  <translation id="TEXT_DOCUMENT_CONTROLE">
+    <en_us>document controle</en_us>
+  </translation>
+  <translation id="TEXT_IMPORT_BANK_STATEMENT">
+    <en_us>import bank statement</en_us>
+  </translation>
+  <translation id="TEXT_CUSTOMER_PRICE_SHEETS">
+    <en_us>customer price sheets</en_us>
+  </translation>
+  <translation id="TEXT_VENDOR_PRICE_SHEETS">
+    <en_us>vendor price sheets</en_us>
+  </translation>
+  <translation id="TEXT_PAYMENT_MODULE">
+    <en_us>payment module</en_us>
+  </translation>
+  <translation id="TEXT_PHREEBOOKS">
+    <en_us>phreebooks</en_us>
+  </translation>
+  <translation id="TEXT_PHREEFORM">
+    <en_us>phreeform</en_us>
+  </translation>
+  <translation id="TEXT_PHREEHELP">
+    <en_us>phreehelp</en_us>
+  </translation>
+  <translation id="TEXT_PHREEPOS">
+    <en_us>phreepos</en_us>
+  </translation>
+  <translation id="TEXT_RMA">
+    <en_us>rma</en_us>
+  </translation>
+  <translation id="MODULE_SHIPPING_ENDICIA_TEXT_TITLE">
+    <en_us>module shipping endicia title</en_us>
+  </translation>
+  <translation id="MODULE_SHIPPING_ENDICIA_TEXT_DESCRIPTION">
+    <en_us>module shipping endicia description</en_us>
+  </translation>
+  <translation id="TEXT_0010_DOLLARS">
+    <en_us>0010 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0025_DOLLARS">
+    <en_us>0025 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0100_DOLLARS">
+    <en_us>0100 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0250_DOLLARS">
+    <en_us>0250 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0500_DOLLARS">
+    <en_us>0500 dollars</en_us>
+  </translation>
+  <translation id="TEXT_1000_DOLLARS">
+    <en_us>1000 dollars</en_us>
+  </translation>
+  <translation id="TEXT_PRODUCTION_OR_TEST_MODE_USED_FOR_TESTING_SHIPPING_LABELS">
+    <en_us>production or test mode used for testing shipping labels</en_us>
+  </translation>
+  <translation id="TEXT_TRANSLATOR">
+    <en_us>translator</en_us>
+  </translation>
+  <translation id="TEXT_WORK_ORDER">
+    <en_us>work order</en_us>
+  </translation>
+  <translation id="TEXT_THIS_MODULE_BUILDS_THE_XML_INFORMATION_FILES">
+    <en_us>this module builds the xml information files</en_us>
+  </translation>
+  <translation id="TEXT_XML_BUILDER">
+    <en_us>xml builder</en_us>
+  </translation>
+  <translation id="TEXT_ZENCART">
+    <en_us>zencart</en_us>
+  </translation>
+  <translation id="TEXT_SELECT_ARGS">
+    <en_us>select args</en_us>
+  </translation>
+  <translation id="TEXT_LOGIN">
+    <en_us>login</en_us>
+  </translation>
+  <translation id="TEXT_COPYRIGHT">
+    <en_us>copyright</en_us>
+  </translation>
+  <translation id="TEXT_OPEN">
+    <en_us>open</en_us>
+  </translation>
+  <translation id="TEXT_PRINT">
+    <en_us>print</en_us>
+  </translation>
+  <translation id="TEXT_INVENTORY">
+    <en_us>inventory</en_us>
+  </translation>
+  <translation id="TEXT_COMPANY">
+    <en_us>company</en_us>
+  </translation>
+  <translation id="TEXT_LOG_OUT">
+    <en_us>log out</en_us>
+  </translation>
+  <translation id="TEXT_IMPORT_OR_EXPORT">
+    <en_us>import or export</en_us>
+  </translation>
+  <translation id="TEXT_COMPANY_BACKUP">
+    <en_us>company backup</en_us>
+  </translation>
+  <translation id="TEXT_ROLES">
+    <en_us>roles</en_us>
+  </translation>
+  <translation id="TEXT_AUDIT">
+    <en_us>audit</en_us>
+  </translation>
+  <translation id="TEXT_MANAGER_ARGS">
+    <en_us>manager args</en_us>
+  </translation>
+  <translation id="TEXT_PHREECRM">
+    <en_us>phreecrm</en_us>
+  </translation>
+  <translation id="TEXT_PROJECT">
+    <en_us>project</en_us>
+  </translation>
+  <translation id="TEXT_CAPA_ACTION">
+    <en_us>capa action</en_us>
+  </translation>
+  <translation id="TEXT_CORRECTIVE_ACTION_PREVENTATIVE_ACTION">
+    <en_us>corrective action preventative action</en_us>
+  </translation>
+  <translation id="TEXT_DOCUMENT_CONTROL">
+    <en_us>document control</en_us>
+  </translation>
+  <translation id="TEXT_DOCUMENT_CONTROLE">
+    <en_us>document controle</en_us>
+  </translation>
+  <translation id="TEXT_IMPORT_BANK_STATEMENT">
+    <en_us>import bank statement</en_us>
+  </translation>
+  <translation id="TEXT_CUSTOMER_PRICE_SHEETS">
+    <en_us>customer price sheets</en_us>
+  </translation>
+  <translation id="TEXT_VENDOR_PRICE_SHEETS">
+    <en_us>vendor price sheets</en_us>
+  </translation>
+  <translation id="TEXT_PAYMENT_MODULE">
+    <en_us>payment module</en_us>
+  </translation>
+  <translation id="TEXT_PHREEBOOKS">
+    <en_us>phreebooks</en_us>
+  </translation>
+  <translation id="TEXT_PHREEFORM">
+    <en_us>phreeform</en_us>
+  </translation>
+  <translation id="TEXT_PHREEHELP">
+    <en_us>phreehelp</en_us>
+  </translation>
+  <translation id="TEXT_PHREEPOS">
+    <en_us>phreepos</en_us>
+  </translation>
+  <translation id="TEXT_RMA">
+    <en_us>rma</en_us>
+  </translation>
+  <translation id="MODULE_SHIPPING_ENDICIA_TEXT_TITLE">
+    <en_us>module shipping endicia title</en_us>
+  </translation>
+  <translation id="MODULE_SHIPPING_ENDICIA_TEXT_DESCRIPTION">
+    <en_us>module shipping endicia description</en_us>
+  </translation>
+  <translation id="TEXT_0010_DOLLARS">
+    <en_us>0010 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0025_DOLLARS">
+    <en_us>0025 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0100_DOLLARS">
+    <en_us>0100 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0250_DOLLARS">
+    <en_us>0250 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0500_DOLLARS">
+    <en_us>0500 dollars</en_us>
+  </translation>
+  <translation id="TEXT_1000_DOLLARS">
+    <en_us>1000 dollars</en_us>
+  </translation>
+  <translation id="TEXT_PRODUCTION_OR_TEST_MODE_USED_FOR_TESTING_SHIPPING_LABELS">
+    <en_us>production or test mode used for testing shipping labels</en_us>
+  </translation>
+  <translation id="TEXT_TRANSLATOR">
+    <en_us>translator</en_us>
+  </translation>
+  <translation id="TEXT_WORK_ORDER">
+    <en_us>work order</en_us>
+  </translation>
+  <translation id="TEXT_THIS_MODULE_BUILDS_THE_XML_INFORMATION_FILES">
+    <en_us>this module builds the xml information files</en_us>
+  </translation>
+  <translation id="TEXT_XML_BUILDER">
+    <en_us>xml builder</en_us>
+  </translation>
+  <translation id="TEXT_ZENCART">
+    <en_us>zencart</en_us>
+  </translation>
+  <translation id="TEXT_SELECT_ARGS">
+    <en_us>select args</en_us>
+  </translation>
+  <translation id="TEXT_LOGIN">
+    <en_us>login</en_us>
+  </translation>
+  <translation id="TEXT_COPYRIGHT">
+    <en_us>copyright</en_us>
+  </translation>
+  <translation id="TEXT_OPEN">
+    <en_us>open</en_us>
+  </translation>
+  <translation id="TEXT_PRINT">
+    <en_us>print</en_us>
+  </translation>
+  <translation id="TEXT_INVENTORY">
+    <en_us>inventory</en_us>
+  </translation>
+  <translation id="TEXT_COMPANY">
+    <en_us>company</en_us>
+  </translation>
+  <translation id="TEXT_LOG_OUT">
+    <en_us>log out</en_us>
+  </translation>
+  <translation id="TEXT_IMPORT_OR_EXPORT">
+    <en_us>import or export</en_us>
+  </translation>
+  <translation id="TEXT_COMPANY_BACKUP">
+    <en_us>company backup</en_us>
+  </translation>
+  <translation id="TEXT_ROLES">
+    <en_us>roles</en_us>
+  </translation>
+  <translation id="TEXT_AUDIT">
+    <en_us>audit</en_us>
+  </translation>
+  <translation id="TEXT_MANAGER_ARGS">
+    <en_us>manager args</en_us>
+  </translation>
+  <translation id="TEXT_PHREECRM">
+    <en_us>phreecrm</en_us>
+  </translation>
+  <translation id="TEXT_PROJECT">
+    <en_us>project</en_us>
+  </translation>
+  <translation id="TEXT_CAPA_ACTION">
+    <en_us>capa action</en_us>
+  </translation>
+  <translation id="TEXT_CORRECTIVE_ACTION_PREVENTATIVE_ACTION">
+    <en_us>corrective action preventative action</en_us>
+  </translation>
+  <translation id="TEXT_DOCUMENT_CONTROL">
+    <en_us>document control</en_us>
+  </translation>
+  <translation id="TEXT_DOCUMENT_CONTROLE">
+    <en_us>document controle</en_us>
+  </translation>
+  <translation id="TEXT_IMPORT_BANK_STATEMENT">
+    <en_us>import bank statement</en_us>
+  </translation>
+  <translation id="TEXT_CUSTOMER_PRICE_SHEETS">
+    <en_us>customer price sheets</en_us>
+  </translation>
+  <translation id="TEXT_VENDOR_PRICE_SHEETS">
+    <en_us>vendor price sheets</en_us>
+  </translation>
+  <translation id="TEXT_PAYMENT_MODULE">
+    <en_us>payment module</en_us>
+  </translation>
+  <translation id="TEXT_PHREEBOOKS">
+    <en_us>phreebooks</en_us>
+  </translation>
+  <translation id="TEXT_PHREEFORM">
+    <en_us>phreeform</en_us>
+  </translation>
+  <translation id="TEXT_PHREEHELP">
+    <en_us>phreehelp</en_us>
+  </translation>
+  <translation id="TEXT_PHREEPOS">
+    <en_us>phreepos</en_us>
+  </translation>
+  <translation id="TEXT_RMA">
+    <en_us>rma</en_us>
+  </translation>
+  <translation id="MODULE_SHIPPING_ENDICIA_TEXT_TITLE">
+    <en_us>module shipping endicia title</en_us>
+  </translation>
+  <translation id="MODULE_SHIPPING_ENDICIA_TEXT_DESCRIPTION">
+    <en_us>module shipping endicia description</en_us>
+  </translation>
+  <translation id="TEXT_0010_DOLLARS">
+    <en_us>0010 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0025_DOLLARS">
+    <en_us>0025 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0100_DOLLARS">
+    <en_us>0100 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0250_DOLLARS">
+    <en_us>0250 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0500_DOLLARS">
+    <en_us>0500 dollars</en_us>
+  </translation>
+  <translation id="TEXT_1000_DOLLARS">
+    <en_us>1000 dollars</en_us>
+  </translation>
+  <translation id="TEXT_PRODUCTION_OR_TEST_MODE_USED_FOR_TESTING_SHIPPING_LABELS">
+    <en_us>production or test mode used for testing shipping labels</en_us>
+  </translation>
+  <translation id="TEXT_TRANSLATOR">
+    <en_us>translator</en_us>
+  </translation>
+  <translation id="TEXT_WORK_ORDER">
+    <en_us>work order</en_us>
+  </translation>
+  <translation id="TEXT_THIS_MODULE_BUILDS_THE_XML_INFORMATION_FILES">
+    <en_us>this module builds the xml information files</en_us>
+  </translation>
+  <translation id="TEXT_XML_BUILDER">
+    <en_us>xml builder</en_us>
+  </translation>
+  <translation id="TEXT_ZENCART">
+    <en_us>zencart</en_us>
+  </translation>
+  <translation id="TEXT_OPEN">
+    <en_us>open</en_us>
+  </translation>
+  <translation id="TEXT_PRINT">
+    <en_us>print</en_us>
+  </translation>
+  <translation id="TEXT_INVENTORY">
+    <en_us>inventory</en_us>
+  </translation>
+  <translation id="TEXT_COMPANY">
+    <en_us>company</en_us>
+  </translation>
+  <translation id="TEXT_LOG_OUT">
+    <en_us>log out</en_us>
+  </translation>
+  <translation id="TEXT_IMPORT_OR_EXPORT">
+    <en_us>import or export</en_us>
+  </translation>
+  <translation id="TEXT_COMPANY_BACKUP">
+    <en_us>company backup</en_us>
+  </translation>
+  <translation id="TEXT_ROLES">
+    <en_us>roles</en_us>
+  </translation>
+  <translation id="TEXT_AUDIT">
+    <en_us>audit</en_us>
+  </translation>
+  <translation id="TEXT_MANAGER_ARGS">
+    <en_us>manager args</en_us>
+  </translation>
+  <translation id="TEXT_PHREECRM">
+    <en_us>phreecrm</en_us>
+  </translation>
+  <translation id="TEXT_PROJECT">
+    <en_us>project</en_us>
+  </translation>
+  <translation id="TEXT_CAPA_ACTION">
+    <en_us>capa action</en_us>
+  </translation>
+  <translation id="TEXT_CORRECTIVE_ACTION_PREVENTATIVE_ACTION">
+    <en_us>corrective action preventative action</en_us>
+  </translation>
+  <translation id="TEXT_DOCUMENT_CONTROL">
+    <en_us>document control</en_us>
+  </translation>
+  <translation id="TEXT_DOCUMENT_CONTROLE">
+    <en_us>document controle</en_us>
+  </translation>
+  <translation id="TEXT_IMPORT_BANK_STATEMENT">
+    <en_us>import bank statement</en_us>
+  </translation>
+  <translation id="TEXT_CUSTOMER_PRICE_SHEETS">
+    <en_us>customer price sheets</en_us>
+  </translation>
+  <translation id="TEXT_VENDOR_PRICE_SHEETS">
+    <en_us>vendor price sheets</en_us>
+  </translation>
+  <translation id="TEXT_PAYMENT_MODULE">
+    <en_us>payment module</en_us>
+  </translation>
+  <translation id="TEXT_PHREEBOOKS">
+    <en_us>phreebooks</en_us>
+  </translation>
+  <translation id="TEXT_PHREEFORM">
+    <en_us>phreeform</en_us>
+  </translation>
+  <translation id="TEXT_PHREEHELP">
+    <en_us>phreehelp</en_us>
+  </translation>
+  <translation id="TEXT_PHREEPOS">
+    <en_us>phreepos</en_us>
+  </translation>
+  <translation id="TEXT_RMA">
+    <en_us>rma</en_us>
+  </translation>
+  <translation id="MODULE_SHIPPING_ENDICIA_TEXT_TITLE">
+    <en_us>module shipping endicia title</en_us>
+  </translation>
+  <translation id="MODULE_SHIPPING_ENDICIA_TEXT_DESCRIPTION">
+    <en_us>module shipping endicia description</en_us>
+  </translation>
+  <translation id="TEXT_0010_DOLLARS">
+    <en_us>0010 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0025_DOLLARS">
+    <en_us>0025 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0100_DOLLARS">
+    <en_us>0100 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0250_DOLLARS">
+    <en_us>0250 dollars</en_us>
+  </translation>
+  <translation id="TEXT_0500_DOLLARS">
+    <en_us>0500 dollars</en_us>
+  </translation>
+  <translation id="TEXT_1000_DOLLARS">
+    <en_us>1000 dollars</en_us>
+  </translation>
+  <translation id="TEXT_PRODUCTION_OR_TEST_MODE_USED_FOR_TESTING_SHIPPING_LABELS">
+    <en_us>production or test mode used for testing shipping labels</en_us>
+  </translation>
+  <translation id="TEXT_TRANSLATOR">
+    <en_us>translator</en_us>
+  </translation>
+  <translation id="TEXT_WORK_ORDER">
+    <en_us>work order</en_us>
+  </translation>
+  <translation id="TEXT_THIS_MODULE_BUILDS_THE_XML_INFORMATION_FILES">
+    <en_us>this module builds the xml information files</en_us>
+  </translation>
+  <translation id="TEXT_XML_BUILDER">
+    <en_us>xml builder</en_us>
+  </translation>
+  <translation id="TEXT_ZENCART">
+    <en_us>zencart</en_us>
+  </translation>
+  <translation id="TEXT_SELECT_ARGS">
+    <en_us>select args</en_us>
+  </translation>
+  <translation id="TEXT_LOGIN">
+    <en_us>login</en_us>
+  </translation>
+  <translation id="TEXT_COPYRIGHT">
+    <en_us>copyright</en_us>
+  </translation>
+</translations>

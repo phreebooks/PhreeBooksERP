@@ -101,9 +101,10 @@ class messageStack {
 	}
 
 	function write_debug() {
-		$filename = DIR_FS_MY_FILES . "/development.log";
+		$filename = DIR_FS_MY_FILES."/development.log";
         if (!$handle = @fopen($filename, 'rb'))             throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
         // send the right headers
+        header_remove();
         header("Content-Type: application/force-download");
         header("Content-Type: application/octet-stream");
         header("Content-Type: application/download");

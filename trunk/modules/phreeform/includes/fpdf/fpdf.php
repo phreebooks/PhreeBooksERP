@@ -1009,11 +1009,10 @@ function Output($name='', $dest='')
 	{
 		case 'I':
 			//Send to standard output
-			if(ob_get_length())
-				$this->Error('Some data has already been output, can\'t send PDF file');
 			if(php_sapi_name()!='cli')
 			{
 				//We send to a browser
+				header_remove();
 				header('Content-Type: application/pdf');
 				if(headers_sent())
 					$this->Error('Some data has already been output, can\'t send PDF file');
@@ -1027,8 +1026,7 @@ function Output($name='', $dest='')
 			break;
 		case 'D':
 			//Download file
-			if(ob_get_length())
-				$this->Error('Some data has already been output, can\'t send PDF file');
+			header_remove();
 			header('Content-Type: application/x-download');
 			if(headers_sent())
 				$this->Error('Some data has already been output, can\'t send PDF file');
@@ -1725,6 +1723,7 @@ function _enddoc()
 //Handle special IE contype request
 if(isset($_SERVER['HTTP_USER_AGENT']) && $_SERVER['HTTP_USER_AGENT']=='contype')
 {
+	header_remove();
 	header('Content-Type: application/pdf');
 	exit;
 }

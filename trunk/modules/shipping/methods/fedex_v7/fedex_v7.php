@@ -1226,6 +1226,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 	}
 	// output results
 	gen_add_audit_log('FedEx Reconciliation Report', 'Records: ' . $count);
+	header_remove();
 	header("Content-type: plain/txt");
 	header("Content-disposition: attachment; filename=FedEx-" . $inv_num . ".txt; size=" . strlen($output));
 	header('Pragma: cache');

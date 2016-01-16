@@ -82,7 +82,7 @@ define ('VERSION','0.31b');
 define ('DATA_CHUNK_LENGTH',16384);  // How many chars are read per time
 define ('MAX_QUERY_LINES',300);      // How many lines may be considered to be one query (except text lines)
 define ('TESTMODE',false);           // Set to true to process the file without actually accessing the database
-
+header_remove();
 header("Expires: Mon, 1 Dec 2003 01:00:00 GMT");
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Cache-Control: no-store, no-cache, must-revalidate");
@@ -966,6 +966,7 @@ function create_xml_response()
 				 $pct_this, $pct_done, $pct_togo, $pct_tota,$pct_bar;
 
 	//echo "Content-type: application/xml; charset='iso-8859-1'";
+	header_remove();
 	header('Content-Type: application/xml');
 	header('Cache-Control: no-cache');
 	/*

@@ -6,7 +6,7 @@ namespace core\classes;
      * Some ideas: passwording pages, adding page specific css/js files, etc
      */
 
-class outputMobile implements \SplObserver {
+class outputMobile {
 
 	// header elements
     private $css_files			= array();

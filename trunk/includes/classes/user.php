@@ -24,6 +24,7 @@ class user {
 
 	function __construct(){
 		$this->language = new \core\classes\language();
+		$this->load_companies();
 	}
 
 	final static public function get($variable){
@@ -43,26 +44,17 @@ class user {
 			$this->LoadLogIn();
 		}
 		if (isset($_SESSION['admin_id']) && $_SESSION['admin_id'] <> '') return true;
-		if ($_REQUEST['action'] == "ValidateUser") {
-			$_SESSION['company'] = $_REQUEST['company'];
-			return true;
-		}
+		if ($_REQUEST['action'] == "ValidateUser") return true;
 		//allow the user to continu to with the login action.
 		if (!in_array($_REQUEST['action'], array('ValidateUser', 'pw_lost_sub', 'pw_lost_req'))){
-			$this->load_companies();
-			self::load_languages();
-			self::get_company();
 			if($_REQUEST['action'] == 'pw_lost_req') {
-				$admin->fireEvent('LoadLostPassword');
+				$admin->fireEvent('LoadLostPassword'); //@todo move to this file
 			}else{
 				$this->LoadLogIn();
 			}
 			return false;
 		}
-		$this->load_companies();
-		self::load_languages();
-		self::get_company();
-		throw new \core\classes\userException(TEXT_SORRY_YOU_ARE_LOGGED_OUT, "LoadLogIn");
+		$this->LoadLogIn();
 	}
 
 	/**
@@ -80,28 +72,6 @@ class user {
 			}
 		}
 		return $_SESSION['company'];
-	}
-
-	/**
-	 * returns the current language and sets it in the Session variable.
-	 */
-
-	final static public function get_language(){
-		if (isset($_SESSION['language'])) return $_SESSION['language'];
-		if( isset($_REQUEST['language'])) {
-			$_SESSION['language'] = $_REQUEST['language'];
-		} elseif ( !isset($_SESSION['language'])) {
-			if(defined('DEFAULT_LANGUAGE')) {
-				$_SESSION['language'] = DEFAULT_LANGUAGE;
-			}else if( isset($_COOKIE['pb_language'])){
-				$_SESSION['language'] = $_COOKIE['pb_language'];
-			}else if( isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) && strlen($_SERVER['HTTP_ACCEPT_LANGUAGE']) == 5){
-				$_SESSION['language'] = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
-			}else{
-				$_SESSION['language'] = $this->language;
-			}
-		}
-		return $_SESSION['language'];
 	}
 
 	/**
@@ -183,101 +153,81 @@ class user {
 			}
 		}
 	}
-
-	final static function load_languages() {//@todo rewrite for other language files and loading of core language
-		$contents = @scandir('modules/phreedom/language/');
-		if($contents === false) throw new \core\classes\userException("couldn't read or find directory modules/phreedom/language/");
-		foreach ($contents as $lang) {
-			if (!isset($_SESSION['language'])) $_SESSION['language'] = $lang;
-			if ($lang <> '.' && $lang <> '..' && is_dir('modules/phreedom/language/'. $lang) && file_exists("modules/phreedom/language/$lang/language.php")) {
-		  		if ($config_file = file("modules/phreedom/language/$lang/language.php")) {
-		  			foreach ($config_file as $line) {
-		  				if (strstr($line,'\'LANGUAGE\'') !== false) {
-			    			$start_pos     = strpos($line, ',') + 2;
-			    			$end_pos       = strpos($line, ')') + 1;
-				    		$language_name = substr($line, $start_pos, $end_pos - $start_pos);
-				    		break;
-			  			}
-		  			}
-		  			$_SESSION['languages'][$lang] = array('id' => $lang, 'text' => $language_name);
-		  		}
-			}
-		}
-	}
 	
 	final function LoadLogIn(){
 		?> <script type='text/javascript'>
 				document.title = '<?php echo TEXT_PHREEBOOKS_ERP; ?>';
-				$(window).load(function() {
-					$( \"#admin_name\" ).select();
-				});
+				window.onload = function(){
+						input = document.getElementById('admin_name');
+						input.focus();
+						input.select();
+				}
 		 </script>
 		<?php 
-		 echo html_form('login', FILENAME_DEFAULT, 'action=ValidateUser', 'post', 'onsubmit="return submit_wait();"').chr(10);
-?>
-<div style="margin-left:25%;margin-right:25%;margin-top:50px;">
-	  <table class="ui-widget">
-        <thead class="ui-widget-header">
-        <tr height="70">
-          <th style="text-align:right"><img src="modules/phreedom/images/phreesoft_logo.png" alt="Phreedom Business Toolkit" height="50" /></th>
-        </tr>
-        </thead>
-        <tbody class="ui-widget-content">
-        <tr>
-          <td>
-		    <table>
-			  <tr>
-			    <td colspan="2"><?php if(is_object($messageStack)) echo $messageStack->output(); ?></td>
-			  </tr>
-              <tr>
-                <td width="35%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_USERNAME; ?>:</td>
-                <td width="65%"><?php echo html_input_field('admin_name', (isset($basis->cInfo->admin_name) ? $basis->cInfo->admin_name : ''), '', true); ?></td>
-              </tr>
-              <tr>
-                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_PASSWORD; ?>:</td>
-                <td><?php echo html_password_field('admin_pass', '', true); ?></td>
-              </tr>
-<?php if (sizeof($this->companies) != 1) { ?>
-              <tr>
-                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo sprintf(TEXT_SELECT_ARGS, TEXT_COMPANY); ?></td>
-                <td><?php echo html_pull_down_menu('company', $this->companies, $this->get_company(), '', true); ?></td>
-              </tr>
-<?php } else{
-		echo html_hidden_field('company',  $this->get_company()) . chr(10);
-}?>
-<?php if (sizeof($this->language->languages) != 1) { ?>
-              <tr>
-                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_SELECT_LANGUAGE; ?>: </td>
-                <td><?php echo html_pull_down_menu('language', $this->language->languages, $this->language->language_code, '', true); ?></td>
-              </tr>
-<?php } else{
-			echo html_hidden_field('language', $this->language->language_code) . chr(10);
-}?>
-              <tr>
-                <td colspan="2" align="right">&nbsp;
-				  <div id="wait_msg" style="display:none;"><?php echo TEXT_FORM_PLEASE_WAIT; ?></div>
-				  <?php echo html_submit_field('submit', TEXT_LOGIN); ?>
-				</td>
-              </tr>
-              <tr>
-                <td colspan="2"><?php echo '<a href="' . html_href_link(FILENAME_DEFAULT, 'action=LoadLostPassword', 'SSL') . '">' . TEXT_RESEND_PASSWORD . '</a>'; ?></td>
-              </tr>
-              <tr>
-                <td colspan="2">
-<?php echo TEXT_COPYRIGHT; ?> (c) 2008-2015 <a href="http://www.PhreeSoft.com">PhreeSoft</a><br />
-<?php echo sprintf(TEXT_COPYRIGHT_NOTICE, '<a href="' . DIR_WS_MODULES . 'phreedom/language/en_us/manual/ch01-Introduction/license.html">' . TEXT_HERE . '</a>'); ?>
-				</td>
-              </tr>
-            </table>
-	      </td>
-        </tr>
-        </tbody>
-      </table>
-</div>
-</form>
-<?php 
-die();
-		
+		 echo html_form('login', FILENAME_DEFAULT, 'action=ValidateUser', 'post').chr(10);
+		?>
+		<div style="margin-left:25%;margin-right:25%;margin-top:50px;">
+			  <table class="ui-widget">
+		        <thead class="ui-widget-header">
+		        <tr height="70">
+		          <th style="text-align:right"><img src="modules/phreedom/images/phreesoft_logo.png" alt="Phreedom Business Toolkit" height="50" /></th>
+		        </tr>
+		        </thead>
+		        <tbody class="ui-widget-content">
+		        <tr>
+		          <td>
+				    <table>
+					  <tr>
+					    <td colspan="2"><?php if(is_object($messageStack)) echo $messageStack->output(); ?></td>
+					  </tr>
+		              <tr>
+		                <td width="35%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_USERNAME; ?>:</td>
+		                <td width="65%"><?php echo html_input_field('admin_name', (isset($basis->cInfo->admin_name) ? $basis->cInfo->admin_name : ''), '', true); ?></td>
+		              </tr>
+		              <tr>
+		                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_PASSWORD; ?>:</td>
+		                <td><?php echo html_password_field('admin_pass', '', true); ?></td>
+		              </tr>
+		<?php if (sizeof($this->companies) > 1) { ?>
+		              <tr>
+		                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo sprintf(TEXT_SELECT_ARGS, TEXT_COMPANY); ?></td>
+		                <td><?php echo html_pull_down_menu('company', $this->companies, $this->get_company(), '', true); ?></td>
+		              </tr>
+		<?php } else{
+				echo html_hidden_field('company',  $this->get_company()) . chr(10);
+		}?>
+		<?php if (sizeof($this->language->languages) > 1) { ?>
+		              <tr>
+		                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_SELECT_LANGUAGE; ?>: </td>
+		                <td><?php echo html_pull_down_menu('language', $this->language->languages, $this->language->language_code, '', true); ?></td>
+		              </tr>
+		<?php } else{
+					echo html_hidden_field('language', $this->language->language_code) . chr(10);
+		}?>
+		              <tr>
+		                <td colspan="2" align="right">&nbsp;
+						  <div id="wait_msg" style="display:none;"><?php echo TEXT_FORM_PLEASE_WAIT; ?></div>
+						  <?php echo html_submit_field('submit', TEXT_LOGIN); ?>
+						</td>
+		              </tr>
+		              <tr>
+		                <td colspan="2"><?php echo '<a href="' . html_href_link(FILENAME_DEFAULT, 'action=LoadLostPassword', 'SSL') . '">' . TEXT_RESEND_PASSWORD . '</a>'; ?></td>
+		              </tr>
+		              <tr>
+		                <td colspan="2">
+		<?php echo TEXT_COPYRIGHT; ?> (c) 2008-2015 <a href="http://www.PhreeSoft.com">PhreeSoft</a><br />
+		<?php echo sprintf(TEXT_COPYRIGHT_NOTICE, '<a href="' . DIR_WS_MODULES . 'phreedom/language/en_us/manual/ch01-Introduction/license.html">' . TEXT_HERE . '</a>'); ?>
+						</td>
+		              </tr>
+		            </table>
+			      </td>
+		        </tr>
+		        </tbody>
+		      </table>
+		</div>
+		</form>
+		<?php 
+		die();	
 	}
 	
 	function __destruct(){

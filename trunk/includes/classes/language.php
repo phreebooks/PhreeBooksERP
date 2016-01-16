@@ -255,6 +255,7 @@ class language {
 		$lang_path = (DIR_FS_INCLUDES."language/translations.xml");
 		if (!file_exists($lang_path)) throw new \core\classes\userException("can't find your language file {$lang_path} ");
 		$doc = new \DOMDocument('1.0', 'utf-8');
+		$doc->preserveWhiteSpace = false;
 		$doc->formatOutput = true;
 		$doc->load($lang_path);
 		if ($doc->getElementById($constant) != null) break;
@@ -262,10 +263,10 @@ class language {
 		$first_element = $doc->createElement('translation');
 		$first_element->setAttribute('id', $constant);
 		$second = $root->appendChild($first_element);
-		$string = strtolower(str_replace(array('TEXT_', '_'), array('', ' '),$constant));
+		$string = strtolower(str_replace(array('TEXT_', '_', 'ARGS'), array('', ' ', '%'),$constant));
 		$temp = $doc->createElement('en_us', $string);
 		$second->appendChild($temp);
-		$doc->formatOutput = true;
+		$doc->normalizeDocument();
 		$doc->save($lang_path);
 		define($constant, $string);
 	}

@@ -135,7 +135,6 @@ class admin extends \core\classes\admin {
 	function after_ValidateUser(\core\classes\basis &$basis) { //@done
 	  	global $admin, $messageStack;
 		require_once(DIR_FS_MODULES . 'zencart/functions/zencart.php');
-		require_once(DIR_FS_MODULES . 'zencart/language/'.$_SESSION['language'].'/language.php');
 		require_once(DIR_FS_MODULES . 'inventory/defaults.php');
 		require_once(DIR_FS_MODULES . 'inventory/functions/inventory.php');
 		if(defined('MODULE_ZENCART_LAST_UPDATE') && MODULE_ZENCART_LAST_UPDATE <> '') $where = " and ( last_update >'" . MODULE_ZENCART_LAST_UPDATE . "' or last_journal_date >'" . MODULE_ZENCART_LAST_UPDATE . "')";

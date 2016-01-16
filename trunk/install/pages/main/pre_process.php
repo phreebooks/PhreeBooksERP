@@ -59,6 +59,7 @@ switch ($_REQUEST['action']) {
 	default:
 	case 'welcome':
 		if (isset($_POST['license_consent']) && $_POST['license_consent'] == 'disagree') {
+		header_remove();
 		header('location: index.php');
 	}
 	$include_template = 'template_welcome.php';
@@ -67,6 +68,7 @@ switch ($_REQUEST['action']) {
 	case 'inspect':
 		// check for decline
 		if ($_POST['license'] == 'disagree') {
+			header_remove();
 			header('location: http://www.google.com');
 		}
 		// start the checks for minimum requirements

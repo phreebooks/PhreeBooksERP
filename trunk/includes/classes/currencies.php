@@ -37,8 +37,7 @@ class currencies {
 	/**
 	 * loads currencies from db.
 	 */
-  	function load(){
-  		global $admin;
+  	function load(\core\classes\basis &$admin){
   		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
   		$sql = $admin->DataBase->prepare("SELECT * FROM " .$this->db_table);
   		$sql->execute();

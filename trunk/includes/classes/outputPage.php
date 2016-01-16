@@ -6,7 +6,7 @@ namespace core\classes;
      * Some ideas: passwording pages, adding page specific css/js files, etc
      */
 
-class outputPage implements \SplObserver {
+class outputPage  {
 
 	// header elements
     private $css_files				= array();
@@ -19,7 +19,6 @@ class outputPage implements \SplObserver {
     // page elements
     public  $title 					= '';
     public  $custom_html			= false;
-    public  $include_header			= true;
     public  $include_footer			= true;
     public  $include_template		= '';
     private $ModuleAndPage			= "phreedom/main";
@@ -38,21 +37,24 @@ class outputPage implements \SplObserver {
   		$this->js_files[] = "includes/jquery.easyui.min.js";
   		$this->js_files[] = "includes/common.js";
   		$this->include_php_js_files[] = DIR_FS_ADMIN . DIR_WS_THEMES . '/config.php';
-  		$this->css_files[] = DIR_WS_THEMES.'css/'.MY_COLORS.'/stylesheet.css';
-  		$this->css_files[] = DIR_WS_THEMES.'css/'.MY_COLORS.'/jquery_datatables.css';
-  		$this->css_files[] = DIR_WS_THEMES.'css/'.MY_COLORS.'/jquery-ui.css';
-  		$this->css_files[] = DIR_WS_THEMES.'css/'.MY_COLORS.'/easyui.css';
-  		$this->css_files[] = DIR_WS_THEMES.'css/icon.css';
     }
     
     function send_header($basis){
+    	//header_remove();
+    	header("Content-type: text/html; charset=".CHARSET);
+    	if ($force_reset_cache) { header("Cache-Control: no-cache, must-revalidate"); header("Expires: ".date('D, j M \2\0\0\0 G:i:s T')); }
     	echo "<!DOCTYPE html>";
     	echo "<html".HTML_PARAMS.">";
     	echo "<head>";
     	echo "<meta http-equiv='Content-Type' content='text/html; charset=".CHARSET."' />";
-    	echo "<title>{$basis->page_title}</title>";
+    	echo "<title>".TEXT_PHREEBOOKS_ERP."</title>";
+    	echo "<link rel='stylesheet' type='text/css' href='".DIR_WS_THEMES.'css/'.MY_COLORS.'/stylesheet.css'."' />". chr(13);
+    	echo "<link rel='stylesheet' type='text/css' href='".DIR_WS_THEMES.'css/'.MY_COLORS.'/jquery_datatables.css'."' />". chr(13);
+    	echo "<link rel='stylesheet' type='text/css' href='".DIR_WS_THEMES.'css/'.MY_COLORS.'/jquery-ui.css'."' />". chr(13);
+    	echo "<link rel='stylesheet' type='text/css' href='".DIR_WS_THEMES.'css/'.MY_COLORS.'/easyui.css'."' />". chr(13);
+    	echo "<link rel='stylesheet' type='text/css' href='".DIR_WS_THEMES.'css/icon.css'."' />". chr(13);
     	echo "</head>";
-    	if($basis->include_header)$this->send_menu($basis);
+    	ob_flush();
     }
     
     function send_menu($basis){
@@ -72,7 +74,25 @@ class outputPage implements \SplObserver {
     		case 'left': echo '<div style="float:left;margin-left:auto;margin-right:auto;">'.chr(10); break;
     		case 'top':
     		default:     echo '<div>'.chr(10); break;
-    	}
+    	}?>
+    	<link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/ddsmoothmenu.css'; ?>" />
+    	<script type="text/javascript" src="themes/default/ddsmoothmenu.js">
+    	/***********************************************
+    	 * Smooth Navigational Menu- (c) Dynamic Drive DHTML code library (www.dynamicdrive.com)
+    	* This notice MUST stay intact for legal use
+    	* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+    	***********************************************/
+    	</script>
+    	<script type="text/javascript">
+    	ddsmoothmenu.init({
+    		mainmenuid: "smoothmenu",
+    		orientation: '<?php echo MY_MENU=='left'?'v':'h';?>',
+    		classname: '<?php echo MY_MENU=='left'?'ddsmoothmenu-v':'ddsmoothmenu';?>',
+    		contentsource: "markup"
+    	})
+    	</script>
+    	<?php 
+    	ob_flush();
     }
     
     function sortByOrder($a, $b) {
@@ -143,13 +163,6 @@ class outputPage implements \SplObserver {
        	}
        	if($this->js)  echo "  <script type='text/javascrip'>$this->js</script>" . chr(10);
        	if($basis->js) echo "  <script type='text/javascrip'>$basis->js</script>" . chr(10);
-    }
-
-    public function print_css_includes($basis){
-    	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-      	foreach($this->css_files as $file){
-       		if($file) echo "<link rel='stylesheet' type='text/css' href='$file' />". chr(13);
-       	}
     }
 
     public function print_menu($basis){

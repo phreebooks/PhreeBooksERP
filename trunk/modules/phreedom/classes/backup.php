@@ -151,8 +151,9 @@ class backup {
 		if (!@fclose($handle)) 										throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 	$source_file));
 		if (!$save_source) unlink($source_file);
 		if (strlen($contents) == 0) throw new \core\classes\userException(TEXT_THE_DOWNLOAD_FILE_DOES_NOT_CONTAIN_ANY_DATA);
+		header_remove();
 		header("Content-type: " . $this->backup_mime);
-		header("Content-disposition: attachment; filename=" . $filename . "; size=" . strlen($contents));
+		header("Content-disposition: attachment; filename={$filename}; size=" . strlen($contents));
 		header('Pragma: cache');
 		header('Cache-Control: public, must-revalidate, max-age=0');
 		header('Connection: close');

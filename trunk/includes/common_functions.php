@@ -37,6 +37,7 @@
 		ob_clean();
 		ob_end_flush();
 	  	session_write_close();
+	  	header_remove();
 	    while (strstr($url, '&&'))    $url = str_replace('&&', '&', $url);
 	    // header locates should not have the &amp; in the address it breaks things
 	    while (strstr($url, '&amp;')) $url = str_replace('&amp;', '&', $url);
@@ -1339,6 +1340,7 @@ function charConv($string, $in, $out) {
 // Section 8. Conversion Functions
 /**************************************************************************************************************/
 function createXmlHeader() {
+	header_remove();
 	header("Content-Type: text/xml");
 	if (!defined("CHARSET")) define("CHARSET", "UTF-8");
 	$str = "<?xml version=\"1.0\" encoding=\"" . CHARSET . "\" standalone=\"yes\"?>\n";
@@ -1596,6 +1598,7 @@ function PhreebooksExceptionHandler($exception) {
   	$text  = date('Y-m-d H:i:s') . " User: " . $_SESSION['admin_id'] . " Company: " . $_SESSION['company'] ;
     $text .= " Uncaught Exception: '" . $exception->getMessage() . "' line " . $exception->getLine() . " in file " . $exception->getFile();
     error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    header_remove();
     header('HTTP/1.1 500 Internal Server Error');
     echo " Uncaught Exception<br/>'" . $exception->getMessage() . "'<br/>line: " . $exception->getLine() . "<br/>file: " . $exception->getFile();
     echo "<br>trace:<br/>". $exception->getTraceAsString();

@@ -346,7 +346,8 @@ class admin extends \core\classes\admin {
 	function ValidateUser (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		// Errors will happen here if there was a problem logging in, logout and restart
-		if ($basis->DataBase == null) throw new \core\classes\userException("Database isn't created");
+		\core\classes\messageStack::debug_log("database type ".get_class($basis->DataBase));
+		if (!$basis->DataBase instanceof \PDO) throw new \core\classes\userException("Database isn't created");
 		$sql = $basis->DataBase->prepare("SELECT admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security
 		  FROM " . TABLE_USERS . " WHERE admin_name = '{$basis->cInfo->admin_name}'");
 		$sql->execute();
@@ -361,8 +362,8 @@ class admin extends \core\classes\admin {
 		$_SESSION['admin_security'] = \core\classes\user::parse_permissions($result['admin_security']);
 		// set some cookies for the next visit to remember the company, language, and theme
 		$cookie_exp = 2592000 + time(); // one month
-		setcookie('pb_company' , \core\classes\user::get_company(),  $cookie_exp);
-		setcookie('pb_language', \core\classes\user::get_language(), $cookie_exp);
+		setcookie('pb_company' , $basis->user->get_company(),  $cookie_exp);
+		setcookie('pb_language', $basis->user->language->language_code, $cookie_exp);
 		// load init functions for each module and execute
 		foreach ($basis->classes as $key => $module_class) $module_class->should_update($basis);
 		if (defined('TABLE_CONTACTS')) {
@@ -398,7 +399,7 @@ class admin extends \core\classes\admin {
 	 * @throws \core\classes\userException
 	 */
 	function LoadMainPage (\core\classes\basis &$basis){
-		$basis->include_menu();
+		$basis->observer->send_menu($basis);
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$basis->cInfo->menu_id  =  isset($basis->cInfo->mID) ? $basis->cInfo->mID : 'index'; // default to index unless heading is passed
 		$sql = $basis->DataBase->prepare("SELECT dashboard_id, id, user_id, menu_id, column_id, row_id, params FROM ".TABLE_USERS_PROFILES." WHERE user_id = '{$_SESSION['admin_id']}' and menu_id = '{$basis->cInfo->menu_id}' ORDER BY column_id, row_id");
@@ -420,7 +421,7 @@ class admin extends \core\classes\admin {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		gen_add_audit_log(TEXT_USER_LOGOFF . " -> id: {$_SESSION['admin_id']} name: {$_SESSION['display_name']}");
 		session_destroy();
-		$basis->addEventToStack("LoadLogIn");
+		$basis->user->LoadLogIn();
 	}
 
 	/**
@@ -451,7 +452,8 @@ class admin extends \core\classes\admin {
 	}
 
 	function LoadCrash (\core\classes\basis $basis){
-		$basis->include_menu();
+		global $messageStack;
+		$basis->observer->send_menu($basis);
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$messageStack->write_debug();
 		$basis->include_footer  = false;
@@ -468,7 +470,7 @@ class admin extends \core\classes\admin {
 	 */
 	function LoadUsersPage (\core\classes\basis &$basis){ //@todo
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		$basis->include_menu();
+		$basis->observer->send_menu($basis);
 		$basis->cInfo->menu_id  =  isset($basis->cInfo->mID) ? $basis->cInfo->mID : 'index'; // default to index unless heading is passed
 		$basis->page_title 	= TEXT_USERS;
 		$basis->module		= 'phreedom';
@@ -531,6 +533,7 @@ class admin extends \core\classes\admin {
 		if (!$contents = @fread($handle, filesize(DIR_FS_MY_FILES . $filename)))	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, 		DIR_FS_MY_FILES . $filename));
 		if (!@fclose($handle)) 														throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 	DIR_FS_MY_FILES . $filename));
 		$file_size = strlen($contents);
+		header_remove();
 		header('Content-type: text/html; charset=utf-8');
 		header("Content-disposition: attachment; filename=$filename; size=$file_size");
 		header('Pragma: cache');

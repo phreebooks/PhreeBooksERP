@@ -1,6 +1,6 @@
 <?php
 namespace core\classes;
-class outputXml implements \SplObserver{
+class outputXml {
 
 	public function update(\SplSubject $basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );

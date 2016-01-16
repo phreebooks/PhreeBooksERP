@@ -81,6 +81,7 @@ switch ($_REQUEST['action']) {
   case 'sample_xml':
   case 'sample_csv':
     $type = $_REQUEST['action']=='sample_csv' ? 'csv' : 'xml';
+    header_remove();
     switch ($type) {
 	  case 'xml':
 	  	$output = build_sample_xml($page_list[$subject]['structure'], $db_table);
@@ -120,6 +121,7 @@ switch ($_REQUEST['action']) {
 	  case 'csv': $output = table_export_csv($page_list[$subject]['structure'], $db_table); break;
 	}
 	if ($output) {
+	  header_remove();
 	  header("Content-disposition: attachment; filename=$db_table.$format; size=" . strlen($output));
 	  header('Pragma: cache');
 	  header('Cache-Control: public, must-revalidate, max-age=0');

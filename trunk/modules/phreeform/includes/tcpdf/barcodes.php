@@ -93,6 +93,7 @@ class TCPDFBarcode {
 	public function getBarcodeSVG($w=2, $h=30, $color='black') {
 		// send headers
 		$code = $this->getBarcodeSVGcode($w, $h, $color);
+		header_remove();
 		header('Content-Type: application/svg+xml');
 		header('Cache-Control: public, must-revalidate, max-age=0'); // HTTP/1.1
 		header('Pragma: public');
@@ -209,6 +210,7 @@ class TCPDFBarcode {
 			$x += $bw;
 		}
 		// send headers
+		header_remove();
 		header('Content-Type: image/png');
 		header('Cache-Control: public, must-revalidate, max-age=0'); // HTTP/1.1
 		header('Pragma: public');

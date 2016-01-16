@@ -1,11 +1,12 @@
 <?php
 namespace core\classes;
-class outputJson implements \SplObserver{
+class outputJson {
 
 	public function update(\SplSubject $basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		global $messageStack;
 		if($basis->page == 'json'){
+			header_remove();
 			header('Content-Type: application/json');
 			echo json_encode($basis);
 			return true;

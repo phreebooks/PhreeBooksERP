@@ -20,7 +20,7 @@ ob_start();
 ini_set('log_errors','1');
 ini_set('display_errors', '1');
 ini_set('max_input_vars', '3000');
-error_reporting(E_ALL);//@todo set to excelude e_notice
+error_reporting(E_ALL & ~E_NOTICE);//@todo set to excelude e_notice
 if (isset($_POST['module']))    $module = $_POST['module'];
 elseif (isset($_GET['module'])) $module = $_GET['module'];
 else                            $module = 'phreedom';
@@ -29,15 +29,7 @@ elseif (isset($_GET['page']))   $page = $_GET['page'];
 else                     		$page = 'main';
 try{
 	require_once('includes/application_top.php');
-   	$admin->attach(new \core\classes\outputXml);
-   	$admin->attach(new \core\classes\outputJson);
-   	$admin->attach(new \core\classes\outputMobile);
-   	$admin->attach(new \core\classes\outputPage);
-   	$admin->setCinfo();
-   	$admin->send_header();
-   	ob_flush();
    	$messageStack->debug("\n checking if user is validated");
-   	$admin->user->is_validated($admin);
    	if ($admin->cInfo->action) $admin->removeEventsAndAddNewEvent($admin->cInfo->action);
    	$admin->startProcessingEvents();
 	ob_end_flush();

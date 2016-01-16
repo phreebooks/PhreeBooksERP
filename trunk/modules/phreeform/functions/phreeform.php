@@ -598,6 +598,7 @@ function BuildPDF($report, $delivery_method = 'D') { // for forms only - PDF sty
 	  }
 	}
 	// Add additional headers needed for MSIE and send page
+	header_remove();
 	header('Pragma: cache');
 	header('Cache-Control: public, must-revalidate, max-age=0');
 	$output['filename'] = $report->filename;
@@ -739,6 +740,7 @@ function BuildSeq($report, $delivery_method = 'D') { // for forms only - Sequent
   }
   if ($delivery_method == 'S') return $output;
   $FileSize = strlen($output);
+  header_remove();
   header("Content-type: application/text");
   header("Content-disposition: attachment; filename=" . $report->filenameprefix . ".txt; size=" . $FileSize);
   header('Pragma: cache');
@@ -1046,6 +1048,7 @@ function GeneratePDFFile($Data, $report, $delivery_method = 'D') { // for pdf re
 	$pdf->ReportTable($Data);
 	$ReportName = ReplaceNonAllowedCharacters($report->title) . '.pdf';
 	if ($delivery_method == 'S') return array('filename' => $ReportName, 'pdf' => $pdf->Output($ReportName, 'S'));
+	header_remove();
 	header('Content-type: application/pdf');
 	header('Content-Disposition: inline; filename=' . $ReportName);
 	header('Expires: 0');
@@ -1096,6 +1099,7 @@ function GenerateCSVFile($Data, $report, $delivery_method = 'D') { // for csv re
 	}
 	$ReportName = ReplaceNonAllowedCharacters($report->title) . '.csv';
 	if ($delivery_method == 'S') return array('filename' => $ReportName, 'pdf' => $CSVOutput);
+	header_remove();
 	header("Content-type: application/csv");
 	header("Content-disposition: attachment; filename=" . $report->title . ".csv; size=" . strlen($CSVOutput));
 	header('Pragma: cache');

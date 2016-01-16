@@ -19,13 +19,13 @@
 
 namespace core\classes;
 
-class basis implements \SplSubject {
+class basis {
 	public  $classes 	= array ();
 	public  $_observers = array ();
 	public  $module		= 'phreedom';
 	public  $page 		= 'main';
 	public  $template;
-	public  $observer	= 'core\classes\outputPage';
+	public  $observer;
 	public  $custom_html		= false;
     public  $include_footer		= true;
 	public  $DataBase 			= null;
@@ -47,8 +47,7 @@ class basis implements \SplSubject {
 		$this->user = new \core\classes\user();
 		$this->toolbar = new \core\classes\toolbar ();
 		$this->currencies = new \core\classes\currencies ();
-		$this->cInfo = (json_decode($request) != NULL) ? (object) json_decode($request) : (object)array_merge ( $_GET, $_POST );
-//		$this->events = $this->cInfo->action;
+		$this->setCinfo();
 		if ($this->getNumberOfAdminClasses () == 0 || empty ( $this->mainmenu )) {
 			$dirs = @scandir ( DIR_FS_MODULES );
 			if ($dirs === false) throw new \core\classes\userException ( "couldn't read or find directory " . DIR_FS_MODULES );
@@ -114,16 +113,15 @@ class basis implements \SplSubject {
 				'link'  		=> html_href_link(FILENAME_DEFAULT, 'action=logout', 'SSL'),
 				'icon'  		=> html_icon('actions/system-log-out.png', TEXT_LOG_OUT, 'small'),
 		);
+		$this->setObserver();
+		$this->set_database();
+		$this->user->is_validated($this);
+		$this->checkIfModulesInstalled();
 	}
 
 	public function checkIfModulesInstalled(){
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		foreach ( $this->classes as $module_class ) $module_class->checkInstalled ( $this );
-	}
-
-	public function __sleep() {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		$this->DataBase = null;
 	}
 
 	public function setCinfo(){
@@ -133,40 +131,70 @@ class basis implements \SplSubject {
 			$this->cInfo = (object)array_merge ( $_GET, $_POST );
 		}
 	}
+	public function __sleep() {}
 
 	public function __wakeup() {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		$this->setObserver();
+		$this->set_database();
+		$this->user->is_validated($this);
 		$this->checkIfModulesInstalled();
+		$this->setCinfo();
 	}
-
-	public function attach(\SplObserver $observer) {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__);
-		\core\classes\messageStack::debug_log("attaching observer".get_class($observer));
-		$this->_observers[get_class($observer)] = $observer;//@todo only add the one observer that will respond
-	}
-
-	public function detach(\SplObserver $observer) {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		unset($this->_observers[ get_class($observer) ]);
+	
+	private function setObserver(){
+		switch(strtolower($_SERVER['HTTP_X_REQUESTED_WITH'])){
+			default: 
+				$this->observer = new \core\classes\outputPage();
+				break;
+			case 'xmlhttprequest':
+				$this->observer = new \core\classes\outputXml();
+				break;
+			case 'json':	
+				$this->observer = new \core\classes\outputJson();
+				break;
+			case 'mobile':
+				$this->observer = new \core\classes\outputMobile();
+				break;
+		}
+		$this->observer->send_header($this);
 	}
 
 	/**
 	 * this method sends a notify to the template page to start sending information in requested format.
 	 */
 	public function notify() {
-		global $messageStack;
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		foreach ( $this->_observers as $key => $observer ) {
-			\core\classes\messageStack::debug_log( "calling ". get_class($observer)." for output" );
-			$this->observer = get_class($observer);
-			$observer->update ( $this );
-		}
+		\core\classes\messageStack::debug_log( "calling ". get_class($this->observer)." for output" );
+		$this->observer = get_class($observer);
+		$this->observer->update ( $this );
 	}
-
-	public function returnCurrentObserver(){
+	
+	public function set_database(){
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		\core\classes\messageStack::debug_log("returning object of {$this->observer}");
-		return $this->_observers[$this->observer];
+		if ($_REQUEST['action']=="ValidateUser") $_SESSION['company'] = $_POST['company'];
+		if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php')) {
+			\core\classes\messageStack::debug_log("connecting to database {$_SESSION['company']}" );
+			define('DB_DATABASE', $_SESSION['company']);
+			require_once(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php');
+			if(!defined('DB_SERVER_HOST')) define('DB_SERVER_HOST',DB_SERVER);
+			$this->DataBase = new \core\classes\PDO(DB_TYPE.":dbname={$_SESSION['company']};host=".DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION));
+			//	if(APC_EXTENSION_LOADED == false || apc_load_constants('configuration') == false) {
+			$result = $this->DataBase->prepare("SELECT configuration_key, configuration_value FROM " . DB_PREFIX . "configuration");
+			$result->execute();
+			while ($row = $result->fetch(\PDO::FETCH_LAZY)){
+				$this->configuration[$_SESSION['company']][$row['configuration_key']] = $row['configuration_value'];
+				define($row['configuration_key'],$row['configuration_value']);//@todo remove
+			}
+			require(DIR_FS_MODULES . 'phreedom/config.php');
+			$this->currencies->load($this);
+			// pull in the custom language over-rides for this module (to pre-define the standard language)
+			$path = DIR_FS_MODULES . "{$_REQUEST['module']}/custom/pages/{$_REQUEST['page']}/extra_menus.php";
+			if (file_exists($path)) { include($path); }
+		}else{
+			$this->user->LoadLogIn();
+		}
+		\core\classes\messageStack::debug_log("database type ".get_class($this->DataBase));
 	}
 
 	public function ReturnAdminClasses() {
@@ -301,16 +329,6 @@ class basis implements \SplSubject {
 			return $this->configuration[ $_SESSION['company'] ][$configuration_key];
 		}
 		return null;
-	}
-	
-	function send_header(){
-		\core\classes\messageStack::debug_log( "calling ". get_class($this->observer)." for headers" );
-		$this->observer->send_header($this);
-	}
-	
-	function include_menu(){
-		\core\classes\messageStack::debug_log( "calling ". get_class($this->observer)." for menus" );
-		$this->observer->send_menu($this);
 	}
 
 	function __destruct() {

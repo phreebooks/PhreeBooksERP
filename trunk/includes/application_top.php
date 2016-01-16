@@ -79,27 +79,6 @@ if ($admin == false){
 	$admin = new \core\classes\basis;
 	if (APC_EXTENSION_LOADED) apc_add("admin", $admin, 600);
 }
-// determine what company to connect to
-if ($_REQUEST['action']=="ValidateUser") $_SESSION['company'] = $_POST['company'];
-if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php')) {
-	define('DB_DATABASE', $_SESSION['company']);
-	require_once(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php');
-	if(!defined('DB_SERVER_HOST')) define('DB_SERVER_HOST',DB_SERVER);
-	$admin->DataBase = new \core\classes\PDO(DB_TYPE.":dbname={$_SESSION['company']};host=".DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION));
-	//	if(APC_EXTENSION_LOADED == false || apc_load_constants('configuration') == false) {
-	$result = $admin->DataBase->prepare("SELECT configuration_key, configuration_value FROM " . DB_PREFIX . "configuration");
-	$result->execute();
-	while ($row = $result->fetch(\PDO::FETCH_LAZY)){
-	   	$admin->configuration[$_SESSION['company']][$row['configuration_key']] = $row['configuration_value'];
-	   	define($row['configuration_key'],$row['configuration_value']);//@todo remove
-	}
-	$admin->checkIfModulesInstalled();
-  	require(DIR_FS_MODULES . 'phreedom/config.php');
-  	$admin->currencies->load();
-	// pull in the custom language over-rides for this module (to pre-define the standard language)
-  	$path = DIR_FS_MODULES . "{$_REQUEST['module']}/custom/pages/{$_REQUEST['page']}/extra_menus.php";
-  	if (file_exists($path)) { include($path); }
-}
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > (SESSION_TIMEOUT_ADMIN < 360 ? 360 : SESSION_TIMEOUT_ADMIN))) {
 	$_SESSION = array('language'=>$_SESSION['language'], 'companies'=>$_SESSION['companies']);
 	gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL'));

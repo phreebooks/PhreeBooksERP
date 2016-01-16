@@ -35,8 +35,8 @@ if ($custom_html) { // load the template only as the rest of the html will be ge
 <?php if ($force_reset_cache) { header("Cache-Control: no-cache, must-revalidate"); header("Expires: ".date('D, j M \2\0\0\0 G:i:s T')); }?>
   <title><?php echo $basis->page_title; ?></title>
   <!-- start loading includes -->
-  <?php $basis->returnCurrentObserver()->print_css_includes($basis);
-  		$basis->returnCurrentObserver()->print_js_includes($basis);
+  <?php $basis->observer()->print_css_includes($basis);
+  		$basis->observer()->print_js_includes($basis);
   ?>
   <!-- end loading includes -->
   <script type="text/javascript">
@@ -67,13 +67,13 @@ if ($custom_html) { // load the template only as the rest of the html will be ge
  <body>
   <div id="please_wait"><p><?php echo html_icon('phreebooks/please_wait.gif', TEXT_PLEASE_WAIT, 'large'); ?></p></div>
   <!-- start Menu -->
-  <?php $basis->returnCurrentObserver()->print_menu($basis);?>
+  <?php $basis->observer()->print_menu($basis);?>
   <!-- end Menu -->
   <!-- Template -->
-  <?php require($basis->returnCurrentObserver()->get_template());?>
+  <?php require($basis->observer()->get_template());?>
   </div>
   <!-- start Footer -->
-  <?php $basis->returnCurrentObserver()->print_footer($basis); ?>
+  <?php $basis->observer()->print_footer($basis); ?>
   <!-- end Footer -->
 </body>
 </html>
