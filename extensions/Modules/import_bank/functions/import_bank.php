@@ -19,9 +19,11 @@
 function bank_import_csv($structure, $filename, $bank_gl_acct) {
   	global $db, $messageStack;
   	include(DIR_FS_WORKING. 'classes/import_banking.php');
+	$messageStack->debug("\n creating new class import_banking ");
   	$bankimport = new impbanking();
   	$data = file($_FILES[$filename]['tmp_name']);
 	// read the header and build array
+	$messageStack->debug("\n checking if csv holds more then headers alone");
   	if (sizeof($data) < 2) {
 	    $messageStack->add('The number of lines in the file is to small, a csv file must contain a header line and at least on input line!','error');
 		return false;
@@ -30,6 +32,7 @@ function bank_import_csv($structure, $filename, $bank_gl_acct) {
   	// build the map structure
   	$temp = $structure->Module->Table;
   	$map_array = array();
+	$messageStack->debug("\n mapping structure of table");
   	foreach ($structure->Module->Table as $table) {
 		foreach ($table->Field as $field) {
 	  		$key = array_search($field->TagName, $header);
@@ -37,6 +40,7 @@ function bank_import_csv($structure, $filename, $bank_gl_acct) {
 		}
 		break;
   	}
+	$messageStack->debug("\n building table");
 	// 	build dependent map tables
   	$ref_mapping = array();
   	if (is_object($table->LinkTable)) $table->LinkTable = array($table->LinkTable);
@@ -58,8 +62,10 @@ function bank_import_csv($structure, $filename, $bank_gl_acct) {
 	  		}
 		}
   	}
+	$messageStack->debug("\n starting with processing data");
   	$countline =0;
   	foreach ($data as $line) {
+		$messageStack->debug("\n processing $line");
     	if (!$line  = trim($line)) continue; // blank line
 		$line_array = $map_array;
 		$sql_array  = array();
@@ -84,6 +90,8 @@ function bank_import_csv($structure, $filename, $bank_gl_acct) {
 					//	echo 'inserting data: '; print_r($table_array); echo '<br>';
 					$bankimport->start_import($table_array['our_account_number'],$table_array['date'],$table_array['account_number_to'],$table_array['credit_amount'],$table_array['debit_amount'],$table_array['description'].' '. $table_array['anouncement'], $bank_gl_acct, $table_array['iban_to']);
 					if ($bankimport->_succes == true) $countline++;
+	  			}else{
+					$messageStack->add("There are no amounts to proces. On date {$table_array['date']} payment to {$table_array['account_number_to']}");
 	  			}
 	  		}
 		}
@@ -97,6 +105,6 @@ function bank_import_csv($structure, $filename, $bank_gl_acct) {
   			$messageStack->add("succesfully posted $countline number of lines",'caution');
   		}
   	}
-  	$messageStack->write_debug();
+	$messageStack->write_debug();
 }
 ?>

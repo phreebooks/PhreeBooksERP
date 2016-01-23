@@ -63,6 +63,7 @@ class impbanking extends journal {
 				return false;
 				exit;
 			}
+			$messageStack->debug("\n try to find the gl_account with the description like $ouwer_bank");
 		 	$sql ="select id, description from " . TABLE_CHART_OF_ACCOUNTS. " where description like '%{$ouwer_bank}%'";
 			$result = $db->Execute($sql);
 			If($result->RecordCount()== 0){
@@ -70,13 +71,17 @@ class impbanking extends journal {
 				return false;
 				exit;
 			}
+			$messageStack->debug("\n atleast found one gl_account with machting description");
 			if (!$result->RecordCount()> 1){
 				$messageStack->add(TEXT_BIMP_ERMSG2 .' '. $ouwer_bank, 'error');
 				return false;
 				exit;
 			}
+			$messageStack->debug("\n using gl_account {$result->fields['id']}");
 			$this->gl_acct_id 			= $result->fields['id'];
 		}else{
+			$messageStack->debug("\n gl_account isn't supplied by csv should be set by at the upload screen.");
+			$messageStack->debug("\n gl_account supplied is $bank_gl_acct");
 			If($bank_gl_acct == ''){
 				$messageStack->add(TEXT_BIMP_ERMSG1 , 'error');
 				return false;
@@ -91,10 +96,15 @@ class impbanking extends journal {
 		$this->post_date           	= gen_db_date($post_date);
 		$this->period              	= gen_calculate_period($this->post_date, true);
 		$this->admin_id            	= $_SESSION['admin_id'];
+		$messageStack->debug("\n first trying to find contact with matching bank account details.");
 		If ($this->find_contact( $other_bank_account_number, $other_bank_account_iban )){	
+			$messageStack->debug("\n trying to find the right invoice for contact.");
 			$this->find_right_invoice();
 		}else{
+			$messageStack->debug("\n couldn't vind contact.");
+			$messageStack->debug("\n trying to find a common 'know mutation' with matching details.");
 			if($this->proces_know_mutation($other_bank_account_number, $other_bank_account_iban) == false){
+				$messageStack->debug("\n couldn't find common mutation now processing it as a general journal.");
 				$this->proces_mutation();
 			} 
 		}
@@ -385,7 +395,7 @@ class impbanking extends journal {
 	private function proces_mutation(){
 		global $db, $messageStack;
 		$messageStack->debug("\n this wil be posted as a journal ");
-		$sql ="select gl_account from " . TABLE_JOURNAL_ITEM. " where description = '".$this->_description."' and not gl_account='".$this->gl_acct_id."' and not gl_account='".$this->_questionposts."'";
+		$sql ="select gl_account from " . TABLE_JOURNAL_ITEM. " where description = '{$this->_description}' and not gl_account='{$this->gl_acct_id}' and not gl_account='".$this->_questionposts."'";
 		$result = $db->Execute($sql);
 		$gl_account = $this->_questionposts;
 		If(!$result->RecordCount() == 0){
@@ -422,7 +432,7 @@ class impbanking extends journal {
 	
 	private function proces_know_mutation($other_bank_account_number, $other_bank_account_iban){
 		global $db, $messageStack;
-		$messageStack->debug("\n we start looking for a match with a know bank account in proces_know_mutation.\n where bank_account = '".$other_bank_account_number."' or bank_iban = '".$other_bank_account_iban );
+		$messageStack->debug("\n we start looking for a match with a know bank account in proces_know_mutation.\n where bank_account = '{$other_bank_account_number}' or bank_iban = '".$other_bank_account_iban );
 		if (isset($this->known_trans[$other_bank_account_iban])){
 			$temp = $other_bank_account_iban;
 		}elseif (isset($this->known_trans[$other_bank_account_number])){
@@ -463,6 +473,7 @@ class impbanking extends journal {
 	
 	private function unknown_contact($other_bank_account_number, $other_bank_account_iban){
 		global $messageStack;
+		$messageStack->debug("\n executing unknown_contact for bank_account_number $other_bank_account_number or iban $other_bank_account_iban");
 		if (isset($this->known_trans[$other_bank_account_iban]))   return false;
 		if (isset($this->known_trans[$other_bank_account_number])) return false;
 		//looking if it is a new contact
@@ -478,11 +489,13 @@ class impbanking extends journal {
 				}				
 			}
 		}
+		$messageStack->debug("\n this is a unknown contact ");
 		return false;
 	}
 
 	private function get_known_trans(){
 		global $db, $messageStack;
+		$messageStack->debug("\n executing get_know trans ");
 		$result = $db->Execute("select * from " . TABLE_IMPORT_BANK);
 	 	while(!$result->EOF){
     		$this->known_trans[$result->fields['bank_account']] = array(
@@ -491,9 +504,12 @@ class impbanking extends journal {
     		);
     		$result->MoveNext();
     	}
+		$messageStack->debug("\n done get_known_trans ");
 	}
 	
 	private function get_all_open_invoices(){
+		global $messageStack;
+		$messageStack->debug("\n executing get_all_open_invoices ");
 		// to build this data array, all current open invoices need to be gathered and then the paid part needs
 		// to be applied along with discounts taken by row.
 		global $db, $currencies;
@@ -549,9 +565,12 @@ class impbanking extends journal {
 		  	);
 		  	$index++;
 		}
+		$messageStack->debug("\n done with get_all_open_invoices found $index invoices ");
 	}
 	
 	private function reset(){
+		global $messageStack;
+		$messageStack->debug("\n reseting import_bank class ");
 		$this->_succes 				= false;
 	 	$this->journal_rows 		= null;
 	 	$this->journal_main_array 	= null;
@@ -596,9 +615,10 @@ class impbanking extends journal {
 
 
 	function checkIBAN($iban) {
+		global $messageStack;
 	  	// Normalize input (remove spaces and make upcase)
+		$messageStack->debug("\n checkIBAN for $iban");
 	  	$iban = strtoupper(str_replace(' ', '', $iban));
-	 
 	  	if (preg_match('/^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/', $iban)) {
 		    $country = substr($iban, 0, 2);
 		    $check = intval(substr($iban, 2, 2));
@@ -616,8 +636,10 @@ class impbanking extends journal {
 		      	$checksum += intval(substr($numstr, $pos,1));
 		      	$checksum %= 97;
 	    	}
+			$messageStack->debug("\n checkIBAN is a ");
 	    	return ((98-$checksum) == $check); // returns true or false
 	  	} else{
+			$messageStack->debug("\n checkIBAN is not a iban ");
 	    	return false;
 	  	}
 	}
