@@ -17,7 +17,6 @@
 //  Path: /modules/phreedom/pages/main/template_main.php
 //
 // display alerts/error messages, if any since the toolbar is not shown
-if(is_object($messageStack)) echo $messageStack->output();
 $current_column = 1;
 $row_started = true;
 // include hidden fields

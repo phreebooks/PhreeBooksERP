@@ -167,7 +167,7 @@ class basis {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		\core\classes\messageStack::debug_log( "calling ". get_class($this->observer)." for output" );
 		$this->observer = get_class($observer);
-		$this->observer->update ( $this );
+
 	}
 	
 	public function set_database(){
@@ -280,8 +280,8 @@ class basis {
 					$module_class->$ActionAfter ( $this );
 				}
 			}
+			ob_flush();
 		}
-		$this->notify();
 	}
 
 	/**

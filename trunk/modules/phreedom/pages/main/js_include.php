@@ -25,6 +25,7 @@
 function init() {
 <?php
   if ($_REQUEST['action'] == 'login') echo "  document.getElementById('admin_name').focus();";
+  echo "document.title = '".COMPANY_NAME." - ".TEXT_PHREEBOOKS_ERP."'";
 ?>
 }
 

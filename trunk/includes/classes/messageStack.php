@@ -25,18 +25,10 @@ class messageStack {
     }
 
     function add($message, $type = 'error') {
-      	if ($type == 'error') {
-        	$_SESSION['messageToStack'][] = array('type' => $type, 'params' => 'class="ui-state-error"', 'text' => html_icon('emblems/emblem-unreadable.png', TEXT_ERROR) . '&nbsp;' . $message, 'message' => $message);
-        	if (DEBUG) error_log("messageStack error:".$message . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
-      	} elseif ($type == 'success') {
-	    	if (!HIDE_SUCCESS_MESSAGES) $_SESSION['messageToStack'][] = array('type' => $type, 'params' => 'class="ui-state-active"', 'text' => html_icon('emotes/face-smile.png', TEXT_SUCCESS) . '&nbsp;' . $message, 'message' => $message);
-      	} elseif ($type == 'caution' || $type == 'warning') {
-        	$_SESSION['messageToStack'][] = array('type' => $type, 'params' => 'class="ui-state-highlight"', 'text' => html_icon('emblems/emblem-important.png', TEXT_CAUTION) . '&nbsp;' . $message, 'message' => $message);
-      	} else {
-        	$_SESSION['messageToStack'][] = array('type' => $type, 'params' => 'class="ui-state-error"', 'text' => $message, 'message' => $message);
-        	if (DEBUG) error_log("messageStack error:".$message . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
-      	}
-      	$this->debug("\n On screen displaying '$type' message = $message");
+    	echo '<script type="text/javascript">';
+    	echo "MessageStackAdd('". gen_js_encode($message)."', '{$error}');";
+    	echo "<script>";
+      	if (DEBUG) error_log("messageStack error:".$message . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
 	  	return true;
     }
 

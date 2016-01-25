@@ -408,9 +408,8 @@ class admin extends \core\classes\admin {
 			$basis->cInfo->cp_boxes[] = $result;
 		}
 		$basis->page_title 	= COMPANY_NAME.' - '.TEXT_PHREEBOOKS_ERP;
-		$basis->module		= 'phreedom';
-		$basis->page		= 'main';
-		$basis->template 	= 'template_main';
+		require (DIR_FS_ADMIN . "modules/phreedom/pages/main/js_include.php");
+		require (DIR_FS_ADMIN . "modules/phreedom/pages/main/template_main.php");
 	}
 
 	/**

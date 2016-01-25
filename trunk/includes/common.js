@@ -48,7 +48,21 @@ function addUnloadEvent(func) {
 	  func(); 
 	};
   } 
-} 
+}
+
+function MessageStackAdd(message, type){
+	var newRow = document.getElementById('messageStack').insertRow(-1);
+	cell  = '<td align="center">';
+	if (type == 'success') {
+  		cell  = '<td class="ui-state-active" style="width:100%">'+message+ '</td>';
+  	} else if (type == 'caution' || type == 'warning') {
+  		cell  = '<td class="ui-state-highlight" style="width:100%">'+message+ '</td>';
+  	} else {
+  		cell  = '<td class="ui-state-error" style="width:100%">'+message+ '</td>';
+  	}
+	newCell = newRow.insertCell(-1);
+	newCell.innerHTML = cell;
+}
 
 // BOS - set up ajax session refresh timer to stay logged in if the browser is active
 var sessionClockID = 0; // start a session clock to stay logged in

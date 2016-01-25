@@ -84,13 +84,14 @@ class outputPage  {
     	***********************************************/
     	</script>
     	<script type="text/javascript">
-    	ddsmoothmenu.init({
-    		mainmenuid: "smoothmenu",
-    		orientation: '<?php echo MY_MENU=='left'?'v':'h';?>',
-    		classname: '<?php echo MY_MENU=='left'?'ddsmoothmenu-v':'ddsmoothmenu';?>',
-    		contentsource: "markup"
-    	})
+//   		ddsmoothmenu.init({
+//  		mainmenuid: "smoothmenu",
+//    		orientation: '<?php echo MY_MENU=='left'?'v':'h';?>',
+//    		classname: '<?php echo MY_MENU=='left'?'ddsmoothmenu-v':'ddsmoothmenu';?>',
+//    		contentsource: "markup"
+//    	})
     	</script>
+    	<table id='messageStack' style="border-collapse:collapse;width:100%"></table> 
     	<?php 
     	ob_flush();
     }
