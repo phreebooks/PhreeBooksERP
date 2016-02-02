@@ -79,21 +79,20 @@ class admin extends \core\classes\admin {
 	}
 
 	function upgrade(\core\classes\basis &$basis) {
-	    global $admin;
 	    parent::upgrade($basis);
 	    if (version_compare($this->status, '3.13', '<') ) {
-		  	if ($admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_rma_desc')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_rma_desc");
+		  	if ($basis->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_rma_desc')) $basis->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_rma_desc");
 		}
 		if (version_compare($this->status, '3.3', '<') ) {
-		  	if (!$admin->DataBase->field_exists(TABLE_RMA, 'attachments'))       $admin->DataBase->query("ALTER TABLE " . TABLE_RMA . " ADD attachments TEXT DEFAULT NULL AFTER closed_date");
-		  	if (!$admin->DataBase->field_exists(TABLE_RMA, 'contact_id'))        $admin->DataBase->query("ALTER TABLE " . TABLE_RMA . " ADD contact_id VARCHAR(32) DEFAULT NULL AFTER caller_email");
-		  	if (!$admin->DataBase->field_exists(TABLE_RMA, 'contact_name'))      $admin->DataBase->query("ALTER TABLE " . TABLE_RMA . " ADD contact_name VARCHAR(48) DEFAULT NULL AFTER contact_id");
-		  	if (!$admin->DataBase->field_exists(TABLE_RMA, 'purch_order_id'))    $admin->DataBase->query("ALTER TABLE " . TABLE_RMA . " ADD purch_order_id VARCHAR(24) DEFAULT NULL AFTER purchase_invoice_id");
-		  	if (!$admin->DataBase->field_exists(TABLE_RMA, 'receive_details'))   $admin->DataBase->query("ALTER TABLE " . TABLE_RMA . " ADD receive_details TEXT DEFAULT NULL AFTER receive_notes");
-		  	if (!$admin->DataBase->field_exists(TABLE_RMA, 'close_notes'))       $admin->DataBase->query("ALTER TABLE " . TABLE_RMA . " ADD close_notes VARCHAR(255) DEFAULT NULL AFTER receive_details");
-		  	if (!$admin->DataBase->field_exists(TABLE_RMA, 'close_details'))     $admin->DataBase->query("ALTER TABLE " . TABLE_RMA . " ADD close_details TEXT DEFAULT NULL AFTER close_notes");
-		  	if (!$admin->DataBase->field_exists(TABLE_RMA, 'invoice_date'))      $admin->DataBase->query("ALTER TABLE " . TABLE_RMA . " ADD invoice_date DATE NOT NULL DEFAULT '0000-00-00' AFTER creation_date");
-		  	$result = $admin->DataBase->query("select * from " . DB_PREFIX . 'rma_module_item');
+		  	if (!$basis->DataBase->field_exists(TABLE_RMA, 'attachments'))       $basis->DataBase->query("ALTER TABLE " . TABLE_RMA . " ADD attachments TEXT DEFAULT NULL AFTER closed_date");
+		  	if (!$basis->DataBase->field_exists(TABLE_RMA, 'contact_id'))        $basis->DataBase->query("ALTER TABLE " . TABLE_RMA . " ADD contact_id VARCHAR(32) DEFAULT NULL AFTER caller_email");
+		  	if (!$basis->DataBase->field_exists(TABLE_RMA, 'contact_name'))      $basis->DataBase->query("ALTER TABLE " . TABLE_RMA . " ADD contact_name VARCHAR(48) DEFAULT NULL AFTER contact_id");
+		  	if (!$basis->DataBase->field_exists(TABLE_RMA, 'purch_order_id'))    $basis->DataBase->query("ALTER TABLE " . TABLE_RMA . " ADD purch_order_id VARCHAR(24) DEFAULT NULL AFTER purchase_invoice_id");
+		  	if (!$basis->DataBase->field_exists(TABLE_RMA, 'receive_details'))   $basis->DataBase->query("ALTER TABLE " . TABLE_RMA . " ADD receive_details TEXT DEFAULT NULL AFTER receive_notes");
+		  	if (!$basis->DataBase->field_exists(TABLE_RMA, 'close_notes'))       $basis->DataBase->query("ALTER TABLE " . TABLE_RMA . " ADD close_notes VARCHAR(255) DEFAULT NULL AFTER receive_details");
+		  	if (!$basis->DataBase->field_exists(TABLE_RMA, 'close_details'))     $basis->DataBase->query("ALTER TABLE " . TABLE_RMA . " ADD close_details TEXT DEFAULT NULL AFTER close_notes");
+		  	if (!$basis->DataBase->field_exists(TABLE_RMA, 'invoice_date'))      $basis->DataBase->query("ALTER TABLE " . TABLE_RMA . " ADD invoice_date DATE NOT NULL DEFAULT '0000-00-00' AFTER creation_date");
+		  	$result = $basis->DataBase->query("select * from " . DB_PREFIX . 'rma_module_item');
 		  	$output = array();
 		  	while (!$result->EOF) {
 			  	$output[$result->fields['ref_id']][] = array(
@@ -107,7 +106,7 @@ class admin extends \core\classes\admin {
 		  	if (sizeof($output > 0)) foreach ($output as $key => $value) {
 		  		db_perform(TABLE_RMA, array('close_details'=>serialize($value)), 'update', 'id = '.$key);
 		  	}
-		  	if ($admin->DataBase->table_exists(DB_PREFIX . 'rma_module_item')) $admin->DataBase->query("drop table ".DB_PREFIX.'rma_module_item');
+		  	if ($basis->DataBase->table_exists(DB_PREFIX . 'rma_module_item')) $basis->DataBase->query("drop table ".DB_PREFIX.'rma_module_item');
 	    }
 	}
 

@@ -65,7 +65,7 @@ class toolbar {
 		$this->icon_list['help'] = array(
 		  'show'   => true,
 		  'icon'   => 'apps/help-browser.png',
-		  'params' => "onclick='window.open(\"" . FILENAME_DEFAULT . ".php?module=phreehelp&amp;page=main&amp;idx={$index}\",\"".TEXT_HELP."\",\"width=800,height=600,resizable=1,scrollbars=1,top=100,left=100\")'",
+		  'params' => "onclick='window.open(\"" . FILENAME_DEFAULT . ".php?actione=loadHelpScreen&amp;idx={$index}\",\"".TEXT_HELP."\",\"width=800,height=600,resizable=1,scrollbars=1,top=100,left=100\")'",
 		  'text'   => TEXT_HELP,
 		  'order'  => $order,
 		);
