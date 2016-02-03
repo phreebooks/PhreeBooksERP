@@ -23,10 +23,20 @@ class user {
 	public $companies = array();
 
 	function __construct(){
+		global $admin;
 		$this->language = new \core\classes\language();
 		$this->load_companies();
+		$this->is_validated($admin);
 	}
 
+	public function __wakeup() {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		global $admin;
+		$this->language = new \core\classes\language();
+		$this->load_companies();
+		$this->is_validated($admin);
+	}
+	
 	final static public function get($variable){
 		if (isset($_SESSION[$variable])) return $_SESSION[$variable];
 		if (isset(self::$variable)) 	return self::$variable;
@@ -39,22 +49,23 @@ class user {
 	 */
 
 	final public function is_validated (\core\classes\basis &$admin) {
-		if (is_null($admin->DataBase)){
-			\core\classes\messageStack::debug_log("database isn't connected.");
+		//allow the user to continu to with the login action.
+		if ($_REQUEST['action'] == 'LoadLostPassword') $this->LoadLostPassword();
+		if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php')) {
 			$this->LoadLogIn();
 		}
-		if (isset($_SESSION['admin_id']) && $_SESSION['admin_id'] <> '') return true;
+		$this->validate_company();
 		if ($_REQUEST['action'] == "ValidateUser") return true;
-		//allow the user to continu to with the login action.
-		if (!in_array($_REQUEST['action'], array('ValidateUser', 'pw_lost_sub', 'pw_lost_req'))){
-			if($_REQUEST['action'] == 'pw_lost_req') {
-				$admin->fireEvent('LoadLostPassword'); //@todo move to this file
-			}else{
-				$this->LoadLogIn();
-			}
-			return false;
-		}
+		if (isset($_SESSION['admin_id']) && $_SESSION['admin_id'] <> '') return true;
 		$this->LoadLogIn();
+	}
+	
+	final static public function validate_company(){
+		if ($_REQUEST['action'] == "ValidateUser") $_SESSION['company'] = $_POST['company'];
+		if (!isset($_SESSION['company']) && $_SESSION['company'] == '' && !file_exists(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php')) {
+			$messageStack->add(sprintf(TEXT_COMPANY_CONFIG_FILE_DOESNT_EXIST, $_SESSION['company']));
+			$this->LoadLogIn();
+		}
 	}
 
 	/**
@@ -155,6 +166,7 @@ class user {
 	}
 	
 	final function LoadLogIn(){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		?> <script type='text/javascript'>
 				document.title = '<?php echo TEXT_PHREEBOOKS_ERP; ?>';
 				window.onload = function(){
@@ -230,8 +242,37 @@ class user {
 		die();	
 	}
 	
+	final function LoadLostPassword(){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		echo html_form('pw_lost', FILENAME_DEFAULT, 'action=SendLostPassWord') . chr(10);
+		?>
+		<div style="margin-left:25%;margin-right:25%;margin-top:50px;">
+		<table class="ui-widget" style="border-collapse:collapse;width:100%">
+		 <thead class="ui-widget-header">
+		   <tr height="70"><th colspan="2" align="right"><img src="modules/phreedom/images/phreesoft_logo.png" alt="Phreedom Business Toolkit" height="50" /></th></tr>
+		 </thead>
+		 <tbody class="ui-widget-content">
+		  <tr><td colspan="2"><h2><?php echo TEXT_RESEND_PASSWORD; ?></h2></td></tr>
+		  <tr>
+		   <td nowrap="nowrap">&nbsp;&nbsp;<?php echo TEXT_EMAIL_ADDRESS . ': '; ?></td>
+		   <td><?php echo html_input_field('admin_email', $this->admin_email, 'size="60"'); ?></td>
+		  </tr>
+		  <tr>
+		   <td nowrap="nowrap">&nbsp;&nbsp;<?php echo sprintf(TEXT_SELECT_ARGS, TEXT_COMPANY); ?></td>
+		   <td><?php echo html_pull_down_menu('company', $this->companies, $this->company_index, '', true); ?></td>
+		  </tr>
+		  <tr><td colspan="2" align="right"><?php echo html_submit_field('submit', TEXT_RESEND_PASSWORD) . '&nbsp;&nbsp;'; ?></td></tr>
+		 </tbody>
+		</table>
+		</div>
+		</form>
+	<?php 	
+		die();
+	}
+	
+	
 	function __destruct(){
-//		$_SESSION['companies'] = $this->companies; @todo do we still need this
+		$_SESSION['companies'] = $this->companies;// @todo do we still need this
 	}
 
 }

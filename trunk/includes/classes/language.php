@@ -112,7 +112,12 @@ class language {
 		foreach ($phrases as $phrase) {
 			if (strtoupper($phrase->getAttribute('id')) == 'LANGUAGE') {
 				foreach ($phrase->childNodes as $language) {
-					if ($language->tagName != '') $this->languages[$language->tagName] = $language->nodeValue;
+					if ($language->tagName != ''){
+						$this->languages[$language->tagName]= array(
+							'id'   => $language->tagName,
+				  	  		'text' => $language->nodeValue,
+						);
+					}
 				}
 				break;
 			}

@@ -107,6 +107,6 @@ class messageStack {
 	}
 
 	function __destruct(){
-
+		error_log("/***** ending messageStack *****/". PHP_EOL, 3, DIR_FS_MY_FILES."/development.log");
 	}
 }
