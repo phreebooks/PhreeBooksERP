@@ -22,16 +22,15 @@ class user {
 	public $languages = array();
 	public $companies = array();
 
-	function __construct(){
-		global $admin;
+	function __construct(\core\classes\basis &$admin){
 		$this->language = new \core\classes\language();
 		$this->load_companies();
 		$this->is_validated($admin);
 	}
 
 	public function __wakeup() {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		global $admin;
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->language = new \core\classes\language();
 		$this->load_companies();
 		$this->is_validated($admin);
@@ -50,20 +49,19 @@ class user {
 
 	final public function is_validated (\core\classes\basis &$admin) {
 		//allow the user to continu to with the login action.
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		if ($_REQUEST['action'] == 'LoadLostPassword') $this->LoadLostPassword();
-		if (isset($_SESSION['company']) && $_SESSION['company'] != '' && file_exists(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php')) {
-			$this->LoadLogIn();
-		}
 		$this->validate_company();
 		if ($_REQUEST['action'] == "ValidateUser") return true;
 		if (isset($_SESSION['admin_id']) && $_SESSION['admin_id'] <> '') return true;
 		$this->LoadLogIn();
 	}
 	
-	final static public function validate_company(){
+	final public function validate_company(){
 		if ($_REQUEST['action'] == "ValidateUser") $_SESSION['company'] = $_POST['company'];
-		if (!isset($_SESSION['company']) && $_SESSION['company'] == '' && !file_exists(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php')) {
-			$messageStack->add(sprintf(TEXT_COMPANY_CONFIG_FILE_DOESNT_EXIST, $_SESSION['company']));
+		if ( $_SESSION['company'] == '' || !file_exists(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php')) {
+			\core\classes\messageStack::debug_log("company file doesn't exist");
+			\core\classes\messageStack::add(sprintf(TEXT_COMPANY_CONFIG_FILE_DOESNT_EXIST, $_SESSION['company']));
 			$this->LoadLogIn();
 		}
 	}
@@ -71,7 +69,8 @@ class user {
 	/**
 	 * returns the current company and sets it in the Session variable.
 	 */
-	final static public function get_company(){
+	final public function get_company(){
+		//reset($this->companies);
 		if (isset($_SESSION['company'])) return $_SESSION['company'];
 		if (isset($_REQUEST['company'])) {
 			$_SESSION['company'] = $_REQUEST['company'];
@@ -154,7 +153,7 @@ class user {
 		foreach ($contents as $file) {
 			if ($file <> '.' && $file <> '..' && is_dir(DIR_FS_MY_FILES . $file)) {
 			  	if (file_exists(DIR_FS_MY_FILES   . $file . '/config.php')) {
-			  		if (!isset($_SESSION['company'])) $_SESSION['company'] = $file;
+			  		if (!isset($_SESSION['company'])|| $_SESSION['company'] == '') $_SESSION['company'] = $file;
 					require_once (DIR_FS_MY_FILES . $file . '/config.php');
 					$this->companies[$file] = array(
 				  	  'id'   => $file,
@@ -259,7 +258,7 @@ class user {
 		  </tr>
 		  <tr>
 		   <td nowrap="nowrap">&nbsp;&nbsp;<?php echo sprintf(TEXT_SELECT_ARGS, TEXT_COMPANY); ?></td>
-		   <td><?php echo html_pull_down_menu('company', $this->companies, $this->company_index, '', true); ?></td>
+		   <td><?php echo html_pull_down_menu('company', $this->companies, $this->get_company(), '', true); ?></td>
 		  </tr>
 		  <tr><td colspan="2" align="right"><?php echo html_submit_field('submit', TEXT_RESEND_PASSWORD) . '&nbsp;&nbsp;'; ?></td></tr>
 		 </tbody>
@@ -273,6 +272,7 @@ class user {
 	
 	function __destruct(){
 		$_SESSION['companies'] = $this->companies;// @todo do we still need this
+//		print_r($_SESSION);
 	}
 
 }

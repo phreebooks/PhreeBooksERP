@@ -432,9 +432,9 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 	  if ($show_message) $messageStack->add(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');
 	} else { // update CURRENT_ACCOUNTING_PERIOD constant with this new period
 	  $result = $admin->DataBase->query("select start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . " where period = " . $period);
-	  write_configure('CURRENT_ACCOUNTING_PERIOD',       $period);
-	  write_configure('CURRENT_ACCOUNTING_PERIOD_START', $result->fields['start_date']);
-	  write_configure('CURRENT_ACCOUNTING_PERIOD_END',   $result->fields['end_date']);
+	  $admin->DataBase->write_configure('CURRENT_ACCOUNTING_PERIOD',       $period);
+	  $admin->DataBase->write_configure('CURRENT_ACCOUNTING_PERIOD_START', $result->fields['start_date']);
+	  $admin->DataBase->write_configure('CURRENT_ACCOUNTING_PERIOD_END',   $result->fields['end_date']);
 	  gen_add_audit_log(TEXT_CHANGED . " " . TEXT_ACCOUNTING_PERIOD);
 	  if ($show_message) {
 	    $messageStack->add(sprintf(ERROR_MSG_ACCT_PERIOD_CHANGE, $period),'success');

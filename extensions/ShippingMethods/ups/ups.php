@@ -154,10 +154,10 @@ class ups extends \shipping\classes\shipping {
 	  $field = strtolower($key['key']);
 	  switch ($key['key']) {
 	    case 'MODULE_SHIPPING_UPS_TYPES': // read the checkboxes
-		  write_configure($key['key'], implode(',', $_POST[$field]));
+		  $admin->DataBase->write_configure($key['key'], implode(',', $_POST[$field]));
 		  break;
 		default:  // just write the value
-		  if (isset($_POST[$field])) write_configure($key['key'], $_POST[$field]);
+		  if (isset($_POST[$field])) $admin->DataBase->write_configure($key['key'], $_POST[$field]);
 	  }
 	}
   }

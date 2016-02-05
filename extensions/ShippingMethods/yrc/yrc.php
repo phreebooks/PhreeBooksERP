@@ -55,7 +55,7 @@ class yrc {
   function update() {
     foreach ($this->keys() as $key) {
 	  $field = strtolower($key['key']);
-	  if (isset($_POST[$field])) write_configure($key['key'], $_POST[$field]);
+	  if (isset($_POST[$field])) $admin->DataBase->write_configure($key['key'], $_POST[$field]);
 	}
   }
 

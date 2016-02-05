@@ -53,57 +53,6 @@
     	return strcmp($a->sort_order, $b->sort_order);
 	}
 
-	/**
-	 * function stores configuration values and updates constants and or cache.
-	 * @param string $constant
-	 * @param string $value
-	 */
-
-  	function write_configure($constant, $value = '') {
-    	global $admin;
-		if (!$constant) throw new \core\classes\userException("contant isn't defined for value: $value");
-		$result = $admin->DataBase->query("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = '$constant'");
-		if ($result->fetch(\PDO::FETCH_NUM) == 0) {
-	  		$sql_array = array('configuration_key'  => $constant, 'configuration_value'=> $value);
-	  		$sql = $admin->DataBase->prepare("INSERT INTO " . TABLE_CONFIGURATION . " (configuration_key, configuration_value) VALUES (:configuration_key, :configuration_value)");
-	  		$sql->execute(array(':configuration_key'=>$constant, ':configuration_value'=>$value));
-		} elseif ($result->fields['configuration_value'] <> $value) {
-			$admin->DataBase->exec("UPDATE " . TABLE_CONFIGURATION . " set configuration_value = '$value' where configuration_key = '$constant'");
-		}
-		if (function_exists('apc_load_constants')) {// rebuild cache
-			$sql = $admin->DataBase->prepare("select configuration_key, configuration_value from " . TABLE_CONFIGURATION );
-			$array = array ();
-			$sql->execute();
-			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
-				$array[ $result['configuration_key'] ] = $result['configuration_value'];
-			}
-			apc_define_constants("configuration", $array, true);
-		} else{ // cache not installed just define constant
-			define($constant, $value);
-		}
-  	}
-
-  	/**
-  	 * function removes constant from configuration values and updates cache if installed.
-  	 * @param string $constant
-  	 */
-
-  	function remove_configure($constant){
-	    global $admin;
-		if (!$constant) throw new \core\classes\userException("There is no constant to remove");
-		$admin->DataBase->exec("delete from " . TABLE_CONFIGURATION . " where configuration_key = '$constant'");
-		if (function_exists('apc_load_constants')) {// rebuild cache
-			$result = $admin->DataBase->query("select configuration_key, configuration_value from " . TABLE_CONFIGURATION );
-			$array = array ();
-			while (!$result->EOF) {
-				$array[$result->fields['configuration_key']] = $result->fields['configuration_value'];
-				$result->MoveNext();
-			}
-			apc_define_constants("configuration", $array, true);
-		}
-		return true;
-  	}
-
   function gen_not_null($value) {
     return (!is_null($value) || strlen(trim($value)) > 0) ? true : false;
   }
@@ -1468,7 +1417,6 @@ function csv_string_to_array($str = '') {
 /**************************************************************************************************************/
 
 function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext) {
-	global $messageStack;
     if (!(error_reporting() & $errno)) {
         // This error code is not included in error_reporting
         return;

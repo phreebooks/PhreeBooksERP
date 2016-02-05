@@ -106,7 +106,7 @@ class phreewiki_admin {
 
   function update($module) {
   	global $admin;
-  	write_configure('MODULE_' . strtoupper($module) . '_STATUS', constant('MODULE_' . strtoupper($module) . '_VERSION'));
+  	$admin->DataBase->write_configure('MODULE_' . strtoupper($module) . '_STATUS', constant('MODULE_' . strtoupper($module) . '_VERSION'));
   }
 
   function remove($module) {

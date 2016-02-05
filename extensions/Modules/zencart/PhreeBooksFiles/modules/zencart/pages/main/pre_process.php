@@ -48,7 +48,7 @@ switch ($_REQUEST['action']) {
 	  		$inc_image = isset($_POST['include_images']) ? true : false;
 	    	\zencart\classes\bulk_upload($inc_image);
 			gen_add_audit_log(TEXT_BULK_UPLOAD);
-			write_configure('MODULE_ZENCART_LAST_UPDATE', date('Y-m-d H:i:s'));
+			$admin->DataBase->write_configure('MODULE_ZENCART_LAST_UPDATE', date('Y-m-d H:i:s'));
 	  	}catch(Exception $e) {
 	  		$messageStack->add($e->getMessage());
 		}

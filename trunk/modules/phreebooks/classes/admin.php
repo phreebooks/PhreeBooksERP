@@ -329,11 +329,11 @@ class admin extends \core\classes\admin {
 		}
 		if (version_compare ( $db_version, '3.1', '==' )) {
 			validate_path ( DIR_FS_MY_FILES . $_SESSION ['company'] . '/phreebooks/orders/', 0755 );
-			write_configure ( 'ALLOW_NEGATIVE_INVENTORY', '1' );
+			$admin->DataBase->write_configure ( 'ALLOW_NEGATIVE_INVENTORY', '1' );
 			$db_version = 3.2;
 		}
 		if (version_compare ( $db_version, '3.2', '==' )) {
-			write_configure ( 'APPLY_CUSTOMER_CREDIT_LIMIT', '0' ); // flag for using credit limit to authorize orders
+			$admin->DataBase->write_configure ( 'APPLY_CUSTOMER_CREDIT_LIMIT', '0' ); // flag for using credit limit to authorize orders
 			$basis->DataBase->query ( "ALTER TABLE " . TABLE_JOURNAL_MAIN . " CHANGE `shipper_code` `shipper_code` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT ''" );
 			require_once (DIR_FS_MODULES . 'phreebooks/defaults.php');
 			if (is_array ( glob ( DIR_FS_ADMIN . 'PHREEBOOKS_DIR_MY_ORDERS*.zip' ) )) {

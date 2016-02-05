@@ -33,7 +33,7 @@ switch ($_REQUEST['action']) {
 	\core\classes\user::validate_security($security_level, 3);
   	foreach ($admin->classes['contacts']->keys as $key => $default) {
 	  $field = strtolower($key);
-      if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
+      if (isset($_POST[$field])) $admin->DataBase->write_configure($key, $_POST[$field]);
     }
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	$messageStack->add(CONTACTS_CONFIG_SAVED,'success');

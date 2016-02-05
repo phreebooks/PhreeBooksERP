@@ -58,7 +58,7 @@ class translator_admin {
     global $db, $messageStack;
 	$error = false;
 	if (!$error) {
-	  write_configure('MODULE_'.strtoupper($module).'_STATUS', constant('MODULE_'.strtoupper($module).'_VERSION'));
+	  $admin->DataBase->write_configure('MODULE_'.strtoupper($module).'_STATUS', constant('MODULE_'.strtoupper($module).'_VERSION'));
    	  $messageStack->add(sprintf(GEN_MODULE_UPDATE_SUCCESS, $module, constant('MODULE_'.strtoupper($module).'_VERSION')), 'success');
 	}
 	return $error;

@@ -62,8 +62,8 @@ class payment {
   	 */
 
   	function install(){
-  		write_configure('MODULE_PAYMENT_' . strtoupper($this->id) . '_STATUS', '1');
-		foreach ($this->keys as $key) write_configure($key['key'], $key['default']);
+  		$admin->DataBase->write_configure('MODULE_PAYMENT_' . strtoupper($this->id) . '_STATUS', '1');
+		foreach ($this->keys as $key) $admin->DataBase->write_configure($key['key'], $key['default']);
 
   	}
   	/**
@@ -73,7 +73,7 @@ class payment {
     function update() {
     	foreach ($this->keys as $key) {
           $field = strtolower($key['key']);
-          if (isset($_POST[$field])) write_configure($key['key'], $_POST[$field]);
+          if (isset($_POST[$field])) $admin->DataBase->write_configure($key['key'], $_POST[$field]);
         }
   	}
 

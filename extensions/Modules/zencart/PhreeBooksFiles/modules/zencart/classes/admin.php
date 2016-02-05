@@ -149,13 +149,13 @@ class admin extends \core\classes\admin {
 		}
 		$messageStack->add(sprintf(ZENCART_BULK_UPLOAD_SUCCESS, $cnt), 'success');
 		gen_add_audit_log(TEXT_BULK_UPLOAD);
-		write_configure('MODULE_ZENCART_LAST_UPDATE', date('Y-m-d H:i:s'));
+		$admin->DataBase->write_configure('MODULE_ZENCART_LAST_UPDATE', date('Y-m-d H:i:s'));
 	}
 
 	function upgrade(\core\classes\basis &$basis) {
 		parent::upgrade($basis);
 		if (version_compare($this->status, '3.4', '<') ) {
-			write_configure('MODULE_ZENCART_LAST_UPDATE', date('0000-00-00 00:00:00'));
+			$admin->DataBase->write_configure('MODULE_ZENCART_LAST_UPDATE', date('0000-00-00 00:00:00'));
 		}
 		$sql = $basis->DataBase->prepare("select tab_id from " . TABLE_EXTRA_FIELDS . " where field_name = 'category_id'");
 		$sql->execute();

@@ -30,12 +30,9 @@ class outputPage  {
     function __construct() {
     	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
        	$this->include_template = DIR_FS_ADMIN .'modules/phreedom/pages/main/template_main.php';
-       	$this->js_files[] = "includes/jquery-2.2.0.min.js";
-  		$this->js_files[] = "includes/jquery-migrate-1.2.1.min.js";
-  		$this->js_files[] = "includes/jquery.dataTables.min.js";
+       	$this->js_files[] = "includes/jquery.dataTables.min.js";// @todo only nessecery
   		$this->js_files[] = "https://www.google.com/jsapi"; //@todo work around.
   		$this->js_files[] = "includes/jquery.easyui.min.js";
-  		$this->js_files[] = "includes/common.js";
   		$this->include_php_js_files[] = DIR_FS_ADMIN . DIR_WS_THEMES . '/config.php';
     }
     
@@ -53,6 +50,9 @@ class outputPage  {
     	echo "<link rel='stylesheet' type='text/css' href='".DIR_WS_THEMES.'css/'.MY_COLORS.'/jquery-ui.css'."' />". chr(13);
     	echo "<link rel='stylesheet' type='text/css' href='".DIR_WS_THEMES.'css/'.MY_COLORS.'/easyui.css'."' />". chr(13);
     	echo "<link rel='stylesheet' type='text/css' href='".DIR_WS_THEMES.'css/icon.css'."' />". chr(13);
+    	echo "<script type='text/javascript' src='includes/common.js'></script>". chr(13);
+    	echo "<script type='text/javascript' src='includes/jquery-2.2.0.min.js'></script>". chr(13);
+    	echo "<script type='text/javascript' src='includes/jquery-migrate-1.2.1.min.js'></script>". chr(13); //@todo can be removed after development
     	echo "</head>";
     	ob_flush();
     }
@@ -90,8 +90,7 @@ class outputPage  {
 //    		classname: '<?php echo MY_MENU=='left'?'ddsmoothmenu-v':'ddsmoothmenu';?>',
 //    		contentsource: "markup"
 //    	})
-    	</script>
-    	<table id='messageStack' style="border-collapse:collapse;width:100%"></table> 
+    	</script> 
     	<?php 
     	ob_flush();
     }

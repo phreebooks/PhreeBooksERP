@@ -254,7 +254,7 @@ class admin extends \core\classes\admin {
 		  array('title' => 'Euro',      'code' => 'EUR', 'symbol_left' => '€', 'symbol_right' => '', 'decimal_point' => ',', 'thousands_point' => '.', 'decimal_places' => '2', 'decimal_precise' => '2', 'value' => 0.75000000, 'last_updated' => date('Y-m-d H:i:s')),
 		);
 		foreach($currencies_list as $entry) db_perform(TABLE_CURRENCIES, $entry, 'insert');
-		write_configure('DEFAULT_CURRENCY', 'USD');
+		$admin->DataBase->write_configure('DEFAULT_CURRENCY', 'USD');
 		// Enter some data into table current status
 		$admin->DataBase->exec("TRUNCATE TABLE " . TABLE_CURRENT_STATUS);
 		$admin->DataBase->exec("insert into " . TABLE_CURRENT_STATUS . " set id = 1");

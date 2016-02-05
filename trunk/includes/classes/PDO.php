@@ -84,6 +84,56 @@ class PDO extends \PDO {
 		}
 		return false;
 	}
+	
+	/**
+	 * function stores configuration values and updates constants and or cache.
+	 * @param string $constant
+	 * @param string $value
+	 */
+	
+	function write_configure($constant, $value = '') {
+		if (!$constant) throw new \core\classes\userException("contant isn't defined for value: $value");
+		$result = $this->query("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = '$constant'");
+		if ($result->fetch(\PDO::FETCH_NUM) == 0) {
+			$sql_array = array('configuration_key'  => $constant, 'configuration_value'=> $value);
+			$sql = $this->prepare("INSERT INTO " . TABLE_CONFIGURATION . " (configuration_key, configuration_value) VALUES (:configuration_key, :configuration_value)");
+			$sql->execute(array(':configuration_key'=>$constant, ':configuration_value'=>$value));
+		} elseif ($result['configuration_value'] <> $value) {
+			$this->exec("UPDATE " . TABLE_CONFIGURATION . " set configuration_value = '$value' where configuration_key = '$constant'");
+		}
+		if (function_exists('apc_load_constants')) {// rebuild cache
+			$sql = $this->prepare("select configuration_key, configuration_value from " . TABLE_CONFIGURATION );
+			$array = array ();
+			$sql->execute();
+			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+				$array[ $result['configuration_key'] ] = $result['configuration_value'];
+			}
+			apc_define_constants("configuration", $array, true);
+		} else{ // cache not installed just define constant
+			define($constant, $value);
+		}
+	}
+	
+	/**
+	 * function removes constant from configuration values and updates cache if installed.
+	 * @param string $constant
+	 */
+	
+	function remove_configure($constant){
+		global $admin;
+		if (!$constant) throw new \core\classes\userException("There is no constant to remove");
+		$this->exec("delete from " . TABLE_CONFIGURATION . " where configuration_key = '$constant'");
+		if (function_exists('apc_load_constants')) {// rebuild cache
+			$result = $this->prepare("select configuration_key, configuration_value from " . TABLE_CONFIGURATION );
+			$array = array ();
+			$sql->execute();
+			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+				$array[ $result['configuration_key'] ] = $result['configuration_value'];
+			}
+			apc_define_constants("configuration", $array, true);
+		}
+		return true;
+	}
 
 }
 

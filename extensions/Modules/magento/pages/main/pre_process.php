@@ -44,7 +44,7 @@ switch ($_REQUEST['action']) {
     $inc_image = isset($_POST['include_images']) ? true : false;
 	if ($upXML->bulkUpload($inc_image)) {
 		gen_add_audit_log(MAGENTO_BULK_UPLOAD);
-		write_configure('MODULE_MAGENTO_LAST_UPDATE', date('Y-m-d H:i:s'));
+		$admin->DataBase->write_configure('MODULE_MAGENTO_LAST_UPDATE', date('Y-m-d H:i:s'));
 	}
     break;
   case 'sync':

@@ -45,7 +45,7 @@ class basis {
 	public function __construct() {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->setObserver();
-		$this->user = new \core\classes\user();
+		$this->user = new \core\classes\user($this);
 		$this->toolbar = new \core\classes\toolbar ();
 		$this->currencies = new \core\classes\currencies ();
 		$this->setCinfo();
@@ -171,23 +171,28 @@ class basis {
 	public function set_database(){
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		\core\classes\messageStack::debug_log("connecting to database {$_SESSION['company']}" );
-		define('DB_DATABASE', $_SESSION['company']);
-		require_once(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php');
-		if(!defined('DB_SERVER_HOST')) define('DB_SERVER_HOST',DB_SERVER);
-		$this->DataBase = new \core\classes\PDO(DB_TYPE.":dbname={$_SESSION['company']};host=".DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION));
-		//	if(APC_EXTENSION_LOADED == false || apc_load_constants('configuration') == false) {
-		$result = $this->DataBase->prepare("SELECT configuration_key, configuration_value FROM " . DB_PREFIX . "configuration");
-		$result->execute();
-		while ($row = $result->fetch(\PDO::FETCH_LAZY)){
-			$this->configuration[$_SESSION['company']][$row['configuration_key']] = $row['configuration_value'];
-			define($row['configuration_key'],$row['configuration_value']);//@todo remove
+		try{
+			define('DB_DATABASE', $_SESSION['company']);
+			require_once(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php');
+			if(!defined('DB_SERVER_HOST')) define('DB_SERVER_HOST',DB_SERVER);
+			$this->DataBase = new \core\classes\PDO(DB_TYPE.":dbname={$_SESSION['company']};host=".DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION));
+			//	if(APC_EXTENSION_LOADED == false || apc_load_constants('configuration') == false) {
+			$result = $this->DataBase->prepare("SELECT configuration_key, configuration_value FROM " . DB_PREFIX . "configuration");
+			$result->execute();
+			while ($row = $result->fetch(\PDO::FETCH_LAZY)){
+				$this->configuration[$_SESSION['company']][$row['configuration_key']] = $row['configuration_value'];
+				define($row['configuration_key'],$row['configuration_value']);//@todo remove
+			}
+			require(DIR_FS_MODULES . 'phreedom/config.php');
+			$this->currencies->load($this);
+			// pull in the custom language over-rides for this module (to pre-define the standard language)
+			$path = DIR_FS_MODULES . "{$_REQUEST['module']}/custom/pages/{$_REQUEST['page']}/extra_menus.php";
+			if (file_exists($path)) { include($path); }
+			\core\classes\messageStack::debug_log("database type ".get_class($this->DataBase));
+		}catch (\Exception $e){
+			$messageStack->add($e);
+			$this->user->LoadLogIn();
 		}
-		require(DIR_FS_MODULES . 'phreedom/config.php');
-		$this->currencies->load($this);
-		// pull in the custom language over-rides for this module (to pre-define the standard language)
-		$path = DIR_FS_MODULES . "{$_REQUEST['module']}/custom/pages/{$_REQUEST['page']}/extra_menus.php";
-		if (file_exists($path)) { include($path); }
-		\core\classes\messageStack::debug_log("database type ".get_class($this->DataBase));
 	}
 
 	public function ReturnAdminClasses() {

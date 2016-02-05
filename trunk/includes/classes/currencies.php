@@ -167,7 +167,7 @@ class currencies {
 		  	$sql = $admin->DataBase->prepare("SELECT id FROM " . TABLE_JOURNAL_MAIN . " LIMIT 1");
 		  	$sql->execute();
 			if ($sql->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(SETUP_ERROR_CANNOT_CHANGE_DEFAULT);
-		  	write_configure('DEFAULT_CURRENCY', db_input($code));
+		  	$admin->DataBase->write_configure('DEFAULT_CURRENCY', db_input($code));
 			db_perform($this->db_table, array('value' => 1), 'update', "code='$code'"); // change default exc rate to 1
 		    $admin->DataBase->exec("ALETER TABLE " . TABLE_JOURNAL_MAIN . " CHANGE currencies_code currencies_code CHAR(3) NOT NULL DEFAULT '" . db_input($code) . "'");
 			$this->def_currency = db_input($code);

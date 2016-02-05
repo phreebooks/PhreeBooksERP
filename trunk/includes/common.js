@@ -51,6 +51,12 @@ function addUnloadEvent(func) {
 }
 
 function MessageStackAdd(message, type){
+	if ( ! document.getElementById("messageStack")) {
+	    var tbl = document.createElement('table');
+	    tbl.setAttribute('id', 'messageStack');
+	    tbl.setAttribute('style', "border-collapse:collapse;width:100%");
+	    document.body.insertBefore(tbl, document.body.childNodes[0]);
+	}
 	var newRow = document.getElementById('messageStack').insertRow(-1);
 	cell  = '<td align="center">';
 	if (type == 'success') {

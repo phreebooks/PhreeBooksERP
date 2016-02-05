@@ -114,7 +114,7 @@ class admin extends \core\classes\admin {
     	if (!$admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_wo_num')) {
 	  		$admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_wo_num VARCHAR(16) NOT NULL DEFAULT 'WO-0001';");
     	}
-		write_configure('PHREEHELP_FORCE_RELOAD', '1');
+		$admin->DataBase->write_configure('PHREEHELP_FORCE_RELOAD', '1');
   	}
 
 	function upgrade(\core\classes\basis &$basis) {
@@ -140,7 +140,7 @@ class admin extends \core\classes\admin {
 	    global $admin;
 	    parent::delete($path_my_files);
 	    if ($admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_wo_num')) $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_wo_num");
-		write_configure('PHREEHELP_FORCE_RELOAD', '1');
+		$admin->DataBase->write_configure('PHREEHELP_FORCE_RELOAD', '1');
 	}
 
 	function load_reports() {

@@ -34,7 +34,7 @@ switch ($_REQUEST['action']) {
 	// save general tab
 	foreach ($admin->classes['inventory']->keys as $key => $default) {
 	  $field = strtolower($key);
-      if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
+      if (isset($_POST[$field])) $admin->DataBase->write_configure($key, $_POST[$field]);
     }
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	$messageStack->add(INVENTORY_CONFIG_SAVED,'success');
