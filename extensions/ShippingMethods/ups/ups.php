@@ -468,12 +468,12 @@ class ups extends \shipping\classes\shipping {
 			throw new \core\classes\userException("The ship method {$sInfo->ship_method} is not supported by this tool presently. Please ship the package via a different tool.");
 		}
 		$strXML = $this->FormatUPSShipRequest($sInfo, $key);
-		if (DEBUG) $messageStack->debug('Ship Request xmlString = ' . htmlspecialchars($strXML));
+		\core\classes\messageStack::debug_log('Ship Request xmlString = ' . htmlspecialchars($strXML));
 		$this->labelRequest = $strXML;
 //echo 'Ship Request xmlString = ' . htmlspecialchars($strXML) . '<br />';
 		$url = (MODULE_SHIPPING_UPS_TEST_MODE == 'Test') ? MODULE_SHIPPING_UPS_SHIP_URL_TEST : MODULE_SHIPPING_UPS_SHIP_URL;
 		$SubmitXML = GetXMLString($strXML, $url, "POST");
-		if (DEBUG) $messageStack->debug('Ship Request response string = ' . htmlspecialchars($SubmitXML['xmlString']));
+		\core\classes\messageStack::debug_log('Ship Request response string = ' . htmlspecialchars($SubmitXML['xmlString']));
 		$this->labelResponse = $SubmitXML['xmlString'];
 //echo 'Ship Request response string = ' . htmlspecialchars($SubmitXML['xmlString']) . '<br />';
 		// Check for XML request errors
@@ -490,12 +490,12 @@ class ups extends \shipping\classes\shipping {
 
 		// Now resend request with digest to get the label
 		$strXML = $this->FormatUPSAcceptRequest($digest);
-		$messageStack->debug('Accept Request xmlString = ' . htmlspecialchars($strXML));
+		\core\classes\messageStack::debug_log('Accept Request xmlString = ' . htmlspecialchars($strXML));
 		$this->labelFetchRequest = $strXML;
 //echo 'Accept Request xmlString = ' . htmlspecialchars($strXML) . '<br />';
 		$url = (MODULE_SHIPPING_UPS_TEST_MODE == 'Test') ? MODULE_SHIPPING_UPS_LABEL_URL_TEST : MODULE_SHIPPING_UPS_LABEL_URL;
 		$SubmitXML = GetXMLString($strXML, $url, "POST");
-		$messageStack->debug('Accept Response response string = ' . htmlspecialchars($SubmitXML['xmlString']));
+		\core\classes\messageStack::debug_log('Accept Response response string = ' . htmlspecialchars($SubmitXML['xmlString']));
 		$this->labelFetchReturned = $SubmitXML['xmlString'];
 //echo 'Accept Response response string = ' . htmlspecialchars($SubmitXML['xmlString']) . '<br />';
 		// Check for XML request errors

@@ -18,7 +18,6 @@
 //  Path: /modules/phreedom/pages/pw_lost/template_main.php
 //
 echo html_form('pw_lost', FILENAME_DEFAULT, 'action=SendLostPassWord') . chr(10);
-if(is_object($messageStack)) echo $messageStack->output();
 ?>
 <div style="margin-left:25%;margin-right:25%;margin-top:50px;">
 <table class="ui-widget" style="border-collapse:collapse;width:100%">

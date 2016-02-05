@@ -60,10 +60,10 @@ abstract class journal {
 		// start unposting all affected records
 		if (sizeof($this->unpost_ids) > 0) {
 	  		krsort($this->unpost_ids); // unpost in reverse order
-	  		$admin->messageStack->debug("\nStarting to unPost reverse sorted id array = " . print_r($this->unpost_ids, true));
+	  		\core\classes\messageStack::debug_log("\nStarting to unPost reverse sorted id array = " . print_r($this->unpost_ids, true));
 		  	while (true) {
 				if (!$id = array_shift($this->unpost_ids)) break; // no more to unPost, exit loop
-				$admin->messageStack->debug("\n/********* unPosting journal_main id = $id");
+				\core\classes\messageStack::debug_log("\n/********* unPosting journal_main id = $id");
 				$unPost = new journal($id, false);
 				if (!isset($unPost->id)) continue; // already has been unposted, skip
 				if ($this->id <> $id) { // re-queue to post if not current entry
@@ -75,30 +75,30 @@ abstract class journal {
 				$this->affected_accounts = gen_array_key_merge($this->affected_accounts, $unPost->affected_accounts);
 				// add the new post_ids to the arrays, one for now, one for re-post loop later
 				$this->unpost_ids += $unPost->unpost_ids;
-				$admin->messageStack->debug("\n  unPosting array now looks like = " . print_r($this->unpost_ids, true));
-				$admin->messageStack->debug("\n  re-Posting array keys now looks like = " . print_r(array_keys($this->post_ids), true));
+				\core\classes\messageStack::debug_log("\n  unPosting array now looks like = " . print_r($this->unpost_ids, true));
+				\core\classes\messageStack::debug_log("\n  re-Posting array keys now looks like = " . print_r(array_keys($this->post_ids), true));
 //				$unPost->post_ids = array(); // clear nested unPost to zero, so it doesn't re-post
 	  		}
 		}
 		// Post entry and rePost any journal entries unPosted
 		ksort($this->post_ids); // re-post in post_date/record_id ascending order
-		$admin->messageStack->debug("\nStarting to Post indexes to be Posted = " . print_r(array_keys($this->post_ids), true));
+		\core\classes\messageStack::debug_log("\nStarting to Post indexes to be Posted = " . print_r(array_keys($this->post_ids), true));
 		while ($glEntry = array_shift($this->post_ids)) {
-			$admin->messageStack->debug("\n/********* Posting Journal main ... id = $glEntry->id and journal class = ".get_class($glEntry));
+			\core\classes\messageStack::debug_log("\n/********* Posting Journal main ... id = $glEntry->id and journal class = ".get_class($glEntry));
 			$this->repost_ids = $glEntry->check_for_re_post();
 			$glEntry->remove_cogs_rows(); // they will be regenerated during the post
-			$admin->messageStack->debug("\n  journal_main array = " . print_r($glEntry->journal_main_array, true));
+			\core\classes\messageStack::debug_log("\n  journal_main array = " . print_r($glEntry->journal_main_array, true));
 			db_perform(TABLE_JOURNAL_MAIN, $glEntry->journal_main_array, 'insert');
 			if (!$glEntry->id) $glEntry->id = \core\classes\PDO::lastInsertId('id');
 			// post journal rows
-			$admin->messageStack->debug("\n  Posting Journal rows ...");
+			\core\classes\messageStack::debug_log("\n  Posting Journal rows ...");
 			for ($i = 0; $i < count($glEntry->journal_rows); $i++) {
-		  		$admin->messageStack->debug("\n  journal_rows = " . print_r($glEntry->journal_rows[$i], true));
+		  		\core\classes\messageStack::debug_log("\n  journal_rows = " . print_r($glEntry->journal_rows[$i], true));
 		  		$glEntry->journal_rows[$i]['ref_id'] = $glEntry->id;	// link the rows to the journal main id
 		  		db_perform(TABLE_JOURNAL_ITEM, $glEntry->journal_rows[$i], 'insert');
 		  		if (!$glEntry->journal_rows[$i]['id']) $glEntry->journal_rows[$i]['id'] = \core\classes\PDO::lastInsertId('id');
 			}
-			$admin->messageStack->debug("\nStarting auxilliary post functions ...");
+			\core\classes\messageStack::debug_log("\nStarting auxilliary post functions ...");
 	  		// Inventory needs to be posted first because function may add additional journal rows for COGS
 			$glEntry->Post_inventory();
 			$glEntry->Post_chart_balances();
@@ -107,34 +107,34 @@ abstract class journal {
 			$this->first_period = min($this->first_period, $glEntry->period);
 			if (sizeof($this->repost_ids) > 0) {
 				ksort($this->repost_ids); // repost by post date
-				$admin->messageStack->debug("\nStarting to rePost entries queued from first pass, sorted id array = ".print_r($this->repost_ids, true));
+				\core\classes\messageStack::debug_log("\nStarting to rePost entries queued from first pass, sorted id array = ".print_r($this->repost_ids, true));
 				while (true) {
 					if (!$id = array_shift($this->repost_ids)) break; // no more to unPost, exit loop
-					$admin->messageStack->debug("\n/********* rePosting journal_main id = $id");
+					\core\classes\messageStack::debug_log("\n/********* rePosting journal_main id = $id");
 					if ($this->id == $id) continue; // don't repost current post
 					$rePost = new journal($id, false);
 					$rePost->Post('edit', true);
 					// add the new post_ids to the arrays, one for now, one for re-post loop later
 					$this->repost_ids += $rePost->repost_ids;
-					$admin->messageStack->debug("\n  rePosting array now looks like = " . print_r($this->repost_ids, true));
+					\core\classes\messageStack::debug_log("\n  rePosting array now looks like = " . print_r($this->repost_ids, true));
 				}
 			}
 		}
 		if (!$skip_balance) $this->update_chart_history_periods($this->first_period);
 		$this->check_for_closed_po_so('Post');
-		$admin->messageStack->debug("\n*************** end Posting Journal ******************* id = $this->id\n");
+		\core\classes\messageStack::debug_log("\n*************** end Posting Journal ******************* id = $this->id\n");
 		return true;
   	}
 
   	public function unPost($action = 'delete', $skip_balance = false) {
 		global $admin;
-		$admin->messageStack->debug("\nunPosting Journal... id = {$this->id} and action = $action and journal class = ".get_class($this));
+		\core\classes\messageStack::debug_log("\nunPosting Journal... id = {$this->id} and action = $action and journal class = ".get_class($this));
 		$this->unpost_ids = $this->check_for_re_post();
 		$this->unPost_account_sales_purchases();	// unPost the customer/vendor history
 		// unPost_chart_balances needs to be unPosted before inventory because inventory may remove journal rows (COGS)
 		$this->unPost_chart_balances();	// unPost the chart of account values
 		$this->unPost_inventory();
-		$admin->messageStack->debug("\n  Deleting Journal main and rows as part of unPost ...");
+		\core\classes\messageStack::debug_log("\n  Deleting Journal main and rows as part of unPost ...");
 		$result = $admin->DataBase->exec("DELETE FROM " . TABLE_JOURNAL_MAIN . " WHERE id = " . $this->id);
 		if ($result->AffectedRows() <> 1) throw new \core\classes\userException(GL_ERROR_CANNOT_DELETE_MAIN);
 		$result = $admin->DataBase->exec("DELETE FROM " . TABLE_JOURNAL_ITEM . " WHERE ref_id = " . $this->id);
@@ -143,7 +143,7 @@ abstract class journal {
 	  		if (is_array($this->unpost_ids)) { // rePost any journal entries unPosted to rollback COGS calculation
 	  			ksort($this->unpost_ids);
 				while ($id = array_shift($this->unpost_ids)) {
-					$admin->messageStack->debug("\nRe-posting as part of unPost - Journal main id = " . $id);
+					\core\classes\messageStack::debug_log("\nRe-posting as part of unPost - Journal main id = " . $id);
 			  		$rePost = new journal($id, false);
 			  		if (!isset($rePost->id)) continue; // already has been unposted, skip
 			  		$rePost->remove_cogs_rows(); // they will be regenerated during the re-post
@@ -155,7 +155,7 @@ abstract class journal {
 		}
 		if (!$skip_balance) $this->update_chart_history_periods($this->period);
 		$this->check_for_closed_po_so('unPost'); // check to re-open predecessor entry
-		$admin->messageStack->debug("\nend unPosting Journal.\n\n");
+		\core\classes\messageStack::debug_log("\nend unPosting Journal.\n\n");
 		return true;
   	}
 
@@ -180,12 +180,12 @@ abstract class journal {
 
   	final function validate_balance($period = CURRENT_ACCOUNTING_PERIOD) {
 		global $admin;
-		$admin->messageStack->debug("\n    Validating trial balance for period: $period ... ");
+		\core\classes\messageStack::debug_log("\n    Validating trial balance for period: $period ... ");
 		$sql = $admin->DataBase->prepare("SELECT sum(debit_amount) as debit, sum(credit_amount) as credit FROM " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " WHERE period = " . $period);
 		$sql->execute();
 		$result = $sql->fetch(\PDO::FETCH_LAZY);
 		// check to see if we are still in balance, round debits and credits and compare
-		$admin->messageStack->debug(" debits = {$result['debit']} and credits = {$result['credit']}");
+		\core\classes\messageStack::debug_log(" debits = {$result['debit']} and credits = {$result['credit']}");
 		$debit_total  = round($result['debit'],  $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
 		$credit_total = round($result['credit'], $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
 		if ($debit_total <> $credit_total) { // Trouble in paradise, fraction of cents adjustment next
@@ -202,12 +202,12 @@ abstract class journal {
 		  	} else {
 				$adj_gl_account = ROUNDING_GL_ACCOUNT;
 		  	}
-		  	$admin->messageStack->debug("\n      Adjusting balance, adjustment = $adjustment and gl account = $adj_gl_account");
+		  	\core\classes\messageStack::debug_log("\n      Adjusting balance, adjustment = $adjustment and gl account = $adj_gl_account");
 		  	$sql = "UPDATE " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " SET debit_amount = debit_amount + $adjustment
 			  WHERE period = $period and account_id = '$adj_gl_account'";
 		  	$result = $admin->DataBase->exec($sql);
 		}
-		$admin->messageStack->debug(" ... End Validating trial balance.");
+		\core\classes\messageStack::debug_log(" ... End Validating trial balance.");
 		return true;
   	}
 
@@ -240,7 +240,7 @@ abstract class journal {
 	final function update_inventory_status($sku, $field, $adjustment, $item_cost = 0, $desc = '', $full_price = 0) {
 		global $admin;
 		if (!$sku || $adjustment == 0) return true;
-		$admin->messageStack->debug("\n    update_inventory_status, SKU = $sku, field = $field, adjustment = $adjustment, and item_cost = " . $item_cost);
+		\core\classes\messageStack::debug_log("\n    update_inventory_status, SKU = $sku, field = $field, adjustment = $adjustment, and item_cost = " . $item_cost);
 		// catch sku's that are not in the inventory database but have been requested to post
 		$sql = $admin->DataBase->prepare("SELECT id, inventory_type FROM " . TABLE_INVENTORY . " WHERE sku = '$sku'");
 		$sql->execute();
@@ -302,18 +302,18 @@ abstract class journal {
 	 */
   	function rollback_COGS() {
 		global $admin;
-		$admin->messageStack->debug("\n    Rolling back COGS ... ");
+		\core\classes\messageStack::debug_log("\n    Rolling back COGS ... ");
 		// only calculate cogs for certain inventory_types
 		$sql = $admin->DataBase->prepare("Select id, qty, inventory_history_id FROM " . TABLE_INVENTORY_COGS_USAGE . " WHERE journal_main_id = " . $this->id);
 		$sql->execute();
 		if ($sql->fetch(\PDO::FETCH_NUM) == 0) {
-	  		$admin->messageStack->debug(" ...Exiting COGS, no work to be done.");
+	  		\core\classes\messageStack::debug_log(" ...Exiting COGS, no work to be done.");
 	  		return true;
 		}
 		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
 	  		$admin->DataBase->exec("UPDATE " . TABLE_INVENTORY_HISTORY . " SET remaining = remaining + {$result['qty']} WHERE id = " . $result['inventory_history_id']);
 		}
-		$admin->messageStack->debug(" ... Finished rolling back COGS");
+		\core\classes\messageStack::debug_log(" ... Finished rolling back COGS");
 		return true;
   	}
 
@@ -331,7 +331,7 @@ abstract class journal {
 
   	final function calculate_assembly_list($inv_list) {
 		global $admin;
-		$admin->messageStack->debug("\n    Calculating Assembly item list, SKU = " . $inv_list['sku']);
+		\core\classes\messageStack::debug_log("\n    Calculating Assembly item list, SKU = " . $inv_list['sku']);
 		$sku = $inv_list['sku'];
 		$qty = $inv_list['qty'];
 		$sql = $admin->DataBase->prepare("SELECT id FROM " . TABLE_INVENTORY . " WHERE sku = '$sku'");
@@ -348,7 +348,7 @@ abstract class journal {
 		$assy_cost = 0;
 		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
 		  	if ($result['quantity_on_hand'] < ($qty * $result['qty']) && strpos(COG_ITEM_TYPES, $result['inventory_type']) !== false) {
-				$admin->messageStack->debug("\n    Not enough of SKU = {$result['sku']} needed " . ($qty * $result['qty']) . " and had " . $result['quantity_on_hand']);
+				\core\classes\messageStack::debug_log("\n    Not enough of SKU = {$result['sku']} needed " . ($qty * $result['qty']) . " and had " . $result['quantity_on_hand']);
 				throw new \core\classes\userException(GL_ERROR_NOT_ENOUGH_PARTS . $result['sku']);
 		  	}
 			$result['qty'] = -($qty * $result['qty']);
@@ -494,7 +494,7 @@ abstract class journal {
 
   	final function remove_cogs_rows() {
 		global $admin;
-		$admin->messageStack->debug("\n  Removing system generated gl rows. Started with " . count($this->journal_rows) . " rows ");
+		\core\classes\messageStack::debug_log("\n  Removing system generated gl rows. Started with " . count($this->journal_rows) . " rows ");
 		// remove these types of rows since they are regenerated as part of the Post
 		$removal_gl_types = array('cog', 'asi');
 		$temp_rows = array();
@@ -502,7 +502,7 @@ abstract class journal {
 	  		if (!in_array($value['gl_type'], $removal_gl_types)) $temp_rows[] = $value;
 		}
 		$this->journal_rows = $temp_rows;
-		$admin->messageStack->debug(" and ended with " . count($this->journal_rows) . " rows.");
+		\core\classes\messageStack::debug_log(" and ended with " . count($this->journal_rows) . " rows.");
   	}
 
   	abstract function check_for_closed_po_so($action = 'Post');
@@ -514,7 +514,7 @@ abstract class journal {
 		  'closed_date' => ($closed) ? $this->post_date : '0000-00-00',
 		);
 		db_perform(TABLE_JOURNAL_MAIN, $sql_data_array, 'update', 'id = ' . $id);
-		$admin->messageStack->debug("\n  Record ID: {$this->id} " . (($closed) ? "Closed Record ID: " : "Opened Record ID: ") . $id);
+		\core\classes\messageStack::debug_log("\n  Record ID: {$this->id} " . (($closed) ? "Closed Record ID: " : "Opened Record ID: ") . $id);
 		return;
   	}
 

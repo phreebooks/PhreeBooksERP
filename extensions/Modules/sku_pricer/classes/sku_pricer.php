@@ -32,7 +32,7 @@ class sku_pricer {
   	function processCSV($filename) { //Master
   		global $admin, $messageStack;
   		$rows = $this->csv_to_array($_FILES[$filename]['tmp_name'], $delimiter=',');
-  		$messageStack->debug("\nfinished parsing, extracted number of rows = ".sizeof($rows));
+  		\core\classes\messageStack::debug_log("\nfinished parsing, extracted number of rows = ".sizeof($rows));
 		$valid_fields = array(
 			'description_short'		=> 'description_short',
 			'description_sales'		=> 'description_sales',
@@ -78,7 +78,7 @@ class sku_pricer {
 			foreach ($valid_fields as $key => $value) if (isset($row[$key])) $query .= " $value='".db_input($row[$key])."',";
 			$query .= "last_update='".date('Y-m-d')."'";
 			$sql = "UPDATE ".TABLE_INVENTORY." SET $query WHERE $where";
-			$messageStack->debug("\nExecuting sql = $sql");
+			\core\classes\messageStack::debug_log("\nExecuting sql = $sql");
 			$result = $admin->DataBase->query($sql);
 			if ($result->AffectedRows() > 0) $count++;
 			// now update the purchase table (need the sku, upc_code will not work)
@@ -92,7 +92,7 @@ class sku_pricer {
 			foreach ($purch_fields as $key => $value) if (isset($row[$key])) $query .= " $value='".db_input($row[$key])."',";
 			$query = substr($query, 0, strlen($query)-1); // remove last comma
 			$sql = "UPDATE ".TABLE_INVENTORY_PURCHASE." SET $query WHERE $where";
-			$messageStack->debug("\nExecuting sql = $sql");
+			\core\classes\messageStack::debug_log("\nExecuting sql = $sql");
 			$result = $admin->DataBase->query($sql);
 		}
 		if (DEBUG) $messageStack->write_debug();

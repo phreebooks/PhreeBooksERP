@@ -27,8 +27,8 @@ class journal_08 extends \core\classes\journal {
 	/*******************************************************************************************************************/
 	function check_for_re_post() {
 		global $admin;
-		$admin->messageStack->debug("\n  Checking for re-post records ... ");
-		$admin->messageStack->debug(" end check for Re-post with no action.");
+		\core\classes\messageStack::debug_log("\n  Checking for re-post records ... ");
+		\core\classes\messageStack::debug_log(" end check for Re-post with no action.");
 		return array();
 	}
 
@@ -37,8 +37,8 @@ class journal_08 extends \core\classes\journal {
 	/*******************************************************************************************************************/
 	function Post_chart_balances() {
 		global $admin;
-		$admin->messageStack->debug("\n  Posting Chart Balances...");
-		$admin->messageStack->debug(" end Posting Chart Balances with no action.");
+		\core\classes\messageStack::debug_log("\n  Posting Chart Balances...");
+		\core\classes\messageStack::debug_log(" end Posting Chart Balances with no action.");
 	}
 
 	/**
@@ -46,8 +46,8 @@ class journal_08 extends \core\classes\journal {
 	 */
 	function unPost_chart_balances() {
 		global $admin;
-		$admin->messageStack->debug("\n  unPosting Chart Balances...");
-		$admin->messageStack->debug(" end unPosting Chart Balances with no action.");
+		\core\classes\messageStack::debug_log("\n  unPosting Chart Balances...");
+		\core\classes\messageStack::debug_log(" end unPosting Chart Balances with no action.");
 	}
 
 	// *********  chart of account support functions  **********
@@ -61,7 +61,7 @@ class journal_08 extends \core\classes\journal {
 		$result = $admin->DataBase->query($sql);
 		$max_period = $result['period'];
 		$affected_acct_string = (is_array($this->affected_accounts)) ? implode("', '", array_keys($this->affected_accounts)) : '';
-		$admin->messageStack->debug("\n  Updating chart history for fiscal year: $fiscal_year and period: $period for accounts: ('$affected_acct_string')");
+		\core\classes\messageStack::debug_log("\n  Updating chart history for fiscal year: $fiscal_year and period: $period for accounts: ('$affected_acct_string')");
 		for ($i = $period; $i <= $max_period; $i++) {
 			$this->validate_balance($i);//will throw exceptions
 			// update future months
@@ -103,7 +103,7 @@ class journal_08 extends \core\classes\journal {
 			$this->update_chart_history_periods($max_period + 1);
 		}
 		// all historical chart of account balances from period on should be OK at this point.
-		$admin->messageStack->debug("\n  end Updating chart history periods. Fiscal Year: " . $fiscal_year);;
+		\core\classes\messageStack::debug_log("\n  end Updating chart history periods. Fiscal Year: " . $fiscal_year);;
 		return true;
 	}
 
@@ -115,9 +115,9 @@ class journal_08 extends \core\classes\journal {
 	// Post the customers/vendors sales/purchases values for the given period
 	function Post_account_sales_purchases() {
 		global $admin;
-		$admin->messageStack->debug("\n  Posting account sales and purchases ...");
+		\core\classes\messageStack::debug_log("\n  Posting account sales and purchases ...");
 		// nothing required to do
-		$admin->messageStack->debug(" end Posting account sales and purchases with no action.");
+		\core\classes\messageStack::debug_log(" end Posting account sales and purchases with no action.");
 		return true;
 	}
 
@@ -128,9 +128,9 @@ class journal_08 extends \core\classes\journal {
 
 	function unPost_account_sales_purchases() {
 		global $admin;
-		$admin->messageStack->debug("\n  unPosting account sales and purchases ...");
+		\core\classes\messageStack::debug_log("\n  unPosting account sales and purchases ...");
 		// nothing required to do
-		$admin->messageStack->debug(" end unPosting account sales and purchases with no action.");
+		\core\classes\messageStack::debug_log(" end unPosting account sales and purchases with no action.");
 	}
 
 	/*******************************************************************************************************************/
@@ -140,14 +140,14 @@ class journal_08 extends \core\classes\journal {
 	/*******************************************************************************************************************/
 	function Post_inventory() {
 		global $admin;
-		$admin->messageStack->debug("\n  Posting Inventory ...");
-		$admin->messageStack->debug(" end Posting Inventory not requiring any action.");
+		\core\classes\messageStack::debug_log("\n  Posting Inventory ...");
+		\core\classes\messageStack::debug_log(" end Posting Inventory not requiring any action.");
 	}
 
 	function unPost_inventory() {
 		global $admin;
-		$admin->messageStack->debug("\n  unPosting Inventory ...");
-		$admin->messageStack->debug(" end unPosting Inventory with no action.");
+		\core\classes\messageStack::debug_log("\n  unPosting Inventory ...");
+		\core\classes\messageStack::debug_log(" end unPosting Inventory with no action.");
 	}
 
 
@@ -162,7 +162,7 @@ class journal_08 extends \core\classes\journal {
 	 */
 	function calculate_COGS($item, $return_cogs = false) {
 		global $admin;
-		$admin->messageStack->debug("\n    No COGS to be calculated in Payrol journal");
+		\core\classes\messageStack::debug_log("\n    No COGS to be calculated in Payrol journal");
 		return true;
 	}
 
@@ -174,7 +174,7 @@ class journal_08 extends \core\classes\journal {
 	 */
 	function calculateCost($sku = '', $qty=1, $serial_num='') {
 		global $admin;
-		$admin->messageStack->debug("\n    nothing to calculate SKU cost for payrol");
+		\core\classes\messageStack::debug_log("\n    nothing to calculate SKU cost for payrol");
 		return 0;
 	}
 
@@ -186,7 +186,7 @@ class journal_08 extends \core\classes\journal {
 	 */
 	function calculate_avg_cost($sku = '', $price = 0, $qty = 1) {
 		global $admin;
-		$admin->messageStack->debug("\n    nothing to calculate avg SKU cost for payrol");
+		\core\classes\messageStack::debug_log("\n    nothing to calculate avg SKU cost for payrol");
 		return 0;
 	}
 
@@ -197,7 +197,7 @@ class journal_08 extends \core\classes\journal {
 	 */
 	function fetch_avg_cost($sku = '', $qty=1) {
 		global $admin;
-		$admin->messageStack->debug("\n    nothing to fetch avg SKU cost for payrol");
+		\core\classes\messageStack::debug_log("\n    nothing to fetch avg SKU cost for payrol");
 		return 0;
 	}
 
@@ -207,27 +207,27 @@ class journal_08 extends \core\classes\journal {
 	 */
 	function rollback_COGS() {
 		global $admin;
-		$admin->messageStack->debug("\n    Rolling back COGS ... ");
+		\core\classes\messageStack::debug_log("\n    Rolling back COGS ... ");
 		// only calculate cogs for certain inventory_types
 		$sql = $admin->DataBase->prepare("Select id, qty, inventory_history_id FROM " . TABLE_INVENTORY_COGS_USAGE . " WHERE journal_main_id = " . $this->id);
 		$sql->execute();
 		if ($sql->fetch(\PDO::FETCH_NUM) == 0) {
-			$admin->messageStack->debug(" ...Exiting COGS, no work to be done.");
+			\core\classes\messageStack::debug_log(" ...Exiting COGS, no work to be done.");
 			return true;
 		}
 		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
 			$admin->DataBase->exec("UPDATE " . TABLE_INVENTORY_HISTORY . " SET remaining = remaining + {$result['qty']} WHERE id = " . $result['inventory_history_id']);
 		}
-		$admin->messageStack->debug(" ... Finished rolling back COGS");
+		\core\classes\messageStack::debug_log(" ... Finished rolling back COGS");
 		return true;
 	}
 
 	function load_so_po_balance($ref_id, $id = '', $post = true) {
 		global $admin;
-		$admin->messageStack->debug("\n    Starting to load SO/PO balances ...");
+		\core\classes\messageStack::debug_log("\n    Starting to load SO/PO balances ...");
 		if ($ref_id) throw new \core\classes\userException('Error in classes/journal_08, function load_so_po_balance. Bad journal for this function.');
 		$this->so_po_balance_array = array();
-		$admin->messageStack->debug(" Finished loading SO/PO balances = " . print_r($item_array, true));
+		\core\classes\messageStack::debug_log(" Finished loading SO/PO balances = " . print_r($item_array, true));
 		return array();
 	}
 
@@ -245,7 +245,7 @@ class journal_08 extends \core\classes\journal {
 		//   all quantities are reduced to zero (from so/po journal - should be deleted instead but it's possible)
 		//   editing quantities on po/so to match the number received (from po/so journal)
 		//   receiving all (or more) po/so items through one or more purchases/sales (from purchase/sales journal)
-		$admin->messageStack->debug("\n  Checking for closed entry. action = " . $action);
+		\core\classes\messageStack::debug_log("\n  Checking for closed entry. action = " . $action);
 		return true;
 	}
 
@@ -255,17 +255,17 @@ class journal_08 extends \core\classes\journal {
 	 */
 	function validate_purchase_invoice_id() {
 		global $admin;
-		$admin->messageStack->debug("\n  Start validating purchase_invoice_id ... ");
+		\core\classes\messageStack::debug_log("\n  Start validating purchase_invoice_id ... ");
 		if ($this->purchase_invoice_id <> '') {	// entered a so/po/invoice value, check for dups
 			$sql = "SELECT purchase_invoice_id FROM " . TABLE_JOURNAL_MAIN . " WHERE purchase_invoice_id = '{$this->purchase_invoice_id}' and journal_id = '8'";
 			if ($this->id) $sql .= " and id <> " . $this->id;
 			$result = $admin->DataBase->query($sql);
 			if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(sprintf(TEXT_THE_YOU_ENTERED_IS_A_DUPLICATE,_PLEASE_ENTER_A_NEW_UNIQUE_VALUE_ARGS, $this->id_field_name));
 			$this->journal_main_array['purchase_invoice_id'] = $this->purchase_invoice_id;
-			$admin->messageStack->debug(" specified ID but no dups, returning OK. ");
+			\core\classes\messageStack::debug_log(" specified ID but no dups, returning OK. ");
 		} else {	// generate a new order/invoice value
 			$this->journal_main_array['purchase_invoice_id'] = '';
-			$admin->messageStack->debug(" generated ID, returning ID# " . $this->journal_main_array['purchase_invoice_id']);
+			\core\classes\messageStack::debug_log(" generated ID, returning ID# " . $this->journal_main_array['purchase_invoice_id']);
 		}
 		return true;
 	}

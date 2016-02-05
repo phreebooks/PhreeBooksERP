@@ -29,7 +29,7 @@ elseif (isset($_GET['page']))   $page = $_GET['page'];
 else                     		$page = 'main';
 try{
 	require_once('includes/application_top.php');
-   	$messageStack->debug("\n checking if user is validated");
+   	\core\classes\messageStack::debug_log("\n checking if user is validated");
    	if ($admin->cInfo->action) $admin->removeEventsAndAddNewEvent($admin->cInfo->action);
    	$admin->startProcessingEvents();
 	ob_end_flush();
@@ -38,9 +38,9 @@ try{
 }catch (\core\classes\userException $e) {
 	\core\classes\messageStack::add($e->getMessage());
 	if (is_object($admin->DataBase)) gen_add_audit_log($e->getMessage());
-	$messageStack->debug(" ".$e->getMessage());
-	$messageStack->debug(" fire event : $e->action");
-	$messageStack->debug("\n\n\n".$e->getTraceAsString());
+	\core\classes\messageStack::debug_log(" ".$e->getMessage());
+	\core\classes\messageStack::debug_log(" fire event : $e->action");
+	\core\classes\messageStack::debug_log("\n\n\n".$e->getTraceAsString());
 	if (is_object($admin)) {
 		$admin->removeEventsAndAddNewEvent($e->action); //@todo werkt nog niet altijd
 		$admin->startProcessingEvents();

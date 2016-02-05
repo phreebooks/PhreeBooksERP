@@ -34,8 +34,8 @@ class import_banking extends \phreebooks\classes\journal {
 	public    $open_inv    = array();
 
 	 public function __construct(){
-	 	global $admin, $messageStack;
-	 	$messageStack->debug("\n\n*************** Start Import Payment Class *******************");
+	 	global $admin;
+	 	\core\classes\messageStack::debug_log("\n\n*************** Start Import Payment Class *******************");
 	 	$temp = $admin->DataBase->query("describe " . TABLE_CONTACTS);
 	 	while (!$temp->EOF) {
 	 		if(strripos($temp->fields['Field'],'bank_account')!==false) $this->bank_account_fields[] = $temp->fields['Field'];
@@ -49,7 +49,7 @@ class import_banking extends \phreebooks\classes\journal {
 	 public function start_import($ouwer_bank_account_number, $post_date, $other_bank_account_number, $credit_amount, $debit_amount, $description, $bank_gl_acct, $other_bank_account_iban){
 	 	global $admin, $messageStack;
 	 	$this->reset();
-	 	$messageStack->debug("\n\n*************** Start Processing Import Payment *******************");
+	 	\core\classes\messageStack::debug_log("\n\n*************** Start Processing Import Payment *******************");
 	 	if ($ouwer_bank_account_number <> '') {
 			$ouwer_bank = ltrim($ouwer_bank_account_number,0);
 		 	if ($ouwer_bank == '') throw new \core\classes\userException(TEXT_OUWER_BANK_ACCOUNT_IS_EMPTY);
@@ -76,7 +76,7 @@ class import_banking extends \phreebooks\classes\journal {
 				$this->proces_mutation();
 			}
 		}
-	$messageStack->debug("\n\n*************** End Processing Import Payment *******************");
+	\core\classes\messageStack::debug_log("\n\n*************** End Processing Import Payment *******************");
 	}
 
 	private function find_contact(&$other_bank_account_number, &$other_bank_account_iban){
@@ -88,9 +88,9 @@ class import_banking extends \phreebooks\classes\journal {
 			$other_bank_account_number 	= null;
 		}
 		$criteria = false;
-		$messageStack->debug("\n trying to find a contact ");
+		\core\classes\messageStack::debug_log("\n trying to find a contact ");
 		if($other_bank_account_number =='' && $other_bank_account_iban ==''){
-			$messageStack->debug("\n there is no other bank account number or iban. can not find contact. ");
+			\core\classes\messageStack::debug_log("\n there is no other bank account number or iban. can not find contact. ");
 			return false;
 		}
 		if($other_bank_account_iban != '' && count($this->iban_fields) > 0 ){
@@ -100,8 +100,8 @@ class import_banking extends \phreebooks\classes\journal {
 			if(count($this->bank_account_fields) > 0){
 				$criteria = '(' . implode(' = "' . ltrim($other_bank_account_number,0) . '" or ', $this->bank_account_fields) . ' = "' . ltrim($other_bank_account_number,0) . '")';
 			}else{
-				if($other_bank_account_iban != '' )  $messageStack->debug("\n iban field is supplied but cant find it in the contact fields. If you want it add it in the contacts module administration ");
-				if($other_bank_account_number != '') $messageStack->debug("\n the other bank account field is supplied but cant find it in the contact fields. If you want it add it in the contacts module administration");
+				if($other_bank_account_iban != '' )  \core\classes\messageStack::debug_log("\n iban field is supplied but cant find it in the contact fields. If you want it add it in the contacts module administration ");
+				if($other_bank_account_number != '') \core\classes\messageStack::debug_log("\n the other bank account field is supplied but cant find it in the contact fields. If you want it add it in the contacts module administration");
 				return false;
 			}
 		}
@@ -110,7 +110,7 @@ class import_banking extends \phreebooks\classes\journal {
 		$result1 = $admin->DataBase->query($sql);
 		$contact = false;
 		if($result1->fetch(\PDO::FETCH_NUM) !== 0){
-			$messageStack->debug("\n found a costumer or vender with the bankaccountnumber ". ltrim($other_bank_account_number,0));
+			\core\classes\messageStack::debug_log("\n found a costumer or vender with the bankaccountnumber ". ltrim($other_bank_account_number,0));
 			if (!$result1->fetch(\PDO::FETCH_NUM)> 1){
 				//TEXT_IMP_ERMSG17 = two or more accounts with the same account
 				\core\classes\messageStack::add(TEXT_THERE_ARE_TWO_OR_MORE_ACCOUNTS_WITH_THE_SAME_BANK_ACCOUNT . ': ' . $other_bank_account_number, 'error');
@@ -122,7 +122,7 @@ class import_banking extends \phreebooks\classes\journal {
 			$contact = $this->unknown_contact($other_bank_account_number, $other_bank_account_iban);
 		}
 		if($contact == false){
-			$messageStack->debug("\n was unable to find a 1 matching contact. ");
+			\core\classes\messageStack::debug_log("\n was unable to find a 1 matching contact. ");
 			return false;
 		}
 		$result2 = $admin->DataBase->query("SELECT * FROM ". TABLE_ADDRESS_BOOK ." WHERE (type ='vm' or type='vb' or type ='cm' or type ='cb' ) and ref_id = '{$contact['id']}'");
@@ -145,7 +145,7 @@ class import_banking extends \phreebooks\classes\journal {
 
 	private function find_right_invoice(){
 		global $admin, $messageStack;
-		$messageStack->debug("\n trying to find the right invoice");
+		\core\classes\messageStack::debug_log("\n trying to find the right invoice");
 		$found_invoices = array();
 		$invoice_number = array();
 		$invoice_id 	= array();
@@ -153,11 +153,11 @@ class import_banking extends \phreebooks\classes\journal {
 		if(isset($this->open_inv[$this->bill_acct_id])) foreach ($this->open_inv[$this->bill_acct_id] as $key => $invoice) {
 			//when we find a invoice we book a payment to it
 			if( strripos($this->_description, $invoice['purchase_invoice_id']) !== false){ // if invoice is part of the description use it
-				$messageStack->debug("\n Found matching invoice number in description purchase_invoice_id {$invoice['purchase_invoice_id']} id {$invoice['id']} \n variables ".print_r($invoice,  true));
+				\core\classes\messageStack::debug_log("\n Found matching invoice number in description purchase_invoice_id {$invoice['purchase_invoice_id']} id {$invoice['id']} \n variables ".print_r($invoice,  true));
 				$invoice['found_by_number'] = true;
 				$found_invoices[] = $invoice;
 			}else if ( abs($invoice['total_amount'] - $invoice['amount_paid'] - $this->total_amount) < $epsilon)	{
-				$messageStack->debug("\n Found by value matching invoice purchase_invoice_id {$invoice['purchase_invoice_id']} id {$invoice['id']}\n variables ".print_r($invoice, true));
+				\core\classes\messageStack::debug_log("\n Found by value matching invoice purchase_invoice_id {$invoice['purchase_invoice_id']} id {$invoice['id']}\n variables ".print_r($invoice, true));
 				$invoice['found_by_number'] = false;
 				$found_invoices[] = $invoice;
 			}
@@ -192,37 +192,37 @@ class import_banking extends \phreebooks\classes\journal {
 					case 6:
 					case 1: // full amount is payed
 						$found_invoices[$i]['discount'] = false;
-						$messageStack->debug("\n step $step trying if we get totals balanced when the full amount is payed. ");
+						\core\classes\messageStack::debug_log("\n step $step trying if we get totals balanced when the full amount is payed. ");
 						break;
 					case 7:
 					case 2: // make use of discount full
-						$messageStack->debug("\n step $step trying if we get totals balanced when the full discount is used. ");
+						\core\classes\messageStack::debug_log("\n step $step trying if we get totals balanced when the full discount is used. ");
 						if($found_invoices[$i]['early_date'] >= $this->post_date){// if post_date is smaller than early_date allow discount
 							$found_invoices[$i]['discount'] = round($found_invoices[$i]['total_amount'] * $found_invoices[$i]['percent'],  $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
-							$messageStack->debug("\n discount could be used for invoice ".$found_invoices[$i]['purchase_invoice_id']." Payed = ". $found_invoices[$i]['amount']." Discount = ". $found_invoices[$i]['discount']);
+							\core\classes\messageStack::debug_log("\n discount could be used for invoice ".$found_invoices[$i]['purchase_invoice_id']." Payed = ". $found_invoices[$i]['amount']." Discount = ". $found_invoices[$i]['discount']);
 						}
 						break;
 					case 8:
 					case 3: // make use of less discount than is allowed.
-						$messageStack->debug("\n step $step trying if we get totals balanced when less than the full discount is used. ");
+						\core\classes\messageStack::debug_log("\n step $step trying if we get totals balanced when less than the full discount is used. ");
 						if( $found_invoices[$i]['discount'] && $difference > 0 ){
-							$messageStack->debug("\n for invoice ".$found_invoices[$i]['purchase_invoice_id']." discount = ".$found_invoices[$i]['discount']." difference = ". $difference);
+							\core\classes\messageStack::debug_log("\n for invoice ".$found_invoices[$i]['purchase_invoice_id']." discount = ".$found_invoices[$i]['discount']." difference = ". $difference);
 							if($found_invoices[$i]['discount'] >= $difference){
 								$found_invoices[$i]['discount'] -= $difference;
 								$difference = 0;
-								$messageStack->debug("\n for invoice ".$found_invoices[$i]['purchase_invoice_id']." discount reduced by the difference.");
+								\core\classes\messageStack::debug_log("\n for invoice ".$found_invoices[$i]['purchase_invoice_id']." discount reduced by the difference.");
 							}else{
 								$difference -= $found_invoices[$i]['discount'];
 								$found_invoices[$i]['discount'] = false;
-								$messageStack->debug("\n for invoice ".$found_invoices[$i]['purchase_invoice_id']." discount is set to null and difference is decreased by the discount.");
+								\core\classes\messageStack::debug_log("\n for invoice ".$found_invoices[$i]['purchase_invoice_id']." discount is set to null and difference is decreased by the discount.");
 							}
 							$found_invoices[$i]['discount'] = round($found_invoices[$i]['discount'],  $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
 						}
 						break;
 					case 5:// unset items that where not found by invoice_number
-						$messageStack->debug("\n step $step removing items that were not found by invoice number. ");
+						\core\classes\messageStack::debug_log("\n step $step removing items that were not found by invoice number. ");
 						if(!$found_invoices[$i]['found_by_number']) {
-							$messageStack->debug("\n removing invoice number. ".$found_invoices[$i]['purchase_invoice_id']);
+							\core\classes\messageStack::debug_log("\n removing invoice number. ".$found_invoices[$i]['purchase_invoice_id']);
 							$found_invoices[$i]['total_amount'] = 0;
 							$found_invoices[$i]['amount_paid']  = 0;
 							$found_invoices[$i]['amount']		= 0;
@@ -230,12 +230,12 @@ class import_banking extends \phreebooks\classes\journal {
 							$found_invoices[$i]['percent']		= 0;
 							$found_invoices[$i]['discount']     = false;
 						}
-						$messageStack->debug("\n now only use invoices " .print_r($invoice, true));
+						\core\classes\messageStack::debug_log("\n now only use invoices " .print_r($invoice, true));
 						break;
 					case 9;//do a partial payment
 						if($difference_perc > 0){
 					    	$found_invoices[$i]['amount'] = round($found_invoices[$i]['amount'] / $difference_perc,  $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
-					    	$messageStack->debug("\n step ".$step." doing a partial payment. ");
+					    	\core\classes\messageStack::debug_log("\n step ".$step." doing a partial payment. ");
 							$found_invoices[$i]['payed_if_full']  = false;
 					    	$found_invoices[$i]['discount']       = false;
 						}else{
@@ -245,7 +245,7 @@ class import_banking extends \phreebooks\classes\journal {
 						}
 					    break;
 					case 4;//try the first invoice
-						$messageStack->debug("\n step $step trying the first invoice. ");
+						\core\classes\messageStack::debug_log("\n step $step trying the first invoice. ");
 						if($i > 0){
 							$found_invoices[$i]['discount'] 	 = false;
 							$found_invoices[$i]['amount']   	 = 0;
@@ -282,16 +282,16 @@ class import_banking extends \phreebooks\classes\journal {
 			if( $step == 5 ) $difference_perc = $amount_used / $this->total_amount;
 			$difference = $this->total_amount - $amount_used;
 			$good = abs($this->total_amount - $amount_used) < $epsilon;
-			$messageStack->debug("\n contiune = $good total_amount = {$this->total_amount} amount_used = $amount_used difference percent = $difference_perc");
+			\core\classes\messageStack::debug_log("\n contiune = $good total_amount = {$this->total_amount} amount_used = $amount_used difference percent = $difference_perc");
 			$step++;
 		}
 		if ($good == false){
 			if(sizeof($found_invoices) != 0 ){
-				$messageStack->debug("\n Found invoices but total amounts didn't align. ");
+				\core\classes\messageStack::debug_log("\n Found invoices but total amounts didn't align. ");
 				$this->journal_rows = null;
 				$amount_used = 0;
 			}
-			$messageStack->debug("\n posting payment as a deposit ");
+			\core\classes\messageStack::debug_log("\n posting payment as a deposit ");
 			$this->journal_rows[] = array(
 				'so_po_item_ref_id'		=> '',
 				'gl_type'               => GL_TYPE,
@@ -308,11 +308,11 @@ class import_banking extends \phreebooks\classes\journal {
 			for($i=0; $i < sizeof($found_invoices); $i++){
 				$this->open_inv[$this->bill_acct_id][$found_invoices[$i]['purchase_invoice_id']]['amount_paid'] += $found_invoices[$i]['amount'];
 				if($found_invoices[$i]['payed_if_full']){
-					$messageStack->debug("\n unsetting invoice ".print_r($this->open_inv[$this->bill_acct_id][$found_invoices[$i]['purchase_invoice_id']], true));
+					\core\classes\messageStack::debug_log("\n unsetting invoice ".print_r($this->open_inv[$this->bill_acct_id][$found_invoices[$i]['purchase_invoice_id']], true));
 					unset($this->open_inv[$this->bill_acct_id][$found_invoices[$i]['purchase_invoice_id']]);
 				}
 			}
-			$messageStack->debug("\n posting payment to invoices ".print_r($found_invoices, true));
+			\core\classes\messageStack::debug_log("\n posting payment to invoices ".print_r($found_invoices, true));
 		}
 		$this->journal_rows[] = array(
 			'gl_type'               => 'ttl',
@@ -327,7 +327,7 @@ class import_banking extends \phreebooks\classes\journal {
 		$this->Post('insert', true);
 		$this->increment_purchase_invoice_id();
 		if ($good == false){ // make credit inv
-			$messageStack->debug("\n Making credit invoice. ");
+			\core\classes\messageStack::debug_log("\n Making credit invoice. ");
 			$this->journal_main_array   = null;
 			$this->journal_id          	= ($this->_firstjid == 20) ? 7 : 13;
 			$this->gl_acct_id          	= $gl_acct_id;
@@ -362,7 +362,7 @@ class import_banking extends \phreebooks\classes\journal {
 
 	private function proces_mutation(){
 		global $admin, $messageStack;
-		$messageStack->debug("\n this wil be posted as a journal ");
+		\core\classes\messageStack::debug_log("\n this wil be posted as a journal ");
 		$sql ="select gl_account from " . TABLE_JOURNAL_ITEM. " where description = '".$this->_description."' and not gl_account='".$this->gl_acct_id."' and not gl_account='".$this->_questionposts."'";
 		$result = $admin->DataBase->query($sql);
 		$gl_account = $this->_questionposts;
@@ -396,17 +396,17 @@ class import_banking extends \phreebooks\classes\journal {
 
 	private function proces_know_mutation($other_bank_account_number, $other_bank_account_iban){
 		global $admin, $messageStack;
-		$messageStack->debug("\n we start looking for a match with a know bank account in proces_know_mutation.\n where bank_account = '".$other_bank_account_number."' or bank_iban = '".$other_bank_account_iban );
+		\core\classes\messageStack::debug_log("\n we start looking for a match with a know bank account in proces_know_mutation.\n where bank_account = '".$other_bank_account_number."' or bank_iban = '".$other_bank_account_iban );
 		if (isset($this->known_trans[$other_bank_account_iban])){
 			$temp = $other_bank_account_iban;
 		}elseif (isset($this->known_trans[$other_bank_account_number])){
 			$temp = $other_bank_account_number;
 		}else{
-			$messageStack->debug("\n couldn't find a match with a know bank account.");
+			\core\classes\messageStack::debug_log("\n couldn't find a match with a know bank account.");
 			return false;
 		}
 		if($this->known_trans[$temp]['gl_acct_id'] == ''){
-			$messageStack->debug("\n the gl_acct_id is empty.");
+			\core\classes\messageStack::debug_log("\n the gl_acct_id is empty.");
 			return false;
 		}
 		$this->id					= '';
@@ -437,12 +437,12 @@ class import_banking extends \phreebooks\classes\journal {
 		if (isset($this->known_trans[$other_bank_account_iban]))   return false;
 		if (isset($this->known_trans[$other_bank_account_number])) return false;
 		//looking if it is a new contact
-		$messageStack->debug("\n start looking for unknown match");
+		\core\classes\messageStack::debug_log("\n start looking for unknown match");
 		foreach ($this->open_inv as $contact_id => $contact) {
 			//when we find a invoice we book a payment to it
 			foreach ($contact as $invoice_id => $invoice) {
 				if( strripos($this->_description, $invoice['purchase_invoice_id']) !== false){ // if invoice is part of the description use it
-					$messageStack->debug("\n Found contact by invoice_nr in description. found contact ".$contact_id);
+					\core\classes\messageStack::debug_log("\n Found contact by invoice_nr in description. found contact ".$contact_id);
 					if($other_bank_account_number) \core\classes\messageStack::add(sprintf(TEXT_NEW_BANK, $other_bank_account_number, $invoice['short_name']), 'caution');
 					if($other_bank_account_iban)   \core\classes\messageStack::add(sprintf(TEXT_NEW_IBAN, $other_bank_account_iban,   $invoice['short_name']), 'caution');
 					return array('id' => $contact_id,'type' => $invoice['type']);
@@ -597,7 +597,7 @@ class import_banking extends \phreebooks\classes\journal {
 
 	public function __destruct(){
 		global $messageStack;
-		$messageStack->debug("\n\n*************** end Import Payment Class*******************");
+		\core\classes\messageStack::debug_log("\n\n*************** end Import Payment Class*******************");
 		//print_r($this);
 	}
 }

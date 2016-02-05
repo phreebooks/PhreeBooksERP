@@ -164,7 +164,7 @@ switch ($_REQUEST['action']) {
 		$admin->DataBase->transCommit();
 		if ($glEntry->rm_attach) @unlink(PHREEBOOKS_DIR_MY_ORDERS . 'order_'.$glEntry->id.'.zip');
 		if (is_uploaded_file($_FILES['file_name']['tmp_name'])) {
-			$messageStack->debug('Saving file to: '.PHREEBOOKS_DIR_MY_ORDERS.'order_'.$glEntry->id.'.zip');
+			\core\classes\messageStack::debug_log('Saving file to: '.PHREEBOOKS_DIR_MY_ORDERS.'order_'.$glEntry->id.'.zip');
 		  	saveUploadZip('file_name', PHREEBOOKS_DIR_MY_ORDERS, 'order_'.$glEntry->id.'.zip');
 		}
 		gen_add_audit_log(TEXT_GENERAL_JOURNAL_ENTRY. " - " . (($glEntry->id) ? TEXT_EDIT : TEXT_ADD), $glEntry->purchase_invoice_id);

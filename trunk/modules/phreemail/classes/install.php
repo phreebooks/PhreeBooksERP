@@ -123,7 +123,7 @@ class phreemail_admin {
 
   function Iinitialize() {
   		global $admin, $messageStack;
-  		$messageStack->debug("\n\n*************** Retrieving Mail from ".EMAIL_SMTPAUTH_MAILBOX." *******************");
+  		\core\classes\messageStack::debug_log("\n\n*************** Retrieving Mail from ".EMAIL_SMTPAUTH_MAILBOX." *******************");
 		try{
 			include_once (DIR_FS_MODULES . 'phreemail/classes/phreemail.php');
 	  		$mail = new phreemail();
@@ -144,9 +144,9 @@ class phreemail_admin {
 		}catch (\Exception $exception){
 			\core\classes\messageStack::add($exception->getMessage(), 'error');
 		}
-		$messageStack->debug("\n\n*************** End Retrieving Mail from ".EMAIL_SMTPAUTH_MAILBOX." *******************");
+		\core\classes\messageStack::debug_log("\n\n*************** End Retrieving Mail from ".EMAIL_SMTPAUTH_MAILBOX." *******************");
 		try{
-			$messageStack->debug("\n\n*************** Retrieving Mail from ".$_SESSION['admin_email']." *******************");
+			\core\classes\messageStack::debug_log("\n\n*************** Retrieving Mail from ".$_SESSION['admin_email']." *******************");
 			$mail = new phreemail();
 			$mail->connect('', '', $_SESSION['admin_email'], '');
 //			$mail->get_all_emails();
@@ -163,7 +163,7 @@ class phreemail_admin {
 				$mail->do_action();
 				$mail->MoveNext();
 			}*/
-			$messageStack->debug("\n\n*************** End Retrieving Mail from ".$_SESSION['admin_email']." *******************");
+			\core\classes\messageStack::debug_log("\n\n*************** End Retrieving Mail from ".$_SESSION['admin_email']." *******************");
 		}catch (\Exception $exception){
 			\core\classes\messageStack::add($exception->getMessage(), 'error');
 		}

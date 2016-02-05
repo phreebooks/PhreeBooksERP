@@ -28,9 +28,6 @@
 					src="../modules/phreedom/images/phreesoft_logo.png"
 					alt="Phreedom Small Business Toolkit" height="50" /></th>
 			</tr>
-			<tr>
-				<th colspan="2"><?php echo $messageStack->output(); ?></th>
-			</tr>
 		</thead>
 		<tbody class="ui-widget-content">
 			<tr>

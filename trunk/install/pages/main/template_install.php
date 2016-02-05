@@ -41,10 +41,6 @@
 			<tr>
 				<td colspan="2"><?php echo MSG_INSPECT_ERRORS; ?></td>
 			</tr>
-			<tr>
-				<td colspan="2"><?php echo $messageStack->output(); ?></td>
-			</tr>
-
 
 
 

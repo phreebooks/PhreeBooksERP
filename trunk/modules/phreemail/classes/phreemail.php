@@ -258,7 +258,7 @@ class phreemail extends PHPMailer{
     	$email 	= array();
     	$header = imap_headerinfo($this->imap_stream, $msgid);
     	foreach($header as $key => $value) $email[strtolower_utf8($key)] = db_prepare_input($value);
-    	$messageStack->debug("\n email header ".print_r($email, true));
+    	\core\classes\messageStack::debug_log("\n email header ".print_r($email, true));
     	/*Recent - R if recent and seen, N if recent and not seen, ' ' if not recent.
  		* Unseen - U if not seen AND not recent, ' ' if seen OR not seen and recent
  		*/
@@ -435,10 +435,10 @@ class phreemail extends PHPMailer{
 			$message_id = $email['message_id'];
 			foreach ($remove_non_flags as $key) unset($email[$key]);
 			db_perform(TABLE_PHREEMAIL, $email, 'update'," message_id='$message_id'");
-			$messageStack->debug("\n email $message_id is already in database");
+			\core\classes\messageStack::debug_log("\n email $message_id is already in database");
 			return false;// returning false because no futher action is needed
 		}
-		$messageStack->debug("\n email ".$email['message_id']." is not in database");
+		\core\classes\messageStack::debug_log("\n email ".$email['message_id']." is not in database");
 		//TABLE_ADDRESS_BOOK
 		$temp = $admin->DataBase->query("select address_id, ref_id from " . TABLE_ADDRESS_BOOK . " where email ='".$email['fromaddress']."' and ref_id <> 0");
 		if($temp->fetch(\PDO::FETCH_NUM) == 0) $email['spam'] = 'maybe'; // mark that it could be spam if contact is is unknowm
@@ -500,7 +500,7 @@ class phreemail extends PHPMailer{
     	$sql_data_array['FSize']		= $email["SIZE"];
     	$sql_data_array['Date_start']	= date("Y-m-d H:i:s");
     	$sql_data_array['Status'] 		= 2;
-    	$messageStack->debug('\n Phreemail action = '. print_r($sql_data_array, true));
+    	\core\classes\messageStack::debug_log('\n Phreemail action = '. print_r($sql_data_array, true));
 	}
 
  /**
@@ -521,7 +521,7 @@ class phreemail extends PHPMailer{
 		$sql_data_array['Status'] 		= 1;
     	$sql_data_array['Info'] 		= addslashes($info);
     	$sql_data_array['Date_finish'] 	= date("Y-m-d H:i:s");
-		$messageStack->debug('\n Phreemail action = '. print_r($sql_data_array, true));
+		\core\classes\messageStack::debug_log('\n Phreemail action = '. print_r($sql_data_array, true));
   	}
 
 
@@ -627,7 +627,7 @@ class phreemail extends PHPMailer{
 
   function __destruct(){
   	global $messageStack;
-  	//$messageStack->debug(print_r($this, true));
+  	//\core\classes\messageStack::debug_log(print_r($this, true));
   	//$messageStack->write_debug();
   	if($this->imap_stream) $this->close();
   }

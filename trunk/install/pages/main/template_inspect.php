@@ -36,9 +36,6 @@
 			<tr>
 				<td><?php echo MSG_INSPECT_ERRORS; ?></td>
 			</tr>
-			<tr>
-				<td><?php echo $messageStack->output(); ?></td>
-			</tr>
 			
 			
 			

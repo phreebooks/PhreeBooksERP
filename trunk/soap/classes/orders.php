@@ -34,7 +34,7 @@ class xml_orders extends parser {
 //echo '<pre>' . $rawXML . '</pre>';
 	  if (!$objXML = xml_to_object($rawXML)) return false;  // parse the submitted string, check for errors
 //echo 'parsed string = '; print_r($objXML); echo '<br />';
-	  if (DEBUG) $messageStack->debug("\n\nobjXML array = ".serialize($objXML));
+	  \core\classes\messageStack::debug_log("\n\nobjXML array = ".serialize($objXML));
 	  $this->username = $objXML->Request->UserID;
 	  $this->password = $objXML->Request->Password;
 	  $this->version  = $objXML->Request->Version;
@@ -67,7 +67,7 @@ class xml_orders extends parser {
 	  default:
 		define('JOURNAL_ID',10);
 	}
-	$messageStack->debug("\njournal_id = ".JOURNAL_ID." and function = ".$this->function);
+	\core\classes\messageStack::debug_log("\njournal_id = ".JOURNAL_ID." and function = ".$this->function);
 	$tax_rates = ord_calculate_tax_drop_down('c');
 	// Here we map the received xml array to the pre-defined generic structure (application specific format later)
 	if (!is_array($objXML->Request->Order)) $objXML->Request->Order = array($objXML->Request->Order);
@@ -295,7 +295,7 @@ class xml_orders extends parser {
 // echo 'failed a post need to rollback here.<br>';
 	  $admin->DataBase->transRollback();
 	  $this->failed[] = $this->order['reference'];
-	  $text = strip_tags($messageStack->output());
+	  $text = strip_tags($messageStack->output());//@todo this function doesn't exist anymore
 	  $this->response[] = preg_replace('/&nbsp;/', '', $text); // the &nbsp; messes up the response XML
 	  return;
 	}

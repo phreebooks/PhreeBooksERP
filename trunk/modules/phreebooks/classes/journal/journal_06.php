@@ -88,7 +88,7 @@ class journal_06 extends \core\classes\journal {
 	/*******************************************************************************************************************/
 	function check_for_re_post() {
 		global $admin;
-		$admin->messageStack->debug("\n  Checking for re-post records ... ");
+		\core\classes\messageStack::debug_log("\n  Checking for re-post records ... ");
 		$repost_ids = array();
 		$skus = array();
 		foreach ($this->journal_rows as $row) if ($row['sku'] <> '') $skus[] = $row['sku'];
@@ -97,11 +97,11 @@ class journal_06 extends \core\classes\journal {
 			$sql->execute();
 			$askus = $sql->fetchAll();
 			if (sizeof($askus) > 0) {
-				$admin->messageStack->debug("\n    Finding re-post ids for average sku list = ".print_r($askus, true)." \n and post_date after $this->post_date");
+				\core\classes\messageStack::debug_log("\n    Finding re-post ids for average sku list = ".print_r($askus, true)." \n and post_date after $this->post_date");
 				$sql = $admin->DataBase->prepare("SELECT ref_id, post_date FROM ".TABLE_JOURNAL_ITEM." WHERE sku IN ('".implode("', '", $askus)."') AND post_date > '$this->post_date'");
 				$sql->execute();
 				while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
-					$admin->messageStack->debug("\n    check_for_re_post is queing for average cost record id = ".$result['ref_id']);
+					\core\classes\messageStack::debug_log("\n    check_for_re_post is queing for average cost record id = ".$result['ref_id']);
 					$idx = substr($result['post_date'], 0, 10).':'.str_pad($result['ref_id'], 8, '0', STR_PAD_LEFT);
 					$repost_ids[$idx] = $result['ref_id'];
 				}
@@ -117,7 +117,7 @@ class journal_06 extends \core\classes\journal {
 				$sql->execute();
 				while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
 					if ($result['journal_main_id'] <> $this->id) {
-						$admin->messageStack->debug("\n    check_for_re_post is queing for cogs usage id = " . $result['journal_main_id']);
+						\core\classes\messageStack::debug_log("\n    check_for_re_post is queing for cogs usage id = " . $result['journal_main_id']);
 						$p_date = $admin->DataBase->query("SELECT post_date FROM ".TABLE_JOURNAL_MAIN." WHERE id=".$result['journal_main_id']);
 						$idx = substr($p_date['post_date'], 0, 10).':'.str_pad($result['journal_main_id'], 8, '0', STR_PAD_LEFT);
 						$repost_ids[$idx] = $result['journal_main_id'];
@@ -138,7 +138,7 @@ class journal_06 extends \core\classes\journal {
 				while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
 					if ($working_qty >= $result['qty']) { // repost this journal entry and remove the owed record since we will repost all the negative quantities necessary
 						if ($result['journal_main_id'] <> $this->id) { // prevent infinite loop
-							$admin->messageStack->debug("\n    check_for_re_post is queing for cogs owed, id = {$result['journal_main_id']} to re-post.");
+							\core\classes\messageStack::debug_log("\n    check_for_re_post is queing for cogs owed, id = {$result['journal_main_id']} to re-post.");
 							$idx = substr($result['post_date'], 0, 10).':'.str_pad($result['journal_main_id'], 8, '0', STR_PAD_LEFT);
 							$repost_ids[$idx] = $result['journal_main_id'];
 						}
@@ -154,12 +154,12 @@ class journal_06 extends \core\classes\journal {
 			$sql = $admin->DataBase->query("SELECT ref_id, post_date FROM ".TABLE_JOURNAL_ITEM." WHERE so_po_item_ref_id = $this->id AND gl_type in ('chk', 'pmt')");
 			$sql->execute();
 			while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
-				$admin->messageStack->debug("\n    check_for_re_post is queing for payment id = " . $result['ref_id']);
+				\core\classes\messageStack::debug_log("\n    check_for_re_post is queing for payment id = " . $result['ref_id']);
 				$idx = substr($result['post_date'], 0, 10).':'.str_pad($result['ref_id'], 8, '0', STR_PAD_LEFT);
 				$repost_ids[$idx] = $result['ref_id'];
 			}
 		}
-		$admin->messageStack->debug(" end Checking for Re-post.");
+		\core\classes\messageStack::debug_log(" end Checking for Re-post.");
 		return $repost_ids;
 	}
 
@@ -168,7 +168,7 @@ class journal_06 extends \core\classes\journal {
 	/*******************************************************************************************************************/
 	function Post_chart_balances() {
 		global $admin;
-		$admin->messageStack->debug("\n  Posting Chart Balances...");
+		\core\classes\messageStack::debug_log("\n  Posting Chart Balances...");
 		$accounts = array();
 		$precision = $this->currencies[DEFAULT_CURRENCY]['decimal_places'] + 2;
 		if (sizeof($this->journal_rows) > 0) foreach ($this->journal_rows as $value) {
@@ -184,12 +184,12 @@ class journal_06 extends \core\classes\journal {
 			if  (round($values['credit'], $precision) <> 0 || round($values['debit'], $precision) <> 0) {
 				$sql = "UPDATE " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " SET credit_amount = credit_amount + {$values['credit']}, debit_amount = debit_amount + {$values['debit']},
 				last_update = '$this->post_date' WHERE account_id = '$gl_acct' AND period = $this->period";
-				$admin->messageStack->debug("\n    Post chart balances: credit_amount = {$values['credit']}, debit_amount = {$values['debit']}, acct = $gl_acct, period = $this->period");
+				\core\classes\messageStack::debug_log("\n    Post chart balances: credit_amount = {$values['credit']}, debit_amount = {$values['debit']}, acct = $gl_acct, period = $this->period");
 				$result = $admin->DataBase->exec($sql);
 				if ($result->AffectedRows() <> 1) throw new \core\classes\userException(TEXT_ERROR_POSTING_CHART_OF_ACCOUNT_BALANCES_TO_ACCOUNT_ID .": " . ($gl_acct ? $gl_acct : TEXT_NOT_SPECIFIED));
 			}
 		}
-		$admin->messageStack->debug("\n  end Posting Chart Balances.");
+		\core\classes\messageStack::debug_log("\n  end Posting Chart Balances.");
 	}
 
 	/**
@@ -197,17 +197,17 @@ class journal_06 extends \core\classes\journal {
 	 */
 	function unPost_chart_balances() {
 		global $admin;
-		$admin->messageStack->debug("\n  unPosting Chart Balances...");
+		\core\classes\messageStack::debug_log("\n  unPosting Chart Balances...");
 		for ($i=0; $i<count($this->journal_rows); $i++) {
 			// 	Update chart of accounts history
 			$sql = "UPDATE " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " SET credit_amount = credit_amount - {$this->journal_rows[$i]['credit_amount']},
 			debit_amount = debit_amount - {$this->journal_rows[$i]['debit_amount']}
 			WHERE account_id = '{$this->journal_rows[$i]['gl_account']}' and period = " . $this->period;
-			$admin->messageStack->debug("\n    unPost chart balances: credit_amount = {$this->journal_rows[$i]['credit_amount']}, debit_amount = {$this->journal_rows[$i]['debit_amount']}, acct = {$this->journal_rows[$i]['gl_account']}, period = " . $this->period);
+			\core\classes\messageStack::debug_log("\n    unPost chart balances: credit_amount = {$this->journal_rows[$i]['credit_amount']}, debit_amount = {$this->journal_rows[$i]['debit_amount']}, acct = {$this->journal_rows[$i]['gl_account']}, period = " . $this->period);
 			$admin->DataBase->exec($sql);
 			$this->affected_accounts[$this->journal_rows[$i]['gl_account']] = 1;
 		}
-		$admin->messageStack->debug("\n  end unPosting Chart Balances.");
+		\core\classes\messageStack::debug_log("\n  end unPosting Chart Balances.");
 	}
 
 	// *********  chart of account support functions  **********
@@ -221,7 +221,7 @@ class journal_06 extends \core\classes\journal {
 		$result = $admin->DataBase->query($sql);
 		$max_period = $result['period'];
 		$affected_acct_string = (is_array($this->affected_accounts)) ? implode("', '", array_keys($this->affected_accounts)) : '';
-		$admin->messageStack->debug("\n  Updating chart history for fiscal year: $fiscal_year and period: $period for accounts: ('$affected_acct_string')");
+		\core\classes\messageStack::debug_log("\n  Updating chart history for fiscal year: $fiscal_year and period: $period for accounts: ('$affected_acct_string')");
 		for ($i = $period; $i <= $max_period; $i++) {
 			$this->validate_balance($i);//will throw exceptions
 			// update future months
@@ -263,7 +263,7 @@ class journal_06 extends \core\classes\journal {
 			$this->update_chart_history_periods($max_period + 1);
 		}
 		// all historical chart of account balances from period on should be OK at this point.
-		$admin->messageStack->debug("\n  end Updating chart history periods. Fiscal Year: " . $fiscal_year);;
+		\core\classes\messageStack::debug_log("\n  end Updating chart history periods. Fiscal Year: " . $fiscal_year);;
 		return true;
 	}
 
@@ -275,7 +275,7 @@ class journal_06 extends \core\classes\journal {
 	// Post the customers/vendors sales/purchases values for the given period
 	function Post_account_sales_purchases() {
 		global $admin;
-		$admin->messageStack->debug("\n  Posting account sales and purchases ...");
+		\core\classes\messageStack::debug_log("\n  Posting account sales and purchases ...");
 		if (!$this->bill_acct_id) throw new \core\classes\userException(TEXT_NO_ACCOUNT_NUMBER_PROVIDED_IN_CORE_JOURNAL_FUNCTION . ': '  . 'post_account_sales_purchases.');
 		$purchase_invoice_id = $this->purchase_invoice_id ? $this->purchase_invoice_id : $this->journal_main_array['purchase_invoice_id'];
 		$history_array = array(
@@ -289,7 +289,7 @@ class journal_06 extends \core\classes\journal {
 		);
 		$result = db_perform(TABLE_ACCOUNTS_HISTORY, $history_array, 'insert');
 		if ($result->AffectedRows() <> 1 ) throw new \core\classes\userException(TEXT_ERROR_UPDATING_CONTACT_HISTORY);
-		$admin->messageStack->debug(" end Posting account sales and purchases.");
+		\core\classes\messageStack::debug_log(" end Posting account sales and purchases.");
 		return true;
 	}
 
@@ -300,11 +300,11 @@ class journal_06 extends \core\classes\journal {
 
 	function unPost_account_sales_purchases() {
 		global $admin;
-		$admin->messageStack->debug("\n  unPosting account sales and purchases ...");
+		\core\classes\messageStack::debug_log("\n  unPosting account sales and purchases ...");
 		if (!$this->bill_acct_id) throw new \core\classes\userException(TEXT_NO_ACCOUNT_NUMBER_PROVIDED_IN_CORE_JOURNAL_FUNCTION . ': ' . 'unPost_account_sales_purchases.');
 		$result = $admin->DataBase->exec("DELETE FROM " . TABLE_ACCOUNTS_HISTORY . " WHERE ref_id = " . $this->id);
 		if ($result->AffectedRows() != 1) throw new \core\classes\userException(TEXT_ERROR_DELETING_CUSTOMER_OR_VENDOR_ACCOUNT_HISTORY_RECORD);
-		$admin->messageStack->debug(" end unPosting account sales and purchases.");
+		\core\classes\messageStack::debug_log(" end unPosting account sales and purchases.");
 	}
 
 	/*******************************************************************************************************************/
@@ -314,7 +314,7 @@ class journal_06 extends \core\classes\journal {
 	/*******************************************************************************************************************/
 	function Post_inventory() {
 		global $admin;
-		$admin->messageStack->debug("\n  Posting Inventory ...");
+		\core\classes\messageStack::debug_log("\n  Posting Inventory ...");
 		$item_array      = $this->load_so_po_balance($this->so_po_ref_id, $this->id);
 		// adjust inventory stock status levels (also fills inv_list array)
 		$item_rows_to_process = count($this->journal_rows); // NOTE: variable needs to be here because journal_rows may grow within for loop (COGS)
@@ -366,13 +366,13 @@ class journal_06 extends \core\classes\journal {
 			if (ENABLE_AUTO_ITEM_COST == 'PR' && $this->journal_rows[$i]['qty']) $item_cost = $this->journal_rows[$i]['debit_amount'] / $this->journal_rows[$i]['qty'];
 			$this->update_inventory_status($this->journal_rows[$i]['sku'], 'quantity_on_hand', $post_qty, $item_cost, $this->journal_rows[$i]['description'], $full_price);
 		}
-		$admin->messageStack->debug("\n  end Posting Inventory.");
+		\core\classes\messageStack::debug_log("\n  end Posting Inventory.");
 		return true;
 	}
 
 	function unPost_inventory() {
 		global $admin;
-		$admin->messageStack->debug("\n  unPosting Inventory ...");
+		\core\classes\messageStack::debug_log("\n  unPosting Inventory ...");
 		// if remaining <> qty then some items have been sold; reduce qty and remaining by original qty (qty will be 0)
 		// and keep record. Quantity may go negative because it was used in a COGS calculation but will be corrected when
 		// new inventory has been received and the associated cost applied. If the quantity is changed, the new remaining
@@ -397,7 +397,7 @@ class journal_06 extends \core\classes\journal {
 		$admin->DataBase->exec("DELETE FROM " . TABLE_INVENTORY_COGS_USAGE . " WHERE journal_main_id = " . $this->id);
 		// remove cost of goods sold records (will be re-calculated if re-posting)
 		$this->remove_journal_COGS_entries();
-		$admin->messageStack->debug("\n  end unPosting Inventory.");
+		\core\classes\messageStack::debug_log("\n  end unPosting Inventory.");
 	}
 
 
@@ -412,7 +412,7 @@ class journal_06 extends \core\classes\journal {
 	 */
 	function calculate_COGS($item, $return_cogs = false) {
 		global $admin;
-		$admin->messageStack->debug("\n    Calculating COGS, SKU = {$item['sku']} and QTY = {$item['qty']}");
+		\core\classes\messageStack::debug_log("\n    Calculating COGS, SKU = {$item['sku']} and QTY = {$item['qty']}");
 		$cogs = 0;
 		// fetch the additional inventory item fields we need
 		$raw_sql = "SELECT inactive, inventory_type, account_inventory_wage, account_cost_of_sales, item_cost, cost_method, quantity_on_hand, serialize FROM " . TABLE_INVENTORY . " WHERE sku = '{$item['sku']}'";
@@ -429,7 +429,7 @@ class journal_06 extends \core\classes\journal {
 		$defaults = $sql->fetch(\PDO::FETCH_LAZY);
 		// only calculate cogs for certain inventory_types
 		if (strpos(COG_ITEM_TYPES, $defaults['inventory_type']) === false) {
-			$admin->messageStack->debug(". Exiting COGS, no work to be done with this SKU.");
+			\core\classes\messageStack::debug_log(". Exiting COGS, no work to be done with this SKU.");
 			return true;
 		}
 		if (ENABLE_MULTI_BRANCH) $defaults['quantity_on_hand'] = $this->branch_qty_on_hand($item['sku'], $defaults['quantity_on_hand']);
@@ -460,7 +460,7 @@ class journal_06 extends \core\classes\journal {
 				if ($sql->fetch(\PDO::FETCH_NUM) <> 0) throw new \core\classes\userException(GL_ERROR_SERIALIZE_COGS);
 				$history_array['serialize_number'] = $item['serialize_number'];
 			}
-			$admin->messageStack->debug("\n      Inserting into inventory history = " . print_r($history_array, true));
+			\core\classes\messageStack::debug_log("\n      Inserting into inventory history = " . print_r($history_array, true));
 			$result = db_perform(TABLE_INVENTORY_HISTORY, $history_array, 'insert');
 			if ($result->AffectedRows() <> 1) throw new \core\classes\userException(TEXT_ERROR_POSTING_INVENTORY_HISTORY);
 		} else { // for negative quantities, i.e. sales, negative inv adjustments, assemblies, vendor credit memos
@@ -540,14 +540,14 @@ class journal_06 extends \core\classes\journal {
 						'post_date'       => $this->post_date,
 						'store_id'        => $this->store_id,
 				);
-				$admin->messageStack->debug("\n    Adding inventory_cogs_owed, SKU = {$item['sku']}, qty = " . $working_qty);
+				\core\classes\messageStack::debug_log("\n    Adding inventory_cogs_owed, SKU = {$item['sku']}, qty = " . $working_qty);
 				db_perform(TABLE_INVENTORY_COGS_OWED, $sql_data_array, 'insert');
 			}
 		}
 
 		$this->sku_cogs = $cogs;
 		if ($return_cogs) return $cogs; // just calculate cogs and adjust inv history
-		$admin->messageStack->debug("\n    Adding COGS to array (if not zero), sku = {$item['sku']} with calculated value = $cogs");
+		\core\classes\messageStack::debug_log("\n    Adding COGS to array (if not zero), sku = {$item['sku']} with calculated value = $cogs");
 		if ($cogs) {
 			// credit inventory cost of inventory
 			$cogs_acct = $defaults['account_inventory_wage'];
@@ -564,7 +564,7 @@ class journal_06 extends \core\classes\journal {
 				$this->cogs_entry[$cogs_acct]['credit'] += -$cogs;
 			}
 		}
-		$admin->messageStack->debug(" ... Finished calculating COGS.");
+		\core\classes\messageStack::debug_log(" ... Finished calculating COGS.");
 		return true;
 	}
 
@@ -576,7 +576,7 @@ class journal_06 extends \core\classes\journal {
 	 */
 	function calculateCost($sku = '', $qty=1, $serial_num='') {
 		global $admin;
-		$admin->messageStack->debug("\n    Calculating SKU cost, SKU = $sku and QTY = $qty");
+		\core\classes\messageStack::debug_log("\n    Calculating SKU cost, SKU = $sku and QTY = $qty");
 		$cogs = 0;
 		$sql = $admin->DataBase->prepare("SELECT inventory_type, item_cost, cost_method, serialize FROM ".TABLE_INVENTORY." WHERE sku='$sku'");
 		$sql->execute();
@@ -604,7 +604,7 @@ class journal_06 extends \core\classes\journal {
 			$working_qty -= $result['remaining'];
 		}
 		if ($working_qty > 0) $cogs += $defaults['item_cost'] * $working_qty; // leftovers, use default cost
-		$admin->messageStack->debug(" ... Finished calculating cost: $cogs");
+		\core\classes\messageStack::debug_log(" ... Finished calculating cost: $cogs");
 		return $cogs;
 	}
 
@@ -639,7 +639,7 @@ class journal_06 extends \core\classes\journal {
 	 */
 	function fetch_avg_cost($sku = '', $qty=1) {
 		global $admin;
-		$admin->messageStack->debug("\n      Entering fetch_avg_cost for sku: $sku and qty: $qty ... ");
+		\core\classes\messageStack::debug_log("\n      Entering fetch_avg_cost for sku: $sku and qty: $qty ... ");
 		$raw_sql = "SELECT avg_cost, remaining, post_date FROM ".TABLE_INVENTORY_HISTORY." WHERE sku='$sku' AND remaining>0";
 		if (ENABLE_MULTI_BRANCH) $raw_sql .= " AND store_id='$this->store_id'";
 		$raw_sql .= " ORDER BY post_date";
@@ -654,13 +654,13 @@ class journal_06 extends \core\classes\journal {
 			$post_date = substr($result['post_date'], 0, 10);
 			if ($qty <= 0) $ready_to_exit = true;
 			if ($ready_to_exit && $post_date > $this->post_date) { // will get the last purchase cost before the sale post date
-				$admin->messageStack->debug("Exiting early with history post_date = $post_date fetch_avg_cost with cost = ".($last_qty > 0 ? $result['avg_cost'] : $last_cost));
+				\core\classes\messageStack::debug_log("Exiting early with history post_date = $post_date fetch_avg_cost with cost = ".($last_qty > 0 ? $result['avg_cost'] : $last_cost));
 				return $last_qty > 0 ? $result['avg_cost'] : $last_cost;
 			}
 			$last_cost = $result['avg_cost'];
 			$last_qty = $qty; // not finished yet, get next average cost
 		}
-		$admin->messageStack->debug("Exiting fetch_avg_cost with cost = $last_cost");
+		\core\classes\messageStack::debug_log("Exiting fetch_avg_cost with cost = $last_cost");
 		return $last_cost;
 	}
 
@@ -670,24 +670,24 @@ class journal_06 extends \core\classes\journal {
 	 */
 	function rollback_COGS() {
 		global $admin;
-		$admin->messageStack->debug("\n    Rolling back COGS ... ");
+		\core\classes\messageStack::debug_log("\n    Rolling back COGS ... ");
 		// only calculate cogs for certain inventory_types
 		$sql = $admin->DataBase->prepare("Select id, qty, inventory_history_id FROM " . TABLE_INVENTORY_COGS_USAGE . " WHERE journal_main_id = " . $this->id);
 		$sql->execute();
 		if ($sql->fetch(\PDO::FETCH_NUM) == 0) {
-			$admin->messageStack->debug(" ...Exiting COGS, no work to be done.");
+			\core\classes\messageStack::debug_log(" ...Exiting COGS, no work to be done.");
 			return true;
 		}
 		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
 			$admin->DataBase->exec("UPDATE " . TABLE_INVENTORY_HISTORY . " SET remaining = remaining + {$result['qty']} WHERE id = " . $result['inventory_history_id']);
 		}
-		$admin->messageStack->debug(" ... Finished rolling back COGS");
+		\core\classes\messageStack::debug_log(" ... Finished rolling back COGS");
 		return true;
 	}
 
 	function load_so_po_balance($ref_id, $id = '', $post = true) {
 		global $admin;
-		$admin->messageStack->debug("\n    Starting to load SO/PO balances ...");
+		\core\classes\messageStack::debug_log("\n    Starting to load SO/PO balances ...");
 		$item_array = array();
 		if ($ref_id) {
 			// start by retrieving the po/so item list
@@ -707,7 +707,7 @@ class journal_06 extends \core\classes\journal {
 			}
 		}
 		$this->so_po_balance_array = $item_array;
-		$admin->messageStack->debug(" Finished loading SO/PO balances = " . print_r($item_array, true));
+		\core\classes\messageStack::debug_log(" Finished loading SO/PO balances = " . print_r($item_array, true));
 		return $item_array;
 	}
 
@@ -725,7 +725,7 @@ class journal_06 extends \core\classes\journal {
 		//   all quantities are reduced to zero (from so/po journal - should be deleted instead but it's possible)
 		//   editing quantities on po/so to match the number received (from po/so journal)
 		//   receiving all (or more) po/so items through one or more purchases/sales (from purchase/sales journal)
-		$admin->messageStack->debug("\n  Checking for closed entry. action = " . $action);
+		\core\classes\messageStack::debug_log("\n  Checking for closed entry. action = " . $action);
 		if ($this->so_po_ref_id) {	// make sure there is a reference po/so to check
 			$ordr_diff = false;
 			if (is_array($this->so_po_balance_array)) {
@@ -754,17 +754,17 @@ class journal_06 extends \core\classes\journal {
 	 */
 	function validate_purchase_invoice_id() {
 		global $admin;
-		$admin->messageStack->debug("\n  Start validating purchase_invoice_id ... ");
+		\core\classes\messageStack::debug_log("\n  Start validating purchase_invoice_id ... ");
 		if ($this->purchase_invoice_id <> '') {	// entered a so/po/invoice value, check for dups
 			$sql = "SELECT purchase_invoice_id FROM " . TABLE_JOURNAL_MAIN . " WHERE purchase_invoice_id = '{$this->purchase_invoice_id}' and journal_id = '6'";
 			if ($this->id) $sql .= " and id <> " . $this->id;
 			$result = $admin->DataBase->query($sql);
 			if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(sprintf(TEXT_THE_YOU_ENTERED_IS_A_DUPLICATE,_PLEASE_ENTER_A_NEW_UNIQUE_VALUE_ARGS, $this->id_field_name));
 			$this->journal_main_array['purchase_invoice_id'] = $this->purchase_invoice_id;
-			$admin->messageStack->debug(" specified ID but no dups, returning OK. ");
+			\core\classes\messageStack::debug_log(" specified ID but no dups, returning OK. ");
 		} else {	// generate a new order/invoice value
 			$this->journal_main_array['purchase_invoice_id'] = '';
-			$admin->messageStack->debug(" generated ID, returning ID# " . $this->journal_main_array['purchase_invoice_id']);
+			\core\classes\messageStack::debug_log(" generated ID, returning ID# " . $this->journal_main_array['purchase_invoice_id']);
 		}
 		return true;
 	}
@@ -794,7 +794,7 @@ class journal_06 extends \core\classes\journal {
 		$this->journal_main_array = $this->build_journal_main_array();	// build ledger main record
 
 		// ***************************** START TRANSACTION *******************************
-		$messageStack->debug("\n  started order post purchase_invoice_id = {$this->purchase_invoice_id} and id = " . $this->id);
+		\core\classes\messageStack::debug_log("\n  started order post purchase_invoice_id = {$this->purchase_invoice_id} and id = " . $this->id);
 		$admin->DataBase->transStart();
 		// *************  Pre-POST processing *************
 		// add/update address book
@@ -840,7 +840,7 @@ class journal_06 extends \core\classes\journal {
 					$this->journal_main_array['period']        = $this->period;
 					$this->journal_main_array['terminal_date'] = $this->terminal_date;
 					$this->validate_purchase_invoice_id();
-					$messageStack->debug("\n\n  re-posting recur id = " . $this->id);
+					\core\classes\messageStack::debug_log("\n\n  re-posting recur id = " . $this->id);
 					$this->Post('edit');
 					// test for single post versus rolling into future posts, terminate loop if single post
 					if (!$this->recur_frequency) break;
@@ -905,7 +905,7 @@ class journal_06 extends \core\classes\journal {
 			$this->Post($this->id ? 'edit' : 'insert');
 		}
 		// ************* post-POST processing *************
-		$messageStack->debug("\n  committed order post purchase_invoice_id = {$this->purchase_invoice_id} and id = {$this->id}");
+		\core\classes\messageStack::debug_log("\n  committed order post purchase_invoice_id = {$this->purchase_invoice_id} and id = {$this->id}");
 		$admin->DataBase->transCommit();	// finished successfully
 		//echo 'committed transaction - bailing!'; exit();
 		// ***************************** END TRANSACTION *******************************

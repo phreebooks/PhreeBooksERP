@@ -291,14 +291,14 @@ class tills {
   function adjust_balance($amount){
   	global $admin, $messageStack;
   	$sql_data_array = array('balance' => $this->balance + $amount);
-  	$messageStack->debug("\n\n\n updating till balance  balance was = ".$this->balance . " adding = ". $amount." new balance = ". $this->balance + $amount."\n\n\n");
+  	\core\classes\messageStack::debug_log("\n\n\n updating till balance  balance was = ".$this->balance . " adding = ". $amount." new balance = ". $this->balance + $amount."\n\n\n");
   	db_perform($this->db_table, $sql_data_array, 'update', "till_id = '" . $this->till_id . "'");
   }
 
   function new_balance($amount){
   	global $admin, $messageStack;
   	$sql_data_array = array('balance' => $amount);
-  	$messageStack->debug("\n\n\n updating till balance  balance was = ".$this->balance . " new balance = ". $amount ."\n\n\n");
+  	\core\classes\messageStack::debug_log("\n\n\n updating till balance  balance was = ".$this->balance . " new balance = ". $amount ."\n\n\n");
   	db_perform($this->db_table, $sql_data_array, 'update', "till_id = '" . $this->till_id . "'");
   }
 

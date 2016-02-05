@@ -33,23 +33,7 @@ class messageStack {
 	  	return true;
     }
 
-    function reset() {
-      unset($_SESSION['messageToStack']);
-    }
-
-    function output() {
-		$output = NULL;
-	  	if (! isset($_SESSION['messageToStack'])) return '';
-	  	$output .= '<table style="border-collapse:collapse;width:100%">' . chr(10);
-		foreach ($_SESSION['messageToStack'] as $value) {
-			$output .= '<tr><td ' . $value['params'] . ' style="width:100%">' . $value['text'] . '</td></tr>' . chr(10);
-	  	}
-	  	$output .= '</table>' . chr(10);
-	  	$this->reset();
-      	return $output;
-    }
-
-  	function output_xml() {
+  	function output_xml() { //@todo this needs to be replaced 
 		$xml = "<messageStack>\n";
 	  	if (! isset($_SESSION['messageToStack'])) return '';
 		foreach ($_SESSION['messageToStack'] as $value) {
@@ -72,29 +56,19 @@ class messageStack {
       		}
 	  	}
 	  	$xml .= "</messageStack>\n ";
-	  	$this->reset();
       	return $xml;
     }
 
     Static function debug_log ($txt){
     	global $admin;
     	error_log("date: " . date('Y-m-d H:i:s') . " company:" .\core\classes\user::get_company(). " user: ".\core\classes\user::get('display_name'). ' ' . substr($txt, 1) . PHP_EOL, 3, DIR_FS_MY_FILES."development.log");
-    	error_log("\nTime: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, " . $admin->DataBase->count_queries . " SQLs " . (int)($admin->DataBase->total_query_time * 1000)." ms => ".substr($txt, 1). PHP_EOL, 3, DIR_FS_MY_FILES."debug.log");
-    }
-
-	function debug($txt) {
-	  	global $admin;
-	  	error_log("date: " . date('Y-m-d H:i:s') . " company:" .\core\classes\user::get_company(). " user: ".\core\classes\user::get('display_name'). ' ' . substr($txt, 1) . PHP_EOL, 3, DIR_FS_MY_FILES."development.log");
-	  	error_log("date: " . date('Y-m-d H:i:s') . " company:" .\core\classes\user::get_company(). " user: ".\core\classes\user::get('display_name'). ' ' . substr($txt, 1) . PHP_EOL, 3, DIR_FS_MY_FILES."debug.log");
-	  	if (substr($txt, 0, 1) == "\n") {
-//echo "\nTime: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, " . $admin->DataBase->count_queries . " SQLs " . (int)($admin->DataBase->total_query_time * 1000)." ms => " . substr($txt, 1) . '<br>';
-	    	$this->debug_info .= "\nTime: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, " . $admin->DataBase->count_queries . " SQLs " . (int)($admin->DataBase->total_query_time * 1000)." ms => ";
-	    	$this->debug_info .= substr($txt, 1);
-	  	} else {
+    	if (substr($txt, 0, 1) == "\n") {
+    		error_log("\nTime: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, " . $admin->DataBase->count_queries . " SQLs " . (int)($admin->DataBase->total_query_time * 1000)." ms => ".substr($txt, 1). PHP_EOL, 3, DIR_FS_MY_FILES."debug.log");
+    	}else {
+    		error_log($txt. PHP_EOL, 3, DIR_FS_MY_FILES."debug.log");
 	    	$this->debug_info .= $txt;
-
 	  	}
-	}
+    }
 
 	function write_debug() {
 		$filename = DIR_FS_MY_FILES."debug.log";
@@ -106,7 +80,7 @@ class messageStack {
         header("Content-Type: application/download");
         header("Content-Disposition: attachment; filename='" . basename($filename) . "'");
         header("Content-Length: " . filesize($filename));
-        readfile($file);
+        readfile($filename);
         $this->add("Successfully created $filename file.","success");
 	}
 

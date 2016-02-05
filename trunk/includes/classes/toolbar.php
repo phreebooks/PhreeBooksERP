@@ -88,7 +88,6 @@ class toolbar {
 		}
 		$output .= "</div> \n"; // end of the right justified icons
 		// display alerts/error messages, if any
-	    $output .= $messageStack->output();
 	    return $output;
   	}
 

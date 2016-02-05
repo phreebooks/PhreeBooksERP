@@ -122,8 +122,8 @@ class admin extends \core\classes\admin {
 	}
 
   function Aafter_ValidateUser(\core\classes\basis &$basis) {//@todo
-  		global $admin, $messageStack;
-  		$messageStack->debug("\n\n*************** Retrieving Mail from ".EMAIL_SMTPAUTH_MAILBOX." *******************");
+  		global $admin;
+  		\core\classes\messageStack::debug_log("\n\n*************** Retrieving Mail from ".EMAIL_SMTPAUTH_MAILBOX." *******************");
 		try{
 	  		$mail = new \phreemail\classes\phreemail();
 			$mail->connect('', '', EMAIL_SMTPAUTH_MAILBOX, '');
@@ -143,9 +143,9 @@ class admin extends \core\classes\admin {
 		}catch (\Exception $exception){
 			\core\classes\messageStack::add($exception->getMessage(), 'error');
 		}
-		$messageStack->debug("\n\n*************** End Retrieving Mail from ".EMAIL_SMTPAUTH_MAILBOX." *******************");
+		\core\classes\messageStack::debug_log("\n\n*************** End Retrieving Mail from ".EMAIL_SMTPAUTH_MAILBOX." *******************");
 		try{
-			$messageStack->debug("\n\n*************** Retrieving Mail from ".$_SESSION['admin_email']." *******************");
+			\core\classes\messageStack::debug_log("\n\n*************** Retrieving Mail from ".$_SESSION['admin_email']." *******************");
 			$mail = new \phreemail\classes\phreemail();
 			$mail->connect('', '', $_SESSION['admin_email'], '');
 //			$mail->get_all_emails();
@@ -162,7 +162,7 @@ class admin extends \core\classes\admin {
 				$mail->do_action();
 				$mail->MoveNext();
 			}*/
-			$messageStack->debug("\n\n*************** End Retrieving Mail from ".$_SESSION['admin_email']." *******************");
+			\core\classes\messageStack::debug_log("\n\n*************** End Retrieving Mail from ".$_SESSION['admin_email']." *******************");
 		}catch (\Exception $exception){
 			\core\classes\messageStack::add($exception->getMessage(), 'error');
 		}

@@ -169,7 +169,7 @@ switch ($_REQUEST['action']) {
 		$_SESSION['company']  = $db_name;
 		$_SESSION['language'] = $lang;
 		// create the company directory
-		if (DEBUG) $messageStack->debug("\n  creating the company directory");
+		\core\classes\messageStack::debug_log("\n  creating the company directory");
 		validate_path(DIR_FS_ADMIN . PATH_TO_MY_FILES . $db_name);
 		if (!$error) { // write the db config.php in the company directory
 		  if (!install_build_co_config_file($db_name, $db_name . '_TITLE',  $company_name)) $error = true;
@@ -213,20 +213,20 @@ switch ($_REQUEST['action']) {
 		// install core modules first
 	  	foreach ($admin->classes as $module_class) {
 	  		if ($module_class->core) {
-	  			if (DEBUG) $messageStack->debug("\n  installing core module = " . $module_class->id);
+	  			\core\classes\messageStack::debug_log("\n  installing core module = " . $module_class->id);
 	  			$module_class->install(DIR_FS_MY_FILES.$_SESSION['company'].'/', $company_demo);
 	  		}
 	  	}
 		// load phreedom reports now since table exists
-	  	if (DEBUG) $messageStack->debug("\n  installing phreedom.");
+	  	if (DEBUG) \core\classes\messageStack::debug_log"\n  installing phreedom.");
 		foreach ($admin->classes as $module_class) {
 	  		if (!$module_class->core) {
-	  			if (DEBUG) $messageStack->debug("\n  installing core module = {$module_class->id}");
+	  			\core\classes\messageStack::debug_log("\n  installing core module = {$module_class->id}");
 	  			$module_class->install(DIR_FS_MY_FILES.$_SESSION['company'].'/', $company_demo);
 	  		}
 	  	}
 		if (!$error) { // input admin username record, clear the tables first
-			if (DEBUG) $messageStack->debug("\n  installing users");
+			\core\classes\messageStack::debug_log("\n  installing users");
 		  	$admin->DataBase->query("TRUNCATE TABLE " . TABLE_USERS);
 		  	$admin->DataBase->query("TRUNCATE TABLE " . TABLE_USERS_PROFILES);
 		  	$security = load_full_access_security();
@@ -244,7 +244,7 @@ switch ($_REQUEST['action']) {
 		  	}
 		}
 		if (!$error) { // install fiscal year, default chart of accounts
-			if (DEBUG) $messageStack->debug("\n  installing fiscal year.");
+			\core\classes\messageStack::debug_log("\n  installing fiscal year.");
 		  	require_once('../modules/phreebooks/functions/phreebooks.php');
 		  	$admin->DataBase->query("TRUNCATE TABLE " . TABLE_ACCOUNTING_PERIODS);
 		  	$current_year = date('Y');
@@ -258,7 +258,7 @@ switch ($_REQUEST['action']) {
 		  		$runaway++;
 		  		if ($runaway > 10) break;
 		  	}
-		  	if (DEBUG) $messageStack->debug("\n  loading chart of accounts");
+		  	\core\classes\messageStack::debug_log("\n  loading chart of accounts");
 			// load the retail chart as default if the chart of accounts table is empty
 		  	$result = $admin->DataBase->query("select id from " . TABLE_JOURNAL_MAIN . " limit 1");
 		  	$entries_exist = $result->fetch(\PDO::FETCH_NUM) > 0 ? true : false;
@@ -280,13 +280,13 @@ switch ($_REQUEST['action']) {
 		  			db_perform(TABLE_CHART_OF_ACCOUNTS, $sql_data_array, 'insert');
 		  		}
 		  	}
-		  	if (DEBUG) $messageStack->debug("\n  building and checking chart history");
+		  	\core\classes\messageStack::debug_log("\n  building and checking chart history");
 		  	build_and_check_account_history_records();
-		  	if (DEBUG) $messageStack->debug("\n  updating current period");
+		  	\core\classes\messageStack::debug_log("\n  updating current period");
 		  	gen_auto_update_period(false);
 		}
 		if (!$error) { // write the includes/configure.php file
-		  if (DEBUG) $messageStack->debug("\n  writing configure.php file");
+		  \core\classes\messageStack::debug_log("\n  writing configure.php file");
 		  $config_contents = str_replace('DEFAULT_HTTP_SERVER',      $srvr_http,   $config_contents);
 		  $config_contents = str_replace('DEFAULT_HTTPS_SERVER',     $srvr_https,  $config_contents);
 		  $config_contents = str_replace('DEFAULT_ENABLE_SSL_ADMIN', $use_ssl,     $config_contents);

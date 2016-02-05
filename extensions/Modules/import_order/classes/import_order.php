@@ -32,7 +32,7 @@ class import_order {
   	function processCSV($filename, $function='Sales') {
   		global $admin;
   		$rows = $this->csv_to_array($_FILES[$filename]['tmp_name'], $delimiter=',');
-  		$messageStack->debug("\nfinished parsing, extracted number of rows = ".sizeof($rows));
+  		\core\classes\messageStack::debug_log("\nfinished parsing, extracted number of rows = ".sizeof($rows));
   	  	switch ($function) {
   			default:
   			case 'Sales':
