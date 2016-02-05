@@ -95,7 +95,7 @@ switch ($_REQUEST['action']) {
 	$result = $admin->DataBase->query("select sheet_name, type, default_sheet from " . TABLE_PRICE_SHEETS . " where id = " . $id);
 	$sheet_name = $result['sheet_name'];
 	$type       = $result['type'];
-	if ($result['default_sheet'] == '1') $messageStack->add(PRICE_SHEET_DEFAULT_DELETED, 'caution');
+	if ($result['default_sheet'] == '1') \core\classes\messageStack::add(PRICE_SHEET_DEFAULT_DELETED, 'caution');
 	$admin->DataBase->exec("delete from " . TABLE_PRICE_SHEETS . " where id = '" . $id . "'");
 	$admin->DataBase->exec("delete from " . TABLE_INVENTORY_SPECIAL_PRICES . " where price_sheet_id = '" . $id . "'");
 	gen_add_audit_log(TEXT_PRICE_SHEET. " - "  . TEXT_DELETE, $sheet_name);

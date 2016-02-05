@@ -482,7 +482,7 @@ class ups extends \shipping\classes\shipping {
 		$XMLFail = GetNodeData($ResponseXML, 'ShipmentConfirmResponse:Response:Error:ErrorCode'); // Check for errors returned from UPS
 		$XMLWarn = GetNodeData($ResponseXML, 'ShipmentConfirmResponse:Response:Error:ErrorSeverity'); // Check for warnings returned from UPS (process continues)
 		if ($XMLFail && $XMLWarn == 'Warning') { // soft error, report it and continue
-			$messageStack->add('UPS Label Request Warning # ' . $XMLFail . ' - ' . GetNodeData($ResponseXML, 'ShipmentConfirmResponse:Response:Error:ErrorDescription'),'caution');
+			\core\classes\messageStack::add('UPS Label Request Warning # ' . $XMLFail . ' - ' . GetNodeData($ResponseXML, 'ShipmentConfirmResponse:Response:Error:ErrorDescription'),'caution');
 		} elseif ($XMLFail && $XMLWarn <> 'Warning') { // hard error - return with bad news
 			throw new \core\classes\userException("UPS Label Request Error # $XMLFail - " . GetNodeData($ResponseXML, 'ShipmentConfirmResponse:Response:Error:ErrorDescription'));
 		}
@@ -504,7 +504,7 @@ class ups extends \shipping\classes\shipping {
 		$XMLFail = GetNodeData($ResponseXML, 'ShipmentAcceptResponse:Response:Error:ErrorCode'); // Check for errors returned from UPS
 		$XMLWarn = GetNodeData($ResponseXML, 'ShipmentAcceptResponse:Response:Error:ErrorSeverity'); // Check for warnings returned from UPS (process continues)
 		if ($XMLFail && $XMLWarn == 'Warning') { // soft error, report it and continue
-			$messageStack->add('UPS Label Retrieval Warning # ' . $XMLFail . ' - ' . GetNodeData($ResponseXML, 'ShipmentAcceptResponse:Response:Error:ErrorDescription'),'caution');
+			\core\classes\messageStack::add('UPS Label Retrieval Warning # ' . $XMLFail . ' - ' . GetNodeData($ResponseXML, 'ShipmentAcceptResponse:Response:Error:ErrorDescription'),'caution');
 		} elseif ($XMLFail && $XMLWarn <> 'Warning') { // hard error - return with bad news
 			throw new \core\classes\userException("UPS Label Retrieval Error # $XMLFail - " . GetNodeData($ResponseXML, 'ShipmentAcceptResponse:Response:Error:ErrorDescription'));
 		}
@@ -545,11 +545,11 @@ class ups extends \shipping\classes\shipping {
 				$filename = $label['tracking'] . '.gif'; // plain paper
 			}
 			if (!$handle = @fopen($file_path . $filename, 'w')) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE,  $file_path . $filename));
-			if (!@fwrite($handle, $output_label) === false) 	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $file_path . $filename);
+			if (!@fwrite($handle, $output_label) === false) 	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $file_path . $filename));
 			$this->labelFilePath = $file_path . $filename;
 			if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
 		}
-        $messageStack->add('Successfully retrieved the UPS shipping label. Tracking # ' . $ups_results[$key]['tracking'],'success');
+        \core\classes\messageStack::add('Successfully retrieved the UPS shipping label. Tracking # ' . $ups_results[$key]['tracking'],'success');
 		if (DEBUG) $messageStack->write_debug();
 		return $returnArray;
 	}
@@ -890,7 +890,7 @@ class ups extends \shipping\classes\shipping {
 		$XMLFail = GetNodeData($ResponseXML, 'VoidShipmentResponse:Response:Error:ErrorCode'); // Check for errors returned from UPS
 		$XMLWarn = GetNodeData($ResponseXML, 'VoidShipmentResponse:Response:Error:ErrorSeverity'); // Check for warnings returned from UPS (process continues)
 		if ($XMLFail && $XMLWarn == 'Warning') { // soft error, report it and continue
-			$messageStack->add('UPS Label Delete Warning # ' . $XMLFail . ' - ' . GetNodeData($ResponseXML, 'VoidShipmentResponse:Response:Error:ErrorDescription'),'caution');
+			\core\classes\messageStack::add('UPS Label Delete Warning # ' . $XMLFail . ' - ' . GetNodeData($ResponseXML, 'VoidShipmentResponse:Response:Error:ErrorDescription'),'caution');
 		} elseif ($XMLFail && $XMLWarn <> 'Warning') { // hard error - return with bad news
 			throw new \core\classes\userException("UPS Label Delete Error # $XMLFai - ". GetNodeData($ResponseXML, 'VoidShipmentResponse:Response:Error:ErrorDescription'));
 		}
@@ -905,10 +905,10 @@ class ups extends \shipping\classes\shipping {
 		} else {
 			$file_name = false; // file does not exist, skip
 		}
-		if ($file_name) if (!unlink($file_path . $file_name)) $messageStack->add('Trouble deleting label file (' . $file_path . $file_name . ')','caution');
+		if ($file_name) if (!unlink($file_path . $file_name)) \core\classes\messageStack::add('Trouble deleting label file (' . $file_path . $file_name . ')','caution');
 
 		// if we are here the delete was successful, the lack of an error indicates success
-		$messageStack->add('Successfully deleted the UPS shipping label. Tracking # ' . $tracking_number,'success');
+		\core\classes\messageStack::add('Successfully deleted the UPS shipping label. Tracking # ' . $tracking_number,'success');
 		return true;
 	}
 

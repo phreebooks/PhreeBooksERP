@@ -161,12 +161,12 @@ switch ($_REQUEST['action']) {
 			  and i.gl_account = '" . $tills->gl_acct_id . "'
 			  and m.id in (" . implode(",", $mains) . ")");
 		}
-		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_SAVED, TEXT_RECONCILIATION , ''),'success');
+		\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_SAVED, TEXT_RECONCILIATION , ''),'success');
 		gen_add_audit_log(TEXT_ACCOUNT_RECONCILIATION." ". TEXT_PERIOD ." : " . $period, $tills->gl_acct_id);
 		$post_date = ''; // reset for new form
   	}catch(Exception $e){
   		$admin->DataBase->transRollback();
-  		$messageStack->add($e->getMessage());
+  		\core\classes\messageStack::add($e->getMessage());
   		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
   	}
 	if (DEBUG) $messageStack->write_debug();
@@ -302,7 +302,7 @@ if ($post_date){
 
 	// load the end balance
 	$till_balance = $admin->currencies->format($tills->balance);
-	if (empty($combined_list) && $tills->till_id <> '' ) $messageStack->add('No Items were found for till and period.!','warning');
+	if (empty($combined_list) && $tills->till_id <> '' ) \core\classes\messageStack::add('No Items were found for till and period.!','warning');
 }
 
 $cal_gl = array(

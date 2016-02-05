@@ -71,7 +71,7 @@ class sku_pricer {
 				$where = "upc_code='{$row['upc_code']}'";
 			}
 			if (!$where) {
-				$messageStack->add("No search field was found. Either the SKU or UPC Code field must be included in the csv file.", 'error');
+				\core\classes\messageStack::add("No search field was found. Either the SKU or UPC Code field must be included in the csv file.", 'error');
 				break; // no valid search fields
 			}
 			$query = "";
@@ -96,7 +96,7 @@ class sku_pricer {
 			$result = $admin->DataBase->query($sql);
 		}
 		if (DEBUG) $messageStack->write_debug();
-		$messageStack->add("Total lines processed: ".sizeof($rows).". Total affected rows = $count.", "success");
+		\core\classes\messageStack::add("Total lines processed: ".sizeof($rows).". Total affected rows = $count.", "success");
   	}
 
   	function csv_to_array($filename='', $delimiter=',') {

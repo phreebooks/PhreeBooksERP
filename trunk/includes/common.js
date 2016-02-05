@@ -55,19 +55,26 @@ function MessageStackAdd(message, type){
 	    var tbl = document.createElement('table');
 	    tbl.setAttribute('id', 'messageStack');
 	    tbl.setAttribute('style', "border-collapse:collapse;width:100%");
-	    document.body.insertBefore(tbl, document.body.childNodes[0]);
+		if ( !document.getElementById('smoothmenu')) {
+			document.body.insertBefore(tbl, document.body.childNodes[0]);
+		}else{
+			document.getElementById('smoothmenu').appendChild(tbl);
+		}
 	}
 	var newRow = document.getElementById('messageStack').insertRow(-1);
-	cell  = '<td align="center">';
+	td = newRow.insertCell();
+	td.setAttribute('width',"100%");
+	td.appendChild(document.createTextNode(message));
 	if (type == 'success') {
-  		cell  = '<td class="ui-state-active" style="width:100%">'+message+ '</td>';
+		console.info("messageStack = " + message);
+		td.setAttribute('class',"ui-state-active");
   	} else if (type == 'caution' || type == 'warning') {
-  		cell  = '<td class="ui-state-highlight" style="width:100%">'+message+ '</td>';
+  		console.warn("messageStack = " + message);
+  		td.setAttribute('class',"ui-state-highlight");
   	} else {
-  		cell  = '<td class="ui-state-error" style="width:100%">'+message+ '</td>';
+  		console.error("messageStack = " + message);
+  		td.setAttribute('class',"ui-state-error");
   	}
-	newCell = newRow.insertCell(-1);
-	newCell.innerHTML = cell;
 }
 
 // BOS - set up ajax session refresh timer to stay logged in if the browser is active

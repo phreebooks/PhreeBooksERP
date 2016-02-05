@@ -650,7 +650,7 @@ class journal_03 extends \core\classes\journal {
 		$admin->DataBase->transCommit();	// finished successfully
 		//echo 'committed transaction - bailing!'; exit();
 		// ***************************** END TRANSACTION *******************************
-		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, $this->id_field_name, $this->purchase_invoice_id), 'success');
+		\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, $this->id_field_name, $this->purchase_invoice_id), 'success');
 		return true;
 	}
 

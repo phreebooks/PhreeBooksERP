@@ -53,10 +53,10 @@ class zencart {
 		$this->code   = $results->Response->Code;
 		$this->text   = $results->Response->Text;
 		if ($this->code == 0) {
-			if (!$hide_success) $messageStack->add($this->text, strtolower($this->result));
+			if (!$hide_success) \core\classes\messageStack::add($this->text, strtolower($this->result));
 			return true;
 		} else {
-			$messageStack->add(TEXT_ERROR . $this->code . ' - ' . $this->text, strtolower($this->result));
+			\core\classes\messageStack::add(TEXT_ERROR . $this->code . ' - ' . $this->text, strtolower($this->result));
 			return false;
 		}
 	}

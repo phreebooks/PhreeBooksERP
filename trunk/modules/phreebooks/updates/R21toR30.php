@@ -91,7 +91,7 @@ while (FALSE !== ($filename = $d->read())) {
   @copy($dir_source . '/' . $filename, $dir_dest . '/' . $filename);
 }
 $d->close();
-if ($count) $messageStack->add(sprintf(PB_CONVERT_SUCCESS, $count), 'success');
+if ($count) \core\classes\messageStack::add(sprintf(PB_CONVERT_SUCCESS, $count), 'success');
 
 $result = $admin->DataBase->query("select id, doc_title from " . TABLE_PHREEFORM . " where doc_ext in ('rpt','frm')");
 $new_reports = array();

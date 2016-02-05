@@ -65,7 +65,7 @@ switch ($_REQUEST['action']) {
 			print $output;
 			exit();*/
 		}catch(\Exception $e){
-			$messageStack->add($e->getMessage());
+			\core\classes\messageStack::add($e->getMessage());
 		}
 	default:
 }

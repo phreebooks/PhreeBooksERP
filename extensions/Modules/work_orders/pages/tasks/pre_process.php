@@ -72,10 +72,10 @@ switch ($_REQUEST['action']) {
 		    if (!db_perform(TABLE_WO_TASK, $sql_data_array, 'insert')) throw new \core\classes\userException("unable to insert in the database");
 			gen_add_audit_log(sprintf(WO_AUDIT_LOG_TASK, TEXT_ADD) . $task_name);
 		}
-		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS,($id ? TEXT_UPDATED : TEXT_ADDED), TEXT_WORK_ORDER_TASK , $task_name),'success');
+		\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS,($id ? TEXT_UPDATED : TEXT_ADDED), TEXT_WORK_ORDER_TASK , $task_name),'success');
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
   	}catch(Exception $e){
-  		$messageStack->add($e->getMessage());
+  		\core\classes\messageStack::add($e->getMessage());
   	}
 	break;
   case 'delete':
@@ -87,7 +87,7 @@ switch ($_REQUEST['action']) {
 	  	gen_add_audit_log(sprintf(WO_AUDIT_LOG_TASK, TEXT_DELETE), $id);
 	  	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	} else {
-	  	$messageStack->add(sprintf(WO_ERROR_CANNOT_DELETE . $result->fields['ref_id']), 'error');
+	  	\core\classes\messageStack::add(sprintf(WO_ERROR_CANNOT_DELETE . $result->fields['ref_id']), 'error');
 	}
 	break;
   case 'go_first':    $_REQUEST['list'] = 1;       break;

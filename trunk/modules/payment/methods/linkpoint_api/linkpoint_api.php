@@ -381,7 +381,7 @@ class linkpoint_api extends \payment\classes\payment {
 			$all_response_info .= ' ' . $key . '=' . $value;
 		}
 		if ($this->code_debug) {
-			$messageStack->add($all_response_info, 'caution');
+			\core\classes\messageStack::add($all_response_info, 'caution');
 		}
 
 		$chargetotal = $myorder["chargetotal"];
@@ -711,7 +711,7 @@ class linkpoint_api extends \payment\classes\payment {
 		} else {
 			// Success, so save the results
 			$this->_updateOrderStatus($oID, $new_order_status, 'REFUND INITIATED. Order ID:' . $result['r_ordernum'] . ' - ' . 'Trans ID: ' . $result['r_tdate'] . "\n" . 'Amount: ' . $myorder["chargetotal"] . "\n" . $refundNote);
-			$messageStack->add(sprintf(MODULE_PAYMENT_LINKPOINT_API_TEXT_REFUND_INITIATED, $result['r_tdate'], $result['r_ordernum']), 'success');
+			\core\classes\messageStack::add(sprintf(MODULE_PAYMENT_LINKPOINT_API_TEXT_REFUND_INITIATED, $result['r_tdate'], $result['r_ordernum']), 'success');
 			return true;
 		}
 		return false;
@@ -758,7 +758,7 @@ class linkpoint_api extends \payment\classes\payment {
 		if ($result["r_approved"] != "APPROVED")	throw new \core\classes\userException($response_alert);
 		// Success, so save the results
 		$this->_updateOrderStatus($oID, $new_order_status, 'FUNDS COLLECTED. Auth Code: ' . substr($result['r_code'], 0, 6) . ' - ' . 'Trans ID: ' . $result['r_tdate'] . "\n" . ' Amount: ' . number_format($captureAmt, 2) . "\n" . $captureNote);
-		$messageStack->add(sprintf(MODULE_PAYMENT_LINKPOINT_API_TEXT_CAPT_INITIATED, $captureAmt, $result['r_tdate'], substr($result['r_code'], 0, 6)), 'success');
+		\core\classes\messageStack::add(sprintf(MODULE_PAYMENT_LINKPOINT_API_TEXT_CAPT_INITIATED, $captureAmt, $result['r_tdate'], substr($result['r_code'], 0, 6)), 'success');
 		return true;
 	}
 	/**
@@ -796,7 +796,7 @@ class linkpoint_api extends \payment\classes\payment {
 		} else {
 			// Success, so save the results
 			//$this->_updateOrderStatus($oID, $new_order_status, 'VOIDED. OrderNo: ' . $result['r_ordernum'] . ' - Trans ID: ' . $result['r_tdate'] . "\n" . $voidNote);
-			$messageStack->add(sprintf(MODULE_PAYMENT_LINKPOINT_API_TEXT_VOID_INITIATED, $result['r_tdate'], $result['r_ordernum']), 'success');
+			\core\classes\messageStack::add(sprintf(MODULE_PAYMENT_LINKPOINT_API_TEXT_VOID_INITIATED, $result['r_tdate'], $result['r_ordernum']), 'success');
 			return true;
 		}
 		return false;

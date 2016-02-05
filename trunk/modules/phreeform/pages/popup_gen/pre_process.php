@@ -203,10 +203,10 @@ switch ($_REQUEST['action']) {
 	  }
 	  if (!@fwrite($handle, $output)) 	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));
 	  if (!@fclose($handle)) 			throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
-	  $messageStack->add(TEXT_REPORT . $report->description . TEXT_WAS_SAVED_AND_COPIED_TO_REPORT . ': ' . $report->title, 'success');
+	  \core\classes\messageStack::add(TEXT_REPORT . $report->description . TEXT_WAS_SAVED_AND_COPIED_TO_REPORT . ': ' . $report->title, 'success');
 	  break; // we're done
 	} elseif ($_REQUEST['action'] == 'save') {
-	  $messageStack->add(PHREEFORM_CANNOT_EDIT,'caution');
+	  \core\classes\messageStack::add(PHREEFORM_CANNOT_EDIT,'caution');
 	  break; // we're done
 	} elseif ($_REQUEST['action'] == 'save_as') {
 	  $result = $admin->DataBase->query("select * from " . TABLE_PHREEFORM . " where id = " . $rID);
@@ -229,7 +229,7 @@ switch ($_REQUEST['action']) {
 	  }
 	  if (@fwrite($handle, $output)) 	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));
 	  if (!@fclose($handle))			throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
-	  $messageStack->add(TEXT_REPORT . $report->description . TEXT_WAS_SAVED_AND_COPIED_TO_REPORT . ': ' . $report->title, 'success');
+	  \core\classes\messageStack::add(TEXT_REPORT . $report->description . TEXT_WAS_SAVED_AND_COPIED_TO_REPORT . ': ' . $report->title, 'success');
 	  break; // we're done
 	}
 
@@ -269,7 +269,7 @@ switch ($_REQUEST['action']) {
 		}
 		$attachments_list['file'] = $filename;
 		validate_send_mail($to_name, $to_email, $message_subject, $email_text, $from_name, $from_email, $block, $attachments_list);
-		$messageStack->add(EMAIL_SEND_SUCCESS, 'success');
+		\core\classes\messageStack::add(EMAIL_SEND_SUCCESS, 'success');
 		unlink($filename);
 	}
 	default:

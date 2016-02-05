@@ -162,7 +162,7 @@ switch ($_REQUEST['action']) {
 		'acct'  => db_prepare_input($_POST['acct_1']),
 	  );
 	  $post_credit = $order->post_ordr($_REQUEST['action']);
-	  $messageStack->add("order id is now: $order->id", 'caution');
+	  \core\classes\messageStack::add("order id is now: $order->id", 'caution');
 	  $oID = $order->id; // need to fetch id for printing
 	  if (!$post_credit) {
 		$order            = new \core\classes\objectInfo($_POST);

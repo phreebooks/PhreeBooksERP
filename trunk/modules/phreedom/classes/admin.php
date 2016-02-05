@@ -274,16 +274,16 @@ class admin extends \core\classes\admin {
 		if ($this->revisions && CFG_AUTO_UPDATE_CHECK && (SECURITY_ID_CONFIGURATION > 3)) { // compaire software versions
 			$versions = xml_to_object($this->revisions);
 			$latest  = $versions->Revisions->Phreedom->Current;
-			if (version_compare($basis->classes['phreedom']->version, $latest, '<'))  $messageStack->add(sprintf(TEXT_VERSION_CHECK_NEW_VER, $basis->classes['phreedom']->version, $latest), 'caution');
+			if (version_compare($basis->classes['phreedom']->version, $latest, '<'))  \core\classes\messageStack::add(sprintf(TEXT_VERSION_CHECK_NEW_VER, $basis->classes['phreedom']->version, $latest), 'caution');
 			// load installed modules and initialize them
 			foreach ($basis->classes as $key => $module_class) {
 				if ($key == 'phreedom') continue; // skip this module
 				$latest  = $versions->Revisions->Modules->$key->Current;
-				if (version_compare($module_class->version, $latest , '<'))  $messageStack->add(sprintf(TEXT_VERSION_CHECK_NEW_MOD_VER, $module_class->text, $module_class->version, $latest), 'caution');
+				if (version_compare($module_class->version, $latest , '<'))  \core\classes\messageStack::add(sprintf(TEXT_VERSION_CHECK_NEW_MOD_VER, $module_class->text, $module_class->version, $latest), 'caution');
 			}
 		}
 		// Make sure the install directory has been moved/removed
-		if (is_dir(DIR_FS_ADMIN . 'install')) $messageStack->add(TEXT_INSTALL_DIR_PRESENT, 'caution');
+		if (is_dir(DIR_FS_ADMIN . 'install')) \core\classes\messageStack::add(TEXT_INSTALL_DIR_PRESENT, 'caution');
   	}
 
 	function web_connected($silent = true) {
@@ -520,7 +520,7 @@ class admin extends \core\classes\admin {
 		$html_msg['EMAIL_CUSTOMERS_NAME'] = $result['admin_name'];
 		$html_msg['EMAIL_MESSAGE_HTML']   = sprintf(TEXT_EMAIL_MESSAGE, COMPANY_NAME, $new_password);
 		validate_send_mail($result['admin_name'], $result['admin_email'], TEXT_EMAIL_SUBJECT, $html_msg['EMAIL_MESSAGE_HTML'], COMPANY_NAME, EMAIL_FROM, $html_msg);
-		$messageStack->add(SUCCESS_PASSWORD_SENT, 'success');
+		\core\classes\messageStack::add(SUCCESS_PASSWORD_SENT, 'success');
 		gen_add_audit_log(TEXT_RE-SENT_PASSWORD_TO_EMAIL . ' -> ' . $basis->admin_email);
 		$basis->addEventToStack("LoadLogIn");
 	}

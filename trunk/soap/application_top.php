@@ -101,7 +101,7 @@ $currencies   = new \core\classes\currencies;
 $messageStack = new \core\classes\messageStack;
 if (get_cfg_var('safe_mode')) echo 'Operating in Safe Mode. (This is bad!)';
 // check if a default currency is set
-if (!defined('DEFAULT_CURRENCY')) $messageStack->add(ERROR_NO_DEFAULT_CURRENCY_DEFINED, 'error');
+if (!defined('DEFAULT_CURRENCY')) \core\classes\messageStack::add(ERROR_NO_DEFAULT_CURRENCY_DEFINED, 'error');
 // include the password crypto functions
 
 ?>

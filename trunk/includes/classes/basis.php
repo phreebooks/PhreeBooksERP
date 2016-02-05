@@ -190,7 +190,7 @@ class basis {
 			if (file_exists($path)) { include($path); }
 			\core\classes\messageStack::debug_log("database type ".get_class($this->DataBase));
 		}catch (\Exception $e){
-			$messageStack->add($e);
+			\core\classes\messageStack::add($e);
 			$this->user->LoadLogIn();
 		}
 	}

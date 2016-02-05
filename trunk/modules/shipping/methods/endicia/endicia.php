@@ -196,10 +196,10 @@ class endicia extends \shipping\classes\shipping {
 			$field = strtolower($key['key']);
 			switch ($key['key']) {
 		    	case 'MODULE_SHIPPING_ENDICIA_TYPES': // read the checkboxes
-			  		write_configure($key['key'], implode(',', $_POST[$field]));
+			  		$admin->DataBase->write_configure($key['key'], implode(',', $_POST[$field]));
 			  		break;
 				default:  // just write the value
-			  		if (isset($_POST[$field])) write_configure($key['key'], $_POST[$field]);
+			  		if (isset($_POST[$field])) $admin->DataBase->write_configure($key['key'], $_POST[$field]);
 			}
 		}
 	}
@@ -362,7 +362,7 @@ class endicia extends \shipping\classes\shipping {
   	try {
 	  $response = $client->BuyPostage($data);
   	  if ($response->RecreditRequestResponse->Status == 0) {
-  		$messageStack->add(sprintf(SHIPPING_ENDICIA_PURCHASE_SUCCESS_MSG, $admin->currencies->format($response->RecreditRequestResponse->CertifiedIntermediary->PostageBalance), $response->RecreditRequestResponse->CertifiedIntermediary->SerialNumber),'success');
+  		\core\classes\messageStack::add(sprintf(SHIPPING_ENDICIA_PURCHASE_SUCCESS_MSG, $admin->currencies->format($response->RecreditRequestResponse->CertifiedIntermediary->PostageBalance), $response->RecreditRequestResponse->CertifiedIntermediary->SerialNumber),'success');
   	  } else {
   		throw new \core\classes\userException(TEXT_ERROR.' ('.$response->RecreditRequestResponse->Status.') '.$response->RecreditRequestResponse->ErrorMessage);
 	  }
@@ -399,8 +399,8 @@ class endicia extends \shipping\classes\shipping {
   	try {
 	  $response = $client->ChangePassPhrase($data);
   	  if ($response->ChangePassPhraseRequestResponse->Status == 0) {
-  	  	write_configure('MODULE_SHIPPING_ENDICIA_PASS_PHRASE', $new_pp);
-  		$messageStack->add(SHIPPING_ENDICIA_PASSPHRASE_SUCCESS_MSG, 'success');
+  	  	$admin->DataBase->write_configure('MODULE_SHIPPING_ENDICIA_PASS_PHRASE', $new_pp);
+  		\core\classes\messageStack::add(SHIPPING_ENDICIA_PASSPHRASE_SUCCESS_MSG, 'success');
   	  } else {
   		throw new \core\classes\userException(TEXT_ERROR.' ('.$response->ChangePassPhraseRequestResponse->Status.') '.$response->ChangePassPhraseRequestResponse->ErrorMessage);
   	  }
@@ -460,7 +460,7 @@ class endicia extends \shipping\classes\shipping {
 		  if (!$handle = @fopen($file_path . $filename, 'w')) throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, file_path . $filename));
 		  if (!@fwrite($handle, $label)) throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$file_path . $filename));
 		  if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
-		  $messageStack->add(sprintf(SHIPPING_ENDICIA_LABEL_STATUS, $tracking, $response->LabelRequestResponse->PostageBalance),'success');
+		  \core\classes\messageStack::add(sprintf(SHIPPING_ENDICIA_LABEL_STATUS, $tracking, $response->LabelRequestResponse->PostageBalance),'success');
 		} else {
 		  throw new \core\classes\userException('Error - No label found in return string.');
 		}
@@ -592,7 +592,7 @@ class endicia extends \shipping\classes\shipping {
 //echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';
 //echo 'Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
 	  if ($response->RefundResponse->RefundList->PICNumber->IsAppoved == 'YES') {
-	  	$messageStack->add(sprintf(SHIPPING_ENDICIA_REFUND_MSG, $response->RefundResponse->RefundList->PICNumber, $response->RefundResponse->RefundList->PICNumber->IsApproved, $response->RefundResponse->RefundList->PICNumber->ErrorMsg), 'success');
+	  	\core\classes\messageStack::add(sprintf(SHIPPING_ENDICIA_REFUND_MSG, $response->RefundResponse->RefundList->PICNumber, $response->RefundResponse->RefundList->PICNumber->IsApproved, $response->RefundResponse->RefundList->PICNumber->ErrorMsg), 'success');
 	  } else {
 	  	throw new \core\classes\userException(TEXT_ERROR.' '.$response->RefundResponse->RefundList->PICNumber->ErrorMsg);
   	  }
@@ -644,7 +644,7 @@ class endicia extends \shipping\classes\shipping {
 	  	  $description = $status->PICNumber->Status;
 	  	  $status_code = $status->PICNumber->StatusCode;
 	  	  $message     = sprintf(SHIPPING_ENDICIA_TRACK_STATUS, $shipments->fields['ref_id'], $shipments->fields['tracking_id'], $description);
-	  	  $messageStack->add($message, $status_code=='D'?'success':'caution');
+	  	  \core\classes\messageStack::add($message, $status_code=='D'?'success':'caution');
 		}
 	  } else {
 	  	throw new \core\classes\userException(TEXT_ERROR.' ('.$response->StatusResponse->Status.') '.$response->StatusResponse->ErrorMsg);

@@ -128,7 +128,7 @@ class admin extends \core\classes\admin {
 	  		$mail = new \phreemail\classes\phreemail();
 			$mail->connect('', '', EMAIL_SMTPAUTH_MAILBOX, '');
 			if ($mail->error_count != 0 ){
-				$messageStack->add($mail->ErrorInfo, 'error');
+				\core\classes\messageStack::add($mail->ErrorInfo, 'error');
 			}else{
 				//while(!$mail->EOF){
 					$mail->do_action();
@@ -141,7 +141,7 @@ class admin extends \core\classes\admin {
 				$mail->MoveNext();
 			}*/
 		}catch (\Exception $exception){
-			$messageStack->add($exception->getMessage(), 'error');
+			\core\classes\messageStack::add($exception->getMessage(), 'error');
 		}
 		$messageStack->debug("\n\n*************** End Retrieving Mail from ".EMAIL_SMTPAUTH_MAILBOX." *******************");
 		try{
@@ -150,7 +150,7 @@ class admin extends \core\classes\admin {
 			$mail->connect('', '', $_SESSION['admin_email'], '');
 //			$mail->get_all_emails();
 			if ($mail->error_count != 0 ){
-				$messageStack->add($mail->ErrorInfo, 'error');
+				\core\classes\messageStack::add($mail->ErrorInfo, 'error');
 			}else{
 				//while(!$mail->EOF){
 					$mail->do_action();
@@ -164,7 +164,7 @@ class admin extends \core\classes\admin {
 			}*/
 			$messageStack->debug("\n\n*************** End Retrieving Mail from ".$_SESSION['admin_email']." *******************");
 		}catch (\Exception $exception){
-			$messageStack->add($exception->getMessage(), 'error');
+			\core\classes\messageStack::add($exception->getMessage(), 'error');
 		}
 		if ( DEBUG )   $messageStack->write_debug();
   }

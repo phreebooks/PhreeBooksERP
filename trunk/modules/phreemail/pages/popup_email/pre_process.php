@@ -56,7 +56,7 @@ if($_REQUEST['action'] = 'send'){
 		$block['EMAIL_CC_ADDRESS'] = $cc_address;
 	}
 	validate_send_mail($to_name, $to_address, $email_subject, $email_text, $from_name, $from_address, $block);
-	$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_SEND, TEXT_EMAIL , ''), 'success');
+	\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_SEND, TEXT_EMAIL , ''), 'success');
 	echo '<script type="text/javascript"> window.opener.location.reload();' . chr(10);
 	echo'self.close();</script>' . chr(10);
 }

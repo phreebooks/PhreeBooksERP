@@ -259,7 +259,7 @@ class authorizenet extends \payment\classes\payment {
     // If the MD5 hash doesn't match, then this transaction's authenticity cannot be verified.
     // Thus, order will be placed in Pending status
     if ($response['HashMatchStatus'] != 'PASS' && defined('MODULE_PAYMENT_AUTHORIZENET_MD5HASH') && MODULE_PAYMENT_AUTHORIZENET_MD5HASH != '') {
-      $messageStack->add(MODULE_PAYMENT_AUTHORIZENET_TEXT_AUTHENTICITY_WARNING, 'caution');
+      \core\classes\messageStack::add(MODULE_PAYMENT_AUTHORIZENET_TEXT_AUTHENTICITY_WARNING, 'caution');
     }
 
     // If the response code is not 1 (approved) then redirect back to the payment page with the appropriate error message
@@ -410,7 +410,7 @@ class authorizenet extends \payment\classes\payment {
         $admin->DataBase->query("update " . TABLE_ORDERS  . "
                       set orders_status = '" . (int)$new_order_status . "'
                       where orders_id = '" . (int)$oID . "'");
-        $messageStack->add(sprintf(MODULE_PAYMENT_AUTHORIZENET_TEXT_REFUND_INITIATED, $response[9], $response[6]), 'success');
+        \core\classes\messageStack::add(sprintf(MODULE_PAYMENT_AUTHORIZENET_TEXT_REFUND_INITIATED, $response[9], $response[6]), 'success');
         return true;
   	}
 
@@ -448,7 +448,7 @@ class authorizenet extends \payment\classes\payment {
        	$admin->DataBase->query("update " . TABLE_ORDERS  . "
                       set orders_status = '" . (int)$new_order_status . "'
                      where orders_id = '" . (int)$oID . "'");
-       	$messageStack->add(sprintf(MODULE_PAYMENT_AUTHORIZENET_TEXT_VOID_INITIATED, $response[6], $response[4]), 'success');
+       	\core\classes\messageStack::add(sprintf(MODULE_PAYMENT_AUTHORIZENET_TEXT_VOID_INITIATED, $response[6], $response[4]), 'success');
        	return true;
 
   	}

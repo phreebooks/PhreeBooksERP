@@ -74,56 +74,56 @@ switch ($_REQUEST['action']) {
 		// start the checks for minimum requirements
 		//PHP Version Check
 		if (version_compare(PHP_VERSION, '5.2.0', '<')) {
-	  		$error = $messageStack->add(INSTALL_ERROR_PHP_VERSION, 'error');
+	  		$error = \core\classes\messageStack::add(INSTALL_ERROR_PHP_VERSION, 'error');
 		}
 		// Check Register Globals
 		$register_globals = ini_get("register_globals");
 		if ($register_globals <> '' && $register_globals <> '0' && strtoupper($register_globals) <> 'OFF') {
-	  		$error = $messageStack->add(INSTALL_ERROR_REGISER_GLOBALS, 'error');
+	  		$error = \core\classes\messageStack::add(INSTALL_ERROR_REGISER_GLOBALS, 'error');
 		}
 		// SAFE MODE check
 		if (ini_get("safe_mode")) {
-			$error = $messageStack->add(INSTALL_ERROR_SAFE_MODE, 'error');
+			$error = \core\classes\messageStack::add(INSTALL_ERROR_SAFE_MODE, 'error');
 		}
 		// Support for Sessions check
 		if (@!extension_loaded('session')) {
-			$error = $messageStack->add(INSTALL_ERROR_SESSION_SUPPORT, 'error');
+			$error = \core\classes\messageStack::add(INSTALL_ERROR_SESSION_SUPPORT, 'error');
 		}
 		//Check for OpenSSL support (only relevant for Apache
 		if (@!extension_loaded('openssl')) {
-			$caution = $messageStack->add(INSTALL_ERROR_OPENSSL, 'caution');
+			$caution = \core\classes\messageStack::add(INSTALL_ERROR_OPENSSL, 'caution');
 		}
 		//Check for cURL support (ie: for payment/shipping gateways)
 		if (@!extension_loaded('curl')) {
-			$error = $messageStack->add(INSTALL_ERROR_CURL, 'error');
+			$error = \core\classes\messageStack::add(INSTALL_ERROR_CURL, 'error');
 		}
 		//Check for upload support built in to PHP
 		if (@!ini_get('file_uploads')) {
-			$caution = $messageStack->add(INSTALL_ERROR_UPLOADS, 'caution');
+			$caution = \core\classes\messageStack::add(INSTALL_ERROR_UPLOADS, 'caution');
 		}
 		//Upload TMP dir setting
 		if (!ini_get("upload_tmp_dir")) {
-			$caution = $messageStack->add(INSTALL_ERROR_UPLOAD_DIR, 'caution');
+			$caution = \core\classes\messageStack::add(INSTALL_ERROR_UPLOAD_DIR, 'caution');
 		}
 		//Check for XML Support
 		if (!function_exists('xml_parser_create')) {
-			$caution = $messageStack->add(INSTALL_ERROR_XML, 'caution');
+			$caution = \core\classes\messageStack::add(INSTALL_ERROR_XML, 'caution');
 		}
 		//Check for FTP support built in to PHP (for manual sending of configure.php files to server if applicable)
 		if (@!extension_loaded('ftp')) {
-			$caution = $messageStack->add(INSTALL_ERROR_FTP, 'caution');
+			$caution = \core\classes\messageStack::add(INSTALL_ERROR_FTP, 'caution');
 		}
 		// check for /includes writeable
 		if (!is_writable('../includes')) {
-			$error = $messageStack->add(INSTALL_ERROR_INCLUDES_DIR, 'error');
+			$error = \core\classes\messageStack::add(INSTALL_ERROR_INCLUDES_DIR, 'error');
 		}
 		// check for configure.php already exists
 		if (file_exists('../includes/configure.php')) {
-			$error = $messageStack->add(MSG_ERROR_CONFIGURE_EXISTS, 'error');
+			$error = \core\classes\messageStack::add(MSG_ERROR_CONFIGURE_EXISTS, 'error');
 		}
 		// check for /my_files writeable
 		if (!is_writable('../' . PATH_TO_MY_FILES)) {
-			$error = $messageStack->add(INSTALL_ERROR_MY_FILES_DIR, 'error');
+			$error = \core\classes\messageStack::add(INSTALL_ERROR_MY_FILES_DIR, 'error');
 		}
 		if ((!$error && !$caution) || (!$error && isset($_POST['btn_install']))) {
 			$include_template = 'template_install.php';
@@ -152,17 +152,17 @@ switch ($_REQUEST['action']) {
 		$fy_year         = db_prepare_input($_POST['fy_year']);
 
 		// error check input, user info
-		if (strlen($company_name) < 1)  $error = $messageStack->add(ERROR_TEXT_ADMIN_COMPANY_ISEMPTY, 'error');
-		if (strlen($user_username) < 1) $error = $messageStack->add(ERROR_TEXT_ADMIN_USERNAME_ISEMPTY, 'error');
-		if (strlen($user_email) < 1)    $error = $messageStack->add(ERROR_TEXT_ADMIN_EMAIL_ISEMPTY, 'error');
-		if (strlen($user_password) < 1) $error = $messageStack->add(ERROR_TEXT_LOGIN_PASS_ISEMPTY, 'error');
-		if ($user_password <> $user_pw_confirm) $error = $messageStack->add(ERROR_TEXT_LOGIN_PASS_NOTEQUAL, 'error');
+		if (strlen($company_name) < 1)  $error = \core\classes\messageStack::add(ERROR_TEXT_ADMIN_COMPANY_ISEMPTY, 'error');
+		if (strlen($user_username) < 1) $error = \core\classes\messageStack::add(ERROR_TEXT_ADMIN_USERNAME_ISEMPTY, 'error');
+		if (strlen($user_email) < 1)    $error = \core\classes\messageStack::add(ERROR_TEXT_ADMIN_EMAIL_ISEMPTY, 'error');
+		if (strlen($user_password) < 1) $error = \core\classes\messageStack::add(ERROR_TEXT_LOGIN_PASS_ISEMPTY, 'error');
+		if ($user_password <> $user_pw_confirm) $error = \core\classes\messageStack::add(ERROR_TEXT_LOGIN_PASS_NOTEQUAL, 'error');
 		// database info
-		if (preg_match('/a-z0-9_/i', $db_prefix) > 0) $error = $messageStack->add(ERROR_TEXT_DB_PREFIX_NODOTS, 'error');
-		if (strlen($db_host)     < 1) $error = $messageStack->add(ERROR_TEXT_DB_HOST_ISEMPTY,     'error');
-		if (strlen($db_name)     < 1) $error = $messageStack->add(ERROR_TEXT_DB_NAME_ISEMPTY,     'error');
-		if (strlen($db_username) < 1) $error = $messageStack->add(ERROR_TEXT_DB_USERNAME_ISEMPTY, 'error');
-		if (strlen($db_password) < 1) $error = $messageStack->add(ERROR_TEXT_DB_PASSWORD_ISEMPTY, 'error');
+		if (preg_match('/a-z0-9_/i', $db_prefix) > 0) $error = \core\classes\messageStack::add(ERROR_TEXT_DB_PREFIX_NODOTS, 'error');
+		if (strlen($db_host)     < 1) $error = \core\classes\messageStack::add(ERROR_TEXT_DB_HOST_ISEMPTY,     'error');
+		if (strlen($db_name)     < 1) $error = \core\classes\messageStack::add(ERROR_TEXT_DB_NAME_ISEMPTY,     'error');
+		if (strlen($db_username) < 1) $error = \core\classes\messageStack::add(ERROR_TEXT_DB_USERNAME_ISEMPTY, 'error');
+		if (strlen($db_password) < 1) $error = \core\classes\messageStack::add(ERROR_TEXT_DB_PASSWORD_ISEMPTY, 'error');
 
 		// define some things so the install can use existing functions
 		define('DB_PREFIX', $db_prefix);
@@ -181,7 +181,7 @@ switch ($_REQUEST['action']) {
 		  require('../includes/db/' . DB_TYPE . '/query_factory.php');
 		  $db = new queryFactory();//@todo pdo
 		  if (!$admin->DataBase->connect($db_host, $db_username, $db_password, $db_name)) {
-		  	$error = $messageStack->add(MSG_ERROR_CANNOT_CONNECT_DB . $admin->DataBase->show_error(), 'error');
+		  	$error = \core\classes\messageStack::add(MSG_ERROR_CANNOT_CONNECT_DB . $admin->DataBase->show_error(), 'error');
 		  } else { // test for InnoDB support
 		  	$result = $admin->DataBase->query("show engines");
 		  	$innoDB_enabled = false;
@@ -189,7 +189,7 @@ switch ($_REQUEST['action']) {
 		  		if ($result->fields['Engine'] == 'InnoDB') $innoDB_enabled = true;
 		  		$result->MoveNext();
 		  	}
-		  	if (!$innoDB_enabled) $error = $messageStack->add(MSG_ERROR_INNODB_NOT_ENABLED, 'error');
+		  	if (!$innoDB_enabled) $error = \core\classes\messageStack::add(MSG_ERROR_INNODB_NOT_ENABLED, 'error');
 		  }
 		}
 		if (!$error) {
@@ -299,7 +299,7 @@ switch ($_REQUEST['action']) {
 		  if (!$handle = @fopen('../includes/configure.php', 'w'))	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, 'includes/configure.php'));
 		  if (!@fwrite($handle, $config_contents))					throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 'includes/configure.php'));
 		  if (!@fclose($handle))									throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 'includes/configure.php'));
-		  if (!@chmod('../includes/configure.php', 0444))			$messageStack->add("Was not able to mark configure file as read only", "caution");
+		  if (!@chmod('../includes/configure.php', 0444))			\core\classes\messageStack::add("Was not able to mark configure file as read only", "caution");
 		}
 		if (!$error) { // set the session variables so they can log in
 		  $_SESSION['admin_id']       = $user_id;

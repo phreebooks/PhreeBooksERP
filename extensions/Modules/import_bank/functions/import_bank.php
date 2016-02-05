@@ -17,7 +17,7 @@
 //  Path: /modules/import_bank/functions/import_bank.php
 //
 function bank_import_csv($structure, $filename, $bank_gl_acct) {
-  	global $admin, $messageStack;
+  	global $admin;
 	$bankimport = new \import_bank\classes\import_banking();
   	$data = file($_FILES[$filename]['tmp_name']);
   	// read the header and build array
@@ -86,11 +86,11 @@ function bank_import_csv($structure, $filename, $bank_gl_acct) {
 	}
 	if (!$bankimport->update_chart_history_periods($bankimport->first_period)){
   		$admin->DataBase->transRollback();
-  		$messageStack->add("Chart of accounts are out of balance. When we try to import the file");
+  		\core\classes\messageStack::add("Chart of accounts are out of balance. When we try to import the file");
   		$messageStack->write_debug();
   	}
   	$admin->DataBase->transCommit();
-  	if ( $countline <> 0 ) $messageStack->add("succesfully posted $countline number of lines",'caution');
+  	if ( $countline <> 0 ) \core\classes\messageStack::add("succesfully posted $countline number of lines",'caution');
   	$messageStack->write_debug();
 }
 ?>

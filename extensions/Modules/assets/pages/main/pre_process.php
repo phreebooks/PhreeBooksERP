@@ -152,7 +152,7 @@ switch ($_REQUEST['action']) {
 		gen_add_audit_log(AESSETS_LOG_ASSETS . TEXT_UPDATE, $asset_id . ' - ' . $sql_data_array['description_short']);
 
 	} catch (Exception $e) {
-		$messageStack->add($e->getMessage());
+		\core\classes\messageStack::add($e->getMessage());
 		$_POST['id'] = $id;
 		$cInfo = new \core\classes\objectInfo($_POST);
 		$processed = true;

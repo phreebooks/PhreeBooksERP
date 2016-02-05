@@ -36,7 +36,7 @@ try{
    	$messageStack->write_debug();
    	session_write_close();
 }catch (\core\classes\userException $e) {
-	$messageStack->add($e->getMessage());
+	\core\classes\messageStack::add($e->getMessage());
 	if (is_object($admin->DataBase)) gen_add_audit_log($e->getMessage());
 	$messageStack->debug(" ".$e->getMessage());
 	$messageStack->debug(" fire event : $e->action");

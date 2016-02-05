@@ -57,22 +57,23 @@ class admin {
 	 */
 
 	function install($path_my_files, $demo = false) {
+		global $admin;
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->check_prerequisites_versions();
 		$this->install_dirs($path_my_files);
 		$this->install_update_tables();
-		foreach ($this->keys as $key => $value) write_configure($key, $value);
+		foreach ($this->keys as $key => $value) $admin->DataBase->write_configure($key, $value);
   		if ($demo) $this->load_demo(); // load demo data
   		$this->load_reports();
   		admin_add_reports($this->id);
   		$this->after_install();
 		foreach ($this->methods as $method) {
-	  		write_configure('MODULE_' . strtoupper($this->id) . '_' . strtoupper($method->id) . '_STATUS', $method->version);
-	  		foreach ($method->key as $key) write_configure($key['key'], $key['default']);
+	  		$admin->DataBase->write_configure('MODULE_' . strtoupper($this->id) . '_' . strtoupper($method->id) . '_STATUS', $method->version);
+	  		foreach ($method->key as $key) $admin->DataBase->write_configure($key['key'], $key['default']);
 	  		if (method_exists($method, 'install')) $method->install();
 		}
 		foreach ($this->dashboards as $dashboard) {
-	    	foreach ($dashboard->key() as $key) write_configure($key['key'], $key['default']);
+	    	foreach ($dashboard->key() as $key) $admin->DataBase->write_configure($key['key'], $key['default']);
 	    	if (method_exists($dashboard, 'install')) $dashboard->install();
 		}
 		$this->installed = true;
@@ -93,18 +94,19 @@ class admin {
   	 */
 
 	function upgrade(\core\classes\basis &$basis) {
+		global $admin;
 		\core\classes\messageStack::debug_log("executing upgrade of class ". get_class($this));
 		$this->check_prerequisites_versions();
 		$this->install_dirs($path_my_files);
 		$this->install_update_tables();
-		foreach ($this->keys as $key => $value) if(!defined($key)) write_configure($key, $value);
+		foreach ($this->keys as $key => $value) if(!defined($key)) $admin->DataBase->write_configure($key, $value);
 		foreach ($this->methods as $method) {
 			if ($method->installed && $method->should_update()){
-	    		foreach ($method->key() as $key) if(!defined($key['key'])) write_configure($key['key'], $key['default']);
+	    		foreach ($method->key() as $key) if(!defined($key['key'])) $admin->DataBase->write_configure($key['key'], $key['default']);
 				if (method_exists($method, 'upgrade')) $method->upgrade();
-				write_configure('MODULE_' . strtoupper($this->id) . '_' . strtoupper($method->id) . '_STATUS', $method->version);
+				$admin->DataBase->write_configure('MODULE_' . strtoupper($this->id) . '_' . strtoupper($method->id) . '_STATUS', $method->version);
 				gen_add_audit_log(sprintf(TEXT_MODULE_ARGS, $method->text) . TEXT_UPDATE, $method->version);
-	   			$messageStack->add(sprintf(GEN_MODULE_UPDATE_SUCCESS, $method->id, $method->version), 'success');
+	   			\core\classes\messageStack::add(sprintf(GEN_MODULE_UPDATE_SUCCESS, $method->id, $method->version), 'success');
 			}
 		}
 	}
@@ -122,14 +124,15 @@ class admin {
 		}
 	    $this->remove_tables();
 	    $this->remove_dirs($path_my_files);
-	    remove_configure('MODULE_' . strtoupper($this->id) . '_STATUS');
+	    $admin->DataBase->remove_configure('MODULE_' . strtoupper($this->id) . '_STATUS');
 	    $this->installed = false;
 	}
 
   	function release_update($version, $path = '') {
+  		global $admin;
     	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		if (file_exists($path)) { include_once ($path); }
-		write_configure('MODULE_' . strtoupper($this->id) . '_STATUS', $version);
+		$admin->DataBase->write_configure('MODULE_' . strtoupper($this->id) . '_STATUS', $version);
 		return $version;
   	}
 
@@ -151,15 +154,15 @@ class admin {
 	}
 
 	function should_update(\core\classes\basis &$basis){
-		global $messageStack;
+		global $admin;
 		$this->checkInstalled($basis);
 		if ($basis->returnConfigurationValue('MODULE_'.strtoupper($this->id).'_STATUS') !== null){
 			\core\classes\messageStack::debug_log("checking if class ".get_class($this)." needs updating installed = {$this->installed} and this version = {$this->version} current status = {$this->status} needs updating = ".version_compare($this->status, $this->version, '<') );
 			if (version_compare($this->status, $this->version, '<') != 0 ) {
 				$this->upgrade($basis);
 				$this->status = $this->version;
-				write_configure('MODULE_' . strtoupper($this->id) . '_STATUS', $this->version);
-				$messageStack->add(sprintf(GEN_MODULE_UPDATE_SUCCESS, $this->text, $this->version), 'success');
+				$admin->DataBase->write_configure('MODULE_' . strtoupper($this->id) . '_STATUS', $this->version);
+				\core\classes\messageStack::add(sprintf(GEN_MODULE_UPDATE_SUCCESS, $this->text, $this->version), 'success');
 				return true;
 			}
 		}

@@ -98,7 +98,6 @@ class admin extends \core\classes\admin {
 	}
 
 	function install($path_my_files, $demo = false) {
-	    global $admin, $messageStack;
 	    parent::install($path_my_files, $demo);
 		require_once(DIR_FS_MODULES . 'phreewiki/functions/phreewiki.php');
 		foreach ($this->pluginArray as $key => $value) install_plugin($key, $value);

@@ -63,7 +63,7 @@ switch ($_REQUEST['action']) {
       if (isset($_POST[$field])) $admin->DataBase->write_configure($key, $_POST[$field]);
     }
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-	$messageStack->add(TEXT_SAVED_IMPORT_BANK_CONFIG, 'success');
+	\core\classes\messageStack::add(TEXT_SAVED_IMPORT_BANK_CONFIG, 'success');
     break;
   case 'delete':
 	\core\classes\user::validate_security($security_level, 4); // security check

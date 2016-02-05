@@ -123,10 +123,10 @@ class usps extends \shipping\classes\shipping {
 		  	switch ($key['key']) {
 		    	case 'MODULE_SHIPPING_USPS_TYPES':
 			    case 'MODULE_SHIPPING_USPS_TYPES_INTL':
-					write_configure($key['key'], implode(',', $_POST[$field]));
+					$admin->DataBase->write_configure($key['key'], implode(',', $_POST[$field]));
 			  		break;
 				default:  // just write the value
-			  		if (isset($_POST[$field])) write_configure($key['key'], $_POST[$field]);
+			  		if (isset($_POST[$field])) $admin->DataBase->write_configure($key['key'], $_POST[$field]);
 		  	}
 		}
 	}

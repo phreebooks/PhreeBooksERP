@@ -36,7 +36,7 @@ class beg_bal_import {
 			if (!$current_order['order_id']) {
 				switch (JOURNAL_ID) {
 				  	case 6:
-						$messageStack->add(sprintf(TEXT_NO_INVOICE_NUMBER_FOUND_ON_LINE_FLAGGED_AS_WAITING_FOR_PAYMENT_ARGS, ($row_id + 1)),'caution');
+						\core\classes\messageStack::add(sprintf(TEXT_NO_INVOICE_NUMBER_FOUND_ON_LINE_FLAGGED_AS_WAITING_FOR_PAYMENT_ARGS, ($row_id + 1)),'caution');
 						$this->records[$row_id]['waiting'] = 1;
 						break;
 				  	default:
@@ -50,7 +50,7 @@ class beg_bal_import {
 				case 12:
 				  	$this->records[$row_id]['total_amount'] = $admin->currencies->clean_value($current_order['total_amount']);
 				  	if ($current_order['total_amount'] == 0) {
-						$messageStack->add(TEXT_SKIPPING_LINE._ZERO_TOTAL_AMOUNT_FOUND_ON_LINE . ' ' . ($row_id + 1),'caution');
+						\core\classes\messageStack::add(TEXT_SKIPPING_LINE._ZERO_TOTAL_AMOUNT_FOUND_ON_LINE . ' ' . ($row_id + 1),'caution');
 						$this->records[$row_id]['skip_this_record'] = 1;
 				  	}
 				default:
@@ -235,7 +235,7 @@ class beg_bal_import {
 			$admin->classes['inventory']->validate_name($row['sku']);
 			if (!in_array($row['inv_gl_acct'], $coa) || !in_array($row['gl_acct'], $coa)) throw new \core\classes\userException(sprintf(TEXT_ERROR_INVALID_GL_ACCT, $j));
 			if ($qty == 0) {
-				$messageStack->add(TEXT_SKIPPING_INVENTORY_ITEM._ZERO_QUANTITY_FOUND_ON_LINE . ' ' . $j,'caution');
+				\core\classes\messageStack::add(TEXT_SKIPPING_INVENTORY_ITEM._ZERO_QUANTITY_FOUND_ON_LINE . ' ' . $j,'caution');
 			} else {
 				$affected_accounts[$row['inv_gl_acct']] = true;	// need list of accounts to update history
 				$affected_accounts[$row['gl_acct']]     = true;	// both credit and debit

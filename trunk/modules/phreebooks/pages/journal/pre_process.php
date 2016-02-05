@@ -172,7 +172,7 @@ switch ($_REQUEST['action']) {
 		// *************** END TRANSACTION *************************
   	}catch(Exception $e){
 		$admin->DataBase->transRollback();
-		$messageStack->add($e->getMessage());
+		\core\classes\messageStack::add($e->getMessage());
 		$cInfo = new \core\classes\objectInfo($_POST); // if we are here, there was an error, reload page
 		$cInfo->post_date = \core\classes\DateTime::db_date_format($_POST['post_date']);
   	}
@@ -206,7 +206,7 @@ switch ($_REQUEST['action']) {
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
   	}catch(Exception $e){
 		$admin->DataBase->transRollback();
-		$messageStack->add($e->getMessage());
+		\core\classes\messageStack::add($e->getMessage());
 		$cInfo = new \core\classes\objectInfo($_POST); // if we are here, there was an error, reload page
 		$cInfo->post_date = \core\classes\DateTime::db_date_format($_POST['post_date']);
   	}

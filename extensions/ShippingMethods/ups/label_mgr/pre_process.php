@@ -98,7 +98,7 @@ switch ($_REQUEST['action']) {
 		$tracking_list = implode(':',$labels_array);
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('method', 'labels', 'date')) . 'module=shipping&page=popup_label_viewer&method=' . $shipping_module . '&date=' . $sInfo->ship_date . '&labels=' . $tracking_list, 'SSL'));
 	} catch(exception $e) {
-		$messageStack->add($e->getMessage());
+		\core\classes\messageStack::add($e->getMessage());
 		$sInfo->ship_country_code = gen_get_country_iso_3_from_2($sInfo->ship_country_code);
 	}
 	break;

@@ -37,7 +37,7 @@ switch ($_REQUEST['action']) {
       if (isset($_POST[$field])) $admin->DataBase->write_configure($key, $_POST[$field]);
     }
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-	$messageStack->add(INVENTORY_CONFIG_SAVED,'success');
+	\core\classes\messageStack::add(INVENTORY_CONFIG_SAVED,'success');
     break;
   case 'delete':
 	\core\classes\user::validate_security($security_level, 4); // security check
@@ -74,7 +74,7 @@ switch ($_REQUEST['action']) {
 		if (!isset($journal_repost[$result->fields['sku']])) {
 			$repair[$result->fields['sku']] += $totals;
 			$journal_repost[$result->fields['sku']] = $result->fields['sku'];
-			$messageStack->add(sprintf("The qty's for sku %s are not the same as the journal history would indicate. On stock are %s but should be %s", $result->fields['sku'], $remaining, $totals), 'error');
+			\core\classes\messageStack::add(sprintf("The qty's for sku %s are not the same as the journal history would indicate. On stock are %s but should be %s", $result->fields['sku'], $remaining, $totals), 'error');
 //			print(sprintf("The qty's for sku %s are not the same as the journal history would indicate. On stock are %s but should be %s", $result->fields['sku'], $remaining, $totals));
 //			ob_flush();
 			$cnt++;
@@ -93,13 +93,13 @@ switch ($_REQUEST['action']) {
 		if ($on_hand <> ($remaining - $owed)) {
 		  	$repair[$result->fields['sku']] = $remaining - $owed;
 		  	if ($_REQUEST['action'] <> 'inv_hist_fix') {
-		    	$messageStack->add(sprintf(INV_TOOLS_OUT_OF_BALANCE, $result->fields['sku'], $on_hand, ($remaining - $owed)), 'error');
+		    	\core\classes\messageStack::add(sprintf(INV_TOOLS_OUT_OF_BALANCE, $result->fields['sku'], $on_hand, ($remaining - $owed)), 'error');
 		    	$cnt++;
 		  	}
 	  	} else if ($on_hand <> $result->fields['quantity_on_hand']) { // check for quantity on hand not rounded properly
 	    	$repair[$result->fields['sku']] = $on_hand;
 			if ($_REQUEST['action'] <> 'inv_hist_fix') {
-		  		$messageStack->add(sprintf(INV_TOOLS_STOCK_ROUNDING_ERROR, $result->fields['sku'], $result->fields['quantity_on_hand'], $on_hand), 'error');
+		  		\core\classes\messageStack::add(sprintf(INV_TOOLS_STOCK_ROUNDING_ERROR, $result->fields['sku'], $result->fields['quantity_on_hand'], $on_hand), 'error');
 		  		$cnt++;
 			}
 	  	}
@@ -111,7 +111,7 @@ switch ($_REQUEST['action']) {
 	  	if (sizeof($repair) > 0) {
 	    	foreach ($repair as $key => $value) {
 		  		$admin->DataBase->query("UPDATE " . TABLE_INVENTORY . " SET quantity_on_hand = $value WHERE sku = '$key'");
-		  		$messageStack->add(sprintf(INV_TOOLS_BALANCE_CORRECTED, $key, $value), 'success');
+		  		\core\classes\messageStack::add(sprintf(INV_TOOLS_BALANCE_CORRECTED, $key, $value), 'success');
 			}
 	  	}
 	  	if (sizeof($journal_repost) > 0) {
@@ -123,7 +123,7 @@ switch ($_REQUEST['action']) {
 	  				$gl_entry->remove_cogs_rows(); // they will be regenerated during the re-post
 	  				if (!$gl_entry->Post('edit', true)) {
 	  					$admin->DataBase->transRollback();
-	  					$messageStack->add('<br /><br />Failed Re-posting the journals, try a smaller range. The record that failed was # '.$gl_entry->id,'error');
+	  					\core\classes\messageStack::add('<br /><br />Failed Re-posting the journals, try a smaller range. The record that failed was # '.$gl_entry->id,'error');
 	  					break;
 	  				}
 	  				$result->MoveNext();
@@ -132,7 +132,7 @@ switch ($_REQUEST['action']) {
 	  		}
 	  	}
 	}
-	if ($cnt == 0) $messageStack->add(INV_TOOLS_IN_BALANCE, 'success');
+	if ($cnt == 0) \core\classes\messageStack::add(INV_TOOLS_IN_BALANCE, 'success');
 	$default_tab_id = 'tools';
     break;
 	break;
@@ -161,19 +161,19 @@ switch ($_REQUEST['action']) {
 	if (sizeof($inv) > 0) foreach ($inv as $sku => $balance) {
 	  if (!isset($po[$sku])) $po[$sku] = 0;
 	  if ($balance['qty_po'] <> $po[$sku]) {
-	    $messageStack->add(sprintf(INV_TOOLS_PO_ERROR, $sku, $balance['qty_po'], $po[$sku]), 'caution');
+	    \core\classes\messageStack::add(sprintf(INV_TOOLS_PO_ERROR, $sku, $balance['qty_po'], $po[$sku]), 'caution');
 		$admin->DataBase->query("update " . TABLE_INVENTORY . " set quantity_on_order = " . $po[$sku] . " where id = " . $balance['id']);
 		$fix++;
 	  }
 	  if (!isset($so[$sku])) $so[$sku] = 0;
 	  if ($balance['qty_so'] <> $so[$sku]) {
-	    $messageStack->add(sprintf(INV_TOOLS_SO_ERROR, $sku, $balance['qty_so'], $so[$sku]), 'caution');
+	    \core\classes\messageStack::add(sprintf(INV_TOOLS_SO_ERROR, $sku, $balance['qty_so'], $so[$sku]), 'caution');
 		$admin->DataBase->query("update " . TABLE_INVENTORY . " set quantity_on_sales_order = " . $so[$sku] . " where id = " . $balance['id']);
 	    $fix++;
 	  }
 	  $cnt++;
 	}
-	$messageStack->Add(sprintf(INV_TOOLS_SO_PO_RESULT, $cnt, $fix),'success');
+	\core\classes\messageStack::add(sprintf(INV_TOOLS_SO_PO_RESULT, $cnt, $fix),'success');
 	gen_add_audit_log(sprintf(INV_TOOLS_AUTDIT_LOG_SO_PO,  $cnt), 'Fixed: ' . $fix);
 	$default_tab_id = 'tools';
     break;

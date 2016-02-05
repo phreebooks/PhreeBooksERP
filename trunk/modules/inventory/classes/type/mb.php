@@ -388,18 +388,18 @@ class mb extends \inventory\classes\inventory {//Master Build (combination of Ma
 		// check to see if there is inventory history remaining, if so don't allow delete
 		$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY_HISTORY . " where sku = '" . $sku . "' and remaining > 0");
 		if ($result->fetch(\PDO::FETCH_NUM) > 0) {
-			$messageStack->add(sprintf(INV_MS_ERROR_DELETE_HISTORY_EXISTS, $sku), 'caution');
+			\core\classes\messageStack::add(sprintf(INV_MS_ERROR_DELETE_HISTORY_EXISTS, $sku), 'caution');
 		 	return 'remaining';
 		}
 		// check to see if this item is part of an assembly
 		$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY_ASSY_LIST . " where sku = '" . $sku . "'");
 		if ($result->fetch(\PDO::FETCH_NUM) > 0) {
-			$messageStack->add(sprintf(INV_MS_ERROR_DELETE_ASSEMBLY_PART, $sku), 'caution');
+			\core\classes\messageStack::add(sprintf(INV_MS_ERROR_DELETE_ASSEMBLY_PART, $sku), 'caution');
 	  		return false;
 		}
 		$result = $admin->DataBase->query( "select id from " . TABLE_JOURNAL_ITEM . " where sku = '" . $sku . "' limit 1");
 		if ($result->Recordcount() > 0) {
-			$messageStack->add(sprintf(INV_MS_ERROR_CANNOT_DELETE, $sku), 'caution');
+			\core\classes\messageStack::add(sprintf(INV_MS_ERROR_CANNOT_DELETE, $sku), 'caution');
 	  		return false;
 		}
 	  	return true;

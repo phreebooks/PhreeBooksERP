@@ -53,21 +53,21 @@ switch ($_REQUEST['action']) {
 			require_once(DIR_FS_MODULES . $method . '/config.php'); // config is not loaded yet since module is not installed.
 			if ($_REQUEST['action'] == 'install') {
 		  		$admin->classes[$method]->install(DIR_FS_MY_FILES.$_SESSION['company'].'/', false);
-		  		write_configure('MODULE_' . strtoupper($admin->classes[$method]->id) . '_STATUS', $admin->classes[$method]->version);
+		  		$admin->DataBase->write_configure('MODULE_' . strtoupper($admin->classes[$method]->id) . '_STATUS', $admin->classes[$method]->version);
  				gen_add_audit_log(sprintf(TEXT_MODULE_ARGS, $admin->classes[$method]->text) . TEXT_INSTALL , $admin->classes[$method]->version);
- 				$messageStack->add(sprintf(TEXT_MODULE_ARGS, $admin->classes[$method]->text). TEXT_INSTALL . $admin->classes[$method]->version, 'success');
+ 				\core\classes\messageStack::add(sprintf(TEXT_MODULE_ARGS, $admin->classes[$method]->text). TEXT_INSTALL . $admin->classes[$method]->version, 'success');
 			} else {
 		  		$admin->classes[$method]->update();
-		  		write_configure('MODULE_' . strtoupper($admin->classes[$method]->id) . '_STATUS', $admin->classes[$method]->version);
+		  		$admin->DataBase->write_configure('MODULE_' . strtoupper($admin->classes[$method]->id) . '_STATUS', $admin->classes[$method]->version);
  				gen_add_audit_log(sprintf(TEXT_MODULE_ARGS, $admin->classes[$method]->text) . TEXT_UPDATE, $admin->classes[$method]->version);
-	   			$messageStack->add(sprintf(GEN_MODULE_UPDATE_SUCCESS, $admin->classes[$method]->id, $admin->classes[$method]->version), 'success');
+	   			\core\classes\messageStack::add(sprintf(GEN_MODULE_UPDATE_SUCCESS, $admin->classes[$method]->id, $admin->classes[$method]->version), 'success');
 			}
-			if (sizeof($admin->classes[$method]->notes) > 0) foreach ($admin->classes[$method]->notes as $note) $messageStack->add($note, 'caution');
+			if (sizeof($admin->classes[$method]->notes) > 0) foreach ($admin->classes[$method]->notes as $note) \core\classes\messageStack::add($note, 'caution');
 			$admin->DataBase->transCommit();
 			break;
   		}catch (Exception $e){
   			$admin->DataBase->transRollback();
-  			$messageStack->add($e->getMessage());
+  			\core\classes\messageStack::add($e->getMessage());
   			break;
   		}
   	case 'remove':
@@ -78,12 +78,12 @@ switch ($_REQUEST['action']) {
 			$admin->DataBase->transStart();
 			$admin->classes[$method]->delete(DIR_FS_MY_FILES.$_SESSION['company'].'/');
 			$admin->DataBase->transCommit();
-			if (sizeof($admin->classes[$method]->notes) > 0) foreach ($admin->classes[$method]->notes as $note) $messageStack->add($note, 'caution');
+			if (sizeof($admin->classes[$method]->notes) > 0) foreach ($admin->classes[$method]->notes as $note) \core\classes\messageStack::add($note, 'caution');
 			gen_add_audit_log(sprintf(TEXT_UNINSTALLED_MODULE, $admin->classes[$method]->text));
 			break;
   		}catch (Exception $e){
   			$admin->DataBase->transRollback();
-  			$messageStack->add($e->getMessage());
+  			\core\classes\messageStack::add($e->getMessage());
   			break;
   		}
   	case 'save':
@@ -93,19 +93,19 @@ switch ($_REQUEST['action']) {
 			$admin->DataBase->transStart();
 			foreach ($admin->classes['phreedom']->keys as $key => $default) {
 				$field = strtolower($key);
-		     	if (isset($_POST[$field])) write_configure($key, db_prepare_input($_POST[$field]));
+		     	if (isset($_POST[$field])) $admin->DataBase->write_configure($key, db_prepare_input($_POST[$field]));
 				// special case for field COMPANY_NAME to update company config file
 				if ($key == 'COMPANY_NAME' && $_POST[$field] <> COMPANY_NAME) {
 					install_build_co_config_file($_SESSION['company'], $_SESSION['company'] . '_TITLE', db_prepare_input($_POST[$field]));
 				}
 			}
 		    $admin->DataBase->transCommit();
-			$messageStack->add(TEXT_CONFIGURATION_VALUES_HAVE_BEEN_SAVED,'success');
+			\core\classes\messageStack::add(TEXT_CONFIGURATION_VALUES_HAVE_BEEN_SAVED,'success');
 			$default_tab_id = 'company';
 		    break;
   		}catch (Exception $e){
   			$admin->DataBase->transRollback();
-  			$messageStack->add($e->getMessage());
+  			\core\classes\messageStack::add($e->getMessage());
   			break;
   		}
   	case 'delete':
@@ -120,7 +120,7 @@ switch ($_REQUEST['action']) {
 		   	break;
   		}catch (Exception $e){
   			$admin->DataBase->transRollback();
-  			$messageStack->add($e->getMessage());
+  			\core\classes\messageStack::add($e->getMessage());
   			break;
   		}
   	case 'copy_co':
@@ -156,10 +156,10 @@ switch ($_REQUEST['action']) {
 				  	case 'core':
 				  	case 'demo':
 				  		$class->install(DIR_FS_MY_FILES . $db_name . '/', $task == 'demo');
-						write_configure('MODULE_' . strtoupper($class->id) . '_STATUS', $class->version);
+						$admin->DataBase->write_configure('MODULE_' . strtoupper($class->id) . '_STATUS', $class->version);
  						gen_add_audit_log(sprintf(TEXT_MODULE_ARGS, $class->text) . TEXT_INSTALL , $class->version);
- 						$messageStack->add(sprintf(TEXT_MODULE_ARGS, $class->text). TEXT_INSTALL . $class->version, 'success');
- 						if (sizeof($admin->classes[$method]->notes) > 0) foreach ($class->notes as $note) $messageStack->add($note, 'caution');
+ 						\core\classes\messageStack::add(sprintf(TEXT_MODULE_ARGS, $class->text). TEXT_INSTALL . $class->version, 'success');
+ 						if (sizeof($admin->classes[$method]->notes) > 0) foreach ($class->notes as $note) \core\classes\messageStack::add($note, 'caution');
 				    	break;
 				  	case 'data':
 						$table_list = array();
@@ -193,7 +193,7 @@ switch ($_REQUEST['action']) {
 			// reset SESSION['company'] to new company and redirect to install->store_setup
 			$admin->DataBase->query("update " . TABLE_CONFIGURATION . " set configuration_value = '" . $co_name . "'
 			  where configuration_key = 'COMPANY_NAME'");
-			$messageStack->add(TEXT_SUCCESSFULY_CREATED_NEW_COMPANY,'success');
+			\core\classes\messageStack::add(TEXT_SUCCESSFULY_CREATED_NEW_COMPANY,'success');
 			gen_add_audit_log(sprintf(TEXT_MANAGER_ARGS, TEXT_COMPANY). ' - ' . TEXT_COPY, $db_name);
 			$_SESSION['db_server'] = $db_server;
 			$_SESSION['company']   = $db_name;
@@ -207,7 +207,7 @@ switch ($_REQUEST['action']) {
   			$admin->DataBase->transRollback();
   			$db = new queryFactory;//@todo pdo
 			$admin->DataBase->connect(DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, DB_DATABASE);
-  			$messageStack->add($e->getMessage());
+  			\core\classes\messageStack::add($e->getMessage());
   			break;
   		}
   case 'delete_co':
@@ -238,7 +238,7 @@ switch ($_REQUEST['action']) {
 	    $backup->delete_dir(DIR_FS_MY_FILES . $db_name);
 	    unset($basis->user->companies[$_POST['del_company']]);
 	    gen_add_audit_log(sprintf(TEXT_MANAGER_ARGS, TEXT_COMPANY). ' - ' . TEXT_DELETE, $db_name);
-	    $messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_COMPANY, $_POST['del_company']), 'success');
+	    \core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_COMPANY, $_POST['del_company']), 'success');
 	}
 	$default_tab_id = 'manager';
 	break;
@@ -255,7 +255,7 @@ switch ($_REQUEST['action']) {
 	// post them to the current_status table
 	if (sizeof($sequence_array) > 0) {
 	  $result = db_perform(TABLE_CURRENT_STATUS, $sequence_array, 'update', 'id > 0');
-	  $messageStack->add(TEXT_SUCCESSFULLY_POSTED_THE_CURRENT_ORDER_NUMBER_CHANGES,'success');
+	  \core\classes\messageStack::add(TEXT_SUCCESSFULLY_POSTED_THE_CURRENT_ORDER_NUMBER_CHANGES,'success');
 	  gen_add_audit_log(GEN_ADM_TOOLS_AUDIT_LOG_SEQ);
 	}
 	$default_tab_id = 'tools';
@@ -264,7 +264,7 @@ switch ($_REQUEST['action']) {
 	$clean_date = \core\classes\DateTime::db_date_format($_POST['clean_date']);
 	if (!$clean_date) break;
 	$result = $admin->DataBase->exec("delete from ".TABLE_DATA_SECURITY." where exp_date < '".$clean_date."'");
-	$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, $result->AffectedRows(), TEXT_DATA_SECURITY_RECORDS), 'success');
+	\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, $result->AffectedRows(), TEXT_DATA_SECURITY_RECORDS), 'success');
 	break;
   default:
 }

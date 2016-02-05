@@ -71,13 +71,13 @@ switch ($_REQUEST['action']) {
 			$glEntry->Post($glEntry->id ? 'edit' : 'insert');
 	  		$admin->DataBase->transCommit();	// post the chart of account values
 	  		gen_add_audit_log(TEXT_INVENTORY_ASSEMBLY . ' - ' . ($_REQUEST['action']=='save' ? TEXT_SAVE : TEXT_EDIT), $sku, $qty);
-	  		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_ASSEMBLED, TEXT_SKU , $sku), 'success');
+	  		\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_ASSEMBLED, TEXT_SKU , $sku), 'success');
 	  		if (DEBUG) $messageStack->write_debug();
 	  		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 			// *************** END TRANSACTION *************************
 		}catch(Exception $e){
 			$admin->DataBase->transRollback();
-			$messageStack->add($e->getMessage(), $e->getCode());
+			\core\classes\messageStack::add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo($_POST);
 			if (DEBUG) $messageStack->write_debug();
 		}
@@ -98,7 +98,7 @@ switch ($_REQUEST['action']) {
 		  	}
 		}catch(Exception $e){
 			$admin->DataBase->transRollback();
-			$messageStack->add($e->getMessage(), $e->getCode());
+			\core\classes\messageStack::add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo($_POST);
 			if (DEBUG) $messageStack->write_debug();
 		}
@@ -110,7 +110,7 @@ switch ($_REQUEST['action']) {
 			$cInfo = new \core\classes\objectInfo(array());
     	}catch(Exception $e){
 			$admin->DataBase->transRollback();
-			$messageStack->add($e->getMessage(), $e->getCode());
+			\core\classes\messageStack::add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo(array());
 			if (DEBUG) $messageStack->write_debug();
 		}

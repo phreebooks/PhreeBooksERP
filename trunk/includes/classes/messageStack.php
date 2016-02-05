@@ -24,10 +24,11 @@ class messageStack {
     	error_log("/***** restarting messageStack *****/". PHP_EOL, 3, DIR_FS_MY_FILES."development.log");
     }
 
-    static function add($message, $type = 'error') {
-    	echo '<script type="text/javascript">';
-    	echo "MessageStackAdd('". gen_js_encode($message)."', '{$error}');";
-    	echo "<script>";
+    static function add($message, $type  = 'error') {
+//    	if ($type == '') $type = 'error';
+    	echo "<script type='text/javascript'>";
+    	echo "MessageStackAdd('". gen_js_encode($message)."', '{$type}');";
+    	echo "</script>";
       	if (DEBUG) error_log("messageStack error:".$message . PHP_EOL, 3, DIR_FS_MY_FILES."errors.log");
 	  	return true;
     }
@@ -76,12 +77,15 @@ class messageStack {
     }
 
     Static function debug_log ($txt){
-    	error_log("date: " . date('Y-m-d H:i:s') . " company:" .\core\classes\user::get_company(). " user: ".\core\classes\user::get('display_name'). ' ' . $txt . PHP_EOL, 3, DIR_FS_MY_FILES."development.log");
+    	global $admin;
+    	error_log("date: " . date('Y-m-d H:i:s') . " company:" .\core\classes\user::get_company(). " user: ".\core\classes\user::get('display_name'). ' ' . substr($txt, 1) . PHP_EOL, 3, DIR_FS_MY_FILES."development.log");
+    	error_log("\nTime: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, " . $admin->DataBase->count_queries . " SQLs " . (int)($admin->DataBase->total_query_time * 1000)." ms => ".substr($txt, 1). PHP_EOL, 3, DIR_FS_MY_FILES."debug.log");
     }
 
 	function debug($txt) {
 	  	global $admin;
 	  	error_log("date: " . date('Y-m-d H:i:s') . " company:" .\core\classes\user::get_company(). " user: ".\core\classes\user::get('display_name'). ' ' . substr($txt, 1) . PHP_EOL, 3, DIR_FS_MY_FILES."development.log");
+	  	error_log("date: " . date('Y-m-d H:i:s') . " company:" .\core\classes\user::get_company(). " user: ".\core\classes\user::get('display_name'). ' ' . substr($txt, 1) . PHP_EOL, 3, DIR_FS_MY_FILES."debug.log");
 	  	if (substr($txt, 0, 1) == "\n") {
 //echo "\nTime: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, " . $admin->DataBase->count_queries . " SQLs " . (int)($admin->DataBase->total_query_time * 1000)." ms => " . substr($txt, 1) . '<br>';
 	    	$this->debug_info .= "\nTime: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, " . $admin->DataBase->count_queries . " SQLs " . (int)($admin->DataBase->total_query_time * 1000)." ms => ";
@@ -93,7 +97,7 @@ class messageStack {
 	}
 
 	function write_debug() {
-		$filename = DIR_FS_MY_FILES."development.log";
+		$filename = DIR_FS_MY_FILES."debug.log";
         if (!$handle = @fopen($filename, 'rb'))             throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
         // send the right headers
         header_remove();

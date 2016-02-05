@@ -36,7 +36,7 @@ switch ($_REQUEST['action']) {
   	try{
     	if ($subject_module->btn_save($sID)) $close_popup = true;
   	}catch(Exception $e){
-  		$messageStack->add($e->getMessage(), $e->getCode);
+  		\core\classes\messageStack::add($e->getMessage(), $e->getCode);
   	}
 	break;
   default:

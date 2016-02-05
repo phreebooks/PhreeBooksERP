@@ -42,42 +42,42 @@ if (!$admin->DataBase->field_exists(TABLE_USERS_PROFILES, 'dashboard_id')) {
 }
 
 // check for modules installed, set status
-                                                       		write_configure('MODULE_CONTACTS_STATUS',   '0.1');
-                                                       		write_configure('MODULE_INVENTORY_STATUS',  '0.1');
-                                                       		write_configure('MODULE_PAYMENT_STATUS',    '0.1');
-                                                       		write_configure('MODULE_PHREEBOOKS_STATUS', '0.1');
-                                                       		write_configure('MODULE_PHREECRM_STATUS',   '0.1');
-                                                       		write_configure('MODULE_PHREEHELP_STATUS',  '0.1');
-                                                       		write_configure('MODULE_SHIPPING_STATUS',   '0.1');
-if ($admin->DataBase->table_exists(DB_PREFIX . 'assets'))             		write_configure('MODULE_ASSETS_STATUS',     '0.1');
-if ($admin->DataBase->table_exists(DB_PREFIX . 'capa_module'))        		write_configure('MODULE_CP_ACTION_STATUS',  '0.1');
-if ($admin->DataBase->table_exists(DB_PREFIX . 'doc_ctl_document'))   		write_configure('MODULE_DOC_CTL_STATUS',    '0.1');
-if ($admin->DataBase->table_exists(DB_PREFIX . 'receiving_module'))   		write_configure('MODULE_RECEIVING_STATUS',  '0.1');
-if ($admin->DataBase->table_exists(DB_PREFIX . 'rma_module'))         		write_configure('MODULE_RMA_STATUS',        '0.1');
-if ($admin->DataBase->table_exists(DB_PREFIX . 'translate_files'))    		write_configure('MODULE_TRANSLATOR_STATUS', '0.1');
-if ($admin->DataBase->table_exists(DB_PREFIX . 'wo_main'))            		write_configure('MODULE_WORK_ORDERS_STATUS','0.1');
-if ($admin->DataBase->field_exists(DB_PREFIX . 'inventory', 'catalog'))	write_configure('MODULE_ZENCART_STATUS',    '0.1');
+                                                       		$admin->DataBase->write_configure('MODULE_CONTACTS_STATUS',   '0.1');
+                                                       		$admin->DataBase->write_configure('MODULE_INVENTORY_STATUS',  '0.1');
+                                                       		$admin->DataBase->write_configure('MODULE_PAYMENT_STATUS',    '0.1');
+                                                       		$admin->DataBase->write_configure('MODULE_PHREEBOOKS_STATUS', '0.1');
+                                                       		$admin->DataBase->write_configure('MODULE_PHREECRM_STATUS',   '0.1');
+                                                       		$admin->DataBase->write_configure('MODULE_PHREEHELP_STATUS',  '0.1');
+                                                       		$admin->DataBase->write_configure('MODULE_SHIPPING_STATUS',   '0.1');
+if ($admin->DataBase->table_exists(DB_PREFIX . 'assets'))             		$admin->DataBase->write_configure('MODULE_ASSETS_STATUS',     '0.1');
+if ($admin->DataBase->table_exists(DB_PREFIX . 'capa_module'))        		$admin->DataBase->write_configure('MODULE_CP_ACTION_STATUS',  '0.1');
+if ($admin->DataBase->table_exists(DB_PREFIX . 'doc_ctl_document'))   		$admin->DataBase->write_configure('MODULE_DOC_CTL_STATUS',    '0.1');
+if ($admin->DataBase->table_exists(DB_PREFIX . 'receiving_module'))   		$admin->DataBase->write_configure('MODULE_RECEIVING_STATUS',  '0.1');
+if ($admin->DataBase->table_exists(DB_PREFIX . 'rma_module'))         		$admin->DataBase->write_configure('MODULE_RMA_STATUS',        '0.1');
+if ($admin->DataBase->table_exists(DB_PREFIX . 'translate_files'))    		$admin->DataBase->write_configure('MODULE_TRANSLATOR_STATUS', '0.1');
+if ($admin->DataBase->table_exists(DB_PREFIX . 'wo_main'))            		$admin->DataBase->write_configure('MODULE_WORK_ORDERS_STATUS','0.1');
+if ($admin->DataBase->field_exists(DB_PREFIX . 'inventory', 'catalog'))	$admin->DataBase->write_configure('MODULE_ZENCART_STATUS',    '0.1');
 
 // check installed payment and shipping methods and update
-if (defined('MODULE_PAYMENT_AUTHORIZENET_ORDER'))      write_configure('MODULE_PAYMENT_AUTHORIZENET_STATUS', '0.1');
-if (defined('MODULE_PAYMENT_COD_SORT_ORDER'))          write_configure('MODULE_PAYMENT_COD_STATUS',          '0.1');
-if (defined('MODULE_PAYMENT_DIRECTDEBIT_SORT_ORDER'))  write_configure('MODULE_PAYMENT_DIRECTDEBIT_STATUS',  '0.1');
-if (defined('MODULE_PAYMENT_NOVA_XML_SORT_ORDER'))     write_configure('MODULE_PAYMENT_NOVA_XML_STATUS',     '0.1');
-if (defined('MODULE_PAYMENT_FIRSTDATA_SORT_ORDER'))    write_configure('MODULE_PAYMENT_FIRSTDATA_STATUS',    '0.1');
-if (defined('MODULE_PAYMENT_FREECHARGER_SORT_ORDER'))  write_configure('MODULE_PAYMENT_FREECHARGER_STATUS',  '0.1');
-if (defined('MODULE_PAYMENT_LINKPOINT_API_SORT_ORDER'))write_configure('MODULE_PAYMENT_LINKPOINT_API_STATUS','0.1');
-if (defined('MODULE_PAYMENT_MONEYORDER_SORT_ORDER'))   write_configure('MODULE_PAYMENT_MONEYORDER_STATUS',   '0.1');
-if (defined('MODULE_PAYMENT_PAYPAL_NVP_SORT_ORDER'))   write_configure('MODULE_PAYMENT_PAYPAL_NVP_STATUS',   '0.1');
+if (defined('MODULE_PAYMENT_AUTHORIZENET_ORDER'))      $admin->DataBase->write_configure('MODULE_PAYMENT_AUTHORIZENET_STATUS', '0.1');
+if (defined('MODULE_PAYMENT_COD_SORT_ORDER'))          $admin->DataBase->write_configure('MODULE_PAYMENT_COD_STATUS',          '0.1');
+if (defined('MODULE_PAYMENT_DIRECTDEBIT_SORT_ORDER'))  $admin->DataBase->write_configure('MODULE_PAYMENT_DIRECTDEBIT_STATUS',  '0.1');
+if (defined('MODULE_PAYMENT_NOVA_XML_SORT_ORDER'))     $admin->DataBase->write_configure('MODULE_PAYMENT_NOVA_XML_STATUS',     '0.1');
+if (defined('MODULE_PAYMENT_FIRSTDATA_SORT_ORDER'))    $admin->DataBase->write_configure('MODULE_PAYMENT_FIRSTDATA_STATUS',    '0.1');
+if (defined('MODULE_PAYMENT_FREECHARGER_SORT_ORDER'))  $admin->DataBase->write_configure('MODULE_PAYMENT_FREECHARGER_STATUS',  '0.1');
+if (defined('MODULE_PAYMENT_LINKPOINT_API_SORT_ORDER'))$admin->DataBase->write_configure('MODULE_PAYMENT_LINKPOINT_API_STATUS','0.1');
+if (defined('MODULE_PAYMENT_MONEYORDER_SORT_ORDER'))   $admin->DataBase->write_configure('MODULE_PAYMENT_MONEYORDER_STATUS',   '0.1');
+if (defined('MODULE_PAYMENT_PAYPAL_NVP_SORT_ORDER'))   $admin->DataBase->write_configure('MODULE_PAYMENT_PAYPAL_NVP_STATUS',   '0.1');
 
-if (defined('MODULE_SHIPPING_FEDEX_SORT_ORDER'))       write_configure('MODULE_SHIPPING_FEDEX_STATUS',       '0.1');
-if (defined('MODULE_SHIPPING_FEDEX_V7_SORT_ORDER'))    write_configure('MODULE_SHIPPING_FEDEX_V7_STATUS',    '0.1');
-if (defined('MODULE_SHIPPING_FLAT_SORT_ORDER'))        write_configure('MODULE_SHIPPING_FLAT_STATUS',        '0.1');
-if (defined('MODULE_SHIPPING_FREESHIPPER_SORT_ORDER')) write_configure('MODULE_SHIPPING_FREESHIPPER_STATUS', '0.1');
-if (defined('MODULE_SHIPPING_ITEM_SORT_ORDER'))        write_configure('MODULE_SHIPPING_ITEM_STATUS',        '0.1');
-if (defined('MODULE_SHIPPING_STOREPICKUP_SORT_ORDER')) write_configure('MODULE_SHIPPING_STOREPICKUP_STATUS', '0.1');
-if (defined('MODULE_SHIPPING_TABLE_SORT_ORDER'))       write_configure('MODULE_SHIPPING_TABLE_STATUS',       '0.1');
-if (defined('MODULE_SHIPPING_UPS_SORT_ORDER'))         write_configure('MODULE_SHIPPING_UPS_STATUS',         '0.1');
-if (defined('MODULE_SHIPPING_USPS_SORT_ORDER'))        write_configure('MODULE_SHIPPING_USPS_STATUS',        '0.1');
+if (defined('MODULE_SHIPPING_FEDEX_SORT_ORDER'))       $admin->DataBase->write_configure('MODULE_SHIPPING_FEDEX_STATUS',       '0.1');
+if (defined('MODULE_SHIPPING_FEDEX_V7_SORT_ORDER'))    $admin->DataBase->write_configure('MODULE_SHIPPING_FEDEX_V7_STATUS',    '0.1');
+if (defined('MODULE_SHIPPING_FLAT_SORT_ORDER'))        $admin->DataBase->write_configure('MODULE_SHIPPING_FLAT_STATUS',        '0.1');
+if (defined('MODULE_SHIPPING_FREESHIPPER_SORT_ORDER')) $admin->DataBase->write_configure('MODULE_SHIPPING_FREESHIPPER_STATUS', '0.1');
+if (defined('MODULE_SHIPPING_ITEM_SORT_ORDER'))        $admin->DataBase->write_configure('MODULE_SHIPPING_ITEM_STATUS',        '0.1');
+if (defined('MODULE_SHIPPING_STOREPICKUP_SORT_ORDER')) $admin->DataBase->write_configure('MODULE_SHIPPING_STOREPICKUP_STATUS', '0.1');
+if (defined('MODULE_SHIPPING_TABLE_SORT_ORDER'))       $admin->DataBase->write_configure('MODULE_SHIPPING_TABLE_STATUS',       '0.1');
+if (defined('MODULE_SHIPPING_UPS_SORT_ORDER'))         $admin->DataBase->write_configure('MODULE_SHIPPING_UPS_STATUS',         '0.1');
+if (defined('MODULE_SHIPPING_USPS_SORT_ORDER'))        $admin->DataBase->write_configure('MODULE_SHIPPING_USPS_STATUS',        '0.1');
 // load the phreeform module
 require_once (DIR_FS_MODULES . 'phreeform/config.php');
 require_once (DIR_FS_MODULES . 'phreeform/defaults.php');
@@ -95,8 +95,8 @@ foreach ($admin->classes as $key => $class) {
 	if ($class->installed ) require_once (DIR_FS_MODULES . $key . '/config.php');
 }
 
-write_configure('DATE_FORMAT',     defined('DATE_FORMAT')      ? DATE_FORMAT      : 'm/d/Y');
-write_configure('DATE_DELIMITER',  defined('DATE_DELIMITER')   ? DATE_DELIMITER   : '/');
-write_configure('DATE_TIME_FORMAT',defined('DATE_TIME_FORMAT') ? DATE_TIME_FORMAT : 'm/d/Y h:i:s a');
+$admin->DataBase->write_configure('DATE_FORMAT',     defined('DATE_FORMAT')      ? DATE_FORMAT      : 'm/d/Y');
+$admin->DataBase->write_configure('DATE_DELIMITER',  defined('DATE_DELIMITER')   ? DATE_DELIMITER   : '/');
+$admin->DataBase->write_configure('DATE_TIME_FORMAT',defined('DATE_TIME_FORMAT') ? DATE_TIME_FORMAT : 'm/d/Y h:i:s a');
 
 ?>

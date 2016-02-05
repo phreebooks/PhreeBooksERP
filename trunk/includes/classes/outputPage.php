@@ -41,7 +41,7 @@ class outputPage  {
     	header("Content-type: text/html; charset=".CHARSET);
     	if ($force_reset_cache) { header("Cache-Control: no-cache, must-revalidate"); header("Expires: ".date('D, j M \2\0\0\0 G:i:s T')); }
     	echo "<!DOCTYPE html>";
-    	echo "<html".HTML_PARAMS.">";
+    	echo "<html ".HTML_PARAMS.">";
     	echo "<head>";
     	echo "<meta http-equiv='Content-Type' content='text/html; charset=".CHARSET."' />";
     	echo "<title>".TEXT_PHREEBOOKS_ERP."</title>";
@@ -53,7 +53,7 @@ class outputPage  {
     	echo "<script type='text/javascript' src='includes/common.js'></script>". chr(13);
     	echo "<script type='text/javascript' src='includes/jquery-2.2.0.min.js'></script>". chr(13);
     	echo "<script type='text/javascript' src='includes/jquery-migrate-1.2.1.min.js'></script>". chr(13); //@todo can be removed after development
-    	echo "</head>";
+    	echo "</head><body>";
     	ob_flush();
     }
     

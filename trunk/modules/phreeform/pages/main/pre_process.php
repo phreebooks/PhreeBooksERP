@@ -65,7 +65,7 @@ switch ($_REQUEST['action']) {
 	}
 	if (!@fwrite($handle, $output)) throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));
 	if (!@fclose($handle)) 			throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
-	$messageStack->add($message, 'success');
+	\core\classes\messageStack::add($message, 'success');
 	break;
   case 'export':
     $result = $admin->DataBase->query("select doc_title from " . TABLE_PHREEFORM . " where id = '" . $rID . "'");

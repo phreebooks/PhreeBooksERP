@@ -793,7 +793,7 @@ class journal_19 extends \core\classes\journal {
 		$messageStack->debug("\n  committed order post purchase_invoice_id = {$this->purchase_invoice_id} and id = {$this->id}\n\n");
 		$admin->DataBase->transCommit();
 		// ***************************** END TRANSACTION *******************************
-		$messageStack->add('Successfully posted ' . TEXT_POINT_OF_SALE . ' Ref # ' . $this->purchase_invoice_id, 'success');
+		\core\classes\messageStack::add('Successfully posted ' . TEXT_POINT_OF_SALE . ' Ref # ' . $this->purchase_invoice_id, 'success');
 		return true;
 	}
 

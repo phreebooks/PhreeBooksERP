@@ -72,7 +72,7 @@ switch ($_REQUEST['action']) {
 		}
 		if ($admin_id == $_SESSION['admin_id']) $_SESSION['admin_security'] = \core\classes\user::parse_permissions($admin_security); // update if user is current user
   	}catch(Exception $e){
-  		$messageStack->add($e->getMessage());
+  		\core\classes\messageStack::add($e->getMessage());
   	}
   	$uInfo = new \core\classes\objectInfo($_POST);
 	$uInfo->admin_security = $admin_security;
@@ -108,13 +108,13 @@ switch ($_REQUEST['action']) {
 		}
 		db_perform(TABLE_USERS, $output_array, 'insert');
 		$new_id = \core\classes\PDO::lastInsertId('id');
-		$messageStack->add(GEN_MSG_COPY_SUCCESS, 'success');
+		\core\classes\messageStack::add(GEN_MSG_COPY_SUCCESS, 'success');
 		// now continue with newly copied item by editing it
 		gen_add_audit_log(sprintf(GEN_LOG_USER, TEXT_COPY), $old_name . ' => ' . $new_name);
 		$_POST['rowSeq'] = $new_id;	// set item pointer to new record
 		$_REQUEST['action'] = 'edit'; // fall through to edit case
   	}catch(Exception $e){
-  		$messageStack->add($e->getMessage());
+  		\core\classes\messageStack::add($e->getMessage());
   	}
   case 'edit':
 	if (isset($_POST['rowSeq'])) $admin_id = db_prepare_input($_POST['rowSeq']);

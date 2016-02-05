@@ -141,11 +141,11 @@ switch ($_REQUEST['action']) {
 			$admin->DataBase->query("update " . TABLE_CURRENT_STATUS . " set next_rma_num = '" . $next_num . "'");
 		}
 		$admin->DataBase->transCommit();
-		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, ($_POST['id'] ? TEXT_UPDATED : TEXT_ADDED ), TEXT_RMA , $rma_num), 'success');
+		\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, ($_POST['id'] ? TEXT_UPDATED : TEXT_ADDED ), TEXT_RMA , $rma_num), 'success');
 		gen_add_audit_log(sprintf(TEXT_SUCCESSFULLY_ARGS, ($_POST['id'] ? TEXT_UPDATED : TEXT_ADDED ), TEXT_RMA , $rma_num));
   	}catch(Exception $e){
   		$admin->DataBase->transRollback();
-  		$messageStack->add($e->getMessage());
+  		\core\classes\messageStack::add($e->getMessage());
   	}
 	break;
   case 'edit':
@@ -167,7 +167,7 @@ switch ($_REQUEST['action']) {
 	  gen_add_audit_log(sprintf( TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_RMA, $result->fields['rma_num']));
 	  gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('cID', 'action')), 'SSL'));
 	} else {
-	  $messageStack->add(TEXT_THERE_WAS_AN_ERROR_DELETING_THE_RMA, 'error');
+	  \core\classes\messageStack::add(TEXT_THERE_WAS_AN_ERROR_DELETING_THE_RMA, 'error');
 	}
 	break;
   case 'download':

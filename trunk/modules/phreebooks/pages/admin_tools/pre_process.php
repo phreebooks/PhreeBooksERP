@@ -65,7 +65,7 @@ switch ($_REQUEST['action']) {
 		if ($next_start_date <> $result->fields['start_date']) {
 			$fy_array = array('start_date' =>$next_start_date);
 			db_perform(TABLE_ACCOUNTING_PERIODS, $fy_array, 'update', 'period = ' . (int)$next_period);
-			$messageStack->add(GL_ERROR_FISCAL_YEAR_SEQ, 'caution');
+			\core\classes\messageStack::add(GL_ERROR_FISCAL_YEAR_SEQ, 'caution');
 			$fy++;
 		}
 	}
@@ -121,9 +121,9 @@ switch ($_REQUEST['action']) {
 		if (defined('MODULE_SHIPPING_STATUS')) $admin->DataBase->query("TRUNCATE TABLE " . TABLE_SHIPPING_LOG);
 		$admin->DataBase->query("update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " set beginning_balance = 0, debit_amount = 0, credit_amount = 0");
 		$admin->DataBase->query("update " . TABLE_INVENTORY . " set quantity_on_hand = 0, quantity_on_order = 0, quantity_on_sales_order = 0");
-		$messageStack->add(GL_UTIL_PURGE_CONFIRM, 'success');
+		\core\classes\messageStack::add(GL_UTIL_PURGE_CONFIRM, 'success');
 	} else {
-		$messageStack->add(GL_UTIL_PURGE_FAIL, 'caution');
+		\core\classes\messageStack::add(GL_UTIL_PURGE_FAIL, 'caution');
 	}
 	gen_add_audit_log(TEXT_GENERAL_JOURNAL_PURGE_DATABASE);
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
@@ -136,9 +136,9 @@ switch ($_REQUEST['action']) {
 	foreach ($valid_journals as $journal_id) if (isset($_POST['jID_' . $journal_id])) $journals[] = $journal_id;
 	$repost_cnt = repost_journals($journals, $start_date, $end_date);
 	if ($repost_cnt === false) {
-	  	$messageStack->add(TEXT_NO_JOURNALS_WERE_SELECTED_TO_RE-POST . '. ' . TEXT_NO_ACTION_WAS_TAKEN,'caution');
+	  	\core\classes\messageStack::add(TEXT_NO_JOURNALS_WERE_SELECTED_TO_RE-POST . '. ' . TEXT_NO_ACTION_WAS_TAKEN,'caution');
 	} else {
-	  $messageStack->add(sprintf(GEN_ADM_TOOLS_RE_POST_SUCCESS, $repost_cnt),'success');
+	  \core\classes\messageStack::add(sprintf(GEN_ADM_TOOLS_RE_POST_SUCCESS, $repost_cnt),'success');
 	  gen_add_audit_log(TEXT_RE-POST_JOURNALS . ' - ', implode(',', $journals));
 	}
 	if (DEBUG) $messageStack->write_debug();
@@ -158,11 +158,11 @@ switch ($_REQUEST['action']) {
 			    $result->MoveNext();
 			}
 		    $admin->DataBase->transCommit();
-		    $messageStack->add(sprintf(GEN_ADM_TOOLS_RE_POST_SUCCESS, $cnt), 'success');
+		    \core\classes\messageStack::add(sprintf(GEN_ADM_TOOLS_RE_POST_SUCCESS, $cnt), 'success');
 			gen_add_audit_log(TEXT_RE-POST_JOURNALS . ' - ', "inventory owed");
 		}catch(Exception $e){
 			$admin->DataBase->transRollback();
-			$messageStack->add($e->getMessage());
+			\core\classes\messageStack::add($e->getMessage());
 		}
 		if (DEBUG) $messageStack->write_debug();
 		break;
@@ -222,7 +222,7 @@ switch ($_REQUEST['action']) {
 		if (in_array($acct, $acct_list) && in_array($period, $max_periods)) $next_beg_bal = 0;
 		if (abs($diff_debit) > $tolerance || abs($diff_credit) > $tolerance) {
 		  if ($_REQUEST['action'] == 'coa_hist_test') {
-		    $messageStack->add(sprintf(GEN_ADM_TOOLS_REPAIR_ERROR_MSG, $period, 'gl '.$acct, $posted_bal, $admin->currencies->format($next_beg_bal)), 'caution');
+		    \core\classes\messageStack::add(sprintf(GEN_ADM_TOOLS_REPAIR_ERROR_MSG, $period, 'gl '.$acct, $posted_bal, $admin->currencies->format($next_beg_bal)), 'caution');
 		  }
 		  $bad_accounts[$acct][$period]['debit_amount']  = $posted->fields['debit'];
 		  $bad_accounts[$acct][$period]['credit_amount'] = $posted->fields['credit'];
@@ -232,7 +232,7 @@ switch ($_REQUEST['action']) {
 		}
 		if ($admin->currencies->format(abs($next_beg_bal - $history[$acct][$period+1]['beg_bal'])) > $tolerance) {
 		  if ($_REQUEST['action'] == 'coa_hist_test' && $period <= CURRENT_ACCOUNTING_PERIOD) {
-		    $messageStack->add(sprintf(GEN_ADM_TOOLS_REPAIR_BALANCE_ERROR_MSG, $period, $acct, $admin->currencies->format($history[$acct][$period+1]['beg_bal']), $admin->currencies->format($next_beg_bal)), 'caution');
+		    \core\classes\messageStack::add(sprintf(GEN_ADM_TOOLS_REPAIR_BALANCE_ERROR_MSG, $period, $acct, $admin->currencies->format($history[$acct][$period+1]['beg_bal']), $admin->currencies->format($next_beg_bal)), 'caution');
 		  }
 		  $bad_accounts[$acct][$period+1]['beginning_balance'] = $next_beg_bal;
 		  $history[$acct][$period+1]['beg_bal'] = $next_beg_bal;
@@ -257,14 +257,14 @@ switch ($_REQUEST['action']) {
 		$min_period = max($first_error_period, 2); // avoid a crash if min_period is the first period
 		if ($glEntry->update_chart_history_periods($min_period - 1)) { // from prior period than the error account
 			$admin->DataBase->transCommit();
-			$messageStack->add(TEXT_THE_CHART_BALANCES_HAVE_BEEN_REPAIRED,'success');
+			\core\classes\messageStack::add(TEXT_THE_CHART_BALANCES_HAVE_BEEN_REPAIRED,'success');
 			gen_add_audit_log(TEXT_REPAIRED_GL_BALANCES);
 		}
 	}
 	if (sizeof($bad_accounts) == 0) {
-	  $messageStack->add(TEXT_YOUR_CHART_OF_ACCOUNTS_ARE_IN_BALANCE,'success');
+	  \core\classes\messageStack::add(TEXT_YOUR_CHART_OF_ACCOUNTS_ARE_IN_BALANCE,'success');
 	} else {
-	  $messageStack->add(GEN_ADM_TOOLS_REPAIR_ERROR,'error');
+	  \core\classes\messageStack::add(GEN_ADM_TOOLS_REPAIR_ERROR,'error');
 	}
 	if (DEBUG) $messageStack->write_debug();
     break;

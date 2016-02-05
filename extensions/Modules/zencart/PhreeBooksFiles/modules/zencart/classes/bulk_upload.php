@@ -29,7 +29,7 @@ class bulk_upload {
 	  		$cnt++;
 	  		$result->MoveNext();
 		}
-		$messageStack->add(sprintf(ZENCART_BULK_UPLOAD_SUCCESS, $cnt), 'success');
+		\core\classes\messageStack::add(sprintf(ZENCART_BULK_UPLOAD_SUCCESS, $cnt), 'success');
 		return  true;
   	}
 }

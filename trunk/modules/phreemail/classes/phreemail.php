@@ -620,7 +620,7 @@ class phreemail extends PHPMailer{
 	    	$this->update_db_log($email,'Finish coping');
 	        if(!empty($email)){
 	    		//unset($this->partsarray);
-	    		$messageStack->add(PHREEMAIL_NEW_MAIL,'caution');
+	    		\core\classes\messageStack::add(PHREEMAIL_NEW_MAIL,'caution');
 	    	}
 	   	}
 	}

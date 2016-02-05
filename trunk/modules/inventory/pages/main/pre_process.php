@@ -52,7 +52,7 @@ switch ($_REQUEST['action']) {
 		\core\classes\user::validate_security($security_level, 2); // security check
 		$cInfo->save();
   	}catch(Exception $e){
-  		$messageStack->add($e->getMessage());
+  		\core\classes\messageStack::add($e->getMessage());
 		$_REQUEST['action'] = 'edit';
   	}
 	break;

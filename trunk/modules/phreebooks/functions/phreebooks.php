@@ -429,7 +429,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 	$period = \core\classes\DateTime::period_of_date(date('Y-m-d'), true);
 	if ($period == CURRENT_ACCOUNTING_PERIOD && defined('CURRENT_ACCOUNTING_PERIOD')) return; // we're in the current period
 	if (!$period) { // we're outside of the defined fiscal years
-	  if ($show_message) $messageStack->add(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');
+	  if ($show_message) \core\classes\messageStack::add(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');
 	} else { // update CURRENT_ACCOUNTING_PERIOD constant with this new period
 	  $result = $admin->DataBase->query("select start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . " where period = " . $period);
 	  $admin->DataBase->write_configure('CURRENT_ACCOUNTING_PERIOD',       $period);
@@ -437,7 +437,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 	  $admin->DataBase->write_configure('CURRENT_ACCOUNTING_PERIOD_END',   $result->fields['end_date']);
 	  gen_add_audit_log(TEXT_CHANGED . " " . TEXT_ACCOUNTING_PERIOD);
 	  if ($show_message) {
-	    $messageStack->add(sprintf(ERROR_MSG_ACCT_PERIOD_CHANGE, $period),'success');
+	    \core\classes\messageStack::add(sprintf(ERROR_MSG_ACCT_PERIOD_CHANGE, $period),'success');
 	  }
 	}
   }

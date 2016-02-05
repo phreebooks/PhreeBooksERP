@@ -54,7 +54,7 @@ class admin extends \core\classes\admin {
 	}
 
   	function install($path_my_files, $demo = false) {
-    	global $admin, $messageStack;
+    	global $admin;
     	parent::install($path_my_files, $demo);
 		if (!$admin->DataBase->field_exists(TABLE_CONTACTS, 'bank_account_1')) {
 			$sql = "select id from " . TABLE_EXTRA_FIELDS . " where module_id = 'contacts' and field_name = 'bank_account'";

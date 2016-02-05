@@ -76,7 +76,7 @@ class ctl_panel {
 		global $admin;
 		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
 		$result = $admin->DataBase->exec("DELETE FROM " . TABLE_USERS_PROFILES . " WHERE dashboard_id = '" . addcslashes(get_class($this), '\\') );
-		foreach ($this->keys as $key) remove_configure($key['key']); // remove all of the keys from the configuration table
+		foreach ($this->keys as $key) $admin->DataBase->remove_configure($key['key']); // remove all of the keys from the configuration table
 		return true;
   	}
 

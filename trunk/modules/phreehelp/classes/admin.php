@@ -36,7 +36,7 @@ class admin extends \core\classes\admin {
 	
 	function upgrade(\core\classes\basis &$basis) {
 		parent::upgrade($basis);
-		remove_configure(PHREEHELP_FORCE_RELOAD);
+		$admin->DataBase->remove_configure('PHREEHELP_FORCE_RELOAD');
 		$basis->DataBase->query("drop table ".DB_PREFIX.'phreehelp');
 	}
 	

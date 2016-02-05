@@ -31,7 +31,7 @@ switch ($_REQUEST['action']) {
 	if ($enc_key <> $enc_key_confirm) throw new \core\classes\userException(TEXT_ERROR_ENCRYPTION_KEY_MATCH);
 	\core\classes\encryption::validate_password($enc_key, ENCRYPTION_VALUE);
 	$_SESSION['admin_encrypt'] = $enc_key;
-    $messageStack->add(TEXT_THE_ENCRYPTION_KEY_IS_SET,'success');
+    \core\classes\messageStack::add(TEXT_THE_ENCRYPTION_KEY_IS_SET,'success');
 	break;
   case 'encrypt_key':
 	\core\classes\user::validate_security($security_level, 4);
@@ -47,8 +47,8 @@ switch ($_REQUEST['action']) {
 	}
 	if (strlen($new_key) < ENTRY_PASSWORD_MIN_LENGTH) throw new \core\classes\userException(sprintf(TEXT_YOUR_NEW_PASSWORD_MUST_CONTAIN_A_MINIMUM_OF_CHARACTERS_ARGS, ENTRY_PASSWORD_MIN_LENGTH));
 	if ($new_key != $new_key_confirm) throw new \core\classes\userException(TEXT_THE_PASSWORD_CONFIRMATION_MUST_MATCH_YOUR_NEW_PASSWORD);
-	write_configure('ENCRYPTION_VALUE', \core\classes\encryption::password($new_key));
-    $messageStack->add(TEXT_THE_ENCRYPTION_KEY_IS_CHANGED,'success');
+	$admin->DataBase->write_configure('ENCRYPTION_VALUE', \core\classes\encryption::password($new_key));
+    \core\classes\messageStack::add(TEXT_THE_ENCRYPTION_KEY_IS_CHANGED,'success');
     break;
   default:
 }

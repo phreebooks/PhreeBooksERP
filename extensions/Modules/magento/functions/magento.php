@@ -33,8 +33,7 @@ class magento{
 	}
 
 	function login(){
-		global $messageStack;
-//		$messageStack->add('loggin in', 'caution');
+//		\core\classes\messageStack::add('loggin in', 'caution');
 		$this->client = new \SoapClient(MAGENTO_URL.'/index.php/api/v2_soap/?wsdl');
 		$this->session = $this->client->login(MAGENTO_USERNAME, MAGENTO_PASSWORD);
 	}
@@ -82,7 +81,6 @@ class magento{
 	}
 
 	function create_product($sku){
-		global $messageStack;
 		if ($this->session == '') $this->login();
 		// get attribute set
 		$inventory = new \magento\classes\inventory();
@@ -92,7 +90,7 @@ class magento{
 		//$attributeSet = current($attributeSets);
 
 		//$result = $this->client->catalogProductCreate($this->session, 'simple', $attributeSet->set_id, 'product_sku', $inventory);
-		if($result != false) $messageStack->add("uploaded with success assigend id $result", "success");
+		if($result != false) \core\classes\messageStack::add("uploaded with success assigend id $result", "success");
 	}
 
 	/**
@@ -121,31 +119,27 @@ class magento{
 			$tierPrices = array(
 				array('customer_group_id' => $pricesheet_id, 'website' => '0', 'qty' => $item['qty'], 'price' => $item['price'])
 			);
-		global $messageStack;
 		if ($this->session == '') $this->login();
 		if( $this->client->catalogProductAttributeTierPriceUpdate($this->session, $sku,	$tierPrices) == true){
-			$messageStack->add("updated tier pricing for $sku with success", "success");
+			\core\classes\messageStack::add("updated tier pricing for $sku with success", "success");
 		}
 	}
 
 	function set_menu_for_sku($menuId, $sku){
-		global $messageStack;
 		if ($this->session == '') $this->login();
 		if($this->client->catalogCategoryAssignProduct($this->session, $menuId, $sku, '', 'SKU') == true){
-			$messageStack->add("assigned to webshop category $menuId with success", "success");
+			\core\classes\messageStack::add("assigned to webshop category $menuId with success", "success");
 		}
 	}
 
 	function delete_product($sku){
-		global $messageStack;
 		if ($this->session == '') $this->login();
 		if ($proxy->catalogProductDelete($sessionId, $sku , 'SKU') == true){
-			$messageStack->add("deleted from webshop with success", "success");
+			\core\classes\messageStack::add("deleted from webshop with success", "success");
 		}
 	}
 
 	function __destruct(){
-		global $messageStack;
 		$this->client->endSession($this->session);
 	}
 

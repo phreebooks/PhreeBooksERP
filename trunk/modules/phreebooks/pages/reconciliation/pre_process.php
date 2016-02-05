@@ -111,7 +111,7 @@ switch ($_REQUEST['action']) {
 		  and i.gl_account in ('" . implode("','", $gl_accounts) . "')
 		  and m.id in (" . implode(",", $mains) . ")");
 	}
-	$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_SAVED, TEXT_RECONCILIATION , ''),'success');
+	\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_SAVED, TEXT_RECONCILIATION , ''),'success');
 	gen_add_audit_log(TEXT_ACCOUNT_RECONCILIATION." ". TEXT_PERIOD ." : " . $period, $gl_account);
 	break;
   default:

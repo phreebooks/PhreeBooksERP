@@ -395,8 +395,8 @@ class paymentech {
 		if ($results['ApprovalStatus'] == 1) { //Gateway returned approved
 			$this->auth_code = $results['AuthCode'];
 			$this->transaction_id = $results['TxRefNum'];
-		    $messageStack->add($results['StatusMsg'] . ' - Approval code: ' . $this->auth_code . ' --> CVV2 results: ' . $this->CVV2RespCode[$results['CVV2RespCode']], 'success');
-		    $messageStack->add('Address verification results: ' . $this->AVSRespCode[$results['AVSRespCode']], 'success');
+		    \core\classes\messageStack::add($results['StatusMsg'] . ' - Approval code: ' . $this->auth_code . ' --> CVV2 results: ' . $this->CVV2RespCode[$results['CVV2RespCode']], 'success');
+		    \core\classes\messageStack::add('Address verification results: ' . $this->AVSRespCode[$results['AVSRespCode']], 'success');
 /* DELETE ME */ return true; // force a fail to not post
 		    return false;
 		} else {

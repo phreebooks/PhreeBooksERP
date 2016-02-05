@@ -30,7 +30,7 @@ class import_order {
   	 * @return void|boolean
   	 */
   	function processCSV($filename, $function='Sales') {
-  		global $admin, $messageStack;
+  		global $admin;
   		$rows = $this->csv_to_array($_FILES[$filename]['tmp_name'], $delimiter=',');
   		$messageStack->debug("\nfinished parsing, extracted number of rows = ".sizeof($rows));
   	  	switch ($function) {
@@ -121,7 +121,7 @@ class import_order {
   			$soap_order->buildJournalEntry();
 		}
 		if (DEBUG) $messageStack->write_debug();
-		$messageStack->add("Total lines processed: ".sizeof($rows), "success");
+		\core\classes\messageStack::add("Total lines processed: ".sizeof($rows), "success");
   	}
 
   	function csv_to_array($filename='', $delimiter=',') {

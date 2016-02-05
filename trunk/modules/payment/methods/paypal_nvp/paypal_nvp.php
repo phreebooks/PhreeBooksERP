@@ -215,7 +215,7 @@ class paypal_nvp extends \payment\classes\payment {
 
 /*
  * FOR TEST PURPOSES
- * $messageStack->add('Test transaction complete!', 'success');
+ * \core\classes\messageStack::add('Test transaction complete!', 'success');
  * return false;
  * END FOR TEST
  */
@@ -225,8 +225,8 @@ class paypal_nvp extends \payment\classes\payment {
 
     $this->transaction_id = $httpParsedResponseAr['TRANSACTIONID'];
 	if("SUCCESS" == strtoupper($httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($httpParsedResponseAr["ACK"])) {
-		$messageStack->add(sprintf(MODULE_PAYMENT_PAYPAL_NVP_SUCCESSE_CODE, $httpParsedResponseAr['ACK'], $this->transaction_id, $this->cvv_codes[$httpParsedResponseAr['CVV2MATCH']]), 'success');
-		$messageStack->add('Address verification results: ' . $this->avs_codes[$httpParsedResponseAr['AVSCODE']], 'success');
+		\core\classes\messageStack::add(sprintf(MODULE_PAYMENT_PAYPAL_NVP_SUCCESSE_CODE, $httpParsedResponseAr['ACK'], $this->transaction_id, $this->cvv_codes[$httpParsedResponseAr['CVV2MATCH']]), 'success');
+		\core\classes\messageStack::add('Address verification results: ' . $this->avs_codes[$httpParsedResponseAr['AVSCODE']], 'success');
 //echo 'Success response:'; print_r($httpParsedResponseAr); echo '<br>';
 		return false;
 	}

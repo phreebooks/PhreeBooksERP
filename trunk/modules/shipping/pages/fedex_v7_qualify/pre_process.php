@@ -58,7 +58,7 @@ switch ($_REQUEST['action']) {
 					);
 			  	}
 			  	if (count($sInfo->package) > 0) $admin->classes['shipping']->methods['fedex_v7']->retrieveLabel($sInfo); // fetch label
-			  	$messageStack->add('generating label for '.$sInfo->ship_primary_name.' and label length: '.strlen($admin->classes['shipping']->methods['fedex_v7']->returned_label), 'caution');
+			  	\core\classes\messageStack::add('generating label for '.$sInfo->ship_primary_name.' and label length: '.strlen($admin->classes['shipping']->methods['fedex_v7']->returned_label), 'caution');
 			  	$ext = (MODULE_SHIPPING_FEDEX_V7_PRINTER_TYPE == 'Thermal') ? '.lpt' : '.pdf';
 			  	write_file($backup->source_dir . 'label_' . $count . $ext, $admin->classes['shipping']->methods['fedex_v7']->returned_label);
 			  	$count++;
@@ -69,7 +69,7 @@ switch ($_REQUEST['action']) {
 			ob_end_flush();
 			exit();
 		}catch(Exception $e){
-			$messageStack->add($e->getMessage());
+			\core\classes\messageStack::add($e->getMessage());
 		}
 		break;
 }

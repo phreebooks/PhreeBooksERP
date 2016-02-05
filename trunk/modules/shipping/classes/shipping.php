@@ -66,8 +66,8 @@ class shipping {
   	 */
 
   	function install(){
-  		write_configure('MODULE_SHIPPING_' . strtoupper($this->id) . '_STATUS', '1');
-		foreach ($this->keys as $key) write_configure($key['key'], $key['default']);
+  		$admin->DataBase->write_configure('MODULE_SHIPPING_' . strtoupper($this->id) . '_STATUS', '1');
+		foreach ($this->keys as $key) $admin->DataBase->write_configure($key['key'], $key['default']);
 
   	}
 
@@ -77,8 +77,8 @@ class shipping {
   	 */
 
 	function delete(){
-		foreach ($this->keys as $key) remove_configure($key['key']); // remove all of the keys from the configuration table
-		remove_configure('MODULE_SHIPPING_' . strtoupper($this->id) . '_STATUS');
+		foreach ($this->keys as $key) $admin->DataBase->remove_configure($key['key']); // remove all of the keys from the configuration table
+		$admin->DataBase->remove_configure('MODULE_SHIPPING_' . strtoupper($this->id) . '_STATUS');
 		return true;
 	}
 
@@ -90,7 +90,7 @@ class shipping {
   	function update() {
     	foreach ($this->keys as $key) {
 	  		$field = strtolower($key['key']);
-	  		if (isset($_POST[$field])) write_configure($key['key'], $_POST[$field]);
+	  		if (isset($_POST[$field])) $admin->DataBase->write_configure($key['key'], $_POST[$field]);
 		}
   	}
 

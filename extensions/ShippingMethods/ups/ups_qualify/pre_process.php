@@ -95,7 +95,7 @@ switch ($action) {
 	}
 	// zip the results and download
 
-	$messageStack->add('Successfully created UPS validation files! Disregard error messages from delete operation, they are expected. The files can be found in: ' . $file_path,'success');
+	\core\classes\messageStack::add('Successfully created UPS validation files! Disregard error messages from delete operation, they are expected. The files can be found in: ' . $file_path,'success');
 	break;
 
   default:

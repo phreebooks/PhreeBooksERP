@@ -312,7 +312,7 @@ class firstdata extends \payment\classes\payment {
 	$curlerror    = curl_error($ch);
 	curl_close ($ch);
 	if ($curlerrornum) throw new \core\classes\userException('XML Read Error (cURL) #' . $curlerrornum . '. Description = ' . $curlerror);
-//$messageStack->add('response xml = ' . htmlspecialchars($authorize),'caution');
+//\core\classes\messageStack::add('response xml = ' . htmlspecialchars($authorize),'caution');
 
 	// since the response is only one level deep, we can do a simple parse
 	$authorize = trim($authorize);
@@ -336,8 +336,8 @@ class firstdata extends \payment\classes\payment {
     if ($results['r_error']) {
       	throw new \core\classes\userException('Decline Code #' . $results['r_error'] . ': ' . $results['r_message'] . ' - ' . MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE);
     } else {
-		$messageStack->add($results['r_message'] . ' - Approval code: ' . $this->auth_code . ' --> CVV2 results: ' . $this->cvv_codes[$results['r_authresponse']], 'success');
-		$messageStack->add('Address verification results: ' . $this->avs_codes[$results['r_avs']], 'success');
+		\core\classes\messageStack::add($results['r_message'] . ' - Approval code: ' . $this->auth_code . ' --> CVV2 results: ' . $this->cvv_codes[$results['r_authresponse']], 'success');
+		\core\classes\messageStack::add('Address verification results: ' . $this->avs_codes[$results['r_avs']], 'success');
 		return false;
 	}
 	throw new \core\classes\userException($results['r_message'] . ' - ' . MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE);

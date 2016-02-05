@@ -229,10 +229,10 @@ class fedex_v7 extends \shipping\classes\shipping {
 	  $field = strtolower($key['key']);
 	  switch ($key['key']) {
 	    case 'MODULE_SHIPPING_FEDEX_V7_TYPES': // read the checkboxes
-		  write_configure($key['key'], implode(',', $_POST[$field]));
+		  $admin->DataBase->write_configure($key['key'], implode(',', $_POST[$field]));
 		  break;
 		default:  // just write the value
-		  if (isset($_POST[$field])) write_configure($key['key'], $_POST[$field]);
+		  if (isset($_POST[$field])) $admin->DataBase->write_configure($key['key'], $_POST[$field]);
 	  }
 	}
   }
@@ -297,7 +297,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 	  if ($response->HighestSeverity != 'FAILURE' && $response->HighestSeverity != 'ERROR') {
 		if ($response->HighestSeverity == 'NOTE' || $response->HighestSeverity == 'WARNING') {
 		  $message .= ' (' . $response->Notifications->Code . ') ' . $response->Notifications->Message;
-		  $messageStack->add('FedEx Note: ' . $message, 'caution');
+		  \core\classes\messageStack::add('FedEx Note: ' . $message, 'caution');
 		}
 		if (is_object($response->RateReplyDetails)) $response->RateReplyDetails = array($response->RateReplyDetails);
 		if (is_array($response->RateReplyDetails)) foreach ($response->RateReplyDetails as $rateReply) {
@@ -388,7 +388,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 	$ship_date = date('c', strtotime($pkg->ship_date));
 	$today = date('Y-m-d');
 	if ($ship_date < $today) {
-	  $messageStack->add(SHIPPING_BAD_QUOTE_DATE, 'caution');
+	  \core\classes\messageStack::add(SHIPPING_BAD_QUOTE_DATE, 'caution');
 	  $ship_date = date('c');
 	}
 	$request['RequestedShipment']['ShipTimestamp'] = $ship_date;
@@ -582,7 +582,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 					if (!@fwrite($handle, $label) === false) 			throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$file_path . $filename));
 					if (!@fclose($handle)) 								throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 		$file_path . $filename));
 					$cnt++;
-//					$messageStack->add('Successfully retrieved the FedEx shipping label. Tracking # ' . $fedex_results[$key]['tracking'],'success');
+//					\core\classes\messageStack::add('Successfully retrieved the FedEx shipping label. Tracking # ' . $fedex_results[$key]['tracking'],'success');
 				  }
 				} else {
 					throw new \core\classes\userException('Error - No label found in return string.');
@@ -917,7 +917,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 //echo 'Request <pre>' . htmlspecialchars($client->__getLastRequest()) . '</pre>';
 //echo 'Response <pre>' . htmlspecialchars($client->__getLastResponse()) . '</pre>';
 		if ($response->HighestSeverity != 'FAILURE' && $response->HighestSeverity != 'ERROR') {
-		  $messageStack->add(SHIPPING_FEDEX_V7_DEL_SUCCESS. $tracking_number, 'success');
+		  \core\classes\messageStack::add(SHIPPING_FEDEX_V7_DEL_SUCCESS. $tracking_number, 'success');
 		} else {
 		  foreach ($response->Notifications as $notification) {
 			if (is_object($notification)) {
@@ -1010,15 +1010,15 @@ class fedex_v7 extends \shipping\classes\shipping {
 					$late = '0'; // no data
 					if ($shipments->fields['deliver_date'] < $actual_date) {
 					  $late = 'L';
-//					  $messageStack->add(SHIPPING_FEDEX_V7_TRACK_FAIL . $shipments->fields['ref_id'], 'error');
+//					  \core\classes\messageStack::add(SHIPPING_FEDEX_V7_TRACK_FAIL . $shipments->fields['ref_id'], 'error');
 					} elseif ($response->TrackDetails->StatusCode <> 'DL') {
 					  $late = 'T';
-					  $messageStack->add(sprintf(SHIPPING_FEDEX_V7_TRACK_STATUS, $shipments->fields['ref_id'], $response->TrackDetails->StatusCode, $response->TrackDetails->StatusDescription), 'caution');
+					  \core\classes\messageStack::add(sprintf(SHIPPING_FEDEX_V7_TRACK_STATUS, $shipments->fields['ref_id'], $response->TrackDetails->StatusCode, $response->TrackDetails->StatusDescription), 'caution');
 					}
 					// update the log file with the actual delivery timestamp, append notes
 					$admin->DataBase->query("update " . TABLE_SHIPPING_LOG . "
 					  set actual_date = '" . $actual_date . "', deliver_late = '" . $late . "' where id = " . $shipments->fields['id']);
-//					$messageStack->add(SHIPPING_FEDEX_V7_TRACK_SUCCESS . $response->TrackDetails->ActualDeliveryTimestamp, 'success');
+//					\core\classes\messageStack::add(SHIPPING_FEDEX_V7_TRACK_SUCCESS . $response->TrackDetails->ActualDeliveryTimestamp, 'success');
 				} else {
 					foreach ($response->Notifications as $notification) {
 						if (is_object($notification)) {
@@ -1115,7 +1115,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 				if (fwrite($handle, $hazMatReport) === false) throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $file_path . $filename));
 */
 				if (!@fclose($handle)) throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
-				$messageStack->add(SHIPPING_FEDEX_V7_CLOSE_SUCCESS,'success');
+				\core\classes\messageStack::add(SHIPPING_FEDEX_V7_CLOSE_SUCCESS,'success');
 			} else {
 				foreach ($response->Notifications as $notification) {
 					if (is_object($notification)) {

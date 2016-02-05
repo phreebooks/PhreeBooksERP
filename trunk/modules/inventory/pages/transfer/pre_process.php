@@ -181,12 +181,12 @@ switch ($_REQUEST['action']) {
 	    	$admin->DataBase->transCommit();	// post the chart of account values
 	    	// *************** END TRANSACTION *************************
 			gen_add_audit_log(sprintf(INV_LOG_TRANSFER, $source_store_id, $dest_store_id), $sku, $qty);
-	   		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, TEXT_INVENTORY_ADJUSTMENT, $glEntry->purchase_invoice_id), 'success');
+	   		\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, TEXT_INVENTORY_ADJUSTMENT, $glEntry->purchase_invoice_id), 'success');
 	   		if (DEBUG) $messageStack->write_debug();
 	   		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	  	}catch(Exception $e){
 			$admin->DataBase->transRollback();
-			$messageStack->add($e->getMessage(), $e->getCode());
+			\core\classes\messageStack::add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo($_POST);
 			if (DEBUG) $messageStack->write_debug();
 		}
@@ -210,7 +210,7 @@ switch ($_REQUEST['action']) {
 		    gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		}catch(Exception $e){
 			$admin->DataBase->transRollback();
-			$messageStack->add($e->getMessage(), $e->getCode());
+			\core\classes\messageStack::add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo($_POST);
 			if (DEBUG) $messageStack->write_debug();
 		}

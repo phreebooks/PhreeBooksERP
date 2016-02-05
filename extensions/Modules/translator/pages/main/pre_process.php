@@ -148,7 +148,7 @@ switch ($_REQUEST['action']) {
 			$admin->DataBase->query("update " . TABLE_TRANSLATOR . "
 			  set translation = '" . db_input($trans) . "', translated = '" . $status . "' where id = '" . $id . "'");
 		}
-		$messageStack->add(TEXT_TRANSLATION_RECORDS_SAVED,'success');
+		\core\classes\messageStack::add(TEXT_TRANSLATION_RECORDS_SAVED,'success');
 		$_REQUEST['action'] = 'edit';
 		break;
   	case 'delete':

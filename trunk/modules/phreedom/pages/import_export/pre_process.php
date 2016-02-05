@@ -131,7 +131,7 @@ switch ($_REQUEST['action']) {
 	  print $output;
 	  exit();
 	} else{
-	  $messageStack->add('There are no records in this database table.','caution');
+	  \core\classes\messageStack::add('There are no records in this database table.','caution');
 	  $_REQUEST['action'] = 'module'; // retun to module page
 	}
 	break;
@@ -221,12 +221,12 @@ switch ($_REQUEST['action']) {
 		  	case 'import_so':
 		  	case 'import_ar':  $so_po->processCSV($upload_name);
 		}
-		$messageStack->add(TEXT_SUCCESS . '-' . $journal_types_list[JOURNAL_ID]['text'] . '-' . TEXT_IMPORT . ': ' . sprintf(SUCCESS_IMPORT_COUNT, $so_po->line_count),'success');
+		\core\classes\messageStack::add(TEXT_SUCCESS . '-' . $journal_types_list[JOURNAL_ID]['text'] . '-' . TEXT_IMPORT . ': ' . sprintf(SUCCESS_IMPORT_COUNT, $so_po->line_count),'success');
 		gen_add_audit_log($journal_types_list[JOURNAL_ID]['text'] . '-' . TEXT_IMPORT, $so_po->line_count);
 		$admin->DataBase->transCommit();
   	}catch(Exception $e){
   		$admin->DataBase->transRollback();
-  		$messageStack->add($e->getMessage());
+  		\core\classes\messageStack::add($e->getMessage());
   	}
   	default:
 }

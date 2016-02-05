@@ -20,7 +20,7 @@
 require_once(DIR_FS_MODULES . 'phreebooks/defaults.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 function build_audit_xml($date_from, $date_to, $select){
-	global $admin, $messageStack, $coa_types_list;
+	global $admin, $coa_types_list;
 	$tax_auths      = gen_build_tax_auth_array();
 	$date = new \core\classes\DateTime($date_from);
   	$output  = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .chr(10);

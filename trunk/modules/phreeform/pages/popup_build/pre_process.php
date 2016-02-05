@@ -245,7 +245,7 @@ switch ($_REQUEST['action']) {
 		$success = save_report($report, $rID);
 		if ($_REQUEST['action'] == 'save' && $success) $self_close  = true;
   	}catch(Exception $e){
-  		$messageStack->add($e->getMessage());
+  		\core\classes\messageStack::add($e->getMessage());
   	}
     break;
   case 'save_dir':
@@ -283,11 +283,11 @@ switch ($_REQUEST['action']) {
 	$result = $admin->DataBase->query("select id from " . TABLE_PHREEFORM . " where parent_id = " . $id);
 	if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(TEXT_THE_DIRECTORY_CANNOT_BE_DELETED_BECAUSE_IT_IS_NOT_EMPTY);
 	$admin->DataBase->exec("delete from " . TABLE_PHREEFORM . " where id = " . $id);
-	$messageStack->add(TEXT_THE_DIRECTORY_WAS_SUCESSFULLY_DELETED,'success');
+	\core\classes\messageStack::add(TEXT_THE_DIRECTORY_WAS_SUCESSFULLY_DELETED,'success');
     break;
   case 'import_one':
     if ($success = ImportReport($_POST['reportname'], $_POST['RptFileName'], $import_path)) {
-	  $messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_IMPORTED, TEXT_REPORT , $doc_title), 'success');
+	  \core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_IMPORTED, TEXT_REPORT , $doc_title), 'success');
 	  $self_close = true;
 	}
 	break;
@@ -303,10 +303,10 @@ switch ($_REQUEST['action']) {
 		}
 	    closedir($handle);
 		foreach ($output as $file) ImportReport(NULL, $file, $import_path);
-	    $messageStack->add(TEXT_THE_DIRECTORY_OF_REPORTS_WAS_IMPORTED_SUCCESSFULLY, 'success');
+	    \core\classes\messageStack::add(TEXT_THE_DIRECTORY_OF_REPORTS_WAS_IMPORTED_SUCCESSFULLY, 'success');
 		$self_close = true;
   	}catch(Exception $e){
-  		$messageStack->add($e->getMessage());
+  		\core\classes\messageStack::add($e->getMessage());
   	}
 	break;
   default:

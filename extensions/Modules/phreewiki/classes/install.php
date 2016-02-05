@@ -92,12 +92,11 @@ class phreewiki_admin {
   }
 
   function install($module) {
-    global $admin, $messageStack;
-		$error = false;
-		require_once(DIR_FS_MODULES . 'phreewiki/functions/phreewiki.php');
-		foreach ($this->pluginArray as $key => $value){
-			$error = install_plugin($key, $value);
-		}
+    $error = false;
+	require_once(DIR_FS_MODULES . 'phreewiki/functions/phreewiki.php');
+	foreach ($this->pluginArray as $key => $value){
+		$error = install_plugin($key, $value);
+	}
     return $error;
   }
 

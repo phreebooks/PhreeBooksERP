@@ -67,7 +67,7 @@ switch ($_REQUEST['action']) {
 		gen_add_audit_log(TEXT_COMPANY_DATABASE_BACKUP);
 		$backup->download($backup->dest_dir, $backup->dest_file, $save_local); // will not return if successful
 	}catch(Exception $e){
-		$messageStack->add($e->getMessage());
+		\core\classes\messageStack::add($e->getMessage());
 	}
 	break;
 
@@ -87,7 +87,7 @@ switch ($_REQUEST['action']) {
 		gen_add_audit_log(TEXT_AUDIT_DB_DATA_BACKUP);
 		$backup->download($backup->dest_dir, $backup->dest_file, false);
   	}catch(Exception $e){
-		$messageStack->add($e->getMessage());
+		\core\classes\messageStack::add($e->getMessage());
 	}
     break;
 
@@ -95,7 +95,7 @@ switch ($_REQUEST['action']) {
   		$date = new \core\classes\DateTime();
   		$date->modify("-{$date->format('j')} day");
     	$result = $admin->DataBase->exec("delete from " . TABLE_AUDIT_LOG . " where action_date < '{$date->format('Y-m-d')}'");
-    	$messageStack->add('The number of records deleted was:' . ' ' . $result->AffectedRows(),'success');
+    	\core\classes\messageStack::add('The number of records deleted was:' . ' ' . $result->AffectedRows(),'success');
 		gen_add_audit_log(TEXT_AUDIT_DB_DATA_CLEAN);
 		break;
 

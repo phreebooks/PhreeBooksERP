@@ -23,7 +23,6 @@ class magento {
   	var $strXML;
 
   	function submitXML($id, $action = '', $hide_success = false, $inc_image = true) {
-		global $messageStack;
 		switch ($action) {
 	  		case 'product_ul':
 				$this->buildProductUploadXML($id, $inc_image);
@@ -50,7 +49,7 @@ class magento {
 		$this->code   = $results->Response->Code;
 		$this->text   = $results->Response->Text;
 		if ($this->code == 0) {
-	  		if (!$hide_success) $messageStack->add($this->text, strtolower($this->result));
+	  		if (!$hide_success) \core\classes\messageStack::add($this->text, strtolower($this->result));
 	  		return true;
 		} else {
 	  		throw new \core\classes\userException(MAGENTO_TEXT_ERROR . $this->code . ' - ' . $this->text);

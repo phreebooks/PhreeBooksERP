@@ -48,7 +48,7 @@ switch ($_REQUEST['action']) {
 	if (is_array($accounts->account)) foreach ($accounts->account as $account) {
 	  	$result = $admin->DataBase->query("select id from " . TABLE_CHART_OF_ACCOUNTS . " where id = '" . $account->id . "'");
 	  	if ($result->fetch(\PDO::FETCH_NUM) > 0) {
-	    	$messageStack->add(sprintf(TEXT_THE_GL_ACCOUNT_ALREADY_EXISTS_THE_ACCOUNT_WILL_NOT_BE_ADDED_ARGS, $account->id),'error');
+	    	\core\classes\messageStack::add(sprintf(TEXT_THE_GL_ACCOUNT_ALREADY_EXISTS_THE_ACCOUNT_WILL_NOT_BE_ADDED_ARGS, $account->id),'error');
 			continue;
 	  	}
 		$sql_data_array = array(
@@ -73,7 +73,7 @@ switch ($_REQUEST['action']) {
       if (isset($_POST[$field])) $admin->DataBase->write_configure($key, $_POST[$field]);
     }
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-	$messageStack->add(PHREEBOOKS_CONFIG_SAVED,'success');
+	\core\classes\messageStack::add(PHREEBOOKS_CONFIG_SAVED,'success');
     break;
   case 'delete':
 	\core\classes\user::validate_security($security_level, 4);

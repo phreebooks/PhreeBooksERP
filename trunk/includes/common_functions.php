@@ -1279,8 +1279,8 @@ function charConv($string, $in, $out) {
 			} // end foreach loop thru possible multiple email addresses
     		return true;
          }catch(Exception $e) {
-      		$messageStack->add(sprintf(TEXT_THE_EMAIL_MESSAGE_WAS_NOT_SENT . '&nbsp;'. $mail->ErrorInfo, $to_name, $to_email_address, $email_subject),'error');
-	  		$messageStack->add($e->getMessage(), $e->getCode());
+      		\core\classes\messageStack::add(sprintf(TEXT_THE_EMAIL_MESSAGE_WAS_NOT_SENT . '&nbsp;'. $mail->ErrorInfo, $to_name, $to_email_address, $email_subject),'error');
+	  		\core\classes\messageStack::add($e->getMessage(), $e->getCode());
 		}
 
 	}  // end function

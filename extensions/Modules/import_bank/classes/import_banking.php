@@ -113,7 +113,7 @@ class import_banking extends \phreebooks\classes\journal {
 			$messageStack->debug("\n found a costumer or vender with the bankaccountnumber ". ltrim($other_bank_account_number,0));
 			if (!$result1->fetch(\PDO::FETCH_NUM)> 1){
 				//TEXT_IMP_ERMSG17 = two or more accounts with the same account
-				$messageStack->add(TEXT_THERE_ARE_TWO_OR_MORE_ACCOUNTS_WITH_THE_SAME_BANK_ACCOUNT . ': ' . $other_bank_account_number, 'error');
+				\core\classes\messageStack::add(TEXT_THERE_ARE_TWO_OR_MORE_ACCOUNTS_WITH_THE_SAME_BANK_ACCOUNT . ': ' . $other_bank_account_number, 'error');
 				return false;
 			}
 			$contact['id']   = $result1->fields['id'];
@@ -443,8 +443,8 @@ class import_banking extends \phreebooks\classes\journal {
 			foreach ($contact as $invoice_id => $invoice) {
 				if( strripos($this->_description, $invoice['purchase_invoice_id']) !== false){ // if invoice is part of the description use it
 					$messageStack->debug("\n Found contact by invoice_nr in description. found contact ".$contact_id);
-					if($other_bank_account_number) $messageStack->add(sprintf(TEXT_NEW_BANK, $other_bank_account_number, $invoice['short_name']), 'caution');
-					if($other_bank_account_iban)   $messageStack->add(sprintf(TEXT_NEW_IBAN, $other_bank_account_iban,   $invoice['short_name']), 'caution');
+					if($other_bank_account_number) \core\classes\messageStack::add(sprintf(TEXT_NEW_BANK, $other_bank_account_number, $invoice['short_name']), 'caution');
+					if($other_bank_account_iban)   \core\classes\messageStack::add(sprintf(TEXT_NEW_IBAN, $other_bank_account_iban,   $invoice['short_name']), 'caution');
 					return array('id' => $contact_id,'type' => $invoice['type']);
 				}
 			}

@@ -142,7 +142,7 @@ class yrc {
 	$ship_date = date('Ymd', strtotime($pkg->ship_date));
 	$today = date('Ymd');
 	if ($ship_date < $today) {
-	  $messageStack->add(SHIPPING_BAD_QUOTE_DATE, 'caution');
+	  \core\classes\messageStack::add(SHIPPING_BAD_QUOTE_DATE, 'caution');
 	  $ship_date = date('Ymd');
 	}
 	$output = array();

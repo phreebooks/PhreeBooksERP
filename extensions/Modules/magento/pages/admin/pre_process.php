@@ -33,7 +33,7 @@ switch ($_REQUEST['action']) {
       if (isset($_POST[$field])) $admin->DataBase->write_configure($key, $_POST[$field]);
     }
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
-	$messageStack->add(MAGENTO_CONFIG_SAVED, 'success');
+	\core\classes\messageStack::add(MAGENTO_CONFIG_SAVED, 'success');
     break;
   case 'go_first':    $_REQUEST['list'] = 1;     break;
   case 'go_previous': $_REQUEST['list']--;       break;

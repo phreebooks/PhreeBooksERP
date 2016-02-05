@@ -90,7 +90,7 @@ switch ($_REQUEST['action']) {
 		// ***************************** END TRANSACTION *******************************
   	}catch(Exception $e){
   		$admin->DataBase->transRollback();
-  		$messageStack->add($e->getMessage());
+  		\core\classes\messageStack::add($e->getMessage());
   	}
 	break;
   default:

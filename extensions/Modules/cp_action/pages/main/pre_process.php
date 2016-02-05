@@ -88,7 +88,7 @@ switch ($_REQUEST['action']) {
 		  	$admin->DataBase->query("update " . TABLE_CURRENT_STATUS . " set next_capa_num = '" . $next_num . "'");
 		  	gen_add_audit_log(TEXT_CAPA_CREATED_CAPA . ' # ' . $capa_num);
 	  }
-	  $messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, ($_POST['rowSeq'] ? TEXT_UPDATED : TEXT_ADDED ), TEXT_CORRECTIVE_ACTION_PREVENTATIVE_ACTION , $capa_num), 'success');
+	  \core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, ($_POST['rowSeq'] ? TEXT_UPDATED : TEXT_ADDED ), TEXT_CORRECTIVE_ACTION_PREVENTATIVE_ACTION , $capa_num), 'success');
 	break;
 
   case 'edit':

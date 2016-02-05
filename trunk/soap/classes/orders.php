@@ -236,7 +236,7 @@ class xml_orders extends parser {
 	$psOrd->ship_email          = $this->order['customer']['email'];
 	// check for truncation of addresses
 	if (strlen($psOrd->bill_primary_name) > 32 || strlen($psOrd->bill_address1) > 32 || strlen($psOrd->ship_primary_name) > 32 || strlen($psOrd->ship_address1) > 32) {
-	  $messageStack->add('Either the Primary Name or Address has been truncated to fit in the Phreedom database field sizes. Please check source information.', 'caution');
+	  \core\classes\messageStack::add('Either the Primary Name or Address has been truncated to fit in the Phreedom database field sizes. Please check source information.', 'caution');
 	}
 	// load the item rows
 	switch (JOURNAL_ID) {

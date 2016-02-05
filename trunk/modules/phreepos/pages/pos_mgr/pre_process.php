@@ -56,7 +56,7 @@ switch ($_REQUEST['action']) {
 				if (method_exists($admin->classes['payment']->methods[$pmt_fields[1]], 'refund')) {
 			   		$admin->classes['payment']->methods[$pmt_fields[1]]->refund($value['debit_amount'], $reference, $pmt_field_0, $pmt_field_1);
 			   	} else {
-			  		$messageStack->add(sprintf('The payment method (%s) was not refunded with the processor. The refund in the amount of %s needs to be credited with the processor manually.', $pmt_method, $admin->currencies->format_full($value['debit_amount'])), 'caution');
+			  		\core\classes\messageStack::add(sprintf('The payment method (%s) was not refunded with the processor. The refund in the amount of %s needs to be credited with the processor manually.', $pmt_method, $admin->currencies->format_full($value['debit_amount'])), 'caution');
 				}
 		    }
 			$admin->DataBase->transCommit();
@@ -65,7 +65,7 @@ switch ($_REQUEST['action']) {
 		    // *************** END TRANSACTION *************************
 		}catch(Exception $e){
 	  		$admin->DataBase->transRollback();
-			$messageStack->add($e->getMessage());
+			\core\classes\messageStack::add($e->getMessage());
 	  	}
 	  	if (DEBUG) $messageStack->write_debug();
 

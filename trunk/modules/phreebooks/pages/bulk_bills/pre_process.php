@@ -120,7 +120,7 @@ switch ($_REQUEST['action']) {
 				// Make sure there is a positive balance to pay
 				$order->total_amount = $payment_total;
 				if ($order->total_amount <= 0) {
-					$messageStack->add(sprintf(BNK_BULK_PAY_NOT_POSITIVE, $order->bill_primary_name), 'caution');
+					\core\classes\messageStack::add(sprintf(BNK_BULK_PAY_NOT_POSITIVE, $order->bill_primary_name), 'caution');
 					continue;
 				}
 
@@ -137,7 +137,7 @@ switch ($_REQUEST['action']) {
 			$admin->DataBase->transCommit();	// finished successfully
   		}catch(Exception $e){
   			$admin->DataBase->transRollback();
-  			$messageStack->add($e->getMessage());
+  			\core\classes\messageStack::add($e->getMessage());
   		}
 
 		// ***************************** END TRANSACTION *******************************

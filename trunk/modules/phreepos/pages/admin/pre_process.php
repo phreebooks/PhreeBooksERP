@@ -31,9 +31,9 @@ switch ($_REQUEST['action']) {
 		// save general tab
 		foreach ($admin->classes['phreepos']->keys as $key => $default) {
 		  $field = strtolower($key);
-	      if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
+	      if (isset($_POST[$field])) $admin->DataBase->write_configure($key, $_POST[$field]);
 	    }
-		$messageStack->add(TEXT_CONFIGURATION_VALUES_HAVE_BEEN_SAVED, 'success');
+		\core\classes\messageStack::add(TEXT_CONFIGURATION_VALUES_HAVE_BEEN_SAVED, 'success');
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	    break;
 	}

@@ -59,7 +59,7 @@ class translator_admin {
 	$error = false;
 	if (!$error) {
 	  $admin->DataBase->write_configure('MODULE_'.strtoupper($module).'_STATUS', constant('MODULE_'.strtoupper($module).'_VERSION'));
-   	  $messageStack->add(sprintf(GEN_MODULE_UPDATE_SUCCESS, $module, constant('MODULE_'.strtoupper($module).'_VERSION')), 'success');
+   	  \core\classes\messageStack::add(sprintf(GEN_MODULE_UPDATE_SUCCESS, $module, constant('MODULE_'.strtoupper($module).'_VERSION')), 'success');
 	}
 	return $error;
   }

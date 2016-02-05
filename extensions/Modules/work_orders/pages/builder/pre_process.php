@@ -110,11 +110,11 @@ switch ($_REQUEST['action']) {
 		$admin->DataBase->transCommit();
 		// finish
 		gen_add_audit_log(($id  ? sprintf(WO_AUDIT_LOG_BUILDER, TEXT_UPDATE) : sprintf(WO_AUDIT_LOG_BUILDER, TEXT_ADD)) . $task_id);
-		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS,(isset($_POST['id']) ? TEXT_UPDATED : TEXT_ADDED), TEXT_WORK_ORDER_RECORD , $wo_title),'success');
+		\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS,(isset($_POST['id']) ? TEXT_UPDATED : TEXT_ADDED), TEXT_WORK_ORDER_RECORD , $wo_title),'success');
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	} catch(Exception $e) {
 		$admin->DataBase->transRollback();
-	  	$messageStack->add($e->getMessage(), 'error');
+	  	\core\classes\messageStack::add($e->getMessage(), 'error');
 	  	$_REQUEST['action'] = 'edit';
 	}
 	break;
@@ -125,7 +125,7 @@ switch ($_REQUEST['action']) {
 	// check for duplicate skus
 	$result = $admin->DataBase->query("select id from " . TABLE_WO_MAIN . " where wo_title = '" . $title . "'");
 	if ($result->Recordcount() > 0) {	// error and reload
-		$messageStack->add(WO_BUILDER_ERROR_DUP_TITLE, 'error');
+		\core\classes\messageStack::add(WO_BUILDER_ERROR_DUP_TITLE, 'error');
 		break;
 	}
 	$result = $admin->DataBase->query("select * from " . TABLE_WO_MAIN . " where id = " . $id);
@@ -171,13 +171,13 @@ switch ($_REQUEST['action']) {
 	$highest_rev = $result->fields['revision'];
 	// set some filters
 	if ($revision < $highest_rev) {
-	  	$messageStack->add(WO_CANNOT_SAVE, 'caution');
+	  	\core\classes\messageStack::add(WO_CANNOT_SAVE, 'caution');
 	  	$hide_save = true;
 	}
 	if ($revision > 0) $lock_title = true;
 	if (!$hide_save && $last_usage <> '0000-00-00') {
 	  	$lock_title = true;
-	  	$messageStack->add(WO_ROLL_REVISION, 'caution');
+	  	\core\classes\messageStack::add(WO_ROLL_REVISION, 'caution');
 	}
 	// pull the sku
 	$result = $admin->DataBase->query("select sku, image_with_path from " . TABLE_INVENTORY . " where id = " . $sku_id);
@@ -209,7 +209,7 @@ switch ($_REQUEST['action']) {
 		$admin->DataBase->exec("delete from " . TABLE_WO_MAIN  . " where id = " . $id);
 		$admin->DataBase->exec("delete from " . TABLE_WO_STEPS . " where ref_id = " . $id);
 		gen_add_audit_log(sprintf(WO_AUDIT_LOG_BUILDER, TEXT_DELETE) . $result->fields['wo_title']);
-		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_WORK_ORDER_RECORD , $result->fields['wo_title']),'success');
+		\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_WORK_ORDER_RECORD , $result->fields['wo_title']),'success');
     	$_REQUEST['action'] = '';
 		break;
   case 'go_first':    $_REQUEST['list'] = 1;       break;

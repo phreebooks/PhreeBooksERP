@@ -22,7 +22,7 @@ class bulk_upload {
   }
 
   function bulkUpload($inc_image = false) {
-	global $admin, $messageStack;
+	global $admin;
 	$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY . " where catalog = '1' " . $where);
 	$cnt    = 0;
 	while(!$result->EOF) {
@@ -31,7 +31,7 @@ class bulk_upload {
 	  	$cnt++;
 	  	$result->MoveNext();
 	}
-	$messageStack->add(sprintf(MAGENTO_BULK_UPLOAD_SUCCESS, $cnt), 'success');
+	\core\classes\messageStack::add(sprintf(MAGENTO_BULK_UPLOAD_SUCCESS, $cnt), 'success');
 	return  true;
   }
 

@@ -193,7 +193,7 @@ class currencies {
 		  	$rate = $this->$quote_function($currency['code'], $this->def_currency);
 		  	if (empty($rate) && (gen_not_null(CURRENCY_SERVER_BACKUP))) {
 				$message[] = sprintf(SETUP_WARN_PRIMARY_SERVER_FAILED, CURRENCY_SERVER_PRIMARY, $currency['title'], $currency['code']);
-				$messageStack->add(sprintf(SETUP_WARN_PRIMARY_SERVER_FAILED, CURRENCY_SERVER_PRIMARY, $currency['title'], $currency['code']), 'caution');
+				\core\classes\messageStack::add(sprintf(SETUP_WARN_PRIMARY_SERVER_FAILED, CURRENCY_SERVER_PRIMARY, $currency['title'], $currency['code']), 'caution');
 				$quote_function = 'quote_'.CURRENCY_SERVER_BACKUP;
 				$rate = $this->$quote_function($currency['code'], $this->def_currency);
 				$server_used = CURRENCY_SERVER_BACKUP;
@@ -202,7 +202,7 @@ class currencies {
 				$admin->DataBase->exec("UPDATE {$this->db_table} set value = '$rate', last_updated = now() WHERE currencies_id = '{$currency['currencies_id']}'");
 				$this->currencies[$key]['value'] = $rate;
 				$message[] = sprintf(SETUP_INFO_CURRENCY_UPDATED, $currency['title'], $currency['code'], $server_used);
-				$messageStack->add(sprintf(SETUP_INFO_CURRENCY_UPDATED, $currency['title'], $currency['code'], $server_used), 'success');
+				\core\classes\messageStack::add(sprintf(SETUP_INFO_CURRENCY_UPDATED, $currency['title'], $currency['code'], $server_used), 'success');
 		  	} else {
 				$message[] = sprintf(SETUP_ERROR_CURRENCY_INVALID, $currency['title'], $currency['code'], $server_used);
 				throw new \core\classes\userException(sprintf(SETUP_ERROR_CURRENCY_INVALID, $currency['title'], $currency['code'], $server_used));

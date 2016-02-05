@@ -610,7 +610,7 @@ class journal_23 extends \core\classes\journal {
 		// ************* POST journal entry *************
 		if ($this->id) {	// it's an edit, first unPost record, then rewrite
 			$this->Post($new_post = 'edit');
-			$messageStack->add(BNK_REPOST_PAYMENT,'caution');
+			\core\classes\messageStack::add(BNK_REPOST_PAYMENT,'caution');
 		} else {
 			$this->Post($new_post = 'insert');
 		}
@@ -622,7 +622,7 @@ class journal_23 extends \core\classes\journal {
 
 		$admin->DataBase->transCommit();	// finished successfully
 		// ***************************** END TRANSACTION *******************************
-		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, $this->id_field_name, $this->purchase_invoice_id), 'success');
+		\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, $this->id_field_name, $this->purchase_invoice_id), 'success');
 		return true;
 	}
 
@@ -659,7 +659,7 @@ class journal_23 extends \core\classes\journal {
 		$this->unPost('delete');
 		$admin->DataBase->transCommit();
 		// *************** END TRANSACTION *************************
-		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, $this->id_field_name, $this->purchase_invoice_id), 'success');
+		\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, $this->id_field_name, $this->purchase_invoice_id), 'success');
 		return true;
 	}
 

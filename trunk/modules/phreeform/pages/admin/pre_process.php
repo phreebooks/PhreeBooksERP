@@ -30,9 +30,9 @@ switch ($_REQUEST['action']) {
   	// save general tab
 	foreach ($admin->classes['phreeform']->keys as $key => $default) {
 	  $field = strtolower($key);
-      if (isset($_POST[$field])) write_configure($key, $_POST[$field]);
+      if (isset($_POST[$field])) $admin->DataBase->write_configure($key, $_POST[$field]);
     }
-	$messageStack->add(TEXT_CONFIGURATION_VALUES_HAVE_BEEN_SAVED, 'success');
+	\core\classes\messageStack::add(TEXT_CONFIGURATION_VALUES_HAVE_BEEN_SAVED, 'success');
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
     break;
   case 'fix':
@@ -83,7 +83,7 @@ switch ($_REQUEST['action']) {
 	  rename(PF_DIR_MY_REPORTS.'tmp_'.$old, PF_DIR_MY_REPORTS.'pf_'.$new);
 	}
 	gen_add_audit_log(TEXT_PHREEFORM_STUCTURE_VERIFICATION_AND_REBUILD);
-	$messageStack->add(sprintf(PHREEFORM_TOOLS_REBUILD_SUCCESS, $rpt_cnt, $orph_cnt), 'success');
+	\core\classes\messageStack::add(sprintf(PHREEFORM_TOOLS_REBUILD_SUCCESS, $rpt_cnt, $orph_cnt), 'success');
   	break;
 
 /*** BOF - Added by PhreeSoft to convert PhreeBooks reports to phreeform format *************/
@@ -108,7 +108,7 @@ switch ($_REQUEST['action']) {
 		  if (!$success = save_report($params)) throw new \core\classes\userException(sprintf(PB_CONVERT_SAVE_ERROR, $params->title));
 		  $count++;
 	  }catch(exception $e){
-	  	$messageStack->add($e->getMessage());
+	  	\core\classes\messageStack::add($e->getMessage());
 	  }
 	  $result->MoveNext();
 	}
@@ -121,7 +121,7 @@ switch ($_REQUEST['action']) {
 	  @copy($dir_source . '/' . $filename, $dir_dest . '/' . $filename);
 	}
 	$d->close();
-	if ($count) $messageStack->add(sprintf(PB_CONVERT_SUCCESS, $count), 'success');
+	if ($count) \core\classes\messageStack::add(sprintf(PB_CONVERT_SUCCESS, $count), 'success');
     break;
 /*** EOF - Added by PhreeSoft to convert PhreeBooks reports to phreeform format *************/
   default:

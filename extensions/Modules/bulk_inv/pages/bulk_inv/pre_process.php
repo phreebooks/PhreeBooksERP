@@ -43,7 +43,7 @@ switch ($_REQUEST['action']) {
 	  db_perform(TABLE_INVENTORY, $sql_data_array, 'update', "id = $id");
 	  $row++;
 	}
-	$messageStack->add('Finished updating inventory database', 'success');
+	\core\classes\messageStack::add('Finished updating inventory database', 'success');
 	break;
   case 'go_first':    $_REQUEST['list'] = 1;       break;
   case 'go_previous': $_REQUEST['list'] = max($_REQUEST['list']-1, 1); break;

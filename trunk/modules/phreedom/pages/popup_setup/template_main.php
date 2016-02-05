@@ -36,7 +36,7 @@ echo $toolbar->build();
 try{
 	echo $subject_module->build_form_html($_REQUEST['action'], $sID); 
 }catch(Exception $e){
-	$messageStack->add($e->getMessage(), $e->getCode);
+	\core\classes\messageStack::add($e->getMessage(), $e->getCode);
 }
 	?>
 </form>

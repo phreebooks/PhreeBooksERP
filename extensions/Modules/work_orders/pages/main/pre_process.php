@@ -117,10 +117,10 @@ switch ($_REQUEST['action']) {
 		}
 		// finish
 		gen_add_audit_log($id  ? sprintf(WO_AUDIT_LOG_MAIN, TEXT_UPDATE) . $wo_id : sprintf(WO_AUDIT_LOG_MAIN, TEXT_ADD) . $wo_id);
-		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS,(isset($_POST['id']) ? TEXT_UPDATED : TEXT_ADDED), TEXT_WORK_ORDER_RECORD , $wo_title),'success');
+		\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS,(isset($_POST['id']) ? TEXT_UPDATED : TEXT_ADDED), TEXT_WORK_ORDER_RECORD , $wo_title),'success');
 		if ($_REQUEST['action'] == 'save') gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	} catch(Exception $e) {
-	  $messageStack->add($e->getMessage(), 'error');
+	  \core\classes\messageStack::add($e->getMessage(), 'error');
 	  $_REQUEST['action'] = 'edit';
 	}
 	break;
@@ -203,7 +203,7 @@ switch ($_REQUEST['action']) {
 				);
 				$glEntry->Post('insert');
 				gen_add_audit_log(TEXT_INVENTORY_ASSEMBLY . ' - ' . TEXT_SAVE, $sku, $qty);
-				$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_ASSEMBLED, TEXT_SKU , $sku), 'success');
+				\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_ASSEMBLED, TEXT_SKU , $sku), 'success');
 			}
 			$admin->DataBase->query("update " . TABLE_WO_JOURNAL_ITEM . " set complete = '1', admin_id = " . $_SESSION['admin_id'] . "
 			  where ref_id = $id and step = $step");
@@ -218,17 +218,17 @@ switch ($_REQUEST['action']) {
 				$allocate = $temp->fields['allocate'];
 				if ($allocate) allocation_adjustment($result->fields['sku_id'], 0, $result->fields['qty']);
 				gen_add_audit_log(sprintf(WO_AUDIT_LOG_WO_COMPLETE, $id));
-				$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_COMPLETED, TEXT_WORK_ORDER_RECORD , $result->fields['wo_title']),'success');
+				\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_COMPLETED, TEXT_WORK_ORDER_RECORD , $result->fields['wo_title']),'success');
 				gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 			}
 		}
 		$admin->DataBase->transCommit();	// post the chart of account values
 		gen_add_audit_log(sprintf(WO_AUDIT_LOG_STEP_COMPLETE, $step));
-		$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_UPDATED, TEXT_WORK_ORDER_STEP , $step),'success');
+		\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_UPDATED, TEXT_WORK_ORDER_STEP , $step),'success');
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')) . '&action=build&id=' . $id, 'SSL'));
 	} catch(Exception $e) {
 		$admin->DataBase->transRollback();
-	  	$messageStack->add($e->getMessage());
+	  	\core\classes\messageStack::add($e->getMessage());
 	  	$_REQUEST['action'] = 'build';
 	  	$_POST['rowSeq'] = $id; // make it look like an edit
 	}
@@ -276,7 +276,7 @@ switch ($_REQUEST['action']) {
 	$admin->DataBase->exec("delete from " . TABLE_WO_JOURNAL_MAIN  . " where id = " . $id);
 	$admin->DataBase->exec("delete from " . TABLE_WO_JOURNAL_ITEM  . " where ref_id = " . $id);
 	gen_add_audit_log(sprintf(WO_AUDIT_LOG_MAIN, TEXT_DELETE) . $result->fields['wo_title']);
-	$messageStack->add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_WORK_ORDER_RECORD , $result->fields['wo_title']),'success');
+	\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_WORK_ORDER_RECORD , $result->fields['wo_title']),'success');
     $_REQUEST['action'] = '';
 	break;
   case 'go_first':    $_REQUEST['list'] = 1;       break;

@@ -120,7 +120,7 @@ switch ($action) {
 	  $label_data = str_replace("\r", "", addslashes($label_data)); // for javascript multi-line
 	  $label_data = str_replace("\n", "\\n", $label_data);
 	} else {
-	  $messageStack->add(SHIPPING_NO_PACKAGES,'error');
+	  \core\classes\messageStack::add(SHIPPING_NO_PACKAGES,'error');
 	  $sInfo->ship_country_code = gen_get_country_iso_3_from_2($sInfo->ship_country_code);
 	}
 	break;
@@ -157,11 +157,11 @@ switch ($action) {
 	$ship_method = $shipments->fields['method'];
 	$shipment    = new $shipping_module;
 	if ($shipments->fetch(\PDO::FETCH_NUM) == 0 || !$ship_method) {
-	  $error = $messageStack->add(SHIPPING_DELETE_ERROR,'error');
+	  $error = \core\classes\messageStack::add(SHIPPING_DELETE_ERROR,'error');
 	  break;
 	}
 	if ($shipments->fields['ship_date'] < date('Y-m-d')) { // only allow delete if shipped today or in future
-	  $error = $messageStack->add(SHIPPING_CANNOT_DELETE,'error');
+	  $error = \core\classes\messageStack::add(SHIPPING_CANNOT_DELETE,'error');
 	  break;
 	}
 	while (!$shipments->EOF) {
@@ -180,11 +180,11 @@ switch ($action) {
 	  while(true) {
 			$filename = $file_path . $tracking_number . ($cnt > 0 ? '-'.$cnt : '') . '.lpt';
 			if   (is_file($filename)) {
-		  		if (!unlink($filename)) $messageStack->add("Trouble removing label file ($filename)",'caution');
+		  		if (!unlink($filename)) \core\classes\messageStack::add("Trouble removing label file ($filename)",'caution');
 			} else {
 			  	$filename = $file_path . $tracking_number . ($cnt > 0 ? '-'.$cnt : '') . '.pdf';
 			  	if (is_file($filename)) {
-			    	if (!unlink($filename)) $messageStack->add("Trouble removing label file ($filename)",'caution');
+			    	if (!unlink($filename)) \core\classes\messageStack::add("Trouble removing label file ($filename)",'caution');
 			  	} else {
 			    	break; // file does not exist, exit loop
 			  	}

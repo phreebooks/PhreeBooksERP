@@ -40,7 +40,7 @@ switch ($_REQUEST['action']) {
 			$upXML->submitXML($id, 'product_ul');
 			gen_add_audit_log(TEXT_UPLOAD_PRODUCT, $upXML->sku);
 	  	}catch(Exception $e) {
-	  		$messageStack->add($e->getMessage());
+	  		\core\classes\messageStack::add($e->getMessage());
 		}
 		break;
   	case 'bulkupload':
@@ -50,7 +50,7 @@ switch ($_REQUEST['action']) {
 			gen_add_audit_log(TEXT_BULK_UPLOAD);
 			$admin->DataBase->write_configure('MODULE_ZENCART_LAST_UPDATE', date('Y-m-d H:i:s'));
 	  	}catch(Exception $e) {
-	  		$messageStack->add($e->getMessage());
+	  		\core\classes\messageStack::add($e->getMessage());
 		}
 	    break;
   	case 'sync':
@@ -59,7 +59,7 @@ switch ($_REQUEST['action']) {
 			$upXML->submitXML(0, 'product_sync');
 			gen_add_audit_log(TEXT_ZENCART_PRODUCT_SYNC);
 		}catch(Exception $e) {
-	  		$messageStack->add($e->getMessage());
+	  		\core\classes\messageStack::add($e->getMessage());
 		}
 		break;
   	case 'confirm':
@@ -69,7 +69,7 @@ switch ($_REQUEST['action']) {
 			$upXML->submitXML(0, 'confirm');
 			gen_add_audit_log(ZENCART_SHIP_CONFIRM, $ship_date);
 		}catch(Exception $e) {
-	  		$messageStack->add($e->getMessage());
+	  		\core\classes\messageStack::add($e->getMessage());
 		}
 	    break;
   	default:

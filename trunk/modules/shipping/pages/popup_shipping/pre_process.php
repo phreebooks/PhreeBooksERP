@@ -56,7 +56,7 @@ switch ($_REQUEST['action']) {
 			  	}
 			}
   		}catch(Exception $e){
-  			$messageStack->add($e->getMessage());
+  			\core\classes\messageStack::add($e->getMessage());
   			$_REQUEST['action'] = ''; // reload selection form
   		}
 		break;

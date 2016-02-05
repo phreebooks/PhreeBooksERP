@@ -153,7 +153,7 @@ switch ($_REQUEST['action']) {
 		$admin->DataBase->transCommit();
 	} catch (Exception $e) { // else there was a post error, display and re-display form
 		$admin->DataBase->transRollback();
-	 	$messageStack->add($e->getMessage());
+	 	\core\classes\messageStack::add($e->getMessage());
 	  	$order = new \core\classes\objectInfo($_POST);
 	  	$order->post_date = \core\classes\DateTime::db_date_format($_POST['post_date']); // fix the date to original format
 	  	$order->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive

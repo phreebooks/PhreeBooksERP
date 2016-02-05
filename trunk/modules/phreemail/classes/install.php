@@ -129,7 +129,7 @@ class phreemail_admin {
 	  		$mail = new phreemail();
 			$mail->connect('', '', EMAIL_SMTPAUTH_MAILBOX, '');
 			if ($mail->error_count != 0 ){
-				$messageStack->add($mail->ErrorInfo, 'error');
+				\core\classes\messageStack::add($mail->ErrorInfo, 'error');
 			}else{
 				//while(!$mail->EOF){
 					$mail->do_action();
@@ -142,7 +142,7 @@ class phreemail_admin {
 				$mail->MoveNext();
 			}*/
 		}catch (\Exception $exception){
-			$messageStack->add($exception->getMessage(), 'error');
+			\core\classes\messageStack::add($exception->getMessage(), 'error');
 		}
 		$messageStack->debug("\n\n*************** End Retrieving Mail from ".EMAIL_SMTPAUTH_MAILBOX." *******************");
 		try{
@@ -151,7 +151,7 @@ class phreemail_admin {
 			$mail->connect('', '', $_SESSION['admin_email'], '');
 //			$mail->get_all_emails();
 			if ($mail->error_count != 0 ){
-				$messageStack->add($mail->ErrorInfo, 'error');
+				\core\classes\messageStack::add($mail->ErrorInfo, 'error');
 			}else{
 				//while(!$mail->EOF){
 					$mail->do_action();
@@ -165,7 +165,7 @@ class phreemail_admin {
 			}*/
 			$messageStack->debug("\n\n*************** End Retrieving Mail from ".$_SESSION['admin_email']." *******************");
 		}catch (\Exception $exception){
-			$messageStack->add($exception->getMessage(), 'error');
+			\core\classes\messageStack::add($exception->getMessage(), 'error');
 		}
 		if ( DEBUG )   $messageStack->write_debug();
   }
@@ -174,8 +174,8 @@ class phreemail_admin {
     global $admin, $messageStack;
     $error = false;
 	if (!$error) {
-	  write_configure('MODULE_' . strtoupper($module) . '_STATUS', constant('MODULE_' . strtoupper($module) . '_VERSION'));
-   	  $messageStack->add(sprintf(GEN_MODULE_UPDATE_SUCCESS, $module, constant('MODULE_' . strtoupper($module) . '_VERSION')), 'success');
+	  $admin->DataBase->write_configure('MODULE_' . strtoupper($module) . '_STATUS', constant('MODULE_' . strtoupper($module) . '_VERSION'));
+   	  \core\classes\messageStack::add(sprintf(GEN_MODULE_UPDATE_SUCCESS, $module, constant('MODULE_' . strtoupper($module) . '_VERSION')), 'success');
 	}
     return $error;
   }

@@ -113,7 +113,7 @@ switch ($_REQUEST['action']) {
 	  	$label_data = str_replace("\r", "", addslashes($label_data)); // for javascript multi-line
 	  	$label_data = str_replace("\n", "\\n", $label_data);
 	} catch(Exception $e) {
-	  	$messageStack->add($e->getMessage(),'error');
+	  	\core\classes\messageStack::add($e->getMessage(),'error');
 	  	$sInfo->ship_country_code = gen_get_country_iso_3_from_2($sInfo->ship_country_code);
 	}
 	break;
@@ -144,7 +144,7 @@ switch ($_REQUEST['action']) {
 			gen_redirect(html_href_link(FILENAME_DEFAULT, 'module=shipping&page=popup_label_viewer&method=' . $admin->classes['shipping']->methods[$method]->id . '&date=' . $date . '&labels=' . $labels, 'SSL'));
 		}
   	}catch(exception $e){
-  		$messageStack->add($e->getMessage(),'error');
+  		\core\classes\messageStack::add($e->getMessage(),'error');
   	}
     break;
 

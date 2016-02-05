@@ -309,8 +309,8 @@ class nova_xml extends \payment\classes\payment {
     if ($results['errorCode']) {
       throw new \core\classes\userException('Decline Code #' . $results['errorCode'] . ': ' . $results['errorMessage'] . ' - ' . MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE);
     } elseif ($results['ssl_result'] == '0') {
-		$messageStack->add($results['ssl_result_message'] . ' - Approval code: ' . $this->auth_code . ' --> CVV2 results: ' . $this->cvv_codes[$results['ssl_cvv2_response']], 'success');
-		$messageStack->add('Address verification results: ' . $this->avs_codes[$results['ssl_avs_response']], 'success');
+		\core\classes\messageStack::add($results['ssl_result_message'] . ' - Approval code: ' . $this->auth_code . ' --> CVV2 results: ' . $this->cvv_codes[$results['ssl_cvv2_response']], 'success');
+		\core\classes\messageStack::add('Address verification results: ' . $this->avs_codes[$results['ssl_avs_response']], 'success');
 		return false;
 	}
 	throw new \core\classes\userException($results['ssl_result_message'] . ' - ' . MODULE_PAYMENT_CC_TEXT_DECLINED_MESSAGE);
