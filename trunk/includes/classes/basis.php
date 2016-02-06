@@ -27,7 +27,6 @@ class basis {
 	public  $template;
 	public  $observer;
 	public  $custom_html		= false;
-    public  $include_footer		= true;
 	public  $DataBase 			= null;
 	public  $configuration		= array ();
 	public  $user;

@@ -646,6 +646,7 @@ class admin extends \core\classes\admin {
 		$basis->module			= 'inventory';
 		$basis->page			= 'main';
 		$basis->template 		= 'template_detail';
+		$basis->observer->send_footer($basis);
 	}
 
 	/**
@@ -654,7 +655,6 @@ class admin extends \core\classes\admin {
 	 */
   	function LoadInventoryPopUp (\core\classes\basis $basis){
   		$this->LoadInventoryPage ($basis);
-		$basis->include_footer	= false;
   	}
 
   	function LoadNewInventoryItem (\core\classes\basis $basis){
@@ -664,6 +664,7 @@ class admin extends \core\classes\admin {
   		$basis->module			= 'inventory';
   		$basis->page			= 'main';
   		$basis->template 		= 'template_id';
+  		$basis->observer->send_footer($basis);
   	}
 
   	function LoadInventoryManager (\core\classes\basis $basis){
@@ -738,6 +739,7 @@ class admin extends \core\classes\admin {
   		$basis->module			= 'inventory';
   		$basis->page			= 'main';
   		$basis->template 		= 'template_main';
+  		$basis->observer->send_footer($basis);
   	}
 
   	function LoadInventoryFilter(){
@@ -937,6 +939,7 @@ class admin extends \core\classes\admin {
   		$basis->module			= 'inventory';
   		$basis->page			= 'adjustments';
   		$basis->template 		= 'template_main';
+  		$basis->observer->send_footer($basis);
   	}
 
   	function SaveInventoryAssemblies (\core\classes\basis $basis){
@@ -1029,6 +1032,7 @@ class admin extends \core\classes\admin {
   		$basis->module			= 'inventory';
   		$basis->page			= 'assemblies';
   		$basis->template 		= 'template_main';
+  		$basis->observer->send_footer($basis);
   	}
 }
 ?>

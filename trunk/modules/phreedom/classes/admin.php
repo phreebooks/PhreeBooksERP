@@ -318,7 +318,7 @@ class admin extends \core\classes\admin {
 		  	if (!$basis->DataBase->field_exists(TABLE_AUDIT_LOG, 'stats'))        $basis->DataBase->exec("ALTER TABLE ".TABLE_AUDIT_LOG." ADD `stats` VARCHAR(32) NOT NULL AFTER `ip_address`");
 	  	}
 	  	if (!$basis->DataBase->field_exists(TABLE_EXTRA_FIELDS, 'required'))  $basis->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD required enum('0','1') NOT NULL DEFAULT '0'");
-	  	if (version_compare($this->status, '4.0', '<') ) { //updating dashboards to store the namespaces.
+	  	if (version_compare($this->status, '4.0.1', '<') ) { //updating dashboards to store the namespaces.
 	  		$basis->DataBase->exec ("ALTER TABLE ".TABLE_USERS_PROFILES." CHANGE dashboard_id dashboard_id VARCHAR( 255 ) NOT NULL DEFAULT ''");
 	  		$sql = $basis->DataBase->prepare("SELECT * FROM ".TABLE_USERS_PROFILES." WHERE module_id <> '' ");
 			$sql->execute();
@@ -402,14 +402,51 @@ class admin extends \core\classes\admin {
 		$basis->observer->send_menu($basis);
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$basis->cInfo->menu_id  =  isset($basis->cInfo->mID) ? $basis->cInfo->mID : 'index'; // default to index unless heading is passed
+		$current_column = 1;
+		require (DIR_FS_ADMIN . "modules/phreedom/pages/main/js_include.php");
+		// include hidden fields
+		echo html_hidden_field('action', '') . chr(10);
+		echo html_hidden_field('dashboard_id', '') . chr(10);
+		?>
+		<script type='text/javascript'>	document.title = '<?php echo COMPANY_NAME.' - '.TEXT_PHREEBOOKS_ERP; ?>';</script>
+		<div><a href="<?php echo html_href_link(FILENAME_DEFAULT, 'amp;mID=' . $basis->cInfo->menu_id, 'SSL'); ?>"><?php echo TEXT_ADD_DASHBOARD_ITEMS_TO_THIS_PAGE; ?></a></div>
+		<table style="width:100%;margin-left:auto;margin-right:auto;">
+		  <tr>
+		  </tr>
+		  <tr>
+		    <td width="33%" valign="top">
+		      <div id="col_<?php echo $current_column; ?>" style="position:relative;">
+		<?php
 		$sql = $basis->DataBase->prepare("SELECT dashboard_id, id, user_id, menu_id, column_id, row_id, params FROM ".TABLE_USERS_PROFILES." WHERE user_id = '{$_SESSION['admin_id']}' and menu_id = '{$basis->cInfo->menu_id}' ORDER BY column_id, row_id");
 		$sql->execute();
-		while ($result = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)) {
-			$basis->cInfo->cp_boxes[] = $result;
+		while ($box = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)) {print_r($box);
+			if($box->column_id <> $current_column) {
+				$box->row_started = true;
+				while ($box->column_id <> $current_column) {
+					$current_column++;
+					echo '      </div>' . chr(10);
+					echo '    </td>' . chr(10);
+					echo '    <td width="33%" valign="top">' . chr(10);
+					echo "      <div id='col_{$current_column}' style='position:relative;'>" . chr(10);
+				}
+			}
+		 	echo $box->output();
 		}
-		$basis->page_title 	= COMPANY_NAME.' - '.TEXT_PHREEBOOKS_ERP;
-		require (DIR_FS_ADMIN . "modules/phreedom/pages/main/js_include.php");
-		require (DIR_FS_ADMIN . "modules/phreedom/pages/main/template_main.php");
+		
+		while (MAX_CP_COLUMNS <> $current_column) { // fill remaining columns with blank space
+		  	$current_column++;
+		  	echo '      </div>' . chr(10);
+		  	echo '    </td>' . chr(10);
+		  	echo '    <td width="33%" valign="top">' . chr(10);
+		  	echo "      <div id='col_{$current_column}' style='position:relative;'>" . chr(10);
+		}
+		?>
+		      </div>
+		    </td>
+		  </tr>
+		</table><?php
+		
+		$basis->observer->send_footer($basis);
 	}
 
 	/**
@@ -429,7 +466,6 @@ class admin extends \core\classes\admin {
 	 */
 	function LoadLogIn (\core\classes\basis &$basis){
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		$basis->include_footer  = false;
 		$basis->page_title		= TEXT_PHREEBOOKS_ERP;
 		$basis->module			= 'phreedom';
 		$basis->page			= 'main';
@@ -443,7 +479,6 @@ class admin extends \core\classes\admin {
 
 	function LoadLostPassword (\core\classes\basis $basis){
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		$basis->include_footer  = false;
 		$basis->page_title		= TEXT_PHREEBOOKS_ERP;
 		$basis->module			= 'phreedom';
 		$basis->page			= 'main';
@@ -455,7 +490,7 @@ class admin extends \core\classes\admin {
 		$basis->observer->send_menu($basis);
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$messageStack->write_debug();
-		$basis->include_footer  = false;
+		$basis->observer->send_footer($basis);
 		$basis->module			= 'phreedom';
 		$basis->page			= 'main';
 		$basis->template 		= 'template_crash';
@@ -506,6 +541,7 @@ class admin extends \core\classes\admin {
 		$query_result = $basis->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 		$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 		history_save('users');
+		$basis->observer->send_footer($basis);
 	}
 
 	function SendLostPassWord (\core\classes\basis $basis){
