@@ -18,7 +18,6 @@
 //
 namespace core\classes;
 class messageStack {
-    public $debug_info 	= NULL;
 
     function __construct(){
     	error_log("/***** restarting messageStack *****/". PHP_EOL, 3, DIR_FS_MY_FILES."development.log");
@@ -61,16 +60,16 @@ class messageStack {
 
     Static function debug_log ($txt){
     	global $admin;
-    	error_log("date: " . date('Y-m-d H:i:s') . " company:" .\core\classes\user::get_company(). " user: ".\core\classes\user::get('display_name'). ' ' . substr($txt, 1) . PHP_EOL, 3, DIR_FS_MY_FILES."development.log");
+    	error_log("date: " . date('Y-m-d H:i:s') . " company:" .\core\classes\user::get_company(). " user: ".\core\classes\user::get('display_name'). ' ' . $txt . PHP_EOL, 3, DIR_FS_MY_FILES."development.log");
     	if (substr($txt, 0, 1) == "\n") {
     		error_log("\nTime: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, " . $admin->DataBase->count_queries . " SQLs " . (int)($admin->DataBase->total_query_time * 1000)." ms => ".substr($txt, 1). PHP_EOL, 3, DIR_FS_MY_FILES."debug.log");
     	}else {
     		error_log($txt. PHP_EOL, 3, DIR_FS_MY_FILES."debug.log");
-	    	$this->debug_info .= $txt;
 	  	}
     }
 
 	function write_debug() {
+		if (!DEBUG) return;//@todo needs to be checked
 		$filename = DIR_FS_MY_FILES."debug.log";
         if (!$handle = @fopen($filename, 'rb'))             throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
         // send the right headers
@@ -81,7 +80,7 @@ class messageStack {
         header("Content-Disposition: attachment; filename='" . basename($filename) . "'");
         header("Content-Length: " . filesize($filename));
         readfile($filename);
-        $this->add("Successfully created $filename file.","success");
+        self::add("Successfully created $filename file.","success");
 	}
 
 	function __destruct(){

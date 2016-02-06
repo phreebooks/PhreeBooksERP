@@ -111,6 +111,7 @@ class payment {
   	 */
 
 	function delete(){
+		global $admin;
 		foreach ($this->keys as $key) $admin->DataBase->remove_configure($key['key']); // remove all of the keys from the configuration table
 		$admin->DataBase->remove_configure('MODULE_PAYMENT_' . strtoupper($this->id) . '_STATUS');
 		return true;

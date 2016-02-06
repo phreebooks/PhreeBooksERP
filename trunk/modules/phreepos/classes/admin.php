@@ -116,9 +116,9 @@ class admin extends \core\classes\admin {
 			  	);
 			  	db_perform(TABLE_PHREEPOS_TILLS, $sql_data_array);
 			  }
-			  if(defined('PHREEPOS_RECEIPT_PRINTER_NAME')) 			$admin->DataBase->remove_configure('PHREEPOS_RECEIPT_PRINTER_NAME');
-			  if(defined('PHREEPOS_RECEIPT_PRINTER_STARTING_LINE')) $admin->DataBase->remove_configure('PHREEPOS_RECEIPT_PRINTER_STARTING_LINE');
-			  if(defined('PHREEPOS_RECEIPT_PRINTER_CLOSING_LINE'))  $admin->DataBase->remove_configure('PHREEPOS_RECEIPT_PRINTER_CLOSING_LINE');
+			  if(defined('PHREEPOS_RECEIPT_PRINTER_NAME')) 			$basis->DataBase->remove_configure('PHREEPOS_RECEIPT_PRINTER_NAME');
+			  if(defined('PHREEPOS_RECEIPT_PRINTER_STARTING_LINE')) $basis->DataBase->remove_configure('PHREEPOS_RECEIPT_PRINTER_STARTING_LINE');
+			  if(defined('PHREEPOS_RECEIPT_PRINTER_CLOSING_LINE'))  $basis->DataBase->remove_configure('PHREEPOS_RECEIPT_PRINTER_CLOSING_LINE');
 		}
 		if (!$basis->DataBase->field_exists(TABLE_PHREEPOS_TILLS, 'tax_id')) $basis->DataBase->query("ALTER TABLE " . TABLE_PHREEPOS_TILLS . " ADD tax_id INT(11) default '-1' AFTER max_discount");
   	}

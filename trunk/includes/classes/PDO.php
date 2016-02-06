@@ -93,8 +93,10 @@ class PDO extends \PDO {
 	
 	function write_configure($constant, $value = '') {
 		if (!$constant) throw new \core\classes\userException("contant isn't defined for value: $value");
-		$result = $this->query("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = '$constant'");
-		if ($result->fetch(\PDO::FETCH_NUM) == 0) {
+		$sql = $this->query("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = '$constant'");
+		$rowcnt = $sql->fetch(\PDO::FETCH_NUM);
+		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		if ($rowcnt == 0) {
 			$sql_array = array('configuration_key'  => $constant, 'configuration_value'=> $value);
 			$sql = $this->prepare("INSERT INTO " . TABLE_CONFIGURATION . " (configuration_key, configuration_value) VALUES (:configuration_key, :configuration_value)");
 			$sql->execute(array(':configuration_key'=>$constant, ':configuration_value'=>$value));
@@ -124,7 +126,7 @@ class PDO extends \PDO {
 		if (!$constant) throw new \core\classes\userException("There is no constant to remove");
 		$this->exec("delete from " . TABLE_CONFIGURATION . " where configuration_key = '$constant'");
 		if (function_exists('apc_load_constants')) {// rebuild cache
-			$result = $this->prepare("select configuration_key, configuration_value from " . TABLE_CONFIGURATION );
+			$sql = $this->prepare("select configuration_key, configuration_value from " . TABLE_CONFIGURATION );
 			$array = array ();
 			$sql->execute();
 			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){

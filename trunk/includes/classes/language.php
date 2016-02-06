@@ -75,10 +75,12 @@ class language {
 		if (!file_exists($lang_path)) throw new \core\classes\userException("can't find your language file {$lang_path} ");
 		$xml = new \DomDocument();
 		$xml->load($lang_path);
-		$phrases = $xml->getElementsByTagName($this->language_code);
+		//$phrases = $xml->getElementsByTagName($this->language_code);
+		$phrases = $xml->getElementsByTagName('translation');
 		foreach ($phrases as $phrase) {
-			$translation = $phrase->parentNode;
-			$this->phrases[$translation->getAttribute('id')] = $phrase->nodeValue;
+			foreach ($phrase->childNodes as $language) {
+				if ($language->tagName == $this->language_code) $this->phrases[$phrase->getAttribute('id')] = $language->nodeValue;
+			}
 		}
 		if (sizeof($this->phrases) == 0) throw new \core\classes\userException("there are no translations for your language {$this->language_code} ");
 		//fetch custom language phrases
@@ -87,11 +89,12 @@ class language {
 			$xml = new \DomDocument();
 			$xml->load($custom_path);
 			//phrases
-			$phrases = $xml->getElementsByTagName($this->language_code);
+			$phrases = $xml->getElementsByTagName('translation');
 			if ($phrases->length != 0) {
 				foreach ($phrases as $phrase) {
-					$translation = $phrase->parentNode;
-					$this->phrases[$translation->getAttribute('id')] = $phrase->nodeValue;
+					foreach ($phrase->childNodes as $language) {
+						if ($language->tagName == $this->language_code) $this->phrases[$phrase->getAttribute('id')] = $language->nodeValue;
+					}
 				}
 			}
 		}

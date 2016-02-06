@@ -27,13 +27,6 @@
 // 3.7 => 2014-07-21 - bug fixes
 // 3.7.1 => 2014-08-14 - added php_info to the admin panel
 // Module software version information
-// Menu Sort Positions
-define('MENU_HEADING_INVENTORY_ORDER',  30);
-define('MENU_HEADING_BANKING_ORDER',    40);
-define('MENU_HEADING_GL_ORDER',         50);
-define('MENU_HEADING_TOOLS_ORDER',      70);
-define('MENU_HEADING_QUALITY_ORDER', 	75);
-define('MENU_HEADING_COMPANY_ORDER', 	90);
 // Menu Security id's (refer to master doc to avoid security setting overlap)
 define('SECURITY_ID_USERS',            1);
 define('SECURITY_ID_IMPORT_EXPORT',    2);
@@ -85,7 +78,7 @@ $mainmenu["gl"] = array(
   'order'			=> MENU_HEADING_GL_ORDER,
   'text' 			=> TEXT_GENERAL_LEDGER,
   'security_id' 	=> '',
-  'link' 			=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_gl', 'SSL'),
+  'link' 			=> html_href_link(FILENAME_DEFAULT, 'action=LoadMainPage&amp;mID=cat_gl', 'SSL'),
   'params'      	=> '',
 );
 $mainmenu["tools"] = array(

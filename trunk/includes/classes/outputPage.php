@@ -84,12 +84,12 @@ class outputPage  {
     	***********************************************/
     	</script>
     	<script type="text/javascript">
-//   		ddsmoothmenu.init({
-//  		mainmenuid: "smoothmenu",
-//    		orientation: '<?php echo MY_MENU=='left'?'v':'h';?>',
-//    		classname: '<?php echo MY_MENU=='left'?'ddsmoothmenu-v':'ddsmoothmenu';?>',
-//    		contentsource: "markup"
-//    	})
+   		ddsmoothmenu.init({
+  		mainmenuid: "smoothmenu",
+    		orientation: '<?php echo MY_MENU=='left'?'v':'h';?>',
+    		classname: '<?php echo MY_MENU=='left'?'ddsmoothmenu-v':'ddsmoothmenu';?>',
+    		contentsource: "markup"
+    	})
     	</script> 
     	<?php 
     	ob_flush();

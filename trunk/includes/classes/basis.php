@@ -46,6 +46,60 @@ class basis {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->setObserver();
 		$this->user = new \core\classes\user($this);
+		$this->mainmenu["home"] = array(
+				'order' => -1,
+				'text'  => TEXT_HOME,
+				'link'  => html_href_link(FILENAME_DEFAULT),
+				'icon'  => html_icon('actions/go-home.png', TEXT_HOME, 'small'),
+		);
+		$this->mainmenu["inventory"] = array(
+				'order' 		=> 30,
+				'text' 			=> TEXT_INVENTORY,
+				'security_id'	=> '',
+				'link' 			=> html_href_link(FILENAME_DEFAULT, 'action=LoadMainPage&amp;mID=cat_inv', 'SSL'),
+				'params'      	=> '',
+		);
+		$this->mainmenu["banking"] = array(
+				'order'			=> 40,
+				'text' 			=> TEXT_BANKING,
+				'security_id' 	=> '',
+				'link' 			=> html_href_link(FILENAME_DEFAULT, 'action=LoadMainPage&amp;mID=cat_bnk', 'SSL'),
+				'params'      	=> '',
+		);
+		$this->mainmenu["gl"] = array(
+				'order'			=> 50,
+				'text' 			=> TEXT_GENERAL_LEDGER,
+				'security_id' 	=> '',
+				'link' 			=> html_href_link(FILENAME_DEFAULT, 'action=LoadMainPage&amp;mID=cat_gl', 'SSL'),
+				'params'      	=> '',
+		);
+		$this->mainmenu["tools"] = array(
+				'order'			=> 70,
+				'text' 			=> TEXT_TOOLS,
+				'security_id' 	=> '',
+				'link' 			=> html_href_link(FILENAME_DEFAULT, 'action=LoadMainPage&amp;mID=cat_tools', 'SSL'),
+				'params'      	=> '',
+		);
+		if (defined('MODULE_CP_ACTION_STATUS') || defined('MODULE_DOC_CTL_STATUS')) $this->mainmenu["quality"] = array(
+				'order' 		=> 75,
+				'text'  		=> TEXT_QUALITY,
+				'security_id' 	=> '',
+				'link' 			=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_qa', 'SSL'),
+				'params'      	=> '',
+		);
+		$this->mainmenu["company"] = array(
+				'order' 		=> 90,
+				'text' 			=> TEXT_COMPANY,
+				'security_id' 	=> '',
+				'link' 			=> html_href_link(FILENAME_DEFAULT, 'action=LoadMainPage&amp;mID=cat_company', 'SSL'),
+				'params'      	=> '',
+		);
+		$this->mainmenu["logout"] = array(
+				'order' 		=> 999,
+				'text'  		=> TEXT_LOG_OUT,
+				'link'  		=> html_href_link(FILENAME_DEFAULT, 'action=logout', 'SSL'),
+				'icon'  		=> html_icon('actions/system-log-out.png', TEXT_LOG_OUT, 'small'),
+		);
 		$this->toolbar = new \core\classes\toolbar ();
 		$this->currencies = new \core\classes\currencies ();
 		$this->setCinfo();
@@ -60,60 +114,6 @@ class basis {
 				}
 			}
 		}
-		$this->mainmenu["home"] = array(
-				'order' => 0,
-				'text'  => TEXT_HOME,
-				'link'  => html_href_link(FILENAME_DEFAULT),
-				'icon'  => html_icon('actions/go-home.png', TEXT_HOME, 'small'),
-		);
-		$this->mainmenu["inventory"] = array(
-				'order' 		=> MENU_HEADING_INVENTORY_ORDER,
-				'text' 			=> TEXT_INVENTORY,
-				'security_id'	=> '',
-				'link' 			=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_inv', 'SSL'),
-				'params'      	=> '',
-		);
-		$this->mainmenu["banking"] = array(
-				'order'			=> MENU_HEADING_BANKING_ORDER,
-				'text' 			=> TEXT_BANKING,
-				'security_id' 	=> '',
-				'link' 			=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_bnk', 'SSL'),
-				'params'      	=> '',
-		);
-		$this->mainmenu["gl"] = array(
-				'order'			=> MENU_HEADING_GL_ORDER,
-				'text' 			=> TEXT_GENERAL_LEDGER,
-				'security_id' 	=> '',
-				'link' 			=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_gl', 'SSL'),
-				'params'      	=> '',
-		);
-		$this->mainmenu["tools"] = array(
-				'order'			=> MENU_HEADING_TOOLS_ORDER,
-				'text' 			=> TEXT_TOOLS,
-				'security_id' 	=> '',
-				'link' 			=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_tools', 'SSL'),
-				'params'      	=> '',
-		);
-		$this->mainmenu["company"] = array(
-				'order' 		=> MENU_HEADING_COMPANY_ORDER,
-				'text' 			=> TEXT_COMPANY,
-				'security_id' 	=> '',
-				'link' 			=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_company', 'SSL'),
-				'params'      	=> '',
-		);
-		if (defined('MODULE_CP_ACTION_STATUS') || defined('MODULE_DOC_CTL_STATUS')) $this->mainmenu["quality"] = array(
-				'order' 		=> MENU_HEADING_QUALITY_ORDER,
-				'text'  		=> TEXT_QUALITY,
-				'security_id' 	=> '',
-				'link' 			=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_qa', 'SSL'),
-				'params'      	=> '',
-		);
-		$this->mainmenu["logout"] = array(
-				'order' 		=> 999,
-				'text'  		=> TEXT_LOG_OUT,
-				'link'  		=> html_href_link(FILENAME_DEFAULT, 'action=logout', 'SSL'),
-				'icon'  		=> html_icon('actions/system-log-out.png', TEXT_LOG_OUT, 'small'),
-		);
 		$this->set_database();
 		$this->checkIfModulesInstalled();
 	}
@@ -218,8 +218,9 @@ class basis {
 	 */
 	public function attachAdminClasses($moduleName, \core\classes\admin $admin_class) {
 		\core\classes\messageStack::debug_log("attaching admin class ".get_class($admin_class));
-		if (array_search ( $admin_class, $this->classes ) === false) {
+		if (array_key_exists($moduleName, $this->classes ) == false) {
 			$this->classes [$moduleName] = $admin_class;
+				\core\classes\messageStack::debug_log("attaching menu for class ".get_class($admin_class));
 				$this->mainmenu = array_merge_recursive($this->mainmenu, $admin_class->mainmenu);
 		}
 		uasort ( $this->classes, array ( $this, 'arangeObjectBySortOrder') );

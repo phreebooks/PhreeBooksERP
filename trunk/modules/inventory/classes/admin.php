@@ -203,27 +203,27 @@ class admin extends \core\classes\admin {
 
 		$this->mainmenu["inventory"]["submenu"]["new_inventory"] = array(
 				'order' 		=> 1,
-				'text' 		=> sprintf(TEXT_NEW_ARGS, TEXT_INVENTORY_ITEM),
-				'security_id' => SECURITY_ID_MAINTAIN_INVENTORY,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'action=LoadNewInventoryItem', 'SSL'),
+				'text' 			=> sprintf(TEXT_NEW_ARGS, TEXT_INVENTORY_ITEM),
+				'security_id' 	=> SECURITY_ID_MAINTAIN_INVENTORY,
+				'link'        	=> html_href_link(FILENAME_DEFAULT, 'action=LoadNewInventoryItem', 'SSL'),
 				'show_in_users_settings' => false,
-				'params'      => '',
+				'params'      	=> '',
 		);
 		$this->mainmenu["inventory"]["submenu"]["inventory_mgr"] = array(
 				'order' 		=> 5,
-				'text' 		=> sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY),
-				'security_id' => SECURITY_ID_MAINTAIN_INVENTORY,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=main&amp;list=1', 'SSL'),
+				'text' 			=> sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY),
+				'security_id' 	=> SECURITY_ID_MAINTAIN_INVENTORY,
+				'link'        	=> html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=main&amp;list=1', 'SSL'),
 				'show_in_users_settings' => true,
-				'params'      => '',
+				'params'      	=> '',
 		);
 		$this->mainmenu["inventory"]["submenu"]["adjustment"] = array(
-				'text'        => TEXT_ADJUSTMENTS,
-				'order'        => 15,
-				'security_id' => SECURITY_ID_ADJUST_INVENTORY,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=adjustments', 'SSL'),
+				'text'        	=> TEXT_ADJUSTMENTS,
+				'order'        	=> 15,
+				'security_id' 	=> SECURITY_ID_ADJUST_INVENTORY,
+				'link'        	=> html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=adjustments', 'SSL'),
 				'show_in_users_settings' => true,
-				'params'      => '',
+				'params'      	=> '',
 		);
 		$this->mainmenu["inventory"]["submenu"]["assemble"] = array(
 				'text'        => TEXT_ASSEMBLIES,
@@ -244,7 +244,7 @@ class admin extends \core\classes\admin {
 			);
 		}
 		$this->mainmenu["customers"]["submenu"]["pricesheet"] = array(
-				'text'        => TEXT_CUSTOMER_PRICE_SHEETS,
+				'text'        => sprintf(TEXT_ARGS_PRICE_SHEETS, TEXT_CUSTOMER),
 				'order'       => 65,
 				'security_id' => SECURITY_ID_PRICE_SHEET_MANAGER,
 				'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=price_sheets&amp;type=c&amp;list=1', 'SSL'),
@@ -252,7 +252,7 @@ class admin extends \core\classes\admin {
 				'params'      => '',
 		);
 		$this->mainmenu["vendors"]["submenu"]["pricesheet"] = array(
-				'text'        => TEXT_VENDOR_PRICE_SHEETS,
+				'text'        => sprintf(TEXT_ARGS_PRICE_SHEETS, TEXT_VENDOR),
 				'order'       => 65,
 				'security_id' => SECURITY_ID_VEND_PRICE_SHEET_MGR,
 				'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=price_sheets&amp;type=v&amp;list=1', 'SSL'),

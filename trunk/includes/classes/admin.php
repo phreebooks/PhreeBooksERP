@@ -112,6 +112,7 @@ class admin {
 	}
 
 	function delete($path_my_files) {
+		global $admin;
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		if ($this->core) throw new \core\classes\userException("can not delete core module " .$this->text);
 		foreach ($this->methods as $method) {
