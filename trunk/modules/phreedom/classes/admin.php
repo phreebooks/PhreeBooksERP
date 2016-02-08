@@ -432,7 +432,6 @@ class admin extends \core\classes\admin {
 			}
 		 	echo $box->output();
 		}
-		
 		while (MAX_CP_COLUMNS <> $current_column) { // fill remaining columns with blank space
 		  	$current_column++;
 		  	echo '      </div>' . chr(10);
@@ -445,7 +444,6 @@ class admin extends \core\classes\admin {
 		    </td>
 		  </tr>
 		</table><?php
-		
 		$basis->observer->send_footer($basis);
 	}
 

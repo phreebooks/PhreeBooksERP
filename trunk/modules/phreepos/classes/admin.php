@@ -77,6 +77,72 @@ class admin extends \core\classes\admin {
 	  			PRIMARY KEY (ot_id)
 	  		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
 		);
+		if (defined('MODULE_PHREEPOS_STATUS')) {
+			/*
+			 // Set the title menu
+			 $pb_headings[MENU_HEADING_PHREEPOS_ORDER] = array(
+			 'text' => TEXT_POINT_OF_SALE,
+			 'link' => html_href_link(FILENAME_DEFAULT, 'module=phreepos&amp;page=main&amp;mID=cat_pos', 'SSL'),
+			 );
+			 */
+			// Set the menus
+			$this->mainmenu["customers"]['submenu']["phreepos"] = array(
+					'order' 	  => 51,
+					'text'        => TEXT_POINT_OF_SALE,
+					'security_id' => SECURITY_ID_PHREEPOS,
+					'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreepos&amp;page=main', 'SSL'),
+					'show_in_users_settings' => true,
+					'params'      => '',
+			);
+			$this->mainmenu["banking"]['submenu']['phreepos'] = array(
+					'order' 	  => 50,
+					'text'        => TEXT_POINT_OF_SALE,
+					'show_in_users_settings' => false,
+					'params'      => '',
+			);
+			$this->mainmenu["banking"]['submenu']['phreepos']['submenu']["phreepos_mgr"] = array(
+					'order' 	  => 53,
+					'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_POS_POP),
+					'security_id' => SECURITY_ID_POS_MGR,
+					'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreepos&amp;page=pos_mgr&amp;list=1', 'SSL'),
+					'show_in_users_settings' => true,
+					'params'      => '',
+			);
+			$this->mainmenu["banking"]['submenu']['phreepos']['submenu']["phreepos_closing"] = array(
+					'order' 	  => 54,
+					'text'        => TEXT_CLOSING_POS_OR_POP,
+					'security_id' => SECURITY_ID_POS_CLOSING,
+					'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreepos&amp;page=closing', 'SSL'),
+					'show_in_users_settings' => true,
+					'params'      => '',
+			);
+			$this->mainmenu["banking"]['submenu']["receipts"]['submenu']['customer_deposit'] = array(
+					'text'        => TEXT_CUSTOMER_DEPOSITS,
+					'order'       => 60,
+					'security_id' => SECURITY_ID_CUSTOMER_DEPOSITS,
+					'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreepos&amp;page=deposit&amp;type=c', 'SSL'),
+					'show_in_users_settings' => true,
+					'params'      => '',
+			);
+			$this->mainmenu["banking"]['submenu']["vendor_payments"]['submenu']['vendor_deposit'] = array(
+					'text'        => TEXT_VENDOR_DEPOSITS,
+					'order'       => 60,
+					'security_id' => SECURITY_ID_VENDOR_DEPOSITS,
+					'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreepos&amp;page=deposit&amp;type=v', 'SSL'),
+					'show_in_users_settings' => true,
+					'params'      => '',
+			);
+			if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0) {
+				$this->mainmenu["company"]['submenu']["configuration"]['submenu']["phreepos"] = array(
+						'order'	      => sprintf(TEXT_MODULE_ARGS, TEXT_PHREEPOS),
+						'text'        => sprintf(TEXT_MODULE_ARGS, TEXT_PHREEPOS),
+						'security_id' => SECURITY_ID_CONFIGURATION,
+						'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreepos&amp;page=admin', 'SSL'),
+						'show_in_users_settings' => false,
+						'params'      => '',
+				);
+			}
+		}
 	    parent::__construct();
 	}
 

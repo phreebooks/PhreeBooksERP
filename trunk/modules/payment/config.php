@@ -33,17 +33,4 @@ define('SECURITY_ID_PAYMENT',       81);
 // Set the title menu
 // Set the menus
 
-if(defined('MODULE_PAYMENT_STATUS')){
-	if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
-	  $mainmenu["company"]['submenu']["configuration"]['submenu']["payment"] = array(
-		'order'	      => TEXT_PAYMENT_MODULE,
-		'text'        => TEXT_PAYMENT_MODULE,
-		'security_id' => SECURITY_ID_CONFIGURATION,
-		'link'        => html_href_link(FILENAME_DEFAULT, 'module=payment&amp;page=admin', 'SSL'),
-	    'show_in_users_settings' => false,
-		'params'      => '',
-	  );
-	}
-}
-
 ?>

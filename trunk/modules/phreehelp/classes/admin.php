@@ -17,7 +17,6 @@
 //  Path: /modules/phreehelp/classes/admin.php
 //
 namespace phreehelp\classes;
-require_once (DIR_FS_ADMIN . 'modules/phreehelp/config.php');
 class admin extends \core\classes\admin {
 	public $id 			= 'phreehelp';
 	public $description = MODULE_PHREEHELP_DESCRIPTION;
@@ -29,6 +28,14 @@ class admin extends \core\classes\admin {
 		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_PHREEHELP);
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom' => 4.0,
+		);
+		$this->mainmenu["company"]['submenu']["help"] = array(
+				'order' 		=> 1,
+				'text'        => TEXT_HELP,
+				'security_id' => SECURITY_ID_HELP,
+				'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreehelp&amp;page=main', 'SSL'),
+				'show_in_users_settings' => true,
+				'params'      => 'target="_blank"',
 		);
 		
 	    parent::__construct();

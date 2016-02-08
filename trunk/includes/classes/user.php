@@ -91,6 +91,7 @@ class user {
 	 */
 
 	final static function security_level($token){
+		if ($token == 0) return 1;
 		if (isset($_SESSION['admin_security'][$token])) return $_SESSION['admin_security'][$token];
 		return 0;
 	}

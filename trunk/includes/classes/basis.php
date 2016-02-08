@@ -45,60 +45,17 @@ class basis {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->setObserver();
 		$this->user = new \core\classes\user($this);
-		$this->mainmenu["home"] = array(
-				'order' => -1,
-				'text'  => TEXT_HOME,
-				'link'  => html_href_link(FILENAME_DEFAULT),
-				'icon'  => html_icon('actions/go-home.png', TEXT_HOME, 'small'),
-		);
-		$this->mainmenu["inventory"] = array(
-				'order' 		=> 30,
-				'text' 			=> TEXT_INVENTORY,
-				'security_id'	=> '',
-				'link' 			=> html_href_link(FILENAME_DEFAULT, 'action=LoadMainPage&amp;mID=cat_inv', 'SSL'),
-				'params'      	=> '',
-		);
-		$this->mainmenu["banking"] = array(
-				'order'			=> 40,
-				'text' 			=> TEXT_BANKING,
-				'security_id' 	=> '',
-				'link' 			=> html_href_link(FILENAME_DEFAULT, 'action=LoadMainPage&amp;mID=cat_bnk', 'SSL'),
-				'params'      	=> '',
-		);
-		$this->mainmenu["gl"] = array(
-				'order'			=> 50,
-				'text' 			=> TEXT_GENERAL_LEDGER,
-				'security_id' 	=> '',
-				'link' 			=> html_href_link(FILENAME_DEFAULT, 'action=LoadMainPage&amp;mID=cat_gl', 'SSL'),
-				'params'      	=> '',
-		);
-		$this->mainmenu["tools"] = array(
-				'order'			=> 70,
-				'text' 			=> TEXT_TOOLS,
-				'security_id' 	=> '',
-				'link' 			=> html_href_link(FILENAME_DEFAULT, 'action=LoadMainPage&amp;mID=cat_tools', 'SSL'),
-				'params'      	=> '',
-		);
-		if (defined('MODULE_CP_ACTION_STATUS') || defined('MODULE_DOC_CTL_STATUS')) $this->mainmenu["quality"] = array(
-				'order' 		=> 75,
-				'text'  		=> TEXT_QUALITY,
-				'security_id' 	=> '',
-				'link' 			=> html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;mID=cat_qa', 'SSL'),
-				'params'      	=> '',
-		);
-		$this->mainmenu["company"] = array(
-				'order' 		=> 90,
-				'text' 			=> TEXT_COMPANY,
-				'security_id' 	=> '',
-				'link' 			=> html_href_link(FILENAME_DEFAULT, 'action=LoadMainPage&amp;mID=cat_company', 'SSL'),
-				'params'      	=> '',
-		);
-		$this->mainmenu["logout"] = array(
-				'order' 		=> 999,
-				'text'  		=> TEXT_LOG_OUT,
-				'link'  		=> html_href_link(FILENAME_DEFAULT, 'action=logout', 'SSL'),
-				'icon'  		=> html_icon('actions/system-log-out.png', TEXT_LOG_OUT, 'small'),
-		);
+		$this->mainmenu["home"] 		= new \core\classes\menuItem (-1, 	TEXT_HOME);
+		$this->mainmenu["home"]->icon  	= html_icon('actions/go-home.png', TEXT_HOME, 'small');
+		$this->mainmenu["inventory"]  	= new \core\classes\menuItem (30, 	TEXT_INVENTORY,			'action=LoadMainPage&amp;mID=cat_inv');
+		$this->mainmenu["banking"] 		= new \core\classes\menuItem (40, 	TEXT_BANKING, 			'action=LoadMainPage&amp;mID=cat_bnk');
+		$this->mainmenu["gl"] 			= new \core\classes\menuItem (50, 	TEXT_GENERAL_LEDGER, 	'action=LoadMainPage&amp;mID=cat_gl');
+		$this->mainmenu["tools"] 		= new \core\classes\menuItem (70, 	TEXT_TOOLS, 			'action=LoadMainPage&amp;mID=cat_tools');
+		$this->mainmenu["quality"] 		= new \core\classes\menuItem (75, 	TEXT_QUALITY, 			'action=LoadMainPage&amp;mID=cat_qa');
+		$this->mainmenu["quality"]->required_module = array ('MODULE_CP_ACTION_STATUS' ,'MODULE_DOC_CTL_STATUS');
+		$this->mainmenu["company"] 		= new \core\classes\menuItem (90, 	TEXT_COMPANY, 			'action=LoadMainPage&amp;mID=cat_company');
+		$this->mainmenu["logout"]		= new \core\classes\menuItem (999, 	TEXT_LOG_OUT, 			'action=logout');
+		$this->mainmenu["logout"]->icon = html_icon('actions/system-log-out.png', TEXT_LOG_OUT, 'small');
 		$this->toolbar = new \core\classes\toolbar ();
 		$this->currencies = new \core\classes\currencies ();
 		$this->setCinfo();

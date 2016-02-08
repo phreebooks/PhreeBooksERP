@@ -29,10 +29,6 @@
 // 3.7.2 => 2014-07-21 - bug fixes
 // 3.7.3 => added contacts_level field
 // Module software version information
-// Menu Sort Positions
-define('MENU_HEADING_CUSTOMERS_ORDER',   10);
-define('MENU_HEADING_VENDORS_ORDER',     20);
-define('MENU_HEADING_EMPLOYEES_ORDER',   60);
 // Menu Security id's (refer to master doc to avoid security setting overlap)
 define('SECURITY_ID_MAINTAIN_BRANCH',    15);
 define('SECURITY_ID_MAINTAIN_CUSTOMERS', 26);

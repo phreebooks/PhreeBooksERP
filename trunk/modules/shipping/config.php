@@ -33,25 +33,5 @@ define('SECURITY_ID_SHIPPING_MANAGER', 13);
 define('TABLE_SHIPPING_LOG', DB_PREFIX . 'shipping_log');
 // Set the title menu
 // Set the menus
-if (defined('MODULE_SHIPPING_STATUS')) {
-  $mainmenu["tools"]['submenu']['shipping'] = array(
-    	'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_SHIPPING),
-    	'order'       => 5,
-    	'security_id' => SECURITY_ID_SHIPPING_MANAGER,
-    	'link'        => html_href_link(FILENAME_DEFAULT, 'module=shipping&amp;page=ship_mgr', 'SSL'),
-    	'show_in_users_settings' => true,
-  );
-  if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
-	  $mainmenu["company"]['submenu']["configuration"]['submenu']["shipping"] = array(
-		'order'	      => sprintf(TEXT_MODULE_ARGS, TEXT_SHIPPING),
-		'text'        => sprintf(TEXT_MODULE_ARGS, TEXT_SHIPPING),
-		'security_id' => SECURITY_ID_CONFIGURATION,
-		'link'        => html_href_link(FILENAME_DEFAULT, 'module=shipping&amp;page=admin', 'SSL'),
-	    'show_in_users_settings' => false,
-		'params'      => '',
-	  );
-  }
-
-}
 
 ?>

@@ -61,6 +61,83 @@ class admin extends \core\classes\admin {
 				PRIMARY KEY (id)
 			  ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
 	    );
+		if (defined('MODULE_PHREEFORM_STATUS')) {
+			// Set the title menu
+			// Set the menus
+			$this->mainmenu["tools"]['submenu']['reports'] = array(
+					'text'        => TEXT_REPORTS,
+					'order'       => 25,
+					'security_id' => SECURITY_ID_PHREEFORM,
+					'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreeform&amp;page=main', 'SSL'),
+					'params'      => '',
+			);
+			if (defined('MODULE_CONTACTS_STATUS')) { // add reports menus
+				$this->mainmenu["customers"]['submenu']['reports'] = array(
+						'text'        => TEXT_REPORTS,
+						'order'       => 99,
+						'security_id' => SECURITY_ID_PHREEFORM,
+			  			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreeform&amp;page=main&amp;tab=cust', 'SSL'),
+						'show_in_users_settings' => false,
+			  			'params'      => '',
+				);
+				$this->mainmenu["employees"]['submenu']['reports'] = array(
+						'text'        => TEXT_REPORTS,
+						'order'       => 99,
+						'security_id' => SECURITY_ID_PHREEFORM,
+			  			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreeform&amp;page=main&amp;tab=hr', 'SSL'),
+			  			'show_in_users_settings' => false,
+			  			'params'      => '',
+				);
+				$this->mainmenu["vendors"]['submenu']['reports'] = array(
+						'text'        => TEXT_REPORTS,
+						'order'       => 99,
+						'security_id' => SECURITY_ID_PHREEFORM,
+			  			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreeform&amp;page=main&amp;tab=vend', 'SSL'),
+			  			'show_in_users_settings' => false,
+			 		 	'params'      => '',
+				);
+			}
+			if (defined('MODULE_INVENTORY_STATUS')) {
+				$this->mainmenu["inventory"]['submenu']['reports'] = array(
+						'text'        => TEXT_REPORTS,
+						'order'       => 99,
+						'security_id' => SECURITY_ID_PHREEFORM,
+			  			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreeform&amp;page=main&amp;tab=inv', 'SSL'),
+						'show_in_users_settings' => false,
+			  			'params'      => '',
+				);
+			}
+			if (defined('MODULE_PHREEBOOKS_STATUS')) {
+				$this->mainmenu["banking"]['submenu']['reports'] = array(
+						'text'        => TEXT_REPORTS,
+						'order'       => 99,
+						'security_id' => SECURITY_ID_PHREEFORM,
+						'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreeform&amp;page=main&amp;tab=bnk', 'SSL'),
+						'show_in_users_settings' => false,
+			  			'params'      => '',
+				);
+				$this->mainmenu["gl"]['submenu']['reports'] = array(
+						'text'        => TEXT_REPORTS,
+						'order'       => 99,
+						'security_id' => SECURITY_ID_PHREEFORM,
+						'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreeform&amp;page=main&amp;tab=gl', 'SSL'),
+			  			'show_in_users_settings' => false,
+			  			'params'      => '',
+				);
+			}
+			if(defined('MODULE_CP_ACTION_STATUS') ||defined('MODULE_DOC_CTL_STATUS')){
+				$this->mainmenu["quality"]['submenu']["reports"] = array(
+						'order' 	  => 99,
+						'text'        => TEXT_REPORTS,
+						'security_id' => SECURITY_ID_PHREEFORM,
+						'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreeform&amp;page=main', 'SSL'),
+						'show_in_users_settings' => false,
+						'params'      => '',
+				);
+			}
+		
+		}
+		
 	    parent::__construct();
 	}
 
