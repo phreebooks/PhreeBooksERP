@@ -29,7 +29,9 @@ class company_links extends \core\classes\ctl_panel {
   	function install($column_id = 1, $row_id = 0) {
   		global $admin;
 		// fetch the pages params to copy to new install
-		$result = $admin->DataBase->query("SELECT params FROM ".TABLE_USERS_PROFILES." WHERE menu_id = '{$this->menu_id}' and dashboard_id = '" . get_class($this) . "'"); // just need one
+		$sql = $admin->DataBase->prepare("SELECT params FROM ".TABLE_USERS_PROFILES." WHERE menu_id = '{$this->menu_id}' and dashboard_id = '" . get_class($this) . "'"); // just need one
+		$sql->execute();
+		$result = $sql->fetch(\PDO::FETCH_LAZY);
 		$this->default_params = unserialize($result['params']);
 		parent::install($column_id, $row_id);
   	}

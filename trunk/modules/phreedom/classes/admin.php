@@ -323,14 +323,17 @@ class admin extends \core\classes\admin {
 	  		$sql = $basis->DataBase->prepare("SELECT * FROM ".TABLE_USERS_PROFILES." WHERE module_id <> '' ");
 			$sql->execute();
 			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
-				if ( !in_array( $result['dashboard_id'] , $basis->classes[ $result['module_id'] ]->dashboards) ) {
-					$basis->DataBase->exec("DELETE from " . TABLE_USERS_PROFILES . " WHERE user_id = {$result['user_id']} and menu_id = '{$result['menu_id']}' and dashboard_id = '{$result['dashboard_id']}'");
-				} else {
+				\core\classes\messageStack::debug_log("started validating if dashboard {$result['dashboard_id']} if it exists in module {$result['module_id']}");
+				if ( array_key_exists( $result['dashboard_id'] , $basis->classes[ $result['module_id'] ]->dashboards) ) {
+					\core\classes\messageStack::debug_log("updating dashboard {$result['dashboard_id']} in module {$result['module_id']}");
 					$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->menu_id			= $result['menu_id'];
 					$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->user_id			= $result['user_id'];
 					$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->default_params	= unserialize( $result['params'] );
 					$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->install( $result['column_id'], $result['row_id'] );
-				}
+				} else {
+					\core\classes\messageStack::debug_log("removing dashboard {$result['dashboard_id']} because it doesn't exist in module {$result['module_id']}");
+					$basis->DataBase->exec("DELETE from " . TABLE_USERS_PROFILES . " WHERE user_id = {$result['user_id']} and menu_id = '{$result['menu_id']}' and dashboard_id = '{$result['dashboard_id']}'");
+				}  
 			}
 			$basis->DataBase->exec("DELETE from ".TABLE_USERS_PROFILES . " WHERE module_id != ''");
 			$basis->DataBase->exec("ALTER TABLE ".TABLE_USERS_PROFILES . " DROP module_id");
@@ -419,7 +422,7 @@ class admin extends \core\classes\admin {
 		<?php
 		$sql = $basis->DataBase->prepare("SELECT dashboard_id, id, user_id, menu_id, column_id, row_id, params FROM ".TABLE_USERS_PROFILES." WHERE user_id = '{$_SESSION['admin_id']}' and menu_id = '{$basis->cInfo->menu_id}' ORDER BY column_id, row_id");
 		$sql->execute();
-		while ($box = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)) {print_r($box);
+		while ($box = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)) {
 			if($box->column_id <> $current_column) {
 				$box->row_started = true;
 				while ($box->column_id <> $current_column) {

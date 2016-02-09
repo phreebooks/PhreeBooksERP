@@ -33,13 +33,13 @@ class ctl_panel {
 	public $row_started			= false;
 
   	function __construct () {
-  		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($this));
   		$this->security_level = \core\classes\user::security_level($this->security_id); // security check
   		if (!is_array($this->params)) $this->params = unserialize($this->params);
   	}
 
   	function pre_install ($odd, $my_profile){
-  		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($this));
   		$this->valid_user = in_array($this->id, $my_profile);
 		$output  = '<tr class="'.($odd?'odd':'even').'"><td align="center">';
 		$checked = (in_array($this->id, $my_profile)) ? ' selected' : '';
@@ -50,12 +50,12 @@ class ctl_panel {
 
   	function install ($column_id = 1, $row_id = 0) {
 		global $admin;
-		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
+		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($this));
 		if (!$row_id) $row_id 		= $this->get_next_row();
 		//$this->params['num_rows']   = $this->default_num_rows;	// defaults to unlimited rows
 		$admin->DataBase->exec("INSERT INTO " . TABLE_USERS_PROFILES . " SET
 		  user_id = {$this->user_id}, menu_id = '{$this->menu_id}',
-		  dashboard_id = '" . get_class($this) . "', column_id = $column_id, row_id = $row_id,
+		  dashboard_id = '" . addcslashes(get_class($this), '\\') . "', column_id = $column_id, row_id = $row_id,
 		  params = '"       . serialize($this->default_params) . "'");
   	}
 
@@ -64,7 +64,7 @@ class ctl_panel {
   	 */
   	function remove () {
 		global $admin;
-		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
+		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ".get_class($this));
 		$admin->DataBase->exec("DELETE FROM " . TABLE_USERS_PROFILES . " WHERE id = '{$this->id}'");
   	}
 
@@ -74,7 +74,7 @@ class ctl_panel {
 
   	function delete (){
 		global $admin;
-		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
+		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($this));
 		$result = $admin->DataBase->exec("DELETE FROM " . TABLE_USERS_PROFILES . " WHERE dashboard_id = '" . addcslashes(get_class($this), '\\') );
 		foreach ($this->keys as $key) $admin->DataBase->remove_configure($key['key']); // remove all of the keys from the configuration table
 		return true;
@@ -82,14 +82,14 @@ class ctl_panel {
 
   	function update () {
   		global $admin;
-  		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($this));
   		$admin->DataBase->exec("UPDATE " . TABLE_USERS_PROFILES . " SET params = '" . serialize($this->params) . "'
 	  		WHERE user_id = {$this->user_id} and menu_id = '{$this->menu_id}'
 	    	and dashboard_id = '" . addcslashes(get_class($this), '\\') . "'");
   	}
 
   	function build_div ($contents, $controls) {
-  		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($this));
 	  	$output = '';
 		$output .= "<!--// start: {$this->id} //-->" . chr(10);
 		$output .= '<div id="'.$this->id.'" style="position:relative;" class="easyui-panel" title="'.$this->text.'" data-options="collapsible:true,tools:\'#'.$this->id.'_tt\'">' . chr(10);
@@ -130,7 +130,7 @@ class ctl_panel {
 
 	function get_next_row ($column_id = 1) {
 		global $admin;
-		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
+		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($this));
 		$sql = $admin->DataBase->prepare("SELECT max(row_id) AS max_row FROM " . TABLE_USERS_PROFILES . " WHERE user_id = {$this->user_id} and menu_id = '{$this->menu_id}' and column_id = {$column_id}");
 		$sql->execute();
 		$result = $sql->fetch(\PDO::FETCH_LAZY);
@@ -138,7 +138,7 @@ class ctl_panel {
 	}
 
 	function upgrade ($params){
-		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
+		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($this));
 		foreach ($this->default_params as $key => $value){
 			if(in_array($key, $params, false)){
 				$this->params[$key] =  $params[$key];
@@ -155,7 +155,7 @@ class ctl_panel {
 	 */
 	function move_left () {
 		global $admin;
-		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
+		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($this));
 		$new_column = $this->column_id - 1;
 		if ($new_column >= 1) {
 			$sql = $admin->DataBase->prepare("SELECT MAX(row_id) as max_row FROM " . TABLE_USERS_PROFILES . " WHERE user_id = {$this->user_id} and menu_id = '{$this->menu_id}' and column_id = '{$new_column}'");
@@ -172,7 +172,7 @@ class ctl_panel {
 	 */
 	function move_right () {
 		global $admin;
-		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
+		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($this));
 		$new_column = $this->column_id + 1;
 		if ($new_column <= MAX_CP_COLUMNS) {
 			$sql = $admin->DataBase->prepare("SELECT MAX(row_id) as max_row FROM " . TABLE_USERS_PROFILES . " WHERE user_id = {$this->user_id} and menu_id = '{$this->menu_id}' and column_id = '{$new_column}'");
@@ -189,7 +189,7 @@ class ctl_panel {
 	 */
 	function move_up (){
 		global $admin;
-		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
+		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($this));
 		$new_row = $this->row_id - 1;
 		if ($new_row >= 1) {
 			$admin->DataBase->exec("UPDATE " . TABLE_USERS_PROFILES . " SET row_id=$this->row_id WHERE user_id={$this->user_id} and menu_id='{$this->menu_id}' and column_id={$this->column_id} and row_id='$new_row'");
@@ -202,7 +202,7 @@ class ctl_panel {
 	 */
 	function move_down (){
 		global $admin;
-		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($admin_class));
+		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($this));
 		$new_row = $this->row_id + 1;
 		$sql = $admin->DataBase->prepare("SELECT max(row_id) as max_row from " . TABLE_USERS_PROFILES . " WHERE user_id={$this->user_id} and menu_id='{$this->menu_id}' and column_id='{$this->column_id}'");
 		$sql->execute();

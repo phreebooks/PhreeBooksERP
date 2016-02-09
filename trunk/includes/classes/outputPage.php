@@ -53,6 +53,7 @@ class outputPage  {
     	echo "<script type='text/javascript' src='includes/common.js'></script>". chr(13);
     	echo "<script type='text/javascript' src='includes/jquery-2.2.0.min.js'></script>". chr(13);
     	echo "<script type='text/javascript' src='includes/jquery-migrate-1.2.1.min.js'></script>". chr(13); //@todo can be removed after development
+    	echo "<script type='text/javascript' src='includes/jquery.easyui.min.js'></script>". chr(13);
     	echo "</head><body>";
     	ob_flush();
     }
