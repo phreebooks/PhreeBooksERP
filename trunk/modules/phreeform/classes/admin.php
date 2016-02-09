@@ -64,80 +64,14 @@ class admin extends \core\classes\admin {
 		if (defined('MODULE_PHREEFORM_STATUS')) {
 			// Set the title menu
 			// Set the menus
-			$this->mainmenu["tools"]['submenu']['reports'] = array(
-					'text'        => TEXT_REPORTS,
-					'order'       => 25,
-					'security_id' => SECURITY_ID_PHREEFORM,
-					'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreeform&amp;page=main', 'SSL'),
-					'params'      => '',
-			);
-			if (defined('MODULE_CONTACTS_STATUS')) { // add reports menus
-				$this->mainmenu["customers"]['submenu']['reports'] = array(
-						'text'        => TEXT_REPORTS,
-						'order'       => 99,
-						'security_id' => SECURITY_ID_PHREEFORM,
-			  			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreeform&amp;page=main&amp;tab=cust', 'SSL'),
-						'show_in_users_settings' => false,
-			  			'params'      => '',
-				);
-				$this->mainmenu["employees"]['submenu']['reports'] = array(
-						'text'        => TEXT_REPORTS,
-						'order'       => 99,
-						'security_id' => SECURITY_ID_PHREEFORM,
-			  			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreeform&amp;page=main&amp;tab=hr', 'SSL'),
-			  			'show_in_users_settings' => false,
-			  			'params'      => '',
-				);
-				$this->mainmenu["vendors"]['submenu']['reports'] = array(
-						'text'        => TEXT_REPORTS,
-						'order'       => 99,
-						'security_id' => SECURITY_ID_PHREEFORM,
-			  			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreeform&amp;page=main&amp;tab=vend', 'SSL'),
-			  			'show_in_users_settings' => false,
-			 		 	'params'      => '',
-				);
-			}
-			if (defined('MODULE_INVENTORY_STATUS')) {
-				$this->mainmenu["inventory"]['submenu']['reports'] = array(
-						'text'        => TEXT_REPORTS,
-						'order'       => 99,
-						'security_id' => SECURITY_ID_PHREEFORM,
-			  			'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreeform&amp;page=main&amp;tab=inv', 'SSL'),
-						'show_in_users_settings' => false,
-			  			'params'      => '',
-				);
-			}
-			if (defined('MODULE_PHREEBOOKS_STATUS')) {
-				$this->mainmenu["banking"]['submenu']['reports'] = array(
-						'text'        => TEXT_REPORTS,
-						'order'       => 99,
-						'security_id' => SECURITY_ID_PHREEFORM,
-						'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreeform&amp;page=main&amp;tab=bnk', 'SSL'),
-						'show_in_users_settings' => false,
-			  			'params'      => '',
-				);
-				$this->mainmenu["gl"]['submenu']['reports'] = array(
-						'text'        => TEXT_REPORTS,
-						'order'       => 99,
-						'security_id' => SECURITY_ID_PHREEFORM,
-						'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreeform&amp;page=main&amp;tab=gl', 'SSL'),
-			  			'show_in_users_settings' => false,
-			  			'params'      => '',
-				);
-			}
-			if(defined('MODULE_CP_ACTION_STATUS') ||defined('MODULE_DOC_CTL_STATUS')){
-				$this->mainmenu["quality"]['submenu']["reports"] = array(
-						'order' 	  => 99,
-						'text'        => TEXT_REPORTS,
-						'security_id' => SECURITY_ID_PHREEFORM,
-						'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreeform&amp;page=main', 'SSL'),
-						'show_in_users_settings' => false,
-						'params'      => '',
-				);
-			}
-		
-		}
-		
+		$this->mainmenu["tools"]->submenu ["reports"]  		= new \core\classes\menuItem (25, 	TEXT_REPORTS,	'module=phreeform&amp;page=main', 				SECURITY_ID_PHREEFORM,	'MODULE_PHREEFORM_STATUS');
+		$this->mainmenu["customers"]->submenu ["reports"]  	= new \core\classes\menuItem (999, 	TEXT_REPORTS,	'module=phreeform&amp;page=main&amp;tab=cust', 	SECURITY_ID_PHREEFORM,	array('MODULE_CONTACTS_STATUS',  'MODULE_PHREEFORM_STATUS'));
+		$this->mainmenu["employees"]->submenu ["reports"]  	= new \core\classes\menuItem (999, 	TEXT_REPORTS,	'module=phreeform&amp;page=main&amp;tab=hr', 	SECURITY_ID_PHREEFORM,	array('MODULE_CONTACTS_STATUS',  'MODULE_PHREEFORM_STATUS'));
+		$this->mainmenu["vendors"]->submenu ["reports"]  	= new \core\classes\menuItem (999, 	TEXT_REPORTS,	'module=phreeform&amp;page=main&amp;tab=vend', 	SECURITY_ID_PHREEFORM,	array('MODULE_CONTACTS_STATUS',  'MODULE_PHREEFORM_STATUS'));
+		$this->mainmenu["inventory"]->submenu ["reports"]  	= new \core\classes\menuItem (999, 	TEXT_REPORTS,	'module=phreeform&amp;page=main&amp;tab=inv', 	SECURITY_ID_PHREEFORM,	array('MODULE_INVENTORY_STATUS', 'MODULE_PHREEFORM_STATUS'));
+		$this->mainmenu["banking"]->submenu ["reports"]  	= new \core\classes\menuItem (999, 	TEXT_REPORTS,	'module=phreeform&amp;page=main&amp;tab=bnk', 	SECURITY_ID_PHREEFORM,	array('MODULE_PHREEBOOKS_STATUS', 'MODULE_PHREEFORM_STATUS'));
+		$this->mainmenu["gl"]->submenu ["reports"]  		= new \core\classes\menuItem (999, 	TEXT_REPORTS,	'module=phreeform&amp;page=main&amp;tab=gl', 	SECURITY_ID_PHREEFORM,	array('MODULE_PHREEBOOKS_STATUS', 'MODULE_PHREEFORM_STATUS'));
+		$this->mainmenu["quality"]->submenu ["reports"] 	= new \core\classes\menuItem (999, 	TEXT_REPORTS,	'module=phreeform&amp;page=main', 				SECURITY_ID_PHREEFORM,	array('MODULE_CP_ACTION_STATUS', 'MODULE_DOC_CTL_STATUS', 'MODULE_PHREEFORM_STATUS'));
 	    parent::__construct();
 	}
 

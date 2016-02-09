@@ -100,26 +100,8 @@ class admin extends \core\classes\admin {
 			  KEY ref_id (ref_id)
 			) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
 	    );
-		if (defined('MODULE_SHIPPING_STATUS')) {
-			$this->mainmenu["tools"]['submenu']['shipping'] = array(
-					'text'        => sprintf(TEXT_MANAGER_ARGS, TEXT_SHIPPING),
-					'order'       => 5,
-					'security_id' => SECURITY_ID_SHIPPING_MANAGER,
-					'link'        => html_href_link(FILENAME_DEFAULT, 'module=shipping&amp;page=ship_mgr', 'SSL'),
-					'show_in_users_settings' => true,
-			);
-			if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
-				$this->mainmenu["company"]['submenu']["configuration"]['submenu']["shipping"] = array(
-						'order'	      => sprintf(TEXT_MODULE_ARGS, TEXT_SHIPPING),
-						'text'        => sprintf(TEXT_MODULE_ARGS, TEXT_SHIPPING),
-						'security_id' => SECURITY_ID_CONFIGURATION,
-						'link'        => html_href_link(FILENAME_DEFAULT, 'module=shipping&amp;page=admin', 'SSL'),
-						'show_in_users_settings' => false,
-						'params'      => '',
-				);
-			}
-		
-		}
+		$this->mainmenu["tools"]->submenu ["shipping"]  = new \core\classes\menuItem (5, sprintf(TEXT_MANAGER_ARGS, TEXT_SHIPPING),	'module=shipping&amp;page=ship_mgr',   SECURITY_ID_SHIPPING_MANAGER, 'MODULE_SHIPPING_STATUS');
+		$this->mainmenu["company"]->submenu ["configuration"]->submenu ["shipping"]  = new \core\classes\menuItem (sprintf(TEXT_MODULE_ARGS, TEXT_SHIPPING), sprintf(TEXT_MODULE_ARGS, TEXT_SHIPPING),	'module=shipping&amp;page=admin',   SECURITY_ID_CONFIGURATION, 'MODULE_SHIPPING_STATUS');
 	    parent::__construct();
 	}
 

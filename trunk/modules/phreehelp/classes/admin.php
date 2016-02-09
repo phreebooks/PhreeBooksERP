@@ -25,19 +25,12 @@ class admin extends \core\classes\admin {
 	public $version		= '4.0-dev';
 
 	function __construct() {
-		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_PHREEHELP);
+		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_HELP);
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom' => 4.0,
 		);
-		$this->mainmenu["company"]['submenu']["help"] = array(
-				'order' 		=> 1,
-				'text'        => TEXT_HELP,
-				'security_id' => SECURITY_ID_HELP,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreehelp&amp;page=main', 'SSL'),
-				'show_in_users_settings' => true,
-				'params'      => 'target="_blank"',
-		);
-		
+		$this->mainmenu["company"]->submenu ["help"]  = new \core\classes\menuItem (1, TEXT_HELP),	'module=phreehelp&amp;page=main');
+		$this->mainmenu["company"]->submenu ["help"]->params = 'target="_blank"';		
 	    parent::__construct();
 	}
 	

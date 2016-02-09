@@ -200,76 +200,18 @@ class admin extends \core\classes\admin {
 			  PRIMARY KEY (id)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci",
 	    );
-
-		$this->mainmenu["inventory"]["submenu"]["new_inventory"] = array(
-				'order' 		=> 1,
-				'text' 			=> sprintf(TEXT_NEW_ARGS, TEXT_INVENTORY_ITEM),
-				'security_id' 	=> SECURITY_ID_MAINTAIN_INVENTORY,
-				'link'        	=> html_href_link(FILENAME_DEFAULT, 'action=LoadNewInventoryItem', 'SSL'),
-				'show_in_users_settings' => false,
-				'params'      	=> '',
-		);
-		$this->mainmenu["inventory"]["submenu"]["inventory_mgr"] = array(
-				'order' 		=> 5,
-				'text' 			=> sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY),
-				'security_id' 	=> SECURITY_ID_MAINTAIN_INVENTORY,
-				'link'        	=> html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=main&amp;list=1', 'SSL'),
-				'show_in_users_settings' => true,
-				'params'      	=> '',
-		);
-		$this->mainmenu["inventory"]["submenu"]["adjustment"] = array(
-				'text'        	=> TEXT_ADJUSTMENTS,
-				'order'        	=> 15,
-				'security_id' 	=> SECURITY_ID_ADJUST_INVENTORY,
-				'link'        	=> html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=adjustments', 'SSL'),
-				'show_in_users_settings' => true,
-				'params'      	=> '',
-		);
-		$this->mainmenu["inventory"]["submenu"]["assemble"] = array(
-				'text'        => TEXT_ASSEMBLIES,
-				'order'        => 20,
-				'security_id' => SECURITY_ID_ASSEMBLE_INVENTORY,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=assemblies', 'SSL'),
-				'show_in_users_settings' => true,
-				'params'      => '',
-		);
+		$this->mainmenu["inventory"]->submenu ["inventory"] 	= new \core\classes\menuItem (10, 	TEXT_INVENTORY,			'module=inventory&amp;page=main&amp;list=1', 	SECURITY_ID_MAINTAIN_INVENTORY);
+		$this->mainmenu["inventory"]->submenu ["inventory"]->submenu ["new_inventory"] 	= new \core\classes\menuItem (1, 	sprintf(TEXT_NEW_ARGS, TEXT_INVENTORY), 	'action=LoadNewInventoryItem');
+		$this->mainmenu["inventory"]->submenu ["inventory"]->submenu ["inventory_mgr"] 	= new \core\classes\menuItem (5, 	sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY), 'module=inventory&amp;page=main&amp;list=1');
+		
+		$this->mainmenu["inventory"]->submenu ["adjustment"] 	= new \core\classes\menuItem (15, 	TEXT_ADJUSTMENTS,		'module=inventory&amp;page=adjustments',	 	SECURITY_ID_ADJUST_INVENTORY);
+		$this->mainmenu["inventory"]->submenu ["assemble"] 		= new \core\classes\menuItem (20, 	TEXT_ASSEMBLIES,		'module=inventory&amp;page=assemblies',		 	SECURITY_ID_ASSEMBLE_INVENTORY);
 		if (defined('ENABLE_MULTI_BRANCH') && ENABLE_MULTI_BRANCH){
-			$this->mainmenu["inventory"]["submenu"]["transfer"] = array(
-			  'text'        => TEXT_TRANSFER_INVENTORY,
-			  'order'       => 80,
-			  'security_id' => SECURITY_ID_TRANSFER_INVENTORY,
-			  'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=transfer', 'SSL'),
-			  'show_in_users_settings' => true,
-			  'params'      => '',
-			);
+			$this->mainmenu["inventory"]->submenu ["transfer"] 	= new \core\classes\menuItem (80, 	TEXT_TRANSFER_INVENTORY,'module=inventory&amp;page=transfer',		 	SECURITY_ID_TRANSFER_INVENTORY);
 		}
-		$this->mainmenu["customers"]["submenu"]["pricesheet"] = array(
-				'text'        => sprintf(TEXT_ARGS_PRICE_SHEETS, TEXT_CUSTOMER),
-				'order'       => 65,
-				'security_id' => SECURITY_ID_PRICE_SHEET_MANAGER,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=price_sheets&amp;type=c&amp;list=1', 'SSL'),
-				'show_in_users_settings' => true,
-				'params'      => '',
-		);
-		$this->mainmenu["vendors"]["submenu"]["pricesheet"] = array(
-				'text'        => sprintf(TEXT_ARGS_PRICE_SHEETS, TEXT_VENDOR),
-				'order'       => 65,
-				'security_id' => SECURITY_ID_VEND_PRICE_SHEET_MGR,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=price_sheets&amp;type=v&amp;list=1', 'SSL'),
-				'show_in_users_settings' => true,
-				'params'      => '',
-		);
-
-		if (\core\classes\user::security_level(SECURITY_ID_CONFIGURATION) > 0){
-			$this->mainmenu["company"]['submenu']["configuration"]['submenu']["inventory"] = array(
-					'order'	      => sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY),
-					'text'        => sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY),
-					'security_id' => SECURITY_ID_CONFIGURATION,
-					'link'        => html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=admin', 'SSL'),
-					'show_in_users_settings' => false,
-					'params'      => '',
-			);
-		}
+		$this->mainmenu["customers"]->submenu ["pricesheet"] 	= new \core\classes\menuItem (65, 	sprintf(TEXT_ARGS_PRICE_SHEETS, TEXT_CUSTOMER),		'module=inventory&amp;page=price_sheets&amp;type=c&amp;list=1',		 SECURITY_ID_PRICE_SHEET_MANAGER);
+		$this->mainmenu["vendors"]->submenu ["pricesheet"]	 	= new \core\classes\menuItem (65, 	sprintf(TEXT_ARGS_PRICE_SHEETS, TEXT_VENDOR),		'module=inventory&amp;page=price_sheets&amp;type=v&amp;list=1',		 SECURITY_ID_PRICE_SHEET_MANAGER);
+		$this->mainmenu["company"]->submenu ["configuration"]->submenu ["inventory"]  = new \core\classes\menuItem (sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY), sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY),	'module=inventory&amp;page=admin',   SECURITY_ID_CONFIGURATION);
 
 	    parent::__construct();
 	}

@@ -28,11 +28,12 @@ class menuItem {
 	public $required_module;
 	public $icon;
 	
-	public function __construct($order, $text, $action, $security_id){
+	public function __construct($order, $text, $action, $security_id, $constant){
 		$this->order = $order;
 		$this->text  = $text;
 		$this->security_id = $security_id;
 		$this->link = $action;
+		$this->required_module = $constant;
 	}
 	
 	function output(){
@@ -56,8 +57,8 @@ class menuItem {
 	}
 	
 	function sortByOrder($a, $b) {
-		if (is_integer($a['order']) && is_integer($b['order'])) return $a['order'] - $b['order'];
-		return strcmp($a["order"], $b["order"]);
+		if (is_integer($a->order) && is_integer($b->order)) return $a->order - $b->order;
+		return strcmp($a->order, $b->order);
 	}
 	
 	function show(){
@@ -70,7 +71,7 @@ class menuItem {
 				if(!defined($this->required_module)) return false;
 			}
 		}
-		if ($this->security_id > 0 && \core\classes\user::security_level($this->security_id) != 0 ) return false ;
+		if ($this->security_id > 0 && \core\classes\user::security_level($this->security_id) != 0 ) return false;
 		return true;
 	}
 	

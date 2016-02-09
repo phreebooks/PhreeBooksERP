@@ -16,6 +16,7 @@ class outputPage  {
     private $js;
     private $js_override_files		= array();
     private $js_override;
+    private $menu_send				= false;
     // page elements
     public  $title 					= '';
     public  $custom_html			= false;
@@ -59,6 +60,7 @@ class outputPage  {
     }
     
     function send_menu($basis){
+    	if ($this->menu_send) return;
     	usort($basis->mainmenu, array($this,'sortByOrder'));
     	echo '<!-- Pull Down Menu -->' . chr(10);
     	switch (MY_MENU) {
@@ -94,12 +96,13 @@ class outputPage  {
     	</script> 
     	<?php 
     	ob_flush();
+    	$this->menu_send = true;
     }
 
-    function sortByOrder($a, $b) {
-    	if(is_integer($a['order']) && is_integer($b['order'])) return $a['order'] - $b['order'];
-    	return strcmp($a["order"], $b["order"]);
-    }
+	function sortByOrder($a, $b) {
+		if (is_integer($a->order) && is_integer($b->order)) return $a->order - $b->order;
+		return strcmp($a->order, $b->order);
+	}
      
     public function print_js_includes($basis){
     	\core\classes\messageStack::debug_log("executing ".__METHOD__ );

@@ -174,73 +174,17 @@ class admin extends \core\classes\admin {
 			  PRIMARY KEY (id)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
 	    );
-		$this->mainmenu["company"]['submenu']["profile"] = array(
-				'order' 		=> 5,
-				'text'        => TEXT_MY_PROFILE,
-				'security_id' => SECURITY_ID_MY_PROFILE,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=profile', 'SSL'),
-				'show_in_users_settings' => true,
-				'params'      => '',
-		);
-
-		$this->mainmenu["company"]['submenu']["configuration"] = array(
-				'order' 		=> 10,
-				'text'        => TEXT_MODULE_ADMINISTRATION,
-				'security_id' => SECURITY_ID_CONFIGURATION,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=admin', 'SSL'),
-				'show_in_users_settings' => true,
-				'params'      => '',
-		);
-
-		if (defined('DEBUG') && DEBUG == true) $this->mainmenu["tools"]['submenu']["debug"] = array(
-				'order' 		=> 0,
-				'text'        => TEXT_DOWNLOAD_DEBUG_FILE,
-				'security_id' => SECURITY_ID_CONFIGURATION,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=main&amp;action=debug', 'SSL'),
-				'show_in_users_settings' => false,
-				'params'      => '',
-		);
-		if (defined('ENABLE_ENCRYPTION') && ENABLE_ENCRYPTION == true) $this->mainmenu["tools"]['submenu']["encryption"] = array(
-				'order' 		=> 1,
-				'text'        => TEXT_DATA_ENCRYPTION,
-				'security_id' => SECURITY_ID_ENCRYPTION,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=encryption', 'SSL'),
-				'show_in_users_settings' => true,
-				'params'      => '',
-		);
-		$this->mainmenu["tools"]['submenu']["import_export"] = array(
-				'order' 		=> 50,
-				'text'        => TEXT_IMPORT_OR_EXPORT,
-				'security_id' => SECURITY_ID_IMPORT_EXPORT,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=import_export', 'SSL'),
-				'show_in_users_settings' => true,
-				'params'      => '',
-		);
-		$this->mainmenu["tools"]['submenu']["backup"] = array(
-				'order' 		=> 95,
-				'text'        => TEXT_COMPANY_BACKUP,
-				'security_id' => SECURITY_ID_BACKUP,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=backup', 'SSL'),
-				'show_in_users_settings' => true,
-				'params'      => '',
-		);
-		$this->mainmenu["company"]['submenu']["users"] = array(
-				'order' 		=> 90,
-				'text'        => TEXT_USERS,
-				'security_id' => SECURITY_ID_USERS,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'action=LoadUsersPage&amp;list=1', 'SSL'),
-				'show_in_users_settings' => true,
-				'params'      => '',
-		);
-		$this->mainmenu["company"]['submenu']["roles"] = array(
-				'order' 		=> 85,
-				'text'        => TEXT_ROLES,
-				'security_id' => SECURITY_ID_ROLES,
-				'link'        => html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=roles&amp;list=1', 'SSL'),
-				'show_in_users_settings' => true,
-				'params'      => '',
-		);
-
+		$this->mainmenu["tools"]->submenu   ["debug"]  			= new \core\classes\menuItem (-1, 	TEXT_DOWNLOAD_DEBUG_FILE,	'module=phreedom&amp;page=admin', 				SECURITY_ID_CONFIGURATION);
+		$this->mainmenu["tools"]->submenu   ["debug"]->required_module = 'DEBUG';
+		$this->mainmenu["tools"]->submenu   ["encryption"]  	= new \core\classes\menuItem ( 1, 	TEXT_DATA_ENCRYPTION,		'module=phreedom&amp;page=encryption', 			SECURITY_ID_ENCRYPTION);
+		$this->mainmenu["tools"]->submenu   ["encryption"]->required_module = 'ENABLE_ENCRYPTION';
+		$this->mainmenu["tools"]->submenu   ["import_export"]  	= new \core\classes\menuItem (50, 	TEXT_IMPORT_OR_EXPORT,		'module=phreedom&amp;page=import_export', 		SECURITY_ID_IMPORT_EXPORT);
+		$this->mainmenu["tools"]->submenu   ["backup"]  		= new \core\classes\menuItem (95, 	TEXT_COMPANY_BACKUP,		'module=phreedom&amp;page=backup', 				SECURITY_ID_BACKUP);
+		
+		$this->mainmenu["company"]->submenu ["profile"] 		= new \core\classes\menuItem ( 5, 	TEXT_MY_PROFILE,			'module=phreedom&amp;page=profile', 			SECURITY_ID_MY_PROFILE);
+		$this->mainmenu["company"]->submenu ["configuration"]  	= new \core\classes\menuItem (10, 	TEXT_MODULE_ADMINISTRATION,	'module=phreedom&amp;page=admin', 				SECURITY_ID_CONFIGURATION);
+		$this->mainmenu["company"]->submenu ["roles"]  			= new \core\classes\menuItem (85, 	TEXT_ROLES,					'module=phreedom&amp;page=roles&amp;list=1',	SECURITY_ID_ROLES);
+		$this->mainmenu["company"]->submenu ["users"] 		 	= new \core\classes\menuItem (90, 	TEXT_USERS,					'action=LoadUsersPage&amp;list=1', 				SECURITY_ID_USERS);
 	    parent::__construct();
 	}
 
