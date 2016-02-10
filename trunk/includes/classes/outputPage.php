@@ -69,7 +69,10 @@ class outputPage  {
     		default:     echo '<div id="smoothmenu" class="ddsmoothmenu">'.chr(10); break;
     	}
     	echo '  <ul>' . chr(10);
-    	foreach($basis->mainmenu as $menu_item) $menu_item->output();
+    	foreach($basis->mainmenu as $menu_item){//@todo needs to work
+    		print("testen van printen {$menu_item['text']}". print_r($menu_item));
+    		$menu_item->output();
+    	}
     	echo '  </ul>' . chr(10);
     	echo '<br style="clear:left" />'.chr(10);
     	echo '</div>'.chr(10);

@@ -29,7 +29,7 @@ class admin extends \core\classes\admin {
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom' => 4.0,
 		);
-		$this->mainmenu["company"]->submenu ["help"]  = new \core\classes\menuItem (1, TEXT_HELP),	'module=phreehelp&amp;page=main');
+		$this->mainmenu["company"]->submenu ["help"]  = new \core\classes\menuItem (1, TEXT_HELP,	'module=phreehelp&amp;page=main');
 		$this->mainmenu["company"]->submenu ["help"]->params = 'target="_blank"';		
 	    parent::__construct();
 	}

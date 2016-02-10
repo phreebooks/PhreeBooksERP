@@ -75,7 +75,6 @@ class language {
 		if (!file_exists($lang_path)) throw new \core\classes\userException("can't find your language file {$lang_path} ");
 		$xml = new \DomDocument();
 		$xml->load($lang_path);
-		//$phrases = $xml->getElementsByTagName($this->language_code);
 		$phrases = $xml->getElementsByTagName('translation');
 		foreach ($phrases as $phrase) {
 			foreach ($phrase->childNodes as $language) {

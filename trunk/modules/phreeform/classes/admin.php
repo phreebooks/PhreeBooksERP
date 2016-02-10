@@ -61,9 +61,8 @@ class admin extends \core\classes\admin {
 				PRIMARY KEY (id)
 			  ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
 	    );
-		if (defined('MODULE_PHREEFORM_STATUS')) {
-			// Set the title menu
-			// Set the menus
+		// Set the title menu
+		// Set the menus
 		$this->mainmenu["tools"]->submenu ["reports"]  		= new \core\classes\menuItem (25, 	TEXT_REPORTS,	'module=phreeform&amp;page=main', 				SECURITY_ID_PHREEFORM,	'MODULE_PHREEFORM_STATUS');
 		$this->mainmenu["customers"]->submenu ["reports"]  	= new \core\classes\menuItem (999, 	TEXT_REPORTS,	'module=phreeform&amp;page=main&amp;tab=cust', 	SECURITY_ID_PHREEFORM,	array('MODULE_CONTACTS_STATUS',  'MODULE_PHREEFORM_STATUS'));
 		$this->mainmenu["employees"]->submenu ["reports"]  	= new \core\classes\menuItem (999, 	TEXT_REPORTS,	'module=phreeform&amp;page=main&amp;tab=hr', 	SECURITY_ID_PHREEFORM,	array('MODULE_CONTACTS_STATUS',  'MODULE_PHREEFORM_STATUS'));
