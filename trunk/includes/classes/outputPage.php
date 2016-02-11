@@ -57,7 +57,7 @@ class outputPage  {
     	echo "<script type='text/javascript' src='includes/jquery.easyui.min.js'></script>". chr(13);
     	echo "</head><body>";
     	ob_flush();
-    } 
+    }
     
     function send_menu($basis){
     	if ($this->menu_send) return;

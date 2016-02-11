@@ -142,24 +142,23 @@ class admin extends \core\classes\admin {
 			  KEY description_short (description_short)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci",
 	    );
-		$this->mainmenu["customers"] 	= new \core\classes\menuItem (10, 	TEXT_CUSTOMERS,			'action=LoadMainPage&amp;mID=cat_ar');
-		$this->mainmenu["vendors"]  	= new \core\classes\menuItem (20, 	TEXT_VENDORS,			'action=LoadMainPage&amp;mID=cat_ap');
-		$this->mainmenu["employees"]	= new \core\classes\menuItem (60, 	TEXT_EMPLOYEES,			'action=LoadMainPage&amp;mID=cat_hr');
 		// Set the menus
+		$this->mainmenu["customers"] 	= new \core\classes\menuItem (10, 	TEXT_CUSTOMERS,			'action=LoadMainPage&amp;mID=cat_ar');
 		$this->mainmenu["customers"]->submenu ["contact"] 	= new \core\classes\menuItem (10, 	TEXT_CUSTOMERS,		'action=LoadContactMgrPage&amp;type=c&amp;list=1', SECURITY_ID_MAINTAIN_CUSTOMERS);
 		$this->mainmenu["customers"]->submenu ["contact"]->submenu ["new"] 	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_CUSTOMER),		'action=NewContact&amp;type=c');
 		$this->mainmenu["customers"]->submenu ["contact"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_CUSTOMER),	'action=LoadContactMgrPage&amp;type=c&amp;list=1');
 		$this->mainmenu["customers"]->submenu ["crm"] 		= new \core\classes\menuItem (15, 	TEXT_PHREECRM,		'action=LoadContactMgrPage&amp;type=i&amp;list=1');
+		$this->mainmenu["vendors"]  	= new \core\classes\menuItem (20, 	TEXT_VENDORS,			'action=LoadMainPage&amp;mID=cat_ap');
 		$this->mainmenu["vendors"]->submenu   ["contact"]	= new \core\classes\menuItem (10, 	TEXT_VENDORS,		'action=LoadContactMgrPage&amp;type=v&amp;list=1', SECURITY_ID_MAINTAIN_VENDORS);
 		$this->mainmenu["vendors"]->submenu   ["contact"]->submenu ["new"]	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_VENDOR),		'action=NewContact&amp;type=v');
 		$this->mainmenu["vendors"]->submenu   ["contact"]->submenu ["mgr"]	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR),	'action=LoadContactMgrPage&amp;type=v&amp;list=1');
+		$this->mainmenu["employees"]	= new \core\classes\menuItem (60, 	TEXT_EMPLOYEES,			'action=LoadMainPage&amp;mID=cat_hr');
 		$this->mainmenu["employees"]->submenu ["contact"] 	= new \core\classes\menuItem (10, 	TEXT_EMPLOYEES,		'action=LoadContactMgrPage&amp;type=e&amp;list=1', SECURITY_ID_MAINTAIN_EMPLOYEES);
 		$this->mainmenu["employees"]->submenu ["contact"]->submenu ["new"]	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_EMPLOYEE),		'action=NewContact&amp;type=e');
 		$this->mainmenu["employees"]->submenu ["contact"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_EMPLOYEE),	'action=LoadContactMgrPage&amp;type=e&amp;list=1');
 		$this->mainmenu["company"]->submenu   ["branches"] 	= new \core\classes\menuItem (10, 	TEXT_BRANCHES,		'action=LoadContactMgrPage&amp;type=b&amp;list=1', SECURITY_ID_MAINTAIN_BRANCH, 'ENABLE_MULTI_BRANCH');
 		$this->mainmenu["company"]->submenu   ["branches"]->submenu ["new"]	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_BRANCH),		'action=NewContact&amp;type=b');
-		$this->mainmenu["company"]->submenu   ["branches"]->submenu ["mgr"] = new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_BRANCH),	'action=LoadContactMgrPage&amp;type=b&amp;list=1');
-		
+		$this->mainmenu["company"]->submenu   ["branches"]->submenu ["mgr"] = new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_BRANCH),	'action=LoadContactMgrPage&amp;type=b&amp;list=1');	
 		$this->mainmenu["customers"]->submenu ["projects"] 	= new \core\classes\menuItem (60, 	TEXT_PROJECTS,		'action=LoadContactMgrPage&amp;type=j&amp;list=1', SECURITY_ID_MAINTAIN_PROJECTS);
 		$this->mainmenu["customers"]->submenu ["projects"]->submenu ["new"]	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_PROJECT),		'action=NewContact&amp;type=j');
 		$this->mainmenu["customers"]->submenu ["projects"]->submenu ["mgr"] = new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_PROJECT),	'action=LoadContactMgrPage&amp;type=j&amp;list=1');
@@ -435,6 +434,43 @@ class admin extends \core\classes\admin {
 		$basis->page			= 'popup_terms';
 		$basis->page_title 		= TEXT_PAYMENT_TERMS;
 	}
+	
+	function ContactGetChartData (\core\classes\basis &$basis) {
+		$basis->cInfo->type  = pie;
+		$basis->cInfo->width  = 600;
+		$basis->cInfo->height  = 400;
+		switch ($basis->cInfo->fID) {
+			case 'annual_sales':
+				$basis->cInfo->type       = 'column';
+				$basis->cInfo->title      = TEXT_MONTHLY_SALES;
+				$basis->cInfo->label_text = TEXT_DATE;
+				$basis->cInfo->value_text = TEXT_TOTAL;
+				if (!$basis->cInfo->cID)  throw new \core\classes\userException('There is no contact id');
+				$date = new \core\classes\DateTime();
+				$date->modify("-1 year");
+				$date->modify("first day of this month");
+				$sql = $basis->DataBase->prepare("SELECT month(post_date) as month, year(post_date) as year, sum(total_amount) as total FROM ".TABLE_JOURNAL_MAIN."
+						WHERE bill_acct_id = {$basis->cInfo->cID} and journal_id in (12,13) and post_date >= '".$date->format('Y-m-d')."' group by year, month LIMIT 12");
+				$sql->execute();
+				for ($i=0; $i<12; $i++) {
+					$result = $sql->fetch(\PDO::FETCH_LAZY);
+					if ($result['year'] == $date->format('Y') && $result['month'] == $date->format('m')) {
+						$value = $result['total'];
+					} else {
+						$value = 0;
+					}
+					$basis->cInfo->data[] = array(
+							'label' => $date->format('Y-m'),
+							'value' => $value,
+					);
+					$date->modify("first day of next month");
+				}
+				break;
+			default:
+				throw new \core\classes\userException("Don't know report {$basis->cInfo->fID}");
+		}
+	}
+	
 
 	function load_demo() {
 		global $admin;
