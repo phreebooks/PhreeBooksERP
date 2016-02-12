@@ -143,16 +143,13 @@ class admin extends \core\classes\admin {
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci",
 	    );
 		// Set the menus
-		$this->mainmenu["customers"] 	= new \core\classes\menuItem (10, 	TEXT_CUSTOMERS,			'action=LoadMainPage&amp;mID=cat_ar');
 		$this->mainmenu["customers"]->submenu ["contact"] 	= new \core\classes\menuItem (10, 	TEXT_CUSTOMERS,		'action=LoadContactMgrPage&amp;type=c&amp;list=1', SECURITY_ID_MAINTAIN_CUSTOMERS);
 		$this->mainmenu["customers"]->submenu ["contact"]->submenu ["new"] 	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_CUSTOMER),		'action=NewContact&amp;type=c');
 		$this->mainmenu["customers"]->submenu ["contact"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_CUSTOMER),	'action=LoadContactMgrPage&amp;type=c&amp;list=1');
 		$this->mainmenu["customers"]->submenu ["crm"] 		= new \core\classes\menuItem (15, 	TEXT_PHREECRM,		'action=LoadContactMgrPage&amp;type=i&amp;list=1');
-		$this->mainmenu["vendors"]  	= new \core\classes\menuItem (20, 	TEXT_VENDORS,			'action=LoadMainPage&amp;mID=cat_ap');
 		$this->mainmenu["vendors"]->submenu   ["contact"]	= new \core\classes\menuItem (10, 	TEXT_VENDORS,		'action=LoadContactMgrPage&amp;type=v&amp;list=1', SECURITY_ID_MAINTAIN_VENDORS);
 		$this->mainmenu["vendors"]->submenu   ["contact"]->submenu ["new"]	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_VENDOR),		'action=NewContact&amp;type=v');
 		$this->mainmenu["vendors"]->submenu   ["contact"]->submenu ["mgr"]	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR),	'action=LoadContactMgrPage&amp;type=v&amp;list=1');
-		$this->mainmenu["employees"]	= new \core\classes\menuItem (60, 	TEXT_EMPLOYEES,			'action=LoadMainPage&amp;mID=cat_hr');
 		$this->mainmenu["employees"]->submenu ["contact"] 	= new \core\classes\menuItem (10, 	TEXT_EMPLOYEES,		'action=LoadContactMgrPage&amp;type=e&amp;list=1', SECURITY_ID_MAINTAIN_EMPLOYEES);
 		$this->mainmenu["employees"]->submenu ["contact"]->submenu ["new"]	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_EMPLOYEE),		'action=NewContact&amp;type=e');
 		$this->mainmenu["employees"]->submenu ["contact"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_EMPLOYEE),	'action=LoadContactMgrPage&amp;type=e&amp;list=1');

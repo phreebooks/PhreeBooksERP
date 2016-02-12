@@ -69,9 +69,13 @@ class outputPage  {
     		default:     echo '<div id="smoothmenu" class="ddsmoothmenu">'.chr(10); break;
     	}
     	echo '  <ul>' . chr(10);
+    	print_r($basis->mainmenu);
     	foreach($basis->mainmenu as $menu_item){//@todo needs to work
-    		print("testen van printen {$menu_item['text']}". print_r($menu_item));
-    		$menu_item->output();
+    		if (method_exists ( $menu_item, 'output' )){
+    			$menu_item->output();
+    		}else{
+    			print("heeft geen output{$menu_item['text']}".chr(13));
+    		}
     	}
     	echo '  </ul>' . chr(10);
     	echo '<br style="clear:left" />'.chr(10);

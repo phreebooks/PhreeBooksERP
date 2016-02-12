@@ -75,7 +75,17 @@ class menuItem {
 		return true;
 	}
 	
-	
+	function appendsubmenu(\core\classes\menuItem $menuitems){
+		foreach ($menuitems as $key => $menuitem){ 
+			$this->submenu[$key] = $menuitem;
+			if (is_array($menuitem->submenu)) {
+				print_r($menuitem);
+//				$key = key($menuitems);
+//				$this->submenu[$key]->appendsubmenu($menuitem->submenu);
+			}
+//			$this->submenu[$key]->appendsubmenu($menuitem->submenu);
+		}
+	}
 	
 }
 
