@@ -59,9 +59,11 @@ class user {
 	
 	final public function validate_company(){
 		if ($_REQUEST['action'] == "ValidateUser") $_SESSION['company'] = $_POST['company'];
-		if ( $_SESSION['company'] == '' || !file_exists(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php')) {
-			\core\classes\messageStack::debug_log("company file doesn't exist");
-			\core\classes\messageStack::add(sprintf(TEXT_COMPANY_CONFIG_FILE_DOESNT_EXIST, $_SESSION['company']));
+		if ( $_SESSION['company'] == '') {
+			if (!file_exists(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php')) {
+				\core\classes\messageStack::debug_log("company file doesn't exist");
+				\core\classes\messageStack::add(sprintf(TEXT_COMPANY_CONFIG_FILE_DOESNT_EXIST, $_SESSION['company']));
+			}
 			$this->LoadLogIn();
 		}
 	}
@@ -270,6 +272,10 @@ class user {
 	
 	function __destruct(){
 		$_SESSION['companies'] = $this->companies;// @todo do we still need this
+		$cookie_exp = 2592000 + time(); // one month
+		setcookie('pb_company' , $this->get_company(),  $cookie_exp);
+		setcookie('pb_language', $this->language->language_code, $cookie_exp);
+		
 //		print_r($_SESSION);
 	}
 

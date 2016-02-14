@@ -33,7 +33,7 @@ define('TABLE_PHREEMAIL_WORDS',		DB_PREFIX . 'phreemail_words'); //emailtodb_wor
 define('TABLE_PHREEMAIL_ATTACH',	DB_PREFIX . 'phreemail_attach'); //emailtodb_attach
 
 // directory
-$db_company = (isset($_SESSION['company'])) ? $_SESSION['company'] : $basis->user->companies[$_POST['company']];
+$db_company = (isset($_SESSION['company'])) ? $_SESSION['company'] : $_SESSION['user']->companies[$_POST['company']];
 define('PHREEMAIL_DIR_ATTACHMENTS',  DIR_FS_MY_FILES . $db_company . '/phreemail/attachments/');
 
 if (defined('MODULE_PHREEMAIL_STATUS')) {

@@ -69,12 +69,14 @@ class outputPage  {
     		default:     echo '<div id="smoothmenu" class="ddsmoothmenu">'.chr(10); break;
     	}
     	echo '  <ul>' . chr(10);
-    	print_r($basis->mainmenu);
     	foreach($basis->mainmenu as $menu_item){//@todo needs to work
-    		if (method_exists ( $menu_item, 'output' )){
-    			$menu_item->output();
+    		if (! $menu_item instanceof \core\classes\menuItem){
+    			$temp = get_object_vars($menu_item);
+    			$tempmenu_item = new \core\classes\menuItem();
+    			foreach ($temp as $key => $value) $tempmenu_item->$key = $value;
+    			$tempmenu_item->output();
     		}else{
-    			print("heeft geen output{$menu_item['text']}".chr(13));
+    			$menu_item->output();
     		}
     	}
     	echo '  </ul>' . chr(10);

@@ -236,7 +236,7 @@ switch ($_REQUEST['action']) {
 	    }
 	    if (is_array($tables)) foreach ($tables as $table) $del_db->query("drop table " . $table);
 	    $backup->delete_dir(DIR_FS_MY_FILES . $db_name);
-	    unset($basis->user->companies[$_POST['del_company']]);
+	    unset($_SESSION['user']->companies[$_POST['del_company']]);
 	    gen_add_audit_log(sprintf(TEXT_MANAGER_ARGS, TEXT_COMPANY). ' - ' . TEXT_DELETE, $db_name);
 	    \core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_DELETED, TEXT_COMPANY, $_POST['del_company']), 'success');
 	}

@@ -44,7 +44,7 @@ class basis {
 	public function __construct() {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->setObserver();
-		$this->user = new \core\classes\user($this);
+		$_SESSION['user'] = new \core\classes\user($this);
 		$this->mainmenu["home"] 		= new \core\classes\menuItem (-1, 	TEXT_HOME);
 		$this->mainmenu["home"]->icon  	= html_icon('actions/go-home.png', TEXT_HOME, 'small');
 		$this->mainmenu["customers"] 	= new \core\classes\menuItem (10, 	TEXT_CUSTOMERS,			'action=LoadMainPage&amp;mID=cat_ar');
@@ -150,7 +150,7 @@ class basis {
 			\core\classes\messageStack::debug_log("database type ".get_class($this->DataBase));
 		}catch (\Exception $e){
 			\core\classes\messageStack::add($e);
-			$this->user->LoadLogIn();
+			$_SESSION['user']->LoadLogIn();
 		}
 	}
 
@@ -180,8 +180,8 @@ class basis {
 		if (array_key_exists($moduleName, $this->classes ) == false) {
 			$this->classes [$moduleName] = $admin_class;
 				\core\classes\messageStack::debug_log("attaching menu for class ".get_class($admin_class));
-				foreach ($admin_class->mainmenu as $key => $menuitem) $this->mainmenu[$key]->appendsubmenu($menuitem->submenu);
-//				$this->mainmenu = array_merge_recursive($this->mainmenu, $admin_class->mainmenu);
+//				foreach ($admin_class->mainmenu as $key => $menuitem) $this->mainmenu[$key]->appendsubmenu($menuitem->submenu);
+				$this->mainmenu = array_merge_recursive($this->mainmenu, $admin_class->mainmenu);
 		}
 		uasort ( $this->classes, array ( $this, 'arangeObjectBySortOrder') );
 	}

@@ -79,7 +79,7 @@
 	    <td colspan="3" style="color:red"><?php echo SETUP_CO_MGR_DELETE_CONFIRM; ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo TEXT_SELECT_THE_COMPANY_TO_DELETE .': ' . html_pull_down_menu('del_company', gen_build_pull_down($basis->user->companies, false, true)); ?></td>
+	    <td colspan="3"><?php echo TEXT_SELECT_THE_COMPANY_TO_DELETE .': ' . html_pull_down_menu('del_company', gen_build_pull_down($_SESSION['user']->companies, false, true)); ?></td>
 	    <td align="right"><?php echo html_button_field('del_button', TEXT_DELETE, 'onclick="if (confirm(\'' . SETUP_CO_MGR_JS_DELETE_CONFIRM . '\')) submitToDo(\'delete_co\')"'); ?></td>
 	  </tr>
 	 </table>

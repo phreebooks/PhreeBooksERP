@@ -37,18 +37,22 @@ class menuItem {
 	}
 	
 	function output(){
+		print_r($this);
 		if ($this->show() == false) return ;
-		if (is_array($this->submenu)){
+		if (is_array($this->submenu)) {
 			usort($this->submenu, array($this,'sortByOrder'));
-			$show = false; 
-			foreach($this->submenu as $menu_item) if ($menu_item->show()) $show = true;
-			if ($show){
-				echo "  <li><a href='".html_href_link(FILENAME_DEFAULT, $this->link, 'SSL')."' {$this->params}> $this->icon $this->text</a>";
-				echo '    <ul>';
-				foreach($this->submenu as $menu_item) $menu_item->output();
-				echo '    </ul>';
-				echo '  </li>';
+			echo "  <li><a href='".html_href_link(FILENAME_DEFAULT, $this->link, 'SSL')."' {$this->params}> $this->icon $this->text</a>";
+			echo '    <ul>';
+			foreach($this->submenu as $key => $menu_item){
+				if (! $menu_item instanceof \core\classes\menuItem){
+					$temp = get_object_vars($menu_item);
+					$menu_item = new \core\classes\menuItem();
+					foreach ($temp as $key => $value) $menu_item->$key = $value;
+				}
+				$menu_item->output();
 			}
+			echo '    </ul>';
+			echo '  </li>';
 		}else{
 			echo "  <li><a href='".html_href_link(FILENAME_DEFAULT, $this->link, 'SSL')."' {$this->params}>";
 			if ($this->text == TEXT_HOME && ENABLE_ENCRYPTION && strlen($_SESSION['admin_encrypt']) > 0) echo html_icon('emblems/emblem-readonly.png', TEXT_ENCRYPTION_KEY_IS_SET, 'small');
