@@ -37,7 +37,7 @@ $xml .= xmlEntry("WOid",          $id);
 $xml .= xmlEntry("WOTitle",       $result->fields['wo_title']);
 $xml .= xmlEntry("WODescription", $result->fields['description']);
 if ($result->fields['image_with_path']) { // show image if it is defined
-  $image = DIR_WS_MY_FILES . $_SESSION['company'] . '/inventory/images/' . $result->fields['image_with_path'];
+  $image = DIR_WS_MY_FILES . $_SESSION['user']->company . '/inventory/images/' . $result->fields['image_with_path'];
 } else {
   $image = 0;
 }

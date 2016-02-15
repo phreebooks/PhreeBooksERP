@@ -50,10 +50,10 @@ class contacts {
     	if ($this->security_token != '') $this->security_level = \core\classes\user::validate($this->security_token); // in this case it must be done after the class is defined for
     	$this->page_title_new	= sprintf(TEXT_NEW_ARGS, $this->title);
     	$this->page_title_edit	= sprintf(TEXT_EDIT_ARGS, $this->title);
-    	$this->dir_attachments  = DIR_FS_MY_FILES . "{$_SESSION['company']}/contacts/main/";
+    	$this->dir_attachments  = DIR_FS_MY_FILES . "{$_SESSION['user']->company}/contacts/main/";
     	//set defaults
         $this->crm_date			= date('Y-m-d');
-        $this->crm_rep_id		= $_SESSION['account_id'] <> 0 ? $_SESSION['account_id'] : $_SESSION['admin_id'];
+        $this->crm_rep_id		= $_SESSION['user']->account_id <> 0 ? $_SESSION['user']->account_id : $_SESSION['user']->admin_id;
         $this->fields 			= new \contacts\classes\fields(false, $this->type);
         foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
         $this->special_terms  =  db_prepare_input($_POST['terms']); // TBD will fix when popup terms is redesigned

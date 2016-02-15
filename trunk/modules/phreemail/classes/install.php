@@ -146,9 +146,9 @@ class phreemail_admin {
 		}
 		\core\classes\messageStack::debug_log("\n\n*************** End Retrieving Mail from ".EMAIL_SMTPAUTH_MAILBOX." *******************");
 		try{
-			\core\classes\messageStack::debug_log("\n\n*************** Retrieving Mail from ".$_SESSION['admin_email']." *******************");
+			\core\classes\messageStack::debug_log("\n\n*************** Retrieving Mail from ".$_SESSION['user']->admin_email." *******************");
 			$mail = new phreemail();
-			$mail->connect('', '', $_SESSION['admin_email'], '');
+			$mail->connect('', '', $_SESSION['user']->admin_email, '');
 //			$mail->get_all_emails();
 			if ($mail->error_count != 0 ){
 				\core\classes\messageStack::add($mail->ErrorInfo, 'error');
@@ -163,7 +163,7 @@ class phreemail_admin {
 				$mail->do_action();
 				$mail->MoveNext();
 			}*/
-			\core\classes\messageStack::debug_log("\n\n*************** End Retrieving Mail from ".$_SESSION['admin_email']." *******************");
+			\core\classes\messageStack::debug_log("\n\n*************** End Retrieving Mail from ".$_SESSION['user']->admin_email." *******************");
 		}catch (\Exception $exception){
 			\core\classes\messageStack::add($exception->getMessage(), 'error');
 		}

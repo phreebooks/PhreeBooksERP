@@ -34,8 +34,8 @@ switch ($_REQUEST['action']) {
 		// set execution time limit to a large number to allow extra time
 		if (ini_get('max_execution_time') < 20000) set_time_limit(20000);
 		$backup              = new \phreedom\classes\backup;
-		$backup->db_filename = 'db-' . $_SESSION['company'] . '-' . date('Ymd');
-		$backup->source_dir  = DIR_FS_MY_FILES . $_SESSION['company'] . '/';
+		$backup->db_filename = 'db-' . $_SESSION['user']->company . '-' . date('Ymd');
+		$backup->source_dir  = DIR_FS_MY_FILES . $_SESSION['user']->company . '/';
 		$backup->source_file = $backup->db_filename . '.sql';
 		$backup->dest_dir    = DIR_FS_MY_FILES . 'backups/';
 		$backup->dump_db_table($db, 'all', 'both');
@@ -45,7 +45,7 @@ switch ($_REQUEST['action']) {
 			if ($dl_type == 'file') {
 			  $backup->dest_file = $backup->db_filename . '.bz2';
 			} else {
-			  $backup->dest_file = 'bu-' . $_SESSION['company'] . '-' . date('Ymd') . '.tar.bz2';
+			  $backup->dest_file = 'bu-' . $_SESSION['user']->company . '-' . date('Ymd') . '.tar.bz2';
 			}
 		    $backup->make_bz2($dl_type);
 			@unlink($backup->source_dir . $backup->source_file); // delete db sql file
@@ -54,7 +54,7 @@ switch ($_REQUEST['action']) {
 			if ($dl_type == 'file') {
 			  $backup->dest_file = $backup->db_filename . '.zip';
 			} else {
-			  $backup->dest_file = 'bu-' . $_SESSION['company'] . '-' . date('Ymd') . '.zip';
+			  $backup->dest_file = 'bu-' . $_SESSION['user']->company . '-' . date('Ymd') . '.zip';
 			}
 			$backup->make_zip($dl_type);
 			@unlink($backup->source_dir . $backup->source_file); // delete db sql file
@@ -75,8 +75,8 @@ switch ($_REQUEST['action']) {
   	try{
 		if (ini_get('max_execution_time') < 20000) set_time_limit(20000);
 		$backup              = new \phreedom\classes\backup;
-		$backup->db_filename = 'log-' . $_SESSION['company'] . '-' . date('Ymd');
-		$backup->source_dir  = DIR_FS_MY_FILES . $_SESSION['company'] . '/';
+		$backup->db_filename = 'log-' . $_SESSION['user']->company . '-' . date('Ymd');
+		$backup->source_dir  = DIR_FS_MY_FILES . $_SESSION['user']->company . '/';
 		$backup->source_file = $backup->db_filename . '.sql';
 		$backup->dest_dir    = DIR_FS_MY_FILES . 'backups/';
 		$backup->dest_file   = $backup->db_filename . '.zip';

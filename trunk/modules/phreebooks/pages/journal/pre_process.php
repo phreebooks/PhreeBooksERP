@@ -43,7 +43,7 @@ switch ($_REQUEST['action']) {
 		$glEntry->journal_id          = JOURNAL_ID;
 		$glEntry->post_date           = $post_date;
 		$glEntry->period              = $period;
-		$glEntry->admin_id            = $_SESSION['admin_id'];
+		$glEntry->admin_id            = $_SESSION['user']->admin_id;
 		$glEntry->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);
 		$glEntry->recur_id            = db_prepare_input($_POST['recur_id']);
 		$glEntry->recur_frequency     = db_prepare_input($_POST['recur_frequency']);

@@ -81,7 +81,7 @@ if (defined('MODULE_SHIPPING_USPS_SORT_ORDER'))        $admin->DataBase->write_c
 // load the phreeform module
 require_once (DIR_FS_MODULES . 'phreeform/config.php');
 require_once (DIR_FS_MODULES . 'phreeform/defaults.php');
-$admin->classes['phreeform']->install(DIR_FS_MY_FILES.$_SESSION['company'].'/', false);
+$admin->classes['phreeform']->install(DIR_FS_MY_FILES.$_SESSION['user']->company.'/', false);
 // load installed modules and build report folders
 foreach ($admin->classes as $key => $class) { // load the configuration files to load version info
     if ($class->installed && $key <> 'phreeform') { // build the directories

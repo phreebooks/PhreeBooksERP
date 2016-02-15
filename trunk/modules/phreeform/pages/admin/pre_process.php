@@ -57,7 +57,7 @@ switch ($_REQUEST['action']) {
 	  if (($temp = @file_get_contents(PF_DIR_MY_REPORTS.$report)) === false)  throw new \core\classes\userException(sprintf(ERROR_READ_FILE, PF_DIR_MY_REPORTS.$report));
 	  $rpt = xml_to_object($temp);
 	  if ($rpt->PhreeformReport) $rpt = $rpt->PhreeformReport; // lose the container
-	  if ($rpt->security == 'u:-1;g:-1') $rpt->security = 'u:'.$_SESSION['admin_id'].'g:-1'; // orphaned, set so current user can access
+	  if ($rpt->security == 'u:-1;g:-1') $rpt->security = 'u:'.$_SESSION['user']->admin_id.'g:-1'; // orphaned, set so current user can access
 	  $result = $admin->DataBase->query("select id from ".TABLE_PHREEFORM." where doc_group = '".$rpt->groupname."' and doc_type = '0'");
 	  if ($result->fetch(\PDO::FETCH_NUM) == 0) { // orphaned put into misc category
 	  	$orph_cnt++;
@@ -113,7 +113,7 @@ switch ($_REQUEST['action']) {
 	  $result->MoveNext();
 	}
 	// Copy the PhreeBooks images
-	$dir_source = DIR_FS_MY_FILES . $_SESSION['company'] . '/images';
+	$dir_source = DIR_FS_MY_FILES . $_SESSION['user']->company . '/images';
 	$dir_dest   = PF_DIR_MY_REPORTS . 'images';
 	$d = dir($dir_source);
 	while (FALSE !== ($filename = $d->read())) {

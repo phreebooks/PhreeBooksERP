@@ -30,7 +30,7 @@ if(isset($_GET['oID'])){
 	$journal_id = $_GET['oID'];
 }else {
 	$order = $admin->DataBase->query("select MAX(id) AS id from " . TABLE_JOURNAL_MAIN . "
-	    where journal_id = '" . JOURNAL_ID . "' and admin_id = '".$_SESSION['admin_id']."'");
+	    where journal_id = '" . JOURNAL_ID . "' and admin_id = '".$_SESSION['user']->admin_id."'");
 	$journal_id = $order->fields['id'];
 }
 //print

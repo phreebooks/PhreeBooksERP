@@ -182,7 +182,6 @@ class admin extends \core\classes\admin {
 		$this->mainmenu["tools"]->submenu   ["backup"]  		= new \core\classes\menuItem (95, 	TEXT_COMPANY_BACKUP,		'module=phreedom&amp;page=backup', 				SECURITY_ID_BACKUP);
 		
 		$this->mainmenu["company"]->submenu ["profile"] 		= new \core\classes\menuItem ( 5, 	TEXT_MY_PROFILE,			'module=phreedom&amp;page=profile', 			SECURITY_ID_MY_PROFILE);
-		$this->mainmenu["company"]->submenu ["configuration"]  	= new \core\classes\menuItem (10, 	TEXT_MODULE_ADMINISTRATION,	'module=phreedom&amp;page=admin', 				SECURITY_ID_CONFIGURATION);
 		$this->mainmenu["company"]->submenu ["roles"]  			= new \core\classes\menuItem (85, 	TEXT_ROLES,					'module=phreedom&amp;page=roles&amp;list=1',	SECURITY_ID_ROLES);
 		$this->mainmenu["company"]->submenu ["users"] 		 	= new \core\classes\menuItem (90, 	TEXT_USERS,					'action=LoadUsersPage&amp;list=1', 				SECURITY_ID_USERS);
 	    parent::__construct();
@@ -299,27 +298,24 @@ class admin extends \core\classes\admin {
 		  FROM " . TABLE_USERS . " WHERE admin_name = '{$basis->cInfo->admin_name}'");
 		$sql->execute();
 		$result = $sql->fetch(\PDO::FETCH_LAZY);
-		if (!$result || $basis->cInfo->admin_name <> $result['admin_name'] || $result['inactive']) \core\classes\userException(TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD, 'LoadLogIn');
+		if (!$result || $result['inactive']) \core\classes\userException(TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD, 'LoadLogIn');
 		\core\classes\encryption::validate_password($basis->cInfo->admin_pass, $result['admin_pass']);
-		$_SESSION['admin_id']       = $result['admin_id'];
-		$_SESSION['display_name']   = $result['display_name'];
-		$_SESSION['admin_email']    = $result['admin_email'];
-		$_SESSION['admin_prefs']    = unserialize($result['admin_prefs']);
-		$_SESSION['account_id']     = $result['account_id'];
-		$_SESSION['admin_security'] = \core\classes\user::parse_permissions($result['admin_security']);
-		// set some cookies for the next visit to remember the company, language, and theme
-		$cookie_exp = 2592000 + time(); // one month
-		setcookie('pb_company' , $basis->user->get_company(),  $cookie_exp);
-		setcookie('pb_language', $basis->user->language->language_code, $cookie_exp);
+		$_SESSION['user']->admin_id       = $result['admin_id'];
+		$_SESSION['user']->display_name   = $result['display_name'];
+		$_SESSION['user']->admin_email    = $result['admin_email'];
+		$_SESSION['user']->admin_prefs    = unserialize($result['admin_prefs']);
+		$_SESSION['user']->account_id     = $result['account_id'];
+		$_SESSION['user']->admin_security = \core\classes\user::parse_permissions($result['admin_security']);
+		
 		// load init functions for each module and execute
 		foreach ($basis->classes as $key => $module_class) $module_class->should_update($basis);
 		if (defined('TABLE_CONTACTS')) {
 			$sql = $basis->DataBase->prepare("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result['account_id']);
 			$sql->execute();
 			$dept = $sql->fetch(\PDO::FETCH_LAZY);
-			$_SESSION['department'] = $dept['dept_rep_id'];
+			$_SESSION['user']->department = $dept['dept_rep_id'];
 		}
-		gen_add_audit_log(TEXT_USER_LOGIN . " -> id: {$_SESSION['admin_id']} name: {$_SESSION['display_name']}");
+		gen_add_audit_log(TEXT_USER_LOGIN . " -> id: {$_SESSION['user']->admin_id} name: {$_SESSION['user']->display_name}");
 		// check for session timeout to reload to requested page
 		/*$get_params = '';
 		if (isset($_SESSION['pb_module']) && $_SESSION['pb_module']) {
@@ -364,7 +360,7 @@ class admin extends \core\classes\admin {
 		    <td width="33%" valign="top">
 		      <div id="col_<?php echo $current_column; ?>" style="position:relative;">
 		<?php
-		$sql = $basis->DataBase->prepare("SELECT dashboard_id, id, user_id, menu_id, column_id, row_id, params FROM ".TABLE_USERS_PROFILES." WHERE user_id = '{$_SESSION['admin_id']}' and menu_id = '{$basis->cInfo->menu_id}' ORDER BY column_id, row_id");
+		$sql = $basis->DataBase->prepare("SELECT dashboard_id, id, user_id, menu_id, column_id, row_id, params FROM ".TABLE_USERS_PROFILES." WHERE user_id = '{$_SESSION['user']->admin_id}' and menu_id = '{$basis->cInfo->menu_id}' ORDER BY column_id, row_id");
 		$sql->execute();
 		while ($box = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)) {
 			if($box->column_id <> $current_column) {
@@ -400,9 +396,7 @@ class admin extends \core\classes\admin {
 	 */
 	function logout (\core\classes\basis &$basis){
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		gen_add_audit_log(TEXT_USER_LOGOFF . " -> id: {$_SESSION['admin_id']} name: {$_SESSION['display_name']}");
-		session_destroy();
-		$basis->user->LoadLogIn();
+		$_SESSION['user']->logout();
 	}
 
 	/**

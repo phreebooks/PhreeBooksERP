@@ -18,7 +18,7 @@
 //
 namespace phreemail\classes;
 require_once (DIR_FS_MODULES . 'phreedom/includes/PHPMailer/class.phpmailer.php');
-require_once (DIR_FS_MODULES . 'phreemail/language/'.$_SESSION['language'].'/language.php');
+require_once (DIR_FS_MODULES . 'phreemail/language/'.$_SESSION['user']->language.'/language.php');
 require_once (DIR_FS_MODULES . 'phreemail/config.php');
 
 class phreemail extends PHPMailer{

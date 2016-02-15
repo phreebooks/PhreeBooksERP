@@ -52,7 +52,7 @@ echo $toolbar->build();
 		<td><?php echo TEXT_AUTO_COMPLETE . ' ' . html_checkbox_field('auto_complete', '1', '1'); ?></td>
 
 	  <?php if (ENABLE_MULTI_BRANCH) { ?>
-		<td><?php echo TEXT_STORE_ID . ' ' . html_pull_down_menu('store_id', gen_get_store_ids(), $cInfo->store_id ? $cInfo->store_id : $_SESSION['admin_prefs']['def_store_id']); ?></td>
+		<td><?php echo TEXT_STORE_ID . ' ' . html_pull_down_menu('store_id', gen_get_store_ids(), $cInfo->store_id ? $cInfo->store_id : $_SESSION['user']->admin_prefs['def_store_id']); ?></td>
 	  <?php } ?>
 	  </tr>
 	 </tbody>

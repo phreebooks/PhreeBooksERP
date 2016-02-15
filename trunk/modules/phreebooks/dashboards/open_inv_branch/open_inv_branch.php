@@ -45,7 +45,7 @@ class open_inv_branch extends \core\classes\ctl_panel {
 		$total = 0;
 		$temp = "SELECT id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value
 		  FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id = 12 and closed = '0'";
-		$sql .= " and store_id = " . ($_SESSION['admin_prefs']['def_store_id'] ? $_SESSION['admin_prefs']['def_store_id'] : 0);
+		$sql .= " and store_id = " . ($_SESSION['user']->admin_prefs['def_store_id'] ? $_SESSION['user']->admin_prefs['def_store_id'] : 0);
 		$sql .= " ORDER BY post_date DESC, purchase_invoice_id DESC";
 		if ($this->params['num_rows']) $temp .= " LIMIT " . $this->params['num_rows'];
 		$sql = $admin->DataBase->prepare($temp);

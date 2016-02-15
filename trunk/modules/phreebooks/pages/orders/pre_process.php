@@ -128,7 +128,7 @@ switch ($_REQUEST['action']) {
 		$order->post_date           = \core\classes\DateTime::db_date_format($_POST['post_date']);
 		$order->period              = \core\classes\DateTime::period_of_date($order->post_date);
 		if (!$order->period) throw new \core\classes\userException("the period isn't set");	// bad post_date was submitted
-		if ($_SESSION['admin_prefs']['restrict_period'] && $order->period <> CURRENT_ACCOUNTING_PERIOD) throw new \core\classes\userException(ORD_ERROR_NOT_CUR_PERIOD);
+		if ($_SESSION['user']->admin_prefs['restrict_period'] && $order->period <> CURRENT_ACCOUNTING_PERIOD) throw new \core\classes\userException(ORD_ERROR_NOT_CUR_PERIOD);
 		$order->so_po_ref_id        = db_prepare_input($_POST['so_po_ref_id']);	// Internal link to reference po/so record
 		$order->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);	// PhreeBooks order/invoice ID
 		$order->purch_order_id      = db_prepare_input($_POST['purch_order_id']);  // customer PO/Ref number
@@ -137,7 +137,7 @@ switch ($_REQUEST['action']) {
 		$order->recur_id            = db_prepare_input($_POST['recur_id']);
 		$order->recur_frequency     = db_prepare_input($_POST['recur_frequency']);
 	//	$order->sales_tax_auths     = db_prepare_input($_POST['sales_tax_auths']);
-		$order->admin_id            = $_SESSION['admin_id'];
+		$order->admin_id            = $_SESSION['user']->admin_id;
 		$order->rep_id              = db_prepare_input($_POST['rep_id']);
 		$order->gl_acct_id          = db_prepare_input($_POST['gl_acct_id']);
 		$order->terms               = db_prepare_input($_POST['terms']);
@@ -331,7 +331,7 @@ for ($i = 0; $i < count($proj_list); $i++) {
   $js_proj_list .= 'proj_list[' . $i . '] = new dropDownData("' . $proj_list[$i]['id'] . '", "' . $proj_list[$i]['text'] . '");' . chr(10);
 }
 // see if current user points to a employee for sales rep default
-$result = $admin->DataBase->query("select account_id from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
+$result = $admin->DataBase->query("select account_id from " . TABLE_USERS . " where admin_id = " . $_SESSION['user']->admin_id);
 $default_sales_rep = $result->fields['account_id'] ? $result->fields['account_id'] : '0';
 
 // Load shipping methods

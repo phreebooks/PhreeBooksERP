@@ -41,7 +41,7 @@ class journal_23 extends \core\classes\journal {
 
 	function __construct( $id = 0, $verbose = true) {
 		global $admin;
-		if (isset($_SESSION['admin_prefs']['def_cash_acct'])) $this->gl_acct_id = $_SESSION['admin_prefs']['def_cash_acct'];
+		if (isset($_SESSION['user']->admin_prefs['def_cash_acct'])) $this->gl_acct_id = $_SESSION['user']->admin_prefs['def_cash_acct'];
 		$result = $admin->DataBase->query("select next_check_num from " . TABLE_CURRENT_STATUS);
 		$this->purchase_invoice_id = $result['next_check_num'];
 		parent::__construct( $id, $verbose);

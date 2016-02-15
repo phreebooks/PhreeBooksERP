@@ -52,7 +52,7 @@
   <tbody class="ui-widget-content">
 	<tr>
 	  <td align="right" valign="top"><?php echo TEXT_ENTERED_BY; ?></td>
-	  <td valign="top"><?php echo html_pull_down_menu('entered_by', $user_choices, ($cInfo->entered_by ? $cInfo->entered_by : $_SESSION['admin_id'])); ?></td>
+	  <td valign="top"><?php echo html_pull_down_menu('entered_by', $user_choices, ($cInfo->entered_by ? $cInfo->entered_by : $_SESSION['user']->admin_id)); ?></td>
 	</tr>
 	<tr>
 	  <td align="right"><?php echo TEXT_STATUS; ?></td>

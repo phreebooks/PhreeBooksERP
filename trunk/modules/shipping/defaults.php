@@ -19,8 +19,8 @@
 //
 
 define('DEFAULT_MOD_DIR', DIR_FS_WORKING . 'methods/');
-define('SHIPPING_DEFAULT_LABEL_DIR', DIR_FS_MY_FILES . $_SESSION['company'] . '/shipping/labels/');
-define('SHIPPING_DEFAULT_LABEL_WS',  DIR_WS_MY_FILES . $_SESSION['company'] . '/shipping/labels/');
+define('SHIPPING_DEFAULT_LABEL_DIR', DIR_FS_MY_FILES . $_SESSION['user']->company . '/shipping/labels/');
+define('SHIPPING_DEFAULT_LABEL_WS',  DIR_WS_MY_FILES . $_SESSION['user']->company . '/shipping/labels/');
 define('SHIPPING_DEFAULT_LTL_CLASS','125');
 
 // Set up choices for dropdown menus for general shipping methods, not all are used for each method

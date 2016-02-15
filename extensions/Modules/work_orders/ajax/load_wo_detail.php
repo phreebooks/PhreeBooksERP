@@ -23,7 +23,7 @@ $security_level = \core\classes\user::validate();
 $id = $_GET['id'];
 if (!$id) throw new \core\classes\userException("Error - Bad ID passed.");
 
-$result = $admin->DataBase->query("select display_name, admin_email from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
+$result = $admin->DataBase->query("select display_name, admin_email from " . TABLE_USERS . " where admin_id = " . $_SESSION['user']->admin_id);
 $xml  = xmlEntry("id",     $id);
 $xml .= xmlEntry("sEmail", $result->fields['admin_email']);
 $xml .= xmlEntry("sName",  $result->fields['display_name']);

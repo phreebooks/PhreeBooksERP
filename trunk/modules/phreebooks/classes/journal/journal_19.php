@@ -89,8 +89,8 @@ class journal_19 extends \core\classes\journal {
 
 	function __construct( $id = 0, $verbose = true) {
         $this->purchase_invoice_id = 'DP' . date('Ymd');
-        if (isset($_SESSION['admin_prefs']['def_cash_acct'])) $this->gl_acct_id = $_SESSION['admin_prefs']['def_cash_acct'];
-		if (isset($_SESSION['admin_prefs']['def_store_id']))  $this->store_id   = $_SESSION['admin_prefs']['def_store_id'];
+        if (isset($_SESSION['user']->admin_prefs['def_cash_acct'])) $this->gl_acct_id = $_SESSION['user']->admin_prefs['def_cash_acct'];
+		if (isset($_SESSION['user']->admin_prefs['def_store_id']))  $this->store_id   = $_SESSION['user']->admin_prefs['def_store_id'];
 		parent::__construct( $id, $verbose);
 	}
 

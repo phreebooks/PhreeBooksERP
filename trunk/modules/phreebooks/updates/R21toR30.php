@@ -83,7 +83,7 @@ while (!$result->EOF) {
   	$result->MoveNext();
 }
 // Copy the PhreeBooks images
-$dir_source = DIR_FS_MY_FILES . $_SESSION['company'] . '/images';
+$dir_source = DIR_FS_MY_FILES . $_SESSION['user']->company . '/images';
 $dir_dest   = PF_DIR_MY_REPORTS . 'images';
 $d = dir($dir_source);
 while (FALSE !== ($filename = $d->read())) {

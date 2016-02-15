@@ -218,7 +218,7 @@ class tills {
 
   function default_till(){
   	global $admin;
-  	$sql = "select till_id from " . $this->db_table . " where store_id = '" . $_SESSION['admin_prefs']['def_store_id']."'";
+  	$sql = "select till_id from " . $this->db_table . " where store_id = '" . $_SESSION['user']->admin_prefs['def_store_id']."'";
     $result = $admin->DataBase->query($sql);
     return $result->fields['till_id'];
   }
@@ -247,7 +247,7 @@ class tills {
 
   function get_default_till_info(){
   	global $admin;
-  	$sql = "select * from " . $this->db_table . " where store_id = '" . $_SESSION['admin_prefs']['def_store_id']."'";
+  	$sql = "select * from " . $this->db_table . " where store_id = '" . $_SESSION['user']->admin_prefs['def_store_id']."'";
     $result = $admin->DataBase->query($sql);
     foreach ($result->fields as $key => $value) $this->$key = $value;
   }

@@ -21,7 +21,7 @@ $security_level = \core\classes\user::validate(SECURITY_ID_MY_PROFILE);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_WORKING . 'functions/phreedom.php');
 /**************   page specific initialization  *************************/
-$result = $admin->DataBase->query("select admin_prefs from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
+$result = $admin->DataBase->query("select admin_prefs from " . TABLE_USERS . " where admin_id = " . $_SESSION['user']->admin_id);
 $prefs  = unserialize($result->fields['admin_prefs']);
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/profile/extra_actions.php';
@@ -34,10 +34,10 @@ switch ($_REQUEST['action']) {
 	$prefs['menu']   = db_prepare_input($_POST['menu']);
 	$prefs['colors'] = db_prepare_input($_POST['colors']);
 	if (!$prefs['colors']) throw new \core\classes\userException(GEN_ERROR_NO_THEME_COLORS);
-	db_perform(TABLE_USERS, array('admin_prefs'=>serialize($prefs)), 'update', 'admin_id = '.$_SESSION['admin_id']);
-	$_SESSION['admin_prefs']['theme']  = $prefs['theme'];
-	$_SESSION['admin_prefs']['menu']   = $prefs['menu'];
-	$_SESSION['admin_prefs']['colors'] = $prefs['colors'];
+	db_perform(TABLE_USERS, array('admin_prefs'=>serialize($prefs)), 'update', 'admin_id = '.$_SESSION['user']->admin_id);
+	$_SESSION['user']->admin_prefs['theme']  = $prefs['theme'];
+	$_SESSION['user']->admin_prefs['menu']   = $prefs['menu'];
+	$_SESSION['user']->admin_prefs['colors'] = $prefs['colors'];
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(), 'SSL'));
 	break;
   default:

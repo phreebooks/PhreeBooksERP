@@ -27,8 +27,8 @@ class backup {
     public $dest_file   = 'filename.bak';
 
   	function __construct() {
-    	$this->db_filename = 'db-' . $_SESSION['company'] . '-' . date('Ymd');
-    	$this->source_dir  = DIR_FS_MY_FILES . $_SESSION['company'] . '/';
+    	$this->db_filename = 'db-' . $_SESSION['user']->company . '-' . date('Ymd');
+    	$this->source_dir  = DIR_FS_MY_FILES . $_SESSION['user']->company . '/';
     	$this->dest_dir    = DIR_FS_MY_FILES . 'backups/';
   	}
 

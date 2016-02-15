@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/phreedom/pages/users/pre_process.php
 //
-if($_SESSION['admin_id'] == 1) $security_level = 4;
+if($_SESSION['user']->admin_id == 1) $security_level = 4;
 else $security_level = \core\classes\user::validate(SECURITY_ID_USERS);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_WORKING . 'functions/phreedom.php');
@@ -102,7 +102,7 @@ switch ($_REQUEST['action']) {
 			$admin_id = \core\classes\PDO::lastInsertId('id');
 			gen_add_audit_log(sprintf(GEN_LOG_USER, TEXT_ADD), db_prepare_input($_POST['admin_name']));
 	  	}
-	  	if ($admin_id == $_SESSION['admin_id']) $_SESSION['admin_security'] = \core\classes\user::parse_permissions($admin_security); // update if user is current user
+	  	if ($admin_id == $_SESSION['user']->admin_id) $_SESSION['user']->admin_security = \core\classes\user::parse_permissions($admin_security); // update if user is current user
   	}catch(Exception $e){
   		$_REQUEST['action'] = 'edit';
   		\core\classes\messageStack::add($e->getMessage());

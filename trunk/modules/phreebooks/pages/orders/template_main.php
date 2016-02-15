@@ -263,7 +263,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
             <td align="center"><?php echo html_input_field('sales_order_num', $order->sales_order_num, 'readonly="readonly" size="21" maxlength="20"'); ?></td>
 		  <?php } ?>
           <?php if (ENABLE_MULTI_BRANCH) { ?>
-            <td align="center"><?php echo html_pull_down_menu('store_id', gen_get_store_ids(), $order->store_id ? $order->store_id : $_SESSION['admin_prefs']['def_store_id']); ?></td>
+            <td align="center"><?php echo html_pull_down_menu('store_id', gen_get_store_ids(), $order->store_id ? $order->store_id : $_SESSION['user']->admin_prefs['def_store_id']); ?></td>
 		  <?php } ?>
           <td align="center"><?php echo html_pull_down_menu('rep_id', gen_get_rep_ids($order->account_type), $order->rep_id ? $order->rep_id : $default_sales_rep); ?></td>
 <?php if ($template_options['terms']) echo '<td align="center">' . html_input_field('terms_text', gen_terms_to_language('0', true, 'ap'), 'readonly="readonly" size="25"') . '&nbsp;' . html_icon('apps/accessories-text-editor.png', TEXT_TERMS_DUE, 'small', 'align="top" style="cursor:pointer" onclick="TermsList()"') . '</td>'; ?>

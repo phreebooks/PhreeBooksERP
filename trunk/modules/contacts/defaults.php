@@ -17,7 +17,7 @@
 //  Path: /modules/contacts/defaults.php
 //
 // default directory for contact attachments
-define('CONTACTS_DIR_ATTACHMENTS',  DIR_FS_MY_FILES . $_SESSION['company'] . '/contacts/main/');
+define('CONTACTS_DIR_ATTACHMENTS',  DIR_FS_MY_FILES . $_SESSION['user']->company . '/contacts/main/');
 
 $employee_types = array(
   'e' => TEXT_EMPLOYEE,

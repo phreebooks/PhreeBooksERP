@@ -24,7 +24,7 @@
 /**************   Check user security   *****************************/
 $security_level = \core\classes\user::validate(SECURITY_PHREEMAIL_MGT);
 /**************  include page specific files  *********************/
-require(DIR_FS_MODULES . 'phreeform/language/'  . $_SESSION['language'] . '/language.php'); // error messages, qualifiers
+require(DIR_FS_MODULES . 'phreeform/language/'  . $_SESSION['user']->language . '/language.php'); // error messages, qualifiers
 
 /**************   page specific initialization  *************************/
 $recpt_email 		= '';
@@ -72,7 +72,7 @@ while (!$result->EOF){
 	}
 	$result->MoveNext();
 }
-$result 	  = $admin->DataBase->query("select display_name, admin_email from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
+$result 	  = $admin->DataBase->query("select display_name, admin_email from " . TABLE_USERS . " where admin_id = " . $_SESSION['user']->admin_id);
 $sender_name  = $result->fields['display_name'];
 $sender_email = $result->fields['admin_email'];
 

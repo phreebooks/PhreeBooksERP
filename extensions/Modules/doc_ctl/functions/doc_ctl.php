@@ -71,7 +71,7 @@ function build_dir_path($id) {
 function load_bookmarks() {
 	global $admin;
 	$contents = NULL;
-	$result = $admin->DataBase->query("select id, title from " . TABLE_DC_DOCUMENT . " where bookmarks like '%:" . $_SESSION['admin_id'] . ":%'");
+	$result = $admin->DataBase->query("select id, title from " . TABLE_DC_DOCUMENT . " where bookmarks like '%:" . $_SESSION['user']->admin_id . ":%'");
 	if ($result->fetch(\PDO::FETCH_NUM) == 0) {
 	  $contents .= TEXT_NO_BOOKMARKS . '<br />';
 	} else {
@@ -89,7 +89,7 @@ function load_bookmarks() {
 function load_checked_out() {
 	global $admin;
 	$contents = NULL;
-	$result = $admin->DataBase->query("select id, title from " . TABLE_DC_DOCUMENT . " where checkout_id = " . $_SESSION['admin_id']);
+	$result = $admin->DataBase->query("select id, title from " . TABLE_DC_DOCUMENT . " where checkout_id = " . $_SESSION['user']->admin_id);
 	if ($result->fetch(\PDO::FETCH_NUM) == 0) {
 	  $contents .= TEXT_NO_CHECKED_OUT . '<br />';
 	} else {
@@ -129,7 +129,7 @@ function get_owner_name($id) {
 
 function test_bookmark() {
   global $admin;
-  $result = $admin->DataBase->query("select id from " . TABLE_DC_DOCUMENT . " where bookmarks like '%:" . $_SESSION['admin_id'] . ":%'");
+  $result = $admin->DataBase->query("select id from " . TABLE_DC_DOCUMENT . " where bookmarks like '%:" . $_SESSION['user']->admin_id . ":%'");
   return ($result->fetch(\PDO::FETCH_NUM) > 0) ? true : false;
 }
 
@@ -144,8 +144,8 @@ function get_doc_history($id, $revision_level = 0) {
 
 function security_check($tokens) {
 	$categories = explode(';', $tokens);
-	$user_str = ':' . $_SESSION['admin_id'] . ':';
-	$dept_str = ':' . ($_SESSION['department'] ? $_SESSION['department'] : '0') . ':';
+	$user_str = ':' . $_SESSION['user']->admin_id . ':';
+	$dept_str = ':' . ($_SESSION['user']->department ? $_SESSION['user']->department : '0') . ':';
 	foreach ($categories as $category) {
 		$type = substr($category, 0, 1);
 		$approved_ids = substr($category, 1) . ':';

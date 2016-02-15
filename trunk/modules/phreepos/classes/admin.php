@@ -22,6 +22,7 @@ class admin extends \core\classes\admin {
 	public $id 			= 'phreepos';
 	public $description = MODULE_PHREEPOS_DESCRIPTION;
 	public $version		= '3.9';
+	public $sort_order  = 8;
 
 	function __construct(){
 		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_PHREEPOS);
@@ -84,7 +85,7 @@ class admin extends \core\classes\admin {
 		$this->mainmenu["banking"]->submenu   ['phreepos']->submenu ["closing"]  		= new \core\classes\menuItem (10, 	TEXT_CLOSING_POS_OR_POP,					'module=phreepos&amp;page=closing', 			SECURITY_ID_POS_CLOSING, 		'MODULE_PHREEPOS_STATUS');
 		$this->mainmenu["banking"]->submenu   ['customer_payment']->submenu ['deposit'] = new \core\classes\menuItem (60, 	TEXT_DEPOSIT,								'module=phreepos&amp;page=deposit&amp;type=c', 	SECURITY_ID_CUSTOMER_DEPOSITS, 	'MODULE_PHREEPOS_STATUS');
 		$this->mainmenu["banking"]->submenu   ['vendor_payment']->submenu   ['deposit'] = new \core\classes\menuItem (60, 	TEXT_DEPOSIT,								'module=phreepos&amp;page=deposit&amp;type=v', 	SECURITY_ID_VENDOR_DEPOSITS, 	'MODULE_PHREEPOS_STATUS');
-		$this->mainmenu["company"]->submenu ["configuration"]->submenu ["phreepos"]  = new \core\classes\menuItem (sprintf(TEXT_MODULE_ARGS, TEXT_PHREEPOS), sprintf(TEXT_MODULE_ARGS, TEXT_PHREEPOS),	'module=phreepos&amp;page=admin',   SECURITY_ID_CONFIGURATION, 'MODULE_PHREEPOS_STATUS');
+		$this->mainmenu["company"]->submenu	  ["configuration"]->submenu   ["phreepos"] = new \core\classes\menuItem (sprintf(TEXT_MODULE_ARGS, TEXT_PHREEPOS), sprintf(TEXT_MODULE_ARGS, TEXT_PHREEPOS),	'module=phreepos&amp;page=admin',   SECURITY_ID_CONFIGURATION, 'MODULE_PHREEPOS_STATUS');
 	    parent::__construct();
 	}
 

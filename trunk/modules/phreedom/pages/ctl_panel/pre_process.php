@@ -24,7 +24,7 @@ $menu_id = $_GET['mID'];
 // retireve current user profile for this page
 $my_profile = array();
 $result = $admin->DataBase->query("select dashboard_id from " . TABLE_USERS_PROFILES . "
-  where user_id = " . $_SESSION['admin_id'] . " and menu_id = '" . $menu_id . "'");
+  where user_id = " . $_SESSION['user']->admin_id . " and menu_id = '" . $menu_id . "'");
 while (!$result->EOF) {
   $my_profile[] = $result->fields['dashboard_id'];
   $result->MoveNext();

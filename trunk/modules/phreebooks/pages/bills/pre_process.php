@@ -90,7 +90,7 @@ switch ($_REQUEST['action']) {
 
 		// load journal main data
 		$order->id                  = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
-		$order->admin_id            = $_SESSION['admin_id'];
+		$order->admin_id            = $_SESSION['user']->admin_id;
 		$order->rep_id              = db_prepare_input($_POST['rep_id']);
 		$order->journal_id          = JOURNAL_ID;
 		$order->post_date           = $post_date;
@@ -248,7 +248,7 @@ $cal_bills = array(
 );
 
 // see if current user points to a employee for sales rep default
-$result = $admin->DataBase->query("select account_id from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
+$result = $admin->DataBase->query("select account_id from " . TABLE_USERS . " where admin_id = " . $_SESSION['user']->admin_id);
 $default_sales_rep = $result->fields['account_id'] ? $result->fields['account_id'] : '0';
 
 $include_header   = true;

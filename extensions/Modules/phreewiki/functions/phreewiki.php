@@ -239,7 +239,7 @@ function tiddler_bodyDecode($body) {
 
 function user_getUsername()	{
 	global $admin;
-	$result = $admin->DataBase->query('Select display_name From '.TABLE_USERS.' Where admin_id ="'.$_SESSION['admin_id'].'"');
+	$result = $admin->DataBase->query('Select display_name From '.TABLE_USERS.' Where admin_id ="'.$_SESSION['user']->admin_id.'"');
 	$names = explode(' ',$result->fields['display_name']);
 	While ($name =array_shift($names)){
 		$u .=ucfirst(strtolower($name));

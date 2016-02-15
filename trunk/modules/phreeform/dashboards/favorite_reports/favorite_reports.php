@@ -79,7 +79,7 @@ class favorite_reports extends \core\classes\ctl_panel {
 		if (!$remove_id && $report_id == '') return;
 		// fetch the current params
 		$result = $admin->DataBase->query("SELECT params FROM " . TABLE_USERS_PROFILES . "
-		  WHERE user_id = {$_SESSION['admin_id']} and menu_id = '{$this->menu_id}' and dashboard_id = '{$this->id}'");
+		  WHERE user_id = {$_SESSION['user']->admin_id} and menu_id = '{$this->menu_id}' and dashboard_id = '{$this->id}'");
 		if ($remove_id) { // remove element
 		  	$this->params = unserialize($result->fields['params']);
 		  	$temp   = array();
@@ -97,7 +97,7 @@ class favorite_reports extends \core\classes\ctl_panel {
 		}
 		asort($this->params);
 		$admin->DataBase->exec("UPDATE " . TABLE_USERS_PROFILES . " SET params = '" . serialize($this->params) . "'
-		  WHERE user_id = {$_SESSION['admin_id']} and menu_id = '{$this->menu_id}' and dashboard_id = '{$this->id}'");
+		  WHERE user_id = {$_SESSION['user']->admin_id} and menu_id = '{$this->menu_id}' and dashboard_id = '{$this->id}'");
 	}
 }
 ?>

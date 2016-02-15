@@ -39,7 +39,7 @@ $default_chart = DIR_FS_MODULES . 'phreebooks/language/en_us/charts/USA_Retail.x
 
 require_once('functions/install.php');
 $lang = $_GET['lang'] ? $_GET['lang'] : DEFAULT_LANGUAGE;
-$_SESSION['language'] = $lang;
+$_SESSION['user']->language = $lang;
 install_pull_language($lang);
 install_lang('phreedom',  $lang, 'language'); // install general language file
 install_lang('phreeform', $lang, 'language'); // install general language file
@@ -166,8 +166,8 @@ switch ($_REQUEST['action']) {
 
 		// define some things so the install can use existing functions
 		define('DB_PREFIX', $db_prefix);
-		$_SESSION['company']  = $db_name;
-		$_SESSION['language'] = $lang;
+		$_SESSION['user']->company  = $db_name;
+		$_SESSION['user']->language = $lang;
 		// create the company directory
 		\core\classes\messageStack::debug_log("\n  creating the company directory");
 		validate_path(DIR_FS_ADMIN . PATH_TO_MY_FILES . $db_name);
@@ -214,15 +214,15 @@ switch ($_REQUEST['action']) {
 	  	foreach ($admin->classes as $module_class) {
 	  		if ($module_class->core) {
 	  			\core\classes\messageStack::debug_log("\n  installing core module = " . $module_class->id);
-	  			$module_class->install(DIR_FS_MY_FILES.$_SESSION['company'].'/', $company_demo);
+	  			$module_class->install(DIR_FS_MY_FILES.$_SESSION['user']->company.'/', $company_demo);
 	  		}
 	  	}
 		// load phreedom reports now since table exists
-	  	if (DEBUG) \core\classes\messageStack::debug_log"\n  installing phreedom.");
+	  	if (DEBUG) \core\classes\messageStack::debug_log("\n  installing phreedom.");
 		foreach ($admin->classes as $module_class) {
 	  		if (!$module_class->core) {
 	  			\core\classes\messageStack::debug_log("\n  installing core module = {$module_class->id}");
-	  			$module_class->install(DIR_FS_MY_FILES.$_SESSION['company'].'/', $company_demo);
+	  			$module_class->install(DIR_FS_MY_FILES.$_SESSION['user']->company.'/', $company_demo);
 	  		}
 	  	}
 		if (!$error) { // input admin username record, clear the tables first
@@ -302,11 +302,11 @@ switch ($_REQUEST['action']) {
 		  if (!@chmod('../includes/configure.php', 0444))			\core\classes\messageStack::add("Was not able to mark configure file as read only", "caution");
 		}
 		if (!$error) { // set the session variables so they can log in
-		  $_SESSION['admin_id']       = $user_id;
-		  $_SESSION['admin_prefs']    = '';
-		  $_SESSION['language']       = $lang;
-		  $_SESSION['account_id']     = '';
-		  $_SESSION['admin_security'] = \core\classes\user::parse_permissions($security);
+		  $_SESSION['user']->admin_id       = $user_id;
+		  $_SESSION['user']->admin_prefs    = '';
+		  $_SESSION['user']->language       = $lang;
+		  $_SESSION['user']->account_id     = '';
+		  $_SESSION['user']->admin_security = \core\classes\user::parse_permissions($security);
 		  $include_template = 'template_finish.php';
 		  define('PAGE_TITLE', TITLE_FINISH);
 		  if (DEBUG) $messageStack->write_debug();

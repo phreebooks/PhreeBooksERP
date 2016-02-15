@@ -37,20 +37,12 @@ class menuItem {
 	}
 	
 	function output(){
-		print_r($this);
 		if ($this->show() == false) return ;
 		if (is_array($this->submenu)) {
 			usort($this->submenu, array($this,'sortByOrder'));
-			echo "  <li><a href='".html_href_link(FILENAME_DEFAULT, $this->link, 'SSL')."' {$this->params}> $this->icon $this->text</a>";
+			echo "  <li><a href='".html_href_link(FILENAME_DEFAULT, $this->link, 'SSL')."' {$this->params}> $this->icon $this->text</a>" .chr(10);
 			echo '    <ul>';
-			foreach($this->submenu as $key => $menu_item){
-				if (! $menu_item instanceof \core\classes\menuItem){
-					$temp = get_object_vars($menu_item);
-					$menu_item = new \core\classes\menuItem();
-					foreach ($temp as $key => $value) $menu_item->$key = $value;
-				}
-				$menu_item->output();
-			}
+			foreach($this->submenu as $key => $menu_item) $menu_item->output();
 			echo '    </ul>';
 			echo '  </li>';
 		}else{
@@ -66,29 +58,23 @@ class menuItem {
 	}
 	
 	function show(){
+		\core\classes\messageStack::debug_log("menu $this->text show $this->required_module and security = $this->security_id" );
 		if ($this->required_module != ''){
+			\core\classes\messageStack::debug_log("$this->text show there is a required module");
 			if (is_array($this->required_module)) {
+				\core\classes\messageStack::debug_log("$this->text show it is a array required module");
 				$temp = false;
 				foreach ($this->required_module as $key) if (defined($key)) $temp = true;
 				if ($temp == false ) return false;
 			} else{
 				if(!defined($this->required_module)) return false;
 			}
+			\core\classes\messageStack::debug_log("$this->text show it is is allowd to contiune");
 		}
-		if ($this->security_id > 0 && \core\classes\user::security_level($this->security_id) != 0 ) return false;
+		\core\classes\messageStack::debug_log("menu $this->text $this->security_id = ". \core\classes\user::security_level($this->security_id));
+		if (\core\classes\user::security_level($this->security_id) == 0 ) return false;
+		\core\classes\messageStack::debug_log("past security check");
 		return true;
-	}
-	
-	function appendsubmenu(\core\classes\menuItem $menuitems){
-		foreach ($menuitems as $key => $menuitem){ 
-			$this->submenu[$key] = $menuitem;
-			if (is_array($menuitem->submenu)) {
-				print_r($menuitem);
-//				$key = key($menuitems);
-//				$this->submenu[$key]->appendsubmenu($menuitem->submenu);
-			}
-//			$this->submenu[$key]->appendsubmenu($menuitem->submenu);
-		}
 	}
 	
 }

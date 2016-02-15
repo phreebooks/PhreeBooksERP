@@ -20,7 +20,7 @@ $hidden_fields = '';
 ?>
 <div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
   <div id="inv_image" title="<?php echo $wo_title; ?>">
-    <?php if ($image_with_path) echo html_image(DIR_WS_MY_FILES . $_SESSION['company'] . '/inventory/images/' . $image_with_path, '', 600) . chr(10);
+    <?php if ($image_with_path) echo html_image(DIR_WS_MY_FILES . $_SESSION['user']->company . '/inventory/images/' . $image_with_path, '', 600) . chr(10);
 			else echo TEXT_NO_IMAGE; ?>
     <div>
 	  <h2><?php echo TEXT_WORK_ORDER_TITLE . ': ' . $wo_title; ?></h2>
@@ -41,7 +41,7 @@ $hidden_fields = '';
 	  </td>
 	  <td align="center" rowspan="3">
 		<?php if ($image_with_path) { // show image if it is defined
-			echo html_image(DIR_WS_MY_FILES . $_SESSION['company'] . '/inventory/images/' . $image_with_path, $image_with_path, '', '100', 'rel="#photo1"');
+			echo html_image(DIR_WS_MY_FILES . $_SESSION['user']->company . '/inventory/images/' . $image_with_path, $image_with_path, '', '100', 'rel="#photo1"');
 		} else echo '&nbsp;'; ?>
 	  </td>
 	</tr>

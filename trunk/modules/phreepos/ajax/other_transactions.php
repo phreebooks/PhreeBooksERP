@@ -47,7 +47,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 		'description'         => TEXT_GENERAL_JOURNAL_ENTRY,
 		'bill_primary_name'   => $transaction->description,
 		'purchase_invoice_id' => '',
-		'admin_id'            => $_SESSION['admin_id'],
+		'admin_id'            => $_SESSION['user']->admin_id,
 		'store_id'            => $tills->store_id,
 		'total_amount'		  => ($admin->currencies->clean_value(db_prepare_input($_POST['ot_amount']), $order->currencies_code) / $order->currencies_value),
 	);

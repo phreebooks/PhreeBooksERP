@@ -79,7 +79,7 @@ class company_notes extends \core\classes\ctl_panel {
 		if (!$remove_id && $my_note == '') return;
 		// fetch the current params
 		$sql = $admin->DataBase->prepare("SELECT params FROM " . TABLE_USERS_PROFILES . "
-		  WHERE user_id = {$_SESSION['admin_id']} and menu_id = '{$this->menu_id}'
+		  WHERE user_id = {$_SESSION['user']->admin_id} and menu_id = '{$this->menu_id}'
 		  and dashboard_id = '" . get_class($this). "'");
 		$sql->execute();
 		$result = $sql->fetch(\PDO::FETCH_LAZY);

@@ -17,6 +17,6 @@
 //  Path: /modules/doc_ctl/defaults.php
 //
 define('INSTALL_NUMBER_OF_DRIVES', 1); // the number of root drives to create when installing
-define('DOC_CTL_DIR_MY_DOCS',  DIR_FS_MY_FILES . $_SESSION['company'] . '/doc_ctl/docs/'); // default dir for document storage
+define('DOC_CTL_DIR_MY_DOCS',  DIR_FS_MY_FILES . $_SESSION['user']->company . '/doc_ctl/docs/'); // default dir for document storage
 
 ?>

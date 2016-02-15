@@ -18,10 +18,10 @@
 //
 
 define('DEFAULT_MODULE','phreebooks'); // for importing selection dropdown
-define('PF_DIR_MY_REPORTS',  DIR_FS_MY_FILES . $_SESSION['company'] . '/phreeform/');
-define('PF_WEB_MY_REPORTS',  DIR_WS_MY_FILES . $_SESSION['company'] . '/phreeform/');
+define('PF_DIR_MY_REPORTS',  DIR_FS_MY_FILES . $_SESSION['user']->company . '/phreeform/');
+define('PF_WEB_MY_REPORTS',  DIR_WS_MY_FILES . $_SESSION['user']->company . '/phreeform/');
 define('PF_DIR_DEF_REPORTS', 'modules/' . DEFAULT_MODULE . '/language/' . DEFAULT_LANGUAGE . '/reports/');
-define('PF_DIR_DEF_IMAGE_LINK', DIR_FS_MY_FILES . $_SESSION['company'] . '/');
+define('PF_DIR_DEF_IMAGE_LINK', DIR_FS_MY_FILES . $_SESSION['user']->company . '/');
 define('nl',"\n");
 
 $phreeformTypes = array(

@@ -67,7 +67,7 @@ switch ($_REQUEST['action']) {
 	  		$glEntry->store_id            = $source_store_id;
 	  		$glEntry->bill_acct_id        = $dest_store_id;
 	  		$glEntry->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);
-	  		$glEntry->admin_id            = $_SESSION['admin_id'];
+	  		$glEntry->admin_id            = $_SESSION['user']->admin_id;
 	  		$glEntry->closed              = '1'; // closes by default
 	  		$glEntry->closed_date         = $post_date;
 	  		$glEntry->currencies_code     = DEFAULT_CURRENCY;
@@ -131,7 +131,7 @@ switch ($_REQUEST['action']) {
 	      	$glEntry->period              = $period;
 	      	$glEntry->store_id            = $dest_store_id;
 	      	$glEntry->bill_acct_id        = $source_store_id;
-	      	$glEntry->admin_id            = $_SESSION['admin_id'];
+	      	$glEntry->admin_id            = $_SESSION['user']->admin_id;
 	      	$glEntry->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);
 	      	$glEntry->closed              = '1'; // closes by default
 	      	$glEntry->closed_date         = $post_date;

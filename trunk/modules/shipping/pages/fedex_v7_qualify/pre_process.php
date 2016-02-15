@@ -32,7 +32,7 @@ require(DIR_FS_WORKING . 'functions/shipping.php');
 require(DIR_FS_WORKING . 'pages/fedex_v7_qualify/sample_data.php');
 /**************   page specific initialization  *************************/
 $backup              = new \phreedom\classes\backup();
-$backup->source_dir  = DIR_FS_MY_FILES . $_SESSION['company'] . '/temp/fedex_qual/';
+$backup->source_dir  = DIR_FS_MY_FILES . $_SESSION['user']->company . '/temp/fedex_qual/';
 $backup->dest_dir    = DIR_FS_MY_FILES . 'backups/';
 $backup->dest_file   = 'fedex_qual.zip';
 /***************   Act on the action request   *************************/

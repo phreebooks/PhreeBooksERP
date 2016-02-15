@@ -40,7 +40,7 @@ print_R($mail);
 <h1><?php echo TEXT_ASSETS . ' - ' . TEXT_ASSET_ID . '# ' . $cInfo->asset_id; ?></h1>
 
   <div id="inv_image" title="<?php echo $cInfo->asset_id; ?>">
-    <?php if ($cInfo->image_with_path) echo html_image(DIR_WS_FULL_PATH . 'my_files/' . $_SESSION['company'] . '/assets/images/' . $cInfo->image_with_path, '', 600) . chr(10);
+    <?php if ($cInfo->image_with_path) echo html_image(DIR_WS_FULL_PATH . 'my_files/' . $_SESSION['user']->company . '/assets/images/' . $cInfo->image_with_path, '', 600) . chr(10);
 			else echo TEXT_NO_IMAGE; ?>
     <div>
 	  <h2><?php echo TEXT_ASSET_ID . ': ' . $cInfo->asset_id; ?></h2>
@@ -61,7 +61,7 @@ print_R($mail);
 	  </td>
 	  <td rowspan="4" align="center">
 		<?php if ($cInfo->image_with_path) { // show image if it is defined
-			echo html_image(DIR_WS_FULL_PATH . 'my_files/' . $_SESSION['company'] . '/assets/images/' . $cInfo->image_with_path, $cInfo->image_with_path, '', '100', 'rel="#photo1"');
+			echo html_image(DIR_WS_FULL_PATH . 'my_files/' . $_SESSION['user']->company . '/assets/images/' . $cInfo->image_with_path, $cInfo->image_with_path, '', '100', 'rel="#photo1"');
 		} else echo '&nbsp;'; ?>
 	  </td>
 	  <td><?php echo TEXT_IMAGE . ' (' . TEXT_REMOVE . ' ' . html_checkbox_field('remove_image', '1', $cInfo->remove_image) . ')'; ?></td>

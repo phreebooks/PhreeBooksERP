@@ -63,7 +63,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 	$order->store_id            = $tills->store_id;
 	if ($order->store_id == '') $order->store_id = 0;
 	$order->description         = TEXT_POINT_OF_SALE;
-	$order->admin_id            = $_SESSION['admin_id'];
+	$order->admin_id            = $_SESSION['user']->admin_id;
 	$order->rep_id              = db_prepare_input($_POST['rep_id']);
 	$order->gl_acct_id          = $tills->gl_acct_id;
 	$order->item_count          = db_prepare_input($_POST['item_count']);

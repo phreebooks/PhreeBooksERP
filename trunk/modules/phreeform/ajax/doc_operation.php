@@ -31,7 +31,7 @@ $doc_details = $admin->DataBase->query("select * from " . TABLE_PHREEFORM . " wh
 switch ($_REQUEST['action']) {
   case 'bookmark':
 	$sql_array = array(
-	  'admin_id' => $_SESSION['admin_id'],
+	  'admin_id' => $_SESSION['user']->admin_id,
 	  'doc_id'   => $id,
 	  'type'     => 'b', // bookmark
 	  'params'   => '1', // true
@@ -41,12 +41,12 @@ switch ($_REQUEST['action']) {
     break;
   case 'del_bookmark':
 	$result = $admin->DataBase->exec("delete from " . TABLE_DC_PROPERTIES . "
-		where doc_id = '$id' and type = 'b' and admin_id = '{$_SESSION['admin_id']}'");
+		where doc_id = '$id' and type = 'b' and admin_id = '{$_SESSION['user']->admin_id}'");
 	$ajax_text = DOC_CTL_JS_BOOKMARK_REMOVE;
     break;
   case 'lock':
 	$sql_array = array(
-	  'admin_id' => $_SESSION['admin_id'],
+	  'admin_id' => $_SESSION['user']->admin_id,
 	  'doc_id'   => $id,
 	  'type'     => 'l', // Lock (lower case L)
 	  'params'   => '1', // true

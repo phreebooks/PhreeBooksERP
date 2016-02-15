@@ -40,7 +40,7 @@ function sortByOrder($a, $b) {
 }
 
 function create_menu(array $array){
-	if($array['security_id'] != 1 && $_SESSION['admin_id'] != 1){
+	if($array['security_id'] != 1 && $_SESSION['user']->admin_id != 1){
 		if(isset($array['security_id']) && $array['security_id'] != ''){
 			if (\core\classes\user::security_level($array['security_id']) != 0 ) return '';
 		}

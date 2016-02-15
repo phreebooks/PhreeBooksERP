@@ -100,7 +100,7 @@ class zencart {
 	  }
 	}
 	if ($inc_image && $result->fields['image_with_path']) { // image file
-	  $filename = DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/images/' . $result->fields['image_with_path'];
+	  $filename = DIR_FS_MY_FILES . $_SESSION['user']->company . '/inventory/images/' . $result->fields['image_with_path'];
 	  if (file_exists($filename)) {
 		if (!$handle = @fopen($filename, "rb")) 				throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE,	$filename));
 		if (!$contents = @fread($handle, filesize($filename))) 	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, 		$filename));

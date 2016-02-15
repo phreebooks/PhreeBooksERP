@@ -82,7 +82,7 @@ switch ($_REQUEST['action']) {
 				$order->journal_id          = JOURNAL_ID;
 				$order->post_date           = $post_date;
 				$order->period              = $period;
-				$order->admin_id            = $_SESSION['admin_id'];
+				$order->admin_id            = $_SESSION['user']->admin_id;
 				$order->purchase_invoice_id = $purchase_invoice_id;	// PhreeBooks payment number
 				$order->shipper_code        = '';
 				$order->purch_order_id      = $purch_order_id;

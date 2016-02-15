@@ -93,7 +93,7 @@ class magento {
 	  }
 	}
 	if ($inc_image && $result->fields['image_with_path']) { // image file
-	  $filename = DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/images/' . $result->fields['image_with_path'];
+	  $filename = DIR_FS_MY_FILES . $_SESSION['user']->company . '/inventory/images/' . $result->fields['image_with_path'];
 	  if (file_exists($filename)) {
 			if (!$handle = @fopen($filename, "rb")) 				throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
 		  	if (!$contents = @fread($handle, filesize($filename))) 	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, 		$filename));
@@ -113,7 +113,7 @@ class magento {
 	$this->strXML .= xmlEntry('Version', '2.00');
 	$this->strXML .= xmlEntry('UserName', MAGENTO_USERNAME);
 	$this->strXML .= xmlEntry('UserPassword', MAGENTO_PASSWORD);
-	$this->strXML .= xmlEntry('Language', $_SESSION['language']);
+	$this->strXML .= xmlEntry('Language', $_SESSION['user']->language);
 	$this->strXML .= xmlEntry('Operation', 'ProductUpload');
 	$this->strXML .= xmlEntry('Action', 'InsertUpdate');
 	$this->strXML .= xmlEntry('Reference', 'Product Upload SKU: ' . $result->fields['sku']);
@@ -199,7 +199,7 @@ if (file_exists(DIR_FS_MODULES . 'magento/custom/extra_product_attrs.php')) {
 	$this->strXML .= xmlEntry('Version', '2.00');
 	$this->strXML .= xmlEntry('UserName', MAGENTO_USERNAME);
 	$this->strXML .= xmlEntry('UserPassword', MAGENTO_PASSWORD);
-	$this->strXML .= xmlEntry('Language', $_SESSION['language']);
+	$this->strXML .= xmlEntry('Language', $_SESSION['user']->language);
 	$this->strXML .= xmlEntry('Operation', 'ProductSync');
 	$this->strXML .= xmlEntry('Action', 'Validate');
 	$this->strXML .= xmlEntry('Reference', 'Product Syncronizer');
@@ -224,7 +224,7 @@ if (file_exists(DIR_FS_MODULES . 'magento/custom/extra_product_attrs.php')) {
 	$this->strXML .= xmlEntry('Version', '2.00');
 	$this->strXML .= xmlEntry('UserName', MAGENTO_USERNAME);
 	$this->strXML .= xmlEntry('UserPassword', MAGENTO_PASSWORD);
-	$this->strXML .= xmlEntry('Language', $_SESSION['language']);
+	$this->strXML .= xmlEntry('Language', $_SESSION['user']->language);
 	$this->strXML .= xmlEntry('Operation', 'ShipConfirm');
 	$this->strXML .= xmlEntry('Action', 'Confirm');
 	$this->strXML .= xmlEntry('Reference', 'Order Ship Confirmation');

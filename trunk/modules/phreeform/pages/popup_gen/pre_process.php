@@ -89,8 +89,8 @@ if (isset($_GET['xfld']) && strpos($_GET['xfld'], 'journal_main') !== false) { /
 }
 
 $delivery_method = $_POST['delivery_method'] ? $_POST['delivery_method'] : 'I';
-$from_email      = $_POST['from_email']      ? $_POST['from_email']      : $_SESSION['admin_email'];
-$from_name       = $_POST['from_name']       ? $_POST['from_name']       : $_SESSION['display_name'];
+$from_email      = $_POST['from_email']      ? $_POST['from_email']      : $_SESSION['user']->admin_email;
+$from_name       = $_POST['from_name']       ? $_POST['from_name']       : $_SESSION['user']->display_name;
 $to_email        = $_POST['to_email']        ? $_POST['to_email']        : $_GET['rEmail'];
 $to_name         = $_POST['to_name']         ? $_POST['to_name']         : $_GET['rName'];
 $cc_email        = $_POST['cc_email']        ? $_POST['cc_email']        : '';
@@ -216,7 +216,7 @@ switch ($_REQUEST['action']) {
 		'doc_title'   => $_POST['title'],
 		'doc_group'   => $result->fields['doc_group'],
 		'doc_ext'     => $result->fields['doc_ext'],
-		'security'    => 'u:' . $_SESSION['admin_id'] . ';g:-1', // only the current user can see this
+		'security'    => 'u:' . $_SESSION['user']->admin_id . ';g:-1', // only the current user can see this
 		'create_date' => date('Y-m-d'),
 	  );
 	  db_perform(TABLE_PHREEFORM, $sql_array);
@@ -258,7 +258,7 @@ switch ($_REQUEST['action']) {
 	}
 	// if we are here, delivery method was email
 	if ($output) {
-		$filename = DIR_FS_MY_FILES . $_SESSION['company'] . '/temp/' . $output['filename'];
+		$filename = DIR_FS_MY_FILES . $_SESSION['user']->company . '/temp/' . $output['filename'];
 		if (!$handle = @fopen($filename, 'w'))	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, 	$filename));
 		if (@fwrite($handle, $output['pdf']))	throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 	$filename));
 		if (!@fclose($handle)) 					throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));

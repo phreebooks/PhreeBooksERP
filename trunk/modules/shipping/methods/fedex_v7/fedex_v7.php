@@ -823,14 +823,14 @@ class fedex_v7 extends \shipping\classes\shipping {
 					'NotifyOnShipment'  => $pkg->email_sndr_ship ? '1' : '0',
 					'NotifyOnException' => $pkg->email_sndr_dlvr ? '1' : '0',
 					'NotifyOnException' => $pkg->email_sndr_excp ? '1' : '0',
-					'Localization"'     => substr($_SESSION['language'], 0, 2),
+					'Localization"'     => substr($_SESSION['user']->language, 0, 2),
 				  ),
 				  'Recipient' => array(
 					'EMailAddress'      => $pkg->ship_email,
 					'NotifyOnShipment'  => $pkg->email_rcp_ship ? '1' : '0',
 					'NotifyOnException' => $pkg->email_rcp_dlvr ? '1' : '0',
 					'NotifyOnException' => $pkg->email_rcp_excp ? '1' : '0',
-					'Localization"'     => substr($_SESSION['language'], 0, 2),
+					'Localization"'     => substr($_SESSION['user']->language, 0, 2),
 				  ),
 				),
 			  );
@@ -1099,7 +1099,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 //echo 'close response array = '; print_r($response); echo '<br />';
 			if ($response->HighestSeverity != 'FAILURE' && $response->HighestSeverity != 'ERROR') {
 				// Fetch the FedEx reports
-				$file_path   = DIR_FS_MY_FILES . $_SESSION['company'] . '/shipping/reports/' . $this->id . '/' . $date[0] . '/' . $date[1] . '/';
+				$file_path   = DIR_FS_MY_FILES . $_SESSION['user']->company . '/shipping/reports/' . $this->id . '/' . $date[0] . '/' . $date[1] . '/';
 				validate_path($file_path);
 				$filename    = $date[2] . '-' . $response->Manifest->FileName . '.txt';
 				$closeReport  = base64_decode($response->Manifest->File);

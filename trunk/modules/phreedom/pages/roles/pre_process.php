@@ -70,7 +70,7 @@ switch ($_REQUEST['action']) {
 			$admin_id = \core\classes\PDO::lastInsertId('id');
 			gen_add_audit_log(sprintf(GEN_LOG_USER, TEXT_ADD), db_prepare_input($_POST['admin_name']));
 		}
-		if ($admin_id == $_SESSION['admin_id']) $_SESSION['admin_security'] = \core\classes\user::parse_permissions($admin_security); // update if user is current user
+		if ($admin_id == $_SESSION['user']->admin_id) $_SESSION['user']->admin_security = \core\classes\user::parse_permissions($admin_security); // update if user is current user
   	}catch(Exception $e){
   		\core\classes\messageStack::add($e->getMessage());
   	}

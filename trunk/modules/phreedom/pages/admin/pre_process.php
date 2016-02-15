@@ -52,7 +52,7 @@ switch ($_REQUEST['action']) {
 			$admin->DataBase->transStart();
 			require_once(DIR_FS_MODULES . $method . '/config.php'); // config is not loaded yet since module is not installed.
 			if ($_REQUEST['action'] == 'install') {
-		  		$admin->classes[$method]->install(DIR_FS_MY_FILES.$_SESSION['company'].'/', false);
+		  		$admin->classes[$method]->install(DIR_FS_MY_FILES.$_SESSION['user']->company.'/', false);
 		  		$admin->DataBase->write_configure('MODULE_' . strtoupper($admin->classes[$method]->id) . '_STATUS', $admin->classes[$method]->version);
  				gen_add_audit_log(sprintf(TEXT_MODULE_ARGS, $admin->classes[$method]->text) . TEXT_INSTALL , $admin->classes[$method]->version);
  				\core\classes\messageStack::add(sprintf(TEXT_MODULE_ARGS, $admin->classes[$method]->text). TEXT_INSTALL . $admin->classes[$method]->version, 'success');
@@ -76,7 +76,7 @@ switch ($_REQUEST['action']) {
 			// load the module installation class
 			if (!array_key_exists($method, $admin->classes)) throw new \core\classes\userException(sprintf('Looking for the delete script for module %s, but could not locate it. The module cannot be deleted!', $method));
 			$admin->DataBase->transStart();
-			$admin->classes[$method]->delete(DIR_FS_MY_FILES.$_SESSION['company'].'/');
+			$admin->classes[$method]->delete(DIR_FS_MY_FILES.$_SESSION['user']->company.'/');
 			$admin->DataBase->transCommit();
 			if (sizeof($admin->classes[$method]->notes) > 0) foreach ($admin->classes[$method]->notes as $note) \core\classes\messageStack::add($note, 'caution');
 			gen_add_audit_log(sprintf(TEXT_UNINSTALLED_MODULE, $admin->classes[$method]->text));
@@ -96,7 +96,7 @@ switch ($_REQUEST['action']) {
 		     	if (isset($_POST[$field])) $admin->DataBase->write_configure($key, db_prepare_input($_POST[$field]));
 				// special case for field COMPANY_NAME to update company config file
 				if ($key == 'COMPANY_NAME' && $_POST[$field] <> COMPANY_NAME) {
-					install_build_co_config_file($_SESSION['company'], $_SESSION['company'] . '_TITLE', db_prepare_input($_POST[$field]));
+					install_build_co_config_file($_SESSION['user']->company, $_SESSION['user']->company . '_TITLE', db_prepare_input($_POST[$field]));
 				}
 			}
 		    $admin->DataBase->transCommit();
@@ -132,7 +132,7 @@ switch ($_REQUEST['action']) {
 			$co_name   = db_prepare_input($_POST['co_name']);
 			// error check company name and company full name
 			if (!$db_name || !$co_name)           throw new \core\classes\userException(SETUP_CO_MGR_ERROR_EMPTY_FIELD);
-			if ($db_name == $_SESSION['company']) throw new \core\classes\userException(SETUP_CO_MGR_DUP_DB_NAME);
+			if ($db_name == $_SESSION['user']->company) throw new \core\classes\userException(SETUP_CO_MGR_DUP_DB_NAME);
 			// check for database already exists
 			$db_orig = new queryFactory;//@todo pdo
 			if (!$db_orig->connect(DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, DB_DATABASE)) trigger_error('Problem connecting to original DB!', E_USER_ERROR);
@@ -168,7 +168,7 @@ switch ($_REQUEST['action']) {
 					  		$backup->copy_db_table($db_orig, $table_list, $type = 'both', $params = '');
 			  			}
 						if (is_array($class->dirlist)) foreach($class->dirlist as $source_dir) {
-				      		$dir_source = DIR_FS_MY_FILES . $_SESSION['company'] . '/' . $source_dir . '/';
+				      		$dir_source = DIR_FS_MY_FILES . $_SESSION['user']->company . '/' . $source_dir . '/';
 				      		$dir_dest   = DIR_FS_MY_FILES . $db_name             . '/' . $source_dir . '/';
 					  		validate_path(DIR_FS_MY_FILES . "$db_name/$source_dir");
 					  		$backup->copy_dir($dir_source, $dir_dest);
@@ -196,7 +196,7 @@ switch ($_REQUEST['action']) {
 			\core\classes\messageStack::add(TEXT_SUCCESSFULY_CREATED_NEW_COMPANY,'success');
 			gen_add_audit_log(sprintf(TEXT_MANAGER_ARGS, TEXT_COMPANY). ' - ' . TEXT_COPY, $db_name);
 			$_SESSION['db_server'] = $db_server;
-			$_SESSION['company']   = $db_name;
+			$_SESSION['user']->company   = $db_name;
 			$_SESSION['db_user']   = $db_user;
 			$_SESSION['db_pw']     = $db_pw;
 		    gen_redirect(html_href_link(FILENAME_DEFAULT, $get_parmas, ENABLE_SSL_ADMIN ? 'SSL' : 'NONSSL'));
@@ -215,7 +215,7 @@ switch ($_REQUEST['action']) {
 	// Failsafe to prevent current company from being deleted accidently
 	$backup = new backup;
 	if ($db_name == 'none') throw new \core\classes\userException(TEXT_NO_COMPANY_WAS_SELECTED_TO_DELETE .'!');
-	if ($db_name <> $_SESSION['company']) {
+	if ($db_name <> $_SESSION['user']->company) {
 		// connect to other company, retrieve login info
 	  	$config = file(DIR_FS_MY_FILES . $db_name . '/config.php');
 	  	foreach ($config as $line) {

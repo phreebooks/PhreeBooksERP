@@ -79,7 +79,7 @@ class journal_04 extends \core\classes\journal {
 	public $id_field_name 		= TEXT_PO_NUMBER;
 
 	function __construct( $id = 0, $verbose = true){
-		if (isset($_SESSION['admin_prefs']['def_ap_acct'])) $this->gl_acct_id =  $_SESSION['admin_prefs']['def_ap_acct'];
+		if (isset($_SESSION['user']->admin_prefs['def_ap_acct'])) $this->gl_acct_id =  $_SESSION['user']->admin_prefs['def_ap_acct'];
 		parent::__construct( $id, $verbose);
 	}
 

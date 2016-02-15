@@ -22,7 +22,7 @@ $security_level = validate_ajax_user();
 /**************  include page specific files    *********************/
 /**************   page specific initialization  *************************/
 $error = false;
-$filename = DIR_FS_MY_FILES . $_SESSION['company'] . '/temp/' . $_GET['fn'] . '.txt';
+$filename = DIR_FS_MY_FILES . $_SESSION['user']->company . '/temp/' . $_GET['fn'] . '.txt';
 $xml = NULL;
 
 // Check for the file to exist

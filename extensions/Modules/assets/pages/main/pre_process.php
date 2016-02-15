@@ -63,7 +63,7 @@ switch ($_REQUEST['action']) {
 
 	$admin->DataBase->exec("delete from " . TABLE_ASSETS . " where id = " . $id);
 	if ($image_with_path) { // delete image
-	  $file_path = DIR_FS_MY_FILES . $_SESSION['company'] . '/assets/images/';
+	  $file_path = DIR_FS_MY_FILES . $_SESSION['user']->company . '/assets/images/';
 	  if (file_exists($file_path . $result->fields['image_with_path'])) unlink ($file_path . $result->fields['image_with_path']);
 	}
 	foreach (glob(ASSETS_DIR_ATTACHMENTS.'assets_'.$id.'_*.zip') as $filename) unlink($filename); // remove attachments
@@ -133,7 +133,7 @@ switch ($_REQUEST['action']) {
 			$sql_data_array['image_with_path'] = '';
 		}
 		is_uploaded_file($_FILES['asset_image']['tmp_name']);
-		$file_path = DIR_FS_MY_FILES . $_SESSION['company'] . '/assets/images';
+		$file_path = DIR_FS_MY_FILES . $_SESSION['user']->company . '/assets/images';
 	       $asset_path = str_replace('\\', '/', $asset_path);
 		// strip beginning and trailing slashes if present
 		if (substr($asset_path, -1, 1) == '/') $asset_path = substr($asset_path, 0, -1);

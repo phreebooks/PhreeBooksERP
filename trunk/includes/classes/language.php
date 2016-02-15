@@ -28,8 +28,8 @@ class language {
 	 *
 	 */
 	function __construct(){
-		if( isset($_SESSION['language']) && $_SESSION['language'] != '') {
-			 $this->language_code = $_SESSION['language'];
+		if( $_SESSION['user']->language != '') {
+			 $this->language_code = $_SESSION['user']->language;
 		} else if( isset($_REQUEST['language']) && $_REQUEST['language'] != '') {
 			$this->language_code = $_REQUEST['language'];
 		} else {
@@ -47,8 +47,8 @@ class language {
 	}
 
 	public function __wakeup() {
-		if( isset($_SESSION['language']) && $_SESSION['language'] != '') {
-			$this->language_code = $_SESSION['language'];
+		if ( $_SESSION['user']->language != '') {
+			$this->language_code = $_SESSION['user']->language;
 		} else if( isset($_REQUEST['language']) && $_REQUEST['language'] != '') {
 			$this->language_code = $_REQUEST['language'];
 		} else {
@@ -278,8 +278,5 @@ class language {
 		define($constant, $string);
 	}
 
-	function __destruct(){
-		$_SESSION['language'] = $this->language_code;
-	}
 }
 ?>

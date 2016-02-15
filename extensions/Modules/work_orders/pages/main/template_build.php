@@ -38,7 +38,7 @@ echo $toolbar->build();
 ?>
 <h1><?php echo TEXT_BUILD_AND_TRACK_WORK_ORDER . (!$id ? '' : ' - ' . $id); ?></h1>
   <div id="inv_image" title="<?php echo $sku; ?>">
-    <?php if ($image) echo html_image(DIR_WS_MY_FILES . $_SESSION['company'] . '/inventory/images/' . $image, '', 600) . chr(10);
+    <?php if ($image) echo html_image(DIR_WS_MY_FILES . $_SESSION['user']->company . '/inventory/images/' . $image, '', 600) . chr(10);
 			else echo TEXT_NO_IMAGE; ?>
     <div>
 	  <h2><?php echo TEXT_SKU . ': ' . $sku; ?></h2>
@@ -58,7 +58,7 @@ echo $toolbar->build();
 	<td><?php echo html_input_field('post_date', \core\classes\DateTime::createFromFormat(DATE_FORMAT, $post_date), 'readonly="readonly" size="12"'); ?></td>
 <?php if ($image) {
 		echo '<td rowspan="4">';
-		echo html_image(DIR_WS_MY_FILES . $_SESSION['company'] . '/inventory/images/' . $image, $image, '', '100', 'rel="#photo1"');
+		echo html_image(DIR_WS_MY_FILES . $_SESSION['user']->company . '/inventory/images/' . $image, $image, '', '100', 'rel="#photo1"');
 		echo '</td>';
 } ?>
   </tr>

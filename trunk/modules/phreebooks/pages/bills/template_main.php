@@ -97,7 +97,7 @@ echo '<br />' . html_input_field('bill_email', $order->bill_email, 'size="40" ma
 	  <?php if (ENABLE_MULTI_BRANCH) { ?>
 		  <tr>
 		    <td align="right"><?php echo TEXT_STORE_ID . '&nbsp;'; ?></td>
-			<td align="right"><?php echo html_pull_down_menu('store_id', gen_get_store_ids(), $order->store_id ? $order->store_id : $_SESSION['admin_prefs']['def_store_id']); ?></td>
+			<td align="right"><?php echo html_pull_down_menu('store_id', gen_get_store_ids(), $order->store_id ? $order->store_id : $_SESSION['user']->admin_prefs['def_store_id']); ?></td>
 		  </tr>
 	  <?php } ?>
 		  <tr>

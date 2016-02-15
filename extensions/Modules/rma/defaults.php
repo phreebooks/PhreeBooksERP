@@ -17,7 +17,7 @@
 //  Path: /modules/rma/defaults.php
 //
 // default directory for contact attachments
-define('RMA_DIR_ATTACHMENTS',  DIR_FS_MY_FILES . $_SESSION['company'] . '/rma/main/');
+define('RMA_DIR_ATTACHMENTS',  DIR_FS_MY_FILES . $_SESSION['user']->company . '/rma/main/');
 
 $status_codes = array(
   '0'  => TEXT_PLEASE_SELECT, // do not remove from top position

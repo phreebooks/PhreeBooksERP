@@ -407,7 +407,7 @@ class admin extends \core\classes\admin {
 				if($result['item_cost'] <> '' && $result['item_cost'] > 0) $sql_data_array['product_margin'] = round($sql_data_array['full_price_with_tax'] / $result['item_cost'], $basis->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
 				db_perform(TABLE_INVENTORY, $sql_data_array, 'update', "id = " . $result['id']);
 			}
-		  	validate_path(DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/attachments/', 0755);
+		  	validate_path(DIR_FS_MY_FILES . $_SESSION['user']->company . '/inventory/attachments/', 0755);
 		}
 		if (version_compare($this->status, '3.7.1', '<') ) {
 			if (!$basis->DataBase->field_exists(TABLE_INVENTORY_HISTORY, 'avg_cost')) {
@@ -503,9 +503,9 @@ class admin extends \core\classes\admin {
 
 		// copy the demo image
 		$backups = new \phreedom\classes\backup;
-		validate_path(DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/images/demo');
+		validate_path(DIR_FS_MY_FILES . $_SESSION['user']->company . '/inventory/images/demo');
 		$dir_source = DIR_FS_MODULES  . 'inventory/images/demo/';
-		$dir_dest   = DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/images/demo/';
+		$dir_dest   = DIR_FS_MY_FILES . $_SESSION['user']->company . '/inventory/images/demo/';
 		$backups->copy_dir($dir_source, $dir_dest);
 		parent::load_demo();
 	}
@@ -779,7 +779,7 @@ class admin extends \core\classes\admin {
   		$glEntry->post_date           = $post_date;
   		$glEntry->period              = \core\classes\DateTime::period_of_date($post_date);
   		$glEntry->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);
-  		$glEntry->admin_id            = $_SESSION['admin_id'];
+  		$glEntry->admin_id            = $_SESSION['user']->admin_id;
   		$glEntry->closed              = '1'; // closes by default
   		$glEntry->closed_date         = $post_date;
   		$glEntry->currencies_code     = DEFAULT_CURRENCY;
@@ -892,7 +892,7 @@ class admin extends \core\classes\admin {
   		$glEntry->journal_id = 14;
   		$glEntry->store_id   = isset($_POST['store_id']) ? $_POST['store_id'] : 0;
   		$glEntry->post_date  = $_POST['post_date']       ? \core\classes\DateTime::db_date_format($_POST['post_date']) : date('Y-m-d');
-  		$glEntry->admin_id            = $_SESSION['admin_id'];
+  		$glEntry->admin_id            = $_SESSION['user']->admin_id;
   		$glEntry->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);
   		$sku                          = db_prepare_input($_POST['sku_1']);
   		$qty                          = db_prepare_input($_POST['qty_1']);

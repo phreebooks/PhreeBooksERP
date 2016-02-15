@@ -21,7 +21,7 @@
 
   <div class="easyui-window" id="inv_image" title="<?php echo $cInfo->sku; ?>" data-options="modal:true,closed:true" >
     <?php if (isset($cInfo->image_with_path) && $cInfo->image_with_path) {
-    	echo html_image(DIR_WS_MY_FILES . $_SESSION['company'] . '/inventory/images/' . $cInfo->image_with_path, '', 600) . chr(10);
+    	echo html_image(DIR_WS_MY_FILES . $_SESSION['user']->company . '/inventory/images/' . $cInfo->image_with_path, '', 600) . chr(10);
     } else {
     	echo TEXT_NO_IMAGE;
     }
@@ -47,7 +47,7 @@
 	  <td><?php if(isset($cInfo->quantity_on_hand)) echo html_input_field('quantity_on_hand', $admin->currencies->precise($cInfo->quantity_on_hand), 'disabled="disabled" size="6" maxlength="5" style="text-align:right"', false); ?></td>
 	  <td rowspan="5" align="center">
 		<?php if (isset($cInfo->image_with_path) && $cInfo->image_with_path) { // show image if it is defined
-			echo html_image(DIR_WS_MY_FILES . $_SESSION['company'] . '/inventory/images/' . $cInfo->image_with_path, $cInfo->image_with_path, '', '100', 'onclick="showImage()"');
+			echo html_image(DIR_WS_MY_FILES . $_SESSION['user']->company . '/inventory/images/' . $cInfo->image_with_path, $cInfo->image_with_path, '', '100', 'onclick="showImage()"');
 		} else echo '&nbsp;'; ?>
 	  </td>
 	</tr>

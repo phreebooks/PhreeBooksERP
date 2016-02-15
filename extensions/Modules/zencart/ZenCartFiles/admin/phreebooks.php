@@ -165,8 +165,8 @@
   $installed_modules = array();
   for ($i=0, $n=sizeof($directory_array); $i<$n; $i++) {
     $file = $directory_array[$i];
-    if (file_exists(DIR_FS_CATALOG_LANGUAGES . $_SESSION['language'] . '/modules/' . $module_type . '/' . $file)) {
-      include(DIR_FS_CATALOG_LANGUAGES . $_SESSION['language'] . '/modules/' . $module_type . '/' . $file);
+    if (file_exists(DIR_FS_CATALOG_LANGUAGES . $_SESSION['user']->language . '/modules/' . $module_type . '/' . $file)) {
+      include(DIR_FS_CATALOG_LANGUAGES . $_SESSION['user']->language . '/modules/' . $module_type . '/' . $file);
       include($module_directory . $file);
       $class = substr($file, 0, strrpos($file, '.'));
       if (zen_class_exists($class)) {
@@ -233,7 +233,7 @@
 <?php
       }
     } else {
-      echo ERROR_MODULE_FILE_NOT_FOUND . DIR_FS_CATALOG_LANGUAGES . $_SESSION['language'] . '/modules/' . $module_type . '/' . $file . '<br />';
+      echo ERROR_MODULE_FILE_NOT_FOUND . DIR_FS_CATALOG_LANGUAGES . $_SESSION['user']->language . '/modules/' . $module_type . '/' . $file . '<br />';
     }
   }
   ksort($installed_modules);

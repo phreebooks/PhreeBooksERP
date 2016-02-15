@@ -76,7 +76,7 @@ switch ($_REQUEST['action']) {
 	$order->post_date           = $post_date;
 	$order->period              = $period;
 	$order->journal_id          = JOURNAL_ID;
-	$order->admin_id            = $_SESSION['admin_id'];
+	$order->admin_id            = $_SESSION['user']->admin_id;
 	$order->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);	// PhreeBooks order/invoice ID
 	$order->shipper_code        = db_prepare_input($_POST['shipper_code']);  // store payment method in shipper_code field
 	$order->purch_order_id      = db_prepare_input($_POST['purch_order_id']);  // customer PO/Ref number
@@ -150,7 +150,7 @@ switch ($_REQUEST['action']) {
 	  $order->gl_type             = (JOURNAL_ID == 18) ? 'sos' : 'por';
 	  $order->post_date           = $post_date;
 	  $order->period              = $period;
-	  $order->admin_id            = $_SESSION['admin_id'];
+	  $order->admin_id            = $_SESSION['user']->admin_id;
 	  $order->purch_order_id      = db_prepare_input($_POST['purch_order_id']);  // customer PO/Ref number
 	  $order->total_amount        = $admin->currencies->clean_value(db_prepare_input($_POST['total']), DEFAULT_CURRENCY);
 	  $order->gl_acct_id          = (JOURNAL_ID == 18) ? AR_DEFAULT_GL_ACCT : AP_DEFAULT_PURCHASE_ACCOUNT;

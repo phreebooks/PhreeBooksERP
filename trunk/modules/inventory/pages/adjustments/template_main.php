@@ -43,9 +43,9 @@ echo $toolbar->build();
    <tbody>
 <?php if (ENABLE_MULTI_BRANCH) { ?>
 	<tr>
-	  <td><?php echo TEXT_STORE_ID . '&nbsp;' .  html_pull_down_menu('store_id', gen_get_store_ids(), $cInfo->store_id ? $cInfo->store_id : $_SESSION['admin_prefs']['def_store_id']); ?></td>
+	  <td><?php echo TEXT_STORE_ID . '&nbsp;' .  html_pull_down_menu('store_id', gen_get_store_ids(), $cInfo->store_id ? $cInfo->store_id : $_SESSION['user']->admin_prefs['def_store_id']); ?></td>
 	</tr>
-<?php } else $hidden_fields .= html_hidden_field('store_id', $_SESSION['admin_prefs']['def_store_id']) . chr(10); ?>
+<?php } else $hidden_fields .= html_hidden_field('store_id', $_SESSION['user']->admin_prefs['def_store_id']) . chr(10); ?>
 	<tr>
 	  <td align="right"><?php echo TEXT_REASON_FOR_ADJUSTMENT; ?></td>
 	  <td><?php echo html_input_field('adj_reason', $cInfo->adj_reason, 'size="50"'); ?></td>

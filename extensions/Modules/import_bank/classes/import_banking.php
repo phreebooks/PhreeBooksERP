@@ -68,7 +68,7 @@ class import_banking extends \phreebooks\classes\journal {
 		$this->total_amount			= $this->_debitamount + $this->_creditamount ;
 		$this->post_date           	= \core\classes\DateTime::db_date_format($post_date);
 		$this->period              	= \core\classes\DateTime::period_of_date($this->post_date, true);
-		$this->admin_id            	= $_SESSION['admin_id'];
+		$this->admin_id            	= $_SESSION['user']->admin_id;
 		If ($this->find_contact( $other_bank_account_number, $other_bank_account_iban )){
 			$this->find_right_invoice();
 		}else{

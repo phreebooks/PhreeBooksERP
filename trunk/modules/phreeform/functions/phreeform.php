@@ -68,9 +68,9 @@ function buildToggleList($id, $toggle_list = '') {
 
 function security_check($tokens) {
   $categories = explode(';', $tokens);
-  $user_str = ':' . $_SESSION['admin_id'] . ':';
-  $emp_str  = ':' . ($_SESSION['account_id'] ? $_SESSION['account_id'] : '0') . ':';
-  $dept_str = ':' . ($_SESSION['department'] ? $_SESSION['department'] : '0') . ':';
+  $user_str = ':' . $_SESSION['user']->admin_id . ':';
+  $emp_str  = ':' . ($_SESSION['user']->account_id ? $_SESSION['user']->account_id : '0') . ':';
+  $dept_str = ':' . ($_SESSION['user']->department ? $_SESSION['user']->department : '0') . ':';
   foreach ($categories as $category) {
 	$type = substr($category, 0, 1);
 	$approved_ids = substr($category, 1) . ':';
@@ -93,7 +93,7 @@ function pf_validate_security($security = 'u:-1;g:-1', $include_all = true) {
 	  $settings[$type] = $temp;
 	}
 	if (!is_array($settings['u']) || !is_array($settings['g'])) return false;
-	if (in_array($_SESSION['admin_id'], $settings['u']) || in_array($_SESSION['department'], $settings['g'])) return true;
+	if (in_array($_SESSION['user']->admin_id, $settings['u']) || in_array($_SESSION['user']->department, $settings['g'])) return true;
 	if ($include_all && (in_array(0, $settings['u']) || in_array(0, $settings['g']))) return true;
 	return false;
 }
@@ -166,8 +166,8 @@ function find_special_class($class_name) {
 }
 
 function load_special_language($path, $class_name) {
-  	if (file_exists($path . "language/{$_SESSION['language']}/classes/$class_name.php")) {
-    	require_once ($path . "language/{$_SESSION['language']}/classes/$class_name.php");
+  	if (file_exists($path . "language/{$_SESSION['user']->language}/classes/$class_name.php")) {
+    	require_once ($path . "language/{$_SESSION['user']->language}/classes/$class_name.php");
   	} elseif (file_exists($path . "language/en_us/classes/$class_name.php")) {
     	require_once       ($path . "language/en_us/classes/$class_name.php");
   	}

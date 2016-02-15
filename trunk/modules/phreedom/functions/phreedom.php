@@ -59,8 +59,8 @@ function load_colors_dropdown() {
 /**************************** admin functions ***********************************************/
 
 function admin_add_reports($module, $save_path = PF_DIR_MY_REPORTS) {
-	if (file_exists(DIR_FS_MODULES . $module . '/language/' . $_SESSION['language'] . '/reports/')) {
-	    $read_path = DIR_FS_MODULES . $module . '/language/' . $_SESSION['language'] . '/reports/';
+	if (file_exists(DIR_FS_MODULES . $module . '/language/' . $_SESSION['user']->language . '/reports/')) {
+	    $read_path = DIR_FS_MODULES . $module . '/language/' . $_SESSION['user']->language . '/reports/';
 	} elseif (file_exists(DIR_FS_MODULES . $module . '/language/en_us/reports/')) {
 	    $read_path = DIR_FS_MODULES . $module . '/language/en_us/reports/';
 	} else {

@@ -38,7 +38,7 @@ function check_form() {
 
 function clearForm() {
   document.getElementById('id').value                  = 0;
-  document.getElementById('store_id').value            = <?php echo $_SESSION['admin_prefs']['def_store_id'] ? $_SESSION['admin_prefs']['def_store_id'] : 0; ?>;
+  document.getElementById('store_id').value            = <?php echo $_SESSION['user']->admin_prefs['def_store_id'] ? $_SESSION['user']->admin_prefs['def_store_id'] : 0; ?>;
   document.getElementById('purchase_invoice_id').value = '';
   document.getElementById('post_date').value           = '<?php echo date(DATE_FORMAT); ?>';
   document.getElementById('adj_reason').value          = '';

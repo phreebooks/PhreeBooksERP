@@ -340,7 +340,7 @@ class inventory {
 		if($this->image_with_path != '') {
 			$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY . " where image_with_path = '" . $this->image_with_path ."'");
 	  		if ( $result->fetch(\PDO::FETCH_NUM) == 0) { // delete image
-				$file_path = DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/images/';
+				$file_path = DIR_FS_MY_FILES . $_SESSION['user']->company . '/inventory/images/';
 				if (file_exists($file_path . $this->image_with_path)) unlink ($file_path . $this->image_with_path);
 	  		}
 		}
@@ -366,7 +366,7 @@ class inventory {
 		} else{
 			if (isset($sql_data_array['item_cost'])) unset($sql_data_array['item_cost']);
 		}
-		$file_path = DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/images';
+		$file_path = DIR_FS_MY_FILES . $_SESSION['user']->company . '/inventory/images';
 		if ($this->remove_image == '1') { // update the image with relative path
 	  		if ($this->image_with_path && file_exists($file_path . '/' . $this->image_with_path)) unlink ($file_path . '/' . $this->image_with_path);
 	  		$this->image_with_path = '';

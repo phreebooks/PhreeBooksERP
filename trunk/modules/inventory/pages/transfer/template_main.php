@@ -43,7 +43,7 @@ echo $toolbar->build();
 	<tr>
 	  <td align="right"><?php echo TEXT_TRANSFER_FROM_STORE_ID; ?></td>
 	  <td>
-	    <?php echo html_pull_down_menu('source_store_id', gen_get_store_ids(), $cInfo->source_store_id ? $cInfo->source_store_id : $_SESSION['admin_prefs']['def_store_id']); ?>
+	    <?php echo html_pull_down_menu('source_store_id', gen_get_store_ids(), $cInfo->source_store_id ? $cInfo->source_store_id : $_SESSION['user']->admin_prefs['def_store_id']); ?>
 	    <?php echo TEXT_TO_STORE_ID . html_pull_down_menu('dest_store_id',   gen_get_store_ids(), $cInfo->dest_store_id); ?>
 	  </td>
 	  <td align="right"><?php echo TEXT_POST_DATE . '&nbsp;'; ?></td>

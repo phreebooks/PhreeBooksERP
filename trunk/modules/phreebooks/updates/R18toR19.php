@@ -22,10 +22,10 @@
 // *************************** IMPORTANT UPDATE INFORMATION *********************************//
 //********************************* END OF IMPORTANT ****************************************//
 // Release 1.8 to 1.9
-if (!file_exists(DIR_FS_MY_FILES . $_SESSION['company'] . '/index.html')) {
+if (!file_exists(DIR_FS_MY_FILES . $_SESSION['user']->company . '/index.html')) {
   install_blank_webpage(DIR_FS_MY_FILES . '/index.html');
   install_blank_webpage(DIR_FS_MY_FILES . 'backups/index.html');
-  install_blank_webpage(DIR_FS_MY_FILES . $_SESSION['company'] . '/index.html');
+  install_blank_webpage(DIR_FS_MY_FILES . $_SESSION['user']->company . '/index.html');
 }
 if (!$admin->DataBase->field_exists(TABLE_JOURNAL_MAIN, 'printed'))  {
   $admin->DataBase->query("ALTER TABLE " . TABLE_JOURNAL_MAIN . " ADD printed enum('0','1') NOT NULL DEFAULT '0' AFTER closed");

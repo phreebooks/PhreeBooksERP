@@ -74,7 +74,7 @@ foreach ($admin->currencies->currencies as $key => $currency) {
 	$js_currency .= "currency['$key'] = new currencyType('$key','{$currency['title']}', '{$currency['value']}', '{$currency['decimal_point']}', '{$currency['thousands_point']}', '{$currency['decimal_places']}', '{$currency['decimal_precise']}');" . chr(10);
 }
 // see if current user points to a employee for sales rep default
-$result = $admin->DataBase->query("select account_id from " . TABLE_USERS . " where admin_id = " . $_SESSION['admin_id']);
+$result = $admin->DataBase->query("select account_id from " . TABLE_USERS . " where admin_id = " . $_SESSION['user']->admin_id);
 $default_sales_rep = $result->fields['account_id'] ? $result->fields['account_id'] : '0';
 // build the display options
 $template_options = array();

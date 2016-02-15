@@ -41,7 +41,7 @@ switch ($_REQUEST['action']) {
 		$order->closed = '0';
 		$order->gl_acct_id = AP_DEFAULT_PURCHASE_ACCOUNT;
 	    $order->purchase_invoice_id = $purchase_invoice_id;
-		$order->admin_id = $_SESSION['admin_id'];
+		$order->admin_id = $_SESSION['user']->admin_id;
 		$order->terminal_date = $order->post_date; // make ship date the same as post date
 		$order->description = sprintf(TEXT_ARGS_ENTRY, $journal_types_list[JOURNAL_ID]['text']);
 		$order->drop_ship = $drop_ship;

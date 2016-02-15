@@ -139,7 +139,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 			if($ms_array['image_with_path'] != ''){
 				$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY . " where image_with_path = '" . $ms_array['image_with_path'] ."'");
 	  			if ( $result->fetch(\PDO::FETCH_NUM) == 0){ // delete image
-					$file_path = DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/images/';
+					$file_path = DIR_FS_MY_FILES . $_SESSION['user']->company . '/inventory/images/';
 					if (file_exists($file_path . $ms_array['image_with_path'])) unlink ($file_path . $ms_array['image_with_path']);
 	  			}
 			}

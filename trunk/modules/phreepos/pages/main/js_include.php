@@ -1054,7 +1054,7 @@ function fillInventory(sXml) {
   document.getElementById('sku').value = '';
 //Image handler
   if($(xml).find('image_with_path').text() != ''){
-	  image = "<?php echo DIR_WS_MY_FILES . $_SESSION['company'] . '/inventory/images/' ?>"+ $(xml).find('image_with_path').text();
+	  image = "<?php echo DIR_WS_MY_FILES . $_SESSION['user']->company . '/inventory/images/' ?>"+ $(xml).find('image_with_path').text();
   }
   setImage(image);
 }

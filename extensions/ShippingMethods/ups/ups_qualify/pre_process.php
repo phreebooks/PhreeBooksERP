@@ -43,7 +43,7 @@ switch ($action) {
   case 'go':
 	validate_security($security_level, 3);
   	// retrieve the sample ship to addresses and query UPS
-	$file_path = DIR_FS_MY_FILES . $_SESSION['company'] . '/temp/ups_cal/';
+	$file_path = DIR_FS_MY_FILES . $_SESSION['user']->company . '/temp/ups_cal/';
 	validate_path($file_path);
 	$count = 1;
 	foreach ($shipto as $pkg) {

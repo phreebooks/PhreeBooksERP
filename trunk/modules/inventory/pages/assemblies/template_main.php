@@ -45,9 +45,9 @@ echo $toolbar->build();
 <?php if (ENABLE_MULTI_BRANCH) { ?>
      <tr>
 	    <td><?php echo TEXT_STORE_ID . '&nbsp;'; ?></td>
-        <td align="right"><?php echo html_pull_down_menu('store_id', gen_get_store_ids(), $cInfo->store_id ? $cInfo->store_id : $_SESSION['admin_prefs']['def_store_id']); ?></td>
+        <td align="right"><?php echo html_pull_down_menu('store_id', gen_get_store_ids(), $cInfo->store_id ? $cInfo->store_id : $_SESSION['user']->admin_prefs['def_store_id']); ?></td>
       </tr>
-<?php } else $hidden_fields .= html_hidden_field('store_id', $_SESSION['admin_prefs']['def_store_id']) . chr(10); ?>
+<?php } else $hidden_fields .= html_hidden_field('store_id', $_SESSION['user']->admin_prefs['def_store_id']) . chr(10); ?>
 	  <tr>
 		<td><?php echo TEXT_SKU; ?></td>
 		<td align="right"><?php echo html_input_field('sku_1', $cInfo->sku_1, 'size="' . (MAX_INVENTORY_SKU_LENGTH + 1) . '" maxlength="' . MAX_INVENTORY_SKU_LENGTH . '" onfocus="clearField(\'sku_1\', \''.TEXT_SEARCH.'\')" onblur="setField(\'sku_1\', \''.TEXT_SEARCH.'\'); loadSkuDetails(0, 1)"');

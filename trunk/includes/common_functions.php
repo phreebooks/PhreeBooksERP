@@ -246,11 +246,11 @@
 		$result_array = array();
 		$sql = $admin->DataBase->prepare("SELECT id, short_name as text FROM " . TABLE_CONTACTS . " WHERE type = 'b'");
 		$sql->execute();
-		if (($_SESSION['admin_prefs']['restrict_store'] && $_SESSION['admin_prefs']['def_store_id'] == 0) || !$_SESSION['admin_prefs']['restrict_store']) {
+		if (($_SESSION['user']->admin_prefs['restrict_store'] && $_SESSION['user']->admin_prefs['def_store_id'] == 0) || !$_SESSION['user']->admin_prefs['restrict_store']) {
         	$result_array[0] = array('id' => '0', 'text' => COMPANY_ID);
 		}
 		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
-	  		if (($_SESSION['admin_prefs']['restrict_store'] && $_SESSION['admin_prefs']['def_store_id'] == $result['id']) || !$_SESSION['admin_prefs']['restrict_store']) {
+	  		if (($_SESSION['user']->admin_prefs['restrict_store'] && $_SESSION['user']->admin_prefs['def_store_id'] == $result['id']) || !$_SESSION['user']->admin_prefs['restrict_store']) {
  	     	 	$result_array[$result['id']] = $result;
 	  		}
 		}
@@ -354,7 +354,7 @@
   		$sql = $admin->DataBase->prepare("INSERT INTO " . TABLE_AUDIT_LOG . " (user_id, action, ip_address, stats, reference_id, amount) VALUES (:user_id, :action, :ip_address, :stats, :reference_id, :amount)");
   		$stats = (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME))."ms, {$admin->DataBase->count_queries}q ".(int)($admin->DataBase->total_query_time * 1000)."ms";
 		$fields = array(
-	  		':user_id'   	=> $_SESSION['admin_id'] ? $_SESSION['admin_id'] : '1',
+	  		':user_id'   	=> $_SESSION['user']->admin_id ? $_SESSION['user']->admin_id : '1',
 	  		':action'    	=> substr($action, 0, 64), // limit to field length
 	  		':ip_address'	=> $_SERVER['REMOTE_ADDR'],
 	  		':stats'     	=> $stats,
@@ -456,8 +456,8 @@ function get_dir_tree($dir, $root = true)  {
 
 /*************** Country Functions *******************************/
   	function gen_pull_countries() {
-    	if (file_exists(DIR_FS_MODULES . "phreedom/language/{$_SESSION['language']}/locales.xml")) {
-      		if (($xmlStr = @file_get_contents(DIR_FS_MODULES . "phreedom/language/{$_SESSION['language']}/locales.xml")) === false) 	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, "phreedom/language/{$_SESSION['language']}/locales.xml"));
+    	if (file_exists(DIR_FS_MODULES . "phreedom/language/{$_SESSION['user']->language}/locales.xml")) {
+      		if (($xmlStr = @file_get_contents(DIR_FS_MODULES . "phreedom/language/{$_SESSION['user']->language}/locales.xml")) === false) 	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, "phreedom/language/{$_SESSION['user']->language}/locales.xml"));
     	} else {
     		if (($xmlStr = @file_get_contents(DIR_FS_MODULES . "phreedom/language/en_us/locales.xml")) === false) 					throw new \core\classes\userException(sprintf(ERROR_READ_FILE, "phreedom/language/en_us/locales.xml"));
     	}
@@ -1423,8 +1423,8 @@ function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext
     }
     $temp = '';
     $type = 'error';
-	if(isset($_SESSION['admin_id'])) $temp = " User: " . $_SESSION['admin_id'];
-	if(isset($_SESSION['company'])) $temp .= " Company: " . $_SESSION['company'];
+	if(isset($_SESSION['user']->admin_id)) $temp = " User: " . $_SESSION['user']->admin_id;
+	if(isset($_SESSION['user']->company)) $temp .= " Company: " . $_SESSION['user']->company;
     switch ($errno) {
     	case E_ERROR: //1
     		$text  = date('Y-m-d H:i:s') . $temp;
@@ -1543,7 +1543,7 @@ function log_trace() {
 
 function PhreebooksExceptionHandler($exception) {
 	ob_clean();
-  	$text  = date('Y-m-d H:i:s') . " User: " . $_SESSION['admin_id'] . " Company: " . $_SESSION['company'] ;
+  	$text  = date('Y-m-d H:i:s') . " User: " . $_SESSION['user']->admin_id . " Company: " . $_SESSION['user']->company ;
     $text .= " Uncaught Exception: '" . $exception->getMessage() . "' line " . $exception->getLine() . " in file " . $exception->getFile();
     error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
     header_remove();

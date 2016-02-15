@@ -19,11 +19,19 @@
 namespace core\classes;
 class user {
 	public $language;
+	public $company;
+	private $last_activity;
 	public $languages = array();
 	public $companies = array();
 
 	function __construct(\core\classes\basis &$admin){
 		$this->language = new \core\classes\language();
+		$this->last_activity = time();
+		if(defined('DEFAULT_COMPANY')) {
+			$this->company =  DEFAULT_COMPANY;
+		}else{
+			if (isset($_COOKIE['pb_company'])) $this->company =  $_COOKIE['pb_company'];
+		}
 		$this->load_companies();
 		$this->is_validated($admin);
 	}
@@ -50,40 +58,24 @@ class user {
 	final public function is_validated (\core\classes\basis &$admin) {
 		//allow the user to continu to with the login action.
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		if (time() - $this->last_activity > (SESSION_TIMEOUT_ADMIN < 360 ? 360 : SESSION_TIMEOUT_ADMIN)) $this->logout();
+		$this->last_activity = time();
 		if ($_REQUEST['action'] == 'LoadLostPassword') $this->LoadLostPassword();
 		$this->validate_company();
 		if ($_REQUEST['action'] == "ValidateUser") return true;
-		if (isset($_SESSION['admin_id']) && $_SESSION['admin_id'] <> '') return true;
+		if (isset($_SESSION['user']->admin_id) && $_SESSION['user']->admin_id <> '') return true;
 		$this->LoadLogIn();
 	}
 	
 	final public function validate_company(){
-		if ($_REQUEST['action'] == "ValidateUser") $_SESSION['company'] = $_POST['company'];
-		if ( $_SESSION['company'] == '') {
-			if (!file_exists(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php')) {
+		if ($_REQUEST['action'] == "ValidateUser") $this->company = $_POST['company'];
+		if ( $this->company == '') {
+			if (!file_exists(DIR_FS_MY_FILES . $this->company. '/config.php')) {
 				\core\classes\messageStack::debug_log("company file doesn't exist");
-				\core\classes\messageStack::add(sprintf(TEXT_COMPANY_CONFIG_FILE_DOESNT_EXIST, $_SESSION['company']));
+				\core\classes\messageStack::add(sprintf(TEXT_COMPANY_CONFIG_FILE_DOESNT_EXIST, $this->company));
 			}
 			$this->LoadLogIn();
 		}
-	}
-
-	/**
-	 * returns the current company and sets it in the Session variable.
-	 */
-	final public function get_company(){
-		//reset($this->companies);
-		if (isset($_SESSION['company'])) return $_SESSION['company'];
-		if (isset($_REQUEST['company'])) {
-			$_SESSION['company'] = $_REQUEST['company'];
-		} else { // find default company
-			if(defined('DEFAULT_COMPANY')) {
-				$_SESSION['company'] = DEFAULT_COMPANY;
-			}else{
-				if (isset($_COOKIE['pb_company'])) $_SESSION['company'] = $_COOKIE['pb_company'];
-			}
-		}
-		return $_SESSION['company'];
 	}
 
 	/**
@@ -93,8 +85,8 @@ class user {
 	 */
 
 	final static function security_level($token){
-		if ($token == 0) return 1;
-		if (isset($_SESSION['admin_security'][$token])) return $_SESSION['admin_security'][$token];
+		if ($token == 0 || $token == '') return 1;
+		if (isset($_SESSION['user']->admin_security[$token])) return $_SESSION['user']->admin_security[$token];
 		return 0;
 	}
 
@@ -107,7 +99,7 @@ class user {
 	 */
 
 	final static function validate($token = 0, $user_active = false) {
-  		$security_level = $_SESSION['admin_security'][$token];
+  		$security_level = $_SESSION['user']->admin_security[$token];
   		if (!in_array($security_level, array(1,2,3,4)) && !$user_active) throw new \core\classes\userException(ERROR_NO_PERMISSION, 10, $e);
   		return $user_active ? 1 : $security_level;
 	}
@@ -202,10 +194,10 @@ class user {
 		<?php if (sizeof($this->companies) > 1) { ?>
 		              <tr>
 		                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo sprintf(TEXT_SELECT_ARGS, TEXT_COMPANY); ?></td>
-		                <td><?php echo html_pull_down_menu('company', $this->companies, $this->get_company(), '', true); ?></td>
+		                <td><?php echo html_pull_down_menu('company', $this->companies, $this->company, '', true); ?></td>
 		              </tr>
 		<?php } else{
-				echo html_hidden_field('company',  $this->get_company()) . chr(10);
+				echo html_hidden_field('company',  $this->company) . chr(10);
 		}?>
 		<?php if (sizeof($this->language->languages) > 1) { ?>
 		              <tr>
@@ -258,7 +250,7 @@ class user {
 		  </tr>
 		  <tr>
 		   <td nowrap="nowrap">&nbsp;&nbsp;<?php echo sprintf(TEXT_SELECT_ARGS, TEXT_COMPANY); ?></td>
-		   <td><?php echo html_pull_down_menu('company', $this->companies, $this->get_company(), '', true); ?></td>
+		   <td><?php echo html_pull_down_menu('company', $this->companies, $this->company, '', true); ?></td>
 		  </tr>
 		  <tr><td colspan="2" align="right"><?php echo html_submit_field('submit', TEXT_RESEND_PASSWORD) . '&nbsp;&nbsp;'; ?></td></tr>
 		 </tbody>
@@ -269,11 +261,17 @@ class user {
 		die();
 	}
 	
+	function logout(){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		gen_add_audit_log(TEXT_USER_LOGOFF . " -> id: {$this->admin_id} name: {$this->display_name}");
+		session_destroy();
+		$this->LoadLogIn();
+	}
+	
 	
 	function __destruct(){
-		$_SESSION['companies'] = $this->companies;// @todo do we still need this
 		$cookie_exp = 2592000 + time(); // one month
-		setcookie('pb_company' , $this->get_company(),  $cookie_exp);
+		setcookie('pb_company' , $this->company,  $cookie_exp);
 		setcookie('pb_language', $this->language->language_code, $cookie_exp);
 		
 //		print_r($_SESSION);

@@ -16,7 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/inventory/defaults.php
 //
-define('INVENTORY_DIR_ATTACHMENTS',  DIR_FS_MY_FILES . $_SESSION['company'] . '/inventory/attachments/');
+define('INVENTORY_DIR_ATTACHMENTS',  DIR_FS_MY_FILES . $_SESSION['user']->company . '/inventory/attachments/');
 define('MAX_INVENTORY_SKU_LENGTH', 24); // database is currently set for a maximum of 24 characters
 define('MAX_NUM_PRICE_LEVELS', 5);
 // the inventory type indexes should not be changed or the inventory module won't work.

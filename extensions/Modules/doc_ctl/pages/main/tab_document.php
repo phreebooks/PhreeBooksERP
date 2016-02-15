@@ -47,7 +47,7 @@ if ($bookmarked) {
 		'order'  => 20,
 	);
 }
-if ($locked && $_SESSION['admin_id'] == $doc_details->fields['doc_owner']) {
+if ($locked && $_SESSION['user']->admin_id == $doc_details->fields['doc_owner']) {
 	$docbar->icon_list['del_lock'] = array(
 		'show'   => true,
 		'icon'   => 'actions/system-lock-screen.png',
@@ -73,7 +73,7 @@ if ($security_level > 2 && !$checked_out) {
 		'order'  => 60,
 	);
 }
-if ($security_level > 3 && $checked_out && $checkout_id == $_SESSION['admin_id']) {
+if ($security_level > 3 && $checked_out && $checkout_id == $_SESSION['user']->admin_id) {
 	$docbar->icon_list['del_checkout'] = array(
 		'show'   => true,
 		'icon'   => 'actions/mail-mark-not-junk.png',

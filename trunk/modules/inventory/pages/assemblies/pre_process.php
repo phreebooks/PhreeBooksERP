@@ -35,7 +35,7 @@ switch ($_REQUEST['action']) {
   		try{
 			\core\classes\user::validate_security($security_level, 2); // security check
 			// 	retrieve and clean input values
-			$glEntry->admin_id            = $_SESSION['admin_id'];
+			$glEntry->admin_id            = $_SESSION['user']->admin_id;
 			$glEntry->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);
 			$sku                          = db_prepare_input($_POST['sku_1']);
 			$qty                          = db_prepare_input($_POST['qty_1']);

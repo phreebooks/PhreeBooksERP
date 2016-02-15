@@ -57,6 +57,7 @@ class basis {
 		$this->mainmenu["quality"] 		= new \core\classes\menuItem (75, 	TEXT_QUALITY, 			'action=LoadMainPage&amp;mID=cat_qa');
 		$this->mainmenu["quality"]->required_module = array ('MODULE_CP_ACTION_STATUS' ,'MODULE_DOC_CTL_STATUS');
 		$this->mainmenu["company"] 		= new \core\classes\menuItem (90, 	TEXT_COMPANY, 			'action=LoadMainPage&amp;mID=cat_company');
+		$this->mainmenu["company"]->submenu ["configuration"]  	= new \core\classes\menuItem (10, 	TEXT_MODULE_ADMINISTRATION,	'module=phreedom&amp;page=admin', 				SECURITY_ID_CONFIGURATION);
 		$this->mainmenu["logout"]		= new \core\classes\menuItem (999, 	TEXT_LOG_OUT, 			'action=logout');
 		$this->mainmenu["logout"]->icon = html_icon('actions/system-log-out.png', TEXT_LOG_OUT, 'small');
 		$this->toolbar = new \core\classes\toolbar ();
@@ -129,17 +130,17 @@ class basis {
 	
 	public function set_database(){
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		\core\classes\messageStack::debug_log("connecting to database {$_SESSION['company']}" );
+		\core\classes\messageStack::debug_log("connecting to database {$_SESSION['user']->company}" );
 		try{
-			define('DB_DATABASE', $_SESSION['company']);
-			require_once(DIR_FS_MY_FILES . $_SESSION['company'] . '/config.php');
+			define('DB_DATABASE', $_SESSION['user']->company);
+			require_once(DIR_FS_MY_FILES . $_SESSION['user']->company . '/config.php');
 			if(!defined('DB_SERVER_HOST')) define('DB_SERVER_HOST',DB_SERVER);
-			$this->DataBase = new \core\classes\PDO(DB_TYPE.":dbname={$_SESSION['company']};host=".DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION));
+			$this->DataBase = new \core\classes\PDO(DB_TYPE.":dbname={$_SESSION['user']->company};host=".DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION));
 			//	if(APC_EXTENSION_LOADED == false || apc_load_constants('configuration') == false) {
 			$result = $this->DataBase->prepare("SELECT configuration_key, configuration_value FROM " . DB_PREFIX . "configuration");
 			$result->execute();
 			while ($row = $result->fetch(\PDO::FETCH_LAZY)){
-				$this->configuration[$_SESSION['company']][$row['configuration_key']] = $row['configuration_value'];
+				$this->configuration[$_SESSION['user']->company][$row['configuration_key']] = $row['configuration_value'];
 				define($row['configuration_key'],$row['configuration_value']);//@todo remove
 			}
 			require(DIR_FS_MODULES . 'phreedom/config.php');
@@ -180,8 +181,19 @@ class basis {
 		if (array_key_exists($moduleName, $this->classes ) == false) {
 			$this->classes [$moduleName] = $admin_class;
 				\core\classes\messageStack::debug_log("attaching menu for class ".get_class($admin_class));
-//				foreach ($admin_class->mainmenu as $key => $menuitem) $this->mainmenu[$key]->appendsubmenu($menuitem->submenu);
-				$this->mainmenu = array_merge_recursive($this->mainmenu, $admin_class->mainmenu);
+				foreach ($admin_class->mainmenu as $key => $menu) {
+					if (!isset($this->mainmenu [$key])) $this->mainmenu [$key] = $menu;
+					if (is_array($menu->submenu)) {
+						foreach ($menu->submenu as $subkey => $submenu) {
+							if (!isset($this->mainmenu [$key]->submenu [$subkey])) $this->mainmenu [$key]->submenu [$subkey] = $submenu;
+							if (is_array($this->mainmenu [$key]->submenu [$subkey])) {
+								foreach ($this->mainmenu [$key]->submenu [$subkey] as $subsubkey => $subsubmenu) {
+									if (!isset($this->mainmenu [$key]->submenu [$subkey]->submenu [$subsubkey])) $this->mainmenu [$key]->submenu [$subkey]->submenu [$subsubkey] = $subsubmenu;
+								}
+							}
+						}
+					} 
+				}
 		}
 		uasort ( $this->classes, array ( $this, 'arangeObjectBySortOrder') );
 	}
@@ -284,8 +296,8 @@ class basis {
 	 */
 
 	function returnConfigurationValue($configuration_key) {
-		if (array_key_exists ($configuration_key, $this->configuration[ $_SESSION['company'] ])) {
-			return $this->configuration[ $_SESSION['company'] ][$configuration_key];
+		if (array_key_exists ($configuration_key, $this->configuration[ $_SESSION['user']->company ])) {
+			return $this->configuration[ $_SESSION['user']->company ][$configuration_key];
 		}
 		return null;
 	}

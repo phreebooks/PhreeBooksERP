@@ -58,7 +58,7 @@ echo $toolbar->build();
 	  <td align="right"><?php echo TEXT_CAPA_NUM . ' (' . TEXT_ASSIGNED_BY_SYSTEM . ') '; ?></td>
 	  <td><?php echo html_input_field('capa_num', $cInfo->capa_num, 'readonly="readonly"'); ?> </td>
 	  <td align="right"><?php echo TEXT_ENTERED_BY; ?></td>
-	  <td><?php echo html_pull_down_menu('entered_by', gen_get_pull_down(TABLE_USERS, true, '1', 'admin_id', 'display_name'), ($cInfo->entered_by ? $cInfo->entered_by : $_SESSION['admin_id'])); ?></td>
+	  <td><?php echo html_pull_down_menu('entered_by', gen_get_pull_down(TABLE_USERS, true, '1', 'admin_id', 'display_name'), ($cInfo->entered_by ? $cInfo->entered_by : $_SESSION['user']->admin_id)); ?></td>
 	  <td align="right"><?php echo TEXT_CREATION_DATE; ?></td>
 	  <td><?php echo html_calendar_field($cal_date0); ?></td>
 	</tr>

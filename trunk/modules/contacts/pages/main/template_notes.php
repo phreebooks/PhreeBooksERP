@@ -44,7 +44,7 @@ $cal_c_gen = array(
 	  </thead>
 	  <tbody class="ui-widget-content">
 	   <tr>
-	    <td align="center"><?php echo html_pull_down_menu('crm_rep_id', $basis->cInfo->sales_rep_array, $basis->cInfo->contact->crm_rep_id ? $basis->cInfo->contact->crm_rep_id : $_SESSION['account_id']); ?></td>
+	    <td align="center"><?php echo html_pull_down_menu('crm_rep_id', $basis->cInfo->sales_rep_array, $basis->cInfo->contact->crm_rep_id ? $basis->cInfo->contact->crm_rep_id : $_SESSION['user']->account_id); ?></td>
 	    <td align="center"><?php echo html_calendar_field($cal_c_gen); ?></td>
 	    <td align="center"><?php echo html_pull_down_menu('crm_action', $basis->cInfo->contact->crm_actions, $basis->cInfo->contact->crm_action); ?></td>
 	   </tr>

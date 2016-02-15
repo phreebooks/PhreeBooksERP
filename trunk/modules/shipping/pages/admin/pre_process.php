@@ -70,7 +70,7 @@ switch ($_REQUEST['action']) {
 	// set execution time limit to a large number to allow extra time
 	if (ini_get('max_execution_time') < 20000) set_time_limit(20000);
 	$backup              = new \phreedom\classes\backup;
-	$backup->source_dir  = DIR_FS_MY_FILES . $_SESSION['company'].'/shipping/labels/'.$carrier.'/'.$fy_year.'/'.$fy_month.'/';
+	$backup->source_dir  = DIR_FS_MY_FILES . $_SESSION['user']->company.'/shipping/labels/'.$carrier.'/'.$fy_year.'/'.$fy_month.'/';
 	$backup->dest_dir    = DIR_FS_MY_FILES . 'backups/';
 	switch ($conv_type) {
 		case 'bz2':
@@ -93,7 +93,7 @@ switch ($_REQUEST['action']) {
 	$fy_year   = db_prepare_input($_POST['fy_year']);
   	$conv_type = db_prepare_input($_POST['conv_type']);
 	$backup    = new \phreedom\classes\backup;
-	$backup->source_dir  = DIR_FS_MY_FILES . $_SESSION['company'] . '/shipping/labels/' . $carrier . '/' . $fy_year . '/' . $fy_month . '/';
+	$backup->source_dir  = DIR_FS_MY_FILES . $_SESSION['user']->company . '/shipping/labels/' . $carrier . '/' . $fy_year . '/' . $fy_month . '/';
     $backup->delete_dir($backup->source_dir, $recursive = true);
 	gen_add_audit_log(GEN_FILE_DATA_CLEAN);
 	$default_tab_id = 'tools';

@@ -66,7 +66,7 @@ class to_do extends \core\classes\ctl_panel {
 		if (!$remove_id && $add_to_do == '') return;
 		// fetch the current params
 		$result = $admin->DataBase->query("SELECT params FROM " . TABLE_USERS_PROFILES . "
-			WHERE user_id = {$_SESSION['admin_id']} and menu_id = '{$this->menu_id}' and dashboard_id = '" . get_class($this) . "'");
+			WHERE user_id = {$_SESSION['user']->admin_id} and menu_id = '{$this->menu_id}' and dashboard_id = '" . get_class($this) . "'");
 		if ($remove_id) { // remove element
 			$this->params	= unserialize($result['params']);
 		  	$first_part		= array_slice($this->params, 0, $remove_id - 1);
@@ -79,7 +79,7 @@ class to_do extends \core\classes\ctl_panel {
 		  	$this->params[]	= $add_to_do;
 		}
 		ksort($this->params);
-		db_perform(TABLE_USERS_PROFILES, array('params' => serialize($this->params)), "update", "user_id = {$_SESSION['admin_id']} and menu_id = '{$this->menu_id}' and dashboard_id = '" . get_class($this). "'");
+		db_perform(TABLE_USERS_PROFILES, array('params' => serialize($this->params)), "update", "user_id = {$_SESSION['user']->admin_id} and menu_id = '{$this->menu_id}' and dashboard_id = '" . get_class($this). "'");
 	}
 
 }

@@ -533,7 +533,7 @@ class ups extends \shipping\classes\shipping {
 		foreach ($results as $label) {
 		    $returnArray[] = $ups_results + array('tracking' => $label['tracking']);
 			$date = explode('-', $sInfo->ship_date); // date format YYYY-MM-DD
-			$file_path = DIR_FS_MY_FILES . $_SESSION['company'] . '/shipping/labels/' . $this->id . '/' . $date[0] . '/' . $date[1] . '/' . $date[2] . '/';
+			$file_path = DIR_FS_MY_FILES . $_SESSION['user']->company . '/shipping/labels/' . $this->id . '/' . $date[0] . '/' . $date[1] . '/' . $date[2] . '/';
 			validate_path($file_path);
 			// check for label to be for thermal printer or plain paper
 			if (MODULE_SHIPPING_UPS_PRINTER_TYPE == 'Thermal') {
@@ -897,7 +897,7 @@ class ups extends \shipping\classes\shipping {
 
 		// delete the label file
 		$date = explode('-', $shipments->fields['ship_date']);
-		$file_path = DIR_FS_MY_FILES . $_SESSION['company'] . '/shipping/labels/' . $this->id . '/' . $date[0] . '/' . $date[1] . '/' . $date[2] . '/';
+		$file_path = DIR_FS_MY_FILES . $_SESSION['user']->company . '/shipping/labels/' . $this->id . '/' . $date[0] . '/' . $date[1] . '/' . $date[2] . '/';
 		if (file_exists($file_path . $shipments->fields['tracking_id'] . '.lpt')) {
 			$file_name = $shipments->fields['tracking_id'] . '.lpt';
 		} elseif (file_exists($file_path . $shipments->fields['tracking_id'] . '.gif')) {

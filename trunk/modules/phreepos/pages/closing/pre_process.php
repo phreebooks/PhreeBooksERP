@@ -57,7 +57,7 @@ switch ($_REQUEST['action']) {
 		$glEntry->post_date           = $post_date;
 		$glEntry->period              = $period;
 		$glEntry->closed 			  = ($security_level > 2) ? 1 : 0;
-		$glEntry->admin_id            = $_SESSION['admin_id'];
+		$glEntry->admin_id            = $_SESSION['user']->admin_id;
 		$glEntry->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);
 		$glEntry->recur_id            = db_prepare_input($_POST['recur_id']);
 		$glEntry->recur_frequency     = db_prepare_input($_POST['recur_frequency']);

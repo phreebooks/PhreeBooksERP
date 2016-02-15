@@ -17,7 +17,7 @@
 //  Path: /modules/assets/defaults.php
 //
 // default directory for contact attachments
-define('ASSETS_DIR_ATTACHMENTS',  DIR_FS_MY_FILES . $_SESSION['company'] . '/assets/main/');
+define('ASSETS_DIR_ATTACHMENTS',  DIR_FS_MY_FILES . $_SESSION['user']->company . '/assets/main/');
 // the asset type indexes should not be changed or the asset module won't work.
 $assets_types = array(
   'vh' => TEXT_VEHICLE,

@@ -128,7 +128,7 @@ class admin extends \core\classes\admin {
   	global $admin;
   	RETURN TRUE; //@TODO EVT NOG BEWERKEN OF VERWIJDEREN.
   	require_once(DIR_FS_MODULES . 'magento/functions/magento.php');
-	require_once(DIR_FS_MODULES . 'magento/language/'.$_SESSION['language'].'/language.php');
+	require_once(DIR_FS_MODULES . 'magento/language/'.$_SESSION['user']->language.'/language.php');
     require_once(DIR_FS_MODULES . 'inventory/defaults.php');
   	require_once(DIR_FS_MODULES . 'inventory/functions/inventory.php');
 

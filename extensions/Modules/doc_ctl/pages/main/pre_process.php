@@ -68,7 +68,7 @@ switch ($_REQUEST['action']) {
 	if ($_FILES['docfile']['tmp_name']) {
 	  $sql_array['checkout_id'] = 0;
 	  $sql_array['revision']    = $revision;
-	  $sql_array['doc_owner']   = $_SESSION['admin_id'];
+	  $sql_array['doc_owner']   = $_SESSION['user']->admin_id;
 	  $sql_array['file_name']   = $_FILES['docfile']['name'];
 	  $sql_array['doc_ext']     = substr($_FILES['docfile']['name'], strrpos($_FILES['docfile']['name'], '.') + 1);
 	  $sql_array['doc_size']    = $_FILES['docfile']['size'];
@@ -81,7 +81,7 @@ switch ($_REQUEST['action']) {
 	$admin->DataBase->query("update " . TABLE_DC_DOCUMENT . " set checkout_id = 0 where id = " . $doc_id);
     break;
   case 'check_out':
-	$admin->DataBase->query("update " . TABLE_DC_DOCUMENT . " set checkout_id = " . $_SESSION['admin_id'] . " where id = " . $doc_id);
+	$admin->DataBase->query("update " . TABLE_DC_DOCUMENT . " set checkout_id = " . $_SESSION['user']->admin_id . " where id = " . $doc_id);
 	// now perform the download
   case 'download':
 	$doc_details = $admin->DataBase->query("select file_name, revision from " . TABLE_DC_DOCUMENT . " where id = '" . $doc_id . "'");

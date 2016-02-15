@@ -108,7 +108,7 @@ class beg_bal_import {
 			$glEntry->gl_acct_id          = $order['gl_acct'];
 			$glEntry->total_amount        = $order['total_amount'];
 			$glEntry->purchase_invoice_id = $order['order_id'];
-			$glEntry->admin_id            = $_SESSION['admin_id'];	// set imported dept rep id to current logged in user
+			$glEntry->admin_id            = $_SESSION['user']->admin_id;	// set imported dept rep id to current logged in user
 			if ($order['waiting']) $glEntry->waiting = '1';
 			$glEntry->bill_primary_name   = $order['bill_primary_name'];
 			$glEntry->bill_contact        = $order['bill_contact'];

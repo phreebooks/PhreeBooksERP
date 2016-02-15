@@ -67,9 +67,9 @@ spl_autoload_register('Phreebooks_autoloader', true, false);
 // pull in the custom language over-rides for this module/page
 $custom_path = DIR_FS_MODULES . "{$_REQUEST['module']}/custom/pages/{$_REQUEST['page']}/extra_defines.php";
 if (file_exists($custom_path)) { include($custom_path); }
-define('DIR_WS_THEMES', 'themes/' . (isset($_SESSION['admin_prefs']['theme']) ? $_SESSION['admin_prefs']['theme'] : DEFAULT_THEME) . '/');
-define('MY_COLORS',isset($_SESSION['admin_prefs']['colors'])?$_SESSION['admin_prefs']['colors']:DEFAULT_COLORS);
-define('MY_MENU',  isset($_SESSION['admin_prefs']['menu'])  ?$_SESSION['admin_prefs']['menu']  :DEFAULT_MENU);
+define('DIR_WS_THEMES', 'themes/' . (isset($_SESSION['user']->admin_prefs['theme']) ? $_SESSION['user']->admin_prefs['theme'] : DEFAULT_THEME) . '/');
+define('MY_COLORS',isset($_SESSION['user']->admin_prefs['colors'])?$_SESSION['user']->admin_prefs['colors']:DEFAULT_COLORS);
+define('MY_MENU',  isset($_SESSION['user']->admin_prefs['menu'])  ?$_SESSION['user']->admin_prefs['menu']  :DEFAULT_MENU);
 define('DIR_WS_IMAGES', DIR_WS_THEMES . 'images/');
 if (file_exists(DIR_WS_THEMES . 'icons/')) { define('DIR_WS_ICONS',  DIR_WS_THEMES . 'icons/'); }
 else { define('DIR_WS_ICONS', 'themes/default/icons/'); } // use default
@@ -79,11 +79,6 @@ if ($admin == false){
 	$admin = new \core\classes\basis;
 	if (APC_EXTENSION_LOADED) apc_add("admin", $admin, 600);
 }
-if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > (SESSION_TIMEOUT_ADMIN < 360 ? 360 : SESSION_TIMEOUT_ADMIN))) {
-	$_SESSION = array('language'=>$_SESSION['language'], 'companies'=>$_SESSION['companies']);
-	gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL'));
-}
-$_SESSION['LAST_ACTIVITY'] = time();
 $prefered_type = ENABLE_SSL_ADMIN == 'true' ? 'SSL' : 'NONSSL';
 if ($request_type <> $prefered_type) gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL')); // re-direct if SSL request not matching actual request
 ?>

@@ -184,7 +184,7 @@ switch ($_REQUEST['action']) {
 				// Inventory Assemblies Journal
 				$glEntry = new \core\classes\journal\journal_14();
 				$glEntry->id                  = '';
-				$glEntry->admin_id            = $_SESSION['admin_id'];
+				$glEntry->admin_id            = $_SESSION['user']->admin_id;
 				$glEntry->post_date           = date('Y-m-d');
 				$glEntry->period              = \core\classes\DateTime::period_of_date($glEntry->post_date);
 				if (!$glEntry->period) break;
@@ -205,7 +205,7 @@ switch ($_REQUEST['action']) {
 				gen_add_audit_log(TEXT_INVENTORY_ASSEMBLY . ' - ' . TEXT_SAVE, $sku, $qty);
 				\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_ASSEMBLED, TEXT_SKU , $sku), 'success');
 			}
-			$admin->DataBase->query("update " . TABLE_WO_JOURNAL_ITEM . " set complete = '1', admin_id = " . $_SESSION['admin_id'] . "
+			$admin->DataBase->query("update " . TABLE_WO_JOURNAL_ITEM . " set complete = '1', admin_id = " . $_SESSION['user']->admin_id . "
 			  where ref_id = $id and step = $step");
 			// check to see if the work order is complete
 			$result = $admin->DataBase->query("select max(step) as max_step from " . TABLE_WO_JOURNAL_ITEM . " where ref_id = $id");
