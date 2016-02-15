@@ -182,13 +182,13 @@ switch ($_REQUEST['action']) {
 	    	// *************** END TRANSACTION *************************
 			gen_add_audit_log(sprintf(INV_LOG_TRANSFER, $source_store_id, $dest_store_id), $sku, $qty);
 	   		\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, TEXT_INVENTORY_ADJUSTMENT, $glEntry->purchase_invoice_id), 'success');
-	   		if (DEBUG) $messageStack->write_debug();
+	   		$messageStack->write_debug();
 	   		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	  	}catch(Exception $e){
 			$admin->DataBase->transRollback();
 			\core\classes\messageStack::add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo($_POST);
-			if (DEBUG) $messageStack->write_debug();
+			$messageStack->write_debug();
 		}
 		break;
   	case 'delete':
@@ -206,13 +206,13 @@ switch ($_REQUEST['action']) {
 		  	if ($delOrd->unPost('delete')) throw new \core\classes\userException('cannot unpost record!');
 		   	$admin->DataBase->transCommit(); // if not successful rollback will already have been performed
 		    gen_add_audit_log(TEXT_INVENTORY_ADJUSTMENT . ' - ' . TEXT_DELETE, $delOrd->journal_rows[0]['sku'], $delOrd->journal_rows[0]['qty']);
-		    if (DEBUG) $messageStack->write_debug();
+		    $messageStack->write_debug();
 		    gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		}catch(Exception $e){
 			$admin->DataBase->transRollback();
 			\core\classes\messageStack::add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo($_POST);
-			if (DEBUG) $messageStack->write_debug();
+			$messageStack->write_debug();
 		}
 		break;
 

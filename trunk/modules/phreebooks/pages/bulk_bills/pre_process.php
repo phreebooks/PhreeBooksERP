@@ -141,7 +141,7 @@ switch ($_REQUEST['action']) {
   		}
 
 		// ***************************** END TRANSACTION *******************************
-		if (DEBUG) $messageStack->write_debug();
+		$messageStack->write_debug();
 		// send to printer (range of check numbers)
 		break;
   	case 'search':

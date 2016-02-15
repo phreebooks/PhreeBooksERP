@@ -62,7 +62,7 @@
     <td><?php echo html_input_field('session_timeout_admin', $_POST['session_timeout_admin'] ? $_POST['session_timeout_admin'] : SESSION_TIMEOUT_ADMIN, ''); ?></td>
   </tr>
   <tr>
-    <td><?php echo CD_15_05_DESC; ?></td>
+    <td><?php echo TEXT_WHEN_ENABLED; ?></td>
     <td><?php echo html_pull_down_menu('session_auto_refresh', $sel_yes_no, $_POST['session_auto_refresh'] ? $_POST['session_auto_refresh'] : SESSION_AUTO_REFRESH, ''); ?></td>
   </tr>
   <tr>

@@ -1353,7 +1353,6 @@
     <bg_bg>Отстъпки при ранно плащане. Оставете процента на нула или ранните дни нула за да изключите отстъпките при ранно плащане.</bg_bg>
     <en_us>Early payment discounts. Leave percent zero or early days zero to disable early payment discounts.</en_us>
     <es_cr>Selección de términos de pago</es_cr>
-    <id_id>Early payment discounts. Leave percent zero or early days zero to disable early payment discounts.</id_id>
     <nl_nl>Vervroegde betaling kortingen. Laat procent nul of vroege dagen nul om vroege betalingskorting uit te schakelen.</nl_nl>
     <pt_br>Descontos para pagamento antecipado. Deixe percentual zero ou dias antecipados zero para desabilitar Descontos para pagamento antecipado.</pt_br>
   </translation>
@@ -1376,26 +1375,6 @@
     <id_id>Percent (%) discount if paid in</id_id>
     <nl_nl>Procent (%) korting bij betaling binnen</nl_nl>
     <pt_br>Percentual (%) desconto se pago em </pt_br>
-  </translation>
-  <translation id="CD_02_14_DESC">
-    <fr_fr>Le nombre de jours à utiliser pour une remise si paiement anticipé. Utiliser en conjonction avec remise pour paiement anticipé ci-dessous. Entrez 0 pour aucun rabais si prépaiement.</fr_fr>
-    <ru_ru>Number of days to use for prepayment discount. Use in conjunction with Prepayment Discount below. Enter 0 for no prepayment discount.</ru_ru>
-    <bg_bg>дни. Общо задължение</bg_bg>
-    <en_us>days. Total due in</en_us>
-    <es_cr>Número de días a usar para descuento por prepago.  Use junto con el descuento por prepago que se detalla a mas adelante.  Digite 0 para ningún descuento por prepago.</es_cr>
-    <id_id>days. Total due in</id_id>
-    <nl_nl>dagen. Totaal verschuldigd binnen</nl_nl>
-    <pt_br>dias. Total até</pt_br>
-  </translation>
-  <translation id="CD_02_15_DESC">
-    <fr_fr>Pourcentage de remise pour paiement anticipé. Inutilisé sauf si le nombre de jours de remise pour prépaiement est égal à zéro.</fr_fr>
-    <ru_ru>Percent discount for early payment. Not used unless Prepayment Discount Number of Days is equal to zero.</ru_ru>
-    <bg_bg>дни.</bg_bg>
-    <en_us>days.</en_us>
-    <es_cr>Descuento por prepago en porcentaje.  No use a no ser que el número de días para el descuento por prepago sea igual a cero.</es_cr>
-    <id_id>hari.</id_id>
-    <nl_nl>dagen</nl_nl>
-    <pt_br>dias.</pt_br>
   </translation>
   <translation id="CD_02_17_DESC">
     <fr_fr>Détermine le nombre de jours pour le premier avertissement de factures en souffrance. Le délai court à partir de la date de début de vieillissement de compte.</fr_fr>
@@ -1665,16 +1644,6 @@
     <nl_nl>Hiermee kan een ajax call de mogelijke keuzen in vullen</nl_nl>
     <pt_br>Permite uma chamada ajax preencher possíveis opções a medida que dados são digitados no campo SKU. Esta função é importante quando os SKUs são conhecidos e agiliza o preenchimento de ordens de compras. Pode tornar lentas entradas de SKU quando leitores de código de barra são utilizados.</pt_br>
   </translation>
-  <translation id="CD_05_65_DESC">
-    <fr_fr>Si activé</fr_fr>
-    <ru_ru>When enabled</ru_ru>
-    <bg_bg>When enabled</bg_bg>
-    <en_us>When enabled</en_us>
-    <es_cr>Cuando está habilitado</es_cr>
-    <id_id>When enabled</id_id>
-    <nl_nl>Wanneer deze is ingeschakeld</nl_nl>
-    <pt_br>Quando habilitado</pt_br>
-  </translation>
   <translation id="CD_05_70_DESC">
     <fr_fr>Définit le nombre de caractères attendus lors de la lecture de valeurs de codes barres du stock. PhreeBooks effectue une recherche uniquement lorsque le nombre de caractères a été atteint. Des valeurs typiques sont 12 et 13 caractères.</fr_fr>
     <ru_ru>Sets the number of characters to expect when reading inventory bar code values. PhreeBooks only searches when the number of characters has been reached. Typical values are 12 and 13 characters.</ru_ru>
@@ -1685,7 +1654,7 @@
     <nl_nl>Stelt het aantal tekens te verwachten bij het lezen van voorraad streepjescode. PhreeBooks zoekt alleen wanneer het aantal tekens is bereikt. Typische waarden zijn 12 en 13 tekens.</nl_nl>
     <pt_br>Estabelece o número de caracteres esperados quando leitores de código de barra são utilizados. PhreeBooks só realiza a busca quando o número de caracteres foi atingido. Valores típicos são 12 ou 13 caracteres.</pt_br>
   </translation>
-  <translation id="CD_05_75_DESC">
+  <translation id="TEXT_WHEN_ENABLED">
     <fr_fr>Si activé</fr_fr>
     <ru_ru>When enabled</ru_ru>
     <bg_bg>Когато е включено</bg_bg>
@@ -1787,11 +1756,8 @@
   </translation>
   <translation id="CD_10_32_DESC">
     <fr_fr>Affiche la case à cocher de frais de manutention .</fr_fr>
-    <ru_ru>Show the handling charge checkbox.</ru_ru>
-    <bg_bg>Additional handling charge checkbox</bg_bg>
     <en_us>Additional handling charge checkbox</en_us>
     <es_cr>Muestre la casilla de cargos por manejo.</es_cr>
-    <id_id>Additional handling charge checkbox</id_id>
     <nl_nl>Toon de administratiekosten selectievakje.</nl_nl>
     <pt_br>Taxa adicional de manuseio</pt_br>
   </translation>
@@ -1901,16 +1867,6 @@
     <nl_nl>Voer de tijd seconden in. (Standaard = 3600). Voorbeeld: 3600 = 1 uur &lt;br /&gt; LET OP: Te weinig seconden kan resulteren in een time-out problemen bij het toevoegen / bewerken van producten.</nl_nl>
     <pt_br>Limite Tempo Sessão - Entre o tempo em segundos (padrão = 3600). Exemplo: 3600 = 1 hora&lt;br /&gt;Atenção: Poucos segundos podem resultar em problemas ao inserir/editar produtos.</pt_br>
   </translation>
-  <translation id="CD_15_05_DESC">
-    <fr_fr>Si activée</fr_fr>
-    <ru_ru>When enabled</ru_ru>
-    <bg_bg>Когато е включена</bg_bg>
-    <en_us>When enabled</en_us>
-    <es_cr>Cuando está habilitado</es_cr>
-    <id_id>When enabled</id_id>
-    <nl_nl>Wanneer deze optie is ingeschakeld zal ajax gebruikt worden om de sessie-timer om de 5 minuten te vernieuwen om afmelden van de gebruiker te voorkomen. Deze functie helpt te voorkomen dat het opslaan mislukt. (wanneer het opslaan resulteert in een login scherm).</nl_nl>
-    <pt_br>Quando habilitada</pt_br>
-  </translation>
   <translation id="CD_20_99_DESC">
     <fr_fr>Activer la génération d'une trace pour le débogage.&lt;br&gt;Si OUI est sélectionné</fr_fr>
     <ru_ru>Enable trace generation for debug purposes.&lt;br /&gt;If Yes is selected</ru_ru>
@@ -1969,8 +1925,9 @@
     <nl_nl>Of het verplicht is of het veld: %s in gevult moet worden voor een nieuw hoofd/factuur adres(voor Leveranciers</nl_nl>
     <pt_br>Campo obrigatório ou não: %s deve ser inserido para um novo endereço principal/faturamento (para fornecedores</pt_br>
   </translation>
-  <translation id="CONTACT_LEVEL">
-    <en_us>Customer Level</en_us>
+  <translation id="TEXT_CONTACT_LEVEL">
+    <en_us>Contact Level</en_us>
+    <nl_nl>Contact Niveau</nl_nl>
   </translation>
   <translation id="CONTACT_SHIP_FIELD_REQ">
     <bg_bg>Whether or not to require field: %s to be entered for a new shipping address</bg_bg>
@@ -2007,14 +1964,7 @@
     <nl_nl> dag(en) terug (Vandaag=0)</nl_nl>
     <pt_br>dia(s) atrás (Hoje=0)</pt_br>
   </translation>
-  <translation id="CP_AUDIT_LOG_NO_RESULTS">
-    <en_us>No results for this day!</en_us>
-    <es_cr>¡No hay ninguno!</es_cr>
-  </translation>
-  <translation id="CP_AUDIT_LOG_SECURITY">
-    <en_us>4</en_us>
-  </translation>
-  <translation id="CP_AUDIT_LOG_TITLE">
+  <translation id="TEXT_AUDIT_LOG">
     <en_us>Audit Log</en_us>
     <es_cr>Bitácora de auditoraje</es_cr>
     <nl_nl>Logboek</nl_nl>
@@ -14972,33 +14922,26 @@
   </translation>
   <translation id="TEXT_LOGIN">
     <en_us>Login</en_us>
+    <nl_nl>Login</nl_nl>
   </translation>
-  <translation id="TEXT_LOGIN_COMPANY">
-    <hu_hu>Válassz céget: </hu_hu>
-    <bg_bg>Изберете фирма: </bg_bg>
-    <en_us>Select Company: </en_us>
-    <es_cr>Seleccione compañía: </es_cr>
-    <id_id>Pilih Perusahaan: </id_id>
-    <nl_nl>Selecteer Bedrijf: </nl_nl>
-    <pt_br>Selecione Empresa: </pt_br>
+  <translation id="TEXT_USERNAME">
+    <hu_hu>Felhasználónév</hu_hu>
+    <bg_bg>Потребителско име</bg_bg>
+    <en_us>Username</en_us>
+    <es_cr>Usuario</es_cr>
+    <id_id>Nama Pengguna</id_id>
+    <nl_nl>Gebruikersnaam</nl_nl>
+    <pt_br>Usuário</pt_br>
   </translation>
-  <translation id="TEXT_LOGIN_NAME">
-    <hu_hu>Felhasználónév: </hu_hu>
-    <bg_bg>Потребителско име: </bg_bg>
-    <en_us>Username: </en_us>
-    <es_cr>Usuario: </es_cr>
-    <id_id>Nama Pengguna: </id_id>
-    <nl_nl>Gebruikersnaam: </nl_nl>
-    <pt_br>Usuário: </pt_br>
-  </translation>
-  <translation id="TEXT_LOGIN_PASS">
-    <hu_hu>Jelszó: </hu_hu>
-    <bg_bg>Парола: </bg_bg>
-    <en_us>Password: </en_us>
-    <es_cr>Contraseña: </es_cr>
-    <id_id>Kata Sandi: </id_id>
-    <nl_nl>Wachtwoord: </nl_nl>
-    <pt_br>Senha: </pt_br>
+  <translation id="TEXT_PASSWORD">
+    <hu_hu>Jelszó</hu_hu>
+    <ru_ru>Пароль</ru_ru>
+    <bg_bg>Парола</bg_bg>
+    <en_us>Password</en_us>
+    <es_cr>Contraseña</es_cr>
+    <id_id>Kata Sandi</id_id>
+    <nl_nl>Wachtwoord</nl_nl>
+    <pt_br>Senha</pt_br>
   </translation>
   <translation id="TEXT_LOG_EMAIL">
     <en_us>Log and Email</en_us>
@@ -16106,16 +16049,6 @@
   </translation>
   <translation id="TEXT_PASSPHRASE_NOW">
     <en_us>Enter Current Passphrase</en_us>
-  </translation>
-  <translation id="TEXT_PASSWORD">
-    <hu_hu>Jelszó</hu_hu>
-    <ru_ru>Пароль</ru_ru>
-    <bg_bg>Парола</bg_bg>
-    <en_us>Password</en_us>
-    <es_cr>Contraseña</es_cr>
-    <id_id>Kata Sandi</id_id>
-    <nl_nl>Wachtwoord</nl_nl>
-    <pt_br>Senha</pt_br>
   </translation>
   <translation id="TEXT_PATH">
     <bg_bg>Път</bg_bg>
@@ -19586,11 +19519,6 @@
     <nl_nl>Gebruikt</nl_nl>
     <pt_br>Utilizado</pt_br>
   </translation>
-  <translation id="TEXT_USERNAME">
-    <en_us>Username</en_us>
-    <nl_nl>Gebruikersnaam</nl_nl>
-    <pt_br>Nome Usuário</pt_br>
-  </translation>
   <translation id="TEXT_USERS">
     <hu_hu>Felhasználók</hu_hu>
     <ru_ru>Пользователи</ru_ru>
@@ -20476,4 +20404,31 @@
     <nl_nl>Tabel Tarief</nl_nl>
     <ru_ru>Local Delivery</ru_ru>
   </translation>
- </translations>
+  <translation id="TEXT_THIS_QUARTER_IN_ACCOUNTING_PERIODS">
+    <en_us>This quarter in accounting periods</en_us>
+    <nl_nl>Dit Kwartaal in boekhoud periode</nl_nl>
+  </translation>
+  <translation id="TEXT_QUARTER_TO_DATE_IN_ACCOUNTING_PERIODS">
+    <en_us>Quarter to date in accounting periods</en_us>
+    <nl_nl>Kwartaal tot vandaag in boekhoud periode</nl_nl>
+  </translation>
+  <translation id="TEXT_THIS_YEAR_IN_ACCOUNTING_PERIODS">
+    <en_us>This year in accounting periods</en_us>
+    <nl_nl>Dit jaar in boekhoud perioden</nl_nl>
+  </translation>
+  <translation id="TEXT_YEAR_TO_DATE_IN_ACCOUNTING_PERIODS">
+    <en_us>Year to date in accounting periods</en_us>
+    <nl_nl>Jaar tot vandaag in boekhoud perioden</nl_nl>
+  </translation>
+  <translation id="TEXT_DATE_BY_PERIOD">
+    <en_us>Date by period</en_us>
+    <nl_nl>Datum per Periode</nl_nl>
+  </translation>
+  <translation id="TEXT_SELECT_ARGS">
+    <en_us>select %</en_us>
+    <nl_nl>Selecteer %</nl_nl>
+  </translation>
+  <translation id="TEXT_COPYRIGHT">
+    <en_us>copyright</en_us>
+  </translation>
+</translations>

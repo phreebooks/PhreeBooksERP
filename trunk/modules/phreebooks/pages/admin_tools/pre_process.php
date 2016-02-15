@@ -141,7 +141,7 @@ switch ($_REQUEST['action']) {
 	  \core\classes\messageStack::add(sprintf(GEN_ADM_TOOLS_RE_POST_SUCCESS, $repost_cnt),'success');
 	  gen_add_audit_log(TEXT_RE-POST_JOURNALS . ' - ', implode(',', $journals));
 	}
-	if (DEBUG) $messageStack->write_debug();
+	$messageStack->write_debug();
 	break;
 
 	case 'inv_owed_fix' :
@@ -164,7 +164,7 @@ switch ($_REQUEST['action']) {
 			$admin->DataBase->transRollback();
 			\core\classes\messageStack::add($e->getMessage());
 		}
-		if (DEBUG) $messageStack->write_debug();
+		$messageStack->write_debug();
 		break;
 
   case 'coa_hist_test':
@@ -266,7 +266,7 @@ switch ($_REQUEST['action']) {
 	} else {
 	  \core\classes\messageStack::add(GEN_ADM_TOOLS_REPAIR_ERROR,'error');
 	}
-	if (DEBUG) $messageStack->write_debug();
+	$messageStack->write_debug();
     break;
 
   default:

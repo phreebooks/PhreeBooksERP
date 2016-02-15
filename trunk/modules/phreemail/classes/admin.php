@@ -166,7 +166,7 @@ class admin extends \core\classes\admin {
 		}catch (\Exception $exception){
 			\core\classes\messageStack::add($exception->getMessage(), 'error');
 		}
-		if ( DEBUG )   $messageStack->write_debug();
+		$messageStack->write_debug();
   }
 
 }

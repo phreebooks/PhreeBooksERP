@@ -163,7 +163,7 @@ switch ($_REQUEST['action']) {
 	$glEntry->update_chart_history_periods($period = 1); // roll the beginning balances into chart history table
 	$admin->DataBase->transCommit();	// post the chart of account values
 	gen_add_audit_log('Enter Beginning Balances');
-	if (DEBUG) $messageStack->write_debug();
+	$messageStack->write_debug();
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	// *************** END TRANSACTION *************************
 	break;

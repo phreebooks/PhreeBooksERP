@@ -94,7 +94,7 @@ switch ($_REQUEST['action']) {
 	    $admin->DataBase->transCommit();	// post the chart of account values
 	    gen_add_audit_log(TEXT_INVENTORY_ADJUSTMENT . ' - ' . ($_REQUEST['action']=='save' ? TEXT_SAVE : TEXT_EDIT), $sku, $qty);
 	    \core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, TEXT_INVENTORY_ADJUSTMENT, $glEntry->purchase_invoice_id), 'success');
-	    if (DEBUG) $messageStack->write_debug();
+	    $messageStack->write_debug();
 	    gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	}catch (error $e) {
 		throw $e;
@@ -113,7 +113,7 @@ switch ($_REQUEST['action']) {
 		$delOrd->unPost('delete');
 		$admin->DataBase->transCommit(); // if not successful rollback will already have been performed
 		gen_add_audit_log(TEXT_INVENTORY_ADJUSTMENT . ' - ' . TEXT_DELETE, $delOrd->journal_rows[0]['sku'], $delOrd->journal_rows[0]['qty']);
-		if (DEBUG) $messageStack->write_debug();
+		$messageStack->write_debug();
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		break;
 	} catch (error $e){

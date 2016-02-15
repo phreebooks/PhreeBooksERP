@@ -108,7 +108,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 
 
 	$order->Post('insert', true);
-	if ( DEBUG )           $messageStack->write_debug();
+	$messageStack->write_debug();
 						$xml .= "\t" . xmlEntry("action",			$_REQUEST['action']);
 //if ($order->errormsg)	$xml .= "\t" . xmlEntry("error", 			$order->errormsg);
 echo createXmlHeader() . $xml . createXmlFooter();

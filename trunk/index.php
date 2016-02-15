@@ -33,7 +33,6 @@ try{
    	if ($admin->cInfo->action) $admin->removeEventsAndAddNewEvent($admin->cInfo->action);
    	$admin->startProcessingEvents();
 	ob_end_flush();
-   	$messageStack->write_debug();
    	session_write_close();
 }catch (\core\classes\userException $e) {
 	\core\classes\messageStack::add($e->getMessage());
@@ -48,5 +47,4 @@ try{
 		echo "sorry but there was a unforseen error <br/> <b>{$e->getMessage()}</b><br/><br/>".$e->getTraceAsString();
 	}
 }
-$admin->DataBase = null;
 ?>

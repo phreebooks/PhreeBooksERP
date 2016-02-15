@@ -25,7 +25,7 @@ class audit_log extends \core\classes\ctl_panel {
 	public $description	 		= CP_AUDIT_LOG_DESCRIPTION;
 	public $max_length   		= 50;
 	public $security_id  		= SECURITY_ID_CONFIGURATION;
-	public $text		 		= CP_AUDIT_LOG_TITLE;
+	public $text		 		= TEXT_AUDIT_LOG;
 	public $version      		= '4.0';
 	public $default_params 		= array('num_rows'=> 50, 'today_minus' => '0');
 
@@ -80,7 +80,7 @@ class audit_log extends \core\classes\ctl_panel {
                 $contents .= '</div>' . chr(10);
           	}
         }
-        $this->text = CP_AUDIT_LOG_TITLE . " " . date('Y-m-d', strtotime('-' . $this->params['today_minus'] . ' day'));
+        $this->text = TEXT_AUDIT_LOG . " " . date('Y-m-d', strtotime('-' . $this->params['today_minus'] . ' day'));
        	return $this->build_div( $contents, $control);
  	}
 

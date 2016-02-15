@@ -170,7 +170,7 @@ switch ($_REQUEST['action']) {
 		$order->id        = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
 	  }
 	  gen_add_audit_log(PAGE_TITLE, $order->purchase_invoice_id, $order->total_amount);
-	  if (DEBUG) $messageStack->write_debug();
+	  $messageStack->write_debug();
 	  if ($_REQUEST['action'] == 'save') {
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	  } // else print or print_update, fall through and load javascript to call form_popup and clear form

@@ -67,7 +67,7 @@ switch ($_REQUEST['action']) {
 	  		$admin->DataBase->transRollback();
 			\core\classes\messageStack::add($e->getMessage());
 	  	}
-	  	if (DEBUG) $messageStack->write_debug();
+	  	$messageStack->write_debug();
 
     	break;
   case 'go_first':    $_REQUEST['list'] = 1;       break;

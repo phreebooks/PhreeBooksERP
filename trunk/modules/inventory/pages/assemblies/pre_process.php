@@ -72,14 +72,14 @@ switch ($_REQUEST['action']) {
 	  		$admin->DataBase->transCommit();	// post the chart of account values
 	  		gen_add_audit_log(TEXT_INVENTORY_ASSEMBLY . ' - ' . ($_REQUEST['action']=='save' ? TEXT_SAVE : TEXT_EDIT), $sku, $qty);
 	  		\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_ASSEMBLED, TEXT_SKU , $sku), 'success');
-	  		if (DEBUG) $messageStack->write_debug();
+	  		$messageStack->write_debug();
 	  		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 			// *************** END TRANSACTION *************************
 		}catch(Exception $e){
 			$admin->DataBase->transRollback();
 			\core\classes\messageStack::add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo($_POST);
-			if (DEBUG) $messageStack->write_debug();
+			$messageStack->write_debug();
 		}
 		break;
   	case 'delete':
@@ -92,7 +92,7 @@ switch ($_REQUEST['action']) {
 		  	if ($delAssy->unPost('delete')) {	// unpost the prior assembly
 				$admin->DataBase->transCommit(); // if not successful rollback will already have been performed
 				gen_add_audit_log(TEXT_INVENTORY_ASSEMBLY . ' - ' . TEXT_DELETE, $delAssy->journal_rows[0]['sku'], $delAssy->journal_rows[0]['qty']);
-				if (DEBUG) $messageStack->write_debug();
+				$messageStack->write_debug();
 				gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 				// *************** END TRANSACTION *************************
 		  	}
@@ -100,7 +100,7 @@ switch ($_REQUEST['action']) {
 			$admin->DataBase->transRollback();
 			\core\classes\messageStack::add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo($_POST);
-			if (DEBUG) $messageStack->write_debug();
+			$messageStack->write_debug();
 		}
 		break;
   	case 'edit':
@@ -112,7 +112,7 @@ switch ($_REQUEST['action']) {
 			$admin->DataBase->transRollback();
 			\core\classes\messageStack::add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo(array());
-			if (DEBUG) $messageStack->write_debug();
+			$messageStack->write_debug();
 		}
 		break;
   default:

@@ -169,7 +169,7 @@ switch ($_REQUEST['action']) {
   		\core\classes\messageStack::add($e->getMessage());
   		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
   	}
-	if (DEBUG) $messageStack->write_debug();
+	$messageStack->write_debug();
 	break;
   default:
 }

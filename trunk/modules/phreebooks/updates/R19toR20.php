@@ -65,13 +65,13 @@ if (!$admin->DataBase->field_exists(TABLE_INVENTORY, 'price_sheet'))  {
 if (!defined('ORD_ENABLE_LINE_ITEM_BAR_CODE')) {
   $admin->DataBase->query("INSERT INTO " .  TABLE_CONFIGURATION . "
            ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` , `set_function` )
-    VALUES ( 'CD_05_65_TITLE', 'ORD_ENABLE_LINE_ITEM_BAR_CODE', '0', 'CD_05_65_DESC', '5', '65', NULL , now(), NULL, 'cfg_keyed_select_option(array(0 =>\'" . TEXT_NO . "\', 1=>\'" . TEXT_YES . "\'),' );");
+    VALUES ( 'CD_05_65_TITLE', 'ORD_ENABLE_LINE_ITEM_BAR_CODE', '0', 'TEXT_WHEN_ENABLED', '5', '65', NULL , now(), NULL, 'cfg_keyed_select_option(array(0 =>\'" . TEXT_NO . "\', 1=>\'" . TEXT_YES . "\'),' );");
   $admin->DataBase->query("INSERT INTO " .  TABLE_CONFIGURATION . "
            ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` )
     VALUES ( 'CD_05_70_TITLE', 'ORD_BAR_CODE_LENGTH', '12', 'CD_05_70_DESC', '5', '70', NULL , now(), NULL );");
   $admin->DataBase->query("INSERT INTO " .  TABLE_CONFIGURATION . "
            ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` , `set_function` )
-    VALUES ( 'CD_15_05_TITLE', 'SESSION_AUTO_REFRESH', '0', 'CD_15_05_DESC', '15', '5', NULL , now(), NULL, 'cfg_keyed_select_option(array(0 =>\'" . TEXT_NO . "\', 1=>\'" . TEXT_YES . "\'),' );");
+    VALUES ( 'CD_15_05_TITLE', 'SESSION_AUTO_REFRESH', '0', 'TEXT_WHEN_ENABLED', '15', '5', NULL , now(), NULL, 'cfg_keyed_select_option(array(0 =>\'" . TEXT_NO . "\', 1=>\'" . TEXT_YES . "\'),' );");
 }
 // update the reconcilliation from journal_main to journal_item
 // build the array of cash accounts
@@ -91,7 +91,7 @@ while (!$result->EOF) {
 if (!defined('ENABLE_AUTO_ITEM_COST')) {
   $admin->DataBase->query("INSERT INTO " .  TABLE_CONFIGURATION . "
            ( `configuration_title` , `configuration_key` , `configuration_value` , `configuration_description` , `configuration_group_id` , `sort_order` , `last_modified` , `date_added` , `use_function` , `set_function` )
-    VALUES ( 'CD_05_75_TITLE', 'ENABLE_AUTO_ITEM_COST', '0', 'CD_05_75_DESC', '5', '75', NULL , now(), NULL, 'cfg_keyed_select_option(array(0=>\'" . TEXT_NO . "\', \'PO\'=>\'" . TEXT_PURCHASE_ORDERS . "\', \'PR\'=>\'" . TEXT_PURCHASE . "\'),' );");
+    VALUES ( 'CD_05_75_TITLE', 'ENABLE_AUTO_ITEM_COST', '0', 'TEXT_WHEN_ENABLED', '5', '75', NULL , now(), NULL, 'cfg_keyed_select_option(array(0=>\'" . TEXT_NO . "\', \'PO\'=>\'" . TEXT_PURCHASE_ORDERS . "\', \'PR\'=>\'" . TEXT_PURCHASE . "\'),' );");
 }
 
 ?>

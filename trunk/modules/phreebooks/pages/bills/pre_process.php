@@ -158,7 +158,7 @@ switch ($_REQUEST['action']) {
 	  	$order->post_date = \core\classes\DateTime::db_date_format($_POST['post_date']); // fix the date to original format
 	  	$order->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
 	}
-	if (DEBUG) $messageStack->write_debug();
+	$messageStack->write_debug();
 	break;
 
   case 'delete':
@@ -169,7 +169,7 @@ switch ($_REQUEST['action']) {
 		$delOrd->journal($id); // load the posted record based on the id submitted
 		if ($delOrd->delete_payment()) {
 			gen_add_audit_log(AUDIT_LOG_DEL_DESC, $order->purchase_invoice_id, $order->total_amount);
-			if (DEBUG) $messageStack->write_debug();
+			$messageStack->write_debug();
 			gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		}
 	} else {

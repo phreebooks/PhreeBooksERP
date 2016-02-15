@@ -281,7 +281,7 @@ class beg_bal_import {
 		  }
 		  // update the chart of accounts history through the existing periods
 		  $glEntry->update_chart_history_periods($period = 1);
-		  if (DEBUG) $messageStack->write_debug();
+		  $messageStack->write_debug();
 		  $db->transCommit();	// post the chart of account values
 		  // *************** END TRANSACTION *************************
 		}

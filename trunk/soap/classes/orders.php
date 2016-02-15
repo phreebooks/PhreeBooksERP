@@ -290,7 +290,7 @@ class xml_orders extends parser {
 	// post the sales order
 //echo 'ready to post =><br />'; echo 'psOrd object = '; print_r($psOrd); echo '<br />';
 	$post_success = $psOrd->post_ordr($action);
-	if (DEBUG) $messageStack->write_debug();
+	$messageStack->write_debug();
 	if (!$post_success) { // extract the error message from the messageStack and return with error
 // echo 'failed a post need to rollback here.<br>';
 	  $admin->DataBase->transRollback();

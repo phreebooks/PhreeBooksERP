@@ -176,7 +176,7 @@ switch ($_REQUEST['action']) {
 		$cInfo = new \core\classes\objectInfo($_POST); // if we are here, there was an error, reload page
 		$cInfo->post_date = \core\classes\DateTime::db_date_format($_POST['post_date']);
   	}
-  	if (DEBUG) $messageStack->write_debug();
+  	$messageStack->write_debug();
 	break;
   case 'delete':
   	try{
@@ -210,7 +210,7 @@ switch ($_REQUEST['action']) {
 		$cInfo = new \core\classes\objectInfo($_POST); // if we are here, there was an error, reload page
 		$cInfo->post_date = \core\classes\DateTime::db_date_format($_POST['post_date']);
   	}
-	if (DEBUG) $messageStack->write_debug();
+	$messageStack->write_debug();
 	break;
 
   case 'edit':

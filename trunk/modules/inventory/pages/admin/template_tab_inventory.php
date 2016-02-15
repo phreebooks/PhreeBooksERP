@@ -118,7 +118,7 @@
 	    <td><?php echo html_pull_down_menu('inventory_auto_fill', $sel_yes_no, $_POST['inventory_auto_fill'] ? $_POST['inventory_auto_fill'] : INVENTORY_AUTO_FILL, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="4"><?php echo CD_05_65_DESC; ?></td>
+	    <td colspan="4"><?php echo TEXT_WHEN_ENABLED; ?></td>
 	    <td><?php echo html_pull_down_menu('ord_enable_line_item_bar_code', $sel_yes_no, $_POST['ord_enable_line_item_bar_code'] ? $_POST['ord_enable_line_item_bar_code'] : ORD_ENABLE_LINE_ITEM_BAR_CODE, ''); ?></td>
 	  </tr>
 	  <tr>
@@ -126,7 +126,7 @@
 	    <td><?php echo html_input_field('ord_bar_code_length', $_POST['ord_bar_code_length'] ? $_POST['ord_bar_code_length'] : ORD_BAR_CODE_LENGTH, ''); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="4"><?php echo CD_05_75_DESC; ?></td>
+	    <td colspan="4"><?php echo TEXT_WHEN_ENABLED; ?></td>
 	    <td><?php echo html_pull_down_menu('enable_auto_item_cost', $sel_item_cost, $_POST['enable_auto_item_cost'] ? $_POST['enable_auto_item_cost'] : ENABLE_AUTO_ITEM_COST, ''); ?></td>
 	  </tr>
 	</table>

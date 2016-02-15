@@ -836,7 +836,7 @@ class admin extends \core\classes\admin {
   			$admin->DataBase->transCommit();	// post the chart of account values
   			gen_add_audit_log(TEXT_INVENTORY_ADJUSTMENT . ' - ' . ($_REQUEST['action']=='save' ? TEXT_SAVE : TEXT_EDIT), $sku, $qty);
   			\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, TEXT_INVENTORY_ADJUSTMENT, $glEntry->purchase_invoice_id), 'success');
-  			if (DEBUG) $messageStack->write_debug();
+  			$messageStack->write_debug();
   			$basis->cInfo = null;
   			$basis->fireEvent("LoadInventoryAdjustments");
   		}
@@ -853,7 +853,7 @@ class admin extends \core\classes\admin {
   		if ($delOrd->unPost('delete')) {
   			$admin->DataBase->transCommit(); // if not successful rollback will already have been performed
   			gen_add_audit_log(TEXT_INVENTORY_ADJUSTMENT . ' - ' . TEXT_DELETE, $delOrd->journal_rows[0]['sku'], $delOrd->journal_rows[0]['qty']);
-  			if (DEBUG) $messageStack->write_debug();
+  			$messageStack->write_debug();
   			$basis->cInfo = null;
   			$basis->fireEvent("LoadInventoryAdjustments");
   		}
@@ -929,7 +929,7 @@ class admin extends \core\classes\admin {
   		$admin->DataBase->transCommit();	// post the chart of account values
   		gen_add_audit_log(TEXT_INVENTORY_ASSEMBLY . ' - ' . ($_REQUEST['action']=='save' ? TEXT_SAVE : TEXT_EDIT), $sku, $qty);
   		\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_ASSEMBLED, TEXT_SKU , $sku), 'success');
-  		if (DEBUG) $messageStack->write_debug();
+  		$messageStack->write_debug();
   		$basis->cInfo = null;
   		$basis->fireEvent("LoadInventoryAssemblies");
   	}
@@ -948,7 +948,7 @@ class admin extends \core\classes\admin {
   		if ($delAssy->unPost('delete')) {	// unpost the prior assembly
   			$admin->DataBase->transCommit(); // if not successful rollback will already have been performed
   			gen_add_audit_log(TEXT_INVENTORY_ASSEMBLY . ' - ' . TEXT_DELETE, $delAssy->journal_rows[0]['sku'], $delAssy->journal_rows[0]['qty']);
-  			if (DEBUG) $messageStack->write_debug();
+  			$messageStack->write_debug();
   			gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
   			// *************** END TRANSACTION *************************
   		}

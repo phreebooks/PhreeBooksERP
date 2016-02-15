@@ -25,7 +25,7 @@
         <td align="right"><?php echo constant('ACT_' . strtoupper($basis->cInfo->contact->type) . '_SHORT_NAME') . ($basis->cInfo->contact->auto_type == false ? '' : ' (' . TEXT_LEAVE_BLANK_FOR_SYSTEM_GENERATED_ID. ') ' ); ?></td>
         <td><?php echo html_input_field('short_name', $basis->cInfo->contact->short_name, 'size="21" maxlength="20"', $basis->cInfo->contact->auto_type == false ? true : false); ?></td>
         <?php if (sizeof($basis->cInfo->contact->contacts_levels) > 0) { ?>
-        <td align="right"><?php echo CONTACT_LEVEL; ?></td>
+        <td align="right"><?php echo TEXT_CONTACT_LEVEL; ?></td>
         <td><?php echo html_pull_down_menu('contacts_level', $basis->cInfo->contact->contacts_levels, $basis->cInfo->contact->contacts_level ? $basis->cInfo->contact->contacts_level : '0'); ?></td>
         <td align="right"><?php echo constant('ACT_' . strtoupper($basis->cInfo->contact->type) . '_REP_ID'); ?></td>
         <td><?php echo html_pull_down_menu('dept_rep_id', $basis->cInfo->contact->sales_rep_array, $basis->cInfo->contact->dept_rep_id ? $basis->cInfo->contact->dept_rep_id : 'r'); ?></td>

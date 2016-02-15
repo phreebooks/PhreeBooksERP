@@ -261,7 +261,7 @@ switch ($_REQUEST['action']) {
 		  	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		}
 	}
-	if (DEBUG) $messageStack->write_debug();
+	$messageStack->write_debug();
 	break;
 
   case 'delete':
@@ -274,7 +274,7 @@ switch ($_REQUEST['action']) {
 		$delOrd->journal($id); // load the posted record based on the id submitted
 		$delOrd->recur_frequency = db_prepare_input($_POST['recur_frequency']);
 		$delOrd->unPost('delete');
-		if (DEBUG) $messageStack->write_debug();
+		$messageStack->write_debug();
 		$admin->DataBase->transCommit();
 		gen_add_audit_log($order->description . ' - Delete', $delOrd->purchase_invoice_id, $delOrd->total_amount);
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
@@ -283,7 +283,7 @@ switch ($_REQUEST['action']) {
   		$order->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);	// reset order num to submitted value (may have been set if payment failed)
 		$order->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
   	}
-	if (DEBUG) $messageStack->write_debug();
+	$messageStack->write_debug();
 	break;
 
   case 'edit':
