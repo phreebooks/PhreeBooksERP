@@ -46,9 +46,7 @@ class language {
 
 	public function __wakeup() {
 		if( isset($_REQUEST['language']) && $_REQUEST['language'] != '') $this->language_code = $_REQUEST['language'];
-		//		$this->find_language_constants();
-		if (sizeof($this->languages) == 0) $this->get_languages();
-		if (sizeof($this->phrases)   == 0) $this->get_translations();
+		foreach ($this->phrases as $key => $value ) define($key, $value);
 	}
 	
 	/**

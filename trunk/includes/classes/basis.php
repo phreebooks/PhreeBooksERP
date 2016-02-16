@@ -44,7 +44,7 @@ class basis {
 	public function __construct() {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->setObserver();
-		if (! isset( $_SESSION['user'])) $_SESSION['user'] = new \core\classes\user($this);
+		if (!isset($_SESSION['user'])) $_SESSION['user'] = new \core\classes\user($this);
 		$this->mainmenu["home"] 		= new \core\classes\menuItem (-1, 	TEXT_HOME);
 		$this->mainmenu["home"]->icon  	= html_icon('actions/go-home.png', TEXT_HOME, 'small');
 		$this->mainmenu["customers"] 	= new \core\classes\menuItem (10, 	TEXT_CUSTOMERS,			'action=LoadMainPage&amp;mID=cat_ar');
@@ -130,6 +130,7 @@ class basis {
 	
 	public function set_database(){
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		$_SESSION['user']->is_validated();
 		\core\classes\messageStack::debug_log("connecting to database {$_SESSION['user']->company}" );
 		try{
 			define('DB_DATABASE', $_SESSION['user']->company);

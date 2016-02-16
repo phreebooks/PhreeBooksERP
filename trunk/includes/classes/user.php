@@ -24,24 +24,19 @@ class user {
 	public $languages = array();
 	public $companies = array();
 
-	function __construct(\core\classes\basis &$admin){
-		$this->language = new \core\classes\language();
-		$this->last_activity = time();
-		if(defined('DEFAULT_COMPANY')) {
+	function __construct(){
+		if (count ($this->language) == 0 ) $this->language = new \core\classes\language();
+		if ($this->last_activity == '') $this->last_activity = time();
+		if (defined('DEFAULT_COMPANY')) {
 			$this->company =  DEFAULT_COMPANY;
 		}else{
 			if (isset($_COOKIE['pb_company'])) $this->company =  $_COOKIE['pb_company'];
 		}
 		$this->load_companies();
-		$this->is_validated($admin);
 	}
 
 	public function __wakeup() {
-		global $admin;
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		$this->language = new \core\classes\language();
-		$this->load_companies();
-		$this->is_validated($admin);
+		if (count ($this->language) == 0 ) $this->language = new \core\classes\language();
 	}
 	
 	final static public function get($variable){
@@ -55,10 +50,10 @@ class user {
 	 * @return bool if user is logged in.
 	 */
 
-	final public function is_validated (\core\classes\basis &$admin) {
+	final public function is_validated () {
 		//allow the user to continu to with the login action.
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		if (time() - $this->last_activity > (SESSION_TIMEOUT_ADMIN < 360 ? 360 : SESSION_TIMEOUT_ADMIN)) $this->logout();
+		if (time() - $this->last_activity >  max ( SESSION_TIMEOUT_ADMIN, 360)) $this->logout();
 		$this->last_activity = time();
 		if ($_REQUEST['action'] == 'LoadLostPassword') $this->LoadLostPassword();
 		$this->validate_company();
@@ -143,6 +138,7 @@ class user {
   	}
 
   	final function load_companies() {
+  		if (count ($this->companies) != 0 && $this->company != '') return;
 		$contents = @scandir(DIR_FS_MY_FILES);
 		if($contents === false) throw new \core\classes\userException("couldn't read or find directory ". DIR_FS_MY_FILES);
 		foreach ($contents as $file) {
@@ -150,6 +146,7 @@ class user {
 			  	if (file_exists(DIR_FS_MY_FILES   . $file . '/config.php')) {
 			  		if (!isset($_SESSION['company'])|| $_SESSION['company'] == '') $_SESSION['company'] = $file;
 					require_once (DIR_FS_MY_FILES . $file . '/config.php');
+					if ($this->company == '') $this->company = $file;
 					$this->companies[$file] = array(
 				  	  'id'   => $file,
 				  	  'text' => constant($file . '_TITLE'),
@@ -270,6 +267,7 @@ class user {
 	
 	
 	function __destruct(){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$cookie_exp = 2592000 + time(); // one month
 		setcookie('pb_company' , $this->company,  $cookie_exp);
 		setcookie('pb_language', $this->language->language_code, $cookie_exp);

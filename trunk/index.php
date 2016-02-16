@@ -28,6 +28,8 @@ if (isset($_POST['page']))      $page = $_POST['page'];
 elseif (isset($_GET['page']))   $page = $_GET['page'];
 else                     		$page = 'main';
 try{
+	require_once('includes/classes/language.php');// this line needs to be here because the autoloader isn't running jet
+	require_once('includes/classes/user.php');// this line needs to be before the session start.
 	require_once('includes/application_top.php');
    	\core\classes\messageStack::debug_log("\n checking if user is validated");
    	if ($admin->cInfo->action) $admin->removeEventsAndAddNewEvent($admin->cInfo->action);

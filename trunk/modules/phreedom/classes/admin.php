@@ -292,14 +292,20 @@ class admin extends \core\classes\admin {
 	function ValidateUser (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		// Errors will happen here if there was a problem logging in, logout and restart
-		\core\classes\messageStack::debug_log("database type ".get_class($basis->DataBase));
+		\core\classes\messageStack::debug_log("database type ".$basis->DataBase->getAttribute(\PDO::ATTR_DRIVER_NAME));
 		if (!$basis->DataBase instanceof \PDO) throw new \core\classes\userException("Database isn't created");
-		$sql = $basis->DataBase->prepare("SELECT admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security
-		  FROM " . TABLE_USERS . " WHERE admin_name = '{$basis->cInfo->admin_name}'");
-		$sql->execute();
-		$result = $sql->fetch(\PDO::FETCH_LAZY);
-		if (!$result || $result['inactive']) \core\classes\userException(TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD, 'LoadLogIn');
-		\core\classes\encryption::validate_password($basis->cInfo->admin_pass, $result['admin_pass']);
+		try{
+			$sql = $basis->DataBase->prepare("SELECT admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security
+			  FROM " . TABLE_USERS . " WHERE admin_name = '{$basis->cInfo->admin_name}'");
+			$sql->execute();
+			$result = $sql->fetch(\PDO::FETCH_LAZY);
+			if (!$result || $result['inactive']) throw new \core\classes\userException(TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD, 'LoadLogIn');
+			\core\classes\encryption::validate_password($basis->cInfo->admin_pass, $result['admin_pass']);
+		}catch (\Exception $e){
+			\core\classes\messageStack::debug_log($e);
+			\core\classes\messageStack::add(TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD);
+			$_SESSION['user']->LoadLogIn();
+		}
 		$_SESSION['user']->admin_id       = $result['admin_id'];
 		$_SESSION['user']->display_name   = $result['display_name'];
 		$_SESSION['user']->admin_email    = $result['admin_email'];
