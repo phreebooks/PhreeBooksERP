@@ -36,7 +36,7 @@ class journal_22 extends \core\classes\journal {
 	public $gl_acct_id			= AR_SALES_RECEIPTS_ACCOUNT;
 	public $gl_disc_acct_id     = AR_DISCOUNT_SALES_ACCOUNT;
 	public $error_6				= GENERAL_JOURNAL_22_ERROR_6;
-	public $description 		= TEXT_CUSTOMER_PAYMENTS;
+	public $description 		= TEXT_CUSTOMER_PAYMENT;
 	public $id_field_name 		= TEXT_PAYMENT_NUMBER;
 
 	function __construct( $id = 0, $verbose = true) {

@@ -32,9 +32,6 @@ class outputPage  {
     	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
        	$this->include_template = DIR_FS_ADMIN .'modules/phreedom/pages/main/template_main.php';
        	$this->js_files[] = "includes/jquery.dataTables.min.js";// @todo only nessecery
-  		$this->js_files[] = "https://www.google.com/jsapi"; //@todo work around.
-  		$this->js_files[] = "includes/jquery.easyui.min.js";
-  		$this->include_php_js_files[] = DIR_FS_ADMIN . DIR_WS_THEMES . '/config.php';
     }
     
     function send_header($basis){
@@ -55,6 +52,7 @@ class outputPage  {
     	echo "<script type='text/javascript' src='includes/jquery-2.2.0.min.js'></script>". chr(13);
     	echo "<script type='text/javascript' src='includes/jquery-migrate-1.2.1.min.js'></script>". chr(13); //@todo can be removed after development
     	echo "<script type='text/javascript' src='includes/jquery.easyui.min.js'></script>". chr(13);
+//    	echo "<script type='text/javascript' src='https://www.google.com/jsapi'></script>". chr(13);
     	echo "</head><body>";
     	ob_flush();
     }

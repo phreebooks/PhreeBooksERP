@@ -57,7 +57,7 @@ class basis {
 		$this->mainmenu["quality"] 		= new \core\classes\menuItem (75, 	TEXT_QUALITY, 			'action=LoadMainPage&amp;mID=cat_qa');
 		$this->mainmenu["quality"]->required_module = array ('MODULE_CP_ACTION_STATUS' ,'MODULE_DOC_CTL_STATUS');
 		$this->mainmenu["company"] 		= new \core\classes\menuItem (90, 	TEXT_COMPANY, 			'action=LoadMainPage&amp;mID=cat_company');
-		$this->mainmenu["company"]->submenu ["configuration"]  	= new \core\classes\menuItem (10, 	TEXT_MODULE_ADMINISTRATION,	'module=phreedom&amp;page=admin', 				SECURITY_ID_CONFIGURATION);
+		$this->mainmenu["company"]->submenu ["configuration"]  	= new \core\classes\menuItem (10, 	TEXT_MODULE_ADMINISTRATION,	'module=phreedom&amp;page=admin', 	11);
 		$this->mainmenu["logout"]		= new \core\classes\menuItem (999, 	TEXT_LOG_OUT, 			'action=logout');
 		$this->mainmenu["logout"]->icon = html_icon('actions/system-log-out.png', TEXT_LOG_OUT, 'small');
 		$this->toolbar = new \core\classes\toolbar ();

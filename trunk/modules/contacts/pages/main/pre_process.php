@@ -258,7 +258,7 @@ switch ($_REQUEST['action']) {
 	    	case 'b':define('PAGE_TITLE', sprintf(TEXT_MANAGER_ARGS, TEXT_BRANCH));	break;
 	    	case 'c':define('PAGE_TITLE', sprintf(TEXT_MANAGER_ARGS, TEXT_CUSTOMER));	break;
 	    	case 'e':define('PAGE_TITLE', sprintf(TEXT_MANAGER_ARGS, TEXT_EMPLOYEE));	break;
-	    	case 'i':define('PAGE_TITLE', TEXT_PHREECRM); break;
+	    	case 'i':define('PAGE_TITLE', TEXT_CRM); break;
 	    	case 'j':define('PAGE_TITLE', sprintf(TEXT_MANAGER_ARGS, TEXT_PROJECT));	break;
 	    	case 'v':define('PAGE_TITLE', sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR));	break;
 	    }

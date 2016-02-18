@@ -22,7 +22,7 @@ namespace phreedom\dashboards\company_to_do;
 class company_to_do extends \core\classes\ctl_panel {
 	public $description	 		= CP_COMPANY_TO_DO_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_PHREEFORM;
-	public $text		 		= CP_COMPANY_TO_DO_TITLE;
+	public $text		 		= TEXT_COMPANY_TO_DO;
 	public $version      		= '3.5';
 	public $module_id 			= 'phreedom';
 

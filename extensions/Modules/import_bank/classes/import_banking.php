@@ -168,7 +168,7 @@ class import_banking extends \phreebooks\classes\journal {
 			$gl_acct_id         		= AR_DEFAULT_GL_ACCT ;
 			$gl_disc_acct_id			= AR_DISCOUNT_SALES_ACCOUNT;
 			$this->purchase_invoice_id 	= 'DP' . $this->post_date;
-			$this->description			= sprintf(TEXT_ARGS_ENTRY, TEXT_CUSTOMER_PAYMENTS);
+			$this->description			= sprintf(TEXT_ARGS_ENTRY, TEXT_CUSTOMER_PAYMENT);
 			define('GL_TYPE','pmt');
 		}else{
 			$this->_firstjid 			= 20;

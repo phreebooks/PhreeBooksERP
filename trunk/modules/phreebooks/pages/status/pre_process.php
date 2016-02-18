@@ -151,7 +151,7 @@ switch (JOURNAL_ID) { //@todo move to journals class
 		$page_title = TEXT_CUSTOMER_CREDIT_MEMOS;
 		break;
 	case 18 : // Cash Receipts Journal
-		$page_title = TEXT_CUSTOMER_PAYMENTS;
+		$page_title = TEXT_CUSTOMER_PAYMENT;
 		break;
 	case 20 : // Cash Distribution Journal
 		$page_title = TEXT_VENDOR_PAYMENTS;

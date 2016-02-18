@@ -23,7 +23,7 @@ namespace phreedom\dashboards\company_notes;
 class company_notes extends \core\classes\ctl_panel {
 	public $description	 		= CP_COMPANY_NOTES_DESCRIPTION;
 	public $security_id  		= SECURITY_ID_PHREEFORM;
-	public $text		 		= CP_COMPANY_NOTES_TITLE;
+	public $text		 		= TEXT_COMPANY_NOTES;
 	public $version      		= '3.5';
 	public $module_id 			= 'phreedom';
 

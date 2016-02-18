@@ -146,7 +146,7 @@ class admin extends \core\classes\admin {
 		$this->mainmenu["customers"]->submenu ["contact"] 	= new \core\classes\menuItem (10, 	TEXT_CUSTOMERS,		'action=LoadContactMgrPage&amp;type=c&amp;list=1', SECURITY_ID_MAINTAIN_CUSTOMERS);
 		$this->mainmenu["customers"]->submenu ["contact"]->submenu ["new"] 	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_CUSTOMER),		'action=NewContact&amp;type=c');
 		$this->mainmenu["customers"]->submenu ["contact"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_CUSTOMER),	'action=LoadContactMgrPage&amp;type=c&amp;list=1');
-		$this->mainmenu["customers"]->submenu ["crm"] 		= new \core\classes\menuItem (15, 	TEXT_PHREECRM,		'action=LoadContactMgrPage&amp;type=i&amp;list=1');
+		$this->mainmenu["customers"]->submenu ["crm"] 		= new \core\classes\menuItem (15, 	TEXT_CRM,		'action=LoadContactMgrPage&amp;type=i&amp;list=1');
 		$this->mainmenu["vendors"]->submenu   ["contact"]	= new \core\classes\menuItem (10, 	TEXT_VENDORS,		'action=LoadContactMgrPage&amp;type=v&amp;list=1', SECURITY_ID_MAINTAIN_VENDORS);
 		$this->mainmenu["vendors"]->submenu   ["contact"]->submenu ["new"]	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_VENDOR),		'action=NewContact&amp;type=v');
 		$this->mainmenu["vendors"]->submenu   ["contact"]->submenu ["mgr"]	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR),	'action=LoadContactMgrPage&amp;type=v&amp;list=1');
@@ -227,6 +227,38 @@ class admin extends \core\classes\admin {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$basis->observer->send_menu($basis);
 		if (! isset($basis->cInfo->type)) $basis->cInfo->type = 'c'; // default to customer
+		switch ($basis->cInfo->type) {
+			case 'b': $page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_BRANCH);	break;
+			case 'c': $page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_CUSTOMER);	break;
+			case 'e': $page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_EMPLOYEE);	break;
+			case 'i': $page_title = TEXT_CRM; 									break;
+			case 'j': $page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_PROJECT);	break;
+			case 'v': $page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR);	break;
+		}
+		?>
+		    <table id="dg" title="<?php echo $page_title;?>" class="easyui-datagrid" style="width:550px;height:250px"
+          	  	 url="index.php?action=AllGetContacts&amp;type=<?php echo $basis->cInfo->type;?>"
+            	 toolbar="#toolbar" loadMsg="<?php echo TEXT_PLEASE_WAIT?>"
+            	 rownumbers="true" fitColumns="true" singleSelect="true">
+        		<thead>
+            		<tr>
+            			<th field="short_name" width="50"><?php echo constant('ACT_' . strtoupper($basis->cInfo->type) . '_SHORT_NAME')?></th>
+                		<th field="primary_name" width="50"><?php echo TEXT_NAME_OR_COMPANY?></th>
+	                	<th field="address1" width="50"><?php echo TEXT_ADDRESS1?></th>
+    	            	<th field="city_town" width="50"><?php echo TEXT_CITY_TOWN?></th>
+        	        	<th field="state_province" width="50"><?php echo TEXT_STATE_PROVINCE?></th>
+        	        	<th field="postal_code" width="50"><?php echo TEXT_POSTAL_CODE?></th>
+        	        	<th field="telephone1" width="50"><?php echo TEXT_TELEPHONE?></th>
+            		</tr>
+        		</thead>
+    		</table>
+    		<div id="toolbar">
+		        <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newUser()">New User</a>
+    		    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editUser()">Edit User</a>
+        		<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="destroyUser()">Remove User</a>
+    		</div>
+		<?php 
+		$basis->observer->send_footer($basis);
 		history_filter('contacts'.$basis->cInfo->type, $defaults = array('sf'=>'', 'so'=>'asc')); // load the filters
 		if (! isset( $basis->cInfo->contact_show_inactive)) {
 			$basis->cInfo->contact_show_inactive = defined('CONTACTS_F0_'.strtoupper($basis->cInfo->type)) ? constant('CONTACTS_F0_'.strtoupper($basis->cInfo->type)) : DEFAULT_F0_SETTING;
@@ -246,22 +278,32 @@ class admin extends \core\classes\admin {
 		$query_raw = "SELECT * FROM " . TABLE_CONTACTS . " c LEFT JOIN " . TABLE_ADDRESS_BOOK . " a ON c.id = a.ref_id {$search} ORDER BY c.short_name"; //@todo needs modifying
 		$sql = $basis->DataBase->prepare($query_raw);
 		$sql->execute();
-		$basis->cInfo->contacts_list = $sql->fetchAll(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE) ;
-		$basis->cInfo->query_split  = new \core\classes\splitPageResults($_REQUEST['list'], $sql->rowCount());
-		history_save('contacts'.$basis->cInfo->type);
-		$basis->module		= 'contacts';
-		$basis->page		= 'main';
-		$basis->template 	= 'template_main';
-		switch ($basis->cInfo->type) {
-			case 'b': $basis->page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_BRANCH);		break;
-			case 'c': $basis->page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_CUSTOMER);	break;
-			case 'e': $basis->page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_EMPLOYEE);	break;
-			case 'i': $basis->page_title = TEXT_PHREECRM; 								break;
-			case 'j': $basis->page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_PROJECT);	break;
-			case 'v': $basis->page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR);		break;
-		}
-		$basis->observer->send_footer($basis);
+		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
+		print_r($results);
+		die();		
 	}
+	
+	function AllGetContacts (\core\classes\basis &$basis) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		header_remove();
+		header('Content-Type: application/json');
+		$criteria[] = "c.type = '{$basis->cInfo->type}'";
+		if (isset($basis->cInfo->search_text) && $basis->cInfo->search_text <> '') {
+			$search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.address1',
+					'a.address2', 'a.city_town', 'a.postal_code', 'c.short_name');
+			// hook for inserting new search fields to the query criteria.
+			if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
+			$criteria[] = '(' . implode(" like '%{$basis->cInfo->search_text}%' or ", $search_fields) . " like '%{$basis->cInfo->search_text}%')";
+		}
+		if (!$basis->cInfo->contact_show_inactive) $criteria[] = "(c.inactive = '0' or c.inactive = '')"; // inactive flag
+		$search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
+		$query_raw = "SELECT * FROM " . TABLE_CONTACTS . " c LEFT JOIN " . TABLE_ADDRESS_BOOK . " a ON c.id = a.ref_id {$search} ORDER BY c.short_name"; //@todo needs modifying
+		$sql = $basis->DataBase->prepare($query_raw);
+		$sql->execute();
+		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
+		echo json_encode($results);
+	}
+	
 	/**
 	 * will create new contact depending on type
 	 * @param unknown $basis

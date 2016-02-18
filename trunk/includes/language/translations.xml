@@ -13,6 +13,22 @@
     <nl_nl>Account Historie</nl_nl>
     <pt_br>Histórico Contas</pt_br>
   </translation>
+  <translation id="TEXT_CUSTOMER_PAYMENT">
+  	<en_us>Customer Payment</en_us>
+  	<nl_nl>Klant Betaling</nl_nl>
+  </translation>
+  <translation id="TEXT_CUSTOMER_REFUND">
+  	<en_us>Customer Refund</en_us>
+  	<nl_nl>Klant Restitutie</nl_nl>
+  </translation>
+  <translation id="TEXT_VENDOR_PAYMENT">
+  	<en_us>Vendor Payment</en_us>
+  	<nl_nl>Leverancier Betaling</nl_nl>
+  </translation>
+  <translation id="TEXT_VENDOR_REFUND">
+  	<en_us>Vendor Refund</en_us>
+  	<nl_nl>Leverancier Restitutie</nl_nl>
+  </translation>  
   <translation id="ACT_BILLING_MESSAGE">
     <fr_fr>Ces champs ne sont pas obligatoires</fr_fr>
     <hu_hu>Ezek a mezők nem szükségesek</hu_hu>
@@ -1060,7 +1076,7 @@
   <translation id="BOX_PHREEMAIL_MODULE">
     <en_us>PhreeMail</en_us>
   </translation>
-  <translation id="BOX_PHREEPOS">
+  <translation id="TEXT_POINT_OF_SALE">
     <bg_bg>Point of Sale</bg_bg>
     <en_us>Point of Sale</en_us>
     <es_cr>Punto de venta</es_cr>
@@ -1986,17 +2002,23 @@
     <en_us>Allows posting notes and reminders viewable to all in company.</en_us>
     <pt_br>Permite postar anotações e lembretes visíveis para toda a empresa.</pt_br>
   </translation>
-  <translation id="CP_COMPANY_NOTES_TITLE">
+  <translation id="TEXT_COMPANY_NOTES">
     <en_us>Company Notes</en_us>
+    <nl_nl>Bedrijfs Notities</nl_nl>
     <pt_br>Empresa Anotações</pt_br>
   </translation>
   <translation id="CP_COMPANY_TO_DO_DESCRIPTION">
     <en_us>Creates a list of activities and things to do viewable throughout the company.</en_us>
     <pt_br>Cria uma lista de atividades e tarefas a realizar visíveis para toda a empresa.</pt_br>
   </translation>
-  <translation id="CP_COMPANY_TO_DO_TITLE">
+  <translation id="TEXT_COMPANY_TO_DO">
     <en_us>Company ToDo List</en_us>
+    <nl_nl>Bedrijfs todo Lijst</nl_nl>
     <pt_br>Empresa Tarefas a Realizar</pt_br>
+  </translation>
+  <translation id= "TEXT_POS_POP">
+    <en_us>Pos Pop</en_us>
+    <nl_nl>Pos Pop</nl_nl>
   </translation>
   <translation id="CP_FAVORITE_REPORTS_DESCRIPTION">
     <en_us>Lists favorite reports for quick display.</en_us>
@@ -2895,12 +2917,12 @@
     <nl_nl>Start Datum</nl_nl>
     <pt_br>Data Inicial</pt_br>
   </translation>
-  <translation id="GEN_ADM_TOOLS_TITLE">
+   <translation id="TEXT_ADMINISTRATIVE_TOOLS">
+    <en_us>Administrative Tools</en_us>
+    <pt_br>Ferramentas Adiministrativas</pt_br>
     <bg_bg>Административни инструменти</bg_bg>
-    <en_us>Administrative Tools and Utilities</en_us>
     <es_cr>Utilitarios y herramientas administrativas</es_cr>
-    <nl_nl>Administratieve Gereedschappen en Programma's</nl_nl>
-    <pt_br>Ferramentas Administrativas e Utilitários</pt_br>
+    <nl_nl>Administratieve Gereedschappen</nl_nl>
   </translation>
   <translation id="GEN_BACKUP_GEN_INFO">
     <bg_bg>Моля изберете тип компресия за архивирането и опциите долу.</bg_bg>
@@ -10018,10 +10040,6 @@
     <es_cr>%s ítems</es_cr>
     <pt_br>%s Itens</pt_br>
   </translation>
-  <translation id="TEXT_ADMINISTRATIVE_TOOLS">
-    <en_us>Administrative Tools</en_us>
-    <pt_br>Ferramentas Adiministrativas</pt_br>
-  </translation>
   <translation id="TEXT_ADMIN_NOT_VALIDATED">
     <bg_bg>The override потребителско име и парола са невалидни. Моля опитайте отново.</bg_bg>
     <en_us>The override username and password was not valid. Please try again.</en_us>
@@ -12595,6 +12613,7 @@
   <translation id="TEXT_DOWNLOAD_DEBUG_FILE">
     <en_us>Download Debug File</en_us>
     <pt_br>Baixar Arquivo Debug</pt_br>
+    <nl>Download Debug Bestand</nl>
   </translation>
   <translation id="TEXT_DOWNLOAD_DEBUG_INFORMATION">
     <en_us>Download Debug Information</en_us>
@@ -14102,12 +14121,13 @@
     <pt_br>Importar Relatórios Selecionados</pt_br>
   </translation>
   <translation id="TEXT_IMPORT_OR_EXPORT">
-    <en_us>Import/Export</en_us>
-    <pt_br>Importar/Exportar</pt_br>
+    <en_us>Import or Export</en_us>
+    <pt_br>Importar / Exportar</pt_br>
+    <nl_nl>Import Of Export</nl_nl>
   </translation>
   <translation id="TEXT_IMPORT_OR_EXPORT_AND_BEGINNING_BALANCES">
-    <en_us>Import/Export and Beginning Balances</en_us>
-    <nl_nl>Import</nl_nl>
+    <en_us>Import Or Export and Beginning Balances</en_us>
+    <nl_nl>Import of Export en begin Balans</nl_nl>
     <pt_br>Importação/Exportação e Saldos Inicias</pt_br>
   </translation>
   <translation id="TEXT_IMPORT_OR_EXPORT_DATABASE_TABLES">
@@ -16198,8 +16218,9 @@
     <nl_nl>PhreeBooks SQL Error Traceer Informatie</nl_nl>
     <pt_br>Informação Rastreio Erro SQL PhreeBooks</pt_br>
   </translation>
-  <translation id="TEXT_PHREECRM">
-    <en_us>PhreeCRM</en_us>
+  <translation id="TEXT_CRM">
+    <en_us>CRM</en_us>
+    <nl_nl>CRM</nl_nl>
   </translation>
   <translation id="TEXT_PHREEDOM_INFO">
     <bg_bg>PhreeSoft решения за малкия бизнес</bg_bg>
@@ -16753,6 +16774,10 @@
     <en_us>Quarter To Date</en_us>
     <nl_nl>Dit Kwartaal  tot Vandaag</nl_nl>
     <pt_br>Este Quadrimestre até a Data</pt_br>
+  </translation>
+  <translation id="TEXT_QUOTE">
+    <en_us>Quote</en_us>
+    <nl_nl>Offerte</nl_nl>
   </translation>
   <translation id="TEXT_QUOTES">
     <en_us>Quotes</en_us>

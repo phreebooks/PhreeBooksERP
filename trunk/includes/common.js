@@ -266,13 +266,13 @@ function AlertError(MethodName, e)  {
   if (e.description == null) {  $.messager.alert("methode error",MethodName + "Exception: " + e.message, "error"); }
   else {  $.messager.alert("methode error",MethodName + " Exception: " + e.description, "error"); }
 }
-
+/* @todo dit kost veel tijd en veroorzaakt nu een fout. 
 // Chart functions
 chartProps = new Object();
 google.load('visualization', '1.0', {'packages':['corechart']});
 google.setOnLoadCallback(drawChart);
 function drawChart() {}
-
+*/
 function phreedomChart() {
   var modID = chartProps.modID;
   var func  = chartProps.func;

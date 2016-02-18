@@ -62,7 +62,7 @@ $journal_types_list = array(//@todo should be removed
 		'19' => array('id' => 19, 'text' => TEXT_POINT_OF_SALE,					'id_field_name' => TEXT_RECEIPT),
 		'20' => array('id' => 20, 'text' => TEXT_VENDOR_PAYMENTS,				'id_field_name' => TEXT_PAYMENT_NUMBER), 	//@todo dit alleen nog maar leverancier betalingen nr 23 is klant restitutie.
 		'21' => array('id' => 21, 'text' => TEXT_POINT_OF_PURCHASE,				'id_field_name' => TEXT_RECEIPT),
-		'22' => array('id' => 22, 'text' => TEXT_CUSTOMER_PAYMENTS,				'id_field_name' => TEXT_PAYMENT_NUMBER), 	//@todo dit alleen nog maar klant betalingen nr 18 is leverancier restituties.
+		'22' => array('id' => 22, 'text' => TEXT_CUSTOMER_PAYMENT,				'id_field_name' => TEXT_PAYMENT_NUMBER), 	//@todo dit alleen nog maar klant betalingen nr 18 is leverancier restituties.
 		'23' => array('id' => 23, 'text' => TEXT_CUSTOMER_REFUNDS,				'id_field_name' => TEXT_RECEIPT_NUMBER), 	// @todo dit alleen nog maar klant restituties nr 20 is leverancier betalingen.
 
 );
