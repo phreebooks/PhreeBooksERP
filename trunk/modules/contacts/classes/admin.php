@@ -236,19 +236,20 @@ class admin extends \core\classes\admin {
 			case 'v': $page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR);	break;
 		}
 		?>
-		    <table id="dg" title="<?php echo $page_title;?>" class="easyui-datagrid" style="width:550px;height:250px"
-          	  	 url="index.php?action=AllGetContacts&amp;type=<?php echo $basis->cInfo->type;?>"
-            	 toolbar="#toolbar" loadMsg="<?php echo TEXT_PLEASE_WAIT?>"
-            	 rownumbers="true" fitColumns="true" singleSelect="true">
+		    <table id="dg" title="<?php echo $page_title;?>" class="easyui-datagrid" 
+          	  	 url="index.php?action=GetAllContacts&amp;type=<?php echo $basis->cInfo->type;?>" style="height:500px"
+            	 toolbar="#toolbar" loadMsg="<?php echo TEXT_PLEASE_WAIT?>" fitColumns="true" idField="id"
+            	 rownumbers="true" fitColumns="true" singleSelect="true" sortName="id" sortOrder="desc" onLoadSuccess:function (data){
+				if(!data.total) alert('No Rows Returned');});>
         		<thead>
             		<tr>
-            			<th field="short_name" width="50"><?php echo constant('ACT_' . strtoupper($basis->cInfo->type) . '_SHORT_NAME')?></th>
-                		<th field="primary_name" width="50"><?php echo TEXT_NAME_OR_COMPANY?></th>
-	                	<th field="address1" width="50"><?php echo TEXT_ADDRESS1?></th>
-    	            	<th field="city_town" width="50"><?php echo TEXT_CITY_TOWN?></th>
-        	        	<th field="state_province" width="50"><?php echo TEXT_STATE_PROVINCE?></th>
-        	        	<th field="postal_code" width="50"><?php echo TEXT_POSTAL_CODE?></th>
-        	        	<th field="telephone1" width="50"><?php echo TEXT_TELEPHONE?></th>
+            			<th data-options="field:'short_name'"><?php echo constant('ACT_' . strtoupper($basis->cInfo->type) . '_SHORT_NAME')?></th>
+                		<th data-options="field:'primary_name'"><?php echo TEXT_NAME_OR_COMPANY?></th>
+	                	<th data-options="field:'address1'"><?php echo TEXT_ADDRESS1?></th>
+    	            	<th data-options="field:'city_town'"><?php echo TEXT_CITY_TOWN?></th>
+        	        	<th data-options="field:'state_province'"><?php echo TEXT_STATE_PROVINCE?></th>
+        	        	<th data-options="field:'postal_code'"><?php echo TEXT_POSTAL_CODE?></th>
+        	        	<th data-options="field:'telephone1'"><?php echo TEXT_TELEPHONE?></th>
             		</tr>
         		</thead>
     		</table>
@@ -259,34 +260,13 @@ class admin extends \core\classes\admin {
     		</div>
 		<?php 
 		$basis->observer->send_footer($basis);
-		history_filter('contacts'.$basis->cInfo->type, $defaults = array('sf'=>'', 'so'=>'asc')); // load the filters
-		if (! isset( $basis->cInfo->contact_show_inactive)) {
-			$basis->cInfo->contact_show_inactive = defined('CONTACTS_F0_'.strtoupper($basis->cInfo->type)) ? constant('CONTACTS_F0_'.strtoupper($basis->cInfo->type)) : DEFAULT_F0_SETTING;
-			if($_SERVER['REQUEST_METHOD'] == 'POST') $basis->cInfo->contact_show_inactive = false; // show inactive checkbox
-		}
-
-		$criteria[] = "c.type = '{$basis->cInfo->type}'";
-		if (isset($basis->cInfo->search_text) && $basis->cInfo->search_text <> '') {
-			$search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.address1',
-					'a.address2', 'a.city_town', 'a.postal_code', 'c.short_name');
-			// hook for inserting new search fields to the query criteria.
-			if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
-			$criteria[] = '(' . implode(" like '%{$basis->cInfo->search_text}%' or ", $search_fields) . " like '%{$basis->cInfo->search_text}%')";
-		}
-		if (!$basis->cInfo->contact_show_inactive) $criteria[] = "(c.inactive = '0' or c.inactive = '')"; // inactive flag
-		$search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
-		$query_raw = "SELECT * FROM " . TABLE_CONTACTS . " c LEFT JOIN " . TABLE_ADDRESS_BOOK . " a ON c.id = a.ref_id {$search} ORDER BY c.short_name"; //@todo needs modifying
-		$sql = $basis->DataBase->prepare($query_raw);
-		$sql->execute();
-		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
-		print_r($results);
-		die();		
+		$this->GetAllContacts($basis);
 	}
 	
-	function AllGetContacts (\core\classes\basis &$basis) {
+	function GetAllContacts (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		header_remove();
-		header('Content-Type: application/json');
+		header('Content-type:application/json;charset=utf-8');print('hoe moet dit verdzer');
 		$criteria[] = "c.type = '{$basis->cInfo->type}'";
 		if (isset($basis->cInfo->search_text) && $basis->cInfo->search_text <> '') {
 			$search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.address1',
@@ -297,11 +277,14 @@ class admin extends \core\classes\admin {
 		}
 		if (!$basis->cInfo->contact_show_inactive) $criteria[] = "(c.inactive = '0' or c.inactive = '')"; // inactive flag
 		$search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
-		$query_raw = "SELECT * FROM " . TABLE_CONTACTS . " c LEFT JOIN " . TABLE_ADDRESS_BOOK . " a ON c.id = a.ref_id {$search} ORDER BY c.short_name"; //@todo needs modifying
+		$query_raw = "SELECT id, short_name, primary_name, address1, city_town, state_province, postal_code, telephone1 FROM " . TABLE_CONTACTS . " c LEFT JOIN " . TABLE_ADDRESS_BOOK . " a ON c.id = a.ref_id {$search} ORDER BY c.short_name"; //@todo needs modifying
 		$sql = $basis->DataBase->prepare($query_raw);
 		$sql->execute();
 		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
-		echo json_encode($results);
+		$temp = array();
+		$temp["total"] = sizeof($results);
+		$temp["rows"] = $results;
+		echo json_encode($temp);
 	}
 	
 	/**

@@ -101,6 +101,7 @@ class basis {
 	}
 	
 	private function setObserver(){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ ." Type of request = ".$_SERVER['HTTP_X_REQUESTED_WITH']);
 		switch(strtolower($_SERVER['HTTP_X_REQUESTED_WITH'])){
 			default: 
 				$this->observer = new \core\classes\outputPage();

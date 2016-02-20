@@ -2,6 +2,11 @@
 namespace core\classes;
 class outputXml {
 
+	function send_header($basis){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		echo createXmlHeader();
+	}
+	
 	public function update(\SplSubject $basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		global $messageStack;
@@ -24,6 +29,11 @@ class outputXml {
 			return DIR_FS_ADMIN .'modules/phreedom/pages/main/template_main.php';
 		}
 		return $this->include_template;
+	}
+	
+	function __destruct(){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		echo createXmlFooter();
 	}
 }
 ?>

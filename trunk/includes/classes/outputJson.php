@@ -1,7 +1,12 @@
 <?php
 namespace core\classes;
 class outputJson {
-
+	
+	function send_header($basis){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		header('Content-Type: application/json');
+	}
+	
 	public function update(\SplSubject $basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		global $messageStack;

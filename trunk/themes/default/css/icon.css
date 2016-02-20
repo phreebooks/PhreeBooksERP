@@ -8,6 +8,9 @@
 .icon-edit{
 	background:url('../icons/easyui/pencil.png') no-repeat center center;
 }
+.icon-clear{
+	background:url('../icons/easyui/clear.png') no-repeat center center;
+}
 .icon-remove{
 	background:url('../icons/easyui/edit_remove.png') no-repeat center center;
 }
@@ -71,6 +74,18 @@
 .icon-tip{
 	background:url('../icons/easyui/tip.png') no-repeat center center;
 }
+.icon-filter{
+	background:url('../icons/easyui/filter.png') no-repeat center center;
+}
+.icon-man{
+	background:url('../icons/easyui/man.png') no-repeat center center;
+}
+.icon-lock{
+	background:url('../icons/easyui/lock.png') no-repeat center center;
+}
+.icon-more{
+	background:url('../icons/easyui/more.png') no-repeat center center;
+}
 
 .icon-mini-add{
 	background:url('../icons/easyui/mini_add.png') no-repeat center center;
@@ -80,4 +95,20 @@
 }
 .icon-mini-refresh{
 	background:url('../icons/easyui/mini_refresh.png') no-repeat center center;
+}
+
+.icon-large-picture{
+	background:url('../icons/easyui/large_picture.png') no-repeat center center;
+}
+.icon-large-clipart{
+	background:url('../icons/easyui/large_clipart.png') no-repeat center center;
+}
+.icon-large-shapes{
+	background:url('../icons/easyui/large_shapes.png') no-repeat center center;
+}
+.icon-large-smartart{
+	background:url('../icons/easyui/large_smartart.png') no-repeat center center;
+}
+.icon-large-chart{
+	background:url('../icons/easyui/large_chart.png') no-repeat center center;
 }
