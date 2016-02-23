@@ -143,22 +143,22 @@ class admin extends \core\classes\admin {
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci",
 	    );
 		// Set the menus
-		$this->mainmenu["customers"]->submenu ["contact"] 	= new \core\classes\menuItem (10, 	TEXT_CUSTOMERS,		'action=LoadContactMgrPage&amp;type=c&amp;list=1', SECURITY_ID_MAINTAIN_CUSTOMERS);
+		$this->mainmenu["customers"]->submenu ["contact"] 	= new \core\classes\menuItem (10, 	TEXT_CUSTOMERS,		'action=LoadContactMgrPage&amp;type=c', SECURITY_ID_MAINTAIN_CUSTOMERS);
 		$this->mainmenu["customers"]->submenu ["contact"]->submenu ["new"] 	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_CUSTOMER),		'action=NewContact&amp;type=c');
-		$this->mainmenu["customers"]->submenu ["contact"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_CUSTOMER),	'action=LoadContactMgrPage&amp;type=c&amp;list=1');
-		$this->mainmenu["customers"]->submenu ["crm"] 		= new \core\classes\menuItem (15, 	TEXT_CRM,		'action=LoadContactMgrPage&amp;type=i&amp;list=1');
-		$this->mainmenu["vendors"]->submenu   ["contact"]	= new \core\classes\menuItem (10, 	TEXT_VENDORS,		'action=LoadContactMgrPage&amp;type=v&amp;list=1', SECURITY_ID_MAINTAIN_VENDORS);
+		$this->mainmenu["customers"]->submenu ["contact"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_CUSTOMER),	'action=LoadContactMgrPage&amp;type=c');
+		$this->mainmenu["customers"]->submenu ["crm"] 		= new \core\classes\menuItem (15, 	TEXT_CRM,			'action=LoadContactMgrPage&amp;type=i');
+		$this->mainmenu["vendors"]->submenu   ["contact"]	= new \core\classes\menuItem (10, 	TEXT_VENDORS,		'action=LoadContactMgrPage&amp;type=v', SECURITY_ID_MAINTAIN_VENDORS);
 		$this->mainmenu["vendors"]->submenu   ["contact"]->submenu ["new"]	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_VENDOR),		'action=NewContact&amp;type=v');
-		$this->mainmenu["vendors"]->submenu   ["contact"]->submenu ["mgr"]	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR),	'action=LoadContactMgrPage&amp;type=v&amp;list=1');
-		$this->mainmenu["employees"]->submenu ["contact"] 	= new \core\classes\menuItem (10, 	TEXT_EMPLOYEES,		'action=LoadContactMgrPage&amp;type=e&amp;list=1', SECURITY_ID_MAINTAIN_EMPLOYEES);
+		$this->mainmenu["vendors"]->submenu   ["contact"]->submenu ["mgr"]	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR),	'action=LoadContactMgrPage&amp;type=v');
+		$this->mainmenu["employees"]->submenu ["contact"] 	= new \core\classes\menuItem (10, 	TEXT_EMPLOYEES,		'action=LoadContactMgrPage&amp;type=e', SECURITY_ID_MAINTAIN_EMPLOYEES);
 		$this->mainmenu["employees"]->submenu ["contact"]->submenu ["new"]	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_EMPLOYEE),		'action=NewContact&amp;type=e');
-		$this->mainmenu["employees"]->submenu ["contact"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_EMPLOYEE),	'action=LoadContactMgrPage&amp;type=e&amp;list=1');
-		$this->mainmenu["company"]->submenu   ["branches"] 	= new \core\classes\menuItem (10, 	TEXT_BRANCHES,		'action=LoadContactMgrPage&amp;type=b&amp;list=1', SECURITY_ID_MAINTAIN_BRANCH, 'ENABLE_MULTI_BRANCH');
+		$this->mainmenu["employees"]->submenu ["contact"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_EMPLOYEE),	'action=LoadContactMgrPage&amp;type=e');
+		$this->mainmenu["company"]->submenu   ["branches"] 	= new \core\classes\menuItem (10, 	TEXT_BRANCHES,		'action=LoadContactMgrPage&amp;type=b', SECURITY_ID_MAINTAIN_BRANCH, 'ENABLE_MULTI_BRANCH');
 		$this->mainmenu["company"]->submenu   ["branches"]->submenu ["new"]	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_BRANCH),		'action=NewContact&amp;type=b');
-		$this->mainmenu["company"]->submenu   ["branches"]->submenu ["mgr"] = new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_BRANCH),	'action=LoadContactMgrPage&amp;type=b&amp;list=1');	
-		$this->mainmenu["customers"]->submenu ["projects"] 	= new \core\classes\menuItem (60, 	TEXT_PROJECTS,		'action=LoadContactMgrPage&amp;type=j&amp;list=1', SECURITY_ID_MAINTAIN_PROJECTS);
+		$this->mainmenu["company"]->submenu   ["branches"]->submenu ["mgr"] = new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_BRANCH),	'action=LoadContactMgrPage&amp;type=b');	
+		$this->mainmenu["customers"]->submenu ["projects"] 	= new \core\classes\menuItem (60, 	TEXT_PROJECTS,		'action=LoadContactMgrPage&amp;type=j', SECURITY_ID_MAINTAIN_PROJECTS);
 		$this->mainmenu["customers"]->submenu ["projects"]->submenu ["new"]	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_PROJECT),		'action=NewContact&amp;type=j');
-		$this->mainmenu["customers"]->submenu ["projects"]->submenu ["mgr"] = new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_PROJECT),	'action=LoadContactMgrPage&amp;type=j&amp;list=1');
+		$this->mainmenu["customers"]->submenu ["projects"]->submenu ["mgr"] = new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_PROJECT),	'action=LoadContactMgrPage&amp;type=j');
 		$this->mainmenu["company"]->submenu ["configuration"]->submenu ["inventory"]  = new \core\classes\menuItem (sprintf(TEXT_MODULE_ARGS, TEXT_CONTACTS), sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY),	'module=contacts&amp;page=admin',   SECURITY_ID_CONFIGURATION);
 	    parent::__construct();
 	}
@@ -250,9 +250,9 @@ class admin extends \core\classes\admin {
         		</thead>
     		</table>
     		<div id="toolbar">
-		        <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newUser()">New User</a>
-    		    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editUser()">Edit User</a>
-        		<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="destroyUser()">Remove User</a>
+		        <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newContact()"><?php echo sprintf(TEXT_NEW_ARGS, $contact);?></a>
+    		    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editContact()"><?php echo sprintf(TEXT_EDIT_ARGS, $contact);?></a>
+        		<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteContact()"><?php echo sprintf(TEXT_DELETE_ARGS, $contact);?></a>
         		<span style="margin-left: 100px;"><?php echo  TEXT_SHOW_INACTIVE . ' :'?></span>
         		<?php echo html_checkbox_field('contact_show_inactive', '1', false,'', 'onchange="doSearch()"' );?>
         		<div style="float: right;">
@@ -262,6 +262,10 @@ class admin extends \core\classes\admin {
 <!--     				<a href="#" class="easyui-linkbutton" onclick="doSearch()"><?php echo TEXT_SEARCH?></a> -->
     			</div>
     		</div>
+    		<div id="win" class="easyui-window" title="My Window" style="width:600px;height:400px" data-options="iconCls:'icon-save',modal:true">
+        		<form id="fm"></form>
+    		</div>
+    		
 		<script type="text/javascript">
 	    	function doSearch(){
 	        	$('#dg').datagrid('load',{
@@ -272,7 +276,35 @@ class admin extends \core\classes\admin {
 	                contact_show_inactive: $('#contact_show_inactive').is(":checked") ? 1 : 0,
 	        	});
 	    	}
-		
+
+	        function newContact(){
+	            $('#win').window('open').window('center').window('setTitle','<?php echo sprintf(TEXT_NEW_ARGS, $contact);?>');
+	            $('#win').window('refresh', "index.php?action=newContact");
+	        }
+	        function editContact(){
+		        var row = $('#win').datagrid('getSelected');
+		        if(row){
+//	        		$('#win').window('contactid', row);
+	            	$('#win').window('open');//.window('center').window('setTitle','<?php echo sprintf(TEXT_EDIT_ARGS, $contact);?>');
+//		        	$('#win').window('refresh');
+		        }
+	        }
+	        $('#win').window({
+	        	href:		"index.php?action=editContact",
+				closed: true,
+				queryParams: {
+					type: '<?php echo $basis->cInfo->type;?>',
+					dataType: 'json',
+	                contentType: 'application/json',
+	                //contactid: $('#win').datagrid('getSelected'),
+				},
+				onLoadSuccess:function(data){
+					if(data.total == 0) $.messager.alert('<?php echo TEXT_ERROR?>',"<?php echo TEXT_NO_RESULTS_FOUND?>");
+				},
+				onLoadError: function(){
+					$.messager.alert('<?php echo TEXT_ERROR?>','Load error:'+arguments.responseText);
+				},
+			});
 			$('#dg').datagrid({
 				url:		"index.php?action=GetAllContacts",
 				queryParams: {
@@ -283,7 +315,7 @@ class admin extends \core\classes\admin {
 				onLoadSuccess:function(data){
 					if(data.total == 0) $.messager.alert('<?php echo TEXT_ERROR?>',"<?php echo TEXT_NO_RESULTS_FOUND?>");
 				},
-				onLoadError: function(arguments){
+				onLoadError: function(){
 					$.messager.alert('<?php echo TEXT_ERROR?>','Load error:'+arguments.responseText);
 				},
 				remoteSort:	false,
