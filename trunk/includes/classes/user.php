@@ -53,10 +53,9 @@ class user {
 
 	final public function is_validated () {
 		//allow the user to continu to with the login action.
-		if (defined('SESSION_TIMEOUT_ADMIN')) $this->SESSION_TIMEOUT = max ( SESSION_TIMEOUT_ADMIN, 360); 
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		\core\classes\messageStack::debug_log("time difference is ".(time() - $this->last_activity)." time out is {$this->SESSION_TIMEOUT} max is" .max ( SESSION_TIMEOUT_ADMIN, 360));
-		if (time() - $this->last_activity >  $this->SESSION_TIMEOUT) $this->logout();
+		if ((time() - $this->last_activity) >  max ( SESSION_TIMEOUT_ADMIN, 360)) $this->logout();
 		$this->last_activity = time();
 		if ($_REQUEST['action'] == 'LoadLostPassword') $this->LoadLostPassword();
 		$this->validate_company();
@@ -274,8 +273,6 @@ class user {
 		$cookie_exp = 2592000 + time(); // one month
 		setcookie('pb_company' , $this->company,  $cookie_exp);
 		setcookie('pb_language', $this->language->language_code, $cookie_exp);
-		if (defined('SESSION_TIMEOUT_ADMIN')) $this->SESSION_TIMEOUT = max ( SESSION_TIMEOUT_ADMIN, 360);
-//		print_r($_SESSION);
 	}
 
 }

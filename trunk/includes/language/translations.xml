@@ -28,7 +28,11 @@
   <translation id="TEXT_VENDOR_REFUND">
   	<en_us>Vendor Refund</en_us>
   	<nl_nl>Leverancier Restitutie</nl_nl>
-  </translation>  
+  </translation> 
+  <translation id ="TEXT_ARGS_ID">
+  	<en_us>%s ID</en_us>
+  	<nl_nl>%s ID</nl_nl>
+  </translation> 
   <translation id="ACT_BILLING_MESSAGE">
     <fr_fr>Ces champs ne sont pas obligatoires</fr_fr>
     <hu_hu>Ezek a mezők nem szükségesek</hu_hu>
@@ -15711,11 +15715,6 @@
     <nl_nl>Er zijn geen attributen in te stellen voor dit type.</nl_nl>
     <pt_br>Não há atributos  a especificar para este tipo.</pt_br>
   </translation>
-  <translation id="TEXT_NO_RESULTS">
-    <es_cr>No se encontró.  La palabra que quiere buscar debe contener por lo menos cuatro letras y no ser una palabra común.</es_cr>
-    <en_us>No results were found. The search word must be at least four letters and not a common word.</en_us>
-    <nl_nl>Er zijn geen resultaten gevonden. De zoekterm moet minstens vier letters</nl_nl>
-  </translation>
   <translation id="TEXT_NO_RESULTS_FOUND">
     <en_us>No Results Found!</en_us>
     <nl_nl>Geen resultaat gevonden</nl_nl>
@@ -20451,8 +20450,8 @@
     <nl_nl>Datum per Periode</nl_nl>
   </translation>
   <translation id="TEXT_SELECT_ARGS">
-    <en_us>select %</en_us>
-    <nl_nl>Selecteer %</nl_nl>
+    <en_us>select %s</en_us>
+    <nl_nl>Selecteer %s</nl_nl>
   </translation>
   <translation id="TEXT_COPYRIGHT">
     <en_us>copyright</en_us>

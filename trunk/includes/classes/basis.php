@@ -107,7 +107,11 @@ class basis {
 				$this->observer = new \core\classes\outputPage();
 				break;
 			case 'xmlhttprequest':
-				$this->observer = new \core\classes\outputXml();
+				if ($_REQUEST['dataType'] == 'json') {
+					$this->observer = new \core\classes\outputJson();
+				}else{
+					$this->observer = new \core\classes\outputXml();
+				}
 				break;
 			case 'json':	
 				$this->observer = new \core\classes\outputJson();

@@ -228,28 +228,24 @@ class admin extends \core\classes\admin {
 		$basis->observer->send_menu($basis);
 		if (! isset($basis->cInfo->type)) $basis->cInfo->type = 'c'; // default to customer
 		switch ($basis->cInfo->type) {
-			case 'b': $page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_BRANCH);	break;
-			case 'c': $page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_CUSTOMER);	break;
-			case 'e': $page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_EMPLOYEE);	break;
-			case 'i': $page_title = TEXT_CRM; 									break;
-			case 'j': $page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_PROJECT);	break;
-			case 'v': $page_title = sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR);	break;
+			case 'b': $contact = TEXT_BRANCH;	break;
+			case 'c': $contact = TEXT_CUSTOMER;	break;
+			case 'e': $contact = TEXT_EMPLOYEE;	break;
+			case 'i': $contact = TEXT_CRM;		break;
+			case 'j': $contact = TEXT_PROJECT;	break;
+			case 'v': $contact = TEXT_VENDOR;	break;
 		}
 		?>
-		    <table id="dg" title="<?php echo $page_title;?>" class="easyui-datagrid" 
-          	  	 url="index.php?action=GetAllContacts&amp;type=<?php echo $basis->cInfo->type;?>" style="height:500px"
-            	 toolbar="#toolbar" loadMsg="<?php echo TEXT_PLEASE_WAIT?>" fitColumns="true" idField="id"
-            	 rownumbers="true" fitColumns="true" singleSelect="true" sortName="id" sortOrder="desc" onLoadSuccess:function (data){
-				if(!data.total) alert('No Rows Returned');});>
+		    <table id="dg" title="<?php echo sprintf(TEXT_MANAGER_ARGS, $contact);?>" class="easyui-datagrid" style="height:500px;padding:50px;">
         		<thead>
             		<tr>
-            			<th data-options="field:'short_name'"><?php echo constant('ACT_' . strtoupper($basis->cInfo->type) . '_SHORT_NAME')?></th>
-                		<th data-options="field:'primary_name'"><?php echo TEXT_NAME_OR_COMPANY?></th>
-	                	<th data-options="field:'address1'"><?php echo TEXT_ADDRESS1?></th>
-    	            	<th data-options="field:'city_town'"><?php echo TEXT_CITY_TOWN?></th>
-        	        	<th data-options="field:'state_province'"><?php echo TEXT_STATE_PROVINCE?></th>
-        	        	<th data-options="field:'postal_code'"><?php echo TEXT_POSTAL_CODE?></th>
-        	        	<th data-options="field:'telephone1'"><?php echo TEXT_TELEPHONE?></th>
+            			<th data-options="field:'short_name',sortable:true"><?php echo sprintf(TEXT_ARGS_ID, $contact);?></th>
+                		<th data-options="field:'name',sortable:true"><?php echo TEXT_NAME_OR_COMPANY?></th>
+	                	<th data-options="field:'address1',sortable:true"><?php echo TEXT_ADDRESS1?></th>
+    	            	<th data-options="field:'city_town',sortable:true"><?php echo TEXT_CITY_TOWN?></th>
+        	        	<th data-options="field:'state_province',sortable:true"><?php echo TEXT_STATE_PROVINCE?></th>
+        	        	<th data-options="field:'postal_code',sortable:true"><?php echo TEXT_POSTAL_CODE?></th>
+        	        	<th data-options="field:'telephone1',sortable:true"><?php echo TEXT_TELEPHONE?></th>
             		</tr>
         		</thead>
     		</table>
@@ -257,17 +253,59 @@ class admin extends \core\classes\admin {
 		        <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newUser()">New User</a>
     		    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editUser()">Edit User</a>
         		<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="destroyUser()">Remove User</a>
+        		<span style="margin-left: 100px;"><?php echo  TEXT_SHOW_INACTIVE . ' :'?></span>
+        		<?php echo html_checkbox_field('contact_show_inactive', '1', false,'', 'onchange="doSearch()"' );?>
+        		<div style="float: right;">
+        			<span><?php echo TEXT_SEARCH?> : </span>
+    				<input id="search_text" style="line-height:26px;border:1px solid #ccc">
+    				<?php echo html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'onclick="doSearch()"');?>
+<!--     				<a href="#" class="easyui-linkbutton" onclick="doSearch()"><?php echo TEXT_SEARCH?></a> -->
+    			</div>
     		</div>
-		<?php 
+		<script type="text/javascript">
+	    	function doSearch(){
+	        	$('#dg').datagrid('load',{
+	        		search_text: $('#search_text').val(),
+	        		dataType: 'json',
+	                contentType: 'application/json',
+	                type: '<?php echo $basis->cInfo->type;?>',
+	                contact_show_inactive: $('#contact_show_inactive').is(":checked") ? 1 : 0,
+	        	});
+	    	}
+		
+			$('#dg').datagrid({
+				url:		"index.php?action=GetAllContacts",
+				queryParams: {
+					type: '<?php echo $basis->cInfo->type;?>',
+					dataType: 'json',
+	                contentType: 'application/json',
+				},
+				onLoadSuccess:function(data){
+					if(data.total == 0) $.messager.alert('<?php echo TEXT_ERROR?>',"<?php echo TEXT_NO_RESULTS_FOUND?>");
+				},
+				onLoadError: function(arguments){
+					$.messager.alert('<?php echo TEXT_ERROR?>','Load error:'+arguments.responseText);
+				},
+				remoteSort:	false,
+				idField:	"contactid",
+				fitColumns:	true,
+				singleSelect:true,
+				sortName:	"short_name",
+				sortOrder: 	"desc",
+				loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
+				toolbar: 	"#toolbar",
+				rowStyler: function(index,row){
+					if (row.inactive == '1')return 'background-color:pink;';
+				},
+			});
+		</script><?php 
 		$basis->observer->send_footer($basis);
-		$this->GetAllContacts($basis);
 	}
 	
 	function GetAllContacts (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		header_remove();
-		header('Content-type:application/json;charset=utf-8');print('hoe moet dit verdzer');
-		$criteria[] = "c.type = '{$basis->cInfo->type}'";
+		\core\classes\messageStack::debug_log(print_r($_REQUEST,true) );
+		$criteria[] = "a.type = '{$basis->cInfo->type}m'";
 		if (isset($basis->cInfo->search_text) && $basis->cInfo->search_text <> '') {
 			$search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.address1',
 					'a.address2', 'a.city_town', 'a.postal_code', 'c.short_name');
@@ -277,7 +315,7 @@ class admin extends \core\classes\admin {
 		}
 		if (!$basis->cInfo->contact_show_inactive) $criteria[] = "(c.inactive = '0' or c.inactive = '')"; // inactive flag
 		$search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
-		$query_raw = "SELECT id, short_name, primary_name, address1, city_town, state_province, postal_code, telephone1 FROM " . TABLE_CONTACTS . " c LEFT JOIN " . TABLE_ADDRESS_BOOK . " a ON c.id = a.ref_id {$search} ORDER BY c.short_name"; //@todo needs modifying
+		$query_raw = "SELECT id as contactid, short_name, CASE c.type WHEN 'e' THEN CONCAT(contact_first , ' ',contact_last) ELSE primary_name END AS name, address1, city_town, state_province, postal_code, telephone1, inactive FROM contacts c LEFT JOIN address_book a ON c.id = a.ref_id $search ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order}";
 		$sql = $basis->DataBase->prepare($query_raw);
 		$sql->execute();
 		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);

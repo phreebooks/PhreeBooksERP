@@ -50,7 +50,6 @@ class outputPage  {
     	echo "<link rel='stylesheet' type='text/css' href='".DIR_WS_THEMES.'css/icon.css'."' />". chr(13);
     	echo "<script type='text/javascript' src='includes/common.js'></script>". chr(13);
     	echo "<script type='text/javascript' src='includes/jquery-2.2.0.min.js'></script>". chr(13);
-    	echo "<script type='text/javascript' src='includes/jquery-migrate-1.2.1.min.js'></script>". chr(13); //@todo can be removed after development
     	echo "<script type='text/javascript' src='includes/jquery.easyui.min.js'></script>". chr(13);
 //    	echo "<script type='text/javascript' src='https://www.google.com/jsapi'></script>". chr(13);
     	echo "</head><body>";

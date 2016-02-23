@@ -43,7 +43,7 @@ $cal_j_gen2 = array(
     <legend><?php echo TEXT_CONTACT_INFORMATION; ?></legend>
     <table>
       <tr>
-        <td align="right"><?php echo ACT_J_SHORT_NAME; ?></td>
+        <td align="right"><?php echo sprintf(TEXT_ARGS_ID, TEXT_PROJECT); ?></td>
         <td><?php echo html_input_field('short_name', $basis->cInfo->contact->short_name, 'size="21" maxlength="20"', true); ?></td>
         <td align="right"><?php echo TEXT_INACTIVE; ?></td>
         <td>
