@@ -104,18 +104,18 @@ class e extends \contacts\classes\contacts{
   		$security_level = \core\classes\user::validate($this->security_token); // in this case it must be done after the class is defined for
   		$bkgnd          = ($this->inactive) ? ' style="background-color:pink"' : '';
   		$attach_exists  = $this->attachments ? true : false;
-  		echo "<td $bkgnd onclick='$js_function( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->short_name) ."</td>";
-  		echo "<td $bkgnd onclick='$js_function( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->contact_first . ' ' . $this->contact_last). "</td>";
-  		echo "<td        onclick='$js_function( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->address1) ."</td>";
-  		echo "<td        onclick='$js_function( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->city_town)."</td>";
-  		echo "<td        onclick='$js_function( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->state_province)."</td>";
-  		echo "<td        onclick='$js_function( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->postal_code)."</td>";
-  		echo "<td 	     onclick='$js_function( $this->id, \"LoadContactPage\")'>". htmlspecialchars($this->telephone1)."</td>";
+  		echo "<td $bkgnd onclick='$js_function( $this->id, \"editContact\")'>". htmlspecialchars($this->short_name) ."</td>";
+  		echo "<td $bkgnd onclick='$js_function( $this->id, \"editContact\")'>". htmlspecialchars($this->contact_first . ' ' . $this->contact_last). "</td>";
+  		echo "<td        onclick='$js_function( $this->id, \"editContact\")'>". htmlspecialchars($this->address1) ."</td>";
+  		echo "<td        onclick='$js_function( $this->id, \"editContact\")'>". htmlspecialchars($this->city_town)."</td>";
+  		echo "<td        onclick='$js_function( $this->id, \"editContact\")'>". htmlspecialchars($this->state_province)."</td>";
+  		echo "<td        onclick='$js_function( $this->id, \"editContact\")'>". htmlspecialchars($this->postal_code)."</td>";
+  		echo "<td 	     onclick='$js_function( $this->id, \"editContact\")'>". htmlspecialchars($this->telephone1)."</td>";
   		echo "<td align='right'>";
   		if ($js_function == "submitSeq") {
 	  		// build the action toolbar
   			if ($security_level > 1) echo html_icon('mimetypes/x-office-presentation.png', TEXT_SALES, 'small', 	"onclick='contactChart(\"annual_sales\", $this->id)'") . chr(10);
-  			if ($security_level > 1) echo html_icon('actions/edit-find-replace.png', TEXT_EDIT, 'small', 			"onclick='submitSeq($this->id, \"LoadContactPage\")'") . chr(10);
+  			if ($security_level > 1) echo html_icon('actions/edit-find-replace.png', TEXT_EDIT, 'small', 			"onclick='submitSeq($this->id, \"editContact\")'") . chr(10);
 	  		if ($attach_exists) 	 echo html_icon('status/mail-attachment.png', TEXT_DOWNLOAD_ATTACHMENT,'small', "onclick='submitSeq($this->id, \"ContactAttachmentDownloadFirst\", true)'") . chr(10);
   			if ($security_level > 3) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 			"onclick='if (confirm(\"" . ACT_WARN_DELETE_ACCOUNT . "\")) submitSeq($this->id, \"DeleteContact\")'") . chr(10);
   		}else if ($js_function == "setReturnAccount"){

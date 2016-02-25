@@ -101,8 +101,9 @@ class basis {
 	}
 	
 	private function setObserver(){
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ ." Type of request = ".$_SERVER['HTTP_X_REQUESTED_WITH']);
-		switch(strtolower($_SERVER['HTTP_X_REQUESTED_WITH'])){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ ." Type of request = {$_SERVER['HTTP_X_REQUESTED_WITH']} datatype = {$_REQUEST['contentType']} ");
+		switch($_REQUEST['contentType']){
+			case 'text/html':
 			default: 
 				$this->observer = new \core\classes\outputPage();
 				break;
@@ -113,7 +114,7 @@ class basis {
 					$this->observer = new \core\classes\outputXml();
 				}
 				break;
-			case 'json':	
+			case 'application/json':	
 				$this->observer = new \core\classes\outputJson();
 				break;
 			case 'mobile':

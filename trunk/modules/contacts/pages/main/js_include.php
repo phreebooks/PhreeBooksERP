@@ -37,7 +37,7 @@ function init() {
 function check_form() {
   var error = 0;
   var error_message = "<?php echo JS_ERROR; ?>";
-  <?php if ($basis->cInfo->auto_type == false && ($basis->cInfo->action == 'LoadContactPage' || $_REQUEST['action'] == 'update' || $_REQUEST['action'] == 'new')) { ?> // if showing the edit/update detail form  @todo
+  <?php if ($basis->cInfo->auto_type == false && ($basis->cInfo->action == 'editContact' || $_REQUEST['action'] == 'update' || $_REQUEST['action'] == 'new')) { ?> // if showing the edit/update detail form  @todo
   var acctId = document.getElementById('short_name').value;
   if (acctId == '') {
       error_message += "* <?php echo TEXT_THE_ID_ENTRY_CANNOT_BE_EMPTY; ?>";

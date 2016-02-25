@@ -23,7 +23,7 @@ echo html_hidden_field('id',  $basis->cInfo->contact->id) . chr(10);
 echo html_hidden_field('del_crm_note','') . chr(10);
 echo html_hidden_field('payment_id',  '') . chr(10);
 // customize the toolbar actions
-if ($basis->cInfo->action == 'LoadContactsPopUp') {
+if ($basis->cInfo->action == 'editContact') {
   $basis->toolbar->icon_list['cancel']['params'] = 'onclick="self.close()"';
   $basis->toolbar->icon_list['save']['show']     = false;
 } else {

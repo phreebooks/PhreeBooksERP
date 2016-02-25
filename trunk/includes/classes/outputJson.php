@@ -7,6 +7,10 @@ class outputJson {
 		header('Content-Type: application/json');
 	}
 	
+	function send_menu($basis){
+		echo '<!-- json menu-->';
+	}
+	
 	public function update(\SplSubject $basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		global $messageStack;
@@ -21,6 +25,9 @@ class outputJson {
 
 	}
 
+	function send_footer($basis){
+		echo '<!-- json footer-->';
+	}
 	/**
 	 * returns the current template
 	 * @return string

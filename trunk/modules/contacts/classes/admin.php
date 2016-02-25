@@ -257,9 +257,7 @@ class admin extends \core\classes\admin {
         		<?php echo html_checkbox_field('contact_show_inactive', '1', false,'', 'onchange="doSearch()"' );?>
         		<div style="float: right;">
         			<span><?php echo TEXT_SEARCH?> : </span>
-    				<input id="search_text" style="line-height:26px;border:1px solid #ccc">
-    				<?php echo html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'onclick="doSearch()"');?>
-<!--     				<a href="#" class="easyui-linkbutton" onclick="doSearch()"><?php echo TEXT_SEARCH?></a> -->
+    				<input class="easyui-searchbox" data-options="prompt:'<?php TEXT_PLEASE_INPUT_VALUE; ?>',searcher:doSearch" id="search_text" >
     			</div>
     		</div>
     		<div id="win" class="easyui-window" title="My Window" style="width:600px;height:400px" data-options="iconCls:'icon-save',modal:true">
@@ -267,7 +265,7 @@ class admin extends \core\classes\admin {
     		</div>
     		
 		<script type="text/javascript">
-	    	function doSearch(){
+	    	function doSearch(value){
 	        	$('#dg').datagrid('load',{
 	        		search_text: $('#search_text').val(),
 	        		dataType: 'json',
@@ -280,31 +278,16 @@ class admin extends \core\classes\admin {
 	        function newContact(){
 	            $('#win').window('open').window('center').window('setTitle','<?php echo sprintf(TEXT_NEW_ARGS, $contact);?>');
 	            $('#win').window('refresh', "index.php?action=newContact");
+	            $('#win').window('resize');
 	        }
 	        function editContact(){
-		        var row = $('#win').datagrid('getSelected');
+		        var row = $('#dg').datagrid('getSelected');
 		        if(row){
-//	        		$('#win').window('contactid', row);
-	            	$('#win').window('open');//.window('center').window('setTitle','<?php echo sprintf(TEXT_EDIT_ARGS, $contact);?>');
+		        	$('#win').window('refresh', "index.php?action=editContact&contactid="+row.contactid);
+	            	$('#win').window('open').window('center').window('setTitle','<?php echo sprintf(TEXT_EDIT_ARGS, $contact);?>');
 //		        	$('#win').window('refresh');
 		        }
 	        }
-	        $('#win').window({
-	        	href:		"index.php?action=editContact",
-				closed: true,
-				queryParams: {
-					type: '<?php echo $basis->cInfo->type;?>',
-					dataType: 'json',
-	                contentType: 'application/json',
-	                //contactid: $('#win').datagrid('getSelected'),
-				},
-				onLoadSuccess:function(data){
-					if(data.total == 0) $.messager.alert('<?php echo TEXT_ERROR?>',"<?php echo TEXT_NO_RESULTS_FOUND?>");
-				},
-				onLoadError: function(){
-					$.messager.alert('<?php echo TEXT_ERROR?>','Load error:'+arguments.responseText);
-				},
-			});
 			$('#dg').datagrid({
 				url:		"index.php?action=GetAllContacts",
 				queryParams: {
@@ -330,13 +313,37 @@ class admin extends \core\classes\admin {
 					if (row.inactive == '1')return 'background-color:pink;';
 				},
 			});
+			$('#win').window({
+	        	href:		"index.php?action=editContact",
+				closed: true,
+				closable: false,
+				collapsible: false,
+				minimizable: false,
+				fit: true,
+				queryParams: {
+					type: '<?php echo $basis->cInfo->type;?>',
+					dataType: 'html',
+	                contentType: 'text/html',
+				},
+				onDblClickRow: function(index, row){
+					alert('index '+index+' row '+row);
+					$('#win').window('refresh', "index.php?action=editContact&contactid="+row.contactid);
+//					$('#win').window('queryParams','contactid'+ row.contactid);
+		            $('#win').window('open').window('center').window('setTitle','<?php echo sprintf(TEXT_EDIT_ARGS, $contact);?>');
+				},
+				onLoadSuccess: function(data){
+					if(data.total == 0) $.messager.alert('<?php echo TEXT_ERROR?>',"<?php echo TEXT_NO_RESULTS_FOUND?>");
+				},
+				onLoadError: function(){
+					$.messager.alert('<?php echo TEXT_ERROR?>','Load error:'+arguments.responseText);
+				},
+			});
 		</script><?php 
 		$basis->observer->send_footer($basis);
 	}
 	
 	function GetAllContacts (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		\core\classes\messageStack::debug_log(print_r($_REQUEST,true) );
 		$criteria[] = "a.type = '{$basis->cInfo->type}m'";
 		if (isset($basis->cInfo->search_text) && $basis->cInfo->search_text <> '') {
 			$search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.address1',
@@ -362,6 +369,7 @@ class admin extends \core\classes\admin {
 	 * @param unknown $basis
 	 */
 	function NewContact (\core\classes\basis &$basis) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$temp = "\\contacts\\classes\\type\\{$basis->cInfo->type}";
 		$contact = new $temp();
 		\core\classes\user::validate_security($contact->security_level, 2);
@@ -369,17 +377,18 @@ class admin extends \core\classes\admin {
 		$sql = $basis->DataBase->prepare("INSERT INTO ".TABLE_CONTACTS." (class, type ) VALUES ('" . addcslashes(get_class($contact), '\\') . "', '{$contact->type}')");
 		$sql->execute();
 		$basis->cInfo->cID =  $basis->DataBase->lastInsertId('id');
-		$this->LoadContactPage($basis);
+		$this->editContact($basis);
 	}
 
 	/**
 	 * this function will load the contact page
 	 */
-	function LoadContactPage(\core\classes\basis &$basis) {
-		$basis->observer->send_menu($basis);
-		if ( isset($basis->cInfo->rowSeq)) $basis->cInfo->cID = $basis->cInfo->rowSeq;
-		if ($basis->cInfo->cID == '') throw new \core\classes\userException("cID variable isn't set can't execute method LoadContactPage ");
-		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->cID}");
+	function editContact(\core\classes\basis &$basis) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::debug_log(print_r($_REQUEST,true) );
+		if ( isset($basis->cInfo->rowSeq)) $basis->cInfo->contactid = $basis->cInfo->rowSeq;
+		if ($basis->cInfo->contactid == '') throw new \core\classes\userException("cID variable isn't set can't execute method editContact ");
+		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->contactid}");
 		$sql->execute();
 		$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
 
@@ -400,19 +409,8 @@ class admin extends \core\classes\admin {
 		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
 			$basis->cInfo->all_employees[$result['id']] = $result['contact_first'] . ' ' . $result['contact_last'];
 		}
-		$basis->module		= 'contacts';
-		$basis->page		= 'main';
-		$basis->template 	= 'template_detail';
 		$basis->page_title  = "{$basis->cInfo->contact->page_title_edit} - ({$basis->cInfo->contact->short_name}) {$basis->cInfo->contact->address[m][0]->primary_name}";
-		$basis->observer->send_footer($basis);
-	}
-
-	/**
-	 * this function will call LoadContactPage but deactivate menu and footer.
-	 * @param \core\classes\basis $basis
-	 */
-	function LoadContactsPopUp(\core\classes\basis &$basis) {
-		$this->LoadContactPage($basis);
+		include(DIR_FS_MODULES . "contacts/pages/main/template_detail.php");
 	}
 
 	function SaveContact (\core\classes\basis &$basis) {
@@ -469,8 +467,8 @@ class admin extends \core\classes\admin {
 	}
 
 	function DeleteContact (\core\classes\basis &$basis) {
-		if ($basis->cInfo->cID == '') throw new \core\classes\userException("cID variable isn't set can't execute method DeleteContact ");
-		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->cID}");
+		if ($basis->cInfo->contactid == '') throw new \core\classes\userException("contactid variable isn't set can't execute method DeleteContact ");
+		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->contactid}");
 		$sql->execute();
 		$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
 		// error check
