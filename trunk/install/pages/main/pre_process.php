@@ -38,11 +38,7 @@ define('DIR_FS_MY_FILES','../' . PATH_TO_MY_FILES);
 $default_chart = DIR_FS_MODULES . 'phreebooks/language/en_us/charts/USA_Retail.xml';
 
 require_once('functions/install.php');
-$lang = $_GET['lang'] ? $_GET['lang'] : DEFAULT_LANGUAGE;
-$_SESSION['user']->language = $lang;
-install_pull_language($lang);
-install_lang('phreedom',  $lang, 'language'); // install general language file
-install_lang('phreeform', $lang, 'language'); // install general language file
+$_SESSION['user'];
 require_once('defaults.php');
 require_once(DIR_FS_MODULES . 'phreedom/defaults.php');
 require_once(DIR_FS_MODULES . 'phreeform/defaults.php');
@@ -134,116 +130,109 @@ switch ($_REQUEST['action']) {
 		}
 		break;
 	case 'install':
-		$company_name    = db_prepare_input($_POST['company_name']);
-		$company_demo    = db_prepare_input($_POST['company_demo']);
-		$user_username   = db_prepare_input($_POST['user_username']);
-		$user_password   = db_prepare_input($_POST['user_password']);
-		$user_pw_confirm = db_prepare_input($_POST['user_pw_confirm']);
-		$user_email      = db_prepare_input($_POST['user_email']);
-		$srvr_http       = db_prepare_input($_POST['srvr_http']);
-		$use_ssl         = $_POST['use_ssl'] ? 'true' : 'false';
-		$srvr_https      = db_prepare_input($_POST['srvr_https']);
-		$db_host         = db_prepare_input($_POST['db_host']);
-		$db_prefix       = db_prepare_input($_POST['db_prefix']);
-		$db_name         = db_prepare_input($_POST['db_name']);
-		$db_username     = db_prepare_input($_POST['db_username']);
-		$db_password     = db_prepare_input($_POST['db_password']);
-		$fy_month        = db_prepare_input($_POST['fy_month']);
-		$fy_year         = db_prepare_input($_POST['fy_year']);
-
-		// error check input, user info
-		if (strlen($company_name) < 1)  $error = \core\classes\messageStack::add(ERROR_TEXT_ADMIN_COMPANY_ISEMPTY, 'error');
-		if (strlen($user_username) < 1) $error = \core\classes\messageStack::add(ERROR_TEXT_ADMIN_USERNAME_ISEMPTY, 'error');
-		if (strlen($user_email) < 1)    $error = \core\classes\messageStack::add(ERROR_TEXT_ADMIN_EMAIL_ISEMPTY, 'error');
-		if (strlen($user_password) < 1) $error = \core\classes\messageStack::add(ERROR_TEXT_LOGIN_PASS_ISEMPTY, 'error');
-		if ($user_password <> $user_pw_confirm) $error = \core\classes\messageStack::add(ERROR_TEXT_LOGIN_PASS_NOTEQUAL, 'error');
-		// database info
-		if (preg_match('/a-z0-9_/i', $db_prefix) > 0) $error = \core\classes\messageStack::add(ERROR_TEXT_DB_PREFIX_NODOTS, 'error');
-		if (strlen($db_host)     < 1) $error = \core\classes\messageStack::add(ERROR_TEXT_DB_HOST_ISEMPTY,     'error');
-		if (strlen($db_name)     < 1) $error = \core\classes\messageStack::add(ERROR_TEXT_DB_NAME_ISEMPTY,     'error');
-		if (strlen($db_username) < 1) $error = \core\classes\messageStack::add(ERROR_TEXT_DB_USERNAME_ISEMPTY, 'error');
-		if (strlen($db_password) < 1) $error = \core\classes\messageStack::add(ERROR_TEXT_DB_PASSWORD_ISEMPTY, 'error');
-
-		// define some things so the install can use existing functions
-		define('DB_PREFIX', $db_prefix);
-		$_SESSION['user']->company  = $db_name;
-		$_SESSION['user']->language = $lang;
-		// create the company directory
-		\core\classes\messageStack::debug_log("\n  creating the company directory");
-		validate_path(DIR_FS_ADMIN . PATH_TO_MY_FILES . $db_name);
-		if (!$error) { // write the db config.php in the company directory
-		  if (!install_build_co_config_file($db_name, $db_name . '_TITLE',  $company_name)) $error = true;
-		  if (!install_build_co_config_file($db_name, 'DB_SERVER_USERNAME', $db_username))  $error = true;
-		  if (!install_build_co_config_file($db_name, 'DB_SERVER_PASSWORD', $db_password))  $error = true;
-		  if (!install_build_co_config_file($db_name, 'DB_SERVER_HOST',     $db_host))      $error = true;
-		}
-		if (!$error) { // try to connect to db
-		  require('../includes/db/' . DB_TYPE . '/query_factory.php');
-		  $db = new queryFactory();//@todo pdo
-		  if (!$admin->DataBase->connect($db_host, $db_username, $db_password, $db_name)) {
-		  	$error = \core\classes\messageStack::add(MSG_ERROR_CANNOT_CONNECT_DB . $admin->DataBase->show_error(), 'error');
-		  } else { // test for InnoDB support
-		  	$result = $admin->DataBase->query("show engines");
-		  	$innoDB_enabled = false;
-		  	while (!$result->EOF) {
-		  		if ($result->fields['Engine'] == 'InnoDB') $innoDB_enabled = true;
-		  		$result->MoveNext();
-		  	}
-		  	if (!$innoDB_enabled) $error = \core\classes\messageStack::add(MSG_ERROR_INNODB_NOT_ENABLED, 'error');
-		  }
-		}
-		if (!$error) {
-	  		$params   = array();
-	  		$contents = @scandir(DIR_FS_MODULES);
-	  		if($contents === false) throw new \core\classes\userException("couldn't read or find directory ". DIR_FS_MODULES);
+		try{
+			$company_name    = db_prepare_input($_POST['company_name']);
+			$company_demo    = db_prepare_input($_POST['company_demo']);
+			$user_username   = db_prepare_input($_POST['user_username']);
+			$user_password   = db_prepare_input($_POST['user_password']);
+			$user_pw_confirm = db_prepare_input($_POST['user_pw_confirm']);
+			$user_email      = db_prepare_input($_POST['user_email']);
+			$srvr_http       = db_prepare_input($_POST['srvr_http']);
+			$use_ssl         = $_POST['use_ssl'] ? 'true' : 'false';
+			$srvr_https      = db_prepare_input($_POST['srvr_https']);
+			$db_host         = db_prepare_input($_POST['db_host']);
+			$db_prefix       = db_prepare_input($_POST['db_prefix']);
+			$db_name         = db_prepare_input($_POST['db_name']);
+			$db_username     = db_prepare_input($_POST['db_username']);
+			$db_password     = db_prepare_input($_POST['db_password']);
+			$fy_month        = db_prepare_input($_POST['fy_month']);
+			$fy_year         = db_prepare_input($_POST['fy_year']);
+	
+			// error check input, user info
+			if (strlen($company_name) < 1)  throw new \core\classes\userException(ERROR_TEXT_ADMIN_COMPANY_ISEMPTY);
+			if (strlen($user_username) < 1) throw new \core\classes\userException(ERROR_TEXT_ADMIN_USERNAME_ISEMPTY);
+			if (strlen($user_email) < 1)    throw new \core\classes\userException(ERROR_TEXT_ADMIN_EMAIL_ISEMPTY);
+			if (strlen($user_password) < 1) throw new \core\classes\userException(ERROR_TEXT_LOGIN_PASS_ISEMPTY);
+			if ($user_password <> $user_pw_confirm) throw new \core\classes\userException(ERROR_TEXT_LOGIN_PASS_NOTEQUAL);
+			// database info
+			if (preg_match('/a-z0-9_/i', $db_prefix) > 0) throw new \core\classes\userException(ERROR_TEXT_DB_PREFIX_NODOTS);
+			if (strlen($db_host)     < 1) throw new \core\classes\userException(ERROR_TEXT_DB_HOST_ISEMPTY);
+			if (strlen($db_name)     < 1) throw new \core\classes\userException(ERROR_TEXT_DB_NAME_ISEMPTY);
+			if (strlen($db_username) < 1) throw new \core\classes\userException(ERROR_TEXT_DB_USERNAME_ISEMPTY);
+			if (strlen($db_password) < 1) throw new \core\classes\userException(ERROR_TEXT_DB_PASSWORD_ISEMPTY);
+	
+			// define some things so the install can use existing functions
+			define('DB_PREFIX', $db_prefix);
+			$_SESSION['user']->company  = $db_name;
+			$_SESSION['user']->language = $lang;
+			// create the company directory
+			\core\classes\messageStack::debug_log("\n  creating the company directory");
+			validate_path(DIR_FS_ADMIN . PATH_TO_MY_FILES . $db_name);
+			if (!install_build_co_config_file($db_name, $db_name . '_TITLE',  $company_name)) throw new \core\classes\userException("couldn't build config file");
+			if (!install_build_co_config_file($db_name, 'DB_SERVER_USERNAME', $db_username))  throw new \core\classes\userException("couldn't build config file");
+			if (!install_build_co_config_file($db_name, 'DB_SERVER_PASSWORD', $db_password))  throw new \core\classes\userException("couldn't build config file");
+			if (!install_build_co_config_file($db_name, 'DB_SERVER_HOST',     $db_host))      throw new \core\classes\userException("couldn't build config file");
+			require('../includes/db/' . DB_TYPE . '/query_factory.php');
+			$db = new queryFactory();//@todo pdo
+			if (!$admin->DataBase->connect($db_host, $db_username, $db_password, $db_name)) {
+			  	throw new \core\classes\userException(MSG_ERROR_CANNOT_CONNECT_DB . $admin->DataBase->show_error());
+			} else { // test for InnoDB support
+			  	$result = $admin->DataBase->query("show engines");
+			  	$innoDB_enabled = false;
+			  	while (!$result->EOF) {
+			  		if ($result->fields['Engine'] == 'InnoDB') $innoDB_enabled = true;
+			  		$result->MoveNext();
+			  	}
+			  	if (!$innoDB_enabled) throw new \core\classes\userException(MSG_ERROR_INNODB_NOT_ENABLED);
+			}
+			
+		  	$params   = array();
+		  	$contents = @scandir(DIR_FS_MODULES);
+		  	if($contents === false) throw new \core\classes\userException("couldn't read or find directory ". DIR_FS_MODULES);
 			// fake the install status of all modules found to 1, so all gets installed
-	  		foreach ($contents as $entry) define('MODULE_' . strtoupper($entry) . '_STATUS','1');
-	  		require_once (DIR_FS_MODULES . 'phreedom/config.php'); // needed here to avoid breaking menu array
-	  		foreach ($contents as $entry) {
-	  			// load the configuration files to load version info
-	  			if ($entry <> 'phreedom' && $entry <> '.' && $entry <> '..' && is_dir(DIR_FS_MODULES . $entry)) {
-	  				if (file_exists(DIR_FS_MODULES . $entry . '/config.php')) {
-	  					install_lang($entry, $lang, 'menu');
-	  					install_lang($entry, $lang, 'admin');
-	  					require_once (DIR_FS_MODULES . $entry . '/config.php');
-	  				}
-	  			}
-	  		}
-	  	}
-		// install core modules first
-	  	foreach ($admin->classes as $module_class) {
-	  		if ($module_class->core) {
-	  			\core\classes\messageStack::debug_log("\n  installing core module = " . $module_class->id);
-	  			$module_class->install(DIR_FS_MY_FILES.$_SESSION['user']->company.'/', $company_demo);
-	  		}
-	  	}
-		// load phreedom reports now since table exists
-	  	if (DEBUG) \core\classes\messageStack::debug_log("\n  installing phreedom.");
-		foreach ($admin->classes as $module_class) {
-	  		if (!$module_class->core) {
-	  			\core\classes\messageStack::debug_log("\n  installing core module = {$module_class->id}");
-	  			$module_class->install(DIR_FS_MY_FILES.$_SESSION['user']->company.'/', $company_demo);
-	  		}
-	  	}
-		if (!$error) { // input admin username record, clear the tables first
+		  	foreach ($contents as $entry) define('MODULE_' . strtoupper($entry) . '_STATUS','1');
+		  	require_once (DIR_FS_MODULES . 'phreedom/config.php'); // needed here to avoid breaking menu array
+		  	foreach ($contents as $entry) {
+		  		// load the configuration files to load version info
+		  		if ($entry <> 'phreedom' && $entry <> '.' && $entry <> '..' && is_dir(DIR_FS_MODULES . $entry)) {
+		  			if (file_exists(DIR_FS_MODULES . $entry . '/config.php')) {
+		  				require_once (DIR_FS_MODULES . $entry . '/config.php');
+		  			}
+		  		}
+		  	}
+			// install core modules first
+		  	foreach ($admin->classes as $module_class) {
+		  		if ($module_class->core) {
+		  			\core\classes\messageStack::debug_log("\n  installing core module = " . $module_class->id);
+		  			$module_class->install(DIR_FS_MY_FILES.$_SESSION['user']->company.'/', $company_demo);
+		  		}
+		  	}
+			// load phreedom reports now since table exists
+		  	\core\classes\messageStack::debug_log("\n  installing phreedom.");
+			foreach ($admin->classes as $module_class) {
+		  		if (!$module_class->core) {
+		  			\core\classes\messageStack::debug_log("\n  installing core module = {$module_class->id}");
+		  			$module_class->install(DIR_FS_MY_FILES.$_SESSION['user']->company.'/', $company_demo);
+		  		}
+		  	}
+			// input admin username record, clear the tables first
 			\core\classes\messageStack::debug_log("\n  installing users");
-		  	$admin->DataBase->query("TRUNCATE TABLE " . TABLE_USERS);
+		 	$admin->DataBase->query("TRUNCATE TABLE " . TABLE_USERS);
 		  	$admin->DataBase->query("TRUNCATE TABLE " . TABLE_USERS_PROFILES);
 		  	$security = load_full_access_security();
 		  	$admin->DataBase->query($sql = "insert into " . TABLE_USERS . " set
-		      admin_name  = '" . $user_username . "',
-			  admin_email = '" . $user_email . "',
+		      admin_name  = '{$user_username}',
+			  admin_email = '{$user_email}',
 		  	  admin_pass  = '" . \core\classes\encryption::password($user_password) . "',
-			  admin_security = '" . $security . "'");
+			  admin_security = '{$security}'");
 		  	$user_id = $admin->DataBase->insert_ID();
 		  	if (sizeof($params) > 0) {
 		  		// create My Notes dashboard entries
-		  		$admin->DataBase->query("insert into " . TABLE_USERS_PROFILES . " set user_id = " . $user_id . ",
+		  		$admin->DataBase->query("insert into " . TABLE_USERS_PROFILES . " set user_id = {$user_id},
 				  menu_id = 'index', module_id = 'phreedom', dashboard_id = 'to_do', column_id = 1, row_id = 1,
 			  	  params = '" . serialize($params) . "'");
 		  	}
-		}
-		if (!$error) { // install fiscal year, default chart of accounts
+			// install fiscal year, default chart of accounts
 			\core\classes\messageStack::debug_log("\n  installing fiscal year.");
 		  	require_once('../modules/phreebooks/functions/phreebooks.php');
 		  	$admin->DataBase->query("TRUNCATE TABLE " . TABLE_ACCOUNTING_PERIODS);
@@ -284,35 +273,31 @@ switch ($_REQUEST['action']) {
 		  	build_and_check_account_history_records();
 		  	\core\classes\messageStack::debug_log("\n  updating current period");
 		  	gen_auto_update_period(false);
-		}
-		if (!$error) { // write the includes/configure.php file
-		  \core\classes\messageStack::debug_log("\n  writing configure.php file");
-		  $config_contents = str_replace('DEFAULT_HTTP_SERVER',      $srvr_http,   $config_contents);
-		  $config_contents = str_replace('DEFAULT_HTTPS_SERVER',     $srvr_https,  $config_contents);
-		  $config_contents = str_replace('DEFAULT_ENABLE_SSL_ADMIN', $use_ssl,     $config_contents);
-		  $config_contents = str_replace('DEFAULT_DIR_WS_ADMIN',     DIR_WS_ADMIN, $config_contents);
-		  $config_contents = str_replace('DEFAULT_DIR_FS_ADMIN',     DIR_FS_ADMIN, $config_contents);
-		  $config_contents = str_replace('DEFAULT_DEFAULT_LANGUAGE', $lang,        $config_contents);
-		  $config_contents = str_replace('DEFAULT_DB_TYPE',          DB_TYPE,      $config_contents);
-		  $config_contents = str_replace('DEFAULT_DB_PREFIX',        DB_PREFIX,    $config_contents);
-		  if (file_exists('../includes/configure.php'))				throw new \core\classes\userException(MSG_ERROR_CONFIGURE_EXISTS);
-		  if (!$handle = @fopen('../includes/configure.php', 'w'))	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, 'includes/configure.php'));
-		  if (!@fwrite($handle, $config_contents))					throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 'includes/configure.php'));
-		  if (!@fclose($handle))									throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 'includes/configure.php'));
-		  if (!@chmod('../includes/configure.php', 0444))			\core\classes\messageStack::add("Was not able to mark configure file as read only", "caution");
-		}
-		if (!$error) { // set the session variables so they can log in
-		  $_SESSION['user']->admin_id       = $user_id;
-		  $_SESSION['user']->admin_prefs    = '';
-		  $_SESSION['user']->language       = $lang;
-		  $_SESSION['user']->account_id     = '';
-		  $_SESSION['user']->admin_security = \core\classes\user::parse_permissions($security);
-		  $include_template = 'template_finish.php';
-		  define('PAGE_TITLE', TITLE_FINISH);
-		  if (DEBUG) $messageStack->write_debug();
-		} else {
-		  $include_template = 'template_install.php';
-		  define('PAGE_TITLE', TITLE_INSTALL);
+			// write the includes/configure.php file
+			\core\classes\messageStack::debug_log("\n  writing configure.php file");
+			$config_contents = str_replace('DEFAULT_HTTP_SERVER',      $srvr_http,   $config_contents);
+			$config_contents = str_replace('DEFAULT_HTTPS_SERVER',     $srvr_https,  $config_contents);
+			$config_contents = str_replace('DEFAULT_ENABLE_SSL_ADMIN', $use_ssl,     $config_contents);
+			$config_contents = str_replace('DEFAULT_DIR_WS_ADMIN',     DIR_WS_ADMIN, $config_contents);
+			$config_contents = str_replace('DEFAULT_DIR_FS_ADMIN',     DIR_FS_ADMIN, $config_contents);
+			$config_contents = str_replace('DEFAULT_DEFAULT_LANGUAGE', $lang,        $config_contents);
+			$config_contents = str_replace('DEFAULT_DB_TYPE',          DB_TYPE,      $config_contents);
+			$config_contents = str_replace('DEFAULT_DB_PREFIX',        DB_PREFIX,    $config_contents);
+			if (file_exists('../includes/configure.php'))				throw new \core\classes\userException(MSG_ERROR_CONFIGURE_EXISTS);
+			if (!$handle = @fopen('../includes/configure.php', 'w'))	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, 'includes/configure.php'));
+			if (!@fwrite($handle, $config_contents))					throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, 'includes/configure.php'));
+			if (!@fclose($handle))										throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, 'includes/configure.php'));
+			if (!@chmod('../includes/configure.php', 0444))				\core\classes\messageStack::add("Was not able to mark configure file as read only", "caution");
+			// set the session variables so they can log in
+			$_SESSION['user']->admin_id       			= $user_id;
+			$_SESSION['user']->language->language_code 	= $lang;
+			$_SESSION['user']->admin_security 			= \core\classes\user::parse_permissions($security);
+			$include_template = 'template_finish.php';
+			define('PAGE_TITLE', TITLE_FINISH);
+			$messageStack->write_debug();
+		}catch (\Exception $e){
+			$include_template = 'template_install.php';
+			define('PAGE_TITLE', TITLE_INSTALL);
 		}
 		break;
 	case 'finish':

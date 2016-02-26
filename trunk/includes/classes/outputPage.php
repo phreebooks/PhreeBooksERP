@@ -52,7 +52,12 @@ class outputPage  {
     	echo "<script type='text/javascript' src='includes/jquery-2.2.0.min.js'></script>". chr(13);
     	echo "<script type='text/javascript' src='includes/jquery.easyui.min.js'></script>". chr(13);
 //    	echo "<script type='text/javascript' src='https://www.google.com/jsapi'></script>". chr(13);
-    	echo "</head><body>";
+    	//setting easyui defaults.
+		echo "<script type='text/javascript' >
+				$.fn.validatebox.defaults.invalidMessage = '".TEXT_INVALID_VALUE."';
+				$.fn.validatebox.defaults.missingMessage = '".TEXT_THIS_FIELD_IS_REQUIRED."';
+			 </script>";
+		echo "</head><body>";
     	ob_flush();
     }
     

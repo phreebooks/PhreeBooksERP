@@ -191,7 +191,7 @@ class DateTime extends \DateTime {
 	static function db_date_format($raw_date = '') {
 		$date = self::createFromFormat ( DATE_FORMAT , $raw_date);
 		$errors = self::getLastErrors();
-		if ($date->format('Y')  < 1900 || $date->format('Y')  > 2099) throw new \core\classes\userException("The year is lower than 1900 or higher than 2099 recieved: $date->format('Y') ", 'error');
+		if ($date->format('Y')  < 1900 || $date->format('Y')  > 2099) throw new \core\classes\userException("The year is lower than 1900 or higher than 2099 recieved: ". $date->format('Y'), 'error');
 		if ($errors['warning_count'] != 0)  throw new \core\classes\userException($errors['warnings'], 	'warning');
 		if ($errors['error_count'] != 0)    throw new \core\classes\userException($errors['errors'],	'error');
 		return $date->format('Y-m-d');

@@ -38,6 +38,9 @@ class user {
 
 	public function __wakeup() {
 		if (count ($this->language) == 0 ) $this->language = new \core\classes\language();
+		$cookie_exp = 2592000 + time(); // one month
+		setcookie('pb_company' , $this->company,  $cookie_exp);
+		setcookie('pb_language', $this->language->language_code, $cookie_exp);
 	}
 	
 	final static public function get($variable){
@@ -269,10 +272,8 @@ class user {
 	
 	
 	function __destruct(){
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		$cookie_exp = 2592000 + time(); // one month
-		setcookie('pb_company' , $this->company,  $cookie_exp);
-		setcookie('pb_language', $this->language->language_code, $cookie_exp);
+//		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		
 	}
 
 }

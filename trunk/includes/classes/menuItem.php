@@ -28,7 +28,7 @@ class menuItem {
 	public $required_module;
 	public $icon;
 	
-	public function __construct($order, $text, $action, $security_id, $constant){
+	public function __construct($order, $text, $action = NULL , $security_id = NULL, $constant = NULL){
 		$this->order = $order;
 		$this->text  = $text;
 		$this->security_id = $security_id;

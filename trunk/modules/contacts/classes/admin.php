@@ -144,21 +144,11 @@ class admin extends \core\classes\admin {
 	    );
 		// Set the menus
 		$this->mainmenu["customers"]->submenu ["contact"] 	= new \core\classes\menuItem (10, 	TEXT_CUSTOMERS,		'action=LoadContactMgrPage&amp;type=c', SECURITY_ID_MAINTAIN_CUSTOMERS);
-		$this->mainmenu["customers"]->submenu ["contact"]->submenu ["new"] 	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_CUSTOMER),		'action=NewContact&amp;type=c');
-		$this->mainmenu["customers"]->submenu ["contact"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_CUSTOMER),	'action=LoadContactMgrPage&amp;type=c');
 		$this->mainmenu["customers"]->submenu ["crm"] 		= new \core\classes\menuItem (15, 	TEXT_CRM,			'action=LoadContactMgrPage&amp;type=i');
 		$this->mainmenu["vendors"]->submenu   ["contact"]	= new \core\classes\menuItem (10, 	TEXT_VENDORS,		'action=LoadContactMgrPage&amp;type=v', SECURITY_ID_MAINTAIN_VENDORS);
-		$this->mainmenu["vendors"]->submenu   ["contact"]->submenu ["new"]	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_VENDOR),		'action=NewContact&amp;type=v');
-		$this->mainmenu["vendors"]->submenu   ["contact"]->submenu ["mgr"]	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR),	'action=LoadContactMgrPage&amp;type=v');
 		$this->mainmenu["employees"]->submenu ["contact"] 	= new \core\classes\menuItem (10, 	TEXT_EMPLOYEES,		'action=LoadContactMgrPage&amp;type=e', SECURITY_ID_MAINTAIN_EMPLOYEES);
-		$this->mainmenu["employees"]->submenu ["contact"]->submenu ["new"]	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_EMPLOYEE),		'action=NewContact&amp;type=e');
-		$this->mainmenu["employees"]->submenu ["contact"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_EMPLOYEE),	'action=LoadContactMgrPage&amp;type=e');
 		$this->mainmenu["company"]->submenu   ["branches"] 	= new \core\classes\menuItem (10, 	TEXT_BRANCHES,		'action=LoadContactMgrPage&amp;type=b', SECURITY_ID_MAINTAIN_BRANCH, 'ENABLE_MULTI_BRANCH');
-		$this->mainmenu["company"]->submenu   ["branches"]->submenu ["new"]	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_BRANCH),		'action=NewContact&amp;type=b');
-		$this->mainmenu["company"]->submenu   ["branches"]->submenu ["mgr"] = new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_BRANCH),	'action=LoadContactMgrPage&amp;type=b');	
 		$this->mainmenu["customers"]->submenu ["projects"] 	= new \core\classes\menuItem (60, 	TEXT_PROJECTS,		'action=LoadContactMgrPage&amp;type=j', SECURITY_ID_MAINTAIN_PROJECTS);
-		$this->mainmenu["customers"]->submenu ["projects"]->submenu ["new"]	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_PROJECT),		'action=NewContact&amp;type=j');
-		$this->mainmenu["customers"]->submenu ["projects"]->submenu ["mgr"] = new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_PROJECT),	'action=LoadContactMgrPage&amp;type=j');
 		$this->mainmenu["company"]->submenu ["configuration"]->submenu ["inventory"]  = new \core\classes\menuItem (sprintf(TEXT_MODULE_ARGS, TEXT_CONTACTS), sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY),	'module=contacts&amp;page=admin',   SECURITY_ID_CONFIGURATION);
 	    parent::__construct();
 	}
@@ -261,7 +251,7 @@ class admin extends \core\classes\admin {
     			</div>
     		</div>
     		<div id="win" class="easyui-window" title="My Window" style="width:600px;height:400px" data-options="iconCls:'icon-save',modal:true">
-        		<form id="fm"></form>
+      
     		</div>
     		
 		<script type="text/javascript">
@@ -300,6 +290,9 @@ class admin extends \core\classes\admin {
 				},
 				onLoadError: function(){
 					$.messager.alert('<?php echo TEXT_ERROR?>','Load error:'+arguments.responseText);
+				},
+				onDblClickRow: function(){
+					editContact();
 				},
 				remoteSort:	false,
 				idField:	"contactid",
@@ -410,10 +403,11 @@ class admin extends \core\classes\admin {
 			$basis->cInfo->all_employees[$result['id']] = $result['contact_first'] . ' ' . $result['contact_last'];
 		}
 		$basis->page_title  = "{$basis->cInfo->contact->page_title_edit} - ({$basis->cInfo->contact->short_name}) {$basis->cInfo->contact->address[m][0]->primary_name}";
+		include(DIR_FS_MODULES . "contacts/pages/main/js_include.php");
 		include(DIR_FS_MODULES . "contacts/pages/main/template_detail.php");
 	}
 
-	function SaveContact (\core\classes\basis &$basis) {
+	function saveContact (\core\classes\basis &$basis) {
 		if ($basis->cInfo->id == '') throw new \core\classes\userException("id variable isn't set can't execute method SaveContact ");
 		if ($_POST['crm_date']) $_POST['crm_date'] = gen_db_date($_POST['crm_date']);
 		if ($_POST['due_date']) $_POST['due_date'] = gen_db_date($_POST['due_date']);

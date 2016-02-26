@@ -691,10 +691,10 @@ function get_dir_tree($dir, $root = true)  {
 	  		$id = str_replace('[', '_', $name); // clean up for array inputs causing html errors
 	  		$id = str_replace(']', '',  $id);
     	}
-    	$field = '<input type="' . $type . '" name="' . $name . '" class="easyui-validatebox"';
+    	$field = '<input type="' . $type . '" name="' . $name . '" ';
 		if ($id)                       	$field .= ' id="'    . $id    . '"';
     	if (gen_not_null($value))      	$field .= ' value="' . str_replace('"', '&quot;', $value) . '"';
-    	if ($required == true) 			$field .= ' required="required"';
+    	if ($required == true) 			$field .= ' class="easyui-validatebox" required="required"';
     	if (gen_not_null($parameters)) 	$field .= ' ' . $parameters;
     	$field .= ' />';
     	return $field;
@@ -704,7 +704,7 @@ function get_dir_tree($dir, $root = true)  {
     	return html_input_field($name, $value, $parameters, false, 'hidden', false);
   	}
 
-  	function html_currency_field($name, $value, $parameters, $currency_code = DEFAULT_CURRENCY){//@todo test and implement
+  	function html_currency_field($name, $value, $parameters, $currency_code = DEFAULT_CURRENCY, $required = NULL){//@todo test and implement
   		global $admin;
   		if (strpos($name, '[]')) { // don't show id attribute if generic array
 	  		$id = false;
@@ -712,16 +712,15 @@ function get_dir_tree($dir, $root = true)  {
 	  		$id = str_replace('[', '_', $name); // clean up for array inputs causing html errors
 	  		$id = str_replace(']', '',  $id);
     	}
-    	$field = "<input class='easyui-numberbox' data-options='min:0,precision:2' name='$name' ";//@todo set precision
+    	$field = "<input ";
 		if ($id)						$field .= " id='$id' ";
-    	if (gen_not_null($value))		$field .= ' value="' . str_replace('"', '&quot;', $value) . '"';
     	if (gen_not_null($parameters))	$field .= " $parameters ";
-    	if ($required)					$field .= " required='required' ";
-    	$field .= " class='easyui-numberbox' data-options=\"precision:{$admin->currencies[$currency_code]->decimal_places},groupSeparator:'{$admin->currencies[$currency_code]->thousands_point}',decimalSeparator:'{$admin->currencies[$currency_code]->decimal_point}',prefix:'{$admin->currencies[$currency_code]->symbol_left}'\" $temp />";
+    	if ($required)					$required = ",required:true";
+    	$field .= " class='easyui-numberbox' data-options=\"precision:{$admin->currencies[$currency_code]->decimal_places},groupSeparator:'{$admin->currencies[$currency_code]->thousands_point}',decimalSeparator:'{$admin->currencies[$currency_code]->decimal_point}',prefix:'{$admin->currencies[$currency_code]->symbol_left}', suffix:'{$admin->currencies[$currency_code]->symbol_right}', value:'$value' $required\">";
   		return $field;
   }
 
-  	function html_number_field($name, $value, $parameters, $required = false){//@todo test and implement
+  	function html_number_field($name, $value, $parameters, $required = NULL){//@todo test and implement
 	  	global $admin;
   		if (strpos($name, '[]')) { // don't show id attribute if generic array
 	  		$id = false;
@@ -729,12 +728,11 @@ function get_dir_tree($dir, $root = true)  {
 	  		$id = str_replace('[', '_', $name); // clean up for array inputs causing html errors
 	  		$id = str_replace(']', '',  $id);
     	}
-    	$field = "<input class='easyui-numberbox' data-options='min:0,precision:2' name='$name' ";
+    	$field = "<input ";
 		if ($id)						$field .= " id='$id' ";
-    	if (gen_not_null($value))		$field .= ' value="' . str_replace('"', '&quot;', $value) . '"';
     	if (gen_not_null($parameters))	$field .= " $parameters ";
-    	if ($required)					$field .= " required='required' ";
-    	$field .=  "class='easyui-numberbox' data-options=\"precision:{$admin->currencies[DEFAULT_CURRENCY]->decimal_places},groupSeparator:'{$admin->currencies[DEFAULT_CURRENCY]->thousands_point}',decimalSeparator:'{$admin->currencies[DEFAULT_CURRENCY]->decimal_point}'\" />";
+    	if ($required)					$required = ",required:true";
+    	$field .=  "class='easyui-numberbox' data-options=\"precision:{$admin->currencies[DEFAULT_CURRENCY]->decimal_places},groupSeparator:'{$admin->currencies[DEFAULT_CURRENCY]->thousands_point}',decimalSeparator:'{$admin->currencies[DEFAULT_CURRENCY]->decimal_point}', value:'$value' $required\" />";
   		return $field;
   	}
 

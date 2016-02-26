@@ -1,0 +1,1480 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data>
+<description>Bevat de landen en regio s voor keuze menu s</description>
+<language>nl_nl</language>
+<country>
+  <name>Afghanistan</name>
+  <iso2>AF</iso2>
+  <iso3>AFG</iso3>
+</country>
+<country>
+  <name>Albanie</name>
+  <iso2>AL</iso2>
+  <iso3>ALB</iso3>
+</country>
+<country>
+  <name>Algerije</name>
+  <iso2>DZ</iso2>
+  <iso3>DZA</iso3>
+</country>
+<country>
+  <name>Amerikaans-Samoa</name>
+  <iso2>AS</iso2>
+  <iso3>ASM</iso3>
+</country>
+<country>
+  <name>Andorra</name>
+  <iso2>AD</iso2>
+  <iso3>AND</iso3>
+</country>
+<country>
+  <name>Angola</name>
+  <iso2>AO</iso2>
+  <iso3>AGO</iso3>
+</country>
+<country>
+  <name>Anguilla</name>
+  <iso2>AI</iso2>
+  <iso3>AIA</iso3>
+</country>
+<country>
+  <name>Antarctica</name>
+  <iso2>AQ</iso2>
+  <iso3>ATA</iso3>
+</country>
+<country>
+  <name>Antigua en Barbuda</name>
+  <iso2>AG</iso2>
+  <iso3>ATG</iso3>
+</country>
+<country>
+  <name>Argentinie</name>
+  <iso2>AR</iso2>
+  <iso3>ARG</iso3>
+</country>
+<country>
+  <name>Armenie</name>
+  <iso2>AM</iso2>
+  <iso3>ARM</iso3>
+</country>
+<country>
+  <name>Aruba</name>
+  <iso2>AW</iso2>
+  <iso3>ABW</iso3>
+</country>
+<country>
+  <name>Australie</name>
+  <iso2>AU</iso2>
+  <iso3>AUS</iso3>
+</country>
+<country>
+  <name>Oostenrijk</name>
+  <iso2>AT</iso2>
+  <iso3>AUT</iso3>
+</country>
+<country>
+  <name>Azerbeidzjan</name>
+  <iso2>AZ</iso2>
+  <iso3>AZE</iso3>
+</country>
+<country>
+  <name>Bahamas</name>
+  <iso2>BS</iso2>
+  <iso3>BHS</iso3>
+</country>
+<country>
+  <name>Bahrein</name>
+  <iso2>BH</iso2>
+  <iso3>BHR</iso3>
+</country>
+<country>
+  <name>Bangladesh</name>
+  <iso2>BD</iso2>
+  <iso3>BGD</iso3>
+</country>
+<country>
+  <name>Barbados</name>
+  <iso2>BB</iso2>
+  <iso3>BRB</iso3>
+</country>
+<country>
+  <name>Wit-Rusland</name>
+  <iso2>BY</iso2>
+  <iso3>BLR</iso3>
+</country>
+<country>
+  <name>Belgie</name>
+  <iso2>BE</iso2>
+  <iso3>BEL</iso3>
+</country>
+<country>
+  <name>Belize</name>
+  <iso2>BZ</iso2>
+  <iso3>BLZ</iso3>
+</country>
+<country>
+  <name>Benin</name>
+  <iso2>BJ</iso2>
+  <iso3>BEN</iso3>
+</country>
+<country>
+  <name>Bermuda</name>
+  <iso2>BM</iso2>
+  <iso3>BMU</iso3>
+</country>
+<country>
+  <name>Bhutan</name>
+  <iso2>BT</iso2>
+  <iso3>BTN</iso3>
+</country>
+<country>
+  <name>Bolivia</name>
+  <iso2>BO</iso2>
+  <iso3>BOL</iso3>
+</country>
+<country>
+  <name>Bosnië-Herzegovina</name>
+  <iso2>BA</iso2>
+  <iso3>BIH</iso3>
+</country>
+<country>
+  <name>Botswana</name>
+  <iso2>BW</iso2>
+  <iso3>BWA</iso3>
+</country>
+<country>
+  <name>Bouvet Island</name>
+  <iso2>BV</iso2>
+  <iso3>BVT</iso3>
+</country>
+<country>
+  <name>Brazilie</name>
+  <iso2>BR</iso2>
+  <iso3>BRA</iso3>
+</country>
+<country>
+  <name>British Indian Ocean Territory</name>
+  <iso2>IO</iso2>
+  <iso3>IOT</iso3>
+</country>
+<country>
+  <name>Brunei Darussalam</name>
+  <iso2>BN</iso2>
+  <iso3>BRN</iso3>
+</country>
+<country>
+  <name>Bulgarie</name>
+  <iso2>BG</iso2>
+  <iso3>BGR</iso3>
+</country>
+<country>
+  <name>Burkina Faso</name>
+  <iso2>BF</iso2>
+  <iso3>BFA</iso3>
+</country>
+<country>
+  <name>Boeroendi</name>
+  <iso2>BI</iso2>
+  <iso3>BDI</iso3>
+</country>
+<country>
+  <name>Cambodja</name>
+  <iso2>KH</iso2>
+  <iso3>KHM</iso3>
+</country>
+<country>
+  <name>Kameroen</name>
+  <iso2>CM</iso2>
+  <iso3>CMR</iso3>
+</country>
+<country>
+  <name>Canada</name>
+  <iso2>CA</iso2>
+  <iso3>CAN</iso3>
+</country>
+<country>
+  <name>Cape Verde</name>
+  <iso2>CV</iso2>
+  <iso3>CPV</iso3>
+</country>
+<country>
+  <name>Kaaimaneilanden</name>
+  <iso2>KY</iso2>
+  <iso3>CYM</iso3>
+</country>
+<country>
+  <name>Centraal-Afrikaanse Republiek</name>
+  <iso2>CF</iso2>
+  <iso3>CAF</iso3>
+</country>
+<country>
+  <name>Tsjaad</name>
+  <iso2>TD</iso2>
+  <iso3>TCD</iso3>
+</country>
+<country>
+  <name>Chili</name>
+  <iso2>CL</iso2>
+  <iso3>CHL</iso3>
+</country>
+<country>
+  <name>China</name>
+  <iso2>CN</iso2>
+  <iso3>CHN</iso3>
+</country>
+<country>
+  <name>Christmas Island</name>
+  <iso2>CX</iso2>
+  <iso3>CXR</iso3>
+</country>
+<country>
+  <name>Cocos (Keeling) Islands</name>
+  <iso2>CC</iso2>
+  <iso3>CCK</iso3>
+</country>
+<country>
+  <name>Colombia</name>
+  <iso2>CO</iso2>
+  <iso3>COL</iso3>
+</country>
+<country>
+  <name>Comoren</name>
+  <iso2>KM</iso2>
+  <iso3>COM</iso3>
+</country>
+<country>
+  <name>Congo</name>
+  <iso2>CG</iso2>
+  <iso3>COG</iso3>
+</country>
+<country>
+  <name>Cook Eilanden</name>
+  <iso2>CK</iso2>
+  <iso3>COK</iso3>
+</country>
+<country>
+  <name>Costa Rica</name>
+  <iso2>CR</iso2>
+  <iso3>CRI</iso3>
+</country>
+<country>
+  <name>Ivoorkust</name>
+  <iso2>CI</iso2>
+  <iso3>CIV</iso3>
+</country>
+<country>
+  <name>Croatie</name>
+  <iso2>HR</iso2>
+  <iso3>HRV</iso3>
+</country>
+<country>
+  <name>Cuba</name>
+  <iso2>CU</iso2>
+  <iso3>CUB</iso3>
+</country>
+<country>
+  <name>Cyprus</name>
+  <iso2>CY</iso2>
+  <iso3>CYP</iso3>
+</country>
+<country>
+  <name>Tsjechische Republiek</name>
+  <iso2>CZ</iso2>
+  <iso3>CZE</iso3>
+</country>
+<country>
+  <name>Denemarken</name>
+  <iso2>DK</iso2>
+  <iso3>DNK</iso3>
+</country>
+<country>
+  <name>Djibouti</name>
+  <iso2>DJ</iso2>
+  <iso3>DJI</iso3>
+</country>
+<country>
+  <name>Dominica</name>
+  <iso2>DM</iso2>
+  <iso3>DMA</iso3>
+</country>
+<country>
+  <name>Dominicaanse Republiek</name>
+  <iso2>DO</iso2>
+  <iso3>DOM</iso3>
+</country>
+<country>
+  <name>Oost-Timor</name>
+  <iso2>TP</iso2>
+  <iso3>TMP</iso3>
+</country>
+<country>
+  <name>Ecuador</name>
+  <iso2>EC</iso2>
+  <iso3>ECU</iso3>
+</country>
+<country>
+  <name>Egypte</name>
+  <iso2>EG</iso2>
+  <iso3>EGY</iso3>
+</country>
+<country>
+  <name>El Salvador</name>
+  <iso2>SV</iso2>
+  <iso3>SLV</iso3>
+</country>
+<country>
+  <name>Equatoriaal-Guinea</name>
+  <iso2>GQ</iso2>
+  <iso3>GNQ</iso3>
+</country>
+<country>
+  <name>Eritrea</name>
+  <iso2>ER</iso2>
+  <iso3>ERI</iso3>
+</country>
+<country>
+  <name>Estland</name>
+  <iso2>EE</iso2>
+  <iso3>EST</iso3>
+</country>
+<country>
+  <name>Ethiopie</name>
+  <iso2>ET</iso2>
+  <iso3>ETH</iso3>
+</country>
+<country>
+  <name>Falkland Eilanden (Malvinas)</name>
+  <iso2>FK</iso2>
+  <iso3>FLK</iso3>
+</country>
+<country>
+  <name>Faeröer</name>
+  <iso2>FO</iso2>
+  <iso3>FRO</iso3>
+</country>
+<country>
+  <name>Fiji</name>
+  <iso2>FJ</iso2>
+  <iso3>FJI</iso3>
+</country>
+<country>
+  <name>Finland</name>
+  <iso2>FI</iso2>
+  <iso3>FIN</iso3>
+</country>
+<country>
+  <name>Frankrijk</name>
+  <iso2>FR</iso2>
+  <iso3>FRA</iso3>
+</country>
+<country>
+  <name>Frankrijk Metropolitan</name>
+  <iso2>FX</iso2>
+  <iso3>FXX</iso3>
+</country>
+<country>
+  <name>Frans-Guyana</name>
+  <iso2>GF</iso2>
+  <iso3>GUF</iso3>
+</country>
+<country>
+  <name>Frans-Polynesië</name>
+  <iso2>PF</iso2>
+  <iso3>PYF</iso3>
+</country>
+<country>
+  <name>Franse Zuidelijke Gebieden</name>
+  <iso2>TF</iso2>
+  <iso3>ATF</iso3>
+</country>
+<country>
+  <name>Gabon</name>
+  <iso2>GA</iso2>
+  <iso3>GAB</iso3>
+</country>
+<country>
+  <name>Gambia</name>
+  <iso2>GM</iso2>
+  <iso3>GMB</iso3>
+</country>
+<country>
+  <name>Georgië</name>
+  <iso2>GE</iso2>
+  <iso3>GEO</iso3>
+</country>
+<country>
+  <name>Duitsland</name>
+  <iso2>DE</iso2>
+  <iso3>DEU</iso3>
+</country>
+<country>
+  <name>Ghana</name>
+  <iso2>GH</iso2>
+  <iso3>GHA</iso3>
+</country>
+<country>
+  <name>Gibraltar</name>
+  <iso2>GI</iso2>
+  <iso3>GIB</iso3>
+</country>
+<country>
+  <name>Griekenland</name>
+  <iso2>GR</iso2>
+  <iso3>GRC</iso3>
+</country>
+<country>
+  <name>Groenland</name>
+  <iso2>GL</iso2>
+  <iso3>GRL</iso3>
+</country>
+<country>
+  <name>Grenada</name>
+  <iso2>GD</iso2>
+  <iso3>GRD</iso3>
+</country>
+<country>
+  <name>Guadeloupe</name>
+  <iso2>GP</iso2>
+  <iso3>GLP</iso3>
+</country>
+<country>
+  <name>Guam</name>
+  <iso2>GU</iso2>
+  <iso3>GUM</iso3>
+</country>
+<country>
+  <name>Guatemala</name>
+  <iso2>GT</iso2>
+  <iso3>GTM</iso3>
+</country>
+<country>
+  <name>Guinea</name>
+  <iso2>GN</iso2>
+  <iso3>GIN</iso3>
+</country>
+<country>
+  <name>Guinea-bissau</name>
+  <iso2>GW</iso2>
+  <iso3>GNB</iso3>
+</country>
+<country>
+  <name>Guyana</name>
+  <iso2>GY</iso2>
+  <iso3>GUY</iso3>
+</country>
+<country>
+  <name>Haiti</name>
+  <iso2>HT</iso2>
+  <iso3>HTI</iso3>
+</country>
+<country>
+  <name>Heard en McDonaldeilanden</name>
+  <iso2>HM</iso2>
+  <iso3>HMD</iso3>
+</country>
+<country>
+  <name>Honduras</name>
+  <iso2>HN</iso2>
+  <iso3>HND</iso3>
+</country>
+<country>
+  <name>Hong Kong</name>
+  <iso2>HK</iso2>
+  <iso3>HKG</iso3>
+</country>
+<country>
+  <name>Hongarije</name>
+  <iso2>HU</iso2>
+  <iso3>HUN</iso3>
+</country>
+<country>
+  <name>Ijsland</name>
+  <iso2>IS</iso2>
+  <iso3>ISL</iso3>
+</country>
+<country>
+  <name>India</name>
+  <iso2>IN</iso2>
+  <iso3>IND</iso3>
+</country>
+<country>
+  <name>Indonesië</name>
+  <iso2>ID</iso2>
+  <iso3>IDN</iso3>
+</country>
+<country>
+  <name>Iran (Islamitische Republiek)</name>
+  <iso2>IR</iso2>
+  <iso3>IRN</iso3>
+</country>
+<country>
+  <name>Irak</name>
+  <iso2>IQ</iso2>
+  <iso3>IRQ</iso3>
+</country>
+<country>
+  <name>Ierland</name>
+  <iso2>IE</iso2>
+  <iso3>IRL</iso3>
+</country>
+<country>
+  <name>Israël</name>
+  <iso2>IL</iso2>
+  <iso3>ISR</iso3>
+</country>
+<country>
+  <name>Italië</name>
+  <iso2>IT</iso2>
+  <iso3>ITA</iso3>
+</country>
+<country>
+  <name>Jamaica</name>
+  <iso2>JM</iso2>
+  <iso3>JAM</iso3>
+</country>
+<country>
+  <name>Japan</name>
+  <iso2>JP</iso2>
+  <iso3>JPN</iso3>
+</country>
+<country>
+  <name>Jordanië</name>
+  <iso2>JO</iso2>
+  <iso3>JOR</iso3>
+</country>
+<country>
+  <name>Kazachstan</name>
+  <iso2>KZ</iso2>
+  <iso3>KAZ</iso3>
+</country>
+<country>
+  <name>Kenia</name>
+  <iso2>KE</iso2>
+  <iso3>KEN</iso3>
+</country>
+<country>
+  <name>Kiribati</name>
+  <iso2>KI</iso2>
+  <iso3>KIR</iso3>
+</country>
+<country>
+  <name>Korea, Democratische Volksrepubliek</name>
+  <iso2>KP</iso2>
+  <iso3>PRK</iso3>
+</country>
+<country>
+  <name>Korea, Republiek</name>
+  <iso2>KR</iso2>
+  <iso3>KOR</iso3>
+</country>
+<country>
+  <name>Koeweit</name>
+  <iso2>KW</iso2>
+  <iso3>KWT</iso3>
+</country>
+<country>
+  <name>Kirgizië</name>
+  <iso2>KG</iso2>
+  <iso3>KGZ</iso3>
+</country>
+<country>
+  <name>Lao Democratische Volksrepubliek</name>
+  <iso2>LA</iso2>
+  <iso3>LAO</iso3>
+</country>
+<country>
+  <name>Letland</name>
+  <iso2>LV</iso2>
+  <iso3>LVA</iso3>
+</country>
+<country>
+  <name>Libanon</name>
+  <iso2>LB</iso2>
+  <iso3>LBN</iso3>
+</country>
+<country>
+  <name>Lesotho</name>
+  <iso2>LS</iso2>
+  <iso3>LSO</iso3>
+</country>
+<country>
+  <name>Liberia</name>
+  <iso2>LR</iso2>
+  <iso3>LBR</iso3>
+</country>
+<country>
+  <name>Libyan Arab Jamahiriya</name>
+  <iso2>LY</iso2>
+  <iso3>LBY</iso3>
+</country>
+<country>
+  <name>Liechtenstein</name>
+  <iso2>LI</iso2>
+  <iso3>LIE</iso3>
+</country>
+<country>
+  <name>Litouwen</name>
+  <iso2>LT</iso2>
+  <iso3>LTU</iso3>
+</country>
+<country>
+  <name>Luxemburg</name>
+  <iso2>LU</iso2>
+  <iso3>LUX</iso3>
+</country>
+<country>
+  <name>Macau</name>
+  <iso2>MO</iso2>
+  <iso3>MAC</iso3>
+</country>
+<country>
+  <name>Macedonië, de Voormalige Joegoslavische Republiek</name>
+  <iso2>MK</iso2>
+  <iso3>MKD</iso3>
+</country>
+<country>
+  <name>Madagascar</name>
+  <iso2>MG</iso2>
+  <iso3>MDG</iso3>
+</country>
+<country>
+  <name>Malawi</name>
+  <iso2>MW</iso2>
+  <iso3>MWI</iso3>
+</country>
+<country>
+  <name>Maleisië</name>
+  <iso2>MY</iso2>
+  <iso3>MYS</iso3>
+</country>
+<country>
+  <name>Maldiven</name>
+  <iso2>MV</iso2>
+  <iso3>MDV</iso3>
+</country>
+<country>
+  <name>Mali</name>
+  <iso2>ML</iso2>
+  <iso3>MLI</iso3>
+</country>
+<country>
+  <name>Malta</name>
+  <iso2>MT</iso2>
+  <iso3>MLT</iso3>
+</country>
+<country>
+  <name>Marshall Eilanden</name>
+  <iso2>MH</iso2>
+  <iso3>MHL</iso3>
+</country>
+<country>
+  <name>Martinique</name>
+  <iso2>MQ</iso2>
+  <iso3>MTQ</iso3>
+</country>
+<country>
+  <name>Mauritanië</name>
+  <iso2>MR</iso2>
+  <iso3>MRT</iso3>
+</country>
+<country>
+  <name>Mauritius</name>
+  <iso2>MU</iso2>
+  <iso3>MUS</iso3>
+</country>
+<country>
+  <name>Mayotte</name>
+  <iso2>YT</iso2>
+  <iso3>MYT</iso3>
+</country>
+<country>
+  <name>Mexico</name>
+  <iso2>MX</iso2>
+  <iso3>MEX</iso3>
+</country>
+<country>
+  <name>Micronesië, Federale Staten van</name>
+  <iso2>FM</iso2>
+  <iso3>FSM</iso3>
+</country>
+<country>
+  <name>Moldavië</name>
+  <iso2>MD</iso2>
+  <iso3>MDA</iso3>
+</country>
+<country>
+  <name>Monaco</name>
+  <iso2>MC</iso2>
+  <iso3>MCO</iso3>
+</country>
+<country>
+  <name>Mongolië</name>
+  <iso2>MN</iso2>
+  <iso3>MNG</iso3>
+</country>
+<country>
+  <name>Montserrat</name>
+  <iso2>MS</iso2>
+  <iso3>MSR</iso3>
+</country>
+<country>
+  <name>Marokko</name>
+  <iso2>MA</iso2>
+  <iso3>MAR</iso3>
+</country>
+<country>
+  <name>Mozambique</name>
+  <iso2>MZ</iso2>
+  <iso3>MOZ</iso3>
+</country>
+<country>
+  <name>Myanmar</name>
+  <iso2>MM</iso2>
+  <iso3>MMR</iso3>
+</country>
+<country>
+  <name>Namibië</name>
+  <iso2>NA</iso2>
+  <iso3>NAM</iso3>
+</country>
+<country>
+  <name>Nauru</name>
+  <iso2>NR</iso2>
+  <iso3>NRU</iso3>
+</country>
+<country>
+  <name>Nepal</name>
+  <iso2>NP</iso2>
+  <iso3>NPL</iso3>
+</country>
+<country>
+  <name>Nederland</name>
+  <iso2>NL</iso2>
+  <iso3>NLD</iso3>
+  <region>
+	<code>DR</code>
+    <name>Drenthe</name>
+  </region>
+  <region>
+	<code>FL</code>
+    <name>Flevoland</name>
+  </region>
+  <region>
+	<code>FR</code>
+    <name>Friesland</name>
+  </region>
+  <region>
+	<code>GE</code>
+    <name>Gelderland</name>
+  </region>
+  <region>
+	<code>GR</code>
+    <name>Groningen</name>
+  </region>
+  <region>
+	<code>LI</code>
+    <name>Limburg</name>
+  </region>
+  <region>
+	<code>NB</code>
+    <name>Noord-Brabant</name>
+  </region>
+  <region>
+	<code>NH</code>
+    <name>Noord-Holland</name>
+  </region>
+  <region>
+	<code>OV</code>
+    <name>Overijssel</name>
+  </region>
+  <region>
+	<code>UT</code>
+    <name>Utrecht</name>
+  </region>
+  <region>
+	<code>ZE</code>
+    <name>Zeeland</name>
+  </region>
+  <region>
+	<code>ZH</code>
+    <name>Zuid-Holland</name>
+  </region>
+</country>
+<country>
+  <name>Nederlands Antillen</name>
+  <iso2>AN</iso2>
+  <iso3>ANT</iso3>
+</country>
+<country>
+  <name>Nieuw-Caledonië</name>
+  <iso2>NC</iso2>
+  <iso3>NCL</iso3>
+</country>
+<country>
+  <name>Nieuw-Zeeland</name>
+  <iso2>NZ</iso2>
+  <iso3>NZL</iso3>
+</country>
+<country>
+  <name>Nicaragua</name>
+  <iso2>NI</iso2>
+  <iso3>NIC</iso3>
+</country>
+<country>
+  <name>Niger</name>
+  <iso2>NE</iso2>
+  <iso3>NER</iso3>
+</country>
+<country>
+  <name>Nigeria</name>
+  <iso2>NG</iso2>
+  <iso3>NGA</iso3>
+</country>
+<country>
+  <name>Niue</name>
+  <iso2>NU</iso2>
+  <iso3>NIU</iso3>
+</country>
+<country>
+  <name>Norfolk Eilanden</name>
+  <iso2>NF</iso2>
+  <iso3>NFK</iso3>
+</country>
+<country>
+  <name>Noordelijke Marianen</name>
+  <iso2>MP</iso2>
+  <iso3>MNP</iso3>
+</country>
+<country>
+  <name>Noorwegen</name>
+  <iso2>NO</iso2>
+  <iso3>NOR</iso3>
+</country>
+<country>
+  <name>Oman</name>
+  <iso2>OM</iso2>
+  <iso3>OMN</iso3>
+</country>
+<country>
+  <name>Pakistan</name>
+  <iso2>PK</iso2>
+  <iso3>PAK</iso3>
+</country>
+<country>
+  <name>Palau</name>
+  <iso2>PW</iso2>
+  <iso3>PLW</iso3>
+</country>
+<country>
+  <name>Panama</name>
+  <iso2>PA</iso2>
+  <iso3>PAN</iso3>
+</country>
+<country>
+  <name>Papoea-Nieuw-Guinea</name>
+  <iso2>PG</iso2>
+  <iso3>PNG</iso3>
+</country>
+<country>
+  <name>Paraguay</name>
+  <iso2>PY</iso2>
+  <iso3>PRY</iso3>
+</country>
+<country>
+  <name>Peru</name>
+  <iso2>PE</iso2>
+  <iso3>PER</iso3>
+</country>
+<country>
+  <name>Filipijnen</name>
+  <iso2>PH</iso2>
+  <iso3>PHL</iso3>
+</country>
+<country>
+  <name>Pitcairn</name>
+  <iso2>PN</iso2>
+  <iso3>PCN</iso3>
+</country>
+<country>
+  <name>Polen</name>
+  <iso2>PL</iso2>
+  <iso3>POL</iso3>
+</country>
+<country>
+  <name>Portugal</name>
+  <iso2>PT</iso2>
+  <iso3>PRT</iso3>
+</country>
+<country>
+  <name>Puerto Rico</name>
+  <iso2>PR</iso2>
+  <iso3>PRI</iso3>
+</country>
+<country>
+  <name>Katar</name>
+  <iso2>QA</iso2>
+  <iso3>QAT</iso3>
+</country>
+<country>
+  <name>Reunion</name>
+  <iso2>RE</iso2>
+  <iso3>REU</iso3>
+</country>
+<country>
+  <name>Roemenië</name>
+  <iso2>RO</iso2>
+  <iso3>ROM</iso3>
+</country>
+<country>
+  <name>Russische Federatie</name>
+  <iso2>RU</iso2>
+  <iso3>RUS</iso3>
+</country>
+<country>
+  <name>Rwanda</name>
+  <iso2>RW</iso2>
+  <iso3>RWA</iso3>
+</country>
+<country>
+  <name>Saint Kitts en Nevis</name>
+  <iso2>KN</iso2>
+  <iso3>KNA</iso3>
+</country>
+<country>
+  <name>Saint Lucia</name>
+  <iso2>LC</iso2>
+  <iso3>LCA</iso3>
+</country>
+<country>
+  <name>Saint Vincent en de Grenadines</name>
+  <iso2>VC</iso2>
+  <iso3>VCT</iso3>
+</country>
+<country>
+  <name>Samoa</name>
+  <iso2>WS</iso2>
+  <iso3>WSM</iso3>
+</country>
+<country>
+  <name>San Marino</name>
+  <iso2>SM</iso2>
+  <iso3>SMR</iso3>
+</country>
+<country>
+  <name>Sao Tome en Principe</name>
+  <iso2>ST</iso2>
+  <iso3>STP</iso3>
+</country>
+<country>
+  <name>Saudi-Arabië</name>
+  <iso2>SA</iso2>
+  <iso3>SAU</iso3>
+</country>
+<country>
+  <name>Senegal</name>
+  <iso2>SN</iso2>
+  <iso3>SEN</iso3>
+</country>
+<country>
+  <name>Seychellen</name>
+  <iso2>SC</iso2>
+  <iso3>SYC</iso3>
+</country>
+<country>
+  <name>Sierra Leone</name>
+  <iso2>SL</iso2>
+  <iso3>SLE</iso3>
+</country>
+<country>
+  <name>Singapore</name>
+  <iso2>SG</iso2>
+  <iso3>SGP</iso3>
+</country>
+<country>
+  <name>Slowakije (Slowaakse Republiek)</name>
+  <iso2>SK</iso2>
+  <iso3>SVK</iso3>
+</country>
+<country>
+  <name>Slovenië</name>
+  <iso2>SI</iso2>
+  <iso3>SVN</iso3>
+</country>
+<country>
+  <name>Salomonseilanden</name>
+  <iso2>SB</iso2>
+  <iso3>SLB</iso3>
+</country>
+<country>
+  <name>Somalië</name>
+  <iso2>SO</iso2>
+  <iso3>SOM</iso3>
+</country>
+<country>
+  <name>Zuid Africa</name>
+  <iso2>ZA</iso2>
+  <iso3>ZAF</iso3>
+</country>
+<country>
+  <name>Zuid-Georgië en de Zuidelijke Sandwicheilanden</name>
+  <iso2>GS</iso2>
+  <iso3>SGS</iso3>
+</country>
+<country>
+  <name>Spanje</name>
+  <iso2>ES</iso2>
+  <iso3>ESP</iso3>
+</country>
+<country>
+  <name>Sri Lanka</name>
+  <iso2>LK</iso2>
+  <iso3>LKA</iso3>
+</country>
+<country>
+  <name>St. Helena</name>
+  <iso2>SH</iso2>
+  <iso3>SHN</iso3>
+</country>
+<country>
+  <name>St. Pierre en Miquelon</name>
+  <iso2>PM</iso2>
+  <iso3>SPM</iso3>
+</country>
+<country>
+  <name>Sudan</name>
+  <iso2>SD</iso2>
+  <iso3>SDN</iso3>
+</country>
+<country>
+  <name>Suriname</name>
+  <iso2>SR</iso2>
+  <iso3>SUR</iso3>
+</country>
+<country>
+  <name>Svalbard en Jan Mayen Eilanden</name>
+  <iso2>SJ</iso2>
+  <iso3>SJM</iso3>
+</country>
+<country>
+  <name>Swaziland</name>
+  <iso2>SZ</iso2>
+  <iso3>SWZ</iso3>
+</country>
+<country>
+  <name>Zweden</name>
+  <iso2>SE</iso2>
+  <iso3>SWE</iso3>
+</country>
+<country>
+  <name>Zwitserland</name>
+  <iso2>CH</iso2>
+  <iso3>CHE</iso3>
+</country>
+<country>
+  <name>Syrische Arabische Republiek</name>
+  <iso2>SY</iso2>
+  <iso3>SYR</iso3>
+</country>
+<country>
+  <name>Taiwan</name>
+  <iso2>TW</iso2>
+  <iso3>TWN</iso3>
+</country>
+<country>
+  <name>Tadzjikistan</name>
+  <iso2>TJ</iso2>
+  <iso3>TJK</iso3>
+</country>
+<country>
+  <name>Tanzania, Verenigde Republiek</name>
+  <iso2>TZ</iso2>
+  <iso3>TZA</iso3>
+</country>
+<country>
+  <name>Thailand</name>
+  <iso2>TH</iso2>
+  <iso3>THA</iso3>
+</country>
+<country>
+  <name>Togo</name>
+  <iso2>TG</iso2>
+  <iso3>TGO</iso3>
+</country>
+<country>
+  <name>Tokelau-eilanden</name>
+  <iso2>TK</iso2>
+  <iso3>TKL</iso3>
+</country>
+<country>
+  <name>Tonga</name>
+  <iso2>TO</iso2>
+  <iso3>TON</iso3>
+</country>
+<country>
+  <name>Trinidad en Tobago</name>
+  <iso2>TT</iso2>
+  <iso3>TTO</iso3>
+</country>
+<country>
+  <name>Tunesië</name>
+  <iso2>TN</iso2>
+  <iso3>TUN</iso3>
+</country>
+<country>
+  <name>Turkije</name>
+  <iso2>TR</iso2>
+  <iso3>TUR</iso3>
+</country>
+<country>
+  <name>Turkmenistan</name>
+  <iso2>TM</iso2>
+  <iso3>TKM</iso3>
+</country>
+<country>
+  <name>Turks-en Caicoseilanden</name>
+  <iso2>TC</iso2>
+  <iso3>TCA</iso3>
+</country>
+<country>
+  <name>Tuvalu</name>
+  <iso2>TV</iso2>
+  <iso3>TUV</iso3>
+</country>
+<country>
+  <name>Uganda</name>
+  <iso2>UG</iso2>
+  <iso3>UGA</iso3>
+</country>
+<country>
+  <name>Oekraïne</name>
+  <iso2>UA</iso2>
+  <iso3>UKR</iso3>
+</country>
+<country>
+  <name>Verenigde Arabische Emiraten</name>
+  <iso2>AE</iso2>
+  <iso3>ARE</iso3>
+</country>
+<country>
+  <name>Verenigd Koninkrijk</name>
+  <iso2>GB</iso2>
+  <iso3>GBR</iso3>
+</country>
+<country>
+  <name>Verenigde Staten</name>
+  <iso2>US</iso2>
+  <iso3>USA</iso3>
+  <region>
+	<code>AL</code>
+    <name>Alabama</name>
+  </region>
+  <region>
+	<code>AK</code>
+    <name>Alaska</name>
+  </region>
+  <region>
+	<code>AZ</code>
+    <name>Arizona</name>
+  </region>
+  <region>
+	<code>AR</code>
+    <name>Arkansas</name>
+  </region>
+  <region>
+	<code>CA</code>
+    <name>Californië</name>
+  </region>
+  <region>
+	<code>CO</code>
+    <name>Colorado</name>
+  </region>
+  <region>
+	<code>CT</code>
+    <name>Connecticut</name>
+  </region>
+  <region>
+	<code>DE</code>
+    <name>Delaware</name>
+  </region>
+  <region>
+	<code>DC</code>
+    <name>District of Columbia</name>
+  </region>
+  <region>
+	<code>FL</code>
+    <name>Florida</name>
+  </region>
+  <region>
+	<code>GA</code>
+    <name>Georgia</name>
+  </region>
+  <region>
+	<code>HI</code>
+    <name>Hawaii</name>
+  </region>
+  <region>
+	<code>ID</code>
+    <name>Idaho</name>
+  </region>
+  <region>
+	<code>IL</code>
+    <name>Illinois</name>
+  </region>
+  <region>
+	<code>IN</code>
+    <name>Indiana</name>
+  </region>
+  <region>
+	<code>IA</code>
+    <name>Iowa</name>
+  </region>
+  <region>
+	<code>KS</code>
+    <name>Kansas</name>
+  </region>
+  <region>
+	<code>KY</code>
+    <name>Kentucky</name>
+  </region>
+  <region>
+	<code>LA</code>
+    <name>Louisiana</name>
+  </region>
+  <region>
+	<code>ME</code>
+    <name>Maine</name>
+  </region>
+  <region>
+	<code>MD</code>
+    <name>Maryland</name>
+  </region>
+  <region>
+	<code>MA</code>
+    <name>Massachusetts</name>
+  </region>
+  <region>
+	<code>MI</code>
+    <name>Michigan</name>
+  </region>
+  <region>
+	<code>MN</code>
+    <name>Minnesota</name>
+  </region>
+  <region>
+	<code>MS</code>
+    <name>Mississippi</name>
+  </region>
+  <region>
+	<code>MO</code>
+    <name>Missouri</name>
+  </region>
+  <region>
+	<code>MT</code>
+    <name>Montana</name>
+  </region>
+  <region>
+	<code>NE</code>
+    <name>Nebraska</name>
+  </region>
+  <region>
+	<code>NV</code>
+    <name>Nevada</name>
+  </region>
+  <region>
+	<code>NH</code>
+    <name>New Hampshire</name>
+  </region>
+  <region>
+	<code>NJ</code>
+    <name>New Jersey</name>
+  </region>
+  <region>
+	<code>NM</code>
+    <name>New Mexico</name>
+  </region>
+  <region>
+	<code>NY</code>
+    <name>New York</name>
+  </region>
+  <region>
+	<code>NC</code>
+    <name>North Carolina</name>
+  </region>
+  <region>
+	<code>ND</code>
+    <name>North Dakota</name>
+  </region>
+  <region>
+	<code>OH</code>
+    <name>Ohio</name>
+  </region>
+  <region>
+	<code>OK</code>
+    <name>Oklahoma</name>
+  </region>
+  <region>
+	<code>OR</code>
+    <name>Oregon</name>
+  </region>
+  <region>
+	<code>PA</code>
+    <name>Pennsylvania</name>
+  </region>
+  <region>
+	<code>RI</code>
+    <name>Rhode Island</name>
+  </region>
+  <region>
+	<code>SC</code>
+    <name>South Carolina</name>
+  </region>
+  <region>
+	<code>SD</code>
+    <name>South Dakota</name>
+  </region>
+  <region>
+	<code>TN</code>
+    <name>Tennessee</name>
+  </region>
+  <region>
+	<code>TX</code>
+    <name>Texas</name>
+  </region>
+  <region>
+	<code>UT</code>
+    <name>Utah</name>
+  </region>
+  <region>
+	<code>VT</code>
+    <name>Vermont</name>
+  </region>
+  <region>
+	<code>VI</code>
+    <name>Virgin Islands</name>
+  </region>
+  <region>
+	<code>VA</code>
+    <name>Virginia</name>
+  </region>
+  <region>
+	<code>WA</code>
+    <name>Washington</name>
+  </region>
+  <region>
+	<code>WV</code>
+    <name>West Virginia</name>
+  </region>
+  <region>
+	<code>WI</code>
+    <name>Wisconsin</name>
+  </region>
+  <region>
+	<code>WY</code>
+    <name>Wyoming</name>
+  </region>
+</country>
+<country>
+  <name>Amerikaanse ondergeschikte afgelegen eilanden</name>
+  <iso2>UM</iso2>
+  <iso3>UMI</iso3>
+  <region>
+	<code>AF</code>
+    <name>Armed Forces-Afrika</name>
+  </region>
+  <region>
+	<code>AA</code>
+    <name>Armed Forces Americas</name>
+  </region>
+  <region>
+	<code>AC</code>
+    <name>Armed Forces Canada</name>
+  </region>
+  <region>
+	<code>AE</code>
+    <name>Armed Forces Europa</name>
+  </region>
+  <region>
+	<code>AM</code>
+    <name>Armed Forces Midden Oosten</name>
+  </region>
+  <region>
+	<code>AP</code>
+    <name>Armed Forces Pacific</name>
+  </region>
+</country>
+<country>
+  <name>Uruguay</name>
+  <iso2>UY</iso2>
+  <iso3>URY</iso3>
+</country>
+<country>
+  <name>Oezbekistan</name>
+  <iso2>UZ</iso2>
+  <iso3>UZB</iso3>
+</country>
+<country>
+  <name>Vanuatu</name>
+  <iso2>VU</iso2>
+  <iso3>VUT</iso3>
+</country>
+<country>
+  <name>Vaticaanstad (Heilige Stoel)</name>
+  <iso2>VA</iso2>
+  <iso3>VAT</iso3>
+</country>
+<country>
+  <name>Venezuela</name>
+  <iso2>VE</iso2>
+  <iso3>VEN</iso3>
+</country>
+<country>
+  <name>Vietnam</name>
+  <iso2>VN</iso2>
+  <iso3>VNM</iso3>
+</country>
+<country>
+  <name>Maagdeneilanden (Brits)</name>
+  <iso2>VG</iso2>
+  <iso3>VGB</iso3>
+</country>
+<country>
+  <name>Maagdeneilanden (VS)</name>
+  <iso2>VI</iso2>
+  <iso3>VIR</iso3>
+</country>
+<country>
+  <name>Wallis en Futuna</name>
+  <iso2>WF</iso2>
+  <iso3>WLF</iso3>
+</country>
+<country>
+  <name>Westelijke Sahara</name>
+  <iso2>EH</iso2>
+  <iso3>ESH</iso3>
+</country>
+<country>
+  <name>Jemen</name>
+  <iso2>YE</iso2>
+  <iso3>YEM</iso3>
+</country>
+<country>
+  <name>Joegoslavië</name>
+  <iso2>YU</iso2>
+  <iso3>YUG</iso3>
+</country>
+<country>
+  <name>Zaïre</name>
+  <iso2>ZR</iso2>
+  <iso3>ZAR</iso3>
+</country>
+<country>
+  <name>Zambia</name>
+  <iso2>ZM</iso2>
+  <iso3>ZMB</iso3>
+</country>
+<country>
+  <name>Zimbabwe</name>
+  <iso2>ZW</iso2>
+  <iso3>ZWE</iso3>
+</country>
+</data>

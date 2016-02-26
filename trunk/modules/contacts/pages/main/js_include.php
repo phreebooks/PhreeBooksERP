@@ -18,21 +18,37 @@
 //
 ?>
 <script type="text/javascript">
-<!--
+
 // pass any php variables generated during pre-process that are used in the javascript functions.
 // Include translations here as well.
 var attachment_path = '<?php echo urlencode($basis->cInfo->contact->dir_attachments); ?>';
 var default_country = '<?php echo COMPANY_COUNTRY; ?>';
 var account_type    = '<?php echo $basis->cInfo->contact->type; ?>';
 
-function init() {
-<?php if ($basis->include_template == 'template_main') {
- 	echo '  document.getElementById("search_text").focus();'  . chr(10);
-  	echo '  document.getElementById("search_text").select();' . chr(10);
-  }
-?>
-  if (window.extra_init) { extra_init() } // hook for additional initializations
-}
+$('#contact').form({
+    url: "index.php?action=saveContact",
+    onSubmit: function(param){
+        param.p1 = '<?php echo $basis->cInfo->contact->type; ?>';
+        param.p2 = '<?php echo $basis->cInfo->contact->id; ?>';
+    },  
+    success: function(data){
+        var data = eval('(' + data + ')');  // change the JSON string to javascript object
+        if (!data.success){
+            alert(data.message)
+        }else{
+        	$.messager.progress('close');
+        	$('#win').window('close');
+        }    
+    },  
+    tools:[
+		{
+			iconCls:'icon-add',
+			handler:function(){alert('add')}
+		},{
+			iconCls:'icon-edit',
+			handler:function(){alert('edit')}
+		}],
+});
 
 function check_form() {
   var error = 0;
@@ -86,6 +102,6 @@ function fillContacts(sXml) {
   });
 }
 
-// -->
+
 </script>
 <script type="text/javascript" src="modules/contacts/javascript/contacts.js"></script>

@@ -31,7 +31,7 @@
 		</thead>
 		<tbody class="ui-widget-content">
 			<tr>
-				<td colspan="2"><?php echo LANGUAGE_TEXT . html_pull_down_menu('lang', load_lang_dropdown(), isset($_GET['lang']) ? $_GET['lang'] : 'en_us', 'onchange="langSelect()"'); ?>
+				<td colspan="2"><?php echo LANGUAGE_TEXT . html_pull_down_menu('lang', $this->language->languages, $this->language->language_code, 'onchange="langSelect()"'); ?>
 				</td>
 			</tr>
 			<tr>
