@@ -17,7 +17,7 @@
 //  Path: /modules/contacts/pages/main/template_general.php
 //
 ?>
-<div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
+<div title="<?php echo TEXT_GENERAL;?>" >
   <fieldset>
     <legend><?php echo TEXT_CONTACT_INFORMATION; ?></legend>
     <table>

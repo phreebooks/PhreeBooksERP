@@ -453,7 +453,7 @@ class fields {
 	  				$this->extra_tab_html .= '</div>' . chr(10);
   				}
 	  			$tab_array[] = $result['tab_id'];
-	  			$this->extra_tab_html .= "<div title='{$result['tab_name']}' id='tab_{$result['tab_id']}'>" . chr(10);
+	  			$this->extra_tab_html .= "<div title='{$result['tab_name']}' >" . chr(10);
 		  		$this->extra_tab_html .= '  <table>' . chr(10);
 	  		}else if($previous_group <> $result['group_by']){
 	  			$this->extra_tab_html .= '<tr class="ui-widget-header" height="5px"><td colspan="2"></td></tr>' . chr(10);

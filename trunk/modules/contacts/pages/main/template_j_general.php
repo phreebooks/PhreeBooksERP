@@ -38,7 +38,7 @@ $cal_j_gen2 = array(
 <?php echo js_calendar_init($cal_j_gen2); ?>
 </script>
 
-<div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
+<div title="<?php echo TEXT_GENERAL;?>">
   <fieldset>
     <legend><?php echo TEXT_CONTACT_INFORMATION; ?></legend>
     <table>

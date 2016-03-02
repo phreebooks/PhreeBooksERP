@@ -16,21 +16,9 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/contacts/pages/main/template_notes.php
 //
-$cal_c_gen = array(
-  'name'      => 'dateReference',
-  'form'      => 'contacts',
-  'fieldname' => 'crm_date',
-  'imagename' => 'btn_c_gen',
-  'default'   => \core\classes\DateTime::createFromFormat(DATE_FORMAT, $basis->cInfo->contact->crm_date),
-  'params'    => array('align' => 'left'),
-);
 ?>
-<script type="text/javascript">
-<!--
-<?php echo js_calendar_init($cal_c_gen); ?>
-</script>
 
-<div title="<?php echo TEXT_NOTES;?>" id="tab_notes">
+<div title="<?php echo TEXT_NOTES;?>">
   <fieldset>
     <legend><?php echo TEXT_NOTES; ?></legend>
 	<div style="float:right;width:50%">
@@ -45,7 +33,7 @@ $cal_c_gen = array(
 	  <tbody class="ui-widget-content">
 	   <tr>
 	    <td align="center"><?php echo html_pull_down_menu('crm_rep_id', $basis->cInfo->sales_rep_array, $basis->cInfo->contact->crm_rep_id ? $basis->cInfo->contact->crm_rep_id : $_SESSION['user']->account_id); ?></td>
-	    <td align="center"><?php echo html_calendar_field($cal_c_gen); ?></td>
+	    <td align="center"><?php echo html_calendar_field('crm_date', \core\classes\DateTime::createFromFormat(DATE_FORMAT, $basis->cInfo->contact->crm_date)); ?></td>
 	    <td align="center"><?php echo html_pull_down_menu('crm_action', $basis->cInfo->contact->crm_actions, $basis->cInfo->contact->crm_action); ?></td>
 	   </tr>
 	   <tr>

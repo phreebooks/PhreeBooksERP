@@ -16,36 +16,14 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/contacts/pages/main/template_detail.php
 //
-echo html_form('contacts', FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'post', 'enctype="multipart/form-data"', true) . chr(10);
+//echo html_form('contacts', FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'post', 'enctype="multipart/form-data"', true) . chr(10);
+echo "<form id='contacts' style='padding:10px 20px 10px 40px;' method='post' enctype='multipart/form-data'>";
 // include hidden fields
 echo html_hidden_field('action',        '') . chr(10);
 echo html_hidden_field('id',  $basis->cInfo->contact->id) . chr(10);
 echo html_hidden_field('del_crm_note','') . chr(10);
 echo html_hidden_field('payment_id',  '') . chr(10);
-// customize the toolbar actions
-if ($basis->cInfo->action == 'editContact') {
-  $basis->toolbar->icon_list['cancel']['params'] = 'onclick="self.close()"';
-  $basis->toolbar->icon_list['save']['show']     = false;
-} else {
-  $basis->toolbar->icon_list['cancel']['params'] = 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, "action=LoadContactMgrPage&amp;type={$basis->cInfo->contact->type}&amp;list={$basis->cInfo->list}", 'SSL') . '\'"';
-  if ((!isset($basis->cInfo->contact->id) && $basis->cInfo->contact->security_level < 2) || ($basis->cInfo->contact->id && $basis->cInfo->contact->security_level < 3)) {
-    $basis->toolbar->icon_list['save']['show']   = false;
-  } else {
-    $basis->toolbar->icon_list['save']['params'] = 'onclick="submitToDo(\'SaveContact\')"';
-  }
-}
-$basis->toolbar->icon_list['open']['show']       = false;
-$basis->toolbar->icon_list['delete']['show']     = false;
-$basis->toolbar->icon_list['print']['show']      = false;
 
-// pull in extra toolbar overrides and additions
-if (count($extra_toolbar_buttons) > 0) {
-  foreach ($extra_toolbar_buttons as $key => $value) $basis->toolbar->icon_list[$key] = $value;
-}
-
-// add the help file index and build the toolbar
-if( !$basis->cInfo->contact->help == '' ) $basis->toolbar->add_help($basis->cInfo->contact->help);
-echo $basis->toolbar->build();
 $basis->cInfo->contact->fields->display($basis->cInfo->contact);
 // Build the page
 

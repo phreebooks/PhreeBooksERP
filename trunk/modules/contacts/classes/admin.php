@@ -250,9 +250,15 @@ class admin extends \core\classes\admin {
     				<input class="easyui-searchbox" data-options="prompt:'<?php TEXT_PLEASE_INPUT_VALUE; ?>',searcher:doSearch" id="search_text" >
     			</div>
     		</div>
-    		<div id="win" class="easyui-window" title="My Window" style="width:600px;height:400px" data-options="iconCls:'icon-save',modal:true">
-      
-    		</div>
+    		<div id="win">
+    		<div id="contactToolbar" style="margin:2px 5px;">
+				<a class="easyui-linkbutton" iconCls="icon-undo" plain="true" onclick="$('#win').window('close')"><?php echo TEXT_CANCEL?></a>
+				<?php if (\core\classes\user::validate($basis->cInfo->contact->security_token, true) < 2){?>
+				<a class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="saveContact()" ><?php echo TEXT_SAVE?></a>
+				<?php }?>
+				<a class="easyui-linkbutton" iconCls="icon-help" plain="true" onclick="loadHelp()"><?php TEXT_HELP?></a>
+			</div>
+			</div>
     		
 		<script type="text/javascript">
 	    	function doSearch(value){
@@ -309,28 +315,50 @@ class admin extends \core\classes\admin {
 			$('#win').window({
 	        	href:		"index.php?action=editContact",
 				closed: true,
-				closable: false,
-				collapsible: false,
-				minimizable: false,
-				fit: true,
+				title:	"<?php echo sprintf(TEXT_EDIT_ARGS, $contact);?>",
+				fit:	true,
 				queryParams: {
 					type: '<?php echo $basis->cInfo->type;?>',
 					dataType: 'html',
 	                contentType: 'text/html',
 				},
-				onDblClickRow: function(index, row){
-					alert('index '+index+' row '+row);
-					$('#win').window('refresh', "index.php?action=editContact&contactid="+row.contactid);
-//					$('#win').window('queryParams','contactid'+ row.contactid);
-		            $('#win').window('open').window('center').window('setTitle','<?php echo sprintf(TEXT_EDIT_ARGS, $contact);?>');
-				},
-				onLoadSuccess: function(data){
-					if(data.total == 0) $.messager.alert('<?php echo TEXT_ERROR?>',"<?php echo TEXT_NO_RESULTS_FOUND?>");
-				},
 				onLoadError: function(){
-					$.messager.alert('<?php echo TEXT_ERROR?>','Load error:'+arguments.responseText);
+					$.messager.alert('<?php echo TEXT_ERROR?>');
 				},
 			});
+			$('#contacts').form({
+			    url: "index.php?action=saveContact",
+			    onSubmit: function(param){
+			        type = '<?php echo $basis->cInfo->contact->type; ?>';
+			        id	 = '<?php echo $basis->cInfo->contact->id; ?>';
+					var isValid = $(this).form('validate');
+					if (!isValid){
+						console.log('the form field are not validated');
+						$.messager.progress('close');	// hide progress bar while the form is invalid
+					}
+					console.log('the form field are validated');
+					return isValid;	// return false will stop the form submission
+				},  
+				success: function(){
+					console.log('successfully saved contact info. close window and refresh datagrid.');
+					$.messager.progress('close');	// hide progress bar while submit successfully
+					$('#win').window('close');
+					$('#dg').datagrid('reload'); 
+				}, 
+				toolbar:contactToolbar, 
+			});
+
+			function closeWindow(){
+				$('#contacts').form('clear');
+				console.log('close contact window');
+				$('#win').window('close', true);
+			}
+
+			function saveContact(){
+				console.log('save contact info');
+				$.messager.progress();
+			    $('#contacts').submit();
+			}			
 		</script><?php 
 		$basis->observer->send_footer($basis);
 	}

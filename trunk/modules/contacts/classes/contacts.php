@@ -161,7 +161,7 @@ class contacts {
   		$output = array();
   		$i = 1;
   		$output[0] = array('id' => '', 'text' => TEXT_NEW);
-  		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+  		while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
   	    	$output[$i] = $result;
   	    	$output[$i]['text'] = $result['purchase_invoice_id'];
   	    	$output[$i]['total_amount'] = in_array($result['journal_id'], array(7,13)) ? -$result['total_amount'] : $result['total_amount'];

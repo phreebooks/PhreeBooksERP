@@ -17,7 +17,7 @@
 //  Path: /modules/contacts/pages/main/template_contacts.php
 //
 ?>
-<div title="<?php echo TEXT_CONTACTS;?>" id="tab_contacts">
+<div title="<?php echo TEXT_CONTACTS;?>" >
 <?php
   	if (is_array($basis->cInfo->contact->contacts)) {
 		$crm_headings   = html_heading_bar(array(), array(TEXT_LAST_NAME, TEXT_FIRST_NAME, TEXT_TITLE, TEXT_TELEPHONE, TEXT_MOBILE_PHONE, TEXT_EMAIL, TEXT_ACTION));// don't sort

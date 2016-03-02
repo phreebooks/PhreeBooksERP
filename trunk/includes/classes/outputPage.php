@@ -170,16 +170,16 @@ class outputPage  {
 			$this->include_php_js_files[] = DIR_FS_ADMIN . "modules/{$basis->module}/pages/{$basis->page}/js_include.php";
 			if ( !file_exists(DIR_FS_ADMIN . "modules/{$basis->module}/pages/{$basis->page}/js_include.php")) trigger_error("No js_include file, looking for the file: {$basis->module}/pages/{$basis->page}/js_include.php", E_USER_ERROR);
 			// load the jquery and javascript translations
-			if      (file_exists("modules/phreedom/custom/language/{$_SESSION['user']->language}/jquery_i18n.js")) {
-				$this->js_files[] = "modules/phreedom/custom/language/{$_SESSION['user']->language}/jquery_i18n.js";
-			} elseif(file_exists("modules/phreedom/language/{$_SESSION['user']->language}/jquery_i18n.js")) {
-				$this->js_files[] = "modules/phreedom/language/{$_SESSION['user']->language}/jquery_i18n.js";
+			if      (file_exists("modules/phreedom/custom/language/{$_SESSION['user']->language->language_code}/jquery_i18n.js")) {
+				$this->js_files[] = "modules/phreedom/custom/language/{$_SESSION['user']->language->language_code}/jquery_i18n.js";
+			} elseif(file_exists("modules/phreedom/language/{$_SESSION['user']->language->language_code}/jquery_i18n.js")) {
+				$this->js_files[] = "modules/phreedom/language/{$_SESSION['user']->language->language_code}/jquery_i18n.js";
 			} else               $this->js_files[] = "modules/phreedom/language/en_us/jquery_i18n.js";
 			//for easyui
-			if      (file_exists("includes/easyui/custom/language/{$_SESSION['user']->language}/easyui_lang.js")) {
-				$this->js_files[] = "includes/easyui/custom/language/{$_SESSION['user']->language}/easyui_lang.js";
-			} elseif(file_exists("includes/easyui/language/{$_SESSION['user']->language}/easyui_lang.js")) {
-				$this->js_files[] = "includes/easyui/language/{$_SESSION['user']->language}/easyui_lang.js";
+			if      (file_exists("includes/easyui/custom/language/{$_SESSION['user']->language->language_code}/easyui_lang.js")) {
+				$this->js_files[] = "includes/easyui/custom/language/{$_SESSION['user']->language->language_code}/easyui_lang.js";
+			} elseif(file_exists("includes/easyui/language/{$_SESSION['user']->language->language_code}/easyui_lang.js")) {
+				$this->js_files[] = "includes/easyui/language/{$_SESSION['user']->language->language_code}/easyui_lang.js";
 			} else               $this->js_files[] = "includes/easyui/language/en_us/easyui_lang.js";
 			//load the custom javascript if present
 			if (file_exists(DIR_FS_ADMIN . "modules/{$basis->module}/custom/pages/{$basis->page}/extra_js.php")) $this->include_php_js_files[] = DIR_FS_ADMIN . "modules/{$basis->module}/custom/pages/{$basis->page}/extra_js.php";

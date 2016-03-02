@@ -18,7 +18,7 @@
 //
 echo html_hidden_field('account_number', $basis->cInfo->contact->account_number); // not used for employees
 ?>
-<div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
+<div title="<?php echo TEXT_GENERAL;?>" >
   <fieldset>
     <legend><?php echo TEXT_CONTACT_INFORMATION; ?></legend>
     <table>

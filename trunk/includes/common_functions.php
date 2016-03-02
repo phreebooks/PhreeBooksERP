@@ -364,9 +364,8 @@
     	$sql->execute($fields);
   	}
 
-  function gen_get_all_get_params($exclude_array = '') {
+  function gen_get_all_get_params($exclude_array = array()) {
     global $_GET;
-    if ($exclude_array == '') $exclude_array = array();
     $get_url = '';
     reset($_GET);
     $output = array();
@@ -456,8 +455,8 @@ function get_dir_tree($dir, $root = true)  {
 
 /*************** Country Functions *******************************/
   	function gen_pull_countries() {
-    	if (file_exists(DIR_FS_MODULES . "phreedom/language/{$_SESSION['user']->language}/locales.xml")) {
-      		if (($xmlStr = @file_get_contents(DIR_FS_MODULES . "phreedom/language/{$_SESSION['user']->language}/locales.xml")) === false) 	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, "phreedom/language/{$_SESSION['user']->language}/locales.xml"));
+    	if (file_exists(DIR_FS_MODULES . "phreedom/language/{$_SESSION['user']->language->language_code}/locales.xml")) {
+      		if (($xmlStr = @file_get_contents(DIR_FS_MODULES . "phreedom/language/{$_SESSION['user']->language->language_code}/locales.xml")) === false) 	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, "phreedom/language/{$_SESSION['user']->language}/locales.xml"));
     	} else {
     		if (($xmlStr = @file_get_contents(DIR_FS_MODULES . "phreedom/language/en_us/locales.xml")) === false) 					throw new \core\classes\userException(sprintf(ERROR_READ_FILE, "phreedom/language/en_us/locales.xml"));
     	}
@@ -702,6 +701,22 @@ function get_dir_tree($dir, $root = true)  {
 
   	function html_hidden_field($name, $value = '', $parameters = '') {
     	return html_input_field($name, $value, $parameters, false, 'hidden', false);
+  	}
+  	
+  	function html_calendar_field($name, $value = '', $parameters = '') {
+  		if (strpos($name, '[]')) { // don't show id attribute if generic array
+		  	$id = false;
+		} else {
+	  		$id = str_replace('[', '_', $name); // clean up for array inputs causing html errors
+	  		$id = str_replace(']', '',  $id);
+    	}
+    	$field = "<input class='easyui-calendar' name='$name' style='width:180px;height:180px;'";
+		if ($id)                       	$field .= " id='$id'";
+    	if (gen_not_null($value))      	$field .= ' value="' . str_replace('"', '&quot;', $value) . '"';
+    	if ($required)					$required = ",required:true";
+    	if (gen_not_null($parameters)) 	$field .= ' ' . $parameters;
+    	$field .= " data-options=\"$required \" />";
+    	return $field;
   	}
 
   	function html_currency_field($name, $value, $parameters, $currency_code = DEFAULT_CURRENCY, $required = NULL){//@todo test and implement

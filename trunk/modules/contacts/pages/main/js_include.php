@@ -25,31 +25,6 @@ var attachment_path = '<?php echo urlencode($basis->cInfo->contact->dir_attachme
 var default_country = '<?php echo COMPANY_COUNTRY; ?>';
 var account_type    = '<?php echo $basis->cInfo->contact->type; ?>';
 
-$('#contact').form({
-    url: "index.php?action=saveContact",
-    onSubmit: function(param){
-        param.p1 = '<?php echo $basis->cInfo->contact->type; ?>';
-        param.p2 = '<?php echo $basis->cInfo->contact->id; ?>';
-    },  
-    success: function(data){
-        var data = eval('(' + data + ')');  // change the JSON string to javascript object
-        if (!data.success){
-            alert(data.message)
-        }else{
-        	$.messager.progress('close');
-        	$('#win').window('close');
-        }    
-    },  
-    tools:[
-		{
-			iconCls:'icon-add',
-			handler:function(){alert('add')}
-		},{
-			iconCls:'icon-edit',
-			handler:function(){alert('edit')}
-		}],
-});
-
 function check_form() {
   var error = 0;
   var error_message = "<?php echo JS_ERROR; ?>";

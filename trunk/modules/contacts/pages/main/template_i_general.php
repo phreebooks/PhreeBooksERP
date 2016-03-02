@@ -19,7 +19,7 @@
 // some setup
 $acct_def = (!$basis->cInfo->contact->dept_rep_id) ? array() : array(array('id'=>$basis->cInfo->contact->dept_rep_id, 'text'=>gen_get_contact_name($basis->cInfo->contact->dept_rep_id)));
 // *********************** Display account information ****************************** ?>
-<div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
+<div title="<?php echo TEXT_GENERAL;?>">
   <fieldset>
     <legend><?php echo TEXT_CONTACT_INFORMATION; ?></legend>
     <table>

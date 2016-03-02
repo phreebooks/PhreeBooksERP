@@ -18,7 +18,7 @@
 //
 
 ?>
-<div title="<?php echo TEXT_PAYMENT;?>" id="tab_payment">
+<div title="<?php echo TEXT_PAYMENT;?>">
   <fieldset>
     <legend><?php echo TEXT_CREDIT_CARD_PAYMENT_INFORMATION; ?></legend>
     <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto;">

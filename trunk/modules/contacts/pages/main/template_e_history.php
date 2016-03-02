@@ -17,7 +17,7 @@
 //  Path: /modules/contacts/pages/main/template_e_history.php
 //
 ?>
-<div title="<?php echo TEXT_HISTORY;?>" id="tab_history">
+<div title="<?php echo TEXT_HISTORY;?>">
   <fieldset>
     <legend><?php echo TEXT_ACCOUNT_HISTORY; ?></legend>
 	  <table class="ui-widget" style="border-collapse:collapse;width:100%;">

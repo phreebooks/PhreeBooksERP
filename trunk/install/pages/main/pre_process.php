@@ -164,7 +164,7 @@ switch ($_REQUEST['action']) {
 			// define some things so the install can use existing functions
 			define('DB_PREFIX', $db_prefix);
 			$_SESSION['user']->company  = $db_name;
-			$_SESSION['user']->language = $lang;
+			$_SESSION['user']->language->language_code = $lang;
 			// create the company directory
 			\core\classes\messageStack::debug_log("\n  creating the company directory");
 			validate_path(DIR_FS_ADMIN . PATH_TO_MY_FILES . $db_name);

@@ -50,6 +50,10 @@ function addUnloadEvent(func) {
   } 
 }
 
+function loadHelp(){
+	alert('help Function');//@todo write help function
+}
+
 function MessageStackAdd(message, type){
 	if ( ! document.getElementById("messageStack")) {
 	    var tbl = document.createElement('table');

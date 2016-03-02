@@ -166,8 +166,8 @@ function find_special_class($class_name) {
 }
 
 function load_special_language($path, $class_name) {
-  	if (file_exists($path . "language/{$_SESSION['user']->language}/classes/$class_name.php")) {
-    	require_once ($path . "language/{$_SESSION['user']->language}/classes/$class_name.php");
+  	if (file_exists($path . "language/{$_SESSION['user']->language->language_code}/classes/$class_name.php")) {
+    	require_once ($path . "language/{$_SESSION['user']->language->language_code}/classes/$class_name.php");
   	} elseif (file_exists($path . "language/en_us/classes/$class_name.php")) {
     	require_once       ($path . "language/en_us/classes/$class_name.php");
   	}
