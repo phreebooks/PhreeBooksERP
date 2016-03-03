@@ -252,7 +252,7 @@ class admin extends \core\classes\admin {
     		</div>
     		<div id="win">
     		<div id="contactToolbar" style="margin:2px 5px;">
-				<a class="easyui-linkbutton" iconCls="icon-undo" plain="true" onclick="$('#win').window('close')"><?php echo TEXT_CANCEL?></a>
+				<a class="easyui-linkbutton" iconCls="icon-undo" plain="true" onclick="closeWindow()"><?php echo TEXT_CANCEL?></a>
 				<?php if (\core\classes\user::validate($basis->cInfo->contact->security_token, true) < 2){?>
 				<a class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="saveContact()" ><?php echo TEXT_SAVE?></a>
 				<?php }?>
@@ -279,9 +279,7 @@ class admin extends \core\classes\admin {
 	        function editContact(){
 		        var row = $('#dg').datagrid('getSelected');
 		        if(row){
-		        	$('#win').window('refresh', "index.php?action=editContact&contactid="+row.contactid);
 	            	$('#win').window('open').window('center').window('setTitle','<?php echo sprintf(TEXT_EDIT_ARGS, $contact);?>');
-//		        	$('#win').window('refresh');
 		        }
 	        }
 			$('#dg').datagrid({
@@ -324,6 +322,14 @@ class admin extends \core\classes\admin {
 				},
 				onLoadError: function(){
 					$.messager.alert('<?php echo TEXT_ERROR?>');
+					$.messager.progress('close');
+				},
+				onOpen: function(){
+					$.messager.progress('close');
+				},
+				onBeforeLoad: function(param){
+					var row = $('#dg').datagrid('getSelected');
+					param.contactid = row.contactid;
 				},
 			});
 			$('#contacts').form({
@@ -349,6 +355,7 @@ class admin extends \core\classes\admin {
 			});
 
 			function closeWindow(){
+				$.messager.progress();
 				$('#contacts').form('clear');
 				console.log('close contact window');
 				$('#win').window('close', true);
@@ -408,7 +415,7 @@ class admin extends \core\classes\admin {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		\core\classes\messageStack::debug_log(print_r($_REQUEST,true) );
 		if ( isset($basis->cInfo->rowSeq)) $basis->cInfo->contactid = $basis->cInfo->rowSeq;
-		if ($basis->cInfo->contactid == '') throw new \core\classes\userException("cID variable isn't set can't execute method editContact ");
+		if ($basis->cInfo->contactid == '') throw new \core\classes\userException("contactid variable isn't set can't execute method editContact ");
 		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->contactid}");
 		$sql->execute();
 		$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);

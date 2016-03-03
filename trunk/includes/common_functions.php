@@ -454,25 +454,14 @@ function get_dir_tree($dir, $root = true)  {
 }
 
 /*************** Country Functions *******************************/
-  	function gen_pull_countries() {
-    	if (file_exists(DIR_FS_MODULES . "phreedom/language/{$_SESSION['user']->language->language_code}/locales.xml")) {
-      		if (($xmlStr = @file_get_contents(DIR_FS_MODULES . "phreedom/language/{$_SESSION['user']->language->language_code}/locales.xml")) === false) 	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, "phreedom/language/{$_SESSION['user']->language}/locales.xml"));
-    	} else {
-    		if (($xmlStr = @file_get_contents(DIR_FS_MODULES . "phreedom/language/en_us/locales.xml")) === false) 					throw new \core\classes\userException(sprintf(ERROR_READ_FILE, "phreedom/language/en_us/locales.xml"));
-    	}
-		$locales =  xml_to_object($xmlStr);
-    	if (isset($locales->data)) $locales = $locales->data;
-		return $locales;
-  	}
-
   function gen_get_country_iso_2_from_3($iso3 = COMPANY_COUNTRY, $countries = false) {
-    if (!$countries) $countries = gen_pull_countries();
+    if (!$countries) $countries = $_SESSION['user']->language->load_countries();
 	foreach ($countries->country as $value) if ($value->iso3 == $iso3) return $value->iso2;
     return $iso3; // not found
   }
 
   function gen_get_country_iso_3_from_2($iso2, $countries = false) {
-    if (!$countries) $countries = gen_pull_countries();
+    if (!$countries) $countries = $_SESSION['user']->language->load_countries();
 	foreach ($countries->country as $value) if ($value->iso2 == $iso2) return $value->iso3;
     return $iso2; // not found
   }
@@ -480,8 +469,8 @@ function get_dir_tree($dir, $root = true)  {
   function gen_get_countries($choose = false, $countries = false) {
 	$temp   = array();
     $output = array();
-    if (!$countries) $countries = gen_pull_countries();
-    foreach ($countries->country as $value) $temp[$value->iso3] = $value->name;
+    if (!$countries) $countries = $_SESSION['user']->language->load_countries();
+    foreach ($countries->country as $key => $value) $temp[(string)$value->iso3] = $value->name;
     asort($temp); // for language translations, sort to alphabetical
     if ($choose) $output[] = array('id' => '0', 'text' => TEXT_PLEASE_SELECT);
     foreach ($temp as $iso3 => $country) $output[] = array('id' => $iso3, 'text' => $country);

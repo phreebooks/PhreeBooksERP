@@ -28,6 +28,10 @@ if (isset($_POST['page']))      $page = $_POST['page'];
 elseif (isset($_GET['page']))   $page = $_GET['page'];
 else                     		$page = 'main';
 try{
+	require_once('includes/common_functions.php');
+	set_error_handler("PhreebooksErrorHandler");
+	set_exception_handler('PhreebooksExceptionHandler');
+	spl_autoload_register('Phreebooks_autoloader', true, false);
 	require_once('includes/classes/language.php');// this line needs to be here because the autoloader isn't running jet
 	require_once('includes/classes/user.php');// this line needs to be before the session start.
 	require_once('includes/application_top.php');

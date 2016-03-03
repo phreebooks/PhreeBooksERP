@@ -22,6 +22,7 @@ class language {
 	public $phrases;
 	public $languages;
 	public $translate;
+	private $locales = array();
 
 	/**
 	 * sets the current language and sets it in the Session variable.
@@ -262,6 +263,23 @@ class language {
 		$doc->save($lang_path);
 		define($constant, $string);
 	}
-
+	
+	function load_countries() {
+		if (sizeof($this->locales) == 0) {
+			\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+			if (file_exists(DIR_FS_MODULES . "phreedom/language/{$this->language_code}/locales.xml")) {
+				if (($xmlStr = @file_get_contents(DIR_FS_MODULES . "phreedom/language/{$this->language_code}/locales.xml")) === false) 	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, "phreedom/language/{$_SESSION['user']->language}/locales.xml"));
+			} else {
+				if (($xmlStr = @file_get_contents(DIR_FS_MODULES . "phreedom/language/en_us/locales.xml")) === false) 					throw new \core\classes\userException(sprintf(ERROR_READ_FILE, "phreedom/language/en_us/locales.xml"));
+			}
+			$this->locales =  simplexml_load_string ($xmlStr);
+		}
+		if (isset($this->locales->data)) return $this->locales->data;
+		return $this->locales;
+	}
+	
+	function __sleep(){
+		$this->locales = array();
+	}
 }
 ?>
