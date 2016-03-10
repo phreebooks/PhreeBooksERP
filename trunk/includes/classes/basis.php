@@ -135,7 +135,6 @@ class basis {
 	}
 	
 	public function set_database(){
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$_SESSION['user']->is_validated();
 		\core\classes\messageStack::debug_log("connecting to database {$_SESSION['user']->company}" );
 		try{
@@ -184,23 +183,21 @@ class basis {
 	 * @param \core\classes\admin $admin_class
 	 */
 	public function attachAdminClasses($moduleName, \core\classes\admin $admin_class) {
-		\core\classes\messageStack::debug_log("attaching admin class ".get_class($admin_class));
 		if (array_key_exists($moduleName, $this->classes ) == false) {
 			$this->classes [$moduleName] = $admin_class;
-				\core\classes\messageStack::debug_log("attaching menu for class ".get_class($admin_class));
-				foreach ($admin_class->mainmenu as $key => $menu) {
-					if (!isset($this->mainmenu [$key])) $this->mainmenu [$key] = $menu;
-					if (is_array($menu->submenu)) {
-						foreach ($menu->submenu as $subkey => $submenu) {
-							if (!isset($this->mainmenu [$key]->submenu [$subkey])) $this->mainmenu [$key]->submenu [$subkey] = $submenu;
-							if (is_array($this->mainmenu [$key]->submenu [$subkey])) {
-								foreach ($this->mainmenu [$key]->submenu [$subkey] as $subsubkey => $subsubmenu) {
-									if (!isset($this->mainmenu [$key]->submenu [$subkey]->submenu [$subsubkey])) $this->mainmenu [$key]->submenu [$subkey]->submenu [$subsubkey] = $subsubmenu;
-								}
+			foreach ($admin_class->mainmenu as $key => $menu) {
+				if (!isset($this->mainmenu [$key])) $this->mainmenu [$key] = $menu;
+				if (is_array($menu->submenu)) {
+					foreach ($menu->submenu as $subkey => $submenu) {
+						if (!isset($this->mainmenu [$key]->submenu [$subkey])) $this->mainmenu [$key]->submenu [$subkey] = $submenu;
+						if (is_array($this->mainmenu [$key]->submenu [$subkey])) {
+							foreach ($this->mainmenu [$key]->submenu [$subkey] as $subsubkey => $subsubmenu) {
+								if (!isset($this->mainmenu [$key]->submenu [$subkey]->submenu [$subsubkey])) $this->mainmenu [$key]->submenu [$subkey]->submenu [$subsubkey] = $subsubmenu;
 							}
 						}
-					} 
-				}
+					}
+				} 
+			}
 		}
 		uasort ( $this->classes, array ( $this, 'arangeObjectBySortOrder') );
 	}
@@ -269,7 +266,6 @@ class basis {
 	 * @throws exception if event is emtpy
 	 */
 	public function addEventToStack($event) {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		if (! $event) throw new \exception ( "in the basis class method addEventToStack we received a empty event." );
 		\core\classes\messageStack::debug_log("adding event $event to stack" );
 		if (! in_array ( $event, (array) $this->events)) array_push ($this->events, $event );
@@ -292,7 +288,6 @@ class basis {
 	 * this method empties the event stack
 	 */
 	public function clearEventsStack() {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		\core\classes\messageStack::debug_log("clearing events stack" );
 		$this->events = array();
 	}

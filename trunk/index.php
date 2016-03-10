@@ -32,15 +32,12 @@ try{
 	set_error_handler("PhreebooksErrorHandler");
 	set_exception_handler('PhreebooksExceptionHandler');
 	spl_autoload_register('Phreebooks_autoloader', true, false);
-	require_once('includes/classes/language.php');// this line needs to be here because the autoloader isn't running jet
-	require_once('includes/classes/user.php');// this line needs to be before the session start.
 	require_once('includes/application_top.php');
-   	\core\classes\messageStack::debug_log("\n checking if user is validated");
    	if ($admin->cInfo->action) $admin->removeEventsAndAddNewEvent($admin->cInfo->action);
    	$admin->startProcessingEvents();
 	ob_end_flush();
    	session_write_close();
-}catch (\core\classes\userException $e) {
+}catch (\Exception $e) {
 	\core\classes\messageStack::add($e->getMessage());
 	if (is_object($admin->DataBase)) gen_add_audit_log($e->getMessage());
 	\core\classes\messageStack::debug_log(" ".$e->getMessage());

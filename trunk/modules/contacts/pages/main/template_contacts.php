@@ -18,72 +18,138 @@
 //
 ?>
 <div title="<?php echo TEXT_CONTACTS;?>" >
-<?php
-  	if (is_array($basis->cInfo->contact->contacts)) {
-		$crm_headings   = html_heading_bar(array(), array(TEXT_LAST_NAME, TEXT_FIRST_NAME, TEXT_TITLE, TEXT_TELEPHONE, TEXT_MOBILE_PHONE, TEXT_EMAIL, TEXT_ACTION));// don't sort
-?>
-  <fieldset>
-    <legend><?php echo TEXT_CONTACTS; ?></legend>
-	 <table class="ui-widget" style="border-collapse:collapse;width:100%;">
-	  <thead class="ui-widget-header"><?php echo $crm_headings['html_code']; ?></thead>
-	  <tbody class="ui-widget-content">
-<?php
-  		$odd = true;
-  		foreach ($basis->cInfo->contact->contacts as $entry) {
-			echo "<tr id='tr_add_{$entry->id}' class='". ($odd?'odd':'even')."' style='cursor:pointer'>";
-    		$entry->print_contact_list();
-    		echo "</tr>";
-    		$odd = !$odd;
-    	}
-?>
-	  </tbody>
+	<table id="cdg" title="<?php echo sprintf(TEXT_MANAGER_ARGS, $contact);?>" class="easyui-datagrid" style="height:500px;padding:50px;">
+    	<thead>
+       		<tr>
+       			<th data-options="field:'contact_last',sortable:true"><?php echo TEXT_LAST_NAME;?></th>
+          		<th data-options="field:'contact_first',sortable:true"><?php echo TEXT_FIRST_NAME?></th>
+	           	<th data-options="field:'contact_middle',sortable:true"><?php echo TEXT_TITLE?></th>
+	           	<th data-options="field:'telephone1',sortable:true"><?php echo TEXT_TELEPHONE?></th>
+	           	<th data-options="field:'telephone4',sortable:true"><?php echo TEXT_MOBILE_PHONE?></th>
+	           	<th data-options="field:'email',sortable:true"><?php echo TEXT_EMAIL?></th>
+	        </tr>
+	     </thead>
 	</table>
-  </fieldset>
-<?php
-	} // *********************** Mailing/Main Address (only one allowed) ****************************** ?>
-  <fieldset>
-    <legend><?php echo TEXT_ADD_UPDATE .' ' . TEXT_CONTACT; ?></legend>
-      <table class="ui-widget" style="border-collapse:collapse;width:100%;">
-      <tr>
-       <td>
-<?php // build a secondary toolbar for the contact form
-	$ctoolbar = new \core\classes\toolbar('i');
-	$ctoolbar->icon_list['cancel']['show'] = false;
-	$ctoolbar->icon_list['open']['show']   = false;
-	$ctoolbar->icon_list['save']['show']   = false;
-	$ctoolbar->icon_list['delete']['show'] = false;
-	$ctoolbar->icon_list['print']['show']  = false;
-	$ctoolbar->add_icon('new', 'onclick="clearAddress(\'im\')"', $order = 10);
-	$ctoolbar->icon_list['new']['icon']    = 'actions/contact-new.png';
-	$ctoolbar->icon_list['new']['text']    = sprintf(TEXT_NEW_ARGS, TEXT_CONTACT);
-	$ctoolbar->add_icon('copy', 'onclick="copyContactAddress(\'' . $basis->cInfo->contact->type . '\')"', 20);
-	$ctoolbar->icon_list['copy']['text']   = TEXT_TRANSFER_ADDRESS;
-	echo $ctoolbar->build();
-?>
-    </td></tr>
-    </table>
-    <table class="ui-widget" style="border-collapse:collapse;width:100%;">
-      <tr>
-       <td align="right"><?php echo TEXT_CONTACT_ID . html_hidden_field('i_id', ''); ?></td>
-       <td><?php echo html_input_field('i_short_name', $basis->cInfo->contact->i_short_name, 'size="21" maxlength="20"', true); ?></td>
-       <td align="right"><?php echo TEXT_TITLE; ?></td>
-       <td><?php echo html_input_field('i_contact_middle', $basis->cInfo->contact->i_contact_middle, 'size="33" maxlength="32"', false); ?></td>
-      </tr>
-      <tr>
-        <td align="right"><?php echo TEXT_FIRST_NAME; ?></td>
-        <td><?php echo html_input_field('i_contact_first', $basis->cInfo->contact->i_contact_first, 'size="33" maxlength="32"', false); ?></td>
-        <td align="right"><?php echo TEXT_LAST_NAME; ?></td>
-        <td><?php echo html_input_field('i_contact_last', $basis->cInfo->contact->i_contact_last, 'size="33" maxlength="32"', false); ?></td>
-      </tr>
-      <tr>
-        <td align="right"><?php echo TEXT_FACEBOOK_ID; ?></td>
-        <td><?php echo html_input_field('i_account_number', $basis->cInfo->contact->i_account_number, 'size="17" maxlength="16"'); ?></td>
-        <td align="right"><?php echo TEXT_TWITTER_ID; ?></td>
-        <td><?php echo html_input_field('i_gov_id_number', $basis->cInfo->contact->i_gov_id_number, 'size="17" maxlength="16"'); ?></td>
-      </tr>
-    </table>
-    <table id="im_address_form" class="ui-widget" style="border-collapse:collapse;width:100%;">
-      <?php $basis->cInfo->contact->draw_address_fields('im', false, true, false, false); ?>
-    </table>
-  </fieldset>
+	<div id="ContactsToolbar">
+    	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editContact()"><?php echo sprintf(TEXT_EDIT_ARGS, $contact);?></a>
+	    <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newContact()"><?php echo sprintf(TEXT_NEW_ARGS, $contact);?></a>
+    	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteContact()"><?php echo sprintf(TEXT_DELETE_ARGS, $contact);?></a>
+    	<span style="margin-left: 100px;"><?php echo  TEXT_SHOW_INACTIVE . ' :'?></span>
+    	<?php echo html_checkbox_field('contact_show_inactive', '1', false,'', 'onchange="contactdoSearch()"' );?>
+    	<div style="float: right;">
+      		<span><?php echo TEXT_SEARCH?> : </span>
+    		<input class="easyui-searchbox" data-options="prompt:'<?php TEXT_PLEASE_INPUT_VALUE; ?>',searcher:contactdoSearch" id="Contacts_search_text" >
+    	</div>
+    </div>
+<script type="text/javascript">
+	    	function contactdoSearch(value){
+	    		$.messager.progress();
+	        	$('#cdg').datagrid('load',{
+					dept_rep_id: $('#id').val(),
+	        		search_text: $('#Contacts_search_text').val(),
+	        		dataType: 'json',
+	                contentType: 'application/json',
+	                type: '<?php echo $basis->cInfo->type;?>',
+	                contact_show_inactive: $('#contacts_show_inactive').is(":checked") ? 1 : 0,
+	        	});
+	    	}
+
+	        function newContact(){
+	        	$.messager.progress();
+	            $('#contactsWindow').window('open').window('center').window('setTitle','<?php echo sprintf(TEXT_NEW_ARGS, $contact);?>');
+	            $('#contactsWindow').window('refresh', "index.php?action=newContact");
+	            $('#contactsWindow').window('resize');
+	        }
+	        
+	        function editContact(){
+		        $('#win').window('open').window('center').window('setTitle','<?php echo sprintf(TEXT_EDIT_ARGS, $contact);?>');
+	        }
+	        
+			$('#cdg').datagrid({
+				url:		"index.php?action=GetAllContacts",
+				queryParams: {
+					dept_rep_id: $('#id').val(),
+					type: '<?php echo $basis->cInfo->type;?>',
+					dataType: 'json',
+	                contentType: 'application/json',
+	                async: false
+				},
+				onLoadSuccess:function(data){
+					console.log('the loading of the contacts datagrid was succesfull');
+					$.messager.progress('close');
+				},
+				onLoadError: function(){
+					console.log('the loading of the contacts datagrid resulted in a error');
+					$.messager.progress('close');
+					$.messager.alert('<?php echo TEXT_ERROR?>','Load error:'+arguments.responseText);
+				},
+				onDblClickRow: function(index , row){
+					console.log('a row in the datagrid was double clicked');
+					$('#contactsWindow').window('open').window('center').window('setTitle',"<?php echo TEXT_EDIT?>"+ ' ' + row.name);
+				},
+				remoteSort:	false,
+				idField:	"contactid",
+				fitColumns:	true,
+				singleSelect:true,
+				sortName:	"short_name",
+				sortOrder: 	"asc",
+				loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
+				toolbar: 	"ContactsToolbar",
+				rowStyler: function(index,row){
+					if (row.inactive == '1')return 'background-color:pink;';
+				},
+			});
+			$('#contactsWindow').window({
+	        	href:		"index.php?action=editContact",
+				closed: true,
+				title:	"<?php echo sprintf(TEXT_EDIT_ARGS, $contact);?>",
+				fit:	true,
+				queryParams: {
+					type: '<?php echo $basis->cInfo->type;?>',
+					dataType: 'html',
+	                contentType: 'text/html',
+	                async: false
+				},
+				onLoadError: function(){
+					console.log('the loading of the window resulted in a error');
+					$.messager.alert('<?php echo TEXT_ERROR?>');
+					$.messager.progress('close');
+				},
+				onOpen: function(){
+					$.messager.progress('close');
+				},
+				onBeforeLoad: function(param){
+					var row = $('#cdg').datagrid('getSelected');
+					param.contactid = row.contactid;
+				},
+			});
+			$('#contactDetails').form({
+			    url: "index.php?action=saveContact",
+			    onSubmit: function(param){
+					var isValid = $(this).form('validate');
+					if (!isValid){
+						console.log('the form field are not validated');
+						$.messager.progress('close');	// hide progress bar while the form is invalid
+					}
+					console.log('the form field are validated');
+					return isValid;	// return false will stop the form submission
+				},  
+				success: function(data){
+					console.log('successfully saved contact info. close window and refresh datagrid.');
+					console.log('data received = '+ data);
+					$.messager.progress('close');	// hide progress bar while submit successfully
+					$('#contactsWindow').window('close');
+					$('#cdg').datagrid('reload'); 
+				},
+				onLoadSuccess: function(data){
+					console.log('successfully loaded the form.');
+				}, 
+				onLoadError: function(){
+					console.log('there was a error during loading of the form.');
+				}, 
+//				toolbar:contactToolbar, 
+			});
+
+			
+</script>
 </div>

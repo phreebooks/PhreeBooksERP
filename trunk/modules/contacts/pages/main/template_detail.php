@@ -56,4 +56,34 @@ if (isset($extra_contact_tabs) && is_array($extra_contact_tabs)) {
 echo $basis->cInfo->contact->fields->extra_tab_html;// user added extra tabs
 ?>
 </div>
+
+
+<div id = 'contactsWindow'>
+	<form id='contactDetails'>
+	    <legend><?php echo TEXT_ADD_UPDATE .' ' . TEXT_CONTACT; ?></legend>
+	    <table class="ui-widget" style="border-collapse:collapse;width:100%;">
+	      <tr>
+	       <td align="right"><?php echo TEXT_CONTACT_ID . html_hidden_field('i_id', ''); ?></td>
+	       <td><?php echo html_input_field('i_short_name', $basis->cInfo->contact->i_short_name, 'size="21" maxlength="20"', true); ?></td>
+	       <td align="right"><?php echo TEXT_TITLE; ?></td>
+	       <td><?php echo html_input_field('i_contact_middle', $basis->cInfo->contact->i_contact_middle, 'size="33" maxlength="32"', false); ?></td>
+	      </tr>
+	      <tr>
+	        <td align="right"><?php echo TEXT_FIRST_NAME; ?></td>
+	        <td><?php echo html_input_field('i_contact_first', $basis->cInfo->contact->i_contact_first, 'size="33" maxlength="32"', false); ?></td>
+	        <td align="right"><?php echo TEXT_LAST_NAME; ?></td>
+	        <td><?php echo html_input_field('i_contact_last', $basis->cInfo->contact->i_contact_last, 'size="33" maxlength="32"', false); ?></td>
+	      </tr>
+	      <tr>
+	        <td align="right"><?php echo TEXT_FACEBOOK_ID; ?></td>
+	        <td><?php echo html_input_field('i_account_number', $basis->cInfo->contact->i_account_number, 'size="17" maxlength="16"'); ?></td>
+	        <td align="right"><?php echo TEXT_TWITTER_ID; ?></td>
+	        <td><?php echo html_input_field('i_gov_id_number', $basis->cInfo->contact->i_gov_id_number, 'size="17" maxlength="16"'); ?></td>
+	      </tr>
+	    </table>
+	    <table id="im_address_form" class="ui-widget" style="border-collapse:collapse;width:100%;">
+	      <?php $basis->cInfo->contact->draw_address_fields('im', false, true, false, false); ?>
+	    </table>
+	</form>
+</div>
 </form>

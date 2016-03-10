@@ -240,8 +240,8 @@ class admin extends \core\classes\admin {
         		</thead>
     		</table>
     		<div id="toolbar">
+    			<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editContact()"><?php echo sprintf(TEXT_EDIT_ARGS, $contact);?></a>
 		        <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newContact()"><?php echo sprintf(TEXT_NEW_ARGS, $contact);?></a>
-    		    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editContact()"><?php echo sprintf(TEXT_EDIT_ARGS, $contact);?></a>
         		<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteContact()"><?php echo sprintf(TEXT_DELETE_ARGS, $contact);?></a>
         		<span style="margin-left: 100px;"><?php echo  TEXT_SHOW_INACTIVE . ' :'?></span>
         		<?php echo html_checkbox_field('contact_show_inactive', '1', false,'', 'onchange="doSearch()"' );?>
@@ -262,6 +262,8 @@ class admin extends \core\classes\admin {
     		
 		<script type="text/javascript">
 	    	function doSearch(value){
+	    		console.log('A search was requested.');
+	    		$.messager.progress();
 	        	$('#dg').datagrid('load',{
 	        		search_text: $('#search_text').val(),
 	        		dataType: 'json',
@@ -272,44 +274,51 @@ class admin extends \core\classes\admin {
 	    	}
 
 	        function newContact(){
+	        	$.messager.progress();
 	            $('#win').window('open').window('center').window('setTitle','<?php echo sprintf(TEXT_NEW_ARGS, $contact);?>');
 	            $('#win').window('refresh', "index.php?action=newContact");
 	            $('#win').window('resize');
 	        }
+	        
 	        function editContact(){
-		        var row = $('#dg').datagrid('getSelected');
-		        if(row){
-	            	$('#win').window('open').window('center').window('setTitle','<?php echo sprintf(TEXT_EDIT_ARGS, $contact);?>');
-		        }
+		        $('#win').window('open').window('center').window('setTitle','<?php echo sprintf(TEXT_EDIT_ARGS, $contact);?>');
 	        }
+	        
 			$('#dg').datagrid({
 				url:		"index.php?action=GetAllContacts",
 				queryParams: {
 					type: '<?php echo $basis->cInfo->type;?>',
 					dataType: 'json',
 	                contentType: 'application/json',
+	                async: false
 				},
 				onLoadSuccess:function(data){
+					console.log('the loading of the datagrid was succesfull');
+					$.messager.progress('close');
 					if(data.total == 0) $.messager.alert('<?php echo TEXT_ERROR?>',"<?php echo TEXT_NO_RESULTS_FOUND?>");
 				},
 				onLoadError: function(){
+					console.log('the loading of the datagrid resulted in a error');
+					$.messager.progress('close');
 					$.messager.alert('<?php echo TEXT_ERROR?>','Load error:'+arguments.responseText);
 				},
-				onDblClickRow: function(){
-					editContact();
+				onDblClickRow: function(index , row){
+					console.log('a row in the datagrid was double clicked');
+					$('#win').window('open').window('center').window('setTitle',"<?php echo TEXT_EDIT?>"+ ' ' + row.name);
 				},
 				remoteSort:	false,
 				idField:	"contactid",
 				fitColumns:	true,
 				singleSelect:true,
 				sortName:	"short_name",
-				sortOrder: 	"desc",
+				sortOrder: 	"asc",
 				loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
 				toolbar: 	"#toolbar",
 				rowStyler: function(index,row){
 					if (row.inactive == '1')return 'background-color:pink;';
 				},
 			});
+			
 			$('#win').window({
 	        	href:		"index.php?action=editContact",
 				closed: true,
@@ -319,8 +328,10 @@ class admin extends \core\classes\admin {
 					type: '<?php echo $basis->cInfo->type;?>',
 					dataType: 'html',
 	                contentType: 'text/html',
+	                async: false
 				},
 				onLoadError: function(){
+					console.log('the loading of the window resulted in a error');
 					$.messager.alert('<?php echo TEXT_ERROR?>');
 					$.messager.progress('close');
 				},
@@ -332,11 +343,12 @@ class admin extends \core\classes\admin {
 					param.contactid = row.contactid;
 				},
 			});
+			
 			$('#contacts').form({
 			    url: "index.php?action=saveContact",
 			    onSubmit: function(param){
-			        type = '<?php echo $basis->cInfo->contact->type; ?>';
-			        id	 = '<?php echo $basis->cInfo->contact->id; ?>';
+			        param.type = '<?php echo $basis->cInfo->contact->type; ?>';
+			        param.id	 = '<?php echo $basis->cInfo->contact->id; ?>';
 					var isValid = $(this).form('validate');
 					if (!isValid){
 						console.log('the form field are not validated');
@@ -345,11 +357,18 @@ class admin extends \core\classes\admin {
 					console.log('the form field are validated');
 					return isValid;	// return false will stop the form submission
 				},  
-				success: function(){
+				success: function(data){
 					console.log('successfully saved contact info. close window and refresh datagrid.');
+					console.log('data received = '+ data);
 					$.messager.progress('close');	// hide progress bar while submit successfully
 					$('#win').window('close');
 					$('#dg').datagrid('reload'); 
+				},
+				onLoadSuccess: function(data){
+					console.log('successfully loaded the form.');
+				}, 
+				onLoadError: function(){
+					console.log('there was a error during loading of the form.');
 				}, 
 				toolbar:contactToolbar, 
 			});
@@ -368,11 +387,17 @@ class admin extends \core\classes\admin {
 			}			
 		</script><?php 
 		$basis->observer->send_footer($basis);
+		$basis->cInfo->contactid = 33;
+		$this->editContact($basis);
 	}
 	
 	function GetAllContacts (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		$criteria[] = "a.type = '{$basis->cInfo->type}m'";
+		if (isset($basis->cInfo->dept_rep_id)) {
+			$criteria[] = "c.dept_rep_id = '{$basis->cInfo->dept_rep_id}'";
+		}else{
+			$criteria[] = "a.type = '{$basis->cInfo->type}m'";
+		}
 		if (isset($basis->cInfo->search_text) && $basis->cInfo->search_text <> '') {
 			$search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.address1',
 					'a.address2', 'a.city_town', 'a.postal_code', 'c.short_name');
@@ -382,7 +407,7 @@ class admin extends \core\classes\admin {
 		}
 		if (!$basis->cInfo->contact_show_inactive) $criteria[] = "(c.inactive = '0' or c.inactive = '')"; // inactive flag
 		$search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
-		$query_raw = "SELECT id as contactid, short_name, CASE c.type WHEN 'e' THEN CONCAT(contact_first , ' ',contact_last) ELSE primary_name END AS name, address1, city_town, state_province, postal_code, telephone1, inactive FROM contacts c LEFT JOIN address_book a ON c.id = a.ref_id $search ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order}";
+		$query_raw = "SELECT id as contactid, short_name, CASE c.type WHEN 'e' THEN CONCAT(contact_first , ' ',contact_last) ELSE primary_name END AS name, contact_last, contact_first, contact_middle, address1, city_town, state_province, postal_code, telephone1, telephone4, email, inactive FROM contacts c LEFT JOIN address_book a ON c.id = a.ref_id $search ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order}";
 		$sql = $basis->DataBase->prepare($query_raw);
 		$sql->execute();
 		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);

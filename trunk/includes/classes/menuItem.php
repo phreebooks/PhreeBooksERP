@@ -58,22 +58,16 @@ class menuItem {
 	}
 	
 	function show(){
-		\core\classes\messageStack::debug_log("menu $this->text show $this->required_module and security = $this->security_id" );
 		if ($this->required_module != ''){
-			\core\classes\messageStack::debug_log("$this->text show there is a required module");
 			if (is_array($this->required_module)) {
-				\core\classes\messageStack::debug_log("$this->text show it is a array required module");
 				$temp = false;
 				foreach ($this->required_module as $key) if (defined($key)) $temp = true;
 				if ($temp == false ) return false;
 			} else{
 				if(!defined($this->required_module)) return false;
 			}
-			\core\classes\messageStack::debug_log("$this->text show it is is allowd to contiune");
 		}
-		\core\classes\messageStack::debug_log("menu $this->text $this->security_id = ". \core\classes\user::security_level($this->security_id));
 		if (\core\classes\user::security_level($this->security_id) == 0 ) return false;
-		\core\classes\messageStack::debug_log("past security check");
 		return true;
 	}
 	

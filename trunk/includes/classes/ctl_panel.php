@@ -33,7 +33,6 @@ class ctl_panel {
 	public $row_started			= false;
 
   	function __construct () {
-  		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($this));
   		$this->security_level = \core\classes\user::security_level($this->security_id); // security check
   		if (!is_array($this->params)) $this->params = unserialize($this->params);
   	}
