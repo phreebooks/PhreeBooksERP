@@ -29,7 +29,6 @@ $oID       = db_prepare_input($_GET['oID']);
 $jID       = db_prepare_input($_GET['jID']);
 $so_po     = db_prepare_input($_GET['so_po']); // pull from a so/po for invoice/receipt
 $just_ship = db_prepare_input($_GET['ship_only']);
-define('JOURNAL_ID',$jID);
 $cog_types = explode(',', COG_ITEM_TYPES);
 $sID   = $cID; // set ship contact ID equal to bill contact ID
 
@@ -94,8 +93,8 @@ if (sizeof($order->fields) > 0) {
 	  $order->fields['so_po_ref_id'] = $so_po_ref_id;
 	  $order->fields['cb_closed']    = 0;
 	  $order->fields['cb_waiting']   = 0;
-      if (JOURNAL_ID == 6)  $order->fields['purch_order_id']  = $order->fields['purchase_invoice_id'];
-      if (JOURNAL_ID == 12) $order->fields['sales_order_num'] = $order->fields['purchase_invoice_id'];
+      if ($jID == 6)  $order->fields['purch_order_id']  = $order->fields['purchase_invoice_id'];
+      if ($jID == 12) $order->fields['sales_order_num'] = $order->fields['purchase_invoice_id'];
 	  unset($order->fields['id']);
 	  unset($order->fields['purchase_invoice_id']);
 	  unset($order->fields['id']);
@@ -111,7 +110,7 @@ if (sizeof($order->fields) > 0) {
 	$item_list = array();
 	$subtotal  = 0;
 	if ($so_po_ref_id) {	// then there is a purchase order/sales order to load first
-      if (JOURNAL_ID == 12) { // fetch the sales order number
+      if ($jID == 12) { // fetch the sales order number
 	    $result = $admin->DataBase->query("select purchase_invoice_id from " . TABLE_JOURNAL_MAIN . " where id = " . $so_po_ref_id);
 		$order->fields['sales_order_num'] = $result->fields['purchase_invoice_id'];
 	  }
@@ -173,7 +172,7 @@ if (sizeof($order->fields) > 0) {
 	  // retrieve item information
 	  $subtotal = 0;
 	  $ordr_items = $admin->DataBase->query("select * from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $id . " order by item_cnt, id");
-	  switch (JOURNAL_ID) { // determine where to put value, qty or pstd
+	  switch ($jID) { // determine where to put value, qty or pstd
 		case  3:
 		case  4:
 		case  9:
@@ -254,7 +253,7 @@ if (sizeof($order->fields) > 0) {
 	  $order->fields['disc_percent'] = ($subtotal <> 0) ? 100 * (1 - (($subtotal - $discount) / $subtotal)) : '0';
 	}
 	// calculate received/sales levels (SO and PO)
-	if (JOURNAL_ID == 4 || JOURNAL_ID == 10) {
+	if ($jID == 4 || $jID == 10) {
 	  $sql = "select i.qty, i.sku, i.so_po_item_ref_id
 		  from " . TABLE_JOURNAL_MAIN . " m left join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 		  where m.so_po_ref_id = " . $id;

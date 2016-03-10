@@ -22,7 +22,6 @@ $date = ($_REQUEST['search_date']!= '') ? \core\classes\DateTime::db_date_format
 require(DIR_FS_WORKING . 'functions/phreebooks.php');
 
 /**************   page specific initialization  *************************/
-define('JOURNAL_ID',(int)$_GET['jID']);
 history_filter('pb_pop_orders');
 $date        = \core\classes\DateTime::db_date_format($_REQUEST['search_date']);
 $acct_period = $_REQUEST['search_period'];
@@ -46,7 +45,7 @@ switch ($_REQUEST['action']) {
 // build the list header
 $heading_array['post_date'] = TEXT_DATE;
 $heading_array['purchase_invoice_id'] = $order->id_field_name;
-switch (JOURNAL_ID) {
+switch ($_GET['jID']) {
   case  6:
   case  7:
 	$heading_array['so_po_ref_id']   = TEXT_PO_NUMBER;
@@ -63,7 +62,7 @@ switch (JOURNAL_ID) {
   default:
 	$heading_array['closed']         = TEXT_CLOSED;
 }
-$heading_array['bill_primary_name'] = in_array(JOURNAL_ID, array(12,13)) ? TEXT_CUSTOMER_NAME : TEXT_VENDOR_NAME;
+$heading_array['bill_primary_name'] = in_array($_GET['jID'], array(12,13)) ? TEXT_CUSTOMER_NAME : TEXT_VENDOR_NAME;
 $heading_array['total_amount']      = TEXT_AMOUNT;
 $result      = html_heading_bar($heading_array, array());
 $list_header = $result['html_code'];
@@ -106,7 +105,7 @@ if ($date != false){
 	$acct_period   = '';
 }
 $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " from " . TABLE_JOURNAL_MAIN . "
-  where journal_id = " . JOURNAL_ID . $period_filter . $search . " order by $disp_order";
+  where journal_id = " . $_GET['jID'] . $period_filter . $search . " order by $disp_order";
 $query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go last was selected, now we know # pages, requery to get results

@@ -21,7 +21,6 @@ $security_level = \core\classes\user::validate(0, true);
 /**************  include page specific files  *********************/
 /**************   page specific initialization  *************************/
 $oID = (int)$_GET['oID'];
-define('JOURNAL_ID',(int)$_GET['jID']);
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/popup_delivery/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
@@ -43,7 +42,7 @@ switch ($_REQUEST['action']) {
   default:
 }
 /*****************   prepare to display templates  *************************/
-$gl_type = (JOURNAL_ID == 4 || JOURNAL_ID == 6) ? 'poo' : 'soo';
+$gl_type = ($_GET['jID'] == 4 || $_GET['jID'] == 6) ? 'poo' : 'soo';
 $sql = " select m.purchase_invoice_id, i.id, i.sku, i.qty, i.description, i.date_1
 	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
 	where i.ref_id = $oID and i.gl_type = '{$gl_type}'";

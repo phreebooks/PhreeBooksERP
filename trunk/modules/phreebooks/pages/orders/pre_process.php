@@ -17,8 +17,9 @@
 //  Path: /modules/phreebooks/pages/orders/pre_process.php
 //
 /**************   Check user security   *****************************/
-define('JOURNAL_ID',$_GET['jID']);
-switch (JOURNAL_ID) {
+$temp = "\phreebooks\classes\journal\journal_".$_GET['jID'];
+$order        = new $temp();
+switch ($order->journal_id) { //@todo is this still usefull.
   case  3: $security_token = SECURITY_ID_PURCHASE_QUOTE;     break;
   case  4: $security_token = SECURITY_ID_PURCHASE_ORDER;     break;
   case  6: $security_token = SECURITY_ID_PURCHASE_INVENTORY; break;
@@ -42,34 +43,6 @@ if (defined('MODULE_SHIPPING_STATUS')) {
 }
 /**************   page specific initialization  *************************/
 $post_success = false;
-$order        = new \phreebooks\classes\orders();
-switch (JOURNAL_ID) {
-  case 3:		// Vendor Quote Journal
-	define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);	//@todo default account to use for item rows
-	break;
-  case 4:		// Purchase Order Journal
-	define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);	// default account to use for item rows
-	break;
-  case 6:		// Purchase Journal (accounts payable - pay later)
-	define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);
-	break;
-  case 7:		// Vendor Credit Memo Journal (unpaid invoice returned product to vendor)
-	define('DEF_INV_GL_ACCT',AP_DEFAULT_INVENTORY_ACCOUNT);
-	break;
-  case 9:		// Customer Quote Journal
-	define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);	// default account to use for item rows
-	break;
-  case 10:	// Sales Order Journal
-	define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);
-	break;
-  case 12:	// Sales/Invoice Journal (invoice for payment later)
-	define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);
-	break;
-  case 13:	// Customer Credit Memo Journal (unpaid invoice returned product from customer)
-	define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);
-	break;
-  default:
-}
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/orders/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
@@ -124,7 +97,6 @@ switch ($_REQUEST['action']) {
 		}
 		// load journal main data
 		$order->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
-		$order->journal_id          = JOURNAL_ID;
 		$order->post_date           = \core\classes\DateTime::db_date_format($_POST['post_date']);
 		$order->period              = \core\classes\DateTime::period_of_date($order->post_date);
 		if (!$order->period) throw new \core\classes\userException("the period isn't set");	// bad post_date was submitted
@@ -141,7 +113,7 @@ switch ($_REQUEST['action']) {
 		$order->rep_id              = db_prepare_input($_POST['rep_id']);
 		$order->gl_acct_id          = db_prepare_input($_POST['gl_acct_id']);
 		$order->terms               = db_prepare_input($_POST['terms']);
-		$order->waiting             = (JOURNAL_ID == 6 || JOURNAL_ID == 7) ? (isset($_POST['waiting']) ? 1 : 0) : ($_POST['waiting'] ? 1 : 0);
+		$order->waiting             = ($order->journal_id == 6 || $order->journal_id == 7) ? (isset($_POST['waiting']) ? 1 : 0) : ($_POST['waiting'] ? 1 : 0);
 		$order->closed              = ($_POST['closed'] == '1') ? 1 : 0;
 		$order->terminal_date       = \core\classes\DateTime::db_date_format($_POST['terminal_date']);
 		$order->item_count          = db_prepare_input($_POST['item_count']);
@@ -196,7 +168,7 @@ switch ($_REQUEST['action']) {
 		  $contact_type = $order->account_type == 'c' ? strtolower (TEXT_CUSTOMER) : strtolower (TEXT_VENDOR);
 		  throw new \core\classes\userException(sprintf(ERROR_NO_CONTACT_SELECTED, $contact_type, $contact_type, TEXT_ADD_UPDATE));
 		}
-		$base_msg = in_array(JOURNAL_ID, array(3,4,6,7)) ? TEXT_REMIT_TO . ':' : TEXT_BILL_TO . ':' ;
+		$base_msg = in_array($order->journal_id, array(3,4,6,7)) ? TEXT_REMIT_TO . ':' : TEXT_BILL_TO . ':' ;
 		if ($order->bill_primary_name     === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . $base_msg . ' / ' . TEXT_NAME_OR_COMPANY);
 		if ($order->bill_contact          === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . $base_msg . ' / ' . TEXT_ATTENTION);
 		if ($order->bill_address1         === false) throw new \core\classes\userException(TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . $base_msg . ' / ' . TEXT_ADDRESS1);
@@ -225,7 +197,7 @@ switch ($_REQUEST['action']) {
 		if ($_REQUEST['action'] == 'save') {
 			gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		} elseif ($_REQUEST['action'] == 'payment') {
-			switch (JOURNAL_ID) {
+			switch ($order->journal_id) {
 				case  6: $jID = 20; break; // payments
 				case 12: $jID = 18; break; // cash receipts
 				default: $jID = 0; // error
@@ -244,7 +216,7 @@ switch ($_REQUEST['action']) {
 		if ($result->fetch(\PDO::FETCH_NUM) > 0) {
 			$oID    = $result->fields['id'];
 		    $_REQUEST['action'] = 'edit'; // force page to reload with the new order to edit
-			$order  = new \phreebooks\classes\orders();
+			$order  = new $temp();
 	    } else { // at the beginning
 		  	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		}
@@ -256,7 +228,7 @@ switch ($_REQUEST['action']) {
 		if ($result->fetch(\PDO::FETCH_NUM) > 0) {
 		    $oID    = $result->fields['id'];
 		    $_REQUEST['action'] = 'edit'; // force page to reload with the new order to edit
-			$order  = new \phreebooks\classes\orders();
+			$order  = new $temp();
 	    } else { // at the end
 		  	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		}
@@ -270,8 +242,7 @@ switch ($_REQUEST['action']) {
 	  	$id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
 		if (!$id) throw new \core\classes\userException(TEXT_THERE_WERE_ERRORS_DURING_PROCESSING . ' ' . TEXT_THE_RECORD_WAS_NOT_DELETED);
 		$admin->DataBase->transStart();
-		$delOrd = new \phreebooks\classes\orders($id);
-		$delOrd->journal($id); // load the posted record based on the id submitted
+		$delOrd = new $temp($id); // load the posted record based on the id submitted
 		$delOrd->recur_frequency = db_prepare_input($_POST['recur_frequency']);
 		$delOrd->unPost('delete');
 		$messageStack->write_debug();
@@ -354,9 +325,9 @@ $cal_terminal = array(
   'default'   => isset($order->terminal_date) ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $order->terminal_date) : $req_date,
   'params'    => array('align' => 'left'),
 );
-// build the display options based on JOURNAL_ID
+// build the display options based on $order->journal_id
 $template_options = array();
-switch(JOURNAL_ID) {
+switch($order->journal_id) {
   case  3:
   case  4:
   	$date = new \core\classes\DateTime();

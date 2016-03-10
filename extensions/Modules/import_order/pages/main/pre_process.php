@@ -27,8 +27,7 @@ require_once (DIR_FS_MODULES.'phreebooks/classes/orders.php');
 /**************   page specific initialization  *************************/
 $upload_name = 'file_name';
 // set some defaults
-define('DEF_INV_GL_ACCT', AR_DEF_GL_SALES_ACCT);
-define('DEF_GL_ACCT',     AR_DEFAULT_GL_ACCT);
+define('DEF_GL_ACCT',     AR_DEFAULT_GL_ACCT); //@todo
 /***************   Act on the action request   *************************/
 switch ($_REQUEST['action']) {
   case 'save':

@@ -85,6 +85,7 @@ class journal_19 extends \core\classes\journal {
 	public $error_6 			= GENERAL_JOURNAL_19_ERROR_6;
 	public $description 		= TEXT_POINT_OF_SALE;
 	public $id_field_name 		= TEXT_RECEIPT;
+	public $def_inv_gl_acct		= AR_DEF_GL_SALES_ACCT;
 
 
 	function __construct( $id = 0, $verbose = true) {

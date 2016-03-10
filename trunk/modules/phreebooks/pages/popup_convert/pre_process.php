@@ -36,18 +36,18 @@ switch ($_REQUEST['action']) {
 		$order     = new \core\classes\journal($id);
 		switch ($order->journal_id) {
 		  	case  3:
-		    	define('JOURNAL_ID', 4);
+		    	$order->journal_id   = 04;
 				$search_gl_type      = 'poo';
 				$purchase_invoice_id = $so_num;
 				break;
 		  	default:
 		  	case  9:
 				if ($selection == 'inv') { // invoice
-			  		define('JOURNAL_ID',12);
+			  		$order->journal_id   = 12;
 			  		$search_gl_type      = 'soo';
 			  		$purchase_invoice_id = $inv_num;
 				} else { // sales order
-			  		define('JOURNAL_ID',10);
+			  		$order->journal_id   = 10;
 			  		$search_gl_type      = 'soo';
 			  		$purchase_invoice_id = $so_num;
 				}
@@ -55,7 +55,6 @@ switch ($_REQUEST['action']) {
 		}
 		// change some values to make it look like a new sales order/invoice
 		$order->id            = '';
-		$order->journal_id    = JOURNAL_ID;
 		$order->post_date     = date('Y-m-d'); // make post date today
 		$order->period        = \core\classes\DateTime::period_of_date($order->post_date);
 		$order->terminal_date = $order->post_date;
@@ -63,7 +62,7 @@ switch ($_REQUEST['action']) {
 		$order->journal_main_array['journal_id']  = $order->journal_id;
 		$order->journal_main_array['post_date']   = $order->post_date;
 		$order->journal_main_array['period']      = $order->period;
-		$order->journal_main_array['description'] = sprintf(TEXT_ARGS_ENTRY, $journal_types_list[JOURNAL_ID]['text']);
+		$order->journal_main_array['description'] = sprintf(TEXT_ARGS_ENTRY, $journal_types_list[$order->journal_id]['text']);
 		for ($i = 0; $i < sizeof($order->journal_rows); $i++) {
 		  	$order->journal_rows[$i]['id']                = '';
 		  	$order->journal_rows[$i]['so_po_item_ref_id'] = '';
@@ -83,7 +82,7 @@ switch ($_REQUEST['action']) {
 	    if ($order->purchase_invoice_id == '') {
 		  	$order->increment_purchase_invoice_id();
 		}
-		gen_add_audit_log($journal_types_list[JOURNAL_ID]['text'] . ' - ' . TEXT_ADD, $order->purchase_invoice_id, $order->total_amount);
+		gen_add_audit_log($journal_types_list[$order->journal_id]['text'] . ' - ' . TEXT_ADD, $order->purchase_invoice_id, $order->total_amount);
 		// set the closed flag on the quote
 		$result = $admin->DataBase->query("update " . TABLE_JOURNAL_MAIN . " set closed = '1' where id = " . $id);
 		$admin->DataBase->transCommit();	// finished successfully

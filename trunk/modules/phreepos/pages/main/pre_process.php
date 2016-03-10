@@ -17,7 +17,6 @@
 //  Path: /modules/phreepos/pages/main/pre_process.php
 //
 $security_level = \core\classes\user::validate(SECURITY_ID_PHREEPOS);
-define('JOURNAL_ID',19);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_MODULES . 'payment/defaults.php');
 require_once(DIR_FS_MODULES . 'inventory/defaults.php');
@@ -25,8 +24,7 @@ require_once(DIR_FS_MODULES . 'phreeform/defaults.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
 /**************   page specific initialization  *************************/
-$order        = new \phreepos\classes\journal\journal_19();
-define('DEF_INV_GL_ACCT',	AR_DEF_GL_SALES_ACCT);
+$order        = new \phreebooks\classes\journal\journal_19();
 $tills        = new \phreepos\classes\tills();
 $trans	 	  = new \phreepos\classes\other_transactions();
 $extra_ThirdToolbar_buttons = null;

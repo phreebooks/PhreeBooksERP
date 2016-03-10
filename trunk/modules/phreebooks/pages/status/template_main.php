@@ -27,10 +27,10 @@ $toolbar->icon_list['save']['show']     = false;
 $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['print']['show']    = false;
 
-$toolbar->add_icon('new', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;jID=' . JOURNAL_ID, 'SSL') . '\'"', 2);
+$toolbar->add_icon('new', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;jID=' . $_GET['jID'], 'SSL') . '\'"', 2);
 
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
-switch (JOURNAL_ID) {
+switch ($_GET['jID']) {
   case  2:
 	$toolbar->add_icon('new', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=journal', 'SSL') . '\'"', 2);
   	$toolbar->add_help('');
@@ -44,11 +44,11 @@ switch (JOURNAL_ID) {
   case 12: $toolbar->add_help('07.03.03.04'); break;
   case 13: $toolbar->add_help('07.03.03.04'); break;
   case 18:
-  	$toolbar->add_icon('new', 'onclick="location.href=\''.html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=bills&amp;type=c&amp;jID='.JOURNAL_ID, 'SSL') . '\'"', 2);
+  	$toolbar->add_icon('new', 'onclick="location.href=\''.html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=bills&amp;type=c&amp;jID='.$_GET['jID'], 'SSL') . '\'"', 2);
   	$toolbar->add_help('');
   	break;
   case 20:
-  	$toolbar->add_icon('new', 'onclick="location.href=\''.html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=bills&amp;type=v&amp;jID='.JOURNAL_ID, 'SSL') . '\'"', 2);
+  	$toolbar->add_icon('new', 'onclick="location.href=\''.html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=bills&amp;type=v&amp;jID='.$_GET['jID'], 'SSL') . '\'"', 2);
   	$toolbar->add_help('');
   	break;
 }
@@ -57,7 +57,7 @@ echo $toolbar->build($add_search = true, $add_periods = true);
 // Build the page
 ?>
 <h1><?php echo PAGE_TITLE; ?></h1>
-<div style="height:19px"><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . $journal_types_list[JOURNAL_ID]['text']); ?>
+<div style="height:19px"><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . $journal_types_list[$_GET['jID']]['text']); ?>
 <div style="float:right"><?php echo $query_split->display_links(); ?></div>
 </div>
 <table class="ui-widget" style="border-collapse:collapse;width:100%">
@@ -78,9 +78,9 @@ echo $toolbar->build($add_search = true, $add_periods = true);
 	if (ENABLE_MULTI_CURRENCY) $total_amount .= ' (' . $query_result->fields['currencies_code'] . ')';
 	$bkgnd          = $query_result->fields['waiting'] ? ' style="background-color:lightblue"' : '';
 	$attach_exists  = file_exists(PHREEBOOKS_DIR_MY_ORDERS . 'order_' . $oID . '.zip') ? true : false;
-	switch (JOURNAL_ID) {
+	switch ($_GET['jID']) {
 	  case  2:
-	    $link_page = html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=journal&amp;oID=' . $oID . '&amp;jID=' . JOURNAL_ID . '&amp;action=edit', 'SSL');
+	    $link_page = html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=journal&amp;oID=' . $oID . '&amp;jID=' . $_GET['jID'] . '&amp;action=edit', 'SSL');
 	    break;
 	  case  3:
 	  case  4:
@@ -90,13 +90,13 @@ echo $toolbar->build($add_search = true, $add_periods = true);
 	  case 10:
 	  case 12:
 	  case 13:
-	    $link_page = html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;oID=' . $oID . '&amp;jID=' . JOURNAL_ID . '&amp;action=edit', 'SSL');
+	    $link_page = html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;oID=' . $oID . '&amp;jID=' . $_GET['jID'] . '&amp;action=edit', 'SSL');
 	    break;
 	  case 18:
-	    $link_page = html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=bills&amp;oID=' . $oID . '&amp;jID=' . JOURNAL_ID . '&amp;type=c&amp;action=edit', 'SSL');
+	    $link_page = html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=bills&amp;oID=' . $oID . '&amp;jID=' . $_GET['jID'] . '&amp;type=c&amp;action=edit', 'SSL');
 	    break;
 	  case 20:
-	    $link_page = html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=bills&amp;oID=' . $oID . '&amp;jID=' . JOURNAL_ID . '&amp;type=v&amp;action=edit', 'SSL');
+	    $link_page = html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=bills&amp;oID=' . $oID . '&amp;jID=' . $_GET['jID'] . '&amp;type=v&amp;action=edit', 'SSL');
 	    break;
 	}
 ?>
@@ -107,7 +107,7 @@ echo $toolbar->build($add_search = true, $add_periods = true);
 	<td onclick="window.open('<?php echo $link_page; ?>','_blank')"><?php echo $purch_order_id; ?></td>
 	<td onclick="window.open('<?php echo $link_page; ?>','_blank')"><?php echo $closed; ?></td>
 	<td align="right" onclick="window.open('<?php echo $link_page; ?>','_blank')"><?php echo $total_amount; ?></td>
-<?php if (defined('MODULE_SHIPPING_STATUS') && JOURNAL_ID == 12) {
+<?php if (defined('MODULE_SHIPPING_STATUS') && $_GET['jID'] == 12) {
       $sID            = 0;
       $shipped        = false;
 	  $result = $admin->DataBase->query("select id, shipment_id, ship_date from " . TABLE_SHIPPING_LOG . " where ref_id like '" . $query_result->fields['purchase_invoice_id'] . "%'");
@@ -126,7 +126,7 @@ echo $toolbar->build($add_search = true, $add_periods = true);
 	<td align="right">
 <?php // build the action toolbar
 	if (function_exists('add_extra_action_bar_buttons')) echo add_extra_action_bar_buttons($query_result->fields);
-	switch (JOURNAL_ID) {
+	switch ($_GET['jID']) {
 	  case  2:
 	    break;
 	  case  3:
@@ -191,5 +191,5 @@ echo $toolbar->build($add_search = true, $add_periods = true);
  </tbody>
 </table>
 <div style="float:right"><?php echo $query_split->display_links(); ?></div>
-<div><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . $journal_types_list[JOURNAL_ID]['text']); ?></div>
+<div><?php echo $query_split->display_count(TEXT_DISPLAY_NUMBER . $journal_types_list[$_GET['jID']]['text']); ?></div>
 </form>

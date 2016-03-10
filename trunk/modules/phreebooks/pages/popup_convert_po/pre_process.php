@@ -30,12 +30,11 @@ switch ($_REQUEST['action']) {
   	try{
 		$purchase_invoice_id = $_POST['po_num'];
 		$drop_ship = isset($_POST['drop_ship']) ? '1' : '0';
-		define('JOURNAL_ID',4);
 		// Load the existing sales order
 		$order = new \core\classes\journal($id);
 		// replace some settings with the new values and re-post
 		$order->id = '';
-		$order->journal_id = JOURNAL_ID;
+		$order->journal_id = 04;
 		$order->post_date = date('Y-m-d',time()); // make post date today
 		$order->period = \core\classes\DateTime::period_of_date($order->post_date);
 		$order->closed = '0';
@@ -43,7 +42,7 @@ switch ($_REQUEST['action']) {
 	    $order->purchase_invoice_id = $purchase_invoice_id;
 		$order->admin_id = $_SESSION['user']->admin_id;
 		$order->terminal_date = $order->post_date; // make ship date the same as post date
-		$order->description = sprintf(TEXT_ARGS_ENTRY, $journal_types_list[JOURNAL_ID]['text']);
+		$order->description = sprintf(TEXT_ARGS_ENTRY, $journal_types_list[$order->journal_id]['text']);
 		$order->drop_ship = $drop_ship;
 
 		$temp_rows = $order->journal_rows;
@@ -135,7 +134,7 @@ switch ($_REQUEST['action']) {
 	    if ($order->purchase_invoice_id == '') {	// it's a new record, increment the po/so/inv to next number
 		  	$order->increment_purchase_invoice_id();
 		}
-		gen_add_audit_log($journal_types_list[JOURNAL_ID]['text']. ' - ' . TEXT_ADD, $order->purchase_invoice_id, $order->total_amount);
+		gen_add_audit_log($journal_types_list[$order->journal_id]['text']. ' - ' . TEXT_ADD, $order->purchase_invoice_id, $order->total_amount);
 		$admin->DataBase->transCommit();	// finished successfully
 		// ***************************** END TRANSACTION *******************************
   	}catch(Exception $e){

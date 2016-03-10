@@ -20,7 +20,6 @@ $security_level = \core\classes\user::validate(0, true);
 /**************  include page specific files    *********************/
 require(DIR_FS_WORKING . 'functions/contacts.php');
 /**************   page specific initialization  *************************/
-define('JOURNAL_ID',(int)$_GET['jID']);
 $account_type = (isset($_GET['type']) ? $_GET['type'] : 'c');	// current types are c (customer) and v (vendor)
 $fill = isset($_GET['fill']) ? $_GET['fill'] : 'bill';
 history_filter('contacts_popup');
@@ -52,7 +51,7 @@ $heading_array = array(
 	'postal_code'              => TEXT_POSTAL_CODE,
 	'telephone1'               => TEXT_TELEPHONE,
 );
-switch (JOURNAL_ID) {
+switch ($_GET['jID']) {
 	case  6:
 	case 12: $extra_headings = array(TEXT_OPEN_ORDERS); break;
 	case  7:

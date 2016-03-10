@@ -128,7 +128,7 @@ function fill_paid_invoice_array($id, $account_id, $type = 'c') {
 	// to build this data array, all current open invoices need to be gathered and then the paid part needs
 	// to be applied along with discounts taken by row.
 	global $admin;
-	$negate = ((JOURNAL_ID == 20 && $type == 'c') || (JOURNAL_ID == 18 && $type == 'v')) ? true : false;
+	$negate = (($_GET['jID'] == 20 && $type == 'c') || ($_GET['jID'] == 18 && $type == 'v')) ? true : false;
 	// first read all currently open invoices and the payments of interest and put into an array
 	$paid_indeces = array();
 	if ($id > 0) {

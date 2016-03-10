@@ -19,8 +19,6 @@
 //
 namespace phreedom\classes;
 class beg_bal_import {
-  function __construct() {
-  }
 
   	function processCSV($upload_name = '') {
 		global $coa, $admin, $messageStack;

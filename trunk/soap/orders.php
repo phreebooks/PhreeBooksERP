@@ -24,7 +24,6 @@ require_once (DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 require_once (DIR_FS_MODULES . 'phreebooks/classes/gen_ledger.php');
 require_once (DIR_FS_MODULES . 'phreebooks/classes/orders.php');
 // set some defaults
-define('DEF_INV_GL_ACCT', AR_DEF_GL_SALES_ACCT);
 // retrieve the XML raw string
 if (($temp = @file_get_contents("php://input")) === false)  throw new \core\classes\userException(sprintf(ERROR_READ_FILE, "php://input"));
 $rawpost = urldecode($temp); // retrieve the XML raw string

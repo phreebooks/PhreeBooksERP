@@ -77,6 +77,7 @@ class journal_13 extends \core\classes\journal {
 	public $error_6 			= GENERAL_JOURNAL_13_ERROR_6;
 	public $description 		= TEXT_CUSTOMER_CREDIT_MEMOS;
 	public $id_field_name 		= TEXT_CREDIT_MEMO;
+	public $def_inv_gl_acct		= AR_DEF_GL_SALES_ACCT;
 
 	function __construct( $id = 0, $verbose = true){
 		if (isset($_SESSION['user']->admin_prefs['def_ar_acct'])) $this->gl_acct_id =  $_SESSION['user']->admin_prefs['def_ar_acct'];

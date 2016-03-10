@@ -21,10 +21,9 @@ $security_level = \core\classes\user::validate(SECURITY_ID_JOURNAL_ENTRY);
 require_once(DIR_FS_WORKING . 'defaults.php');
 require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
 /**************   page specific initialization  *************************/
-define('JOURNAL_ID',2);	// General Journal
 $post_date = ($_POST['post_date']) ? \core\classes\DateTime::db_date_format($_POST['post_date']) : date('Y-m-d', time());
 $period    = \core\classes\DateTime::period_of_date($post_date);
-$glEntry   = new \core\classes\journal();
+$glEntry   = new \core\classes\journal\journal_02();
 $glEntry->id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing gl entry
 // All general journal entries are in the default currency.
 $glEntry->currencies_code  = DEFAULT_CURRENCY;
@@ -40,7 +39,6 @@ switch ($_REQUEST['action']) {
 		\core\classes\user::validate_security($security_level, 2);
 	    // for copy operation, erase the id to force post a new journal entry with same values
 		if ($_REQUEST['action'] == 'copy') $glEntry->id = '';
-		$glEntry->journal_id          = JOURNAL_ID;
 		$glEntry->post_date           = $post_date;
 		$glEntry->period              = $period;
 		$glEntry->admin_id            = $_SESSION['user']->admin_id;
@@ -78,7 +76,7 @@ switch ($_REQUEST['action']) {
 		$glEntry->journal_main_array = array(
 			'id'                  => $glEntry->id,
 			'period'              => $glEntry->period,
-			'journal_id'          => JOURNAL_ID,
+			'journal_id'          => $glEntry->journal_id,
 			'post_date'           => $glEntry->post_date,
 			'total_amount'        => $total_amount,
 			'description'         => TEXT_GENERAL_JOURNAL_ENTRY,

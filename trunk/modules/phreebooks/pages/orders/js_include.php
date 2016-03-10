@@ -31,8 +31,8 @@ var image_ser_num        = '<?php echo TEXT_SERIAL_NUMBER; ?>';
 var add_array            = new Array("<?php echo implode('", "', $js_arrays['fields']); ?>");
 var company_array        = new Array("<?php echo implode('", "', $js_arrays['company']); ?>");
 var default_array        = new Array("<?php echo implode('", "', $js_arrays['text']); ?>");
-var journalID            = '<?php echo JOURNAL_ID; ?>';
-var securityLevel        = <?php echo $security_level; ?>;
+var journalID            = '<?php echo $order->journal_id; ?>';
+var securityLevel        =  <?php echo $security_level; ?>;
 var single_line_list     = '<?php echo SINGLE_LINE_ORDER_SCREEN; ?>';
 var account_type         = '<?php echo $order->account_type; ?>';
 var text_search          = '<?php echo TEXT_SEARCH; ?>';
@@ -44,7 +44,7 @@ var text_gl_acct         = '<?php echo TEXT_GL_ACCOUNT; ?>';
 var text_sales_tax       = '<?php echo TEXT_TAXABLE; ?>';
 var text_price_manager   = '<?php echo TEXT_PRICE_SHEETS; ?>';
 var text_acct_ID         = '<?php echo TEXT_GL_ACCOUNT; ?>';
-var default_inv_acct     = '<?php echo DEF_INV_GL_ACCT; ?>';
+var default_inv_acct     = '<?php echo $order->def_inv_gl_acct; ?>';
 var default_sales_tax    = '<?php echo ($order->account_type == "v") ? INVENTORY_DEFAULT_PURCH_TAX : INVENTORY_DEFAULT_TAX; ?>';
 var default_GL_acct      = '<?php echo $order->gl_acct_id; ?>';
 var default_disc_acct    = '<?php echo ($order->account_type == "v") ? AP_DISCOUNT_PURCHASE_ACCOUNT : AR_DISCOUNT_SALES_ACCOUNT; ?>';
@@ -154,8 +154,8 @@ function init() {
 		echo '  var printWin = window.open("index.php?module=phreebooks&page=popup_email&oID=' . $order->id . '","forms","width=500px,height=350px,resizable=1,scrollbars=1,top=150px,left=200px");' . "\n";
     	echo '  printWin.focus()' . "\n";
   	}
-  	if ($_REQUEST['action'] == 'edit')   echo '  ajaxOrderData(0, ' . $oID . ', ' . JOURNAL_ID . ', false, false);' . "\n";
-  	if ($_REQUEST['action'] == 'prc_so') echo '  ajaxOrderData(0, ' . $oID . ', ' . JOURNAL_ID . ', true, false);' . "\n";
+  	if ($_REQUEST['action'] == 'edit')   echo '  ajaxOrderData(0, ' . $oID . ', ' . $order->journal_id . ', false, false);' . "\n";
+  	if ($_REQUEST['action'] == 'prc_so') echo '  ajaxOrderData(0, ' . $oID . ', ' . $order->journal_id . ', true, false);' . "\n";
   	if (ORD_ENABLE_LINE_ITEM_BAR_CODE) echo 'refreshOrderClock();';
 ?>
   	$("#search").change(function(){

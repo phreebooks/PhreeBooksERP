@@ -24,6 +24,7 @@ abstract class journal {
 	public  $journal_rows 		= array();
 	public  $first_period		= 0;
 	public 	$popup_form_type;
+	public  $def_inv_gl_acct;
 
 	public function __construct( $id = 0, $verbose = true) {
 		global $admin;
@@ -572,7 +573,7 @@ abstract class journal {
 	  		if ($result->fetch(\PDO::FETCH_NUM) == 0) { // new account
 				$sql_data_array['type']            = $acct_type;
 				$sql_data_array['short_name']      = $short_name;
-				$sql_data_array['gl_type_account'] = DEF_INV_GL_ACCT;//@todo
+				$sql_data_array['gl_type_account'] = $this->def_inv_gl_acct;
 				$sql_data_array['first_date']      = 'now()';
 				db_perform(TABLE_CONTACTS, $sql_data_array, 'insert');
 				$acct_id = \core\classes\PDO::lastInsertId('id');

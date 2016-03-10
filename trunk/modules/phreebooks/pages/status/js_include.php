@@ -22,7 +22,7 @@
 <!--
 // pass any php variables generated during pre-process that are used in the javascript functions.
 // Include translations here as well.
-var journal_ID = '<?php echo JOURNAL_ID; ?>';
+var journal_ID = '<?php echo $_GET['jID']; ?>';
 
 function init() {
   document.getElementById('search_text').focus();

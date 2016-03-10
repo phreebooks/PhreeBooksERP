@@ -26,7 +26,7 @@ var image_delete_msg  = '<?php echo TEXT_ARE_YOU_SURE_YOU_WANT_TO_DELETE_THIS_JO
 var text_acct_ID      = '<?php echo TEXT_GL_ACCOUNT; ?>';
 var text_increased    = '<?php echo TEXT_ACCOUNT_WILL_BE_INCREASED; ?>';
 var text_decreased    = '<?php echo TEXT_ACCOUNT_WILL_BE_DECREASED; ?>';
-var journalID         = '<?php echo JOURNAL_ID; ?>';
+var journalID         = '<?php echo $glEntry->journal_id; ?>';
 var securityLevel     = <?php echo $security_level; ?>;
 <?php echo js_calendar_init($cal_gl); ?>
 

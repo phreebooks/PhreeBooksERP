@@ -50,13 +50,13 @@ $toolbar->icon_list['open']['params']   = 'onclick="OpenOrdrList(this)"';
 $toolbar->icon_list['delete']['params'] = 'onclick="if (confirm(\'' . ORD_DELETE_ALERT . '\')) submitToDo(\'delete\')"';
 $toolbar->icon_list['save']['params']   = 'onclick="submitToDo(\'save\')"';
 $toolbar->icon_list['print']['params']  = 'onclick="submitToDo(\'print\')"';
-$toolbar->add_icon('new', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action', 'jID')) . '&jID=' . JOURNAL_ID, 'SSL') . '\'"', 2);
+$toolbar->add_icon('new', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action', 'jID')) . '&jID=' . $order->journal_id, 'SSL') . '\'"', 2);
 if ($security_level > 1 && ENABLE_BAR_CODE_READERS) {
   $toolbar->add_icon('bar_code', 'onclick="openBarCode()"', 9);
   $toolbar->icon_list['bar_code']['icon'] = 'devices/network-wired.png';
   $toolbar->icon_list['bar_code']['text'] = TEXT_BAR_CODE;
 }
-if (JOURNAL_ID == 12 && $security_level > 2) {
+if ($order->journal_id == 12 && $security_level > 2) {
   $toolbar->add_icon ('post_previous', 'onclick="submitToDo(\'post_previous\')"', 10);
   $toolbar->icon_list['post_previous']['icon'] = 'actions/go-previous.png';
   $toolbar->icon_list['post_previous']['text'] = TEXT_SAVE_OPEN_PREVIOUS;
@@ -64,26 +64,26 @@ if (JOURNAL_ID == 12 && $security_level > 2) {
   $toolbar->icon_list['post_next']['icon'] = 'actions/go-next.png';
   $toolbar->icon_list['post_next']['text'] = TEXT_SAVE_OPEN_NEXT;
 }
-if ($security_level > 1 && in_array(JOURNAL_ID, array(4, 6, 10, 12))) {
+if ($security_level > 1 && in_array($order->journal_id, array(4, 6, 10, 12))) {
   $toolbar->add_icon('recur', 'onclick="OpenRecurList(this)"', 12);
 }
-if ($security_level > 1 && in_array(JOURNAL_ID, array(3, 9))) {
+if ($security_level > 1 && in_array($order->journal_id, array(3, 9))) {
   $toolbar->add_icon('cvt_quote', 'onclick="convertQuote()"', 13);
   $toolbar->icon_list['cvt_quote']['icon'] = 'emblems/emblem-symbolic-link.png';
-  $toolbar->icon_list['cvt_quote']['text'] = JOURNAL_ID == 3 ? TEXT_CONVERT_TO_PURCHASE_ORDER : TEXT_CONVERT_TO_SALES_ORDER;
+  $toolbar->icon_list['cvt_quote']['text'] = $order->journal_id == 3 ? TEXT_CONVERT_TO_PURCHASE_ORDER : TEXT_CONVERT_TO_SALES_ORDER;
 }
-if ($security_level > 1 && JOURNAL_ID == 10 && \core\classes\user::security_level(SECURITY_ID_PURCHASE_ORDER) > 1) {
+if ($security_level > 1 && $order->journal_id == 10 && \core\classes\user::security_level(SECURITY_ID_PURCHASE_ORDER) > 1) {
   $toolbar->add_icon('cvt_quote', 'onclick="convertSO()"', 13);
   $toolbar->icon_list['cvt_quote']['icon'] = 'emblems/emblem-symbolic-link.png';
   $toolbar->icon_list['cvt_quote']['text'] = TEXT_CONVERT_TO_PURCHASE_ORDER_SHORT;
 }
-if ($security_level > 1 && (JOURNAL_ID == 6 || JOURNAL_ID == 12)) {
+if ($security_level > 1 && ($order->journal_id == 6 || $order->journal_id == 12)) {
   $toolbar->add_icon('payment', 'onclick="submitToDo(\'payment\')"', 15); // POS and POP (Purchase)
   $toolbar->add_icon('ship_all', 'onclick="checkShipAll()"', 20);
-  if (JOURNAL_ID == 6) $toolbar->icon_list['ship_all']['text'] = TEXT_RECEIVE_ALL;
+  if ($order->journal_id == 6) $toolbar->icon_list['ship_all']['text'] = TEXT_RECEIVE_ALL;
 }
 if ($security_level < 4) $toolbar->icon_list['delete']['show'] = false;
-if ($security_level < 2 || JOURNAL_ID == 6 || JOURNAL_ID == 7) $toolbar->icon_list['print']['show']  = false;
+if ($security_level < 2 || $order->journal_id == 6 || $order->journal_id == 7) $toolbar->icon_list['print']['show']  = false;
 if ($security_level < 2) {
   $toolbar->icon_list['save']['show']  = false;
   $toolbar->icon_list['new']['show']   = false;
@@ -92,7 +92,7 @@ if ($security_level < 3 && $order->id) {
   $toolbar->icon_list['save']['show']  = false;
   $toolbar->icon_list['print']['show'] = false;
 }
-if ($security_level >1 && JOURNAL_ID == 4 ) {
+if ($security_level >1 && $order->journal_id == 4 ) {
   $toolbar->add_icon('import', 'onclick=PreProcessLowStock()');
   $toolbar->icon_list['import']['text'] = TEXT_FILL_ORDER_WITH_ITEMS_WITH_LOW_STOCK;
 }
@@ -102,7 +102,7 @@ if (count($extra_toolbar_buttons) > 0) {
 }
 
 // add the help file index and build the toolbar
-switch(JOURNAL_ID) {
+switch($order->journal_id) {
   case  3: $toolbar->add_help('07.02.04'); break;
   case  4: $toolbar->add_help('07.02.03'); break;
   case  6: $toolbar->add_help('07.02.05'); break;
@@ -145,7 +145,7 @@ echo $toolbar->build();
 		  <td><?php echo TEXT_DATE . ' ' . html_calendar_field($cal_order); ?></td>
 		</tr>
 		<tr>
-		  <td width="33%"><?php echo in_array(JOURNAL_ID, array(3,4,6,7)) ? TEXT_REMIT_TO . ':' : TEXT_BILL_TO . ':'; ?> :
+		  <td width="33%"><?php echo in_array($order->journal_id, array(3,4,6,7)) ? TEXT_REMIT_TO . ':' : TEXT_BILL_TO . ':'; ?> :
 		    <?php echo html_pull_down_menu('bill_to_select', gen_null_pull_down(), '', 'onchange="fillAddress(\'bill\')"'); ?>
 		  </td>
 		  <td width="40%"><?php echo (defined('MODULE_SHIPPING_STATUS')) ? TEXT_SHIP_TO . ': ' : '&nbsp;'; ?>
@@ -167,7 +167,7 @@ echo $toolbar->build();
 			    </td>
 			  </tr>
 <?php }
-$tip = (in_array(JOURNAL_ID, array(6,7))) ? ORD_JS_WAITING_FOR_PAYMENT : ORD_TT_PURCH_INV_NUM;
+$tip = (in_array($order->journal_id, array(6,7))) ? ORD_JS_WAITING_FOR_PAYMENT : ORD_TT_PURCH_INV_NUM;
 ?>
 			  <tr>
 				<td align="right"><?php echo $order->id_field_name; ?></td>
@@ -247,19 +247,19 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
       <table style="border-collapse:collapse;width:100%;">
 		<thead class="ui-widget-header">
         <tr>
-          <th><?php echo in_array(JOURNAL_ID, array(6,9,10,12)) ? TEXT_PO_NUMBER : TEXT_REFERENCE; ?></th>
-          <?php if (JOURNAL_ID==12) echo '<th>' . TEXT_SO_NUMBER . '</th>' . chr(10); ?>
+          <th><?php echo in_array($order->journal_id, array(6,9,10,12)) ? TEXT_PO_NUMBER : TEXT_REFERENCE; ?></th>
+          <?php if ($order->journal_id==12) echo '<th>' . TEXT_SO_NUMBER . '</th>' . chr(10); ?>
           <?php if (ENABLE_MULTI_BRANCH) echo '<th>' . TEXT_STORE_ID . '</th>' . chr(10); ?>
-          <th><?php echo (in_array(JOURNAL_ID, array(3,4,6,7,9)) ? TEXT_BUYER : TEXT_SALES_REP); ?></th>
+          <th><?php echo (in_array($order->journal_id, array(3,4,6,7,9)) ? TEXT_BUYER : TEXT_SALES_REP); ?></th>
 <?php if ($template_options['terms']) echo '<th>' . TEXT_TERMS_DUE . '</th>'; ?>
-<?php if ($template_options['terminal_date']) echo '<th>' . (in_array(JOURNAL_ID, array(3,4,9)) ? TEXT_EXPIRATION_DATE : TEXT_SHIP_BY_DATE) . '</th>'; ?>
+<?php if ($template_options['terminal_date']) echo '<th>' . (in_array($order->journal_id, array(3,4,9)) ? TEXT_EXPIRATION_DATE : TEXT_SHIP_BY_DATE) . '</th>'; ?>
           <th><?php echo $order->text_account; ?></th>
         </tr>
         </thead>
         <tbody class="ui-widget-content">
         <tr>
           <td align="center"><?php echo html_input_field('purch_order_id', $order->purch_order_id, 'size="21" maxlength="20"'); ?></td>
-          <?php if (JOURNAL_ID==12) { ?>
+          <?php if ($order->journal_id==12) { ?>
             <td align="center"><?php echo html_input_field('sales_order_num', $order->sales_order_num, 'readonly="readonly" size="21" maxlength="20"'); ?></td>
 		  <?php } ?>
           <?php if (ENABLE_MULTI_BRANCH) { ?>
@@ -319,7 +319,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
 			for ($j = 0, $i = 1; $j < count($order->item_rows); $j++, $i++) {
 				echo '<tr class="'.  ($odd?'odd':'even').'">' . chr(10);
 				// turn off delete icon if required
-				if (($order->item_rows[$j]['so_po_item_ref_id']) || ((JOURNAL_ID == 4 || JOURNAL_ID == 10) && $order->item_rows[$j]['pstd'])) {
+				if (($order->item_rows[$j]['so_po_item_ref_id']) || (($order->journal_id == 4 || $order->journal_id == 10) && $order->item_rows[$j]['pstd'])) {
 					echo '  <td align="center">&nbsp;</td>' . chr(10);
 					$sku_enable = false;
 				} else {
@@ -337,7 +337,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
 				// for serialized items, show the icon IF the item type is serial
 				$invType = $admin->DataBase->query("SELECT inventory_type FROM ".TABLE_INVENTORY." WHERE sku='{$order->item_rows[$j]['sku']}'");
 				$imgSerialView = in_array($invType->fields['inventory_type'], array('sr','sa')) ? "" : "display:none;";
-				if (in_array(JOURNAL_ID, array(6,7,12,13))) echo html_icon('actions/tab-new.png', TEXT_SERIAL_NUMBER, 'small', 'id="imgSerial_'.$i.'" align="top" style="cursor:pointer;'.$imgSerialView.'" onclick="serialList(\'serial_' . $i . '\')"');
+				if (in_array($order->journal_id, array(6,7,12,13))) echo html_icon('actions/tab-new.png', TEXT_SERIAL_NUMBER, 'small', 'id="imgSerial_'.$i.'" align="top" style="cursor:pointer;'.$imgSerialView.'" onclick="serialList(\'serial_' . $i . '\')"');
 				echo '</td>' . chr(10);
 				echo '  <td nowrap="nowrap" align="center">';
 				echo html_input_field('sku_' . $i, $order->item_rows[$j]['sku'], ($sku_enable ? '' : ' readonly="readonly"') . ' size="' . (MAX_INVENTORY_SKU_LENGTH + 1) . '" maxlength="' . MAX_INVENTORY_SKU_LENGTH . '" onfocus="clearField(\'sku_' . $i . '\', \'' . TEXT_SEARCH . '\')" onkeydown="checkEnterEvent(event,' . $i . ');" onblur="setField(\'sku_' . $i . '\', \'' . TEXT_SEARCH . '\'); loadSkuDetails(0, ' . $i . ')"') . chr(10);
@@ -406,7 +406,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
 		  </td>
         </tr>
 
-<?php if (ENABLE_ORDER_DISCOUNT && in_array(JOURNAL_ID, array(9, 10, 12, 19))) { ?>
+<?php if (ENABLE_ORDER_DISCOUNT && in_array($order->journal_id, array(9, 10, 12, 19))) { ?>
         <tr>
           <td>
 <?php echo TEXT_DISCOUNT_GL_ACCOUNT . ' ';

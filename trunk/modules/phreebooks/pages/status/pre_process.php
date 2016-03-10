@@ -17,8 +17,7 @@
 //  Path: /modules/phreebooks/pages/status/pre_process.php
 //
 /**************   Check user security   *****************************/
-define('JOURNAL_ID', $_GET['jID']);
-switch (JOURNAL_ID) {
+switch ($_GET['jID']) {
   case  2: $security_token = SECURITY_ID_JOURNAL_ENTRY;      break;
   case  3: $security_token = SECURITY_ID_PURCHASE_QUOTE;     break;
   case  4: $security_token = SECURITY_ID_PURCHASE_ORDER;     break;
@@ -34,11 +33,11 @@ switch (JOURNAL_ID) {
     die('Bad or missing journal id found (filename: modules/phreebooks/status.php), Journal_ID needs to be passed to this script to identify the correct procedure.');
 }
 $security_level = \core\classes\user::validate ( $security_token );
-**************  include page specific files    *********************/
+/**************  include page specific files    *********************/
 require(DIR_FS_WORKING . 'defaults.php');
 require(DIR_FS_WORKING . 'functions/phreebooks.php');
 /**************   page specific initialization  *************************/
-history_filter('pb'.JOURNAL_ID, $defaults = array('sf'=>TEXT_DATE, 'so'=>'desc', 'search_period'=>CURRENT_ACCOUNTING_PERIOD));
+history_filter('pb'.$_GET['jID'], $defaults = array('sf'=>TEXT_DATE, 'so'=>'desc', 'search_period'=>CURRENT_ACCOUNTING_PERIOD));
 $date_today = date('Y-m-d');
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/status/extra_actions.php';
@@ -83,7 +82,7 @@ switch ($_REQUEST['action']) {
 $heading_array = array (
 		'post_date' => TEXT_DATE,
 		'purchase_invoice_id' => $order->id_field_name,
-		'bill_primary_name' => in_array ( JOURNAL_ID, array (9,	10,	12,	13,	19) ) ? TEXT_CUSTOMER_NAME : TEXT_VENDOR_NAME,
+		'bill_primary_name' => in_array ( $_GET['jID'], array (9,	10,	12,	13,	19) ) ? TEXT_CUSTOMER_NAME : TEXT_VENDOR_NAME,
 		'purch_order_id' => TEXT_REFERENCE,
 		'closed' => TEXT_CLOSED,
 		'total_amount' => TEXT_AMOUNT
@@ -114,7 +113,7 @@ $search_fields = array (
 	'total_amount'
 );
 
-switch (JOURNAL_ID) { //@todo move to journals class
+switch ($_GET['jID']) { //@todo move to journals class
 	case 2 : // Purchase Quote Journal
 		$heading_array ['bill_primary_name'] = TEXT_DESCRIPTION;
 		$page_title = TEXT_GENERAL_JOURNAL;
@@ -178,7 +177,7 @@ if (is_array ( $extra_query_list_fields ) > 0)
 	$field_list = array_merge ( $field_list, $extra_query_list_fields );
 
 $query_raw = "select SQL_CALC_FOUND_ROWS " . implode ( ', ', $field_list ) . " from " . TABLE_JOURNAL_MAIN . "
-	where journal_id = " . JOURNAL_ID . $period_filter . $search . " order by $disp_order, purchase_invoice_id DESC";
+	where journal_id = " . $_GET['jID'] . $period_filter . $search . " order by $disp_order, purchase_invoice_id DESC";
 $query_result = $admin->DataBase->query ( $query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST ['list'] - 1)) . ", " . MAX_DISPLAY_SEARCH_RESULTS );
 // the splitPageResults should be run directly after the query that contains SQL_CALC_FOUND_ROWS
 $query_split  = new splitPageResults($_REQUEST['list'], '');
@@ -187,7 +186,7 @@ if ($query_split->current_page_number <> $_REQUEST['list']) { // if here, go las
 	$query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 	$query_split  = new splitPageResults($_REQUEST['list'], '');
 }
-history_save('pb'.JOURNAL_ID);
+history_save('pb'.$_GET['jID']);
 
 $include_header = true;
 $include_footer = true;

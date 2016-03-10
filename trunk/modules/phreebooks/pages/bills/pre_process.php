@@ -21,13 +21,11 @@
 $jID  = (int)$_GET['jID'];
 $account_type = isset($_REQUEST['type']) ? $_REQUEST['type'] : 'c';
 
-switch ($jID) {
+switch ($_GET['jID']) {
   case 18:	// Cash Receipts Journal
-	define('JOURNAL_ID',18);
 	$security_token = ($account_type == 'v') ? SECURITY_ID_VENDOR_RECEIPTS : SECURITY_ID_CUSTOMER_RECEIPTS;
 	break;
   case 20:	// Cash Disbursements Journal
-	define('JOURNAL_ID',20);
 	$security_token = ($account_type == 'c') ? SECURITY_ID_CUSTOMER_PAYMENTS : SECURITY_ID_PAY_BILLS;
 	break;
 }
@@ -48,7 +46,7 @@ if (!$period) { // bad post_date was submitted
 $gl_acct_id        = ($_POST['gl_acct_id']) ? db_prepare_input($_POST['gl_acct_id']) : AP_PURCHASE_INVOICE_ACCOUNT;
 $post_success      = false;
 
-switch (JOURNAL_ID) {
+switch ($_GET['jID']) {
   case 18:	// Cash Receipts Journal
 	define('AUDIT_LOG_DESC',TEXT_CASH_RECEIPTS);
 	define('AUDIT_LOG_DEL_DESC',TEXT_CASH_RECEIPTS . '-' . TEXT_DELETE);
@@ -61,7 +59,7 @@ switch (JOURNAL_ID) {
 	throw new \core\classes\userException('No valid journal id found (module bills), Journal ID needs to be passed to this script to identify the action');
 	gen_redirect(html_href_link(FILENAME_DEFAULT, '', 'SSL'));
 }
-$temp = "\phreebooks\classes\journal\journal_".JOURNAL_ID;
+$temp = "\phreebooks\classes\journal\journal_".$_GET['jID'];
 $order  = new temp();
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/bills/extra_actions.php';
@@ -92,7 +90,6 @@ switch ($_REQUEST['action']) {
 		$order->id                  = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
 		$order->admin_id            = $_SESSION['user']->admin_id;
 		$order->rep_id              = db_prepare_input($_POST['rep_id']);
-		$order->journal_id          = JOURNAL_ID;
 		$order->post_date           = $post_date;
 		$order->period              = $period;
 		if (!$order->period) break;	// bad post_date was submitted
@@ -137,7 +134,7 @@ switch ($_REQUEST['action']) {
 		}
 		if (!$order->item_rows) throw new \core\classes\userException(GL_ERROR_NO_ITEMS);
 		// check to make sure the payment method is valid
-		if (JOURNAL_ID == 18) $admin->classes['payment']->methods[$order->shipper_code]->pre_confirmation_check();
+		if ($_GET['jID'] == 18) $admin->classes['payment']->methods[$order->shipper_code]->pre_confirmation_check();
 
 	/* This has been commented out to allow customer refunds (negative invoices)
 		if ($order->total_amount < 0) throw new \core\classes\userException(TEXT_TOTAL_LESS_THAN_ZERO);

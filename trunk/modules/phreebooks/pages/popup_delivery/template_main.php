@@ -30,7 +30,7 @@ $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) {
   foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
 }
-switch (JOURNAL_ID) {
+switch ($_GET['jID']) {
   case 4: $toolbar->add_help('07.02.03.04'); break;
   case 6: $toolbar->add_help('07.03.03.04'); break;
 }

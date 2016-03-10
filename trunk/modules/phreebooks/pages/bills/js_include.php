@@ -28,9 +28,9 @@ var add_array          = new Array("<?php echo implode('", "', $js_arrays['field
 var securityLevel      = <?php echo $security_level; ?>;
 var default_array      = new Array("<?php echo implode('", "', $js_arrays['text']); ?>");
 var defaultPostDate    = '<?php echo date(DATE_FORMAT, time()); ?>';
-var defaultGlAcct      = '<?php echo JOURNAL_ID == 18 ? AR_SALES_RECEIPTS_ACCOUNT : AP_PURCHASE_INVOICE_ACCOUNT; ?>';
-var defaultDiscAcct    = '<?php echo JOURNAL_ID == 18 ? AR_DISCOUNT_SALES_ACCOUNT : AP_DISCOUNT_PURCHASE_ACCOUNT; ?>';
-var journalID          = '<?php echo JOURNAL_ID; ?>';
+var defaultGlAcct      = '<?php echo $_GET['jID'] == 18 ? AR_SALES_RECEIPTS_ACCOUNT : AP_PURCHASE_INVOICE_ACCOUNT; ?>';
+var defaultDiscAcct    = '<?php echo $_GET['jID'] == 18 ? AR_DISCOUNT_SALES_ACCOUNT : AP_DISCOUNT_PURCHASE_ACCOUNT; ?>';
+var journalID          = '<?php echo $_GET['jID']; ?>';
 var text_enter_new     = '<?php echo TEXT_ENTER_NEW; ?>';
 var account_type       = '<?php echo $account_type; ?>';
 var store_country_code = '<?php echo STORE_COUNTRY; ?>';
@@ -50,7 +50,7 @@ function init() {
   }
   document.getElementById('search').focus();
 <?php if ($_REQUEST['action'] == 'edit') { // if paying from sales window automatically check first box
-    echo 'ajaxBillData(0, ' . $oID . ', ' . JOURNAL_ID . ');';
+    echo 'ajaxBillData(0, ' . $oID . ', ' . $_GET['jID'] . ');';
   } else if ($_REQUEST['action'] == 'pmt') {
 	echo 'loadNewPayment();' . chr(10);
     echo 'updateTotalPrices();' . chr(10);

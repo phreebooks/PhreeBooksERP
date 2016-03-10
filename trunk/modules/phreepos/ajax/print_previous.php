@@ -17,7 +17,6 @@
 //  Path: /modules/phreepos/ajax/save_pos.php
 //
 $security_level = \core\classes\user::validate(SECURITY_ID_PHREEPOS);
-define('JOURNAL_ID','19');
 /**************  include page specific files    *********************/
 require_once(DIR_FS_MODULES . 'phreeform/defaults.php');
 require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
@@ -30,7 +29,7 @@ if(isset($_GET['oID'])){
 	$journal_id = $_GET['oID'];
 }else {
 	$order = $admin->DataBase->query("select MAX(id) AS id from " . TABLE_JOURNAL_MAIN . "
-	    where journal_id = '" . JOURNAL_ID . "' and admin_id = '".$_SESSION['user']->admin_id."'");
+	    where journal_id = '19' and admin_id = '".$_SESSION['user']->admin_id."'");
 	$journal_id = $order->fields['id'];
 }
 //print

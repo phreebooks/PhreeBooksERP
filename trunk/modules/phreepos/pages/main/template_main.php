@@ -40,9 +40,9 @@ $toolbar->icon_list['open']['show']     = false;
 $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['save']['show']     = false;
 $toolbar->icon_list['print']['show']    = false;
-$toolbar->add_icon('new', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action', 'jID')) . '&jID='.JOURNAL_ID, 'SSL') . '\'"', 2);
+$toolbar->add_icon('new', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action', 'jID')) . '&jID='.$order->journal_id, 'SSL') . '\'"', 2);
 if ($security_level > 1) {
-  $toolbar->add_icon('pos_return', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action', 'jID')) . '&action=pos_return&jID='.JOURNAL_ID, 'SSL') . '\'"', 50);
+  $toolbar->add_icon('pos_return', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action', 'jID')) . '&action=pos_return&jID='.$order->journal_id, 'SSL') . '\'"', 50);
   $toolbar->icon_list['pos_return']['icon'] = 'actions/document-save-as.png';
   $toolbar->icon_list['pos_return']['text'] = TEXT_PROCESS_RETURN;
 }

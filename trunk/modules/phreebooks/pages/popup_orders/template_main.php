@@ -27,7 +27,7 @@ $toolbar->icon_list['save']['show']     = false;
 $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
-switch(JOURNAL_ID) {
+switch($_GET['jID']) {
 	case  3: $toolbar->add_help('07.02.04.02'); break;
 	case  4: $toolbar->add_help('07.02.03.02'); break;
 	case  6: $toolbar->add_help('07.02.05.02'); break;
@@ -55,7 +55,7 @@ echo $toolbar->build($add_search = true, $add_period = true,  $cal_date);
 <?php
   $odd = true;
   while (!$query_result->EOF) {
-	  switch (JOURNAL_ID) {
+	  switch ($_GET['jID']) {
 	  	case  3:
 	  	case  4:
 	  	case  9:
@@ -72,7 +72,7 @@ echo $toolbar->build($add_search = true, $add_period = true,  $cal_date);
   <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer" onclick="setReturnOrdr(<?php echo $query_result->fields['id']; ?>, false)">
 	<td><?php echo \core\classes\DateTime::createFromFormat(DATE_FORMAT, $query_result->fields['post_date']); ?></td>
 	<td><?php echo $query_result->fields['purchase_invoice_id']; ?></td>
-	<?php switch (JOURNAL_ID) {
+	<?php switch ($_GET['jID']) {
 		case  6:
 		case 12: echo '<td>' . $purch_order_id . '</td>'; break;
 		case  7:

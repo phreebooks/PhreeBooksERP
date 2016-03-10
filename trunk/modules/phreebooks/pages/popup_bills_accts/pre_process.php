@@ -20,9 +20,8 @@ $security_level = \core\classes\user::validate(0, true);
 /**************  include page specific files    *********************/
 require(DIR_FS_WORKING . 'functions/phreebooks.php');
 /**************   page specific initialization  *************************/
-define('JOURNAL_ID',   $_GET['jID']);
 define('ACCOUNT_TYPE', $_GET['type']);
-switch (JOURNAL_ID) {
+switch ($_GET['jID']) {
 	default:
 	case 18:
 		$terms_type = 'AR';

@@ -17,15 +17,13 @@
 //  Path: /modules/phreepos/ajax/save_pos.php
 //
 $security_level = \core\classes\user::validate(SECURITY_ID_PHREEPOS);
-define('JOURNAL_ID',19);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_MODULES . 'inventory/defaults.php');
 require_once(DIR_FS_MODULES . 'phreeform/defaults.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 require_once(DIR_FS_MODULES . 'phreeform/functions/phreeform.php');
 /**************   page specific initialization  *************************/
-$order           = new \phreepos\classes\journal\journal_19();
-define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);//@todo
+$order           = new \phreebooks\classes\journal\journal_19();
 $auto_print      = false;
 $total_discount  = 0;
 $total_fixed     = 0;
@@ -55,7 +53,6 @@ if (file_exists($custom_path)) { include($custom_path); }
 	$order->bill_email          = db_prepare_input(($_POST['bill_email'] <> TEXT_EMAIL) ? $_POST['bill_email'] : '', ADDRESS_BOOK_EMAIL_REQUIRED);
 	// load journal main data
 	$order->id                  = ''; // all POS are new
-	$order->journal_id          = JOURNAL_ID;
 	$order->post_date           = date('Y-m-d');
 	$order->period              = CURRENT_ACCOUNTING_PERIOD;
 	$order->save_payment        = '1'; // save payment (if encryption enabled)

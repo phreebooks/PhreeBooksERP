@@ -20,10 +20,9 @@ $security_level = \core\classes\user::validate(0, true);
 /**************  include page specific files  *********************/
 require(DIR_FS_WORKING . 'functions/phreebooks.php');
 /**************   page specific initialization  *************************/
-define('JOURNAL_ID',   $_GET['jID']);
 define('ACCOUNT_TYPE', $_GET['type']);
 
-switch (JOURNAL_ID) {
+switch ($_GET['jID']) {
   default:
   case 18: $terms_type = 'AR'; break;
   case 20: $terms_type = 'AP'; break;
@@ -79,7 +78,7 @@ if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_lis
 $query_raw = "select SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . "
 	from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_CONTACTS . " a on m.bill_acct_id = a.id
 	where a.type = '" . (ACCOUNT_TYPE == 'v' ? 'v' : 'c') . "'
-	and m.journal_id = " . JOURNAL_ID . $period_filter . $search . " order by $disp_order";
+	and m.journal_id = {$_GET['jID']} {$period_filter} {$search} order by $disp_order";
 $query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 $query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 history_save('pb_pop_bills');

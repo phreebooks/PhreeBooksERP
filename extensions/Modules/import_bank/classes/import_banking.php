@@ -19,7 +19,7 @@
 namespace import_bank\classes;
 require(DIR_FS_MODULES  . 'phreebooks/functions/phreebooks.php');
 
-class import_banking extends \phreebooks\classes\journal {
+class import_banking extends \core\classes\journal {
 	protected $_questionposts = QUESTION_POSTS;
 	protected $_accounttype;
 	protected $_creditamount;

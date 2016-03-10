@@ -27,7 +27,7 @@ $toolbar->icon_list['save']['show']     = false;
 $toolbar->icon_list['delete']['show']   = false;
 $toolbar->icon_list['print']['show']    = false;
 if (count($extra_toolbar_buttons) > 0) foreach ($extra_toolbar_buttons as $key => $value) $toolbar->icon_list[$key] = $value;
-switch (JOURNAL_ID) {
+switch ($_GET['jID']) {
   case 18: $toolbar->add_help('07.05.02'); break;
   case 20: $toolbar->add_help('07.05.01'); break;
 }

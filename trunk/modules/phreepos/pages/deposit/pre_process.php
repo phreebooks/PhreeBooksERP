@@ -21,12 +21,12 @@ $security_level = \core\classes\user::validate(SECURITY_ID_CUSTOMER_DEPOSITS);
 $type           = $_GET['type'];
 switch ($type) {
   case 'c': // customers
-	define('JOURNAL_ID', 18);
+  	$order = new \phreebooks\classes\journal\journal_18();
 	define('DEF_DEP_GL_ACCT',AR_DEF_DEP_LIAB_ACCT);
 	define('PAGE_TITLE', TEXT_CUSTOMER_DEPOSITS);
     break;
   case 'v': // vendors
-	define('JOURNAL_ID', 20);
+  	$order = new \phreebooks\classes\journal\journal_18();
 	define('DEF_DEP_GL_ACCT',AP_DEF_DEP_LIAB_ACCT);
 	define('PAGE_TITLE', TEXT_VENDOR_DEPOSITS);
     break;
@@ -37,9 +37,7 @@ switch ($type) {
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 /**************   page specific initialization  *************************/
 $post_success     = false;
-$default_dep_acct = JOURNAL_ID == 18 ? AR_DEF_DEPOSIT_ACCT : AP_DEF_DEPOSIT_ACCT;
-$temp = "\phreebooks\classes\journal\journal_". JOUNRAL_ID;
-$order            = new temp();
+$default_dep_acct = $order->journal_id == 18 ? AR_DEF_DEPOSIT_ACCT : AP_DEF_DEPOSIT_ACCT;//@todo is this still usefull
 $gl_acct_id       = isset($_POST['gl_acct_id'])          ? db_prepare_input($_POST['gl_acct_id'])          : $order->gl_acct_id;
 $next_inv_ref     = isset($_POST['purchase_invoice_id']) ? db_prepare_input($_POST['purchase_invoice_id']) : $order->purchase_invoice_id;
 $post_date        = isset($_POST['post_date'])           ? \core\classes\DateTime::db_date_format($_POST['post_date'])                : date('Y-m-d');
@@ -75,12 +73,11 @@ switch ($_REQUEST['action']) {
 	$order->id                  = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
 	$order->post_date           = $post_date;
 	$order->period              = $period;
-	$order->journal_id          = JOURNAL_ID;
 	$order->admin_id            = $_SESSION['user']->admin_id;
 	$order->purchase_invoice_id = db_prepare_input($_POST['purchase_invoice_id']);	// PhreeBooks order/invoice ID
 	$order->shipper_code        = db_prepare_input($_POST['shipper_code']);  // store payment method in shipper_code field
 	$order->purch_order_id      = db_prepare_input($_POST['purch_order_id']);  // customer PO/Ref number
-	$order->description         = sprintf(TEXT_ARGS_ENTRY, JOURNAL_ID==18 ? TEXT_CUSTOMER_DEPOSITS: TEXT_VENDOR_DEPOSITS);
+	$order->description         = sprintf(TEXT_ARGS_ENTRY, $order->journal_id==18 ? TEXT_CUSTOMER_DEPOSITS: TEXT_VENDOR_DEPOSITS);
 	$order->total_amount        = $admin->currencies->clean_value(db_prepare_input($_POST['total']), DEFAULT_CURRENCY);
 	$order->gl_acct_id          = $gl_acct_id;
 	$order->payment_id          = db_prepare_input($_POST['payment_id']);
@@ -99,7 +96,7 @@ switch ($_REQUEST['action']) {
 	  'total'     => $admin->currencies->clean_value(db_prepare_input($_POST['total_1'])),
 	);
 	// load the payments
-	switch (JOURNAL_ID) {
+	switch ($order->journal_id) {
 	  case 18:
 	  	$pmt_meth = db_prepare_input($_POST['shipper_code']);
 	    $admin->classes['payment']->methods[$pmt_meth]->pre_confirmation_check();
@@ -131,8 +128,13 @@ switch ($_REQUEST['action']) {
 	if (!$order->item_rows[0]['total']) throw new \core\classes\userException(GL_ERROR_NO_ITEMS);
 	// post the receipt/payment
 	if (!$error && $post_success = $order->post_ordr($_REQUEST['action'])) {
-	  // now create a credit memo to show a credit on customers account
-	  $order                      = new \phreebooks\classes\orders();
+	  	// now create a credit memo to show a credit on customers account
+	  	if ($order->journal_id == 18){
+	  		$order = new \phreebooks\classes\journal\journal_13();
+	  	}else{ // 20
+	  		$order = new \phreebooks\classes\journal\journal_07();
+	  	}
+	  
 	  $order->bill_short_name     = db_prepare_input($_POST['search']);
 	  $order->bill_acct_id        = db_prepare_input($_POST['bill_acct_id']);
 	  $order->bill_address_id     = db_prepare_input($_POST['bill_address_id']);
@@ -146,14 +148,12 @@ switch ($_REQUEST['action']) {
 	  $order->bill_country_code   = db_prepare_input($_POST['bill_country_code']);
 	  // load journal main data
 	  $order->id                  = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
-	  $order->journal_id          = (JOURNAL_ID == 18) ? 13 : 7;  // credit memo
-	  $order->gl_type             = (JOURNAL_ID == 18) ? 'sos' : 'por';
 	  $order->post_date           = $post_date;
 	  $order->period              = $period;
 	  $order->admin_id            = $_SESSION['user']->admin_id;
 	  $order->purch_order_id      = db_prepare_input($_POST['purch_order_id']);  // customer PO/Ref number
 	  $order->total_amount        = $admin->currencies->clean_value(db_prepare_input($_POST['total']), DEFAULT_CURRENCY);
-	  $order->gl_acct_id          = (JOURNAL_ID == 18) ? AR_DEFAULT_GL_ACCT : AP_DEFAULT_PURCHASE_ACCOUNT;
+	  $order->gl_acct_id          = ($order->journal_id == 18) ? AR_DEFAULT_GL_ACCT : AP_DEFAULT_PURCHASE_ACCOUNT;
 	  $order->item_rows[0] = array(
 		'pstd'  => '1',
 		'id'    => '',

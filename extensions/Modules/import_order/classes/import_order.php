@@ -20,10 +20,6 @@
 class import_order {
 	public $records = array();
 
-  	function __construct() {
-  		$this->records = array();
-  	}
-
   	/**
   	 * this function will import orders from a csv file to the general journal.
   	 * @param string $lines_array

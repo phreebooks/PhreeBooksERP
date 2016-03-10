@@ -20,9 +20,7 @@
 $security_level = \core\classes\user::validate(0, true);
 /**************  include page specific files    *********************/
 /**************   page specific initialization  *************************/
-define('JOURNAL_ID',$_GET['jID']);
-
-switch (JOURNAL_ID) {
+switch ($_GET['jID']) {
 	case  2:	// General Journal
 	case  4:	// Purchase Order Journal
 	case  6:	// Purchase/Receive Journal

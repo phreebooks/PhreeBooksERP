@@ -25,7 +25,7 @@
 var pmt_array          = new Array(); // holds the encrypted payment information
 var add_array          = new Array("<?php echo implode('", "', $js_arrays['fields']); ?>");
 var default_array      = new Array("<?php echo implode('", "', $js_arrays['text']); ?>");
-var journalID          = '<?php echo JOURNAL_ID; ?>';
+var journalID          = '<?php echo $order->journal_id; ?>';
 var account_type       = '<?php echo $type; ?>';
 var payments_installed = <?php echo count($admin->classes['payment']->methods) ? 'true' : 'false'; ?>;
 <?php echo js_calendar_init($cal_bills); ?>

@@ -77,6 +77,7 @@ class journal_07 extends \core\classes\journal {
 	public $error_6 			= GENERAL_JOURNAL_7_ERROR_6;
 	public $description 		= TEXT_VENDOR_CREDIT_MEMOS;
 	public $id_field_name 		= TEXT_CREDIT_MEMO;
+	public $def_inv_gl_acct		= AP_DEFAULT_INVENTORY_ACCOUNT;
 
 	function __construct( $id = 0, $verbose = true){
 		if (isset($_SESSION['user']->admin_prefs['def_ap_acct'])) $this->gl_acct_id =  $_SESSION['user']->admin_prefs['def_ap_acct'];

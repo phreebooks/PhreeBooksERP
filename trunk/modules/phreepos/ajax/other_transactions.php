@@ -17,15 +17,13 @@
 //  Path: /modules/phreepos/ajax/other_transactions.php
 //
 $security_level = \core\classes\user::validate(SECURITY_ID_PHREEPOS);
-define('JOURNAL_ID',2);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_MODULES . 'inventory/defaults.php');
 require_once(DIR_FS_MODULES . 'phreeform/defaults.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
 /**************   page specific initialization  *************************/
-$order           = new \core\classes\journal();
-define('DEF_INV_GL_ACCT',AR_DEF_GL_SALES_ACCT);
-$order->gl_acct_id = AR_DEFAULT_GL_ACCT;
+$order           = new \phreebooks\classes\journal\journal_02();
+$order->gl_acct_id = AR_DEFAULT_GL_ACCT;//@todo
 $transaction     = new \phreepos\classes\other_transactions();
 $tills           = new \phreepos\classes\tills();
 /***************   hook for custom actions  ***************************/
@@ -41,7 +39,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 	// load journal main data
 	$order->journal_main_array = array(
 		'period'              => CURRENT_ACCOUNTING_PERIOD,
-		'journal_id'          => JOURNAL_ID,
+		'journal_id'          => $order->journal_id,
 		'post_date'           => date('Y-m-d'),
 		'total_amount'        => $total_amount,
 		'description'         => TEXT_GENERAL_JOURNAL_ENTRY,

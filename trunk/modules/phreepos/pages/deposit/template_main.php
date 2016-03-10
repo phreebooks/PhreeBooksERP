@@ -28,7 +28,7 @@ echo html_hidden_field('bill_address_id', $order->bill_address_id) . chr(10);
 echo html_hidden_field('bill_telephone1', $order->bill_telephone1) . chr(10);
 echo html_hidden_field('bill_email',      $order->bill_email) . chr(10);
 echo html_hidden_field('gl_disc_acct_id', '') . chr(10);
-if (JOURNAL_ID == 20) echo html_hidden_field('shipper_code',    '') . chr(10);
+if ($order->journal_id == 20) echo html_hidden_field('shipper_code',    '') . chr(10);
 
 // customize the toolbar actions
 $toolbar->icon_list['cancel']['params'] = 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, '', 'SSL') . '\'"';
@@ -38,7 +38,7 @@ $toolbar->icon_list['save']['params']   = 'onclick="submitToDo(\'save\')"';
 if ($security_level < 2) $toolbar->icon_list['save']['show'] = false;
 $toolbar->icon_list['print']['params']  = 'onclick="submitToDo(\'print\')"';
 if ($security_level < 2) $toolbar->icon_list['print']['show'] = false;
-$toolbar->add_icon('new', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')) . 'jID=' . JOURNAL_ID . '&amp;type=' . $type, 'SSL') . '\'"', 2);
+$toolbar->add_icon('new', 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')) . 'jID=' . $order->journal_id . '&amp;type=' . $type, 'SSL') . '\'"', 2);
 
 // pull in extra toolbar overrides and additions
 if (count($extra_toolbar_buttons) > 0) {
@@ -46,7 +46,7 @@ if (count($extra_toolbar_buttons) > 0) {
 }
 
 // add the help file index and build the toolbar
-switch (JOURNAL_ID) {
+switch ($order->journal_id) {
   case 18: $toolbar->add_help('07.05'); break;
   case 20: $toolbar->add_help('07.05'); break;
 }
@@ -65,7 +65,7 @@ echo '&nbsp;' . html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'al
 ?>
 	  </td>
 	  <td class="main" align="right">
-	    <?php echo ((JOURNAL_ID == 20 || !isset($_SESSION['admin_encrypt'])) ? '&nbsp;' : TEXT_SAVE_PAYMENT_INFO . html_checkbox_field('save_payment', '1', ($order->save_payment ? true : false), '', '')); ?>
+	    <?php echo (($order->journal_id == 20 || !isset($_SESSION['admin_encrypt'])) ? '&nbsp;' : TEXT_SAVE_PAYMENT_INFO . html_checkbox_field('save_payment', '1', ($order->save_payment ? true : false), '', '')); ?>
 	  </td>
 	  <td>
 	    <?php echo html_pull_down_menu('payment_id', gen_null_pull_down(), '', 'style="visibility:hidden" onchange=\'fillPayment()\'') . chr(10); ?>
@@ -74,7 +74,7 @@ echo '&nbsp;' . html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'al
 	<tr>
 	  <td class="main" valign="top">
 <?php
-echo (JOURNAL_ID == 20 ? TEXT_REMIT_TO : TEXT_BILL_TO). ':' . chr(10);
+echo ($order->journal_id == 20 ? TEXT_REMIT_TO : TEXT_BILL_TO). ':' . chr(10);
 echo            html_pull_down_menu('bill_to_select',    gen_null_pull_down(), '', 'onchange=\'fillAddress("bill")\'') . chr(10);
 echo '<br />' . html_input_field('bill_primary_name',    $order->bill_primary_name, 'size="33" maxlength="32" onfocus="clearField(\'bill_primary_name\', \'' . TEXT_NAME_OR_COMPANY . '\')" onblur="setField(\'bill_primary_name\', \'' . TEXT_NAME_OR_COMPANY . '\')"') . chr(10);
 echo '<br />' . html_input_field('bill_contact',         $order->bill_contact, 'size="33" maxlength="32" onfocus="clearField(\'bill_contact\', \'' . TEXT_ATTENTION . '\')" onblur="setField(\'bill_contact\', \'' . TEXT_ATTENTION . '\')"') . chr(10);
@@ -89,7 +89,7 @@ echo '<br />' . html_pull_down_menu('bill_country_code', gen_get_countries(), $o
 	  <td valign="top">
 		<table border="0">
 		  <tr>
-			<td class="main" align="right"><?php echo ((JOURNAL_ID == 18) ? TEXT_DEPOSIT_ID : TEXT_PAYMENT_ID) . '&nbsp;'; ?></td>
+			<td class="main" align="right"><?php echo (($order->journal_id == 18) ? TEXT_DEPOSIT_ID : TEXT_PAYMENT_ID) . '&nbsp;'; ?></td>
 			<td class="main" align="right"><?php echo html_input_field('purchase_invoice_id', $next_inv_ref, 'style="text-align:right"'); ?></td>
 		  </tr>
 		  <tr>
@@ -117,7 +117,7 @@ echo '<br />' . html_pull_down_menu('bill_country_code', gen_get_countries(), $o
 		  </tr>
 		</table>
 	  </td>
-<?php if (JOURNAL_ID == 18) { ?>
+<?php if ($order->journal_id == 18) { ?>
 	  <td valign="top">
 	    <fieldset>
           <legend><?php echo TEXT_PAYMENT_METHOD; ?></legend>
@@ -141,7 +141,7 @@ echo '<br />' . html_pull_down_menu('bill_country_code', gen_get_countries(), $o
 		  </div>
 		</fieldset>
 	  </td>
-<?php } elseif (JOURNAL_ID == 20) { ?>
+<?php } elseif ($order->journal_id == 20) { ?>
 	  <td align="right" valign="top">
 		<table border="0">
 		  <tr>
@@ -154,7 +154,7 @@ echo '<br />' . html_pull_down_menu('bill_country_code', gen_get_countries(), $o
 		  </tr>
 		</table>
 	  </td>
-<?php } // end if (JOURNAL_ID == 20) ?>
+<?php } // end if ($order->journal_id == 20) ?>
 	</tr>
   </table>
 </div>
@@ -165,7 +165,7 @@ echo '<br />' . html_pull_down_menu('bill_country_code', gen_get_countries(), $o
   	<tr>
 	  <th align="center"><?php echo TEXT_DESCRIPTION; ?></th>
 	  <th align="center"><?php echo TEXT_GL_ACCOUNT; ?></th>
-	  <th align="center"><?php echo (JOURNAL_ID == 20) ? TEXT_AMOUNT_PAID : BNK_18_AMOUNT_PAID . (ENABLE_MULTI_CURRENCY ? ' (' . DEFAULT_CURRENCY . ')' : ''); ?></th>
+	  <th align="center"><?php echo ($order->journal_id == 20) ? TEXT_AMOUNT_PAID : BNK_18_AMOUNT_PAID . (ENABLE_MULTI_CURRENCY ? ' (' . DEFAULT_CURRENCY . ')' : ''); ?></th>
 	</tr>
 	<?php
 		echo '<tr>' . chr(10);

@@ -20,7 +20,6 @@ $security_level = \core\classes\user::validate(SECURITY_ID_SELECT_PAYMENT);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_WORKING . 'functions/phreebooks.php');
 /**************   page specific initialization  *************************/
-define('JOURNAL_ID',20);
 define('AUDIT_LOG_DESC',TEXT_CASH_DISTRIBUTIONS);
 $post_success      = false;
 $post_date         = isset($_REQUEST['post_date']) ? \core\classes\DateTime::db_date_format($_REQUEST['post_date']) : date('Y-m-d', time());
@@ -79,7 +78,6 @@ switch ($_REQUEST['action']) {
 				$order = new \phreebooks\classes\journal\journal_20();
 				// load journal main data
 				$order->id = '';
-				$order->journal_id          = JOURNAL_ID;
 				$order->post_date           = $post_date;
 				$order->period              = $period;
 				$order->admin_id            = $_SESSION['user']->admin_id;

@@ -17,7 +17,6 @@
 //  Path: /modules/phreepos/pages/closing/pre_process.php
 //
 $security_level = \core\classes\user::validate(SECURITY_ID_POS_CLOSING);
-define('JOURNAL_ID',2);
 /**************  include page specific files    *********************/
 require_once(DIR_FS_WORKING . 'classes/tills.php');
 require_once(DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
@@ -29,7 +28,7 @@ $all_items       = array();
 $gl_types 		 = array('pmt','ttl','tpm');
 $post_date 		 = ($_POST['post_date']) ? \core\classes\DateTime::db_date_format($_POST['post_date']) : '';
 $tills           = new \phreepos\classes\tills();
-$glEntry		 = new \core\classes\journal();
+$glEntry		 = new \phreebooks\classes\journal\journal_02();
 if(isset($_GET['till_id'])){
 	$tills->get_till_info(db_prepare_input($_GET['till_id']));
 	$post_date 		 = \core\classes\DateTime::db_date_format(\core\classes\DateTime::createFromFormat(DATE_FORMAT, date('Y-m-d')));
@@ -53,7 +52,6 @@ switch ($_REQUEST['action']) {
   case 'save':
   	try{
 		\core\classes\user::validate_security($security_level, 2);
-		$glEntry->journal_id          = JOURNAL_ID;
 		$glEntry->post_date           = $post_date;
 		$glEntry->period              = $period;
 		$glEntry->closed 			  = ($security_level > 2) ? 1 : 0;
@@ -112,7 +110,7 @@ switch ($_REQUEST['action']) {
 
 		$glEntry->journal_main_array = array(
 		  'period'              => $glEntry->period,
-		  'journal_id'          => JOURNAL_ID,
+		  'journal_id'          => $glEntry->journal_id,
 		  'post_date'           => $glEntry->post_date,
 		  'total_amount'        => $admin->currencies->clean_value($_POST['balance']),
 		  'description'         => TEXT_GENERAL_JOURNAL_ENTRY,
