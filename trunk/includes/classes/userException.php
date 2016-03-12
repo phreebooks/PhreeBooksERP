@@ -23,7 +23,7 @@ class userException extends \Exception {
 
 	function __construct ($message, $action = NULL, $code = 0, Exception $previous = NULL){
 		\core\classes\messageStack::debug_log(" There was a error $message -> action = $action" );
-		error_log("userException".$message . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+		error_log("userException ".$message . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
 		log_trace();
 		if ($action) $this->action = $action;
 		parent::__construct($message, $code, $previous);

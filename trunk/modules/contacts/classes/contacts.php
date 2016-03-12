@@ -118,6 +118,10 @@ class contacts {
 				$this->crm_log[$i]['with'] = $this->short_name . ' ' . $this->address["{$this->type}m"][0]['primary_name'];
 			}
 		}
+		// load dept_rep_id
+		$sql = $admin->DataBase->prepare("SELECT * FROM ".TABLE_CONTACTS." WHERE id={$this->dept_rep_id}");
+		$sql->execute();
+		$this->department_rep = $sql->fetchAll(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE) ;
 		// load contacts info
 		$sql = $admin->DataBase->prepare("SELECT * FROM ".TABLE_CONTACTS." WHERE dept_rep_id={$this->id}");
 		$sql->execute();

@@ -17,7 +17,8 @@
 //  Path: /modules/contacts/pages/main/template_i_general.php
 //
 // some setup
-$acct_def = (!$basis->cInfo->contact->dept_rep_id) ? array() : array(array('id'=>$basis->cInfo->contact->dept_rep_id, 'text'=>gen_get_contact_name($basis->cInfo->contact->dept_rep_id)));
+\core\classes\messageStack::debug_log(" results = ".print_r($basis->cInfo->contact,true) );
+$acct_def = (!$basis->cInfo->contact->dept_rep_id) ? array() : array(array('id'=>$basis->cInfo->contact->department_rep->id, 'text'=>$basis->cInfo->contact->department_rep->dept_rep_id));
 // *********************** Display account information ****************************** ?>
 <div title="<?php echo TEXT_GENERAL;?>">
   <fieldset>

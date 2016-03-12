@@ -31,9 +31,9 @@
 	     </thead>
 	</table>
 	<div id="ContactsToolbar">
-    	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editContact()"><?php echo sprintf(TEXT_EDIT_ARGS, $contact);?></a>
-	    <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newContact()"><?php echo sprintf(TEXT_NEW_ARGS, $contact);?></a>
-    	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteContact()"><?php echo sprintf(TEXT_DELETE_ARGS, $contact);?></a>
+    	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editContacts()"><?php echo sprintf(TEXT_EDIT_ARGS, $contact);?></a>
+	    <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newContacts()"><?php echo sprintf(TEXT_NEW_ARGS, $contact);?></a>
+    	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteContacts()"><?php echo sprintf(TEXT_DELETE_ARGS, $contact);?></a>
     	<span style="margin-left: 100px;"><?php echo  TEXT_SHOW_INACTIVE . ' :'?></span>
     	<?php echo html_checkbox_field('contact_show_inactive', '1', false,'', 'onchange="contactdoSearch()"' );?>
     	<div style="float: right;">
@@ -94,7 +94,7 @@
 				sortName:	"short_name",
 				sortOrder: 	"asc",
 				loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
-				toolbar: 	"ContactsToolbar",
+				toolbar: 	"#ContactsToolbar",
 				rowStyler: function(index,row){
 					if (row.inactive == '1')return 'background-color:pink;';
 				},
@@ -147,7 +147,7 @@
 				onLoadError: function(){
 					console.log('there was a error during loading of the form.');
 				}, 
-//				toolbar:contactToolbar, 
+//				
 			});
 
 			

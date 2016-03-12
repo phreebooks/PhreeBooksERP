@@ -1448,13 +1448,14 @@ function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext
         case E_NOTICE: //8
         	$text  = date('Y-m-d H:i:s') . $temp;
     		$text .= " RUN-TIME NOTICE:  '$errstr' line $errline in file $errfile";
-    		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
     		if ( strpos($errstr, 'Use of undefined constant') !== false && strpos($errstr, 'TEXT') !== false) {
     			// add to language file
     			$temp = ltrim($errstr, 'Use of undefined constant ');
     			$temp = explode(' ', $temp);
     			\core\classes\language::add_constant($temp[0]);
+    			break;
     		}
+    		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
         	break;
         case E_CORE_ERROR: //16
         	$text  = date('Y-m-d H:i:s') . $temp;

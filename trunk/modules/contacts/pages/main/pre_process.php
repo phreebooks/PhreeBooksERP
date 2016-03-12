@@ -139,9 +139,8 @@ switch ($_REQUEST['action']) {
     case 'delete':
     case 'crm_delete':
 	    \core\classes\user::validate_security($security_level, 4);
-	    $short_name = gen_get_contact_name($cInfo->id);
 	   	$cInfo->delete();
-	    gen_add_audit_log(TEXT_CONTACTS.'-'.TEXT_DELETE.'-'.$cInfo->title, $short_name);
+	    gen_add_audit_log(TEXT_CONTACTS.'-'.TEXT_DELETE.'-'.$cInfo->title, $cInfo->short_name);
 	    break;
 
     case 'download':

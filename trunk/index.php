@@ -47,7 +47,7 @@ try{
 		$admin->removeEventsAndAddNewEvent($e->action); //@todo werkt nog niet altijd
 		$admin->startProcessingEvents();
 	} else {
-		echo "sorry but there was a unforseen error <br/> <b>{$e->getMessage()}</b><br/><br/>".$e->getTraceAsString();
+		echo "Sorry but there was a unforseen error <br/> <b>".$e->getMessage()."</b><br/><br/>".$e->getTraceAsString();
 	}
 }
 ?>

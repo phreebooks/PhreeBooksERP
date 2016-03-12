@@ -61,11 +61,9 @@ class language {
 		if (!file_exists($lang_path)) throw new \core\classes\userException("can't find your language file {$lang_path} ");
 		$xml = new \DomDocument();
 		$xml->load($lang_path);
-		$phrases = $xml->getElementsByTagName('translation');
-		foreach ($phrases as $phrase) {
-			foreach ($phrase->childNodes as $language) {
-				if ($language->tagName == $this->language_code) $this->phrases[$phrase->getAttribute('id')] = $language->nodeValue;
-			}
+		$phrases = $xml->getElementsByTagName($this->language_code);
+		foreach  ($phrases as $phrase) {
+			$this->phrases[$phrase->parentNode->getAttribute('xml:id')] = $phrase->nodeValue;
 		}
 		if (sizeof($this->phrases) == 0) throw new \core\classes\userException("there are no translations for your language {$this->language_code} ");
 		//fetch custom language phrases
@@ -74,16 +72,13 @@ class language {
 			$xml = new \DomDocument();
 			$xml->load($custom_path);
 			//phrases
-			$phrases = $xml->getElementsByTagName('translation');
-			if ($phrases->length != 0) {
-				foreach ($phrases as $phrase) {
-					foreach ($phrase->childNodes as $language) {
-						if ($language->tagName == $this->language_code) $this->phrases[$phrase->getAttribute('id')] = $language->nodeValue;
-					}
-				}
+			$phrases = $xml->getElementsByTagName($this->language_code);
+			foreach  ($phrases as $phrase) {
+				$this->phrases[$phrase->parentNode->getAttribute('xml:id')] = $phrase->nodeValue;
 			}
 		}
 		foreach ($this->phrases as $key => $value ) define($key, $value);
+//		\core\classes\messageStack::debug_log("end ".__METHOD__ ." finding languages " .print_r($this->phrases,true));
 	}
 
 	/**
@@ -92,22 +87,18 @@ class language {
 	 */
 	private function get_languages(){
 		//fetch all languages
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$lang_path = (DIR_FS_INCLUDES."language/translations.xml");
 		if (!file_exists($lang_path)) throw new \core\classes\userException("can't find your language file {$lang_path} ");
 		$xml = new \DomDocument();
 		$xml->load($lang_path);
-		$phrases = $xml->getElementsByTagName('translation');
-		foreach ($phrases as $phrase) {
-			if (strtoupper($phrase->getAttribute('id')) == 'LANGUAGE') {
-				foreach ($phrase->childNodes as $language) {
-					if ($language->tagName != ''){
-						$this->languages[$language->tagName]= array(
-							'id'   => $language->tagName,
-				  	  		'text' => $language->nodeValue,
-						);
-					}
-				}
-				break;
+		$phrases = $xml->getElementById('LANGUAGE');
+		foreach ($phrases->childNodes as $phrase) {
+			if ($phrase->tagName != ''){
+				$this->languages[$phrase->tagName]= array(
+					'id'   => $phrase->tagName,
+		  	  		'text' => $phrase->nodeValue,
+				);
 			}
 		}
 	}
@@ -227,7 +218,7 @@ class language {
 			$string = rtrim($string);
 			$string = rtrim($string, "'");
 			$string = rtrim($string, '"');
-			$first_element->setAttribute('id', $string);
+			$first_element->setAttribute('xml:id', $string);
 			$second = $root->appendChild($first_element);
 			foreach($value as $language => $translation) {
 				$string = ltrim($translation);
@@ -251,17 +242,22 @@ class language {
 		$doc->preserveWhiteSpace = false;
 		$doc->formatOutput = true;
 		$doc->load($lang_path);
-		if ($doc->getElementById($constant) != null) break;
+		$string = strtolower(str_replace(array('TEXT_', '_', 'ARGS'), array('', ' ', '%'),$constant));
+		if ($doc->getElementById($constant) !== null){
+			define($constant, $string);
+			error_log("The constant $constant is not defined in your language ". PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+			return;
+		}
 		$root = $doc->documentElement;
 		$first_element = $doc->createElement('translation');
-		$first_element->setAttribute('id', $constant);
+		$first_element->setAttribute('xml:id', $constant);
 		$second = $root->appendChild($first_element);
-		$string = strtolower(str_replace(array('TEXT_', '_', 'ARGS'), array('', ' ', '%'),$constant));
 		$temp = $doc->createElement('en_us', $string);
 		$second->appendChild($temp);
 		$doc->normalizeDocument();
 		$doc->save($lang_path);
 		define($constant, $string);
+		error_log("The constant $constant is added to your language file ". PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
 	}
 	
 	function load_countries() {
