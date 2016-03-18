@@ -18,14 +18,17 @@
 //
 namespace core\classes;
 class user {
+	public $admin_id;
 	public $language;
 	public $company;
+	private $config  = array();
 	private $last_activity;
 	public $languages = array();
 	public $companies = array();
 	private $SESSION_TIMEOUT = 360;
 
 	function __construct(){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		if (count ($this->language) == 0 ) $this->language = new \core\classes\language();
 		if ($this->last_activity == '') $this->last_activity = time();
 		if (defined('DEFAULT_COMPANY')) {
@@ -37,6 +40,7 @@ class user {
 	}
 
 	public function __wakeup() {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		if (count ($this->language) == 0 ) $this->language = new \core\classes\language();
 		$cookie_exp = 2592000 + time(); // one month
 		setcookie('pb_company' , $this->company,  $cookie_exp);
@@ -44,7 +48,6 @@ class user {
 	}
 	
 	final static public function get($variable){
-		if (isset($_SESSION[$variable])) return $_SESSION[$variable];
 		if (isset(self::$variable)) 	return self::$variable;
 		return "unknown";
 	}
@@ -57,13 +60,12 @@ class user {
 	final public function is_validated () {
 		//allow the user to continu to with the login action.
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		\core\classes\messageStack::debug_log("time difference is ".(time() - $this->last_activity)." time out is {$this->SESSION_TIMEOUT} max is" .max ( SESSION_TIMEOUT_ADMIN, 360));
-		if ((time() - $this->last_activity) >  max ( SESSION_TIMEOUT_ADMIN, 360)) $this->logout();
+		if ((time() - $this->last_activity) >  max ( $this->config['SESSION_TIMEOUT_ADMIN'], 360)) $this->logout();
 		$this->last_activity = time();
 		if ($_REQUEST['action'] == 'LoadLostPassword') $this->LoadLostPassword();
 		$this->validate_company();
 		if ($_REQUEST['action'] == "ValidateUser") return true;
-		if (isset($_SESSION['user']->admin_id) && $_SESSION['user']->admin_id <> '') return true;
+		if ($this->admin_id <> '') return true;
 		$this->LoadLogIn();
 	}
 	
@@ -149,7 +151,6 @@ class user {
 		foreach ($contents as $file) {
 			if ($file <> '.' && $file <> '..' && is_dir(DIR_FS_MY_FILES . $file)) {
 			  	if (file_exists(DIR_FS_MY_FILES   . $file . '/config.php')) {
-			  		if (!isset($_SESSION['company'])|| $_SESSION['company'] == '') $_SESSION['company'] = $file;
 					require_once (DIR_FS_MY_FILES . $file . '/config.php');
 					if ($this->company == '') $this->company = $file;
 					$this->companies[$file] = array(
@@ -159,6 +160,30 @@ class user {
 			  	}
 			}
 		}
+	}
+	
+	function loadConfig (\core\classes\basis &$basis) {
+		if(count($this->config) == 0){
+			$result = $basis->DataBase->prepare("SELECT configuration_key, configuration_value FROM " . DB_PREFIX . "configuration ");
+			$result->execute();
+			while ($row = $result->fetch(\PDO::FETCH_LAZY)){
+				$this->config[$row['configuration_key']] = $row['configuration_value'];
+			}
+			/*/ load user config 
+			$result = $basis->DataBase->prepare("SELECT configuration_key, configuration_value FROM " . DB_PREFIX . "configuration where user = '$this->admin_id'");
+			$result->execute();
+			while ($row = $result->fetch(\PDO::FETCH_LAZY)){
+				$this->config[$row['configuration_key']] = $row['configuration_value'];
+			}	*/		
+		}
+		foreach ($this->config as $key => $value) define($key,$value);
+	}
+	
+	function getConfig($constant){
+		if(count($this->config) != 0){
+			return $this->config[$constant];
+		}
+		return;
 	}
 	
 	final function LoadLogIn(){

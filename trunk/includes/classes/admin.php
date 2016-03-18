@@ -148,16 +148,16 @@ class admin {
 	function checkInstalled(\core\classes\basis &$basis){
 		$this->installed = false;
 		$this->status 	 = '';
-		if ($basis->returnConfigurationValue('MODULE_'.strtoupper($this->id).'_STATUS') !== null){
+		if ($_SESSION['user']->getConfig('MODULE_'.strtoupper($this->id).'_STATUS') !== null){
 			$this->installed = true;
-			$this->status  = $basis->returnConfigurationValue('MODULE_'.strtoupper($this->id).'_STATUS');
+			$this->status  = $_SESSION['user']->getConfig('MODULE_'.strtoupper($this->id).'_STATUS');
 		}
 	}
 
 	function should_update(\core\classes\basis &$basis){
 		global $admin;
 		$this->checkInstalled($basis);
-		if ($basis->returnConfigurationValue('MODULE_'.strtoupper($this->id).'_STATUS') !== null){
+		if ($_SESSION['user']->getConfig('MODULE_'.strtoupper($this->id).'_STATUS') !== null){
 			\core\classes\messageStack::debug_log("checking if class ".get_class($this)." needs updating installed = {$this->installed} and this version = {$this->version} current status = {$this->status} needs updating = ".version_compare($this->status, $this->version, '<') );
 			if (version_compare($this->status, $this->version, '<') != 0 ) {
 				$this->upgrade($basis);

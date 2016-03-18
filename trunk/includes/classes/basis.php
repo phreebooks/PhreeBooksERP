@@ -136,25 +136,14 @@ class basis {
 	
 	public function set_database(){
 		$_SESSION['user']->is_validated();
-		\core\classes\messageStack::debug_log("connecting to database {$_SESSION['user']->company}" );
 		try{
 			define('DB_DATABASE', $_SESSION['user']->company);
 			require_once(DIR_FS_MY_FILES . $_SESSION['user']->company . '/config.php');
 			if(!defined('DB_SERVER_HOST')) define('DB_SERVER_HOST',DB_SERVER);
 			$this->DataBase = new \core\classes\PDO(DB_TYPE.":dbname={$_SESSION['user']->company};host=".DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION));
-			//	if(APC_EXTENSION_LOADED == false || apc_load_constants('configuration') == false) {
-			$result = $this->DataBase->prepare("SELECT configuration_key, configuration_value FROM " . DB_PREFIX . "configuration");
-			$result->execute();
-			while ($row = $result->fetch(\PDO::FETCH_LAZY)){
-				$this->configuration[$_SESSION['user']->company][$row['configuration_key']] = $row['configuration_value'];
-				define($row['configuration_key'],$row['configuration_value']);//@todo remove
-			}
+			$_SESSION['user']->loadConfig($this);
 			require(DIR_FS_MODULES . 'phreedom/config.php');
 			$this->currencies->load($this);
-			// pull in the custom language over-rides for this module (to pre-define the standard language)
-			$path = DIR_FS_MODULES . "{$_REQUEST['module']}/custom/pages/{$_REQUEST['page']}/extra_menus.php";
-			if (file_exists($path)) { include($path); }
-			\core\classes\messageStack::debug_log("database type ".get_class($this->DataBase));
 		}catch (\Exception $e){
 			\core\classes\messageStack::add($e);
 			$_SESSION['user']->LoadLogIn();
@@ -290,18 +279,6 @@ class basis {
 	public function clearEventsStack() {
 		\core\classes\messageStack::debug_log("clearing events stack" );
 		$this->events = array();
-	}
-
-	/**
-	 * returns the companies configuration value
-	 * @param unknown $configuration_key
-	 */
-
-	function returnConfigurationValue($configuration_key) {
-		if (array_key_exists ($configuration_key, $this->configuration[ $_SESSION['user']->company ])) {
-			return $this->configuration[ $_SESSION['user']->company ][$configuration_key];
-		}
-		return null;
 	}
 
 	function __destruct() {
