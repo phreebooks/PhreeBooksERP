@@ -47,6 +47,7 @@ class contacts {
     public  $security_level		= 0;
 
     public function __construct(){
+    	global $admin;
     	if ($this->security_token != '') $this->security_level = \core\classes\user::validate($this->security_token); // in this case it must be done after the class is defined for
     	$this->page_title_new	= sprintf(TEXT_NEW_ARGS, $this->title);
     	$this->page_title_edit	= sprintf(TEXT_EDIT_ARGS, $this->title);
@@ -57,8 +58,7 @@ class contacts {
         $this->fields 			= new \contacts\classes\fields(false, $this->type);
         foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
         $this->special_terms  =  db_prepare_input($_POST['terms']); // TBD will fix when popup terms is redesigned
-        if ($this->id  == '') $this->id  = db_prepare_input($_POST['rowSeq'], true) ? db_prepare_input($_POST['rowSeq']) : db_prepare_input($_GET['cID']);
-        if ($this->aid == '') $this->aid = db_prepare_input($_GET['aID'],     true) ? db_prepare_input($_GET['aID'])     : db_prepare_input($_POST['aID']);
+        if ($this->id  == '') $this->id  = $admin->cInfo->contactid;
         $this->crm_actions = array(
         	'0' 		=> array('id' => '0',			'text'  => TEXT_NONE),
         	'new' 		=> array('id' => 'new', 		'text'  => sprintf(TEXT_NEW_ARGS, TEXT_CALL)),
