@@ -53,7 +53,7 @@
 		$field .= '</table></td></tr>' . chr(10);
 		echo $field;
 	}
-    if (!$_SESSION['admin_encrypt']) { ?>
+    if (!$_SESSION['ENCRYPTION_VALUE']) { ?>
       <tr><td colspan="2" class="ui-state-highlight"><?php echo ACT_NO_ENCRYPT_KEY_ENTERED; ?></td></tr>
 <?php } ?>
       <tr><td colspan="2"><?php echo '&nbsp;'; ?></td></tr>

@@ -56,7 +56,7 @@ function create_menu(array $array){
 		}
 	}else{
 		echo "  <li><a href='{$array['link']}' {$array['params']}>";
-		if ($array['text'] == TEXT_HOME && ENABLE_ENCRYPTION && strlen($_SESSION['admin_encrypt']) > 0) echo html_icon('emblems/emblem-readonly.png', TEXT_ENCRYPTION_KEY_IS_SET, 'small');
+		if ($array['text'] == TEXT_HOME && ENABLE_ENCRYPTION && strlen($_SESSION['ENCRYPTION_VALUE']) > 0) echo html_icon('emblems/emblem-readonly.png', TEXT_ENCRYPTION_KEY_IS_SET, 'small');
   		echo (isset($array['icon']) ? $array['icon'].' '.$array['text'] : $array['text']).'</a>  </li>'.chr(10);
 	}
 	return true;

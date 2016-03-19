@@ -47,7 +47,7 @@ class menuItem {
 			echo '  </li>';
 		}else{
 			echo "  <li><a href='".html_href_link(FILENAME_DEFAULT, $this->link, 'SSL')."' {$this->params}>";
-			if ($this->text == TEXT_HOME && ENABLE_ENCRYPTION && strlen($_SESSION['admin_encrypt']) > 0) echo html_icon('emblems/emblem-readonly.png', TEXT_ENCRYPTION_KEY_IS_SET, 'small');
+			if ($this->text == TEXT_HOME && ENABLE_ENCRYPTION && strlen($_SESSION['ENCRYPTION_VALUE']) > 0) echo html_icon('emblems/emblem-readonly.png', TEXT_ENCRYPTION_KEY_IS_SET, 'small');
 			echo "$this->icon $this->text</a>  </li>".chr(10);
 		}
 	}

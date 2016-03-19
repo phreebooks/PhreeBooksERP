@@ -30,7 +30,7 @@ switch ($_REQUEST['action']) {
     $enc_key_confirm = db_prepare_input($_POST['enc_key_confirm']);
 	if ($enc_key <> $enc_key_confirm) throw new \core\classes\userException(TEXT_ERROR_ENCRYPTION_KEY_MATCH);
 	\core\classes\encryption::validate_password($enc_key, ENCRYPTION_VALUE);
-	$_SESSION['admin_encrypt'] = $enc_key;
+	$_SESSION['ENCRYPTION_VALUE'] = $enc_key;
     \core\classes\messageStack::add(TEXT_THE_ENCRYPTION_KEY_IS_SET,'success');
 	break;
   case 'encrypt_key':

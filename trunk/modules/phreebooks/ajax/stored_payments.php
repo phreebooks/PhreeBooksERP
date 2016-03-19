@@ -28,7 +28,7 @@ $enc_data = new \core\classes\encryption();
 $sql = "select id, hint, enc_value from ".TABLE_DATA_SECURITY." where module='contacts' and ref_1 = $contact_id";
 $result = $admin->DataBase->query($sql);
 while (!$result->EOF) {
-	$data = $enc_data->decrypt($_SESSION['admin_encrypt'], $result->fields['enc_value']);
+	$data = $enc_data->decrypt($_SESSION['ENCRYPTION_VALUE'], $result->fields['enc_value']);
 	$fields = explode(':', $data);
 	if (strlen($fields[3]) == 2) $fields[3] = '20'.$fields[3]; // make sure year is 4 digits
 	$xml .= "<Payment>\n";
@@ -40,7 +40,7 @@ while (!$result->EOF) {
 	$result->MoveNext();
 }
 // error check
-if (!$_SESSION['admin_encrypt'] && $result->fetch(\PDO::FETCH_NUM) > 0)  // no permission to enter page, return error
+if (!$_SESSION['ENCRYPTION_VALUE'] && $result->fetch(\PDO::FETCH_NUM) > 0)  // no permission to enter page, return error
   	throw new \core\classes\userException(BNK_ERROR_NO_ENCRYPT_KEY);
 
 echo createXmlHeader() . $xml . createXmlFooter();

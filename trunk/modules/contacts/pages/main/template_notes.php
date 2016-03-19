@@ -16,6 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/contacts/pages/main/template_notes.php
 //
+
 ?>
 
 <div title="<?php echo TEXT_NOTES;?>">

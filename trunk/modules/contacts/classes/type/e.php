@@ -59,11 +59,11 @@ class e extends \contacts\classes\contacts{
 			$this->address[$result['type']][$i] = get_object_vars ($result);
 		}
 		// load payment info
-		if ($_SESSION['admin_encrypt'] && ENABLE_ENCRYPTION) {
+		if ($_SESSION['ENCRYPTION_VALUE'] && ENABLE_ENCRYPTION) {
 			$sql = $admin->DataBase->prepare("SELECT id, hint, enc_value FROM ".TABLE_DATA_SECURITY." WHERE module='contacts' and ref_1={$this->id}");
 			$sql->execute();
 			while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
-				$val = explode(':', \core\classes\encryption::decrypt($_SESSION['admin_encrypt'], $result['enc_value']));
+				$val = explode(':', \core\classes\encryption::decrypt($_SESSION['ENCRYPTION_VALUE'], $result['enc_value']));
 				$this->payment_data[] = array(
 						'id'   => $result['id'],
 						'name' => $val[0],

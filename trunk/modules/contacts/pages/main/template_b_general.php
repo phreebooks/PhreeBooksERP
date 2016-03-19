@@ -23,7 +23,7 @@
     <table>
       <tr>
         <td align="right"><?php echo TEXT_BRANCH_ID; ?></td>
-        <td><?php echo html_input_field('short_name', $basis->cInfo->contact->short_name, 'size="21" maxlength="20"', true); ?></td>
+        <td><?php echo html_input_field('short_name', $basis->cInfo->contact->short_name, 'size="21" maxlength="20"', $basis->cInfo->contact->auto_type == false ? true : false); ?></td>
         <td align="right">&nbsp;</td>
         <td>&nbsp;</td>
         <td align="right"><?php echo TEXT_INACTIVE; ?></td>

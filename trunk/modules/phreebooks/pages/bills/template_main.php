@@ -61,7 +61,7 @@ echo '&nbsp;' . html_icon('actions/system-search.png', TEXT_SEARCH, 'small', 'al
 ?>
 	  </td>
 	  <td align="right">
-	    <?php echo (($_GET['jID'] == 20 || !isset($_SESSION['admin_encrypt'])) ? '&nbsp;' : TEXT_SAVE_PAYMENT_INFO . html_checkbox_field('save_payment', '1', ($order->save_payment ? true : false), '', '')); ?>
+	    <?php echo (($_GET['jID'] == 20 || !isset($_SESSION['ENCRYPTION_VALUE'])) ? '&nbsp;' : TEXT_SAVE_PAYMENT_INFO . html_checkbox_field('save_payment', '1', ($order->save_payment ? true : false), '', '')); ?>
 	  </td>
 	  <td>
 	    <?php echo html_pull_down_menu('payment_id', gen_null_pull_down(), '', 'style="visibility:hidden" onchange=\'fillPayment()\'') . chr(10); ?>

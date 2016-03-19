@@ -250,7 +250,7 @@ class admin extends \core\classes\admin {
     				<input class="easyui-searchbox" data-options="prompt:'<?php TEXT_PLEASE_INPUT_VALUE; ?>',searcher:doSearch" id="search_text" >
     			</div>
     		</div>
-    		<div id="win">
+    		<div id="win" class="easyui-window">
     		<div id="contactToolbar" style="margin:2px 5px;">
 				<a class="easyui-linkbutton" iconCls="icon-undo" plain="true" onclick="closeWindow()"><?php echo TEXT_CANCEL?></a>
 				<?php if (\core\classes\user::validate($basis->cInfo->contact->security_token, true) < 2){?>
@@ -407,7 +407,7 @@ class admin extends \core\classes\admin {
 		}
 		if (!$basis->cInfo->contact_show_inactive) $criteria[] = "(c.inactive = '0' or c.inactive = '')"; // inactive flag
 		$search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
-		$query_raw = "SELECT id as contactid, short_name, CASE c.type WHEN 'e' THEN CONCAT(contact_first , ' ',contact_last) ELSE primary_name END AS name, contact_last, contact_first, contact_middle, address1, city_town, state_province, postal_code, telephone1, telephone4, email, inactive FROM contacts c LEFT JOIN address_book a ON c.id = a.ref_id $search ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order}";
+		$query_raw = "SELECT id as contactid, short_name, CASE WHEN c.type = 'e' OR c.type = 'i' THEN CONCAT(contact_first , ' ',contact_last) ELSE primary_name END AS name, contact_last, contact_first, contact_middle, address1, city_town, state_province, postal_code, telephone1, telephone4, email, inactive FROM contacts c LEFT JOIN address_book a ON c.id = a.ref_id $search ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order}";
 		$sql = $basis->DataBase->prepare($query_raw);
 		$sql->execute();
 		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);

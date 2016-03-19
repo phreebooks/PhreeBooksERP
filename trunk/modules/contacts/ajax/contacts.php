@@ -75,7 +75,7 @@ switch ($_REQUEST['action']) {
 		if ($result->fetch(\PDO::FETCH_NUM) < 1) {
 			$message[] = sprintf('The record could not be found! Looking for id = %s', $id);
 		} else {
-			$data = \core\classes\encryption::decrypt($_SESSION['admin_encrypt'], $result['enc_value']);
+			$data = \core\classes\encryption::decrypt($_SESSION['ENCRYPTION_VALUE'], $result['enc_value']);
 			$fields = explode(':', $data);
 			if (strlen($fields[3]) == 2) $fields[3] = '20'.$fields[3]; // make sure year is 4 digits
 			$xml .= "<PaymentMethod>\n";

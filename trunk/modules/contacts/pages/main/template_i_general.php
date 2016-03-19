@@ -27,7 +27,7 @@ $acct_def = (!$basis->cInfo->contact->dept_rep_id) ? array() : array(array('id'=
       <tr>
        <td align="right"><?php echo TEXT_CONTACT_ID; ?></td>
        <td>
-	     <?php echo html_input_field('short_name', $basis->cInfo->contact->short_name, 'size="21" maxlength="20"', true); ?>
+	     <?php echo html_input_field('short_name', $basis->cInfo->contact->short_name, 'size="21" maxlength="20"', $basis->cInfo->contact->auto_type == false ? true : false); ?>
          <?php echo ' ' . TEXT_INACTIVE . ' '; ?>
          <?php echo html_checkbox_field('inactive', '1', $basis->cInfo->contact->inactive); ?>
 	   </td>

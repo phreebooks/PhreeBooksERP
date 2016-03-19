@@ -24,7 +24,7 @@ echo html_hidden_field('account_number', $basis->cInfo->contact->account_number)
     <table>
       <tr>
         <td align="right"><?php echo sprintf(TEXT_ARGS_ID, TEXT_EMPLOYEE); ?></td>
-        <td><?php echo html_input_field('short_name', $basis->cInfo->contact->short_name, 'size="21" maxlength="20"', true); ?></td>
+        <td><?php echo html_input_field('short_name', $basis->cInfo->contact->short_name, 'size="21" maxlength="20"', $basis->cInfo->contact->auto_type == false ? true : false); ?></td>
         <td align="right"><?php echo ACT_E_ID_NUMBER; ?></td>
         <td><?php echo html_input_field('gov_id_number', $basis->cInfo->contact->gov_id_number, 'size="17" maxlength="16"'); ?></td>
         <td align="right"><?php echo TEXT_INACTIVE; ?></td>

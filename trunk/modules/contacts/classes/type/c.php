@@ -35,12 +35,12 @@ class c extends \contacts\classes\contacts{
 	public $contact_level	= 'r';
 
 	public function __construct(){
-		$this->tab_list[] = array('file'=>'template_payment',	'tag'=>'payment',  'order'=>30, 'text'=>TEXT_PAYMENT);
-		$this->tab_list[] = array('file'=>'template_addbook',	'tag'=>'addbook',  'order'=>20, 'text'=>TEXT_ADDRESS_BOOK);
-		$this->tab_list[] = array('file'=>'template_contacts',	'tag'=>'contacts', 'order'=> 5, 'text'=>TEXT_CONTACTS);
-		$this->tab_list[] = array('file'=>'template_history',	'tag'=>'history',  'order'=>10, 'text'=>TEXT_HISTORY);
-		$this->tab_list[] = array('file'=>'template_notes',		'tag'=>'notes',    'order'=>40, 'text'=>TEXT_NOTES);
-		$this->tab_list[] = array('file'=>'template_general',	'tag'=>'general',  'order'=> 1, 'text'=>TEXT_GENERAL);
+		$this->tab_list[] = array('file'=>'template_payment',	'tag'=>'payment',  'order'=>30);
+		$this->tab_list[] = array('file'=>'template_addbook',	'tag'=>'addbook',  'order'=>20);
+		$this->tab_list[] = array('file'=>'template_contacts',	'tag'=>'contacts', 'order'=> 5);
+		$this->tab_list[] = array('file'=>'template_history',	'tag'=>'history',  'order'=>10);
+		$this->tab_list[] = array('file'=>'template_notes',		'tag'=>'notes',    'order'=>40);
+		$this->tab_list[] = array('file'=>'template_general',	'tag'=>'general',  'order'=> 1);
 		parent::__construct();
 		$this->contacts_levels = array(
 			'r' => array('id' => 'r', 'text'=> TEXT_RETAIL),

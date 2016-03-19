@@ -17,7 +17,7 @@
 //  Path: /modules/contacts/pages/main/template_detail.php
 //
 //echo html_form('contacts', FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'post', 'enctype="multipart/form-data"', true) . chr(10);
-echo "<form id='contacts' style='padding:10px 20px 10px 40px;' method='post' enctype='multipart/form-data'>";
+echo "<form id='contacts' class=\"easyui-form\" style='padding:10px 20px 10px 40px;' method='post' enctype='multipart/form-data'>";
 // include hidden fields
 echo html_hidden_field('action',        '') . chr(10);
 echo html_hidden_field('id',  $basis->cInfo->contact->id) . chr(10);
@@ -56,10 +56,10 @@ if (isset($extra_contact_tabs) && is_array($extra_contact_tabs)) {
 echo $basis->cInfo->contact->fields->extra_tab_html;// user added extra tabs
 ?>
 </div>
+</form>
 
-
-<div id = 'contactsWindow'>
-	<form id='contactDetails'>
+<div id ='contactsWindow' class="easyui-window">
+	<form id='contactDetails' class="easyui-form">
 	    <legend><?php echo TEXT_ADD_UPDATE .' ' . TEXT_CONTACT; ?></legend>
 	    <table class="ui-widget" style="border-collapse:collapse;width:100%;">
 	      <tr>
@@ -86,4 +86,3 @@ echo $basis->cInfo->contact->fields->extra_tab_html;// user added extra tabs
 	    </table>
 	</form>
 </div>
-</form>

@@ -210,7 +210,7 @@ class tills {
 	  	}
 	  	$sql = "select till_id, description from " . $this->db_table . " where store_id in (" . implode(',', $temp) . ")";
 	    $result = $admin->DataBase->query($sql);
-	    if (defined('ENABLE_ENCRYPTION') && ENABLE_ENCRYPTION == true && (!isset($_SESSION['admin_encrypt']) || $_SESSION['admin_encrypt'] == '')) throw new \core\classes\userException("Error - Encryption key not set! The encryption key must be set to use the POS module.");
+	    if (defined('ENABLE_ENCRYPTION') && ENABLE_ENCRYPTION == true && (!isset($_SESSION['ENCRYPTION_VALUE']) || $_SESSION['ENCRYPTION_VALUE'] == '')) throw new \core\classes\userException("Error - Encryption key not set! The encryption key must be set to use the POS module.");
 	    if ($result->fetch(\PDO::FETCH_NUM)== 0) throw new \core\classes\userException("Before continuing set a till for this store. This will contain default values to allow this page to work", E_USER_ERROR);// there should always be a till because of defaults values.
 	    if ($result->fetch(\PDO::FETCH_NUM)== 1) return false;
 	    return true;

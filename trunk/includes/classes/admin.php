@@ -272,7 +272,6 @@ class admin {
 			if ($method == '.' || $method == '..' || !is_dir($method_dir . $method)) continue;
 		  	$class = "\\$this->id\\$type\\$method\\$method";
 		  	$choices[$method] = new $class;
-		  	\core\classes\messageStack::debug_log("finding $type as $class");
 	    }
 		uasort($choices, "arange_object_by_sort_order");
 	    return $choices;

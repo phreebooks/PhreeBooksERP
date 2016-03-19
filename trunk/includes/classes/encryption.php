@@ -32,7 +32,7 @@ class encryption {
   	}
 
   	final static function encrypt_cc($params) {
-		if (strlen($_SESSION['admin_encrypt']) < 1) throw new \core\classes\userException(TEXT_WARNING_NO_ENCRYPTION_KEY);
+		if (strlen($_SESSION['ENCRYPTION_VALUE']) < 1) throw new \core\classes\userException(TEXT_WARNING_NO_ENCRYPTION_KEY);
 		if ($params['number']) {
 	  		$params['number'] = preg_replace("/[^0-9]/", "", $params['number']);
 	  		$hint  = substr($params['number'], 0, 4);
@@ -47,7 +47,7 @@ class encryption {
 			if (isset($params['alt1'])) $payment[] = $params['alt1'];
 			if (isset($params['alt2'])) $payment[] = $params['alt2'];
 			$val = implode(':', $payment).':';
-			$enc_value = $this->encrypt($_SESSION['admin_encrypt'], $val, 128);
+			$enc_value = $this->encrypt($_SESSION['ENCRYPTION_VALUE'], $val, 128);
 		}
 		if (strlen($params['exp_year']) == 2) $params['exp_year'] = '20'.$params['exp_year'];
 		$exp_date = $params['exp_year'].'-'.$params['exp_mon'].'-01';
@@ -55,7 +55,7 @@ class encryption {
   	}
 
   	final static function decrypt ($key, $source) {
-  		if (strlen($_SESSION['admin_encrypt']) < 1) throw new \core\classes\userException(TEXT_WARNING_NO_ENCRYPTION_KEY);
+  		if (strlen($_SESSION['ENCRYPTION_VALUE']) < 1) throw new \core\classes\userException(TEXT_WARNING_NO_ENCRYPTION_KEY);
 		$fudgefactor = $this->_convertKey($key);
 		if (empty($source)) throw new \core\classes\userException('No value has been supplied for decryption');
 		$target  = null;
@@ -77,7 +77,7 @@ class encryption {
   	}
 
   	final static function encrypt ($key, $source, $sourcelen = 0) {
-  		if (strlen($_SESSION['admin_encrypt']) < 1) throw new \core\classes\userException(TEXT_WARNING_NO_ENCRYPTION_KEY);
+  		if (strlen($_SESSION['ENCRYPTION_VALUE']) < 1) throw new \core\classes\userException(TEXT_WARNING_NO_ENCRYPTION_KEY);
 		$fudgefactor  = $this->_convertKey($key);
 		if (empty($source)) throw new \core\classes\userException('No value has been supplied for encryption');
 	  	while (strlen($source) < $sourcelen) $source .= ' ';
