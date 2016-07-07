@@ -476,5 +476,20 @@ class admin extends \core\classes\admin {
 		$admin->DataBase->query ( "INSERT INTO " . TABLE_TAX_RATES . " VALUES (2, 'c', 'State Only', 'State Only Tax - Shipments', '2', '0');" );
 		parent::load_demo ();
 	}
+	
+	function loadOrders (\core\classes\basis &$basis) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		$raw_sql  = "SELECT id, journal_id, closed, closed_date, post_date, total_amount, purchase_invoice_id, purch_order_id FROM ".TABLE_JOURNAL_MAIN." WHERE";
+		$raw_sql .= ($basis->cInfo->only_open) ? " closed = '0' and " : "";
+		$raw_sql .= " journal_id in ({$basis->cInfo->journal_id}) and bill_acct_id = {$basis->cInfo->contact_id} ORDER BY post_date DESC";
+		$raw_sql .= ($basis->cInfo->limit) ? " LIMIT {$basis->cInfo->limit}" : "";
+		$sql = $basis->DataBase->prepare($raw_sql);
+		$sql->execute();
+		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
+		$temp = array();
+		$temp["total"] = sizeof($results);
+		$temp["rows"] = $results;
+		echo json_encode($temp);
+	}
 }
 ?>

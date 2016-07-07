@@ -19,90 +19,131 @@
 ?>
 <div title="<?php echo TEXT_HISTORY;?>">
 <?php // ***********************  History Section  ****************************** ?>
-  <fieldset>
-    <legend><?php echo TEXT_ACCOUNT_HISTORY; ?></legend>
-    <p><?php echo constant('ACT_'.strtoupper($basis->cInfo->contact->type).'_FIRST_DATE').' '.\core\classes\DateTime::createFromFormat(DATE_FORMAT, $basis->cInfo->contact->first_date); ?></p>
-    <p width="50%"><?php echo constant('ACT_'.strtoupper($basis->cInfo->contact->type).'_LAST_DATE1').' '.\core\classes\DateTime::createFromFormat(DATE_FORMAT, $basis->cInfo->contact->last_update); ?></p>
-  </fieldset>
-
-  <fieldset>
-    <legend><?php echo TEXT_ORDER_HISTORY; ?></legend>
-    <table class="ui-widget" style="border-style:none;width:100%;">
-	  <tr><td valign="top" width="50%">
-		<table class="ui-widget" style="border-collapse:collapse;width:100%;">
-		 <thead class="ui-widget-header">
-			<?php if($basis->cInfo->contact->type == 'c'){ ?>
-		  <tr><th colspan="5"><?php echo sprintf(ACT_SO_HIST, LIMIT_HISTORY_RESULTS); ?></th></tr>
-			<?php }else{ ?>
- 		  <tr><th colspan="5"><?php echo sprintf(TEXT_PO_HISTORY_ARGS, LIMIT_HISTORY_RESULTS); ?></th></tr>
-			<?php } ?>
-		  <tr>
-		    <th><?php if($basis->cInfo->contact->type == 'c') echo TEXT_SO_NUMBER; ?></th>
-		    <th><?php echo TEXT_PO_NUMBER; ?></th>
-		    <th><?php echo TEXT_DATE; ?></th>
-		    <th><?php echo TEXT_OPEN; ?></th>
-		    <th><?php echo TEXT_AMOUNT; ?></th>
-		  </tr>
-		 </thead>
-		 <tbody class="ui-widget-content">
-		  <?php // first SO/PO
-	    $result = $basis->cInfo->contact->load_orders('10', false, LIMIT_HISTORY_RESULTS);
-		$odd = true;
-	    if ($result) {
-		  array_shift($result); // the first entry is for new stuff, don't display
-		  foreach ($result as $value) {
-		    echo '<tr class="'.($odd?"odd":"even").'">';
-		    echo '<td>';
-			echo html_icon('actions/edit-find-replace.png', TEXT_EDIT,   'small', 'onclick="window.open(\'' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;action=edit&amp;jID=' . ($basis->cInfo->contact->type == 'v' ? 4 : 10) . '&amp;oID=' . $value['id'], 'SSL') . '\',\'_blank\')"');
-		    echo '<a href="' . html_href_link(FILENAME_DEFAULT, 'module=phreebooks&amp;page=orders&amp;action=edit&amp;jID=' . ($basis->cInfo->contact->type == 'v' ? 4 : 10) . '&amp;oID=' . $value['id'], 'SSL') . '">' . $value['purchase_invoice_id'] . '</a></td>';
-		    if($basis->cInfo->contact->type == 'c') echo '<td>' . ($value['purch_order_id'] ? $value['purch_order_id'] : '&nbsp;') . '</td>';
-		    echo '<td align="center">' . \core\classes\DateTime::createFromFormat(DATE_FORMAT, $value['post_date']) . '</td>';
-		    echo '<td align="center">' . ($value['closed'] ? '&nbsp;' : TEXT_YES) . '</td>';
-		    echo '<td align="right">'  . $basis->currencies->format($value['total_amount']) . '</td></tr>' . chr(10);
-		    $odd = !$odd;
-		  }
-		} else {
-		  echo '<tr><td align="center" colspan="5">' . TEXT_NO_RESULTS_FOUND . '</td></tr>';
-		}
-	  ?>
-		</tbody>
-		</table>
-	  </td><td valign="top" width="50%">
-		<table class="ui-widget" style="border-collapse:collapse;width:100%;">
-		 <thead class="ui-widget-header">
-		  <tr><th colspan="5"><?php echo sprintf(TEXT_INVOICE_HISTORY_ARGS, LIMIT_HISTORY_RESULTS); ?></th></tr>
-		  <tr><th><?php echo TEXT_INVOICE_NUMBER; ?></th>
-		  <th><?php echo TEXT_PO_NUMBER; ?></th>
-		  <th><?php echo TEXT_DATE; ?></th>
-		  <th><?php echo TEXT_PAID; ?></th>
-		  <th><?php echo TEXT_AMOUNT; ?></th></tr>
-		 </thead>
-		 <tbody class="ui-widget-content">
-		  <?php // then Sales/Purchases
-	    $result = $basis->cInfo->contact->load_orders($basis->cInfo->contact->journals, false, LIMIT_HISTORY_RESULTS);
-		$odd = true;
-		if ($result) {
-		  array_shift($result); // the first entry is for new stuff, don't display
-		  foreach ($result as $value) {
-		    $closed = $value['closed_date'] <> '0000-00-00' ? \core\classes\DateTime::createFromFormat(DATE_FORMAT, $value['closed_date']) : ($value['closed'] ? TEXT_YES : '&nbsp;');
-		    echo '<tr class="'.($odd?"odd":"even").'">';
-		    echo '<td>';
-			echo html_icon('actions/edit-find-replace.png', TEXT_EDIT,   'small', 'onclick="window.open(\'' . html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;action=edit&amp;jID={$value['journal_id']}&amp;oID={$value['id']}", 'SSL') . '\',\'_blank\')"');
-		    echo '<a href="' . html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;action=edit&amp;jID={$value['journal_id']}&amp;oID={$value['id']}", 'SSL') . '">' . $value['purchase_invoice_id'] . '</a></td>';
-		    echo '<td>' . ($value['purch_order_id'] ? $value['purch_order_id'] : '&nbsp;') . '</td>';
-		    echo '<td align="center">' . \core\classes\DateTime::createFromFormat(DATE_FORMAT, $value['post_date']) . '</td>';
-		    echo '<td align="center">' . $closed . '</td>';
-		    echo '<td align="right">'  . $basis->currencies->format($value['total_amount']) . '</td></tr>' . chr(10);
-		    $odd = !$odd;
-		  }
-		} else {
-		  echo '<tr><td align="center" colspan="5">' . TEXT_NO_RESULTS_FOUND . '</td></tr>';
-		}
-	  ?>
-		</tbody>
-		</table>
-	  </td></tr>
-    </table>
-  </fieldset>
+	<fieldset>
+    	<legend><?php echo TEXT_ACCOUNT_HISTORY; ?></legend>
+    	<p><?php echo constant('ACT_'.strtoupper($basis->cInfo->contact->type).'_FIRST_DATE').' '.\core\classes\DateTime::createFromFormat(DATE_FORMAT, $basis->cInfo->contact->first_date); ?></p>
+    	<p width="50%"><?php echo constant('ACT_'.strtoupper($basis->cInfo->contact->type).'_LAST_DATE1').' '.\core\classes\DateTime::createFromFormat(DATE_FORMAT, $basis->cInfo->contact->last_update); ?></p>
+  	</fieldset>
+  	<fieldset>
+    	<legend><?php echo TEXT_ORDER_HISTORY; ?></legend>
+    	<?php if($basis->cInfo->contact->order_jid != ''){?>
+	    <table id='order_history' title="<?php echo TEXT_ORDER_HISTORY ." ". sprintf(TEXT_HISTORY_ARGS, LIMIT_HISTORY_RESULTS); ?>">
+	    	<thead>
+	    		<tr>
+		        	<th data-options="field:'purchase_invoice_id',sortable:true, align:'center'"><?php echo TEXT_SO_NUMBER;?></th>
+	    	        <th data-options="field:'purch_order_id',sortable:true, align:'center'"><?php echo TEXT_PO_NUMBER?></th>
+	        	    <th data-options="field:'post_date',sortable:true, align:'center', formatter: function(value,row,index){ return formatDate(new Date(value))}"><?php echo TEXT_DATE?></th>
+		            <th data-options="field:'total_amount',sortable:true, align:'right', formatter: function(value,row,index){ return formatCurrency(value)}"><?php echo TEXT_AMOUNT?></th>
+	    	    </tr>
+	    	</thead>
+	    </table>
+	    <?php }
+	    if($basis->cInfo->contact->journals != ''){ ?>
+	    <table id='invoice_history' title="<?php echo TEXT_INVOICE_HISTORY ." ". sprintf(TEXT_HISTORY_ARGS, LIMIT_HISTORY_RESULTS); ?>">
+	    	<thead>
+	    		<tr>
+		        	<th data-options="field:'purchase_invoice_id',sortable:true, align:'center'"><?php echo TEXT_INVOICE_NUMBER;?></th>
+	    	        <th data-options="field:'purch_order_id',sortable:true, align:'center'"><?php echo TEXT_PO_NUMBER?></th>
+	        	    <th data-options="field:'post_date',sortable:true, align:'center', formatter: function(value,row,index){ return formatDate(new Date(value))}"><?php echo TEXT_DATE?></th>
+	            	<th data-options="field:'closed_date',sortable:true, align:'center', formatter: function(value,row,index){ if ( value == '0000-00-00') {return ''}else{return formatDate(new Date(value))}}"><?php echo TEXT_PAID?></th>
+		            <th data-options="field:'total_amount',sortable:true, align:'right', formatter: function(value,row,index){ return formatCurrency(value)}"><?php echo TEXT_AMOUNT?></th>
+	    	    </tr>
+	    	</thead>
+	    </table> 
+	    <?php }?>
+	</fieldset>
 <?php echo RECORD_NUM_REF_ONLY . $basis->cInfo->contact->id; ?>
 </div>
+
+<script type="text/javascript">
+<?php if($basis->cInfo->contact->order_jid != ''){?>
+$('#order_history').datagrid({
+	url:		"index.php?action=loadOrders",
+	queryParams: {
+		contact_id: '<?php echo $basis->cInfo->contact->id;?>',
+		journal_id: '<?php echo $basis->cInfo->contact->order_jid?>',
+		open_only: false,
+		limit:'<?php echo LIMIT_HISTORY_RESULTS?>',
+		dataType: 'json',
+        contentType: 'application/json',
+        async: false,
+	},
+	width: '500px',
+	style:{
+		float:'left',
+		margin:'50px',
+	},
+	onBeforeLoad:function(){
+		console.log('loading of the order history datagrid');
+	},
+	onLoadSuccess: function(data){
+		console.log('the loading of the order history datagrid was succesfull');
+		$.messager.progress('close');
+	},
+	onLoadError: function(){
+		console.error('the loading of the order history datagrid resulted in a error');
+		$.messager.progress('close');
+		$.messager.alert('<?php echo TEXT_ERROR?>','Load error for table order history');
+	},
+	onDblClickRow: function(index , row){
+		console.log('a row in the order history was double clicked');
+		//@todo open order
+	},
+	remoteSort:	false,
+	fitColumns:	true,
+	idField:	"purchase_invoice_id",
+	singleSelect:true,
+	sortName:	"post_date",
+	sortOrder: 	"dsc",
+	loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
+	rowStyler: function(index,row){
+		if (row.closed == '1') return 'background-color:pink;';
+	},
+});
+<?php }
+if($basis->cInfo->contact->journals != ''){ ?>
+$('#invoice_history').datagrid({
+	url:'index.php?action=loadOrders',
+	queryParams: {
+		contact_id: '<?php echo $basis->cInfo->contact->id;?>',
+		journal_id: '<?php echo $basis->cInfo->contact->journals?>',
+		open_only: false,
+		limit:'<?php echo LIMIT_HISTORY_RESULTS?>',
+		dataType: 'json',
+		contentType: 'application/json',
+		async: false,
+	},
+	width: '500px',
+	style:{
+		float:'left',
+		margin:'50px',
+	},
+    onBeforeLoad:function(){
+		console.log('loading of the invoice history datagrid');
+	},
+	onLoadSuccess: function(data){
+		console.log('the loading of the invoice history datagrid was succesfull');
+		$.messager.progress('close');
+	},
+	onLoadError: function(){
+		console.error('the loading of the invoice history datagrid resulted in a error');
+		$.messager.progress('close');
+		$.messager.alert('<?php echo TEXT_ERROR?>','Load error for table invoice history');
+	},
+	onDblClickRow: function(index , row){
+		console.log('a row in the invoice history was double clicked');
+		//@todo open order
+	},
+	remoteSort:	false,
+	fitColumns:	true,
+	idField:	"purchase_invoice_id",
+	singleSelect:true,
+	sortName:	"post_date",
+	sortOrder: 	"dsc",
+	loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
+	rowStyler: function(index,row){
+		if (row.closed_date != '0000-00-00') return 'background-color:pink;';
+	},
+});
+<?php }?>
+</script>

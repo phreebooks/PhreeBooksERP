@@ -17,6 +17,7 @@
 //  Path: /modules/contacts/pages/main/js_include.php
 //
 ?>
+<script type="text/javascript" src="includes/easyui/plugins/datagrid-detailview.js"></script>
 <script type="text/javascript">
 
 // pass any php variables generated during pre-process that are used in the javascript functions.
@@ -33,6 +34,7 @@ function loadContacts() {
   if (guess.length < 3) return;
   $.ajax({
     type: "GET",
+    async: false,
     url: 'index.php?module=contacts&page=ajax&op=load_contact_info&guess='+guess,
     dataType: ($.browser.msie) ? "text" : "xml",
     error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -41,89 +43,6 @@ function loadContacts() {
 	success: fillContacts
   });
 }
-
-function contactdoSearch(value){
-	console.log('A contact search was requested.');
-	$.messager.progress();
-	$('#cdg').datagrid('load',{
-		dept_rep_id: $('#id').val(),
-		search_text: $('#Contacts_search_text').val(),
-		dataType: 'json',
-        contentType: 'application/json',
-        type: '<?php echo $basis->cInfo->type;?>',
-        contact_show_inactive: $('#contacts_show_inactive').is(":checked") ? 1 : 0,
-	});
-}
-
-function newContact(){
-    $('#cdg').datagrid('appendRow',{isNewRecord:true});
-    var index = $('#dg').datagrid('getRows').length - 1;
-    $('#cdg').datagrid('expandRow', index);
-    $('#cdg').datagrid('selectRow', index);
-}
-
-$('#cdg').datagrid({
-	url:		"index.php?action=GetAllContacts",
-	queryParams: {
-		dept_rep_id: $('#id').val(),
-		type: '<?php echo $basis->cInfo->type;?>',
-		dataType: 'json',
-        contentType: 'application/json',
-        async: false
-	},
-	onLoadSuccess:function(data){
-		console.log('the loading of the contacts datagrid was succesfull');
-		$.messager.progress('close');
-	},
-	onLoadError: function(){
-		console.log('the loading of the contacts datagrid resulted in a error');
-		$.messager.progress('close');
-		$.messager.alert('<?php echo TEXT_ERROR?>','Load error:'+arguments.responseText);
-	},
-	onDblClickRow: function(index , row){
-		console.log('a row in the datagrid was double clicked');
-		$('#contactsWindow').window('open').window('center').window('setTitle',"<?php echo TEXT_EDIT?>"+ ' ' + row.name);
-	},
-	remoteSort:	false,
-	idField:	"contactid",
-	fitColumns:	true,
-	singleSelect:true,
-	sortName:	"name",
-	sortOrder: 	"asc",
-	loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
-	toolbar: 	"#ContactsToolbar",
-	rowStyler: function(index,row){
-		if (row.inactive == '1')return 'background-color:pink;';
-	},
-    onExpandRow: function(index,row){
-        var ddv = $(this).datagrid('getRowDetail',index).find('div.ddv');
-        ddv.panel({
-            border:false,
-            cache:true,
-            onBeforeLoad: function(param){
-				var row = $('#cdg').datagrid('getSelected');
-				param.contactid = row.contactid;
-			},
-            href:'index.php?action=editContact',
-            queryParams: {
-				type: '<?php echo $basis->cInfo->type;?>',
-				dataType: 'html',
-                contentType: 'text/html',
-                async: false
-			},
-            onLoad:function(){
-                $('#cdg').datagrid('fixDetailRowHeight',index);
-                $('#cdg').datagrid('selectRow',index);
-                $('#cdg').datagrid('getRowDetail',index).find('form').form('load',row);
-            }
-        });
-        $('#cdg').datagrid('fixDetailRowHeight',index);
-    },
-    view: detailview,
-    detailFormatter:function(index,row){
-        return '<div class="ddv"></div>';
-    },
-});
 
 // ajax response handler call back function
 function fillContacts(sXml) {

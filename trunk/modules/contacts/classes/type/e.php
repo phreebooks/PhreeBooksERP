@@ -26,7 +26,7 @@ class e extends \contacts\classes\contacts{
     public $dept_rep_id 	= EMP_DEFAULT_DEPARTMENT; //will overwrite if exists in database.
 
 	public function __construct(){
-		$this->tab_list[] = array('file'=>'template_e_history',	'tag'=>'history',  'order'=>10, 'text'=>TEXT_HISTORY);
+		$this->tab_list[] = array('file'=>'template_history',	'tag'=>'history',  'order'=>10, 'text'=>TEXT_HISTORY);
 		$this->tab_list[] = array('file'=>'template_notes',		'tag'=>'notes',    'order'=>40, 'text'=>TEXT_NOTES);
 		$this->tab_list[] = array('file'=>'template_e_general',	'tag'=>'general',  'order'=> 1, 'text'=>TEXT_GENERAL);
 		$this->employee_types = array(

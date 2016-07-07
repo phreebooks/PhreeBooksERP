@@ -26,6 +26,7 @@ class c extends \contacts\classes\contacts{
 	public $security_token	= SECURITY_ID_MAINTAIN_CUSTOMERS;
 	public $auto_type		= AUTO_INC_CUST_ID;
 	public $auto_field		= 'next_cust_id_num';
+	public $order_jid		= '10';
 	public $journals		= '12,13,19';
 	public $help			= '07.03.02.02';
 	public $help_terms		= '07.03.02.04';

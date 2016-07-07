@@ -43,11 +43,13 @@ class language {
 //		$this->find_language_constants();
 		if (sizeof($this->languages) == 0) $this->get_languages();
 		if (sizeof($this->phrases)   == 0) $this->get_translations();
+		if (!file_exists(DIR_FS_INCLUDES."language/custom/locals.xml")) $this->create_countries();
 	}
 
 	public function __wakeup() {
 		if( isset($_REQUEST['language']) && $_REQUEST['language'] != '') $this->language_code = $_REQUEST['language'];
 		foreach ($this->phrases as $key => $value ) define($key, $value);
+		if (!file_exists(DIR_FS_INCLUDES."language/custom/locals.xml")) $this->create_countries();
 	}
 	
 	/**
@@ -272,6 +274,64 @@ class language {
 		}
 		if (isset($this->locales->data)) return $this->locales->data;
 		return $this->locales;
+	}
+	
+	function create_countries(){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__);
+		$countries = array();
+		$lang_dir = DIR_FS_MODULES ."phreedom/language";
+		$language_folders = @scandir ( $lang_dir );
+		foreach ( $language_folders as $language_folder ) {
+			if ($language_folders == '.' || $language_folders == '..') continue;
+			if (is_dir ( "{$lang_dir}/{$language_folder}" )) {
+				$path = "{$lang_dir}/{$language_folder}/locales.xml";
+				if (!file_exists($path)) continue;
+				$xml = new \DomDocument();
+				$xml->load($path);
+				$phrases = $xml->getElementsByTagName('country');
+				foreach ($phrases as $phrase) {
+					$temp = array();
+					if($phrase->childNodes->length) {
+						foreach($phrase->childNodes as $i) {
+							$temp[$i->nodeName] = $i->nodeValue;
+						}
+					}
+					\core\classes\messageStack::debug_log("phrase ".print_r($temp, true));
+					if (isset($countries[$temp['iso3']])){
+						$countries[$temp['iso3']]['languages'][$language_folder] = $temp['name'];
+					}else{
+						$countries[$temp['iso3']]= array(
+								'iso2'   	=> $temp['iso2'],
+								'languages'	=> array(
+										$language_folder => $temp['name'],
+								),
+						);
+					}
+				}
+			}
+		}
+		ksort($countries);
+		\core\classes\messageStack::debug_log("found array ".print_r($countries, true));
+		//store in xml.
+		$doc = new \DOMDocument('1.0', 'utf-8');
+		$doc->formatOutput = true;
+		$root_element = $doc->createElement('countries');
+		$root = $doc->appendChild($root_element);
+		foreach($countries as $key => $value) {
+			$first_element = $doc->createElement('country');
+			$first_element->setAttribute('xml:id', $key);
+			$second = $root->appendChild($first_element);
+			$temp = $doc->createElement('iso3', $value['iso2']);
+			$second->appendChild($temp);
+			$temp = $doc->createElement('iso2', $value['iso2']);
+			$second->appendChild($temp);
+			foreach($value['languages'] as $language => $translation) {
+				$temp = $doc->createElement($language, $translation);
+				$second->appendChild($temp);
+			}
+		}
+		$custom_path = DIR_FS_INCLUDES."language/custom/locals.xml";
+		$doc->save($custom_path);
 	}
 	
 	function __sleep(){

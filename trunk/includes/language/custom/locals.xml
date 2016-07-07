@@ -1,0 +1,1437 @@
+<?xml version="1.0" encoding="utf-8"?>
+<countries>
+  <country xml:id="ABW">
+    <iso3>AW</iso3>
+    <iso2>AW</iso2>
+    <en_us>Aruba</en_us>
+    <nl_nl>Aruba</nl_nl>
+  </country>
+  <country xml:id="AFG">
+    <iso3>AF</iso3>
+    <iso2>AF</iso2>
+    <en_us>Afghanistan</en_us>
+    <nl_nl>Afghanistan</nl_nl>
+  </country>
+  <country xml:id="AGO">
+    <iso3>AO</iso3>
+    <iso2>AO</iso2>
+    <en_us>Angola</en_us>
+    <nl_nl>Angola</nl_nl>
+  </country>
+  <country xml:id="AIA">
+    <iso3>AI</iso3>
+    <iso2>AI</iso2>
+    <en_us>Anguilla</en_us>
+    <nl_nl>Anguilla</nl_nl>
+  </country>
+  <country xml:id="ALB">
+    <iso3>AL</iso3>
+    <iso2>AL</iso2>
+    <en_us>Albania</en_us>
+    <nl_nl>Albanie</nl_nl>
+  </country>
+  <country xml:id="AND">
+    <iso3>AD</iso3>
+    <iso2>AD</iso2>
+    <en_us>Andorra</en_us>
+    <nl_nl>Andorra</nl_nl>
+  </country>
+  <country xml:id="ANT">
+    <iso3>AN</iso3>
+    <iso2>AN</iso2>
+    <en_us>Netherlands Antilles</en_us>
+    <nl_nl>Nederlands Antillen</nl_nl>
+  </country>
+  <country xml:id="ARE">
+    <iso3>AE</iso3>
+    <iso2>AE</iso2>
+    <en_us>United Arab Emirates</en_us>
+    <nl_nl>Verenigde Arabische Emiraten</nl_nl>
+  </country>
+  <country xml:id="ARG">
+    <iso3>AR</iso3>
+    <iso2>AR</iso2>
+    <en_us>Argentina</en_us>
+    <nl_nl>Argentinie</nl_nl>
+  </country>
+  <country xml:id="ARM">
+    <iso3>AM</iso3>
+    <iso2>AM</iso2>
+    <en_us>Armenia</en_us>
+    <nl_nl>Armenie</nl_nl>
+  </country>
+  <country xml:id="ASM">
+    <iso3>AS</iso3>
+    <iso2>AS</iso2>
+    <en_us>American Samoa</en_us>
+    <nl_nl>Amerikaans-Samoa</nl_nl>
+  </country>
+  <country xml:id="ATA">
+    <iso3>AQ</iso3>
+    <iso2>AQ</iso2>
+    <en_us>Antarctica</en_us>
+    <nl_nl>Antarctica</nl_nl>
+  </country>
+  <country xml:id="ATF">
+    <iso3>TF</iso3>
+    <iso2>TF</iso2>
+    <en_us>French Southern Territories</en_us>
+    <nl_nl>Franse Zuidelijke Gebieden</nl_nl>
+  </country>
+  <country xml:id="ATG">
+    <iso3>AG</iso3>
+    <iso2>AG</iso2>
+    <en_us>Antigua and Barbuda</en_us>
+    <nl_nl>Antigua en Barbuda</nl_nl>
+  </country>
+  <country xml:id="AUS">
+    <iso3>AU</iso3>
+    <iso2>AU</iso2>
+    <en_us>Australia</en_us>
+    <nl_nl>Australie</nl_nl>
+  </country>
+  <country xml:id="AUT">
+    <iso3>AT</iso3>
+    <iso2>AT</iso2>
+    <en_us>Austria</en_us>
+    <nl_nl>Oostenrijk</nl_nl>
+  </country>
+  <country xml:id="AZE">
+    <iso3>AZ</iso3>
+    <iso2>AZ</iso2>
+    <en_us>Azerbaijan</en_us>
+    <nl_nl>Azerbeidzjan</nl_nl>
+  </country>
+  <country xml:id="BDI">
+    <iso3>BI</iso3>
+    <iso2>BI</iso2>
+    <en_us>Burundi</en_us>
+    <nl_nl>Boeroendi</nl_nl>
+  </country>
+  <country xml:id="BEL">
+    <iso3>BE</iso3>
+    <iso2>BE</iso2>
+    <en_us>Belgium</en_us>
+    <nl_nl>Belgie</nl_nl>
+  </country>
+  <country xml:id="BEN">
+    <iso3>BJ</iso3>
+    <iso2>BJ</iso2>
+    <en_us>Benin</en_us>
+    <nl_nl>Benin</nl_nl>
+  </country>
+  <country xml:id="BFA">
+    <iso3>BF</iso3>
+    <iso2>BF</iso2>
+    <en_us>Burkina Faso</en_us>
+    <nl_nl>Burkina Faso</nl_nl>
+  </country>
+  <country xml:id="BGD">
+    <iso3>BD</iso3>
+    <iso2>BD</iso2>
+    <en_us>Bangladesh</en_us>
+    <nl_nl>Bangladesh</nl_nl>
+  </country>
+  <country xml:id="BGR">
+    <iso3>BG</iso3>
+    <iso2>BG</iso2>
+    <en_us>Bulgaria</en_us>
+    <nl_nl>Bulgarie</nl_nl>
+  </country>
+  <country xml:id="BHR">
+    <iso3>BH</iso3>
+    <iso2>BH</iso2>
+    <en_us>Bahrain</en_us>
+    <nl_nl>Bahrein</nl_nl>
+  </country>
+  <country xml:id="BHS">
+    <iso3>BS</iso3>
+    <iso2>BS</iso2>
+    <en_us>Bahamas</en_us>
+    <nl_nl>Bahamas</nl_nl>
+  </country>
+  <country xml:id="BIH">
+    <iso3>BA</iso3>
+    <iso2>BA</iso2>
+    <en_us>Bosnia and Herzegowina</en_us>
+    <nl_nl>Bosnië-Herzegovina</nl_nl>
+  </country>
+  <country xml:id="BLR">
+    <iso3>BY</iso3>
+    <iso2>BY</iso2>
+    <en_us>Belarus</en_us>
+    <nl_nl>Wit-Rusland</nl_nl>
+  </country>
+  <country xml:id="BLZ">
+    <iso3>BZ</iso3>
+    <iso2>BZ</iso2>
+    <en_us>Belize</en_us>
+    <nl_nl>Belize</nl_nl>
+  </country>
+  <country xml:id="BMU">
+    <iso3>BM</iso3>
+    <iso2>BM</iso2>
+    <en_us>Bermuda</en_us>
+    <nl_nl>Bermuda</nl_nl>
+  </country>
+  <country xml:id="BOL">
+    <iso3>BO</iso3>
+    <iso2>BO</iso2>
+    <en_us>Bolivia</en_us>
+    <nl_nl>Bolivia</nl_nl>
+  </country>
+  <country xml:id="BRA">
+    <iso3>BR</iso3>
+    <iso2>BR</iso2>
+    <en_us>Brazil</en_us>
+    <nl_nl>Brazilie</nl_nl>
+  </country>
+  <country xml:id="BRB">
+    <iso3>BB</iso3>
+    <iso2>BB</iso2>
+    <en_us>Barbados</en_us>
+    <nl_nl>Barbados</nl_nl>
+  </country>
+  <country xml:id="BRN">
+    <iso3>BN</iso3>
+    <iso2>BN</iso2>
+    <en_us>Brunei Darussalam</en_us>
+    <nl_nl>Brunei Darussalam</nl_nl>
+  </country>
+  <country xml:id="BTN">
+    <iso3>BT</iso3>
+    <iso2>BT</iso2>
+    <en_us>Bhutan</en_us>
+    <nl_nl>Bhutan</nl_nl>
+  </country>
+  <country xml:id="BVT">
+    <iso3>BV</iso3>
+    <iso2>BV</iso2>
+    <en_us>Bouvet Island</en_us>
+    <nl_nl>Bouvet Island</nl_nl>
+  </country>
+  <country xml:id="BWA">
+    <iso3>BW</iso3>
+    <iso2>BW</iso2>
+    <en_us>Botswana</en_us>
+    <nl_nl>Botswana</nl_nl>
+  </country>
+  <country xml:id="CAF">
+    <iso3>CF</iso3>
+    <iso2>CF</iso2>
+    <en_us>Central African Republic</en_us>
+    <nl_nl>Centraal-Afrikaanse Republiek</nl_nl>
+  </country>
+  <country xml:id="CAN">
+    <iso3>CA</iso3>
+    <iso2>CA</iso2>
+    <en_us>Canada</en_us>
+    <nl_nl>Canada</nl_nl>
+  </country>
+  <country xml:id="CCK">
+    <iso3>CC</iso3>
+    <iso2>CC</iso2>
+    <en_us>Cocos (Keeling) Islands</en_us>
+    <nl_nl>Cocos (Keeling) Islands</nl_nl>
+  </country>
+  <country xml:id="CHE">
+    <iso3>CH</iso3>
+    <iso2>CH</iso2>
+    <en_us>Switzerland</en_us>
+    <nl_nl>Zwitserland</nl_nl>
+  </country>
+  <country xml:id="CHL">
+    <iso3>CL</iso3>
+    <iso2>CL</iso2>
+    <en_us>Chile</en_us>
+    <nl_nl>Chili</nl_nl>
+  </country>
+  <country xml:id="CHN">
+    <iso3>CN</iso3>
+    <iso2>CN</iso2>
+    <en_us>China</en_us>
+    <nl_nl>China</nl_nl>
+  </country>
+  <country xml:id="CIV">
+    <iso3>CI</iso3>
+    <iso2>CI</iso2>
+    <en_us>Cote D'Ivoire</en_us>
+    <nl_nl>Ivoorkust</nl_nl>
+  </country>
+  <country xml:id="CMR">
+    <iso3>CM</iso3>
+    <iso2>CM</iso2>
+    <en_us>Cameroon</en_us>
+    <nl_nl>Kameroen</nl_nl>
+  </country>
+  <country xml:id="COG">
+    <iso3>CG</iso3>
+    <iso2>CG</iso2>
+    <en_us>Congo</en_us>
+    <nl_nl>Congo</nl_nl>
+  </country>
+  <country xml:id="COK">
+    <iso3>CK</iso3>
+    <iso2>CK</iso2>
+    <en_us>Cook Islands</en_us>
+    <nl_nl>Cook Eilanden</nl_nl>
+  </country>
+  <country xml:id="COL">
+    <iso3>CO</iso3>
+    <iso2>CO</iso2>
+    <en_us>Colombia</en_us>
+    <nl_nl>Colombia</nl_nl>
+  </country>
+  <country xml:id="COM">
+    <iso3>KM</iso3>
+    <iso2>KM</iso2>
+    <en_us>Comoros</en_us>
+    <nl_nl>Comoren</nl_nl>
+  </country>
+  <country xml:id="CPV">
+    <iso3>CV</iso3>
+    <iso2>CV</iso2>
+    <en_us>Cape Verde</en_us>
+    <nl_nl>Cape Verde</nl_nl>
+  </country>
+  <country xml:id="CRI">
+    <iso3>CR</iso3>
+    <iso2>CR</iso2>
+    <en_us>Costa Rica</en_us>
+    <nl_nl>Costa Rica</nl_nl>
+  </country>
+  <country xml:id="CUB">
+    <iso3>CU</iso3>
+    <iso2>CU</iso2>
+    <en_us>Cuba</en_us>
+    <nl_nl>Cuba</nl_nl>
+  </country>
+  <country xml:id="CXR">
+    <iso3>CX</iso3>
+    <iso2>CX</iso2>
+    <en_us>Christmas Island</en_us>
+    <nl_nl>Christmas Island</nl_nl>
+  </country>
+  <country xml:id="CYM">
+    <iso3>KY</iso3>
+    <iso2>KY</iso2>
+    <en_us>Cayman Islands</en_us>
+    <nl_nl>Kaaimaneilanden</nl_nl>
+  </country>
+  <country xml:id="CYP">
+    <iso3>CY</iso3>
+    <iso2>CY</iso2>
+    <en_us>Cyprus</en_us>
+    <nl_nl>Cyprus</nl_nl>
+  </country>
+  <country xml:id="CZE">
+    <iso3>CZ</iso3>
+    <iso2>CZ</iso2>
+    <en_us>Czech Republic</en_us>
+    <nl_nl>Tsjechische Republiek</nl_nl>
+  </country>
+  <country xml:id="DEU">
+    <iso3>DE</iso3>
+    <iso2>DE</iso2>
+    <en_us>Germany</en_us>
+    <nl_nl>Duitsland</nl_nl>
+  </country>
+  <country xml:id="DJI">
+    <iso3>DJ</iso3>
+    <iso2>DJ</iso2>
+    <en_us>Djibouti</en_us>
+    <nl_nl>Djibouti</nl_nl>
+  </country>
+  <country xml:id="DMA">
+    <iso3>DM</iso3>
+    <iso2>DM</iso2>
+    <en_us>Dominica</en_us>
+    <nl_nl>Dominica</nl_nl>
+  </country>
+  <country xml:id="DNK">
+    <iso3>DK</iso3>
+    <iso2>DK</iso2>
+    <en_us>Denmark</en_us>
+    <nl_nl>Denemarken</nl_nl>
+  </country>
+  <country xml:id="DOM">
+    <iso3>DO</iso3>
+    <iso2>DO</iso2>
+    <en_us>Dominican Republic</en_us>
+    <nl_nl>Dominicaanse Republiek</nl_nl>
+  </country>
+  <country xml:id="DZA">
+    <iso3>DZ</iso3>
+    <iso2>DZ</iso2>
+    <en_us>Algeria</en_us>
+    <nl_nl>Algerije</nl_nl>
+  </country>
+  <country xml:id="ECU">
+    <iso3>EC</iso3>
+    <iso2>EC</iso2>
+    <en_us>Ecuador</en_us>
+    <nl_nl>Ecuador</nl_nl>
+  </country>
+  <country xml:id="EGY">
+    <iso3>EG</iso3>
+    <iso2>EG</iso2>
+    <en_us>Egypt</en_us>
+    <nl_nl>Egypte</nl_nl>
+  </country>
+  <country xml:id="ERI">
+    <iso3>ER</iso3>
+    <iso2>ER</iso2>
+    <en_us>Eritrea</en_us>
+    <nl_nl>Eritrea</nl_nl>
+  </country>
+  <country xml:id="ESH">
+    <iso3>EH</iso3>
+    <iso2>EH</iso2>
+    <en_us>Western Sahara</en_us>
+    <nl_nl>Westelijke Sahara</nl_nl>
+  </country>
+  <country xml:id="ESP">
+    <iso3>ES</iso3>
+    <iso2>ES</iso2>
+    <en_us>Spain</en_us>
+    <nl_nl>Spanje</nl_nl>
+  </country>
+  <country xml:id="EST">
+    <iso3>EE</iso3>
+    <iso2>EE</iso2>
+    <en_us>Estonia</en_us>
+    <nl_nl>Estland</nl_nl>
+  </country>
+  <country xml:id="ETH">
+    <iso3>ET</iso3>
+    <iso2>ET</iso2>
+    <en_us>Ethiopia</en_us>
+    <nl_nl>Ethiopie</nl_nl>
+  </country>
+  <country xml:id="FIN">
+    <iso3>FI</iso3>
+    <iso2>FI</iso2>
+    <en_us>Finland</en_us>
+    <nl_nl>Finland</nl_nl>
+  </country>
+  <country xml:id="FJI">
+    <iso3>FJ</iso3>
+    <iso2>FJ</iso2>
+    <en_us>Fiji</en_us>
+    <nl_nl>Fiji</nl_nl>
+  </country>
+  <country xml:id="FLK">
+    <iso3>FK</iso3>
+    <iso2>FK</iso2>
+    <en_us>Falkland Islands (Malvinas)</en_us>
+    <nl_nl>Falkland Eilanden (Malvinas)</nl_nl>
+  </country>
+  <country xml:id="FRA">
+    <iso3>FR</iso3>
+    <iso2>FR</iso2>
+    <en_us>France</en_us>
+    <nl_nl>Frankrijk</nl_nl>
+  </country>
+  <country xml:id="FRO">
+    <iso3>FO</iso3>
+    <iso2>FO</iso2>
+    <en_us>Faroe Islands</en_us>
+    <nl_nl>Faeröer</nl_nl>
+  </country>
+  <country xml:id="FSM">
+    <iso3>FM</iso3>
+    <iso2>FM</iso2>
+    <en_us>Micronesia, Federated States of</en_us>
+    <nl_nl>Micronesië, Federale Staten van</nl_nl>
+  </country>
+  <country xml:id="FXX">
+    <iso3>FX</iso3>
+    <iso2>FX</iso2>
+    <en_us>France Metropolitan</en_us>
+    <nl_nl>Frankrijk Metropolitan</nl_nl>
+  </country>
+  <country xml:id="GAB">
+    <iso3>GA</iso3>
+    <iso2>GA</iso2>
+    <en_us>Gabon</en_us>
+    <nl_nl>Gabon</nl_nl>
+  </country>
+  <country xml:id="GBR">
+    <iso3>GB</iso3>
+    <iso2>GB</iso2>
+    <en_us>United Kingdom</en_us>
+    <nl_nl>Verenigd Koninkrijk</nl_nl>
+  </country>
+  <country xml:id="GEO">
+    <iso3>GE</iso3>
+    <iso2>GE</iso2>
+    <en_us>Georgia</en_us>
+    <nl_nl>Georgië</nl_nl>
+  </country>
+  <country xml:id="GHA">
+    <iso3>GH</iso3>
+    <iso2>GH</iso2>
+    <en_us>Ghana</en_us>
+    <nl_nl>Ghana</nl_nl>
+  </country>
+  <country xml:id="GIB">
+    <iso3>GI</iso3>
+    <iso2>GI</iso2>
+    <en_us>Gibraltar</en_us>
+    <nl_nl>Gibraltar</nl_nl>
+  </country>
+  <country xml:id="GIN">
+    <iso3>GN</iso3>
+    <iso2>GN</iso2>
+    <en_us>Guinea</en_us>
+    <nl_nl>Guinea</nl_nl>
+  </country>
+  <country xml:id="GLP">
+    <iso3>GP</iso3>
+    <iso2>GP</iso2>
+    <en_us>Guadeloupe</en_us>
+    <nl_nl>Guadeloupe</nl_nl>
+  </country>
+  <country xml:id="GMB">
+    <iso3>GM</iso3>
+    <iso2>GM</iso2>
+    <en_us>Gambia</en_us>
+    <nl_nl>Gambia</nl_nl>
+  </country>
+  <country xml:id="GNB">
+    <iso3>GW</iso3>
+    <iso2>GW</iso2>
+    <en_us>Guinea-bissau</en_us>
+    <nl_nl>Guinea-bissau</nl_nl>
+  </country>
+  <country xml:id="GNQ">
+    <iso3>GQ</iso3>
+    <iso2>GQ</iso2>
+    <en_us>Equatorial Guinea</en_us>
+    <nl_nl>Equatoriaal-Guinea</nl_nl>
+  </country>
+  <country xml:id="GRC">
+    <iso3>GR</iso3>
+    <iso2>GR</iso2>
+    <en_us>Greece</en_us>
+    <nl_nl>Griekenland</nl_nl>
+  </country>
+  <country xml:id="GRD">
+    <iso3>GD</iso3>
+    <iso2>GD</iso2>
+    <en_us>Grenada</en_us>
+    <nl_nl>Grenada</nl_nl>
+  </country>
+  <country xml:id="GRL">
+    <iso3>GL</iso3>
+    <iso2>GL</iso2>
+    <en_us>Greenland</en_us>
+    <nl_nl>Groenland</nl_nl>
+  </country>
+  <country xml:id="GTM">
+    <iso3>GT</iso3>
+    <iso2>GT</iso2>
+    <en_us>Guatemala</en_us>
+    <nl_nl>Guatemala</nl_nl>
+  </country>
+  <country xml:id="GUF">
+    <iso3>GF</iso3>
+    <iso2>GF</iso2>
+    <en_us>French Guiana</en_us>
+    <nl_nl>Frans-Guyana</nl_nl>
+  </country>
+  <country xml:id="GUM">
+    <iso3>GU</iso3>
+    <iso2>GU</iso2>
+    <en_us>Guam</en_us>
+    <nl_nl>Guam</nl_nl>
+  </country>
+  <country xml:id="GUY">
+    <iso3>GY</iso3>
+    <iso2>GY</iso2>
+    <en_us>Guyana</en_us>
+    <nl_nl>Guyana</nl_nl>
+  </country>
+  <country xml:id="HKG">
+    <iso3>HK</iso3>
+    <iso2>HK</iso2>
+    <en_us>Hong Kong</en_us>
+    <nl_nl>Hong Kong</nl_nl>
+  </country>
+  <country xml:id="HMD">
+    <iso3>HM</iso3>
+    <iso2>HM</iso2>
+    <en_us>Heard and Mc Donald Islands</en_us>
+    <nl_nl>Heard en McDonaldeilanden</nl_nl>
+  </country>
+  <country xml:id="HND">
+    <iso3>HN</iso3>
+    <iso2>HN</iso2>
+    <en_us>Honduras</en_us>
+    <nl_nl>Honduras</nl_nl>
+  </country>
+  <country xml:id="HRV">
+    <iso3>HR</iso3>
+    <iso2>HR</iso2>
+    <en_us>Croatia</en_us>
+    <nl_nl>Croatie</nl_nl>
+  </country>
+  <country xml:id="HTI">
+    <iso3>HT</iso3>
+    <iso2>HT</iso2>
+    <en_us>Haiti</en_us>
+    <nl_nl>Haiti</nl_nl>
+  </country>
+  <country xml:id="HUN">
+    <iso3>HU</iso3>
+    <iso2>HU</iso2>
+    <en_us>Hungary</en_us>
+    <nl_nl>Hongarije</nl_nl>
+  </country>
+  <country xml:id="IDN">
+    <iso3>ID</iso3>
+    <iso2>ID</iso2>
+    <en_us>Indonesia</en_us>
+    <nl_nl>Indonesië</nl_nl>
+  </country>
+  <country xml:id="IND">
+    <iso3>IN</iso3>
+    <iso2>IN</iso2>
+    <en_us>India</en_us>
+    <nl_nl>India</nl_nl>
+  </country>
+  <country xml:id="IOT">
+    <iso3>IO</iso3>
+    <iso2>IO</iso2>
+    <en_us>British Indian Ocean Territory</en_us>
+    <nl_nl>British Indian Ocean Territory</nl_nl>
+  </country>
+  <country xml:id="IRL">
+    <iso3>IE</iso3>
+    <iso2>IE</iso2>
+    <en_us>Ireland</en_us>
+    <nl_nl>Ierland</nl_nl>
+  </country>
+  <country xml:id="IRN">
+    <iso3>IR</iso3>
+    <iso2>IR</iso2>
+    <en_us>Iran (Islamic Republic of)</en_us>
+    <nl_nl>Iran (Islamitische Republiek)</nl_nl>
+  </country>
+  <country xml:id="IRQ">
+    <iso3>IQ</iso3>
+    <iso2>IQ</iso2>
+    <en_us>Iraq</en_us>
+    <nl_nl>Irak</nl_nl>
+  </country>
+  <country xml:id="ISL">
+    <iso3>IS</iso3>
+    <iso2>IS</iso2>
+    <en_us>Iceland</en_us>
+    <nl_nl>Ijsland</nl_nl>
+  </country>
+  <country xml:id="ISR">
+    <iso3>IL</iso3>
+    <iso2>IL</iso2>
+    <en_us>Israel</en_us>
+    <nl_nl>Israël</nl_nl>
+  </country>
+  <country xml:id="ITA">
+    <iso3>IT</iso3>
+    <iso2>IT</iso2>
+    <en_us>Italy</en_us>
+    <nl_nl>Italië</nl_nl>
+  </country>
+  <country xml:id="JAM">
+    <iso3>JM</iso3>
+    <iso2>JM</iso2>
+    <en_us>Jamaica</en_us>
+    <nl_nl>Jamaica</nl_nl>
+  </country>
+  <country xml:id="JOR">
+    <iso3>JO</iso3>
+    <iso2>JO</iso2>
+    <en_us>Jordan</en_us>
+    <nl_nl>Jordanië</nl_nl>
+  </country>
+  <country xml:id="JPN">
+    <iso3>JP</iso3>
+    <iso2>JP</iso2>
+    <en_us>Japan</en_us>
+    <nl_nl>Japan</nl_nl>
+  </country>
+  <country xml:id="KAZ">
+    <iso3>KZ</iso3>
+    <iso2>KZ</iso2>
+    <en_us>Kazakhstan</en_us>
+    <nl_nl>Kazachstan</nl_nl>
+  </country>
+  <country xml:id="KEN">
+    <iso3>KE</iso3>
+    <iso2>KE</iso2>
+    <en_us>Kenya</en_us>
+    <nl_nl>Kenia</nl_nl>
+  </country>
+  <country xml:id="KGZ">
+    <iso3>KG</iso3>
+    <iso2>KG</iso2>
+    <en_us>Kyrgyzstan</en_us>
+    <nl_nl>Kirgizië</nl_nl>
+  </country>
+  <country xml:id="KHM">
+    <iso3>KH</iso3>
+    <iso2>KH</iso2>
+    <en_us>Cambodia</en_us>
+    <nl_nl>Cambodja</nl_nl>
+  </country>
+  <country xml:id="KIR">
+    <iso3>KI</iso3>
+    <iso2>KI</iso2>
+    <en_us>Kiribati</en_us>
+    <nl_nl>Kiribati</nl_nl>
+  </country>
+  <country xml:id="KNA">
+    <iso3>KN</iso3>
+    <iso2>KN</iso2>
+    <en_us>Saint Kitts and Nevis</en_us>
+    <nl_nl>Saint Kitts en Nevis</nl_nl>
+  </country>
+  <country xml:id="KOR">
+    <iso3>KR</iso3>
+    <iso2>KR</iso2>
+    <en_us>Korea, Republic of</en_us>
+    <nl_nl>Korea, Republiek</nl_nl>
+  </country>
+  <country xml:id="KWT">
+    <iso3>KW</iso3>
+    <iso2>KW</iso2>
+    <en_us>Kuwait</en_us>
+    <nl_nl>Koeweit</nl_nl>
+  </country>
+  <country xml:id="LAO">
+    <iso3>LA</iso3>
+    <iso2>LA</iso2>
+    <en_us>Lao People's Democratic Republic</en_us>
+    <nl_nl>Lao Democratische Volksrepubliek</nl_nl>
+  </country>
+  <country xml:id="LBN">
+    <iso3>LB</iso3>
+    <iso2>LB</iso2>
+    <en_us>Lebanon</en_us>
+    <nl_nl>Libanon</nl_nl>
+  </country>
+  <country xml:id="LBR">
+    <iso3>LR</iso3>
+    <iso2>LR</iso2>
+    <en_us>Liberia</en_us>
+    <nl_nl>Liberia</nl_nl>
+  </country>
+  <country xml:id="LBY">
+    <iso3>LY</iso3>
+    <iso2>LY</iso2>
+    <en_us>Libyan Arab Jamahiriya</en_us>
+    <nl_nl>Libyan Arab Jamahiriya</nl_nl>
+  </country>
+  <country xml:id="LCA">
+    <iso3>LC</iso3>
+    <iso2>LC</iso2>
+    <en_us>Saint Lucia</en_us>
+    <nl_nl>Saint Lucia</nl_nl>
+  </country>
+  <country xml:id="LIE">
+    <iso3>LI</iso3>
+    <iso2>LI</iso2>
+    <en_us>Liechtenstein</en_us>
+    <nl_nl>Liechtenstein</nl_nl>
+  </country>
+  <country xml:id="LKA">
+    <iso3>LK</iso3>
+    <iso2>LK</iso2>
+    <en_us>Sri Lanka</en_us>
+    <nl_nl>Sri Lanka</nl_nl>
+  </country>
+  <country xml:id="LSO">
+    <iso3>LS</iso3>
+    <iso2>LS</iso2>
+    <en_us>Lesotho</en_us>
+    <nl_nl>Lesotho</nl_nl>
+  </country>
+  <country xml:id="LTU">
+    <iso3>LT</iso3>
+    <iso2>LT</iso2>
+    <en_us>Lithuania</en_us>
+    <nl_nl>Litouwen</nl_nl>
+  </country>
+  <country xml:id="LUX">
+    <iso3>LU</iso3>
+    <iso2>LU</iso2>
+    <en_us>Luxembourg</en_us>
+    <nl_nl>Luxemburg</nl_nl>
+  </country>
+  <country xml:id="LVA">
+    <iso3>LV</iso3>
+    <iso2>LV</iso2>
+    <en_us>Latvia</en_us>
+    <nl_nl>Letland</nl_nl>
+  </country>
+  <country xml:id="MAC">
+    <iso3>MO</iso3>
+    <iso2>MO</iso2>
+    <en_us>Macau</en_us>
+    <nl_nl>Macau</nl_nl>
+  </country>
+  <country xml:id="MAR">
+    <iso3>MA</iso3>
+    <iso2>MA</iso2>
+    <en_us>Morocco</en_us>
+    <nl_nl>Marokko</nl_nl>
+  </country>
+  <country xml:id="MCO">
+    <iso3>MC</iso3>
+    <iso2>MC</iso2>
+    <en_us>Monaco</en_us>
+    <nl_nl>Monaco</nl_nl>
+  </country>
+  <country xml:id="MDA">
+    <iso3>MD</iso3>
+    <iso2>MD</iso2>
+    <en_us>Moldova, Republic of</en_us>
+    <nl_nl>Moldavië</nl_nl>
+  </country>
+  <country xml:id="MDG">
+    <iso3>MG</iso3>
+    <iso2>MG</iso2>
+    <en_us>Madagascar</en_us>
+    <nl_nl>Madagascar</nl_nl>
+  </country>
+  <country xml:id="MDV">
+    <iso3>MV</iso3>
+    <iso2>MV</iso2>
+    <en_us>Maldives</en_us>
+    <nl_nl>Maldiven</nl_nl>
+  </country>
+  <country xml:id="MEX">
+    <iso3>MX</iso3>
+    <iso2>MX</iso2>
+    <en_us>Mexico</en_us>
+    <nl_nl>Mexico</nl_nl>
+  </country>
+  <country xml:id="MHL">
+    <iso3>MH</iso3>
+    <iso2>MH</iso2>
+    <en_us>Marshall Islands</en_us>
+    <nl_nl>Marshall Eilanden</nl_nl>
+  </country>
+  <country xml:id="MKD">
+    <iso3>MK</iso3>
+    <iso2>MK</iso2>
+    <en_us>Macedonia, The Former Yugoslav Republic of</en_us>
+    <nl_nl>Macedonië, de Voormalige Joegoslavische Republiek</nl_nl>
+  </country>
+  <country xml:id="MLI">
+    <iso3>ML</iso3>
+    <iso2>ML</iso2>
+    <en_us>Mali</en_us>
+    <nl_nl>Mali</nl_nl>
+  </country>
+  <country xml:id="MLT">
+    <iso3>MT</iso3>
+    <iso2>MT</iso2>
+    <en_us>Malta</en_us>
+    <nl_nl>Malta</nl_nl>
+  </country>
+  <country xml:id="MMR">
+    <iso3>MM</iso3>
+    <iso2>MM</iso2>
+    <en_us>Myanmar</en_us>
+    <nl_nl>Myanmar</nl_nl>
+  </country>
+  <country xml:id="MNG">
+    <iso3>MN</iso3>
+    <iso2>MN</iso2>
+    <en_us>Mongolia</en_us>
+    <nl_nl>Mongolië</nl_nl>
+  </country>
+  <country xml:id="MNP">
+    <iso3>MP</iso3>
+    <iso2>MP</iso2>
+    <en_us>Northern Mariana Islands</en_us>
+    <nl_nl>Noordelijke Marianen</nl_nl>
+  </country>
+  <country xml:id="MOZ">
+    <iso3>MZ</iso3>
+    <iso2>MZ</iso2>
+    <en_us>Mozambique</en_us>
+    <nl_nl>Mozambique</nl_nl>
+  </country>
+  <country xml:id="MRT">
+    <iso3>MR</iso3>
+    <iso2>MR</iso2>
+    <en_us>Mauritania</en_us>
+    <nl_nl>Mauritanië</nl_nl>
+  </country>
+  <country xml:id="MSR">
+    <iso3>MS</iso3>
+    <iso2>MS</iso2>
+    <en_us>Montserrat</en_us>
+    <nl_nl>Montserrat</nl_nl>
+  </country>
+  <country xml:id="MTQ">
+    <iso3>MQ</iso3>
+    <iso2>MQ</iso2>
+    <en_us>Martinique</en_us>
+    <nl_nl>Martinique</nl_nl>
+  </country>
+  <country xml:id="MUS">
+    <iso3>MU</iso3>
+    <iso2>MU</iso2>
+    <en_us>Mauritius</en_us>
+    <nl_nl>Mauritius</nl_nl>
+  </country>
+  <country xml:id="MWI">
+    <iso3>MW</iso3>
+    <iso2>MW</iso2>
+    <en_us>Malawi</en_us>
+    <nl_nl>Malawi</nl_nl>
+  </country>
+  <country xml:id="MYS">
+    <iso3>MY</iso3>
+    <iso2>MY</iso2>
+    <en_us>Malaysia</en_us>
+    <nl_nl>Maleisië</nl_nl>
+  </country>
+  <country xml:id="MYT">
+    <iso3>YT</iso3>
+    <iso2>YT</iso2>
+    <en_us>Mayotte</en_us>
+    <nl_nl>Mayotte</nl_nl>
+  </country>
+  <country xml:id="NAM">
+    <iso3>NA</iso3>
+    <iso2>NA</iso2>
+    <en_us>Namibia</en_us>
+    <nl_nl>Namibië</nl_nl>
+  </country>
+  <country xml:id="NCL">
+    <iso3>NC</iso3>
+    <iso2>NC</iso2>
+    <en_us>New Caledonia</en_us>
+    <nl_nl>Nieuw-Caledonië</nl_nl>
+  </country>
+  <country xml:id="NER">
+    <iso3>NE</iso3>
+    <iso2>NE</iso2>
+    <en_us>Niger</en_us>
+    <nl_nl>Niger</nl_nl>
+  </country>
+  <country xml:id="NFK">
+    <iso3>NF</iso3>
+    <iso2>NF</iso2>
+    <en_us>Norfolk Island</en_us>
+    <nl_nl>Norfolk Eilanden</nl_nl>
+  </country>
+  <country xml:id="NGA">
+    <iso3>NG</iso3>
+    <iso2>NG</iso2>
+    <en_us>Nigeria</en_us>
+    <nl_nl>Nigeria</nl_nl>
+  </country>
+  <country xml:id="NIC">
+    <iso3>NI</iso3>
+    <iso2>NI</iso2>
+    <en_us>Nicaragua</en_us>
+    <nl_nl>Nicaragua</nl_nl>
+  </country>
+  <country xml:id="NIU">
+    <iso3>NU</iso3>
+    <iso2>NU</iso2>
+    <en_us>Niue</en_us>
+    <nl_nl>Niue</nl_nl>
+  </country>
+  <country xml:id="NLD">
+    <iso3>NL</iso3>
+    <iso2>NL</iso2>
+    <en_us>Netherlands</en_us>
+    <nl_nl>Nederland</nl_nl>
+  </country>
+  <country xml:id="NOR">
+    <iso3>NO</iso3>
+    <iso2>NO</iso2>
+    <en_us>Norway</en_us>
+    <nl_nl>Noorwegen</nl_nl>
+  </country>
+  <country xml:id="NPL">
+    <iso3>NP</iso3>
+    <iso2>NP</iso2>
+    <en_us>Nepal</en_us>
+    <nl_nl>Nepal</nl_nl>
+  </country>
+  <country xml:id="NRU">
+    <iso3>NR</iso3>
+    <iso2>NR</iso2>
+    <en_us>Nauru</en_us>
+    <nl_nl>Nauru</nl_nl>
+  </country>
+  <country xml:id="NZL">
+    <iso3>NZ</iso3>
+    <iso2>NZ</iso2>
+    <en_us>New Zealand</en_us>
+    <nl_nl>Nieuw-Zeeland</nl_nl>
+  </country>
+  <country xml:id="OMN">
+    <iso3>OM</iso3>
+    <iso2>OM</iso2>
+    <en_us>Oman</en_us>
+    <nl_nl>Oman</nl_nl>
+  </country>
+  <country xml:id="PAK">
+    <iso3>PK</iso3>
+    <iso2>PK</iso2>
+    <en_us>Pakistan</en_us>
+    <nl_nl>Pakistan</nl_nl>
+  </country>
+  <country xml:id="PAN">
+    <iso3>PA</iso3>
+    <iso2>PA</iso2>
+    <en_us>Panama</en_us>
+    <nl_nl>Panama</nl_nl>
+  </country>
+  <country xml:id="PCN">
+    <iso3>PN</iso3>
+    <iso2>PN</iso2>
+    <en_us>Pitcairn</en_us>
+    <nl_nl>Pitcairn</nl_nl>
+  </country>
+  <country xml:id="PER">
+    <iso3>PE</iso3>
+    <iso2>PE</iso2>
+    <en_us>Peru</en_us>
+    <nl_nl>Peru</nl_nl>
+  </country>
+  <country xml:id="PHL">
+    <iso3>PH</iso3>
+    <iso2>PH</iso2>
+    <en_us>Philippines</en_us>
+    <nl_nl>Filipijnen</nl_nl>
+  </country>
+  <country xml:id="PLW">
+    <iso3>PW</iso3>
+    <iso2>PW</iso2>
+    <en_us>Palau</en_us>
+    <nl_nl>Palau</nl_nl>
+  </country>
+  <country xml:id="PNG">
+    <iso3>PG</iso3>
+    <iso2>PG</iso2>
+    <en_us>Papua New Guinea</en_us>
+    <nl_nl>Papoea-Nieuw-Guinea</nl_nl>
+  </country>
+  <country xml:id="POL">
+    <iso3>PL</iso3>
+    <iso2>PL</iso2>
+    <en_us>Poland</en_us>
+    <nl_nl>Polen</nl_nl>
+  </country>
+  <country xml:id="PRI">
+    <iso3>PR</iso3>
+    <iso2>PR</iso2>
+    <en_us>Puerto Rico</en_us>
+    <nl_nl>Puerto Rico</nl_nl>
+  </country>
+  <country xml:id="PRK">
+    <iso3>KP</iso3>
+    <iso2>KP</iso2>
+    <en_us>Korea, Democratic People's Republic of</en_us>
+    <nl_nl>Korea, Democratische Volksrepubliek</nl_nl>
+  </country>
+  <country xml:id="PRT">
+    <iso3>PT</iso3>
+    <iso2>PT</iso2>
+    <en_us>Portugal</en_us>
+    <nl_nl>Portugal</nl_nl>
+  </country>
+  <country xml:id="PRY">
+    <iso3>PY</iso3>
+    <iso2>PY</iso2>
+    <en_us>Paraguay</en_us>
+    <nl_nl>Paraguay</nl_nl>
+  </country>
+  <country xml:id="PYF">
+    <iso3>PF</iso3>
+    <iso2>PF</iso2>
+    <en_us>French Polynesia</en_us>
+    <nl_nl>Frans-Polynesië</nl_nl>
+  </country>
+  <country xml:id="QAT">
+    <iso3>QA</iso3>
+    <iso2>QA</iso2>
+    <en_us>Qatar</en_us>
+    <nl_nl>Katar</nl_nl>
+  </country>
+  <country xml:id="REU">
+    <iso3>RE</iso3>
+    <iso2>RE</iso2>
+    <en_us>Reunion</en_us>
+    <nl_nl>Reunion</nl_nl>
+  </country>
+  <country xml:id="ROM">
+    <iso3>RO</iso3>
+    <iso2>RO</iso2>
+    <en_us>Romania</en_us>
+    <nl_nl>Roemenië</nl_nl>
+  </country>
+  <country xml:id="RUS">
+    <iso3>RU</iso3>
+    <iso2>RU</iso2>
+    <en_us>Russian Federation</en_us>
+    <nl_nl>Russische Federatie</nl_nl>
+  </country>
+  <country xml:id="RWA">
+    <iso3>RW</iso3>
+    <iso2>RW</iso2>
+    <en_us>Rwanda</en_us>
+    <nl_nl>Rwanda</nl_nl>
+  </country>
+  <country xml:id="SAU">
+    <iso3>SA</iso3>
+    <iso2>SA</iso2>
+    <en_us>Saudi Arabia</en_us>
+    <nl_nl>Saudi-Arabië</nl_nl>
+  </country>
+  <country xml:id="SDN">
+    <iso3>SD</iso3>
+    <iso2>SD</iso2>
+    <en_us>Sudan</en_us>
+    <nl_nl>Sudan</nl_nl>
+  </country>
+  <country xml:id="SEN">
+    <iso3>SN</iso3>
+    <iso2>SN</iso2>
+    <en_us>Senegal</en_us>
+    <nl_nl>Senegal</nl_nl>
+  </country>
+  <country xml:id="SGP">
+    <iso3>SG</iso3>
+    <iso2>SG</iso2>
+    <en_us>Singapore</en_us>
+    <nl_nl>Singapore</nl_nl>
+  </country>
+  <country xml:id="SGS">
+    <iso3>GS</iso3>
+    <iso2>GS</iso2>
+    <en_us>South Georgia and the South Sandwich Islands</en_us>
+    <nl_nl>Zuid-Georgië en de Zuidelijke Sandwicheilanden</nl_nl>
+  </country>
+  <country xml:id="SHN">
+    <iso3>SH</iso3>
+    <iso2>SH</iso2>
+    <en_us>St. Helena</en_us>
+    <nl_nl>St. Helena</nl_nl>
+  </country>
+  <country xml:id="SJM">
+    <iso3>SJ</iso3>
+    <iso2>SJ</iso2>
+    <en_us>Svalbard and Jan Mayen Islands</en_us>
+    <nl_nl>Svalbard en Jan Mayen Eilanden</nl_nl>
+  </country>
+  <country xml:id="SLB">
+    <iso3>SB</iso3>
+    <iso2>SB</iso2>
+    <en_us>Solomon Islands</en_us>
+    <nl_nl>Salomonseilanden</nl_nl>
+  </country>
+  <country xml:id="SLE">
+    <iso3>SL</iso3>
+    <iso2>SL</iso2>
+    <en_us>Sierra Leone</en_us>
+    <nl_nl>Sierra Leone</nl_nl>
+  </country>
+  <country xml:id="SLV">
+    <iso3>SV</iso3>
+    <iso2>SV</iso2>
+    <en_us>El Salvador</en_us>
+    <nl_nl>El Salvador</nl_nl>
+  </country>
+  <country xml:id="SMR">
+    <iso3>SM</iso3>
+    <iso2>SM</iso2>
+    <en_us>San Marino</en_us>
+    <nl_nl>San Marino</nl_nl>
+  </country>
+  <country xml:id="SOM">
+    <iso3>SO</iso3>
+    <iso2>SO</iso2>
+    <en_us>Somalia</en_us>
+    <nl_nl>Somalië</nl_nl>
+  </country>
+  <country xml:id="SPM">
+    <iso3>PM</iso3>
+    <iso2>PM</iso2>
+    <en_us>St. Pierre and Miquelon</en_us>
+    <nl_nl>St. Pierre en Miquelon</nl_nl>
+  </country>
+  <country xml:id="STP">
+    <iso3>ST</iso3>
+    <iso2>ST</iso2>
+    <en_us>Sao Tome and Principe</en_us>
+    <nl_nl>Sao Tome en Principe</nl_nl>
+  </country>
+  <country xml:id="SUR">
+    <iso3>SR</iso3>
+    <iso2>SR</iso2>
+    <en_us>Suriname</en_us>
+    <nl_nl>Suriname</nl_nl>
+  </country>
+  <country xml:id="SVK">
+    <iso3>SK</iso3>
+    <iso2>SK</iso2>
+    <en_us>Slovakia (Slovak Republic)</en_us>
+    <nl_nl>Slowakije (Slowaakse Republiek)</nl_nl>
+  </country>
+  <country xml:id="SVN">
+    <iso3>SI</iso3>
+    <iso2>SI</iso2>
+    <en_us>Slovenia</en_us>
+    <nl_nl>Slovenië</nl_nl>
+  </country>
+  <country xml:id="SWE">
+    <iso3>SE</iso3>
+    <iso2>SE</iso2>
+    <en_us>Sweden</en_us>
+    <nl_nl>Zweden</nl_nl>
+  </country>
+  <country xml:id="SWZ">
+    <iso3>SZ</iso3>
+    <iso2>SZ</iso2>
+    <en_us>Swaziland</en_us>
+    <nl_nl>Swaziland</nl_nl>
+  </country>
+  <country xml:id="SYC">
+    <iso3>SC</iso3>
+    <iso2>SC</iso2>
+    <en_us>Seychelles</en_us>
+    <nl_nl>Seychellen</nl_nl>
+  </country>
+  <country xml:id="SYR">
+    <iso3>SY</iso3>
+    <iso2>SY</iso2>
+    <en_us>Syrian Arab Republic</en_us>
+    <nl_nl>Syrische Arabische Republiek</nl_nl>
+  </country>
+  <country xml:id="TCA">
+    <iso3>TC</iso3>
+    <iso2>TC</iso2>
+    <en_us>Turks and Caicos Islands</en_us>
+    <nl_nl>Turks-en Caicoseilanden</nl_nl>
+  </country>
+  <country xml:id="TCD">
+    <iso3>TD</iso3>
+    <iso2>TD</iso2>
+    <en_us>Chad</en_us>
+    <nl_nl>Tsjaad</nl_nl>
+  </country>
+  <country xml:id="TGO">
+    <iso3>TG</iso3>
+    <iso2>TG</iso2>
+    <en_us>Togo</en_us>
+    <nl_nl>Togo</nl_nl>
+  </country>
+  <country xml:id="THA">
+    <iso3>TH</iso3>
+    <iso2>TH</iso2>
+    <en_us>Thailand</en_us>
+    <nl_nl>Thailand</nl_nl>
+  </country>
+  <country xml:id="TJK">
+    <iso3>TJ</iso3>
+    <iso2>TJ</iso2>
+    <en_us>Tajikistan</en_us>
+    <nl_nl>Tadzjikistan</nl_nl>
+  </country>
+  <country xml:id="TKL">
+    <iso3>TK</iso3>
+    <iso2>TK</iso2>
+    <en_us>Tokelau</en_us>
+    <nl_nl>Tokelau-eilanden</nl_nl>
+  </country>
+  <country xml:id="TKM">
+    <iso3>TM</iso3>
+    <iso2>TM</iso2>
+    <en_us>Turkmenistan</en_us>
+    <nl_nl>Turkmenistan</nl_nl>
+  </country>
+  <country xml:id="TMP">
+    <iso3>TP</iso3>
+    <iso2>TP</iso2>
+    <en_us>East Timor</en_us>
+    <nl_nl>Oost-Timor</nl_nl>
+  </country>
+  <country xml:id="TON">
+    <iso3>TO</iso3>
+    <iso2>TO</iso2>
+    <en_us>Tonga</en_us>
+    <nl_nl>Tonga</nl_nl>
+  </country>
+  <country xml:id="TTO">
+    <iso3>TT</iso3>
+    <iso2>TT</iso2>
+    <en_us>Trinidad and Tobago</en_us>
+    <nl_nl>Trinidad en Tobago</nl_nl>
+  </country>
+  <country xml:id="TUN">
+    <iso3>TN</iso3>
+    <iso2>TN</iso2>
+    <en_us>Tunisia</en_us>
+    <nl_nl>Tunesië</nl_nl>
+  </country>
+  <country xml:id="TUR">
+    <iso3>TR</iso3>
+    <iso2>TR</iso2>
+    <en_us>Turkey</en_us>
+    <nl_nl>Turkije</nl_nl>
+  </country>
+  <country xml:id="TUV">
+    <iso3>TV</iso3>
+    <iso2>TV</iso2>
+    <en_us>Tuvalu</en_us>
+    <nl_nl>Tuvalu</nl_nl>
+  </country>
+  <country xml:id="TWN">
+    <iso3>TW</iso3>
+    <iso2>TW</iso2>
+    <en_us>Taiwan</en_us>
+    <nl_nl>Taiwan</nl_nl>
+  </country>
+  <country xml:id="TZA">
+    <iso3>TZ</iso3>
+    <iso2>TZ</iso2>
+    <en_us>Tanzania, United Republic of</en_us>
+    <nl_nl>Tanzania, Verenigde Republiek</nl_nl>
+  </country>
+  <country xml:id="UGA">
+    <iso3>UG</iso3>
+    <iso2>UG</iso2>
+    <en_us>Uganda</en_us>
+    <nl_nl>Uganda</nl_nl>
+  </country>
+  <country xml:id="UKR">
+    <iso3>UA</iso3>
+    <iso2>UA</iso2>
+    <en_us>Ukraine</en_us>
+    <nl_nl>Oekraïne</nl_nl>
+  </country>
+  <country xml:id="UMI">
+    <iso3>UM</iso3>
+    <iso2>UM</iso2>
+    <en_us>United States Minor Outlying Islands</en_us>
+    <nl_nl>Amerikaanse ondergeschikte afgelegen eilanden</nl_nl>
+  </country>
+  <country xml:id="URY">
+    <iso3>UY</iso3>
+    <iso2>UY</iso2>
+    <en_us>Uruguay</en_us>
+    <nl_nl>Uruguay</nl_nl>
+  </country>
+  <country xml:id="USA">
+    <iso3>US</iso3>
+    <iso2>US</iso2>
+    <en_us>United States</en_us>
+    <nl_nl>Verenigde Staten</nl_nl>
+  </country>
+  <country xml:id="UZB">
+    <iso3>UZ</iso3>
+    <iso2>UZ</iso2>
+    <en_us>Uzbekistan</en_us>
+    <nl_nl>Oezbekistan</nl_nl>
+  </country>
+  <country xml:id="VAT">
+    <iso3>VA</iso3>
+    <iso2>VA</iso2>
+    <en_us>Vatican City State (Holy See)</en_us>
+    <nl_nl>Vaticaanstad (Heilige Stoel)</nl_nl>
+  </country>
+  <country xml:id="VCT">
+    <iso3>VC</iso3>
+    <iso2>VC</iso2>
+    <en_us>Saint Vincent and the Grenadines</en_us>
+    <nl_nl>Saint Vincent en de Grenadines</nl_nl>
+  </country>
+  <country xml:id="VEN">
+    <iso3>VE</iso3>
+    <iso2>VE</iso2>
+    <en_us>Venezuela</en_us>
+    <nl_nl>Venezuela</nl_nl>
+  </country>
+  <country xml:id="VGB">
+    <iso3>VG</iso3>
+    <iso2>VG</iso2>
+    <en_us>Virgin Islands (British)</en_us>
+    <nl_nl>Maagdeneilanden (Brits)</nl_nl>
+  </country>
+  <country xml:id="VIR">
+    <iso3>VI</iso3>
+    <iso2>VI</iso2>
+    <en_us>Virgin Islands (U.S.)</en_us>
+    <nl_nl>Maagdeneilanden (VS)</nl_nl>
+  </country>
+  <country xml:id="VNM">
+    <iso3>VN</iso3>
+    <iso2>VN</iso2>
+    <en_us>Viet Nam</en_us>
+    <nl_nl>Vietnam</nl_nl>
+  </country>
+  <country xml:id="VUT">
+    <iso3>VU</iso3>
+    <iso2>VU</iso2>
+    <en_us>Vanuatu</en_us>
+    <nl_nl>Vanuatu</nl_nl>
+  </country>
+  <country xml:id="WLF">
+    <iso3>WF</iso3>
+    <iso2>WF</iso2>
+    <en_us>Wallis and Futuna Islands</en_us>
+    <nl_nl>Wallis en Futuna</nl_nl>
+  </country>
+  <country xml:id="WSM">
+    <iso3>WS</iso3>
+    <iso2>WS</iso2>
+    <en_us>Samoa</en_us>
+    <nl_nl>Samoa</nl_nl>
+  </country>
+  <country xml:id="YEM">
+    <iso3>YE</iso3>
+    <iso2>YE</iso2>
+    <en_us>Yemen</en_us>
+    <nl_nl>Jemen</nl_nl>
+  </country>
+  <country xml:id="YUG">
+    <iso3>YU</iso3>
+    <iso2>YU</iso2>
+    <en_us>Yugoslavia</en_us>
+    <nl_nl>Joegoslavië</nl_nl>
+  </country>
+  <country xml:id="ZAF">
+    <iso3>ZA</iso3>
+    <iso2>ZA</iso2>
+    <en_us>South Africa</en_us>
+    <nl_nl>Zuid Africa</nl_nl>
+  </country>
+  <country xml:id="ZAR">
+    <iso3>ZR</iso3>
+    <iso2>ZR</iso2>
+    <en_us>Zaire</en_us>
+    <nl_nl>Zaïre</nl_nl>
+  </country>
+  <country xml:id="ZMB">
+    <iso3>ZM</iso3>
+    <iso2>ZM</iso2>
+    <en_us>Zambia</en_us>
+    <nl_nl>Zambia</nl_nl>
+  </country>
+  <country xml:id="ZWE">
+    <iso3>ZW</iso3>
+    <iso2>ZW</iso2>
+    <en_us>Zimbabwe</en_us>
+    <nl_nl>Zimbabwe</nl_nl>
+  </country>
+</countries>

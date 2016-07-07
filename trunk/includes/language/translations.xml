@@ -138,16 +138,6 @@
     <nl_nl>Credit Card Betaal Information</nl_nl>
     <pt_br>Informação Pagamento Cartão Crédito</pt_br>
   </translation>
-  <translation xml:id="TEXT_SHIPPING_ADDRESSES">
-    <fr_fr>Adresse de livraison</fr_fr>
-    <ru_ru>Адреса доставки</ru_ru>
-    <bg_bg>Адрес за доставки</bg_bg>
-    <en_us>Shipping Addresses</en_us>
-    <es_cr>Dirección para envíos</es_cr>
-    <id_id>Alamat Pengiriman</id_id>
-    <nl_nl>Verzend Adres</nl_nl>
-    <pt_br>Endereço Entrega</pt_br>
-  </translation>
   <translation xml:id="ACT_C_ACCOUNT_NUMBER">
     <fr_fr>N° Compte</fr_fr>
     <bg_bg>Сметка номер</bg_bg>
@@ -534,7 +524,15 @@
     <id_id>ID Kontak</id_id>
     <pt_br>ID Contato</pt_br>
   </translation>
-  <translation xml:id="ACT_SO_HIST">
+  <translation xml:id="TEXT_HISTORY_ARGS">
+    <fr_fr>%s plus récents résultats</fr_fr>
+    <bg_bg>Последни %s резултати</bg_bg>
+    <en_us>Most Recent %s Results</en_us>
+    <es_cr>últimas %s</es_cr>
+    <nl_nl>Meest recente %s Resultaten</nl_nl>
+    <pt_br>%s Resultados Mais Recentes</pt_br>
+  </translation>
+  <translation xml:id="TEXT_SO_HISTORY_ARGS">
     <fr_fr>Historique commande client (%s plus récents résultats)</fr_fr>
     <bg_bg>История на поръчка за продажба (Последни %s резултати)</bg_bg>
     <en_us>Sales Order History (Most Recent %s Results)</en_us>
@@ -7594,12 +7592,13 @@
     <nl_nl>Geen geldige leverancier kon worden gevonden</nl_nl>
     <pt_br>Não foi encontrado fornecedor válido</pt_br>
   </translation>
-  <translation xml:id="PB_PF_CONTACT_ID">
+  <translation xml:id="TEXT_CONTACT_ID">
     <bg_bg>Контакт ID</bg_bg>
     <en_us>Contact ID</en_us>
     <es_cr>ID Contacto</es_cr>
     <id_id>ID Kontak</id_id>
     <pt_br>ID Cliente</pt_br>
+    <nl_nl>Contact ID</nl_nl>
   </translation>
   <translation xml:id="PB_PF_CUST_CRD_MEMO">
     <bg_bg>Кредитни известия - клиент</bg_bg>
@@ -9997,6 +9996,16 @@
     <id_id>Buku Alamat</id_id>
     <nl_nl>Adres Boek</nl_nl>
     <pt_br>Livro Endereços</pt_br>
+  </translation>
+  <translation xml:id="TEXT_ADDRESS">
+    <fr_fr>Adresses</fr_fr>
+    <ru_ru>Адресная</ru_ru>
+    <bg_bg>Адресна</bg_bg>
+    <en_us>Address</en_us>
+    <es_cr>direcciones</es_cr>
+    <id_id>Alamat</id_id>
+    <nl_nl>Adres</nl_nl>
+    <pt_br>Livro</pt_br>
   </translation>
   <translation xml:id="TEXT_ADD_DASHBOARD_ITEMS_TO_THIS_PAGE">
     <en_us>Add Dashboard Items to this Menu</en_us>
@@ -12798,8 +12807,9 @@
     <ru_ru>одинадцать</ru_ru>
   </translation>
   <translation xml:id="TEXT_EMAIL">
-    <en_us>Email: </en_us>
-    <es_cr>Correo: </es_cr>
+    <en_us>Email</en_us>
+    <nl_nl>Email</nl_nl>
+    <es_cr>Correo</es_cr>
   </translation>
   <translation xml:id="TEXT_EMAIL_ADDRESS">
     <en_us>Email Address</en_us>
@@ -12925,6 +12935,7 @@
     <en_us>Entered By</en_us>
     <pt_br>Digitado por</pt_br>
     <es_cr>Digitado por</es_cr>
+	<nl_nl>Ingevoerd Door</nl_nl>
   </translation>
   <translation xml:id="TEXT_ENTER_ADMIM_PASSWORD">
     <en_us>Enter Admim Password</en_us>
@@ -13236,6 +13247,7 @@
   </translation>
   <translation xml:id="TEXT_FACEBOOK_ID">
     <en_us>Facebook ID</en_us>
+    <nl_nl>Facebook ID</nl_nl>
     <pt_br>ID Facebook</pt_br>
   </translation>
   <translation xml:id="TEXT_FAILED_UPDATING_ACCOUNT_THE_PROCESS_WAS_TERMINATED_ARGS">
@@ -13264,6 +13276,7 @@
   </translation>
   <translation xml:id="TEXT_FAX">
     <en_us>Fax</en_us>
+    <nl_nl>Fax</nl_nl>
   </translation>
   <translation xml:id="TEXT_FEB">
     <ru_ru>Февраль</ru_ru>
@@ -14495,10 +14508,10 @@
     <en_us>Invoice Date</en_us>
     <pt_br>Data Fatura</pt_br>
   </translation>
-  <translation xml:id="TEXT_INVOICE_HISTORY_ARGS">
-    <en_us>Invoice History (Most Recent %s Results)</en_us>
-    <nl_nl>Factuur Historie (Meest recente %s Resultaten)</nl_nl>
-    <pt_br>Histórico Faturamento ( %s Resultados Mais Recentes)</pt_br>
+  <translation xml:id="TEXT_INVOICE_HISTORY">
+    <en_us>Invoice History</en_us>
+    <nl_nl>Factuur Historie</nl_nl>
+    <pt_br>Histórico Faturamento</pt_br>
   </translation>
   <translation xml:id="TEXT_INVOICE_NUMBER">
     <en_us>Invoice Number</en_us>
@@ -15175,7 +15188,7 @@
   </translation>
   <translation xml:id="TEXT_MOBILE_PHONE">
     <en_us>Mobile Phone</en_us>
-    <nl_nl>Mobiele nummer</nl_nl>
+    <nl_nl>Mobiel</nl_nl>
     <pt_br>Celular</pt_br>
   </translation>
   <translation xml:id="TEXT_MODULE">
@@ -15354,6 +15367,11 @@
     <en_us>N/A</en_us>
     <es_cr>N/D</es_cr>
     <nl_nl>Niet Beschikbaar</nl_nl>
+  </translation>
+  <translation xml:id="TEXT_NAME">
+    <en_us>Name</en_us>
+    <nl_nl>Naam</nl_nl>
+    <pt_br>Nome</pt_br>
   </translation>
   <translation xml:id="TEXT_NAME_OR_COMPANY">
     <en_us>Name/Company</en_us>
@@ -18033,6 +18051,14 @@
     <nl_nl>Verzending</nl_nl>
     <pt_br>Envio</pt_br>
   </translation>
+   <translation xml:id="TEXT_SHIPPING_ARGS">
+    <bg_bg>Превоз %s</bg_bg>
+    <en_us>Shipping %s</en_us>
+    <es_cr>Envío %S</es_cr>
+    <id_id>Pengiriman %s</id_id>
+    <nl_nl>Verzending %s</nl_nl>
+    <pt_br>Envio %s</pt_br>
+  </translation>
   <translation xml:id="TEXT_SHIPPING_ADDRESS_BOOK_SETTINGS">
     <en_us>Shipping Address Book Settings</en_us>
     <nl_nl>Verzend Adres Instellingen</nl_nl>
@@ -18700,6 +18726,7 @@
     <en_us>Telephone</en_us>
     <es_cr>Teléfono</es_cr>
     <pt_br>Telefone</pt_br>
+    <nl_nl>Telefoon</nl_nl>
   </translation>
   <translation xml:id="TEXT_TEN">
     <bg_bg>десет</bg_bg>
@@ -19374,6 +19401,7 @@
   </translation>
   <translation xml:id="TEXT_TWITTER_ID">
     <en_us>Twitter ID</en_us>
+    <nl_nl>Twitter ID</nl_nl>
     <pt_br>ID Twitter</pt_br>
   </translation>
   <translation xml:id="TEXT_TWO">
@@ -19806,6 +19834,7 @@
   </translation>
   <translation xml:id="TEXT_WEBSITE">
     <en_us>Website</en_us>
+    <nl_nl>Website</nl_nl>
   </translation>
   <translation xml:id="TEXT_WED">
     <ru_ru>Ср</ru_ru>
@@ -20503,26 +20532,42 @@
   </translation>
   <translation xml:id="TEXT_EDIT_ARGS">
     <en_us>Edit %</en_us>
-	<nl_nl>Bewerk %</nl_nl>
+    <nl_nl>Bewerk %</nl_nl>
   </translation>
   <translation xml:id="TEXT_DELETE_ARGS">
     <en_us>Delete %</en_us>
-	<nl_nl>Verwijder %</nl_nl>
+    <nl_nl>Verwijder %</nl_nl>
   </translation>
   <translation xml:id="TEXT_PLEASE_INPUT_VALUE">
     <en_us>Please Input Value</en_us>
-	<nl_nl>Voer Waarde In</nl_nl>
+    <nl_nl>Voer Waarde In</nl_nl>
   </translation>
   <translation xml:id="TEXT_CALL">
     <en_us>Call</en_us>
-	<nl_nl>Bel</nl_nl>
+    <nl_nl>Bel</nl_nl>
   </translation>
   <translation xml:id="TEXT_LEAD">
     <en_us>Lead</en_us>
-	<nl_nl>Aanwijzing</nl_nl>
+    <nl_nl>Aanwijzing</nl_nl>
   </translation>
   <translation xml:id="TEXT_CONTACT">
     <en_us>Contact</en_us>
-	<nl_nl>Contact</nl_nl>
+    <nl_nl>Contact</nl_nl>
+  </translation>
+  <translation xml:id="TEXT_ZENCART">
+    <en_us>zencart</en_us>
+	<nl_nl>zencart</nl_nl>
+  </translation>
+  <translation xml:id="TEXT_SO_NUMBER">
+    <en_us>so number</en_us>
+	<nl_nl>vo nummer</nl_nl>
+  </translation>
+  <translation xml:id="TEXT_BILLING_ARGS">
+    <en_us>billing %s</en_us>
+	<nl_nl>Factuur %s</nl_nl>
+  </translation>
+  <translation xml:id="TEXT_WITH">
+    <en_us>With</en_us>
+	<nl_nl>Met</nl_nl>
   </translation>
 </translations>

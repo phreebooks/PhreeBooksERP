@@ -205,17 +205,17 @@ function cleanDate(sDate) { // converts date from locale to mysql friendly yyyy-
 }
 
 function formatDate(sDate) { // converts date from mysql friendly yyyy-mm-dd to locale specific
-  var tmpArray = new Array();
-  var keys  = date_format.split(date_delimiter);
-  var parts = sDate.split('-');
-  for (var i=0; i<keys.length; i++) {
-	switch (keys[i]) {
-	  case 'Y': tmpArray[i] = parts[0]; break;
-	  case 'm': tmpArray[i] = parts[1]; break;
-	  case 'd': tmpArray[i] = parts[2]; break;
-	}
-  }
-  return tmpArray.join(date_delimiter);
+	if(typeof sDate == 'string'){
+		  sDate = 	new Date(sDate);
+	  }
+	  return sDate.toLocaleDateString();
+}
+
+function formatDateTime(sDate) { // converts date from mysql friendly yyyy-mm-dd to locale specific
+	  if(typeof sDate == 'string'){
+		  sDate = 	new Date(sDate);
+	  }
+	  return sDate.toLocaleString();
 }
 
 // Currency translation functions

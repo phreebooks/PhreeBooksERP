@@ -226,31 +226,31 @@ class admin extends \core\classes\admin {
 			case 'v': $contact = TEXT_VENDOR;	break;
 		}
 		?>
-		    <table id="dg" title="<?php echo sprintf(TEXT_MANAGER_ARGS, $contact);?>" class="easyui-datagrid" style="height:500px;padding:50px;">
-        		<thead>
-            		<tr>
-            			<th data-options="field:'short_name',sortable:true"><?php echo sprintf(TEXT_ARGS_ID, $contact);?></th>
-                		<th data-options="field:'name',sortable:true"><?php echo TEXT_NAME_OR_COMPANY?></th>
-	                	<th data-options="field:'address1',sortable:true"><?php echo TEXT_ADDRESS1?></th>
-    	            	<th data-options="field:'city_town',sortable:true"><?php echo TEXT_CITY_TOWN?></th>
-        	        	<th data-options="field:'state_province',sortable:true"><?php echo TEXT_STATE_PROVINCE?></th>
-        	        	<th data-options="field:'postal_code',sortable:true"><?php echo TEXT_POSTAL_CODE?></th>
-        	        	<th data-options="field:'telephone1',sortable:true"><?php echo TEXT_TELEPHONE?></th>
-            		</tr>
-        		</thead>
-    		</table>
-    		<div id="toolbar">
-    			<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editContact()"><?php echo sprintf(TEXT_EDIT_ARGS, $contact);?></a>
-		        <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newContact()"><?php echo sprintf(TEXT_NEW_ARGS, $contact);?></a>
-        		<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteContact()"><?php echo sprintf(TEXT_DELETE_ARGS, $contact);?></a>
-        		<span style="margin-left: 100px;"><?php echo  TEXT_SHOW_INACTIVE . ' :'?></span>
-        		<?php echo html_checkbox_field('contact_show_inactive', '1', false,'', 'onchange="doSearch()"' );?>
-        		<div style="float: right;">
-        			<span><?php echo TEXT_SEARCH?> : </span>
-    				<input class="easyui-searchbox" data-options="prompt:'<?php TEXT_PLEASE_INPUT_VALUE; ?>',searcher:doSearch" id="search_text" >
-    			</div>
+	    <table id="dg" title="<?php echo sprintf(TEXT_MANAGER_ARGS, $contact);?>" style="height:500px;padding:50px;">
+        	<thead>
+            	<tr>
+            		<th data-options="field:'short_name',sortable:true"><?php echo sprintf(TEXT_ARGS_ID, $contact);?></th>
+               		<th data-options="field:'name',sortable:true"><?php echo TEXT_NAME_OR_COMPANY?></th>
+            	   	<th data-options="field:'address1',sortable:true"><?php echo TEXT_ADDRESS1?></th>
+    	           	<th data-options="field:'city_town',sortable:true"><?php echo TEXT_CITY_TOWN?></th>
+        	       	<th data-options="field:'state_province',sortable:true"><?php echo TEXT_STATE_PROVINCE?></th>
+        	       	<th data-options="field:'postal_code',sortable:true"><?php echo TEXT_POSTAL_CODE?></th>
+        	       	<th data-options="field:'telephone1',sortable:true"><?php echo TEXT_TELEPHONE?></th>
+            	</tr>
+        	</thead>
+    	</table>
+    	<div id="toolbar">
+    		<a class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editContact()"><?php echo sprintf(TEXT_EDIT_ARGS, $contact);?></a>
+	        <a class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newContact()"><?php echo sprintf(TEXT_NEW_ARGS, $contact);?></a>
+        	<a class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteContact()"><?php echo sprintf(TEXT_DELETE_ARGS, $contact);?></a>
+        	<span style="margin-left: 100px;"><?php echo  TEXT_SHOW_INACTIVE . ' :'?></span>
+        	<?php echo html_checkbox_field('contact_show_inactive', '1', false,'', 'onchange="doSearch()"' );?>
+        	<div style="float: right;">
+        		<span><?php echo TEXT_SEARCH?> : </span>
+    			<input class="easyui-searchbox" data-options="prompt:'<?php TEXT_PLEASE_INPUT_VALUE; ?>',searcher:doSearch" id="search_text" >
     		</div>
-    		<div id="win" class="easyui-window">
+    	</div>
+    	<div id="win" class="easyui-window">
     		<div id="contactToolbar" style="margin:2px 5px;">
 				<a class="easyui-linkbutton" iconCls="icon-undo" plain="true" onclick="closeWindow()"><?php echo TEXT_CANCEL?></a>
 				<?php if (\core\classes\user::validate($basis->cInfo->contact->security_token, true) < 2){?>
@@ -258,7 +258,7 @@ class admin extends \core\classes\admin {
 				<?php }?>
 				<a class="easyui-linkbutton" iconCls="icon-help" plain="true" onclick="loadHelp()"><?php TEXT_HELP?></a>
 			</div>
-			</div>
+		</div>
     		
 		<script type="text/javascript">
 	    	function doSearch(value){
@@ -268,6 +268,7 @@ class admin extends \core\classes\admin {
 	        		search_text: $('#search_text').val(),
 	        		dataType: 'json',
 	                contentType: 'application/json',
+	                async: false,
 	                type: '<?php echo $basis->cInfo->type;?>',
 	                contact_show_inactive: $('#contact_show_inactive').is(":checked") ? 1 : 0,
 	        	});
@@ -290,21 +291,22 @@ class admin extends \core\classes\admin {
 					type: '<?php echo $basis->cInfo->type;?>',
 					dataType: 'json',
 	                contentType: 'application/json',
-	                async: false
+	                async: false,
 				},
-				onLoadSuccess:function(data){
+				onLoadSuccess: function(data){
 					console.log('the loading of the datagrid was succesfull');
 					$.messager.progress('close');
 					if(data.total == 0) $.messager.alert('<?php echo TEXT_ERROR?>',"<?php echo TEXT_NO_RESULTS_FOUND?>");
 				},
 				onLoadError: function(){
-					console.log('the loading of the datagrid resulted in a error');
+					console.error('the loading of the datagrid resulted in a error');
 					$.messager.progress('close');
 					$.messager.alert('<?php echo TEXT_ERROR?>','Load error:'+arguments.responseText);
 				},
 				onDblClickRow: function(index , row){
 					console.log('a row in the datagrid was double clicked');
-					$('#win').window('open').window('center').window('setTitle',"<?php echo TEXT_EDIT?>"+ ' ' + row.name);
+					document.location = "index.php?action=editContact&contactid="+ row.contactid;
+					//$('#win').window('open').window('center').window('setTitle',"<?php echo TEXT_EDIT?>"+ ' ' + row.name);
 				},
 				remoteSort:	false,
 				idField:	"contactid",
@@ -315,7 +317,7 @@ class admin extends \core\classes\admin {
 				loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
 				toolbar: 	"#toolbar",
 				rowStyler: function(index,row){
-					if (row.inactive == '1')return 'background-color:pink;';
+					if (row.inactive == '1') return 'background-color:pink;';
 				},
 			});
 			
@@ -328,10 +330,10 @@ class admin extends \core\classes\admin {
 					type: '<?php echo $basis->cInfo->type;?>',
 					dataType: 'html',
 	                contentType: 'text/html',
-	                async: false
+	                async: false,
 				},
 				onLoadError: function(){
-					console.log('the loading of the window resulted in a error');
+					console.error('the loading of the window resulted in a error');
 					$.messager.alert('<?php echo TEXT_ERROR?>');
 					$.messager.progress('close');
 				},
@@ -351,7 +353,7 @@ class admin extends \core\classes\admin {
 			        param.id	 = '<?php echo $basis->cInfo->contact->id; ?>';
 					var isValid = $(this).form('validate');
 					if (!isValid){
-						console.log('the form field are not validated');
+						console.error('the form field are not validated');
 						$.messager.progress('close');	// hide progress bar while the form is invalid
 					}
 					console.log('the form field are validated');
@@ -368,7 +370,7 @@ class admin extends \core\classes\admin {
 					console.log('successfully loaded the form.');
 				}, 
 				onLoadError: function(){
-					console.log('there was a error during loading of the form.');
+					console.error('there was a error during loading of the form.');
 				}, 
 				toolbar:contactToolbar, 
 			});
@@ -387,8 +389,6 @@ class admin extends \core\classes\admin {
 			}			
 		</script><?php 
 		$basis->observer->send_footer($basis);
-		$basis->cInfo->contactid = 33;
-		$this->editContact($basis);
 	}
 	
 	function GetAllContacts (\core\classes\basis &$basis) {
@@ -407,7 +407,7 @@ class admin extends \core\classes\admin {
 		}
 		if (!$basis->cInfo->contact_show_inactive) $criteria[] = "(c.inactive = '0' or c.inactive = '')"; // inactive flag
 		$search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
-		$query_raw = "SELECT id as contactid, short_name, CASE WHEN c.type = 'e' OR c.type = 'i' THEN CONCAT(contact_first , ' ',contact_last) ELSE primary_name END AS name, contact_last, contact_first, contact_middle, address1, city_town, state_province, postal_code, telephone1, telephone4, email, inactive FROM contacts c LEFT JOIN address_book a ON c.id = a.ref_id $search ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order}";
+		$query_raw = "SELECT id as contactid, short_name, CASE WHEN c.type = 'e' OR c.type = 'i' THEN CONCAT(contact_first , ' ',contact_last) ELSE primary_name END AS name, contact_last, contact_first, contact_middle, contact, account_number, gov_id_number, address1, address2, city_town, state_province, postal_code, telephone1, telephone2, telephone3, telephone4, email, website, inactive FROM contacts c LEFT JOIN address_book a ON c.id = a.ref_id $search ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order}";
 		$sql = $basis->DataBase->prepare($query_raw);
 		$sql->execute();
 		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
@@ -415,6 +415,30 @@ class admin extends \core\classes\admin {
 		$temp["total"] = sizeof($results);
 		$temp["rows"] = $results;
 		echo json_encode($temp);
+	}
+	
+	function loadCRMHistory (\core\classes\basis &$basis) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		$sql = $basis->DataBase->prepare("SELECT l.log_id, l.contact_id, U.display_name as user_name, l.log_date, l.action, l.notes, c.contact_first, c.contact_last, a.primary_name, CASE WHEN c.contact_last != '' THEN CONCAT(c.contact_first,' ',c.contact_middle,' ',c.contact_last) ELSE a.primary_name END AS name FROM ".TABLE_CONTACTS_LOG." AS l JOIN ".TABLE_CONTACTS." AS c ON l.contact_id = c.id JOIN ".TABLE_ADDRESS_BOOK." AS a ON c.id = a.ref_id JOIN ".TABLE_USERS." AS u ON l.entered_by = u.admin_id WHERE (c.dept_rep_id ={$basis->cInfo->contact_id} OR c.id ={$basis->cInfo->contact_id})");
+		$sql->execute();
+		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
+		$temp = array();
+		$temp["total"] = sizeof($results);
+		$temp["rows"] = $results;
+		echo json_encode($temp);
+	}
+	
+	function loadAddresses (\core\classes\basis &$basis) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::debug_log("variables are ".print_r($basis->cInfo, true) );
+		$sql = $basis->DataBase->prepare("SELECT * FROM ".TABLE_ADDRESS_BOOK." WHERE ref_id = {$basis->cInfo->contact_id} AND type LIKE '%{$basis->cInfo->address_type}' ORDER BY primary_name");
+		$sql->execute();
+		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
+		$temp = array();
+		$temp["total"] = sizeof($results);
+		$temp["rows"] = $results;
+		echo json_encode($temp);
+		\core\classes\messageStack::debug_log("returning ".print_r($temp, true) ); //@todo remove.
 	}
 	
 	/**
@@ -438,7 +462,7 @@ class admin extends \core\classes\admin {
 	 */
 	function editContact(\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		\core\classes\messageStack::debug_log(print_r($_REQUEST,true) );
+		$basis->observer->send_menu($basis);
 		if ( isset($basis->cInfo->rowSeq)) $basis->cInfo->contactid = $basis->cInfo->rowSeq;
 		if ($basis->cInfo->contactid == '') throw new \core\classes\userException("contactid variable isn't set can't execute method editContact ");
 		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->contactid}");
@@ -467,6 +491,7 @@ class admin extends \core\classes\admin {
 		include(DIR_FS_MODULES . "contacts/pages/main/template_detail.php");
 	}
 
+	
 	function saveContact (\core\classes\basis &$basis) {
 		if ($basis->cInfo->id == '') throw new \core\classes\userException("id variable isn't set can't execute method SaveContact ");
 		if ($_POST['crm_date']) $_POST['crm_date'] = gen_db_date($_POST['crm_date']);

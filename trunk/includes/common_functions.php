@@ -689,7 +689,7 @@ function get_dir_tree($dir, $root = true)  {
   	}
 
   	function html_hidden_field($name, $value = '', $parameters = '') {
-    	return html_input_field($name, $value, $parameters, false, 'hidden', false);
+    	return html_input_field($name, $value, $parameters. '  data-options="disabled:true"' , false, 'hidden', false);
   	}
   	
   	function html_calendar_field($name, $value = '', $parameters = '') {
@@ -699,12 +699,12 @@ function get_dir_tree($dir, $root = true)  {
 	  		$id = str_replace('[', '_', $name); // clean up for array inputs causing html errors
 	  		$id = str_replace(']', '',  $id);
     	}
-    	$field = "<input class='easyui-calendar' name='$name' style='width:180px;height:180px;'";
+    	$field = "<input class='easyui-datebox' data-options='currentText:\"".TEXT_TODAY."\",closeText:\"".TEXT_CLOSE."\",formatter:formatDate' name='$name' style='width:180px;height:26px;'";
 		if ($id)                       	$field .= " id='$id'";
     	if (gen_not_null($value))      	$field .= ' value="' . str_replace('"', '&quot;', $value) . '"';
     	if ($required)					$required = ",required:true";
     	if (gen_not_null($parameters)) 	$field .= ' ' . $parameters;
-    	$field .= " data-options=\"$required \" />";
+    	$field .= " >";
     	return $field;
   	}
 
@@ -758,7 +758,7 @@ function get_dir_tree($dir, $root = true)  {
 		if ($id)					$field .= " id='$id'";
     	if (gen_not_null($value))	$field .= ' value="' . str_replace('"', '&quot;', $value) . '"';
     	if ($required == true)		$field .= " required='required' ";
-    	$field .= " class='easyui-datebox' />";
+    	$field .= " />";
     	return $field;
   	}
 
@@ -871,19 +871,13 @@ function get_dir_tree($dir, $root = true)  {
 	    $id = str_replace(']', '', $id);
       }
 	}
-	$field  = '<input class="easyui-combobox" type="text" name="' . $name . '"';
-	if (gen_not_null($id)) 	$field .= ' id="' . $id . '"';
+	$field  = "<input list='{$name}_list' name='{$name}'";
+	if (gen_not_null($id)) 	$field .= " id='{$id}'";
 	if ($required)			$field .= ' required="required" ';
-	$field .= ' value="' . $default . '" ' . $parameters . ' />';
-	$field .= '<img name="imgName' . $id . '" id="imgName' . $id . '" alt="" src="' . DIR_WS_ICONS . '16x16/phreebooks/pull_down_inactive.gif" height="16" width="16" align="top" style="border:none;" onmouseover="handleOver(\'imgName' . $id . '\'); return true;" onmouseout="handleOut(\'imgName' . $id . '\'); return true;" onclick="JavaScript:cbMmenuActivate(\'' . $id . '\', \'combodiv' . $id . '\', \'combosel' . $id . '\', \'imgName' . $id . '\')" />';
-	$field .= '<div id="combodiv' . $id . '" style="position:absolute; display:none; top:0px; left:0px; z-index:10000" onmouseover="javascript:oOverMenu=\'combodiv' . $id . '\';" onmouseout="javascript:oOverMenu=false;">';
-	$field .= '<select size="10" id="combosel' . $id . '" style="width:' . $width . '; border-style:none" onchange="JavaScript:textSet(\'' . $id . '\', this.value); ' . $onchange . ';" onkeypress="JavaScript:comboKey(\'' . $id . '\', this, event);">';
-    for ($i = 0; $i < sizeof($values); $i++) {
-      $field .= '<option value="' . $values[$i]['id'] . '"';
-      if ($default == $values[$i]['id']) $field .= ' selected="selected"';
-      $field .= '>' . htmlspecialchars($values[$i]['text']) . '</option>';
-    }
-	$field .= '</select></div>';
+	$field .= " value='{$default}' {$parameters} />";
+	$field .= "<datalist id='{$name}_list'>";
+    for ($i = 0; $i < sizeof($values); $i++) $field .= "<option value='". htmlspecialchars($values[$i]['text']) . "'>";
+	$field .= '</datalist>';
 	return $field;
   }
 

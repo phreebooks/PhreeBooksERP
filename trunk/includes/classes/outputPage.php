@@ -55,7 +55,7 @@ class outputPage  {
     	//setting easyui defaults.
 		echo "<script type='text/javascript' >
 				$.fn.validatebox.defaults.invalidMessage = '".TEXT_INVALID_VALUE."';
-				$.fn.validatebox.defaults.missingMessage = '".TEXT_THIS_FIELD_IS_REQUIRED."';
+				$.fn.validatebox.defaults.missingMessage = '".TEXT_THIS_FIELD_IS_REQUIRED."';		
 			 </script>";
 		echo "</head><body>";
     	ob_flush();
@@ -95,6 +95,14 @@ class outputPage  {
     		classname: '<?php echo MY_MENU=='left'?'ddsmoothmenu-v':'ddsmoothmenu';?>',
     		contentsource: "markup"
     	})
+		var date_format         = '<?php echo DATE_FORMAT; ?>';
+  		var date_delimiter      = '<?php echo DATE_DELIMITER; ?>';
+  		var inactive_text_color = '#cccccc';
+  		var decimal_places      = <?php  echo $basis->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']; ?>;
+  		var decimal_precise     = <?php  echo $basis->currencies->currencies[DEFAULT_CURRENCY]['decimal_precise']; ?>;
+  		var decimal_point       = "<?php echo $basis->currencies->currencies[DEFAULT_CURRENCY]['decimal_point']; ?>"; // leave " for ' separator
+  		var thousands_point     = "<?php echo $basis->currencies->currencies[DEFAULT_CURRENCY]['thousands_point']; ?>";
+  		var formatted_zero      = "<?php echo $basis->currencies->format(0); ?>";
     	</script> 
     	<?php 
     	ob_flush();

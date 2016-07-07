@@ -450,22 +450,6 @@ class contacts {
   		echo "</td>";
   	}
 
-  	function print_contact_list(){
-  		$security_level = \core\classes\user::validate($this->security_token); // in this case it must be done after the class is defined for
-  		$bkgnd = ($this->inactive) ? 'class="ui-state-highlight"' : '';
-  		echo "<td onclick='getAddress({$this->address['m'][0]->address_id}, \"im\")' $bkgnd	> {$this->contact_last}</td>";
-  		echo "<td onclick='getAddress({$this->address['m'][0]->address_id}, \"im\")' $bkgnd	> {$this->contact_first}</td>";
-  		echo "<td onclick='getAddress({$this->address['m'][0]->address_id}, \"im\")' 		> {$this->contact_middle}</td>";
-  		echo "<td onclick='getAddress({$this->address['m'][0]->address_id}, \"im\")' 		> {$this->address['m'][0]->telephone1}</td>";
-  		echo "<td onclick='getAddress({$this->address['m'][0]->address_id}, \"im\")' 		> {$this->address['m'][0]->telephone4}</td>";
-  		echo "<td onclick='getAddress({$this->address['m'][0]->address_id}, \"im\")' 		> {$this->address['m'][0]->email}</td>";
-  		echo "<td align='right'>";
-  		// build the action toolbar
-  		if ($security_level > 1) echo html_icon('actions/edit-find-replace.png', TEXT_EDIT,   'small', "onclick='getAddress({$this->address['m'][0]->address_id}, \"im\")'") . chr(10);
-  		if ($security_level > 3) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', "onclick='if (confirm(\"". ACT_WARN_DELETE_ACCOUNT . "\")) deleteAddress({$this->address['m'][0]->address_id})'") . chr(10);
-  		echo "</td>";
-  	}
-
-  //	function __destruct(){print_r($this);}
+//	function __destruct(){print_r($this);}
 }
 ?>
