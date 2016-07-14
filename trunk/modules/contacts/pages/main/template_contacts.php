@@ -63,6 +63,10 @@ $('#cdg').datagrid({
 		$.messager.progress('close');
 		$.messager.alert('<?php echo TEXT_ERROR?>','Load error for table contacts');
 	},
+	onDblClickRow: function(index , row){
+		console.log('a row in the contacts datagrids was double clicked');
+		$('#cdg').datagrid('expandRow', index);
+	},
 	remoteSort:	false,
 	idField:	"contactid",
 	fitColumns:	true,

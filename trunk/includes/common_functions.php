@@ -455,13 +455,13 @@ function get_dir_tree($dir, $root = true)  {
 
 /*************** Country Functions *******************************/
   function gen_get_country_iso_2_from_3($iso3 = COMPANY_COUNTRY, $countries = false) {
-    if (!$countries) $countries = $_SESSION['user']->language->load_countries();
+    if (!$countries) $countries = $_SESSION['language']->load_countries();
 	foreach ($countries->country as $value) if ($value->iso3 == $iso3) return $value->iso2;
     return $iso3; // not found
   }
 
   function gen_get_country_iso_3_from_2($iso2, $countries = false) {
-    if (!$countries) $countries = $_SESSION['user']->language->load_countries();
+    if (!$countries) $countries = $_SESSION['language']->load_countries();
 	foreach ($countries->country as $value) if ($value->iso2 == $iso2) return $value->iso3;
     return $iso2; // not found
   }
@@ -469,7 +469,7 @@ function get_dir_tree($dir, $root = true)  {
   function gen_get_countries($choose = false, $countries = false) {
 	$temp   = array();
     $output = array();
-    if (!$countries) $countries = $_SESSION['user']->language->load_countries();
+    if (!$countries) $countries = $_SESSION['language']->load_countries();
     foreach ($countries->country as $key => $value) $temp[(string)$value->iso3] = $value->name;
     asort($temp); // for language translations, sort to alphabetical
     if ($choose) $output[] = array('id' => '0', 'text' => TEXT_PLEASE_SELECT);

@@ -23,7 +23,6 @@
 
 // Additional action bar buttons (DYNAMIC AS IT IS SET BASED ON EVERY LINE!!!)
 @include_once(DIR_FS_MODULES . 'zencart/config.php'); // pull the current ZenCart config info, if it is there
-@include_once(DIR_FS_MODULES . 'zencart/language/' . $_SESSION['user']->language . '/language.php');
 function add_extra_action_bar_buttons($query_fields) {
   $output = '';
   if (defined('ZENCART_URL') && \core\classes\user::security_level(SECURITY_ID_MAINTAIN_INVENTORY) > 1 && $query_fields['catalog'] == '1') {

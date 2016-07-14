@@ -68,9 +68,8 @@ if ($db_name && file_exists(DIR_FS_MY_FILES . $db_name . '/config.php')) {
 }
 
 // set the language
-$_SESSION['user']->language->language_code = $_GET['lang'] ? $_GET['lang'] : 'en_us';
-define('LANGUAGE',$_SESSION['user']->language->language_code);
-require_once(DIR_FS_ADMIN . 'soap/language/' . LANGUAGE . '/language.php');
+$_SESSION['language']->language_code = $_GET['lang'] ? $_GET['lang'] : 'en_us';
+define('LANGUAGE',$_SESSION['language']->language_code);
 
 // include the database functions
 // Load queryFactory db classes

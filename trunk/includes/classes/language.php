@@ -29,6 +29,7 @@ class language {
 	 *
 	 */
 	function __construct(){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__);
 		if( isset($_REQUEST['language']) && $_REQUEST['language'] != '') {
 			$this->language_code = $_REQUEST['language'];
 		} else {
@@ -40,13 +41,13 @@ class language {
 				$this->language_code = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
 			}
 		}
-//		$this->find_language_constants();
 		if (sizeof($this->languages) == 0) $this->get_languages();
 		if (sizeof($this->phrases)   == 0) $this->get_translations();
 		if (!file_exists(DIR_FS_INCLUDES."language/custom/locals.xml")) $this->create_countries();
 	}
 
 	public function __wakeup() {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__);
 		if( isset($_REQUEST['language']) && $_REQUEST['language'] != '') $this->language_code = $_REQUEST['language'];
 		foreach ($this->phrases as $key => $value ) define($key, $value);
 		if (!file_exists(DIR_FS_INCLUDES."language/custom/locals.xml")) $this->create_countries();
@@ -105,138 +106,6 @@ class language {
 		}
 	}
 
-	/**
-	 * function will read language files and add contants to xml language file.
-	 * @todo should be deleted before release 4.0
-	 */
-	function find_language_constants(){
-		$dirs = @scandir ( DIR_FS_MODULES );
-		foreach ( $dirs as $dir ) {
-			if ($dir == '.' || $dir == '..') continue;
-			$lang_dir = DIR_FS_MODULES . $dir . "/language";
-			if (is_dir ( $lang_dir )) {
-				$language_folders = @scandir ( $lang_dir );
-				foreach ( $language_folders as $language_folder ) {
-					if ($language_folder == '.' || $language_folder == '..') continue;
-					$language_files = @scandir ( $lang_dir .'/'. $language_folder );
-					foreach ( $language_files as $language_file ) {
-						if ($language_file == '.' || $language_file == '..') continue;
-						if (is_dir ( $language_file )) {
-							$language_sub_folders = @scandir ( "{$lang_dir}/{$language_folder}/{$language_file}");
-							foreach ( $language_sub_folders as $language_sub_folder ) {
-								if ($language_sub_folder == '.' || $language_sub_folder == '..') continue;
-								$handle = fopen("{$lang_dir}/{$language_folder}/{$language_file}/{$language_sub_folder}", "r");
-								if ($handle) {
-									while (($line = fgets($handle)) !== false) {
-										// process the line read.
-										if (false !== strpos ($line, "define(")) {
-											$string = ltrim($line);
-											$string = ltrim($string,"define(");
-											$string = rtrim($string);
-											$string = rtrim($string,");");
-											$string = explode(",", $string);
-											$this->translate[$string[0]][$language_folder] = $string[1];
-										}
-									}
-									fclose($handle);
-								}
-							}
-						}else{
-							$handle = fopen("{$lang_dir}/{$language_folder}/{$language_file}", "r");
-							if ($handle) {
-								while (($line = fgets($handle)) !== false) {
-									// process the line read.
-									if (false !== strpos ($line, "define(")) {
-										$string = ltrim($line);
-										$string = ltrim($string,"define(");
-										$string = rtrim($string);
-										$string = rtrim($string,");");
-										$string = explode(",", $string);
-										$this->translate[$string[0]][$language_folder] = $string[1];
-									}
-								}
-								fclose($handle);
-							}
-						}
-					}
-				}
-			}
-			foreach(array('dashboards','methods') as $type) {
-				$method_dir = DIR_FS_MODULES ."{$dir}/{$type}";
-				if (is_dir ( $method_dir )) {
-					$methods = @scandir ( $method_dir );
-					foreach ( $methods as $method ) {
-						if ($method == '.' || $method == '..') continue;
-						$language_folders = @scandir ( "{$method_dir}/{$method}/language" );
-						foreach ( $language_folders as $language_folder ) {
-							if ($language_folder == '.' || $language_folder == '..') continue;
-							$language_files = @scandir ( "{$method_dir}/{$method}/language/{$language_folder}" );
-							foreach ( $language_files as $language_file ) {
-								if ($language_file == '.' || $language_file == '..') continue;
-								$handle = fopen("{$method_dir}/{$method}/language/{$language_folder}/{$language_file}", "r");
-								if ($handle) {
-									while (($line = fgets($handle)) !== false) {
-										// process the line read.
-										if (false !== strpos ($line, "define(")) {
-											$string = ltrim($line);
-											$string = ltrim($string,"define(");
-											$string = rtrim($string);
-											$string = rtrim($string,");");
-											$string = explode(",", $string);
-											$this->translate[$string[0]][$language_folder] = $string[1];
-										}
-									}
-									fclose($handle);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		//controleren
-		foreach ($this->translate as $key => $string){
-			if(!isset($string['en_us'])){
-				unset($this->translate[$key]);
-			}else{
-				foreach($string as $language => $translation){
-					if ($language == 'en_us') continue;
-					if ($string['en_us'] == $translation) unset($this->translate[$key][$language]);
-				}
-			}
-		}
-
-		ksort($this->translate);
-		//store in xml.
-		$doc = new \DOMDocument('1.0', 'utf-8');
-		$doc->formatOutput = true;
-		$root_element = $doc->createElement('translations');
-		$root = $doc->appendChild($root_element);
-		foreach($this->translate as $key => $value) {
-			$first_element = $doc->createElement('translation');
-			$string = ltrim($key);
-			$string = ltrim($string,"'");
-			$string = ltrim($string,'"');
-			$string = rtrim($string);
-			$string = rtrim($string, "'");
-			$string = rtrim($string, '"');
-			$first_element->setAttribute('xml:id', $string);
-			$second = $root->appendChild($first_element);
-			foreach($value as $language => $translation) {
-				$string = ltrim($translation);
-				$string = ltrim($string,"'");
-				$string = ltrim($string,'"');
-				$string = rtrim($string);
-				$string = rtrim($string, "'");
-				$string = rtrim($string, '"');
-				$temp = $doc->createElement($language, $string);
-				$second->appendChild($temp);
-			}
-		}
-		$custom_path = DIR_FS_INCLUDES."language/custom/translations.xml";
-		$doc->save($custom_path);
-	}
-
 	static function add_constant($constant){
 		$lang_path = (DIR_FS_INCLUDES."language/translations.xml");
 		if (!file_exists($lang_path)) throw new \core\classes\userException("can't find your language file {$lang_path} ");
@@ -266,7 +135,7 @@ class language {
 		if (sizeof($this->locales) == 0) {
 			\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 			if (file_exists(DIR_FS_MODULES . "phreedom/language/{$this->language_code}/locales.xml")) {
-				if (($xmlStr = @file_get_contents(DIR_FS_MODULES . "phreedom/language/{$this->language_code}/locales.xml")) === false) 	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, "phreedom/language/{$_SESSION['user']->language}/locales.xml"));
+				if (($xmlStr = @file_get_contents(DIR_FS_MODULES . "phreedom/language/{$this->language_code}/locales.xml")) === false) 	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, "phreedom/language/{$this->language_code}/locales.xml"));
 			} else {
 				if (($xmlStr = @file_get_contents(DIR_FS_MODULES . "phreedom/language/en_us/locales.xml")) === false) 					throw new \core\classes\userException(sprintf(ERROR_READ_FILE, "phreedom/language/en_us/locales.xml"));
 			}
@@ -274,68 +143,6 @@ class language {
 		}
 		if (isset($this->locales->data)) return $this->locales->data;
 		return $this->locales;
-	}
-	
-	function create_countries(){
-		\core\classes\messageStack::debug_log("executing ".__METHOD__);
-		$countries = array();
-		$lang_dir = DIR_FS_MODULES ."phreedom/language";
-		$language_folders = @scandir ( $lang_dir );
-		foreach ( $language_folders as $language_folder ) {
-			if ($language_folders == '.' || $language_folders == '..') continue;
-			if (is_dir ( "{$lang_dir}/{$language_folder}" )) {
-				$path = "{$lang_dir}/{$language_folder}/locales.xml";
-				if (!file_exists($path)) continue;
-				$xml = new \DomDocument();
-				$xml->load($path);
-				$phrases = $xml->getElementsByTagName('country');
-				foreach ($phrases as $phrase) {
-					$temp = array();
-					if($phrase->childNodes->length) {
-						foreach($phrase->childNodes as $i) {
-							$temp[$i->nodeName] = $i->nodeValue;
-						}
-					}
-					\core\classes\messageStack::debug_log("phrase ".print_r($temp, true));
-					if (isset($countries[$temp['iso3']])){
-						$countries[$temp['iso3']]['languages'][$language_folder] = $temp['name'];
-					}else{
-						$countries[$temp['iso3']]= array(
-								'iso2'   	=> $temp['iso2'],
-								'languages'	=> array(
-										$language_folder => $temp['name'],
-								),
-						);
-					}
-				}
-			}
-		}
-		ksort($countries);
-		\core\classes\messageStack::debug_log("found array ".print_r($countries, true));
-		//store in xml.
-		$doc = new \DOMDocument('1.0', 'utf-8');
-		$doc->formatOutput = true;
-		$root_element = $doc->createElement('countries');
-		$root = $doc->appendChild($root_element);
-		foreach($countries as $key => $value) {
-			$first_element = $doc->createElement('country');
-			$first_element->setAttribute('xml:id', $key);
-			$second = $root->appendChild($first_element);
-			$temp = $doc->createElement('iso3', $value['iso2']);
-			$second->appendChild($temp);
-			$temp = $doc->createElement('iso2', $value['iso2']);
-			$second->appendChild($temp);
-			foreach($value['languages'] as $language => $translation) {
-				$temp = $doc->createElement($language, $translation);
-				$second->appendChild($temp);
-			}
-		}
-		$custom_path = DIR_FS_INCLUDES."language/custom/locals.xml";
-		$doc->save($custom_path);
-	}
-	
-	function __sleep(){
-		$this->locales = array();
 	}
 }
 ?>

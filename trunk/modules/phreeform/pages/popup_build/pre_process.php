@@ -323,7 +323,7 @@ switch ($_REQUEST['action']) {
   case 'import_one':
   case 'import_all':
   case 'refresh_dir':
-	$sel_language = $_SESSION['user']->language->languages;
+	$sel_language = $_SESSION['language']->languages;
 	define('PAGE_TITLE', TEXT_PHREEFORM_IMPORT_TOOL);
     $include_template = 'template_import.php';
     break;

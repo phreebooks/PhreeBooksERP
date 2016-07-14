@@ -56,14 +56,8 @@ session_set_cookie_params((SESSION_TIMEOUT_ADMIN < 360 ? 360 : SESSION_TIMEOUT_A
 
 //end session
 $_REQUEST = array_merge($_GET, $_POST);
-if(!isset($_REQUEST['module']))	$_REQUEST['module']	= 'phreedom';
-if(!isset($_REQUEST['page'])) 	$_REQUEST['page'] 	= 'main';
 // define general functions and classes used application-wide
 require_once(DIR_FS_MODULES  . 'phreedom/defaults.php');
-require_once(DIR_FS_INCLUDES . 'common_functions.php');
-set_error_handler("PhreebooksErrorHandler");
-set_exception_handler('PhreebooksExceptionHandler');
-spl_autoload_register('Phreebooks_autoloader', true, false);
 // pull in the custom language over-rides for this module/page
 $custom_path = DIR_FS_MODULES . "{$_REQUEST['module']}/custom/pages/{$_REQUEST['page']}/extra_defines.php";
 if (file_exists($custom_path)) { include($custom_path); }

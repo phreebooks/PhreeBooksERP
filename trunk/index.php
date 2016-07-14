@@ -21,22 +21,18 @@ ini_set('log_errors','1');
 ini_set('display_errors', '1');
 ini_set('max_input_vars', '3000');
 error_reporting(E_ALL & ~E_NOTICE);//@todo set to excelude e_notice
-if (isset($_POST['module']))    $module = $_POST['module'];
-elseif (isset($_GET['module'])) $module = $_GET['module'];
-else                            $module = 'phreedom';
-if (isset($_POST['page']))      $page = $_POST['page'];
-elseif (isset($_GET['page']))   $page = $_GET['page'];
-else                     		$page = 'main';
 try{
 	require_once('includes/common_functions.php');
 	set_error_handler("PhreebooksErrorHandler");
 	set_exception_handler('PhreebooksExceptionHandler');
 	spl_autoload_register('Phreebooks_autoloader', true, false);
+	\core\classes\messageStack::start();
 	require_once('includes/application_top.php');
    	if ($admin->cInfo->action) $admin->removeEventsAndAddNewEvent($admin->cInfo->action);
    	$admin->startProcessingEvents();
 	ob_end_flush();
    	session_write_close();
+   	\core\classes\messageStack::end();
 }catch (\Exception $e) {
 	\core\classes\messageStack::add($e->getMessage());
 	if (is_object($admin->DataBase)) gen_add_audit_log($e->getMessage());
@@ -49,5 +45,6 @@ try{
 	} else {
 		echo "Sorry but there was a unforseen error <br/> <b>".$e->getMessage()."</b><br/><br/>".$e->getTraceAsString();
 	}
+	\core\classes\messageStack::end();
 }
 ?>

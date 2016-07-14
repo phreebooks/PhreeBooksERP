@@ -40,7 +40,7 @@ switch ($_REQUEST['action']) {
 	  $admin->DataBase->query("TRUNCATE TABLE " . TABLE_CHART_OF_ACCOUNTS);
 	  $admin->DataBase->query("TRUNCATE TABLE " . TABLE_CHART_OF_ACCOUNTS_HISTORY);
 	}
-	$filename = $std_chart ? (DIR_FS_WORKING.'language/'.$_SESSION['user']->language->language_code.'/charts/'.$std_chart) : $_FILES['file_name']['tmp_name'];
+	$filename = $std_chart ? (DIR_FS_WORKING.'language/'.$_SESSION['language']->language_code.'/charts/'.$std_chart) : $_FILES['file_name']['tmp_name'];
 	if (($temp = @file_get_contents($filename)) === false)  throw new \core\classes\userException(sprintf(ERROR_READ_FILE, $filename));
 	$accounts = xml_to_object($temp);
 	if (is_object($accounts->ChartofAccounts)) $accounts = $accounts->ChartofAccounts; // just pull the first one
@@ -116,7 +116,7 @@ $sel_inv_due = array( // invoice date versus due date for aging
 );
 
 // load available charts based on language
-if (is_dir($dir = DIR_FS_WORKING."language/{$_SESSION['user']->language->language_code}/charts")) {
+if (is_dir($dir = DIR_FS_WORKING."language/{$_SESSION['language']->language_code}/charts")) {
 	$charts = @scandir($dir);
 	if($charts === false) throw new \core\classes\userException("couldn't read or find directory $dir");
 }else {
@@ -126,7 +126,7 @@ if (is_dir($dir = DIR_FS_WORKING."language/{$_SESSION['user']->language->languag
 $sel_chart = array(array('id' => '0', 'text' => TEXT_SELECT));
 foreach ($charts as $chart) {
   	if (strpos($chart, 'xml')) {
-  		if (($file = @file_get_contents(DIR_FS_WORKING . "language/{$_SESSION['user']->language->language_code}/charts/$chart")) === false)  throw new \core\classes\userException(sprintf(ERROR_READ_FILE, DIR_FS_WORKING . "language/{$_SESSION['user']->language}/charts/$chart"));
+  		if (($file = @file_get_contents(DIR_FS_WORKING . "language/{$_SESSION['language']->language_code}/charts/$chart")) === false)  throw new \core\classes\userException(sprintf(ERROR_READ_FILE, DIR_FS_WORKING . "language/{$_SESSION['language']->language_code}/charts/$chart"));
 		$temp = xml_to_object($file);
 		if ($temp->ChartofAccounts) $temp = $temp->ChartofAccounts;
     	$sel_chart[] = array('id' => $chart, 'text' => $temp->description);

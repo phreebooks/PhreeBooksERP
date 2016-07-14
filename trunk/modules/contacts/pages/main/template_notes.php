@@ -22,7 +22,7 @@
 <div title="<?php echo TEXT_NOTES;?>">
   <fieldset>
 	<div style="float:right;width:50%">
-	  	<div id="dlg" class="easyui-dialog" style="width:600px;height:400px;padding:10px 20px" closed="true" buttons="#dlg-buttons">
+	<!--   	<div id="dlg" class="easyui-dialog" style="width:600px;height:400px;padding:10px 20px" closed="true" buttons="#dlg-buttons">
 	  	        <div class="ftitle"><?php echo TEXT_CRM; ?></div>
        			<form id="fm" method="post" novalidate>
             		<div class="fitem">
@@ -42,15 +42,15 @@
                 		<?php echo html_textarea_field('crm_note', 60, 1, $basis->cInfo->contact->crm_note, ''); ?>
             		</div>
         		</form>
-		</div>
+		</div>-->
 		<table id='notes' title="<?php echo TEXT_HISTORY; ?>">
 		    <thead>
 		   		<tr>
-		        	<th data-options="field:'name',sortable:true, align:'center'"><?php echo TEXT_WITH;?></th>
-	    	        <th data-options="field:'user_name',sortable:true, align:'center'"><?php echo TEXT_ENTERED_BY?></th>	
-	    	        <th data-options="field:'log_date',sortable:true, align:'center', formatter: function(value,row,index){ return formatDateTime(value)}"><?php echo TEXT_DATE?></th>
-			        <th data-options="field:'action',sortable:true, align:'right', formatter: function(value,row,index){ return ConvertCrmAction(value)}"><?php echo TEXT_ACTION?></th>
-			        <th data-options="field:'notes',sortable:false, align:'right'"><?php echo TEXT_NOTE?></th>		        
+		        	<th data-options="field:'name',sortable:true, align:'left'"><?php echo TEXT_WITH;?></th>
+	    	        <th data-options="field:'user_name',sortable:true, align:'left'"><?php echo TEXT_ENTERED_BY?></th>	
+	    	        <th data-options="field:'log_date',sortable:true, align:'right', formatter: function(value,row,index){ return formatDateTime(value)}"><?php echo TEXT_DATE?></th>
+			        <th data-options="field:'action',sortable:true, align:'left', formatter: function(value,row,index){ return ConvertCrmAction(value)}"><?php echo TEXT_ACTION?></th>
+			        <th data-options="field:'notes',sortable:false, align:'left'"><?php echo TEXT_NOTE?></th>		        
 		    	</tr>
 		   	</thead>
 		</table>
@@ -102,6 +102,24 @@ $('#notes').datagrid({
 	sortName:	"log_date",
 	sortOrder: 	"dsc",
 	loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
+    view: detailview,
+    detailFormatter:function(index,row){
+        return '<div class="ddv"></div>';
+    },
+    onExpandRow: function(index,row){
+        var ddv = $(this).datagrid('getRowDetail',index).find('div.ddv');
+        ddv.panel({
+            border:false,
+            cache:true,
+            href:'index.php?action=editCRM&index='+index,
+            onLoad:function(){
+                $('#notes').datagrid('fixDetailRowHeight',index);
+                $('#notes').datagrid('selectRow',index);
+                $('#notes').datagrid('getRowDetail',index).find('form').form('load',row);
+            },
+        });
+        $('#notes').datagrid('fixDetailRowHeight',index);
+    }
 });
 
 function ConvertCrmAction (value){

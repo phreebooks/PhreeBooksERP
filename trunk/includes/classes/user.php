@@ -29,7 +29,7 @@ class user {
 
 	function __construct(){
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		if (count ($this->language) == 0 ) $this->language = new \core\classes\language();
+		if (!isset($_SESSION['language'])) $_SESSION['language'] = new \core\classes\language();
 		if ($this->last_activity == '') $this->last_activity = time();
 		if (defined('DEFAULT_COMPANY')) {
 			$this->company =  DEFAULT_COMPANY;
@@ -41,10 +41,10 @@ class user {
 
 	public function __wakeup() {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		if (count ($this->language) == 0 ) $this->language = new \core\classes\language();
+		if (!isset($_SESSION['language'])) $_SESSION['language'] = new \core\classes\language();
 		$cookie_exp = 2592000 + time(); // one month
 		setcookie('pb_company' , $this->company,  $cookie_exp);
-		setcookie('pb_language', $this->language->language_code, $cookie_exp);
+		setcookie('pb_language', $_SESSION['language']->language_code, $cookie_exp);
 	}
 	
 	final static public function get($variable){
@@ -226,13 +226,13 @@ class user {
 		<?php } else{
 				echo html_hidden_field('company',  $this->company) . chr(10);
 		}?>
-		<?php if (sizeof($this->language->languages) > 1) { ?>
+		<?php if (sizeof($_SESSION['language']->languages) > 1) { ?>
 		              <tr>
 		                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo TEXT_SELECT_LANGUAGE; ?>: </td>
-		                <td><?php echo html_pull_down_menu('language', $this->language->languages, $this->language->language_code, '', true); ?></td>
+		                <td><?php echo html_pull_down_menu('language', $_SESSION['language']->languages, $_SESSION['language']->language_code, '', true); ?></td>
 		              </tr>
 		<?php } else{
-					echo html_hidden_field('language', $this->language->language_code) . chr(10);
+					echo html_hidden_field('language', $_SESSION['language']->language_code) . chr(10);
 		}?>
 		              <tr>
 		                <td colspan="2" align="right">&nbsp;
@@ -294,7 +294,6 @@ class user {
 		session_destroy();
 		$this->LoadLogIn();
 	}
-	
 	
 	function __destruct(){
 //		\core\classes\messageStack::debug_log("executing ".__METHOD__ );

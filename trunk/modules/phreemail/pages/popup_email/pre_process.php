@@ -24,7 +24,6 @@
 /**************   Check user security   *****************************/
 $security_level = \core\classes\user::validate(SECURITY_PHREEMAIL_MGT);
 /**************  include page specific files  *********************/
-require(DIR_FS_MODULES . 'phreeform/language/'  . $_SESSION['user']->language->language_code . '/language.php'); // error messages, qualifiers
 
 /**************   page specific initialization  *************************/
 $recpt_email 		= '';

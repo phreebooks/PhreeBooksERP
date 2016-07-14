@@ -263,7 +263,6 @@ class admin extends \core\classes\admin {
 		<script type="text/javascript">
 	    	function doSearch(value){
 	    		console.log('A search was requested.');
-	    		$.messager.progress();
 	        	$('#dg').datagrid('load',{
 	        		search_text: $('#search_text').val(),
 	        		dataType: 'json',
@@ -419,13 +418,34 @@ class admin extends \core\classes\admin {
 	
 	function loadCRMHistory (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		$sql = $basis->DataBase->prepare("SELECT l.log_id, l.contact_id, U.display_name as user_name, l.log_date, l.action, l.notes, c.contact_first, c.contact_last, a.primary_name, CASE WHEN c.contact_last != '' THEN CONCAT(c.contact_first,' ',c.contact_middle,' ',c.contact_last) ELSE a.primary_name END AS name FROM ".TABLE_CONTACTS_LOG." AS l JOIN ".TABLE_CONTACTS." AS c ON l.contact_id = c.id JOIN ".TABLE_ADDRESS_BOOK." AS a ON c.id = a.ref_id JOIN ".TABLE_USERS." AS u ON l.entered_by = u.admin_id WHERE (c.dept_rep_id ={$basis->cInfo->contact_id} OR c.id ={$basis->cInfo->contact_id})");
+		$sql = $basis->DataBase->prepare("SELECT l.log_id, l.entered_by, l.contact_id, u.display_name as user_name, l.log_date, l.action, l.notes, c.contact_first, c.contact_last, a.primary_name, CASE WHEN c.contact_last != '' THEN CONCAT(c.contact_first,' ',c.contact_middle,' ',c.contact_last) ELSE a.primary_name END AS name FROM ".TABLE_CONTACTS_LOG." AS l JOIN ".TABLE_CONTACTS." AS c ON l.contact_id = c.id JOIN ".TABLE_ADDRESS_BOOK." AS a ON c.id = a.ref_id JOIN ".TABLE_USERS." AS u ON l.entered_by = u.admin_id WHERE (c.dept_rep_id ={$basis->cInfo->contact_id} OR c.id ={$basis->cInfo->contact_id})");
 		$sql->execute();
 		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
 		$temp = array();
 		$temp["total"] = sizeof($results);
 		$temp["rows"] = $results;
 		echo json_encode($temp);
+	}
+	
+	function editCRM (\core\classes\basis &$basis) {	?>
+		<form id="crm" method="post" novalidate>
+			<div class="fitem">
+				<label style="display:inline-block; width:80px;"><?php echo TEXT_SALES_REP; ?></label>
+			   <?php echo html_pull_down_menu('entered_by', $basis->cInfo->all_employees, $basis->cInfo->contact->crm_rep_id ? $basis->cInfo->contact->crm_rep_id : $_SESSION['user']->account_id); ?>
+			</div>
+            <div class="fitem">
+            	<label style="display:inline-block; width:80px;"><?php echo TEXT_DATE; ?></label>
+        		<?php echo html_calendar_field('log_date', \core\classes\DateTime::createFromFormat(DATE_FORMAT, $basis->cInfo->contact->crm_date)); ?>
+            </div>
+            <div class="fitem">
+            	<label style="display:inline-block; width:80px;"><?php echo TEXT_ACTION; ?></label>
+                <?php echo html_pull_down_menu('action', $basis->cInfo->contact->crm_actions, $basis->cInfo->contact->crm_action); ?>
+            </div>
+            <div class="fitem">
+		        <label style="display:inline-block; width:80px;"><?php echo TEXT_NOTE; ?></label>
+            	<?php echo html_textarea_field('note', 60, 1, $basis->cInfo->contact->crm_note, ''); ?>
+            </div>
+	   </form><?php 
 	}
 	
 	function loadAddresses (\core\classes\basis &$basis) {

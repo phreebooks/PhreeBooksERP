@@ -164,7 +164,7 @@ switch ($_REQUEST['action']) {
 			// define some things so the install can use existing functions
 			define('DB_PREFIX', $db_prefix);
 			$_SESSION['user']->company  = $db_name;
-			$_SESSION['user']->language->language_code = $lang;
+			$_SESSION['language']->language_code = $lang;
 			// create the company directory
 			\core\classes\messageStack::debug_log("\n  creating the company directory");
 			validate_path(DIR_FS_ADMIN . PATH_TO_MY_FILES . $db_name);
@@ -290,7 +290,7 @@ switch ($_REQUEST['action']) {
 			if (!@chmod('../includes/configure.php', 0444))				\core\classes\messageStack::add("Was not able to mark configure file as read only", "caution");
 			// set the session variables so they can log in
 			$_SESSION['user']->admin_id       			= $user_id;
-			$_SESSION['user']->language->language_code 	= $lang;
+			$_SESSION['language']->language_code 	= $lang;
 			$_SESSION['user']->admin_security 			= \core\classes\user::parse_permissions($security);
 			$include_template = 'template_finish.php';
 			define('PAGE_TITLE', TITLE_FINISH);

@@ -89,6 +89,7 @@ $('#shipping_address').datagrid({
 	},
 	onDblClickRow: function(index , row){
 		console.log('a row in the shipping address was double clicked');
+		$('#shipping_address').datagrid('expandRow', index);
 		//@todo edit address
 	},
 	toolbar: shipping_toolbar,
@@ -138,6 +139,7 @@ $('#billing_address').datagrid({
 	},
 	onDblClickRow: function(index , row){
 		console.log('a row in the billing address was double clicked');
+		$('#billing_address').datagrid('expandRow', index);
 		//@todo edit address
 	},
 	toolbar: billing_toolbar,

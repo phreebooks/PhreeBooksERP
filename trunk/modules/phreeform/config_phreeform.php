@@ -3,7 +3,7 @@
 //  Path: /modules/phreeform/config_phreeform.php
 //
 /*
-$objLocales = $_SESSION['user']->language->load_countries();
+$objLocales = $_SESSION['language']->load_countries();
 $arrLocales = array();
 foreach ($objLocales->country as $country) $arrLocales[$country->iso3] = array('iso2' => $country->iso2, 'name' => $country->name);
 $FormProcessing['cvt_iso2']  = 'Convert ISO2';

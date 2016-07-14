@@ -133,7 +133,7 @@ foreach ($_REQUEST as $key => $val)
   if (!$_SESSION['user']->admin_prefs['theme']) $_SESSION['user']->admin_prefs['theme'] = 'default';
   require_once(DIR_FS_ADMIN . 'themes/' . $_SESSION['user']->admin_prefs['theme'] . '/config.php');
   // load the language file
-  include_once(DIR_FS_MODULES . 'phreedom/includes/bigdump/language/'.$_SESSION['user']->language->language_code.'/language.php');
+  include_once(DIR_FS_MODULES . 'phreedom/includes/bigdump/language/'.$_SESSION['language']->language_code.'/language.php');
   // load the javascript specific, required
   $js_include_path = DIR_FS_WORKING . 'pages/' . $page . '/js_include.php';
   if (file_exists($js_include_path)) { require($js_include_path); } else throw new \core\classes\userException('No js_include file');
