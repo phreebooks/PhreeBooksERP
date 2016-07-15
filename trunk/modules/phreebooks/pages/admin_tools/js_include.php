@@ -64,7 +64,7 @@ function updateEnd(index) {
 	if (thisMonth < 10) thisMonth = '0' + thisMonth;
 	thisYear = nextDay.getFullYear();
 	temp = thisYear + '-' + thisMonth + '-' + thisDay;
-	document.getElementById('start_'+(index+1)).value = formatDate(temp);
+	document.getElementById('start_'+(index+1)).value = formatDate(new Date(temp));
   }
 }
 

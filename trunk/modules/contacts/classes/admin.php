@@ -427,7 +427,9 @@ class admin extends \core\classes\admin {
 		echo json_encode($temp);
 	}
 	
-	function editCRM (\core\classes\basis &$basis) {	?>
+	function editCRM (\core\classes\basis &$basis) {	
+		\core\classes\messageStack::debug_log("variables are ".print_r($basis->cInfo, true) );
+	?>
 		<form id="crm" method="post" novalidate>
 			<div class="fitem">
 				<label style="display:inline-block; width:80px;"><?php echo TEXT_SALES_REP; ?></label>
@@ -450,7 +452,6 @@ class admin extends \core\classes\admin {
 	
 	function loadAddresses (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		\core\classes\messageStack::debug_log("variables are ".print_r($basis->cInfo, true) );
 		$sql = $basis->DataBase->prepare("SELECT * FROM ".TABLE_ADDRESS_BOOK." WHERE ref_id = {$basis->cInfo->contact_id} AND type LIKE '%{$basis->cInfo->address_type}' ORDER BY primary_name");
 		$sql->execute();
 		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
@@ -458,7 +459,6 @@ class admin extends \core\classes\admin {
 		$temp["total"] = sizeof($results);
 		$temp["rows"] = $results;
 		echo json_encode($temp);
-		\core\classes\messageStack::debug_log("returning ".print_r($temp, true) ); //@todo remove.
 	}
 	
 	/**

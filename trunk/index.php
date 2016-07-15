@@ -26,7 +26,6 @@ try{
 	set_error_handler("PhreebooksErrorHandler");
 	set_exception_handler('PhreebooksExceptionHandler');
 	spl_autoload_register('Phreebooks_autoloader', true, false);
-	\core\classes\messageStack::start();
 	require_once('includes/application_top.php');
    	if ($admin->cInfo->action) $admin->removeEventsAndAddNewEvent($admin->cInfo->action);
    	$admin->startProcessingEvents();

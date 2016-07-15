@@ -95,7 +95,7 @@ if (sizeof($basis->cInfo->contact->attachments) > 0) {
 	    echo '<tr>';
 	    echo ' <td>' . html_checkbox_field('rm_attach_'.$key, '1', false) . '</td>' . chr(10);
 	    echo " <td>{$value}</td>" . chr(10);
-	    echo ' <td>' . html_button_field('dn_attach_'.$key, TEXT_DOWNLOAD, "onclick='submitSeq({$key}, \"download\", true)'" ) . '</td>';
+	    echo ' <td>' . html_button_field('dn_attach_'.$key, TEXT_DOWNLOAD, "onclick='submitSeq({$key}, \"ContactAttachmentDownload\", true)'") . '</td>';
 	    echo '</tr>' . chr(10);
   	}
 } else {

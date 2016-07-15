@@ -59,7 +59,7 @@ $acct_def = (!$basis->cInfo->contact->dept_rep_id) ? array() : array(array('id'=
   <fieldset>
     <legend><?php echo TEXT_MAIN_MAILING_ADDRESS; ?></legend>
     <table id="<?php echo $basis->cInfo->contact->type; ?>m_address_form" class="ui-widget" style="border-collapse:collapse;width:100%;">
-      <?php $basis->cInfo->contact->draw_address_fields( $basis->cInfo->contact->type.'m', false, true, false, true); ?>
+      <?php $basis->cInfo->contact->draw_address_fields($basis->cInfo->contact->type.'m', false, true, false, true); ?>
     </table>
   </fieldset>
 <?php // *********************** Attachments  ************************************* ?>
@@ -81,10 +81,10 @@ $acct_def = (!$basis->cInfo->contact->dept_rep_id) ? array() : array(array('id'=
 if (sizeof($basis->cInfo->contact->attachments) > 0) {
   	foreach ($basis->cInfo->contact->attachments as $key => $value) {
     	echo '<tr>';
-    	echo ' <td>' . html_checkbox_field('rm_attach_'.$key, '1', false) . '</td>' . chr(10);
-    	echo ' <td>' . $value . '</td>' . chr(10);
-    	echo ' <td>' . html_button_field('dn_attach_'.$key, TEXT_DOWNLOAD, 'onclick="submitSeq(' . $key . ', \'download\', true)"') . '</td>';
-    	echo '</tr>' . chr(10);
+	    echo ' <td>' . html_checkbox_field('rm_attach_'.$key, '1', false) . '</td>' . chr(10);
+	    echo " <td>{$value}</td>" . chr(10);
+	    echo ' <td>' . html_button_field('dn_attach_'.$key, TEXT_DOWNLOAD, "onclick='submitSeq({$key}, \"ContactAttachmentDownload\", true)'") . '</td>';
+	    echo '</tr>' . chr(10);
   	}
 } else {
   	echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS_HAVE_BEEN_FOUND . '</td></tr>';

@@ -56,8 +56,6 @@
 		</table>
 		<div id="notes_toolbar">
 	        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newCRM()"><?php echo sprintf(TEXT_NEW_ARGS, TEXT_CRM); ?></a>
-	        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editUser()">Edit User</a>
-	        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="destroyUser()">Remove User</a>
 	    </div>
 	</div>
     <div style="width:50%"><?php echo html_textarea_field("address[{$basis->cInfo->contact->type}m][notes]", 60, 30, $basis->cInfo->contact->address[$basis->cInfo->contact->type.'m']['notes']); ?></div>
@@ -65,6 +63,10 @@
 </div>
 
 <script type="text/javascript">
+$.ajaxPrefilter(function( options, originalOptions, jqXHR ) {
+    options.async = true;
+});
+
 $('#notes').datagrid({
 	url:		"index.php?action=loadCRMHistory",
 	queryParams: {
@@ -74,6 +76,7 @@ $('#notes').datagrid({
         async: false,
 	},
 	width: '100%',
+	height: '500px',
 	style:{
 		float:'right',
 		margin:'50px',
@@ -112,11 +115,24 @@ $('#notes').datagrid({
             border:false,
             cache:true,
             href:'index.php?action=editCRM&index='+index,
+            loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
             onLoad:function(){
                 $('#notes').datagrid('fixDetailRowHeight',index);
                 $('#notes').datagrid('selectRow',index);
                 $('#notes').datagrid('getRowDetail',index).find('form').form('load',row);
             },
+            onBeforeLoad:function(){
+        		console.log('loading the crm form');
+        	},
+        	onLoadSuccess:function(data){
+        		console.log('the loading the crm form was succesfull');
+        		$.messager.progress('close');
+        	},
+            onLoadError: function(){
+        		console.error('the loading of the crm form resulted in a error');
+        		$.messager.progress('close');
+        		$.messager.alert('<?php echo TEXT_ERROR?>','Load error for crm form');
+        	},
         });
         $('#notes').datagrid('fixDetailRowHeight',index);
     }
@@ -134,9 +150,12 @@ function ConvertCrmAction (value){
 }
 
 function newCRM(){
-	$('#dlg').dialog('open').dialog('center').dialog('setTitle','<?php echo sprintf(TEXT_NEW_ARGS, TEXT_CRM); ?>');
-	$('#fm').form('clear');
-	url = 'save_user.php';
+	console.log('new crm was cliced');
+    $('#notes').datagrid('appendRow',{isNewRecord:true});
+    var index = $('#notes').datagrid('getRows').length - 1;
+    $('#notes').datagrid('selectRow', index);
+    $('#notes').datagrid('expandRow', index);
+    $('#notes').datagrid('getRowDetail',index).find('form').form('reset');
 }
 
 </script>

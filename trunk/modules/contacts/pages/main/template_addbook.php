@@ -227,12 +227,9 @@ function newShipping(){
 function saveShipping (target){
 	var tr = $(target).closest('.datagrid-row-detail').closest('tr').prev();
 	var index = parseInt(tr.attr('datagrid-row-index'));
-	//var index = $('#shipping_address').datagrid('getRowIndex');
 	var row = $('#shipping_address').datagrid('getSelected');
-	console.log('save shipping address was clicked for row '+index);
     var url = row.isNewRecord == true ? 'index.php?action=saveNewAddress' : 'index.php?action=saveAddress&id='+row.address_id;
-    console.log('url  '+url);
-    $('#shipping_address').datagrid('getExpander', index).form('submit',{
+    $('#shipping_address').datagrid('getRowDetail',index).find('form').form('submit',{
         url: url,
         onSubmit: function(param){
         	console.log('sending');

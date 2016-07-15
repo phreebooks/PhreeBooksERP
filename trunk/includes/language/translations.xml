@@ -7786,6 +7786,10 @@
     <nl_nl>Rapporten gevonden in deze map</nl_nl>
     <pt_br>Relatórios / Formulários encontrados nesta pasta</pt_br>
   </translation>
+  <translation xml:id="TEXT_ARE_YOU_SURE_YOU_WANT_TO_DELETE_ARGS">
+    <en_us>Are you sure you want to delete this %s?</en_us>
+    <nl_nl>Weet u zeker dat u deze %s wil verwijderen?</nl_nl>
+  </translation>
   <translation xml:id="PHREEFORM_DELETE_DIRECTORY">
     <bg_bg>Сигурни ли сте</bg_bg>
     <en_us>Are you sure you want to delete this directory? The directory cannot be deleted unless it is empty.</en_us>

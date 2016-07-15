@@ -19,7 +19,7 @@
 namespace core\classes;
 class messageStack {
     
-    function start(){
+    static function start(){
     	error_log("/***** restarting messageStack *****/". PHP_EOL, 3, DIR_FS_MY_FILES."development.log");
     }
 
@@ -84,7 +84,7 @@ class messageStack {
         self::add("Successfully created $filename file.","success");
 	}
 
-	function end(){
+	static function end(){
 		error_log("/***** ending messageStack *****/". PHP_EOL, 3, DIR_FS_MY_FILES."/development.log");
 	}
 }

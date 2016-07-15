@@ -17,7 +17,7 @@
 //  Path: /modules/contacts/pages/main/template_general.php
 //
 ?>
-<div title="<?php echo TEXT_GENERAL;?>" >
+<div title="<?php echo TEXT_GENERAL;?>">
   <fieldset>
     <legend><?php echo TEXT_CONTACT_INFORMATION; ?></legend>
     <table>
@@ -97,7 +97,7 @@ if (sizeof($basis->cInfo->contact->attachments) > 0) {
   	foreach ($basis->cInfo->contact->attachments as $key => $value) {
     	echo '<tr>';
 	    echo ' <td>' . html_checkbox_field('rm_attach_'.$key, '1', false) . '</td>' . chr(10);
-	    echo " <td>$value</td>" . chr(10);
+	    echo " <td>{$value}</td>" . chr(10);
 	    echo ' <td>' . html_button_field('dn_attach_'.$key, TEXT_DOWNLOAD, "onclick='submitSeq({$key}, \"ContactAttachmentDownload\", true)'") . '</td>';
 	    echo '</tr>' . chr(10);
   	}

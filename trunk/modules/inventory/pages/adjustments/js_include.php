@@ -234,7 +234,7 @@ function processEditAdjustment(sXml) {
   document.getElementById('id').value                  = id;
   document.getElementById('store_id').value            = $(xml).find("store_id").text();
   document.getElementById('purchase_invoice_id').value = $(xml).find("purchase_invoice_id").text();
-  document.getElementById('post_date').value           = formatDate($(xml).find("post_date").first().text());
+  document.getElementById('post_date').value           = formatDate(new Date($(xml).find("post_date").first().text()));
   // turn off some icons
   if (id && securityLevel < 3) removeElement('tb_main_0', 'tb_icon_save');
   // fill item rows
