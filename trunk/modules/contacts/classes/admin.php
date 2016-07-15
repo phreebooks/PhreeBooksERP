@@ -427,25 +427,38 @@ class admin extends \core\classes\admin {
 		echo json_encode($temp);
 	}
 	
-	function editCRM (\core\classes\basis &$basis) {	
-		\core\classes\messageStack::debug_log("variables are ".print_r($basis->cInfo, true) );
+	function editCRM (\core\classes\basis &$basis) {
+		$sql = $basis->DataBase->prepare("SELECT id, CONCAT (contact_first,' ',contact_last) as text FROM ".TABLE_CONTACTS." WHERE type='e'");
+		$sql->execute();
+		$all_employees       = $sql->fetchAll();
+		$crm_actions = array(
+			array('id'=> '', 		'text'	=> TEXT_NONE),
+			array('id'=> 'new', 	'text'	=> sprintf(TEXT_NEW_ARGS, TEXT_CALL)),
+			array('id'=> 'ret', 	'text'	=> TEXT_RETURNED_CALL),
+			array('id'=> 'flw', 	'text'	=> TEXT_FOLLOW_UP_CALL),
+			array('id'=> 'inac', 	'text'	=> TEXT_INACTIVE),
+			array('id'=> 'lead', 	'text'	=> sprintf(TEXT_NEW_ARGS, TEXT_LEAD)),
+			array('id'=> 'mail_in', 'text'	=> TEXT_EMAIL_RECEIVED),
+			array('id'=> 'mail_out','text'	=> TEXT_EMAIL_SEND),
+		);
 	?>
 		<form id="crm" method="post" novalidate>
+			<?php echo html_hidden_field('log_id', '');?>
 			<div class="fitem">
 				<label style="display:inline-block; width:80px;"><?php echo TEXT_SALES_REP; ?></label>
-			   <?php echo html_pull_down_menu('entered_by', $basis->cInfo->all_employees, $basis->cInfo->contact->crm_rep_id ? $basis->cInfo->contact->crm_rep_id : $_SESSION['user']->account_id); ?>
+			   <?php echo html_pull_down_menu('entered_by', $all_employees); ?>
 			</div>
             <div class="fitem">
             	<label style="display:inline-block; width:80px;"><?php echo TEXT_DATE; ?></label>
-        		<?php echo html_calendar_field('log_date', \core\classes\DateTime::createFromFormat(DATE_FORMAT, $basis->cInfo->contact->crm_date)); ?>
+        		<?php echo html_date_field('log_date' ); ?>
             </div>
             <div class="fitem">
             	<label style="display:inline-block; width:80px;"><?php echo TEXT_ACTION; ?></label>
-                <?php echo html_pull_down_menu('action', $basis->cInfo->contact->crm_actions, $basis->cInfo->contact->crm_action); ?>
+                <?php echo html_pull_down_menu('action', $crm_actions); ?>
             </div>
             <div class="fitem">
 		        <label style="display:inline-block; width:80px;"><?php echo TEXT_NOTE; ?></label>
-            	<?php echo html_textarea_field('note', 60, 1, $basis->cInfo->contact->crm_note, ''); ?>
+            	<?php echo html_textarea_field('notes', 60, 1, $basis->cInfo->contact->crm_note, ''); ?>
             </div>
 	   </form><?php 
 	}
@@ -500,7 +513,7 @@ class admin extends \core\classes\admin {
 		}
 		// load the tax rates
 		$basis->cInfo->tax_rates       = ord_calculate_tax_drop_down($basis->cInfo->contact->type, true);
-		$result = $basis->DataBase->prepare("SELECT id, contact_first, contact_last FROM ".TABLE_CONTACTS." WHERE type='e'");
+		$sql = $basis->DataBase->prepare("SELECT id, contact_first, contact_last FROM ".TABLE_CONTACTS." WHERE type='e'");
 		$sql->execute();
 		$basis->cInfo->all_employees       = array();
 		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){

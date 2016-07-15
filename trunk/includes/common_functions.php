@@ -1417,6 +1417,7 @@ function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext
         // This error code is not included in error_reporting
         return;
     }
+    if (!defined('PATH_TO_MY_FILES')) define('PATH_TO_MY_FILES','my_files/');
     $temp = '';
     $type = 'error';
 	if(isset($_SESSION['user']->admin_id)) $temp = " User: " . $_SESSION['user']->admin_id;
@@ -1426,18 +1427,18 @@ function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext
     		$text  = date('Y-m-d H:i:s') . $temp;
     		$text .= " FATAL RUN-TIME ERROR: '$errstr' Fatal error on line $errline in file $errfile, PHP " . PHP_VERSION . " (" . PHP_OS . ") Aborting...";
     		//error_log($text, 1, "operator@example.com");
-    		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    		error_log($text . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
     		throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
 	        break;
     	case E_WARNING: //2
     		$text  = date('Y-m-d H:i:s') . $temp;
     		$text .= " RUN-TIME WARNING: '$errstr' line $errline in file $errfile";
-    		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    		error_log($text . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
         	break;
     	case E_PARSE: //4
         	$text  = date('Y-m-d H:i:s') . $temp;
     		$text .= " COMPILE-TIME PARSE ERROR: '$errstr' error on line $errline in file $errfile";
-    		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    		error_log($text . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
         	break;
         case E_NOTICE: //8
         	$text  = date('Y-m-d H:i:s') . $temp;
@@ -1449,70 +1450,70 @@ function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext
     			\core\classes\language::add_constant($temp[0]);
     			break;
     		}
-    		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    		error_log($text . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
         	break;
         case E_CORE_ERROR: //16
         	$text  = date('Y-m-d H:i:s') . $temp;
     		$text .= " FATAL ERROR THAT OCCURED DURING PHP's INITIAL STARTUP: '$errstr' Fatal error on line $errline in file $errfile, PHP " . PHP_VERSION . " (" . PHP_OS . ") Aborting...";
     		//error_log($text, 1, "operator@example.com");
-    		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    		error_log($text . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
     		throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
 	        break;
         case E_CORE_WARNING: //32
         	$text  = date('Y-m-d H:i:s') . $temp;
     		$text .= " WARNING THAT OCCURED DURING PHP's INITIAL STARTUP: '$errstr' line $errline in file $errfile";
-    		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    		error_log($text . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
         	break;
         case E_COMPILE_ERROR://64
         	$text  = date('Y-m-d H:i:s') . $temp;
     		$text .= " FATAL COMPILE-TIME ERROR: '$errstr' Fatal error on line $errline in file $errfile, PHP " . PHP_VERSION . " (" . PHP_OS . ") Aborting...";
     		//error_log($text, 1, "operator@example.com");
-    		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    		error_log($text . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
     		throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
 	        break;
         case E_COMPILE_WARNING: //128
         	$text  = date('Y-m-d H:i:s') . $temp;
     		$text .= " COMPILE-TIME WARNING: '$errstr' line $errline in file $errfile";
-    		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    		error_log($text . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
         	break;
     	case E_USER_ERROR: //256
     		$text  = date('Y-m-d H:i:s') . $temp;
     		$text .= " USER ERROR: '$errstr' Fatal error on line $errline in file $errfile, PHP " . PHP_VERSION . " (" . PHP_OS . ") Aborting...";
-    		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    		error_log($text . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
     		//error_log($text, 1, "operator@example.com");
     		throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
 	        break;
     	case E_USER_WARNING: //512
     		$text  = date('Y-m-d H:i:s') . $temp;
     		$text .= " USER WARNING: '$errstr' line $errline in file $errfile";
-    		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    		error_log($text . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
     		$_SESSION['messageToStack'][] = array('type' => $type, 'params' => 'class="ui-state-highlight"', 'text' => $errstr, 'message' => $errstr);
         	break;
     	case E_USER_NOTICE: //1024
     		$text  = date('Y-m-d H:i:s') . $temp;
     		$text .= " USER NOTICE:  '$errstr' line $errline in file $errfile";
-    		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    		error_log($text . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
     		$_SESSION['messageToStack'][] = array('type' => $type, 'params' => 'class="ui-state-highlight"', 'text' => $errstr, 'message' => $errstr);
         	break;
     	case E_RECOVERABLE_ERROR : //4096
     		$text  = date('Y-m-d H:i:s') . $temp;
     		$text .= " RECOVERABLE ERROR:  '$errstr' error on line $errline in file $errfile";
-    		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    		error_log($text . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
         	break;
         case E_DEPRECATED : //4096
     		$text  = "PLEASE REPORT THIS TO THE DEV TEAM ".date('Y-m-d H:i:s') . $temp;
     		$text .= " DEPRECATED FUNCTION:  '$errstr' line $errline in file $errfile";
-    		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    		error_log($text . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
         	break;
         case E_USER_DEPRECATED : //16384
     		$text  = "PLEASE REPORT THIS TO THE DEV TEAM ".date('Y-m-d H:i:s') . $temp;
     		$text .= " USER DEPRECATED FUNCTION:  '$errstr' line $errline in file $errfile";
-    		error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    		error_log($text . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
         	break;
         default:
 	    	$text  = date('Y-m-d H:i:s') . $temp;
 	    	$text .=  " Unknown error type: [$errno] '$errstr' error on line $errline in file $errfile";
-	    	error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+	    	error_log($text . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
         	break;
     }
     /* Don't execute PHP internal error handler */
@@ -1520,19 +1521,20 @@ function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext
 }
 
 function log_trace() {
+	if (!defined('PATH_TO_MY_FILES')) define('PATH_TO_MY_FILES','my_files/');
     $trace = debug_backtrace();
     $caller = array_shift($trace);
     $function_name = $caller['function'];
-    error_log(sprintf('%s: Called from %s:%s', $function_name, $caller['file'], $caller['line']) . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    error_log(sprintf('%s: Called from %s:%s', $function_name, $caller['file'], $caller['line']) . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
     echo sprintf('%s: Called from %s:%s', $function_name, $caller['file'], $caller['line']) . "<br/>";
     foreach ($trace as $entry_id => $entry) {
         $entry['file'] = $entry['file'] ? : '-';
         $entry['line'] = $entry['line'] ? : '-';
         if (empty($entry['class'])) {
-            error_log(sprintf('%s %3s. %s() %s:%s', $function_name, $entry_id + 1, $entry['function'], $entry['file'], $entry['line']) . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+            error_log(sprintf('%s %3s. %s() %s:%s', $function_name, $entry_id + 1, $entry['function'], $entry['file'], $entry['line']) . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
 		echo sprintf('%s %3s. %s() %s:%s', $function_name, $entry_id + 1, $entry['function'], $entry['file'], $entry['line']) . "<br/>";
         } else {
-            error_log(sprintf('%s %3s. %s->%s() %s:%s', $function_name, $entry_id + 1, $entry['class'], $entry['function'], $entry['file'], $entry['line']) . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+            error_log(sprintf('%s %3s. %s->%s() %s:%s', $function_name, $entry_id + 1, $entry['class'], $entry['function'], $entry['file'], $entry['line']) . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
 		echo sprintf('%s %3s. %s->%s() %s:%s', $function_name, $entry_id + 1, $entry['class'], $entry['function'], $entry['file'], $entry['line']) . "<br/>";
         }
     }
@@ -1540,9 +1542,10 @@ function log_trace() {
 
 function PhreebooksExceptionHandler($exception) {
 	ob_clean();
+	if (!defined('PATH_TO_MY_FILES')) define('PATH_TO_MY_FILES','my_files/');
   	$text  = date('Y-m-d H:i:s') . " User: " . $_SESSION['user']->admin_id . " Company: " . $_SESSION['user']->company ;
     $text .= " Uncaught Exception: '" . $exception->getMessage() . "' line " . $exception->getLine() . " in file " . $exception->getFile();
-    error_log($text . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
+    error_log($text . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
     header_remove();
     header('HTTP/1.1 500 Internal Server Error');
     echo " Uncaught Exception<br/>'" . $exception->getMessage() . "'<br/>line: " . $exception->getLine() . "<br/>file: " . $exception->getFile();

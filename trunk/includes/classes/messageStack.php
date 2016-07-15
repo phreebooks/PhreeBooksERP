@@ -20,15 +20,17 @@ namespace core\classes;
 class messageStack {
     
     static function start(){
-    	error_log("/***** restarting messageStack *****/". PHP_EOL, 3, DIR_FS_MY_FILES."development.log");
+    	if (!defined('PATH_TO_MY_FILES')) define('PATH_TO_MY_FILES','my_files/');
+    	error_log("/***** restarting messageStack *****/". PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."development.log");
     }
 
     static function add($message, $type  = 'error') {
+    	if (!defined('PATH_TO_MY_FILES')) define('PATH_TO_MY_FILES','my_files/');
 //    	if ($type == '') $type = 'error';
     	echo "<script type='text/javascript'>";
     	echo "MessageStackAdd('". gen_js_encode($message)."', '{$type}');";
     	echo "</script>";
-      	if (DEBUG) error_log("messageStack error:".$message . PHP_EOL, 3, DIR_FS_MY_FILES."errors.log");
+      	if (DEBUG) error_log("messageStack error:".$message . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."errors.log");
 	  	return true;
     }
 
@@ -60,18 +62,19 @@ class messageStack {
 
     Static function debug_log ($txt){
     	global $admin;
+    	if (!defined('PATH_TO_MY_FILES')) define('PATH_TO_MY_FILES','my_files/');
     	$date = new \core\classes\DateTime();
-    	error_log("date: " . $date->format('Y-m-d H:i:s.u') . " company: {$_SESSION['user']->company} user: {$_SESSION['user']->display_name}  $txt" . PHP_EOL, 3, DIR_FS_MY_FILES."development.log");
+    	error_log("date: " . $date->format('Y-m-d H:i:s.u') . " company: {$_SESSION['user']->company} user: {$_SESSION['user']->display_name}  $txt" . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."development.log");
     	if (substr($txt, 0, 1) == "\n") {
-    		error_log("\nTime: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, " . $admin->DataBase->count_queries . " SQLs " . (int)($admin->DataBase->total_query_time * 1000)." ms => ".substr($txt, 1). PHP_EOL, 3, DIR_FS_MY_FILES."debug.log");
+    		error_log("\nTime: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, " . $admin->DataBase->count_queries . " SQLs " . (int)($admin->DataBase->total_query_time * 1000)." ms => ".substr($txt, 1). PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."debug.log");
     	}else {
-    		error_log($txt. PHP_EOL, 3, DIR_FS_MY_FILES."debug.log");
+    		error_log($txt. PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."debug.log");
 	  	}
     }
 
 	function write_debug() {
 		if (!DEBUG) return;//@todo needs to be checked
-		$filename = DIR_FS_MY_FILES."debug.log";
+		$filename = DIR_FS_ADMIN . PATH_TO_MY_FILES."debug.log";
         if (!$handle = @fopen($filename, 'rb'))             throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
         // send the right headers
         header_remove();
@@ -85,6 +88,7 @@ class messageStack {
 	}
 
 	static function end(){
-		error_log("/***** ending messageStack *****/". PHP_EOL, 3, DIR_FS_MY_FILES."/development.log");
+		if (!defined('PATH_TO_MY_FILES')) define('PATH_TO_MY_FILES','my_files/');
+		error_log("/***** ending messageStack *****/". PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/development.log");
 	}
 }

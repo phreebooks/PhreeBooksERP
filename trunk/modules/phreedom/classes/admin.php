@@ -323,20 +323,9 @@ class admin extends \core\classes\admin {
 		}
 		gen_add_audit_log(TEXT_USER_LOGIN . " -> id: {$_SESSION['user']->admin_id} name: {$_SESSION['user']->display_name}");
 		// check for session timeout to reload to requested page
-		/*$get_params = '';
-		if (isset($_SESSION['pb_module']) && $_SESSION['pb_module']) {
-			$get_params  = 'module='    . $_SESSION['pb_module'];
-			if (isset($_SESSION['pb_page']) && $_SESSION['pb_page']) $get_params .= '&amp;page=' . $_SESSION['pb_page'];
-			if (isset($_SESSION['pb_jID'])  && $_SESSION['pb_jID'])  $get_params .= '&amp;jID='  . $_SESSION['pb_jID'];
-			if (isset($_SESSION['pb_type']) && $_SESSION['pb_type']) $get_params .= '&amp;type=' . $_SESSION['pb_type'];
-			if (isset($_SESSION['pb_list']) && $_SESSION['pb_list']) $get_params .= '&amp;list=' . $_SESSION['pb_list'];
-			unset($_SESSION['pb_module']);
-			unset($_SESSION['pb_page']);
-			unset($_SESSION['pb_jID']);
-			unset($_SESSION['pb_type']);
-			unset($_SESSION['pb_list']);
-			gen_redirect(html_href_link(FILENAME_DEFAULT, $get_params, 'SSL'));
-		}*/
+		if (!empty($_POST['previous']) && false === strpos ($_POST['previous'],'LoadLostPassword')&& false === strpos ($_POST['previous'],'ValidateUser') && false === strpos ($_POST['previous'],'logout') ){
+			gen_redirect(html_href_link(FILENAME_DEFAULT, $_POST['previous'], 'SSL'));
+		}
 		// check safe mode is allowed to log in.
 		if (get_cfg_var('safe_mode')) throw new \core\classes\userException(SAFE_MODE_ERROR); //@todo is this removed as of php 5.3??
 		$basis->addEventToStack("LoadMainPage");
