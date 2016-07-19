@@ -22,7 +22,7 @@ class language {
 	public $phrases;
 	public $languages;
 	public $translate;
-	private $locales = array();
+	public $countries;
 
 	/**
 	 * sets the current language and sets it in the Session variable.
@@ -31,26 +31,33 @@ class language {
 	function __construct(){
 		\core\classes\messageStack::debug_log("executing ".__METHOD__);
 		if( isset($_REQUEST['language']) && $_REQUEST['language'] != '') {
+			\core\classes\messageStack::debug_log("language requested {$_REQUEST['language']}");
 			$this->language_code = $_REQUEST['language'];
 		} else {
-			if(defined('DEFAULT_LANGUAGE')) {
-				$this->language_code = DEFAULT_LANGUAGE;
-			}else if( isset($_COOKIE['pb_language'])){
+			if( !empty($_COOKIE['pb_language'])){
+				\core\classes\messageStack::debug_log("language cookie set {$_COOKIE['pb_language']}");
 				$this->language_code = $_COOKIE['pb_language'];
-			}else if( isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) && strlen($_SERVER['HTTP_ACCEPT_LANGUAGE']) == 5){
+			}else if( !empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && strlen($_SERVER['HTTP_ACCEPT_LANGUAGE']) == 5){
+				\core\classes\messageStack::debug_log("language accept Language set {$_SERVER['HTTP_ACCEPT_LANGUAGE']}");
 				$this->language_code = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+			}else if(defined('DEFAULT_LANGUAGE') && DEFAULT_LANGUAGE !== '') {
+				\core\classes\messageStack::debug_log("default language defined". DEFAULT_LANGUAGE);
+				$this->language_code = DEFAULT_LANGUAGE;
 			}
 		}
 		if (sizeof($this->languages) == 0) $this->get_languages();
 		if (sizeof($this->phrases)   == 0) $this->get_translations();
-		if (!file_exists(DIR_FS_INCLUDES."language/custom/locals.xml")) $this->create_countries();
+		if (sizeof($this->countries) == 0) $this->get_countries();
 	}
 
 	public function __wakeup() {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__);
 		if( isset($_REQUEST['language']) && $_REQUEST['language'] != '') $this->language_code = $_REQUEST['language'];
+		if (sizeof($this->languages) == 0) $this->get_languages();
+		if (sizeof($this->phrases)   == 0) $this->get_translations();
+		if (sizeof($this->countries) == 0) $this->get_countries();
 		foreach ($this->phrases as $key => $value ) define($key, $value);
-		if (!file_exists(DIR_FS_INCLUDES."language/custom/locals.xml")) $this->create_countries();
+		
 	}
 	
 	/**
@@ -131,18 +138,49 @@ class language {
 		error_log("The constant $constant is added to your language file ". PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
 	}
 	
-	function load_countries() {
-		if (sizeof($this->locales) == 0) {
-			\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-			if (file_exists(DIR_FS_MODULES . "phreedom/language/{$this->language_code}/locales.xml")) {
-				if (($xmlStr = @file_get_contents(DIR_FS_MODULES . "phreedom/language/{$this->language_code}/locales.xml")) === false) 	throw new \core\classes\userException(sprintf(ERROR_READ_FILE, "phreedom/language/{$this->language_code}/locales.xml"));
-			} else {
-				if (($xmlStr = @file_get_contents(DIR_FS_MODULES . "phreedom/language/en_us/locales.xml")) === false) 					throw new \core\classes\userException(sprintf(ERROR_READ_FILE, "phreedom/language/en_us/locales.xml"));
+	/**
+	 * function will get all country constants.
+	 * @throws \core\classes\userException
+	 */
+	private function get_countries() {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ ." finding language code " .$this->language_code);
+		//fetch default language phrases
+		$lang_path = DIR_FS_INCLUDES."language/locals.xml";
+		if (!file_exists($lang_path)) throw new \core\classes\userException("can't find your locals file {$lang_path} ");
+		$xml = new \DomDocument();
+		$xml->load($lang_path);
+		$countries = $xml->getElementsByTagName('country');
+		foreach  ($countries as $country) {
+			foreach($country->childNodes as $i) {
+				if ($i->tagName == 'translations') {
+					foreach($i->childNodes as $language) {
+						if (!empty($language->tagName) ){
+							$this->countries[$country->getAttribute('xml:id')][$i->tagName][$language->tagName] = $language->nodeValue;
+							if ($language->tagName == $this->language_code) $this->countries[$country->getAttribute('xml:id')]['name'] = $language->nodeValue;
+						}
+					}
+				}else{
+					if (!empty($i->tagName)) $this->countries[$country->getAttribute('xml:id')][$i->tagName] = $i->nodeValue;
+				}
 			}
-			$this->locales =  simplexml_load_string ($xmlStr);
 		}
-		if (isset($this->locales->data)) return $this->locales->data;
-		return $this->locales;
+		if (sizeof($this->countries) == 0) throw new \core\classes\userException("there are no countries for your language {$this->language_code} ");
+		uasort ( $this->countries, array ( $this, 'arangeObjectByNameValue') );
 	}
+	
+	/**
+	 * this method is for sorting a array of objects by the sort_order variable
+	 */
+	function arangeObjectByNameValue($a, $b) {
+		return strcmp ( $a['name'], $b['name'] );
+	}
+	
+	
+	function load_countries(){
+		if (sizeof($this->countries) == 0) $this->get_countries();
+		return $this->countries;
+	}
+	
 }
+	
 ?>

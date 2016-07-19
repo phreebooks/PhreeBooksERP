@@ -454,16 +454,14 @@ function get_dir_tree($dir, $root = true)  {
 }
 
 /*************** Country Functions *******************************/
-  function gen_get_country_iso_2_from_3($iso3 = COMPANY_COUNTRY, $countries = false) {
-    if (!$countries) $countries = $_SESSION['language']->load_countries();
-	foreach ($countries->country as $value) if ($value->iso3 == $iso3) return $value->iso2;
-    return $iso3; // not found
+  function gen_get_country_iso_2_from_3($iso3 = COMPANY_COUNTRY) {
+  	if (!isset($_SESSION['language']->countries[$iso3])) throw new \core\classes\userException(printf(TEXT_CANT_FIND_ISO3, $this->id));
+    return $_SESSION['language']->countries[$iso3]->iso2;
   }
 
-  function gen_get_country_iso_3_from_2($iso2, $countries = false) {
-    if (!$countries) $countries = $_SESSION['language']->load_countries();
-	foreach ($countries->country as $value) if ($value->iso2 == $iso2) return $value->iso3;
-    return $iso2; // not found
+  function gen_get_country_iso_3_from_2($iso2) {
+	foreach ($_SESSION['language']->countries as $value) if ($value->iso2 == $iso2) return $value->iso3;
+	throw new \core\classes\userException(printf(TEXT_CANT_FIND_ISO2, $this->id));
   }
 
   function gen_get_countries($choose = false, $countries = false) {

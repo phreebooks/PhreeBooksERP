@@ -43,7 +43,7 @@
             		</div>
         		</form>
 		</div>-->
-		<table id='notes' title="<?php echo TEXT_HISTORY; ?>">
+		<table id='notes_table' title="<?php echo TEXT_HISTORY; ?>">
 		    <thead>
 		   		<tr>
 		        	<th data-options="field:'name',sortable:true, align:'left'"><?php echo TEXT_WITH;?></th>
@@ -67,7 +67,7 @@ $.ajaxPrefilter(function( options, originalOptions, jqXHR ) {
     options.async = true;
 });
 
-$('#notes').datagrid({
+$('#notes_table').datagrid({
 	url:		"index.php?action=loadCRMHistory",
 	queryParams: {
 		contact_id: '<?php echo $basis->cInfo->contact->id;?>',
@@ -117,9 +117,9 @@ $('#notes').datagrid({
             href:'index.php?action=editCRM&index='+index,
             loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
             onLoad:function(){
-                $('#notes').datagrid('fixDetailRowHeight',index);
-                $('#notes').datagrid('selectRow',index);
-                $('#notes').datagrid('getRowDetail',index).find('form').form('load',row);
+                $('#notes_table').datagrid('fixDetailRowHeight',index);
+                $('#notes_table').datagrid('selectRow',index);
+                $('#notes_table').datagrid('getRowDetail',index).find('form').form('load',row);
             },
             onBeforeLoad:function(){
         		console.log('loading the crm form');
@@ -134,7 +134,7 @@ $('#notes').datagrid({
         		$.messager.alert('<?php echo TEXT_ERROR?>','Load error for crm form');
         	},
         });
-        $('#notes').datagrid('fixDetailRowHeight',index);
+        $('#notes_table').datagrid('fixDetailRowHeight',index);
     }
 });
 
@@ -151,11 +151,11 @@ function ConvertCrmAction (value){
 
 function newCRM(){
 	console.log('new crm was cliced');
-    $('#notes').datagrid('appendRow',{isNewRecord:true});
-    var index = $('#notes').datagrid('getRows').length - 1;
-    $('#notes').datagrid('selectRow', index);
-    $('#notes').datagrid('expandRow', index);
-    $('#notes').datagrid('getRowDetail',index).find('form').form('reset');
+    $('#notes_table').datagrid('appendRow',{isNewRecord:true});
+    var index = $('#notes_table').datagrid('getRows').length - 1;
+    $('#notes_table').datagrid('selectRow', index);
+    $('#notes_table').datagrid('expandRow', index);
+    $('#notes_table').datagrid('getRowDetail',index).find('form').form('reset');
 }
 
 </script>
