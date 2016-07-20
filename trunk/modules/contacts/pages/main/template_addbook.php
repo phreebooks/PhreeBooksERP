@@ -207,7 +207,7 @@ function AddressDetailFormatter(index, row, field){
 	 			'  <td align="right"> <?php echo TEXT_POSTAL_CODE ?> </td>'+
  				'  <td><input name="postal_code" type="text" value="' +row.postal_code+'"  size="11" maxlength="10"  <?php if (ADDRESS_BOOK_POSTAL_CODE_REQUIRED) echo ' required="required" ' ?> ></td>'+
  				'  <td align="right"> <?php echo TEXT_COUNTRY ?> </td>'+
-	 			'  <td><select class="easyui-combobox" id="country_code" ><?php foreach (gen_get_countries() as $key => $value) echo "<option value=\"{$value['id']}\">{$value['text']}</option>";?> </select></td>'+
+	 			'  <td><select class="easyui-combobox" id="country_code" ><?php foreach ($_SESSION['language']->get_countries_dropdown() as $key => $value) echo "<option value=\"{$value['id']}\">{$value['text']}</option>";?> </select></td>'+
 	 		'</tr>'+
 	 		'<tr>'+
 	 		'<td></td><td><a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save"   plain="true" onclick="saveShipping(this)"><?php echo TEXT_SAVE; ?></a></td>'+

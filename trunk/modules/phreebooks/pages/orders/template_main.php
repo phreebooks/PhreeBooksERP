@@ -203,7 +203,7 @@ echo html_input_field('bill_address2', $order->bill_address2, 'size="33" maxleng
 echo html_input_field('bill_city_town', $order->bill_city_town, 'size="25" maxlength="24" onfocus="clearField(\'bill_city_town\', \'' . TEXT_CITY_TOWN . '\')" onblur="setField(\'bill_city_town\', \'' . TEXT_CITY_TOWN . '\')"', ADDRESS_BOOK_CITY_TOWN_REQUIRED) . chr(10);
 echo html_input_field('bill_state_province', $order->bill_state_province, 'size="3" maxlength="5" onfocus="clearField(\'bill_state_province\', \'' . TEXT_STATE_PROVINCE . '\')" onblur="setField(\'bill_state_province\', \'' . TEXT_STATE_PROVINCE . '\')"', ADDRESS_BOOK_STATE_PROVINCE_REQUIRED) . chr(10);
 echo html_input_field('bill_postal_code', $order->bill_postal_code, 'size="11" maxlength="10" onfocus="clearField(\'bill_postal_code\', \'' . TEXT_POSTAL_CODE . '\')" onblur="setField(\'bill_postal_code\', \'' . TEXT_POSTAL_CODE . '\')"', ADDRESS_BOOK_POSTAL_CODE_REQUIRED) . '<br />' . chr(10);
-echo html_pull_down_menu('bill_country_code', gen_get_countries(), $order->bill_country_code) . '<br />' . chr(10);
+echo html_pull_down_menu('bill_country_code', $_SESSION['language']->get_countries_dropdown(), $order->bill_country_code) . '<br />' . chr(10);
 echo html_input_field('bill_telephone1', $order->bill_telephone1, 'size="21" maxlength="20" onfocus="clearField(\'bill_telephone1\', \'' . TEXT_TELEPHONE . '\')" onblur="setField(\'bill_telephone1\', \'' . TEXT_TELEPHONE . '\')"', ADDRESS_BOOK_TELEPHONE1_REQUIRED) . chr(10);
 echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48" onfocus="clearField(\'bill_email\', \'' . TEXT_EMAIL . '\')" onblur="setField(\'bill_email\', \'' . TEXT_EMAIL . '\')"', ADDRESS_BOOK_EMAIL_REQUIRED) . chr(10);
 ?>
@@ -219,7 +219,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
   echo html_input_field('ship_city_town', $order->ship_city_town, 'size="25" maxlength="24" onfocus="clearField(\'ship_city_town\', \'' . TEXT_CITY_TOWN . '\')" onblur="setField(\'ship_city_town\', \'' . TEXT_CITY_TOWN . '\')"', ADDRESS_BOOK_SHIP_CITY_REQ) . chr(10);
   echo html_input_field('ship_state_province', $order->ship_state_province, 'size="3" maxlength="5" onfocus="clearField(\'ship_state_province\', \'' . TEXT_STATE_PROVINCE . '\')" onblur="setField(\'ship_state_province\', \'' . TEXT_STATE_PROVINCE . '\')"', ADDRESS_BOOK_SHIP_STATE_REQ) . chr(10);
   echo html_input_field('ship_postal_code', $order->ship_postal_code, 'size="11" maxlength="10" onfocus="clearField(\'ship_postal_code\', \'' . TEXT_POSTAL_CODE . '\')" onblur="setField(\'ship_postal_code\', \'' . TEXT_POSTAL_CODE . '\')"', ADDRESS_BOOK_SHIP_POSTAL_CODE_REQ) . '<br />' . chr(10);
-  echo html_pull_down_menu('ship_country_code', gen_get_countries(), $order->ship_country_code) . '<br />' . chr(10);
+  echo html_pull_down_menu('ship_country_code', $_SESSION['language']->get_countries_dropdown(), $order->ship_country_code) . '<br />' . chr(10);
   echo html_input_field('ship_telephone1', $order->ship_telephone1, 'size="21" maxlength="20" onfocus="clearField(\'ship_telephone1\', \'' . TEXT_TELEPHONE . '\')" onblur="setField(\'ship_telephone1\', \'' . TEXT_TELEPHONE . '\')"', ADDRESS_BOOK_TELEPHONE1_REQUIRED) . chr(10);
   echo html_input_field('ship_email', $order->ship_email, 'size="35" maxlength="48" onfocus="clearField(\'ship_email\', \'' . TEXT_EMAIL . '\')" onblur="setField(\'ship_email\', \'' . TEXT_EMAIL . '\')"', ADDRESS_BOOK_EMAIL_REQUIRED) . chr(10);
 } else {

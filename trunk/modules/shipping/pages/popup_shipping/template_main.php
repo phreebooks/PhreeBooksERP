@@ -74,13 +74,12 @@ echo html_input_field('ship_to_postal_code', $pkg->ship_to_postal_code, $paramet
   <tr>
 	<td>
 <?php echo TEXT_SHIP_FROM_COUNTRY . ': ';
-$country_list = gen_get_countries();
-echo html_pull_down_menu('ship_country_code', $country_list, $pkg->ship_country_code) . chr(10);
+echo html_pull_down_menu('ship_country_code', $_SESSION['language']->get_countries_dropdown, $pkg->ship_country_code) . chr(10);
 ?>
 	 </td>
 	 <td>
 <?php echo TEXT_SHIP_TO_COUNTRY . ': ';
-echo html_pull_down_menu('ship_to_country_code', $country_list, $pkg->ship_to_country_code) . chr(10); ?>
+echo html_pull_down_menu('ship_to_country_code', $_SESSION['language']->get_countries_dropdown, $pkg->ship_to_country_code) . chr(10); ?>
 	 </td>
   </tr>
   <tr>

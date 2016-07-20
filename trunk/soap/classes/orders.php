@@ -216,7 +216,7 @@ class xml_orders extends parser {
 	$psOrd->bill_city_town      = $this->order['billing']['city_town'];
 	$psOrd->bill_state_province = $this->order['billing']['state_province'];
 	$psOrd->bill_postal_code    = $this->order['billing']['postal_code'];
-	$psOrd->bill_country_code   = gen_get_country_iso_3_from_2($this->order['billing']['country_code']);
+	$psOrd->bill_country_code   = $_SESSION['language']->get_country_iso_3_from_2($this->order['billing']['country_code']);
 	$psOrd->bill_telephone1     = $this->order['customer']['telephone'];
 	$psOrd->bill_email          = $this->order['customer']['email'];
 	if ($this->order['shipping']['primary_name'] == '') {
@@ -231,7 +231,7 @@ class xml_orders extends parser {
 	$psOrd->ship_city_town      = $this->order['shipping']['city_town'];
 	$psOrd->ship_state_province = $this->order['shipping']['state_province'];
 	$psOrd->ship_postal_code    = $this->order['shipping']['postal_code'];
-	$psOrd->ship_country_code   = gen_get_country_iso_3_from_2($this->order['shipping']['country_code']);
+	$psOrd->ship_country_code   = $_SESSION['language']->get_country_iso_3_from_2($this->order['shipping']['country_code']);
 	$psOrd->ship_telephone1     = $this->order['customer']['telephone'];
 	$psOrd->ship_email          = $this->order['customer']['email'];
 	// check for truncation of addresses

@@ -453,50 +453,7 @@ function get_dir_tree($dir, $root = true)  {
 	if ($root) return $tree;
 }
 
-/*************** Country Functions *******************************/
-  function gen_get_country_iso_2_from_3($iso3 = COMPANY_COUNTRY) {
-  	if (!isset($_SESSION['language']->countries[$iso3])) throw new \core\classes\userException(printf(TEXT_CANT_FIND_ISO3, $this->id));
-    return $_SESSION['language']->countries[$iso3]->iso2;
-  }
-
-  function gen_get_country_iso_3_from_2($iso2) {
-	foreach ($_SESSION['language']->countries as $value) if ($value->iso2 == $iso2) return $value->iso3;
-	throw new \core\classes\userException(printf(TEXT_CANT_FIND_ISO2, $this->id));
-  }
-
-  function gen_get_countries($choose = false, $countries = false) {
-	$temp   = array();
-    $output = array();
-    if (!$countries) $countries = $_SESSION['language']->load_countries();
-    foreach ($countries->country as $key => $value) $temp[(string)$value->iso3] = $value->name;
-    asort($temp); // for language translations, sort to alphabetical
-    if ($choose) $output[] = array('id' => '0', 'text' => TEXT_PLEASE_SELECT);
-    foreach ($temp as $iso3 => $country) $output[] = array('id' => $iso3, 'text' => $country);
-    return $output;
-  }
-
 /*************** Other Functions *******************************/
-
-  function get_ip_address() {
-    if (isset($_SERVER)) {
-      if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-      } elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
-        $ip = $_SERVER['HTTP_CLIENT_IP'];
-      } else {
-        $ip = $_SERVER['REMOTE_ADDR'];
-      }
-    } else {
-      if (getenv('HTTP_X_FORWARDED_FOR')) {
-        $ip = getenv('HTTP_X_FORWARDED_FOR');
-      } elseif (getenv('HTTP_CLIENT_IP')) {
-        $ip = getenv('HTTP_CLIENT_IP');
-      } else {
-        $ip = getenv('REMOTE_ADDR');
-      }
-    }
-    return $ip;
-  }
 
 // Return a random value
   function general_rand($min = null, $max = null) {

@@ -95,7 +95,7 @@ $('#notes_table').datagrid({
 	},
 	onDblClickRow: function(index , row){
 		console.log('a row in the crm history was double clicked');
-		//@todo open order
+		$('#notes_table').datagrid('expandRow', index);
 	},
 	toolbar: notes_toolbar,
 	remoteSort:	false,
@@ -109,19 +109,19 @@ $('#notes_table').datagrid({
     detailFormatter:function(index,row){
         return '<div class="ddv"></div>';
     },
-    onExpandRow: function(index,row){
+    onExpandRow: function(index, row){
         var ddv = $(this).datagrid('getRowDetail',index).find('div.ddv');
         ddv.panel({
             border:false,
             cache:true,
-            href:'index.php?action=editCRM&index='+index,
+            href:'index.php?action=editCRM',
             loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
             onLoad:function(){
                 $('#notes_table').datagrid('fixDetailRowHeight',index);
                 $('#notes_table').datagrid('selectRow',index);
                 $('#notes_table').datagrid('getRowDetail',index).find('form').form('load',row);
             },
-            onBeforeLoad:function(){
+            onBeforeLoad:function(param){
         		console.log('loading the crm form');
         	},
         	onLoadSuccess:function(data){
@@ -134,7 +134,6 @@ $('#notes_table').datagrid({
         		$.messager.alert('<?php echo TEXT_ERROR?>','Load error for crm form');
         	},
         });
-        $('#notes_table').datagrid('fixDetailRowHeight',index);
     }
 });
 

@@ -391,7 +391,7 @@ class contacts {
   		echo '  <td align="right">' . TEXT_POSTAL_CODE . '</td>' . chr(10);
   		echo '  <td>' . html_input_field("address[$address_type][postal_code]", $addres['postal_code'], 'size="11" maxlength="10"', ADDRESS_BOOK_POSTAL_CODE_REQUIRED) . '</td>' . chr(10);
   		echo '  <td align="right">' . TEXT_COUNTRY . '</td>' . chr(10);
-  		echo '  <td>' . html_pull_down_menu("address[$address_type][country_code]", gen_get_countries(), $addres['country_code'] ? $addres['country_code'] : COMPANY_COUNTRY) . '</td>' . chr(10);
+  		echo '  <td>' . html_pull_down_menu("address[$address_type][country_code]", $_SESSION['language']->get_countries_dropdown(), $addres['country_code'] ? $addres['country_code'] : COMPANY_COUNTRY) . '</td>' . chr(10);
   		echo '</tr>';
 
   		if (substr($address_type, 1, 1) <> 'm' || ($address_type == 'im' && substr($address_type, 0, 1) <> 'i')) {

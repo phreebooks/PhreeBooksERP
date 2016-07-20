@@ -63,7 +63,7 @@
   </tr>
   <tr>
     <td><?php echo TEXT_THE_COUNTRY_THIS_COMPANY_IS_LOCATED; ?></td>
-    <td><?php echo html_pull_down_menu('company_country', gen_get_countries(), $_POST['company_country'] ? $_POST['company_country'] : COMPANY_COUNTRY, ''); ?></td>
+    <td><?php echo html_pull_down_menu('company_country', $_SESSION['language']->get_countries_dropdown(), $_POST['company_country'] ? $_POST['company_country'] : COMPANY_COUNTRY, ''); ?></td>
   </tr>
   <tr>
     <td><?php echo TEXT_ENTER_THE_COMPANYS_PRIMARY_TELEPHONE_NUMBER; ?></td>

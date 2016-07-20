@@ -34,7 +34,7 @@ switch ($_REQUEST['action']) {
 		reset($_POST);
 		while (list($key, $value) = each($_POST)) $sInfo->$key = db_prepare_input($value);
 		// generate ISO2 codes for countries (needed by FedEx and others)
-		$sInfo->ship_country_code = gen_get_country_iso_2_from_3($sInfo->ship_country_code);
+		$sInfo->ship_country_code = $_SESSION['language']->get_country_iso_2_from_3($sInfo->ship_country_code);
 		$sInfo->ship_date             = date('Y-m-d', strtotime($sInfo->ship_date));
 		// read checkboxes
 		$sInfo->residential_address   = isset($_POST['residential_address'])   ? '1' : '0';
@@ -114,7 +114,7 @@ switch ($_REQUEST['action']) {
 	  	$label_data = str_replace("\n", "\\n", $label_data);
 	} catch(Exception $e) {
 	  	\core\classes\messageStack::add($e->getMessage(),'error');
-	  	$sInfo->ship_country_code = gen_get_country_iso_3_from_2($sInfo->ship_country_code);
+	  	$sInfo->ship_country_code = $_SESSION['language']->get_country_iso_3_from_2($sInfo->ship_country_code);
 	}
 	break;
 

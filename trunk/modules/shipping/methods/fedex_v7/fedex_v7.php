@@ -437,7 +437,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 			'City'                => COMPANY_CITY_TOWN,
 			'StateOrProvinceCode' => COMPANY_ZONE,
 			'PostalCode'          => COMPANY_POSTAL_CODE,
-			'CountryCode'         => gen_get_country_iso_2_from_3(COMPANY_COUNTRY),
+			'CountryCode'         => $_SESSION['language']->get_country_iso_2_from_3(COMPANY_COUNTRY),
 		  ),
 		),
 		'Role'         => 'SHIPPER', // valid values are SHIPPER, THIRD_PARTY, and CONSIGNEE
@@ -652,7 +652,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 			'City'                => COMPANY_CITY_TOWN,
 			'StateOrProvinceCode' => COMPANY_ZONE,
 			'PostalCode'          => COMPANY_POSTAL_CODE,
-			'CountryCode'         => gen_get_country_iso_2_from_3(COMPANY_COUNTRY),
+			'CountryCode'         => $_SESSION['language']->get_country_iso_2_from_3(COMPANY_COUNTRY),
 		  ),
 		);
 		$request['RequestedShipment']['Recipient'] = array(
@@ -669,7 +669,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 			'City'                => strtoupper($pkg->ship_city_town),
 			'StateOrProvinceCode' => ($pkg->ship_country_code == 'US') ? strtoupper($pkg->ship_state_province) : '',
 			'PostalCode'          => strip_alphanumeric($pkg->ship_postal_code),
-			'CountryCode'         => gen_get_country_iso_2_from_3($pkg->ship_country_code),
+			'CountryCode'         => $_SESSION['language']->get_country_iso_2_from_3($pkg->ship_country_code),
 			'Residential'         => $pkg->residential_address ? '1' : '0',
 		  ),
 		);
@@ -704,7 +704,7 @@ class fedex_v7 extends \shipping\classes\shipping {
 					'City'                => COMPANY_CITY_TOWN,
 					'StateOrProvinceCode' => COMPANY_ZONE,
 					'PostalCode'          => COMPANY_POSTAL_CODE,
-					'CountryCode'         => gen_get_country_iso_2_from_3(COMPANY_COUNTRY),
+					'CountryCode'         => $_SESSION['language']->get_country_iso_2_from_3(COMPANY_COUNTRY),
 				  ),
 				),
 				'PrintedReferences' => array(

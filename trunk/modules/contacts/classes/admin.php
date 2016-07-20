@@ -261,6 +261,7 @@ class admin extends \core\classes\admin {
 		</div>
     		
 		<script type="text/javascript">
+			document.title = '<?php echo sprintf(BOX_STATUS_MGR, $contact); ?>';
 	    	function doSearch(value){
 	    		console.log('A search was requested.');
 	        	$('#dg').datagrid('load',{
@@ -442,24 +443,32 @@ class admin extends \core\classes\admin {
 			array('id'=> 'mail_out','text'	=> TEXT_EMAIL_SEND),
 		);
 	?>
-		<form id="crm" method="post" novalidate>
+		<form>
 			<?php echo html_hidden_field('log_id', '');?>
-			<div class="fitem">
-				<label style="display:inline-block; width:80px;"><?php echo TEXT_SALES_REP; ?></label>
-			   <?php echo html_pull_down_menu('entered_by', $all_employees); ?>
-			</div>
-            <div class="fitem">
-            	<label style="display:inline-block; width:80px;"><?php echo TEXT_DATE; ?></label>
-        		<?php echo html_date_field('log_date' ); ?>
-            </div>
-            <div class="fitem">
-            	<label style="display:inline-block; width:80px;"><?php echo TEXT_ACTION; ?></label>
-                <?php echo html_pull_down_menu('action', $crm_actions); ?>
-            </div>
-            <div class="fitem">
-		        <label style="display:inline-block; width:80px;"><?php echo TEXT_NOTE; ?></label>
-            	<?php echo html_textarea_field('notes', 60, 1, $basis->cInfo->contact->crm_note, ''); ?>
-            </div>
+			<table class="dv-table" style="width:100%;border:1px solid #ccc;padding:5px;margin-top:5px;">
+				<tbody>
+					<tr>
+						<td style="width:80px;"><?php echo TEXT_SALES_REP; ?></td>
+				   		<td> <?php echo html_pull_down_menu('entered_by', $all_employees); ?></td>
+					</tr>
+	            	<tr>
+	            		<td style="width:80px;"><?php echo TEXT_DATE; ?></td>
+		        		<td><?php echo html_date_field('log_date' ); ?></td>
+	            	</tr>
+	            	<tr>
+	            		<td style="width:80px;"><?php echo TEXT_ACTION; ?></td>
+						<td><?php echo html_pull_down_menu('action', $crm_actions); ?></td>
+	            	</tr>
+	            	<tr>
+			        	<td style="width:80px;"><?php echo TEXT_NOTE; ?></td>
+	            		<td><?php echo html_textarea_field('notes', 60, 1, $basis->cInfo->contact->crm_note, ''); ?></td>
+	            	</tr>
+	            	<tr>
+			        	<td style="width:80px;">txt save</td>@todo
+	            		<td>txt cancel</td>@todo
+	            	</tr>
+	            </tbody>
+            </table>
 	   </form><?php 
 	}
 	
@@ -612,13 +621,105 @@ class admin extends \core\classes\admin {
 		}
 	}
 
+	/**
+	 * this function loads the contacts pop up to select and return a contact
+	 * @param unknown $basis
+	 */
 	function LoadContactsAccountsPopUp(\core\classes\basis &$basis) {
-		history_filter('contacts_popup');
-		$this->LoadContactMgrPage($basis);
-		if (!isset($basis->cInfo->fill)) $basis->cInfo->fill = 'bill';
-		$basis->page			= 'popup_accts';
-		$basis->page_title		= TEXT_CONTACT_SEARCH;
-		history_save('contacts_popup');
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		if (! isset($basis->cInfo->type)) $basis->cInfo->type = 'c'; // default to customer
+		if (! isset($basis->cInfo->fill)) $basis->cInfo->fill = 'bill'; // default
+		if (! isset($basis->cInfo->journal_id)) throw new \core\classes\userException(TEXT_JOURNAL_ID_NOT_DEFINED); 
+		switch ($basis->cInfo->type) {
+			case 'b': $contact = TEXT_BRANCH;	break;
+			case 'c': $contact = TEXT_CUSTOMER;	break;
+			case 'e': $contact = TEXT_EMPLOYEE;	break;
+			case 'i': $contact = TEXT_CRM;		break;
+			case 'j': $contact = TEXT_PROJECT;	break;
+			case 'v': $contact = TEXT_VENDOR;	break;
+		}
+		?>
+	    <table id="dg" title="<?php echo TEXT_PLEASE_SELECT;?>" style="height:500px;padding:50px;">
+        	<thead>
+            	<tr>
+            		<th data-options="field:'short_name',sortable:true"><?php echo sprintf(TEXT_ARGS_ID, $contact);?></th>
+               		<th data-options="field:'name',sortable:true"><?php echo TEXT_NAME_OR_COMPANY?></th>
+            	   	<th data-options="field:'address1',sortable:true"><?php echo TEXT_ADDRESS1?></th>
+    	           	<th data-options="field:'city_town',sortable:true"><?php echo TEXT_CITY_TOWN?></th>
+        	       	<th data-options="field:'state_province',sortable:true"><?php echo TEXT_STATE_PROVINCE?></th>
+        	       	<th data-options="field:'postal_code',sortable:true"><?php echo TEXT_POSTAL_CODE?></th>
+        	       	<th data-options="field:'telephone1',sortable:true"><?php echo TEXT_TELEPHONE?></th>
+            	</tr>
+        	</thead>
+    	</table>
+    	<div id="toolbar">
+    		<span style="margin-left: 100px;"><?php echo  TEXT_SHOW_INACTIVE . ' :'?></span>
+        	<?php echo html_checkbox_field('contact_show_inactive', '1', false,'', 'onchange="doSearch()"' );?>
+        	<div style="float: right;">
+        		<span><?php echo TEXT_SEARCH?> : </span>
+    			<input class="easyui-searchbox" data-options="prompt:'<?php TEXT_PLEASE_INPUT_VALUE; ?>',searcher:doSearch" id="search_text" >
+    		</div>
+    	</div>
+    		
+		<script type="text/javascript">
+			document.title = '<?php echo TEXT_CONTACT_SEARCH; ?>';
+	    	function doSearch(value){
+	    		console.log('A search was requested.');
+	        	$('#dg').datagrid('load',{
+	        		search_text: $('#search_text').val(),
+	        		dataType: 'json',
+	                contentType: 'application/json',
+	                async: false,
+	                type: '<?php echo $basis->cInfo->type;?>',
+	                contact_show_inactive: $('#contact_show_inactive').is(":checked") ? 1 : 0,
+	        	});
+	    	}
+	        
+			$('#dg').datagrid({
+				url:		"index.php?action=GetAllContacts",
+				queryParams: {
+					type: '<?php echo $basis->cInfo->type;?>',
+					journal_id: '<?php echo $basis->cInfo->journal_id;?>',
+					dataType: 'json',
+	                contentType: 'application/json',
+	                async: false,
+				},
+				onLoadSuccess: function(data){
+					console.log('the loading of the datagrid was succesfull');
+					$.messager.progress('close');
+					if(data.total == 0) $.messager.alert('<?php echo TEXT_ERROR?>',"<?php echo TEXT_NO_RESULTS_FOUND?>");
+				},
+				onLoadError: function(){
+					console.error('the loading of the datagrid resulted in a error');
+					$.messager.progress('close');
+					$.messager.alert('<?php echo TEXT_ERROR?>','Load error:'+arguments.responseText);
+				},
+				onDblClickRow: function(index , row){
+					console.log('a row in the datagrid was double clicked');
+					var fill = '<?php echo $basis->cInfo->fill?>';
+					if (fill == 'ship') {
+					    var ship_only = true;
+					    window.opener.clearAddress('ship');
+					} else {
+					    var ship_only = false;
+					    window.opener.ClearForm();
+					}
+					window.opener.ajaxOrderData(row.contactid, 0, <?php echo $basis->cInfo->journal_id;?>, false, ship_only);
+					self.close();
+				},
+				remoteSort:	false,
+				idField:	"contactid",
+				fitColumns:	true,
+				singleSelect:true,
+				sortName:	"short_name",
+				sortOrder: 	"asc",
+				loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
+				toolbar: 	"#toolbar",
+				rowStyler: function(index,row){
+					if (row.inactive == '1') return 'background-color:pink;';
+				},
+			});
+		</script><?php 
 	}
 
 	function LoadTermsPopUp (\core\classes\basis &$basis) {

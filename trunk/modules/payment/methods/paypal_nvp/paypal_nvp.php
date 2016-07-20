@@ -193,7 +193,7 @@ class paypal_nvp extends \payment\classes\payment {
 		'CITY'           => $order->bill_city_town,
 		'STATE'          => $order->bill_state_province,
 		'ZIP'            => preg_replace("/[^A-Za-z0-9]/", "", $order->bill_postal_code),
-		'COUNTRYCODE'    => gen_get_country_iso_2_from_3($order->bill_country_code),
+		'COUNTRYCODE'    => $_SESSION['language']->get_country_iso_2_from_3($order->bill_country_code),
 		'EMAIL'          => $order->bill_email,
 		'PHONENUM'       => $order->bill_telephone,
 		'CURRENCYCODE'   => DEFAULT_CURRENCY,
@@ -243,7 +243,7 @@ class paypal_nvp extends \payment\classes\payment {
 		'PWD'       => MODULE_PAYMENT_PAYPAL_NVP_PW,
 		'USER'      => MODULE_PAYMENT_PAYPAL_NVP_USER_ID,
 		'SIGNATURE' => MODULE_PAYMENT_PAYPAL_NVP_SIG,
-		'IPADDRESS' => get_ip_address(),
+		'IPADDRESS' => $_SESSION['user']->get_ip_address(),
 	);
 
 	$data = ''; // initiate XML string

@@ -34,8 +34,8 @@ switch ($_REQUEST['action']) {
 			reset ($_POST);
 			while (list($key, $value) = each($_POST)) $pkg->$key = db_prepare_input($value);
 			// generate ISO2 codes for countries (needed by FedEx and others)
-			$pkg->ship_from_country_iso2 = gen_get_country_iso_2_from_3($pkg->ship_country_code);
-			$pkg->ship_to_country_iso2   = gen_get_country_iso_2_from_3($pkg->ship_to_country_code);
+			$pkg->ship_from_country_iso2 = $_SESSION['language']->get_country_iso_2_from_3($pkg->ship_country_code);
+			$pkg->ship_to_country_iso2   = $_SESSION['language']->get_country_iso_2_from_3($pkg->ship_to_country_code);
 			// read checkboxes
 			$pkg->residential_address    = isset($_POST['residential_address']) ? '1' : '0';
 			$pkg->additional_handling    = isset($_POST['additional_handling']) ? '1' : '0';

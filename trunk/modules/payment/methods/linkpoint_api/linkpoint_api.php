@@ -297,7 +297,7 @@ class linkpoint_api extends \payment\classes\payment {
 		// "oid" - Order ID number must be unique. If not set, gateway will assign one.
 		$new_order_id = date('Ymdmis') . general_rand(100, 'digits'); // Create a UID for the order
 		$myorder["oid"] = $new_order_id; //"";    // time(); ????
-		$myorder["ip"] = get_ip_address();
+		$myorder["ip"] = $_SESSION['user']->get_ip_address();
 
 		$myorder["ponumber"] = "";
 		$myorder["subtotal"] = $order->total_amount;

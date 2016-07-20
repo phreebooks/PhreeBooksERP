@@ -79,7 +79,7 @@ echo '<br />' . html_input_field('bill_address2', $order->bill_address2, 'size="
 echo '<br />' . html_input_field('bill_city_town', $order->bill_city_town, 'size="25" maxlength="24" onfocus="clearField(\'bill_city_town\', \'' . TEXT_CITY_TOWN . '\')" onblur="setField(\'bill_city_town\', \'' . TEXT_CITY_TOWN . '\')"') . chr(10);
 echo html_input_field('bill_state_province', $order->bill_state_province, 'size="3" maxlength="5" onfocus="clearField(\'bill_state_province\', \'' . TEXT_STATE_PROVINCE . '\')" onblur="setField(\'bill_state_province\', \'' . TEXT_STATE_PROVINCE . '\')"') . chr(10);
 echo html_input_field('bill_postal_code', $order->bill_postal_code, 'size="11" maxlength="10" onfocus="clearField(\'bill_postal_code\', \'' . TEXT_POSTAL_CODE . '\')" onblur="setField(\'bill_postal_code\', \'' . TEXT_POSTAL_CODE . '\')"') . chr(10);
-echo '<br />' . html_pull_down_menu('bill_country_code', gen_get_countries(), $order->bill_country_code) . chr(10);
+echo '<br />' . html_pull_down_menu('bill_country_code', $_SESSION['language']->get_countries_dropdown(), $order->bill_country_code) . chr(10);
 echo '<br />' . html_input_field('bill_email', $order->bill_email, 'size="40" maxlength="64" onfocus="clearField(\'bill_email\', \'' . TEXT_EMAIL . '\')" onblur="setField(\'bill_email\', \'' . TEXT_EMAIL . '\')"') . chr(10);
 ?>
 	  </td>

@@ -137,8 +137,8 @@ $('#cdg').datagrid({
   						'<td align="right"><?php echo TEXT_POSTAL_CODE ?></td>'+
   						'<td><input type="text" name="postal_code" size="11" maxlength="10" class="easyui-textbox" <?php if(ADDRESS_BOOK_POSTAL_CODE_REQUIRED == true) echo'required="required"'?> value="'+row.postal_code+'"></input></td>'+
   						'<td align="right"><?php echo TEXT_COUNTRY ?></td>'+
-  						'<td><select id="country_code" value="'+row.country_code+'" class="easyui-combobox" ><?php  foreach(gen_get_countries() as  $key => $choice) echo "<option value\"{$choice['id']}\">{$choice['text']}</option>"; ?> </select></td>'+
-//  						"<td><?php echo html_pull_down_menu("country_code", gen_get_countries(), COMPANY_COUNTRY);?></td>"+
+  						'<td><select id="country_code" value="'+row.country_code+'" class="easyui-combobox" ><?php  foreach($_SESSION['language']->get_countries_dropdown() as  $key => $choice) echo "<option value\"{$choice['id']}\">{$choice['text']}</option>"; ?> </select></td>'+
+//  						"<td><?php echo html_pull_down_menu("country_code", $_SESSION['language']->get_countries_dropdown(), COMPANY_COUNTRY);?></td>"+
   					'</tr>'+
 	    		'</table>';
 //    			$('#country_code').combogrid('setValue', row.country_code);

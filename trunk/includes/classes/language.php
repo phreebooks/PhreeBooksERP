@@ -181,6 +181,23 @@ class language {
 		return $this->countries;
 	}
 	
+	function get_country_iso_2_from_3($iso3 = COMPANY_COUNTRY) {
+		if (!isset($this->countries[$iso3])) throw new \core\classes\userException ( sprintf(TEXT_COULDNT_FIND_ISO3, $iso3));
+		$this->countries[$iso3]->iso2;
+	}
+	
+	function get_country_iso_3_from_2($iso2) {
+		foreach ($this->countries as $iso3 => $value) if ($value->iso2 == $iso2) return $value->iso3;
+		if (!isset($this->countries[$iso2])) throw new \core\classes\userException ( sprintf(TEXT_COULDNT_FIND_ISO2, $iso2));
+	}
+	
+	function get_countries_dropdown($choose = false) {
+		$output = array();
+		if ($choose) $output[] = array('id' => '0', 'text' => TEXT_PLEASE_SELECT);
+		foreach ($this->countries as $iso3 => $value) $output[] = array('id' => $iso3, 'text' => $value->name);
+		return $output;
+	}
+	
 }
 	
 ?>

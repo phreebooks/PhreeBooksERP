@@ -231,7 +231,7 @@ class authorizenet extends \payment\classes\payment {
 	  'x_ship_to_country'    => $order->ship_country_code,
 	  'x_description'        => $description,
 	  'x_recurring_billing'  => 'NO',
-	  'x_customer_ip'        => get_ip_address(),
+	  'x_customer_ip'        => $_SESSION['user']->get_ip_address(),
 	  'x_po_num'             => date('M-d-Y h:i:s'), //$order->info['po_number'],
 	  'x_freight'            => $order->freight,
 	  'x_tax_exempt'         => 'FALSE', /* 'TRUE' or 'FALSE' */
@@ -239,7 +239,7 @@ class authorizenet extends \payment\classes\payment {
 	  'x_duty'               => '0',
 	  'x_allow_partial_Auth' => 'FALSE', // unable to accept partial authorizations at this time
 	  'Date'                 => $order_time,
-	  'IP'                   => get_ip_address(),
+	  'IP'                   => $_SESSION['user']->get_ip_address(),
 	  'Session'              => $sessID,
 	);
 //echo 'submit_data = '; print_r($submit_data); echo '<br>';
