@@ -141,7 +141,7 @@ $('#cdg').datagrid({
 //  						"<td><?php echo html_pull_down_menu("country_code", $_SESSION['language']->get_countries_dropdown(), COMPANY_COUNTRY);?></td>"+
   					'</tr>'+
 	    		'</table>';
-//    			$('#country_code').combogrid('setValue', row.country_code);
+    			$('#country_code').combogrid('setValue', row.country_code);
     },
 });
 

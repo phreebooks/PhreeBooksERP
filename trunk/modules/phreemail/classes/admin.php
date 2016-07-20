@@ -168,6 +168,14 @@ class admin extends \core\classes\admin {
 		}
 		$messageStack->write_debug();
   }
+  
+  function after_editContact(\core\classes\basis &$basis) {
+  	?>
+  	<div data-options="region:'east',split:true,collapsed:false,collapsible:true,minWidth:'50px',title:'<?php echo TEXT_EMAILS?>'" style="width:250px">
+  	Deze text moet nog vervangen worden voor email data
+  	</div>
+  	<?php 
+  }
 
 }
 ?>

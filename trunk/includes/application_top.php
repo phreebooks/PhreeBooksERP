@@ -54,7 +54,6 @@ define('COG_ITEM_TYPES','si,sr,ms,mi,ma,sa');
 session_start();
 @ini_set('session.gc_maxlifetime', (SESSION_TIMEOUT_ADMIN < 360 ? 360 : SESSION_TIMEOUT_ADMIN));
 session_set_cookie_params((SESSION_TIMEOUT_ADMIN < 360 ? 360 : SESSION_TIMEOUT_ADMIN),'/',$path);
-
 //end session
 $_REQUEST = array_merge($_GET, $_POST);
 // define general functions and classes used application-wide

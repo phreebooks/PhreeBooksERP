@@ -38,7 +38,8 @@ try{
 	\core\classes\messageStack::debug_log(" ".$e->getMessage());
 	\core\classes\messageStack::debug_log(" fire event : $e->action");
 	\core\classes\messageStack::debug_log("\n\n\n".$e->getTraceAsString());
-	if (is_object($admin)) {
+	if (is_object($admin) && !empty($e->action)) {
+		// maybe redirect user to template error method.
 		$admin->removeEventsAndAddNewEvent($e->action); //@todo werkt nog niet altijd
 		$admin->startProcessingEvents();
 	} else {

@@ -57,7 +57,7 @@ class outputPage  {
 				$.fn.validatebox.defaults.invalidMessage = '".TEXT_INVALID_VALUE."';
 				$.fn.validatebox.defaults.missingMessage = '".TEXT_THIS_FIELD_IS_REQUIRED."';		
 			 </script>";
-		echo "</head><body>";
+		echo "</head><body class='easyui-layout'>";
     	ob_flush();
     }
     
@@ -66,20 +66,14 @@ class outputPage  {
     	usort($basis->mainmenu, array($this,'sortByOrder'));
     	echo '<!-- Pull Down Menu -->' . chr(10);
     	switch (MY_MENU) {
-    		case 'left': echo '<div id="smoothmenu" class="ddsmoothmenu-v" style="float:left">'.chr(10); break;
+    		case 'left': echo '<div id="smoothmenu" class="ddsmoothmenu-v" data-options="region:\'west\'" style="float:left">'.chr(10); break;
     		case 'top':
-    		default:     echo '<div id="smoothmenu" class="ddsmoothmenu">'.chr(10); break;
+    		default:     echo '<div id="smoothmenu" class="ddsmoothmenu" data-options="region:\'north\'" style="overflow:hidden">'.chr(10); break;
     	}
     	echo '  <ul>' . chr(10);
     	foreach($basis->mainmenu as $menu_item)	$menu_item->output();
     	echo '  </ul>' . chr(10);
-    	echo '<br style="clear:left" />'.chr(10);
-    	echo '</div>'.chr(10);
-    	switch (MY_MENU) {
-    		case 'left': echo '<div style="float:left;margin-left:auto;margin-right:auto;">'.chr(10); break;
-    		case 'top':
-    		default:     echo '<div>'.chr(10); break;
-    	}?>
+    	echo '</div>'.chr(10); ?>
     	<link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/ddsmoothmenu.css'; ?>" />
     	<script type="text/javascript" src="themes/default/ddsmoothmenu.js">
     	/***********************************************

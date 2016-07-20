@@ -29,7 +29,7 @@ class user {
 
 	function __construct(){
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		if (empty($_SESSION['language'])) $_SESSION['language'] = new \core\classes\language();
+		if (empty($_SESSION['language']) || !is_object($_SESSION['language'])) $_SESSION['language'] = new \core\classes\language();
 		if ($this->last_activity == '') $this->last_activity = time();
 		if (defined('DEFAULT_COMPANY')) {
 			$this->company =  DEFAULT_COMPANY;
@@ -41,7 +41,7 @@ class user {
 
 	public function __wakeup() {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		if (empty($_SESSION['language'])) $_SESSION['language'] = new \core\classes\language();
+		if (empty($_SESSION['language']) || !is_object($_SESSION['language'])) $_SESSION['language'] = new \core\classes\language();
 		$cookie_exp = 2592000 + time(); // one month
 		setcookie('pb_company' , $this->company,  $cookie_exp);
 		setcookie('pb_language', $_SESSION['language']->language_code, $cookie_exp);
@@ -60,7 +60,6 @@ class user {
 	final public function is_validated () {
 		//allow the user to continu to with the login action.
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		\core\classes\messageStack::debug_log("variable ".print_r($_SERVER,true));
 		if ((time() - $this->last_activity) >  max ( $this->config['SESSION_TIMEOUT_ADMIN'], 360)) $this->logout();
 		$this->last_activity = time();
 		if ($_REQUEST['action'] == 'LoadLostPassword') $this->LoadLostPassword();

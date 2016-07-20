@@ -117,7 +117,7 @@ class zencart {
 	$this->strXML .= xmlEntry('Version', '2.00');
 	$this->strXML .= xmlEntry('UserName', ZENCART_USERNAME);
 	$this->strXML .= xmlEntry('UserPassword', ZENCART_PASSWORD);
-	$this->strXML .= xmlEntry('Language', $_SESSION['language']);
+	$this->strXML .= xmlEntry('Language', $_SESSION['language']->language_code);
 	$this->strXML .= xmlEntry('Operation', 'ProductUpload');
 	$this->strXML .= xmlEntry('Action', 'InsertUpdate');
 	$this->strXML .= xmlEntry('Reference', 'Product Upload SKU: ' . $result->fields['sku']);
@@ -201,7 +201,7 @@ if (file_exists(DIR_FS_MODULES . 'zencart/custom/extra_product_attrs.php')) {
 	$this->strXML .= xmlEntry('Version', '2.00');
 	$this->strXML .= xmlEntry('UserName', ZENCART_USERNAME);
 	$this->strXML .= xmlEntry('UserPassword', ZENCART_PASSWORD);
-	$this->strXML .= xmlEntry('Language', $_SESSION['language']);
+	$this->strXML .= xmlEntry('Language', $_SESSION['language']->language_code);
 	$this->strXML .= xmlEntry('Operation', 'ProductSync');
 	$this->strXML .= xmlEntry('Action', 'Validate');
 	$this->strXML .= xmlEntry('Reference', 'Product Syncronizer');
@@ -227,7 +227,7 @@ if (file_exists(DIR_FS_MODULES . 'zencart/custom/extra_product_attrs.php')) {
 	$this->strXML .= xmlEntry('Version', '2.00');
 	$this->strXML .= xmlEntry('UserName', ZENCART_USERNAME);
 	$this->strXML .= xmlEntry('UserPassword', ZENCART_PASSWORD);
-	$this->strXML .= xmlEntry('Language', $_SESSION['language']);
+	$this->strXML .= xmlEntry('Language', $_SESSION['language']->language_code);
 	$this->strXML .= xmlEntry('Operation', 'ShipConfirm');
 	$this->strXML .= xmlEntry('Action', 'Confirm');
 	$this->strXML .= xmlEntry('Reference', 'Order Ship Confirmation');

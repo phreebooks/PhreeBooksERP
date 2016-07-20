@@ -151,14 +151,35 @@ $('#billing_address').datagrid({
 	sortOrder: 	"asc",
 	loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
 	view: detailview,
-    detailFormatter:function(index,row){
-        if (row == null) var row = {};
-        return AddressDetailFormatter(index, row, 'Billing');
+	detailFormatter:function(index,row){
+        return '<div class="ddv"></div>';
     },
-    onExpandRow: function(index,row){
-    	$('#billing_address').datagrid('selectRow', index);
-    	//$('#country_code').combobox('setValue', row.country_code);
-    },
+    onExpandRow: function(index, row){
+        var ddv = $(this).datagrid('getRowDetail',index).find('div.ddv');
+        ddv.panel({
+            border:false,
+            cache:true,
+            href:'index.php?action=editAddress',
+            loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
+            onLoad:function(){
+                $('#billing_address').datagrid('fixDetailRowHeight',index);
+                $('#billing_address').datagrid('selectRow',index);
+                $('#billing_address').datagrid('getRowDetail',index).find('form').form('load',row);
+            },
+            onBeforeLoad:function(param){
+        		console.log('loading the billing_address form');
+        	},
+        	onLoadSuccess:function(data){
+        		console.log('the loading the billing_address form was succesfull');
+        		$.messager.progress('close');
+        	},
+            onLoadError: function(){
+        		console.error('the loading of the billing_address form resulted in a error');
+        		$.messager.progress('close');
+        		$.messager.alert('<?php echo TEXT_ERROR?>','Load error for billing_address form');
+        	},
+        });
+    }
 });
 
 function AddressDetailFormatter(index, row, field){

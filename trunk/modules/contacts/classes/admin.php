@@ -483,6 +483,57 @@ class admin extends \core\classes\admin {
 		echo json_encode($temp);
 	}
 	
+	function editAddress (\core\classes\basis &$basis) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		?>
+		<form>
+		<?php echo html_hidden_field('address_id', '');?>
+		<table >
+			<tr>
+				<td align="right"><?php echo TEXT_NAME_OR_COMPANY ?></td>
+				<td><?php echo html_input_field("primary_name", $addres['primary_name'], 'size="49" maxlength="48"', true) ?></td>
+				<td align="right"><?php echo TEXT_TELEPHONE ?></td>
+				<td><?php echo html_input_field("telephone1", $addres['telephone1'], 'size="21" maxlength="20"', ADDRESS_BOOK_TELEPHONE1_REQUIRED)?></td>
+			</tr>
+			<tr>
+				<td align="right"><?php echo TEXT_ATTENTION . html_hidden_field("address[$address_type][address_id]", $addres['address_id'])?></td>
+				<td><?php echo html_input_field("contact", $addres['contact'], 'size="33" maxlength="32"', ADDRESS_BOOK_CONTACT_REQUIRED)?></td>
+				<td align="right"><?php echo TEXT_ALTERNATIVE_TELEPHONE_SHORT?></td>
+				<td><?php echo html_input_field("$address_type", $addres['telephone2'], 'size="21" maxlength="20"')?></td>
+			</tr>
+			<tr>
+				<td align="right"><?php echo TEXT_ADDRESS1?></td>
+				<td><?php echo html_input_field("address1" , $addres['address1'], 'size="33" maxlength="32"', ADDRESS_BOOK_ADDRESS1_REQUIRED)?></td>
+				<td align="right"><?php echo TEXT_FAX?></td>
+				<td><?php echo html_input_field("$address_type", $addres['telephone3'], 'size="21" maxlength="20"')?></td>
+			</tr>
+			<tr>
+				<td align="right"><?php echo TEXT_ADDRESS2?></td>
+				<td><?php echo html_input_field("address2", $addres['address2'], 'size="33" maxlength="32"', ADDRESS_BOOK_ADDRESS2_REQUIRED)?></td>
+				<td align="right"><?php echo TEXT_MOBILE_PHONE?></td>
+				<td><?php echo html_input_field("telephone4", $addres['telephone4'], 'size="21" maxlength="20"')?></td>
+			</tr>
+			<tr>
+				<td align="right"><?php echo TEXT_CITY_TOWN?></td>
+				<td><?php echo html_input_field("city_town", $addres['city_town'], 'size="25" maxlength="24"', ADDRESS_BOOK_CITY_TOWN_REQUIRED)?></td>
+				<td align="right"><?php echo TEXT_EMAIL?></td>
+				<td><?php echo html_input_field("email", $addres['email'], 'size="51" maxlength="50"')?></td>
+			</tr>
+			<tr>
+				<td align="right"><?php echo TEXT_STATE_PROVINCE?></td>
+				<td><?php echo html_input_field("state_province", $addres['state_province'], 'size="25" maxlength="24"', ADDRESS_BOOK_STATE_PROVINCE_REQUIRED)?></td>
+				<td align="right"><?php echo TEXT_WEBSITE?></td>
+				<td><?php echo html_input_field("website", $addres['website'], 'size="51" maxlength="50"')?></td>
+			</tr>
+			<tr>
+				<td align="right"><?php echo TEXT_POSTAL_CODE?></td>
+				<td><?php echo html_input_field("postal_code", $addres['postal_code'], 'size="11" maxlength="10"', ADDRESS_BOOK_POSTAL_CODE_REQUIRED)?></td>
+				<td align="right"><?php echo TEXT_COUNTRY?></td>
+				<td><?php echo html_pull_down_menu("country_code", $_SESSION['language']->get_countries_dropdown(), $addres['country_code'] ? $addres['country_code'] : COMPANY_COUNTRY)?></td>
+			</tr>
+		</table></form><?php
+	}
+	
 	/**
 	 * will create new contact depending on type
 	 * @param unknown $basis
@@ -629,7 +680,7 @@ class admin extends \core\classes\admin {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		if (! isset($basis->cInfo->type)) $basis->cInfo->type = 'c'; // default to customer
 		if (! isset($basis->cInfo->fill)) $basis->cInfo->fill = 'bill'; // default
-		if (! isset($basis->cInfo->journal_id)) throw new \core\classes\userException(TEXT_JOURNAL_ID_NOT_DEFINED); 
+		if (! isset($basis->cInfo->jID)) throw new \core\classes\userException(TEXT_JOURNAL_ID_NOT_DEFINED); 
 		switch ($basis->cInfo->type) {
 			case 'b': $contact = TEXT_BRANCH;	break;
 			case 'c': $contact = TEXT_CUSTOMER;	break;
@@ -679,7 +730,7 @@ class admin extends \core\classes\admin {
 				url:		"index.php?action=GetAllContacts",
 				queryParams: {
 					type: '<?php echo $basis->cInfo->type;?>',
-					journal_id: '<?php echo $basis->cInfo->journal_id;?>',
+					journal_id: '<?php echo $basis->cInfo->jID;?>',
 					dataType: 'json',
 	                contentType: 'application/json',
 	                async: false,
@@ -704,7 +755,7 @@ class admin extends \core\classes\admin {
 					    var ship_only = false;
 					    window.opener.ClearForm();
 					}
-					window.opener.ajaxOrderData(row.contactid, 0, <?php echo $basis->cInfo->journal_id;?>, false, ship_only);
+					window.opener.ajaxOrderData(row.contactid, 0, <?php echo $basis->cInfo->jID;?>, false, ship_only);
 					self.close();
 				},
 				remoteSort:	false,

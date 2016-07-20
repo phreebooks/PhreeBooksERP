@@ -16,6 +16,7 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/contacts/pages/main/template_detail.php
 //
+echo "<div data-options=\"region:'center'\">";
 echo "<form id='contacts' style='padding:10px 20px 10px 40px;' method='post' enctype='multipart/form-data'>";
 // include hidden fields
 echo html_hidden_field('action',        '') . chr(10);
@@ -34,17 +35,18 @@ function tab_sort($a, $b) {
 }
 usort($basis->cInfo->contact->tab_list, 'tab_sort');
 ?>
-<h1><?php echo $basis->page_title; ?></h1>
-<div class="easyui-tabs" id="contacts_tabs">
-<?php
-foreach ($basis->cInfo->contact->tab_list as $value) {
-	if (file_exists(DIR_FS_MODULES . "contacts/custom/pages/main/{$value['file']}.php")) {
-		include(DIR_FS_MODULES . "contacts/custom/pages/main/{$value['file']}.php");
-  	} else {
-		include(DIR_FS_MODULES . "contacts/pages/main/{$value['file']}.php");
-  	}
-}
-echo $basis->cInfo->contact->fields->extra_tab_html;// user added extra tabs
-?>
+		<h1><?php echo $basis->page_title; ?></h1>
+		<div class="easyui-tabs" id="contacts_tabs">
+		<?php
+		foreach ($basis->cInfo->contact->tab_list as $value) {
+			if (file_exists(DIR_FS_MODULES . "contacts/custom/pages/main/{$value['file']}.php")) {
+				include(DIR_FS_MODULES . "contacts/custom/pages/main/{$value['file']}.php");
+		  	} else {
+				include(DIR_FS_MODULES . "contacts/pages/main/{$value['file']}.php");
+		  	}
+		}
+		echo $basis->cInfo->contact->fields->extra_tab_html;// user added extra tabs
+		?>
+		</div>
+	</form>
 </div>
-</form>

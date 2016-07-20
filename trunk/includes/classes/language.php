@@ -194,7 +194,7 @@ class language {
 	function get_countries_dropdown($choose = false) {
 		$output = array();
 		if ($choose) $output[] = array('id' => '0', 'text' => TEXT_PLEASE_SELECT);
-		foreach ($this->countries as $iso3 => $value) $output[] = array('id' => $iso3, 'text' => $value->name);
+		foreach ($this->countries as $iso3 => $value) $output[] = array('id' => $iso3, 'text' => $value['name']);
 		return $output;
 	}
 	
