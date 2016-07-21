@@ -144,6 +144,7 @@ class basis {
 			$_SESSION['user']->loadConfig($this);
 			require(DIR_FS_MODULES . 'phreedom/config.php');
 			$this->currencies->load($this);
+			$this->observer->send_constants($this);
 		}catch (\Exception $e){
 			\core\classes\messageStack::add($e);
 			$_SESSION['user']->LoadLogIn();

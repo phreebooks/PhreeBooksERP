@@ -453,7 +453,7 @@ class admin extends \core\classes\admin {
 					</tr>
 	            	<tr>
 	            		<td style="width:80px;"><?php echo TEXT_DATE; ?></td>
-		        		<td><?php echo html_date_field('log_date' ); ?></td>
+		        		<td><?php echo html_date_time_field('log_date'); ?></td>
 	            	</tr>
 	            	<tr>
 	            		<td style="width:80px;"><?php echo TEXT_ACTION; ?></td>
@@ -689,29 +689,37 @@ class admin extends \core\classes\admin {
 			case 'j': $contact = TEXT_PROJECT;	break;
 			case 'v': $contact = TEXT_VENDOR;	break;
 		}
+		switch ($basis->cInfo->jID) {
+			case  6: $search_journal = 4;  break;
+			case  7: $search_journal = 6;  break;
+			case 12: $search_journal = 10; break;
+			case 13: $search_journal = 12; break;
+		}
 		?>
-	    <table id="dg" title="<?php echo TEXT_PLEASE_SELECT;?>" style="height:500px;padding:50px;">
-        	<thead>
-            	<tr>
-            		<th data-options="field:'short_name',sortable:true"><?php echo sprintf(TEXT_ARGS_ID, $contact);?></th>
-               		<th data-options="field:'name',sortable:true"><?php echo TEXT_NAME_OR_COMPANY?></th>
-            	   	<th data-options="field:'address1',sortable:true"><?php echo TEXT_ADDRESS1?></th>
-    	           	<th data-options="field:'city_town',sortable:true"><?php echo TEXT_CITY_TOWN?></th>
-        	       	<th data-options="field:'state_province',sortable:true"><?php echo TEXT_STATE_PROVINCE?></th>
-        	       	<th data-options="field:'postal_code',sortable:true"><?php echo TEXT_POSTAL_CODE?></th>
-        	       	<th data-options="field:'telephone1',sortable:true"><?php echo TEXT_TELEPHONE?></th>
-            	</tr>
-        	</thead>
-    	</table>
-    	<div id="toolbar">
-    		<span style="margin-left: 100px;"><?php echo  TEXT_SHOW_INACTIVE . ' :'?></span>
-        	<?php echo html_checkbox_field('contact_show_inactive', '1', false,'', 'onchange="doSearch()"' );?>
-        	<div style="float: right;">
-        		<span><?php echo TEXT_SEARCH?> : </span>
-    			<input class="easyui-searchbox" data-options="prompt:'<?php TEXT_PLEASE_INPUT_VALUE; ?>',searcher:doSearch" id="search_text" >
-    		</div>
-    	</div>
-    		
+		<div data-options="region:'center'">
+			<script type="text/javascript" src="includes/easyui/plugins/datagrid-detailview.js"></script>
+		    <table id="dg" title="<?php echo TEXT_PLEASE_SELECT;?>" style="height:500px;padding:50px;">
+	        	<thead>
+	            	<tr>
+	            		<th data-options="field:'short_name',sortable:true"><?php echo sprintf(TEXT_ARGS_ID, $contact);?></th>
+	               		<th data-options="field:'name',sortable:true"><?php echo TEXT_NAME_OR_COMPANY?></th>
+	            	   	<th data-options="field:'address1',sortable:true"><?php echo TEXT_ADDRESS1?></th>
+	    	           	<th data-options="field:'city_town',sortable:true"><?php echo TEXT_CITY_TOWN?></th>
+	        	       	<th data-options="field:'state_province',sortable:true"><?php echo TEXT_STATE_PROVINCE?></th>
+	        	       	<th data-options="field:'postal_code',sortable:true"><?php echo TEXT_POSTAL_CODE?></th>
+	        	       	<th data-options="field:'telephone1',sortable:true"><?php echo TEXT_TELEPHONE?></th>
+	            	</tr>
+	        	</thead>
+	    	</table>
+	    	<div id="toolbar">
+	    		<span style="margin-left: 100px;"><?php echo  TEXT_SHOW_INACTIVE . ' :'?></span>
+	        	<?php echo html_checkbox_field('contact_show_inactive', '1', false,'', 'onchange="doSearch()"' );?>
+	        	<div style="float: right;">
+	        		<span><?php echo TEXT_SEARCH?> : </span>
+	    			<input class="easyui-searchbox" data-options="prompt:'<?php TEXT_PLEASE_INPUT_VALUE; ?>',searcher:doSearch" id="search_text" >
+	    		</div>
+	    	</div>
+    	</div>	
 		<script type="text/javascript">
 			document.title = '<?php echo TEXT_CONTACT_SEARCH; ?>';
 	    	function doSearch(value){
@@ -746,7 +754,7 @@ class admin extends \core\classes\admin {
 					$.messager.alert('<?php echo TEXT_ERROR?>','Load error:'+arguments.responseText);
 				},
 				onDblClickRow: function(index , row){
-					console.log('a row in the datagrid was double clicked');
+					console.log('a contact in the datagrid was double clicked');
 					var fill = '<?php echo $basis->cInfo->fill?>';
 					if (fill == 'ship') {
 					    var ship_only = true;
@@ -764,11 +772,50 @@ class admin extends \core\classes\admin {
 				singleSelect:true,
 				sortName:	"short_name",
 				sortOrder: 	"asc",
-				loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
 				toolbar: 	"#toolbar",
+				loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
 				rowStyler: function(index,row){
 					if (row.inactive == '1') return 'background-color:pink;';
 				},
+                view: detailview,
+                detailFormatter:function(index,row){
+                    return '<div style="padding:2px"><table class="ddv"></table></div>';
+                },
+                onExpandRow: function(index,row){
+                    var ddv = $(this).datagrid('getRowDetail',index).find('table.ddv');
+                    ddv.datagrid({
+                    	url:		"index.php?action=loadOrders&contact_id="+row.contactid,
+        				queryParams: {
+        					journal_id: '<?php echo $search_journal?>',
+        					open_only: true,
+        					dataType: 'json',
+        			        contentType: 'application/json',
+        			        async: false,
+        				},
+                        fitColumns:true,
+                        singleSelect:true,
+                        loadMsg:"<?php echo TEXT_PLEASE_WAIT?>",
+                        height:'auto',
+                        onDblClickRow: function(index , row){
+                        	console.error('the order of the datagrid was double clicked');
+                        	window.opener.ClearForm();
+                        	window.opener.ajaxOrderData(0, row.id, <?php echo $basis->cInfo->jID;?>, true, false);
+                        	self.close();
+                        },
+                        columns:[[ 
+                            {field:'purchase_invoice_id',title:'<?php echo TEXT_ORDER_NUMBER?>',},
+                            {field:'total_amount',title:'<?php echo TEXT_AMOUNT?>',formatter: function(value,row,index){ return formatCurrency(value)},align:'right'},
+                        ]],
+                        onResize:function(){
+                            $('#dg').datagrid('fixDetailRowHeight',index);
+                        },
+                        onLoadSuccess:function(){
+                            setTimeout(function(){
+                                $('#dg').datagrid('fixDetailRowHeight',index);
+                            },0);
+                        },
+                    })
+                },
 			});
 		</script><?php 
 	}

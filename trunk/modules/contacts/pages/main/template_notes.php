@@ -15,7 +15,7 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/contacts/pages/main/template_notes.php
-//
+//@todo maybe move together with phreemail in crm module.
 
 ?>
 

@@ -7,6 +7,10 @@ class outputXml {
 		echo createXmlHeader();
 	}
 	
+	function send_constants($basis){
+		 
+	}
+	
 	public function update(\SplSubject $basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		global $messageStack;

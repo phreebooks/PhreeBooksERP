@@ -479,6 +479,8 @@ class admin extends \core\classes\admin {
 	
 	function loadOrders (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		if (empty($basis->cInfo->contact_id)) throw new \core\classes\userException(TEXT_CONTACT_ID_NOT_DEFINED); 
+		if (empty($basis->cInfo->journal_id)) throw new \core\classes\userException(TEXT_JOURNAL_ID_NOT_DEFINED); 
 		$raw_sql  = "SELECT id, journal_id, closed, closed_date, post_date, total_amount, purchase_invoice_id, purch_order_id FROM ".TABLE_JOURNAL_MAIN." WHERE";
 		$raw_sql .= ($basis->cInfo->only_open) ? " closed = '0' and " : "";
 		$raw_sql .= " journal_id in ({$basis->cInfo->journal_id}) and bill_acct_id = {$basis->cInfo->contact_id} ORDER BY post_date DESC";

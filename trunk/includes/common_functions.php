@@ -694,7 +694,27 @@ function get_dir_tree($dir, $root = true)  {
     	$field .=  "class='easyui-numberbox' data-options=\"precision:{$admin->currencies[DEFAULT_CURRENCY]->decimal_places},groupSeparator:'{$admin->currencies[DEFAULT_CURRENCY]->thousands_point}',decimalSeparator:'{$admin->currencies[DEFAULT_CURRENCY]->decimal_point}', value:'$value' $required\" />";
   		return $field;
   	}
-
+  	/**
+  	 * new function to create a date field
+  	 * @param $name
+  	 * @param $value
+  	 * @param $required bool
+  	 */
+  	
+  	function html_date_time_field($name, $value = '', $required = false){//@todo test and implement date format needs to be right
+  		if (strpos($name, '[]')) { // don't show id attribute if generic array
+  			$id = false;
+  		} else {
+  			$id = str_replace('[', '_', $name); // clean up for array inputs causing html errors
+  			$id = str_replace(']', '',  $id);
+  		}
+  		$field = "<input class='easyui-datetimebox' name='$name' ";
+  		if ($id)					$field .= " id='$id'";
+  		if (gen_not_null($value))	$field .= ' value="' . str_replace('"', '&quot;', $value) . '"';
+  		if ($required == true)		$field .= " required='required' ";
+  		$field .= " />";
+  		return $field;
+  	}
   	/**
   	 * new function to create a date field
   	 * @param $name
@@ -702,7 +722,7 @@ function get_dir_tree($dir, $root = true)  {
   	 * @param $required bool
   	 */
 
-  	function html_date_field($name, $value, $required = false){//@todo test and implement date format needs to be right
+  	function html_date_field($name, $value = '', $required = false){//@todo test and implement date format needs to be right
   		if (strpos($name, '[]')) { // don't show id attribute if generic array
 	  		$id = false;
 		} else {

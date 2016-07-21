@@ -68,6 +68,10 @@ class outputMobile {
        		echo "<link rel='stylesheet' type='text/css' href='$file' />";
        	}
     }
+    
+    function send_constants($basis){
+    	 
+    }
 
     public function print_menu(){
     	\core\classes\messageStack::debug_log("executing ".__METHOD__ );

@@ -61,6 +61,19 @@ class outputPage  {
     	ob_flush();
     }
     
+    function send_constants($basis){?>
+    	<script type="text/javascript">
+	    	var date_format         = '<?php echo DATE_FORMAT; ?>';
+	    	var date_delimiter      = '<?php echo DATE_DELIMITER; ?>';
+	    	var inactive_text_color = '#cccccc';
+	    	var decimal_places      = <?php  echo $basis->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']; ?>;
+	    	var decimal_precise     = <?php  echo $basis->currencies->currencies[DEFAULT_CURRENCY]['decimal_precise']; ?>;
+    	  	var decimal_point       = "<?php echo $basis->currencies->currencies[DEFAULT_CURRENCY]['decimal_point']; ?>"; // leave " for ' separator
+    	  	var thousands_point     = "<?php echo $basis->currencies->currencies[DEFAULT_CURRENCY]['thousands_point']; ?>";
+    	  	var formatted_zero      = "<?php echo $basis->currencies->format(0); ?>";
+    	</script> <?php 
+    }
+    
     function send_menu($basis){
     	if ($this->menu_send) return;
     	usort($basis->mainmenu, array($this,'sortByOrder'));
@@ -89,15 +102,7 @@ class outputPage  {
     		classname: '<?php echo MY_MENU=='left'?'ddsmoothmenu-v':'ddsmoothmenu';?>',
     		contentsource: "markup"
     	})
-		var date_format         = '<?php echo DATE_FORMAT; ?>';
-  		var date_delimiter      = '<?php echo DATE_DELIMITER; ?>';
-  		var inactive_text_color = '#cccccc';
-  		var decimal_places      = <?php  echo $basis->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']; ?>;
-  		var decimal_precise     = <?php  echo $basis->currencies->currencies[DEFAULT_CURRENCY]['decimal_precise']; ?>;
-  		var decimal_point       = "<?php echo $basis->currencies->currencies[DEFAULT_CURRENCY]['decimal_point']; ?>"; // leave " for ' separator
-  		var thousands_point     = "<?php echo $basis->currencies->currencies[DEFAULT_CURRENCY]['thousands_point']; ?>";
-  		var formatted_zero      = "<?php echo $basis->currencies->format(0); ?>";
-    	</script> 
+		</script>
     	<?php 
     	ob_flush();
     	$this->menu_send = true;

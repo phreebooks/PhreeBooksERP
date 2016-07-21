@@ -6,7 +6,8 @@ class outputJson {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		header('Content-Type: application/json');
 	}
-	
+	function send_constants($basis){	 
+	}
 	function send_menu($basis){
 		echo '<!-- json menu-->';
 	}
