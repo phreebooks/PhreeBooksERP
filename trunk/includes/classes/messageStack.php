@@ -26,9 +26,18 @@ class messageStack {
 
     static function add($message, $type  = 'error') {
     	if (!defined('PATH_TO_MY_FILES')) define('PATH_TO_MY_FILES','my_files/');
-//    	if ($type == '') $type = 'error';
+    	$title = constant("TEXT_".strtoupper($type));
     	echo "<script type='text/javascript'>";
-    	echo "MessageStackAdd('". gen_js_encode($message)."', '{$type}');";
+    	if ($type == 'success') {
+			echo "console.info('messageStack = $message');";
+    		echo "$.messager.show({title:'$title',msg:'$message',icon:'info'});";
+    	} else if ($type == 'caution' || $type == 'warning') {
+    		echo "console.info('messageStack = $message');";
+    		echo "$.messager.show({title:'$title',msg:'$message',icon:'warning'});";
+    	} else {
+    		echo "console.error('messageStack = $message');";
+    		echo "$.messager.alert('$title','$message','error');";
+    	}
     	echo "</script>";
       	if (DEBUG) error_log("messageStack error:".$message . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."errors.log");
 	  	return true;

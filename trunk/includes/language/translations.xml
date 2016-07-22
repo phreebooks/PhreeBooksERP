@@ -237,6 +237,10 @@
     <nl_nl>Klant</nl_nl>
     <pt_br>Clientes</pt_br>
   </translation>
+  <translation xml:id="TEXT_ERROR">
+  	<en_us>Error</en_us>
+  	<nl_nl>Fout</nl_nl>
+  </translation>
   <translation xml:id="ACT_ERROR_CANNOT_DELETE">
     <fr_fr>Impossible de supprimer ce compte car un enregistrement de journal contient ce compte</fr_fr>
     <hu_hu>Nem tudom törölni ezt a fiókot a journal record contains this account</hu_hu>

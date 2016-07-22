@@ -76,34 +76,11 @@ class outputPage  {
     
     function send_menu($basis){
     	if ($this->menu_send) return;
-    	usort($basis->mainmenu, array($this,'sortByOrder'));
+    	uasort($basis->mainmenu, array($this,'sortByOrder'));
     	echo '<!-- Pull Down Menu -->' . chr(10);
-    	switch (MY_MENU) {
-    		case 'left': echo '<div id="smoothmenu" class="ddsmoothmenu-v" data-options="region:\'west\'" style="float:left">'.chr(10); break;
-    		case 'top':
-    		default:     echo '<div id="smoothmenu" class="ddsmoothmenu" data-options="region:\'north\'" style="overflow:hidden">'.chr(10); break;
-    	}
-    	echo '  <ul>' . chr(10);
-    	foreach($basis->mainmenu as $menu_item)	$menu_item->output();
-    	echo '  </ul>' . chr(10);
-    	echo '</div>'.chr(10); ?>
-    	<link rel="stylesheet" type="text/css" href="<?php echo DIR_WS_THEMES.'css/'.MY_COLORS.'/ddsmoothmenu.css'; ?>" />
-    	<script type="text/javascript" src="themes/default/ddsmoothmenu.js">
-    	/***********************************************
-    	 * Smooth Navigational Menu- (c) Dynamic Drive DHTML code library (www.dynamicdrive.com)
-    	* This notice MUST stay intact for legal use
-    	* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
-    	***********************************************/
-    	</script>
-    	<script type="text/javascript">
-   		ddsmoothmenu.init({
-  		mainmenuid: "smoothmenu",
-    		orientation: '<?php echo MY_MENU=='left'?'v':'h';?>',
-    		classname: '<?php echo MY_MENU=='left'?'ddsmoothmenu-v':'ddsmoothmenu';?>',
-    		contentsource: "markup"
-    	})
-		</script>
-    	<?php 
+    	echo '<div id="headermenu" class="easyui-linkbutton" data-options="region:\'north\'" style="margin-bottom:5px">'; 
+    	foreach($basis->mainmenu as $key => $menu_item)	$menu_item->output($key, true);
+    	echo '</div>';
     	ob_flush();
     	$this->menu_send = true;
     }
@@ -152,7 +129,7 @@ class outputPage  {
 	public function send_footer($basis){
     	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
        	$image_path = defined('FOOTER_LOGO') ? FOOTER_LOGO : (DIR_WS_ADMIN . 'modules/phreedom/images/phreesoft_logo.png');
-       	echo '<div style="clear:both;text-align:center;font-size:9px">';
+       	echo '<div data-options="region:\'south\'" style="overflow:hidden,text-align:center;font-size:9px">';
        	echo "<a href='http://www.PhreeSoft.com' target='_blank'>". html_image($image_path, TEXT_PHREEDOM_INFO, NULL, '64') ."</a><br />";
        	echo COMPANY_NAME.' | '.TEXT_ACCOUNTING_PERIOD.': '.CURRENT_ACCOUNTING_PERIOD.' | '.TEXT_PHREEDOM_INFO." ({$basis->classes['phreedom']->version}) ";
        	if ($basis->module <> 'phreedom') echo "({$basis->module} {$basis->classes[$basis->module]->version}) ";

@@ -100,8 +100,8 @@ class admin extends \core\classes\admin {
 			  KEY ref_id (ref_id)
 			) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
 	    );
-		$this->mainmenu["tools"]->submenu ["shipping"]  = new \core\classes\menuItem (5, sprintf(TEXT_MANAGER_ARGS, TEXT_SHIPPING),	'module=shipping&amp;page=ship_mgr',   SECURITY_ID_SHIPPING_MANAGER, 'MODULE_SHIPPING_STATUS');
-		$this->mainmenu["company"]->submenu ["configuration"]->submenu ["shipping"]  = new \core\classes\menuItem (sprintf(TEXT_MODULE_ARGS, TEXT_SHIPPING), sprintf(TEXT_MODULE_ARGS, TEXT_SHIPPING),	'module=shipping&amp;page=admin',   SECURITY_ID_CONFIGURATION, 'MODULE_SHIPPING_STATUS');
+		$this->mainmenu["tools"]->submenu ["shipping"]  = new \core\classes\menuItem (5, sprintf(TEXT_MANAGER_ARGS, TEXT_SHIPPING),	'module=shipping&amp;page=ship_mgr',   SECURITY_ID_SHIPPING_MANAGER, MODULE_SHIPPING_STATUS);
+		$this->mainmenu["company"]->submenu ["configuration"]->submenu ["shipping"]  = new \core\classes\menuItem (sprintf(TEXT_MODULE_ARGS, TEXT_SHIPPING), sprintf(TEXT_MODULE_ARGS, TEXT_SHIPPING),	'module=shipping&amp;page=admin',   SECURITY_ID_CONFIGURATION);
 	    parent::__construct();
 	}
 

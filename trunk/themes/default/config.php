@@ -17,7 +17,7 @@
 //  Path: /themes/default/config.php
 //
 $theme = array('name' => 'Cool Blue (Default)'); // theme name for display purposes
-$theme_menu_options = array( // available menu location options
+$theme_menu_options = array( // available menu location options @todo remove
   'top' => TEXT_TOP,
   'left'=> TEXT_LEFT,
 );
@@ -34,7 +34,7 @@ if (!function_exists('js_calendar_init')) {
     return 'addLoadEvent(function() { $("#'.$properties['fieldname'].'").datepicker('.$opt.'); });';
   }
 }
-if (!function_exists('html_calendar_field')) {
+if (!function_exists('html_calendar_field')) { //@todo remove
   function html_calendar_field($properties = NULL) {
     return html_input_field($properties['fieldname'], $properties['default']);
   }

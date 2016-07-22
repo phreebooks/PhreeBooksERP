@@ -211,7 +211,7 @@ class admin extends \core\classes\admin {
 		}
 		$this->mainmenu["customers"]->submenu ["pricesheet"] 	= new \core\classes\menuItem (65, 	sprintf(TEXT_ARGS_PRICE_SHEETS, TEXT_CUSTOMER),		'module=inventory&amp;page=price_sheets&amp;type=c&amp;list=1',		 SECURITY_ID_PRICE_SHEET_MANAGER);
 		$this->mainmenu["vendors"]->submenu ["pricesheet"]	 	= new \core\classes\menuItem (65, 	sprintf(TEXT_ARGS_PRICE_SHEETS, TEXT_VENDOR),		'module=inventory&amp;page=price_sheets&amp;type=v&amp;list=1',		 SECURITY_ID_PRICE_SHEET_MANAGER);
-		$this->mainmenu["company"]->submenu ["configuration"]->submenu ["inventory"]  = new \core\classes\menuItem (sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY), sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY),	'module=inventory&amp;page=admin',   SECURITY_ID_CONFIGURATION);
+		$this->mainmenu["company"]->submenu ["configuration"]->submenu ["inventory"]  = new \core\classes\menuItem (sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY), sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY),	'module=inventory&amp;page=admin',    SECURITY_ID_CONFIGURATION);
 
 	    parent::__construct();
 	}

@@ -32,8 +32,7 @@ class admin extends \core\classes\admin {
 	  	  'phreedom'   => 3.6,
 	  	  'phreebooks' => 3.6,
 		);
-		$this->mainmenu["company"]->submenu ["configuration"]->submenu ["payment"]  = new \core\classes\menuItem (TEXT_PAYMENT_MODULE, TEXT_PAYMENT_MODULE,	'module=payment&amp;page=admin', SECURITY_ID_CONFIGURATION);
-		$this->mainmenu["company"]->submenu ["configuration"]->submenu ["payment"]->required_module = 'MODULE_PAYMENT_STATUS';
+		$this->mainmenu["company"]->submenu ["configuration"]->submenu ["payment"]  = new \core\classes\menuItem (TEXT_PAYMENT_MODULE, TEXT_PAYMENT_MODULE,	'module=payment&amp;page=admin',    SECURITY_ID_CONFIGURATION);
 		parent::__construct();
   	}
 }

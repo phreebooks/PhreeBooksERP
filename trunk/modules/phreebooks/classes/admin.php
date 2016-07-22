@@ -312,7 +312,7 @@ class admin extends \core\classes\admin {
 		$this->mainmenu["gl"]->submenu ["search"]    		= new \core\classes\menuItem (15, 	TEXT_SEARCH,				'module=phreebooks&amp;page=search&amp;journal_id=-1',	 				SECURITY_ID_SEARCH,										'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["gl"]->submenu ["budget"]    		= new \core\classes\menuItem (50, 	TEXT_BUDGETING,				'module=phreebooks&amp;page=budget',				 					SECURITY_ID_GL_BUDGET,									'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["gl"]->submenu ["admin_tools"]		= new \core\classes\menuItem (70, 	TEXT_ADMINISTRATIVE_TOOLS,	'module=phreebooks&amp;page=admin_tools',				 				SECURITY_ID_GEN_ADMIN_TOOLS,							'MODULE_PHREEBOOKS_STATUS');
-		$this->mainmenu["company"]->submenu ["configuration"]->submenu ["phreebooks"]  = new \core\classes\menuItem (sprintf(TEXT_MODULE_ARGS, TEXT_PHREEBOOKS), sprintf(TEXT_MODULE_ARGS, TEXT_PHREEBOOKS),	'module=phreebooks&amp;page=admin',   SECURITY_ID_CONFIGURATION, 'MODULE_PHREEBOOKS_STATUS');		
+		$this->mainmenu["company"]->submenu ["configuration"]->submenu ["phreebooks"]  = new \core\classes\menuItem (sprintf(TEXT_MODULE_ARGS, TEXT_PHREEBOOKS), sprintf(TEXT_MODULE_ARGS, TEXT_PHREEBOOKS),	'module=phreebooks&amp;page=admin',    SECURITY_ID_CONFIGURATION);		
 		parent::__construct ();
 	}
 

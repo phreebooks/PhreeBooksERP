@@ -149,7 +149,7 @@ class admin extends \core\classes\admin {
 		$this->mainmenu["employees"]->submenu ["contact"] 	= new \core\classes\menuItem (10, 	TEXT_EMPLOYEES,		'action=LoadContactMgrPage&amp;type=e', SECURITY_ID_MAINTAIN_EMPLOYEES);
 		$this->mainmenu["company"]->submenu   ["branches"] 	= new \core\classes\menuItem (10, 	TEXT_BRANCHES,		'action=LoadContactMgrPage&amp;type=b', SECURITY_ID_MAINTAIN_BRANCH, 'ENABLE_MULTI_BRANCH');
 		$this->mainmenu["customers"]->submenu ["projects"] 	= new \core\classes\menuItem (60, 	TEXT_PROJECTS,		'action=LoadContactMgrPage&amp;type=j', SECURITY_ID_MAINTAIN_PROJECTS);
-		$this->mainmenu["company"]->submenu ["configuration"]->submenu ["inventory"]  = new \core\classes\menuItem (sprintf(TEXT_MODULE_ARGS, TEXT_CONTACTS), sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY),	'module=contacts&amp;page=admin',   SECURITY_ID_CONFIGURATION);
+		$this->mainmenu["company"]->submenu ["configuration"]->submenu ["contacts"]  = new \core\classes\menuItem (sprintf(TEXT_MODULE_ARGS, TEXT_CONTACTS), sprintf(TEXT_MODULE_ARGS, TEXT_CONTACTS),	'module=contacts&amp;page=admin');
 	    parent::__construct();
 	}
 
@@ -226,6 +226,7 @@ class admin extends \core\classes\admin {
 			case 'v': $contact = TEXT_VENDOR;	break;
 		}
 		?>
+		<div data-options="region:'center'">
 	    <table id="dg" title="<?php echo sprintf(TEXT_MANAGER_ARGS, $contact);?>" style="height:500px;padding:50px;">
         	<thead>
             	<tr>
@@ -259,7 +260,7 @@ class admin extends \core\classes\admin {
 				<a class="easyui-linkbutton" iconCls="icon-help" plain="true" onclick="loadHelp()"><?php TEXT_HELP?></a>
 			</div>
 		</div>
-    		
+    	</div>	
 		<script type="text/javascript">
 			document.title = '<?php echo sprintf(BOX_STATUS_MGR, $contact); ?>';
 	    	function doSearch(value){

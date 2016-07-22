@@ -36,19 +36,31 @@ class menuItem {
 		$this->required_module = $constant;
 	}
 	
-	function output(){
+	function output($key, $first_row = false){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__. print_r($this,true) );
 		if ($this->show() == false) return ;
 		if (is_array($this->submenu)) {
-			usort($this->submenu, array($this,'sortByOrder'));
-			echo "  <li><a href='".html_href_link(FILENAME_DEFAULT, $this->link, 'SSL')."' {$this->params}> $this->icon $this->text</a>" .chr(10);
-			echo '    <ul>';
-			foreach($this->submenu as $key => $menu_item) $menu_item->output();
-			echo '    </ul>';
-			echo '  </li>';
+			uasort ($this->submenu, array($this,'sortByOrder'));
+			if($first_row){
+				echo "  <a class='easyui-menubutton' data-options=\"menu:'#{$key}'\" href='".html_href_link(FILENAME_DEFAULT, $this->link, 'SSL')."' {$this->params}> $this->icon $this->text</a>";
+				echo "<div id='$key'>";
+				foreach($this->submenu as $subkey => $menu_item) $menu_item->output($key.$subkey);
+				echo '</div>';
+			}else{
+				echo "<div id='$key' href='".html_href_link(FILENAME_DEFAULT, $this->link, 'SSL')."' {$this->params}> <span>$this->icon $this->text</span><div>";
+				foreach($this->submenu as $subkey => $menu_item) $menu_item->output($key.$subkey);
+				echo '</div></div>';
+			}
 		}else{
-			echo "  <li><a href='".html_href_link(FILENAME_DEFAULT, $this->link, 'SSL')."' {$this->params}>";
-			if ($this->text == TEXT_HOME && ENABLE_ENCRYPTION && strlen($_SESSION['ENCRYPTION_VALUE']) > 0) echo html_icon('emblems/emblem-readonly.png', TEXT_ENCRYPTION_KEY_IS_SET, 'small');
-			echo "$this->icon $this->text</a>  </li>".chr(10);
+			if($first_row){
+				echo "  <a class='easyui-linkbutton' href='".html_href_link(FILENAME_DEFAULT, $this->link, 'SSL')."' {$this->params}>";
+				if ($this->text == TEXT_HOME && ENABLE_ENCRYPTION && strlen($_SESSION['ENCRYPTION_VALUE']) > 0) echo html_icon('emblems/emblem-readonly.png', TEXT_ENCRYPTION_KEY_IS_SET, 'small');
+				echo "$this->icon $this->text</a>".chr(10);
+			}else{
+				echo "  <div href='".html_href_link(FILENAME_DEFAULT, $this->link, 'SSL')."' {$this->params}>";
+				if ($this->text == TEXT_HOME && ENABLE_ENCRYPTION && strlen($_SESSION['ENCRYPTION_VALUE']) > 0) echo html_icon('emblems/emblem-readonly.png', TEXT_ENCRYPTION_KEY_IS_SET, 'small');
+				echo "$this->icon $this->text</div>".chr(10);
+			}
 		}
 	}
 	

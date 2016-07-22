@@ -346,6 +346,7 @@ class admin extends \core\classes\admin {
 		echo html_hidden_field('action', '') . chr(10);
 		echo html_hidden_field('dashboard_id', '') . chr(10);
 		?>
+		<div data-options="region:'center'">
 		<script type='text/javascript'>	document.title = '<?php echo COMPANY_NAME.' - '.TEXT_PHREEBOOKS_ERP; ?>';</script>
 		<div><a href="<?php echo html_href_link(FILENAME_DEFAULT, 'amp;mID=' . $basis->cInfo->menu_id, 'SSL'); ?>"><?php echo TEXT_ADD_DASHBOARD_ITEMS_TO_THIS_PAGE; ?></a></div>
 		<table style="width:100%;margin-left:auto;margin-right:auto;">
@@ -381,7 +382,7 @@ class admin extends \core\classes\admin {
 		      </div>
 		    </td>
 		  </tr>
-		</table><?php
+		</table></div><?php
 		$basis->observer->send_footer($basis);
 	}
 

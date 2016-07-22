@@ -54,33 +54,6 @@ function loadHelp(){
 	alert('help Function');//@todo write help function
 }
 
-function MessageStackAdd(message, type){
-	if ( ! document.getElementById("messageStack")) {
-	    var tbl = document.createElement('table');
-	    tbl.setAttribute('id', 'messageStack');
-	    tbl.setAttribute('style', "border-collapse:collapse;width:100%");
-		if ( !document.getElementById('smoothmenu')) {
-			document.body.insertBefore(tbl, document.body.childNodes[0]);
-		}else{
-			document.getElementById('smoothmenu').appendChild(tbl);
-		}
-	}
-	var newRow = document.getElementById('messageStack').insertRow(-1);
-	td = newRow.insertCell();
-	td.setAttribute('width',"100%");
-	td.appendChild(document.createTextNode(message));
-	if (type == 'success') {
-		console.info("messageStack = " + message);
-		td.setAttribute('class',"ui-state-active");
-  	} else if (type == 'caution' || type == 'warning') {
-  		console.warn("messageStack = " + message);
-  		td.setAttribute('class',"ui-state-highlight");
-  	} else {
-  		console.error("messageStack = " + message);
-  		td.setAttribute('class',"ui-state-error");
-  	}
-}
-
 // BOS - set up ajax session refresh timer to stay logged in if the browser is active
 var sessionClockID = 0; // start a session clock to stay logged in
 function refreshSessionClock() {
