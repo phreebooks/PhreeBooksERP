@@ -179,9 +179,9 @@ class basis {
 				if (!isset($this->mainmenu [$key])) $this->mainmenu [$key] = $menu;
 				if (is_array($menu->submenu)) {
 					foreach ($menu->submenu as $subkey => $submenu) {
-						if (!isset($this->mainmenu [$key]->submenu [$subkey])) $this->mainmenu [$key]->submenu [$subkey] = $submenu;
-						if (is_array($this->mainmenu [$key]->submenu [$subkey])) {
-							foreach ($this->mainmenu [$key]->submenu [$subkey] as $subsubkey => $subsubmenu) {
+						if (!isset(  $this->mainmenu [$key]->submenu [$subkey])) $this->mainmenu [$key]->submenu [$subkey] = $submenu;
+						if (is_array($submenu->submenu)) {
+							foreach ($submenu->submenu as $subsubkey => $subsubmenu) {
 								if (!isset($this->mainmenu [$key]->submenu [$subkey]->submenu [$subsubkey])) $this->mainmenu [$key]->submenu [$subkey]->submenu [$subsubkey] = $subsubmenu;
 							}
 						}

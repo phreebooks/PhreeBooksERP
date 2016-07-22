@@ -127,7 +127,7 @@ class outputPage  {
 	public function send_footer($basis){
     	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
        	$image_path = defined('FOOTER_LOGO') ? FOOTER_LOGO : (DIR_WS_ADMIN . 'modules/phreedom/images/phreesoft_logo.png');
-       	echo '<div data-options="region:\'south\'" style="overflow:hidden,text-align:center;font-size:9px">';
+       	echo '<div data-options="region:\'south\'" style="text-align:center;font-size:9px;height:95px">';
        	echo "<a href='http://www.PhreeSoft.com' target='_blank'>". html_image($image_path, TEXT_PHREEDOM_INFO, NULL, '64') ."</a><br />";
        	echo COMPANY_NAME.' | '.TEXT_ACCOUNTING_PERIOD.': '.CURRENT_ACCOUNTING_PERIOD.' | '.TEXT_PHREEDOM_INFO." ({$basis->classes['phreedom']->version}) ";
        	if ($basis->module <> 'phreedom') echo "({$basis->module} {$basis->classes[$basis->module]->version}) ";
