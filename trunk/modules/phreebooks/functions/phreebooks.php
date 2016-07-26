@@ -47,14 +47,14 @@ function modify_account_history_records($id, $add_acct = true) {
   	$max_period = $result['period'];
   	if (!$max_period) die ('table: '.TABLE_ACCOUNTING_PERIODS.' is not set, run setup.');
   	if ($add_acct) {
-    	$result = $admin->DataBase->query("select heading_only from " . TABLE_CHART_OF_ACCOUNTS . " where id = '" . $id . "'");
+    	$result = $admin->DataBase->query("select heading_only from " . TABLE_CHART_OF_ACCOUNTS . " where id = '{$id}'");
 		if ($result['heading_only'] <> '1') {
 	  		for ($i = 0, $j = 1; $i < $max_period; $i++, $j++) {
-	    		$admin->DataBase->query("insert into " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " (account_id, period) values('" . $id . "', '" . $j . "')");
+	    		$admin->DataBase->query("insert into " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " (account_id, period) values('{$id}', '{$j}')");
 	  		}
 		}
   	} else {
-		$result = $admin->DataBase->exec("delete from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '" . $id . "'");
+		$result = $admin->DataBase->exec("delete from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " where account_id = '{$id}'");
   	}
 }
 

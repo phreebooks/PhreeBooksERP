@@ -55,15 +55,8 @@ switch ($_REQUEST['action']) {
 		  $encoded_prices[] = $level_data;
 		}
 		$price_levels = implode(';', $encoded_prices);
-		$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY_SPECIAL_PRICES . "
-			where inventory_id = " . $id . " and price_sheet_id = " . $sheet_id);
-		if ($result->fetch(\PDO::FETCH_NUM) == 0) {
-		  $admin->DataBase->query("insert into " . TABLE_INVENTORY_SPECIAL_PRICES . "
-			set inventory_id = " . $id . ", price_sheet_id = " . $sheet_id . ", price_levels = '" . $price_levels . "'");
-		} else {
-		  $admin->DataBase->query("update " . TABLE_INVENTORY_SPECIAL_PRICES . " set price_levels = '" . $price_levels . "'
-			where inventory_id = " . $id . " and price_sheet_id = " . $sheet_id);
-		}
+		$admin->DataBase->query("INSERT INTO " . TABLE_INVENTORY_SPECIAL_PRICES . "
+			SET id = {$prices_id}, inventory_id = {$id}, price_sheet_id = {$sheet_id}, price_levels = '{$price_levels}' ON DUPLICATE KEY UPDATE price_levels = '{$price_levels}'");
 		$sql_data_array = array();
 		if($type == 'v')  $sql_data_array ['price_sheet_v'] = $_POST['sheet_name_'.$tab_id ];
 		else 			  $sql_data_array ['price_sheet']   = $_POST['sheet_name_'.$tab_id ];

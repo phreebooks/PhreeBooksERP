@@ -24,7 +24,7 @@ class admin extends \core\classes\admin {
 	public $installed	= true;
 	public $text;
 	public $sort_order  = 1;
-	public $version		= '4.0';
+	public $version		= '4.0.2';
 
 	function __construct() {
 		// Load configuration constants for this module, must match entries in admin tabs
@@ -280,6 +280,16 @@ class admin extends \core\classes\admin {
 			}
 			$basis->DataBase->exec("DELETE from ".TABLE_USERS_PROFILES . " WHERE module_id != ''");
 			$basis->DataBase->exec("ALTER TABLE ".TABLE_USERS_PROFILES . " DROP module_id");
+	  	}
+	  	if (version_compare($this->status, '4.0.2', '<') ) {
+	  		if($basis->DataBase->field_exists(TABLE_CONFIGURATION, 'configuration_id')){
+	  			$basis->DataBase->exec ("ALTER TABLE ".TABLE_CONFIGURATION." DROP `configuration_id`;");
+	  		}
+	  		try{
+	  			$basis->DataBase->exec ("ALTER TABLE ".TABLE_CONFIGURATION." ADD PRIMARY KEY(configuration_key);");
+	  		}catch(Exception $e){
+	  			//just to be sure.
+	  		}
 	  	}
 	}
 

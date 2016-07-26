@@ -186,6 +186,26 @@ class user {
 		return;
 	}
 	
+	/**
+	 * update config key for current session.
+	 * @param string $constant
+	 * @param unknown $value
+	 */
+	function updateConfig($constant, $value){
+		if (!$constant) throw new \core\classes\userException("contant isn't defined for value: $value");
+		$this->config[$constant] = $value;
+		define($constant,$value);
+	}
+	
+	/**
+	* remove config key for current session.
+	* @param string $constant
+	*/
+	function removeConfig($constant){
+		if (!$constant) throw new \core\classes\userException("contant isn't defined");
+		unset($this->config[$constant]);
+	}
+	
 	function get_ip_address() {
 		if (isset($_SERVER)) {
 			if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {

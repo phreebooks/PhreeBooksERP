@@ -112,7 +112,7 @@ switch ($_REQUEST['action']) {
 	  'sheet_name'     => $result['sheet_name'],
 	  'type'           => $type,
 	  'revision'       => $result['revision'] + 1,
-	  'effective_date' => $date->modify("+1 day")->format("Y-m-d");
+	  'effective_date' => $date->modify("+1 day")->format("Y-m-d"),
 	  'default_sheet'  => $result['default_sheet'],
 	  'default_levels' => $result['default_levels'],
 	);
@@ -122,9 +122,9 @@ switch ($_REQUEST['action']) {
 	$admin->DataBase->exec("UPDATE ".TABLE_PRICE_SHEETS." SET expiration_date='".$date->format('Y-m-d')."' WHERE id=$old_id");
 	// Copy special pricing information to new sheet
 	$levels = $admin->DataBase->query("select inventory_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where price_sheet_id = $old_id");
-	while (!$levels->EOF){
-	  $admin->DataBase->query("insert into " . TABLE_INVENTORY_SPECIAL_PRICES . " set inventory_id = $levels['inventory_id'],
-	  price_sheet_id = $id, price_levels = '$levels['price_levels']'");
+	while (!$levels->EOF){//@todo
+	  $admin->DataBase->query("insert into " . TABLE_INVENTORY_SPECIAL_PRICES . " set inventory_id = {$levels['inventory_id']},
+	  price_sheet_id = $id, price_levels = '{$levels['price_levels']}'");
 	  $levels->MoveNext();
 	}
 	gen_add_audit_log(TEXT_PRICE_SHEET. " - "  . TEXT_REVISE, $result['sheet_name'] . ' Rev. ' . $old_rev . ' => ' . ($old_rev + 1));

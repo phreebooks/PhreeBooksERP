@@ -245,7 +245,7 @@ class contacts {
     		$keys = array_keys($sql_data_array);
     		$fields = '`'.implode('`, `',$keys).'`';
     		$placeholder = substr(str_repeat('?,',count($keys),0,-1));
-    		$sql = $admin->DataBase->prepare("INSERT INTO ".TABLE_CONTACTS." ($fields) VALUES ($placeholder)");
+    		$sql = $admin->DataBase->prepare("INSERT INTO ".TABLE_CONTACTS." ($fields) VALUES ($placeholder) ON DUPLICATE KEY UPDATE ");//@todo
     		$sql->execute(get_object_vars($this));
 //        	db_perform(TABLE_CONTACTS, $sql_data_array, 'insert');
         	$this->id = $basis->DataBase->lastInsertId('id');
