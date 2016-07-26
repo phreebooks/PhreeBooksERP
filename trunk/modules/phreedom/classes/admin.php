@@ -382,7 +382,9 @@ class admin extends \core\classes\admin {
 		      </div>
 		    </td>
 		  </tr>
-		</table></div><?php
+		</table>
+		</div>
+		<?php
 		$basis->observer->send_footer($basis);
 	}
 

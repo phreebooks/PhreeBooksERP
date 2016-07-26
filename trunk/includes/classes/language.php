@@ -52,10 +52,16 @@ class language {
 
 	public function __wakeup() {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__);
-		if( isset($_REQUEST['language']) && $_REQUEST['language'] != '') $this->language_code = $_REQUEST['language'];
 		if (sizeof($this->languages) == 0) $this->get_languages();
-		if (sizeof($this->phrases)   == 0) $this->get_translations();
-		if (sizeof($this->countries) == 0) $this->get_countries();
+		if( isset($_REQUEST['language']) && $_REQUEST['language'] != '') {
+			$this->language_code = $_REQUEST['language'];
+			$this->get_translations();
+			$this->get_countries();
+			
+		}else{
+			if (sizeof($this->phrases)   == 0) $this->get_translations();
+			if (sizeof($this->countries) == 0) $this->get_countries();
+		}
 		foreach ($this->phrases as $key => $value ) define($key, $value);
 		
 	}

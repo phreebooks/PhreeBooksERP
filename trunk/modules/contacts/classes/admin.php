@@ -583,6 +583,7 @@ class admin extends \core\classes\admin {
 		$basis->page_title  = "{$basis->cInfo->contact->page_title_edit} - ({$basis->cInfo->contact->short_name}) {$basis->cInfo->contact->address[m][0]->primary_name}";
 		include(DIR_FS_MODULES . "contacts/pages/main/js_include.php");
 		include(DIR_FS_MODULES . "contacts/pages/main/template_detail.php");
+		$basis->observer->send_footer($basis);
 	}
 
 	

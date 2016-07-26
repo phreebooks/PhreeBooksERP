@@ -222,8 +222,8 @@ class user {
 		?>
 		<div style="margin-left:25%;margin-right:25%;margin-top:50px;">
 		<?php echo html_hidden_field('previous', $_SERVER['QUERY_STRING'])?>
-			  <table class="ui-widget">
-		        <thead class="ui-widget-header">
+			  <table>
+		        <thead class="panel-header">
 		        <tr height="70">
 		          <th style="text-align:right"><img src="modules/phreedom/images/phreesoft_logo.png" alt="Phreedom Business Toolkit" height="50" /></th>
 		        </tr>
@@ -287,8 +287,8 @@ class user {
 		echo html_form('pw_lost', FILENAME_DEFAULT, 'action=SendLostPassWord') . chr(10);
 		?>
 		<div style="margin-left:25%;margin-right:25%;margin-top:50px;">
-		<table class="ui-widget" style="border-collapse:collapse;width:100%">
-		 <thead class="ui-widget-header">
+		<table style="border-collapse:collapse;width:100%">
+		 <thead class="panel-header">
 		   <tr height="70"><th colspan="2" align="right"><img src="modules/phreedom/images/phreesoft_logo.png" alt="Phreedom Business Toolkit" height="50" /></th></tr>
 		 </thead>
 		 <tbody class="ui-widget-content">

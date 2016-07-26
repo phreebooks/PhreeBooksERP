@@ -277,7 +277,7 @@
     <iso2>BV</iso2>
     <translations>
       <en_us>Bouvet Island</en_us>
-      <nl_nl>Bouvet Island</nl_nl>
+      <nl_nl>Bouveteiland</nl_nl>
     </translations>
   </country>
   <country xml:id="BWA">
@@ -309,7 +309,7 @@
     <iso2>CC</iso2>
     <translations>
       <en_us>Cocos (Keeling) Islands</en_us>
-      <nl_nl>Cocos (Keeling) Islands</nl_nl>
+      <nl_nl>Cocoseilanden</nl_nl>
     </translations>
   </country>
   <country xml:id="CHE">
@@ -340,7 +340,7 @@
     <iso3>CIV</iso3>
     <iso2>CI</iso2>
     <translations>
-      <en_us>Cote D\'Ivoire</en_us>
+      <en_us>Cote D'Ivoire</en_us>
       <nl_nl>Ivoorkust</nl_nl>
     </translations>
   </country>
@@ -389,7 +389,7 @@
     <iso2>CV</iso2>
     <translations>
       <en_us>Cape Verde</en_us>
-      <nl_nl>Cape Verde</nl_nl>
+      <nl_nl>Kaapverdië</nl_nl>
     </translations>
   </country>
   <country xml:id="CRI">
@@ -413,7 +413,7 @@
     <iso2>CX</iso2>
     <translations>
       <en_us>Christmas Island</en_us>
-      <nl_nl>Christmas Island</nl_nl>
+      <nl_nl>Christmaseiland</nl_nl>
     </translations>
   </country>
   <country xml:id="CYM">
@@ -805,7 +805,7 @@
     <iso2>IO</iso2>
     <translations>
       <en_us>British Indian Ocean Territory</en_us>
-      <nl_nl>British Indian Ocean Territory</nl_nl>
+      <nl_nl>Brits Indische Oceaanterritorium</nl_nl>
     </translations>
   </country>
   <country xml:id="IRL">
@@ -948,7 +948,7 @@
     <iso3>LAO</iso3>
     <iso2>LA</iso2>
     <translations>
-      <en_us>Lao People\'s Democratic Republic</en_us>
+      <en_us>Lao People's Democratic Republic</en_us>
       <nl_nl>Lao Democratische Volksrepubliek</nl_nl>
     </translations>
   </country>
@@ -973,7 +973,7 @@
     <iso2>LY</iso2>
     <translations>
       <en_us>Libyan Arab Jamahiriya</en_us>
-      <nl_nl>Libyan Arab Jamahiriya</nl_nl>
+      <nl_nl>Libië</nl_nl>
     </translations>
   </country>
   <country xml:id="LCA">
@@ -1100,8 +1100,8 @@
     <iso3>MKD</iso3>
     <iso2>MK</iso2>
     <translations>
-      <en_us>Macedonia, The Former Yugoslav Republic of</en_us>
-      <nl_nl>Macedonië, de Voormalige Joegoslavische Republiek</nl_nl>
+      <en_us>Macedonia</en_us>
+      <nl_nl>Macedonië</nl_nl>
     </translations>
   </country>
   <country xml:id="MLI">
@@ -1333,7 +1333,7 @@
     <iso2>PN</iso2>
     <translations>
       <en_us>Pitcairn</en_us>
-      <nl_nl>Pitcairn</nl_nl>
+      <nl_nl>Pitcairneilanden</nl_nl>
     </translations>
   </country>
   <country xml:id="PER">
@@ -1388,8 +1388,8 @@
     <iso3>PRK</iso3>
     <iso2>KP</iso2>
     <translations>
-      <en_us>Korea, Democratic People\'s Republic of</en_us>
-      <nl_nl>Korea, Democratische Volksrepubliek</nl_nl>
+      <en_us>Korea, Democratic People's Republic of</en_us>
+      <nl_nl>Noord-Korea</nl_nl>
     </translations>
   </country>
   <country xml:id="PRT">
@@ -1421,7 +1421,7 @@
     <iso2>QA</iso2>
     <translations>
       <en_us>Qatar</en_us>
-      <nl_nl>Katar</nl_nl>
+      <nl_nl>Qatar</nl_nl>
     </translations>
   </country>
   <country xml:id="REU">
@@ -1445,7 +1445,7 @@
     <iso2>RU</iso2>
     <translations>
       <en_us>Russian Federation</en_us>
-      <nl_nl>Russische Federatie</nl_nl>
+      <nl_nl>Rusland</nl_nl>
     </translations>
   </country>
   <country xml:id="RWA">
@@ -1509,7 +1509,7 @@
     <iso2>SJ</iso2>
     <translations>
       <en_us>Svalbard and Jan Mayen Islands</en_us>
-      <nl_nl>Svalbard en Jan Mayen Eilanden</nl_nl>
+      <nl_nl>Spitsbergen en Jan Mayen</nl_nl>
     </translations>
   </country>
   <country xml:id="SLB">
@@ -1581,7 +1581,7 @@
     <iso2>SK</iso2>
     <translations>
       <en_us>Slovakia (Slovak Republic)</en_us>
-      <nl_nl>Slowakije (Slowaakse Republiek)</nl_nl>
+      <nl_nl>Slowakije</nl_nl>
     </translations>
   </country>
   <country xml:id="SVN">
@@ -1621,7 +1621,7 @@
     <iso2>SY</iso2>
     <translations>
       <en_us>Syrian Arab Republic</en_us>
-      <nl_nl>Syrische Arabische Republiek</nl_nl>
+      <nl_nl>Syrië</nl_nl>
     </translations>
   </country>
   <country xml:id="TCA">
@@ -1629,7 +1629,7 @@
     <iso2>TC</iso2>
     <translations>
       <en_us>Turks and Caicos Islands</en_us>
-      <nl_nl>Turks-en Caicoseilanden</nl_nl>
+      <nl_nl>Turks- en Caicoseilanden</nl_nl>
     </translations>
   </country>
   <country xml:id="TCD">
@@ -1669,7 +1669,7 @@
     <iso2>TK</iso2>
     <translations>
       <en_us>Tokelau</en_us>
-      <nl_nl>Tokelau-eilanden</nl_nl>
+      <nl_nl>Tokelau</nl_nl>
     </translations>
   </country>
   <country xml:id="TKM">
@@ -1741,7 +1741,7 @@
     <iso2>TZ</iso2>
     <translations>
       <en_us>Tanzania, United Republic of</en_us>
-      <nl_nl>Tanzania, Verenigde Republiek</nl_nl>
+      <nl_nl>Tanzania</nl_nl>
     </translations>
   </country>
   <country xml:id="UGA">
@@ -1765,7 +1765,7 @@
     <iso2>UM</iso2>
     <translations>
       <en_us>United States Minor Outlying Islands</en_us>
-      <nl_nl>Amerikaanse ondergeschikte afgelegen eilanden</nl_nl>
+      <nl_nl>Kleine afgelegen eilanden van de Verenigde Staten</nl_nl>
     </translations>
   </country>
   <country xml:id="URY">
@@ -1797,7 +1797,7 @@
     <iso2>VA</iso2>
     <translations>
       <en_us>Vatican City State (Holy See)</en_us>
-      <nl_nl>Vaticaanstad (Heilige Stoel)</nl_nl>
+      <nl_nl>Vaticaanstad</nl_nl>
     </translations>
   </country>
   <country xml:id="VCT">
