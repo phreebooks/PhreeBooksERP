@@ -37,7 +37,7 @@ class menuItem {
 	}
 	
 	function output($key, $first_row = false){
-		\core\classes\messageStack::debug_log("executing ".__METHOD__. print_r($this,true) );
+		\core\classes\messageStack::debug_log("executing ".__METHOD__);
 		if ($this->show() == false) return ;
 		if (is_array($this->submenu)) {
 			uasort ($this->submenu, array($this,'sortByOrder'));

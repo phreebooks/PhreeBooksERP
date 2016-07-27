@@ -91,7 +91,7 @@ class ctl_panel {
   		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($this));
 	  	$output = '';
 		$output .= "<!--// start: {$this->id} //-->" . chr(10);
-		$output .= '<div id="'.$this->id.'" style="position:relative;" class="easyui-panel" title="'.$this->text.'" data-options="collapsible:true,tools:\'#'.$this->id.'_tt\'">' . chr(10);
+		$output .= '<div id="'.$this->id.'" class="easyui-panel" title="'.$this->text.'" style="margin-top:15px;" data-options="collapsible:true,minimizable:true,maximizable:true,closable:true,tools:\'#'.$this->id.'_tt\'">' . chr(10);
 		// heading text
 		$output .= "<div id='{$this->id}_tt'>" . chr(10);
 		if ($this->column_id > 1) 				$output .= '	<a href="javascript:void(0)" class="icon-go_previous"	onclick="return move_box(\'' . $this->id . '\', \'move_left\')"></a>' . chr(10);
@@ -123,7 +123,7 @@ class ctl_panel {
 		$output .= '</td></tr></tbody></table>' . chr(10);
 		// finish it up
 		$output .= '</div>' . chr(10);
-		$output .= "<!--// end: {$this->id} //--><br />" . chr(10) . chr(10);
+		$output .= "<!--// end: {$this->id} //-->" . chr(10) . chr(10);
 		return $output;
   	}
 

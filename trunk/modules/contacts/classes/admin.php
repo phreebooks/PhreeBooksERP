@@ -408,7 +408,7 @@ class admin extends \core\classes\admin {
 		}
 		if (!$basis->cInfo->contact_show_inactive) $criteria[] = "(c.inactive = '0' or c.inactive = '')"; // inactive flag
 		$search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
-		$query_raw = "SELECT id as contactid, short_name, CASE WHEN c.type = 'e' OR c.type = 'i' THEN CONCAT(contact_first , ' ',contact_last) ELSE primary_name END AS name, contact_last, contact_first, contact_middle, contact, account_number, gov_id_number, address1, address2, city_town, state_province, postal_code, telephone1, telephone2, telephone3, telephone4, email, website, inactive FROM contacts c LEFT JOIN address_book a ON c.id = a.ref_id $search ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order}";
+		$query_raw = "SELECT id as contactid, short_name, CASE WHEN c.type = 'e' OR c.type = 'i' THEN CONCAT(contact_first , ' ',contact_last) ELSE primary_name END AS name, contact_last, contact_first, contact_middle, contact, account_number, gov_id_number, address1, address2, city_town, state_province, postal_code, telephone1, telephone2, telephone3, telephone4, email, website, inactive FROM ".TABLE_CONTACTS." c LEFT JOIN ".TABLE_ADDRESS_BOOK." a ON c.id = a.ref_id $search ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order}";
 		$sql = $basis->DataBase->prepare($query_raw);
 		$sql->execute();
 		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
@@ -699,7 +699,7 @@ class admin extends \core\classes\admin {
 		}
 		?>
 		<div data-options="region:'center'">
-			<script type="text/javascript" src="includes/easyui/plugins/datagrid-detailview.js"></script>
+			<script type="text/javascript" src="includes/easyui/plugins/datagrid-groupview.js"></script>
 		    <table id="dg" title="<?php echo TEXT_PLEASE_SELECT;?>" style="height:500px;padding:50px;">
 	        	<thead>
 	            	<tr>
@@ -737,10 +737,11 @@ class admin extends \core\classes\admin {
 	    	}
 	        
 			$('#dg').datagrid({
-				url:		"index.php?action=GetAllContacts",
+				url:		"index.php?action=GetAllContactsAndJournals",
 				queryParams: {
 					type: '<?php echo $basis->cInfo->type;?>',
-					journal_id: '<?php echo $basis->cInfo->jID;?>',
+					journal_id: '<?php echo $search_journal;?>',
+					open_only: true,
 					dataType: 'json',
 	                contentType: 'application/json',
 	                async: false,
@@ -756,6 +757,7 @@ class admin extends \core\classes\admin {
 					$.messager.alert('<?php echo TEXT_ERROR?>','Load error:'+arguments.responseText);
 				},
 				onDblClickRow: function(index , row){
+					alert(row);
 					console.log('a contact in the datagrid was double clicked');
 					var fill = '<?php echo $basis->cInfo->fill?>';
 					if (fill == 'ship') {
@@ -779,44 +781,10 @@ class admin extends \core\classes\admin {
 				rowStyler: function(index,row){
 					if (row.inactive == '1') return 'background-color:pink;';
 				},
-                view: detailview,
-                detailFormatter:function(index,row){
-                    return '<div style="padding:2px"><table class="ddv"></table></div>';
-                },
-                onExpandRow: function(index,row){
-                    var ddv = $(this).datagrid('getRowDetail',index).find('table.ddv');
-                    ddv.datagrid({
-                    	url:		"index.php?action=loadOrders&contact_id="+row.contactid,
-        				queryParams: {
-        					journal_id: '<?php echo $search_journal?>',
-        					open_only: true,
-        					dataType: 'json',
-        			        contentType: 'application/json',
-        			        async: false,
-        				},
-                        fitColumns:true,
-                        singleSelect:true,
-                        loadMsg:"<?php echo TEXT_PLEASE_WAIT?>",
-                        height:'auto',
-                        onDblClickRow: function(index , row){
-                        	console.error('the order of the datagrid was double clicked');
-                        	window.opener.ClearForm();
-                        	window.opener.ajaxOrderData(0, row.id, <?php echo $basis->cInfo->jID;?>, true, false);
-                        	self.close();
-                        },
-                        columns:[[ 
-                            {field:'purchase_invoice_id',title:'<?php echo TEXT_ORDER_NUMBER?>',},
-                            {field:'total_amount',title:'<?php echo TEXT_AMOUNT?>',formatter: function(value,row,index){ return formatCurrency(value)},align:'right'},
-                        ]],
-                        onResize:function(){
-                            $('#dg').datagrid('fixDetailRowHeight',index);
-                        },
-                        onLoadSuccess:function(){
-                            setTimeout(function(){
-                                $('#dg').datagrid('fixDetailRowHeight',index);
-                            },0);
-                        },
-                    })
+                view:groupview,
+                groupField:'contactid',
+                groupFormatter:function(value,rows){
+                    return value + ' - ' + rows.length + ' Item(s)';
                 },
 			});
 		</script><?php 

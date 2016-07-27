@@ -493,5 +493,35 @@ class admin extends \core\classes\admin {
 		$temp["rows"] = $results;
 		echo json_encode($temp);
 	}
+	
+	function GetAllContactsAndJournals (\core\classes\basis &$basis) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		if (empty($basis->cInfo->contact_id)) throw new \core\classes\userException(TEXT_CONTACT_ID_NOT_DEFINED); 
+		if (empty($basis->cInfo->journal_id)) $basis->StartEvent('GetAllContacts'); 
+		if (isset($basis->cInfo->dept_rep_id)) {
+			$criteria[] = "c.dept_rep_id = '{$basis->cInfo->dept_rep_id}'";
+		}else{
+			$criteria[] = "a.type = '{$basis->cInfo->type}m'";
+		}
+		if (isset($basis->cInfo->search_text) && $basis->cInfo->search_text <> '') {
+			$search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.address1',
+					'a.address2', 'a.city_town', 'a.postal_code', 'c.short_name');
+			// hook for inserting new search fields to the query criteria.
+			if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
+			$criteria[] = '(' . implode(" like '%{$basis->cInfo->search_text}%' or ", $search_fields) . " like '%{$basis->cInfo->search_text}%')";
+		}
+		$criteria[] = ($basis->cInfo->only_open) ? " j.closed = '0' and " : "";
+		$criteria[] = " journal_id in ({$basis->cInfo->journal_id}) ";
+		if (!$basis->cInfo->contact_show_inactive) $criteria[] = "(c.inactive = '0' or c.inactive = '')"; // inactive flag
+		$search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
+		$query_raw = "SELECT id as contactid, short_name, CASE WHEN c.type = 'e' OR c.type = 'i' THEN CONCAT(contact_first , ' ',contact_last) ELSE primary_name END AS name, address1, city_town, postal_code, telephone1, inactive, j.id as journal FROM ".TABLE_CONTACTS." c LEFT JOIN ".TABLE_ADDRESS_BOOK." a ON c.id = a.ref_id LEFT JOIN ".TABLE_JOURNAL_MAIN." j ON c.id = j.bill_acct_id $search ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order}";
+		$sql = $basis->DataBase->prepare($query_raw);
+		$sql->execute();
+		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
+		$temp = array();
+		$temp["total"] = sizeof($results);
+		$temp["rows"] = $results;
+		echo json_encode($temp);
+	}
 }
 ?>

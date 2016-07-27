@@ -209,6 +209,19 @@ class basis {
 	public function fireEvent($event) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->removeEventsAndAddNewEvent($event);
+		ob_flush();
+		die();
+	}
+	/**
+	 * this method start the event.
+	 * but will not return.
+	 * @param string $event
+	 */
+	public function StartEvent($event) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		$this->removeEventsAndAddNewEvent($event);
+		ob_flush();
+		die();
 	}
 
 	/**

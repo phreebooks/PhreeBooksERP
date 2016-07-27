@@ -262,34 +262,35 @@ class admin extends \core\classes\admin {
 	  	}
 	  	if (!$basis->DataBase->field_exists(TABLE_EXTRA_FIELDS, 'required'))  $basis->DataBase->exec("ALTER TABLE ".TABLE_EXTRA_FIELDS." ADD required enum('0','1') NOT NULL DEFAULT '0'");
 	  	if (version_compare($this->status, '4.0.1', '<') ) { //updating dashboards to store the namespaces.
-	  		$basis->DataBase->exec ("ALTER TABLE ".TABLE_USERS_PROFILES." CHANGE dashboard_id dashboard_id VARCHAR( 255 ) NOT NULL DEFAULT ''");
-	  		$sql = $basis->DataBase->prepare("SELECT * FROM ".TABLE_USERS_PROFILES." WHERE module_id <> '' ");
-			$sql->execute();
-			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
-				\core\classes\messageStack::debug_log("started validating if dashboard {$result['dashboard_id']} if it exists in module {$result['module_id']}");
-				if ( array_key_exists( $result['dashboard_id'] , $basis->classes[ $result['module_id'] ]->dashboards) ) {
-					\core\classes\messageStack::debug_log("updating dashboard {$result['dashboard_id']} in module {$result['module_id']}");
-					$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->menu_id			= $result['menu_id'];
-					$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->user_id			= $result['user_id'];
-					$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->default_params	= unserialize( $result['params'] );
-					$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->install( $result['column_id'], $result['row_id'] );
-				} else {
-					\core\classes\messageStack::debug_log("removing dashboard {$result['dashboard_id']} because it doesn't exist in module {$result['module_id']}");
-					$basis->DataBase->exec("DELETE from " . TABLE_USERS_PROFILES . " WHERE user_id = {$result['user_id']} and menu_id = '{$result['menu_id']}' and dashboard_id = '{$result['dashboard_id']}'");
-				}  
-			}
-			$basis->DataBase->exec("DELETE from ".TABLE_USERS_PROFILES . " WHERE module_id != ''");
-			$basis->DataBase->exec("ALTER TABLE ".TABLE_USERS_PROFILES . " DROP module_id");
+	  		if($basis->DataBase->field_exists(TABLE_USERS_PROFILES, 'module_id')){
+		  		$basis->DataBase->exec ("ALTER TABLE ".TABLE_USERS_PROFILES." CHANGE dashboard_id dashboard_id VARCHAR( 255 ) NOT NULL DEFAULT ''");
+		  		$sql = $basis->DataBase->prepare("SELECT * FROM ".TABLE_USERS_PROFILES." WHERE module_id <> '' ");
+				$sql->execute();
+				while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+					\core\classes\messageStack::debug_log("started validating if dashboard {$result['dashboard_id']} if it exists in module {$result['module_id']}");
+					if ( array_key_exists( $result['dashboard_id'] , $basis->classes[ $result['module_id'] ]->dashboards) ) {
+						\core\classes\messageStack::debug_log("updating dashboard {$result['dashboard_id']} in module {$result['module_id']}");
+						$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->menu_id			= $result['menu_id'];
+						$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->user_id			= $result['user_id'];
+						$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->default_params	= unserialize( $result['params'] );
+						$basis->classes[ $result['module_id'] ]->dashboards[ $result['dashboard_id'] ]->install( $result['column_id'], $result['row_id'] );
+					} else {
+						\core\classes\messageStack::debug_log("removing dashboard {$result['dashboard_id']} because it doesn't exist in module {$result['module_id']}");
+						$basis->DataBase->exec("DELETE from " . TABLE_USERS_PROFILES . " WHERE user_id = {$result['user_id']} and menu_id = '{$result['menu_id']}' and dashboard_id = '{$result['dashboard_id']}'");
+					}  
+				}
+				$basis->DataBase->exec("DELETE from ".TABLE_USERS_PROFILES . " WHERE module_id != ''");
+				$basis->DataBase->exec("ALTER TABLE ".TABLE_USERS_PROFILES . " DROP module_id");
+	  		}
 	  	}
 	  	if (version_compare($this->status, '4.0.2', '<') ) {
 	  		if($basis->DataBase->field_exists(TABLE_CONFIGURATION, 'configuration_id')){
 	  			$basis->DataBase->exec ("ALTER TABLE ".TABLE_CONFIGURATION." DROP `configuration_id`;");
 	  		}
-	  		try{
-	  			$basis->DataBase->exec ("ALTER TABLE ".TABLE_CONFIGURATION." ADD PRIMARY KEY(configuration_key);");
-	  		}catch(Exception $e){
-	  			//just to be sure.
-	  		}
+	  		$sql = $basis->DataBase->prepare ("SHOW KEYS FROM ".TABLE_CONFIGURATION." WHERE Key_name = 'PRIMARY' ");
+	  		$sql->execute();
+	  		$result = $sql->fetch(\PDO::FETCH_ASSOC);
+	  		if ($result['Column_name'] != 'configuration_key')$basis->DataBase->exec ("ALTER TABLE ".TABLE_CONFIGURATION." ADD PRIMARY KEY(configuration_key);");
 	  	}
 	}
 
@@ -357,42 +358,34 @@ class admin extends \core\classes\admin {
 		echo html_hidden_field('dashboard_id', '') . chr(10);
 		?>
 		<div data-options="region:'center'">
-		<script type='text/javascript'>	document.title = '<?php echo COMPANY_NAME.' - '.TEXT_PHREEBOOKS_ERP; ?>';</script>
-		<div><a href="<?php echo html_href_link(FILENAME_DEFAULT, 'amp;mID=' . $basis->cInfo->menu_id, 'SSL'); ?>"><?php echo TEXT_ADD_DASHBOARD_ITEMS_TO_THIS_PAGE; ?></a></div>
-		<table style="width:100%;margin-left:auto;margin-right:auto;">
-		  <tr>
-		  </tr>
-		  <tr>
-		    <td width="33%" valign="top">
-		      <div id="col_<?php echo $current_column; ?>" style="position:relative;">
-		<?php
-		$sql = $basis->DataBase->prepare("SELECT dashboard_id, id, user_id, menu_id, column_id, row_id, params FROM ".TABLE_USERS_PROFILES." WHERE user_id = '{$_SESSION['user']->admin_id}' and menu_id = '{$basis->cInfo->menu_id}' ORDER BY column_id, row_id");
-		$sql->execute();
-		while ($box = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)) {
-			if($box->column_id <> $current_column) {
-				$box->row_started = true;
-				while ($box->column_id <> $current_column) {
-					$current_column++;
-					echo '      </div>' . chr(10);
-					echo '    </td>' . chr(10);
-					echo '    <td width="33%" valign="top">' . chr(10);
-					echo "      <div id='col_{$current_column}' style='position:relative;'>" . chr(10);
+			<script type='text/javascript'>	document.title = '<?php echo COMPANY_NAME.' - '.TEXT_PHREEBOOKS_ERP; ?>';</script>
+			<a href="<?php echo html_href_link(FILENAME_DEFAULT, 'amp;mID=' . $basis->cInfo->menu_id, 'SSL'); ?>"><?php echo TEXT_ADD_DASHBOARD_ITEMS_TO_THIS_PAGE; ?></a>
+			<div class="easyui-layout" data-options="fit:true">
+				<div data-options="region:'west'" style='margin:5px;width:30%'>
+			<?php
+			$sql = $basis->DataBase->prepare("SELECT dashboard_id, id, user_id, menu_id, column_id, row_id, params FROM ".TABLE_USERS_PROFILES." WHERE user_id = '{$_SESSION['user']->admin_id}' and menu_id = '{$basis->cInfo->menu_id}' ORDER BY column_id, row_id");
+			$sql->execute();
+			while ($box = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE)) {
+				if($box->column_id <> $current_column) {
+					$box->row_started = true;
+					while ($box->column_id <> $current_column) {
+						$current_column++;
+						echo '				</div>' . chr(10);
+						if ($current_column == 2 ) echo "				<div data-options=\"region:'center'\" style='margin:5px;width:30%'> " . chr(10);
+						if ($current_column == 3 ) echo "				<div data-options=\"region:'east'\" style='margin:5px;width:30%'>" . chr(10);
+					}
 				}
+			 	echo $box->output();
 			}
-		 	echo $box->output();
-		}
-		while (MAX_CP_COLUMNS <> $current_column) { // fill remaining columns with blank space
-		  	$current_column++;
-		  	echo '      </div>' . chr(10);
-		  	echo '    </td>' . chr(10);
-		  	echo '    <td width="33%" valign="top">' . chr(10);
-		  	echo "      <div id='col_{$current_column}' style='position:relative;'>" . chr(10);
-		}
-		?>
-		      </div>
-		    </td>
-		  </tr>
-		</table>
+			while ($current_column != 3) { // fill remaining columns with blank space
+			  	$current_column++;
+			  	echo '				</div>' . chr(10);
+				if ($current_column == 2 ) echo "				<div data-options=\"region:'center'\" style='margin:5px;width:30%'>" . chr(10);
+				if ($current_column == 3 ) echo "				<div data-options=\"region:'east'\" style='margin:5px;width:30%'>" . chr(10);
+			}
+			?>
+				</div>
+			</div>
 		</div>
 		<?php
 		$basis->observer->send_footer($basis);
