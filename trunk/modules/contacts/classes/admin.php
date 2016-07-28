@@ -102,7 +102,7 @@ class admin extends \core\classes\admin {
 			  contact_id int(11) NOT NULL default '0',
 			  entered_by int(11) NOT NULL default '0',
 			  log_date datetime NOT NULL default '0000-00-00',
-			  action varchar(32) NOT NULL default '',
+			  crmaction varchar(32) NOT NULL default '',
 			  notes text,
 			  PRIMARY KEY (log_id)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci",
@@ -185,6 +185,9 @@ class admin extends \core\classes\admin {
 			if (!$basis->DataBase->field_exists(TABLE_CONTACTS, 'class')) $basis->DataBase->exec("ALTER TABLE ".TABLE_CONTACTS." ADD class VARCHAR( 255 ) NOT NULL DEFAULT '' FIRST");
 			$sql = $basis->DataBase->exec("UPDATE ".TABLE_CONTACTS." SET class = CONCAT('contacts\\\\classes\\\\type\\\\', type) WHERE class = '' ");
 		}
+		if (version_compare($this->status, '4.0.1', '<') ) {
+			if (!$basis->DataBase->field_exists(TABLE_CONTACTS_LOG, 'crmaction')) $basis->DataBase->exec("ALTER TABLE ".TABLE_CONTACTS_LOG." CHANGE `action` `crmaction` VARCHAR(32) NOT NULL DEFAULT '';");
+		}
 		\core\classes\fields::sync_fields('contacts', TABLE_CONTACTS);
   	}
 
@@ -227,39 +230,39 @@ class admin extends \core\classes\admin {
 		}
 		?>
 		<div data-options="region:'center'">
-	    <table id="dg" title="<?php echo sprintf(TEXT_MANAGER_ARGS, $contact);?>" style="height:500px;padding:50px;">
-        	<thead>
-            	<tr>
-            		<th data-options="field:'short_name',sortable:true"><?php echo sprintf(TEXT_ARGS_ID, $contact);?></th>
-               		<th data-options="field:'name',sortable:true"><?php echo TEXT_NAME_OR_COMPANY?></th>
-            	   	<th data-options="field:'address1',sortable:true"><?php echo TEXT_ADDRESS1?></th>
-    	           	<th data-options="field:'city_town',sortable:true"><?php echo TEXT_CITY_TOWN?></th>
-        	       	<th data-options="field:'state_province',sortable:true"><?php echo TEXT_STATE_PROVINCE?></th>
-        	       	<th data-options="field:'postal_code',sortable:true"><?php echo TEXT_POSTAL_CODE?></th>
-        	       	<th data-options="field:'telephone1',sortable:true"><?php echo TEXT_TELEPHONE?></th>
-            	</tr>
-        	</thead>
-    	</table>
-    	<div id="toolbar">
-    		<a class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editContact()"><?php echo sprintf(TEXT_EDIT_ARGS, $contact);?></a>
-	        <a class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newContact()"><?php echo sprintf(TEXT_NEW_ARGS, $contact);?></a>
-        	<a class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteContact()"><?php echo sprintf(TEXT_DELETE_ARGS, $contact);?></a>
-        	<span style="margin-left: 100px;"><?php echo  TEXT_SHOW_INACTIVE . ' :'?></span>
-        	<?php echo html_checkbox_field('contact_show_inactive', '1', false,'', 'onchange="doSearch()"' );?>
-        	<div style="float: right;">
-        		<span><?php echo TEXT_SEARCH?> : </span>
-    			<input class="easyui-searchbox" data-options="prompt:'<?php TEXT_PLEASE_INPUT_VALUE; ?>',searcher:doSearch" id="search_text" >
-    		</div>
-    	</div>
-    	<div id="win" class="easyui-window">
-    		<div id="contactToolbar" style="margin:2px 5px;">
-				<a class="easyui-linkbutton" iconCls="icon-undo" plain="true" onclick="closeWindow()"><?php echo TEXT_CANCEL?></a>
-				<?php if (\core\classes\user::validate($basis->cInfo->contact->security_token, true) < 2){?>
-				<a class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="saveContact()" ><?php echo TEXT_SAVE?></a>
-				<?php }?>
-				<a class="easyui-linkbutton" iconCls="icon-help" plain="true" onclick="loadHelp()"><?php TEXT_HELP?></a>
+		    <table id="dg" title="<?php echo sprintf(TEXT_MANAGER_ARGS, $contact);?>" style="height:500px;padding:50px;">
+	        	<thead>
+	            	<tr>
+	            		<th data-options="field:'short_name',sortable:true"><?php echo sprintf(TEXT_ARGS_ID, $contact);?></th>
+	               		<th data-options="field:'name',sortable:true"><?php echo TEXT_NAME_OR_COMPANY?></th>
+	            	   	<th data-options="field:'address1',sortable:true"><?php echo TEXT_ADDRESS1?></th>
+	    	           	<th data-options="field:'city_town',sortable:true"><?php echo TEXT_CITY_TOWN?></th>
+	        	       	<th data-options="field:'state_province',sortable:true"><?php echo TEXT_STATE_PROVINCE?></th>
+	        	       	<th data-options="field:'postal_code',sortable:true"><?php echo TEXT_POSTAL_CODE?></th>
+	        	       	<th data-options="field:'telephone1',sortable:true"><?php echo TEXT_TELEPHONE?></th>
+	            	</tr>
+	        	</thead>
+	    	</table>
+	    	<div id="toolbar">
+	    		<a class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editContact()"><?php echo sprintf(TEXT_EDIT_ARGS, $contact);?></a>
+		        <a class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newContact()"><?php echo sprintf(TEXT_NEW_ARGS, $contact);?></a>
+	        	<a class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteContact()"><?php echo sprintf(TEXT_DELETE_ARGS, $contact);?></a>
+	        	<span style="margin-left: 100px;"><?php echo  TEXT_SHOW_INACTIVE . ' :'?></span>
+	        	<?php echo html_checkbox_field('contact_show_inactive', '1', false,'', 'onchange="doSearch()"' );?>
+	        	<div style="float: right;">
+	        		<span><?php echo TEXT_SEARCH?> : </span>
+	    			<input class="easyui-searchbox" data-options="prompt:'<?php TEXT_PLEASE_INPUT_VALUE; ?>',searcher:doSearch" id="search_text" >
+	    		</div>
+	    	</div>
+	    	<div id="win" class="easyui-window">
+	    		<div id="contactToolbar" style="margin:2px 5px;">
+					<a class="easyui-linkbutton" iconCls="icon-undo" plain="true" onclick="closeWindow()"><?php echo TEXT_CANCEL?></a>
+					<?php if (\core\classes\user::validate($basis->cInfo->contact->security_token, true) < 2){?>
+					<a class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="saveContact()" ><?php echo TEXT_SAVE?></a>
+					<?php }?>
+					<a class="easyui-linkbutton" iconCls="icon-help" plain="true" onclick="loadHelp()"><?php TEXT_HELP?></a>
+				</div>
 			</div>
-		</div>
     	</div>	
 		<script type="text/javascript">
 			document.title = '<?php echo sprintf(BOX_STATUS_MGR, $contact); ?>';
@@ -420,7 +423,7 @@ class admin extends \core\classes\admin {
 	
 	function loadCRMHistory (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		$sql = $basis->DataBase->prepare("SELECT l.log_id, l.entered_by, l.contact_id, u.display_name as user_name, l.log_date, l.action, l.notes, c.contact_first, c.contact_last, a.primary_name, CASE WHEN c.contact_last != '' THEN CONCAT(c.contact_first,' ',c.contact_middle,' ',c.contact_last) ELSE a.primary_name END AS name FROM ".TABLE_CONTACTS_LOG." AS l JOIN ".TABLE_CONTACTS." AS c ON l.contact_id = c.id JOIN ".TABLE_ADDRESS_BOOK." AS a ON c.id = a.ref_id JOIN ".TABLE_USERS." AS u ON l.entered_by = u.admin_id WHERE (c.dept_rep_id ={$basis->cInfo->contact_id} OR c.id ={$basis->cInfo->contact_id})");
+		$sql = $basis->DataBase->prepare("SELECT l.log_id, l.entered_by, l.contact_id, u.display_name as user_name, l.log_date, l.crmaction, l.notes, c.contact_first, c.contact_last, a.primary_name, CASE WHEN c.contact_last != '' THEN CONCAT(c.contact_first,' ',c.contact_middle,' ',c.contact_last) ELSE a.primary_name END AS name FROM ".TABLE_CONTACTS_LOG." AS l JOIN ".TABLE_CONTACTS." AS c ON l.contact_id = c.id JOIN ".TABLE_ADDRESS_BOOK." AS a ON c.id = a.ref_id JOIN ".TABLE_USERS." AS u ON l.entered_by = u.admin_id WHERE (c.dept_rep_id ={$basis->cInfo->contact_id} OR c.id ={$basis->cInfo->contact_id})");
 		$sql->execute();
 		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
 		$temp = array();
@@ -444,8 +447,9 @@ class admin extends \core\classes\admin {
 			array('id'=> 'mail_out','text'	=> TEXT_EMAIL_SEND),
 		);
 	?>
-		<form>
+		<form id="crm_form" method="post">
 			<?php echo html_hidden_field('log_id', '');?>
+			<?php echo html_hidden_field('contact_id', $basis->cInfo->contact_id);?>
 			<table class="dv-table" style="width:100%;border:1px solid #ccc;padding:5px;margin-top:5px;">
 				<tbody>
 					<tr>
@@ -458,19 +462,63 @@ class admin extends \core\classes\admin {
 	            	</tr>
 	            	<tr>
 	            		<td style="width:80px;"><?php echo TEXT_ACTION; ?></td>
-						<td><?php echo html_pull_down_menu('action', $crm_actions); ?></td>
+						<td><?php echo html_pull_down_menu('crmaction', $crm_actions); ?></td>
 	            	</tr>
 	            	<tr>
 			        	<td style="width:80px;"><?php echo TEXT_NOTE; ?></td>
-	            		<td><?php echo html_textarea_field('notes', 60, 1, $basis->cInfo->contact->crm_note, ''); ?></td>
-	            	</tr>
-	            	<tr>
-			        	<td style="width:80px;">txt save</td>@todo
-	            		<td>txt cancel</td>@todo
+	            		<td><?php echo html_textarea_field('notes', 60, 1, '', ''); ?></td>
 	            	</tr>
 	            </tbody>
             </table>
+            <div style="padding:5px 0;text-align:right;padding-right:100px">
+		    	<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="save1()"><?php echo TEXT_SAVE?></a>
+            	<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" plain="true" onclick="cancel1(this)"><?php echo TEXT_CLEAR?></a>
+        	</div>
+        	<script type="text/javascript">
+	            function save1(){
+	            	$('#crm_form').form('submit');
+//	                var tr = $(target).closest('.datagrid-row-detail').closest('tr').prev();
+//	                var index = parseInt(tr.attr('datagrid-row-index'));
+//	                saveCRM(index+1);
+	            }
+	            function cancel1(target){
+	                var tr = $(target).closest('.datagrid-row-detail').closest('tr').prev();
+	                var index = parseInt(tr.attr('datagrid-row-index'));
+	                console.log(index)
+	                cancelCRM(index+1);
+	            }
+	            $('#crm_form').form({
+	        		url:'index.php?action=saveCRM',
+	        		novalidate: true,
+	                onSubmit: function(param){
+	        			console.log('submitting form');
+//	                    return true;
+	                },
+	                success: function(data){
+	                	console.log('succesfull submitted form');
+	                    data = eval('('+data+')');
+	                    data.isNewRecord = false;
+	                    var row = $('#notes_table').datagrid('getSelected');
+	                    var index = $('#notes_table').datagrid('getRowIndex', row);
+	                    $('#notes_table').datagrid('collapseRow',index);
+	                    $('#notes_table').datagrid('updateRow',{
+	                        index: index,
+	                        row: data
+	                    });
+	                }
+	                
+	            });
+        	</script>
 	   </form><?php 
+	}
+	
+	function saveCRM (\core\classes\basis &$basis) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__. print_r($basis->cInfo, true) );
+		$sql = $this->prepare("INSERT INTO " . TABLE_CONTACTS_LOG . " (`log_id`, `contact_id`, `entered_by`, `log_date`, `action`, `notes`) VALUES (:log_id, :contact_id, :entered_by, :log_date, :action, :notes) ON DUPLICATE KEY UPDATE contact_id = :contact_id, enterd_by = :entered_by, log_date= :log_date, action= :action, notes = :notes");
+		$sql->execute(array(':log_id' => $basis->cInfo->log_id,':contact_id' => $basis->cInfo->contact_id, ':entered_by' => $basis->cInfo->enterd_by, ':log_date' => $basis->cInfo->log_date, ':action' => $basis->cInfo->action,':notes' => $basis->cInfo->notes));
+		$temp["success"] = true;
+		$temp["message"] = TEXT_SAVED_SUCCESSFULLY;
+		echo json_encode($temp);
 	}
 	
 	function loadAddresses (\core\classes\basis &$basis) {

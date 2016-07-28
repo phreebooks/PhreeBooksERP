@@ -37,8 +37,7 @@ var groupview = $.extend({}, $.fn.datagrid.defaults.view, {
 			table.push('<span class="datagrid-row-expander datagrid-row-collapse">&nbsp;</span>');
 			table.push('</span>');
 		}
-		if ((frozen && hasFrozen) || (!frozen && !hasFrozen)){
-		// if (!frozen){
+		if ((frozen && hasFrozen) || (!frozen)){
 			table.push('<span class="datagrid-group-title">');
 			table.push(opts.groupFormatter.call(target, group.value, group.rows));
 			table.push('</span>');
@@ -156,8 +155,9 @@ var groupview = $.extend({}, $.fn.datagrid.defaults.view, {
 			if (!$('#datagrid-group-style').length){
 				$('head').append(
 					'<style id="datagrid-group-style">' +
-					'.datagrid-group{height:'+opts.groupHeight+'px;overflow:hidden;font-weight:bold;border-bottom:1px solid #ccc;}' +
+					'.datagrid-group{height:'+opts.groupHeight+'px;overflow:hidden;font-weight:bold;border-bottom:1px solid #ccc;white-space:nowrap;word-break:normal;}' +
 					'.datagrid-group-title,.datagrid-group-expander{display:inline-block;vertical-align:bottom;height:100%;line-height:'+opts.groupHeight+'px;padding:0 4px;}' +
+					'.datagrid-group-title{position:relative;}' +
 					'.datagrid-group-expander{width:'+opts.expanderWidth+'px;text-align:center;padding:0}' +
 					'.datagrid-row-expander{margin:'+Math.floor((opts.groupHeight-16)/2)+'px 0;display:inline-block;width:16px;height:16px;cursor:pointer}' +
 					'</style>'
@@ -178,15 +178,11 @@ var groupview = $.extend({}, $.fn.datagrid.defaults.view, {
 			state.onResize = opts.onResize;
 		}
 		opts.onResizeColumn = function(field, width){
-			if (!opts.fitColumns){
-				view.resizeGroup(target);
-			}
+			view.resizeGroup(target);
 			state.onResizeColumn.call(target, field, width);
 		}
 		opts.onResize = function(width, height){
-			if (opts.fitColumns){
-				view.resizeGroup(target);		
-			}
+			view.resizeGroup(target);		
 			state.onResize.call($(target).datagrid('getPanel')[0], width, height);
 		}
 		view.resizeGroup(target);
@@ -262,6 +258,12 @@ $.extend(groupview, {
 			var groupHeader = dc.body2.children('div.datagrid-group[group-index=' + groupIndex + ']');
 		}
 		groupHeader._outerWidth(ww);
+		var opts = state.options;
+		if (opts.frozenColumns && opts.frozenColumns.length){
+			var width = dc.view1.width() - opts.expanderWidth;
+			var isRtl = dc.view1.css('direction').toLowerCase()=='rtl';
+			groupHeader.find('.datagrid-group-title').css(isRtl?'right':'left', -width+'px');
+		}
 		fr.show();
 	},
 
@@ -312,7 +314,8 @@ $.extend(groupview, {
 			this.groups.push(group);
 			state.data.rows.push(row);
 		}
-		
+
+		this.setGroupIndex(target);
 		this.refreshGroupTitle(target, groupIndex);
 		this.resizeGroup(target);
 		
@@ -355,6 +358,10 @@ $.extend(groupview, {
 			this.groups.splice(groupIndex, 1);
 		}
 		
+		this.setGroupIndex(target);
+	},
+
+	setGroupIndex: function(target){
 		var index = 0;
 		for(var i=0; i<this.groups.length; i++){
 			var group = this.groups[i];

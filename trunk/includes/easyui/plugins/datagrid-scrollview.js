@@ -204,7 +204,7 @@ var scrollview = $.extend({}, $.fn.datagrid.defaults.view, {
 		var opts = state.options;
 		var dc = state.dc;
 		var view = this;
-		
+
 		state.data.firstRows = state.data.rows;
 		state.data.rows = [];
 
@@ -231,6 +231,17 @@ var scrollview = $.extend({}, $.fn.datagrid.defaults.view, {
 			// erase the onLoadSuccess event, make sure it can't be triggered
 			state.onLoadSuccess = opts.onLoadSuccess;
 			opts.onLoadSuccess = function(){};
+			if (!opts.remoteSort){
+				var onBeforeSortColumn = opts.onBeforeSortColumn;
+				opts.onBeforeSortColumn = function(name, order){
+					var result = onBeforeSortColumn.call(this, name, order);
+					if (result == false){
+						return false;
+					}
+					state.data.rows = state.data.firstRows;
+				}
+			}
+			dc.body2.unbind('.datagrid');
 			setTimeout(function(){
 				dc.body2.unbind('.datagrid').bind('scroll.datagrid', function(e){
 					if (state.onLoadSuccess){
@@ -539,7 +550,13 @@ $.extend($.fn.datagrid.methods, {
 	getRowIndex: function(jq, id){
 		var opts = jq.datagrid('options');
 		if (opts.view.type == 'scrollview'){
-			return jq.datagrid('baseGetRowIndex', id) + opts.view.index;
+			// return jq.datagrid('baseGetRowIndex', id) + opts.view.index;
+			var index = jq.datagrid('baseGetRowIndex', id);
+			if (index == -1){
+				return -1;
+			} else {
+				return index + opts.view.index;
+			}
 		} else {
 			return jq.datagrid('baseGetRowIndex', id);
 		}
