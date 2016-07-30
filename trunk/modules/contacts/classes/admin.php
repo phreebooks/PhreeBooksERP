@@ -421,7 +421,7 @@ class admin extends \core\classes\admin {
 		echo json_encode($temp);
 	}
 	
-	function loadCRMHistory (\core\classes\basis &$basis) {
+/*	function loadCRMHistory (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$sql = $basis->DataBase->prepare("SELECT l.log_id, l.entered_by, l.contact_id, u.display_name as user_name, l.log_date, l.crmaction, l.notes, c.contact_first, c.contact_last, a.primary_name, CASE WHEN c.contact_last != '' THEN CONCAT(c.contact_first,' ',c.contact_middle,' ',c.contact_last) ELSE a.primary_name END AS name FROM ".TABLE_CONTACTS_LOG." AS l JOIN ".TABLE_CONTACTS." AS c ON l.contact_id = c.id JOIN ".TABLE_ADDRESS_BOOK." AS a ON c.id = a.ref_id JOIN ".TABLE_USERS." AS u ON l.entered_by = u.admin_id WHERE (c.dept_rep_id ={$basis->cInfo->contact_id} OR c.id ={$basis->cInfo->contact_id})");
 		$sql->execute();
@@ -519,7 +519,7 @@ class admin extends \core\classes\admin {
 		$temp["success"] = true;
 		$temp["message"] = TEXT_SAVED_SUCCESSFULLY;
 		echo json_encode($temp);
-	}
+	}*/
 	
 	function loadAddresses (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
