@@ -55,7 +55,7 @@ class outputPage  {
 				$.fn.validatebox.defaults.invalidMessage = '".TEXT_INVALID_VALUE."';
 				$.fn.validatebox.defaults.missingMessage = '".TEXT_THIS_FIELD_IS_REQUIRED."';		
 			 </script>";
-		echo "</head><body class='easyui-layout'>";
+		echo "</head><body class='easyui-layout'><div id='popup'></div>";
     	ob_flush();
     }
     
