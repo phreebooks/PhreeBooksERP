@@ -59,40 +59,13 @@ class contacts {
         foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
         $this->special_terms  =  db_prepare_input($_POST['terms']); // TBD will fix when popup terms is redesigned
         if ($this->id  == '') $this->id  = $admin->cInfo->contactid;
-        $this->crm_actions = array(
-        	'0' 		=> array('id' => '0',			'text'  => TEXT_NONE),
-        	'new' 		=> array('id' => 'new', 		'text'  => sprintf(TEXT_NEW_ARGS, TEXT_CALL)),
-        	'ret'  		=> array('id' => 'ret', 		'text'  => TEXT_RETURNED_CALL),
-        	'flw'  		=> array('id' => 'flw', 		'text'  => TEXT_FOLLOW_UP_CALL),
-        	'inac'  	=> array('id' => 'inac', 		'text'  => TEXT_INACTIVE),
-        	'lead'  	=> array('id' => 'lead', 		'text'  => sprintf(TEXT_NEW_ARGS, TEXT_LEAD)),
-        	'mail_in'  	=> array('id' => 'mail_in', 	'text'  => TEXT_EMAIL_RECEIVED),
-        	'mail_out'  => array('id' => 'mail_out', 	'text'  => TEXT_EMAIL_SEND),
-        );
         if ($this->id  != '') $this->getContact();
     }
 
 	public function getContact() {
 	  	global $admin;
-	  	if ($this->id == '' && !$this->aid == ''){
-	  		$sql = $admin->DataBase->prepare("SELECT * FROM ".TABLE_ADDRESS_BOOK." WHERE address_id = {$this->aid}");
-	  		$sql->execute();
-	  		$result = $sql->fetch(\PDO::FETCH_LAZY);
-	  		// Load contact info, including custom fields
-	  		$sql = $admin->DataBase->prepare("SELECT * FROM ".TABLE_CONTACTS." WHERE id = {$result['ref_id']}");
-	  		$sql->execute();
-	  		$this[] = $sql->fetch(\PDO::FETCH_LAZY);
-	  	}
-		// expand attachments
+	  	// expand attachments
 		$this->attachments = $result['attachments'] ? unserialize($result['attachments']) : array();
-		// Load the address book
-		$sql = $admin->DataBase->query("SELECT * FROM ".TABLE_ADDRESS_BOOK." WHERE ref_id = {$this->id} ORDER BY primary_name");
-		$sql->execute();
-		$this->address = array();
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
-			$i = sizeof($this->address[$result['type']]);
-		  	$this->address[$result['type']][$i] = get_object_vars ($result);
-		}
 		// load payment info
 		if ($_SESSION['ENCRYPTION_VALUE'] && ENABLE_ENCRYPTION) {
 		  	$sql = $admin->DataBase->prepare("SELECT id, hint, enc_value FROM ".TABLE_DATA_SECURITY." WHERE module='contacts' and ref_1={$this->id}");
@@ -106,30 +79,7 @@ class contacts {
 			  	  'exp'  => $val[2] . '/' . $val[3],
 		    	);
 		  	}
-		}
-		$sql = $admin->DataBase->prepare("SELECT * FROM ".TABLE_CONTACTS_LOG." WHERE contact_id = {$this->id} ORDER BY log_date DESC");
-		$sql->execute();
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
-			$i = sizeof($this->crm_log);
-			foreach ($result as $key => $value) $this->crm_log[$i] = get_object_vars ($result);
-			if ( $this->contact_first != '' || $this->contact_last != '') {
-				$this->crm_log[$i]['with'] = $this->contact_first . ' ' . $this->contact_last;
-			} else {
-				$this->crm_log[$i]['with'] = $this->short_name . ' ' . $this->address["{$this->type}m"][0]['primary_name'];
-			}
-		}
-		// load dept_rep_id
-		$sql = $admin->DataBase->prepare("SELECT * FROM ".TABLE_CONTACTS." WHERE dept_rep_id={$this->id}");
-		$sql->execute();
-		$this->department_rep = $sql->fetchAll(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE) ;
-		// load contacts info
-		$sql = $admin->DataBase->prepare("SELECT * FROM ".TABLE_CONTACTS." WHERE dept_rep_id={$this->id}");
-		$sql->execute();
-		$this->contacts = $sql->fetchAll(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE) ;
-		foreach($this->contacts as $contact){
-			$this->crm_log = array_merge($this->crm_log, $contact->crm_log);
-		}
-		// load sales reps
+		}	// load sales reps
 		$this->sales_rep_array = gen_get_rep_ids($basis->cInfo->contact->type);
   	}
 
@@ -181,22 +131,7 @@ class contacts {
         	$this->short_name  = $result['next_id'];
         	$this->inc_auto_id = true;
     	}
-  		foreach ($this->address_types as $value) {
-      		if (($value <> 'im' && substr($value, 1, 1) == 'm') || // all main addresses except contacts which is optional
-        	  ($this->address[$value]['primary_name'] <> '')) { // optional billing, shipping, and contact
-          		$msg_add_type = TEXT_A_REQUIRED_FIELD_HAS_BEEN_LEFT_BLANK_FIELD . ': ' . constant('ACT_CATEGORY_' . strtoupper(substr($value, 1, 1)) . '_ADDRESS');
-	      		if (false === db_prepare_input($this->address[$value]['primary_name'],   $required = true))                     throw new \core\classes\userException($msg_add_type.' - '.TEXT_NAME_OR_COMPANY);
-	      		if (false === db_prepare_input($this->address[$value]['contact'],        ADDRESS_BOOK_CONTACT_REQUIRED))        throw new \core\classes\userException($msg_add_type.' - '.TEXT_ATTENTION);
-	      		if (false === db_prepare_input($this->address[$value]['address1'],       ADDRESS_BOOK_ADDRESS1_REQUIRED))       throw new \core\classes\userException($msg_add_type.' - '.TEXT_ADDRESS1);
-	      		if (false === db_prepare_input($this->address[$value]['address2'],       ADDRESS_BOOK_ADDRESS2_REQUIRED))       throw new \core\classes\userException($msg_add_type.' - '.TEXT_ADDRESS2);
-	      		if (false === db_prepare_input($this->address[$value]['city_town'],      ADDRESS_BOOK_CITY_TOWN_REQUIRED))      throw new \core\classes\userException($msg_add_type.' - '.TEXT_CITY_TOWN);
-	      		if (false === db_prepare_input($this->address[$value]['state_province'], ADDRESS_BOOK_STATE_PROVINCE_REQUIRED)) throw new \core\classes\userException($msg_add_type.' - '.TEXT_STATE_PROVINCE);
-	      		if (false === db_prepare_input($this->address[$value]['postal_code'],    ADDRESS_BOOK_POSTAL_CODE_REQUIRED))    throw new \core\classes\userException($msg_add_type.' - '.TEXT_POSTAL_CODE);
-	      		if (false === db_prepare_input($this->address[$value]['telephone1'],     ADDRESS_BOOK_TELEPHONE1_REQUIRED))     throw new \core\classes\userException($msg_add_type.' - '.TEXT_TELEPHONE);
-	      		if (false === db_prepare_input($this->address[$value]['email'],          ADDRESS_BOOK_EMAIL_REQUIRED))          throw new \core\classes\userException($msg_add_type.' - '.TEXT_EMAIL);
-      		}
-    	}
-    	$this->duplicate_id();
+  		$this->duplicate_id();
     	return true;
   	}
 
@@ -223,6 +158,7 @@ class contacts {
   		global $admin;
   		$this->id ? \core\classes\user::validate_security($this->security_level, 3) : \core\classes\user::validate_security($this->security_level, 2);
   		$sql_data_array = $this->fields->what_to_save();
+  		$sql_data_array['id']				= $this->id;
   		$sql_data_array['class']			= addcslashes(get_class($this), '\\');
     	$sql_data_array['type']            	= $this->type;
     	$sql_data_array['short_name']      	= $this->short_name;
@@ -240,13 +176,20 @@ class contacts {
     	$sql_data_array['price_sheet']     	= $this->price_sheet;
     	$sql_data_array['tax_id']          	= $this->tax_id;
     	$sql_data_array['last_update']     	= 'now()';
-    	if ($this->id == '') { //create record
+//    	if ($this->id == '') { //create record
     		$sql_data_array['first_date'] = 'now()';
     		$keys = array_keys($sql_data_array);
-    		$fields = '`'.implode('`, `',$keys).'`';
-    		$placeholder = substr(str_repeat('?,',count($keys),0,-1));
-    		$sql = $admin->DataBase->prepare("INSERT INTO ".TABLE_CONTACTS." ($fields) VALUES ($placeholder) ON DUPLICATE KEY UPDATE ");//@todo
-    		$sql->execute(get_object_vars($this));
+    		$fields = "'".implode("', '",$keys)."'";
+    		$placeholder = "'".implode("', '",$sql_data_array)."'";
+    		unset($sql_data_array['id']);
+    		unset($sql_data_array['first_date']);
+    		$output = implode(', ', array_map(
+    			function ($v, $k) { return sprintf("%s='%s'", $k, $v); },
+    			$sql_data_array,
+    			array_keys($sql_data_array)
+    		));
+    		$sql = $admin->DataBase->prepare("INSERT INTO ".TABLE_CONTACTS." ($fields) VALUES ($placeholder) ON DUPLICATE KEY UPDATE $output");//@todo
+    		$sql->execute();
 //        	db_perform(TABLE_CONTACTS, $sql_data_array, 'insert');
         	$this->id = $basis->DataBase->lastInsertId('id');
 			//	if auto-increment see if the next id is there and increment if so.
@@ -255,7 +198,7 @@ class contacts {
             	$admin->DataBase->query("UPDATE ".TABLE_CURRENT_STATUS." SET {$this->auto_field} = '$next_id'");
 	        }
     	    gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_ADD . '-' . $this->title, $this->short_name);
-    	} else { // update record
+/*    	} else { // update record
     		$keys = array_keys($sql_data_array);
     		$fields = '`'.implode('`, `',$keys).'`';
     		$placeholder = '`:'.implode('`:, `',$keys).'`';
@@ -263,149 +206,10 @@ class contacts {
     		$sql->execute(get_object_vars($this));
         	//db_perform(TABLE_CONTACTS, $sql_data_array, 'update', "id = '$this->id'");
         	gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_UPDATE . '-' . $this->title, $this->short_name);
-    	}
-	    // address book fields
-    	foreach ($this->address_types as $value) {
-      		if (($value <> 'im' && substr($value, 1, 1) == 'm') || // all main addresses except contacts which is optional
-        	  ($this->address[$value]['primary_name'] <> '')) { // billing, shipping, and contact if primary_name present
-              	$sql_data_array = array(
-                    'ref_id'         => $this->id,
-                    'type'           => $value,
-                    'primary_name'   => $this->address[$value]['primary_name'],
-                    'contact'        => $this->address[$value]['contact'],
-                    'address1'       => $this->address[$value]['address1'],
-                    'address2'       => $this->address[$value]['address2'],
-                    'city_town'      => $this->address[$value]['city_town'],
-                    'state_province' => $this->address[$value]['state_province'],
-                    'postal_code'    => $this->address[$value]['postal_code'],
-                    'country_code'   => $this->address[$value]['country_code'],
-                    'telephone1'     => $this->address[$value]['telephone1'],
-                    'telephone2'     => $this->address[$value]['telephone2'],
-                    'telephone3'     => $this->address[$value]['telephone3'],
-                    'telephone4'     => $this->address[$value]['telephone4'],
-                    'email'          => $this->address[$value]['email'],
-                    'website'        => $this->address[$value]['website'],
-                    'notes'          => $this->address[$value]['notes'],
-                );
-              	if ($value == 'im') $sql_data_array['ref_id'] = $this->i_id; // re-point contact
-              	if ($this->address[$value]['address_id'] == '') { // then it's a new address
-                	db_perform(TABLE_ADDRESS_BOOK, $sql_data_array, 'insert');
-                	$this->address[$value]['address_id'] = \core\classes\PDO::lastInsertId('id');
-              	} else { // then update address
-                	db_perform(TABLE_ADDRESS_BOOK, $sql_data_array, 'update', "address_id = '{$this->address[$value]['address_id']}'");
-              	}
-      		}
-    	}
+    	}*/
   	}
 
-  	function draw_address_fields($address_type, $reset_button = false, $hide_list = false, $short = false, $prefill_adress = true) {
-//  		echo "add_type = '$address_type' entries = ".print_r($this->address[$add_type]). '<br>';
-  		if (!$hide_list && sizeof($this->address[$address_type]) > 0) {
-  			echo '<tr><td><table class="ui-widget" style="border-collapse:collapse;width:100%;">';
-  			echo '<thead class="ui-widget-header">' . chr(10);
-  			echo '<tr>' . chr(10);
-  			echo '  <th>' . TEXT_NAME_OR_COMPANY .   '</th>' . chr(10);
-  			echo '  <th>' . TEXT_ATTENTION .        '</th>' . chr(10);
-  			echo '  <th>' . TEXT_ADDRESS1 .       '</th>' . chr(10);
-  			echo '  <th>' . TEXT_CITY_TOWN .      '</th>' . chr(10);
-  			echo '  <th>' . TEXT_STATE_PROVINCE . '</th>' . chr(10);
-  			echo '  <th>' . TEXT_POSTAL_CODE .    '</th>' . chr(10);
-  			echo '  <th>' . TEXT_COUNTRY .        '</th>' . chr(10);
-  			// add some special fields
-  			if (substr($address_type, 1, 1) == 'p') echo '  <th>' . TEXT_PAYMENT_REF . '</th>' . chr(10);
-  			echo '  <th align="center">' . TEXT_ACTION . '</th>' . chr(10);
-  			echo '</tr>' . chr(10) . chr(10);
-  			echo '</thead>' . chr(10) . chr(10);
-  			echo '<tbody class="ui-widget-content">' . chr(10);
-
-  			$odd = true;
-  			foreach ($this->address[$address_type] as $key => $address) {
-  				if (empty($address['address_id'])) break;
-  				echo "<tr id='tr_add_{$address['address_id']}' class='".($odd?'odd':'even')."' style='cursor:pointer'>";
-  				echo "  <td onclick='getAddress({$address['address_id']}, '$address_type')'>{$address['primary_name']}</td>" . chr(10);
-  				echo "  <td onclick='getAddress({$address['address_id']}, '$address_type')'>{$address['contact']}</td>" . chr(10);
-  				echo "  <td onclick='getAddress({$address['address_id']}, '$address_type')'>{$address['address1']}</td>" . chr(10);
-  				echo "  <td onclick='getAddress({$address['address_id']}, '$address_type')'>{$address['city_town']}</td>" . chr(10);
-  				echo "  <td onclick='getAddress({$address['address_id']}, '$address_type')'>{$address['state_province']}</td>" . chr(10);
-  				echo "  <td onclick='getAddress({$address['address_id']}, '$address_type')'>{$address['postal_code']}</td>" . chr(10);
-  				echo "  <td onclick='getAddress({$address['address_id']}, '$address_type')'>{$address['country_code']}</td>" . chr(10);
-  				// add special fields
-  				if (substr($address_type, 1, 1) == 'p')	echo "  <td onclick='getAddress({$address['address_id']}, $address_type)'>". ($address['hint'] ? $address['hint'] : '&nbsp;') ."</td>" . chr(10);
-  				echo '  <td align="center">';
-  				echo html_icon('actions/edit-find-replace.png', TEXT_EDIT, 'small', "onclick='getAddress({$address['address_id']}, '$address_type')'") . chr(10);
-  				echo '&nbsp;' . html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . ACT_WARN_DELETE_ADDRESS . '\')) deleteAddress(' .$address['address_id'] . ');"') . chr(10);
-  				echo '  </td>' . chr(10);
-  				echo '</tr>' . chr(10);
-  				$odd = !$odd;
-  			}
-  			echo '</tbody>' . chr(10) . chr(10);
-  			echo '</table></td></tr>';
-  		}
-  		$addres = array();
-		if ($prefill_adress) $addres = $this->address[$address_type][0];
-  		echo '<tr><td><table class="ui-widget" style="border-collapse:collapse;width:100%;">' . chr(10);
-  		if (!$short) {
-  			echo '<tr>';
-  			echo '  <td align="right">' . TEXT_NAME_OR_COMPANY . '</td>' . chr(10);
-  			echo '  <td>' . html_input_field("address[$address_type][primary_name]", $addres['primary_name'], 'size="49" maxlength="48"', true) . '</td>' . chr(10);
-  			echo '  <td align="right">' . TEXT_TELEPHONE . '</td>' . chr(10);
-  			echo '  <td>' . html_input_field("address[$address_type][telephone1]", $addres['telephone1'], 'size="21" maxlength="20"', ADDRESS_BOOK_TELEPHONE1_REQUIRED) . '</td>' . chr(10);
-  			echo '</tr>';
-  		}
-  		echo '<tr>';
-  		echo '  <td align="right">' . TEXT_ATTENTION . html_hidden_field("address[$address_type][address_id]", $addres['address_id']) . '</td>' . chr(10);
-  		echo '  <td>' . html_input_field("address[$address_type][contact]", $addres['contact'], 'size="33" maxlength="32"', ADDRESS_BOOK_CONTACT_REQUIRED) . '</td>' . chr(10);
-  		echo '  <td align="right">' . TEXT_ALTERNATIVE_TELEPHONE_SHORT . '</td>' . chr(10);
-  		echo '  <td>' . html_input_field("address[$address_type][telephone2]", $addres['telephone2'], 'size="21" maxlength="20"') . '</td>' . chr(10);
-  		echo '</tr>';
-
-  		echo '<tr>';
-  		echo '  <td align="right">' . TEXT_ADDRESS1 . '</td>' . chr(10);
-  		echo '  <td>' . html_input_field("address[$address_type][address1]" , $addres['address1'], 'size="33" maxlength="32"', ADDRESS_BOOK_ADDRESS1_REQUIRED) . '</td>' . chr(10);
-  		echo '  <td align="right">' . TEXT_FAX . '</td>' . chr(10);
-  		echo '  <td>' . html_input_field("address[$address_type][telephone3]", $addres['telephone3'], 'size="21" maxlength="20"') . '</td>' . chr(10);
-  		echo '</tr>';
-
-  		echo '<tr>';
-  		echo '  <td align="right">' . TEXT_ADDRESS2 . '</td>' . chr(10);
-  		echo '  <td>' . html_input_field("address[$address_type][address2]", $addres['address2'], 'size="33" maxlength="32"', ADDRESS_BOOK_ADDRESS2_REQUIRED) . '</td>' . chr(10);
-  		echo '  <td align="right">' . TEXT_MOBILE_PHONE . '</td>' . chr(10);
-  		echo '  <td>' . html_input_field("address[$address_type][telephone4]", $addres['telephone4'], 'size="21" maxlength="20"') . '</td>' . chr(10);
-  		echo '</tr>';
-
-  		echo '<tr>';
-  		echo '  <td align="right">' . TEXT_CITY_TOWN . '</td>' . chr(10);
-  		echo '  <td>' . html_input_field("address[$address_type][city_town]", $addres['city_town'], 'size="25" maxlength="24"', ADDRESS_BOOK_CITY_TOWN_REQUIRED) . '</td>' . chr(10);
-  		echo '  <td align="right">' . TEXT_EMAIL . '</td>' . chr(10);
-  		echo '  <td>' . html_input_field("address[$address_type][email]", $addres['email'], 'size="51" maxlength="50"') . '</td>' . chr(10);
-  		echo '</tr>';
-
-  		echo '<tr>';
-  		echo '  <td align="right">' . TEXT_STATE_PROVINCE . '</td>' . chr(10);
-  		echo '  <td>' . html_input_field("address[$address_type][state_province]", $addres['state_province'], 'size="25" maxlength="24"', ADDRESS_BOOK_STATE_PROVINCE_REQUIRED) . '</td>' . chr(10);
-  		echo '  <td align="right">' . TEXT_WEBSITE . '</td>' . chr(10);
-  		echo '  <td>' . html_input_field("address[$address_type][website]", $addres['website'], 'size="51" maxlength="50"') . '</td>' . chr(10);
-  		echo '</tr>';
-
-  		echo '<tr>';
-  		echo '  <td align="right">' . TEXT_POSTAL_CODE . '</td>' . chr(10);
-  		echo '  <td>' . html_input_field("address[$address_type][postal_code]", $addres['postal_code'], 'size="11" maxlength="10"', ADDRESS_BOOK_POSTAL_CODE_REQUIRED) . '</td>' . chr(10);
-  		echo '  <td align="right">' . TEXT_COUNTRY . '</td>' . chr(10);
-  		echo '  <td>' . html_pull_down_menu("address[$address_type][country_code]", $_SESSION['language']->get_countries_dropdown(), $addres['country_code'] ? $addres['country_code'] : COMPANY_COUNTRY) . '</td>' . chr(10);
-  		echo '</tr>';
-
-  		if (substr($address_type, 1, 1) <> 'm' || ($address_type == 'im' && substr($address_type, 0, 1) <> 'i')) {
-  			echo '<tr>' . chr(10);
-  			echo '  <td align="right">' . TEXT_NOTES . '</td>' . chr(10);
-  			echo '  <td colspan="3">' . html_textarea_field("address[$address_type][notes]", 80, 3, $addres['notes']) . chr(10);
-  			if ($reset_button) echo html_icon('actions/view-refresh.png', TEXT_RESET, 'small', "onclick='clearAddress(\"{$address_type}\")'") . chr(10);
-  			echo '  </td>' . chr(10);
-  			echo '</tr>' . chr(10);
-  		}
-  		echo '</table></td></tr>' . chr(10) . chr(10);
-  	}
-
-
+  	
   	/**
   	 * this method outputs a line on the template page.
   	 */

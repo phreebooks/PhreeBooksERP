@@ -123,7 +123,7 @@ echo $toolbar->build();
 	<p><?php echo TEXT_CREDIT_LIMIT_DESC; ?></p>
 	<p>
 	  <?php echo TEXT_ENTER_ADMIM_USERNAME . '&nbsp;' . html_input_field('override_user', '', 'onblur="document.getElementById(\'override_user\').value = this.value;"', true); ?><br />
-	  <?php echo TEXT_ENTER_ADMIM_PASSWORD . '&nbsp;' . html_password_field('override_pass', '', true, 'onblur="document.getElementById(\'override_pass\').value = this.value;"'); ?>
+	  <?php echo \core\classes\htmlElement::password('override_pass', TEXT_ENTER_ADMIM_PASSWORD, true, 'onblur="document.getElementById(\'override_pass\').value = this.value;"'); ?>
 	</p>
 	<p align="right"><?php echo html_icon('actions/go-next.png', TEXT_CONTINUE, 'small', 'onclick="checkOverride();"'); ?></p>
 </div>
@@ -349,7 +349,7 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
 // for standard controlled input, uncomment below (default setting)
 				echo '  <td colspan="' . ((SINGLE_LINE_ORDER_SCREEN) ? 1 : 3) . '">' . html_input_field('desc_' . $i, $order->item_rows[$j]['desc'], 'size="'.((SINGLE_LINE_ORDER_SCREEN)?50:75).'" maxlength="255"') . '</td>' . chr(10);
 				if (SINGLE_LINE_ORDER_SCREEN) {
-				  echo '  <td>' . html_combo_box('acct_' . $i, $gl_array_list, $order->item_rows[$j]['acct'], 'size="10"') . '</td>' . chr(10);
+				  echo '  <td>' . \core\classes\htmlElement::combobox('acct_' . $i, '', $gl_array_list, $order->item_rows[$j]['acct'], 'size="10"') . '</td>' . chr(10);
 				} else {
 				  echo '  <td colspan="2">' . html_pull_down_menu('proj_' . $i, $proj_list, $order->item_rows[$j]['proj']) . '</td>' . chr(10);
 				  echo '</tr>' . chr(10) .  '<tr class="'.($odd?'odd':'even').'">' . chr(10);

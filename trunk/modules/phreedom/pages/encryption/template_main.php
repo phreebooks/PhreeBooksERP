@@ -41,10 +41,10 @@ echo $toolbar->build();
  </thead>
  <tbody class="ui-widget-content">
   <tr>
-	<td align="center"><?php echo TEXT_ENCRYPTION_KEY . html_password_field('enc_key', ''); ?></td>
+	<td align="center"><?php echo \core\classes\htmlElement::password('enc_key', TEXT_ENCRYPTION_KEY); ?></td>
   </tr>
   <tr>
-	<td align="center"><?php echo TEXT_ENCRYPTION_KEY_CONFIRM . html_password_field('enc_key_confirm', ''); ?></td>
+  	<td align="center"><?php echo \core\classes\htmlElement::password('enc_key_confirm', TEXT_ENCRYPTION_KEY_CONFIRM); ?></td>
   </tr>
   <tr>
 	<td colspan="2" align="right"><?php echo html_button_field('encrypt_key', TEXT_SAVE_CHANGES, 'onclick="submitToDo(\'save\')"'); ?></td>
@@ -59,16 +59,13 @@ echo $toolbar->build();
 <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto">
  <tbody class="ui-widget-content">
     <tr>
-	  <td><?php  echo TEXT_OLD_ENCRYPTION_KEY; ?></td>
-	  <td><?php  echo html_password_field('old_encrypt_key'); ?></td>
+    	<td><?php echo \core\classes\htmlElement::password('old_encrypt_key', TEXT_OLD_ENCRYPTION_KEY); ?></td>
 	</tr>
     <tr>
-	  <td><?php echo sprintf(TEXT_NEW_ARGS, TEXT_ENCRYPTION_KEY); ?></td>
-	  <td><?php echo html_password_field('new_encrypt_key'); ?></td>
+    	<td><?php echo \core\classes\htmlElement::password('new_encrypt_key', sprintf(TEXT_NEW_ARGS, TEXT_ENCRYPTION_KEY)); ?></td>
 	</tr>
     <tr>
-	  <td><?php echo TEXT_RE-ENTER_NEW_ENCRYPTION_KEY; ?></td>
-	  <td><?php echo html_password_field('new_encrypt_confirm'); ?></td>
+    	<td><?php echo \core\classes\htmlElement::password('new_encrypt_confirm', TEXT_RE-ENTER_NEW_ENCRYPTION_KEY); ?></td>
 	</tr>
     <tr>
 	  <td colspan="2" align="right"><?php echo html_button_field('encrypt_key', TEXT_SAVE_CHANGES, 'onclick="submitToDo(\'encrypt_key\')"'); ?></td>

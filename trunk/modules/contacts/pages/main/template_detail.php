@@ -19,13 +19,10 @@
 echo "<div data-options=\"region:'center'\">";
 echo "<form id='contacts' style='padding:10px 20px 10px 40px;' method='post' enctype='multipart/form-data'>";
 // include hidden fields
-echo html_hidden_field('action',        '') . chr(10);
-echo html_hidden_field('id',  $basis->cInfo->contact->id) . chr(10);
-echo html_hidden_field('payment_id',  '') . chr(10);
+echo \core\classes\htmlElement::hidden('payment_id') . chr(10);
 
 $basis->cInfo->contact->fields->display($basis->cInfo->contact);
 // Build the page
-
 $custom_path = DIR_FS_MODULES . 'contacts/custom/pages/main/extra_tabs.php';
 if (file_exists($custom_path)) { include($custom_path); }
 
@@ -35,8 +32,14 @@ function tab_sort($a, $b) {
 }
 usort($basis->cInfo->contact->tab_list, 'tab_sort');
 ?>
-		<h1><?php echo $basis->page_title; ?></h1>
-		<div class="easyui-tabs" id="contacts_tabs">
+<div id="mainToolbar" data-options="region:'north'" >
+    <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="location.href = 'index.php?action=LoadContactMgrPage&type=<?php echo $basis->cInfo->contact->type;?>'"><?php echo TEXT_UNDO;?></a>
+   	<a href="#" class="easyui-linkbutton" iconCls="icon-save"   onclick="$('#contacts').submit();"><?php echo TEXT_SAVE;?></a>
+   	<a href="#" class="easyui-linkbutton" iconCls="icon-help"   onclick="loadHelp('editContact');"><?php echo TEXT_HELP;?></a>
+   	<a href="#" class="easyui-linkbutton" iconCls="icon-email"  onclick="deleteContact()"><?php echo TEXT_MAIL;?></a>
+   	<h1><?php echo $basis->page_title; ?></h1>
+</div>
+		<div id="Tabs" class="easyui-tabs" border="false" plain="true" >
 		<?php
 		foreach ($basis->cInfo->contact->tab_list as $value) {
 			if (file_exists(DIR_FS_MODULES . "contacts/custom/pages/main/{$value['file']}.php")) {
@@ -50,3 +53,45 @@ usort($basis->cInfo->contact->tab_list, 'tab_sort');
 		</div>
 	</form>
 </div>
+<script type="text/javascript">
+$('#Tabs').tabs({
+	onAdd:function(title, index){
+		console.log('we are adding = '+ title+' index= '+index);
+	},
+	onLoadError:function(){
+		console.error('There has been a error loading the tabs');
+	},
+})
+$('#contacts').form({
+	queryParams: {
+		action: 'saveContact',
+		id: '<?php echo $basis->cInfo->contactid;?>',
+		dataType: 'json',
+        contentType: 'application/json',
+        async: false
+	},
+	onSubmit :function(){
+		if($('#editAddress').form('validate')){
+			console.log('the address form is valid');
+			if ($(this).form('validate')){
+				$('#editAddress').submit();
+				return true;
+			}else{
+				console.error('the contact form is not valid');
+			}
+		}else{
+			console.error('the address form is not valid');
+			return false;
+		}
+	},
+	success: function(data){
+    	data = eval('('+data+')');
+        if (data.error_message){
+        	console.error(data.error_message);
+            $.messager.show({ title: '<?php echo TEXT_ERROR?>', msg: data.error_message });
+        }else{
+        	location.href = 'index.php?action=LoadContactMgrPage&type=<?php echo $basis->cInfo->contact->type;?>'
+        }
+    }
+})
+</script>

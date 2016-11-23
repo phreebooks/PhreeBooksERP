@@ -191,13 +191,31 @@ class DateTime extends \DateTime {
 	static function db_date_format($raw_date = '') {
 		if ($raw_date == '') return '';
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ ." date format = ".DATE_FORMAT." raw date = $raw_date");
-		$date = self::createFromFormat ('Y-m-d',$raw_date);
+		$date = self::createFromFormat (DATE_FORMAT, $raw_date);
 		$errors = self::getLastErrors();
 		if (!$date instanceof \DateTime) throw new \core\classes\userException(print_r($errors,true),	'error');
 		if ($date->format('Y')  < 1900 || $date->format('Y')  > 2099) throw new \core\classes\userException("The year is lower than 1900 or higher than 2099 recieved: ". $date->format('Y'), 'error');
-		if ($errors['warning_count'] != 0)  throw new \core\classes\userException($errors['warnings'], 	'warning');
+		if ($errors['warning_count'] != 0)  \core\classes\messageStack::add($errors['warnings'], 	'warning');
 		if ($errors['error_count'] != 0)    throw new \core\classes\userException($errors['errors'],	'error');
 		return $date->format('Y-m-d');
+	}
+	
+	/**
+	 * returns a database date from when formated in DATE_TIME_FORMAT
+	 * @param string $raw_date
+	 * @return string
+	 */
+	static function db_date_time_format($raw_date = '') {
+		if ($raw_date == '') return '';
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ ." date format = ".DATE_TIME_FORMAT." raw date = $raw_date");
+		$date = self::createFromFormat (DATE_TIME_FORMAT, $raw_date);
+		$errors = self::getLastErrors();
+		\core\classes\messageStack::debug_log("errors are ".print_r($errors, true));
+		if (!$date instanceof \DateTime) throw new \core\classes\userException(print_r($errors,true),	'error');
+		if ($date->format('Y')  < 1900 || $date->format('Y')  > 2099) throw new \core\classes\userException("The year is lower than 1900 or higher than 2099 recieved: ". $date->format('Y'), 'error');
+		if ($errors['warning_count'] != 0)  \core\classes\messageStack::add($errors['warnings'], 	'warning');
+		if ($errors['error_count'] != 0)    throw new \core\classes\userException($errors['errors'],	'error');
+		return $date->format('Y-m-d H:i:s');
 	}
 
 	/**
@@ -210,7 +228,7 @@ class DateTime extends \DateTime {
 		$errors = $this->getLastErrors();
 		$year = $this->format('Y');
 		if ($year  < 1900 || $year  > 2099) throw new \core\classes\userException("The year is lower than 1900 or higher than 2099 recieved: $year ", 'error');
-		if ($errors['warning_count'] != 0)  throw new \core\classes\userException($errors['warnings'], 	'error');
+		if ($errors['warning_count'] != 0)  \core\classes\messageStack::add($errors['warnings'], 	'warning');
 		if ($errors['error_count'] != 0)    throw new \core\classes\userException($errors['errors'],	'error');
 		if ($long) return $this->format(DATE_TIME_FORMAT);
 		return $this->format(DATE_FORMAT);

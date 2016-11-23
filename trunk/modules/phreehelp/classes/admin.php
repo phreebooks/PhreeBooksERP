@@ -29,8 +29,9 @@ class admin extends \core\classes\admin {
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
 		  'phreedom' => 4.0,
 		);
-		$this->mainmenu["company"]->submenu ["help"]  = new \core\classes\menuItem (1, TEXT_HELP,	'module=phreehelp&amp;page=main');
-		$this->mainmenu["company"]->submenu ["help"]->params = 'target="_blank"';		
+		$temp = new \core\classes\menuItem (1, TEXT_HELP,	'action=loadHelpScreen');
+		$temp->params = 'target="_blank"';
+		$this->mainmenu["company"]->submenu ["help"]  = $temp;
 	    parent::__construct();
 	}
 	
@@ -41,8 +42,13 @@ class admin extends \core\classes\admin {
 	}
 	
 	function loadHelpScreen (\core\classes\basis $basis){
-		echo " <iframe src='http://www.phreebooks.com/documentation/{$basis->cInfo['idx']}'></iframe>";
-		ob_flush();
+		$basis->observer->send_menu($basis);
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ ); 
+		//@todo change because cross domain isn't allowed.
+		?>
+		<div data-options="region:'center',href:'https://www.phreesoft.com/'"></div>
+		<?php 
+		$basis->observer->send_footer($basis);
 	}
 }
 ?>

@@ -25,7 +25,6 @@ class b extends \contacts\classes\contacts{
 	public $title			= TEXT_BRANCH;
 
 	public function __construct(){
-		$this->tab_list[] = array('file'=>'template_notes',		'tag'=>'notes',    'order'=>40, 'text'=>TEXT_NOTES);
 		$this->tab_list[] = array('file'=>'template_b_general',	'tag'=>'general',  'order'=> 1, 'text'=>TEXT_GENERAL);
 		parent::__construct();
 	}

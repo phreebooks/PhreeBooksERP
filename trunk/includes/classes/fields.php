@@ -425,7 +425,7 @@ class fields {
         	}elseif (!isset($_POST[$field_name]) && $xtra_db_fields['entry_type'] == 'check_box') {
             	$sql_data_array[$field_name] = '0'; // special case for unchecked check boxes
         	}elseif (isset($_POST[$field_name]) && $field_name <> 'id') {
-        		if (db_prepare_input($_POST[$field_name], $xtra_db_fields['required']) == false) throw new \core\classes\userException(sprintf(TEXT_FIELD_IS_REQUIRED_BUT_HAS_BEEN_LEFT_BLANK_ARGS, $xtra_db_fields['field_name']));
+        		if (db_prepare_input($_POST[$field_name], $xtra_db_fields['required']) === false) throw new \core\classes\userException(sprintf(TEXT_FIELD_IS_REQUIRED_BUT_HAS_BEEN_LEFT_BLANK_ARGS, $xtra_db_fields['field_name']));
             	$sql_data_array[$field_name] = db_prepare_input($_POST[$field_name]);
         	}
         	if ($xtra_db_fields['entry_type'] == 'date_time') {

@@ -89,7 +89,9 @@ class basis {
 		} else {
 			$this->cInfo = (object)array_merge ( $_GET, $_POST );
 		}
+		\core\classes\messageStack::debug_log("variables ".print_r($this->cInfo, true) );
 	}
+	
 	public function __sleep() {}
 
 	public function __wakeup() {
@@ -103,6 +105,9 @@ class basis {
 	private function setObserver(){
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ ." Type of request = {$_SERVER['HTTP_X_REQUESTED_WITH']} datatype = {$_REQUEST['contentType']} ");
 		switch($_REQUEST['contentType']){
+			case 'inlineForm':
+				$this->observer = new \core\classes\outputInlineForm();
+				break;
 			case 'text/html':
 			default: 
 				$this->observer = new \core\classes\outputPage();

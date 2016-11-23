@@ -24,7 +24,7 @@ class admin extends \core\classes\admin {
 	public $installed	= true;
 	public $text;
 	public $sort_order  = 1;
-	public $version		= '4.0.2';
+	public $version		= '4.0.3';
 
 	function __construct() {
 		// Load configuration constants for this module, must match entries in admin tabs
@@ -71,7 +71,7 @@ class admin extends \core\classes\admin {
 		  'CURRENCIES_TRANSLATIONS'    => '&pound;,?:&euro;,?',
 	      'DATE_FORMAT'                => 'm/d/Y', // this is used for date(), use only values: Y, m and d (case sensitive)
 	      'DATE_DELIMITER'             => '/', // must match delimiter used in DATE_FORMAT
-	      'DATE_TIME_FORMAT'           => 'm/d/Y h:i:s a',
+	      'DATE_TIME_FORMAT'           => 'm/d/Y H:i:s a',
 		);
 		// add new directories to store images and data
 		$this->dirlist = array(
@@ -292,6 +292,10 @@ class admin extends \core\classes\admin {
 	  		$result = $sql->fetch(\PDO::FETCH_ASSOC);
 	  		if ($result['Column_name'] != 'configuration_key')$basis->DataBase->exec ("ALTER TABLE ".TABLE_CONFIGURATION." ADD PRIMARY KEY(configuration_key);");
 	  	}
+	  	if (version_compare($this->status, '4.0.3', '<') ) {
+//@todo	  		DATE_TIME_FORMAT in this constant the h should be G
+//	  		dashes and slahses should be changed to #
+	  	}
 	}
 
 	// EVENTS PART OF THE CLASS
@@ -476,7 +480,6 @@ class admin extends \core\classes\admin {
 		$query_raw    = "SELECT SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " FROM " . TABLE_USERS . " WHERE is_role = '0'{$search} ORDER BY {$disp_order}";
 		$sql = $basis->DataBase->prepare($query_raw);
 		$sql->execute();
-		$sql->fetch(\PDO::FETCH_NUM);
 		$result = $sql->fetch(\PDO::FETCH_LAZY);
 		$query_result = $basis->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 		$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');

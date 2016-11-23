@@ -35,7 +35,7 @@ class outputMobile {
   		$this->js_files[] = "includes/jquery-ui-1.8.16.custom.min.js";
   		$this->js_files[] = "includes/jquery.dataTables.min.js";
   		$this->js_files[] = "https://www.google.com/jsapi";
-  		$this->js_files[] = "includes/jquery.easyui.min.js";
+  		$this->js_files[] = "includes/easyui/jquery.easyui.min.js";
   		$this->js_files[] = "includes/common.js";
   		$this->js_files[] = DIR_FS_ADMIN . DIR_WS_THEMES . '/config.php';
   		$this->css_files[] = DIR_WS_THEMES.'css/'.MY_COLORS.'/stylesheet.css';

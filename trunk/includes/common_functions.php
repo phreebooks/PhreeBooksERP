@@ -626,7 +626,8 @@ function get_dir_tree($dir, $root = true)  {
     $form .= ">";
     return $form;
   }
-
+  	
+  	//@todo needs to be replaced by the htmlElement class
   	function html_input_field($name, $value = '', $parameters = '', $required = false, $type = 'text') {
 		if (strpos($name, '[]')) { // don't show id attribute if generic array
 		  	$id = false;
@@ -634,10 +635,10 @@ function get_dir_tree($dir, $root = true)  {
 	  		$id = str_replace('[', '_', $name); // clean up for array inputs causing html errors
 	  		$id = str_replace(']', '',  $id);
     	}
-    	$field = '<input type="' . $type . '" name="' . $name . '" ';
-		if ($id)                       	$field .= ' id="'    . $id    . '"';
+    	$field = "<input type='{$type}' name='{$name}'";
+		if ($id)                       	$field .= " id='{$id}'";
     	if (gen_not_null($value))      	$field .= ' value="' . str_replace('"', '&quot;', $value) . '"';
-    	if ($required == true) 			$field .= ' class="easyui-validatebox" required="required"';
+    	if ($required == true) 			$field .= ' required="required"';
     	if (gen_not_null($parameters)) 	$field .= ' ' . $parameters;
     	$field .= ' />';
     	return $field;
@@ -694,52 +695,7 @@ function get_dir_tree($dir, $root = true)  {
     	$field .=  "class='easyui-numberbox' data-options=\"precision:{$admin->currencies[DEFAULT_CURRENCY]->decimal_places},groupSeparator:'{$admin->currencies[DEFAULT_CURRENCY]->thousands_point}',decimalSeparator:'{$admin->currencies[DEFAULT_CURRENCY]->decimal_point}', value:'$value' $required\" />";
   		return $field;
   	}
-  	/**
-  	 * new function to create a date field
-  	 * @param $name
-  	 * @param $value
-  	 * @param $required bool
-  	 */
   	
-  	function html_date_time_field($name, $value = '', $required = false){//@todo test and implement date format needs to be right
-  		if (strpos($name, '[]')) { // don't show id attribute if generic array
-  			$id = false;
-  		} else {
-  			$id = str_replace('[', '_', $name); // clean up for array inputs causing html errors
-  			$id = str_replace(']', '',  $id);
-  		}
-  		$field = "<input class='easyui-datetimebox' name='$name' ";
-  		if ($id)					$field .= " id='$id'";
-  		if (gen_not_null($value))	$field .= ' value="' . str_replace('"', '&quot;', $value) . '"';
-  		if ($required == true)		$field .= " required='required' ";
-  		$field .= " />";
-  		return $field;
-  	}
-  	/**
-  	 * new function to create a date field
-  	 * @param $name
-  	 * @param $value
-  	 * @param $required bool
-  	 */
-
-  	function html_date_field($name, $value = '', $required = false){//@todo test and implement date format needs to be right
-  		if (strpos($name, '[]')) { // don't show id attribute if generic array
-	  		$id = false;
-		} else {
-	  		$id = str_replace('[', '_', $name); // clean up for array inputs causing html errors
-	  		$id = str_replace(']', '',  $id);
-    	}
-    	$field = "<input class='easyui-datebox' name='$name' ";
-		if ($id)					$field .= " id='$id'";
-    	if (gen_not_null($value))	$field .= ' value="' . str_replace('"', '&quot;', $value) . '"';
-    	if ($required == true)		$field .= " required='required' ";
-    	$field .= " />";
-    	return $field;
-  	}
-
-  function html_password_field($name, $value = '', $required = false, $parameters = '') {
-    return html_input_field($name, $value, 'maxlength="40" ' . $parameters, $required, 'password', false);
-  }
 
   function html_file_field($name, $required = false) {
     return html_input_field($name, '', '', $required, 'file', false);
@@ -752,29 +708,25 @@ function get_dir_tree($dir, $root = true)  {
   function html_button_field($name, $value, $parameters = '') {
   	return '<a href="#" id="'.$name.'" class="ui-state-default ui-corner-all" '.$parameters.'>'.$value.'</a>';
   }
-
-  function html_selection_field($name, $type, $value = '', $checked = false, $compare = '', $parameters = '') {
-	if (strpos($name, '[]')) { // don't show id attribute if generic array
-	  $id = false;
-	} else {
-	  $id = str_replace('[','_', $name); // clean up for array inputs causing html errors
-	  $id = str_replace(']','',  $id);
+	
+  function html_checkbox_field($name, $value = '', $checked = false, $compare = '', $parameters = '') {
+    if (strpos($name, '[]')) { // don't show id attribute if generic array
+    	$id = false;
+    } else {
+    	$id = str_replace('[','_', $name); // clean up for array inputs causing html errors
+    	$id = str_replace(']','',  $id);
     }
-	$selection = '<input type="' . $type . '" name="' . $name . '"';
-	if ($id) $selection .= ' id="' . $id . '"';
+    $selection = "<input type='checkbox' name='{$name}'";
+    if ($id) $selection .= ' id="' . $id . '"';
     if (gen_not_null($value)) $selection .= ' value="' . $value . '"';
     if (($checked == true) || (gen_not_null($value) && gen_not_null($compare) && ($value == $compare))) {
-      $selection .= ' checked="checked"';
+    	$selection .= ' checked="checked"';
     }
     if (gen_not_null($parameters)) $selection .= ' ' . $parameters;
     $selection .= ' />';
     return $selection;
   }
-
-  function html_checkbox_field($name, $value = '', $checked = false, $compare = '', $parameters = '') {
-    return html_selection_field($name, 'checkbox', $value, $checked, $compare, $parameters);
-  }
-
+  
   function html_radio_field($name, $value = '', $checked = false, $compare = '', $parameters = '') {
     $selection  = '<input type="radio" name="' . $name . '" id="' . $name . '_' . $value . '"';
     $selection .= ' value="' . $value . '"';
@@ -800,7 +752,7 @@ function get_dir_tree($dir, $root = true)  {
     $field .= '</textarea>';
     return $field;
   }
-
+  
   	function html_pull_down_menu($name, $values, $default = '', $parameters = '', $required = false) {
 		if (strpos($name, '[]')) { // don't show id attribute if generic array
 	  		$id = false;
@@ -836,6 +788,8 @@ function get_dir_tree($dir, $root = true)  {
     	$field .= '</select>';
     	return $field;
   	}
+  	
+  	
 
   function html_combo_box($name, $values, $default = '', $parameters = '', $width = '220px', $onchange = '', $id = false) {
 	if (!$id) {

@@ -40,7 +40,6 @@ class c extends \contacts\classes\contacts{
 		$this->tab_list[] = array('file'=>'template_addbook',	'tag'=>'addbook',  'order'=>20);
 		$this->tab_list[] = array('file'=>'template_contacts',	'tag'=>'contacts', 'order'=> 5);
 		$this->tab_list[] = array('file'=>'template_history',	'tag'=>'history',  'order'=>10);
-		$this->tab_list[] = array('file'=>'template_notes',		'tag'=>'notes',    'order'=>40);
 		$this->tab_list[] = array('file'=>'template_general',	'tag'=>'general',  'order'=> 1);
 		parent::__construct();
 		$this->contacts_levels = array(

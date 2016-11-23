@@ -17,96 +17,93 @@
 //  Path: /modules/contacts/pages/main/template_j_general.php
 //
 
-// *********************** Display contact information ******************************
-$cal_j_gen1 = array(
-  'name'      => 'dateFrom',
-  'form'      => 'contacts',
-  'fieldname' => 'contact_first',
-  'imagename' => 'btn_j_gen1',
-  'default'   => isset($basis->cInfo->contact->contact_first) ? $basis->cInfo->contact->contact_first : '',
-);
-$cal_j_gen2 = array(
-  'name'      => 'dateTo',
-  'form'      => 'contacts',
-  'fieldname' => 'contact_last',
-  'imagename' => 'btn_j_gen2',
-  'default'   => isset($basis->cInfo->contact->contact_last) ? $basis->cInfo->contact->contact_last : '',
-);
 ?>
-<script type="text/javascript">
-<?php echo js_calendar_init($cal_j_gen1); ?>
-<?php echo js_calendar_init($cal_j_gen2); ?>
-</script>
-
-<div title="<?php echo TEXT_GENERAL;?>">
-  <fieldset>
-    <legend><?php echo TEXT_CONTACT_INFORMATION; ?></legend>
-    <table>
-      <tr>
-        <td align="right"><?php echo sprintf(TEXT_ARGS_ID, TEXT_PROJECT); ?></td>
-        <td><?php echo html_input_field('short_name', $basis->cInfo->contact->short_name, 'size="21" maxlength="20"', $basis->cInfo->contact->auto_type == false ? true : false); ?></td>
-        <td align="right"><?php echo TEXT_INACTIVE; ?></td>
-        <td>
-	      <?php echo html_checkbox_field('inactive', '1', $basis->cInfo->contact->inactive) . ' ';
-            echo TEXT_BREAK_INTO_PHASES . ': ';
-            echo html_radio_field('account_number', 1, ($basis->cInfo->contact->account_number == '1' ? true : false)) . TEXT_YES . chr(10);
-            echo html_radio_field('account_number', 2, (($basis->cInfo->contact->account_number == '' || $basis->cInfo->contact->account_number == '2') ? true : false)) . TEXT_NO  . chr(10);
-          ?>
-	   </td>
-      </tr>
-      <tr>
-        <td align="right"><?php echo ACT_J_REP_ID; ?></td>
-        <td>
-		  <?php echo html_pull_down_menu('dept_rep_id', gen_get_rep_ids('c'), $basis->cInfo->contact->dept_rep_id); ?>
-	    </td>
-        <td align="right"><?php echo TEXT_START_DATE; ?></td>
-        <td><?php echo html_calendar_field($cal_j_gen1); ?></td>
-      </tr>
-      <tr>
-        <td align="right"><?php echo ACT_J_ID_NUMBER; ?></td>
-        <td><?php echo html_input_field('gov_id_number', $basis->cInfo->contact->gov_id_number, 'size="17" maxlength="16"'); ?></td>
-        <td align="right"><?php echo TEXT_END_DATE; ?></td>
-        <td><?php echo html_calendar_field($cal_j_gen2); ?></td>
-      </tr>
-    </table>
-  </fieldset>
+	<div title="<?php echo TEXT_GENERAL;?>" style="padding:10px">
+		<fieldset>
+	    	<legend><?php echo TEXT_CONTACT_INFORMATION; ?></legend>
+	    	<table>
+	      		<tr> 
+	      			<td><?php echo \core\classes\htmlElement::textbox("short_name",	sprintf(TEXT_ARGS_ID, TEXT_PROJECT), 'size="21" maxlength="20"', $basis->cInfo->contact->short_name, $basis->cInfo->contact->auto_type == false);?></td>
+	      			<td><?php echo \core\classes\htmlElement::checkbox('inactive', TEXT_INACTIVE, '1', $basis->cInfo->contact->inactive );?></td>
+			        <td><?php 
+			            echo TEXT_BREAK_INTO_PHASES . ': ';
+			            echo html_radio_field('account_number', 1, ($basis->cInfo->contact->account_number == '1' ? true : false)) . TEXT_YES . chr(10);
+			            echo html_radio_field('account_number', 2, (($basis->cInfo->contact->account_number == '' || $basis->cInfo->contact->account_number == '2') ? true : false)) . TEXT_NO  . chr(10);
+			          ?>
+				   </td>
+				</tr>
+				<tr>
+					<td><?php echo \core\classes\htmlElement::combobox("dept_rep_id", 	ACT_J_REP_ID, gen_get_rep_ids('c'), $basis->cInfo->contact->dept_rep_id ); ?></td>
+        			<td><?php echo \core\classes\htmlElement::date('contact_first', TEXT_START_DATE); ?></td>
+      			</tr>
+      			<tr>
+      				<td><?php echo \core\classes\htmlElement::textbox("gov_id_number", ACT_J_ID_NUMBER, 'size="17" maxlength="16"', $basis->cInfo->contact->gov_id_number);?></td>
+        			<td><?php echo \core\classes\htmlElement::date('contact_last', TEXT_END_DATE); ?></td>
+      			</tr>
+      		</table>
+      	</fieldset>
 
 <?php // *********************** Mailing/Main Address (only one allowed) ****************************** ?>
-  <fieldset>
-    <legend><?php echo TEXT_MAIN_MAILING_ADDRESS; ?></legend>
-    <table id="<?php echo $basis->cInfo->contact->type; ?>m_address_form" class="ui-widget" style="border-collapse:collapse;width:100%;">
-      <?php $basis->cInfo->contact->draw_address_fields($basis->cInfo->contact->type.'m', false, true, false, true); ?>
-    </table>
-  </fieldset>
-<?php // *********************** Attachments  ************************************* ?>
-  <div>
-   <fieldset>
-   <legend><?php echo TEXT_ATTACHMENTS; ?></legend>
-   <table class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto;">
-    <thead class="ui-widget-header">
-     <tr><th colspan="3"><?php echo TEXT_ATTACHMENTS; ?></th></tr>
-    </thead>
-    <tbody class="ui-widget-content">
-     <tr><td colspan="3"><?php echo TEXT_SELECT_FILE_TO_ATTACH . ' ' . html_file_field('file_name'); ?></td></tr>
-     <tr  class="ui-widget-header">
-      <th><?php echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small'); ?></th>
-      <th><?php echo TEXT_FILE_NAME; ?></th>
-      <th><?php echo TEXT_ACTION; ?></th>
-     </tr>
-<?php
-if (sizeof($basis->cInfo->contact->attachments) > 0) {
-  	foreach ($basis->cInfo->contact->attachments as $key => $value) {
-    	echo '<tr>';
-	    echo ' <td>' . html_checkbox_field('rm_attach_'.$key, '1', false) . '</td>' . chr(10);
-    	echo ' <td>' . $value . '</td>' . chr(10);
-	    echo ' <td>' . html_button_field('dn_attach_'.$key, TEXT_DOWNLOAD, 'onclick="submitSeq(' . $key . ', \'download\', true)"') . '</td>';
-    	echo '</tr>' . chr(10);
-	}
-} else {
-  	echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS_HAVE_BEEN_FOUND . '</td></tr>';
-} ?>
-    </tbody>
-   </table>
-   </fieldset>
-  </div>
-</div>
+	  	<div id="address_panel" class="easyui-panel" title="<?php echo TEXT_MAIN_MAILING_ADDRESS; ?>" style= "width:75%"> 	</div>
+	  	<script type="text/javascript">
+			$('#address_panel').panel({
+	            border: true,
+	            queryParams: {
+	            	contentType:'inlineForm',
+			        async: false,
+			        contact_id: '<?php echo $basis->cInfo->contact->id;?>',
+			        type: '<?php echo $basis->cInfo->contact->type;?>m',
+				},
+	            cache: false,
+	            href:'index.php?action=editAddress',
+	            loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
+	            onLoad: function(){
+	           
+	            },
+	            onBeforeLoad: function(param){
+	        		console.log('loading the main_address form');
+	        	},
+	        	onLoadSuccess: function(data){
+	        		console.log('the loading the main_address form was succesfull');
+	        		$.messager.progress('close');
+	        	},
+	            onLoadError: function(){
+	        		console.error('the loading of the main_address form resulted in a error');
+	        		$.messager.progress('close');
+	        		$.messager.alert('<?php echo TEXT_ERROR?>','Load error for main_address form');
+	        	},
+	        });
+		</script>
+
+	<?php // *********************** Attachments  ************************************* ?>
+	  	<div>
+	   		<fieldset>
+	   			<legend><?php echo TEXT_ATTACHMENTS; ?></legend>
+	   			<table class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto;">
+	    			<thead class="ui-widget-header">
+	     				<tr><th colspan="3"><?php echo TEXT_ATTACHMENTS; ?></th></tr>
+	    			</thead>
+	    			<tbody class="ui-widget-content">
+	     				<tr><td colspan="3"><?php echo TEXT_SELECT_FILE_TO_ATTACH . ' ' . html_file_field('file_name'); ?></td></tr>
+	     				<tr  class="ui-widget-header">
+	      					<th><?php echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small'); ?></th>
+	      					<th><?php echo TEXT_FILE_NAME; ?></th>
+	      					<th><?php echo TEXT_ACTION; ?></th>
+	     				</tr>
+	<?php
+						if (sizeof($basis->cInfo->contact->attachments) > 0) {
+						  	foreach ($basis->cInfo->contact->attachments as $key => $value) {
+						    	echo '<tr>';
+							    echo ' <td>' . \core\classes\htmlElement::checkbox('rm_attach_'.$key, '', '1', false) . '</td>' . chr(10);
+							    echo " <td>{$value}</td>" . chr(10);
+							    echo ' <td>' . html_button_field('dn_attach_'.$key, TEXT_DOWNLOAD, "onclick='submitSeq({$key}, \"ContactAttachmentDownload\", true)'") . '</td>';
+							    echo '</tr>' . chr(10);
+						  	}
+						} else {
+						  	echo '<tr><td colspan="3">' . TEXT_NO_DOCUMENTS_HAVE_BEEN_FOUND . '</td></tr>';
+						} ?>
+	    			</tbody>
+	   			</table>
+	   		</fieldset>
+	  	</div>
+	</div>

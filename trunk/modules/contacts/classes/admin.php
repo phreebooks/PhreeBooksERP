@@ -23,7 +23,7 @@ class admin extends \core\classes\admin {
 	public $id 			= 'contacts';
 	public $description = MODULE_CONTACTS_DESCRIPTION;
 	public $core		= true;
-	public $version		= '4.0-dev';
+	public $version		= '4.0.2-dev';
 
 	function __construct() {
 		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_CONTACTS);
@@ -77,6 +77,7 @@ class admin extends \core\classes\admin {
 			  type char(1) NOT NULL default 'c',
 			  short_name varchar(32) NOT NULL default '',
 			  inactive enum('0','1') NOT NULL default '0',
+			  title varchar(32) default NULL,
 			  contact_first varchar(32) default NULL,
 			  contact_middle varchar(32) default NULL,
 			  contact_last varchar(32) default NULL,
@@ -178,7 +179,7 @@ class admin extends \core\classes\admin {
       		if (!$basis->DataBase->field_exists(TABLE_CONTACTS_LOG, 'entered_by')) $basis->DataBase->exec("ALTER TABLE ".TABLE_CONTACTS_LOG." ADD entered_by INT(11) NOT NULL DEFAULT '0' AFTER contact_id");
     	}
 		if (!$basis->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_crm_id_num')){
-    		$result = $basis->DataBase->exec("Select MAX(short_name + 1) AS new  FROM ".TABLE_CONTACTS." WHERE TYPE = 'i'");
+    		$result = $basis->DataBase->exec("SELECT MAX(short_name + 1) AS new  FROM ".TABLE_CONTACTS." WHERE TYPE = 'i'");
 			$basis->DataBase->exec("ALTER TABLE ".TABLE_CURRENT_STATUS." ADD next_crm_id_num VARCHAR( 16 ) NOT NULL DEFAULT '{$result->fields['new']}';");
 		}
 		if (version_compare($this->status, '4.0', '<') ) {
@@ -186,7 +187,18 @@ class admin extends \core\classes\admin {
 			$sql = $basis->DataBase->exec("UPDATE ".TABLE_CONTACTS." SET class = CONCAT('contacts\\\\classes\\\\type\\\\', type) WHERE class = '' ");
 		}
 		if (version_compare($this->status, '4.0.1', '<') ) {
-			if (!$basis->DataBase->field_exists(TABLE_CONTACTS_LOG, 'crmaction')) $basis->DataBase->exec("ALTER TABLE ".TABLE_CONTACTS_LOG." CHANGE `action` `crmaction` VARCHAR(32) NOT NULL DEFAULT '';");
+			// fake install crm module 
+			$basis->DataBase->write_configure('MODULE_CRM_STATUS', 1);
+			if ($basis->DataBase->field_exists(TABLE_CONTACTS, 'last_date_1'))  $basis->DataBase->exec("ALTER TABLE " . TABLE_CONTACTS . " DROP last_date_1");
+			if ($basis->DataBase->field_exists(TABLE_CONTACTS, 'last_date_2'))  $basis->DataBase->exec("ALTER TABLE " . TABLE_CONTACTS . " DROP last_date_2");
+		}
+		if (version_compare($this->status, '4.0.2', '<') ) {
+			if (!$basis->DataBase->field_exists(TABLE_CONTACTS, 'title')) {
+				$basis->DataBase->exec("ALTER TABLE " . TABLE_CONTACTS . " ADD title varchar(32) default NULL AFTER inactive");
+				$basis->DataBase->exec("UPDATE " . TABLE_CONTACTS . " SET title = contact_middle, contact_middle = '' WHERE type = 'i'");
+				$basis->DataBase->exec("UPDATE " . TABLE_ADDRESS_BOOK . " SET website = CONCAT('http://', website) WHERE website NOT LIKE 'http%'and website <> ''");
+			}
+			//@todo update website in database so that it starts with http://
 		}
 		\core\classes\fields::sync_fields('contacts', TABLE_CONTACTS);
   	}
@@ -198,7 +210,7 @@ class admin extends \core\classes\admin {
 		if ($admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_cust_id_desc')) $admin->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_cust_id_desc");
 	    if ($admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_vend_id_num'))  $admin->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_vend_id_num");
 		if ($admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_vend_id_desc')) $admin->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_vend_id_desc");
-		if ($admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_crm_id_desc')) $admin->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_crm_id_desc");
+		if ($admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_crm_id_desc'))  $admin->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_crm_id_desc");
 		$admin->DataBase->exec("DELETE FROM " . TABLE_EXTRA_FIELDS . " WHERE module_id = 'contacts'");
 		$admin->DataBase->exec("DELETE FROM " . TABLE_EXTRA_TABS   . " WHERE module_id = 'contacts'");
 	}
@@ -247,12 +259,8 @@ class admin extends \core\classes\admin {
 	    		<a class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editContact()"><?php echo sprintf(TEXT_EDIT_ARGS, $contact);?></a>
 		        <a class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newContact()"><?php echo sprintf(TEXT_NEW_ARGS, $contact);?></a>
 	        	<a class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteContact()"><?php echo sprintf(TEXT_DELETE_ARGS, $contact);?></a>
-	        	<span style="margin-left: 100px;"><?php echo  TEXT_SHOW_INACTIVE . ' :'?></span>
-	        	<?php echo html_checkbox_field('contact_show_inactive', '1', false,'', 'onchange="doSearch()"' );?>
-	        	<div style="float: right;">
-	        		<span><?php echo TEXT_SEARCH?> : </span>
-	    			<input class="easyui-searchbox" data-options="prompt:'<?php TEXT_PLEASE_INPUT_VALUE; ?>',searcher:doSearch" id="search_text" >
-	    		</div>
+	        	<?php echo \core\classes\htmlElement::checkbox('contact_show_inactive', TEXT_SHOW_INACTIVE, '1', false,'onchange="doSearch()"' );?>
+	        	<div style="float: right;"> <?php echo \core\classes\htmlElement::search('search_text','doSearch');?></div>
 	    	</div>
 	    	<div id="win" class="easyui-window">
 	    		<div id="contactToolbar" style="margin:2px 5px;">
@@ -274,7 +282,7 @@ class admin extends \core\classes\admin {
 	                contentType: 'application/json',
 	                async: false,
 	                type: '<?php echo $basis->cInfo->type;?>',
-	                contact_show_inactive: $('#contact_show_inactive').is(":checked") ? 1 : 0,
+	                contact_show_inactive: document.getElementById('contact_show_inactive').checked ? 1 : 0,
 	        	});
 	    	}
 
@@ -396,7 +404,7 @@ class admin extends \core\classes\admin {
 	}
 	
 	function GetAllContacts (\core\classes\basis &$basis) {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ . print_r($basis->cInfo, true));
 		if (isset($basis->cInfo->dept_rep_id)) {
 			$criteria[] = "c.dept_rep_id = '{$basis->cInfo->dept_rep_id}'";
 		}else{
@@ -409,9 +417,9 @@ class admin extends \core\classes\admin {
 			if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
 			$criteria[] = '(' . implode(" like '%{$basis->cInfo->search_text}%' or ", $search_fields) . " like '%{$basis->cInfo->search_text}%')";
 		}
-		if (!$basis->cInfo->contact_show_inactive) $criteria[] = "(c.inactive = '0' or c.inactive = '')"; // inactive flag
+		if ($basis->cInfo->contact_show_inactive == false) $criteria[] = "(c.inactive = '0' or c.inactive = '')"; // inactive flag
 		$search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
-		$query_raw = "SELECT id as contactid, short_name, CASE WHEN c.type = 'e' OR c.type = 'i' THEN CONCAT(contact_first , ' ',contact_last) ELSE primary_name END AS name, contact_last, contact_first, contact_middle, contact, account_number, gov_id_number, address1, address2, city_town, state_province, postal_code, telephone1, telephone2, telephone3, telephone4, email, website, inactive FROM ".TABLE_CONTACTS." c LEFT JOIN ".TABLE_ADDRESS_BOOK." a ON c.id = a.ref_id $search ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order}";
+		$query_raw = "SELECT id as contactid, short_name, title, CASE WHEN c.type = 'e' OR c.type = 'i' THEN CONCAT(contact_first , ' ',contact_last) ELSE primary_name END AS name, contact_last, contact_first, contact_middle, contact, account_number, gov_id_number, address1, address2, city_town, state_province, postal_code, telephone1, telephone2, telephone3, telephone4, email, website, inactive, c.type, address_id, country_code FROM ".TABLE_CONTACTS." c LEFT JOIN ".TABLE_ADDRESS_BOOK." a ON c.id = a.ref_id $search ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order}";
 		$sql = $basis->DataBase->prepare($query_raw);
 		$sql->execute();
 		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
@@ -420,107 +428,7 @@ class admin extends \core\classes\admin {
 		$temp["rows"] = $results;
 		echo json_encode($temp);
 	}
-	
-/*	function loadCRMHistory (\core\classes\basis &$basis) {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		$sql = $basis->DataBase->prepare("SELECT l.log_id, l.entered_by, l.contact_id, u.display_name as user_name, l.log_date, l.crmaction, l.notes, c.contact_first, c.contact_last, a.primary_name, CASE WHEN c.contact_last != '' THEN CONCAT(c.contact_first,' ',c.contact_middle,' ',c.contact_last) ELSE a.primary_name END AS name FROM ".TABLE_CONTACTS_LOG." AS l JOIN ".TABLE_CONTACTS." AS c ON l.contact_id = c.id JOIN ".TABLE_ADDRESS_BOOK." AS a ON c.id = a.ref_id JOIN ".TABLE_USERS." AS u ON l.entered_by = u.admin_id WHERE (c.dept_rep_id ={$basis->cInfo->contact_id} OR c.id ={$basis->cInfo->contact_id})");
-		$sql->execute();
-		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
-		$temp = array();
-		$temp["total"] = sizeof($results);
-		$temp["rows"] = $results;
-		echo json_encode($temp);
-	}
-	
-	function editCRM (\core\classes\basis &$basis) {
-		$sql = $basis->DataBase->prepare("SELECT id, CONCAT (contact_first,' ',contact_last) as text FROM ".TABLE_CONTACTS." WHERE type='e'");
-		$sql->execute();
-		$all_employees       = $sql->fetchAll();
-		$crm_actions = array(
-			array('id'=> '', 		'text'	=> TEXT_NONE),
-			array('id'=> 'new', 	'text'	=> sprintf(TEXT_NEW_ARGS, TEXT_CALL)),
-			array('id'=> 'ret', 	'text'	=> TEXT_RETURNED_CALL),
-			array('id'=> 'flw', 	'text'	=> TEXT_FOLLOW_UP_CALL),
-			array('id'=> 'inac', 	'text'	=> TEXT_INACTIVE),
-			array('id'=> 'lead', 	'text'	=> sprintf(TEXT_NEW_ARGS, TEXT_LEAD)),
-			array('id'=> 'mail_in', 'text'	=> TEXT_EMAIL_RECEIVED),
-			array('id'=> 'mail_out','text'	=> TEXT_EMAIL_SEND),
-		);
-	?>
-		<form id="crm_form" method="post">
-			<?php echo html_hidden_field('log_id', '');?>
-			<?php echo html_hidden_field('contact_id', $basis->cInfo->contact_id);?>
-			<table class="dv-table" style="width:100%;border:1px solid #ccc;padding:5px;margin-top:5px;">
-				<tbody>
-					<tr>
-						<td style="width:80px;"><?php echo TEXT_SALES_REP; ?></td>
-				   		<td> <?php echo html_pull_down_menu('entered_by', $all_employees); ?></td>
-					</tr>
-	            	<tr>
-	            		<td style="width:80px;"><?php echo TEXT_DATE; ?></td>
-		        		<td><?php echo html_date_time_field('log_date'); ?></td>
-	            	</tr>
-	            	<tr>
-	            		<td style="width:80px;"><?php echo TEXT_ACTION; ?></td>
-						<td><?php echo html_pull_down_menu('crmaction', $crm_actions); ?></td>
-	            	</tr>
-	            	<tr>
-			        	<td style="width:80px;"><?php echo TEXT_NOTE; ?></td>
-	            		<td><?php echo html_textarea_field('notes', 60, 1, '', ''); ?></td>
-	            	</tr>
-	            </tbody>
-            </table>
-            <div style="padding:5px 0;text-align:right;padding-right:100px">
-		    	<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="save1()"><?php echo TEXT_SAVE?></a>
-            	<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" plain="true" onclick="cancel1(this)"><?php echo TEXT_CLEAR?></a>
-        	</div>
-        	<script type="text/javascript">
-	            function save1(){
-	            	$('#crm_form').form('submit');
-//	                var tr = $(target).closest('.datagrid-row-detail').closest('tr').prev();
-//	                var index = parseInt(tr.attr('datagrid-row-index'));
-//	                saveCRM(index+1);
-	            }
-	            function cancel1(target){
-	                var tr = $(target).closest('.datagrid-row-detail').closest('tr').prev();
-	                var index = parseInt(tr.attr('datagrid-row-index'));
-	                console.log(index)
-	                cancelCRM(index+1);
-	            }
-	            $('#crm_form').form({
-	        		url:'index.php?action=saveCRM',
-	        		novalidate: true,
-	                onSubmit: function(param){
-	        			console.log('submitting form');
-//	                    return true;
-	                },
-	                success: function(data){
-	                	console.log('succesfull submitted form');
-	                    data = eval('('+data+')');
-	                    data.isNewRecord = false;
-	                    var row = $('#notes_table').datagrid('getSelected');
-	                    var index = $('#notes_table').datagrid('getRowIndex', row);
-	                    $('#notes_table').datagrid('collapseRow',index);
-	                    $('#notes_table').datagrid('updateRow',{
-	                        index: index,
-	                        row: data
-	                    });
-	                }
-	                
-	            });
-        	</script>
-	   </form><?php 
-	}
-	
-	function saveCRM (\core\classes\basis &$basis) {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__. print_r($basis->cInfo, true) );
-		$sql = $this->prepare("INSERT INTO " . TABLE_CONTACTS_LOG . " (`log_id`, `contact_id`, `entered_by`, `log_date`, `action`, `notes`) VALUES (:log_id, :contact_id, :entered_by, :log_date, :action, :notes) ON DUPLICATE KEY UPDATE contact_id = :contact_id, enterd_by = :entered_by, log_date= :log_date, action= :action, notes = :notes");
-		$sql->execute(array(':log_id' => $basis->cInfo->log_id,':contact_id' => $basis->cInfo->contact_id, ':entered_by' => $basis->cInfo->enterd_by, ':log_date' => $basis->cInfo->log_date, ':action' => $basis->cInfo->action,':notes' => $basis->cInfo->notes));
-		$temp["success"] = true;
-		$temp["message"] = TEXT_SAVED_SUCCESSFULLY;
-		echo json_encode($temp);
-	}*/
-	
+
 	function loadAddresses (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$sql = $basis->DataBase->prepare("SELECT * FROM ".TABLE_ADDRESS_BOOK." WHERE ref_id = {$basis->cInfo->contact_id} AND type LIKE '%{$basis->cInfo->address_type}' ORDER BY primary_name");
@@ -533,54 +441,281 @@ class admin extends \core\classes\admin {
 	}
 	
 	function editAddress (\core\classes\basis &$basis) {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ ); 
+		if ($basis->cInfo->table == ''){
+			$sql = $basis->DataBase->prepare("SELECT * FROM ".TABLE_ADDRESS_BOOK." WHERE ref_id = {$basis->cInfo->contact_id} AND type LIKE '%{$basis->cInfo->address_type}' ORDER BY primary_name");
+			$sql->execute();
+			$basis->cInfo = (object)$sql->fetch(\PDO::FETCH_ASSOC);
+			\core\classes\messageStack::debug_log("variables are ".print_r($basis->cInfo, true) );
+		}
 		?>
-		<form>
-		<?php echo html_hidden_field('address_id', '');?>
-		<table >
-			<tr>
-				<td align="right"><?php echo TEXT_NAME_OR_COMPANY ?></td>
-				<td><?php echo html_input_field("primary_name", $addres['primary_name'], 'size="49" maxlength="48"', true) ?></td>
-				<td align="right"><?php echo TEXT_TELEPHONE ?></td>
-				<td><?php echo html_input_field("telephone1", $addres['telephone1'], 'size="21" maxlength="20"', ADDRESS_BOOK_TELEPHONE1_REQUIRED)?></td>
-			</tr>
-			<tr>
-				<td align="right"><?php echo TEXT_ATTENTION . html_hidden_field("address[$address_type][address_id]", $addres['address_id'])?></td>
-				<td><?php echo html_input_field("contact", $addres['contact'], 'size="33" maxlength="32"', ADDRESS_BOOK_CONTACT_REQUIRED)?></td>
-				<td align="right"><?php echo TEXT_ALTERNATIVE_TELEPHONE_SHORT?></td>
-				<td><?php echo html_input_field("$address_type", $addres['telephone2'], 'size="21" maxlength="20"')?></td>
-			</tr>
-			<tr>
-				<td align="right"><?php echo TEXT_ADDRESS1?></td>
-				<td><?php echo html_input_field("address1" , $addres['address1'], 'size="33" maxlength="32"', ADDRESS_BOOK_ADDRESS1_REQUIRED)?></td>
-				<td align="right"><?php echo TEXT_FAX?></td>
-				<td><?php echo html_input_field("$address_type", $addres['telephone3'], 'size="21" maxlength="20"')?></td>
-			</tr>
-			<tr>
-				<td align="right"><?php echo TEXT_ADDRESS2?></td>
-				<td><?php echo html_input_field("address2", $addres['address2'], 'size="33" maxlength="32"', ADDRESS_BOOK_ADDRESS2_REQUIRED)?></td>
-				<td align="right"><?php echo TEXT_MOBILE_PHONE?></td>
-				<td><?php echo html_input_field("telephone4", $addres['telephone4'], 'size="21" maxlength="20"')?></td>
-			</tr>
-			<tr>
-				<td align="right"><?php echo TEXT_CITY_TOWN?></td>
-				<td><?php echo html_input_field("city_town", $addres['city_town'], 'size="25" maxlength="24"', ADDRESS_BOOK_CITY_TOWN_REQUIRED)?></td>
-				<td align="right"><?php echo TEXT_EMAIL?></td>
-				<td><?php echo html_input_field("email", $addres['email'], 'size="51" maxlength="50"')?></td>
-			</tr>
-			<tr>
-				<td align="right"><?php echo TEXT_STATE_PROVINCE?></td>
-				<td><?php echo html_input_field("state_province", $addres['state_province'], 'size="25" maxlength="24"', ADDRESS_BOOK_STATE_PROVINCE_REQUIRED)?></td>
-				<td align="right"><?php echo TEXT_WEBSITE?></td>
-				<td><?php echo html_input_field("website", $addres['website'], 'size="51" maxlength="50"')?></td>
-			</tr>
-			<tr>
-				<td align="right"><?php echo TEXT_POSTAL_CODE?></td>
-				<td><?php echo html_input_field("postal_code", $addres['postal_code'], 'size="11" maxlength="10"', ADDRESS_BOOK_POSTAL_CODE_REQUIRED)?></td>
-				<td align="right"><?php echo TEXT_COUNTRY?></td>
-				<td><?php echo html_pull_down_menu("country_code", $_SESSION['language']->get_countries_dropdown(), $addres['country_code'] ? $addres['country_code'] : COMPANY_COUNTRY)?></td>
-			</tr>
-		</table></form><?php
+		<form id='editAddress'  method="post">					<?php
+		echo \core\classes\htmlElement::hidden('address_id', $basis->cInfo->address_id);
+		echo \core\classes\htmlElement::hidden('type', $basis->cInfo->type);
+		echo \core\classes\htmlElement::hidden('ref_id', $basis->cInfo->contact_id);
+		echo \core\classes\htmlElement::hidden('isNewRecord', false);?>
+			<div style="margin-left:50px;text-align:right;float:left;"><?php
+			echo 	\core\classes\htmlElement::textbox("primary_name",	 	TEXT_NAME_OR_COMPANY,'size="33" maxlength="32"', 	$basis->cInfo->primary_name, 	true). '<br>' .chr(13).
+					\core\classes\htmlElement::textbox("contact",	 		TEXT_ATTENTION, 	'size="33" maxlength="32"', 	$basis->cInfo->contact, 		ADDRESS_BOOK_CONTACT_REQUIRED). '<br>' .chr(13).
+					\core\classes\htmlElement::textbox("address1" , 		TEXT_ADDRESS1, 		'size="33" maxlength="32"', 	$basis->cInfo->address1, 		ADDRESS_BOOK_ADDRESS1_REQUIRED). '<br>' .chr(13).
+					\core\classes\htmlElement::textbox("address2" , 		TEXT_ADDRESS2, 		'size="33" maxlength="32"', 	$basis->cInfo->address2, 		ADDRESS_BOOK_ADDRESS2_REQUIRED). '<br>' .chr(13).
+					\core\classes\htmlElement::textbox("city_town" , 		TEXT_CITY_TOWN, 	'size="33" maxlength="32"', 	$basis->cInfo->city_town, 		ADDRESS_BOOK_CITY_TOWN_REQUIRED). '<br>' .chr(13).
+					\core\classes\htmlElement::textbox("state_province",	TEXT_STATE_PROVINCE,'size="25" maxlength="24"', 	$basis->cInfo->state_province,	ADDRESS_BOOK_STATE_PROVINCE_REQUIRED). '<br>' .chr(13).
+					\core\classes\htmlElement::textbox("postal_code" , 		TEXT_POSTAL_CODE, 	'size="11" maxlength="10"', 	$basis->cInfo->postal_code, 	ADDRESS_BOOK_POSTAL_CODE_REQUIRED). '<br>' .chr(13);
+				?>
+			</div>
+			<div style="margin-left:50px;text-align:right;"> <?php
+			echo	\core\classes\htmlElement::textbox("telephone1", 		TEXT_TELEPHONE, 	'size="22" maxlength="21"', $basis->cInfo->telephone1, ADDRESS_BOOK_TELEPHONE1_REQUIRED). '<br>' .chr(13).
+					\core\classes\htmlElement::textbox("telephone2", 		TEXT_TELEPHONE, 	'size="22" maxlength="21"', $basis->cInfo->telephone2). '<br>' .chr(13).
+			 		\core\classes\htmlElement::textbox("telephone3", 		TEXT_FAX,			'size="22" maxlength="21"', $basis->cInfo->telephone3). '<br>' .chr(13).
+					\core\classes\htmlElement::textbox("telephone4", 		TEXT_MOBILE_PHONE, 	'size="22" maxlength="21"', $basis->cInfo->telephone4). '<br>' .chr(13).
+					\core\classes\htmlElement::textbox("email", 			TEXT_EMAIL_ADDRESS, 'size="51" maxlength="50" data-options="validType:\'email\'"', $basis->cInfo->email). '<br>' .chr(13).
+					\core\classes\htmlElement::textbox("website", 			TEXT_WEBSITE, 		'size="51" maxlength="50" data-options="validType:\'url\'"', $basis->cInfo->website). '<br>' .chr(13).
+					\core\classes\htmlElement::combobox("country_code", 	TEXT_COUNTRY,		$_SESSION['language']->get_countries_dropdown(), ($basis->cInfo->country_code =='') ? COMPANY_COUNTRY : $basis->cInfo->country_code). '<br>' .chr(13);
+			  	?>
+		  	</div>
+		    <div data-options="region:'south'" style="padding:5px 0;text-align:right;padding-right:100px;clear: both;	">
+			   	<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="saveAddress1(this)"><?php echo TEXT_SAVE?></a>
+	           	<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" plain="true" onclick="cancelAddress1(this)"><?php echo TEXT_CLEAR?></a>
+	           	<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteAddress()"><?php echo sprintf(TEXT_DELETE_ARGS, $contact);?></a>
+	        </div>
+         	<script type="text/javascript">
+	            function saveAddress1(target){
+	            	console.log('save address was clicked');
+	            	var tr = $(target).closest('.datagrid-row-detail').closest('tr').prev();
+	                var index = parseInt(tr.attr('datagrid-row-index'));
+	                $('#<?php echo $basis->cInfo->table?>').datagrid('selectRow', index);
+	            	$('#editAddress').form('submit');
+	            }
+	            function cancelAddress1(target){
+	                var tr = $(target).closest('.datagrid-row-detail').closest('tr').prev();
+	                var index = parseInt(tr.attr('datagrid-row-index'));
+	                <?php 
+	                if ($basis->cInfo->table == 'billing_address'){
+	                	echo 'cancelBilling (index)';
+	                }else{
+	                	echo 'cancelShipping (index)';
+	                }	?>
+	            }
+	            
+	            function deleteAddress(){
+	            	console.log('delete address was clicked');
+	                var row = $('#<?php echo $basis->cInfo->table?>').datagrid('getSelected');
+	                var index = $('#<?php echo $basis->cInfo->table?>').datagrid('getRowIndex', row);
+	                if (row){
+	                    $.messager.confirm('<?php echo TEXT_CONFORM?>','<?php echo sprintf(TEXT_ARE_YOU_SURE_YOU_WANT_TO_DELETE_ARGS, TEXT_ADDRESS)?>',function(r){
+	                        if (r){
+	                        	$.post('index.php?action=deleteAddress',{address_id:row.address_id, dataType: 'json', async: false, contentType: 'application/json'},function(result){
+	                                if (result.success){
+	                                	$('#<?php echo $basis->cInfo->table?>').datagrid('deleteRow', index);
+	                                } else {
+	                                    $.messager.show({    // show error message
+	                                        title: '<?php echo TEXT_ERROR?>',
+	                                        msg: result.error_message
+	                                    });
+	                                }
+	                            },'json');
+	                        }
+	                    });
+	                }
+	            }
+	            
+	            $('#editAddress').form({
+	        		url:'index.php?action=saveAddress',
+	        		queryParams: {
+						dataType: 'json',
+				        contentType: 'application/json',
+				        async: false,
+					},
+	                onSubmit: function(param){
+	        			console.log('submitting Address Relation form ');
+	                },
+	                onLoadSuccess: function(data){
+	                	console.log('succesfull loaded form data '+JSON.stringify(data));
+		            },
+	                success: function(data){
+	                	data = eval('('+data+')');
+	                    if (data.error_message){
+	                    	console.error(data.error_message);
+	                        $.messager.show({ title: '<?php echo TEXT_ERROR?>', msg: data.error_message });
+	                    }else{
+		                    data.isNewRecord = false;
+		                    var row = $('#<?php echo $basis->cInfo->table?>').datagrid('getSelected');
+			                var index = $('#<?php echo $basis->cInfo->table?>').datagrid('getRowIndex', row);
+			                $('#<?php echo $basis->cInfo->table?>').datagrid('updateRow',{index: index, row: data });
+			                $('#<?php echo $basis->cInfo->table?>').datagrid('collapseRow',index);
+	                    }
+	                }
+	                
+	            });
+        	</script>
+		</form><?php
+	}
+	
+	function saveAddress  (\core\classes\basis &$basis) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		try{
+			$temp = $basis->cInfo;
+			$sql = $basis->DataBase->prepare("INSERT INTO " . TABLE_ADDRESS_BOOK . " (`address_id`, `ref_id`, `type`, `primary_name`, `contact`, `address1`, `address2`, `city_town`, `state_province`,`postal_code`, `country_code`, `telephone1`, `telephone2`, `telephone3`, `telephone4`, `email`, `website`) VALUES (:address_id, :ref_id, :type, :primary_name, :contact, :address1, :address2, :city_town, :state_province, :postal_code, :country_code, :telephone1, :telephone2, :telephone3, :telephone4, :email, :website) ON DUPLICATE KEY UPDATE primary_name = :primary_name, contact = :contact, address1 = :address1, address2 = :address2, city_town = :city_town, state_province = :state_province, postal_code = :postal_code, country_code = :country_code, telephone1 = :telephone1, telephone2 = :telephone2, telephone3 = :telephone3, telephone4 = :telephone4, email = :email, website = :website, type = :type");
+			$sql->execute(array(':address_id' => $temp->address_id, ':ref_id' => $temp->ref_id, ':type' => "{$temp->type}m", ':primary_name' => $temp->primary_name, ':contact' => $temp->contact, ':address1' => $temp->address1, ':address2' => $temp->address2, ':city_town' => $temp->city_town, ':state_province' => $temp->state_province, ':postal_code' => $temp->postal_code, ':country_code' => $temp->country_code, ':telephone1' => $temp->telephone1, ':telephone2' => $temp->telephone2, ':telephone3' => $temp->telephone3, ':telephone4' => $temp->telephone4, ':email' => $temp->email, ':website' => $temp->website));
+			if($temp->address_id == ''){//find new contact id.
+				$temp->address_id = $basis->DataBase->lastInsertId();
+			}
+			$temp->success = true;
+			$temp->message = TEXT_SAVED_SUCCESSFULLY;
+		}catch (\Exception $e) {
+			$temp->success = false;
+			$temp->error_message = $e->getMessage();
+		}
+		echo json_encode($temp);
+	}
+	
+	function deleteAddress  (\core\classes\basis &$basis) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		try{
+			$temp = $basis->cInfo;
+			$basis->DataBase->exec("DELETE FROM ".TABLE_ADDRESS_BOOK ." WHERE address_id={$temp->address_id}");
+			$temp->success = true;
+			$temp->message = TEXT_SAVED_SUCCESSFULLY;
+		}catch (\Exception $e) {
+			$temp->success = false;
+			$temp->error_message = $e->getMessage();
+		}
+		echo json_encode($temp);
+	}
+	
+	function editContactRelation (\core\classes\basis &$basis) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		if ($basis->cInfo->contactid == '') {
+			$sql = $basis->DataBase->prepare("SELECT next_crm_id_num FROM ".TABLE_CURRENT_STATUS);
+			$sql->execute();
+			$result = $sql->fetch(\PDO::FETCH_ASSOC);
+			$temp  = $result['next_crm_id_num'];
+		}
+		?>
+		<form id='editRelation'  method="post">
+			<?php echo \core\classes\htmlElement::hidden('dept_rep_id', $basis->cInfo->contact_id);
+			echo \core\classes\htmlElement::hidden('type', 'i');
+			echo \core\classes\htmlElement::hidden('isNewRecord', false);
+			echo \core\classes\htmlElement::hidden('contactid');
+			echo \core\classes\htmlElement::hidden('address_id');?>
+				<div style="margin-left:50px;text-align:right;float:right"> <?php
+				echo 	\core\classes\htmlElement::textbox("title", 			TEXT_TITLE, 	'size="33" maxlength="32"'). '<br>' .chr(13).
+						\core\classes\htmlElement::textbox("contact_middle", 	TEXT_MIDDLE_NAME,	'size="33" maxlength="32"'). '<br>' .chr(13).
+						\core\classes\htmlElement::textbox("contact_last", 		TEXT_LAST_NAME, 	'size="33" maxlength="32"', null, true). '<br>' .chr(13).
+						\core\classes\htmlElement::textbox("gov_id_number", 	TEXT_TWITTER_ID, 	'size="17" maxlength="16"'). '<br>' .chr(13).
+						\core\classes\htmlElement::textbox("telephone1", 		TEXT_TELEPHONE, 	'size="22" maxlength="21"', null, ADDRESS_BOOK_TELEPHONE1_REQUIRED). '<br>' .chr(13).
+						\core\classes\htmlElement::textbox("telephone2", 		TEXT_TELEPHONE, 	'size="22" maxlength="21"'). '<br>' .chr(13).
+				 		\core\classes\htmlElement::textbox("telephone3", 		TEXT_FAX,			'size="22" maxlength="21"'). '<br>' .chr(13).
+						\core\classes\htmlElement::textbox("telephone4", 		TEXT_MOBILE_PHONE, 	'size="22" maxlength="21"'). '<br>' .chr(13).
+						\core\classes\htmlElement::textbox("email", 			TEXT_EMAIL_ADDRESS, 'size="51" maxlength="50" data-options="validType:\'email\'"'). '<br>' .chr(13).
+						\core\classes\htmlElement::textbox("website", 			TEXT_WEBSITE, 		'size="51" maxlength="50" data-options="validType:\'url\'"'). '<br>' .chr(13).
+						\core\classes\htmlElement::combobox("country_code", 	TEXT_COUNTRY,		$_SESSION['language']->get_countries_dropdown(), COMPANY_COUNTRY). '<br>' .chr(13);
+			  	?>
+			  	</div>
+				<div style="text-align:right"><?php
+				echo \core\classes\htmlElement::checkbox("inactive", 		TEXT_INACTIVE , '1', false). '<br>' .chr(13).
+						\core\classes\htmlElement::textbox("short_name", 		TEXT_CONTACT_ID, 	'size="21" maxlength="20"', $temp). '<br>' .chr(13).
+						\core\classes\htmlElement::textbox("contact_first", 	TEXT_FIRST_NAME, 	'size="33" maxlength="32"', null, true). '<br>' .chr(13).
+						\core\classes\htmlElement::textbox("account_number",	TEXT_FACEBOOK_ID, 	'size="17" maxlength="16"'). '<br>' .chr(13).
+						\core\classes\htmlElement::textbox("primary_name",	 	TEXT_NAME_OR_COMPANY,'size="33" maxlength="32"'). '<br>' .chr(13).
+						\core\classes\htmlElement::textbox("contact",	 		TEXT_ATTENTION, 	'size="33" maxlength="32"', null, ADDRESS_BOOK_CONTACT_REQUIRED). '<br>' .chr(13).
+						\core\classes\htmlElement::textbox("address1" , 		TEXT_ADDRESS1, 		'size="33" maxlength="32"', null, ADDRESS_BOOK_ADDRESS1_REQUIRED). '<br>' .chr(13).
+						\core\classes\htmlElement::textbox("address2" , 		TEXT_ADDRESS2, 		'size="33" maxlength="32"', null, ADDRESS_BOOK_ADDRESS2_REQUIRED). '<br>' .chr(13).
+						\core\classes\htmlElement::textbox("city_town" , 		TEXT_CITY_TOWN, 	'size="33" maxlength="32"', null, ADDRESS_BOOK_CITY_TOWN_REQUIRED). '<br>' .chr(13).
+						\core\classes\htmlElement::textbox("state_province",	TEXT_STATE_PROVINCE,'size="25" maxlength="24"', null, ADDRESS_BOOK_STATE_PROVINCE_REQUIRED). '<br>' .chr(13).
+						\core\classes\htmlElement::textbox("postal_code" , 		TEXT_POSTAL_CODE, 	'size="11" maxlength="10"', null, ADDRESS_BOOK_POSTAL_CODE_REQUIRED). '<br>' .chr(13);
+					?>
+				</div>
+		    	<div data-options="region:'south'" style="padding:5px 0;text-align:right;padding-right:100px">
+			    	<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="save1(this)"><?php echo TEXT_SAVE?></a>
+	            	<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" plain="true" onclick="cancel1(this)"><?php echo TEXT_CLEAR?></a>
+	            	<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteContact()"><?php echo sprintf(TEXT_DELETE_ARGS, $contact);?></a>
+	        	</div>
+        	<script type="text/javascript">
+	            function save1(target){
+	            	console.log('save contact was clicked');
+	            	var tr = $(target).closest('.datagrid-row-detail').closest('tr').prev();
+	                var index = parseInt(tr.attr('datagrid-row-index'));
+	                $('#cdg').datagrid('selectRow', index);
+	            	$('#editRelation').form('submit');
+	            }
+	            function cancel1(target){
+	                var tr = $(target).closest('.datagrid-row-detail').closest('tr').prev();
+	                var index = parseInt(tr.attr('datagrid-row-index'));
+	                cancelContact(index);
+	            }
+	            $('#editRelation').form({
+	        		url:'index.php?action=saveContactRelation',
+	        		queryParams: {
+						dataType: 'json',
+				        contentType: 'application/json',
+				        async: false
+					},
+	                onSubmit: function(param){
+	        			console.log('submitting Contact Relation form ');
+	                },
+	                onLoadSuccess: function(data){
+	                	console.log('succesfull loaded form data ');
+		            },
+	                success: function(data){
+	                	data = eval('('+data+')');
+	                    if (data.error_message){
+	                    	console.error(data.error_message);
+	                        $.messager.show({ title: '<?php echo TEXT_ERROR?>', msg: data.error_message });
+	                    }else{
+		                    data.isNewRecord = false;
+		                    var row = $('#cdg').datagrid('getSelected');
+		                    var index = $('#cdg').datagrid('getRowIndex', row);
+		                    $('#cdg').datagrid('updateRow',{
+		                        index: index,
+		                        row: data
+		                    });
+		                    $('#cdg').datagrid('collapseRow',index);
+	                    }
+	                }
+	                
+	            });
+        	</script>
+    	</form><?php 
+	}
+	
+	function saveContactRelation (\core\classes\basis &$basis) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		$temp = $basis->cInfo;
+		try{
+			if ($temp->type == '' || $temp->type == 0 ) $temp->type = 'i';
+			$temp->inactive = $temp->inactive? '1':'0';
+			$date = new \core\classes\DateTime();
+			$sql = $basis->DataBase->prepare("INSERT INTO " . TABLE_CONTACTS . " (`class`, `id`, `type`, `short_name`, `inactive`, `title`, `contact_first`, `contact_middle`, `contact_last`, `dept_rep_id`, `gov_id_number`, `account_number`,`first_date`, `last_update`) VALUES (:class, :id, :type, :short_name, :inactive, :title, :contact_first, :contact_middle, :contact_last, :dept_rep_id, :gov_id_number, :account_number, :first_date, :last_update) ON DUPLICATE KEY UPDATE short_name = :short_name, inactive = :inactive, title= :title, contact_first = :contact_first, contact_middle = :contact_middle, gov_id_number = :gov_id_number, account_number = :account_number, contact_last = :contact_last, last_update = :last_update");
+			$sql->execute(array(':class' => "contacts\\classes\\type\\{$temp->type}", ':id' => $temp->contactid,':type' => $temp->type, ':short_name' => $temp->short_name, ':inactive' => $temp->inactive,':title' => $temp->title ,':contact_first' => $temp->contact_first, ':contact_middle' => $temp->contact_middle, ':contact_last' => $temp->contact_last, ':dept_rep_id' => $temp->dept_rep_id, ':first_date' => $date->format( 'Y-m-d' ), ':last_update' => $date->format( 'Y-m-d' ), 'gov_id_number' => $temp->gov_id_number, ':account_number' => $temp->account_number));
+			if($temp->contactid == ''){//find new contact id.
+				$temp->contactid = $basis->DataBase->lastInsertId();
+				\core\classes\messageStack::debug_log("contactID =  {$temp->contactid}");
+				if($temp->isNewRecord){
+			  		$next_id = string_increment($temp->short_name);
+			  		\core\classes\messageStack::debug_log("nextID =  {$next_id} table = " .TABLE_CURRENT_STATUS);
+			  		\core\classes\messageStack::debug_log("UPDATE ".TABLE_CURRENT_STATUS." SET next_crm_id_num = {$next_id}");
+					$sql = $basis->DataBase->exec ("UPDATE ".TABLE_CURRENT_STATUS." SET next_crm_id_num = {$next_id}");
+				}
+			}
+			$sql = $basis->DataBase->prepare("INSERT INTO " . TABLE_ADDRESS_BOOK . " (`address_id`, `ref_id`, `type`, `primary_name`, `contact`, `address1`, `address2`, `city_town`, `state_province`,`postal_code`, `country_code`, `telephone1`, `telephone2`, `telephone3`, `telephone4`, `email`, `website`) VALUES (:address_id, :ref_id, :type, :primary_name, :contact, :address1, :address2, :city_town, :state_province, :postal_code, :country_code, :telephone1, :telephone2, :telephone3, :telephone4, :email, :website) ON DUPLICATE KEY UPDATE primary_name = :primary_name, contact = :contact, address1 = :address1, address2 = :address2, city_town = :city_town, state_province = :state_province, postal_code = :postal_code, country_code = :country_code, telephone1 = :telephone1, telephone2 = :telephone2, telephone3 = :telephone3, telephone4 = :telephone4, email = :email, website = :website, type = :type");
+			$sql->execute(array(':address_id' => $temp->address_id, ':ref_id' => $temp->contactid, ':type' => "{$temp->type}m", ':primary_name' => $temp->primary_name, ':contact' => $temp->contact, ':address1' => $temp->address1, ':address2' => $temp->address2, ':city_town' => $temp->city_town, ':state_province' => $temp->state_province, ':postal_code' => $temp->postal_code, ':country_code' => $temp->country_code, ':telephone1' => $temp->telephone1, ':telephone2' => $temp->telephone2, ':telephone3' => $temp->telephone3, ':telephone4' => $temp->telephone4, ':email' => $temp->email, ':website' => $temp->website));
+			if($temp->address_id == ''){//find new contact id.
+				$temp->address_id = $basis->DataBase->lastInsertId();
+			}
+			$temp->success = true;
+			$temp->message = TEXT_SAVED_SUCCESSFULLY;
+		}catch (\Exception $e) {
+			$temp->success = false;
+			$temp->error_message = $e->getMessage();
+		}
+		if (in_array($temp->type, array('e','i')) ){
+			$temp->name = $temp->contact_first . ' ' .$temp->contact_last;
+		}else{
+			$temp->name = $temp->primary_name;
+		}
+		echo json_encode($temp);
 	}
 	
 	/**
@@ -622,12 +757,9 @@ class admin extends \core\classes\admin {
 		}
 		// load the tax rates
 		$basis->cInfo->tax_rates       = ord_calculate_tax_drop_down($basis->cInfo->contact->type, true);
-		$sql = $basis->DataBase->prepare("SELECT id, contact_first, contact_last FROM ".TABLE_CONTACTS." WHERE type='e'");
+		$sql = $basis->DataBase->prepare("SELECT id, CONCAT(contact_first , ' ',contact_last) as text FROM ".TABLE_CONTACTS." WHERE type='e'");
 		$sql->execute();
-		$basis->cInfo->all_employees       = array();
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
-			$basis->cInfo->all_employees[$result['id']] = $result['contact_first'] . ' ' . $result['contact_last'];
-		}
+		$basis->cInfo->contact->sales_rep_array = $sql->fetchAll(\PDO::FETCH_ASSOC);
 		$basis->page_title  = "{$basis->cInfo->contact->page_title_edit} - ({$basis->cInfo->contact->short_name}) {$basis->cInfo->contact->address[m][0]->primary_name}";
 		include(DIR_FS_MODULES . "contacts/pages/main/js_include.php");
 		include(DIR_FS_MODULES . "contacts/pages/main/template_detail.php");
@@ -636,56 +768,44 @@ class admin extends \core\classes\admin {
 
 	
 	function saveContact (\core\classes\basis &$basis) {
-		if ($basis->cInfo->id == '') throw new \core\classes\userException("id variable isn't set can't execute method SaveContact ");
-		if ($_POST['crm_date']) $_POST['crm_date'] = gen_db_date($_POST['crm_date']);
-		if ($_POST['due_date']) $_POST['due_date'] = gen_db_date($_POST['due_date']);
-		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->id}");
-		$sql->execute();
-		$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
-		// error check
-		$basis->cInfo->contact->data_complete();
-		// start saving data
-		$basis->cInfo->contact->save();
-		if ($basis->cInfo->contact->type <> 'i' && ($_POST['i_short_name'] || $_POST['address']['im']['primary_name'])) { // is null
-			$crmInfo = new \contacts\classes\type\i;
-			$crmInfo->dept_rep_id = $basis->cInfo->contact->id;
-			// error check contact
-			$crmInfo->data_complete();
-			$crmInfo->save();
-		}
-		// Check attachments
-		$result = $admin->DataBase->query("SELECT attachments FROM ".TABLE_CONTACTS." WHERE id = {$basis->cInfo->contact->id}");
-		$attachments = $result['attachments'] ? unserialize($result['attachments']) : array();
-		for ($image_id = 0; $image_id <= sizeof($attachments); $image_id++) {
-			if (isset($_POST['rm_attach_'.$image_id])) {
-				@unlink("{$this->dir_attachments}contacts_{$basis->cInfo->contact->id}_{$image_id}.zip");
-				unset($attachments[$image_id]);
+		try{
+			if ($basis->cInfo->id == '') throw new \core\classes\userException("id variable isn't set can't execute method SaveContact ");
+			if ($_POST['crm_date']) $_POST['crm_date'] = gen_db_date($_POST['crm_date']);
+			if ($_POST['due_date']) $_POST['due_date'] = gen_db_date($_POST['due_date']);
+			$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->id}");
+			$sql->execute();
+			$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
+			// error check
+			$basis->cInfo->contact->data_complete();
+			// start saving data
+			$basis->cInfo->contact->save();
+			// Check attachments
+			$result = $basis->DataBase->query("SELECT attachments FROM ".TABLE_CONTACTS." WHERE id = {$basis->cInfo->contact->id}");
+			$attachments = $result['attachments'] ? unserialize($result['attachments']) : array();
+			for ($image_id = 0; $image_id <= sizeof($attachments); $image_id++) {
+				if (isset($_POST['rm_attach_'.$image_id])) {
+					@unlink("{$this->dir_attachments}contacts_{$basis->cInfo->contact->id}_{$image_id}.zip");
+					unset($attachments[$image_id]);
+				}
 			}
-		}
-		if (is_uploaded_file($_FILES['file_name']['tmp_name'])) { // find an image slot to use
-			$image_id = 0;
-			while (true) {
-				if (!file_exists("{$this->dir_attachments}contacts_{$basis->cInfo->contact->id}_{$image_id}.zip")) break;
-				$image_id++;
+			if (is_uploaded_file($_FILES['file_name']['tmp_name'])) { // find an image slot to use
+				$image_id = 0;
+				while (true) {
+					if (!file_exists("{$this->dir_attachments}contacts_{$basis->cInfo->contact->id}_{$image_id}.zip")) break;
+					$image_id++;
+				}
+				saveUploadZip('file_name', "{$this->dir_attachments}contacts_{$basis->cInfo->contact->id}_{$image_id}.zip");
+				$attachments[$image_id] = $_FILES['file_name']['name'];
 			}
-			saveUploadZip('file_name', "{$this->dir_attachments}contacts_{$basis->cInfo->contact->id}_{$image_id}.zip");
-			$attachments[$image_id] = $_FILES['file_name']['name'];
+			$sql = $basis->DataBase->prepare("UPDATE ".TABLE_CONTACTS." SET attachments = '".serialize($attachments). "' WHERE id = {$basis->cInfo->contact->id}");
+			$sql->execute();
+			$temp->success = true;
+			$temp->message = TEXT_SAVED_SUCCESSFULLY;
+		}catch (\Exception $e) {
+			$temp->success = false;
+			$temp->error_message = $e->getMessage();
 		}
-		$sql = $admin->DataBase->prepare("UPDATE ".TABLE_CONTACTS." SET attachments = '".serialize($attachments). "' WHERE id = {$basis->cInfo->contact->id}");
-		$sql->execute();
-		// check for crm notes
-		if ($_POST['crm_action'] <> '' || $_POST['crm_note'] <> '') {
-			$sql_data_array = array(
-					'contact_id' => $basis->cInfo->contact->id,
-					'log_date'   => $_POST['crm_date'],
-					'entered_by' => $_POST['crm_rep_id'],
-					'action'     => $_POST['crm_action'],
-					'notes'      => db_prepare_input($_POST['crm_note']),
-			);
-			$sql = $basis->Database->prepare("INSERT INTO " . TABLE_CONTACTS_LOG . " SET (contact_id, log_date, entered_by, action, notes) VALUES (:contact_id, :log_date, :entered_by, :action, :notes)");
-			$sql->execute($sql_data_array);
-		}
-		$basis->addEventToStack('LoadContactMgrPage');
+		echo json_encode($temp);
 	}
 
 	function DeleteContact (\core\classes\basis &$basis) {
@@ -695,7 +815,14 @@ class admin extends \core\classes\admin {
 		$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
 		// error check
 		$basis->cInfo->contact->delete();
-		$basis->addEventToStack('LoadContactMgrPage');
+		$temp = $basis->cInfo; 
+		if( $basis->cInfo->contentType == "application/json"){
+			$temp->success = true;
+			$temp->message = TEXT_SAVED_SUCCESSFULLY;
+			echo json_encode($temp);
+		}else{
+			$basis->addEventToStack('LoadContactMgrPage');
+		}
 	}
 
 	function ContactAttachmentDownload (\core\classes\basis &$basis) {
@@ -711,7 +838,7 @@ class admin extends \core\classes\admin {
 	function ContactAttachmentDownloadFirst (\core\classes\basis &$basis) {
 	//	case 'dn_attach': // download from list, assume the first document only
 		$cID   = db_prepare_input($_POST['rowSeq']);
-		$result = $admin->DataBase->query("SELECT attachments FROM ".TABLE_CONTACTS." WHERE id = $cID");
+		$result = $basis->DataBase->query("SELECT attachments FROM ".TABLE_CONTACTS." WHERE id = $cID");
 		$attachments = unserialize($result['attachments']);
 		foreach ($attachments as $key => $value) {
 			$filename = "contacts_{$cID}_{$key}.zip";
@@ -762,12 +889,8 @@ class admin extends \core\classes\admin {
 	        	</thead>
 	    	</table>
 	    	<div id="toolbar">
-	    		<span style="margin-left: 100px;"><?php echo  TEXT_SHOW_INACTIVE . ' :'?></span>
-	        	<?php echo html_checkbox_field('contact_show_inactive', '1', false,'', 'onchange="doSearch()"' );?>
-	        	<div style="float: right;">
-	        		<span><?php echo TEXT_SEARCH?> : </span>
-	    			<input class="easyui-searchbox" data-options="prompt:'<?php TEXT_PLEASE_INPUT_VALUE; ?>',searcher:doSearch" id="search_text" >
-	    		</div>
+	    		<?php echo \core\classes\htmlElement::checkbox('contact_show_inactive', TEXT_SHOW_INACTIVE, '1', false,'onchange="doSearch()"' );?>
+	        	<div style="float: right;"> <?php echo \core\classes\htmlElement::search('search_text','doSearch');?></div>
 	    	</div>
     	</div>	
 		<script type="text/javascript">
@@ -780,7 +903,7 @@ class admin extends \core\classes\admin {
 	                contentType: 'application/json',
 	                async: false,
 	                type: '<?php echo $basis->cInfo->type;?>',
-	                contact_show_inactive: $('#contact_show_inactive').is(":checked") ? 1 : 0,
+	                contact_show_inactive: document.getElementById('contact_show_inactive').checked ? 1 : 0,
 	        	});
 	    	}
 	        
@@ -788,7 +911,7 @@ class admin extends \core\classes\admin {
 				url:		"index.php?action=GetAllContactsAndJournals",
 				queryParams: {
 					type: '<?php echo $basis->cInfo->type;?>',
-					journal_id: '<?php echo $search_journal;?>',
+					jID: '<?php echo $search_journal;?>',
 					open_only: true,
 					dataType: 'json',
 	                contentType: 'application/json',

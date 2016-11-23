@@ -27,7 +27,6 @@ class e extends \contacts\classes\contacts{
 
 	public function __construct(){
 		$this->tab_list[] = array('file'=>'template_history',	'tag'=>'history',  'order'=>10, 'text'=>TEXT_HISTORY);
-		$this->tab_list[] = array('file'=>'template_notes',		'tag'=>'notes',    'order'=>40, 'text'=>TEXT_NOTES);
 		$this->tab_list[] = array('file'=>'template_e_general',	'tag'=>'general',  'order'=> 1, 'text'=>TEXT_GENERAL);
 		$this->employee_types = array(
 			'e' => TEXT_EMPLOYEE,
@@ -39,25 +38,9 @@ class e extends \contacts\classes\contacts{
 
 	public function getContact() {
 		global $admin;
-		if ($this->id == '' && !$this->aid == ''){
-			$sql = $admin->DataBase->prepare("SELECT * FROM ".TABLE_ADDRESS_BOOK." WHERE address_id = {$this->aid}");
-			$sql->execute();
-			$result = $sql->fetch(\PDO::FETCH_LAZY);
-			// Load contact info, including custom fields
-			$sql = $admin->DataBase->prepare("SELECT * FROM ".TABLE_CONTACTS." WHERE id = {$result['ref_id']}");
-			$sql->execute();
-			$this[] = $sql->fetch(\PDO::FETCH_LAZY);
-		}
 		// expand attachments
 		$this->attachments = $result['attachments'] ? unserialize($result['attachments']) : array();
 		// Load the address book
-		$sql = $admin->DataBase->query("SELECT * FROM ".TABLE_ADDRESS_BOOK." WHERE ref_id = {$this->id} ORDER BY primary_name");
-		$sql->execute();
-		$this->address = array();
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
-			$i = sizeof($this->address[$result['type']]);
-			$this->address[$result['type']][$i] = get_object_vars ($result);
-		}
 		// load payment info
 		if ($_SESSION['ENCRYPTION_VALUE'] && ENABLE_ENCRYPTION) {
 			$sql = $admin->DataBase->prepare("SELECT id, hint, enc_value FROM ".TABLE_DATA_SECURITY." WHERE module='contacts' and ref_1={$this->id}");
@@ -70,17 +53,6 @@ class e extends \contacts\classes\contacts{
 						'hint' => $result['hint'],
 						'exp'  => $val[2] . '/' . $val[3],
 				);
-			}
-		}
-		$sql = $admin->DataBase->prepare("SELECT * FROM ".TABLE_CONTACTS_LOG." WHERE contact_id = {$this->id} ORDER BY log_date DESC");
-		$sql->execute();
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
-			$i = sizeof($this->crm_log);
-			foreach ($result as $key => $value) $this->crm_log[$i] = get_object_vars ($result);
-			if ( $this->contact_first != '' || $this->contact_last != '') {
-				$this->crm_log[$i]['with'] = $this->contact_first . ' ' . $this->contact_last;
-			} else {
-				$this->crm_log[$i]['with'] = $this->short_name . ' ' . $this->address["{$this->type}m"][0]['primary_name'];
 			}
 		}
 		// load contacts info

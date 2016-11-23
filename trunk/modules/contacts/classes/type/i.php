@@ -25,25 +25,8 @@ class i extends \contacts\classes\contacts{
 	public  $title					= TEXT_CONTACT;
 
   	public function __construct(){
-		$this->tab_list[] = array('file'=>'template_notes',		'tag'=>'notes',    'order'=>40, 'text'=>TEXT_NOTES);
 		$this->tab_list[] = array('file'=>'template_i_general',	'tag'=>'general',  'order'=> 1, 'text'=>TEXT_GENERAL);
 		parent::__construct();
-		if (isset($_POST['i_id'])){
-			if ($_POST['i_id']) {
-				$this->id             = db_prepare_input($_POST['i_id']);
-			}else{
-				$this->id             = '';
-			}
-			$this->short_name     = db_prepare_input($_POST['i_short_name']);
-			$this->contact_first  = db_prepare_input($_POST['i_contact_first']);
-	    	$this->contact_middle = db_prepare_input($_POST['i_contact_middle']);
-	    	$this->contact_last   = db_prepare_input($_POST['i_contact_last']);
-	    	$this->gov_id_number  = db_prepare_input($_POST['i_gov_id_number']);
-	    	$this->account_number = db_prepare_input($_POST['i_account_number']);
-	    	$this->dept_rep_id    = db_prepare_input($_POST['id']); // this id is from the parent.
-		}
-		$this->crm_date = \core\classes\DateTime::db_date_format($this->crm_date);
-		$this->due_date = \core\classes\DateTime::db_date_format($this->due_date);
   	}
 
 	public function data_complete(){

@@ -38,17 +38,10 @@ class tabs {
 		  'description' => $this->description,
 		  'sort_order'  => $this->sort_order,
 		);
-	    if (!$this->id == 0) {
-		  db_perform(TABLE_EXTRA_TABS, $sql_data_array, 'update', "id = " . $this->id);
-	      gen_add_audit_log($this->module .' '. TEXT_TABS . ' - '.  TEXT_UPDATE, $this->tab_name);
-		} else {
-		  // Test for duplicates.
-		  $result = $admin->DataBase->query("select id from " . TABLE_EXTRA_TABS . " where module_id='{$this->module}' and tab_name='{$this->tab_name}'");
-		  if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(TEXT_THIS_TAB_NAME_ALREADY_EXISTS_PLEASE_USE_ANOTHER_NAME);
-		  db_perform(TABLE_EXTRA_TABS, $sql_data_array);
-		  gen_add_audit_log($this->module .' '. TEXT_TABS . ' - '. TEXT_ADD, $this->tab_name);
-		}
-		return true;
+		
+		$admin->DataBase->prepare("INSERT INTO ".TEXT_TABS." (id, module_id, tab_name, description, sort_order) VALUES ({$this->id},{$this->module},{$this->tab_name},{$this->description},{$this->sort_order}) ON DUPLICATE KEY UPDATE module_id ='{$this->module}', tab_name='{$this->tab_name}', description='{$this->description}', sort_order='{$this->sort_order}';");
+		gen_add_audit_log($this->module .' '. TEXT_TABS . ' - '.  TEXT_UPDATE , $this->tab_name);
+	    return true;
 	}
 
     public function btn_delete($id = 0) {

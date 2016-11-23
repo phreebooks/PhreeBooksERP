@@ -113,7 +113,7 @@ class departments {
 	$output .= '    <td colspan="2">' . ($action=='new' ? HR_INFO_INSERT_INTRO : TEXT_PLEASE_MAKE_ANY_NECESSARY_CHANGES) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . TEXT_DEPARTMENT_ID . html_hidden_field('id', $this->id) . '</td>' . chr(10);
+	$output .= '    <td>' . TEXT_DEPARTMENT_ID . \core\classes\htmlElement::hidden('id', $this->id) . '</td>' . chr(10);
 	$output .= '    <td>' . html_input_field('description_short', $this->description_short) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
@@ -133,8 +133,7 @@ class departments {
 	$output .= '    <td>' . html_pull_down_menu('department_type', gen_get_pull_down(TABLE_DEPT_TYPES, false, '1'), $this->department_type) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . TEXT_INACTIVE . '</td>' . chr(10);
-	$output .= '    <td>' . html_checkbox_field('department_inactive', '1', $this->department_inactive ? true : false) . '</td>' . chr(10);
+	$output .= '    <td>' . \core\classes\htmlElement::checkbox('department_inactive', TEXT_INACTIVE, '1', $this->department_inactive? true :false ) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  </tbody>' . "\n";
     $output .= '</table>' . chr(10);

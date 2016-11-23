@@ -168,6 +168,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 			if (empty($attr1)) {
 				if($idx0[0] != ''){
 					$sku_list[] = $this->sku . '-' . $idx0[0];
+					$variables[$this->sku . '-' . $idx0[0]]['id0'] = $idx0[0];
 					$variables[$this->sku . '-' . $idx0[0]]['idx0'] = $idx0[1];
 				}
 			} else {
@@ -176,7 +177,9 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 					if($idx0[0] != '' && $idx1[0] != '') {
 						$sku_list[] = $this->sku . '-' . $idx0[0] . $idx1[0];
 						$variables[$this->sku . '-' . $idx0[0] . $idx1[0]]['idx0'] = $idx0[1];
+						$variables[$this->sku . '-' . $idx0[0] . $idx1[0]]['id0']  = $idx0[0];
 						$variables[$this->sku . '-' . $idx0[0] . $idx1[0]]['idx1'] = $idx1[1];
+						$variables[$this->sku . '-' . $idx0[0] . $idx1[0]]['id1']  = $idx1[0];
 					}
 				}
 			}
@@ -202,7 +205,7 @@ class ms extends \inventory\classes\inventory {//Master Stock Item parent of mi
 				$purchase_data_array = array (
 					'sku'						=> $sku,
 					'vendor_id' 				=> $purchase_row['vendor_id'],
-					'description_purchase'		=> sprintf($purchase_row['description_purchase'], $variables[$sku]['idx0'], $variables[$sku]['idx1'] ),
+					'description_purchase'		=> sprintf($purchase_row['description_purchase'], $variables[$sku]['id0'], $variables[$sku]['id1'] ),
 					'item_cost'	 				=> $purchase_row['item_cost'],
 					'purch_package_quantity'	=> $purchase_row['purch_package_quantity'],
 					'purch_taxable'	 			=> $purchase_row['purch_taxable'],

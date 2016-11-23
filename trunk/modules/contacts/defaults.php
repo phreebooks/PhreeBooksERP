@@ -33,15 +33,4 @@ $project_cost_types = array(
  'OTH' => TEXT_OTHER,
 );
 
-$crm_actions = array(
-  ''     => TEXT_NONE,
-  'new'  => sprintf(TEXT_NEW_ARGS, TEXT_CALL),
-  'ret'  => TEXT_RETURNED_CALL,
-  'flw'  => TEXT_FOLLOW_UP_CALL,
-  'inac' => TEXT_INACTIVE,
-  'lead' => sprintf(TEXT_NEW_ARGS, TEXT_LEAD),
-  'mail_in'  => TEXT_EMAIL_RECEIVED,
-  'mail_out' => TEXT_EMAIL_SEND,
-);
-
 ?>

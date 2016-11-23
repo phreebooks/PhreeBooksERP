@@ -36,6 +36,7 @@ class outputPage  {
     
     function send_header($basis){
     	//header_remove();
+    	if (!defined('CHARSET')) define('CHARSET', 'UTF-8');
     	header("Content-type: text/html; charset=".CHARSET);
     	if ($force_reset_cache) { header("Cache-Control: no-cache, must-revalidate"); header("Expires: ".date('D, j M \2\0\0\0 G:i:s T')); }
     	echo "<!DOCTYPE html>";
@@ -47,20 +48,37 @@ class outputPage  {
     	echo "<link rel='stylesheet' type='text/css' href='".DIR_WS_THEMES.'css/'.MY_COLORS.'/easyui.css'."' />". chr(13);
     	echo "<link rel='stylesheet' type='text/css' href='".DIR_WS_THEMES.'css/icon.css'."' />". chr(13);
     	echo "<script type='text/javascript' src='includes/common.js'></script>". chr(13);
-    	echo "<script type='text/javascript' src='includes/jquery-2.2.0.min.js'></script>". chr(13);
-    	echo "<script type='text/javascript' src='includes/jquery.easyui.min.js'></script>". chr(13);
+    	echo "<script type='text/javascript' src='includes/easyui/jquery.min.js'></script>". chr(13);
+    	echo "<script type='text/javascript' src='includes/easyui/easyloader.js'></script>". chr(13);
+    	echo "<script type='text/javascript' src='includes/easyui/jquery.easyui.min.js'></script>". chr(13);
 //    	echo "<script type='text/javascript' src='https://www.google.com/jsapi'></script>". chr(13);
-    	//setting easyui defaults.
-		echo "<script type='text/javascript' >
-				$.fn.validatebox.defaults.invalidMessage = '".TEXT_INVALID_VALUE."';
-				$.fn.validatebox.defaults.missingMessage = '".TEXT_THIS_FIELD_IS_REQUIRED."';		
-			 </script>";
 		echo "</head><body class='easyui-layout'>";
     	ob_flush();
     }
     
     function send_constants($basis){?>
     	<script type="text/javascript">
+    	//setting easyui defaults.
+	    	$.fn.validatebox.defaults.invalidMessage = '<?php echo TEXT_INVALID_VALUE?>';
+			$.fn.validatebox.defaults.missingMessage = '<?php echo TEXT_THIS_FIELD_IS_REQUIRED?>';
+			$.fn.datebox.defaults.formatter = function(date){
+				var Y = date.getFullYear();
+				var m = date.getMonth()+1;
+				var d = date.getDate();
+				return <?php echo str_replace(DATE_DELIMITER ,'+"'.DATE_DELIMITER.'"+',DATE_FORMAT)?>;
+			}
+			$.fn.datebox.defaults.parser = function(s) {
+				if (s) {
+					var a = s.split('<?php echo DATE_DELIMITER?>');
+					var d = new Number(a[<?php echo array_search('d',explode(DATE_DELIMITER,DATE_FORMAT))?>]);
+					var m = new Number(a[<?php echo array_search('m',explode(DATE_DELIMITER,DATE_FORMAT))?>]);
+					var y = new Number(a[<?php echo array_search('Y',explode(DATE_DELIMITER,DATE_FORMAT))?>]);
+					var dd = new Date(y, m-1, d);
+					return dd;
+				} else {
+					return new Date();
+				}
+			};
 	    	var date_format         = '<?php echo DATE_FORMAT; ?>';
 	    	var date_delimiter      = '<?php echo DATE_DELIMITER; ?>';
 	    	var inactive_text_color = '#cccccc';

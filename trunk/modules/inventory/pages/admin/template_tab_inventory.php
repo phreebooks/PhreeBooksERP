@@ -31,71 +31,71 @@
 	  </tr>
 	  <tr>
 	    <td><?php echo TEXT_STOCK_ITEMS; ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_stock_default_sales', $inc_chart,  $_POST['inv_stock_default_sales'] ? $_POST['inv_stock_default_sales'] : INV_STOCK_DEFAULT_SALES, ''); ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_stock_default_inventory', $inv_chart,  $_POST['inv_stock_default_inventory'] ? $_POST['inv_stock_default_inventory'] : INV_STOCK_DEFAULT_INVENTORY, ''); ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_stock_default_cos', $cog_chart,  $_POST['inv_stock_default_cos'] ? $_POST['inv_stock_default_cos'] : INV_STOCK_DEFAULT_COS, ''); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_stock_default_sales', 		TEXT_CHART_OF_ACCOUNT, $inc_chart,  $_POST['inv_stock_default_sales'] ? $_POST['inv_stock_default_sales'] : INV_STOCK_DEFAULT_SALES, null, false, false); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_stock_default_inventory', 	TEXT_CHART_OF_ACCOUNT, $inv_chart,  $_POST['inv_stock_default_inventory'] ? $_POST['inv_stock_default_inventory'] : INV_STOCK_DEFAULT_INVENTORY, null, false, false); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_stock_default_cos', 			TEXT_CHART_OF_ACCOUNT, $cog_chart,  $_POST['inv_stock_default_cos'] ? $_POST['inv_stock_default_cos'] : INV_STOCK_DEFAULT_COS, null, false, false); ?></td>
 	    <td align="center"><?php echo html_pull_down_menu('inv_stock_default_costing',  $cost_methods, $_POST['inv_stock_default_costing'] ? $_POST['inv_stock_default_costing'] : INV_STOCK_DEFAULT_COSTING, ''); ?></td>
 	  </tr>
 	  <tr>
 	    <td><?php echo TEXT_MASTER_STOCK; ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_master_stock_default_sales', $inc_chart,  $_POST['inv_master_stock_default_sales'] ? $_POST['inv_master_stock_default_sales'] : INV_MASTER_STOCK_DEFAULT_SALES, ''); ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_master_stock_default_inventory', $inv_chart,  $_POST['inv_master_stock_default_inventory'] ? $_POST['inv_master_stock_default_inventory'] : INV_MASTER_STOCK_DEFAULT_INVENTORY, ''); ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_master_stock_default_cos', $cog_chart,  $_POST['inv_master_stock_default_cos'] ? $_POST['inv_master_stock_default_cos'] : INV_MASTER_STOCK_DEFAULT_COS, ''); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_master_stock_default_sales', 	TEXT_CHART_OF_ACCOUNT, $inc_chart,  $_POST['inv_master_stock_default_sales'] ? $_POST['inv_master_stock_default_sales'] : INV_MASTER_STOCK_DEFAULT_SALES, null, false, false); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_master_stock_default_inventory', TEXT_CHART_OF_ACCOUNT, $inv_chart,  $_POST['inv_master_stock_default_inventory'] ? $_POST['inv_master_stock_default_inventory'] : INV_MASTER_STOCK_DEFAULT_INVENTORY, null, false, false); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_master_stock_default_cos', 		TEXT_CHART_OF_ACCOUNT, $cog_chart,  $_POST['inv_master_stock_default_cos'] ? $_POST['inv_master_stock_default_cos'] : INV_MASTER_STOCK_DEFAULT_COS, null, false, false); ?></td>
 	    <td align="center"><?php echo html_pull_down_menu('inv_master_stock_default_costing',  $cost_methods, $_POST['inv_master_stock_default_costing'] ? $_POST['inv_master_stock_default_costing'] : INV_MASTER_STOCK_DEFAULT_COSTING, ''); ?></td>
 	  </tr>
 	  <tr>
 	    <td><?php echo TEXT_ASSEMBLIES; ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_assy_default_sales', $inc_chart,  $_POST['inv_assy_default_sales'] ? $_POST['inv_assy_default_sales'] : INV_ASSY_DEFAULT_SALES, ''); ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_assy_default_inventory', $inv_chart,  $_POST['inv_assy_default_inventory'] ? $_POST['inv_assy_default_inventory'] : INV_ASSY_DEFAULT_INVENTORY, ''); ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_assy_default_cos', $cog_chart,  $_POST['inv_assy_default_cos'] ? $_POST['inv_assy_default_cos'] : INV_ASSY_DEFAULT_COS, ''); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_assy_default_sales', 			TEXT_CHART_OF_ACCOUNT, $inc_chart,  $_POST['inv_assy_default_sales'] ? $_POST['inv_assy_default_sales'] : INV_ASSY_DEFAULT_SALES, null, false, false); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_assy_default_inventory', 		TEXT_CHART_OF_ACCOUNT, $inv_chart,  $_POST['inv_assy_default_inventory'] ? $_POST['inv_assy_default_inventory'] : INV_ASSY_DEFAULT_INVENTORY, null, false, false); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_assy_default_cos', 				TEXT_CHART_OF_ACCOUNT, $cog_chart,  $_POST['inv_assy_default_cos'] ? $_POST['inv_assy_default_cos'] : INV_ASSY_DEFAULT_COS, null, false, false); ?></td>
 	    <td align="center"><?php echo html_pull_down_menu('inv_assy_default_costing',  $cost_methods, $_POST['inv_assy_default_costing'] ? $_POST['inv_assy_default_costing'] : INV_ASSY_DEFAULT_COSTING, ''); ?></td>
 	  </tr>
 	  <tr>
 	    <td><?php echo TEXT_SERIALIZED; ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_serialize_default_sales', $inc_chart,  $_POST['inv_serialize_default_sales'] ? $_POST['inv_serialize_default_sales'] : INV_SERIALIZE_DEFAULT_SALES, ''); ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_serialize_default_inventory', $inv_chart,  $_POST['inv_serialize_default_inventory'] ? $_POST['inv_serialize_default_inventory'] : INV_SERIALIZE_DEFAULT_INVENTORY, ''); ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_serialize_default_cos', $cog_chart,  $_POST['inv_serialize_default_cos'] ? $_POST['inv_serialize_default_cos'] : INV_SERIALIZE_DEFAULT_COS, ''); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_serialize_default_sales', 		TEXT_CHART_OF_ACCOUNT, $inc_chart,  $_POST['inv_serialize_default_sales'] ? $_POST['inv_serialize_default_sales'] : INV_SERIALIZE_DEFAULT_SALES, null, false, false); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_serialize_default_inventory',	TEXT_CHART_OF_ACCOUNT, $inv_chart,  $_POST['inv_serialize_default_inventory'] ? $_POST['inv_serialize_default_inventory'] : INV_SERIALIZE_DEFAULT_INVENTORY, null, false, false); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_serialize_default_cos',			TEXT_CHART_OF_ACCOUNT, $cog_chart,  $_POST['inv_serialize_default_cos'] ? $_POST['inv_serialize_default_cos'] : INV_SERIALIZE_DEFAULT_COS, null, false, false); ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
 	  </tr>
 	  <tr>
 	    <td><?php echo TEXT_NON-STOCK_ITEM; ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_non_stock_default_sales', $inc_chart,  $_POST['inv_non_stock_default_sales'] ? $_POST['inv_non_stock_default_sales'] : INV_NON_STOCK_DEFAULT_SALES, ''); ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_non_stock_default_inventory', $inv_chart,  $_POST['inv_non_stock_default_inventory'] ? $_POST['inv_non_stock_default_inventory'] : INV_NON_STOCK_DEFAULT_INVENTORY, ''); ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_non_stock_default_cos', $cog_chart,  $_POST['inv_non_stock_default_cos'] ? $_POST['inv_non_stock_default_cos'] : INV_SERIALIZE_DEFAULT_COS, ''); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_non_stock_default_sales', 		TEXT_CHART_OF_ACCOUNT, $inc_chart,  $_POST['inv_non_stock_default_sales'] ? $_POST['inv_non_stock_default_sales'] : INV_NON_STOCK_DEFAULT_SALES, null, false, false); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_non_stock_default_inventory', 	TEXT_CHART_OF_ACCOUNT, $inv_chart,  $_POST['inv_non_stock_default_inventory'] ? $_POST['inv_non_stock_default_inventory'] : INV_NON_STOCK_DEFAULT_INVENTORY, null, false, false); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_non_stock_default_cos', 			TEXT_CHART_OF_ACCOUNT, $cog_chart,  $_POST['inv_non_stock_default_cos'] ? $_POST['inv_non_stock_default_cos'] : INV_SERIALIZE_DEFAULT_COS, null, false, false); ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
 	  </tr>
 	  <tr>
 	    <td><?php echo TEXT_SERVICE; ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_service_default_sales', $inc_chart,  $_POST['inv_service_default_sales'] ? $_POST['inv_service_default_sales'] : INV_SERVICE_DEFAULT_SALES, ''); ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_service_default_inventory', $inv_chart,  $_POST['inv_service_default_inventory'] ? $_POST['inv_service_default_inventory'] : INV_SERVICE_DEFAULT_INVENTORY, ''); ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_service_default_cos', $cog_chart,  $_POST['inv_service_default_cos'] ? $_POST['inv_service_default_cos'] : INV_SERVICE_DEFAULT_COS, ''); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_service_default_sales', 			TEXT_CHART_OF_ACCOUNT, $inc_chart,  $_POST['inv_service_default_sales'] ? $_POST['inv_service_default_sales'] : INV_SERVICE_DEFAULT_SALES, null, false, false); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_service_default_inventory', 		TEXT_CHART_OF_ACCOUNT, $inv_chart,  $_POST['inv_service_default_inventory'] ? $_POST['inv_service_default_inventory'] : INV_SERVICE_DEFAULT_INVENTORY, null, false, false); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_service_default_cos', 			TEXT_CHART_OF_ACCOUNT, $cog_chart,  $_POST['inv_service_default_cos'] ? $_POST['inv_service_default_cos'] : INV_SERVICE_DEFAULT_COS, null, false, false); ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
 	  </tr>
 	  <tr>
 	    <td><?php echo TEXT_LABOR; ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_labor_default_sales', $inc_chart,  $_POST['inv_labor_default_sales'] ? $_POST['inv_labor_default_sales'] : INV_LABOR_DEFAULT_SALES, ''); ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_labor_default_inventory', $inv_chart,  $_POST['inv_labor_default_inventory'] ? $_POST['inv_labor_default_inventory'] : INV_LABOR_DEFAULT_INVENTORY, ''); ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_labor_default_cos', $cog_chart,  $_POST['inv_labor_default_cos'] ? $_POST['inv_labor_default_cos'] : INV_LABOR_DEFAULT_COS, ''); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_labor_default_sales', 			TEXT_CHART_OF_ACCOUNT, $inc_chart,  $_POST['inv_labor_default_sales'] ? $_POST['inv_labor_default_sales'] : INV_LABOR_DEFAULT_SALES, null, false, false); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_labor_default_inventory', 		TEXT_CHART_OF_ACCOUNT, $inv_chart,  $_POST['inv_labor_default_inventory'] ? $_POST['inv_labor_default_inventory'] : INV_LABOR_DEFAULT_INVENTORY, null, false, false); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_labor_default_cos',				TEXT_CHART_OF_ACCOUNT, $cog_chart,  $_POST['inv_labor_default_cos'] ? $_POST['inv_labor_default_cos'] : INV_LABOR_DEFAULT_COS, null, false, false); ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
 	  </tr>
 	  <tr>
 	    <td><?php echo TEXT_ACTIVITY; ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_activity_default_sales', $inc_chart,  $_POST['inv_activity_default_sales'] ? $_POST['inv_activity_default_sales'] : INV_ACTIVITY_DEFAULT_SALES, ''); ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_activity_default_inventory', $inv_chart,  $_POST['inv_activity_default_inventory'] ? $_POST['inv_activity_default_inventory'] : INV_ACTIVITY_DEFAULT_INVENTORY, ''); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_activity_default_sales', 		TEXT_CHART_OF_ACCOUNT, $inc_chart,  $_POST['inv_activity_default_sales'] ? $_POST['inv_activity_default_sales'] : INV_ACTIVITY_DEFAULT_SALES, null, false, false); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_activity_default_inventory', 	TEXT_CHART_OF_ACCOUNT, $inv_chart,  $_POST['inv_activity_default_inventory'] ? $_POST['inv_activity_default_inventory'] : INV_ACTIVITY_DEFAULT_INVENTORY, null, false, false); ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
 	  </tr>
 	  <tr>
 	    <td><?php echo TEXT_CHARGE_ITEMS; ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_charge_default_sales', $inc_chart,  $_POST['inv_charge_default_sales'] ? $_POST['inv_charge_default_sales'] : INV_CHARGE_DEFAULT_SALES, ''); ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_charge_default_inventory', $inv_chart,  $_POST['inv_charge_default_inventory'] ? $_POST['inv_charge_default_inventory'] : INV_CHARGE_DEFAULT_INVENTORY, ''); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_charge_default_sales', 			TEXT_CHART_OF_ACCOUNT, $inc_chart,  $_POST['inv_charge_default_sales'] ? $_POST['inv_charge_default_sales'] : INV_CHARGE_DEFAULT_SALES, null, false, false); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_charge_default_inventory', 		TEXT_CHART_OF_ACCOUNT, $inv_chart,  $_POST['inv_charge_default_inventory'] ? $_POST['inv_charge_default_inventory'] : INV_CHARGE_DEFAULT_INVENTORY, null, false, false); ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
 	  </tr>
 	  <tr>
 	    <td><?php echo TEXT_DESCRIPTION; ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_desc_default_sales', $inc_chart,  $_POST['inv_desc_default_sales'] ? $_POST['inv_desc_default_sales'] : INV_DESC_DEFAULT_SALES, ''); ?></td>
-	    <td align="center" nowrap="nowrap"><?php echo html_combo_box('inv_desc_default_inventory', $inv_chart,  $_POST['inv_desc_default_inventory'] ? $_POST['inv_desc_default_inventory'] : INV_DESC_DEFAULT_INVENTORY, ''); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_desc_default_sales', 			TEXT_CHART_OF_ACCOUNT, $inc_chart,  $_POST['inv_desc_default_sales'] ? $_POST['inv_desc_default_sales'] : INV_DESC_DEFAULT_SALES, null, false, false); ?></td>
+	    <td align="center" nowrap="nowrap"><?php echo \core\classes\htmlElement::combobox('inv_desc_default_inventory', 		TEXT_CHART_OF_ACCOUNT, $inv_chart,  $_POST['inv_desc_default_inventory'] ? $_POST['inv_desc_default_inventory'] : INV_DESC_DEFAULT_INVENTORY, null, false, false); ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
 	    <td><?php echo '&nbsp;'; ?></td>
 	  </tr>

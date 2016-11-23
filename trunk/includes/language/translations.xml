@@ -237,14 +237,9 @@
     <nl_nl>Klant</nl_nl>
     <pt_br>Clientes</pt_br>
   </translation>
-  <translation xml:id="TEXT_ERROR">
-  	<en_us>Error</en_us>
-  	<nl_nl>Fout</nl_nl>
-  </translation>
   <translation xml:id="ACT_ERROR_CANNOT_DELETE">
     <fr_fr>Impossible de supprimer ce compte car un enregistrement de journal contient ce compte</fr_fr>
     <hu_hu>Nem tudom törölni ezt a fiókot a journal record contains this account</hu_hu>
-    <ru_ru>Cannot delete this account because a journal record contains this account</ru_ru>
     <bg_bg>Не мога да изтрия този контакт</bg_bg>
     <en_us>Cannot delete this contact because a journal record contains this account</en_us>
     <es_cr>No puede borrar esta cuenta ya que tiene transacciones ligadas</es_cr>
@@ -2576,7 +2571,6 @@
   <translation xml:id="GENERAL_JOURNAL_12_ERROR_6">
     <fr_fr>S/I - Une facture ne peut pas être supprimée s'il y a eu un avoir ou un paiement appliqué !</fr_fr>
     <hu_hu>S/I - Nem lehet törölni a számlát</hu_hu>
-    <ru_ru>S/I - An invoice cannot be deleted if there has been a credit memo or payment applied!</ru_ru>
     <bg_bg>Фактура/продажба не може да бъде изтрита</bg_bg>
     <en_us>SI - An invoice cannot be deleted if there has been a credit memo or payment applied!</en_us>
     <es_cr>¡SI - No se puede eliminar una factura si tiene una nota de crédito o un pago aplicado!</es_cr>
@@ -2595,7 +2589,6 @@
   <translation xml:id="GENERAL_JOURNAL_18_ERROR_6">
     <fr_fr>C/R - Une recette ne peut pas être supprimée si l'écriture a été rapprochée avec la banque !</fr_fr>
     <hu_hu>S/I - Nem törölheted az elismervényt</hu_hu>
-    <ru_ru>C/R - An receipt cannot be deleted if the entry has been reconciled with the bank!</ru_ru>
     <bg_bg>Касова бележка не може да бъде изтрита ако записът е бил приравнен а банката!</bg_bg>
     <en_us>CR - An receipt cannot be deleted if the entry has been reconciled with the bank!</en_us>
     <es_cr>¡CR - No se puede eliminar un recibo de dinero si ya ha sido reconciliado con el estado de cuenta del banco!</es_cr>
@@ -2605,7 +2598,6 @@
   <translation xml:id="GENERAL_JOURNAL_20_ERROR_6">
     <fr_fr>V/P - Un paiement ne peut pas être supprimé si l'écriture a été rapprochée avec la banque !</fr_fr>
     <hu_hu>P/R - Nem lehet törölni a kifizetést</hu_hu>
-    <ru_ru>V/P - A payment cannot be deleted if the entry has been reconciled with the bank!</ru_ru>
     <bg_bg>Плащане не може да бъде изтрито</bg_bg>
     <en_us>VP - A payment cannot be deleted if the entry has been reconciled with the bank!</en_us>
     <es_cr>¡VP - No se puede eliminar un pago si ya ya sido reconciliado con el estado de cuenta del banco!</es_cr>
@@ -2624,7 +2616,6 @@
   <translation xml:id="GENERAL_JOURNAL_6_ERROR_6">
     <fr_fr>P/R - Un achat ne peut pas être supprimé s'il y a eu un avoir ou un paiement appliqué !</fr_fr>
     <hu_hu>P/R - Nem lehet törölni a beszerzést</hu_hu>
-    <ru_ru>P/R - A purchase cannot be deleted if there has been a credit memo or payment applied!</ru_ru>
     <bg_bg>Поръчка не може да бъде изтрита</bg_bg>
     <en_us>PR - A purchase cannot be deleted if there has been a credit memo or payment applied!</en_us>
     <es_cr>¡PR - No se puede eliminar una compra si tiene una nota de crédito o un pago aplicado!</es_cr>
@@ -2674,7 +2665,6 @@
     <pt_br>Status Corrente Ordem - Atualização</pt_br>
   </translation>
   <translation xml:id="GEN_ADM_TOOLS_BTN_CLEAN_CONFIRM">
-    <ru_ru>Are you sure you want to delete these audit log records?</ru_ru>
     <bg_bg>Сигурни ли сте</bg_bg>
     <en_us>Are you sure you want to delete these log records?</en_us>
     <es_cr>¿Está seguro que quiere borrar el registro de auditoría?</es_cr>
@@ -3921,7 +3911,6 @@
     <id_id>Are you sure you want to delete this Inventory Adjustment?</id_id>
     <nl_nl>Weet u zeker dat u deze voorraad wijziging wilt verwijderen?</nl_nl>
     <pt_br>Tem certeza de que quer remover este Ajuste de Inventário?</pt_br>
-    <ru_ru>Are you sure you want to delete this Inventory Adjustment?</ru_ru>
   </translation>
   <translation xml:id="INV_CALCULATING_ERROR">
     <en_us>When Phreebooks has to calculate the full price with tax it will come to = </en_us>
@@ -11137,7 +11126,7 @@
     <en_us>Clear</en_us>
     <es_cr>Cobrado</es_cr>
     <id_id>Bersihkan</id_id>
-    <nl_nl>Opschonen</nl_nl>
+    <nl_nl>Legen</nl_nl>
     <pt_br>Limpar</pt_br>
   </translation>
   <translation xml:id="TEXT_CLEAR_ALL_BUDGETS_FOR_THIS_FINANCIAL_YEAR">
@@ -13085,10 +13074,11 @@
     <pt_br>Entrada ERP</pt_br>
   </translation>
   <translation xml:id="TEXT_ERROR">
+  	<en_us>Error</en_us>
+  	<nl_nl>Fout</nl_nl>
     <hu_hu>Hiba</hu_hu>
     <ru_ru>Ошибка</ru_ru>
     <bg_bg>Грешка</bg_bg>
-    <en_us>Error</en_us>
     <pt_br>Erro</pt_br>
   </translation>
   <translation xml:id="TEXT_ERROR_CREATING_DATABASE_TABLES">
@@ -13716,7 +13706,7 @@
   <translation xml:id="TEXT_GENERAL">
     <ru_ru>Главная</ru_ru>
     <bg_bg>Общ</bg_bg>
-    <en_us>General'); // typical</en_us>
+    <en_us>General</en_us>
     <es_cr>General</es_cr>
     <id_id>Umum</id_id>
     <nl_nl>Algemeen</nl_nl>

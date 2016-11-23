@@ -27,32 +27,25 @@
 	 </thead>
 	 <tbody class="ui-widget-content">
 	  <tr>
-	    <td colspan="3"><?php echo CD_02_01_DESC; ?></td>
-	    <td nowrap="nowrap"><?php echo html_combo_box('ar_default_gl_acct', $ar_chart, $_POST['ar_default_gl_acct'] ? $_POST['ar_default_gl_acct'] : AR_DEFAULT_GL_ACCT, ''); ?></td>
+	    <td colspan="4"><?php echo \core\classes\htmlElement::combobox('ar_default_gl_acct', CD_02_01_DESC, $ar_chart, $_POST['ar_default_gl_acct'] ? $_POST['ar_default_gl_acct'] : AR_DEFAULT_GL_ACCT, null, false, false); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo CD_02_02_DESC; ?></td>
-	    <td><?php echo html_combo_box('ar_def_gl_sales_acct', $inc_chart, $_POST['ar_def_gl_sales_acct'] ? $_POST['ar_def_gl_sales_acct'] : AR_DEF_GL_SALES_ACCT, ''); ?></td>
+	    <td colspan="4"><?php echo \core\classes\htmlElement::combobox('ar_def_gl_sales_acct', CD_02_02_DESC, $inc_chart, $_POST['ar_def_gl_sales_acct'] ? $_POST['ar_def_gl_sales_acct'] : AR_DEF_GL_SALES_ACCT, null, false, false); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo TEXT_DEFAULT_ACCOUNT_TO_USE_FOR_PAYMENTS_TO_WHEN_INVOICES_ARE_PAID_TYPICALLY_A_CASH_TYPE_ACCOUNT; ?></td>
-	    <td><?php echo html_combo_box('ar_sales_receipts_account', $cash_chart, $_POST['ar_sales_receipts_account'] ? $_POST['ar_sales_receipts_account'] : AR_SALES_RECEIPTS_ACCOUNT, ''); ?></td>
+	    <td colspan="4"><?php echo \core\classes\htmlElement::combobox('ar_sales_receipts_account', TEXT_DEFAULT_ACCOUNT_TO_USE_FOR_PAYMENTS_TO_WHEN_INVOICES_ARE_PAID_TYPICALLY_A_CASH_TYPE_ACCOUNT, $cash_chart, $_POST['ar_sales_receipts_account'] ? $_POST['ar_sales_receipts_account'] : AR_SALES_RECEIPTS_ACCOUNT, null, false, false); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo CD_02_04_DESC; ?></td>
-	    <td><?php echo html_combo_box('ar_discount_sales_account', $inc_chart, $_POST['ar_discount_sales_account'] ? $_POST['ar_discount_sales_account'] : AR_DISCOUNT_SALES_ACCOUNT, ''); ?></td>
+	    <td colspan="4"><?php echo \core\classes\htmlElement::combobox('ar_discount_sales_account', CD_02_04_DESC, $inc_chart, $_POST['ar_discount_sales_account'] ? $_POST['ar_discount_sales_account'] : AR_DISCOUNT_SALES_ACCOUNT, null, false, false); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo CD_02_05_DESC; ?></td>
-	    <td><?php echo html_combo_box('ar_def_freight_acct', $inc_chart, $_POST['ar_def_freight_acct'] ? $_POST['ar_def_freight_acct'] : AR_DEF_FREIGHT_ACCT, ''); ?></td>
+	    <td colspan="4"><?php echo \core\classes\htmlElement::combobox('ar_def_freight_acct', CD_02_05_DESC, $inc_chart, $_POST['ar_def_freight_acct'] ? $_POST['ar_def_freight_acct'] : AR_DEF_FREIGHT_ACCT, null, false, false); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo CD_02_06_DESC; ?></td>
-	    <td><?php echo html_combo_box('ar_def_deposit_acct', $cash_chart, $_POST['ar_def_deposit_acct'] ? $_POST['ar_def_deposit_acct'] : AR_DEF_DEPOSIT_ACCT, ''); ?></td>
+	    <td colspan="4"><?php echo \core\classes\htmlElement::combobox('ar_def_deposit_acct', CD_02_06_DESC, $cash_chart, $_POST['ar_def_deposit_acct'] ? $_POST['ar_def_deposit_acct'] : AR_DEF_DEPOSIT_ACCT, null, false, false); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo CD_02_07_DESC; ?></td>
-	    <td><?php echo html_combo_box('ar_def_dep_liab_acct', $ocl_chart, $_POST['ar_def_dep_liab_acct'] ? $_POST['ar_def_dep_liab_acct'] : AR_DEF_DEP_LIAB_ACCT, ''); ?></td>
+	    <td colspan="4"><?php echo \core\classes\htmlElement::combobox('ar_def_dep_liab_acct', CD_02_07_DESC, $ocl_chart, $_POST['ar_def_dep_liab_acct'] ? $_POST['ar_def_dep_liab_acct'] : AR_DEF_DEP_LIAB_ACCT, null, false, false); ?></td>
 	  </tr>
 	 </tbody>
 	</table>

@@ -125,8 +125,7 @@ class project_costs {
 	$output .= '    <td>' . html_pull_down_menu('cost_type', gen_build_pull_down($this->cost_types), $this->cost_type) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  <tr>' . chr(10);
-	$output .= '    <td>' . TEXT_INACTIVE . '</td>' . chr(10);
-	$output .= '    <td>' . html_checkbox_field('inactive', '1', $this->inactive ? true : false) . '</td>' . chr(10);
+	$output .= '    <td>' . \core\classes\htmlElement::checkbox('inactive', TEXT_INACTIVE, '1', $this->inactive? true :false ) . '</td>' . chr(10);
     $output .= '  </tr>' . chr(10);
 	$output .= '  </tbody>' . "\n";
     $output .= '</table>' . chr(10);

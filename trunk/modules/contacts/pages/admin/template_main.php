@@ -21,9 +21,9 @@
 echo html_form('admin', FILENAME_DEFAULT, gen_get_all_get_params(array('action'))) . chr(10);
 
 // include hidden fields
-echo html_hidden_field('action', '')   . chr(10);
-echo html_hidden_field('subject','') . chr(10);
-echo html_hidden_field('rowSeq', '') . chr(10);
+echo \core\classes\htmlElement::hidden('action')   . chr(10);
+echo \core\classes\htmlElement::hidden('subject') . chr(10);
+echo \core\classes\htmlElement::hidden('rowSeq') . chr(10);
 
 // customize the toolbar actions
 $toolbar->icon_list['cancel']['params'] = 'onclick="location.href = \'' . html_href_link(FILENAME_DEFAULT, 'module=phreedom&amp;page=admin', 'SSL') . '\'"';

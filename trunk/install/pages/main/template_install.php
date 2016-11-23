@@ -62,12 +62,10 @@
 	<td><?php echo html_input_field('user_username', $_POST['user_username']); ?></td>
    </tr>
    <tr>
-	<td><?php echo TEXT_USER_PASSWORD; ?></td>
-	<td><?php echo html_password_field('user_password'); ?></td>
+	<td><?php echo \core\classes\htmlElement::password('user_password', TEXT_PASSWORD); ?></td>
    </tr>
    <tr>
-	<td><?php echo TEXT_UER_PW_CONFIRM; ?></td>
-	<td><?php echo html_password_field('user_pw_confirm'); ?></td>
+	<td><?php echo \core\classes\htmlElement::password('user_pw_confirm', TEXT_UER_PW_CONFIRM); ?></td>
    </tr>
    <tr>
 	<td><?php echo TEXT_USER_EMAIL; ?></td>
@@ -106,8 +104,7 @@
 	<td><?php echo html_input_field('db_username', $_POST['db_username']); ?></td>
    </tr>
    <tr>
-	<td><?php echo TEXT_DB_PASSWORD; ?></td>
-	<td><?php echo html_password_field('db_password'); ?></td>
+	<td><?php echo \core\classes\htmlElement::password('db_password', TEXT_DB_PASSWORD); ?></td>
    </tr>
 
    <tr class="ui-widget-header"><th colspan="2"><?php echo TEXT_FISCAL_INFO; ?></th></tr>

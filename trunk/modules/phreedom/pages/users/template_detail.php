@@ -46,15 +46,15 @@ echo $toolbar->build();
     <td><?php echo TEXT_INACTIVE . ' ' . html_checkbox_field('inactive', '1', ($uInfo->inactive ? true : false)); ?></td>
     <td><?php echo TEXT_DISPLAY_NAME . ' ' . html_input_field('display_name', $uInfo->display_name, 'size="25"'); ?></td>
    </tr>
-   <tr>
-    <td align="right"><?php echo TEXT_PASSWORD . ' ' . html_password_field('password_new', ''); ?></td>
-    <td><?php echo '&nbsp;'; ?></td>
-    <td><?php echo TEXT_EMAIL . ' ' . html_input_field('admin_email', $uInfo->admin_email, 'size="33"'); ?></td>
+   	<tr>
+   		<td><?php echo \core\classes\htmlElement::password('password_new', TEXT_PASSWORD); ?></td>
+    	<td><?php echo '&nbsp;'; ?></td>
+    	<td><?php echo TEXT_EMAIL . ' ' . html_input_field('admin_email', $uInfo->admin_email, 'size="33"'); ?></td>
    </tr>
    <tr>
-    <td align="right"><?php echo TEXT_CONFIRM_PASSWORD . ' ' . html_password_field('password_conf', ''); ?></td>
-    <td><?php echo '&nbsp;'; ?></td>
-    <td><?php echo TEXT_LINK_TO_EMPLOYEE_ACCOUNT . ' ' . html_pull_down_menu('account_id', gen_get_contact_array_by_type('e'), $uInfo->account_id, ''); ?></td>
+   		<td><?php echo \core\classes\htmlElement::password('password_conf', TEXT_CONFIRM_PASSWORD); ?></td>
+    	<td><?php echo '&nbsp;'; ?></td>
+    	<td><?php echo TEXT_LINK_TO_EMPLOYEE_ACCOUNT . ' ' . html_pull_down_menu('account_id', gen_get_contact_array_by_type('e'), $uInfo->account_id, ''); ?></td>
    </tr>
    <tr>
     <td><?php echo TEXT_SELECT_ROLE . ' ' . html_pull_down_menu('fill_role', $fill_all_roles, $uInfo->role, 'onchange="submitToDo(\'fill_role\')"'); ?></td>

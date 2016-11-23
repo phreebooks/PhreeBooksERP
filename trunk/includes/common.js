@@ -50,8 +50,9 @@ function addUnloadEvent(func) {
   } 
 }
 
-function loadHelp(){
-	alert('help Function');//@todo write help function
+function loadHelp(subject){
+	console.log('load help topic ' +subject);
+	alert('help Function ' +subject);//@todo write help function
 }
 
 // BOS - set up ajax session refresh timer to stay logged in if the browser is active
@@ -178,18 +179,20 @@ function cleanDate(sDate) { // converts date from locale to mysql friendly yyyy-
 }
 
 function formatDate(sDate) { // converts date from mysql friendly yyyy-mm-dd to locale specific
-	if( sDate == null) return;
+	if( sDate == null) return '';
 	if(typeof sDate == 'string'){
 		sDate = 	new Date(sDate);
 	}
+	if ( isNaN( sDate.getTime())) return '';
 	return sDate.toLocaleDateString();
 }
 
 function formatDateTime(sDate) { // converts date from mysql friendly yyyy-mm-dd to locale specific
-	if( sDate == null) return;
+	if( sDate == null) return '';
 	if(typeof sDate == 'string'){
 		sDate = 	new Date(sDate);
 	}
+	if ( isNaN( sDate.getTime())) return '';
 	return sDate.toLocaleString();
 }
 

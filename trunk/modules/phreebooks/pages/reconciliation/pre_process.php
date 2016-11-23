@@ -69,14 +69,14 @@ switch ($_REQUEST['action']) {
 	  'statement_balance' => $statement_balance,
 	  'cleared_items'     => serialize($cleared_items),
 	);
-	$sql = "select id from " . TABLE_RECONCILIATION . " where period = " . $period . " and gl_account = '" . $gl_account . "'";
+	$sql = "select id from " . TABLE_RECONCILIATION . " where period = $period and gl_account = '$gl_account'";
 	$result = $admin->DataBase->query($sql);
 	if ($result->fetch(\PDO::FETCH_NUM) == 0) {
 	  $sql_data_array['period']     = $period;
 	  $sql_data_array['gl_account'] = $gl_account;
 	  db_perform(TABLE_RECONCILIATION, $sql_data_array, 'insert');
 	} else {
-	  db_perform(TABLE_RECONCILIATION, $sql_data_array, 'update', "period = " . $period . " and gl_account = '" . $gl_account . "'");
+	  db_perform(TABLE_RECONCILIATION, $sql_data_array, 'update', "period = $period and gl_account = '$gl_account'");
 	}
 	// set reconciled flag to period for all records that were checked
 	if (count($cleared_items)) {

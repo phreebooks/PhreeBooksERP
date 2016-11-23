@@ -42,8 +42,7 @@
 		<td><?php echo html_input_field('db_user', $db_user, '', true); ?></td>
 	  </tr>
 	  <tr>
-		<td><?php echo TEXT_DATABASE_PASSWORD; ?></td>
-		<td><?php echo html_password_field('db_pw', '', true); ?></td>
+		<td><?php echo \core\classes\htmlElement::password('db_pw', TEXT_DB_PASSWORD, '', true); ?></td>
 	  </tr>
 	  <tr>
 		<td><?php echo TEXT_COMPANY_FULL_NAME; ?></td>

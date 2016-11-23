@@ -25,7 +25,6 @@ class j extends \contacts\classes\contacts{
 	public $dept_rep_id 	= AR_DEF_GL_SALES_ACCT; //will overwrite if exists in database.
 
 	public function __construct(){
-		$this->tab_list[] = array('file'=>'template_notes',		'tag'=>'notes',    'order'=>40, 'text'=>TEXT_NOTES);
 		$this->tab_list[] = array('file'=>'template_j_general',	'tag'=>'general',  'order'=> 1, 'text'=>TEXT_GENERAL);
 		parent::__construct();
 	}

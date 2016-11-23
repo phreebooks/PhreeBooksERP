@@ -55,36 +55,25 @@ switch ($_REQUEST['action']) {
 	$default_levels = implode(';', $encoded_prices);
 	// Check for duplicate price sheet names
 	if ($_REQUEST['action'] == 'save') {
-	  $result = $admin->DataBase->query("SELECT id FROM " . TABLE_PRICE_SHEETS . " WHERE sheet_name='".addslashes($sheet_name)."'");
+	  $result = $admin->DataBase->query("SELECT id FROM " . TABLE_PRICE_SHEETS . " WHERE sheet_name=".$admin->DataBase->quote($sheet_name));
 	  if ($result->fetch(\PDO::FETCH_NUM) > 0) {
 		$effective_date = \core\classes\DateTime::createFromFormat(DATE_FORMAT, $effective_date);
 		$_REQUEST['action'] = 'new';
 		throw new \core\classes\userException(SRVCS_DUPLICATE_SHEET_NAME);
 	  }
 	}
-	$sql_data_array = array(
-	  'sheet_name' 		=> $sheet_name,
-	  'type' 			=> $type,
-	  'inactive' 		=> $inactive,
-	  'revision' 		=> $revision,
-	  'effective_date' 	=> $effective_date->format("Y-m-d"),
-	  'default_sheet' 	=> $default_sheet,
-	  'default_levels' 	=> $default_levels);
-	if ($_REQUEST['action'] == 'save'){
-		db_perform(TABLE_PRICE_SHEETS, $sql_data_array, 'insert');
-	}else{
-		db_perform(TABLE_PRICE_SHEETS, $sql_data_array, 'update', " id = $id");
-	}
+	$admin->DataBase->exec("INSERT INTO ".TABLE_PRICE_SHEETS." (id, sheet_name, type, inactive, revision, effective_date, default_sheet, default_levels) VALUES ($id, ".$admin->DataBase->quote($sheet_name).", '$type', $inactive, $revision, ".$effective_date->format("Y-m-d").", '$default_sheet', '$default_levels')  
+ON DUPLICATE KEY UPDATE sheet_name=".$admin->DataBase->quote($sheet_name).", type='$type', inactive=$inactive, revision=$revision, effective_date=".$effective_date->format("Y-m-d").", default_sheet='$default_sheet', '$default_levels')");
 	if ($default_sheet) {
 		// Reset all other price sheet default flags if set to this price sheet
-		$admin->DataBase->query("update " . TABLE_PRICE_SHEETS . " set default_sheet = '0' where sheet_name <> '".addslashes($sheet_name)."' and type = '$type'");
+		$admin->DataBase->query("UPDATE " . TABLE_PRICE_SHEETS . " SET default_sheet = '0' WHERE sheet_name <> '".addslashes($sheet_name)."' and type = '$type'");
 		// Set all price sheets with this name to default
-	  	$admin->DataBase->query("update " . TABLE_PRICE_SHEETS . " set default_sheet = '1' where sheet_name = '".addslashes($sheet_name)."' and type = '$type'");
+	  	$admin->DataBase->query("UPDATE " . TABLE_PRICE_SHEETS . " SET default_sheet = '1' WHERE sheet_name = '".addslashes($sheet_name)."' and type = '$type'");
 	}
 	// set expiration date of previous rev if there is a older rev of this price sheet
 	$experation_date = clone $effective_date;
-	if ($id != '') $admin->DataBase->query("update " . TABLE_PRICE_SHEETS . " set expiration_date = '" . $experation_date->modify("-1 day")->format("Y-m-d") . "'
-	  where sheet_name = '".addslashes($sheet_name)."' and type = '$type' and ( expiration_date IS NULL or expiration_date = '0000-00-00' or expiration_date >= '{$effective_date->format('Y-m-d')}' ) and id < $id");
+	if ($id != '') $admin->DataBase->query("UPDATE " . TABLE_PRICE_SHEETS . " SET expiration_date = '" . $experation_date->modify("-1 day")->format("Y-m-d") . "'
+	  where sheet_name = ".$admin->DataBase->quote($sheet_name)." and type = '$type' and ( expiration_date IS NULL or expiration_date = '0000-00-00' or expiration_date >= '{$effective_date->format('Y-m-d')}' ) and id < $id");
 	gen_add_audit_log(TEXT_PRICE_SHEET. " - "  . ($_REQUEST['action'] == 'save') ? TEXT_SAVE : TEXT_UPDATE, $sheet_name);
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('psID', 'action')), 'SSL'));
 	break;

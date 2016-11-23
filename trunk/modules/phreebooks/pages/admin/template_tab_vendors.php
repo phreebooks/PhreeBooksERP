@@ -27,32 +27,25 @@
 	 </thead>
 	 <tbody class="ui-widget-content">
 	  <tr>
-	    <td colspan="3"><?php echo CD_03_01_DESC; ?></td>
-	    <td nowrap="nowrap"><?php echo html_combo_box('ap_default_inventory_account', $inv_chart, $_POST['ap_default_inventory_account'] ? $_POST['ap_default_inventory_account'] : AP_DEFAULT_INVENTORY_ACCOUNT, ''); ?></td>
+	    <td colspan="4"><?php echo \core\classes\htmlElement::combobox('ap_default_inventory_account', CD_03_01_DESC, $inv_chart, $_POST['ap_default_inventory_account'] ? $_POST['ap_default_inventory_account'] : AP_DEFAULT_INVENTORY_ACCOUNT, null, false, false); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo CD_03_02_DESC; ?></td>
-	    <td><?php echo html_combo_box('ap_default_purchase_account', $ap_chart, $_POST['ap_default_purchase_account'] ? $_POST['ap_default_purchase_account'] : AP_DEFAULT_PURCHASE_ACCOUNT, ''); ?></td>
+	    <td colspan="4"><?php echo \core\classes\htmlElement::combobox('ap_default_purchase_account', CD_03_02_DESC, $ap_chart, $_POST['ap_default_purchase_account'] ? $_POST['ap_default_purchase_account'] : AP_DEFAULT_PURCHASE_ACCOUNT, null, false, false); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo TEXT_DEFAULT_ACCOUNT_TO_USE_FOR_PAYMENTS_TO_WHEN_INVOICES_ARE_PAID_TYPICALLY_A_CASH_TYPE_ACCOUNT; ?></td>
-	    <td><?php echo html_combo_box('ap_purchase_invoice_account', $cash_chart, $_POST['ap_purchase_invoice_account'] ? $_POST['ap_purchase_invoice_account'] : AP_PURCHASE_INVOICE_ACCOUNT, ''); ?></td>
+	    <td colspan="4"><?php echo \core\classes\htmlElement::combobox('ap_purchase_invoice_account', TEXT_DEFAULT_ACCOUNT_TO_USE_FOR_PAYMENTS_TO_WHEN_INVOICES_ARE_PAID_TYPICALLY_A_CASH_TYPE_ACCOUNT, $cash_chart, $_POST['ap_purchase_invoice_account'] ? $_POST['ap_purchase_invoice_account'] : AP_PURCHASE_INVOICE_ACCOUNT, null, false, false); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo CD_03_04_DESC; ?></td>
-	    <td><?php echo html_combo_box('ap_def_freight_acct', $inv_chart, $_POST['ap_def_freight_acct'] ? $_POST['ap_def_freight_acct'] : AP_DEF_FREIGHT_ACCT, ''); ?></td>
+	    <td colspan="4"><?php echo \core\classes\htmlElement::combobox('ap_def_freight_acct', CD_03_04_DESC, $inv_chart, $_POST['ap_def_freight_acct'] ? $_POST['ap_def_freight_acct'] : AP_DEF_FREIGHT_ACCT, null, false, false); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo CD_03_05_DESC; ?></td>
-	    <td><?php echo html_combo_box('ap_discount_purchase_account', $ap_chart, $_POST['ap_discount_purchase_account'] ? $_POST['ap_discount_purchase_account'] : AP_DISCOUNT_PURCHASE_ACCOUNT, ''); ?></td>
+	    <td colspan="4"><?php echo \core\classes\htmlElement::combobox('ap_discount_purchase_account', CD_03_05_DESC, $ap_chart, $_POST['ap_discount_purchase_account'] ? $_POST['ap_discount_purchase_account'] : AP_DISCOUNT_PURCHASE_ACCOUNT, null, false, false); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo CD_03_06_DESC; ?></td>
-	    <td><?php echo html_combo_box('ap_def_deposit_acct', $cash_chart, $_POST['ap_def_deposit_acct'] ? $_POST['ap_def_deposit_acct'] : AP_DEF_DEPOSIT_ACCT, ''); ?></td>
+	    <td colspan="4"><?php echo \core\classes\htmlElement::combobox('ap_def_deposit_acct', CD_03_06_DESC, $cash_chart, $_POST['ap_def_deposit_acct'] ? $_POST['ap_def_deposit_acct'] : AP_DEF_DEPOSIT_ACCT, null, false, false); ?></td>
 	  </tr>
 	  <tr>
-	    <td colspan="3"><?php echo CD_03_07_DESC; ?></td>
-	    <td><?php echo html_combo_box('ap_def_dep_liab_acct', $ocl_chart, $_POST['ap_def_dep_liab_acct'] ? $_POST['ap_def_dep_liab_acct'] : AP_DEF_DEP_LIAB_ACCT, ''); ?></td>
+	    <td colspan="4"><?php echo \core\classes\htmlElement::combobox('ap_def_dep_liab_acct', CD_03_07_DESC, $ocl_chart, $_POST['ap_def_dep_liab_acct'] ? $_POST['ap_def_dep_liab_acct'] : AP_DEF_DEP_LIAB_ACCT, null, false, false); ?></td>
 	  </tr>
 	 </tbody>
 	</table>

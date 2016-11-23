@@ -38,12 +38,17 @@ try{
 	\core\classes\messageStack::debug_log(" ".$e->getMessage());
 	\core\classes\messageStack::debug_log(" fire event : $e->action");
 	\core\classes\messageStack::debug_log("\n\n\n".$e->getTraceAsString());
-	if (is_object($admin) && !empty($e->action)) {
-		// maybe redirect user to template error method.
-		$admin->removeEventsAndAddNewEvent($e->action); //@todo werkt nog niet altijd
-		$admin->startProcessingEvents();
-	} else {
-		echo "Sorry but there was a unforseen error <br/> <b>".$e->getMessage()."</b><br/><br/>".$e->getTraceAsString();
+	if( $basis->cInfo->contentType == "application/json"){
+		$temp->error_message = $e->getMessage();
+		echo json_encode($temp);
+	}else{
+		if (is_object($admin) && !empty($e->action)) {
+			// maybe redirect user to template error method.
+			$admin->removeEventsAndAddNewEvent($e->action); //@todo werkt nog niet altijd
+			$admin->startProcessingEvents();
+		} else {
+			echo "Sorry but there was a unforseen error <br/> <b>".$e->getMessage()."</b><br/><br/>".$e->getTraceAsString();
+		}
 	}
 	\core\classes\messageStack::end();
 }

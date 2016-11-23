@@ -340,8 +340,8 @@ abstract class journal {
 		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(TEXT_THE_SKU_ENTERED_COULD_NOT_BE_FOUND);
 		$result = $sql->fetch(\PDO::FETCH_LAZY);
 		$sku_id = $result['id'];
-		$raw_sql = "SELECT a.sku, a.description, a.qty, i.inventory_type, i.quantity_on_hand, i.account_inventory_wage, i.item_cost as price
-		  FROM " . TABLE_INVENTORY_ASSY_LIST . " a inner join " . TABLE_INVENTORY . " i on a.sku = i.sku
+		$raw_sql = "SELECT a.sku, a.description, a.qty, i.inventory_type, i.quantity_on_hand, i.account_inventory_wage, i.item_cost AS price
+		  FROM " . TABLE_INVENTORY_ASSY_LIST . " a INNER JOIN " . TABLE_INVENTORY . " i ON a.sku = i.sku
 		  WHERE a.ref_id = " . $sku_id;
 		$sql = $admin->DataBase->prepare($raw_sql);
 		$sql->execute();
