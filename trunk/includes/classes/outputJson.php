@@ -12,12 +12,11 @@ class outputJson {
 		echo '<!-- json menu-->';
 	}
 	
-	public function send() {
+	public function send(\SplSubject $basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		global $admin;
 		header_remove();
 		header('Content-Type: application/json');
-		echo json_encode($admin->cInfo);
+		echo json_encode($basis->cInfo);
 		return true;
 	}
 
