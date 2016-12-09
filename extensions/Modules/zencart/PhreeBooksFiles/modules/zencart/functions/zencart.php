@@ -19,12 +19,14 @@
 
 function doCURLRequest($method = 'GET', $url, $vars) {
 	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_VERBOSE, 0);
-	curl_setopt($ch, CURLOPT_HEADER, false);
-	curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 30); // times out after 30 seconds
+	curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
+	curl_setopt ($ch, CURLOPT_CAINFO, DIR_FS_MODULES."phreedom/includes/cacert.pem");
+	curl_setopt ($ch, CURLOPT_URL, $url);
+	curl_setopt ($ch, CURLOPT_VERBOSE, 0);
+	curl_setopt ($ch, CURLOPT_HEADER, false);
+	curl_setopt ($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
+	curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt ($ch, CURLOPT_TIMEOUT, 30); // times out after 30 seconds
 	if (strtoupper($method) == 'POST') {
 		curl_setopt($ch, CURLOPT_POST, true);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $vars);
