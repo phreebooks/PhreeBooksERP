@@ -265,6 +265,7 @@ class basis {
 			}
 			ob_flush();
 		}
+		if (method_exists ( $this->observer, 'send' )) $this->observer->send();  
 	}
 
 	/**

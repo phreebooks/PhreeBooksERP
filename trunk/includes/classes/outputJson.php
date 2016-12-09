@@ -12,7 +12,7 @@ class outputJson {
 		echo '<!-- json menu-->';
 	}
 	
-	public function __destruct() {
+	public function send() {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		global $admin;
 		header_remove();
