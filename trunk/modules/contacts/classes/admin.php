@@ -423,10 +423,8 @@ class admin extends \core\classes\admin {
 		$sql = $basis->DataBase->prepare($query_raw);
 		$sql->execute();
 		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
-		$temp = array();
-		$temp["total"] = sizeof($results);
-		$temp["rows"] = $results;
-		echo json_encode($temp);
+		$basis->cInfo->total = sizeof($results);
+		$basis->cInfo->rows = $results;
 	}
 
 	function loadAddresses (\core\classes\basis &$basis) {
@@ -435,9 +433,8 @@ class admin extends \core\classes\admin {
 		$sql->execute();
 		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
 		$temp = array();
-		$temp["total"] = sizeof($results);
-		$temp["rows"] = $results;
-		echo json_encode($temp);
+		$basis->cInfo->total = sizeof($results);
+		$basis->cInfo->rows = $results;
 	}
 	
 	function editAddress (\core\classes\basis &$basis) {
@@ -555,33 +552,29 @@ class admin extends \core\classes\admin {
 	function saveAddress  (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		try{
-			$temp = $basis->cInfo;
 			$sql = $basis->DataBase->prepare("INSERT INTO " . TABLE_ADDRESS_BOOK . " (`address_id`, `ref_id`, `type`, `primary_name`, `contact`, `address1`, `address2`, `city_town`, `state_province`,`postal_code`, `country_code`, `telephone1`, `telephone2`, `telephone3`, `telephone4`, `email`, `website`) VALUES (:address_id, :ref_id, :type, :primary_name, :contact, :address1, :address2, :city_town, :state_province, :postal_code, :country_code, :telephone1, :telephone2, :telephone3, :telephone4, :email, :website) ON DUPLICATE KEY UPDATE primary_name = :primary_name, contact = :contact, address1 = :address1, address2 = :address2, city_town = :city_town, state_province = :state_province, postal_code = :postal_code, country_code = :country_code, telephone1 = :telephone1, telephone2 = :telephone2, telephone3 = :telephone3, telephone4 = :telephone4, email = :email, website = :website, type = :type");
-			$sql->execute(array(':address_id' => $temp->address_id, ':ref_id' => $temp->ref_id, ':type' => "{$temp->type}m", ':primary_name' => $temp->primary_name, ':contact' => $temp->contact, ':address1' => $temp->address1, ':address2' => $temp->address2, ':city_town' => $temp->city_town, ':state_province' => $temp->state_province, ':postal_code' => $temp->postal_code, ':country_code' => $temp->country_code, ':telephone1' => $temp->telephone1, ':telephone2' => $temp->telephone2, ':telephone3' => $temp->telephone3, ':telephone4' => $temp->telephone4, ':email' => $temp->email, ':website' => $temp->website));
-			if($temp->address_id == ''){//find new contact id.
-				$temp->address_id = $basis->DataBase->lastInsertId();
+			$sql->execute(array(':address_id' => $basis->cInfo->address_id, ':ref_id' => $basis->cInfo->ref_id, ':type' => "{$basis->cInfo->type}m", ':primary_name' => $basis->cInfo->primary_name, ':contact' => $basis->cInfo->contact, ':address1' => $basis->cInfo->address1, ':address2' => $basis->cInfo->address2, ':city_town' => $basis->cInfo->city_town, ':state_province' => $basis->cInfo->state_province, ':postal_code' => $basis->cInfo->postal_code, ':country_code' => $basis->cInfo->country_code, ':telephone1' => $basis->cInfo->telephone1, ':telephone2' => $basis->cInfo->telephone2, ':telephone3' => $basis->cInfo->telephone3, ':telephone4' => $basis->cInfo->telephone4, ':email' => $basis->cInfo->email, ':website' => $basis->cInfo->website));
+			if($basis->cInfo->address_id == ''){//find new contact id.
+				$basis->cInfo->address_id = $basis->DataBase->lastInsertId();
 			}
-			$temp->success = true;
-			$temp->message = TEXT_SAVED_SUCCESSFULLY;
+			$basis->cInfo->success = true;
+			$basis->cInfo->message = TEXT_SAVED_SUCCESSFULLY;
 		}catch (\Exception $e) {
-			$temp->success = false;
-			$temp->error_message = $e->getMessage();
+			$basis->cInfo->success = false;
+			$basis->cInfo->error_message = $e->getMessage();
 		}
-		echo json_encode($temp);
 	}
 	
 	function deleteAddress  (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		try{
-			$temp = $basis->cInfo;
-			$basis->DataBase->exec("DELETE FROM ".TABLE_ADDRESS_BOOK ." WHERE address_id={$temp->address_id}");
-			$temp->success = true;
-			$temp->message = TEXT_SAVED_SUCCESSFULLY;
+			$basis->DataBase->exec("DELETE FROM ".TABLE_ADDRESS_BOOK ." WHERE address_id={$basis->cInfo->address_id}");
+			$basis->cInfo->success = true;
+			$basis->cInfo->message = TEXT_SAVED_SUCCESSFULLY;
 		}catch (\Exception $e) {
-			$temp->success = false;
-			$temp->error_message = $e->getMessage();
+			$basis->cInfo->success = false;
+			$basis->cInfo->error_message = $e->getMessage();
 		}
-		echo json_encode($temp);
 	}
 	
 	function editContactRelation (\core\classes\basis &$basis) {
@@ -684,38 +677,37 @@ class admin extends \core\classes\admin {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$temp = $basis->cInfo;
 		try{
-			if ($temp->type == '' || $temp->type == 0 ) $temp->type = 'i';
-			$temp->inactive = $temp->inactive? '1':'0';
+			if ($basis->cInfo->type == '' || $basis->cInfo->type == 0 ) $basis->cInfo->type = 'i';
+			$basis->cInfo->inactive = $basis->cInfo->inactive? '1':'0';
 			$date = new \core\classes\DateTime();
 			$sql = $basis->DataBase->prepare("INSERT INTO " . TABLE_CONTACTS . " (`class`, `id`, `type`, `short_name`, `inactive`, `title`, `contact_first`, `contact_middle`, `contact_last`, `dept_rep_id`, `gov_id_number`, `account_number`,`first_date`, `last_update`) VALUES (:class, :id, :type, :short_name, :inactive, :title, :contact_first, :contact_middle, :contact_last, :dept_rep_id, :gov_id_number, :account_number, :first_date, :last_update) ON DUPLICATE KEY UPDATE short_name = :short_name, inactive = :inactive, title= :title, contact_first = :contact_first, contact_middle = :contact_middle, gov_id_number = :gov_id_number, account_number = :account_number, contact_last = :contact_last, last_update = :last_update");
-			$sql->execute(array(':class' => "contacts\\classes\\type\\{$temp->type}", ':id' => $temp->contactid,':type' => $temp->type, ':short_name' => $temp->short_name, ':inactive' => $temp->inactive,':title' => $temp->title ,':contact_first' => $temp->contact_first, ':contact_middle' => $temp->contact_middle, ':contact_last' => $temp->contact_last, ':dept_rep_id' => $temp->dept_rep_id, ':first_date' => $date->format( 'Y-m-d' ), ':last_update' => $date->format( 'Y-m-d' ), 'gov_id_number' => $temp->gov_id_number, ':account_number' => $temp->account_number));
-			if($temp->contactid == ''){//find new contact id.
-				$temp->contactid = $basis->DataBase->lastInsertId();
-				\core\classes\messageStack::debug_log("contactID =  {$temp->contactid}");
-				if($temp->isNewRecord){
-			  		$next_id = string_increment($temp->short_name);
+			$sql->execute(array(':class' => "contacts\\classes\\type\\{$basis->cInfo->type}", ':id' => $basis->cInfo->contactid,':type' => $basis->cInfo->type, ':short_name' => $basis->cInfo->short_name, ':inactive' => $basis->cInfo->inactive,':title' => $basis->cInfo->title ,':contact_first' => $basis->cInfo->contact_first, ':contact_middle' => $basis->cInfo->contact_middle, ':contact_last' => $basis->cInfo->contact_last, ':dept_rep_id' => $basis->cInfo->dept_rep_id, ':first_date' => $date->format( 'Y-m-d' ), ':last_update' => $date->format( 'Y-m-d' ), 'gov_id_number' => $basis->cInfo->gov_id_number, ':account_number' => $basis->cInfo->account_number));
+			if($basis->cInfo->contactid == ''){//find new contact id.
+				$basis->cInfo->contactid = $basis->DataBase->lastInsertId();
+				\core\classes\messageStack::debug_log("contactID =  {$basis->cInfo->contactid}");
+				if($basis->cInfo->isNewRecord){
+			  		$next_id = string_increment($basis->cInfo->short_name);
 			  		\core\classes\messageStack::debug_log("nextID =  {$next_id} table = " .TABLE_CURRENT_STATUS);
 			  		\core\classes\messageStack::debug_log("UPDATE ".TABLE_CURRENT_STATUS." SET next_crm_id_num = {$next_id}");
 					$sql = $basis->DataBase->exec ("UPDATE ".TABLE_CURRENT_STATUS." SET next_crm_id_num = {$next_id}");
 				}
 			}
 			$sql = $basis->DataBase->prepare("INSERT INTO " . TABLE_ADDRESS_BOOK . " (`address_id`, `ref_id`, `type`, `primary_name`, `contact`, `address1`, `address2`, `city_town`, `state_province`,`postal_code`, `country_code`, `telephone1`, `telephone2`, `telephone3`, `telephone4`, `email`, `website`) VALUES (:address_id, :ref_id, :type, :primary_name, :contact, :address1, :address2, :city_town, :state_province, :postal_code, :country_code, :telephone1, :telephone2, :telephone3, :telephone4, :email, :website) ON DUPLICATE KEY UPDATE primary_name = :primary_name, contact = :contact, address1 = :address1, address2 = :address2, city_town = :city_town, state_province = :state_province, postal_code = :postal_code, country_code = :country_code, telephone1 = :telephone1, telephone2 = :telephone2, telephone3 = :telephone3, telephone4 = :telephone4, email = :email, website = :website, type = :type");
-			$sql->execute(array(':address_id' => $temp->address_id, ':ref_id' => $temp->contactid, ':type' => "{$temp->type}m", ':primary_name' => $temp->primary_name, ':contact' => $temp->contact, ':address1' => $temp->address1, ':address2' => $temp->address2, ':city_town' => $temp->city_town, ':state_province' => $temp->state_province, ':postal_code' => $temp->postal_code, ':country_code' => $temp->country_code, ':telephone1' => $temp->telephone1, ':telephone2' => $temp->telephone2, ':telephone3' => $temp->telephone3, ':telephone4' => $temp->telephone4, ':email' => $temp->email, ':website' => $temp->website));
-			if($temp->address_id == ''){//find new contact id.
-				$temp->address_id = $basis->DataBase->lastInsertId();
+			$sql->execute(array(':address_id' => $basis->cInfo->address_id, ':ref_id' => $basis->cInfo->contactid, ':type' => "{$basis->cInfo->type}m", ':primary_name' => $basis->cInfo->primary_name, ':contact' => $basis->cInfo->contact, ':address1' => $basis->cInfo->address1, ':address2' => $basis->cInfo->address2, ':city_town' => $basis->cInfo->city_town, ':state_province' => $basis->cInfo->state_province, ':postal_code' => $basis->cInfo->postal_code, ':country_code' => $basis->cInfo->country_code, ':telephone1' => $basis->cInfo->telephone1, ':telephone2' => $basis->cInfo->telephone2, ':telephone3' => $basis->cInfo->telephone3, ':telephone4' => $basis->cInfo->telephone4, ':email' => $basis->cInfo->email, ':website' => $basis->cInfo->website));
+			if($basis->cInfo->address_id == ''){//find new contact id.
+				$basis->cInfo->address_id = $basis->DataBase->lastInsertId();
 			}
-			$temp->success = true;
-			$temp->message = TEXT_SAVED_SUCCESSFULLY;
+			$basis->cInfo->success = true;
+			$basis->cInfo->message = TEXT_SAVED_SUCCESSFULLY;
 		}catch (\Exception $e) {
-			$temp->success = false;
-			$temp->error_message = $e->getMessage();
+			$basis->cInfo->success = false;
+			$basis->cInfo->error_message = $e->getMessage();
 		}
-		if (in_array($temp->type, array('e','i')) ){
-			$temp->name = $temp->contact_first . ' ' .$temp->contact_last;
+		if (in_array($basis->cInfo->type, array('e','i')) ){
+			$basis->cInfo->name = $basis->cInfo->contact_first . ' ' .$basis->cInfo->contact_last;
 		}else{
-			$temp->name = $temp->primary_name;
+			$basis->cInfo->name = $basis->cInfo->primary_name;
 		}
-		echo json_encode($temp);
 	}
 	
 	/**
@@ -799,13 +791,12 @@ class admin extends \core\classes\admin {
 			}
 			$sql = $basis->DataBase->prepare("UPDATE ".TABLE_CONTACTS." SET attachments = '".serialize($attachments). "' WHERE id = {$basis->cInfo->contact->id}");
 			$sql->execute();
-			$temp->success = true;
-			$temp->message = TEXT_SAVED_SUCCESSFULLY;
+			$basis->cInfo->success = true;
+			$basis->cInfo->message = TEXT_SAVED_SUCCESSFULLY;
 		}catch (\Exception $e) {
-			$temp->success = false;
-			$temp->error_message = $e->getMessage();
+			$basis->cInfo->success = false;
+			$basis->cInfo->error_message = $e->getMessage();
 		}
-		echo json_encode($temp);
 	}
 
 	function DeleteContact (\core\classes\basis &$basis) {
@@ -817,9 +808,8 @@ class admin extends \core\classes\admin {
 		$basis->cInfo->contact->delete();
 		$temp = $basis->cInfo; 
 		if( $basis->cInfo->contentType == "application/json"){
-			$temp->success = true;
-			$temp->message = TEXT_SAVED_SUCCESSFULLY;
-			echo json_encode($temp);
+			$basis->cInfo->success = true;
+			$basis->cInfo->message = TEXT_SAVED_SUCCESSFULLY;
 		}else{
 			$basis->addEventToStack('LoadContactMgrPage');
 		}

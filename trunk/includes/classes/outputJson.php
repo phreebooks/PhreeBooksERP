@@ -12,18 +12,13 @@ class outputJson {
 		echo '<!-- json menu-->';
 	}
 	
-	public function update(\SplSubject $basis) {
+	public function __destruct() {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		global $messageStack;
-		if($basis->page == 'json'){
-			header_remove();
-			header('Content-Type: application/json');
-			echo json_encode($basis);
-			return true;
-		}else{
-			return false;
-		}
-
+		global $admin;
+		header_remove();
+		header('Content-Type: application/json');
+		echo json_encode($admin->cInfo);
+		return true;
 	}
 
 	function send_footer($basis){

@@ -39,6 +39,7 @@ try{
 	\core\classes\messageStack::debug_log(" fire event : $e->action");
 	\core\classes\messageStack::debug_log("\n\n\n".$e->getTraceAsString());
 	if( $basis->cInfo->contentType == "application/json"){
+		$temp->success = false;
 		$temp->error_message = $e->getMessage();
 		echo json_encode($temp);
 	}else{

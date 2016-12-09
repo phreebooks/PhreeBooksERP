@@ -488,10 +488,8 @@ class admin extends \core\classes\admin {
 		$sql = $basis->DataBase->prepare($raw_sql);
 		$sql->execute();
 		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
-		$temp = array();
-		$temp["total"] = sizeof($results);
-		$temp["rows"] = $results;
-		echo json_encode($temp);
+		$basis->cInfo->total = sizeof($results);
+		$basis->cInfo->rows = $results;
 	}
 	
 	function GetAllContactsAndJournals (\core\classes\basis &$basis) {
@@ -518,10 +516,8 @@ class admin extends \core\classes\admin {
 		$sql = $basis->DataBase->prepare($query_raw);
 		$sql->execute();
 		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
-		$temp = array();
-		$temp["total"] = sizeof($results);
-		$temp["rows"] = $results;
-		echo json_encode($temp);
+		$basis->cInfo->total = sizeof($results);
+		$basis->cInfo->rows = $results;
 	}
 }
 ?>

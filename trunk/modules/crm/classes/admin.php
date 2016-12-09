@@ -222,10 +222,9 @@ class admin extends \core\classes\admin {
 		$sql = $basis->DataBase->prepare("SELECT DISTINCT l.log_id, l.entered_by, l.contact_id, u.display_name as user_name, l.log_date, l.crmaction, l.notes, c.contact_first, c.contact_last, a.primary_name, CASE WHEN c.contact_last != '' THEN CONCAT(c.contact_first,' ',c.contact_middle,' ',c.contact_last) ELSE a.primary_name END AS name FROM ".TABLE_CONTACTS_LOG." AS l JOIN ".TABLE_CONTACTS." AS c ON l.contact_id = c.id JOIN ".TABLE_ADDRESS_BOOK." AS a ON c.id = a.ref_id JOIN ".TABLE_USERS." AS u ON l.entered_by = u.admin_id WHERE (c.dept_rep_id ={$basis->cInfo->contact_id} OR c.id ={$basis->cInfo->contact_id})");
 		$sql->execute();
 		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
-		$temp = array();
-		$temp["total"] = sizeof($results);
-		$temp["rows"] = $results;
-		echo json_encode($temp);
+		
+		$basis->cInfo->total = sizeof($results);
+		$basis->cInfo->rows = $results;
 	}
 	
 	function editCRM (\core\classes\basis &$basis) {
@@ -294,17 +293,15 @@ class admin extends \core\classes\admin {
 	
 	function saveCRM (\core\classes\basis &$basis) {
 		$date = \core\classes\DateTime::db_date_time_format(trim($basis->cInfo->log_date));
-		$temp = $basis->cInfo;
-		$temp->log_date = $date;
+		$basis->cInfo->log_date = $date;
 		$sql = $basis->DataBase->prepare("INSERT INTO " . TABLE_CONTACTS_LOG . " (`log_id`, `contact_id`, `entered_by`, `log_date`, `crmaction`, `notes`) VALUES (:log_id, :contact_id, :entered_by, :log_date, :action, :notes) ON DUPLICATE KEY UPDATE contact_id = :contact_id, entered_by = :entered_by, log_date = :log_date, crmaction = :action, notes = :notes");
 		if ($sql->execute(array(':log_id' => $basis->cInfo->log_id,':contact_id' => $basis->cInfo->contact_id, ':entered_by' => $basis->cInfo->entered_by, ':log_date' => $date, ':action' => $basis->cInfo->crmaction,':notes' => $basis->cInfo->notes))){
-			$temp->success = true;
-			$temp->message = TEXT_SAVED_SUCCESSFULLY;
+			$basis->cInfo->success = true;
+			$basis->cInfo->message = TEXT_SAVED_SUCCESSFULLY;
 		}else{
-			$temp->success = false;
-			$temp->error_message = TEXT_SAVED_FAILED;
+			$basis->cInfo->success = false;
+			$basis->cInfo->error_message = TEXT_SAVED_FAILED;
 		}
-		echo json_encode($temp);
 	}
 }
 ?>
