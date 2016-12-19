@@ -17,7 +17,16 @@
 //  Path: /modules/phreemail/classes/install.php
 //
 namespace phreemail\classes;
-require_once (DIR_FS_ADMIN . 'modules/phreemail/config.php');
+// Release History
+// 1.0 - created
+// New Database Tables
+define('TABLE_PHREEMAIL',			DB_PREFIX . 'phreemail');
+define('TABLE_PHREEMAIL_DIR',		DB_PREFIX . 'phreemail_dir');
+define('TABLE_PHREEMAIL_LIST',		DB_PREFIX . 'phreemail_list');
+define('TABLE_PHREEMAIL_ATTACH',	DB_PREFIX . 'phreemail_attach');
+// directory
+define('PHREEMAIL_DIR_ATTACHMENTS',  DIR_FS_MY_FILES . $_SESSION['user']->company . '/phreemail/attachments/');
+
 class admin extends \core\classes\admin {
 	public $id 			= 'phreemail';
 	public $text		= MODULE_PHREEMAIL_TITLE;
@@ -26,9 +35,9 @@ class admin extends \core\classes\admin {
 
 	function __construct() {
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
-		  'phreedom'   => 3.3,
-		  'inventory'  => 3.3,
-		  'phreebooks' => 3.3,
+			'contacts' 		=> 4.0,
+			'phreedom'   	=> 4.0,
+		  	'phreebooks'	=> 4.0,
 		);
 		// add new directories to store images and data
 		$this->dirlist = array(
@@ -38,7 +47,7 @@ class admin extends \core\classes\admin {
 	    //@todo maybe the toaddress_id and fromadress_id can be removed.
 		$this->tables = array(
 		  TABLE_PHREEMAIL => "CREATE TABLE ".TABLE_PHREEMAIL."  (
-	  		`id` int(11) NOT NULL auto_increment,
+	  		`email_id` int(11) NOT NULL auto_increment,
 	  		`message_id` varchar(255) NOT NULL default '0',
 	  		`toaddress_id` int(11) NOT NULL default '0',
 	  		`fromaddress_id` int(11) NOT NULL default '0',
@@ -64,7 +73,7 @@ class admin extends \core\classes\admin {
 	  		`message_html` text  NOT NULL,
 	  		`size` int(11) NOT NULL default '0',
 	  		`reply_id` int(11) NOT NULL default '0',
-	  		PRIMARY KEY  (`ID`),
+	  		PRIMARY KEY  (`email_id`),
 	  		KEY `message_id` (`message_id`),
 	  		KEY `from` (`fromaddress`)
 		) ENGINE=MyISAM;",
@@ -89,13 +98,6 @@ class admin extends \core\classes\admin {
 	  		KEY `Email` (`Email`)
 			) ENGINE=MyISAM;",
 
-		TABLE_PHREEMAIL_WORDS => "CREATE TABLE ". TABLE_PHREEMAIL_WORDS ." (
-	  		`IDw` int(11) NOT NULL auto_increment,
-	  		`Word` varchar(100)  NOT NULL default '',
-	  		PRIMARY KEY  (`IDw`),
-	  		KEY `Word` (`Word`)
-			) ENGINE=MyISAM;",
-
 		TABLE_PHREEMAIL_ATTACH => "CREATE TABLE ". TABLE_PHREEMAIL_ATTACH ." (
 	  		`ID` int(11) NOT NULL auto_increment,
 	  		`IDEmail` int(11) NOT NULL default '0',
@@ -105,24 +107,14 @@ class admin extends \core\classes\admin {
 	  		KEY `IDEmail` (`IDEmail`)
 			) ENGINE=MyISAM;",
 		);
+		
+		// Set the menus
+		$this->mainmenu["customers"]->submenu ["email"] 		= new \core\classes\menuItem (70, 	TEXT_EMAIL,			'action=LoadEmailMgrPage');
+		//		$this->mainmenu["company"]->submenu ["configuration"]->submenu ["email"]  = new \core\classes\menuItem (sprintf(TEXT_MODULE_ARGS, TEXT_EMAIL), sprintf(TEXT_MODULE_ARGS, TEXT_EMAIL),	'module=email&amp;page=admin');
+		
 	}
 
-	function install($path_my_files, $demo = false) {
-	    global $admin, $messageStack;
-		parent::install($path_my_files, $demo);
-	  	$admin->DataBase->query("INSERT INTO " . TABLE_PHREEMAIL_WORDS . " VALUES(1, 'viagvra');");
-	  	$admin->DataBase->query("INSERT INTO " . TABLE_PHREEMAIL_WORDS . " VALUES(2, 'rjolex');");
-	  	$admin->DataBase->query("INSERT INTO " . TABLE_PHREEMAIL_WORDS . " VALUES(3, 'viajagra');");
-		$admin->DataBase->query("INSERT INTO " . TABLE_PHREEMAIL_LIST  . " VALUES (1, 'spam@spamserver.com', 'B');");
-		$admin->DataBase->query("INSERT INTO " . TABLE_PHREEMAIL_DIR   . " VALUES (1, 0, 0, 'Spam', 1, '', '');");
-		$admin->DataBase->query("INSERT INTO " . TABLE_PHREEMAIL_DIR   . " VALUES (2, 0, 1, 'Trash', 1, '', '');");
-		$admin->DataBase->query("INSERT INTO " . TABLE_PHREEMAIL_DIR   . " VALUES (3, 0, 2, 'Orders', 1, '', '');");
-		$admin->DataBase->query("INSERT INTO " . TABLE_PHREEMAIL_DIR   . " VALUES (4, 0, 3, 'Personal', 1, '', '');");
-		parent::install();
-	}
-
-  function Aafter_ValidateUser(\core\classes\basis &$basis) {//@todo
-  		global $admin;
+	function after_ValidateUser(\core\classes\basis &$basis) {
   		\core\classes\messageStack::debug_log("\n\n*************** Retrieving Mail from ".EMAIL_SMTPAUTH_MAILBOX." *******************");
 		try{
 	  		$mail = new \phreemail\classes\phreemail();
@@ -130,52 +122,102 @@ class admin extends \core\classes\admin {
 			if ($mail->error_count != 0 ){
 				\core\classes\messageStack::add($mail->ErrorInfo, 'error');
 			}else{
-				//while(!$mail->EOF){
-					$mail->do_action();
-					//$mail->MoveNext();
-				//}
-			}
-
-			/*while(!$mail->EOF){
 				$mail->do_action();
-				$mail->MoveNext();
-			}*/
+			}
 		}catch (\Exception $exception){
 			\core\classes\messageStack::add($exception->getMessage(), 'error');
 		}
 		\core\classes\messageStack::debug_log("\n\n*************** End Retrieving Mail from ".EMAIL_SMTPAUTH_MAILBOX." *******************");
 		try{
-			\core\classes\messageStack::debug_log("\n\n*************** Retrieving Mail from ".$_SESSION['user']->admin_email." *******************");
+			\core\classes\messageStack::debug_log("\n\n*************** Retrieving Mail from {$_SESSION['user']->admin_email} *******************");
 			$mail = new \phreemail\classes\phreemail();
 			$mail->connect('', '', $_SESSION['user']->admin_email, '');
-//			$mail->get_all_emails();
 			if ($mail->error_count != 0 ){
 				\core\classes\messageStack::add($mail->ErrorInfo, 'error');
 			}else{
-				//while(!$mail->EOF){
-					$mail->do_action();
-					//$mail->MoveNext();
-				//}
-			}
-			/*
-			while(!$mail->EOF){
 				$mail->do_action();
-				$mail->MoveNext();
-			}*/
-			\core\classes\messageStack::debug_log("\n\n*************** End Retrieving Mail from ".$_SESSION['user']->admin_email." *******************");
+			}
 		}catch (\Exception $exception){
 			\core\classes\messageStack::add($exception->getMessage(), 'error');
 		}
-		$messageStack->write_debug();
+		\core\classes\messageStack::debug_log("\n\n*************** End Retrieving Mail from {$_SESSION['user']->admin_email} *******************");
   }
   
   function after_editContact(\core\classes\basis &$basis) {
-  	?>
-  	<div data-options="region:'east',split:true,collapsed:false,collapsible:true,minWidth:'50px',title:'<?php echo TEXT_EMAILS?>'" style="width:250px">
-  	Deze text moet nog vervangen worden voor email data
-  	</div>
-  	<?php 
-  }
-
+  	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+  	?><script type="text/javascript">
+			$(document).ready(function(){
+				
+				$('#email_table').datagrid({
+					url:		"index.php?action=loadEmailHistory",
+					queryParams: {
+						contact_id: '<?php echo $basis->cInfo->contact->id;?>',
+						dataType: 'json',
+				        contentType: 'application/json',
+				        async: false,
+					},
+					width: '100%',
+					height: '500px',
+					onBeforeLoad:function(){
+						console.log('loading of the email history datagrid');
+					},
+					onLoadSuccess: function(data){
+						console.log('the loading of the email history datagrid was succesfull');
+						$.messager.progress('close');
+					},
+					onLoadError: function(){
+						console.error('the loading of the email history datagrid resulted in a error');
+						$.messager.progress('close');
+						$.messager.alert('<?php echo TEXT_ERROR?>','Load error for table email notes');
+					},
+					onDblClickRow: function(index , row){
+						console.log('a row in the email history was double clicked');
+						$('#email_table').datagrid('expandRow', index);
+					},
+					toolbar: "#email_toolbar",
+					remoteSort:	false,
+					fitColumns:	true,
+					idField:	"email_id",
+					singleSelect:true,
+					sortName:	"date",
+					sortOrder: 	"dsc",
+					loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
+				    view: detailview,
+				    detailFormatter:function(index,row){
+				        return '<div class="ddv"></div>';
+				    },
+				    onExpandRow: function(index, row){
+				        //@todo write this 
+				    }
+				});
+			})
+			
+			</script>
+			<div data-options="region:'east',split:true,collapsed:false,collapsible:true,minWidth:'50px',title:'<?php echo TEXT_EMAILS?>'" style="width:250px">
+					<table id='email_table'>
+					    <thead>
+					   		<tr>
+					        	<th data-options="field:'toaddress',sortable:true, align:'left'"><?php echo TEXT_TO;?></th>
+				    	        <th data-options="field:'fromaddress',sortable:true, align:'left'"><?php echo TEXT_FROM?></th>	
+				    	        <th data-options="field:'date',sortable:true, align:'right', formatter: function(value,row,index){ return formatDateTime(value)}"><?php echo TEXT_DATE?></th>
+						        <th data-options="field:'status',sortable:true, align:'left'"><?php echo TEXT_STATUS?></th>
+						        <th data-options="field:'subject',sortable:false, align:'left'"><?php echo TEXT_SUBJECT?></th>		        
+					    	</tr>
+					   	</thead>
+					</table>
+					<div id="email_toolbar">
+				        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newEmail()"><?php echo sprintf(TEXT_NEW_ARGS, TEXT_EMAIL); //@todo?></a>
+				    </div>
+			</div>
+		<?php 				
+	}
+	
+	function getAllEmails(){//@todo add filter and max.
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		$sql = $admin->DataBase->prepare("SELECT * FROM " . TABLE_PHREEMAIL . " ORDER BY email_id DESC");
+		$sql->execute();
+		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
+		return $results;
+	}
 }
 ?>

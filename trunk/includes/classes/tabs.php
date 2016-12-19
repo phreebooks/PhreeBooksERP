@@ -48,10 +48,10 @@ class tabs {
 	  	global $admin;
 		\core\classes\user::validate_security($this->security_id, 4); // security check
 		$result = $admin->DataBase->query("SELECT field_name FROM ".TABLE_EXTRA_FIELDS." WHERE tab_id='$id'");
-		if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(INV_CATEGORY_CANNOT_DELETE . $result->fields['field_name']);
+		if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(INV_CATEGORY_CANNOT_DELETE . $result['field_name']);
 		$result = $admin->DataBase->query("SELECT tab_name FROM ".TABLE_EXTRA_TABS." WHERE id='$id'");
 		$admin->DataBase->exec("DELETE FROM ".TABLE_EXTRA_TABS." WHERE id=$id");
-		gen_add_audit_log($this->module .' '. TEXT_TABS . ' - '. TEXT_DELETE, $result->fields['tab_name']);
+		gen_add_audit_log($this->module .' '. TEXT_TABS . ' - '. TEXT_DELETE, $result['tab_name']);
 		return true;
 	}
 
@@ -62,23 +62,23 @@ class tabs {
 		  'value' => array(TEXT_TITLE, TEXT_DESCRIPTION, TEXT_SORT_ORDER, TEXT_ACTION),
 		  'params'=> 'width="100%" cellspacing="0" cellpadding="1"',
 	   );
-	   $result = $admin->DataBase->query("select id, tab_name, description, sort_order from " . TABLE_EXTRA_TABS . " where module_id='" . $this->module . "'");
-	   $rowCnt = 0;
-	   while (!$result->EOF) {
+	   	$sql = $admin->DataBase->prepare("select id, tab_name, description, sort_order from " . TABLE_EXTRA_TABS . " where module_id='" . $this->module . "'");
+	   	$rowCnt = 0;
+	   	$sql->execute();
+		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
 		  $actions = '';
-		  if ($this->security_id > 1) $actions .= html_icon('actions/edit-find-replace.png', TEXT_EDIT,   'small', 'onclick="loadPopUp(\'tabs_edit\', ' . $result->fields['id'] . ')"') . chr(10);
-		  if ($this->security_id > 3) $actions .= html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . EXTRA_TABS_DELETE_INTRO . '\')) subjectDelete(\'tabs\', ' . $result->fields['id'] . ')"') . chr(10);
+		  if ($this->security_id > 1) $actions .= html_icon('actions/edit-find-replace.png', TEXT_EDIT,   'small', 'onclick="loadPopUp(\'tabs_edit\', ' . $result['id'] . ')"') . chr(10);
+		  if ($this->security_id > 3) $actions .= html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . EXTRA_TABS_DELETE_INTRO . '\')) subjectDelete(\'tabs\', ' . $result['id'] . ')"') . chr(10);
 		  $content['tbody'][$rowCnt] = array(
-		    array('value' => htmlspecialchars($result->fields['tab_name']),
-				  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'tabs_edit\',\''.$result->fields['id'].'\')"'),
-			array('value' => htmlspecialchars($result->fields['description']),
-				  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'tabs_edit\',\''.$result->fields['id'].'\')"'),
-			array('value' => $result->fields['sort_order'],
-				  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'tabs_edit\',\''.$result->fields['id'].'\')"'),
+		    array('value' => htmlspecialchars($result['tab_name']),
+				  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'tabs_edit\',\''.$result['id'].'\')"'),
+			array('value' => htmlspecialchars($result['description']),
+				  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'tabs_edit\',\''.$result['id'].'\')"'),
+			array('value' => $result['sort_order'],
+				  'params'=> 'style="cursor:pointer" onclick="loadPopUp(\'tabs_edit\',\''.$result['id'].'\')"'),
 		    array('value' => $actions,
                   'params'=> 'align="right"'),
 		   );
-	       $result->MoveNext();
 	       $rowCnt++;
 	   }
 	   return html_datatable('tab_table', $content);
@@ -86,10 +86,7 @@ class tabs {
 
     public function build_form_html($action, $id = '') {
 	   global $admin;
-	   if ($action <> 'new') {
-	       $result = $admin->DataBase->query("select * from " . TABLE_EXTRA_TABS . " where id = " . $this->id);
-	       foreach ($result->fields as $key => $value) $this->$key = $value;
-       }
+	   if ($action <> 'new') $this = $admin->DataBase->query("SELECT * FROM " . TABLE_EXTRA_TABS . " WHERE id = " . $this->id);
 	   $output  = '<table style="border-collapse:collapse;margin-left:auto; margin-right:auto;">' . chr(10);
 	   $output .= '  <thead class="ui-widget-header">' . "\n";
 	   $output .= '  <tr>' . chr(10);

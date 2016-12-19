@@ -18,7 +18,6 @@
 //
 namespace phreemail\classes;
 require_once (DIR_FS_MODULES . 'phreedom/includes/PHPMailer/class.phpmailer.php');
-require_once (DIR_FS_MODULES . 'phreemail/config.php');
 
 class phreemail extends PHPMailer{
 	public $Host 		= EMAIL_SMTPAUTH_MAIL_SERVER; #pop3 server // van ouder
@@ -53,18 +52,13 @@ class phreemail extends PHPMailer{
 	 * @param string $Password
 	 */
 	function connect($Host, $Port, $Username, $Password){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->error_count = 0;
 		if ($Host != '') 		$this->Host 	= $Host;
   		if ($Username != '')	$this->Username = $Username;
   		if ($Port != '')		$this->Port		= $Port;
-  		try{
-  			$this->imap_stream 	= imap_open("{". $this->Host . $this->Port."}".$this->box, $this->Username, $this->Password);
-	  		if($this->imap_stream == false){
-	    		throw new \core\classes\userException(imap_last_error());
-	  		}
-  		}catch(\Exception $e){
-  			$this->SetError($e->getMessage());
-  		}
+  		$this->imap_stream 	= imap_open("{". $this->Host . $this->Port."}".$this->box, $this->Username, $this->Password);
+	  	if($this->imap_stream == false) throw new \core\classes\userException(imap_last_error());
   		$this->num_message = imap_num_msg($this->imap_stream);
  	}
 
@@ -76,85 +70,13 @@ class phreemail extends PHPMailer{
  	* Recent - number of recent messages in the mailbox
   	*/
   	function mailboxmsginfo(){
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	    $mailbox = imap_check($this->imap_stream);
   		if($mailbox == false) throw new \core\classes\userException(imap_last_error());
-  		print_r($mailbox);
-	    $mbox["Date"]    = $mailbox->Date;
-    	$mbox["Driver"]  = $mailbox->Driver;
-	    $mbox["Mailbox"] = $mailbox->Mailbox;
-    	$mbox["Nmsgs"]	 = $mailbox->Nmsgs;
-	    $mbox["Recent"]  = $mailbox->Recent;
-    	$mbox["Unread"]  = $mailbox->Unread;
-		$mbox["Deleted"] = $mailbox->Deleted;
-       	$mbox["Size"]    = $mailbox->Size;
-       	return $mbox;
+		\core\classes\messageStack::debug_log("\n mailboxmsginfo ".print_r($mailbox, true));
+       	return $mailbox;
   	}
 
-	/**
-	* Number of Recent Emails
-	* @TODO wordt niet gebruikt
-	*/
-/*	function num_recent(){
-	  	return imap_num_recent($this->imap_stream);
-	}
-*/
-	/**
-	* Type and subtype message
-	* @TODO wordt niet gebruikt
-	*/
-/*	function msg_type_subtype($code){
-       	switch($code){
-        	case '0': $type = "text"; break;
-        	case '1': $type = "multipart"; break;
-        	case '2': $type = "message"; break;
-        	case '3': $type = "application"; break;
-        	case '4': $type = "audio"; break;
-        	case '5': $type = "image"; break;
-        	case '6': $type = "video"; break;
-        	default:
-        	case '7': $type = "other"; break;
-    	}
-    	return $type;
-  	}
-*/
-  	/**
-   	* Flag message
-   	* @TODO wordt niet gebruikt
-   	*/
-
-/*	function email_flag($char){
-
-    	switch ($char) {
-            case 'S':
-                if (strtolower($flag) == '\\seen') {
-                    $msg->is_seen = true;
-                }
-            break;
-            case 'A':
-                if (strtolower($flag) == '\\answered') {
-                    $msg->is_answered = true;
-                }
-            break;
-            case 'D':
-               if (strtolower($flag) == '\\deleted') {
-                    $msg->is_deleted = true;
-                }
-            break;
-            case 'F':
-                if (strtolower($flag) == '\\flagged') {
-                    $msg->is_flagged = true;
-                }
-            break;
-            case 'M':
-                if (strtolower($flag) == '$mdnsent') {
-                    $msg->is_mdnsent = true;
-                }
-            break;
-                default:
-            break;
-            }
-  	}
-*/
 	/**
 	 *
 	 * Enter description here ...
@@ -163,6 +85,7 @@ class phreemail extends PHPMailer{
 	 * @param unknown_type $section
 	 */
   	function parsepart($p, $msgid, $section){
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
    		$part = imap_fetchbody($this->imap_stream, $msgid, $section);
    		//Multipart
    		if ($p->type != 0){
@@ -224,36 +147,12 @@ class phreemail extends PHPMailer{
    		return;
   	}
 
-  	/**
-   	* All email headers
-   	* $TODO wordt niet gebruikt
-   	*/
-/*  	function email_headers(){
-    	#$headers=imap_headers($this->imap_stream);
-     	if($this->max_headers == 'max'){
-       		$headers = imap_fetch_overview($this->imap_stream, "1:".$this->num_message, 0);
-     	} else {
-       		$headers = imap_fetch_overview($this->imap_stream, "1:$this->max_headers", 0);
-     	}
- 		for($i = 1; $i <= sizeof($headers); $i++){
-  			$val = $headers[$i];
-   			$subject_s = (empty($val->subject)) ? '[No subject]' : $val->subject;
-   			imap_setflag_full($this->imap_stream, imap_uid($this->imap_stream, $i), '\\SEEN', SE_UID);
-   			$header = imap_headerinfo($this->imap_stream, $i, 80, 80);
-
-   			if($val->seen == "0"  && $val->recent == "0") {
-   				echo  '<b>'.$val->msgno . '-' . $subject_s . '-' . $val->from .'-'. $val->date."</b><br><hr>" ;
-   			}else {
-   				echo  $val->msgno . '-' . $subject_s . '-' . $val->from .'-'. $val->date."<br><hr>" ;
-   			}
-   		}
-  	}
-*/
+ 
    	/**
    	* Get email
    	*/
   	function email_get($msgid){
-  		global $messageStack;
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
     	$email 	= array();
     	$header = imap_headerinfo($this->imap_stream, $msgid);
     	foreach($header as $key => $value) $email[strtolower_utf8($key)] = db_prepare_input($value);
@@ -303,6 +202,7 @@ class phreemail extends PHPMailer{
 	}
 
 	function mimie_text_decode($string){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
     	$string = htmlspecialchars(chop($string));
 
     	$elements = imap_mime_header_decode($string);
@@ -321,6 +221,7 @@ class phreemail extends PHPMailer{
    	* Save messages on local disc
    	*/
   	function save_files($filename, $part){
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	    if (!$handle = @fopen($this->file_path . $filename, "w+")) 	throw new \core\classes\userException(sprintf(ERROR_ACCESSING_FILE, $filename));
 	    if (!@fwrite($handle,$part)) 								throw new \core\classes\userException(sprintf(ERROR_WRITE_FILE, $filename));
     	if (!@fclose($handle)) 										throw new \core\classes\userException(sprintf(ERROR_CLOSING_FILE, $filename));
@@ -331,6 +232,7 @@ class phreemail extends PHPMailer{
    	* @zou misschien flags moeten ontvangen.
    	*/
   	function email_setflag(){
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
     	imap_setflag_full($this->imap_stream, "2,5","\\Seen \\Flagged");
   	}
 
@@ -338,6 +240,7 @@ class phreemail extends PHPMailer{
    	* Mark a current message for deletion
    	*/
   	function email_delete($msgid){
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
     	if (DEBUG == false) imap_delete($this->imap_stream, $msgid);
   	}
 
@@ -345,6 +248,7 @@ class phreemail extends PHPMailer{
    	* Delete marked messages
    	*/
   	function email_expunge(){
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
     	if (DEBUG == false) imap_expunge($this->imap_stream);
 	}
 
@@ -352,6 +256,7 @@ class phreemail extends PHPMailer{
    	* Close IMAP connection
    	*/
   	function close(){
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
     	imap_close($this->imap_stream);
   	}
 
@@ -360,57 +265,12 @@ class phreemail extends PHPMailer{
  	 * @return array of mailboxes
  	 */
 	function listmailbox(){
-		try{
-			$list = imap_list($this->imap_stream, "{".$this->Host."}", "*");
-	  		if (is_array($list) == false) throw new \core\classes\userException(imap_last_error());
-	    	return $list;
-		}catch(\Exception $e){
-  			$this->SetError($e->getMessage());
-  			return array();
-  		}
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		$list = imap_list($this->imap_stream, "{$this->Host}", "*");
+	  	if (is_array($list) == false) throw new \core\classes\userException(imap_last_error());
+	   	return $list;
 	}
 
-/*******************************************************************************
- * Rewritten for phreedom
- *                                 SPAM  DETECTION
- ******************************************************************************/
-
-	function spam_detect(){
-    	global $admin;
-	    $email = array();
-    	$id = $this->newid; #ID email in DB
-   		$result = $admin->DataBase->query("SELECT * FROM ".TABLE_PHREEMAIL." WHERE id='".$this->newid."'");
-   	    $ID = $result->fields['ID'];
-    	if($this->check_blacklist($result->fields['fromaddress'])||
-    		$this->check_words($result->fields['subject'])||
-    		$this->check_words($result->fields['message'])||
-    		$this->check_words($result->fields['message_html']))		$this->update_folder($this->newid, $this->spam_folder);
-	}
-
-  	function check_blacklist($email){
-  		global $admin;
-   		$result = $admin->DataBase->query("SELECT Email FROM ".TABLE_PHREEMAIL_LIST." WHERE Email='".addslashes($email)."' AND Type='B'");
-   		$e_mail = $result->fields['Email'];
-   		if($result->fetch(\PDO::FETCH_NUM) > 0){
-    		return 1;
-   		} else {
-    		return 0;
-   		}
-  	}
-
-    function check_words($string){
-    	global $admin;
-    	$string = strtolower($string);
-    	$result = $admin->DataBase->query("SELECT Word FROM ".TABLE_PHREEMAIL_WORDS);
-    	while(!$result->EOF){
-    		$word = strtolower($result->fields['Word']);
-            if (stripos($word, $string)!== false) {
-	    	      return true;
-        	}
-        	$result->MoveNext();
-    	}
-		return false;
-  	}
 /*******************************************************************************
  *                                 DB FUNCTIONS
  ******************************************************************************/
@@ -422,24 +282,24 @@ class phreemail extends PHPMailer{
  * @param array $email
  */
   	function db_add_message(array $email){
-		global $messageStack, $admin;
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		global $admin;
 		unset($email['x_subject']);
 		unset($email['x_from_name']);
 	    unset($email['x_from_email']);
 	    unset($email['x_to_email']);
 	    unset($email['x_date']);
-	    $remove_non_flags = array(`id`,`message_id`,`toaddress_id`,`fromaddress_id`,`toaddress`,`fromaddress`,`reply_toaddress`,`senderaddress`,`account`,`date`,`maildate`,`udate`,`database_date`,`subject`,`message`,`message_html`,`size`);
-		$temp = $admin->DataBase->query("select * from ".TABLE_PHREEMAIL." where message_id ='".$email['message_id']."'");
+	    $remove_non_flags = array(`email_id`,`message_id`,`toaddress_id`,`fromaddress_id`,`toaddress`,`fromaddress`,`reply_toaddress`,`senderaddress`,`account`,`date`,`maildate`,`udate`,`database_date`,`subject`,`message`,`message_html`,`size`);
+		$temp = $admin->DataBase->query("select * from ".TABLE_PHREEMAIL." where message_id ='{$email['message_id']}'");
 		if($temp->fetch(\PDO::FETCH_NUM)> 0 ){
-			$message_id = $email['message_id'];
 			foreach ($remove_non_flags as $key) unset($email[$key]);
-			db_perform(TABLE_PHREEMAIL, $email, 'update'," message_id='$message_id'");
-			\core\classes\messageStack::debug_log("\n email $message_id is already in database");
+			db_perform(TABLE_PHREEMAIL, $email, 'update'," message_id='{$email['message_id']}'");
+			\core\classes\messageStack::debug_log("\n email {$email['message_id']} is already in database");
 			return false;// returning false because no futher action is needed
 		}
-		\core\classes\messageStack::debug_log("\n email ".$email['message_id']." is not in database");
+		\core\classes\messageStack::debug_log("\n email {$email['message_id']} is not in database");
 		//TABLE_ADDRESS_BOOK
-		$temp = $admin->DataBase->query("select address_id, ref_id from " . TABLE_ADDRESS_BOOK . " where email ='".$email['fromaddress']."' and ref_id <> 0");
+		$temp = $admin->DataBase->query("select address_id, ref_id from " . TABLE_ADDRESS_BOOK . " where email ='{$email['fromaddress']}' and ref_id <> 0");
 		if($temp->fetch(\PDO::FETCH_NUM) == 0) $email['spam'] = 'maybe'; // mark that it could be spam if contact is is unknowm
 		$email['fromaddress_id'] 	= $temp->fields['address_id'];
 		$ref_id 					= $temp->fields['ref_id'];
@@ -466,6 +326,7 @@ class phreemail extends PHPMailer{
  **/
 
 	function db_add_attach($file_orig, $filename){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
  		$sql_data_array['IDEmail'] 		= $this->newid;
  		$sql_data_array['FileNameOrg'] 	= addslashes($file_orig);
  		$sql_data_array['Filename'] 	= addslashes($filename);
@@ -477,6 +338,7 @@ class phreemail extends PHPMailer{
 * Rewritten for phreedom
 */
   	function db_update_message($msg, $type= 'PLAIN'){
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
     	switch ($type){
 			case 'HTML':
 				$sql_data_array['Message_html'] = addslashes($msg);
@@ -484,22 +346,7 @@ class phreemail extends PHPMailer{
 			default:
   				$sql_data_array['Message'] 	= addslashes($msg);
   		}
-  		db_perform(TABLE_PHREEMAIL, $sql_data_array, 'update', "ID = '$this->newid'");
-	}
-
-/**
- * Insert progress log
- * Rewritten for phreedom
- */
-	function add_db_log($email, $info){
-		global $messageStack;
-    	$sql_data_array['IDemail']		= $this->newid;
-    	$sql_data_array['Email']		= $email['FROM_EMAIL'];
-    	$sql_data_array['Info']			= addslashes(strip_tags($info));
-    	$sql_data_array['FSize']		= $email["SIZE"];
-    	$sql_data_array['Date_start']	= date("Y-m-d H:i:s");
-    	$sql_data_array['Status'] 		= 2;
-    	\core\classes\messageStack::debug_log('\n Phreemail action = '. print_r($sql_data_array, true));
+  		db_perform(TABLE_PHREEMAIL, $sql_data_array, 'update', "email_id = '$this->newid'");
 	}
 
  /**
@@ -507,79 +354,46 @@ class phreemail extends PHPMailer{
  * Rewritten for phreedom
  */
   	function update_folder($id, $folder){
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
   		$sql_data_array['Type'] 	= addslashes($folder);
   		db_perform(TABLE_PHREEMAIL, $sql_data_array, 'update', "ID = '$id'");
   	}
 
- /**
- * Update progress log
- * Rewritten for phreedom
- */
-	function update_db_log($info, $id) {
-		global $messageStack;
-		$sql_data_array['Status'] 		= 1;
-    	$sql_data_array['Info'] 		= addslashes($info);
-    	$sql_data_array['Date_finish'] 	= date("Y-m-d H:i:s");
-		\core\classes\messageStack::debug_log('\n Phreemail action = '. print_r($sql_data_array, true));
-  	}
-
-
-  	function MoveNext(){
+   	function MoveNext(){
+   		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
   		if ($this->msgid == $this->num_message) $this->EOF = true;
   		$this->msgid++;
   	}
 
   	function getEmailFromDb($id){
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." id = $id");
   		global $admin;
-		$result = $admin->DataBase->query("select * from " . TABLE_PHREEMAIL . " where id = '" . $id  . "'");
-		foreach ($result->fields as $key => $value) {
-			if(is_null($value)) $this->$key = '';
-			else $this->$key = $value;
-		}
+		$this = $admin->DataBase->query("SELECT * FROM " . TABLE_PHREEMAIL . " WHERE id = '{$id}'");
 	}
 
- /**
- * Read emails from DB
- * @TODO Needs work
- */
-	function db_read_emails(){
-  		if (!isset($db)) $db = new DB_WL;
-  		$email = array();
-
-   		$admin->DataBase->query("SELECT ID, IDEmail, EmailFrom, EmailFromP, EmailTo, DateE, DateDb, Subject, Message, Message_html, MsgSize FROM emailtodb_email ORDER BY ID DESC LIMIT 25");
-   		while($admin->DataBase->next_record()){
-    		$ID = $admin->DataBase->f('ID');
-    		$email[$ID]['Email']     = $admin->DataBase->f('EmailFrom');
-    		$email[$ID]['EmailName'] = $admin->DataBase->f('EmailFromP');
-    		$email[$ID]['Subject']   = $admin->DataBase->f('Subject');
-    		$email[$ID]['Date']      = $admin->DataBase->f('DateE');
-    		$email[$ID]['Size']      = $admin->DataBase->f('MsgSize');
-
-   		}
-   		return $email;
-  	}
 /*
  * @TODO don't know if this is used
  */
   	function dir_name() {
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
     	$year  = date('Y');
   		$month = date('m');
   		$dir_n = $year . "_" . $month;
 
-  		validate_path($this->file_path . $dir_n))
+  		validate_path($this->file_path . $dir_n);
     	return $dir_n . '/';
  	}
 
 
 	function do_action(){
-   		global $messageStack;
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 	    for ($i = 1; $i <= $this->num_message; ++$i) {
 	    	$this->partsarray = array();
 	   		$email 	= null;
 	    	$email 	= $this->email_get($i); //Get first message
 	    	$dir 	= $this->dir_name(); //Get store dir
 	    	if(!$this->db_add_message($email)) break;//Insert message to db, if false is returned exit function.
-//	    	$this->add_db_log($email, 'Copy e-mail - start ');
+	    	\core\classes\messageStack::debug_log("$email, Copy e-mail - start" );
 	    	foreach($this->partsarray as $part){
 	     		if($part[text]['type'] == 'HTML'){
 	       			#$message_HTML = $part[text][string];
@@ -593,30 +407,26 @@ class phreemail extends PHPMailer{
 	        		foreach(array($part[attachment]) as $attach){
 	            		$attach[filename] = $this->mimie_text_decode($attach[filename]);
 	            		$attach[filename] = preg_replace('/[^a-z0-9_\-\.]/i', '_', $attach[filename]);
-	            		$this->add_db_log($email, 'Start coping file:"'.strip_tags($attach[filename]).'"');
+	            		\core\classes\messageStack::debug_log("$email, Start coping file:".strip_tags($attach[filename]));
 			            $this->save_files($this->newid.$attach[filename], $attach[string]);
 			            $filename =  $dir.$this->newid.$attach[filename];
 	        		    $this->db_add_attach($attach[filename], $filename);
-	            		$this->update_db_log($email,'<b>'.$filename.'</b>Finish coping: "'.strip_tags($attach[filename]).'"');
+	            		\core\classes\messageStack::debug_log("{$email}, {$filename} Finish coping: ".strip_tags($attach[filename]));
 	        		}
 	     		}elseif($part[image]){ //Save files(attachments) on local disc
 	        		$message_IMAGE[] = $part[image];
 	        		foreach($message_IMAGE as $image){
 	            		$image[filename] = $this->mimie_text_decode($image[filename]);
 	            		$image[filename] = preg_replace('/[^a-z0-9_\-\.]/i', '_', $image[filename]);
-	            		$this->add_db_log($email, 'Start coping file: "'.strip_tags($image[filename]).'"');
+	            		\core\classes\messageStack::debug_log("$email, Start coping file: ".strip_tags($image[filename]));
 						$this->save_files($this->newid.$image[filename], $image[string]);
 	            		$filename =  $dir.$this->newid.$image[filename];
 	            		$this->db_add_attach($image[filename], $filename);
-	            		$this->update_db_log('<b>'.$filename.'</b>Finish coping:"'.strip_tags($image[filename]).'"');
+	            		\core\classes\messageStack::debug_log("{$filename} Finish coping:".strip_tags($image[filename]));
 	        		}
 	     		}
 	    	}
-//	    	$this->spam_detect();
-//	    	$this->email_setflag();
-//	    	$this->email_delete();
-//	    	$this->email_expunge();
-	    	$this->update_db_log($email,'Finish coping');
+	    	\core\classes\messageStack::debug_log("$email ,Finish coping");
 	        if(!empty($email)){
 	    		//unset($this->partsarray);
 	    		\core\classes\messageStack::add(PHREEMAIL_NEW_MAIL,'caution');
@@ -624,12 +434,9 @@ class phreemail extends PHPMailer{
 	   	}
 	}
 
-  function __destruct(){
-  	global $messageStack;
-  	//\core\classes\messageStack::debug_log(print_r($this, true));
-  	//$messageStack->write_debug();
-  	if($this->imap_stream) $this->close();
-  }
+  	function __destruct(){
+  		if($this->imap_stream) $this->close();
+  	}
 
 }
 

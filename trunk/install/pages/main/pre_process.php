@@ -177,12 +177,10 @@ switch ($_REQUEST['action']) {
 			if (!$admin->DataBase->connect($db_host, $db_username, $db_password, $db_name)) {
 			  	throw new \core\classes\userException(MSG_ERROR_CANNOT_CONNECT_DB . $admin->DataBase->show_error());
 			} else { // test for InnoDB support
-			  	$result = $admin->DataBase->query("show engines");
+			  	$sql = $admin->DataBase->prepare("show engines");
 			  	$innoDB_enabled = false;
-			  	while (!$result->EOF) {
-			  		if ($result->fields['Engine'] == 'InnoDB') $innoDB_enabled = true;
-			  		$result->MoveNext();
-			  	}
+			  	$sql->execute();
+				while ($result = $sql->fetch(\PDO::FETCH_LAZY))	if ($result['Engine'] == 'InnoDB') $innoDB_enabled = true;
 			  	if (!$innoDB_enabled) throw new \core\classes\userException(MSG_ERROR_INNODB_NOT_ENABLED);
 			}
 			
