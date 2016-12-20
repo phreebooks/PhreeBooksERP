@@ -1783,6 +1783,246 @@
       <en_us>United States</en_us>
       <nl_nl>Verenigde Staten</nl_nl>
     </translations>
+    <zones>
+    	<zone xml:id="US-AL">
+    		<iso2>AL</iso2>
+    		<translations>
+      			<en_us>Alabama</en_us>
+      			<nl_nl>Alabama</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-AK">
+    		<iso2>AK</iso2>
+    		<translations>
+      			<en_us>Alaska</en_us>
+      			<nl_nl>Alaska</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-AZ">
+    		<iso2>AZ</iso2>
+    		<translations>
+      			<en_us>Arizona</en_us>
+      			<nl_nl>Arizona</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-AR">
+    		<iso2>AR</iso2>
+    		<translations>
+      			<en_us>Arkansas</en_us>
+      			<nl_nl>Arkansas</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-CA">
+    		<iso2>CA</iso2>
+    		<translations>
+      			<en_us>California</en_us>
+      			<nl_nl>California</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-CO">
+    		<iso2>CO</iso2>
+    		<translations>
+      			<en_us>Colorado</en_us>
+      			<nl_nl>Colorado</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-CT">
+    		<iso2>CT</iso2>
+    		<translations>
+      			<en_us>Connecticut</en_us>
+      			<nl_nl>Connecticut</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-DE">
+    		<iso2>DE</iso2>
+    		<translations>
+      			<en_us>Delaware</en_us>
+      			<nl_nl>Delaware</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-FL">
+    		<iso2>FL</iso2>
+    		<translations>
+      			<en_us>Florida</en_us>
+      			<nl_nl>Florida</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-GA">
+    		<iso2>GA</iso2>
+    		<translations>
+      			<en_us>Georgia</en_us>
+      			<nl_nl>Georgia</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-HI">
+    		<iso2>HI</iso2>
+    		<translations>
+      			<en_us>Hawaii</en_us>
+      			<nl_nl>Hawaii</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-ID">
+    		<iso2>ID</iso2>
+    		<translations>
+      			<en_us>Idaho</en_us>
+      			<nl_nl>Idaho</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-IL">
+    		<iso2>IL</iso2>
+    		<translations>
+      			<en_us>Illinois</en_us>
+      			<nl_nl>Illinois</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-IN">
+    		<iso2>IN</iso2>
+    		<translations>
+      			<en_us>Indiana</en_us>
+      			<nl_nl>Indiana</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-IA">
+    		<iso2>IA</iso2>
+    		<translations>
+      			<en_us>Iowa</en_us>
+      			<nl_nl>Iowa</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-KS">
+    		<iso2>KS</iso2>
+    		<translations>
+      			<en_us>Kansas</en_us>
+      			<nl_nl>Kansas</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-KY">
+    		<iso2>KY</iso2>
+    		<translations>
+      			<en_us>Kentucky</en_us>
+      			<nl_nl>Kentucky</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-LA">
+    		<iso2>LA</iso2>
+    		<translations>
+      			<en_us>Louisiana</en_us>
+      			<nl_nl>Louisiana</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-ME">
+    		<iso2>ME</iso2>
+    		<translations>
+      			<en_us>Maine</en_us>
+      			<nl_nl>Maine</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-MD">
+    		<iso2>MD</iso2>
+    		<translations>
+      			<en_us>Maryland</en_us>
+      			<nl_nl>Maryland</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-MA">
+    		<iso2>MA</iso2>
+    		<translations>
+      			<en_us>Massachusetts</en_us>
+      			<nl_nl>Massachusetts</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-MI">
+    		<iso2>MI</iso2>
+    		<translations>
+      			<en_us>Michigan</en_us>
+      			<nl_nl>Michigan</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-MN">
+    		<iso2>MN</iso2>
+    		<translations>
+      			<en_us>Minnesota</en_us>
+      			<nl_nl>Minnesota</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-MS">
+    		<iso2>MS</iso2>
+    		<translations>
+      			<en_us>Mississippi</en_us>
+      			<nl_nl>Mississippi</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-MO">
+    		<iso2>MO</iso2>
+    		<translations>
+      			<en_us>Missouri</en_us>
+      			<nl_nl>Missouri</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-MT">
+    		<iso2>MT</iso2>
+    		<translations>
+      			<en_us>Montana</en_us>
+      			<nl_nl>Montana</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-NE">
+    		<iso2>NE</iso2>
+    		<translations>
+      			<en_us>Nebraska</en_us>
+      			<nl_nl>Nebraska</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-NV">
+    		<iso2>NV</iso2>
+    		<translations>
+      			<en_us>Nevada</en_us>
+      			<nl_nl>Nevada</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-NH">
+    		<iso2>NH</iso2>
+    		<translations>
+      			<en_us>New Hampshire</en_us>
+      			<nl_nl>New Hampshire</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-NJ">
+    		<iso2>NJ</iso2>
+    		<translations>
+      			<en_us>New Jersey</en_us>
+      			<nl_nl>New Jersey</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-NM">
+    		<iso2>NM</iso2>
+    		<translations>
+      			<en_us>New Mexico</en_us>
+      			<nl_nl>New Mexico</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-NY">
+    		<iso2>NY</iso2>
+    		<translations>
+      			<en_us>New York</en_us>
+      			<nl_nl>New York</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-NC">
+    		<iso2>NC</iso2>
+    		<translations>
+      			<en_us>North Carolina</en_us>
+      			<nl_nl>North Carolina</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-ND">
+    		<iso2>ND</iso2>
+    		<translations>
+      			<en_us>North Dakota</en_us>
+      			<nl_nl>North Dakota</nl_nl>
+    		</translations>
+    	</zone>
+    </zones>
   </country>
   <country xml:id="UZB">
     <iso3>UZB</iso3>

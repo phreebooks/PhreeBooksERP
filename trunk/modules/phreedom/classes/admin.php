@@ -293,6 +293,13 @@ class admin extends \core\classes\admin {
 	  		if ($result['Column_name'] != 'configuration_key')$basis->DataBase->exec ("ALTER TABLE ".TABLE_CONFIGURATION." ADD PRIMARY KEY(configuration_key);");
 	  	}
 	  	if (version_compare($this->status, '4.0.3', '<') ) {
+	  		if ( $basis->DataBase->table_exists(DB_PREFIX .  'zh_config')) 		$basis->DataBase->exec("DROP TABLE ".DB_PREFIX .  "zh_config");
+	  		if ( $basis->DataBase->table_exists(DB_PREFIX .  'zh_glossary')) 	$basis->DataBase->exec("DROP TABLE ".DB_PREFIX .  "zh_glossary");
+	  		if ( $basis->DataBase->table_exists(DB_PREFIX .  'zh_index')) 		$basis->DataBase->exec("DROP TABLE ".DB_PREFIX .  "zh_index");
+	  		if ( $basis->DataBase->table_exists(DB_PREFIX .  'zh_search')) 		$basis->DataBase->exec("DROP TABLE ".DB_PREFIX .  "zh_search");
+	  		if ( $basis->DataBase->table_exists(DB_PREFIX .  'zones')) 		$basis->DataBase->exec("DROP TABLE ".DB_PREFIX .  "zh_search");
+	  	}
+	  	if (version_compare($this->status, '4.0.4', '<') ) {
 //@todo	  		DATE_TIME_FORMAT in this constant the h should be G
 //	  		dashes and slahses should be changed to #
 	  	}

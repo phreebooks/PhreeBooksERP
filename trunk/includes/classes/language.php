@@ -165,6 +165,13 @@ class language {
 							if ($language->tagName == $this->language_code) $this->countries[$country->getAttribute('xml:id')]['name'] = $language->nodeValue;
 						}
 					}
+				}else if ($i->tagName == 'zones') {
+					foreach($i->childNodes as $zone) {
+						if (!empty($zone->tagName) ){//@todo check
+							$this->countries[$country->getAttribute('xml:id')][$i->tagName][$zone->tagName] = $zone->nodeValue;
+							if ($zone->tagName == $this->zone_code) $this->countries[$country->getAttribute('xml:id')]['name'] = $zone->nodeValue;
+						}
+					}
 				}else{
 					if (!empty($i->tagName)) $this->countries[$country->getAttribute('xml:id')][$i->tagName] = $i->nodeValue;
 				}
@@ -195,6 +202,35 @@ class language {
 	function get_country_iso_3_from_2($iso2) {
 		foreach ($this->countries as $iso3 => $value) if ($value->iso2 == $iso2) return $value->iso3;
 		if (!isset($this->countries[$iso2])) throw new \core\classes\userException ( sprintf(TEXT_COULDNT_FIND_ISO2, $iso2));
+	}
+	/**
+	 * @todo rewrite and add zones to locals.
+	 * @todo replace getCodes with this method
+	 * @param unknown $country
+	 * @param unknown $zone
+	 * @return iso2
+	 */
+	function get_country_codes($country, $zone) {
+		foreach ($this->countries as $iso3 => $country) {
+			foreach ($country->translations as $language => $country) {
+				if ($value->iso2 == $iso2) return $value->iso3;
+			}
+		}
+		global $db;
+		
+		$codes = array();
+		$iso_country = $db->Execute("select countries_id, countries_iso_code_2 from " . TABLE_COUNTRIES . "
+		  where countries_name = '{$country}'");
+		if ($iso_country->RecordCount() < 1) { // not found, return original choices
+			$codes['country'] = $country;
+			$codes['state']   = $zone;
+			return $codes;
+		}
+		$codes['country'] = $iso_country->fields['countries_iso_code_2'];
+		$state = $db->Execute("select zone_code from " . TABLE_ZONES . "
+	  where zone_country_id = '" . $iso_country->fields['countries_id'] . "' and zone_name = '" . $zone . "'");
+		$codes['state'] = ($state->RecordCount() < 1) ? $zone : $state->fields['zone_code'];
+		return $codes;
 	}
 	
 	function get_countries_dropdown($choose = false) {

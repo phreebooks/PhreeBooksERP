@@ -75,7 +75,7 @@ class admin extends \core\classes\admin {
       		if (!$basis->DataBase->field_exists(TABLE_CONTACTS_LOG, 'entered_by')) $basis->DataBase->exec("ALTER TABLE ".TABLE_CONTACTS_LOG." ADD entered_by INT(11) NOT NULL DEFAULT '0' AFTER contact_id");
     	}
 		if (version_compare($this->status, '4.0.1', '<') ) {
-			if (!$basis->DataBase->field_exists(TABLE_CONTACTS_LOG, 'crmaction')) $basis->DataBase->exec("ALTER TABLE ".TABLE_CONTACTS_LOG." CHANGE `action` `crmaction` VARCHAR(32) NOT NULL DEFAULT '';");
+			if (!$basis->DataBase->field_exists(TABLE_CONTACTS_LOG, 'crmaction')) $basis->DataBase->exec("ALTER TABLE ".TABLE_CONTACTS_LOG." CHANGE `action` `crmaction` VARCHAR(32) NOT NULL DEFAULT ''");
 		}
   	}
 

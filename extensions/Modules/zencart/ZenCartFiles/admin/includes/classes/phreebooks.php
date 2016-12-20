@@ -183,7 +183,7 @@ class phreebooks extends parser {
 	global $db;
 	$codes = array();
 	$iso_country = $db->Execute("select countries_id, countries_iso_code_2 from " . TABLE_COUNTRIES . "
-	  where countries_name = '" . $country . "'");
+	  where countries_name = '{$country}'");
 	if ($iso_country->RecordCount() < 1) { // not found, return original choices
 	  $codes['country'] = $country;
 	  $codes['state']   = $zone;
