@@ -34,12 +34,12 @@
     </thead>
     <tbody id="bom_table_body" class="ui-widget-content">
 <?php
-	if (count($cInfo->bom)) {
-		for ($j = 0, $i = 1; $j < count($cInfo->bom); $j++, $i++) {
+	if (count($basis->cInfo->inventory->bom)) {
+		for ($j = 0, $i = 1; $j < count($basis->cInfo->inventory->bom); $j++, $i++) {
 			$readonly = '';
 			echo '    <tr>';
 			echo '      <td>';
-			if ($cInfo->allow_edit_bom) {
+			if ($basis->cInfo->inventory->allow_edit_bom) {
 				echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\''.TEXT_DELETE_ENTRY.'\')) $(this).parent().parent().remove();bomTotalValues();"');
 			} else {
 				echo '&nbsp;';
@@ -48,15 +48,15 @@
 			echo '      </td>' . chr(10);
 			echo '      <td nowrap="nowrap">';
 			// Hidden fields
-			echo '      	<input type="hidden" name="id_' . $i . '" id="id_' . $i . '" value="' . $cInfo->bom[$j]['id'] . '" />' . chr(10);
+			echo '      	<input type="hidden" name="id_' . $i . '" id="id_' . $i . '" value="' . $basis->cInfo->inventory->bom[$j]['id'] . '" />' . chr(10);
 			// End hidden fields
-			echo '			<input type="text" name="assy_sku[]" id="sku_' . $i . '" value="' . $cInfo->bom[$j]['sku'] . '" ' . $readonly . 'size="' . (MAX_INVENTORY_SKU_LENGTH + 1) . '" maxlength="' . MAX_INVENTORY_SKU_LENGTH . '" onchange="bom_guess(' . $i . ');"  />&nbsp;' . chr(10);
-			if ($cInfo->allow_edit_bom) echo html_icon('actions/system-search.png', TEXT_SKU, 'small', $params = 'align="top" style="cursor:pointer" onclick="InventoryList(' . $i . ')"') . chr(10);
+			echo '			<input type="text" name="assy_sku[]" id="sku_' . $i . '" value="' . $basis->cInfo->inventory->bom[$j]['sku'] . '" ' . $readonly . 'size="' . (MAX_INVENTORY_SKU_LENGTH + 1) . '" maxlength="' . MAX_INVENTORY_SKU_LENGTH . '" onchange="bom_guess(' . $i . ');"  />&nbsp;' . chr(10);
+			if ($basis->cInfo->inventory->allow_edit_bom) echo html_icon('actions/system-search.png', TEXT_SKU, 'small', $params = 'align="top" style="cursor:pointer" onclick="InventoryList(' . $i . ')"') . chr(10);
 			echo '      </td>' . chr(10);
-			echo '      <td><input type="text" name="assy_desc[]" 		 id="desc_' . $i . '" 		 value="' . $cInfo->bom[$j]['description'] . '" ' . $readonly . 'size="64" maxlength="64" /></td>' . chr(10);
-			echo '      <td><input type="text" name="assy_qty[]" 		 id="qty_' . $i . '" 		 value="' . $admin->currencies->precise($cInfo->bom[$j]['qty']) . '" 		' . $readonly . 'size="6" maxlength="5" /></td>' . chr(10);
-			echo '      <td><input type="text" name="assy_item_cost[]" 	 id="item_cost_' . $i . '" 	 value="' . $admin->currencies->precise($cInfo->bom[$j]['item_cost']) . '" 	' . $readonly . 'size="6" maxlength="5" /></td>' . chr(10);
-			echo '      <td><input type="text" name="assy_sales_price[]" id="sales_price_' . $i . '" value="' . $admin->currencies->precise($cInfo->bom[$j]['full_price']) . '" 	' . $readonly . 'size="6" maxlength="5" /></td>' . chr(10);
+			echo '      <td><input type="text" name="assy_desc[]" 		 id="desc_' . $i . '" 		 value="' . $basis->cInfo->inventory->bom[$j]['description'] . '" ' . $readonly . 'size="64" maxlength="64" /></td>' . chr(10);
+			echo '      <td><input type="text" name="assy_qty[]" 		 id="qty_' . $i . '" 		 value="' . $admin->currencies->precise($basis->cInfo->inventory->bom[$j]['qty']) . '" 		' . $readonly . 'size="6" maxlength="5" /></td>' . chr(10);
+			echo '      <td><input type="text" name="assy_item_cost[]" 	 id="item_cost_' . $i . '" 	 value="' . $admin->currencies->precise($basis->cInfo->inventory->bom[$j]['item_cost']) . '" 	' . $readonly . 'size="6" maxlength="5" /></td>' . chr(10);
+			echo '      <td><input type="text" name="assy_sales_price[]" id="sales_price_' . $i . '" value="' . $admin->currencies->precise($basis->cInfo->inventory->bom[$j]['full_price']) . '" 	' . $readonly . 'size="6" maxlength="5" /></td>' . chr(10);
 			echo '    </tr>';
 		}
 	} else {
@@ -66,7 +66,7 @@
      </tbody>
      <tfoot>
 		  <tr>
-			<td><?php if ($cInfo->allow_edit_bom) { // show add button if no posting have been made
+			<td><?php if ($basis->cInfo->inventory->allow_edit_bom) { // show add button if no posting have been made
 						echo html_icon('actions/list-add.png', TEXT_ADD, 'medium', 'onclick="addBOMRow()"');
 					} else { echo '&nbsp;'; } ?>
 			</td>

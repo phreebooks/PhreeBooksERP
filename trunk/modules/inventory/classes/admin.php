@@ -18,6 +18,69 @@
 //
 namespace inventory\classes;
 require_once (DIR_FS_ADMIN . 'modules/inventory/config.php');
+define('INVENTORY_DIR_ATTACHMENTS',  DIR_FS_MY_FILES . $_SESSION['user']->company . '/inventory/attachments/');
+define('MAX_INVENTORY_SKU_LENGTH', 24); // database is currently set for a maximum of 24 characters
+define('MAX_NUM_PRICE_LEVELS', 5);
+// the inventory type indexes should not be changed or the inventory module won't work.
+// system generated types (not to be displayed are: ai - assembly item, mi - master stock with attributes)
+$inventory_types = array(
+		'si' => TEXT_STOCK_ITEM,
+		'sr' => TEXT_SERIALIZED_ITEM,
+		'ms' => TEXT_MASTER_STOCK_ITEM,
+		'mb' => TEXT_MASTER_STOCK_ASSEMBLY,
+		'ma' => TEXT_ITEM_ASSEMBLY,
+		'sa' => TEXT_SERIALIZED_ASSEMBLY,
+		'ns' => TEXT_NON-STOCK_ITEM,
+		'lb' => TEXT_LABOR,
+		'sv' => TEXT_SERVICE,
+		'sf' => TEXT_FLAT_RATE_SERVICE,
+		'ci' => TEXT_CHARGE_ITEM,
+		'ai' => TEXT_ACTIVITY,
+		'ds' => TEXT_DESCRIPTION,
+);
+// used for identifying inventory types in reports and forms that are not selectable by the user
+$inventory_types_plus       = $inventory_types;
+$inventory_types_plus['ia'] = TEXT_ITEM_ASSEMBLY_PART;
+$inventory_types_plus['mi'] = TEXT_MASTER_STOCK_SUB_ITEM;
+
+asort ($inventory_types);
+asort ($inventory_types_plus);
+
+$cost_methods = array(
+		'f' => TEXT_FIFO,	   // First-in, First-out
+		'l' => TEXT_LIFO,	   // Last-in, First-out
+		'a' => TEXT_AVERAGE, // Average Costing
+);
+
+$price_mgr_sources = array(
+		'0' => TEXT_NOT_USED,	// Do not remove this selection, leave as first entry
+		'1' => TEXT_DIR_ENTRY,
+		'2' => TEXT_ITEM_COST,
+		'3' => TEXT_FULL_PRICE,
+		// Price Level 1 needs to always be at the end (it is pulled from the first row to avoid a circular reference)
+// The index can change but must be matched with the javascript to update the price source values.
+		'4' => TEXT_PRICE_LVL_1,
+);
+$price_mgr_adjustments = array(
+		'0' => TEXT_NONE,
+		'1' => TEXT_DECREASE_BY_AMOUNT,
+		'2' => TEXT_DECREASE_BY_PERCENT,
+		'3' => TEXT_INCREASE_BY_AMOUNT,
+		'4' => TEXT_INCREASE_BY_PERCENT,
+		'5' => TEXT_MARK_UP_BY_PERCENT, // Mark up by Percent
+		'6' => TEXT_MARGIN, // Margin by Percent
+		'7' => TEXT_TIERED_PRICING, // tiered pricing
+		'5' => TEXT_MARK_UP_BY_PERCENT, // Mark up by Percent
+		'6' => TEXT_MARGIN, // Margin by Percent
+		'7' => TEXT_TIERED_PRICING, // tiered pricing
+);
+$price_mgr_rounding = array(
+		'0' => TEXT_NONE,
+		'1' => TEXT_NEXT_WHOLE,
+		'2' => TEXT_CONSTANT_CENTS,
+		'3' => TEXT_NEXT_INCREMENT,
+);
+
 class admin extends \core\classes\admin {
 	public $sort_order  = 4;
 	public $id 			= 'inventory';
@@ -28,9 +91,9 @@ class admin extends \core\classes\admin {
 	function __construct() {
 		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY);
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
-		  'contacts'   => 3.71,
-		  'phreedom'   => 3.6,
-		  'phreebooks' => 3.6,
+		  'contacts'   => 4.0,
+		  'phreedom'   => 4.0,
+		  'phreebooks' => 4.0,
 		);
 		// Load configuration constants for this module, must match entries in admin tabs
 	    $this->keys = array(
@@ -202,7 +265,7 @@ class admin extends \core\classes\admin {
 	    );
 		$this->mainmenu["inventory"]->submenu ["inventory"] 	= new \core\classes\menuItem (10, 	TEXT_INVENTORY,			'module=inventory&amp;page=main&amp;list=1', 	SECURITY_ID_MAINTAIN_INVENTORY);
 		$this->mainmenu["inventory"]->submenu ["inventory"]->submenu ["new_inventory"] 	= new \core\classes\menuItem (1, 	sprintf(TEXT_NEW_ARGS, TEXT_INVENTORY), 	'action=LoadNewInventoryItem');
-		$this->mainmenu["inventory"]->submenu ["inventory"]->submenu ["inventory_mgr"] 	= new \core\classes\menuItem (5, 	sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY), 'module=inventory&amp;page=main&amp;list=1');
+		$this->mainmenu["inventory"]->submenu ["inventory"]->submenu ["inventory_mgr"] 	= new \core\classes\menuItem (5, 	sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY), 'action=LoadInventoryManager');
 		
 		$this->mainmenu["inventory"]->submenu ["adjustment"] 	= new \core\classes\menuItem (15, 	TEXT_ADJUSTMENTS,		'module=inventory&amp;page=adjustments',	 	SECURITY_ID_ADJUST_INVENTORY);
 		$this->mainmenu["inventory"]->submenu ["assemble"] 		= new \core\classes\menuItem (20, 	TEXT_ASSEMBLIES,		'module=inventory&amp;page=assemblies',		 	SECURITY_ID_ASSEMBLE_INVENTORY);
@@ -422,6 +485,8 @@ class admin extends \core\classes\admin {
 		if (version_compare($this->status, '4.0', '<') ) {
 			if (!$basis->DataBase->field_exists(TABLE_INVENTORY, 'class')) $basis->DataBase->exec("ALTER TABLE ".TABLE_INVENTORY." ADD class VARCHAR( 255 ) NOT NULL DEFAULT '' FIRST");
 			$basis->DataBase->exec("UPDATE ".TABLE_INVENTORY." SET class = CONCAT('inventory\\\\classes\\\\type\\\\', inventory_type) WHERE class = '' ");
+			if ($basis->DataBase->field_exists(TABLE_INVENTORY, 'description_purchase'))  $basis->DataBase->exec("ALTER TABLE " . TABLE_INVENTORY . " DROP description_purchase");
+			$this->notes[] = " in release 4.0 the column description_purchase has been dropt from the inventory table all information now comes from the table inventory_purchase_details ";
 		}
 		\core\classes\fields::sync_fields('inventory', TABLE_INVENTORY);
 	}
@@ -608,8 +673,188 @@ class admin extends \core\classes\admin {
   		$basis->template 		= 'template_id';
   		$basis->observer->send_footer($basis);
   	}
-
+  	
   	function LoadInventoryManager (\core\classes\basis $basis){
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+  		$basis->observer->send_menu($basis); ?>
+  			<div data-options="region:'center'">
+  				<table id="dg" title="<?php echo sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY);?>" style="height:500px;padding:50px;">
+  					<thead>
+  						<tr>
+  							<th data-options="field:'sku',align:'right',sortable:true"><?php echo TEXT_SKU;?></th>
+  		               		<th data-options="field:'description_short',sortable:true"><?php echo TEXT_DESCRIPTION?></th>
+  		            	   	<th data-options="field:'quantity_on_hand',align:'center',sortable:true,formatter:formatQtyOnhand,styler:styleQty"><?php echo TEXT_QUANTITY_ON_HAND?></th>
+  		    	           	<th data-options="field:'quantity_on_sales_order',align:'center',sortable:true"><?php echo TEXT_QUANTITY_IN_SALES_ORDERS?></th>
+  		        	       	<th data-options="field:'quantity_on_allocation',align:'center',sortable:true"><?php echo TEXT_QUANTITY_ON_ALLOCATION?></th>
+  		        	       	<th data-options="field:'quantity_on_order',align:'center',sortable:true"><?php echo TEXT_QUANTITY_ON_ORDER?></th>
+  		        	       	<th data-options="field:'id',align:'right',formatter:actionformater"><?php echo TEXT_ACTIONS?></th>
+  		            	</tr>
+  		        	</thead>
+  		    	</table>
+  		    	<div id="toolbar">
+  		    		<a class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editInventory()"><?php echo sprintf(TEXT_EDIT_ARGS, TEXT_INVENTORY);?></a>
+  			        <a class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newInventory()"><?php echo sprintf(TEXT_NEW_ARGS, TEXT_INVENTORY);?></a>
+  		        	<a class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteInventory()"><?php echo sprintf(TEXT_DELETE_ARGS, TEXT_INVENTORY);?></a>
+  		        	<?php echo \core\classes\htmlElement::checkbox('inventory_show_inactive', TEXT_SHOW_INACTIVE, '1', false,'onchange="doSearch()"' );?>
+  		        	<div style="float: right;"> <?php echo \core\classes\htmlElement::search('search_text','doSearch');?></div>
+  		    	</div>
+  		    	<div id="win" class="easyui-window">
+  		    		<div id="contactToolbar" style="margin:2px 5px;">
+  						<a class="easyui-linkbutton" iconCls="icon-undo" plain="true" onclick="closeWindow()"><?php echo TEXT_CANCEL?></a>
+  						<?php if (\core\classes\user::validate($basis->cInfo->contact->security_token, true) < 2){?>
+  						<a class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="saveContact()" ><?php echo TEXT_SAVE?></a>
+  						<?php }?>
+  						<a class="easyui-linkbutton" iconCls="icon-help" plain="true" onclick="loadHelp()"><?php TEXT_HELP?></a>
+  					</div>
+  				</div>
+  	    	</div>	
+  			<script type="text/javascript">
+  				function actionformater (value,row,index){
+  					var href = 'innerlist.php?list='+row.id;
+  					var dhref = 'dellist.php?list='+row.id;
+  					return '<center><a target="_blank" href="' + href + '"><span class="btn btn-primary btn-xs"><i class="fa fa-search"></i> Preview</span></a><a href="' + dhref + '" class="panel-tool-close" plain="true" >Remove Entry</a></center>';
+  				}
+  				
+  				function formatQtyOnhand (value,row,index){
+  					var not_show_types = ['ns','lb','sv','sf','ci','ai','ds'];
+  					if ( not_show_types.indexOf( row.inventory_type ) > 0){
+  	  					return '';
+  					}else{
+  	  					return formatQty (row.quantity_on_hand);
+  					}
+  				}
+
+  				function styleQty (value,row,index) {
+  	  				if (row.quantity_on_hand < row.minimum_stock_level){
+  	  				return 'background-color:green;';
+  	  				}
+  				}
+  				
+  				document.title = '<?php echo sprintf(BOX_STATUS_MGR, $contact); ?>';
+  		    	function doSearch(value){
+  		    		console.log('A search was requested.');
+  		        	$('#dg').datagrid('load',{
+  		        		search_text: $('#search_text').val(),
+  		        		dataType: 'json',
+  		                contentType: 'application/json',
+  		                async: false,
+  		                type: '<?php echo $basis->cInfo->type;?>',
+  		                inventory_show_inactive: document.getElementById('inventory_show_inactive').checked ? 1 : 0,
+  		        	});
+  		    	}
+  	
+  		        function newInventory(){
+  		        	$.messager.progress();
+  		            $('#win').window('open').window('center').window('setTitle','<?php echo sprintf(TEXT_NEW_ARGS, TEXT_INVENTORY);?>');
+  		            $('#win').window('refresh', "index.php?action=newInventory");
+  		            $('#win').window('resize');
+  		        }
+  		        
+  		        function editContact(){
+  			        $('#win').window('open').window('center').window('setTitle','<?php echo sprintf(TEXT_EDIT_ARGS, TEXT_INVENTORY);?>');
+  		        }
+  		        
+  				$('#dg').datagrid({
+  					url:		"index.php?action=GetAllInventory",
+  					queryParams: {
+  						dataType: 'json',
+  		                contentType: 'application/json',
+  		                async: false,
+  					},
+  					onLoadSuccess: function(data){
+  						console.log('the loading of the datagrid was succesfull');
+  						$.messager.progress('close');
+  						if(data.total == 0) $.messager.alert('<?php echo TEXT_ERROR?>',"<?php echo TEXT_NO_RESULTS_FOUND?>");
+  					},
+  					onLoadError: function(){
+  						console.error('the loading of the datagrid resulted in a error');
+  						$.messager.progress('close');
+  						$.messager.alert('<?php echo TEXT_ERROR?>','Load error:'+arguments.responseText);
+  					},
+  					onDblClickRow: function(index , row){
+  						console.log('a row in the datagrid was double clicked');
+  						document.location = "index.php?action=editInventory&inventoryid="+ row.contactid;
+  						//$('#win').window('open').window('center').window('setTitle',"<?php echo TEXT_EDIT?>"+ ' ' + row.name);
+  					},
+  					pagination: true,
+  					pageSize:   50,
+  					remoteSort:	true,
+  					idField:	"id",
+  					fitColumns:	true,
+  					singleSelect:true,
+  					sortName:	"sku",
+  					sortOrder: 	"asc",
+  					loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
+  					toolbar: 	"#toolbar",
+  					rowStyler: function(index,row){
+  						if (row.inactive == '1') return 'background-color:pink;';
+  					},
+  				});
+  				
+  				$('#win').window({
+  		        	href:		"index.php?action=editInventory",
+  					closed: true,
+  					title:	"<?php echo sprintf(TEXT_EDIT_ARGS, TEXT_INVENTORY);?>",
+  					fit:	true,
+  					queryParams: {
+  						dataType: 'html',
+  		                contentType: 'text/html',
+  		                async: false,
+  					},
+  					onLoadError: function(){
+  						console.error('the loading of the window resulted in a error');
+  						$.messager.alert('<?php echo TEXT_ERROR?>');
+  						$.messager.progress('close');
+  					},
+  					onOpen: function(){
+  						$.messager.progress('close');
+  					},
+  					onBeforeLoad: function(param){
+  						var row = $('#dg').datagrid('getSelected');
+  						param.contactid = row.contactid;
+  					},
+  				});
+  				
+  				function closeWindow(){
+  					$.messager.progress();
+  					$('#inventory').form('clear');
+  					console.log('close inventory window');
+  					$('#win').window('close', true);
+  				}
+  			</script><?php 
+  		$basis->observer->send_footer($basis);
+  	}
+  	
+  	function GetAllInventory (\core\classes\basis $basis){
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__);
+  		try{
+  			$offset = ($basis->cInfo->page - 1) * $basis->cInfo->rows;
+			if ($basis->cInfo->search_text != '') {
+	  			$search_fields = array('a.sku', 'a.description_short', 'a.description_sales', 'p.description_purchase');
+	  			// hook for inserting new search fields to the query criteria.
+	  			if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
+	  			$criteria[] = '(' . implode(" LIKE '%{$basis->cInfo->search_text}%' OR ", $search_fields) . " LIKE '%{$basis->cInfo->search_text}%')";
+	  		}
+	  		if ($basis->cInfo->sort == 'sku') $basis->cInfo->sort = " LPAD(a.sku,".MAX_INVENTORY_SKU_LENGTH.",0) "; 
+	  		// build search filter string
+	  		$search = (sizeof($criteria) > 0) ? (' WHERE ' . implode(' AND ', $criteria)) : '';
+	  		$sql = $basis->DataBase->query("SELECT COUNT(*) FROM " . TABLE_INVENTORY ." a LEFT JOIN " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku $search");
+	  		$basis->cInfo->total = $sql->fetchColumn();
+	  		$field_list = array('a.id as id', 'a.sku as sku', 'inactive', 'inventory_type', 'description_short', 'full_price', 'full_price_with_tax',
+	  				'quantity_on_hand', 'quantity_on_order', 'quantity_on_sales_order', 'quantity_on_allocation', 'last_journal_date', 'minimum_stock_level');
+	  		// hook to add new fields to the query return results
+	  		if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
+	  		//check if sql is executed before otherwise retrieve from memorie.
+	  		$sql = $basis->DataBase->prepare("SELECT SQL_CALC_FOUND_ROWS DISTINCT " . implode(', ', $field_list)  . " FROM " . TABLE_INVENTORY ." a LEFT JOIN " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku $search ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order} LIMIT $offset, {$basis->cInfo->rows}");
+	  		$sql->execute();
+			$basis->cInfo->rows = $sql->fetchAll(\PDO::FETCH_ASSOC);
+		}catch (\Exception $e) {
+			$basis->cInfo->success = false;
+			$basis->cInfo->error_message = $e->getMessage();
+		}
+  	}
+
+  	function oldLoadInventoryManager (\core\classes\basis $basis){ 
   		$basis->observer->send_menu($basis);
   		$basis->security_level	= \core\classes\user::validate(SECURITY_ID_MAINTAIN_INVENTORY);
   		//building filter criteria

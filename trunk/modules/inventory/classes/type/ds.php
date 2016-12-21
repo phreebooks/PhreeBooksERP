@@ -9,6 +9,10 @@ class ds extends \inventory\classes\inventory {//Description
 	public $cost_method				= 'f'; // should be null not sure what will happen if i set this to null
 	public $posible_cost_methodes   = array();
 
+	function __construct(){
+		$this->quantity_on_hand = '';
+	}
+	
 	function update_inventory_status($sku, $field, $adjustment, $item_cost, $vendor_id, $desc) {
 		return true;
 	}

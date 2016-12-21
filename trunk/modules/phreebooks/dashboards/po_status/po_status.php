@@ -26,59 +26,6 @@ class po_status extends \core\classes\ctl_panel {
 	public $version      		= '4.0';
 	public $default_params 		= array('num_rows'=> 0, 'order' => 'asc', 'limit' => 1);
 
-	function output() {
-		global $admin;
-		if(count($this->params) != count($this->default_params)) { //upgrading
-			$this->params = $this->upgrade($this->params);
-		}
-		$list_length = array();
-		$contents = '';
-		$control  = '';
-		for ($i = 0; $i <= $this->max_length; $i++) $list_length[] = array('id' => $i, 'text' => $i);
-		$list_order = array(
-		  	array('id'=>'asc', 'text'=>TEXT_ASC),
-		  	array('id'=>'desc','text'=>TEXT_DESCENDING_SHORT),
-		);
-		$list_limit = array(
-		  	array('id'=>'0', 'text'=>TEXT_NO),
-		  	array('id'=>'1', 'text'=>TEXT_YES),
-		);
-		// Build control box form data
-		$control  = '<div class="row">';
-		$control .= '  <div style="white-space:nowrap">';
-		$control .= TEXT_SHOW.TEXT_SHOW_NO_LIMIT.'&nbsp'.html_pull_down_menu('po_status_field_0', $list_length,$this->params['num_rows']).'<br />';
-		$control .= CP_PO_STATUS_SORT_ORDER     .'&nbsp'.html_pull_down_menu('po_status_field_1', $list_order, $this->params['order']).'<br />';
-		$control .= CP_PO_STATUS_HIDE_FUTURE    .'&nbsp'.html_pull_down_menu('po_status_field_2', $list_limit, $this->params['limit']);
-		$control .= html_submit_field('sub_po_status', TEXT_SAVE);
-		$control .= '  </div>';
-		$control .= '</div>';
-		// Build content box
-		$temp = "SELECT id, post_date, purchase_invoice_id, bill_primary_name, total_amount, currencies_code, currencies_value
-		  FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id = 4 and closed = '0'";
-		if ($this->params['limit'] == '1')    $temp .= " and post_date <= '".date('Y-m-d')."'";
-		if ($this->params['order'] == 'desc') $temp .= " ORDER BY post_date desc";
-		if ($this->params['num_rows'])      $temp .= " LIMIT " . $this->params['num_rows'];
-		$sql = $admin->DataBase->prepare($temp);
-		$sql->execute();
-		if ($sql->fetch(\PDO::FETCH_NUM) < 1) {
-			$contents = TEXT_NO_RESULTS_FOUND;
-		} else {
-			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
-			  	$contents .= '<div style="float:right">' ;
-			  	$contents .= html_button_field('invoice_' . $result['id'], TEXT_RECEIVE, 'onclick="window.open(\'' . html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;oID={$result['id']}&amp;jID=6&amp;action=prc_so", 'SSL') . '\',\'_blank\')"') . "  ";
-				$contents .= $admin->currencies->format_full($result['total_amount'], true, $result['currencies_code'], $result['currencies_value']);
-				$contents .= '</div>';
-				$contents .= '<div>';
-				$contents .= '<a href="' . html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;oID={$result['id']}&amp;jID=4&amp;action=edit", 'SSL') . '">';
-				$contents .= $result['purchase_invoice_id'] . ' - ' . \core\classes\DateTime::createFromFormat(DATE_FORMAT, $result['post_date']);
-				$contents .= ' ' . htmlspecialchars(gen_trim_string($result['bill_primary_name'], 20, true));
-				$contents .= '</a>';
-				$contents .= '</div>' . chr(10);
-			}
-	  	}
-	  	return $this->build_div($contents, $control);
-	}
-
 	function update() {
 		if(count($this->params) == 0){
 			$this->params = array(
@@ -88,6 +35,60 @@ class po_status extends \core\classes\ctl_panel {
 			);
 		}
 		parent::update();
+	}
+	
+	function panelContent(){
+		?>
+		<table id='open_purchase_orders'>
+		   	<thead>
+		   		<tr>
+		        	<th data-options="field:'purchase_invoice_id',sortable:true, align:'center'"><?php echo TEXT_PO_NUMBER;?></th>
+		   	        <th data-options="field:'post_date',sortable:true, align:'center', formatter: function(value,row,index){ return formatDate(new Date(value))}"><?php echo TEXT_DATE?></th>
+		   	        <th data-options="field:'bill_primary_name',sortable:true, align:'center'"><?php echo TEXT_COMPANY;?></th>
+		       	    <th data-options="field:'total_amount',sortable:true, align:'center', formatter: function(value,row,index){ return formatCurrency(value)}"><?php echo TEXT_AMOUNT?></th>
+		   	    </tr>
+		   	</thead>
+		</table>
+		
+		
+		<script type="text/javascript">
+		$('#open_purchase_orders').datagrid({
+			url:		"index.php?action=loadOpenOrders",
+			queryParams: {
+				journal_id: '4',
+<?php if($_SESSION['user']->is_role == 0) echo "store_id:{$_SESSION['user']->admin_prefs['def_store_id']},"?>
+				dataType: 'json',
+				contentType: 'application/json',
+				async: false,
+			},
+			onBeforeLoad:function(){
+				console.log('loading of the open purchase orders datagrid');
+			},
+			onLoadSuccess: function(data){
+				console.log('the loading of the open purchase orders was succesfull');
+				$.messager.progress('close');
+			},
+			onLoadError: function(){
+				console.error('the loading of the open purchase orders resulted in a error');
+				$.messager.progress('close');
+				$.messager.alert('<?php echo TEXT_ERROR?>','Load error for table open purchase orders');
+			},
+			onDblClickRow: function(index , row){
+				console.log('a row in the open purchase orders was double clicked');
+				//@todo open order
+			},
+			remoteSort:	false,
+			fitColumns:	true,
+			idField:	"id",
+			singleSelect:true,
+			sortName:	"post_date",
+			sortOrder: 	"dsc",
+			loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
+			rowStyler: function(index,row){
+				if (row.closed == '1') return 'background-color:pink;';
+			},
+		});
+		</script><?php
 	}
 }
 ?>

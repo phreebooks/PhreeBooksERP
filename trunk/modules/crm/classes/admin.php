@@ -17,6 +17,10 @@
 //  Path: /modules/crm/classes/admin.php
 //
 namespace crm\classes;
+
+define('SECURITY_ID_PHREECRM',           49);
+define('TABLE_CONTACTS_LOG',    DB_PREFIX . 'contacts_log');
+
 class admin extends \core\classes\admin {
 	public $sort_order  = 5;
 	public $id 			= 'crm';
@@ -75,7 +79,7 @@ class admin extends \core\classes\admin {
       		if (!$basis->DataBase->field_exists(TABLE_CONTACTS_LOG, 'entered_by')) $basis->DataBase->exec("ALTER TABLE ".TABLE_CONTACTS_LOG." ADD entered_by INT(11) NOT NULL DEFAULT '0' AFTER contact_id");
     	}
 		if (version_compare($this->status, '4.0.1', '<') ) {
-			if (!$basis->DataBase->field_exists(TABLE_CONTACTS_LOG, 'crmaction')) $basis->DataBase->exec("ALTER TABLE ".TABLE_CONTACTS_LOG." CHANGE `action` `crmaction` VARCHAR(32) NOT NULL DEFAULT ''");
+			if (!$basis->DataBase->field_exists(TABLE_CONTACTS_LOG, 'crmaction')) $basis->DataBase->exec("ALTER TABLE ".TABLE_CONTACTS_LOG." CHANGE `action` `crmaction` VARCHAR(32) NOT NULL DEFAULT '';");
 		}
   	}
 
@@ -96,7 +100,7 @@ class admin extends \core\classes\admin {
 		            selected: false
 		        });
 				document.getElementById('notes_panel').appendChild(document.getElementById('notes_content'));
-	
+				document.getElementById('notes_content').appendChild(document.getElementById('notes_div'));
 				$('#notes_table').datagrid({
 					url:		"index.php?action=loadCRMHistory",
 					queryParams: {
@@ -212,7 +216,6 @@ class admin extends \core\classes\admin {
 				        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newCRM()"><?php echo sprintf(TEXT_NEW_ARGS, TEXT_CRM); ?></a>
 				    </div>
 				</div>
-			    <div style="width:50%"><?php echo html_textarea_field("address[{$basis->cInfo->contact->type}m][notes]", 60, 30, $basis->cInfo->contact->address[$basis->cInfo->contact->type.'m']['notes']); ?></div>
 			  </fieldset>
 		<?php 				
 	}

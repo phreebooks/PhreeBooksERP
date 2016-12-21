@@ -477,13 +477,19 @@ class admin extends \core\classes\admin {
 		parent::load_demo ();
 	}
 	
+	/**
+	 * @todo merge with loadOpenOrders
+	 * @param \core\classes\basis $basis
+	 * @throws \core\classes\userException
+	 */
+	
 	function loadOrders (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		if (empty($basis->cInfo->contact_id)) throw new \core\classes\userException(TEXT_CONTACT_ID_NOT_DEFINED); 
 		if (empty($basis->cInfo->journal_id)) throw new \core\classes\userException(TEXT_JOURNAL_ID_NOT_DEFINED); 
-		$raw_sql  = "SELECT id, journal_id, closed, closed_date, post_date, total_amount, purchase_invoice_id, purch_order_id FROM ".TABLE_JOURNAL_MAIN." WHERE";
-		$raw_sql .= ($basis->cInfo->only_open) ? " closed = '0' and " : "";
-		$raw_sql .= " journal_id in ({$basis->cInfo->journal_id}) and bill_acct_id = {$basis->cInfo->contact_id} ORDER BY post_date DESC";
+		$raw_sql  = "SELECT id, journal_id, closed, closed_date, post_date, total_amount, purchase_invoice_id, purch_order_id FROM ".TABLE_JOURNAL_MAIN." WHERE ";
+		$raw_sql .= ($basis->cInfo->only_open) ? " closed = '0' AND " : "";
+		$raw_sql .= " journal_id IN ({$basis->cInfo->journal_id}) AND bill_acct_id = {$basis->cInfo->contact_id} ORDER BY post_date DESC";
 		$raw_sql .= ($basis->cInfo->limit) ? " LIMIT {$basis->cInfo->limit}" : "";
 		$sql = $basis->DataBase->prepare($raw_sql);
 		$sql->execute();
@@ -492,8 +498,55 @@ class admin extends \core\classes\admin {
 		$basis->cInfo->rows = $results;
 	}
 	
+	/**
+	 * load the SO's and PO's and get order, expected del date
+	 * @throws \core\classes\userException
+	 */
+	function loadOpenOrders  (\core\classes\basis &$basis) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		try{
+			$temp = $basis->cInfo;
+			if (!property_exists($basis->cInfo, 'journal_id')) 	throw new \core\classes\userException(TEXT_JOURNAL_ID_NOT_DEFINED);
+			\core\classes\messageStack::debug_log("tot hier");
+			switch ($basis->cInfo->journal_id) {
+				case  4:
+					$gl_type   = 'por';
+					break;
+				case 10:
+					$gl_type   = 'sos';
+					break;
+			}
+			if (property_exists($basis->cInfo, 'store_id')) $store_id = " AND m.store_id = '{$basis->cInfo->store_id}' ";
+			if (property_exists($basis->cInfo, 'sku')) $sku = " AND i.sku = '{$basis->cInfo->sku}' ";
+			if (property_exists($basis->cInfo, 'sku')) {
+				$sql = $basis->DataBase->prepare("SELECT m.id, m.journal_id, m.store_id, m.purchase_invoice_id, i.qty, i.post_date, i.date_1, i.id as item_id, m.total_amount, m.bill_primary_name
+		  	  		FROM " . TABLE_JOURNAL_MAIN . " m INNER JOIN " . TABLE_JOURNAL_ITEM . " i ON m.id = i.ref_id
+					WHERE m.journal_id  = {$basis->cInfo->journal_id} {$sku} {$store_id} AND m.closed = '0'
+					ORDER BY i.date_1");
+				$sql->execute();
+				while($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+					// this looks for partial received to make sure this item is still on order
+					$adj = $basis->DataBase->query($sql = "SELECT SUM(qty) as qty FROM " . TABLE_JOURNAL_ITEM . " WHERE gl_type = '{$gl_type}' AND so_po_item_ref_id = '{$result['item_id']}' "); 
+					if ($result['qty'] > $adj['qty']) $results = $result;
+				}
+			}else{
+				$sql = $basis->DataBase->prepare("SELECT m.id, m.journal_id, m.store_id, m.purchase_invoice_id, i.qty, i.post_date, i.date_1, i.id as item_id, m.total_amount, m.bill_primary_name
+		  	  		FROM " . TABLE_JOURNAL_MAIN . " m INNER JOIN " . TABLE_JOURNAL_ITEM . " i ON m.id = i.ref_id
+						WHERE m.journal_id  = {$basis->cInfo->journal_id} {$store_id} AND m.closed = '0' AND i.gl_type = 'ttl'
+						ORDER BY i.date_1");
+				$sql->execute();
+				$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
+			}
+			$basis->cInfo->total = sizeof($results);
+			$basis->cInfo->rows = $results;
+		}catch (\Exception $e) {
+			$basis->cInfo->success = false;
+			$basis->cInfo->error_message = $e->getMessage();
+		}
+	}
+	
 	function GetAllContactsAndJournals (\core\classes\basis &$basis) {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ .print_r($basis->cInfo, true));
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		if (empty($basis->cInfo->contact_id)) throw new \core\classes\userException(TEXT_CONTACT_ID_NOT_DEFINED); 
 		if (empty($basis->cInfo->jID)) $basis->StartEvent('GetAllContacts'); 
 		if (isset($basis->cInfo->dept_rep_id)) {
@@ -511,13 +564,38 @@ class admin extends \core\classes\admin {
 		$criteria[] = ($basis->cInfo->only_open) ? " j.closed = '0' and " : "";
 		$criteria[] = " journal_id in ({$basis->cInfo->jID}) ";
 		if ($basis->cInfo->contact_show_inactive == false) $criteria[] = "(c.inactive = '0' or c.inactive = '')"; // inactive flag
-		$search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
+		$search = (sizeof($criteria) > 0) ? (' WHERE ' . implode(' and ', $criteria)) : '';
 		$query_raw = "SELECT id as contactid, short_name, CASE WHEN c.type = 'e' OR c.type = 'i' THEN CONCAT(contact_first , ' ',contact_last) ELSE primary_name END AS name, address1, city_town, postal_code, telephone1, inactive, j.id as journal, purchase_invoice_id FROM ".TABLE_CONTACTS." c LEFT JOIN ".TABLE_ADDRESS_BOOK." a ON c.id = a.ref_id LEFT JOIN ".TABLE_JOURNAL_MAIN." j ON c.id = j.bill_acct_id $search ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order}";
 		$sql = $basis->DataBase->prepare($query_raw);
 		$sql->execute();
 		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
 		$basis->cInfo->total = sizeof($results);
 		$basis->cInfo->rows = $results;
+	}
+	
+	function GetAllJournals (\core\classes\basis &$basis) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		try{
+			if (!property_exists($basis->cInfo, 'jID')) 	throw new \core\classes\userException(TEXT_JOURNAL_TYPE_NOT_DEFINED);
+			if (isset($basis->cInfo->search_text) && $basis->cInfo->search_text <> '') {
+				$search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.address1',
+						'a.address2', 'a.city_town', 'a.postal_code', 'c.short_name');
+				// hook for inserting new search fields to the query criteria.
+				if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
+				$criteria[] = '(' . implode(" like '%{$basis->cInfo->search_text}%' or ", $search_fields) . " like '%{$basis->cInfo->search_text}%')";
+			}
+			$criteria[] = ($basis->cInfo->only_open) ? " j.closed = '0' and " : "";
+			$criteria[] = " journal_id in ({$basis->cInfo->jID}) ";
+			$search = (sizeof($criteria) > 0) ? (' WHERE ' . implode(' and ', $criteria)) : '';
+			$sql = $basis->DataBase->prepare("SELECT *, MONTH(post_date) as month, YEAR(post_date) as year FROM " . TABLE_JOURNAL_MAIN . " {$search} ORDER BY post_date");
+			$sql->execute();
+			$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
+			$basis->cInfo->total = sizeof($results);
+			$basis->cInfo->rows = $results;
+		}catch (\Exception $e) {
+			$basis->cInfo->success = false;
+			$basis->cInfo->error_message = $e->getMessage();
+		}
 	}
 }
 ?>

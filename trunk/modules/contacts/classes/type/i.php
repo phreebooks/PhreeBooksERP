@@ -24,11 +24,6 @@ class i extends \contacts\classes\contacts{
 	public 	$auto_field    			= 'next_crm_id_num';
 	public  $title					= TEXT_CONTACT;
 
-  	public function __construct(){
-		$this->tab_list[] = array('file'=>'template_i_general',	'tag'=>'general',  'order'=> 1, 'text'=>TEXT_GENERAL);
-		parent::__construct();
-  	}
-
 	public function data_complete(){
     	global $admin;
     	if ($this->auto_field && $this->short_name == '') {
@@ -121,6 +116,45 @@ class i extends \contacts\classes\contacts{
 		    }
 	    }
   	}
-
+  	
+  	/**
+  	 * editContacts page main tab
+  	 */
+  	
+  	function PageMainTabGeneral(){
+  		$acct_def = (!$this->dept_rep_id) ? array() : array(array('id'=>$this->department_rep->id, 'text'=>$this->department_rep->dept_rep_id));
+  		?>	<table>
+      			<tr>
+					<td><?php echo \core\classes\htmlElement::textbox("short_name",	TEXT_CONTACT_ID, 'size="21" maxlength="20"', $this->short_name, $this->auto_type == false);?></td>
+	      			<td><?php echo \core\classes\htmlElement::checkbox('inactive', TEXT_INACTIVE, '1', $this->inactive );?></td>
+    				<td><?php echo \core\classes\htmlElement::textbox("contact_middle",	TEXT_TITLE,	'size="33" maxlength="32"', $this->contact_middle);?></td>
+      			</tr>
+      			<tr>
+			    	<td><?php echo \core\classes\htmlElement::textbox("contact_first",	TEXT_FIRST_NAME,  	'size="33" maxlength="32"', $this->contact_first);?></td>
+			        <td><?php echo \core\classes\htmlElement::textbox("contact_last",	TEXT_LAST_NAME, 	'size="33" maxlength="32"', $this->contact_last);?></td>
+			    </tr>
+      			<tr>
+      				<td><?php echo \core\classes\htmlElement::textbox("account_number",	TEXT_FACEBOOK_ID, 	'size="17" maxlength="16"'); ?></td>
+      				<td><?php echo \core\classes\htmlElement::textbox("gov_id_number", 	TEXT_TWITTER_ID, 	'size="17" maxlength="16"'); ?></td>
+      			</tr>
+      			<tr>
+        			<td><?php echo \core\classes\htmlElement::combobox('dept_rep_id', TEXT_LINK_TO, $acct_def, $this->dept_rep_id); ?></td>
+      			</tr>
+    		</table>
+    		<script type="text/javascript">
+				$('#dept_rep_id').combobox({
+				    url:'index.php?module=contacts&page=ajax&op=load_contact_info&guess='+$(this).combobox('getValue'),
+				    valueField:'id',
+				    textField:'text',
+				    queryParams: {
+						dataType: 'json',
+				        contentType: 'application/json',
+				        async: false,
+					},
+				});
+			</script>
+<?php 
+  	  }
+  	  	
 }
 ?>

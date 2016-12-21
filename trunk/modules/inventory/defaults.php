@@ -15,7 +15,7 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/inventory/defaults.php
-//
+// 012345678910109876543210 oirddddhkkkkkkkhkggf
 define('INVENTORY_DIR_ATTACHMENTS',  DIR_FS_MY_FILES . $_SESSION['user']->company . '/inventory/attachments/');
 define('MAX_INVENTORY_SKU_LENGTH', 24); // database is currently set for a maximum of 24 characters
 define('MAX_NUM_PRICE_LEVELS', 5);

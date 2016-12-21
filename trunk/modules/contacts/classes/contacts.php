@@ -56,16 +56,9 @@ class contacts {
         $this->crm_date			= date('Y-m-d');
         $this->crm_rep_id		= $_SESSION['user']->account_id <> 0 ? $_SESSION['user']->account_id : $_SESSION['user']->admin_id;
         $this->fields 			= new \contacts\classes\fields(false, $this->type);
-        foreach ($_POST as $key => $value) $this->$key = db_prepare_input($value);
-        $this->special_terms  =  db_prepare_input($_POST['terms']); // TBD will fix when popup terms is redesigned
-        if ($this->id  == '') $this->id  = $admin->cInfo->contactid;
-        if ($this->id  != '') $this->getContact();
-    }
-
-	public function getContact() {
-	  	global $admin;
-	  	// expand attachments
-		$this->attachments = $result['attachments'] ? unserialize($result['attachments']) : array();
+        foreach ($admin->cInfo as $key => $value) $this->$key = db_prepare_input($value);
+        $this->special_terms  =  db_prepare_input($admin->cInfo->terms); // TBD will fix when popup terms is redesigned
+        $this->attachments = unserialize($this->attachments) !== false ? unserialize($this->attachments) : array();
 		// load payment info
 		if ($_SESSION['ENCRYPTION_VALUE'] && ENABLE_ENCRYPTION) {
 		  	$sql = $admin->DataBase->prepare("SELECT id, hint, enc_value FROM ".TABLE_DATA_SECURITY." WHERE module='contacts' and ref_1={$this->id}");
@@ -80,7 +73,7 @@ class contacts {
 		    	);
 		  	}
 		}	// load sales reps
-		$this->sales_rep_array = gen_get_rep_ids($basis->cInfo->contact->type);
+		$this->sales_rep_array = gen_get_rep_ids($this->type);
   	}
 
 	/**
@@ -162,53 +155,84 @@ class contacts {
   		$sql_data_array['class']			= addcslashes(get_class($this), '\\');
     	$sql_data_array['type']            	= $this->type;
     	$sql_data_array['short_name']      	= $this->short_name;
-    	$sql_data_array['inactive']        	= isset($this->inactive) ? '1' : '0';
-    	$sql_data_array['contacts_level'] 	= $this->contacts_level;
-    	$sql_data_array['contact_first']   	= $this->contact_first;
-    	$sql_data_array['contact_middle']  	= $this->contact_middle;
-    	$sql_data_array['contact_last']    	= $this->contact_last;
-    	$sql_data_array['store_id']        	= $this->store_id;
-    	$sql_data_array['gl_type_account'] 	= (is_array($this->gl_type_account)) ? implode('', array_keys($this->gl_type_account)) : $this->gl_type_account;
-    	$sql_data_array['gov_id_number']   	= $this->gov_id_number;
-    	$sql_data_array['dept_rep_id']     	= $this->dept_rep_id;
-    	$sql_data_array['account_number']  	= $this->account_number;
-    	$sql_data_array['special_terms']   	= $this->special_terms;
-    	$sql_data_array['price_sheet']     	= $this->price_sheet;
-    	$sql_data_array['tax_id']          	= $this->tax_id;
     	$sql_data_array['last_update']     	= 'now()';
-//    	if ($this->id == '') { //create record
-    		$sql_data_array['first_date'] = 'now()';
-    		$keys = array_keys($sql_data_array);
-    		$fields = "'".implode("', '",$keys)."'";
-    		$placeholder = "'".implode("', '",$sql_data_array)."'";
-    		unset($sql_data_array['id']);
-    		unset($sql_data_array['first_date']);
-    		$output = implode(', ', array_map(
+    	$sql_data_array['first_date'] = 'now()';
+    	// Check attachments
+    	for ($image_id = 0; $image_id <= sizeof($this->attachments); $image_id++) {
+    		if (property_exists($basis->cInfo, "rm_attach_{$image_id}") === true) {
+    			@unlink("{$this->dir_attachments}contacts_{$this->id}_{$image_id}.zip");
+    			unset($this->attachments[$image_id]);
+    		}
+    	}
+    	if (is_uploaded_file($_FILES['file_name']['tmp_name'])) { // find an image slot to use
+    		$image_id = 0;
+    		while (true) {
+    			if (!file_exists("{$this->dir_attachments}contacts_{$this->id}_{$image_id}.zip")) break;
+    			$image_id++;
+    		}
+    		saveUploadZip('file_name', "{$this->dir_attachments}contacts_{$this->id}_{$image_id}.zip");
+    		$this->attachments[$image_id] = $_FILES['file_name']['name'];
+    	}
+    	$sql_data_array['attachments'] = serialize($this->attachments);
+    	$keys = array_keys($sql_data_array);
+    	$fields = implode(", ",$keys);
+    	$placeholder = "'".implode("', '",$sql_data_array)."'";
+    	unset($sql_data_array['id']);
+    	unset($sql_data_array['first_date']);
+    	$output = implode(', ', array_map(
     			function ($v, $k) { return sprintf("%s='%s'", $k, $v); },
     			$sql_data_array,
     			array_keys($sql_data_array)
-    		));
-    		$sql = $admin->DataBase->prepare("INSERT INTO ".TABLE_CONTACTS." ($fields) VALUES ($placeholder) ON DUPLICATE KEY UPDATE $output");//@todo
-    		$sql->execute();
-//        	db_perform(TABLE_CONTACTS, $sql_data_array, 'insert');
-        	$this->id = $basis->DataBase->lastInsertId('id');
-			//	if auto-increment see if the next id is there and increment if so.
-    	    if ($this->inc_auto_id) { // increment the ID value
-        	    $next_id = string_increment($this->short_name);
-            	$admin->DataBase->query("UPDATE ".TABLE_CURRENT_STATUS." SET {$this->auto_field} = '$next_id'");
-	        }
-    	    gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_ADD . '-' . $this->title, $this->short_name);
-/*    	} else { // update record
-    		$keys = array_keys($sql_data_array);
-    		$fields = '`'.implode('`, `',$keys).'`';
-    		$placeholder = '`:'.implode('`:, `',$keys).'`';
-    		$sql = $admin->DataBase->prepare("UPDATE ".TABLE_CONTACTS." SET ($fields) VALUES ($placeholder)");
-    		$sql->execute(get_object_vars($this));
-        	//db_perform(TABLE_CONTACTS, $sql_data_array, 'update', "id = '$this->id'");
-        	gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_UPDATE . '-' . $this->title, $this->short_name);
-    	}*/
+    			));
+    	$sql = $admin->DataBase->prepare("INSERT INTO ".TABLE_CONTACTS." ($fields) VALUES ($placeholder) ON DUPLICATE KEY UPDATE $output");//@todo
+    	$sql->execute();
+    	if ($this->id == '') $this->id = $admin->DataBase->lastInsertId();
+		//	if auto-increment see if the next id is there and increment if so.
+   	    if ($this->inc_auto_id) { // increment the ID value
+       	    $next_id = string_increment($this->short_name);
+           	$admin->DataBase->query("UPDATE ".TABLE_CURRENT_STATUS." SET {$this->auto_field} = '$next_id'");
+        }
+   	    gen_add_audit_log(TEXT_CONTACTS . '-' . TEXT_ADD . '-' . $this->title, $this->short_name);
   	}
 
+  	/**
+  	 * editContacts page main tab 
+  	 */
+  	function PageMainTabGeneral(){
+  		?>	<table>
+	      		<tr> 
+	      			<td><?php echo \core\classes\htmlElement::textbox("short_name",	constant('ACT_' . strtoupper($this->type) . '_SHORT_NAME'), 'size="21" maxlength="20"', $this->short_name, $this->auto_type == false);?></td>
+			       	<td><?php 
+			       	if (sizeof($this->contacts_levels) > 0) { 
+			       		echo \core\classes\htmlElement::combobox("contacts_level", 	TEXT_CONTACT_LEVEL,	$this->contacts_levels , $this->contacts_level );
+			       	}
+			       	?>
+					</td>
+					<td><?php echo \core\classes\htmlElement::combobox("dept_rep_id", 	constant('ACT_' . strtoupper($this->type) . '_REP_ID'), $this->sales_rep_array , $this->dept_rep_id ? $this->dept_rep_id : 'r' ); ?></td>
+	      		</tr>
+	      		<tr>
+	      			<td><?php echo \core\classes\htmlElement::checkbox('inactive', TEXT_INACTIVE, '1', $this->inactive );?></td>
+	      		</tr>
+			    <tr>
+			    	<td><?php echo \core\classes\htmlElement::textbox("contact_first",	TEXT_FIRST_NAME,  	'size="33" maxlength="32"', $this->contact_first);?></td>
+			        <td><?php echo \core\classes\htmlElement::textbox("contact_middle",	TEXT_MIDDLE_NAME,	'size="33" maxlength="32"', $this->contact_middle);?></td>
+			        <td><?php echo \core\classes\htmlElement::textbox("contact_last",	TEXT_LAST_NAME, 	'size="33" maxlength="32"', $this->contact_last);?></td>
+			    </tr>
+			    <tr>
+			    	<td><?php echo \core\classes\htmlElement::combobox("gl_type_account",	constant('ACT_' . strtoupper($this->type) . '_GL_ACCOUNT_TYPE'), gen_coa_pull_down(), $this->gl_type_account == '' ? AR_DEF_GL_SALES_ACCT : $this->gl_type_account );?></td>
+			        <td><?php echo \core\classes\htmlElement::textbox("account_number",		constant('ACT_' . strtoupper($this->type) . '_ACCOUNT_NUMBER'), 'size="17" maxlength="16"', $this->account_number);?></td>
+			        <td><?php echo \core\classes\htmlElement::combobox("price_sheet",		TEXT_DEFAULT_PRICE_SHEET, 	get_price_sheet_data($this->type), $this->account_number);?></td>
+			    </tr>
+			     <tr>
+			     	<td><?php echo \core\classes\htmlElement::textbox("gov_id_number",		constant('ACT_' . strtoupper($this->type) . '_ID_NUMBER'), 'size="17" maxlength="16"', $this->gov_id_number);?></td>
+			    	<td><?php echo \core\classes\htmlElement::combobox("tax_id",	TEXT_DEFAULT_SALES_TAX, $basis->cInfo->tax_rates, $this->tax_id );?></td>
+			    	<td><?php echo \core\classes\htmlElement::textbox('terms_text', TEXT_PAYMENT_TERMS, 'readonly="readonly" size="20"', gen_terms_to_language($this->special_terms, true, $this->terms_type)) . '&nbsp;' . chr(10);
+			    	  		  echo html_icon('apps/accessories-text-editor.png', TEXT_TERMS_DUE, 'small', 'style="cursor:pointer" onclick="TermsList()"'); ?>
+				   	</td>
+			    </tr>
+	    	</table>
+  		<?php 
+  	}
   	
   	/**
   	 * this method outputs a line on the template page.

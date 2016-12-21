@@ -15,7 +15,7 @@
 // | GNU General Public License for more details.                    |
 // +-----------------------------------------------------------------+
 //  Path: /modules/contacts/pages/main/template_c_payment.php
-//
+//@todo need table
 
 ?>
 <div title="<?php echo TEXT_PAYMENT;?>">

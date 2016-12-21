@@ -34,7 +34,7 @@ class outputPage  {
        	$this->js_files[] = "includes/jquery.dataTables.min.js";// @todo only nessecery
     }
     
-    function send_header($basis){
+    function send_header (\core\classes\basis $basis){
     	//header_remove();
     	if (!defined('CHARSET')) define('CHARSET', 'UTF-8');
     	header("Content-type: text/html; charset=".CHARSET);
@@ -56,7 +56,7 @@ class outputPage  {
     	ob_flush();
     }
     
-    function send_constants($basis){?>
+    function send_constants (\core\classes\basis $basis){?>
     	<script type="text/javascript">
     	//setting easyui defaults.
 	    	$.fn.validatebox.defaults.invalidMessage = '<?php echo TEXT_INVALID_VALUE?>';
@@ -90,7 +90,7 @@ class outputPage  {
     	</script> <?php 
     }
     
-    function send_menu($basis){
+    function send_menu (\core\classes\basis $basis){
     	if ($this->menu_send) return;
     	uasort($basis->mainmenu, array($this,'sortByOrder'));
     	echo '<!-- Pull Down Menu -->' . chr(10);
@@ -106,7 +106,7 @@ class outputPage  {
 		return strcmp($a->order, $b->order);
 	}
      
-    public function print_js_includes($basis){
+    public function print_js_includes (\core\classes\basis $basis){
     	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
        	//first normal js files
        	foreach($this->js_files as $file){
@@ -133,7 +133,7 @@ class outputPage  {
        	if($basis->js) echo "  <script type='text/javascrip'>$basis->js</script>" . chr(10);
     }
 
-    public function print_menu($basis){
+    public function print_menu (\core\classes\basis $basis){
     	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
        	if($basis->include_header){
        		require_once(DIR_FS_ADMIN . DIR_WS_THEMES . '/menu.php');
@@ -142,7 +142,7 @@ class outputPage  {
        	}
     }
 
-	public function send_footer($basis){
+	public function send_footer (\core\classes\basis $basis){
     	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
        	$image_path = defined('FOOTER_LOGO') ? FOOTER_LOGO : (DIR_WS_ADMIN . 'modules/phreedom/images/phreesoft_logo.png');
        	echo '<div id="page_footer" data-options="region:\'south\'" style="text-align:center;overflow:hidden;font-size:9px;height:95px">';
@@ -155,39 +155,10 @@ class outputPage  {
     }
     /**
      * this method is called by the basis object when it is done with all actions.
-     * @param \SplSubject $subject
      */
 
-    public function update(\SplSubject $basis) {//@todo
+    public function update (\core\classes\basis $basis) {
     	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-//    	if ($basis->page != 'json' && $basis->page != 'ajax' && $basis->page == 'mobile') {
-    		$this->include_template = DIR_FS_ADMIN . "modules/{$basis->module}/pages/{$basis->page}/{$basis->template}.php";
-	    	if ( file_exists(DIR_FS_ADMIN . "modules/{$basis->module}/custom/pages/{$basis->page}/{$basis->template}.php")) {
-	    		$this->include_template = DIR_FS_ADMIN . "modules/{$basis->module}/custom/pages/{$basis->page}/{$basis->template}.php";
-	    	}
-			$this->ModuleAndPage	= "{$basis->module}/{$basis->page}";
-			// load the javascript specific, required
-			$this->include_php_js_files[] = DIR_FS_ADMIN . "modules/{$basis->module}/pages/{$basis->page}/js_include.php";
-			if ( !file_exists(DIR_FS_ADMIN . "modules/{$basis->module}/pages/{$basis->page}/js_include.php")) trigger_error("No js_include file, looking for the file: {$basis->module}/pages/{$basis->page}/js_include.php", E_USER_ERROR);
-			// load the jquery and javascript translations
-			if      (file_exists("modules/phreedom/custom/language/{$_SESSION['language']->language_code}/jquery_i18n.js")) {
-				$this->js_files[] = "modules/phreedom/custom/language/{$_SESSION['language']->language_code}/jquery_i18n.js";
-			} elseif(file_exists("modules/phreedom/language/{$_SESSION['language']->language_code}/jquery_i18n.js")) {
-				$this->js_files[] = "modules/phreedom/language/{$_SESSION['language']->language_code}/jquery_i18n.js";
-			} else               $this->js_files[] = "modules/phreedom/language/en_us/jquery_i18n.js";
-			//for easyui
-			if      (file_exists("includes/easyui/custom/language/{$_SESSION['language']->language_code}/easyui_lang.js")) {
-				$this->js_files[] = "includes/easyui/custom/language/{$_SESSION['language']->language_code}/easyui_lang.js";
-			} elseif(file_exists("includes/easyui/language/{$_SESSION['language']->language_code}/easyui_lang.js")) {
-				$this->js_files[] = "includes/easyui/language/{$_SESSION['language']->language_code}/easyui_lang.js";
-			} else               $this->js_files[] = "includes/easyui/language/en_us/easyui_lang.js";
-			//load the custom javascript if present
-			if (file_exists(DIR_FS_ADMIN . "modules/{$basis->module}/custom/pages/{$basis->page}/extra_js.php")) $this->include_php_js_files[] = DIR_FS_ADMIN . "modules/{$basis->module}/custom/pages/{$basis->page}/extra_js.php";
-			require('includes/template_index.php');
-			return true;
-/*		}else{
-			return false;
-		}*/
     }
 
     /**

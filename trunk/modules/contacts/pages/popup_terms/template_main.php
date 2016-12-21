@@ -64,7 +64,7 @@ if ($terms[0] == '0' || $terms[0] == '1' || $terms[0] == '2' || $terms[0] == '3'
 	$field_value = '';
 }
 echo ACT_TERMS_NET . html_input_field('standard_days', $field_value, 'size="3"') . TEXT_DAY_S . '<br />' . chr(10);
-echo '<br /><br />'.html_calendar_field($basis->cInfo->cal_terms);
+echo '<br /><br />'.\core\classes\htmlElement::date('due_date', TEXT_DUE_DATE);
 if ($terms[0] == '4' || $terms[0] == '5') {
 	echo '<script type="text/javascript">';
 	echo "document.popup_terms.elements['due_date'].value = '{$terms[3]}';";

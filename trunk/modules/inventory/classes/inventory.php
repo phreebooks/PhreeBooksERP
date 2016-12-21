@@ -556,46 +556,14 @@ class inventory {
 		$endDate->modify("-1 year");
 		$last_year = $endDate->format('Y-m-d');
 
-		// load the SO's and PO's and get order, expected del date
-		$sql = "select m.id, m.journal_id, m.store_id, m.purchase_invoice_id, i.qty, i.post_date, i.date_1,	i.id as item_id
-	  	  from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
-	  	  where m.journal_id in (4, 10) and i.sku = '" . $this->sku ."' and m.closed = '0'
-	  	  order by i.date_1";
-		$result = $admin->DataBase->query($sql);
-		while(!$result->EOF) {
-	  		switch ($result['journal_id']) {
-	    		case  4:
-		  			$gl_type   = 'por';
-		  			$hist_type = 'open_po';
-		  			break;
-	    		case 10:
-		  			$gl_type   = 'sos';
-		  			$hist_type = 'open_so';
-		  		break;
-	  		}
-	  		$sql = "select sum(qty) as qty from " . TABLE_JOURNAL_ITEM . "
-			  where gl_type = '" . $gl_type . "' and so_po_item_ref_id = " . $result['item_id'];
-	  		$adj = $admin->DataBase->query($sql); // this looks for partial received to make sure this item is still on order
-	  		if ($result['qty'] > $adj['qty']) {
-				$this->history[$hist_type][] = array(
-		  			'id'                  => $result['id'],
-		  			'store_id'            => $result['store_id'],
-		  			'purchase_invoice_id' => $result['purchase_invoice_id'],
-		  			'post_date'           => $result['post_date'],
-		  			'qty'                 => $result['qty'],
-		  			'date_1'              => $result['date_1'],
-				);
-	  		}
-	  		$result->MoveNext();
-		}
-
 		// load the units received and sold, assembled and adjusted
-		$sql = "select m.journal_id, m.post_date, i.qty, i.gl_type, i.credit_amount, i.debit_amount
-		  from " . TABLE_JOURNAL_MAIN . " m inner join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id
-		  where m.journal_id in (6, 12, 14, 16, 19, 21) and i.sku = '" . $this->sku ."' and m.post_date >= '" . $last_year . "'
-		  order by m.post_date DESC";
-		$result = $admin->DataBase->query($sql);
-		while(!$result->EOF) {
+		$sql = "SELECT m.journal_id, m.post_date, i.qty, i.gl_type, i.credit_amount, i.debit_amount
+		  FROM " . TABLE_JOURNAL_MAIN . " m INNER JOIN " . TABLE_JOURNAL_ITEM . " i ON m.id = i.ref_id
+		  WHERE m.journal_id in (6, 12, 14, 16, 19, 21) AND i.sku = '{$this->sku}' AND m.post_date >= '{$last_year}'
+		  ORDER BY m.post_date DESC";
+		$sql = $admin->DataBase->prepare($sql);
+		$sql->execute();
+		while($result = $sql->fetch(\PDO::FETCH_LAZY)) {
 			$month = substr($result['post_date'], 0, 7);
 	  		switch ($result['journal_id']) {
 	    		case  6:
@@ -618,7 +586,6 @@ class inventory {
 	      			$this->sales_history[$month]['usage'] += $result['qty'];
 		  			break;
 	  		}
-	  		$result->MoveNext();
 		}
 
 		// calculate average usage

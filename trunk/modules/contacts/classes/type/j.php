@@ -24,9 +24,42 @@ class j extends \contacts\classes\contacts{
 	public $title			= TEXT_PROJECT;
 	public $dept_rep_id 	= AR_DEF_GL_SALES_ACCT; //will overwrite if exists in database.
 
+	
 	public function __construct(){
-		$this->tab_list[] = array('file'=>'template_j_general',	'tag'=>'general',  'order'=> 1, 'text'=>TEXT_GENERAL);
+		$this->project_cost_types = array(
+			 'LBR' => TEXT_LABOR,
+			 'MAT' => TEXT_MATERIALS,
+			 'CNT' => TEXT_CONTRACTORS,
+			 'EQT' => TEXT_EQUIPMENT,
+			 'OTH' => TEXT_OTHER,
+		);
 		parent::__construct();
+	}
+	/**
+	 * editContacts page main tab
+	 */
+	function PageMainTabGeneral(){
+		?>	<table>
+	      		<tr> 
+	      			<td><?php echo \core\classes\htmlElement::textbox("short_name",	sprintf(TEXT_ARGS_ID, TEXT_PROJECT), 'size="21" maxlength="20"', $this->short_name, $this->auto_type == false);?></td>
+	      			<td><?php echo \core\classes\htmlElement::checkbox('inactive', TEXT_INACTIVE, '1', $this->inactive );?></td>
+			        <td><?php 
+			            echo TEXT_BREAK_INTO_PHASES . ': ';
+			            echo html_radio_field('account_number', 1, ($this->account_number == '1' ? true : false)) . TEXT_YES . chr(10);
+			            echo html_radio_field('account_number', 2, (($this->account_number == '' || $this->account_number == '2') ? true : false)) . TEXT_NO  . chr(10);
+			          ?>
+				   </td>
+				</tr>
+				<tr>
+					<td><?php echo \core\classes\htmlElement::combobox("dept_rep_id", 	ACT_J_REP_ID, gen_get_rep_ids('c'), $this->dept_rep_id ); ?></td>
+        			<td><?php echo \core\classes\htmlElement::date('contact_first', TEXT_START_DATE); ?></td>
+      			</tr>
+      			<tr>
+      				<td><?php echo \core\classes\htmlElement::textbox("gov_id_number", ACT_J_ID_NUMBER, 'size="17" maxlength="16"', $this->gov_id_number);?></td>
+        			<td><?php echo \core\classes\htmlElement::date('contact_last', TEXT_END_DATE); ?></td>
+      			</tr>
+      		</table>
+	<?php 
 	}
 }
 ?>

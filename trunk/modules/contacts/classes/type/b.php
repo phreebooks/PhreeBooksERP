@@ -24,9 +24,22 @@ class b extends \contacts\classes\contacts{
 	public $type			= 'b';
 	public $title			= TEXT_BRANCH;
 
-	public function __construct(){
-		$this->tab_list[] = array('file'=>'template_b_general',	'tag'=>'general',  'order'=> 1, 'text'=>TEXT_GENERAL);
-		parent::__construct();
+	/**
+	 * editContacts page main tab
+	 */
+	function PageMainTabGeneral(){
+		?>	<table>
+	      		<tr> 
+	      			<td><?php echo \core\classes\htmlElement::textbox("short_name",	TEXT_BRANCH_ID, 'size="21" maxlength="20"', $this->short_name, $this->auto_type == false);?></td>
+	      			<td><?php echo \core\classes\htmlElement::checkbox('inactive', TEXT_INACTIVE, '1', $this->inactive );?></td>
+	      		</tr>
+        		<tr>
+			    	<td><?php echo \core\classes\htmlElement::textbox("contact_first",	TEXT_FIRST_NAME,  	'size="33" maxlength="32"', $this->contact_first);?></td>
+			        <td><?php echo \core\classes\htmlElement::textbox("contact_middle",	TEXT_MIDDLE_NAME,	'size="33" maxlength="32"', $this->contact_middle);?></td>
+			        <td><?php echo \core\classes\htmlElement::textbox("contact_last",	TEXT_LAST_NAME, 	'size="33" maxlength="32"', $this->contact_last);?></td>
+			    </tr>
+    		</table>
+	  		<?php 
 	}
 }
 ?>

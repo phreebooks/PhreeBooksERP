@@ -162,8 +162,9 @@ class htmlElement {
 		return $field;
 	}
 	
-	function html_currency_field($name, $label, $value, $parameters, $currency_code = DEFAULT_CURRENCY, $required = NULL){//@todo test and implement
+	static function currency($name, $label, $value, $parameters, $currency_code = DEFAULT_CURRENCY, $required = NULL){//@todo test and implement
 		global $admin;
+		$temp = $admin->currencies->currencies[$currency_code];
 		if (strpos($name, '[]')) { // don't show id attribute if generic array
 			$id = false;
 		} else {
@@ -174,7 +175,7 @@ class htmlElement {
 		if ($id)						$field .= " id='$id' ";
 		if (gen_not_null($parameters))	$field .= " $parameters ";
 		if ($required)					$required = ",required:true";
-		$field .= " class='easyui-numberbox' label='{$label}: ' labelPosition='before' data-options=\"precision:{$admin->currencies[$currency_code]->decimal_places},groupSeparator:'{$admin->currencies[$currency_code]->thousands_point}',decimalSeparator:'{$admin->currencies[$currency_code]->decimal_point}',prefix:'{$admin->currencies[$currency_code]->symbol_left}', suffix:'{$admin->currencies[$currency_code]->symbol_right}', value:'$value' $required\">";
+		$field .= " class='easyui-numberbox' label='{$label}: ' labelPosition='before' data-options=\"precision:{$temp['decimal_places']},groupSeparator:'{$temp['thousands_point']}',decimalSeparator:'{$temp['decimal_point']}',prefix:'".utf8_decode ($temp['symbol_left'])."', suffix:'{$temp['symbol_right']}', value:'$value' $required\">";
 		return $field;
 	}
 	
@@ -190,7 +191,7 @@ class htmlElement {
 		if ($id)						$field .= " id='$id' ";
 		if (gen_not_null($parameters))	$field .= " $parameters ";
 		if ($required)					$required = ",required:true";
-		$field .=  "class='easyui-numberbox' label='{$label}: ' labelPosition='before' data-options=\"precision:{$admin->currencies[DEFAULT_CURRENCY]->decimal_places},groupSeparator:'{$admin->currencies[DEFAULT_CURRENCY]->thousands_point}',decimalSeparator:'{$admin->currencies[DEFAULT_CURRENCY]->decimal_point}', value:'$value' $required\" />";
+		$field .=  "class='easyui-numberbox' label='{$label}: ' labelPosition='before' data-options=\"precision:{$temp[DEFAULT_CURRENCY]->decimal_places},groupSeparator:'{$temp[DEFAULT_CURRENCY]->thousands_point}',decimalSeparator:'{$temp[DEFAULT_CURRENCY]->decimal_point}', value:'$value' $required\" />";
 		return $field;
 	}
 	/**

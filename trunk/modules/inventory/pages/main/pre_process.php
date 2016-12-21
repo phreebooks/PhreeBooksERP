@@ -41,7 +41,7 @@ if (!isset($_REQUEST['inventory_type'])){
 	else $type ='si';
 }
 $temp = '\inventory\classes\type\\'. $type;
-$cInfo = new $temp;
+$basis->cInfo->inventory = new $temp;
 /***************   hook for custom actions  ***************************/
 $custom_path = DIR_FS_WORKING . 'custom/pages/main/extra_actions.php';
 if (file_exists($custom_path)) { include($custom_path); }
@@ -50,7 +50,7 @@ switch ($_REQUEST['action']) {
   case 'save':
   	try{
 		\core\classes\user::validate_security($security_level, 2); // security check
-		$cInfo->save();
+		$basis->cInfo->inventory->save();
   	}catch(Exception $e){
   		\core\classes\messageStack::add($e->getMessage());
 		$_REQUEST['action'] = 'edit';

@@ -99,7 +99,7 @@ class backup {
 	function make_zip($type = 'file', $localname = NULL, $root_folder = '/') {
 		if (!class_exists('ZipArchive')) throw new \core\classes\userException(GEN_BACKUP_NO_ZIP_CLASS);
 		$zip = new \ZipArchive;
-		$res = $zip->open($this->dest_dir . $this->dest_file, ZipArchive::CREATE);
+		$res = $zip->open($this->dest_dir . $this->dest_file, \ZipArchive::CREATE);
 		if ($res !== true) throw new \core\classes\userException(TEXT_ERROR_ZIP_FILE . $this->dest_dir);
 		if ($type == 'file') {
 			$zip->addFile($this->source_dir . $this->source_file, $localname);

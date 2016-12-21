@@ -60,7 +60,8 @@ class language {
 			
 		}else{
 			if (sizeof($this->phrases)   == 0) $this->get_translations();
-			if (sizeof($this->countries) == 0) $this->get_countries();
+			//if (sizeof($this->countries) == 0)
+				$this->get_countries();
 		}
 		foreach ($this->phrases as $key => $value ) define($key, $value);
 		
@@ -166,10 +167,22 @@ class language {
 						}
 					}
 				}else if ($i->tagName == 'zones') {
-					foreach($i->childNodes as $zone) {
-						if (!empty($zone->tagName) ){//@todo check
-							$this->countries[$country->getAttribute('xml:id')][$i->tagName][$zone->tagName] = $zone->nodeValue;
-							if ($zone->tagName == $this->zone_code) $this->countries[$country->getAttribute('xml:id')]['name'] = $zone->nodeValue;
+					foreach($i->childNodes as $zones) {
+						if (!empty($zones->tagName) ){
+							foreach($zones->childNodes as $zone) {
+	//							\core\classes\messageStack::debug_log("zone = ".print_r($zone,true) );
+								if ($zone->tagName == 'translations') {
+									foreach($zone->childNodes as $language) {
+										\core\classes\messageStack::debug_log("zone = ".print_r($language,true) );
+										if (!empty($language->tagName) ){//@todo check
+											$this->countries[$country->getAttribute('xml:id')][$i->tagName]['zones'][$zone->tagName] = $language->nodeValue;
+											if ($zone->tagName == $this->language_code) $this->countries[$country->getAttribute('xml:id')][$i->tagName]['zones'][$zone->tagName]['name'] = $language->nodeValue;
+										}
+									}
+								}else{
+									if (!empty($zone->tagName)) $this->countries[$country->getAttribute('xml:id')][$i->tagName]['zones'][$zone->tagName] = $zone->nodeValue;
+								}
+							}
 						}
 					}
 				}else{
@@ -179,6 +192,7 @@ class language {
 		}
 		if (sizeof($this->countries) == 0) throw new \core\classes\userException("there are no countries for your language {$this->language_code} ");
 		uasort ( $this->countries, array ( $this, 'arangeObjectByNameValue') );
+		\core\classes\messageStack::debug_log("countries ".print_r($this->countries,true) );
 	}
 	
 	/**
@@ -206,30 +220,22 @@ class language {
 	/**
 	 * @todo rewrite and add zones to locals.
 	 * @todo replace getCodes with this method
-	 * @param unknown $country
-	 * @param unknown $zone
+	 * @param unknown $search_country
+	 * @param unknown $search_zone
 	 * @return iso2
 	 */
-	function get_country_codes($country, $zone) {
+	function get_country_codes($search_country, $search_zone) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		foreach ($this->countries as $iso3 => $country) {
-			foreach ($country->translations as $language => $country) {
-				if ($value->iso2 == $iso2) return $value->iso3;
+			if ($country->name == $search_country){
+				$codes['country'] = $country->iso2;
+				foreach ($country->zones as $key => $zone) {
+					if ($zone->name == $search_zone){
+						$codes['state'] = $zone->iso2;
+					}
+				}
 			}
 		}
-		global $db;
-		
-		$codes = array();
-		$iso_country = $db->Execute("select countries_id, countries_iso_code_2 from " . TABLE_COUNTRIES . "
-		  where countries_name = '{$country}'");
-		if ($iso_country->RecordCount() < 1) { // not found, return original choices
-			$codes['country'] = $country;
-			$codes['state']   = $zone;
-			return $codes;
-		}
-		$codes['country'] = $iso_country->fields['countries_iso_code_2'];
-		$state = $db->Execute("select zone_code from " . TABLE_ZONES . "
-	  where zone_country_id = '" . $iso_country->fields['countries_id'] . "' and zone_name = '" . $zone . "'");
-		$codes['state'] = ($state->RecordCount() < 1) ? $zone : $state->fields['zone_code'];
 		return $codes;
 	}
 	

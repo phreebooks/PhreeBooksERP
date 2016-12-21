@@ -9,6 +9,10 @@ class sf extends \inventory\classes\inventory {//Flat Rate - Service
 	public $cost_method				= 'f';
 	public $posible_cost_methodes   = array('f');
 
+	function __construct(){
+		$this->quantity_on_hand = '';
+	}
+	
 	function update_inventory_status($sku, $field, $adjustment, $item_cost, $vendor_id, $desc){
 		return true;
 	}

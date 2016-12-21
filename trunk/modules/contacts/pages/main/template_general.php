@@ -21,38 +21,7 @@ echo \core\classes\htmlElement::hidden('terms', $basis->cInfo->contact->special_
 	<div title="<?php echo TEXT_GENERAL;?>" style="padding:10px">
 		<fieldset>
 	    	<legend><?php echo TEXT_CONTACT_INFORMATION; ?></legend>
-	    	<table>
-	      		<tr> 
-	      			<td><?php echo \core\classes\htmlElement::textbox("short_name",	constant('ACT_' . strtoupper($basis->cInfo->contact->type) . '_SHORT_NAME'), 'size="21" maxlength="20"', $basis->cInfo->contact->short_name, $basis->cInfo->contact->auto_type == false);?></td>
-			       	<td><?php 
-			       	if (sizeof($basis->cInfo->contact->contacts_levels) > 0) { 
-			       		echo \core\classes\htmlElement::combobox("contacts_level", 	TEXT_CONTACT_LEVEL,	$basis->cInfo->contact->contacts_levels , $basis->cInfo->contact->contacts_level );
-			       	}
-			       	?>
-					</td>
-					<td><?php echo \core\classes\htmlElement::combobox("dept_rep_id", 	constant('ACT_' . strtoupper($basis->cInfo->contact->type) . '_REP_ID'), $basis->cInfo->contact->sales_rep_array , $basis->cInfo->contact->dept_rep_id ? $basis->cInfo->contact->dept_rep_id : 'r' ); ?></td>
-	      		</tr>
-	      		<tr>
-	      			<td><?php echo \core\classes\htmlElement::checkbox('inactive', TEXT_INACTIVE, '1', $basis->cInfo->contact->inactive );?></td>
-	      		</tr>
-			    <tr>
-			    	<td><?php echo \core\classes\htmlElement::textbox("contact_first",	TEXT_FIRST_NAME,  	'size="33" maxlength="32"', $basis->cInfo->contact->contact_first);?></td>
-			        <td><?php echo \core\classes\htmlElement::textbox("contact_middle",	TEXT_MIDDLE_NAME,	'size="33" maxlength="32"', $basis->cInfo->contact->contact_middle);?></td>
-			        <td><?php echo \core\classes\htmlElement::textbox("contact_last",	TEXT_LAST_NAME, 	'size="33" maxlength="32"', $basis->cInfo->contact->contact_last);?></td>
-			    </tr>
-			    <tr>
-			    	<td><?php echo \core\classes\htmlElement::combobox("gl_type_account",	constant('ACT_' . strtoupper($basis->cInfo->contact->type) . '_GL_ACCOUNT_TYPE'), gen_coa_pull_down(), $basis->cInfo->contact->gl_type_account == '' ? AR_DEF_GL_SALES_ACCT : $basis->cInfo->contact->gl_type_account );?></td>
-			        <td><?php echo \core\classes\htmlElement::textbox("account_number",		constant('ACT_' . strtoupper($basis->cInfo->contact->type) . '_ACCOUNT_NUMBER'), 'size="17" maxlength="16"', $basis->cInfo->contact->account_number);?></td>
-			        <td><?php echo \core\classes\htmlElement::combobox("price_sheet",		TEXT_DEFAULT_PRICE_SHEET, 	get_price_sheet_data($basis->cInfo->contact->type), $basis->cInfo->contact->account_number);?></td>
-			    </tr>
-			     <tr>
-			     	<td><?php echo \core\classes\htmlElement::textbox("gov_id_number",		constant('ACT_' . strtoupper($basis->cInfo->contact->type) . '_ID_NUMBER'), 'size="17" maxlength="16"', $basis->cInfo->contact->gov_id_number);?></td>
-			    	<td><?php echo \core\classes\htmlElement::combobox("tax_id",	TEXT_DEFAULT_SALES_TAX, $basis->cInfo->tax_rates, $basis->cInfo->contact->tax_id );?></td>
-			    	<td><?php echo \core\classes\htmlElement::textbox('terms_text', TEXT_PAYMENT_TERMS, 'readonly="readonly" size="20"', gen_terms_to_language($basis->cInfo->contact->special_terms, true, $basis->cInfo->contact->terms_type)) . '&nbsp;' . chr(10);
-			    	  		  echo html_icon('apps/accessories-text-editor.png', TEXT_TERMS_DUE, 'small', 'style="cursor:pointer" onclick="TermsList()"'); ?>
-				   	</td>
-			    </tr>
-	    	</table>
+	    	<?php $basis->cInfo->contact->PageMainTabGeneral();?>
 	  	</fieldset>
 	
 	<?php // *********************** Mailing/Main Address (only one allowed) ****************************** ?>
@@ -118,4 +87,5 @@ echo \core\classes\htmlElement::hidden('terms', $basis->cInfo->contact->special_
 	   			</table>
 	   		</fieldset>
 	  	</div>
+	  	<div id='notes_div' style="width:50%"><?php echo html_textarea_field("notes", 60, 30, $basis->cInfo->contact->notes); ?></div>
 	</div>

@@ -104,27 +104,42 @@ class ctl_panel {
 		$output .= '	<a id="'.$this->id.'_del" href="javascript:void(0)" class="icon-cancel"  onclick="return del_box(\'' . $this->id . '\')"></a>' . chr(10);
 		//$output .= '	<a href="javascript:void(0)" class="icon-help" onclick="javascript:alert(help)"></a>' . chr(10);
 		$output .= '</div>' . chr(10);
-		$output .= '<table style="border-collapse:collapse;width:100%">'. chr(10);
-		// properties contents
-		$output .= '<tbody class="ui-widget-content">' . chr(10);
-		$output .= '<tr id="' . $this->id . '_prop" style="display:none"><td colspan="4">' . chr(10);
-		$output .= html_form($this->id . '_frm', FILENAME_DEFAULT, gen_get_all_get_params(array('action'))) . chr(10);
-		$output .= $controls . chr(10);
-		$output .= "<input type='hidden' name='dashboard_id' value='{$this->id}' />" . chr(10);
-		$output .= "<input type='hidden' name='column_id' value='{$this->column_id}' />" . chr(10);
-		$output .= "<input type= 'hidden' name='row_id' value='{$this->row_id}' />" . chr(10);
-		$output .= '</form></td></tr>' . chr(10);
-		$output .= "<tr id='{$this->id}_hr' style='display:none'><td colspan='4'><hr /></td></tr>" . chr(10);
-		// box contents
-		$output .= '<tr><td colspan="4">' . chr(10);
-		$output .= "<div id='{$this->id}_body'>" . chr(10);
-		$output .= $contents;
-		$output .= '</div>';
-		$output .= '</td></tr></tbody></table>' . chr(10);
+		if(method_exists($this,'displayContent')) {
+			echo $output;
+			$this->displayContent();
+			// finish it up
+			echo '</div>' . chr(10);
+			echo "<!--// end: {$this->id} //--> <br/>" . chr(10) . chr(10);
+			return;
+		}else{
+			$output .= '<table style="border-collapse:collapse;width:100%">'. chr(10);
+			// properties contents
+			$output .= '<tbody class="ui-widget-content">' . chr(10);
+			$output .= '<tr id="' . $this->id . '_prop" style="display:none"><td colspan="4">' . chr(10);
+			$output .= html_form($this->id . '_frm', FILENAME_DEFAULT, gen_get_all_get_params(array('action'))) . chr(10);
+			$output .= $controls . chr(10);
+			$output .= "<input type='hidden' name='dashboard_id' value='{$this->id}' />" . chr(10);
+			$output .= "<input type='hidden' name='column_id' value='{$this->column_id}' />" . chr(10);
+			$output .= "<input type= 'hidden' name='row_id' value='{$this->row_id}' />" . chr(10);
+			$output .= '</form></td></tr>' . chr(10);
+			$output .= "<tr id='{$this->id}_hr' style='display:none'><td colspan='4'><hr /></td></tr>" . chr(10);
+			// box contents
+			$output .= '<tr><td colspan="4">' . chr(10);
+			$output .= "<div id='{$this->id}_body'>" . chr(10);
+			$output .= $contents;
+			$output .= '</div>';
+			$output .= '</td></tr></tbody></table>' . chr(10);
+		}
 		// finish it up
 		$output .= '</div>' . chr(10);
 		$output .= "<!--// end: {$this->id} //--> <br/>" . chr(10) . chr(10);
 		return $output;
+  	}
+  	
+  	function output(){
+  		$this->panelHeader();
+  		$this->panelContent();
+  		$this->panelFooter();
   	}
 
 	function get_next_row ($column_id = 1) {
@@ -210,5 +225,28 @@ class ctl_panel {
 			$admin->DataBase->exec("UPDATE " . TABLE_USERS_PROFILES . " SET row_id=$this->row_id WHERE user_id={$this->user_id} and menu_id='{$this->menu_id}' and column_id={$this->column_id} and row_id='$new_row'");
 			$admin->DataBase->exec("UPDATE " . TABLE_USERS_PROFILES . " SET row_id=$new_row     WHERE WHERE id = '{$this->id}'");
 		}
+	}
+	
+	function panelHeader(){
+		echo "<!--// start: {$this->id} //-->" . chr(10);
+		echo "<div id='{$this->id}' class='easyui-panel' title=\"{$this->text}\" data-options=\"collapsible:true,maximizable:true,closable:true,tools:'#{$this->id}_tt'\">" . chr(10);
+		// heading text
+		echo "<div id='{$this->id}_tt'>" . chr(10);
+		if ($this->column_id > 1) 				echo "	<a href='javascript:void(0)' class='icon-go_previous'	onclick='return move_box(\"{$this->id}\", \"move_left\")'></a>" . chr(10);
+		if ($this->column_id < MAX_CP_COLUMNS)	echo "	<a href='javascript:void(0)' class='icon-go_next'		onclick='return move_box(\"{$this->id}\", \"move_right\")'></a>" . chr(10);
+		if ($this->row_started == false)		echo "	<a href='javascript:void(0)' class='icon-go_up'    onclick='return move_box(\"{$this->id}\", \"move_up\")'></a>" . chr(10);
+		if ($this->row_id < $this->get_next_row($this->column_id) - 1)
+			echo "	<a href='javascript:void(0)' class='icon-go_down'    onclick='return move_box(\"{$this->id}\", \"move_down\")'></a>" . chr(10);
+		echo "	<a id='{$this->id}'_add' href='javascript:void(0)' class='icon-edit'    onclick='return box_edit(\"{$this->id}\")'></a>" . chr(10);
+		echo "	<a id='{$this->id}'_can' href='javascript:void(0)' class='icon-undo'    onclick='return box_cancel(\"{$this->id}\")'></a>" . chr(10);
+		echo "	<a id='{$this->id}'_del' href='javascript:void(0)' class='icon-cancel'  onclick='return del_box(\"{$this->id}\")'></a>" . chr(10);
+		//echo '	<a href="javascript:void(0)" class="icon-help" onclick="javascript:alert(help)"></a>' . chr(10);
+		echo '</div>' . chr(10);
+	}
+	
+	function panelFooter(){
+		// finish it up
+		echo '</div>' . chr(10);
+		echo "<!--// end: {$this->id} //--> <br/>" . chr(10) . chr(10);
 	}
 }

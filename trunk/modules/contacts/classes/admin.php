@@ -16,20 +16,39 @@
 // +-----------------------------------------------------------------+
 //  Path: /modules/contacts/classes/admin.php
 //
+// Release History
+// 3.7.2 => 2014-07-21 - bug fixes
+// 3.7.3 => added contacts_level field
+//@todo move this to $this->notes
 namespace contacts\classes;
-require_once (DIR_FS_ADMIN . 'modules/contacts/config.php');
+
+define('SECURITY_ID_MAINTAIN_BRANCH',    15);
+define('SECURITY_ID_MAINTAIN_CUSTOMERS', 26);
+define('SECURITY_ID_MAINTAIN_EMPLOYEES', 76);
+define('SECURITY_ID_MAINTAIN_PROJECTS',  16);
+define('SECURITY_ID_PROJECT_PHASES',     36);
+define('SECURITY_ID_PROJECT_COSTS',      37);
+define('SECURITY_ID_MAINTAIN_VENDORS',   51);
+// New Database Tables
+define('TABLE_ADDRESS_BOOK',    DB_PREFIX . 'address_book');
+define('TABLE_CONTACTS',        DB_PREFIX . 'contacts');
+define('TABLE_DEPARTMENTS',     DB_PREFIX . 'departments');
+define('TABLE_DEPT_TYPES',      DB_PREFIX . 'departments_types');
+define('TABLE_PROJECTS_COSTS',  DB_PREFIX . 'projects_costs');
+define('TABLE_PROJECTS_PHASES', DB_PREFIX . 'projects_phases');
+
 class admin extends \core\classes\admin {
 	public $sort_order  = 3;
 	public $id 			= 'contacts';
 	public $description = MODULE_CONTACTS_DESCRIPTION;
 	public $core		= true;
-	public $version		= '4.0.2-dev';
+	public $version		= '4.0.3-dev';
 
 	function __construct() {
 		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_CONTACTS);
 		$this->prerequisites = array( // modules required and rev level for this module to work properly
-		  'phreedom'   => 3.6,
-		  'phreebooks' => 3.6,
+		  'phreedom'   => 4.0,
+		  'phreebooks' => 4.0,
 		);
 		// Load configuration constants for this module, must match entries in admin tabs
 	    $this->keys = array(
@@ -67,7 +86,6 @@ class admin extends \core\classes\admin {
 			  telephone4 VARCHAR(20) NULL DEFAULT '',
 			  email VARCHAR(48) NULL DEFAULT '',
 			  website VARCHAR(48) NULL DEFAULT '',
-			  notes text,
 			  PRIMARY KEY (address_id),
 			  KEY customer_id (ref_id,type)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci",
@@ -92,20 +110,10 @@ class admin extends \core\classes\admin {
 	          attachments text,
 			  first_date date NOT NULL default '0000-00-00',
 			  last_update date default NULL,
-			  last_date_1 date default NULL,
-			  last_date_2 date default NULL,
+			  notes text,
 			  PRIMARY KEY (id),
 			  KEY type (type),
 			  KEY short_name (short_name)
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci",
-		  TABLE_CONTACTS_LOG => "CREATE TABLE " . TABLE_CONTACTS_LOG . " (
-			  log_id int(11) NOT NULL auto_increment,
-			  contact_id int(11) NOT NULL default '0',
-			  entered_by int(11) NOT NULL default '0',
-			  log_date datetime NOT NULL default '0000-00-00',
-			  crmaction varchar(32) NOT NULL default '',
-			  notes text,
-			  PRIMARY KEY (log_id)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci",
 		  TABLE_DEPARTMENTS => "CREATE TABLE " . TABLE_DEPARTMENTS . " (
 			  id int(11) NOT NULL auto_increment,
@@ -198,7 +206,11 @@ class admin extends \core\classes\admin {
 				$basis->DataBase->exec("UPDATE " . TABLE_CONTACTS . " SET title = contact_middle, contact_middle = '' WHERE type = 'i'");
 				$basis->DataBase->exec("UPDATE " . TABLE_ADDRESS_BOOK . " SET website = CONCAT('http://', website) WHERE website NOT LIKE 'http%'and website <> ''");
 			}
-			//@todo update website in database so that it starts with http://
+		}
+		if (version_compare($this->status, '4.0.3', '<') ) {
+			if (!$basis->DataBase->field_exists(TABLE_CONTACTS, 'notes')) $basis->DataBase->exec("ALTER TABLE " . TABLE_CONTACTS . " ADD notes TEXT NOT NULL AFTER attachments");
+			$basis->DataBase->exec("UPDATE ".TABLE_CONTACTS." AS c SET notes = ( SELECT notes FROM ".TABLE_ADDRESS_BOOK." AS a WHERE  c.id = a.ref_id AND a.type like '%m')");
+			if ($basis->DataBase->field_exists(TABLE_ADDRESS_BOOK, 'notes'))  $basis->DataBase->exec("ALTER TABLE " . TABLE_ADDRESS_BOOK . " DROP notes");
 		}
 		\core\classes\fields::sync_fields('contacts', TABLE_CONTACTS);
   	}
@@ -231,7 +243,7 @@ class admin extends \core\classes\admin {
 	function LoadContactMgrPage(\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$basis->observer->send_menu($basis);
-		if (! isset($basis->cInfo->type)) $basis->cInfo->type = 'c'; // default to customer
+		if (property_exists($basis->cInfo, 'type') !== true) $basis->cInfo->type = 'c'; // default to customer
 		switch ($basis->cInfo->type) {
 			case 'b': $contact = TEXT_BRANCH;	break;
 			case 'c': $contact = TEXT_CUSTOMER;	break;
@@ -320,7 +332,9 @@ class admin extends \core\classes\admin {
 					document.location = "index.php?action=editContact&contactid="+ row.contactid;
 					//$('#win').window('open').window('center').window('setTitle',"<?php echo TEXT_EDIT?>"+ ' ' + row.name);
 				},
-				remoteSort:	false,
+				pagination: true,
+				pageSize:   50,
+				remoteSort:	true,
 				idField:	"contactid",
 				fitColumns:	true,
 				singleSelect:true,
@@ -357,74 +371,39 @@ class admin extends \core\classes\admin {
 					param.contactid = row.contactid;
 				},
 			});
-			
-			$('#contacts').form({
-			    url: "index.php?action=saveContact",
-			    onSubmit: function(param){
-			        param.type = '<?php echo $basis->cInfo->contact->type; ?>';
-			        param.id	 = '<?php echo $basis->cInfo->contact->id; ?>';
-					var isValid = $(this).form('validate');
-					if (!isValid){
-						console.error('the form field are not validated');
-						$.messager.progress('close');	// hide progress bar while the form is invalid
-					}
-					console.log('the form field are validated');
-					return isValid;	// return false will stop the form submission
-				},  
-				success: function(data){
-					console.log('successfully saved contact info. close window and refresh datagrid.');
-					console.log('data received = '+ data);
-					$.messager.progress('close');	// hide progress bar while submit successfully
-					$('#win').window('close');
-					$('#dg').datagrid('reload'); 
-				},
-				onLoadSuccess: function(data){
-					console.log('successfully loaded the form.');
-				}, 
-				onLoadError: function(){
-					console.error('there was a error during loading of the form.');
-				}, 
-				toolbar:contactToolbar, 
-			});
 
 			function closeWindow(){
 				$.messager.progress();
 				$('#contacts').form('clear');
 				console.log('close contact window');
 				$('#win').window('close', true);
-			}
-
-			function saveContact(){
-				console.log('save contact info');
-				$.messager.progress();
-			    $('#contacts').submit();
-			}			
+			}	
 		</script><?php 
 		$basis->observer->send_footer($basis);
 	}
 	
 	function GetAllContacts (\core\classes\basis &$basis) {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ . print_r($basis->cInfo, true));
-		if (isset($basis->cInfo->dept_rep_id)) {
+		\core\classes\messageStack::debug_log("executing ".__METHOD__);
+		$offset = ($basis->cInfo->page - 1) * $basis->cInfo->rows;
+		if (property_exists($basis->cInfo, 'dept_rep_id') === true) {
 			$criteria[] = "c.dept_rep_id = '{$basis->cInfo->dept_rep_id}'";
 		}else{
 			$criteria[] = "a.type = '{$basis->cInfo->type}m'";
 		}
-		if (isset($basis->cInfo->search_text) && $basis->cInfo->search_text <> '') {
+		if ($basis->cInfo->search_text != '') {
 			$search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.address1',
 					'a.address2', 'a.city_town', 'a.postal_code', 'c.short_name');
 			// hook for inserting new search fields to the query criteria.
 			if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
 			$criteria[] = '(' . implode(" like '%{$basis->cInfo->search_text}%' or ", $search_fields) . " like '%{$basis->cInfo->search_text}%')";
 		}
+		$sql = $basis->DataBase->query("SELECT COUNT(*) FROM ".TABLE_CONTACTS." c LEFT JOIN ".TABLE_ADDRESS_BOOK." a ON c.id = a.ref_id $search");
+		$basis->cInfo->total = $sql->fetchColumn();
 		if ($basis->cInfo->contact_show_inactive == false) $criteria[] = "(c.inactive = '0' or c.inactive = '')"; // inactive flag
 		$search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
-		$query_raw = "SELECT id as contactid, short_name, title, CASE WHEN c.type = 'e' OR c.type = 'i' THEN CONCAT(contact_first , ' ',contact_last) ELSE primary_name END AS name, contact_last, contact_first, contact_middle, contact, account_number, gov_id_number, address1, address2, city_town, state_province, postal_code, telephone1, telephone2, telephone3, telephone4, email, website, inactive, c.type, address_id, country_code FROM ".TABLE_CONTACTS." c LEFT JOIN ".TABLE_ADDRESS_BOOK." a ON c.id = a.ref_id $search ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order}";
-		$sql = $basis->DataBase->prepare($query_raw);
+		$sql = $basis->DataBase->prepare("SELECT id as contactid, short_name, title, CASE WHEN c.type = 'e' OR c.type = 'i' THEN CONCAT(contact_first , ' ',contact_last) ELSE primary_name END AS name, contact_last, contact_first, contact_middle, contact, account_number, gov_id_number, address1, address2, city_town, state_province, postal_code, telephone1, telephone2, telephone3, telephone4, email, website, inactive, c.type, address_id, country_code FROM ".TABLE_CONTACTS." c LEFT JOIN ".TABLE_ADDRESS_BOOK." a ON c.id = a.ref_id $search ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order}");
 		$sql->execute();
-		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
-		$basis->cInfo->total = sizeof($results);
-		$basis->cInfo->rows = $results;
+		$basis->cInfo->rows = $sql->fetchAll(\PDO::FETCH_ASSOC);
 	}
 
 	function loadAddresses (\core\classes\basis &$basis) {
@@ -444,9 +423,10 @@ class admin extends \core\classes\admin {
 			$sql->execute();
 			$basis->cInfo = (object)$sql->fetch(\PDO::FETCH_ASSOC);
 			\core\classes\messageStack::debug_log("variables are ".print_r($basis->cInfo, true) );
+			$id = 'editMainAddress';
 		}
 		?>
-		<form id='editAddress'  method="post">					<?php
+		<form id='<?php echo $id;?>'  method="post"><?php
 		echo \core\classes\htmlElement::hidden('address_id', $basis->cInfo->address_id);
 		echo \core\classes\htmlElement::hidden('type', $basis->cInfo->type);
 		echo \core\classes\htmlElement::hidden('ref_id', $basis->cInfo->contact_id);
@@ -471,11 +451,13 @@ class admin extends \core\classes\admin {
 					\core\classes\htmlElement::combobox("country_code", 	TEXT_COUNTRY,		$_SESSION['language']->get_countries_dropdown(), ($basis->cInfo->country_code =='') ? COMPANY_COUNTRY : $basis->cInfo->country_code). '<br>' .chr(13);
 			  	?>
 		  	</div>
+		  	<?php if ($basis->cInfo->table !== ''){?>
 		    <div data-options="region:'south'" style="padding:5px 0;text-align:right;padding-right:100px;clear: both;	">
 			   	<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="saveAddress1(this)"><?php echo TEXT_SAVE?></a>
 	           	<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" plain="true" onclick="cancelAddress1(this)"><?php echo TEXT_CLEAR?></a>
 	           	<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteAddress()"><?php echo sprintf(TEXT_DELETE_ARGS, $contact);?></a>
 	        </div>
+	        <?php }?>
          	<script type="text/javascript">
 	            function saveAddress1(target){
 	            	console.log('save address was clicked');
@@ -517,7 +499,7 @@ class admin extends \core\classes\admin {
 	                }
 	            }
 	            
-	            $('#editAddress').form({
+	            $('#<?php echo $id;?>').form({
 	        		url:'index.php?action=saveAddress',
 	        		queryParams: {
 						dataType: 'json',
@@ -536,11 +518,13 @@ class admin extends \core\classes\admin {
 	                    	console.error(data.error_message);
 	                        $.messager.show({ title: '<?php echo TEXT_ERROR?>', msg: data.error_message });
 	                    }else{
+	                    	<?php if ($basis->cInfo->table !== ''){?>
 		                    data.isNewRecord = false;
 		                    var row = $('#<?php echo $basis->cInfo->table?>').datagrid('getSelected');
 			                var index = $('#<?php echo $basis->cInfo->table?>').datagrid('getRowIndex', row);
 			                $('#<?php echo $basis->cInfo->table?>').datagrid('updateRow',{index: index, row: data });
 			                $('#<?php echo $basis->cInfo->table?>').datagrid('collapseRow',index);
+			                <?php }?>
 	                    }
 	                }
 	                
@@ -719,7 +703,7 @@ class admin extends \core\classes\admin {
 		$temp = "\\contacts\\classes\\type\\{$basis->cInfo->type}";
 		$contact = new $temp();
 		\core\classes\user::validate_security($contact->security_level, 2);
-		if (! isset($basis->cInfo->type)) $basis->cInfo->type = 'c'; // default to customer
+		if (property_exists($basis->cInfo, 'type') !== true) $basis->cInfo->type = 'c'; // default to customer
 		$sql = $basis->DataBase->prepare("INSERT INTO ".TABLE_CONTACTS." (class, type ) VALUES ('" . addcslashes(get_class($contact), '\\') . "', '{$contact->type}')");
 		$sql->execute();
 		$basis->cInfo->cID =  $basis->DataBase->lastInsertId('id');
@@ -732,8 +716,8 @@ class admin extends \core\classes\admin {
 	function editContact(\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$basis->observer->send_menu($basis);
-		if ( isset($basis->cInfo->rowSeq)) $basis->cInfo->contactid = $basis->cInfo->rowSeq;
-		if ($basis->cInfo->contactid == '') throw new \core\classes\userException("contactid variable isn't set can't execute method editContact ");
+		if ( property_exists($basis->cInfo, 'rowSeq') === true) $basis->cInfo->contactid = $basis->cInfo->rowSeq;
+		if ( property_exists($basis->cInfo, 'contactid') !== true) throw new \core\classes\userException("contactid variable isn't set can't execute method editContact ");
 		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->contactid}");
 		$sql->execute();
 		$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
@@ -749,10 +733,6 @@ class admin extends \core\classes\admin {
 		}
 		// load the tax rates
 		$basis->cInfo->tax_rates       = ord_calculate_tax_drop_down($basis->cInfo->contact->type, true);
-		$sql = $basis->DataBase->prepare("SELECT id, CONCAT(contact_first , ' ',contact_last) as text FROM ".TABLE_CONTACTS." WHERE type='e'");
-		$sql->execute();
-		$basis->cInfo->contact->sales_rep_array = $sql->fetchAll(\PDO::FETCH_ASSOC);
-		$basis->page_title  = "{$basis->cInfo->contact->page_title_edit} - ({$basis->cInfo->contact->short_name}) {$basis->cInfo->contact->address[m][0]->primary_name}";
 		include(DIR_FS_MODULES . "contacts/pages/main/js_include.php");
 		include(DIR_FS_MODULES . "contacts/pages/main/template_detail.php");
 		$basis->observer->send_footer($basis);
@@ -761,9 +741,7 @@ class admin extends \core\classes\admin {
 	
 	function saveContact (\core\classes\basis &$basis) {
 		try{
-			if ($basis->cInfo->id == '') throw new \core\classes\userException("id variable isn't set can't execute method SaveContact ");
-			if ($_POST['crm_date']) $_POST['crm_date'] = gen_db_date($_POST['crm_date']);
-			if ($_POST['due_date']) $_POST['due_date'] = gen_db_date($_POST['due_date']);
+			if (property_exists($basis->cInfo, 'id') !== true) throw new \core\classes\userException("id variable isn't set can't execute method SaveContact ");
 			$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->id}");
 			$sql->execute();
 			$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
@@ -771,36 +749,17 @@ class admin extends \core\classes\admin {
 			$basis->cInfo->contact->data_complete();
 			// start saving data
 			$basis->cInfo->contact->save();
-			// Check attachments
-			$result = $basis->DataBase->query("SELECT attachments FROM ".TABLE_CONTACTS." WHERE id = {$basis->cInfo->contact->id}");
-			$attachments = $result['attachments'] ? unserialize($result['attachments']) : array();
-			for ($image_id = 0; $image_id <= sizeof($attachments); $image_id++) {
-				if (isset($_POST['rm_attach_'.$image_id])) {
-					@unlink("{$this->dir_attachments}contacts_{$basis->cInfo->contact->id}_{$image_id}.zip");
-					unset($attachments[$image_id]);
-				}
-			}
-			if (is_uploaded_file($_FILES['file_name']['tmp_name'])) { // find an image slot to use
-				$image_id = 0;
-				while (true) {
-					if (!file_exists("{$this->dir_attachments}contacts_{$basis->cInfo->contact->id}_{$image_id}.zip")) break;
-					$image_id++;
-				}
-				saveUploadZip('file_name', "{$this->dir_attachments}contacts_{$basis->cInfo->contact->id}_{$image_id}.zip");
-				$attachments[$image_id] = $_FILES['file_name']['name'];
-			}
-			$sql = $basis->DataBase->prepare("UPDATE ".TABLE_CONTACTS." SET attachments = '".serialize($attachments). "' WHERE id = {$basis->cInfo->contact->id}");
-			$sql->execute();
 			$basis->cInfo->success = true;
 			$basis->cInfo->message = TEXT_SAVED_SUCCESSFULLY;
 		}catch (\Exception $e) {
+			\core\classes\messageStack::debug_log("there was a error ".$e->getMessage() );
 			$basis->cInfo->success = false;
 			$basis->cInfo->error_message = $e->getMessage();
 		}
 	}
 
 	function DeleteContact (\core\classes\basis &$basis) {
-		if ($basis->cInfo->contactid == '') throw new \core\classes\userException("contactid variable isn't set can't execute method DeleteContact ");
+		if (property_exists($basis->cInfo, 'contactid') !== true) throw new \core\classes\userException("contactid variable isn't set can't execute method DeleteContact ");
 		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->contactid}");
 		$sql->execute();
 		$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
@@ -841,13 +800,15 @@ class admin extends \core\classes\admin {
 
 	/**
 	 * this function loads the contacts pop up to select and return a contact
+	 * used to be popup_accts
+	 * @todo it should also display outstanding orders and stuff like that. 
 	 * @param unknown $basis
 	 */
 	function LoadContactsAccountsPopUp(\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		if (! isset($basis->cInfo->type)) $basis->cInfo->type = 'c'; // default to customer
-		if (! isset($basis->cInfo->fill)) $basis->cInfo->fill = 'bill'; // default
-		if (! isset($basis->cInfo->jID)) throw new \core\classes\userException(TEXT_JOURNAL_ID_NOT_DEFINED); 
+		if (property_exists($basis->cInfo, 'type') !== true) $basis->cInfo->type = 'c'; // default to customer
+		if (property_exists($basis->cInfo, 'fill') !== true) $basis->cInfo->fill = 'bill'; // default
+		if (property_exists($basis->cInfo, 'jID')  !== true) throw new \core\classes\userException(TEXT_JOURNAL_ID_NOT_DEFINED); 
 		switch ($basis->cInfo->type) {
 			case 'b': $contact = TEXT_BRANCH;	break;
 			case 'c': $contact = TEXT_CUSTOMER;	break;
@@ -950,19 +911,15 @@ class admin extends \core\classes\admin {
 			});
 		</script><?php 
 	}
-
+	
+	/**
+	 * this function used to be popup_terms
+	 * @todo is this still right maybe change to module and class
+	 * @param \core\classes\basis $basis
+	 */
 	function LoadTermsPopUp (\core\classes\basis &$basis) {
 		$temp = "\\contacts\\classes\\type\\{$basis->cInfo->type}";
 		$basis->cInfo->contact = new $temp;
-		$basis->cInfo->cal_terms = array(
-				'name'      => 'dateReference',
-				'form'      => 'popup_terms',
-				'fieldname' => 'due_date',
-				'imagename' => 'btn_terms',
-				'default'   => '',
-				'params'    => array('align' => 'left'),
-		);
-
 		$basis->page			= 'popup_terms';
 		$basis->page_title 		= TEXT_PAYMENT_TERMS;
 	}
@@ -977,7 +934,7 @@ class admin extends \core\classes\admin {
 				$basis->cInfo->title      = TEXT_MONTHLY_SALES;
 				$basis->cInfo->label_text = TEXT_DATE;
 				$basis->cInfo->value_text = TEXT_TOTAL;
-				if (!$basis->cInfo->cID)  throw new \core\classes\userException('There is no contact id');
+				if (property_exists($basis->cInfo, 'cID') !== true)  throw new \core\classes\userException('There is no contact id');
 				$date = new \core\classes\DateTime();
 				$date->modify("-1 year");
 				$date->modify("first day of this month");

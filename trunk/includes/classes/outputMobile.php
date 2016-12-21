@@ -69,7 +69,7 @@ class outputMobile {
        	}
     }
     
-    function send_constants($basis){
+    function send_constants (\core\classes\basis $basis){
     	 
     }
 
@@ -84,28 +84,10 @@ class outputMobile {
 
     /**
      * this method is called by the basis object when it is done with all actions.
-     * @param \SplSubject $subject
      */
 
-    public function update(\SplSubject $admin) {//@todo
-    	global $messageStack;
+    public function update (\core\classes\basis $basis) {
     	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-    	if ($basis->page == 'mobile') {
-    		$this->include_template = DIR_FS_ADMIN . "modules/{$basis->module}/pages/{$basis->page}/{$basis->template}.php";
-	    	if ( file_exists(DIR_FS_ADMIN . "modules/{$basis->module}/custom/pages/{$basis->page}/{$basis->template}.php")) {
-	    		$this->include_template = DIR_FS_ADMIN . "modules/{$basis->module}/custom/pages/{$basis->page}/{$basis->template}.php";
-	    	}
-			$this->ModuleAndPage	= "{$basis->module}/{$basis->page}";
-			// load the javascript specific, required
-			$this->include_php_js_files[] = DIR_FS_ADMIN . "modules/{$basis->module}/pages/{$basis->page}/js_include.php";
-			if ( !file_exists(DIR_FS_ADMIN . "modules/{$basis->module}/pages/{$basis->page}/js_include.php")) trigger_error("No js_include file, looking for the file: {$basis->module}/pages/{$basis->page}/js_include.php", E_USER_ERROR);
-			//load the custom javascript if present
-			if (file_exists(DIR_FS_ADMIN . "modules/{$basis->module}/custom/pages/{$basis->page}/extra_js.php")) $this->include_php_js_files[] = DIR_FS_ADMIN . "modules/{$basis->module}/custom/pages/{$basis->page}/extra_js.php";
-			require('includes/template_index.php');
-    		return true;
-		}else{
-			return false;
-		}
     }
 
     /**

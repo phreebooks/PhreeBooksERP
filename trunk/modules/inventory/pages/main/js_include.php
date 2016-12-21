@@ -17,13 +17,15 @@
 //  Path: /modules/inventory/pages/main/js_include.php
 //
 ?>
+<script type="text/javascript" src="includes/easyui/plugins/datagrid-detailview.js"></script>
+<script type="text/javascript" src="includes/easyui/plugins/datagrid-groupview.js"></script>
 <script type="text/javascript">
 // pass some php variables
 var image_delete_text 	= '<?php echo TEXT_DELETE; ?>';
 var image_delete_msg  	= '<?php echo INV_MSG_DELETE_INV_ITEM; ?>';
 var text_sku          	= '<?php echo TEXT_SKU; ?>';
 var text_properties   	= '<?php echo TEXT_PROPERTIES;?>';
-var default_tax 	  	= '<?php echo $basis->cInfo->purch_taxable;?>';
+var default_tax 	  	= '<?php echo $basis->cInfo->inventory->purch_taxable;?>';
 var delete_icon_HTML  	= '<?php echo substr(html_icon("emblems/emblem-unreadable.png", TEXT_DELETE, "small", "onclick=\"if (confirm(\'" . INV_MSG_DELETE_INV_ITEM . "\')) removeBOMRow("), 0, -2); ?>';
 var text_no 			= '<?php echo TEXT_NO; ?>';
 var text_yes			= '<?php echo TEXT_YES; ?>';
@@ -35,17 +37,17 @@ var filter_bigger_than	= '<?php echo TEXT_BIGGER_THAN. ': ';?>';
 var filter_less_than	= '<?php echo TEXT_LESS_THAN. ': ';?>';
 var filter_contains		= '<?php echo TEXT_CONTAINS;?>';
 
-<?php echo $basis->cInfo->js_tax_rates;?>
-<?php if(isset($basis->cInfo->FirstValue)) 		echo $basis->cInfo->FirstValue;?>;
-<?php if(isset($basis->cInfo->FirstId)) 		echo $basis->cInfo->FirstId; ?>;
-<?php if(isset($basis->cInfo->SecondField)) 	echo $basis->cInfo->SecondField; ?>;
-<?php if(isset($basis->cInfo->SecondFieldValue))echo $basis->cInfo->SecondFieldValue; ?>;
-<?php if(isset($basis->cInfo->SecondFieldId)) 	echo $basis->cInfo->SecondFieldId; ?>;
+<?php echo $basis->cInfo->inventory->js_tax_rates;?>
+<?php if(isset($basis->cInfo->inventory->FirstValue)) 		echo $basis->cInfo->inventory->FirstValue;?>;
+<?php if(isset($basis->cInfo->inventory->FirstId)) 		echo $basis->cInfo->inventory->FirstId; ?>;
+<?php if(isset($basis->cInfo->inventory->SecondField)) 	echo $basis->cInfo->inventory->SecondField; ?>;
+<?php if(isset($basis->cInfo->inventory->SecondFieldValue))echo $basis->cInfo->inventory->SecondFieldValue; ?>;
+<?php if(isset($basis->cInfo->inventory->SecondFieldId)) 	echo $basis->cInfo->inventory->SecondFieldId; ?>;
 // required function called with every page load
 function init() {
 	<?php
 	$action_array = array('edit','properties','create');
-  	if(in_array($_REQUEST['action'], $action_array)&& empty($basis->cInfo->purchase_array)) {
+  	if(in_array($_REQUEST['action'], $action_array)&& empty($basis->cInfo->inventory->purchase_array)) {
   		echo "  addVendorRow();";
   	}
   	?>
@@ -589,7 +591,7 @@ function addVendorRow(){
 	newCell = newRow.insertCell(-1);
 	newCell.innerHTML = cell;
 	<?php
-	if(isset($basis->cInfo->vendor_id)) {
+	if(isset($basis->cInfo->inventory->vendor_id)) {
 		echo "cell  ='". str_replace("'", "\'", html_pull_down_menu('vendor_id_array[]', gen_get_contact_array_by_type('v'), ""))."';".chr(13);
 	}else{
 		echo "cell  ='';".chr(13);
@@ -597,7 +599,7 @@ function addVendorRow(){
 	newCell = newRow.insertCell(-1);
 	newCell.innerHTML = cell;
 	<?php
-	if(isset($basis->cInfo->description_purchase)){
+	if(isset($basis->cInfo->inventory->description_purchase)){
 		echo "cell  ='". str_replace("'", "\'", html_textarea_field('description_purchase_array[]', 75, 2, '', '', $reinsert_value = true))."';".chr(13);
 	}else{
 		echo "cell  ='';".chr(13);
@@ -605,7 +607,7 @@ function addVendorRow(){
 	newCell = newRow.insertCell(-1);
 	newCell.innerHTML = cell;
 	<?php
-	if(isset($basis->cInfo->item_cost)){
+	if(isset($basis->cInfo->inventory->item_cost)){
 		echo "cell  ='". str_replace("'", "\'", html_input_field('item_cost_array[]', $admin->currencies->precise(0), 'onchange="what_to_update();" size="15" maxlength="20" style="text-align:right"', false))."';".chr(13);
 	}else{
 		echo "cell  ='';".chr(13);
@@ -613,7 +615,7 @@ function addVendorRow(){
 	newCell = newRow.insertCell(-1);
 	newCell.innerHTML = cell;
 	<?php
-	if(isset($basis->cInfo->item_cost)){
+	if(isset($basis->cInfo->inventory->item_cost)){
 		echo "cell  ='". str_replace("'", "\'", html_input_field('purch_package_quantity_array[]', 1, 'size="6" maxlength="5" style="text-align:right"'))."';".chr(13);
 	}else{
 		echo "cell  ='';".chr(13);
@@ -621,7 +623,7 @@ function addVendorRow(){
 	newCell = newRow.insertCell(-1);
 	newCell.innerHTML = cell;
 	<?php
-	if(isset($basis->cInfo->purch_taxable)){
+	if(isset($basis->cInfo->inventory->purch_taxable)){
 		echo "cell  ='". str_replace("'", "\'", html_pull_down_menu('purch_taxable_array[]', $purch_tax_rates, INVENTORY_DEFAULT_PURCH_TAX))."';".chr(13);
 	}else{
 		echo "cell  ='';".chr(13);
@@ -629,7 +631,7 @@ function addVendorRow(){
 	newCell = newRow.insertCell(-1);
 	newCell.innerHTML = cell;
 	<?php
-	if(isset($basis->cInfo->price_sheet_v)){
+	if(isset($basis->cInfo->inventory->price_sheet_v)){
 		echo "cell  ='".str_replace("'", "\'", html_pull_down_menu('price_sheet_v_array[]', get_price_sheet_data('v'), ''))."';".chr(13);
 	}else{ print('onwaar');
 		echo "cell  ='';".chr(13);
@@ -647,7 +649,7 @@ $(document).ready(function(){
 	//event for change of textbox
 	$("#description_short").change(function(){
 		var value = document.getElementById('description_short').value;
-		$("#heading_title").html(<?php echo '"'. TEXT_INVENTORY . ' - ' . TEXT_SKU . '# ' . $basis->cInfo->sku . ' (" ';?> + value +  ')');
+		$("#heading_title").html(<?php echo '"'. TEXT_INVENTORY . ' - ' . TEXT_SKU . '# ' . $basis->cInfo->inventory->sku . ' (" ';?> + value +  ')');
 	});
 });
 // ******* EOF - AJAX BOM Where Used pair *********/

@@ -204,25 +204,44 @@ function cleanCurrency(amount) {
 }
 
 function formatCurrency(amount) { // convert to expected currency format
-  // amount needs to be a string type with thousands separator ',' and decimal point dot '.' 
-  var factor  = Math.pow(10, decimal_places);
-  var adj     = Math.pow(10, (decimal_places+2)); // to fix rounding (i.e. .1499999999 rounding to 0.14 s/b 0.15)
-  var numExpr = parseFloat(amount);
-  if (isNaN(numExpr)) return amount;
-  numExpr     = Math.round((numExpr * factor) + (1/adj));
-  var minus   = (numExpr < 0) ? '-' : ''; 
-  numExpr     = Math.abs(numExpr);
-  var decimal = (numExpr % factor).toString();
-  while (decimal.length < decimal_places) decimal = '0' + decimal;
-  var whole   = Math.floor(numExpr / factor).toString();
-  for (var i = 0; i < Math.floor((whole.length-(1+i))/3); i++)
-    whole = whole.substring(0,whole.length-(4*i+3)) + thousands_point + whole.substring(whole.length-(4*i+3));
-  if (decimal_places > 0) {
-    return minus + whole + decimal_point + decimal;
-  } else {
-	return minus + whole;
-  }
+	// amount needs to be a string type with thousands separator ',' and decimal point dot '.' 
+	var factor  = Math.pow(10, decimal_places);
+	var adj     = Math.pow(10, (decimal_places+2)); // to fix rounding (i.e. .1499999999 rounding to 0.14 s/b 0.15)
+	var numExpr = parseFloat(amount);
+	if (isNaN(numExpr)) return amount;
+	numExpr     = Math.round((numExpr * factor) + (1/adj));
+	var minus   = (numExpr < 0) ? '-' : ''; 
+	numExpr     = Math.abs(numExpr);
+	var decimal = (numExpr % factor).toString();
+	while (decimal.length < decimal_places) decimal = '0' + decimal;
+	var whole   = Math.floor(numExpr / factor).toString();
+	for (var i = 0; i < Math.floor((whole.length-(1+i))/3); i++)
+		whole = whole.substring(0,whole.length-(4*i+3)) + thousands_point + whole.substring(whole.length-(4*i+3));
+	if (decimal_places > 0) {
+		return minus + whole + decimal_point + decimal;
+	} else {
+		return minus + whole;
+	}
 }
+
+(function() {
+	var currencyfield =  document.getElementsByClassName("_easyui_textbox_input74");
+	currencyfield.onfocus = function(){
+		this.value = cleanCurrency(this.value);
+	};
+
+	currencyfield.onkeydown = function(e){
+		console.error("keydown currency field keycode = "+e.keyCode);
+		if (thousands_point == String.fromCharCode(e.keyCode)){
+			console.error("keydown is the same as thousands point");
+		}
+		this.value = this.value.replace(thousands_point, '');
+	};
+
+	currencyfield.onblur = function(){
+		this.value = formatPrecise(this.value);
+	};
+})();
 
 function formatPrecise(amount) { // convert to expected currency format with the additional precision
   // amount needs to be a string type with thousands separator ',' and decimal point dot '.' 
@@ -242,6 +261,26 @@ function formatPrecise(amount) { // convert to expected currency format with the
   } else {
 	return minus + whole;
   }
+}
+
+function formatQty(amount) { // @todo needs to be reviced convert to expected currency format with the additional precision
+	// amount needs to be a string type with thousands separator ',' and decimal point dot '.' 
+	var factor = Math.pow(10, decimal_precise);
+	var numExpr = parseFloat(amount);
+	if (isNaN(numExpr)) return amount;
+	numExpr = Math.round(numExpr * factor);
+	var minus = (numExpr < 0) ? '-' : ''; 
+	numExpr = Math.abs(numExpr);
+	var decimal = (numExpr % factor).toString();
+	while (decimal.length < decimal_precise) decimal = '0' + decimal;
+	var whole = Math.floor(numExpr / factor).toString();
+	for (var i = 0; i < Math.floor((whole.length-(1+i))/3); i++)
+	whole = whole.substring(0,whole.length-(4*i+3)) + thousands_point + whole.substring(whole.length-(4*i+3));
+	if (decimal_precise > 0) {
+		return minus + whole + decimal_point + decimal;
+	} else {
+		return minus + whole;
+	}
 }
 
 function AlertError(MethodName, e)  {

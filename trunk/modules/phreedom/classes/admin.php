@@ -328,11 +328,8 @@ class admin extends \core\classes\admin {
 			\core\classes\messageStack::add(TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD);
 			$_SESSION['user']->LoadLogIn();
 		}
-		$_SESSION['user']->admin_id       = $result['admin_id'];
-		$_SESSION['user']->display_name   = $result['display_name'];
-		$_SESSION['user']->admin_email    = $result['admin_email'];
+		foreach ($result as $key => $value) $_SESSION['user']->$key = $value;
 		$_SESSION['user']->admin_prefs    = unserialize($result['admin_prefs']);
-		$_SESSION['user']->account_id     = $result['account_id'];
 		$_SESSION['user']->admin_security = \core\classes\user::parse_permissions($result['admin_security']);
 		
 		// load init functions for each module and execute

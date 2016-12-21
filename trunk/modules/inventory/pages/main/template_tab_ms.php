@@ -21,7 +21,7 @@
 <div title="<?php echo TEXT_MASTER_STOCK_ATTRIBUTES;?>" id="tab_master">
 <?php echo TEXT_MS_HELP;?>
 <div style="margin:auto;min-height:165px;">
- <?php if($cInfo->edit_ms_list){?>
+ <?php if($basis->cInfo->inventory->edit_ms_list){?>
   <div style="float:left;width:50%">
   <table class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto" width="250px">
    <thead class="ui-widget-header">
@@ -30,7 +30,7 @@
     <tbody class="ui-widget-content">
 	  <tr>
 	    <td><?php echo TEXT_TITLE; ?></td>
-	    <td><?php echo html_input_field('attr_name_0', $cInfo->attr_name_0, 'size="11" maxlength="10" onchange="masterStockTitle(0)"'); ?></td>
+	    <td><?php echo html_input_field('attr_name_0', $basis->cInfo->inventory->attr_name_0, 'size="11" maxlength="10" onchange="masterStockTitle(0)"'); ?></td>
 	  </tr>
 	  <tr>
 	    <td colspan="2"><?php echo INV_MASTER_STOCK_ATTRIB_ID . ' '; ?>
@@ -49,7 +49,7 @@
       		<td align="center" colspan="2">
   			  <table>
 			    <tr>
-				  <td><?php echo html_pull_down_menu('attr_index_0', $cInfo->attr_array0, '', 'size="5" width="200px"'); ?></td>
+				  <td><?php echo html_pull_down_menu('attr_index_0', $basis->cInfo->inventory->attr_array0, '', 'size="5" width="200px"'); ?></td>
 			  <td valign="top"><?php echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="masterStockBuildList(\'delete\', 0)"') . chr(10); ?></td>
 			</tr>
 	      </table>
@@ -66,7 +66,7 @@
     <tbody class="ui-widget-content">
 	  <tr>
 	    <td><?php echo TEXT_TITLE; ?></td>
-	    <td><?php echo html_input_field('attr_name_1', $cInfo->attr_name_1, 'size="11" maxlength="10" onchange="masterStockTitle(1)"'); ?></td>
+	    <td><?php echo html_input_field('attr_name_1', $basis->cInfo->inventory->attr_name_1, 'size="11" maxlength="10" onchange="masterStockTitle(1)"'); ?></td>
 	  </tr>
 	  <tr>
 	    <td colspan="2"><?php echo INV_MASTER_STOCK_ATTRIB_ID . ' '; ?>
@@ -85,7 +85,7 @@
       		<td align="center" colspan="2">
   			  <table>
 			    <tr>
-				  <td><?php echo html_pull_down_menu('attr_index_1', $cInfo->attr_array1, '', 'size="5" width="200px"'); ?></td>
+				  <td><?php echo html_pull_down_menu('attr_index_1', $basis->cInfo->inventory->attr_array1, '', 'size="5" width="200px"'); ?></td>
 			  <td valign="top"><?php echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="masterStockBuildList(\'delete\', 1)"') . chr(10); ?></td>
 			</tr>
 	      </table>
@@ -100,13 +100,13 @@
   <table id="sku_list" class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto;margin-top:20px">
    <thead class="ui-widget-header">
     <tr>
-	  <th colspan="11" align="center"><?php if($cInfo->edit_ms_list) echo INV_MS_CREATED_SKUS; ?></th>
+	  <th colspan="11" align="center"><?php if($basis->cInfo->inventory->edit_ms_list) echo INV_MS_CREATED_SKUS; ?></th>
     </tr>
     <tr>
 	  <th><?php echo TEXT_SKU; ?></th>
 	  <th><?php echo TEXT_SHORT_DESCRIPTION; ?></th>
-	  <th><?php echo $cInfo->attr_name_0; ?></th>
-	  <th><?php echo $cInfo->attr_name_1; ?></th>
+	  <th><?php echo $basis->cInfo->inventory->attr_name_0; ?></th>
+	  <th><?php echo $basis->cInfo->inventory->attr_name_1; ?></th>
 	  <th width="20px" style="padding:0px 5px"><?php echo TEXT_QUANTITY_ON_HAND; ?></th>
 	  <th width="20px" style="padding:0px 5px"><?php echo TEXT_QUANTITY_ON_PURCHASE_ORDER; ?></th>
 	  <th width="20px" style="padding:0px 5px"><?php echo TEXT_QUANTITY_ON_SALES_ORDER; ?></th>
@@ -119,8 +119,8 @@
     <tbody id="sku_list_body" class="ui-widget-content">
     	<?php
     	$odd = false;
-    	 if(!empty($cInfo->child_array)){
-    		foreach ($cInfo->child_array as $value) {
+    	 if(!empty($basis->cInfo->inventory->child_array)){
+    		foreach ($basis->cInfo->inventory->child_array as $value) {
 		  		if($odd) echo '<tr class="odd" style="cursor:pointer"  onclick="window.open(\''. html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=main&amp;cID=' . $value['id'] . '&amp;action=edit', 'SSL').'\',\'_blank\')">' . chr(10);
 		  		else     echo '<tr class="even" style="cursor:pointer" onclick="window.open(\''. html_href_link(FILENAME_DEFAULT, 'module=inventory&amp;page=main&amp;cID=' . $value['id'] . '&amp;action=edit', 'SSL').'\',\'_blank\')">' . chr(10);
 			  	if($value['inactive'] == 1) echo '<td style="background-color:pink;padding:1px 15px;">' . $value['sku'] . '</td>' . chr(10);

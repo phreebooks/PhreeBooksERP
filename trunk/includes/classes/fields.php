@@ -406,34 +406,35 @@ class fields {
   	public function what_to_save(){
   		global $admin;
   		$sql_data_array = array();
-    	$sql = $admin->DataBase->prepare("SELECT field_name, entry_type, params, required, field_name FROM " . TABLE_EXTRA_FIELDS . " WHERE module_id='{$this->current_module}'");
+    	$sql = $admin->DataBase->prepare("SELECT field_name, entry_type, params, required, field_name FROM " . TABLE_EXTRA_FIELDS . " WHERE module_id='{$this->current_module}' and field_name NOT IN ('id','last_update','last_journal_date','first_date','creation_date') ");
     	$sql->execute();
     	while ($xtra_db_fields = $sql->fetch(\PDO::FETCH_LAZY)) {
-    		if ($xtra_db_fields['field_name'] == 'id' )  break;
         	$field_name = $xtra_db_fields['field_name'];
-        	if ($xtra_db_fields['entry_type'] == 'multi_check_box') {
-            	$temp ='';
-            	$params = unserialize($xtra_db_fields['params']);
-            	$choices = explode(',',$params['default']);
-          	  	while ($choice = array_shift($choices)) {
-                	$values = explode(':',$choice);
-                	if(isset($_POST[$field_name.$values[0]])){
-                    	$temp.= $_POST[$field_name.$values[0]].',';
-            	}}
-            	if ($xtra_db_fields['required'] == '1' && $temp == '') throw new \core\classes\userException(sprintf(TEXT_FIELD_IS_REQUIRED_BUT_HAS_BEEN_LEFT_BLANK_ARGS, $xtra_db_fields['field_name']));
-            	$sql_data_array[$field_name] = $temp;
-        	}elseif (!isset($_POST[$field_name]) && $xtra_db_fields['entry_type'] == 'check_box') {
-            	$sql_data_array[$field_name] = '0'; // special case for unchecked check boxes
-        	}elseif (isset($_POST[$field_name]) && $field_name <> 'id') {
-        		if (db_prepare_input($_POST[$field_name], $xtra_db_fields['required']) === false) throw new \core\classes\userException(sprintf(TEXT_FIELD_IS_REQUIRED_BUT_HAS_BEEN_LEFT_BLANK_ARGS, $xtra_db_fields['field_name']));
-            	$sql_data_array[$field_name] = db_prepare_input($_POST[$field_name]);
-        	}
-        	if ($xtra_db_fields['entry_type'] == 'date_time') {
-            	$sql_data_array[$field_name] = ($sql_data_array[$field_name]) ? \core\classes\DateTime::db_date_format($sql_data_array[$field_name]) : '';
-        	}
-    		if ($xtra_db_fields['entry_type'] == 'decimal') {
-            	$sql_data_array[$field_name] = ($sql_data_array[$field_name]) ? $admin->currencies->clean_value($sql_data_array[$field_name]) : '';
-        	}
+        	switch ($xtra_db_fields['entry_type']){
+        		case 'multi_check_box':
+	            	$temp ='';
+	            	$params = unserialize($xtra_db_fields['params']);
+	            	$choices = explode(',',$params['default']);
+	          	  	while ($choice = array_shift($choices)) {
+	                	$values = explode(':',$choice);
+	                	if(property_exists($admin->cInfo, $field_name.$values[0]) === true){
+	                    	$temp.= $admin->cInfo->$field_name.$values[0].',';
+	            	}}
+	            	$sql_data_array[$field_name] = $temp;
+	            	break;
+        		case 'check_box':
+            		$sql_data_array[$field_name] = property_exists($admin->cInfo, $field_name) === true ? '1' : '0'; // special case for unchecked check boxes
+            		break;
+        		case 'date_time':
+            		$sql_data_array[$field_name] = property_exists($admin->cInfo, $field_name) != false ? \core\classes\DateTime::db_date_format($admin->cInfo->$field_name) : '';
+            		break;
+        		case 'decimal':
+            		$sql_data_array[$field_name] = property_exists($admin->cInfo, $field_name) != false ? $admin->currencies->clean_value($admin->cInfo->$field_name) : '';
+            		break;
+        		default:
+	        		if (property_exists($admin->cInfo, $field_name) != false ) $sql_data_array[$field_name] = db_prepare_input($admin->cInfo->$field_name);
+    		}
+    		if (db_prepare_input($sql_data_array[$field_name], $xtra_db_fields['required'] == '1') === false) throw new \core\classes\userException(sprintf(TEXT_FIELD_IS_REQUIRED_BUT_HAS_BEEN_LEFT_BLANK_ARGS, $field_name));
     	}
     	return $sql_data_array;
   	}

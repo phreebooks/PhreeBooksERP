@@ -391,8 +391,8 @@
 
 function saveUploadZip($file_field, $dest_dir, $dest_name) {
 	// php error uploading file
-	if ($_FILES[$file_field]['error']) throw new \core\classes\userException(TEXT_IMP_ERMSG5 . $_FILES[$file_field]['error']);
-	if ($_FILES[$file_field]['size'] > 0)  throw new \core\classes\userException("file $file_field is empty ");
+	if ($_FILES[$file_field]['error'] > 0) throw new \core\classes\userException(TEXT_IMP_ERMSG5 . $_FILES[$file_field]['error']);
+	if ($_FILES[$file_field]['size'] == 0)  throw new \core\classes\userException("file $file_field is empty ");
 	$backup              = new \phreedom\classes\backup();
 	$backup->source_dir  = $_FILES[$file_field]['tmp_name'];
 	$backup->source_file = '';

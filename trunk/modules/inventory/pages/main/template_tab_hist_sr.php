@@ -35,20 +35,20 @@
  <tbody>
 <?php
   $odd = true;
-  while (!$cInfo->orderHistory->EOF) {
-	$oID          = $cInfo->orderHistory['id'];
-	$post_date    = \core\classes\DateTime::createFromFormat(DATE_FORMAT, $cInfo->orderHistory['post_date']);
-	$reference_id = htmlspecialchars($cInfo->orderHistory['purchase_invoice_id']);
-	$primary_name = htmlspecialchars($cInfo->orderHistory['bill_primary_name']);
-	$closed       = $cInfo->orderHistory['closed'] ? TEXT_YES : '';
-	$total_amount = $admin->currencies->format_full($cInfo->orderHistory['total_amount']);
+  while (!$basis->cInfo->inventory->orderHistory->EOF) {
+	$oID          = $basis->cInfo->inventory->orderHistory['id'];
+	$post_date    = \core\classes\DateTime::createFromFormat(DATE_FORMAT, $basis->cInfo->inventory->orderHistory['post_date']);
+	$reference_id = htmlspecialchars($basis->cInfo->inventory->orderHistory['purchase_invoice_id']);
+	$primary_name = htmlspecialchars($basis->cInfo->inventory->orderHistory['bill_primary_name']);
+	$closed       = $basis->cInfo->inventory->orderHistory['closed'] ? TEXT_YES : '';
+	$total_amount = $admin->currencies->format_full($basis->cInfo->inventory->orderHistory['total_amount']);
     $link_page    = html_href_link(FILENAME_DEFAULT, "module=phreebooks&amp;page=orders&amp;oID=$oID&amp;action=edit&amp;jID=12", 'SSL');
 ?>
   <tr class="<?php echo $odd?'odd':'even'; ?>" style="cursor:pointer">
 	<td onclick="window.open('<?php echo $link_page; ?>','_blank')"><?php echo $post_date; ?></td>
 	<td onclick="window.open('<?php echo $link_page; ?>','_blank')"><?php echo $reference_id; ?></td>
 	<td<?php echo $bkgnd; ?> onclick="window.open('<?php echo $link_page; ?>','_blank')"><?php echo $primary_name; ?></td>
-	<td onclick="window.open('<?php echo $link_page; ?>','_blank')"><?php echo $cInfo->orderHistory['serialize_number']; ?></td>
+	<td onclick="window.open('<?php echo $link_page; ?>','_blank')"><?php echo $basis->cInfo->inventory->orderHistory['serialize_number']; ?></td>
 	<td onclick="window.open('<?php echo $link_page; ?>','_blank')"><?php echo $closed; ?></td>
 	<td align="right" onclick="window.open('<?php echo $link_page; ?>','_blank')"><?php echo $total_amount; ?></td>
 	<td align="right">
@@ -59,7 +59,7 @@
 	</td>
   </tr>
 <?php
-	  $cInfo->orderHistory->MoveNext();
+	  $basis->cInfo->inventory->orderHistory->MoveNext();
 	  $odd = !$odd;
 	}
 ?>
