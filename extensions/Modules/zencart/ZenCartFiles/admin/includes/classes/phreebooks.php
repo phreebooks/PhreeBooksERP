@@ -177,25 +177,24 @@ class phreebooks extends parser {
 	$strXML .= '</Request>' . chr(10);
 	return $strXML;
   }
-
-// Misc function to format XML string properly
+  // Misc function to format XML string properly
   function getCodes($country, $zone) {
-	global $db;
-	$codes = array();
-	$iso_country = $db->Execute("select countries_id, countries_iso_code_2 from " . TABLE_COUNTRIES . "
-	  where countries_name = '{$country}'");
-	if ($iso_country->RecordCount() < 1) { // not found, return original choices
-	  $codes['country'] = $country;
-	  $codes['state']   = $zone;
-	  return $codes;
-	}
-	$codes['country'] = $iso_country->fields['countries_iso_code_2'];
-	$state = $db->Execute("select zone_code from " . TABLE_ZONES . "
+  	global $db;
+  	$codes = array();
+  	$iso_country = $db->Execute("select countries_id, countries_iso_code_2 from " . TABLE_COUNTRIES . "
+	  where countries_name = '" . $country . "'");
+  	if ($iso_country->RecordCount() < 1) { // not found, return original choices
+  		$codes['country'] = $country;
+  		$codes['state']   = $zone;
+  		return $codes;
+  	}
+  	$codes['country'] = $iso_country->fields['countries_iso_code_2'];
+  	$state = $db->Execute("select zone_code from " . TABLE_ZONES . "
 	  where zone_country_id = '" . $iso_country->fields['countries_id'] . "' and zone_name = '" . $zone . "'");
-	$codes['state'] = ($state->RecordCount() < 1) ? $zone : $state->fields['zone_code'];
-	return $codes;
+  	$codes['state'] = ($state->RecordCount() < 1) ? $zone : $state->fields['zone_code'];
+  	return $codes;
   }
-
+  
   // finds the details of the order_total modules for a given class name
   function getClassInfo($className, $searchArray) {
 	for ($i = 0; $i < count($searchArray); $i++) {

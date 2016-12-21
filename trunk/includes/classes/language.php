@@ -60,8 +60,7 @@ class language {
 			
 		}else{
 			if (sizeof($this->phrases)   == 0) $this->get_translations();
-			//if (sizeof($this->countries) == 0)
-				$this->get_countries();
+			if (sizeof($this->countries) == 0) $this->get_countries();
 		}
 		foreach ($this->phrases as $key => $value ) define($key, $value);
 		
@@ -162,7 +161,7 @@ class language {
 				if ($i->tagName == 'translations') {
 					foreach($i->childNodes as $language) {
 						if (!empty($language->tagName) ){
-							$this->countries[$country->getAttribute('xml:id')][$i->tagName][$language->tagName] = $language->nodeValue;
+							$this->countries[$country->getAttribute('xml:id')]['translations'][$language->tagName] = $language->nodeValue;
 							if ($language->tagName == $this->language_code) $this->countries[$country->getAttribute('xml:id')]['name'] = $language->nodeValue;
 						}
 					}
@@ -170,17 +169,15 @@ class language {
 					foreach($i->childNodes as $zones) {
 						if (!empty($zones->tagName) ){
 							foreach($zones->childNodes as $zone) {
-	//							\core\classes\messageStack::debug_log("zone = ".print_r($zone,true) );
 								if ($zone->tagName == 'translations') {
 									foreach($zone->childNodes as $language) {
-										\core\classes\messageStack::debug_log("zone = ".print_r($language,true) );
 										if (!empty($language->tagName) ){//@todo check
-											$this->countries[$country->getAttribute('xml:id')][$i->tagName]['zones'][$zone->tagName] = $language->nodeValue;
-											if ($zone->tagName == $this->language_code) $this->countries[$country->getAttribute('xml:id')][$i->tagName]['zones'][$zone->tagName]['name'] = $language->nodeValue;
+											$this->countries[$country->getAttribute('xml:id')]['zones'][$zones->getAttribute('xml:id')]['translations'][$language->tagName] = $language->nodeValue;
+											if ($language->tagName == $this->language_code) $this->countries[$country->getAttribute('xml:id')]['zones'][$zones->getAttribute('xml:id')]['name'] = $language->nodeValue;
 										}
 									}
 								}else{
-									if (!empty($zone->tagName)) $this->countries[$country->getAttribute('xml:id')][$i->tagName]['zones'][$zone->tagName] = $zone->nodeValue;
+									if (!empty($zone->tagName)) $this->countries[$country->getAttribute('xml:id')]['zones'][$zones->getAttribute('xml:id')][$zone->tagName] = $zone->nodeValue;
 								}
 							}
 						}
@@ -192,7 +189,6 @@ class language {
 		}
 		if (sizeof($this->countries) == 0) throw new \core\classes\userException("there are no countries for your language {$this->language_code} ");
 		uasort ( $this->countries, array ( $this, 'arangeObjectByNameValue') );
-		\core\classes\messageStack::debug_log("countries ".print_r($this->countries,true) );
 	}
 	
 	/**
@@ -217,15 +213,16 @@ class language {
 		foreach ($this->countries as $iso3 => $value) if ($value->iso2 == $iso2) return $value->iso3;
 		if (!isset($this->countries[$iso2])) throw new \core\classes\userException ( sprintf(TEXT_COULDNT_FIND_ISO2, $iso2));
 	}
+	
 	/**
-	 * @todo rewrite and add zones to locals.
-	 * @todo replace getCodes with this method
 	 * @param unknown $search_country
 	 * @param unknown $search_zone
 	 * @return iso2
 	 */
+	
 	function get_country_codes($search_country, $search_zone) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		$codes = array('country' => $search_country, 'state' => $search_zone);
 		foreach ($this->countries as $iso3 => $country) {
 			if ($country->name == $search_country){
 				$codes['country'] = $country->iso2;

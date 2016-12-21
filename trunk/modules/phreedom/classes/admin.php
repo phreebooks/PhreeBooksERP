@@ -297,7 +297,8 @@ class admin extends \core\classes\admin {
 	  		if ( $basis->DataBase->table_exists(DB_PREFIX .  'zh_glossary')) 	$basis->DataBase->exec("DROP TABLE ".DB_PREFIX .  "zh_glossary");
 	  		if ( $basis->DataBase->table_exists(DB_PREFIX .  'zh_index')) 		$basis->DataBase->exec("DROP TABLE ".DB_PREFIX .  "zh_index");
 	  		if ( $basis->DataBase->table_exists(DB_PREFIX .  'zh_search')) 		$basis->DataBase->exec("DROP TABLE ".DB_PREFIX .  "zh_search");
-	  		if ( $basis->DataBase->table_exists(DB_PREFIX .  'zones')) 		$basis->DataBase->exec("DROP TABLE ".DB_PREFIX .  "zh_search");
+	  		if ( $basis->DataBase->table_exists(DB_PREFIX .  'zones')) 			$basis->DataBase->exec("DROP TABLE ".DB_PREFIX .  "zh_search");
+	  		if ( $basis->DataBase->table_exists(DB_PREFIX .  'countries')) 		$basis->DataBase->exec("DROP TABLE ".DB_PREFIX .  "countries");
 	  	}
 	  	if (version_compare($this->status, '4.0.4', '<') ) {
 //@todo	  		DATE_TIME_FORMAT in this constant the h should be G
