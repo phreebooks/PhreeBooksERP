@@ -170,7 +170,7 @@ class htmlElement {
 		} else {
 			$id = str_replace('[', '_', $name); // clean up for array inputs causing html errors
 			$id = str_replace(']', '',  $id);
-		}
+		}//@todo maybe remove currency symbool or strip it when field is enterd and also with thousand symbol  
 		$field = "<input ";
 		if ($id)						$field .= " id='$id' ";
 		if (gen_not_null($parameters))	$field .= " $parameters ";

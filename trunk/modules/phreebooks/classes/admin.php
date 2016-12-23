@@ -28,10 +28,10 @@ class admin extends \core\classes\admin {
 	function __construct() {
 		$this->text = sprintf ( TEXT_MODULE_ARGS, TEXT_PHREEBOOKS );
 		$this->prerequisites = array ( // modules required and rev level for this module to work properly
-				'phreedom' => 3.6,
-				'contacts' => 3.71,
-				'inventory' => 3.6,
-				'payment' => 3.6,
+				'phreedom' 	=> 4.0,
+				'contacts' 	=> 4.0,
+				'inventory' => 4.0,
+				'payment' 	=> 3.6,
 				'phreeform' => 3.6
 		);
 		// Load configuration constants for this module, must match entries in admin tabs
@@ -265,50 +265,50 @@ class admin extends \core\classes\admin {
 		);
 		
 		// banking customers
-		$this->mainmenu["banking"]->submenu ["customer_payment"]  	= new \core\classes\menuItem (5, 	TEXT_CUSTOMER_PAYMENT,			'module=phreebooks&amp;page=status&amp;jID=18&amp;type=c', 	SECURITY_ID_CUSTOMER_RECEIPTS,							'MODULE_PHREEBOOKS_STATUS');
+		$this->mainmenu["banking"]->submenu ["customer_payment"]  	= new \core\classes\menuItem (5, 	TEXT_CUSTOMER_PAYMENT,			'action=LoadJournalManager&amp;jID=18&amp;type=c', 	SECURITY_ID_CUSTOMER_RECEIPTS,							'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["banking"]->submenu ["customer_payment"]->submenu ["new"] 	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_CUSTOMER_PAYMENT),		'module=phreebooks&amp;page=bills&amp;jID=18&amp;type=c');
-		$this->mainmenu["banking"]->submenu ["customer_payment"]->submenu ["mgr"] 	= new \core\classes\menuItem (15, 	sprintf(TEXT_MANAGER_ARGS, TEXT_CUSTOMER_PAYMENT),	'module=phreebooks&amp;page=status&amp;jID=18&amp;type=c');
-		$this->mainmenu["banking"]->submenu ["customer_refund"]  	= new \core\classes\menuItem (10, 	TEXT_CUSTOMER_REFUND,			'module=phreebooks&amp;page=status&amp;jID=20&amp;type=c', 	SECURITY_ID_CUSTOMER_PAYMENTS, 							'MODULE_PHREEBOOKS_STATUS');
+		$this->mainmenu["banking"]->submenu ["customer_payment"]->submenu ["mgr"] 	= new \core\classes\menuItem (15, 	sprintf(TEXT_MANAGER_ARGS, TEXT_CUSTOMER_PAYMENT),	'action=LoadJournalManager&amp;jID=18&amp;type=c');
+		$this->mainmenu["banking"]->submenu ["customer_refund"]  	= new \core\classes\menuItem (10, 	TEXT_CUSTOMER_REFUND,			'action=LoadJournalManager&amp;jID=20&amp;type=c', 	SECURITY_ID_CUSTOMER_PAYMENTS, 							'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["banking"]->submenu ["customer_refund"]->submenu ["new"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_NEW_ARGS, TEXT_CUSTOMER_REFUND),		'module=phreebooks&amp;page=bills&amp;jID=20&amp;type=c');
-		$this->mainmenu["banking"]->submenu ["customer_refund"]->submenu ["mgr"] 	= new \core\classes\menuItem (20, 	sprintf(TEXT_MANAGER_ARGS, TEXT_CUSTOMER_REFUND),	'module=phreebooks&amp;page=status&amp;jID=20&amp;type=c');
+		$this->mainmenu["banking"]->submenu ["customer_refund"]->submenu ["mgr"] 	= new \core\classes\menuItem (20, 	sprintf(TEXT_MANAGER_ARGS, TEXT_CUSTOMER_REFUND),	'action=LoadJournalManager&amp;jID=20&amp;type=c');
 		// banking vendors
-		$this->mainmenu["banking"]->submenu ["vendor_payment"]  	= new \core\classes\menuItem (15, 	TEXT_VENDOR_PAYMENT,			'module=phreebooks&amp;page=status&amp;jID=20&amp;type=v', 	SECURITY_ID_PAY_BILLS, 									'MODULE_PHREEBOOKS_STATUS');
+		$this->mainmenu["banking"]->submenu ["vendor_payment"]  	= new \core\classes\menuItem (15, 	TEXT_VENDOR_PAYMENT,			'action=LoadJournalManager&amp;jID=20&amp;type=v', 	SECURITY_ID_PAY_BILLS, 									'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["banking"]->submenu ["vendor_payment"]->submenu ["new"] 	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_VENDOR_PAYMENT),		'module=phreebooks&amp;page=bills&amp;jID=20&amp;type=v');
 		$this->mainmenu["banking"]->submenu ["vendor_payment"]->submenu ["bulk"]	= new \core\classes\menuItem (10, 	TEXT_PAY_BY_DUE_DATE,	'module=phreebooks&amp;page=bulk_bills', 	SECURITY_ID_SELECT_PAYMENT, 							'MODULE_PHREEBOOKS_STATUS');
-		$this->mainmenu["banking"]->submenu ["vendor_payment"]->submenu ["mgr"] 	= new \core\classes\menuItem (15, 	sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR_PAYMENT),	'module=phreebooks&amp;page=status&amp;jID=20&amp;type=v');
-		$this->mainmenu["banking"]->submenu ["vendor_refund"]  		= new \core\classes\menuItem (20, 	TEXT_VENDOR_REFUND,			'module=phreebooks&amp;page=status&amp;jID=18&amp;type=v', 		SECURITY_ID_CUSTOMER_PAYMENTS,							'MODULE_PHREEBOOKS_STATUS');
+		$this->mainmenu["banking"]->submenu ["vendor_payment"]->submenu ["mgr"] 	= new \core\classes\menuItem (15, 	sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR_PAYMENT),	'action=LoadJournalManager&amp;jID=20&amp;type=v');
+		$this->mainmenu["banking"]->submenu ["vendor_refund"]  		= new \core\classes\menuItem (20, 	TEXT_VENDOR_REFUND,			'action=LoadJournalManager&amp;jID=18&amp;type=v', 		SECURITY_ID_CUSTOMER_PAYMENTS,							'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["banking"]->submenu ["vendor_refund"]->submenu ["new"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_NEW_ARGS, TEXT_VENDOR_REFUND),		'module=phreebooks&amp;page=bills&amp;jID=18&amp;type=v');
-		$this->mainmenu["banking"]->submenu ["vendor_refund"]->submenu ["mgr"] 	= new \core\classes\menuItem (20, 	sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR_REFUND),	'module=phreebooks&amp;page=status&amp;jID=18&amp;type=v');
+		$this->mainmenu["banking"]->submenu ["vendor_refund"]->submenu ["mgr"] 	= new \core\classes\menuItem (20, 	sprintf(TEXT_MANAGER_ARGS, TEXT_VENDOR_REFUND),	'action=LoadJournalManager&amp;jID=18&amp;type=v');
 		$this->mainmenu["banking"]->submenu ["register"]  			= new \core\classes\menuItem (40, 	TEXT_BANK_ACCOUNT_REGISTER,			'module=phreebooks&amp;page=register', 					SECURITY_ID_ACCT_REGISTER,								'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["banking"]->submenu ["reconciliation"]		= new \core\classes\menuItem (60, 	TEXT_ACCOUNT_RECONCILIATION,		'module=phreebooks&amp;page=reconciliation', 			SECURITY_ID_ACCT_RECONCILIATION,						'MODULE_PHREEBOOKS_STATUS');
-		$this->mainmenu["customers"]->submenu ["quotes"]  	= new \core\classes\menuItem (20, 	TEXT_QUOTE,			'module=phreebooks&amp;page=status&amp;jID=9&amp;list=1', 						SECURITY_ID_SALES_QUOTE,								'MODULE_PHREEBOOKS_STATUS');
+		$this->mainmenu["customers"]->submenu ["quotes"]  	= new \core\classes\menuItem (20, 	TEXT_QUOTE,			'action=LoadJournalManager&amp;jID=9&amp;list=1', 						SECURITY_ID_SALES_QUOTE,								'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["customers"]->submenu ["quotes"]->submenu ["new"] 	= new \core\classes\menuItem (5, 	sprintf(TEXT_NEW_ARGS, TEXT_QUOTE),			'module=phreebooks&amp;page=orders&amp;jID=9');
-		$this->mainmenu["customers"]->submenu ["quotes"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_QUOTE),		'module=phreebooks&amp;page=status&amp;jID=9&amp;list=1');
-		$this->mainmenu["customers"]->submenu ["orders"]   	= new \core\classes\menuItem (30, 	TEXT_ORDER,			'module=phreebooks&amp;page=status&amp;jID=10&amp;list=1', 						SECURITY_ID_SALES_ORDER,								'MODULE_PHREEBOOKS_STATUS');
+		$this->mainmenu["customers"]->submenu ["quotes"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_QUOTE),		'action=LoadJournalManager&amp;jID=9&amp;list=1');
+		$this->mainmenu["customers"]->submenu ["orders"]   	= new \core\classes\menuItem (30, 	TEXT_ORDER,			'action=LoadJournalManager&amp;jID=10&amp;list=1', 						SECURITY_ID_SALES_ORDER,								'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["customers"]->submenu ["orders"]->submenu ["new"] 	= new \core\classes\menuItem (5, 	sprintf(TEXT_NEW_ARGS, TEXT_ORDER),			'module=phreebooks&amp;page=orders&amp;jID=10');
-		$this->mainmenu["customers"]->submenu ["orders"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_ORDER),		'module=phreebooks&amp;page=status&amp;jID=10&amp;list=1');
-		$this->mainmenu["customers"]->submenu ["invoice"]   	= new \core\classes\menuItem (30, 	TEXT_INVOICE,			'module=phreebooks&amp;page=status&amp;jID=12&amp;list=1', 				SECURITY_ID_SALES_INVOICE, 								'MODULE_PHREEBOOKS_STATUS');
+		$this->mainmenu["customers"]->submenu ["orders"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_ORDER),		'action=LoadJournalManager&amp;jID=10&amp;list=1');
+		$this->mainmenu["customers"]->submenu ["invoice"]   	= new \core\classes\menuItem (30, 	TEXT_INVOICE,			'action=LoadJournalManager&amp;jID=12&amp;list=1', 				SECURITY_ID_SALES_INVOICE, 								'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["customers"]->submenu ["invoice"]->submenu ["new"] 	= new \core\classes\menuItem (5, 	sprintf(TEXT_NEW_ARGS, TEXT_INVOICE),			'module=phreebooks&amp;page=orders&amp;jID=12');
-		$this->mainmenu["customers"]->submenu ["invoice"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_INVOICE),		'module=phreebooks&amp;page=status&amp;jID=12&amp;list=1');
-		$this->mainmenu["customers"]->submenu ["credits"]   	= new \core\classes\menuItem (30, 	TEXT_CREDIT,			'module=phreebooks&amp;page=status&amp;jID=13&amp;list=1', 				SECURITY_ID_SALES_CREDIT, 								'MODULE_PHREEBOOKS_STATUS');
+		$this->mainmenu["customers"]->submenu ["invoice"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_INVOICE),		'action=LoadJournalManager&amp;jID=12&amp;list=1');
+		$this->mainmenu["customers"]->submenu ["credits"]   	= new \core\classes\menuItem (30, 	TEXT_CREDIT,			'action=LoadJournalManager&amp;jID=13&amp;list=1', 				SECURITY_ID_SALES_CREDIT, 								'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["customers"]->submenu ["credits"]->submenu ["new"] 	= new \core\classes\menuItem (5, 	sprintf(TEXT_NEW_ARGS, TEXT_CREDIT),			'module=phreebooks&amp;page=orders&amp;jID=13');
-		$this->mainmenu["customers"]->submenu ["credits"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_CREDIT),		'module=phreebooks&amp;page=status&amp;jID=13&amp;list=1');
+		$this->mainmenu["customers"]->submenu ["credits"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_CREDIT),		'action=LoadJournalManager&amp;jID=13&amp;list=1');
 		//VENDOR
-		$this->mainmenu["vendors"]->submenu ["quotes"]  	= new \core\classes\menuItem (20, 	TEXT_QUOTE,			'module=phreebooks&amp;page=status&amp;jID=3&amp;list=1', 						SECURITY_ID_PURCHASE_QUOTE,								'MODULE_PHREEBOOKS_STATUS');
+		$this->mainmenu["vendors"]->submenu ["quotes"]  	= new \core\classes\menuItem (20, 	TEXT_QUOTE,			'action=LoadJournalManager&amp;jID=3&amp;list=1', 						SECURITY_ID_PURCHASE_QUOTE,								'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["vendors"]->submenu ["quotes"]->submenu ["new"] 	= new \core\classes\menuItem (5, 	sprintf(TEXT_NEW_ARGS, TEXT_QUOTE),			'module=phreebooks&amp;page=orders&amp;jID=3');
-		$this->mainmenu["vendors"]->submenu ["quotes"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_QUOTE),		'module=phreebooks&amp;page=status&amp;jID=3&amp;list=1');
-		$this->mainmenu["vendors"]->submenu ["orders"]   	= new \core\classes\menuItem (30, 	TEXT_ORDER,			'module=phreebooks&amp;page=status&amp;jID=4&amp;list=1', 						SECURITY_ID_PURCHASE_ORDER,								'MODULE_PHREEBOOKS_STATUS');
+		$this->mainmenu["vendors"]->submenu ["quotes"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_QUOTE),		'action=LoadJournalManager&amp;jID=3&amp;list=1');
+		$this->mainmenu["vendors"]->submenu ["orders"]   	= new \core\classes\menuItem (30, 	TEXT_ORDER,			'action=LoadJournalManager&amp;jID=4&amp;list=1', 						SECURITY_ID_PURCHASE_ORDER,								'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["vendors"]->submenu ["orders"]->submenu ["new"] 	= new \core\classes\menuItem (5, 	sprintf(TEXT_NEW_ARGS, TEXT_ORDER),			'module=phreebooks&amp;page=orders&amp;jID=4');
-		$this->mainmenu["vendors"]->submenu ["orders"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_ORDER),		'module=phreebooks&amp;page=status&amp;jID=4&amp;list=1');
-		$this->mainmenu["vendors"]->submenu ["invoice"]   	= new \core\classes\menuItem (30, 	TEXT_INVOICE,			'module=phreebooks&amp;page=status&amp;jID=6&amp;list=1', 					SECURITY_ID_PURCHASE_INVENTORY,							'MODULE_PHREEBOOKS_STATUS');
+		$this->mainmenu["vendors"]->submenu ["orders"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_ORDER),		'action=LoadJournalManager&amp;jID=4&amp;list=1');
+		$this->mainmenu["vendors"]->submenu ["invoice"]   	= new \core\classes\menuItem (30, 	TEXT_INVOICE,			'action=LoadJournalManager&amp;jID=6&amp;list=1', 					SECURITY_ID_PURCHASE_INVENTORY,							'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["vendors"]->submenu ["invoice"]->submenu ["new"] 	= new \core\classes\menuItem (5, 	sprintf(TEXT_NEW_ARGS, TEXT_INVOICE),			'module=phreebooks&amp;page=orders&amp;jID=6');
-		$this->mainmenu["vendors"]->submenu ["invoice"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_INVOICE),		'module=phreebooks&amp;page=status&amp;jID=6&amp;list=1');
-		$this->mainmenu["vendors"]->submenu ["credits"]   	= new \core\classes\menuItem (30, 	TEXT_CREDIT,				'module=phreebooks&amp;page=status&amp;jID=7&amp;list=1', 				SECURITY_ID_PURCHASE_CREDIT,							'MODULE_PHREEBOOKS_STATUS');
+		$this->mainmenu["vendors"]->submenu ["invoice"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_INVOICE),		'action=LoadJournalManager&amp;jID=6&amp;list=1');
+		$this->mainmenu["vendors"]->submenu ["credits"]   	= new \core\classes\menuItem (30, 	TEXT_CREDIT,				'action=LoadJournalManager&amp;jID=7&amp;list=1', 				SECURITY_ID_PURCHASE_CREDIT,							'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["vendors"]->submenu ["credits"]->submenu ["new"] 	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_CREDIT),			'module=phreebooks&amp;page=orders&amp;jID=7');
-		$this->mainmenu["vendors"]->submenu ["credits"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_CREDIT),		'module=phreebooks&amp;page=status&amp;jID=7&amp;list=1');
-		$this->mainmenu["gl"]->submenu ["journals"]    		= new \core\classes\menuItem ( 5, 	TEXT_GENERAL_JOURNAL,		'module=phreebooks&amp;page=status&amp;jID=2&amp;list=1', 				SECURITY_ID_JOURNAL_ENTRY,								'MODULE_PHREEBOOKS_STATUS');
+		$this->mainmenu["vendors"]->submenu ["credits"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_CREDIT),		'action=LoadJournalManager&amp;jID=7&amp;list=1');
+		$this->mainmenu["gl"]->submenu ["journals"]    		= new \core\classes\menuItem ( 5, 	TEXT_GENERAL_JOURNAL,		'action=LoadJournalManager&amp;jID=2&amp;list=1', 				SECURITY_ID_JOURNAL_ENTRY,								'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["gl"]->submenu ["journals"]->submenu ["new"] 		= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_GENERAL_JOURNAL),			'module=phreebooks&amp;page=orders&amp;jID=2');
-		$this->mainmenu["gl"]->submenu ["journals"]->submenu ["mgr"] 		= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_GENERAL_JOURNAL),		'module=phreebooks&amp;page=status&amp;jID=2&amp;list=1');
+		$this->mainmenu["gl"]->submenu ["journals"]->submenu ["mgr"] 		= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_GENERAL_JOURNAL),		'action=LoadJournalManager&amp;jID=2&amp;list=1');
 		$this->mainmenu["gl"]->submenu ["search"]    		= new \core\classes\menuItem (15, 	TEXT_SEARCH,				'module=phreebooks&amp;page=search&amp;journal_id=-1',	 				SECURITY_ID_SEARCH,										'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["gl"]->submenu ["budget"]    		= new \core\classes\menuItem (50, 	TEXT_BUDGETING,				'module=phreebooks&amp;page=budget',				 					SECURITY_ID_GL_BUDGET,									'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["gl"]->submenu ["admin_tools"]		= new \core\classes\menuItem (70, 	TEXT_ADMINISTRATIVE_TOOLS,	'module=phreebooks&amp;page=admin_tools',				 				SECURITY_ID_GEN_ADMIN_TOOLS,							'MODULE_PHREEBOOKS_STATUS');
@@ -585,9 +585,8 @@ class admin extends \core\classes\admin {
 				$criteria[] = '(' . implode(" like '%{$basis->cInfo->search_text}%' or ", $search_fields) . " like '%{$basis->cInfo->search_text}%')";
 			}
 			$criteria[] = ($basis->cInfo->only_open) ? " j.closed = '0' and " : "";
-			$criteria[] = " journal_id in ({$basis->cInfo->jID}) ";
-			$search = (sizeof($criteria) > 0) ? (' WHERE ' . implode(' and ', $criteria)) : '';
-			$sql = $basis->DataBase->prepare("SELECT *, MONTH(post_date) as month, YEAR(post_date) as year FROM " . TABLE_JOURNAL_MAIN . " {$search} ORDER BY post_date");
+			$search = (sizeof($criteria) > 0) ?  implode(' and ', $criteria) : '';
+			$sql = $basis->DataBase->prepare("SELECT *, MONTH(post_date) as month, YEAR(post_date) as year FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id in ({$basis->cInfo->jID}) {$search} ORDER BY post_date");
 			$sql->execute();
 			$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
 			$basis->cInfo->total = sizeof($results);
@@ -597,5 +596,157 @@ class admin extends \core\classes\admin {
 			$basis->cInfo->error_message = $e->getMessage();
 		}
 	}
+	
+	function LoadJournalManager (\core\classes\basis $basis){
+  		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+  		$basis->observer->send_menu($basis); ?>
+  			<div data-options="region:'center'">
+  				<table id="dg" title="<?php echo sprintf(TEXT_MANAGER_ARGS, TEXT_JOURNAL);?>" style="height:500px;padding:50px;">
+  					<thead>
+  						<tr>
+  							<th data-options="field:'post_date',align:'right',sortable:true, formatter: function(value,row,index){ return formatDate(new Date(value))}"><?php echo TEXT_DATE;?></th>
+  		               		<th data-options="field:'purchase_invoice_id',align:'left',sortable:true"><?php echo TEXT_DESCRIPTION//@todo?></th>
+  		            	   	<th data-options="field:'bill_primary_name',align:'center',sortable:true"><?php echo in_array ( $basis->cInfo->jID, array (9,	10,	12,	13,	19) ) ? TEXT_CUSTOMER_NAME : TEXT_VENDOR_NAME?></th>
+  		    	           	<th data-options="field:'purch_order_id',align:'center',sortable:true"><?php echo TEXT_REFERENCE?></th>
+  		        	       	<th data-options="field:'closed',align:'center',sortable:true,formatter: function(value,row,index){ if(value == '1'){return '<?php echo TEXT_YES?>'}else{return ''}}"><?php echo TEXT_CLOSED?></th>
+  		        	       	<th data-options="field:'total_amount',align:'right',sortable:true, formatter: function(value,row,index){ return formatCurrency(value)}"><?php echo TEXT_AMOUNT?></th>
+  		        	       	<th data-options="field:'id',align:'right',formatter:actionformater"><?php echo TEXT_ACTIONS?></th>
+  		            	</tr>
+  		        	</thead>
+  		    	</table>
+  		    	<div id="toolbar">
+  		    		<a class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editJournal()"><?php echo sprintf(TEXT_EDIT_ARGS, TEXT_JOURNAL);?></a>
+  			        <a class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newJournal()"><?php echo sprintf(TEXT_NEW_ARGS, TEXT_JOURNAL);?></a>
+  		        	<a class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteJournal()"><?php echo sprintf(TEXT_DELETE_ARGS, TEXT_JOURNAL);?></a>
+  		        	<?php echo \core\classes\htmlElement::checkbox('Journal_show_inactive', TEXT_SHOW_INACTIVE, '1', false,'onchange="doSearch()"' );?>
+  		        	<div style="float: right;"> <?php echo \core\classes\htmlElement::search('search_text','doSearch');?></div>
+  		    	</div>
+  		    	<div id="win" class="easyui-window">
+  		    		<div id="contactToolbar" style="margin:2px 5px;">
+  						<a class="easyui-linkbutton" iconCls="icon-undo" plain="true" onclick="closeWindow()"><?php echo TEXT_CANCEL?></a>
+  						<?php if (\core\classes\user::validate($basis->cInfo->contact->security_token, true) < 2){?>
+  						<a class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="saveContact()" ><?php echo TEXT_SAVE?></a>
+  						<?php }?>
+  						<a class="easyui-linkbutton" iconCls="icon-help" plain="true" onclick="loadHelp()"><?php TEXT_HELP?></a>
+  					</div>
+  				</div>
+  	    	</div>	
+  			<script type="text/javascript">
+  				function actionformater (value,row,index){
+  					var href = 'innerlist.php?list='+row.id;
+  					var dhref = 'dellist.php?list='+row.id;
+  					return '<center><a target="_blank" href="' + href + '"><span class="btn btn-primary btn-xs"><i class="fa fa-search"></i> Preview</span></a><a href="' + dhref + '" class="panel-tool-close" plain="true" >Remove Entry</a></center>';
+  				}
+  				
+  				function formatQtyOnhand (value,row,index){
+  					var not_show_types = ['ns','lb','sv','sf','ci','ai','ds'];
+  					if ( not_show_types.indexOf( row.inventory_type ) > 0){
+  	  					return '';
+  					}else{
+  	  					return formatQty (row.quantity_on_hand);
+  					}
+  				}
+
+  				function styleQty (value,row,index) {
+  	  				if (row.quantity_on_hand < row.minimum_stock_level){
+  	  				return 'background-color:green;';
+  	  				}
+  				}
+  				
+  				document.title = '<?php echo sprintf(BOX_STATUS_MGR, $contact); ?>';
+  		    	function doSearch(value){
+  		    		console.log('A search was requested.');
+  		        	$('#dg').datagrid('load',{
+  		        		search_text: $('#search_text').val(),
+  		        		dataType: 'json',
+  		                contentType: 'application/json',
+  		                async: false,
+  		                type: '<?php echo $basis->cInfo->type;?>',
+  		                Journal_show_inactive: document.getElementById('Journal_show_inactive').checked ? 1 : 0,
+  		        	});
+  		    	}
+  	
+  		        function newJournal(){
+  		        	$.messager.progress();
+  		            $('#win').window('open').window('center').window('setTitle','<?php echo sprintf(TEXT_NEW_ARGS, TEXT_JOURNAL);?>');
+  		            $('#win').window('refresh', "index.php?action=newJournal");
+  		            $('#win').window('resize');
+  		        }
+  		        
+  		        function editContact(){
+  			        $('#win').window('open').window('center').window('setTitle','<?php echo sprintf(TEXT_EDIT_ARGS, TEXT_JOURNAL);?>');
+  		        }
+  		        
+  				$('#dg').datagrid({
+  					url:		"index.php?action=GetAllJournals",
+  					queryParams: {
+  						dataType: 'json',
+  		                contentType: 'application/json',
+  		                async: false,
+						jID: '<?php echo $basis->cInfo->jID;?>',
+  					},
+  					onLoadSuccess: function(data){
+  						console.log('the loading of the datagrid was succesfull');
+  						$.messager.progress('close');
+  						if(data.total == 0) $.messager.alert('<?php echo TEXT_ERROR?>',"<?php echo TEXT_NO_RESULTS_FOUND?>");
+  					},
+  					onLoadError: function(){
+  						console.error('the loading of the datagrid resulted in a error');
+  						$.messager.progress('close');
+  						$.messager.alert('<?php echo TEXT_ERROR?>','Load error:'+arguments.responseText);
+  					},
+  					onDblClickRow: function(index , row){
+  						console.log('a row in the datagrid was double clicked');
+  						document.location = "index.php?action=editJournal&jID="+ row.id;
+  						//$('#win').window('open').window('center').window('setTitle',"<?php echo TEXT_EDIT?>"+ ' ' + row.name);
+  					},
+  					pagination: true,
+  					pageSize:   50,
+  					remoteSort:	true,
+  					idField:	"id",
+  					fitColumns:	true,
+  					singleSelect:true,
+  					sortName:	"sku",
+  					sortOrder: 	"asc",
+  					loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
+  					toolbar: 	"#toolbar",
+  					rowStyler: function(index,row){
+  						if (row.waiting == '1') return 'background-color:lightblue';
+  					},
+  				});
+  				
+  				$('#win').window({
+  		        	href:		"index.php?action=editJournal",
+  					closed: true,
+  					title:	"<?php echo sprintf(TEXT_EDIT_ARGS, TEXT_JOURNAL);?>",
+  					fit:	true,
+  					queryParams: {
+  						dataType: 'html',
+  		                contentType: 'text/html',
+  		                async: false,
+  					},
+  					onLoadError: function(){
+  						console.error('the loading of the window resulted in a error');
+  						$.messager.alert('<?php echo TEXT_ERROR?>');
+  						$.messager.progress('close');
+  					},
+  					onOpen: function(){
+  						$.messager.progress('close');
+  					},
+  					onBeforeLoad: function(param){
+  						var row = $('#dg').datagrid('getSelected');
+  						param.contactid = row.contactid;
+  					},
+  				});
+  				
+  				function closeWindow(){
+  					$.messager.progress();
+  					$('#Journal').form('clear');
+  					console.log('close Journal window');
+  					$('#win').window('close', true);
+  				}
+  			</script><?php 
+  		$basis->observer->send_footer($basis);
+  	}
 }
 ?>

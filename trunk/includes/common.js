@@ -224,25 +224,6 @@ function formatCurrency(amount) { // convert to expected currency format
 	}
 }
 
-(function() {
-	var currencyfield =  document.getElementsByClassName("_easyui_textbox_input74");
-	currencyfield.onfocus = function(){
-		this.value = cleanCurrency(this.value);
-	};
-
-	currencyfield.onkeydown = function(e){
-		console.error("keydown currency field keycode = "+e.keyCode);
-		if (thousands_point == String.fromCharCode(e.keyCode)){
-			console.error("keydown is the same as thousands point");
-		}
-		this.value = this.value.replace(thousands_point, '');
-	};
-
-	currencyfield.onblur = function(){
-		this.value = formatPrecise(this.value);
-	};
-})();
-
 function formatPrecise(amount) { // convert to expected currency format with the additional precision
   // amount needs to be a string type with thousands separator ',' and decimal point dot '.' 
   var factor = Math.pow(10, decimal_precise);

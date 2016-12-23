@@ -712,7 +712,7 @@ class admin extends \core\classes\admin {
   				function actionformater (value,row,index){
   					var href = 'innerlist.php?list='+row.id;
   					var dhref = 'dellist.php?list='+row.id;
-  					return '<center><a target="_blank" href="' + href + '"><span class="btn btn-primary btn-xs"><i class="fa fa-search"></i> Preview</span></a><a href="' + dhref + '" class="panel-tool-close" plain="true" >Remove Entry</a></center>';
+  					return '<a class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editInventory()"><?php echo sprintf(TEXT_EDIT_ARGS, TEXT_INVENTORY);?></a><a href="#" class="easyui-linkbutton" iconCls="icon-no" plain="true" onclick="deleteInventory()"><?php echo sprintf(TEXT_DELETE_ARGS, TEXT_INVENTORY);?></a>';
   				}
   				
   				function formatQtyOnhand (value,row,index){
@@ -730,7 +730,7 @@ class admin extends \core\classes\admin {
   	  				}
   				}
   				
-  				document.title = '<?php echo sprintf(BOX_STATUS_MGR, $contact); ?>';
+  				document.title = '<?php echo sprintf(BOX_STATUS_MGR, TEXT_INVENTORY); ?>';
   		    	function doSearch(value){
   		    		console.log('A search was requested.');
   		        	$('#dg').datagrid('load',{
@@ -773,7 +773,7 @@ class admin extends \core\classes\admin {
   					},
   					onDblClickRow: function(index , row){
   						console.log('a row in the datagrid was double clicked');
-  						document.location = "index.php?action=editInventory&inventoryid="+ row.contactid;
+  						document.location = "index.php?action=editInventory&inventoryID="+ row.id;
   						//$('#win').window('open').window('center').window('setTitle',"<?php echo TEXT_EDIT?>"+ ' ' + row.name);
   					},
   					pagination: true,
@@ -811,7 +811,7 @@ class admin extends \core\classes\admin {
   					},
   					onBeforeLoad: function(param){
   						var row = $('#dg').datagrid('getSelected');
-  						param.contactid = row.contactid;
+  						param.inventoryID = row.id;
   					},
   				});
   				
