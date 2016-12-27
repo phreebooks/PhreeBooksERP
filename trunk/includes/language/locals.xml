@@ -2022,6 +2022,118 @@
       			<nl_nl>North Dakota</nl_nl>
     		</translations>
     	</zone>
+    	<zone xml:id="US-OH">
+    		<iso2>OH</iso2>
+    		<translations>
+      			<en_us>Ohio</en_us>
+      			<nl_nl>Ohio</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-OK">
+    		<iso2>OK</iso2>
+    		<translations>
+      			<en_us>Oklahoma</en_us>
+      			<nl_nl>Oklahoma</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-OR">
+    		<iso2>OR</iso2>
+    		<translations>
+      			<en_us>Oregon</en_us>
+      			<nl_nl>Oregon</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-PA">
+    		<iso2>PA</iso2>
+    		<translations>
+      			<en_us>Pennsylvania</en_us>
+      			<nl_nl>Pennsylvania</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-RI">
+    		<iso2>RI</iso2>
+    		<translations>
+      			<en_us>Rhode Island</en_us>
+      			<nl_nl>Rhode Island</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-SC">
+    		<iso2>SC</iso2>
+    		<translations>
+      			<en_us>South Carolina</en_us>
+      			<nl_nl>South Carolina</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-SD">
+    		<iso2>SD</iso2>
+    		<translations>
+      			<en_us>South Dakota</en_us>
+      			<nl_nl>South Dakota</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-TN">
+    		<iso2>TN</iso2>
+    		<translations>
+      			<en_us>Tennessee</en_us>
+      			<nl_nl>Tennessee</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-TX">
+    		<iso2>TX</iso2>
+    		<translations>
+      			<en_us>Texas</en_us>
+      			<nl_nl>Texas</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-UT">
+    		<iso2>UT</iso2>
+    		<translations>
+      			<en_us>Utah</en_us>
+      			<nl_nl>Utah</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-VT">
+    		<iso2>VT</iso2>
+    		<translations>
+      			<en_us>Vermont</en_us>
+      			<nl_nl>Vermont</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-VA">
+    		<iso2>VA</iso2>
+    		<translations>
+      			<en_us>Virginia</en_us>
+      			<nl_nl>Virginia</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-WA">
+    		<iso2>WA</iso2>
+    		<translations>
+      			<en_us>Washington</en_us>
+      			<nl_nl>Washington</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-WV">
+    		<iso2>WV</iso2>
+    		<translations>
+      			<en_us>West Virginia</en_us>
+      			<nl_nl>West Virginia</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-WI">
+    		<iso2>WI</iso2>
+    		<translations>
+      			<en_us>Wisconsin</en_us>
+      			<nl_nl>Wisconsin</nl_nl>
+    		</translations>
+    	</zone>
+    	<zone xml:id="US-WY">
+    		<iso2>WY</iso2>
+    		<translations>
+      			<en_us>Wyoming</en_us>
+      			<nl_nl>Wyoming</nl_nl>
+    		</translations>
+    	</zone>
     </zones>
   </country>
   <country xml:id="UZB">
