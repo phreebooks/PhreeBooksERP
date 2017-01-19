@@ -620,7 +620,7 @@ class admin extends \core\classes\admin {
 		$cInfo = new $temp;
 		$cInfo->copy($basis->cInfo['id'], $basis->cInfo['sku']);
 		$basis->cInfo = null;
-		$basis->fireEvent("LoadInventoryPage");
+		$basis->fireEvent("editInventory");
 	}
 
 	/**
@@ -635,33 +635,63 @@ class admin extends \core\classes\admin {
 		$cInfo->check_create_new();
 		$sql = $basis->DataBase->prepare("INSERT INTO ".TABLE_INVENTORY." (class, inventory_type ) VALUES ('" . addcslashes(get_class($inventory), '\\') . "', '{$inventory->type}')");
 		$sql->execute();
-		$basis->cInfo->iID =  $basis->DataBase->lastInsertId('id');
-		$basis->fireEvent("LoadInventoryPage");
+		$basis->cInfo->inventoryID =  $basis->DataBase->lastInsertId('id');
+		$basis->fireEvent("editInventory");
 	}
 
 	/**
 	 * this function will load the inventory page
 	 */
-	function LoadInventoryPage (\core\classes\basis $basis){
+	function editInventory (\core\classes\basis $basis){
 		$basis->observer->send_menu($basis);
-		if ( isset($basis->cInfo->rowSeq)) $basis->cInfo->iID = $basis->cInfo->rowSeq;
-		if ($basis->cInfo->iID == '') throw new \core\classes\userException("iID variable isn't set can't execute method LoadInventoryPage ");
-		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_INVENTORY . " WHERE id = {$basis->cInfo->iID}");
+		if ( property_exists($basis->cInfo, 'rowSeq') === true) 	 $basis->cInfo->inventoryID = $basis->cInfo->rowSeq;
+		if ( property_exists($basis->cInfo, 'inventoryID') !== true) throw new \core\classes\userException("inventoryID variable isn't set can't execute method editInventory ");
+		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_INVENTORY . " WHERE id = {$basis->cInfo->inventoryID}");
 		$sql->execute();
 		$basis->cInfo->inventory = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
-		$basis->page_title		= sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY);
-		$basis->module			= 'inventory';
-		$basis->page			= 'main';
-		$basis->template 		= 'template_detail';
+		// build the type filter list
+		$basis->cInfo->type_select_list = array( // add some extra options
+				array('id' => '0',   'text' => TEXT_ALL),
+				array('id' => 'cog', 'text' => TEXT_CONTROLLED_STOCK),
+		);
+		
+		foreach ($inventory_types_plus as $key => $value) $basis->cInfo->type_select_list[] = array('id' => $key,  'text' => $value);
+		// generate the vendors and fill js arrays for dynamic pull downs
+		$vendors = gen_get_contact_array_by_type('v');
+		$basis->cInfo->js_vendor_array = "var js_vendor_array = new Array();" . chr(10);
+		for ($i = 0; $i < count($vendors); $i++) {
+			$basis->cInfo->js_vendor_array .= "js_vendor_array[$i] = new dropDownData('{$vendors[$i]['id']}', '{$vendors[$i]['text']}');" . chr(10);
+		}
+		// generate the pricesheets and fill js arrays for dynamic pull downs
+		$pur_pricesheets = get_price_sheet_data('v');
+		$basis->cInfo->js_pricesheet_array = "var js_pricesheet_array = new Array();" . chr(10);
+		for ($i = 0; $i < count($pur_pricesheets); $i++) {
+			$basis->cInfo->js_pricesheet_array .= "js_pricesheet_array[$i] = new dropDownData('{$pur_pricesheets[$i]['id']}', '{$pur_pricesheets[$i]['text']}');" . chr(10);
+		}
+		
+		// load the tax rates
+		$tax_rates        = ord_calculate_tax_drop_down('c');
+		$basis->cInfo->purch_tax_rates  = ord_calculate_tax_drop_down('v',false);
+		// generate a rate array parallel to the drop down for javascript
+		$basis->cInfo->js_tax_rates = 'var tax_rates = new Array(' . count($tax_rates) . ');' . chr(10);
+		for ($i = 0; $i < count($tax_rates); $i++) {
+			$basis->cInfo->js_tax_rates .= "tax_rates[{$i}] = new tax('{$tax_rates[$i]['id']}', '{$tax_rates[$i]['text']}', '{$tax_rates[$i]['rate']}');" . chr(10);
+		}
+		
+		// load gl accounts
+		$basis->cInfo->gl_array_list    = gen_coa_pull_down();
+		
+		include(DIR_FS_MODULES . "inventory/pages/main/js_include.php");
+		include(DIR_FS_MODULES . "inventory/pages/main/template_detail.php");
 		$basis->observer->send_footer($basis);
 	}
 
 	/**
-	 * this function will call LoadInventoryPage but deactivate menu and footer.
+	 * this function will call editInventory but deactivate menu and footer.
 	 * @param \core\classes\basis $basis
 	 */
   	function LoadInventoryPopUp (\core\classes\basis $basis){
-  		$this->LoadInventoryPage ($basis);
+  		$this->editInventory ($basis);
   	}
 
   	function LoadNewInventoryItem (\core\classes\basis $basis){
@@ -730,7 +760,7 @@ class admin extends \core\classes\admin {
   	  				}
   				}
   				
-  				document.title = '<?php echo sprintf(BOX_STATUS_MGR, TEXT_INVENTORY); ?>';
+  				document.title = '<?php echo sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY); ?>';
   		    	function doSearch(value){
   		    		console.log('A search was requested.');
   		        	$('#dg').datagrid('load',{
@@ -853,7 +883,7 @@ class admin extends \core\classes\admin {
 			$basis->cInfo->error_message = $e->getMessage();
 		}
   	}
-
+//@todo remove
   	function oldLoadInventoryManager (\core\classes\basis $basis){ 
   		$basis->observer->send_menu($basis);
   		$basis->security_level	= \core\classes\user::validate(SECURITY_ID_MAINTAIN_INVENTORY);
@@ -928,7 +958,7 @@ class admin extends \core\classes\admin {
   		$basis->template 		= 'template_main';
   		$basis->observer->send_footer($basis);
   	}
-
+  	
   	function LoadInventoryFilter(){
   		global $admin;
   		//building array's for filter dropdown selection

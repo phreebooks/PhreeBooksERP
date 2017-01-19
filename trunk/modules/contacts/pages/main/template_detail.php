@@ -34,13 +34,13 @@ function tab_sort($a, $b) {
 }
 usort($basis->cInfo->contact->tab_list, 'tab_sort');
 ?>
-<div id="mainToolbar" data-options="region:'north'" >
-    <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="location.href = 'index.php?action=LoadContactMgrPage&type=<?php echo $basis->cInfo->contact->type;?>'"><?php echo TEXT_UNDO;?></a>
-   	<a href="#" class="easyui-linkbutton" iconCls="icon-save"   onclick="$('#contacts').submit();"><?php echo TEXT_SAVE;?></a>
-   	<a href="#" class="easyui-linkbutton" iconCls="icon-help"   onclick="loadHelp('editContact');"><?php echo TEXT_HELP;?></a>
-   	<a href="#" class="easyui-linkbutton" iconCls="icon-email"  onclick="deleteContact()"><?php echo TEXT_MAIL;?></a>//@todo
-   	<h1><?php echo "{$basis->cInfo->contact->page_title_edit} - ({$basis->cInfo->contact->short_name}) "; ?></h1>
-</div>
+		<div id="mainToolbar" data-options="region:'north'" >
+		    <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="location.href = 'index.php?action=LoadContactMgrPage&type=<?php echo $basis->cInfo->contact->type;?>'"><?php echo TEXT_UNDO;?></a>
+		   	<a href="#" class="easyui-linkbutton" iconCls="icon-save"   onclick="$('#contacts').submit();"><?php echo TEXT_SAVE;?></a>
+		   	<a href="#" class="easyui-linkbutton" iconCls="icon-help"   onclick="loadHelp('editContact');"><?php echo TEXT_HELP;?></a>
+		   	<a href="#" class="easyui-linkbutton" iconCls="icon-email"  onclick="deleteContact()"><?php echo TEXT_MAIL;?></a>//@todo
+		   	<h1><?php echo "{$basis->cInfo->contact->page_title_edit} - ({$basis->cInfo->contact->short_name}) "; ?></h1>
+		</div>
 		<div id="Tabs" class="easyui-tabs" border="false" plain="true" >
 		<?php
 		foreach ($basis->cInfo->contact->tab_list as $value) {

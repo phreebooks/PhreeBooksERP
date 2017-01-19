@@ -20,6 +20,7 @@
 <script type="text/javascript" src="includes/easyui/plugins/datagrid-detailview.js"></script>
 <script type="text/javascript" src="includes/easyui/plugins/datagrid-groupview.js"></script>
 <script type="text/javascript">
+document.title = '<?php echo sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY); ?>';
 // pass some php variables
 var image_delete_text 	= '<?php echo TEXT_DELETE; ?>';
 var image_delete_msg  	= '<?php echo INV_MSG_DELETE_INV_ITEM; ?>';
@@ -608,7 +609,7 @@ function addVendorRow(){
 	newCell.innerHTML = cell;
 	<?php
 	if(isset($basis->cInfo->inventory->item_cost)){
-		echo "cell  ='". str_replace("'", "\'", html_input_field('item_cost_array[]', $admin->currencies->precise(0), 'onchange="what_to_update();" size="15" maxlength="20" style="text-align:right"', false))."';".chr(13);
+		echo "cell  ='". str_replace("'", "\'", html_input_field('item_cost_array[]', $basis->currencies->precise(0), 'onchange="what_to_update();" size="15" maxlength="20" style="text-align:right"', false))."';".chr(13);
 	}else{
 		echo "cell  ='';".chr(13);
 	} ?>

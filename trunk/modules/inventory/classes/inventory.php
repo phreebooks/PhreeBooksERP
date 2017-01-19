@@ -54,11 +54,11 @@ class inventory {
 	  	$this->fields 		 = new \inventory\classes\fields(false, $this->type);
 		$this->tab_list['general'] = array('file'=>'template_tab_gen',	'tag'=>'general', 'order'=>10, 'text'=>TEXT_SYSTEM);
 		$this->tab_list['history'] = array('file'=>'template_tab_hist',	'tag'=>'history', 'order'=>20, 'text'=>TEXT_HISTORY);
-		if($this->auto_field){
+/*		if($this->auto_field){
 			$result = $admin->DataBase->query("SELECT ".$this->auto_field." FROM ".TABLE_CURRENT_STATUS);
         	$this->new_sku = $result[$this->auto_field];
 		}
-		if ($this->id  != '') $this->getInventory();
+		if ($this->id  != '') $this->getInventory();*/
 	}
 
 	/**

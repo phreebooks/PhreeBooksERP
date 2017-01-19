@@ -658,7 +658,7 @@ class admin extends \core\classes\admin {
   	  				}
   				}
   				
-  				document.title = '<?php echo sprintf(BOX_STATUS_MGR, $contact); ?>';
+  				document.title = '<?php echo sprintf(TEXT_MANAGER_ARGS, $contact); ?>';
   		    	function doSearch(value){
   		    		console.log('A search was requested.');
   		        	$('#dg').datagrid('load',{
