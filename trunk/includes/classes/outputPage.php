@@ -86,6 +86,8 @@ class outputPage  {
 	    	var decimal_precise     = <?php  echo $basis->currencies->currencies[DEFAULT_CURRENCY]['decimal_precise']; ?>;
     	  	var decimal_point       = "<?php echo $basis->currencies->currencies[DEFAULT_CURRENCY]['decimal_point']; ?>"; // leave " for ' separator
     	  	var thousands_point     = "<?php echo $basis->currencies->currencies[DEFAULT_CURRENCY]['thousands_point']; ?>";
+    	  	var symbol_left			= "<?php echo $basis->currencies->currencies[DEFAULT_CURRENCY]['symbol_left']; ?>";
+    	  	var symbol_right		= "<?php echo $basis->currencies->currencies[DEFAULT_CURRENCY]['symbol_right']; ?>";
     	  	var formatted_zero      = "<?php echo $basis->currencies->format(0); ?>";
     	</script> <?php 
     }

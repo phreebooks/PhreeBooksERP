@@ -224,6 +224,12 @@ function formatCurrency(amount) { // convert to expected currency format
 	}
 }
 
+function focusCurrency(field){
+	field.value = field.value.replace(thousands_point, '');
+	field.value = field.value.replace(symbol_left, '');
+	field.value = field.value.replace(symbol_right, '');
+}
+
 function formatPrecise(amount) { // convert to expected currency format with the additional precision
   // amount needs to be a string type with thousands separator ',' and decimal point dot '.' 
   var factor = Math.pow(10, decimal_precise);

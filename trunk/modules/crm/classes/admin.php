@@ -65,14 +65,6 @@ class admin extends \core\classes\admin {
 	    parent::__construct();
 	}
 
-	function install($path_my_files, $demo = false) {
-	    global $admin;
-	    parent::install($path_my_files, $demo);
-		if (!$admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_crm_id_num'))  $admin->DataBase->query("ALTER TABLE " . TABLE_CURRENT_STATUS . " ADD next_crm_id_num VARCHAR( 16 ) NOT NULL DEFAULT '10000';");
-		require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
-		\core\classes\fields::sync_fields('contacts', TABLE_CONTACTS);
-	}
-
   	function upgrade(\core\classes\basis &$basis) {
     	parent::upgrade($basis);
     	if (version_compare($this->status, '3.7', '<') ) {
@@ -83,12 +75,6 @@ class admin extends \core\classes\admin {
 		}
   	}
 
-	function delete($path_my_files) {
-	    global $admin;
-	    parent::delete($path_my_files);
-		if ($admin->DataBase->field_exists(TABLE_CURRENT_STATUS, 'next_crm_id_desc')) $admin->DataBase->exec("ALTER TABLE " . TABLE_CURRENT_STATUS . " DROP next_crm_id_desc");
-	}
-	
 	function after_editContact(\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		?>

@@ -44,6 +44,41 @@ class phreemail extends PHPMailer{
 	}
 
 	/**
+	 * Set the language for error messages.
+	 * Returns false if it cannot load the language file.
+	 * The default language is English.
+	 * @param string $langcode ISO 639-1 2-character language code (e.g. French is "fr")
+	 * @param string $lang_path Path to the language file directory, with trailing separator (slash)
+	 * @return bool
+	 * @access public
+	 */
+	public function setLanguage($langcode = 'en', $lang_path = 'language/')	{
+		parent::setLanguage($langcode = 'en', $lang_path = 'language/');
+		//Define full set of translatable strings
+		$PHPMAILER_LANG = array(
+				'authenticate'         => PHPMAILER_AUTH,     // 'SMTP Error: Could not authenticate.'
+				'connect_host'         => PHPMAILER_CH,       // 'SMTP Error: Could not connect to SMTP host.'
+				'data_not_accepted'    => PHPMAILER_DNA,      // 'SMTP Error: Data not accepted.'
+				'encoding'             => PHPMAILER_ENC,      // 'Unknown encoding: '
+				'empty_message'        => PHPMAILER_EMP_MSG,  // 'Message body empty'
+				'execute'              => PHPMAILER_EXE,      // 'Could not execute: '
+				'file_access'          => PHPMAILER_FA,       // 'Could not access file: '
+				'file_open'            => PHPMAILER_FO,       // 'File Error: Could not open file: '
+				'from_failed'          => PHPMAILER_FFAIL,    // 'The following From address failed: '
+				'invalid_address'      => PHPMAILER_INV_ADD,  // 'Invalid address'
+				'instantiate'          => PHPMAILER_INST,     // 'Could not instantiate mail function.'
+				'provide_address'      => PHPMAILER_PA,       // 'You must provide at least one recipient email address.'
+				'mailer_not_supported' => PHPMAILER_MNS,      // ' mailer is not supported.'
+				'recipients_failed'    => PHPMAILER_RFAIL,    // 'SMTP Error: The following recipients failed: '
+				'signing'              => PHPMAILER_SIGN,     // 'Signing Error: '
+				'smtp_connect_failed'  => PHPMAILER_CONN_FAILT,//'SMTP connect() failed.'
+				'smtp_error'           => PHPMAILER_SMTP_ERR, // 'SMTP server error: '
+				'variable_set'         => PHPMAILER_VAR_SET,  // 'Cannot set or reset variable: '
+		);
+		$this->language = $PHPMAILER_LANG;
+		return true;
+	}
+	/**
 	 *
 	 * this functions makes a connection with the imap server and sets the imap_stream
 	 * @param string $Host
@@ -435,6 +470,9 @@ class phreemail extends PHPMailer{
 	}
 
   	function __destruct(){
+  		if ($this->Mailer == 'smtp') { //close any open SMTP connection nicely
+  			$this->smtpClose();
+  		}
   		if($this->imap_stream) $this->close();
   	}
 

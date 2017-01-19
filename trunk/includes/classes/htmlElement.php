@@ -175,7 +175,7 @@ class htmlElement {
 		if ($id)						$field .= " id='$id' ";
 		if (gen_not_null($parameters))	$field .= " $parameters ";
 		if ($required)					$required = ",required:true";
-		$field .= " class='easyui-numberbox' label='{$label}: ' labelPosition='before' data-options=\"precision:{$temp['decimal_places']},groupSeparator:'{$temp['thousands_point']}',decimalSeparator:'{$temp['decimal_point']}',prefix:'".utf8_decode ($temp['symbol_left'])."', suffix:'{$temp['symbol_right']}', value:'$value' $required\">";
+		$field .= " class='easyui-numberbox' onfocus='focusCurrency(this)' label='{$label}: ' labelPosition='before' data-options=\"precision:{$temp['decimal_places']},groupSeparator:'{$temp['thousands_point']}',decimalSeparator:'{$temp['decimal_point']}',prefix:'".utf8_decode ($temp['symbol_left'])."', suffix:'{$temp['symbol_right']}', value:'$value' $required\">";
 		return $field;
 	}
 	

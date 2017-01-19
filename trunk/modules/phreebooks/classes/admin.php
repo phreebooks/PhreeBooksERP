@@ -577,6 +577,7 @@ class admin extends \core\classes\admin {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		try{
 			if (!property_exists($basis->cInfo, 'jID')) 	throw new \core\classes\userException(TEXT_JOURNAL_TYPE_NOT_DEFINED);
+			$period = ($basis->cInfo->search_period == 'all') ? '' : " and period = {$basis->cInfo->search_period} ";
 			if (isset($basis->cInfo->search_text) && $basis->cInfo->search_text <> '') {
 				$search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.address1',
 						'a.address2', 'a.city_town', 'a.postal_code', 'c.short_name');
@@ -586,7 +587,7 @@ class admin extends \core\classes\admin {
 			}
 			$criteria[] = ($basis->cInfo->only_open) ? " j.closed = '0' and " : "";
 			$search = (sizeof($criteria) > 0) ?  implode(' and ', $criteria) : '';
-			$sql = $basis->DataBase->prepare("SELECT *, MONTH(post_date) as month, YEAR(post_date) as year FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id in ({$basis->cInfo->jID}) {$search} ORDER BY post_date");
+			$sql = $basis->DataBase->prepare("SELECT *, MONTH(post_date) as month, YEAR(post_date) as year FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id in ({$basis->cInfo->jID}) {$search} {$period} ORDER BY post_date");
 			$sql->execute();
 			$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
 			$basis->cInfo->total = sizeof($results);
@@ -619,7 +620,11 @@ class admin extends \core\classes\admin {
   			        <a class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newJournal()"><?php echo sprintf(TEXT_NEW_ARGS, TEXT_JOURNAL);?></a>
   		        	<a class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteJournal()"><?php echo sprintf(TEXT_DELETE_ARGS, TEXT_JOURNAL);?></a>
   		        	<?php echo \core\classes\htmlElement::checkbox('Journal_show_inactive', TEXT_SHOW_INACTIVE, '1', false,'onchange="doSearch()"' );?>
-  		        	<div style="float: right;"> <?php echo \core\classes\htmlElement::search('search_text','doSearch');?></div>
+  		        	<div style="float: right;">
+						<?php 
+						echo \core\classes\htmlElement::dropdown('search_period','doSearch');
+						echo \core\classes\htmlElement::search('search_text','doSearch');?>
+					</div>
   		    	</div>
   		    	<div id="win" class="easyui-window">
   		    		<div id="contactToolbar" style="margin:2px 5px;">
@@ -658,6 +663,7 @@ class admin extends \core\classes\admin {
   		    		console.log('A search was requested.');
   		        	$('#dg').datagrid('load',{
   		        		search_text: $('#search_text').val(),
+						search_period: $('#search_period').val(),
   		        		dataType: 'json',
   		                contentType: 'application/json',
   		                async: false,
@@ -680,6 +686,7 @@ class admin extends \core\classes\admin {
   				$('#dg').datagrid({
   					url:		"index.php?action=GetAllJournals",
   					queryParams: {
+						search_period: <?php echo CURRENT_PERIOD; ?>,
   						dataType: 'json',
   		                contentType: 'application/json',
   		                async: false,
