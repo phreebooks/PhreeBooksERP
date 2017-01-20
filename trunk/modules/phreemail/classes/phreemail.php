@@ -403,7 +403,8 @@ class phreemail extends PHPMailer{
   	function getEmailFromDb($id){
   		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." id = $id");
   		global $admin;
-		$this = $admin->DataBase->query("SELECT * FROM " . TABLE_PHREEMAIL . " WHERE id = '{$id}'");
+		$temp = $admin->DataBase->query("SELECT * FROM " . TABLE_PHREEMAIL . " WHERE id = '{$id}'");
+		foreach ($temp as $key => $value) $this->$key = $value;
 	}
 
 /*

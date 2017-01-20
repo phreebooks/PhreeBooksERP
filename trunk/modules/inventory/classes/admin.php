@@ -796,20 +796,20 @@ class admin extends \core\classes\admin {
   				}
   				
   				document.title = '<?php echo sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY); ?>';
+  				
   		    	function doSearch(value){
   		    		console.log('A search was requested.');
   		    		var field = document.getElementsByName("filter_field");
   		    		var criteria = document.getElementsByName("filter_criteria");
   		    		var value = document.getElementsByName("filter_value");
-  		    		var temp new Array(field.length);
-  		    		var i;
+  		    		var temp = {};
   		    		for (i = 0; i < field.length; i++) { //@todo
-  		    			temp[i] = new Array (3);
-  		    			temp[i]['field']		= field[i].value;
-  		    			temp[i]['criteria']	= criteria[i].value;
-  		    			temp[i]['value']		= value[i].value;
-  		    		}
-  		    		console.log('filter =.'+ JSON.stringify(temp));
+  		    			temp[i] = {};
+  		    			temp[i].field = field[i].value;
+  		    			temp[i].criteria = criteria[i].value;
+  		    			temp[i].value = value[i].value;
+  		    		};
+  		    		
   		        	$('#dg').datagrid('load',{
   		        		search_text: $('#search_text').val(),
   		        		dataType: 'json',
@@ -908,7 +908,28 @@ class admin extends \core\classes\admin {
   		\core\classes\messageStack::development("executing ".__METHOD__);
   		try{
   			$offset = ($basis->cInfo->page - 1) * $basis->cInfo->rows;
-			if ($basis->cInfo->search_text != '') {
+  			if (sizeof($basis->cInfo->filter) > 0 ) {
+  				$filter_criteria = Array(" = "," != "," LIKE "," NOT LIKE "," > "," < ");
+  				foreach ($basis->cInfo->filter as $key => $row) {
+  					if(      $filter_criteria[$row->criteria] == " LIKE " || $row->criteria == FILTER_CONTAINS){
+  						if ( $_SESSION['filter_value'][$x] <> '' ) $criteria[] = "{$row->field}  Like '%{$row->value}%' ";
+  							
+  					}elseif( $filter_criteria[$row->criteria] == " NOT LIKE "){
+  						if ( $row->value <> '' ) $criteria[] = "{$row->field} Not Like '%{$row->value}%' ";
+  							
+  					}elseif( $filter_criteria[$row->criteria] == " = "  && $row->value == ''){
+  						if ( $row->field == 'a.sku' && $row->value == '' ) { $x++; continue; }
+  						$criteria[] = "({$row->field} {$filter_criteria[$row->criteria]} '{$row->value}' or '{$row->field}' IS NULL ) ";
+  							
+  					}elseif( $filter_criteria[$row->criteria] == " != " && $row->value == ''){
+  						$criteria[] = "({$row->field} {$filter_criteria[$row->criteria]}  '{$row->value} or '{$row->field}' IS NOT NULL ) ";
+  							
+  					}else{
+  						$criteria[] = "{$row->field} {$filter_criteria[$row->criteria]} '{$row->value}' ";
+  					}
+  				}
+  			} 
+  			if ($basis->cInfo->search_text != '') {
 	  			$search_fields = array('a.sku', 'a.description_short', 'a.description_sales', 'p.description_purchase');
 	  			// hook for inserting new search fields to the query criteria.
 	  			if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
@@ -932,81 +953,6 @@ class admin extends \core\classes\admin {
 			$basis->cInfo->success = false;
 			$basis->cInfo->error_message = $e->getMessage();
 		}
-  	}
-
-  	function oldLoadInventoryManager (\core\classes\basis $basis){ 
-  		$basis->observer->send_menu($basis);
-  		$basis->security_level	= \core\classes\user::validate(SECURITY_ID_MAINTAIN_INVENTORY);
-  		//building filter criteria
-  		$_SESSION['filter_field'] 	 = isset( $basis->cInfo['filter_field']) 	?  $basis->cInfo['filter_field'] : $_SESSION['filter_field'];
-  		$_SESSION['filter_criteria'] = isset( $basis->cInfo['filter_criteria']) ?  $basis->cInfo['filter_criteria'] : $_SESSION['filter_criteria'];
-  		$_SESSION['filter_value'] 	 = isset( $basis->cInfo['filter_value']) 	?  $basis->cInfo['filter_value'] : $_SESSION['filter_value'];
-  		$filter_criteria = Array(" = "," != "," LIKE "," NOT LIKE "," > "," < ");
-  		$x = 0;
-  		history_filter('inventory');
-  		while (isset($_SESSION['filter_field'][$x])) {
-  			if(      $filter_criteria[$_SESSION['filter_criteria'][$x]] == " LIKE " || $_SESSION['filter_criteria'][$x] == TEXT_CONTAINS){
-  				if ( $_SESSION['filter_value'][$x] <> '' ) $criteria[] = "{$_SESSION['filter_field'][$x]} Like '%{$_SESSION['filter_value'][$x]}%' ";
-  			}elseif( $filter_criteria[$_SESSION['filter_criteria'][$x]] == " NOT LIKE "){
-  				if ( $_SESSION['filter_value'][$x] <> '' ) $criteria[] = "{$_SESSION['filter_field'][$x]} Not Like '%{$_SESSION['filter_value'][$x]}%' ";
-  			}elseif( $filter_criteria[$_SESSION['filter_criteria'][$x]] == " = "  && $_SESSION['filter_value'][$x] == ''){
-  				if ( $_SESSION['filter_field'][$x] == 'a.sku' && $_SESSION['filter_value'][$x] == '' ) { $x++; continue; }
-  				$criteria[] = "({$_SESSION['filter_field'][$x]} {$filter_criteria[$_SESSION['filter_criteria'][$x]]} '{$_SESSION['filter_value'][$x]}' or '{$_SESSION['filter_field'][$x]}' IS NULL ) ";
-  			}elseif( $filter_criteria[$_SESSION['filter_criteria'][$x]] == " != " && $_SESSION['filter_value'][$x] == ''){
-  				$criteria[] = "({$_SESSION['filter_field'][$x]} {$filter_criteria[$_SESSION['filter_criteria'][$x]]} '{$_SESSION['filter_value'][$x]}' or '{$_SESSION['filter_field'][$x]}' IS NOT NULL ) ";
-  			}else{
-  				$criteria[] = $_SESSION['filter_field'][$x] . $filter_criteria[$_SESSION['filter_criteria'][$x]]. ' "' . $_SESSION['filter_value'][$x] . '" ';
-  			}
-  			$x++;
-  		}
-
-  		// build the list header
-  		$heading_array = array(
-  				'a.sku'                     => TEXT_SKU,
-  				'a.inactive'                => TEXT_INACTIVE,
-  				'a.description_short'       => TEXT_DESCRIPTION,
-  				'a.quantity_on_hand'        => TEXT_QUANTITY_ON_HAND_SHORT,
-  				'a.quantity_on_sales_order' => INV_HEADING_QTY_ON_SO,
-  				'a.quantity_on_allocation'  => INV_HEADING_QTY_ON_ALLOC,
-  				'a.quantity_on_order'       => TEXT_QUANTITY_ON_ORDER_SHORT,
-  		);
-  		$result      = html_heading_bar($heading_array);
-  		$list_header = $result['html_code'];
-  		$disp_order  = $result['disp_order'];
-  		//	if ($disp_order == 'a.sku ASC') $disp_order ='LPAD(a.sku,'.MAX_INVENTORY_SKU_LENGTH.',0) ASC';
-  		//	if ($disp_order == 'a.sku DESC')$disp_order ='LPAD(a.sku,'.MAX_INVENTORY_SKU_LENGTH.',0) DESC';
-  		// build the list for the page selected
-  		if (isset($basis->cInfo['search_text']) && $basis->cInfo['search_text'] <> '') {
-  			$search_fields = array('a.sku', 'a.description_short', 'a.description_sales', 'p.description_purchase');
-  			// hook for inserting new search fields to the query criteria.
-  			if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
-  			$criteria[] = '(' . implode(" like '%{$basis->cInfo['search_text']}%' or ", $search_fields) . " like '%{$_REQUEST['search_text']}%')";
-  		}
-  		// build search filter string
-  		$search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
-  		$field_list = array('a.id as id', 'a.sku as sku', 'inactive', 'inventory_type', 'description_short', 'full_price',
-  				'quantity_on_hand', 'quantity_on_order', 'quantity_on_sales_order', 'quantity_on_allocation', 'last_journal_date');
-  		// hook to add new fields to the query return results
-  		if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
-  		$query_raw    = "SELECT SQL_CALC_FOUND_ROWS DISTINCT " . implode(', ', $field_list)  . " FROM " . TABLE_INVENTORY ." a LEFT JOIN " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku ". $search . " order by $disp_order ";
-  		//check if sql is executed before otherwise retrieve from memorie.
-  		$sql = $basis->DataBase->prepare($query_raw);
-  		$sql->execute();
-  		$basis->cInfo->inventory_list = $sql->fetchAll(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE) ;
-/* @todo look at this
- *   		if (isset($basis->sqls[$query_raw])) $query_result = $basis->sqls[$query_raw];
-  		else $query_result = $admin->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($basis->cInfo['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
-  		$query_split  = new \core\classes\splitPageResults($basis->cInfo['list'], '');
-  		$basis->sqls[$query_raw] = $query_result; // storing data into cache memory*/
-  		history_save('inventory');
-  		// the following should save loading time.
-  		if ($basis->cInfo->FirstValue == '' || $basis->cInfo->FirstId  == '' || $basis->cInfo->SecondField  == '' || $basis->cInfo->SecondFieldValue  == '' || $basis->cInfo->SecondFieldId	 == '' ) $this->LoadInventoryFilter();
-  		//end building array's for filter dropdown selection
-  		$basis->page_title		= sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY);
-  		$basis->module			= 'inventory';
-  		$basis->page			= 'main';
-  		$basis->template 		= 'template_main';
-  		$basis->observer->send_footer($basis);
   	}
 
   	function before_LoadInventoryManager(\core\classes\basis $basis){
@@ -1105,12 +1051,12 @@ class admin extends \core\classes\admin {
   			var RowCells = document.getElementById('filter_table').rows[rowCnt].cells;
   			switch (SecondField[text]) {
   				case  'multi_check_box':
-  					RowCells[2].innerHTML =	'<input type="text" name="filter_criteria[]" readonly  id="filter_criteria' + rowCnt + '"  value="<?php echo TEXT_CONTAINS;?>" />';
+  					RowCells[2].innerHTML =	'<input type="text" name="filter_criteria" readonly  id="filter_criteria' + rowCnt + '"  value="<?php echo TEXT_CONTAINS;?>" />';
   					break;
   				default:
   					var tempValue = new Array( '<?php echo TEXT_EQUAL_TO?>', '<?php echo TEXT_NOT_EQUAL_TO?>', '<?php echo TEXT_LIKE?>', '<?php echo TEXT_NOT_LIKE?>', '<?php echo TEXT_BIGGER_THAN?>', '<?php echo TEXT_LESS_THAN?>');
   					var tempId    = new Array("0","1","2","3","4","5");
-  					RowCells[2].innerHTML =	'<select name="filter_criteria[]" id="filter_criteria'+ rowCnt + '" ></select>';
+  					RowCells[2].innerHTML =	'<select name="filter_criteria" id="filter_criteria'+ rowCnt + '" ></select>';
   					buildSelect('filter_criteria'+ rowCnt, tempValue, tempId);
   			}
   			switch (SecondField[text]) {
@@ -1119,14 +1065,14 @@ class admin extends \core\classes\admin {
   				case  'radio':
   					var tempValue 	=  SecondFieldId[text];
   					var tempId     	=  SecondFieldValue[text];
-  					RowCells[3].innerHTML =	'<select name="filter_value[]" id="filter_value'+ rowCnt + '" ></select>';
+  					RowCells[3].innerHTML =	'<select name="filter_value" id="filter_value'+ rowCnt + '" ></select>';
   					buildSelect('filter_value'+ rowCnt, tempValue, tempId);
   					break;
   				case  'check_box':
   					if (typeFilterValue == 'SELECT' ) valueFilterValue = '';
-  					var tempValue = new Array(text_no, text_yes);
+  					var tempValue = new Array("<?php echo TEXT_NO ?>", "<?php echo TEXT_YES ?>");
   					var tempId    = new Array("0","1");
-  					RowCells[3].innerHTML =	'<select name="filter_value[]" id="filter_value'+ rowCnt + '" ></select>';
+  					RowCells[3].innerHTML =	'<select name="filter_value" id="filter_value'+ rowCnt + '" ></select>';
   					buildSelect('filter_value'+ rowCnt, tempValue, tempId);
   					break;
   				default:
@@ -1134,9 +1080,9 @@ class admin extends \core\classes\admin {
   						var typeFilterValue  = document.getElementById('filter_value'+ rowCnt ).tagName;
   						var valueFilterValue = document.getElementById('filter_value'+ rowCnt ).value;
   						if (typeFilterValue != 'INPUT') valueFilterValue = '';
-  						RowCells[3].innerHTML = '<input type="text" name="filter_value[]" id="filter_value' + rowCnt + '" size="64" maxlength="64" value="'+valueFilterValue+'" />';
+  						RowCells[3].innerHTML = '<input type="text" name="filter_value" id="filter_value' + rowCnt + '" size="64" maxlength="64" value="'+valueFilterValue+'" />';
   					}else {
-  						RowCells[3].innerHTML = '<input type="text" name="filter_value[]" id="filter_value' + rowCnt + '" size="64" maxlength="64" />';
+  						RowCells[3].innerHTML = '<input type="text" name="filter_value" id="filter_value' + rowCnt + '" size="64" maxlength="64" />';
   					}
   			}
   		}
@@ -1154,7 +1100,7 @@ class admin extends \core\classes\admin {
   			newCell.innerHTML = cell;
   		
   			cell  = '   <td">';
-  			cell +=		'<select name="filter_field[]" id="filter_field'+ rowCnt + '" onChange="updateFilter('+ rowCnt + ', false)"></select>';
+  			cell +=		'<select name="filter_field" id="filter_field'+ rowCnt + '" onChange="updateFilter('+ rowCnt + ', false)"></select>';
   			cell += '   </td>';
   			newCell = newRow.insertCell(-1);
   			newCell.innerHTML = cell;

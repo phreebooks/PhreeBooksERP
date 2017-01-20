@@ -209,7 +209,7 @@ class admin extends \core\classes\admin {
 		}
 		if (version_compare($this->status, '4.0.3', '<') ) {
 			if (!$basis->DataBase->field_exists(TABLE_CONTACTS, 'notes')) $basis->DataBase->exec("ALTER TABLE " . TABLE_CONTACTS . " ADD notes TEXT NOT NULL AFTER attachments");
-			$basis->DataBase->exec("UPDATE ".TABLE_CONTACTS." AS c SET notes = ( SELECT notes FROM ".TABLE_ADDRESS_BOOK." AS a WHERE  c.id = a.ref_id AND a.type like '%m')");
+			$basis->DataBase->exec("UPDATE ".TABLE_CONTACTS." AS c SET notes = ( SELECT notes FROM ".TABLE_ADDRESS_BOOK." AS a WHERE  c.id = a.ref_id AND a.type like '%m' AND a.notes != '')");
 			if ($basis->DataBase->field_exists(TABLE_ADDRESS_BOOK, 'notes'))  $basis->DataBase->exec("ALTER TABLE " . TABLE_ADDRESS_BOOK . " DROP notes");
 		}
 		\core\classes\fields::sync_fields('contacts', TABLE_CONTACTS);

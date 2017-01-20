@@ -26,7 +26,7 @@ class PDO extends \PDO {
     }
 
 	public function query($query) {
-		\core\classes\messageStack::debug_log("excecuting query: $query");
+		\core\classes\messageStack::debug_log("executing query: $query");
 		$time_start = explode(' ', microtime());
 		$temp =  parent::query($query);
 		$time_end = explode (' ', microtime());
@@ -37,7 +37,7 @@ class PDO extends \PDO {
 	}
 
 	public function prepare ($query, $options = NULL){
-		\core\classes\messageStack::debug_log("excecuting query: $query");
+		\core\classes\messageStack::debug_log("executing query: $query");
 		$time_start = explode(' ', microtime());
 		$temp =  parent::prepare($query);
 		$time_end = explode (' ', microtime());
@@ -48,7 +48,7 @@ class PDO extends \PDO {
 	}
 
 	public function exec ($query){
-		\core\classes\messageStack::debug_log("excecuting query: $query");
+		\core\classes\messageStack::debug_log("executing query: $query");
 		$time_start = explode(' ', microtime());
 		$temp =  parent::exec($query);
 		$time_end = explode (' ', microtime());

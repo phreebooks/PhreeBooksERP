@@ -73,6 +73,7 @@ class user {
 		if ($_REQUEST['action'] == "ValidateUser") $this->company = $_POST['company'];
 		if ( $this->company == '') {
 			if (!file_exists(DIR_FS_MY_FILES . $this->company. '/config.php')) {
+				$this->load_companies();
 				\core\classes\messageStack::debug_log("company file doesn't exist");
 				\core\classes\messageStack::add(sprintf(TEXT_COMPANY_CONFIG_FILE_DOESNT_EXIST, $this->company));
 			}

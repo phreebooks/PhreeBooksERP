@@ -23,7 +23,7 @@ class admin extends \core\classes\admin {
 	public $id = 'phreebooks';
 	public $description = MODULE_PHREEBOOKS_DESCRIPTION;
 	public $core = true;
-	public $version = '3.6';
+	public $version = '4.0';
 
 	function __construct() {
 		$this->text = sprintf ( TEXT_MODULE_ARGS, TEXT_PHREEBOOKS );
@@ -401,12 +401,12 @@ class admin extends \core\classes\admin {
 			$db_version = 3.4;
 		}
 		if (version_compare ( $db_version, '3.51', '<' )) {
-			$result = $basis->DataBase->query ( "SELECT id, so_po_ref_id FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id = 16 AND so_po_ref_id > 0" );
-			while ( ! $result->EOF ) { // to fix transfers to store 0 from any other store
-				if ($result->fields ['so_po_ref_id'] > $result->fields ['id']) {
-					$basis->DataBase->query ( "UPDATE " . TABLE_JORNAL_MAIN . " SET so_po_ref_id = -1 WHERE id=" . $result->fields ['id'] );
+			$sql = $basis->DataBase->prepare ( "SELECT id, so_po_ref_id FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id = 16 AND so_po_ref_id > 0" );
+			$sql->execute();
+		  	while ($result = $sql->fetch(\PDO::FETCH_LAZY)) { // to fix transfers to store 0 from any other store
+				if ($result['so_po_ref_id'] > $result['id']) {
+					$basis->DataBase->query ( "UPDATE " . TABLE_JORNAL_MAIN . " SET so_po_ref_id = -1 WHERE id=" . $result['id'] );
 				}
-				$result->MoveNext ();
 			}
 			if (! $basis->DataBase->field_exists ( TABLE_JOURNAL_ITEM, 'purch_package_quantity' ))
 				$basis->DataBase->query ( "ALTER TABLE " . TABLE_JOURNAL_ITEM . " ADD purch_package_quantity float default NULL AFTER project_id" );
