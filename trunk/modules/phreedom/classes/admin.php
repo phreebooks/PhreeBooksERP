@@ -322,11 +322,11 @@ class admin extends \core\classes\admin {
 			  FROM " . TABLE_USERS . " WHERE admin_name = '{$basis->cInfo->admin_name}'");
 			$sql->execute();
 			$result = $sql->fetch(\PDO::FETCH_LAZY);
-			if (!$result || $result['inactive']) throw new \core\classes\userException(TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD, 'LoadLogIn');
+			if (!$result || $result['inactive']) throw new \Exception(TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD);
 			\core\classes\encryption::validate_password($basis->cInfo->admin_pass, $result['admin_pass']);
 		}catch (\Exception $e){
-			\core\classes\messageStack::debug_log($e);
-			\core\classes\messageStack::add(TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD);
+			\core\classes\messageStack::error($_SESSION['user']->get_ip_address(). " ". $e);
+			\core\classes\messageStack::add($e);
 			$_SESSION['user']->LoadLogIn();
 		}
 		foreach ($result as $key => $value) $_SESSION['user']->$key = $value;

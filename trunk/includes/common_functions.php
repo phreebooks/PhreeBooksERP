@@ -604,11 +604,11 @@ function get_dir_tree($dir, $root = true)  {
 		case 'large':  $subdir = '32x32/'; $height='32'; break;
 		case 'svg' :   $subdir = 'scalable/';            break;
 	}
-    $image_html = '<img src="' . DIR_WS_ICONS . $subdir . $image . '" alt="' . $alt . '" class="imgIcon"';
-    if (gen_not_null($alt))    $image_html .= ' title="'  . $alt    . '"';
-    if (gen_not_null($id))     $image_html .= ' id="'     . $id     . '"';
-    if ($width > 0)            $image_html .= ' width="'  . $width  . '"';
-    if ($height > 0)           $image_html .= ' height="' . $height . '"';
+    $image_html = "<img src='" . DIR_WS_ICONS . "{$subdir}{$image}'  alt='{$alt}' class='imgIcon'";
+    if (gen_not_null($alt))    $image_html .= " title='{$alt}'";
+    if (gen_not_null($id))     $image_html .= " id='{$id}'";
+    if ($width > 0)            $image_html .= " width='{$width}'";
+    if ($height > 0)           $image_html .= " height='{$height}'";
     if (gen_not_null($params)) $image_html .= ' ' . $params;
     $image_html .= ' />';
     return $image_html;

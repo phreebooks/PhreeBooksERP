@@ -10,7 +10,7 @@ class lb extends \inventory\classes\inventory {//Labor
 	public $posible_cost_methodes   = array('f');
 
 	function __construct(){
-		$this->quantity_on_hand = '';
+		//$this->quantity_on_hand = '';
 	}
 	
 	function update_inventory_status($sku, $field, $adjustment, $item_cost, $vendor_id, $desc){

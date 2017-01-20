@@ -38,9 +38,10 @@ try{
 	\core\classes\messageStack::debug_log(" ".$e->getMessage());
 	\core\classes\messageStack::debug_log(" fire event : $e->action");
 	\core\classes\messageStack::debug_log("\n\n\n".$e->getTraceAsString());
-	if( $basis->cInfo->contentType == "application/json"){
-		$temp->success = false;
-		$temp->error_message = $e->getMessage();
+	if( $_REQUEST['contentType'] == "application/json"){
+		$temp['rows'] = 0;
+		$temp['success'] = false;
+		$temp['error_message'] = $e->getMessage();
 		echo json_encode($temp);
 	}else{
 		if (is_object($admin) && !empty($e->action)) {

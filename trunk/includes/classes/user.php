@@ -101,8 +101,9 @@ class user {
 	 */
 
 	final static function validate($token = 0, $user_active = false) {
+		\core\classes\messageStack::development("executing ".__METHOD__);
   		$security_level = $_SESSION['user']->admin_security[$token];
-  		if (!in_array($security_level, array(1,2,3,4)) && !$user_active) throw new \core\classes\userException(ERROR_NO_PERMISSION, 10, $e);
+  		if (!in_array($security_level, array(1,2,3,4)) && !$user_active) throw new \core\classes\userException(ERROR_NO_PERMISSION);
   		return $user_active ? 1 : $security_level;
 	}
 
@@ -206,7 +207,7 @@ class user {
 		unset($this->config[$constant]);
 	}
 	
-	function get_ip_address() {
+	static function get_ip_address() {
 		if (isset($_SERVER)) {
 			if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
 				$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
@@ -228,7 +229,16 @@ class user {
 	}
 	
 	final function LoadLogIn(){
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		global $admin;
+		\core\classes\messageStack::development("executing ".__METHOD__ );
+		if ( $_REQUEST['contentType'] == "application/json"){
+			\core\classes\messageStack::development("returning json you need to signin ");
+			$temp['rows'] = 0;
+			$temp['success'] = false;
+			$temp['error_message'] = TEXT_SORRY_YOU_NEED_TO_LOGIN;
+			//echo json_encode($temp);
+			die(json_encode($temp));
+		}
 		?> <script type='text/javascript'>
 				document.title = '<?php echo TEXT_PHREEBOOKS_ERP; ?>';
 				window.onload = function(){

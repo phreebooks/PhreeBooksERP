@@ -68,12 +68,14 @@ class messageStack {
 	  	$xml .= "</messageStack>\n ";
       	return $xml;
     }
-
-    Static function debug_log ($txt){
+	/**
+	 * @todo forward to development
+	 * @param unknown $txt
+	 */
+    static function debug_log ($txt){
     	global $admin;
     	if (!defined('PATH_TO_MY_FILES')) define('PATH_TO_MY_FILES','my_files/');
-    	$date = new \core\classes\DateTime();
-    	error_log("date: " . $date->format('Y-m-d H:i:s.u') . " company: {$_SESSION['user']->company} user: {$_SESSION['user']->display_name}  $txt" . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."development.log");
+    	self::development($txt);
     	if (substr($txt, 0, 1) == "\n") {
     		error_log("\nTime: " . (int)(1000 * (microtime(true) - PAGE_EXECUTION_START_TIME)) . " ms, " . $admin->DataBase->count_queries . " SQLs " . (int)($admin->DataBase->total_query_time * 1000)." ms => ".substr($txt, 1). PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."debug.log");
     	}else {
@@ -95,9 +97,41 @@ class messageStack {
         readfile($filename);
         self::add("Successfully created $filename file.","success");
 	}
-
+	
+	static function development($txt){
+		if (!defined('PATH_TO_MY_FILES')) define('PATH_TO_MY_FILES','my_files/');
+		$date = new \core\classes\DateTime();
+		error_log("date: " . $date->format('Y-m-d H:i:s.u') . " company: {$_SESSION['user']->company} user: {$_SESSION['user']->display_name}  $txt" . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."development.log");
+	}
+	
+	static function error($txt){
+		if (!defined('PATH_TO_MY_FILES')) define('PATH_TO_MY_FILES','my_files/');
+		self::development($txt);
+		$date = new \core\classes\DateTime();
+		$text  = $date->format('Y-m-d H:i:s.u') . " User: {$_SESSION['user']->admin_id} Company: {$_SESSION['user']->company} Caught Error: '{$txt}' ";
+		error_log($text . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
+	}
+	
 	static function end(){
 		if (!defined('PATH_TO_MY_FILES')) define('PATH_TO_MY_FILES','my_files/');
 		error_log("/***** ending messageStack *****/". PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/development.log");
+	}
+	
+	function __destruct(){
+		return;
+		if (!defined('PATH_TO_MY_FILES')) define('PATH_TO_MY_FILES','my_files/');
+	    $trace = debug_backtrace();
+	    $caller = array_shift($trace);
+	    $function_name = $caller['function'];
+	    error_log(sprintf('%s: Called from %s:%s', $function_name, $caller['file'], $caller['line']) . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
+	    foreach ($trace as $entry_id => $entry) {
+	        $entry['file'] = $entry['file'] ? : '-';
+	        $entry['line'] = $entry['line'] ? : '-';
+	        if (empty($entry['class'])) {
+	            error_log(sprintf('%s %3s. %s() %s:%s', $function_name, $entry_id + 1, $entry['function'], $entry['file'], $entry['line']) . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
+	        } else {
+	            error_log(sprintf('%s %3s. %s->%s() %s:%s', $function_name, $entry_id + 1, $entry['class'], $entry['function'], $entry['file'], $entry['line']) . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
+	        }
+	    }
 	}
 }

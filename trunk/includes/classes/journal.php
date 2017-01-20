@@ -648,7 +648,7 @@ abstract class journal {
 		$output = array();
 		$sql = $admin->DataBase->prepare("SELECT id, post_date, purchase_invoice_id, terminal_date FROM " . TABLE_JOURNAL_MAIN . " WHERE recur_id = $recur_id and post_date >= '$post_date' order by post_date");
 		$sql->execute();
-		return $sql->fetchAll(\PDO::FETCH_LAZY);
+		return $sql->fetchAll(\PDO::FETCH_ASSOC);
   	}
 } // end class journal
 ?>

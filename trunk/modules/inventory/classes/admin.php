@@ -86,7 +86,7 @@ class admin extends \core\classes\admin {
 	public $id 			= 'inventory';
 	public $description = MODULE_INVENTORY_DESCRIPTION;
 	public $core		= true;
-	public $version		= '4.0-dev';
+	public $version		= '4.0.1-dev';
 
 	function __construct() {
 		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY);
@@ -485,8 +485,11 @@ class admin extends \core\classes\admin {
 		if (version_compare($this->status, '4.0', '<') ) {
 			if (!$basis->DataBase->field_exists(TABLE_INVENTORY, 'class')) $basis->DataBase->exec("ALTER TABLE ".TABLE_INVENTORY." ADD class VARCHAR( 255 ) NOT NULL DEFAULT '' FIRST");
 			$basis->DataBase->exec("UPDATE ".TABLE_INVENTORY." SET class = CONCAT('inventory\\\\classes\\\\type\\\\', inventory_type) WHERE class = '' ");
-			if ($basis->DataBase->field_exists(TABLE_INVENTORY, 'description_purchase'))  $basis->DataBase->exec("ALTER TABLE " . TABLE_INVENTORY . " DROP description_purchase");
-			$this->notes[] = " in release 4.0 the column description_purchase has been dropt from the inventory table all information now comes from the table inventory_purchase_details ";
+			if ($basis->DataBase->field_exists(TABLE_INVENTORY, 'description_purchase'))  	$basis->DataBase->exec("ALTER TABLE " . TABLE_INVENTORY . " DROP description_purchase");
+			if ($basis->DataBase->field_exists(TABLE_INVENTORY, 'purch_taxable'))  			$basis->DataBase->exec("ALTER TABLE " . TABLE_INVENTORY . " DROP purch_taxable");
+			if ($basis->DataBase->field_exists(TABLE_INVENTORY, 'item_cost'))  				$basis->DataBase->exec("ALTER TABLE " . TABLE_INVENTORY . " DROP item_cost");
+			if ($basis->DataBase->field_exists(TABLE_INVENTORY, 'price_sheet_v'))  			$basis->DataBase->exec("ALTER TABLE " . TABLE_INVENTORY . " DROP price_sheet_v");
+			$this->notes[] = " in release 4.0 the columns vendor_id, description_purchase, purch_taxable, item_cost, price_sheet_v have been dropt from the inventory table all information now comes from the table inventory_purchase_details ";
 		}
 		\core\classes\fields::sync_fields('inventory', TABLE_INVENTORY);
 	}
@@ -708,6 +711,29 @@ class admin extends \core\classes\admin {
   		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
   		$basis->observer->send_menu($basis); ?>
   			<div data-options="region:'center'">
+  				<table id="filter_table" class="ui-widget" style="border-collapse:collapse;">
+			  		<thead class="ui-widget-header">
+						<tr>
+				  			<th></th>
+				  			<th><?php echo TEXT_FIELD_NAME; ?></th>
+				  			<th><?php echo TEXT_COMPARISON; ?></th>
+				  			<th><?php echo TEXT_VALUE;?>:</th>
+						</tr>
+			  		</thead>
+			  		<tbody id="filter_table_body" class="ui-widget-content">
+				  
+			 		</tbody>
+			 		<tfoot>
+				 		<tr>
+				 			<td><?php echo html_icon('actions/list-add.png', TEXT_ADD, 'medium', 'onclick="addFilterRow()"'); ?></td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+				 			<td style="text-align:right">
+							<?php echo html_icon('actions/system-search.png', TEXT_SEARCH, 'medium', 'onclick="doSearch()"') ?>
+							</td>
+				 		</tr>
+			 		</tfoot>
+				</table>
   				<table id="dg" title="<?php echo sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY);?>" style="height:500px;padding:50px;">
   					<thead>
   						<tr>
@@ -739,10 +765,19 @@ class admin extends \core\classes\admin {
   				</div>
   	    	</div>	
   			<script type="text/javascript">
-  				function actionformater (value,row,index){
-  					var href = 'innerlist.php?list='+row.id;
-  					var dhref = 'dellist.php?list='+row.id;
-  					return '<a class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editInventory()"><?php echo sprintf(TEXT_EDIT_ARGS, TEXT_INVENTORY);?></a><a href="#" class="easyui-linkbutton" iconCls="icon-no" plain="true" onclick="deleteInventory()"><?php echo sprintf(TEXT_DELETE_ARGS, TEXT_INVENTORY);?></a>';
+  				function actionformater (value,row,index){ 
+  	  				var temp = '';
+  	  				//console.log(" id = "+row.id+" sku = "+row.sku+" and security level ="+row.security_level);	//@todo
+  					if (row.security_level > 1) {
+  	  					temp += '<a class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editInventory()"><?php echo sprintf(TEXT_EDIT_ARGS, TEXT_INVENTORY);?></a>';
+  					}
+
+	  				//  	if ($security_level > 3 && row.inventory_type <> 'mi' && row.inventory_type <> 'ia') echo html_icon('apps/accessories-text-editor.png', TEXT_RENAME, 'small', "onclick='renameItem({row.id},\"{row.inventory_type}\")'") + chr(10);
+	  				//  	if ($security_level > 3 && row.inventory_type <> 'mi' && row.inventory_type <> 'ia' && (row.last_journal_date != '0000-00-00 00:00:00' || row.last_journal_date != '')) echo html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', "onclick='if (confirm(\"" + INV_MSG_DELETE_INV_ITEM + "\")) deleteItem({row.id},\"{row.inventory_type}\")'") + chr(10);
+	  				//  	if ($security_level > 1 && row.inventory_type <> 'mi' && row.inventory_type <> 'ia') echo html_icon('actions/edit-copy.png', TEXT_COPY, 'small', "onclick='copyItem({row.id},\"{row.inventory_type}\")'") + chr(10);
+	  				//  	if ($security_level > 2) echo html_icon('mimetypes/x-office-spreadsheet.png', TEXT_CUSTOMER_PRICE_SHEETS, 'small', "onclick='priceMgr({row.id}, \"\",{row.full_price}, \"c\")'") + chr(10);
+
+  						return temp;//'<a class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editInventory()"><?php echo sprintf(TEXT_EDIT_ARGS, TEXT_INVENTORY);?></a><a href="#" class="easyui-linkbutton" iconCls="icon-no" plain="true" onclick="deleteInventory()"><?php echo sprintf(TEXT_DELETE_ARGS, TEXT_INVENTORY);?></a>';
   				}
   				
   				function formatQtyOnhand (value,row,index){
@@ -763,6 +798,18 @@ class admin extends \core\classes\admin {
   				document.title = '<?php echo sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY); ?>';
   		    	function doSearch(value){
   		    		console.log('A search was requested.');
+  		    		var field = document.getElementsByName("filter_field");
+  		    		var criteria = document.getElementsByName("filter_criteria");
+  		    		var value = document.getElementsByName("filter_value");
+  		    		var temp new Array(field.length);
+  		    		var i;
+  		    		for (i = 0; i < field.length; i++) { //@todo
+  		    			temp[i] = new Array (3);
+  		    			temp[i]['field']		= field[i].value;
+  		    			temp[i]['criteria']	= criteria[i].value;
+  		    			temp[i]['value']		= value[i].value;
+  		    		}
+  		    		console.log('filter =.'+ JSON.stringify(temp));
   		        	$('#dg').datagrid('load',{
   		        		search_text: $('#search_text').val(),
   		        		dataType: 'json',
@@ -770,6 +817,7 @@ class admin extends \core\classes\admin {
   		                async: false,
   		                type: '<?php echo $basis->cInfo->type;?>',
   		                inventory_show_inactive: document.getElementById('inventory_show_inactive').checked ? 1 : 0,
+  		  		        filter: temp,
   		        	});
   		    	}
   	
@@ -795,6 +843,7 @@ class admin extends \core\classes\admin {
   						console.log('the loading of the datagrid was succesfull');
   						$.messager.progress('close');
   						if(data.total == 0) $.messager.alert('<?php echo TEXT_ERROR?>',"<?php echo TEXT_NO_RESULTS_FOUND?>");
+  						if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
   					},
   					onLoadError: function(){
   						console.error('the loading of the datagrid resulted in a error');
@@ -856,7 +905,7 @@ class admin extends \core\classes\admin {
   	}
   	
   	function GetAllInventory (\core\classes\basis $basis){
-  		\core\classes\messageStack::debug_log("executing ".__METHOD__);
+  		\core\classes\messageStack::development("executing ".__METHOD__);
   		try{
   			$offset = ($basis->cInfo->page - 1) * $basis->cInfo->rows;
 			if ($basis->cInfo->search_text != '') {
@@ -866,7 +915,6 @@ class admin extends \core\classes\admin {
 	  			$criteria[] = '(' . implode(" LIKE '%{$basis->cInfo->search_text}%' OR ", $search_fields) . " LIKE '%{$basis->cInfo->search_text}%')";
 	  		}
 	  		if ($basis->cInfo->sort == 'sku') $basis->cInfo->sort = " LPAD(a.sku,".MAX_INVENTORY_SKU_LENGTH.",0) "; 
-	  		// build search filter string
 	  		$search = (sizeof($criteria) > 0) ? (' WHERE ' . implode(' AND ', $criteria)) : '';
 	  		$sql = $basis->DataBase->query("SELECT COUNT(*) FROM " . TABLE_INVENTORY ." a LEFT JOIN " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku $search");
 	  		$basis->cInfo->total = $sql->fetchColumn();
@@ -875,15 +923,17 @@ class admin extends \core\classes\admin {
 	  		// hook to add new fields to the query return results
 	  		if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
 	  		//check if sql is executed before otherwise retrieve from memorie.
-	  		$sql = $basis->DataBase->prepare("SELECT SQL_CALC_FOUND_ROWS DISTINCT " . implode(', ', $field_list)  . " FROM " . TABLE_INVENTORY ." a LEFT JOIN " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku $search ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order} LIMIT $offset, {$basis->cInfo->rows}");
+	  		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_INVENTORY ." a LEFT OUTER JOIN " . TABLE_INVENTORY_PURCHASE . " p ON a.sku = p.sku {$search} ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order} LIMIT $offset, {$basis->cInfo->rows}");
 	  		$sql->execute();
-			$basis->cInfo->rows = $sql->fetchAll(\PDO::FETCH_ASSOC);
+	  		$basis->cInfo->rows = $sql->fetchAll(\PDO::FETCH_ASSOC);
 		}catch (\Exception $e) {
+			\core\classes\messageStack::error(" error = ".$e->getMessage());
+			$basis->cInfo->rows = 0;
 			$basis->cInfo->success = false;
 			$basis->cInfo->error_message = $e->getMessage();
 		}
   	}
-//@todo remove
+
   	function oldLoadInventoryManager (\core\classes\basis $basis){ 
   		$basis->observer->send_menu($basis);
   		$basis->security_level	= \core\classes\user::validate(SECURITY_ID_MAINTAIN_INVENTORY);
@@ -958,17 +1008,17 @@ class admin extends \core\classes\admin {
   		$basis->template 		= 'template_main';
   		$basis->observer->send_footer($basis);
   	}
-  	
-  	function LoadInventoryFilter(){
-  		global $admin;
+
+  	function before_LoadInventoryManager(\core\classes\basis $basis){
+  		\core\classes\messageStack::development("executing ".__METHOD__);
   		//building array's for filter dropdown selection
   		$i=0;
-  		$result = $admin->DataBase->prepare("SELECT * FROM " . TABLE_EXTRA_FIELDS ." WHERE module_id = 'inventory' AND use_in_inventory_filter = '1' ORDER BY description ASC");
-  		$basis->cInfo->FirstValue 		= 'var FirstValue = new Array();' 		. chr(10);
-  		$basis->cInfo->FirstId 			= 'var FirstId = new Array();' 			. chr(10);
-  		$basis->cInfo->SecondField 		= 'var SecondField = new Array();' 		. chr(10);
-  		$basis->cInfo->SecondFieldValue	= 'var SecondFieldValue = new Array();'	. chr(10);
-  		$basis->cInfo->SecondFieldId	= 'var SecondFieldId = new Array();' 	. chr(10);
+  		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_EXTRA_FIELDS ." WHERE module_id = 'inventory' AND use_in_inventory_filter = '1' ORDER BY description ASC");
+  		$FirstValue 		= 'var FirstValue = new Array();' 		. chr(10);
+  		$FirstId 			= 'var FirstId = new Array();' 			. chr(10);
+  		$SecondField 		= 'var SecondField = new Array();' 		. chr(10);
+  		$SecondFieldValue	= 'var SecondFieldValue = new Array();'	. chr(10);
+  		$SecondFieldId		= 'var SecondFieldId = new Array();' 	. chr(10);
   		$sql->execute();
   		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
   			if(in_array($result['field_name'], array('vendor_id','description_purchase','item_cost','purch_package_quantity','purch_taxable','price_sheet_v')) ){
@@ -976,8 +1026,8 @@ class admin extends \core\classes\admin {
   			}else{
   				$append 	= 'a.';
   			}
-  			$basis->cInfo->FirstValue 	.= "FirstValue[$i] = '{$result['description']}';" . chr(10);
-  			$basis->cInfo->FirstId 		.= "FirstId[$i] = '{$append}{$result['field_name']}';" . chr(10);
+  			$FirstValue 	.= "FirstValue[$i] = '{$result['description']}';" . chr(10);
+  			$FirstId 		.= "FirstId[$i] = '{$append}{$result['field_name']}';" . chr(10);
   			Switch($result['field_name']){
   				case 'vendor_id':
   					$contacts = gen_get_contact_array_by_type('v');
@@ -989,9 +1039,9 @@ class admin extends \core\classes\admin {
   					}
   					$tempValue  .='")' ;
   					$tempId 	.='")' ;
-  					$basis->cInfo->SecondField		.= "SecondField['{$append}{$result['field_name']}'] = 'drop_down';" . chr(10);
-  					$basis->cInfo->SecondFieldValue	.= "SecondFieldValue['{$append}{$result['field_name']}] = $tempValue;" . chr(10);
-  					$basis->cInfo->SecondFieldId	.= "SecondFieldId['{$append}{$result['field_name']}'] = $tempId;" . chr(10);
+  					$SecondField		.= "SecondField['{$append}{$result['field_name']}'] = 'drop_down';" . chr(10);
+  					$SecondFieldValue	.= "SecondFieldValue['{$append}{$result['field_name']}'] = $tempValue;" . chr(10);
+  					$SecondFieldId	.= "SecondFieldId['{$append}{$result['field_name']}'] = $tempId;" . chr(10);
   					break;
 
   				case'inventory_type':
@@ -1003,9 +1053,9 @@ class admin extends \core\classes\admin {
   					}
   					$tempValue 	.='")' ;
   					$tempId 	.='")' ;
-  					$basis->cInfo->SecondField		.= "SecondField['{$append}{$result['field_name']}'] = 'drop_down';" . chr(10);
-  					$basis->cInfo->SecondFieldValue	.= "SecondFieldValue['{$append}{$result['field_name']}'] = $tempValue;" . chr(10);
-  					$basis->cInfo->SecondFieldId	.= "SecondFieldId['{$append}{$result['field_name']}'] = $tempId;" . chr(10);
+  					$SecondField		.= "SecondField['{$append}{$result['field_name']}'] = 'drop_down';" . chr(10);
+  					$SecondFieldValue	.= "SecondFieldValue['{$append}{$result['field_name']}'] = $tempValue;" . chr(10);
+  					$SecondFieldId	.= "SecondFieldId['{$append}{$result['field_name']}'] = $tempId;" . chr(10);
   					break;
   				case'cost_method':
   					$tempValue 	='Array("'  ;
@@ -1016,12 +1066,12 @@ class admin extends \core\classes\admin {
   					}
   					$tempValue .='")' ;
   					$tempId .='")' ;
-  					$basis->cInfo->SecondField		.= "SecondField['{$append}{$result['field_name']}'] = 'drop_down';" . chr(10);
-  					$basis->cInfo->SecondFieldValue	.= "SecondFieldValue['{$append}{$result['field_name']}'] = $tempValue;" . chr(10);
-  					$basis->cInfo->SecondFieldId	.= "SecondFieldId['{$append}{$result['field_name']}'] = $tempId;" . chr(10);
+  					$SecondField		.= "SecondField['{$append}{$result['field_name']}'] = 'drop_down';" . chr(10);
+  					$SecondFieldValue	.= "SecondFieldValue['{$append}{$result['field_name']}'] = $tempValue;" . chr(10);
+  					$SecondFieldId	.= "SecondFieldId['{$append}{$result['field_name']}'] = $tempId;" . chr(10);
   					break;
   				default:
-  					$basis->cInfo->SecondField.= "SecondField['{$append}{$result['field_name']}'] ='{$result['entry_type']}';" . chr(10);
+  					$SecondField.= "SecondField['{$append}{$result['field_name']}'] ='{$result['entry_type']}';" . chr(10);
   					if(in_array($result['entry_type'], array('drop_down','radio','multi_check_box','data_list'))){
   						$tempValue 	='Array("';
   						$tempId 	='Array("' ;
@@ -1035,12 +1085,115 @@ class admin extends \core\classes\admin {
   						}
   						$tempValue 	.='")' ;
   						$tempId 	.='")' ;
-  						$basis->cInfo->SecondFieldValue	.= "SecondFieldValue['{$append}{$result['field_name']}'] = $tempValue;" . chr(10);
-  						$basis->cInfo->SecondFieldId	.= "SecondFieldId['{$append}{$result['field_name']}'] = $tempId;" . chr(10);
+  						$SecondFieldValue	.= "SecondFieldValue['{$append}{$result['field_name']}'] = $tempValue;" . chr(10);
+  						$SecondFieldId	.= "SecondFieldId['{$append}{$result['field_name']}'] = $tempId;" . chr(10);
   					}
   			}
   			$i++;
   		}
+  		?>
+  		<script type="text/javascript">
+  		<?php echo $FirstValue. chr(10);
+  		echo $FirstId. chr(10); 
+  		echo $SecondField. chr(10);
+  		echo $SecondFieldValue. chr(10);
+  		echo $SecondFieldId. chr(10);
+  		?>
+  		function updateFilter(rowCnt, start){
+  			console.log('updateFilter');
+  			var text 	 = document.getElementById('filter_field'+ rowCnt ).value;
+  			var RowCells = document.getElementById('filter_table').rows[rowCnt].cells;
+  			switch (SecondField[text]) {
+  				case  'multi_check_box':
+  					RowCells[2].innerHTML =	'<input type="text" name="filter_criteria[]" readonly  id="filter_criteria' + rowCnt + '"  value="<?php echo TEXT_CONTAINS;?>" />';
+  					break;
+  				default:
+  					var tempValue = new Array( '<?php echo TEXT_EQUAL_TO?>', '<?php echo TEXT_NOT_EQUAL_TO?>', '<?php echo TEXT_LIKE?>', '<?php echo TEXT_NOT_LIKE?>', '<?php echo TEXT_BIGGER_THAN?>', '<?php echo TEXT_LESS_THAN?>');
+  					var tempId    = new Array("0","1","2","3","4","5");
+  					RowCells[2].innerHTML =	'<select name="filter_criteria[]" id="filter_criteria'+ rowCnt + '" ></select>';
+  					buildSelect('filter_criteria'+ rowCnt, tempValue, tempId);
+  			}
+  			switch (SecondField[text]) {
+  				case  'drop_down':
+  				case  'multi_check_box':
+  				case  'radio':
+  					var tempValue 	=  SecondFieldId[text];
+  					var tempId     	=  SecondFieldValue[text];
+  					RowCells[3].innerHTML =	'<select name="filter_value[]" id="filter_value'+ rowCnt + '" ></select>';
+  					buildSelect('filter_value'+ rowCnt, tempValue, tempId);
+  					break;
+  				case  'check_box':
+  					if (typeFilterValue == 'SELECT' ) valueFilterValue = '';
+  					var tempValue = new Array(text_no, text_yes);
+  					var tempId    = new Array("0","1");
+  					RowCells[3].innerHTML =	'<select name="filter_value[]" id="filter_value'+ rowCnt + '" ></select>';
+  					buildSelect('filter_value'+ rowCnt, tempValue, tempId);
+  					break;
+  				default:
+  					if(!start ){
+  						var typeFilterValue  = document.getElementById('filter_value'+ rowCnt ).tagName;
+  						var valueFilterValue = document.getElementById('filter_value'+ rowCnt ).value;
+  						if (typeFilterValue != 'INPUT') valueFilterValue = '';
+  						RowCells[3].innerHTML = '<input type="text" name="filter_value[]" id="filter_value' + rowCnt + '" size="64" maxlength="64" value="'+valueFilterValue+'" />';
+  					}else {
+  						RowCells[3].innerHTML = '<input type="text" name="filter_value[]" id="filter_value' + rowCnt + '" size="64" maxlength="64" />';
+  					}
+  			}
+  		}
+  		
+  		function addFilterRow(){
+  			console.log('addFilterRow');
+  			var newCell;
+  			var cell;
+  			var newRow  = document.getElementById('filter_table_body').insertRow(-1);
+  			var rowCnt  = newRow.rowIndex;
+  			newRow.id =  rowCnt;
+  			cell  = '<td align="center" >';
+  			cell += buildIcon(icon_path+'16x16/emblems/emblem-unreadable.png', '<?php echo TEXT_DELETE?>', 'onClick="removeFilterRow('+rowCnt+')"') + '</td>';
+  			newCell = newRow.insertCell(-1);
+  			newCell.innerHTML = cell;
+  		
+  			cell  = '   <td">';
+  			cell +=		'<select name="filter_field[]" id="filter_field'+ rowCnt + '" onChange="updateFilter('+ rowCnt + ', false)"></select>';
+  			cell += '   </td>';
+  			newCell = newRow.insertCell(-1);
+  			newCell.innerHTML = cell;
+  			cell  = '   <td">';
+  			cell += '   </td>';
+  			newCell = newRow.insertCell(-1);
+  			newCell.innerHTML = cell;
+  			newCell = newRow.insertCell(-1);
+  			newCell.innerHTML = cell;
+  			buildSelect('filter_field'+ rowCnt, FirstValue, FirstId);
+  			updateFilter(rowCnt, true);
+  		
+  		}
+  		
+  		function buildSelect(selElement, value, id) {
+  			console.log('buildSelect inventoryfilter');
+  			for (i=0; i<value.length; i++) {
+  				newOpt = document.createElement("option");
+  				newOpt.text = value[i];
+  				document.getElementById(selElement).options.add(newOpt);
+  				document.getElementById(selElement).options[i].value = id[i];
+  			}
+  		}
+  		
+  		function removeFilterRow(rowCnt) {
+  			console.log('removeFilterRow row ='+rowCnt);
+  			$('#'+rowCnt).remove();
+  		}
+  		
+  		$( document ).ready(function() {
+  			console.log('start inventoryfilter onload');
+  			addFilterRow();
+  			rowCnt = document.getElementById('filter_table_body').rows.length;
+  			document.getElementById('filter_field'+ rowCnt ).value    = "a.sku" ;
+  			updateFilter(rowCnt, true);
+  			document.getElementById('filter_criteria'+ rowCnt ).value = "0";
+  			document.getElementById('filter_value'+ rowCnt ).value = "";
+  		});
+  		</script><?php		
   	}
 
   	function SaveInventoryAdjustment (\core\classes\basis $basis){

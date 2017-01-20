@@ -321,6 +321,7 @@ class admin extends \core\classes\admin {
 					console.log('the loading of the datagrid was succesfull');
 					$.messager.progress('close');
 					if(data.total == 0) $.messager.alert('<?php echo TEXT_ERROR?>',"<?php echo TEXT_NO_RESULTS_FOUND?>");
+					if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
 				},
 				onLoadError: function(){
 					console.error('the loading of the datagrid resulted in a error');
@@ -872,6 +873,7 @@ class admin extends \core\classes\admin {
 					console.log('the loading of the datagrid was succesfull');
 					$.messager.progress('close');
 					if(data.total == 0) $.messager.alert('<?php echo TEXT_ERROR?>',"<?php echo TEXT_NO_RESULTS_FOUND?>");
+					if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
 				},
 				onLoadError: function(){
 					console.error('the loading of the datagrid resulted in a error');

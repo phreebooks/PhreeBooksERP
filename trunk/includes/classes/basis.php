@@ -42,7 +42,7 @@ class basis {
 
 
 	public function __construct() {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::development("executing ".__METHOD__ );
 		$this->setObserver();
 		if (empty($_SESSION['user'])) $_SESSION['user'] = new \core\classes\user($this);
 		$this->mainmenu["home"] 		= new \core\classes\menuItem (-1, 	TEXT_HOME);
@@ -79,7 +79,7 @@ class basis {
 	}
 
 	public function checkIfModulesInstalled(){
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::development("executing ".__METHOD__ );
 		foreach ( $this->classes as $module_class ) $module_class->checkInstalled ( $this );
 	}
 
@@ -89,21 +89,21 @@ class basis {
 		} else {
 			$this->cInfo = (object)array_merge ( $_GET, $_POST );
 		}
-		\core\classes\messageStack::debug_log("variables ".print_r($this->cInfo, true) );
+		\core\classes\messageStack::debug_log("variables are ".print_r($this->cInfo, true) );
 	}
 	
 	public function __sleep() {}
 
 	public function __wakeup() {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::development("executing ".__METHOD__ );
 		$this->setObserver();
+		$this->setCinfo();
 		$this->set_database();
 		$this->checkIfModulesInstalled();
-		$this->setCinfo();
 	}
 	
 	private function setObserver(){
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ ." Type of request = {$_SERVER['HTTP_X_REQUESTED_WITH']} datatype = {$_REQUEST['contentType']} ");
+		\core\classes\messageStack::development("executing ".__METHOD__ ." Type of request = {$_SERVER['HTTP_X_REQUESTED_WITH']} datatype = {$_REQUEST['contentType']} ");
 		switch($_REQUEST['contentType']){
 			case 'inlineForm':
 				$this->observer = new \core\classes\outputInlineForm();
@@ -131,12 +131,11 @@ class basis {
 
 	/**
 	 * this method sends a notify to the template page to start sending information in requested format.
+	 * @todo is this still used
 	 */
 	public function notify() {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		\core\classes\messageStack::debug_log( "calling ". get_class($this->observer)." for output" );
-		$this->observer = get_class($observer);
-
+		\core\classes\messageStack::development("executing ".__METHOD__ );
+		\core\classes\messageStack::development( "calling ". get_class($this->observer)." for output" );
 	}
 	
 	public function set_database(){
@@ -157,7 +156,7 @@ class basis {
 	}
 
 	public function ReturnAdminClasses() {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::development("executing ".__METHOD__ );
 		return $this->classes;
 	}
 
@@ -167,7 +166,7 @@ class basis {
 	 * @return integer
 	 */
 	public function getNumberOfAdminClasses() {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::development("executing ".__METHOD__ );
 		return sizeof ( $this->classes );
 	}
 
@@ -212,7 +211,7 @@ class basis {
 	 * @param string $event
 	 */
 	public function fireEvent($event) {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::development("executing ".__METHOD__ );
 		$this->removeEventsAndAddNewEvent($event);
 		ob_flush();
 		die();
@@ -223,7 +222,7 @@ class basis {
 	 * @param string $event
 	 */
 	public function StartEvent($event) {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::development("executing ".__METHOD__ );
 		$this->removeEventsAndAddNewEvent($event);
 		ob_flush();
 		die();
@@ -237,7 +236,7 @@ class basis {
 	 * @throws exception if the event stack is empty
 	 */
 	public function startProcessingEvents() {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::development("executing ".__METHOD__ );
 		if ( count($this->events ) == 0) throw new \Exception ( "trying to start processing events but the events array is empty" );
 		while ( $event = array_shift($this->events) ) {
 			\core\classes\messageStack::debug_log("starting with event: $event" );
@@ -287,7 +286,7 @@ class basis {
 	 * @throws exception if event is empty
 	 */
 	public function removeEventsAndAddNewEvent($event) {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::development("executing ".__METHOD__ );
 		if (! $event) throw new \exception ( "in the basis class method  we received a empty event." );
 		$this->clearEventsStack ();
 		$this->addEventToStack ( $event );
@@ -302,7 +301,7 @@ class basis {
 	}
 
 	function __destruct() {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::development("executing ".__METHOD__ );
 		$this->DataBase = null;
 		//print_R($this);
 	}

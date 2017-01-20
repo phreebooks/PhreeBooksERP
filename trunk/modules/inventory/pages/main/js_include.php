@@ -39,11 +39,6 @@ var filter_less_than	= '<?php echo TEXT_LESS_THAN. ': ';?>';
 var filter_contains		= '<?php echo TEXT_CONTAINS;?>';
 
 <?php echo $basis->cInfo->inventory->js_tax_rates;?>
-<?php if(isset($basis->cInfo->inventory->FirstValue)) 		echo $basis->cInfo->inventory->FirstValue;?>;
-<?php if(isset($basis->cInfo->inventory->FirstId)) 		echo $basis->cInfo->inventory->FirstId; ?>;
-<?php if(isset($basis->cInfo->inventory->SecondField)) 	echo $basis->cInfo->inventory->SecondField; ?>;
-<?php if(isset($basis->cInfo->inventory->SecondFieldValue))echo $basis->cInfo->inventory->SecondFieldValue; ?>;
-<?php if(isset($basis->cInfo->inventory->SecondFieldId)) 	echo $basis->cInfo->inventory->SecondFieldId; ?>;
 // required function called with every page load
 function init() {
 	<?php

@@ -507,7 +507,6 @@ class admin extends \core\classes\admin {
 		try{
 			$temp = $basis->cInfo;
 			if (!property_exists($basis->cInfo, 'journal_id')) 	throw new \core\classes\userException(TEXT_JOURNAL_ID_NOT_DEFINED);
-			\core\classes\messageStack::debug_log("tot hier");
 			switch ($basis->cInfo->journal_id) {
 				case  4:
 					$gl_type   = 'por';
@@ -540,6 +539,7 @@ class admin extends \core\classes\admin {
 			$basis->cInfo->total = sizeof($results);
 			$basis->cInfo->rows = $results;
 		}catch (\Exception $e) {
+			$basis->cInfo->rows = 0;
 			$basis->cInfo->success = false;
 			$basis->cInfo->error_message = $e->getMessage();
 		}

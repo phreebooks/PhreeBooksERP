@@ -89,6 +89,7 @@ class outputPage  {
     	  	var symbol_left			= "<?php echo $basis->currencies->currencies[DEFAULT_CURRENCY]['symbol_left']; ?>";
     	  	var symbol_right		= "<?php echo $basis->currencies->currencies[DEFAULT_CURRENCY]['symbol_right']; ?>";
     	  	var formatted_zero      = "<?php echo $basis->currencies->format(0); ?>";
+    	  	var icon_path			= '<?php echo DIR_WS_ICONS;?>';
     	</script> <?php 
     }
     
