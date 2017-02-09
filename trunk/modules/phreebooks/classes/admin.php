@@ -484,13 +484,16 @@ class admin extends \core\classes\admin {
 	 */
 	
 	function loadOrders (\core\classes\basis &$basis) {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		if (empty($basis->cInfo->contact_id)) throw new \core\classes\userException(TEXT_CONTACT_ID_NOT_DEFINED); 
-		if (empty($basis->cInfo->journal_id)) throw new \core\classes\userException(TEXT_JOURNAL_ID_NOT_DEFINED); 
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ ); 
+		if (empty($basis->cInfo->journal_id)) throw new \core\classes\userException(TEXT_JOURNAL_ID_NOT_DEFINED);
+		$offset = ($basis->cInfo->rows)? " LIMIT ".(($basis->cInfo->page - 1) * $basis->cInfo->rows).", {$basis->cInfo->rows}" : "";
 		$raw_sql  = "SELECT id, journal_id, closed, closed_date, post_date, total_amount, purchase_invoice_id, purch_order_id FROM ".TABLE_JOURNAL_MAIN." WHERE ";
-		$raw_sql .= ($basis->cInfo->only_open) ? " closed = '0' AND " : "";
-		$raw_sql .= " journal_id IN ({$basis->cInfo->journal_id}) AND bill_acct_id = {$basis->cInfo->contact_id} ORDER BY post_date DESC";
-		$raw_sql .= ($basis->cInfo->limit) ? " LIMIT {$basis->cInfo->limit}" : "";
+		$raw_sql .= ($basis->cInfo->only_open)  ? " closed = '0' AND " : "";
+		$raw_sql .= ($basis->cInfo->post_date)  ? " post_date = '{$basis->cInfo->post_date}' AND " : "";
+		$raw_sql .= ($basis->cInfo->post_date_min)  ? " post_date >= '{$basis->cInfo->post_date_min}' AND " : "";
+		$raw_sql .= ($basis->cInfo->post_date_max)  ? " post_date =< '{$basis->cInfo->post_date_max}' AND " : "";
+		$raw_sql .= ($basis->cInfo->contact_id) ? " bill_acct_id = '{$basis->cInfo->contact_id}' AND " : "";
+		$raw_sql .= " journal_id IN ({$basis->cInfo->journal_id}) ORDER BY post_date DESC $offset";
 		$sql = $basis->DataBase->prepare($raw_sql);
 		$sql->execute();
 		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
@@ -577,6 +580,7 @@ class admin extends \core\classes\admin {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		try{
 			if (!property_exists($basis->cInfo, 'jID')) 	throw new \core\classes\userException(TEXT_JOURNAL_TYPE_NOT_DEFINED);
+			$offset = ($basis->cInfo->rows)? " LIMIT ".(($basis->cInfo->page - 1) * $basis->cInfo->rows).", {$basis->cInfo->rows}" : "";
 			$period = ($basis->cInfo->search_period == 'all') ? '' : " and period = {$basis->cInfo->search_period} ";
 			if (isset($basis->cInfo->search_text) && $basis->cInfo->search_text <> '') {
 				$search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.address1',
@@ -587,11 +591,13 @@ class admin extends \core\classes\admin {
 			}
 			$criteria[] = ($basis->cInfo->only_open) ? " j.closed = '0' and " : "";
 			$search = (sizeof($criteria) > 0) ?  implode(' and ', $criteria) : '';
-			$sql = $basis->DataBase->prepare("SELECT *, MONTH(post_date) as month, YEAR(post_date) as year FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id in ({$basis->cInfo->jID}) {$search} {$period} ORDER BY post_date");
+			$sql = $basis->DataBase->prepare("SELECT *, MONTH(post_date) as month, YEAR(post_date) as year FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id in ({$basis->cInfo->jID}) {$search} {$period} ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order}");
 			$sql->execute();
 			$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
 			$basis->cInfo->total = sizeof($results);
-			$basis->cInfo->rows = $results;
+			$sql = $basis->DataBase->prepare("SELECT *, MONTH(post_date) as month, YEAR(post_date) as year FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id in ({$basis->cInfo->jID}) {$search} {$period} ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order} $offset");
+			$sql->execute();
+			$basis->cInfo->rows = $sql->fetchAll(\PDO::FETCH_ASSOC);
 		}catch (\Exception $e) {
 			$basis->cInfo->success = false;
 			$basis->cInfo->error_message = $e->getMessage();
@@ -708,7 +714,7 @@ class admin extends \core\classes\admin {
   						//$('#win').window('open').window('center').window('setTitle',"<?php echo TEXT_EDIT?>"+ ' ' + row.name);
   					},
   					pagination: true,
-  					pageSize:   50,
+  					pageSize:   <?php echo MAX_DISPLAY_SEARCH_RESULTS?>,
   					remoteSort:	true,
   					idField:	"id",
   					fitColumns:	true,

@@ -23,59 +23,64 @@ class pos_todays extends \core\classes\ctl_panel {
 	public $security_id  		= SECURITY_ID_POS_MGR;
 	public $text		 		= CP_POS_TODAYS_TITLE;
 	public $version      		= '4.0';
-	public $default_params 		= array('num_rows'=> 0);
 
-	function output() {
-		global $admin;
-		$list_length = array();
-		if(count($this->params) != count($this->default_params)) { //upgrading
-			$this->params = $this->upgrade($this->params);
-		}
-		$contents = '';
-		$control  = '';
-		for ($i = 0; $i <= $this->max_length; $i++) $list_length[] = array('id' => $i, 'text' => $i);
-		// Build control box form data
-		$control  = '<div class="row">';
-		$control .= '<div style="white-space:nowrap">' . TEXT_SHOW . TEXT_SHOW_NO_LIMIT;
-		$control .= html_pull_down_menu('pos_todays_field_0', $list_length, $this->params['num_rows']);
-		$control .= html_submit_field('sub_pos_todays', TEXT_SAVE);
-		$control .= '</div></div>';
-
-		// Build content box
-		$total = 0;
-		$temp = "SELECT id, purchase_invoice_id, total_amount, bill_primary_name, currencies_code, currencies_value
-		  FROM " . TABLE_JOURNAL_MAIN . "
-		  WHERE journal_id = 19 and post_date = '" . date('Y-m-d', time()) . "' ORDER BY purchase_invoice_id";
-		if ($this->params['num_rows']) $temp .= " LIMIT " . $this->params['num_rows'];
-		$sql = $admin->DataBase->prepare($temp);
-		$sql->execute();
-		if ($sql->fetch(\PDO::FETCH_NUM) < 1) {
-			$contents = TEXT_NO_RESULTS_FOUND;
-		} else {
-			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
-				$total += $result['total_amount'];
-				$contents .= '<div style="float:right">' . $admin->currencies->format_full($result['total_amount'], true, $result['currencies_code'], $result['currencies_value']) . '</div>';
-				$contents .= '<div>';
-				$contents .= $result['purchase_invoice_id'];
-				if($result['bill_primary_name']<>''){
-					$contents .= ' - ' . htmlspecialchars(gen_trim_string($result['bill_primary_name'], 20, true));
-				}
-				$contents .= '</a></div>' . chr(10);
-			}
-		}
-		if (!$this->params['num_rows'] && $sql->fetch(\PDO::FETCH_NUM) != 0) {
-		  	$contents .= '<div style="float:right"><b>' . $admin->currencies->format_full($total, true, $result['currencies_code'], $result['currencies_value']) . '</b></div>';
-		  	$contents .= '<div><b>' . TEXT_TOTAL . '</b></div>' . chr(10);
-		}
-		return $this->build_div($contents, $control);
+	function panelContent(){
+	?>
+		<table id='pos_today' >
+	    	<thead>
+	    		<tr>
+		        	<th data-options="field:'purchase_invoice_id',sortable:true, align:'center'"><?php echo TEXT_INVOICE_NUMBER;?></th>
+	    	        <th data-options="field:'purch_order_id',sortable:true, align:'center'"><?php echo TEXT_PO_NUMBER?></th>
+	    	        <th data-options="field:'bill_primary_name',sortable:true, align:'center'"><?php echo TEXT_COMPANY;?></th>
+	        	    <th data-options="field:'post_date',sortable:true, align:'center', formatter: function(value,row,index){ return formatDate(new Date(value))}"><?php echo TEXT_DATE?></th>
+	            	<th data-options="field:'closed_date',sortable:true, align:'center', formatter: function(value,row,index){ if ( value == '0000-00-00') {return ''}else{return formatDate(new Date(value))}}"><?php echo TEXT_PAID?></th>
+		            <th data-options="field:'total_amount',sortable:true, align:'right', formatter: function(value,row,index){ return formatCurrency(value)}"><?php echo TEXT_AMOUNT?></th>
+	    	    </tr>
+	    	</thead>
+	    </table> 
+		
+		<script type="text/javascript">
+		$('#pos_today').datagrid({
+			url:		"index.php?action=loadOrders",
+			queryParams: {
+				journal_id: '19',
+				post_date: '<?php echo date('Y-m-d') ?> ', 
+<?php if($_SESSION['user']->is_role == 0) echo "store_id:{$_SESSION['user']->admin_prefs['def_store_id']},"?> 
+				dataType: 'json',
+		        contentType: 'application/json',
+		        async: false,
+			},
+			onBeforeLoad:function(){
+				console.log('loading of the pos today datagrid');
+			},
+			onLoadSuccess: function(data){
+				console.log('the loading of the pos today was succesfull');
+				$.messager.progress('close');
+			},
+			onLoadError: function(){
+				console.error('the loading of the pos today resulted in a error');
+				$.messager.progress('close');
+				$.messager.alert('<?php echo TEXT_ERROR?>','Load error for table pos today');
+			},
+			onDblClickRow: function(index , row){
+				console.log('a row in the pos today was double clicked');
+				//@todo open order
+			},
+			pagination: true,
+			pageSize:   <?php echo MAX_DASHBOARD_SEARCH_RESULTS?>,
+			remoteSort:	true,
+			fitColumns:	true,
+			showFooter: true,
+			idField:	"id",
+			singleSelect:true,
+			sortName:	"purchase_invoice_id",
+			sortOrder: 	"dsc",
+			loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
+			rowStyler: function(index,row){
+				if (row.closed == '1') return 'background-color:pink;';
+			},
+		});
+		</script><?php
 	}
-
-	function update() {
-		if(count($this->params) == 0){
-			$this->params['num_rows'] = db_prepare_input($_POST['pos_todays_field_0']);
-		}
-		parent::update();
-	}
-
 }
 ?>

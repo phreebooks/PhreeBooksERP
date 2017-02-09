@@ -24,22 +24,10 @@ class so_status extends \core\classes\ctl_panel {
 	public $security_id  		= SECURITY_ID_SALES_ORDER;
 	public $text		 		= CP_SO_STATUS_TITLE;
 	public $version      		= '4.0';
-	public $default_params 		= array('num_rows'=> 0, 'order'   => 'asc', 'limit'   => 1);
-
-	function update() {
-		if(count($this->params) == 0){
-			$this->params = array(
-			  'num_rows'=> db_prepare_input($_POST['so_status_field_0']),
-			  'order'   => db_prepare_input($_POST['so_status_field_1']),
-			  'limit'   => db_prepare_input($_POST['so_status_field_2']),
-			);
-		}
-		parent::update();
-	}
 	
 	function panelContent(){
 		?>
-		<table id='invoice_history' >
+		<table id='open_sales_orders' >
 	    	<thead>
 	    		<tr>
 		        	<th data-options="field:'purchase_invoice_id',sortable:true, align:'center'"><?php echo TEXT_INVOICE_NUMBER;?></th>
@@ -62,11 +50,6 @@ class so_status extends \core\classes\ctl_panel {
 		        contentType: 'application/json',
 		        async: false,
 			},
-			width: '500px',
-			style:{
-				float:'left',
-				margin:'50px',
-			},
 			onBeforeLoad:function(){
 				console.log('loading of the open sales orders datagrid');
 			},
@@ -83,7 +66,9 @@ class so_status extends \core\classes\ctl_panel {
 				console.log('a row in the open sales orders was double clicked');
 				//@todo open order
 			},
-			remoteSort:	false,
+			pagination: true,
+			pageSize:   <?php echo MAX_DASHBOARD_SEARCH_RESULTS?>,
+			remoteSort:	true,
 			fitColumns:	true,
 			idField:	"id",
 			singleSelect:true,

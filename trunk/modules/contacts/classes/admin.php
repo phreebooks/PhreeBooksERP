@@ -334,7 +334,7 @@ class admin extends \core\classes\admin {
 					//$('#win').window('open').window('center').window('setTitle',"<?php echo TEXT_EDIT?>"+ ' ' + row.name);
 				},
 				pagination: true,
-				pageSize:   50,
+				pageSize:   <?php echo MAX_DISPLAY_SEARCH_RESULTS?>,
 				remoteSort:	true,
 				idField:	"contactid",
 				fitColumns:	true,
@@ -385,7 +385,7 @@ class admin extends \core\classes\admin {
 	
 	function GetAllContacts (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__);
-		$offset = ($basis->cInfo->page - 1) * $basis->cInfo->rows;
+		$offset = ($basis->cInfo->rows)? " LIMIT ".(($basis->cInfo->page - 1) * $basis->cInfo->rows).", {$basis->cInfo->rows}" : "";
 		if (property_exists($basis->cInfo, 'dept_rep_id') === true) {
 			$criteria[] = "c.dept_rep_id = '{$basis->cInfo->dept_rep_id}'";
 		}else{
@@ -402,7 +402,7 @@ class admin extends \core\classes\admin {
 		$basis->cInfo->total = $sql->fetchColumn();
 		if ($basis->cInfo->contact_show_inactive == false) $criteria[] = "(c.inactive = '0' or c.inactive = '')"; // inactive flag
 		$search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
-		$sql = $basis->DataBase->prepare("SELECT id as contactid, short_name, title, CASE WHEN c.type = 'e' OR c.type = 'i' THEN CONCAT(contact_first , ' ',contact_last) ELSE primary_name END AS name, contact_last, contact_first, contact_middle, contact, account_number, gov_id_number, address1, address2, city_town, state_province, postal_code, telephone1, telephone2, telephone3, telephone4, email, website, inactive, c.type, address_id, country_code FROM ".TABLE_CONTACTS." c LEFT JOIN ".TABLE_ADDRESS_BOOK." a ON c.id = a.ref_id $search ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order}");
+		$sql = $basis->DataBase->prepare("SELECT id as contactid, short_name, title, CASE WHEN c.type = 'e' OR c.type = 'i' THEN CONCAT(contact_first , ' ',contact_last) ELSE primary_name END AS name, contact_last, contact_first, contact_middle, contact, account_number, gov_id_number, address1, address2, city_town, state_province, postal_code, telephone1, telephone2, telephone3, telephone4, email, website, inactive, c.type, address_id, country_code FROM ".TABLE_CONTACTS." c LEFT JOIN ".TABLE_ADDRESS_BOOK." a ON c.id = a.ref_id $search ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order} $offset");
 		$sql->execute();
 		$basis->cInfo->rows = $sql->fetchAll(\PDO::FETCH_ASSOC);
 	}
@@ -894,7 +894,9 @@ class admin extends \core\classes\admin {
 					window.opener.ajaxOrderData(row.contactid, 0, <?php echo $basis->cInfo->jID;?>, false, ship_only);
 					self.close();
 				},
-				remoteSort:	false,
+				pagination: true,
+				pageSize:   <?php echo MAX_DISPLAY_SEARCH_RESULTS?>,
+				remoteSort:	true,
 				idField:	"contactid",
 				fitColumns:	true,
 				singleSelect:true,

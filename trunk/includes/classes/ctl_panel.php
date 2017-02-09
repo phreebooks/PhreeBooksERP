@@ -237,9 +237,6 @@ class ctl_panel {
 		if ($this->row_started == false)		echo "	<a href='javascript:void(0)' class='icon-go_up'    onclick='return move_box(\"{$this->id}\", \"move_up\")'></a>" . chr(10);
 		if ($this->row_id < $this->get_next_row($this->column_id) - 1)
 			echo "	<a href='javascript:void(0)' class='icon-go_down'    onclick='return move_box(\"{$this->id}\", \"move_down\")'></a>" . chr(10);
-		echo "	<a id='{$this->id}'_add' href='javascript:void(0)' class='icon-edit'    onclick='return box_edit(\"{$this->id}\")'></a>" . chr(10);
-		echo "	<a id='{$this->id}'_can' href='javascript:void(0)' class='icon-undo'    onclick='return box_cancel(\"{$this->id}\")'></a>" . chr(10);
-		echo "	<a id='{$this->id}'_del' href='javascript:void(0)' class='icon-cancel'  onclick='return del_box(\"{$this->id}\")'></a>" . chr(10);
 		//echo '	<a href="javascript:void(0)" class="icon-help" onclick="javascript:alert(help)"></a>' . chr(10);
 		echo '</div>' . chr(10);
 	}

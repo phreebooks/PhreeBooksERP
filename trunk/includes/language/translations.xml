@@ -2218,17 +2218,19 @@
     <nl_nl>Verkopen vandaag</nl_nl>
     <pt_br>Vendas de Hoje</pt_br>
   </translation>
-  <translation xml:id="CP_TODAYS_S_QUOTES_DESCRIPTION">
+  <translation xml:id="TEXT_TODAYS_SALES_QUOTES_DESCRIPTION">
     <en_us>Lists today's sales quotes. Links to review the quotes are also provided.</en_us>
     <es_cr>Lista de las cotizaciones a clientes de hoy. Las cotizaciones tienen los vínculos para abrilas.</es_cr>
     <id_id>Daftar Penawaran penjualan hari ini.</id_id>
     <pt_br>Lista as cotações de vendas de hoje. Conexão para rever as cotações.</pt_br>
+    <nl_nl>Lijst van verkoop order van vandaag.</nl_nl>
   </translation>
-  <translation xml:id="CP_TODAYS_S_QUOTES_TITLE">
+  <translation xml:id="TEXT_TODAYS_SALES_QUOTES">
     <en_us>Today's Sales Quotes</en_us>
     <es_cr>Cotizaciones a clientes de hoy</es_cr>
     <id_id>Penawaran Penjualan hari ini</id_id>
     <pt_br>Cotações de Venda de Hoje</pt_br>
+    <nl_nl>Verkoop Order van Vandaag</nl_nl>
   </translation>
   <translation xml:id="CP_TO_DO_DESCRIPTION">
     <en_us>Creates a list of activities and things to do.</en_us>

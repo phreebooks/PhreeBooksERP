@@ -25,61 +25,51 @@ class my_notes extends \core\classes\ctl_panel {
 	public $text		 		= CP_MY_NOTES_TITLE;
 	public $version      		= '4.0';
 
-	function output() {
-		global $admin;
-		$contents = '';
-		$control  = '';
-		// Build control box form data
-		$control  = '  <div class="row">' . chr(10);
-		$control .= '    <div style="white-space:nowrap">';
-		$control .= TEXT_NOTE . ': &nbsp;' . html_input_field('my_notes_field_0', '', 'size="64"') . '<br />';
-		$control .= '&nbsp;&nbsp;&nbsp;&nbsp;';
-		$control .= html_submit_field('sub_my_notes', TEXT_ADD);
-		$control .= html_hidden_field('my_notes_rId', '');
-		$control .= '    </div>' . chr(10);
-		$control .= '  </div>' . chr(10);
-		// Build content box
-		$contents = '';
-		if (is_array($this->params)) {
-			$index = 1;
-		  	foreach ($this->params as $my_note) {
-		    	$contents .= '  <div>';
-				$contents .= '    <div style="float:right; height:16px;">';
-				$contents .= html_icon('phreebooks/dashboard-remove.png', TEXT_REMOVE, 'small', 'onclick="return del_index(\'' . $this->id . '\', ' . $index . ')"');
-				$contents .= '    </div>' . chr(10);
-				$contents .= '    <div style="min-height:16px;">&#9679; '. $my_note . '</div>' . chr(10);
-		    	$contents .= '  </div>' . chr(10);
-				$index++;
-		  	}
-		} else {
-		  	$contents = TEXT_NO_RESULTS_FOUND;
-		}
-		return $this->build_div($contents, $control);
+	function panelContent(){
+		?>
+		
+		<div id='my_notes'></div>
+		
+		<script type="text/javascript">
+		$('#my_notes').datalist({
+			url:		"index.php?action=getNotes",
+			queryParams: { 
+				user_id: <?php echo $_SESSION['user']->admin_id ?>,
+				dashboard: 'my_notes',
+				dataType: 'json',
+		        contentType: 'application/json',
+		        async: false,
+			},
+            checkbox: true,
+            selectOnCheck: false,
+			onBeforeLoad:function(){
+				console.log('loading of the My Notes datagrid');
+			},
+			onLoadSuccess: function(data){
+				console.log('the loading of the My Notes was succesfull');
+				$.messager.progress('close');
+			},
+			onLoadError: function(){
+				console.error('the loading of the My Notes resulted in a error');
+				$.messager.progress('close');
+				$.messager.alert('<?php echo TEXT_ERROR?>','Load error for table My Notes');
+			},
+			onCheck: function(index , row){
+				console.log('a row in the My Notes was checked');
+				//@todo open order
+			},
+			remoteSort:	true,
+			fitColumns:	true,
+			idField:	"id",
+			singleSelect:true,
+			sortName:	"post_date",
+			sortOrder: 	"dsc",
+			loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
+			rowStyler: function(index,row){
+				if (row.closed == '1') return 'background-color:pink;';
+			},
+		});
+		</script><?php
 	}
-
-	function update() {
-		global $admin;
-		$my_note   = db_prepare_input($_POST['my_notes_field_0']);
-		$remove_id = db_prepare_input($_POST['my_notes_rId']);
-		// do nothing if no title or url entered
-		if (!$remove_id && $my_note == '') return;
-		// fetch the current params
-		$result = $admin->DataBase->query("SELECT params FROM " . TABLE_USERS_PROFILES . "
-			WHERE user_id = {$_SESSION['user']->admin_id} and menu_id = '{$this->menu_id}' and dashboard_id = '" . get_class($this) . "'");
-		if ($remove_id) { // remove element
-		  	$this->params	= unserialize($result['params']);
-		  	$first_part 	= array_slice($this->params, 0, $remove_id - 1);
-		  	$last_part  	= array_slice($this->params, $remove_id);
-		  	$this->params	= array_merge($first_part, $last_part);
-		} elseif ($result['params']) { // append new note and sort
-		  	$this->params   = unserialize($result['params']);
-		  	$this->params[] = $my_note;
-		} else { // first entry
-		  	$this->params[] = $my_note;
-		}
-		ksort($this->params);
-		db_perform(TABLE_USERS_PROFILES, array('params' => serialize($this->params)), "update", "user_id = {$_SESSION['user']->admin_id} and menu_id = '{$this->menu_id}' and dashboard_id = '" . get_class($this). "'");
-	}
-
 }
 ?>

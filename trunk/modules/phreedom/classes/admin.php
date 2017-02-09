@@ -24,7 +24,7 @@ class admin extends \core\classes\admin {
 	public $installed	= true;
 	public $text;
 	public $sort_order  = 1;
-	public $version		= '4.0.3';
+	public $version		= '4.0.4';
 
 	function __construct() {
 		// Load configuration constants for this module, must match entries in admin tabs
@@ -50,6 +50,7 @@ class admin extends \core\classes\admin {
 		  'ENABLE_ENCRYPTION'          => '0',
 		  'ENTRY_PASSWORD_MIN_LENGTH'  => '5',
 		  'MAX_DISPLAY_SEARCH_RESULTS' => '20',
+	      'MAX_DASHBOARD_SEARCH_RESULTS'=>'10',
 		  'CFG_AUTO_UPDATE_CHECK'      => '0',
 		  'HIDE_SUCCESS_MESSAGES'      => '0',
 		  'AUTO_UPDATE_CURRENCY'       => '1',
@@ -580,7 +581,27 @@ class admin extends \core\classes\admin {
 		}
 		$basis->addEventToStack("LoadMainPage");
 	}
-
+	
+	function getNotes (\core\classes\basis $basis){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		$user = ($basis->cInfo->user_id) ? " user_id = {$basis->cInfo->user_id} AND " : "";
+		$sql = $basis->DataBase->prepare("SELECT params FROM " . TABLE_USERS_PROFILES . " WHERE {$user} dashboard_id LIKE '%{$basis->cInfo->dashboard}'");
+		$sql->execute();
+		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		$temp = unserialize($result['params']);
+		if (is_array($temp)) {
+			$index = 1;
+		  	foreach ($temp as $key => $note) {
+		  		\core\classes\messageStack::development("note = $key = ". print_r($note, true));
+		  		$basis->cInfo->rows[$key]['text'] = $note;
+		  		\core\classes\messageStack::development("rows = ". print_r($basis->cInfo->rows, true));
+		  	}
+		}
+//		\core\classes\messageStack::development("rows = ". print_r($basis->cInfo->rows, true));
+		$basis->cInfo->total = sizeof($basis->cInfo->rows);
+		
+	}
+	
 	function showPHPinfo (\core\classes\basis $basis){
 		die(phpinfo());
 	}

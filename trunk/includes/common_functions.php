@@ -886,8 +886,8 @@ function get_dir_tree($dir, $root = true)  {
 	$head_bar  = '   <tr>'."\n";
 	foreach ($content['thead']['value'] as $heading) $head_bar .= '    <th>'.htmlspecialchars($heading).'</th>'."\n";
 	$head_bar .= '   </tr>'."\n";
-	$output    = '<table class="easyui-datagrid" id="'.$id.'" title="'.$title.'"  pagination="true"
-		rownumbers="true" fitColumns="true" singleSelect="true">'."\n";
+	$output    = "<table class='easyui-datagrid' id='{$id}' title='{$title}'  pagination='true'
+		rownumbers='true' fitColumns='true' singleSelect='true'>\n";
 	$output   .= '  <thead>'."\n".$head_bar.'  </thead>'."\n";
 	$output   .= '  <tbody>'."\n";
     if (is_array($content['tbody'])) {

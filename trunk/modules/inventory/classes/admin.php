@@ -856,7 +856,7 @@ class admin extends \core\classes\admin {
   						//$('#win').window('open').window('center').window('setTitle',"<?php echo TEXT_EDIT?>"+ ' ' + row.name);
   					},
   					pagination: true,
-  					pageSize:   50,
+  					pageSize:   <?php echo MAX_DISPLAY_SEARCH_RESULTS?>,
   					remoteSort:	true,
   					idField:	"id",
   					fitColumns:	true,
@@ -907,7 +907,7 @@ class admin extends \core\classes\admin {
   	function GetAllInventory (\core\classes\basis $basis){
   		\core\classes\messageStack::development("executing ".__METHOD__);
   		try{
-  			$offset = ($basis->cInfo->page - 1) * $basis->cInfo->rows;
+  			$offset = ($basis->cInfo->rows)? " LIMIT ".(($basis->cInfo->page - 1) * $basis->cInfo->rows).", {$basis->cInfo->rows}" : "";
   			if (sizeof($basis->cInfo->filter) > 0 ) {
   				$filter_criteria = Array(" = "," != "," LIKE "," NOT LIKE "," > "," < ");
   				foreach ($basis->cInfo->filter as $key => $row) {
@@ -944,7 +944,7 @@ class admin extends \core\classes\admin {
 	  		// hook to add new fields to the query return results
 	  		if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
 	  		//check if sql is executed before otherwise retrieve from memorie.
-	  		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_INVENTORY ." a LEFT OUTER JOIN " . TABLE_INVENTORY_PURCHASE . " p ON a.sku = p.sku {$search} ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order} LIMIT $offset, {$basis->cInfo->rows}");
+	  		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_INVENTORY ." a LEFT OUTER JOIN " . TABLE_INVENTORY_PURCHASE . " p ON a.sku = p.sku {$search} ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order} $offset");
 	  		$sql->execute();
 	  		$basis->cInfo->rows = $sql->fetchAll(\PDO::FETCH_ASSOC);
 		}catch (\Exception $e) {

@@ -24,18 +24,6 @@ class po_status extends \core\classes\ctl_panel {
 	public $security_id  		= SECURITY_ID_PURCHASE_ORDER;
 	public $text		 		= CP_PO_STATUS_TITLE;
 	public $version      		= '4.0';
-	public $default_params 		= array('num_rows'=> 0, 'order' => 'asc', 'limit' => 1);
-
-	function update() {
-		if(count($this->params) == 0){
-			$this->params = array(
-			  'num_rows'=> db_prepare_input($_POST['po_status_field_0']),
-			  'order'   => db_prepare_input($_POST['po_status_field_1']),
-			  'limit'   => db_prepare_input($_POST['po_status_field_2']),
-			);
-		}
-		parent::update();
-	}
 	
 	function panelContent(){
 		?>
@@ -56,7 +44,7 @@ class po_status extends \core\classes\ctl_panel {
 			url:		"index.php?action=loadOpenOrders",
 			queryParams: {
 				journal_id: '4',
-<?php if($_SESSION['user']->is_role == 0) echo "store_id:{$_SESSION['user']->admin_prefs['def_store_id']},"?>
+<?php if($_SESSION['user']->is_role == 0) echo "store_id:{$_SESSION['user']->admin_prefs['def_store_id']},";//@todo dit klopt nog niet helemaal?> 
 				dataType: 'json',
 				contentType: 'application/json',
 				async: false,
@@ -77,7 +65,9 @@ class po_status extends \core\classes\ctl_panel {
 				console.log('a row in the open purchase orders was double clicked');
 				//@todo open order
 			},
-			remoteSort:	false,
+			pagination: true,
+			pageSize:   <?php echo MAX_DASHBOARD_SEARCH_RESULTS?>,
+			remoteSort:	true,
 			fitColumns:	true,
 			idField:	"id",
 			singleSelect:true,
