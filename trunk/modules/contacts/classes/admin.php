@@ -400,15 +400,17 @@ class admin extends \core\classes\admin {
 		}
 		$sql = $basis->DataBase->query("SELECT COUNT(*) FROM ".TABLE_CONTACTS." c LEFT JOIN ".TABLE_ADDRESS_BOOK." a ON c.id = a.ref_id $search");
 		$basis->cInfo->total = $sql->fetchColumn();
-		if ($basis->cInfo->contact_show_inactive == false) $criteria[] = "(c.inactive = '0' or c.inactive = '')"; // inactive flag
+		if ($basis->cInfo->contact_show_inactive != true) $criteria[] = "(c.inactive = '0' or c.inactive = '')"; // inactive flag
 		$search = (sizeof($criteria) > 0) ? (' where ' . implode(' and ', $criteria)) : '';
-		$sql = $basis->DataBase->prepare("SELECT id as contactid, short_name, title, CASE WHEN c.type = 'e' OR c.type = 'i' THEN CONCAT(contact_first , ' ',contact_last) ELSE primary_name END AS name, contact_last, contact_first, contact_middle, contact, account_number, gov_id_number, address1, address2, city_town, state_province, postal_code, telephone1, telephone2, telephone3, telephone4, email, website, inactive, c.type, address_id, country_code FROM ".TABLE_CONTACTS." c LEFT JOIN ".TABLE_ADDRESS_BOOK." a ON c.id = a.ref_id $search ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order} $offset");
+		$sql = $basis->DataBase->prepare("SELECT id as contactid, short_name, title, CASE WHEN c.type = 'e' OR c.type = 'i' THEN CONCAT(contact_first , ' ',contact_last) ELSE primary_name END AS name, primary_name, contact_last, contact_first, contact_middle, contact, account_number, gov_id_number, address1, address2, city_town, state_province, postal_code, telephone1, telephone2, telephone3, telephone4, email, website, inactive, c.type, address_id, country_code FROM ".TABLE_CONTACTS." c LEFT JOIN ".TABLE_ADDRESS_BOOK." a ON c.id = a.ref_id $search ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order}");
 		$sql->execute();
 		$basis->cInfo->rows = $sql->fetchAll(\PDO::FETCH_ASSOC);
 	}
 
 	function loadAddresses (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		if ( property_exists($basis->cInfo, 'contactid') !== true) throw new \core\classes\userException("contactid variable isn't set can't execute method loadAddresses ");
+		if ( property_exists($basis->cInfo, 'address_type') !== true) throw new \core\classes\userException("address_type variable isn't set can't execute method loadAddresses ");
 		$sql = $basis->DataBase->prepare("SELECT * FROM ".TABLE_ADDRESS_BOOK." WHERE ref_id = {$basis->cInfo->contact_id} AND type LIKE '%{$basis->cInfo->address_type}' ORDER BY primary_name");
 		$sql->execute();
 		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);

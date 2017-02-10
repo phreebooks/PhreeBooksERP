@@ -27,7 +27,6 @@ var image_delete_msg  	= '<?php echo INV_MSG_DELETE_INV_ITEM; ?>';
 var text_sku          	= '<?php echo TEXT_SKU; ?>';
 var text_properties   	= '<?php echo TEXT_PROPERTIES;?>';
 var default_tax 	  	= '<?php echo $basis->cInfo->inventory->purch_taxable;?>';
-var delete_icon_HTML  	= '<?php echo substr(html_icon("emblems/emblem-unreadable.png", TEXT_DELETE, "small", "onclick=\"if (confirm(\'" . INV_MSG_DELETE_INV_ITEM . "\')) removeBOMRow("), 0, -2); ?>';
 var text_no 			= '<?php echo TEXT_NO; ?>';
 var text_yes			= '<?php echo TEXT_YES; ?>';
 var filter_equal_to 	= '<?php echo TEXT_EQUAL_TO. ': ';?>';
@@ -572,74 +571,6 @@ function showWhereUsed(sXml) {
   }
 }
 // ******* EOF - AJAX Where Used pair *********/
-
-function addVendorRow(){
-	var newCell = '';
-	var cell    = '';
-	var newRow  = document.getElementById('vendor_table_tbody').insertRow(-1);
-	var rowCnt  = newRow.rowIndex - 2;
-	var odd 	= (newRow.rowIndex%2 == 0) ? 'even' : 'odd';
-	newRow.setAttribute("className", odd);
-	newRow.setAttribute("class", odd);
-	var rowId = Math.floor((Math.random()*100)+1);
-	newRow.setAttribute("id", "row_id_"+rowId );
-	cell    = buildIcon(icon_path+'16x16/emblems/emblem-unreadable.png', image_delete_text, 'onclick="if (confirm(\'<?php echo INV_MSG_DELETE_VENDOR_ROW;?>\')) removeVendorRow('+rowId+');"');
-	newCell = newRow.insertCell(-1);
-	newCell.innerHTML = cell;
-	<?php
-	if(isset($basis->cInfo->inventory->vendor_id)) {
-		echo "cell  ='". str_replace("'", "\'", html_pull_down_menu('vendor_id_array[]', gen_get_contact_array_by_type('v'), ""))."';".chr(13);
-	}else{
-		echo "cell  ='';".chr(13);
-	} ?>
-	newCell = newRow.insertCell(-1);
-	newCell.innerHTML = cell;
-	<?php
-	if(isset($basis->cInfo->inventory->description_purchase)){
-		echo "cell  ='". str_replace("'", "\'", html_textarea_field('description_purchase_array[]', 75, 2, '', '', $reinsert_value = true))."';".chr(13);
-	}else{
-		echo "cell  ='';".chr(13);
-	} ?>
-	newCell = newRow.insertCell(-1);
-	newCell.innerHTML = cell;
-	<?php
-	if(isset($basis->cInfo->inventory->item_cost)){
-		echo "cell  ='". str_replace("'", "\'", html_input_field('item_cost_array[]', $basis->currencies->precise(0), 'onchange="what_to_update();" size="15" maxlength="20" style="text-align:right"', false))."';".chr(13);
-	}else{
-		echo "cell  ='';".chr(13);
-	} ?>
-	newCell = newRow.insertCell(-1);
-	newCell.innerHTML = cell;
-	<?php
-	if(isset($basis->cInfo->inventory->item_cost)){
-		echo "cell  ='". str_replace("'", "\'", html_input_field('purch_package_quantity_array[]', 1, 'size="6" maxlength="5" style="text-align:right"'))."';".chr(13);
-	}else{
-		echo "cell  ='';".chr(13);
-	} ?>
-	newCell = newRow.insertCell(-1);
-	newCell.innerHTML = cell;
-	<?php
-	if(isset($basis->cInfo->inventory->purch_taxable)){
-		echo "cell  ='". str_replace("'", "\'", html_pull_down_menu('purch_taxable_array[]', $purch_tax_rates, INVENTORY_DEFAULT_PURCH_TAX))."';".chr(13);
-	}else{
-		echo "cell  ='';".chr(13);
-	} ?>
-	newCell = newRow.insertCell(-1);
-	newCell.innerHTML = cell;
-	<?php
-	if(isset($basis->cInfo->inventory->price_sheet_v)){
-		echo "cell  ='".str_replace("'", "\'", html_pull_down_menu('price_sheet_v_array[]', get_price_sheet_data('v'), ''))."';".chr(13);
-	}else{ print('onwaar');
-		echo "cell  ='';".chr(13);
-	} ?>
-	newCell = newRow.insertCell(-1);
-	newCell.innerHTML = cell;
-}
-
-function removeVendorRow(index){
-	var row = document.getElementById('row_id_'+index);
-	row.parentElement.removeChild(row);
-}
 
 $(document).ready(function(){
 	//event for change of textbox

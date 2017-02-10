@@ -23,63 +23,6 @@ define('MAX_INVENTORY_SKU_LENGTH', 24); // database is currently set for a maxim
 define('MAX_NUM_PRICE_LEVELS', 5);
 // the inventory type indexes should not be changed or the inventory module won't work.
 // system generated types (not to be displayed are: ai - assembly item, mi - master stock with attributes)
-$inventory_types = array(
-		'si' => TEXT_STOCK_ITEM,
-		'sr' => TEXT_SERIALIZED_ITEM,
-		'ms' => TEXT_MASTER_STOCK_ITEM,
-		'mb' => TEXT_MASTER_STOCK_ASSEMBLY,
-		'ma' => TEXT_ITEM_ASSEMBLY,
-		'sa' => TEXT_SERIALIZED_ASSEMBLY,
-		'ns' => TEXT_NON-STOCK_ITEM,
-		'lb' => TEXT_LABOR,
-		'sv' => TEXT_SERVICE,
-		'sf' => TEXT_FLAT_RATE_SERVICE,
-		'ci' => TEXT_CHARGE_ITEM,
-		'ai' => TEXT_ACTIVITY,
-		'ds' => TEXT_DESCRIPTION,
-);
-// used for identifying inventory types in reports and forms that are not selectable by the user
-$inventory_types_plus       = $inventory_types;
-$inventory_types_plus['ia'] = TEXT_ITEM_ASSEMBLY_PART;
-$inventory_types_plus['mi'] = TEXT_MASTER_STOCK_SUB_ITEM;
-
-asort ($inventory_types);
-asort ($inventory_types_plus);
-
-$cost_methods = array(
-		'f' => TEXT_FIFO,	   // First-in, First-out
-		'l' => TEXT_LIFO,	   // Last-in, First-out
-		'a' => TEXT_AVERAGE, // Average Costing
-);
-
-$price_mgr_sources = array(
-		'0' => TEXT_NOT_USED,	// Do not remove this selection, leave as first entry
-		'1' => TEXT_DIR_ENTRY,
-		'2' => TEXT_ITEM_COST,
-		'3' => TEXT_FULL_PRICE,
-		// Price Level 1 needs to always be at the end (it is pulled from the first row to avoid a circular reference)
-// The index can change but must be matched with the javascript to update the price source values.
-		'4' => TEXT_PRICE_LVL_1,
-);
-$price_mgr_adjustments = array(
-		'0' => TEXT_NONE,
-		'1' => TEXT_DECREASE_BY_AMOUNT,
-		'2' => TEXT_DECREASE_BY_PERCENT,
-		'3' => TEXT_INCREASE_BY_AMOUNT,
-		'4' => TEXT_INCREASE_BY_PERCENT,
-		'5' => TEXT_MARK_UP_BY_PERCENT, // Mark up by Percent
-		'6' => TEXT_MARGIN, // Margin by Percent
-		'7' => TEXT_TIERED_PRICING, // tiered pricing
-		'5' => TEXT_MARK_UP_BY_PERCENT, // Mark up by Percent
-		'6' => TEXT_MARGIN, // Margin by Percent
-		'7' => TEXT_TIERED_PRICING, // tiered pricing
-);
-$price_mgr_rounding = array(
-		'0' => TEXT_NONE,
-		'1' => TEXT_NEXT_WHOLE,
-		'2' => TEXT_CONSTANT_CENTS,
-		'3' => TEXT_NEXT_INCREMENT,
-);
 
 class admin extends \core\classes\admin {
 	public $sort_order  = 4;
@@ -87,6 +30,57 @@ class admin extends \core\classes\admin {
 	public $description = MODULE_INVENTORY_DESCRIPTION;
 	public $core		= true;
 	public $version		= '4.0.1-dev';
+	public $inventory_types = array(
+			'si' => TEXT_STOCK_ITEM,
+			'sr' => TEXT_SERIALIZED_ITEM,
+			'ms' => TEXT_MASTER_STOCK_ITEM,
+			'mb' => TEXT_MASTER_STOCK_ASSEMBLY,
+			'ma' => TEXT_ITEM_ASSEMBLY,
+			'sa' => TEXT_SERIALIZED_ASSEMBLY,
+			'ns' => TEXT_NON_STOCK_ITEM,
+			'lb' => TEXT_LABOR,
+			'sv' => TEXT_SERVICE,
+			'sf' => TEXT_FLAT_RATE_SERVICE,
+			'ci' => TEXT_CHARGE_ITEM,
+			'ai' => TEXT_ACTIVITY,
+			'ds' => TEXT_DESCRIPTION,
+	);
+	
+	public $cost_methods = array(
+			'f' => TEXT_FIFO,	   // First-in, First-out
+			'l' => TEXT_LIFO,	   // Last-in, First-out
+			'a' => TEXT_AVERAGE, // Average Costing
+	);
+	// price manager
+	public $price_mgr_sources = array(
+			'0' => TEXT_NOT_USED,	// Do not remove this selection, leave as first entry
+			'1' => TEXT_DIR_ENTRY,
+			'2' => TEXT_ITEM_COST,
+			'3' => TEXT_FULL_PRICE,
+			// Price Level 1 needs to always be at the end (it is pulled from the first row to avoid a circular reference)
+			// 	The index can change but must be matched with the javascript to update the price source values.
+			'4' => TEXT_PRICE_LVL_1,
+	);
+	public $price_mgr_adjustments = array(
+			'0' => TEXT_NONE,
+			'1' => TEXT_DECREASE_BY_AMOUNT,
+			'2' => TEXT_DECREASE_BY_PERCENT,
+			'3' => TEXT_INCREASE_BY_AMOUNT,
+			'4' => TEXT_INCREASE_BY_PERCENT,
+			'5' => TEXT_MARK_UP_BY_PERCENT, // Mark up by Percent
+			'6' => TEXT_MARGIN, // Margin by Percent
+			'7' => TEXT_TIERED_PRICING, // tiered pricing
+			'5' => TEXT_MARK_UP_BY_PERCENT, // Mark up by Percent
+			'6' => TEXT_MARGIN, // Margin by Percent
+			'7' => TEXT_TIERED_PRICING, // tiered pricing
+	);
+	public $price_mgr_rounding = array(
+			'0' => TEXT_NONE,
+			'1' => TEXT_NEXT_WHOLE,
+			'2' => TEXT_CONSTANT_CENTS,
+			'3' => TEXT_NEXT_INCREMENT,
+	);
+	
 
 	function __construct() {
 		$this->text = sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY);
@@ -275,7 +269,14 @@ class admin extends \core\classes\admin {
 		$this->mainmenu["customers"]->submenu ["pricesheet"] 	= new \core\classes\menuItem (65, 	sprintf(TEXT_ARGS_PRICE_SHEETS, TEXT_CUSTOMER),		'module=inventory&amp;page=price_sheets&amp;type=c&amp;list=1',		 SECURITY_ID_PRICE_SHEET_MANAGER);
 		$this->mainmenu["vendors"]->submenu ["pricesheet"]	 	= new \core\classes\menuItem (65, 	sprintf(TEXT_ARGS_PRICE_SHEETS, TEXT_VENDOR),		'module=inventory&amp;page=price_sheets&amp;type=v&amp;list=1',		 SECURITY_ID_PRICE_SHEET_MANAGER);
 		$this->mainmenu["company"]->submenu ["configuration"]->submenu ["inventory"]  = new \core\classes\menuItem (sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY), sprintf(TEXT_MODULE_ARGS, TEXT_INVENTORY),	'module=inventory&amp;page=admin',    SECURITY_ID_CONFIGURATION);
-
+		// used for identifying inventory types in reports and forms that are not selectable by the user
+		$this->inventory_types_plus       = $this->inventory_types;
+		$this->inventory_types_plus['ia'] = TEXT_ITEM_ASSEMBLY_PART;
+		$this->inventory_types_plus['mi'] = TEXT_MASTER_STOCK_SUB_ITEM;
+		
+		asort ($this->inventory_types);
+		asort ($this->inventory_types_plus);
+		
 	    parent::__construct();
 	}
 
@@ -652,13 +653,6 @@ class admin extends \core\classes\admin {
 		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_INVENTORY . " WHERE id = {$basis->cInfo->inventoryID}");
 		$sql->execute();
 		$basis->cInfo->inventory = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
-		// build the type filter list
-		$basis->cInfo->type_select_list = array( // add some extra options
-				array('id' => '0',   'text' => TEXT_ALL),
-				array('id' => 'cog', 'text' => TEXT_CONTROLLED_STOCK),
-		);
-		
-		foreach ($inventory_types_plus as $key => $value) $basis->cInfo->type_select_list[] = array('id' => $key,  'text' => $value);
 		// generate the vendors and fill js arrays for dynamic pull downs
 		$vendors = gen_get_contact_array_by_type('v');
 		$basis->cInfo->js_vendor_array = "var js_vendor_array = new Array();" . chr(10);
@@ -671,10 +665,9 @@ class admin extends \core\classes\admin {
 		for ($i = 0; $i < count($pur_pricesheets); $i++) {
 			$basis->cInfo->js_pricesheet_array .= "js_pricesheet_array[$i] = new dropDownData('{$pur_pricesheets[$i]['id']}', '{$pur_pricesheets[$i]['text']}');" . chr(10);
 		}
-		
+		$basis->cInfo->cost_methods = $this->cost_methods;
 		// load the tax rates
 		$tax_rates        = ord_calculate_tax_drop_down('c');
-		$basis->cInfo->purch_tax_rates  = ord_calculate_tax_drop_down('v',false);
 		// generate a rate array parallel to the drop down for javascript
 		$basis->cInfo->js_tax_rates = 'var tax_rates = new Array(' . count($tax_rates) . ');' . chr(10);
 		for ($i = 0; $i < count($tax_rates); $i++) {
@@ -911,21 +904,16 @@ class admin extends \core\classes\admin {
   			if (sizeof($basis->cInfo->filter) > 0 ) {
   				$filter_criteria = Array(" = "," != "," LIKE "," NOT LIKE "," > "," < ");
   				foreach ($basis->cInfo->filter as $key => $row) {
-  					if(      $filter_criteria[$row->criteria] == " LIKE " || $row->criteria == FILTER_CONTAINS){
-  						if ( $_SESSION['filter_value'][$x] <> '' ) $criteria[] = "{$row->field}  Like '%{$row->value}%' ";
-  							
-  					}elseif( $filter_criteria[$row->criteria] == " NOT LIKE "){
-  						if ( $row->value <> '' ) $criteria[] = "{$row->field} Not Like '%{$row->value}%' ";
-  							
-  					}elseif( $filter_criteria[$row->criteria] == " = "  && $row->value == ''){
-  						if ( $row->field == 'a.sku' && $row->value == '' ) { $x++; continue; }
-  						$criteria[] = "({$row->field} {$filter_criteria[$row->criteria]} '{$row->value}' or '{$row->field}' IS NULL ) ";
-  							
-  					}elseif( $filter_criteria[$row->criteria] == " != " && $row->value == ''){
-  						$criteria[] = "({$row->field} {$filter_criteria[$row->criteria]}  '{$row->value} or '{$row->field}' IS NOT NULL ) ";
-  							
+  					if(      $filter_criteria[$row['criteria']] == " LIKE " || $row['criteria'] == FILTER_CONTAINS){
+  						if ( $row['value'] <> '' ) $criteria[] = "{$row['field']}  Like '%{$row['value']}%' ";
+  					}elseif( $filter_criteria[$row['criteria']] == " NOT LIKE "){
+  						if ( $row['value'] <> '' ) $criteria[] = "{$row['field']} Not Like '%{$row['value']}%' ";
+  					}elseif( $filter_criteria[$row['criteria']] == " = "  && $row['value'] == ''){
+  						$criteria[] = "({$row['field']} {$filter_criteria[$row['criteria']]} '{$row['value']}' or '{$row['field']}' IS NULL ) ";							
+  					}elseif( $filter_criteria[$row['criteria']] == " != " && $row['value'] == ''){
+  						$criteria[] = "({$row['field']} {$filter_criteria[$row['criteria']]}  '{$row['value']} or '{$row['field']}' IS NOT NULL ) ";
   					}else{
-  						$criteria[] = "{$row->field} {$filter_criteria[$row->criteria]} '{$row->value}' ";
+  						$criteria[] = "{$row['field']} {$filter_criteria[$row['criteria']]} '{$row['value']}' ";
   					}
   				}
   			} 
@@ -993,7 +981,7 @@ class admin extends \core\classes\admin {
   				case'inventory_type':
   					$tempValue 	='Array("'  ;
   					$tempId 	='Array("' ;
-  					foreach ($inventory_types_plus as $key => $value){
+  					foreach ($this->inventory_types_plus as $key => $value){
   						$tempValue .= $key.'","';
   						$tempId    .= $value.'","';
   					}
@@ -1006,7 +994,7 @@ class admin extends \core\classes\admin {
   				case'cost_method':
   					$tempValue 	='Array("'  ;
   					$tempId 	='Array("' ;
-  					foreach ($cost_methods as $key => $value){
+  					foreach ($this->cost_methods as $key => $value){
   						$tempValue .= $key.'","';
   						$tempId    .= $value.'","';
   					}
@@ -1140,6 +1128,17 @@ class admin extends \core\classes\admin {
   			document.getElementById('filter_value'+ rowCnt ).value = "";
   		});
   		</script><?php		
+  	}
+  	
+  	function getPurchasedetails (\core\classes\basis $basis){
+  		\core\classes\messageStack::development("executing ".__METHOD__);
+  		if ( property_exists($basis->cInfo, 'sku') !== true) throw new \core\classes\userException("sku variable isn't set can't execute method getPurchasedetails ");
+		//$sql = $basis->DataBase->query("SELECT * FROM " . TABLE_INVENTORY_PURCHASE . " i JOIN " . TABLE_ADDRESS_BOOK . " a ON i.vendor_id = a.ref_id WHERE sku = '{$basis->cInfo->sku}' and a.type like '%m'");
+  		$sql = $basis->DataBase->query("SELECT * FROM " . TABLE_INVENTORY_PURCHASE . " i JOIN " . TABLE_ADDRESS_BOOK . " a ON i.vendor_id = a.ref_id JOIN " . TABLE_TAX_RATES." t ON i.purch_taxable = t.tax_rate_id WHERE sku = '{$basis->cInfo->sku}' and a.type like '%m'");
+  		$sql->execute();
+  		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
+  		$basis->cInfo->total = sizeof($results);
+  		$basis->cInfo->rows = $results;
   	}
 
   	function SaveInventoryAdjustment (\core\classes\basis $basis){

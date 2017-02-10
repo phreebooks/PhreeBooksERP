@@ -55,6 +55,27 @@ function loadHelp(subject){
 	alert('help Function ' +subject);//@todo write help function
 }
 
+var customloader = function(param, success, error){
+	var opts = $(this).combobox('options');
+	if (!opts.url) return false;
+	$.ajax({
+		type: opts.method,
+		url: opts.url,
+		data: param,
+		dataType: 'json',
+		success: function(data){
+			if (data.rows){
+				success(data.rows);  // used the data.rows array to fill combobox list
+			} else {
+				success(data);
+			}
+		},
+		error: function(){
+			error.apply(this, arguments);
+		}
+	});
+}
+
 // BOS - set up ajax session refresh timer to stay logged in if the browser is active
 var sessionClockID = 0; // start a session clock to stay logged in
 function refreshSessionClock() {
@@ -225,6 +246,7 @@ function formatCurrency(amount) { // convert to expected currency format
 }
 
 function focusCurrency(field){
+	consol.log('focusCurrency still needs to be checked and the keydown event needs to prevent the thousand point.');
 	field.value = field.value.replace(thousands_point, '');
 	field.value = field.value.replace(symbol_left, '');
 	field.value = field.value.replace(symbol_right, '');

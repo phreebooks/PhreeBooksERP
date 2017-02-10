@@ -1,7 +1,7 @@
 <?php
 namespace inventory\classes\type;
 class ns extends \inventory\classes\inventory {//Non-stock Item
-	public $title       			= TEXT_NON-STOCK_ITEM;
+	public $title       			= TEXT_NON_STOCK_ITEM;
     public $account_sales_income	= INV_NON_STOCK_DEFAULT_SALES;
 	public $account_inventory_wage	= INV_NON_STOCK_DEFAULT_INVENTORY;
 	public $account_cost_of_sales	= INV_NON_STOCK_DEFAULT_COS;

@@ -46,7 +46,7 @@ if (count($extra_toolbar_buttons) > 0) {
 // add the help file index and build the toolbar
 if( !$basis->cInfo->inventory->help == '' ) $basis->toolbar->add_help($basis->cInfo->inventory->help);
 echo $basis->toolbar->build();
-$basis->cInfo->inventory->fields->display($basis->cInfo->inventory);
+$basis->cInfo->inventory->fields->display($basis->cInfo->inventory, $basis->cInfo->inventory);
 // Build the page
 
 function tab_sort($a, $b) {
@@ -60,16 +60,16 @@ usort($basis->cInfo->inventory->tab_list, 'tab_sort');
 		   	<a href="#" class="easyui-linkbutton" iconCls="icon-save"   onclick="$('#contacts').submit();"><?php echo TEXT_SAVE;?></a>
 		   	<a href="#" class="easyui-linkbutton" iconCls="icon-help"   onclick="loadHelp('editContact');"><?php echo TEXT_HELP;?></a>
 		   	<a href="#" class="easyui-linkbutton" iconCls="icon-email"  onclick="deleteContact()"><?php echo TEXT_MAIL;?></a>//@todo
-		   	<h1><?php echo "{$basis->cInfo->contact->page_title_edit} - ({$basis->cInfo->contact->short_name}) "; ?></h1>
+		   	<h1><?php echo "{$basis->cInfo->inventory->title} - ({$basis->cInfo->inventory->sku}) "; ?></h1>
 		</div>
 		<div id="Tabs" class="easyui-tabs" border="false" plain="true" >
 		<?php
 		foreach ($basis->cInfo->inventory->tab_list as $value) {
-		  if (file_exists(DIR_FS_MODULES . "contacts/custom/pages/main/{$value['file']}.php")) {
-			include(DIR_FS_MODULES . "contacts/custom/pages/main/{$value['file']}.php");
-		  } else {
-			include(DIR_FS_MODULES . "contacts/pages/main/{$value['file']}.php");
-		  }
+		  	if (file_exists(DIR_FS_MODULES . "inventory/custom/pages/main/{$value['file']}.php")) {
+				include(DIR_FS_MODULES . "inventory/custom/pages/main/{$value['file']}.php");
+		  	} else {
+				include(DIR_FS_MODULES . "inventory/pages/main/{$value['file']}.php");
+		  	}
 		}
 		echo $basis->cInfo->inventory->fields->extra_tab_html;// user added extra tabs
 		?>

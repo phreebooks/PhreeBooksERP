@@ -28,6 +28,7 @@ $toolbar->icon_list['print']['show']    = false;
 $toolbar->add_icon('continue', 'onclick="submitToDo(\'CreateInventoryItem\')"', $order = 10);
 $toolbar->add_help('07.04.01.01');
 echo $toolbar->build();
+$inventory = new \inventory\classes\admin(); //@todo is not needed
 ?>
   <h1><?php echo sprintf(TEXT_NEW_ARGS, TEXT_INVENTORY_ITEM); ?></h1>
   <table class="ui-widget" style="border-collapse:collapse;width:600px;margin-left:auto;margin-right:auto">
@@ -43,12 +44,12 @@ echo $toolbar->build();
     </tr>
     <tr>
 	  <td align="right"><?php echo TEXT_INVENTORY_TYPES; ?></td>
-	  <td><?php echo html_pull_down_menu('inventory_type', gen_build_pull_down($inventory_types), isset($inventory_type) ? $inventory_type : 'si', 'onchange="setSkuLength()"'); ?></td>
+	  <td><?php echo html_pull_down_menu('inventory_type', gen_build_pull_down($inventory->inventory_types), isset($inventory_type) ? $inventory_type : 'si', 'onchange="setSkuLength()"'); ?></td>
     </tr>
     <?php /*?>
     <tr>
 	  <td align="right"><?php echo TEXT_COST_METHOD; ?></td>
-	  <td><?php echo html_pull_down_menu('cost_method', gen_build_pull_down($cost_methods), isset($cost_method) ? $cost_method : 'f'); ?></td>
+	  <td><?php echo html_pull_down_menu('cost_method', gen_build_pull_down($basis->cInfo->cost_methods), isset($cost_method) ? $cost_method : 'f'); ?></td>
     </tr><?php */?>
     <tr>
 	  <td nowrap="nowrap" colspan="2"><?php echo '&nbsp;'; ?></td>

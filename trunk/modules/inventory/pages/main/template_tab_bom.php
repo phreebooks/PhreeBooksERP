@@ -54,9 +54,9 @@
 			if ($basis->cInfo->inventory->allow_edit_bom) echo html_icon('actions/system-search.png', TEXT_SKU, 'small', $params = 'align="top" style="cursor:pointer" onclick="InventoryList(' . $i . ')"') . chr(10);
 			echo '      </td>' . chr(10);
 			echo '      <td><input type="text" name="assy_desc[]" 		 id="desc_' . $i . '" 		 value="' . $basis->cInfo->inventory->bom[$j]['description'] . '" ' . $readonly . 'size="64" maxlength="64" /></td>' . chr(10);
-			echo '      <td><input type="text" name="assy_qty[]" 		 id="qty_' . $i . '" 		 value="' . $admin->currencies->precise($basis->cInfo->inventory->bom[$j]['qty']) . '" 		' . $readonly . 'size="6" maxlength="5" /></td>' . chr(10);
-			echo '      <td><input type="text" name="assy_item_cost[]" 	 id="item_cost_' . $i . '" 	 value="' . $admin->currencies->precise($basis->cInfo->inventory->bom[$j]['item_cost']) . '" 	' . $readonly . 'size="6" maxlength="5" /></td>' . chr(10);
-			echo '      <td><input type="text" name="assy_sales_price[]" id="sales_price_' . $i . '" value="' . $admin->currencies->precise($basis->cInfo->inventory->bom[$j]['full_price']) . '" 	' . $readonly . 'size="6" maxlength="5" /></td>' . chr(10);
+			echo '      <td><input type="text" name="assy_qty[]" 		 id="qty_' . $i . '" 		 value="' . $basis->currencies->precise($basis->cInfo->inventory->bom[$j]['qty']) . '" 		' . $readonly . 'size="6" maxlength="5" /></td>' . chr(10);
+			echo '      <td><input type="text" name="assy_item_cost[]" 	 id="item_cost_' . $i . '" 	 value="' . $basis->currencies->precise($basis->cInfo->inventory->bom[$j]['item_cost']) . '" 	' . $readonly . 'size="6" maxlength="5" /></td>' . chr(10);
+			echo '      <td><input type="text" name="assy_sales_price[]" id="sales_price_' . $i . '" value="' . $basis->currencies->precise($basis->cInfo->inventory->bom[$j]['full_price']) . '" 	' . $readonly . 'size="6" maxlength="5" /></td>' . chr(10);
 			echo '    </tr>';
 		}
 	} else {

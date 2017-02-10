@@ -58,7 +58,7 @@ echo $toolbar->build($add_search = true);
 		<td>&nbsp;</td>
  		<td style="text-align:right">
 		<?php echo html_icon('actions/system-search.png', TEXT_SEARCH, 'medium', 'onclick="submitToDo(\'filter\')"') ?>
-		<?php if($_SESSION['filter_field']) echo html_icon('actions/view-refresh.png', TEXT_RESET, 'small', 'onclick="location.href = \'index.php?' . gen_get_all_get_params(array('search_text', 'search_period', 'search_date', 'list', 'action')) . '&action=reset\';" style="cursor:pointer;"');?>
+		<?php echo html_icon('actions/view-refresh.png', TEXT_RESET, 'small', 'onclick="location.href = \'index.php?' . gen_get_all_get_params(array('search_text', 'search_period', 'search_date', 'list', 'action')) . '&action=reset\';" style="cursor:pointer;"');?>
 		</td>
  	</tr>
  </tfoot>

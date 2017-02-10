@@ -27,8 +27,8 @@ class fields extends \core\classes\fields{
 	public  $extra_buttons = '';
 
 	public function __construct($sync, $inventory_type){
-	  	require(DIR_FS_MODULES . 'inventory/defaults.php');
-	  	foreach ($inventory_types_plus as $key => $value) $this->type_array[] = array('id'=>$key, 'text'=>$value);
+		global $admin;
+	  	foreach ($admin->classes['inventory']->inventory_types_plus as $key => $value) $this->type_array[$key] = array('id'=>$key, 'text'=>$value);
 	    $this->type_desc    = TEXT_INVENTORY_TYPES;
 	    parent::__construct($sync, $inventory_type);
 	}
