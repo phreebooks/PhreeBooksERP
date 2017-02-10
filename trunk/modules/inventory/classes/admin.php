@@ -659,12 +659,6 @@ class admin extends \core\classes\admin {
 		for ($i = 0; $i < count($vendors); $i++) {
 			$basis->cInfo->js_vendor_array .= "js_vendor_array[$i] = new dropDownData('{$vendors[$i]['id']}', '{$vendors[$i]['text']}');" . chr(10);
 		}
-		// generate the pricesheets and fill js arrays for dynamic pull downs
-		$pur_pricesheets = get_price_sheet_data('v');
-		$basis->cInfo->js_pricesheet_array = "var js_pricesheet_array = new Array();" . chr(10);
-		for ($i = 0; $i < count($pur_pricesheets); $i++) {
-			$basis->cInfo->js_pricesheet_array .= "js_pricesheet_array[$i] = new dropDownData('{$pur_pricesheets[$i]['id']}', '{$pur_pricesheets[$i]['text']}');" . chr(10);
-		}
 		$basis->cInfo->cost_methods = $this->cost_methods;
 		// load the tax rates
 		$tax_rates        = ord_calculate_tax_drop_down('c');
@@ -900,6 +894,7 @@ class admin extends \core\classes\admin {
   	function GetAllInventory (\core\classes\basis $basis){
   		\core\classes\messageStack::development("executing ".__METHOD__);
   		try{
+  			if ($basis->cInfo->rows == 'NaN') $basis->cInfo->rows = MAX_DISPLAY_SEARCH_RESULTS;
   			$offset = ($basis->cInfo->rows)? " LIMIT ".(($basis->cInfo->page - 1) * $basis->cInfo->rows).", {$basis->cInfo->rows}" : "";
   			if (sizeof($basis->cInfo->filter) > 0 ) {
   				$filter_criteria = Array(" = "," != "," LIKE "," NOT LIKE "," > "," < ");
@@ -925,14 +920,14 @@ class admin extends \core\classes\admin {
 	  		}
 	  		if ($basis->cInfo->sort == 'sku') $basis->cInfo->sort = " LPAD(a.sku,".MAX_INVENTORY_SKU_LENGTH.",0) "; 
 	  		$search = (sizeof($criteria) > 0) ? (' WHERE ' . implode(' AND ', $criteria)) : '';
-	  		$sql = $basis->DataBase->query("SELECT COUNT(*) FROM " . TABLE_INVENTORY ." a LEFT JOIN " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku $search");
+	  		$sql = $basis->DataBase->query("SELECT DISTINCT COUNT(*) FROM " . TABLE_INVENTORY ." a LEFT JOIN " . TABLE_INVENTORY_PURCHASE . " p on a.sku = p.sku $search");
 	  		$basis->cInfo->total = $sql->fetchColumn();
 	  		$field_list = array('a.id as id', 'a.sku as sku', 'inactive', 'inventory_type', 'description_short', 'full_price', 'full_price_with_tax',
 	  				'quantity_on_hand', 'quantity_on_order', 'quantity_on_sales_order', 'quantity_on_allocation', 'last_journal_date', 'minimum_stock_level');
 	  		// hook to add new fields to the query return results
 	  		if (is_array($extra_query_list_fields) > 0) $field_list = array_merge($field_list, $extra_query_list_fields);
 	  		//check if sql is executed before otherwise retrieve from memorie.
-	  		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_INVENTORY ." a LEFT OUTER JOIN " . TABLE_INVENTORY_PURCHASE . " p ON a.sku = p.sku {$search} ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order} $offset");
+	  		$sql = $basis->DataBase->prepare("SELECT DISTINCT * FROM " . TABLE_INVENTORY ." a LEFT JOIN " . TABLE_INVENTORY_PURCHASE . " p ON a.sku = p.sku {$search} ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order} $offset");
 	  		$sql->execute();
 	  		$basis->cInfo->rows = $sql->fetchAll(\PDO::FETCH_ASSOC);
 		}catch (\Exception $e) {
@@ -1348,6 +1343,13 @@ class admin extends \core\classes\admin {
   		$basis->page			= 'assemblies';
   		$basis->template 		= 'template_main';
   		$basis->observer->send_footer($basis);
+  	}
+  	
+  	function GetAllPriceSheets (\core\classes\basis $basis){
+  		\core\classes\messageStack::development("executing ".__METHOD__ );
+  		// generate the pricesheets and fill js arrays for dynamic pull downs
+  		$basis->cInfo->rows = get_price_sheet_data('v');
+  		$basis->cInfo->total = sizeof($basis->cInfo->rows);
   	}
 }
 ?>

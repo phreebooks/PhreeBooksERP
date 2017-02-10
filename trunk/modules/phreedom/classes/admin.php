@@ -49,7 +49,7 @@ class admin extends \core\classes\admin {
 		  'ENABLE_MULTI_CURRENCY'      => '0',
 		  'ENABLE_ENCRYPTION'          => '0',
 		  'ENTRY_PASSWORD_MIN_LENGTH'  => '5',
-		  'MAX_DISPLAY_SEARCH_RESULTS' => '20',
+		  'MAX_DISPLAY_SEARCH_RESULTS' => '50',
 	      'MAX_DASHBOARD_SEARCH_RESULTS'=>'10',
 		  'CFG_AUTO_UPDATE_CHECK'      => '0',
 		  'HIDE_SUCCESS_MESSAGES'      => '0',
@@ -300,6 +300,7 @@ class admin extends \core\classes\admin {
 	  		if ( $basis->DataBase->table_exists(DB_PREFIX .  'zh_search')) 		$basis->DataBase->exec("DROP TABLE ".DB_PREFIX .  "zh_search");
 	  		if ( $basis->DataBase->table_exists(DB_PREFIX .  'zones')) 			$basis->DataBase->exec("DROP TABLE ".DB_PREFIX .  "zh_search");
 	  		if ( $basis->DataBase->table_exists(DB_PREFIX .  'countries')) 		$basis->DataBase->exec("DROP TABLE ".DB_PREFIX .  "countries");
+	  		$basis->DataBase->write_configure('MAX_DISPLAY_SEARCH_RESULTS', 50);
 	  	}
 	  	if (version_compare($this->status, '4.0.4', '<') ) {
 //@todo	  		DATE_TIME_FORMAT in this constant the h should be G

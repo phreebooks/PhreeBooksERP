@@ -486,6 +486,7 @@ class admin extends \core\classes\admin {
 	function loadOrders (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ ); 
 		if (empty($basis->cInfo->journal_id)) throw new \core\classes\userException(TEXT_JOURNAL_ID_NOT_DEFINED);
+		if ($basis->cInfo->rows == 'NaN') $basis->cInfo->rows = MAX_DISPLAY_SEARCH_RESULTS;
 		$offset = ($basis->cInfo->rows)? " LIMIT ".(($basis->cInfo->page - 1) * $basis->cInfo->rows).", {$basis->cInfo->rows}" : "";
 		$raw_sql  = "SELECT id, journal_id, closed, closed_date, post_date, total_amount, purchase_invoice_id, purch_order_id FROM ".TABLE_JOURNAL_MAIN." WHERE ";
 		$raw_sql .= ($basis->cInfo->only_open)  ? " closed = '0' AND " : "";
@@ -580,6 +581,7 @@ class admin extends \core\classes\admin {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		try{
 			if (!property_exists($basis->cInfo, 'jID')) 	throw new \core\classes\userException(TEXT_JOURNAL_TYPE_NOT_DEFINED);
+			if ($basis->cInfo->rows == 'NaN') $basis->cInfo->rows = MAX_DISPLAY_SEARCH_RESULTS;
 			$offset = ($basis->cInfo->rows)? " LIMIT ".(($basis->cInfo->page - 1) * $basis->cInfo->rows).", {$basis->cInfo->rows}" : "";
 			$period = ($basis->cInfo->search_period == 'all') ? '' : " and period = {$basis->cInfo->search_period} ";
 			if (isset($basis->cInfo->search_text) && $basis->cInfo->search_text <> '') {
@@ -760,6 +762,16 @@ class admin extends \core\classes\admin {
   				}
   			</script><?php 
   		$basis->observer->send_footer($basis);
+  	}
+  	
+  	function GetTaxRates (\core\classes\basis $basis){
+  		\core\classes\messageStack::development("executing ".__METHOD__ );
+  		if (!property_exists($basis->cInfo, 'type')) 	throw new \core\classes\userException(TEXT_CONTACT_TYPE_NOT_DEFINED);
+  		$tax_rates        = ord_calculate_tax_drop_down($basis->cInfo->type);
+  		foreach ($tax_rates as $key => $tax_rate){
+  			$basis->cInfo->rows[$key] = $tax_rate;
+  		}
+  		$basis->cInfo->total = sizeof($basis->cInfo->rows);
   	}
 }
 ?>

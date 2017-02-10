@@ -385,6 +385,7 @@ class admin extends \core\classes\admin {
 	
 	function GetAllContacts (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__);
+		if ($basis->cInfo->rows == 'NaN') $basis->cInfo->rows = MAX_DISPLAY_SEARCH_RESULTS;
 		$offset = ($basis->cInfo->rows)? " LIMIT ".(($basis->cInfo->page - 1) * $basis->cInfo->rows).", {$basis->cInfo->rows}" : "";
 		if (property_exists($basis->cInfo, 'dept_rep_id') === true) {
 			$criteria[] = "c.dept_rep_id = '{$basis->cInfo->dept_rep_id}'";

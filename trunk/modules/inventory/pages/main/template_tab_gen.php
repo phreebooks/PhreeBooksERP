@@ -169,7 +169,7 @@
                             type:'combobox',
                             options:{
                                 valueField:'id',
-                                textField:'name',
+                                textField:'text',
                                 method:'get',
                                 url:'index.php?action=GetAllPriceSheets',
                                 required:true,
