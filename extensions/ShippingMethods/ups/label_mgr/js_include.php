@@ -29,11 +29,11 @@ var image_delete_msg  = '<?php echo SHIPPING_DELETE_CONFIRM; ?>';
 <?php echo js_calendar_init($cal_exp); ?>
 
 function init() {
-	<?php if ($_REQUEST['action'] == 'label' || $_REQUEST['action'] == 'delete') {
+	if (!$error && !$auto_print &&  $_REQUEST['action'] == 'label' || $_REQUEST['action'] == 'delete') {
 		echo 'window.opener.location.reload();' . chr(10);
 		echo 'self.close();' . chr(10);
 	} ?>
-	document.getElementById('wt_1').focus();
+ if (!$auto_print) echo '  document.getElementById("wt_1").focus();' . chr(10);
 }
 
 function check_form() {
