@@ -129,14 +129,16 @@
     	return $type_format_array;
   	}
 
-  	function gen_get_period_pull_down($include_all = true) {
+  	function gen_get_period_pull_down($include_all = true) { //@todo move to DateTime
     	global $admin;
     	$sql = $admin->DataBase->prepare("SELECT period, start_date, end_date FROM " . TABLE_ACCOUNTING_PERIODS . " ORDER BY period");
     	$sql->execute();
     	$period_array = array();
     	if ($include_all) $period_array[] = array('id' => 'all', 'text' => TEXT_ALL);
     	while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
-	  		$text_value = TEXT_PERIOD . " {$result['period']} : " . \core\classes\DateTime($result['start_date'])->format(DATE_FORMAT) . ' - ' . \core\classes\DateTime($result['end_date'])->format(DATE_FORMAT);
+    		$startdate = new \core\classes\DateTime($result['start_date']);
+    		$enddate   = new \core\classes\DateTime($result['end_date']);
+	  		$text_value = TEXT_PERIOD . " {$result['period']} : " . $startdate->format(DATE_FORMAT) . ' - ' . $enddate->format(DATE_FORMAT);
       		$period_array[] = array('id' => $result['period'], 'text' => $text_value);
     	}
     	return $period_array;

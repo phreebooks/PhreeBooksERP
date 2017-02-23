@@ -615,11 +615,11 @@ class admin extends \core\classes\admin {
   						<tr>
   							<th data-options="field:'post_date',align:'right',sortable:true, formatter: function(value,row,index){ return formatDate(new Date(value))}"><?php echo TEXT_DATE;?></th>
   		               		<th data-options="field:'purchase_invoice_id',align:'left',sortable:true"><?php echo TEXT_DESCRIPTION//@todo?></th>
-  		            	   	<th data-options="field:'bill_primary_name',align:'center',sortable:true"><?php echo in_array ( $basis->cInfo->jID, array (9,	10,	12,	13,	19) ) ? TEXT_CUSTOMER_NAME : TEXT_VENDOR_NAME?></th>
+  		            	   	<th data-options="field:'bill_primary_name',align:'center',sortable:true"><?php echo in_array ( $basis->cInfo->jID, array (9,10,12,13,19) ) ? TEXT_CUSTOMER_NAME : TEXT_VENDOR_NAME?></th>
   		    	           	<th data-options="field:'purch_order_id',align:'center',sortable:true"><?php echo TEXT_REFERENCE?></th>
   		        	       	<th data-options="field:'closed',align:'center',sortable:true,formatter: function(value,row,index){ if(value == '1'){return '<?php echo TEXT_YES?>'}else{return ''}}"><?php echo TEXT_CLOSED?></th>
   		        	       	<th data-options="field:'total_amount',align:'right',sortable:true, formatter: function(value,row,index){ return formatCurrency(value)}"><?php echo TEXT_AMOUNT?></th>
-  		        	       	<th data-options="field:'id',align:'right',formatter:actionformater"><?php echo TEXT_ACTIONS?></th>
+<!--   		        	       	<th data-options="field:'id',align:'right',formatter:actionformater"><?php echo TEXT_ACTIONS?></th>-->
   		            	</tr>
   		        	</thead>
   		    	</table>
@@ -630,7 +630,7 @@ class admin extends \core\classes\admin {
   		        	<?php echo \core\classes\htmlElement::checkbox('Journal_show_inactive', TEXT_SHOW_INACTIVE, '1', false,'onchange="doSearch()"' );?>
   		        	<div style="float: right;">
 						<?php 
-						echo \core\classes\htmlElement::dropdown('search_period','doSearch');
+						echo \core\classes\htmlElement::combobox('search_period', TEXT_ACCOUNTING_PERIOD, gen_get_period_pull_down(false), CURRENT_ACCOUNTING_PERIOD, " onChange='doSearch'");
 						echo \core\classes\htmlElement::search('search_text','doSearch');?>
 					</div>
   		    	</div>
@@ -645,26 +645,12 @@ class admin extends \core\classes\admin {
   				</div>
   	    	</div>	
   			<script type="text/javascript">
-  				function actionformater (value,row,index){
+  			/*	function actionformater (value,row,index){
   					var href = 'innerlist.php?list='+row.id;
   					var dhref = 'dellist.php?list='+row.id;
   					return '<center><a target="_blank" href="' + href + '"><span class="btn btn-primary btn-xs"><i class="fa fa-search"></i> Preview</span></a><a href="' + dhref + '" class="panel-tool-close" plain="true" >Remove Entry</a></center>';
-  				}
+  				}*/
   				
-  				function formatQtyOnhand (value,row,index){
-  					var not_show_types = ['ns','lb','sv','sf','ci','ai','ds'];
-  					if ( not_show_types.indexOf( row.inventory_type ) > 0){
-  	  					return '';
-  					}else{
-  	  					return formatQty (row.quantity_on_hand);
-  					}
-  				}
-
-  				function styleQty (value,row,index) {
-  	  				if (row.quantity_on_hand < row.minimum_stock_level){
-  	  				return 'background-color:green;';
-  	  				}
-  				}
   				
   				document.title = '<?php echo sprintf(TEXT_MANAGER_ARGS, $contact); ?>';
   		    	function doSearch(value){
@@ -675,7 +661,7 @@ class admin extends \core\classes\admin {
   		        		dataType: 'json',
   		                contentType: 'application/json',
   		                async: false,
-  		                type: '<?php echo $basis->cInfo->type;?>',
+  		                jID: '<?php echo $basis->cInfo->jID;?>',
   		                Journal_show_inactive: document.getElementById('Journal_show_inactive').checked ? 1 : 0,
   		        	});
   		    	}
@@ -694,7 +680,7 @@ class admin extends \core\classes\admin {
   				$('#dg').datagrid({
   					url:		"index.php?action=GetAllJournals",
   					queryParams: {
-						search_period: <?php echo CURRENT_PERIOD; ?>,
+						search_period: $('#search_period').val(),
   						dataType: 'json',
   		                contentType: 'application/json',
   		                async: false,
@@ -712,7 +698,7 @@ class admin extends \core\classes\admin {
   					},
   					onDblClickRow: function(index , row){
   						console.log('a row in the datagrid was double clicked');
-  						document.location = "index.php?action=editJournal&jID="+ row.id;
+  						document.location = "index.php?action=editJournal&journal_id="+ row.id;
   						//$('#win').window('open').window('center').window('setTitle',"<?php echo TEXT_EDIT?>"+ ' ' + row.name);
   					},
   					pagination: true,
@@ -721,7 +707,7 @@ class admin extends \core\classes\admin {
   					idField:	"id",
   					fitColumns:	true,
   					singleSelect:true,
-  					sortName:	"sku",
+  					sortName:	"post_date",
   					sortOrder: 	"asc",
   					loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
   					toolbar: 	"#toolbar",
