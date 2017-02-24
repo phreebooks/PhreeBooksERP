@@ -1418,13 +1418,13 @@ function PhreebooksErrorHandler($errno, $errstr, $errfile, $errline, $errcontext
     		$text  = date('Y-m-d H:i:s') . $temp;
     		$text .= " USER WARNING: '$errstr' line $errline in file $errfile";
     		error_log($text . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
-    		$_SESSION['messageToStack'][] = array('type' => $type, 'params' => 'class="ui-state-highlight"', 'text' => $errstr, 'message' => $errstr);
+    		\core\classes\messageStack::add($errstr, 'warning');
         	break;
     	case E_USER_NOTICE: //1024
     		$text  = date('Y-m-d H:i:s') . $temp;
     		$text .= " USER NOTICE:  '$errstr' line $errline in file $errfile";
     		error_log($text . PHP_EOL, 3, DIR_FS_ADMIN . PATH_TO_MY_FILES."/errors.log");
-    		$_SESSION['messageToStack'][] = array('type' => $type, 'params' => 'class="ui-state-highlight"', 'text' => $errstr, 'message' => $errstr);
+    		\core\classes\messageStack::add($errstr, 'warning');
         	break;
     	case E_RECOVERABLE_ERROR : //4096
     		$text  = date('Y-m-d H:i:s') . $temp;

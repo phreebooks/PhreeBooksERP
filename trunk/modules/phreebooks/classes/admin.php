@@ -601,6 +601,7 @@ class admin extends \core\classes\admin {
 			$sql->execute();
 			$basis->cInfo->rows = $sql->fetchAll(\PDO::FETCH_ASSOC);
 		}catch (\Exception $e) {
+			$basis->cInfo->rows = 0;
 			$basis->cInfo->success = false;
 			$basis->cInfo->error_message = $e->getMessage();
 		}
@@ -608,7 +609,25 @@ class admin extends \core\classes\admin {
 	
 	function LoadJournalManager (\core\classes\basis $basis){
   		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-  		$basis->observer->send_menu($basis); ?>
+  		$basis->observer->send_menu($basis);
+  		switch ($basis->cInfo->jID) {
+  			case  2: \core\classes\user::validate ( SECURITY_ID_JOURNAL_ENTRY);      break;
+  			case  3: \core\classes\user::validate ( SECURITY_ID_PURCHASE_QUOTE);     break;
+  			case  4: \core\classes\user::validate ( SECURITY_ID_PURCHASE_ORDER);     break;
+  			case  6: \core\classes\user::validate ( SECURITY_ID_PURCHASE_INVENTORY); break;
+  			case  7: \core\classes\user::validate ( SECURITY_ID_PURCHASE_CREDIT);    break;
+  			case  9: \core\classes\user::validate ( SECURITY_ID_SALES_QUOTE);        break;
+  			case 10: \core\classes\user::validate ( SECURITY_ID_SALES_ORDER);        break;
+  			case 12: \core\classes\user::validate ( SECURITY_ID_SALES_INVOICE);      break;
+  			case 13: \core\classes\user::validate ( SECURITY_ID_SALES_CREDIT);       break;
+  			case 18: \core\classes\user::validate ( SECURITY_ID_CUSTOMER_RECEIPTS);  break;
+  			case 20: \core\classes\user::validate ( SECURITY_ID_PAY_BILLS);          break;
+  			case 21: \core\classes\user::validate ( SECURITY_ID_PAY_BILLS);          break;//@todo
+  			case 22: \core\classes\user::validate ( SECURITY_ID_PAY_BILLS);          break;//@todo
+  			default:
+  				die('Bad or missing journal id found (LoadJournalManager), jID needs to be passed to this script to identify the correct procedure.');
+  		}
+  		$security_level = \core\classes\user::validate ( $security_token );?>
   			<div data-options="region:'center'">
   				<table id="dg" title="<?php echo sprintf(TEXT_MANAGER_ARGS, TEXT_JOURNAL);?>" style="height:500px;padding:50px;">
   					<thead>
@@ -627,10 +646,10 @@ class admin extends \core\classes\admin {
   		    		<a class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editJournal()"><?php echo sprintf(TEXT_EDIT_ARGS, TEXT_JOURNAL);?></a>
   			        <a class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newJournal()"><?php echo sprintf(TEXT_NEW_ARGS, TEXT_JOURNAL);?></a>
   		        	<a class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteJournal()"><?php echo sprintf(TEXT_DELETE_ARGS, TEXT_JOURNAL);?></a>
-  		        	<?php echo \core\classes\htmlElement::checkbox('Journal_show_inactive', TEXT_SHOW_INACTIVE, '1', false,'onchange="doSearch()"' );?>
+  		        	<?php echo \core\classes\htmlElement::checkbox('Journal_show_inactive', TEXT_SHOW_INACTIVE, '1', false,'onChange="doSearch()"' );?>
   		        	<div style="float: right;">
 						<?php 
-						echo \core\classes\htmlElement::combobox('search_period', TEXT_ACCOUNTING_PERIOD, gen_get_period_pull_down(false), CURRENT_ACCOUNTING_PERIOD, " onChange='doSearch'");
+						echo \core\classes\htmlElement::combobox('search_period', TEXT_ACCOUNTING_PERIOD, gen_get_period_pull_down(false), CURRENT_ACCOUNTING_PERIOD);
 						echo \core\classes\htmlElement::search('search_text','doSearch');?>
 					</div>
   		    	</div>
@@ -665,6 +684,21 @@ class admin extends \core\classes\admin {
   		                Journal_show_inactive: document.getElementById('Journal_show_inactive').checked ? 1 : 0,
   		        	});
   		    	}
+
+  		    	$('#search_period').combobox({
+  	  		    	onChange:function(oldvalue, newvalue){
+	  		    		console.log('search period is changed.');
+	  		        	$('#dg').datagrid('load',{
+	  		        		search_text: $('#search_text').val(),
+							search_period: $('#search_period').val(),
+	  		        		dataType: 'json',
+	  		                contentType: 'application/json',
+	  		                async: false,
+	  		                jID: '<?php echo $basis->cInfo->jID;?>',
+	  		                Journal_show_inactive: document.getElementById('Journal_show_inactive').checked ? 1 : 0,
+	  		        	});
+  	  		    	}
+	  		    });
   	
   		        function newJournal(){
   		        	$.messager.progress();
@@ -690,6 +724,7 @@ class admin extends \core\classes\admin {
   						console.log('the loading of the datagrid was succesfull');
   						$.messager.progress('close');
   						if(data.total == 0) $.messager.alert('<?php echo TEXT_ERROR?>',"<?php echo TEXT_NO_RESULTS_FOUND?>");
+  						if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
   					},
   					onLoadError: function(){
   						console.error('the loading of the datagrid resulted in a error');
@@ -698,7 +733,7 @@ class admin extends \core\classes\admin {
   					},
   					onDblClickRow: function(index , row){
   						console.log('a row in the datagrid was double clicked');
-  						document.location = "index.php?action=editJournal&journal_id="+ row.id;
+  						document.location = "index.php?action=editJournal&id="+ row.id;
   						//$('#win').window('open').window('center').window('setTitle',"<?php echo TEXT_EDIT?>"+ ' ' + row.name);
   					},
   					pagination: true,
@@ -713,6 +748,7 @@ class admin extends \core\classes\admin {
   					toolbar: 	"#toolbar",
   					rowStyler: function(index,row){
   						if (row.waiting == '1') return 'background-color:lightblue';
+  						if (row.closed  == '1') return 'background-color:pink';
   					},
   				});
   				
