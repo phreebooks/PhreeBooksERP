@@ -103,6 +103,7 @@ class user {
 
 	final static function validate($token = 0, $user_active = false) {
 		\core\classes\messageStack::development("executing ".__METHOD__);
+		if ($token == '') throw new \core\classes\userException("security token is empty.");
   		$security_level = $_SESSION['user']->admin_security[$token];
   		if (!in_array($security_level, array(1,2,3,4)) && !$user_active) throw new \core\classes\userException(ERROR_NO_PERMISSION);
   		return $user_active ? 1 : $security_level;
